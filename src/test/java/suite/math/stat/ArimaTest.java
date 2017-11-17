@@ -26,7 +26,7 @@ public class ArimaTest {
 	}
 
 	private void test(float[] ars, float[] mas) {
-		int length = 128;
+		int length = 8;
 		int p = ars.length;
 		int q = mas.length;
 		float[] xs = new float[length];
@@ -44,10 +44,10 @@ public class ArimaTest {
 		}
 
 		Em em = arima.em(xs, p, q);
-		System.out.println(Arrays.toString(em.ars));
-		System.out.println(Arrays.toString(em.mas));
-		System.out.println(Arrays.toString(xs));
-		System.out.println(em.x1);
+		System.out.println("x = " + Arrays.toString(xs));
+		System.out.println("ar = " + Arrays.toString(em.ars));
+		System.out.println("ma = " + Arrays.toString(em.mas));
+		System.out.println("x1 = " + em.x1);
 	}
 
 }
