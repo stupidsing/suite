@@ -57,7 +57,8 @@ public class Arima {
 		}
 
 		// for n in 0 until p
-		// K[n + 1] := d[n] ^ -1 summation(k in 0 until n, alpha[n][k] * r[n + 1 - k])
+		// K[n + 1] := d[n] ^ -1 summation(k in 0 until n, alpha[n][k] * r[n + 1
+		// - k])
 		// d[n + 1] := d[n] * (1 - K[n + 1] ^ 2)
 		// alpha[n + 1][0] := 1
 		// for k := 1 to n
@@ -133,7 +134,7 @@ public class Arima {
 		for (int i = 0; i < d; i++)
 			xs = ts.dropDiff(1, xs);
 
-		float[] xs1 = Floats_.concat(xs, new float[] { em(xs, p, q), });
+		float[] xs1 = Floats_.concat(xs, new float[] { em(xs, p, q).x1, });
 		int xLength = xs.length;
 
 		for (int i = 0; i < d; i++) {
@@ -151,13 +152,13 @@ public class Arima {
 	// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 	// = eps[t]
 	// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
-	private float em(float[] xs, int p, int q) { // ARMA
+	public Em em(float[] xs, int p, int q) { // ARMA
 		int maxpq = Math.max(p, q);
 		int xLength = xs.length;
 		int tsLength = xLength - maxpq;
 		float[] ars = Floats_.toArray(p, i -> (float) Math.scalb(1d, -i));
 		float[] mas = Floats_.toArray(q, i -> (float) Math.scalb(1d, -i));
-		float[] eps = Floats_.toArray(q + 1, i -> .1f);
+		float[] eps = Floats_.toArray(xLength, i -> .1f);
 
 		for (int iter = 0; iter < 9; iter++) {
 
@@ -198,7 +199,6 @@ public class Arima {
 					int t_ = t;
 					for (int j = 0; j < q; j++)
 						lrxs[--t_] = mas[j];
-					lrxss[i] = mas;
 					lrys[i] = (float) (xs[t] - eps[t] - Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs[t - j - 1])));
 
 					eps = stat.linearRegression(lrxss, lrys).coefficients;
@@ -215,9 +215,23 @@ public class Arima {
 		// + eps[t]
 		// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 		// when t = xLength
-		return (float) (0f //
+		double x1 = 0d //
 				+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs[xLength - j - 1])) //
-				+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas_[j] * eps_[xLength - j - 1])));
+				+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas_[j] * eps_[xLength - j - 1]));
+
+		return new Em(ars_, mas_, (float) x1);
+	}
+
+	public class Em {
+		public final float[] ars;
+		public final float[] mas;
+		public final float x1;
+
+		private Em(float[] ars, float[] mas, float x1) {
+			this.ars = ars;
+			this.mas = mas;
+			this.x1 = x1;
+		}
 	}
 
 	// Digital Processing of Random Signals, Boaz Porat, page 190
