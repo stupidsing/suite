@@ -115,8 +115,7 @@ public class P4GenerateCode {
 		P4Emit emit = new P4Emit(instructions::add);
 		if (isUseEbp)
 			emit.mov(ebp, esp);
-		CompileOut out = new Compile0(CompileOut_.OPREG, emit).new Compile1(registerSet, 0).compile(funp);
-		emit.mov(ebx, out.op0);
+		new Compile0(CompileOut_.OPSPEC, emit, null, ebx, null).new Compile1(registerSet, 0).compile(funp);
 		emit.mov(eax, amd64.imm(1, is));
 		emit.emit(amd64.instruction(Insn.INT, amd64.imm(-128)));
 		return instructions;
