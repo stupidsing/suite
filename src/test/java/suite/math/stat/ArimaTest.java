@@ -37,6 +37,7 @@ public class ArimaTest {
 		Em em = arima.em(xs, ars.length, mas.length);
 		System.out.println(Arrays.toString(em.ars));
 		System.out.println(Arrays.toString(em.mas));
+		System.out.println(Arrays.toString(xs));
 		System.out.println(em.x1);
 	}
 

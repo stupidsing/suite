@@ -158,7 +158,7 @@ public class Arima {
 		int tsLength = xLength - maxpq;
 		float[] ars = Floats_.toArray(p, i -> (float) Math.scalb(1d, -i));
 		float[] mas = Floats_.toArray(q, i -> (float) Math.scalb(1d, -i));
-		float[] eps = Floats_.toArray(xLength, i -> .1f);
+		float[] eps = Floats_.toArray(xLength, i -> 0f);
 
 		for (int iter = 0; iter < 9; iter++) {
 
@@ -188,7 +188,7 @@ public class Arima {
 			// xs[t] - eps[t]
 			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 			// = eps[t - 1] * mas[0] + ... + eps[t - q] * mas[q - 1]
-			{
+			if (q < 0) {
 				float[][] lrxss = new float[tsLength][xLength];
 				float[] lrys = new float[tsLength];
 
