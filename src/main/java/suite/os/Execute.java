@@ -44,7 +44,11 @@ public class Execute {
 	}
 
 	public Execute(String[] command, String in) {
-		InputStream bis = new ByteArrayInputStream(in.getBytes(Constants.charset));
+		this(command, in.getBytes(Constants.charset));
+	}
+
+	public Execute(String[] command, byte[] bytes) {
+		InputStream bis = new ByteArrayInputStream(bytes);
 		ByteArrayOutputStream bos0 = new ByteArrayOutputStream();
 		ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
 

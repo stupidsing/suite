@@ -53,17 +53,18 @@ public class ElfTest {
 	}
 
 	private void test(String program, String input, int code) {
+		Bytes bytes = Bytes.of(input.getBytes(Constants.charset));
+
 		if (System.getenv("COMPUTERNAME") == null) { // not Windows => run ELF
-			Execute exec = elf.exec(input, offset -> Funp_.main().compile(offset, program).t1);
+			Execute exec = elf.exec(bytes.toArray(), offset -> Funp_.main().compile(offset, program).t1);
 			assertEquals(code, exec.code);
 			assertEquals(input, exec.out);
 		} else { // Windows => interpret assembly
-			Bytes array = Bytes.of(input.getBytes(Constants.charset));
 			List<Instruction> instructions = Funp_.main().compile(code, program).t0;
 
-			Amd64Interpret interpret = new Amd64Interpret(array);
+			Amd64Interpret interpret = new Amd64Interpret(bytes);
 			assertEquals(code, interpret.interpret(instructions));
-			assertEquals(array, interpret.out.toBytes());
+			assertEquals(bytes, interpret.out.toBytes());
 		}
 	}
 

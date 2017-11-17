@@ -4,12 +4,14 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import suite.Constants;
 import suite.ip.ImperativeCompiler;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfTest0 {
 
 	private ElfWriter elf = new ElfWriter();
+	private ImperativeCompiler ic = new ImperativeCompiler();
 
 	@Test
 	public void test() {
@@ -66,7 +68,7 @@ public class ElfTest0 {
 	}
 
 	private Execute test(String program, String text) {
-		return elf.exec(text, offset -> new ImperativeCompiler().compile(offset, "" //
+		return elf.exec(text.getBytes(Constants.charset), offset -> ic.compile(offset, "" //
 				+ "asm _ MOV (EBP, ESP);" //
 				+ program //
 				+ "asm _ MOV (EBX, EAX);" //

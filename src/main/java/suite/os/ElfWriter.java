@@ -19,13 +19,12 @@ import suite.util.Util;
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfWriter {
 
-	public Execute exec(String text, Int_Obj<Bytes> source) {
+	public Execute exec(byte[] input, Int_Obj<Bytes> source) {
 		Path path = TempDir.resolve("a.out." + Util.temp());
 		int org = 0x08048000;
 
 		write(org, source.apply(org + 84), path);
-
-		return new Execute(new String[] { path.toString(), }, text);
+		return new Execute(new String[] { path.toString(), }, input);
 	}
 
 	private void write(int org, Bytes code, Path path) {
