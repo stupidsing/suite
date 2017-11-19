@@ -36,6 +36,17 @@ public class Amd64Assemble {
 		VP__, VP66, VPF3, VPF2,
 	};
 
+	private Map<Vexp, Integer> vexps = Map.ofEntries( //
+			entry(Vexp.VP__, 0), //
+			entry(Vexp.VP66, 1), //
+			entry(Vexp.VPF3, 2), //
+			entry(Vexp.VPF2, 3));
+
+	private Map<Vexm, Integer> vexms = Map.ofEntries( //
+			entry(Vexm.VM0F__, 1), //
+			entry(Vexm.VM0F38, 2), //
+			entry(Vexm.VM0F3A, 3));
+
 	private interface Encode {
 		public Bytes encode_();
 	}
@@ -109,9 +120,9 @@ public class Amd64Assemble {
 
 		private VexCode vex(Vexp vexp, int v, Vexm vexm, int w) {
 			VexCode vex = new VexCode();
-			vex.p = Map.ofEntries(entry(Vexp.VP__, 0), entry(Vexp.VP66, 1), entry(Vexp.VPF3, 2), entry(Vexp.VPF2, 3)).get(vexp);
+			vex.p = vexps.get(vexp);
 			vex.v = v;
-			vex.m = Map.ofEntries(entry(Vexm.VM0F__, 1), entry(Vexm.VM0F38, 2), entry(Vexm.VM0F3A, 3)).get(vexm);
+			vex.m = vexms.get(vexm);
 			vex.w = w;
 			return vex;
 		}
