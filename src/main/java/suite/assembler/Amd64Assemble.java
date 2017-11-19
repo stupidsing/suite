@@ -28,6 +28,8 @@ import suite.primitive.Bytes_;
 // TODO validate size of operands
 public class Amd64Assemble {
 
+	private InsnCode invalid = new InsnCode(-1, new byte[0]);
+
 	private enum Vexm {
 		VM0F__, VM0F38, VM0F3A,
 	};
@@ -48,12 +50,18 @@ public class Amd64Assemble {
 			entry(Vexm.VM0F3A, 3));
 
 	private interface Encode {
+		public boolean isValid();
+
 		public Bytes encode_();
 	}
 
 	private class VexCode implements Encode {
 		public int m, w, p, v;
 		public InsnCode code;
+
+		public boolean isValid() {
+			return code.isValid();
+		}
 
 		public Bytes encode_() {
 			return encode(code, vex(m, p, code.size, code.modrm, w, v));
@@ -127,11 +135,12 @@ public class Amd64Assemble {
 			return vex;
 		}
 
+		public boolean isValid() {
+			return 0 < size;
+		}
+
 		public Bytes encode_() {
-			if (size == 1 || size == 2 || size == 4)
-				return encode(this, null);
-			else
-				throw new RuntimeException("bad instruction");
+			return encode(size == 1 || size == 2 || size == 4 ? this : invalid, null);
 		}
 
 	}
@@ -176,6 +185,9 @@ public class Amd64Assemble {
 		case ADD:
 			encode = assembleRmRegImm(instruction, 0x00, 0x80, 0);
 			break;
+		case ADDPS:
+			encode = assembleRegRm(instruction.op0, instruction.op1, 0x58).pre(bs(0x0F));
+			break;
 		case AND:
 			encode = assembleRmRegImm(instruction, 0x20, 0x80, 4);
 			break;
@@ -188,7 +200,7 @@ public class Amd64Assemble {
 			else if (isRm(instruction.op0))
 				encode = assemble(instruction.op0, 0xFF, 2);
 			else
-				throw new RuntimeException("bad instruction");
+				encode = invalid;
 			break;
 		case CLD:
 			encode = assemble(instruction, 0xFC);
@@ -223,7 +235,7 @@ public class Amd64Assemble {
 				insnCode_.bs = new byte[] {};
 				encode = insnCode_;
 			} else
-				throw new RuntimeException("bad instruction");
+				encode = invalid;
 			break;
 		case IMUL:
 			if (instruction.op1 instanceof OpNone)
@@ -238,11 +250,11 @@ public class Amd64Assemble {
 					else if (imm.size == instruction.op0.size)
 						encode = assembleRegRm(instruction.op0, instruction.op1, 0x69).imm(imm);
 					else
-						throw new RuntimeException("bad instruction");
+						encode = invalid;
 				} else
-					throw new RuntimeException("bad instruction");
+					encode = invalid;
 			else
-				throw new RuntimeException("bad instruction");
+				encode = invalid;
 			break;
 		case IN:
 			encode = assembleInOut(instruction.op1, instruction.op0, 0xE4);
@@ -258,7 +270,7 @@ public class Amd64Assemble {
 				else
 					encode = assemble(instruction, 0xCC);
 			} else
-				throw new RuntimeException("bad instruction");
+				encode = invalid;
 			break;
 		case INTO:
 			encode = assemble(instruction, 0xCE);
@@ -374,7 +386,7 @@ public class Amd64Assemble {
 					} else if (isRm(instruction.op0))
 						encode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(op1);
 					else
-						throw new RuntimeException("bad instruction");
+						encode = invalid;
 				} else if (instruction.op0 instanceof OpRegSegment) {
 					OpRegSegment regSegment = (OpRegSegment) instruction.op0;
 					encode = assemble(instruction.op1, 0x8E, regSegment.sreg);
@@ -393,12 +405,12 @@ public class Amd64Assemble {
 					OpRegControl regControl = (OpRegControl) instruction.op0;
 					OpReg reg = (OpReg) instruction.op1;
 					encode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x22, b(reg.reg, regControl.creg, 3), });
-				} else if ((encode = assembleRmReg(instruction, 0x88)) != null)
+				} else if ((encode = assembleRmReg(instruction, 0x88)).isValid())
 					;
 				else
-					throw new RuntimeException("bad instruction");
+					encode = invalid;
 			else
-				throw new RuntimeException("bad instruction");
+				encode = invalid;
 			break;
 		case MOVAPS:
 			encode = assembleRmReg(instruction, isXmm, 0x29, 0x28).size(4).pre(bs(0x0F));
@@ -466,12 +478,12 @@ public class Amd64Assemble {
 						encode = new InsnCode(sreg.size, bs(0x0F, 0xA9));
 						break;
 					default:
-						throw new RuntimeException("bad instruction");
+						encode = invalid;
 					}
 				} else
-					throw new RuntimeException("bad instruction");
+					encode = invalid;
 			else
-				throw new RuntimeException("bad instruction");
+				encode = invalid;
 			break;
 		case POPA:
 			encode = assemble(instruction, 0x61);
@@ -508,12 +520,12 @@ public class Amd64Assemble {
 						encode = new InsnCode(sreg.size, bs(0x0F, 0xA8));
 						break;
 					default:
-						throw new RuntimeException("bad instruction");
+						encode = invalid;
 					}
 				} else
-					throw new RuntimeException("bad instruction");
+					encode = invalid;
 			else
-				throw new RuntimeException("bad instruction");
+				encode = invalid;
 			break;
 		case PUSHA:
 			encode = assemble(instruction, 0x60);
@@ -539,7 +551,7 @@ public class Amd64Assemble {
 			else if (instruction.op0 instanceof OpImm && instruction.op0.size == 2)
 				encode = new InsnCode(instruction.op0.size, (OpImm) instruction.op0).setByte(0xC2);
 			else
-				throw new RuntimeException("bad instruction");
+				encode = invalid;
 			break;
 		case SAL:
 			encode = assembleShift(instruction, 0xC0, 4);
@@ -614,7 +626,7 @@ public class Amd64Assemble {
 				else
 					encode = assembleRegRm(instruction.op1, instruction.op0, 0x84);
 			else
-				throw new RuntimeException("bad instruction");
+				encode = invalid;
 			break;
 		case VMOVAPS:
 			encode = assembleRmReg(instruction, isXmmYmm, 0x29, 0x28).vex(Vexp.VP__, 0, Vexm.VM0F__);
@@ -632,7 +644,7 @@ public class Amd64Assemble {
 				else
 					encode = assembleRegRm(instruction.op1, instruction.op0, 0x86);
 			else
-				throw new RuntimeException("bad instruction");
+				encode = invalid;
 			break;
 		case WRMSR:
 			encode = new InsnCode(4, bs(0x0F, 0x30));
@@ -641,13 +653,10 @@ public class Amd64Assemble {
 			encode = assembleRmRegImm(instruction, 0x30, 0x80, 6);
 			break;
 		default:
-			encode = null;
+			encode = invalid;
 		}
 
-		if (encode != null)
-			return encode.encode_();
-		else
-			throw new RuntimeException("bad instruction");
+		return encode.encode_();
 	}
 
 	private InsnCode assembleInOut(Operand port, Operand acc, int b) {
@@ -658,7 +667,7 @@ public class Amd64Assemble {
 			else if (port.size == 2 && port instanceof OpReg && ((OpReg) port).reg == 2) // DX
 				portImm = null;
 			else
-				throw new RuntimeException("bad instruction");
+				return invalid;
 
 			InsnCode insnCode = new InsnCode(acc.size, bs(b + (acc.size == 1 ? 0 : 1) + (portImm != null ? 0 : 8)));
 			if (portImm != null) {
@@ -667,14 +676,14 @@ public class Amd64Assemble {
 			}
 			return insnCode;
 		} else
-			throw new RuntimeException("bad instruction");
+			return invalid;
 	}
 
 	private InsnCode assembleJump(Instruction instruction, long offset, int bNear, byte[] bFar) {
 		if (instruction.op0 instanceof OpImm)
 			return assembleJumpImm((OpImm) instruction.op0, offset, bNear, bFar);
 		else
-			throw new RuntimeException("bad instruction");
+			return invalid;
 	}
 
 	private InsnCode assembleJumpImm(OpImm op0, long offset, int b1, byte[] bs4) {
@@ -689,7 +698,7 @@ public class Amd64Assemble {
 			bs0 = bs4;
 			break;
 		default:
-			throw new RuntimeException("bad instruction");
+			return invalid;
 		}
 
 		long rel = op0.imm - (offset + bs0.length + size);
@@ -699,9 +708,10 @@ public class Amd64Assemble {
 			insnCode = new InsnCode(size, bs0);
 			insnCode.immSize = size;
 			insnCode.imm = rel;
-			return insnCode;
 		} else
-			throw new RuntimeException("jump too far");
+			insnCode = invalid;
+
+		return insnCode;
 	}
 
 	private InsnCode assembleRegRmExtended(Instruction instruction, int b) {
@@ -709,14 +719,7 @@ public class Amd64Assemble {
 			OpReg reg = (OpReg) instruction.op0;
 			return assemble(instruction.op1, b + (instruction.op1.size <= 1 ? 0 : 1), reg.reg);
 		} else
-			throw new RuntimeException("bad instruction");
-	}
-
-	private InsnCode assembleRegRm(Operand reg, Operand rm, int b) {
-		if (reg instanceof OpReg && isRm(rm))
-			return assemble(rm, b, ((OpReg) reg).reg);
-		else
-			throw new RuntimeException("bad instruction");
+			return invalid;
 	}
 
 	private InsnCode assembleRm(Instruction instruction, int bReg, int bModrm, int num) {
@@ -727,7 +730,7 @@ public class Amd64Assemble {
 		} else if (isRm(instruction.op0))
 			insnCode = assembleByteFlag(instruction.op0, bModrm, num);
 		else
-			throw new RuntimeException("bad instruction");
+			insnCode = invalid;
 		return insnCode;
 	}
 
@@ -737,12 +740,12 @@ public class Amd64Assemble {
 
 	private InsnCode assembleRmRegImm(Instruction instruction, int bModrm, int bAccImm, int bRmImm, int num) {
 		InsnCode insnCode, insnCodeRmReg;
-		if ((insnCodeRmReg = assembleRmReg(instruction, bModrm)) != null)
+		if ((insnCodeRmReg = assembleRmReg(instruction, bModrm)).isValid())
 			insnCode = insnCodeRmReg;
 		else if (instruction.op1 instanceof OpImm)
 			insnCode = assembleRmImm(instruction.op0, (OpImm) instruction.op1, bAccImm, bRmImm, num);
 		else
-			throw new RuntimeException("bad instruction");
+			insnCode = invalid;
 		return insnCode;
 	}
 
@@ -751,14 +754,25 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRmReg(Instruction instruction, Predicate<Operand> pred, int bRmReg, int bRegRm) {
-		FixieFun3<Operand, Integer, OpReg, InsnCode> fun = (rm, b1, reg) -> 0 <= b1 ? assembleByteFlag(rm, b1, reg.reg) : null;
+		FixieFun3<Operand, Integer, OpReg, InsnCode> fun = (rm, b1, reg) -> 0 <= b1 ? assembleByteFlag(rm, b1, reg.reg) : invalid;
 
 		if (isRm(instruction.op0) && pred.test(instruction.op1))
 			return fun.apply(instruction.op0, bRmReg, (OpReg) instruction.op1);
 		else if (pred.test(instruction.op0) && isRm(instruction.op1))
 			return fun.apply(instruction.op1, bRegRm, (OpReg) instruction.op0);
 		else
-			return null;
+			return invalid;
+	}
+
+	private InsnCode assembleRegRm(Operand reg, Operand rm, int b) {
+		return assembleRegRm(reg, op -> op instanceof OpReg, rm, b);
+	}
+
+	private InsnCode assembleRegRm(Operand reg, Predicate<Operand> pred, Operand rm, int b) {
+		if (pred.test(reg) && isRm(rm))
+			return assemble(rm, b, ((OpReg) reg).reg);
+		else
+			return invalid;
 	}
 
 	private InsnCode assembleRmImm(Operand op0, OpImm op1, int bAccImm, int bRmImm, int num) {
@@ -771,7 +785,7 @@ public class Amd64Assemble {
 			insnCode.bs = bs(bRmImm + b0);
 			insnCode.modrm = modrm(op0, num);
 		} else
-			throw new RuntimeException("bad instruction");
+			insnCode = invalid;
 		return insnCode;
 	}
 
@@ -790,7 +804,7 @@ public class Amd64Assemble {
 				isShiftImm = false;
 				b1 = b + 16 + 2;
 			} else
-				throw new RuntimeException("bad instruction");
+				return invalid;
 
 			InsnCode insnCode = assembleByteFlag(instruction.op0, b1, num);
 
@@ -801,7 +815,7 @@ public class Amd64Assemble {
 
 			return insnCode;
 		} else
-			throw new RuntimeException("bad instruction");
+			return invalid;
 	}
 
 	private InsnCode assembleByteFlag(Operand operand, int b, int num) {
@@ -819,25 +833,28 @@ public class Amd64Assemble {
 	}
 
 	private Bytes encode(InsnCode insnCode, byte[] vexs) {
-		Modrm modrm = insnCode.modrm;
-		int rex = modrm != null ? rex(modrm) : rex(insnCode.size, 0, 0, 0);
+		if (insnCode.isValid()) {
+			Modrm modrm = insnCode.modrm;
+			int rex = modrm != null ? rex(modrm) : rex(insnCode.size, 0, 0, 0);
 
-		BytesBuilder bb = new BytesBuilder();
-		if (vexs != null)
-			bb.append(vexs);
-		else {
-			if (insnCode.size == 2)
-				bb.append((byte) 0x66);
-			appendIf(bb, rex);
-		}
-		bb.append(insnCode.bs);
-		if (modrm != null) {
-			bb.append(b(modrm.rm, modrm.num, modrm.mod));
-			appendIf(bb, sib(modrm));
-			appendImm(bb, modrm.dispSize, modrm.disp);
-		}
-		appendImm(bb, insnCode.immSize, insnCode.imm);
-		return bb.toBytes();
+			BytesBuilder bb = new BytesBuilder();
+			if (vexs != null)
+				bb.append(vexs);
+			else {
+				if (insnCode.size == 2)
+					bb.append((byte) 0x66);
+				appendIf(bb, rex);
+			}
+			bb.append(insnCode.bs);
+			if (modrm != null) {
+				bb.append(b(modrm.rm, modrm.num, modrm.mod));
+				appendIf(bb, sib(modrm));
+				appendImm(bb, modrm.dispSize, modrm.disp);
+			}
+			appendImm(bb, insnCode.immSize, insnCode.imm);
+			return bb.toBytes();
+		} else
+			throw new RuntimeException("bad instruction");
 	}
 
 	private void appendIf(BytesBuilder bb, int b) {

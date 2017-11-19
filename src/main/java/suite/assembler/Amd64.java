@@ -13,6 +13,7 @@ public class Amd64 {
 		AAA, //
 		ADC, //
 		ADD, //
+		ADDPS, //
 		AND, //
 		AOP, //
 		CALL, //
