@@ -64,6 +64,7 @@ public class Amd64 {
 		LIDT, //
 		LTR, //
 		MOV, //
+		MOVD, //
 		MOVSB, //
 		MOVSD, //
 		MOVSW, //
@@ -142,12 +143,12 @@ public class Amd64 {
 		public int sreg;
 	}
 
-	public class OpRegXmm extends Operand {
-		public int xreg;
+	public class OpRegXmm extends OpReg {
+		public int reg;
 	}
 
-	public class OpRegYmm extends Operand {
-		public int yreg;
+	public class OpRegYmm extends OpReg {
+		public int reg;
 	}
 
 	public class Instruction {
@@ -345,14 +346,14 @@ public class Amd64 {
 	private OpRegXmm newRegXmm(int xreg) {
 		OpRegXmm opRegXmm = new OpRegXmm();
 		opRegXmm.size = 16;
-		opRegXmm.xreg = xreg;
+		opRegXmm.reg = xreg;
 		return opRegXmm;
 	}
 
 	private OpRegYmm newRegYmm(int yreg) {
 		OpRegYmm opRegYmm = new OpRegYmm();
 		opRegYmm.size = 32;
-		opRegYmm.yreg = yreg;
+		opRegYmm.reg = yreg;
 		return opRegYmm;
 	}
 
