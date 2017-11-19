@@ -26,7 +26,7 @@ public class Amd64Assemble {
 	private class InsnCode {
 		private int size;
 		private byte[] bs;
-		private ModRm modRm;
+		private Modrm modrm;
 		private int immSize;
 		private long imm;
 
@@ -52,14 +52,14 @@ public class Amd64Assemble {
 			Bytes_.copy(bs, 0, bs1, length0, length1);
 
 			InsnCode insnCode = new InsnCode(size, bs1);
-			insnCode.modRm = modRm;
+			insnCode.modrm = modrm;
 			insnCode.immSize = immSize;
 			insnCode.imm = imm;
 			return insnCode;
 		}
 	}
 
-	private class ModRm {
+	private class Modrm {
 		private int size, mod, num, rm, s, i, b, dispSize;
 		private long disp;
 	}
@@ -682,7 +682,7 @@ public class Amd64Assemble {
 		else if (isRm(op0)) {
 			int b0 = ((1 < op0.size && op1.size <= 1) ? 2 : 0) + (op0.size <= 1 ? 0 : 1);
 			insnCode.bs = bs(bRmImm + b0);
-			insnCode.modRm = modRm(op0, num);
+			insnCode.modrm = modrm(op0, num);
 		} else
 			throw new RuntimeException("bad instruction");
 		return insnCode;
@@ -728,23 +728,23 @@ public class Amd64Assemble {
 
 	private InsnCode assemble(Operand operand, byte[] bs, int num) {
 		InsnCode insnCode = new InsnCode(operand.size, bs);
-		insnCode.modRm = modRm(operand, num);
+		insnCode.modrm = modrm(operand, num);
 		return insnCode;
 	}
 
 	private Bytes encode(InsnCode insnCode) {
-		ModRm modRm = insnCode.modRm;
-		int rex = modRm != null ? rex(modRm) : rex(insnCode.size, 0, 0, 0);
+		Modrm modrm = insnCode.modrm;
+		int rex = modrm != null ? rex(modrm) : rex(insnCode.size, 0, 0, 0);
 
 		BytesBuilder bb = new BytesBuilder();
 		if (insnCode.size == 2)
 			bb.append((byte) 0x66);
 		appendIf(bb, rex);
 		bb.append(insnCode.bs);
-		if (modRm != null) {
-			bb.append(b(modRm.rm, modRm.num, modRm.mod));
-			appendIf(bb, sib(modRm));
-			appendImm(bb, modRm.dispSize, modRm.disp);
+		if (modrm != null) {
+			bb.append(b(modrm.rm, modrm.num, modrm.mod));
+			appendIf(bb, sib(modrm));
+			appendImm(bb, modrm.dispSize, modrm.disp);
 		}
 		appendImm(bb, insnCode.immSize, insnCode.imm);
 		return bb.toBytes();
@@ -770,7 +770,7 @@ public class Amd64Assemble {
 		return operand instanceof OpMem || operand instanceof OpReg;
 	}
 
-	private ModRm modRm(Operand operand, int num) {
+	private Modrm modrm(Operand operand, int num) {
 		int mod, rm, s, i, b, dispSize;
 		long disp;
 
@@ -840,17 +840,17 @@ public class Amd64Assemble {
 		} else
 			throw new RuntimeException("bad operand");
 
-		ModRm modRm = new ModRm();
-		modRm.size = operand.size;
-		modRm.mod = mod;
-		modRm.num = num;
-		modRm.rm = rm;
-		modRm.s = s;
-		modRm.i = i;
-		modRm.b = b;
-		modRm.dispSize = dispSize;
-		modRm.disp = disp;
-		return modRm;
+		Modrm modrm = new Modrm();
+		modrm.size = operand.size;
+		modrm.mod = mod;
+		modrm.num = num;
+		modrm.rm = rm;
+		modrm.s = s;
+		modrm.i = i;
+		modrm.b = b;
+		modrm.dispSize = dispSize;
+		modrm.disp = disp;
+		return modrm;
 	}
 
 	private int dispMod(int dispSize) {
@@ -866,8 +866,8 @@ public class Amd64Assemble {
 		}
 	}
 
-	private int sib(ModRm modRm) {
-		return 0 <= modRm.s ? b(modRm.b, modRm.i, modRm.s) : -1;
+	private int sib(Modrm modrm) {
+		return 0 <= modrm.s ? b(modrm.b, modrm.i, modrm.s) : -1;
 	}
 
 	private int scale(OpMem op) {
@@ -885,8 +885,8 @@ public class Amd64Assemble {
 		}
 	}
 
-	private int rex(ModRm modRm) {
-		return rex(modRm.size, modRm.num, modRm.i, modRm.b);
+	private int rex(Modrm modrm) {
+		return rex(modrm.size, modrm.num, modrm.i, modrm.b);
 	}
 
 	private int rex(int size, int r, int x, int b) {
