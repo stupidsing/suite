@@ -75,12 +75,8 @@ public class Amd64Assemble {
 			return imm(imm.imm, imm.size);
 		}
 
-		private InsnCode imm(long imm, int size) {
-			InsnCode insnCode = new InsnCode(size, bs);
-			insnCode.modrm = modrm;
-			insnCode.immSize = size;
-			insnCode.imm = imm;
-			return insnCode;
+		private InsnCode imm(long  imm1, int size1) {
+			return set(size1 ,bs, imm1, size1);
 		}
 
 		private InsnCode pre(int pre) {
@@ -92,18 +88,18 @@ public class Amd64Assemble {
 			int length1 = bs.length;
 			byte[] bs1 = Arrays.copyOf(pre, length0 + length1);
 			Bytes_.copy(bs, 0, bs1, length0, length1);
-			return setBs(bs1);
+			return set(size, bs1, imm, immSize);
 		}
 
-		private InsnCode setBs(byte[] bs1) {
-			return set(size, bs1);
+		private InsnCode setByte(int b) {
+			return set(size, bs(b), imm, immSize);
 		}
 
 		private InsnCode size(int size1) {
-			return set(size1, bs);
+			return set(size1, bs, imm, immSize);
 		}
 
-		private InsnCode set(int size1, byte[] bs1) {
+		private InsnCode set(int size1, byte[] bs1, long imm, int immSize) {
 			InsnCode insnCode = new InsnCode(size1, bs1);
 			insnCode.modrm = modrm;
 			insnCode.immSize = immSize;
@@ -350,7 +346,7 @@ public class Amd64Assemble {
 
 					if (instruction.op0 instanceof OpReg) {
 						OpReg op0 = (OpReg) instruction.op0;
-						insnCode = new InsnCode(op1.size, op1).setBs(bs(0xB0 + (op0.size <= 1 ? 0 : 8) + op0.reg));
+						insnCode = new InsnCode(op1.size, op1).setByte(0xB0 + (op0.size <= 1 ? 0 : 8) + op0.reg);
 					} else if (isRm(instruction.op0))
 						insnCode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(op1);
 					else
@@ -459,7 +455,7 @@ public class Amd64Assemble {
 		case PUSH:
 			if (instruction.op0 instanceof OpImm) {
 				int size = instruction.op0.size;
-				insnCode = new InsnCode(size, (OpImm) instruction.op0).setBs(bs(0x68 + (1 < size ? 0 : 2)));
+				insnCode = new InsnCode(size, (OpImm) instruction.op0).setByte(0x68 + (1 < size ? 0 : 2));
 			} else if (1 < instruction.op0.size)
 				if (isRm(instruction.op0))
 					insnCode = assembleRm(instruction, 0x50, 0xFE, 6);
@@ -514,7 +510,7 @@ public class Amd64Assemble {
 			if (instruction.op0 instanceof OpNone)
 				insnCode = assemble(instruction, 0xC3);
 			else if (instruction.op0 instanceof OpImm && instruction.op0.size == 2)
-				insnCode = new InsnCode(instruction.op0.size, (OpImm) instruction.op0).setBs(bs(0xC2));
+				insnCode = new InsnCode(instruction.op0.size, (OpImm) instruction.op0).setByte(0xC2);
 			else
 				throw new RuntimeException("bad instruction");
 			break;
