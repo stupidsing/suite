@@ -65,6 +65,7 @@ public class Amd64 {
 		LTR, //
 		MOV, //
 		MOVD, //
+		MOVQ, //
 		MOVSB, //
 		MOVSD, //
 		MOVSW, //

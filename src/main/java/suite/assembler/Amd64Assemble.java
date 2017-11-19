@@ -12,6 +12,7 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.OpRegControl;
 import suite.assembler.Amd64.OpRegSegment;
 import suite.assembler.Amd64.OpRegXmm;
+import suite.assembler.Amd64.OpRegYmm;
 import suite.assembler.Amd64.Operand;
 import suite.node.util.Singleton;
 import suite.os.LogUtil;
@@ -106,7 +107,7 @@ public class Amd64Assemble {
 			if (instruction.op0 instanceof OpImm && instruction.op0.size == 4)
 				insnCode = assembleJumpImm((OpImm) instruction.op0, offset, -1, bs(0xE8));
 			else if (isRm(instruction.op0))
-				insnCode = assemble(instruction.op0, bs(0xFF), 2);
+				insnCode = assemble(instruction.op0, 0xFF, 2);
 			else
 				throw new RuntimeException("bad instruction");
 			break;
@@ -187,7 +188,7 @@ public class Amd64Assemble {
 			insnCode = assemble(instruction, 0xCE);
 			break;
 		case INVLPG:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x01), 7);
+			insnCode = assemble(instruction.op0, 0x01, 7).pre(0x0F);
 			break;
 		case IRET:
 			insnCode = assemble(instruction, 0xCF);
@@ -221,7 +222,7 @@ public class Amd64Assemble {
 			break;
 		case JMP:
 			if (isRm(instruction.op0) && instruction.op0.size == 4)
-				insnCode = assemble(instruction.op0, bs(0xFF), 4);
+				insnCode = assemble(instruction.op0, 0xFF, 4);
 			else
 				insnCode = assembleJump(instruction, offset, 0xEB, bs(0xE9));
 			break;
@@ -278,13 +279,13 @@ public class Amd64Assemble {
 			insnCode = assembleJump(instruction, offset, 0xE1, null);
 			break;
 		case LGDT:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x01), 2);
+			insnCode = assemble(instruction.op0, 0x01, 2).pre(0x0F);
 			break;
 		case LIDT:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x01), 3);
+			insnCode = assemble(instruction.op0, 0x01, 3).pre(0x0F);
 			break;
 		case LTR:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x00), 3);
+			insnCode = assemble(instruction.op0, 0x00, 3).pre(0x0F);
 			break;
 		case MOV:
 			if (instruction.op0.size == instruction.op1.size)
@@ -304,10 +305,10 @@ public class Amd64Assemble {
 					insnCode.imm = op1.imm;
 				} else if (instruction.op0 instanceof OpRegSegment) {
 					OpRegSegment regSegment = (OpRegSegment) instruction.op0;
-					insnCode = assemble(instruction.op1, bs(0x8E), regSegment.sreg);
+					insnCode = assemble(instruction.op1, 0x8E, regSegment.sreg);
 				} else if (instruction.op1 instanceof OpRegSegment) {
 					OpRegSegment regSegment = (OpRegSegment) instruction.op1;
-					insnCode = assemble(instruction.op0, bs(0x8C), regSegment.sreg);
+					insnCode = assemble(instruction.op0, 0x8C, regSegment.sreg);
 				} else if (instruction.op0.size == 4 //
 						&& instruction.op0 instanceof OpReg //
 						&& instruction.op1 instanceof OpRegControl) {
@@ -330,6 +331,9 @@ public class Amd64Assemble {
 		case MOVD:
 			insnCode = assembleRmReg(instruction, OpRegXmm.class, 0x7E, 0x6E).pre(bs(0x66, 0x0F));
 			break;
+		case MOVQ:
+			insnCode = assembleRmReg(instruction, OpRegYmm.class, 0x7E, 0x6E).pre(bs(0x66, 0x0F));
+			break;
 		case MOVSB:
 			insnCode = new InsnCode(1, bs(0xA4));
 			break;
@@ -340,10 +344,10 @@ public class Amd64Assemble {
 			insnCode = new InsnCode(2, bs(0xA5));
 			break;
 		case MOVSX:
-			insnCode = assembleRegRmExtended(instruction, 0x0F, 0xBE);
+			insnCode = assembleRegRmExtended(instruction, 0xBE).pre(0x0F);
 			break;
 		case MOVZX:
-			insnCode = assembleRegRmExtended(instruction, 0x0F, 0xB6);
+			insnCode = assembleRegRmExtended(instruction, 0xB6).pre(0x0F);
 			break;
 		case MUL:
 			insnCode = assembleByteFlag(instruction.op0, 0xF6, 4);
@@ -473,34 +477,34 @@ public class Amd64Assemble {
 			insnCode = assembleRmRegImm(instruction, 0x18, 0x80, 3);
 			break;
 		case SETA:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x97), 0);
+			insnCode = assemble(instruction.op0, 0x97, 0).pre(0x0F);
 			break;
 		case SETAE:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x93), 0);
+			insnCode = assemble(instruction.op0, 0x93, 0).pre(0x0F);
 			break;
 		case SETB:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x92), 0);
+			insnCode = assemble(instruction.op0, 0x92, 0).pre(0x0F);
 			break;
 		case SETBE:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x96), 0);
+			insnCode = assemble(instruction.op0, 0x96, 0).pre(0x0F);
 			break;
 		case SETE:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x94), 0);
+			insnCode = assemble(instruction.op0, 0x94, 0).pre(0x0F);
 			break;
 		case SETG:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x9F), 0);
+			insnCode = assemble(instruction.op0, 0x9F, 0).pre(0x0F);
 			break;
 		case SETGE:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x9D), 0);
+			insnCode = assemble(instruction.op0, 0x9D, 0).pre(0x0F);
 			break;
 		case SETL:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x9C), 0);
+			insnCode = assemble(instruction.op0, 0x9C, 0).pre(0x0F);
 			break;
 		case SETLE:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x9E), 0);
+			insnCode = assemble(instruction.op0, 0x9E, 0).pre(0x0F);
 			break;
 		case SETNE:
-			insnCode = assemble(instruction.op0, bs(0x0F, 0x95), 0);
+			insnCode = assemble(instruction.op0, 0x95, 0).pre(0x0F);
 			break;
 		case SHL:
 			insnCode = assembleShift(instruction, 0xC0, 4);
@@ -617,17 +621,17 @@ public class Amd64Assemble {
 			throw new RuntimeException("jump too far");
 	}
 
-	private InsnCode assembleRegRmExtended(Instruction instruction, int b0, int b1) {
+	private InsnCode assembleRegRmExtended(Instruction instruction, int b) {
 		if (instruction.op0 instanceof OpReg && isRm(instruction.op1)) {
 			OpReg reg = (OpReg) instruction.op0;
-			return assemble(instruction.op1, bs(b0, b1 + (instruction.op1.size <= 1 ? 0 : 1)), reg.reg);
+			return assemble(instruction.op1, b + (instruction.op1.size <= 1 ? 0 : 1), reg.reg);
 		} else
 			throw new RuntimeException("bad instruction");
 	}
 
 	private InsnCode assembleRegRm(Operand reg, Operand rm, int b) {
 		if (reg instanceof OpReg && isRm(rm))
-			return assemble(rm, bs(b), ((OpReg) reg).reg);
+			return assemble(rm, b, ((OpReg) reg).reg);
 		else
 			throw new RuntimeException("bad instruction");
 	}
@@ -718,16 +722,15 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleByteFlag(Operand operand, int b, int num) {
-		int b1 = b + (operand.size <= 1 ? 0 : 1);
-		return assemble(operand, bs(b1), num);
+		return assemble(operand, b + (operand.size <= 1 ? 0 : 1), num);
 	}
 
 	private InsnCode assemble(Instruction instruction, int b) {
 		return new InsnCode(4, bs(b));
 	}
 
-	private InsnCode assemble(Operand operand, byte[] bs, int num) {
-		InsnCode insnCode = new InsnCode(operand.size, bs);
+	private InsnCode assemble(Operand operand, int b, int num) {
+		InsnCode insnCode = new InsnCode(operand.size, bs(b));
 		insnCode.modrm = modrm(operand, num);
 		return insnCode;
 	}
