@@ -110,13 +110,16 @@ public class Amd64 {
 		STOSD, //
 		STOSW, //
 		SUB, //
+		SUBPS, //
 		SYSENTER, //
 		SYSEXIT, //
 		WRMSR, //
 		TEST, //
+		VADDPS, //
 		VMOVAPS, //
 		VMOVD, //
 		VMOVQ, //
+		VSUBPS, //
 		XCHG, //
 		XOR, //
 	};

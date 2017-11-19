@@ -122,6 +122,14 @@ public class Amd64Assemble {
 			return insnCode;
 		}
 
+		private Encode vex(Vexp vexp, Operand op, Vexm vexm) {
+			OpReg opReg = (OpReg) op;
+			if (opReg.size == size)
+				return vex(vexp, opReg.reg, vexm, size == 8 ? 1 : 0);
+			else
+				return invalid;
+		}
+
 		private VexCode vex(Vexp vexp, int v, Vexm vexm) {
 			return vex(vexp, v, vexm, size == 8 ? 1 : 0);
 		}
@@ -413,13 +421,13 @@ public class Amd64Assemble {
 				encode = invalid;
 			break;
 		case MOVAPS:
-			encode = assembleRmReg(instruction, isXmm, 0x29, 0x28).size(4).pre(0x0F);
+			encode = assembleRmReg(instruction, 0x29, 0x28, isXmm).size(4).pre(0x0F);
 			break;
 		case MOVD:
-			encode = assembleRmReg(instruction, isXmm, 0x7E, 0x6E).size(4).pre(bs(0x66, 0x0F));
+			encode = assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(4).pre(bs(0x66, 0x0F));
 			break;
 		case MOVQ:
-			encode = assembleRmReg(instruction, isXmm, 0x7E, 0x6E).size(8).pre(bs(0x66, 0x0F));
+			encode = assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(8).pre(bs(0x66, 0x0F));
 			break;
 		case MOVSB:
 			encode = new InsnCode(1, bs(0xA4));
@@ -613,6 +621,9 @@ public class Amd64Assemble {
 		case SUB:
 			encode = assembleRmRegImm(instruction, 0x28, 0x80, 5);
 			break;
+		case SUBPS:
+			encode = assembleRegRm(instruction.op0, instruction.op1, 0x5C).pre(0x0F);
+			break;
 		case SYSENTER:
 			encode = new InsnCode(4, bs(0x0F, 0x34));
 			break;
@@ -628,14 +639,20 @@ public class Amd64Assemble {
 			else
 				encode = invalid;
 			break;
+		case VADDPS:
+			encode = assembleRegRm(instruction.op0, instruction.op2, 0x58).vex(Vexp.VP__, instruction.op1, Vexm.VM0F__);
+			break;
 		case VMOVAPS:
-			encode = assembleRmReg(instruction, isXmmYmm, 0x29, 0x28).vex(Vexp.VP__, 0, Vexm.VM0F__);
+			encode = assembleRmReg(instruction, 0x29, 0x28, isXmmYmm).vex(Vexp.VP__, 0, Vexm.VM0F__);
 			break;
 		case VMOVD:
-			encode = assembleRmReg(instruction, isXmm, 0x7E, 0x6E).size(4).vex(Vexp.VP66, 0, Vexm.VM0F__);
+			encode = assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(4).vex(Vexp.VP66, 0, Vexm.VM0F__);
 			break;
 		case VMOVQ:
-			encode = assembleRmReg(instruction, isXmm, 0x7E, 0x6E).size(8).vex(Vexp.VP66, 0, Vexm.VM0F__);
+			encode = assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(8).vex(Vexp.VP66, 0, Vexm.VM0F__);
+			break;
+		case VSUBPS:
+			encode = assembleRegRm(instruction.op0, instruction.op2, 0x5C).vex(Vexp.VP__, instruction.op1, Vexm.VM0F__);
 			break;
 		case XCHG:
 			if (instruction.op0.size == instruction.op1.size)
@@ -750,10 +767,10 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRmReg(Instruction instruction, int b) {
-		return assembleRmReg(instruction, op -> op instanceof OpReg, b, b + 2);
+		return assembleRmReg(instruction, b, b + 2, this::isReg);
 	}
 
-	private InsnCode assembleRmReg(Instruction instruction, Predicate<Operand> pred, int bRmReg, int bRegRm) {
+	private InsnCode assembleRmReg(Instruction instruction, int bRmReg, int bRegRm, Predicate<Operand> pred) {
 		FixieFun3<Operand, Integer, OpReg, InsnCode> fun = (rm, b1, reg) -> 0 <= b1 ? assembleByteFlag(rm, b1, reg.reg) : invalid;
 
 		if (isRm(instruction.op0) && pred.test(instruction.op1))
@@ -765,10 +782,10 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRegRm(Operand reg, Operand rm, int b) {
-		return assembleRegRm(reg, op -> op instanceof OpReg, rm, b);
+		return assembleRegRm(reg, rm, b, this::isReg);
 	}
 
-	private InsnCode assembleRegRm(Operand reg, Predicate<Operand> pred, Operand rm, int b) {
+	private InsnCode assembleRegRm(Operand reg, Operand rm, int b, Predicate<Operand> pred) {
 		if (pred.test(reg) && isRm(rm))
 			return assemble(rm, b, ((OpReg) reg).reg);
 		else
@@ -871,6 +888,10 @@ public class Amd64Assemble {
 
 	private boolean isAcc(Operand operand) {
 		return operand instanceof OpReg && ((OpReg) operand).reg == 0;
+	}
+
+	private boolean isReg(Operand operand) {
+		return operand instanceof OpReg;
 	}
 
 	private boolean isRm(Operand operand) {
