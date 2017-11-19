@@ -1015,16 +1015,12 @@ public class Amd64Assemble {
 		return 0 <= r ? r >> 3 & 1 : 0;
 	}
 
-	private byte[] bs(int b0, int b1, int b2) {
-		return new byte[] { (byte) b0, (byte) b1, (byte) b2, };
-	}
-
-	private byte[] bs(int b0, int b1) {
-		return new byte[] { (byte) b0, (byte) b1, };
-	}
-
-	private byte[] bs(int b) {
-		return new byte[] { (byte) b, };
+	private byte[] bs(int... is) {
+		int length = is.length;
+		byte[] bs = new byte[length];
+		for (int i = 0; i < length; i++)
+			bs[i] = (byte) is[i];
+		return bs;
 	}
 
 	private byte b(int b03, int b36, int b68) {
