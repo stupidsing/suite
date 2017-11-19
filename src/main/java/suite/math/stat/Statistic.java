@@ -1,5 +1,7 @@
 package suite.math.stat;
 
+import java.util.List;
+
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix_;
 import suite.math.linalg.Vector_;
@@ -10,6 +12,7 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
@@ -61,6 +64,13 @@ public class Statistic {
 	}
 
 	// ordinary least squares
+	public LinearRegression linearRegression(List<FltObjPair<float[]>> pairs) {
+		int size = pairs.size();
+		float[][] x = To.array(size, float[].class, i -> pairs.get(i).t1);
+		float[] y = Floats_.toArray(size, i -> pairs.get(i).t0);
+		return linearRegression(x, y);
+	}
+
 	public LinearRegression linearRegression(float[][] x, float[] y) {
 		return new LinearRegression(x, y, null);
 	}
