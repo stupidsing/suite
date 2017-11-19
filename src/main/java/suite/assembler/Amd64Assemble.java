@@ -37,20 +37,9 @@ public class Amd64Assemble {
 	private interface Encode {
 	}
 
-	private class Vex2Code implements Encode {
-		public int p, v;
+	private class VexCode implements Encode {
+		public int m, w, p, v;
 		public InsnCode code;
-
-		private Vex3Code vex3(Vexm vexm, int w) {
-			Vex3Code vex3 = new Vex3Code();
-			vex3.m = Map.ofEntries(entry(Vexm.VM0F__, 1), entry(Vexm.VM0F38, 2), entry(Vexm.VM0F3A, 3)).get(vexm);
-			vex3.w = w;
-			return vex3;
-		}
-	}
-
-	private class Vex3Code extends Vex2Code {
-		public int m, w;
 	}
 
 	private class InsnCode implements Encode {
@@ -75,8 +64,8 @@ public class Amd64Assemble {
 			return imm(imm.imm, imm.size);
 		}
 
-		private InsnCode imm(long  imm1, int size1) {
-			return set(size1 ,bs, imm1, size1);
+		private InsnCode imm(long imm1, int size1) {
+			return set(size1, bs, imm1, size1);
 		}
 
 		private InsnCode pre(int pre) {
@@ -107,11 +96,13 @@ public class Amd64Assemble {
 			return insnCode;
 		}
 
-		private Vex2Code vex2(Vexp vexp, int v) {
-			Vex2Code vex2 = new Vex2Code();
-			vex2.p = Map.ofEntries(entry(Vexp.VP__, 0), entry(Vexp.VP66, 1), entry(Vexp.VPF3, 2), entry(Vexp.VPF2, 3)).get(vexp);
-			vex2.v = v;
-			return vex2;
+		private VexCode vex(Vexp vexp, int v, Vexm vexm, int w) {
+			VexCode vex = new VexCode();
+			vex.p = Map.ofEntries(entry(Vexp.VP__, 0), entry(Vexp.VP66, 1), entry(Vexp.VPF3, 2), entry(Vexp.VPF2, 3)).get(vexp);
+			vex.v = v;
+			vex.m = Map.ofEntries(entry(Vexm.VM0F__, 1), entry(Vexm.VM0F38, 2), entry(Vexm.VM0F3A, 3)).get(vexm);
+			vex.w = w;
+			return vex;
 		}
 	}
 
@@ -590,10 +581,10 @@ public class Amd64Assemble {
 				throw new RuntimeException("bad instruction");
 			break;
 		case VMOVD:
-			insnCode = assembleRmReg(instruction, OpRegXmm.class, 0x7E, 0x6E).size(4).vex2(Vexp.VP66, 0).vex3(Vexm.VM0F__, 0);
+			insnCode = assembleRmReg(instruction, OpRegXmm.class, 0x7E, 0x6E).size(4).vex(Vexp.VP66, 0, Vexm.VM0F__, 0);
 			break;
 		case VMOVQ:
-			insnCode = assembleRmReg(instruction, OpRegXmm.class, 0x7E, 0x6E).size(8).vex2(Vexp.VP66, 0).vex3(Vexm.VM0F__, 1);
+			insnCode = assembleRmReg(instruction, OpRegXmm.class, 0x7E, 0x6E).size(8).vex(Vexp.VP66, 0, Vexm.VM0F__, 1);
 			break;
 		case XCHG:
 			if (instruction.op0.size == instruction.op1.size)
@@ -791,22 +782,15 @@ public class Amd64Assemble {
 	private Bytes encode(Encode encode) {
 		if (encode instanceof InsnCode)
 			return encode((InsnCode) encode);
-		else if (encode instanceof Vex3Code)
-			return encode((Vex3Code) encode);
-		else if (encode instanceof Vex2Code)
-			return encode((Vex2Code) encode);
+		else if (encode instanceof VexCode)
+			return encode((VexCode) encode);
 		else
 			throw new RuntimeException();
 	}
 
-	private Bytes encode(Vex2Code vex2) {
-		InsnCode insnCode = vex2.code;
-		return encode(insnCode, vex2(vex2.p, insnCode.size, insnCode.modrm, vex2.v));
-	}
-
-	private Bytes encode(Vex3Code vex3) {
-		InsnCode insnCode = vex3.code;
-		return encode(vex3.code, vex3(vex3.m, vex3.p, insnCode.size, insnCode.modrm, vex3.w, vex3.v));
+	private Bytes encode(VexCode vex) {
+		InsnCode insnCode = vex.code;
+		return encode(vex.code, vex(vex.m, vex.p, insnCode.size, insnCode.modrm, vex.w, vex.v));
 	}
 
 	private Bytes encode(InsnCode insnCode) {
@@ -983,24 +967,27 @@ public class Amd64Assemble {
 	}
 
 	// https://en.wikipedia.org/wiki/VEX_prefix
-	private byte[] vex2(int p, int size, Modrm modrm, int v) {
-		int b1 = ((h(modrm.num) ^ 1) << 7) //
-				+ (~v << 3)//
-				+ ((size != 16 ? 1 : 0) << 2) //
-				+ (p << 0);
-		return bs(0xC5, b1);
-	}
-
-	private byte[] vex3(int m, int p, int size, Modrm modrm, int w, int v) {
-		int b1 = ((h(modrm.num) ^ 1) << 7) //
-				+ ((h(modrm.i) ^ 1) << 6) //
-				+ ((h(modrm.b) ^ 1) << 5) //
-				+ (~m << 0);
-		int b2 = (h(w) << 7) //
-				+ (~v << 3)//
-				+ ((size != 16 ? 1 : 0) << 2) //
-				+ (p << 0);
-		return bs(0xC4, b1, b2);
+	private byte[] vex(int m, int p, int size, Modrm modrm, int w, int v) {
+		int x = h(modrm.i);
+		int b = h(modrm.b);
+		int w_ = h(w);
+		if (m == 1 && x == 0 && b == 0 && w == 0) {
+			int b1 = ((h(modrm.num) ^ 1) << 7) //
+					+ (~v << 3)//
+					+ ((size != 16 ? 1 : 0) << 2) //
+					+ (p << 0);
+			return bs(0xC5, b1);
+		} else {
+			int b1 = ((h(modrm.num) ^ 1) << 7) //
+					+ ((x ^ 1) << 6) //
+					+ ((b ^ 1) << 5) //
+					+ (~m << 0);
+			int b2 = (w_ << 7) //
+					+ (~v << 3)//
+					+ ((size != 16 ? 1 : 0) << 2) //
+					+ (p << 0);
+			return bs(0xC4, b1, b2);
+		}
 	}
 
 	private int h(int r) {
