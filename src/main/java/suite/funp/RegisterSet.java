@@ -20,7 +20,7 @@ public class RegisterSet {
 
 	static {
 		Map<Integer, OpReg> map = Read //
-				.from2(amd64.regsByName) //
+				.from2(amd64.regByName) //
 				.values() //
 				.filter(opReg -> opReg.size == Funp_.integerSize) //
 				.map2(opReg -> opReg.reg, opReg -> opReg) //

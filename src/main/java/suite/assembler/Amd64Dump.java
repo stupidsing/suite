@@ -53,7 +53,7 @@ public class Amd64Dump {
 					+ (0 <= indexReg ? " + " + dump(regs[indexReg]) + " * " + (1 << opMem.scale) : "") //
 					+ (0 < opMem.dispSize ? dumpDisp(opMem.disp, pointerSize) : "");
 			return "[" + s.substring(3) + "]";
-		} else if ((name = (amd64.registersByName.inverse().get(op0).name)) != null)
+		} else if ((name = (amd64.registerByName.inverse().get(op0).name)) != null)
 			return name;
 		else
 			return op0.toString();

@@ -177,7 +177,7 @@ public class Amd64 {
 	public OpReg esi = reg32[6];
 	public OpReg edi = reg32[7];
 
-	public BiMap<Atom, OpReg> regsByName = new HashBiMap<>() {
+	public BiMap<Atom, OpReg> regByName = new HashBiMap<>() {
 		{
 			put(Atom.of("AL"), al);
 			put(Atom.of("CL"), cl);
@@ -247,7 +247,7 @@ public class Amd64 {
 		}
 	};
 
-	public BiMap<Atom, OpRegControl> cregsByName = new HashBiMap<>() {
+	public BiMap<Atom, OpRegControl> cregByName = new HashBiMap<>() {
 		{
 			put(Atom.of("CR0"), newRegControl(0));
 			put(Atom.of("CR2"), newRegControl(2));
@@ -256,7 +256,7 @@ public class Amd64 {
 		}
 	};
 
-	public BiMap<Atom, OpRegSegment> sregsByName = new HashBiMap<>() {
+	public BiMap<Atom, OpRegSegment> sregByName = new HashBiMap<>() {
 		{
 			put(Atom.of("ES"), newRegSegment(0));
 			put(Atom.of("CS"), newRegSegment(1));
@@ -267,11 +267,11 @@ public class Amd64 {
 		}
 	};
 
-	public BiMap<Atom, Operand> registersByName = new HashBiMap<>() {
+	public BiMap<Atom, Operand> registerByName = new HashBiMap<>() {
 		{
-			putAll(regsByName);
-			putAll(cregsByName);
-			putAll(sregsByName);
+			putAll(regByName);
+			putAll(cregByName);
+			putAll(sregByName);
 			for (int i = 0; i < 16; i++) {
 				put(Atom.of("XMM" + i), regXmm[i]);
 				put(Atom.of("YMM" + i), regYmm[i]);
@@ -315,7 +315,7 @@ public class Amd64 {
 	}
 
 	public OpReg reg(String name) {
-		return regsByName.get(Atom.of(name));
+		return regByName.get(Atom.of(name));
 	}
 
 	private Amd64() {

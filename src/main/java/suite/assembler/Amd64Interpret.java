@@ -223,7 +223,7 @@ public class Amd64Interpret {
 	private String state(Instruction instruction) {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 8; i++)
-			sb.append((i % 2 == 0 ? "\n" : " ") + amd64.regsByName.inverse().get(amd64.reg32[i]) + ":" + To.hex8(regs[i]));
+			sb.append((i % 2 == 0 ? "\n" : " ") + amd64.regByName.inverse().get(amd64.reg32[i]) + ":" + To.hex8(regs[i]));
 		sb.append("\nCMP = " + c);
 		sb.append("\nINSTRUCTION = " + dump.dump(instruction));
 		return sb.toString();

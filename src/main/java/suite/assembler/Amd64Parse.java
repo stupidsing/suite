@@ -37,7 +37,7 @@ public class Amd64Parse {
 		Operand operand;
 		Node[] m;
 
-		if ((operand = amd64.registersByName.get(node)) != null)
+		if ((operand = amd64.registerByName.get(node)) != null)
 			return operand;
 		else if ((m = Suite.match("BYTE `.0`").apply(node)) != null)
 			return parseOpMem(m, 1);
@@ -66,7 +66,7 @@ public class Amd64Parse {
 		for (Node component : scan(m[0], ".0 + .1"))
 			if ((m = Suite.match(".0 * .1").apply(component)) != null)
 				if (opMem.indexReg < 0) {
-					opMem.indexReg = amd64.regsByName.get(m[0]).reg;
+					opMem.indexReg = amd64.regByName.get(m[0]).reg;
 					opMem.scale = ((Int) m[1]).number;
 				} else
 					throw new RuntimeException("bad operand");
@@ -77,7 +77,7 @@ public class Amd64Parse {
 				} else
 					throw new RuntimeException("bad operand");
 			else if (opMem.baseReg < 0)
-				opMem.baseReg = amd64.regsByName.get(component).reg;
+				opMem.baseReg = amd64.regByName.get(component).reg;
 			else
 				throw new RuntimeException("bad operand");
 		return opMem;
