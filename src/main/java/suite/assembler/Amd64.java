@@ -64,6 +64,7 @@ public class Amd64 {
 		LIDT, //
 		LTR, //
 		MOV, //
+		MOVAPS, //
 		MOVD, //
 		MOVQ, //
 		MOVSB, //
@@ -112,6 +113,7 @@ public class Amd64 {
 		SYSEXIT, //
 		WRMSR, //
 		TEST, //
+		VMOVAPS, //
 		VMOVD, //
 		VMOVQ, //
 		XCHG, //
