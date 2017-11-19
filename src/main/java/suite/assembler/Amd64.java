@@ -112,6 +112,8 @@ public class Amd64 {
 		SYSEXIT, //
 		WRMSR, //
 		TEST, //
+		VMOVD, //
+		VMOVQ, //
 		XCHG, //
 		XOR, //
 	};

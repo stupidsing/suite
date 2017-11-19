@@ -1,7 +1,10 @@
 package suite.assembler;
 
+import static java.util.Map.entry;
+
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.assembler.Amd64.Instruction;
@@ -12,7 +15,6 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.OpRegControl;
 import suite.assembler.Amd64.OpRegSegment;
 import suite.assembler.Amd64.OpRegXmm;
-import suite.assembler.Amd64.OpRegYmm;
 import suite.assembler.Amd64.Operand;
 import suite.node.util.Singleton;
 import suite.os.LogUtil;
@@ -24,12 +26,39 @@ import suite.primitive.Bytes_;
 // TODO validate size of operands
 public class Amd64Assemble {
 
-	private class InsnCode {
-		private int size;
-		private byte[] bs;
-		private Modrm modrm;
-		private int immSize;
-		private long imm;
+	private enum Vexm {
+		VM0F__, VM0F38, VM0F3A,
+	};
+
+	private enum Vexp {
+		VP__, VP66, VPF3, VPF2,
+	};
+
+	private interface Encode {
+	}
+
+	private class Vex2Code implements Encode {
+		public int p, v;
+		public InsnCode code;
+
+		private Vex3Code vex3(Vexm vexm, int w) {
+			Vex3Code vex3 = new Vex3Code();
+			vex3.m = Map.ofEntries(entry(Vexm.VM0F__, 1), entry(Vexm.VM0F38, 2), entry(Vexm.VM0F3A, 3)).get(vexm);
+			vex3.w = w;
+			return vex3;
+		}
+	}
+
+	private class Vex3Code extends Vex2Code {
+		public int m, w;
+	}
+
+	private class InsnCode implements Encode {
+		public int size;
+		public byte[] bs;
+		public Modrm modrm;
+		public int immSize;
+		public long imm;
 
 		private InsnCode(int size, OpImm imm) {
 			this.size = size;
@@ -42,6 +71,18 @@ public class Amd64Assemble {
 			this.bs = bs;
 		}
 
+		private InsnCode imm(OpImm imm) {
+			return imm(imm.imm, imm.size);
+		}
+
+		private InsnCode imm(long imm, int size) {
+			InsnCode insnCode = new InsnCode(size, bs);
+			insnCode.modrm = modrm;
+			insnCode.immSize = size;
+			insnCode.imm = imm;
+			return insnCode;
+		}
+
 		private InsnCode pre(int pre) {
 			return pre(bs(pre));
 		}
@@ -51,12 +92,30 @@ public class Amd64Assemble {
 			int length1 = bs.length;
 			byte[] bs1 = Arrays.copyOf(pre, length0 + length1);
 			Bytes_.copy(bs, 0, bs1, length0, length1);
+			return setBs(bs1);
+		}
 
-			InsnCode insnCode = new InsnCode(size, bs1);
+		private InsnCode setBs(byte[] bs1) {
+			return set(size, bs1);
+		}
+
+		private InsnCode size(int size1) {
+			return set(size1, bs);
+		}
+
+		private InsnCode set(int size1, byte[] bs1) {
+			InsnCode insnCode = new InsnCode(size1, bs1);
 			insnCode.modrm = modrm;
 			insnCode.immSize = immSize;
 			insnCode.imm = imm;
 			return insnCode;
+		}
+
+		private Vex2Code vex2(Vexp vexp, int v) {
+			Vex2Code vex2 = new Vex2Code();
+			vex2.p = Map.ofEntries(entry(Vexp.VP__, 0), entry(Vexp.VP66, 1), entry(Vexp.VPF3, 2), entry(Vexp.VPF2, 3)).get(vexp);
+			vex2.v = v;
+			return vex2;
 		}
 	}
 
@@ -86,7 +145,7 @@ public class Amd64Assemble {
 	}
 
 	public Bytes assemble(long offset, Instruction instruction) {
-		InsnCode insnCode;
+		Encode insnCode;
 		switch (instruction.insn) {
 		case AAA:
 			insnCode = assemble(instruction, 0x37);
@@ -140,8 +199,9 @@ public class Amd64Assemble {
 			break;
 		case IMM:
 			if (instruction.op0 instanceof OpImm) {
-				insnCode = new InsnCode(0, (OpImm) instruction.op0);
-				insnCode.bs = new byte[] {};
+				InsnCode insnCode_ = new InsnCode(0, (OpImm) instruction.op0);
+				insnCode_.bs = new byte[] {};
+				insnCode = insnCode_;
 			} else
 				throw new RuntimeException("bad instruction");
 			break;
@@ -154,13 +214,11 @@ public class Amd64Assemble {
 				else if (instruction.op2 instanceof OpImm) {
 					OpImm imm = (OpImm) instruction.op2;
 					if (imm.size <= 1)
-						insnCode = assembleRegRm(instruction.op0, instruction.op1, 0x6B);
+						insnCode = assembleRegRm(instruction.op0, instruction.op1, 0x6B).imm(imm);
 					else if (imm.size == instruction.op0.size)
-						insnCode = assembleRegRm(instruction.op0, instruction.op1, 0x69);
+						insnCode = assembleRegRm(instruction.op0, instruction.op1, 0x69).imm(imm);
 					else
 						throw new RuntimeException("bad instruction");
-					insnCode.immSize = imm.size;
-					insnCode.imm = imm.imm;
 				} else
 					throw new RuntimeException("bad instruction");
 			else
@@ -175,11 +233,9 @@ public class Amd64Assemble {
 		case INT:
 			if (instruction.op0 instanceof OpImm) {
 				long iv = ((OpImm) instruction.op0).imm;
-				if (iv != 3) {
-					insnCode = assemble(instruction, 0xCD);
-					insnCode.immSize = 1;
-					insnCode.imm = iv;
-				} else
+				if (iv != 3)
+					insnCode = assemble(instruction, 0xCD).imm(iv, 1);
+				else
 					insnCode = assemble(instruction, 0xCC);
 			} else
 				throw new RuntimeException("bad instruction");
@@ -294,15 +350,11 @@ public class Amd64Assemble {
 
 					if (instruction.op0 instanceof OpReg) {
 						OpReg op0 = (OpReg) instruction.op0;
-						insnCode = new InsnCode(op1.size, op1);
-						insnCode.bs = bs(0xB0 + (op0.size <= 1 ? 0 : 8) + op0.reg);
+						insnCode = new InsnCode(op1.size, op1).setBs(bs(0xB0 + (op0.size <= 1 ? 0 : 8) + op0.reg));
 					} else if (isRm(instruction.op0))
-						insnCode = assembleByteFlag(instruction.op0, 0xC6, 0);
+						insnCode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(op1);
 					else
 						throw new RuntimeException("bad instruction");
-
-					insnCode.immSize = op1.size;
-					insnCode.imm = op1.imm;
 				} else if (instruction.op0 instanceof OpRegSegment) {
 					OpRegSegment regSegment = (OpRegSegment) instruction.op0;
 					insnCode = assemble(instruction.op1, 0x8E, regSegment.sreg);
@@ -329,10 +381,10 @@ public class Amd64Assemble {
 				throw new RuntimeException("bad instruction");
 			break;
 		case MOVD:
-			insnCode = assembleRmReg(instruction, OpRegXmm.class, 0x7E, 0x6E).pre(bs(0x66, 0x0F));
+			insnCode = assembleRmReg(instruction, OpRegXmm.class, 0x7E, 0x6E).size(4).pre(bs(0x66, 0x0F));
 			break;
 		case MOVQ:
-			insnCode = assembleRmReg(instruction, OpRegYmm.class, 0x7E, 0x6E).pre(bs(0x66, 0x0F));
+			insnCode = assembleRmReg(instruction, OpRegXmm.class, 0x7E, 0x6E).size(8).pre(bs(0x66, 0x0F));
 			break;
 		case MOVSB:
 			insnCode = new InsnCode(1, bs(0xA4));
@@ -406,8 +458,8 @@ public class Amd64Assemble {
 			break;
 		case PUSH:
 			if (instruction.op0 instanceof OpImm) {
-				insnCode = new InsnCode(instruction.op0.size, (OpImm) instruction.op0);
-				insnCode.bs = bs(0x68 + (1 < instruction.op0.size ? 0 : 2));
+				int size = instruction.op0.size;
+				insnCode = new InsnCode(size, (OpImm) instruction.op0).setBs(bs(0x68 + (1 < size ? 0 : 2)));
 			} else if (1 < instruction.op0.size)
 				if (isRm(instruction.op0))
 					insnCode = assembleRm(instruction, 0x50, 0xFE, 6);
@@ -461,10 +513,9 @@ public class Amd64Assemble {
 		case RET:
 			if (instruction.op0 instanceof OpNone)
 				insnCode = assemble(instruction, 0xC3);
-			else if (instruction.op0 instanceof OpImm && instruction.op0.size == 2) {
-				insnCode = new InsnCode(instruction.op0.size, (OpImm) instruction.op0);
-				insnCode.bs = bs(0xC2);
-			} else
+			else if (instruction.op0 instanceof OpImm && instruction.op0.size == 2)
+				insnCode = new InsnCode(instruction.op0.size, (OpImm) instruction.op0).setBs(bs(0xC2));
+			else
 				throw new RuntimeException("bad instruction");
 			break;
 		case SAL:
@@ -541,6 +592,12 @@ public class Amd64Assemble {
 					insnCode = assembleRegRm(instruction.op1, instruction.op0, 0x84);
 			else
 				throw new RuntimeException("bad instruction");
+			break;
+		case VMOVD:
+			insnCode = assembleRmReg(instruction, OpRegXmm.class, 0x7E, 0x6E).size(4).vex2(Vexp.VP66, 0).vex3(Vexm.VM0F__, 0);
+			break;
+		case VMOVQ:
+			insnCode = assembleRmReg(instruction, OpRegXmm.class, 0x7E, 0x6E).size(8).vex2(Vexp.VP66, 0).vex3(Vexm.VM0F__, 1);
 			break;
 		case XCHG:
 			if (instruction.op0.size == instruction.op1.size)
@@ -735,14 +792,43 @@ public class Amd64Assemble {
 		return insnCode;
 	}
 
+	private Bytes encode(Encode encode) {
+		if (encode instanceof InsnCode)
+			return encode((InsnCode) encode);
+		else if (encode instanceof Vex3Code)
+			return encode((Vex3Code) encode);
+		else if (encode instanceof Vex2Code)
+			return encode((Vex2Code) encode);
+		else
+			throw new RuntimeException();
+	}
+
+	private Bytes encode(Vex2Code vex2) {
+		InsnCode insnCode = vex2.code;
+		return encode(insnCode, vex2(vex2.p, insnCode.size, insnCode.modrm, vex2.v));
+	}
+
+	private Bytes encode(Vex3Code vex3) {
+		InsnCode insnCode = vex3.code;
+		return encode(vex3.code, vex3(vex3.m, vex3.p, insnCode.size, insnCode.modrm, vex3.w, vex3.v));
+	}
+
 	private Bytes encode(InsnCode insnCode) {
+		return encode(insnCode, null);
+	}
+
+	private Bytes encode(InsnCode insnCode, byte[] vexs) {
 		Modrm modrm = insnCode.modrm;
 		int rex = modrm != null ? rex(modrm) : rex(insnCode.size, 0, 0, 0);
 
 		BytesBuilder bb = new BytesBuilder();
-		if (insnCode.size == 2)
-			bb.append((byte) 0x66);
-		appendIf(bb, rex);
+		if (vexs != null)
+			bb.append(vexs);
+		else {
+			if (insnCode.size == 2)
+				bb.append((byte) 0x66);
+			appendIf(bb, rex);
+		}
 		bb.append(insnCode.bs);
 		if (modrm != null) {
 			bb.append(b(modrm.rm, modrm.num, modrm.mod));
@@ -894,10 +980,39 @@ public class Amd64Assemble {
 
 	private int rex(int size, int r, int x, int b) {
 		int b04 = ((size != 8 ? 0 : 1) << 3) //
-				+ (0 <= r ? (((r >> 3) & 1) << 2) : 0) //
-				+ (0 <= x ? (((x >> 3) & 1) << 1) : 0) //
-				+ (0 <= b ? (((b >> 3) & 1) << 0) : 0);
+				+ (h(r) << 2) //
+				+ (h(x) << 1) //
+				+ (h(b) << 0);
 		return b04 != 0 ? 0x40 + b04 : -1;
+	}
+
+	// https://en.wikipedia.org/wiki/VEX_prefix
+	private byte[] vex2(int p, int size, Modrm modrm, int v) {
+		int b1 = ((h(modrm.num) ^ 1) << 7) //
+				+ (~v << 3)//
+				+ ((size != 16 ? 1 : 0) << 2) //
+				+ (p << 0);
+		return bs(0xC5, b1);
+	}
+
+	private byte[] vex3(int m, int p, int size, Modrm modrm, int w, int v) {
+		int b1 = ((h(modrm.num) ^ 1) << 7) //
+				+ ((h(modrm.i) ^ 1) << 6) //
+				+ ((h(modrm.b) ^ 1) << 5) //
+				+ (~m << 0);
+		int b2 = (h(w) << 7) //
+				+ (~v << 3)//
+				+ ((size != 16 ? 1 : 0) << 2) //
+				+ (p << 0);
+		return bs(0xC4, b1, b2);
+	}
+
+	private int h(int r) {
+		return 0 <= r ? r >> 3 & 1 : 0;
+	}
+
+	private byte[] bs(int b0, int b1, int b2) {
+		return new byte[] { (byte) b0, (byte) b1, (byte) b2, };
 	}
 
 	private byte[] bs(int b0, int b1) {
