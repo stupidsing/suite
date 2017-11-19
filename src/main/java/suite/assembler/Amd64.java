@@ -142,6 +142,14 @@ public class Amd64 {
 		public int sreg;
 	}
 
+	public class OpRegXmm extends Operand {
+		public int xreg;
+	}
+
+	public class OpRegYmm extends Operand {
+		public int yreg;
+	}
+
 	public class Instruction {
 		public Insn insn;
 		public Operand op0, op1, op2;
@@ -153,6 +161,8 @@ public class Amd64 {
 	public OpReg[] reg16 = To.array(16, OpReg.class, r -> newReg(2, r));
 	public OpReg[] reg32 = To.array(16, OpReg.class, r -> newReg(4, r));
 	public OpReg[] reg64 = To.array(16, OpReg.class, r -> newReg(8, r));
+	public OpRegXmm[] regXmm = To.array(16, OpRegXmm.class, this::newRegXmm);
+	public OpRegYmm[] regYmm = To.array(16, OpRegYmm.class, this::newRegYmm);
 
 	public OpReg al = reg8[0];
 	public OpReg cl = reg8[1];
@@ -233,7 +243,6 @@ public class Amd64 {
 			put(Atom.of("R13"), reg64[13]);
 			put(Atom.of("R14"), reg64[14]);
 			put(Atom.of("R15"), reg64[15]);
-
 		}
 	};
 
@@ -318,6 +327,20 @@ public class Amd64 {
 		opRegSegment.size = 2;
 		opRegSegment.sreg = sreg;
 		return opRegSegment;
+	}
+
+	private OpRegXmm newRegXmm(int xreg) {
+		OpRegXmm opRegXmm = new OpRegXmm();
+		opRegXmm.size = 16;
+		opRegXmm.xreg = xreg;
+		return opRegXmm;
+	}
+
+	private OpRegYmm newRegYmm(int yreg) {
+		OpRegYmm opRegYmm = new OpRegYmm();
+		opRegYmm.size = 32;
+		opRegYmm.yreg = yreg;
+		return opRegYmm;
 	}
 
 	private int size(long v) {
