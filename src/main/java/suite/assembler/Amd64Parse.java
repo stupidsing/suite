@@ -37,11 +37,7 @@ public class Amd64Parse {
 		Operand operand;
 		Node[] m;
 
-		if ((operand = amd64.regsByName.get(node)) != null)
-			return operand;
-		else if ((operand = amd64.cregsByName.get(node)) != null)
-			return operand;
-		else if ((operand = amd64.sregsByName.get(node)) != null)
+		if ((operand = amd64.registersByName.get(node)) != null)
 			return operand;
 		else if ((m = Suite.match("BYTE `.0`").apply(node)) != null)
 			return parseOpMem(m, 1);

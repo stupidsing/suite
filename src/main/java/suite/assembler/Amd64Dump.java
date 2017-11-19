@@ -7,8 +7,6 @@ import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpNone;
 import suite.assembler.Amd64.OpReg;
-import suite.assembler.Amd64.OpRegControl;
-import suite.assembler.Amd64.OpRegSegment;
 import suite.assembler.Amd64.Operand;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -34,6 +32,7 @@ public class Amd64Dump {
 	private String dump(Operand op0) {
 		int pointerSize = 4;
 		OpReg[] regs;
+		String name;
 
 		if (pointerSize == 4)
 			regs = amd64.reg32;
@@ -54,12 +53,8 @@ public class Amd64Dump {
 					+ (0 <= indexReg ? " + " + dump(regs[indexReg]) + " * " + (1 << opMem.scale) : "") //
 					+ (0 < opMem.dispSize ? dumpDisp(opMem.disp, pointerSize) : "");
 			return "[" + s.substring(3) + "]";
-		} else if (op0 instanceof OpReg)
-			return amd64.regsByName.inverse().get(op0).name;
-		else if (op0 instanceof OpRegControl)
-			return amd64.cregsByName.inverse().get(op0).name;
-		else if (op0 instanceof OpRegSegment)
-			return amd64.sregsByName.inverse().get(op0).name;
+		} else if ((name = (amd64.registersByName.inverse().get(op0).name)) != null)
+			return name;
 		else
 			return op0.toString();
 	}

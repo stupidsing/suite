@@ -243,6 +243,7 @@ public class Amd64 {
 			put(Atom.of("R13"), reg64[13]);
 			put(Atom.of("R14"), reg64[14]);
 			put(Atom.of("R15"), reg64[15]);
+
 		}
 	};
 
@@ -263,6 +264,18 @@ public class Amd64 {
 			put(Atom.of("DS"), newRegSegment(3));
 			put(Atom.of("FS"), newRegSegment(4));
 			put(Atom.of("GS"), newRegSegment(5));
+		}
+	};
+
+	public BiMap<Atom, Operand> registersByName = new HashBiMap<>() {
+		{
+			putAll(regsByName);
+			putAll(cregsByName);
+			putAll(sregsByName);
+			for (int i = 0; i < 16; i++) {
+				put(Atom.of("XMM" + i), regXmm[i]);
+				put(Atom.of("YMM" + i), regYmm[i]);
+			}
 		}
 	};
 
