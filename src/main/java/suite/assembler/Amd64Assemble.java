@@ -186,7 +186,7 @@ public class Amd64Assemble {
 			encode = assembleRmRegImm(instruction, 0x00, 0x80, 0);
 			break;
 		case ADDPS:
-			encode = assembleRegRm(instruction.op0, instruction.op1, 0x58).pre(bs(0x0F));
+			encode = assembleRegRm(instruction.op0, instruction.op1, 0x58).pre(0x0F);
 			break;
 		case AND:
 			encode = assembleRmRegImm(instruction, 0x20, 0x80, 4);
@@ -413,7 +413,7 @@ public class Amd64Assemble {
 				encode = invalid;
 			break;
 		case MOVAPS:
-			encode = assembleRmReg(instruction, isXmm, 0x29, 0x28).size(4).pre(bs(0x0F));
+			encode = assembleRmReg(instruction, isXmm, 0x29, 0x28).size(4).pre(0x0F);
 			break;
 		case MOVD:
 			encode = assembleRmReg(instruction, isXmm, 0x7E, 0x6E).size(4).pre(bs(0x66, 0x0F));
