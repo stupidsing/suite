@@ -168,7 +168,7 @@ public class Arima {
 			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 			// = eps[t] * 1
 			// + eps[t - 1] * mas[0] + ... + eps[t - q] * mas[q - 1]
-			{
+			if (0 < q) {
 				List<FltObjPair<float[]>> pairs = Ints_.range(p, xLength).map(t -> {
 					float[] lrxs = new float[xpqLength];
 					int tq = t + pq;
@@ -179,12 +179,8 @@ public class Arima {
 					return FltObjPair.of(lry, lrxs);
 				}).toList();
 
-				System.out.println("lrxs0 = " + Arrays.toString(pairs.get(0).t1));
-				System.out.println("lrxsx = " + Arrays.toString(pairs.get(pairs.size() - 1).t1));
-				System.out.println("lrys = " + pairs);
 				float[] eps1 = stat.linearRegression(pairs).coefficients;
 				Floats_.copy(eps1, 0, eps, 0, xpqLength);
-				System.out.println("eps = " + Arrays.toString(eps));
 			}
 
 			// xs[t] - eps[t]
