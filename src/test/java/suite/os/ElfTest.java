@@ -30,15 +30,15 @@ public class ElfTest {
 				+ "expand size := 256 >> \n" //
 				+ "define linux-read := `pointer, length` => ( \n" //
 				+ "	type pointer = address (size * array byte _) >> \n" //
-				+ "	io (asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { \n" //
+				+ "	asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { \n" //
 				+ "		INT (-128); -- length in EAX \n" //
-				+ "	}) \n" //
+				+ "	} \n" //
 				+ ") >> \n" //
 				+ "define linux-write := `pointer, length` => ( \n" //
 				+ "	type pointer = address (size * array byte _) >> \n" //
-				+ "	io (asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { \n" //
+				+ "	asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { \n" //
 				+ "		INT (-128); -- length in EAX \n" //
-				+ "	}) \n" //
+				+ "	} \n" //
 				+ ") >> \n" //
 				+ "iterate n 1 (n != 0) ( \n" //
 				+ "	let buffer := (size * array byte _) >> \n" //
