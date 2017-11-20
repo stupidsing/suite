@@ -179,9 +179,6 @@ public class Amd64Assemble {
 	}
 
 	public Bytes assemble(long offset, Instruction instruction) {
-		Predicate<Operand> isXmm = op -> op instanceof OpRegXmm;
-		Predicate<Operand> isXmmYmm = op -> op instanceof OpRegXmm || op instanceof OpRegYmm;
-
 		Encode encode;
 		switch (instruction.insn) {
 		case AAA:
@@ -205,7 +202,7 @@ public class Amd64Assemble {
 		case CALL:
 			if (instruction.op0 instanceof OpImm && instruction.op0.size == 4)
 				encode = assembleJumpImm((OpImm) instruction.op0, offset, -1, bs(0xE8));
-			else if (isRm(instruction.op0))
+			else if (isRm.test(instruction.op0))
 				encode = assemble(instruction.op0, 0xFF, 2);
 			else
 				encode = invalid;
@@ -317,7 +314,7 @@ public class Amd64Assemble {
 			encode = assembleJump(instruction, offset, 0x7E, bs(0x0F, 0x8E));
 			break;
 		case JMP:
-			if (isRm(instruction.op0) && instruction.op0.size == 4)
+			if (isRm.test(instruction.op0) && instruction.op0.size == 4)
 				encode = assemble(instruction.op0, 0xFF, 4);
 			else
 				encode = assembleJump(instruction, offset, 0xEB, bs(0xE9));
@@ -391,7 +388,7 @@ public class Amd64Assemble {
 					if (instruction.op0 instanceof OpReg) {
 						OpReg op0 = (OpReg) instruction.op0;
 						encode = new InsnCode(op1.size, op1).setByte(0xB0 + (op0.size <= 1 ? 0 : 8) + op0.reg);
-					} else if (isRm(instruction.op0))
+					} else if (isRm.test(instruction.op0))
 						encode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(op1);
 					else
 						encode = invalid;
@@ -447,6 +444,9 @@ public class Amd64Assemble {
 		case MUL:
 			encode = assembleByteFlag(instruction.op0, 0xF6, 4);
 			break;
+		case MULPS:
+			encode = assembleRegRm(instruction.op0, instruction.op1, 0x59).pre(0x0F);
+			break;
 		case NEG:
 			encode = assembleByteFlag(instruction.op0, 0xF6, 3);
 			break;
@@ -464,7 +464,7 @@ public class Amd64Assemble {
 			break;
 		case POP:
 			if (1 < instruction.op0.size)
-				if (isRm(instruction.op0))
+				if (isRm.test(instruction.op0))
 					encode = assembleRm(instruction, 0x58, 0x8E, 0);
 				else if (instruction.op0 instanceof OpRegSegment) {
 					OpRegSegment sreg = (OpRegSegment) instruction.op0;
@@ -504,7 +504,7 @@ public class Amd64Assemble {
 				int size = instruction.op0.size;
 				encode = new InsnCode(size, (OpImm) instruction.op0).setByte(0x68 + (1 < size ? 0 : 2));
 			} else if (1 < instruction.op0.size)
-				if (isRm(instruction.op0))
+				if (isRm.test(instruction.op0))
 					encode = assembleRm(instruction, 0x50, 0xFE, 6);
 				else if (instruction.op0 instanceof OpRegSegment) {
 					OpRegSegment sreg = (OpRegSegment) instruction.op0;
@@ -635,7 +635,7 @@ public class Amd64Assemble {
 				if (instruction.op1 instanceof OpImm)
 					encode = assembleRmImm(instruction.op0, (OpImm) instruction.op1, 0xA8, 0xF6, 0);
 				else
-					encode = assembleRegRm(instruction.op1, instruction.op0, 0x84);
+					encode = assembleByteFlag(instruction.op0, 0x84, instruction.op1);
 			else
 				encode = invalid;
 			break;
@@ -651,15 +651,18 @@ public class Amd64Assemble {
 		case VMOVQ:
 			encode = assembleRmReg(instruction, 0x7E, 0x6E, isXmm).size(8).vex(Vexp.VP66, 0, Vexm.VM0F__);
 			break;
+		case VMULPS:
+			encode = assembleRegRm(instruction.op0, instruction.op2, 0x59).vex(Vexp.VP__, instruction.op1, Vexm.VM0F__);
+			break;
 		case VSUBPS:
 			encode = assembleRegRm(instruction.op0, instruction.op2, 0x5C).vex(Vexp.VP__, instruction.op1, Vexm.VM0F__);
 			break;
 		case XCHG:
-			if (instruction.op0.size == instruction.op1.size)
-				if (isAcc(instruction.op0) && instruction.op1 instanceof OpReg)
+			if (instruction.op0.size == instruction.op1.size && instruction.op1 instanceof OpReg)
+				if (isAcc.test(instruction.op0))
 					encode = assemble(instruction, 0x90 + ((OpReg) instruction.op1).reg);
 				else
-					encode = assembleRegRm(instruction.op1, instruction.op0, 0x86);
+					encode = assembleByteFlag(instruction.op0, 0x86, instruction.op1);
 			else
 				encode = invalid;
 			break;
@@ -677,7 +680,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleInOut(Operand port, Operand acc, int b) {
-		if (isAcc(acc)) {
+		if (isAcc.test(acc)) {
 			OpImm portImm;
 			if (port instanceof OpImm)
 				portImm = (OpImm) port;
@@ -732,7 +735,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRegRmExtended(Instruction instruction, int b) {
-		if (instruction.op0 instanceof OpReg && isRm(instruction.op1)) {
+		if (instruction.op0 instanceof OpReg && isRm.test(instruction.op1)) {
 			OpReg reg = (OpReg) instruction.op0;
 			return assemble(instruction.op1, b + (instruction.op1.size <= 1 ? 0 : 1), reg.reg);
 		} else
@@ -744,7 +747,7 @@ public class Amd64Assemble {
 		if (instruction.op0 instanceof OpReg && 1 < instruction.op0.size) {
 			OpReg op0 = (OpReg) instruction.op0;
 			insnCode = new InsnCode(instruction.op0.size, bs(bReg + op0.reg));
-		} else if (isRm(instruction.op0))
+		} else if (isRm.test(instruction.op0))
 			insnCode = assembleByteFlag(instruction.op0, bModrm, num);
 		else
 			insnCode = invalid;
@@ -767,26 +770,25 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRmReg(Instruction instruction, int b) {
-		return assembleRmReg(instruction, b, b + 2, this::isReg);
+		return assembleRmReg(instruction, b, b + 2, isReg);
 	}
 
 	private InsnCode assembleRmReg(Instruction instruction, int bRmReg, int bRegRm, Predicate<Operand> pred) {
 		FixieFun3<Operand, Integer, OpReg, InsnCode> fun = (rm, b1, reg) -> 0 <= b1 ? assembleByteFlag(rm, b1, reg.reg) : invalid;
-
-		if (isRm(instruction.op0) && pred.test(instruction.op1))
+		if (isRm.test(instruction.op0) && pred.test(instruction.op1))
 			return fun.apply(instruction.op0, bRmReg, (OpReg) instruction.op1);
-		else if (pred.test(instruction.op0) && isRm(instruction.op1))
+		else if (pred.test(instruction.op0) && isRm.test(instruction.op1))
 			return fun.apply(instruction.op1, bRegRm, (OpReg) instruction.op0);
 		else
 			return invalid;
 	}
 
 	private InsnCode assembleRegRm(Operand reg, Operand rm, int b) {
-		return assembleRegRm(reg, rm, b, this::isReg);
+		return assembleRegRm(reg, rm, b, isReg);
 	}
 
 	private InsnCode assembleRegRm(Operand reg, Operand rm, int b, Predicate<Operand> pred) {
-		if (pred.test(reg) && isRm(rm))
+		if (pred.test(reg) && isRm.test(rm))
 			return assemble(rm, b, ((OpReg) reg).reg);
 		else
 			return invalid;
@@ -795,9 +797,9 @@ public class Amd64Assemble {
 	private InsnCode assembleRmImm(Operand op0, OpImm op1, int bAccImm, int bRmImm, int num) {
 		InsnCode insnCode = new InsnCode(op0.size, op1);
 
-		if (isAcc(op0))
+		if (isAcc.test(op0))
 			insnCode.bs = bs(bAccImm + (op0.size <= 1 ? 0 : 1));
-		else if (isRm(op0)) {
+		else if (isRm.test(op0)) {
 			int b0 = ((1 < op0.size && op1.size <= 1) ? 2 : 0) + (op0.size <= 1 ? 0 : 1);
 			insnCode.bs = bs(bRmImm + b0);
 			insnCode.modrm = modrm(op0, num);
@@ -807,7 +809,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleShift(Instruction instruction, int b, int num) {
-		if (isRm(instruction.op0)) {
+		if (isRm.test(instruction.op0)) {
 			Operand shift = instruction.op1;
 			boolean isShiftImm;
 			OpImm shiftImm;
@@ -833,6 +835,10 @@ public class Amd64Assemble {
 			return insnCode;
 		} else
 			return invalid;
+	}
+
+	private InsnCode assembleByteFlag(Operand operand, int b, Operand opReg) {
+		return assembleByteFlag(operand, b, opReg);
 	}
 
 	private InsnCode assembleByteFlag(Operand operand, int b, int num) {
@@ -886,17 +892,11 @@ public class Amd64Assemble {
 		}
 	}
 
-	private boolean isAcc(Operand operand) {
-		return operand instanceof OpReg && ((OpReg) operand).reg == 0;
-	}
-
-	private boolean isReg(Operand operand) {
-		return operand instanceof OpReg;
-	}
-
-	private boolean isRm(Operand operand) {
-		return operand instanceof OpMem || operand instanceof OpReg;
-	}
+	Predicate<Operand> isAcc = operand -> operand instanceof OpReg && ((OpReg) operand).reg == 0;
+	Predicate<Operand> isReg = operand -> operand instanceof OpReg;
+	Predicate<Operand> isRm = operand -> operand instanceof OpMem || operand instanceof OpReg;
+	Predicate<Operand> isXmm = op -> op instanceof OpRegXmm;
+	Predicate<Operand> isXmmYmm = op -> op instanceof OpRegXmm || op instanceof OpRegYmm;
 
 	private Modrm modrm(Operand operand, int num) {
 		int mod, rm, s, i, b, dispSize;

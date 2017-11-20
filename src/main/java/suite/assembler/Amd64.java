@@ -74,6 +74,7 @@ public class Amd64 {
 		MOVSX, //
 		MOVZX, //
 		MUL, //
+		MULPS, //
 		NEG, //
 		NOP, //
 		NOT, //
@@ -119,6 +120,7 @@ public class Amd64 {
 		VMOVAPS, //
 		VMOVD, //
 		VMOVQ, //
+		VMULPS, //
 		VSUBPS, //
 		XCHG, //
 		XOR, //

@@ -169,7 +169,9 @@ public class Arima {
 			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 			// = eps[t] * 1
 			// + eps[t - 1] * mas[0] + ... + eps[t - q] * m0 as[q - 1]
-			if (0 < q) {
+			if (0 < q)
+				;
+			{
 				List<FltObjPair<float[]>> pairs = Ints_.range(p, xLength).map(t -> {
 					float[] lrxs = new float[xqLength];
 					int tq = t + q;
