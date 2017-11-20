@@ -728,10 +728,9 @@ public class Amd64Assemble {
 			insnCode = new InsnCode(size, bs0);
 			insnCode.immSize = size;
 			insnCode.imm = rel;
+			return insnCode;
 		} else
-			insnCode = invalid;
-
-		return insnCode;
+			return invalid;
 	}
 
 	private InsnCode assembleRegRmExtended(Instruction instruction, int b) {
@@ -743,15 +742,13 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRm(Instruction instruction, int bReg, int bModrm, int num) {
-		InsnCode insnCode;
 		if (instruction.op0 instanceof OpReg && 1 < instruction.op0.size) {
 			OpReg op0 = (OpReg) instruction.op0;
-			insnCode = new InsnCode(instruction.op0.size, bs(bReg + op0.reg));
+			return new InsnCode(instruction.op0.size, bs(bReg + op0.reg));
 		} else if (isRm.test(instruction.op0))
-			insnCode = assembleByteFlag(instruction.op0, bModrm, num);
+			return assembleByteFlag(instruction.op0, bModrm, num);
 		else
-			insnCode = invalid;
-		return insnCode;
+			return invalid;
 	}
 
 	private InsnCode assembleRmRegImm(Instruction instruction, int bModrm, int bImm, int num) {
@@ -759,14 +756,13 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRmRegImm(Instruction instruction, int bModrm, int bAccImm, int bRmImm, int num) {
-		InsnCode insnCode, insnCodeRmReg;
+		InsnCode insnCodeRmReg;
 		if ((insnCodeRmReg = assembleRmReg(instruction, bModrm)).isValid())
-			insnCode = insnCodeRmReg;
+			return insnCodeRmReg;
 		else if (instruction.op1 instanceof OpImm)
-			insnCode = assembleRmImm(instruction.op0, (OpImm) instruction.op1, bAccImm, bRmImm, num);
+			return assembleRmImm(instruction.op0, (OpImm) instruction.op1, bAccImm, bRmImm, num);
 		else
-			insnCode = invalid;
-		return insnCode;
+			return invalid;
 	}
 
 	private InsnCode assembleRmReg(Instruction instruction, int b) {
@@ -774,7 +770,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRmReg(Instruction instruction, int bRmReg, int bRegRm, Predicate<Operand> pred) {
-		FixieFun3<Operand, Integer, OpReg, InsnCode> fun = (rm, b1, reg) -> 0 <= b1 ? assembleByteFlag(rm, b1, reg.reg) : invalid;
+		FixieFun3<Operand, Integer, OpReg, InsnCode> fun = (rm, b1, reg) -> 0 <= b1 ? assembleByteFlag(rm, b1, reg) : invalid;
 		if (isRm.test(instruction.op0) && pred.test(instruction.op1))
 			return fun.apply(instruction.op0, bRmReg, (OpReg) instruction.op1);
 		else if (pred.test(instruction.op0) && isRm.test(instruction.op1))
@@ -837,8 +833,8 @@ public class Amd64Assemble {
 			return invalid;
 	}
 
-	private InsnCode assembleByteFlag(Operand operand, int b, Operand opReg) {
-		return assembleByteFlag(operand, b, opReg);
+	private InsnCode assembleByteFlag(Operand operand, int b, Operand reg) {
+		return assembleByteFlag(operand, b, ((OpReg) reg).reg);
 	}
 
 	private InsnCode assembleByteFlag(Operand operand, int b, int num) {
@@ -858,15 +854,13 @@ public class Amd64Assemble {
 	private Bytes encode(InsnCode insnCode, byte[] vexs) {
 		if (insnCode.isValid()) {
 			Modrm modrm = insnCode.modrm;
-			int rex = modrm != null ? rex(modrm) : rex(insnCode.size, 0, 0, 0);
-
 			BytesBuilder bb = new BytesBuilder();
 			if (vexs != null)
 				bb.append(vexs);
 			else {
 				if (insnCode.size == 2)
 					bb.append((byte) 0x66);
-				appendIf(bb, rex);
+				appendIf(bb, modrm != null ? rex(modrm) : rex(insnCode.size, 0, 0, 0));
 			}
 			bb.append(insnCode.bs);
 			if (modrm != null) {
@@ -1019,25 +1013,25 @@ public class Amd64Assemble {
 
 	private int rex(int size, int r, int x, int b) {
 		int b04 = ((size != 8 ? 0 : 1) << 3) //
-				+ (h(r) << 2) //
-				+ (h(x) << 1) //
-				+ (h(b) << 0);
+				+ (bit4(r) << 2) //
+				+ (bit4(x) << 1) //
+				+ (bit4(b) << 0);
 		return b04 != 0 ? 0x40 + b04 : -1;
 	}
 
 	// https://en.wikipedia.org/wiki/VEX_prefix
 	private byte[] vex(int m, int p, int size, Modrm modrm, int w, int v) {
-		int x = h(modrm.i);
-		int b = h(modrm.b);
-		int w_ = h(w);
+		int x = bit4(modrm.i);
+		int b = bit4(modrm.b);
+		int w_ = bit4(w);
 		if (m == 1 && x == 0 && b == 0 && w == 0) {
-			int b1 = ((h(modrm.num) ^ 1) << 7) //
+			int b1 = ((bit4(modrm.num) ^ 1) << 7) //
 					+ (~v << 3)//
 					+ ((size != 16 ? 1 : 0) << 2) //
 					+ (p << 0);
 			return bs(0xC5, b1);
 		} else {
-			int b1 = ((h(modrm.num) ^ 1) << 7) //
+			int b1 = ((bit4(modrm.num) ^ 1) << 7) //
 					+ ((x ^ 1) << 6) //
 					+ ((b ^ 1) << 5) //
 					+ (~m << 0);
@@ -1049,7 +1043,7 @@ public class Amd64Assemble {
 		}
 	}
 
-	private int h(int r) {
+	private int bit4(int r) {
 		return 0 <= r ? r >> 3 & 1 : 0;
 	}
 
