@@ -156,62 +156,58 @@ public class Arima {
 	// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 	public Em em(float[] xs, int p, int q) { // ARMA
 		int xLength = xs.length;
-		int xqLength = xLength + q;
+		int pq = -p + q;
+		int xpqLength = xLength + pq;
 		float[] ars = Floats_.toArray(p, i -> (float) Math.scalb(.5d, -i));
 		float[] mas = Floats_.toArray(q, i -> (float) Math.scalb(.5d, -i));
-		float[] eps = Floats_.toArray(xqLength, i -> 0f);
+		float[] eps = Floats_.toArray(xpqLength, i -> 0f);
 
 		for (int iter = 0; iter < 9; iter++) {
-			float[] ars_ = ars;
-			float[] mas_ = mas;
 
 			// xs[t]
 			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 			// = eps[t] * 1
-			// + eps[t - 1] * mas[0] + ... + eps[t - q] * m0 as[q - 1]
-			if (0 < q)
-				;
+			// + eps[t - 1] * mas[0] + ... + eps[t - q] * mas[q - 1]
 			{
 				List<FltObjPair<float[]>> pairs = Ints_.range(p, xLength).map(t -> {
-					float[] lrxs = new float[xqLength];
-					int tq = t + q;
+					float[] lrxs = new float[xpqLength];
+					int tq = t + pq;
 					lrxs[tq--] = 1f;
 					for (int j = 0; j < q; j++)
-						lrxs[tq--] = mas_[j];
-					float lry = (float) (xs[t] - Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs[t - j - 1])));
+						lrxs[tq--] = mas[j];
+					float lry = (float) (xs[t] - Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars[j] * xs[t - j - 1])));
 					return FltObjPair.of(lry, lrxs);
 				}).toList();
 
-				eps = stat.linearRegression(pairs).coefficients;
+				System.out.println("lrxs0 = " + Arrays.toString(pairs.get(0).t1));
+				System.out.println("lrxsx = " + Arrays.toString(pairs.get(pairs.size() - 1).t1));
+				System.out.println("lrys = " + pairs);
+				float[] eps1 = stat.linearRegression(pairs).coefficients;
+				Floats_.copy(eps1, 0, eps, 0, xpqLength);
+				System.out.println("eps = " + Arrays.toString(eps));
 			}
 
 			// xs[t] - eps[t]
 			// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
 			// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 			{
-				float[] eps_ = eps;
-
 				List<FltObjPair<float[]>> pairs = Ints_.range(p, xLength).map(t -> {
 					float[] lrxs = new float[p + q];
-					int tq = t + q;
+					int tpq = t + pq;
 					int k = 0;
 					for (int j = 1; j <= p; j++)
 						lrxs[k++] = xs[t - j];
 					for (int j = 1; j <= q; j++)
-						lrxs[k++] = eps_[tq - j];
-					float lry = xs[t] - eps_[tq];
+						lrxs[k++] = eps[tpq - j];
+					float lry = xs[t] - eps[tpq];
 					return FltObjPair.of(lry, lrxs);
 				}).toList();
 
 				float[] coeffs = stat.linearRegression(pairs).coefficients;
-				ars = Arrays.copyOfRange(coeffs, 0, p);
-				mas = Arrays.copyOfRange(coeffs, p, p + q);
+				Floats_.copy(coeffs, 0, ars, 0, p);
+				Floats_.copy(coeffs, p, mas, p, q);
 			}
 		}
-
-		float[] ars_ = ars;
-		float[] mas_ = mas;
-		float[] eps_ = eps;
 
 		// x[t]
 		// = ars[0] * x[t - 1] + ... + ars[p - 1] * x[t - p]
@@ -219,10 +215,10 @@ public class Arima {
 		// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 		// when t = xLength
 		double x1 = 0d //
-				+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars_[j] * xs[xLength - j - 1])) //
-				+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas_[j] * eps_[xqLength - j - 1]));
+				+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars[j] * xs[xLength - j - 1])) //
+				+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas[j] * eps[xpqLength - j - 1]));
 
-		return new Em(ars_, mas_, (float) x1);
+		return new Em(ars, mas, (float) x1);
 	}
 
 	public class Em {
