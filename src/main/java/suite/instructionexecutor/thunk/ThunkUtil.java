@@ -39,8 +39,7 @@ public class ThunkUtil {
 	}
 
 	/**
-	 * Evaluates the whole (lazy) term to a list and feed the elements into a
-	 * sink.
+	 * Evaluates the whole (lazy) term to a list and feed the elements into a sink.
 	 */
 	public static void yawnSink(Iterate<Node> yawn, Node node, IoSink<Node> sink) throws IOException {
 		Outlet<Node> st = yawnList(yawn, node, true);
@@ -81,13 +80,13 @@ public class ThunkUtil {
 	/**
 	 * Evaluates the whole (lazy) term to actual by invoking all the thunks.
 	 */
-	public static Node yawnFully(Iterate<Node> yawn, Node node) {
+	public static Node deepYawn(Iterate<Node> yawn, Node node) {
 		node = yawn.apply(node);
 
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
-			Node left = yawnFully(yawn, tree.getLeft());
-			Node right = yawnFully(yawn, tree.getRight());
+			Node left = deepYawn(yawn, tree.getLeft());
+			Node right = deepYawn(yawn, tree.getRight());
 			node = Tree.of(tree.getOperator(), left, right);
 		}
 

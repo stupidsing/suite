@@ -66,7 +66,7 @@ public class EvaluateUtil {
 	public Node evaluateFun(FunCompilerConfig fcc) {
 		try (FunInstructionExecutor executor = configureFunExecutor(fcc)) {
 			Node result = executor.execute();
-			return fcc.isLazy() ? ThunkUtil.yawnFully(executor.getYawnFun(), result) : result;
+			return fcc.isLazy() ? ThunkUtil.deepYawn(executor.getYawnFun(), result) : result;
 		}
 	}
 

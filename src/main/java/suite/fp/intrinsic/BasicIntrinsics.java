@@ -27,7 +27,7 @@ public class BasicIntrinsics {
 
 	public Intrinsic log1 = (callback, inputs) -> {
 		Node node = inputs.get(0);
-		LogUtil.info(Formatter.display(ThunkUtil.yawnFully(callback::yawn, node)));
+		LogUtil.info(Formatter.display(ThunkUtil.deepYawn(callback::yawn, node)));
 		return node;
 	};
 
