@@ -22,7 +22,7 @@ public class VerifyTest {
 
 	@Test
 	public void test() {
-		new Verify(new HashMap<>()).verify(null);
+		new Verify(new HashMap<>()).verify(Atom.TRUE);
 	}
 
 	private class Verify {
