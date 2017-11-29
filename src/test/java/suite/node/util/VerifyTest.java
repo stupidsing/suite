@@ -40,11 +40,11 @@ public class VerifyTest {
 			else if ((m = Suite.match(".0 | imply .1").apply(proof)) != null) {
 				Rule rule = rules.get(((Atom) m[1]).name);
 				Generalizer generalizer = new Generalizer();
-				bind(m[0], generalizer.generalize(rule.t0));
+				bind(verify(m[0]), generalizer.generalize(rule.t0));
 				return generalizer.generalize(rule.t1);
 			} else if ((m = Suite.match(".0 | subst .1 .2").apply(proof)) != null) {
 				Generalizer generalizer = new Generalizer();
-				Node node = generalizer.generalize(m[0]);
+				Node node = generalizer.generalize(verify(m[0]));
 				bind(generalizer.generalize(m[1]), m[2]);
 				return node;
 			} else if ((m = Suite.match("true").apply(proof)) != null)
