@@ -1,6 +1,5 @@
 package suite.node.util;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.Test;
@@ -22,7 +21,7 @@ public class VerifyTest {
 
 	@Test
 	public void test() {
-		new Verify(new HashMap<>()).verify(Atom.TRUE);
+		new Verify(Map.ofEntries()).verify(Atom.TRUE);
 	}
 
 	private class Verify {
