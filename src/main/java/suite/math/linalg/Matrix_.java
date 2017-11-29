@@ -179,7 +179,7 @@ public class Matrix_ {
 		int jx = w(m);
 		float[] o = new float[ix];
 		int i1, j1;
-		if (jx == nT.length)
+		if (ix == 0 || jx == nT.length)
 			for (int i0 = 0; i0 < ix; i0 = i1) {
 				i1 = Math.min(i0 + 64, ix);
 				for (int j0 = 0; j0 < jx; j0 = j1) {
@@ -200,7 +200,7 @@ public class Matrix_ {
 		int width = w(n);
 		float[][] o = of(height, width);
 		int i1, j1, k1;
-		if (ks == h(n))
+		if (height == 0 || ks == h(n))
 			for (int i0 = 0; i0 < height; i0 = i1) {
 				i1 = Math.min(i0 + 64, height);
 				for (int j0 = 0; j0 < width; j0 = j1) {
@@ -263,7 +263,6 @@ public class Matrix_ {
 		int width = w(n);
 		float[][] o = of(height, width);
 		int i1, j1, k1;
-
 		if (ks == h(n))
 			for (int i0 = 0; i0 < height; i0 = i1) {
 				i1 = Math.min(i0 + 64, height);
@@ -280,7 +279,6 @@ public class Matrix_ {
 			}
 		else
 			throw new RuntimeException("wrong input sizes");
-
 		return o;
 	}
 
