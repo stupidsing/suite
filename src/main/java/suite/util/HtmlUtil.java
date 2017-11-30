@@ -1,7 +1,14 @@
 package suite.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import suite.adt.map.BiMap;
 import suite.adt.map.HashBiMap;
+import suite.immutable.IList;
+import suite.primitive.adt.pair.IntIntPair;
+import suite.primitive.adt.pair.IntObjPair;
+import suite.util.FunUtil.Fun;
 
 public class HtmlUtil {
 
@@ -71,6 +78,67 @@ public class HtmlUtil {
 			encoded = null;
 
 		return encoded;
+	}
+
+	public List<IList<String>> parse(String in) {
+		List<IntIntPair> pairs = new ArrayList<>();
+		int pos0, pos1 = 0;
+
+		while (0 <= (pos0 = in.indexOf("<", pos1)) && 0 <= (pos1 = in.indexOf(">", pos0 + 1)))
+			pairs.add(IntIntPair.of(pos0, ++pos1));
+
+		Fun<String, IntObjPair<String>> getNameFun = tag -> {
+			int p0 = 1, p1 = p0 + 1, px = tag.length() - 1;
+			char first = tag.charAt(p1);
+			char last = tag.charAt(px - 1);
+			int d;
+
+			if (first == '!')
+				return IntObjPair.of(0, tag);
+			else {
+				if (first == '/') {
+					p1++;
+					d = -1;
+				} else if (last == '/') {
+					px--;
+					d = 0;
+				} else
+					d = 1;
+
+				int ps0 = tag.indexOf(' ');
+				int ps1 = 0 <= ps0 ? ps0 : px;
+				return IntObjPair.of(d, tag.substring(p1, ps1));
+			}
+		};
+
+		List<IList<String>> list = new ArrayList<>();
+		IList<String> stack = IList.end();
+		int prevp = 0;
+
+		for (IntIntPair pair : pairs) {
+			int p0 = pair.t0;
+			int px = pair.t1;
+			list.add(IList.cons(in.substring(prevp, p0), stack));
+			String tag = in.substring(p0, px);
+			IntObjPair<String> dn = getNameFun.apply(tag);
+			int d = dn.t0;
+			String name = dn.t1;
+
+			if (d == -1) {
+				boolean b = true;
+				while (b && !stack.isEmpty()) {
+					b = !String_.equals(getNameFun.apply(stack.head).t1, name);
+					stack = stack.tail;
+				}
+			} else if (d == 1)
+				stack = IList.cons(tag, stack);
+			else
+				list.add(IList.cons("", IList.cons(tag, stack)));
+
+			prevp = px;
+		}
+
+		return list;
 	}
 
 	private void initialize() {
