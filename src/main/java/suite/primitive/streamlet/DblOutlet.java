@@ -87,7 +87,10 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public static DblOutlet of(Source<Double> source) {
-		return of(() -> source.source());
+		return DblOutlet.of(() -> {
+			Double c = source.source();
+			return c != null ? c : DblFunUtil.EMPTYVALUE;
+		});
 	}
 
 	public static DblOutlet of(DblSource source) {

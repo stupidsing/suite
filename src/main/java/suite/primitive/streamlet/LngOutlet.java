@@ -87,7 +87,10 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public static LngOutlet of(Source<Long> source) {
-		return of(() -> source.source());
+		return LngOutlet.of(() -> {
+			Long c = source.source();
+			return c != null ? c : LngFunUtil.EMPTYVALUE;
+		});
 	}
 
 	public static LngOutlet of(LngSource source) {

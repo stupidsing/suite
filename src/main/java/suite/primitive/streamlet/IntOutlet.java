@@ -87,7 +87,10 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public static IntOutlet of(Source<Integer> source) {
-		return of(() -> source.source());
+		return IntOutlet.of(() -> {
+			Integer c = source.source();
+			return c != null ? c : IntFunUtil.EMPTYVALUE;
+		});
 	}
 
 	public static IntOutlet of(IntSource source) {

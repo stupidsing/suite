@@ -87,7 +87,10 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public static ChrOutlet of(Source<Character> source) {
-		return of(() -> source.source());
+		return ChrOutlet.of(() -> {
+			Character c = source.source();
+			return c != null ? c : ChrFunUtil.EMPTYVALUE;
+		});
 	}
 
 	public static ChrOutlet of(ChrSource source) {

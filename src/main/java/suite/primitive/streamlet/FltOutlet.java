@@ -87,7 +87,10 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public static FltOutlet of(Source<Float> source) {
-		return of(() -> source.source());
+		return FltOutlet.of(() -> {
+			Float c = source.source();
+			return c != null ? c : FltFunUtil.EMPTYVALUE;
+		});
 	}
 
 	public static FltOutlet of(FltSource source) {
