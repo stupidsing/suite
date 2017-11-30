@@ -8,10 +8,10 @@ import java.util.zip.ZipFile;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.text.TextUtil;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 import suite.util.Set_;
 import suite.util.To;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
 
 /**
  * Compare content of two zip files.
@@ -23,7 +23,7 @@ public class CompareZipMain extends ExecutableProgram {
 	private TextUtil textUtil = new TextUtil();
 
 	public static void main(String[] args) {
-		Util.run(CompareZipMain.class, args);
+		RunUtil.run(CompareZipMain.class, args);
 	}
 
 	@Override

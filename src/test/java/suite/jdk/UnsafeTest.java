@@ -6,7 +6,7 @@ import java.nio.file.Paths;
 import org.junit.Test;
 
 import suite.util.Object_;
-import suite.util.Util.ExecutableProgram;
+import suite.util.RunUtil.ExecutableProgram;
 
 public class UnsafeTest {
 

@@ -7,15 +7,15 @@ import java.nio.file.Paths;
 import suite.ip.ImperativeCompiler;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
-import suite.util.Util.RunOption;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
+import suite.util.RunUtil.RunOption;
 
 // mvn compile exec:java -Dexec.mainClass=suite.asm.BootMain && qemu-system-x86_64 target/boot.bin
 public class BootMain extends ExecutableProgram {
 
 	public static void main(String[] args) {
-		Util.run(BootMain.class, args, RunOption.TIME___);
+		RunUtil.run(BootMain.class, args, RunOption.TIME___);
 	}
 
 	@Override

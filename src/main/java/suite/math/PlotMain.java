@@ -3,13 +3,13 @@ package suite.math;
 import suite.image.Render;
 import suite.primitive.DblDbl_Dbl;
 import suite.primitive.IntInt_Int;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 
 public class PlotMain extends ExecutableProgram {
 
 	public static void main(String[] args) {
-		Util.run(PlotMain.class, args);
+		RunUtil.run(PlotMain.class, args);
 	}
 
 	@Override

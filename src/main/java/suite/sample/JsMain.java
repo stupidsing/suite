@@ -9,9 +9,9 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 import suite.util.String_;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
 
 /**
  * Starts program using a JavaScript script. Perhaps you can avoid using Spring
@@ -26,7 +26,7 @@ public class JsMain extends ExecutableProgram {
 	private ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
 
 	public static void main(String[] args) {
-		Util.run(JsMain.class, args);
+		RunUtil.run(JsMain.class, args);
 	}
 
 	protected synchronized boolean run(String[] args) throws IOException, ScriptException {

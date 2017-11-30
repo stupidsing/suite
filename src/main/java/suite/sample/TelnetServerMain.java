@@ -10,14 +10,14 @@ import java.util.Set;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.util.Copy;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 import suite.util.Thread_;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
 
 public class TelnetServerMain extends ExecutableProgram {
 
 	public static void main(String[] args) {
-		Util.run(TelnetServerMain.class, args);
+		RunUtil.run(TelnetServerMain.class, args);
 	}
 
 	@Override

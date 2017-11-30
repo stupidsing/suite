@@ -15,16 +15,16 @@ import suite.node.Str;
 import suite.os.Schedule;
 import suite.os.Scheduler;
 import suite.telegram.TelegramBot;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 import suite.util.Thread_;
 import suite.util.To;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
 
 // mvn compile exec:java -Dexec.mainClass=suite.ServerMain
 public class ServerMain extends ExecutableProgram {
 
 	public static void main(String[] args) {
-		Util.run(ServerMain.class, args);
+		RunUtil.run(ServerMain.class, args);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class ServerMain extends ExecutableProgram {
 				+ "</html>"));
 
 		HttpHandler handler1 = HttpHandler.ofDispatch(IMap //
-				.<String, HttpHandler> empty() //
+				.<String, HttpHandler>empty() //
 				.put("path", HttpHandler.ofPath(Constants.tmp)) //
 				.put("site", HttpHandler.ofSession(authenticator, handler0)));
 

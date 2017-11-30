@@ -21,10 +21,10 @@ import suite.util.FunUtil.Source;
 import suite.util.Object_;
 import suite.util.ParseUtil;
 import suite.util.Rethrow;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 import suite.util.String_;
 import suite.util.To;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
 
 /**
  * Logic interpreter and functional interpreter. Likes Prolog and Haskell.
@@ -41,7 +41,7 @@ public class Main extends ExecutableProgram {
 	private Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, Constants.charset));
 
 	public static void main(String[] args) {
-		Util.run(Main.class, args);
+		RunUtil.run(Main.class, args);
 	}
 
 	protected boolean run(String[] args) throws IOException {
@@ -84,7 +84,7 @@ public class Main extends ExecutableProgram {
 				@SuppressWarnings("unchecked")
 				Class<? extends ExecutableProgram> clazz = (Class<? extends ExecutableProgram>) //
 				Rethrow.ex(() -> Class.forName(verb_));
-				Util.run(clazz, inputs.toArray(new String[0]));
+				RunUtil.run(clazz, inputs.toArray(new String[0]));
 			} else if (String_.equals(verb, "type"))
 				result &= dispatcher.dispatchType(inputs);
 			else if (verb == null)

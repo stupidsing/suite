@@ -14,9 +14,10 @@ import java.util.Map.Entry;
 import suite.adt.pair.Pair;
 import suite.os.SocketUtil;
 import suite.util.CommandUtil;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 import suite.util.String_;
 import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
 
 public class NntpServerMain extends ExecutableProgram {
 
@@ -27,7 +28,7 @@ public class NntpServerMain extends ExecutableProgram {
 	private Nntp nntp;
 
 	public static void main(String[] args) {
-		Util.run(NntpServerMain.class, args);
+		RunUtil.run(NntpServerMain.class, args);
 	}
 
 	@Override

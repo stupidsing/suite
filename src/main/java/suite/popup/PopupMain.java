@@ -19,9 +19,9 @@ import suite.editor.LayoutCalculator.Orientation;
 import suite.editor.Listen;
 import suite.os.Execute;
 import suite.util.FunUtil.Fun;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 import suite.util.String_;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
 
 /**
  * Volume up: Alt-A
@@ -34,7 +34,7 @@ import suite.util.Util.ExecutableProgram;
 public class PopupMain extends ExecutableProgram {
 
 	public static void main(String[] args) {
-		Util.run(PopupMain.class, args);
+		RunUtil.run(PopupMain.class, args);
 	}
 
 	@Override

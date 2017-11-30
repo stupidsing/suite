@@ -10,9 +10,9 @@ import java.util.Map;
 
 import suite.Constants;
 import suite.os.SocketUtil;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 import suite.util.To;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
 
 public class SimpleCgiServerMain extends ExecutableProgram {
 
@@ -21,7 +21,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 	}
 
 	public static void main(String[] args) {
-		Util.run(SimpleCgiServerMain.class, args);
+		RunUtil.run(SimpleCgiServerMain.class, args);
 	}
 
 	@Override

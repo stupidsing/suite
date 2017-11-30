@@ -18,9 +18,9 @@ import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.Rethrow;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 import suite.util.To;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
 
 /**
  * Maintains library of files, probably images or documents.
@@ -42,7 +42,7 @@ public class LibraryMain extends ExecutableProgram {
 	}
 
 	public static void main(String[] args) {
-		Util.run(LibraryMain.class, args);
+		RunUtil.run(LibraryMain.class, args);
 	}
 
 	protected boolean run(String[] args) {

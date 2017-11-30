@@ -10,15 +10,15 @@ import suite.adt.pair.Pair;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
 import suite.parser.Wildcard;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 import suite.util.To;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
 
 // mAIN=suite.node.parser.RecursiveFileFactorizerMain ./run.sh
 public class RecursiveFileFactorizerMain extends ExecutableProgram {
 
 	public static void main(String[] args) {
-		Util.run(RecursiveFileFactorizerMain.class, args);
+		RunUtil.run(RecursiveFileFactorizerMain.class, args);
 	}
 
 	protected boolean run(String[] args) throws IOException {

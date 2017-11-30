@@ -1,7 +1,7 @@
 package suite.editor;
 
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 
 /**
  * A boring editor.
@@ -9,7 +9,7 @@ import suite.util.Util.ExecutableProgram;
 public class EditorMain extends ExecutableProgram {
 
 	public static void main(String[] args) {
-		Util.run(EditorMain.class, args);
+		RunUtil.run(EditorMain.class, args);
 	}
 
 	@Override

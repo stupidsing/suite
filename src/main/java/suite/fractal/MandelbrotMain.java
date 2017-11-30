@@ -3,8 +3,8 @@ package suite.fractal;
 import suite.image.Render;
 import suite.math.Complex;
 import suite.math.Vector;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 
 public class MandelbrotMain extends ExecutableProgram {
 
@@ -12,7 +12,7 @@ public class MandelbrotMain extends ExecutableProgram {
 	private int height = 768;
 
 	public static void main(String[] args) {
-		Util.run(MandelbrotMain.class, args);
+		RunUtil.run(MandelbrotMain.class, args);
 	}
 
 	@Override

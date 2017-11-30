@@ -1,15 +1,15 @@
 package suite.node.parser;
 
 import suite.node.io.TermOp;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 import suite.util.To;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
 
 // mAIN=suite.node.parser.RecursiveFactorizerMain ./run.sh
 public class RecursiveFactorizerMain extends ExecutableProgram {
 
 	public static void main(String[] args) {
-		Util.run(RecursiveFactorizerMain.class, args);
+		RunUtil.run(RecursiveFactorizerMain.class, args);
 	}
 
 	protected boolean run(String[] args) {

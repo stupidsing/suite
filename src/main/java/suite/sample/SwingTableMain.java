@@ -12,8 +12,8 @@ import javax.swing.JTable;
 import javax.swing.JTextPane;
 import javax.swing.table.AbstractTableModel;
 
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 
 /**
  * A boring demonstration of various Swing components.
@@ -21,7 +21,7 @@ import suite.util.Util.ExecutableProgram;
 public class SwingTableMain extends ExecutableProgram {
 
 	public static void main(String[] args) {
-		Util.run(SwingTableMain.class, args);
+		RunUtil.run(SwingTableMain.class, args);
 	}
 
 	@Override

@@ -12,8 +12,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 
 public class AnimationMain extends ExecutableProgram {
 
@@ -22,7 +22,7 @@ public class AnimationMain extends ExecutableProgram {
 	}
 
 	public static void main(String[] args) {
-		Util.run(AnimationMain.class, args);
+		RunUtil.run(AnimationMain.class, args);
 	}
 
 	protected boolean run(String[] args) throws InterruptedException {

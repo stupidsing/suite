@@ -5,14 +5,14 @@ import java.util.Objects;
 import suite.adt.pair.Pair;
 import suite.ansi.Keyboard.VK;
 import suite.streamlet.Outlet;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 
 // mvn compile exec:java -Dexec.mainClass=suite.ansi.ReadLineMain
 public class ReadLineMain extends ExecutableProgram {
 
 	public static void main(String[] args) {
-		Util.run(ReadLineMain.class, args);
+		RunUtil.run(ReadLineMain.class, args);
 	}
 
 	protected boolean run(String[] args) {

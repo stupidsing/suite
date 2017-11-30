@@ -23,8 +23,8 @@ import suite.trade.data.ConfigurationImpl;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 
 // mvn compile exec:java -Dexec.mainClass=suite.trade.bcakalloc.run.BackTestMain
 public class BackTestMain extends ExecutableProgram {
@@ -33,7 +33,7 @@ public class BackTestMain extends ExecutableProgram {
 	private Configuration cfg = new ConfigurationImpl();
 
 	public static void main(String[] args) {
-		Util.run(BackTestMain.class, args);
+		RunUtil.run(BackTestMain.class, args);
 	}
 
 	@Override

@@ -38,12 +38,12 @@ import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
 import suite.util.FunUtil.Sink;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 import suite.util.Serialize;
 import suite.util.Set_;
 import suite.util.String_;
 import suite.util.To;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
 
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
 public class DailyMain extends ExecutableProgram {
@@ -69,7 +69,7 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	public static void main(String[] args) {
-		Util.run(DailyMain.class, args);
+		RunUtil.run(DailyMain.class, args);
 	}
 
 	@Override

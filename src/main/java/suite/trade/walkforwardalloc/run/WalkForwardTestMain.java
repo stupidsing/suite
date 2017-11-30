@@ -10,8 +10,8 @@ import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.HkexUtil;
 import suite.trade.walkforwardalloc.WalkForwardAllocConfiguration;
 import suite.trade.walkforwardalloc.WalkForwardAllocTester;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 
 // mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.WalkForwardTestMain
 public class WalkForwardTestMain extends ExecutableProgram {
@@ -20,7 +20,7 @@ public class WalkForwardTestMain extends ExecutableProgram {
 	private Configuration cfg = new ConfigurationImpl();
 
 	public static void main(String[] args) {
-		Util.run(WalkForwardTestMain.class, args);
+		RunUtil.run(WalkForwardTestMain.class, args);
 	}
 
 	@Override

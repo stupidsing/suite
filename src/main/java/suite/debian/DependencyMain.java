@@ -14,9 +14,9 @@ import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.util.Object_;
 import suite.util.Rethrow;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 import suite.util.Set_;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
 
 public class DependencyMain extends ExecutableProgram {
 
@@ -140,7 +140,7 @@ public class DependencyMain extends ExecutableProgram {
 			supplementaryList);
 
 	public static void main(String[] args) {
-		Util.run(DependencyMain.class, args);
+		RunUtil.run(DependencyMain.class, args);
 	}
 
 	protected boolean run(String[] args) throws IOException {

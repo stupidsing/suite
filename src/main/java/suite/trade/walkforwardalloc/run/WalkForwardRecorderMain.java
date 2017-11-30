@@ -26,8 +26,8 @@ import suite.trade.data.HkexUtil;
 import suite.trade.walkforwardalloc.WalkForwardAllocConfiguration;
 import suite.trade.walkforwardalloc.WalkForwardAllocTester;
 import suite.util.HomeDir;
-import suite.util.Util;
-import suite.util.Util.ExecutableProgram;
+import suite.util.RunUtil;
+import suite.util.RunUtil.ExecutableProgram;
 
 // mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.WalkForwardRecorderMain
 public class WalkForwardRecorderMain extends ExecutableProgram {
@@ -36,7 +36,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 	private Configuration cfg = new ConfigurationImpl();
 
 	public static void main(String[] args) {
-		Util.run(WalkForwardRecorderMain.class, args);
+		RunUtil.run(WalkForwardRecorderMain.class, args);
 	}
 
 	@Override
