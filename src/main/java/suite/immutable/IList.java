@@ -5,6 +5,8 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.Objects;
 
+import suite.streamlet.Outlet;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
@@ -29,7 +31,7 @@ public class IList<T> implements Iterable<T> {
 
 	@SafeVarargs
 	public static <T> IList<T> asList(T... ts) {
-		IList<T> list = IList.<T> end();
+		IList<T> list = IList.<T>end();
 		for (T t : ts)
 			list = cons(t, list);
 		return list;
@@ -82,6 +84,21 @@ public class IList<T> implements Iterable<T> {
 		for (T t : this)
 			deque.addFirst(t);
 		return deque;
+	}
+
+	public Streamlet<T> streamlet() {
+		return new Streamlet<>(() -> Outlet.of(new Source<>() {
+			private IList<T> list = IList.this;
+
+			public T source() {
+				if (list != null) {
+					T t = list.head;
+					list = list.tail;
+					return t;
+				} else
+					return null;
+			}
+		}));
 	}
 
 	@Override

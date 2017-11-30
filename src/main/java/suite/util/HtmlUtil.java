@@ -1,11 +1,12 @@
 package suite.util;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 import suite.adt.map.BiMap;
 import suite.adt.map.HashBiMap;
-import suite.immutable.IList;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.util.FunUtil.Fun;
@@ -80,7 +81,16 @@ public class HtmlUtil {
 		return encoded;
 	}
 
-	public List<IList<String>> parse(String in) {
+	public class HtmlNode {
+		public final String tag;
+		public final List<HtmlNode> children = new ArrayList<>();
+
+		private HtmlNode(String tag) {
+			this.tag = tag;
+		}
+	}
+
+	public HtmlNode parse(String in) {
 		List<IntIntPair> pairs = new ArrayList<>();
 		int pos0, pos1 = 0;
 
@@ -111,34 +121,36 @@ public class HtmlUtil {
 			}
 		};
 
-		List<IList<String>> list = new ArrayList<>();
-		IList<String> stack = IList.end();
+		Deque<HtmlNode> deque = new ArrayDeque<>(List.of(new HtmlNode(null)));
 		int prevp = 0;
 
 		for (IntIntPair pair : pairs) {
+			HtmlNode htmlNode = deque.element();
 			int p0 = pair.t0;
 			int px = pair.t1;
-			list.add(IList.cons(in.substring(prevp, p0), stack));
+
+			htmlNode.children.add(new HtmlNode(in.substring(prevp, p0)));
+
 			String tag = in.substring(p0, px);
 			IntObjPair<String> dn = getNameFun.apply(tag);
 			int d = dn.t0;
 			String name = dn.t1;
 
-			if (d == -1) {
-				boolean b = true;
-				while (b && !stack.isEmpty()) {
-					b = !String_.equals(getNameFun.apply(stack.head).t1, name);
-					stack = stack.tail;
-				}
-			} else if (d == 1)
-				stack = IList.cons(tag, stack);
-			else
-				list.add(IList.cons("", IList.cons(tag, stack)));
+			if (d == -1)
+				while (!deque.isEmpty() && !String_.equals(getNameFun.apply(deque.pop().tag).t1, name))
+					;
+			else {
+				HtmlNode htmlNode1 = new HtmlNode(tag);
+				htmlNode.children.add(htmlNode1);
+				if (d == 1)
+					deque.push(htmlNode1);
+			}
 
 			prevp = px;
 		}
 
-		return list;
+		return deque.pop();
+
 	}
 
 	private void initialize() {
