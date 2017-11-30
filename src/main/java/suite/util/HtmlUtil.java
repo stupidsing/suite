@@ -125,7 +125,7 @@ public class HtmlUtil {
 		int prevp = 0;
 
 		for (IntIntPair pair : pairs) {
-			HtmlNode htmlNode = deque.element();
+			HtmlNode htmlNode = deque.element(), htmlNode1;
 			int p0 = pair.t0;
 			int px = pair.t1;
 
@@ -140,8 +140,7 @@ public class HtmlUtil {
 				while (!deque.isEmpty() && !String_.equals(getNameFun.apply(deque.pop().tag).t1, name))
 					;
 			else {
-				HtmlNode htmlNode1 = new HtmlNode(tag);
-				htmlNode.children.add(htmlNode1);
+				htmlNode.children.add(htmlNode1 = new HtmlNode(tag));
 				if (d == 1)
 					deque.push(htmlNode1);
 			}
