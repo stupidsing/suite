@@ -10,6 +10,7 @@ import suite.primitive.Floats;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
+import suite.primitive.adt.pair.FltObjPair;
 import suite.trade.Trade_;
 import suite.util.To;
 
@@ -37,13 +38,13 @@ public class TimeSeries {
 	// Augmented Dickey-Fuller test
 	public double adf(float[] ys, int tor) {
 		float[] ydiffs = differences_(1, ys);
-		float[][] xs = new float[ys.length][];
-		for (int i = tor; i < xs.length; i++)
-			// i - drift term, necessary?
-			xs[i] = Floats.concat(Floats.of(ys[i - 1], 1f, i), Floats.of(ydiffs, i - tor, i)).toArray();
-		float[][] xs1 = drop_(tor, xs);
-		float[] ydiffs1 = drop_(tor, ydiffs);
-		LinearRegression lr = stat.linearRegression(xs1, ydiffs1);
+		int length = ys.length;
+		LinearRegression lr = stat.linearRegression(Ints_ //
+				.range(tor, length) //
+				.map(i -> FltObjPair.of(ydiffs[i],
+						// i - drift term, necessary?
+						Floats.concat(Floats.of(ys[i - 1], 1f, i), Floats.of(ydiffs, i - tor, i)).toArray())) //
+				.toList());
 		return lr.tStatistic()[0];
 	}
 
@@ -80,9 +81,10 @@ public class TimeSeries {
 			float[] diffs2 = To.arrayOfFloats(diffs, diff -> diff * diff);
 			return (float) Math.log(stat.variance(diffs2));
 		});
-		float[][] xs = To.array(logVrs.length, float[].class, i -> new float[] { logVrs[i], 1f, });
-		float[] n = Floats_.toArray(logVrs.length, i -> (float) Math.log(tors[i]));
-		LinearRegression lr = stat.linearRegression(xs, n);
+		LinearRegression lr = stat.linearRegression(Ints_ //
+				.range(logVrs.length) //
+				.map(i -> FltObjPair.of((float) Math.log(tors[i]), new float[] { logVrs[i], 1f, })) //
+				.toList());
 		float beta0 = lr.coefficients[0];
 		return beta0 / 2d;
 	}
@@ -118,16 +120,21 @@ public class TimeSeries {
 	}
 
 	public LinearRegression meanReversion(float[] ys, int tor) {
-		float[][] xs = To.array(ys.length - tor, float[].class, i -> new float[] { ys[i], 1f, });
-		float[] diffs1 = drop_(tor, differences_(1, ys));
-		return stat.linearRegression(xs, diffs1);
+		float[] diffs = differences_(1, ys);
+
+		return stat.linearRegression(Ints_ //
+				.range(tor, ys.length) //
+				.map(i -> FltObjPair.of(diffs[i], new float[] { ys[i], 1f, })) //
+				.toList());
 	}
 
 	public LinearRegression movingAvgMeanReversion(float[] ys, float[] movingAvg, int tor) {
-		float[] ma = drop_(tor, movingAvg);
-		float[][] xs = To.array(ys.length - tor, float[].class, i -> new float[] { ma[i], 1f, });
-		float[] diffs1 = drop_(tor, differences_(1, ys));
-		return stat.linearRegression(xs, diffs1);
+		float[] diffs = differences_(1, ys);
+
+		return stat.linearRegression(Ints_ //
+				.range(tor, ys.length) //
+				.map(i -> FltObjPair.of(diffs[i], new float[] { movingAvg[i], 1f, })) //
+				.toList());
 	}
 
 	// partial autocorrelation function

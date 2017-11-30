@@ -68,11 +68,7 @@ public class Statistic {
 		int size = pairs.size();
 		float[][] x = To.array(size, float[].class, i -> pairs.get(i).t1);
 		float[] y = Floats_.toArray(size, i -> pairs.get(i).t0);
-		return linearRegression(x, y);
-	}
-
-	public LinearRegression linearRegression(float[][] x, float[] y) {
-		return new LinearRegression(x, y, null);
+		return linearRegression(x, y, null);
 	}
 
 	public LinearRegression linearRegression(float[][] x, float[] y, String[] coefficientNames) {

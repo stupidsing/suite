@@ -2,6 +2,8 @@ package suite.math.stat;
 
 import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.Floats_;
+import suite.primitive.Ints_;
+import suite.primitive.adt.pair.FltObjPair;
 import suite.util.To;
 
 /**
@@ -29,8 +31,10 @@ public class Ardl {
 			float[] fs = fsList[it];
 
 			if (length == fs.length) {
-				float[][] x = To.array(length - maxLag, float[].class, t -> getExplanatoryVariables(fsList, it, t));
-				return stat.linearRegression(x, fs);
+				return stat.linearRegression(Ints_ //
+						.range(length - maxLag) //
+						.map(t -> FltObjPair.of(fs[t], getExplanatoryVariables(fsList, it, t))) //
+						.toList());
 			} else
 				throw new RuntimeException("wrong input sizes");
 		});

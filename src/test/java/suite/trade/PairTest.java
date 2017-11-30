@@ -6,12 +6,13 @@ import org.junit.Test;
 
 import suite.math.stat.Statistic;
 import suite.math.stat.Statistic.LinearRegression;
+import suite.primitive.Ints_;
 import suite.primitive.Longs_;
+import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
-import suite.util.To;
 
 /**
  * Finds the period of various stocks using FFT.
@@ -39,9 +40,12 @@ public class PairTest {
 		float[] prices0 = ds0.alignBeforePrices(tradeTimes).prices;
 		float[] prices1 = ds1.alignBeforePrices(tradeTimes).prices;
 		int length = prices0.length;
-		float[][] x = To.array(length, float[].class, i -> new float[] { prices0[i], 1f, });
-		float[] y = prices1;
-		LinearRegression lr = statistic.linearRegression(x, y);
+
+		LinearRegression lr = statistic.linearRegression(Ints_ //
+				.range(length) //
+				.map(i -> FltObjPair.of(prices1[i], new float[] { prices0[i], 1f, })) //
+				.toList());
+
 		System.out.println(symbol0 + " -> " + symbol1 + lr);
 		assertTrue(.4d < lr.r2);
 	}

@@ -1,7 +1,6 @@
 package suite.math.stat;
 
 import java.util.Arrays;
-import java.util.List;
 
 import suite.math.linalg.Vector_;
 import suite.math.stat.Statistic.LinearRegression;
@@ -19,10 +18,10 @@ public class Arima {
 	private Vector_ vec = new Vector_();
 
 	public LinearRegression ar(float[] ys, int n) {
-		int length = ys.length;
-		float[][] deps = To.array(length - n, float[].class, i -> Arrays.copyOfRange(ys, i, i + n));
-		float[] ys1 = Arrays.copyOfRange(ys, n, length);
-		return stat.linearRegression(deps, ys1);
+		return stat.linearRegression(Ints_ //
+				.range(n, ys.length) //
+				.map(i -> FltObjPair.of(ys[i], Arrays.copyOfRange(ys, i - n, i))) //
+				.toList());
 	}
 
 	// Digital Processing of Random Signals, Boaz Porat, page 159
@@ -75,7 +74,11 @@ public class Arima {
 		// auto regressive
 		int length = ys.length;
 		float[][] xs0 = To.array(length, float[].class, i -> copyPadZeroes(ys, i - p, i));
-		LinearRegression lr0 = stat.linearRegression(xs0, ys);
+
+		LinearRegression lr0 = stat.linearRegression(Ints_ //
+				.range(length) //
+				.map(i -> FltObjPair.of(ys[i], copyPadZeroes(ys, i - p, i))) //
+				.toList());
 
 		float[] variances = Floats_.toArray(length, i -> {
 			double residual = ys[i] - lr0.predict(xs0[i]);
@@ -83,8 +86,10 @@ public class Arima {
 		});
 
 		// conditional heteroskedasticity
-		float[][] xs1 = To.array(length, float[].class, i -> copyPadZeroes(variances, i - p, i));
-		LinearRegression lr1 = stat.linearRegression(xs1, variances);
+		LinearRegression lr1 = stat.linearRegression(Ints_ //
+				.range(length) //
+				.map(i -> FltObjPair.of(variances[i], copyPadZeroes(variances, i - p, i))) //
+				.toList());
 
 		return Floats_.concat(lr0.coefficients, lr1.coefficients);
 	}
@@ -115,18 +120,20 @@ public class Arima {
 
 			residuals[iter] = yiter;
 
-			float[][] xs = To.array(length, float[].class, i -> {
-				int p0 = -Math.max(0, i - p);
-				int nr = Math.min(iterp1, q);
+			lr = stat.linearRegression(Ints_ //
+					.range(length) //
+					.map(i -> {
+						int p0 = -Math.max(0, i - p);
+						int nr = Math.min(iterp1, q);
 
-				float[] fs1 = new float[p + iterp1];
-				Arrays.fill(fs1, 0, p0, 0f);
-				Floats_.copy(ys, 0, fs1, p0, p - p0);
-				Floats_.copy(residuals, 0, fs1, p, nr);
-				return fs1;
-			});
+						float[] fs1 = new float[p + iterp1];
+						Arrays.fill(fs1, 0, p0, 0f);
+						Floats_.copy(ys, 0, fs1, p0, p - p0);
+						Floats_.copy(residuals, 0, fs1, p, nr);
 
-			lr = stat.linearRegression(xs, ys);
+						return FltObjPair.of(ys[i], fs1);
+					}) //
+					.toList());
 		}
 
 		return lr;
@@ -168,19 +175,21 @@ public class Arima {
 			// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
 			// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 			{
-				List<FltObjPair<float[]>> pairs = Ints_.range(p, xLength).map(t -> {
-					float[] lrxs = new float[p + q];
-					int tpq = t + pq;
-					int k = 0;
-					for (int j = 1; j <= p; j++)
-						lrxs[k++] = xs[t - j];
-					for (int j = 1; j <= q; j++)
-						lrxs[k++] = eps[tpq - j];
-					float lry = xs[t] - eps[tpq];
-					return FltObjPair.of(lry, lrxs);
-				}).toList();
+				float[] coeffs = stat.linearRegression(Ints_ //
+						.range(p, xLength) //
+						.map(t -> {
+							float[] lrxs = new float[p + q];
+							int tpq = t + pq;
+							int k = 0;
+							for (int j = 1; j <= p; j++)
+								lrxs[k++] = xs[t - j];
+							for (int j = 1; j <= q; j++)
+								lrxs[k++] = eps[tpq - j];
+							float lry = xs[t] - eps[tpq];
+							return FltObjPair.of(lry, lrxs);
+						}) //
+						.toList()).coefficients;
 
-				float[] coeffs = stat.linearRegression(pairs).coefficients;
 				Floats_.copy(coeffs, 0, ars, 0, p);
 				Floats_.copy(coeffs, p, mas, p, q);
 			}
@@ -190,17 +199,19 @@ public class Arima {
 			// = eps[t] * 1
 			// + eps[t - 1] * mas[0] + ... + eps[t - q] * mas[q - 1]
 			{
-				List<FltObjPair<float[]>> pairs = Ints_.range(p, xLength).map(t -> {
-					float[] lrxs = new float[xpqLength];
-					int tq = t + pq;
-					lrxs[tq--] = 1f;
-					for (int j = 0; j < q; j++)
-						lrxs[tq--] = mas[j];
-					float lry = (float) (xs[t] - Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars[j] * xs[t - j - 1])));
-					return FltObjPair.of(lry, lrxs);
-				}).toList();
+				float[] eps1 = stat.linearRegression(Ints_ //
+						.range(p, xLength) //
+						.map(t -> {
+							float[] lrxs = new float[xpqLength];
+							int tq = t + pq;
+							lrxs[tq--] = 1f;
+							for (int j = 0; j < q; j++)
+								lrxs[tq--] = mas[j];
+							float lry = (float) (xs[t] - Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars[j] * xs[t - j - 1])));
+							return FltObjPair.of(lry, lrxs);
+						}) //
+						.toList()).coefficients;
 
-				float[] eps1 = stat.linearRegression(pairs).coefficients;
 				Floats_.copy(eps1, 0, eps, 0, xpqLength);
 			}
 		}

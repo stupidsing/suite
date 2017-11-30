@@ -9,6 +9,8 @@ import suite.math.MathUtil;
 import suite.math.linalg.Vector_;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.Floats_;
+import suite.primitive.adt.pair.FltObjPair;
+import suite.streamlet.Read;
 import suite.util.To;
 
 public class StatisticTest {
@@ -28,8 +30,12 @@ public class StatisticTest {
 		Random random = new Random();
 		float[] expect = Floats_.toArray(m, j -> random.nextFloat());
 		float[][] xs = To.arrayOfFloats(n, m, (i, j) -> random.nextFloat());
-		float[] ys = To.arrayOfFloats(xs, x -> (float) (vec.dot(expect, x) + random.nextGaussian() * .01f));
-		LinearRegression lr = stat.linearRegression(xs, ys);
+		LinearRegression lr = stat.linearRegression(Read //
+				.from(xs) //
+				.map(x -> FltObjPair.of( //
+						(float) (vec.dot(expect, x) + random.nextGaussian() * .01f), //
+						Floats_.toArray(m, j -> random.nextFloat()))) //
+				.toList());
 		Dump.out(lr);
 		float[] actual = lr.coefficients;
 		vec.verifyEquals(expect, actual, .1f);
