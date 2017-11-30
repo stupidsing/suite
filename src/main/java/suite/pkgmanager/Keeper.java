@@ -9,10 +9,10 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import suite.Constants;
 import suite.inspect.Mapify;
 import suite.node.util.Singleton;
 import suite.os.FileUtil;
-import suite.util.TempDir;
 
 /**
  * Keeps track of the package installed in local machine.
@@ -21,7 +21,7 @@ import suite.util.TempDir;
  */
 public class Keeper {
 
-	private Path keeperDir = TempDir.resolve("keeper");
+	private Path keeperDir = Constants.tmp("keeper");
 
 	private ObjectMapper objectMapper;
 	private Mapify mapify = Singleton.me.mapify;

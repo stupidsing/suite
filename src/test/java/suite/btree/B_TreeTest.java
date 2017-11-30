@@ -12,6 +12,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
+import suite.Constants;
 import suite.adt.pair.Pair;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.JournalledPageFile;
@@ -21,7 +22,6 @@ import suite.primitive.Ints_;
 import suite.sample.Profiler;
 import suite.util.Object_;
 import suite.util.Serialize;
-import suite.util.TempDir;
 import suite.util.To;
 
 public class B_TreeTest {
@@ -41,7 +41,7 @@ public class B_TreeTest {
 	@Test
 	public void testDump() throws IOException {
 		int pageSize = 4096;
-		Path path = TempDir.resolve("b_tree-dump");
+		Path path = Constants.tmp("b_tree-dump");
 
 		Files.deleteIfExists(path);
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
@@ -63,7 +63,7 @@ public class B_TreeTest {
 	@Test
 	public void testAccess() throws IOException {
 		int pageSize = 4096;
-		Path path = TempDir.resolve("b_tree-file");
+		Path path = Constants.tmp("b_tree-file");
 
 		Files.deleteIfExists(path);
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
@@ -101,7 +101,7 @@ public class B_TreeTest {
 		int nKeys = 16384;
 		keys = Ints_.toArray(nKeys, i -> i);
 		int pageSize = 4096;
-		Path path = TempDir.resolve("b_tree-file");
+		Path path = Constants.tmp("b_tree-file");
 
 		for (int i = 0; i < nKeys; i++) {
 			int j = random.nextInt(nKeys);

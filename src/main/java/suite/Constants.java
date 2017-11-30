@@ -83,6 +83,10 @@ public class Constants {
 		return memoizeSecrets.source();
 	}
 
+	public static Path tmp(String path) {
+		return tmp.resolve(path);
+	}
+
 	private static Source<Prover> memoizeSecrets = Memoize.source(() -> {
 		RuleSet rs = Suite.newRuleSet();
 		String text = To.string(HomeDir.resolve("private/secrets.sl"));

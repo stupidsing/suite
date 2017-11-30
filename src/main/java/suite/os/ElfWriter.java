@@ -13,14 +13,13 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.util.DataOutput_;
-import suite.util.TempDir;
 import suite.util.Util;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfWriter {
 
 	public Execute exec(byte[] input, Int_Obj<Bytes> source) {
-		Path path = TempDir.resolve("a.out." + Util.temp());
+		Path path = Constants.tmp("a.out." + Util.temp());
 		int org = 0x08048000;
 
 		write(org, source.apply(org + 84), path);

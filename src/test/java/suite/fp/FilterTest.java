@@ -7,9 +7,9 @@ import java.io.Writer;
 
 import org.junit.Test;
 
+import suite.Constants;
 import suite.Suite;
 import suite.os.FileUtil;
-import suite.util.TempDir;
 import suite.util.Thread_;
 
 public class FilterTest {
@@ -69,7 +69,7 @@ public class FilterTest {
 					System.out.println("Dump heap to check memory now");
 					System.out.println("" //
 							+ "jmap -histo " + FileUtil.getPid() //
-							+ " | tee " + TempDir.resolve("jmap") //
+							+ " | tee " + Constants.tmp("jmap") //
 							+ " | less");
 					Thread_.sleepQuietly(10 * 1000l);
 				}

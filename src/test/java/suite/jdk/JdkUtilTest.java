@@ -5,15 +5,15 @@ import java.nio.file.Path;
 
 import org.junit.Test;
 
+import suite.Constants;
 import suite.os.FileUtil;
-import suite.util.TempDir;
 
 public class JdkUtilTest {
 
 	@Test
 	public void test() throws IOException {
-		Path srcDir = TempDir.resolve("src");
-		Path binDir = TempDir.resolve("bin");
+		Path srcDir = Constants.tmp("src");
+		Path binDir = Constants.tmp("bin");
 		String className = "HelloWorld";
 
 		FileUtil.mkdir(srcDir);

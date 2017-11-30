@@ -11,6 +11,7 @@ import javax.imageio.ImageIO;
 
 import org.junit.Test;
 
+import suite.Constants;
 import suite.math.Vector;
 import suite.os.FileUtil;
 import suite.rt.RayTracer.LightSource;
@@ -21,7 +22,6 @@ import suite.rt.composite.Minus;
 import suite.rt.composite.Union;
 import suite.rt.planar.Plane;
 import suite.rt.planar.Triangle;
-import suite.util.TempDir;
 import suite.util.Thread_;
 
 public class RayTracerTest {
@@ -200,7 +200,7 @@ public class RayTracerTest {
 	}
 
 	private void rasterize(RayTracer rayTracer) throws IOException {
-		Path path = TempDir.resolve(Thread_.getStackTrace(3).getMethodName() + ".png");
+		Path path = Constants.tmp(Thread_.getStackTrace(3).getMethodName() + ".png");
 		BufferedImage bufferedImage = rayTracer.trace(640, 480, 640);
 
 		try (OutputStream os = FileUtil.out(path)) {
