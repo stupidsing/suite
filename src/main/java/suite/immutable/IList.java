@@ -87,7 +87,7 @@ public class IList<T> implements Iterable<T> {
 	}
 
 	public Streamlet<T> streamlet() {
-		return new Streamlet<>(() -> Outlet.of(new Source<>() {
+		return new Streamlet<>(() -> Outlet.of(new Source<T>() {
 			private IList<T> list = IList.this;
 
 			public T source() {
