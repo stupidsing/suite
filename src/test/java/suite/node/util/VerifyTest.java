@@ -37,7 +37,7 @@ public class VerifyTest {
 				e.apply("nat.0", "true", "is-nat 0"), //
 				e.apply("nat.1", "is-nat .n", "is-nat (succ .n)"));
 
-		new Verify(rules).verify(Suite.parse("true"));
+		new Verify(rules).verify(Suite.parse("axiom nat.0 | imply nat.1"));
 	}
 
 	private class Verify {
