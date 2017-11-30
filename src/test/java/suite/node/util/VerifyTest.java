@@ -1,10 +1,14 @@
 package suite.node.util;
 
+import static java.util.Map.entry;
+
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.Test;
 
 import suite.Suite;
+import suite.adt.pair.Fixie_.FixieFun3;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
@@ -17,11 +21,23 @@ public class VerifyTest {
 
 	private class Rule {
 		private Node t0, t1;
+
+		private Rule(Node t0, Node t1) {
+			this.t0 = t0;
+			this.t1 = t1;
+		}
 	}
 
 	@Test
 	public void test() {
-		new Verify(Map.ofEntries()).verify(Atom.TRUE);
+		FixieFun3<String, String, String, Entry<String, Rule>> e = (name, head, tail) -> entry(name,
+				new Rule(Suite.parse(head), Suite.parse(tail)));
+
+		Map<String, Rule> rules = Map.ofEntries( //
+				e.apply("nat.0", "true", "is-nat 0"), //
+				e.apply("nat.1", "is-nat .n", "is-nat (succ .n)"));
+
+		new Verify(rules).verify(Suite.parse("true"));
 	}
 
 	private class Verify {
