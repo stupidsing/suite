@@ -20,10 +20,7 @@ public class Aastocks {
 		URL url = To.url(urlString);
 		List<String> lines = HttpUtil.get(url).out.collect(As::lines).toList();
 		int i0 = Ints_.range(lines.size()).filter(i -> lines.get(i).contains("HSI")).first();
-		return Float.parseFloat(new String(Chars_ //
-				.of(lines.get(i0 + 1).toCharArray()) //
-				.filter(c -> c == '.' || '0' <= c && c <= '9') //
-				.toArray()));
+		return toFloat(lines.get(i0 + 1));
 	}
 
 	public float quote(String symbol) {
@@ -38,8 +35,11 @@ public class Aastocks {
 		URL url = To.url(urlString);
 		List<String> lines = HttpUtil.get(url).out.collect(As::lines).toList();
 		int i0 = Ints_.range(lines.size()).filter(i -> lines.get(i).contains("text_last")).first();
-		return Float.parseFloat(new String(Chars_ //
-				.of(lines.get(i0 + 1).replace("0px", "").replace(".png", "").toCharArray()) //
+		return toFloat(lines.get(i0 + 1).replace("0px", "").replace(".png", ""));
+	}
+
+	private float toFloat(String s) {
+		return Float.parseFloat(new String(Chars_.of(s.toCharArray()) //
 				.filter(c -> c == '.' || '0' <= c && c <= '9') //
 				.toArray()));
 	}
