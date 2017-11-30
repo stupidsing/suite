@@ -164,25 +164,6 @@ public class Arima {
 
 		for (int iter = 0; iter < 9; iter++) {
 
-			// xs[t]
-			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
-			// = eps[t] * 1
-			// + eps[t - 1] * mas[0] + ... + eps[t - q] * mas[q - 1]
-			{
-				List<FltObjPair<float[]>> pairs = Ints_.range(p, xLength).map(t -> {
-					float[] lrxs = new float[xpqLength];
-					int tq = t + pq;
-					lrxs[tq--] = 1f;
-					for (int j = 0; j < q; j++)
-						lrxs[tq--] = mas[j];
-					float lry = (float) (xs[t] - Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars[j] * xs[t - j - 1])));
-					return FltObjPair.of(lry, lrxs);
-				}).toList();
-
-				float[] eps1 = stat.linearRegression(pairs).coefficients;
-				Floats_.copy(eps1, 0, eps, 0, xpqLength);
-			}
-
 			// xs[t] - eps[t]
 			// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
 			// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
@@ -202,6 +183,25 @@ public class Arima {
 				float[] coeffs = stat.linearRegression(pairs).coefficients;
 				Floats_.copy(coeffs, 0, ars, 0, p);
 				Floats_.copy(coeffs, p, mas, p, q);
+			}
+
+			// xs[t]
+			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
+			// = eps[t] * 1
+			// + eps[t - 1] * mas[0] + ... + eps[t - q] * mas[q - 1]
+			{
+				List<FltObjPair<float[]>> pairs = Ints_.range(p, xLength).map(t -> {
+					float[] lrxs = new float[xpqLength];
+					int tq = t + pq;
+					lrxs[tq--] = 1f;
+					for (int j = 0; j < q; j++)
+						lrxs[tq--] = mas[j];
+					float lry = (float) (xs[t] - Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars[j] * xs[t - j - 1])));
+					return FltObjPair.of(lry, lrxs);
+				}).toList();
+
+				float[] eps1 = stat.linearRegression(pairs).coefficients;
+				Floats_.copy(eps1, 0, eps, 0, xpqLength);
 			}
 		}
 

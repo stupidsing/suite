@@ -11,7 +11,6 @@ import suite.os.LogUtil;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntSource;
 import suite.sample.Profiler;
-import suite.util.Thread_.RunnableEx;
 
 public class Util {
 
@@ -26,24 +25,6 @@ public class Util {
 
 		public void close() {
 		}
-	}
-
-	@SafeVarargs
-	public static <T> T[] add(Class<T> clazz, T[]... lists) {
-		int size = 0;
-
-		for (T[] list : lists)
-			size += list.length;
-
-		T[] result = Array_.newArray(clazz, size);
-		int i = 0;
-
-		for (T[] list : lists) {
-			int length = list.length;
-			Array_.copy(list, 0, result, i, length);
-			i += length;
-		}
-		return result;
 	}
 
 	public static void assert_(boolean b) {
@@ -80,9 +61,6 @@ public class Util {
 			}
 			return 0 <= c ? strip(sb) : null;
 		});
-	}
-
-	public static void run(RunnableEx runnableEx, RunOption runOption) {
 	}
 
 	public static void run(Class<? extends ExecutableProgram> clazz, String[] args) {
