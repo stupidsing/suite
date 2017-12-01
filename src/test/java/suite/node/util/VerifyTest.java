@@ -1,5 +1,7 @@
 package suite.node.util;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 
 import suite.Suite;
@@ -10,6 +12,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.util.FunUtil2.Sink2;
 
 public class VerifyTest {
 
@@ -20,7 +23,14 @@ public class VerifyTest {
 				.put("nat.0", Suite.parse("true => is-nat 0")) //
 				.put("nat.1", Suite.parse("is-nat N => is-nat (succ N)"));
 
-		System.out.println(new Verify(rules).verify(Suite.parse("axiom nat.0 | satisfy (nat.1 | subst N 0)")));
+		Sink2<String, String> test = (expect, proof) -> {
+			Node expect_ = Suite.parse(expect);
+			Node proven = new Verify(rules).verify(Suite.parse(proof));
+			System.out.println("proven = " + proven);
+			assertTrue(Binder.bind(expect_, proven, new Trail()));
+		};
+
+		test.sink2("is-nat succ 0", "axiom nat.0 | satisfy (nat.1 | subst N 0)");
 	}
 
 	private class Verify {
