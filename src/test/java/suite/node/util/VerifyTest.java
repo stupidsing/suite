@@ -14,22 +14,28 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.util.FunUtil2.Sink2;
 
+/**
+ * TODO expand/unexpand definitions
+ *
+ * @author ywsing
+ */
 public class VerifyTest {
 
 	@Test
 	public void test() {
 		IMap<String, Node> rules = IMap //
-				.<String, Node>empty() //
+				.<String, Node> empty() //
 				.put("and.0", Suite.parse("P, Q => P")) //
 				.put("and.1", Suite.parse("P, Q => Q")) //
-				.put("op1.0", Suite.parse("is.op1 P Op, P P0 => P (Op P0)")) //
-				.put("op2.0", Suite.parse("is.op2 P Op, P P1 => is.op1 P (Op P1)")) //
+				.put("op1.0", Suite.parse("is.op1 P Op, IsElem P0 => IsElem (Op P0)")) //
+				.put("op2.0", Suite.parse("is.op2 P Op, IsElem P1 => is.op1 IsElem (Op P1)")) //
 				.put("eq.0", Suite.parse("A = B => B = A")) //
 				.put("eq.1", Suite.parse("A = B, B = C => A = C")) //
-				.put("grp.0", Suite.parse("is.group P Zero Op => P Zero")) //
-				.put("grp.1", Suite.parse("is.group P Zero Op => is.op2 P Op")) //
-				.put("grp.2", Suite.parse("is.group P Zero Op, P P0 => Op Zero P0 = Zero")) //
-				.put("grp.3", Suite.parse("is.group P Zero Op, P P0, P P1, P P2 => Op P0 (Op P1 P2) = Op (Op P0 P1) P2")) //
+				.put("grp.0", Suite.parse("is.group IsElem Zero Op => IsElem Zero")) //
+				.put("grp.1", Suite.parse("is.group IsElem Zero Op => is.op2 IsElem Op")) //
+				.put("grp.2", Suite.parse("is.group IsElem Zero Op, IsElem P0 => Op Zero P0 = Zero")) //
+				.put("grp.3", Suite.parse("is.group IsElem Zero Op, IsElem P0, IsElem P1, IsElem P2 => " //
+						+ "Op P0 (Op P1 P2) = Op (Op P0 P1) P2")) //
 				.put("nat.0", Suite.parse("true => is.group is.nat 0 ADD")) //
 				.put("nat.1", Suite.parse("is.nat N => is.nat (succ N)")) //
 				.put("nat.add.0", Suite.parse("is.nat N => 0 + N = N")) //
@@ -42,7 +48,7 @@ public class VerifyTest {
 			assertTrue(Binder.bind(expect_, proven, new Trail()));
 		};
 
-		String p = "lemma is.nat.zero := axiom nat.0 | satisfy (grp.0 {P:is.nat} {Zero:0} {Op:ADD}) >> ";
+		String p = "lemma is.nat.zero := axiom nat.0 | satisfy (grp.0 {IsElem:is.nat} {Zero:0} {Op:ADD}) >> ";
 
 		test.sink2("is.nat 0", p + "is.nat.zero");
 		test.sink2("is.nat succ 0", p + "is.nat.zero | satisfy (nat.1 {N:0})");
