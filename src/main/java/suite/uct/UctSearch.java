@@ -16,7 +16,8 @@ import suite.weiqi.Weiqi;
 public class UctSearch<Move> {
 
 	/**
-	 * Larger values give uniform search; smaller values give very selective search.
+	 * Larger values give uniform search; smaller values give very selective
+	 * search.
 	 */
 	private static float explorationFactor = .4f;
 	private static float raveFactor = 5f;
@@ -86,8 +87,8 @@ public class UctSearch<Move> {
 	/**
 	 * Plays a simulation UCT.
 	 *
-	 * @return true if the next player will win after UCT selections and evaluation
-	 *         after random moves.
+	 * @return true if the next player will win after UCT selections and
+	 *         evaluation after random moves.
 	 */
 	private boolean playSimulation(UctVisitor<Move> visitor, UctNode<Move> node, int depth) {
 		boolean outcome;
@@ -174,10 +175,6 @@ public class UctSearch<Move> {
 		return (1f - beta) * rave + beta * uct;
 	}
 
-	private int getMoveRave(Map<Move, AtomicInteger> raveMap, Move move) {
-		return move != null ? raveMap.get(move).get() : 0;
-	}
-
 	private void incrementMoveRave(Map<Move, AtomicInteger> raveMap, Move move) {
 		raveMap.get(move).incrementAndGet();
 	}
@@ -242,6 +239,10 @@ public class UctSearch<Move> {
 			if (++n % Weiqi.size == 0)
 				System.out.println();
 		}
+	}
+
+	private int getMoveRave(Map<Move, AtomicInteger> raveMap, Move move) {
+		return move != null ? raveMap.get(move).get() : 0;
 	}
 
 	private double logp1(int pnRaveVisits) {
