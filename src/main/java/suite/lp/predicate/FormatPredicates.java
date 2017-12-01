@@ -87,8 +87,10 @@ public class FormatPredicates {
 			return prover.bind(new Str(rpn.toRpn(node)), r);
 	});
 
-	public BuiltinPredicate startsWith = PredicateUtil.p2(
-			(prover, s, start) -> s instanceof Atom && start instanceof Atom && ((Atom) s).name.startsWith(((Atom) start).name));
+	public BuiltinPredicate startsWith = PredicateUtil.p2((prover, s, start) -> true //
+			&& s instanceof Atom //
+			&& start instanceof Atom //
+			&& ((Atom) s).name.startsWith(((Atom) start).name));
 
 	public BuiltinPredicate stringLength = PredicateUtil.fun(n -> Int.of(((Str) n).value.length()));
 

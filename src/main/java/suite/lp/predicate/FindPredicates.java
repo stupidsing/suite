@@ -33,7 +33,7 @@ public class FindPredicates {
 		return prover.bind(results, results_);
 	});
 
-	public BuiltinPredicate findAllMemoizedClear = PredicateUtil.run(() -> memoizedPredicates.clear());
+	public BuiltinPredicate findAllMemoizedClear = PredicateUtil.run(memoizedPredicates::clear);
 
 	public BuiltinPredicate suspend = PredicateUtil.p3((prover, susp, var, goal) -> {
 		Suspend suspend = new Suspend(() -> Read.from(elaborate(prover, var, goal)).uniqueResult());

@@ -82,18 +82,16 @@ public class IoPredicates {
 
 	public BuiltinPredicate homeDir = PredicateUtil.p1((prover, p0) -> prover.bind(new Str(FileUtil.homeDir()), p0));
 
-	public BuiltinPredicate nl = PredicateUtil.run(() -> System.out.println());
+	public BuiltinPredicate nl = PredicateUtil.run(System.out::println);
 
-	public BuiltinPredicate readLine = PredicateUtil.p1((prover, p0) -> {
-		return Rethrow.ex(() -> {
-			BytesBuilder bb = new BytesBuilder();
-			byte b;
-			while (0 <= (b = (byte) System.in.read()) && b != 10)
-				bb.append(b);
-			String s = To.string(bb.toBytes());
-			return prover.bind(new Str(s), p0);
-		});
-	});
+	public BuiltinPredicate readLine = PredicateUtil.p1((prover, p0) -> Rethrow.ex(() -> {
+		BytesBuilder bb = new BytesBuilder();
+		byte b;
+		while (0 <= (b = (byte) System.in.read()) && b != 10)
+			bb.append(b);
+		String s = To.string(bb.toBytes());
+		return prover.bind(new Str(s), p0);
+	}));
 
 	public BuiltinPredicate log = PredicateUtil.sink(n -> LogUtil.info(Formatter.dump(n)));
 
