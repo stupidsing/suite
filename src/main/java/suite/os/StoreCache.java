@@ -25,7 +25,7 @@ import suite.util.To;
 public class StoreCache {
 
 	private int documentAge = 30;
-	private Path dir = HomeDir.resolve("store-cache");
+	private Path dir = HomeDir.dir("store-cache");
 
 	public class Piper {
 		private String sh;
