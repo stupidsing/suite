@@ -62,6 +62,7 @@ public class Summarize {
 	public <K> SummarizeByStrategy<K> summarize(Fun<Trade, K> fun) {
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = sb::append;
+		Time now = Time.now();
 
 		Streamlet2<K, Summarize_> summaryByKey = trades //
 				.groupBy(fun, trades_ -> summarize_(trades_, priceBySymbol, s -> null)) //
@@ -86,7 +87,6 @@ public class Summarize {
 		Map<String, Float> acquiredPrices = trades.collect(Trade_::collectBrokeredTrades).collect(Trade_::collectAcquiredPrices);
 
 		Summarize_ overall = summarize_(trades, priceBySymbol, symbol -> {
-			Time now = Time.now();
 			boolean isMarketOpen = false //
 					|| HkexUtil.isMarketOpen(now) //
 					|| HkexUtil.isMarketOpen(now.addHours(1));
