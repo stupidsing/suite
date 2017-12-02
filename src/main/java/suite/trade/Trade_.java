@@ -53,9 +53,8 @@ public class Trade_ {
 
 	public static Map<String, Float> collectAcquiredPrices(Outlet<Trade> outlet) {
 		Map<String, List<IntFltPair>> acquireBySymbol = new HashMap<>();
-		Trade trade;
 
-		while ((trade = outlet.next()) != null) {
+		for (Trade trade : outlet) {
 			String symbol = trade.symbol;
 			int buySell = trade.buySell;
 			float price = trade.price;
@@ -125,7 +124,7 @@ public class Trade_ {
 		return diff_(time, assets0, assets1, priceFun);
 	}
 
-	public static float dividend(Streamlet<Trade> trades, Fun<String, LngFltPair[]> fun, Dbl_Dbl fee) {
+	public static float dividend(Streamlet<Trade> trades, Fun<String, LngFltPair[]> fun, Dbl_Dbl feeFun) {
 		float sum = 0f;
 
 		for (Pair<String, List<Trade>> pair : trades.toMultimap(trade -> trade.symbol).listEntries()) {
@@ -148,7 +147,7 @@ public class Trade_ {
 				}
 
 				float amount = tn.t1 * dividend.t1;
-				sum += amount - fee.apply(amount);
+				sum += amount - feeFun.apply(amount);
 			}
 		}
 
