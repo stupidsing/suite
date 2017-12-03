@@ -39,27 +39,25 @@ public class VerifyTest {
 
 		IMap<String, Definition> defs = IMap //
 				.<String, Definition> empty() //
-				.put("eq", defn.apply("eq", and.apply(IList.asList( //
-						"A = B => B = A", //
-						"A = B, B = C => A = C")))) //
-				.put("uni.op", def2.apply("uni.op IsElem Op", "IsElem P0 => IsElem Op/P0")) //
-				.put("bin.op", def2.apply("bin.op IsElem Op", "IsElem P1 => uni.op IsElem Op/P1")) //
+				.put("eq", defn.apply("eq .eq", and.apply(IList.asList( //
+						"A .eq B => B .eq A", //
+						"A .eq B, B .eq C => A .eq C")))) //
+				.put("uni.op", def2.apply("uni.op .isElem .op", ".isElem P => .isElem (.op P)")) //
+				.put("bin.op", def2.apply("bin.op .isElem .op", ".isElem P, .isElem Q => .isElem (P .op Q)")) //
 				.put("group", defn.apply("group .isElem .zero .op", and.apply(IList.asList( //
 						".isElem .zero", //
 						"bin.op .isElem .op", //
-						"(.isElem P0 => .op/.zero/P0 = .zero)", //
-						"(.isElem P0, .isElem P1, .isElem P2 => .op/P0/(.op/P1/P2) = .op/(.op/P0/P1)/P2)"))));
+						"Eq .eq, .isElem P => (.zero .op P) Eq P", //
+						"Eq .eq, .isElem P, .isElem Q, .isElem R => (P .op (Q .op R)) Eq ((P .op Q) .op R)"))));
 
 		IMap<String, Node> rules = IMap //
 				.<String, Node> empty() //
 				.put("and.0", Suite.parse("P, Q => P")) //
-				.put("and.1", Suite.parse("P, Q, R => Q")) //
-				.put("and.2", Suite.parse("P, Q, R, S => R")) //
-				.put("and.3", Suite.parse("P, Q, R, S, T => S")) //
-				.put("nat.0", Suite.parse("true => group is.nat 0 ADD")) //
+				.put("and.1", Suite.parse("P, Q => Q")) //
+				.put("nat.0", Suite.parse("true => group is.nat 0 nat.add")) //
 				.put("nat.1", Suite.parse("is.nat N => is.nat (succ N)")) //
-				.put("nat.add.0", Suite.parse("is.nat N => 0 + N = N")) //
-				.put("nat.add.1", Suite.parse("is.nat N => M + succ N = succ (M + N)"));
+				.put("nat.add.0", Suite.parse("is.nat N => (0 nat.add N) nat.eq N")) //
+				.put("nat.add.1", Suite.parse("is.nat N => M nat.eq (succ N) = succ (M nat.add N)"));
 
 		Sink2<String, String> test = (expect, proof) -> {
 			Node expect_ = Suite.parse(expect);
