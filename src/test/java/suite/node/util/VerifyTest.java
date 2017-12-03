@@ -32,7 +32,7 @@ public class VerifyTest {
 				.<String, Definition> empty() //
 				.put("group", def.apply("group .isElem .zero .op", "" //
 						+ ".isElem .zero, \n" //
-						+ "is.op2 .isElem .op, \n" //
+						+ "is.op.binary .isElem .op, \n" //
 						+ "(.isElem P0 => .op/.zero/P0 = .zero), \n" //
 						+ "(.isElem P0, .isElem P1, .isElem P2 => .op/P0/(.op/P1/P2) = .op/(.op/P0/P1)/P2), \n" //
 						+ "true"));
@@ -43,8 +43,8 @@ public class VerifyTest {
 				.put("and.1", Suite.parse("P, Q, R => Q")) //
 				.put("and.2", Suite.parse("P, Q, R, S => R")) //
 				.put("and.3", Suite.parse("P, Q, R, S, T => S")) //
-				.put("op1.0", Suite.parse("is.op1 P Op, IsElem P0 => IsElem Op/P0")) //
-				.put("op2.0", Suite.parse("is.op2 P Op, IsElem P1 => is.op1 IsElem Op/P1")) //
+				.put("op1.0", Suite.parse("is.op.unitary P Op, IsElem P0 => IsElem Op/P0")) //
+				.put("op2.0", Suite.parse("is.op.binary P Op, IsElem P1 => is.op.unitary IsElem Op/P1")) //
 				.put("eq.0", Suite.parse("A = B => B = A")) //
 				.put("eq.1", Suite.parse("A = B, B = C => A = C")) //
 				.put("nat.0", Suite.parse("true => group is.nat 0 ADD")) //
@@ -59,7 +59,7 @@ public class VerifyTest {
 			assertTrue(Binder.bind(expect_, proven, new Trail()));
 		};
 
-		String p = "lemma is.nat.zero := axiom nat.0 | expand group | satisfy (and.0 {P, Q,}) >> ";
+		String p = "lemma is.nat.zero := axiom nat.0 | expand group | choose is.nat >> ";
 
 		test.sink2("is.nat 0", p + "is.nat.zero");
 		test.sink2("is.nat succ 0", p + "is.nat.zero | satisfy (nat.1 {N:0})");
@@ -96,7 +96,18 @@ public class VerifyTest {
 				return replace(verify(m[0]), m[1], m[2]);
 			else if ((m = Suite.match("axiom .0").apply(proof)) != null)
 				return verify(Suite.substitute("true | satisfy .0", m));
-			else if ((m = Suite.match("contradict .0:.1 >> .2").apply(proof)) != null)
+			else if ((m = Suite.match(".0 | choose .1").apply(proof)) != null) {
+				Node list = verify(m[0]);
+				Tree tree0, tree1;
+				while (true)
+					if ((tree0 = Tree.decompose(list, TermOp.AND___)) != null)
+						if ((tree1 = Tree.decompose(tree0.getLeft(), TermOp.TUPLE_)) != null && tree1.getLeft() == m[1])
+							return tree1;
+						else
+							list = tree0.getRight();
+					else
+						throw new RuntimeException();
+			} else if ((m = Suite.match("contradict .0:.1 >> .2").apply(proof)) != null)
 				if (Binder.bind(new Verify(defs, rules.put(name(m[0]), m[1])).verify(m[2]), Atom.FALSE, new Trail()))
 					return Suite.substitute("not .0", m[1]);
 				else
