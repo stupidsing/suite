@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.Suite;
+import suite.immutable.IList;
 import suite.immutable.IMap;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -14,6 +15,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil2.Fun2;
 import suite.util.FunUtil2.Sink2;
 
@@ -26,16 +28,27 @@ public class VerifyTest {
 
 	@Test
 	public void test() {
-		Fun2<String, String, Definition> def = (t0, t1) -> new Definition(Suite.parse(t0), Suite.parse(t1));
+		Fun<IList<String>, Node> and = new Fun<>() {
+			public Node apply(IList<String> list) {
+				return !list.isEmpty() ? Tree.of(TermOp.AND___, Suite.parse(list.head), apply(list.tail)) : Atom.TRUE;
+			}
+		};
+
+		Fun2<String, Node, Definition> defn = (t0, t1) -> new Definition(Suite.parse(t0), t1);
+		Fun2<String, String, Definition> def2 = (t0, t1) -> defn.apply(t0, Suite.parse(t1));
 
 		IMap<String, Definition> defs = IMap //
 				.<String, Definition> empty() //
-				.put("group", def.apply("group .isElem .zero .op", "" //
-						+ ".isElem .zero, \n" //
-						+ "is.op.binary .isElem .op, \n" //
-						+ "(.isElem P0 => .op/.zero/P0 = .zero), \n" //
-						+ "(.isElem P0, .isElem P1, .isElem P2 => .op/P0/(.op/P1/P2) = .op/(.op/P0/P1)/P2), \n" //
-						+ "true"));
+				.put("eq", defn.apply("eq", and.apply(IList.asList( //
+						"A = B => B = A", //
+						"A = B, B = C => A = C")))) //
+				.put("uni.op", def2.apply("uni.op IsElem Op", "IsElem P0 => IsElem Op/P0")) //
+				.put("bin.op", def2.apply("bin.op IsElem Op", "IsElem P1 => uni.op IsElem Op/P1")) //
+				.put("group", defn.apply("group .isElem .zero .op", and.apply(IList.asList( //
+						".isElem .zero", //
+						"bin.op .isElem .op", //
+						"(.isElem P0 => .op/.zero/P0 = .zero)", //
+						"(.isElem P0, .isElem P1, .isElem P2 => .op/P0/(.op/P1/P2) = .op/(.op/P0/P1)/P2)"))));
 
 		IMap<String, Node> rules = IMap //
 				.<String, Node> empty() //
@@ -43,10 +56,6 @@ public class VerifyTest {
 				.put("and.1", Suite.parse("P, Q, R => Q")) //
 				.put("and.2", Suite.parse("P, Q, R, S => R")) //
 				.put("and.3", Suite.parse("P, Q, R, S, T => S")) //
-				.put("op1.0", Suite.parse("is.op.unitary P Op, IsElem P0 => IsElem Op/P0")) //
-				.put("op2.0", Suite.parse("is.op.binary P Op, IsElem P1 => is.op.unitary IsElem Op/P1")) //
-				.put("eq.0", Suite.parse("A = B => B = A")) //
-				.put("eq.1", Suite.parse("A = B, B = C => A = C")) //
 				.put("nat.0", Suite.parse("true => group is.nat 0 ADD")) //
 				.put("nat.1", Suite.parse("is.nat N => is.nat (succ N)")) //
 				.put("nat.add.0", Suite.parse("is.nat N => 0 + N = N")) //
