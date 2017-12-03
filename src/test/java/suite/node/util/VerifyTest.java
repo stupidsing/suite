@@ -70,10 +70,10 @@ public class VerifyTest {
 						+ "given @cond.1 := P Eq Q >> " //
 						+ "given @cond.2 := not (Q Eq R) >> " //
 						+ "contradict fail := P Eq R >> " //
-						+ "lemma !eq := @cond.0 | expand def$eq >> " //
-						+ "lemma !Q-eq-P := !eq | choose {_ => B Eq A} | rename {A, B,} | rsatisfy @cond.1 >> " //
-						+ "lemma !Q-eq-R := !Q-eq-P, fail | satisfy (!eq | choose {A .eq B, B .eq C => _} | rename {A, B, C,}) >> " //
-						+ "!Q-eq-R, @cond.2 | satisfy (@not.0 | rename {P,})") //
+						+ "lemma !Eq := @cond.0 | expand def$eq >> " //
+						+ "lemma !Q-Eq-P := !Eq | choose {_ => B Eq A} | rename {A, B,} | rsatisfy @cond.1 >> " //
+						+ "lemma !Q-Eq-R := !Q-Eq-P, fail | satisfy (!Eq | choose {A .eq B, B .eq C => _} | rename {A, B, C,}) >> " //
+						+ "!Q-Eq-R, @cond.2 | satisfy (@not.0 | rename {P,})") //
 				.extend("is-nat 0", "axiom @nat.0 | expand def$group | choose {is-nat _}") //
 				.extend("is-nat (succ 0)", "'is-nat 0' | satisfy (@nat.1 | rename {N:0})");
 	}
