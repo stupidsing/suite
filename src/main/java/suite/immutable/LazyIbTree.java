@@ -56,11 +56,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public static <T> LazyIbTree<T> of(Comparator<T> comparator, List<T> ts) {
-		List<Slot<T>> list = Read.from(ts) //
-				.cons(null) //
-				.map(t -> new Slot<>(null, t)) //
-				.toList();
-
+		List<Slot<T>> list = Read.from(ts).cons(null).map(t -> new Slot<>(null, t)).toList();
 		int size;
 
 		while (maxBranchFactor <= (size = list.size())) {
