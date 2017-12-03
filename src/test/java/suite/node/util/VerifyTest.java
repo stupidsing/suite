@@ -34,8 +34,8 @@ public class VerifyTest {
 		IMap<String, Definition> defs = IMap //
 				.<String, Definition> empty() //
 				.put("def$eq", defn.apply("eq-class .eq", and.apply(IList.asList( //
-						"A .eq B => B .eq A", //
-						"A .eq B, B .eq C => A .eq C")))) //
+						"commute # A .eq B => B .eq A", //
+						"transit # A .eq B, B .eq C => A .eq C")))) //
 				.put("def$uni-op", def2.apply("uni-op .isElem .op", ".isElem P => .isElem (.op P)")) //
 				.put("def$bin-op", def2.apply("bin-op .isElem .op", ".isElem P, .isElem Q => .isElem (P .op Q)")) //
 				.put("def$group", defn.apply("group .isElem .eq .op .inv .zero", and.apply(IList.asList( //
@@ -69,10 +69,10 @@ public class VerifyTest {
 				.extend("given @cond.0 := eq-class Eq >> " //
 						+ "given @cond.1 := P Eq Q >> " //
 						+ "given @cond.2 := not (Q Eq R) >> " //
-						+ "contradict fail := P Eq R >> " //
+						+ "contradict @fail := P Eq R >> " //
 						+ "lemma !Eq := @cond.0 | expand def$eq >> " //
-						+ "lemma !Q-Eq-P := !Eq | choose {_ => B Eq A} | rename {A, B,} | rsatisfy @cond.1 >> " //
-						+ "lemma !Q-Eq-R := !Q-Eq-P, fail | satisfy (!Eq | choose {A .eq B, B .eq C => _} | rename {A, B, C,}) >> " //
+						+ "lemma !Q-Eq-P := !Eq | choose {commute # _} | rename {A, B,} | rsatisfy @cond.1 >> " //
+						+ "lemma !Q-Eq-R := !Q-Eq-P, @fail | satisfy (!Eq | choose {transit # _} | rename {A, B, C,}) >> " //
 						+ "!Q-Eq-R, @cond.2 | satisfy (@not.0 | rename {P,})") //
 				.extend("is-nat 0", "axiom @nat.0 | expand def$group | choose {is-nat _}") //
 				.extend("is-nat (succ 0)", "'is-nat 0' | satisfy (@nat.1 | rename {N:0})");
@@ -101,6 +101,8 @@ public class VerifyTest {
 			Node[] m, m1;
 			if ((m = Suite.match(".0, .1").apply(proof)) != null)
 				return Tree.of(TermOp.AND___, verify(m[0]), verify(m[1]));
+			else if ((m = Suite.match(".0 # .1").apply(proof)) != null)
+				return Tree.of(TermOp.NEXT__, m[0], verify(m[1]));
 			else if ((m = Suite.match("axiom .0").apply(proof)) != null)
 				return verify(Suite.substitute("true | satisfy .0", m));
 			else if ((m = Suite.match(".0 | choose {.1}").apply(proof)) != null) {
