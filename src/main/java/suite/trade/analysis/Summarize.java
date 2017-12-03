@@ -153,7 +153,7 @@ public class Summarize {
 							+ (info != null ? " \t(" + info + ")" : "");
 				}) //
 				.sort(Object_::compare) //
-				.append("OWN = " + To.string(amount1 - amount0)) //
+				.append("SIZ = " + To.string(amount1 - amount0)) //
 				.append("P/L = " + To.string(amount1)) //
 				.append("DIV = " + To.string(Trade_.dividend(trades0, dividendFun, dividendFeeFun))) //
 				.append(accountTx.transactionSummary(cfg::transactionFee)) //
