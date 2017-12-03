@@ -60,10 +60,6 @@ public class Summarize {
 	}
 
 	public <K> SummarizeByStrategy<K> summarize(Fun<Trade, K> fun) {
-		StringBuilder sb = new StringBuilder();
-		Sink<String> log = sb::append;
-		Time now = Time.now();
-
 		Streamlet2<K, Summarize_> summaryByKey = trades //
 				.groupBy(fun, trades_ -> summarize_(trades_, priceBySymbol, s -> null)) //
 				.filterKey(key -> key != null) //
@@ -79,12 +75,8 @@ public class Summarize {
 						.toMap()) //
 				.toMap();
 
-		Map<K, String> outByKey = summaryByKey.mapValue(summary -> summary.out).toMap();
-
-		for (Entry<K, String> e : outByKey.entrySet())
-			log.sink("\nFor strategy " + e.getKey() + ":" + e.getValue());
-
 		Map<String, Float> acquiredPrices = trades.collect(Trade_::collectBrokeredTrades).collect(Trade_::collectAcquiredPrices);
+		Time now = Time.now();
 
 		Summarize_ overall = summarize_(trades, priceBySymbol, symbol -> {
 			boolean isMarketOpen = false //
@@ -107,6 +99,13 @@ public class Summarize {
 					+ ", " + percent(price0, pricex) //
 					+ (!keys.isEmpty() ? ", " + keys : "");
 		});
+
+		Map<K, String> outByKey = summaryByKey.mapValue(summary -> summary.out).toMap();
+		StringBuilder sb = new StringBuilder();
+		Sink<String> log = sb::append;
+
+		for (Entry<K, String> e : outByKey.entrySet())
+			log.sink("\nFor strategy " + e.getKey() + ":" + e.getValue());
 
 		log.sink(FormatUtil.tablize("\nOverall:\t" + Time.now().ymdHms() + overall.out));
 
