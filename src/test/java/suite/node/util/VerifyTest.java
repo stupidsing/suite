@@ -99,14 +99,12 @@ public class VerifyTest {
 			else if ((m = Suite.match(".0 | choose .1").apply(proof)) != null) {
 				Node list = verify(m[0]);
 				Tree tree0, tree1;
-				while (true)
-					if ((tree0 = Tree.decompose(list, TermOp.AND___)) != null)
-						if ((tree1 = Tree.decompose(tree0.getLeft(), TermOp.TUPLE_)) != null && tree1.getLeft() == m[1])
-							return tree1;
-						else
-							list = tree0.getRight();
+				while ((tree0 = Tree.decompose(list, TermOp.AND___)) != null)
+					if ((tree1 = Tree.decompose(tree0.getLeft(), TermOp.TUPLE_)) != null && tree1.getLeft() == m[1])
+						return tree1;
 					else
-						throw new RuntimeException();
+						list = tree0.getRight();
+				throw new RuntimeException();
 			} else if ((m = Suite.match("contradict .0:.1 >> .2").apply(proof)) != null)
 				if (Binder.bind(new Verify(defs, rules.put(name(m[0]), m[1])).verify(m[2]), Atom.FALSE, new Trail()))
 					return Suite.substitute("not .0", m[1]);
