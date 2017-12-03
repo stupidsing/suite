@@ -39,22 +39,23 @@ public class VerifyTest {
 
 		IMap<String, Definition> defs = IMap //
 				.<String, Definition> empty() //
-				.put("eq", defn.apply("eq .eq", and.apply(IList.asList( //
+				.put("eq", defn.apply("eq-class .eq", and.apply(IList.asList( //
 						"A .eq B => B .eq A", //
 						"A .eq B, B .eq C => A .eq C")))) //
 				.put("uni.op", def2.apply("uni.op .isElem .op", ".isElem P => .isElem (.op P)")) //
 				.put("bin.op", def2.apply("bin.op .isElem .op", ".isElem P, .isElem Q => .isElem (P .op Q)")) //
-				.put("group", defn.apply("group .isElem .zero .op", and.apply(IList.asList( //
+				.put("group", defn.apply("group .isElem .eq .op .zero", and.apply(IList.asList( //
 						".isElem .zero", //
+						"eq-class .eq", //
 						"bin.op .isElem .op", //
-						"Eq .eq, .isElem P => (.zero .op P) Eq P", //
-						"Eq .eq, .isElem P, .isElem Q, .isElem R => (P .op (Q .op R)) Eq ((P .op Q) .op R)"))));
+						".isElem P => (.zero .op P) .eq P", //
+						".isElem P, .isElem Q, .isElem R => (P .op (Q .op R)) .eq ((P .op Q) .op R)"))));
 
 		IMap<String, Node> rules = IMap //
 				.<String, Node> empty() //
 				.put("and.0", Suite.parse("P, Q => P")) //
 				.put("and.1", Suite.parse("P, Q => Q")) //
-				.put("nat.0", Suite.parse("true => group is.nat 0 nat.add")) //
+				.put("nat.0", Suite.parse("true => group is.nat nat.eq nat.add 0")) //
 				.put("nat.1", Suite.parse("is.nat N => is.nat (succ N)")) //
 				.put("nat.add.0", Suite.parse("is.nat N => (0 nat.add N) nat.eq N")) //
 				.put("nat.add.1", Suite.parse("is.nat N => M nat.eq (succ N) = succ (M nat.add N)"));
