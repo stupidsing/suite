@@ -33,9 +33,9 @@ public class VerifyTest {
 		Fun2<String, IList<String>, Definition> defn = (t0, t1) -> def_.apply(t0, and.apply(t1));
 
 		IMap<String, Definition> defs = IMap //
-				.<String, Definition>empty() //
+				.<String, Definition> empty() //
 				.put("def$eq", defn.apply("eq-class .eq", IList.asList( //
-						"associative # .A .eq .B => .B .eq .A", //
+						"commutative # .A .eq .B => .B .eq .A", //
 						"transitive # .A .eq .B, .B .eq .C => .A .eq .C"))) //
 				.put("def$uni-op", def2.apply("uni-op .isElem .op", ".isElem .P => .isElem (.op .P)")) //
 				.put("def$bin-op", def2.apply("bin-op .isElem .op", ".isElem .P, .isElem .Q => .isElem (.P .op .Q)")) //
@@ -55,7 +55,7 @@ public class VerifyTest {
 						".isElem .P => .P .eq .zero; (.P .op1 (.inv1 .P)) .eq .one")));
 
 		IMap<String, Node> axioms = IMap //
-				.<String, Node>empty() //
+				.<String, Node> empty() //
 				.put("@not.0", Suite.parse(".P, not .P => false")) //
 				.put("@and.0", Suite.parse(".P, .Q => .P")) //
 				.put("@and.1", Suite.parse(".P, .Q => .Q")) //
@@ -73,7 +73,7 @@ public class VerifyTest {
 						+ "suppose @cond.2 := not (.Q Eq .R) >> " //
 						+ "contradict @fail := .P Eq .R >> " //
 						+ "lemma @eq := @cond.0 | expand def$eq >> " //
-						+ "lemma @Q-Eq-P := @eq | choose associative | fulfill-by @cond.1 >> " //
+						+ "lemma @Q-Eq-P := @eq | choose commutative | fulfill-by @cond.1 >> " //
 						+ "lemma @Q-Eq-R := @eq | choose transitive | fulfill-by (@Q-Eq-P, @fail) >> " //
 						+ "@Q-Eq-R, @cond.2 | fulfill @not.0") //
 				.extend("is-nat 0", "axiom @nat.0") //
