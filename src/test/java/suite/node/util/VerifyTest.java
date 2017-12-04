@@ -11,7 +11,6 @@ import suite.lp.doer.Cloner;
 import suite.lp.doer.Generalizer;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
@@ -33,7 +32,7 @@ public class VerifyTest {
 		Fun2<String, String, Definition> def2 = (t0, t1) -> defn.apply(t0, Suite.parse(t1));
 
 		IMap<String, Definition> defs = IMap //
-				.<String, Definition> empty() //
+				.<String, Definition>empty() //
 				.put("def$eq", defn.apply("eq-class .eq", and.apply(IList.asList( //
 						"associative # .A .eq .B => .B .eq .A", //
 						"transitive # .A .eq .B, .B .eq .C => .A .eq .C")))) //
@@ -55,16 +54,16 @@ public class VerifyTest {
 						".isElem .P => .P .eq .zero; (.P .op1 (.inv1 .P)) .eq .one"))));
 
 		IMap<String, Node> axioms = IMap //
-				.<String, Node> empty() //
+				.<String, Node>empty() //
 				.put("@not.0", Suite.parse(".P, not .P => false")) //
 				.put("@and.0", Suite.parse(".P, .Q => .P")) //
 				.put("@and.1", Suite.parse(".P, .Q => .Q")) //
 				.put("@or.0", Suite.parse(".P => .P; .Q")) //
 				.put("@or.1", Suite.parse(".Q => .P; .Q")) //
 				.put("@nat.0", Suite.parse("true => group is-nat nat-eq nat-add nat-neg 0")) //
-				.put("@nat.1", Suite.parse("is-nat N => is-nat (succ N)")) //
-				.put("@nat-add.0", Suite.parse("is-nat N => (0 nat-add N) nat-eq N")) //
-				.put("@nat-add.1", Suite.parse("is-nat N => M nat-eq (succ N) = succ (M nat-add N)"));
+				.put("@nat.1", Suite.parse("is-nat .N => is-nat (succ .N)")) //
+				.put("@nat-add.0", Suite.parse("is-nat .N => (0 nat-add .N) nat-eq .N")) //
+				.put("@nat-add.1", Suite.parse("is-nat .N => .M nat-eq (succ .N) = succ (.M nat-add .N)"));
 
 		new Verify(defs, axioms) //
 				.extend("given @cond.0 := eq-class Eq >> " //
@@ -76,7 +75,7 @@ public class VerifyTest {
 						+ "lemma @Q-Eq-R := @eq | choose transitive | fulfill-by (@Q-Eq-P, @fail) >> " //
 						+ "@Q-Eq-R, @cond.2 | fulfill @not.0") //
 				.extend("is-nat 0", "axiom @nat.0 | expand def$group | choose {is-nat _}") //
-				.extend("is-nat (succ 0)", "'is-nat 0' | fulfill (@nat.1 | rename {N:0,})");
+				.extend("is-nat (succ 0)", "'is-nat 0' | fulfill @nat.1");
 	}
 
 	private class Definition {
@@ -131,7 +130,7 @@ public class VerifyTest {
 					throw new RuntimeException("cannot verify " + proof);
 			else if ((m = Suite.match(".0 | expand .1").apply(proof)) != null) {
 				Definition def = defs.get(name(m[1])).clone_();
-				return replaceBind(verify(m[0]), def.t0, def.t1);
+				return replace(verify(m[0]), def.t0, def.t1);
 			} else if ((m = Suite.match(".0 | fulfill .1").apply(proof)) != null)
 				if ((m1 = Suite.match(".0 => .1").apply(new Generalizer().generalize(verify(m[1])))) != null
 						&& Binder.bind(verify(m[0]), m1[0], new Trail()))
@@ -144,15 +143,9 @@ public class VerifyTest {
 				return Suite.substitute(".0 => .1", m[1], new Verify(defs, rules.put(name(m[0]), m[1])).verify(m[2]));
 			else if ((m = Suite.match("lemma .0 := .1 >> .2").apply(proof)) != null)
 				return new Verify(defs, rules.put(name(m[0]), verify(m[1]))).verify(m[2]);
-			else if ((m = Suite.match(".0 | rename {}").apply(proof)) != null)
-				return verify(m[0]);
-			else if ((m = Suite.match(".0 | rename {.1:.2, .3}").apply(proof)) != null)
-				return replace(verify(Suite.substitute(".0 | rename {.1}", m[0], m[3])), m[1], m[2]);
-			else if ((m = Suite.match(".0 | rename {.1, .2}").apply(proof)) != null)
-				return replace(verify(Suite.substitute(".0 | rename {.1}", m[0], m[2])), m[1], new Reference());
 			else if ((m = Suite.match(".0 | rexpand .1").apply(proof)) != null) {
 				Definition def = defs.get(name(m[1])).clone_();
-				return replaceBind(verify(m[0]), def.t1, def.t0);
+				return replace(verify(m[0]), def.t1, def.t0);
 			} else if ((m = Suite.match("true").apply(proof)) != null)
 				return Atom.TRUE;
 			else if (proof instanceof Atom)
@@ -180,7 +173,7 @@ public class VerifyTest {
 			return node;
 		}
 
-		private Node replaceBind(Node node, Node from, Node to) {
+		private Node replace(Node node, Node from, Node to) {
 			return new Object() {
 				private Node replace(Node node_) {
 					Generalizer generalizer = new Generalizer();
@@ -198,18 +191,6 @@ public class VerifyTest {
 					return tree != null //
 							? Tree.of(tree.getOperator(), replace(tree.getLeft()), replace(tree.getRight())) //
 							: node_;
-				}
-			}.replace(node);
-		}
-
-		private Node replace(Node node, Node from, Node to) {
-			return new Object() {
-				private Node replace(Node node_) {
-					Tree tree;
-					if ((tree = Tree.decompose(node_)) != null)
-						return Tree.of(tree.getOperator(), replace(tree.getLeft()), replace(tree.getRight()));
-					else
-						return node_ == from ? to : node_;
 				}
 			}.replace(node);
 		}
