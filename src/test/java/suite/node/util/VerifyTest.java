@@ -71,8 +71,8 @@ public class VerifyTest {
 						+ "given @cond.2 := not (Q Eq R) >> " //
 						+ "contradict @fail := P Eq R >> " //
 						+ "lemma !Eq := @cond.0 | expand def$eq >> " //
-						+ "lemma !Q-Eq-P := !Eq | choose {commute # _} | rename {A, B,} | rsatisfy @cond.1 >> " //
-						+ "lemma !Q-Eq-R := !Q-Eq-P, @fail | satisfy (!Eq | choose {transit # _} | rename {A, B, C,}) >> " //
+						+ "lemma !Q-Eq-P := !Eq | choose commute | rename {A, B,} | rsatisfy @cond.1 >> " //
+						+ "lemma !Q-Eq-R := !Q-Eq-P, @fail | satisfy (!Eq | choose transit | rename {A, B, C,}) >> " //
 						+ "!Q-Eq-R, @cond.2 | satisfy (@not.0 | rename {P,})") //
 				.extend("is-nat 0", "axiom @nat.0 | expand def$group | choose {is-nat _}") //
 				.extend("is-nat (succ 0)", "'is-nat 0' | satisfy (@nat.1 | rename {N:0})");
@@ -106,13 +106,17 @@ public class VerifyTest {
 			else if ((m = Suite.match("axiom .0").apply(proof)) != null)
 				return verify(Suite.substitute("true | satisfy .0", m));
 			else if ((m = Suite.match(".0 | choose {.1}").apply(proof)) != null) {
-				Node list = verify(m[0]), node;
-				Tree tree;
-				while ((tree = Tree.decompose(list, TermOp.AND___)) != null)
-					if (Binder.bind(node = tree.getLeft(), new Generalizer().generalize(m[1]), new Trail()))
+				Node list = verify(m[0]);
+				for (Node node : Tree.iter(list, TermOp.AND___))
+					if (Binder.bind(node, new Generalizer().generalize(m[1]), new Trail()))
 						return node;
-					else
-						list = tree.getRight();
+				throw new RuntimeException("cannot verify " + proof);
+			} else if ((m = Suite.match(".0 | choose .1").apply(proof)) != null) {
+				Node list = verify(m[0]);
+				Tree tree;
+				for (Node node : Tree.iter(list, TermOp.AND___))
+					if ((tree = Tree.decompose(node, TermOp.NEXT__)) != null && tree.getLeft() == m[1])
+						return tree.getRight();
 				throw new RuntimeException("cannot verify " + proof);
 			} else if ((m = Suite.match("contradict .0 := .1 >> .2").apply(proof)) != null)
 				if (Binder.bind(new Verify(defs, rules.put(name(m[0]), m[1])).verify(m[2]), Atom.FALSE, new Trail()))
