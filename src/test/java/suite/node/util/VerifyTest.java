@@ -70,12 +70,12 @@ public class VerifyTest {
 						+ "given @cond.1 := P Eq Q >> " //
 						+ "given @cond.2 := not (Q Eq R) >> " //
 						+ "contradict @fail := P Eq R >> " //
-						+ "lemma !Eq := @cond.0 | expand def$eq >> " //
-						+ "lemma !Q-Eq-P := !Eq | choose commute | rename {A, B,} | rsatisfy @cond.1 >> " //
-						+ "lemma !Q-Eq-R := !Q-Eq-P, @fail | satisfy (!Eq | choose transit | rename {A, B, C,}) >> " //
-						+ "!Q-Eq-R, @cond.2 | satisfy (@not.0 | rename {P,})") //
+						+ "lemma @eq := @cond.0 | expand def$eq >> " //
+						+ "lemma @Q-Eq-P := @eq | choose commute | rename {A, B,} | be-sat @cond.1 >> " //
+						+ "lemma @Q-Eq-R := @Q-Eq-P, @fail | fulfill (@eq | choose transit | rename {A, B, C,}) >> " //
+						+ "@Q-Eq-R, @cond.2 | fulfill (@not.0 | rename {P,})") //
 				.extend("is-nat 0", "axiom @nat.0 | expand def$group | choose {is-nat _}") //
-				.extend("is-nat (succ 0)", "'is-nat 0' | satisfy (@nat.1 | rename {N:0})");
+				.extend("is-nat (succ 0)", "'is-nat 0' | fulfill (@nat.1 | rename {N:0,})");
 	}
 
 	private class Definition {
@@ -104,7 +104,9 @@ public class VerifyTest {
 			else if ((m = Suite.match(".0 # .1").apply(proof)) != null)
 				return Tree.of(TermOp.NEXT__, m[0], verify(m[1]));
 			else if ((m = Suite.match("axiom .0").apply(proof)) != null)
-				return verify(Suite.substitute("true | satisfy .0", m));
+				return verify(Suite.substitute("true | fulfill .0", m));
+			else if ((m = Suite.match(".0 | be-sat .1").apply(proof)) != null)
+				return verify(Suite.substitute(".0 | fulfill .1", m[1], m[0]));
 			else if ((m = Suite.match(".0 | choose {.1}").apply(proof)) != null) {
 				Node list = verify(m[0]);
 				for (Node node : Tree.iter(list, TermOp.AND___))
@@ -126,27 +128,25 @@ public class VerifyTest {
 			else if ((m = Suite.match(".0 | expand .1").apply(proof)) != null) {
 				Definition def = defs.get(name(m[1]));
 				return replaceBind(verify(m[0]), def.t0, def.t1);
-			} else if ((m = Suite.match("given .0 := .1 >> .2").apply(proof)) != null)
+			} else if ((m = Suite.match(".0 | fulfill .1").apply(proof)) != null)
+				if ((m1 = Suite.match(".0 => .1").apply(verify(m[1]))) != null && Binder.bind(verify(m[0]), m1[0], new Trail()))
+					return m1[1];
+				else
+					throw new RuntimeException("cannot verify " + proof);
+			else if ((m = Suite.match("given .0 := .1 >> .2").apply(proof)) != null)
 				return Suite.substitute(".0 => .1", m[1], new Verify(defs, rules.put(name(m[0]), m[1])).verify(m[2]));
 			else if ((m = Suite.match("lemma .0 := .1 >> .2").apply(proof)) != null)
 				return new Verify(defs, rules.put(name(m[0]), verify(m[1]))).verify(m[2]);
 			else if ((m = Suite.match(".0 | rename {}").apply(proof)) != null)
 				return verify(m[0]);
+			else if ((m = Suite.match(".0 | rename {.1:.2, .3}").apply(proof)) != null)
+				return replace(verify(Suite.substitute(".0 | rename {.1}", m[0], m[3])), m[1], m[2]);
 			else if ((m = Suite.match(".0 | rename {.1, .2}").apply(proof)) != null)
 				return replace(verify(Suite.substitute(".0 | rename {.1}", m[0], m[2])), m[1], new Reference());
-			else if ((m = Suite.match(".0 | rename {.1:.2}").apply(proof)) != null)
-				return replace(verify(m[0]), m[1], m[2]);
 			else if ((m = Suite.match(".0 | rexpand .1").apply(proof)) != null) {
 				Definition def = defs.get(name(m[1]));
 				return replaceBind(verify(m[0]), def.t1, def.t0);
-			} else if ((m = Suite.match(".0 | rsatisfy .1").apply(proof)) != null)
-				return verify(Suite.substitute(".0 | satisfy .1", m[1], m[0]));
-			else if ((m = Suite.match(".0 | satisfy .1").apply(proof)) != null)
-				if ((m1 = Suite.match(".0 => .1").apply(verify(m[1]))) != null && Binder.bind(verify(m[0]), m1[0], new Trail()))
-					return m1[1];
-				else
-					throw new RuntimeException("cannot verify " + proof);
-			else if ((m = Suite.match("true").apply(proof)) != null)
+			} else if ((m = Suite.match("true").apply(proof)) != null)
 				return Atom.TRUE;
 			else if (proof instanceof Atom)
 				return rules.get(name(proof));
