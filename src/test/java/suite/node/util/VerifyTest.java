@@ -67,9 +67,9 @@ public class VerifyTest {
 
 		new Verify(defs, axioms) //
 				.extend("given @cond.0 := eq-class Eq >> " //
-						+ "given @cond.1 := P Eq Q >> " //
-						+ "given @cond.2 := not (Q Eq R) >> " //
-						+ "contradict @fail := P Eq R >> " //
+						+ "given @cond.1 := .P Eq .Q >> " //
+						+ "given @cond.2 := not (.Q Eq .R) >> " //
+						+ "contradict @fail := .P Eq .R >> " //
 						+ "lemma @eq := @cond.0 | expand def$eq >> " //
 						+ "lemma @Q-Eq-P := @eq | choose associative | fulfill-by @cond.1 >> " //
 						+ "lemma @Q-Eq-R := @eq | choose transitive | fulfill-by (@Q-Eq-P, @fail) >> " //
