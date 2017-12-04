@@ -28,42 +28,44 @@ public class VerifyTest {
 			}
 		};
 
-		Fun2<String, Node, Definition> defn = (t0, t1) -> new Definition(Suite.parse(t0), t1);
-		Fun2<String, String, Definition> def2 = (t0, t1) -> defn.apply(t0, Suite.parse(t1));
+		Fun2<String, Node, Definition> def_ = (t0, t1) -> new Definition(Suite.parse(t0), t1);
+		Fun2<String, String, Definition> def2 = (t0, t1) -> def_.apply(t0, Suite.parse(t1));
+		Fun2<String, IList<String>, Definition> defn = (t0, t1) -> def_.apply(t0, and.apply(t1));
 
 		IMap<String, Definition> defs = IMap //
-				.<String, Definition>empty() //
-				.put("def$eq", defn.apply("eq-class .eq", and.apply(IList.asList( //
+				.<String, Definition> empty() //
+				.put("def$eq", defn.apply("eq-class .eq", IList.asList( //
 						"associative # .A .eq .B => .B .eq .A", //
-						"transitive # .A .eq .B, .B .eq .C => .A .eq .C")))) //
+						"transitive # .A .eq .B, .B .eq .C => .A .eq .C"))) //
 				.put("def$uni-op", def2.apply("uni-op .isElem .op", ".isElem .P => .isElem (.op .P)")) //
 				.put("def$bin-op", def2.apply("bin-op .isElem .op", ".isElem .P, .isElem .Q => .isElem (.P .op .Q)")) //
-				.put("def$group", defn.apply("group .isElem .eq .op .inv .zero", and.apply(IList.asList( //
+				.put("def$group", defn.apply("group .isElem .eq .op .inv .zero", IList.asList( //
 						".isElem .zero", //
 						"eq-class .eq", //
 						"bin-op .isElem .op", //
 						".isElem .P => (.zero .op .P) .eq .P", //
 						".isElem .P, .isElem .Q, .isElem .R => (.P .op (.Q .op .R)) .eq ((.P .op .Q) .op .R)", //
-						".isElem .P => (.P .op (.inv .P)) .eq .zero")))) //
-				.put("def$field", defn.apply("field .isElem .eq .op0 .inv0 .zero .op1 .inv1 .one", and.apply(IList.asList( //
+						".isElem .P => (.P .op (.inv .P)) .eq .zero"))) //
+				.put("def$field", defn.apply("field .isElem .eq .op0 .inv0 .zero .op1 .inv1 .one", IList.asList( //
 						"group .isElem .eq .op0 .inv0 .zero", //
 						".isElem .one", //
 						"bin-op .op1", //
 						".isElem .P => (.one .op1 .P) .eq .P", //
 						".isElem .P, .isElem .Q, .isElem .R => (.P .op1 (.Q .op1 .R)) .eq ((.P .op1 .Q) .op1 .R)", //
-						".isElem .P => .P .eq .zero; (.P .op1 (.inv1 .P)) .eq .one"))));
+						".isElem .P => .P .eq .zero; (.P .op1 (.inv1 .P)) .eq .one")));
 
 		IMap<String, Node> axioms = IMap //
-				.<String, Node>empty() //
+				.<String, Node> empty() //
 				.put("@not.0", Suite.parse(".P, not .P => false")) //
 				.put("@and.0", Suite.parse(".P, .Q => .P")) //
 				.put("@and.1", Suite.parse(".P, .Q => .Q")) //
 				.put("@or.0", Suite.parse(".P => .P; .Q")) //
 				.put("@or.1", Suite.parse(".Q => .P; .Q")) //
-				.put("@nat.0", Suite.parse("true => group is-nat nat-eq nat-add nat-neg 0")) //
+				.put("@nat.0", Suite.parse("true => is-nat 0")) //
 				.put("@nat.1", Suite.parse("is-nat .N => is-nat (succ .N)")) //
 				.put("@nat-add.0", Suite.parse("is-nat .N => (0 nat-add .N) nat-eq .N")) //
-				.put("@nat-add.1", Suite.parse("is-nat .N => .M nat-eq (succ .N) = succ (.M nat-add .N)"));
+				.put("@nat-add.1", Suite.parse("is-nat .N => .M nat-eq (succ .N) = succ (.M nat-add .N)")) //
+				.put("@int.0", Suite.parse("true => group is-int int-eq int-add int-neg I0"));
 
 		new Verify(defs, axioms) //
 				.extend("given @cond.0 := eq-class Eq >> " //
@@ -74,7 +76,7 @@ public class VerifyTest {
 						+ "lemma @Q-Eq-P := @eq | choose associative | fulfill-by @cond.1 >> " //
 						+ "lemma @Q-Eq-R := @eq | choose transitive | fulfill-by (@Q-Eq-P, @fail) >> " //
 						+ "@Q-Eq-R, @cond.2 | fulfill @not.0") //
-				.extend("is-nat 0", "axiom @nat.0 | expand def$group | choose {is-nat _}") //
+				.extend("is-nat 0", "axiom @nat.0") //
 				.extend("is-nat (succ 0)", "'is-nat 0' | fulfill @nat.1");
 	}
 
