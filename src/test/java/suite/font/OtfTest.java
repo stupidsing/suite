@@ -23,10 +23,10 @@ public class OtfTest {
 				.each(Paths.get("/tmp/fonts")) //
 				.concatMap(path -> FileUtil.findPaths(path)) //
 				.map(Path::toString) //
-				.filter(path -> false //
-						|| path.toLowerCase().endsWith(".otf") //
-						|| path.toLowerCase().endsWith(".ttf") //
-				) //
+				.filter(path -> {
+					String pathl = path.toLowerCase();
+					return pathl.endsWith(".otf") || pathl.endsWith(".ttf");
+				}) //
 				.map2(path -> {
 					Execute exec = new Execute(new String[] { "otfinfo", "-i", path, });
 					return Read.from(exec.out.split("\n")) //
