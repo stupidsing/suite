@@ -43,7 +43,7 @@ public class BackTester {
 		Streamlet<String> results1 = simulationsByKey //
 				.filterValue(sim -> sim.exception == null) //
 				.groupBy(sims -> {
-					double txFee = sims.collectAsDouble(Obj_Dbl.sum(sim -> cfg.transactionFee(sim.account.transactionAmount())));
+					double txFee = sims.toDouble(Obj_Dbl.sum(sim -> cfg.transactionFee(sim.account.transactionAmount())));
 
 					float[] returns = sims //
 							.collect(Obj_Flt.lift(sim -> (float) sim.annualReturn)) //

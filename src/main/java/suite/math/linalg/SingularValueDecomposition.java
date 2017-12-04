@@ -28,7 +28,7 @@ public class SingularValueDecomposition {
 
 		for (int j = 0; j < width_; j++) {
 			int j_ = j;
-			double mean = Ints_.range(0, height).collectAsDouble(Int_Dbl.sum(i -> m1[i][j_])) / height;
+			double mean = Ints_.range(0, height).toDouble(Int_Dbl.sum(i -> m1[i][j_])) / height;
 			for (int i = 0; i < height; i++)
 				m1[i][j_] -= mean;
 		}

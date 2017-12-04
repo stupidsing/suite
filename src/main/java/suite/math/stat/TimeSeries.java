@@ -25,11 +25,11 @@ public class TimeSeries {
 		double meany = stat.mean(ys);
 		int length = ys.length;
 		float[] ydevs = Floats_.toArray(length, i -> (float) (ys[i] - meany));
-		double avgydev0 = Ints_.range(length).collectAsDouble(Int_Dbl.sum(i -> ydevs[i])) / length;
+		double avgydev0 = Ints_.range(length).toDouble(Int_Dbl.sum(i -> ydevs[i])) / length;
 		return Floats_.toArray(n, k -> {
 			int lk = length - k;
-			double nom = Ints_.range(lk).collectAsDouble(Int_Dbl.sum(i -> ydevs[i] * ydevs[i + k]));
-			double avgydev1 = Ints_.range(lk).collectAsDouble(Int_Dbl.sum(i -> ydevs[i])) / lk;
+			double nom = Ints_.range(lk).toDouble(Int_Dbl.sum(i -> ydevs[i] * ydevs[i + k]));
+			double avgydev1 = Ints_.range(lk).toDouble(Int_Dbl.sum(i -> ydevs[i])) / lk;
 			double denom = Math.sqrt(avgydev0 * avgydev1) * lk;
 			return (float) (nom / denom);
 		});

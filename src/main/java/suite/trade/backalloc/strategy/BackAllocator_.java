@@ -52,7 +52,7 @@ public class BackAllocator_ {
 
 			return index -> odts //
 					.flatMap(odt -> odt.onDateTime(index)) //
-					.groupBy(Pair::first_, st -> st.collectAsDouble(Obj_Dbl.sum(Pair::second))) //
+					.groupBy(Pair::first_, st -> st.toDouble(Obj_Dbl.sum(Pair::second))) //
 					.toList();
 		};
 	}

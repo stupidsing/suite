@@ -46,11 +46,11 @@ public class Matrix_ {
 	public float[][] covariance(float[][] vs) {
 		int h = h(vs);
 		int w = w(vs);
-		float[] means = Floats_.toArray(h, j -> (float) (Read.from(vs).collectAsDouble(Obj_Dbl.sum(vector -> vector[j])) / w));
+		float[] means = Floats_.toArray(h, j -> (float) (Read.from(vs).toDouble(Obj_Dbl.sum(vector -> vector[j])) / w));
 
 		return To.arrayOfFloats(h, h, (i0, i1) -> (float) (Ints_ //
 				.range(0, w) //
-				.collectAsDouble(Int_Dbl.sum(j -> vs[i0][j] * vs[i1][j])) / w - means[i0] * means[i1]));
+				.toDouble(Int_Dbl.sum(j -> vs[i0][j] * vs[i1][j])) / w - means[i0] * means[i1]));
 	}
 
 	public double det(float[][] m) {

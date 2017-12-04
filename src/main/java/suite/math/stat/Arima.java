@@ -33,7 +33,7 @@ public class Arima {
 		float[] r = Ints_ //
 				.range(p + 1) //
 				.collect(Int_Flt.lift(i -> {
-					double sum = Ints_.range(i, length).collectAsDouble(Int_Dbl.sum(j -> ys[j - i] * ys[j]));
+					double sum = Ints_.range(i, length).toDouble(Int_Dbl.sum(j -> ys[j - i] * ys[j]));
 					return (float) (sum - mean2);
 				})) //
 				.toArray();
@@ -46,7 +46,7 @@ public class Arima {
 			float[] alpha0 = alpha;
 			int n_ = n;
 
-			double k1 = (1d / d) * Ints_.range(n).collectAsDouble(Int_Dbl.sum(k -> alpha0[k] * r[n_ + 1 - k]));
+			double k1 = (1d / d) * Ints_.range(n).toDouble(Int_Dbl.sum(k -> alpha0[k] * r[n_ + 1 - k]));
 			d = d * (1d - k1 * k1);
 
 			float[] alpha1 = new float[p];
@@ -207,7 +207,7 @@ public class Arima {
 							lrxs[tq--] = 1f;
 							for (int j = 0; j < q; j++)
 								lrxs[tq--] = mas[j];
-							float lry = (float) (xs[t] - Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars[j] * xs[t - j - 1])));
+							float lry = (float) (xs[t] - Ints_.range(p).toDouble(Int_Dbl.sum(j -> ars[j] * xs[t - j - 1])));
 							return FltObjPair.of(lry, lrxs);
 						}) //
 						.toList()).coefficients;
@@ -222,8 +222,8 @@ public class Arima {
 		// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 		// when t = xLength
 		double x1 = 0d //
-				+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars[j] * xs[xLength - j - 1])) //
-				+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas[j] * eps[xpqLength - j - 1]));
+				+ Ints_.range(p).toDouble(Int_Dbl.sum(j -> ars[j] * xs[xLength - j - 1])) //
+				+ Ints_.range(q).toDouble(Int_Dbl.sum(j -> mas[j] * eps[xpqLength - j - 1]));
 
 		return new Em(ars, mas, (float) x1);
 	}

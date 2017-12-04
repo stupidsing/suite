@@ -229,7 +229,7 @@ public class DailyMain extends ExecutableProgram {
 
 		Map<String, Float> faceValueBySymbol = history //
 				.groupBy(record -> record.symbol, //
-						rs -> (float) (Read.from(rs).collectAsDouble(Obj_Dbl.sum(r -> r.amount()))))
+						rs -> (float) (Read.from(rs).toDouble(Obj_Dbl.sum(Trade::amount))))
 				.toMap();
 
 		List<Trade> trades = account //

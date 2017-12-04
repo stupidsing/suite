@@ -383,7 +383,7 @@ public interface BackAllocator {
 				// re-assemble the entries into current profile
 				return Read //
 						.multimap(entriesBySymbol) //
-						.groupBy(entries -> entries.collectAsDouble(Obj_Dbl.sum(pair -> pair.t0))) //
+						.groupBy(entries -> entries.toDouble(Obj_Dbl.sum(pair -> pair.t0))) //
 						.toList();
 			};
 		};
@@ -429,7 +429,7 @@ class BackAllocatorUtil {
 	}
 
 	static double totalPotential(List<Pair<String, Double>> potentialBySymbol) {
-		return Read.from2(potentialBySymbol).collectAsDouble(ObjObj_Dbl.sum((symbol, potential) -> potential));
+		return Read.from2(potentialBySymbol).toDouble(ObjObj_Dbl.sum((symbol, potential) -> potential));
 	}
 
 }

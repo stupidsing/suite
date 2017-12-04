@@ -245,7 +245,7 @@ public class StatisticalArbitrageTest {
 				double sum = Ints_ //
 						.range(1, maxTor) //
 						.map(i -> i) //
-						.collectAsDouble(Obj_Dbl.sum(tor -> {
+						.toDouble(Obj_Dbl.sum(tor -> {
 							double probability = cpsArray[tor - 1][cpsi_ + 1] - cpsArray[tor - 1][cpsi_];
 							return 1d / probability;
 						}));

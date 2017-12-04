@@ -171,7 +171,7 @@ public class Trade_ {
 	public static Map<String, Integer> portfolio(Iterable<Trade> trades) {
 		return Read.from(trades) //
 				.map2(r -> r.symbol, r -> r.buySell) //
-				.groupBy(sizes -> sizes.collectAsInt(Obj_Int.sum(size -> size))) //
+				.groupBy(sizes -> sizes.toInt(Obj_Int.sum(size -> size))) //
 				.filterValue(size -> size != 0) //
 				.toMap();
 	}

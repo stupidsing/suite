@@ -12,16 +12,16 @@ public interface StreamletDefaults<T, Outlet_ extends OutletDefaults<T>> extends
 		return fun.apply(outlet());
 	}
 
-	public default double collectAsDouble(Obj_Dbl<Outlet_> fun) {
-		return fun.apply(outlet());
-	}
-
-	public default int collectAsInt(Obj_Int<Outlet_> fun) {
-		return fun.apply(outlet());
-	}
-
 	public default int size() {
 		return outlet().count();
+	}
+
+	public default double toDouble(Obj_Dbl<Outlet_> fun) {
+		return fun.apply(outlet());
+	}
+
+	public default int toInt(Obj_Int<Outlet_> fun) {
+		return fun.apply(outlet());
 	}
 
 }

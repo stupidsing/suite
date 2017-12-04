@@ -47,7 +47,7 @@ public class NaiveBayes {
 	public boolean classify(int[] record) {
 		double t = Ints_ //
 				.range(length) //
-				.collectAsDouble(Int_Dbl.sum(j -> record[j] * (Math.log(ps[i(false)][j]) - Math.log(ps[i(true)][j]))));
+				.toDouble(Int_Dbl.sum(j -> record[j] * (Math.log(ps[i(false)][j]) - Math.log(ps[i(true)][j]))));
 		return t <= b;
 	}
 

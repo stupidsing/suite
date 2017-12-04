@@ -119,7 +119,7 @@ public class Account {
 		}
 
 		public float sum() {
-			return (float) streamlet().collectAsDouble(ObjObj_Dbl.sum((symbol, v) -> v));
+			return (float) streamlet().toDouble(ObjObj_Dbl.sum((symbol, v) -> v));
 		}
 	}
 

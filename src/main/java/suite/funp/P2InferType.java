@@ -506,7 +506,7 @@ public class P2InferType {
 		})).applyIf(TypeReference.class, t -> t.apply(type -> {
 			return ps;
 		})).applyIf(TypeStruct.class, t -> t.apply(pairs -> {
-			return Read.from(pairs).collectAsInt(Obj_Int.sum(field -> getTypeSize(field.t1)));
+			return Read.from(pairs).toInt(Obj_Int.sum(field -> getTypeSize(field.t1)));
 		})).result();
 
 		if (result != null)

@@ -39,8 +39,8 @@ public class ArimaTest {
 		while (i < length) {
 			int im1 = i - 1;
 			xs[i++] = (float) (0d //
-					+ Ints_.range(p).collectAsDouble(Int_Dbl.sum(j -> ars[j] * xs[im1 - j])) //
-					+ Ints_.range(q).collectAsDouble(Int_Dbl.sum(j -> mas[j] * eps[im1 - j])));
+					+ Ints_.range(p).toDouble(Int_Dbl.sum(j -> ars[j] * xs[im1 - j])) //
+					+ Ints_.range(q).toDouble(Int_Dbl.sum(j -> mas[j] * eps[im1 - j])));
 		}
 
 		Em em = arima.em(xs, p, q);

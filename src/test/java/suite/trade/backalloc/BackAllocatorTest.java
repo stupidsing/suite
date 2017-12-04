@@ -39,7 +39,7 @@ public class BackAllocatorTest {
 		List<Double> potentials = Ints_ //
 				.range(indices.length) //
 				.map(index -> 0 < index ? Read.from(odt.onDateTime(index)) : Read.<Pair<String, Double>> empty()) //
-				.map(pairs -> pairs.collectAsDouble(Obj_Dbl.sum(pair -> pair.t1))) //
+				.map(pairs -> pairs.toDouble(Obj_Dbl.sum(pair -> pair.t1))) //
 				.toList();
 
 		assertEquals(List.of(0d, 1d, 1d, 1d, 0d, 0d, 0d, 0d, 0d), potentials);
