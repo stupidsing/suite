@@ -33,7 +33,7 @@ public class VerifyTest {
 		Fun2<String, IList<String>, Definition> defn = (t0, t1) -> def_.apply(t0, and.apply(t1));
 
 		IMap<String, Definition> defs = IMap //
-				.<String, Definition> empty() //
+				.<String, Definition>empty() //
 				.put("def$eq", defn.apply("eq-class .eq", IList.asList( //
 						"associative # .A .eq .B => .B .eq .A", //
 						"transitive # .A .eq .B, .B .eq .C => .A .eq .C"))) //
@@ -55,7 +55,7 @@ public class VerifyTest {
 						".isElem .P => .P .eq .zero; (.P .op1 (.inv1 .P)) .eq .one")));
 
 		IMap<String, Node> axioms = IMap //
-				.<String, Node> empty() //
+				.<String, Node>empty() //
 				.put("@not.0", Suite.parse(".P, not .P => false")) //
 				.put("@and.0", Suite.parse(".P, .Q => .P")) //
 				.put("@and.1", Suite.parse(".P, .Q => .Q")) //
@@ -68,9 +68,9 @@ public class VerifyTest {
 				.put("@int.0", Suite.parse("true => group is-int int-eq int-add int-neg I0"));
 
 		new Verify(defs, axioms) //
-				.extend("given @cond.0 := eq-class Eq >> " //
-						+ "given @cond.1 := .P Eq .Q >> " //
-						+ "given @cond.2 := not (.Q Eq .R) >> " //
+				.extend("suppose @cond.0 := eq-class Eq >> " //
+						+ "suppose @cond.1 := .P Eq .Q >> " //
+						+ "suppose @cond.2 := not (.Q Eq .R) >> " //
 						+ "contradict @fail := .P Eq .R >> " //
 						+ "lemma @eq := @cond.0 | expand def$eq >> " //
 						+ "lemma @Q-Eq-P := @eq | choose associative | fulfill-by @cond.1 >> " //
@@ -141,14 +141,14 @@ public class VerifyTest {
 					throw new RuntimeException("cannot verify " + proof);
 			else if ((m = Suite.match(".0 | fulfill-by .1").apply(proof)) != null)
 				return verify(Suite.substitute(".0 | fulfill .1", m[1], m[0]));
-			else if ((m = Suite.match("given .0 := .1 >> .2").apply(proof)) != null)
-				return Suite.substitute(".0 => .1", m[1], new Verify(defs, rules.put(name(m[0]), m[1])).verify(m[2]));
 			else if ((m = Suite.match("lemma .0 := .1 >> .2").apply(proof)) != null)
 				return new Verify(defs, rules.put(name(m[0]), verify(m[1]))).verify(m[2]);
 			else if ((m = Suite.match(".0 | rexpand .1").apply(proof)) != null) {
 				Definition def = defs.get(name(m[1])).clone_();
 				return replace(verify(m[0]), def.t1, def.t0);
-			} else if ((m = Suite.match("true").apply(proof)) != null)
+			} else if ((m = Suite.match("suppose .0 := .1 >> .2").apply(proof)) != null)
+				return Suite.substitute(".0 => .1", m[1], new Verify(defs, rules.put(name(m[0]), m[1])).verify(m[2]));
+			else if ((m = Suite.match("true").apply(proof)) != null)
 				return Atom.TRUE;
 			else if (proof instanceof Atom)
 				return new Cloner().clone(rules.get(name(proof)));
