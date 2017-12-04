@@ -56,11 +56,11 @@ public class VerifyTest {
 
 		IMap<String, Node> axioms = IMap //
 				.<String, Node> empty() //
-				.put("@not.0", Suite.parse("P, not P => false")) //
-				.put("@and.0", Suite.parse("P, Q => P")) //
-				.put("@and.1", Suite.parse("P, Q => Q")) //
-				.put("@or.0", Suite.parse("P => P; Q")) //
-				.put("@or.1", Suite.parse("Q => P; Q")) //
+				.put("@not.0", Suite.parse(".P, not .P => false")) //
+				.put("@and.0", Suite.parse(".P, .Q => .P")) //
+				.put("@and.1", Suite.parse(".P, .Q => .Q")) //
+				.put("@or.0", Suite.parse(".P => .P; .Q")) //
+				.put("@or.1", Suite.parse(".Q => .P; .Q")) //
 				.put("@nat.0", Suite.parse("true => group is-nat nat-eq nat-add nat-neg 0")) //
 				.put("@nat.1", Suite.parse("is-nat N => is-nat (succ N)")) //
 				.put("@nat-add.0", Suite.parse("is-nat N => (0 nat-add N) nat-eq N")) //
@@ -74,7 +74,7 @@ public class VerifyTest {
 						+ "lemma @eq := @cond.0 | expand def$eq >> " //
 						+ "lemma @Q-Eq-P := @eq | choose associative | fulfill-by @cond.1 >> " //
 						+ "lemma @Q-Eq-R := @eq | choose transitive | fulfill-by (@Q-Eq-P, @fail) >> " //
-						+ "@Q-Eq-R, @cond.2 | fulfill (@not.0 | rename {P,})") //
+						+ "@Q-Eq-R, @cond.2 | fulfill @not.0") //
 				.extend("is-nat 0", "axiom @nat.0 | expand def$group | choose {is-nat _}") //
 				.extend("is-nat (succ 0)", "'is-nat 0' | fulfill (@nat.1 | rename {N:0,})");
 	}
@@ -133,7 +133,8 @@ public class VerifyTest {
 				Definition def = defs.get(name(m[1])).clone_();
 				return replaceBind(verify(m[0]), def.t0, def.t1);
 			} else if ((m = Suite.match(".0 | fulfill .1").apply(proof)) != null)
-				if ((m1 = Suite.match(".0 => .1").apply(verify(m[1]))) != null && Binder.bind(verify(m[0]), m1[0], new Trail()))
+				if ((m1 = Suite.match(".0 => .1").apply(new Generalizer().generalize(verify(m[1])))) != null
+						&& Binder.bind(verify(m[0]), m1[0], new Trail()))
 					return m1[1];
 				else
 					throw new RuntimeException("cannot verify " + proof);
