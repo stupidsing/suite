@@ -47,7 +47,6 @@ public class Pmamr implements BackAllocator {
 	@Override
 	public OnDateTime allocate(AlignKeyDataSource<String> akds, int[] indices) {
 		Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
-		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
 		DataSourceView<String, MeanReversionStat> dsv = DataSourceView //
 				.of(tor, 256, akds, (symbol, ds, period) -> new MeanReversionStat(ds, period));
@@ -70,7 +69,7 @@ public class Pmamr implements BackAllocator {
 
 						double lma = mrs.latestMovingAverage();
 						double mamrRatio = mrs.movingAvgMeanReversionRatio();
-						double dailyReturn = Quant.return_(price, lma) * mamrRatio - dailyRiskFreeInterestRate;
+						double dailyReturn = Quant.return_(price, lma) * mamrRatio;
 						ReturnsStat returnsStat = ts.returnsStatDaily(ds.prices);
 						double sharpe = returnsStat.sharpeRatio();
 						double kelly = returnsStat.kellyCriterion();
