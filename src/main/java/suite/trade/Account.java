@@ -75,14 +75,28 @@ public class Account {
 		return transactionAmount;
 	}
 
-	public String txnSummary(Dbl_Dbl transactionFeeFun) {
-		double fee = transactionFeeFun.apply(transactionAmount);
-		return "txnFee:" + To.string(fee) + "/" + nTransactions;
+	public TransactionSummary transactionSummary(Dbl_Dbl transactionFeeFun) {
+		return new TransactionSummary(nTransactions, (float) transactionAmount, (float) transactionFeeFun.apply(transactionAmount));
 	}
 
-	public String transactionSummary(Dbl_Dbl transactionFeeFun) {
-		double fee = transactionFeeFun.apply(transactionAmount);
-		return "transactions = " + To.string(transactionAmount) + "/" + nTransactions + ", fee = " + To.string(fee);
+	public class TransactionSummary {
+		public final int nTransactions;
+		public final float transactionAmount;
+		public final float transactionFee;
+
+		public TransactionSummary(int nTransactions, float transactionAmount, float transactionFee) {
+			this.nTransactions = nTransactions;
+			this.transactionAmount = transactionAmount;
+			this.transactionFee = transactionFee;
+		}
+
+		public String out0() {
+			return "txnFee:" + To.string(transactionFee) + "/" + nTransactions;
+		}
+
+		public String out1() {
+			return "transactions = " + To.string(transactionAmount) + "/" + nTransactions + ", fee = " + To.string(transactionFee);
+		}
 	}
 
 	private void update(String code, int amount) {
