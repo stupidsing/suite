@@ -158,7 +158,7 @@ public class Summarize {
 		public final Streamlet<String> details;
 		public final Streamlet<Trade> trades;
 		public final Account account;
-		public final double size, pnl, dividend;
+		public final String size, pnl, dividend;
 		public final TransactionSummary transactionSummary;
 
 		public Summarize_(Streamlet<String> details, Streamlet<Trade> trades0, Streamlet<Trade> trades1) {
@@ -171,18 +171,18 @@ public class Summarize {
 			this.details = details;
 			this.trades = trades0;
 			this.account = account0;
-			size = amount1 - amount0;
-			pnl = amount1;
-			dividend = Trade_.dividend(trades, dividendFun, dividendFeeFun);
+			size = To.string(amount1 - amount0);
+			pnl = To.string(amount1);
+			dividend = To.string(Trade_.dividend(trades, dividendFun, dividendFeeFun));
 			transactionSummary = accountTx.transactionSummary(cfg::transactionFee);
 		}
 
 		public String out0() {
 			return details //
 					.append("" //
-							+ "size:" + To.string(size) //
-							+ ", pnl:" + To.string(pnl) //
-							+ ", div:" + To.string(dividend) //
+							+ "size:" + size //
+							+ ", pnl:" + pnl //
+							+ ", div:" + dividend //
 							+ ", " + transactionSummary.out0()) //
 					.map(m -> "\n" + m) //
 					.collect(As::joined);
@@ -190,9 +190,9 @@ public class Summarize {
 
 		public String out1() {
 			return details //
-					.append("SIZ = " + To.string(size)) //
-					.append("PNL = " + To.string(pnl)) //
-					.append("DIV = " + To.string(dividend)) //
+					.append("SIZ = " + size) //
+					.append("PNL = " + pnl) //
+					.append("DIV = " + dividend) //
 					.append(transactionSummary.out1()) //
 					.map(m -> "\n" + m) //
 					.collect(As::joined);
