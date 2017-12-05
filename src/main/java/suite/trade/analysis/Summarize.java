@@ -179,11 +179,11 @@ public class Summarize {
 
 		public String out0() {
 			return details //
-					.append("siz/pnl/div =" //
-							+ " " + To.string(size) //
-							+ "/" + To.string(pnl) //
-							+ "/" + To.string(dividend)) //
-					.append(transactionSummary.out0()) //
+					.append("" //
+							+ "size:" + To.string(size) //
+							+ ", pnl:" + To.string(pnl) //
+							+ ", div:" + To.string(dividend) //
+							+ ", " + transactionSummary.out0()) //
 					.map(m -> "\n" + m) //
 					.collect(As::joined);
 		}
