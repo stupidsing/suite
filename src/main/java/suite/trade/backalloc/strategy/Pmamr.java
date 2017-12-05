@@ -69,13 +69,13 @@ public class Pmamr implements BackAllocator {
 
 						double lma = mrs.latestMovingAverage();
 						double mamrRatio = mrs.movingAvgMeanReversionRatio();
-						double dailyReturn = Quant.return_(price, lma) * mamrRatio;
+						double dailyReturn = Quant.return_(lma, price) * mamrRatio;
 						ReturnsStat returnsStat = ts.returnsStatDaily(ds.prices);
 						double sharpe = returnsStat.sharpeRatio();
 						double kelly = returnsStat.kellyCriterion();
 						return new PotentialStat(dailyReturn, sharpe, kelly);
 					}) //
-					.filterValue(ps -> 0d < ps.dailyReturn) //
+					.filterValue(ps -> ps.dailyReturn < 0d) //
 					.filterValue(ps -> 0d < ps.sharpe) //
 					.cons(Asset.cashSymbol, new PotentialStat(Trade_.riskFreeInterestRate, 1d, 0d)) //
 					.mapValue(ps -> ps.kelly) //
