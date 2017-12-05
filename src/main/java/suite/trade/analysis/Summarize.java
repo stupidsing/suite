@@ -156,7 +156,7 @@ public class Summarize {
 				.append("SIZ = " + To.string(amount1 - amount0)) //
 				.append("P/L = " + To.string(amount1)) //
 				.append("DIV = " + To.string(Trade_.dividend(trades0, dividendFun, dividendFeeFun))) //
-				.append(accountTx.transactionSummary(cfg::transactionFee)) //
+				.append(accountTx.transactionSummary(cfg::transactionFee).out1()) //
 				.map(m -> "\n" + m) //
 				.collect(As::joined);
 

@@ -168,7 +168,7 @@ public class BackAllocTester {
 						+ " yearRtn:" + To.string(annualReturn) //
 						+ " sharpe:" + To.string(sharpe) //
 						+ " skew:" + To.string(skewness) //
-						+ " " + account.txnSummary(cfg::transactionFee) //
+						+ " " + account.transactionSummary(cfg::transactionFee).out0() //
 						+ " holds::" + sb + "...";
 			else {
 				LogUtil.error(exception);
