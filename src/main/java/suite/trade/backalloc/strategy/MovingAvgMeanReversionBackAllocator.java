@@ -123,8 +123,8 @@ public class MovingAvgMeanReversionBackAllocator implements BackAllocator {
 				meanReversion = ts.meanReversion(prices, 1);
 				movingAvgMeanReversion = ts.movingAvgMeanReversion(prices, movingAverage, tor);
 			} else {
-				meanReversion = movingAvgMeanReversion = null;
 				adf = hurst = 0d;
+				meanReversion = movingAvgMeanReversion = null;
 			}
 		}
 

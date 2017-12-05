@@ -119,8 +119,8 @@ public class PmamrBackAllocator implements BackAllocator {
 				hurst = ts.hurst(prices, tor);
 				movingAvgMeanReversion = ts.movingAvgMeanReversion(prices, movingAverage, tor);
 			} else {
-				movingAvgMeanReversion = null;
 				adf = hurst = 0d;
+				movingAvgMeanReversion = null;
 			}
 		}
 
