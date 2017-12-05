@@ -24,7 +24,7 @@ import suite.util.To;
  *
  * @author ywsing
  */
-public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
+public class PmamrBackAllocator implements BackAllocator {
 
 	private int top = 5;
 	private int tor = 64;
@@ -34,20 +34,19 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 	private TimeSeries ts = new TimeSeries();
 
 	public static BackAllocator of() {
-		return MovingAvgMeanReversionBackAllocator0.of_().frequency(3).reallocate();
+		return PmamrBackAllocator.of_().reallocate();
 	}
 
-	public static MovingAvgMeanReversionBackAllocator0 of_() {
-		return new MovingAvgMeanReversionBackAllocator0();
+	public static PmamrBackAllocator of_() {
+		return new PmamrBackAllocator();
 	}
 
-	private MovingAvgMeanReversionBackAllocator0() {
+	private PmamrBackAllocator() {
 	}
 
 	@Override
 	public OnDateTime allocate(AlignKeyDataSource<String> akds, int[] indices) {
 		Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
-		double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
 		DataSourceView<String, MeanReversionStat> dsv = DataSourceView //
 				.of(tor, 256, akds, (symbol, ds, period) -> new MeanReversionStat(ds, period));
@@ -70,13 +69,13 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 
 						double lma = mrs.latestMovingAverage();
 						double mamrRatio = mrs.movingAvgMeanReversionRatio();
-						double dailyReturn = Quant.return_(price, lma) * mamrRatio - dailyRiskFreeInterestRate;
+						double dailyReturn = Quant.return_(lma, price) * mamrRatio;
 						ReturnsStat returnsStat = ts.returnsStatDaily(ds.prices);
 						double sharpe = returnsStat.sharpeRatio();
 						double kelly = returnsStat.kellyCriterion();
 						return new PotentialStat(dailyReturn, sharpe, kelly);
 					}) //
-					.filterValue(ps -> 0d < ps.dailyReturn) //
+					.filterValue(ps -> ps.dailyReturn < 0d) //
 					.filterValue(ps -> 0d < ps.sharpe) //
 					.cons(Asset.cashSymbol, new PotentialStat(Trade_.riskFreeInterestRate, 1d, 0d)) //
 					.mapValue(ps -> ps.kelly) //
@@ -108,7 +107,6 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 		private final float[] movingAverage;
 		private final double adf;
 		private final double hurst;
-		private final LinearRegression meanReversion;
 		private final LinearRegression movingAvgMeanReversion;
 
 		private MeanReversionStat(DataSource ds, TimeRange mrsPeriod) {
@@ -119,10 +117,9 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 			if (tor * 2 <= prices.length) {
 				adf = ts.adf(prices, tor);
 				hurst = ts.hurst(prices, tor);
-				meanReversion = ts.meanReversion(prices, 1);
 				movingAvgMeanReversion = ts.movingAvgMeanReversion(prices, movingAverage, tor);
 			} else {
-				meanReversion = movingAvgMeanReversion = null;
+				movingAvgMeanReversion = null;
 				adf = hurst = 0d;
 			}
 		}
@@ -131,16 +128,8 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 			return movingAverage[movingAverage.length - 1];
 		}
 
-		private double meanReversionRatio() {
-			return meanReversion.coefficients[0];
-		}
-
 		private double movingAvgMeanReversionRatio() {
 			return movingAvgMeanReversion.coefficients[0];
-		}
-
-		private double halfLife() {
-			return neglog2 / Math.log1p(meanReversionRatio());
 		}
 
 		private double movingAvgHalfLife() {
@@ -150,7 +139,6 @@ public class MovingAvgMeanReversionBackAllocator0 implements BackAllocator {
 		public String toString() {
 			return "adf = " + adf //
 					+ ", hurst = " + hurst //
-					+ ", halfLife = " + halfLife() //
 					+ ", movingAvgHalfLife = " + movingAvgHalfLife() //
 					+ ", latestMovingAverage = " + latestMovingAverage();
 		}

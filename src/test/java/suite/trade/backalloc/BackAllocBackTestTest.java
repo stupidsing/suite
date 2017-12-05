@@ -13,7 +13,7 @@ import suite.trade.analysis.Summarize.SummarizeByStrategy;
 import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.run.BackTester;
 import suite.trade.backalloc.strategy.MovingAvgMeanReversionBackAllocator;
-import suite.trade.backalloc.strategy.Pmamr;
+import suite.trade.backalloc.strategy.PmamrBackAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 
@@ -27,7 +27,7 @@ public class BackAllocBackTestTest {
 
 	@Test
 	public void testBackTest() {
-		BackAllocator backAllocator = Pmamr.of();
+		BackAllocator backAllocator = PmamrBackAllocator.of();
 		Simulate sim = runner.backTest(backAllocator, period);
 		SummarizeByStrategy<String> sbs = Summarize.of(cfg, Read.from(sim.trades)).summarize(trade -> trade.symbol);
 		System.out.println(sbs.log);
