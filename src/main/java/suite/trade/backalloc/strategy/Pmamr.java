@@ -34,7 +34,7 @@ public class Pmamr implements BackAllocator {
 	private TimeSeries ts = new TimeSeries();
 
 	public static BackAllocator of() {
-		return Pmamr.of_().frequency(3).reallocate();
+		return Pmamr.of_().reallocate();
 	}
 
 	public static Pmamr of_() {
