@@ -11,7 +11,7 @@ import suite.trade.backalloc.strategy.BackAllocatorGeneral;
 import suite.trade.backalloc.strategy.BackAllocatorMech;
 import suite.trade.backalloc.strategy.BackAllocatorOld;
 import suite.trade.backalloc.strategy.BackAllocator_;
-import suite.trade.backalloc.strategy.MovingAvgMeanReversionBackAllocator0;
+import suite.trade.backalloc.strategy.Pmamr;
 import suite.trade.backalloc.strategy.ReverseCorrelateBackAllocator;
 import suite.trade.data.Configuration;
 import suite.util.FunUtil.Fun;
@@ -31,7 +31,7 @@ public class BackAllocConfigurations {
 		private BackAllocator ba_bbHold = baGen.bb_.filterByIndex(cfg).holdExtend(8);
 		private BackAllocator ba_donHold = baGen.donHold;
 		private BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().longOnly().pick(3).even();
-		private BackAllocator ba_pmamr = MovingAvgMeanReversionBackAllocator0.of();
+		private BackAllocator ba_pmamr = Pmamr.of();
 		private BackAllocator ba_pmmmr = baOld.movingMedianMeanRevn().holdExtend(9);
 		private BackAllocator ba_revco = ReverseCorrelateBackAllocator.of();
 
