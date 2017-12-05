@@ -14,6 +14,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Account;
+import suite.trade.Account.TransactionSummary;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.Trade;
@@ -100,14 +101,14 @@ public class Summarize {
 					+ (!keys.isEmpty() ? ", " + keys : "");
 		});
 
-		Map<K, String> outByKey = summaryByKey.mapValue(summary -> summary.out).toMap();
+		Map<K, String> outByKey = summaryByKey.mapValue(Summarize_::out0).toMap();
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = sb::append;
 
 		for (Entry<K, String> e : outByKey.entrySet())
 			log.sink("\nFor strategy " + e.getKey() + ":" + e.getValue());
 
-		log.sink(FormatUtil.tablize("\nOverall:\t" + Time.now().ymdHms() + overall.out));
+		log.sink(FormatUtil.tablize("\nOverall:\t" + Time.now().ymdHms() + overall.out1()));
 
 		// profit and loss
 		Map<K, Double> pnlByKey = sellAll(trades, priceBySymbol) //
@@ -135,13 +136,8 @@ public class Summarize {
 			Iterate<String> infoFun) {
 		Streamlet<Trade> trades0 = trades_;
 		Streamlet<Trade> trades1 = sellAll(trades0, priceBySymbol);
-		Account accountTx = Account.ofHistory(trades0.collect(Trade_::collectBrokeredTrades));
-		Account account0 = Account.ofHistory(trades0);
-		Account account1 = Account.ofHistory(trades1);
-		double amount0 = account0.cash();
-		double amount1 = account1.cash();
 
-		String out = Read //
+		Streamlet<String> details = Read //
 				.from2(Trade_.portfolio(trades0)) //
 				.map((symbol, nShares) -> {
 					Asset asset = cfg.queryCompany(symbol);
@@ -153,23 +149,53 @@ public class Summarize {
 							+ (info != null ? " \t(" + info + ")" : "");
 				}) //
 				.sort(Object_::compare) //
-				.append("SIZ = " + To.string(amount1 - amount0)) //
-				.append("P/L = " + To.string(amount1)) //
-				.append("DIV = " + To.string(Trade_.dividend(trades0, dividendFun, dividendFeeFun))) //
-				.append(accountTx.transactionSummary(cfg::transactionFee).out1()) //
-				.map(m -> "\n" + m) //
-				.collect(As::joined);
+				.collect(As::streamlet);
 
-		return new Summarize_(account0, out);
+		return new Summarize_(details, trades0, trades1);
 	}
 
 	private class Summarize_ {
+		public final Streamlet<String> details;
+		public final Streamlet<Trade> trades;
 		public final Account account;
-		public final String out;
+		public final double size, pnl, dividend;
+		public final TransactionSummary transactionSummary;
 
-		public Summarize_(Account account, String out) {
-			this.account = account;
-			this.out = out;
+		public Summarize_(Streamlet<String> details, Streamlet<Trade> trades0, Streamlet<Trade> trades1) {
+			Account accountTx = Account.ofHistory(trades0.collect(Trade_::collectBrokeredTrades));
+			Account account0 = Account.ofHistory(trades0);
+			Account account1 = Account.ofHistory(trades1);
+			double amount0 = account0.cash();
+			double amount1 = account1.cash();
+
+			this.details = details;
+			this.trades = trades0;
+			this.account = account0;
+			size = amount1 - amount0;
+			pnl = amount1;
+			dividend = Trade_.dividend(trades, dividendFun, dividendFeeFun);
+			transactionSummary = accountTx.transactionSummary(cfg::transactionFee);
+		}
+
+		public String out0() {
+			return details //
+					.append("siz/pnl/div =" //
+							+ " " + To.string(size) //
+							+ "/" + To.string(pnl) //
+							+ "/" + To.string(dividend)) //
+					.append(transactionSummary.out0()) //
+					.map(m -> "\n" + m) //
+					.collect(As::joined);
+		}
+
+		public String out1() {
+			return details //
+					.append("SIZ = " + To.string(size)) //
+					.append("PNL = " + To.string(pnl)) //
+					.append("DIV = " + To.string(dividend)) //
+					.append(transactionSummary.out1()) //
+					.map(m -> "\n" + m) //
+					.collect(As::joined);
 		}
 	}
 
