@@ -8,6 +8,7 @@ import suite.math.stat.TimeSeries;
 import suite.math.stat.TimeSeries.ReturnsStat;
 import suite.streamlet.Read;
 import suite.trade.Asset;
+import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.analysis.MovingAverage;
@@ -52,6 +53,8 @@ public class PmamrBackAllocator implements BackAllocator {
 				.of(tor, 256, akds, (symbol, ds, period) -> new MeanReversionStat(ds, period));
 
 		return index -> {
+			Time time = Time.ofEpochSec(akds.ts[index - 1]);
+
 			Map<String, MeanReversionStat> mrsBySymbol = akds.dsByKey //
 					.map2((symbol, ds) -> dsv.get(symbol, index)) //
 					.filterValue(mrsReversionStat -> mrsReversionStat != null) //
