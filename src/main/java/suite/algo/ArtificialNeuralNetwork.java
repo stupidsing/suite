@@ -7,7 +7,9 @@ import java.util.Random;
 import suite.math.Sigmoid;
 import suite.math.linalg.Matrix_;
 import suite.math.linalg.Vector_;
+import suite.primitive.Ints;
 import suite.util.List_;
+import suite.util.To;
 
 public class ArtificialNeuralNetwork {
 
@@ -30,18 +32,13 @@ public class ArtificialNeuralNetwork {
 		}
 	}
 
-	public ArtificialNeuralNetwork(List<Integer> layerSizes, Random random) {
+	public ArtificialNeuralNetwork(Ints layerSizes, Random random) {
 		nLayers = layerSizes.size() - 1;
 
 		for (int layer = 0; layer < nLayers; layer++) {
 			int nInputs = layerSizes.get(layer);
 			int nOutputs = layerSizes.get(layer + 1);
-			float[][] weights = new float[nInputs][nOutputs];
-
-			for (int i = 0; i < nInputs; i++)
-				for (int j = 0; j < nOutputs; j++)
-					weights[i][j] = random.nextFloat();
-
+			float[][] weights = To.arrayOfFloats(nInputs, nOutputs, (i, j) -> random.nextFloat());
 			lws.add(new LayerWeight(nInputs, nOutputs, weights));
 		}
 	}
@@ -50,8 +47,8 @@ public class ArtificialNeuralNetwork {
 		return List_.last(activateForward(inputs));
 	}
 
-	public void train(float[] inputs, float[] expected) {
-		propagateBackward(activateForward(inputs), expected);
+	public void train(float[] inputs, float[] expect) {
+		propagateBackward(activateForward(inputs), expect);
 	}
 
 	private List<float[]> activateForward(float[] values) {
@@ -70,25 +67,24 @@ public class ArtificialNeuralNetwork {
 		return outputs;
 	}
 
-	private void propagateBackward(List<float[]> activations, float[] expected) {
-		float[] errors = null;
+	private void propagateBackward(List<float[]> activations, float[] expect) {
+		float[] outs = activations.get(nLayers);
+		float[] errors = vec.sub(expect, outs);
 
-		for (int layer = nLayers; 0 < layer; layer--) {
-			LayerWeight lw0 = lws.get(layer - 1);
-			LayerWeight lw1 = layer < nLayers ? lws.get(layer) : null;
+		for (int layer = nLayers - 1; 0 <= layer; layer--) {
+			float[] ins = activations.get(layer);
+			LayerWeight lw = lws.get(layer);
 
-			float[] ins = activations.get(layer - 1);
-			float[] outs = activations.get(layer);
-			float[] errors1 = lw1 != null ? mtx.mul(lw1.weights, errors) : vec.sub(expected, outs);
+			for (int j = 0; j < lw.nOutputs; j++) {
+				float e = errors[j] *= activationFunctionGradient(outs[j]);
 
-			for (int j = 0; j < lw0.nOutputs; j++)
-				errors1[j] *= activationFunctionGradient(outs[j]);
+				for (int i = 0; i < lw.nInputs; i++)
+					lw.weights[i][j] += learningRate * ins[i] * e;
 
-			for (int j = 0; j < lw0.nOutputs; j++)
-				for (int i = 0; i < lw0.nInputs; i++)
-					lw0.weights[i][j] += learningRate * ins[i] * errors1[j];
+			}
 
-			errors = errors1;
+			errors = mtx.mul(lw.weights, errors);
+			outs = ins;
 		}
 	}
 

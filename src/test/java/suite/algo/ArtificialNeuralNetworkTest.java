@@ -8,6 +8,9 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.adt.pair.Pair;
+import suite.nn.NeuralNetwork;
+import suite.nn.NeuralNetwork.Layer;
+import suite.primitive.Ints;
 import suite.util.FunUtil2.BinOp;
 
 public class ArtificialNeuralNetworkTest {
@@ -18,28 +21,41 @@ public class ArtificialNeuralNetworkTest {
 		Pair<String, BinOp<Boolean>> op1 = Pair.of("or", (b0, b1) -> b0 || b1);
 		Pair<String, BinOp<Boolean>> op2 = Pair.of("xor", (b0, b1) -> b0 ^ b1);
 		boolean[] booleans = new boolean[] { false, true, };
+
+		NeuralNetwork nn = new NeuralNetwork();
 		Random random = new Random();
+
+		Layer[] layers = new Layer[] { nn.new FeedForwardNnLayer(2, 4), nn.new FeedForwardNnLayer(4, 1), };
 
 		// random.setSeed(0l);
 
 		for (Pair<String, BinOp<Boolean>> pair : List.of(op0, op1, op2)) {
 			String name = pair.t0;
 			BinOp<Boolean> oper = pair.t1;
-			ArtificialNeuralNetwork ann = new ArtificialNeuralNetwork(List.of(2, 4, 1), random);
+			ArtificialNeuralNetwork ann = new ArtificialNeuralNetwork(Ints.of(2, 4, 1), random);
 
 			for (int i = 0; i < 16384; i++) {
 				boolean b0 = random.nextBoolean();
 				boolean b1 = random.nextBoolean();
-				ann.train(input(b0, b1), new float[] { f(oper.apply(b0, b1)), });
+				float[] in = input(b0, b1);
+				float[] out = new float[] { f(oper.apply(b0, b1)), };
+				ann.train(in, out);
+				nn.forward(layers, in, out);
 			}
 
 			boolean result = true;
 
 			for (boolean b0 : booleans)
 				for (boolean b1 : booleans) {
-					float f = ann.feed(input(b0, b1))[0];
-					System.out.println(b0 + " " + name + " " + b1 + " = " + f);
-					result &= oper.apply(b0, b1) == .5f < f;
+					float[] in = input(b0, b1);
+					boolean out = oper.apply(b0, b1);
+
+					float f0 = ann.feed(in)[0];
+					float f1 = nn.forward(layers, in, null)[0];
+					System.out.println(b0 + " " + name + " " + b1 + " = " + f0);
+					System.out.println(b0 + " " + name + " " + b1 + " = " + f1);
+					result &= out == .5f < f0;
+					result &= out == .5f < f1;
 				}
 
 			assertTrue(result);
