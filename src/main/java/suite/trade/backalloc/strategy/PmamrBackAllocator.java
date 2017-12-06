@@ -67,12 +67,13 @@ public class PmamrBackAllocator implements BackAllocator {
 							&& mrs.hurst < .5d) //
 					.map2((symbol, mrs) -> {
 						DataSource ds = dsBySymbol.get(symbol);
-						double price = ds.prices[index - 1];
+						float[] prices = ds.prices;
+						double price = prices[index - 1];
 
 						double lma = mrs.latestMovingAverage();
 						double mamrRatio = mrs.movingAvgMeanReversionRatio();
 						double dailyReturn = Quant.return_(lma, price) * mamrRatio;
-						ReturnsStat returnsStat = ts.returnsStatDaily(ds.prices);
+						ReturnsStat returnsStat = ts.returnsStatDaily(prices);
 						double sharpe = returnsStat.sharpeRatio();
 						double kelly = returnsStat.kellyCriterion();
 						return new PotentialStat(dailyReturn, sharpe, kelly);
