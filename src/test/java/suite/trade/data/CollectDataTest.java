@@ -24,7 +24,7 @@ public class CollectDataTest {
 	public void test() throws IOException {
 		Streamlet<String> equities = Streamlet.concat( //
 				hkex.queryCompanies().map(company -> company.symbol), //
-				forex.invertedCurrencies.map((ccy, name) -> ccy));
+				forex.invertedCurrencies.keys());
 
 		for (String code : equities) {
 			String urlString = yahoo.tableUrl(code, TimeRange.ages());
