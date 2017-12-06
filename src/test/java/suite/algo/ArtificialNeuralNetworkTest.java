@@ -22,10 +22,7 @@ public class ArtificialNeuralNetworkTest {
 		Pair<String, BinOp<Boolean>> op2 = Pair.of("xor", (b0, b1) -> b0 ^ b1);
 		boolean[] booleans = new boolean[] { false, true, };
 
-		NeuralNetwork nn = new NeuralNetwork();
 		Random random = new Random();
-
-		Layer[] layers = new Layer[] { nn.new FeedForwardNnLayer(2, 4), nn.new FeedForwardNnLayer(4, 1), };
 
 		// random.setSeed(0l);
 
@@ -33,6 +30,8 @@ public class ArtificialNeuralNetworkTest {
 			String name = pair.t0;
 			BinOp<Boolean> oper = pair.t1;
 			ArtificialNeuralNetwork ann = new ArtificialNeuralNetwork(Ints.of(2, 4, 1), random);
+			NeuralNetwork nn = new NeuralNetwork();
+			Layer[] layers = new Layer[] { nn.new FeedForwardNnLayer(2, 4), nn.new FeedForwardNnLayer(4, 1), };
 
 			for (int i = 0; i < 16384; i++) {
 				boolean b0 = random.nextBoolean();
