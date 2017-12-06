@@ -1,4 +1,4 @@
-package suite.algo;
+package suite.nn;
 
 import static org.junit.Assert.assertTrue;
 
@@ -8,12 +8,10 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.adt.pair.Pair;
-import suite.nn.NeuralNetwork;
-import suite.nn.NeuralNetwork.Layer;
-import suite.primitive.Ints;
 import suite.util.FunUtil2.BinOp;
+import suite.util.FunUtil2.Fun2;
 
-public class ArtificialNeuralNetworkTest {
+public class NeuralNetworkTest {
 
 	@Test
 	public void test() {
@@ -21,25 +19,20 @@ public class ArtificialNeuralNetworkTest {
 		Pair<String, BinOp<Boolean>> op1 = Pair.of("or", (b0, b1) -> b0 || b1);
 		Pair<String, BinOp<Boolean>> op2 = Pair.of("xor", (b0, b1) -> b0 ^ b1);
 		boolean[] booleans = new boolean[] { false, true, };
-
 		Random random = new Random();
-
-		// random.setSeed(0l);
 
 		for (Pair<String, BinOp<Boolean>> pair : List.of(op0, op1, op2)) {
 			String name = pair.t0;
 			BinOp<Boolean> oper = pair.t1;
-			ArtificialNeuralNetwork ann = new ArtificialNeuralNetwork(Ints.of(2, 4, 1), random);
 			NeuralNetwork nn = new NeuralNetwork();
-			Layer[] layers = new Layer[] { nn.new FeedForwardNnLayer(2, 4), nn.new FeedForwardNnLayer(4, 1), };
+			Fun2<float[], float[], float[]> train = nn.ml(new int[] { 2, 4, 1, });
 
 			for (int i = 0; i < 16384; i++) {
 				boolean b0 = random.nextBoolean();
 				boolean b1 = random.nextBoolean();
 				float[] in = input(b0, b1);
 				float[] out = new float[] { f(oper.apply(b0, b1)), };
-				ann.train(in, out);
-				nn.forward(layers, in, out);
+				train.apply(in, out);
 			}
 
 			boolean result = true;
@@ -48,13 +41,9 @@ public class ArtificialNeuralNetworkTest {
 				for (boolean b1 : booleans) {
 					float[] in = input(b0, b1);
 					boolean out = oper.apply(b0, b1);
-
-					float f0 = ann.feed(in)[0];
-					float f1 = nn.forward(layers, in, null)[0];
-					System.out.println(b0 + " " + name + " " + b1 + " = " + f0);
-					System.out.println(b0 + " " + name + " " + b1 + " = " + f1);
-					result &= out == .5f < f0;
-					result &= out == .5f < f1;
+					float f = train.apply(in, null)[0];
+					System.out.println(b0 + " " + name + " " + b1 + " = " + f);
+					result &= out == .5f < f;
 				}
 
 			assertTrue(result);

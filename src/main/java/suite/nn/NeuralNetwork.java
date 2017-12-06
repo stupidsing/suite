@@ -5,6 +5,7 @@ import java.util.Random;
 import suite.math.Sigmoid;
 import suite.math.linalg.Matrix_;
 import suite.math.linalg.Vector_;
+import suite.util.FunUtil2.Fun2;
 import suite.util.To;
 
 public class NeuralNetwork {
@@ -21,23 +22,30 @@ public class NeuralNetwork {
 		public float[] backProp(float[] inputs, float[] outputs, float[] errors);
 	}
 
-	public float[] forward(Layer[] layers, float[] ins, float[] expect) {
-		int nLayers = layers.length;
-		float[][] inputs = new float[nLayers][];
-		float[][] outputs = new float[nLayers][];
-		float[] result = ins;
+	public Fun2<float[], float[], float[]> ml(int[] n) {
+		int nLayers = n.length - 1;
+		Layer[] layers = new Layer[nLayers];
 
 		for (int i = 0; i < nLayers; i++)
-			result = outputs[i] = layers[i].forward(inputs[i] = result);
+			layers[i] = new FeedForwardNnLayer(n[i], n[i + 1]);
 
-		if (expect != null) {
-			float[] errors = vec.sub(expect, result);
+		return (ins, expect) -> {
+			float[][] inputs = new float[nLayers][];
+			float[][] outputs = new float[nLayers][];
+			float[] result = ins;
 
-			for (int i = nLayers - 1; 0 <= i; i--)
-				errors = layers[i].backProp(inputs[i], outputs[i], errors);
-		}
+			for (int i = 0; i < nLayers; i++)
+				result = outputs[i] = layers[i].forward(inputs[i] = result);
 
-		return result;
+			if (expect != null) {
+				float[] errors = vec.sub(expect, result);
+
+				for (int i = nLayers - 1; 0 <= i; i--)
+					errors = layers[i].backProp(inputs[i], outputs[i], errors);
+			}
+
+			return result;
+		};
 	}
 
 	public class FeedForwardNnLayer implements Layer {
