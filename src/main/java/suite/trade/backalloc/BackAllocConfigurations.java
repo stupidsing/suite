@@ -11,6 +11,7 @@ import suite.trade.backalloc.strategy.BackAllocatorGeneral;
 import suite.trade.backalloc.strategy.BackAllocatorMech;
 import suite.trade.backalloc.strategy.BackAllocatorOld;
 import suite.trade.backalloc.strategy.BackAllocator_;
+import suite.trade.backalloc.strategy.Pmamr2BackAllocator;
 import suite.trade.backalloc.strategy.PmamrBackAllocator;
 import suite.trade.backalloc.strategy.ReverseCorrelateBackAllocator;
 import suite.trade.data.Configuration;
@@ -32,6 +33,7 @@ public class BackAllocConfigurations {
 		private BackAllocator ba_donHold = baGen.donHold;
 		private BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().longOnly().pick(3).even();
 		private BackAllocator ba_pmamr = PmamrBackAllocator.of();
+		private BackAllocator ba_pmamr2 = Pmamr2BackAllocator.of();
 		private BackAllocator ba_pmmmr = baOld.movingMedianMeanRevn().holdExtend(9);
 		private BackAllocator ba_revco = ReverseCorrelateBackAllocator.of();
 
@@ -41,6 +43,7 @@ public class BackAllocConfigurations {
 		public final Pair<String, BackAllocConfiguration> pair_ema = pair("ema", baGen.ema);
 		public final Pair<String, BackAllocConfiguration> pair_donchian = pair("donchian", ba_donHold);
 		public final Pair<String, BackAllocConfiguration> pair_pmamr = pair("pmamr", ba_pmamr);
+		public final Pair<String, BackAllocConfiguration> pair_pmamr2 = pair("pmamr2", ba_pmamr2);
 		public final Pair<String, BackAllocConfiguration> pair_pmmmr = pair("pmmmr", ba_pmmmr);
 		public final Pair<String, BackAllocConfiguration> pair_revco = pair("revco", ba_revco);
 		public final Pair<String, BackAllocConfiguration> pair_tma = pair("tma", baGen.tma);
@@ -62,6 +65,7 @@ public class BackAllocConfigurations {
 				.cons("january", BackAllocator_.ofSingle(Asset.hsiSymbol).january().cfgUnl(fun_hsi)) //
 				.cons("mix", BackAllocator_.sum(ba_bbHold, ba_donHold).cfgUnl(fun)) //
 				.cons(pair_pmamr) //
+				.cons(pair_pmamr2) //
 				.cons(pair_pmmmr) //
 				.cons(pair_revco) //
 				.cons("revdd", baOld.revDrawdown().holdExtend(40).cfgUnl(fun)) //
