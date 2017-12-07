@@ -105,6 +105,7 @@ public class HkexFactBook {
 			throw new RuntimeException();
 	}
 
+	@SuppressWarnings("unused")
 	private String getUrl0(int year, String section) {
 		URI uri0 = To.uri("https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook.htm");
 		Map<String, URI> links0 = HttpUtil.resolveLinks(uri0);
