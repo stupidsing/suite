@@ -53,12 +53,12 @@ public class NeuralNetwork {
 		};
 	}
 
-	public class FeedForwardNnLayer implements Layer<float[], float[]> {
+	private class FeedForwardNnLayer implements Layer<float[], float[]> {
 		private int nInputs;
 		private int nOutputs;
 		private float[][] weights;
 
-		public FeedForwardNnLayer(int nInputs, int nOutputs) {
+		private FeedForwardNnLayer(int nInputs, int nOutputs) {
 			this.nInputs = nInputs;
 			this.nOutputs = nOutputs;
 			weights = To.arrayOfFloats(nInputs, nOutputs, (i, j) -> random.nextFloat());
@@ -78,6 +78,73 @@ public class NeuralNetwork {
 					weights[i][j] += learningRate * inputs[i] * e;
 			}
 			return mtx.mul(weights, errors);
+		}
+	}
+
+	@SuppressWarnings("unused")
+	private class SpawnLayer<I, O> implements Layer<I, Object[]> {
+		private Layer<I, O>[] layers;
+
+		private SpawnLayer(int size, Layer<I, O>[] layers) {
+			this.layers = layers;
+		}
+
+		public Object[] forward(I inputs) {
+			return To.array(layers.length, Object.class, i -> layers[i].forward(inputs));
+		}
+
+		public Object[] backprop(I inputs, Object[] outputs, Object[] errors) {
+			return To.array(layers.length, Object.class, i -> {
+				@SuppressWarnings("unchecked")
+				O output = (O) outputs[i], error = (O) errors[i];
+				return layers[i].backprop(inputs, output, error);
+			});
+		}
+
+	}
+
+	@SuppressWarnings("unused")
+	private class ConvNnLayer implements Layer<float[][], float[][]> {
+		private int sx, sy;
+		private float[][] kernel;
+
+		private ConvNnLayer(int sx, int sy) {
+			this.sx = sx;
+			this.sy = sy;
+			kernel = To.arrayOfFloats(sx, sy, (x, y) -> random.nextFloat());
+		}
+
+		public float[][] forward(float[][] inputs) {
+			int hsx = mtx.height(inputs) - sx;
+			int hsy = mtx.width(inputs) - sy;
+			float[][] outputs = new float[hsx][hsy];
+			for (int ox = 0; ox <= hsx; ox++)
+				for (int oy = 0; oy <= hsy; oy++) {
+					double sum = 0d;
+					for (int x = 0; x < sx; x++)
+						for (int y = 0; y < sy; y++)
+							sum += inputs[ox + x][oy + y] * (double) kernel[x][y];
+					outputs[ox][oy] = (float) Math.min(0d, sum);
+				}
+			return outputs;
+		}
+
+		public float[][] backprop(float[][] inputs, float[][] outputs, float[][] errors) {
+			int hsx = mtx.height(inputs) - sx;
+			int hsy = mtx.width(inputs) - sy;
+			float errors1[][] = new float[hsx][hsy];
+			for (int ox = 0; ox < hsx; ox++)
+				for (int oy = 0; oy < hsy; oy++) {
+					float e = errors[ox][oy] *= (float) outputs[ox][oy] < 0f ? 0f : 1f;
+					for (int x = 0; x < sx; x++)
+						for (int y = 0; y < sy; y++) {
+							int ix = ox + x;
+							int iy = oy + y;
+							errors1[ix][iy] += e * (double) (kernel[x][y] += learningRate * inputs[ix][iy] * e);
+						}
+				}
+
+			return errors1;
 		}
 	}
 
