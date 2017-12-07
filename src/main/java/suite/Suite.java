@@ -41,7 +41,6 @@ public class Suite {
 	// compilation defaults
 	public static boolean isProverTrace = false;
 	public static boolean isInstructionDump = false;
-	public static boolean isInstructionTrace = false;
 	public static int stackSize = 16384;
 
 	public static List<String> libraries = List.of("STANDARD", "CHARS", "TEXT");

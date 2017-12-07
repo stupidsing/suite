@@ -77,7 +77,6 @@ public class FailedTests {
 	@Test
 	public void testRecursiveCall() {
 		Suite.isInstructionDump = true;
-		Suite.isInstructionTrace = true;
 		Suite.useLibraries(() -> {
 			assertNotNull(Suite.evaluateFun("define f := f >> f", true));
 			return true;

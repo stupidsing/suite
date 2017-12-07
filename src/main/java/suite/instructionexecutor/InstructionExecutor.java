@@ -80,13 +80,9 @@ public class InstructionExecutor implements AutoCloseable {
 				Frame frame = current.frame;
 				Node[] regs = frame != null ? frame.registers : null;
 				Instruction insn = instructions[ip = current.ip++];
-
 				Thunk thunk;
 				TermOp op;
 				int i;
-
-				if (Suite.isInstructionTrace)
-					StatisticsCollector.getInstance().collect(ip, insn);
 
 				switch (insn.insn) {
 				case ASSIGNCONST___:
