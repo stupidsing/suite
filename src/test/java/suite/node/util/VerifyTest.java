@@ -69,13 +69,13 @@ public class VerifyTest {
 
 		new Verify(defs, axioms) //
 				.extend("suppose @cond.0 := eq-class Eq >> " //
-						+ "suppose @cond.1 := .P Eq .Q >> " //
-						+ "suppose @cond.2 := not (.Q Eq .R) >> " //
+						+ "suppose @P-Eq-Q := .P Eq .Q >> " //
+						+ "suppose @Q-Ne-R := not (.Q Eq .R) >> " //
 						+ "contradict @fail := .P Eq .R >> " //
 						+ "lemma @eq := @cond.0 | expand def$eq >> " //
-						+ "lemma @Q-Eq-P := @eq | choose commutative | fulfill-by @cond.1 >> " //
+						+ "lemma @Q-Eq-P := @eq | choose commutative | fulfill-by @P-Eq-Q >> " //
 						+ "lemma @Q-Eq-R := @eq | choose transitive | fulfill-by (@Q-Eq-P, @fail) >> " //
-						+ "@Q-Eq-R, @cond.2 | fulfill @not.0") //
+						+ "@Q-Eq-R, @Q-Ne-R | fulfill @not.0") //
 				.extend("is-nat 0", "axiom @nat.0") //
 				.extend("is-nat (succ 0)", "'is-nat 0' | fulfill @nat.1");
 	}
