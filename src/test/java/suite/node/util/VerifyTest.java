@@ -143,7 +143,19 @@ public class VerifyTest {
 				return verify(Suite.substitute(".0 | fulfill .1", m[1], m[0]));
 			else if ((m = Suite.match("lemma .0 := .1 >> .2").apply(proof)) != null)
 				return new Verify(defs, rules.put(name(m[0]), verify(m[1]))).verify(m[2]);
-			else if ((m = Suite.match(".0 | rexpand .1").apply(proof)) != null) {
+			else if ((m = Suite.match(".0 | mi .1 .2").apply(proof)) != null) {
+				Node[] m_ = m;
+				Fun<Node, Node> fun = value -> {
+					Generalizer generalizer = new Generalizer();
+					Binder.bind(generalizer.generalize(m_[1]), value, new Trail());
+					return generalizer.generalize(m_[2]);
+				};
+				Node t = Atom.temp();
+				Node init = fun.apply(Suite.parse("0"));
+				Node succ = Suite.substitute(".0 => .1", t, fun.apply(Suite.substitute("succ .0", t)));
+				Binder.bind(verify(m[0]), Tree.of(TermOp.AND___, init, succ), new Trail());
+				return Suite.substitute("is.nat .N => .0", fun.apply(Suite.parse(".N")));
+			} else if ((m = Suite.match(".0 | rexpand .1").apply(proof)) != null) {
 				Definition def = defs.get(name(m[1])).clone_();
 				return replace(verify(m[0]), def.t1, def.t0);
 			} else if ((m = Suite.match("suppose .0 := .1 >> .2").apply(proof)) != null)
