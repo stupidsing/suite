@@ -33,7 +33,7 @@ public class VerifyTest {
 		Fun2<String, IList<String>, Definition> defn = (t0, t1) -> def_.apply(t0, and.apply(t1));
 
 		IMap<String, Definition> defs = IMap //
-				.<String, Definition> empty() //
+				.<String, Definition>empty() //
 				.put("def$eq", defn.apply("eq-class .eq", IList.asList( //
 						"commutative # .A .eq .B => .B .eq .A", //
 						"transitive # .A .eq .B, .B .eq .C => .A .eq .C"))) //
@@ -55,7 +55,7 @@ public class VerifyTest {
 						".isElem .P => .P .eq .zero; (.P .op1 (.inv1 .P)) .eq .one")));
 
 		IMap<String, Node> axioms = IMap //
-				.<String, Node> empty() //
+				.<String, Node>empty() //
 				.put("@not.0", Suite.parse(".P, not .P => false")) //
 				.put("@and.0", Suite.parse(".P, .Q => .P")) //
 				.put("@and.1", Suite.parse(".P, .Q => .Q")) //
@@ -68,13 +68,13 @@ public class VerifyTest {
 				.put("@int.0", Suite.parse("true => group is-int int-eq int-add int-neg I0"));
 
 		new Verify(defs, axioms) //
-				.extend("suppose @cond.0 := eq-class Eq >> " //
+				.extend("suppose @EqClass-Eq := eq-class Eq >> " //
 						+ "suppose @P-Eq-Q := .P Eq .Q >> " //
 						+ "suppose @Q-Ne-R := not (.Q Eq .R) >> " //
-						+ "contradict @fail := .P Eq .R >> " //
-						+ "lemma @eq := @cond.0 | expand def$eq >> " //
+						+ "contradict @P-Eq-R := .P Eq .R >> " //
+						+ "lemma @eq := @EqClass-Eq | expand def$eq >> " //
 						+ "lemma @Q-Eq-P := @eq | choose commutative | fulfill-by @P-Eq-Q >> " //
-						+ "lemma @Q-Eq-R := @eq | choose transitive | fulfill-by (@Q-Eq-P, @fail) >> " //
+						+ "lemma @Q-Eq-R := @eq | choose transitive | fulfill-by (@Q-Eq-P, @P-Eq-R) >> " //
 						+ "@Q-Eq-R, @Q-Ne-R | fulfill @not.0") //
 				.extend("is-nat 0", "axiom @nat.0") //
 				.extend("is-nat (succ 0)", "'is-nat 0' | fulfill @nat.1");
