@@ -19,7 +19,7 @@ public class NeuralNetwork {
 	public interface Layer {
 		public float[] forward(float[] inputs);
 
-		public float[] backProp(float[] inputs, float[] outputs, float[] errors);
+		public float[] backprop(float[] inputs, float[] outputs, float[] errors);
 	}
 
 	public Fun2<float[], float[], float[]> ml(int[] n) {
@@ -41,7 +41,7 @@ public class NeuralNetwork {
 				float[] errors = vec.sub(expect, result);
 
 				for (int i = nLayers - 1; 0 <= i; i--)
-					errors = layers[i].backProp(inputs[i], outputs[i], errors);
+					errors = layers[i].backprop(inputs[i], outputs[i], errors);
 			}
 
 			return result;
@@ -66,7 +66,7 @@ public class NeuralNetwork {
 			return m;
 		}
 
-		public float[] backProp(float[] inputs, float[] outputs, float[] errors) {
+		public float[] backprop(float[] inputs, float[] outputs, float[] errors) {
 			for (int j = 0; j < nOutputs; j++) {
 				float e = errors[j] *= (float) activationFunctionGradient(outputs[j]);
 				for (int i = 0; i < nInputs; i++)
