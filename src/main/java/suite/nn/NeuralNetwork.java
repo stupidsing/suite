@@ -107,6 +107,7 @@ public class NeuralNetwork {
 	private class ConvNnLayer implements Layer<float[][], float[][]> {
 		private int sx, sy;
 		private float[][] kernel;
+		private float bias;
 
 		private ConvNnLayer(int sx, int sy) {
 			this.sx = sx;
@@ -120,7 +121,7 @@ public class NeuralNetwork {
 			float[][] outputs = new float[hsx][hsy];
 			for (int ox = 0; ox <= hsx; ox++)
 				for (int oy = 0; oy <= hsy; oy++) {
-					double sum = 0d;
+					double sum = bias;
 					for (int x = 0; x < sx; x++)
 						for (int y = 0; y < sy; y++)
 							sum += inputs[ox + x][oy + y] * (double) kernel[x][y];
@@ -136,6 +137,7 @@ public class NeuralNetwork {
 			for (int ox = 0; ox < hsx; ox++)
 				for (int oy = 0; oy < hsy; oy++) {
 					float e = errors[ox][oy] *= (float) outputs[ox][oy] < 0f ? 0f : 1f;
+					bias += e;
 					for (int x = 0; x < sx; x++)
 						for (int y = 0; y < sy; y++) {
 							int ix = ox + x;
