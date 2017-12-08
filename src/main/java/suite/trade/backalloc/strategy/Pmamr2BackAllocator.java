@@ -34,11 +34,7 @@ public class Pmamr2BackAllocator implements BackAllocator {
 	private TimeSeries ts = new TimeSeries();
 
 	public static BackAllocator of() {
-		return Pmamr2BackAllocator.of_().reallocate();
-	}
-
-	public static Pmamr2BackAllocator of_() {
-		return new Pmamr2BackAllocator();
+		return new Pmamr2BackAllocator().reallocate();
 	}
 
 	private Pmamr2BackAllocator() {
