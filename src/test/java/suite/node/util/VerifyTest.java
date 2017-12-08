@@ -34,19 +34,19 @@ public class VerifyTest {
 
 		IMap<String, Definition> defs = IMap //
 				.<String, Definition>empty() //
-				.put("def$eq", defn.apply("eq-class .eq", IList.asList( //
+				.put("def$eq", defn.apply("eq-class .eq", IList.of( //
 						"commutative # .A .eq .B => .B .eq .A", //
 						"transitive # .A .eq .B, .B .eq .C => .A .eq .C"))) //
 				.put("def$uni-op", def2.apply("uni-op .isElem .op", ".isElem .P => .isElem (.op .P)")) //
 				.put("def$bin-op", def2.apply("bin-op .isElem .op", ".isElem .P, .isElem .Q => .isElem (.P .op .Q)")) //
-				.put("def$group", defn.apply("group .isElem .eq .op .inv .zero", IList.asList( //
+				.put("def$group", defn.apply("group .isElem .eq .op .inv .zero", IList.of( //
 						".isElem .zero", //
 						"eq-class .eq", //
 						"bin-op .isElem .op", //
 						".isElem .P => (.zero .op .P) .eq .P", //
 						".isElem .P, .isElem .Q, .isElem .R => (.P .op (.Q .op .R)) .eq ((.P .op .Q) .op .R)", //
 						".isElem .P => (.P .op (.inv .P)) .eq .zero"))) //
-				.put("def$field", defn.apply("field .isElem .eq .op0 .inv0 .zero .op1 .inv1 .one", IList.asList( //
+				.put("def$field", defn.apply("field .isElem .eq .op0 .inv0 .zero .op1 .inv1 .one", IList.of( //
 						"group .isElem .eq .op0 .inv0 .zero", //
 						".isElem .one", //
 						"bin-op .op1", //
