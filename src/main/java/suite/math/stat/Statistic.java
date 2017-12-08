@@ -115,14 +115,17 @@ public class Statistic {
 			}
 
 			// sse = sst - ssr; // theoretically
-			nSamples = nSamples_;
-			sampleLength = sampleLength_;
-			in = x;
-			invn2 = 1d / (nSamples_ - sampleLength_ - 1);
-			sst = sst_;
-			sse = sse_;
-			r2 = ssr / sst_; // 0 -> not accurate, 1 -> totally accurate
-			standardError = Math.sqrt(ssr * invn2);
+			if (!Double.isNaN(sse_)) {
+				nSamples = nSamples_;
+				sampleLength = sampleLength_;
+				in = x;
+				invn2 = 1d / (nSamples_ - sampleLength_ - 1);
+				sst = sst_;
+				sse = sse_;
+				r2 = ssr / sst_; // 0 -> not accurate, 1 -> totally accurate
+				standardError = Math.sqrt(ssr * invn2);
+			} else
+				throw new RuntimeException();
 		}
 
 		public float predict(float[] x) {
