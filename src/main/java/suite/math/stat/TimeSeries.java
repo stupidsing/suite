@@ -96,18 +96,18 @@ public class TimeSeries {
 	public double hurstFwf(float[] ys, int tor) {
 		float[] logys = To.arrayOfFloats(ys, price -> (float) Math.log(price));
 		float[] returns0 = dropDiff_(1, logys);
-		int rlength = returns0.length;
+		int length = returns0.length;
 		List<FltObjPair<float[]>> pairs = new ArrayList<>();
-		for (int n = 0; n < rlength * 3 / 4; n++) {
-			float[] returns = Arrays.copyOfRange(returns0, n, rlength);
+		for (int n = 0; n < length * 3 / 4; n++) {
+			float[] returns = Arrays.copyOfRange(returns0, n, length);
 			MeanVariance mv = stat.meanVariance(returns);
 			double mean = mv.mean;
 			float[] devs = To.arrayOfFloats(returns, r -> (float) (r - mean));
 			double min = Double.MAX_VALUE;
 			double max = Double.MIN_VALUE;
 			double sum = 0d;
-			for (int i = 0; i < devs.length; i++) {
-				sum += devs[i];
+			for (float dev : devs) {
+				sum += dev;
 				min = Math.min(sum, min);
 				max = Math.max(sum, max);
 			}
