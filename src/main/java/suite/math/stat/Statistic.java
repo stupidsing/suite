@@ -115,6 +115,7 @@ public class Statistic {
 			}
 
 			// sse = sst - ssr; // theoretically
+
 			if (!Double.isNaN(sse_)) {
 				nSamples = nSamples_;
 				sampleLength = sampleLength_;

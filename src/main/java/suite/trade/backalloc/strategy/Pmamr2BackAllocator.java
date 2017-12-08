@@ -13,7 +13,6 @@ import suite.trade.Trade_;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
-import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSourceView;
 import suite.util.To;
 
@@ -24,7 +23,7 @@ import suite.util.To;
  *
  * @author ywsing
  */
-public class Pmamr2BackAllocator implements BackAllocator {
+public class Pmamr2BackAllocator {
 
 	private int top = 5;
 	private int tor = 64;
@@ -33,56 +32,52 @@ public class Pmamr2BackAllocator implements BackAllocator {
 	private MovingAverage ma = new MovingAverage();
 	private TimeSeries ts = new TimeSeries();
 
-	public static BackAllocator of() {
-		return new Pmamr2BackAllocator().reallocate();
-	}
+	public BackAllocator backAllocator() {
+		BackAllocator ba = (akds, indices) -> {
+			Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
 
-	private Pmamr2BackAllocator() {
-	}
+			DataSourceView<String, MeanReversionStat> dsv = DataSourceView //
+					.of(tor, 256, akds, (symbol, ds, period) -> new MeanReversionStat(ds, period));
 
-	@Override
-	public OnDateTime allocate(AlignKeyDataSource<String> akds, int[] indices) {
-		Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
+			return index -> {
+				// Time time = Time.ofEpochSec(akds.ts[index - 1]);
 
-		DataSourceView<String, MeanReversionStat> dsv = DataSourceView //
-				.of(tor, 256, akds, (symbol, ds, period) -> new MeanReversionStat(ds, period));
+				Map<String, MeanReversionStat> mrsBySymbol = akds.dsByKey //
+						.map2((symbol, ds) -> dsv.get(symbol, index)) //
+						.filterValue(mrsReversionStat -> mrsReversionStat != null) //
+						.toMap();
 
-		return index -> {
-			// Time time = Time.ofEpochSec(akds.ts[index - 1]);
+				// make sure all time-series are mean-reversions:
+				// ensure ADF < 0d: price is not random walk
+				// ensure Hurst exponent < .5d: price is weakly mean reverting
+				return Read.from2(mrsBySymbol) //
+						.filterValue(mrs -> mrs.adf < 0d //
+								&& mrs.hurst < .5d) //
+						.map2((symbol, mrs) -> {
+							DataSource ds = dsBySymbol.get(symbol);
+							float[] prices = ds.prices;
+							int last = index - 1;
+							float price0 = prices[last - tor / 2];
+							double price = prices[last];
 
-			Map<String, MeanReversionStat> mrsBySymbol = akds.dsByKey //
-					.map2((symbol, ds) -> dsv.get(symbol, index)) //
-					.filterValue(mrsReversionStat -> mrsReversionStat != null) //
-					.toMap();
-
-			// make sure all time-series are mean-reversions:
-			// ensure ADF < 0d: price is not random walk
-			// ensure Hurst exponent < .5d: price is weakly mean reverting
-			return Read.from2(mrsBySymbol) //
-					.filterValue(mrs -> mrs.adf < 0d //
-							&& mrs.hurst < .5d) //
-					.map2((symbol, mrs) -> {
-						DataSource ds = dsBySymbol.get(symbol);
-						float[] prices = ds.prices;
-						int last = index - 1;
-						float price0 = prices[last - tor / 2];
-						double price = prices[last];
-
-						double mamrRatio = mrs.movingAvgMeanReversionRatio();
-						double dailyReturn = Quant.return_(price0, price) * mamrRatio;
-						ReturnsStat returnsStat = ts.returnsStatDaily(prices);
-						double sharpe = returnsStat.sharpeRatio();
-						double kelly = returnsStat.kellyCriterion();
-						return new PotentialStat(dailyReturn, sharpe, kelly);
-					}) //
-					.filterValue(ps -> ps.dailyReturn < 0d) //
-					.filterValue(ps -> 0d < ps.sharpe) //
-					.cons(Asset.cashSymbol, new PotentialStat(Trade_.riskFreeInterestRate, 1d, 0d)) //
-					.mapValue(ps -> ps.kelly) //
-					.sortBy((symbol, potential) -> -potential) //
-					.take(top) //
-					.toList();
+							double mamrRatio = mrs.movingAvgMeanReversionRatio();
+							double dailyReturn = Quant.return_(price0, price) * mamrRatio;
+							ReturnsStat returnsStat = ts.returnsStatDaily(prices);
+							double sharpe = returnsStat.sharpeRatio();
+							double kelly = returnsStat.kellyCriterion();
+							return new PotentialStat(dailyReturn, sharpe, kelly);
+						}) //
+						.filterValue(ps -> ps.dailyReturn < 0d) //
+						.filterValue(ps -> 0d < ps.sharpe) //
+						.cons(Asset.cashSymbol, new PotentialStat(Trade_.riskFreeInterestRate, 1d, 0d)) //
+						.mapValue(ps -> ps.kelly) //
+						.sortBy((symbol, potential) -> -potential) //
+						.take(top) //
+						.toList();
+			};
 		};
+
+		return ba.reallocate();
 	}
 
 	private class PotentialStat {

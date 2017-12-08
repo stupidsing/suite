@@ -27,7 +27,7 @@ public class BackAllocBackTestTest {
 
 	@Test
 	public void testBackTest() {
-		BackAllocator backAllocator = PmamrBackAllocator.of();
+		BackAllocator backAllocator = new PmamrBackAllocator().backAllocator();
 		Simulate sim = runner.backTest(backAllocator, period);
 		SummarizeByStrategy<String> sbs = Summarize.of(cfg, Read.from(sim.trades)).summarize(trade -> trade.symbol);
 		System.out.println(sbs.log);

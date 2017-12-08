@@ -32,8 +32,8 @@ public class BackAllocConfigurations {
 		private BackAllocator ba_bbHold = baGen.bb_.filterByIndex(cfg).holdExtend(8);
 		private BackAllocator ba_donHold = baGen.donHold;
 		private BackAllocator ba_facoil = Factor.ofCrudeOil(cfg).backAllocator().longOnly().pick(3).even();
-		private BackAllocator ba_pmamr = PmamrBackAllocator.of();
-		private BackAllocator ba_pmamr2 = Pmamr2BackAllocator.of();
+		private BackAllocator ba_pmamr = new PmamrBackAllocator().backAllocator();
+		private BackAllocator ba_pmamr2 = new Pmamr2BackAllocator().backAllocator();
 		private BackAllocator ba_pmmmr = baOld.movingMedianMeanRevn().holdExtend(9);
 		private BackAllocator ba_revco = ReverseCorrelateBackAllocator.of();
 
