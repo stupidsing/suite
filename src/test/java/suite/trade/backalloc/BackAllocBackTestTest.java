@@ -37,7 +37,7 @@ public class BackAllocBackTestTest {
 	@Test
 	public void testBackTestSingle() {
 		Asset asset = cfg.queryCompany("0945.HK");
-		BackAllocator backAllocator = MovingAvgMeanReversionBackAllocator.of();
+		BackAllocator backAllocator = new MovingAvgMeanReversionBackAllocator().backAllocator();
 		assertGrowth(out(runner.backTest(backAllocator, period, Read.each(asset))));
 	}
 

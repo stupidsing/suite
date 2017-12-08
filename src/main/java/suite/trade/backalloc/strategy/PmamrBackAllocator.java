@@ -51,8 +51,7 @@ public class PmamrBackAllocator {
 				// ensure ADF < 0d: price is not random walk
 				// ensure Hurst exponent < .5d: price is weakly mean reverting
 				return Read.from2(mrsBySymbol) //
-						.filterValue(mrs -> mrs.adf < 0d //
-								&& mrs.hurst < .5d) //
+						.filterValue(mrs -> mrs.adf < 0d && mrs.hurst < .5d) //
 						.map2((symbol, mrs) -> {
 							DataSource ds = dsBySymbol.get(symbol);
 							float[] prices = ds.prices;
