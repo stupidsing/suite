@@ -30,7 +30,7 @@ public class IList<T> implements Iterable<T> {
 	}
 
 	@SafeVarargs
-	public static <T> IList<T> asList(T... ts) {
+	public static <T> IList<T> of(T... ts) {
 		IList<T> list = IList.<T>end();
 		for (T t : ts)
 			list = cons(t, list);

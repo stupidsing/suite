@@ -177,7 +177,7 @@ public class ISkewedBinPriorityQueue<T> {
 			nodes = IList.cons(node0, IList.cons(node1, smallest.nodes));
 		} else { // 0 <= c20 && c01 <= 0
 			smallest = node0;
-			nodes = IList.asList(node1, node2);
+			nodes = IList.of(node1, node2);
 		}
 
 		return new Node(node1.rank + 1, smallest.value, nodes);

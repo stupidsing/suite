@@ -69,7 +69,7 @@ public class HttpSessionController {
 			Session session = sessionId != null ? sessionManager.get(sessionId) : null;
 			HttpResponse response;
 
-			if (Objects.equals(request.path, IList.asList("login"))) {
+			if (Objects.equals(request.path, IList.of("login"))) {
 				Map<String, String> attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
 				String username = attrs.get("username");
 				String password = attrs.get("password");
@@ -95,7 +95,7 @@ public class HttpSessionController {
 					response = showProtectedPage(request1, sessionId);
 				} else
 					response = showLoginPage(path, true);
-			} else if (Objects.equals(request.path, IList.asList("logout"))) {
+			} else if (Objects.equals(request.path, IList.of("logout"))) {
 				if (sessionId != null)
 					sessionManager.remove(sessionId);
 
