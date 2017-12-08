@@ -1,6 +1,8 @@
 package suite.math.stat;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Vector_;
@@ -70,14 +72,15 @@ public class TimeSeries {
 	}
 
 	public float[] dropDiff(int tor, float[] fs) {
-		return drop_(tor, differences_(tor, fs));
+		return dropDiff_(tor, fs);
 	}
 
+	// epchan
 	public double hurst(float[] ys, int tor) {
 		float[] logys = To.arrayOfFloats(ys, price -> (float) Math.log(price));
 		int[] tors = Ints_.toArray(tor, t -> t + 1);
 		float[] logVrs = Floats_.toArray(tor, t -> {
-			float[] diffs = dropDiff(tors[t], logys);
+			float[] diffs = dropDiff_(tors[t], logys);
 			float[] diffs2 = To.arrayOfFloats(diffs, diff -> diff * diff);
 			return (float) Math.log(stat.variance(diffs2));
 		});
@@ -87,6 +90,32 @@ public class TimeSeries {
 				.toList());
 		float beta0 = lr.coefficients[0];
 		return beta0 / 2d;
+	}
+
+	// http://www.financialwisdomforum.org/gummy-stuff/hurst.htm
+	public double hurstFwf(float[] ys, int tor) {
+		float[] logys = To.arrayOfFloats(ys, price -> (float) Math.log(price));
+		float[] returns0 = dropDiff_(1, logys);
+		int rlength = returns0.length;
+		List<FltObjPair<float[]>> pairs = new ArrayList<>();
+		for (int n = 0; n < rlength * 3 / 4; n++) {
+			float[] returns = Arrays.copyOfRange(returns0, n, rlength);
+			MeanVariance mv = stat.meanVariance(returns);
+			double mean = mv.mean;
+			float[] devs = To.arrayOfFloats(returns, r -> (float) (r - mean));
+			double min = Double.MAX_VALUE;
+			double max = Double.MIN_VALUE;
+			double sum = 0d;
+			for (int i = 0; i < devs.length; i++) {
+				sum += devs[i];
+				min = Math.min(sum, min);
+				max = Math.max(sum, max);
+			}
+			double x = Math.log(returns.length);
+			double y = (max - min) / mv.standardDeviation();
+			pairs.add(FltObjPair.of((float) y, new float[] { (float) x, 1f, }));
+		}
+		return stat.linearRegression(pairs).coefficients[0];
 	}
 
 	public boolean isUnitRootDetected(float[] ys, int tor) {
@@ -207,9 +236,13 @@ public class TimeSeries {
 
 	public double varianceRatio(float[] prices, int tor) {
 		float[] logs = To.arrayOfFloats(prices, price -> (float) Math.log(price));
-		float[] diffsTor = dropDiff(tor, logs);
-		float[] diffs1 = dropDiff(1, logs);
+		float[] diffsTor = dropDiff_(tor, logs);
+		float[] diffs1 = dropDiff_(1, logs);
 		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));
+	}
+
+	private float[] dropDiff_(int tor, float[] fs) {
+		return drop_(tor, differences_(tor, fs));
 	}
 
 	private float[] drop_(int tor, float[] fs) {

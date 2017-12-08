@@ -266,6 +266,45 @@ public class Statistic {
 		return meanVariance_(fs).variance;
 	}
 
+	private double mean_(float[] fs) {
+		int length = fs.length;
+		double sum = 0f;
+		for (float f : fs)
+			sum += f;
+		return sum / length;
+	}
+
+	private MeanVariance meanVariance_(float[] fs) {
+		return new MeanVariance(fs.length, i -> fs[i]);
+	}
+
+	private double skewness_(MeanVariance mv, float[] fs) {
+		double mean = mv.mean;
+		double sd = mv.standardDeviation();
+		double sum = 0d;
+		for (float f : fs) {
+			double d = f - mean;
+			sum += d * d * d;
+		}
+		double length = fs.length;
+		double length1 = length - 1;
+		double adjustment = Math.sqrt(length * length1) / length1;
+		return adjustment * sum / (length * sd * sd * sd);
+	}
+
+	private double kurtosis_(MeanVariance mv, float[] fs) {
+		double mean = mv.mean;
+		double sd = mv.standardDeviation();
+		double sum = 0d;
+		for (float f : fs) {
+			double d = f - mean;
+			double d2 = d * d;
+			sum += d2 * d2;
+		}
+		double sd2 = sd * sd;
+		return sum / (fs.length * sd2 * sd2);
+	}
+
 	public class MeanVariance {
 		public final int size;
 		public final double min, max;
@@ -317,45 +356,6 @@ public class Statistic {
 					+ " sd:" + To.string(standardDeviation()) //
 					+ ")";
 		}
-	}
-
-	private double mean_(float[] fs) {
-		int length = fs.length;
-		double sum = 0f;
-		for (float f : fs)
-			sum += f;
-		return sum / length;
-	}
-
-	private MeanVariance meanVariance_(float[] fs) {
-		return new MeanVariance(fs.length, i -> fs[i]);
-	}
-
-	private double skewness_(MeanVariance mv, float[] fs) {
-		double mean = mv.mean;
-		double sd = mv.standardDeviation();
-		double sum = 0d;
-		for (float f : fs) {
-			double d = f - mean;
-			sum += d * d * d;
-		}
-		double length = fs.length;
-		double length1 = length - 1;
-		double adjustment = Math.sqrt(length * length1) / length1;
-		return adjustment * sum / (length * sd * sd * sd);
-	}
-
-	private double kurtosis_(MeanVariance mv, float[] fs) {
-		double mean = mv.mean;
-		double sd = mv.standardDeviation();
-		double sum = 0d;
-		for (float f : fs) {
-			double d = f - mean;
-			double d2 = d * d;
-			sum += d2 * d2;
-		}
-		double sd2 = sd * sd;
-		return sum / (fs.length * sd2 * sd2);
 	}
 
 }
