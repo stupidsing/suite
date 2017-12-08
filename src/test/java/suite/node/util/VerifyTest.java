@@ -39,19 +39,18 @@ public class VerifyTest {
 						"transitive # .A .eq .B, .B .eq .C => .A .eq .C"))) //
 				.put("def$uni-op", def2.apply("uni-op .isElem .op", ".isElem .P => .isElem (.op .P)")) //
 				.put("def$bin-op", def2.apply("bin-op .isElem .op", ".isElem .P, .isElem .Q => .isElem (.P .op .Q)")) //
-				.put("def$group", defn.apply("group .isElem .eq .op .inv .zero", IList.of( //
+				.put("def$group0", defn.apply("group0 .isElem .eq .op .zero", IList.of( //
 						".isElem .zero", //
 						"eq-class .eq", //
 						"bin-op .isElem .op", //
 						".isElem .P => (.zero .op .P) .eq .P", //
-						".isElem .P, .isElem .Q, .isElem .R => (.P .op (.Q .op .R)) .eq ((.P .op .Q) .op .R)", //
+						".isElem .P, .isElem .Q, .isElem .R => (.P .op (.Q .op .R)) .eq ((.P .op .Q) .op .R)"))) //
+				.put("def$group", defn.apply("group .isElem .eq .op .inv .zero", IList.of( //
+						"group0 .isElem .eq .op .zero", //
 						".isElem .P => (.P .op (.inv .P)) .eq .zero"))) //
 				.put("def$field", defn.apply("field .isElem .eq .op0 .inv0 .zero .op1 .inv1 .one", IList.of( //
 						"group .isElem .eq .op0 .inv0 .zero", //
-						".isElem .one", //
-						"bin-op .op1", //
-						".isElem .P => (.one .op1 .P) .eq .P", //
-						".isElem .P, .isElem .Q, .isElem .R => (.P .op1 (.Q .op1 .R)) .eq ((.P .op1 .Q) .op1 .R)", //
+						"group0 .isElem .eq .op1 .inv1 .one", //
 						".isElem .P => .P .eq .zero; (.P .op1 (.inv1 .P)) .eq .one")));
 
 		IMap<String, Node> axioms = IMap //
@@ -143,7 +142,7 @@ public class VerifyTest {
 				return verify(Suite.substitute(".0 | fulfill .1", m[1], m[0]));
 			else if ((m = Suite.match("lemma .0 := .1 >> .2").apply(proof)) != null)
 				return new Verify(defs, rules.put(name(m[0]), verify(m[1]))).verify(m[2]);
-			else if ((m = Suite.match(".0 | mi .1 .2").apply(proof)) != null) {
+			else if ((m = Suite.match(".0 | nat.mi .1 .2").apply(proof)) != null) {
 				Node[] m_ = m;
 				Fun<Node, Node> fun = value -> {
 					Generalizer generalizer = new Generalizer();
