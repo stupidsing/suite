@@ -7,11 +7,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64Interpret;
-import suite.funp.Funp_.Main;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 
@@ -51,13 +49,6 @@ public class FunpTest {
 	@Test
 	public void testExpr1() {
 		test(3, "1 + 2 * (3 + 4) / 7");
-	}
-
-	@Test
-	public void testInterpret() {
-		Main main = Funp_.main();
-		assertEquals(7, main.interpret(Suite.parse("1 + 2 * 3")));
-		assertEquals(1, main.interpret(Suite.parse("0 | (a => a + 1)")));
 	}
 
 	@Test
