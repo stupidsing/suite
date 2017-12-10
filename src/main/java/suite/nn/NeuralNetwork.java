@@ -10,8 +10,10 @@ import suite.math.linalg.Vector_;
 import suite.primitive.Floats_;
 import suite.primitive.Ints_;
 import suite.streamlet.Outlet;
+import suite.util.Array_;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
+import suite.util.FunUtil2.BiFun;
 import suite.util.FunUtil2.Fun2;
 import suite.util.To;
 
@@ -30,25 +32,27 @@ public class NeuralNetwork {
 	}
 
 	public Fun2<float[], float[], float[]> ml(int[] sizes) {
-		int nLayers = sizes.length - 1;
 		List<Layer<float[], float[]>> layers = new ArrayList<>();
-		int size = sizes[0];
 
-		for (int i = 0; i < nLayers;) {
-			int size0 = size;
-			layers.add(new FeedForwardNnLayer(size0, size = sizes[++i]));
-		}
+		for (int i = 0; i < sizes.length - 1; i++)
+			layers.add(new FeedForwardNnLayer(sizes[i], sizes[i + 1]));
+
+		return train(float[].class, layers, vec::sub);
+	}
+
+	private <T> BiFun<T, T> train(Class<T> clazz, List<Layer<T, T>> layers, BiFun<T, T> errorFun) {
+		int nLayers = layers.size();
 
 		return (ins, expect) -> {
-			float[][] inputs = new float[nLayers][];
-			float[][] outputs = new float[nLayers][];
-			float[] result = ins;
+			T[] inputs = Array_.newArray(clazz, nLayers);
+			T[] outputs = Array_.newArray(clazz, nLayers);
+			T result = ins;
 
 			for (int i = 0; i < nLayers; i++)
 				result = outputs[i] = layers.get(i).forward(inputs[i] = result);
 
 			if (expect != null) {
-				float[] errors = vec.sub(expect, result);
+				T errors = errorFun.apply(expect, result);
 
 				for (int i = nLayers - 1; 0 <= i; i--)
 					errors = layers.get(i).backprop(inputs[i], outputs[i], errors);
