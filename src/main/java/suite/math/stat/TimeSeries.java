@@ -24,8 +24,8 @@ public class TimeSeries {
 
 	// autocorrelation function
 	public float[] acf(float[] ys, int n) {
-		double meany = stat.mean(ys);
 		int length = ys.length;
+		double meany = stat.mean(ys);
 		float[] ydevs = Floats_.toArray(length, i -> (float) (ys[i] - meany));
 		double avgydev0 = Ints_.range(length).toDouble(Int_Dbl.sum(i -> ydevs[i])) / length;
 		return Floats_.toArray(n, k -> {
