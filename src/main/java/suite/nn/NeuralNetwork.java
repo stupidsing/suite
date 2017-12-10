@@ -24,9 +24,9 @@ public class NeuralNetwork {
 	private float learningRate = 1f;
 
 	public interface Layer<I, O> {
-		public O forward(I inputs); // may destroy inputs
+		public O forward(I inputs);
 
-		public I backprop(I inputs, O outputs, O errors); // may destroy errors
+		public I backprop(I inputs, O outputs, O errors); // may destroy inputs, outputs, errors
 	}
 
 	public Fun2<float[], float[], float[]> ml(int[] sizes) {
@@ -90,13 +90,13 @@ public class NeuralNetwork {
 	private class SpawnLayer<I, O> implements Layer<I, O[]> {
 		private Class<O> clazz;
 		private Layer<I, O>[] layers;
-		private Iterate<O> cloneErrors;
+		private Iterate<I> cloneInputs;
 		private Fun<Outlet<I>, I> combineErrors;
 
-		private SpawnLayer(Class<O> clazz, Layer<I, O>[] layers, Iterate<O> cloneErrors, Fun<Outlet<I>, I> combineErrors) {
+		private SpawnLayer(Class<O> clazz, Layer<I, O>[] layers, Iterate<I> cloneInputs, Fun<Outlet<I>, I> combineErrors) {
 			this.clazz = clazz;
 			this.layers = layers;
-			this.cloneErrors = cloneErrors;
+			this.cloneInputs = cloneInputs;
 			this.combineErrors = combineErrors;
 		}
 
@@ -107,7 +107,7 @@ public class NeuralNetwork {
 		public I backprop(I inputs, O[] outputs, O[] errors) {
 			return Ints_ //
 					.range(layers.length) //
-					.map(i -> layers[i].backprop(inputs, outputs[i], cloneErrors.apply(errors[i]))) //
+					.map(i -> layers[i].backprop(cloneInputs.apply(inputs), outputs[i], errors[i])) //
 					.collect(combineErrors);
 		}
 	}
@@ -210,14 +210,17 @@ public class NeuralNetwork {
 		public float[][] backprop(float[][] inputs, float[][] outputs, float[][] errors) {
 			int sx = mtx.height(inputs);
 			int sy = mtx.width(inputs);
-			float[][] ies = new float[sx][sy];
-			for (int ix = 0; ix < sx; ix++)
+			for (int ix = 0; ix < sx; ix++) {
+				int ox = ix & ux1;
+				float[] in = inputs[ix];
+				float[] out = outputs[ox];
+				float[] err = errors[ox];
 				for (int iy = 0; iy < sy; iy++) {
-					int ox = ix & ux1;
 					int oy = iy & uy1;
-					ies[ix][iy] = inputs[ix][iy] == outputs[ox][oy] ? errors[ox][oy] : 0f;
+					in[iy] = in[iy] == out[oy] ? err[oy] : 0f;
 				}
-			return outputs;
+			}
+			return inputs;
 		}
 	}
 
