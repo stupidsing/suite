@@ -21,7 +21,7 @@ public class Sigmoid {
 	}
 
 	public static double sigmoidGradient(double value) {
-		return value * (1f - value);
+		return value * (1d - value);
 	}
 
 }

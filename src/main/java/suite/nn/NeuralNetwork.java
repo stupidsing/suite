@@ -67,13 +67,13 @@ public class NeuralNetwork {
 		public float[] forward(float[] inputs) {
 			float[] m = mtx.mul(inputs, weights);
 			for (int j = 0; j < nOutputs; j++)
-				m[j] = (float) activationFunction(m[j]);
+				m[j] = (float) Sigmoid.sigmoid(m[j]);
 			return m;
 		}
 
 		public float[] backprop(float[] inputs, float[] outputs, float[] errors) {
 			for (int j = 0; j < nOutputs; j++) {
-				float e = errors[j] *= (float) activationFunctionGradient(outputs[j]);
+				float e = errors[j] *= (float) Sigmoid.sigmoidGradient(outputs[j]);
 				for (int i = 0; i < nInputs; i++)
 					weights[i][j] += learningRate * inputs[i] * e;
 			}
@@ -82,25 +82,22 @@ public class NeuralNetwork {
 	}
 
 	@SuppressWarnings("unused")
-	private class SpawnLayer<I, O> implements Layer<I, Object[]> {
+	private class SpawnLayer<I, O> implements Layer<I, O[]> {
+		private Class<O> clazz;
 		private Layer<I, O>[] layers;
 
-		private SpawnLayer(int size, Layer<I, O>[] layers) {
+		private SpawnLayer(int size, Class<O> clazz, Layer<I, O>[] layers) {
+			this.clazz = clazz;
 			this.layers = layers;
 		}
 
-		public Object[] forward(I inputs) {
-			return To.array(layers.length, Object.class, i -> layers[i].forward(inputs));
+		public O[] forward(I inputs) {
+			return To.array(layers.length, clazz, i -> layers[i].forward(inputs));
 		}
 
-		public Object[] backprop(I inputs, Object[] outputs, Object[] errors) {
-			return To.array(layers.length, Object.class, i -> {
-				@SuppressWarnings("unchecked")
-				O output = (O) outputs[i], error = (O) errors[i];
-				return layers[i].backprop(inputs, output, error);
-			});
+		public O[] backprop(I inputs, O[] outputs, O[] errors) {
+			return To.array(layers.length, clazz, i -> layers[i].backprop(inputs, outputs[i], errors[i]));
 		}
-
 	}
 
 	@SuppressWarnings("unused")
@@ -116,27 +113,24 @@ public class NeuralNetwork {
 		}
 
 		public float[][] forward(float[][] inputs) {
-			int hsx = mtx.height(inputs) - sx;
-			int hsy = mtx.width(inputs) - sy;
-			float[][] outputs = new float[hsx][hsy];
-			for (int ox = 0; ox <= hsx; ox++)
-				for (int oy = 0; oy <= hsy; oy++) {
-					double sum = bias;
-					for (int x = 0; x < sx; x++)
-						for (int y = 0; y < sy; y++)
-							sum += inputs[ox + x][oy + y] * (double) kernel[x][y];
-					outputs[ox][oy] = (float) Math.min(0d, sum);
-				}
-			return outputs;
+			int hsx = mtx.height(inputs) - sx + 1;
+			int hsy = mtx.width(inputs) - sy + 1;
+			return To.arrayOfFloats(hsx, hsy, (ox, oy) -> {
+				double sum = bias;
+				for (int x = 0; x < sx; x++)
+					for (int y = 0; y < sy; y++)
+						sum += inputs[ox + x][oy + y] * (double) kernel[x][y];
+				return relu(sum);
+			});
 		}
 
 		public float[][] backprop(float[][] inputs, float[][] outputs, float[][] errors) {
-			int hsx = mtx.height(inputs) - sx;
-			int hsy = mtx.width(inputs) - sy;
+			int hsx = mtx.height(inputs) - sx + 1;
+			int hsy = mtx.width(inputs) - sy + 1;
 			float errors1[][] = new float[hsx][hsy];
 			for (int ox = 0; ox < hsx; ox++)
 				for (int oy = 0; oy < hsy; oy++) {
-					float e = errors[ox][oy] *= (float) outputs[ox][oy] < 0f ? 0f : 1f;
+					float e = errors[ox][oy] *= (float) reluGradient(outputs[ox][oy]);
 					bias += e;
 					for (int x = 0; x < sx; x++)
 						for (int y = 0; y < sy; y++) {
@@ -150,12 +144,12 @@ public class NeuralNetwork {
 		}
 	}
 
-	private double activationFunction(double value) {
-		return Sigmoid.sigmoid(value);
+	private double relu(double d) {
+		return Math.min(0d, d);
 	}
 
-	private double activationFunctionGradient(double value) {
-		return Sigmoid.sigmoidGradient(value);
+	private double reluGradient(double value) {
+		return value < 0f ? 0f : 1f;
 	}
 
 }
