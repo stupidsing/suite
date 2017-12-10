@@ -8,10 +8,14 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.adt.pair.Pair;
+import suite.math.linalg.Vector_;
+import suite.nn.NeuralNetwork.Layer;
+import suite.nn.NeuralNetwork.Out;
 import suite.util.FunUtil2.BinOp;
-import suite.util.FunUtil2.Fun2;
 
 public class NeuralNetworkTest {
+
+	private Vector_ vec = new Vector_();
 
 	@Test
 	public void test() {
@@ -25,14 +29,16 @@ public class NeuralNetworkTest {
 		for (Pair<String, BinOp<Boolean>> pair : List.of(op0, op1, op2))
 			result &= pair.map((name, oper) -> {
 				NeuralNetwork nn = new NeuralNetwork();
-				Fun2<float[], float[], float[]> train = nn.ml(new int[] { 2, 4, 1, });
+				Layer<float[], float[]> train = nn.ml(new int[] { 2, 4, 1, });
 
 				for (int i = 0; i < 16384; i++) {
 					boolean b0 = random.nextBoolean();
 					boolean b1 = random.nextBoolean();
 					float[] in = input(b0, b1);
-					float[] out = new float[] { f(oper.apply(b0, b1)), };
-					train.apply(in, out);
+					float[] expect = new float[] { f(oper.apply(b0, b1)), };
+					Out<float[], float[]> out = train.feed(in);
+					float[] actual = out.output;
+					out.backprop.apply(vec.sub(expect, actual));
 				}
 
 				boolean result_ = true;
@@ -41,7 +47,7 @@ public class NeuralNetworkTest {
 					for (boolean b1 : booleans) {
 						float[] in = input(b0, b1);
 						boolean out = oper.apply(b0, b1);
-						float f = train.apply(in, null)[0];
+						float f = train.feed(in).output[0];
 						System.out.println(b0 + " " + name + " " + b1 + " = " + f);
 						result_ &= out == .5f < f;
 					}

@@ -1,172 +1,179 @@
 package suite.nn;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import suite.math.Sigmoid;
 import suite.math.linalg.Matrix_;
-import suite.math.linalg.Vector_;
+import suite.primitive.DblMutable;
 import suite.primitive.Floats_;
+import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
 import suite.util.Array_;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil2.BiFun;
-import suite.util.FunUtil2.Fun2;
 import suite.util.To;
 
 public class NeuralNetwork {
 
 	private Matrix_ mtx = new Matrix_();
-	private Vector_ vec = new Vector_();
 	private Random random = new Random();
 
 	private float learningRate = 1f;
 
 	public interface Layer<I, O> {
-		public O forward(I inputs);
+		public Out<I, O> feed(I input);
 
-		public I backprop(I inputs, O outputs, O errors); // may destroy inputs, outputs, errors
+		public default <U> Layer<I, U> append(Layer<O, U> layer) {
+			Layer<I, O> layer0 = this;
+			Layer<O, U> layer1 = layer;
+			return new Layer<>() {
+				public Out<I, U> feed(I inputs) {
+					Out<I, O> out0 = layer0.feed(inputs);
+					Out<O, U> out1 = layer1.feed(out0.output);
+					return new Out<>(out1.output, errors -> out0.backprop.apply(out1.backprop.apply(errors)));
+				}
+			};
+		}
 	}
 
-	public Fun2<float[], float[], float[]> ml(int[] sizes) {
-		List<Layer<float[], float[]>> layers = new ArrayList<>();
+	public static class Out<I, O> {
+		public O output;
+		public Fun<O, I> backprop; // input errors, return errors
 
-		for (int i = 0; i < sizes.length - 1; i++)
-			layers.add(new FeedForwardNnLayer(sizes[i], sizes[i + 1]));
-
-		return train(float[].class, layers, vec::sub);
+		public Out(O output, Fun<O, I> backprop) {
+			this.output = output;
+			this.backprop = backprop;
+		}
 	}
 
-	private <T> BiFun<T, T> train(Class<T> clazz, List<Layer<T, T>> layers, BiFun<T, T> errorFun) {
-		int nLayers = layers.size();
+	public Layer<float[], float[]> ml(int[] sizes) {
+		Layer<float[], float[]> layer = new NilLayer<float[]>();
+		for (int i = 1; i < sizes.length; i++)
+			layer = compose(layer, feedForward(sizes[i - 1], sizes[i]));
+		return layer;
+	}
 
-		return (ins, expect) -> {
-			T[] inputs = Array_.newArray(clazz, nLayers);
-			T[] outputs = Array_.newArray(clazz, nLayers);
-			T result = ins;
+	public Layer<float[][], float[]> conv() {
+		int nKernels = 9;
+		int inputSize = 19;
+		int kernelSize = 5;
+		int maxPoolSize = 3;
+		int flattenSize = (inputSize - kernelSize + 1) / maxPoolSize;
+		int outputSize = 1;
 
-			for (int i = 0; i < nLayers; i++)
-				result = outputs[i] = layers.get(i).forward(inputs[i] = result);
+		return new NilLayer<float[][]>() //
+				.append(spawnLayer(nKernels, i -> new NilLayer<float[][]>() // input 19x19
+						.append(convLayer(kernelSize, kernelSize)) //
+						.append(Boolean.TRUE ? maxPoolLayer(maxPoolSize, maxPoolSize) : averagePoolLayer(maxPoolSize, maxPoolSize)) //
+						.append(flattenLayer(flattenSize)) //
+						.append(reluLayer()))) //
+				.append(flattenLayer(flattenSize)) //
+				.append(feedForward(nKernels * flattenSize, outputSize));
+	}
 
-			if (expect != null) {
-				T errors = errorFun.apply(expect, result);
-
-				for (int i = nLayers - 1; 0 <= i; i--)
-					errors = layers.get(i).backprop(inputs[i], outputs[i], errors);
+	private <I, J, K> Layer<I, K> compose(Layer<I, J> layer0, Layer<J, K> layer1) {
+		return new Layer<>() {
+			public Out<I, K> feed(I inputs) {
+				Out<I, J> out0 = layer0.feed(inputs);
+				Out<J, K> out1 = layer1.feed(out0.output);
+				return new Out<>(out1.output, errors -> out0.backprop.apply(out1.backprop.apply(errors)));
 			}
-
-			return result;
 		};
 	}
 
-	private class FeedForwardNnLayer implements Layer<float[], float[]> {
-		private int nInputs;
-		private int nOutputs;
-		private float[][] weights;
-
-		private FeedForwardNnLayer(int nInputs, int nOutputs) {
-			this.nInputs = nInputs;
-			this.nOutputs = nOutputs;
-			weights = To.arrayOfFloats(nInputs, nOutputs, (i, j) -> random.nextFloat());
+	private class NilLayer<I> implements Layer<I, I> {
+		public Out<I, I> feed(I inputs) {
+			return new Out<>(inputs, errors -> errors);
 		}
+	}
 
-		public float[] forward(float[] inputs) {
-			float[] m = mtx.mul(inputs, weights);
+	private Layer<float[], float[]> feedForward(int nInputs, int nOutputs) {
+		float[][] weights = To.arrayOfFloats(nInputs, nOutputs, (i, j) -> random.nextFloat());
+
+		return inputs -> {
+			float[] outputs = mtx.mul(inputs, weights);
 			for (int j = 0; j < nOutputs; j++)
-				m[j] = (float) Sigmoid.sigmoid(m[j]);
-			return m;
-		}
+				outputs[j] = (float) Sigmoid.sigmoid(outputs[j]);
 
-		public float[] backprop(float[] inputs, float[] outputs, float[] errors) {
-			for (int j = 0; j < nOutputs; j++) {
-				float e = errors[j] *= (float) Sigmoid.sigmoidGradient(outputs[j]);
-				for (int i = 0; i < nInputs; i++)
-					weights[i][j] += learningRate * inputs[i] * e;
-			}
-			return mtx.mul(weights, errors);
-		}
+			return new Out<>(outputs, errors -> {
+				for (int j = 0; j < nOutputs; j++) {
+					float e = errors[j] *= (float) Sigmoid.sigmoidGradient(outputs[j]);
+					for (int i = 0; i < nInputs; i++)
+						weights[i][j] += learningRate * inputs[i] * e;
+				}
+				return mtx.mul(weights, errors);
+			});
+		};
 	}
 
-	@SuppressWarnings("unused")
-	private class SpawnLayer<I, O> implements Layer<I, O[]> {
-		private Class<O> clazz;
-		private Layer<I, O>[] layers;
-		private Iterate<I> cloneInputs;
-		private Fun<Outlet<I>, I> combineErrors;
-
-		private SpawnLayer(Class<O> clazz, Layer<I, O>[] layers, Iterate<I> cloneInputs, Fun<Outlet<I>, I> combineErrors) {
-			this.clazz = clazz;
-			this.layers = layers;
-			this.cloneInputs = cloneInputs;
-			this.combineErrors = combineErrors;
-		}
-
-		public O[] forward(I inputs) {
-			return To.array(layers.length, clazz, i -> layers[i].forward(inputs));
-		}
-
-		public I backprop(I inputs, O[] outputs, O[] errors) {
-			return Ints_ //
-					.range(layers.length) //
-					.map(i -> layers[i].backprop(cloneInputs.apply(inputs), outputs[i], errors[i])) //
-					.collect(combineErrors);
-		}
+	private Layer<float[][], float[][]> spawnLayer(int n, Int_Obj<Layer<float[][], float[]>> fun) {
+		List<Layer<float[][], float[]>> layers = Ints_.range(n).map(fun::apply).toList();
+		return this.<float[][], float[]> spawnLayer(float[].class, layers, input -> input, errors -> new float[0][]);
 	}
 
-	@SuppressWarnings("unused")
-	private class ConvNnLayer implements Layer<float[][], float[][]> {
-		private int sx, sy;
-		private float[][] kernel;
-		private float bias;
+	private <I, O> Layer<I, O[]> spawnLayer( //
+			Class<O> clazz, //
+			List<Layer<I, O>> layers, //
+			Iterate<I> cloneInputs, //
+			Fun<Outlet<I>, I> combineErrors) {
+		int size = layers.size();
 
-		private ConvNnLayer(int sx, int sy) {
-			this.sx = sx;
-			this.sy = sy;
-			kernel = To.arrayOfFloats(sx, sy, (x, y) -> random.nextFloat());
-		}
+		return inputs -> {
+			@SuppressWarnings("unchecked")
+			Out<I, O>[] outs = To.array(size, Out.class, i -> layers.get(i).feed(cloneInputs.apply(inputs)));
+			O[] outputs = Read.from(outs).map(out -> out.output).toArray(clazz);
 
-		public float[][] forward(float[][] inputs) {
+			return new Out<>(outputs, errors -> Ints_ //
+					.range(size) //
+					.map(i -> outs[i].backprop.apply(errors[i])) //
+					.collect(combineErrors));
+		};
+	}
+
+	private Layer<float[][], float[][]> convLayer(int sx, int sy) {
+		float[][] kernel = To.arrayOfFloats(sx, sy, (x, y) -> random.nextFloat());
+		DblMutable bias = DblMutable.of(0d);
+
+		return inputs -> {
 			int hsx = mtx.height(inputs) - sx + 1;
 			int hsy = mtx.width(inputs) - sy + 1;
-			return To.arrayOfFloats(hsx, hsy, (ox, oy) -> {
-				double sum = bias;
+			float[][] outputs = To.arrayOfFloats(hsx, hsy, (ox, oy) -> {
+				double sum = bias.get();
 				for (int x = 0; x < sx; x++)
 					for (int y = 0; y < sy; y++)
 						sum += inputs[ox + x][oy + y] * (double) kernel[x][y];
 				return sum;
 			});
-		}
 
-		public float[][] backprop(float[][] inputs, float[][] outputs, float[][] errors) {
-			int hsx = mtx.height(inputs) - sx + 1;
-			int hsy = mtx.width(inputs) - sy + 1;
-			float errors1[][] = new float[hsx][hsy];
-			for (int ox = 0; ox < hsx; ox++)
-				for (int oy = 0; oy < hsy; oy++) {
-					float e = errors[ox][oy] *= outputs[ox][oy];
-					bias += e;
-					for (int x = 0; x < sx; x++)
-						for (int y = 0; y < sy; y++) {
-							int ix = ox + x;
-							int iy = oy + y;
-							errors1[ix][iy] += e * (double) (kernel[x][y] += learningRate * inputs[ix][iy] * e);
-						}
-				}
+			return new Out<>(outputs, errors -> {
+				float errors1[][] = new float[hsx][hsy];
+				for (int ox = 0; ox < hsx; ox++)
+					for (int oy = 0; oy < hsy; oy++) {
+						float e = errors[ox][oy] *= outputs[ox][oy];
+						bias.update(bias.get() + e);
+						for (int x = 0; x < sx; x++)
+							for (int y = 0; y < sy; y++) {
+								int ix = ox + x;
+								int iy = oy + y;
+								errors1[ix][iy] += e * (double) (kernel[x][y] += learningRate * inputs[ix][iy] * e);
+							}
+					}
 
-			return errors1;
-		}
+				return errors1;
+			});
+		};
 	}
 
-	@SuppressWarnings("unused")
-	private class AveragePoolLayer extends PoolLayer {
-		private AveragePoolLayer(int ux, int uy) { // powers of 2
-			super(ux, uy);
-		}
+	private Layer<float[][], float[][]> averagePoolLayer(int ux, int uy) {
+		int maskx = ux - 1;
+		int masky = uy - 1;
+		int shiftx = Integer.numberOfTrailingZeros(ux);
+		int shifty = Integer.numberOfTrailingZeros(uy);
 
-		public float[][] forward(float[][] inputs) {
+		return inputs -> {
 			int sx = mtx.height(inputs);
 			int sy = mtx.width(inputs);
 			float[][] outputs = new float[sx + maskx >> shiftx][sy + masky >> shifty];
@@ -176,103 +183,92 @@ public class NeuralNetwork {
 				for (int iy = 0; iy < sy; iy++)
 					out[iy >> shifty] += in[iy];
 			}
-			return outputs;
-		}
 
-		public float[][] backprop(float[][] inputs, float[][] outputs, float[][] errors) {
-			int sx = mtx.height(inputs);
-			int sy = mtx.width(inputs);
-			return To.arrayOfFloats(sx, sy, (ix, iy) -> errors[ix >> shiftx][iy >> shifty]);
-		}
+			return new Out<>(outputs, errors -> To //
+					.arrayOfFloats(sx, sy, (ix, iy) -> errors[ix >> shiftx][iy >> shifty]));
+		};
 	}
 
-	@SuppressWarnings("unused")
-	private class MaxPoolLayer extends PoolLayer {
-		private MaxPoolLayer(int ux, int uy) { // powers of 2
-			super(ux, uy);
-		}
+	private Layer<float[][], float[][]> maxPoolLayer(int ux, int uy) {
+		int maskx = ux - 1;
+		int masky = uy - 1;
+		int shiftx = Integer.numberOfTrailingZeros(ux);
+		int shifty = Integer.numberOfTrailingZeros(uy);
 
-		public float[][] forward(float[][] inputs) {
+		return inputs -> {
 			int sx = mtx.height(inputs);
 			int sy = mtx.width(inputs);
 			float[][] outputs = To.arrayOfFloats(sx + maskx >> shiftx, sy + masky >> shifty, (x, y) -> Float.MIN_VALUE);
+
 			for (int ix = 0; ix < sx; ix++)
 				for (int iy = 0; iy < sy; iy++) {
 					int ox = ix >> shiftx;
 					int oy = iy >> shifty;
 					outputs[ox][oy] = Math.max(outputs[ox][oy], inputs[ix][iy]);
 				}
-			return outputs;
-		}
 
-		public float[][] backprop(float[][] inputs, float[][] outputs, float[][] errors) {
-			int sx = mtx.height(inputs);
-			int sy = mtx.width(inputs);
-			for (int ix = 0; ix < sx; ix++)
-				for (int iy = 0; iy < sy; iy++) {
-					int ox = ix >> shiftx;
-					int oy = iy >> shifty;
-					inputs[ix][iy] = inputs[ix][iy] == outputs[ox][oy] ? errors[ox][oy] : 0f;
-				}
-			return inputs;
-		}
-	}
-
-	private abstract class PoolLayer implements Layer<float[][], float[][]> {
-		protected int maskx, masky;
-		protected int shiftx, shifty;
-
-		private PoolLayer(int ux, int uy) { // powers of 2
-			this.maskx = ux - 1;
-			this.masky = uy - 1;
-			this.shiftx = Integer.numberOfTrailingZeros(ux);
-			this.shifty = Integer.numberOfTrailingZeros(uy);
-		}
+			return new Out<>(outputs, errors -> {
+				for (int ix = 0; ix < sx; ix++)
+					for (int iy = 0; iy < sy; iy++) {
+						int ox = ix >> shiftx;
+						int oy = iy >> shifty;
+						inputs[ix][iy] = inputs[ix][iy] == outputs[ox][oy] ? errors[ox][oy] : 0f;
+					}
+				return inputs;
+			});
+		};
 	}
 
 	@SuppressWarnings("unused")
-	private class FlattenLayer implements Layer<float[][], float[]> {
-		private int stride;
+	private <T> Layer<T[][], T[]> flattenLayer(Class<T[]> arrayClazz, int stride) {
+		@SuppressWarnings("unchecked")
+		Class<T> clazz = (Class<T>) arrayClazz.getComponentType();
+		return inputs -> {
+			T[] outputs = Array_.newArray(clazz, inputs.length * stride);
+			int di = 0;
+			for (T[] row : inputs) {
+				Array_.copy(row, 0, outputs, di, stride);
+				di += stride;
+			}
 
-		private FlattenLayer(int stride) {
-			this.stride = stride;
-		}
+			return new Out<>(outputs, errors -> {
+				T[][] errors1 = Array_.newArray(arrayClazz, errors.length / stride);
+				int si = 0;
+				for (int i = 0; i < errors1.length; i++) {
+					Array_.copy(errors, si, errors1[i] = Array_.newArray(clazz, stride), 0, stride);
+					si += stride;
+				}
+				return errors1;
+			});
+		};
+	}
 
-		public float[] forward(float[][] inputs) {
+	private Layer<float[][], float[]> flattenLayer(int stride) {
+		return inputs -> {
 			float[] outputs = new float[inputs.length * stride];
 			int di = 0;
 			for (float[] row : inputs) {
 				Floats_.copy(row, 0, outputs, di, stride);
 				di += stride;
 			}
-			return outputs;
-		}
 
-		public float[][] backprop(float[][] inputs, float[] outputs, float[] errors) {
-			float[][] errors1 = new float[errors.length / stride][stride];
-			int si = 0;
-			for (float[] row : errors1) {
-				Floats_.copy(errors, si, row, 0, stride);
-				si += stride;
-			}
-			return errors1;
-		}
+			return new Out<>(outputs, errors -> {
+				float[][] errors1 = new float[errors.length / stride][stride];
+				int si = 0;
+				for (float[] row : errors1) {
+					Floats_.copy(errors, si, row, 0, stride);
+					si += stride;
+				}
+				return errors1;
+			});
+		};
 	}
 
-	@SuppressWarnings("unused")
-	private class ReluLayer implements Layer<float[], float[]> {
-		public float[] forward(float[] inputs) {
-			for (int i = 0; i < inputs.length; i++)
-				inputs[i] = (float) relu(inputs[i]);
-			return inputs;
-		}
-
-		public float[] backprop(float[] inputs, float[] outputs, float[] errors) {
-			for (int i = 0; i < errors.length; i++)
-				errors[i] = (float) reluGradient(errors[i]);
-			return errors;
-		}
-
+	private Layer<float[], float[]> reluLayer() {
+		return inputs -> {
+			float[] outputs = To.arrayOfFloats(inputs, NeuralNetwork.this::relu);
+			return new Out<>(outputs, errors -> To.arrayOfFloats(errors, NeuralNetwork.this::reluGradient));
+		};
 	}
 
 	private double relu(double d) {
