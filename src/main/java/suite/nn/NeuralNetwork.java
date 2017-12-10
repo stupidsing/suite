@@ -161,15 +161,9 @@ public class NeuralNetwork {
 	}
 
 	@SuppressWarnings("unused")
-	private class AveragePoolLayer implements Layer<float[][], float[][]> {
-		private int maskx, masky;
-		private int shiftx, shifty;
-
+	private class AveragePoolLayer extends PoolLayer {
 		private AveragePoolLayer(int ux, int uy) { // powers of 2
-			this.maskx = ux - 1;
-			this.masky = uy - 1;
-			this.shiftx = Integer.numberOfTrailingZeros(ux);
-			this.shifty = Integer.numberOfTrailingZeros(uy);
+			super(ux, uy);
 		}
 
 		public float[][] forward(float[][] inputs) {
@@ -193,46 +187,46 @@ public class NeuralNetwork {
 	}
 
 	@SuppressWarnings("unused")
-	private class MaxPoolLayer implements Layer<float[][], float[][]> {
-		private int maskx, masky;
-		private int shiftx, shifty;
-
+	private class MaxPoolLayer extends PoolLayer {
 		private MaxPoolLayer(int ux, int uy) { // powers of 2
-			this.maskx = ux - 1;
-			this.masky = uy - 1;
-			this.shiftx = Integer.numberOfTrailingZeros(ux);
-			this.shifty = Integer.numberOfTrailingZeros(uy);
+			super(ux, uy);
 		}
 
 		public float[][] forward(float[][] inputs) {
 			int sx = mtx.height(inputs);
 			int sy = mtx.width(inputs);
 			float[][] outputs = To.arrayOfFloats(sx + maskx >> shiftx, sy + masky >> shifty, (x, y) -> Float.MIN_VALUE);
-			for (int ix = 0; ix < sx; ix++) {
-				float[] in = inputs[ix];
-				float[] out = outputs[ix >> shiftx];
+			for (int ix = 0; ix < sx; ix++)
 				for (int iy = 0; iy < sy; iy++) {
+					int ox = ix >> shiftx;
 					int oy = iy >> shifty;
-					out[oy] = Math.max(out[oy], in[iy]);
+					outputs[ox][oy] = Math.max(outputs[ox][oy], inputs[ix][iy]);
 				}
-			}
 			return outputs;
 		}
 
 		public float[][] backprop(float[][] inputs, float[][] outputs, float[][] errors) {
 			int sx = mtx.height(inputs);
 			int sy = mtx.width(inputs);
-			for (int ix = 0; ix < sx; ix++) {
-				int ox = ix >> shiftx;
-				float[] in = inputs[ix];
-				float[] out = outputs[ox];
-				float[] err = errors[ox];
+			for (int ix = 0; ix < sx; ix++)
 				for (int iy = 0; iy < sy; iy++) {
+					int ox = ix >> shiftx;
 					int oy = iy >> shifty;
-					in[iy] = in[iy] == out[oy] ? err[oy] : 0f;
+					inputs[ix][iy] = inputs[ix][iy] == outputs[ox][oy] ? errors[ox][oy] : 0f;
 				}
-			}
 			return inputs;
+		}
+	}
+
+	private abstract class PoolLayer implements Layer<float[][], float[][]> {
+		protected int maskx, masky;
+		protected int shiftx, shifty;
+
+		private PoolLayer(int ux, int uy) { // powers of 2
+			this.maskx = ux - 1;
+			this.masky = uy - 1;
+			this.shiftx = Integer.numberOfTrailingZeros(ux);
+			this.shifty = Integer.numberOfTrailingZeros(uy);
 		}
 	}
 
@@ -278,6 +272,7 @@ public class NeuralNetwork {
 				errors[i] = (float) reluGradient(errors[i]);
 			return errors;
 		}
+
 	}
 
 	private double relu(double d) {
