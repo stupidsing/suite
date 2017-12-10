@@ -79,9 +79,9 @@ public class Oscillator {
 		double r = 1d / .015d;
 		double i3 = 1d / 3d;
 		int length = ds.ts.length;
-		float[] ps = Floats_.toArray(length, i -> (float) ((ds.closes[i] + ds.lows[i] + ds.highs[i]) * i3));
+		float[] ps = To.arrayOfFloats(length, i -> (ds.closes[i] + ds.lows[i] + ds.highs[i]) * i3);
 
-		return Floats_.toArray(length, i -> {
+		return To.arrayOfFloats(length, i -> {
 			int i0 = Math.max(0, i - nDays + 1);
 			int l = i - i0 + 1;
 			double sum = 0d, sumAbsDev = 0d;
@@ -91,7 +91,7 @@ public class Oscillator {
 			for (int d = i0; d <= i; d++)
 				sumAbsDev += Math.abs(ps[d] - mean);
 			double meanAbsDev = sumAbsDev / l;
-			return (float) (r * (ps[i] - mean) / meanAbsDev);
+			return r * (ps[i] - mean) / meanAbsDev;
 		});
 	}
 
@@ -160,7 +160,7 @@ public class Oscillator {
 		double a = 1d / nDays;
 		float[] usMa = ma.exponentialMovingAvg(us, a);
 		float[] dsMa = ma.exponentialMovingAvg(ds, a);
-		return Floats_.toArray(length, i -> (float) (1d - 1d / (1d + usMa[i] / dsMa[i])));
+		return To.arrayOfFloats(length, i -> 1d - 1d / (1d + usMa[i] / dsMa[i]));
 	}
 
 	// Parabolic stop and reverse
@@ -217,9 +217,9 @@ public class Oscillator {
 			his[i] = hi;
 		}
 
-		float[] k = Floats_.toArray(length, i -> {
+		float[] k = To.arrayOfFloats(length, i -> {
 			double low = los[i];
-			return (float) ((ds.closes[i] - low) / (his[i] - low));
+			return (ds.closes[i] - low) / (his[i] - low);
 		});
 
 		return ma.movingAvg(k, dDays);

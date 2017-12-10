@@ -6,9 +6,9 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.math.stat.Arima.Em;
-import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
+import suite.util.To;
 
 public class ArimaTest {
 
@@ -30,7 +30,7 @@ public class ArimaTest {
 		int p = ars.length;
 		int q = mas.length;
 		float[] xs = new float[length];
-		float[] eps = Floats_.toArray(length, i -> (float) random.nextGaussian());
+		float[] eps = To.arrayOfFloats(length, i -> random.nextGaussian());
 		int i = 0;
 
 		while (i < Math.max(p, q))

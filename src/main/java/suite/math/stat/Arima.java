@@ -80,9 +80,9 @@ public class Arima {
 				.map(i -> FltObjPair.of(ys[i], copyPadZeroes(ys, i - p, i))) //
 				.toList());
 
-		float[] variances = Floats_.toArray(length, i -> {
+		float[] variances = To.arrayOfFloats(length, i -> {
 			double residual = ys[i] - lr0.predict(xs0[i]);
-			return (float) (residual * residual);
+			return residual * residual;
 		});
 
 		// conditional heteroskedasticity
@@ -165,9 +165,9 @@ public class Arima {
 		int xLength = xs.length;
 		int pq = -p + q;
 		int xpqLength = xLength + pq;
-		float[] ars = Floats_.toArray(p, i -> (float) Math.scalb(.5d, -i));
-		float[] mas = Floats_.toArray(q, i -> (float) Math.scalb(.5d, -i));
-		float[] eps = Floats_.toArray(xpqLength, i -> 0f);
+		float[] ars = To.arrayOfFloats(p, i -> Math.scalb(.5d, -i));
+		float[] mas = To.arrayOfFloats(q, i -> Math.scalb(.5d, -i));
+		float[] eps = To.arrayOfFloats(xpqLength, i -> 0d);
 
 		for (int iter = 0; iter < 9; iter++) {
 

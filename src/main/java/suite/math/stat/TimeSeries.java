@@ -9,7 +9,6 @@ import suite.math.linalg.Vector_;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.math.stat.Statistic.MeanVariance;
 import suite.primitive.Floats;
-import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltObjPair;
@@ -26,14 +25,14 @@ public class TimeSeries {
 	public float[] acf(float[] ys, int n) {
 		int length = ys.length;
 		double meany = stat.mean(ys);
-		float[] ydevs = Floats_.toArray(length, i -> (float) (ys[i] - meany));
+		float[] ydevs = To.arrayOfFloats(length, i -> ys[i] - meany);
 		double avgydev0 = Ints_.range(length).toDouble(Int_Dbl.sum(i -> ydevs[i])) / length;
-		return Floats_.toArray(n, k -> {
+		return To.arrayOfFloats(n, k -> {
 			int lk = length - k;
 			double nom = Ints_.range(lk).toDouble(Int_Dbl.sum(i -> ydevs[i] * ydevs[i + k]));
 			double avgydev1 = Ints_.range(lk).toDouble(Int_Dbl.sum(i -> ydevs[i])) / lk;
 			double denom = Math.sqrt(avgydev0 * avgydev1) * lk;
-			return (float) (nom / denom);
+			return nom / denom;
 		});
 	}
 
@@ -79,10 +78,10 @@ public class TimeSeries {
 	public double hurst(float[] ys, int tor) {
 		float[] logys = To.arrayOfFloats(ys, Math::log);
 		int[] tors = Ints_.toArray(tor, t -> t + 1);
-		float[] logVrs = Floats_.toArray(tor, t -> {
+		float[] logVrs = To.arrayOfFloats(tor, t -> {
 			float[] diffs = dropDiff_(tors[t], logys);
 			float[] diffs2 = To.arrayOfFloats(diffs, diff -> diff * diff);
-			return (float) Math.log(stat.variance(diffs2));
+			return Math.log(stat.variance(diffs2));
 		});
 		LinearRegression lr = stat.linearRegression(Ints_ //
 				.range(logVrs.length) //

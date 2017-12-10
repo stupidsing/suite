@@ -5,7 +5,6 @@ import java.util.Arrays;
 import suite.math.MathUtil;
 import suite.math.Vector;
 import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
@@ -46,7 +45,7 @@ public class Matrix_ {
 	public float[][] covariance(float[][] vs) {
 		int h = h(vs);
 		int w = w(vs);
-		float[] means = Floats_.toArray(h, j -> (float) (Read.from(vs).toDouble(Obj_Dbl.sum(vector -> vector[j])) / w));
+		float[] means = To.arrayOfFloats(h, j -> Read.from(vs).toDouble(Obj_Dbl.sum(vector -> vector[j])) / w);
 
 		return To.arrayOfFloats(h, h, (i0, i1) -> Ints_ //
 				.range(w) //
