@@ -1,7 +1,7 @@
 package suite.trade.analysis;
 
-import suite.primitive.Floats_;
 import suite.trade.data.DataSource;
+import suite.util.To;
 
 // "High Frequency Trading: A Practical Guide to Algorithmic Strategies and Trading Systems", Irene Alridge, page 107
 public class Volatility {
@@ -25,17 +25,17 @@ public class Volatility {
 	public float[] vol0(float f) {
 		double a = 1d / (f * 2d);
 		double b = 1d / ((1d - f) * 2d);
-		return Floats_.toArray(length, t -> {
+		return To.arrayOfFloats(length, t -> {
 			double opc = opens[t] - closes[Math.max(0, t - 1)];
 			double co = closes[t] - opens[t];
-			return (float) (opc * opc * a + co * co * b);
+			return opc * opc * a + co * co * b;
 		});
 	}
 
 	public float[] vol1() {
-		return Floats_.toArray(length, t -> {
+		return To.arrayOfFloats(length, t -> {
 			double hl = highs[t] - lows[t];
-			return (float) (hl * hl * inv4ln2);
+			return hl * hl * inv4ln2;
 		});
 	}
 
@@ -43,20 +43,20 @@ public class Volatility {
 	public float[] vol2(float f) {
 		double a = .17d / f;
 		double b = .83d / (1d - f) * inv4ln2;
-		return Floats_.toArray(length, t -> {
+		return To.arrayOfFloats(length, t -> {
 			double opc = opens[t] - closes[Math.max(0, t - 1)];
 			double hl = highs[t] - lows[t];
-			return (float) (opc * opc * a + hl * hl * b);
+			return opc * opc * a + hl * hl * b;
 		});
 	}
 
 	public float[] vol3() {
 		double a = .5d;
 		double b = 1d - 2d * Math.log(2d);
-		return Floats_.toArray(length, t -> {
+		return To.arrayOfFloats(length, t -> {
 			double hl = highs[t] - lows[t];
 			double co = closes[t] - opens[t];
-			return (float) (hl * hl * a + co * co * b);
+			return hl * hl * a + co * co * b;
 		});
 	}
 
@@ -64,9 +64,9 @@ public class Volatility {
 		float[] vol3 = vol3();
 		double a = .12d / f;
 		double b = .88d / (1d - f);
-		return Floats_.toArray(length, t -> {
+		return To.arrayOfFloats(length, t -> {
 			double opc = opens[t] - closes[Math.max(0, t - 1)];
-			return (float) (opc * opc * a + vol3[t] * b);
+			return opc * opc * a + vol3[t] * b;
 		});
 	}
 
