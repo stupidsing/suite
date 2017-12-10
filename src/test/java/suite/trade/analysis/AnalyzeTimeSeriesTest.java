@@ -118,6 +118,7 @@ public class AnalyzeTimeSeriesTest {
 						.of(4, 16) //
 						.map(d -> "\nvariance ratio [" + d + "d over 1d] = " + ts.varianceRatio(prices, d)) //
 						.collect(As::joined) //
+				+ "\nreturn hurst = " + ts.hurst(prices, prices.length / 2) //
 				+ "\nhold " + buySell(d -> 1d).invest(prices) //
 				+ "\nkelly " + buySell(d -> kelly).invest(prices) //
 				+ "\nma200 trend " + mat.invest(prices) //
