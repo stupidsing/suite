@@ -77,7 +77,7 @@ public class TimeSeries {
 
 	// epchan
 	public double hurst(float[] ys, int tor) {
-		float[] logys = To.arrayOfFloats(ys, price -> (float) Math.log(price));
+		float[] logys = To.arrayOfFloats(ys, Math::log);
 		int[] tors = Ints_.toArray(tor, t -> t + 1);
 		float[] logVrs = Floats_.toArray(tor, t -> {
 			float[] diffs = dropDiff_(tors[t], logys);
@@ -94,7 +94,7 @@ public class TimeSeries {
 
 	// http://www.financialwisdomforum.org/gummy-stuff/hurst.htm
 	public double hurstFwf(float[] ys, int tor) {
-		float[] logys = To.arrayOfFloats(ys, price -> (float) Math.log(price));
+		float[] logys = To.arrayOfFloats(ys, Math::log);
 		float[] returns0 = dropDiff_(1, logys);
 		int length = returns0.length;
 		List<FltObjPair<float[]>> pairs = new ArrayList<>();
@@ -102,7 +102,7 @@ public class TimeSeries {
 			float[] returns = Arrays.copyOfRange(returns0, n, length);
 			MeanVariance mv = stat.meanVariance(returns);
 			double mean = mv.mean;
-			float[] devs = To.arrayOfFloats(returns, r -> (float) (r - mean));
+			float[] devs = To.arrayOfFloats(returns, r -> r - mean);
 			double min = Double.MAX_VALUE;
 			double max = Double.MIN_VALUE;
 			double sum = 0d;
@@ -235,7 +235,7 @@ public class TimeSeries {
 	}
 
 	public double varianceRatio(float[] prices, int tor) {
-		float[] logs = To.arrayOfFloats(prices, price -> (float) Math.log(price));
+		float[] logs = To.arrayOfFloats(prices, Math::log);
 		float[] diffsTor = dropDiff_(tor, logs);
 		float[] diffs1 = dropDiff_(1, logs);
 		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));

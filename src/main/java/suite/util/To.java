@@ -29,17 +29,15 @@ import java.util.Set;
 import java.util.function.IntFunction;
 
 import suite.Constants;
-import suite.math.linalg.VirtualMatrix;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats_;
-import suite.primitive.FltPrimitives.Obj_Flt;
-import suite.primitive.Flt_Flt;
-import suite.primitive.IntInt_Flt;
+import suite.primitive.Flt_Dbl;
+import suite.primitive.IntInt_Dbl;
 import suite.primitive.IoSink;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
-import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 
@@ -54,16 +52,24 @@ public class To {
 		return ts;
 	}
 
-	public static float[] arrayOfFloats(float[] fs, Flt_Flt fun) {
-		return Floats_.toArray(fs.length, i -> fun.apply(fs[i]));
+	public static float[] arrayOfFloats(float[] fs, Flt_Dbl fun) {
+		return Floats_.toArray(fs.length, i -> (float) fun.apply(fs[i]));
 	}
 
-	public static <T> float[] arrayOfFloats(T[] ts, Obj_Flt<T> fun) {
-		return Read.from(ts).collect(Obj_Flt.lift(fun)).toArray();
+	public static <T> float[] arrayOfFloats(T[] fs0, Obj_Dbl<T> fun) {
+		int length = fs0.length;
+		float[] fs1 = new float[length];
+		for (int i = 0; i < length; i++)
+			fs1[i] = (float) fun.apply(fs0[i]);
+		return fs1;
 	}
 
-	public static float[][] arrayOfFloats(int height, int width, IntInt_Flt fun) {
-		return VirtualMatrix.of(height, width, fun).matrix();
+	public static float[][] arrayOfFloats(int height, int width_, IntInt_Dbl fun) {
+		float[][] matrix = new float[height][width_];
+		for (int i = 0; i < height; i++)
+			for (int j = 0; j < width_; j++)
+				matrix[i][j] = (float) fun.apply(i, j);
+		return matrix;
 	}
 
 	public static Bytes bytes(String s) {

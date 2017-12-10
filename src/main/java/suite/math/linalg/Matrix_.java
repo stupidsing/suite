@@ -48,9 +48,9 @@ public class Matrix_ {
 		int w = w(vs);
 		float[] means = Floats_.toArray(h, j -> (float) (Read.from(vs).toDouble(Obj_Dbl.sum(vector -> vector[j])) / w));
 
-		return To.arrayOfFloats(h, h, (i0, i1) -> (float) (Ints_ //
-				.range(0, w) //
-				.toDouble(Int_Dbl.sum(j -> vs[i0][j] * vs[i1][j])) / w - means[i0] * means[i1]));
+		return To.arrayOfFloats(h, h, (i0, i1) -> Ints_ //
+				.range(w) //
+				.toDouble(Int_Dbl.sum(j -> vs[i0][j] * vs[i1][j])) / w - means[i0] * means[i1]);
 	}
 
 	public double det(float[][] m) {

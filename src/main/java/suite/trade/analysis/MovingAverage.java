@@ -42,9 +42,9 @@ public class MovingAverage {
 	}
 
 	public float[] exponentialGeometricMovingAvg(float[] prices, double alpha) {
-		float[] logPrices = To.arrayOfFloats(prices, price -> (float) Math.log(price));
+		float[] logPrices = To.arrayOfFloats(prices, Math::log);
 		float[] movingAvgs = exponentialMovingAvg(logPrices, alpha);
-		return To.arrayOfFloats(movingAvgs, lma -> (float) Math.exp(lma));
+		return To.arrayOfFloats(movingAvgs, Math::exp);
 	}
 
 	public float[] exponentialMovingAvg(float[] prices, int halfLife) {
@@ -61,9 +61,9 @@ public class MovingAverage {
 	}
 
 	public float[] geometricMovingAvg(float[] prices, int windowSize) {
-		float[] logPrices = To.arrayOfFloats(prices, price -> (float) Math.log(price));
+		float[] logPrices = To.arrayOfFloats(prices, Math::log);
 		float[] movingAvgs = movingAvg(logPrices, windowSize);
-		return To.arrayOfFloats(movingAvgs, lma -> (float) Math.exp(lma));
+		return To.arrayOfFloats(movingAvgs, Math::exp);
 	}
 
 	public float[] movingAvg(float[] prices, int windowSize) {
