@@ -207,8 +207,8 @@ public class Arima {
 							lrxs[tq--] = 1f;
 							for (int j = 0; j < q; j++)
 								lrxs[tq--] = mas[j];
-							float lry = (float) (xs[t] - Ints_.range(p).toDouble(Int_Dbl.sum(j -> ars[j] * xs[t - j - 1])));
-							return FltObjPair.of(lry, lrxs);
+							double lry = xs[t] - Ints_.range(p).toDouble(Int_Dbl.sum(j -> ars[j] * xs[t - j - 1]));
+							return FltObjPair.of((float) lry, lrxs);
 						}) //
 						.toList()).coefficients;
 
