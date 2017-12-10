@@ -22,18 +22,17 @@ public class TimeSeries {
 	private Vector_ vec = new Vector_();
 
 	// autocorrelation function
+	// "The Analysis of Time Series", Chris Chatfield
+	// 2.7 Autocorrelation and the Correlogram
 	public float[] acf(float[] ys, int n) {
 		int length = ys.length;
 		double meany = stat.mean(ys);
 		float[] ydevs = To.arrayOfFloats(length, i -> ys[i] - meany);
-		double avgydev0 = Ints_.range(length).toDouble(Int_Dbl.sum(i -> ydevs[i])) / length;
-		return To.arrayOfFloats(n, k -> {
-			int lk = length - k;
-			double nom = Ints_.range(lk).toDouble(Int_Dbl.sum(i -> ydevs[i] * ydevs[i + k]));
-			double avgydev1 = Ints_.range(lk).toDouble(Int_Dbl.sum(i -> ydevs[i])) / lk;
-			double denom = Math.sqrt(avgydev0 * avgydev1) * lk;
-			return nom / denom;
-		});
+		float[] acovs = To.arrayOfFloats(length, k -> Ints_ //
+				.range(length - k) //
+				.toDouble(Int_Dbl.sum(i -> (ydevs[i] * ydevs[i + k]))));
+		double inv = 1d / acovs[0];
+		return To.arrayOfFloats(acovs.length, k -> acovs[k] * inv);
 	}
 
 	// Augmented Dickey-Fuller test
