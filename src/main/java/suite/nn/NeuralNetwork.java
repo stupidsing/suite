@@ -30,12 +30,10 @@ public class NeuralNetwork {
 		public default <U> Layer<I, U> append(Layer<O, U> layer) {
 			Layer<I, O> layer0 = this;
 			Layer<O, U> layer1 = layer;
-			return new Layer<>() {
-				public Out<I, U> feed(I inputs) {
-					Out<I, O> out0 = layer0.feed(inputs);
-					Out<O, U> out1 = layer1.feed(out0.output);
-					return new Out<>(out1.output, errors -> out0.backprop.apply(out1.backprop.apply(errors)));
-				}
+			return inputs -> {
+				Out<I, O> out0 = layer0.feed(inputs);
+				Out<O, U> out1 = layer1.feed(out0.output);
+				return new Out<>(out1.output, errors -> out0.backprop.apply(out1.backprop.apply(errors)));
 			};
 		}
 	}
