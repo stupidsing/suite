@@ -10,8 +10,10 @@ import suite.primitive.DblMutable;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
+import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.Array_;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
@@ -103,7 +105,8 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[][], float[][]> spawnLayer(int n, Int_Obj<Layer<float[][], float[]>> fun) {
-		List<Layer<float[][], float[]>> layers = Ints_.range(n).map(fun::apply).toList();
+		Streamlet<Layer<float[][], float[]>> layers = Ints_.range(n).map(fun::apply);
+
 		return this.<float[][], float[]> spawnLayer(float[].class, layers, input -> input, errors0 -> {
 			List<float[][]> errors1 = errors0.toList();
 			float[][] e = errors1.get(0);
@@ -116,19 +119,18 @@ public class NeuralNetwork {
 
 	private <I, O> Layer<I, O[]> spawnLayer( //
 			Class<O> clazz, //
-			List<Layer<I, O>> layers, //
+			Streamlet<Layer<I, O>> layers, //
 			Iterate<I> cloneInputs, //
 			Fun<Outlet<I>, I> combineErrors) {
 		int size = layers.size();
 
 		return inputs -> {
-			@SuppressWarnings("unchecked")
-			Out<I, O>[] outs = To.array(size, Out.class, i -> layers.get(i).feed(cloneInputs.apply(inputs)));
+			List<Out<I, O>> outs = layers.map( layer -> layer.feed(cloneInputs.apply(inputs))).toList();
 			O[] outputs = Read.from(outs).map(out -> out.output).toArray(clazz);
 
 			return new Out<>(outputs, errors -> Ints_ //
 					.range(size) //
-					.map(i -> outs[i].backprop.apply(errors[i])) //
+					.map(i -> outs.get(i).backprop.apply(errors[i])) //
 					.collect(combineErrors));
 		};
 	}
