@@ -1,5 +1,6 @@
 package suite.nn;
 
+import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Random;
 
@@ -65,14 +66,14 @@ public class NeuralNetwork {
 		int flattenSize = (inputSize - kernelSize + 1) / maxPoolSize;
 		int outputSize = 1;
 
+		// input 19x19
 		return new NilLayer<float[][]>() //
-				.append(spawnLayer(nKernels, i -> new NilLayer<float[][]>() // input
-																			// 19x19
+				.append(spawnLayer(nKernels, i -> new NilLayer<float[][]>() //
 						.append(convLayer(kernelSize, kernelSize)) //
 						.append(Boolean.TRUE ? maxPoolLayer(maxPoolSize, maxPoolSize) : averagePoolLayer(maxPoolSize, maxPoolSize)) //
-						.append(flattenLayer(flattenSize)) //
+						.append(this.<float[]> flattenLayer(float[].class, flattenSize)) //
 						.append(reluLayer()))) //
-				.append(flattenLayer(flattenSize)) //
+				.append(this.<float[]> flattenLayer(float[].class, flattenSize)) //
 				.append(feedForward(nKernels * flattenSize, outputSize));
 	}
 
@@ -225,26 +226,27 @@ public class NeuralNetwork {
 		};
 	}
 
-	@SuppressWarnings("unused")
-	private <T> Layer<T[][], T[]> flattenLayer(Class<T[]> arrayClazz, int stride) {
-		@SuppressWarnings("unchecked")
-		Class<T> clazz = (Class<T>) arrayClazz.getComponentType();
+	private <T> Layer<T[], T> flattenLayer(Class<T> arrayClazz, int stride) {
+		Class<?> clazz = arrayClazz.getComponentType();
 
 		return inputs -> {
-			T[] outputs = Array_.newArray(clazz, inputs.length * stride);
+			@SuppressWarnings("unchecked")
+			T outputs = (T) Array_.newArray(clazz, inputs.length * stride);
 			int di = 0;
 
-			for (T[] row : inputs) {
-				Array_.copy(row, 0, outputs, di, stride);
+			for (T row : inputs) {
+				System.arraycopy(row, 0, outputs, di, stride);
 				di += stride;
 			}
 
 			return new Out<>(outputs, errors -> {
-				T[][] errors1 = Array_.newArray(arrayClazz, errors.length / stride);
+				T[] errors1 = Array_.newArray(arrayClazz, Array.getLength(errors) / stride);
 				int si = 0;
 
 				for (int i = 0; i < errors1.length; i++) {
-					Array_.copy(errors, si, errors1[i] = Array_.newArray(clazz, stride), 0, stride);
+					@SuppressWarnings("unchecked")
+					T t = (T) Array_.newArray(clazz, stride);
+					System.arraycopy(errors, si, errors1[i] = t, 0, stride);
 					si += stride;
 				}
 				return errors1;
