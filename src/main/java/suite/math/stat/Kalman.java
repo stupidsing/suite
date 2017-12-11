@@ -14,7 +14,7 @@ public class Kalman {
 	private float[][] H; // observation
 	private float[][] Q; // state noise
 	private float[][] R; // observation noise
-	private float[][] covariance0;
+	private float[][] estimatedCovariance0;
 	private float[] estimatedState0;
 
 	// hidden equations:
@@ -28,15 +28,15 @@ public class Kalman {
 
 		// predict
 		float[] predictedState1 = vec.add(mtx.mul(F, estimatedState0), mtx.mul(B, input0));
-		float[][] predictedCovariance1 = mtx.add(mul(F, covariance0, Ft), Q);
+		float[][] predictedCovariance1 = mtx.add(mul(F, estimatedCovariance0, Ft), Q);
 
 		// update
 		float[][] kalmanGain = mul(predictedCovariance1, Ht, mtx.inverse(mtx.add(R, mul(H, predictedCovariance1, Ht))));
 		float[] estimatedState1 = vec.add(predictedState1, mtx.mul(kalmanGain, vec.sub(observed0, mtx.mul(H, predictedState1))));
-		float[][] covariance1 = mtx.mul(mtx.add(identity, mtx.neg(mtx.mul(kalmanGain, H))), predictedCovariance1);
+		float[][] estimatedCovariance1 = mtx.mul(mtx.add(identity, mtx.neg(mtx.mul(kalmanGain, H))), predictedCovariance1);
 		// residual1 = observed0 - H * estimatedState1
 
-		covariance0 = covariance1;
+		estimatedCovariance0 = estimatedCovariance1;
 		estimatedState0 = estimatedState1;
 	}
 
