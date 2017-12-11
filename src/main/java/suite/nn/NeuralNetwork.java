@@ -124,7 +124,7 @@ public class NeuralNetwork {
 		int size = layers.size();
 
 		return inputs -> {
-			List<Out<I, O>> outs = layers.map( layer -> layer.feed(cloneInputs.apply(inputs))).toList();
+			List<Out<I, O>> outs = layers.map(layer -> layer.feed(cloneInputs.apply(inputs))).toList();
 			O[] outputs = Read.from(outs).map(out -> out.output).toArray(clazz);
 
 			return new Out<>(outputs, errors -> Ints_ //

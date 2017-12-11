@@ -33,7 +33,7 @@ public class VerifyTest {
 		Fun2<String, IList<String>, Definition> defn = (t0, t1) -> def_.apply(t0, and.apply(t1));
 
 		IMap<String, Definition> defs = IMap //
-				.<String, Definition>empty() //
+				.<String, Definition> empty() //
 				.put("def$eq", defn.apply("eq-class .eq", IList.of( //
 						"commutative # .A .eq .B => .B .eq .A", //
 						"transitive # .A .eq .B, .B .eq .C => .A .eq .C"))) //
@@ -54,7 +54,7 @@ public class VerifyTest {
 						".isElem .P => .P .eq .zero; (.P .op1 (.inv1 .P)) .eq .one")));
 
 		IMap<String, Node> axioms = IMap //
-				.<String, Node>empty() //
+				.<String, Node> empty() //
 				.put("@not.0", Suite.parse(".P, not .P => false")) //
 				.put("@and.0", Suite.parse(".P, .Q => .P")) //
 				.put("@and.1", Suite.parse(".P, .Q => .Q")) //
