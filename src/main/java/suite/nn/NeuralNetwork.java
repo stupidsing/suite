@@ -51,7 +51,7 @@ public class NeuralNetwork {
 	public Layer<float[], float[]> ml(int[] sizes) {
 		Layer<float[], float[]> layer = nilLayer();
 		for (int i = 1; i < sizes.length; i++)
-			layer = compose(layer, feedForwardLayer(sizes[i - 1], sizes[i]));
+			layer = layer.append(feedForwardLayer(sizes[i - 1], sizes[i]));
 		return layer;
 	}
 
@@ -72,16 +72,6 @@ public class NeuralNetwork {
 						.append(reluLayer()))) //
 				.append(flattenLayer(flattenSize)) //
 				.append(feedForwardLayer(nKernels * flattenSize, outputSize));
-	}
-
-	private <I, J, K> Layer<I, K> compose(Layer<I, J> layer0, Layer<J, K> layer1) {
-		return new Layer<>() {
-			public Out<I, K> feed(I inputs) {
-				Out<I, J> out0 = layer0.feed(inputs);
-				Out<J, K> out1 = layer1.feed(out0.output);
-				return new Out<>(out1.output, errors -> out0.backprop.apply(out1.backprop.apply(errors)));
-			}
-		};
 	}
 
 	private Layer<float[][], float[][]> nil2dLayer() {
