@@ -40,8 +40,8 @@ public class NeuralNetwork {
 	}
 
 	public static class Out<I, O> {
-		public O output;
-		public Fun<O, I> backprop; // input errors, return errors
+		public final O output;
+		public final Fun<O, I> backprop; // input errors, return errors
 
 		public Out(O output, Fun<O, I> backprop) {
 			this.output = output;
