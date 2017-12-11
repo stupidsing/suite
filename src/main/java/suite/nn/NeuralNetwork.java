@@ -8,7 +8,6 @@ import suite.math.Sigmoid;
 import suite.math.linalg.Matrix_;
 import suite.primitive.DblMutable;
 import suite.primitive.Dbl_Dbl;
-import suite.primitive.Floats_;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
 import suite.streamlet.Outlet;
@@ -52,9 +51,9 @@ public class NeuralNetwork {
 	}
 
 	public Layer<float[], float[]> ml(int[] sizes) {
-		Layer<float[], float[]> layer = new NilLayer<float[]>();
+		Layer<float[], float[]> layer = nilLayer();
 		for (int i = 1; i < sizes.length; i++)
-			layer = compose(layer, feedForward(sizes[i - 1], sizes[i]));
+			layer = compose(layer, feedForwardLayer(sizes[i - 1], sizes[i]));
 		return layer;
 	}
 
@@ -67,14 +66,14 @@ public class NeuralNetwork {
 		int outputSize = 1;
 
 		// input 19x19
-		return new NilLayer<float[][]>() //
-				.append(spawnLayer(nKernels, i -> new NilLayer<float[][]>() //
+		return nil2dLayer() //
+				.append(spawnLayer(nKernels, i -> nil2dLayer() //
 						.append(convLayer(kernelSize, kernelSize)) //
 						.append(Boolean.TRUE ? maxPoolLayer(maxPoolSize, maxPoolSize) : averagePoolLayer(maxPoolSize, maxPoolSize)) //
-						.append(this.<float[]> flattenLayer(float[].class, flattenSize)) //
+						.append(flattenLayer(flattenSize)) //
 						.append(reluLayer()))) //
-				.append(this.<float[]> flattenLayer(float[].class, flattenSize)) //
-				.append(feedForward(nKernels * flattenSize, outputSize));
+				.append(flattenLayer(flattenSize)) //
+				.append(feedForwardLayer(nKernels * flattenSize, outputSize));
 	}
 
 	private <I, J, K> Layer<I, K> compose(Layer<I, J> layer0, Layer<J, K> layer1) {
@@ -87,13 +86,15 @@ public class NeuralNetwork {
 		};
 	}
 
-	private class NilLayer<I> implements Layer<I, I> {
-		public Out<I, I> feed(I inputs) {
-			return new Out<>(inputs, errors -> errors);
-		}
+	private Layer<float[][], float[][]> nil2dLayer() {
+		return this.<float[][]> nilLayer();
 	}
 
-	private Layer<float[], float[]> feedForward(int nInputs, int nOutputs) {
+	private <T> Layer<T, T> nilLayer() {
+		return inputs -> new Out<>(inputs, errors -> errors);
+	}
+
+	private Layer<float[], float[]> feedForwardLayer(int nInputs, int nOutputs) {
 		float[][] weights = To.arrayOfFloats(nInputs, nOutputs, (i, j) -> random.nextFloat());
 
 		return inputs -> {
@@ -115,7 +116,14 @@ public class NeuralNetwork {
 
 	private Layer<float[][], float[][]> spawnLayer(int n, Int_Obj<Layer<float[][], float[]>> fun) {
 		List<Layer<float[][], float[]>> layers = Ints_.range(n).map(fun::apply).toList();
-		return this.<float[][], float[]>spawnLayer(float[].class, layers, input -> input, errors -> new float[0][]);
+		return this.<float[][], float[]> spawnLayer(float[].class, layers, input -> input, errors0 -> {
+			List<float[][]> errors1 = errors0.toList();
+			float[][] e = errors1.get(0);
+			float[][] sums = new float[mtx.height(e)][mtx.width(e)];
+			for (float[][] error : errors1)
+				sums = mtx.add(sums, error);
+			return sums;
+		});
 	}
 
 	private <I, O> Layer<I, O[]> spawnLayer( //
@@ -226,6 +234,10 @@ public class NeuralNetwork {
 		};
 	}
 
+	private Layer<float[][], float[]> flattenLayer(int stride) {
+		return this.<float[]> flattenLayer(float[].class, stride);
+	}
+
 	private <T> Layer<T[], T> flattenLayer(Class<T> arrayClazz, int stride) {
 		Class<?> clazz = arrayClazz.getComponentType();
 
@@ -247,29 +259,6 @@ public class NeuralNetwork {
 					@SuppressWarnings("unchecked")
 					T t = (T) Array_.newArray(clazz, stride);
 					System.arraycopy(errors, si, errors1[i] = t, 0, stride);
-					si += stride;
-				}
-				return errors1;
-			});
-		};
-	}
-
-	private Layer<float[][], float[]> flattenLayer(int stride) {
-		return inputs -> {
-			float[] outputs = new float[inputs.length * stride];
-			int di = 0;
-
-			for (float[] row : inputs) {
-				Floats_.copy(row, 0, outputs, di, stride);
-				di += stride;
-			}
-
-			return new Out<>(outputs, errors -> {
-				float[][] errors1 = new float[errors.length / stride][stride];
-				int si = 0;
-
-				for (float[] row : errors1) {
-					Floats_.copy(errors, si, row, 0, stride);
 					si += stride;
 				}
 				return errors1;
