@@ -6,6 +6,7 @@ import java.util.Random;
 import suite.math.Sigmoid;
 import suite.math.linalg.Matrix_;
 import suite.primitive.DblMutable;
+import suite.primitive.Dbl_Dbl;
 import suite.primitive.Floats_;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
@@ -65,7 +66,8 @@ public class NeuralNetwork {
 		int outputSize = 1;
 
 		return new NilLayer<float[][]>() //
-				.append(spawnLayer(nKernels, i -> new NilLayer<float[][]>() // input 19x19
+				.append(spawnLayer(nKernels, i -> new NilLayer<float[][]>() // input
+																			// 19x19
 						.append(convLayer(kernelSize, kernelSize)) //
 						.append(Boolean.TRUE ? maxPoolLayer(maxPoolSize, maxPoolSize) : averagePoolLayer(maxPoolSize, maxPoolSize)) //
 						.append(flattenLayer(flattenSize)) //
@@ -95,6 +97,7 @@ public class NeuralNetwork {
 
 		return inputs -> {
 			float[] outputs = mtx.mul(inputs, weights);
+
 			for (int j = 0; j < nOutputs; j++)
 				outputs[j] = (float) Sigmoid.sigmoid(outputs[j]);
 
@@ -111,7 +114,7 @@ public class NeuralNetwork {
 
 	private Layer<float[][], float[][]> spawnLayer(int n, Int_Obj<Layer<float[][], float[]>> fun) {
 		List<Layer<float[][], float[]>> layers = Ints_.range(n).map(fun::apply).toList();
-		return this.<float[][], float[]> spawnLayer(float[].class, layers, input -> input, errors -> new float[0][]);
+		return this.<float[][], float[]>spawnLayer(float[].class, layers, input -> input, errors -> new float[0][]);
 	}
 
 	private <I, O> Layer<I, O[]> spawnLayer( //
@@ -140,6 +143,7 @@ public class NeuralNetwork {
 		return inputs -> {
 			int hsx = mtx.height(inputs) - sx + 1;
 			int hsy = mtx.width(inputs) - sy + 1;
+
 			float[][] outputs = To.arrayOfFloats(hsx, hsy, (ox, oy) -> {
 				double sum = bias.get();
 				for (int x = 0; x < sx; x++)
@@ -150,6 +154,7 @@ public class NeuralNetwork {
 
 			return new Out<>(outputs, errors -> {
 				float errors1[][] = new float[hsx][hsy];
+
 				for (int ox = 0; ox < hsx; ox++)
 					for (int oy = 0; oy < hsy; oy++) {
 						float e = errors[ox][oy] *= outputs[ox][oy];
@@ -177,6 +182,7 @@ public class NeuralNetwork {
 			int sx = mtx.height(inputs);
 			int sy = mtx.width(inputs);
 			float[][] outputs = new float[sx + maskx >> shiftx][sy + masky >> shifty];
+
 			for (int ix = 0; ix < sx; ix++) {
 				float[] in = inputs[ix];
 				float[] out = outputs[ix >> shiftx];
@@ -223,9 +229,11 @@ public class NeuralNetwork {
 	private <T> Layer<T[][], T[]> flattenLayer(Class<T[]> arrayClazz, int stride) {
 		@SuppressWarnings("unchecked")
 		Class<T> clazz = (Class<T>) arrayClazz.getComponentType();
+
 		return inputs -> {
 			T[] outputs = Array_.newArray(clazz, inputs.length * stride);
 			int di = 0;
+
 			for (T[] row : inputs) {
 				Array_.copy(row, 0, outputs, di, stride);
 				di += stride;
@@ -234,6 +242,7 @@ public class NeuralNetwork {
 			return new Out<>(outputs, errors -> {
 				T[][] errors1 = Array_.newArray(arrayClazz, errors.length / stride);
 				int si = 0;
+
 				for (int i = 0; i < errors1.length; i++) {
 					Array_.copy(errors, si, errors1[i] = Array_.newArray(clazz, stride), 0, stride);
 					si += stride;
@@ -247,6 +256,7 @@ public class NeuralNetwork {
 		return inputs -> {
 			float[] outputs = new float[inputs.length * stride];
 			int di = 0;
+
 			for (float[] row : inputs) {
 				Floats_.copy(row, 0, outputs, di, stride);
 				di += stride;
@@ -255,6 +265,7 @@ public class NeuralNetwork {
 			return new Out<>(outputs, errors -> {
 				float[][] errors1 = new float[errors.length / stride][stride];
 				int si = 0;
+
 				for (float[] row : errors1) {
 					Floats_.copy(errors, si, row, 0, stride);
 					si += stride;
@@ -266,17 +277,12 @@ public class NeuralNetwork {
 
 	private Layer<float[], float[]> reluLayer() {
 		return inputs -> {
-			float[] outputs = To.arrayOfFloats(inputs, NeuralNetwork.this::relu);
-			return new Out<>(outputs, errors -> To.arrayOfFloats(errors, NeuralNetwork.this::reluGradient));
+			float[] outputs = To.arrayOfFloats(inputs, relu::apply);
+			return new Out<>(outputs, errors -> To.arrayOfFloats(errors, reluGradient::apply));
 		};
 	}
 
-	private double relu(double d) {
-		return Math.min(0d, d);
-	}
-
-	private double reluGradient(double value) {
-		return value < 0f ? 0f : 1f;
-	}
+	private Dbl_Dbl relu = d -> Math.min(0d, d);
+	private Dbl_Dbl reluGradient = value -> value < 0f ? 0f : 1f;
 
 }
