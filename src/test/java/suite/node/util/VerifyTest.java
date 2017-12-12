@@ -35,8 +35,8 @@ public class VerifyTest {
 		IMap<String, Definition> defs = IMap //
 				.<String, Definition> empty() //
 				.put("def$iff", defn.apply("iff .A .B", IList.of( //
-						"forward # .A => .B", //
-						"backward # .B => .A"))) //
+						"fore # .A => .B", //
+						"back # .B => .A"))) //
 				.put("def$eq", defn.apply("eq-class .eq", IList.of( //
 						"reflexive # true => .A .eq .A", //
 						"symmetric # .A .eq .B => .B .eq .A", //
