@@ -44,6 +44,8 @@ public class VerifyTest {
 				.put("def$uni-op", def2.apply("uni-op .class .op", ".class .P => .class (.op .P)")) //
 				.put("def$bin-op", def2.apply("bin-op .class .op", ".class .P, .class .Q => .class (.P .op .Q)")) //
 				.put("def$sub", def2.apply("sub .class .subclass, .subclass .E", ".class .E")) //
+				.put("def$set", defn.apply("set .class .eq", IList.of( //
+						".S .eq .T => (.S .E) iff (.T .E)"))) //
 				.put("def$group0", defn.apply("group0 .class .eq .op .zero", IList.of( //
 						".class .zero", //
 						"eq-class .eq", //
