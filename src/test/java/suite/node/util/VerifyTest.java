@@ -60,11 +60,11 @@ public class VerifyTest {
 
 		IMap<String, Node> axioms = IMap //
 				.<String, Node> empty() //
-				.put("@not.0", Suite.parse(".P, not .P => false")) //
-				.put("@and.0", Suite.parse(".P, .Q => .P")) //
-				.put("@and.1", Suite.parse(".P, .Q => .Q")) //
-				.put("@or.0", Suite.parse(".P => .P; .Q")) //
-				.put("@or.1", Suite.parse(".Q => .P; .Q")) //
+				.put("@complement", Suite.parse(".P, not .P => false")) //
+				.put("@and-lhs", Suite.parse(".P, .Q => .P")) //
+				.put("@and-rhs", Suite.parse(".P, .Q => .Q")) //
+				.put("@or-lhs", Suite.parse(".P => .P; .Q")) //
+				.put("@or-rhs", Suite.parse(".Q => .P; .Q")) //
 				.put("@nat-peano1", Suite.parse("true => is-nat 0")) //
 				.put("@nat-peano234", Suite.parse("eq-class nat-eq")) //
 				.put("@nat-peano5", Suite.parse("is-nat .N, .M nat-eq .N => is-nat .M")) //
@@ -72,8 +72,8 @@ public class VerifyTest {
 				.put("@nat-peano7", Suite.parse("(is-nat .M, is-nat .N) iff (is-nat (succ .M), is-nat (succ .N))")) //
 				.put("@nat-peano8", Suite.parse("succ .N nat-eq 0 => false")) //
 				.put("@nat-group0", Suite.parse("group0 is-nat nat-eq nat-add 0")) //
-				.put("@nat-add.1", Suite.parse("is-nat .N => .M nat-eq (succ .N) = succ (.M nat-add .N)")) //
-				.put("@int.0", Suite.parse("true => group is-int int-eq int-add int-neg I0"));
+				.put("@nat-add", Suite.parse("is-nat .N => .M nat-eq (succ .N) = succ (.M nat-add .N)")) //
+				.put("@int-group", Suite.parse("true => group is-int int-eq int-add int-neg I0"));
 
 		new Verify(defs, axioms) //
 				.extend("suppose @EqClass-Eq := eq-class Eq >> " //
@@ -83,7 +83,7 @@ public class VerifyTest {
 						+ "lemma @eq := @EqClass-Eq | expand def$eq >> " //
 						+ "lemma @Q-Eq-P := @eq | choose symmetric | fulfill-by @P-Eq-Q >> " //
 						+ "lemma @Q-Eq-R := @eq | choose transitive | fulfill-by (@Q-Eq-P, @P-Eq-R) >> " //
-						+ "@Q-Eq-R, @Q-Ne-R | fulfill @not.0") //
+						+ "@Q-Eq-R, @Q-Ne-R | fulfill @complement") //
 				.extend("is-nat 0", "axiom @nat-peano1") //
 				.extend("is-nat (succ 0)", "'is-nat 0' | fulfill @nat-peano6");
 	}
