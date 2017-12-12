@@ -34,24 +34,29 @@ public class VerifyTest {
 
 		IMap<String, Definition> defs = IMap //
 				.<String, Definition> empty() //
+				.put("def$iff", defn.apply("iff .A .B", IList.of( //
+						"forward # .A => .B", //
+						"backward # .B => .A"))) //
 				.put("def$eq", defn.apply("eq-class .eq", IList.of( //
-						"commutative # .A .eq .B => .B .eq .A", //
+						"reflexive # true => .A .eq .A", //
+						"symmetric # .A .eq .B => .B .eq .A", //
 						"transitive # .A .eq .B, .B .eq .C => .A .eq .C"))) //
-				.put("def$uni-op", def2.apply("uni-op .isElem .op", ".isElem .P => .isElem (.op .P)")) //
-				.put("def$bin-op", def2.apply("bin-op .isElem .op", ".isElem .P, .isElem .Q => .isElem (.P .op .Q)")) //
-				.put("def$group0", defn.apply("group0 .isElem .eq .op .zero", IList.of( //
-						".isElem .zero", //
+				.put("def$uni-op", def2.apply("uni-op .class .op", ".class .P => .class (.op .P)")) //
+				.put("def$bin-op", def2.apply("bin-op .class .op", ".class .P, .class .Q => .class (.P .op .Q)")) //
+				.put("def$group0", defn.apply("group0 .class .eq .op .zero", IList.of( //
+						".class .zero", //
 						"eq-class .eq", //
-						"bin-op .isElem .op", //
-						".isElem .P => (.zero .op .P) .eq .P", //
-						".isElem .P, .isElem .Q, .isElem .R => (.P .op (.Q .op .R)) .eq ((.P .op .Q) .op .R)"))) //
-				.put("def$group", defn.apply("group .isElem .eq .op .inv .zero", IList.of( //
-						"group0 .isElem .eq .op .zero", //
-						".isElem .P => (.P .op (.inv .P)) .eq .zero"))) //
-				.put("def$field", defn.apply("field .isElem .eq .op0 .inv0 .zero .op1 .inv1 .one", IList.of( //
-						"group .isElem .eq .op0 .inv0 .zero", //
-						"group0 .isElem .eq .op1 .inv1 .one", //
-						".isElem .P => .P .eq .zero; (.P .op1 (.inv1 .P)) .eq .one")));
+						".class .P, .P .eq .Q => .class .Q", //
+						"bin-op .class .op", //
+						".class .P => (.zero .op .P) .eq .P", //
+						".class .P, .class .Q, .class .R => (.P .op (.Q .op .R)) .eq ((.P .op .Q) .op .R)"))) //
+				.put("def$group", defn.apply("group .class .eq .op .inv .zero", IList.of( //
+						"group0 .class .eq .op .zero", //
+						".class .P => (.P .op (.inv .P)) .eq .zero"))) //
+				.put("def$field", defn.apply("field .class .eq .op0 .inv0 .zero .op1 .inv1 .one", IList.of( //
+						"group .class .eq .op0 .inv0 .zero", //
+						"group0 .class .eq .op1 .inv1 .one", //
+						".class .P => .P .eq .zero; (.P .op1 (.inv1 .P)) .eq .one")));
 
 		IMap<String, Node> axioms = IMap //
 				.<String, Node> empty() //
@@ -60,9 +65,13 @@ public class VerifyTest {
 				.put("@and.1", Suite.parse(".P, .Q => .Q")) //
 				.put("@or.0", Suite.parse(".P => .P; .Q")) //
 				.put("@or.1", Suite.parse(".Q => .P; .Q")) //
-				.put("@nat.0", Suite.parse("true => is-nat 0")) //
-				.put("@nat.1", Suite.parse("is-nat .N => is-nat (succ .N)")) //
-				.put("@nat-add.0", Suite.parse("is-nat .N => (0 nat-add .N) nat-eq .N")) //
+				.put("@nat-peano1", Suite.parse("true => is-nat 0")) //
+				.put("@nat-peano234", Suite.parse("eq-class nat-eq")) //
+				.put("@nat-peano5", Suite.parse("is-nat .N, .M nat-eq .N => is-nat .M")) //
+				.put("@nat-peano6", Suite.parse("is-nat .N => is-nat (succ .N)")) //
+				.put("@nat-peano7", Suite.parse("(is-nat .M, is-nat .N) iff (is-nat (succ .M), is-nat (succ .N))")) //
+				.put("@nat-peano8", Suite.parse("succ .N nat-eq 0 => false")) //
+				.put("@nat-group0", Suite.parse("group0 is-nat nat-eq nat-add 0")) //
 				.put("@nat-add.1", Suite.parse("is-nat .N => .M nat-eq (succ .N) = succ (.M nat-add .N)")) //
 				.put("@int.0", Suite.parse("true => group is-int int-eq int-add int-neg I0"));
 
@@ -72,11 +81,11 @@ public class VerifyTest {
 						+ "suppose @Q-Ne-R := not (.Q Eq .R) >> " //
 						+ "contradict @P-Eq-R := .P Eq .R >> " //
 						+ "lemma @eq := @EqClass-Eq | expand def$eq >> " //
-						+ "lemma @Q-Eq-P := @eq | choose commutative | fulfill-by @P-Eq-Q >> " //
+						+ "lemma @Q-Eq-P := @eq | choose symmetric | fulfill-by @P-Eq-Q >> " //
 						+ "lemma @Q-Eq-R := @eq | choose transitive | fulfill-by (@Q-Eq-P, @P-Eq-R) >> " //
 						+ "@Q-Eq-R, @Q-Ne-R | fulfill @not.0") //
-				.extend("is-nat 0", "axiom @nat.0") //
-				.extend("is-nat (succ 0)", "'is-nat 0' | fulfill @nat.1");
+				.extend("is-nat 0", "axiom @nat-peano1") //
+				.extend("is-nat (succ 0)", "'is-nat 0' | fulfill @nat-peano6");
 	}
 
 	private class Definition {
