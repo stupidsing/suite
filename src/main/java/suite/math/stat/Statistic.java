@@ -140,6 +140,13 @@ public class Statistic {
 			return Math.log(nSamples) * sampleLength - 2d * logLikelihood();
 		}
 
+		public float[] coefficients() {
+			if (!Double.isNaN(sse))
+				return coefficients;
+			else
+				throw new RuntimeException();
+		}
+
 		public double logLikelihood() {
 			double variance = sst / (nSamples - sampleLength - 1);
 			return -.5d * (nSamples * (Math.log(2 * Math.PI) + Math.log(variance)) + sse / variance);

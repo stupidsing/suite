@@ -75,7 +75,7 @@ public class VerifyTest {
 				.put("@nat-peano8", Suite.parse("succ .N nat-eq 0 => false")) //
 				.put("@nat-group0", Suite.parse("group0 is-nat nat-eq nat-add 0")) //
 				.put("@nat-add", Suite.parse("is-nat .N => .M nat-eq (succ .N) = succ (.M nat-add .N)")) //
-				.put("@set-class", Suite.parse("(.E set-in (set-class .C) iff (.C .E)")) //
+				.put("@set-class", Suite.parse(".E set-in (set-class .C) iff (.C .E)")) //
 				.put("@set-union", Suite.parse("(.E set-in (.S set-union .T)) iff (.E set-in .S; .E set-in .T)")) //
 				.put("@set-intersect", Suite.parse("(.E set-in (.S set-intersect .T)) iff (.E set-in .S, .E set-in .T)")) //
 				.put("@int-group", Suite.parse("true => group is-int int-eq int-add int-neg I0"));

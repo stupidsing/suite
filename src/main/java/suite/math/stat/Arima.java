@@ -9,6 +9,7 @@ import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltObjPair;
+import suite.streamlet.Streamlet;
 import suite.util.To;
 
 public class Arima {
@@ -167,7 +168,7 @@ public class Arima {
 		int xpqLength = xLength + pq;
 		float[] ars = To.arrayOfFloats(p, i -> Math.scalb(.5d, -i));
 		float[] mas = To.arrayOfFloats(q, i -> Math.scalb(.5d, -i));
-		float[] eps = To.arrayOfFloats(xpqLength, i -> 0d);
+		float[] eps = To.arrayOfFloats(xpqLength, i -> xs[Math.max(0, Math.min(xLength, i - pq))] * .25f);
 
 		for (int iter = 0; iter < 9; iter++) {
 
@@ -188,18 +189,18 @@ public class Arima {
 							float lry = xs[t] - eps[tpq];
 							return FltObjPair.of(lry, lrxs);
 						}) //
-						.toList()).coefficients;
+						.toList()).coefficients();
 
 				Floats_.copy(coeffs, 0, ars, 0, p);
 				Floats_.copy(coeffs, p, mas, p, q);
 			}
 
-			// xs[t]
-			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
-			// = eps[t] * 1
-			// + eps[t - 1] * mas[0] + ... + eps[t - q] * mas[q - 1]
 			{
-				float[] eps1 = stat.linearRegression(Ints_ //
+				// xs[t]
+				// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
+				// = eps[t] * 1
+				// + eps[t - 1] * mas[0] + ... + eps[t - q] * mas[q - 1]
+				Streamlet<FltObjPair<float[]>> st0 = Ints_ //
 						.range(p, xLength) //
 						.map(t -> {
 							float[] lrxs = new float[xpqLength];
@@ -209,8 +210,18 @@ public class Arima {
 								lrxs[tq--] = mas[j];
 							double lry = xs[t] - Ints_.range(p).toDouble(Int_Dbl.sum(j -> ars[j] * xs[t - j - 1]));
 							return FltObjPair.of((float) lry, lrxs);
-						}) //
-						.toList()).coefficients;
+						});
+
+				// 0 = eps[0] * eps[0] + ... + eps[t] * eps[t]
+				Streamlet<FltObjPair<float[]>> st1 = Ints_ //
+						.range(xpqLength) //
+						.map(t -> {
+							float[] lrxs = new float[xpqLength];
+							lrxs[t] = eps[t];
+							return FltObjPair.of(0f, lrxs);
+						});
+
+				float[] eps1 = stat.linearRegression(Streamlet.concat(st0, st1).toList()).coefficients();
 
 				Floats_.copy(eps1, 0, eps, 0, xpqLength);
 			}
