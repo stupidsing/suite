@@ -8,7 +8,6 @@ import org.junit.Test;
 import suite.math.stat.Arima.Arima_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
-import suite.util.To;
 
 public class ArimaTest {
 
@@ -29,18 +28,21 @@ public class ArimaTest {
 		int length = 256;
 		int p = ars.length;
 		int q = mas.length;
+		float[] xsp = new float[length + p];
+		float[] eps = new float[length + q];
+
+		for (int i = 0; i < p; i++)
+			xsp[i] = 8f * random.nextFloat();
+		for (int i = 0; i < length; i++)
+			eps[i] = (float) random.nextGaussian();
+
 		float[] xs = new float[length];
-		float[] eps = To.arrayOfFloats(length, i -> random.nextGaussian());
-		int i = 0;
 
-		while (i < Math.max(p, q))
-			xs[i++] = 8f * random.nextFloat();
-
-		while (i < length) {
-			int im1 = i - 1;
-			xs[i++] = (float) (0d //
-					+ Ints_.range(p).toDouble(Int_Dbl.sum(j -> ars[j] * xs[im1 - j])) //
-					+ Ints_.range(q).toDouble(Int_Dbl.sum(j -> mas[j] * eps[im1 - j])));
+		for (int t = 0; t < length; t++) {
+			int tm1 = t - 1;
+			xs[t] = xsp[t + p] = (float) (0d //
+					+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tm1 - i + p])) //
+					+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tm1 - i + q])));
 		}
 
 		Arima_ a = arima.armaIa(xs, p, q);
