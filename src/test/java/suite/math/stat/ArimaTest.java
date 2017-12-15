@@ -26,7 +26,7 @@ public class ArimaTest {
 	}
 
 	private void test(float[] ars, float[] mas) {
-		int length = 8;
+		int length = 256;
 		int p = ars.length;
 		int q = mas.length;
 		float[] xs = new float[length];

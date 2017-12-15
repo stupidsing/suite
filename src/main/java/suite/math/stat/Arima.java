@@ -212,8 +212,11 @@ public class Arima {
 	// + eps[t]
 	public Arima_ armaIa(float[] xs, int p, int q) {
 		int length = xs.length;
+		float[] xsp = new float[length + p];
 		float[] eps = new float[length + q];
 		int iter = 0;
+
+		System.arraycopy(xs, 0, xsp, p, length);
 
 		while (true) {
 			int iter_ = iter;
@@ -224,14 +227,14 @@ public class Arima {
 						float[] lrxs = new float[p + iter_];
 						int di = 0;
 						for (int i = 1; i <= p; i++)
-							lrxs[di++] = xs[t - i];
-						for (int i = 1; i <= q; i++)
+							lrxs[di++] = xsp[t - i + p];
+						for (int i = 1; i <= iter_; i++)
 							lrxs[di++] = eps[t - i + q];
 						return FltObjPair.of(xs[t], lrxs);
 					}) //
 					.toList());
 
-			if (iter < q)
+			if (iter++ < q)
 				System.arraycopy(lr.residuals, 0, eps, q, length);
 			else {
 				float[] coeffs = lr.coefficients();
@@ -239,8 +242,7 @@ public class Arima {
 				float[] mas = Floats.of(coeffs, p).toArray();
 
 				double x1 = 0d //
-						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[length - i - 1])) //
-						+ mas[0] //
+						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[length - i - 1 + p])) //
 						+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[length - i - 1 + q]));
 
 				return new Arima_(ars, mas, (float) x1);
