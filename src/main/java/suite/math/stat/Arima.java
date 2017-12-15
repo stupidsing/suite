@@ -2,7 +2,6 @@ package suite.math.stat;
 
 import java.util.Arrays;
 
-import suite.math.linalg.Vector_;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.Floats;
 import suite.primitive.Floats_;
@@ -17,7 +16,6 @@ public class Arima {
 
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
-	private Vector_ vec = new Vector_();
 
 	public LinearRegression ar(float[] ys, int n) {
 		return stat.linearRegression(Ints_ //
@@ -86,51 +84,6 @@ public class Arima {
 				.toList());
 
 		return Floats_.concat(lr0.coefficients, lr1.coefficients);
-	}
-
-	public LinearRegression arima(float[] ys, int p, int d, int q) {
-		float[] is = vec.of(ys);
-		for (int i = 0; i < d; i++)
-			is = ts.differencesOn(i, is);
-		return arma0(ys, p, q);
-	}
-
-	public LinearRegression arma0(float[] ys, int p, int q) {
-		int length = ys.length;
-		float[] residuals = new float[q];
-		LinearRegression lr = null;
-
-		for (int iter = 0; iter < q; iter++) {
-			float yiter = ys[iter];
-			int iterm1 = iter - 1;
-			int iterp1 = iter + 1;
-			int ix = Math.min(p, iterm1);
-			int jx = Math.min(q, iterm1);
-
-			for (int j = 0; j < ix; j++)
-				yiter -= lr.coefficients[j] * ys[iterm1 - j];
-			for (int j = 0; j < jx; j++)
-				yiter -= lr.coefficients[p + j] * residuals[iterm1 - j];
-
-			residuals[iter] = yiter;
-
-			lr = stat.linearRegression(Ints_ //
-					.range(length) //
-					.map(i -> {
-						int p0 = -Math.max(0, i - p);
-						int nr = Math.min(iterp1, q);
-
-						float[] fs1 = new float[p + iterp1];
-						Arrays.fill(fs1, 0, p0, 0f);
-						Floats_.copy(ys, 0, fs1, p0, p - p0);
-						Floats_.copy(residuals, 0, fs1, p, nr);
-
-						return FltObjPair.of(ys[i], fs1);
-					}) //
-					.toList());
-		}
-
-		return lr;
 	}
 
 	public float arimaEm(float[] xs, int p, int d, int q) { // ARIMA
@@ -255,8 +208,7 @@ public class Arima {
 	// Trading Systems", Irene Aldridge, page 100
 	// xs[t]
 	// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
-	// + mas[0] * 1
-	// + mas[1] * eps[t - 1] + ... + mas[q] * eps[t - q]
+	// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 	// + eps[t]
 	public Arima_ armaIa(float[] xs, int p, int q) {
 		int length = xs.length;
@@ -269,11 +221,10 @@ public class Arima {
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
-						float[] lrxs = new float[p + iter_ + 1];
+						float[] lrxs = new float[p + iter_];
 						int di = 0;
 						for (int i = 1; i <= p; i++)
 							lrxs[di++] = xs[t - i];
-						lrxs[di++] = 1f;
 						for (int i = 1; i <= q; i++)
 							lrxs[di++] = eps[q + t - i];
 						return FltObjPair.of(xs[t], lrxs);
@@ -290,7 +241,7 @@ public class Arima {
 				double x1 = 0d //
 						+ Ints_.range(p).toDouble(Int_Dbl.sum(j -> ars[j] * xs[length - j - 1])) //
 						+ mas[0] //
-						+ Ints_.range(q).toDouble(Int_Dbl.sum(j -> mas[j + 1] * eps[length - j - 1]));
+						+ Ints_.range(q).toDouble(Int_Dbl.sum(j -> mas[j] * eps[q + length - j - 1]));
 
 				return new Arima_(ars, mas, (float) x1);
 			}
