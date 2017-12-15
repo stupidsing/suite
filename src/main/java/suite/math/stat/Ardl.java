@@ -30,12 +30,12 @@ public class Ardl {
 		return To.array(n, LinearRegression.class, it -> {
 			float[] fs = fsList[it];
 
-			if (length == fs.length) {
+			if (length == fs.length)
 				return stat.linearRegression(Ints_ //
 						.range(length - maxLag) //
 						.map(t -> FltObjPair.of(fs[t], getExplanatoryVariables(fsList, it, t))) //
 						.toList());
-			} else
+			else
 				throw new RuntimeException("wrong input sizes");
 		});
 	}
