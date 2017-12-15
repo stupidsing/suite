@@ -5,7 +5,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import suite.math.stat.Arima.Em;
+import suite.math.stat.Arima.Arima_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.util.To;
@@ -43,11 +43,11 @@ public class ArimaTest {
 					+ Ints_.range(q).toDouble(Int_Dbl.sum(j -> mas[j] * eps[im1 - j])));
 		}
 
-		Em em = arima.em(xs, p, q);
+		Arima_ a = arima.em(xs, p, q);
 		System.out.println("x = " + Arrays.toString(xs));
-		System.out.println("ar = " + Arrays.toString(em.ars));
-		System.out.println("ma = " + Arrays.toString(em.mas));
-		System.out.println("x1 = " + em.x1);
+		System.out.println("ar = " + Arrays.toString(a.ars));
+		System.out.println("ma = " + Arrays.toString(a.mas));
+		System.out.println("x1 = " + a.x1);
 	}
 
 }
