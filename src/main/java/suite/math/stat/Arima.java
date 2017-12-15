@@ -4,6 +4,7 @@ import java.util.Arrays;
 
 import suite.math.linalg.Vector_;
 import suite.math.stat.Statistic.LinearRegression;
+import suite.primitive.Floats;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
@@ -154,7 +155,7 @@ public class Arima {
 	// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 	// = eps[t]
 	// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
-	public Em em(float[] xs, int p, int q) { // ARMA
+	public Arima_ em(float[] xs, int p, int q) { // ARMA
 		int xLength = xs.length;
 		int pq = -p + q;
 		int xpqLength = xLength + pq;
@@ -228,25 +229,79 @@ public class Arima {
 				+ Ints_.range(p).toDouble(Int_Dbl.sum(j -> ars[j] * xs[xLength - j - 1])) //
 				+ Ints_.range(q).toDouble(Int_Dbl.sum(j -> mas[j] * eps[xpqLength - j - 1]));
 
-		return new Em(ars, mas, (float) x1);
+		return new Arima_(ars, mas, (float) x1);
 	}
 
-	public class Em {
-		public final float[] ars;
-		public final float[] mas;
-		public final float x1;
+	public float arimaIa(float[] xs, int p, int d, int q) { // ARIMA
+		for (int i = 0; i < d; i++)
+			xs = ts.dropDiff(1, xs);
 
-		private Em(float[] ars, float[] mas, float x1) {
-			this.ars = ars;
-			this.mas = mas;
-			this.x1 = x1;
+		float[] xs1 = Floats_.concat(xs, new float[] { arma(xs, p, q).x1, });
+		int xLength = xs.length;
+
+		for (int i = 0; i < d; i++) {
+			int l = xLength;
+			for (int j = i; j < d; j++) {
+				int l0 = l;
+				xs1[l0] += xs1[--l];
+			}
+		}
+
+		return xs1[xLength];
+	}
+
+	// extended from
+	// "High Frequency Trading - A Practical Guide to Algorithmic Strategies and
+	// Trading Systems", Irene Aldridge, page 100
+	// xs[t]
+	// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
+	// + mas[0] * 1
+	// + mas[1] * eps[t - 1] + ... + mas[q] * eps[t - q]
+	// + eps[t]
+	public Arima_ arma(float[] xs, int p, int q) {
+		int length = xs.length;
+		float[] eps = new float[q + length];
+		int iter = 0;
+
+		while (true) {
+			int iter_ = iter;
+
+			LinearRegression lr = stat.linearRegression(Ints_ //
+					.range(length) //
+					.map(t -> {
+						float[] lrxs = new float[p + iter_ + 1];
+						int di = 0;
+						for (int i = 1; i <= p; i++)
+							lrxs[di++] = xs[t - i];
+						lrxs[di++] = 1f;
+						for (int i = 1; i <= q; i++)
+							lrxs[di++] = eps[q + t - i];
+						return FltObjPair.of(xs[t], lrxs);
+					}) //
+					.toList());
+
+			if (iter < q)
+				System.arraycopy(lr.residuals, 0, eps, q, length);
+			else {
+				float[] coeffs = lr.coefficients();
+				float[] ars = Floats.of(coeffs, 0, p).toArray();
+				float[] mas = Floats.of(coeffs, p).toArray();
+
+				double x1 = 0d //
+						+ Ints_.range(p).toDouble(Int_Dbl.sum(j -> ars[j] * xs[length - j - 1])) //
+						+ mas[0] //
+						+ Ints_.range(q).toDouble(Int_Dbl.sum(j -> mas[j + 1] * eps[length - j - 1]));
+
+				return new Arima_(ars, mas, (float) x1);
+			}
 		}
 	}
 
 	// "High Frequency Trading - A Practical Guide to Algorithmic Strategies and
-	// Trading Systems", Irene Aldridge
-	// page 100
-	// x[t] = ma[0] + eps[t] + ma[1] * eps[t - 1] + ... + ma[q] * eps[t - q]
+	// Trading Systems", Irene Aldridge, page 100
+	// x[t]
+	// = mas[0] * 1 + mas[1] * eps[t - 1] + ... + mas[q] * eps[t - q]
+	// + eps[t]
 	public float[] ma(float[] xs, int q) {
 		int length = xs.length;
 		float[] eps = new float[q + length];
@@ -259,14 +314,16 @@ public class Arima {
 					.range(length) //
 					.map(t -> {
 						float[] lrxs = new float[iter_ + 1];
-						lrxs[0] = 1f;
-						System.arraycopy(eps, q + t - iter_, lrxs, 1, iter_);
+						int di = 0;
+						lrxs[di++] = 1f;
+						for (int i = 1; i <= q; i++)
+							lrxs[di++] = eps[q + t - i];
 						return FltObjPair.of(xs[t], lrxs);
 					}) //
 					.toList());
 
 			if (iter < q)
-				System.arraycopy(lr.residuals, 0, eps, q - iter, length);
+				System.arraycopy(lr.residuals, 0, eps, q, length);
 			else
 				return lr.coefficients();
 		}
@@ -277,6 +334,18 @@ public class Arima {
 	public float[] maDurbin(float[] ys, int q, int l) {
 		float[] ar = arLevinsonDurbin(ys, l);
 		return arLevinsonDurbin(ar, q);
+	}
+
+	public class Arima_ {
+		public final float[] ars;
+		public final float[] mas;
+		public final float x1;
+
+		private Arima_(float[] ars, float[] mas, float x1) {
+			this.ars = ars;
+			this.mas = mas;
+			this.x1 = x1;
+		}
 	}
 
 	private float[] copyPadZeroes(float[] fs0, int from, int to) {
