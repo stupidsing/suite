@@ -243,6 +243,35 @@ public class Arima {
 		}
 	}
 
+	// "High Frequency Trading - A Practical Guide to Algorithmic Strategies and
+	// Trading Systems", Irene Aldridge
+	// page 100
+	// x[t] = eps[0] + eps[t] + c[1] * eps[t - 1] + ... + c[q] * eps[t - q]
+	public float[] ma(float[] xs, int q) {
+		int length = xs.length;
+		float[] eps = new float[q + length];
+		int iter = 0;
+
+		while (true) {
+			int iter_ = iter;
+
+			LinearRegression lr = stat.linearRegression(Ints_ //
+					.range(length) //
+					.map(t -> {
+						float[] lrxs = new float[iter_ + 1];
+						lrxs[0] = 1f;
+						System.arraycopy(eps, q + t - iter_, lrxs, 1, iter_);
+						return FltObjPair.of(xs[t], lrxs);
+					}) //
+					.toList());
+
+			if (iter < q)
+				System.arraycopy(lr.residuals, 0, eps, q - iter, length);
+			else
+				return lr.coefficients();
+		}
+	}
+
 	// Digital Processing of Random Signals, Boaz Porat, page 190
 	// q << l << fs.length
 	public float[] maDurbin(float[] ys, int q, int l) {
