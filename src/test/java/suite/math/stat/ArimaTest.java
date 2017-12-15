@@ -43,7 +43,7 @@ public class ArimaTest {
 					+ Ints_.range(q).toDouble(Int_Dbl.sum(j -> mas[j] * eps[im1 - j])));
 		}
 
-		Arima_ a = arima.em(xs, p, q);
+		Arima_ a = arima.armaIa(xs, p, q);
 		System.out.println("x = " + Arrays.toString(xs));
 		System.out.println("ar = " + Arrays.toString(a.ars));
 		System.out.println("ma = " + Arrays.toString(a.mas));

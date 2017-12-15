@@ -133,11 +133,11 @@ public class Arima {
 		return lr;
 	}
 
-	public float em(float[] xs, int p, int d, int q) { // ARIMA
+	public float arimaEm(float[] xs, int p, int d, int q) { // ARIMA
 		for (int i = 0; i < d; i++)
 			xs = ts.dropDiff(1, xs);
 
-		float[] xs1 = Floats_.concat(xs, new float[] { em(xs, p, q).x1, });
+		float[] xs1 = Floats_.concat(xs, new float[] { armaEm(xs, p, q).x1, });
 		int xLength = xs.length;
 
 		for (int i = 0; i < d; i++) {
@@ -155,7 +155,7 @@ public class Arima {
 	// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 	// = eps[t]
 	// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
-	public Arima_ em(float[] xs, int p, int q) { // ARMA
+	public Arima_ armaEm(float[] xs, int p, int q) { // ARMA
 		int xLength = xs.length;
 		int pq = -p + q;
 		int xpqLength = xLength + pq;
@@ -236,7 +236,7 @@ public class Arima {
 		for (int i = 0; i < d; i++)
 			xs = ts.dropDiff(1, xs);
 
-		float[] xs1 = Floats_.concat(xs, new float[] { arma(xs, p, q).x1, });
+		float[] xs1 = Floats_.concat(xs, new float[] { armaIa(xs, p, q).x1, });
 		int xLength = xs.length;
 
 		for (int i = 0; i < d; i++) {
@@ -258,7 +258,7 @@ public class Arima {
 	// + mas[0] * 1
 	// + mas[1] * eps[t - 1] + ... + mas[q] * eps[t - q]
 	// + eps[t]
-	public Arima_ arma(float[] xs, int p, int q) {
+	public Arima_ armaIa(float[] xs, int p, int q) {
 		int length = xs.length;
 		float[] eps = new float[q + length];
 		int iter = 0;
@@ -297,12 +297,19 @@ public class Arima {
 		}
 	}
 
+	// Digital Processing of Random Signals, Boaz Porat, page 190
+	// q << l << fs.length
+	public float[] maDurbin(float[] ys, int q, int l) {
+		float[] ar = arLevinsonDurbin(ys, l);
+		return arLevinsonDurbin(ar, q);
+	}
+
 	// "High Frequency Trading - A Practical Guide to Algorithmic Strategies and
 	// Trading Systems", Irene Aldridge, page 100
 	// x[t]
 	// = mas[0] * 1 + mas[1] * eps[t - 1] + ... + mas[q] * eps[t - q]
 	// + eps[t]
-	public float[] ma(float[] xs, int q) {
+	public float[] maIa(float[] xs, int q) {
 		int length = xs.length;
 		float[] eps = new float[q + length];
 		int iter = 0;
@@ -327,13 +334,6 @@ public class Arima {
 			else
 				return lr.coefficients();
 		}
-	}
-
-	// Digital Processing of Random Signals, Boaz Porat, page 190
-	// q << l << fs.length
-	public float[] maDurbin(float[] ys, int q, int l) {
-		float[] ar = arLevinsonDurbin(ys, l);
-		return arLevinsonDurbin(ar, q);
 	}
 
 	public class Arima_ {
