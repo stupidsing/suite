@@ -8,6 +8,7 @@ import org.junit.Test;
 import suite.math.stat.Arima.Arima_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
+import suite.util.To;
 
 public class ArimaTest {
 
@@ -29,12 +30,10 @@ public class ArimaTest {
 		int p = ars.length;
 		int q = mas.length;
 		float[] xsp = new float[length + p];
-		float[] eps = new float[length + q];
+		float[] eps = To.arrayOfFloats(length + q, i -> random.nextGaussian());
 
 		for (int i = 0; i < p; i++)
 			xsp[i] = 8f * random.nextFloat();
-		for (int i = 0; i < length; i++)
-			eps[i] = (float) random.nextGaussian();
 
 		float[] xs = new float[length];
 
