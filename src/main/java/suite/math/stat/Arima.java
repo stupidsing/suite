@@ -246,7 +246,7 @@ public class Arima {
 	// "High Frequency Trading - A Practical Guide to Algorithmic Strategies and
 	// Trading Systems", Irene Aldridge
 	// page 100
-	// x[t] = eps[0] + eps[t] + c[1] * eps[t - 1] + ... + c[q] * eps[t - q]
+	// x[t] = ma[0] + eps[t] + ma[1] * eps[t - 1] + ... + ma[q] * eps[t - q]
 	public float[] ma(float[] xs, int q) {
 		int length = xs.length;
 		float[] eps = new float[q + length];
