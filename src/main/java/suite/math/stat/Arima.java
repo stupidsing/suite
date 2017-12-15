@@ -128,10 +128,10 @@ public class Arima {
 							float[] lrxs = new float[p + q];
 							int tpq = t + pq;
 							int k = 0;
-							for (int j = 1; j <= p; j++)
-								lrxs[k++] = xs[t - j];
-							for (int j = 1; j <= q; j++)
-								lrxs[k++] = eps[tpq - j];
+							for (int i = 1; i <= p; i++)
+								lrxs[k++] = xs[t - i];
+							for (int i = 1; i <= q; i++)
+								lrxs[k++] = eps[tpq - i];
 							float lry = xs[t] - eps[tpq];
 							return FltObjPair.of(lry, lrxs);
 						}) //
@@ -152,8 +152,8 @@ public class Arima {
 							float[] lrxs = new float[xpqLength];
 							int tq = t + pq;
 							lrxs[tq--] = 1f;
-							for (int j = 0; j < q; j++)
-								lrxs[tq--] = mas[j];
+							for (int i = 0; i < q; i++)
+								lrxs[tq--] = mas[i];
 							double lry = xs[t] - Ints_.range(p).toDouble(Int_Dbl.sum(j -> ars[j] * xs[t - j - 1]));
 							return FltObjPair.of((float) lry, lrxs);
 						});
@@ -212,7 +212,7 @@ public class Arima {
 	// + eps[t]
 	public Arima_ armaIa(float[] xs, int p, int q) {
 		int length = xs.length;
-		float[] eps = new float[q + length];
+		float[] eps = new float[length + q];
 		int iter = 0;
 
 		while (true) {
@@ -226,7 +226,7 @@ public class Arima {
 						for (int i = 1; i <= p; i++)
 							lrxs[di++] = xs[t - i];
 						for (int i = 1; i <= q; i++)
-							lrxs[di++] = eps[q + t - i];
+							lrxs[di++] = eps[t - i + q];
 						return FltObjPair.of(xs[t], lrxs);
 					}) //
 					.toList());
@@ -239,9 +239,9 @@ public class Arima {
 				float[] mas = Floats.of(coeffs, p).toArray();
 
 				double x1 = 0d //
-						+ Ints_.range(p).toDouble(Int_Dbl.sum(j -> ars[j] * xs[length - j - 1])) //
+						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[length - i - 1])) //
 						+ mas[0] //
-						+ Ints_.range(q).toDouble(Int_Dbl.sum(j -> mas[j] * eps[q + length - j - 1]));
+						+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[length - i - 1 + q]));
 
 				return new Arima_(ars, mas, (float) x1);
 			}
