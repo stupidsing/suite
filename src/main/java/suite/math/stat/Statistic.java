@@ -76,39 +76,42 @@ public class Statistic {
 	}
 
 	public class LinearRegression {
-		public final int nSamples;
-		public final int sampleLength;
+		public final int nDataPoints;
+		public final int nDepVariables;
 		public final float[][] in;
 		public final float[] coefficients;
 		public final String[] coefficientNames;
+		public final float[] estimatedy;
+		public final float[] residuals;
 		public final double invn2;
 		public final double sst, sse;
 		public final double r2;
 		public final double standardError;
 
 		private LinearRegression(float[][] x, float[] y, String[] coefficientNames_) {
-			int nSamples_ = y.length;
-			int sampleLength_ = mtx.width(x);
+			int nDataPoints_ = y.length;
+			int nDepVariables_ = mtx.width(x);
 			float[][] xt = mtx.transpose(x);
 			float[][] xtx = mtx.mul(xt, x);
 			coefficients = cholesky.inverseMul(xtx).apply(mtx.mul(xt, y));
 			coefficientNames = coefficientNames_ != null //
 					? coefficientNames_ //
-					: To.array(sampleLength_, String.class, i -> "c" + i);
+					: To.array(nDepVariables_, String.class, i -> "c" + i);
+			estimatedy = To.arrayOfFloats(x, this::predict);
+			residuals = new float[nDataPoints_];
 
-			float[] estimatedy = To.arrayOfFloats(x, this::predict);
 			double meany = mean_(y);
 
 			double sst_ = 0d; // total sum of squares
 			double ssr = 0d; // estimated sum of squares
 			double sse_ = 0d; // sum of squared residuals
 
-			for (int i = 0; i < nSamples_; i++) {
+			for (int i = 0; i < nDataPoints_; i++) {
 				float yi = y[i];
 				float estyi = estimatedy[i];
 				double d0 = yi - meany;
 				double d1 = estyi - meany;
-				double d2 = yi - estyi;
+				double d2 = residuals[i] = yi - estyi;
 				sst_ += d0 * d0;
 				ssr += d1 * d1;
 				sse_ += d2 * d2;
@@ -117,10 +120,10 @@ public class Statistic {
 			// sse = sst - ssr; // theoretically
 
 			// if (!Double.isNaN(sse_)) {
-			nSamples = nSamples_;
-			sampleLength = sampleLength_;
+			nDataPoints = nDataPoints_;
+			nDepVariables = nDepVariables_;
 			in = x;
-			invn2 = 1d / (nSamples_ - sampleLength_ - 1);
+			invn2 = 1d / (nDataPoints_ - nDepVariables_ - 1);
 			sst = sst_;
 			sse = sse_;
 			r2 = ssr / sst_; // 0 -> not accurate, 1 -> totally accurate
@@ -133,11 +136,11 @@ public class Statistic {
 		}
 
 		public double aic() {
-			return 2d * (sampleLength - logLikelihood());
+			return 2d * (nDepVariables - logLikelihood());
 		}
 
 		public double bic() {
-			return Math.log(nSamples) * sampleLength - 2d * logLikelihood();
+			return Math.log(nDataPoints) * nDepVariables - 2d * logLikelihood();
 		}
 
 		public float[] coefficients() {
@@ -148,18 +151,18 @@ public class Statistic {
 		}
 
 		public double logLikelihood() {
-			double variance = sst / (nSamples - sampleLength - 1);
-			return -.5d * (nSamples * (Math.log(2 * Math.PI) + Math.log(variance)) + sse / variance);
+			double variance = sst / (nDataPoints - nDepVariables - 1);
+			return -.5d * (nDataPoints * (Math.log(2 * Math.PI) + Math.log(variance)) + sse / variance);
 		}
 
 		// if f-statistic < .05d, we conclude R%2 != 0, the test is significant
 		public double fStatistic() {
-			return (nSamples - sampleLength - 1) * r2 / (1d - r2);
+			return (nDataPoints - nDepVariables - 1) * r2 / (1d - r2);
 		}
 
 		// the t statistic is the coefficient divided by its standard error
 		public float[] tStatistic() {
-			return Floats_.toArray(sampleLength, i -> {
+			return Floats_.toArray(nDepVariables, i -> {
 				MeanVariance mv = new MeanVariance(in.length, j -> in[j][i]);
 				double invsd = Math.sqrt(mv.variance / (sse * invn2));
 				return (float) (coefficients[i] * invsd);
@@ -169,7 +172,7 @@ public class Statistic {
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			float[] tStatistic = tStatistic();
-			for (int i = 0; i < sampleLength; i++)
+			for (int i = 0; i < nDepVariables; i++)
 				sb.append("\n" + coefficientNames[i] + " = " + To.string(coefficients[i]) //
 						+ ", t-statistic = " + To.string(tStatistic[i]));
 			sb.append("\nstandard error = " + To.string(standardError) + ", r2 = " + To.string(r2));

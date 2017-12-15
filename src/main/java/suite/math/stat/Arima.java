@@ -75,16 +75,8 @@ public class Arima {
 		// auto regressive
 		int length = ys.length;
 		float[][] xs0 = To.array(length, float[].class, i -> copyPadZeroes(ys, i - p, i));
-
-		LinearRegression lr0 = stat.linearRegression(Ints_ //
-				.range(length) //
-				.map(i -> FltObjPair.of(ys[i], copyPadZeroes(ys, i - p, i))) //
-				.toList());
-
-		float[] variances = To.arrayOfFloats(length, i -> {
-			double residual = ys[i] - lr0.predict(xs0[i]);
-			return residual * residual;
-		});
+		LinearRegression lr0 = stat.linearRegression(xs0, ys, null);
+		float[] variances = To.arrayOfFloats(lr0.residuals, residual -> residual * residual);
 
 		// conditional heteroskedasticity
 		LinearRegression lr1 = stat.linearRegression(Ints_ //
