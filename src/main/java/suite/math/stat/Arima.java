@@ -220,7 +220,7 @@ public class Arima {
 		System.arraycopy(xs, 0, xsp, p, length);
 
 		while (true) {
-			int iter_ = iter;
+			int iter_ = iter++;
 
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
@@ -235,7 +235,7 @@ public class Arima {
 					}) //
 					.toList());
 
-			if (iter++ < q)
+			if (iter_ < q)
 				System.arraycopy(lr.residuals, 0, eps, q, length);
 			else {
 				float[] coeffs = lr.coefficients();
@@ -269,7 +269,7 @@ public class Arima {
 		int iter = 0;
 
 		while (true) {
-			int iter_ = iter;
+			int iter_ = iter++;
 
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
@@ -283,7 +283,7 @@ public class Arima {
 					}) //
 					.toList());
 
-			if (iter < q)
+			if (iter_ < q)
 				System.arraycopy(lr.residuals, 0, eps, q, length);
 			else
 				return lr.coefficients();
