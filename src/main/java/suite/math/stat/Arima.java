@@ -227,9 +227,12 @@ public class Arima {
 
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
-					.map(t -> FltObjPair.of(xs[t], FltStreamlet //
-							.concat(Floats_.of(xsp, t + pm1, t - 1, -1), Floats_.of(eps, t + qm1, t + qm1 - iter_, -1)) //
-							.toArray())) //
+					.map(t -> {
+						int tqm1 = t + qm1;
+						return FltObjPair.of(xs[t], FltStreamlet //
+								.concat(Floats_.of(xsp, t + pm1, t - 1, -1), Floats_.of(eps, tqm1, tqm1 - iter_, -1)) //
+								.toArray());
+					}) //
 					.toList());
 
 			float[] coeffs = lr.coefficients();
@@ -266,6 +269,7 @@ public class Arima {
 		int length = xs.length;
 		float[] eps = new float[q + length];
 		int iter = 0;
+		int qm1 = q - 1;
 
 		while (true) {
 			int iter_ = iter;
@@ -273,12 +277,9 @@ public class Arima {
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
-						float[] lrxs = new float[iter_ + 1];
-						int di = 0;
-						lrxs[di++] = 1f;
-						for (int i = 1; i <= q; i++)
-							lrxs[di++] = eps[q + t - i];
-						return FltObjPair.of(xs[t], lrxs);
+						int tqm1 = t + qm1;
+						return FltObjPair.of(xs[t],
+								FltStreamlet.concat(Floats_.of(1f), Floats_.of(eps, tqm1, tqm1 - iter_, -1)).toArray());
 					}) //
 					.toList());
 
