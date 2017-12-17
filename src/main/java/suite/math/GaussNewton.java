@@ -18,7 +18,7 @@ public class GaussNewton {
 
 	private CholeskyDecomposition cd = new CholeskyDecomposition();
 	private Matrix_ mtx = new Matrix_();
-	Symbolic sym = new Symbolic();
+	private Symbolic sym = new Symbolic();
 	private Vector_ vec = new Vector_();
 
 	public float[] sym(Node[] vars, Node[] rs, float[] initials) {
