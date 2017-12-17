@@ -8,17 +8,17 @@ import java.util.Set;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.primitive.Ints;
-import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntOpt;
 import suite.primitive.IntPrimitives.IntComparator;
 import suite.primitive.IntPrimitives.IntObj_Obj;
-import suite.primitive.IntPrimitives.IntPredicate;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.IntSource;
+import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Int;
+import suite.primitive.Ints;
+import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.set.IntSet;
 import suite.streamlet.Read;
@@ -109,7 +109,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		return Object_.clazz(object) == IntStreamlet.class ? Objects.equals(spawn(), ((IntStreamlet) object).spawn()) : false;
 	}
 
-	public IntStreamlet filter(IntPredicate fun) {
+	public IntStreamlet filter(IntTest fun) {
 		return streamlet(() -> spawn().filter(fun));
 	}
 
@@ -146,11 +146,11 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		return new IntObjStreamlet<>(() -> spawn().index());
 	}
 
-	public boolean isAll(IntPredicate pred) {
+	public boolean isAll(IntTest pred) {
 		return spawn().isAll(pred);
 	}
 
-	public boolean isAny(IntPredicate pred) {
+	public boolean isAny(IntTest pred) {
 		return spawn().isAny(pred);
 	}
 
@@ -207,7 +207,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		return spawn();
 	}
 
-	public Pair<IntStreamlet, IntStreamlet> partition(IntPredicate pred) {
+	public Pair<IntStreamlet, IntStreamlet> partition(IntTest pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
 	}
 

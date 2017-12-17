@@ -14,9 +14,9 @@ import suite.primitive.FltFunUtil;
 import suite.primitive.FltOpt;
 import suite.primitive.FltPrimitives.FltComparator;
 import suite.primitive.FltPrimitives.FltObj_Obj;
-import suite.primitive.FltPrimitives.FltPredicate;
 import suite.primitive.FltPrimitives.FltSink;
 import suite.primitive.FltPrimitives.FltSource;
+import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.map.FltObjMap;
@@ -109,7 +109,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return Object_.clazz(object) == FltStreamlet.class ? Objects.equals(spawn(), ((FltStreamlet) object).spawn()) : false;
 	}
 
-	public FltStreamlet filter(FltPredicate fun) {
+	public FltStreamlet filter(FltTest fun) {
 		return streamlet(() -> spawn().filter(fun));
 	}
 
@@ -146,11 +146,11 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return new FltObjStreamlet<>(() -> spawn().index());
 	}
 
-	public boolean isAll(FltPredicate pred) {
+	public boolean isAll(FltTest pred) {
 		return spawn().isAll(pred);
 	}
 
-	public boolean isAny(FltPredicate pred) {
+	public boolean isAny(FltTest pred) {
 		return spawn().isAny(pred);
 	}
 
@@ -207,7 +207,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return spawn();
 	}
 
-	public Pair<FltStreamlet, FltStreamlet> partition(FltPredicate pred) {
+	public Pair<FltStreamlet, FltStreamlet> partition(FltTest pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
 	}
 

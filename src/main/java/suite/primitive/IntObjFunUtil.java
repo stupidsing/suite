@@ -8,7 +8,7 @@ import suite.os.LogUtil;
 import suite.primitive.IntPrimitives.IntObjPredicate;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
-import suite.primitive.IntPrimitives.IntPredicate;
+import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -100,8 +100,8 @@ public class IntObjFunUtil {
 		};
 	}
 
-	public static <V> IntObjSource<V> filterKey(IntPredicate fun0, IntObjSource<V> source2) {
-		IntPredicate fun1 = fun0.rethrow();
+	public static <V> IntObjSource<V> filterKey(IntTest fun0, IntObjSource<V> source2) {
+		IntTest fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))

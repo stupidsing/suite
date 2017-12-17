@@ -3,7 +3,7 @@ package suite.primitive;
 import java.util.Objects;
 
 import suite.adt.Opt;
-import suite.primitive.ChrPrimitives.ChrPredicate;
+import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.util.Object_;
 
@@ -26,7 +26,7 @@ public class ChrOpt {
 		return value == ChrFunUtil.EMPTYVALUE;
 	}
 
-	public ChrOpt filter(ChrPredicate pred) {
+	public ChrOpt filter(ChrTest pred) {
 		return isEmpty() || pred.test(value) ? this : none();
 	}
 

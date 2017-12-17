@@ -17,7 +17,7 @@ import suite.primitive.FltObj_Flt;
 import suite.primitive.FltPrimitives.FltObjPredicate;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.FltObj_Obj;
-import suite.primitive.FltPrimitives.FltPredicate;
+import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.map.ObjFltMap;
@@ -132,7 +132,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 		return fltObjStreamlet(() -> spawn().filter(fun));
 	}
 
-	public FltObjStreamlet<V> filterKey(FltPredicate fun) {
+	public FltObjStreamlet<V> filterKey(FltTest fun) {
 		return fltObjStreamlet(() -> spawn().filterKey(fun));
 	}
 

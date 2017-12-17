@@ -100,10 +100,10 @@ public class LngPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface LngPredicate {
+	public interface LngTest {
 		public boolean test(long c);
 
-		public default LngPredicate rethrow() {
+		public default LngTest rethrow() {
 			return c -> {
 				try {
 					return test(c);

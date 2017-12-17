@@ -100,10 +100,10 @@ public class IntPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface IntPredicate {
+	public interface IntTest {
 		public boolean test(int c);
 
-		public default IntPredicate rethrow() {
+		public default IntTest rethrow() {
 			return c -> {
 				try {
 					return test(c);

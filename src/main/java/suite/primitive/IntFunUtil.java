@@ -5,9 +5,9 @@ import java.util.Iterator;
 
 import suite.os.LogUtil;
 import suite.primitive.IntPrimitives.IntObjSource;
-import suite.primitive.IntPrimitives.IntPredicate;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.IntSource;
+import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.util.FunUtil.Fun;
@@ -88,8 +88,8 @@ public class IntFunUtil {
 		};
 	}
 
-	public static IntSource filter(IntPredicate fun0, IntSource source) {
-		IntPredicate fun1 = fun0.rethrow();
+	public static IntSource filter(IntTest fun0, IntSource source) {
+		IntTest fun1 = fun0.rethrow();
 		return () -> {
 			int c = EMPTYVALUE;
 			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
@@ -122,8 +122,8 @@ public class IntFunUtil {
 		return init;
 	}
 
-	public static boolean isAll(IntPredicate pred0, IntSource source) {
-		IntPredicate pred1 = pred0.rethrow();
+	public static boolean isAll(IntTest pred0, IntSource source) {
+		IntTest pred1 = pred0.rethrow();
 		int c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (!pred1.test(c))
@@ -131,8 +131,8 @@ public class IntFunUtil {
 		return true;
 	}
 
-	public static boolean isAny(IntPredicate pred0, IntSource source) {
-		IntPredicate pred1 = pred0.rethrow();
+	public static boolean isAny(IntTest pred0, IntSource source) {
+		IntTest pred1 = pred0.rethrow();
 		int c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (pred1.test(c))
@@ -217,8 +217,8 @@ public class IntFunUtil {
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static Source<IntSource> split(IntPredicate fun0, IntSource source) {
-		IntPredicate fun1 = fun0.rethrow();
+	public static Source<IntSource> split(IntTest fun0, IntSource source) {
+		IntTest fun1 = fun0.rethrow();
 		return new Source<>() {
 			private int c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;

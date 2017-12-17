@@ -17,7 +17,7 @@ import suite.primitive.LngObj_Lng;
 import suite.primitive.LngPrimitives.LngObjPredicate;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngObj_Obj;
-import suite.primitive.LngPrimitives.LngPredicate;
+import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
@@ -132,7 +132,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		return lngObjStreamlet(() -> spawn().filter(fun));
 	}
 
-	public LngObjStreamlet<V> filterKey(LngPredicate fun) {
+	public LngObjStreamlet<V> filterKey(LngTest fun) {
 		return lngObjStreamlet(() -> spawn().filterKey(fun));
 	}
 

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.IntPredicate;
 
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
@@ -21,9 +22,9 @@ import suite.primitive.FltOpt;
 import suite.primitive.FltPrimitives.FltComparator;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.FltObj_Obj;
-import suite.primitive.FltPrimitives.FltPredicate;
 import suite.primitive.FltPrimitives.FltSink;
 import suite.primitive.FltPrimitives.FltSource;
+import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.map.FltObjMap;
@@ -69,11 +70,19 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	@SafeVarargs
 	public static FltOutlet of(float... ts) {
+		return of(ts, 0, ts.length, 1);
+	}
+
+	public static FltOutlet of(float[] ts, int start, int end, int inc) {
+		IntPredicate pred = 0 < inc ? i -> i < end : i -> end < i;
+
 		return of(new FltSource() {
-			private int i;
+			private int i = start;
 
 			public float source() {
-				return i < ts.length ? ts[i++] : FltFunUtil.EMPTYVALUE;
+				float c = pred.test(i) ? ts[i] : FltFunUtil.EMPTYVALUE;
+				i += inc;
+				return c;
 			}
 		});
 	}
@@ -205,7 +214,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 			return false;
 	}
 
-	public FltOutlet filter(FltPredicate fun) {
+	public FltOutlet filter(FltTest fun) {
 		return of(FltFunUtil.filter(fun, source));
 	}
 
@@ -256,11 +265,11 @@ public class FltOutlet implements OutletDefaults<Float> {
 		});
 	}
 
-	public boolean isAll(FltPredicate pred) {
+	public boolean isAll(FltTest pred) {
 		return FltFunUtil.isAll(pred, source);
 	}
 
-	public boolean isAny(FltPredicate pred) {
+	public boolean isAny(FltTest pred) {
 		return FltFunUtil.isAny(pred, source);
 	}
 
@@ -346,7 +355,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 			return FltOpt.none();
 	}
 
-	public Pair<FltOutlet, FltOutlet> partition(FltPredicate pred) {
+	public Pair<FltOutlet, FltOutlet> partition(FltTest pred) {
 		return Pair.of(filter(pred), filter(c -> !pred.test(c)));
 	}
 
@@ -376,7 +385,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 		return of(toList().toFloats().sort());
 	}
 
-	public Outlet<FltOutlet> split(FltPredicate fun) {
+	public Outlet<FltOutlet> split(FltTest fun) {
 		return Outlet.of(FunUtil.map(FltOutlet::new, FltFunUtil.split(fun, source)));
 	}
 

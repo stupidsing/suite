@@ -5,9 +5,9 @@ import java.util.Iterator;
 
 import suite.os.LogUtil;
 import suite.primitive.ChrPrimitives.ChrObjSource;
-import suite.primitive.ChrPrimitives.ChrPredicate;
 import suite.primitive.ChrPrimitives.ChrSink;
 import suite.primitive.ChrPrimitives.ChrSource;
+import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.util.FunUtil.Fun;
@@ -88,8 +88,8 @@ public class ChrFunUtil {
 		};
 	}
 
-	public static ChrSource filter(ChrPredicate fun0, ChrSource source) {
-		ChrPredicate fun1 = fun0.rethrow();
+	public static ChrSource filter(ChrTest fun0, ChrSource source) {
+		ChrTest fun1 = fun0.rethrow();
 		return () -> {
 			char c = EMPTYVALUE;
 			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
@@ -122,8 +122,8 @@ public class ChrFunUtil {
 		return init;
 	}
 
-	public static boolean isAll(ChrPredicate pred0, ChrSource source) {
-		ChrPredicate pred1 = pred0.rethrow();
+	public static boolean isAll(ChrTest pred0, ChrSource source) {
+		ChrTest pred1 = pred0.rethrow();
 		char c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (!pred1.test(c))
@@ -131,8 +131,8 @@ public class ChrFunUtil {
 		return true;
 	}
 
-	public static boolean isAny(ChrPredicate pred0, ChrSource source) {
-		ChrPredicate pred1 = pred0.rethrow();
+	public static boolean isAny(ChrTest pred0, ChrSource source) {
+		ChrTest pred1 = pred0.rethrow();
 		char c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (pred1.test(c))
@@ -217,8 +217,8 @@ public class ChrFunUtil {
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static Source<ChrSource> split(ChrPredicate fun0, ChrSource source) {
-		ChrPredicate fun1 = fun0.rethrow();
+	public static Source<ChrSource> split(ChrTest fun0, ChrSource source) {
+		ChrTest fun1 = fun0.rethrow();
 		return new Source<>() {
 			private char c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;

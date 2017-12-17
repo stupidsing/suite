@@ -10,22 +10,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.IntPredicate;
 
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.primitive.Longs;
-import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngOpt;
 import suite.primitive.LngPrimitives.LngComparator;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngObj_Obj;
-import suite.primitive.LngPrimitives.LngPredicate;
 import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.LngPrimitives.LngSource;
+import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.primitive.Lng_Lng;
+import suite.primitive.Longs;
+import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.adt.set.LngSet;
@@ -69,11 +70,19 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	@SafeVarargs
 	public static LngOutlet of(long... ts) {
+		return of(ts, 0, ts.length, 1);
+	}
+
+	public static LngOutlet of(long[] ts, int start, int end, int inc) {
+		IntPredicate pred = 0 < inc ? i -> i < end : i -> end < i;
+
 		return of(new LngSource() {
-			private int i;
+			private int i = start;
 
 			public long source() {
-				return i < ts.length ? ts[i++] : LngFunUtil.EMPTYVALUE;
+				long c = pred.test(i) ? ts[i] : LngFunUtil.EMPTYVALUE;
+				i += inc;
+				return c;
 			}
 		});
 	}
@@ -205,7 +214,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 			return false;
 	}
 
-	public LngOutlet filter(LngPredicate fun) {
+	public LngOutlet filter(LngTest fun) {
 		return of(LngFunUtil.filter(fun, source));
 	}
 
@@ -256,11 +265,11 @@ public class LngOutlet implements OutletDefaults<Long> {
 		});
 	}
 
-	public boolean isAll(LngPredicate pred) {
+	public boolean isAll(LngTest pred) {
 		return LngFunUtil.isAll(pred, source);
 	}
 
-	public boolean isAny(LngPredicate pred) {
+	public boolean isAny(LngTest pred) {
 		return LngFunUtil.isAny(pred, source);
 	}
 
@@ -346,7 +355,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 			return LngOpt.none();
 	}
 
-	public Pair<LngOutlet, LngOutlet> partition(LngPredicate pred) {
+	public Pair<LngOutlet, LngOutlet> partition(LngTest pred) {
 		return Pair.of(filter(pred), filter(c -> !pred.test(c)));
 	}
 
@@ -376,7 +385,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 		return of(toList().toLongs().sort());
 	}
 
-	public Outlet<LngOutlet> split(LngPredicate fun) {
+	public Outlet<LngOutlet> split(LngTest fun) {
 		return Outlet.of(FunUtil.map(LngOutlet::new, LngFunUtil.split(fun, source)));
 	}
 

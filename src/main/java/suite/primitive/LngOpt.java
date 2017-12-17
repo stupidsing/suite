@@ -3,7 +3,7 @@ package suite.primitive;
 import java.util.Objects;
 
 import suite.adt.Opt;
-import suite.primitive.LngPrimitives.LngPredicate;
+import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.util.Object_;
 
@@ -26,7 +26,7 @@ public class LngOpt {
 		return value == LngFunUtil.EMPTYVALUE;
 	}
 
-	public LngOpt filter(LngPredicate pred) {
+	public LngOpt filter(LngTest pred) {
 		return isEmpty() || pred.test(value) ? this : none();
 	}
 

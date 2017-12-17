@@ -19,7 +19,7 @@ import suite.primitive.IntObj_Int;
 import suite.primitive.IntPrimitives.IntObjPredicate;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
-import suite.primitive.IntPrimitives.IntPredicate;
+import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntObjPair;
@@ -214,7 +214,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		return of(IntObjFunUtil.filter(fun, source));
 	}
 
-	public IntObjOutlet<V> filterKey(IntPredicate fun) {
+	public IntObjOutlet<V> filterKey(IntTest fun) {
 		return of(IntObjFunUtil.filterKey(fun, source));
 	}
 

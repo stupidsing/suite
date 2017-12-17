@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.IntPredicate;
 
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
@@ -21,9 +22,9 @@ import suite.primitive.ChrOpt;
 import suite.primitive.ChrPrimitives.ChrComparator;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
-import suite.primitive.ChrPrimitives.ChrPredicate;
 import suite.primitive.ChrPrimitives.ChrSink;
 import suite.primitive.ChrPrimitives.ChrSource;
+import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.map.ChrObjMap;
@@ -69,11 +70,19 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	@SafeVarargs
 	public static ChrOutlet of(char... ts) {
+		return of(ts, 0, ts.length, 1);
+	}
+
+	public static ChrOutlet of(char[] ts, int start, int end, int inc) {
+		IntPredicate pred = 0 < inc ? i -> i < end : i -> end < i;
+
 		return of(new ChrSource() {
-			private int i;
+			private int i = start;
 
 			public char source() {
-				return i < ts.length ? ts[i++] : ChrFunUtil.EMPTYVALUE;
+				char c = pred.test(i) ? ts[i] : ChrFunUtil.EMPTYVALUE;
+				i += inc;
+				return c;
 			}
 		});
 	}
@@ -205,7 +214,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 			return false;
 	}
 
-	public ChrOutlet filter(ChrPredicate fun) {
+	public ChrOutlet filter(ChrTest fun) {
 		return of(ChrFunUtil.filter(fun, source));
 	}
 
@@ -256,11 +265,11 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		});
 	}
 
-	public boolean isAll(ChrPredicate pred) {
+	public boolean isAll(ChrTest pred) {
 		return ChrFunUtil.isAll(pred, source);
 	}
 
-	public boolean isAny(ChrPredicate pred) {
+	public boolean isAny(ChrTest pred) {
 		return ChrFunUtil.isAny(pred, source);
 	}
 
@@ -346,7 +355,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 			return ChrOpt.none();
 	}
 
-	public Pair<ChrOutlet, ChrOutlet> partition(ChrPredicate pred) {
+	public Pair<ChrOutlet, ChrOutlet> partition(ChrTest pred) {
 		return Pair.of(filter(pred), filter(c -> !pred.test(c)));
 	}
 
@@ -376,7 +385,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		return of(toList().toChars().sort());
 	}
 
-	public Outlet<ChrOutlet> split(ChrPredicate fun) {
+	public Outlet<ChrOutlet> split(ChrTest fun) {
 		return Outlet.of(FunUtil.map(ChrOutlet::new, ChrFunUtil.split(fun, source)));
 	}
 

@@ -8,7 +8,7 @@ import suite.os.LogUtil;
 import suite.primitive.ChrPrimitives.ChrObjPredicate;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
-import suite.primitive.ChrPrimitives.ChrPredicate;
+import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -100,8 +100,8 @@ public class ChrObjFunUtil {
 		};
 	}
 
-	public static <V> ChrObjSource<V> filterKey(ChrPredicate fun0, ChrObjSource<V> source2) {
-		ChrPredicate fun1 = fun0.rethrow();
+	public static <V> ChrObjSource<V> filterKey(ChrTest fun0, ChrObjSource<V> source2) {
+		ChrTest fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))

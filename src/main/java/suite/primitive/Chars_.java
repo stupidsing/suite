@@ -71,6 +71,10 @@ public class Chars_ {
 		return new ChrStreamlet(() -> ChrOutlet.of(ts));
 	}
 
+	public static ChrStreamlet of(char[] ts, int start, int end, int inc) {
+		return new ChrStreamlet(() -> ChrOutlet.of(ts, start, end, inc));
+	}
+
 	public static ChrStreamlet range(char e) {
 		return range((char) 0, e);
 	}

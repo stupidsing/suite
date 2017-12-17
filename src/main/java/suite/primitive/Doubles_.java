@@ -71,6 +71,10 @@ public class Doubles_ {
 		return new DblStreamlet(() -> DblOutlet.of(ts));
 	}
 
+	public static DblStreamlet of(double[] ts, int start, int end, int inc) {
+		return new DblStreamlet(() -> DblOutlet.of(ts, start, end, inc));
+	}
+
 	public static DblStreamlet range(double e) {
 		return range((double) 0, e);
 	}

@@ -10,22 +10,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.IntPredicate;
 
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.primitive.Ints;
-import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntOpt;
 import suite.primitive.IntPrimitives.IntComparator;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
-import suite.primitive.IntPrimitives.IntPredicate;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.IntSource;
+import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Int;
+import suite.primitive.Ints;
+import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.adt.set.IntSet;
@@ -69,11 +70,19 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	@SafeVarargs
 	public static IntOutlet of(int... ts) {
+		return of(ts, 0, ts.length, 1);
+	}
+
+	public static IntOutlet of(int[] ts, int start, int end, int inc) {
+		IntPredicate pred = 0 < inc ? i -> i < end : i -> end < i;
+
 		return of(new IntSource() {
-			private int i;
+			private int i = start;
 
 			public int source() {
-				return i < ts.length ? ts[i++] : IntFunUtil.EMPTYVALUE;
+				int c = pred.test(i) ? ts[i] : IntFunUtil.EMPTYVALUE;
+				i += inc;
+				return c;
 			}
 		});
 	}
@@ -205,7 +214,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 			return false;
 	}
 
-	public IntOutlet filter(IntPredicate fun) {
+	public IntOutlet filter(IntTest fun) {
 		return of(IntFunUtil.filter(fun, source));
 	}
 
@@ -256,11 +265,11 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		});
 	}
 
-	public boolean isAll(IntPredicate pred) {
+	public boolean isAll(IntTest pred) {
 		return IntFunUtil.isAll(pred, source);
 	}
 
-	public boolean isAny(IntPredicate pred) {
+	public boolean isAny(IntTest pred) {
 		return IntFunUtil.isAny(pred, source);
 	}
 
@@ -346,7 +355,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 			return IntOpt.none();
 	}
 
-	public Pair<IntOutlet, IntOutlet> partition(IntPredicate pred) {
+	public Pair<IntOutlet, IntOutlet> partition(IntTest pred) {
 		return Pair.of(filter(pred), filter(c -> !pred.test(c)));
 	}
 
@@ -376,7 +385,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		return of(toList().toInts().sort());
 	}
 
-	public Outlet<IntOutlet> split(IntPredicate fun) {
+	public Outlet<IntOutlet> split(IntTest fun) {
 		return Outlet.of(FunUtil.map(IntOutlet::new, IntFunUtil.split(fun, source)));
 	}
 

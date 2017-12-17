@@ -71,6 +71,10 @@ public class Ints_ {
 		return new IntStreamlet(() -> IntOutlet.of(ts));
 	}
 
+	public static IntStreamlet of(int[] ts, int start, int end, int inc) {
+		return new IntStreamlet(() -> IntOutlet.of(ts, start, end, inc));
+	}
+
 	public static IntStreamlet range(int e) {
 		return range((int) 0, e);
 	}

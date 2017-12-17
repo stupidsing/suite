@@ -8,17 +8,17 @@ import java.util.Set;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.primitive.Doubles;
-import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblOpt;
 import suite.primitive.DblPrimitives.DblComparator;
 import suite.primitive.DblPrimitives.DblObj_Obj;
-import suite.primitive.DblPrimitives.DblPredicate;
 import suite.primitive.DblPrimitives.DblSink;
 import suite.primitive.DblPrimitives.DblSource;
+import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.Dbl_Dbl;
+import suite.primitive.Doubles;
+import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.set.DblSet;
 import suite.streamlet.Read;
@@ -109,7 +109,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return Object_.clazz(object) == DblStreamlet.class ? Objects.equals(spawn(), ((DblStreamlet) object).spawn()) : false;
 	}
 
-	public DblStreamlet filter(DblPredicate fun) {
+	public DblStreamlet filter(DblTest fun) {
 		return streamlet(() -> spawn().filter(fun));
 	}
 
@@ -146,11 +146,11 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return new DblObjStreamlet<>(() -> spawn().index());
 	}
 
-	public boolean isAll(DblPredicate pred) {
+	public boolean isAll(DblTest pred) {
 		return spawn().isAll(pred);
 	}
 
-	public boolean isAny(DblPredicate pred) {
+	public boolean isAny(DblTest pred) {
 		return spawn().isAny(pred);
 	}
 
@@ -207,7 +207,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return spawn();
 	}
 
-	public Pair<DblStreamlet, DblStreamlet> partition(DblPredicate pred) {
+	public Pair<DblStreamlet, DblStreamlet> partition(DblTest pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
 	}
 

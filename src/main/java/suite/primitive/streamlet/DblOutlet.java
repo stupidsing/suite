@@ -10,22 +10,23 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.IntPredicate;
 
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.primitive.Doubles;
-import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblOpt;
 import suite.primitive.DblPrimitives.DblComparator;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
-import suite.primitive.DblPrimitives.DblPredicate;
 import suite.primitive.DblPrimitives.DblSink;
 import suite.primitive.DblPrimitives.DblSource;
+import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.Dbl_Dbl;
+import suite.primitive.Doubles;
+import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.adt.set.DblSet;
@@ -69,11 +70,19 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 	@SafeVarargs
 	public static DblOutlet of(double... ts) {
+		return of(ts, 0, ts.length, 1);
+	}
+
+	public static DblOutlet of(double[] ts, int start, int end, int inc) {
+		IntPredicate pred = 0 < inc ? i -> i < end : i -> end < i;
+
 		return of(new DblSource() {
-			private int i;
+			private int i = start;
 
 			public double source() {
-				return i < ts.length ? ts[i++] : DblFunUtil.EMPTYVALUE;
+				double c = pred.test(i) ? ts[i] : DblFunUtil.EMPTYVALUE;
+				i += inc;
+				return c;
 			}
 		});
 	}
@@ -205,7 +214,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 			return false;
 	}
 
-	public DblOutlet filter(DblPredicate fun) {
+	public DblOutlet filter(DblTest fun) {
 		return of(DblFunUtil.filter(fun, source));
 	}
 
@@ -256,11 +265,11 @@ public class DblOutlet implements OutletDefaults<Double> {
 		});
 	}
 
-	public boolean isAll(DblPredicate pred) {
+	public boolean isAll(DblTest pred) {
 		return DblFunUtil.isAll(pred, source);
 	}
 
-	public boolean isAny(DblPredicate pred) {
+	public boolean isAny(DblTest pred) {
 		return DblFunUtil.isAny(pred, source);
 	}
 
@@ -346,7 +355,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 			return DblOpt.none();
 	}
 
-	public Pair<DblOutlet, DblOutlet> partition(DblPredicate pred) {
+	public Pair<DblOutlet, DblOutlet> partition(DblTest pred) {
 		return Pair.of(filter(pred), filter(c -> !pred.test(c)));
 	}
 
@@ -376,7 +385,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 		return of(toList().toDoubles().sort());
 	}
 
-	public Outlet<DblOutlet> split(DblPredicate fun) {
+	public Outlet<DblOutlet> split(DblTest fun) {
 		return Outlet.of(FunUtil.map(DblOutlet::new, DblFunUtil.split(fun, source)));
 	}
 
