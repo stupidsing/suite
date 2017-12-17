@@ -59,7 +59,7 @@ public class GaussNewton {
 	 *            Jacobian of s.
 	 * @return
 	 */
-	public float[] gn(Fun<float[], float[]> residualFun, Fun<float[], float[][]> jacobianFun, float[] initials) {
+	private float[] gn(Fun<float[], float[]> residualFun, Fun<float[], float[][]> jacobianFun, float[] initials) {
 		float[] betas = initials;
 
 		for (int iter = 0; iter < 16; iter++) {
