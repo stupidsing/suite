@@ -227,11 +227,11 @@ public class Arima {
 					.range(length) //
 					.map(t -> {
 						int tqm1 = t + qm1;
-						float[] lrys = Floats_ //
+						float[] lrxs = Floats_ //
 								.concat(Floats_.reverse(xsp, t, t + p),
 										Ints_.range(iter_).collect(Int_Flt.lift(i -> epsByIter[i][tqm1 - i]))) //
 								.toArray();
-						return FltObjPair.of(xs[t], lrys);
+						return FltObjPair.of(xs[t], lrxs);
 					}) //
 					.toList());
 
@@ -277,10 +277,10 @@ public class Arima {
 					.range(length) //
 					.map(t -> {
 						int tqm1 = t + qm1;
-						float[] lrys = Floats_
+						float[] lrxs = Floats_
 								.concat(Floats_.of(1f), Ints_.range(iter_).collect(Int_Flt.lift(i -> epsByIter[i][tqm1 - i])))
 								.toArray();
-						return FltObjPair.of(xs[t], lrys);
+						return FltObjPair.of(xs[t], lrxs);
 					}) //
 					.toList());
 
