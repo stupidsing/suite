@@ -46,18 +46,20 @@ public class ArimaTest {
 		int p = ars.length;
 		int q = mas.length;
 		int qp = q - p;
-		float[] xs = new float[length + p];
+		int lengthp = length + p;
+		float[] xs = new float[lengthp];
 		float[] eps = To.arrayOfFloats(length + q, i -> random.nextGaussian());
 		int t = 0;
 
 		while (t < p)
 			xs[t++] = 8f * random.nextFloat();
 
-		while (t < length + p) {
+		while (t < lengthp) {
 			int tm1 = t - 1;
+			int tm1qp = tm1 + qp;
 			xs[t++] = (float) (0d //
 					+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[tm1 - i])) //
-					+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tm1 - i + qp])));
+					+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tm1qp - i])));
 		}
 
 		return Arrays.copyOfRange(xs, p, xs.length);
