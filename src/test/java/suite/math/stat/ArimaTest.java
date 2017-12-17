@@ -38,7 +38,7 @@ public class ArimaTest {
 	public void testMa() {
 		Statistic stat = new Statistic();
 		float[] eps = To.arrayOfFloats(1000, i -> random.nextGaussian());
-		float[] xs = To.arrayOfFloats(eps.length - 2, i -> eps[i] + eps[i + 1] + eps[i + 2]);
+		float[] xs = To.arrayOfFloats(eps.length - 1, i -> eps[i] + eps[i + 1]);
 
 		LinearRegression lr0 = stat.linearRegression(Ints_ //
 				.range(xs.length) //
