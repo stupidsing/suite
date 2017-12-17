@@ -6,12 +6,16 @@ import java.util.List;
 import suite.BindArrayUtil.Match;
 import suite.Suite;
 import suite.adt.Opt;
+import suite.jdk.gen.FunExpression.FunExpr;
+import suite.jdk.gen.FunFactory;
+import suite.jdk.lambda.LambdaInstance;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+import suite.primitive.Dbl_Dbl;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Iterate;
@@ -25,6 +29,42 @@ public class Symbolic {
 
 	public class PolynomializeException extends RuntimeException {
 		private static final long serialVersionUID = 1l;
+	}
+
+	public Dbl_Dbl fun(Node fn, Node node0) {
+		FunFactory f = new FunFactory();
+
+		LambdaInstance<Dbl_Dbl> lambda = LambdaInstance.of(Dbl_Dbl.class, x -> new Object() {
+			public FunExpr fun(Node n) {
+				Node[] m;
+				if ((m = matchAdd.apply(n)) != null)
+					return f.bi("+", fun(m[0]), fun(m[1]));
+				else if ((m = matchNeg.apply(n)) != null)
+					return f.bi("-", f.double_(0d), fun(m[0]));
+				else if ((m = matchMul.apply(n)) != null)
+					return f.bi("*", fun(m[0]), fun(m[1]));
+				else if ((m = matchInv.apply(n)) != null)
+					return f.bi("/", f.double_(1d), fun(m[0]));
+				else if ((m = matchPow.apply(n)) != null)
+					return f.invokeStatic(Math.class, "pow", fun(m[0]), fun(m[1]));
+				else if ((m = matchExp.apply(n)) != null)
+					return f.invokeStatic(Math.class, "exp", fun(m[0]));
+				else if ((m = matchLn.apply(n)) != null)
+					return f.invokeStatic(Math.class, "log", fun(m[0]));
+				else if ((m = matchSin.apply(n)) != null)
+					return f.invokeStatic(Math.class, "sin", fun(m[0]));
+				else if ((m = matchCos.apply(n)) != null)
+					return f.invokeStatic(Math.class, "cos", fun(m[0]));
+				else if (n == node0)
+					return x;
+				else if (n instanceof Int)
+					return f.double_(((Int) n).number);
+				else
+					throw new RuntimeException();
+			}
+		}.fun(fn));
+
+		return lambda.newFun();
 	}
 
 	public Node d(Node x, Node node0) {
