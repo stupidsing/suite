@@ -15,6 +15,7 @@ import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
+import suite.primitive.Flt_Flt;
 import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.Int_Int;
 import suite.util.FunUtil.Fun;
@@ -81,6 +82,13 @@ public class FunCreatorTest {
 				.apply(Map.of(fieldName, 1)) //
 				.apply(5);
 		assertEquals(6, result);
+	}
+
+	@Test
+	public void testFloat() {
+		LambdaInstance<Flt_Flt> lambda0 = LambdaInstance.of(Flt_Flt.class, i -> f.add(f.float_(1), i));
+		LambdaInstance<Flt_Flt> lambda1 = LambdaInstance.of(Flt_Flt.class, i -> f.add(f.float_(1), lambda0.invoke(i)));
+		assertTrue(lambda1.newFun().apply(0) == 2f);
 	}
 
 	@Test
