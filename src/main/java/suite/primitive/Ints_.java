@@ -7,6 +7,8 @@ import suite.primitive.Ints.WriteChar;
 import suite.primitive.streamlet.IntOutlet;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
@@ -19,6 +21,14 @@ public class Ints_ {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
+		});
+	}
+
+	@SafeVarargs
+	public static IntStreamlet concat(IntStreamlet... streamlets) {
+		return new IntStreamlet(() -> {
+			Source<IntStreamlet> source = Read.from(streamlets).outlet().source();
+			return IntOutlet.of(IntFunUtil.concat(FunUtil.map(IntStreamlet::source, source)));
 		});
 	}
 
@@ -87,6 +97,10 @@ public class Ints_ {
 				return c < e ? c : IntFunUtil.EMPTYVALUE;
 			});
 		});
+	}
+
+	public static IntStreamlet reverse(int[] ts, int start, int end) {
+		return new IntStreamlet(() -> IntOutlet.of(ts, end - 1, start - 1, -1));
 	}
 
 	public static Fun<Outlet<Ints>, Outlet<Ints>> split(Ints delim) {

@@ -9,7 +9,6 @@ import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltObjPair;
-import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.Streamlet;
 import suite.util.To;
 
@@ -126,13 +125,12 @@ public class Arima {
 				float[] coeffs = stat.linearRegression(Ints_ //
 						.range(p, xLength) //
 						.map(t -> {
-							float[] lrxs = new float[p + q];
 							int tpq = t + pq;
-							int k = 0;
-							for (int i = 1; i <= p; i++)
-								lrxs[k++] = xs[t - i];
-							for (int i = 1; i <= q; i++)
-								lrxs[k++] = eps[tpq - i];
+							int tm1 = t - 1;
+							int tpqm1 = tpq - 1;
+							float[] lrxs = Floats_ //
+									.concat(Floats_.of(xs, tm1, tm1 - p, -1), Floats_.of(xs, tpqm1, tpqm1 - q, -1)) //
+									.toArray();
 							float lry = xs[t] - eps[tpq];
 							return FltObjPair.of(lry, lrxs);
 						}) //
@@ -228,10 +226,11 @@ public class Arima {
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
-						int tqm1 = t + qm1;
-						return FltObjPair.of(xs[t], FltStreamlet //
-								.concat(Floats_.of(xsp, t + pm1, t - 1, -1), Floats_.of(eps, tqm1, tqm1 - iter_, -1)) //
-								.toArray());
+						int tq = t + q;
+						float[] lrys = Floats_ //
+								.concat(Floats_.reverse(xsp, t, t + p), Floats_.reverse(eps, tq - iter_, tq)) //
+								.toArray();
+						return FltObjPair.of(xs[t], lrys);
 					}) //
 					.toList());
 
@@ -269,7 +268,6 @@ public class Arima {
 		int length = xs.length;
 		float[] eps = new float[q + length];
 		int iter = 0;
-		int qm1 = q - 1;
 
 		while (true) {
 			int iter_ = iter;
@@ -277,9 +275,9 @@ public class Arima {
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
-						int tqm1 = t + qm1;
-						return FltObjPair.of(xs[t],
-								FltStreamlet.concat(Floats_.of(1f), Floats_.of(eps, tqm1, tqm1 - iter_, -1)).toArray());
+						int tq = t + q;
+						float[] lrxs = Floats_.concat(Floats_.of(1f), Floats_.reverse(eps, tq - iter_, tq)).toArray();
+						return FltObjPair.of(xs[t], lrxs);
 					}) //
 					.toList());
 

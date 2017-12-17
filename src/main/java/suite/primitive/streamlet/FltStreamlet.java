@@ -10,7 +10,6 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
-import suite.primitive.FltFunUtil;
 import suite.primitive.FltOpt;
 import suite.primitive.FltPrimitives.FltComparator;
 import suite.primitive.FltPrimitives.FltObj_Obj;
@@ -21,11 +20,9 @@ import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.set.FltSet;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
@@ -34,14 +31,6 @@ import suite.util.Object_;
 public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 
 	private Source<FltOutlet> in;
-
-	@SafeVarargs
-	public static FltStreamlet concat(FltStreamlet... streamlets) {
-		return streamlet(() -> {
-			Source<FltStreamlet> source = Read.from(streamlets).outlet().source();
-			return FltOutlet.of(FltFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
-		});
-	}
 
 	private static FltStreamlet streamlet(Source<FltOutlet> in) {
 		return new FltStreamlet(in);

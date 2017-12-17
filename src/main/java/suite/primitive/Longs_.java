@@ -7,6 +7,8 @@ import suite.primitive.Longs.WriteChar;
 import suite.primitive.streamlet.LngOutlet;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
@@ -19,6 +21,14 @@ public class Longs_ {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
+		});
+	}
+
+	@SafeVarargs
+	public static LngStreamlet concat(LngStreamlet... streamlets) {
+		return new LngStreamlet(() -> {
+			Source<LngStreamlet> source = Read.from(streamlets).outlet().source();
+			return LngOutlet.of(LngFunUtil.concat(FunUtil.map(LngStreamlet::source, source)));
 		});
 	}
 
@@ -87,6 +97,10 @@ public class Longs_ {
 				return c < e ? c : LngFunUtil.EMPTYVALUE;
 			});
 		});
+	}
+
+	public static LngStreamlet reverse(long[] ts, int start, int end) {
+		return new LngStreamlet(() -> LngOutlet.of(ts, end - 1, start - 1, -1));
 	}
 
 	public static Fun<Outlet<Longs>, Outlet<Longs>> split(Longs delim) {

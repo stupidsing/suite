@@ -8,7 +8,6 @@ import java.util.Set;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.primitive.DblFunUtil;
 import suite.primitive.DblOpt;
 import suite.primitive.DblPrimitives.DblComparator;
 import suite.primitive.DblPrimitives.DblObj_Obj;
@@ -21,11 +20,9 @@ import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.set.DblSet;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
@@ -34,14 +31,6 @@ import suite.util.Object_;
 public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 
 	private Source<DblOutlet> in;
-
-	@SafeVarargs
-	public static DblStreamlet concat(DblStreamlet... streamlets) {
-		return streamlet(() -> {
-			Source<DblStreamlet> source = Read.from(streamlets).outlet().source();
-			return DblOutlet.of(DblFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
-		});
-	}
 
 	private static DblStreamlet streamlet(Source<DblOutlet> in) {
 		return new DblStreamlet(in);

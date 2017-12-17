@@ -8,7 +8,6 @@ import java.util.Set;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.primitive.LngFunUtil;
 import suite.primitive.LngOpt;
 import suite.primitive.LngPrimitives.LngComparator;
 import suite.primitive.LngPrimitives.LngObj_Obj;
@@ -21,11 +20,9 @@ import suite.primitive.Longs;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.set.LngSet;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
@@ -34,14 +31,6 @@ import suite.util.Object_;
 public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 
 	private Source<LngOutlet> in;
-
-	@SafeVarargs
-	public static LngStreamlet concat(LngStreamlet... streamlets) {
-		return streamlet(() -> {
-			Source<LngStreamlet> source = Read.from(streamlets).outlet().source();
-			return LngOutlet.of(LngFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
-		});
-	}
 
 	private static LngStreamlet streamlet(Source<LngOutlet> in) {
 		return new LngStreamlet(in);

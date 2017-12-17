@@ -7,6 +7,8 @@ import suite.primitive.Doubles.WriteChar;
 import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.DblStreamlet;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
@@ -19,6 +21,14 @@ public class Doubles_ {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
+		});
+	}
+
+	@SafeVarargs
+	public static DblStreamlet concat(DblStreamlet... streamlets) {
+		return new DblStreamlet(() -> {
+			Source<DblStreamlet> source = Read.from(streamlets).outlet().source();
+			return DblOutlet.of(DblFunUtil.concat(FunUtil.map(DblStreamlet::source, source)));
 		});
 	}
 
@@ -87,6 +97,10 @@ public class Doubles_ {
 				return c < e ? c : DblFunUtil.EMPTYVALUE;
 			});
 		});
+	}
+
+	public static DblStreamlet reverse(double[] ts, int start, int end) {
+		return new DblStreamlet(() -> DblOutlet.of(ts, end - 1, start - 1, -1));
 	}
 
 	public static Fun<Outlet<Doubles>, Outlet<Doubles>> split(Doubles delim) {

@@ -10,7 +10,6 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
-import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrOpt;
 import suite.primitive.ChrPrimitives.ChrComparator;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
@@ -21,11 +20,9 @@ import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.set.ChrSet;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
@@ -34,14 +31,6 @@ import suite.util.Object_;
 public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 
 	private Source<ChrOutlet> in;
-
-	@SafeVarargs
-	public static ChrStreamlet concat(ChrStreamlet... streamlets) {
-		return streamlet(() -> {
-			Source<ChrStreamlet> source = Read.from(streamlets).outlet().source();
-			return ChrOutlet.of(ChrFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
-		});
-	}
 
 	private static ChrStreamlet streamlet(Source<ChrOutlet> in) {
 		return new ChrStreamlet(in);
