@@ -216,6 +216,7 @@ public class Arima {
 		float[] eps = new float[length + q];
 		int iter = 0;
 
+		Arrays.fill(xsp, 0, p, xs[0]);
 		System.arraycopy(xs, 0, xsp, p, length);
 
 		while (true) {
