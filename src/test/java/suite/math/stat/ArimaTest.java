@@ -6,8 +6,10 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.math.stat.Arima.Arima_;
+import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
+import suite.primitive.adt.pair.FltObjPair;
 import suite.util.To;
 
 public class ArimaTest {
@@ -30,6 +32,37 @@ public class ArimaTest {
 		float[] mas = new float[] { .5f, .5f, };
 		float[] xs = generate(new float[] {}, mas);
 		System.out.println(Arrays.toString(arima.maIa(xs, mas.length)));
+	}
+
+	@Test
+	public void testMa() {
+		Statistic stat = new Statistic();
+		float[] eps = To.arrayOfFloats(1000, i -> random.nextGaussian());
+		float[] xs = To.arrayOfFloats(eps.length - 2, i -> eps[i] + eps[i + 1] + eps[i + 2]);
+
+		LinearRegression lr0 = stat.linearRegression(Ints_ //
+				.range(xs.length) //
+				.map(t -> FltObjPair.of(xs[t], new float[] { 1f, })) //
+				.toList());
+
+		System.out.println(lr0.toString());
+
+		LinearRegression lr1 = stat.linearRegression(Ints_ //
+				.range(xs.length) //
+				.map(t -> FltObjPair.of(xs[t], new float[] { 1f, //
+						1 <= t ? lr0.residuals[t - 1] : 0f, })) //
+				.toList());
+
+		System.out.println(lr1.toString());
+
+		LinearRegression lr2 = stat.linearRegression(Ints_ //
+				.range(xs.length) //
+				.map(t -> FltObjPair.of(xs[t], new float[] { 1f, //
+						1 <= t ? lr1.residuals[t - 1] : 0f, //
+						2 <= t ? lr1.residuals[t - 2] : 0f, })) //
+				.toList());
+
+		System.out.println(lr2.toString());
 	}
 
 	private void testArma(float[] ars, float[] mas) {
