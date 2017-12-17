@@ -226,9 +226,10 @@ public class Arima {
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
+						int tqm1 = t + qm1;
 						float[] lrys = Floats_ //
 								.concat(Floats_.reverse(xsp, t, t + p),
-										Ints_.range(iter_).collect(Int_Flt.lift(i -> epsByIter[i][t - i + qm1]))) //
+										Ints_.range(iter_).collect(Int_Flt.lift(i -> epsByIter[i][tqm1 - i]))) //
 								.toArray();
 						return FltObjPair.of(xs[t], lrys);
 					}) //
@@ -277,14 +278,14 @@ public class Arima {
 					.map(t -> {
 						int tqm1 = t + qm1;
 						float[] lrxs = Floats_
-								.concat(Floats_.of(1f), Ints_.range(iter_).collect(Int_Flt.lift(i -> epsByIter[iter_][tqm1 - i])))
+								.concat(Floats_.of(1f), Ints_.range(iter_).collect(Int_Flt.lift(i -> epsByIter[i][tqm1 - i])))
 								.toArray();
 						return FltObjPair.of(xs[t], lrxs);
 					}) //
 					.toList());
 
 			if (iter < q)
-				System.arraycopy(lr.residuals, 0, epsByIter[iter] = new float[q + length], q, length);
+				System.arraycopy(lr.residuals, 0, epsByIter[iter++] = new float[q + length], q, length);
 			else
 				return lr.coefficients();
 		}
