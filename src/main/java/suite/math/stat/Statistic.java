@@ -81,7 +81,6 @@ public class Statistic {
 		public final float[][] in;
 		public final float[] coefficients;
 		public final String[] coefficientNames;
-		public final float[] estimatedy;
 		public final float[] residuals;
 		public final double invn2;
 		public final double sst, sse;
@@ -93,13 +92,15 @@ public class Statistic {
 			int nDepVariables_ = mtx.width(x);
 			float[][] xt = mtx.transpose(x);
 			float[][] xtx = mtx.mul(xt, x);
+
 			coefficients = cholesky.inverseMul(xtx).apply(mtx.mul(xt, y));
 			coefficientNames = coefficientNames_ != null //
 					? coefficientNames_ //
 					: To.array(nDepVariables_, String.class, i -> "c" + i);
-			estimatedy = To.arrayOfFloats(x, this::predict);
+
 			residuals = new float[nDataPoints_];
 
+			float[] estimatedy = mtx.mul(x, coefficients);
 			double meany = mean_(y);
 
 			double sst_ = 0d; // total sum of squares
