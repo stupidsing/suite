@@ -212,10 +212,10 @@ public class Arima {
 	public Arima_ armaIa(float[] xs, int p, int q) {
 		int length = xs.length;
 		float[] xsp = new float[length + p];
-		float[] eps = new float[length + q];
 		int pm1 = p - 1;
 		int qm1 = q - 1;
 		int iter = 0;
+		float[][] epsByIter = new float[q][];
 
 		Arrays.fill(xsp, 0, p, xs[0]);
 		System.arraycopy(xs, 0, xsp, p, length);
@@ -226,9 +226,9 @@ public class Arima {
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
-						int tq = t + q;
 						float[] lrys = Floats_ //
-								.concat(Floats_.reverse(xsp, t, t + p), Floats_.reverse(eps, tq - iter_, tq)) //
+								.concat(Floats_.reverse(xsp, t, t + p),
+										Ints_.range(iter_).collect(Int_Flt.lift(i -> epsByIter[i][t - i + qm1]))) //
 								.toArray();
 						return FltObjPair.of(xs[t], lrys);
 					}) //
@@ -236,16 +236,15 @@ public class Arima {
 
 			float[] coeffs = lr.coefficients();
 
-			if (iter < q) {
-				System.arraycopy(lr.residuals, 0, eps, q, length);
-				iter++;
-			} else {
+			if (iter < q)
+				System.arraycopy(lr.residuals, 0, epsByIter[iter++] = new float[length + q], q, length);
+			else {
 				float[] ars = Floats.of(coeffs, 0, p).toArray();
 				float[] mas = Floats.of(coeffs, p).toArray();
 
 				double x1 = 0d //
 						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[length - i + pm1])) //
-						+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[length - i + qm1]));
+						+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * epsByIter[i][length - i + qm1]));
 
 				return new Arima_(ars, mas, (float) x1);
 			}
@@ -266,8 +265,9 @@ public class Arima {
 	// + eps[t]
 	public float[] maIa(float[] xs, int q) {
 		int length = xs.length;
-		float[] eps = new float[q + length];
+		float[][] epsByIter = new float[q][];
 		int iter = 0;
+		int qm1 = q - 1;
 
 		while (true) {
 			int iter_ = iter;
@@ -275,14 +275,16 @@ public class Arima {
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
-						int tq = t + q;
-						float[] lrxs = Floats_.concat(Floats_.of(1f), Floats_.reverse(eps, tq - iter_, tq)).toArray();
+						int tqm1 = t + qm1;
+						float[] lrxs = Floats_
+								.concat(Floats_.of(1f), Ints_.range(iter_).collect(Int_Flt.lift(i -> epsByIter[iter_][tqm1 - i])))
+								.toArray();
 						return FltObjPair.of(xs[t], lrxs);
 					}) //
 					.toList());
 
 			if (iter < q)
-				System.arraycopy(lr.residuals, 0, eps, q, length);
+				System.arraycopy(lr.residuals, 0, epsByIter[iter] = new float[q + length], q, length);
 			else
 				return lr.coefficients();
 		}
