@@ -9,6 +9,7 @@ import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltObjPair;
+import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.Streamlet;
 import suite.util.To;
 
@@ -214,6 +215,8 @@ public class Arima {
 		int length = xs.length;
 		float[] xsp = new float[length + p];
 		float[] eps = new float[length + q];
+		int pm1 = p - 1;
+		int qm1 = q - 1;
 		int iter = 0;
 
 		Arrays.fill(xsp, 0, p, xs[0]);
@@ -224,27 +227,23 @@ public class Arima {
 
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
-					.map(t -> {
-						float[] lrxs = new float[p + iter_];
-						int di = 0;
-						for (int i = 1; i <= p; i++)
-							lrxs[di++] = xsp[t - i + p];
-						for (int i = 1; i <= iter_; i++)
-							lrxs[di++] = eps[t - i + q];
-						return FltObjPair.of(xs[t], lrxs);
-					}) //
+					.map(t -> FltObjPair.of(xs[t], FltStreamlet //
+							.concat(Floats_.of(xsp, t + pm1, t - 1, -1), Floats_.of(eps, t + qm1, t + qm1 - iter_, -1)) //
+							.toArray())) //
 					.toList());
 
-			if (iter++ < q)
+			float[] coeffs = lr.coefficients();
+
+			if (iter < q) {
 				System.arraycopy(lr.residuals, 0, eps, q, length);
-			else {
-				float[] coeffs = lr.coefficients();
+				iter++;
+			} else {
 				float[] ars = Floats.of(coeffs, 0, p).toArray();
 				float[] mas = Floats.of(coeffs, p).toArray();
 
 				double x1 = 0d //
-						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[length - i - 1 + p])) //
-						+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[length - i - 1 + q]));
+						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[length - i + pm1])) //
+						+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[length - i + qm1]));
 
 				return new Arima_(ars, mas, (float) x1);
 			}
