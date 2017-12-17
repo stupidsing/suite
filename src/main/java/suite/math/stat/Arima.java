@@ -184,7 +184,7 @@ public class Arima {
 		return new Arima_(ars, mas, (float) x1);
 	}
 
-	public float arimaIa(float[] xs, int p, int d, int q) { // ARIMA
+	public float arimaIa(float[] xs, int p, int d, int q) {
 		for (int i = 0; i < d; i++)
 			xs = ts.dropDiff(1, xs);
 
