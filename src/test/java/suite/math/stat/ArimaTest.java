@@ -17,12 +17,12 @@ public class ArimaTest {
 
 	@Test
 	public void testArma20() {
-		test(new float[] { .5f, .5f, }, new float[] {});
+		testArma(new float[] { .5f, .5f, }, new float[] {});
 	}
 
 	@Test
 	public void testArma02() {
-		test(new float[] {}, new float[] { .5f, .5f, });
+		testArma(new float[] {}, new float[] { .5f, .5f, });
 	}
 
 	@Test
@@ -32,7 +32,7 @@ public class ArimaTest {
 		System.out.println(Arrays.toString(arima.maIa(xs, mas.length)));
 	}
 
-	private void test(float[] ars, float[] mas) {
+	private void testArma(float[] ars, float[] mas) {
 		float[] xs = generate(ars, mas);
 		Arima_ a = arima.armaIa(xs, ars.length, mas.length);
 		System.out.println("x = " + Arrays.toString(xs));
