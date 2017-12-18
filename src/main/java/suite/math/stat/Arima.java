@@ -257,6 +257,55 @@ public class Arima {
 		return arLevinsonDurbin(ar, q);
 	}
 
+	// http://math.unice.fr/~frapetti/CorsoP/Chapitre_4_IMEA_1.pdf
+	// "Least squares estimation using backcasting procedure"
+	public float[] maBackcast(float[] xs, int q, float[] mas0) {
+		float[] mas = mas0;
+		int length = xs.length;
+		float[] xsp = Floats_.concat(new float[q], xs);
+		float[] eps = new float[length + q];
+
+		for (int iter = 0; iter < 9; iter++) {
+			float[] mas_ = mas;
+
+			// backcast
+			// eps[t]
+			// = (xs[t + q] - eps[t + q]
+			// - mas[0] * eps[t + q - 1] - ...
+			// - mas[q - 2] * eps[t + 1]) / mas[q - 1]
+			double max = mas[q - 1];
+			for (int t = length - 1; 0 <= t; t--) {
+				int tq = t + q;
+				eps[t] = (float) ((xsp[tq] - eps[tq] - Ints_.range(q - 1).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq - 1 - i])))
+						/ max);
+			}
+
+			// forward recursion
+			// eps[t] = xs[t]
+			// - mas[0] * eps[t - 1] - ... - mas[q - 1] * eps[t - q]
+			for (int t = 0; t < length; t++) {
+				int tq = t + q;
+				eps[tq] = (float) (xsp[tq] - Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq - 1 - i])));
+			}
+
+			LinearRegression lr = stat.linearRegression(Ints_ //
+					.range(length) //
+					.map(t -> {
+						int tq = t + q;
+						float[] lrxs = Ints_ //
+								.range(q) //
+								.collect(Int_Flt.lift(i -> eps[tq - 1 - i])) //
+								.toArray();
+						return FltObjPair.of(xsp[tq] - eps[tq], lrxs);
+					}) //
+					.toList());
+
+			mas = lr.coefficients();
+		}
+
+		return mas;
+	}
+
 	// "High Frequency Trading - A Practical Guide to Algorithmic Strategies and
 	// Trading Systems", Irene Aldridge, page 100
 	// x[t]
