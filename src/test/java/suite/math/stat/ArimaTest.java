@@ -31,14 +31,14 @@ public class ArimaTest {
 	@Test
 	public void testMa2() {
 		float[] mas = new float[] { .5f, .5f, };
-		float[] xs = generate(new float[] {}, mas);
+		float[] xs = generate(256, new float[] {}, mas);
 		System.out.println(Arrays.toString(arima.maIa(xs, mas.length)));
 	}
 
 	@Test
 	public void testMa() {
 		float[] eps = To.arrayOfFloats(1000, i -> random.nextGaussian());
-		float[] xs = To.arrayOfFloats(eps.length - 1, i -> (eps[i] + eps[i + 1]) * .5f);
+		float[] xs = To.arrayOfFloats(eps.length - 9, i -> eps[i] * 1f + eps[i + 1] * 1f);
 		System.out.println("eps = " + Arrays.toString(eps));
 		System.out.println("xs = " + Arrays.toString(xs));
 
@@ -62,16 +62,27 @@ public class ArimaTest {
 		LinearRegression lr2 = stat.linearRegression(Ints_ //
 				.range(xs.length) //
 				.map(t -> FltObjPair.of(xs[t], new float[] { 1f, //
-						1 <= t ? lr1.residuals[t - 1] : 0f, //
+						1 <= t ? lr0.residuals[t - 1] : 0f, //
 						2 <= t ? lr1.residuals[t - 2] : 0f, })) //
 				.toList());
 
 		System.out.println(lr2.toString());
 		System.out.println("residuals = " + Arrays.toString(lr2.residuals));
+
+		LinearRegression lr3 = stat.linearRegression(Ints_ //
+				.range(xs.length) //
+				.map(t -> FltObjPair.of(xs[t], new float[] { 1f, //
+						1 <= t ? lr0.residuals[t - 1] : 0f, //
+						2 <= t ? lr1.residuals[t - 2] : 0f, //
+						3 <= t ? lr2.residuals[t - 3] : 0f, })) //
+				.toList());
+
+		System.out.println(lr3.toString());
+		System.out.println("residuals = " + Arrays.toString(lr3.residuals));
 	}
 
 	private void testArma(float[] ars, float[] mas) {
-		float[] xs = generate(ars, mas);
+		float[] xs = generate(256, ars, mas);
 		Arima_ a = arima.armaIa(xs, ars.length, mas.length);
 		System.out.println("x = " + Arrays.toString(xs));
 		System.out.println("ar = " + Arrays.toString(a.ars));
@@ -79,8 +90,7 @@ public class ArimaTest {
 		System.out.println("x1 = " + a.x1);
 	}
 
-	private float[] generate(float[] ars, float[] mas) {
-		int length = 256;
+	private float[] generate(int length, float[] ars, float[] mas) {
 		int p = ars.length;
 		int q = mas.length;
 		int qp = q - p;

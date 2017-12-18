@@ -221,7 +221,7 @@ public class Arima {
 		System.arraycopy(xs, 0, xsp, p, length);
 
 		while (true) {
-			int iter_ = iter++;
+			int iter_ = iter;
 
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
@@ -271,7 +271,7 @@ public class Arima {
 		int qm1 = q - 1;
 
 		while (true) {
-			int iter_ = iter++;
+			int iter_ = iter;
 
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
