@@ -126,10 +126,8 @@ public class Arima {
 						.range(p, xLength) //
 						.map(t -> {
 							int tpq = t + pq;
-							int tm1 = t - 1;
-							int tpqm1 = tpq - 1;
 							float[] lrxs = Floats_ //
-									.concat(Floats_.of(xs, tm1, tm1 - p, -1), Floats_.of(xs, tpqm1, tpqm1 - q, -1)) //
+									.concat(Floats_.reverse(xs, t - p, t), Floats_.reverse(xs, t - p, tpq)) //
 									.toArray();
 							float lry = xs[t] - eps[tpq];
 							return FltObjPair.of(lry, lrxs);
