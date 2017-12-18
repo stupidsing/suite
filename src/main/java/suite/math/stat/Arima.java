@@ -267,13 +267,13 @@ public class Arima {
 
 		for (int iter = 0; iter < 9; iter++) {
 			float[] mas_ = mas;
+			double max = mas[q - 1];
 
 			// backcast
 			// eps[t]
 			// = (xs[t + q] - eps[t + q]
 			// - mas[0] * eps[t + q - 1] - ...
 			// - mas[q - 2] * eps[t + 1]) / mas[q - 1]
-			double max = mas[q - 1];
 			for (int t = length - 1; 0 <= t; t--) {
 				int tq = t + q;
 				eps[t] = (float) ((xsp[tq] - eps[tq] - Ints_.range(q - 1).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq - 1 - i])))
