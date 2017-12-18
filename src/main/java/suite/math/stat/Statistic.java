@@ -91,45 +91,36 @@ public class Statistic {
 			int nDataPoints_ = y.length;
 			int nDepVariables_ = mtx.width(x);
 			float[][] xt = mtx.transpose(x);
-			float[][] xtx = mtx.mul(xt, x);
-
-			coefficients = cholesky.inverseMul(xtx).apply(mtx.mul(xt, y));
-			coefficientNames = coefficientNames_ != null //
-					? coefficientNames_ //
-					: To.array(nDepVariables_, String.class, i -> "c" + i);
-
-			residuals = new float[nDataPoints_];
-
-			float[] estimatedy = mtx.mul(x, coefficients);
+			float[] coeffs = cholesky.inverseMul(mtx.mul(xt, x)).apply(mtx.mul(xt, y));
+			float[] estimatedy = mtx.mul(x, coeffs);
+			float[] residuals_ = vec.sub(y, estimatedy);
 			double meany = mean_(y);
-
 			double sst_ = 0d; // total sum of squares
 			double ssr = 0d; // estimated sum of squares
-			double sse_ = 0d; // sum of squared residuals
+			double sse_ = vec.dot(residuals_); // sum of squared residuals
 
 			for (int i = 0; i < nDataPoints_; i++) {
-				float yi = y[i];
-				float estyi = estimatedy[i];
-				double d0 = yi - meany;
-				double d1 = estyi - meany;
-				double d2 = residuals[i] = yi - estyi;
+				double d0 = y[i] - meany;
+				double d1 = estimatedy[i] - meany;
 				sst_ += d0 * d0;
 				ssr += d1 * d1;
-				sse_ += d2 * d2;
 			}
 
 			// sse = sst - ssr; // theoretically
 
-			// if (!Double.isNaN(sse_)) {
 			nDataPoints = nDataPoints_;
 			nDepVariables = nDepVariables_;
 			in = x;
+			coefficients = coeffs;
+			coefficientNames = coefficientNames_ != null //
+					? coefficientNames_ //
+					: To.array(nDepVariables_, String.class, i -> "c" + i);
+			residuals = residuals_;
 			invn2 = 1d / (nDataPoints_ - nDepVariables_ - 1);
 			sst = sst_;
 			sse = sse_;
 			r2 = ssr / sst_; // 0 -> not accurate, 1 -> totally accurate
 			standardError = Math.sqrt(ssr * invn2);
-			// } else throw new RuntimeException();
 		}
 
 		public float predict(float[] x) {

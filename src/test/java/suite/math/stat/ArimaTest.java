@@ -16,6 +16,7 @@ public class ArimaTest {
 
 	private Arima arima = new Arima();
 	private Random random = new Random();
+	private Statistic stat = new Statistic();
 
 	@Test
 	public void testArma20() {
@@ -36,9 +37,10 @@ public class ArimaTest {
 
 	@Test
 	public void testMa() {
-		Statistic stat = new Statistic();
 		float[] eps = To.arrayOfFloats(1000, i -> random.nextGaussian());
-		float[] xs = To.arrayOfFloats(eps.length - 1, i -> eps[i] + eps[i + 1]);
+		float[] xs = To.arrayOfFloats(eps.length - 1, i -> (eps[i] + eps[i + 1]) * .5f);
+		System.out.println("eps = " + Arrays.toString(eps));
+		System.out.println("xs = " + Arrays.toString(xs));
 
 		LinearRegression lr0 = stat.linearRegression(Ints_ //
 				.range(xs.length) //
@@ -46,6 +48,7 @@ public class ArimaTest {
 				.toList());
 
 		System.out.println(lr0.toString());
+		System.out.println("residuals = " + Arrays.toString(lr0.residuals));
 
 		LinearRegression lr1 = stat.linearRegression(Ints_ //
 				.range(xs.length) //
@@ -54,6 +57,7 @@ public class ArimaTest {
 				.toList());
 
 		System.out.println(lr1.toString());
+		System.out.println("residuals = " + Arrays.toString(lr1.residuals));
 
 		LinearRegression lr2 = stat.linearRegression(Ints_ //
 				.range(xs.length) //
@@ -63,6 +67,7 @@ public class ArimaTest {
 				.toList());
 
 		System.out.println(lr2.toString());
+		System.out.println("residuals = " + Arrays.toString(lr2.residuals));
 	}
 
 	private void testArma(float[] ars, float[] mas) {
