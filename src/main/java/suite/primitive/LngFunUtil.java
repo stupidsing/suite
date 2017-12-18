@@ -5,9 +5,9 @@ import java.util.Iterator;
 
 import suite.os.LogUtil;
 import suite.primitive.LngPrimitives.LngObjSource;
-import suite.primitive.LngPrimitives.LngPredicate;
 import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.LngPrimitives.LngSource;
+import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.util.FunUtil.Fun;
@@ -88,8 +88,8 @@ public class LngFunUtil {
 		};
 	}
 
-	public static LngSource filter(LngPredicate fun0, LngSource source) {
-		LngPredicate fun1 = fun0.rethrow();
+	public static LngSource filter(LngTest fun0, LngSource source) {
+		LngTest fun1 = fun0.rethrow();
 		return () -> {
 			long c = EMPTYVALUE;
 			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
@@ -122,8 +122,8 @@ public class LngFunUtil {
 		return init;
 	}
 
-	public static boolean isAll(LngPredicate pred0, LngSource source) {
-		LngPredicate pred1 = pred0.rethrow();
+	public static boolean isAll(LngTest pred0, LngSource source) {
+		LngTest pred1 = pred0.rethrow();
 		long c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (!pred1.test(c))
@@ -131,8 +131,8 @@ public class LngFunUtil {
 		return true;
 	}
 
-	public static boolean isAny(LngPredicate pred0, LngSource source) {
-		LngPredicate pred1 = pred0.rethrow();
+	public static boolean isAny(LngTest pred0, LngSource source) {
+		LngTest pred1 = pred0.rethrow();
 		long c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (pred1.test(c))
@@ -217,8 +217,8 @@ public class LngFunUtil {
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static Source<LngSource> split(LngPredicate fun0, LngSource source) {
-		LngPredicate fun1 = fun0.rethrow();
+	public static Source<LngSource> split(LngTest fun0, LngSource source) {
+		LngTest fun1 = fun0.rethrow();
 		return new Source<>() {
 			private long c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;

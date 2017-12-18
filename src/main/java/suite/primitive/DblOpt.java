@@ -3,7 +3,7 @@ package suite.primitive;
 import java.util.Objects;
 
 import suite.adt.Opt;
-import suite.primitive.DblPrimitives.DblPredicate;
+import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.util.Object_;
 
@@ -26,7 +26,7 @@ public class DblOpt {
 		return value == DblFunUtil.EMPTYVALUE;
 	}
 
-	public DblOpt filter(DblPredicate pred) {
+	public DblOpt filter(DblTest pred) {
 		return isEmpty() || pred.test(value) ? this : none();
 	}
 

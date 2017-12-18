@@ -17,7 +17,7 @@ import suite.primitive.DblObj_Dbl;
 import suite.primitive.DblPrimitives.DblObjPredicate;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
-import suite.primitive.DblPrimitives.DblPredicate;
+import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.map.ObjDblMap;
@@ -132,7 +132,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 		return dblObjStreamlet(() -> spawn().filter(fun));
 	}
 
-	public DblObjStreamlet<V> filterKey(DblPredicate fun) {
+	public DblObjStreamlet<V> filterKey(DblTest fun) {
 		return dblObjStreamlet(() -> spawn().filterKey(fun));
 	}
 

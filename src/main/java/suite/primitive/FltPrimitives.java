@@ -100,10 +100,10 @@ public class FltPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface FltPredicate {
+	public interface FltTest {
 		public boolean test(float c);
 
-		public default FltPredicate rethrow() {
+		public default FltTest rethrow() {
 			return c -> {
 				try {
 					return test(c);

@@ -100,10 +100,10 @@ public class DblPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface DblPredicate {
+	public interface DblTest {
 		public boolean test(double c);
 
-		public default DblPredicate rethrow() {
+		public default DblTest rethrow() {
 			return c -> {
 				try {
 					return test(c);

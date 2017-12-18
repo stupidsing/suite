@@ -7,6 +7,8 @@ import suite.primitive.Floats.WriteChar;
 import suite.primitive.streamlet.FltOutlet;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
@@ -19,6 +21,14 @@ public class Floats_ {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
+		});
+	}
+
+	@SafeVarargs
+	public static FltStreamlet concat(FltStreamlet... streamlets) {
+		return new FltStreamlet(() -> {
+			Source<FltStreamlet> source = Read.from(streamlets).outlet().source();
+			return FltOutlet.of(FltFunUtil.concat(FunUtil.map(FltStreamlet::source, source)));
 		});
 	}
 
@@ -71,6 +81,10 @@ public class Floats_ {
 		return new FltStreamlet(() -> FltOutlet.of(ts));
 	}
 
+	public static FltStreamlet of(float[] ts, int start, int end, int inc) {
+		return new FltStreamlet(() -> FltOutlet.of(ts, start, end, inc));
+	}
+
 	public static FltStreamlet range(float e) {
 		return range((float) 0, e);
 	}
@@ -83,6 +97,10 @@ public class Floats_ {
 				return c < e ? c : FltFunUtil.EMPTYVALUE;
 			});
 		});
+	}
+
+	public static FltStreamlet reverse(float[] ts, int start, int end) {
+		return new FltStreamlet(() -> FltOutlet.of(ts, end - 1, start - 1, -1));
 	}
 
 	public static Fun<Outlet<Floats>, Outlet<Floats>> split(Floats delim) {

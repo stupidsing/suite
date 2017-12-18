@@ -19,7 +19,7 @@ import suite.primitive.ChrObj_Chr;
 import suite.primitive.ChrPrimitives.ChrObjPredicate;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
-import suite.primitive.ChrPrimitives.ChrPredicate;
+import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.map.ObjChrMap;
 import suite.primitive.adt.pair.ChrObjPair;
@@ -214,7 +214,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 		return of(ChrObjFunUtil.filter(fun, source));
 	}
 
-	public ChrObjOutlet<V> filterKey(ChrPredicate fun) {
+	public ChrObjOutlet<V> filterKey(ChrTest fun) {
 		return of(ChrObjFunUtil.filterKey(fun, source));
 	}
 

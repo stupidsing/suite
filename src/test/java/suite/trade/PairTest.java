@@ -36,7 +36,7 @@ public class PairTest {
 		DataSource ds1 = cfg.dataSource(symbol1, period);
 		LngStreamlet ts0 = Longs_.of(ds0.ts);
 		LngStreamlet ts1 = Longs_.of(ds1.ts);
-		long[] tradeTimes = LngStreamlet.concat(ts0, ts1).distinct().sort().toArray();
+		long[] tradeTimes = Longs_.concat(ts0, ts1).distinct().sort().toArray();
 		float[] prices0 = ds0.alignBeforePrices(tradeTimes).prices;
 		float[] prices1 = ds1.alignBeforePrices(tradeTimes).prices;
 		int length = prices0.length;

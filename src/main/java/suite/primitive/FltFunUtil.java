@@ -5,9 +5,9 @@ import java.util.Iterator;
 
 import suite.os.LogUtil;
 import suite.primitive.FltPrimitives.FltObjSource;
-import suite.primitive.FltPrimitives.FltPredicate;
 import suite.primitive.FltPrimitives.FltSink;
 import suite.primitive.FltPrimitives.FltSource;
+import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.util.FunUtil.Fun;
@@ -88,8 +88,8 @@ public class FltFunUtil {
 		};
 	}
 
-	public static FltSource filter(FltPredicate fun0, FltSource source) {
-		FltPredicate fun1 = fun0.rethrow();
+	public static FltSource filter(FltTest fun0, FltSource source) {
+		FltTest fun1 = fun0.rethrow();
 		return () -> {
 			float c = EMPTYVALUE;
 			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
@@ -122,8 +122,8 @@ public class FltFunUtil {
 		return init;
 	}
 
-	public static boolean isAll(FltPredicate pred0, FltSource source) {
-		FltPredicate pred1 = pred0.rethrow();
+	public static boolean isAll(FltTest pred0, FltSource source) {
+		FltTest pred1 = pred0.rethrow();
 		float c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (!pred1.test(c))
@@ -131,8 +131,8 @@ public class FltFunUtil {
 		return true;
 	}
 
-	public static boolean isAny(FltPredicate pred0, FltSource source) {
-		FltPredicate pred1 = pred0.rethrow();
+	public static boolean isAny(FltTest pred0, FltSource source) {
+		FltTest pred1 = pred0.rethrow();
 		float c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (pred1.test(c))
@@ -217,8 +217,8 @@ public class FltFunUtil {
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static Source<FltSource> split(FltPredicate fun0, FltSource source) {
-		FltPredicate fun1 = fun0.rethrow();
+	public static Source<FltSource> split(FltTest fun0, FltSource source) {
+		FltTest fun1 = fun0.rethrow();
 		return new Source<>() {
 			private float c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;

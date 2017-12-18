@@ -8,24 +8,21 @@ import java.util.Set;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.primitive.Longs;
-import suite.primitive.Longs.LongsBuilder;
-import suite.primitive.LngFunUtil;
 import suite.primitive.LngOpt;
 import suite.primitive.LngPrimitives.LngComparator;
 import suite.primitive.LngPrimitives.LngObj_Obj;
-import suite.primitive.LngPrimitives.LngPredicate;
 import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.LngPrimitives.LngSource;
+import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.primitive.Lng_Lng;
+import suite.primitive.Longs;
+import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.set.LngSet;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
@@ -34,14 +31,6 @@ import suite.util.Object_;
 public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 
 	private Source<LngOutlet> in;
-
-	@SafeVarargs
-	public static LngStreamlet concat(LngStreamlet... streamlets) {
-		return streamlet(() -> {
-			Source<LngStreamlet> source = Read.from(streamlets).outlet().source();
-			return LngOutlet.of(LngFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
-		});
-	}
 
 	private static LngStreamlet streamlet(Source<LngOutlet> in) {
 		return new LngStreamlet(in);
@@ -109,7 +98,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		return Object_.clazz(object) == LngStreamlet.class ? Objects.equals(spawn(), ((LngStreamlet) object).spawn()) : false;
 	}
 
-	public LngStreamlet filter(LngPredicate fun) {
+	public LngStreamlet filter(LngTest fun) {
 		return streamlet(() -> spawn().filter(fun));
 	}
 
@@ -146,11 +135,11 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		return new LngObjStreamlet<>(() -> spawn().index());
 	}
 
-	public boolean isAll(LngPredicate pred) {
+	public boolean isAll(LngTest pred) {
 		return spawn().isAll(pred);
 	}
 
-	public boolean isAny(LngPredicate pred) {
+	public boolean isAny(LngTest pred) {
 		return spawn().isAny(pred);
 	}
 
@@ -207,7 +196,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		return spawn();
 	}
 
-	public Pair<LngStreamlet, LngStreamlet> partition(LngPredicate pred) {
+	public Pair<LngStreamlet, LngStreamlet> partition(LngTest pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
 	}
 

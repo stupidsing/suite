@@ -92,6 +92,14 @@ public class FunFactory {
 		return expr;
 	}
 
+	public FunExpr double_(double d) {
+		return constant(d, Type.DOUBLE);
+	}
+
+	public FunExpr float_(float f) {
+		return constant(f, Type.FLOAT);
+	}
+
 	public FunExpr if_(FunExpr if_, FunExpr then_, FunExpr else_) {
 		If1FunExpr expr = new If1FunExpr();
 		expr.if_ = if_;

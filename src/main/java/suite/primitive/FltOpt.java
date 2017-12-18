@@ -3,7 +3,7 @@ package suite.primitive;
 import java.util.Objects;
 
 import suite.adt.Opt;
-import suite.primitive.FltPrimitives.FltPredicate;
+import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.util.Object_;
 
@@ -26,7 +26,7 @@ public class FltOpt {
 		return value == FltFunUtil.EMPTYVALUE;
 	}
 
-	public FltOpt filter(FltPredicate pred) {
+	public FltOpt filter(FltTest pred) {
 		return isEmpty() || pred.test(value) ? this : none();
 	}
 

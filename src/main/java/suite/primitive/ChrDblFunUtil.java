@@ -4,8 +4,8 @@ import java.util.Iterator;
 
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
-import suite.primitive.ChrPrimitives.ChrPredicate;
-import suite.primitive.DblPrimitives.DblPredicate;
+import suite.primitive.ChrPrimitives.ChrTest;
+import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.adt.pair.ChrDblPair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -96,8 +96,8 @@ public class ChrDblFunUtil {
 		};
 	}
 
-	public static <V> ChrDblSource filterKey(ChrPredicate fun0, ChrDblSource source2) {
-		ChrPredicate fun1 = fun0.rethrow();
+	public static <V> ChrDblSource filterKey(ChrTest fun0, ChrDblSource source2) {
+		ChrTest fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -106,8 +106,8 @@ public class ChrDblFunUtil {
 		};
 	}
 
-	public static ChrDblSource filterValue(DblPredicate fun0, ChrDblSource source2) {
-		DblPredicate fun1 = fun0.rethrow();
+	public static ChrDblSource filterValue(DblTest fun0, ChrDblSource source2) {
+		DblTest fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t1))
@@ -207,8 +207,8 @@ public class ChrDblFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static Source<ChrDblSource> split(ChrDblPredicate fun0, ChrDblSource source2) {
 		ChrDblPredicate fun1 = fun0.rethrow();

@@ -5,9 +5,9 @@ import java.util.Iterator;
 
 import suite.os.LogUtil;
 import suite.primitive.DblPrimitives.DblObjSource;
-import suite.primitive.DblPrimitives.DblPredicate;
 import suite.primitive.DblPrimitives.DblSink;
 import suite.primitive.DblPrimitives.DblSource;
+import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.util.FunUtil.Fun;
@@ -88,8 +88,8 @@ public class DblFunUtil {
 		};
 	}
 
-	public static DblSource filter(DblPredicate fun0, DblSource source) {
-		DblPredicate fun1 = fun0.rethrow();
+	public static DblSource filter(DblTest fun0, DblSource source) {
+		DblTest fun1 = fun0.rethrow();
 		return () -> {
 			double c = EMPTYVALUE;
 			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
@@ -122,8 +122,8 @@ public class DblFunUtil {
 		return init;
 	}
 
-	public static boolean isAll(DblPredicate pred0, DblSource source) {
-		DblPredicate pred1 = pred0.rethrow();
+	public static boolean isAll(DblTest pred0, DblSource source) {
+		DblTest pred1 = pred0.rethrow();
 		double c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (!pred1.test(c))
@@ -131,8 +131,8 @@ public class DblFunUtil {
 		return true;
 	}
 
-	public static boolean isAny(DblPredicate pred0, DblSource source) {
-		DblPredicate pred1 = pred0.rethrow();
+	public static boolean isAny(DblTest pred0, DblSource source) {
+		DblTest pred1 = pred0.rethrow();
 		double c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (pred1.test(c))
@@ -217,8 +217,8 @@ public class DblFunUtil {
 	 * Problematic split: all data must be read, i.e. the children lists must
 	 * not be skipped.
 	 */
-	public static Source<DblSource> split(DblPredicate fun0, DblSource source) {
-		DblPredicate fun1 = fun0.rethrow();
+	public static Source<DblSource> split(DblTest fun0, DblSource source) {
+		DblTest fun1 = fun0.rethrow();
 		return new Source<>() {
 			private double c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;

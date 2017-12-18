@@ -8,7 +8,7 @@ import suite.os.LogUtil;
 import suite.primitive.LngPrimitives.LngObjPredicate;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngObj_Obj;
-import suite.primitive.LngPrimitives.LngPredicate;
+import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -100,8 +100,8 @@ public class LngObjFunUtil {
 		};
 	}
 
-	public static <V> LngObjSource<V> filterKey(LngPredicate fun0, LngObjSource<V> source2) {
-		LngPredicate fun1 = fun0.rethrow();
+	public static <V> LngObjSource<V> filterKey(LngTest fun0, LngObjSource<V> source2) {
+		LngTest fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))

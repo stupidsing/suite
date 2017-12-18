@@ -3,7 +3,7 @@ package suite.primitive;
 import java.util.Objects;
 
 import suite.adt.Opt;
-import suite.primitive.IntPrimitives.IntPredicate;
+import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.util.Object_;
 
@@ -26,7 +26,7 @@ public class IntOpt {
 		return value == IntFunUtil.EMPTYVALUE;
 	}
 
-	public IntOpt filter(IntPredicate pred) {
+	public IntOpt filter(IntTest pred) {
 		return isEmpty() || pred.test(value) ? this : none();
 	}
 

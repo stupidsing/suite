@@ -17,7 +17,7 @@ import suite.primitive.ChrObj_Chr;
 import suite.primitive.ChrPrimitives.ChrObjPredicate;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
-import suite.primitive.ChrPrimitives.ChrPredicate;
+import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.map.ObjChrMap;
@@ -132,7 +132,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 		return chrObjStreamlet(() -> spawn().filter(fun));
 	}
 
-	public ChrObjStreamlet<V> filterKey(ChrPredicate fun) {
+	public ChrObjStreamlet<V> filterKey(ChrTest fun) {
 		return chrObjStreamlet(() -> spawn().filterKey(fun));
 	}
 

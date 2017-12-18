@@ -125,13 +125,12 @@ public class Arima {
 				float[] coeffs = stat.linearRegression(Ints_ //
 						.range(p, xLength) //
 						.map(t -> {
-							float[] lrxs = new float[p + q];
 							int tpq = t + pq;
-							int k = 0;
-							for (int i = 1; i <= p; i++)
-								lrxs[k++] = xs[t - i];
-							for (int i = 1; i <= q; i++)
-								lrxs[k++] = eps[tpq - i];
+							int tm1 = t - 1;
+							int tpqm1 = tpq - 1;
+							float[] lrxs = Floats_ //
+									.concat(Floats_.of(xs, tm1, tm1 - p, -1), Floats_.of(xs, tpqm1, tpqm1 - q, -1)) //
+									.toArray();
 							float lry = xs[t] - eps[tpq];
 							return FltObjPair.of(lry, lrxs);
 						}) //
@@ -185,7 +184,7 @@ public class Arima {
 		return new Arima_(ars, mas, (float) x1);
 	}
 
-	public float arimaIa(float[] xs, int p, int d, int q) { // ARIMA
+	public float arimaIa(float[] xs, int p, int d, int q) {
 		for (int i = 0; i < d; i++)
 			xs = ts.dropDiff(1, xs);
 
@@ -213,8 +212,10 @@ public class Arima {
 	public Arima_ armaIa(float[] xs, int p, int q) {
 		int length = xs.length;
 		float[] xsp = new float[length + p];
-		float[] eps = new float[length + q];
+		int pm1 = p - 1;
+		int qm1 = q - 1;
 		int iter = 0;
+		float[][] epsByIter = new float[q][];
 
 		Arrays.fill(xsp, 0, p, xs[0]);
 		System.arraycopy(xs, 0, xsp, p, length);
@@ -225,26 +226,26 @@ public class Arima {
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
-						float[] lrxs = new float[p + iter_];
-						int di = 0;
-						for (int i = 1; i <= p; i++)
-							lrxs[di++] = xsp[t - i + p];
-						for (int i = 1; i <= iter_; i++)
-							lrxs[di++] = eps[t - i + q];
+						int tqm1 = t + qm1;
+						float[] lrxs = Floats_ //
+								.concat(Floats_.reverse(xsp, t, t + p),
+										Ints_.range(iter_).collect(Int_Flt.lift(i -> epsByIter[i][tqm1 - i]))) //
+								.toArray();
 						return FltObjPair.of(xs[t], lrxs);
 					}) //
 					.toList());
 
-			if (iter_ < q)
-				System.arraycopy(lr.residuals, 0, eps, q, length);
+			float[] coeffs = lr.coefficients();
+
+			if (iter < q)
+				System.arraycopy(lr.residuals, 0, epsByIter[iter++] = new float[length + q], q, length);
 			else {
-				float[] coeffs = lr.coefficients();
 				float[] ars = Floats.of(coeffs, 0, p).toArray();
 				float[] mas = Floats.of(coeffs, p).toArray();
 
 				double x1 = 0d //
-						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[length - i - 1 + p])) //
-						+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[length - i - 1 + q]));
+						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[length - i + pm1])) //
+						+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * epsByIter[i][length - i + qm1]));
 
 				return new Arima_(ars, mas, (float) x1);
 			}
@@ -265,8 +266,9 @@ public class Arima {
 	// + eps[t]
 	public float[] maIa(float[] xs, int q) {
 		int length = xs.length;
-		float[] eps = new float[q + length];
+		float[][] epsByIter = new float[q][];
 		int iter = 0;
+		int qm1 = q - 1;
 
 		while (true) {
 			int iter_ = iter++;
@@ -274,17 +276,16 @@ public class Arima {
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
-						float[] lrxs = new float[iter_ + 1];
-						int di = 0;
-						lrxs[di++] = 1f;
-						for (int i = 1; i <= q; i++)
-							lrxs[di++] = eps[q + t - i];
+						int tqm1 = t + qm1;
+						float[] lrxs = Floats_
+								.concat(Floats_.of(1f), Ints_.range(iter_).collect(Int_Flt.lift(i -> epsByIter[i][tqm1 - i])))
+								.toArray();
 						return FltObjPair.of(xs[t], lrxs);
 					}) //
 					.toList());
 
-			if (iter_ < q)
-				System.arraycopy(lr.residuals, 0, eps, q, length);
+			if (iter < q)
+				System.arraycopy(lr.residuals, 0, epsByIter[iter++] = new float[q + length], q, length);
 			else
 				return lr.coefficients();
 		}

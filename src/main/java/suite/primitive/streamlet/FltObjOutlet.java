@@ -19,7 +19,7 @@ import suite.primitive.FltObj_Flt;
 import suite.primitive.FltPrimitives.FltObjPredicate;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.FltObj_Obj;
-import suite.primitive.FltPrimitives.FltPredicate;
+import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.map.ObjFltMap;
 import suite.primitive.adt.pair.FltObjPair;
@@ -214,7 +214,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 		return of(FltObjFunUtil.filter(fun, source));
 	}
 
-	public FltObjOutlet<V> filterKey(FltPredicate fun) {
+	public FltObjOutlet<V> filterKey(FltTest fun) {
 		return of(FltObjFunUtil.filterKey(fun, source));
 	}
 

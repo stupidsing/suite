@@ -100,10 +100,10 @@ public class ChrPrimitives {
 	}
 
 	@FunctionalInterface
-	public interface ChrPredicate {
+	public interface ChrTest {
 		public boolean test(char c);
 
-		public default ChrPredicate rethrow() {
+		public default ChrTest rethrow() {
 			return c -> {
 				try {
 					return test(c);

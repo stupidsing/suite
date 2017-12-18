@@ -8,24 +8,21 @@ import java.util.Set;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
-import suite.primitive.Doubles;
-import suite.primitive.Doubles.DoublesBuilder;
-import suite.primitive.DblFunUtil;
 import suite.primitive.DblOpt;
 import suite.primitive.DblPrimitives.DblComparator;
 import suite.primitive.DblPrimitives.DblObj_Obj;
-import suite.primitive.DblPrimitives.DblPredicate;
 import suite.primitive.DblPrimitives.DblSink;
 import suite.primitive.DblPrimitives.DblSource;
+import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.Dbl_Dbl;
+import suite.primitive.Doubles;
+import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.set.DblSet;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
@@ -34,14 +31,6 @@ import suite.util.Object_;
 public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 
 	private Source<DblOutlet> in;
-
-	@SafeVarargs
-	public static DblStreamlet concat(DblStreamlet... streamlets) {
-		return streamlet(() -> {
-			Source<DblStreamlet> source = Read.from(streamlets).outlet().source();
-			return DblOutlet.of(DblFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
-		});
-	}
 
 	private static DblStreamlet streamlet(Source<DblOutlet> in) {
 		return new DblStreamlet(in);
@@ -109,7 +98,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return Object_.clazz(object) == DblStreamlet.class ? Objects.equals(spawn(), ((DblStreamlet) object).spawn()) : false;
 	}
 
-	public DblStreamlet filter(DblPredicate fun) {
+	public DblStreamlet filter(DblTest fun) {
 		return streamlet(() -> spawn().filter(fun));
 	}
 
@@ -146,11 +135,11 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return new DblObjStreamlet<>(() -> spawn().index());
 	}
 
-	public boolean isAll(DblPredicate pred) {
+	public boolean isAll(DblTest pred) {
 		return spawn().isAll(pred);
 	}
 
-	public boolean isAny(DblPredicate pred) {
+	public boolean isAny(DblTest pred) {
 		return spawn().isAny(pred);
 	}
 
@@ -207,7 +196,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return spawn();
 	}
 
-	public Pair<DblStreamlet, DblStreamlet> partition(DblPredicate pred) {
+	public Pair<DblStreamlet, DblStreamlet> partition(DblTest pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
 	}
 

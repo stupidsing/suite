@@ -10,22 +10,19 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
-import suite.primitive.FltFunUtil;
 import suite.primitive.FltOpt;
 import suite.primitive.FltPrimitives.FltComparator;
 import suite.primitive.FltPrimitives.FltObj_Obj;
-import suite.primitive.FltPrimitives.FltPredicate;
 import suite.primitive.FltPrimitives.FltSink;
 import suite.primitive.FltPrimitives.FltSource;
+import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.set.FltSet;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
-import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
@@ -34,14 +31,6 @@ import suite.util.Object_;
 public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 
 	private Source<FltOutlet> in;
-
-	@SafeVarargs
-	public static FltStreamlet concat(FltStreamlet... streamlets) {
-		return streamlet(() -> {
-			Source<FltStreamlet> source = Read.from(streamlets).outlet().source();
-			return FltOutlet.of(FltFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
-		});
-	}
 
 	private static FltStreamlet streamlet(Source<FltOutlet> in) {
 		return new FltStreamlet(in);
@@ -109,7 +98,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return Object_.clazz(object) == FltStreamlet.class ? Objects.equals(spawn(), ((FltStreamlet) object).spawn()) : false;
 	}
 
-	public FltStreamlet filter(FltPredicate fun) {
+	public FltStreamlet filter(FltTest fun) {
 		return streamlet(() -> spawn().filter(fun));
 	}
 
@@ -146,11 +135,11 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return new FltObjStreamlet<>(() -> spawn().index());
 	}
 
-	public boolean isAll(FltPredicate pred) {
+	public boolean isAll(FltTest pred) {
 		return spawn().isAll(pred);
 	}
 
-	public boolean isAny(FltPredicate pred) {
+	public boolean isAny(FltTest pred) {
 		return spawn().isAny(pred);
 	}
 
@@ -207,7 +196,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return spawn();
 	}
 
-	public Pair<FltStreamlet, FltStreamlet> partition(FltPredicate pred) {
+	public Pair<FltStreamlet, FltStreamlet> partition(FltTest pred) {
 		return Pair.of(filter(pred), filter(t -> !pred.test(t)));
 	}
 

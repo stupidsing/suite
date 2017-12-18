@@ -7,6 +7,8 @@ import suite.primitive.Chars.WriteChar;
 import suite.primitive.streamlet.ChrOutlet;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
+import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
@@ -19,6 +21,14 @@ public class Chars_ {
 			protected boolean search() {
 				return bufferSize <= (p0 = p1 = buffer.size());
 			}
+		});
+	}
+
+	@SafeVarargs
+	public static ChrStreamlet concat(ChrStreamlet... streamlets) {
+		return new ChrStreamlet(() -> {
+			Source<ChrStreamlet> source = Read.from(streamlets).outlet().source();
+			return ChrOutlet.of(ChrFunUtil.concat(FunUtil.map(ChrStreamlet::source, source)));
 		});
 	}
 
@@ -71,6 +81,10 @@ public class Chars_ {
 		return new ChrStreamlet(() -> ChrOutlet.of(ts));
 	}
 
+	public static ChrStreamlet of(char[] ts, int start, int end, int inc) {
+		return new ChrStreamlet(() -> ChrOutlet.of(ts, start, end, inc));
+	}
+
 	public static ChrStreamlet range(char e) {
 		return range((char) 0, e);
 	}
@@ -83,6 +97,10 @@ public class Chars_ {
 				return c < e ? c : ChrFunUtil.EMPTYVALUE;
 			});
 		});
+	}
+
+	public static ChrStreamlet reverse(char[] ts, int start, int end) {
+		return new ChrStreamlet(() -> ChrOutlet.of(ts, end - 1, start - 1, -1));
 	}
 
 	public static Fun<Outlet<Chars>, Outlet<Chars>> split(Chars delim) {

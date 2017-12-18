@@ -6,7 +6,7 @@ import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
-import suite.primitive.IntPrimitives.IntPredicate;
+import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
 
@@ -50,7 +50,7 @@ public class RegisterSet {
 		return get_(size);
 	}
 
-	public OpReg[] list(IntPredicate pred) {
+	public OpReg[] list(IntTest pred) {
 		return Ints_ //
 				.range(nRegisters) //
 				.filter(this::isSet) //

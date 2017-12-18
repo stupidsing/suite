@@ -6,25 +6,80 @@ import java.util.List;
 import suite.BindArrayUtil.Match;
 import suite.Suite;
 import suite.adt.Opt;
+import suite.jdk.gen.FunExpression.FunExpr;
+import suite.jdk.gen.FunFactory;
+import suite.jdk.lambda.LambdaInstance;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.Dbl_Dbl;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.Fun2;
 import suite.util.To;
 
 public class Symbolic {
 
+	private FunFactory f = new FunFactory();
 	private Int N0 = Int.of(0);
 	private Int N1 = Int.of(1);
 
 	public class PolynomializeException extends RuntimeException {
 		private static final long serialVersionUID = 1l;
+	}
+
+	public Dbl_Dbl fun(Node fn, Node node0) {
+		return LambdaInstance.of(Dbl_Dbl.class, x -> new Object() {
+			public FunExpr fun(Node n) {
+				return n == node0 ? x : m(n, this::fun);
+			}
+		}.fun(fn)).newFun();
+	}
+
+	public Obj_Dbl<float[]> fun(Node fn, Node[] vars) {
+		@SuppressWarnings("unchecked")
+		Obj_Dbl<float[]> fun = LambdaInstance.of(Obj_Dbl.class, x -> new Object() {
+			public FunExpr fun(Node n) {
+				for (int i = 0; i < vars.length; i++)
+					if (n == vars[i])
+						return x.index(f.int_(i));
+				return m(n, this::fun);
+			}
+		}.fun(fn)).newFun();
+
+		return fun;
+	}
+
+	private FunExpr m(Node n, Fun<Node, FunExpr> fun) {
+		Node[] m;
+		if ((m = matchAdd.apply(n)) != null)
+			return f.bi("+", fun.apply(m[0]), fun.apply(m[1]));
+		else if ((m = matchNeg.apply(n)) != null)
+			return f.bi("-", f.double_(0d), fun.apply(m[0]));
+		else if ((m = matchMul.apply(n)) != null)
+			return f.bi("*", fun.apply(m[0]), fun.apply(m[1]));
+		else if ((m = matchInv.apply(n)) != null)
+			return f.bi("/", f.double_(1d), fun.apply(m[0]));
+		else if ((m = matchPow.apply(n)) != null)
+			return f.invokeStatic(Math.class, "pow", fun.apply(m[0]), fun.apply(m[1]));
+		else if ((m = matchExp.apply(n)) != null)
+			return f.invokeStatic(Math.class, "exp", fun.apply(m[0]));
+		else if ((m = matchLn.apply(n)) != null)
+			return f.invokeStatic(Math.class, "log", fun.apply(m[0]));
+		else if ((m = matchSin.apply(n)) != null)
+			return f.invokeStatic(Math.class, "sin", fun.apply(m[0]));
+		else if ((m = matchCos.apply(n)) != null)
+			return f.invokeStatic(Math.class, "cos", fun.apply(m[0]));
+		else if (n instanceof Int)
+			return f.double_(((Int) n).number);
+		else
+			throw new RuntimeException();
 	}
 
 	public Node d(Node x, Node node0) {
