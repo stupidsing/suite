@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import suite.math.stat.Arima.Arima_;
 import suite.math.stat.Statistic.LinearRegression;
+import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltObjPair;
@@ -30,8 +31,8 @@ public class ArimaTest {
 
 	@Test
 	public void testMa2() {
-		float[] mas = new float[] { 1f, .5f, -.5f, };
-		float[] xs = generate(256, new float[] {}, mas);
+		float[] mas = new float[] { .5f, -.5f, };
+		float[] xs = generate(256, new float[] {}, Floats_.concat(new float[] { 1f, }, mas));
 		System.out.println(Arrays.toString(arima.maBackcast(xs, new float[] { 1f, 1f, })));
 	}
 
