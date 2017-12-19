@@ -128,7 +128,7 @@ public class BackAllocatorGeneral {
 				double min = range.min;
 				double max = range.max;
 				double price = prices[i];
-				boolean b = price * threshold < (max - min);
+				boolean b = price * threshold < (max - min); // channel wide?
 				return b ? Quant.hold(hold, price, min, range.median, max) : hold;
 			});
 		});
