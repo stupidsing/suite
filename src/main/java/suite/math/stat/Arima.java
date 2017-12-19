@@ -175,7 +175,8 @@ public class Arima {
 		return new Arima_(ars, mas, (float) x1);
 	}
 
-	public float arimaEm(float[] xs, int p, int d, int q) {
+	@SuppressWarnings("unused")
+	private float arimaEm(float[] xs, int p, int d, int q) {
 		for (int i = 0; i < d; i++)
 			xs = ts.dropDiff(1, xs);
 
@@ -197,7 +198,7 @@ public class Arima {
 	// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 	// = eps[t]
 	// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
-	public Arima_ armaEm(float[] xs, int p, int q) { // ARMA
+	private Arima_ armaEm(float[] xs, int p, int q) { // ARMA
 		int xLength = xs.length;
 		int pq = -p + q;
 		int xpqLength = xLength + pq;
@@ -261,7 +262,8 @@ public class Arima {
 		return new Arima_(ars, mas, (float) x1);
 	}
 
-	public float arimaIa(float[] xs, int p, int d, int q) {
+	@SuppressWarnings("unused")
+	private float arimaIa(float[] xs, int p, int d, int q) {
 		for (int i = 0; i < d; i++)
 			xs = ts.dropDiff(1, xs);
 
@@ -286,7 +288,7 @@ public class Arima {
 	// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
 	// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 	// + eps[t]
-	public Arima_ armaIa(float[] xs, int p, int q) {
+	private Arima_ armaIa(float[] xs, int p, int q) {
 		int length = xs.length;
 		float[] xsp = new float[length + p];
 		int pm1 = p - 1;
@@ -341,7 +343,8 @@ public class Arima {
 	// x[t]
 	// = mas[0] * 1 + mas[1] * eps[t - 1] + ... + mas[q] * eps[t - q]
 	// + eps[t]
-	public float[] maIa(float[] xs, int q) {
+	@SuppressWarnings("unused")
+	private float[] maIa(float[] xs, int q) {
 		int length = xs.length;
 		float[][] epsByIter = new float[q][];
 		int iter = 0;
