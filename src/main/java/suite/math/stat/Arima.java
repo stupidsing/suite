@@ -1,6 +1,7 @@
 package suite.math.stat;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.Floats;
@@ -15,6 +16,7 @@ import suite.util.To;
 public class Arima {
 
 	private Statistic stat = new Statistic();
+	private Random random = new Random();
 	private TimeSeries ts = new TimeSeries();
 
 	public LinearRegression ar(float[] ys, int n) {
@@ -329,6 +331,31 @@ public class Arima {
 				return new Arima_(ars, mas, (float) x1);
 			}
 		}
+	}
+
+	// https://quant.stackexchange.com/questions/9351/algorithm-to-fit-ar1-garch1-1-model-of-log-returns
+	public double garch11LogLikelihood(float[] xs) {
+		double x = xs[0];
+		double eps = 0d;
+		double var = 0d;
+		double c = random.nextDouble() * .0001d;
+		double ar = random.nextDouble() * .01d;
+		double p0 = random.nextDouble() * .00002d;
+		double p1 = random.nextDouble() * .001d;
+		double p2 = .9d + random.nextDouble() * .001d;
+		double logLikelihood = 0d;
+
+		for (int t = 1; t < xs.length; t++) {
+			double x0 = x;
+			double eps0 = eps;
+			double var0 = var;
+			double estx = c + ar * x0;
+			eps = (x = xs[t]) - estx;
+			var = p0 + p1 * eps0 * eps0 + p2 * var0;
+			logLikelihood += -.5d * (Math.log(var) + Math.log(eps * eps / var));
+		}
+
+		return logLikelihood;
 	}
 
 	// Digital Processing of Random Signals, Boaz Porat, page 190
