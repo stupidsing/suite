@@ -9,6 +9,7 @@ import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltObjPair;
+import suite.primitive.streamlet.FltStreamlet;
 import suite.util.To;
 
 public class Arima {
@@ -85,7 +86,96 @@ public class Arima {
 		return Floats_.concat(lr0.coefficients, lr1.coefficients);
 	}
 
-	public float arimaEm(float[] xs, int p, int d, int q) { // ARIMA
+	public float arimaBackcast(float[] xs, int d, float[] ars, float[] mas) {
+		for (int i = 0; i < d; i++)
+			xs = ts.dropDiff(1, xs);
+
+		float[] xs1 = Floats_.concat(xs, new float[] { armaBackcast(xs, ars, mas).x1, });
+		int xLength = xs.length;
+
+		for (int i = 0; i < d; i++) {
+			int l = xLength;
+			for (int j = i; j < d; j++) {
+				int l0 = l;
+				xs1[l0] += xs1[--l];
+			}
+		}
+
+		return xs1[xLength];
+	}
+
+	// http://math.unice.fr/~frapetti/CorsoP/Chapitre_4_IMEA_1.pdf
+	// "Least squares estimation using backcasting procedure"
+	public Arima_ armaBackcast(float[] xs, float[] ars, float[] mas) {
+		int length = xs.length;
+		int p = ars.length;
+		int q = mas.length;
+		int lengthq = length + q;
+		int qm1 = q - 1;
+		float[] xsp = Floats_.concat(new float[q], xs);
+		float[] eps = new float[lengthq];
+
+		for (int iter = 0; iter < 64; iter++) {
+			float[] ars_ = ars;
+			float[] mas_ = mas;
+			double max = mas[qm1];
+			double error = 0d;
+
+			// backcast
+			// eps[t]
+			// = (xs[t + q]
+			// - ars[0] * xs[t + q - 1] - ... - ars[p - 1] * xs[t + q - p]
+			// - eps[t + q]
+			// - mas[0] * eps[t + q - 1] - ...
+			// - mas[q - 2] * eps[t + 1]) / mas[q - 1]
+			for (int t = q - 1; 0 <= t; t--) {
+				int tq = t + q;
+				double sum = 0d //
+						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars_[i] * xsp[tq - 1 - i])) //
+						+ Ints_.range(qm1).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq - 1 - i]));
+				eps[t] = (float) ((xsp[tq] - eps[tq] - sum) / max);
+			}
+
+			// forward recursion
+			// eps[t] = xs[t]
+			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
+			// - mas[0] * eps[t - 1] - ... - mas[q - 1] * eps[t - q]
+			for (int tq = q; tq < lengthq; tq++) {
+				int tq_ = tq;
+				double eps1 = xsp[tq_] //
+						- Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars_[i] * xsp[tq_ - 1 - i])) //
+						- Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq_ - 1 - i]));
+				double diff = eps1 - eps[tq_];
+				eps[tq_] = (float) eps1;
+				error += diff * diff;
+			}
+
+			// minimization
+			LinearRegression lr = stat.linearRegression(Ints_ //
+					.range(q, lengthq) //
+					.map(tq -> {
+						FltStreamlet lrxs0 = Ints_.range(p).collect(Int_Flt.lift(i -> xsp[tq - 1 - i]));
+						FltStreamlet lrxs1 = Ints_.range(q).collect(Int_Flt.lift(i -> eps[tq - 1 - i]));
+						return FltObjPair.of(xsp[tq], Floats_.concat(lrxs0, lrxs1).toArray());
+					}) //
+					.toList());
+
+			System.out.println("iter " + iter + ", error = " + To.string(error) + lr);
+			System.out.println();
+
+			float[] coefficients = lr.coefficients();
+			Floats_.copy(coefficients, 0, ars, 0, p);
+			Floats_.copy(coefficients, p, mas, 0, q);
+		}
+
+		double x1 = 0d //
+				+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[length - i - 1])) //
+				+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[length - i - 1]));
+
+		return new Arima_(ars, mas, (float) x1);
+	}
+
+	public float arimaEm(float[] xs, int p, int d, int q) {
 		for (int i = 0; i < d; i++)
 			xs = ts.dropDiff(1, xs);
 
@@ -150,7 +240,7 @@ public class Arima {
 							lrxs[tq--] = 1f;
 							for (int i = 0; i < q; i++)
 								lrxs[tq--] = mas[i];
-							double lry = xs[t] - Ints_.range(p).toDouble(Int_Dbl.sum(j -> ars[j] * xs[t - j - 1]));
+							double lry = xs[t] - Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[t - i - 1]));
 							return FltObjPair.of((float) lry, lrxs);
 						}) //
 						.toList()).coefficients();
@@ -165,8 +255,8 @@ public class Arima {
 		// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 		// when t = xLength
 		double x1 = 0d //
-				+ Ints_.range(p).toDouble(Int_Dbl.sum(j -> ars[j] * xs[xLength - j - 1])) //
-				+ Ints_.range(q).toDouble(Int_Dbl.sum(j -> mas[j] * eps[xpqLength - j - 1]));
+				+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[xLength - i - 1])) //
+				+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[xpqLength - i - 1]));
 
 		return new Arima_(ars, mas, (float) x1);
 	}
@@ -244,64 +334,6 @@ public class Arima {
 	public float[] maDurbin(float[] ys, int q, int l) {
 		float[] ar = arLevinsonDurbin(ys, l);
 		return arLevinsonDurbin(ar, q);
-	}
-
-	// http://math.unice.fr/~frapetti/CorsoP/Chapitre_4_IMEA_1.pdf
-	// "Least squares estimation using backcasting procedure"
-	public float[] maBackcast(float[] xs, float[] mas) {
-		int length = xs.length;
-		int q = mas.length;
-		int lengthq = length + q;
-		int qm1 = q - 1;
-		float[] xsp = Floats_.concat(new float[q], xs);
-		float[] eps = new float[lengthq];
-
-		for (int iter = 0; iter < 64; iter++) {
-			float[] mas_ = mas;
-			double max = mas[qm1];
-			double error = 0d;
-
-			// backcast
-			// eps[t]
-			// = (xs[t + q]
-			// - eps[t + q]
-			// - mas[0] * eps[t + q - 1] - ...
-			// - mas[q - 2] * eps[t + 1]) / mas[q - 1]
-			for (int t = q - 1; 0 <= t; t--) {
-				int tq = t + q;
-				double sum = Ints_.range(qm1).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq - 1 - i]));
-				eps[t] = (float) ((xsp[tq] - eps[tq] - sum) / max);
-			}
-
-			// forward recursion
-			// eps[t] = xs[t]
-			// - mas[0] * eps[t - 1] - ... - mas[q - 1] * eps[t - q]
-			for (int tq = q; tq < lengthq; tq++) {
-				int tq_ = tq;
-				double eps1 = xsp[tq_] - Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq_ - 1 - i]));
-				double diff = eps1 - eps[tq_];
-				eps[tq_] = (float) eps1;
-				error += diff * diff;
-			}
-
-			// minimization
-			LinearRegression lr = stat.linearRegression(Ints_ //
-					.range(q, lengthq) //
-					.map(tq -> {
-						float[] lrxs = Ints_ //
-								.range(q) //
-								.collect(Int_Flt.lift(i -> eps[tq - 1 - i])) //
-								.toArray();
-						return FltObjPair.of(xsp[tq], lrxs);
-					}) //
-					.toList());
-
-			System.out.println("iter " + iter + ", error = " + error + lr);
-			System.out.println();
-			mas = lr.coefficients();
-		}
-
-		return mas;
 	}
 
 	// "High Frequency Trading - A Practical Guide to Algorithmic Strategies and

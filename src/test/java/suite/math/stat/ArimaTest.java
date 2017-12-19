@@ -33,7 +33,7 @@ public class ArimaTest {
 	public void testMa2() {
 		float[] mas = new float[] { .5f, -.5f, };
 		float[] xs = generate(256, new float[] {}, Floats_.concat(new float[] { 1f, }, mas));
-		System.out.println(Arrays.toString(arima.maBackcast(xs, new float[] { 1f, 1f, })));
+		System.out.println(Arrays.toString(arima.armaBackcast(xs, new float[] {}, new float[] { 1f, 1f, 1f, 1f, }).mas));
 	}
 
 	@Test
