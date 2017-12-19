@@ -278,12 +278,10 @@ public class Arima {
 			// - mas[0] * eps[t - 1] - ... - mas[q - 1] * eps[t - q]
 			for (int tq = q; tq < lengthq; tq++) {
 				int tq_ = tq;
-				double actualx = xsp[tq_];
-				double sum = Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq_ - 1 - i]));
-				double expectx = eps[tq_] + sum;
-				double diff = actualx - expectx;
+				double eps1 = xsp[tq_] - Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq_ - 1 - i]));
+				double diff = eps1 - eps[tq_];
+				eps[tq_] = (float) eps1;
 				error += diff * diff;
-				eps[tq_] = (float) (actualx - sum);
 			}
 
 			// minimization
