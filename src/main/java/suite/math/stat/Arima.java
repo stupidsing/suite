@@ -259,22 +259,22 @@ public class Arima {
 
 	// http://math.unice.fr/~frapetti/CorsoP/Chapitre_4_IMEA_1.pdf
 	// "Least squares estimation using backcasting procedure"
-	public float[] maBackcast(float[] xs, float[] mas0) {
+	public float[] maBackcast(float[] xs, float[] mas) {
 		int length = xs.length;
-		int q = mas0.length;
+		int q = mas.length;
 		int lengthq = length + q;
 		int qm1 = q - 1;
-		float[] mas = mas0;
 		float[] xsp = Floats_.concat(new float[q], xs);
 		float[] eps = new float[lengthq];
 
-		for (int iter = 0; iter < 9; iter++) {
+		for (int iter = 0; iter < 64; iter++) {
 			float[] mas_ = mas;
 			double max = mas[qm1];
 
 			// backcast
 			// eps[t]
-			// = (xs[t + q] - eps[t + q]
+			// = (xs[t + q]
+			// - eps[t + q]
 			// - mas[0] * eps[t + q - 1] - ...
 			// - mas[q - 2] * eps[t + 1]) / mas[q - 1]
 			for (int t = q - 1; 0 <= t; t--) {
@@ -288,10 +288,8 @@ public class Arima {
 			// - mas[0] * eps[t - 1] - ... - mas[q - 1] * eps[t - q]
 			for (int tq = q; tq < lengthq; tq++) {
 				int tq_ = tq;
-				eps[tq] = (float) (xsp[tq] - Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq_ - 1 - i])));
+				eps[tq_] = (float) (xsp[tq_] - Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq_ - 1 - i])));
 			}
-
-			System.out.println("eps = " + Arrays.toString(eps));
 
 			// minimization
 			LinearRegression lr = stat.linearRegression(Ints_ //
@@ -301,12 +299,11 @@ public class Arima {
 								.range(q) //
 								.collect(Int_Flt.lift(i -> eps[tq - 1 - i])) //
 								.toArray();
-						return FltObjPair.of(xsp[tq] - eps[tq], lrxs);
+						return FltObjPair.of(xsp[tq], lrxs);
 					}) //
 					.toList());
 
 			System.out.println("iter " + iter + lr);
-			System.out.println();
 			System.out.println();
 			mas = lr.coefficients();
 		}
