@@ -259,12 +259,14 @@ public class Arima {
 
 	// http://math.unice.fr/~frapetti/CorsoP/Chapitre_4_IMEA_1.pdf
 	// "Least squares estimation using backcasting procedure"
-	public float[] maBackcast(float[] xs, int q, float[] mas0) {
-		float[] mas = mas0;
+	public float[] maBackcast(float[] xs, float[] mas0) {
 		int length = xs.length;
-		float[] xsp = Floats_.concat(new float[q], xs);
-		float[] eps = new float[length + q];
+		int q = mas0.length;
+		int lengthq = length + q;
 		int qm1 = q - 1;
+		float[] mas = mas0;
+		float[] xsp = Floats_.concat(new float[q], xs);
+		float[] eps = new float[lengthq];
 
 		for (int iter = 0; iter < 9; iter++) {
 			float[] mas_ = mas;
@@ -275,7 +277,7 @@ public class Arima {
 			// = (xs[t + q] - eps[t + q]
 			// - mas[0] * eps[t + q - 1] - ...
 			// - mas[q - 2] * eps[t + 1]) / mas[q - 1]
-			for (int t = length - 1; 0 <= t; t--) {
+			for (int t = q - 1; 0 <= t; t--) {
 				int tq = t + q;
 				double sum = Ints_.range(qm1).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq - 1 - i]));
 				eps[t] = (float) ((xsp[tq] - eps[tq] - sum) / max);
@@ -284,15 +286,17 @@ public class Arima {
 			// forward recursion
 			// eps[t] = xs[t]
 			// - mas[0] * eps[t - 1] - ... - mas[q - 1] * eps[t - q]
-			for (int t = 0; t < length; t++) {
-				int tq = t + q;
-				eps[tq] = (float) (xsp[tq] - Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq - 1 - i])));
+			for (int tq = q; tq < lengthq; tq++) {
+				int tq_ = tq;
+				eps[tq] = (float) (xsp[tq] - Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq_ - 1 - i])));
 			}
 
+			System.out.println("eps = " + Arrays.toString(eps));
+
+			// minimization
 			LinearRegression lr = stat.linearRegression(Ints_ //
-					.range(length) //
-					.map(t -> {
-						int tq = t + q;
+					.range(q, lengthq) //
+					.map(tq -> {
 						float[] lrxs = Ints_ //
 								.range(q) //
 								.collect(Int_Flt.lift(i -> eps[tq - 1 - i])) //
@@ -301,6 +305,9 @@ public class Arima {
 					}) //
 					.toList());
 
+			System.out.println("iter " + iter + lr);
+			System.out.println();
+			System.out.println();
 			mas = lr.coefficients();
 		}
 
