@@ -33,8 +33,7 @@ public class Ardl {
 			if (length == fs.length)
 				return stat.linearRegression(Ints_ //
 						.range(length - maxLag) //
-						.map(t -> FltObjPair.of(fs[t], getExplanatoryVariables(fsList, it, t))) //
-						.toList());
+						.map(t -> FltObjPair.of(fs[t], getExplanatoryVariables(fsList, it, t))));
 			else
 				throw new RuntimeException("wrong input sizes");
 		});

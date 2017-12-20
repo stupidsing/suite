@@ -43,8 +43,7 @@ public class PairTest {
 
 		LinearRegression lr = statistic.linearRegression(Ints_ //
 				.range(length) //
-				.map(i -> FltObjPair.of(prices1[i], new float[] { prices0[i], 1f, })) //
-				.toList());
+				.map(i -> FltObjPair.of(prices1[i], new float[] { prices0[i], 1f, })));
 
 		System.out.println(symbol0 + " -> " + symbol1 + lr);
 		assertTrue(.4d < lr.r2);

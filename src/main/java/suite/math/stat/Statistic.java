@@ -14,6 +14,7 @@ import suite.primitive.Int_Flt;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.adt.pair.IntObjPair;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 
@@ -64,10 +65,11 @@ public class Statistic {
 	}
 
 	// ordinary least squares
-	public LinearRegression linearRegression(List<FltObjPair<float[]>> pairs) {
-		int size = pairs.size();
-		float[][] x = To.array(size, float[].class, i -> pairs.get(i).t1);
-		float[] y = Floats_.toArray(size, i -> pairs.get(i).t0);
+	public LinearRegression linearRegression(Streamlet<FltObjPair<float[]>> pairs) {
+		List<FltObjPair<float[]>> list = pairs.toList();
+		int size = list.size();
+		float[][] x = To.array(size, float[].class, i -> list.get(i).t1);
+		float[] y = Floats_.toArray(size, i -> list.get(i).t0);
 		return linearRegression(x, y, null);
 	}
 

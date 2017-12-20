@@ -12,6 +12,7 @@ import suite.primitive.Floats;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltObjPair;
+import suite.streamlet.Read;
 import suite.trade.Trade_;
 import suite.util.To;
 
@@ -43,8 +44,7 @@ public class TimeSeries {
 				.range(tor, length) //
 				.map(i -> FltObjPair.of(ydiffs[i],
 						// i - drift term, necessary?
-						Floats.concat(Floats.of(ys[i - 1], 1f, i), Floats.of(ydiffs, i - tor, i)).toArray())) //
-				.toList());
+						Floats.concat(Floats.of(ys[i - 1], 1f, i), Floats.of(ydiffs, i - tor, i)).toArray())));
 		return lr.tStatistic()[0];
 	}
 
@@ -84,8 +84,7 @@ public class TimeSeries {
 		});
 		LinearRegression lr = stat.linearRegression(Ints_ //
 				.range(logVrs.length) //
-				.map(i -> FltObjPair.of((float) Math.log(tors[i]), new float[] { logVrs[i], 1f, })) //
-				.toList());
+				.map(i -> FltObjPair.of((float) Math.log(tors[i]), new float[] { logVrs[i], 1f, })));
 		float beta0 = lr.coefficients[0];
 		return beta0 / 2d;
 	}
@@ -113,7 +112,7 @@ public class TimeSeries {
 			double y = (max - min) / mv.standardDeviation();
 			pairs.add(FltObjPair.of((float) y, new float[] { (float) x, 1f, }));
 		}
-		return stat.linearRegression(pairs).coefficients[0];
+		return stat.linearRegression(Read.from(pairs)).coefficients[0];
 	}
 
 	public boolean isUnitRootDetected(float[] ys, int tor) {
@@ -151,8 +150,7 @@ public class TimeSeries {
 
 		return stat.linearRegression(Ints_ //
 				.range(tor, ys.length) //
-				.map(i -> FltObjPair.of(diffs[i], new float[] { ys[i], 1f, })) //
-				.toList());
+				.map(i -> FltObjPair.of(diffs[i], new float[] { ys[i], 1f, })));
 	}
 
 	public LinearRegression movingAvgMeanReversion(float[] ys, float[] movingAvg, int tor) {
@@ -160,8 +158,7 @@ public class TimeSeries {
 
 		return stat.linearRegression(Ints_ //
 				.range(tor, ys.length) //
-				.map(i -> FltObjPair.of(diffs[i], new float[] { movingAvg[i], 1f, })) //
-				.toList());
+				.map(i -> FltObjPair.of(diffs[i], new float[] { movingAvg[i], 1f, })));
 	}
 
 	// partial autocorrelation function

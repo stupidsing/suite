@@ -22,8 +22,7 @@ public class Arima {
 	public LinearRegression ar(float[] ys, int n) {
 		return stat.linearRegression(Ints_ //
 				.range(n, ys.length) //
-				.map(i -> FltObjPair.of(ys[i], Arrays.copyOfRange(ys, i - n, i))) //
-				.toList());
+				.map(i -> FltObjPair.of(ys[i], Arrays.copyOfRange(ys, i - n, i))));
 	}
 
 	// Digital Processing of Random Signals, Boaz Porat, page 159
@@ -82,8 +81,7 @@ public class Arima {
 		// conditional heteroskedasticity
 		LinearRegression lr1 = stat.linearRegression(Ints_ //
 				.range(length) //
-				.map(i -> FltObjPair.of(variances[i], copyPadZeroes(variances, i - p, i))) //
-				.toList());
+				.map(i -> FltObjPair.of(variances[i], copyPadZeroes(variances, i - p, i))));
 
 		return Floats_.concat(lr0.coefficients, lr1.coefficients);
 	}
@@ -159,8 +157,7 @@ public class Arima {
 						FltStreamlet lrxs0 = Ints_.range(p).collect(Int_Flt.lift(i -> xsp[tq - 1 - i]));
 						FltStreamlet lrxs1 = Ints_.range(q).collect(Int_Flt.lift(i -> eps[tq - 1 - i]));
 						return FltObjPair.of(xsp[tq], Floats_.concat(lrxs0, lrxs1).toArray());
-					}) //
-					.toList());
+					}));
 
 			System.out.println("iter " + iter + ", error = " + To.string(error) + lr);
 			System.out.println();
@@ -223,8 +220,7 @@ public class Arima {
 									.toArray();
 							float lry = xs[t] - eps[tpq];
 							return FltObjPair.of(lry, lrxs);
-						}) //
-						.toList()).coefficients();
+						})).coefficients();
 
 				Floats_.copy(coeffs, 0, ars, 0, p);
 				Floats_.copy(coeffs, p, mas, p, q);
@@ -245,8 +241,7 @@ public class Arima {
 								lrxs[tq--] = mas[i];
 							double lry = xs[t] - Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[t - i - 1]));
 							return FltObjPair.of((float) lry, lrxs);
-						}) //
-						.toList()).coefficients();
+						})).coefficients();
 
 				Floats_.copy(eps1, 0, eps, 0, xpqLength);
 			}
@@ -313,8 +308,7 @@ public class Arima {
 										Ints_.range(iter_).collect(Int_Flt.lift(i -> epsByIter[i][tqm1 - i]))) //
 								.toArray();
 						return FltObjPair.of(xs[t], lrxs);
-					}) //
-					.toList());
+					}));
 
 			float[] coeffs = lr.coefficients();
 
@@ -399,8 +393,7 @@ public class Arima {
 								.concat(Floats_.of(1f), Ints_.range(iter_).collect(Int_Flt.lift(i -> epsByIter[i][tqm1 - i])))
 								.toArray();
 						return FltObjPair.of(xs[t], lrxs);
-					}) //
-					.toList());
+					}));
 
 			if (iter < q)
 				System.arraycopy(lr.residuals, 0, epsByIter[iter++] = new float[q + length], q, length);

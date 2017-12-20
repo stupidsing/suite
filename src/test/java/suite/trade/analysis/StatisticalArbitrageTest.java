@@ -2,7 +2,6 @@ package suite.trade.analysis;
 
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -63,12 +62,10 @@ public class StatisticalArbitrageTest {
 		float[][] mas = To.array(power, float[].class, p -> ma.movingAvg(prices, 1 << p));
 		float[] returns = ts.returns(prices);
 
-		List<FltObjPair<float[]>> pairs = Ints_ //
+		LinearRegression lr = stat.linearRegression(Ints_ //
 				.range(1 << power, prices.length) //
-				.map(i -> FltObjPair.of(returns[i], Floats_.toArray(power, p -> mas[p][i - (1 << p)]))) //
-				.toList();
+				.map(i -> FltObjPair.of(returns[i], Floats_.toArray(power, p -> mas[p][i - (1 << p)]))));
 
-		LinearRegression lr = stat.linearRegression(pairs);
 		System.out.println(lr);
 	}
 
@@ -89,12 +86,10 @@ public class StatisticalArbitrageTest {
 		float[] prices0 = pricesBySymbol.get(symbol0);
 		float[] prices1 = pricesBySymbol.get(symbol1);
 
-		List<FltObjPair<float[]>> pairs = Ints_ //
+		LinearRegression lr = stat.linearRegression(Ints_ //
 				.range(tor, length) //
-				.map(i -> FltObjPair.of(prices1[i], Floats_.toArray(tor, j -> prices0[i + j - tor]))) //
-				.toList();
+				.map(i -> FltObjPair.of(prices1[i], Floats_.toArray(tor, j -> prices0[i + j - tor]))));
 
-		LinearRegression lr = stat.linearRegression(pairs);
 		System.out.println(lr);
 	}
 
