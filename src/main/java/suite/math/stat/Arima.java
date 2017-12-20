@@ -334,25 +334,24 @@ public class Arima {
 	}
 
 	// https://quant.stackexchange.com/questions/9351/algorithm-to-fit-ar1-garch1-1-model-of-log-returns
-	public double[] garch11(float[] xs) {
+	public Object[] garch11(float[] xs, int p) {
 		class LogLikelihood {
-			double x = xs[0];
 			double eps = 0d;
 			double var = 0d;
 			double c = random.nextDouble() * .0001d;
-			double ar = random.nextDouble() * .01d;
+			float[] ars = To.arrayOfFloats(p, i -> random.nextDouble() * .01d);
 			double p0 = random.nextDouble() * .00002d;
 			double p1 = random.nextDouble() * .001d;
 			double p2 = .9d + random.nextDouble() * .001d;
 			double logLikelihood = 0d;
 
 			private LogLikelihood() {
-				for (int t = 1; t < xs.length; t++) {
-					double x0 = x;
+				for (int t = p; t < xs.length; t++) {
+					int tm1 = t - 1;
 					double eps0 = eps;
 					double var0 = var;
-					double estx = c + ar * x0;
-					eps = (x = xs[t]) - estx;
+					double estx = c + Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[tm1 - i]));
+					eps = xs[t] - estx;
 					var = p0 + p1 * eps0 * eps0 + p2 * var0;
 					logLikelihood += -.5d * (Math.log(var) + Math.log(eps * eps / var));
 				}
@@ -367,7 +366,7 @@ public class Arima {
 				ll = ll1;
 		}
 
-		return new double[] { ll.c, ll.ar, ll.p0, ll.p1, ll.p2, };
+		return new Object[] { ll.c, ll.ars, ll.p0, ll.p1, ll.p2, };
 	}
 
 	// Digital Processing of Random Signals, Boaz Porat, page 190
