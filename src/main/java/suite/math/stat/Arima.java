@@ -328,7 +328,7 @@ public class Arima {
 	}
 
 	// https://quant.stackexchange.com/questions/9351/algorithm-to-fit-ar1-garch1-1-model-of-log-returns
-	public Object[] garch11(float[] xs, int p) {
+	public Object[] garchp1(float[] xs, int p) {
 		class LogLikelihood {
 			private double eps = 0d;
 			private double var = 0d;
@@ -347,7 +347,7 @@ public class Arima {
 					double estx = c + Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[tm1 - i]));
 					eps = xs[t] - estx;
 					var = p0 + p1 * eps0 * eps0 + p2 * var0;
-					logLikelihood += -.5d * (Math.log(var) + Math.log(eps * eps / var));
+					logLikelihood += -.5d * (Math.log(var) + eps * eps / var);
 				}
 			}
 		}
