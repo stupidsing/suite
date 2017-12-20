@@ -67,7 +67,7 @@ public class Serialize {
 			else if (Objects.equals(clazz, float.class) || Objects.equals(clazz, Float.class))
 				serializer = float_;
 			else if (Objects.equals(clazz, float[].class))
-				serializer = arrayOfFloats;
+				serializer = vector;
 			else if (Objects.equals(clazz, int.class) || Objects.equals(clazz, Integer.class))
 				serializer = int_;
 			else if (Objects.equals(clazz, String.class))
@@ -192,7 +192,7 @@ public class Serialize {
 		};
 	}
 
-	public Serializer<float[]> arrayOfFloats = new Serializer<>() {
+	public Serializer<float[]> vector = new Serializer<>() {
 		public float[] read(DataInput_ dataInput) throws IOException {
 			int size = int_.read(dataInput);
 			float[] array = new float[size];

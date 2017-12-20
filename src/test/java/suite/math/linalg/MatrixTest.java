@@ -50,7 +50,7 @@ public class MatrixTest {
 	@Test
 	public void testInversePerformance() {
 		Random random = new Random();
-		float[][] large0 = To.arrayOfFloats(128, 128, (i, j) -> random.nextFloat());
+		float[][] large0 = To.matrix(128, 128, (i, j) -> random.nextFloat());
 		float[][] large1 = mtx.inverse(large0);
 		float[][] actual = mtx.mul(large0, large1);
 		float[][] expect = mtx.identity(128);

@@ -47,7 +47,7 @@ public class Oscillator {
 
 		float[] maDmUps = ma.movingAvg(dmUps, nDays);
 		float[] maDmDns = ma.movingAvg(dmDns, nDays);
-		float[] invAtrs = To.arrayOfFloats(ma.movingAvg(trueRange(ds), nDays), f -> Quant.div(1f, f));
+		float[] invAtrs = To.vector(ma.movingAvg(trueRange(ds), nDays), f -> Quant.div(1f, f));
 		float[] diUps = Floats_.toArray(length, i -> maDmUps[i] * invAtrs[i]);
 		float[] diDns = Floats_.toArray(length, i -> maDmDns[i] * invAtrs[i]);
 
@@ -79,9 +79,9 @@ public class Oscillator {
 		double r = 1d / .015d;
 		double i3 = 1d / 3d;
 		int length = ds.ts.length;
-		float[] ps = To.arrayOfFloats(length, i -> (ds.closes[i] + ds.lows[i] + ds.highs[i]) * i3);
+		float[] ps = To.vector(length, i -> (ds.closes[i] + ds.lows[i] + ds.highs[i]) * i3);
 
-		return To.arrayOfFloats(length, i -> {
+		return To.vector(length, i -> {
 			int i0 = Math.max(0, i - nDays + 1);
 			int l = i - i0 + 1;
 			double sum = 0d, sumAbsDev = 0d;
@@ -160,7 +160,7 @@ public class Oscillator {
 		double a = 1d / nDays;
 		float[] usMa = ma.exponentialMovingAvg(us, a);
 		float[] dsMa = ma.exponentialMovingAvg(ds, a);
-		return To.arrayOfFloats(length, i -> 1d - 1d / (1d + usMa[i] / dsMa[i]));
+		return To.vector(length, i -> 1d - 1d / (1d + usMa[i] / dsMa[i]));
 	}
 
 	// Parabolic stop and reverse
@@ -217,7 +217,7 @@ public class Oscillator {
 			his[i] = hi;
 		}
 
-		float[] k = To.arrayOfFloats(length, i -> {
+		float[] k = To.vector(length, i -> {
 			double low = los[i];
 			return (ds.closes[i] - low) / (his[i] - low);
 		});

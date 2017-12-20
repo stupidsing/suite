@@ -45,9 +45,9 @@ public class Matrix_ {
 	public float[][] covariance(float[][] vs) {
 		int h = h(vs);
 		int w = w(vs);
-		float[] means = To.arrayOfFloats(h, j -> Read.from(vs).toDouble(Obj_Dbl.sum(vector -> vector[j])) / w);
+		float[] means = To.vector(h, j -> Read.from(vs).toDouble(Obj_Dbl.sum(vector -> vector[j])) / w);
 
-		return To.arrayOfFloats(h, h, (i0, i1) -> Ints_ //
+		return To.matrix(h, h, (i0, i1) -> Ints_ //
 				.range(w) //
 				.toDouble(Int_Dbl.sum(j -> vs[i0][j] * vs[i1][j])) / w - means[i0] * means[i1]);
 	}

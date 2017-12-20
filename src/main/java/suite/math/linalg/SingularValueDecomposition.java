@@ -115,7 +115,7 @@ public class SingularValueDecomposition {
 		float[][] covs = mtx.covariance(omega);
 		float[][] evs = eigen.power(covs);
 		float[] evals = eigen.values(omega, covs);
-		float[][] m = To.arrayOfFloats(mtx.height(evs), mtx.width(evs), (i, j) -> evs[i][j] / Math.sqrt(evals[j]));
+		float[][] m = To.matrix(mtx.height(evs), mtx.width(evs), (i, j) -> evs[i][j] / Math.sqrt(evals[j]));
 		return mtx.mul(m, omega);
 	}
 

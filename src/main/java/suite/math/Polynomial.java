@@ -32,7 +32,7 @@ public class Polynomial {
 	public float[] mul(float[] ps0, float[] ps1) {
 		int length0 = ps0.length;
 		int length1 = ps1.length;
-		return To.arrayOfFloats(length0 + length1, i -> Ints_ //
+		return To.vector(length0 + length1, i -> Ints_ //
 				.range(Math.max(0, i - length1 + 1), Math.min(i + 1, length0)) //
 				.toDouble(Int_Dbl.sum(j -> ps0[j] * ps1[i - j])));
 	}

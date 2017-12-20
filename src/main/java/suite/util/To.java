@@ -52,29 +52,6 @@ public class To {
 		return ts;
 	}
 
-	public static float[] arrayOfFloats(float[] fs, Flt_Dbl fun) {
-		return arrayOfFloats(fs.length, i -> fun.apply(fs[i]));
-	}
-
-	public static <T> float[] arrayOfFloats(T[] fs, Obj_Dbl<T> fun) {
-		return arrayOfFloats(fs.length, i -> fun.apply(fs[i]));
-	}
-
-	public static float[] arrayOfFloats(int length, Int_Dbl f) {
-		float[] fs = new float[length];
-		for (int i = 0; i < length; i++)
-			fs[i] = (float) f.apply(i);
-		return fs;
-	}
-
-	public static float[][] arrayOfFloats(int height, int width_, IntInt_Dbl fun) {
-		float[][] matrix = new float[height][width_];
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width_; j++)
-				matrix[i][j] = (float) fun.apply(i, j);
-		return matrix;
-	}
-
 	public static Bytes bytes(String s) {
 		return Bytes.of(s.getBytes(Constants.charset));
 	}
@@ -169,6 +146,14 @@ public class To {
 		while ((t = source.source()) != null)
 			list.add(t);
 		return list;
+	}
+
+	public static float[][] matrix(int height, int width_, IntInt_Dbl fun) {
+		float[][] matrix = new float[height][width_];
+		for (int i = 0; i < height; i++)
+			for (int j = 0; j < width_; j++)
+				matrix[i][j] = (float) fun.apply(i, j);
+		return matrix;
 	}
 
 	public static Outlet<Bytes> outlet(String data) {
@@ -316,6 +301,21 @@ public class To {
 
 	public static URL url(String s) {
 		return Rethrow.ex(() -> new URL(s));
+	}
+
+	public static float[] vector(float[] fs, Flt_Dbl fun) {
+		return vector(fs.length, i -> fun.apply(fs[i]));
+	}
+
+	public static <T> float[] vector(T[] fs, Obj_Dbl<T> fun) {
+		return vector(fs.length, i -> fun.apply(fs[i]));
+	}
+
+	public static float[] vector(int length, Int_Dbl f) {
+		float[] fs = new float[length];
+		for (int i = 0; i < length; i++)
+			fs[i] = (float) f.apply(i);
+		return fs;
 	}
 
 	private static String read_(Path path) throws IOException {

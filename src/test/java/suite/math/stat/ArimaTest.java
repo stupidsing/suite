@@ -48,7 +48,7 @@ public class ArimaTest {
 		int qp = q - p;
 		int lengthp = length + p;
 		float[] xs = new float[lengthp];
-		float[] eps = To.arrayOfFloats(length + q, i -> random.nextGaussian());
+		float[] eps = To.vector(length + q, i -> random.nextGaussian());
 		int t = 0;
 
 		while (t < p)

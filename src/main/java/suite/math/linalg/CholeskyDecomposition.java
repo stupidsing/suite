@@ -18,7 +18,7 @@ public class CholeskyDecomposition {
 		Pair<float[][], float[]> ldlt = ldlt(m);
 		float[][] l = ldlt.t0;
 		float[] d = ldlt.t1;
-		float[] reciprocalsD = To.arrayOfFloats(d, f -> 1f / f);
+		float[] reciprocalsD = To.vector(d, f -> 1f / f);
 		return fs0 -> {
 			int height = mtx.height(m);
 			int width = mtx.width(m);

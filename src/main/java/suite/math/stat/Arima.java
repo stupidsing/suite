@@ -77,7 +77,7 @@ public class Arima {
 		int length = ys.length;
 		float[][] xs0 = To.array(length, float[].class, i -> copyPadZeroes(ys, i - p, i));
 		LinearRegression lr0 = stat.linearRegression(xs0, ys, null);
-		float[] variances = To.arrayOfFloats(lr0.residuals, residual -> residual * residual);
+		float[] variances = To.vector(lr0.residuals, residual -> residual * residual);
 
 		// conditional heteroskedasticity
 		LinearRegression lr1 = stat.linearRegression(Ints_ //
@@ -204,9 +204,9 @@ public class Arima {
 		int xLength = xs.length;
 		int pq = -p + q;
 		int xpqLength = xLength + pq;
-		float[] ars = To.arrayOfFloats(p, i -> Math.scalb(.5d, -i));
-		float[] mas = To.arrayOfFloats(q, i -> Math.scalb(.5d, -i));
-		float[] eps = To.arrayOfFloats(xpqLength, i -> xs[Math.max(0, Math.min(xLength, i - pq))] * .25f);
+		float[] ars = To.vector(p, i -> Math.scalb(.5d, -i));
+		float[] mas = To.vector(q, i -> Math.scalb(.5d, -i));
+		float[] eps = To.vector(xpqLength, i -> xs[Math.max(0, Math.min(xLength, i - pq))] * .25f);
 
 		for (int iter = 0; iter < 9; iter++) {
 
@@ -339,7 +339,7 @@ public class Arima {
 			double eps = 0d;
 			double var = 0d;
 			double c = random.nextDouble() * .0001d;
-			float[] ars = To.arrayOfFloats(p, i -> random.nextDouble() * .01d);
+			float[] ars = To.vector(p, i -> random.nextDouble() * .01d);
 			double p0 = random.nextDouble() * .00002d;
 			double p1 = random.nextDouble() * .001d;
 			double p2 = .9d + random.nextDouble() * .001d;

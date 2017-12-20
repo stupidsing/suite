@@ -51,7 +51,7 @@ public class StatisticTest {
 		int m = 7, n = 9;
 		Random random = new Random();
 		float[] expect = Floats_.toArray(m, j -> random.nextFloat());
-		float[][] xs = To.arrayOfFloats(n, m, (i, j) -> random.nextFloat());
+		float[][] xs = To.matrix(n, m, (i, j) -> random.nextFloat());
 		LinearRegression lr = stat.linearRegression(Read //
 				.from(xs) //
 				.map(x -> FltObjPair.of( //

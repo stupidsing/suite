@@ -31,7 +31,7 @@ public class JenkinsTraub {
 			h = shift(poly, h, Complex.zero);
 
 		// stage 2 fixed-shift process
-		float[] equation = To.arrayOfFloats(length, i -> Math.sqrt(poly[length - 1 - i].abs2()));
+		float[] equation = To.vector(length, i -> Math.sqrt(poly[length - 1 - i].abs2()));
 		equation[0] = -equation[0];
 
 		double root = newtonRaphson(equation, 0f);

@@ -27,12 +27,12 @@ public class TimeSeries {
 	public float[] acf(float[] ys, int n) {
 		int length = ys.length;
 		double meany = stat.mean(ys);
-		float[] ydevs = To.arrayOfFloats(length, i -> ys[i] - meany);
-		float[] acovs = To.arrayOfFloats(length, k -> Ints_ //
+		float[] ydevs = To.vector(length, i -> ys[i] - meany);
+		float[] acovs = To.vector(length, k -> Ints_ //
 				.range(length - k) //
 				.toDouble(Int_Dbl.sum(i -> (ydevs[i] * ydevs[i + k]))));
 		double inv = 1d / acovs[0];
-		return To.arrayOfFloats(acovs.length, k -> acovs[k] * inv);
+		return To.vector(acovs.length, k -> acovs[k] * inv);
 	}
 
 	// Augmented Dickey-Fuller test
@@ -75,11 +75,11 @@ public class TimeSeries {
 
 	// epchan
 	public double hurst(float[] ys, int tor) {
-		float[] logys = To.arrayOfFloats(ys, Math::log);
+		float[] logys = To.vector(ys, Math::log);
 		int[] tors = Ints_.toArray(tor, t -> t + 1);
-		float[] logVrs = To.arrayOfFloats(tor, t -> {
+		float[] logVrs = To.vector(tor, t -> {
 			float[] diffs = dropDiff_(tors[t], logys);
-			float[] diffs2 = To.arrayOfFloats(diffs, diff -> diff * diff);
+			float[] diffs2 = To.vector(diffs, diff -> diff * diff);
 			return Math.log(stat.variance(diffs2));
 		});
 		LinearRegression lr = stat.linearRegression(Ints_ //
@@ -92,7 +92,7 @@ public class TimeSeries {
 
 	// http://www.financialwisdomforum.org/gummy-stuff/hurst.htm
 	public double hurstFwf(float[] ys, int tor) {
-		float[] logys = To.arrayOfFloats(ys, Math::log);
+		float[] logys = To.vector(ys, Math::log);
 		float[] returns0 = dropDiff_(1, logys);
 		int length = returns0.length;
 		List<FltObjPair<float[]>> pairs = new ArrayList<>();
@@ -100,7 +100,7 @@ public class TimeSeries {
 			float[] returns = Arrays.copyOfRange(returns0, n, length);
 			MeanVariance mv = stat.meanVariance(returns);
 			double mean = mv.mean;
-			float[] devs = To.arrayOfFloats(returns, r -> r - mean);
+			float[] devs = To.vector(returns, r -> r - mean);
 			double min = Double.MAX_VALUE;
 			double max = Double.MIN_VALUE;
 			double sum = 0d;
@@ -168,7 +168,7 @@ public class TimeSeries {
 	// https://stats.stackexchange.com/questions/129052/acf-and-pacf-formula
 	public float[] pacf(float[] ys, int n) {
 		float[] acf = acf(ys, n);
-		float[][] m = To.arrayOfFloats(n, n, (i, j) -> acf[Math.abs(i - j)]);
+		float[][] m = To.matrix(n, n, (i, j) -> acf[Math.abs(i - j)]);
 		float[] acf1 = Arrays.copyOfRange(acf, 1, n - 1);
 		return cd.inverseMul(m).apply(acf1);
 	}
@@ -233,7 +233,7 @@ public class TimeSeries {
 	}
 
 	public double varianceRatio(float[] prices, int tor) {
-		float[] logs = To.arrayOfFloats(prices, Math::log);
+		float[] logs = To.vector(prices, Math::log);
 		float[] diffsTor = dropDiff_(tor, logs);
 		float[] diffs1 = dropDiff_(1, logs);
 		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));

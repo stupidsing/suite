@@ -190,8 +190,8 @@ public class Statistic {
 				float[] y = Floats_.toArray(nSamples, i -> bs[i] ? 1f : 0f);
 
 				for (int n = 0; n < 256; n++) {
-					float[] bernoulli = To.arrayOfFloats(x, this::predict);
-					float[] s = To.arrayOfFloats(bernoulli, b -> b * (1f - b));
+					float[] bernoulli = To.vector(x, this::predict);
+					float[] s = To.vector(bernoulli, b -> b * (1f - b));
 					float[][] sx = mtx.of(x);
 					for (int i = 0; i < nSamples; i++)
 						for (int j = 0; j < sampleLength; j++)

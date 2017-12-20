@@ -84,7 +84,7 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[], float[]> feedForwardLayer(int nInputs, int nOutputs) {
-		float[][] weights = To.arrayOfFloats(nInputs, nOutputs, (i, j) -> random.nextFloat());
+		float[][] weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextFloat());
 
 		return inputs -> {
 			float[] outputs = mtx.mul(inputs, weights);
@@ -135,14 +135,14 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[][], float[][]> convLayer(int sx, int sy) {
-		float[][] kernel = To.arrayOfFloats(sx, sy, (x, y) -> random.nextFloat());
+		float[][] kernel = To.matrix(sx, sy, (x, y) -> random.nextFloat());
 		DblMutable bias = DblMutable.of(0d);
 
 		return inputs -> {
 			int hsx = mtx.height(inputs) - sx + 1;
 			int hsy = mtx.width(inputs) - sy + 1;
 
-			float[][] outputs = To.arrayOfFloats(hsx, hsy, (ox, oy) -> {
+			float[][] outputs = To.matrix(hsx, hsy, (ox, oy) -> {
 				double sum = bias.get();
 				for (int x = 0; x < sx; x++)
 					for (int y = 0; y < sy; y++)
@@ -189,7 +189,7 @@ public class NeuralNetwork {
 			}
 
 			return new Out<>(outputs, errors -> To //
-					.arrayOfFloats(sx, sy, (ix, iy) -> errors[ix >> shiftx][iy >> shifty]));
+					.matrix(sx, sy, (ix, iy) -> errors[ix >> shiftx][iy >> shifty]));
 		};
 	}
 
@@ -202,7 +202,7 @@ public class NeuralNetwork {
 		return inputs -> {
 			int sx = mtx.height(inputs);
 			int sy = mtx.width(inputs);
-			float[][] outputs = To.arrayOfFloats(sx + maskx >> shiftx, sy + masky >> shifty, (x, y) -> Float.MIN_VALUE);
+			float[][] outputs = To.matrix(sx + maskx >> shiftx, sy + masky >> shifty, (x, y) -> Float.MIN_VALUE);
 
 			for (int ix = 0; ix < sx; ix++)
 				for (int iy = 0; iy < sy; iy++) {
@@ -257,8 +257,8 @@ public class NeuralNetwork {
 
 	private Layer<float[], float[]> reluLayer() {
 		return inputs -> {
-			float[] outputs = To.arrayOfFloats(inputs, relu::apply);
-			return new Out<>(outputs, errors -> To.arrayOfFloats(errors, reluGradient::apply));
+			float[] outputs = To.vector(inputs, relu::apply);
+			return new Out<>(outputs, errors -> To.vector(errors, reluGradient::apply));
 		};
 	}
 
