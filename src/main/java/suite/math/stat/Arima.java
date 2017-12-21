@@ -4,13 +4,16 @@ import java.util.Arrays;
 import java.util.Random;
 
 import suite.math.stat.Statistic.LinearRegression;
+import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.Floats;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
+import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltStreamlet;
+import suite.util.FunUtil.Source;
 import suite.util.To;
 
 public class Arima {
@@ -111,14 +114,10 @@ public class Arima {
 		int p = ars.length;
 		int q = mas.length;
 		int lengthq = length + q;
-		int qm1 = q - 1;
 		float[] xsp = Floats_.concat(new float[q], xs);
 		float[] eps = new float[lengthq];
 
 		for (int iter = 0; iter < 64; iter++) {
-			float[] ars_ = ars;
-			float[] mas_ = mas;
-			double max = mas[qm1];
 			double error = 0d;
 
 			// backcast
@@ -128,27 +127,14 @@ public class Arima {
 			// - eps[t + q]
 			// - mas[0] * eps[t + q - 1] - ...
 			// - mas[q - 2] * eps[t + 1]) / mas[q - 1]
-			for (int t = q - 1; 0 <= t; t--) {
-				int tq = t + q;
-				double sum = 0d //
-						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars_[i] * xsp[tq - 1 - i])) //
-						+ Ints_.range(qm1).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq - 1 - i]));
-				eps[t] = (float) ((xsp[tq] - eps[tq] - sum) / max);
-			}
+
+			armaBackcast(xsp, eps, ars, mas);
 
 			// forward recursion
 			// eps[t] = xs[t]
 			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 			// - mas[0] * eps[t - 1] - ... - mas[q - 1] * eps[t - q]
-			for (int tq = q; tq < lengthq; tq++) {
-				int tq_ = tq;
-				double eps1 = xsp[tq_] //
-						- Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars_[i] * xsp[tq_ - 1 - i])) //
-						- Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas_[i] * eps[tq_ - 1 - i]));
-				double diff = eps1 - eps[tq_];
-				eps[tq_] = (float) eps1;
-				error += diff * diff;
-			}
+			error = armaForecast(xsp, eps, ars, mas);
 
 			// minimization
 			LinearRegression lr = stat.linearRegression(Ints_ //
@@ -327,9 +313,29 @@ public class Arima {
 		}
 	}
 
+	public Object[] armaLoglikelihood(float[] xs, int p, int q) {
+		int length = xs.length;
+		int lengthq = length + q;
+		float[] xsp = Floats_.concat(new float[q], xs);
+		float[] eps = new float[lengthq];
+
+		class LogLikelihood implements DblSource {
+			private float[] ars = To.vector(p, i -> random.nextDouble() * .01d);
+			private float[] mas = To.vector(q, i -> random.nextDouble() * .01d);
+
+			public double source() {
+				armaBackcast(xsp, eps, ars, mas);
+				return -armaForecast(xsp, eps, ars, mas);
+			}
+		}
+
+		LogLikelihood ll = max(LogLikelihood::new);
+		return new Object[] { ll.ars, ll.mas, };
+	}
+
 	// https://quant.stackexchange.com/questions/9351/algorithm-to-fit-ar1-garch1-1-model-of-log-returns
 	public Object[] garchp1(float[] xs, int p) {
-		class LogLikelihood {
+		class LogLikelihood implements DblSource {
 			private double eps = 0d;
 			private double var = 0d;
 			private double c = random.nextDouble() * .0001d;
@@ -337,9 +343,10 @@ public class Arima {
 			private double p0 = random.nextDouble() * .00002d;
 			private double p1 = random.nextDouble() * .001d;
 			private double p2 = .9d + random.nextDouble() * .001d;
-			private double logLikelihood = 0d;
 
-			private LogLikelihood() {
+			public double source() {
+				double logLikelihood = 0d;
+
 				for (int t = p; t < xs.length; t++) {
 					int tm1 = t - 1;
 					double eps0 = eps;
@@ -349,17 +356,12 @@ public class Arima {
 					var = p0 + p1 * eps0 * eps0 + p2 * var0;
 					logLikelihood += -.5d * (Math.log(var) + eps * eps / var);
 				}
+
+				return logLikelihood;
 			}
 		}
 
-		LogLikelihood ll = new LogLikelihood();
-
-		for (int b = 1; b < 10000; b++) {
-			LogLikelihood ll1 = new LogLikelihood();
-			if (ll.logLikelihood < ll1.logLikelihood)
-				ll = ll1;
-		}
-
+		LogLikelihood ll = max(LogLikelihood::new);
 		return new Object[] { ll.c, ll.ars, ll.p0, ll.p1, ll.p2, };
 	}
 
@@ -414,12 +416,58 @@ public class Arima {
 		}
 	}
 
+	private void armaBackcast(float[] xsp, float[] eps, float[] ars, float[] mas) {
+		int p = ars.length;
+		int q = mas.length;
+		double max = mas[q - 1];
+
+		for (int t = q - 1; 0 <= t; t--) {
+			int tq = t + q;
+			double sum = 0d //
+					+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tq - 1 - i])) //
+					+ Ints_.range(q - 1).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tq - 1 - i]));
+			eps[t] = (float) ((xsp[tq] - eps[tq] - sum) / max);
+		}
+	}
+
+	private double armaForecast(float[] xsp, float[] eps, float[] ars, float[] mas) {
+		double error = 0d;
+		int p = ars.length;
+		int q = mas.length;
+		int lengthq = xsp.length;
+
+		for (int tq = q; tq < lengthq; tq++) {
+			int tq_ = tq;
+			double eps1 = xsp[tq_] //
+					- Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tq_ - 1 - i])) //
+					- Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tq_ - 1 - i]));
+			double diff = eps1 - eps[tq_];
+			eps[tq_] = (float) eps1;
+			error += diff * diff;
+		}
+
+		return error;
+	}
+
 	private float[] copyPadZeroes(float[] fs0, int from, int to) {
 		float[] fs1 = new float[to - from];
 		int p = -Math.max(0, from);
 		Arrays.fill(fs1, 0, p, 0f);
 		Floats_.copy(fs0, 0, fs1, p, to - p);
 		return fs1;
+	}
+
+	private <T extends DblSource> T max(Source<T> source) {
+		DblObjPair<T> max = DblObjPair.of(Double.MIN_VALUE, null);
+
+		for (int b = 0; b < 10000; b++) {
+			T t = source.source();
+			DblObjPair<T> pair = DblObjPair.of(t.source(), t);
+			if (max == null || max.t0 < pair.t0)
+				max = pair;
+		}
+
+		return max.t1;
 	}
 
 }
