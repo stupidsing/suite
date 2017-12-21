@@ -89,22 +89,10 @@ public class Arima {
 		return Floats_.concat(lr0.coefficients, lr1.coefficients);
 	}
 
-	public float arimaBackcast(float[] xs, int d, float[] ars, float[] mas) {
-		for (int i = 0; i < d; i++)
-			xs = ts.dropDiff(1, xs);
-
-		float[] xs1 = Floats_.concat(xs, new float[] { armaBackcast(xs, ars, mas).x1, });
-		int xLength = xs.length;
-
-		for (int i = 0; i < d; i++) {
-			int l = xLength;
-			for (int j = i; j < d; j++) {
-				int l0 = l;
-				xs1[l0] += xs1[--l];
-			}
-		}
-
-		return xs1[xLength];
+	public float arimaBackcast(float[] xs0, int d, float[] ars, float[] mas) {
+		float[] xs1 = nDiffs(xs0, d);
+		float[] xs2 = Floats_.concat(xs1, new float[] { armaBackcast(xs1, ars, mas).x1, });
+		return nSums(xs2, d);
 	}
 
 	// http://math.unice.fr/~frapetti/CorsoP/Chapitre_4_IMEA_1.pdf
@@ -134,7 +122,7 @@ public class Arima {
 			// eps[t] = xs[t]
 			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 			// - mas[0] * eps[t - 1] - ... - mas[q - 1] * eps[t - q]
-			error = armaForecast(xsp, eps, ars, mas);
+			error = armaForwardRecursion(xsp, eps, ars, mas);
 
 			// minimization
 			LinearRegression lr = stat.linearRegression(Ints_ //
@@ -161,22 +149,10 @@ public class Arima {
 	}
 
 	@SuppressWarnings("unused")
-	private float arimaEm(float[] xs, int p, int d, int q) {
-		for (int i = 0; i < d; i++)
-			xs = ts.dropDiff(1, xs);
-
-		float[] xs1 = Floats_.concat(xs, new float[] { armaEm(xs, p, q).x1, });
-		int xLength = xs.length;
-
-		for (int i = 0; i < d; i++) {
-			int l = xLength;
-			for (int j = i; j < d; j++) {
-				int l0 = l;
-				xs1[l0] += xs1[--l];
-			}
-		}
-
-		return xs1[xLength];
+	private float arimaEm(float[] xs0, int p, int d, int q) {
+		float[] xs1 = nDiffs(xs0, d);
+		float[] xs2 = Floats_.concat(xs1, new float[] { armaEm(xs1, p, q).x1, });
+		return nSums(xs2, d);
 	}
 
 	// xs[t]
@@ -246,22 +222,10 @@ public class Arima {
 	}
 
 	@SuppressWarnings("unused")
-	private float arimaIa(float[] xs, int p, int d, int q) {
-		for (int i = 0; i < d; i++)
-			xs = ts.dropDiff(1, xs);
-
-		float[] xs1 = Floats_.concat(xs, new float[] { armaIa(xs, p, q).x1, });
-		int xLength = xs.length;
-
-		for (int i = 0; i < d; i++) {
-			int l = xLength;
-			for (int j = i; j < d; j++) {
-				int l0 = l;
-				xs1[l0] += xs1[--l];
-			}
-		}
-
-		return xs1[xLength];
+	private float arimaIa(float[] xs0, int p, int d, int q) {
+		float[] xs1 = nDiffs(xs0, d);
+		float[] xs2 = Floats_.concat(xs1, new float[] { armaIa(xs1, p, q).x1, });
+		return nSums(xs2, d);
 	}
 
 	// extended from
@@ -313,7 +277,7 @@ public class Arima {
 		}
 	}
 
-	public Object[] armaLoglikelihood(float[] xs, int p, int q) {
+	public Arima_ armaLoglikelihood(float[] xs, int p, int q) {
 		int length = xs.length;
 		int lengthq = length + q;
 		float[] xsp = Floats_.concat(new float[q], xs);
@@ -325,12 +289,19 @@ public class Arima {
 
 			public double source() {
 				armaBackcast(xsp, eps, ars, mas);
-				return -armaForecast(xsp, eps, ars, mas);
+				return -armaForwardRecursion(xsp, eps, ars, mas);
 			}
 		}
 
 		LogLikelihood ll = max(LogLikelihood::new);
-		return new Object[] { ll.ars, ll.mas, };
+		float[] ars = ll.ars;
+		float[] mas = ll.mas;
+
+		double x1 = 0d //
+				+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[lengthq - i - 1])) //
+				+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[lengthq - i - 1]));
+
+		return new Arima_(ars, mas, (float) x1);
 	}
 
 	// https://quant.stackexchange.com/questions/9351/algorithm-to-fit-ar1-garch1-1-model-of-log-returns
@@ -430,7 +401,7 @@ public class Arima {
 		}
 	}
 
-	private double armaForecast(float[] xsp, float[] eps, float[] ars, float[] mas) {
+	private double armaForwardRecursion(float[] xsp, float[] eps, float[] ars, float[] mas) {
 		double error = 0d;
 		int p = ars.length;
 		int q = mas.length;
@@ -455,6 +426,24 @@ public class Arima {
 		Arrays.fill(fs1, 0, p, 0f);
 		Floats_.copy(fs0, 0, fs1, p, to - p);
 		return fs1;
+	}
+
+	private float[] nDiffs(float[] xs, int d) {
+		for (int i = 0; i < d; i++)
+			xs = ts.dropDiff(1, xs);
+		return xs;
+	}
+
+	private float nSums(float[] xs, int d) {
+		int lengthm1 = xs.length - 1;
+		for (int i = 0; i < d; i++) {
+			int l = lengthm1;
+			for (int j = i; j < d; j++) {
+				int l0 = l;
+				xs[l0] += xs[--l];
+			}
+		}
+		return xs[lengthm1];
 	}
 
 	private <T extends DblSource> T max(Source<T> source) {
