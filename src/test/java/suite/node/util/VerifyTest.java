@@ -18,6 +18,13 @@ import suite.os.LogUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil2.Fun2;
 
+/**
+ * TODO ZFC
+ * 
+ * TODO define finite
+ *
+ * @author CONT-YW_SING
+ */
 public class VerifyTest {
 
 	@Test
