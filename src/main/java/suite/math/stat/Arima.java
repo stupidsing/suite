@@ -127,8 +127,9 @@ public class Arima {
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(q, lengthq) //
 					.map(tq -> {
-						FltStreamlet lrxs0 = Ints_.range(p).collect(Int_Flt.lift(i -> xsp[tq - 1 - i]));
-						FltStreamlet lrxs1 = Ints_.range(q).collect(Int_Flt.lift(i -> eps[tq - 1 - i]));
+						int tqm1 = tq - 1;
+						FltStreamlet lrxs0 = Ints_.range(p).collect(Int_Flt.lift(i -> xsp[tqm1 - i]));
+						FltStreamlet lrxs1 = Ints_.range(q).collect(Int_Flt.lift(i -> eps[tqm1 - i]));
 						return FltObjPair.of(xsp[tq], Floats_.concat(lrxs0, lrxs1).toArray());
 					}));
 
