@@ -104,6 +104,7 @@ public class Arima {
 		int lengthq = length + q;
 		float[] xsp = Floats_.concat(new float[q], xs);
 		float[] eps = new float[lengthq];
+		Arma arma = new Arma(ars, mas);
 
 		for (int iter = 0; iter < 64; iter++) {
 			double error = 0d;
@@ -116,13 +117,13 @@ public class Arima {
 			// - mas[0] * eps[t + q - 1] - ...
 			// - mas[q - 2] * eps[t + 1]) / mas[q - 1]
 
-			armaBackcast(xsp, eps, ars, mas);
+			arma.backcast(xsp, eps);
 
 			// forward recursion
 			// eps[t] = xs[t]
 			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 			// - mas[0] * eps[t - 1] - ... - mas[q - 1] * eps[t - q]
-			error = armaForwardRecursion(xsp, eps, ars, mas);
+			error = arma.forwardRecursion(xsp, eps);
 
 			// minimization
 			LinearRegression lr = stat.linearRegression(Ints_ //
@@ -141,10 +142,7 @@ public class Arima {
 			Floats_.copy(coefficients, p, mas, 0, q);
 		}
 
-		double x1 = 0d //
-				+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[length - i - 1])) //
-				+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[length - i - 1]));
-
+		double x1 = arma.forecast(xsp, eps, length);
 		return new Arima_(ars, mas, (float) x1);
 	}
 
@@ -214,9 +212,7 @@ public class Arima {
 		// + eps[t]
 		// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 		// when t = xLength
-		double x1 = 0d //
-				+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[xLength - i - 1])) //
-				+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[xpqLength - i - 1]));
+		double x1 = new Arma(ars, mas).forecast(xs, eps);
 
 		return new Arima_(ars, mas, (float) x1);
 	}
@@ -284,18 +280,18 @@ public class Arima {
 	}
 
 	private Arima_ armaLoglikelihood(float[] xs, int p, int q) {
-		int length = xs.length;
-		int lengthq = length + q;
+		int lengthq = xs.length + q;
 		float[] xsp = Floats_.concat(new float[q], xs);
 		float[] eps = new float[lengthq];
 
 		class LogLikelihood implements DblSource {
 			private float[] ars = To.vector(p, i -> random.nextDouble() * .01d);
 			private float[] mas = To.vector(q, i -> random.nextDouble() * .01d);
+			private Arma arma = new Arma(ars, mas);
 
 			public double source() {
-				armaBackcast(xsp, eps, ars, mas);
-				return -armaForwardRecursion(xsp, eps, ars, mas);
+				arma.backcast(xsp, eps);
+				return -arma.forwardRecursion(xsp, eps);
 			}
 		}
 
@@ -303,10 +299,7 @@ public class Arima {
 		float[] ars = ll.ars;
 		float[] mas = ll.mas;
 
-		double x1 = 0d //
-				+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[lengthq - i - 1])) //
-				+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[lengthq - i - 1]));
-
+		double x1 = ll.arma.forecast(xsp, eps);
 		return new Arima_(ars, mas, (float) x1);
 	}
 
@@ -393,37 +386,54 @@ public class Arima {
 		}
 	}
 
-	private void armaBackcast(float[] xsp, float[] eps, float[] ars, float[] mas) {
-		int p = ars.length;
-		int q = mas.length;
-		double max = mas[q - 1];
+	private class Arma {
+		private int p, q;
+		private float[] ars;
+		private float[] mas;
 
-		for (int t = q - 1; 0 <= t; t--) {
-			int tq = t + q;
-			double sum = 0d //
+		private Arma(float[] ars, float[] mas) {
+			p = ars.length;
+			q = mas.length;
+			this.ars = ars;
+			this.mas = mas;
+		}
+
+		private void backcast(float[] xsp, float[] eps) {
+			double max = mas[q - 1];
+
+			for (int t = q - 1; 0 <= t; t--) {
+				int tq = t + q;
+				double sum = 0d //
+						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tq - 1 - i])) //
+						+ Ints_.range(q - 1).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tq - 1 - i]));
+				eps[t] = (float) ((xsp[tq] - eps[tq] - sum) / max);
+			}
+		}
+
+		private double forwardRecursion(float[] xsp, float[] eps) {
+			int lengthq = xsp.length;
+			double error = 0d;
+
+			for (int tq = mas.length; tq < lengthq; tq++) {
+				int tq_ = tq;
+				double eps1 = forecast(xsp, eps, tq_);
+				double diff = eps1 - eps[tq_];
+				eps[tq_] = (float) eps1;
+				error += diff * diff;
+			}
+
+			return error;
+		}
+
+		private double forecast(float[] xsp, float[] eps) {
+			return forecast(xsp, eps, xsp.length);
+		}
+
+		private double forecast(float[] xsp, float[] eps, int tq) {
+			return 0d //
 					+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tq - 1 - i])) //
-					+ Ints_.range(q - 1).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tq - 1 - i]));
-			eps[t] = (float) ((xsp[tq] - eps[tq] - sum) / max);
+					+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tq - 1 - i]));
 		}
-	}
-
-	private double armaForwardRecursion(float[] xsp, float[] eps, float[] ars, float[] mas) {
-		double error = 0d;
-		int p = ars.length;
-		int q = mas.length;
-		int lengthq = xsp.length;
-
-		for (int tq = q; tq < lengthq; tq++) {
-			int tq_ = tq;
-			double eps1 = xsp[tq_] //
-					- Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tq_ - 1 - i])) //
-					- Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tq_ - 1 - i]));
-			double diff = eps1 - eps[tq_];
-			eps[tq_] = (float) eps1;
-			error += diff * diff;
-		}
-
-		return error;
 	}
 
 	private float[] copyPadZeroes(float[] fs0, int from, int to) {
