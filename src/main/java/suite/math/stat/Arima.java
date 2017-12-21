@@ -107,7 +107,6 @@ public class Arima {
 		Arma arma = new Arma(ars, mas);
 
 		for (int iter = 0; iter < 64; iter++) {
-			double error = 0d;
 
 			// backcast
 			// eps[t]
@@ -116,14 +115,13 @@ public class Arima {
 			// - eps[t + q]
 			// - mas[0] * eps[t + q - 1] - ...
 			// - mas[q - 2] * eps[t + 1]) / mas[q - 1]
-
 			arma.backcast(xsp, eps);
 
 			// forward recursion
 			// eps[t] = xs[t]
 			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 			// - mas[0] * eps[t - 1] - ... - mas[q - 1] * eps[t - q]
-			error = arma.forwardRecursion(xsp, eps);
+			double error = arma.forwardRecursion(xsp, eps);
 
 			// minimization
 			LinearRegression lr = stat.linearRegression(Ints_ //
@@ -142,7 +140,7 @@ public class Arima {
 			Floats_.copy(coefficients, p, mas, 0, q);
 		}
 
-		double x1 = arma.forecast(xsp, eps, length);
+		double x1 = arma.forecast(xsp, eps);
 		return new Arima_(ars, mas, (float) x1);
 	}
 
@@ -159,11 +157,11 @@ public class Arima {
 	// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 	private Arima_ armaEm(float[] xs, int p, int q) { // ARMA
 		int xLength = xs.length;
-		int pq = -p + q;
-		int xpqLength = xLength + pq;
+		int qp = q - p;
+		int xpqLength = xLength + qp;
 		float[] ars = To.vector(p, i -> Math.scalb(.5d, -i));
 		float[] mas = To.vector(q, i -> Math.scalb(.5d, -i));
-		float[] eps = To.vector(xpqLength, i -> xs[Math.max(0, Math.min(xLength, i - pq))] * .25f);
+		float[] eps = To.vector(xpqLength, i -> xs[Math.max(0, Math.min(xLength, i - qp))] * .25f);
 
 		for (int iter = 0; iter < 9; iter++) {
 
@@ -174,11 +172,11 @@ public class Arima {
 				float[] coeffs = stat.linearRegression(Ints_ //
 						.range(p, xLength) //
 						.map(t -> {
-							int tpq = t + pq;
+							int tqp = t + qp;
 							float[] lrxs = Floats_ //
-									.concat(Floats_.reverse(xs, t - p, t), Floats_.reverse(xs, t - p, tpq)) //
+									.concat(Floats_.reverse(xs, t - p, t), Floats_.reverse(xs, t - p, tqp)) //
 									.toArray();
-							float lry = xs[t] - eps[tpq];
+							float lry = xs[t] - eps[tqp];
 							return FltObjPair.of(lry, lrxs);
 						})).coefficients();
 
@@ -195,7 +193,7 @@ public class Arima {
 						.range(p, xLength) //
 						.map(t -> {
 							float[] lrxs = new float[xpqLength];
-							int tq = t + pq;
+							int tq = t + qp;
 							lrxs[tq--] = 1f;
 							for (int i = 0; i < q; i++)
 								lrxs[tq--] = mas[i];
@@ -399,13 +397,15 @@ public class Arima {
 		}
 
 		private void backcast(float[] xsp, float[] eps) {
-			double max = mas[q - 1];
+			int qm1 = q - 1;
+			double max = mas[qm1];
 
-			for (int t = q - 1; 0 <= t; t--) {
+			for (int t = qm1; 0 <= t; t--) {
 				int tq = t + q;
+				int tqm1 = tq - 1;
 				double sum = 0d //
-						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tq - 1 - i])) //
-						+ Ints_.range(q - 1).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tq - 1 - i]));
+						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tqm1 - i])) //
+						+ Ints_.range(qm1).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tqm1 - i]));
 				eps[t] = (float) ((xsp[tq] - eps[tq] - sum) / max);
 			}
 		}
@@ -415,10 +415,9 @@ public class Arima {
 			double error = 0d;
 
 			for (int tq = mas.length; tq < lengthq; tq++) {
-				int tq_ = tq;
-				double eps1 = forecast(xsp, eps, tq_);
-				double diff = eps1 - eps[tq_];
-				eps[tq_] = (float) eps1;
+				double eps1 = xsp[tq] - forecast(xsp, eps, tq);
+				double diff = eps1 - eps[tq];
+				eps[tq] = (float) eps1;
 				error += diff * diff;
 			}
 
@@ -430,9 +429,10 @@ public class Arima {
 		}
 
 		private double forecast(float[] xsp, float[] eps, int tq) {
+			int tqm1 = tq - 1;
 			return 0d //
-					+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tq - 1 - i])) //
-					+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tq - 1 - i]));
+					+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tqm1 - i])) //
+					+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tqm1 - i]));
 		}
 	}
 
