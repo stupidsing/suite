@@ -36,8 +36,6 @@ public class Arch {
 	// https://quant.stackexchange.com/questions/9351/algorithm-to-fit-ar1-garch1-1-model-of-log-returns
 	public Object[] garchp1(float[] xs, int p) {
 		class LogLikelihood implements DblSource {
-			private double eps = 0d;
-			private double var = 0d;
 			private double c = random.nextDouble() * .0001d;
 			private float[] ars = To.vector(p, i -> random.nextDouble() * .01d);
 			private double p0 = random.nextDouble() * .00002d;
@@ -45,6 +43,8 @@ public class Arch {
 			private double p2 = .9d + random.nextDouble() * .001d;
 
 			public double source() {
+				double eps = 0d;
+				double var = 0d;
 				double logLikelihood = 0d;
 
 				for (int t = p; t < xs.length; t++) {
