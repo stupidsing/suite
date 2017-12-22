@@ -48,8 +48,10 @@ public class VerifyTest {
 						"reflexive # true => .A .eq .A", //
 						"symmetric # .A .eq .B => .B .eq .A", //
 						"transitive # .A .eq .B, .B .eq .C => .A .eq .C"))) //
-				.put("def$uni-op", def2.apply("uni-op .class .op", ".class .P => .class (.op .P)")) //
-				.put("def$bin-op", def2.apply("bin-op .class .op", ".class .P, .class .Q => .class (.P .op .Q)")) //
+				.put("def$uni-op", def2.apply("uni-op .class .op", //
+						".class .P => .class (.op .P)")) //
+				.put("def$bin-op", def2.apply("bin-op .class .op", //
+						".class .P, .class .Q => .class (.P .op .Q)")) //
 				.put("def$set", defn.apply("set .eq", IList.of( //
 						".S .eq .T => (.E set-in .S) iff (.E set-in .T)"))) //
 				.put("def$group0", defn.apply("group0 .class .eq .op .zero", IList.of( //
