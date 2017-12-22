@@ -10,14 +10,13 @@ import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
-import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltStreamlet;
-import suite.util.FunUtil.Source;
 import suite.util.To;
 
 public class Arima {
 
+	private Mle mle = new Mle();
 	private Statistic stat = new Statistic();
 	private Random random = new Random();
 	private TimeSeries ts = new TimeSeries();
@@ -29,7 +28,7 @@ public class Arima {
 	}
 
 	// Digital Processing of Random Signals, Boaz Porat, page 159
-	public float[] arLevinsonDurbin(float[] ys, int p) {
+	private float[] arLevinsonDurbin(float[] ys, int p) {
 		double mean = stat.meanVariance(ys).mean;
 		double mean2 = mean * mean;
 		int length = ys.length;
@@ -71,22 +70,6 @@ public class Arima {
 		// alpha[n + 1][n + 1] := -K[n + 1]
 
 		return alpha;
-	}
-
-	public float[] arch(float[] ys, int p, int q) {
-
-		// auto regressive
-		int length = ys.length;
-		float[][] xs0 = To.array(length, float[].class, i -> copyPadZeroes(ys, i - p, i));
-		LinearRegression lr0 = stat.linearRegression(xs0, ys, null);
-		float[] variances = To.vector(lr0.residuals, residual -> residual * residual);
-
-		// conditional heteroskedasticity
-		LinearRegression lr1 = stat.linearRegression(Ints_ //
-				.range(length) //
-				.map(i -> FltObjPair.of(variances[i], copyPadZeroes(variances, i - p, i))));
-
-		return Floats_.concat(lr0.coefficients, lr1.coefficients);
 	}
 
 	public float arimaBackcast(float[] xs0, int d, float[] ars, float[] mas) {
@@ -230,7 +213,7 @@ public class Arima {
 	// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
 	// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 	// + eps[t]
-	public Arima_ armaIa(float[] xs, int p, int q) {
+	private Arima_ armaIa(float[] xs, int p, int q) {
 		int length = xs.length;
 		float[] xsp = new float[length + p];
 		int pm1 = p - 1;
@@ -294,7 +277,7 @@ public class Arima {
 			}
 		}
 
-		LogLikelihood ll = max(LogLikelihood::new);
+		LogLikelihood ll = mle.max(LogLikelihood::new);
 		float[] ars = ll.ars;
 		float[] mas = ll.mas;
 
@@ -302,41 +285,10 @@ public class Arima {
 		return new Arima_(ars, mas, (float) x1);
 	}
 
-	// https://quant.stackexchange.com/questions/9351/algorithm-to-fit-ar1-garch1-1-model-of-log-returns
-	public Object[] garchp1(float[] xs, int p) {
-		class LogLikelihood implements DblSource {
-			private double eps = 0d;
-			private double var = 0d;
-			private double c = random.nextDouble() * .0001d;
-			private float[] ars = To.vector(p, i -> random.nextDouble() * .01d);
-			private double p0 = random.nextDouble() * .00002d;
-			private double p1 = random.nextDouble() * .001d;
-			private double p2 = .9d + random.nextDouble() * .001d;
-
-			public double source() {
-				double logLikelihood = 0d;
-
-				for (int t = p; t < xs.length; t++) {
-					int tm1 = t - 1;
-					double eps0 = eps;
-					double var0 = var;
-					double estx = c + Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[tm1 - i]));
-					eps = xs[t] - estx;
-					var = p0 + p1 * eps0 * eps0 + p2 * var0;
-					logLikelihood += -.5d * (Math.log(var) + eps * eps / var);
-				}
-
-				return logLikelihood;
-			}
-		}
-
-		LogLikelihood ll = max(LogLikelihood::new);
-		return new Object[] { ll.c, ll.ars, ll.p0, ll.p1, ll.p2, };
-	}
-
 	// Digital Processing of Random Signals, Boaz Porat, page 190
 	// q << l << fs.length
-	public float[] maDurbin(float[] ys, int q, int l) {
+	@SuppressWarnings("unused")
+	private float[] maDurbin(float[] ys, int q, int l) {
 		float[] ar = arLevinsonDurbin(ys, l);
 		return arLevinsonDurbin(ar, q);
 	}
@@ -437,14 +389,6 @@ public class Arima {
 		}
 	}
 
-	private float[] copyPadZeroes(float[] fs0, int from, int to) {
-		float[] fs1 = new float[to - from];
-		int p = -Math.max(0, from);
-		Arrays.fill(fs1, 0, p, 0f);
-		Floats_.copy(fs0, 0, fs1, p, to - p);
-		return fs1;
-	}
-
 	private float[] nDiffs(float[] xs, int d) {
 		for (int i = 0; i < d; i++)
 			xs = ts.dropDiff(1, xs);
@@ -461,19 +405,6 @@ public class Arima {
 			}
 		}
 		return xs[lengthm1];
-	}
-
-	private <T extends DblSource> T max(Source<T> source) {
-		DblObjPair<T> max = DblObjPair.of(Double.MIN_VALUE, null);
-
-		for (int b = 0; b < 10000; b++) {
-			T t = source.source();
-			DblObjPair<T> pair = DblObjPair.of(t.source(), t);
-			if (max == null || max.t0 < pair.t0)
-				max = pair;
-		}
-
-		return max.t1;
 	}
 
 }
