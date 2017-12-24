@@ -35,8 +35,7 @@ public class ArimaTest {
 
 	private void testArma(float[] ars, float[] mas) {
 		float[] xs = generate(256, ars, mas);
-		Arima_ a = arima.armaBackcast(xs, To.vector(ars.length, i -> 1f), To.vector(mas.length, i -> 1f));
-		// arima.armaIa(xs, ars.length, mas.length);
+		Arima_ a = arima.arimaBackcast(xs, ars.length, 0, mas.length).t1;
 		System.out.println("x = " + Arrays.toString(xs));
 		System.out.println("ar = " + Arrays.toString(a.ars));
 		System.out.println("ma = " + Arrays.toString(a.mas));

@@ -10,6 +10,7 @@ import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
+import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.util.To;
@@ -72,10 +73,13 @@ public class Arima {
 		return alpha;
 	}
 
-	public float arimaBackcast(float[] xs0, int d, float[] ars, float[] mas) {
+	public DblObjPair<Arima_> arimaBackcast(float[] xs0, int p, int d, int q) {
+		float[] ars = To.vector(p, i -> 1f);
+		float[] mas = To.vector(p, i -> 1f);
 		float[] xs1 = nDiffs(xs0, d);
-		float[] xs2 = Floats_.concat(xs1, new float[] { armaBackcast(xs1, ars, mas).x1, });
-		return nSums(xs2, d);
+		Arima_ arima = armaBackcast(xs1, ars, mas);
+		float[] xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
+		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
 	// http://math.unice.fr/~frapetti/CorsoP/Chapitre_4_IMEA_1.pdf
@@ -131,10 +135,11 @@ public class Arima {
 	}
 
 	@SuppressWarnings("unused")
-	private float arimaEm(float[] xs0, int p, int d, int q) {
+	private DblObjPair<Arima_> arimaEm(float[] xs0, int p, int d, int q) {
 		float[] xs1 = nDiffs(xs0, d);
-		float[] xs2 = Floats_.concat(xs1, new float[] { armaEm(xs1, p, q).x1, });
-		return nSums(xs2, d);
+		Arima_ arima = armaEm(xs1, p, q);
+		float[] xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
+		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
 	// xs[t]
@@ -202,10 +207,11 @@ public class Arima {
 	}
 
 	@SuppressWarnings("unused")
-	private float arimaIa(float[] xs0, int p, int d, int q) {
+	private DblObjPair<Arima_> arimaIa(float[] xs0, int p, int d, int q) {
 		float[] xs1 = nDiffs(xs0, d);
-		float[] xs2 = Floats_.concat(xs1, new float[] { armaIa(xs1, p, q).x1, });
-		return nSums(xs2, d);
+		Arima_ arima = armaIa(xs1, p, q);
+		float[] xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
+		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
 	// extended from
@@ -257,10 +263,11 @@ public class Arima {
 		}
 	}
 
-	public float arimaMle(float[] xs0, int p, int d, int q) {
+	public DblObjPair<Arima_> arimaMle(float[] xs0, int p, int d, int q) {
 		float[] xs1 = nDiffs(xs0, d);
-		float[] xs2 = Floats_.concat(xs1, new float[] { armaMle(xs1, p, q).x1, });
-		return nSums(xs2, d);
+		Arima_ arima = armaMle(xs1, p, q);
+		float[] xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
+		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
 	private Arima_ armaMle(float[] xs, int p, int q) {
