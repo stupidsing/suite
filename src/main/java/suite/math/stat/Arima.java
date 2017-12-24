@@ -84,9 +84,8 @@ public class Arima {
 		int length = xs.length;
 		int p = ars.length;
 		int q = mas.length;
-		int lengthq = length + q;
-		float[] xsp = Floats_.concat(new float[q], xs);
-		float[] eps = new float[lengthq];
+		float[] xsp = Floats_.concat(new float[p], xs);
+		float[] eps = new float[length + q];
 		Arma arma = new Arma(ars, mas);
 
 		for (int iter = 0; iter < 64; iter++) {
@@ -108,12 +107,15 @@ public class Arima {
 
 			// minimization
 			LinearRegression lr = stat.linearRegression(Ints_ //
-					.range(q, lengthq) //
-					.map(tq -> {
+					.range(length) //
+					.map(t -> {
+						int tp = t + p;
+						int tq = t + q;
+						int tpm1 = tp - 1;
 						int tqm1 = tq - 1;
-						FltStreamlet lrxs0 = Ints_.range(p).collect(Int_Flt.lift(i -> xsp[tqm1 - i]));
+						FltStreamlet lrxs0 = Ints_.range(p).collect(Int_Flt.lift(i -> xsp[tpm1 - i]));
 						FltStreamlet lrxs1 = Ints_.range(q).collect(Int_Flt.lift(i -> eps[tqm1 - i]));
-						return FltObjPair.of(xsp[tq], Floats_.concat(lrxs0, lrxs1).toArray());
+						return FltObjPair.of(xsp[tp], Floats_.concat(lrxs0, lrxs1).toArray());
 					}));
 
 			System.out.println("iter " + iter + ", error = " + To.string(error) + lr);
@@ -262,9 +264,9 @@ public class Arima {
 	}
 
 	private Arima_ armaLoglikelihood(float[] xs, int p, int q) {
-		int lengthq = xs.length + q;
+		int length = xs.length;
 		float[] xsp = Floats_.concat(new float[q], xs);
-		float[] eps = new float[lengthq];
+		float[] eps = new float[length + q];
 
 		class LogLikelihood implements DblSource {
 			private float[] ars = To.vector(p, i -> random.nextDouble() * .01d);
@@ -351,24 +353,27 @@ public class Arima {
 
 		private void backcast(float[] xsp, float[] eps) {
 			int qm1 = q - 1;
-			double max = mas[qm1];
 
 			for (int t = qm1; 0 <= t; t--) {
+				int tp = t + p;
 				int tq = t + q;
+				int tpm1 = tp - 1;
 				int tqm1 = tq - 1;
 				double sum = 0d //
-						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tqm1 - i])) //
+						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i])) //
 						+ Ints_.range(qm1).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tqm1 - i]));
-				eps[t] = (float) ((xsp[tq] - eps[tq] - sum) / max);
+				eps[t] = (float) ((xsp[tp] - eps[tq] - sum) / mas[qm1]);
 			}
 		}
 
 		private double forwardRecursion(float[] xsp, float[] eps) {
-			int lengthq = xsp.length;
+			int length = xsp.length - p;
 			double error = 0d;
 
-			for (int tq = mas.length; tq < lengthq; tq++) {
-				double eps1 = xsp[tq] - forecast(xsp, eps, tq);
+			for (int t = 0; t < length; t++) {
+				int tp = t + p;
+				int tq = t + q;
+				double eps1 = xsp[tp] - forecast(xsp, eps, t);
 				double diff = eps1 - eps[tq];
 				eps[tq] = (float) eps1;
 				error += diff * diff;
@@ -378,13 +383,14 @@ public class Arima {
 		}
 
 		private double forecast(float[] xsp, float[] eps) {
-			return forecast(xsp, eps, xsp.length);
+			return forecast(xsp, eps, xsp.length - p);
 		}
 
-		private double forecast(float[] xsp, float[] eps, int tq) {
-			int tqm1 = tq - 1;
+		private double forecast(float[] xsp, float[] eps, int t) {
+			int tpm1 = t + p - 1;
+			int tqm1 = t + q - 1;
 			return 0d //
-					+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tqm1 - i])) //
+					+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i])) //
 					+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tqm1 - i]));
 		}
 	}
