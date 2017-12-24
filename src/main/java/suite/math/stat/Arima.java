@@ -257,13 +257,13 @@ public class Arima {
 		}
 	}
 
-	public float arimaLoglikelihood(float[] xs0, int p, int d, int q) {
+	public float arimaMle(float[] xs0, int p, int d, int q) {
 		float[] xs1 = nDiffs(xs0, d);
-		float[] xs2 = Floats_.concat(xs1, new float[] { armaLoglikelihood(xs1, p, q).x1, });
+		float[] xs2 = Floats_.concat(xs1, new float[] { armaMle(xs1, p, q).x1, });
 		return nSums(xs2, d);
 	}
 
-	private Arima_ armaLoglikelihood(float[] xs, int p, int q) {
+	private Arima_ armaMle(float[] xs, int p, int q) {
 		int length = xs.length;
 		float[] xsp = Floats_.concat(new float[q], xs);
 		float[] eps = new float[length + q];
