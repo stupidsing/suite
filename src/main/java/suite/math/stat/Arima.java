@@ -355,14 +355,8 @@ public class Arima {
 			int qm1 = q - 1;
 
 			for (int t = qm1; 0 <= t; t--) {
-				int tp = t + p;
-				int tq = t + q;
-				int tpm1 = tp - 1;
-				int tqm1 = tq - 1;
-				double sum = 0d //
-						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i])) //
-						+ Ints_.range(qm1).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tqm1 - i]));
-				eps[t] = (float) ((xsp[tp] - eps[tq] - sum) / mas[qm1]);
+				double sum = forecast(xsp, eps, t, p, qm1);
+				eps[t] = (float) ((xsp[t + p] - eps[t + q] - sum) / mas[qm1]);
 			}
 		}
 
@@ -387,11 +381,15 @@ public class Arima {
 		}
 
 		private double forecast(float[] xsp, float[] eps, int t) {
+			return forecast(xsp, eps, t, p, q);
+		}
+
+		private double forecast(float[] xsp, float[] eps, int t, int p_, int q_) {
 			int tpm1 = t + p - 1;
 			int tqm1 = t + q - 1;
 			return 0d //
-					+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i])) //
-					+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tqm1 - i]));
+					+ Ints_.range(p_).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i])) //
+					+ Ints_.range(q_).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tqm1 - i]));
 		}
 	}
 
