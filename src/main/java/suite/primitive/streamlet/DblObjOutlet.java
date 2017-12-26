@@ -241,11 +241,11 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	@Override
 	public int hashCode() {
-		int hashCode = 5;
 		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		int h = 7;
 		while (next(pair))
-			hashCode = hashCode * 31 + pair.hashCode();
-		return hashCode;
+			h = h * 31 + pair.hashCode();
+		return h;
 	}
 
 	public boolean isAll(DblObjPredicate<V> pred) {

@@ -252,10 +252,10 @@ public class Longs implements Iterable<Long> {
 
 	@Override
 	public int hashCode() {
-		int result = 1;
+		int h = 7;
 		for (int i = start; i < end; i++)
-			result = 31 * result + Long.hashCode(cs[i]);
-		return result;
+			h = h * 31 + Long.hashCode(cs[i]);
+		return h;
 	}
 
 	@Override

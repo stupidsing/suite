@@ -252,10 +252,10 @@ public class Chars implements Iterable<Character> {
 
 	@Override
 	public int hashCode() {
-		int result = 1;
+		int h = 7;
 		for (int i = start; i < end; i++)
-			result = 31 * result + Character.hashCode(cs[i]);
-		return result;
+			h = h * 31 + Character.hashCode(cs[i]);
+		return h;
 	}
 
 	@Override

@@ -58,10 +58,10 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 
 	@Override
 	public int hashCode() {
-		int hashCode = 5;
+		int h = 7;
 		for (Object value : MapObject_.list(this))
-			hashCode = 31 * hashCode + Objects.hashCode(value);
-		return hashCode;
+			h = h * 31 + Objects.hashCode(value);
+		return h;
 	}
 
 	@Override

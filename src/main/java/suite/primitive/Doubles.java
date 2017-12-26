@@ -252,10 +252,10 @@ public class Doubles implements Iterable<Double> {
 
 	@Override
 	public int hashCode() {
-		int result = 1;
+		int h = 7;
 		for (int i = start; i < end; i++)
-			result = 31 * result + Double.hashCode(cs[i]);
-		return result;
+			h = h * 31 + Double.hashCode(cs[i]);
+		return h;
 	}
 
 	@Override

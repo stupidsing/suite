@@ -93,10 +93,10 @@ public class Matrix_ {
 	}
 
 	public int hashCode(float[][] m) {
-		int hashCode = 0;
+		int h = 7;
 		for (float[] row : m)
-			hashCode = hashCode * 31 + Arrays.hashCode(row);
-		return hashCode;
+			h = h * 31 + Arrays.hashCode(row);
+		return h;
 	}
 
 	public int height(float[][] m) {

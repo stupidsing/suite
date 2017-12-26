@@ -64,10 +64,10 @@ public class Rule {
 
 	@Override
 	public int hashCode() {
-		int result = 1;
-		result = 31 * result + head.hashCode();
-		result = 31 * result + tail.hashCode();
-		return result;
+		int h = 7;
+		h = h * 31 + head.hashCode();
+		h = h * 31 + tail.hashCode();
+		return h;
 	}
 
 }

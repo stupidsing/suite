@@ -95,10 +95,10 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 		@Override
 		public int hashCode() {
-			int result = 1;
-			result = 31 * result + Arrays.hashCode(ip);
-			result = 31 * result + port;
-			return result;
+			int h = 7;
+			h = h * 31 + Arrays.hashCode(ip);
+			h = h * 31 + port;
+			return h;
 		}
 
 		@Override

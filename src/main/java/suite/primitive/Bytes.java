@@ -224,10 +224,10 @@ public class Bytes implements Iterable<Byte> {
 
 	@Override
 	public int hashCode() {
-		int result = 1;
+		int h = 7;
 		for (int i = start; i < end; i++)
-			result = 31 * result + bs[i];
-		return result;
+			h = h * 31 + bs[i];
+		return h;
 	}
 
 	@Override

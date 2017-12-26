@@ -23,10 +23,10 @@ public class Tuple extends Node {
 
 	@Override
 	public int hashCode() {
-		int result = 1;
+		int h = 7;
 		for (Node node : nodes)
-			result = 31 * result + node.hashCode();
-		return result;
+			h = h * 31 + node.hashCode();
+		return h;
 	}
 
 }

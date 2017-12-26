@@ -243,11 +243,11 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	@Override
 	public int hashCode() {
-		int hashCode = 5;
+		int h = 7;
 		int c;
 		while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
-			hashCode = hashCode * 31 + Objects.hashCode(c);
-		return hashCode;
+			h = h * 31 + Objects.hashCode(c);
+		return h;
 	}
 
 	public IntObjOutlet<Integer> index() {

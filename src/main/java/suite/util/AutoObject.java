@@ -98,10 +98,10 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 	@Override
 	public int hashCode() {
-		int hashCode = 5;
+		int h = 7;
 		for (Comparable<?> value : values())
-			hashCode = 31 * hashCode + Objects.hashCode(value);
-		return hashCode;
+			h = h * 31 + Objects.hashCode(value);
+		return h;
 	}
 
 	@Override

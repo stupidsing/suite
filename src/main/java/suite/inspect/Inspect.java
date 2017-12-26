@@ -286,8 +286,8 @@ public class Inspect {
 	}
 
 	/**
-	 * @return true if both input value objects are of the same class and having
-	 *         all fields equal.
+	 * @return true if both input value objects are of the same class and having all
+	 *         fields equal.
 	 */
 	public <T> boolean equals(T o0, T o1) {
 		return o0 == o1 || o0 != null && o1 != null //
@@ -305,10 +305,10 @@ public class Inspect {
 	 */
 	public int hashCode(Object object) {
 		return Rethrow.ex(() -> {
-			int hashCode = 0;
+			int h = 7;
 			for (Field field : fields(object.getClass()))
-				hashCode = hashCode * 31 + Objects.hashCode(field.get(object));
-			return hashCode;
+				h = h * 31 + Objects.hashCode(field.get(object));
+			return h;
 		});
 	}
 
@@ -453,7 +453,7 @@ public class Inspect {
 		propertyNames.retainAll(setMethods.keySet());
 
 		return Read.from(propertyNames) //
-				.<Property>map(propertyName -> {
+				.<Property> map(propertyName -> {
 					Method getMethod = getMethods.get(propertyName);
 					Method setMethod = setMethods.get(propertyName);
 					return new Property() {

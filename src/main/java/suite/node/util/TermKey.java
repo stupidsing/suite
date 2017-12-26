@@ -54,12 +54,12 @@ public class TermKey extends HashCodeComparable<TermKey> {
 	}
 
 	private class TermHasher {
-		private int hashCode = 1;
+		private int h = 7;
 
 		public TermHasher(Node node) {
 			new TermVisitor( //
-					i -> hashCode = hashCode * 31 + i //
-					, nr -> hashCode = 31 * hashCode + Objects.hash(nr.type, nr.terminal, nr.op) //
+					i -> h = h * 31 + i //
+					, nr -> h = h * 31 + Objects.hash(nr.type, nr.terminal, nr.op) //
 			).visit(node);
 		}
 	}
@@ -102,16 +102,16 @@ public class TermKey extends HashCodeComparable<TermKey> {
 		}
 
 		public int hashCode() {
-			int result = 1;
+			int h = 7;
 			for (IntObjPair<NodeHead> pair : list) {
-				result = 31 * result + Objects.hash(pair.t0);
+				h = h * 31 + Objects.hash(pair.t0);
 				if (pair.t1 != null) {
-					result = 31 * result + Objects.hash(pair.t1.type);
-					result = 31 * result + Objects.hash(pair.t1.terminal);
-					result = 31 * result + Objects.hash(pair.t1.op);
+					h = h * 31 + Objects.hash(pair.t1.type);
+					h = h * 31 + Objects.hash(pair.t1.terminal);
+					h = h * 31 + Objects.hash(pair.t1.op);
 				}
 			}
-			return result;
+			return h;
 		}
 	}
 
@@ -134,7 +134,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 
 	@Override
 	public int hashCode() {
-		return new TermHasher(node).hashCode;
+		return new TermHasher(node).h;
 	}
 
 }

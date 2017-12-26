@@ -194,11 +194,11 @@ public class Outlet<T> implements OutletDefaults<T> {
 
 	@Override
 	public int hashCode() {
-		int hashCode = 5;
+		int h = 7;
 		T t;
 		while ((t = source.source()) != null)
-			hashCode = hashCode * 31 + Objects.hashCode(t);
-		return hashCode;
+			h = h * 31 + Objects.hashCode(t);
+		return h;
 	}
 
 	public IntObjOutlet<T> index() {

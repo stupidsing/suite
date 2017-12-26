@@ -31,7 +31,7 @@ public class IList<T> implements Iterable<T> {
 
 	@SafeVarargs
 	public static <T> IList<T> of(T... ts) {
-		IList<T> list = IList.<T>end();
+		IList<T> list = IList.<T> end();
 		for (T t : ts)
 			list = cons(t, list);
 		return list;
@@ -124,12 +124,12 @@ public class IList<T> implements Iterable<T> {
 	@Override
 	public int hashCode() {
 		IList<T> list = this;
-		int hashCode = 0;
+		int h = 7;
 		while (!list.isEmpty()) {
-			hashCode = hashCode * 31 + Objects.hashCode(list.head);
+			h = h * 31 + Objects.hashCode(list.head);
 			list = list.tail;
 		}
-		return hashCode;
+		return h;
 	}
 
 	@Override

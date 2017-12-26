@@ -237,11 +237,11 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	@Override
 	public int hashCode() {
-		int hashCode = 5;
 		Pair<K, V> pair = Pair.of(null, null);
+		int h = 7;
 		while (next(pair))
-			hashCode = hashCode * 31 + pair.hashCode();
-		return hashCode;
+			h = h * 31 + pair.hashCode();
+		return h;
 	}
 
 	public boolean isAll(BiPredicate<K, V> pred) {

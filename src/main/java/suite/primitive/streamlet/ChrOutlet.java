@@ -243,11 +243,11 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	@Override
 	public int hashCode() {
-		int hashCode = 5;
+		int h = 7;
 		char c;
 		while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
-			hashCode = hashCode * 31 + Objects.hashCode(c);
-		return hashCode;
+			h = h * 31 + Objects.hashCode(c);
+		return h;
 	}
 
 	public ChrObjOutlet<Integer> index() {

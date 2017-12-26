@@ -19,8 +19,8 @@ int hashptr(void *node) {
 
 int hashstr(char *start, char *end) {
 	char *s = start;
-	int hash = 1;
-	while(s < end) hash = 31 * hash + 5 + *s++;
+	int hash = 7;
+	while(s < end) hash = 31 * hash + *s++;
 	return hash;
 }
 

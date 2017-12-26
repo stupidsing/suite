@@ -140,12 +140,12 @@ public class IVector<T> {
 
 	@Override
 	public int hashCode() {
-		int result = 1;
+		int hashCode = 7;
 		for (int i = start; i < end; i++) {
 			int h = Objects.hashCode(data.nodes[i]);
-			result = 31 * result + h;
+			hashCode = hashCode * 31 + h;
 		}
-		return result;
+		return hashCode;
 	}
 
 }

@@ -241,11 +241,11 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
 	@Override
 	public int hashCode() {
-		int hashCode = 5;
 		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		int h = 7;
 		while (next(pair))
-			hashCode = hashCode * 31 + pair.hashCode();
-		return hashCode;
+			h = h * 31 + pair.hashCode();
+		return h;
 	}
 
 	public boolean isAll(IntObjPredicate<V> pred) {

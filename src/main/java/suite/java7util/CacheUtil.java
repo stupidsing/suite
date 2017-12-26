@@ -43,11 +43,11 @@ public class CacheUtil {
 		}
 
 		public int hashCode() {
-			int result = 1;
-			result = 31 * result + System.identityHashCode(bean);
-			result = 31 * result + Objects.hashCode(method);
-			result = 31 * result + Arrays.deepHashCode(arguments);
-			return result;
+			int h = 7;
+			h = h * 31 + System.identityHashCode(bean);
+			h = h * 31 + Objects.hashCode(method);
+			h = h * 31 + Arrays.deepHashCode(arguments);
+			return h;
 		}
 	}
 

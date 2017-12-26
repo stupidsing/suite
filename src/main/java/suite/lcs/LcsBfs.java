@@ -37,10 +37,10 @@ public class LcsBfs<T> {
 		}
 
 		public int hashCode() {
-			int result = 1;
-			result = 31 * result + pos0;
-			result = 31 * result + pos1;
-			return result;
+			int j = 7;
+			j = 31 * j + pos0;
+			j = 31 * j + pos1;
+			return j;
 		}
 	}
 

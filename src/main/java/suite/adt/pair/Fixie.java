@@ -218,17 +218,17 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements FixieA<T0,
 
 	@Override
 	public int hashCode() {
-		int h = 0;
-		h = Objects.hashCode(t0) + 31 * h;
-		h = Objects.hashCode(t1) + 31 * h;
-		h = Objects.hashCode(t2) + 31 * h;
-		h = Objects.hashCode(t3) + 31 * h;
-		h = Objects.hashCode(t4) + 31 * h;
-		h = Objects.hashCode(t5) + 31 * h;
-		h = Objects.hashCode(t6) + 31 * h;
-		h = Objects.hashCode(t7) + 31 * h;
-		h = Objects.hashCode(t8) + 31 * h;
-		h = Objects.hashCode(t9) + 31 * h;
+		int h = 7;
+		h = h * 31 + Objects.hashCode(t0);
+		h = h * 31 + Objects.hashCode(t1);
+		h = h * 31 + Objects.hashCode(t2);
+		h = h * 31 + Objects.hashCode(t3);
+		h = h * 31 + Objects.hashCode(t4);
+		h = h * 31 + Objects.hashCode(t5);
+		h = h * 31 + Objects.hashCode(t6);
+		h = h * 31 + Objects.hashCode(t7);
+		h = h * 31 + Objects.hashCode(t8);
+		h = h * 31 + Objects.hashCode(t9);
 		return h;
 	}
 

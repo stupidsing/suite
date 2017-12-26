@@ -29,11 +29,11 @@ public class TreeOp extends Tree {
 
 	@Override
 	public int hashCode() {
-		int result = 1;
-		result = 31 * result + Objects.hashCode(getLeft());
-		result = 31 * result + Objects.hashCode(operator);
-		result = 31 * result + Objects.hashCode(getRight());
-		return result;
+		int h = 7;
+		h = h * 31 + Objects.hashCode(getLeft());
+		h = h * 31 + Objects.hashCode(operator);
+		h = h * 31 + Objects.hashCode(getRight());
+		return h;
 	}
 
 	@Override

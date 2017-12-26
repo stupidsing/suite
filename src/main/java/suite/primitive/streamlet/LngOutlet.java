@@ -243,11 +243,11 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	@Override
 	public int hashCode() {
-		int hashCode = 5;
+		int h = 7;
 		long c;
 		while ((c = source.source()) != LngFunUtil.EMPTYVALUE)
-			hashCode = hashCode * 31 + Objects.hashCode(c);
-		return hashCode;
+			h = h * 31 + Objects.hashCode(c);
+		return h;
 	}
 
 	public LngObjOutlet<Integer> index() {

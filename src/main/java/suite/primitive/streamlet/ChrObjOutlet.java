@@ -241,11 +241,11 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	@Override
 	public int hashCode() {
-		int hashCode = 5;
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		int h = 7;
 		while (next(pair))
-			hashCode = hashCode * 31 + pair.hashCode();
-		return hashCode;
+			h = h * 31 + pair.hashCode();
+		return h;
 	}
 
 	public boolean isAll(ChrObjPredicate<V> pred) {

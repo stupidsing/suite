@@ -241,11 +241,11 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
 	@Override
 	public int hashCode() {
-		int hashCode = 5;
 		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
+		int h = 7;
 		while (next(pair))
-			hashCode = hashCode * 31 + pair.hashCode();
-		return hashCode;
+			h = h * 31 + pair.hashCode();
+		return h;
 	}
 
 	public boolean isAll(LngObjPredicate<V> pred) {

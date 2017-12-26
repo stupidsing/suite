@@ -243,11 +243,11 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	@Override
 	public int hashCode() {
-		int hashCode = 5;
+		int h = 7;
 		float c;
 		while ((c = source.source()) != FltFunUtil.EMPTYVALUE)
-			hashCode = hashCode * 31 + Objects.hashCode(c);
-		return hashCode;
+			h = h * 31 + Objects.hashCode(c);
+		return h;
 	}
 
 	public FltObjOutlet<Integer> index() {

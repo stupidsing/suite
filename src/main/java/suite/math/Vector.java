@@ -57,11 +57,11 @@ public class Vector {
 
 	@Override
 	public int hashCode() {
-		int result = 1;
-		result = 31 * result + Float.floatToIntBits(x);
-		result = 31 * result + Float.floatToIntBits(y);
-		result = 31 * result + Float.floatToIntBits(z);
-		return result;
+		int h = 7;
+		h = h * 31 + Float.floatToIntBits(x);
+		h = h * 31 + Float.floatToIntBits(y);
+		h = h * 31 + Float.floatToIntBits(z);
+		return h;
 	}
 
 	@Override
