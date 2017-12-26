@@ -90,6 +90,11 @@ public class Symbolic {
 		return node3;
 	}
 
+	public Node simplify(Node x, Node node) {
+		Rewrite rewrite = new Rewrite(x);
+		return rewrite.polyize(node).or(() -> rewrite.sumOfProducts(node));
+	}
+
 	private class Rewrite {
 		private Node x;
 
@@ -136,11 +141,27 @@ public class Symbolic {
 					else if ((m = matchInv.apply(node_)) != null)
 						return pos(m[0]).map(inv::apply);
 					else if ((m = matchPow.apply(node_)) != null)
-						return pos(m[0]).join2(sop(m[1])).map(matchPow::substitute);
+						if (m[1] instanceof Int) {
+							int power = ((Int) m[1]).number;
+							int div2 = power / 2;
+							int mod2 = power % 2;
+							if (power < 0)
+								return pos(matchInv.substitute(matchPow.substitute(m[0], Int.of(-power))));
+							else if (power == 0) // TODO m[0] != 0
+								return Read.empty();
+							else {
+								Streamlet<Node> n0 = pos(matchPow.substitute(m[0], Int.of(div2)));
+								Streamlet<Node> n1 = Streamlet.concat(n0, n0);
+								return mod2 != 0 ? Streamlet.concat(n1, pos(node_)) : n1;
+							}
+						} else
+							return pos(m[0]).join2(sop(m[1])).map(matchPow::substitute);
 					else if ((m = matchExp.apply(node_)) != null)
 						return sop(m[0]).map(matchExp::substitute);
 					else if (node_ instanceof Tree)
 						return Read.each(sumOfProducts(node_));
+					else if (node_ == N1)
+						return Read.empty();
 					else
 						return Read.each(node_);
 				}
@@ -153,6 +174,8 @@ public class Symbolic {
 						return sop(m[0]).map(neg::apply);
 					else if ((m = matchMul.apply(node_)) != null)
 						return sop(m[0]).join2(sop(m[1])).map(mul::apply).map(this::productOfSums);
+					else if ((m = matchPow.apply(node_)) != null)
+						return sop(productOfSums(node_));
 					else if ((m = matchLn.apply(node_)) != null)
 						return pos(m[0]).map(matchLn::substitute);
 					else if ((m = Suite.match("sin (.0 + .1)").apply(node_)) != null)
@@ -165,6 +188,8 @@ public class Symbolic {
 								mul.recompose(x, Read.each(neg.apply(matchSin.substitute(m[0])), matchSin.substitute(m[1]))));
 					else if (node_ instanceof Tree)
 						return Read.each(productOfSums(node_));
+					else if (node_ == N0)
+						return Read.empty();
 					else
 						return Read.each(node_);
 				}
@@ -193,7 +218,7 @@ public class Symbolic {
 			class Poly {
 				private Opt<Node[]> poly(Node node) {
 					Node[] m;
-					if ((m = matchAdd.apply(node)) != null) {
+					if ((m = matchAdd.apply(node)) != null)
 						return poly(m[0]).join(poly(m[1]), (ps0, ps1) -> {
 							int length0 = ps0.length;
 							int length1 = ps1.length;
@@ -201,18 +226,11 @@ public class Symbolic {
 									i < length0 ? ps0[i] : N0, //
 									i < length1 ? ps1[i] : N0));
 						});
-					} else if ((m = matchMul.apply(node)) != null) {
-						return poly(m[0]).join(poly(m[1]), (ps0, ps1) -> {
-							int length0 = ps0.length;
-							int length1 = ps1.length;
-							return To.array(length0 + length1 - 1, Node.class, i -> {
-								Node sum = N0;
-								for (int j = Math.max(0, i - length1 + 1); j <= Math.min(i, length0 - 1); j++)
-									sum = add.apply(mul.apply(ps0[j], ps1[i - j]), sum);
-								return sum;
-							});
-						});
-					} else if (node.compareTo(x) == 0)
+					else if ((m = matchMul.apply(node)) != null)
+						return multiply(poly(m[0]), poly(m[1]));
+					else if ((m = matchPow.apply(node)) != null && m[1] instanceof Int)
+						return pow(m[0], ((Int) m[1]).number);
+					else if (node.compareTo(x) == 0)
 						return Opt.of(new Node[] { N0, N1, });
 					else if (node == N0)
 						return Opt.of(new Node[] {});
@@ -220,6 +238,37 @@ public class Symbolic {
 						return Opt.of(new Node[] { node, });
 					else
 						return Opt.none();
+				}
+
+				private Opt<Node[]> pow(Node m0, int power) {
+					return polyize(m0).concatMap(n -> {
+						if (power < 0)
+							return Opt.none();
+						else if (power == 0) // TODO m[0] != 0
+							return Opt.of(new Node[] { N1, });
+						else {
+							int div2 = power / 2;
+							int mod2 = power % 2;
+							Opt<Node[]> opt0 = pow(m0, div2);
+							Opt<Node[]> opt1 = multiply(opt0, opt0);
+							return mod2 != 0 ? multiply(opt1, poly(n)) : opt1;
+						}
+					});
+				}
+
+				private Opt<Node[]> multiply(Opt<Node[]> opt0, Opt<Node[]> opt1) {
+					return opt0.join(opt1, (ps0, ps1) -> {
+						int length0 = ps0.length;
+						int length1 = ps1.length;
+						return To.array(length0 + length1 - 1, Node.class, p -> {
+							Node sum = N0;
+							int s = Math.max(0, p - length1 + 1);
+							int e = Math.min(p, length0 - 1);
+							for (int i = s; i <= e; i++)
+								sum = add.apply(mul.apply(ps0[i], ps1[p - i]), sum);
+							return sum;
+						});
+					});
 				}
 			}
 
