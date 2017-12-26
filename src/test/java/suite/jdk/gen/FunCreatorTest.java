@@ -10,11 +10,16 @@ import java.util.function.BiPredicate;
 import org.apache.bcel.generic.Type;
 import org.junit.Test;
 
+import suite.Suite;
 import suite.inspect.Dump;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
+import suite.node.Int;
+import suite.node.Node;
+import suite.node.Tree;
+import suite.node.io.TermOp;
 import suite.primitive.Flt_Flt;
 import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.Int_Int;
@@ -71,6 +76,21 @@ public class FunCreatorTest {
 	public void testConstant() {
 		Iterate<FunExpr> fun = i -> f.int_(1);
 		assertEquals(1, LambdaInstance.of(IntSource.class, fun).newFun().source());
+	}
+
+	@Test
+	public void testExpression() {
+		Int N1 = Int.of(1);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		FunCreator<Source<Node>> fc = (FunCreator) FunCreator.of(Source.class);
+		assertEquals(Suite.parse("1"), fc.create(() -> f.object(N1)).apply(void_).source());
+		assertEquals(Suite.parse("1 + 1"), fc.create(() -> f //
+				.invokeStatic(Tree.class, "of", //
+						f.object(TermOp.PLUS__), //
+						f.object(N1).cast(Node.class), //
+						f.object(N1).cast(Node.class))) //
+				.apply(void_) //
+				.source());
 	}
 
 	@Test
