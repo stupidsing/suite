@@ -18,6 +18,7 @@ import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import suite.jdk.gen.FunExprM.ArrayFunExpr;
 import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
 import suite.jdk.gen.FunExprM.BinaryFunExpr;
 import suite.jdk.gen.FunExprM.CastFunExpr;
@@ -83,7 +84,21 @@ public class FunGenerateBytecode {
 	}
 
 	public void visit_(FunExpr e0) {
-		if (e0 instanceof AssignLocalFunExpr) {
+		if (e0 instanceof ArrayFunExpr) {
+			ArrayFunExpr e1 = (ArrayFunExpr) e0;
+			FunExpr[] elements = e1.elements;
+			list.add(factory.createConstant(elements.length));
+			list.add(factory.createNewArray(Type.getType(e1.clazz), (short) 1));
+			for (int i = 0; i < elements.length; i++) {
+				FunExpr element = elements[i];
+				if (element != null) {
+					list.add(InstructionFactory.createDup(1));
+					list.add(factory.createConstant(i));
+					visit_(element);
+					list.add(InstructionFactory.createArrayStore(fti.typeOf(element)));
+				}
+			}
+		} else if (e0 instanceof AssignLocalFunExpr) {
 			AssignLocalFunExpr e1 = (AssignLocalFunExpr) e0;
 			visit_(e1.value);
 			list.add(InstructionFactory.createStore(fti.typeOf(e1.value), e1.index));
@@ -167,12 +182,12 @@ public class FunGenerateBytecode {
 			String implClassName = e1.className;
 			int classIndex = cpg.addClass(implClassName);
 			list.add(new NEW(classIndex));
-			list.add(InstructionFactory.createDup(0));
+			list.add(InstructionFactory.createDup(1));
 			list.add(factory.createInvoke(implClassName, "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
 
 			for (Entry<String, FunExpr> e : e1.fieldValues.entrySet()) {
 				FunExpr value = e.getValue();
-				list.add(InstructionFactory.createDup(0));
+				list.add(InstructionFactory.createDup(1));
 				visit_(value);
 				list.add(factory.createPutField(implClassName, e.getKey(), fti.typeOf(value)));
 			}
@@ -187,7 +202,7 @@ public class FunGenerateBytecode {
 		} else if (e0 instanceof ProfileFunExpr) {
 			ProfileFunExpr e1 = (ProfileFunExpr) e0;
 			list.add(InstructionFactory.createLoad(Type.OBJECT, 0));
-			list.add(InstructionFactory.createDup(0));
+			list.add(InstructionFactory.createDup(1));
 			list.add(factory.createGetField(className, e1.counterFieldName, Type.INT));
 			list.add(factory.createConstant(1));
 			list.add(InstructionFactory.createBinaryOperation("+", Type.INT));

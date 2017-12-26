@@ -30,6 +30,7 @@ import suite.lp.sewing.SewingBinder.BindPredicate;
 import suite.lp.sewing.SewingCloner.Clone_;
 import suite.lp.sewing.SewingExpression.Evaluate;
 import suite.lp.sewing.SewingProver;
+import suite.lp.sewing.VariableMapper;
 import suite.lp.sewing.VariableMapper.Env;
 import suite.node.Atom;
 import suite.node.Data;
@@ -500,7 +501,7 @@ public class SewingProverImpl implements SewingProver {
 			tr = if_(tr0, tr1, tr2);
 		} else if ((m = Suite.match("let .0 .1").apply(node)) != null) {
 			BindPredicate p = sb.compileBind(m[0]);
-			Evaluate eval = new SewingExpressionImpl0(sb).compile(m[1]);
+			Evaluate eval = new SewingExpressionImpl(sb).compile(m[1]);
 			tr = rt -> p.test(rt, Int.of(eval.evaluate(rt.env))) ? okay : fail;
 		} else if ((m = Suite.match("list.fold .0/.1/.2 .3").apply(node)) != null) {
 			Clone_ list0_ = sb.compile(m[0]);
@@ -925,7 +926,7 @@ public class SewingProverImpl implements SewingProver {
 		if (tree != null)
 			return 1 + Math.max(complexity(tree.getLeft()), complexity(tree.getRight()));
 		else
-			return node instanceof Atom && SewingGeneralizerImpl.isVariable(((Atom) node).name) ? 0 : 1;
+			return node instanceof Atom && VariableMapper.isVariable(((Atom) node).name) ? 0 : 1;
 	}
 
 	private Mutable<Cps> getCpsByPrototype(Prototype prototype) {

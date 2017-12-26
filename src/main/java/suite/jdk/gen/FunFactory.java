@@ -1,5 +1,6 @@
 package suite.jdk.gen;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -16,6 +17,7 @@ import suite.jdk.gen.FunExprL.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExprL.FieldInjectFunExpr;
 import suite.jdk.gen.FunExprL.InvokeLambdaFunExpr;
 import suite.jdk.gen.FunExprL.ObjectFunExpr;
+import suite.jdk.gen.FunExprM.ArrayFunExpr;
 import suite.jdk.gen.FunExprM.BinaryFunExpr;
 import suite.jdk.gen.FunExprM.ConstantFunExpr;
 import suite.jdk.gen.FunExprM.If1FunExpr;
@@ -23,6 +25,7 @@ import suite.jdk.gen.FunExprM.If2FunExpr;
 import suite.jdk.gen.FunExprM.IfNonNullFunExpr;
 import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExprM.LocalFunExpr;
+import suite.jdk.gen.FunExprM.NewFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
@@ -65,6 +68,13 @@ public class FunFactory {
 			return expr;
 		} else
 			return _true();
+	}
+
+	public FunExpr array(Class<?> clazz, FunExpr... elements) {
+		ArrayFunExpr expr = new ArrayFunExpr();
+		expr.clazz = clazz;
+		expr.elements = elements;
+		return expr;
 	}
 
 	public FunExpr bi(String op, FunExpr e0, FunExpr e1) {
@@ -168,6 +178,15 @@ public class FunFactory {
 	public FunExpr local(int number) { // 0 means this
 		LocalFunExpr expr = new LocalFunExpr();
 		expr.index = number;
+		return expr;
+	}
+
+	public FunExpr new_(Class<?> clazz) {
+		NewFunExpr expr = new NewFunExpr();
+		expr.className = clazz.getName();
+		expr.fieldValues = new HashMap<>();
+		expr.implementationClass = clazz;
+		expr.interfaceClass = clazz;
 		return expr;
 	}
 

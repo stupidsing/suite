@@ -11,11 +11,11 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.IntInt_Int;
 
-public class SewingExpressionImpl0 implements SewingExpression {
+public class SewingExpressionImpl implements SewingExpression {
 
 	private SewingCloner sc;
 
-	public SewingExpressionImpl0(SewingCloner sc) {
+	public SewingExpressionImpl(SewingCloner sc) {
 		this.sc = sc;
 	}
 

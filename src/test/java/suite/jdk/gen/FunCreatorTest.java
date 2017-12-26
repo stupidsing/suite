@@ -18,6 +18,7 @@ import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
 import suite.node.Int;
 import suite.node.Node;
+import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.primitive.Flt_Flt;
@@ -54,6 +55,12 @@ public class FunCreatorTest {
 		LambdaInstance<Int_Int> lambda0 = LambdaInstance.of(Int_Int.class, i -> f.add(f.int_(1), i));
 		LambdaInstance<Int_Int> lambda1 = LambdaInstance.of(Int_Int.class, i -> f.add(f.int_(1), lambda0.invoke(i)));
 		assertEquals(2, lambda1.newFun().apply(0));
+	}
+
+	@Test
+	public void testArray() {
+		LambdaInstance<Int_Int> lambda = LambdaInstance.of(Int_Int.class, i -> f.array(int.class, f.int_(1), f.int_(0)).index(i));
+		assertEquals(1, lambda.newFun().apply(0));
 	}
 
 	@Test
@@ -138,6 +145,13 @@ public class FunCreatorTest {
 	public void testLocal() {
 		Iterate<FunExpr> fun = p -> f.declare(f.int_(1), l -> f.add(l, p));
 		assertEquals(4, LambdaInstance.of(Int_Int.class, fun).newFun().apply(3));
+	}
+
+	@Test
+	public void testNew() {
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		FunCreator<Source<Node>> fc = (FunCreator) FunCreator.of(Source.class);
+		assertTrue(fc.create(() -> f.new_(Reference.class)).apply(void_).source() instanceof Reference);
 	}
 
 	@Test

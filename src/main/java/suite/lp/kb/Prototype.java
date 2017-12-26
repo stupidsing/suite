@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import suite.adt.map.ListMultimap;
-import suite.lp.sewing.impl.SewingGeneralizerImpl;
+import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
@@ -57,7 +57,7 @@ public class Prototype implements Comparable<Prototype> {
 			node = t0.getLeft();
 		}
 
-		boolean indexable = !SewingGeneralizerImpl.isVariant(node) && !(node instanceof Reference);
+		boolean indexable = !VariableMapper.isVariant(node) && !(node instanceof Reference);
 		return indexable ? new Prototype(node) : null;
 	}
 

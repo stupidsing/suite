@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.adt.pair.Pair;
-import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.SewingGeneralizer;
+import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
@@ -45,9 +45,9 @@ public class SewingGeneralizerImpl extends VariableMapperImpl implements SewingG
 
 			if (node0 instanceof Atom) {
 				String name = ((Atom) node0).name;
-				if (isWildcard(name))
+				if (VariableMapper.isWildcard(name))
 					fun = env -> new Reference();
-				else if (isVariable(name) || isCut(node0)) {
+				else if (VariableMapper.isVariable(name) || VariableMapper.isCut(node0)) {
 					int index = findVariableIndex(node0);
 					fun = env -> env.get(index);
 				} else
@@ -94,29 +94,6 @@ public class SewingGeneralizerImpl extends VariableMapperImpl implements SewingG
 			};
 		else
 			return funs.get(0);
-	}
-
-	/**
-	 * Would a certain end-node be generalized?
-	 */
-	public static boolean isVariant(Node node) {
-		if (node instanceof Atom) {
-			String name = ((Atom) node).name;
-			return isWildcard(name) || isVariable(name) || isCut(node);
-		} else
-			return false;
-	}
-
-	public static boolean isWildcard(String name) {
-		return name.startsWith(ProverConstant.wildcardPrefix);
-	}
-
-	public static boolean isVariable(String name) {
-		return name.startsWith(ProverConstant.variablePrefix);
-	}
-
-	public static boolean isCut(Node node) {
-		return node == ProverConstant.cut;
 	}
 
 }

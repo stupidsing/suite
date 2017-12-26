@@ -17,6 +17,11 @@ import suite.util.Util;
  */
 public class FunExprM {
 
+	public static class ArrayFunExpr extends FunExpr {
+		public Class<?> clazz;
+		public FunExpr[] elements;
+	}
+
 	public static class AssignLocalFunExpr extends FunExpr {
 		public int index;
 		public FunExpr value;

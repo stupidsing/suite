@@ -1,4 +1,4 @@
-package suite.lp.sewing.impl;
+package suite.lp.compile.impl;
 
 import java.util.Map;
 
@@ -17,14 +17,14 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.util.TreeUtil;
 
-public class SewingExpressionImpl1 implements SewingExpression {
+public class CompileExpressionImpl implements SewingExpression {
 
 	private static FunFactory f = new FunFactory();
 	private static LambdaInterface<Evaluate> lambdaInterface = LambdaInterface.of(Evaluate.class);
 
 	private SewingCloner sc;
 
-	public SewingExpressionImpl1(SewingCloner sc) {
+	public CompileExpressionImpl(SewingCloner sc) {
 		this.sc = sc;
 	}
 
