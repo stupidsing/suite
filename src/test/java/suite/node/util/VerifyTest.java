@@ -21,9 +21,11 @@ import suite.util.FunUtil2.Fun2;
 /**
  * TODO ZFC
  * 
+ * TODO define "there exists"
+ * 
  * TODO define finite
  *
- * @author CONT-YW_SING
+ * @author ywsing
  */
 public class VerifyTest {
 
