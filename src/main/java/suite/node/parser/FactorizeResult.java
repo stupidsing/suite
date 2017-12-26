@@ -25,6 +25,7 @@ public class FactorizeResult {
 
 	private static Inspect inspect = Singleton.me.inspect;
 	private static Nodify nodify = Singleton.me.nodify;
+	private static TreeRewriter trw = new TreeRewriter();
 
 	public final Chars pre;
 	public final FNode node;
@@ -109,7 +110,6 @@ public class FactorizeResult {
 
 	public static FactorizeResult rewrite(FactorizeResult frfrom, FactorizeResult frto, FactorizeResult fr0) {
 		Generalizer generalizer = new Generalizer();
-		TreeRewriter tr = new TreeRewriter();
 
 		Iterate<Node> rewrite = n0 -> {
 			Node[] m = Suite.match(FTerminal.class.getName() + ":.0").apply(n0);
@@ -121,14 +121,14 @@ public class FactorizeResult {
 			return b ? generalizer.generalize(Atom.of(s)) : n0;
 		};
 
-		Fun<FactorizeResult, Node> parse = fr -> tr.rewrite(rewrite, nodify.nodify(FNode.class, fr.node));
+		Fun<FactorizeResult, Node> parse = fr -> trw.rewrite(rewrite, nodify.nodify(FNode.class, fr.node));
 
 		Node nodeFrom = parse.apply(frfrom);
 		Node nodeTo = parse.apply(frto);
 
 		FNode fn0 = fr0.node;
 		Node node0 = nodify.nodify(FNode.class, fn0);
-		Node nodex = tr.rewrite(nodeFrom, nodeTo, node0);
+		Node nodex = trw.rewrite(nodeFrom, nodeTo, node0);
 		FNode fnx = nodify.unnodify(FNode.class, nodex);
 		return new FactorizeResult(fr0.pre, fnx, fr0.post);
 	}

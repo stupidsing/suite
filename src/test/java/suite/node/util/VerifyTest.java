@@ -210,32 +210,32 @@ public class VerifyTest {
 			LogUtil.info("proven :: " + node);
 			return node;
 		}
+	}
 
-		private Node replace(Node node, Node from, Node to) {
-			return new Object() {
-				private Node replace(Node node_) {
-					Generalizer generalizer = new Generalizer();
-					Node t0 = generalizer.generalize(from);
-					Node t1 = generalizer.generalize(to);
-					Trail trail = new Trail();
+	private Node replace(Node node, Node from, Node to) {
+		return new Object() {
+			private Node replace(Node node_) {
+				Generalizer generalizer = new Generalizer();
+				Node t0 = generalizer.generalize(from);
+				Node t1 = generalizer.generalize(to);
+				Trail trail = new Trail();
 
-					if (Binder.bind(node_, t0, trail))
-						return t1;
-					else
-						trail.unwindAll();
+				if (Binder.bind(node_, t0, trail))
+					return t1;
+				else
+					trail.unwindAll();
 
-					Tree tree = Tree.decompose(node_);
+				Tree tree = Tree.decompose(node_);
 
-					return tree != null //
-							? Tree.of(tree.getOperator(), replace(tree.getLeft()), replace(tree.getRight())) //
-							: node_;
-				}
-			}.replace(node);
-		}
+				return tree != null //
+						? Tree.of(tree.getOperator(), replace(tree.getLeft()), replace(tree.getRight())) //
+						: node_;
+			}
+		}.replace(node);
+	}
 
-		private String name(Node node) {
-			return ((Atom) node).name;
-		}
+	private String name(Node node) {
+		return ((Atom) node).name;
 	}
 
 }

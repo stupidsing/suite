@@ -69,6 +69,8 @@ import suite.util.String_;
  */
 public class SewingProverImpl implements SewingProver {
 
+	private static TreeRewriter trw = new TreeRewriter();
+
 	private enum TraceLevel {
 		NONE, STACK, TRACE,
 	}
@@ -280,7 +282,7 @@ public class SewingProverImpl implements SewingProver {
 
 	private boolean isHasCut(List<Rule> rules) {
 		return Boolean.TRUE || Read.from(rules) //
-				.map(rule -> new TreeRewriter().contains(ProverConstant.cut, rule.tail)) //
+				.map(rule -> trw.contains(ProverConstant.cut, rule.tail)) //
 				.isAny(b -> b);
 	}
 

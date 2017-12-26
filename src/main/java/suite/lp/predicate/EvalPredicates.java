@@ -36,6 +36,8 @@ import suite.util.Memoize;
 public class EvalPredicates {
 
 	private static Random random = new Random();
+	private static Specializer specializer = new Specializer();
+	private static TreeRewriter trw = new TreeRewriter();
 
 	private Comparer comparer = Comparer.comparer;
 	private Fun<String, ScriptEngine> engines = Memoize.fun(new ScriptEngineManager()::getEngineByExtension);
@@ -46,7 +48,7 @@ public class EvalPredicates {
 
 	public BuiltinPredicate complexity = PredicateUtil.fun(n -> Int.of(new Complexity().complexity(n)));
 
-	public BuiltinPredicate contains = PredicateUtil.p2((prover, p0, p1) -> new TreeRewriter().contains(p0, p1));
+	public BuiltinPredicate contains = PredicateUtil.p2((prover, p0, p1) -> trw.contains(p0, p1));
 
 	public BuiltinPredicate compare = (prover, ps) -> {
 		Tree tree = (Tree) ps;
@@ -75,9 +77,7 @@ public class EvalPredicates {
 
 		try {
 			result = engines.apply("js").eval(js);
-		} catch (ScriptException ex)
-
-		{
+		} catch (ScriptException ex) {
 			LogUtil.error(ex);
 			return false;
 		}
@@ -143,15 +143,13 @@ public class EvalPredicates {
 
 	public BuiltinPredicate randomPredicate = PredicateUtil.fun(n -> Int.of(random.nextInt(((Int) n).number)));
 
-	public BuiltinPredicate replace = PredicateUtil
-			.p4((prover, from, to, n0, nx) -> prover.bind(new TreeRewriter().replace(from, to, n0), nx));
+	public BuiltinPredicate replace = PredicateUtil.p4((prover, from, to, n0, nx) -> prover.bind(trw.replace(from, to, n0), nx));
 
-	public BuiltinPredicate rewrite = PredicateUtil
-			.p4((prover, from, to, n0, nx) -> prover.bind(new TreeRewriter().rewrite(from, to, n0), nx));
+	public BuiltinPredicate rewrite = PredicateUtil.p4((prover, from, to, n0, nx) -> prover.bind(trw.rewrite(from, to, n0), nx));
 
 	public BuiltinPredicate same = PredicateUtil.p2((prover, p0, p1) -> p0 == p1);
 
-	public BuiltinPredicate specialize = PredicateUtil.fun(new Specializer()::specialize);
+	public BuiltinPredicate specialize = PredicateUtil.fun(specializer::specialize);
 
 	public BuiltinPredicate temp = PredicateUtil.p1((prover, p0) -> prover.bind(p0, Atom.temp()));
 

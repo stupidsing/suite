@@ -34,6 +34,7 @@ public class RecursiveFactorizerTest {
 
 	private Nodify nodify = Singleton.me.nodify;
 	private RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
+	private TreeRewriter tr = new TreeRewriter();
 
 	@Test
 	public void testParseUnparse() {
@@ -115,8 +116,6 @@ public class RecursiveFactorizerTest {
 
 			return new Node[] { fun.apply(pred0).apply(false), fun.apply(predx).apply(true) };
 		};
-
-		TreeRewriter tr = new TreeRewriter();
 
 		FactorizeResult fr0 = recursiveFactorizer.parse(s0);
 		FNode fn0 = fr0.node;

@@ -19,6 +19,8 @@ import suite.node.util.TreeUtil;
 
 public class StackAssembler {
 
+	private TreeRewriter trw = new TreeRewriter();
+
 	private Node rsOp0 = Atom.of("$0");
 	private Node rsOp1 = Atom.of("$1");
 	private Node[] registers = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI") };
@@ -120,9 +122,9 @@ public class StackAssembler {
 
 	private Node rewrite(int sp, Node n) {
 		if (0 <= sp - 1)
-			n = new TreeRewriter().replace(rsOp0, getRegister(sp - 1), n);
+			n = trw.replace(rsOp0, getRegister(sp - 1), n);
 		if (0 <= sp - 2)
-			n = new TreeRewriter().replace(rsOp1, getRegister(sp - 2), n);
+			n = trw.replace(rsOp1, getRegister(sp - 2), n);
 		return n;
 	}
 

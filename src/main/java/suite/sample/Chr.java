@@ -32,6 +32,8 @@ import suite.util.To;
  */
 public class Chr {
 
+	private TreeRewriter trw = new TreeRewriter();
+
 	private List<Rule> rules = new ArrayList<>();
 	private Prover prover = new Prover(Suite.newRuleSet());
 
@@ -166,7 +168,7 @@ public class Chr {
 				private ISet<Node> replace(ISet<Node> facts) {
 					ISet<Node> facts1 = new ISet<>();
 					for (Node node : facts)
-						facts1 = facts1.replace(new TreeRewriter().replace(from, to, node));
+						facts1 = facts1.replace(trw.replace(from, to, node));
 					return facts1;
 				}
 			});
