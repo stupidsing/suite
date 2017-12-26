@@ -86,12 +86,15 @@ public class Symbolic {
 		Rewrite rewrite = new Rewrite(x);
 		Node node1 = rewrite.rewrite(node0);
 		Node node2 = Boolean.TRUE ? rewrite.d(node1) : rewrite.i(node1).get();
-		Node node3 = rewrite.polyize(node2).or(() -> rewrite.sumOfProducts(node2));
+		Node node3 = simplify(rewrite, node2);
 		return node3;
 	}
 
 	public Node simplify(Node x, Node node) {
-		Rewrite rewrite = new Rewrite(x);
+		return simplify(new Rewrite(x), node);
+	}
+
+	private Node simplify(Rewrite rewrite, Node node) {
 		return rewrite.polyize(node).or(() -> rewrite.sumOfProducts(node));
 	}
 
