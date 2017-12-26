@@ -14,15 +14,15 @@ import suite.node.Tuple;
 import suite.node.io.Operator;
 import suite.streamlet.Read;
 
-public class SewingBinderImpl0 extends SewingClonerImpl implements SewingBinder {
+public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
 
 	private boolean isBindTrees;
 
-	public SewingBinderImpl0() {
+	public SewingBinderImpl() {
 		this(true);
 	}
 
-	public SewingBinderImpl0(boolean isBindTrees) {
+	public SewingBinderImpl(boolean isBindTrees) {
 		this.isBindTrees = isBindTrees;
 	}
 

@@ -300,7 +300,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private Cps compileCpsRule(Node head, Node tail) {
-		SewingBinder sb = new SewingBinderImpl0();
+		SewingBinder sb = new SewingBinderImpl();
 		BindPredicate p = sb.compileBind(head);
 		Cps cps = compileCps(sb, tail, rt -> rt.cps);
 		return newEnvCps(sb, rt -> p.test(rt, rt.query) ? cps : null);
@@ -446,7 +446,7 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private Trampoline compileTrRule(Node head, Node tail) {
-		SewingBinder sb = new SewingBinderImpl0();
+		SewingBinder sb = new SewingBinderImpl();
 		BindPredicate p = sb.compileBind(head);
 		Trampoline tr1 = compileTr(sb, tail);
 		return newEnvTr(sb, rt -> p.test(rt, rt.query) ? tr1 : fail);

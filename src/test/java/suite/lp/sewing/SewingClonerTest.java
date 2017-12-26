@@ -10,7 +10,7 @@ import suite.lp.doer.Generalizer;
 import suite.lp.sewing.SewingBinder.BindEnv;
 import suite.lp.sewing.SewingBinder.BindPredicate;
 import suite.lp.sewing.VariableMapper.Env;
-import suite.lp.sewing.impl.SewingBinderImpl0;
+import suite.lp.sewing.impl.SewingBinderImpl;
 import suite.node.Node;
 
 public class SewingClonerTest {
@@ -27,7 +27,7 @@ public class SewingClonerTest {
 
 	private void test(String pattern, String match) {
 		Node node = new Generalizer().generalize(Suite.parse(pattern));
-		SewingBinder sb = new SewingBinderImpl0();
+		SewingBinder sb = new SewingBinderImpl();
 		BindPredicate p = sb.compileBind(node);
 		Env env = sb.env();
 		Trail trail = new Trail();

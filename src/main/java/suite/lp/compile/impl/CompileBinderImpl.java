@@ -1,4 +1,4 @@
-package suite.lp.sewing.impl;
+package suite.lp.compile.impl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +13,7 @@ import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
 import suite.lp.doer.Binder;
 import suite.lp.sewing.SewingBinder;
+import suite.lp.sewing.impl.SewingClonerImpl;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -25,18 +26,18 @@ import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 
-public class SewingBinderImpl1 extends SewingClonerImpl implements SewingBinder {
+public class CompileBinderImpl extends SewingClonerImpl implements SewingBinder {
 
 	private static FunFactory f = new FunFactory();
 	private static LambdaInterface<BindPredicate> lambdaClass = LambdaInterface.of(BindPredicate.class, "test");
 
 	private boolean isBindTrees;
 
-	public SewingBinderImpl1() {
+	public CompileBinderImpl() {
 		this(true);
 	}
 
-	public SewingBinderImpl1(boolean isBindTrees) {
+	public CompileBinderImpl(boolean isBindTrees) {
 		this.isBindTrees = isBindTrees;
 	}
 
