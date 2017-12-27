@@ -376,9 +376,8 @@ public class Arima {
 			for (int t = 0; t < length; t++) {
 				int tp = t + p;
 				int tq = t + q;
-				double eps1 = xsp[tp] - forecast(xsp, eps, t);
-				double diff = eps1 - eps[tq];
-				eps[tq] = (float) eps1;
+				double diff = xsp[tp] - forecast(xsp, eps, t);
+				eps[tq] = (float) diff;
 				error += diff * diff;
 			}
 
