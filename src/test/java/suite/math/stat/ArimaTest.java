@@ -18,12 +18,12 @@ public class ArimaTest {
 
 	@Test
 	public void testArma20() {
-		testArma(new float[] { .5f, .5f, }, new float[] {});
+		test(new float[] { .5f, .5f, }, new float[] {});
 	}
 
 	@Test
 	public void testArma02() {
-		testArma(new float[] {}, new float[] { .5f, .5f, });
+		test(new float[] {}, new float[] { .5f, .5f, });
 	}
 
 	@Test
@@ -33,7 +33,7 @@ public class ArimaTest {
 		System.out.println(Arrays.toString(arima.armaBackcast(xs, new float[] {}, new float[] { 1f, 1f, 1f, 1f, }).mas));
 	}
 
-	private void testArma(float[] ars, float[] mas) {
+	private void test(float[] ars, float[] mas) {
 		float[] xs = generate(256, ars, mas);
 		Arima_ a = arima.arimaBackcast(xs, ars.length, 0, mas.length).t1;
 		System.out.println("x = " + Arrays.toString(xs));

@@ -272,12 +272,12 @@ public class Arima {
 
 	private Arima_ armaMle(float[] xs, int p, int q) {
 		int length = xs.length;
-		float[] xsp = Floats_.concat(new float[q], xs);
+		float[] xsp = Floats_.concat(new float[p], xs);
 		float[] eps = new float[length + q];
 
 		class LogLikelihood implements DblSource {
-			private float[] ars = To.vector(p, i -> random.nextDouble() * .01d);
-			private float[] mas = To.vector(q, i -> random.nextDouble() * .01d);
+			private float[] ars = To.vector(p, i -> random.nextGaussian());
+			private float[] mas = To.vector(q, i -> random.nextGaussian());
 			private Arma arma = new Arma(ars, mas);
 
 			public double source() {
