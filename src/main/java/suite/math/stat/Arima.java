@@ -281,6 +281,8 @@ public class Arima {
 			private Arma arma = new Arma(ars, mas);
 
 			public double source() {
+				if (0 < q)
+					mas[0] = 1f;
 				arma.backcast(xsp, eps);
 				return -arma.forwardRecursion(xsp, eps);
 			}
