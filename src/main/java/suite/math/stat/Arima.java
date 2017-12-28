@@ -208,7 +208,7 @@ public class Arima {
 		// + eps[t]
 		// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 		// when t = x.length
-		double x1 = new Arma(ars, mas).forecast(xs, eps);
+		double x1 = new Arma(ars, mas).forecast(xsp, eps);
 
 		return new Arima_(ars, mas, (float) x1);
 	}
