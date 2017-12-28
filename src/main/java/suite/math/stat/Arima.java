@@ -109,9 +109,10 @@ public class Arima {
 			double error = arma.forwardRecursion(xsp, epq);
 
 			// minimization
-			// xs[t] - ep[t]
+			// xs[t]
 			// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
 			// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
+			// + ep[t]
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
