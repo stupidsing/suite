@@ -369,7 +369,7 @@ public class Arima {
 
 			for (int t = qm1; 0 <= t; t--) {
 				double sum = forecast(xsp, epq, t, p, qm1);
-				epq[t] = (float) ((xsp[t + p] - epq[t + q] - sum) / mas[qm1]);
+				epq[t] = (float) ((xsp[t + p] - sum) / mas[qm1]);
 			}
 		}
 
