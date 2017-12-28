@@ -131,7 +131,7 @@ public class Arima {
 			Floats_.copy(coefficients, p, mas, 0, q);
 		}
 
-		double x1 = arma.forecast(xsp, epq);
+		double x1 = arma.sum(xsp, epq);
 		return new Arima_(ars, mas, (float) x1);
 	}
 
@@ -205,7 +205,7 @@ public class Arima {
 		// + ep[t]
 		// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 		// when t = xs.length
-		double x1 = new Arma(ars, mas).forecast(xsp, epq);
+		double x1 = new Arma(ars, mas).sum(xsp, epq);
 
 		return new Arima_(ars, mas, (float) x1);
 	}
@@ -286,8 +286,6 @@ public class Arima {
 			private Arma arma = new Arma(ars, mas);
 
 			public double source() {
-				if (0 < q)
-					mas[0] = 1f;
 				arma.backcast(xsp, epq);
 				return -arma.forwardRecursion(xsp, epq);
 			}
@@ -297,7 +295,7 @@ public class Arima {
 		float[] ars = ll.ars;
 		float[] mas = ll.mas;
 
-		double x1 = ll.arma.forecast(xsp, epq);
+		double x1 = ll.arma.sum(xsp, epq);
 		return new Arima_(ars, mas, (float) x1);
 	}
 
@@ -369,7 +367,7 @@ public class Arima {
 			int qm1 = q - 1;
 
 			for (int t = qm1; 0 <= t; t--) {
-				double sum = accum(xsp, epq, t, p, qm1);
+				double sum = sum(xsp, epq, t, p, qm1);
 				epq[t] = (float) ((xsp[t + p] - epq[t + q] - sum) / mas[qm1]);
 			}
 		}
@@ -381,7 +379,7 @@ public class Arima {
 			for (int t = 0; t < length; t++) {
 				int tp = t + p;
 				int tq = t + q;
-				double ep = xsp[tp] - accum(xsp, epq, t, p, q);
+				double ep = xsp[tp] - sum(xsp, epq, t, p, q);
 				epq[tq] = (float) ep;
 				error += ep * ep;
 			}
@@ -389,11 +387,11 @@ public class Arima {
 			return error;
 		}
 
-		private double forecast(float[] xsp, float[] epq) {
-			return accum(xsp, epq, xsp.length - p, p, q);
+		private double sum(float[] xsp, float[] epq) {
+			return sum(xsp, epq, xsp.length - p, p, q);
 		}
 
-		private double accum(float[] xsp, float[] epq, int t, int p_, int q_) {
+		private double sum(float[] xsp, float[] epq, int t, int p_, int q_) {
 			int tpm1 = t + p - 1;
 			int tqm1 = t + q - 1;
 			return 0d //
