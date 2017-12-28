@@ -368,8 +368,8 @@ public class Arima {
 			int qm1 = q - 1;
 
 			for (int t = qm1; 0 <= t; t--) {
-				double sum = forecast(xsp, epq, t, p, qm1);
-				epq[t] = (float) ((xsp[t + p] - sum) / mas[qm1]);
+				double sum = accum(xsp, epq, t, p, qm1);
+				epq[t] = (float) ((xsp[t + p] - epq[t + q] - sum) / mas[qm1]);
 			}
 		}
 
@@ -390,10 +390,6 @@ public class Arima {
 
 		private double forecast(float[] xsp, float[] epq) {
 			return accum(xsp, epq, xsp.length - p, p, q);
-		}
-
-		private double forecast(float[] xsp, float[] epq, int t, int p_, int q_) {
-			return accum(xsp, epq, t, p_, q_);
 		}
 
 		private double accum(float[] xsp, float[] epq, int t, int p_, int q_) {
