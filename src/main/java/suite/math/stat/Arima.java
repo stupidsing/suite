@@ -231,6 +231,8 @@ public class Arima {
 		float[] xsp = new float[length + p];
 		int pm1 = p - 1;
 		int qm1 = q - 1;
+		int lengthp = length + p, lengthpm1 = lengthp - 1;
+		int lengthq = length + q, lengthqm1 = lengthq - 1;
 		int iter = 0;
 		float[][] epqByIter = new float[q][];
 
@@ -243,12 +245,13 @@ public class Arima {
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
-						int tqm1 = t + qm1;
+						int tp = t + p;
+						int tq = t + q, tqm1 = tq - 1;
 						float[] lrxs = Floats_ //
-								.concat(Floats_.reverse(xsp, t, t + p),
+								.concat(Floats_.reverse(xsp, t, tp),
 										Ints_.range(iter_).collect(Int_Flt.lift(i -> epqByIter[i][tqm1 - i]))) //
 								.toArray();
-						return FltObjPair.of(xs[t], lrxs);
+						return FltObjPair.of(xsp[tp], lrxs);
 					}));
 
 			float[] coeffs = lr.coefficients();
@@ -260,8 +263,8 @@ public class Arima {
 				float[] mas = Floats.of(coeffs, p).toArray();
 
 				double x1 = 0d //
-						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[length - i + pm1])) //
-						+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * epqByIter[i][length - i + qm1]));
+						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[lengthpm1 - i])) //
+						+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * epqByIter[i][lengthqm1 - i]));
 
 				return new Arima_(ars, mas, (float) x1);
 			}
@@ -381,9 +384,9 @@ public class Arima {
 			for (int t = 0; t < length; t++) {
 				int tp = t + p;
 				int tq = t + q;
-				double diff = xsp[tp] - forecast(xsp, epq, t);
-				epq[tq] = (float) diff;
-				error += diff * diff;
+				double ep = xsp[tp] - forecast(xsp, epq, t);
+				epq[tq] = (float) ep;
+				error += ep * ep;
 			}
 
 			return error;
