@@ -28,9 +28,8 @@ public class ArimaTest {
 
 	@Test
 	public void testMa2() {
-		float[] mas = new float[] { .5f, -.5f, };
-		float[] xs = generate(256, new float[] {}, Floats_.concat(new float[] { 1f, }, mas));
-		System.out.println(Arrays.toString(arima.armaBackcast(xs, new float[] {}, new float[] { 1f, 1f, 1f, 1f, }).mas));
+		float[] xs = generate(256, new float[] {}, new float[] { .5f, -.5f, });
+		System.out.println(Arrays.toString(arima.armaBackcast(xs, new float[] {}, new float[] { 1f, 1f, 1f, }).mas));
 	}
 
 	private void test(float[] ars, float[] mas) {
@@ -45,19 +44,13 @@ public class ArimaTest {
 	private float[] generate(int length, float[] ars, float[] mas) {
 		int p = ars.length;
 		int q = mas.length;
-		int qp = q - p;
-		int lengthp = length + p;
-		float[] xsp = new float[lengthp];
+		float[] xsp = Floats_.concat(To.vector(p, i -> 8f * random.nextDouble()), new float[length]);
 		float[] epq = To.vector(length + q, i -> random.nextGaussian());
-		int tp = 0;
 
-		while (tp < p)
-			xsp[tp++] = 8f * random.nextFloat();
-
-		while (tp < lengthp) {
-			int tpm1 = tp - 1;
-			int tqm1 = tpm1 + qp;
-			xsp[tp++] = (float) (0d //
+		for (int t = 0; t < length; t++) {
+			int tp = t + p, tpm1 = tp - 1;
+			int tq = t + q, tqm1 = tq - 1;
+			xsp[tp++] = (float) (epq[tq] //
 					+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i])) //
 					+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * epq[tqm1 - i])));
 		}
