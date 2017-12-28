@@ -9,12 +9,17 @@ import suite.math.stat.Arima.Arima_;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
+import suite.primitive.adt.pair.DblObjPair;
 import suite.util.To;
 
 public class ArimaTest {
 
 	private Arima arima = new Arima();
 	private Random random = new Random();
+
+	private interface Estimate {
+		public DblObjPair<Arima_> arima(float[] xs, int p, int d, int q);
+	}
 
 	@Test
 	public void testArma20() {
@@ -33,8 +38,12 @@ public class ArimaTest {
 	}
 
 	private void test(float[] ars, float[] mas) {
+		test(ars, mas, arima::arimaBackcast);
+	}
+
+	private void test(float[] ars, float[] mas, Estimate estimate) {
 		float[] xs = generate(256, ars, mas);
-		Arima_ a = arima.arimaMle(xs, ars.length, 0, mas.length).t1;
+		Arima_ a = estimate.arima(xs, ars.length, 0, mas.length).t1;
 		System.out.println("x = " + Arrays.toString(xs));
 		System.out.println("ar = " + Arrays.toString(a.ars));
 		System.out.println("ma = " + Arrays.toString(a.mas));
