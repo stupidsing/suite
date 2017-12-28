@@ -165,7 +165,7 @@ public class Arima {
 			// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 			{
 				float[] coeffs = stat.linearRegression(Ints_ //
-						.range(p, length) //
+						.range(length) //
 						.map(t -> {
 							int tp = t + p;
 							int tq = t + q;
@@ -186,7 +186,7 @@ public class Arima {
 				// = eps[t] * 1
 				// + eps[t - 1] * mas[0] + ... + eps[t - q] * mas[q - 1]
 				float[] eps1 = stat.linearRegression(Ints_ //
-						.range(p, length) //
+						.range(length) //
 						.map(t -> {
 							float[] lrxs = new float[lengthq];
 							int tp = t + p;
