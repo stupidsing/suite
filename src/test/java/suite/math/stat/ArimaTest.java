@@ -47,22 +47,22 @@ public class ArimaTest {
 		int q = mas.length;
 		int qp = q - p;
 		int lengthp = length + p;
-		float[] xs = new float[lengthp];
-		float[] eps = To.vector(length + q, i -> random.nextGaussian());
-		int t = 0;
+		float[] xsp = new float[lengthp];
+		float[] epq = To.vector(length + q, i -> random.nextGaussian());
+		int tp = 0;
 
-		while (t < p)
-			xs[t++] = 8f * random.nextFloat();
+		while (tp < p)
+			xsp[tp++] = 8f * random.nextFloat();
 
-		while (t < lengthp) {
-			int tm1 = t - 1;
-			int tm1qp = tm1 + qp;
-			xs[t++] = (float) (0d //
-					+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[tm1 - i])) //
-					+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tm1qp - i])));
+		while (tp < lengthp) {
+			int tpm1 = tp - 1;
+			int tqm1 = tpm1 + qp;
+			xsp[tp++] = (float) (0d //
+					+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i])) //
+					+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * epq[tqm1 - i])));
 		}
 
-		return Arrays.copyOfRange(xs, p, xs.length);
+		return Arrays.copyOfRange(xsp, p, xsp.length);
 	}
 
 }
