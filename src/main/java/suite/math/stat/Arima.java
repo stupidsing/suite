@@ -394,6 +394,10 @@ public class Arima {
 		}
 
 		private double forecast(float[] xsp, float[] epq, int t, int p_, int q_) {
+			return accum(xsp, epq, t, p_, q_);
+		}
+
+		private double accum(float[] xsp, float[] epq, int t, int p_, int q_) {
 			int tpm1 = t + p - 1;
 			int tqm1 = t + q - 1;
 			return 0d //
