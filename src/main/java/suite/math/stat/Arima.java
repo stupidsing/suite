@@ -147,12 +147,16 @@ public class Arima {
 	// = eps[t]
 	// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 	private Arima_ armaEm(float[] xs, int p, int q) { // ARMA
-		int xLength = xs.length;
-		int qp = q - p;
-		int xpqLength = xLength + qp;
+		int length = xs.length;
+		int lengthp = length + p;
+		int lengthq = length + q;
 		float[] ars = To.vector(p, i -> Math.scalb(.5d, -i));
 		float[] mas = To.vector(q, i -> Math.scalb(.5d, -i));
-		float[] eps = To.vector(xpqLength, i -> xs[Math.max(0, Math.min(xLength, i - qp))] * .25f);
+		float[] xsp = new float[lengthp];
+		float[] eps = To.vector(lengthq, i -> xs[Math.max(0, Math.min(xsp.length, i - q))] * .25f);
+
+		Arrays.fill(xsp, 0, p, xs[0]);
+		System.arraycopy(xs, 0, xsp, p, length);
 
 		for (int iter = 0; iter < 9; iter++) {
 
@@ -161,13 +165,14 @@ public class Arima {
 			// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
 			{
 				float[] coeffs = stat.linearRegression(Ints_ //
-						.range(p, xLength) //
+						.range(p, length) //
 						.map(t -> {
-							int tqp = t + qp;
+							int tp = t + p;
+							int tq = t + q;
 							float[] lrxs = Floats_ //
-									.concat(Floats_.reverse(xs, t - p, t), Floats_.reverse(xs, t - p, tqp)) //
+									.concat(Floats_.reverse(xsp, t, tp), Floats_.reverse(eps, t, tq)) //
 									.toArray();
-							float lry = xs[t] - eps[tqp];
+							float lry = xsp[tp] - eps[tq];
 							return FltObjPair.of(lry, lrxs);
 						})).coefficients();
 
@@ -181,18 +186,20 @@ public class Arima {
 				// = eps[t] * 1
 				// + eps[t - 1] * mas[0] + ... + eps[t - q] * mas[q - 1]
 				float[] eps1 = stat.linearRegression(Ints_ //
-						.range(p, xLength) //
+						.range(p, length) //
 						.map(t -> {
-							float[] lrxs = new float[xpqLength];
-							int tq = t + qp;
+							float[] lrxs = new float[lengthq];
+							int tp = t + p;
+							int tq = t + q;
+							int tpm1 = tp - 1;
 							lrxs[tq--] = 1f;
 							for (int i = 0; i < q; i++)
 								lrxs[tq--] = mas[i];
-							double lry = xs[t] - Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[t - i - 1]));
+							double lry = xsp[tp] - Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i]));
 							return FltObjPair.of((float) lry, lrxs);
 						})).coefficients();
 
-				Floats_.copy(eps1, 0, eps, 0, xpqLength);
+				Floats_.copy(eps1, 0, eps, 0, lengthq);
 			}
 		}
 
@@ -200,7 +207,7 @@ public class Arima {
 		// = ars[0] * x[t - 1] + ... + ars[p - 1] * x[t - p]
 		// + eps[t]
 		// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
-		// when t = xLength
+		// when t = x.length
 		double x1 = new Arma(ars, mas).forecast(xs, eps);
 
 		return new Arima_(ars, mas, (float) x1);

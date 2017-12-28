@@ -35,7 +35,7 @@ public class ArimaTest {
 
 	private void test(float[] ars, float[] mas) {
 		float[] xs = generate(256, ars, mas);
-		Arima_ a = arima.arimaBackcast(xs, ars.length, 0, mas.length).t1;
+		Arima_ a = arima.arimaMle(xs, ars.length, 0, mas.length).t1;
 		System.out.println("x = " + Arrays.toString(xs));
 		System.out.println("ar = " + Arrays.toString(a.ars));
 		System.out.println("ma = " + Arrays.toString(a.mas));
