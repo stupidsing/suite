@@ -89,25 +89,25 @@ public class Arima {
 		int p = ars.length;
 		int q = mas.length;
 		float[] xsp = Floats_.concat(new float[p], xs);
-		float[] eps = new float[length + q];
+		float[] epq = new float[length + q];
 		Arma arma = new Arma(ars, mas);
 
 		for (int iter = 0; iter < 64; iter++) {
 
 			// backcast
-			// eps[t]
+			// ep[t]
 			// = (xs[t + q]
 			// - ars[0] * xs[t + q - 1] - ... - ars[p - 1] * xs[t + q - p]
-			// - eps[t + q]
-			// - mas[0] * eps[t + q - 1] - ...
-			// - mas[q - 2] * eps[t + 1]) / mas[q - 1]
-			arma.backcast(xsp, eps);
+			// - ep[t + q]
+			// - mas[0] * ep[t + q - 1] - ...
+			// - mas[q - 2] * ep[t + 1]) / mas[q - 1]
+			arma.backcast(xsp, epq);
 
 			// forward recursion
-			// eps[t] = xs[t]
+			// ep[t] = xs[t]
 			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
-			// - mas[0] * eps[t - 1] - ... - mas[q - 1] * eps[t - q]
-			double error = arma.forwardRecursion(xsp, eps);
+			// - mas[0] * ep[t - 1] - ... - mas[q - 1] * ep[t - q]
+			double error = arma.forwardRecursion(xsp, epq);
 
 			// minimization
 			LinearRegression lr = stat.linearRegression(Ints_ //
@@ -118,7 +118,7 @@ public class Arima {
 						int tpm1 = tp - 1;
 						int tqm1 = tq - 1;
 						FltStreamlet lrxs0 = Ints_.range(p).collect(Int_Flt.lift(i -> xsp[tpm1 - i]));
-						FltStreamlet lrxs1 = Ints_.range(q).collect(Int_Flt.lift(i -> eps[tqm1 - i]));
+						FltStreamlet lrxs1 = Ints_.range(q).collect(Int_Flt.lift(i -> epq[tqm1 - i]));
 						return FltObjPair.of(xsp[tp], Floats_.concat(lrxs0, lrxs1).toArray());
 					}));
 
@@ -130,7 +130,7 @@ public class Arima {
 			Floats_.copy(coefficients, p, mas, 0, q);
 		}
 
-		double x1 = arma.forecast(xsp, eps);
+		double x1 = arma.forecast(xsp, epq);
 		return new Arima_(ars, mas, (float) x1);
 	}
 
@@ -144,8 +144,8 @@ public class Arima {
 
 	// xs[t]
 	// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
-	// = eps[t]
-	// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
+	// = ep[t]
+	// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 	private Arima_ armaEm(float[] xs, int p, int q) { // ARMA
 		int length = xs.length;
 		int lengthp = length + p;
@@ -153,16 +153,16 @@ public class Arima {
 		float[] ars = To.vector(p, i -> Math.scalb(.5d, -i));
 		float[] mas = To.vector(q, i -> Math.scalb(.5d, -i));
 		float[] xsp = new float[lengthp];
-		float[] eps = To.vector(lengthq, i -> xs[Math.max(0, Math.min(xsp.length, i - q))] * .25f);
+		float[] epq = To.vector(lengthq, i -> xs[Math.max(0, Math.min(xsp.length, i - q))] * .25f);
 
 		Arrays.fill(xsp, 0, p, xs[0]);
 		System.arraycopy(xs, 0, xsp, p, length);
 
 		for (int iter = 0; iter < 9; iter++) {
 
-			// xs[t] - eps[t]
+			// xs[t] - ep[t]
 			// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
-			// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
+			// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 			{
 				float[] coeffs = stat.linearRegression(Ints_ //
 						.range(length) //
@@ -170,9 +170,9 @@ public class Arima {
 							int tp = t + p;
 							int tq = t + q;
 							float[] lrxs = Floats_ //
-									.concat(Floats_.reverse(xsp, t, tp), Floats_.reverse(eps, t, tq)) //
+									.concat(Floats_.reverse(xsp, t, tp), Floats_.reverse(epq, t, tq)) //
 									.toArray();
-							float lry = xsp[tp] - eps[tq];
+							float lry = xsp[tp] - epq[tq];
 							return FltObjPair.of(lry, lrxs);
 						})).coefficients();
 
@@ -183,9 +183,9 @@ public class Arima {
 			{
 				// xs[t]
 				// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
-				// = eps[t] * 1
-				// + eps[t - 1] * mas[0] + ... + eps[t - q] * mas[q - 1]
-				float[] eps1 = stat.linearRegression(Ints_ //
+				// = ep[t] * 1
+				// + ep[t - 1] * mas[0] + ... + ep[t - q] * mas[q - 1]
+				float[] epq1 = stat.linearRegression(Ints_ //
 						.range(length) //
 						.map(t -> {
 							float[] lrxs = new float[lengthq];
@@ -199,16 +199,16 @@ public class Arima {
 							return FltObjPair.of((float) lry, lrxs);
 						})).coefficients();
 
-				Floats_.copy(eps1, 0, eps, 0, lengthq);
+				Floats_.copy(epq1, 0, epq, 0, lengthq);
 			}
 		}
 
 		// x[t]
 		// = ars[0] * x[t - 1] + ... + ars[p - 1] * x[t - p]
-		// + eps[t]
-		// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
+		// + ep[t]
+		// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 		// when t = x.length
-		double x1 = new Arma(ars, mas).forecast(xsp, eps);
+		double x1 = new Arma(ars, mas).forecast(xsp, epq);
 
 		return new Arima_(ars, mas, (float) x1);
 	}
@@ -226,15 +226,15 @@ public class Arima {
 	// Trading Systems", Irene Aldridge, page 100
 	// xs[t]
 	// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
-	// + mas[0] * eps[t - 1] + ... + mas[q - 1] * eps[t - q]
-	// + eps[t]
+	// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
+	// + ep[t]
 	private Arima_ armaIa(float[] xs, int p, int q) {
 		int length = xs.length;
 		float[] xsp = new float[length + p];
 		int pm1 = p - 1;
 		int qm1 = q - 1;
 		int iter = 0;
-		float[][] epsByIter = new float[q][];
+		float[][] epqByIter = new float[q][];
 
 		Arrays.fill(xsp, 0, p, xs[0]);
 		System.arraycopy(xs, 0, xsp, p, length);
@@ -248,7 +248,7 @@ public class Arima {
 						int tqm1 = t + qm1;
 						float[] lrxs = Floats_ //
 								.concat(Floats_.reverse(xsp, t, t + p),
-										Ints_.range(iter_).collect(Int_Flt.lift(i -> epsByIter[i][tqm1 - i]))) //
+										Ints_.range(iter_).collect(Int_Flt.lift(i -> epqByIter[i][tqm1 - i]))) //
 								.toArray();
 						return FltObjPair.of(xs[t], lrxs);
 					}));
@@ -256,14 +256,14 @@ public class Arima {
 			float[] coeffs = lr.coefficients();
 
 			if (iter < q)
-				System.arraycopy(lr.residuals, 0, epsByIter[iter++] = new float[length + q], q, length);
+				System.arraycopy(lr.residuals, 0, epqByIter[iter++] = new float[length + q], q, length);
 			else {
 				float[] ars = Floats.of(coeffs, 0, p).toArray();
 				float[] mas = Floats.of(coeffs, p).toArray();
 
 				double x1 = 0d //
 						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[length - i + pm1])) //
-						+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * epsByIter[i][length - i + qm1]));
+						+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * epqByIter[i][length - i + qm1]));
 
 				return new Arima_(ars, mas, (float) x1);
 			}
@@ -280,7 +280,7 @@ public class Arima {
 	private Arima_ armaMle(float[] xs, int p, int q) {
 		int length = xs.length;
 		float[] xsp = Floats_.concat(new float[p], xs);
-		float[] eps = new float[length + q];
+		float[] epq = new float[length + q];
 
 		class LogLikelihood implements DblSource {
 			private float[] ars = To.vector(p, i -> random.nextGaussian());
@@ -290,8 +290,8 @@ public class Arima {
 			public double source() {
 				if (0 < q)
 					mas[0] = 1f;
-				arma.backcast(xsp, eps);
-				return -arma.forwardRecursion(xsp, eps);
+				arma.backcast(xsp, epq);
+				return -arma.forwardRecursion(xsp, epq);
 			}
 		}
 
@@ -299,7 +299,7 @@ public class Arima {
 		float[] ars = ll.ars;
 		float[] mas = ll.mas;
 
-		double x1 = ll.arma.forecast(xsp, eps);
+		double x1 = ll.arma.forecast(xsp, epq);
 		return new Arima_(ars, mas, (float) x1);
 	}
 
@@ -314,12 +314,12 @@ public class Arima {
 	// "High Frequency Trading - A Practical Guide to Algorithmic Strategies and
 	// Trading Systems", Irene Aldridge, page 100
 	// x[t]
-	// = mas[0] * 1 + mas[1] * eps[t - 1] + ... + mas[q] * eps[t - q]
-	// + eps[t]
+	// = mas[0] * 1 + mas[1] * ep[t - 1] + ... + mas[q] * ep[t - q]
+	// + ep[t]
 	@SuppressWarnings("unused")
 	private float[] maIa(float[] xs, int q) {
 		int length = xs.length;
-		float[][] epsByIter = new float[q][];
+		float[][] epqByIter = new float[q][];
 		int iter = 0;
 		int qm1 = q - 1;
 
@@ -331,13 +331,13 @@ public class Arima {
 					.map(t -> {
 						int tqm1 = t + qm1;
 						float[] lrxs = Floats_
-								.concat(Floats_.of(1f), Ints_.range(iter_).collect(Int_Flt.lift(i -> epsByIter[i][tqm1 - i])))
+								.concat(Floats_.of(1f), Ints_.range(iter_).collect(Int_Flt.lift(i -> epqByIter[i][tqm1 - i])))
 								.toArray();
 						return FltObjPair.of(xs[t], lrxs);
 					}));
 
 			if (iter < q)
-				System.arraycopy(lr.residuals, 0, epsByIter[iter++] = new float[q + length], q, length);
+				System.arraycopy(lr.residuals, 0, epqByIter[iter++] = new float[q + length], q, length);
 			else
 				return lr.coefficients();
 		}
@@ -367,44 +367,44 @@ public class Arima {
 			this.mas = mas;
 		}
 
-		private void backcast(float[] xsp, float[] eps) {
+		private void backcast(float[] xsp, float[] epq) {
 			int qm1 = q - 1;
 
 			for (int t = qm1; 0 <= t; t--) {
-				double sum = forecast(xsp, eps, t, p, qm1);
-				eps[t] = (float) ((xsp[t + p] - eps[t + q] - sum) / mas[qm1]);
+				double sum = forecast(xsp, epq, t, p, qm1);
+				epq[t] = (float) ((xsp[t + p] - epq[t + q] - sum) / mas[qm1]);
 			}
 		}
 
-		private double forwardRecursion(float[] xsp, float[] eps) {
+		private double forwardRecursion(float[] xsp, float[] epq) {
 			int length = xsp.length - p;
 			double error = 0d;
 
 			for (int t = 0; t < length; t++) {
 				int tp = t + p;
 				int tq = t + q;
-				double diff = xsp[tp] - forecast(xsp, eps, t);
-				eps[tq] = (float) diff;
+				double diff = xsp[tp] - forecast(xsp, epq, t);
+				epq[tq] = (float) diff;
 				error += diff * diff;
 			}
 
 			return error;
 		}
 
-		private double forecast(float[] xsp, float[] eps) {
-			return forecast(xsp, eps, xsp.length - p);
+		private double forecast(float[] xsp, float[] epq) {
+			return forecast(xsp, epq, xsp.length - p);
 		}
 
-		private double forecast(float[] xsp, float[] eps, int t) {
-			return forecast(xsp, eps, t, p, q);
+		private double forecast(float[] xsp, float[] epq, int t) {
+			return forecast(xsp, epq, t, p, q);
 		}
 
-		private double forecast(float[] xsp, float[] eps, int t, int p_, int q_) {
+		private double forecast(float[] xsp, float[] epq, int t, int p_, int q_) {
 			int tpm1 = t + p - 1;
 			int tqm1 = t + q - 1;
 			return 0d //
 					+ Ints_.range(p_).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i])) //
-					+ Ints_.range(q_).toDouble(Int_Dbl.sum(i -> mas[i] * eps[tqm1 - i]));
+					+ Ints_.range(q_).toDouble(Int_Dbl.sum(i -> mas[i] * epq[tqm1 - i]));
 		}
 	}
 
