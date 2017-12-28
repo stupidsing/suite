@@ -96,9 +96,8 @@ public class Arima {
 
 			// backcast
 			// ep[t]
-			// = (xs[t + q]
+			// = (xs[t + q] - ep[t + q]
 			// - ars[0] * xs[t + q - 1] - ... - ars[p - 1] * xs[t + q - p]
-			// - ep[t + q]
 			// - mas[0] * ep[t + q - 1] - ... - mas[q - 2] * ep[t + 1]
 			// ) / mas[q - 1]
 			arma.backcast(xsp, epq);
@@ -140,10 +139,8 @@ public class Arima {
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
-	// xs[t]
-	// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
-	// = ep[t]
-	// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
+	// xs[t] - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
+	// = ep[t] + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 	private Arima_ armaEm(float[] xs, int p, int q) { // ARMA
 		int length = xs.length;
 		int lengthp = length + p;
@@ -179,10 +176,8 @@ public class Arima {
 			}
 
 			{
-				// xs[t]
-				// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
-				// = ep[t] * 1
-				// + ep[t - 1] * mas[0] + ... + ep[t - q] * mas[q - 1]
+				// xs[t] - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
+				// = ep[t] + ep[t - 1] * mas[0] + ... + ep[t - q] * mas[q - 1]
 				float[] epq1 = stat.linearRegression(Ints_ //
 						.range(length) //
 						.map(t -> {
@@ -205,7 +200,7 @@ public class Arima {
 		// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
 		// + ep[t]
 		// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
-		// when t = x.length
+		// when t = xs.length
 		double x1 = new Arma(ars, mas).forecast(xsp, epq);
 
 		return new Arima_(ars, mas, (float) x1);
@@ -224,16 +219,16 @@ public class Arima {
 	// Trading Systems", Irene Aldridge, page 100
 	// xs[t]
 	// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
-	// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 	// + ep[t]
+	// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 	private Arima_ armaIa(float[] xs, int p, int q) {
 		int length = xs.length;
-		float[] xsp = new float[length + p];
 		int pm1 = p - 1;
 		int qm1 = q - 1;
 		int lengthp = length + p, lengthpm1 = lengthp - 1;
 		int lengthq = length + q, lengthqm1 = lengthq - 1;
 		int iter = 0;
+		float[] xsp = new float[lengthp];
 		float[][] epqByIter = new float[q][];
 
 		Arrays.fill(xsp, 0, p, xs[0]);
@@ -257,7 +252,7 @@ public class Arima {
 			float[] coeffs = lr.coefficients();
 
 			if (iter < q)
-				System.arraycopy(lr.residuals, 0, epqByIter[iter++] = new float[length + q], q, length);
+				System.arraycopy(lr.residuals, 0, epqByIter[iter++] = new float[lengthq], q, length);
 			else {
 				float[] ars = Floats.of(coeffs, 0, p).toArray();
 				float[] mas = Floats.of(coeffs, p).toArray();
