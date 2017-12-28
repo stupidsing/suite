@@ -203,8 +203,8 @@ public class Arima {
 			}
 		}
 
-		// x[t]
-		// = ars[0] * x[t - 1] + ... + ars[p - 1] * x[t - p]
+		// xs[t]
+		// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
 		// + ep[t]
 		// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 		// when t = x.length
@@ -313,7 +313,7 @@ public class Arima {
 
 	// "High Frequency Trading - A Practical Guide to Algorithmic Strategies and
 	// Trading Systems", Irene Aldridge, page 100
-	// x[t]
+	// xs[t]
 	// = mas[0] * 1 + mas[1] * ep[t - 1] + ... + mas[q] * ep[t - q]
 	// + ep[t]
 	@SuppressWarnings("unused")
