@@ -109,6 +109,9 @@ public class Arima {
 			double error = arma.forwardRecursion(xsp, epq);
 
 			// minimization
+			// xs[t] - ep[t]
+			// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
+			// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
@@ -386,7 +389,7 @@ public class Arima {
 		}
 
 		private double forecast(float[] xsp, float[] epq) {
-			return forecast(xsp, epq, xsp.length - p, p, q);
+			return accum(xsp, epq, xsp.length - p, p, q);
 		}
 
 		private double forecast(float[] xsp, float[] epq, int t, int p_, int q_) {
