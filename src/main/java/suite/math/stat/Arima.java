@@ -223,8 +223,6 @@ public class Arima {
 	// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 	private Arima_ armaIa(float[] xs, int p, int q) {
 		int length = xs.length;
-		int pm1 = p - 1;
-		int qm1 = q - 1;
 		int lengthp = length + p, lengthpm1 = lengthp - 1;
 		int lengthq = length + q, lengthqm1 = lengthq - 1;
 		int iter = 0;
