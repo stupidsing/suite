@@ -99,8 +99,8 @@ public class Arima {
 			// = (xs[t + q]
 			// - ars[0] * xs[t + q - 1] - ... - ars[p - 1] * xs[t + q - p]
 			// - ep[t + q]
-			// - mas[0] * ep[t + q - 1] - ...
-			// - mas[q - 2] * ep[t + 1]) / mas[q - 1]
+			// - mas[0] * ep[t + q - 1] - ... - mas[q - 2] * ep[t + 1]
+			// ) / mas[q - 1]
 			arma.backcast(xsp, epq);
 
 			// forward recursion
@@ -113,10 +113,8 @@ public class Arima {
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
-						int tp = t + p;
-						int tq = t + q;
-						int tpm1 = tp - 1;
-						int tqm1 = tq - 1;
+						int tp = t + p, tpm1 = tp - 1;
+						int tq = t + q, tqm1 = tq - 1;
 						FltStreamlet lrxs0 = Ints_.range(p).collect(Int_Flt.lift(i -> xsp[tpm1 - i]));
 						FltStreamlet lrxs1 = Ints_.range(q).collect(Int_Flt.lift(i -> epq[tqm1 - i]));
 						return FltObjPair.of(xsp[tp], Floats_.concat(lrxs0, lrxs1).toArray());
