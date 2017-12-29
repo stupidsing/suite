@@ -75,7 +75,7 @@ public class Arima {
 
 	public DblObjPair<Arima_> arimaBackcast(float[] xs0, int p, int d, int q) {
 		float[] ars = To.vector(p, i -> 1f);
-		float[] mas = To.vector(p, i -> 1f);
+		float[] mas = To.vector(q, i -> 1f);
 		float[] xs1 = nDiffs(xs0, d);
 		Arima_ arima = armaBackcast(xs1, ars, mas);
 		float[] xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
