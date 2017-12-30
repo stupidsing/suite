@@ -15,22 +15,23 @@ import suite.node.io.Operator;
 import suite.node.io.Rewriter.NodeRead;
 import suite.node.io.Rewriter.NodeWrite;
 import suite.node.io.TermOp;
+import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
 public class SewingGeneralizerImpl extends VariableMapperImpl implements SewingGeneralizer {
 
 	public static Node generalize(Node node) {
-		return process(node).source().node;
+		return new SewingGeneralizerImpl().g(node).source().node;
 	}
 
-	public static Source<Generalization> process(Node node) {
-		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
-		Fun<Env, Node> fun = sg.compile(node);
+	public Source<Generalization> g(Node node) {
+		Fun<Env, Node> fun = compile(node);
 		return () -> {
-			Env env = sg.env();
-			return sg.new Generalization(fun.apply(env), env);
+			Env env = env();
+			return new Generalization(fun.apply(env), env);
 		};
 	}
 
@@ -45,12 +46,12 @@ public class SewingGeneralizerImpl extends VariableMapperImpl implements SewingG
 
 			if (node0 instanceof Atom) {
 				String name = ((Atom) node0).name;
-				if (VariableMapper.isWildcard(name))
-					fun = env -> new Reference();
-				else if (VariableMapper.isVariable(name) || VariableMapper.isCut(node0)) {
+				if (VariableMapper.isCut(node0) || VariableMapper.isVariable(name)) {
 					int index = findVariableIndex(node0);
 					fun = env -> env.get(index);
-				} else
+				} else if (VariableMapper.isWildcard(name))
+					fun = env -> new Reference();
+				else
 					fun = env -> node0;
 			} else if ((tree = Tree.decompose(node0)) != null) {
 				Operator operator = tree.getOperator();
@@ -65,15 +66,13 @@ public class SewingGeneralizerImpl extends VariableMapperImpl implements SewingG
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
 			} else if (0 < (nr = NodeRead.of(node)).children.size()) {
-				List<Pair<Node, Fun<Env, Node>>> ps = Read.from(nr.children) //
+				Streamlet<Pair<Node, Fun<Env, Node>>> ps = Read //
+						.from(nr.children) //
 						.map(Pair.map1(this::compile)) //
-						.toList();
-				fun = env -> {
-					List<Pair<Node, Node>> children1 = Read.from(ps) //
-							.map(Pair.map1(f -> f.apply(env))) //
-							.toList();
-					return new NodeWrite(nr.type, nr.terminal, nr.op, children1).node;
-				};
+						.collect(As::streamlet);
+				fun = env -> ps //
+						.map(Pair.map1(f -> f.apply(env))) //
+						.collect(outlet -> new NodeWrite(nr.type, nr.terminal, nr.op, outlet.toList()).node);
 			} else
 				fun = env -> node0;
 

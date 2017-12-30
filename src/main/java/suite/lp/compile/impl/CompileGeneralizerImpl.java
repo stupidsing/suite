@@ -31,12 +31,12 @@ public class CompileGeneralizerImpl extends VariableMapperImpl implements Sewing
 
 				if (node_ instanceof Atom) {
 					String name = ((Atom) node_).name;
-					if (VariableMapper.isWildcard(name))
-						return f.new_(Reference.class);
-					else if (VariableMapper.isVariable(name) || VariableMapper.isCut(node_)) {
+					if (VariableMapper.isCut(node_) || VariableMapper.isVariable(name)) {
 						int index = findVariableIndex(node_);
 						return env.index(f.int_(index));
-					} else
+					} else if (VariableMapper.isWildcard(name))
+						return f.new_(Reference.class);
+					else
 						return f.object(node);
 				} else if (node_ instanceof Int)
 					return f.object(node_);

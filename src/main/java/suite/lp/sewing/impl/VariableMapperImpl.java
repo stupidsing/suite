@@ -8,8 +8,8 @@ import suite.lp.sewing.VariableMapper;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
+import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.Object_;
 
 public class VariableMapperImpl implements VariableMapper {
@@ -27,17 +27,12 @@ public class VariableMapperImpl implements VariableMapper {
 		}
 
 		public String dumpVariables() {
-			Streamlet<String> kvs = Read.from2(variableIndices) //
+			return Read //
+					.from2(variableIndices) //
 					.map2((k, index) -> k.key, (k, index) -> env.refs[index].finalNode()) //
 					.sortByKey(Object_::compare) //
-					.map((k, v) -> Formatter.display(k) + " = " + Formatter.dump(v));
-			StringBuilder sb = new StringBuilder();
-			for (String kv : kvs) {
-				if (0 < sb.length())
-					sb.append(", ");
-				sb.append(kv);
-			}
-			return sb.toString();
+					.map((k, v) -> Formatter.display(k) + " = " + Formatter.dump(v)) //
+					.collect(As.joinedBy(", "));
 		}
 
 		public Node getVariable(Node variable) {

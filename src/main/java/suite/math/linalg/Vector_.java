@@ -3,6 +3,8 @@ package suite.math.linalg;
 import java.util.Arrays;
 
 import suite.math.MathUtil;
+import suite.primitive.Int_Dbl;
+import suite.primitive.Ints_;
 
 public class Vector_ {
 
@@ -30,6 +32,15 @@ public class Vector_ {
 		for (int i = 0; i < length; i++)
 			m[i] += n[i] * f;
 		return m;
+	}
+
+	public double convolute(int l, float[] m, float[] n, int pn) {
+		return convolute(l, m, 0, n, pn);
+	}
+
+	public double convolute(int l, float[] m, int pm, float[] n, int pn) {
+		int d = pm + pn - 1;
+		return Ints_.range(pm, pm + l).toDouble(Int_Dbl.sum(i -> m[i] * n[d - i]));
 	}
 
 	public float dot(float[] m) {

@@ -68,7 +68,7 @@ public class BindMapUtil {
 			}
 
 			public Node substitute(Map<String, Node> map) {
-				Generalization generalization = SewingGeneralizerImpl.process(Suite.parse(pattern_)).source();
+				Generalization generalization = new SewingGeneralizerImpl().g(Suite.parse(pattern_)).source();
 				for (Entry<String, Node> e : map.entrySet()) {
 					Node variable = Atom.of(e.getKey());
 					((Reference) variable).bound(e.getValue());

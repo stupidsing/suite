@@ -67,20 +67,12 @@ public class As {
 	public static Fun<Outlet<String>, String> joinedBy(String before, String delimiter, String after) {
 		return outlet -> {
 			StringBuilder sb = new StringBuilder();
-			sb.append(before);
-			outlet.sink(new Sink<>() {
-				private boolean first = true;
-
-				public void sink(String s) {
-					if (first)
-						first = false;
-					else
-						sb.append(delimiter);
-					sb.append(s);
-				}
+			outlet.sink(s -> {
+				if (0 < sb.length())
+					sb.append(delimiter);
+				sb.append(s);
 			});
-			sb.append(after);
-			return sb.toString();
+			return before + sb + after;
 		};
 	}
 

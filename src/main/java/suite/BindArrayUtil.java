@@ -49,7 +49,7 @@ public class BindArrayUtil {
 		int size = indexList.size();
 		int[] indices = Ints_.toArray(size, indexList::get);
 
-		Source<Generalization> source = SewingGeneralizerImpl.process(fs);
+		Source<Generalization> source = new SewingGeneralizerImpl().g(fs);
 
 		return new Match() {
 			public Node[] apply(Node node) {

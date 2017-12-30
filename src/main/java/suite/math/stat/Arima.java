@@ -3,6 +3,7 @@ package suite.math.stat;
 import java.util.Arrays;
 import java.util.Random;
 
+import suite.math.linalg.Vector_;
 import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.Floats;
@@ -21,6 +22,7 @@ public class Arima {
 	private Statistic stat = new Statistic();
 	private Random random = new Random();
 	private TimeSeries ts = new TimeSeries();
+	private Vector_ vec = new Vector_();
 
 	public LinearRegression ar(float[] ys, int n) {
 		return stat.linearRegression(Ints_ //
@@ -50,7 +52,7 @@ public class Arima {
 			float[] alpha0 = alpha;
 			int n_ = n;
 
-			double k1 = (1d / d) * Ints_.range(n).toDouble(Int_Dbl.sum(k -> alpha0[k] * r[n_ + 1 - k]));
+			double k1 = Ints_.range(n).toDouble(Int_Dbl.sum(k -> alpha0[k] * r[n_ + 1 - k])) / d;
 			d = d * (1d - k1 * k1);
 
 			float[] alpha1 = new float[p];
@@ -62,8 +64,7 @@ public class Arima {
 		}
 
 		// for n in 0 until p
-		// K[n + 1] := d[n] ^ -1 summation(k in 0 until n, alpha[n][k] * r[n + 1
-		// - k])
+		// K[n + 1] := d[n] ^ -1 * summation(0 <= k < n, alpha[n][k] * r[n + 1 - k])
 		// d[n + 1] := d[n] * (1 - K[n + 1] ^ 2)
 		// alpha[n + 1][0] := 1
 		// for k := 1 to n
@@ -188,11 +189,10 @@ public class Arima {
 							float[] lrxs = new float[lengthq];
 							int tp = t + p;
 							int tq = t + q;
-							int tpm1 = tp - 1;
 							lrxs[tq--] = 1f;
 							for (int i = 0; i < q; i++)
 								lrxs[tq--] = mas[i];
-							double lry = xsp[tp] - Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i]));
+							double lry = xsp[tp] - vec.convolute(p, ars, xsp, tp);
 							return FltObjPair.of((float) lry, lrxs);
 						})).coefficients();
 
@@ -392,11 +392,7 @@ public class Arima {
 		}
 
 		private double sum(float[] xsp, float[] epq, int t, int p_, int q_) {
-			int tpm1 = t + p - 1;
-			int tqm1 = t + q - 1;
-			return 0d //
-					+ Ints_.range(p_).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i])) //
-					+ Ints_.range(q_).toDouble(Int_Dbl.sum(i -> mas[i] * epq[tqm1 - i]));
+			return vec.convolute(p_, ars, xsp, t + p) + vec.convolute(q_, mas, epq, t + q);
 		}
 	}
 
