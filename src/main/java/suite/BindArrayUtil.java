@@ -8,7 +8,7 @@ import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.BindPredicate;
 import suite.lp.doer.Generalizer;
 import suite.lp.sewing.Env;
-import suite.lp.sewing.VariableMapper.Generalization;
+import suite.lp.sewing.VariableMapper.VariableEnv;
 import suite.lp.sewing.impl.SewingBinderImpl;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
@@ -49,7 +49,7 @@ public class BindArrayUtil {
 		int size = indexList.size();
 		int[] indices = Ints_.toArray(size, indexList::get);
 
-		Source<Generalization> source = new SewingGeneralizerImpl().g(fs);
+		Source<VariableEnv> source = new SewingGeneralizerImpl().g(fs);
 
 		return new Match() {
 			public Node[] apply(Node node) {
@@ -72,13 +72,13 @@ public class BindArrayUtil {
 			}
 
 			public Node substitute(Node... nodes) {
-				Generalization generalization = source.source();
+				VariableEnv ve = source.source();
 				int i = 0;
 				for (Node node : nodes) {
-					Node variable = generalization.getVariable(Atom.of("." + i++));
+					Node variable = ve.getVariable(Atom.of("." + i++));
 					((Reference) variable).bound(node);
 				}
-				return generalization.node;
+				return ve.node;
 			}
 		};
 	});

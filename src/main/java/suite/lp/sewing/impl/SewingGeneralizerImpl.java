@@ -27,7 +27,7 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 		return new SewingGeneralizerImpl().g(node).source().node;
 	}
 
-	public Source<Generalization> g(Node node) {
+	public Source<VariableEnv> g(Node node) {
 		Generalize_ fun = compile(node);
 		return () -> g(fun::apply);
 	}

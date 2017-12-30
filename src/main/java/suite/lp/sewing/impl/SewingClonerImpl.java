@@ -19,7 +19,7 @@ import suite.streamlet.Read;
 
 public class SewingClonerImpl extends VariableMapper implements ClonerFactory {
 
-	public Generalization g(Node node) {
+	public VariableEnv g(Node node) {
 		return g(compile(node)::apply);
 	}
 
