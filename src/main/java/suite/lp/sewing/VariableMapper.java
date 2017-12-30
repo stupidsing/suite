@@ -8,6 +8,7 @@ import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
 public class VariableMapper {
@@ -36,6 +37,11 @@ public class VariableMapper {
 		public Node getVariable(Node variable) {
 			return env.refs[getVariableIndex(variable)];
 		}
+	}
+
+	public Generalization g(Fun<Env, Node> fun) {
+		Env env = env();
+		return new Generalization(fun.apply(env), env);
 	}
 
 	public Env env() {

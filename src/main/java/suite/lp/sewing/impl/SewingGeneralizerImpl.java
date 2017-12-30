@@ -6,7 +6,6 @@ import java.util.List;
 import suite.adt.pair.Pair;
 import suite.lp.doer.GeneralizerFactory;
 import suite.lp.doer.ProverConstant;
-import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
 import suite.node.Node;
@@ -30,10 +29,7 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 
 	public Source<Generalization> g(Node node) {
 		Generalize_ fun = compile(node);
-		return () -> {
-			Env env = env();
-			return new Generalization(fun.apply(env), env);
-		};
+		return () -> g(fun::apply);
 	}
 
 	public Generalize_ compile(Node node) {
