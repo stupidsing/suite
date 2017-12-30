@@ -43,9 +43,9 @@ public class CompileClonerImpl extends VariableMapper implements ClonerFactory {
 				else if (node_ instanceof Reference)
 					return env.field("refs").index(f.int_(computeIndex(node_)));
 				else if ((tree = Tree.decompose(node_)) != null) {
-					FunExpr fe0 = compile_(tree.getLeft());
-					FunExpr fe1 = compile_(tree.getRight());
-					return f.invokeStatic(Tree.class, "of", fe0, fe1);
+					FunExpr fe0 = compile_(tree.getLeft()).cast(Node.class);
+					FunExpr fe1 = compile_(tree.getRight()).cast(Node.class);
+					return f.invokeStatic(Tree.class, "of", f.object(tree.getOperator()), fe0, fe1);
 				} else if (node_ instanceof Tuple) {
 					FunExpr[] exprs = Read.from(((Tuple) node_).nodes).map(this::compile_).toArray(FunExpr.class);
 					return f.invokeStatic(Tuple.class, "of", f.array(Node.class, exprs));
