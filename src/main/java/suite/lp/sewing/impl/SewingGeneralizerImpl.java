@@ -8,17 +8,14 @@ import suite.lp.doer.GeneralizerFactory;
 import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
+import suite.node.Dict;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.Operator;
-import suite.node.io.Rewriter.NodeRead;
-import suite.node.io.Rewriter.NodeWrite;
 import suite.node.io.TermOp;
-import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
 
 public class SewingGeneralizerImpl extends VariableMapper implements GeneralizerFactory {
@@ -35,7 +32,6 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 	public Generalize_ compile(Node node) {
 		List<Generalize_> funs = new ArrayList<>();
 		Generalize_ fun;
-		NodeRead nr;
 
 		while (true) {
 			Node node0 = node;
@@ -50,6 +46,19 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 					fun = env -> new Reference();
 				else
 					fun = env -> node0;
+			} else if (node0 instanceof Dict) {
+				Generalize_[][] array = Read //
+						.from2(((Dict) node0).map) //
+						.map((key, value) -> new Generalize_[] { compile(key), compile(value), }) //
+						.toArray(Generalize_[].class);
+				int length = array.length;
+				return env -> {
+					@SuppressWarnings("unchecked")
+					Pair<Node, Reference>[] pairs = new Pair[length];
+					for (int i = 0; i < length; i++)
+						pairs[i] = Pair.of(array[i][0].apply(env), Reference.of(array[i][1].apply(env)));
+					return Dict.of(pairs);
+				};
 			} else if ((tree = Tree.decompose(node0)) != null) {
 				Operator operator = tree.getOperator();
 				if (operator != TermOp.OR____) {
@@ -62,14 +71,6 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 					Generalize_ rf = compile(tree.getRight());
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
-			} else if (0 < (nr = NodeRead.of(node)).children.size()) {
-				Streamlet<Pair<Node, Generalize_>> ps = Read //
-						.from(nr.children) //
-						.map(Pair.map1(this::compile)) //
-						.collect(As::streamlet);
-				fun = env -> ps //
-						.map(Pair.map1(f -> f.apply(env))) //
-						.collect(outlet -> new NodeWrite(nr.type, nr.terminal, nr.op, outlet.toList()).node);
 			} else
 				fun = env -> node0;
 

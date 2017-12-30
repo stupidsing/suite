@@ -2,6 +2,7 @@ package suite.lp.compile.impl;
 
 import java.util.HashMap;
 
+import suite.adt.pair.Pair;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
@@ -9,6 +10,7 @@ import suite.lp.doer.GeneralizerFactory;
 import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
+import suite.node.Dict;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
@@ -36,6 +38,12 @@ public class CompileGeneralizerImpl extends VariableMapper implements Generalize
 						return f.new_(Reference.class);
 					else
 						return f.object(node);
+				} else if (node_ instanceof Dict) {
+					FunExpr[] exprs = Read //
+							.from2(((Dict) node).map) //
+							.map((key, value) -> f.invokeStatic(Pair.class, "of", compile_(key), compile_(value))) //
+							.toArray(FunExpr.class);
+					return f.invokeStatic(Dict.class, "of", f.array(Pair.class, exprs));
 				} else if (node_ instanceof Int)
 					return f.object(node_);
 				else if ((tree = Tree.decompose(node)) != null) {

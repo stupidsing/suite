@@ -6,14 +6,13 @@ import java.util.List;
 import suite.adt.pair.Pair;
 import suite.lp.doer.ClonerFactory;
 import suite.lp.sewing.VariableMapper;
+import suite.node.Dict;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.Operator;
-import suite.node.io.Rewriter.NodeRead;
-import suite.node.io.Rewriter.NodeWrite;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
 
@@ -26,13 +25,25 @@ public class SewingClonerImpl extends VariableMapper implements ClonerFactory {
 	public Clone_ compile(Node node) {
 		List<Clone_> funs = new ArrayList<>();
 		Clone_ fun;
-		NodeRead nr;
 
 		while (true) {
 			Node node0 = node;
 			Tree tree;
 
-			if ((tree = Tree.decompose(node0)) != null) {
+			if (node0 instanceof Dict) {
+				Clone_[][] array = Read //
+						.from2(((Dict) node0).map) //
+						.map((key, value) -> new Clone_[] { compile(key), compile(value), }) //
+						.toArray(Clone_[].class);
+				int length = array.length;
+				return env -> {
+					@SuppressWarnings("unchecked")
+					Pair<Node, Reference>[] pairs = new Pair[length];
+					for (int i = 0; i < length; i++)
+						pairs[i] = Pair.of(array[i][0].apply(env), Reference.of(array[i][1].apply(env)));
+					return Dict.of(pairs);
+				};
+			} else if ((tree = Tree.decompose(node0)) != null) {
 				Operator operator = tree.getOperator();
 				if (operator != TermOp.OR____) {
 					Clone_ f = compile(tree.getLeft());
@@ -44,16 +55,6 @@ public class SewingClonerImpl extends VariableMapper implements ClonerFactory {
 					Clone_ rf = compile(tree.getRight());
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
-			} else if (0 < (nr = NodeRead.of(node)).children.size()) {
-				List<Pair<Node, Clone_>> ps = Read.from(nr.children) //
-						.map(Pair.map1(this::compile)) //
-						.toList();
-				fun = env -> {
-					List<Pair<Node, Node>> children1 = Read.from(ps) //
-							.map(Pair.map1(f -> f.apply(env))) //
-							.toList();
-					return new NodeWrite(nr.type, nr.terminal, nr.op, children1).node;
-				};
 			} else if (node0 instanceof Reference) {
 				int index = computeIndex(node0);
 				fun = env -> env.get(index);

@@ -2,12 +2,14 @@ package suite.lp.compile.impl;
 
 import java.util.HashMap;
 
+import suite.adt.pair.Pair;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.lp.doer.ClonerFactory;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
+import suite.node.Dict;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
@@ -30,7 +32,13 @@ public class CompileClonerImpl extends VariableMapper implements ClonerFactory {
 
 				if (node_ instanceof Atom)
 					return f.object(node_);
-				else if (node_ instanceof Int)
+				else if (node_ instanceof Dict) {
+					FunExpr[] exprs = Read //
+							.from2(((Dict) node).map) //
+							.map((key, value) -> f.invokeStatic(Pair.class, "of", compile_(key), compile_(value))) //
+							.toArray(FunExpr.class);
+					return f.invokeStatic(Dict.class, "of", f.array(Pair.class, exprs));
+				} else if (node_ instanceof Int)
 					return f.object(node_);
 				else if (node_ instanceof Reference)
 					return env.index(f.int_(computeIndex(node_)));
