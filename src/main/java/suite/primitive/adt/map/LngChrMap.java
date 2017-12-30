@@ -117,6 +117,14 @@ public class LngChrMap {
 		return put_(key, v);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (LngObjPair<Character> pair : streamlet())
+			sb.append(pair.t0 + ":" + pair.t1 + ",");
+		return sb.toString();
+	}
+
 	public void update(long key, Chr_Chr fun) {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;

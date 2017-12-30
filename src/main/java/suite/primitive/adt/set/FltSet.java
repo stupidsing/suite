@@ -100,6 +100,14 @@ public class FltSet {
 		return new FltStreamlet(() -> FltOutlet.of(source_()));
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (float c : streamlet())
+			sb.append(c + ",");
+		return sb.toString();
+	}
+
 	private boolean add_(float c) {
 		int index = index(c);
 		if (0 <= index) {

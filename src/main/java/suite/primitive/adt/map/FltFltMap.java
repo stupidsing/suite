@@ -115,6 +115,14 @@ public class FltFltMap {
 		return put_(key, v);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (FltObjPair<Float> pair : streamlet())
+			sb.append(pair.t0 + ":" + pair.t1 + ",");
+		return sb.toString();
+	}
+
 	public void update(float key, Flt_Flt fun) {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;

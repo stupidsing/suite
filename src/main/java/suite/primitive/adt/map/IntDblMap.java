@@ -117,6 +117,14 @@ public class IntDblMap {
 		return put_(key, v);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (IntObjPair<Double> pair : streamlet())
+			sb.append(pair.t0 + ":" + pair.t1 + ",");
+		return sb.toString();
+	}
+
 	public void update(int key, Dbl_Dbl fun) {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;

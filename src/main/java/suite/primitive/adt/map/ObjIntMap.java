@@ -132,6 +132,14 @@ public class ObjIntMap<K> {
 		return new IntObjStreamlet<>(() -> IntObjOutlet.of(source_()));
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (IntObjPair<K> pair : streamlet())
+			sb.append(pair.t1 + ":" + pair.t0 + ",");
+		return sb.toString();
+	}
+
 	private int put_(Object key, int v1) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;

@@ -100,6 +100,14 @@ public class DblSet {
 		return new DblStreamlet(() -> DblOutlet.of(source_()));
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (double c : streamlet())
+			sb.append(c + ",");
+		return sb.toString();
+	}
+
 	private boolean add_(double c) {
 		int index = index(c);
 		if (0 <= index) {

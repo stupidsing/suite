@@ -100,6 +100,14 @@ public class LngSet {
 		return new LngStreamlet(() -> LngOutlet.of(source_()));
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (long c : streamlet())
+			sb.append(c + ",");
+		return sb.toString();
+	}
+
 	private boolean add_(long c) {
 		int index = index(c);
 		if (0 <= index) {

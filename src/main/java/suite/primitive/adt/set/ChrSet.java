@@ -100,6 +100,14 @@ public class ChrSet {
 		return new ChrStreamlet(() -> ChrOutlet.of(source_()));
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (char c : streamlet())
+			sb.append(c + ",");
+		return sb.toString();
+	}
+
 	private boolean add_(char c) {
 		int index = index(c);
 		if (0 <= index) {

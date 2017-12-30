@@ -129,6 +129,14 @@ public class ChrObjMap<V> {
 		return new ChrObjStreamlet<>(() -> ChrObjOutlet.of(source_()));
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (ChrObjPair<V> pair : streamlet())
+			sb.append(pair.t0 + ":" + pair.t1 + ",");
+		return sb.toString();
+	}
+
 	private Object put_(char key, Object v1) {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;

@@ -132,6 +132,14 @@ public class ObjLngMap<K> {
 		return new LngObjStreamlet<>(() -> LngObjOutlet.of(source_()));
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (LngObjPair<K> pair : streamlet())
+			sb.append(pair.t1 + ":" + pair.t0 + ",");
+		return sb.toString();
+	}
+
 	private long put_(Object key, long v1) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;

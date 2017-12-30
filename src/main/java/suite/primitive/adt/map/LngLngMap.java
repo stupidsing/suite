@@ -115,6 +115,14 @@ public class LngLngMap {
 		return put_(key, v);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (LngObjPair<Long> pair : streamlet())
+			sb.append(pair.t0 + ":" + pair.t1 + ",");
+		return sb.toString();
+	}
+
 	public void update(long key, Lng_Lng fun) {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;

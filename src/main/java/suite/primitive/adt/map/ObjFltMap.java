@@ -132,6 +132,14 @@ public class ObjFltMap<K> {
 		return new FltObjStreamlet<>(() -> FltObjOutlet.of(source_()));
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (FltObjPair<K> pair : streamlet())
+			sb.append(pair.t1 + ":" + pair.t0 + ",");
+		return sb.toString();
+	}
+
 	private float put_(Object key, float v1) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;

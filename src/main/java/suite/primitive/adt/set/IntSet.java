@@ -100,6 +100,14 @@ public class IntSet {
 		return new IntStreamlet(() -> IntOutlet.of(source_()));
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (int c : streamlet())
+			sb.append(c + ",");
+		return sb.toString();
+	}
+
 	private boolean add_(int c) {
 		int index = index(c);
 		if (0 <= index) {

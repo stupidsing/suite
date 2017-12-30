@@ -117,6 +117,14 @@ public class DblFltMap {
 		return put_(key, v);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (DblObjPair<Float> pair : streamlet())
+			sb.append(pair.t0 + ":" + pair.t1 + ",");
+		return sb.toString();
+	}
+
 	public void update(double key, Flt_Flt fun) {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;

@@ -129,6 +129,14 @@ public class DblObjMap<V> {
 		return new DblObjStreamlet<>(() -> DblObjOutlet.of(source_()));
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (DblObjPair<V> pair : streamlet())
+			sb.append(pair.t0 + ":" + pair.t1 + ",");
+		return sb.toString();
+	}
+
 	private Object put_(double key, Object v1) {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;

@@ -115,6 +115,14 @@ public class IntIntMap {
 		return put_(key, v);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (IntObjPair<Integer> pair : streamlet())
+			sb.append(pair.t0 + ":" + pair.t1 + ",");
+		return sb.toString();
+	}
+
 	public void update(int key, Int_Int fun) {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
