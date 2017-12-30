@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.Trail;
 import suite.lp.doer.BinderFactory;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.BindPredicate;
@@ -29,18 +28,7 @@ public class SewingClonerTest {
 		Node node = new Generalizer().generalize(Suite.parse(pattern));
 		BinderFactory sb = new SewingBinderImpl();
 		BindPredicate p = sb.compileBind(node);
-		Env env = sb.env();
-		Trail trail = new Trail();
-
-		BindEnv be = new BindEnv() {
-			public Env getEnv() {
-				return env;
-			}
-
-			public Trail getTrail() {
-				return trail;
-			}
-		};
+		BindEnv be = new BindEnv(sb.env());
 
 		assertTrue(p.test(be, Suite.parse(match)));
 	}

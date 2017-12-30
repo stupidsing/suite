@@ -6,10 +6,14 @@ import suite.node.Node;
 
 public interface BinderFactory extends ClonerFactory {
 
-	public interface BindEnv {
-		public Env getEnv();
+	public class BindEnv {
+		public Env env;
+		public Trail trail;
 
-		public Trail getTrail();
+		public BindEnv(Env env) {
+			this.env = env;
+			trail = new Trail();
+		}
 	}
 
 	public interface BindPredicate {

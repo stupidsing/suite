@@ -13,7 +13,6 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.immutable.IList;
 import suite.lp.Configuration.ProverConfig;
-import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.BinderFactory;
 import suite.lp.doer.BinderFactory.BindEnv;
@@ -92,7 +91,7 @@ public class SewingProverImpl implements ProverFactory {
 
 	private BinderFactory passThru = new BinderFactory() {
 		public BindPredicate compileBind(Node node) {
-			return (be, n) -> Binder.bind(node, n, be.getTrail());
+			return (be, n) -> Binder.bind(node, n, be.trail);
 		}
 
 		public Clone_ compile(Node node) {
@@ -126,14 +125,12 @@ public class SewingProverImpl implements ProverFactory {
 		}
 	}
 
-	private class Runtime implements BindEnv {
+	private class Runtime extends BindEnv {
 		private Cps cps;
-		private Env env = emptyEnvironment;
 		private Node query;
 		private IList<Trampoline> cutPoint;
 		private IList<Trampoline> rems = IList.end(); // continuations
 		private IList<Trampoline> alts = IList.end(); // alternatives
-		private Trail trail = new Trail();
 		private Prover prover;
 		private Debug debug = new Debug("", IList.end());
 
@@ -157,11 +154,15 @@ public class SewingProverImpl implements ProverFactory {
 		};
 
 		private Runtime(Runtime rt, Trampoline tr) {
-			this(rt.prover.config(), tr);
-			env = rt.env;
+			this(rt.env, rt.prover.config(), tr);
 		}
 
 		private Runtime(ProverConfig pc, Trampoline tr) {
+			this(emptyEnvironment, pc, tr);
+		}
+
+		private Runtime(Env env, ProverConfig pc, Trampoline tr) {
+			super(env);
 			pushAlt(tr);
 			prover = new Prover(pc, null, trail);
 		}
@@ -178,14 +179,6 @@ public class SewingProverImpl implements ProverFactory {
 
 		private void pushAlt(Trampoline tr) {
 			alts = IList.cons(tr, alts);
-		}
-
-		public Env getEnv() {
-			return env;
-		}
-
-		public Trail getTrail() {
-			return trail;
 		}
 	}
 

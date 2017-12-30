@@ -54,7 +54,7 @@ public class CompileBinderImpl extends SewingClonerImpl implements BinderFactory
 			return compileBindInt((Int) node);
 		else if (node instanceof Reference) {
 			int index = computeIndex(node);
-			return compileBindPredicate((be, n) -> Binder.bind(n, be.getEnv().get(index), be.getTrail()));
+			return compileBindPredicate((be, n) -> Binder.bind(n, be.env.get(index), be.trail));
 		} else if (node instanceof Str)
 			return compileBindStr((Str) node);
 		else if ((tree = Tree.decompose(node)) != null) {
@@ -93,7 +93,7 @@ public class CompileBinderImpl extends SewingClonerImpl implements BinderFactory
 			return LambdaInstance.of(lambdaClass, ifRef(bindRef, bindTuple));
 		} else {
 			Clone_ n_ = compile(node);
-			return compileBindPredicate((be, n) -> Binder.bind(n, n_.apply(be.getEnv()), be.getTrail()));
+			return compileBindPredicate((be, n) -> Binder.bind(n, n_.apply(be.env), be.trail));
 		}
 	}
 
@@ -153,14 +153,14 @@ public class CompileBinderImpl extends SewingClonerImpl implements BinderFactory
 	private Fun<FunExpr, Iterate<FunExpr>> bindRef(Clone_ n_) {
 		Fun<FunExpr, Iterate<FunExpr>> bindRef;
 		if (isBindTrees)
-			bindRef = be -> ref -> bindRef(be, ref, f.object(n_).apply(be.invoke("getEnv")));
+			bindRef = be -> ref -> bindRef(be, ref, f.object(n_).apply(be.field("env")));
 		else
 			bindRef = be -> ref -> f._false();
 		return bindRef;
 	}
 
 	private static FunExpr bindRef(FunExpr bindEnv, FunExpr ref, FunExpr n1) {
-		return f.seq(bindEnv.invoke("getTrail").invoke("addBind", ref, n1), f._true());
+		return f.seq(bindEnv.field("trail").invoke("addBind", ref, n1), f._true());
 	}
 
 	private static FunExpr ifRef(Fun<FunExpr, Iterate<FunExpr>> bindRef, Fun<FunExpr, Iterate<FunExpr>> bindTree) {

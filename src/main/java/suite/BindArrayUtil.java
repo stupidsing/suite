@@ -3,7 +3,6 @@ package suite;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.lp.Trail;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.BindPredicate;
 import suite.lp.doer.Generalizer;
@@ -54,16 +53,7 @@ public class BindArrayUtil {
 		return new Match() {
 			public Node[] apply(Node node) {
 				Env env = sb.env();
-				Trail trail = new Trail();
-				BindEnv be = new BindEnv() {
-					public Env getEnv() {
-						return env;
-					}
-
-					public Trail getTrail() {
-						return trail;
-					}
-				};
+				BindEnv be = new BindEnv(env);
 				if (pred.test(be, node))
 					return To.array(size, Node.class, i -> env.get(indices[i]));
 				else
