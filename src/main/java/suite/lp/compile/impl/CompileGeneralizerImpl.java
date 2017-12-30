@@ -7,7 +7,6 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.lp.doer.GeneralizerFactory;
 import suite.lp.doer.ProverConstant;
-import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
 import suite.node.Int;
@@ -16,15 +15,13 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
 
 public class CompileGeneralizerImpl extends VariableMapper implements GeneralizerFactory {
 
 	private static FunFactory f = new FunFactory();
 
-	public Fun<Env, Node> compile(Node node) {
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		FunCreator<Fun<Env, Node>> fc = (FunCreator) FunCreator.of(Fun.class);
+	public Generalize_ compile(Node node) {
+		FunCreator<Generalize_> fc = FunCreator.of(Generalize_.class);
 
 		return fc.create(env -> new Object() {
 			private FunExpr compile_(Node node_) {

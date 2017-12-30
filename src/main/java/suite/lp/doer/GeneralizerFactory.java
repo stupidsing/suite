@@ -2,12 +2,15 @@ package suite.lp.doer;
 
 import suite.lp.sewing.Env;
 import suite.node.Node;
-import suite.util.FunUtil.Fun;
 
 public interface GeneralizerFactory {
 
+	public interface Generalize_ {
+		public Node apply(Env env);
+	}
+
 	public Env env();
 
-	public Fun<Env, Node> compile(Node node);
+	public Generalize_ compile(Node node);
 
 }

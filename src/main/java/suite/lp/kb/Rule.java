@@ -1,5 +1,6 @@
 package suite.lp.kb;
 
+import suite.lp.doer.GeneralizerFactory.Generalize_;
 import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
@@ -7,7 +8,6 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 
 public class Rule {
@@ -15,7 +15,7 @@ public class Rule {
 	public final Node head, tail;
 	private SewingGeneralizerImpl sewingGeneralizer;
 	private int cutIndex;
-	private Fun<Env, Node> headFun, tailFun;
+	private Generalize_ headFun, tailFun;
 
 	public Rule(Node head, Node tail) {
 		this.head = head;

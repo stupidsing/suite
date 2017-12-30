@@ -20,7 +20,6 @@ import suite.node.io.TermOp;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
 public class SewingGeneralizerImpl extends VariableMapper implements GeneralizerFactory {
@@ -30,16 +29,16 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 	}
 
 	public Source<Generalization> g(Node node) {
-		Fun<Env, Node> fun = compile(node);
+		Generalize_ fun = compile(node);
 		return () -> {
 			Env env = env();
 			return new Generalization(fun.apply(env), env);
 		};
 	}
 
-	public Fun<Env, Node> compile(Node node) {
-		List<Fun<Env, Node>> funs = new ArrayList<>();
-		Fun<Env, Node> fun;
+	public Generalize_ compile(Node node) {
+		List<Generalize_> funs = new ArrayList<>();
+		Generalize_ fun;
 		NodeRead nr;
 
 		while (true) {
@@ -58,17 +57,17 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 			} else if ((tree = Tree.decompose(node0)) != null) {
 				Operator operator = tree.getOperator();
 				if (operator != TermOp.OR____) {
-					Fun<Env, Node> f = compile(tree.getLeft());
+					Generalize_ f = compile(tree.getLeft());
 					funs.add(env -> Tree.of(operator, f.apply(env), null));
 					node = tree.getRight();
 					continue;
 				} else { // delay generalizing for performance
-					Fun<Env, Node> lf = compile(tree.getLeft());
-					Fun<Env, Node> rf = compile(tree.getRight());
+					Generalize_ lf = compile(tree.getLeft());
+					Generalize_ rf = compile(tree.getRight());
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
 			} else if (0 < (nr = NodeRead.of(node)).children.size()) {
-				Streamlet<Pair<Node, Fun<Env, Node>>> ps = Read //
+				Streamlet<Pair<Node, Generalize_>> ps = Read //
 						.from(nr.children) //
 						.map(Pair.map1(this::compile)) //
 						.collect(As::streamlet);
@@ -86,7 +85,7 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 			return env -> {
 				Tree t = Tree.of(null, null, null);
 				Node node_ = t;
-				for (Fun<Env, Node> fun_ : funs) {
+				for (Generalize_ fun_ : funs) {
 					Tree t_ = Tree.decompose(node_);
 					Tree.forceSetRight(t_, fun_.apply(env));
 					node_ = t_.getRight();

@@ -21,14 +21,13 @@ import suite.streamlet.Read;
 public class SewingClonerImpl extends VariableMapper implements ClonerFactory {
 
 	public static Node generalize(Node node) {
-		return process(node).node;
+		return new SewingClonerImpl().g(node).node;
 	}
 
-	public static Generalization process(Node node) {
-		SewingClonerImpl sc = new SewingClonerImpl();
-		Clone_ fun = sc.compile(node);
-		Env env = sc.env();
-		return sc.new Generalization(fun.apply(env), env);
+	public Generalization g(Node node) {
+		Clone_ fun = compile(node);
+		Env env = env();
+		return new Generalization(fun.apply(env), env);
 	}
 
 	public Clone_ compile(Node node) {
