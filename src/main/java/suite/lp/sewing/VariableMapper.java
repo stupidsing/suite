@@ -20,7 +20,7 @@ public class VariableMapper {
 		public final Node node;
 		private Env env;
 
-		public Generalization(Node node, Env env) {
+		private Generalization(Node node, Env env) {
 			this.node = node;
 			this.env = env;
 		}
