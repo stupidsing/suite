@@ -81,10 +81,9 @@ public class ChrIntMap {
 		size++;
 
 		if (capacity * 3 / 4 < size) {
-			int capacity1 = capacity * 2;
 			char[] ks0 = ks;
 			int[] vs0 = vs;
-			allocate(capacity1);
+			allocate(capacity * 2);
 
 			for (int i = 0; i < capacity; i++) {
 				int v_ = vs0[i];

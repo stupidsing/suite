@@ -81,10 +81,9 @@ public class IntLngMap {
 		size++;
 
 		if (capacity * 3 / 4 < size) {
-			int capacity1 = capacity * 2;
 			int[] ks0 = ks;
 			long[] vs0 = vs;
-			allocate(capacity1);
+			allocate(capacity * 2);
 
 			for (int i = 0; i < capacity; i++) {
 				long v_ = vs0[i];

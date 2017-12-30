@@ -55,9 +55,8 @@ public class DblSet {
 		size++;
 
 		if (capacity * 3 / 4 < size) {
-			int capacity1 = capacity * 2;
 			double[] vs0 = vs;
-			allocate(capacity1);
+			allocate(capacity * 2);
 
 			for (int i = 0; i < capacity; i++) {
 				double v_ = vs0[i];

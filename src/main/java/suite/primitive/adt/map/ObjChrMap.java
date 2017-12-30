@@ -70,10 +70,9 @@ public class ObjChrMap<K> {
 		size++;
 
 		if (capacity * 3 / 4 < size) {
-			int capacity1 = capacity * 2;
 			Object[] ks0 = ks;
 			char[] vs0 = vs;
-			allocate(capacity1);
+			allocate(capacity * 2);
 
 			for (int i = 0; i < capacity; i++) {
 				char v_ = vs0[i];

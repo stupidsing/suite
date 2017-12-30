@@ -63,9 +63,8 @@ public class IntIntMap1 {
 		size++;
 
 		if (capacity * 3 / 4 < size) {
-			int capacity1 = capacity * 2;
 			long[] kvs0 = kvs;
-			allocate(capacity1);
+			allocate(capacity * 2);
 
 			for (int i = 0; i < capacity; i++) {
 				long kv0 = kvs0[i];
