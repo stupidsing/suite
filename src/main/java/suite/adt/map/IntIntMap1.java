@@ -45,6 +45,18 @@ public class IntIntMap1 {
 			sink.sink2(pair.t0, pair.t1);
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof IntIntMap1) {
+			IntIntMap1 other = (IntIntMap1) object;
+			boolean b = size == other.size;
+			for (IntObjPair<Integer> pair : streamlet())
+				b &= other.get(pair.t0) == pair.t1;
+			return b;
+		} else
+			return false;
+	}
+
 	public int get(int key) {
 		int mask = kvs.length - 1;
 		int index = key & mask;
@@ -56,6 +68,16 @@ public class IntIntMap1 {
 			else
 				break;
 		return v;
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (IntObjPair<Integer> pair : streamlet()) {
+			h = h * 31 + Integer.hashCode(pair.t0);
+			h = h * 31 + Integer.hashCode(pair.t1);
+		}
+		return h;
 	}
 
 	public int put(int key, int v) {
@@ -77,6 +99,14 @@ public class IntIntMap1 {
 		return put_(key, v);
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		for (IntObjPair<Integer> pair : streamlet())
+			sb.append(pair.t0 + ":" + pair.t1 + ",");
+		return sb.toString();
+	}
+
 	public void update(int key, Int_Int fun) {
 		int mask = kvs.length - 1;
 		int index = key & mask;
@@ -87,7 +117,9 @@ public class IntIntMap1 {
 				index = index + 1 & mask;
 			else
 				break;
-		kvs[index] = fun.apply(v);
+		int v1 = fun.apply(v);
+		kvs[index] = kv(key, v1);
+		size += (v1 != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v != IntFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public IntIntSource source() {

@@ -117,6 +117,7 @@ public class ObjDblMap<K> {
 				index = index + 1 & mask;
 			else
 				break;
+		ks[index] = key;
 		size += ((vs[index] = fun.apply(v)) != DblFunUtil.EMPTYVALUE ? 1 : 0) - (v != DblFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 

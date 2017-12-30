@@ -134,6 +134,7 @@ public class ChrFltMap {
 				index = index + 1 & mask;
 			else
 				break;
+		ks[index] = key;
 		size += ((vs[index] = fun.apply(v)) != FltFunUtil.EMPTYVALUE ? 1 : 0) - (v != FltFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 

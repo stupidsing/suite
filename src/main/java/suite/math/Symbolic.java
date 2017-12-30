@@ -17,12 +17,14 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
+import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.pair.IntObjPair;
+import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.Fun2;
-import suite.util.To;
 
 public class Symbolic {
 
@@ -218,72 +220,77 @@ public class Symbolic {
 		}
 
 		private Opt<Node> polyize(Node node) { // polynomialize
+			class Map extends IntObjMap<Node> {
+				private void add(int power, Node term) {
+					update(power, t -> add.apply(t != null ? t : N0, term));
+				}
+			}
+
 			class Poly {
-				private Opt<Node[]> poly(Node node) {
+				private Opt<Map> poly(Node node) {
 					Node[] m;
 					if ((m = matchAdd.apply(node)) != null)
-						return poly(m[0]).join(poly(m[1]), (ps0, ps1) -> {
-							int length0 = ps0.length;
-							int length1 = ps1.length;
-							return To.array(Math.max(length0, length1), Node.class, i -> add.apply( //
-									i < length0 ? ps0[i] : N0, //
-									i < length1 ? ps1[i] : N0));
+						return poly(m[0]).join(poly(m[1]), (map0, map1) -> {
+							Map map = new Map();
+							for (IntObjPair<Node> pair : IntObjStreamlet.concat(map0.streamlet(), map1.streamlet()))
+								map.add(pair.t0, pair.t1);
+							return map;
 						});
 					else if ((m = matchMul.apply(node)) != null)
 						return multiply(poly(m[0]), poly(m[1]));
 					else if ((m = matchPow.apply(node)) != null && m[1] instanceof Int)
 						return pow(m[0], ((Int) m[1]).number);
-					else if (node.compareTo(x) == 0)
-						return Opt.of(new Node[] { N0, N1, });
-					else if (node == N0)
-						return Opt.of(new Node[] {});
-					else if (!isContains_x(node))
-						return Opt.of(new Node[] { node, });
-					else
+					else if (node.compareTo(x) == 0) {
+						Map map = new Map();
+						map.put(1, N1);
+						return Opt.of(map);
+					} else if (node == N0)
+						return Opt.of(new Map());
+					else if (!isContains_x(node)) {
+						Map map = new Map();
+						map.put(0, node);
+						return Opt.of(map);
+					} else
 						return Opt.none();
 				}
 
-				private Opt<Node[]> pow(Node m0, int power) {
+				private Opt<Map> multiply(Opt<Map> opt0, Opt<Map> opt1) {
+					return opt0.join(opt1, (map0, map1) -> {
+						Map map = new Map();
+						for (IntObjPair<Node> pair0 : map0.streamlet())
+							for (IntObjPair<Node> pair1 : map1.streamlet())
+								map.add(pair0.t0 + pair1.t0, mul.apply(pair0.t1, pair1.t1));
+						return map;
+					});
+				}
+
+				private Opt<Map> pow(Node m0, int power) {
 					return polyize(m0).concatMap(n -> {
 						if (power < 0)
 							return Opt.none();
-						else if (power == 0) // TODO m[0] != 0
-							return Opt.of(new Node[] { N1, });
-						else {
+						else if (power == 0) { // TODO m[0] != 0
+							Map map = new Map();
+							map.put(0, N1);
+							return Opt.of(map);
+						} else {
 							int div2 = power / 2;
 							int mod2 = power % 2;
-							Opt<Node[]> opt0 = pow(m0, div2);
-							Opt<Node[]> opt1 = multiply(opt0, opt0);
+							Opt<Map> opt0 = pow(m0, div2);
+							Opt<Map> opt1 = multiply(opt0, opt0);
 							return mod2 != 0 ? multiply(opt1, poly(n)) : opt1;
 						}
 					});
 				}
-
-				private Opt<Node[]> multiply(Opt<Node[]> opt0, Opt<Node[]> opt1) {
-					return opt0.join(opt1, (ps0, ps1) -> {
-						int length0 = ps0.length;
-						int length1 = ps1.length;
-						return To.array(length0 + length1 - 1, Node.class, p -> {
-							Node sum = N0;
-							int s = Math.max(0, p - length1 + 1);
-							int e = Math.min(p, length0 - 1);
-							for (int i = s; i <= e; i++)
-								sum = add.apply(mul.apply(ps0[i], ps1[p - i]), sum);
-							return sum;
-						});
-					});
-				}
 			}
 
-			return new Poly().poly(node).map(nodes -> {
-				Node power = N1;
+			return new Poly().poly(node).map(map -> {
 				Node sum = N0;
-
-				for (Node child : nodes) {
-					sum = add.apply(mul.apply(child, power), sum);
-					power = mul.apply(x, power);
+				for (IntObjPair<Node> pair : map.streamlet().sortByKey(Integer::compare)) {
+					Node power = N1;
+					for (int i = 0; i < pair.t0; i++)
+						power = mul.apply(x, power);
+					sum = add.apply(mul.apply(pair.t1, power), sum);
 				}
-
 				return sum;
 			});
 		}

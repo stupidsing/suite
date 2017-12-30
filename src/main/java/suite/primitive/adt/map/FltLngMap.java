@@ -134,6 +134,7 @@ public class FltLngMap {
 				index = index + 1 & mask;
 			else
 				break;
+		ks[index] = key;
 		size += ((vs[index] = fun.apply(v)) != LngFunUtil.EMPTYVALUE ? 1 : 0) - (v != LngFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 

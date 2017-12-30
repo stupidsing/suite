@@ -134,6 +134,7 @@ public class DblIntMap {
 				index = index + 1 & mask;
 			else
 				break;
+		ks[index] = key;
 		size += ((vs[index] = fun.apply(v)) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v != IntFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
