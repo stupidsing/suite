@@ -1,6 +1,7 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.ChrObjSink;
@@ -46,11 +47,34 @@ public class ObjChrMap<K> {
 		return v;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof ObjChrMap) {
+			@SuppressWarnings("unchecked")
+			ObjChrMap<Object> other = (ObjChrMap<Object>) object;
+			boolean b = size == other.size;
+			for (ChrObjPair<K> pair : streamlet())
+				b &= other.get(pair.t1) == pair.t0;
+			return b;
+		} else
+			return false;
+	}
+
 	public void forEach(ChrObjSink<K> sink) {
 		ChrObjPair<K> pair = ChrObjPair.of((char) 0, null);
 		ChrObjSource<K> source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (ChrObjPair<K> pair : streamlet()) {
+			h = h * 31 + Character.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
 	}
 
 	public char get(K key) {
@@ -93,7 +117,7 @@ public class ObjChrMap<K> {
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != ChrFunUtil.EMPTYVALUE ? 1 : 0) - (v != ChrFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {

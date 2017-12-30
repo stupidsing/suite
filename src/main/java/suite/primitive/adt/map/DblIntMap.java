@@ -1,8 +1,8 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
-import suite.primitive.DblFunUtil;
 import suite.primitive.DblIntSink;
 import suite.primitive.DblIntSource;
 import suite.primitive.DblPrimitives.DblObjSource;
@@ -52,9 +52,21 @@ public class DblIntMap {
 
 	public int computeIfAbsent(double key, Dbl_Int fun) {
 		int v = get(key);
-		if (v == DblFunUtil.EMPTYVALUE)
+		if (v == IntFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof DblIntMap) {
+			DblIntMap other = (DblIntMap) object;
+			boolean b = size == other.size;
+			for (DblObjPair<Integer> pair : streamlet())
+				b &= other.get(pair.t0) == pair.t1;
+			return b;
+		} else
+			return false;
 	}
 
 	public void forEach(DblIntSink sink) {
@@ -64,11 +76,21 @@ public class DblIntMap {
 			sink.sink2(pair.t0, pair.t1);
 	}
 
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (DblObjPair<Integer> pair : streamlet()) {
+			h = h * 31 + Double.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
+	}
+
 	public int get(double key) {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;
 		int v;
-		while ((v = vs[index]) != DblFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -87,7 +109,7 @@ public class DblIntMap {
 
 			for (int i = 0; i < capacity; i++) {
 				int v_ = vs0[i];
-				if (v_ != DblFunUtil.EMPTYVALUE)
+				if (v_ != IntFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -99,12 +121,12 @@ public class DblIntMap {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;
 		int v;
-		while ((v = vs[index]) != DblFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v != IntFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {
@@ -132,7 +154,7 @@ public class DblIntMap {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;
 		int v0;
-		while ((v0 = vs[index]) != DblFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != IntFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -150,7 +172,7 @@ public class DblIntMap {
 			public boolean source2(DblIntPair pair) {
 				int v;
 				while (index < capacity)
-					if ((v = vs[index]) == DblFunUtil.EMPTYVALUE)
+					if ((v = vs[index]) == IntFunUtil.EMPTYVALUE)
 						index++;
 					else {
 						pair.update(ks[index++], v);

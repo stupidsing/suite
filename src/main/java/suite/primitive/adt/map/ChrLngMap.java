@@ -1,8 +1,8 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
-import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrLngSink;
 import suite.primitive.ChrLngSource;
 import suite.primitive.ChrPrimitives.ChrObjSource;
@@ -52,9 +52,21 @@ public class ChrLngMap {
 
 	public long computeIfAbsent(char key, Chr_Lng fun) {
 		long v = get(key);
-		if (v == ChrFunUtil.EMPTYVALUE)
+		if (v == LngFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof ChrLngMap) {
+			ChrLngMap other = (ChrLngMap) object;
+			boolean b = size == other.size;
+			for (ChrObjPair<Long> pair : streamlet())
+				b &= other.get(pair.t0) == pair.t1;
+			return b;
+		} else
+			return false;
 	}
 
 	public void forEach(ChrLngSink sink) {
@@ -64,11 +76,21 @@ public class ChrLngMap {
 			sink.sink2(pair.t0, pair.t1);
 	}
 
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (ChrObjPair<Long> pair : streamlet()) {
+			h = h * 31 + Character.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
+	}
+
 	public long get(char key) {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		long v;
-		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -87,7 +109,7 @@ public class ChrLngMap {
 
 			for (int i = 0; i < capacity; i++) {
 				long v_ = vs0[i];
-				if (v_ != ChrFunUtil.EMPTYVALUE)
+				if (v_ != LngFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -99,12 +121,12 @@ public class ChrLngMap {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		long v;
-		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != LngFunUtil.EMPTYVALUE ? 1 : 0) - (v != LngFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {
@@ -132,7 +154,7 @@ public class ChrLngMap {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		long v0;
-		while ((v0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -150,7 +172,7 @@ public class ChrLngMap {
 			public boolean source2(ChrLngPair pair) {
 				long v;
 				while (index < capacity)
-					if ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
+					if ((v = vs[index]) == LngFunUtil.EMPTYVALUE)
 						index++;
 					else {
 						pair.update(ks[index++], v);

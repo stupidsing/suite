@@ -1,8 +1,8 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
-import suite.primitive.FltFunUtil;
 import suite.primitive.FltLngSink;
 import suite.primitive.FltLngSource;
 import suite.primitive.FltPrimitives.FltObjSource;
@@ -52,9 +52,21 @@ public class FltLngMap {
 
 	public long computeIfAbsent(float key, Flt_Lng fun) {
 		long v = get(key);
-		if (v == FltFunUtil.EMPTYVALUE)
+		if (v == LngFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof FltLngMap) {
+			FltLngMap other = (FltLngMap) object;
+			boolean b = size == other.size;
+			for (FltObjPair<Long> pair : streamlet())
+				b &= other.get(pair.t0) == pair.t1;
+			return b;
+		} else
+			return false;
 	}
 
 	public void forEach(FltLngSink sink) {
@@ -64,11 +76,21 @@ public class FltLngMap {
 			sink.sink2(pair.t0, pair.t1);
 	}
 
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (FltObjPair<Long> pair : streamlet()) {
+			h = h * 31 + Float.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
+	}
+
 	public long get(float key) {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
 		long v;
-		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -87,7 +109,7 @@ public class FltLngMap {
 
 			for (int i = 0; i < capacity; i++) {
 				long v_ = vs0[i];
-				if (v_ != FltFunUtil.EMPTYVALUE)
+				if (v_ != LngFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -99,12 +121,12 @@ public class FltLngMap {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
 		long v;
-		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != LngFunUtil.EMPTYVALUE ? 1 : 0) - (v != LngFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {
@@ -132,7 +154,7 @@ public class FltLngMap {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
 		long v0;
-		while ((v0 = vs[index]) != FltFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -150,7 +172,7 @@ public class FltLngMap {
 			public boolean source2(FltLngPair pair) {
 				long v;
 				while (index < capacity)
-					if ((v = vs[index]) == FltFunUtil.EMPTYVALUE)
+					if ((v = vs[index]) == LngFunUtil.EMPTYVALUE)
 						index++;
 					else {
 						pair.update(ks[index++], v);

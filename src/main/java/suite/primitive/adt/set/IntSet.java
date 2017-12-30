@@ -43,13 +43,6 @@ public class IntSet {
 		allocate(capacity);
 	}
 
-	public void forEach(IntSink sink) {
-		IntSource source = source_();
-		int c;
-		while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
-			sink.sink(c);
-	}
-
 	public boolean add(int c) {
 		int capacity = vs.length;
 		size++;
@@ -70,6 +63,33 @@ public class IntSet {
 
 	public boolean contains(int c) {
 		return 0 <= index(c);
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof IntSet) {
+			IntSet other = (IntSet) object;
+			boolean b = size == other.size;
+			for (int c : streamlet())
+				b &= other.contains(c);
+			return b;
+		} else
+			return false;
+	}
+
+	public void forEach(IntSink sink) {
+		IntSource source = source_();
+		int c;
+		while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
+			sink.sink(c);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (int c : streamlet())
+			h = h * 31 + Integer.hashCode(c);
+		return h;
 	}
 
 	public IntSource source() {
@@ -108,10 +128,10 @@ public class IntSet {
 
 			public int source() {
 				int v;
-				while ((v = vs[index]) == IntFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return IntFunUtil.EMPTYVALUE;
-				return v;
+				while (index < capacity)
+					if ((v = vs[index++]) != IntFunUtil.EMPTYVALUE)
+						return v;
+				return IntFunUtil.EMPTYVALUE;
 			}
 		};
 	}

@@ -1,6 +1,7 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import suite.primitive.FltFltSink;
 import suite.primitive.FltFltSource;
@@ -54,11 +55,33 @@ public class FltFltMap {
 		return v;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof FltFltMap) {
+			FltFltMap other = (FltFltMap) object;
+			boolean b = size == other.size;
+			for (FltObjPair<Float> pair : streamlet())
+				b &= other.get(pair.t0) == pair.t1;
+			return b;
+		} else
+			return false;
+	}
+
 	public void forEach(FltFltSink sink) {
 		FltFltPair pair = FltFltPair.of((float) 0, (float) 0);
 		FltFltSource source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (FltObjPair<Float> pair : streamlet()) {
+			h = h * 31 + Float.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
 	}
 
 	public float get(float key) {
@@ -101,7 +124,7 @@ public class FltFltMap {
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != FltFunUtil.EMPTYVALUE ? 1 : 0) - (v != FltFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {

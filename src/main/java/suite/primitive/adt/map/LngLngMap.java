@@ -1,6 +1,7 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngLngSink;
@@ -54,11 +55,33 @@ public class LngLngMap {
 		return v;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof LngLngMap) {
+			LngLngMap other = (LngLngMap) object;
+			boolean b = size == other.size;
+			for (LngObjPair<Long> pair : streamlet())
+				b &= other.get(pair.t0) == pair.t1;
+			return b;
+		} else
+			return false;
+	}
+
 	public void forEach(LngLngSink sink) {
 		LngLngPair pair = LngLngPair.of((long) 0, (long) 0);
 		LngLngSource source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (LngObjPair<Long> pair : streamlet()) {
+			h = h * 31 + Long.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
 	}
 
 	public long get(long key) {
@@ -101,7 +124,7 @@ public class LngLngMap {
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != LngFunUtil.EMPTYVALUE ? 1 : 0) - (v != LngFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {

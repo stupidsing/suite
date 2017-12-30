@@ -1,12 +1,14 @@
 package suite.primitive.adt.map;
 
+import java.util.Objects;
+
 import suite.primitive.FltPrimitives.FltObjSink;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Flt_Obj;
-import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltObjOutlet;
 import suite.primitive.streamlet.FltObjStreamlet;
+import suite.util.FunUtil.Iterate;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -43,6 +45,18 @@ public class FltObjMap<V> {
 		return v;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof FltObjMap) {
+			FltObjMap<?> other = (FltObjMap<?>) object;
+			boolean b = size == other.size;
+			for (FltObjPair<V> pair : streamlet())
+				b &= other.get(pair.t0).equals(pair.t1);
+			return b;
+		} else
+			return false;
+	}
+
 	public void forEach(FltObjSink<V> sink) {
 		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
 		FltObjSource<V> source = source_();
@@ -60,6 +74,16 @@ public class FltObjMap<V> {
 			else
 				break;
 		return cast(v);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (FltObjPair<V> pair : streamlet()) {
+			h = h * 31 + Float.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
 	}
 
 	public V put(float key, V v1) {
@@ -81,7 +105,7 @@ public class FltObjMap<V> {
 		return cast(put_(key, v1));
 	}
 
-	public void update(float key, Obj_Int<V> fun) {
+	public void update(float key, Iterate<V> fun) {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
 		Object v;
@@ -90,7 +114,7 @@ public class FltObjMap<V> {
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(cast(v));
+		size += ((vs[index] = fun.apply(cast(v))) != null ? 1 : 0) - (v != null ? 1 : 0);
 	}
 
 	public int size() {

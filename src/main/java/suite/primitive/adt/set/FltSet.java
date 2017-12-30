@@ -43,13 +43,6 @@ public class FltSet {
 		allocate(capacity);
 	}
 
-	public void forEach(FltSink sink) {
-		FltSource source = source_();
-		float c;
-		while ((c = source.source()) != FltFunUtil.EMPTYVALUE)
-			sink.sink(c);
-	}
-
 	public boolean add(float c) {
 		int capacity = vs.length;
 		size++;
@@ -70,6 +63,33 @@ public class FltSet {
 
 	public boolean contains(float c) {
 		return 0 <= index(c);
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof FltSet) {
+			FltSet other = (FltSet) object;
+			boolean b = size == other.size;
+			for (float c : streamlet())
+				b &= other.contains(c);
+			return b;
+		} else
+			return false;
+	}
+
+	public void forEach(FltSink sink) {
+		FltSource source = source_();
+		float c;
+		while ((c = source.source()) != FltFunUtil.EMPTYVALUE)
+			sink.sink(c);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (float c : streamlet())
+			h = h * 31 + Float.hashCode(c);
+		return h;
 	}
 
 	public FltSource source() {
@@ -108,10 +128,10 @@ public class FltSet {
 
 			public float source() {
 				float v;
-				while ((v = vs[index]) == FltFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return FltFunUtil.EMPTYVALUE;
-				return v;
+				while (index < capacity)
+					if ((v = vs[index++]) != FltFunUtil.EMPTYVALUE)
+						return v;
+				return FltFunUtil.EMPTYVALUE;
 			}
 		};
 	}

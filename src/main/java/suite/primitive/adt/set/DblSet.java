@@ -43,13 +43,6 @@ public class DblSet {
 		allocate(capacity);
 	}
 
-	public void forEach(DblSink sink) {
-		DblSource source = source_();
-		double c;
-		while ((c = source.source()) != DblFunUtil.EMPTYVALUE)
-			sink.sink(c);
-	}
-
 	public boolean add(double c) {
 		int capacity = vs.length;
 		size++;
@@ -70,6 +63,33 @@ public class DblSet {
 
 	public boolean contains(double c) {
 		return 0 <= index(c);
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof DblSet) {
+			DblSet other = (DblSet) object;
+			boolean b = size == other.size;
+			for (double c : streamlet())
+				b &= other.contains(c);
+			return b;
+		} else
+			return false;
+	}
+
+	public void forEach(DblSink sink) {
+		DblSource source = source_();
+		double c;
+		while ((c = source.source()) != DblFunUtil.EMPTYVALUE)
+			sink.sink(c);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (double c : streamlet())
+			h = h * 31 + Double.hashCode(c);
+		return h;
 	}
 
 	public DblSource source() {
@@ -108,10 +128,10 @@ public class DblSet {
 
 			public double source() {
 				double v;
-				while ((v = vs[index]) == DblFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return DblFunUtil.EMPTYVALUE;
-				return v;
+				while (index < capacity)
+					if ((v = vs[index++]) != DblFunUtil.EMPTYVALUE)
+						return v;
+				return DblFunUtil.EMPTYVALUE;
 			}
 		};
 	}

@@ -43,13 +43,6 @@ public class ChrSet {
 		allocate(capacity);
 	}
 
-	public void forEach(ChrSink sink) {
-		ChrSource source = source_();
-		char c;
-		while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
-			sink.sink(c);
-	}
-
 	public boolean add(char c) {
 		int capacity = vs.length;
 		size++;
@@ -70,6 +63,33 @@ public class ChrSet {
 
 	public boolean contains(char c) {
 		return 0 <= index(c);
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof ChrSet) {
+			ChrSet other = (ChrSet) object;
+			boolean b = size == other.size;
+			for (char c : streamlet())
+				b &= other.contains(c);
+			return b;
+		} else
+			return false;
+	}
+
+	public void forEach(ChrSink sink) {
+		ChrSource source = source_();
+		char c;
+		while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
+			sink.sink(c);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (char c : streamlet())
+			h = h * 31 + Character.hashCode(c);
+		return h;
 	}
 
 	public ChrSource source() {
@@ -108,10 +128,10 @@ public class ChrSet {
 
 			public char source() {
 				char v;
-				while ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return ChrFunUtil.EMPTYVALUE;
-				return v;
+				while (index < capacity)
+					if ((v = vs[index++]) != ChrFunUtil.EMPTYVALUE)
+						return v;
+				return ChrFunUtil.EMPTYVALUE;
 			}
 		};
 	}

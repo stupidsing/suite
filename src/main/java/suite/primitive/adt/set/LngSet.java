@@ -43,13 +43,6 @@ public class LngSet {
 		allocate(capacity);
 	}
 
-	public void forEach(LngSink sink) {
-		LngSource source = source_();
-		long c;
-		while ((c = source.source()) != LngFunUtil.EMPTYVALUE)
-			sink.sink(c);
-	}
-
 	public boolean add(long c) {
 		int capacity = vs.length;
 		size++;
@@ -70,6 +63,33 @@ public class LngSet {
 
 	public boolean contains(long c) {
 		return 0 <= index(c);
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof LngSet) {
+			LngSet other = (LngSet) object;
+			boolean b = size == other.size;
+			for (long c : streamlet())
+				b &= other.contains(c);
+			return b;
+		} else
+			return false;
+	}
+
+	public void forEach(LngSink sink) {
+		LngSource source = source_();
+		long c;
+		while ((c = source.source()) != LngFunUtil.EMPTYVALUE)
+			sink.sink(c);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (long c : streamlet())
+			h = h * 31 + Long.hashCode(c);
+		return h;
 	}
 
 	public LngSource source() {
@@ -108,10 +128,10 @@ public class LngSet {
 
 			public long source() {
 				long v;
-				while ((v = vs[index]) == LngFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return LngFunUtil.EMPTYVALUE;
-				return v;
+				while (index < capacity)
+					if ((v = vs[index++]) != LngFunUtil.EMPTYVALUE)
+						return v;
+				return LngFunUtil.EMPTYVALUE;
 			}
 		};
 	}

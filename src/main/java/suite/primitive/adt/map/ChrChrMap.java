@@ -1,6 +1,7 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import suite.primitive.ChrChrSink;
 import suite.primitive.ChrChrSource;
@@ -54,11 +55,33 @@ public class ChrChrMap {
 		return v;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof ChrChrMap) {
+			ChrChrMap other = (ChrChrMap) object;
+			boolean b = size == other.size;
+			for (ChrObjPair<Character> pair : streamlet())
+				b &= other.get(pair.t0) == pair.t1;
+			return b;
+		} else
+			return false;
+	}
+
 	public void forEach(ChrChrSink sink) {
 		ChrChrPair pair = ChrChrPair.of((char) 0, (char) 0);
 		ChrChrSource source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (ChrObjPair<Character> pair : streamlet()) {
+			h = h * 31 + Character.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
 	}
 
 	public char get(char key) {
@@ -101,7 +124,7 @@ public class ChrChrMap {
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != ChrFunUtil.EMPTYVALUE ? 1 : 0) - (v != ChrFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {

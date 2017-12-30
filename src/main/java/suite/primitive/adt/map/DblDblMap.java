@@ -1,6 +1,7 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import suite.primitive.DblDblSink;
 import suite.primitive.DblDblSource;
@@ -54,11 +55,33 @@ public class DblDblMap {
 		return v;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof DblDblMap) {
+			DblDblMap other = (DblDblMap) object;
+			boolean b = size == other.size;
+			for (DblObjPair<Double> pair : streamlet())
+				b &= other.get(pair.t0) == pair.t1;
+			return b;
+		} else
+			return false;
+	}
+
 	public void forEach(DblDblSink sink) {
 		DblDblPair pair = DblDblPair.of((double) 0, (double) 0);
 		DblDblSource source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (DblObjPair<Double> pair : streamlet()) {
+			h = h * 31 + Double.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
 	}
 
 	public double get(double key) {
@@ -101,7 +124,7 @@ public class DblDblMap {
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != DblFunUtil.EMPTYVALUE ? 1 : 0) - (v != DblFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {

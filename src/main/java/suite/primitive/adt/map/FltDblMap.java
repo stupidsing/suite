@@ -1,13 +1,13 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltDblSink;
 import suite.primitive.FltDblSource;
-import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Dbl;
@@ -52,9 +52,21 @@ public class FltDblMap {
 
 	public double computeIfAbsent(float key, Flt_Dbl fun) {
 		double v = get(key);
-		if (v == FltFunUtil.EMPTYVALUE)
+		if (v == DblFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof FltDblMap) {
+			FltDblMap other = (FltDblMap) object;
+			boolean b = size == other.size;
+			for (FltObjPair<Double> pair : streamlet())
+				b &= other.get(pair.t0) == pair.t1;
+			return b;
+		} else
+			return false;
 	}
 
 	public void forEach(FltDblSink sink) {
@@ -64,11 +76,21 @@ public class FltDblMap {
 			sink.sink2(pair.t0, pair.t1);
 	}
 
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (FltObjPair<Double> pair : streamlet()) {
+			h = h * 31 + Float.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
+	}
+
 	public double get(float key) {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
 		double v;
-		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != DblFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -87,7 +109,7 @@ public class FltDblMap {
 
 			for (int i = 0; i < capacity; i++) {
 				double v_ = vs0[i];
-				if (v_ != FltFunUtil.EMPTYVALUE)
+				if (v_ != DblFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -99,12 +121,12 @@ public class FltDblMap {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
 		double v;
-		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != DblFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != DblFunUtil.EMPTYVALUE ? 1 : 0) - (v != DblFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {
@@ -132,7 +154,7 @@ public class FltDblMap {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
 		double v0;
-		while ((v0 = vs[index]) != FltFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != DblFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -150,7 +172,7 @@ public class FltDblMap {
 			public boolean source2(FltDblPair pair) {
 				double v;
 				while (index < capacity)
-					if ((v = vs[index]) == FltFunUtil.EMPTYVALUE)
+					if ((v = vs[index]) == DblFunUtil.EMPTYVALUE)
 						index++;
 					else {
 						pair.update(ks[index++], v);

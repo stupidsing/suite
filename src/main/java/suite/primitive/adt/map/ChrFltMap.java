@@ -1,10 +1,10 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import suite.primitive.ChrFltSink;
 import suite.primitive.ChrFltSource;
-import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Flt;
@@ -52,9 +52,21 @@ public class ChrFltMap {
 
 	public float computeIfAbsent(char key, Chr_Flt fun) {
 		float v = get(key);
-		if (v == ChrFunUtil.EMPTYVALUE)
+		if (v == FltFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof ChrFltMap) {
+			ChrFltMap other = (ChrFltMap) object;
+			boolean b = size == other.size;
+			for (ChrObjPair<Float> pair : streamlet())
+				b &= other.get(pair.t0) == pair.t1;
+			return b;
+		} else
+			return false;
 	}
 
 	public void forEach(ChrFltSink sink) {
@@ -64,11 +76,21 @@ public class ChrFltMap {
 			sink.sink2(pair.t0, pair.t1);
 	}
 
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (ChrObjPair<Float> pair : streamlet()) {
+			h = h * 31 + Character.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
+	}
+
 	public float get(char key) {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		float v;
-		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -87,7 +109,7 @@ public class ChrFltMap {
 
 			for (int i = 0; i < capacity; i++) {
 				float v_ = vs0[i];
-				if (v_ != ChrFunUtil.EMPTYVALUE)
+				if (v_ != FltFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -99,12 +121,12 @@ public class ChrFltMap {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		float v;
-		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != FltFunUtil.EMPTYVALUE ? 1 : 0) - (v != FltFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {
@@ -132,7 +154,7 @@ public class ChrFltMap {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		float v0;
-		while ((v0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != FltFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -150,7 +172,7 @@ public class ChrFltMap {
 			public boolean source2(ChrFltPair pair) {
 				float v;
 				while (index < capacity)
-					if ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
+					if ((v = vs[index]) == FltFunUtil.EMPTYVALUE)
 						index++;
 					else {
 						pair.update(ks[index++], v);

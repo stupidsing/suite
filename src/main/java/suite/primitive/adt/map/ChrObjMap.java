@@ -1,12 +1,14 @@
 package suite.primitive.adt.map;
 
+import java.util.Objects;
+
 import suite.primitive.ChrPrimitives.ChrObjSink;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.Chr_Obj;
-import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.streamlet.ChrObjOutlet;
 import suite.primitive.streamlet.ChrObjStreamlet;
+import suite.util.FunUtil.Iterate;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -43,6 +45,18 @@ public class ChrObjMap<V> {
 		return v;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof ChrObjMap) {
+			ChrObjMap<?> other = (ChrObjMap<?>) object;
+			boolean b = size == other.size;
+			for (ChrObjPair<V> pair : streamlet())
+				b &= other.get(pair.t0).equals(pair.t1);
+			return b;
+		} else
+			return false;
+	}
+
 	public void forEach(ChrObjSink<V> sink) {
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		ChrObjSource<V> source = source_();
@@ -60,6 +74,16 @@ public class ChrObjMap<V> {
 			else
 				break;
 		return cast(v);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (ChrObjPair<V> pair : streamlet()) {
+			h = h * 31 + Character.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
 	}
 
 	public V put(char key, V v1) {
@@ -81,7 +105,7 @@ public class ChrObjMap<V> {
 		return cast(put_(key, v1));
 	}
 
-	public void update(char key, Obj_Int<V> fun) {
+	public void update(char key, Iterate<V> fun) {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		Object v;
@@ -90,7 +114,7 @@ public class ChrObjMap<V> {
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(cast(v));
+		size += ((vs[index] = fun.apply(cast(v))) != null ? 1 : 0) - (v != null ? 1 : 0);
 	}
 
 	public int size() {

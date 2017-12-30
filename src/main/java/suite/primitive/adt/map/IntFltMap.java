@@ -1,13 +1,13 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.Flt_Flt;
 import suite.primitive.IntFltSink;
 import suite.primitive.IntFltSource;
-import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Flt;
@@ -52,9 +52,21 @@ public class IntFltMap {
 
 	public float computeIfAbsent(int key, Int_Flt fun) {
 		float v = get(key);
-		if (v == IntFunUtil.EMPTYVALUE)
+		if (v == FltFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof IntFltMap) {
+			IntFltMap other = (IntFltMap) object;
+			boolean b = size == other.size;
+			for (IntObjPair<Float> pair : streamlet())
+				b &= other.get(pair.t0) == pair.t1;
+			return b;
+		} else
+			return false;
 	}
 
 	public void forEach(IntFltSink sink) {
@@ -64,11 +76,21 @@ public class IntFltMap {
 			sink.sink2(pair.t0, pair.t1);
 	}
 
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (IntObjPair<Float> pair : streamlet()) {
+			h = h * 31 + Integer.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
+	}
+
 	public float get(int key) {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		float v;
-		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -87,7 +109,7 @@ public class IntFltMap {
 
 			for (int i = 0; i < capacity; i++) {
 				float v_ = vs0[i];
-				if (v_ != IntFunUtil.EMPTYVALUE)
+				if (v_ != FltFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -99,12 +121,12 @@ public class IntFltMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		float v;
-		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != FltFunUtil.EMPTYVALUE ? 1 : 0) - (v != FltFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {
@@ -132,7 +154,7 @@ public class IntFltMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		float v0;
-		while ((v0 = vs[index]) != IntFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != FltFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -150,7 +172,7 @@ public class IntFltMap {
 			public boolean source2(IntFltPair pair) {
 				float v;
 				while (index < capacity)
-					if ((v = vs[index]) == IntFunUtil.EMPTYVALUE)
+					if ((v = vs[index]) == FltFunUtil.EMPTYVALUE)
 						index++;
 					else {
 						pair.update(ks[index++], v);

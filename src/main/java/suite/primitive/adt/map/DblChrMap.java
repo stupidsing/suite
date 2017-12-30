@@ -1,13 +1,13 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.DblChrSink;
 import suite.primitive.DblChrSource;
-import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Chr;
@@ -52,9 +52,21 @@ public class DblChrMap {
 
 	public char computeIfAbsent(double key, Dbl_Chr fun) {
 		char v = get(key);
-		if (v == DblFunUtil.EMPTYVALUE)
+		if (v == ChrFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof DblChrMap) {
+			DblChrMap other = (DblChrMap) object;
+			boolean b = size == other.size;
+			for (DblObjPair<Character> pair : streamlet())
+				b &= other.get(pair.t0) == pair.t1;
+			return b;
+		} else
+			return false;
 	}
 
 	public void forEach(DblChrSink sink) {
@@ -64,11 +76,21 @@ public class DblChrMap {
 			sink.sink2(pair.t0, pair.t1);
 	}
 
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (DblObjPair<Character> pair : streamlet()) {
+			h = h * 31 + Double.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
+	}
+
 	public char get(double key) {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;
 		char v;
-		while ((v = vs[index]) != DblFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -87,7 +109,7 @@ public class DblChrMap {
 
 			for (int i = 0; i < capacity; i++) {
 				char v_ = vs0[i];
-				if (v_ != DblFunUtil.EMPTYVALUE)
+				if (v_ != ChrFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -99,12 +121,12 @@ public class DblChrMap {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;
 		char v;
-		while ((v = vs[index]) != DblFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != ChrFunUtil.EMPTYVALUE ? 1 : 0) - (v != ChrFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {
@@ -132,7 +154,7 @@ public class DblChrMap {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;
 		char v0;
-		while ((v0 = vs[index]) != DblFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -150,7 +172,7 @@ public class DblChrMap {
 			public boolean source2(DblChrPair pair) {
 				char v;
 				while (index < capacity)
-					if ((v = vs[index]) == DblFunUtil.EMPTYVALUE)
+					if ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
 						index++;
 					else {
 						pair.update(ks[index++], v);

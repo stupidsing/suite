@@ -1,6 +1,7 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.IntObjSink;
@@ -46,11 +47,34 @@ public class ObjIntMap<K> {
 		return v;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof ObjIntMap) {
+			@SuppressWarnings("unchecked")
+			ObjIntMap<Object> other = (ObjIntMap<Object>) object;
+			boolean b = size == other.size;
+			for (IntObjPair<K> pair : streamlet())
+				b &= other.get(pair.t1) == pair.t0;
+			return b;
+		} else
+			return false;
+	}
+
 	public void forEach(IntObjSink<K> sink) {
 		IntObjPair<K> pair = IntObjPair.of((int) 0, null);
 		IntObjSource<K> source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (IntObjPair<K> pair : streamlet()) {
+			h = h * 31 + Integer.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
 	}
 
 	public int get(K key) {
@@ -93,7 +117,7 @@ public class ObjIntMap<K> {
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v != IntFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {

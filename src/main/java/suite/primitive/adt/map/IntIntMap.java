@@ -1,6 +1,7 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntIntSink;
@@ -54,11 +55,33 @@ public class IntIntMap {
 		return v;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof IntIntMap) {
+			IntIntMap other = (IntIntMap) object;
+			boolean b = size == other.size;
+			for (IntObjPair<Integer> pair : streamlet())
+				b &= other.get(pair.t0) == pair.t1;
+			return b;
+		} else
+			return false;
+	}
+
 	public void forEach(IntIntSink sink) {
 		IntIntPair pair = IntIntPair.of((int) 0, (int) 0);
 		IntIntSource source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (IntObjPair<Integer> pair : streamlet()) {
+			h = h * 31 + Integer.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
 	}
 
 	public int get(int key) {
@@ -101,7 +124,7 @@ public class IntIntMap {
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v != IntFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {

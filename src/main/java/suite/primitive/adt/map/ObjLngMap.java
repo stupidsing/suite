@@ -1,6 +1,7 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.LngObjSink;
@@ -46,11 +47,34 @@ public class ObjLngMap<K> {
 		return v;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof ObjLngMap) {
+			@SuppressWarnings("unchecked")
+			ObjLngMap<Object> other = (ObjLngMap<Object>) object;
+			boolean b = size == other.size;
+			for (LngObjPair<K> pair : streamlet())
+				b &= other.get(pair.t1) == pair.t0;
+			return b;
+		} else
+			return false;
+	}
+
 	public void forEach(LngObjSink<K> sink) {
 		LngObjPair<K> pair = LngObjPair.of((long) 0, null);
 		LngObjSource<K> source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (LngObjPair<K> pair : streamlet()) {
+			h = h * 31 + Long.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
 	}
 
 	public long get(K key) {
@@ -93,7 +117,7 @@ public class ObjLngMap<K> {
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != LngFunUtil.EMPTYVALUE ? 1 : 0) - (v != LngFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {

@@ -1,12 +1,14 @@
 package suite.primitive.adt.map;
 
-import suite.primitive.IntPrimitives.Obj_Int;
+import java.util.Objects;
+
 import suite.primitive.LngPrimitives.LngObjSink;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngObjOutlet;
 import suite.primitive.streamlet.LngObjStreamlet;
+import suite.util.FunUtil.Iterate;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -43,6 +45,18 @@ public class LngObjMap<V> {
 		return v;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof LngObjMap) {
+			LngObjMap<?> other = (LngObjMap<?>) object;
+			boolean b = size == other.size;
+			for (LngObjPair<V> pair : streamlet())
+				b &= other.get(pair.t0).equals(pair.t1);
+			return b;
+		} else
+			return false;
+	}
+
 	public void forEach(LngObjSink<V> sink) {
 		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
 		LngObjSource<V> source = source_();
@@ -60,6 +74,16 @@ public class LngObjMap<V> {
 			else
 				break;
 		return cast(v);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (LngObjPair<V> pair : streamlet()) {
+			h = h * 31 + Long.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
 	}
 
 	public V put(long key, V v1) {
@@ -81,7 +105,7 @@ public class LngObjMap<V> {
 		return cast(put_(key, v1));
 	}
 
-	public void update(long key, Obj_Int<V> fun) {
+	public void update(long key, Iterate<V> fun) {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
 		Object v;
@@ -90,7 +114,7 @@ public class LngObjMap<V> {
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(cast(v));
+		size += ((vs[index] = fun.apply(cast(v))) != null ? 1 : 0) - (v != null ? 1 : 0);
 	}
 
 	public int size() {

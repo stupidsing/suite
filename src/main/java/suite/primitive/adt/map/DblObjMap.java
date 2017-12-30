@@ -1,12 +1,14 @@
 package suite.primitive.adt.map;
 
+import java.util.Objects;
+
 import suite.primitive.DblPrimitives.DblObjSink;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.Dbl_Obj;
-import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
+import suite.util.FunUtil.Iterate;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -43,6 +45,18 @@ public class DblObjMap<V> {
 		return v;
 	}
 
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof DblObjMap) {
+			DblObjMap<?> other = (DblObjMap<?>) object;
+			boolean b = size == other.size;
+			for (DblObjPair<V> pair : streamlet())
+				b &= other.get(pair.t0).equals(pair.t1);
+			return b;
+		} else
+			return false;
+	}
+
 	public void forEach(DblObjSink<V> sink) {
 		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
 		DblObjSource<V> source = source_();
@@ -60,6 +74,16 @@ public class DblObjMap<V> {
 			else
 				break;
 		return cast(v);
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (DblObjPair<V> pair : streamlet()) {
+			h = h * 31 + Double.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
 	}
 
 	public V put(double key, V v1) {
@@ -81,7 +105,7 @@ public class DblObjMap<V> {
 		return cast(put_(key, v1));
 	}
 
-	public void update(double key, Obj_Int<V> fun) {
+	public void update(double key, Iterate<V> fun) {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;
 		Object v;
@@ -90,7 +114,7 @@ public class DblObjMap<V> {
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(cast(v));
+		size += ((vs[index] = fun.apply(cast(v))) != null ? 1 : 0) - (v != null ? 1 : 0);
 	}
 
 	public int size() {

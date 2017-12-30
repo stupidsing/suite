@@ -1,13 +1,13 @@
 package suite.primitive.adt.map;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.Chr_Chr;
 import suite.primitive.IntChrSink;
 import suite.primitive.IntChrSource;
-import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Chr;
@@ -52,9 +52,21 @@ public class IntChrMap {
 
 	public char computeIfAbsent(int key, Int_Chr fun) {
 		char v = get(key);
-		if (v == IntFunUtil.EMPTYVALUE)
+		if (v == ChrFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (object instanceof IntChrMap) {
+			IntChrMap other = (IntChrMap) object;
+			boolean b = size == other.size;
+			for (IntObjPair<Character> pair : streamlet())
+				b &= other.get(pair.t0) == pair.t1;
+			return b;
+		} else
+			return false;
 	}
 
 	public void forEach(IntChrSink sink) {
@@ -64,11 +76,21 @@ public class IntChrMap {
 			sink.sink2(pair.t0, pair.t1);
 	}
 
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (IntObjPair<Character> pair : streamlet()) {
+			h = h * 31 + Integer.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
+	}
+
 	public char get(int key) {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		char v;
-		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -87,7 +109,7 @@ public class IntChrMap {
 
 			for (int i = 0; i < capacity; i++) {
 				char v_ = vs0[i];
-				if (v_ != IntFunUtil.EMPTYVALUE)
+				if (v_ != ChrFunUtil.EMPTYVALUE)
 					put_(ks0[i], v_);
 			}
 		}
@@ -99,12 +121,12 @@ public class IntChrMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		char v;
-		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
-		vs[index] = fun.apply(v);
+		size += ((vs[index] = fun.apply(v)) != ChrFunUtil.EMPTYVALUE ? 1 : 0) - (v != ChrFunUtil.EMPTYVALUE ? 1 : 0);
 	}
 
 	public int size() {
@@ -132,7 +154,7 @@ public class IntChrMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		char v0;
-		while ((v0 = vs[index]) != IntFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -150,7 +172,7 @@ public class IntChrMap {
 			public boolean source2(IntChrPair pair) {
 				char v;
 				while (index < capacity)
-					if ((v = vs[index]) == IntFunUtil.EMPTYVALUE)
+					if ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
 						index++;
 					else {
 						pair.update(ks[index++], v);
