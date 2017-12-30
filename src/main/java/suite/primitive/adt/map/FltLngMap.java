@@ -19,8 +19,8 @@ import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive float key and primitive long value. Long.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with primitive float key and primitive long value. Long.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -149,11 +149,14 @@ public class FltLngMap {
 
 			public boolean source2(FltLngPair pair) {
 				long v;
-				while ((v = vs[index]) == FltFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return false;
-				pair.update(ks[index++], v);
-				return true;
+				while (index < capacity)
+					if ((v = vs[index]) == FltFunUtil.EMPTYVALUE)
+						index++;
+					else {
+						pair.update(ks[index++], v);
+						return true;
+					}
+				return false;
 			}
 		};
 	}

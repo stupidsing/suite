@@ -129,11 +129,14 @@ public class ObjDblMap<K> {
 
 			public boolean source2(DblObjPair<K> pair) {
 				double v;
-				while ((v = vs[index]) == DblFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return false;
-				pair.update(v, cast(ks[index++]));
-				return true;
+				while (index < capacity)
+					if ((v = vs[index]) == DblFunUtil.EMPTYVALUE)
+						index++;
+					else {
+						pair.update(v, cast(ks[index++]));
+						return true;
+					}
+				return false;
 			}
 		};
 	}

@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.Suite;
+import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.BindPredicate;
@@ -25,12 +26,13 @@ public class SewingBinderTest {
 	}
 
 	private void test(String pattern, String match) {
-		Node node = new Generalizer().generalize(Suite.parse(match));
-		BinderFactory sb = new SewingBinderImpl();
-		BindPredicate p = sb.compileBind(node);
-		BindEnv be = new BindEnv(sb.env());
+		for (BinderFactory sb : new BinderFactory[] { new CompileBinderImpl(), new SewingBinderImpl(), }) {
+			Node node = new Generalizer().generalize(Suite.parse(pattern));
+			BindPredicate p = sb.compileBind(node);
+			BindEnv be = new BindEnv(sb.env());
 
-		assertTrue(p.test(be, Suite.parse(match)));
+			assertTrue(p.test(be, Suite.parse(match)));
+		}
 	}
 
 }

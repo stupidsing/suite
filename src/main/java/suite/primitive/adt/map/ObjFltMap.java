@@ -129,11 +129,14 @@ public class ObjFltMap<K> {
 
 			public boolean source2(FltObjPair<K> pair) {
 				float v;
-				while ((v = vs[index]) == FltFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return false;
-				pair.update(v, cast(ks[index++]));
-				return true;
+				while (index < capacity)
+					if ((v = vs[index]) == FltFunUtil.EMPTYVALUE)
+						index++;
+					else {
+						pair.update(v, cast(ks[index++]));
+						return true;
+					}
+				return false;
 			}
 		};
 	}

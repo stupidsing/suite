@@ -19,8 +19,8 @@ import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive char key and primitive double value. Double.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with primitive char key and primitive double value. Double.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -149,11 +149,14 @@ public class ChrDblMap {
 
 			public boolean source2(ChrDblPair pair) {
 				double v;
-				while ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return false;
-				pair.update(ks[index++], v);
-				return true;
+				while (index < capacity)
+					if ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
+						index++;
+					else {
+						pair.update(ks[index++], v);
+						return true;
+					}
+				return false;
 			}
 		};
 	}

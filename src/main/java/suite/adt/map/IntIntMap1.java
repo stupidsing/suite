@@ -132,12 +132,15 @@ public class IntIntMap1 {
 			public boolean source2(IntIntPair pair) {
 				long kv;
 				int v;
-				while ((v = v(kv = kvs[index])) == IntFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return false;
-				pair.update(k(kv), v);
-				index++;
-				return true;
+				while (index < capacity)
+					if ((v = v(kv = kvs[index])) == IntFunUtil.EMPTYVALUE)
+						index++;
+					else {
+						pair.update(k(kv), v);
+						index++;
+						return true;
+					}
+				return false;
 			}
 		};
 	}

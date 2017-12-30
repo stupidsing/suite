@@ -16,8 +16,8 @@ import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive long key and primitive long value. Long.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with primitive long key and primitive long value. Long.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -146,11 +146,14 @@ public class LngLngMap {
 
 			public boolean source2(LngLngPair pair) {
 				long v;
-				while ((v = vs[index]) == LngFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return false;
-				pair.update(ks[index++], v);
-				return true;
+				while (index < capacity)
+					if ((v = vs[index]) == LngFunUtil.EMPTYVALUE)
+						index++;
+					else {
+						pair.update(ks[index++], v);
+						return true;
+					}
+				return false;
 			}
 		};
 	}

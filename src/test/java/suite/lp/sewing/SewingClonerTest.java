@@ -5,11 +5,12 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.doer.BinderFactory;
-import suite.lp.doer.BinderFactory.BindEnv;
-import suite.lp.doer.BinderFactory.BindPredicate;
+import suite.lp.Trail;
+import suite.lp.doer.Binder;
+import suite.lp.doer.ClonerFactory;
+import suite.lp.doer.ClonerFactory.Clone_;
 import suite.lp.doer.Generalizer;
-import suite.lp.sewing.impl.SewingBinderImpl;
+import suite.lp.sewing.impl.SewingClonerImpl;
 import suite.node.Node;
 
 public class SewingClonerTest {
@@ -25,12 +26,12 @@ public class SewingClonerTest {
 	}
 
 	private void test(String pattern, String match) {
-		Node node = new Generalizer().generalize(Suite.parse(pattern));
-		BinderFactory sb = new SewingBinderImpl();
-		BindPredicate p = sb.compileBind(node);
-		BindEnv be = new BindEnv(sb.env());
+		for (ClonerFactory cf : new ClonerFactory[] { new SewingClonerImpl(), }) {
+			Node node = new Generalizer().generalize(Suite.parse(pattern));
+			Clone_ p = cf.compile(node);
 
-		assertTrue(p.test(be, Suite.parse(match)));
+			assertTrue(Binder.bind(p.apply(cf.env()), Suite.parse(match), new Trail()));
+		}
 	}
 
 }

@@ -129,11 +129,14 @@ public class ObjLngMap<K> {
 
 			public boolean source2(LngObjPair<K> pair) {
 				long v;
-				while ((v = vs[index]) == LngFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return false;
-				pair.update(v, cast(ks[index++]));
-				return true;
+				while (index < capacity)
+					if ((v = vs[index]) == LngFunUtil.EMPTYVALUE)
+						index++;
+					else {
+						pair.update(v, cast(ks[index++]));
+						return true;
+					}
+				return false;
 			}
 		};
 	}

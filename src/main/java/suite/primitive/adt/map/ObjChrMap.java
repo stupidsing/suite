@@ -129,11 +129,14 @@ public class ObjChrMap<K> {
 
 			public boolean source2(ChrObjPair<K> pair) {
 				char v;
-				while ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return false;
-				pair.update(v, cast(ks[index++]));
-				return true;
+				while (index < capacity)
+					if ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
+						index++;
+					else {
+						pair.update(v, cast(ks[index++]));
+						return true;
+					}
+				return false;
 			}
 		};
 	}

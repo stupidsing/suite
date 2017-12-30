@@ -19,8 +19,8 @@ import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
 /**
- * Map with primitive long key and primitive char value. Character.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with primitive long key and primitive char value. Character.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -149,11 +149,14 @@ public class LngChrMap {
 
 			public boolean source2(LngChrPair pair) {
 				char v;
-				while ((v = vs[index]) == LngFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return false;
-				pair.update(ks[index++], v);
-				return true;
+				while (index < capacity)
+					if ((v = vs[index]) == LngFunUtil.EMPTYVALUE)
+						index++;
+					else {
+						pair.update(ks[index++], v);
+						return true;
+					}
+				return false;
 			}
 		};
 	}

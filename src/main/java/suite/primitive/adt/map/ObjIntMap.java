@@ -129,11 +129,14 @@ public class ObjIntMap<K> {
 
 			public boolean source2(IntObjPair<K> pair) {
 				int v;
-				while ((v = vs[index]) == IntFunUtil.EMPTYVALUE)
-					if (capacity <= ++index)
-						return false;
-				pair.update(v, cast(ks[index++]));
-				return true;
+				while (index < capacity)
+					if ((v = vs[index]) == IntFunUtil.EMPTYVALUE)
+						index++;
+					else {
+						pair.update(v, cast(ks[index++]));
+						return true;
+					}
+				return false;
 			}
 		};
 	}
