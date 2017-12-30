@@ -53,7 +53,7 @@ public class CompileBinderImpl extends SewingClonerImpl implements BinderFactory
 		else if (node instanceof Int)
 			return compileBindInt((Int) node);
 		else if (node instanceof Reference) {
-			int index = findVariableIndex(node);
+			int index = computeIndex(node);
 			return compileBindPredicate((be, n) -> Binder.bind(n, be.getEnv().get(index), be.getTrail()));
 		} else if (node instanceof Str)
 			return compileBindStr((Str) node);

@@ -30,7 +30,7 @@ public class CompileGeneralizerImpl extends VariableMapper implements Generalize
 				if (node_ instanceof Atom) {
 					String name = ((Atom) node_).name;
 					if (ProverConstant.isCut(node_) || ProverConstant.isVariable(name)) {
-						int index = findVariableIndex(node_);
+						int index = computeIndex(node_);
 						return env.index(f.int_(index));
 					} else if (ProverConstant.isWildcard(name))
 						return f.new_(Reference.class);

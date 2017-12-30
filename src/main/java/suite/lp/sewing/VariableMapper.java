@@ -13,7 +13,7 @@ import suite.util.Object_;
 
 public class VariableMapper {
 
-	private Map<IdentityKey<Node>, Integer> variableIndices = new HashMap<>();
+	private Map<IdentityKey<Node>, Integer> indices = new HashMap<>();
 	private int nVariables;
 
 	public class Generalization {
@@ -27,7 +27,7 @@ public class VariableMapper {
 
 		public String dumpVariables() {
 			return Read //
-					.from2(variableIndices) //
+					.from2(indices) //
 					.map2((k, index) -> k.key, (k, index) -> env.refs[index].finalNode()) //
 					.sortByKey(Object_::compare) //
 					.map((k, v) -> Formatter.display(k) + " = " + Formatter.dump(v)) //
@@ -35,7 +35,7 @@ public class VariableMapper {
 		}
 
 		public Node getVariable(Node variable) {
-			return env.refs[getVariableIndex(variable)];
+			return env.refs[getIndex(variable)];
 		}
 	}
 
@@ -48,12 +48,12 @@ public class VariableMapper {
 		return Env.empty(nVariables);
 	}
 
-	public int findVariableIndex(Node variable) {
-		return variableIndices.computeIfAbsent(IdentityKey.of(variable), any -> nVariables++);
+	public int computeIndex(Node variable) {
+		return indices.computeIfAbsent(IdentityKey.of(variable), any -> nVariables++);
 	}
 
-	public Integer getVariableIndex(Node variable) {
-		return variableIndices.get(IdentityKey.of(variable));
+	public Integer getIndex(Node variable) {
+		return indices.get(IdentityKey.of(variable));
 	}
 
 }

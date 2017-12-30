@@ -43,7 +43,7 @@ public class BindArrayUtil {
 		Integer index;
 		int n = 0;
 
-		while ((index = sb.getVariableIndex(generalizer.getVariable(Atom.of("." + n++)))) != null)
+		while ((index = sb.getIndex(generalizer.getVariable(Atom.of("." + n++)))) != null)
 			indexList.add(index);
 
 		int size = indexList.size();

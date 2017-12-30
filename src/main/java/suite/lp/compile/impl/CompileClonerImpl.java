@@ -33,7 +33,7 @@ public class CompileClonerImpl extends VariableMapper implements ClonerFactory {
 				else if (node_ instanceof Int)
 					return f.object(node_);
 				else if (node_ instanceof Reference)
-					return env.index(f.int_(findVariableIndex(node_)));
+					return env.index(f.int_(computeIndex(node_)));
 				else if ((tree = Tree.decompose(node)) != null) {
 					FunExpr fe0 = compile_(tree.getLeft());
 					FunExpr fe1 = compile_(tree.getRight());

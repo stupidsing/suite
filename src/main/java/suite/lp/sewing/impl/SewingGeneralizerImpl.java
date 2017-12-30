@@ -44,7 +44,7 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 			if (node0 instanceof Atom) {
 				String name = ((Atom) node0).name;
 				if (ProverConstant.isCut(node0) || ProverConstant.isVariable(name)) {
-					int index = findVariableIndex(node0);
+					int index = computeIndex(node0);
 					fun = env -> env.get(index);
 				} else if (ProverConstant.isWildcard(name))
 					fun = env -> new Reference();

@@ -43,7 +43,7 @@ public class BindMapUtil {
 		BindPredicate pred = sb.compileBind(toMatch);
 
 		Streamlet2<String, Integer> indices = Read.from(generalizer.getVariablesNames()) //
-				.map2(Formatter::display, name -> sb.getVariableIndex(generalizer.getVariable(name))) //
+				.map2(Formatter::display, name -> sb.getIndex(generalizer.getVariable(name))) //
 				.collect(As::streamlet2);
 
 		return new Match() {

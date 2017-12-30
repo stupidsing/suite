@@ -35,7 +35,7 @@ public class Rule {
 			sewingGeneralizer = new SewingGeneralizerImpl();
 			headFun = sewingGeneralizer.compile(head);
 			tailFun = sewingGeneralizer.compile(tail);
-			cutIndex = sewingGeneralizer.findVariableIndex(ProverConstant.cut);
+			cutIndex = sewingGeneralizer.computeIndex(ProverConstant.cut);
 		}
 
 		Env env = sewingGeneralizer.env();
