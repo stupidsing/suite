@@ -7,7 +7,6 @@ import suite.adt.pair.Pair;
 import suite.lp.doer.ClonerFactory;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
-import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Suspend;
@@ -41,9 +40,7 @@ public class SewingClonerImpl extends VariableMapper implements ClonerFactory {
 			Node node0 = node;
 			Tree tree;
 
-			if (node0 instanceof Atom)
-				fun = env -> node0;
-			else if ((tree = Tree.decompose(node0)) != null) {
+			if ((tree = Tree.decompose(node0)) != null) {
 				Operator operator = tree.getOperator();
 				if (operator != TermOp.OR____) {
 					Clone_ f = compile(tree.getLeft());
