@@ -123,7 +123,7 @@ public class ObjLngMap<K> {
 	}
 
 	private LngObjSource<K> source_() {
-		return new LngObjSource<K>() {
+		return new LngObjSource<>() {
 			private int capacity = vs.length;
 			private int index = 0;
 

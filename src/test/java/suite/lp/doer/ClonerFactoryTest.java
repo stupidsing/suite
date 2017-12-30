@@ -7,10 +7,7 @@ import org.junit.Test;
 import suite.Suite;
 import suite.lp.Trail;
 import suite.lp.compile.impl.CompileClonerImpl;
-import suite.lp.doer.Binder;
-import suite.lp.doer.ClonerFactory;
 import suite.lp.doer.ClonerFactory.Clone_;
-import suite.lp.doer.Generalizer;
 import suite.lp.sewing.impl.SewingClonerImpl;
 import suite.node.Node;
 

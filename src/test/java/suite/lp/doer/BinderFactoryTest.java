@@ -6,10 +6,8 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.lp.compile.impl.CompileBinderImpl;
-import suite.lp.doer.BinderFactory;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.BindPredicate;
-import suite.lp.doer.Generalizer;
 import suite.lp.sewing.impl.SewingBinderImpl;
 import suite.node.Node;
 

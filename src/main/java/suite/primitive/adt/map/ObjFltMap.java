@@ -123,7 +123,7 @@ public class ObjFltMap<K> {
 	}
 
 	private FltObjSource<K> source_() {
-		return new FltObjSource<K>() {
+		return new FltObjSource<>() {
 			private int capacity = vs.length;
 			private int index = 0;
 

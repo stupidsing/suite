@@ -123,7 +123,7 @@ public class ObjChrMap<K> {
 	}
 
 	private ChrObjSource<K> source_() {
-		return new ChrObjSource<K>() {
+		return new ChrObjSource<>() {
 			private int capacity = vs.length;
 			private int index = 0;
 

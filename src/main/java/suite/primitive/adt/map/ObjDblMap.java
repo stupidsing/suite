@@ -123,7 +123,7 @@ public class ObjDblMap<K> {
 	}
 
 	private DblObjSource<K> source_() {
-		return new DblObjSource<K>() {
+		return new DblObjSource<>() {
 			private int capacity = vs.length;
 			private int index = 0;
 

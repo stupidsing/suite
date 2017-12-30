@@ -123,7 +123,7 @@ public class ObjIntMap<K> {
 	}
 
 	private IntObjSource<K> source_() {
-		return new IntObjSource<K>() {
+		return new IntObjSource<>() {
 			private int capacity = vs.length;
 			private int index = 0;
 
