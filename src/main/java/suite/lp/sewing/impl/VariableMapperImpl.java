@@ -6,7 +6,6 @@ import java.util.Map;
 import suite.adt.IdentityKey;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Node;
-import suite.node.Reference;
 import suite.node.io.Formatter;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -41,10 +40,7 @@ public class VariableMapperImpl implements VariableMapper {
 	}
 
 	public Env env() {
-		Reference[] refs = new Reference[nVariables];
-		for (int i = 0; i < nVariables; i++)
-			refs[i] = new Reference();
-		return new Env(refs);
+		return Env.empty(nVariables);
 	}
 
 	public int findVariableIndex(Node variable) {

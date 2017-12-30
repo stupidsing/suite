@@ -82,7 +82,7 @@ public class SewingProverImpl implements SewingProver {
 	private Map<Prototype, Mutable<Cps>> cpsByPrototype = new HashMap<>();
 	private Map<Prototype, Mutable<Trampoline>> trampolineByPrototype = new HashMap<>();
 
-	private Env emptyEnvironment = new Env(new Reference[0]);
+	private Env emptyEnvironment = Env.empty(0);
 
 	private Trampoline okay = rt -> {
 		throw new RuntimeException("impossibly okay");
