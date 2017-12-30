@@ -5,6 +5,7 @@ import java.util.HashMap;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
+import suite.lp.sewing.Env;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.lp.sewing.VariableMapper;
 import suite.lp.sewing.impl.VariableMapperImpl;

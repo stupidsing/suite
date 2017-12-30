@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.adt.pair.Pair;
+import suite.lp.sewing.Env;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;

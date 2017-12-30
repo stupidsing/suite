@@ -1,6 +1,5 @@
 package suite.lp.sewing;
 
-import suite.lp.sewing.VariableMapper.Env;
 import suite.node.Node;
 
 public interface SewingExpression {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.adt.pair.Pair;
+import suite.lp.sewing.Env;
 import suite.lp.sewing.SewingCloner;
 import suite.node.Atom;
 import suite.node.Node;

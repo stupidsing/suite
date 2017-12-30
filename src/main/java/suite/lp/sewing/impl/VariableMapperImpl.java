@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.adt.IdentityKey;
+import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Node;
 import suite.node.io.Formatter;
@@ -35,7 +36,7 @@ public class VariableMapperImpl implements VariableMapper {
 		}
 
 		public Node getVariable(Node variable) {
-			return env.refs[variableIndices.get(IdentityKey.of(variable))];
+			return env.refs[getVariableIndex(variable)];
 		}
 	}
 

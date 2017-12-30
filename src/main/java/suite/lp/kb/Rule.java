@@ -1,7 +1,7 @@
 package suite.lp.kb;
 
 import suite.lp.doer.ProverConstant;
-import suite.lp.sewing.VariableMapper.Env;
+import suite.lp.sewing.Env;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
