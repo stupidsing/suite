@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.adt.pair.Pair;
+import suite.lp.doer.GeneralizerFactory;
 import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.Env;
-import suite.lp.sewing.SewingGeneralizer;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
 import suite.node.Node;
@@ -23,7 +23,7 @@ import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
-public class SewingGeneralizerImpl extends VariableMapper implements SewingGeneralizer {
+public class SewingGeneralizerImpl extends VariableMapper implements GeneralizerFactory {
 
 	public static Node generalize(Node node) {
 		return new SewingGeneralizerImpl().g(node).source().node;

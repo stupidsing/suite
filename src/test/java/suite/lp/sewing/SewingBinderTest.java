@@ -6,9 +6,10 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.lp.Trail;
+import suite.lp.doer.BinderFactory;
+import suite.lp.doer.BinderFactory.BindEnv;
+import suite.lp.doer.BinderFactory.BindPredicate;
 import suite.lp.doer.Generalizer;
-import suite.lp.sewing.SewingBinder.BindEnv;
-import suite.lp.sewing.SewingBinder.BindPredicate;
 import suite.lp.sewing.impl.SewingBinderImpl;
 import suite.node.Node;
 
@@ -26,7 +27,7 @@ public class SewingBinderTest {
 
 	private void test(String pattern, String match) {
 		Node node = new Generalizer().generalize(Suite.parse(match));
-		SewingBinder sb = new SewingBinderImpl();
+		BinderFactory sb = new SewingBinderImpl();
 		BindPredicate p = sb.compileBind(node);
 		Env env = sb.env();
 		Trail trail = new Trail();

@@ -1,11 +1,11 @@
-package suite.lp.sewing;
+package suite.lp.doer;
 
 import java.util.function.Predicate;
 
 import suite.lp.Configuration.ProverConfig;
 import suite.node.Node;
 
-public interface SewingProver {
+public interface ProverFactory {
 
 	public Predicate<ProverConfig> compile(Node node);
 

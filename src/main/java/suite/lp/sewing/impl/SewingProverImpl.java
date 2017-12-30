@@ -15,22 +15,22 @@ import suite.immutable.IList;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
+import suite.lp.doer.BinderFactory;
+import suite.lp.doer.BinderFactory.BindEnv;
+import suite.lp.doer.BinderFactory.BindPredicate;
 import suite.lp.doer.Cloner;
+import suite.lp.doer.ClonerFactory.Clone_;
+import suite.lp.doer.EvaluatorFactory.Evaluate;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.doer.ProverConstant;
+import suite.lp.doer.ProverFactory;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.lp.predicate.SystemPredicates;
 import suite.lp.sewing.Env;
-import suite.lp.sewing.SewingBinder;
-import suite.lp.sewing.SewingBinder.BindEnv;
-import suite.lp.sewing.SewingBinder.BindPredicate;
-import suite.lp.sewing.SewingCloner.Clone_;
-import suite.lp.sewing.SewingExpression.Evaluate;
-import suite.lp.sewing.SewingProver;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;
@@ -67,7 +67,7 @@ import suite.util.String_;
  *
  * @author ywsing
  */
-public class SewingProverImpl implements SewingProver {
+public class SewingProverImpl implements ProverFactory {
 
 	private static TreeRewriter trw = new TreeRewriter();
 
@@ -90,7 +90,7 @@ public class SewingProverImpl implements SewingProver {
 		throw new RuntimeException("impossibly fail");
 	};
 
-	private SewingBinder passThru = new SewingBinder() {
+	private BinderFactory passThru = new BinderFactory() {
 		public BindPredicate compileBind(Node node) {
 			return (be, n) -> Binder.bind(node, n, be.getTrail());
 		}
@@ -299,13 +299,13 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private Cps compileCpsRule(Node head, Node tail) {
-		SewingBinder sb = new SewingBinderImpl();
+		BinderFactory sb = new SewingBinderImpl();
 		BindPredicate p = sb.compileBind(head);
 		Cps cps = compileCps(sb, tail, rt -> rt.cps);
 		return newEnvCps(sb, rt -> p.test(rt, rt.query) ? cps : null);
 	}
 
-	private Cps compileCps(SewingBinder sb, Node node, Cps cpsx) {
+	private Cps compileCps(BinderFactory sb, Node node, Cps cpsx) {
 		List<Node> list;
 		Tree tree;
 		Node m[];
@@ -361,17 +361,17 @@ public class SewingProverImpl implements SewingProver {
 		};
 	}
 
-	private Cps compileCpsCallPredicate(SewingBinder sb, String name, Node pass, Node node, Cps cpsx) {
+	private Cps compileCpsCallPredicate(BinderFactory sb, String name, Node pass, Node node, Cps cpsx) {
 		BuiltinPredicate predicate = systemPredicates.get(name);
 		return predicate != null ? compileCpsCallPredicate(sb, predicate, pass, cpsx) : compileCpsCallPredicate(sb, node, cpsx);
 	}
 
-	private Cps compileCpsCallPredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass, Cps cpsx) {
+	private Cps compileCpsCallPredicate(BinderFactory sb, BuiltinPredicate predicate, Node pass, Cps cpsx) {
 		Clone_ f = sb.compile(pass);
 		return rt -> predicate.prove(rt.prover, f.apply(rt.env)) ? cpsx : null;
 	}
 
-	private Cps compileCpsCallPredicate(SewingBinder sb, Node node, Cps cpsx) {
+	private Cps compileCpsCallPredicate(BinderFactory sb, Node node, Cps cpsx) {
 		Prototype prototype = Prototype.of(node);
 		if (rules.containsKey(prototype)) {
 			Clone_ f = sb.compile(node);
@@ -423,7 +423,7 @@ public class SewingProverImpl implements SewingProver {
 		};
 	}
 
-	private Cps newEnvCps(SewingBinder sb, Cps cps) {
+	private Cps newEnvCps(BinderFactory sb, Cps cps) {
 		return rt -> {
 			rt.env = sb.env();
 			return cps;
@@ -445,13 +445,13 @@ public class SewingProverImpl implements SewingProver {
 	}
 
 	private Trampoline compileTrRule(Node head, Node tail) {
-		SewingBinder sb = new SewingBinderImpl();
+		BinderFactory sb = new SewingBinderImpl();
 		BindPredicate p = sb.compileBind(head);
 		Trampoline tr1 = compileTr(sb, tail);
 		return newEnvTr(sb, rt -> p.test(rt, rt.query) ? tr1 : fail);
 	}
 
-	private Trampoline compileTr(SewingBinder sb, Node node) {
+	private Trampoline compileTr(BinderFactory sb, Node node) {
 		List<Node> list;
 		Trampoline tr;
 		Tree tree;
@@ -772,17 +772,17 @@ public class SewingProverImpl implements SewingProver {
 		};
 	}
 
-	private Trampoline compileTrCallPredicate(SewingBinder sb, String name, Node pass, Node node) {
+	private Trampoline compileTrCallPredicate(BinderFactory sb, String name, Node pass, Node node) {
 		BuiltinPredicate predicate = systemPredicates.get(name);
 		return predicate != null ? compileTrCallPredicate(sb, predicate, pass) : compileTrCallPredicate(sb, node);
 	}
 
-	private Trampoline compileTrCallPredicate(SewingBinder sb, BuiltinPredicate predicate, Node pass) {
+	private Trampoline compileTrCallPredicate(BinderFactory sb, BuiltinPredicate predicate, Node pass) {
 		Clone_ f = sb.compile(pass);
 		return rt -> predicate.prove(rt.prover, f.apply(rt.env)) ? okay : fail;
 	}
 
-	private Trampoline compileTrCallPredicate(SewingBinder sb, Node node) {
+	private Trampoline compileTrCallPredicate(BinderFactory sb, Node node) {
 		Prototype prototype = Prototype.of(node);
 		if (rules.containsKey(prototype)) {
 			Clone_ f = sb.compile(node);
@@ -833,7 +833,7 @@ public class SewingProverImpl implements SewingProver {
 		};
 	}
 
-	private Trampoline newEnvTr(SewingBinder sb, Trampoline tr) {
+	private Trampoline newEnvTr(BinderFactory sb, Trampoline tr) {
 		return rt -> {
 			rt.env = sb.env();
 			return tr;

@@ -1,8 +1,9 @@
-package suite.lp.sewing;
+package suite.lp.doer;
 
+import suite.lp.sewing.Env;
 import suite.node.Node;
 
-public interface SewingCloner {
+public interface ClonerFactory {
 
 	public interface Clone_ {
 		public Node apply(Env env);

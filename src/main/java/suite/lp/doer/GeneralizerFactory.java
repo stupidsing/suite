@@ -1,9 +1,10 @@
-package suite.lp.sewing;
+package suite.lp.doer;
 
+import suite.lp.sewing.Env;
 import suite.node.Node;
 import suite.util.FunUtil.Fun;
 
-public interface SewingGeneralizer {
+public interface GeneralizerFactory {
 
 	public Env env();
 

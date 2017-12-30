@@ -5,9 +5,9 @@ import java.util.HashMap;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
+import suite.lp.doer.GeneralizerFactory;
 import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.Env;
-import suite.lp.sewing.SewingGeneralizer;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
 import suite.node.Int;
@@ -18,7 +18,7 @@ import suite.node.Tuple;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
-public class CompileGeneralizerImpl extends VariableMapper implements SewingGeneralizer {
+public class CompileGeneralizerImpl extends VariableMapper implements GeneralizerFactory {
 
 	private static FunFactory f = new FunFactory();
 

@@ -10,6 +10,7 @@ import org.junit.Test;
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.Generalizer;
+import suite.lp.doer.ProverFactory;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.sewing.impl.SewingProverImpl;
@@ -27,7 +28,7 @@ public class SewingProverTest {
 		RuleSet rs = Suite.newRuleSet();
 		Suite.addRule(rs, "yes");
 
-		SewingProver sp = new SewingProverImpl(rs);
+		ProverFactory sp = new SewingProverImpl(rs);
 		ProverConfig pc = new ProverConfig(rs);
 		assertTrue(sp.compile(Suite.parse("yes")).test(pc));
 		assertTrue(sp.compile(Suite.parse("fail; yes")).test(pc));
@@ -53,7 +54,7 @@ public class SewingProverTest {
 		Suite.addRule(rs, "q .c .v :- once (mem (0,) .v), .a/.b/.c = 0/0/0; mem (1,) .v, .a/.b/.c = 1/1/1");
 		Suite.addRule(rs, "r .c :- q .c .v, .v = 1");
 
-		SewingProver sp = new SewingProverImpl(rs);
+		ProverFactory sp = new SewingProverImpl(rs);
 		ProverConfig pc = new ProverConfig(rs);
 		assertTrue(sp.compile(new Generalizer().generalize(Suite.parse("r .c"))).test(pc));
 	}
@@ -65,7 +66,7 @@ public class SewingProverTest {
 		Suite.addRule(rs, "a");
 		Suite.addRule(rs, "b :- !, fail");
 
-		SewingProver sp = new SewingProverImpl(rs);
+		ProverFactory sp = new SewingProverImpl(rs);
 		ProverConfig pc = new ProverConfig(rs);
 		assertTrue(sp.compile(Suite.parse("a")).test(pc));
 	}
@@ -76,7 +77,7 @@ public class SewingProverTest {
 		Suite.addRule(rs, "a :- b .a, b .b");
 		Suite.addRule(rs, "b 1");
 
-		SewingProver sp = new SewingProverImpl(rs);
+		ProverFactory sp = new SewingProverImpl(rs);
 		ProverConfig pc = new ProverConfig(rs);
 		assertTrue(sp.compile(Suite.parse("a")).test(pc));
 	}
@@ -84,7 +85,7 @@ public class SewingProverTest {
 	@Test
 	public void testIf() {
 		RuleSet rs = Suite.newRuleSet();
-		SewingProver sp = new SewingProverImpl(rs);
+		ProverFactory sp = new SewingProverImpl(rs);
 		ProverConfig pc = new ProverConfig(rs);
 		assertTrue(sp.compile(Suite.parse("if () () fail")).test(pc));
 		assertFalse(sp.compile(Suite.parse("if () fail ()")).test(pc));
@@ -101,7 +102,7 @@ public class SewingProverTest {
 		for (int i = 0; i < 65536; i++)
 			rs.addRule(Rule.of(Tree.of(TermOp.IS____, Tree.of(TermOp.TUPLE_, pred, Int.of(i)), tail)));
 
-		SewingProver sp = new SewingProverImpl(rs);
+		ProverFactory sp = new SewingProverImpl(rs);
 		ProverConfig pc = new ProverConfig(rs);
 		Predicate<ProverConfig> test = sp.compile(Suite.parse("q 32768"));
 

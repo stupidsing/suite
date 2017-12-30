@@ -1,8 +1,9 @@
-package suite.lp.sewing;
+package suite.lp.doer;
 
+import suite.lp.sewing.Env;
 import suite.node.Node;
 
-public interface SewingExpression {
+public interface EvaluatorFactory {
 
 	public interface Evaluate {
 		public int evaluate(Env env);

@@ -3,7 +3,7 @@ package suite.lp.sewing.impl;
 import java.util.List;
 
 import suite.lp.doer.Binder;
-import suite.lp.sewing.SewingBinder;
+import suite.lp.doer.BinderFactory;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -14,7 +14,7 @@ import suite.node.Tuple;
 import suite.node.io.Operator;
 import suite.streamlet.Read;
 
-public class SewingBinderImpl extends SewingClonerImpl implements SewingBinder {
+public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory {
 
 	private boolean isBindTrees;
 

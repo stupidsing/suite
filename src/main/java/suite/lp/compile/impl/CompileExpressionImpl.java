@@ -10,21 +10,21 @@ import suite.jdk.gen.FunFactory;
 import suite.jdk.lambda.LambdaImplementation;
 import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
-import suite.lp.sewing.SewingCloner;
-import suite.lp.sewing.SewingCloner.Clone_;
-import suite.lp.sewing.SewingExpression;
+import suite.lp.doer.ClonerFactory;
+import suite.lp.doer.ClonerFactory.Clone_;
+import suite.lp.doer.EvaluatorFactory;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.util.TreeUtil;
 
-public class CompileExpressionImpl implements SewingExpression {
+public class CompileExpressionImpl implements EvaluatorFactory {
 
 	private static FunFactory f = new FunFactory();
 	private static LambdaInterface<Evaluate> lambdaInterface = LambdaInterface.of(Evaluate.class);
 
-	private SewingCloner sc;
+	private ClonerFactory sc;
 
-	public CompileExpressionImpl(SewingCloner sc) {
+	public CompileExpressionImpl(ClonerFactory sc) {
 		this.sc = sc;
 	}
 

@@ -5,10 +5,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.lp.Trail;
+import suite.lp.doer.BinderFactory.BindEnv;
+import suite.lp.doer.BinderFactory.BindPredicate;
 import suite.lp.doer.Generalizer;
 import suite.lp.sewing.Env;
-import suite.lp.sewing.SewingBinder.BindEnv;
-import suite.lp.sewing.SewingBinder.BindPredicate;
 import suite.lp.sewing.VariableMapper.Generalization;
 import suite.lp.sewing.impl.SewingBinderImpl;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;

@@ -3,10 +3,10 @@ package suite.lp.search;
 import java.util.function.Predicate;
 
 import suite.lp.Configuration.ProverConfig;
+import suite.lp.doer.ProverFactory;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
-import suite.lp.sewing.SewingProver;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.lp.sewing.impl.SewingProverImpl;
 import suite.node.Node;
@@ -26,7 +26,7 @@ public class SewingProverBuilder implements Builder {
 
 	@Override
 	public Fun<Node, Finder> build(RuleSet ruleSet) {
-		SewingProver sewingProver = new SewingProverImpl(ruleSet);
+		ProverFactory sewingProver = new SewingProverImpl(ruleSet);
 
 		return goal -> {
 			Node goal1 = SewingGeneralizerImpl.generalize(goal);

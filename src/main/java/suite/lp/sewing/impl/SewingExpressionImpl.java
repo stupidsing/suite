@@ -1,8 +1,8 @@
 package suite.lp.sewing.impl;
 
-import suite.lp.sewing.SewingCloner;
-import suite.lp.sewing.SewingCloner.Clone_;
-import suite.lp.sewing.SewingExpression;
+import suite.lp.doer.ClonerFactory;
+import suite.lp.doer.ClonerFactory.Clone_;
+import suite.lp.doer.EvaluatorFactory;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
@@ -11,11 +11,11 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.IntInt_Int;
 
-public class SewingExpressionImpl implements SewingExpression {
+public class SewingExpressionImpl implements EvaluatorFactory {
 
-	private SewingCloner sc;
+	private ClonerFactory sc;
 
-	public SewingExpressionImpl(SewingCloner sc) {
+	public SewingExpressionImpl(ClonerFactory sc) {
 		this.sc = sc;
 	}
 
