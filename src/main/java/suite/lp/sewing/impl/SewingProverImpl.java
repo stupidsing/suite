@@ -31,7 +31,6 @@ import suite.lp.sewing.SewingBinder.BindPredicate;
 import suite.lp.sewing.SewingCloner.Clone_;
 import suite.lp.sewing.SewingExpression.Evaluate;
 import suite.lp.sewing.SewingProver;
-import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;
@@ -926,7 +925,7 @@ public class SewingProverImpl implements SewingProver {
 		if (tree != null)
 			return 1 + Math.max(complexity(tree.getLeft()), complexity(tree.getRight()));
 		else
-			return node instanceof Atom && VariableMapper.isVariable(((Atom) node).name) ? 0 : 1;
+			return node instanceof Atom && ProverConstant.isVariable(((Atom) node).name) ? 0 : 1;
 	}
 
 	private Mutable<Cps> getCpsByPrototype(Prototype prototype) {

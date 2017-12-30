@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.adt.pair.Pair;
+import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.lp.sewing.VariableMapper;
@@ -22,7 +23,7 @@ import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
-public class SewingGeneralizerImpl extends VariableMapperImpl implements SewingGeneralizer {
+public class SewingGeneralizerImpl extends VariableMapper implements SewingGeneralizer {
 
 	public static Node generalize(Node node) {
 		return new SewingGeneralizerImpl().g(node).source().node;
@@ -47,10 +48,10 @@ public class SewingGeneralizerImpl extends VariableMapperImpl implements SewingG
 
 			if (node0 instanceof Atom) {
 				String name = ((Atom) node0).name;
-				if (VariableMapper.isCut(node0) || VariableMapper.isVariable(name)) {
+				if (ProverConstant.isCut(node0) || ProverConstant.isVariable(name)) {
 					int index = findVariableIndex(node0);
 					fun = env -> env.get(index);
-				} else if (VariableMapper.isWildcard(name))
+				} else if (ProverConstant.isWildcard(name))
 					fun = env -> new Reference();
 				else
 					fun = env -> node0;

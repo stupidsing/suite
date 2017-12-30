@@ -5,10 +5,10 @@ import java.util.HashMap;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
+import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.SewingGeneralizer;
 import suite.lp.sewing.VariableMapper;
-import suite.lp.sewing.impl.VariableMapperImpl;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -18,7 +18,7 @@ import suite.node.Tuple;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 
-public class CompileGeneralizerImpl extends VariableMapperImpl implements SewingGeneralizer {
+public class CompileGeneralizerImpl extends VariableMapper implements SewingGeneralizer {
 
 	private static FunFactory f = new FunFactory();
 
@@ -32,10 +32,10 @@ public class CompileGeneralizerImpl extends VariableMapperImpl implements Sewing
 
 				if (node_ instanceof Atom) {
 					String name = ((Atom) node_).name;
-					if (VariableMapper.isCut(node_) || VariableMapper.isVariable(name)) {
+					if (ProverConstant.isCut(node_) || ProverConstant.isVariable(name)) {
 						int index = findVariableIndex(node_);
 						return env.index(f.int_(index));
-					} else if (VariableMapper.isWildcard(name))
+					} else if (ProverConstant.isWildcard(name))
 						return f.new_(Reference.class);
 					else
 						return f.object(node);

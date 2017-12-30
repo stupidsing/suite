@@ -6,6 +6,7 @@ import java.util.List;
 import suite.adt.pair.Pair;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.SewingCloner;
+import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
@@ -18,7 +19,7 @@ import suite.node.io.Rewriter.NodeWrite;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
 
-public class SewingClonerImpl extends VariableMapperImpl implements SewingCloner {
+public class SewingClonerImpl extends VariableMapper implements SewingCloner {
 
 	public static Node generalize(Node node) {
 		return process(node).node;
