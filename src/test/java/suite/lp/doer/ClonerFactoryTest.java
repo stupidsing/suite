@@ -1,4 +1,4 @@
-package suite.lp.sewing;
+package suite.lp.doer;
 
 import static org.junit.Assert.assertTrue;
 
@@ -14,7 +14,7 @@ import suite.lp.doer.Generalizer;
 import suite.lp.sewing.impl.SewingClonerImpl;
 import suite.node.Node;
 
-public class SewingClonerTest {
+public class ClonerFactoryTest {
 
 	@Test
 	public void test0() {

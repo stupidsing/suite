@@ -1,4 +1,4 @@
-package suite.lp.sewing;
+package suite.lp.doer;
 
 import static org.junit.Assert.assertTrue;
 
@@ -13,7 +13,7 @@ import suite.lp.doer.Generalizer;
 import suite.lp.sewing.impl.SewingBinderImpl;
 import suite.node.Node;
 
-public class SewingBinderTest {
+public class BinderFactoryTest {
 
 	@Test
 	public void test0() {
