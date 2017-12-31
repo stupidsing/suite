@@ -67,16 +67,6 @@ public class ObjFltMap<K> {
 			sink.sink2(pair.t0, pair.t1);
 	}
 
-	@Override
-	public int hashCode() {
-		int h = 7;
-		for (FltObjPair<K> pair : streamlet()) {
-			h = h * 31 + Float.hashCode(pair.t0);
-			h = h * 31 + Objects.hashCode(pair.t1);
-		}
-		return h;
-	}
-
 	public float get(K key) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
@@ -87,6 +77,16 @@ public class ObjFltMap<K> {
 			else
 				break;
 		return v;
+	}
+
+	@Override
+	public int hashCode() {
+		int h = 7;
+		for (FltObjPair<K> pair : streamlet()) {
+			h = h * 31 + Float.hashCode(pair.t0);
+			h = h * 31 + Objects.hashCode(pair.t1);
+		}
+		return h;
 	}
 
 	public float put(K key, float v) {
