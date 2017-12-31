@@ -24,10 +24,10 @@ public class BinderFactoryTest {
 	}
 
 	private void test(String pattern, String match) {
-		for (BinderFactory sb : new BinderFactory[] { new CompileBinderImpl(), new SewingBinderImpl(), }) {
+		for (BinderFactory bf : new BinderFactory[] { new CompileBinderImpl(), new SewingBinderImpl(), }) {
 			Node node = new Generalizer().generalize(Suite.parse(pattern));
-			BindPredicate p = sb.compileBind(node);
-			BindEnv be = new BindEnv(sb.env());
+			BindPredicate p = bf.compileBind(node);
+			BindEnv be = new BindEnv(bf.env());
 
 			assertTrue(p.test(be, Suite.parse(match)));
 		}
