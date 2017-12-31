@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.lp.doer.BinderFactory.BindEnv;
-import suite.lp.doer.BinderFactory.BindPredicate;
+import suite.lp.doer.BinderFactory.Bind_;
 import suite.lp.doer.Generalizer;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper.VariableEnv;
@@ -39,7 +39,7 @@ public class BindMapUtil {
 		Node toMatch = generalizer.generalize(fs);
 
 		SewingBinderImpl sb = new SewingBinderImpl(false);
-		BindPredicate pred = sb.compileBind(toMatch);
+		Bind_ pred = sb.binder(toMatch);
 
 		Streamlet2<String, Integer> indices = Read.from(generalizer.getVariablesNames()) //
 				.map2(Formatter::display, name -> sb.getIndex(generalizer.getVariable(name))) //

@@ -19,22 +19,22 @@ public class SewingExpressionImpl implements EvaluatorFactory {
 		this.sc = sc;
 	}
 
-	public Evaluate compile(Node node) {
+	public Evaluate_ evaluator(Node node) {
 		Tree tree = Tree.decompose(node);
 
 		if (tree != null) {
 			Operator op = tree.getOperator();
-			Evaluate lhs, rhs;
+			Evaluate_ lhs, rhs;
 			IntInt_Int fun;
 
 			if (op == TermOp.TUPLE_) {
 				Tree rightTree = Tree.decompose(tree.getRight());
-				lhs = compile(tree.getLeft());
-				rhs = compile(rightTree.getRight());
+				lhs = evaluator(tree.getLeft());
+				rhs = evaluator(rightTree.getRight());
 				fun = TreeUtil.evaluateOp(rightTree.getLeft());
 			} else {
-				lhs = compile(tree.getLeft());
-				rhs = compile(tree.getRight());
+				lhs = evaluator(tree.getLeft());
+				rhs = evaluator(tree.getRight());
 				fun = TreeUtil.evaluateOp(op);
 			}
 
@@ -43,7 +43,7 @@ public class SewingExpressionImpl implements EvaluatorFactory {
 			int i = ((Int) node).number;
 			return env -> i;
 		} else {
-			Clone_ f = sc.compile(node);
+			Clone_ f = sc.cloner(node);
 			return env -> TreeUtil.evaluate(f.apply(env));
 		}
 	}

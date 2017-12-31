@@ -26,7 +26,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 		this.isBindTrees = isBindTrees;
 	}
 
-	public BindPredicate compileBind(Node node) {
+	public Bind_ binder(Node node) {
 		Tree tree;
 
 		if (node instanceof Atom)
@@ -40,9 +40,9 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 			return compileBindStr((Str) node);
 		else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
-			Clone_ f = compile(node);
-			BindPredicate c0 = compileBind(tree.getLeft());
-			BindPredicate c1 = compileBind(tree.getRight());
+			Clone_ f = cloner(node);
+			Bind_ c0 = binder(tree.getLeft());
+			Bind_ c1 = binder(tree.getRight());
 			return (be, n) -> {
 				Node n_ = n.finalNode();
 				Tree t;
@@ -58,8 +58,8 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 							&& c1.test(be, t.getRight());
 			};
 		} else if (node instanceof Tuple) {
-			Clone_ f = compile(node);
-			List<BindPredicate> cs = Read.from(((Tuple) node).nodes).map(this::compileBind).toList();
+			Clone_ f = cloner(node);
+			List<Bind_> cs = Read.from(((Tuple) node).nodes).map(this::binder).toList();
 			int size = cs.size();
 			return (be, n) -> {
 				Node n_ = n.finalNode();
@@ -82,12 +82,12 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 					return false;
 			};
 		} else {
-			Clone_ f = compile(node);
+			Clone_ f = cloner(node);
 			return (be, n) -> Binder.bind(n, f.apply(be.env), be.trail);
 		}
 	}
 
-	private BindPredicate compileBindAtom(Atom a) {
+	private Bind_ compileBindAtom(Atom a) {
 		return (be, n) -> {
 			Node n_ = n.finalNode();
 			if (n_ instanceof Reference) {
@@ -98,7 +98,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 		};
 	}
 
-	private BindPredicate compileBindInt(Int i_) {
+	private Bind_ compileBindInt(Int i_) {
 		int i = i_.number;
 		return (be, n) -> {
 			Node n_ = n.finalNode();
@@ -110,7 +110,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 		};
 	}
 
-	private BindPredicate compileBindStr(Str str) {
+	private Bind_ compileBindStr(Str str) {
 		String s = str.value;
 		return (be, n) -> {
 			Node n_ = n.finalNode();

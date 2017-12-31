@@ -5,10 +5,10 @@ import suite.node.Node;
 
 public interface EvaluatorFactory {
 
-	public interface Evaluate {
+	public interface Evaluate_ {
 		public int evaluate(Env env);
 	}
 
-	public Evaluate compile(Node node);
+	public Evaluate_ evaluator(Node node);
 
 }

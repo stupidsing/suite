@@ -29,7 +29,7 @@ import suite.util.FunUtil.Iterate;
 public class CompileBinderImpl extends SewingClonerImpl implements BinderFactory {
 
 	private static FunFactory f = new FunFactory();
-	private static LambdaInterface<BindPredicate> lambdaClass = LambdaInterface.of(BindPredicate.class, "test");
+	private static LambdaInterface<Bind_> lambdaClass = LambdaInterface.of(Bind_.class, "test");
 
 	private boolean isBindTrees;
 
@@ -41,11 +41,11 @@ public class CompileBinderImpl extends SewingClonerImpl implements BinderFactory
 		this.isBindTrees = isBindTrees;
 	}
 
-	public BindPredicate compileBind(Node node) {
+	public Bind_ binder(Node node) {
 		return compileBind_(node).newFun();
 	}
 
-	private LambdaInstance<BindPredicate> compileBind_(Node node) {
+	private LambdaInstance<Bind_> compileBind_(Node node) {
 		Tree tree;
 
 		if (node instanceof Atom)
@@ -59,9 +59,9 @@ public class CompileBinderImpl extends SewingClonerImpl implements BinderFactory
 			return compileBindStr((Str) node);
 		else if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
-			LambdaInstance<BindPredicate> lambda0 = compileBind_(tree.getLeft());
-			LambdaInstance<BindPredicate> lambda1 = compileBind_(tree.getRight());
-			Fun<FunExpr, Iterate<FunExpr>> bindRef = bindRef(compile(node));
+			LambdaInstance<Bind_> lambda0 = compileBind_(tree.getLeft());
+			LambdaInstance<Bind_> lambda1 = compileBind_(tree.getRight());
+			Fun<FunExpr, Iterate<FunExpr>> bindRef = bindRef(cloner(node));
 
 			Fun<FunExpr, Iterate<FunExpr>> bindTree = be -> n_ -> f //
 					.declare(f.invokeStatic(Tree.class, "decompose", n_, f.object(operator)), t -> f //
@@ -71,19 +71,19 @@ public class CompileBinderImpl extends SewingClonerImpl implements BinderFactory
 
 			return LambdaInstance.of(lambdaClass, ifRef(bindRef, bindTree));
 		} else if (node instanceof Tuple) {
-			List<LambdaInstance<BindPredicate>> lambdas = Read //
+			List<LambdaInstance<Bind_>> lambdas = Read //
 					.from(((Tuple) node).nodes) //
 					.map(this::compileBind_) //
 					.toList();
 
-			Fun<FunExpr, Iterate<FunExpr>> bindRef = bindRef(compile(node));
+			Fun<FunExpr, Iterate<FunExpr>> bindRef = bindRef(cloner(node));
 
 			Fun<FunExpr, Iterate<FunExpr>> bindTuple = be -> n_ -> f //
 					.ifInstanceAnd(Tuple.class, n_, tuple -> f //
 							.declare(tuple.field("nodes"), nodes -> {
 								List<FunExpr> cond = new ArrayList<>();
 								for (int i = 0; i < lambdas.size(); i++) {
-									LambdaInstance<BindPredicate> lambda = lambdas.get(i);
+									LambdaInstance<Bind_> lambda = lambdas.get(i);
 									FunExpr ni = nodes.index(f.int_(i));
 									cond.add(lambda.invoke(be, ni));
 								}
@@ -92,44 +92,44 @@ public class CompileBinderImpl extends SewingClonerImpl implements BinderFactory
 
 			return LambdaInstance.of(lambdaClass, ifRef(bindRef, bindTuple));
 		} else {
-			Clone_ n_ = compile(node);
+			Clone_ n_ = cloner(node);
 			return compileBindPredicate((be, n) -> Binder.bind(n, n_.apply(be.env), be.trail));
 		}
 	}
 
-	private LambdaInstance<BindPredicate> compileBindPredicate(BindPredicate pred) {
+	private LambdaInstance<Bind_> compileBindPredicate(Bind_ pred) {
 		return LambdaInstance.of(LambdaImplementation.of( //
 				lambdaClass, //
-				Map.of("pred", Type.getType(BindPredicate.class)), //
+				Map.of("pred", Type.getType(Bind_.class)), //
 				f.parameter2((be, n) -> f.inject("pred").invoke("test", be, n))), //
 				Map.of("pred", pred));
 	}
 
-	private LambdaInstance<BindPredicate> compileBindAtom(Atom a) {
+	private LambdaInstance<Bind_> compileBindAtom(Atom a) {
 		return LambdaInstance.of(compiledBindAtom, Map.of(key0, a));
 	}
 
-	private LambdaInstance<BindPredicate> compileBindInt(Int i) {
+	private LambdaInstance<Bind_> compileBindInt(Int i) {
 		return LambdaInstance.of(compiledBindInt, Map.of(key0, i, key1, i.number));
 	}
 
-	private LambdaInstance<BindPredicate> compileBindStr(Str s) {
+	private LambdaInstance<Bind_> compileBindStr(Str s) {
 		return LambdaInstance.of(compiledBindStr, Map.of(key0, s, key1, s.value));
 	}
 
 	private static String key0 = "k0";
 	private static String key1 = "k1";
-	private static LambdaImplementation<BindPredicate> compiledBindAtom = compileBindAtom_();
-	private static LambdaImplementation<BindPredicate> compiledBindInt = compileBindInt_();
-	private static LambdaImplementation<BindPredicate> compiledBindStr = compileBindStr_();
+	private static LambdaImplementation<Bind_> compiledBindAtom = compileBindAtom_();
+	private static LambdaImplementation<Bind_> compiledBindInt = compileBindInt_();
+	private static LambdaImplementation<Bind_> compiledBindStr = compileBindStr_();
 
-	private static LambdaImplementation<BindPredicate> compileBindAtom_() {
+	private static LambdaImplementation<Bind_> compileBindAtom_() {
 		Map<String, Type> fieldTypes = Map.of(key0, Type.getType(Node.class));
 		Iterate<FunExpr> expr = n_ -> f.ifEquals(n_, f.inject(key0), f._true(), f._false());
 		return bind(fieldTypes, expr);
 	}
 
-	private static LambdaImplementation<BindPredicate> compileBindInt_() {
+	private static LambdaImplementation<Bind_> compileBindInt_() {
 		Map<String, Type> fieldTypes = Map.of(key0, Type.getType(Node.class), key1, Type.INT);
 		Iterate<FunExpr> expr = n_ -> f.ifInstanceAnd( //
 				Int.class, n_, //
@@ -137,7 +137,7 @@ public class CompileBinderImpl extends SewingClonerImpl implements BinderFactory
 		return bind(fieldTypes, expr);
 	}
 
-	private static LambdaImplementation<BindPredicate> compileBindStr_() {
+	private static LambdaImplementation<Bind_> compileBindStr_() {
 		Map<String, Type> fieldTypes = Map.of(key0, Type.getType(Node.class), key1, Type.STRING);
 		Iterate<FunExpr> expr = n_ -> f.ifInstanceAnd( //
 				Str.class, n_, //
@@ -145,7 +145,7 @@ public class CompileBinderImpl extends SewingClonerImpl implements BinderFactory
 		return bind(fieldTypes, expr);
 	}
 
-	private static LambdaImplementation<BindPredicate> bind(Map<String, Type> fieldTypes, Iterate<FunExpr> compare) {
+	private static LambdaImplementation<Bind_> bind(Map<String, Type> fieldTypes, Iterate<FunExpr> compare) {
 		return LambdaImplementation.of(lambdaClass, fieldTypes,
 				ifRef(be -> ref -> bindRef(be, ref, f.inject(key0)), be -> compare));
 	}

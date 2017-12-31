@@ -16,10 +16,10 @@ public interface BinderFactory extends ClonerFactory {
 		}
 	}
 
-	public interface BindPredicate {
+	public interface Bind_ {
 		public boolean test(BindEnv be, Node node);
 	}
 
-	public BindPredicate compileBind(Node node);
+	public Bind_ binder(Node node);
 
 }

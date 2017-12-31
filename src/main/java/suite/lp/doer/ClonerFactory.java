@@ -11,6 +11,6 @@ public interface ClonerFactory {
 
 	public Env env();
 
-	public Clone_ compile(Node node);
+	public Clone_ cloner(Node node);
 
 }

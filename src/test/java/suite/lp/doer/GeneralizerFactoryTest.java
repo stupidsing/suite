@@ -6,12 +6,11 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.lp.Trail;
-import suite.lp.compile.impl.CompileClonerImpl;
-import suite.lp.doer.ClonerFactory.Clone_;
-import suite.lp.sewing.impl.SewingClonerImpl;
-import suite.node.Node;
+import suite.lp.compile.impl.CompileGeneralizerImpl;
+import suite.lp.doer.GeneralizerFactory.Generalize_;
+import suite.lp.sewing.impl.SewingGeneralizerImpl;
 
-public class ClonerFactoryTest {
+public class GeneralizerFactoryTest {
 
 	@Test
 	public void test0() {
@@ -24,9 +23,8 @@ public class ClonerFactoryTest {
 	}
 
 	private void test(String pattern, String match) {
-		for (ClonerFactory cf : new ClonerFactory[] { new CompileClonerImpl(), new SewingClonerImpl(), }) {
-			Node node = new Generalizer().generalize(Suite.parse(pattern));
-			Clone_ p = cf.cloner(node);
+		for (GeneralizerFactory cf : new GeneralizerFactory[] { new CompileGeneralizerImpl(), new SewingGeneralizerImpl(), }) {
+			Generalize_ p = cf.generalizer(Suite.parse(pattern));
 
 			assertTrue(Binder.bind(p.apply(cf.env()), Suite.parse(match), new Trail()));
 		}

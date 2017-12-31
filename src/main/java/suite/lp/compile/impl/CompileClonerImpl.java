@@ -22,7 +22,7 @@ public class CompileClonerImpl extends VariableMapper implements ClonerFactory {
 	private static FunFactory f = new FunFactory();
 
 	@Override
-	public Clone_ compile(Node node) {
+	public Clone_ cloner(Node node) {
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		FunCreator<Clone_> fc = (FunCreator) FunCreator.of(Clone_.class);
 

@@ -20,7 +20,7 @@ import suite.node.util.TreeUtil;
 public class CompileExpressionImpl implements EvaluatorFactory {
 
 	private static FunFactory f = new FunFactory();
-	private static LambdaInterface<Evaluate> lambdaInterface = LambdaInterface.of(Evaluate.class);
+	private static LambdaInterface<Evaluate_> lambdaInterface = LambdaInterface.of(Evaluate_.class);
 
 	private ClonerFactory sc;
 
@@ -28,11 +28,11 @@ public class CompileExpressionImpl implements EvaluatorFactory {
 		this.sc = sc;
 	}
 
-	public Evaluate compile(Node node) {
+	public Evaluate_ evaluator(Node node) {
 		return compile_(node).newFun();
 	}
 
-	private LambdaInstance<Evaluate> compile_(Node node) {
+	private LambdaInstance<Evaluate_> compile_(Node node) {
 		Node[] m;
 
 		if ((m = Suite.match(".0 + .1").apply(node)) != null)
@@ -54,32 +54,32 @@ public class CompileExpressionImpl implements EvaluatorFactory {
 		else if (node instanceof Int)
 			return LambdaInstance.of(compiledNumber, Map.of(keyNumber, ((Int) node).number));
 		else {
-			Clone_ n_ = sc.compile(node);
-			Evaluate evaluate = env -> TreeUtil.evaluate(n_.apply(env));
+			Clone_ n_ = sc.cloner(node);
+			Evaluate_ evaluate = env -> TreeUtil.evaluate(n_.apply(env));
 			return LambdaInstance.of(compiledEval, Map.of(keyEval, evaluate));
 		}
 	}
 
 	private static String keyEval = "eval";
 	private static String keyNumber = "key";
-	private static LambdaImplementation<Evaluate> compiledEval = compileEval(keyEval);
-	private static LambdaImplementation<Evaluate> compiledNumber = compileNumber(keyNumber);
+	private static LambdaImplementation<Evaluate_> compiledEval = compileEval(keyEval);
+	private static LambdaImplementation<Evaluate_> compiledNumber = compileNumber(keyNumber);
 
-	private static LambdaImplementation<Evaluate> compileEval(String key) {
+	private static LambdaImplementation<Evaluate_> compileEval(String key) {
 		FunExpr expr = f.parameter1(env -> f.inject(keyEval).invoke("evaluate", env));
-		return LambdaImplementation.of(lambdaInterface, Map.of(key, Type.getType(Evaluate.class)), expr);
+		return LambdaImplementation.of(lambdaInterface, Map.of(key, Type.getType(Evaluate_.class)), expr);
 	}
 
-	private static LambdaImplementation<Evaluate> compileNumber(String key) {
+	private static LambdaImplementation<Evaluate_> compileNumber(String key) {
 		FunExpr expr = f.parameter0(() -> f.inject(key));
 		return LambdaImplementation.of(lambdaInterface, Map.of(key, Type.INT), expr);
 	}
 
-	private LambdaInstance<Evaluate> compileOperator(Node[] m, String op) {
-		LambdaInstance<Evaluate> lambda0 = compile_(m[0]);
-		LambdaInstance<Evaluate> lambda1 = compile_(m[1]);
+	private LambdaInstance<Evaluate_> compileOperator(Node[] m, String op) {
+		LambdaInstance<Evaluate_> lambda0 = compile_(m[0]);
+		LambdaInstance<Evaluate_> lambda1 = compile_(m[1]);
 
-		return LambdaInstance.of(Evaluate.class, env -> {
+		return LambdaInstance.of(Evaluate_.class, env -> {
 			FunExpr v0 = lambda0.invoke(env);
 			FunExpr v1 = lambda1.invoke(env);
 			return f.bi(op, v0, v1);

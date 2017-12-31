@@ -33,8 +33,8 @@ public class Rule {
 	public synchronized Node newClause(Node query, Node cut) {
 		if (sewingGeneralizer == null) {
 			sewingGeneralizer = new SewingGeneralizerImpl();
-			headFun = sewingGeneralizer.compile(head);
-			tailFun = sewingGeneralizer.compile(tail);
+			headFun = sewingGeneralizer.generalizer(head);
+			tailFun = sewingGeneralizer.generalizer(tail);
 			cutIndex = sewingGeneralizer.computeIndex(ProverConstant.cut);
 		}
 

@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.lp.doer.BinderFactory.BindEnv;
-import suite.lp.doer.BinderFactory.BindPredicate;
+import suite.lp.doer.BinderFactory.Bind_;
 import suite.lp.doer.Generalizer;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper.VariableEnv;
@@ -37,7 +37,7 @@ public class BindArrayUtil {
 		Node toMatch = generalizer.generalize(fs);
 
 		SewingBinderImpl sb = new SewingBinderImpl(false);
-		BindPredicate pred = sb.compileBind(toMatch);
+		Bind_ pred = sb.binder(toMatch);
 		List<Integer> indexList = new ArrayList<>();
 		Integer index;
 		int n = 0;

@@ -11,6 +11,6 @@ public interface GeneralizerFactory {
 
 	public Env env();
 
-	public Generalize_ compile(Node node);
+	public Generalize_ generalizer(Node node);
 
 }

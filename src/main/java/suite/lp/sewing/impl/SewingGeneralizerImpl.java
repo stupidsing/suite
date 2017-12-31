@@ -25,11 +25,11 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 	}
 
 	public Source<VariableEnv> g(Node node) {
-		Generalize_ fun = compile(node);
+		Generalize_ fun = generalizer(node);
 		return () -> g(fun::apply);
 	}
 
-	public Generalize_ compile(Node node) {
+	public Generalize_ generalizer(Node node) {
 		List<Generalize_> funs = new ArrayList<>();
 		Generalize_ fun;
 
@@ -49,7 +49,7 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 			} else if (node0 instanceof Dict) {
 				Generalize_[][] array = Read //
 						.from2(((Dict) node0).map) //
-						.map((key, value) -> new Generalize_[] { compile(key), compile(value), }) //
+						.map((key, value) -> new Generalize_[] { generalizer(key), generalizer(value), }) //
 						.toArray(Generalize_[].class);
 				int length = array.length;
 				return env -> {
@@ -62,13 +62,13 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 			} else if ((tree = Tree.decompose(node0)) != null) {
 				Operator operator = tree.getOperator();
 				if (operator != TermOp.OR____) {
-					Generalize_ f = compile(tree.getLeft());
+					Generalize_ f = generalizer(tree.getLeft());
 					funs.add(env -> Tree.of(operator, f.apply(env), null));
 					node = tree.getRight();
 					continue;
 				} else { // delay generalizing for performance
-					Generalize_ lf = compile(tree.getLeft());
-					Generalize_ rf = compile(tree.getRight());
+					Generalize_ lf = generalizer(tree.getLeft());
+					Generalize_ rf = generalizer(tree.getRight());
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
 			} else

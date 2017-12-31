@@ -19,10 +19,10 @@ import suite.streamlet.Read;
 public class SewingClonerImpl extends VariableMapper implements ClonerFactory {
 
 	public VariableEnv g(Node node) {
-		return g(compile(node)::apply);
+		return g(cloner(node)::apply);
 	}
 
-	public Clone_ compile(Node node) {
+	public Clone_ cloner(Node node) {
 		List<Clone_> funs = new ArrayList<>();
 		Clone_ fun;
 
@@ -33,7 +33,7 @@ public class SewingClonerImpl extends VariableMapper implements ClonerFactory {
 			if (node0 instanceof Dict) {
 				Clone_[][] array = Read //
 						.from2(((Dict) node0).map) //
-						.map((key, value) -> new Clone_[] { compile(key), compile(value), }) //
+						.map((key, value) -> new Clone_[] { cloner(key), cloner(value), }) //
 						.toArray(Clone_[].class);
 				int length = array.length;
 				return env -> {
@@ -46,20 +46,20 @@ public class SewingClonerImpl extends VariableMapper implements ClonerFactory {
 			} else if ((tree = Tree.decompose(node0)) != null) {
 				Operator operator = tree.getOperator();
 				if (operator != TermOp.OR____) {
-					Clone_ f = compile(tree.getLeft());
+					Clone_ f = cloner(tree.getLeft());
 					funs.add(env -> Tree.of(operator, f.apply(env), null));
 					node = tree.getRight();
 					continue;
 				} else { // delay generalizing for performance
-					Clone_ lf = compile(tree.getLeft());
-					Clone_ rf = compile(tree.getRight());
+					Clone_ lf = cloner(tree.getLeft());
+					Clone_ rf = cloner(tree.getRight());
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
 			} else if (node0 instanceof Reference) {
 				int index = computeIndex(node0);
 				fun = env -> env.get(index);
 			} else if (node0 instanceof Tuple) {
-				Clone_[] ps = Read.from(((Tuple) node0).nodes).map(this::compile).toArray(Clone_.class);
+				Clone_[] ps = Read.from(((Tuple) node0).nodes).map(this::cloner).toArray(Clone_.class);
 				int size = ps.length;
 				fun = env -> {
 					Node[] nodes = new Node[size];
