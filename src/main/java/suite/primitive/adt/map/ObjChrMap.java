@@ -105,8 +105,22 @@ public class ObjChrMap<K> {
 				index = index + 1 & mask;
 			else
 				break;
+		char v1 = fun.apply(v0);
 		ks[index] = key;
 		size += ((vs[index] = fun.apply(v0)) != ChrFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != ChrFunUtil.EMPTYVALUE ? 1 : 0);
+		if (v1 == ChrFunUtil.EMPTYVALUE)
+			new Object() {
+				public void rehash(int index) {
+					int index1 = (index + 1) & mask;
+					char v = vs[index1];
+					if (v != ChrFunUtil.EMPTYVALUE) {
+						Object k = ks[index1];
+						rehash(index1);
+						store(k, v);
+					}
+				}
+			}.rehash(index);
+
 		rehash();
 	}
 

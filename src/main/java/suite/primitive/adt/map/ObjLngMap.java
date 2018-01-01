@@ -105,8 +105,22 @@ public class ObjLngMap<K> {
 				index = index + 1 & mask;
 			else
 				break;
+		long v1 = fun.apply(v0);
 		ks[index] = key;
 		size += ((vs[index] = fun.apply(v0)) != LngFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != LngFunUtil.EMPTYVALUE ? 1 : 0);
+		if (v1 == LngFunUtil.EMPTYVALUE)
+			new Object() {
+				public void rehash(int index) {
+					int index1 = (index + 1) & mask;
+					long v = vs[index1];
+					if (v != LngFunUtil.EMPTYVALUE) {
+						Object k = ks[index1];
+						rehash(index1);
+						store(k, v);
+					}
+				}
+			}.rehash(index);
+
 		rehash();
 	}
 

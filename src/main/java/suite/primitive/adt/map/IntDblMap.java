@@ -120,8 +120,21 @@ public class IntDblMap {
 				index = index + 1 & mask;
 			else
 				break;
+		double v1 = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v0)) != DblFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != DblFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = v1) != DblFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != DblFunUtil.EMPTYVALUE ? 1 : 0);
+		if (v1 == DblFunUtil.EMPTYVALUE)
+			new Object() {
+				public void rehash(int index) {
+					int index1 = (index + 1) & mask;
+					double v_ = vs[index1];
+					if (v_ != DblFunUtil.EMPTYVALUE) {
+						int k = ks[index1];
+						rehash(index1);
+						store(k, v_);
+					}
+				}
+			}.rehash(index);
 		rehash();
 	}
 
@@ -144,28 +157,6 @@ public class IntDblMap {
 				return b;
 			}
 		}));
-	}
-
-	private double update_(int index, int key, double v1) {
-		double v0 = vs[index];
-		ks[index] = key;
-		size += ((vs[index] = v1) != DblFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != DblFunUtil.EMPTYVALUE ? 1 : 0);
-		if (v1 == DblFunUtil.EMPTYVALUE) {
-			int mask = vs.length - 1;
-			new Object() {
-				public void rehash(int index) {
-					int index1 = (index + 1) & mask;
-					if (vs[index1] != DblFunUtil.EMPTYVALUE) {
-						int k = ks[index1];
-						double v = vs[index1];
-						rehash(index1);
-						store(k, v);
-					}
-				}
-			}.rehash(index);
-		}
-		rehash();
-		return v0;
 	}
 
 	private void rehash() {

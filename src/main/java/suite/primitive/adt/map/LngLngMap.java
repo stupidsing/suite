@@ -118,8 +118,21 @@ public class LngLngMap {
 				index = index + 1 & mask;
 			else
 				break;
+		long v1 = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v0)) != LngFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != LngFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = v1) != LngFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != LngFunUtil.EMPTYVALUE ? 1 : 0);
+		if (v1 == LngFunUtil.EMPTYVALUE)
+			new Object() {
+				public void rehash(int index) {
+					int index1 = (index + 1) & mask;
+					long v_ = vs[index1];
+					if (v_ != LngFunUtil.EMPTYVALUE) {
+						long k = ks[index1];
+						rehash(index1);
+						store(k, v_);
+					}
+				}
+			}.rehash(index);
 		rehash();
 	}
 
@@ -142,28 +155,6 @@ public class LngLngMap {
 				return b;
 			}
 		}));
-	}
-
-	private long update_(int index, long key, long v1) {
-		long v0 = vs[index];
-		ks[index] = key;
-		size += ((vs[index] = v1) != LngFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != LngFunUtil.EMPTYVALUE ? 1 : 0);
-		if (v1 == LngFunUtil.EMPTYVALUE) {
-			int mask = vs.length - 1;
-			new Object() {
-				public void rehash(int index) {
-					int index1 = (index + 1) & mask;
-					if (vs[index1] != LngFunUtil.EMPTYVALUE) {
-						long k = ks[index1];
-						long v = vs[index1];
-						rehash(index1);
-						store(k, v);
-					}
-				}
-			}.rehash(index);
-		}
-		rehash();
-		return v0;
 	}
 
 	private void rehash() {

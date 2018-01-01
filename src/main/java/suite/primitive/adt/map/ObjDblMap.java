@@ -105,8 +105,22 @@ public class ObjDblMap<K> {
 				index = index + 1 & mask;
 			else
 				break;
+		double v1 = fun.apply(v0);
 		ks[index] = key;
 		size += ((vs[index] = fun.apply(v0)) != DblFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != DblFunUtil.EMPTYVALUE ? 1 : 0);
+		if (v1 == DblFunUtil.EMPTYVALUE)
+			new Object() {
+				public void rehash(int index) {
+					int index1 = (index + 1) & mask;
+					double v = vs[index1];
+					if (v != DblFunUtil.EMPTYVALUE) {
+						Object k = ks[index1];
+						rehash(index1);
+						store(k, v);
+					}
+				}
+			}.rehash(index);
+
 		rehash();
 	}
 

@@ -40,7 +40,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	public static <T, V> Fun<Outlet<T>, IntObjStreamlet<V>> collect(Obj_Int<T> kf0, Fun<T, V> vf0) {
 		Obj_Int<T> kf1 = kf0.rethrow();
 		Fun<T, V> vf1 = vf0.rethrow();
-		return outlet -> intObjStreamlet(() -> {
+		return outlet -> streamlet(() -> {
 			Source<T> source = outlet.source();
 			return IntObjOutlet.of(pair -> {
 				T t = source.source();
@@ -54,13 +54,13 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 
 	@SafeVarargs
 	public static <V> IntObjStreamlet<V> concat(IntObjStreamlet<V>... streamlets) {
-		return intObjStreamlet(() -> {
+		return streamlet(() -> {
 			Source<IntObjStreamlet<V>> source = Read.from(streamlets).outlet().source();
 			return IntObjOutlet.of(IntObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 
-	private static <V> IntObjStreamlet<V> intObjStreamlet(Source<IntObjOutlet<V>> in) {
+	private static <V> IntObjStreamlet<V> streamlet(Source<IntObjOutlet<V>> in) {
 		return new IntObjStreamlet<>(in);
 	}
 
@@ -74,7 +74,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	public IntObjStreamlet<V> append(int key, V value) {
-		return intObjStreamlet(() -> spawn().append(key, value));
+		return streamlet(() -> spawn().append(key, value));
 	}
 
 	public <R> R apply(Fun<IntObjStreamlet<V>, R> fun) {
@@ -86,7 +86,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	public IntObjStreamlet<V> closeAtEnd(Closeable c) {
-		return intObjStreamlet(() -> {
+		return streamlet(() -> {
 			IntObjOutlet<V> in = spawn();
 			in.closeAtEnd(c);
 			return in;
@@ -107,19 +107,19 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 
 	public <V1> IntObjStreamlet<V1> concatMapValue(Fun<V, Streamlet<V1>> fun) {
 		Fun<V, Outlet<V1>> f = v -> fun.apply(v).outlet();
-		return intObjStreamlet(() -> IntObjOutlet.of(spawn().concatMapValue(f)));
+		return streamlet(() -> IntObjOutlet.of(spawn().concatMapValue(f)));
 	}
 
 	public IntObjStreamlet<V> cons(int key, V value) {
-		return intObjStreamlet(() -> spawn().cons(key, value));
+		return streamlet(() -> spawn().cons(key, value));
 	}
 
 	public IntObjStreamlet<V> distinct() {
-		return intObjStreamlet(() -> spawn().distinct());
+		return streamlet(() -> spawn().distinct());
 	}
 
 	public IntObjStreamlet<V> drop(int n) {
-		return intObjStreamlet(() -> spawn().drop(n));
+		return streamlet(() -> spawn().drop(n));
 	}
 
 	@Override
@@ -129,15 +129,15 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	public IntObjStreamlet<V> filter(IntObjPredicate<V> fun) {
-		return intObjStreamlet(() -> spawn().filter(fun));
+		return streamlet(() -> spawn().filter(fun));
 	}
 
 	public IntObjStreamlet<V> filterKey(IntTest fun) {
-		return intObjStreamlet(() -> spawn().filterKey(fun));
+		return streamlet(() -> spawn().filterKey(fun));
 	}
 
 	public IntObjStreamlet<V> filterValue(Predicate<V> fun) {
-		return intObjStreamlet(() -> spawn().filterValue(fun));
+		return streamlet(() -> spawn().filterValue(fun));
 	}
 
 	public IntObjPair<V> first() {
@@ -149,11 +149,11 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	public IntObjStreamlet<List<V>> groupBy() {
-		return intObjStreamlet(() -> spawn().groupBy());
+		return streamlet(() -> spawn().groupBy());
 	}
 
 	public <V1> IntObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return intObjStreamlet(() -> spawn().groupBy(fun));
+		return streamlet(() -> spawn().groupBy(fun));
 	}
 
 	@Override
@@ -194,7 +194,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	public <V1> IntObjStreamlet<V1> mapValue(Fun<V, V1> fun) {
-		return intObjStreamlet(() -> spawn().mapValue(fun));
+		return streamlet(() -> spawn().mapValue(fun));
 	}
 
 	public IntObjPair<V> min(Comparator<IntObjPair<V>> comparator) {
@@ -222,7 +222,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	public IntObjStreamlet<V> reverse() {
-		return intObjStreamlet(() -> spawn().reverse());
+		return streamlet(() -> spawn().reverse());
 	}
 
 	public void sink(BiConsumer<Integer, V> sink) {
@@ -230,23 +230,23 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	public IntObjStreamlet<V> skip(int n) {
-		return intObjStreamlet(() -> spawn().skip(n));
+		return streamlet(() -> spawn().skip(n));
 	}
 
 	public IntObjStreamlet<V> sort(Comparator<IntObjPair<V>> comparator) {
-		return intObjStreamlet(() -> spawn().sort(comparator));
+		return streamlet(() -> spawn().sort(comparator));
 	}
 
 	public <O extends Comparable<? super O>> IntObjStreamlet<V> sortBy(IntObj_Obj<V, O> fun) {
-		return intObjStreamlet(() -> spawn().sortBy(fun));
+		return streamlet(() -> spawn().sortBy(fun));
 	}
 
 	public IntObjStreamlet<V> sortByKey(Comparator<Integer> comparator) {
-		return intObjStreamlet(() -> spawn().sortByKey(comparator));
+		return streamlet(() -> spawn().sortByKey(comparator));
 	}
 
 	public IntObjStreamlet<V> sortByValue(Comparator<V> comparator) {
-		return intObjStreamlet(() -> spawn().sortByValue(comparator));
+		return streamlet(() -> spawn().sortByValue(comparator));
 	}
 
 	public IntObjSource<V> source() {
@@ -254,7 +254,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	public IntObjStreamlet<V> take(int n) {
-		return intObjStreamlet(() -> spawn().take(n));
+		return streamlet(() -> spawn().take(n));
 	}
 
 	public IntObjPair<V>[] toArray() {
@@ -313,7 +313,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 
 	private <V1> IntObjStreamlet<V1> concatMapIntObj_(IntObj_Obj<V, IntObjStreamlet<V1>> fun) {
 		IntObj_Obj<V, IntObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).outlet();
-		return intObjStreamlet(() -> IntObjOutlet.of(spawn().concatMapIntObj(bf)));
+		return streamlet(() -> IntObjOutlet.of(spawn().concatMapIntObj(bf)));
 	}
 
 	private <T> Streamlet<T> map_(IntObj_Obj<V, T> fun) {
@@ -325,7 +325,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	private <V1> IntObjStreamlet<V1> mapIntObj_(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {
-		return intObjStreamlet(() -> spawn().mapIntObj(kf, vf));
+		return streamlet(() -> spawn().mapIntObj(kf, vf));
 	}
 
 	private IntObjOutlet<V> spawn() {

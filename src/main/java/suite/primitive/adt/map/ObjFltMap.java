@@ -105,8 +105,22 @@ public class ObjFltMap<K> {
 				index = index + 1 & mask;
 			else
 				break;
+		float v1 = fun.apply(v0);
 		ks[index] = key;
 		size += ((vs[index] = fun.apply(v0)) != FltFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != FltFunUtil.EMPTYVALUE ? 1 : 0);
+		if (v1 == FltFunUtil.EMPTYVALUE)
+			new Object() {
+				public void rehash(int index) {
+					int index1 = (index + 1) & mask;
+					float v = vs[index1];
+					if (v != FltFunUtil.EMPTYVALUE) {
+						Object k = ks[index1];
+						rehash(index1);
+						store(k, v);
+					}
+				}
+			}.rehash(index);
+
 		rehash();
 	}
 

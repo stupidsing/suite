@@ -120,8 +120,21 @@ public class FltIntMap {
 				index = index + 1 & mask;
 			else
 				break;
+		int v1 = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v0)) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != IntFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = v1) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != IntFunUtil.EMPTYVALUE ? 1 : 0);
+		if (v1 == IntFunUtil.EMPTYVALUE)
+			new Object() {
+				public void rehash(int index) {
+					int index1 = (index + 1) & mask;
+					int v_ = vs[index1];
+					if (v_ != IntFunUtil.EMPTYVALUE) {
+						float k = ks[index1];
+						rehash(index1);
+						store(k, v_);
+					}
+				}
+			}.rehash(index);
 		rehash();
 	}
 
@@ -144,28 +157,6 @@ public class FltIntMap {
 				return b;
 			}
 		}));
-	}
-
-	private int update_(int index, float key, int v1) {
-		int v0 = vs[index];
-		ks[index] = key;
-		size += ((vs[index] = v1) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != IntFunUtil.EMPTYVALUE ? 1 : 0);
-		if (v1 == IntFunUtil.EMPTYVALUE) {
-			int mask = vs.length - 1;
-			new Object() {
-				public void rehash(int index) {
-					int index1 = (index + 1) & mask;
-					if (vs[index1] != IntFunUtil.EMPTYVALUE) {
-						float k = ks[index1];
-						int v = vs[index1];
-						rehash(index1);
-						store(k, v);
-					}
-				}
-			}.rehash(index);
-		}
-		rehash();
-		return v0;
 	}
 
 	private void rehash() {

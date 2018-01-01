@@ -40,7 +40,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	public static <T, V> Fun<Outlet<T>, LngObjStreamlet<V>> collect(Obj_Lng<T> kf0, Fun<T, V> vf0) {
 		Obj_Lng<T> kf1 = kf0.rethrow();
 		Fun<T, V> vf1 = vf0.rethrow();
-		return outlet -> lngObjStreamlet(() -> {
+		return outlet -> streamlet(() -> {
 			Source<T> source = outlet.source();
 			return LngObjOutlet.of(pair -> {
 				T t = source.source();
@@ -54,13 +54,13 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	@SafeVarargs
 	public static <V> LngObjStreamlet<V> concat(LngObjStreamlet<V>... streamlets) {
-		return lngObjStreamlet(() -> {
+		return streamlet(() -> {
 			Source<LngObjStreamlet<V>> source = Read.from(streamlets).outlet().source();
 			return LngObjOutlet.of(LngObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
 
-	private static <V> LngObjStreamlet<V> lngObjStreamlet(Source<LngObjOutlet<V>> in) {
+	private static <V> LngObjStreamlet<V> streamlet(Source<LngObjOutlet<V>> in) {
 		return new LngObjStreamlet<>(in);
 	}
 
@@ -74,7 +74,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public LngObjStreamlet<V> append(long key, V value) {
-		return lngObjStreamlet(() -> spawn().append(key, value));
+		return streamlet(() -> spawn().append(key, value));
 	}
 
 	public <R> R apply(Fun<LngObjStreamlet<V>, R> fun) {
@@ -86,7 +86,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public LngObjStreamlet<V> closeAtEnd(Closeable c) {
-		return lngObjStreamlet(() -> {
+		return streamlet(() -> {
 			LngObjOutlet<V> in = spawn();
 			in.closeAtEnd(c);
 			return in;
@@ -107,19 +107,19 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	public <V1> LngObjStreamlet<V1> concatMapValue(Fun<V, Streamlet<V1>> fun) {
 		Fun<V, Outlet<V1>> f = v -> fun.apply(v).outlet();
-		return lngObjStreamlet(() -> LngObjOutlet.of(spawn().concatMapValue(f)));
+		return streamlet(() -> LngObjOutlet.of(spawn().concatMapValue(f)));
 	}
 
 	public LngObjStreamlet<V> cons(long key, V value) {
-		return lngObjStreamlet(() -> spawn().cons(key, value));
+		return streamlet(() -> spawn().cons(key, value));
 	}
 
 	public LngObjStreamlet<V> distinct() {
-		return lngObjStreamlet(() -> spawn().distinct());
+		return streamlet(() -> spawn().distinct());
 	}
 
 	public LngObjStreamlet<V> drop(int n) {
-		return lngObjStreamlet(() -> spawn().drop(n));
+		return streamlet(() -> spawn().drop(n));
 	}
 
 	@Override
@@ -129,15 +129,15 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public LngObjStreamlet<V> filter(LngObjPredicate<V> fun) {
-		return lngObjStreamlet(() -> spawn().filter(fun));
+		return streamlet(() -> spawn().filter(fun));
 	}
 
 	public LngObjStreamlet<V> filterKey(LngTest fun) {
-		return lngObjStreamlet(() -> spawn().filterKey(fun));
+		return streamlet(() -> spawn().filterKey(fun));
 	}
 
 	public LngObjStreamlet<V> filterValue(Predicate<V> fun) {
-		return lngObjStreamlet(() -> spawn().filterValue(fun));
+		return streamlet(() -> spawn().filterValue(fun));
 	}
 
 	public LngObjPair<V> first() {
@@ -149,11 +149,11 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public LngObjStreamlet<List<V>> groupBy() {
-		return lngObjStreamlet(() -> spawn().groupBy());
+		return streamlet(() -> spawn().groupBy());
 	}
 
 	public <V1> LngObjStreamlet<V1> groupBy(Fun<Streamlet<V>, V1> fun) {
-		return lngObjStreamlet(() -> spawn().groupBy(fun));
+		return streamlet(() -> spawn().groupBy(fun));
 	}
 
 	@Override
@@ -194,7 +194,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public <V1> LngObjStreamlet<V1> mapValue(Fun<V, V1> fun) {
-		return lngObjStreamlet(() -> spawn().mapValue(fun));
+		return streamlet(() -> spawn().mapValue(fun));
 	}
 
 	public LngObjPair<V> min(Comparator<LngObjPair<V>> comparator) {
@@ -222,7 +222,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public LngObjStreamlet<V> reverse() {
-		return lngObjStreamlet(() -> spawn().reverse());
+		return streamlet(() -> spawn().reverse());
 	}
 
 	public void sink(BiConsumer<Long, V> sink) {
@@ -230,23 +230,23 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public LngObjStreamlet<V> skip(int n) {
-		return lngObjStreamlet(() -> spawn().skip(n));
+		return streamlet(() -> spawn().skip(n));
 	}
 
 	public LngObjStreamlet<V> sort(Comparator<LngObjPair<V>> comparator) {
-		return lngObjStreamlet(() -> spawn().sort(comparator));
+		return streamlet(() -> spawn().sort(comparator));
 	}
 
 	public <O extends Comparable<? super O>> LngObjStreamlet<V> sortBy(LngObj_Obj<V, O> fun) {
-		return lngObjStreamlet(() -> spawn().sortBy(fun));
+		return streamlet(() -> spawn().sortBy(fun));
 	}
 
 	public LngObjStreamlet<V> sortByKey(Comparator<Long> comparator) {
-		return lngObjStreamlet(() -> spawn().sortByKey(comparator));
+		return streamlet(() -> spawn().sortByKey(comparator));
 	}
 
 	public LngObjStreamlet<V> sortByValue(Comparator<V> comparator) {
-		return lngObjStreamlet(() -> spawn().sortByValue(comparator));
+		return streamlet(() -> spawn().sortByValue(comparator));
 	}
 
 	public LngObjSource<V> source() {
@@ -254,7 +254,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public LngObjStreamlet<V> take(int n) {
-		return lngObjStreamlet(() -> spawn().take(n));
+		return streamlet(() -> spawn().take(n));
 	}
 
 	public LngObjPair<V>[] toArray() {
@@ -313,7 +313,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	private <V1> LngObjStreamlet<V1> concatMapLngObj_(LngObj_Obj<V, LngObjStreamlet<V1>> fun) {
 		LngObj_Obj<V, LngObjOutlet<V1>> bf = (k, v) -> fun.apply(k, v).outlet();
-		return lngObjStreamlet(() -> LngObjOutlet.of(spawn().concatMapLngObj(bf)));
+		return streamlet(() -> LngObjOutlet.of(spawn().concatMapLngObj(bf)));
 	}
 
 	private <T> Streamlet<T> map_(LngObj_Obj<V, T> fun) {
@@ -325,7 +325,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	private <V1> LngObjStreamlet<V1> mapLngObj_(LngObj_Lng<V> kf, LngObj_Obj<V, V1> vf) {
-		return lngObjStreamlet(() -> spawn().mapLngObj(kf, vf));
+		return streamlet(() -> spawn().mapLngObj(kf, vf));
 	}
 
 	private LngObjOutlet<V> spawn() {

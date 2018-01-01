@@ -102,8 +102,21 @@ public class IntObjMap<V> {
 				index = index + 1 & mask;
 			else
 				break;
+		V v1 = fun.apply(cast(v0));
 		ks[index] = key;
 		size += ((vs[index] = fun.apply(cast(v0))) != null ? 1 : 0) - (v0 != null ? 1 : 0);
+		if (v1 == null)
+			new Object() {
+				public void rehash(int index) {
+					int index1 = (index + 1) & mask;
+					Object v = vs[index1];
+					if (v != null) {
+						int k = ks[index1];
+						rehash(index1);
+						store(k, v);
+					}
+				}
+			}.rehash(index);
 		rehash();
 	}
 
