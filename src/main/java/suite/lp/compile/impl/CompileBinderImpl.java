@@ -13,7 +13,6 @@ import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
 import suite.lp.doer.Binder;
 import suite.lp.doer.BinderFactory;
-import suite.lp.sewing.impl.SewingClonerImpl;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
@@ -26,7 +25,7 @@ import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 
-public class CompileBinderImpl extends SewingClonerImpl implements BinderFactory {
+public class CompileBinderImpl extends CompileClonerImpl implements BinderFactory {
 
 	private static FunFactory f = new FunFactory();
 	private static LambdaInterface<Bind_> lambdaClass = LambdaInterface.of(Bind_.class, "test");

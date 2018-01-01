@@ -1,6 +1,6 @@
 package suite.math.linalg;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import suite.adt.PriorityQueue;
@@ -12,7 +12,28 @@ public class SparseMatrix {
 
 	private int height;
 	private int width_;
-	private List<List<Span>> matrix;
+	private List<Spans> matrix;
+
+	private static class Spans {
+		private int size;
+		private int[] columns = new int[4];
+		private float[] values = new float[4];
+
+		private Spans(Span... spans) {
+			for (Span span : spans)
+				add(span.column, span.value);
+		}
+
+		private void add(int column, float value) {
+			while (size + 1 < columns.length) {
+				columns = Arrays.copyOf(columns, columns.length * 2);
+				values = Arrays.copyOf(values, values.length * 2);
+			}
+			columns[size] = column;
+			values[size] = value;
+			size++;
+		}
+	}
 
 	private static class Span {
 		public final int column;
@@ -25,10 +46,10 @@ public class SparseMatrix {
 	}
 
 	public static SparseMatrix identity(int size) {
-		return new SparseMatrix(size, size, Ints_.range(size).map(i -> List.of(new Span(i, 1f))).toList());
+		return new SparseMatrix(size, size, Ints_.range(size).map(i -> new Spans(new Span(i, 1f))).toList());
 	}
 
-	private SparseMatrix(int height, int width_, List<List<Span>> matrix) {
+	private SparseMatrix(int height, int width_, List<Spans> matrix) {
 		this.height = height;
 		this.width_ = width_;
 		this.matrix = matrix;
@@ -36,12 +57,12 @@ public class SparseMatrix {
 
 	public SparseMatrix transpose() {
 		PriorityQueue<IntIntPair> pq = new PriorityQueue<>(IntIntPair.class, height, (p0, p1) -> Integer.compare(p0.t1, p1.t1));
-		List<List<Span>> matrix1 = Ints_.range(width_).map(i -> (List<Span>) new ArrayList<Span>()).toList();
+		List<Spans> matrix1 = Ints_.range(width_).map(i -> new Spans()).toList();
 		int[] js = new int[height];
 
 		IntSink enqRow = r -> {
 			int j = js[r];
-			if (j < matrix.get(r).size())
+			if (j < matrix.get(r).size)
 				pq.insert(IntIntPair.of(r, j));
 		};
 
@@ -51,8 +72,9 @@ public class SparseMatrix {
 		while (!pq.isEmpty()) {
 			IntIntPair pair = pq.extractMin();
 			int r = pair.t0;
-			Span span = matrix.get(r).get(js[r]++);
-			matrix1.get(span.column).add(new Span(r, span.value));
+			int j = js[r]++;
+			Spans spans = matrix.get(r);
+			matrix1.get(spans.columns[j]).add(r, spans.values[j]);
 			enqRow.sink(r);
 		}
 
