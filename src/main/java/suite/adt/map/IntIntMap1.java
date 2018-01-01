@@ -108,6 +108,18 @@ public class IntIntMap1 {
 		int v1 = fun.apply(v0);
 		kvs[index] = kv(key, v1);
 		size += (v1 != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != IntFunUtil.EMPTYVALUE ? 1 : 0);
+		if (v1 == IntFunUtil.EMPTYVALUE)
+			new Object() {
+				public void rehash(int index) {
+					int index1 = (index + 1) & mask;
+					long kv_ = kvs[index1];
+					int v = v(kv_);
+					if (v != IntFunUtil.EMPTYVALUE) {
+						rehash(index1);
+						store(k(kv_), v);
+					}
+				}
+			}.rehash(index);
 		rehash();
 	}
 
