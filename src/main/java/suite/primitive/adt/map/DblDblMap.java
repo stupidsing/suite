@@ -13,6 +13,7 @@ import suite.primitive.adt.pair.DblDblPair;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
+import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -97,43 +98,29 @@ public class DblDblMap {
 	}
 
 	public double put(double key, double v) {
-		int capacity = vs.length;
 		size++;
-
-		if (capacity * 3 / 4 < size) {
-			double[] ks0 = ks;
-			double[] vs0 = vs;
-			allocate(capacity * 2);
-
-			for (int i = 0; i < capacity; i++) {
-				double v_ = vs0[i];
-				if (v_ != DblFunUtil.EMPTYVALUE)
-					put_(ks0[i], v_);
-			}
-		}
-
-		return put_(key, v);
+		double v0 = store(key, v);
+		rehash();
+		return v0;
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (DblObjPair<Double> pair : streamlet())
-			sb.append(pair.t0 + ":" + pair.t1 + ",");
-		return sb.toString();
+		return streamlet().map((k, v) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	public void update(double key, Dbl_Dbl fun) {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;
-		double v;
-		while ((v = vs[index]) != DblFunUtil.EMPTYVALUE)
+		double v0;
+		while ((v0 = vs[index]) != DblFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v)) != DblFunUtil.EMPTYVALUE ? 1 : 0) - (v != DblFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = fun.apply(v0)) != DblFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != DblFunUtil.EMPTYVALUE ? 1 : 0);
+		rehash();
 	}
 
 	public int size() {
@@ -157,7 +144,45 @@ public class DblDblMap {
 		}));
 	}
 
-	private double put_(double key, double v1) {
+	private double update_(int index, double key, double v1) {
+		double v0 = vs[index];
+		ks[index] = key;
+		size += ((vs[index] = v1) != DblFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != DblFunUtil.EMPTYVALUE ? 1 : 0);
+		if (v1 == DblFunUtil.EMPTYVALUE) {
+			int mask = vs.length - 1;
+			new Object() {
+				public void rehash(int index) {
+					int index1 = (index + 1) & mask;
+					if (vs[index1] != DblFunUtil.EMPTYVALUE) {
+						double k = ks[index1];
+						double v = vs[index1];
+						rehash(index1);
+						store(k, v);
+					}
+				}
+			}.rehash(index);
+		}
+		rehash();
+		return v0;
+	}
+
+	private void rehash() {
+		int capacity = vs.length;
+
+		if (capacity * 3 / 4 < size) {
+			double[] ks0 = ks;
+			double[] vs0 = vs;
+			allocate(capacity * 2);
+
+			for (int i = 0; i < capacity; i++) {
+				double v_ = vs0[i];
+				if (v_ != DblFunUtil.EMPTYVALUE)
+					store(ks0[i], v_);
+			}
+		}
+	}
+
+	private double store(double key, double v1) {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;
 		double v0;

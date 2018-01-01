@@ -87,35 +87,24 @@ public class IntObjMap<V> {
 	}
 
 	public V put(int key, V v1) {
-		int capacity = vs.length;
 		size++;
-
-		if (capacity * 3 / 4 < size) {
-			int[] ks0 = ks;
-			Object[] vs0 = vs;
-			allocate(capacity * 2);
-
-			for (int i = 0; i < capacity; i++) {
-				Object o = vs0[i];
-				if (o != null)
-					put_(ks0[i], o);
-			}
-		}
-
-		return cast(put_(key, v1));
+		V v0 = cast(store(key, v1));
+		rehash();
+		return v0;
 	}
 
 	public void update(int key, Iterate<V> fun) {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
-		Object v;
-		while ((v = vs[index]) != null)
+		Object v0;
+		while ((v0 = vs[index]) != null)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(cast(v))) != null ? 1 : 0) - (v != null ? 1 : 0);
+		size += ((vs[index] = fun.apply(cast(v0))) != null ? 1 : 0) - (v0 != null ? 1 : 0);
+		rehash();
 	}
 
 	public int size() {
@@ -138,7 +127,23 @@ public class IntObjMap<V> {
 		return sb.toString();
 	}
 
-	private Object put_(int key, Object v1) {
+	private void rehash() {
+		int capacity = vs.length;
+
+		if (capacity * 3 / 4 < size) {
+			int[] ks0 = ks;
+			Object[] vs0 = vs;
+			allocate(capacity * 2);
+
+			for (int i = 0; i < capacity; i++) {
+				Object o = vs0[i];
+				if (o != null)
+					store(ks0[i], o);
+			}
+		}
+	}
+
+	private Object store(int key, Object v1) {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		Object v0;

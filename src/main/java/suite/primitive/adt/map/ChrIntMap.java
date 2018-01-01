@@ -15,6 +15,7 @@ import suite.primitive.adt.pair.ChrIntPair;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.streamlet.ChrObjOutlet;
 import suite.primitive.streamlet.ChrObjStreamlet;
+import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -99,43 +100,29 @@ public class ChrIntMap {
 	}
 
 	public int put(char key, int v) {
-		int capacity = vs.length;
 		size++;
-
-		if (capacity * 3 / 4 < size) {
-			char[] ks0 = ks;
-			int[] vs0 = vs;
-			allocate(capacity * 2);
-
-			for (int i = 0; i < capacity; i++) {
-				int v_ = vs0[i];
-				if (v_ != IntFunUtil.EMPTYVALUE)
-					put_(ks0[i], v_);
-			}
-		}
-
-		return put_(key, v);
+		int v0 = store(key, v);
+		rehash();
+		return v0;
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (ChrObjPair<Integer> pair : streamlet())
-			sb.append(pair.t0 + ":" + pair.t1 + ",");
-		return sb.toString();
+		return streamlet().map((k, v) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	public void update(char key, Int_Int fun) {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
-		int v;
-		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
+		int v0;
+		while ((v0 = vs[index]) != IntFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v)) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v != IntFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = fun.apply(v0)) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != IntFunUtil.EMPTYVALUE ? 1 : 0);
+		rehash();
 	}
 
 	public int size() {
@@ -159,7 +146,45 @@ public class ChrIntMap {
 		}));
 	}
 
-	private int put_(char key, int v1) {
+	private int update_(int index, char key, int v1) {
+		int v0 = vs[index];
+		ks[index] = key;
+		size += ((vs[index] = v1) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != IntFunUtil.EMPTYVALUE ? 1 : 0);
+		if (v1 == IntFunUtil.EMPTYVALUE) {
+			int mask = vs.length - 1;
+			new Object() {
+				public void rehash(int index) {
+					int index1 = (index + 1) & mask;
+					if (vs[index1] != IntFunUtil.EMPTYVALUE) {
+						char k = ks[index1];
+						int v = vs[index1];
+						rehash(index1);
+						store(k, v);
+					}
+				}
+			}.rehash(index);
+		}
+		rehash();
+		return v0;
+	}
+
+	private void rehash() {
+		int capacity = vs.length;
+
+		if (capacity * 3 / 4 < size) {
+			char[] ks0 = ks;
+			int[] vs0 = vs;
+			allocate(capacity * 2);
+
+			for (int i = 0; i < capacity; i++) {
+				int v_ = vs0[i];
+				if (v_ != IntFunUtil.EMPTYVALUE)
+					store(ks0[i], v_);
+			}
+		}
+	}
+
+	private int store(char key, int v1) {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
 		int v0;

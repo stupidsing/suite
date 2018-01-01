@@ -90,35 +90,24 @@ public class ObjIntMap<K> {
 	}
 
 	public int put(K key, int v) {
-		int capacity = vs.length;
 		size++;
-
-		if (capacity * 3 / 4 < size) {
-			Object[] ks0 = ks;
-			int[] vs0 = vs;
-			allocate(capacity * 2);
-
-			for (int i = 0; i < capacity; i++) {
-				int v_ = vs0[i];
-				if (v_ != IntFunUtil.EMPTYVALUE)
-					put_(ks0[i], v_);
-			}
-		}
-
-		return put_(key, v);
+		int v0 = store(key, v);
+		rehash();
+		return v0;
 	}
 
 	public void update(K key, Int_Int fun) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
-		int v;
-		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
+		int v0;
+		while ((v0 = vs[index]) != IntFunUtil.EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
 				break;
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v)) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v != IntFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = fun.apply(v0)) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != IntFunUtil.EMPTYVALUE ? 1 : 0);
+		rehash();
 	}
 
 	public int size() {
@@ -141,7 +130,23 @@ public class ObjIntMap<K> {
 		return sb.toString();
 	}
 
-	private int put_(Object key, int v1) {
+	private void rehash() {
+		int capacity = vs.length;
+
+		if (capacity * 3 / 4 < size) {
+			Object[] ks0 = ks;
+			int[] vs0 = vs;
+			allocate(capacity * 2);
+
+			for (int i = 0; i < capacity; i++) {
+				int v_ = vs0[i];
+				if (v_ != IntFunUtil.EMPTYVALUE)
+					store(ks0[i], v_);
+			}
+		}
+	}
+
+	private int store(Object key, int v1) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		int v0;

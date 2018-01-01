@@ -90,35 +90,24 @@ public class ObjFltMap<K> {
 	}
 
 	public float put(K key, float v) {
-		int capacity = vs.length;
 		size++;
-
-		if (capacity * 3 / 4 < size) {
-			Object[] ks0 = ks;
-			float[] vs0 = vs;
-			allocate(capacity * 2);
-
-			for (int i = 0; i < capacity; i++) {
-				float v_ = vs0[i];
-				if (v_ != FltFunUtil.EMPTYVALUE)
-					put_(ks0[i], v_);
-			}
-		}
-
-		return put_(key, v);
+		float v0 = store(key, v);
+		rehash();
+		return v0;
 	}
 
 	public void update(K key, Flt_Flt fun) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
-		float v;
-		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
+		float v0;
+		while ((v0 = vs[index]) != FltFunUtil.EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
 				break;
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v)) != FltFunUtil.EMPTYVALUE ? 1 : 0) - (v != FltFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = fun.apply(v0)) != FltFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != FltFunUtil.EMPTYVALUE ? 1 : 0);
+		rehash();
 	}
 
 	public int size() {
@@ -141,7 +130,23 @@ public class ObjFltMap<K> {
 		return sb.toString();
 	}
 
-	private float put_(Object key, float v1) {
+	private void rehash() {
+		int capacity = vs.length;
+
+		if (capacity * 3 / 4 < size) {
+			Object[] ks0 = ks;
+			float[] vs0 = vs;
+			allocate(capacity * 2);
+
+			for (int i = 0; i < capacity; i++) {
+				float v_ = vs0[i];
+				if (v_ != FltFunUtil.EMPTYVALUE)
+					store(ks0[i], v_);
+			}
+		}
+	}
+
+	private float store(Object key, float v1) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		float v0;

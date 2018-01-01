@@ -81,22 +81,10 @@ public class IntIntMap1 {
 	}
 
 	public int put(int key, int v) {
-		int capacity = kvs.length;
 		size++;
-
-		if (capacity * 3 / 4 < size) {
-			long[] kvs0 = kvs;
-			allocate(capacity * 2);
-
-			for (int i = 0; i < capacity; i++) {
-				long kv0 = kvs0[i];
-				int v_ = v(kv0);
-				if (v_ != IntFunUtil.EMPTYVALUE)
-					put_(k(kv0), v_);
-			}
-		}
-
-		return put_(key, v);
+		int v0 = store(key, v);
+		rehash();
+		return v0;
 	}
 
 	@Override
@@ -111,15 +99,16 @@ public class IntIntMap1 {
 		int mask = kvs.length - 1;
 		int index = key & mask;
 		long kv;
-		int v;
-		while ((v = v(kv = kvs[index])) != IntFunUtil.EMPTYVALUE)
+		int v0;
+		while ((v0 = v(kv = kvs[index])) != IntFunUtil.EMPTYVALUE)
 			if (k(kv) != key)
 				index = index + 1 & mask;
 			else
 				break;
-		int v1 = fun.apply(v);
+		int v1 = fun.apply(v0);
 		kvs[index] = kv(key, v1);
-		size += (v1 != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v != IntFunUtil.EMPTYVALUE ? 1 : 0);
+		size += (v1 != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != IntFunUtil.EMPTYVALUE ? 1 : 0);
+		rehash();
 	}
 
 	public IntIntSource source() {
@@ -141,7 +130,23 @@ public class IntIntMap1 {
 		});
 	}
 
-	private int put_(int key, int v1) {
+	private void rehash() {
+		int capacity = kvs.length;
+
+		if (capacity * 3 / 4 < size) {
+			long[] kvs0 = kvs;
+			allocate(capacity * 2);
+
+			for (int i = 0; i < capacity; i++) {
+				long kv0 = kvs0[i];
+				int v_ = v(kv0);
+				if (v_ != IntFunUtil.EMPTYVALUE)
+					store(k(kv0), v_);
+			}
+		}
+	}
+
+	private int store(int key, int v1) {
 		int capacity = kvs.length;
 		int mask = capacity - 1;
 		int index = key & mask;

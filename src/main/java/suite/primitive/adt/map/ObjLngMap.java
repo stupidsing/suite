@@ -90,35 +90,24 @@ public class ObjLngMap<K> {
 	}
 
 	public long put(K key, long v) {
-		int capacity = vs.length;
 		size++;
-
-		if (capacity * 3 / 4 < size) {
-			Object[] ks0 = ks;
-			long[] vs0 = vs;
-			allocate(capacity * 2);
-
-			for (int i = 0; i < capacity; i++) {
-				long v_ = vs0[i];
-				if (v_ != LngFunUtil.EMPTYVALUE)
-					put_(ks0[i], v_);
-			}
-		}
-
-		return put_(key, v);
+		long v0 = store(key, v);
+		rehash();
+		return v0;
 	}
 
 	public void update(K key, Lng_Lng fun) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
-		long v;
-		while ((v = vs[index]) != LngFunUtil.EMPTYVALUE)
+		long v0;
+		while ((v0 = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
 				break;
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v)) != LngFunUtil.EMPTYVALUE ? 1 : 0) - (v != LngFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = fun.apply(v0)) != LngFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != LngFunUtil.EMPTYVALUE ? 1 : 0);
+		rehash();
 	}
 
 	public int size() {
@@ -141,7 +130,23 @@ public class ObjLngMap<K> {
 		return sb.toString();
 	}
 
-	private long put_(Object key, long v1) {
+	private void rehash() {
+		int capacity = vs.length;
+
+		if (capacity * 3 / 4 < size) {
+			Object[] ks0 = ks;
+			long[] vs0 = vs;
+			allocate(capacity * 2);
+
+			for (int i = 0; i < capacity; i++) {
+				long v_ = vs0[i];
+				if (v_ != LngFunUtil.EMPTYVALUE)
+					store(ks0[i], v_);
+			}
+		}
+	}
+
+	private long store(Object key, long v1) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		long v0;

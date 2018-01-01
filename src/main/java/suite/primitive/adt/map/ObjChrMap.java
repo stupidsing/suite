@@ -90,35 +90,24 @@ public class ObjChrMap<K> {
 	}
 
 	public char put(K key, char v) {
-		int capacity = vs.length;
 		size++;
-
-		if (capacity * 3 / 4 < size) {
-			Object[] ks0 = ks;
-			char[] vs0 = vs;
-			allocate(capacity * 2);
-
-			for (int i = 0; i < capacity; i++) {
-				char v_ = vs0[i];
-				if (v_ != ChrFunUtil.EMPTYVALUE)
-					put_(ks0[i], v_);
-			}
-		}
-
-		return put_(key, v);
+		char v0 = store(key, v);
+		rehash();
+		return v0;
 	}
 
 	public void update(K key, Chr_Chr fun) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
-		char v;
-		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
+		char v0;
+		while ((v0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
 				break;
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v)) != ChrFunUtil.EMPTYVALUE ? 1 : 0) - (v != ChrFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = fun.apply(v0)) != ChrFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != ChrFunUtil.EMPTYVALUE ? 1 : 0);
+		rehash();
 	}
 
 	public int size() {
@@ -141,7 +130,23 @@ public class ObjChrMap<K> {
 		return sb.toString();
 	}
 
-	private char put_(Object key, char v1) {
+	private void rehash() {
+		int capacity = vs.length;
+
+		if (capacity * 3 / 4 < size) {
+			Object[] ks0 = ks;
+			char[] vs0 = vs;
+			allocate(capacity * 2);
+
+			for (int i = 0; i < capacity; i++) {
+				char v_ = vs0[i];
+				if (v_ != ChrFunUtil.EMPTYVALUE)
+					store(ks0[i], v_);
+			}
+		}
+	}
+
+	private char store(Object key, char v1) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		char v0;

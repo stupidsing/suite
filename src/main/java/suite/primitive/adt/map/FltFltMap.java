@@ -13,6 +13,7 @@ import suite.primitive.adt.pair.FltFltPair;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltObjOutlet;
 import suite.primitive.streamlet.FltObjStreamlet;
+import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -97,43 +98,29 @@ public class FltFltMap {
 	}
 
 	public float put(float key, float v) {
-		int capacity = vs.length;
 		size++;
-
-		if (capacity * 3 / 4 < size) {
-			float[] ks0 = ks;
-			float[] vs0 = vs;
-			allocate(capacity * 2);
-
-			for (int i = 0; i < capacity; i++) {
-				float v_ = vs0[i];
-				if (v_ != FltFunUtil.EMPTYVALUE)
-					put_(ks0[i], v_);
-			}
-		}
-
-		return put_(key, v);
+		float v0 = store(key, v);
+		rehash();
+		return v0;
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (FltObjPair<Float> pair : streamlet())
-			sb.append(pair.t0 + ":" + pair.t1 + ",");
-		return sb.toString();
+		return streamlet().map((k, v) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	public void update(float key, Flt_Flt fun) {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
-		float v;
-		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
+		float v0;
+		while ((v0 = vs[index]) != FltFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v)) != FltFunUtil.EMPTYVALUE ? 1 : 0) - (v != FltFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = fun.apply(v0)) != FltFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != FltFunUtil.EMPTYVALUE ? 1 : 0);
+		rehash();
 	}
 
 	public int size() {
@@ -157,7 +144,45 @@ public class FltFltMap {
 		}));
 	}
 
-	private float put_(float key, float v1) {
+	private float update_(int index, float key, float v1) {
+		float v0 = vs[index];
+		ks[index] = key;
+		size += ((vs[index] = v1) != FltFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != FltFunUtil.EMPTYVALUE ? 1 : 0);
+		if (v1 == FltFunUtil.EMPTYVALUE) {
+			int mask = vs.length - 1;
+			new Object() {
+				public void rehash(int index) {
+					int index1 = (index + 1) & mask;
+					if (vs[index1] != FltFunUtil.EMPTYVALUE) {
+						float k = ks[index1];
+						float v = vs[index1];
+						rehash(index1);
+						store(k, v);
+					}
+				}
+			}.rehash(index);
+		}
+		rehash();
+		return v0;
+	}
+
+	private void rehash() {
+		int capacity = vs.length;
+
+		if (capacity * 3 / 4 < size) {
+			float[] ks0 = ks;
+			float[] vs0 = vs;
+			allocate(capacity * 2);
+
+			for (int i = 0; i < capacity; i++) {
+				float v_ = vs0[i];
+				if (v_ != FltFunUtil.EMPTYVALUE)
+					store(ks0[i], v_);
+			}
+		}
+	}
+
+	private float store(float key, float v1) {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
 		float v0;

@@ -90,35 +90,24 @@ public class ObjDblMap<K> {
 	}
 
 	public double put(K key, double v) {
-		int capacity = vs.length;
 		size++;
-
-		if (capacity * 3 / 4 < size) {
-			Object[] ks0 = ks;
-			double[] vs0 = vs;
-			allocate(capacity * 2);
-
-			for (int i = 0; i < capacity; i++) {
-				double v_ = vs0[i];
-				if (v_ != DblFunUtil.EMPTYVALUE)
-					put_(ks0[i], v_);
-			}
-		}
-
-		return put_(key, v);
+		double v0 = store(key, v);
+		rehash();
+		return v0;
 	}
 
 	public void update(K key, Dbl_Dbl fun) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
-		double v;
-		while ((v = vs[index]) != DblFunUtil.EMPTYVALUE)
+		double v0;
+		while ((v0 = vs[index]) != DblFunUtil.EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
 				break;
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v)) != DblFunUtil.EMPTYVALUE ? 1 : 0) - (v != DblFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = fun.apply(v0)) != DblFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != DblFunUtil.EMPTYVALUE ? 1 : 0);
+		rehash();
 	}
 
 	public int size() {
@@ -141,7 +130,23 @@ public class ObjDblMap<K> {
 		return sb.toString();
 	}
 
-	private double put_(Object key, double v1) {
+	private void rehash() {
+		int capacity = vs.length;
+
+		if (capacity * 3 / 4 < size) {
+			Object[] ks0 = ks;
+			double[] vs0 = vs;
+			allocate(capacity * 2);
+
+			for (int i = 0; i < capacity; i++) {
+				double v_ = vs0[i];
+				if (v_ != DblFunUtil.EMPTYVALUE)
+					store(ks0[i], v_);
+			}
+		}
+	}
+
+	private double store(Object key, double v1) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		double v0;

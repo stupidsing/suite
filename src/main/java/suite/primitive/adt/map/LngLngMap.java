@@ -13,6 +13,7 @@ import suite.primitive.adt.pair.LngLngPair;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngObjOutlet;
 import suite.primitive.streamlet.LngObjStreamlet;
+import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 
@@ -97,43 +98,29 @@ public class LngLngMap {
 	}
 
 	public long put(long key, long v) {
-		int capacity = vs.length;
 		size++;
-
-		if (capacity * 3 / 4 < size) {
-			long[] ks0 = ks;
-			long[] vs0 = vs;
-			allocate(capacity * 2);
-
-			for (int i = 0; i < capacity; i++) {
-				long v_ = vs0[i];
-				if (v_ != LngFunUtil.EMPTYVALUE)
-					put_(ks0[i], v_);
-			}
-		}
-
-		return put_(key, v);
+		long v0 = store(key, v);
+		rehash();
+		return v0;
 	}
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (LngObjPair<Long> pair : streamlet())
-			sb.append(pair.t0 + ":" + pair.t1 + ",");
-		return sb.toString();
+		return streamlet().map((k, v) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	public void update(long key, Lng_Lng fun) {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
-		long v;
-		while ((v = vs[index]) != LngFunUtil.EMPTYVALUE)
+		long v0;
+		while ((v0 = vs[index]) != LngFunUtil.EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v)) != LngFunUtil.EMPTYVALUE ? 1 : 0) - (v != LngFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = fun.apply(v0)) != LngFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != LngFunUtil.EMPTYVALUE ? 1 : 0);
+		rehash();
 	}
 
 	public int size() {
@@ -157,7 +144,45 @@ public class LngLngMap {
 		}));
 	}
 
-	private long put_(long key, long v1) {
+	private long update_(int index, long key, long v1) {
+		long v0 = vs[index];
+		ks[index] = key;
+		size += ((vs[index] = v1) != LngFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != LngFunUtil.EMPTYVALUE ? 1 : 0);
+		if (v1 == LngFunUtil.EMPTYVALUE) {
+			int mask = vs.length - 1;
+			new Object() {
+				public void rehash(int index) {
+					int index1 = (index + 1) & mask;
+					if (vs[index1] != LngFunUtil.EMPTYVALUE) {
+						long k = ks[index1];
+						long v = vs[index1];
+						rehash(index1);
+						store(k, v);
+					}
+				}
+			}.rehash(index);
+		}
+		rehash();
+		return v0;
+	}
+
+	private void rehash() {
+		int capacity = vs.length;
+
+		if (capacity * 3 / 4 < size) {
+			long[] ks0 = ks;
+			long[] vs0 = vs;
+			allocate(capacity * 2);
+
+			for (int i = 0; i < capacity; i++) {
+				long v_ = vs0[i];
+				if (v_ != LngFunUtil.EMPTYVALUE)
+					store(ks0[i], v_);
+			}
+		}
+	}
+
+	private long store(long key, long v1) {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
 		long v0;
