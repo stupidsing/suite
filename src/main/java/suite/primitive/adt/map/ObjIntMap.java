@@ -11,6 +11,7 @@ import suite.primitive.Int_Int;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjOutlet;
 import suite.primitive.streamlet.IntObjStreamlet;
+import suite.streamlet.As;
 
 /**
  * Map with generic object key and intacter object value. Integer.MIN_VALUE
@@ -138,10 +139,7 @@ public class ObjIntMap<K> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (IntObjPair<K> pair : streamlet())
-			sb.append(pair.t1 + ":" + pair.t0 + ",");
-		return sb.toString();
+		return streamlet().map((v, k) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	private void rehash() {

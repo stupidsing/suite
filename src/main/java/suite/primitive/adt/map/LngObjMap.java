@@ -8,6 +8,7 @@ import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngObjOutlet;
 import suite.primitive.streamlet.LngObjStreamlet;
+import suite.streamlet.As;
 import suite.util.FunUtil.Iterate;
 
 /**
@@ -134,10 +135,7 @@ public class LngObjMap<V> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (LngObjPair<V> pair : streamlet())
-			sb.append(pair.t0 + ":" + pair.t1 + ",");
-		return sb.toString();
+		return streamlet().map((k, v) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	private void rehash() {

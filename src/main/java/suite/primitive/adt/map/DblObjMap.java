@@ -8,6 +8,7 @@ import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
+import suite.streamlet.As;
 import suite.util.FunUtil.Iterate;
 
 /**
@@ -134,10 +135,7 @@ public class DblObjMap<V> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (DblObjPair<V> pair : streamlet())
-			sb.append(pair.t0 + ":" + pair.t1 + ",");
-		return sb.toString();
+		return streamlet().map((k, v) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	private void rehash() {

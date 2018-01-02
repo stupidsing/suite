@@ -11,6 +11,7 @@ import suite.primitive.Lng_Lng;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngObjOutlet;
 import suite.primitive.streamlet.LngObjStreamlet;
+import suite.streamlet.As;
 
 /**
  * Map with generic object key and longacter object value. Long.MIN_VALUE
@@ -138,10 +139,7 @@ public class ObjLngMap<K> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (LngObjPair<K> pair : streamlet())
-			sb.append(pair.t1 + ":" + pair.t0 + ",");
-		return sb.toString();
+		return streamlet().map((v, k) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	private void rehash() {

@@ -11,6 +11,7 @@ import suite.primitive.Chr_Chr;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.streamlet.ChrObjOutlet;
 import suite.primitive.streamlet.ChrObjStreamlet;
+import suite.streamlet.As;
 
 /**
  * Map with generic object key and character object value. Character.MIN_VALUE
@@ -138,10 +139,7 @@ public class ObjChrMap<K> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (ChrObjPair<K> pair : streamlet())
-			sb.append(pair.t1 + ":" + pair.t0 + ",");
-		return sb.toString();
+		return streamlet().map((v, k) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	private void rehash() {

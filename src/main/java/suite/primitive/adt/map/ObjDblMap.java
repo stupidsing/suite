@@ -11,6 +11,7 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
+import suite.streamlet.As;
 
 /**
  * Map with generic object key and doubleacter object value. Double.MIN_VALUE
@@ -138,10 +139,7 @@ public class ObjDblMap<K> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (DblObjPair<K> pair : streamlet())
-			sb.append(pair.t1 + ":" + pair.t0 + ",");
-		return sb.toString();
+		return streamlet().map((v, k) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	private void rehash() {

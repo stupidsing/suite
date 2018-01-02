@@ -11,6 +11,7 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjOutlet;
 import suite.primitive.streamlet.IntObjStreamlet;
+import suite.streamlet.As;
 
 /**
  * Map with integer key and integer object value. EMPTYVALUE is not allowed in
@@ -89,10 +90,7 @@ public class IntIntMap1 {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (IntObjPair<Integer> pair : streamlet())
-			sb.append(pair.t0 + ":" + pair.t1 + ",");
-		return sb.toString();
+		return streamlet().map((k, v) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	public void update(int key, Int_Int fun) {

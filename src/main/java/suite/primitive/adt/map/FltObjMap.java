@@ -8,6 +8,7 @@ import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltObjOutlet;
 import suite.primitive.streamlet.FltObjStreamlet;
+import suite.streamlet.As;
 import suite.util.FunUtil.Iterate;
 
 /**
@@ -134,10 +135,7 @@ public class FltObjMap<V> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (FltObjPair<V> pair : streamlet())
-			sb.append(pair.t0 + ":" + pair.t1 + ",");
-		return sb.toString();
+		return streamlet().map((k, v) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	private void rehash() {

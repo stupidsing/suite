@@ -8,6 +8,7 @@ import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjOutlet;
 import suite.primitive.streamlet.IntObjStreamlet;
+import suite.streamlet.As;
 import suite.util.FunUtil.Iterate;
 
 /**
@@ -134,10 +135,7 @@ public class IntObjMap<V> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (IntObjPair<V> pair : streamlet())
-			sb.append(pair.t0 + ":" + pair.t1 + ",");
-		return sb.toString();
+		return streamlet().map((k, v) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	private void rehash() {

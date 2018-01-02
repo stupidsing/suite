@@ -11,6 +11,7 @@ import suite.primitive.Flt_Flt;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltObjOutlet;
 import suite.primitive.streamlet.FltObjStreamlet;
+import suite.streamlet.As;
 
 /**
  * Map with generic object key and floatacter object value. Float.MIN_VALUE
@@ -138,10 +139,7 @@ public class ObjFltMap<K> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (FltObjPair<K> pair : streamlet())
-			sb.append(pair.t1 + ":" + pair.t0 + ",");
-		return sb.toString();
+		return streamlet().map((v, k) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	private void rehash() {

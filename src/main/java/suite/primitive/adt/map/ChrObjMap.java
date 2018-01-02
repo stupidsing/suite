@@ -8,6 +8,7 @@ import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.streamlet.ChrObjOutlet;
 import suite.primitive.streamlet.ChrObjStreamlet;
+import suite.streamlet.As;
 import suite.util.FunUtil.Iterate;
 
 /**
@@ -134,10 +135,7 @@ public class ChrObjMap<V> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
-		for (ChrObjPair<V> pair : streamlet())
-			sb.append(pair.t0 + ":" + pair.t1 + ",");
-		return sb.toString();
+		return streamlet().map((k, v) -> k + ":" + v + ",").collect(As::joined);
 	}
 
 	private void rehash() {
