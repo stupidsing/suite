@@ -94,7 +94,7 @@ public class HkexFactBook {
 	}
 
 	private String getUrl(int year) {
-		String dir = "http://www.hkex.com.hk/market-data/statistics/consolidated-reports/hkex-fact-book?sc_lang=en";
+		String dir = "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book";
 		if (year <= 2008)
 			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf";
 		else if (year <= 2015)
