@@ -3,12 +3,12 @@ package suite;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.Bind_;
 import suite.lp.doer.Generalizer;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper.VariableEnv;
-import suite.lp.sewing.impl.SewingBinderImpl;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
@@ -36,7 +36,7 @@ public class BindArrayUtil {
 		Node fs = Suite.parse(pattern_);
 		Node toMatch = generalizer.generalize(fs);
 
-		SewingBinderImpl sb = new SewingBinderImpl(false);
+		CompileBinderImpl sb = new CompileBinderImpl(false);
 		Bind_ pred = sb.binder(toMatch);
 		List<Integer> indexList = new ArrayList<>();
 		Integer index;
