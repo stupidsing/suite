@@ -13,6 +13,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
+import suite.node.Tuple;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
@@ -52,7 +53,7 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 						.map((key, value) -> new Generalize_[] { generalizer(key), generalizer(value), }) //
 						.toArray(Generalize_[].class);
 				int length = array.length;
-				return env -> {
+				fun = env -> {
 					@SuppressWarnings("unchecked")
 					Pair<Node, Reference>[] pairs = new Pair[length];
 					for (int i = 0; i < length; i++)
@@ -71,6 +72,15 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 					Generalize_ rf = generalizer(tree.getRight());
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
+			} else if (node0 instanceof Tuple) {
+				Generalize_[] fs = Read.from(((Tuple) node0).nodes).map(this::generalizer).toArray(Generalize_.class);
+				int length = fs.length;
+				fun = env -> {
+					Node[] array = new Node[length];
+					for (int i = 0; i < length; i++)
+						array[i] = fs[i].apply(env);
+					return Tuple.of(array);
+				};
 			} else
 				fun = env -> node0;
 
