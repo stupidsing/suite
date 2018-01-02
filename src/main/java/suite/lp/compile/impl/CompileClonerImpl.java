@@ -13,6 +13,7 @@ import suite.node.Dict;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
+import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.streamlet.Read;
@@ -42,6 +43,8 @@ public class CompileClonerImpl extends VariableMapper implements ClonerFactory {
 					return f.object(node_);
 				else if (node_ instanceof Reference)
 					return env.field("refs").index(f.int_(computeIndex(node_)));
+				else if (node_ instanceof Str)
+					return f.object(node_);
 				else if ((tree = Tree.decompose(node_)) != null) {
 					FunExpr fe0 = compile_(tree.getLeft()).cast(Node.class);
 					FunExpr fe1 = compile_(tree.getRight()).cast(Node.class);
