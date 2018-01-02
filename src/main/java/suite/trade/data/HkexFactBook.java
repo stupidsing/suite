@@ -94,13 +94,15 @@ public class HkexFactBook {
 	}
 
 	private String getUrl(int year) {
-		String dir = "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book";
+		String dir = "http://www.hkex.com.hk/market-data/statistics/consolidated-reports/hkex-fact-book?sc_lang=en";
 		if (year <= 2008)
 			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf";
 		else if (year <= 2015)
 			return dir + "/HKEx-Fact-Book-" + year + "/fb_" + year + ".pdf";
 		else if (year == 2016)
 			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf";
+		else if (year == 2017)
+			return dir + "/HKEX-Fact-Book-2016/FB_2016.pdf";
 		else
 			throw new RuntimeException();
 	}
