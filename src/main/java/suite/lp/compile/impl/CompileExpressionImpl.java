@@ -27,7 +27,7 @@ public class CompileExpressionImpl implements EvaluatorFactory {
 	public Evaluate_ evaluator(Node node) {
 		FunCreator<Evaluate_> fc = FunCreator.of(Evaluate_.class);
 
-		return fc.create(new Iterate<FunExpr>() {
+		return fc.create(new Iterate<>() {
 			private FunExpr env;
 
 			public FunExpr apply(FunExpr env) {

@@ -27,7 +27,7 @@ public class CompileClonerImpl extends VariableMapper implements ClonerFactory {
 	public Clone_ cloner(Node node) {
 		FunCreator<Clone_> fc = FunCreator.of(Clone_.class);
 
-		return fc.create(new Iterate<FunExpr>() {
+		return fc.create(new Iterate<>() {
 			private FunExpr env;
 
 			public FunExpr apply(FunExpr env) {
