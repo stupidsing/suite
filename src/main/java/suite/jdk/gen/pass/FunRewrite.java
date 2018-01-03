@@ -140,12 +140,12 @@ public class FunRewrite extends FunFactory {
 			int index = localTypes.size();
 			localTypes.add(type);
 
-			AssignLocalFunExpr afe = new AssignLocalFunExpr();
-			afe.index = index;
-			afe.value = value;
+			AssignLocalFunExpr alfe = new AssignLocalFunExpr();
+			alfe.index = index;
+			alfe.value = value;
 
 			placeholders.put(e1.var, local(index));
-			return seq(afe, rewrite(e1.do_));
+			return seq(alfe, rewrite(e1.do_));
 		} else if (e0 instanceof FieldFunExpr) {
 			FieldFunExpr e1 = (FieldFunExpr) e0;
 			FunExpr object = rewrite(e1.object);
