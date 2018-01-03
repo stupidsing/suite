@@ -17,6 +17,7 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.streamlet.Read;
+import suite.util.FunUtil.Iterate;
 
 public class CompileClonerImpl extends VariableMapper implements ClonerFactory {
 
@@ -24,10 +25,16 @@ public class CompileClonerImpl extends VariableMapper implements ClonerFactory {
 
 	@Override
 	public Clone_ cloner(Node node) {
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		FunCreator<Clone_> fc = (FunCreator) FunCreator.of(Clone_.class);
+		FunCreator<Clone_> fc = FunCreator.of(Clone_.class);
 
-		return fc.create(env -> new Object() {
+		return fc.create(new Iterate<FunExpr>() {
+			private FunExpr env;
+
+			public FunExpr apply(FunExpr env) {
+				this.env = env;
+				return compile_(node);
+			}
+
 			private FunExpr compile_(Node node_) {
 				Tree tree;
 
@@ -55,7 +62,7 @@ public class CompileClonerImpl extends VariableMapper implements ClonerFactory {
 				} else
 					throw new RuntimeException();
 			}
-		}.compile_(node)).apply(new HashMap<>());
+		}).apply(new HashMap<>());
 	}
 
 }
