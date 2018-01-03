@@ -22,10 +22,10 @@ public class CompileExpressionImpl implements EvaluatorFactory {
 	private static FunFactory f = new FunFactory();
 	private static LambdaInterface<Evaluate_> lambdaInterface = LambdaInterface.of(Evaluate_.class);
 
-	private ClonerFactory sc;
+	private ClonerFactory clonerFactory;
 
-	public CompileExpressionImpl(ClonerFactory sc) {
-		this.sc = sc;
+	public CompileExpressionImpl(ClonerFactory clonerFactory) {
+		this.clonerFactory = clonerFactory;
 	}
 
 	public Evaluate_ evaluator(Node node) {
@@ -54,7 +54,7 @@ public class CompileExpressionImpl implements EvaluatorFactory {
 		else if (node instanceof Int)
 			return LambdaInstance.of(compiledNumber, Map.of(keyNumber, ((Int) node).number));
 		else {
-			Clone_ n_ = sc.cloner(node);
+			Clone_ n_ = clonerFactory.cloner(node);
 			Evaluate_ evaluate = env -> TreeUtil.evaluate(n_.apply(env));
 			return LambdaInstance.of(compiledEval, Map.of(keyEval, evaluate));
 		}

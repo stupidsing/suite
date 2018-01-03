@@ -13,10 +13,10 @@ import suite.primitive.IntInt_Int;
 
 public class SewingExpressionImpl implements EvaluatorFactory {
 
-	private ClonerFactory sc;
+	private ClonerFactory clonerFactory;
 
-	public SewingExpressionImpl(ClonerFactory sc) {
-		this.sc = sc;
+	public SewingExpressionImpl(ClonerFactory clonerFactory) {
+		this.clonerFactory = clonerFactory;
 	}
 
 	public Evaluate_ evaluator(Node node) {
@@ -43,7 +43,7 @@ public class SewingExpressionImpl implements EvaluatorFactory {
 			int i = ((Int) node).number;
 			return env -> i;
 		} else {
-			Clone_ f = sc.cloner(node);
+			Clone_ f = clonerFactory.cloner(node);
 			return env -> TreeUtil.evaluate(f.apply(env));
 		}
 	}
