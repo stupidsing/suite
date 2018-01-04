@@ -10,6 +10,7 @@ import suite.jdk.gen.FunExprK.PlaceholderFunExpr;
 import suite.jdk.gen.FunExprL.ApplyFunExpr;
 import suite.jdk.gen.FunExprL.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExprM.ArrayFunExpr;
+import suite.jdk.gen.FunExprM.ArrayLengthFunExpr;
 import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
 import suite.jdk.gen.FunExprM.BinaryFunExpr;
 import suite.jdk.gen.FunExprM.CastFunExpr;
@@ -50,7 +51,9 @@ public class FunTypeInformation {
 				if (element != null && type != typeOf(element))
 					throw new RuntimeException();
 			return e1.clazz.isPrimitive() ? new ArrayType(type.getType(), 1) : new ArrayType(type, 1);
-		} else if (e0 instanceof ApplyFunExpr) {
+		} else if (e0 instanceof ArrayLengthFunExpr)
+			return Type.INT;
+		else if (e0 instanceof ApplyFunExpr) {
 			ApplyFunExpr e1 = (ApplyFunExpr) e0;
 			return Type.getType(methodOf(e1.object).getReturnType());
 		} else if (e0 instanceof AssignLocalFunExpr)

@@ -9,6 +9,7 @@ import org.apache.bcel.generic.Type;
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExprL.ApplyFunExpr;
 import suite.jdk.gen.FunExprL.FieldFunExpr;
+import suite.jdk.gen.FunExprM.ArrayLengthFunExpr;
 import suite.jdk.gen.FunExprM.CastFunExpr;
 import suite.jdk.gen.FunExprM.CheckCastFunExpr;
 import suite.jdk.gen.FunExprM.FieldTypeFunExpr;
@@ -91,6 +92,12 @@ public class FunExpression {
 			expr.methodName = methodName;
 			expr.object = this;
 			expr.parameters = list;
+			return expr;
+		}
+
+		public FunExpr length() {
+			ArrayLengthFunExpr expr = new ArrayLengthFunExpr();
+			expr.expr = this;
 			return expr;
 		}
 

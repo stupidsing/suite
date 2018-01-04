@@ -5,18 +5,22 @@ import java.util.HashMap;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
+import suite.lp.doer.Binder;
 import suite.lp.doer.BinderFactory;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
+import suite.node.Str;
+import suite.node.Tree;
+import suite.node.Tuple;
 import suite.util.FunUtil2.BinOp;
 
 public class CompileBinderImpl1 extends CompileClonerImpl implements BinderFactory {
 
 	private static FunFactory f = new FunFactory();
-	private static FunExpr false_ = f._false();
-	private static FunExpr true_ = f._true();
+	private static FunExpr fail = f._false();
+	private static FunExpr ok = f._true();
 
 	private boolean isBindTrees;
 
@@ -32,31 +36,63 @@ public class CompileBinderImpl1 extends CompileClonerImpl implements BinderFacto
 		FunCreator<Bind_> fc = FunCreator.of(Bind_.class);
 
 		return fc.create(new BinOp<>() {
-			private FunExpr bindEnv, target, b;
+			private FunExpr env, trail, b;
 
 			public FunExpr apply(FunExpr bindEnv, FunExpr target) {
-				this.bindEnv = bindEnv;
-				return f.declare(true_, b -> {
+				this.env = bindEnv.field("env");
+				this.trail = bindEnv.field("trail");
+				return f.declare(ok, b -> {
 					this.b = b;
-					return compile_(node, target, b);
+					return compile_(node, target);
 				});
 			}
 
-			private FunExpr compile_(Node node, FunExpr target, FunExpr cps) {
-				FunExpr b1;
+			private FunExpr compile_(Node node, FunExpr target) {
+				FunExpr br = bind(f.object(node), target);
+				FunExpr brc = bindClone(node, target);
+				Tree tree;
 
-				if (node instanceof Atom) {
-					FunExpr h = f.ifInstanceAnd(Reference.class, target, //
-							ref -> f.seq(bindEnv.field("trail").invoke("addBind", ref, f.object(node)), true_));
-					b1 = f.ifEquals(target, f.object(node), true_, h);
-				} else if (node instanceof Int) {
+				if (node instanceof Atom)
+					return f.ifEquals(target, f.object(node), ok, br);
+				else if (node instanceof Int) {
 					int num = ((Int) node).number;
-					b1 = f.ifInstanceAnd(Int.class, target, //
-							i -> f.ifEquals(i.field("number"), f.int_(num), true_, false_));
-				} else
+					return f.ifInstance(Int.class, target, i -> f.ifEquals(i.field("number"), f.int_(num), ok, fail), br);
+				} else if (node instanceof Reference)
+					return f.invokeStatic(Binder.class, "bind", target, env.field("refs").index(f.int_(computeIndex(node))), trail);
+				else if (node instanceof Str) {
+					String str = ((Str) node).value;
+					return f.ifInstance(Str.class, target, s -> f.object(str).invoke("equals", s.field("value")), br);
+				} else if (node instanceof Tuple)
+					return f.ifInstance(Tuple.class, target, tuple -> f.declare(tuple.field("nodes"), targets -> {
+						Node[] nodes = ((Tuple) node).nodes;
+						FunExpr fe = ok;
+						for (int i = 0; i < nodes.length; i++)
+							fe = compile_(nodes[i], targets.index(f.int_(i)), fe);
+						return f.if_(targets.length(), fe, brc);
+					}), brc);
+				else if ((tree = Tree.decompose(node)) != null)
+					return f.declare(f.invokeStatic(Tree.class, "decompose", target, f.object(tree.getOperator())), t -> {
+						Node lt = tree.getLeft();
+						Node rt = tree.getRight();
+						return f.ifNonNull(t, compile_(lt, t.invoke("getLeft"), compile_(rt, t.invoke("getRight"), ok)), brc);
+					});
+				else
 					throw new RuntimeException();
+			}
 
-				return f.assign(b, b1, f.if_(b, cps, false_));
+			private FunExpr compile_(Node node, FunExpr target, FunExpr cps) {
+				return f.assign(b, compile_(node, target), f.if_(b, cps, fail));
+			}
+
+			private FunExpr bindClone(Node node, FunExpr target) {
+				if (isBindTrees)
+					return bind(f.object(cloner(node)).apply(env), target);
+				else
+					return fail;
+			}
+
+			private FunExpr bind(FunExpr node, FunExpr target) {
+				return f.ifInstanceAnd(Reference.class, target, ref -> f.seq(trail.invoke("addBind", ref, node), ok));
 			}
 		}).apply(new HashMap<>());
 	}

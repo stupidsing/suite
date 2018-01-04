@@ -22,6 +22,10 @@ public class FunExprM {
 		public FunExpr[] elements;
 	}
 
+	public static class ArrayLengthFunExpr extends FunExpr {
+		public FunExpr expr;
+	}
+
 	public static class AssignLocalFunExpr extends FunExpr {
 		public FunExpr var;
 		public FunExpr value;

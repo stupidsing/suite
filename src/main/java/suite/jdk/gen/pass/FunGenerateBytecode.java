@@ -7,6 +7,7 @@ import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.generic.ARRAYLENGTH;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.Instruction;
@@ -19,6 +20,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
 import suite.jdk.gen.FunExprM.ArrayFunExpr;
+import suite.jdk.gen.FunExprM.ArrayLengthFunExpr;
 import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
 import suite.jdk.gen.FunExprM.BinaryFunExpr;
 import suite.jdk.gen.FunExprM.CastFunExpr;
@@ -98,6 +100,10 @@ public class FunGenerateBytecode {
 					list.add(InstructionFactory.createArrayStore(fti.typeOf(element)));
 				}
 			}
+		} else if (e0 instanceof ArrayLengthFunExpr) {
+			ArrayLengthFunExpr e1 = (ArrayLengthFunExpr) e0;
+			visit_(e1.expr);
+			list.add(new ARRAYLENGTH());
 		} else if (e0 instanceof AssignLocalFunExpr) {
 			AssignLocalFunExpr e1 = (AssignLocalFunExpr) e0;
 			visit_(e1.value);
