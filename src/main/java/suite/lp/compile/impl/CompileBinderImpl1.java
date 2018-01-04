@@ -48,7 +48,7 @@ public class CompileBinderImpl1 extends CompileClonerImpl implements BinderFacto
 			}
 
 			private FunExpr compile_(Node node, FunExpr target) {
-				FunExpr br = bind(f.object(node), target);
+				FunExpr br = bind(f.object_(node, Node.class), target);
 				FunExpr brc = bindClone(node, target);
 				Tree tree;
 

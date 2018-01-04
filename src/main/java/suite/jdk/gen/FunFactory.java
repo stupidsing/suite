@@ -82,7 +82,6 @@ public class FunFactory {
 		AssignLocalFunExpr expr = new AssignLocalFunExpr();
 		expr.var = var;
 		expr.value = value;
-
 		return seq(expr, do_);
 	}
 
