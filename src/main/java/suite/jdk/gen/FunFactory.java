@@ -18,6 +18,7 @@ import suite.jdk.gen.FunExprL.FieldInjectFunExpr;
 import suite.jdk.gen.FunExprL.InvokeLambdaFunExpr;
 import suite.jdk.gen.FunExprL.ObjectFunExpr;
 import suite.jdk.gen.FunExprM.ArrayFunExpr;
+import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
 import suite.jdk.gen.FunExprM.BinaryFunExpr;
 import suite.jdk.gen.FunExprM.ConstantFunExpr;
 import suite.jdk.gen.FunExprM.If1FunExpr;
@@ -75,6 +76,14 @@ public class FunFactory {
 		expr.clazz = clazz;
 		expr.elements = elements;
 		return expr;
+	}
+
+	public FunExpr assign(FunExpr var, FunExpr value, FunExpr do_) {
+		AssignLocalFunExpr expr = new AssignLocalFunExpr();
+		expr.var = var;
+		expr.value = value;
+
+		return seq(expr, do_);
 	}
 
 	public FunExpr bi(String op, FunExpr e0, FunExpr e1) {

@@ -23,7 +23,7 @@ public class FunExprM {
 	}
 
 	public static class AssignLocalFunExpr extends FunExpr {
-		public int index;
+		public FunExpr var;
 		public FunExpr value;
 	}
 

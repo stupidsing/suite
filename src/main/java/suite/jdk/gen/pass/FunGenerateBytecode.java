@@ -101,7 +101,7 @@ public class FunGenerateBytecode {
 		} else if (e0 instanceof AssignLocalFunExpr) {
 			AssignLocalFunExpr e1 = (AssignLocalFunExpr) e0;
 			visit_(e1.value);
-			list.add(InstructionFactory.createStore(fti.typeOf(e1.value), e1.index));
+			list.add(InstructionFactory.createStore(fti.typeOf(e1.value), ((LocalFunExpr) e1.var).index));
 		} else if (e0 instanceof BinaryFunExpr) {
 			BinaryFunExpr e1 = (BinaryFunExpr) e0;
 			visit_(e1.left);
