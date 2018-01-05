@@ -14,6 +14,7 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
+import suite.node.io.SwitchNode;
 import suite.util.FunUtil2.BinOp;
 
 public class CompileBinderImpl1 extends CompileClonerImpl implements BinderFactory {
@@ -50,34 +51,31 @@ public class CompileBinderImpl1 extends CompileClonerImpl implements BinderFacto
 			private FunExpr compile_(Node node, FunExpr target) {
 				FunExpr br = bind(f.object_(node, Node.class), target);
 				FunExpr brc = bindClone(node, target);
-				Tree tree;
 
-				if (node instanceof Atom)
+				return new SwitchNode<FunExpr>(node //
+				).applyIf(Atom.class, n -> {
 					return f.ifEquals(target, f.object(node), ok, br);
-				else if (node instanceof Int) {
-					int num = ((Int) node).number;
-					return f.ifInstance(Int.class, target, i -> f.ifEquals(i.field("number"), f.int_(num), ok, fail), br);
-				} else if (node instanceof Reference)
+				}).applyIf(Int.class, n -> {
+					return f.ifInstance(Int.class, target, i -> f.ifEquals(i.field("number"), f.int_(n.number), ok, fail), br);
+				}).applyIf(Reference.class, n -> {
 					return f.invokeStatic(Binder.class, "bind", target, env.field("refs").index(f.int_(computeIndex(node))), trail);
-				else if (node instanceof Str) {
-					String str = ((Str) node).value;
-					return f.ifInstance(Str.class, target, s -> f.object(str).invoke("equals", s.field("value")), br);
-				} else if (node instanceof Tuple)
-					return f.ifInstance(Tuple.class, target, tuple -> f.declare(tuple.field("nodes"), targets -> {
-						Node[] nodes = ((Tuple) node).nodes;
-						FunExpr fe = ok;
-						for (int i = 0; i < nodes.length; i++)
-							fe = compile_(nodes[i], targets.index(f.int_(i)), fe);
-						return f.if_(targets.length(), fe, brc);
-					}), brc);
-				else if ((tree = Tree.decompose(node)) != null)
+				}).applyIf(Str.class, n -> {
+					return f.ifInstance(Str.class, target, s -> f.object(n.value).invoke("equals", s.field("value")), br);
+				}).applyIf(Tree.class, tree -> {
 					return f.declare(f.invokeStatic(Tree.class, "decompose", target, f.object(tree.getOperator())), t -> {
 						Node lt = tree.getLeft();
 						Node rt = tree.getRight();
 						return f.ifNonNull(t, compile_(lt, t.invoke("getLeft"), compile_(rt, t.invoke("getRight"), ok)), brc);
 					});
-				else
-					throw new RuntimeException();
+				}).applyIf(Tuple.class, n -> {
+					return f.ifInstance(Tuple.class, target, tuple -> f.declare(tuple.field("nodes"), targets -> {
+						Node[] nodes = n.nodes;
+						FunExpr fe = ok;
+						for (int i = 0; i < nodes.length; i++)
+							fe = compile_(nodes[i], targets.index(f.int_(i)), fe);
+						return f.if_(targets.length(), fe, brc);
+					}), brc);
+				}).nonNullResult();
 			}
 
 			private FunExpr compile_(Node node, FunExpr target, FunExpr cps) {

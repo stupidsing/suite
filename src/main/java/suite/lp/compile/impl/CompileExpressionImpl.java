@@ -2,7 +2,6 @@ package suite.lp.compile.impl;
 
 import java.util.HashMap;
 
-import suite.Suite;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
@@ -11,6 +10,7 @@ import suite.lp.doer.ClonerFactory.Clone_;
 import suite.lp.doer.EvaluatorFactory;
 import suite.node.Int;
 import suite.node.Node;
+import suite.node.io.SwitchNode;
 import suite.node.util.TreeUtil;
 import suite.util.FunUtil.Iterate;
 
@@ -36,31 +36,30 @@ public class CompileExpressionImpl implements EvaluatorFactory {
 			}
 
 			private FunExpr compile_(Node node) {
-				Node[] m;
-
-				if ((m = Suite.match(".0 + .1").apply(node)) != null)
+				return new SwitchNode<FunExpr>(node //
+				).match(".0 + .1", m -> {
 					return compileOperator(m, "+");
-				else if ((m = Suite.match(".0 - .1").apply(node)) != null)
+				}).match(".0 - .1", m -> {
 					return compileOperator(m, "-");
-				else if ((m = Suite.match(".0 * .1").apply(node)) != null)
+				}).match(".0 * .1", m -> {
 					return compileOperator(m, "*");
-				else if ((m = Suite.match(".0 / .1").apply(node)) != null)
+				}).match(".0 / .1", m -> {
 					return compileOperator(m, "/");
-				else if ((m = Suite.match(".0 and .1").apply(node)) != null)
+				}).match(".0 and .1", m -> {
 					return compileOperator(m, "&&");
-				else if ((m = Suite.match(".0 or .1").apply(node)) != null)
+				}).match(".0 or .1", m -> {
 					return compileOperator(m, "||");
-				else if ((m = Suite.match(".0 shl .1").apply(node)) != null)
+				}).match(".0 shl .1", m -> {
 					return compileOperator(m, "<<");
-				else if ((m = Suite.match(".0 shr .1").apply(node)) != null)
+				}).match(".0 shr .1", m -> {
 					return compileOperator(m, ">>");
-				else if (node instanceof Int)
-					return f.int_(((Int) node).number);
-				else {
+				}).applyIf(Int.class, i -> {
+					return f.int_(i.number);
+				}).applyIf(Node.class, i -> {
 					Clone_ n_ = clonerFactory.cloner(node);
 					Evaluate_ evaluate = env -> TreeUtil.evaluate(n_.apply(env));
 					return f.object(evaluate).invoke("evaluate", env);
-				}
+				}).nonNullResult();
 			}
 
 			private FunExpr compileOperator(Node[] m, String op) {

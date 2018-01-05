@@ -13,8 +13,8 @@ public class Switch<R> {
 	}
 
 	public <T> Switch<R> applyIf(Class<T> c, Fun<T, R> fun) {
-		T t = c.isInstance(in) ? c.cast(in) : null;
-		result = t != null ? fun.apply(t) : result;
+		if (result == null && c.isInstance(in))
+			result = fun.apply(c.cast(in));
 		return this;
 	}
 

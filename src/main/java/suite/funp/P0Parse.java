@@ -47,6 +47,7 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.primitive.IntPrimitives.IntObj_Obj;
@@ -107,35 +108,33 @@ public class P0Parse {
 		}
 
 		private Funp parse(Node node) {
-			Node[] m;
-
-			if ((m = Suite.match(".0 | .1").apply(node)) != null)
+			return new SwitchNode<Funp>(node //
+			).match(".0 | .1", m -> {
 				return FunpApply.of(parse(m[0]), parse(m[1]));
-			else if ((m = Suite.match("array .0").apply(node)) != null)
+			}).match("array .0", m -> {
 				return FunpArray.of(Tree.iter(m[0], TermOp.AND___).map(this::parse).toList());
-			else if ((m = Suite.match("asm .0 {.1}").apply(node)) != null)
+			}).match("asm .0 {.1}", m -> {
 				return FunpAsm.of(Tree.iter(m[0], TermOp.OR____).map(n -> {
 					Node[] ma = Suite.match(".0 = .1").apply(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), parse(ma[1]));
 				}).toList(), Tree.iter(m[1], TermOp.OR____).toList());
-			else if (node == Atom.FALSE)
+			}).match(Atom.FALSE, m -> {
 				return FunpBoolean.of(false);
-			else if (node == Atom.TRUE)
+			}).match(Atom.TRUE, m -> {
 				return FunpBoolean.of(true);
-			else if ((m = Suite.match("type .0 = .1 >> .2").apply(node)) != null)
+			}).match("type .0 = .1 >> .2", m -> {
 				return FunpCheckType.of(parse(m[0]), parse(m[1]), parse(m[2]));
-			else if ((m = Suite.match("byte .0").apply(node)) != null)
+			}).match("byte .0", m -> {
 				return FunpCoerce.of("byte", parse(m[0]));
-			else if ((m = Suite.match("define .0 := .1 >> .2").apply(node)) != null) {
+			}).match("define .0 := .1 >> .2", m -> {
 				String var = name(m[0]);
 				return FunpDefine.of(true, var, parse(m[1]), parseNewVariable(m[2], var));
 				// return parse(Suite.substitute("poly .1 | (.0 => .2)", m));
-			} else if ((m = Suite.match("let .0 := .1 >> .2").apply(node)) != null) {
+			}).match("let .0 := .1 >> .2", m -> {
 				String var = name(m[0]);
 				return FunpDefine.of(false, var, parse(m[1]), parseNewVariable(m[2], var));
-			}
-			// return parse(Suite.substitute(".1 | (.0 => .2)", m));
-			else if ((m = Suite.match("recurse .0 >> .1").apply(node)) != null) {
+				// return parse(Suite.substitute(".1 | (.0 => .2)", m));
+			}).match("recurse .0 >> .1", m -> {
 				Match match1 = Suite.match(".0 := .1");
 				Streamlet<Node[]> list = Tree.iter(m[0], TermOp.AND___).map(match1::apply).collect(As::streamlet);
 				ISet<String> variables_ = variables;
@@ -150,15 +149,15 @@ public class P0Parse {
 							return Pair.of(name(m1[0]), p1.parse(m1[1]));
 						}) //
 						.toList(), p1.parse(m[1]));
-			} else if ((m = Suite.match("^.0").apply(node)) != null)
+			}).match("^.0", m -> {
 				return FunpDeref.of(parse(m[0]));
-			else if (node == dontCare)
+			}).match(dontCare, m -> {
 				return FunpDontCare.of();
-			else if ((m = Suite.match("error").apply(node)) != null)
+			}).match("error", m -> {
 				return FunpError.of();
-			else if ((m = Suite.match(".0/.1").apply(node)) != null)
+			}).match(".0/.1", m -> {
 				return FunpField.of(FunpReference.of(parse(m[0])), name(m[1]));
-			else if ((m = Suite.match("if (`.0` = .1) then .2 else .3").apply(node)) != null) {
+			}).match("if (`.0` = .1) then .2 else .3", m -> {
 				Set<String> variables = new HashSet<>();
 
 				Funp be = new Object() {
@@ -190,34 +189,34 @@ public class P0Parse {
 					f1 = FunpDefine.of(false, var, FunpDontCare.of(), f1);
 
 				return f1;
-			} else if ((m = Suite.match("if .0 then .1 else .2").apply(node)) != null)
+			}).match("if .0 then .1 else .2", m -> {
 				return FunpIf.of(parse(m[0]), parse(m[1]), parse(m[2]));
-			else if ((m = Suite.match(".0 {.1}").apply(node)) != null)
+			}).match(".0 {.1}", m -> {
 				return FunpIndex.of(FunpReference.of(parse(m[0])), parse(m[1]));
-			else if ((m = Suite.match("io .0").apply(node)) != null)
+			}).match("io .0", m -> {
 				return FunpIo.of(parse(m[0]));
-			else if ((m = Suite.match("io-cat .0").apply(node)) != null)
+			}).match("io-cat .0", m -> {
 				return FunpIoCat.of(parse(m[0]));
-			else if ((m = Suite.match("iterate .0 .1 .2 .3").apply(node)) != null) {
+			}).match("iterate .0 .1 .2 .3", m -> {
 				String var = name(m[0]);
 				Parse p1 = new Parse(variables.add(var));
 				return FunpIterate.of(var, parse(m[1]), p1.parse(m[2]), p1.parse(m[3]));
-			} else if ((m = Suite.match("`.0` => .1").apply(node)) != null)
+			}).match("`.0` => .1", m -> {
 				return parse(Suite.match(".2 => if (`.0` = .2) then .1 else error").substitute(m[0], m[1], Atom.temp()));
-			else if ((m = Suite.match(".0 => .1").apply(node)) != null) {
+			}).match(".0 => .1", m -> {
 				String var = name(m[0]);
 				return FunpLambda.of(var, parseNewVariable(m[1], var));
-			} else if (node instanceof Int)
-				return FunpNumber.ofNumber(((Int) node).number);
-			else if ((m = Suite.match("predef .0").apply(node)) != null)
+			}).applyIf(Int.class, n -> {
+				return FunpNumber.ofNumber(n.number);
+			}).match("predef .0", m -> {
 				return FunpPredefine.of(parse(m[0]));
-			else if ((m = Suite.match("address .0").apply(node)) != null)
+			}).match("address .0", m -> {
 				return FunpReference.of(parse(m[0]));
-			else if ((m = Suite.match(".0 * array .1").apply(node)) != null)
+			}).match(".0 * array .1", m -> {
 				return FunpRepeat.of(((Int) m[0]).number, parse(m[1]));
-			else if ((m = Suite.match(".0, .1").apply(node)) != null)
+			}).match(".0, .1", m -> {
 				return FunpStruct.of(List.of(Pair.of("t0", parse(m[0])), Pair.of("t1", parse(m[1]))));
-			else if ((m = Suite.match("struct .0").apply(node)) != null)
+			}).match("struct .0", m -> {
 				return FunpStruct.of(Tree //
 						.iter(m[0], TermOp.AND___) //
 						.map(n -> {
@@ -225,19 +224,17 @@ public class P0Parse {
 							return Pair.of(name(m1[0]), parse(m1[1]));
 						}) //
 						.toList());
-			else if (node instanceof Tree) {
-				Tree tree = (Tree) node;
+			}).applyIf(Tree.class, tree -> {
 				Funp left = parse(tree.getLeft());
 				Funp right = parse(tree.getRight());
 				return FunpTree.of(tree.getOperator(), left, right);
-			} else if (node instanceof Atom) {
-				String var = name(node);
+			}).applyIf(Atom.class, atom -> {
+				String var = atom.name;
 				if (variables.contains(var))
 					return FunpVariable.of(var);
 				else
 					return FunpVariableNew.of(var);
-			} else
-				throw new RuntimeException("cannot parse " + node);
+			}).nonNullResult();
 		}
 
 		private Funp parseNewVariable(Node node, String var) {

@@ -16,6 +16,7 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
+import suite.node.io.SwitchNode;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Iterate;
 
@@ -36,31 +37,29 @@ public class CompileClonerImpl extends VariableMapper implements ClonerFactory {
 			}
 
 			private FunExpr compile_(Node node_) {
-				Tree tree;
-
-				if (node_ instanceof Atom)
+				return new SwitchNode<FunExpr>(node_ //
+				).applyIf(Atom.class, n -> {
 					return f.object(node_);
-				else if (node_ instanceof Dict) {
+				}).applyIf(Dict.class, n -> {
 					FunExpr[] exprs = Read //
-							.from2(((Dict) node_).map) //
+							.from2(n.map) //
 							.map((key, value) -> f.invokeStatic(Pair.class, "of", compile_(key), compile_(value))) //
 							.toArray(FunExpr.class);
 					return f.invokeStatic(Dict.class, "of", f.array(Pair.class, exprs));
-				} else if (node_ instanceof Int)
+				}).applyIf(Int.class, n -> {
 					return f.object(node_);
-				else if (node_ instanceof Reference)
+				}).applyIf(Reference.class, n -> {
 					return env.field("refs").index(f.int_(computeIndex(node_)));
-				else if (node_ instanceof Str)
+				}).applyIf(Str.class, n -> {
 					return f.object(node_);
-				else if ((tree = Tree.decompose(node_)) != null) {
+				}).applyIf(Tree.class, tree -> {
 					FunExpr fe0 = compile_(tree.getLeft()).cast(Node.class);
 					FunExpr fe1 = compile_(tree.getRight()).cast(Node.class);
 					return f.invokeStatic(Tree.class, "of", f.object(tree.getOperator()), fe0, fe1);
-				} else if (node_ instanceof Tuple) {
-					FunExpr[] exprs = Read.from(((Tuple) node_).nodes).map(this::compile_).toArray(FunExpr.class);
+				}).applyIf(Tuple.class, n -> {
+					FunExpr[] exprs = Read.from(n.nodes).map(this::compile_).toArray(FunExpr.class);
 					return f.invokeStatic(Tuple.class, "of", f.array(Node.class, exprs));
-				} else
-					throw new RuntimeException();
+				}).nonNullResult();
 			}
 		}).apply(new HashMap<>());
 	}

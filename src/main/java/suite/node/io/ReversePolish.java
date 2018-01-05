@@ -82,29 +82,26 @@ public class ReversePolish {
 		List<String> list = new ArrayList<>();
 
 		while (!deque.isEmpty()) {
-			Node n = deque.pop();
-			String s;
-
-			if (n instanceof Atom)
-				s = "\\" + ((Atom) n).name;
-			else if (n instanceof Int)
-				s = "i" + ((Int) n).number;
-			else if (n instanceof Reference)
-				s = "r" + ((Reference) n).getId();
-			else if (n instanceof Tree) {
-				Tree tree = (Tree) n;
-				s = "t" + tree.getOperator();
+			String s = new SwitchNode<String>(deque.pop() //
+			).applyIf(Atom.class, n_ -> {
+				return "\\" + n_.name;
+			}).applyIf(Int.class, n_ -> {
+				return "i" + n_.number;
+			}).applyIf(Reference.class, n_ -> {
+				return "r" + n_.getId();
+			}).applyIf(Tree.class, tree -> {
 				deque.push(tree.getRight());
 				deque.push(tree.getLeft());
-			} else {
-				NodeRead nr = NodeRead.of(n);
+				return "t" + tree.getOperator();
+			}).applyIf(Node.class, n_ -> {
+				NodeRead nr = NodeRead.of(n_);
 				for (Pair<Node, Node> pair : nr.children) {
 					deque.push(pair.t1);
 					deque.push(pair.t0);
 				}
-				s = "^" + nr.type + ":" + nr.terminal + ":" + nr.op + ":" + nr.children.size();
-				// s = "^" + Formatter.dump(n);
-			}
+				return "^" + nr.type + ":" + nr.terminal + ":" + nr.op + ":" + nr.children.size();
+				// "^" + Formatter.dump(n);
+			}).nonNullResult();
 
 			list.add(s);
 		}

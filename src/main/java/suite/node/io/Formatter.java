@@ -41,26 +41,27 @@ public class Formatter {
 		private StringBuilder sb = new StringBuilder();
 
 		private void treeize(Node node, String indent) {
-			Tree tree = Tree.decompose(node);
 			String indent1 = indent + "  ";
 
-			if (tree != null) {
+			new SwitchNode<Node>(node //
+			).doIf(Dict.class, n -> {
+				for (Entry<Node, Reference> e : ((Dict) node).map.entrySet()) {
+					sb.append(indent + "d:" + dump(e.getKey()) + "\n");
+					treeize(e.getValue().finalNode(), indent1);
+				}
+			}).doIf(Tree.class, tree -> {
 				String op = tree.getOperator().getName();
 				op = String_.equals(op, " ") ? "<>" : op.trim();
 
 				treeize(tree.getLeft(), indent1);
 				sb.append(indent + op + "\n");
 				treeize(tree.getRight(), indent1);
-			} else if (node instanceof Dict)
-				for (Entry<Node, Reference> e : ((Dict) node).map.entrySet()) {
-					sb.append(indent + "d:" + dump(e.getKey()) + "\n");
-					treeize(e.getValue().finalNode(), indent1);
-				}
-			else if (node instanceof Tuple)
+			}).doIf(Tuple.class, n -> {
 				for (Node child : ((Tuple) node).nodes)
 					sb.append(indent + "t:" + dump(child) + "\n");
-			else
+			}).doIf(Node.class, n -> {
 				sb.append(indent + dump(node) + "\n");
+			}).nonNullResult();
 		}
 	}
 
@@ -114,42 +115,44 @@ public class Formatter {
 	}
 
 	private void format_(Node node, int parentPrec) {
-		if (node instanceof Atom)
-			sb.append(quoteAtomIfRequired(((Atom) node).name));
-		else if (node instanceof Data) {
-			Object data = Data.get(node);
+		new SwitchNode<Node>(node //
+		).doIf(Atom.class, n -> {
+			sb.append(quoteAtomIfRequired(n.name));
+		}).doIf(Data.class, n -> {
+			Object data = n.data;
 			if (data instanceof Chars)
 				sb.append("Chars<" + quoteStringIfRequired(data.toString()) + ">");
 			else if (data instanceof Node)
 				sb.append("Data<" + data.toString() + ">");
 			else
 				sb.append("Data<" + data.getClass().getSimpleName() + ">");
-		} else if (node instanceof Dict) {
+		}).doIf(Dict.class, n -> {
 			sb.append("dict<");
-			for (Entry<Node, Reference> e : ((Dict) node).map.entrySet()) {
+			for (Entry<Node, Reference> e : n.map.entrySet()) {
 				format(e.getKey(), TermOp.getLeftPrec(TermOp.AND___));
 				sb.append(":");
 				format(e.getValue(), TermOp.getLeftPrec(TermOp.AND___));
 				sb.append(",");
 			}
 			sb.append(">");
-		} else if (node instanceof Int)
-			sb.append(((Int) node).number);
-		else if (node instanceof Reference)
-			sb.append(((Reference) node).name());
-		else if (node instanceof Str)
-			sb.append(quoteStringIfRequired(((Str) node).value));
-		else if (node instanceof Tree)
-			formatTree(parentPrec, (Tree) node);
-		else if (node instanceof Tuple) {
+		}).doIf(Int.class, n -> {
+			sb.append(n.number);
+		}).doIf(Reference.class, n -> {
+			sb.append(n.name());
+		}).doIf(Str.class, n -> {
+			sb.append(quoteStringIfRequired(n.value));
+		}).doIf(Tree.class, n -> {
+			formatTree(parentPrec, n);
+		}).doIf(Tuple.class, n -> {
 			sb.append("tuple<");
-			for (Node n : ((Tuple) node).nodes) {
-				format(n, TermOp.getLeftPrec(TermOp.AND___));
+			for (Node n_ : n.nodes) {
+				format(n_, TermOp.getLeftPrec(TermOp.AND___));
 				sb.append(", ");
 			}
 			sb.append(">");
-		} else
-			sb.append(node.getClass().getSimpleName() + '@' + Integer.toHexString(System.identityHashCode(node)));
+		}).doIf(Node.class, n -> {
+			sb.append(n.getClass().getSimpleName() + '@' + Integer.toHexString(System.identityHashCode(n)));
+		}).nonNullResult();
 	}
 
 	private void formatTree(int parentPrec, Tree tree) {
