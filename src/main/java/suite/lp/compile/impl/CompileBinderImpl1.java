@@ -34,7 +34,7 @@ public class CompileBinderImpl1 extends CompileClonerImpl implements BinderFacto
 	}
 
 	public Bind_ binder(Node node) {
-		FunCreator<Bind_> fc = FunCreator.of(Bind_.class);
+		FunCreator<Bind_> fc = FunCreator.of(Bind_.class, false);
 
 		return fc.create(new BinOp<>() {
 			private FunExpr env, trail, b;

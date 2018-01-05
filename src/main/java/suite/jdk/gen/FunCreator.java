@@ -56,11 +56,18 @@ public class FunCreator<I> extends FunFactory {
 	public final Type returnType;
 	public final List<Type> parameterTypes;
 
+	private boolean isExpand;
 	private Map<String, Pair<Type, Object>> fieldStaticTypeValues;
 	private Map<String, Type> fieldTypes;
 
 	public static <I> FunCreator<I> of(Class<I> clazz) {
-		return of(LambdaInterface.of(clazz), Collections.emptyMap());
+		return of(clazz, true);
+	}
+
+	public static <I> FunCreator<I> of(Class<I> clazz, boolean isExpand) {
+		FunCreator<I> fc = of(LambdaInterface.of(clazz), Collections.emptyMap());
+		fc.isExpand = isExpand;
+		return fc;
 	}
 
 	public static <I> FunCreator<I> of(LambdaInterface<I> lc, Map<String, Type> fs) {
@@ -121,7 +128,7 @@ public class FunCreator<I> extends FunFactory {
 			FunRewrite fr;
 			FunGenerateBytecode fgb;
 
-			FunExpr expr1 = fe.expand(expr0, 3);
+			FunExpr expr1 = isExpand ? fe.expand(expr0, 3) : expr0;
 			FunExpr expr2 = (fr = new FunRewrite(fieldTypes, localTypes, expr1.cast(interfaceClass))).expr;
 
 			org.apache.bcel.classfile.Method m0, m1;
