@@ -125,10 +125,8 @@ public class FunRewrite extends FunFactory {
 				return null;
 		}).applyIf(DeclareLocalFunExpr.class, e1 -> {
 			FunExpr value = rewrite(e1.value);
-			Type type = fti.typeOf(value);
-
 			int index = localTypes.size();
-			localTypes.add(type);
+			localTypes.add(fti.typeOf(value));
 
 			FunExpr lfe = local(index);
 
