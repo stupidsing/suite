@@ -36,13 +36,13 @@ public class BindArrayUtil {
 		Node fs = Suite.parse(pattern_);
 		Node toMatch = generalizer.generalize(fs);
 
-		CompileBinderImpl sb = new CompileBinderImpl(false);
-		Bind_ pred = sb.binder(toMatch);
+		CompileBinderImpl cb = new CompileBinderImpl(false);
+		Bind_ pred = cb.binder(toMatch);
 		List<Integer> indexList = new ArrayList<>();
 		Integer index;
 		int n = 0;
 
-		while ((index = sb.getIndex(generalizer.getVariable(Atom.of("." + n++)))) != null)
+		while ((index = cb.getIndex(generalizer.getVariable(Atom.of("." + n++)))) != null)
 			indexList.add(index);
 
 		int size = indexList.size();
@@ -52,7 +52,7 @@ public class BindArrayUtil {
 
 		return new Match() {
 			public Node[] apply(Node node) {
-				Env env = sb.env();
+				Env env = cb.env();
 				BindEnv be = new BindEnv(env);
 				if (pred.test(be, node))
 					return To.array(size, Node.class, i -> env.get(indices[i]));

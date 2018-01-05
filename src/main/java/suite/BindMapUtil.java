@@ -38,17 +38,17 @@ public class BindMapUtil {
 		Node fs = Suite.parse(pattern_);
 		Node toMatch = generalizer.generalize(fs);
 
-		CompileBinderImpl sb = new CompileBinderImpl(false);
-		Bind_ pred = sb.binder(toMatch);
+		CompileBinderImpl cb = new CompileBinderImpl(false);
+		Bind_ pred = cb.binder(toMatch);
 
 		Streamlet2<String, Integer> indices = Read //
 				.from(generalizer.getVariablesNames()) //
-				.map2(Formatter::display, name -> sb.getIndex(generalizer.getVariable(name))) //
+				.map2(Formatter::display, name -> cb.getIndex(generalizer.getVariable(name))) //
 				.collect(As::streamlet2);
 
 		return new Match() {
 			public Map<String, Node> apply(Node node) {
-				Env env = sb.env();
+				Env env = cb.env();
 				BindEnv be = new BindEnv(env);
 				if (pred.test(be, node)) {
 					Map<String, Node> results = new HashMap<>();
