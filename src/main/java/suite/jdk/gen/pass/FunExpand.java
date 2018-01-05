@@ -23,6 +23,7 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.String_;
+import suite.util.Switch;
 
 public class FunExpand extends FunFactory {
 
@@ -36,19 +37,8 @@ public class FunExpand extends FunFactory {
 	}
 
 	private FunExpr expand_(FunExpr e0, int depth) {
-		if (e0 instanceof If1FunExpr) {
-			If1FunExpr e1 = (If1FunExpr) e0;
-			FunExpr if_ = e1.if_;
-			if (if_ instanceof ConstantFunExpr) {
-				ConstantFunExpr e2 = (ConstantFunExpr) if_;
-				if (e2.type == Type.INT)
-					return ((Integer) e2.constant).intValue() != 0 ? e1.then : e1.else_;
-				else
-					return null;
-			} else
-				return null;
-		} else if (e0 instanceof ApplyFunExpr) {
-			ApplyFunExpr e1 = (ApplyFunExpr) e0;
+		return new Switch<FunExpr>(e0 //
+		).applyIf(ApplyFunExpr.class, e1 -> {
 			FunExpr object0 = e1.object;
 			FunExpr object1 = object0 instanceof CastFunExpr ? ((CastFunExpr) object0).expr : object0;
 			if (object1 instanceof Declare0ParameterFunExpr) {
@@ -65,24 +55,34 @@ public class FunExpand extends FunFactory {
 				return expand(do2, depth);
 			} else
 				return null;
-		} else if (e0 instanceof DeclareLocalFunExpr) {
-			DeclareLocalFunExpr e1 = (DeclareLocalFunExpr) e0;
+		}).applyIf(DeclareLocalFunExpr.class, e1 -> {
 			return expand(replace(e1.do_, e1.var, e1.value), depth);
-		} else if (e0 instanceof InvokeLambdaFunExpr && Boolean.FALSE) {
-			InvokeLambdaFunExpr e1 = (InvokeLambdaFunExpr) e0;
-			LambdaInstance<?> l_inst = e1.lambda;
-			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
-			if (e1.isExpand || weight(l_impl.expr) <= 5) {
-				LambdaInterface<?> l_iface = l_impl.lambdaInterface;
-				FunExpr fe = l_impl.expr;
-				for (String fieldName : l_impl.fieldTypes.keySet())
-					fe = replaceFieldInject(fe, fieldName,
-							object(l_inst.fieldValues.get(fieldName), l_impl.fieldTypes.get(fieldName)));
-				return expand(fe.cast(l_iface.interfaceClass).apply(e1.parameters), depth - 1);
+		}).applyIf(InvokeLambdaFunExpr.class, e1 -> {
+			if (Boolean.FALSE) {
+				LambdaInstance<?> l_inst = e1.lambda;
+				LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
+				if (e1.isExpand || weight(l_impl.expr) <= 5) {
+					LambdaInterface<?> l_iface = l_impl.lambdaInterface;
+					FunExpr fe = l_impl.expr;
+					for (String fieldName : l_impl.fieldTypes.keySet())
+						fe = replaceFieldInject(fe, fieldName,
+								object(l_inst.fieldValues.get(fieldName), l_impl.fieldTypes.get(fieldName)));
+					return expand(fe.cast(l_iface.interfaceClass).apply(e1.parameters), depth - 1);
+				} else
+					return null;
 			} else
 				return null;
-		} else
-			return null;
+		}).applyIf(If1FunExpr.class, e1 -> {
+			FunExpr if_ = e1.if_;
+			if (if_ instanceof ConstantFunExpr) {
+				ConstantFunExpr e2 = (ConstantFunExpr) if_;
+				if (e2.type == Type.INT)
+					return ((Integer) e2.constant).intValue() != 0 ? e1.then : e1.else_;
+				else
+					return null;
+			} else
+				return null;
+		}).result();
 	}
 
 	private FunExpr replaceFieldInject(FunExpr expr0, String fieldName, FunExpr to) {
@@ -99,7 +99,8 @@ public class FunExpand extends FunFactory {
 			CastFunExpr e1 = (CastFunExpr) e0;
 			return weight(e1.expr);
 		} else
-			return Read.from(inspect.fields(e0.getClass())) //
+			return Read //
+					.from(inspect.fields(e0.getClass())) //
 					.toInt(Obj_Int.sum(field -> {
 						Object e1 = Rethrow.ex(() -> field.get(e0));
 						if (e1 instanceof FunExpr)

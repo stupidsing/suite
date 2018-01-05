@@ -1,6 +1,7 @@
 package suite.util;
 
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Sink;
 
 public class Switch<R> {
 
@@ -15,6 +16,15 @@ public class Switch<R> {
 		T t = c.isInstance(in) ? c.cast(in) : null;
 		result = t != null ? fun.apply(t) : result;
 		return this;
+	}
+
+	public <T> Switch<R> doIf(Class<T> c, Sink<T> fun) {
+		return applyIf(c, t -> {
+			fun.sink(t);
+			@SuppressWarnings("unchecked")
+			R r = (R) t;
+			return r;
+		});
 	}
 
 	public R nonNullResult() {

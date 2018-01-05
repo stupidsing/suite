@@ -32,6 +32,7 @@ import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
+import suite.util.Switch;
 
 public class FunTypeInformation {
 
@@ -44,71 +45,54 @@ public class FunTypeInformation {
 	}
 
 	public Type typeOf(FunExpr e0) {
-		if (e0 instanceof ArrayFunExpr) {
-			ArrayFunExpr e1 = (ArrayFunExpr) e0;
+		return new Switch<Type>(e0 //
+		).applyIf(ArrayFunExpr.class, e1 -> {
 			Type type = Type.getType(e1.clazz);
 			for (FunExpr element : e1.elements)
 				if (element != null && type != typeOf(element))
 					throw new RuntimeException();
 			return e1.clazz.isPrimitive() ? new ArrayType(type.getType(), 1) : new ArrayType(type, 1);
-		} else if (e0 instanceof ArrayLengthFunExpr)
+		}).applyIf(ArrayLengthFunExpr.class, e1 -> {
 			return Type.INT;
-		else if (e0 instanceof ApplyFunExpr) {
-			ApplyFunExpr e1 = (ApplyFunExpr) e0;
+		}).applyIf(ApplyFunExpr.class, e1 -> {
 			return Type.getType(methodOf(e1.object).getReturnType());
-		} else if (e0 instanceof AssignLocalFunExpr)
+		}).applyIf(AssignLocalFunExpr.class, e1 -> {
 			return Type.VOID;
-		else if (e0 instanceof BinaryFunExpr) {
-			BinaryFunExpr e1 = (BinaryFunExpr) e0;
+		}).applyIf(BinaryFunExpr.class, e1 -> {
 			return typeOf(e1.left);
-		} else if (e0 instanceof CastFunExpr) {
-			CastFunExpr e1 = (CastFunExpr) e0;
+		}).applyIf(CastFunExpr.class, e1 -> {
 			return e1.type;
-		} else if (e0 instanceof CheckCastFunExpr) {
-			CheckCastFunExpr e1 = (CheckCastFunExpr) e0;
+		}).applyIf(CheckCastFunExpr.class, e1 -> {
 			return e1.type;
-		} else if (e0 instanceof ConstantFunExpr) {
-			ConstantFunExpr e1 = (ConstantFunExpr) e0;
+		}).applyIf(ConstantFunExpr.class, e1 -> {
 			return e1.type;
-		} else if (e0 instanceof DeclareLocalFunExpr) {
-			DeclareLocalFunExpr e1 = (DeclareLocalFunExpr) e0;
+		}).applyIf(DeclareLocalFunExpr.class, e1 -> {
 			return typeOf(e1.do_);
-		} else if (e0 instanceof FieldTypeFunExpr) {
-			FieldTypeFunExpr e1 = (FieldTypeFunExpr) e0;
+		}).applyIf(FieldTypeFunExpr.class, e1 -> {
 			return e1.fieldType;
-		} else if (e0 instanceof IfFunExpr) {
-			IfFunExpr e1 = (IfFunExpr) e0;
+		}).applyIf(IfFunExpr.class, e1 -> {
 			return typeOf(e1.then);
-		} else if (e0 instanceof IndexFunExpr) {
-			IndexFunExpr e1 = (IndexFunExpr) e0;
+		}).applyIf(IndexFunExpr.class, e1 -> {
 			return ((ArrayType) typeOf(e1.array)).getElementType();
-		} else if (e0 instanceof InstanceOfFunExpr)
+		}).applyIf(InstanceOfFunExpr.class, e1 -> {
 			return Type.BOOLEAN;
-		else if (e0 instanceof InvokeMethodFunExpr) {
-			InvokeMethodFunExpr e1 = (InvokeMethodFunExpr) e0;
+		}).applyIf(InvokeMethodFunExpr.class, e1 -> {
 			return Type.getType(invokeMethodOf(e1).getReturnType());
-		} else if (e0 instanceof LocalFunExpr) {
-			LocalFunExpr e1 = (LocalFunExpr) e0;
+		}).applyIf(LocalFunExpr.class, e1 -> {
 			return localTypes.get(e1.index);
-		} else if (e0 instanceof NewFunExpr) {
-			NewFunExpr e1 = (NewFunExpr) e0;
+		}).applyIf(NewFunExpr.class, e1 -> {
 			return Type.getType(e1.interfaceClass);
-		} else if (e0 instanceof PlaceholderFunExpr) {
-			PlaceholderFunExpr e1 = (PlaceholderFunExpr) e0;
+		}).applyIf(PlaceholderFunExpr.class, e1 -> {
 			return typeOf(placeholderResolver.apply(e1));
-		} else if (e0 instanceof PrintlnFunExpr)
+		}).applyIf(PrintlnFunExpr.class, e1 -> {
 			return Type.VOID;
-		else if (e0 instanceof ProfileFunExpr) {
-			ProfileFunExpr e1 = (ProfileFunExpr) e0;
+		}).applyIf(ProfileFunExpr.class, e1 -> {
 			return typeOf(e1.do_);
-		} else if (e0 instanceof SeqFunExpr) {
-			SeqFunExpr e1 = (SeqFunExpr) e0;
+		}).applyIf(SeqFunExpr.class, e1 -> {
 			return typeOf(e1.right);
-		} else if (e0 instanceof FieldStaticFunExpr) {
-			FieldStaticFunExpr e1 = (FieldStaticFunExpr) e0;
+		}).applyIf(FieldStaticFunExpr.class, e1 -> {
 			return e1.fieldType;
-		} else
-			throw new RuntimeException("unknown expression " + e0.getClass());
+		}).nonNullResult();
 	}
 
 	public Method invokeMethodOf(InvokeMethodFunExpr expr) {

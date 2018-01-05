@@ -36,6 +36,7 @@ import suite.jdk.lambda.LambdaInterface;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.Rethrow;
+import suite.util.Switch;
 import suite.util.Util;
 
 public class FunRewrite extends FunFactory {
@@ -56,29 +57,20 @@ public class FunRewrite extends FunFactory {
 	}
 
 	private FunExpr rewriteFun(FunExpr e0) {
-		if (e0 instanceof CastFunExpr) {
-			CastFunExpr e1 = (CastFunExpr) e0;
-			FunExpr e2 = e1.expr;
-			if (e2 instanceof DeclareParameterFunExpr) {
-				DeclareParameterFunExpr e3 = (DeclareParameterFunExpr) e2;
-				if (e3 instanceof Declare0ParameterFunExpr) {
-					Declare0ParameterFunExpr e4 = (Declare0ParameterFunExpr) e3;
+		return new Switch<FunExpr>(e0 //
+		).applyIf(CastFunExpr.class, //
+				e1 -> new Switch<FunExpr>(e1.expr //
+				).applyIf(Declare0ParameterFunExpr.class, e4 -> {
 					return rewrite(e4.do_);
-				} else if (e3 instanceof Declare1ParameterFunExpr) {
-					Declare1ParameterFunExpr e4 = (Declare1ParameterFunExpr) e3;
+				}).applyIf(Declare1ParameterFunExpr.class, e4 -> {
 					placeholders.put(e4.parameter, local(1));
 					return rewrite(e4.do_);
-				} else if (e3 instanceof Declare2ParameterFunExpr) {
-					Declare2ParameterFunExpr e4 = (Declare2ParameterFunExpr) e3;
+				}).applyIf(Declare2ParameterFunExpr.class, e4 -> {
 					placeholders.put(e4.p0, local(1));
 					placeholders.put(e4.p1, local(2));
 					return rewrite(e4.do_);
-				} else
-					throw new RuntimeException("cannot rewrite " + e3.getClass());
-			} else
-				throw new RuntimeException("cannot rewrite " + e2.getClass());
-		} else
-			throw new RuntimeException("cannot rewrite " + e0.getClass());
+				}).nonNullResult() //
+		).nonNullResult();
 	}
 
 	private FunExpr rewrite(FunExpr expr0) {
@@ -86,14 +78,13 @@ public class FunRewrite extends FunFactory {
 	}
 
 	private FunExpr rewrite_(FunExpr e0) {
-		if (e0 instanceof ApplyFunExpr) {
-			ApplyFunExpr e1 = (ApplyFunExpr) e0;
+		return new Switch<FunExpr>(e0 //
+		).applyIf(ApplyFunExpr.class, e1 -> {
 			FunExpr object = rewrite(e1.object);
 			FunExpr[] parameters = Read.from(e1.parameters).map(this::rewrite).toArray(FunExpr.class);
 			Method method = fti.methodOf(object);
 			return object.invoke(method.getName(), parameters);
-		} else if (e0 instanceof CastFunExpr) {
-			CastFunExpr e1 = (CastFunExpr) e0;
+		}).applyIf(CastFunExpr.class, e1 -> {
 			FunExpr e2 = e1.expr;
 
 			if (e2 instanceof DeclareParameterFunExpr) {
@@ -132,8 +123,7 @@ public class FunRewrite extends FunFactory {
 				return e4;
 			} else
 				return null;
-		} else if (e0 instanceof DeclareLocalFunExpr) {
-			DeclareLocalFunExpr e1 = (DeclareLocalFunExpr) e0;
+		}).applyIf(DeclareLocalFunExpr.class, e1 -> {
 			FunExpr value = rewrite(e1.value);
 			Type type = fti.typeOf(value);
 
@@ -148,44 +138,37 @@ public class FunRewrite extends FunFactory {
 
 			placeholders.put(e1.var, lfe);
 			return seq(alfe, rewrite(e1.do_));
-		} else if (e0 instanceof FieldFunExpr) {
-			FieldFunExpr e1 = (FieldFunExpr) e0;
+		}).applyIf(FieldFunExpr.class, e1 -> {
 			FunExpr object = rewrite(e1.object);
 			String fieldName = e1.fieldName;
 			Class<?> clazz = fti.classOf(object);
 			Field field = Rethrow.ex(() -> clazz.getField(fieldName));
 			return object.cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
-		} else if (e0 instanceof FieldInjectFunExpr) {
-			FieldInjectFunExpr e1 = (FieldInjectFunExpr) e0;
+		}).applyIf(FieldInjectFunExpr.class, e1 -> {
 			Type type = fieldTypes.get(e1.fieldName);
 			if (type != null)
 				return rewrite(this_().field(e1.fieldName, type));
 			else
 				throw new RuntimeException(e1.fieldName);
-		} else if (e0 instanceof InvokeLambdaFunExpr) {
-			InvokeLambdaFunExpr e1 = (InvokeLambdaFunExpr) e0;
+		}).applyIf(InvokeLambdaFunExpr.class, e1 -> {
 			LambdaInstance<?> l_inst = e1.lambda;
 			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
 			LambdaInterface<?> l_iface = l_impl.lambdaInterface;
 			FunExpr object = object_(l_impl.newFun(l_inst.fieldValues), l_iface.interfaceClass);
 
 			return rewrite(object.invoke(l_iface.interfaceClass, l_iface.methodName, e1.parameters));
-		} else if (e0 instanceof ObjectFunExpr) {
-			ObjectFunExpr e1 = (ObjectFunExpr) e0;
+		}).applyIf(ObjectFunExpr.class, e1 -> {
 			return objectField(e1.object, e1.type);
-		} else if (e0 instanceof PlaceholderFunExpr) {
-			PlaceholderFunExpr e1 = (PlaceholderFunExpr) e0;
+		}).applyIf(PlaceholderFunExpr.class, e1 -> {
 			FunExpr e2 = placeholders.get(e1);
 			if (e2 != null)
 				return e2;
 			else
 				throw new RuntimeException("cannot resolve placeholder");
-		} else if (e0 instanceof ProfileFunExpr) {
-			ProfileFunExpr e1 = (ProfileFunExpr) e0;
+		}).applyIf(ProfileFunExpr.class, e1 -> {
 			fieldTypeValues.put(e1.counterFieldName, Pair.of(Type.INT, 0));
 			return null;
-		} else
-			return null;
+		}).result();
 	}
 
 	private FunExpr objectField(Object object, Type type) {
