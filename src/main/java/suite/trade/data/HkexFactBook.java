@@ -69,7 +69,8 @@ public class HkexFactBook {
 			else
 				break;
 
-		return Read.from(list1) //
+		return Read //
+				.from(list1) //
 				.map(list -> {
 					// Asset asset = new
 					// Asset(HkexUtil.toSymbol(list.get(1).replace("*",
