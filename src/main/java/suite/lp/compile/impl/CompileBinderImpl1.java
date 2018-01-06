@@ -76,6 +76,9 @@ public class CompileBinderImpl1 extends CompileClonerImpl implements BinderFacto
 							fe = compile_(nodes[i], targets.index(f.int_(i)), fe);
 						return f.if_(targets.length(), fe, brc);
 					}), brc);
+				}).applyIf(Node.class, n -> {
+					Clone_ cloner = cloner(n);
+					return f.invokeStatic(Binder.class, "bind", target, f.object(cloner).invoke("apply", env), trail);
 				}).nonNullResult();
 			}
 
