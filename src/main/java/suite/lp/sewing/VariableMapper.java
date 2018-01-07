@@ -10,14 +10,14 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.Object_;
+import suite.util.String_;
 
-public class VariableMapper<K extends Comparable<K>> {
+public class VariableMapper<K> {
 
 	private Map<K, Integer> indices = new IdentityHashMap<>();
 	private int nVariables;
 
-	public static class NodeEnv<K extends Comparable<K>> {
+	public static class NodeEnv<K> {
 		private Map<K, Integer> indices;
 		public final Node node;
 		public final Env env;
@@ -32,9 +32,9 @@ public class VariableMapper<K extends Comparable<K>> {
 			Reference[] refs = env.refs;
 			return Read //
 					.from2(indices) //
-					.mapValue(index -> refs[index].finalNode()) //
-					.sortByKey(Object_::compare) //
-					.map((k, v) -> display(k) + " = " + Formatter.dump(v)) //
+					.map2((key, index) -> display(key), (key, index) -> refs[index].finalNode()) //
+					.sortByKey(String_::compare) //
+					.map((k, v) -> k + " = " + Formatter.dump(v)) //
 					.collect(As.joinedBy(", "));
 		}
 

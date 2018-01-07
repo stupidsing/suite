@@ -23,13 +23,13 @@ import suite.util.FunUtil.Source;
 
 public class SewingGeneralizerImpl implements GeneralizerFactory {
 
-	public final VariableMapper<Node> vm = new VariableMapper<>();
+	public final VariableMapper<Atom> vm = new VariableMapper<>();
 
 	public static Node generalize(Node node) {
 		return new SewingGeneralizerImpl().g(node).source().node;
 	}
 
-	public Source<NodeEnv<Node>> g(Node node) {
+	public Source<NodeEnv<Atom>> g(Node node) {
 		return vm.g(generalizer(node)::apply);
 	}
 
@@ -48,9 +48,10 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 			Tree tree;
 
 			if (node0 instanceof Atom) {
-				String name = ((Atom) node0).name;
+				Atom atom = (Atom) node0;
+				String name = atom.name;
 				if (ProverConstant.isCut(node0) || ProverConstant.isVariable(name)) {
-					int index = vm.computeIndex(node0);
+					int index = vm.computeIndex(atom);
 					fun = env -> env.get(index);
 				} else if (ProverConstant.isWildcard(name))
 					fun = env -> new Reference();

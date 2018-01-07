@@ -7,7 +7,8 @@ public class ProverConstant {
 
 	public static String wildcardPrefix = "_";
 	public static String variablePrefix = ".";
-	public static Atom cut = Atom.of("!");
+	public static String cutName = "!";
+	public static Atom cut = Atom.of(cutName);
 
 	/**
 	 * Would a certain end-node be generalized?

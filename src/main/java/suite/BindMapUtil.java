@@ -11,6 +11,7 @@ import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
 import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
+import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
@@ -39,7 +40,7 @@ public class BindMapUtil {
 		Bind_ pred = cb.binder(generalizer.generalize(node));
 
 		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
-		Source<NodeEnv<Node>> source = sg.g(Suite.parse(pattern_));
+		Source<NodeEnv<Atom>> source = sg.g(Suite.parse(pattern_));
 
 		VariableMapper<Node> vm = cb.vm;
 
@@ -54,7 +55,7 @@ public class BindMapUtil {
 			}
 
 			public Node substitute(Map<String, Node> map_) {
-				NodeEnv<Node> ne = source.source();
+				NodeEnv<Atom> ne = source.source();
 				Reference[] refs = ne.env.refs;
 				for (Entry<String, Node> e : map_.entrySet())
 					refs[map.get(e.getKey())].bound(e.getValue());
