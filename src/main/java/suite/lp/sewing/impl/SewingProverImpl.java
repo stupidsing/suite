@@ -293,10 +293,10 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Cps compileCpsRule(Node head, Node tail) {
-		BinderFactory sb = new SewingBinderImpl();
-		Bind_ p = sb.binder(head);
-		Cps cps = compileCps(sb, tail, rt -> rt.cps);
-		return newEnvCps(sb, rt -> p.test(rt, rt.query) ? cps : null);
+		BinderFactory bf = new SewingBinderImpl();
+		Bind_ p = bf.binder(head);
+		Cps cps = compileCps(bf, tail, rt -> rt.cps);
+		return newEnvCps(bf, rt -> p.test(rt, rt.query) ? cps : null);
 	}
 
 	private Cps compileCps(BinderFactory sb, Node node, Cps cpsx) {
@@ -439,10 +439,10 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Trampoline compileTrRule(Node head, Node tail) {
-		BinderFactory sb = new SewingBinderImpl();
-		Bind_ p = sb.binder(head);
-		Trampoline tr1 = compileTr(sb, tail);
-		return newEnvTr(sb, rt -> p.test(rt, rt.query) ? tr1 : fail);
+		BinderFactory bf = new SewingBinderImpl();
+		Bind_ p = bf.binder(head);
+		Trampoline tr1 = compileTr(bf, tail);
+		return newEnvTr(bf, rt -> p.test(rt, rt.query) ? tr1 : fail);
 	}
 
 	private Trampoline compileTr(BinderFactory sb, Node node) {
