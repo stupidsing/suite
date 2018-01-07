@@ -23,10 +23,10 @@ public class GeneralizerFactoryTest {
 	}
 
 	private void test(String pattern, String match) {
-		for (GeneralizerFactory cf : new GeneralizerFactory[] { new CompileGeneralizerImpl(), new SewingGeneralizerImpl(), }) {
-			Generalize_ p = cf.generalizer(Suite.parse(pattern));
+		for (GeneralizerFactory gf : new GeneralizerFactory[] { new CompileGeneralizerImpl(), new SewingGeneralizerImpl(), }) {
+			Generalize_ p = gf.generalizer(Suite.parse(pattern));
 
-			assertTrue(Binder.bind(p.apply(cf.env()), Suite.parse(match), new Trail()));
+			assertTrue(Binder.bind(p.apply(gf.env()), Suite.parse(match), new Trail()));
 		}
 	}
 

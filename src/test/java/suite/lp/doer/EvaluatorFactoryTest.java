@@ -19,10 +19,10 @@ public class EvaluatorFactoryTest {
 	}
 
 	private void test(String pattern, int result) {
-		for (EvaluatorFactory cf : new EvaluatorFactory[] { //
+		for (EvaluatorFactory ef : new EvaluatorFactory[] { //
 				new CompileExpressionImpl(new CompileClonerImpl()), //
 				new SewingExpressionImpl(new SewingClonerImpl()), }) {
-			Evaluate_ e = cf.evaluator(Suite.parse(pattern));
+			Evaluate_ e = ef.evaluator(Suite.parse(pattern));
 
 			assertEquals(result, e.evaluate(null));
 		}
