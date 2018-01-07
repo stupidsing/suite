@@ -1,10 +1,10 @@
 package suite.lp.sewing;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
-import suite.adt.IdentityKey;
 import suite.node.Node;
+import suite.node.Reference;
 import suite.node.io.Formatter;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -14,7 +14,7 @@ import suite.util.Object_;
 
 public class VariableMapper {
 
-	private Map<IdentityKey<Node>, Integer> indices = new HashMap<>();
+	private Map<Node, Integer> indices = new IdentityHashMap<>();
 	private int nVariables;
 
 	public class NodeEnv {
@@ -27,9 +27,10 @@ public class VariableMapper {
 		}
 
 		public String dumpVariables() {
+			Reference[] refs = env.refs;
 			return Read //
 					.from2(indices) //
-					.map2((k, index) -> k.key, (k, index) -> env.refs[index].finalNode()) //
+					.mapValue(index -> refs[index].finalNode()) //
 					.sortByKey(Object_::compare) //
 					.map((k, v) -> Formatter.display(k) + " = " + Formatter.dump(v)) //
 					.collect(As.joinedBy(", "));
@@ -52,11 +53,11 @@ public class VariableMapper {
 	}
 
 	public int computeIndex(Node variable) {
-		return indices.computeIfAbsent(IdentityKey.of(variable), any -> nVariables++);
+		return indices.computeIfAbsent(variable, any -> nVariables++);
 	}
 
 	public Integer getIndex(Node variable) {
-		return indices.get(IdentityKey.of(variable));
+		return indices.get(variable);
 	}
 
 }
