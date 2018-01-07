@@ -11,7 +11,7 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
-import suite.node.io.Operator;
+import suite.node.io.SwitchNode;
 import suite.streamlet.Read;
 
 public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory {
@@ -27,22 +27,20 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 	}
 
 	public Bind_ binder(Node node) {
-		Tree tree;
-
-		if (node instanceof Atom)
-			return compileBindAtom((Atom) node);
-		else if (node instanceof Int)
-			return compileBindInt((Int) node);
-		else if (node instanceof Reference) {
-			int index = vm.computeIndex((Reference) node);
-			return (be, n) -> Binder.bind(n, be.env.get(index), be.trail);
-		} else if (node instanceof Str)
-			return compileBindStr((Str) node);
-		else if ((tree = Tree.decompose(node)) != null) {
-			Operator operator = tree.getOperator();
+		return new SwitchNode<Bind_>(node //
+		).applyIf(Atom.class, n -> {
+			return compileBindAtom(n);
+		}).applyIf(Int.class, n -> {
+			return compileBindInt(n);
+		}).applyIf(Reference.class, n -> {
+			int index = vm.computeIndex(n);
+			return (be, n_) -> Binder.bind(n_, be.env.get(index), be.trail);
+		}).applyIf(Str.class, n -> {
+			return compileBindStr(n);
+		}).applyTree((operator, l, r) -> {
 			Clone_ f = cloner(node);
-			Bind_ c0 = binder(tree.getLeft());
-			Bind_ c1 = binder(tree.getRight());
+			Bind_ c0 = binder(l);
+			Bind_ c1 = binder(r);
 			return (be, n) -> {
 				Node n_ = n.finalNode();
 				Tree t;
@@ -57,9 +55,9 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 							&& c0.test(be, t.getLeft()) //
 							&& c1.test(be, t.getRight());
 			};
-		} else if (node instanceof Tuple) {
+		}).applyIf(Tuple.class, tuple -> {
 			Clone_ f = cloner(node);
-			List<Bind_> cs = Read.from(((Tuple) node).nodes).map(this::binder).toList();
+			List<Bind_> cs = Read.from(tuple.nodes).map(this::binder).toList();
 			int size = cs.size();
 			return (be, n) -> {
 				Node n_ = n.finalNode();
@@ -81,10 +79,10 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 				else
 					return false;
 			};
-		} else {
+		}).applyIf(Node.class, n -> {
 			Clone_ f = cloner(node);
-			return (be, n) -> Binder.bind(n, f.apply(be.env), be.trail);
-		}
+			return (be, n_) -> Binder.bind(n_, f.apply(be.env), be.trail);
+		}).result();
 	}
 
 	private Bind_ compileBindAtom(Atom a) {

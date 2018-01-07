@@ -1,8 +1,10 @@
 package suite.node.io;
 
 import suite.Suite;
+import suite.adt.pair.Fixie_.FixieFun3;
 import suite.node.Atom;
 import suite.node.Node;
+import suite.node.Tree;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 
@@ -18,6 +20,13 @@ public class SwitchNode<R> {
 	public <T extends Node> SwitchNode<R> applyIf(Class<T> c, Fun<T, R> fun) {
 		if (result == null && c.isInstance(in))
 			result = fun.apply(c.cast(in));
+		return this;
+	}
+
+	public <T extends Node> SwitchNode<R> applyTree(FixieFun3<Operator, Node, Node, R> fun) {
+		Tree tree = Tree.decompose(in);
+		if (result == null && tree != null)
+			result = fun.apply(tree.getOperator(), tree.getLeft(), tree.getRight());
 		return this;
 	}
 
