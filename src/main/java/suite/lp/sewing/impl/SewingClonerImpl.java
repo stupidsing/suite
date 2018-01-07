@@ -19,7 +19,7 @@ import suite.streamlet.Read;
 
 public class SewingClonerImpl implements ClonerFactory {
 
-	public final VariableMapper<Node> vm = new VariableMapper<>();
+	public final VariableMapper<Reference> vm = new VariableMapper<>();
 
 	@Override
 	public Env env() {
@@ -61,7 +61,7 @@ public class SewingClonerImpl implements ClonerFactory {
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
 			} else if (node0 instanceof Reference) {
-				int index = vm.computeIndex(node0);
+				int index = vm.computeIndex((Reference) node0);
 				fun = env -> env.get(index);
 			} else if (node0 instanceof Tuple) {
 				Clone_[] ps = Read.from(((Tuple) node0).nodes).map(this::cloner).toArray(Clone_.class);
