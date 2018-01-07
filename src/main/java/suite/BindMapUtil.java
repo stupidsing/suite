@@ -8,7 +8,6 @@ import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.Bind_;
 import suite.lp.doer.Generalizer;
 import suite.lp.sewing.Env;
-import suite.lp.sewing.VariableMapper;
 import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
@@ -42,11 +41,9 @@ public class BindMapUtil {
 		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
 		Source<NodeEnv<Atom>> source = sg.g(Suite.parse(pattern_));
 
-		VariableMapper<Reference> vm = cb.vm;
-
 		Map<String, Integer> map = Read //
 				.from(generalizer.getVariableNames()) //
-				.toMap(Formatter::display, name -> vm.getIndex(generalizer.getVariable(name)));
+				.toMap(Formatter::display, name -> cb.vm.getIndex(generalizer.getVariable(name)));
 
 		return new Match() {
 			public Map<String, Node> apply(Node node) {

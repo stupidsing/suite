@@ -5,12 +5,12 @@ import suite.node.Node;
 
 public interface GeneralizerFactory {
 
-	public interface Generalize_ {
-		public Node apply(Env env);
-	}
-
 	public Env env();
 
 	public Generalize_ generalizer(Node node);
+
+	public interface Generalize_ {
+		public Node apply(Env env);
+	}
 
 }

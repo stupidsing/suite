@@ -5,12 +5,12 @@ import suite.node.Node;
 
 public interface ClonerFactory {
 
-	public interface Clone_ {
-		public Node apply(Env env);
-	}
-
 	public Env env();
 
 	public Clone_ cloner(Node node);
+
+	public interface Clone_ {
+		public Node apply(Env env);
+	}
 
 }

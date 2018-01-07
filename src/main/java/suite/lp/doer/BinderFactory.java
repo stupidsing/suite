@@ -6,6 +6,12 @@ import suite.node.Node;
 
 public interface BinderFactory extends ClonerFactory {
 
+	public Bind_ binder(Node node);
+
+	public interface Bind_ {
+		public boolean test(BindEnv be, Node node);
+	}
+
 	public class BindEnv {
 		public Env env;
 		public final Trail trail;
@@ -15,11 +21,5 @@ public interface BinderFactory extends ClonerFactory {
 			trail = new Trail();
 		}
 	}
-
-	public interface Bind_ {
-		public boolean test(BindEnv be, Node node);
-	}
-
-	public Bind_ binder(Node node);
 
 }
