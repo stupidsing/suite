@@ -9,7 +9,7 @@ public class CompileGeneralizerImpl extends CompileClonerImpl implements General
 
 	public Source<NodeEnv> g(Node node) {
 		Generalize_ fun = generalizer(node);
-		return () -> g(fun::apply);
+		return () -> g(fun);
 	}
 
 	public Generalize_ generalizer(Node node) {
