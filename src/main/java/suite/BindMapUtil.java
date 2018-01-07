@@ -39,9 +39,9 @@ public class BindMapUtil {
 		Bind_ pred = cb.binder(generalizer.generalize(node));
 
 		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
-		Source<NodeEnv> source = sg.g(Suite.parse(pattern_));
+		Source<NodeEnv<Node>> source = sg.g(Suite.parse(pattern_));
 
-		VariableMapper vm = cb.vm;
+		VariableMapper<Node> vm = cb.vm;
 
 		Map<String, Integer> map = Read //
 				.from(generalizer.getVariableNames()) //
@@ -54,7 +54,7 @@ public class BindMapUtil {
 			}
 
 			public Node substitute(Map<String, Node> map_) {
-				NodeEnv ne = source.source();
+				NodeEnv<Node> ne = source.source();
 				Reference[] refs = ne.env.refs;
 				for (Entry<String, Node> e : map_.entrySet())
 					refs[map.get(e.getKey())].bound(e.getValue());

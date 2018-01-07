@@ -19,7 +19,7 @@ import suite.streamlet.Read;
 
 public class SewingClonerImpl implements ClonerFactory {
 
-	public final VariableMapper vm = new VariableMapper();
+	public final VariableMapper<Node> vm = new VariableMapper<>();
 
 	@Override
 	public Env env() {

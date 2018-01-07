@@ -25,7 +25,7 @@ public class CompileClonerImpl implements ClonerFactory {
 
 	private static FunFactory f = new FunFactory();
 
-	public final VariableMapper vm = new VariableMapper();
+	public final VariableMapper<Node> vm = new VariableMapper<>();
 
 	@Override
 	public Env env() {

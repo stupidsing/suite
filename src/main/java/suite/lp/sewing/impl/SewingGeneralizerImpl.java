@@ -23,13 +23,13 @@ import suite.util.FunUtil.Source;
 
 public class SewingGeneralizerImpl implements GeneralizerFactory {
 
-	public final VariableMapper vm = new VariableMapper();
+	public final VariableMapper<Node> vm = new VariableMapper<>();
 
 	public static Node generalize(Node node) {
 		return new SewingGeneralizerImpl().g(node).source().node;
 	}
 
-	public Source<NodeEnv> g(Node node) {
+	public Source<NodeEnv<Node>> g(Node node) {
 		return vm.g(generalizer(node)::apply);
 	}
 

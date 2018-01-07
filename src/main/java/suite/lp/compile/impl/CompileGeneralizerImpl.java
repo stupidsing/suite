@@ -8,7 +8,7 @@ import suite.util.FunUtil.Source;
 
 public class CompileGeneralizerImpl extends CompileClonerImpl implements GeneralizerFactory {
 
-	public Source<NodeEnv> g(Node node) {
+	public Source<NodeEnv<Node>> g(Node node) {
 		return vm.g(generalizer(node)::apply);
 	}
 

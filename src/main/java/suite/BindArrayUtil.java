@@ -39,7 +39,7 @@ public class BindArrayUtil {
 		Bind_ pred = cb.binder(generalizer.generalize(node));
 
 		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
-		Source<NodeEnv> source = sg.g(node);
+		Source<NodeEnv<Node>> source = sg.g(node);
 
 		List<Node> atoms = new ArrayList<>();
 		List<Node> variables = new ArrayList<>();
@@ -66,7 +66,7 @@ public class BindArrayUtil {
 			}
 
 			public Node substitute(Node... nodes) {
-				NodeEnv ne = source.source();
+				NodeEnv<Node> ne = source.source();
 				Reference[] refs = ne.env.refs;
 				for (int i = 0; i < nodes.length; i++)
 					refs[indices1[i]].bound(nodes[i]);
