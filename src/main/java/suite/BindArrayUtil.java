@@ -32,42 +32,44 @@ public class BindArrayUtil {
 	}
 
 	private Fun<String, Match> matches = Memoize.fun(pattern_ -> {
+		Node node = Suite.parse(pattern_);
 		Generalizer generalizer = new Generalizer();
-		Node fs = Suite.parse(pattern_);
-		Node toMatch = generalizer.generalize(fs);
 
 		CompileBinderImpl cb = new CompileBinderImpl(false);
-		Bind_ pred = cb.binder(toMatch);
-		List<Integer> indexList = new ArrayList<>();
-		Integer index;
+		Bind_ pred = cb.binder(generalizer.generalize(node));
+
+		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
+		Source<NodeEnv> source = sg.g(node);
+
+		List<Node> atoms = new ArrayList<>();
+		List<Node> variables = new ArrayList<>();
+		Atom atom;
+		Node variable;
 		int n = 0;
 
-		while ((index = cb.getIndex(generalizer.getVariable(Atom.of("." + n++)))) != null)
-			indexList.add(index);
+		while (cb.getIndex(variable = generalizer.getVariable(atom = Atom.of("." + n++))) != null) {
+			atoms.add(atom);
+			variables.add(variable);
+		}
 
-		int size = indexList.size();
-		int[] indices = Ints_.toArray(size, indexList::get);
-
-		Source<NodeEnv> source = new SewingGeneralizerImpl().g(fs);
+		int size = variables.size();
+		int[] indices0 = Ints_.toArray(size, i -> cb.getIndex(variables.get(i)));
+		int[] indices1 = Ints_.toArray(size, i -> sg.getIndex(atoms.get(i)));
 
 		return new Match() {
 			public Node[] apply(Node node) {
 				Env env = cb.env();
-				BindEnv be = new BindEnv(env);
-				if (pred.test(be, node))
-					return To.array(size, Node.class, i -> env.get(indices[i]));
-				else
-					return null;
+				return pred.test(new BindEnv(env), node) //
+						? To.array(size, Node.class, i -> env.get(indices0[i])) //
+						: null;
 
 			}
 
 			public Node substitute(Node... nodes) {
 				NodeEnv ne = source.source();
-				int i = 0;
-				for (Node node : nodes) {
-					Node variable = ne.getVariable(Atom.of("." + i++));
-					((Reference) variable).bound(node);
-				}
+				Reference[] refs = ne.env.refs;
+				for (int i = 0; i < nodes.length; i++)
+					refs[indices1[i]].bound(nodes[i]);
 				return ne.node;
 			}
 		};

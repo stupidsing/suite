@@ -1,6 +1,5 @@
 package suite;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -11,14 +10,12 @@ import suite.lp.doer.Generalizer;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
-import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
-import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 import suite.util.Memoize;
 
 public class BindMapUtil {
@@ -35,35 +32,29 @@ public class BindMapUtil {
 
 	private Fun<String, Match> matches = Memoize.fun(pattern_ -> {
 		Generalizer generalizer = new Generalizer();
-		Node fs = Suite.parse(pattern_);
-		Node toMatch = generalizer.generalize(fs);
+		Node node = Suite.parse(pattern_);
 
 		CompileBinderImpl cb = new CompileBinderImpl(false);
-		Bind_ pred = cb.binder(toMatch);
+		Bind_ pred = cb.binder(generalizer.generalize(node));
 
-		Streamlet2<String, Integer> indices = Read //
+		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
+		Source<NodeEnv> source = sg.g(Suite.parse(pattern_));
+
+		Map<String, Integer> map = Read //
 				.from(generalizer.getVariablesNames()) //
-				.map2(Formatter::display, name -> cb.getIndex(generalizer.getVariable(name))) //
-				.collect(As::streamlet2);
+				.toMap(Formatter::display, name -> cb.getIndex(generalizer.getVariable(name)));
 
 		return new Match() {
 			public Map<String, Node> apply(Node node) {
 				Env env = cb.env();
-				BindEnv be = new BindEnv(env);
-				if (pred.test(be, node)) {
-					Map<String, Node> results = new HashMap<>();
-					indices.sink((name, index) -> results.put(name, env.get(index)));
-					return results;
-				} else
-					return null;
+				return pred.test(new BindEnv(env), node) ? Read.from2(map).mapValue(env::get).toMap() : null;
 			}
 
-			public Node substitute(Map<String, Node> map) {
-				NodeEnv ne = new SewingGeneralizerImpl().g(Suite.parse(pattern_)).source();
-				for (Entry<String, Node> e : map.entrySet()) {
-					Node variable = Atom.of(e.getKey());
-					((Reference) variable).bound(e.getValue());
-				}
+			public Node substitute(Map<String, Node> map_) {
+				NodeEnv ne = source.source();
+				Reference[] refs = ne.env.refs;
+				for (Entry<String, Node> e : map_.entrySet())
+					refs[map.get(e.getKey())].bound(e.getValue());
 				return ne.node;
 			}
 		};

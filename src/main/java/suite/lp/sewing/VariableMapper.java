@@ -19,7 +19,7 @@ public class VariableMapper {
 
 	public class NodeEnv {
 		public final Node node;
-		private Env env;
+		public final Env env;
 
 		private NodeEnv(Node node, Env env) {
 			this.node = node;
