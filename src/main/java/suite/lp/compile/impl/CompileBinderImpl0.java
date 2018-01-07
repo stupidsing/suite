@@ -20,7 +20,7 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
-import suite.node.io.Operator;
+import suite.node.io.SwitchNode;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
@@ -45,21 +45,19 @@ public class CompileBinderImpl0 extends CompileClonerImpl implements BinderFacto
 	}
 
 	private LambdaInstance<Bind_> compileBind_(Node node) {
-		Tree tree;
-
-		if (node instanceof Atom)
-			return compileBindAtom((Atom) node);
-		else if (node instanceof Int)
-			return compileBindInt((Int) node);
-		else if (node instanceof Reference) {
-			int index = mapper().computeIndex((Reference) node);
+		return new SwitchNode<LambdaInstance<Bind_>>(node //
+		).applyIf(Atom.class, n -> {
+			return compileBindAtom(n);
+		}).applyIf(Int.class, n -> {
+			return compileBindInt(n);
+		}).applyIf(Reference.class, r -> {
+			int index = mapper().computeIndex(r);
 			return compileBindPredicate((be, n) -> Binder.bind(n, be.env.get(index), be.trail));
-		} else if (node instanceof Str)
-			return compileBindStr((Str) node);
-		else if ((tree = Tree.decompose(node)) != null) {
-			Operator operator = tree.getOperator();
-			LambdaInstance<Bind_> lambda0 = compileBind_(tree.getLeft());
-			LambdaInstance<Bind_> lambda1 = compileBind_(tree.getRight());
+		}).applyIf(Str.class, n -> {
+			return compileBindStr(n);
+		}).applyTree((operator, l, r) -> {
+			LambdaInstance<Bind_> lambda0 = compileBind_(l);
+			LambdaInstance<Bind_> lambda1 = compileBind_(r);
 			Fun<FunExpr, Iterate<FunExpr>> bindRef = bindRef(cloner(node));
 
 			Fun<FunExpr, Iterate<FunExpr>> bindTree = be -> n_ -> f //
@@ -69,9 +67,9 @@ public class CompileBinderImpl0 extends CompileClonerImpl implements BinderFacto
 									lambda1.invoke(be, t.invoke("getRight")))));
 
 			return LambdaInstance.of(lambdaClass, ifRef(bindRef, bindTree));
-		} else if (node instanceof Tuple) {
+		}).applyIf(Tuple.class, n -> {
 			List<LambdaInstance<Bind_>> lambdas = Read //
-					.from(((Tuple) node).nodes) //
+					.from(n.nodes) //
 					.map(this::compileBind_) //
 					.toList();
 
@@ -90,10 +88,10 @@ public class CompileBinderImpl0 extends CompileClonerImpl implements BinderFacto
 							}));
 
 			return LambdaInstance.of(lambdaClass, ifRef(bindRef, bindTuple));
-		} else {
-			Clone_ n_ = cloner(node);
-			return compileBindPredicate((be, n) -> Binder.bind(n, n_.apply(be.env), be.trail));
-		}
+		}).applyIf(Node.class, node_ -> {
+			Clone_ clone = cloner(node);
+			return compileBindPredicate((be, n) -> Binder.bind(n, clone.apply(be.env), be.trail));
+		}).result();
 	}
 
 	private LambdaInstance<Bind_> compileBindPredicate(Bind_ pred) {

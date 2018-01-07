@@ -58,7 +58,7 @@ public class CompileBinderImpl extends CompileClonerImpl implements BinderFactor
 				}).applyIf(Int.class, n -> {
 					return f.ifInstance(Int.class, target, i -> f.ifEquals(i.field("number"), f.int_(n.number), ok, fail), br);
 				}).applyIf(Reference.class, n -> {
-					FunExpr ref = env.field("refs").index(f.int_(mapper().computeIndex((Reference) node)));
+					FunExpr ref = env.field("refs").index(f.int_(mapper().computeIndex(n)));
 					return f.invokeStatic(Binder.class, "bind", target, ref.cast(Node.class), trail);
 				}).applyIf(Str.class, n -> {
 					return f.ifInstance(Str.class, target,
