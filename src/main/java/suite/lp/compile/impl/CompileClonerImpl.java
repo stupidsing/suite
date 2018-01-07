@@ -7,7 +7,6 @@ import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.lp.doer.ClonerFactory;
-import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
 import suite.node.Dict;
@@ -25,11 +24,11 @@ public class CompileClonerImpl implements ClonerFactory {
 
 	private static FunFactory f = new FunFactory();
 
-	public final VariableMapper<Reference> vm = new VariableMapper<>();
+	private VariableMapper<Reference> vm = new VariableMapper<>();
 
 	@Override
-	public Env env() {
-		return vm.env();
+	public VariableMapper<Reference> mapper() {
+		return vm;
 	}
 
 	@Override

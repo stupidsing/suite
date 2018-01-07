@@ -7,6 +7,7 @@ import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.Bind_;
 import suite.lp.sewing.Env;
+import suite.lp.sewing.VariableMapper;
 import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
@@ -36,24 +37,28 @@ public class BindArrayUtil {
 		NodeEnv<Atom> ne = source.source();
 
 		CompileBinderImpl cb = new CompileBinderImpl(false);
+		VariableMapper<Reference> mapper = cb.mapper();
 		Bind_ pred = cb.binder(ne.node);
+
+		VariableMapper<Atom> sgm = sg.mapper();
+		VariableMapper<Reference> cbm = cb.mapper();
 
 		List<Atom> atoms = new ArrayList<>();
 		Atom atom;
 		int n = 0;
 
-		while (sg.vm.getIndex(atom = Atom.of("." + n++)) != null)
+		while (sgm.getIndex(atom = Atom.of("." + n++)) != null)
 			atoms.add(atom);
 
 		int size = atoms.size();
-		int[] sg_indices = Ints_.toArray(size, i -> sg.vm.getIndex(atoms.get(i)));
-		int[] cb_indices = Ints_.toArray(size, i -> cb.vm.getIndex(ne.env.refs[sg_indices[i]]));
+		int[] sgi = Ints_.toArray(size, i -> sgm.getIndex(atoms.get(i)));
+		int[] cbi = Ints_.toArray(size, i -> cbm.getIndex(ne.env.refs[sgi[i]]));
 
 		return new Match() {
 			public Node[] apply(Node node) {
-				Env env = cb.env();
+				Env env = mapper.env();
 				return pred.test(new BindEnv(env), node) //
-						? To.array(size, Node.class, i -> env.get(cb_indices[i])) //
+						? To.array(size, Node.class, i -> env.get(cbi[i])) //
 						: null;
 
 			}
@@ -62,7 +67,7 @@ public class BindArrayUtil {
 				NodeEnv<Atom> ne = source.source();
 				Reference[] refs = ne.env.refs;
 				for (int i = 0; i < nodes.length; i++)
-					refs[sg_indices[i]].bound(nodes[i]);
+					refs[sgi[i]].bound(nodes[i]);
 				return ne.node;
 			}
 		};

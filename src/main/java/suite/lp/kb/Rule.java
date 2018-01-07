@@ -35,10 +35,10 @@ public class Rule {
 			sewingGeneralizer = new SewingGeneralizerImpl();
 			headFun = sewingGeneralizer.generalizer(head);
 			tailFun = sewingGeneralizer.generalizer(tail);
-			cutIndex = sewingGeneralizer.vm.computeIndex(ProverConstant.cut);
+			cutIndex = sewingGeneralizer.mapper().computeIndex(ProverConstant.cut);
 		}
 
-		Env env = sewingGeneralizer.env();
+		Env env = sewingGeneralizer.mapper().env();
 		env.refs[cutIndex].bound(cut);
 
 		return Tree.of(TermOp.AND___, //

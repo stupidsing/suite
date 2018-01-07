@@ -31,6 +31,7 @@ import suite.lp.kb.RuleSet;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.lp.predicate.SystemPredicates;
 import suite.lp.sewing.Env;
+import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Int;
@@ -91,16 +92,16 @@ public class SewingProverImpl implements ProverFactory {
 	};
 
 	private BinderFactory passThru = new BinderFactory() {
+		public VariableMapper<Reference> mapper() {
+			return new VariableMapper<>();
+		}
+
 		public Bind_ binder(Node node) {
 			return (be, n) -> Binder.bind(node, n, be.trail);
 		}
 
 		public Clone_ cloner(Node node) {
 			return env -> node.finalNode();
-		}
-
-		public Env env() {
-			return emptyEnvironment;
 		}
 	};
 
@@ -418,8 +419,9 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Cps newEnvCps(BinderFactory bf, Cps cps) {
+		VariableMapper<Reference> mapper = bf.mapper();
 		return rt -> {
-			rt.env = bf.env();
+			rt.env = mapper.env();
 			return cps;
 		};
 	}
@@ -828,8 +830,9 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Trampoline newEnvTr(BinderFactory bf, Trampoline tr) {
+		VariableMapper<Reference> mapper = bf.mapper();
 		return rt -> {
-			rt.env = bf.env();
+			rt.env = mapper.env();
 			return tr;
 		};
 	}

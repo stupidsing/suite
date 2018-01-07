@@ -26,7 +26,7 @@ public class GeneralizerFactoryTest {
 		for (GeneralizerFactory gf : new GeneralizerFactory[] { new CompileGeneralizerImpl(), new SewingGeneralizerImpl(), }) {
 			Generalize_ p = gf.generalizer(Suite.parse(pattern));
 
-			assertTrue(Binder.bind(p.apply(gf.env()), Suite.parse(match), new Trail()));
+			assertTrue(Binder.bind(p.apply(gf.mapper().env()), Suite.parse(match), new Trail()));
 		}
 	}
 

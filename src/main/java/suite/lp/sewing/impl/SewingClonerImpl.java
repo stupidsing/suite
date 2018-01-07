@@ -5,7 +5,6 @@ import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.lp.doer.ClonerFactory;
-import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Dict;
 import suite.node.Node;
@@ -19,11 +18,11 @@ import suite.streamlet.Read;
 
 public class SewingClonerImpl implements ClonerFactory {
 
-	public final VariableMapper<Reference> vm = new VariableMapper<>();
+	private VariableMapper<Reference> vm = new VariableMapper<>();
 
 	@Override
-	public Env env() {
-		return vm.env();
+	public VariableMapper<Reference> mapper() {
+		return vm;
 	}
 
 	@Override

@@ -31,7 +31,7 @@ public class BinderFactoryTest {
 				new SewingBinderImpl(), }) {
 			Node node = new Generalizer().generalize(Suite.parse(pattern));
 			Bind_ p = bf.binder(node);
-			BindEnv be = new BindEnv(bf.env());
+			BindEnv be = new BindEnv(bf.mapper().env());
 
 			assertTrue(p.test(be, Suite.parse(match)));
 		}

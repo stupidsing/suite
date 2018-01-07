@@ -28,7 +28,7 @@ public class ClonerFactoryTest {
 			Node node = new Generalizer().generalize(Suite.parse(pattern));
 			Clone_ p = cf.cloner(node);
 
-			assertTrue(Binder.bind(p.apply(cf.env()), Suite.parse(match), new Trail()));
+			assertTrue(Binder.bind(p.apply(cf.mapper().env()), Suite.parse(match), new Trail()));
 		}
 	}
 

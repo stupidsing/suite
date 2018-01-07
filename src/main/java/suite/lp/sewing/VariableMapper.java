@@ -2,6 +2,7 @@ package suite.lp.sewing;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import suite.node.Node;
 import suite.node.Reference;
@@ -14,7 +15,7 @@ import suite.util.String_;
 
 public class VariableMapper<K> {
 
-	private Map<K, Integer> indices;
+	private Map<K, Integer> indices = new IdentityHashMap<>();
 	private int nVariables;
 
 	public static class NodeEnv<K> {
@@ -47,19 +48,19 @@ public class VariableMapper<K> {
 		}
 	}
 
-	public VariableMapper() {
-		this(new IdentityHashMap<>());
-	}
-
-	public VariableMapper(Map<K, Integer> indices) {
-		this.indices = indices;
-	}
-
 	public Source<NodeEnv<K>> g(Fun<Env, Node> fun) {
 		return () -> {
 			Env env = env();
 			return new NodeEnv<>(indices, fun.apply(env), env);
 		};
+	}
+
+	public <L> VariableMapper<L> mapKeys(Fun<K, L> fun) {
+		VariableMapper<L> vm = new VariableMapper<>();
+		for (Entry<K, Integer> e : indices.entrySet())
+			vm.indices.put(fun.apply(e.getKey()), e.getValue());
+		vm.nVariables = nVariables;
+		return vm;
 	}
 
 	public Env env() {
