@@ -16,11 +16,11 @@ public class VariableMapper {
 	private Map<IdentityKey<Node>, Integer> indices = new HashMap<>();
 	private int nVariables;
 
-	public class VariableEnv {
+	public class NodeEnv {
 		public final Node node;
 		private Env env;
 
-		private VariableEnv(Node node, Env env) {
+		private NodeEnv(Node node, Env env) {
 			this.node = node;
 			this.env = env;
 		}
@@ -39,9 +39,9 @@ public class VariableMapper {
 		}
 	}
 
-	public VariableEnv g(Fun<Env, Node> fun) {
+	public NodeEnv g(Fun<Env, Node> fun) {
 		Env env = env();
-		return new VariableEnv(fun.apply(env), env);
+		return new NodeEnv(fun.apply(env), env);
 	}
 
 	public Env env() {

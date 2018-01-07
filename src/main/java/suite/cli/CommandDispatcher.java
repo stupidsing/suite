@@ -13,6 +13,7 @@ import suite.fp.InterpretFunEager;
 import suite.fp.InterpretFunLazy;
 import suite.fp.InterpretFunLazy0;
 import suite.lp.Configuration.ProverConfig;
+import suite.lp.compile.impl.CompileGeneralizerImpl;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
@@ -20,8 +21,7 @@ import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.SewingProverBuilder;
-import suite.lp.sewing.VariableMapper.VariableEnv;
-import suite.lp.sewing.impl.SewingGeneralizerImpl;
+import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.lp.sewing.impl.SewingProverImpl;
 import suite.node.Atom;
 import suite.node.Data;
@@ -190,11 +190,11 @@ public class CommandDispatcher {
 
 	private void elaborate(Node node0, Sink<Node> sink) {
 		int[] count = { 0 };
-		VariableEnv ve = new SewingGeneralizerImpl().g(node0).source();
-		Node node1 = ve.node;
+		NodeEnv ne = new CompileGeneralizerImpl().g(node0).source();
+		Node node1 = ne.node;
 
 		Node elab = new Data<Source<Boolean>>(() -> {
-			String dump = ve.dumpVariables();
+			String dump = ne.dumpVariables();
 			if (!dump.isEmpty())
 				opt.prompt().println(dump);
 

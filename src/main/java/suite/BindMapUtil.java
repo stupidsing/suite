@@ -9,7 +9,7 @@ import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.Bind_;
 import suite.lp.doer.Generalizer;
 import suite.lp.sewing.Env;
-import suite.lp.sewing.VariableMapper.VariableEnv;
+import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
@@ -59,12 +59,12 @@ public class BindMapUtil {
 			}
 
 			public Node substitute(Map<String, Node> map) {
-				VariableEnv ve = new SewingGeneralizerImpl().g(Suite.parse(pattern_)).source();
+				NodeEnv ne = new SewingGeneralizerImpl().g(Suite.parse(pattern_)).source();
 				for (Entry<String, Node> e : map.entrySet()) {
 					Node variable = Atom.of(e.getKey());
 					((Reference) variable).bound(e.getValue());
 				}
-				return ve.node;
+				return ne.node;
 			}
 		};
 
