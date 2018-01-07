@@ -6,7 +6,6 @@ import java.util.List;
 import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.Bind_;
-import suite.lp.doer.Generalizer;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
@@ -32,35 +31,29 @@ public class BindArrayUtil {
 	}
 
 	private Fun<String, Match> matches = Memoize.fun(pattern_ -> {
-		Node node = Suite.parse(pattern_);
-		Generalizer generalizer = new Generalizer();
+		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
+		Source<NodeEnv<Atom>> source = sg.g(Suite.parse(pattern_));
+		NodeEnv<Atom> ne = source.source();
 
 		CompileBinderImpl cb = new CompileBinderImpl(false);
-		Bind_ pred = cb.binder(generalizer.generalize(node));
-
-		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
-		Source<NodeEnv<Atom>> source = sg.g(node);
+		Bind_ pred = cb.binder(ne.node);
 
 		List<Atom> atoms = new ArrayList<>();
-		List<Reference> refs = new ArrayList<>();
 		Atom atom;
-		Reference ref;
 		int n = 0;
 
-		while (cb.vm.getIndex(ref = generalizer.getVariable(atom = Atom.of("." + n++))) != null) {
+		while (sg.vm.getIndex(atom = Atom.of("." + n++)) != null)
 			atoms.add(atom);
-			refs.add(ref);
-		}
 
-		int size = refs.size();
-		int[] indices0 = Ints_.toArray(size, i -> cb.vm.getIndex(refs.get(i)));
-		int[] indices1 = Ints_.toArray(size, i -> sg.vm.getIndex(atoms.get(i)));
+		int size = atoms.size();
+		int[] sg_indices = Ints_.toArray(size, i -> sg.vm.getIndex(atoms.get(i)));
+		int[] cb_indices = Ints_.toArray(size, i -> cb.vm.getIndex(ne.env.refs[sg_indices[i]]));
 
 		return new Match() {
 			public Node[] apply(Node node) {
 				Env env = cb.env();
 				return pred.test(new BindEnv(env), node) //
-						? To.array(size, Node.class, i -> env.get(indices0[i])) //
+						? To.array(size, Node.class, i -> env.get(cb_indices[i])) //
 						: null;
 
 			}
@@ -69,7 +62,7 @@ public class BindArrayUtil {
 				NodeEnv<Atom> ne = source.source();
 				Reference[] refs = ne.env.refs;
 				for (int i = 0; i < nodes.length; i++)
-					refs[indices1[i]].bound(nodes[i]);
+					refs[sg_indices[i]].bound(nodes[i]);
 				return ne.node;
 			}
 		};
