@@ -13,6 +13,7 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.immutable.IList;
 import suite.lp.Configuration.ProverConfig;
+import suite.lp.compile.impl.CompileExpressionImpl;
 import suite.lp.doer.Binder;
 import suite.lp.doer.BinderFactory;
 import suite.lp.doer.BinderFactory.BindEnv;
@@ -493,7 +494,7 @@ public class SewingProverImpl implements ProverFactory {
 			tr = if_(tr0, tr1, tr2);
 		} else if ((m = Suite.match("let .0 .1").apply(node)) != null) {
 			Bind_ p = sb.binder(m[0]);
-			Evaluate_ eval = new SewingExpressionImpl(sb).evaluator(m[1]);
+			Evaluate_ eval = new CompileExpressionImpl(sb).evaluator(m[1]);
 			tr = rt -> p.test(rt, Int.of(eval.evaluate(rt.env))) ? okay : fail;
 		} else if ((m = Suite.match("list.fold .0/.1/.2 .3").apply(node)) != null) {
 			Clone_ list0_ = sb.cloner(m[0]);
