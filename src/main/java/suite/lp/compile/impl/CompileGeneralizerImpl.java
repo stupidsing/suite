@@ -4,11 +4,12 @@ import suite.lp.doer.Generalizer;
 import suite.lp.doer.GeneralizerFactory;
 import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.node.Node;
+import suite.node.Reference;
 import suite.util.FunUtil.Source;
 
 public class CompileGeneralizerImpl extends CompileClonerImpl implements GeneralizerFactory {
 
-	public Source<NodeEnv<Node>> g(Node node) {
+	public Source<NodeEnv<Reference>> g(Node node) {
 		return vm.g(generalizer(node)::apply);
 	}
 

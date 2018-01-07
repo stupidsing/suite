@@ -42,7 +42,7 @@ public class BindMapUtil {
 		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
 		Source<NodeEnv<Atom>> source = sg.g(Suite.parse(pattern_));
 
-		VariableMapper<Node> vm = cb.vm;
+		VariableMapper<Reference> vm = cb.vm;
 
 		Map<String, Integer> map = Read //
 				.from(generalizer.getVariableNames()) //

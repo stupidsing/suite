@@ -25,7 +25,7 @@ public class CompileClonerImpl implements ClonerFactory {
 
 	private static FunFactory f = new FunFactory();
 
-	public final VariableMapper<Node> vm = new VariableMapper<>();
+	public final VariableMapper<Reference> vm = new VariableMapper<>();
 
 	@Override
 	public Env env() {
@@ -57,7 +57,7 @@ public class CompileClonerImpl implements ClonerFactory {
 				}).applyIf(Int.class, n -> {
 					return f.object(node_);
 				}).applyIf(Reference.class, n -> {
-					return env.field("refs").index(f.int_(vm.computeIndex(node_)));
+					return env.field("refs").index(f.int_(vm.computeIndex(n)));
 				}).applyIf(Str.class, n -> {
 					return f.object(node_);
 				}).applyIf(Tree.class, tree -> {

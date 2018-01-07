@@ -26,6 +26,7 @@ import suite.lp.sewing.impl.SewingProverImpl;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
+import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
@@ -190,7 +191,7 @@ public class CommandDispatcher {
 
 	private void elaborate(Node node0, Sink<Node> sink) {
 		int[] count = { 0 };
-		NodeEnv<Node> ne = new CompileGeneralizerImpl().g(node0).source();
+		NodeEnv<Reference> ne = new CompileGeneralizerImpl().g(node0).source();
 		Node node1 = ne.node;
 
 		Node elab = new Data<Source<Boolean>>(() -> {
