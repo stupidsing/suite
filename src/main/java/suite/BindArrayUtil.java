@@ -8,7 +8,6 @@ import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.Bind_;
 import suite.lp.doer.Generalizer;
 import suite.lp.sewing.Env;
-import suite.lp.sewing.VariableMapper;
 import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
@@ -42,21 +41,20 @@ public class BindArrayUtil {
 		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
 		Source<NodeEnv> source = sg.g(node);
 
-		VariableMapper vm = cb.vm;
 		List<Node> atoms = new ArrayList<>();
 		List<Node> variables = new ArrayList<>();
 		Atom atom;
 		Node variable;
 		int n = 0;
 
-		while (vm.getIndex(variable = generalizer.getVariable(atom = Atom.of("." + n++))) != null) {
+		while (cb.vm.getIndex(variable = generalizer.getVariable(atom = Atom.of("." + n++))) != null) {
 			atoms.add(atom);
 			variables.add(variable);
 		}
 
 		int size = variables.size();
-		int[] indices0 = Ints_.toArray(size, i -> vm.getIndex(variables.get(i)));
-		int[] indices1 = Ints_.toArray(size, i -> sg.getIndex(atoms.get(i)));
+		int[] indices0 = Ints_.toArray(size, i -> cb.vm.getIndex(variables.get(i)));
+		int[] indices1 = Ints_.toArray(size, i -> sg.vm.getIndex(atoms.get(i)));
 
 		return new Match() {
 			public Node[] apply(Node node) {

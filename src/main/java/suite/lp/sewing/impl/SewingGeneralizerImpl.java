@@ -6,7 +6,9 @@ import java.util.List;
 import suite.adt.pair.Pair;
 import suite.lp.doer.GeneralizerFactory;
 import suite.lp.doer.ProverConstant;
+import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
+import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Node;
@@ -19,16 +21,24 @@ import suite.node.io.TermOp;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 
-public class SewingGeneralizerImpl extends VariableMapper implements GeneralizerFactory {
+public class SewingGeneralizerImpl implements GeneralizerFactory {
+
+	public final VariableMapper vm = new VariableMapper();
 
 	public static Node generalize(Node node) {
 		return new SewingGeneralizerImpl().g(node).source().node;
 	}
 
 	public Source<NodeEnv> g(Node node) {
-		return g(generalizer(node)::apply);
+		return vm.g(generalizer(node)::apply);
 	}
 
+	@Override
+	public Env env() {
+		return vm.env();
+	}
+
+	@Override
 	public Generalize_ generalizer(Node node) {
 		List<Generalize_> funs = new ArrayList<>();
 		Generalize_ fun;
@@ -40,7 +50,7 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 			if (node0 instanceof Atom) {
 				String name = ((Atom) node0).name;
 				if (ProverConstant.isCut(node0) || ProverConstant.isVariable(name)) {
-					int index = computeIndex(node0);
+					int index = vm.computeIndex(node0);
 					fun = env -> env.get(index);
 				} else if (ProverConstant.isWildcard(name))
 					fun = env -> new Reference();
