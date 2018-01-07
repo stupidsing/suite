@@ -14,7 +14,7 @@ import suite.util.String_;
 
 public class VariableMapper<K> {
 
-	private Map<K, Integer> indices = new IdentityHashMap<>();
+	private Map<K, Integer> indices;
 	private int nVariables;
 
 	public static class NodeEnv<K> {
@@ -45,6 +45,14 @@ public class VariableMapper<K> {
 		private String display(K key) {
 			return key instanceof Node ? Formatter.display((Node) key) : key.toString();
 		}
+	}
+
+	public VariableMapper() {
+		this(new IdentityHashMap<>());
+	}
+
+	public VariableMapper(Map<K, Integer> indices) {
+		this.indices = indices;
 	}
 
 	public Source<NodeEnv<K>> g(Fun<Env, Node> fun) {

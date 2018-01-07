@@ -12,7 +12,7 @@ import suite.node.io.Rewriter;
 
 public class Generalizer {
 
-	private Map<Node, Reference> variables = new HashMap<>();
+	private Map<Atom, Reference> variables = new HashMap<>();
 
 	public Node generalize(Node node) {
 		Tree tree = Tree.of(null, null, node);
@@ -27,11 +27,12 @@ public class Generalizer {
 			Tree rt;
 
 			if (right instanceof Atom) {
-				String name = ((Atom) right).name;
+				Atom atom = (Atom) right;
+				String name = atom.name;
 				if (name.startsWith(ProverConstant.wildcardPrefix))
 					right = new Reference();
 				if (name.startsWith(ProverConstant.variablePrefix))
-					right = getVariable(right);
+					right = getVariable(atom);
 			} else if ((rt = Tree.decompose(right)) != null)
 				right = nextTree = Tree.of(rt.getOperator(), generalize(rt.getLeft()), rt.getRight());
 			else
@@ -42,11 +43,11 @@ public class Generalizer {
 		}
 	}
 
-	public Reference getVariable(Node variable) {
+	public Reference getVariable(Atom variable) {
 		return variables.computeIfAbsent(variable, any -> new Reference());
 	}
 
-	public Set<Node> getVariableNames() {
+	public Set<Atom> getVariableNames() {
 		return variables.keySet();
 	}
 

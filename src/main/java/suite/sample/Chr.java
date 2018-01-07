@@ -149,7 +149,7 @@ public class Chr {
 
 	private Streamlet<State> chrThen(Streamlet<State> states, Node then) {
 		Generalizer generalizer = new Generalizer();
-		Node a = atom(".a"), b = atom(".b");
+		Atom a = atom(".a"), b = atom(".b");
 
 		if (Binder.bind(then, generalizer.generalize(Suite.substitute(".0 = .1", a, b)), new Trail())) {
 
@@ -194,7 +194,7 @@ public class Chr {
 		};
 	}
 
-	private Node atom(String name) {
+	private Atom atom(String name) {
 		return Atom.of(name);
 	}
 
