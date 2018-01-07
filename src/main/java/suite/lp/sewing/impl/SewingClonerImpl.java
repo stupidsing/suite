@@ -5,6 +5,7 @@ import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.lp.doer.ClonerFactory;
+import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Dict;
 import suite.node.Node;
@@ -16,8 +17,16 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
 
-public class SewingClonerImpl extends VariableMapper implements ClonerFactory {
+public class SewingClonerImpl implements ClonerFactory {
 
+	public final VariableMapper vm = new VariableMapper();
+
+	@Override
+	public Env env() {
+		return vm.env();
+	}
+
+	@Override
 	public Clone_ cloner(Node node) {
 		List<Clone_> funs = new ArrayList<>();
 		Clone_ fun;
@@ -52,7 +61,7 @@ public class SewingClonerImpl extends VariableMapper implements ClonerFactory {
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
 			} else if (node0 instanceof Reference) {
-				int index = computeIndex(node0);
+				int index = vm.computeIndex(node0);
 				fun = env -> env.get(index);
 			} else if (node0 instanceof Tuple) {
 				Clone_[] ps = Read.from(((Tuple) node0).nodes).map(this::cloner).toArray(Clone_.class);

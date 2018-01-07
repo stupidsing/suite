@@ -7,6 +7,7 @@ import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.lp.doer.ClonerFactory;
+import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Atom;
 import suite.node.Dict;
@@ -20,9 +21,16 @@ import suite.node.io.SwitchNode;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Iterate;
 
-public class CompileClonerImpl extends VariableMapper implements ClonerFactory {
+public class CompileClonerImpl implements ClonerFactory {
 
 	private static FunFactory f = new FunFactory();
+
+	public final VariableMapper vm = new VariableMapper();
+
+	@Override
+	public Env env() {
+		return vm.env();
+	}
 
 	@Override
 	public Clone_ cloner(Node node) {
@@ -49,7 +57,7 @@ public class CompileClonerImpl extends VariableMapper implements ClonerFactory {
 				}).applyIf(Int.class, n -> {
 					return f.object(node_);
 				}).applyIf(Reference.class, n -> {
-					return env.field("refs").index(f.int_(computeIndex(node_)));
+					return env.field("refs").index(f.int_(vm.computeIndex(node_)));
 				}).applyIf(Str.class, n -> {
 					return f.object(node_);
 				}).applyIf(Tree.class, tree -> {
