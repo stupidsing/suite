@@ -1,7 +1,5 @@
 package suite.util;
 
-import java.util.concurrent.Callable;
-
 import org.apache.log4j.Level;
 
 import suite.os.LogUtil;
@@ -30,19 +28,13 @@ public class RunUtil {
 		LogUtil.initLog4j(Level.INFO);
 		IntMutable mutableCode = IntMutable.nil();
 
-		Callable<Integer> runnableEx = () -> {
-			try (ExecutableProgram main_ = Object_.new_(clazz)) {
-				return main_.run(args) ? 0 : 1;
-			} catch (ReflectiveOperationException ex) {
-				LogUtil.fatal(ex);
-				return 2;
-			}
-		};
-
 		IntSource source = () -> {
 			try {
-				return runnableEx.call();
+				try (ExecutableProgram main_ = Object_.new_(clazz)) {
+					return main_.run(args) ? 0 : 1;
+				}
 			} catch (Throwable ex) {
+				ex.printStackTrace();
 				LogUtil.fatal(ex);
 				return 2;
 			}
