@@ -9,6 +9,7 @@ import suite.node.io.Formatter;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 import suite.util.Object_;
 
 public class VariableMapper {
@@ -39,9 +40,11 @@ public class VariableMapper {
 		}
 	}
 
-	public NodeEnv g(Fun<Env, Node> fun) {
-		Env env = env();
-		return new NodeEnv(fun.apply(env), env);
+	public Source<NodeEnv> g(Fun<Env, Node> fun) {
+		return () -> {
+			Env env = env();
+			return new NodeEnv(fun.apply(env), env);
+		};
 	}
 
 	public Env env() {

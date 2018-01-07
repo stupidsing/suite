@@ -26,8 +26,7 @@ public class SewingGeneralizerImpl extends VariableMapper implements Generalizer
 	}
 
 	public Source<NodeEnv> g(Node node) {
-		Generalize_ fun = generalizer(node);
-		return () -> g(fun);
+		return g(generalizer(node));
 	}
 
 	public Generalize_ generalizer(Node node) {
