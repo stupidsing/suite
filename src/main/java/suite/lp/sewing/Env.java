@@ -28,11 +28,7 @@ public class Env {
 	}
 
 	public Node get(int index) {
-		return getReference(index).finalNode();
-	}
-
-	public Reference getReference(int index) {
-		return refs[index];
+		return refs[index].finalNode();
 	}
 
 }
