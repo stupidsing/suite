@@ -1,7 +1,5 @@
 package suite.lp.sewing.impl;
 
-import java.util.List;
-
 import suite.lp.doer.Binder;
 import suite.lp.doer.BinderFactory;
 import suite.node.Atom;
@@ -57,15 +55,15 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 			};
 		}).applyIf(Tuple.class, tuple -> {
 			Clone_ f = cloner(node);
-			List<Bind_> cs = Read.from(tuple.nodes).map(this::binder).toList();
-			int size = cs.size();
+			Bind_[] cs = Read.from(tuple.nodes).map(this::binder).toArray(Bind_.class);
+			int length = cs.length;
 			return (be, n) -> {
 				Node n_ = n.finalNode();
 				if (n_ instanceof Tuple) {
 					Node[] nodes = ((Tuple) n_).nodes;
-					if (nodes.length == size) {
-						for (int i = 0; i < size; i++)
-							if (!cs.get(i).test(be, nodes[i]))
+					if (nodes.length == length) {
+						for (int i = 0; i < length; i++)
+							if (!cs[i].test(be, nodes[i]))
 								return false;
 						return true;
 					} else
