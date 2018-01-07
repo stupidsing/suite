@@ -44,7 +44,7 @@ public class BindMapUtil {
 		VariableMapper vm = cb.vm;
 
 		Map<String, Integer> map = Read //
-				.from(generalizer.getVariablesNames()) //
+				.from(generalizer.getVariableNames()) //
 				.toMap(Formatter::display, name -> vm.getIndex(generalizer.getVariable(name)));
 
 		return new Match() {

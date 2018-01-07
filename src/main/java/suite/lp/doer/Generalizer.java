@@ -46,7 +46,7 @@ public class Generalizer {
 		return variables.computeIfAbsent(variable, any -> new Reference());
 	}
 
-	public Set<Node> getVariablesNames() {
+	public Set<Node> getVariableNames() {
 		return variables.keySet();
 	}
 
