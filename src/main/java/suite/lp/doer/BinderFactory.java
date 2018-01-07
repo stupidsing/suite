@@ -8,7 +8,7 @@ public interface BinderFactory extends ClonerFactory {
 
 	public class BindEnv {
 		public Env env;
-		public Trail trail;
+		public final Trail trail;
 
 		public BindEnv(Env env) {
 			this.env = env;
