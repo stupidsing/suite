@@ -56,9 +56,9 @@ public class FunRewrite extends FunFactory {
 	}
 
 	private FunExpr rewriteFun(FunExpr e0) {
-		return e0.switch_(FunExpr.class //
+		return e0.<FunExpr> switch_( //
 		).applyIf(CastFunExpr.class, //
-				e1 -> e1.expr.switch_(FunExpr.class //
+				e1 -> e1.expr.<FunExpr> switch_( //
 				).applyIf(Declare0ParameterFunExpr.class, e2 -> {
 					return rewrite(e2.do_);
 				}).applyIf(Declare1ParameterFunExpr.class, e2 -> {
@@ -77,7 +77,7 @@ public class FunRewrite extends FunFactory {
 	}
 
 	private FunExpr rewrite_(FunExpr e0) {
-		return e0.switch_(FunExpr.class //
+		return e0.<FunExpr> switch_( //
 		).applyIf(ApplyFunExpr.class, e1 -> {
 			FunExpr object = rewrite(e1.object);
 			FunExpr[] parameters = Read.from(e1.parameters).map(this::rewrite).toArray(FunExpr.class);

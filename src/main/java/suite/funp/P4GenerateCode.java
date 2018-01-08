@@ -252,7 +252,7 @@ public class P4GenerateCode {
 					return true;
 				};
 
-				return n.switch_(CompileOut.class //
+				return n.<CompileOut> switch_( //
 				).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, stack) -> {
 					Operand imm = amd64.imm(size), op;
 					int fd1 = fd - size;

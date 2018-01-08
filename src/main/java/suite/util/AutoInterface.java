@@ -13,7 +13,7 @@ public interface AutoInterface<T> {
 		return clazz.isInstance(this) ? clazz.cast(this) : null;
 	}
 
-	public default <U> Switch<U> switch_(Class<U> clazz) {
+	public default <U> Switch<U> switch_() {
 		return new Switch<U>(this);
 	}
 

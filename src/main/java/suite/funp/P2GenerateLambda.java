@@ -83,7 +83,7 @@ public class P2GenerateLambda {
 		}
 
 		private Thunk compile_(Funp n0) {
-			return n0.switch_(Thunk.class //
+			return n0.<Thunk> switch_( //
 			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 				Thunk lambda1 = compile_(lambda);
 				Thunk value1 = compile_(value);

@@ -34,7 +34,7 @@ public class P3Optimize {
 	}
 
 	private Funp optimize_(Funp n) {
-		return n.switch_(Funp.class //
+		return n.<Funp> switch_( //
 		).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
 			return !(expr instanceof FunpDontCare) ? n : optimize(expr);
 		})).applyIf(FunpData.class, f -> f.apply(pairs -> {
@@ -50,16 +50,16 @@ public class P3Optimize {
 				return pairsx != null ? pairsx : Read.each(Pair.of(expr1, range));
 			}).toList());
 		})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
-			return optimize(pointer).switch_(Funp.class).applyIf(FunpReference.class, g -> g.expr).result();
+			return optimize(pointer).<Funp> switch_().applyIf(FunpReference.class, g -> g.expr).result();
 		})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 			return optimize(if_) //
-					.switch_(Funp.class) //
+					.<Funp> switch_() //
 					.applyIf(FunpBoolean.class, g -> g.apply(b -> {
 						return b ? then : else_;
 					})).result();
 		})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 			return optimize(pointer) //
-					.switch_(Funp.class) //
+					.<Funp> switch_() //
 					.applyIf(FunpData.class, g -> g.apply(pairs -> {
 						for (Pair<Funp, IntIntPair> pair : pairs) {
 							IntIntPair range = pair.t1;
@@ -71,7 +71,7 @@ public class P3Optimize {
 						return FunpTree.of(TermOp.PLUS__, g.expr, FunpNumber.ofNumber(start));
 					}).result();
 		})).applyIf(FunpReference.class, f -> f.apply(expr -> {
-			return optimize(expr).switch_(Funp.class).applyIf(FunpMemory.class, g -> g.pointer).result();
+			return optimize(expr).<Funp> switch_().applyIf(FunpMemory.class, g -> g.pointer).result();
 		})).applyIf(FunpTree.class, f -> f.apply((operator, lhs, rhs) -> {
 			IntInt_Bool iib = TreeUtil.boolOperations.get(operator);
 			IntInt_Int iii = TreeUtil.intOperations.get(operator);
@@ -85,7 +85,7 @@ public class P3Optimize {
 			return evaluate(TreeUtil.tupleOperations.get(operator), lhs, rhs);
 		})).applyIf(FunpWhile.class, f -> f.apply((while_, do_, expr) -> {
 			return optimize(while_) //
-					.switch_(Funp.class) //
+					.<Funp> switch_() //
 					.applyIf(FunpBoolean.class, g -> g.apply(b -> {
 						return b ? null : expr;
 					})).result();

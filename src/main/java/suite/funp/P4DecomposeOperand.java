@@ -30,7 +30,7 @@ public class P4DecomposeOperand {
 	}
 
 	public Operand decomposeOperand(int fd, Funp node) {
-		return node.switch_(Operand.class //
+		return node.<Operand> switch_( //
 		).applyIf(FunpDontCare.class, f -> {
 			return amd64.eax;
 		}).applyIf(FunpNumber.class, f -> {

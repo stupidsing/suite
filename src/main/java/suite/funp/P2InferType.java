@@ -100,7 +100,7 @@ public class P2InferType {
 		Funp node1 = new Object() {
 			private Funp extract_(Funp n) {
 				return inspect.rewrite(Funp.class, n_ -> {
-					return n_.switch_(Funp.class //
+					return n_.<Funp> switch_( //
 					).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 						return FunpDefine.of(isPolyType, var, extractPredefine(value), extract_(expr));
 					})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
@@ -283,7 +283,7 @@ public class P2InferType {
 				return FunpSaveRegisters.of(invoke);
 			};
 
-			return n.switch_(Funp.class //
+			return n.<Funp> switch_( //
 			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 				return apply.apply(value, lambda);
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
@@ -382,7 +382,7 @@ public class P2InferType {
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return new Object() {
 					private Funp getAddress(Funp n) {
-						return n.switch_(Funp.class //
+						return n.<Funp> switch_( //
 						).applyIf(FunpAssign.class, f -> f.apply((memory, value, expr) -> {
 							return FunpAssign.of(memory, value, getAddress(expr));
 						})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
