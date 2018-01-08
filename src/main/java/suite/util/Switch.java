@@ -1,7 +1,9 @@
 package suite.util;
 
+import java.io.IOException;
+
+import suite.primitive.IoSink;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
 
 public class Switch<R> {
 
@@ -18,9 +20,13 @@ public class Switch<R> {
 		return this;
 	}
 
-	public <T> Switch<R> doIf(Class<T> c, Sink<T> fun) {
+	public <T> Switch<R> doIf(Class<T> c, IoSink<T> fun) {
 		return applyIf(c, t -> {
-			fun.sink(t);
+			try {
+				fun.sink(t);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 			@SuppressWarnings("unchecked")
 			R r = (R) t;
 			return r;

@@ -1,12 +1,14 @@
 package suite.node.io;
 
+import java.io.IOException;
+
 import suite.Suite;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.primitive.IoSink;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
 
 public class SwitchNode<R> {
 
@@ -30,9 +32,13 @@ public class SwitchNode<R> {
 		return this;
 	}
 
-	public <T extends Node> SwitchNode<R> doIf(Class<T> c, Sink<T> fun) {
+	public <T extends Node> SwitchNode<R> doIf(Class<T> c, IoSink<T> fun) {
 		return applyIf(c, t -> {
-			fun.sink(t);
+			try {
+				fun.sink(t);
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 			@SuppressWarnings("unchecked")
 			R r = (R) t;
 			return r;

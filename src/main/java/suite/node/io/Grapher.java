@@ -297,17 +297,25 @@ public class Grapher {
 			if (type == ReadType.TERM) {
 				Node terminal = gn.terminal;
 
-				if (terminal instanceof Atom) {
+				new SwitchNode<Node>(terminal //
+				).doIf(Atom.class, n -> {
 					dos.writeByte((byte) 'a');
-					dos.writeUTF(((Atom) terminal).name);
-				} else if (terminal instanceof Int) {
+					dos.writeUTF(n.name);
+				}).doIf(Int.class, n -> {
 					dos.writeByte((byte) 'i');
-					dos.writeInt(((Int) terminal).number);
-				} else if (terminal instanceof Reference)
+					dos.writeInt(n.number);
+				}).doIf(Reference.class, n -> {
 					dos.writeByte((byte) 'r');
-				else if (terminal instanceof Str) {
+				}).doIf(Str.class, n -> {
 					dos.writeByte((byte) 's');
-					dos.writeUTF(((Str) terminal).value);
+					dos.writeUTF(n.value);
+				}).nonNullResult();
+
+				if (terminal instanceof Atom) {
+				} else if (terminal instanceof Int) {
+				} else if (terminal instanceof Reference)
+					;
+				else if (terminal instanceof Str) {
 				} else
 					throw new RuntimeException("cannot persist " + terminal);
 			}
