@@ -3,6 +3,7 @@ package suite.lp.sewing;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import suite.node.Node;
 import suite.node.Reference;
@@ -65,6 +66,10 @@ public class VariableMapper<K> {
 
 	public Env env() {
 		return Env.empty(nVariables);
+	}
+
+	public Set<K> getVariableNames() {
+		return indices.keySet();
 	}
 
 	public int computeIndex(K variable) {

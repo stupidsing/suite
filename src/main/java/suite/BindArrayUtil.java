@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.lp.compile.impl.CompileBinderImpl;
+import suite.lp.doer.BinderFactory;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.Bind_;
+import suite.lp.doer.GeneralizerFactory;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
 import suite.lp.sewing.VariableMapper.NodeEnv;
@@ -32,17 +34,15 @@ public class BindArrayUtil {
 	}
 
 	private Fun<String, Match> matches = Memoize.fun(pattern_ -> {
-		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
-		Source<NodeEnv<Atom>> source = sg.g(Suite.parse(pattern_));
-		NodeEnv<Atom> ne = source.source();
+		GeneralizerFactory sg = new SewingGeneralizerImpl();
+		Source<NodeEnv<Atom>> sgs = sg.g(Suite.parse(pattern_));
+		NodeEnv<Atom> ne = sgs.source();
 
-		CompileBinderImpl cb = new CompileBinderImpl(false);
-		VariableMapper<Reference> mapper = cb.mapper();
+		BinderFactory cb = new CompileBinderImpl(false);
 		Bind_ pred = cb.binder(ne.node);
 
 		VariableMapper<Atom> sgm = sg.mapper();
 		VariableMapper<Reference> cbm = cb.mapper();
-
 		List<Atom> atoms = new ArrayList<>();
 		Atom atom;
 		int n = 0;
@@ -56,7 +56,7 @@ public class BindArrayUtil {
 
 		return new Match() {
 			public Node[] apply(Node node) {
-				Env env = mapper.env();
+				Env env = cbm.env();
 				return pred.test(new BindEnv(env), node) //
 						? To.array(size, Node.class, i -> env.get(cbi[i])) //
 						: null;
@@ -64,7 +64,7 @@ public class BindArrayUtil {
 			}
 
 			public Node substitute(Node... nodes) {
-				NodeEnv<Atom> ne = source.source();
+				NodeEnv<Atom> ne = sgs.source();
 				Reference[] refs = ne.env.refs;
 				for (int i = 0; i < nodes.length; i++)
 					refs[sgi[i]].bound(nodes[i]);

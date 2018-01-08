@@ -7,7 +7,6 @@ import suite.adt.pair.Pair;
 import suite.lp.doer.GeneralizerFactory;
 import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.VariableMapper;
-import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Node;
@@ -18,7 +17,6 @@ import suite.node.Tuple;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Source;
 
 public class SewingGeneralizerImpl implements GeneralizerFactory {
 
@@ -26,10 +24,6 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 
 	public static Node generalize(Node node) {
 		return new SewingGeneralizerImpl().g(node).source().node;
-	}
-
-	public Source<NodeEnv<Atom>> g(Node node) {
-		return vm.g(generalizer(node)::apply);
 	}
 
 	@Override

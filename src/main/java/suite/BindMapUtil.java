@@ -4,9 +4,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.lp.compile.impl.CompileBinderImpl;
+import suite.lp.doer.BinderFactory;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.Bind_;
-import suite.lp.doer.Generalizer;
+import suite.lp.doer.GeneralizerFactory;
 import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
 import suite.lp.sewing.VariableMapper.NodeEnv;
@@ -33,31 +34,29 @@ public class BindMapUtil {
 	}
 
 	private Fun<String, Match> matches = Memoize.fun(pattern_ -> {
-		Generalizer generalizer = new Generalizer();
-		Node node = Suite.parse(pattern_);
+		GeneralizerFactory sg = new SewingGeneralizerImpl();
+		Source<NodeEnv<Atom>> sgs = sg.g(Suite.parse(pattern_));
+		NodeEnv<Atom> ne = sgs.source();
 
-		CompileBinderImpl cb = new CompileBinderImpl(false);
-		VariableMapper<Reference> mapper = cb.mapper();
-		Bind_ pred = cb.binder(generalizer.generalize(node));
+		BinderFactory cb = new CompileBinderImpl(false);
+		Bind_ pred = cb.binder(ne.node);
 
-		SewingGeneralizerImpl sg = new SewingGeneralizerImpl();
-		Source<NodeEnv<Atom>> source = sg.g(Suite.parse(pattern_));
-
-		Map<String, Integer> map = Read //
-				.from(generalizer.getVariableNames()) //
-				.toMap(Formatter::display, name -> mapper.getIndex(generalizer.getVariable(name)));
+		VariableMapper<Atom> sgm = sg.mapper();
+		VariableMapper<Reference> cbm = cb.mapper();
+		Map<String, Integer> sgm_ = Read.from(sgm.getVariableNames()).toMap(Formatter::display, sgm::getIndex);
+		Map<String, Integer> cbm_ = Read.from2(sgm_).mapValue(v -> cbm.getIndex(ne.env.refs[v])).toMap();
 
 		return new Match() {
 			public Map<String, Node> apply(Node node) {
-				Env env = mapper.env();
-				return pred.test(new BindEnv(env), node) ? Read.from2(map).mapValue(env::get).toMap() : null;
+				Env env = cbm.env();
+				return pred.test(new BindEnv(env), node) ? Read.from2(cbm_).mapValue(env::get).toMap() : null;
 			}
 
 			public Node substitute(Map<String, Node> map_) {
-				NodeEnv<Atom> ne = source.source();
+				NodeEnv<Atom> ne = sgs.source();
 				Reference[] refs = ne.env.refs;
 				for (Entry<String, Node> e : map_.entrySet())
-					refs[map.get(e.getKey())].bound(e.getValue());
+					refs[sgm_.get(e.getKey())].bound(e.getValue());
 				return ne.node;
 			}
 		};

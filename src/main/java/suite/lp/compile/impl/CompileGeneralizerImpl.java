@@ -6,20 +6,14 @@ import java.util.Map;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.GeneralizerFactory;
 import suite.lp.sewing.VariableMapper;
-import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
-import suite.util.FunUtil.Source;
 
 public class CompileGeneralizerImpl implements GeneralizerFactory {
 
 	private CompileClonerImpl cc = new CompileClonerImpl();
 	private VariableMapper<Atom> vm = new VariableMapper<>();
-
-	public Source<NodeEnv<Atom>> g(Node node) {
-		return vm.g(generalizer(node)::apply);
-	}
 
 	@Override
 	public VariableMapper<Atom> mapper() {
