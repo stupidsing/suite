@@ -294,10 +294,8 @@ public class Grapher {
 
 			dos.writeByte(type.value);
 
-			if (type == ReadType.TERM) {
-				Node terminal = gn.terminal;
-
-				new SwitchNode<Node>(terminal //
+			if (type == ReadType.TERM)
+				new SwitchNode<Node>(gn.terminal //
 				).doIf(Atom.class, n -> {
 					dos.writeByte((byte) 'a');
 					dos.writeUTF(n.name);
@@ -310,23 +308,11 @@ public class Grapher {
 					dos.writeByte((byte) 's');
 					dos.writeUTF(n.value);
 				}).nonNullResult();
-
-				if (terminal instanceof Atom) {
-				} else if (terminal instanceof Int) {
-				} else if (terminal instanceof Reference)
-					;
-				else if (terminal instanceof Str) {
-				} else
-					throw new RuntimeException("cannot persist " + terminal);
-			}
-
-			if (type == ReadType.TREE) {
+			else if (type == ReadType.TREE) {
 				dos.writeUTF(gn.op.getName());
 				dos.writeInt(children.get(0).t1 - index);
 				dos.writeInt(children.get(1).t1 - index);
-			}
-
-			if (type == ReadType.DICT || type == ReadType.TUPLE) {
+			} else if (type == ReadType.DICT || type == ReadType.TUPLE) {
 				dos.writeInt(children.size());
 
 				for (IntIntPair child : children) {
