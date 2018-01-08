@@ -44,7 +44,6 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.primitive.adt.map.IntIntMap;
 import suite.primitive.adt.map.IntObjMap;
 import suite.streamlet.Read;
-import suite.util.Switch;
 
 public class FunGenerateBytecode {
 
@@ -87,7 +86,7 @@ public class FunGenerateBytecode {
 	}
 
 	public void visit_(FunExpr e0) {
-		new Switch<FunExpr>(e0 //
+		e0.switch_(FunExpr.class //
 		).doIf(ArrayFunExpr.class, e1 -> {
 			FunExpr[] elements = e1.elements;
 			list.add(factory.createConstant(elements.length));

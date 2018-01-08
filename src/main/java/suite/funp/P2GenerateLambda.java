@@ -23,7 +23,6 @@ import suite.primitive.IntInt_Int;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
-import suite.util.Switch;
 
 public class P2GenerateLambda {
 
@@ -84,9 +83,8 @@ public class P2GenerateLambda {
 		}
 
 		private Thunk compile_(Funp n0) {
-			Switch<Thunk> sw = new Switch<>(n0);
-
-			sw.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
+			return n0.switch_(Thunk.class //
+			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 				Thunk lambda1 = compile_(lambda);
 				Thunk value1 = compile_(value);
 				return rt -> ((Fun_) lambda1.apply(rt)).apply(value1.apply(rt));
@@ -152,9 +150,7 @@ public class P2GenerateLambda {
 						rt = rt.parent;
 					return rt.var;
 				};
-			}));
-
-			return sw.nonNullResult();
+			})).nonNullResult();
 		}
 	}
 

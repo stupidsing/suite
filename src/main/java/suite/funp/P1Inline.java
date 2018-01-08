@@ -29,7 +29,6 @@ import suite.streamlet.Read;
 import suite.util.FunUtil.Iterate;
 import suite.util.List_;
 import suite.util.String_;
-import suite.util.Switch;
 
 public class P1Inline {
 
@@ -72,7 +71,8 @@ public class P1Inline {
 			}
 
 			private Funp rename(Funp node_) {
-				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
+				return inspect.rewrite(Funp.class, n_ -> n_ //
+						.switch_(Funp.class) //
 						.applyIf(FunpDefine.class, f -> f.apply((isPolyType, var0, value, expr) -> {
 							String var1 = newVar.apply(var0);
 							Rename r1 = new Rename(vars.replace(var0, var1));
@@ -156,7 +156,8 @@ public class P1Inline {
 		Map<FunpVariable, Funp> defByVariables = associateDefinitions(node);
 		Map<Funp, IntMutable> countByDefs = new HashMap<>();
 
-		inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
+		inspect.rewrite(Funp.class, n_ -> n_ //
+				.switch_(Funp.class) //
 				.applyIf(FunpReference.class, f -> f.apply(expr -> {
 					countByDefs.computeIfAbsent(defByVariables.get(expr), v -> IntMutable.of(0)).update(9999);
 					return null;
@@ -221,7 +222,8 @@ public class P1Inline {
 	private Funp inlineLambdas(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
-				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
+				return inspect.rewrite(Funp.class, n_ -> n_ //
+						.switch_(Funp.class) //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 							return lambda.cast(FunpLambda.class, n -> FunpDefine.of(false, n.var, inline(value), inline(n.expr)));
 						})) //
@@ -235,7 +237,8 @@ public class P1Inline {
 
 		new Object() {
 			private Funp associate(IMap<String, Funp> vars, Funp node_) {
-				return inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
+				return inspect.rewrite(Funp.class, n_ -> n_ //
+						.switch_(Funp.class) //
 						.applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 							associate(vars, value);
 							associate(vars.replace(var, f), expr);

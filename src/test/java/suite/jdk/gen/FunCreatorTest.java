@@ -75,7 +75,7 @@ public class FunCreatorTest {
 	@Test
 	public void testClosure() {
 		Source<FunExpr> fun = () -> f.declare(f.int_(1),
-				one -> f.parameter1(j -> f.add(one, j)).cast(Int_Int.class).apply(f.int_(2)));
+				one -> f.parameter1(j -> f.add(one, j)).cast_(Int_Int.class).apply(f.int_(2)));
 		assertEquals(3, LambdaInstance.of(IntSource.class, fun).newFun().source());
 	}
 
@@ -94,8 +94,8 @@ public class FunCreatorTest {
 		assertEquals(Suite.parse("1 + 1"), fc.create(() -> f //
 				.invokeStatic(Tree.class, "of", //
 						f.object(TermOp.PLUS__), //
-						f.object(N1).cast(Node.class), //
-						f.object(N1).cast(Node.class))) //
+						f.object(N1).cast_(Node.class), //
+						f.object(N1).cast_(Node.class))) //
 				.apply(void_) //
 				.source());
 	}

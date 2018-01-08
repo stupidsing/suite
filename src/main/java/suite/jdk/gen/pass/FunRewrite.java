@@ -36,7 +36,6 @@ import suite.jdk.lambda.LambdaInterface;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.Rethrow;
-import suite.util.Switch;
 import suite.util.Util;
 
 public class FunRewrite extends FunFactory {
@@ -57,18 +56,18 @@ public class FunRewrite extends FunFactory {
 	}
 
 	private FunExpr rewriteFun(FunExpr e0) {
-		return new Switch<FunExpr>(e0 //
+		return e0.switch_(FunExpr.class //
 		).applyIf(CastFunExpr.class, //
-				e1 -> new Switch<FunExpr>(e1.expr //
-				).applyIf(Declare0ParameterFunExpr.class, e4 -> {
-					return rewrite(e4.do_);
-				}).applyIf(Declare1ParameterFunExpr.class, e4 -> {
-					placeholders.put(e4.parameter, local(1));
-					return rewrite(e4.do_);
-				}).applyIf(Declare2ParameterFunExpr.class, e4 -> {
-					placeholders.put(e4.p0, local(1));
-					placeholders.put(e4.p1, local(2));
-					return rewrite(e4.do_);
+				e1 -> e1.expr.switch_(FunExpr.class //
+				).applyIf(Declare0ParameterFunExpr.class, e2 -> {
+					return rewrite(e2.do_);
+				}).applyIf(Declare1ParameterFunExpr.class, e2 -> {
+					placeholders.put(e2.parameter, local(1));
+					return rewrite(e2.do_);
+				}).applyIf(Declare2ParameterFunExpr.class, e2 -> {
+					placeholders.put(e2.p0, local(1));
+					placeholders.put(e2.p1, local(2));
+					return rewrite(e2.do_);
 				}).nonNullResult() //
 		).nonNullResult();
 	}
@@ -78,7 +77,7 @@ public class FunRewrite extends FunFactory {
 	}
 
 	private FunExpr rewrite_(FunExpr e0) {
-		return new Switch<FunExpr>(e0 //
+		return e0.switch_(FunExpr.class //
 		).applyIf(ApplyFunExpr.class, e1 -> {
 			FunExpr object = rewrite(e1.object);
 			FunExpr[] parameters = Read.from(e1.parameters).map(this::rewrite).toArray(FunExpr.class);
@@ -139,7 +138,7 @@ public class FunRewrite extends FunFactory {
 			String fieldName = e1.fieldName;
 			Class<?> clazz = fti.classOf(object);
 			Field field = Rethrow.ex(() -> clazz.getField(fieldName));
-			return object.cast(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
+			return object.cast_(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
 		}).applyIf(FieldInjectFunExpr.class, e1 -> {
 			Type type = fieldTypes.get(e1.fieldName);
 			if (type != null)

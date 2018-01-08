@@ -53,7 +53,6 @@ import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
 import suite.util.FunUtil2.Sink2;
-import suite.util.Switch;
 
 public class P4GenerateCode {
 
@@ -253,7 +252,7 @@ public class P4GenerateCode {
 					return true;
 				};
 
-				return new Switch<CompileOut>(n //
+				return n.switch_(CompileOut.class //
 				).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, stack) -> {
 					Operand imm = amd64.imm(size), op;
 					int fd1 = fd - size;

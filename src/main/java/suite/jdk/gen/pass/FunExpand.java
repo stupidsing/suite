@@ -23,7 +23,6 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.String_;
-import suite.util.Switch;
 
 public class FunExpand extends FunFactory {
 
@@ -37,7 +36,7 @@ public class FunExpand extends FunFactory {
 	}
 
 	private FunExpr expand_(FunExpr e0, int depth) {
-		return new Switch<FunExpr>(e0 //
+		return e0.switch_(FunExpr.class //
 		).applyIf(ApplyFunExpr.class, e1 -> {
 			FunExpr object0 = e1.object;
 			FunExpr object1 = object0 instanceof CastFunExpr ? ((CastFunExpr) object0).expr : object0;
@@ -67,7 +66,7 @@ public class FunExpand extends FunFactory {
 					for (String fieldName : l_impl.fieldTypes.keySet())
 						fe = replaceFieldInject(fe, fieldName,
 								object(l_inst.fieldValues.get(fieldName), l_impl.fieldTypes.get(fieldName)));
-					return expand(fe.cast(l_iface.interfaceClass).apply(e1.parameters), depth - 1);
+					return expand(fe.cast_(l_iface.interfaceClass).apply(e1.parameters), depth - 1);
 				} else
 					return null;
 			} else

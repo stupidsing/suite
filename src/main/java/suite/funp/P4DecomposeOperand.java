@@ -18,7 +18,6 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.util.FunUtil2.Fun2;
-import suite.util.Switch;
 
 public class P4DecomposeOperand {
 
@@ -31,7 +30,7 @@ public class P4DecomposeOperand {
 	}
 
 	public Operand decomposeOperand(int fd, Funp node) {
-		return new Switch<Operand>(node //
+		return node.switch_(Operand.class //
 		).applyIf(FunpDontCare.class, f -> {
 			return amd64.eax;
 		}).applyIf(FunpNumber.class, f -> {

@@ -32,7 +32,6 @@ import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
-import suite.util.Switch;
 
 public class FunTypeInformation {
 
@@ -45,7 +44,7 @@ public class FunTypeInformation {
 	}
 
 	public Type typeOf(FunExpr e0) {
-		return new Switch<Type>(e0 //
+		return e0.switch_(Type.class //
 		).applyIf(ArrayFunExpr.class, e1 -> {
 			Type type = Type.getType(e1.clazz);
 			for (FunExpr element : e1.elements)

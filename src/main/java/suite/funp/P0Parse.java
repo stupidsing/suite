@@ -275,7 +275,7 @@ public class P0Parse {
 			else
 
 			{
-				Funp result = new Switch<Funp>(be //
+				Funp result = be.switch_(Funp.class //
 				).applyIf(FunpArray.class, f -> f.apply(elements0 -> {
 					return bindArray.apply(elements0.size(), elements0::get);
 				})).applyIf(FunpDontCare.class, f -> {

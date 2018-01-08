@@ -138,7 +138,7 @@ public class CompileBinderImpl0 extends CompileClonerImpl implements BinderFacto
 		Map<String, Type> fieldTypes = Map.of(key0, Type.getType(Node.class), key1, Type.STRING);
 		Iterate<FunExpr> expr = n_ -> f.ifInstanceAnd( //
 				Str.class, n_, //
-				i -> f.inject(key1).invoke("equals", i.field("value").cast(Object.class)));
+				i -> f.inject(key1).invoke("equals", i.field("value").cast_(Object.class)));
 		return bind(fieldTypes, expr);
 	}
 

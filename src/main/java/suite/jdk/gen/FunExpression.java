@@ -17,13 +17,14 @@ import suite.jdk.gen.FunExprM.IndexFunExpr;
 import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
 import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
 import suite.node.util.Singleton;
+import suite.util.AutoInterface;
 import suite.util.Object_;
 
 public class FunExpression {
 
 	private static Inspect inspect = Singleton.me.inspect;
 
-	public static abstract class FunExpr {
+	public static abstract class FunExpr implements AutoInterface<FunExpr> {
 		public FunExpr apply(FunExpr... parameters) {
 			return apply(List.of(parameters));
 		}
@@ -35,7 +36,7 @@ public class FunExpression {
 			return expr;
 		}
 
-		public FunExpr cast(Class<?> clazz) {
+		public FunExpr cast_(Class<?> clazz) {
 			CastFunExpr expr = new CastFunExpr();
 			expr.type = Type.getType(clazz);
 			expr.expr = this;
