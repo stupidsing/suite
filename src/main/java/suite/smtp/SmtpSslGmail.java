@@ -14,6 +14,7 @@ import javax.net.ssl.SSLSocketFactory;
 
 import suite.Constants;
 import suite.primitive.Chars.CharsBuilder;
+import suite.primitive.ChrChr_Int;
 
 public class SmtpSslGmail {
 
@@ -62,35 +63,27 @@ public class SmtpSslGmail {
 	}
 
 	private static String encode(char[] salt, String in) {
-		CharsBuilder cb0 = new CharsBuilder();
-		char[] text0 = in.toCharArray();
-
-		for (int i = 0; i < text0.length; i++) {
-			int a = text0[i] + salt[i % salt.length];
-			while (a < 32)
-				a += 128 - 32;
-			while (128 < a)
-				a -= 128 - 32;
-			cb0.append((char) a);
-		}
-
-		return cb0.toChars().toString();
+		return convert(salt, in, (a, b) -> a + b);
 	}
 
 	private static String decode(char[] salt, String in) {
-		CharsBuilder cb1 = new CharsBuilder();
-		char[] text1 = in.toCharArray();
+		return convert(salt, in, (a, b) -> a - b);
+	}
 
-		for (int i = 0; i < text1.length; i++) {
-			int a = text1[i] - salt[i % salt.length];
+	private static String convert(char[] salt, String in0, ChrChr_Int f) {
+		CharsBuilder cb = new CharsBuilder();
+		char[] in1 = in0.toCharArray();
+
+		for (int i = 0; i < in1.length; i++) {
+			int a = f.apply(in1[i], salt[i % salt.length]);
 			while (a < 32)
 				a += 128 - 32;
 			while (128 < a)
 				a -= 128 - 32;
-			cb1.append((char) a);
+			cb.append((char) a);
 		}
 
-		return cb1.toChars().toString();
+		return cb.toChars().toString();
 	}
 
 }
