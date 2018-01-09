@@ -14,7 +14,7 @@ public interface AutoInterface<T> {
 	}
 
 	public default <U> Switch<U> switch_() {
-		return new Switch<U>(this);
+		return new Switch<>(this);
 	}
 
 }
