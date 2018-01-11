@@ -30,6 +30,7 @@ import suite.util.String_;
 
 public class Trade_ {
 
+	public static double barrier = 1d;
 	public static Set<String> blackList = Collections.emptySet();
 	public static boolean isCacheQuotes = true;
 	public static boolean isFreePlay = false;
@@ -227,7 +228,9 @@ public class Trade_ {
 					.diff(time, account.assets(), portfolio, priceFun) //
 					.partition(trade -> { // can be executed in next open price?
 						Eod eod = eodBySymbol.get(trade.symbol);
-						float price = trade.price;
+						double price = trade.price;
+						double priceBuy = price / barrier;
+						double priceSell = price * barrier;
 						int buySell = trade.buySell;
 
 						// cannot buy liquidated stock
@@ -235,8 +238,8 @@ public class Trade_ {
 
 						// only if trade is within price range of next tick
 						boolean isMatch = isFreePlay //
-								|| 0 < buySell && eod.nextLow <= price //
-								|| buySell < 0 && price <= eod.nextHigh;
+								|| 0 < buySell && eod.nextLow <= priceBuy //
+								|| buySell < 0 && priceSell <= eod.nextHigh;
 
 						return isTradeable && isMatch;
 					}).t0 //
