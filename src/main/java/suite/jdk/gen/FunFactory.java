@@ -25,15 +25,18 @@ import suite.jdk.gen.FunExprM.If1FunExpr;
 import suite.jdk.gen.FunExprM.If2FunExpr;
 import suite.jdk.gen.FunExprM.IfNonNullFunExpr;
 import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
+import suite.jdk.gen.FunExprM.JsrFunExpr;
 import suite.jdk.gen.FunExprM.LocalFunExpr;
 import suite.jdk.gen.FunExprM.NewFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
+import suite.jdk.gen.FunExprM.SubroutineFunExpr;
 import suite.jdk.gen.FunExprM.VoidFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.lambda.LambdaInstance;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.BinOp;
@@ -274,6 +277,15 @@ public class FunFactory {
 			return fe;
 		} else
 			return _void();
+	}
+
+	public FunExpr sub(Fun<FunExpr, FunExpr> fun, FunExpr subroutine) {
+		JsrFunExpr jfe = new JsrFunExpr();
+		SubroutineFunExpr sfe = new SubroutineFunExpr();
+		sfe.expr = fun.apply(jfe);
+		sfe.subroutine = subroutine;
+		jfe.subroutine.set(sfe);
+		return sfe;
 	}
 
 	public FunExpr _void() {

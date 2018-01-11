@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import suite.adt.Mutable;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.util.Util;
@@ -96,6 +97,14 @@ public class FunExprM {
 		public List<FunExpr> parameters;
 	}
 
+	public static class JsrFunExpr extends FunExpr {
+		public Mutable<SubroutineFunExpr> subroutine = Mutable.nil();
+
+		public int hashCode() {
+			return System.identityHashCode(subroutine);
+		}
+	}
+
 	public static class LocalFunExpr extends FunExpr {
 		public int index;
 	}
@@ -113,6 +122,12 @@ public class FunExprM {
 	public static class ProfileFunExpr extends FunExpr {
 		public String counterFieldName = "p" + Util.temp();
 		public FunExpr do_;
+	}
+
+	public static class SubroutineFunExpr extends FunExpr {
+		public FunExpr expr;
+		public int returnLocal;
+		public FunExpr subroutine;
 	}
 
 	public static class SeqFunExpr extends FunExpr {

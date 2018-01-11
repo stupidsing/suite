@@ -8,6 +8,7 @@ import suite.jdk.gen.FunFactory;
 import suite.lp.doer.ProverFactory;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
+import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 
 public class CompileProverImpl implements ProverFactory {
@@ -34,17 +35,12 @@ public class CompileProverImpl implements ProverFactory {
 				).match(".0, .1", m -> {
 					return compile_(m[0], compile_(m[1], cps));
 				}).match(".0; .1", m -> {
-					if (Boolean.TRUE)
-						return f.declare(fail, flag -> {
-							FunExpr f0 = compile_(m[0], f.assign(flag, ok));
-							FunExpr f1 = compile_(m[1], f.assign(flag, ok));
-							return f.seq(f0, f1, f.if_(flag, cps, f._void()));
-						});
-					else {
-						FunExpr f0 = compile_(m[0], cps);
-						FunExpr f1 = compile_(m[1], cps);
+					Fun<FunExpr, FunExpr> fun = jsr -> {
+						FunExpr f0 = compile_(m[0], jsr);
+						FunExpr f1 = compile_(m[1], jsr);
 						return f.seq(f0, f1);
-					}
+					};
+					return Boolean.TRUE ? f.sub(fun, cps) : fun.apply(cps);
 				}).nonNullResult();
 			}
 		}).apply(new HashMap<>());

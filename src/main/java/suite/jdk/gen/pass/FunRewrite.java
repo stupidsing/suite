@@ -27,6 +27,7 @@ import suite.jdk.gen.FunExprM.CastFunExpr;
 import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
 import suite.jdk.gen.FunExprM.NewFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
+import suite.jdk.gen.FunExprM.SubroutineFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.jdk.gen.Type_;
@@ -163,6 +164,16 @@ public class FunRewrite extends FunFactory {
 		}).applyIf(ProfileFunExpr.class, e1 -> {
 			fieldTypeValues.put(e1.counterFieldName, Pair.of(Type.INT, 0));
 			return null;
+		}).applyIf(SubroutineFunExpr.class, e1 -> {
+			int returnLocal = localTypes.size();
+			localTypes.add(Type.OBJECT);
+
+			SubroutineFunExpr sfe = new SubroutineFunExpr();
+			sfe.expr = rewrite(e1.expr);
+			sfe.returnLocal = returnLocal;
+			sfe.subroutine = rewrite(e1.subroutine);
+
+			return sfe;
 		}).result();
 	}
 

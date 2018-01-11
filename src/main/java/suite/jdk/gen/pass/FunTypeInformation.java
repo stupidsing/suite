@@ -22,11 +22,13 @@ import suite.jdk.gen.FunExprM.IfFunExpr;
 import suite.jdk.gen.FunExprM.IndexFunExpr;
 import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
 import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
+import suite.jdk.gen.FunExprM.JsrFunExpr;
 import suite.jdk.gen.FunExprM.LocalFunExpr;
 import suite.jdk.gen.FunExprM.NewFunExpr;
 import suite.jdk.gen.FunExprM.PrintlnFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
+import suite.jdk.gen.FunExprM.SubroutineFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
@@ -67,6 +69,8 @@ public class FunTypeInformation {
 			return e1.type;
 		}).applyIf(DeclareLocalFunExpr.class, e1 -> {
 			return typeOf(e1.do_);
+		}).applyIf(FieldStaticFunExpr.class, e1 -> {
+			return e1.fieldType;
 		}).applyIf(FieldTypeFunExpr.class, e1 -> {
 			return e1.fieldType;
 		}).applyIf(IfFunExpr.class, e1 -> {
@@ -77,6 +81,8 @@ public class FunTypeInformation {
 			return Type.BOOLEAN;
 		}).applyIf(InvokeMethodFunExpr.class, e1 -> {
 			return Type.getType(invokeMethodOf(e1).getReturnType());
+		}).applyIf(JsrFunExpr.class, e1 -> {
+			return Type.VOID;
 		}).applyIf(LocalFunExpr.class, e1 -> {
 			return localTypes.get(e1.index);
 		}).applyIf(NewFunExpr.class, e1 -> {
@@ -89,8 +95,8 @@ public class FunTypeInformation {
 			return typeOf(e1.do_);
 		}).applyIf(SeqFunExpr.class, e1 -> {
 			return typeOf(e1.right);
-		}).applyIf(FieldStaticFunExpr.class, e1 -> {
-			return e1.fieldType;
+		}).applyIf(SubroutineFunExpr.class, e1 -> {
+			return typeOf(e1.expr);
 		}).nonNullResult();
 	}
 
