@@ -40,6 +40,7 @@ import suite.jdk.gen.FunExprM.NewFunExpr;
 import suite.jdk.gen.FunExprM.PrintlnFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
+import suite.jdk.gen.FunExprM.VoidFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.primitive.adt.map.IntIntMap;
 import suite.primitive.adt.map.IntObjMap;
@@ -184,10 +185,11 @@ public class FunGenerateBytecode {
 
 			constants.put(classIndex, implClass);
 		}).doIf(PrintlnFunExpr.class, e1 -> {
+			String name = PrintStream.class.getName();
 			String sys = System.class.getName();
 			list.add(factory.createGetStatic(sys, "out", Type.getType(PrintStream.class)));
 			visit_(e1.expression);
-			list.add(factory.createInvoke(sys, "println", fti.typeOf(e1), new Type[] { Type.STRING, }, Const.INVOKEVIRTUAL));
+			list.add(factory.createInvoke(name, "println", fti.typeOf(e1), new Type[] { Type.STRING, }, Const.INVOKEVIRTUAL));
 		}).doIf(ProfileFunExpr.class, e1 -> {
 			list.add(InstructionFactory.createLoad(Type.OBJECT, 0));
 			list.add(InstructionFactory.createDup(1));
@@ -201,6 +203,7 @@ public class FunGenerateBytecode {
 			if (!Objects.equals(fti.typeOf(e1.left), Type.VOID))
 				list.add(InstructionConst.POP);
 			visit_(e1.right);
+		}).doIf(VoidFunExpr.class, e1 -> {
 		}).nonNullResult();
 	}
 

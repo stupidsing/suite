@@ -29,6 +29,7 @@ import suite.jdk.gen.FunExprM.LocalFunExpr;
 import suite.jdk.gen.FunExprM.NewFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
+import suite.jdk.gen.FunExprM.VoidFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.lambda.LambdaInstance;
 import suite.node.util.Singleton;
@@ -76,6 +77,10 @@ public class FunFactory {
 		expr.clazz = clazz;
 		expr.elements = elements;
 		return expr;
+	}
+
+	public FunExpr assign(FunExpr var, FunExpr value) {
+		return assign(var, value, _void());
 	}
 
 	public FunExpr assign(FunExpr var, FunExpr value, FunExpr do_) {
@@ -260,6 +265,10 @@ public class FunFactory {
 		expr.left = e0;
 		expr.right = e1;
 		return expr;
+	}
+
+	public FunExpr _void() {
+		return new VoidFunExpr();
 	}
 
 }

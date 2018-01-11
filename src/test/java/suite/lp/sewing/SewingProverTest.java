@@ -3,14 +3,13 @@ package suite.lp.sewing;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.function.Predicate;
-
 import org.junit.Test;
 
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.ProverFactory;
+import suite.lp.doer.ProverFactory.Prove_;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
 import suite.lp.sewing.impl.SewingProverImpl;
@@ -104,7 +103,7 @@ public class SewingProverTest {
 
 		ProverFactory sp = new SewingProverImpl(rs);
 		ProverConfig pc = new ProverConfig(rs);
-		Predicate<ProverConfig> test = sp.compile(Suite.parse("q 32768"));
+		Prove_ test = sp.compile(Suite.parse("q 32768"));
 
 		Source<Stopwatch<Boolean>> trial = () -> Stopwatch.of(() -> {
 			boolean isOk = true;

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Predicate;
 
 import suite.Suite;
 import suite.adt.Mutable;
@@ -198,7 +197,7 @@ public class SewingProverImpl implements ProverFactory {
 			throw new RuntimeException("must not contain wild rules");
 	}
 
-	public Predicate<ProverConfig> compile(Node node) {
+	public Prove_ compile(Node node) {
 		Trampoline tr = cutBegin(compileTr(passThru, node));
 
 		return pc -> {

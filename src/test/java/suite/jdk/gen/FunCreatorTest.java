@@ -12,6 +12,7 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.inspect.Dump;
+import suite.jdk.gen.FunExprM.PrintlnFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.lambda.LambdaInstance;
@@ -167,6 +168,15 @@ public class FunCreatorTest {
 		IntSource instance = LambdaInstance.of(IntSource.class, fun).newFun();
 		assertEquals(1, instance.source());
 		Dump.out(instance);
+	}
+
+	@Test
+	public void testRunnable() {
+		PrintlnFunExpr pfe = new PrintlnFunExpr();
+		pfe.expression = f.object(1).cast_(String.class);
+
+		FunCreator<Runnable> fc = FunCreator.of(Runnable.class);
+		fc.create(() -> pfe).apply(void_).run();
 	}
 
 	private FunCreator<Int_Int> intFun(String fieldName, Type fieldType) {

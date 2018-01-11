@@ -119,4 +119,7 @@ public class FunExprM {
 		public FunExpr left, right;
 	}
 
+	public static class VoidFunExpr extends FunExpr {
+	}
+
 }
