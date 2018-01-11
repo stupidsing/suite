@@ -179,15 +179,6 @@ public class FunCreatorTest {
 		fc.create(() -> pfe).apply(void_).run();
 	}
 
-	@Test
-	public void testSubroutine() {
-		PrintlnFunExpr pfe = new PrintlnFunExpr();
-		pfe.expression = f.object(1).cast_(String.class);
-
-		FunCreator<Runnable> fc = FunCreator.of(Runnable.class);
-		fc.create(() -> f.sub(j -> f.seq(j, j, j), pfe)).apply(void_).run();
-	}
-
 	private FunCreator<Int_Int> intFun(String fieldName, Type fieldType) {
 		return FunCreator.of(lambdaClassIntIntFun, Map.of(fieldName, fieldType));
 	}

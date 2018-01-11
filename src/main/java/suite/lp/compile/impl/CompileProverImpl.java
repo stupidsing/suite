@@ -1,6 +1,6 @@
 package suite.lp.compile.impl;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
@@ -8,7 +8,6 @@ import suite.jdk.gen.FunFactory;
 import suite.lp.doer.ProverFactory;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
-import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 
 public class CompileProverImpl implements ProverFactory {
@@ -35,15 +34,18 @@ public class CompileProverImpl implements ProverFactory {
 				).match(".0, .1", m -> {
 					return compile_(m[0], compile_(m[1], cps));
 				}).match(".0; .1", m -> {
-					Fun<FunExpr, FunExpr> fun = jsr -> {
-						FunExpr f0 = compile_(m[0], jsr);
-						FunExpr f1 = compile_(m[1], jsr);
-						return f.seq(f0, f1);
-					};
-					return Boolean.TRUE ? f.sub(fun, cps) : fun.apply(cps);
+					FunExpr fcps;
+					if (Boolean.TRUE) {
+						Runnable r = FunCreator.of(Runnable.class, false).create(() -> cps).apply(Map.ofEntries());
+						fcps = f.object(r).invoke("run");
+					} else
+						fcps = cps;
+					FunExpr f0 = compile_(m[0], fcps);
+					FunExpr f1 = compile_(m[1], fcps);
+					return f.seq(f0, f1);
 				}).nonNullResult();
 			}
-		}).apply(new HashMap<>());
+		}).apply(Map.ofEntries());
 	}
 
 }

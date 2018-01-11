@@ -1,6 +1,6 @@
 package suite.lp.compile.impl;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
@@ -67,7 +67,7 @@ public class CompileExpressionImpl implements EvaluatorFactory {
 				FunExpr fe1 = compile_(m[1]);
 				return f.bi(op, fe0, fe1);
 			}
-		}).apply(new HashMap<>());
+		}).apply(Map.ofEntries());
 	}
 
 }

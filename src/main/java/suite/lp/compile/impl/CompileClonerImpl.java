@@ -1,6 +1,6 @@
 package suite.lp.compile.impl;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import suite.adt.pair.Pair;
 import suite.jdk.gen.FunCreator;
@@ -68,7 +68,7 @@ public class CompileClonerImpl implements ClonerFactory {
 					return f.invokeStatic(Tuple.class, "of", f.array(Node.class, exprs));
 				}).nonNullResult();
 			}
-		}).apply(new HashMap<>());
+		}).apply(Map.ofEntries());
 	}
 
 }

@@ -1,9 +1,7 @@
 package suite.jdk.gen.pass;
 
 import java.io.PrintStream;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -19,10 +17,8 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.NEW;
 import org.apache.bcel.generic.ObjectType;
-import org.apache.bcel.generic.RET;
 import org.apache.bcel.generic.Type;
 
-import suite.adt.map.ListMultimap;
 import suite.jdk.gen.FunExprM.ArrayFunExpr;
 import suite.jdk.gen.FunExprM.ArrayLengthFunExpr;
 import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
@@ -39,13 +35,11 @@ import suite.jdk.gen.FunExprM.IfNonNullFunExpr;
 import suite.jdk.gen.FunExprM.IndexFunExpr;
 import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
 import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
-import suite.jdk.gen.FunExprM.JsrFunExpr;
 import suite.jdk.gen.FunExprM.LocalFunExpr;
 import suite.jdk.gen.FunExprM.NewFunExpr;
 import suite.jdk.gen.FunExprM.PrintlnFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
-import suite.jdk.gen.FunExprM.SubroutineFunExpr;
 import suite.jdk.gen.FunExprM.VoidFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.primitive.adt.map.IntIntMap;
@@ -61,9 +55,7 @@ public class FunGenerateBytecode {
 
 	public final IntObjMap<Object> constants = new IntObjMap<>();
 	public final IntIntMap jumps = new IntIntMap();
-	public final ListMultimap<SubroutineFunExpr, Integer> jsrs = new ListMultimap<>();
 
-	private Deque<SubroutineFunExpr> deque = new ArrayDeque<>();
 	private List<Instruction> list = new ArrayList<>();
 
 	public FunGenerateBytecode(String className, FunTypeInformation fti, ConstantPoolGen cpg) {
@@ -80,16 +72,6 @@ public class FunGenerateBytecode {
 	public InstructionList visit(FunExpr e, Type returnType) {
 		visit_(e);
 		list.add(InstructionFactory.createReturn(returnType));
-
-		while (!deque.isEmpty()) {
-			SubroutineFunExpr sfe = deque.pop();
-			int tgt = list.size();
-			list.add(InstructionFactory.createStore(Type.OBJECT, sfe.returnLocal));
-			visit_(sfe.subroutine);
-			list.add(new RET(sfe.returnLocal));
-			for (int src : jsrs.get(sfe))
-				jumps.put(src, tgt);
-		}
 
 		InstructionList il = new InstructionList();
 		List<InstructionHandle> ihs = new ArrayList<>();
@@ -184,9 +166,6 @@ public class FunGenerateBytecode {
 					fti.typeOf(e1), //
 					array, //
 					opcode));
-		}).doIf(JsrFunExpr.class, e1 -> {
-			jsrs.put(e1.subroutine.get(), list.size());
-			list.add(InstructionFactory.createBranchInstruction(Const.JSR, null));
 		}).doIf(LocalFunExpr.class, e1 -> {
 			list.add(InstructionFactory.createLoad(fti.typeOf(e1), e1.index));
 		}).doIf(NewFunExpr.class, e1 -> {
@@ -224,9 +203,6 @@ public class FunGenerateBytecode {
 			if (!Objects.equals(fti.typeOf(e1.left), Type.VOID))
 				list.add(InstructionConst.POP);
 			visit_(e1.right);
-		}).doIf(SubroutineFunExpr.class, e1 -> {
-			visit_(e1.expr);
-			deque.push(e1);
 		}).doIf(VoidFunExpr.class, e1 -> {
 		}).nonNullResult();
 	}

@@ -1,6 +1,6 @@
 package suite.lp.compile.impl;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
@@ -97,7 +97,7 @@ public class CompileBinderImpl extends CompileClonerImpl implements BinderFactor
 			private FunExpr bind(FunExpr node, FunExpr target) {
 				return f.ifInstanceAnd(Reference.class, target, ref -> f.seq(trail.invoke("addBind", ref, node), ok));
 			}
-		}).apply(new HashMap<>());
+		}).apply(Map.ofEntries());
 	}
 
 }
