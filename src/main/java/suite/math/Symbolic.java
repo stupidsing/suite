@@ -13,6 +13,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
+import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -59,29 +60,28 @@ public class Symbolic {
 	}
 
 	private FunExpr m(Node n, Fun<Node, FunExpr> fun) {
-		Node[] m;
-		if ((m = matchAdd.apply(n)) != null)
+		return new SwitchNode<FunExpr>(n //
+		).match(matchAdd, m -> {
 			return f.bi("+", fun.apply(m[0]), fun.apply(m[1]));
-		else if ((m = matchNeg.apply(n)) != null)
+		}).match(matchNeg, m -> {
 			return f.bi("-", f.double_(0d), fun.apply(m[0]));
-		else if ((m = matchMul.apply(n)) != null)
+		}).match(matchMul, m -> {
 			return f.bi("*", fun.apply(m[0]), fun.apply(m[1]));
-		else if ((m = matchInv.apply(n)) != null)
+		}).match(matchInv, m -> {
 			return f.bi("/", f.double_(1d), fun.apply(m[0]));
-		else if ((m = matchPow.apply(n)) != null)
+		}).match(matchPow, m -> {
 			return f.invokeStatic(Math.class, "pow", fun.apply(m[0]), fun.apply(m[1]));
-		else if ((m = matchExp.apply(n)) != null)
+		}).match(matchExp, m -> {
 			return f.invokeStatic(Math.class, "exp", fun.apply(m[0]));
-		else if ((m = matchLn.apply(n)) != null)
+		}).match(matchLn, m -> {
 			return f.invokeStatic(Math.class, "log", fun.apply(m[0]));
-		else if ((m = matchSin.apply(n)) != null)
+		}).match(matchSin, m -> {
 			return f.invokeStatic(Math.class, "sin", fun.apply(m[0]));
-		else if ((m = matchCos.apply(n)) != null)
+		}).match(matchCos, m -> {
 			return f.invokeStatic(Math.class, "cos", fun.apply(m[0]));
-		else if (n instanceof Int)
-			return f.double_(((Int) n).number);
-		else
-			throw new RuntimeException();
+		}).applyIf(Int.class, i -> {
+			return f.double_(i.number);
+		}).nonNullResult();
 	}
 
 	public Node d(Node x, Node node0) {
@@ -119,33 +119,33 @@ public class Symbolic {
 		// sin a
 		// i
 		private Node rewrite(Node node) {
-			Tree tree;
-			Node[] m;
-			if ((m = Suite.match(".0 - .1").apply(node)) != null && m[0] != N0)
-				return add.apply(rewrite(m[0]), matchNeg.substitute(rewrite(m[1])));
-			else if ((m = Suite.match(".0 / .1").apply(node)) != null && m[0] != N1)
-				return mul.apply(rewrite(m[0]), matchInv.substitute(rewrite(m[1])));
-			else if ((m = matchPow.apply(node)) != null)
+			return new SwitchNode<Node>(node //
+			).match(".0 - .1", m -> {
+				return m[0] != N0 ? add.apply(rewrite(m[0]), matchNeg.substitute(rewrite(m[1]))) : null;
+			}).match(".0 / .1", m -> {
+				return m[0] != N1 ? mul.apply(rewrite(m[0]), matchInv.substitute(rewrite(m[1]))) : null;
+			}).match(matchPow, m -> {
 				return matchExp.substitute(matchLn.substitute(rewrite(m[0])), rewrite(m[1]));
-			else if (node instanceof Int)
-				return intOf((Int) node);
-			else if ((m = Suite.match(".0 .1").apply(node)) != null)
+			}).applyIf(Int.class, i -> {
+				return intOf(i);
+			}).match(".0 .1", m -> {
 				return Suite.match(".0 .1").substitute(m[0], rewrite(m[1]));
-			else if ((tree = Tree.decompose(node)) != null)
-				return Tree.of(tree.getOperator(), rewrite(tree.getLeft()), rewrite(tree.getRight()));
-			else
-				return node;
+			}).applyTree((op, l, r) -> {
+				return Tree.of(op, rewrite(l), rewrite(r));
+			}).applyIf(Node.class, n -> {
+				return n;
+			}).nonNullResult();
 		}
 
 		private Node sumOfProducts(Node node) {
 			class Recurse {
 				private Streamlet<Node> pos(Node node_) {
-					Node[] m;
-					if ((m = matchMul.apply(node_)) != null)
+					return new SwitchNode<Streamlet<Node>>(node_ //
+					).match(matchMul, m -> {
 						return Streamlet.concat(pos(m[0]), pos(m[1]));
-					else if ((m = matchInv.apply(node_)) != null)
+					}).match(matchInv, m -> {
 						return pos(m[0]).map(inv::apply);
-					else if ((m = matchPow.apply(node_)) != null)
+					}).match(matchPow, m -> {
 						if (m[1] instanceof Int) {
 							int power = ((Int) m[1]).number;
 							int div2 = power / 2;
@@ -161,42 +161,40 @@ public class Symbolic {
 							}
 						} else
 							return pos(m[0]).join2(sop(m[1])).map(matchPow::substitute);
-					else if ((m = matchExp.apply(node_)) != null)
+					}).match(matchExp, m -> {
 						return sop(m[0]).map(matchExp::substitute);
-					else if (node_ instanceof Tree)
+					}).applyTree((op, l, r) -> {
 						return Read.each(sumOfProducts(node_));
-					else if (node_ == N1)
-						return Read.empty();
-					else
-						return Read.each(node_);
+					}).applyIf(Node.class, n -> {
+						return node_ == N1 ? Read.empty() : Read.each(node_);
+					}).nonNullResult();
 				}
 
 				private Streamlet<Node> sop(Node node_) {
-					Node[] m;
-					if ((m = matchAdd.apply(node_)) != null)
+					return new SwitchNode<Streamlet<Node>>(node_ //
+					).match(matchAdd, m -> {
 						return Streamlet.concat(sop(m[0]), sop(m[1]));
-					else if ((m = matchNeg.apply(node_)) != null)
+					}).match(matchNeg, m -> {
 						return sop(m[0]).map(neg::apply);
-					else if ((m = matchMul.apply(node_)) != null)
+					}).match(matchMul, m -> {
 						return sop(m[0]).join2(sop(m[1])).map(mul::apply).map(this::productOfSums);
-					else if ((m = matchPow.apply(node_)) != null)
+					}).match(matchPow, m -> {
 						return sop(productOfSums(node_));
-					else if ((m = matchLn.apply(node_)) != null)
+					}).match(matchLn, m -> {
 						return pos(m[0]).map(matchLn::substitute);
-					else if ((m = Suite.match("sin (.0 + .1)").apply(node_)) != null)
+					}).match("sin (.0 + .1)", m -> {
 						return Read.each( //
 								mul.recompose(x, Read.each(matchSin.substitute(m[0]), matchCos.substitute(m[1]))), //
 								mul.recompose(x, Read.each(matchCos.substitute(m[0]), matchSin.substitute(m[1]))));
-					else if ((m = Suite.match("cos (.0 + .1)").apply(node_)) != null)
+					}).match("cos (.0 + .1)", m -> {
 						return Read.each( //
 								mul.recompose(x, Read.each(matchCos.substitute(m[0]), matchCos.substitute(m[1]))), //
 								mul.recompose(x, Read.each(neg.apply(matchSin.substitute(m[0])), matchSin.substitute(m[1]))));
-					else if (node_ instanceof Tree)
+					}).applyTree((op, l, r) -> {
 						return Read.each(productOfSums(node_));
-					else if (node_ == N0)
-						return Read.empty();
-					else
-						return Read.each(node_);
+					}).applyIf(Node.class, n -> {
+						return node_ == N0 ? Read.empty() : Read.each(node_);
+					}).nonNullResult();
 				}
 
 				private Node productOfSums(Node node) {
@@ -228,30 +226,32 @@ public class Symbolic {
 
 			class Poly {
 				private Opt<Map> poly(Node node) {
-					Node[] m;
-					if ((m = matchAdd.apply(node)) != null)
+					return new SwitchNode<Opt<Map>>(node //
+					).match(matchAdd, m -> {
 						return poly(m[0]).join(poly(m[1]), (map0, map1) -> {
 							Map map = new Map();
 							for (IntObjPair<Node> pair : IntObjStreamlet.concat(map0.streamlet(), map1.streamlet()))
 								map.add(pair.t0, pair.t1);
 							return map;
 						});
-					else if ((m = matchMul.apply(node)) != null)
+					}).match(matchMul, m -> {
 						return multiply(poly(m[0]), poly(m[1]));
-					else if ((m = matchPow.apply(node)) != null && m[1] instanceof Int)
-						return pow(m[0], ((Int) m[1]).number);
-					else if (node.compareTo(x) == 0) {
-						Map map = new Map();
-						map.put(1, N1);
-						return Opt.of(map);
-					} else if (node == N0)
-						return Opt.of(new Map());
-					else if (!isContains_x(node)) {
-						Map map = new Map();
-						map.put(0, node);
-						return Opt.of(map);
-					} else
-						return Opt.none();
+					}).match(matchPow, m -> {
+						return m[1] instanceof Int ? pow(m[0], ((Int) m[1]).number) : null;
+					}).applyIf(Node.class, n -> {
+						if (node.compareTo(x) == 0) {
+							Map map = new Map();
+							map.put(1, N1);
+							return Opt.of(map);
+						} else if (node == N0)
+							return Opt.of(new Map());
+						else if (!isContains_x(node)) {
+							Map map = new Map();
+							map.put(0, node);
+							return Opt.of(map);
+						} else
+							return Opt.none();
+					}).nonNullResult();
 				}
 
 				private Opt<Map> multiply(Opt<Map> opt0, Opt<Map> opt1) {
@@ -296,58 +296,62 @@ public class Symbolic {
 		}
 
 		private Node d(Node node) { // differentiation
-			Node[] m;
-			if ((m = matchAdd.apply(node)) != null)
+			return new SwitchNode<Node>(node //
+			).match(matchAdd, m -> {
 				return add.apply(d(m[0]), d(m[1]));
-			else if ((m = matchNeg.apply(node)) != null)
+			}).match(matchNeg, m -> {
 				return matchNeg.substitute(d(m[0]));
-			else if ((m = matchMul.apply(node)) != null)
+			}).match(matchMul, m -> {
 				return add.apply(mul.apply(m[0], d(m[1])), mul.apply(m[1], d(m[0])));
-			else if ((m = matchInv.apply(node)) != null)
+			}).match(matchInv, m -> {
 				return mul.apply(matchInv.substitute(mul.apply(m[0], m[0])), matchNeg.substitute(d(m[0])));
-			else if ((m = matchExp.apply(node)) != null)
+			}).match(matchExp, m -> {
 				return mul.apply(matchExp.substitute(m[0]), d(m[0]));
-			else if ((m = matchLn.apply(node)) != null)
+			}).match(matchLn, m -> {
 				return mul.apply(matchInv.substitute(m[0]), d(m[0]));
-			else if ((m = Suite.match("sin .0").apply(node)) != null)
+			}).match(matchSin, m -> {
 				return mul.apply(matchCos.substitute(m[0]), d(m[0]));
-			else if ((m = Suite.match("cos .0").apply(node)) != null)
+			}).match(matchCos, m -> {
 				return mul.apply(matchNeg.substitute(matchSin.substitute(m[0])), d(m[0]));
-			else if (node == x)
-				return N1;
-			else if (node instanceof Int)
-				return N0;
-			else
-				throw new RuntimeException();
+			}).applyIf(Node.class, n -> {
+				if (node == x)
+					return N1;
+				else if (node instanceof Int)
+					return N0;
+				else
+					return null;
+			}).nonNullResult();
 		}
 
 		private Opt<Node> i(Node node) { // integration
-			Node[] m;
-			if ((m = matchAdd.apply(node)) != null) {
+			return new SwitchNode<Opt<Node>>(node //
+			).match(matchAdd, m -> {
 				Opt<Node> iudxs = i(m[0]);
 				Opt<Node> ivdxs = i(m[1]);
 				return iudxs.join(ivdxs, add::apply);
-			} else if ((m = matchNeg.apply(node)) != null)
+			}).match(matchNeg, m -> {
 				return i(m[0]).map(matchNeg::substitute);
-			else if ((m = matchMul.apply(node)) != null) {
+			}).match(matchMul, m -> {
 				Node u = m[0];
 				Opt<Node> vs = i(m[1]);
 				Node dudx = d(u);
 				return vs.concatMap(v -> i(mul.apply(v, dudx)).map(ivdu -> add.apply(mul.apply(u, v), matchNeg.substitute(ivdu))));
-			} else if ((m = matchInv.apply(node)) != null && m[0].compareTo(x) == 0)
-				return Opt.of(Suite.match("ln .0").substitute(x));
-			else if ((m = matchExp.apply(node)) != null && m[0].compareTo(x) == 0)
-				return Opt.of(node);
-			else if ((m = Suite.match("sin .0").apply(node)) != null && m[0].compareTo(x) == 0)
+			}).match(matchInv, m -> {
+				return m[0].compareTo(x) == 0 ? Opt.of(Suite.match("ln .0").substitute(x)) : null;
+			}).match(matchExp, m -> {
+				return m[0].compareTo(x) == 0 ? Opt.of(node) : null;
+			}).match(matchSin, m -> {
 				return Opt.of(matchNeg.substitute(matchCos.apply(x)));
-			else if ((m = Suite.match("cos .0").apply(node)) != null && m[0].compareTo(x) == 0)
+			}).match(matchCos, m -> {
 				return Opt.of(matchSin.substitute(x));
-			else if (node.compareTo(x) == 0)
-				return Opt.of(mul.apply(matchInv.substitute(Int.of(2)), mul.apply(x, x)));
-			else if (node instanceof Int)
-				return Opt.of(mul.apply(node, x));
-			else
-				return Opt.none();
+			}).applyIf(Node.class, n -> {
+				if (node.compareTo(x) == 0)
+					return Opt.of(mul.apply(matchInv.substitute(Int.of(2)), mul.apply(x, x)));
+				else if (node instanceof Int)
+					return Opt.of(mul.apply(node, x));
+				else
+					return Opt.none();
+			}).nonNullResult();
 		}
 
 		private boolean isContains_x(Node node) {

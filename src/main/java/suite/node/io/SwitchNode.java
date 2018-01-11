@@ -2,6 +2,7 @@ package suite.node.io;
 
 import java.io.IOException;
 
+import suite.BindArrayUtil.Match;
 import suite.Suite;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.node.Atom;
@@ -51,11 +52,15 @@ public class SwitchNode<R> {
 		return this;
 	}
 
-	public SwitchNode<R> match(String pattern, Fun<Node[], R> fun) {
+	public SwitchNode<R> match(Match match, Fun<Node[], R> fun) {
 		Node[] m;
-		if (result == null && (m = Suite.match(pattern).apply(in)) != null)
+		if (result == null && (m = match.apply(in)) != null)
 			result = fun.apply(m);
 		return this;
+	}
+
+	public SwitchNode<R> match(String pattern, Fun<Node[], R> fun) {
+		return match(Suite.match(pattern), fun);
 	}
 
 	public R nonNullResult() {
