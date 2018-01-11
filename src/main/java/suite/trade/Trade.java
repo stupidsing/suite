@@ -13,6 +13,7 @@ public class Trade {
 	public final String symbol;
 	public final float price;
 	public final String strategy;
+	public final String remark;
 
 	public static Trade of(String[] array) {
 		return new Trade(array[0], Integer.parseInt(array[1]), array[2], Float.parseFloat(array[3]), array[4]);
@@ -27,11 +28,22 @@ public class Trade {
 	}
 
 	private Trade(String date, int buySell, String symbol, float price, String strategy) {
-		this.date = date;
+		String date_, remark_;
+
+		if (date.endsWith("#")) {
+			date_ = date.substring(0, date.length() - 1);
+			remark_ = "#";
+		} else {
+			date_ = date;
+			remark_ = "-";
+		}
+
+		this.date = date_;
 		this.buySell = buySell;
 		this.symbol = symbol;
 		this.price = price;
 		this.strategy = strategy;
+		this.remark = remark_;
 	}
 
 	public String record() {

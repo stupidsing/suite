@@ -78,6 +78,7 @@ public class DailyMain extends ExecutableProgram {
 
 		String sellPool = "sellpool";
 		String ymd = Time.now().ymd();
+		String td = ymd + "#";
 
 		// perform systematic trading
 		List<Result> results = List.of( //
@@ -127,16 +128,16 @@ public class DailyMain extends ExecutableProgram {
 				+ requestTrades //
 						.filterValue(trade -> 0 < trade.buySell) //
 						.map((strategy, t) -> "" //
-								+ "\n" + Trade.of(ymd, -t.buySell, t.symbol, t.price, sellPool).record() //
-								+ "\n" + Trade.of(ymd, +t.buySell, t.symbol, t.price, strategy).record()) //
+								+ "\n" + Trade.of(td, -t.buySell, t.symbol, t.price, sellPool).record() //
+								+ "\n" + Trade.of(td, +t.buySell, t.symbol, t.price, strategy).record()) //
 						.collect(As::joined) //
 				+ "\n" //
 				+ "\nSELL REQUESTS" //
 				+ requestTrades //
 						.filterValue(trade -> trade.buySell < 0) //
 						.map((strategy, t) -> "" //
-								+ "\n" + Trade.of(ymd, +t.buySell, t.symbol, t.price, strategy).record() //
-								+ "\n" + Trade.of(ymd, -t.buySell, t.symbol, t.price, sellPool).record()) //
+								+ "\n" + Trade.of(td, +t.buySell, t.symbol, t.price, strategy).record() //
+								+ "\n" + Trade.of(td, -t.buySell, t.symbol, t.price, sellPool).record()) //
 						.collect(As::joined) //
 				+ "\n" //
 				+ "\nTOTAL BUYS_ = " + To.string(buys_) //

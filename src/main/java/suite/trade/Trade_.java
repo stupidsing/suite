@@ -96,8 +96,11 @@ public class Trade_ {
 
 		IntIntSink tx = (i0_, i1_) -> {
 			if (Ints_.range(i0_, i1_).mapInt(i -> trades0[i].buySell).sum() != 0)
-				while (i0_ < i1_)
-					trades1.add(trades0[i0_++]);
+				while (i0_ < i1_) {
+					Trade trade0 = trades0[i0_++];
+					if (!String_.equals(trade0.remark, "#"))
+						trades1.add(trade0);
+				}
 		};
 
 		for (int i = 1; i < length0; i++) {
