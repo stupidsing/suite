@@ -260,11 +260,20 @@ public class FunFactory {
 		return inspect.rewrite(FunExpr.class, fun, t0);
 	}
 
-	public FunExpr seq(FunExpr e0, FunExpr e1) {
-		SeqFunExpr expr = new SeqFunExpr();
-		expr.left = e0;
-		expr.right = e1;
-		return expr;
+	public FunExpr seq(FunExpr... fes) {
+		int i = fes.length;
+		if (0 < i) {
+			FunExpr fe = fes[--i];
+			while (0 < i) {
+				SeqFunExpr expr = new SeqFunExpr();
+				expr.left = fes[--i];
+				expr.right = fe;
+
+				fe = expr;
+			}
+			return fe;
+		} else
+			return _void();
 	}
 
 	public FunExpr _void() {
