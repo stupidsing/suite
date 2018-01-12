@@ -17,7 +17,7 @@ public class CompileProverImpl implements ProverFactory {
 	private static FunExpr ok = f._true();
 
 	@Override
-	public Prove_ compile(Node node) {
+	public Prove_ prover(Node node) {
 		FunCreator<Prove_> fc = FunCreator.of(Prove_.class, false);
 
 		return fc.create(new Iterate<>() {
@@ -35,7 +35,7 @@ public class CompileProverImpl implements ProverFactory {
 					return compile_(m[0], compile_(m[1], cps));
 				}).match(".0; .1", m -> {
 					FunExpr fcps;
-					if (Boolean.TRUE) {
+					if (Boolean.FALSE) {
 						Runnable r = FunCreator.of(Runnable.class, false).create(() -> cps).apply(Map.ofEntries());
 						fcps = f.object(r).invoke("run");
 					} else
@@ -43,6 +43,10 @@ public class CompileProverImpl implements ProverFactory {
 					FunExpr f0 = compile_(m[0], fcps);
 					FunExpr f1 = compile_(m[1], fcps);
 					return f.seq(f0, f1);
+				}).match("fail", m -> {
+					return f._void();
+				}).match("yes", m -> {
+					return cps;
 				}).nonNullResult();
 			}
 		}).apply(Map.ofEntries());

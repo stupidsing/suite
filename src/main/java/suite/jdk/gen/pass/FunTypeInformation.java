@@ -27,6 +27,7 @@ import suite.jdk.gen.FunExprM.NewFunExpr;
 import suite.jdk.gen.FunExprM.PrintlnFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
+import suite.jdk.gen.FunExprM.VoidFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
@@ -91,6 +92,8 @@ public class FunTypeInformation {
 			return typeOf(e1.do_);
 		}).applyIf(SeqFunExpr.class, e1 -> {
 			return typeOf(e1.right);
+		}).applyIf(VoidFunExpr.class, e1 -> {
+			return Type.VOID;
 		}).nonNullResult();
 	}
 

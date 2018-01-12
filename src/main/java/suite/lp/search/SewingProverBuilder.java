@@ -29,7 +29,7 @@ public class SewingProverBuilder implements Builder {
 
 		return goal -> {
 			Node goal1 = SewingGeneralizerImpl.generalize(goal);
-			Prove_ pred = sewingProver.compile(goal1);
+			Prove_ pred = sewingProver.prover(goal1);
 
 			return (source, sink) -> {
 				ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);

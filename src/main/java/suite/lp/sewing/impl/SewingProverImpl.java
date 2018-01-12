@@ -197,7 +197,7 @@ public class SewingProverImpl implements ProverFactory {
 			throw new RuntimeException("must not contain wild rules");
 	}
 
-	public Prove_ compile(Node node) {
+	public Prove_ prover(Node node) {
 		Trampoline tr = cutBegin(compileTr(passThru, node));
 
 		return pc -> {

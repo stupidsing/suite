@@ -176,7 +176,7 @@ public class CommandDispatcher {
 			code = query(new SewingProverBuilder(opt.pc(ruleSet)), ruleSet, node);
 			break;
 		case QUERYSEWINGELAB:
-			elaborate(node, n -> new SewingProverImpl(ruleSet).compile(n).test(new ProverConfig(ruleSet)));
+			elaborate(node, n -> new SewingProverImpl(ruleSet).prover(n).test(new ProverConfig(ruleSet)));
 			break;
 		case RESET:
 			ruleSet = Suite.newRuleSet();
