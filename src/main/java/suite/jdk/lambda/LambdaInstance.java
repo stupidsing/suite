@@ -1,6 +1,5 @@
 package suite.jdk.lambda;
 
-import java.util.Collections;
 import java.util.Map;
 
 import suite.jdk.gen.FunExpression.FunExpr;
@@ -31,7 +30,7 @@ public class LambdaInstance<I> {
 	}
 
 	public static <I> LambdaInstance<I> of(LambdaInterface<I> lambdaInterface, FunExpr expr) {
-		return of(LambdaImplementation.of(lambdaInterface, Collections.emptyMap(), expr), Collections.emptyMap());
+		return of(LambdaImplementation.of(lambdaInterface, Map.ofEntries(), expr), Map.ofEntries());
 	}
 
 	public static <I> LambdaInstance<I> of(LambdaImplementation<I> lambdaImplementation, Map<String, Object> fieldValues) {

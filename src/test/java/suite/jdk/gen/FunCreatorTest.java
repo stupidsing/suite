@@ -3,7 +3,6 @@ package suite.jdk.gen;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.function.BiPredicate;
 
@@ -34,7 +33,7 @@ public class FunCreatorTest {
 	private static FunFactory f = new FunFactory();
 	private static LambdaInterface<Int_Int> lambdaClassIntIntFun = LambdaInterface.of(Int_Int.class);
 
-	private Map<String, Object> void_ = Collections.emptyMap();
+	private Map<String, Object> void_ = Map.ofEntries();
 
 	@Test
 	public void testApply0() {

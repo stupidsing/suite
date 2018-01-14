@@ -6,7 +6,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
@@ -52,7 +51,7 @@ public class HttpUtil {
 	}
 
 	public static HttpResult http(String method, URL url, Outlet<Bytes> in) {
-		return http(method, url, in, Collections.emptyMap());
+		return http(method, url, in, Map.ofEntries());
 	}
 
 	public static HttpResult http(String method, URL url, Map<String, String> headers) {
