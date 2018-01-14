@@ -77,8 +77,9 @@ public class Mapify {
 	private Mapifier getMapifier(Type type) {
 		Mapifier mapifier = mapifiers.get(type);
 		if (mapifier == null) {
-			mapifiers.put(type, new Mapifier(object -> apply_(getMapifier(type).mapify, object) //
-					, object -> apply_(getMapifier(type).unmapify, object)));
+			mapifiers.put(type, new Mapifier( //
+					object -> apply_(getMapifier(type).mapify, object), //
+					object -> apply_(getMapifier(type).unmapify, object)));
 			mapifiers.put(type, mapifier = newMapifier(type));
 		}
 		return mapifier;
