@@ -1,7 +1,6 @@
 package suite.node.io;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -84,7 +83,7 @@ public class Rewriter {
 				type = ReadType.TERM;
 				terminal = node;
 				op = null;
-				children = Collections.emptyList();
+				children = List.of();
 			}
 
 			return new NodeRead(type, terminal, op, children);

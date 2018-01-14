@@ -7,7 +7,6 @@ import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -139,7 +138,7 @@ public class Inspect {
 
 		// do not display same field of different base classes
 		Set<String> names = new HashSet<>();
-		List<Field> parentFields = superClass != null ? fields(superClass) : Collections.emptyList();
+		List<Field> parentFields = superClass != null ? fields(superClass) : List.of();
 		List<Field> childFields = Read.from(clazz.getDeclaredFields()) //
 				.filter(field -> {
 					int modifiers = field.getModifiers();
@@ -171,7 +170,7 @@ public class Inspect {
 
 		// do not display same method of different base classes
 		Set<String> names = new HashSet<>();
-		List<Method> parentMethods = superClass != null ? methods(superClass) : Collections.emptyList();
+		List<Method> parentMethods = superClass != null ? methods(superClass) : List.of();
 		List<Method> childMethods = Read.from(clazz.getDeclaredMethods()) //
 				.filter(method -> {
 					int modifiers = method.getModifiers();

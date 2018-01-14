@@ -1,7 +1,6 @@
 package suite.ebnf.topdown;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -61,7 +60,7 @@ public class ReduceHeadRecursion {
 	}
 
 	private HeadRecursionForm getHeadRecursionForm(Grammar en0, String entity) {
-		List<Grammar> empty = Collections.emptyList();
+		List<Grammar> empty = List.of();
 		Grammar en = expand(en0);
 		HeadRecursionForm hrf;
 

@@ -84,7 +84,7 @@ public interface BackAllocator {
 
 			return index -> monthPred.test(Time.ofEpochSec(akds.ts[index - 1]).month()) //
 					? onDateTime.onDateTime(index) //
-					: Collections.emptyList();
+					: List.of();
 		};
 	}
 
@@ -129,7 +129,7 @@ public interface BackAllocator {
 							.mapValue(potential -> 1d / each) //
 							.toList();
 				} else
-					return Collections.emptyList();
+					return List.of();
 			};
 		};
 	}
@@ -164,7 +164,7 @@ public interface BackAllocator {
 
 				return -.03f < indexReturn //
 						? onDateTime.onDateTime(index) //
-						: Collections.emptyList();
+						: List.of();
 			};
 		};
 	}

@@ -6,7 +6,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -115,7 +114,7 @@ public class Suite {
 	}
 
 	public static <T> T useLibraries(Source<T> source) {
-		return useLibraries(Collections.emptyList(), source);
+		return useLibraries(List.of(), source);
 	}
 
 	public static <T> T useLibraries(List<String> libraries, Source<T> source) {

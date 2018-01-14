@@ -1,7 +1,6 @@
 package suite.trade;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +30,7 @@ import suite.util.String_;
 public class Trade_ {
 
 	public static double barrier = 1d;
-	public static Set<String> blackList = Collections.emptySet();
+	public static Set<String> blackList = Set.of();
 	public static boolean isCacheQuotes = true;
 	public static boolean isFreePlay = false;
 	public static boolean isMarketOrder = true;
@@ -59,7 +58,7 @@ public class Trade_ {
 			String symbol = trade.symbol;
 			int buySell = trade.buySell;
 			float price = trade.price;
-			List<IntFltPair> acquires0 = acquireBySymbol.getOrDefault(symbol, Collections.emptyList());
+			List<IntFltPair> acquires0 = acquireBySymbol.getOrDefault(symbol, List.of());
 			List<IntFltPair> acquires1 = new ArrayList<>();
 
 			for (IntFltPair acquire : acquires0) {

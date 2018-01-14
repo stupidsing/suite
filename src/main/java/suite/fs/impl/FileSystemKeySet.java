@@ -1,6 +1,5 @@
 package suite.fs.impl;
 
-import java.util.Collections;
 import java.util.List;
 
 import suite.fs.KeyDataMutator;
@@ -21,7 +20,7 @@ import suite.util.List_;
  */
 public class FileSystemKeySet {
 
-	private List<NameKey> emptyKeys = Collections.emptyList();
+	private List<NameKey> emptyKeys = List.of();
 	private FileSystemKeyUtil keyUtil;
 	private KeyDataStore<Bytes> store;
 

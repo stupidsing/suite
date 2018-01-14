@@ -5,7 +5,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -140,7 +139,7 @@ public class Yahoo {
 										|| !(json1 = json0.path("unadjquote")).isMissingNode())
 									return json1;
 								else
-									return Collections.emptyList();
+									return List.of();
 							}) //
 							.flatMap(json_ -> json_.path("unadj" + tag)));
 

@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,7 +48,7 @@ public class Grapher {
 		private List<IntIntPair> children;
 
 		private GN(Node terminal) {
-			this(ReadType.TERM, terminal, null, Collections.emptyList());
+			this(ReadType.TERM, terminal, null, List.of());
 		}
 
 		private GN(ReadType type, Node terminal, Operator op, List<IntIntPair> children) {
