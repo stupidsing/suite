@@ -18,6 +18,7 @@ import suite.jdk.gen.FunExprM.CheckCastFunExpr;
 import suite.jdk.gen.FunExprM.ConstantFunExpr;
 import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
 import suite.jdk.gen.FunExprM.FieldTypeFunExpr;
+import suite.jdk.gen.FunExprM.FieldTypeSetFunExpr;
 import suite.jdk.gen.FunExprM.IfFunExpr;
 import suite.jdk.gen.FunExprM.IndexFunExpr;
 import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
@@ -72,6 +73,8 @@ public class FunTypeInformation {
 			return e1.fieldType;
 		}).applyIf(FieldTypeFunExpr.class, e1 -> {
 			return e1.fieldType;
+		}).applyIf(FieldTypeSetFunExpr.class, e1 -> {
+			return Type.VOID;
 		}).applyIf(IfFunExpr.class, e1 -> {
 			return typeOf(e1.then);
 		}).applyIf(IndexFunExpr.class, e1 -> {
@@ -91,7 +94,10 @@ public class FunTypeInformation {
 		}).applyIf(ProfileFunExpr.class, e1 -> {
 			return typeOf(e1.do_);
 		}).applyIf(SeqFunExpr.class, e1 -> {
-			return typeOf(e1.right);
+			if (typeOf(e1.left) == Type.VOID)
+				return typeOf(e1.right);
+			else
+				throw new RuntimeException();
 		}).applyIf(VoidFunExpr.class, e1 -> {
 			return Type.VOID;
 		}).nonNullResult();

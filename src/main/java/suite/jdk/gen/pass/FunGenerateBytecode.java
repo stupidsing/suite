@@ -28,6 +28,7 @@ import suite.jdk.gen.FunExprM.CheckCastFunExpr;
 import suite.jdk.gen.FunExprM.ConstantFunExpr;
 import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
 import suite.jdk.gen.FunExprM.FieldTypeFunExpr;
+import suite.jdk.gen.FunExprM.FieldTypeSetFunExpr;
 import suite.jdk.gen.FunExprM.If1FunExpr;
 import suite.jdk.gen.FunExprM.If2FunExpr;
 import suite.jdk.gen.FunExprM.IfFunExpr;
@@ -123,6 +124,10 @@ public class FunGenerateBytecode {
 		}).doIf(FieldTypeFunExpr.class, e1 -> {
 			visit_(e1.object);
 			list.add(factory.createGetField(((ObjectType) fti.typeOf(e1.object)).getClassName(), e1.fieldName, e1.fieldType));
+		}).doIf(FieldTypeSetFunExpr.class, e1 -> {
+			visit_(e1.object);
+			visit_(e1.value);
+			list.add(factory.createPutField(((ObjectType) fti.typeOf(e1.object)).getClassName(), e1.fieldName, e1.fieldType));
 		}).doIf(If1FunExpr.class, e1 -> {
 			visit_(e1.if_);
 			visitIf(Const.IFEQ, e1);

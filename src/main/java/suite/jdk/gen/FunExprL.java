@@ -35,6 +35,12 @@ public class FunExprL {
 		public String fieldName;
 	}
 
+	public static class FieldSetFunExpr extends FunExpr {
+		public String fieldName;
+		public FunExpr object;
+		public FunExpr value;
+	}
+
 	public static class InvokeLambdaFunExpr extends FunExpr {
 		public boolean isExpand;
 		public LambdaInstance<?> lambda;

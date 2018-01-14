@@ -62,6 +62,13 @@ public class FunExprM {
 		public FunExpr object;
 	}
 
+	public static class FieldTypeSetFunExpr extends FunExpr {
+		public String fieldName;
+		public Type fieldType;
+		public FunExpr object;
+		public FunExpr value;
+	}
+
 	public static class IfFunExpr extends FunExpr {
 		public FunExpr then, else_;
 	}

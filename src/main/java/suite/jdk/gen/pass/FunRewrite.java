@@ -20,6 +20,7 @@ import suite.jdk.gen.FunExprL.ApplyFunExpr;
 import suite.jdk.gen.FunExprL.DeclareLocalFunExpr;
 import suite.jdk.gen.FunExprL.FieldFunExpr;
 import suite.jdk.gen.FunExprL.FieldInjectFunExpr;
+import suite.jdk.gen.FunExprL.FieldSetFunExpr;
 import suite.jdk.gen.FunExprL.InvokeLambdaFunExpr;
 import suite.jdk.gen.FunExprL.ObjectFunExpr;
 import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
@@ -145,6 +146,12 @@ public class FunRewrite extends FunFactory {
 				return rewrite(this_().field(e1.fieldName, type));
 			else
 				throw new RuntimeException(e1.fieldName);
+		}).applyIf(FieldSetFunExpr.class, e1 -> {
+			FunExpr object = rewrite(e1.object);
+			String fieldName = e1.fieldName;
+			Class<?> clazz = fti.classOf(object);
+			Field field = Rethrow.ex(() -> clazz.getField(fieldName));
+			return object.cast_(field.getDeclaringClass()).fieldSet(fieldName, Type.getType(field.getType()), e1.value);
 		}).applyIf(InvokeLambdaFunExpr.class, e1 -> {
 			LambdaInstance<?> l_inst = e1.lambda;
 			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
