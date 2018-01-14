@@ -18,7 +18,7 @@ import suite.jdk.gen.FunExprK.DeclareParameterFunExpr;
 import suite.jdk.gen.FunExprK.PlaceholderFunExpr;
 import suite.jdk.gen.FunExprL.ApplyFunExpr;
 import suite.jdk.gen.FunExprL.DeclareLocalFunExpr;
-import suite.jdk.gen.FunExprL.FieldFunExpr;
+import suite.jdk.gen.FunExprL.FieldFunExpr_;
 import suite.jdk.gen.FunExprL.FieldInjectFunExpr;
 import suite.jdk.gen.FunExprL.FieldSetFunExpr;
 import suite.jdk.gen.FunExprL.InvokeLambdaFunExpr;
@@ -134,24 +134,21 @@ public class FunRewrite extends FunFactory {
 
 			placeholders.put(e1.var, lfe);
 			return seq(alfe, rewrite(e1.do_));
-		}).applyIf(FieldFunExpr.class, e1 -> {
-			FunExpr object = rewrite(e1.object);
+		}).applyIf(FieldFunExpr_.class, e1 -> {
+			FunExpr set = e1 instanceof FieldSetFunExpr ? ((FieldSetFunExpr) e1).value : null;
+			FunExpr object0 = rewrite(e1.object);
 			String fieldName = e1.fieldName;
-			Class<?> clazz = fti.classOf(object);
+			Class<?> clazz = fti.classOf(object0);
 			Field field = Rethrow.ex(() -> clazz.getField(fieldName));
-			return object.cast_(field.getDeclaringClass()).field(fieldName, Type.getType(field.getType()));
+			FunExpr object1 = object0.cast_(field.getDeclaringClass());
+			Type fieldType = Type.getType(field.getType());
+			return set == null ? object1.field(fieldName, fieldType) : object1.fieldSet(fieldName, fieldType, set);
 		}).applyIf(FieldInjectFunExpr.class, e1 -> {
 			Type type = fieldTypes.get(e1.fieldName);
 			if (type != null)
 				return rewrite(this_().field(e1.fieldName, type));
 			else
 				throw new RuntimeException(e1.fieldName);
-		}).applyIf(FieldSetFunExpr.class, e1 -> {
-			FunExpr object = rewrite(e1.object);
-			String fieldName = e1.fieldName;
-			Class<?> clazz = fti.classOf(object);
-			Field field = Rethrow.ex(() -> clazz.getField(fieldName));
-			return object.cast_(field.getDeclaringClass()).fieldSet(fieldName, Type.getType(field.getType()), e1.value);
 		}).applyIf(InvokeLambdaFunExpr.class, e1 -> {
 			LambdaInstance<?> l_inst = e1.lambda;
 			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;

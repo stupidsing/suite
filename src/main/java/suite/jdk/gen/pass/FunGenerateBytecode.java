@@ -27,7 +27,7 @@ import suite.jdk.gen.FunExprM.CastFunExpr;
 import suite.jdk.gen.FunExprM.CheckCastFunExpr;
 import suite.jdk.gen.FunExprM.ConstantFunExpr;
 import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
-import suite.jdk.gen.FunExprM.FieldTypeFunExpr;
+import suite.jdk.gen.FunExprM.FieldTypeFunExpr_;
 import suite.jdk.gen.FunExprM.FieldTypeSetFunExpr;
 import suite.jdk.gen.FunExprM.If1FunExpr;
 import suite.jdk.gen.FunExprM.If2FunExpr;
@@ -128,13 +128,18 @@ public class FunGenerateBytecode {
 				list.add(factory.createConstant(e1.constant));
 			}).doIf(FieldStaticFunExpr.class, e1 -> {
 				list.add(factory.createGetStatic(className, e1.fieldName, e1.fieldType));
-			}).doIf(FieldTypeFunExpr.class, e1 -> {
+			}).doIf(FieldTypeFunExpr_.class, e1 -> {
+				String className = ((ObjectType) fti.typeOf(e1.object)).getClassName();
+				FunExpr set = e1 instanceof FieldTypeSetFunExpr ? ((FieldTypeSetFunExpr) e1).value : null;
+				Instruction instruction;
 				visit_(e1.object);
-				list.add(factory.createGetField(((ObjectType) fti.typeOf(e1.object)).getClassName(), e1.fieldName, e1.fieldType));
-			}).doIf(FieldTypeSetFunExpr.class, e1 -> {
-				visit_(e1.object);
-				visit_(e1.value);
-				list.add(factory.createPutField(((ObjectType) fti.typeOf(e1.object)).getClassName(), e1.fieldName, e1.fieldType));
+				if (set != null) {
+					visit_(set);
+					instruction = factory.createPutField(className, e1.fieldName, e1.fieldType);
+				} else {
+					instruction = factory.createGetField(className, e1.fieldName, e1.fieldType);
+				}
+				list.add(instruction);
 			}).doIf(If1FunExpr.class, e1 -> {
 				visit_(e1.if_);
 				visitIf(Const.IFEQ, e1);
