@@ -36,15 +36,37 @@ import suite.util.String_;
  */
 public class Inspect {
 
-	private Map<Class<?>, List<Field>> fieldsByClass = new ConcurrentHashMap<>();
-	private Map<Class<?>, List<Method>> gettersByClass = new ConcurrentHashMap<>();
-	private Map<Class<?>, List<Method>> methodsByClass = new ConcurrentHashMap<>();
-	private Map<Class<?>, List<Property>> propertiesByClass = new ConcurrentHashMap<>();
-
 	public interface Property {
 		public Object get(Object object);
 
 		public void set(Object object, Object value);
+	}
+
+	/**
+	 * @return true if both input value objects are of the same class and having all
+	 *         fields equal.
+	 */
+	public <T> boolean equals(T o0, T o1) {
+		return o0 == o1 || o0 != null && o1 != null //
+				&& o0.getClass() == o1.getClass() //
+				&& Rethrow.ex(() -> {
+					boolean result = true;
+					for (Field field : fields(o0.getClass()))
+						result &= Objects.equals(field.get(o0), field.get(o1));
+					return result;
+				});
+	}
+
+	/**
+	 * @return a combined hash code of all fields of the input value object.
+	 */
+	public int hashCode(Object object) {
+		return Rethrow.ex(() -> {
+			int h = 7;
+			for (Field field : fields(object.getClass()))
+				h = h * 31 + Objects.hashCode(field.get(object));
+			return h;
+		});
 	}
 
 	public String toString(Object object) {
@@ -95,6 +117,39 @@ public class Inspect {
 
 		return sb.toString();
 	}
+
+	public List<Field> fields(Class<?> clazz) {
+		List<Field> fields = fieldsByClass.get(clazz);
+		if (fields == null)
+			fieldsByClass.put(clazz, fields = getFields_(clazz));
+		return fields;
+	}
+
+	public List<Method> getters(Class<?> clazz) {
+		List<Method> getters = gettersByClass.get(clazz);
+		if (getters == null)
+			gettersByClass.put(clazz, getters = getGetters_(clazz));
+		return getters;
+	}
+
+	public List<Method> methods(Class<?> clazz) {
+		List<Method> methods = methodsByClass.get(clazz);
+		if (methods == null)
+			methodsByClass.put(clazz, methods = getMethods_(clazz));
+		return methods;
+	}
+
+	public List<Property> properties(Class<?> clazz) {
+		List<Property> properties = propertiesByClass.get(clazz);
+		if (properties == null)
+			propertiesByClass.put(clazz, properties = getProperties_(clazz));
+		return properties;
+	}
+
+	private Map<Class<?>, List<Field>> fieldsByClass = new ConcurrentHashMap<>();
+	private Map<Class<?>, List<Method>> gettersByClass = new ConcurrentHashMap<>();
+	private Map<Class<?>, List<Method>> methodsByClass = new ConcurrentHashMap<>();
+	private Map<Class<?>, List<Property>> propertiesByClass = new ConcurrentHashMap<>();
 
 	private class Extract {
 		private String prefix;
@@ -286,33 +341,6 @@ public class Inspect {
 	}
 
 	/**
-	 * @return true if both input value objects are of the same class and having all
-	 *         fields equal.
-	 */
-	public <T> boolean equals(T o0, T o1) {
-		return o0 == o1 || o0 != null && o1 != null //
-				&& o0.getClass() == o1.getClass() //
-				&& Rethrow.ex(() -> {
-					boolean result = true;
-					for (Field field : fields(o0.getClass()))
-						result &= Objects.equals(field.get(o0), field.get(o1));
-					return result;
-				});
-	}
-
-	/**
-	 * @return a combined hash code of all fields of the input value object.
-	 */
-	public int hashCode(Object object) {
-		return Rethrow.ex(() -> {
-			int h = 7;
-			for (Field field : fields(object.getClass()))
-				h = h * 31 + Objects.hashCode(field.get(object));
-			return h;
-		});
-	}
-
-	/**
 	 * @return the input value object recursively rewritten using the input
 	 *         function.
 	 */
@@ -351,34 +379,6 @@ public class Inspect {
 			field.set(t1, v1);
 		}
 		return t1;
-	}
-
-	public List<Field> fields(Class<?> clazz) {
-		List<Field> fields = fieldsByClass.get(clazz);
-		if (fields == null)
-			fieldsByClass.put(clazz, fields = getFields_(clazz));
-		return fields;
-	}
-
-	public List<Method> getters(Class<?> clazz) {
-		List<Method> getters = gettersByClass.get(clazz);
-		if (getters == null)
-			gettersByClass.put(clazz, getters = getGetters_(clazz));
-		return getters;
-	}
-
-	public List<Method> methods(Class<?> clazz) {
-		List<Method> methods = methodsByClass.get(clazz);
-		if (methods == null)
-			methodsByClass.put(clazz, methods = getMethods_(clazz));
-		return methods;
-	}
-
-	public List<Property> properties(Class<?> clazz) {
-		List<Property> properties = propertiesByClass.get(clazz);
-		if (properties == null)
-			propertiesByClass.put(clazz, properties = getProperties_(clazz));
-		return properties;
 	}
 
 	private List<Field> getFields_(Class<?> clazz) {
