@@ -57,9 +57,13 @@ public class Type_ {
 		else if (clazz == Source.class)
 			return Rethrow.ex(() -> clazz.getMethod("source"));
 		else
-			return Read.from(clazz.getDeclaredMethods()) //
-					.filter(method -> !method.isDefault() && !method.isSynthetic() && !Modifier.isStatic(method.getModifiers())) //
-					.uniqueResult();
+			try {
+				return Read.from(clazz.getDeclaredMethods()) //
+						.filter(method -> !method.isDefault() && !method.isSynthetic() && !Modifier.isStatic(method.getModifiers())) //
+						.uniqueResult();
+			} catch (Exception ex) {
+				throw new RuntimeException("for " + clazz, ex);
+			}
 	}
 
 	private static Class<?> getClassByName(String className) {

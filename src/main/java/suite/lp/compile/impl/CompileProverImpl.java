@@ -9,7 +9,6 @@ import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.ProverFactory;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
-import suite.util.FunUtil.Iterate;
 
 public class CompileProverImpl implements ProverFactory {
 
@@ -18,36 +17,38 @@ public class CompileProverImpl implements ProverFactory {
 
 	@Override
 	public Prove_ prover(Node node) {
-		ProveRt proveRt = FunCreator.of(ProveRt.class, false).create(rt -> {
-			return new Object() {
-				private Iterate<FunExpr> compile_(Node node, Iterate<FunExpr> cps) {
-					return new SwitchNode<Iterate<FunExpr>>(node //
-					).match(".0, .1", m -> {
-						return compile_(m[0], compile_(m[1], cps));
-					}).match(".0; .1", m -> {
-						Iterate<FunExpr> fcps;
-						if (Boolean.TRUE) {
-							ProveRt r = FunCreator.of(ProveRt.class, false).create(cps).apply(Map.ofEntries());
-							fcps = rt_ -> f.object(r).invoke("test", rt_);
-						} else
-							fcps = cps;
-						Iterate<FunExpr> f0 = compile_(m[0], fcps);
-						Iterate<FunExpr> f1 = compile_(m[1], fcps);
-						return rt_ -> f.seq(f0.apply(rt_), f1.apply(rt_));
-					}).match("fail", m -> {
-						return rt_ -> f._void();
-					}).match("yes", m -> {
-						return cps;
-					}).nonNullResult();
-				}
-			}.compile_(node, rt_ -> rt_.fieldSet("ok", ok)).apply(rt);
-		}).apply(Map.ofEntries());
+		FunExpr rt = f.input();
+
+		FunExpr compiled = new Object() {
+			private FunExpr compile_(Node node, FunExpr cps) {
+				return new SwitchNode<FunExpr>(node //
+				).match(".0, .1", m -> {
+					return compile_(m[0], compile_(m[1], cps));
+				}).match(".0; .1", m -> {
+					FunExpr cps1;
+					if (Boolean.TRUE) {
+						ProveRt r = FunCreator.of(ProveRt.class, false).create(rt_ -> cps).apply(Map.ofEntries());
+						cps1 = f.object(r).invoke("test", rt);
+					} else
+						cps1 = cps;
+					FunExpr f0 = compile_(m[0], cps1);
+					FunExpr f1 = compile_(m[1], cps1);
+					return f.seq(f0, f1);
+				}).match("fail", m -> {
+					return f._void();
+				}).match("yes", m -> {
+					return cps;
+				}).nonNullResult();
+			}
+		}.compile_(node, rt.fieldSet("ok", ok));
+
+		ProveRt proveRt = FunCreator.of(ProveRt.class, false).create(rt_ -> compiled).apply(Map.ofEntries());
 
 		return proverConfig -> {
-			Runtime_ rt = new Runtime_();
-			rt.proverConfig = proverConfig;
-			proveRt.test(rt);
-			return rt.ok;
+			Runtime_ rt_ = new Runtime_();
+			rt_.proverConfig = proverConfig;
+			proveRt.test(rt_);
+			return rt_.ok;
 		};
 	}
 
