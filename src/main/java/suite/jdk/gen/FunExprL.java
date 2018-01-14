@@ -26,18 +26,19 @@ public class FunExprL {
 		public FunExpr do_;
 	}
 
-	public static class FieldFunExpr extends FunExpr {
+	public static class FieldFunExpr_ extends FunExpr {
 		public String fieldName;
 		public FunExpr object;
+	}
+
+	public static class FieldFunExpr extends FieldFunExpr_ {
 	}
 
 	public static class FieldInjectFunExpr extends FunExpr {
 		public String fieldName;
 	}
 
-	public static class FieldSetFunExpr extends FunExpr {
-		public String fieldName;
-		public FunExpr object;
+	public static class FieldSetFunExpr extends FieldFunExpr_ {
 		public FunExpr value;
 	}
 

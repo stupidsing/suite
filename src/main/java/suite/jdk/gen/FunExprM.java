@@ -56,16 +56,16 @@ public class FunExprM {
 		public Type fieldType;
 	}
 
-	public static class FieldTypeFunExpr extends FunExpr {
+	public static class FieldTypeFunExpr_ extends FunExpr {
 		public String fieldName;
 		public Type fieldType;
 		public FunExpr object;
 	}
 
-	public static class FieldTypeSetFunExpr extends FunExpr {
-		public String fieldName;
-		public Type fieldType;
-		public FunExpr object;
+	public static class FieldTypeFunExpr extends FieldTypeFunExpr_ {
+	}
+
+	public static class FieldTypeSetFunExpr extends FieldTypeFunExpr_ {
 		public FunExpr value;
 	}
 
