@@ -159,20 +159,20 @@ public class FunGenerateBytecode {
 				list.add(factory.createInstanceOf(e1.instanceType));
 			}).doIf(InvokeMethodFunExpr.class, e1 -> {
 				Type[] array = Read.from(e1.parameters).map(fti::typeOf).toArray(Type.class);
-
 				Class<?> clazz = e1.clazz;
-				String className = clazz != null ? clazz.getName() : ((ObjectType) fti.typeOf(e1.object)).getClassName();
+				FunExpr object = e1.object;
+				String className = clazz != null ? clazz.getName() : ((ObjectType) fti.typeOf(object)).getClassName();
 				short opcode;
 
-				if (e1.object == null)
+				if (object == null)
 					opcode = Const.INVOKESTATIC;
 				else if (fti.invokeMethodOf(e1).getDeclaringClass().isInterface())
 					opcode = Const.INVOKEINTERFACE;
 				else
 					opcode = Const.INVOKEVIRTUAL;
 
-				if (e1.object != null)
-					visit_(e1.object);
+				if (object != null)
+					visit_(object);
 
 				for (FunExpr parameter : e1.parameters)
 					visit_(parameter);
