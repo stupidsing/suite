@@ -33,7 +33,7 @@ import suite.util.To;
 public class HttpUtil {
 
 	// keep timestamps to avoid overloading servers
-	private static ConcurrentHashMap<String, AtomicLong> timestamps = new ConcurrentHashMap<>();
+	private static Map<String, AtomicLong> timestamps = new ConcurrentHashMap<>();
 
 	public static class HttpResult {
 		public int responseCode;
