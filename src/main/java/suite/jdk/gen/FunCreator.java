@@ -33,6 +33,7 @@ import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.pass.FunExpand;
 import suite.jdk.gen.pass.FunGenerateBytecode;
+import suite.jdk.gen.pass.FunGenerateBytecode.Visit;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
 import suite.os.LogUtil;
@@ -151,7 +152,8 @@ public class FunCreator<I> extends FunFactory {
 			}
 
 			{
-				InstructionList il = (fgb = new FunGenerateBytecode(clsName, fr.fti, cp)).visit(expr2, returnType);
+				Visit visit = (fgb = new FunGenerateBytecode(clsName, fr.fti, cp)).visit(expr2, returnType);
+				InstructionList il = visit.instructionList();
 				Type[] paramTypes = parameterTypes.toArray(new Type[0]);
 
 				if (isLog) {
@@ -168,7 +170,7 @@ public class FunCreator<I> extends FunFactory {
 						String s = instruction.toString(false);
 						String p;
 						if (instruction instanceof BranchInstruction)
-							p = Integer.toString(fgb.jumps.get(i));
+							p = Integer.toString(visit.jumps.get(i));
 						else if (instruction instanceof CPInstruction)
 							p = constantPool.constantToString(constantPool.getConstant(((CPInstruction) instruction).getIndex()));
 						else
