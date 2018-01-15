@@ -4,8 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.imageio.ImageIO;
 
@@ -36,7 +36,7 @@ public class RayTracerTest {
 
 	@Test
 	public void testBlank() throws IOException {
-		RayTracer rayTracer = new RayTracer(Collections.emptySet(), new Scene(Collections.emptySet()));
+		RayTracer rayTracer = new RayTracer(Set.of(), new Scene(Set.of()));
 		rasterize(rayTracer);
 	}
 

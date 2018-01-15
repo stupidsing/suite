@@ -1,6 +1,5 @@
 package suite.trade.analysis;
 
-import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -90,7 +89,7 @@ public class Summarize {
 			float pricex = isMarketOpen ? priceBySymbol.get(symbol) : ds.get(-1).t1; // now
 
 			String keys = Read //
-					.from2(nSharesByKeyBySymbol.getOrDefault(symbol, Collections.emptyMap())) //
+					.from2(nSharesByKeyBySymbol.getOrDefault(symbol, Map.ofEntries())) //
 					.keys() //
 					.map(Object::toString) //
 					.sort(String_::compare) //

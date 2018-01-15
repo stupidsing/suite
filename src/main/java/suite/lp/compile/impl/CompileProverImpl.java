@@ -5,43 +5,34 @@ import java.util.Map;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
+import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.ProverFactory;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
-import suite.util.FunUtil.Iterate;
 
 public class CompileProverImpl implements ProverFactory {
 
 	private static FunFactory f = new FunFactory();
-	private static FunExpr fail = f._false();
 	private static FunExpr ok = f._true();
 
 	@Override
 	public Prove_ prover(Node node) {
-		FunCreator<Prove_> fc = FunCreator.of(Prove_.class, false);
+		FunExpr rt = f.input();
 
-		return fc.create(new Iterate<>() {
-			@SuppressWarnings("unused")
-			private FunExpr pc;
-
-			public FunExpr apply(FunExpr pc) {
-				this.pc = pc;
-				return f.declare(fail, flag -> f.seq(compile_(node, f.assign(flag, ok)), flag));
-			}
-
+		FunExpr compiled = new Object() {
 			private FunExpr compile_(Node node, FunExpr cps) {
 				return new SwitchNode<FunExpr>(node //
 				).match(".0, .1", m -> {
 					return compile_(m[0], compile_(m[1], cps));
 				}).match(".0; .1", m -> {
-					FunExpr fcps;
-					if (Boolean.FALSE) {
-						Runnable r = FunCreator.of(Runnable.class, false).create(() -> cps).apply(Map.ofEntries());
-						fcps = f.object(r).invoke("run");
+					FunExpr cps1;
+					if (Boolean.TRUE) {
+						ProveRt r = FunCreator.of(ProveRt.class, false).create(rt_ -> cps).apply(Map.ofEntries());
+						cps1 = f.object(r).invoke("test", rt);
 					} else
-						fcps = cps;
-					FunExpr f0 = compile_(m[0], fcps);
-					FunExpr f1 = compile_(m[1], fcps);
+						cps1 = cps;
+					FunExpr f0 = compile_(m[0], cps1);
+					FunExpr f1 = compile_(m[1], cps1);
 					return f.seq(f0, f1);
 				}).match("fail", m -> {
 					return f._void();
@@ -49,7 +40,25 @@ public class CompileProverImpl implements ProverFactory {
 					return cps;
 				}).nonNullResult();
 			}
-		}).apply(Map.ofEntries());
+		}.compile_(node, rt.fieldSet("ok", ok));
+
+		ProveRt proveRt = FunCreator.of(ProveRt.class, false).create(rt_ -> compiled).apply(Map.ofEntries());
+
+		return proverConfig -> {
+			Runtime_ rt_ = new Runtime_();
+			rt_.proverConfig = proverConfig;
+			proveRt.test(rt_);
+			return rt_.ok;
+		};
+	}
+
+	public interface ProveRt {
+		public void test(Runtime_ rt);
+	}
+
+	public static class Runtime_ {
+		public ProverConfig proverConfig;
+		public boolean ok;
 	}
 
 }

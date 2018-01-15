@@ -167,6 +167,10 @@ public class FunFactory {
 		return expr;
 	}
 
+	public FunExpr input() {
+		return local(1);
+	}
+
 	public FunExpr int_(int i) {
 		return constant(i, Type.INT);
 	}

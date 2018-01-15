@@ -1,7 +1,6 @@
 package suite.trade.backalloc.strategy;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -139,7 +138,7 @@ public class BackAllocatorOld {
 							Pair.of(pdiff < qdiff ? symbol0 : symbol1, 1d), //
 							Pair.of(pdiff < qdiff ? symbol1 : symbol0, -1d));
 				else
-					return Collections.emptyList();
+					return List.of();
 			};
 		};
 

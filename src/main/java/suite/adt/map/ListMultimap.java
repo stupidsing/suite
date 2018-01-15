@@ -1,7 +1,6 @@
 package suite.adt.map;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +31,7 @@ public class ListMultimap<K, V> {
 
 	public List<V> get(K k) {
 		List<V> list = map.get(k);
-		return list != null ? list : Collections.emptyList();
+		return list != null ? list : List.of();
 	}
 
 	public List<V> getMutable(K k) {

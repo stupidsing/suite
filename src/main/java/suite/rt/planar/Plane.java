@@ -1,6 +1,5 @@
 package suite.rt.planar;
 
-import java.util.Collections;
 import java.util.List;
 
 import suite.math.MathUtil;
@@ -63,7 +62,7 @@ public class Plane implements RtObject {
 
 			return List.of(rayHit);
 		} else
-			return Collections.emptyList();
+			return List.of();
 	}
 
 }

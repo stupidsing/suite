@@ -2,7 +2,6 @@ package suite.rt;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import suite.adt.pair.Pair;
@@ -24,7 +23,7 @@ public class RayHit_ {
 
 	public static List<RayHit> join(Collection<RtObject> objects, Ray ray, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
 		List<List<RayHit>> rayHitsList = getHits(ray, objects);
-		List<RayHit> rayHits = !rayHitsList.isEmpty() ? rayHitsList.get(0) : Collections.emptyList();
+		List<RayHit> rayHits = !rayHitsList.isEmpty() ? rayHitsList.get(0) : List.of();
 		for (int i = 1; i < rayHitsList.size(); i++)
 			rayHits = join(rayHits, rayHitsList.get(i), fun);
 		return rayHits;

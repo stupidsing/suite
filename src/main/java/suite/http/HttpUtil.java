@@ -6,10 +6,8 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.http.StatusLine;
@@ -25,15 +23,14 @@ import suite.primitive.Bytes_;
 import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
+import suite.util.FunUtil.Fun;
+import suite.util.Memoize;
 import suite.util.ParseUtil;
 import suite.util.Rethrow;
 import suite.util.Thread_;
 import suite.util.To;
 
 public class HttpUtil {
-
-	// keep timestamps to avoid overloading servers
-	private static ConcurrentHashMap<String, AtomicLong> timestamps = new ConcurrentHashMap<>();
 
 	public static class HttpResult {
 		public int responseCode;
@@ -54,7 +51,7 @@ public class HttpUtil {
 	}
 
 	public static HttpResult http(String method, URL url, Outlet<Bytes> in) {
-		return http(method, url, in, Collections.emptyMap());
+		return http(method, url, in, Map.ofEntries());
 	}
 
 	public static HttpResult http(String method, URL url, Map<String, String> headers) {
@@ -79,7 +76,7 @@ public class HttpUtil {
 	}
 
 	private static HttpResult http_(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) {
-		AtomicLong al = timestamps.computeIfAbsent(url.getHost(), server -> new AtomicLong());
+		AtomicLong al = timestampFun.apply(url.getHost());
 		Backoff backoff = new Backoff();
 		long current, last, start, next;
 
@@ -92,6 +89,9 @@ public class HttpUtil {
 		return Rethrow.ex(() -> httpApache(method, url, in, headers));
 		// return Rethrow.ex(() -> httpJre(method, url, in, headers));
 	}
+
+	// keep timestamps to avoid overloading servers
+	private static Fun<String, AtomicLong> timestampFun = Memoize.fun(server -> new AtomicLong());
 
 	private static HttpResult httpApache(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) throws IOException {
 		LogUtil.info("START " + method + " " + url);

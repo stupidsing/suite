@@ -28,8 +28,30 @@ public class Memoize {
 	 * Cache results of a function call, no clean-up.
 	 */
 	public static <I, O> Fun<I, O> fun(Fun<I, O> fun) {
+		ThreadLocal<Boolean> isEnteredFun = ThreadLocal.withInitial(() -> false);
 		Map<I, O> results = new ConcurrentHashMap<>();
-		return in -> results.computeIfAbsent(in, fun::apply);
+		return in -> {
+			boolean isEnteredFun0 = isEnteredFun.get();
+			if (!isEnteredFun0) {
+				isEnteredFun.set(true);
+				try {
+					return results.computeIfAbsent(in, fun::apply);
+				} finally {
+					isEnteredFun.set(isEnteredFun0);
+				}
+			} else
+				throw new RuntimeException("use funRec() instead");
+		};
+	}
+
+	public static <I, O> Fun<I, O> funRec(Fun<I, O> fun) {
+		Map<I, O> results = new ConcurrentHashMap<>();
+		return in -> {
+			O out = results.get(in);
+			if (out == null)
+				results.put(in, out = fun.apply(in));
+			return out;
+		};
 	}
 
 	/**

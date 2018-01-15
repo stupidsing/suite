@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import suite.Suite;
@@ -31,7 +30,7 @@ public class CommandOptions {
 
 	// program evaluation options
 	private boolean isLazy = true;
-	private List<String> imports = Collections.emptyList();
+	private List<String> imports = List.of();
 	private List<String> libraries = new ArrayList<>(Suite.libraries);
 	private boolean isTrace = false;
 

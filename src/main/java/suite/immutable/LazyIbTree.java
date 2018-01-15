@@ -1,7 +1,6 @@
 package suite.immutable;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -73,7 +72,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public LazyIbTree(Comparator<T> comparator) {
-		this(comparator, List.of(new Slot<T>(() -> Collections.emptyList(), null)));
+		this(comparator, List.of(new Slot<T>(() -> List.of(), null)));
 	}
 
 	public LazyIbTree(Comparator<T> comparator, List<Slot<T>> source) {
@@ -200,7 +199,7 @@ public class LazyIbTree<T> implements ITree<T> {
 			if (fs.c != 0)
 				slots2.add(fs.slot);
 			if (t1 != null)
-				slots2.add(new Slot<>(() -> Collections.emptyList(), t1));
+				slots2.add(new Slot<>(() -> List.of(), t1));
 		}
 
 		List<Slot<T>> slots3 = List_.concat(List_.left(node0, s0), slots2, List_.right(node0, s1));

@@ -1,7 +1,6 @@
 package suite.trade.backalloc;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -104,7 +103,7 @@ public class BackAllocTester {
 			int size = indices.length;
 
 			OnDateTime onDateTime = backAllocator.allocate(akds, indices);
-			Map<String, Eod> eodBySymbol = Collections.emptyMap();
+			Map<String, Eod> eodBySymbol = Map.ofEntries();
 			float[] valuations_ = new float[size];
 			String ymd = null;
 			Exception exception_;

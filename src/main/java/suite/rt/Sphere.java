@@ -1,6 +1,5 @@
 package suite.rt;
 
-import java.util.Collections;
 import java.util.List;
 
 import suite.math.Vector;
@@ -43,7 +42,7 @@ public class Sphere implements RtObject {
 			float denom = 1f / (2f * a);
 			rayHits = List.of(rayHit(ray, (-b - sqrt) * denom), rayHit(ray, (-b + sqrt) * denom));
 		} else
-			rayHits = Collections.emptyList();
+			rayHits = List.of();
 
 		return rayHits;
 	}

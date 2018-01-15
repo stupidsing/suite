@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.Writer;
-import java.util.Collections;
 import java.util.List;
 
 import suite.Suite;
@@ -180,7 +179,7 @@ public class CommandDispatcher {
 			break;
 		case RESET:
 			ruleSet = Suite.newRuleSet();
-			importFiles(Collections.emptyList());
+			importFiles(List.of());
 		}
 
 		pw.flush();
