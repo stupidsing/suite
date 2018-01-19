@@ -9,6 +9,7 @@ import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.ProverFactory;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
+import suite.util.FunUtil.Fun;
 
 public class CompileProverImpl implements ProverFactory {
 
@@ -19,6 +20,8 @@ public class CompileProverImpl implements ProverFactory {
 	public Prove_ prover(Node node) {
 		FunExpr rt = f.input();
 
+		Fun<FunExpr, ProveRt> cf = cps -> FunCreator.of(ProveRt.class, false).create(rt_ -> cps).apply(Map.ofEntries());
+
 		FunExpr compiled = new Object() {
 			private FunExpr compile_(Node node, FunExpr cps) {
 				return new SwitchNode<FunExpr>(node //
@@ -27,7 +30,7 @@ public class CompileProverImpl implements ProverFactory {
 				}).match(".0; .1", m -> {
 					FunExpr cps1;
 					if (Boolean.TRUE) {
-						ProveRt r = FunCreator.of(ProveRt.class, false).create(rt_ -> cps).apply(Map.ofEntries());
+						ProveRt r = cf.apply(cps);
 						cps1 = f.object(r).invoke("test", rt);
 					} else
 						cps1 = cps;
@@ -42,7 +45,7 @@ public class CompileProverImpl implements ProverFactory {
 			}
 		}.compile_(node, rt.fieldSet("ok", ok));
 
-		ProveRt proveRt = FunCreator.of(ProveRt.class, false).create(rt_ -> compiled).apply(Map.ofEntries());
+		ProveRt proveRt = cf.apply(compiled);
 
 		return proverConfig -> {
 			Runtime_ rt_ = new Runtime_();
