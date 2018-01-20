@@ -462,7 +462,7 @@ public class P2InferType {
 
 	private LambdaType lambdaType(Funp lambda) {
 		LambdaType lt = new LambdaType(lambda);
-		return lt.os <= is ? lt : Fail.t();
+		return lt.os <= is || lt.os == ps * 2 ? lt : Fail.t();
 
 	}
 
