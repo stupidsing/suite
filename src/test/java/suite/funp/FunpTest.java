@@ -67,6 +67,11 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testLambdaReturn() {
+		test(2, "1 | (0 | (a => b => b + 1))");
+	}
+
+	@Test
 	public void testReference() {
 		test(5, "define i := 3 >> define p := address i >> 2 + ^p");
 	}
