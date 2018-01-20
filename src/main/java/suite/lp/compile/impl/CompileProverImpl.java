@@ -30,8 +30,8 @@ public class CompileProverImpl implements ProverFactory {
 				}).match(".0; .1", m -> {
 					FunExpr cps1;
 					if (Boolean.TRUE) {
-						ProveRt r = cf.apply(cps);
-						cps1 = f.object(r).invoke("test", rt);
+						ProveRt proveRt_ = cf.apply(cps);
+						cps1 = f.object(proveRt_).invoke("test", rt);
 					} else
 						cps1 = cps;
 					FunExpr f0 = compile_(m[0], cps1);
