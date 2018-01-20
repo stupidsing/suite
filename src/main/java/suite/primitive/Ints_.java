@@ -8,6 +8,7 @@ import suite.primitive.streamlet.IntOutlet;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
+import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -73,7 +74,7 @@ public class Ints_ {
 			try {
 				writer.write(ints.cs, ints.start, ints.end - ints.start);
 			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+				Fail.t(ex);
 			}
 	}
 

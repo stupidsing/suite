@@ -15,6 +15,7 @@ import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.Usex;
 import suite.trade.data.Broker.Hsbc;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil2.Fun2;
 import suite.util.String_;
@@ -128,7 +129,7 @@ public class ConfigurationImpl implements Configuration {
 		else if (symbol.startsWith("#"))
 			return srcPf___;
 		else
-			throw new RuntimeException(symbol);
+			return Fail.t(symbol);
 	}
 
 	private boolean filter(Asset asset) {

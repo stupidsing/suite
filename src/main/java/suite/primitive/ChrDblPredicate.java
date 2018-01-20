@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.util.Fail;
+
 public interface ChrDblPredicate {
 
 	public boolean test(char c, double f);
@@ -9,7 +11,7 @@ public interface ChrDblPredicate {
 			try {
 				return test(c, f);
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + c + ":" + f + ", ", ex);
+				return Fail.t("for " + c + ":" + f + ", ", ex);
 			}
 		};
 	}

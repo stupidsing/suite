@@ -5,6 +5,7 @@ import java.io.IOException;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes.WriteByte;
 import suite.streamlet.Outlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
@@ -33,7 +34,7 @@ public class Bytes_ {
 			try {
 				writer.write(bytes.bs, bytes.start, bytes.end - bytes.start);
 			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+				Fail.t(ex);
 			}
 	}
 

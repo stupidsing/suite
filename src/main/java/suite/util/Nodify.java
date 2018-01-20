@@ -135,12 +135,12 @@ public class Nodify {
 						try {
 							clazz1 = Class.forName(((Atom) tree.getLeft()).name);
 						} catch (ClassNotFoundException ex) {
-							throw new RuntimeException(ex);
+							clazz1 = Fail.t(ex);
 						}
 						return apply_(getNodifier(clazz1), tree.getRight());
 					} else
 						// happens when an enum implements an interface
-						throw new RuntimeException("cannot instantiate enum from interfaces");
+						return Fail.t("cannot instantiate enum from interfaces");
 				});
 			else {
 				List<FieldInfo> fieldInfos = Read.from(inspect.fields(clazz)) //
@@ -210,7 +210,7 @@ public class Nodify {
 			} else
 				nodifier = getNodifier(rawType);
 		} else
-			throw new RuntimeException("unrecognized type " + type);
+			nodifier = Fail.t("unrecognized type " + type);
 
 		return nodifier;
 	}

@@ -1,6 +1,7 @@
 package suite.math.linalg;
 
 import suite.primitive.IntInt_Flt;
+import suite.util.Fail;
 
 public class Strassen {
 
@@ -11,10 +12,7 @@ public class Strassen {
 		int ks = mtx.width(a);
 		int height = mtx.height(a);
 		int width = mtx.width(b);
-		if (ks == mtx.height(b))
-			return mul_(a, 0, height, 0, ks, b, 0, ks, 0, width);
-		else
-			throw new RuntimeException("wrong input sizes");
+		return ks == mtx.height(b) ? mul_(a, 0, height, 0, ks, b, 0, ks, 0, width) : Fail.t("wrong input sizes");
 	}
 
 	private float[][] mul_( //

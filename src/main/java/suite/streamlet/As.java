@@ -17,6 +17,7 @@ import suite.primitive.Bytes_;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.IntPrimitives.Obj_Int;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -90,7 +91,7 @@ public class As {
 		Map<K, V> map = new HashMap<>();
 		outlet.sink((k, v) -> {
 			if (map.put(k, v) != null)
-				throw new RuntimeException("duplicate key " + k);
+				Fail.t("duplicate key " + k);
 		});
 		return map;
 	}
@@ -169,7 +170,7 @@ public class As {
 					else if (bb.size() == 0)
 						return null;
 					else
-						throw new RuntimeException();
+						return Fail.t();
 				}
 				return chars;
 			}
@@ -208,7 +209,7 @@ public class As {
 							if ((b & 0xC0) == 0x80)
 								ch = (ch << 6) + (b & 0x3F);
 							else
-								throw new RuntimeException();
+								Fail.t();
 						}
 						cb.append((char) ch);
 					} else

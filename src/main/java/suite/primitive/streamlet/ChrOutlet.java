@@ -35,6 +35,7 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
 import suite.streamlet.OutletDefaults;
 import suite.streamlet.Read;
+import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -309,7 +310,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		if (c != ChrFunUtil.EMPTYVALUE)
 			return c;
 		else
-			throw new RuntimeException("no result");
+			return Fail.t("no result");
 	}
 
 	public char minOrEmpty(ChrComparator comparator) {
@@ -350,7 +351,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 			if (next() == ChrFunUtil.EMPTYVALUE)
 				return ChrOpt.of(c);
 			else
-				throw new RuntimeException("more than one result");
+				return Fail.t("more than one result");
 		else
 			return ChrOpt.none();
 	}
@@ -443,7 +444,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		while ((c = next()) != ChrFunUtil.EMPTYVALUE) {
 			K key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
-				throw new RuntimeException("duplicate key " + key);
+				Fail.t("duplicate key " + key);
 		}
 		return map;
 	}

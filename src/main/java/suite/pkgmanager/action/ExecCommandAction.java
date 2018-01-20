@@ -1,6 +1,7 @@
 package suite.pkgmanager.action;
 
 import suite.os.Execute;
+import suite.util.Fail;
 
 public class ExecCommandAction implements InstallAction {
 
@@ -23,7 +24,7 @@ public class ExecCommandAction implements InstallAction {
 	private void exec(String[] command) {
 		Execute exec = new Execute(command);
 		if (exec.code != 0)
-			throw new RuntimeException("command return code = " + exec.code + ": " + exec.err);
+			Fail.t("command return code = " + exec.code + ": " + exec.err);
 	}
 
 }

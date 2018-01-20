@@ -10,6 +10,7 @@ import suite.adt.pair.Pair;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
 import suite.parser.Wildcard;
+import suite.util.Fail;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 import suite.util.To;
@@ -36,7 +37,7 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 					try {
 						Files.write(path, s.getBytes(Constants.charset));
 					} catch (IOException ex) {
-						throw new RuntimeException(ex);
+						Fail.t(ex);
 					}
 				});
 

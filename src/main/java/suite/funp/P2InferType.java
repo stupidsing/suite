@@ -61,6 +61,7 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.util.AutoObject;
+import suite.util.Fail;
 import suite.util.FunUtil2.Fun2;
 import suite.util.Rethrow;
 import suite.util.String_;
@@ -91,7 +92,7 @@ public class P2InferType {
 		if (unify.unify(t, new Infer(IMap.empty()).infer(n1)))
 			return new Erase(0, IMap.empty()).erase(n1);
 		else
-			throw new RuntimeException("cannot infer type for " + n0);
+			return Fail.t("cannot infer type for " + n0);
 	}
 
 	private Funp extractPredefine(Funp node0) {
@@ -156,13 +157,13 @@ public class P2InferType {
 						if (assign.t0.size == getTypeSize(tp))
 							;
 						else
-							throw new RuntimeException();
+							return Fail.t();
 					else if (assign.t0.size == 1)
 						unify(n, typeByte, tp);
 					else if (assign.t0.size == is)
 						unify(n, typeNumber, tp);
 					else
-						throw new RuntimeException();
+						return Fail.t();
 				}
 				return TypeIo.of(typeNumber);
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
@@ -347,7 +348,7 @@ public class P2InferType {
 						else
 							return FunpMemory.of(erase(reference), offset, offset1);
 					}
-				throw new RuntimeException();
+				return Fail.t();
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
@@ -416,7 +417,7 @@ public class P2InferType {
 						list.add(Pair.of(erase(values.get(pair.t0)), IntIntPair.of(offset0, offset += getTypeSize(pair.t1))));
 					}
 				else
-					throw new RuntimeException();
+					Fail.t();
 
 				return FunpData.of(list);
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
@@ -461,10 +462,7 @@ public class P2InferType {
 
 	private LambdaType lambdaType(Funp lambda) {
 		LambdaType lt = new LambdaType(lambda);
-		if (lt.os <= is)
-			return lt;
-		else
-			throw new RuntimeException();
+		return lt.os <= is ? lt : Fail.t();
 
 	}
 
@@ -482,7 +480,7 @@ public class P2InferType {
 
 	private void unify(Funp n, UnNode<Type> type0, UnNode<Type> type1) {
 		if (!unify.unify(type0, type1))
-			throw new RuntimeException("cannot unify types in " + n + " between " + type0.final_() + " and " + type1.final_());
+			Fail.t("cannot unify types in " + n + " between " + type0.final_() + " and " + type1.final_());
 	}
 
 	private Type typeOf(Funp n) {
@@ -509,10 +507,7 @@ public class P2InferType {
 			return Read.from(pairs).toInt(Obj_Int.sum(field -> getTypeSize(field.t1)));
 		})).result();
 
-		if (result != null)
-			return result.intValue();
-		else
-			throw new RuntimeException("cannot get size of type " + n);
+		return result != null ? result.intValue() : Fail.t("cannot get size of type " + n);
 	}
 
 	private static Unify<Type> unify = new Unify<>();

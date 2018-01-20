@@ -14,6 +14,7 @@ import suite.ebnf.Grammar.GrammarType;
 import suite.immutable.IList;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.List_;
 
@@ -77,7 +78,7 @@ public class BuildLr {
 				Transition transition1 = fsm.get(value1.t0);
 				return merges.add(Pair.of(transition0, transition1));
 			} else
-				throw new RuntimeException("duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
+				return Fail.t("duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
 		}
 
 		private int order(Pair<State, Reduce> pair) {
@@ -211,7 +212,7 @@ public class BuildLr {
 			blr = new Blr(1, kv(eg.content, state1));
 			break;
 		default:
-			throw new RuntimeException("LR parser cannot recognize " + eg.type);
+			blr = Fail.t("LR parser cannot recognize " + eg.type);
 		}
 
 		return blr;

@@ -28,6 +28,7 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
+import suite.util.Fail;
 import suite.util.FunUtil2.FoldOp;
 import suite.util.HomeDir;
 import suite.util.Object_;
@@ -175,7 +176,7 @@ public class Yahoo {
 						.merge(stockHistory0) //
 						.alignToDate();
 			else
-				throw new RuntimeException();
+				stockHistory1 = Fail.t();
 
 			FileUtil.write(path, stockHistory1.write());
 		} else

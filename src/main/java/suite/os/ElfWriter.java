@@ -13,6 +13,7 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.util.DataOutput_;
+import suite.util.Fail;
 import suite.util.Util;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
@@ -30,7 +31,7 @@ public class ElfWriter {
 		try (OutputStream os = FileUtil.out(path); DataOutput_ do_ = DataOutput_.of(os)) {
 			write(org, code, do_);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 
 		try {
@@ -44,7 +45,7 @@ public class ElfWriter {
 					PosixFilePermission.OWNER_WRITE)));
 		} catch (UnsupportedOperationException ex) {
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 

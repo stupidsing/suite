@@ -14,6 +14,7 @@ import org.apache.bcel.generic.Type;
 
 import javassist.Modifier;
 import suite.streamlet.Read;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -29,7 +30,7 @@ public class Type_ {
 		else if (type instanceof BasicType)
 			return getClassByName(Const.getTypeName(((BasicType) type).getType()));
 		else
-			throw new RuntimeException();
+			return Fail.t();
 	}
 
 	public static boolean isSimple(Class<?> clazz) {
@@ -58,11 +59,12 @@ public class Type_ {
 			return Rethrow.ex(() -> clazz.getMethod("source"));
 		else
 			try {
-				return Read.from(clazz.getDeclaredMethods()) //
+				return Read //
+						.from(clazz.getDeclaredMethods()) //
 						.filter(method -> !method.isDefault() && !method.isSynthetic() && !Modifier.isStatic(method.getModifiers())) //
 						.uniqueResult();
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + clazz, ex);
+				return Fail.t("for " + clazz, ex);
 			}
 	}
 

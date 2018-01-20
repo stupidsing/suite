@@ -20,6 +20,7 @@ import java.util.zip.ZipFile;
 import suite.Constants;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.Rethrow;
 import suite.util.To;
 
@@ -78,7 +79,7 @@ public class FileUtil {
 				try {
 					Files.createDirectories(path);
 				} catch (IOException ex) {
-					throw new RuntimeException(ex);
+					Fail.t(ex);
 				}
 		}
 	}
@@ -125,7 +126,7 @@ public class FileUtil {
 				OutputStreamWriter w = new OutputStreamWriter(os, Constants.charset)) {
 			w.write(contents);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 

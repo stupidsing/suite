@@ -39,7 +39,7 @@ public class FunUtil2 {
 				try {
 					sink2(k, v);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + k + ", " + v, ex);
+					Fail.t("for " + k + ", " + v, ex);
 				}
 			};
 		}
@@ -52,7 +52,7 @@ public class FunUtil2 {
 				try {
 					return apply(x, y);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + x + ":" + y, ex);
+					return Fail.t("for " + x + ":" + y, ex);
 				}
 			};
 		}
@@ -239,8 +239,8 @@ public class FunUtil2 {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static <K, V> Source<Source2<K, V>> split(BiPredicate<K, V> fun0, Source2<K, V> source2) {
 		BiPredicate<K, V> fun1 = Rethrow.biPredicate(fun0);
@@ -283,7 +283,7 @@ public class FunUtil2 {
 				return b;
 			} catch (InterruptedException ex) {
 				thread.interrupt();
-				throw new RuntimeException(ex);
+				return Fail.t(ex);
 			}
 		};
 	}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.immutable.IPointer;
+import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.List_;
 
@@ -51,7 +52,7 @@ public class IndexedSourceReader<T> {
 					if (0 <= index)
 						return index < queue.size() ? queue.get(index) : null;
 					else
-						throw new RuntimeException("cannot unwind flushed input buffer");
+						return Fail.t("cannot unwind flushed input buffer");
 				}
 			}
 

@@ -17,6 +17,7 @@ import suite.os.FileUtil;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
+import suite.util.Fail;
 import suite.util.Rethrow;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
@@ -56,7 +57,7 @@ public class LibraryMain extends ExecutableProgram {
 			try {
 				Files.delete(path);
 			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+				Fail.t(ex);
 			}
 		});
 
@@ -82,7 +83,7 @@ public class LibraryMain extends ExecutableProgram {
 			for (Pair<Path, FileInfo> path_fileInfo : path_fileInfos)
 				pw.println(path_fileInfo.t0 + path_fileInfo.t1.md5);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 
 		path_fileInfos //

@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.util.Fail;
+
 public interface LngLngSink {
 
 	public void sink2(long c, long f);
@@ -9,7 +11,7 @@ public interface LngLngSink {
 			try {
 				sink2(k, v);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
+				Fail.t("for key " + k, ex);
 			}
 		};
 	}

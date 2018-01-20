@@ -25,6 +25,7 @@ import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.HkexUtil;
 import suite.trade.walkforwardalloc.WalkForwardAllocConfiguration;
 import suite.trade.walkforwardalloc.WalkForwardAllocTester;
+import suite.util.Fail;
 import suite.util.HomeDir;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
@@ -66,7 +67,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 							for (Entry<String, Float> e : priceBySymbol.entrySet())
 								bw.println(ymdHms + ", " + e.getKey() + ", " + e.getValue());
 						} catch (IOException ex) {
-							throw new RuntimeException(ex);
+							Fail.t(ex);
 						}
 					});
 
@@ -88,7 +89,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 					data.computeIfAbsent(time, s -> new HashMap<>()).put(symbol, price);
 				}
 			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+				Fail.t(ex);
 			}
 
 			WalkForwardAllocConfiguration wfac = new WalkForwardAllocConfiguration( //

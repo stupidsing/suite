@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.util.Fail;
+
 public interface LngChr_Chr {
 
 	public char apply(long c, char f);
@@ -9,7 +11,7 @@ public interface LngChr_Chr {
 			try {
 				return apply(c, f);
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + c + ":" + f, ex);
+				return Fail.t("for " + c + ":" + f, ex);
 			}
 		};
 

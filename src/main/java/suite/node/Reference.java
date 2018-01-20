@@ -1,6 +1,7 @@
 package suite.node;
 
 import suite.lp.doer.ProverConstant;
+import suite.util.Fail;
 import suite.util.Util;
 
 public class Reference extends Node {
@@ -37,18 +38,12 @@ public class Reference extends Node {
 
 	@Override
 	public boolean equals(Object object) {
-		if (node != this)
-			return node.equals(object);
-		else
-			throw new RuntimeException("no equals for free references");
+		return node != this ? node.equals(object) : Fail.t("no equals for free references");
 	}
 
 	@Override
 	public int hashCode() {
-		if (node != this)
-			return node.hashCode();
-		else
-			throw new RuntimeException("no hash code for free references");
+		return node != this ? node.hashCode() : Fail.t("no hash code for free references");
 	}
 
 	public Node getNode() {

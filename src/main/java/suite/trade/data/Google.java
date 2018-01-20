@@ -21,6 +21,7 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Trade_;
+import suite.util.Fail;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.To;
@@ -117,7 +118,7 @@ public class Google {
 		else if (symbol.endsWith(".HK"))
 			return symbol.substring(0, 4);
 		else
-			throw new RuntimeException();
+			return Fail.t();
 	}
 
 	private String toSymbol(String code) {

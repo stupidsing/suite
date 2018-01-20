@@ -34,6 +34,7 @@ import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.util.Fail;
 
 /**
  * Converts a node into graph representation. The nodes link to other nodes via
@@ -102,7 +103,7 @@ public class Grapher {
 					case TUPLE:
 						return Tuple.of(new Node[gn.children.size()]);
 					default:
-						throw new RuntimeException();
+						return Fail.t();
 					}
 				}) //
 				.toList();
@@ -256,7 +257,7 @@ public class Grapher {
 					terminal = new Str(dis.readUTF());
 					break;
 				default:
-					throw new RuntimeException("unknown type " + ch);
+					terminal = Fail.t("unknown type " + ch);
 				}
 			} else
 				terminal = null;
@@ -346,7 +347,7 @@ public class Grapher {
 						.collect(As.joinedBy("tuple(", ", ", ")"));
 				break;
 			default:
-				throw new RuntimeException();
+				s = Fail.t();
 			}
 			sb.append(s + "\n");
 		}

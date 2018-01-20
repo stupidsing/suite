@@ -21,6 +21,7 @@ import suite.node.util.SuiteException;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.util.Fail;
 import suite.util.Rethrow;
 import suite.util.To;
 
@@ -72,7 +73,7 @@ public class IoPredicates {
 		try (OutputStream fos = FileUtil.out(filename)) {
 			fos.write(content.getBytes(Constants.charset));
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 
 		return true;

@@ -4,6 +4,7 @@ import suite.math.stat.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltObjPair;
+import suite.util.Fail;
 import suite.util.To;
 
 /**
@@ -35,7 +36,7 @@ public class Ardl {
 						.range(length - maxLag) //
 						.map(t -> FltObjPair.of(fs[t], getExplanatoryVariables(fsList, it, t))));
 			else
-				throw new RuntimeException("wrong input sizes");
+				return Fail.t("wrong input sizes");
 		});
 	}
 

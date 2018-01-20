@@ -14,6 +14,7 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.node.util.TreeUtil.IntInt_Bool;
 import suite.primitive.IntInt_Int;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 
@@ -46,9 +47,7 @@ public class InterpretFunLazy0 {
 	}
 
 	public Thunk_ lazy(Node node) {
-		Thunk_ error = () -> {
-			throw new RuntimeException("error termination");
-		};
+		Thunk_ error = () -> Fail.t("error termination");
 
 		IMap<String, Thunk_> env = IMap.empty();
 		env = env.put(Atom.TRUE.name, () -> Atom.TRUE);

@@ -12,6 +12,7 @@ import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.fs.KeyValueMutator;
 import suite.fs.KeyValueStore;
+import suite.util.Fail;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
@@ -82,7 +83,7 @@ public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 			persister.close();
 			superblockFile.close();
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 

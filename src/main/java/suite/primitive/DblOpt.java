@@ -5,6 +5,7 @@ import java.util.Objects;
 import suite.adt.Opt;
 import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.DblPrimitives.Dbl_Obj;
+import suite.util.Fail;
 import suite.util.Object_;
 
 public class DblOpt {
@@ -35,10 +36,7 @@ public class DblOpt {
 	}
 
 	public double get() {
-		if (!isEmpty())
-			return value;
-		else
-			throw new RuntimeException("no result");
+		return !isEmpty() ? value : Fail.t("no result");
 	}
 
 	@Override

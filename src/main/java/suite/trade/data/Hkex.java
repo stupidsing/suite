@@ -19,6 +19,7 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
+import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
 import suite.util.Serialize;
@@ -290,7 +291,7 @@ public class Hkex {
 					.map(json_ -> Float.parseFloat(json_.path(1).textValue().split(" ")[0].replace(",", ""))) //
 					.uniqueResult();
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			return Fail.t(ex);
 		}
 	}
 
@@ -323,7 +324,7 @@ public class Hkex {
 					.map(json_ -> Float.parseFloat(json_.path(1).textValue().split(" ")[0])) //
 					.uniqueResult();
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			return Fail.t(ex);
 		}
 	}
 
@@ -417,7 +418,7 @@ public class Hkex {
 			try (InputStream is = Singleton.me.storeCache.http(url).collect(To::inputStream)) {
 				json = mapper.readTree(is);
 			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+				json = Fail.t(ex);
 			}
 		else {
 			Execute execute = new Execute(new String[] { "curl", url, });

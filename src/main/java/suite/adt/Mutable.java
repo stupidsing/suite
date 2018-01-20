@@ -2,6 +2,7 @@ package suite.adt;
 
 import java.util.Objects;
 
+import suite.util.Fail;
 import suite.util.Object_;
 
 public class Mutable<T> {
@@ -22,7 +23,7 @@ public class Mutable<T> {
 		if (value == null)
 			update(t);
 		else
-			throw new RuntimeException("value already set");
+			Fail.t("value already set");
 	}
 
 	public void update(T t) {

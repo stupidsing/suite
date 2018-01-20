@@ -49,6 +49,7 @@ import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
 import suite.node.util.TreeUtil.IntInt_Bool;
 import suite.primitive.IntInt_Int;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
@@ -184,9 +185,7 @@ public class InterpretFunEager {
 					};
 				}
 			} else if ((ERROR = Matcher.error.match(node)) != null)
-				result = frame -> {
-					throw new RuntimeException("error termination " + Formatter.display(ERROR.m));
-				};
+				result = frame -> Fail.t("error termination " + Formatter.display(ERROR.m));
 			else if ((FUN = Matcher.fun.match(node)) != null) {
 				IMap<Node, Fun<Frame, Node>> vm1 = IMap.empty();
 				for (Pair<Node, Fun<Frame, Node>> e : vm) {
@@ -234,7 +233,7 @@ public class InterpretFunEager {
 			else if ((WRAP = Matcher.wrap.match(node)) != null)
 				result = wrap(eager_(WRAP.do_));
 			else
-				throw new RuntimeException("unrecognized construct " + node);
+				result = Fail.t("unrecognized construct " + node);
 
 			return result;
 		}
@@ -375,7 +374,7 @@ public class InterpretFunEager {
 		else if (type == Atom.of("P"))
 			operator = TermOp.AND___;
 		else
-			throw new RuntimeException("unknown CONS type");
+			operator = Fail.t("unknown CONS type");
 		return operator;
 	}
 

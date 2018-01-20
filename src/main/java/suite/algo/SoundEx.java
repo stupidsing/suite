@@ -1,5 +1,6 @@
 package suite.algo;
 
+import suite.util.Fail;
 import suite.util.String_;
 
 public class SoundEx {
@@ -80,7 +81,7 @@ public class SoundEx {
 		else if (0 <= CHARS6.indexOf(ch))
 			return 6;
 		else
-			throw new RuntimeException("unknown soundex character " + ch);
+			return Fail.t("unknown soundex character " + ch);
 	}
 
 }

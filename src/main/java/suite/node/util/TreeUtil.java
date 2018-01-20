@@ -13,6 +13,7 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.primitive.IntInt_Int;
+import suite.util.Fail;
 
 public class TreeUtil {
 
@@ -73,7 +74,7 @@ public class TreeUtil {
 				params[i] = tree.getLeft();
 				node = tree.getRight();
 			} else
-				throw new RuntimeException("not enough parameters in " + node0);
+				Fail.t("not enough parameters in " + node0);
 		params[n - 1] = node;
 		return params;
 	}
@@ -102,25 +103,19 @@ public class TreeUtil {
 		} else if (node instanceof Int)
 			result = ((Int) node).number;
 		else
-			throw new RuntimeException("cannot evaluate expression: " + node);
+			result = Fail.t("cannot evaluate expression: " + node);
 
 		return result;
 	}
 
 	public static IntInt_Int evaluateOp(Node op) {
 		IntInt_Int fun = tupleOperations.get(op);
-		if (fun != null)
-			return fun;
-		else
-			throw new RuntimeException("cannot evaluate operator: " + op);
+		return fun != null ? fun : Fail.t("cannot evaluate operator: " + op);
 	}
 
 	public static IntInt_Int evaluateOp(Operator op) {
 		IntInt_Int fun = intOperations.get(op);
-		if (fun != null)
-			return fun;
-		else
-			throw new RuntimeException("cannot evaluate operator: " + op);
+		return fun != null ? fun : Fail.t("cannot evaluate operator: " + op);
 	}
 
 	public static boolean isList(Node node, Operator operator) {
@@ -140,7 +135,7 @@ public class TreeUtil {
 
 	private static int intPow(int a, int b) {
 		if (b < 0)
-			throw new RuntimeException();
+			return Fail.t();
 		else if (b == 0)
 			return 1;
 		else {

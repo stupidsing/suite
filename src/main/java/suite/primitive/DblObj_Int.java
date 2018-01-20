@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.util.Fail;
+
 public interface DblObj_Int<T> {
 
 	public int apply(double c, T t);
@@ -9,7 +11,7 @@ public interface DblObj_Int<T> {
 			try {
 				return apply(c, t);
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + c + ":" + t + ", ", ex);
+				return Fail.t("for " + c + ":" + t + ", ", ex);
 			}
 		};
 	}

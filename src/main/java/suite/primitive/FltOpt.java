@@ -5,6 +5,7 @@ import java.util.Objects;
 import suite.adt.Opt;
 import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.FltPrimitives.Flt_Obj;
+import suite.util.Fail;
 import suite.util.Object_;
 
 public class FltOpt {
@@ -35,10 +36,7 @@ public class FltOpt {
 	}
 
 	public float get() {
-		if (!isEmpty())
-			return value;
-		else
-			throw new RuntimeException("no result");
+		return !isEmpty() ? value : Fail.t("no result");
 	}
 
 	@Override

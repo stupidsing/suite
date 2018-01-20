@@ -10,6 +10,7 @@ import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.adt.pair.ChrObjPair;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -211,8 +212,8 @@ public class ChrObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static <V> Source<ChrObjSource<V>> split(ChrObjPredicate<V> fun0, ChrObjSource<V> source2) {
 		ChrObjPredicate<V> fun1 = fun0.rethrow();
@@ -255,7 +256,7 @@ public class ChrObjFunUtil {
 				return b;
 			} catch (InterruptedException ex) {
 				thread.interrupt();
-				throw new RuntimeException(ex);
+				return Fail.t();
 			}
 		};
 	}

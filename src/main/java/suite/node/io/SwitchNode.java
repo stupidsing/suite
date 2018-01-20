@@ -9,6 +9,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.primitive.IoSink;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
 public class SwitchNode<R> {
@@ -38,7 +39,7 @@ public class SwitchNode<R> {
 			try {
 				fun.sink(t);
 			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+				Fail.t(ex);
 			}
 			@SuppressWarnings("unchecked")
 			R r = (R) t;
@@ -64,10 +65,7 @@ public class SwitchNode<R> {
 	}
 
 	public R nonNullResult() {
-		if (result != null)
-			return result;
-		else
-			throw new RuntimeException("cannot handle " + in);
+		return result != null ? result : Fail.t("cannot handle " + in);
 	}
 
 	public R result() {

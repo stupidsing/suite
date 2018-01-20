@@ -14,6 +14,7 @@ import suite.node.parser.Lexer.Token;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
 import suite.text.Preprocess;
+import suite.util.Fail;
 import suite.util.String_;
 
 /**
@@ -75,7 +76,7 @@ public class IterativeParser {
 							node = Tree.of(TermOp.TUPLE_, Atom.of("["), node);
 						add(node);
 					} else
-						throw new RuntimeException("cannot parse " + in);
+						Fail.t("cannot parse " + in);
 				} else if (ch == '`')
 					if (stack.peek().kind == ch) {
 						Node node = stack.pop().unwind(null).getRight();
@@ -90,7 +91,7 @@ public class IterativeParser {
 			if (stack.size() == 1)
 				return stack.pop().unwind(null).getRight();
 			else
-				throw new RuntimeException("cannot parse " + in);
+				return Fail.t("cannot parse " + in);
 		}
 
 		private void add(Node node) {

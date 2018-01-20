@@ -95,9 +95,9 @@ public class Serialize {
 			else if (Pair.class.isAssignableFrom(clazz))
 				serializer = pair(auto_(typeArgs[0]), auto_(typeArgs[1]));
 			else
-				throw new RuntimeException();
+				serializer = Fail.t();
 		} else
-			throw new RuntimeException();
+			serializer = Fail.t();
 		return serializer;
 	}
 
@@ -376,10 +376,7 @@ public class Serialize {
 
 		return new Serializer<>() {
 			public T read(DataInput_ dataInput) throws IOException {
-				if (dataInput.readInt() == c)
-					return serializer.read(dataInput);
-				else
-					throw new RuntimeException();
+				return dataInput.readInt() == c ? serializer.read(dataInput) : Fail.t();
 			}
 
 			public void write(DataOutput_ dataOutput, T value) throws IOException {
@@ -489,7 +486,7 @@ public class Serialize {
 					T t = (T) auto(c).read(dataInput);
 					return t;
 				} else
-					throw new RuntimeException(c.getSimpleName() + " does not implement " + interface_.getSimpleName());
+					return Fail.t(c.getSimpleName() + " does not implement " + interface_.getSimpleName());
 			}
 
 			public void write(DataOutput_ dataOutput, T t) throws IOException {
@@ -499,8 +496,7 @@ public class Serialize {
 					dataOutput.writeUTF(c.getName());
 					auto(c).write(dataOutput, t);
 				} else
-					throw new RuntimeException(c.getSimpleName() + " does not implement " + interface_.getSimpleName());
-
+					Fail.t(c.getSimpleName() + " does not implement " + interface_.getSimpleName());
 			}
 		};
 	}

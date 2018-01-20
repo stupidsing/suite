@@ -6,6 +6,7 @@ import java.util.function.IntPredicate;
 
 import suite.adt.pair.Pair;
 import suite.os.FileUtil;
+import suite.util.Fail;
 
 // curl http://www.flygo.net/mjxj/WeiQiTianDi/dlxs_sdl.sgf | iconv -c -f CN-GB -t UTF-8
 public class Sgf {
@@ -32,10 +33,7 @@ public class Sgf {
 	}
 
 	public Node from(String in) {
-		if (in.charAt(0) == '(')
-			return readNode(in, 1).t;
-		else
-			throw new RuntimeException();
+		return in.charAt(0) == '(' ? readNode(in, 1).t : Fail.t();
 	}
 
 	private PosPair<Node> readNode(String in, int pos) {
@@ -59,10 +57,10 @@ public class Sgf {
 			case ')':
 				return PosPair.of(pos, node);
 			default:
-				throw new RuntimeException();
+				Fail.t();
 			}
 
-		throw new RuntimeException("unexpected end of input");
+		return Fail.t("unexpected end of input");
 	}
 
 	private PosPair<List<Pair<String, List<String>>>> readCommands(String in, int pos) {
@@ -84,7 +82,7 @@ public class Sgf {
 				commands.add(ipCommand.t);
 			}
 
-		throw new RuntimeException("unexpected end of input");
+		return Fail.t("unexpected end of input");
 	}
 
 	private PosPair<Pair<String, List<String>>> readCommand(String in, int pos) {
@@ -107,7 +105,7 @@ public class Sgf {
 				return PosPair.of(pos, Pair.of(ipId.t, ids));
 			}
 
-		throw new RuntimeException("unexpected end of input");
+		return Fail.t("unexpected end of input");
 	}
 
 	private PosPair<String> readIf(String in, int pos, IntPredicate predicate) {
@@ -126,7 +124,7 @@ public class Sgf {
 				return PosPair.of(pos1, in.substring(pos0, pos1));
 		}
 
-		throw new RuntimeException("unexpected end of input");
+		return Fail.t("unexpected end of input");
 	}
 
 }

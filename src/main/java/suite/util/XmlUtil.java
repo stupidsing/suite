@@ -51,7 +51,7 @@ public class XmlUtil {
 			lss = di.createLSSerializer();
 			lss.getDomConfig().setParameter("format-pretty-print", true);
 		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 
@@ -64,7 +64,7 @@ public class XmlUtil {
 			lss.write(documentBuilder.parse(is), lso);
 			return writer.toString();
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			return Fail.t(ex);
 		}
 	}
 

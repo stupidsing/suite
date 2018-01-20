@@ -11,6 +11,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import suite.Constants;
+import suite.util.Fail;
 import suite.util.FunUtil2.FoldOp;
 import suite.util.Rethrow;
 import suite.util.Thread_;
@@ -40,13 +41,13 @@ public class TelegramBot {
 						try {
 							sendApiMethod(sendMessage);
 						} catch (TelegramApiException ex) {
-							throw new RuntimeException(ex);
+							Fail.t(ex);
 						}
 					}
 				}
 			});
 		} catch (TelegramApiException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 
 		while (true)

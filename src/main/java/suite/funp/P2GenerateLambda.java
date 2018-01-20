@@ -22,6 +22,7 @@ import suite.node.util.TreeUtil;
 import suite.primitive.IntInt_Int;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
 public class P2GenerateLambda {
@@ -97,11 +98,11 @@ public class P2GenerateLambda {
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				return compile_(FunpApply.of(value, FunpLambda.of(var, expr)));
 			})).applyIf(FunpDefineRec.class, f -> {
-				throw new RuntimeException();
+				return Fail.t();
 			}).applyIf(FunpDeref.class, f -> {
-				throw new RuntimeException();
+				return Fail.t();
 			}).applyIf(FunpError.class, f -> {
-				throw new RuntimeException();
+				return Fail.t();
 			}).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				Thunk if1 = compile_(if_);
 				Thunk then1 = compile_(then);
@@ -131,7 +132,7 @@ public class P2GenerateLambda {
 				Int i1 = new Int(i.get());
 				return rt -> i1;
 			})).applyIf(FunpReference.class, f -> {
-				throw new RuntimeException();
+				return Fail.t();
 			}).applyIf(FunpTree.class, f -> f.apply((operator, left, right) -> {
 				Thunk v0 = compile_(left);
 				Thunk v1 = compile_(right);

@@ -10,6 +10,7 @@ import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.adt.pair.LngObjPair;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -211,8 +212,8 @@ public class LngObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static <V> Source<LngObjSource<V>> split(LngObjPredicate<V> fun0, LngObjSource<V> source2) {
 		LngObjPredicate<V> fun1 = fun0.rethrow();
@@ -255,7 +256,7 @@ public class LngObjFunUtil {
 				return b;
 			} catch (InterruptedException ex) {
 				thread.interrupt();
-				throw new RuntimeException(ex);
+				return Fail.t();
 			}
 		};
 	}

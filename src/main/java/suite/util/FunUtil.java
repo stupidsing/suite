@@ -29,7 +29,7 @@ public class FunUtil {
 				try {
 					sink(t);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + t, ex);
+					Fail.t("for " + t, ex);
 				}
 			};
 		}
@@ -42,7 +42,7 @@ public class FunUtil {
 				try {
 					return apply(i);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + i, ex);
+					return Fail.t("for " + i, ex);
 				}
 			};
 		}
@@ -219,8 +219,8 @@ public class FunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static <T> Source<Source<T>> split(Predicate<T> fun0, Source<T> source) {
 		Predicate<T> fun1 = Rethrow.predicate(fun0);
@@ -255,7 +255,7 @@ public class FunUtil {
 				return queue.take();
 			} catch (InterruptedException ex) {
 				thread.interrupt();
-				throw new RuntimeException(ex);
+				return Fail.t(ex);
 			}
 		};
 	}

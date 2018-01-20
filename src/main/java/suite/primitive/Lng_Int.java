@@ -5,6 +5,7 @@ import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.primitive.streamlet.LngOutlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
 @FunctionalInterface
@@ -40,7 +41,7 @@ public interface Lng_Int {
 			try {
 				return apply(t);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + t, ex);
+				return Fail.t("for key " + t, ex);
 			}
 		};
 	}

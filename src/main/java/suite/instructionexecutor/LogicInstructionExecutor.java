@@ -13,6 +13,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.util.Fail;
 
 public class LogicInstructionExecutor extends InstructionExecutor {
 
@@ -87,7 +88,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			exec.sp = i(regs[insn.op0]);
 			break;
 		default:
-			throw new RuntimeException("unknown instruction " + insn);
+			Fail.t("unknown instruction " + insn);
 		}
 	}
 

@@ -39,6 +39,7 @@ import suite.os.LogUtil;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Read;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
@@ -217,7 +218,7 @@ public class FunCreator<I> extends FunFactory {
 				try {
 					clazz.getField(e.getKey()).set(null, e.getValue().t1);
 				} catch (ReflectiveOperationException ex) {
-					throw new RuntimeException(ex);
+					Fail.t(ex);
 				}
 		}
 

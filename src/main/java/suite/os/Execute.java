@@ -10,6 +10,7 @@ import java.util.List;
 
 import suite.Constants;
 import suite.util.Copy;
+import suite.util.Fail;
 import suite.util.Rethrow;
 import suite.util.To;
 
@@ -34,9 +35,9 @@ public class Execute {
 			if (execute.code == 0)
 				return execute.out;
 			else
-				throw new RuntimeException(execute.toString());
+				return Fail.t(execute.toString());
 		} else
-			throw new RuntimeException("cannot find shell executable");
+			return Fail.t("cannot find shell executable");
 	}
 
 	public Execute(String[] command) {

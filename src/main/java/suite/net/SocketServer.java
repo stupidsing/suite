@@ -7,6 +7,7 @@ import suite.Constants;
 import suite.os.SocketUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
 public class SocketServer {
@@ -32,7 +33,7 @@ public class SocketServer {
 		while ((nBytesRead = is.read(buffer, 0, Math.min(max - bb.size(), buffer.length))) != -1) {
 			bb.append(buffer, 0, nBytesRead);
 			if (max < bb.size())
-				throw new RuntimeException("input too long");
+				Fail.t("input too long");
 		}
 
 		return bb.toBytes();

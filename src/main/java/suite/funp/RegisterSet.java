@@ -9,6 +9,7 @@ import suite.assembler.Amd64.Operand;
 import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
+import suite.util.Fail;
 
 public class RegisterSet {
 
@@ -94,14 +95,14 @@ public class RegisterSet {
 		else if (size == 8)
 			return amd64.reg64[reg];
 		else
-			throw new RuntimeException("cannot allocate register with size " + size);
+			return Fail.t("cannot allocate register with size " + size);
 	}
 
 	private OpReg get_() {
 		for (int i = 0; i < nRegisters; i++)
 			if (!isSet(i))
 				return registers[i];
-		throw new RuntimeException();
+		return Fail.t();
 	}
 
 	private boolean isSet(int reg) {

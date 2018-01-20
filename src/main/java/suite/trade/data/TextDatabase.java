@@ -15,6 +15,7 @@ import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.HomeDir;
 import suite.util.Object_;
 import suite.util.String_;
@@ -40,7 +41,7 @@ public class TextDatabase {
 			try {
 				thread.join();
 			} catch (InterruptedException ex) {
-				throw new RuntimeException(ex);
+				Fail.t(ex);
 			}
 	}
 
@@ -84,7 +85,7 @@ public class TextDatabase {
 		try (OutputStream os = FileUtil.out(path)) {
 			Bytes_.copy(outlet, os::write);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 
@@ -97,7 +98,7 @@ public class TextDatabase {
 		if (datum0 == null || !Objects.equals(datum, datum0))
 			data.add(datum);
 		else if (!Objects.equals(datum0.value, datum.value))
-			throw new RuntimeException("value mismatch for key " + datum.key + ": " + datum0.value + " != " + datum.value);
+			Fail.t("value mismatch for key " + datum.key + ": " + datum0.value + " != " + datum.value);
 	}
 
 	private Datum toDatum(String line) {

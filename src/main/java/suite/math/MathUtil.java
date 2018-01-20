@@ -1,5 +1,6 @@
 package suite.math;
 
+import suite.util.Fail;
 import suite.util.To;
 
 public class MathUtil {
@@ -77,7 +78,7 @@ public class MathUtil {
 	public static void verifyEquals(double f0, double f1, double epsilon) {
 		double diff = Math.abs(f0 - f1);
 		if (!Double.isFinite(diff) || epsilon < diff)
-			throw new RuntimeException("values differ" //
+			Fail.t("values differ" //
 					+ ": f0 = " + To.string(f0) //
 					+ ", f1 = " + To.string(f1) //
 					+ ", diff = " + diff);

@@ -5,6 +5,7 @@ import java.util.Objects;
 import suite.adt.Opt;
 import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
+import suite.util.Fail;
 import suite.util.Object_;
 
 public class LngOpt {
@@ -35,10 +36,7 @@ public class LngOpt {
 	}
 
 	public long get() {
-		if (!isEmpty())
-			return value;
-		else
-			throw new RuntimeException("no result");
+		return !isEmpty() ? value : Fail.t("no result");
 	}
 
 	@Override

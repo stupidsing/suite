@@ -40,7 +40,7 @@ public class Memoize {
 					isEnteredFun.set(isEnteredFun0);
 				}
 			} else
-				throw new RuntimeException("use funRec() instead");
+				return Fail.t("use funRec() instead");
 		};
 	}
 

@@ -17,6 +17,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
+import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.HomeDir;
 import suite.util.Memoize;
@@ -62,7 +63,7 @@ public class Constants {
 					8 < length ? m[8] : null, //
 					9 < length ? m[9] : null);
 		} else
-			throw new RuntimeException("Cannot match " + pattern);
+			return Fail.t("Cannot match " + pattern);
 	}
 
 	public static String[] secrets(String pattern) {

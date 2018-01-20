@@ -6,6 +6,7 @@ import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import suite.concurrent.Concurrent.DeadlockException;
+import suite.util.Fail;
 import suite.util.Object_;
 
 /**
@@ -66,7 +67,7 @@ public class Mutex {
 				if (owner.compareAndSet(Thread.currentThread(), null))
 					bigLock.notifyAll();
 				else
-					throw new RuntimeException("lock unlocked by wrong thread");
+					Fail.t("lock unlocked by wrong thread");
 		}
 	}
 

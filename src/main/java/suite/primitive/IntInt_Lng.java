@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.util.Fail;
+
 public interface IntInt_Lng {
 
 	public long apply(int c, int f);
@@ -9,7 +11,7 @@ public interface IntInt_Lng {
 			try {
 				return apply(c, f);
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + c + ":" + f, ex);
+				return Fail.t("for " + c + ":" + f, ex);
 			}
 		};
 

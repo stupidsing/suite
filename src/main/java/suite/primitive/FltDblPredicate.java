@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.util.Fail;
+
 public interface FltDblPredicate {
 
 	public boolean test(float c, double f);
@@ -9,7 +11,7 @@ public interface FltDblPredicate {
 			try {
 				return test(c, f);
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + c + ":" + f + ", ", ex);
+				return Fail.t("for " + c + ":" + f + ", ", ex);
 			}
 		};
 	}

@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.util.Fail;
+
 public class BooMutable {
 
 	private static int falseValue = 0;
@@ -41,7 +43,7 @@ public class BooMutable {
 		if (value == IntFunUtil.EMPTYVALUE)
 			update(t);
 		else
-			throw new RuntimeException("value already set");
+			Fail.t("value already set");
 	}
 
 	public void update(int t) {

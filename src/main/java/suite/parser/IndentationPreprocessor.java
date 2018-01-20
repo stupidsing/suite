@@ -7,6 +7,7 @@ import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.text.Preprocess.Run;
 import suite.text.Segment;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
 import suite.util.String_;
@@ -47,7 +48,7 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 			int nIndents = pos0 - pos, lineLength = pos1 - pos0;
 
 			if (!lastIndent.startsWith(indent) && !indent.startsWith(lastIndent))
-				throw new RuntimeException("indent mismatch");
+				Fail.t("indent mismatch");
 
 			if (lineLength != 0) { // ignore empty lines
 				int startPos = 0, endPos = lineLength;

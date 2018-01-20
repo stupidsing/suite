@@ -23,6 +23,7 @@ import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;
+import suite.util.Fail;
 
 // TODO validate number of operands
 // TODO validate size of operands
@@ -173,7 +174,7 @@ public class Amd64Assemble {
 				bb.append(bytes);
 				offset += bytes.size();
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + Singleton.me.inspect.toString(instruction), ex);
+				return Fail.t("for " + Singleton.me.inspect.toString(instruction), ex);
 			}
 		return bb.toBytes();
 	}
@@ -871,7 +872,7 @@ public class Amd64Assemble {
 			appendImm(bb, insnCode.immSize, insnCode.imm);
 			return bb.toBytes();
 		} else
-			throw new RuntimeException("bad instruction");
+			return Fail.t("bad instruction");
 	}
 
 	private void appendIf(BytesBuilder bb, int b) {
@@ -912,7 +913,7 @@ public class Amd64Assemble {
 			if ((op.indexReg & 7) != 4)
 				indexReg = op.indexReg;
 			else
-				throw new RuntimeException("bad operand");
+				indexReg = Fail.t("bad operand");
 
 			if (baseReg < 0 && indexReg < 0) { // [0x1234]
 				mod = 0;
@@ -984,7 +985,7 @@ public class Amd64Assemble {
 		case 4:
 			return 2;
 		default:
-			throw new RuntimeException("bad displacement");
+			return Fail.t("bad displacement");
 		}
 	}
 
@@ -1003,7 +1004,7 @@ public class Amd64Assemble {
 		case 8:
 			return 3;
 		default:
-			throw new RuntimeException("bad scale");
+			return Fail.t("bad scale");
 		}
 	}
 

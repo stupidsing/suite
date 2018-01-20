@@ -46,6 +46,7 @@ import suite.node.util.TreeUtil;
 import suite.node.util.TreeUtil.IntInt_Bool;
 import suite.primitive.IntInt_Int;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.BiFun;
@@ -120,7 +121,7 @@ public class InterpretFunLazy {
 
 		Reference parsed = new Reference();
 		if (!prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)))
-			throw new RuntimeException("cannot parse " + node);
+			Fail.t("cannot parse " + node);
 		return parsed;
 	}
 
@@ -224,9 +225,7 @@ public class InterpretFunLazy {
 					return expr.apply(frame);
 				};
 			} else if ((ERROR = Matcher.error.match(node)) != null)
-				result = frame -> () -> {
-					throw new RuntimeException("error termination " + Formatter.display(ERROR.m));
-				};
+				result = frame -> () -> Fail.t("error termination " + Formatter.display(ERROR.m));
 			else if ((FUN = Matcher.fun.match(node)) != null) {
 				IMap<Node, Fun<Frame, Thunk_>> vm1 = IMap.empty();
 				for (Pair<Node, Fun<Frame, Thunk_>> e : vm) {
@@ -272,7 +271,7 @@ public class InterpretFunLazy {
 			else if ((WRAP = Matcher.wrap.match(node)) != null)
 				result = lazy_(WRAP.do_);
 			else
-				throw new RuntimeException("unrecognized construct " + node);
+				result = Fail.t("unrecognized construct " + node);
 
 			return result;
 		}

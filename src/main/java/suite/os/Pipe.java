@@ -11,6 +11,7 @@ import suite.Constants;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Copy;
+import suite.util.Fail;
 import suite.util.Rethrow;
 
 public class Pipe {
@@ -25,7 +26,7 @@ public class Pipe {
 		if (command0 != null)
 			LogUtil.info("START " + sh);
 		else
-			throw new RuntimeException("cannot find shell executable");
+			Fail.t("cannot find shell executable");
 
 		String[] command1 = command0;
 
@@ -53,9 +54,9 @@ public class Pipe {
 						for (Thread thread : threads)
 							thread.join();
 					else
-						throw new RuntimeException("code = " + code);
+						Fail.t("code = " + code);
 				} catch (InterruptedException ex) {
-					throw new RuntimeException(ex);
+					Fail.t(ex);
 				}
 				process.destroy();
 				LogUtil.info("END__ " + sh);

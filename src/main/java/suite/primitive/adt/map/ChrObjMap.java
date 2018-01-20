@@ -9,6 +9,7 @@ import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.streamlet.ChrObjOutlet;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;
+import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 
 /**
@@ -162,7 +163,7 @@ public class ChrObjMap<V> {
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
-				throw new RuntimeException("duplicate key " + key);
+				return Fail.t("duplicate key " + key);
 		ks[index] = key;
 		vs[index] = v1;
 		return v0;

@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import suite.util.Fail;
+
 public interface FltObj_Chr<T> {
 
 	public char apply(float c, T t);
@@ -9,7 +11,7 @@ public interface FltObj_Chr<T> {
 			try {
 				return apply(c, t);
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + c + ":" + t + ", ", ex);
+				return Fail.t("for " + c + ":" + t + ", ", ex);
 			}
 		};
 	}

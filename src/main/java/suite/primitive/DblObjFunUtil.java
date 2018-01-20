@@ -10,6 +10,7 @@ import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
 import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.adt.pair.DblObjPair;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -211,8 +212,8 @@ public class DblObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static <V> Source<DblObjSource<V>> split(DblObjPredicate<V> fun0, DblObjSource<V> source2) {
 		DblObjPredicate<V> fun1 = fun0.rethrow();
@@ -255,7 +256,7 @@ public class DblObjFunUtil {
 				return b;
 			} catch (InterruptedException ex) {
 				thread.interrupt();
-				throw new RuntimeException(ex);
+				return Fail.t();
 			}
 		};
 	}

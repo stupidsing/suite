@@ -2,6 +2,7 @@ package suite.concurrent;
 
 import java.util.concurrent.atomic.AtomicStampedReference;
 
+import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 
 /**
@@ -35,7 +36,7 @@ public class CasReference<T> {
 				else
 					new Backoff().yield(); // back-off
 			else
-				throw new RuntimeException("stamp overflow");
+				return Fail.t("stamp overflow");
 		}
 	}
 

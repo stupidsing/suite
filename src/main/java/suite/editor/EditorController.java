@@ -20,6 +20,7 @@ import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 import suite.util.Thread_;
 import suite.util.To;
@@ -152,7 +153,7 @@ public class EditorController {
 		try (OutputStream os = FileUtil.out(model.getFilename())) {
 			os.write(view.getEditor().getText().getBytes(Constants.charset));
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 		model.changeModified(false);
 	}
@@ -201,7 +202,7 @@ public class EditorController {
 
 			editor.setText(To.string(process.getInputStream()));
 		} catch (IOException | InterruptedException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 

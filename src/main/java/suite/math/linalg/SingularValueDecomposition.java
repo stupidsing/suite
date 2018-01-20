@@ -7,6 +7,7 @@ import suite.adt.pair.Fixie_.Fixie3;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 
@@ -104,7 +105,7 @@ public class SingularValueDecomposition {
 				return Fixie.of(beta, u, v);
 		}
 
-		throw new RuntimeException();
+		return Fail.t();
 	}
 
 	// http://www.dcs.gla.ac.uk/~vincia/textbook.pdf

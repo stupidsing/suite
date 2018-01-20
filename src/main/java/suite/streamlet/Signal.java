@@ -12,6 +12,7 @@ import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.concurrent.Bag;
 import suite.concurrent.CasReference;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -141,7 +142,7 @@ public class Signal<T> {
 			try {
 				return queue.take();
 			} catch (InterruptedException ex) {
-				throw new RuntimeException(ex);
+				return Fail.t(ex);
 			}
 		});
 	}

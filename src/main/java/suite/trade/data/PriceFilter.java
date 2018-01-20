@@ -8,6 +8,7 @@ import suite.primitive.Flt_Flt;
 import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.TimeRange;
+import suite.util.Fail;
 
 public class PriceFilter {
 
@@ -38,10 +39,7 @@ public class PriceFilter {
 	}
 
 	private String s(String symbol) {
-		if (symbol.startsWith("#"))
-			return symbol.substring(1);
-		else
-			throw new RuntimeException();
+		return symbol.startsWith("#") ? symbol.substring(1) : Fail.t();
 	}
 
 }

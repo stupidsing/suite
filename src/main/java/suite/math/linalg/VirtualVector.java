@@ -1,6 +1,7 @@
 package suite.math.linalg;
 
 import suite.primitive.Int_Flt;
+import suite.util.Fail;
 import suite.util.To;
 
 public class VirtualVector {
@@ -42,10 +43,7 @@ public class VirtualVector {
 
 	public VirtualVector dot(VirtualVector vv1) {
 		return apply((length0, f0) -> apply((length1, f1) -> {
-			if (length0 == length1)
-				return of(length, i -> f0.apply(i) * f1.apply(i));
-			else
-				throw new RuntimeException("wrong input sizes");
+			return length0 == length1 ? of(length, i -> f0.apply(i) * f1.apply(i)) : Fail.t("wrong input sizes");
 		}));
 	}
 
@@ -87,10 +85,7 @@ class VirtualVectorUtil {
 
 	public static VirtualVector checkSizes(VirtualVector vv0, VirtualVector vv1, Int_Flt fun) {
 		return vv0.apply((length0, f0) -> vv1.apply((length1, f1) -> {
-			if (length0 == length1)
-				return VirtualVector.of(length0, fun);
-			else
-				throw new RuntimeException("wrong input sizes");
+			return length0 == length1 ? VirtualVector.of(length0, fun) : Fail.t("wrong input sizes");
 		}));
 	}
 

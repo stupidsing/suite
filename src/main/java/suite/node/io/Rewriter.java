@@ -14,6 +14,7 @@ import suite.node.Tuple;
 import suite.node.util.Comparer;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 
 public class Rewriter {
@@ -113,7 +114,7 @@ public class Rewriter {
 				node = Tuple.of(Read.from(children).map(p -> p.t1).toArray(Node.class));
 				break;
 			default:
-				throw new RuntimeException();
+				node = Fail.t();
 			}
 		}
 	}

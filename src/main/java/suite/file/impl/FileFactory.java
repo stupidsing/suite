@@ -15,6 +15,7 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.DataInput_;
 import suite.util.DataOutput_;
+import suite.util.Fail;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 import suite.util.Util;
@@ -168,7 +169,7 @@ public class FileFactory {
 				if (startPointer <= pointer1 && pointer1 < endPointer)
 					return pointer1;
 				else
-					throw new RuntimeException("page index out of range");
+					return Fail.t("page index out of range");
 			}
 		};
 	}

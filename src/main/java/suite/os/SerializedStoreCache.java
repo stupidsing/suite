@@ -8,6 +8,7 @@ import suite.node.util.Singleton;
 import suite.primitive.Bytes;
 import suite.util.DataInput_;
 import suite.util.DataOutput_;
+import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
 import suite.util.Serialize;
@@ -49,7 +50,7 @@ public class SerializedStoreCache<K, V> {
 		try (DataOutput_ dos = DataOutput_.of(baosKey)) {
 			serializer.write(dos, t);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 
 		return Bytes.of(baosKey.toByteArray());

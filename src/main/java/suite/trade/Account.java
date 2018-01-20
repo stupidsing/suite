@@ -9,6 +9,7 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
+import suite.util.Fail;
 import suite.util.String_;
 import suite.util.To;
 
@@ -109,10 +110,10 @@ public class Account {
 	public void validate() {
 		int cash = cash_();
 		if (!Trade_.isValidCash(cash))
-			throw new RuntimeException("too much leverage: " + cash);
+			Fail.t("too much leverage: " + cash);
 		assets.forEach((symbol, nShares) -> {
 			if (!Trade_.isValidStock(symbol, nShares))
-				throw new RuntimeException("no short-selling " + symbol + " " + nShares);
+				Fail.t("no short-selling " + symbol + " " + nShares);
 		});
 	}
 
@@ -172,7 +173,7 @@ public class Account {
 
 			return isPlayable;
 		} else
-			throw new RuntimeException("impossible transaction price: " + trade);
+			return Fail.t("impossible transaction price: " + trade);
 	}
 
 	private int get(String code) {

@@ -43,7 +43,7 @@ public class Object_ {
 			try {
 				o.close();
 			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+				Fail.t(ex);
 			}
 	}
 
@@ -150,7 +150,7 @@ public class Object_ {
 			else
 				mapper = mapper(rawType);
 		} else
-			throw new RuntimeException("unrecognized type " + type);
+			mapper = Fail.t("unrecognized type " + type);
 
 		return mapper;
 	}

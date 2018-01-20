@@ -10,6 +10,7 @@ import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.primitive.adt.pair.ChrObjPair;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -214,8 +215,8 @@ public class ChrFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static Source<ChrSource> split(ChrTest fun0, ChrSource source) {
 		ChrTest fun1 = fun0.rethrow();
@@ -251,7 +252,7 @@ public class ChrFunUtil {
 				return queue.take();
 			} catch (InterruptedException ex) {
 				thread.interrupt();
-				throw new RuntimeException(ex);
+				return Fail.t(ex);
 			}
 		};
 	}

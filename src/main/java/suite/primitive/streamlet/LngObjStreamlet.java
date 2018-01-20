@@ -28,6 +28,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
+import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -294,7 +295,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		if (pair.t0 != LngFunUtil.EMPTYVALUE)
 			return pair;
 		else
-			throw new RuntimeException("no result");
+			return Fail.t("no result");
 	}
 
 	public Streamlet<V> values() {

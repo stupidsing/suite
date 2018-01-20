@@ -8,6 +8,7 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
+import suite.util.Fail;
 import suite.util.To;
 
 public class Matrix_ {
@@ -24,7 +25,7 @@ public class Matrix_ {
 				for (int j = 0; j < width; j++)
 					m[i][j] += n[i][j];
 		else
-			throw new RuntimeException("wrong input sizes");
+			Fail.t("wrong input sizes");
 		return m;
 	}
 
@@ -118,7 +119,7 @@ public class Matrix_ {
 		int size = h(m);
 
 		if (size != w(m))
-			throw new RuntimeException("wrong input sizes");
+			Fail.t("wrong input sizes");
 
 		float[][] n = identity(size);
 
@@ -130,7 +131,7 @@ public class Matrix_ {
 					break;
 
 			if (c == size)
-				throw new RuntimeException("no inverse exists");
+				Fail.t("no inverse exists");
 
 			if (r != c) {
 				swapRows(m, r, c);
@@ -168,7 +169,7 @@ public class Matrix_ {
 				}
 			}
 		else
-			throw new RuntimeException("wrong input sizes");
+			Fail.t("wrong input sizes");
 		return o;
 	}
 
@@ -189,7 +190,7 @@ public class Matrix_ {
 				}
 			}
 		else
-			throw new RuntimeException("wrong input sizes");
+			Fail.t("wrong input sizes");
 		return o;
 	}
 
@@ -214,7 +215,7 @@ public class Matrix_ {
 				}
 			}
 		else
-			throw new RuntimeException("wrong input sizes");
+			Fail.t("wrong input sizes");
 
 		return o;
 	}
@@ -226,7 +227,7 @@ public class Matrix_ {
 			float z1 = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z;
 			return new Vector(x1, y1, z1);
 		} else
-			throw new RuntimeException("wrong input sizes");
+			return Fail.t("wrong input sizes");
 	}
 
 	// calculate m * nT
@@ -251,7 +252,7 @@ public class Matrix_ {
 				}
 			}
 		else
-			throw new RuntimeException("wrong input sizes");
+			Fail.t("wrong input sizes");
 		return o;
 	}
 
@@ -277,7 +278,7 @@ public class Matrix_ {
 				}
 			}
 		else
-			throw new RuntimeException("wrong input sizes");
+			Fail.t("wrong input sizes");
 		return o;
 	}
 
@@ -355,7 +356,7 @@ public class Matrix_ {
 				for (int j = 0; j < width; j++)
 					MathUtil.verifyEquals(m0[i][j], m1[i][j], epsilon);
 		else
-			throw new RuntimeException("wrong input sizes");
+			Fail.t("wrong input sizes");
 	}
 
 	private void swapRows(float[][] m, int row0, int row1) {
@@ -436,7 +437,7 @@ public class Matrix_ {
 		if (height == w(m))
 			return height;
 		else
-			throw new RuntimeException("wrong input sizes");
+			return Fail.t("wrong input sizes");
 	}
 
 	private int h(float[][] m) {

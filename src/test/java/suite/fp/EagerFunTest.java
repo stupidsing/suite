@@ -10,6 +10,7 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
+import suite.util.Fail;
 
 public class EagerFunTest {
 
@@ -178,7 +179,7 @@ public class EagerFunTest {
 		try {
 			// this would fail stack over during type check, so skip that
 			Suite.evaluateFun("skip-type-check (e => e {e}) {e => e {e}}", false);
-			throw new RuntimeException();
+			Fail.t();
 		} catch (Throwable th) {
 		}
 	}

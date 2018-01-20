@@ -12,6 +12,7 @@ import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.SewingProverBuilder2;
+import suite.util.Fail;
 
 public class ProverTest {
 
@@ -135,7 +136,7 @@ public class ProverTest {
 		if (b0 == b1)
 			return b0;
 		else
-			throw new RuntimeException("different prove result");
+			return Fail.t("different prove result");
 	}
 
 }

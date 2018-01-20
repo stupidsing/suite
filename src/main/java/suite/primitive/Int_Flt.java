@@ -5,6 +5,7 @@ import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.primitive.streamlet.IntOutlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
 @FunctionalInterface
@@ -40,7 +41,7 @@ public interface Int_Flt {
 			try {
 				return apply(t);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + t, ex);
+				return Fail.t("for key " + t, ex);
 			}
 		};
 	}

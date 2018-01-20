@@ -22,6 +22,7 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.primitive.Chars;
+import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 import suite.util.To;
 
@@ -94,7 +95,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = Tree.decompose((Node) ds[--dsp]).getRight();
 			break;
 		default:
-			throw new RuntimeException("unknown instruction " + insn);
+			result = Fail.t("unknown instruction " + insn);
 		}
 
 		exec.sp = dsp;

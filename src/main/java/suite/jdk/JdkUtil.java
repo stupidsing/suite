@@ -12,6 +12,7 @@ import javax.tools.ToolProvider;
 import suite.Constants;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
+import suite.util.Fail;
 
 public class JdkUtil {
 
@@ -46,7 +47,7 @@ public class JdkUtil {
 					List.of("-d", binDir.toString()), //
 					null, //
 					sjfm.getJavaFileObjects(srcFilePath.toFile())).call())
-				throw new RuntimeException("Java compilation error");
+				Fail.t("Java compilation error");
 		}
 
 		return binFilePath;

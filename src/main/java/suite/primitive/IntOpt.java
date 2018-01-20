@@ -5,6 +5,7 @@ import java.util.Objects;
 import suite.adt.Opt;
 import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
+import suite.util.Fail;
 import suite.util.Object_;
 
 public class IntOpt {
@@ -35,10 +36,7 @@ public class IntOpt {
 	}
 
 	public int get() {
-		if (!isEmpty())
-			return value;
-		else
-			throw new RuntimeException("no result");
+		return !isEmpty() ? value : Fail.t("no result");
 	}
 
 	@Override

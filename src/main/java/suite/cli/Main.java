@@ -17,6 +17,7 @@ import suite.net.SocketServer;
 import suite.node.Node;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
+import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
 import suite.util.ParseUtil;
@@ -90,7 +91,7 @@ public class Main extends ExecutableProgram {
 			else if (verb == null)
 				result &= runInteractive(inputs);
 			else
-				throw new RuntimeException("unknown action " + verb);
+				Fail.t("unknown action " + verb);
 
 		return result;
 	}

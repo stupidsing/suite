@@ -48,6 +48,7 @@ import suite.node.util.TreeUtil;
 import suite.primitive.Bytes;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -170,7 +171,7 @@ public class P4GenerateCode {
 					} else if (type == CompileOut_.OPSPEC)
 						em.mov(pop0, old);
 					else
-						throw new RuntimeException();
+						Fail.t();
 					return new CompileOut();
 				};
 
@@ -203,7 +204,7 @@ public class P4GenerateCode {
 						em.mov(pop1, old1);
 						em.mov(pop0, r);
 					} else
-						throw new RuntimeException();
+						Fail.t();
 					return new CompileOut();
 				};
 
@@ -232,7 +233,7 @@ public class P4GenerateCode {
 						em.emit(amd64.instruction(Insn.ADD, esp, imm));
 						return postTwoOp.apply(op0, op1);
 					} else
-						throw new RuntimeException();
+						return Fail.t();
 				};
 
 				Fun<Sink<Compile1>, CompileOut> postRoutine = routine -> compileRoutine(routine).map(postTwoOp);
@@ -370,13 +371,13 @@ public class P4GenerateCode {
 						compileInvoke(routine);
 						return postOp.apply(eax);
 					} else
-						throw new RuntimeException();
+						return Fail.t();
 				})).applyIf(FunpInvokeInt2.class, f -> f.apply(routine -> {
 					if (!rs.contains(eax, edx)) {
 						compileInvoke(routine);
 						return postTwoOp.apply(eax, edx);
 					} else
-						throw new RuntimeException();
+						return Fail.t();
 				})).applyIf(FunpInvokeIo.class, f -> f.apply(routine -> {
 					return postAssign.apply((c1, target) -> {
 						OpReg r0 = c1.compileOpReg(target.pointer);
@@ -400,7 +401,7 @@ public class P4GenerateCode {
 								}
 							});
 						else
-							throw new RuntimeException();
+							return Fail.t();
 					else if (type == CompileOut_.OP || type == CompileOut_.OPREG || type == CompileOut_.OPSPEC)
 						if ((op0 = deOp.decomposeOpMem(fd, pointer, start, size)) != null)
 							return postOp.apply(op0);
@@ -415,7 +416,7 @@ public class P4GenerateCode {
 							return postTwoOp.apply(amd64.mem(r, start, ps), amd64.mem(r, start + is, ps));
 						}
 					else
-						throw new RuntimeException();
+						return Fail.t();
 				})).applyIf(FunpNumber.class, f -> f.apply(i -> {
 					return postOp.apply(amd64.imm(i.get(), is));
 				})).applyIf(FunpRoutine.class, f -> f.apply(expr -> {

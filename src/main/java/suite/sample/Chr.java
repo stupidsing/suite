@@ -22,6 +22,7 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeRewriter;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 
@@ -73,9 +74,9 @@ public class Chr {
 				else if (key == Atom.of("when"))
 					rule.when = value;
 				else
-					throw new RuntimeException("invalid key " + key);
+					Fail.t("invalid key " + key);
 			} else
-				throw new RuntimeException("invalid rule " + node);
+				Fail.t("invalid rule " + node);
 		}
 
 		rules.add(rule);

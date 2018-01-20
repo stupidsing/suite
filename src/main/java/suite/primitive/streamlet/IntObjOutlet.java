@@ -29,6 +29,7 @@ import suite.streamlet.OutletDefaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;
+import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -291,7 +292,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		if (pair != null)
 			return pair;
 		else
-			throw new RuntimeException("no result");
+			return Fail.t("no result");
 	}
 
 	public IntObjPair<V> minOrNull(Comparator<IntObjPair<V>> comparator) {
@@ -337,7 +338,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 			if (!next(pair))
 				return pair;
 			else
-				throw new RuntimeException("more than one result");
+				return Fail.t("more than one result");
 		else
 			return IntObjPair.none();
 	}

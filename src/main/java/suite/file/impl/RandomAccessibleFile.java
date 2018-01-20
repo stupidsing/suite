@@ -10,6 +10,7 @@ import java.nio.file.Path;
 
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
+import suite.util.Fail;
 
 public class RandomAccessibleFile implements Closeable {
 
@@ -21,7 +22,7 @@ public class RandomAccessibleFile implements Closeable {
 		try {
 			file = new RandomAccessFile(path.toFile(), "rw");
 		} catch (FileNotFoundException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 		channel = file.getChannel();
 	}
@@ -32,7 +33,7 @@ public class RandomAccessibleFile implements Closeable {
 			channel.close();
 			file.close();
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 
@@ -40,7 +41,7 @@ public class RandomAccessibleFile implements Closeable {
 		try {
 			channel.force(true);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 
@@ -51,7 +52,7 @@ public class RandomAccessibleFile implements Closeable {
 		try {
 			channel.read(bb, start);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 
 		bb.limit(size);
@@ -62,7 +63,7 @@ public class RandomAccessibleFile implements Closeable {
 		try {
 			channel.write(bytes.toByteBuffer(), start);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 

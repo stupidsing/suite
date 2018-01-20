@@ -6,6 +6,7 @@ import java.util.List;
 import suite.lp.doer.Cloner;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Node;
+import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
 import suite.util.To;
@@ -17,9 +18,9 @@ public class FindUtil {
 		if (list.size() == 1)
 			return list.get(0);
 		else if (!list.isEmpty())
-			throw new RuntimeException("too many results");
+			return Fail.t("too many results");
 		else
-			throw new RuntimeException("failure");
+			return Fail.t("failure");
 	}
 
 	public static List<Node> collectList(Finder finder, Node in) {

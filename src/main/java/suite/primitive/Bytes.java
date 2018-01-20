@@ -9,6 +9,7 @@ import java.util.Iterator;
 import suite.Constants;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.To;
@@ -186,7 +187,7 @@ public class Bytes implements Iterable<Byte> {
 		try {
 			out.write(bs, start, end - start);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 

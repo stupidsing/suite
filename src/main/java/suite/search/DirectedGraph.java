@@ -9,6 +9,7 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 
 public class DirectedGraph<V> {
 
@@ -50,10 +51,7 @@ public class DirectedGraph<V> {
 			b = !set1.isEmpty();
 		} while (b);
 
-		if (set.size() == vertices.size())
-			return results;
-		else
-			throw new RuntimeException("cyclic graph");
+		return set.size() == vertices.size() ? results : Fail.t("cyclic graph");
 	}
 
 	public DirectedGraph<V> reverse() {

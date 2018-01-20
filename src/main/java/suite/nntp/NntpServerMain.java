@@ -14,6 +14,7 @@ import java.util.Map.Entry;
 import suite.adt.pair.Pair;
 import suite.os.SocketUtil;
 import suite.util.CommandUtil;
+import suite.util.Fail;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 import suite.util.String_;
@@ -99,7 +100,7 @@ public class NntpServerMain extends ExecutableProgram {
 								pw.println(group + " " + group);
 							pw.println(".");
 						} else
-							throw new RuntimeException("unrecognized LIST command " + line);
+							Fail.t("unrecognized LIST command " + line);
 						break;
 					case LISTGROUP:
 						pw.println("211 Okay");
@@ -131,7 +132,7 @@ public class NntpServerMain extends ExecutableProgram {
 						pw.println("240 Okay");
 						break;
 					default:
-						throw new RuntimeException("unrecognized command " + line);
+						Fail.t("unrecognized command " + line);
 					}
 				}
 			}

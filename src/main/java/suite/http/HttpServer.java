@@ -11,6 +11,7 @@ import suite.adt.pair.Pair;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.util.Copy;
+import suite.util.Fail;
 import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
@@ -32,7 +33,7 @@ public class HttpServer {
 		try {
 			run_(handler);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 
@@ -62,7 +63,7 @@ public class HttpServer {
 			String path2 = URLDecoder.decode(path1, "UTF-8");
 
 			if (!String_.equals(protocol, "HTTP/1.1"))
-				throw new RuntimeException("only HTTP/1.1 is supported");
+				Fail.t("only HTTP/1.1 is supported");
 
 			Map<String, String> requestHeaders = new HashMap<>();
 

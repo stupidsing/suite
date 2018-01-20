@@ -11,6 +11,7 @@ import suite.lp.doer.Binder;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Node;
 import suite.node.util.Comparer;
+import suite.util.Fail;
 
 public class FunTypeTest {
 
@@ -211,7 +212,7 @@ public class FunTypeTest {
 		} catch (RuntimeException ex) {
 			return;
 		}
-		throw new RuntimeException("cannot catch type error of: " + fps);
+		Fail.t("cannot catch type error of: " + fps);
 	}
 
 	private Node getType(String fps) {

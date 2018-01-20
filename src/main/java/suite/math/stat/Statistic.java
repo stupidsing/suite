@@ -15,6 +15,7 @@ import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 
@@ -138,10 +139,7 @@ public class Statistic {
 		}
 
 		public float[] coefficients() {
-			if (!Double.isNaN(sse))
-				return coefficients;
-			else
-				throw new RuntimeException();
+			return !Double.isNaN(sse) ? coefficients : Fail.t();
 		}
 
 		public double logLikelihood() {
@@ -203,7 +201,7 @@ public class Statistic {
 					w = cd.apply(mtx.mul(xt, vec.sub(vec.add(mtx.mul(sx, w), y), bernoulli)));
 				}
 			} else
-				throw new RuntimeException("wrong input sizes");
+				Fail.t("wrong input sizes");
 		}
 
 		public float predict(float[] x) {

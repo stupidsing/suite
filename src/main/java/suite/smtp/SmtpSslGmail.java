@@ -15,6 +15,7 @@ import javax.net.ssl.SSLSocketFactory;
 import suite.Constants;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrChr_Int;
+import suite.util.Fail;
 
 public class SmtpSslGmail {
 
@@ -46,7 +47,7 @@ public class SmtpSslGmail {
 
 				Transport.send(message);
 			} catch (MessagingException e) {
-				throw new RuntimeException(e);
+				Fail.t(e);
 			}
 
 			return true;

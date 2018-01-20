@@ -11,6 +11,7 @@ import suite.node.util.Singleton;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.Object_;
 import suite.util.To;
 
@@ -105,7 +106,7 @@ public class HkexFactBook {
 		else if (year == 2017)
 			return dir + "/HKEX-Fact-Book-2016/FB_2016.pdf";
 		else
-			throw new RuntimeException();
+			return Fail.t();
 	}
 
 	@SuppressWarnings("unused")
@@ -121,7 +122,7 @@ public class HkexFactBook {
 				return e.getValue().toString();
 		}
 
-		throw new RuntimeException();
+		return Fail.t();
 	}
 
 }

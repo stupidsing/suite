@@ -6,6 +6,7 @@ import java.util.Set;
 import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.TimeRange;
+import suite.util.Fail;
 import suite.util.String_;
 
 public class Hkd {
@@ -14,7 +15,7 @@ public class Hkd {
 		if (String_.equals(symbol, Asset.cashSymbol))
 			return DataSource.of(new long[] { period.to.epochSec(), }, new float[] { 1f, });
 		else
-			throw new RuntimeException();
+			return Fail.t();
 	}
 
 	public Asset queryCompany(String symbol) {
@@ -23,7 +24,7 @@ public class Hkd {
 		else if (String_.equals(symbol, Asset.hsiSymbol))
 			return Asset.hsi;
 		else
-			throw new RuntimeException();
+			return Fail.t();
 	}
 
 	public Map<String, Float> quote(Set<String> symbols) {
@@ -32,7 +33,7 @@ public class Hkd {
 					if (String_.equals(symbol, Asset.cashSymbol))
 						return 1f;
 					else
-						throw new RuntimeException();
+						return Fail.t();
 				}) //
 				.toMap();
 	}

@@ -99,7 +99,7 @@ public class MapObject_ {
 		else if (type == FixieFunA.class)
 			p = (FixieFunA<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) List::of;
 		else
-			throw new RuntimeException();
+			p = Fail.t();
 
 		return (List<?>) Rethrow.ex(() -> m.invoke(object, p));
 	}

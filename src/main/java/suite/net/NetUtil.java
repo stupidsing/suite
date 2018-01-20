@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import suite.primitive.Bytes;
+import suite.util.Fail;
 import suite.util.Rethrow;
 
 public class NetUtil {
@@ -49,7 +50,7 @@ public class NetUtil {
 			T t = (T) in.readObject();
 			return t;
 		} catch (ClassNotFoundException | IOException ex) {
-			throw new RuntimeException(ex);
+			return Fail.t(ex);
 		}
 	}
 

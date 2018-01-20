@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Objects;
 
+import suite.util.Fail;
 import suite.util.Object_;
 import suite.util.To;
 
@@ -46,7 +47,7 @@ public class Time implements Comparable<Time> {
 			else
 				return ofYmdHms(s);
 		else
-			throw new RuntimeException("invalid time " + s);
+			return Fail.t("invalid time " + s);
 	}
 
 	public static Time ofYmd(String s) {

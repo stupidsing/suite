@@ -30,6 +30,7 @@ import suite.node.util.Cyclic;
 import suite.node.util.TreeRewriter;
 import suite.node.util.TreeUtil;
 import suite.os.LogUtil;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
 
@@ -58,7 +59,7 @@ public class EvalPredicates {
 		case LT____:
 			return comparer.compare(tree.getLeft(), tree.getRight()) < 0;
 		default:
-			throw new RuntimeException("unknown comparison");
+			return Fail.t("unknown comparison");
 		}
 	};
 

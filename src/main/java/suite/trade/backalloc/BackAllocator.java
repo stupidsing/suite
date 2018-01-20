@@ -34,6 +34,7 @@ import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSource.Datum;
 import suite.trade.walkforwardalloc.WalkForwardAllocator;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.Set_;
@@ -52,10 +53,9 @@ public interface BackAllocator {
 	public interface OnDateTime {
 
 		/**
-		 * @return a portfolio consisting of list of symbols and potential
-		 *         values, or null if the strategy do not want to trade on that
-		 *         date. The assets will be allocated according to potential
-		 *         values pro-rata.
+		 * @return a portfolio consisting of list of symbols and potential values, or
+		 *         null if the strategy do not want to trade on that date. The assets
+		 *         will be allocated according to potential values pro-rata.
 		 */
 		public List<Pair<String, Double>> onDateTime(int index);
 	}
@@ -235,10 +235,7 @@ public interface BackAllocator {
 			return index -> Read //
 					.from2(onDateTime.onDateTime(index)) //
 					.map2((symbol, potential) -> {
-						if (Double.isFinite(potential))
-							return potential;
-						else
-							throw new RuntimeException("potential is " + potential);
+						return Double.isFinite(potential) ? potential : Fail.t("potential is " + potential);
 					}) //
 					.filterValue(potential -> 0d < potential) //
 					.toList();

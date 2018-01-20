@@ -10,6 +10,7 @@ import java.util.Map;
 
 import suite.Constants;
 import suite.os.SocketUtil;
+import suite.util.Fail;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 import suite.util.To;
@@ -80,10 +81,10 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 			if ('0' <= c && c <= '9')
 				length = length * 10 + c - '0';
 			else
-				throw new RuntimeException("invalid netstring length");
+				Fail.t("invalid netstring length");
 
 		if (c != ':')
-			throw new RuntimeException("netstring length not ended with ':'");
+			Fail.t("netstring length not ended with ':'");
 
 		int nBytesRead = 0;
 		byte[] bytes = new byte[length];

@@ -8,6 +8,7 @@ import java.util.List;
 
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.util.Fail;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
@@ -117,7 +118,7 @@ public class FileSystemKeyUtil {
 		try {
 			md = MessageDigest.getInstance("SHA-256");
 		} catch (NoSuchAlgorithmException ex) {
-			throw new RuntimeException(ex);
+			md = Fail.t(ex);
 		}
 
 		md.update(bytes.toArray());

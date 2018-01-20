@@ -9,6 +9,7 @@ import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjOutlet;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
+import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 
 /**
@@ -162,7 +163,7 @@ public class IntObjMap<V> {
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
-				throw new RuntimeException("duplicate key " + key);
+				return Fail.t("duplicate key " + key);
 		ks[index] = key;
 		vs[index] = v1;
 		return v0;

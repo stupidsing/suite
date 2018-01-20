@@ -7,6 +7,7 @@ import java.util.Set;
 
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
+import suite.util.Fail;
 import suite.util.List_;
 
 public class ReadLookahead {
@@ -72,7 +73,7 @@ public class ReadLookahead {
 			ls.lookaheads.add(eg.content);
 			break;
 		default:
-			throw new RuntimeException("LR parser cannot recognize " + eg.type);
+			Fail.t("LR parser cannot recognize " + eg.type);
 		}
 	}
 

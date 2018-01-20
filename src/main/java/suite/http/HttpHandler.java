@@ -7,6 +7,7 @@ import java.nio.file.Path;
 import suite.adt.pair.Pair;
 import suite.http.HttpSessionController.Authenticator;
 import suite.immutable.IMap;
+import suite.util.Fail;
 import suite.util.Rethrow;
 import suite.util.To;
 
@@ -16,10 +17,7 @@ public interface HttpHandler {
 		return request -> {
 			Pair<String, HttpRequest> p = request.split();
 			HttpHandler handler = map.get(p.t0);
-			if (handler != null)
-				return handler.handle(p.t1);
-			else
-				throw new RuntimeException("no handler for " + p.t0);
+			return handler != null ? handler.handle(p.t1) : Fail.t("no handler for " + p.t0);
 		};
 	}
 

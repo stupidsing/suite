@@ -32,6 +32,7 @@ import suite.jdk.gen.FunExprM.VoidFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 
@@ -51,7 +52,7 @@ public class FunTypeInformation {
 			Type type = Type.getType(e1.clazz);
 			for (FunExpr element : e1.elements)
 				if (element != null && type != typeOf(element))
-					throw new RuntimeException();
+					Fail.t();
 			return e1.clazz.isPrimitive() ? new ArrayType(type.getType(), 1) : new ArrayType(type, 1);
 		}).applyIf(ArrayLengthFunExpr.class, e1 -> {
 			return Type.INT;
@@ -97,7 +98,7 @@ public class FunTypeInformation {
 			if (typeOf(e1.left) == Type.VOID)
 				return typeOf(e1.right);
 			else
-				throw new RuntimeException();
+				return Fail.t();
 		}).applyIf(VoidFunExpr.class, e1 -> {
 			return Type.VOID;
 		}).nonNullResult();

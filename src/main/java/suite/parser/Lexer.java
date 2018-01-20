@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import suite.util.Fail;
 import suite.util.FunUtil.Source;
 
 /**
@@ -118,7 +119,7 @@ public class Lexer {
 			else
 				eof = true;
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 		return ch;
 	}

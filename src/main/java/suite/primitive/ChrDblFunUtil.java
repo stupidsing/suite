@@ -7,6 +7,7 @@ import suite.os.LogUtil;
 import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.adt.pair.ChrDblPair;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -251,7 +252,7 @@ public class ChrDblFunUtil {
 				return b;
 			} catch (InterruptedException ex) {
 				thread.interrupt();
-				throw new RuntimeException(ex);
+				return Fail.t(ex);
 			}
 		};
 	}

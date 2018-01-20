@@ -21,6 +21,7 @@ import suite.node.io.ReversePolish;
 import suite.node.pp.NewPrettyPrinter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
+import suite.util.Fail;
 
 public class FormatPredicates {
 
@@ -59,7 +60,7 @@ public class FormatPredicates {
 			grapher.load(dis);
 			return prover.bind(node, grapher.ungraph());
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			return Fail.t(ex);
 		}
 	});
 
@@ -72,7 +73,7 @@ public class FormatPredicates {
 			grapher.save(dos);
 			return true;
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			return Fail.t(ex);
 		}
 	});
 
@@ -110,7 +111,7 @@ public class FormatPredicates {
 
 			return prover.bind(sx, new Str(name.substring(m, n)));
 		} else
-			throw new RuntimeException("invalid call pattern");
+			return Fail.t("invalid call pattern");
 	});
 
 	public BuiltinPredicate toAtom = PredicateUtil.fun(n -> Atom.of(Formatter.display(n)));

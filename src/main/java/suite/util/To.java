@@ -65,7 +65,7 @@ public class To {
 		try {
 			ioSink.sink(DataOutput_.of(baos));
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 		return Bytes.of(baos.toByteArray());
 	}
@@ -240,7 +240,7 @@ public class To {
 				BufferedReader br = new BufferedReader(isr)) {
 			return string(br);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			return Fail.t(ex);
 		}
 	}
 
@@ -276,7 +276,7 @@ public class To {
 
 			return sb.toString();
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			return Fail.t(ex);
 		}
 	}
 

@@ -19,6 +19,7 @@ import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.util.Array_;
+import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -283,7 +284,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		if (pair != null)
 			return pair;
 		else
-			throw new RuntimeException("no result");
+			return Fail.t("no result");
 	}
 
 	public Pair<K, V> minOrNull(Comparator<Pair<K, V>> comparator) {
@@ -329,7 +330,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			if (!next(pair))
 				return pair;
 			else
-				throw new RuntimeException("more than one result");
+				return Fail.t("more than one result");
 		else
 			return Pair.none();
 	}
@@ -430,7 +431,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		Map<K, V> map = new HashMap<>();
 		while (next(pair))
 			if (map.put(pair.t0, pair.t1) != null)
-				throw new RuntimeException("duplicate key " + pair.t0);
+				Fail.t("duplicate key " + pair.t0);
 		return map;
 	}
 

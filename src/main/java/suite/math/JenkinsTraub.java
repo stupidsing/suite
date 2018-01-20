@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import suite.primitive.Floats_;
+import suite.util.Fail;
 import suite.util.To;
 
 public class JenkinsTraub {
@@ -41,7 +42,7 @@ public class JenkinsTraub {
 
 		re: while (true) {
 			if (21 < ++n)
-				throw new RuntimeException();
+				Fail.t();
 			else if (3 < ++nSteps) {
 				nSteps = 0;
 				maxIterations *= 2;

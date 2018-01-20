@@ -25,7 +25,7 @@ public class Switch<R> {
 			try {
 				fun.sink(t);
 			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+				Fail.t(ex);
 			}
 			@SuppressWarnings("unchecked")
 			R r = (R) t;
@@ -34,10 +34,7 @@ public class Switch<R> {
 	}
 
 	public R nonNullResult() {
-		if (result != null)
-			return result;
-		else
-			throw new RuntimeException("cannot handle " + in);
+		return result != null ? result : Fail.t("cannot handle " + in);
 	}
 
 	public R result() {

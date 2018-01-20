@@ -12,6 +12,7 @@ import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.As;
+import suite.util.Fail;
 
 /**
  * Map with generic object key and doubleacter object value. Double.MIN_VALUE
@@ -166,7 +167,7 @@ public class ObjDblMap<K> {
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
-				throw new RuntimeException("duplicate key");
+				Fail.t("duplicate key");
 		ks[index] = key;
 		vs[index] = v1;
 		return v0;

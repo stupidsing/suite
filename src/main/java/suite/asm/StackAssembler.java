@@ -16,6 +16,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.util.TreeRewriter;
 import suite.node.util.TreeUtil;
+import suite.util.Fail;
 
 public class StackAssembler {
 
@@ -62,9 +63,9 @@ public class StackAssembler {
 				node1 = Atom.NIL;
 			} else if ((m = FREND_.apply(node0)) != null) {
 				if (fs != 0)
-					throw new RuntimeException("unbalanced frame stack in subroutine definition");
+					node1 = Fail.t("unbalanced frame stack in subroutine definition");
 				else if (rs != 0)
-					throw new RuntimeException("unbalanced register stack in subroutine definition");
+					node1 = Fail.t("unbalanced register stack in subroutine definition");
 				else {
 					int[] arr = deque.pop();
 					fs = arr[0];
@@ -75,7 +76,7 @@ public class StackAssembler {
 				if (Binder.bind(m[0], Int.of(-fs), trail))
 					node1 = Atom.NIL;
 				else
-					throw new RuntimeException("cannot bind local variable offset");
+					node1 = Fail.t("cannot bind local variable offset");
 			else if ((m = FRPOP_.apply(node0)) != null) {
 				fs -= 4;
 				node1 = Suite.substitute("POP .0", rewrite(rs, m[0]));
@@ -94,7 +95,7 @@ public class StackAssembler {
 				if (Binder.bind(m[0], Int.of(TreeUtil.evaluate(m[1])), trail))
 					node1 = Atom.NIL;
 				else
-					throw new RuntimeException("cannot calculate expression");
+					node1 = Fail.t("cannot calculate expression");
 			else if (node0 == RPOP__) {
 				rs--;
 				node1 = Atom.NIL;
@@ -129,10 +130,7 @@ public class StackAssembler {
 	}
 
 	private Node getRegister(int p) {
-		if (p < registers.length)
-			return registers[p];
-		else
-			throw new RuntimeException("register stack overflow");
+		return p < registers.length ? registers[p] : Fail.t("register stack overflow");
 	}
 
 }

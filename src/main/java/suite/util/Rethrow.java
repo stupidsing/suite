@@ -15,7 +15,7 @@ public class Rethrow {
 			try {
 				fun0.accept(k, v);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
+				Fail.t("for key " + k, ex);
 			}
 		};
 	}
@@ -25,7 +25,7 @@ public class Rethrow {
 			try {
 				return fun0.test(k, v);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + k, ex);
+				return Fail.t("for key " + k, ex);
 			}
 		};
 	}
@@ -37,7 +37,7 @@ public class Rethrow {
 			if (ex instanceof RuntimeException)
 				throw (RuntimeException) ex;
 			else
-				throw new RuntimeException(ex);
+				return Fail.t(ex);
 		}
 	}
 
@@ -46,7 +46,7 @@ public class Rethrow {
 			try {
 				return predicate.test(t);
 			} catch (Exception ex) {
-				throw new RuntimeException("for " + t, ex);
+				return Fail.t("for " + t, ex);
 			}
 		};
 	}

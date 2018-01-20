@@ -32,6 +32,7 @@ import suite.node.parser.IterativeParser;
 import suite.primitive.Chars;
 import suite.primitive.IoSink;
 import suite.streamlet.Read;
+import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.To;
 
@@ -169,7 +170,7 @@ public class Suite {
 			evaluateFilterFun(program, reader, writer, isLazy, isDo);
 			return writer.toString();
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			return Fail.t(ex);
 		}
 	}
 
@@ -181,7 +182,7 @@ public class Suite {
 			Node node3 = applyWriter(node2);
 			evaluateFunToWriter(fcc(node3, isLazy), writer);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 

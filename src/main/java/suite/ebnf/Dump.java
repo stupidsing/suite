@@ -6,6 +6,7 @@ import java.io.Writer;
 import java.util.List;
 
 import suite.ebnf.Ebnf.Ast;
+import suite.util.Fail;
 import suite.util.String_;
 
 public class Dump {
@@ -18,7 +19,7 @@ public class Dump {
 		try {
 			prettyPrint(ast, "");
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 

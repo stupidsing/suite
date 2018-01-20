@@ -10,6 +10,7 @@ import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.ParseUtil;
 import suite.util.Rethrow;
 import suite.util.To;
@@ -130,7 +131,7 @@ public class Sina {
 		if (sina.startsWith(prefix))
 			return sina.substring(prefix.length()) + ".HK";
 		else
-			throw new RuntimeException(sina);
+			return Fail.t(sina);
 	}
 
 	private String toSina(String symbol_) {

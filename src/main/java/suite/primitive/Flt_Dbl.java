@@ -5,6 +5,7 @@ import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.FltPrimitives.FltSource;
 import suite.primitive.streamlet.DblStreamlet;
 import suite.primitive.streamlet.FltOutlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
 @FunctionalInterface
@@ -40,7 +41,7 @@ public interface Flt_Dbl {
 			try {
 				return apply(t);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + t, ex);
+				return Fail.t("for key " + t, ex);
 			}
 		};
 	}

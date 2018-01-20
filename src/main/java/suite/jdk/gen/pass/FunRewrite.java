@@ -36,6 +36,7 @@ import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
+import suite.util.Fail;
 import suite.util.Rethrow;
 import suite.util.Util;
 
@@ -148,7 +149,7 @@ public class FunRewrite extends FunFactory {
 			if (type != null)
 				return rewrite(this_().field(e1.fieldName, type));
 			else
-				throw new RuntimeException(e1.fieldName);
+				return Fail.t(e1.fieldName);
 		}).applyIf(InvokeLambdaFunExpr.class, e1 -> {
 			LambdaInstance<?> l_inst = e1.lambda;
 			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
@@ -163,7 +164,7 @@ public class FunRewrite extends FunFactory {
 			if (e2 != null)
 				return e2;
 			else
-				throw new RuntimeException("cannot resolve placeholder");
+				return Fail.t("cannot resolve placeholder");
 		}).applyIf(ProfileFunExpr.class, e1 -> {
 			fieldTypeValues.put(e1.counterFieldName, Pair.of(Type.INT, 0));
 			return null;

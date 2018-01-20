@@ -12,6 +12,7 @@ import suite.primitive.streamlet.LngOutlet;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
@@ -214,7 +215,7 @@ public class Longs implements Iterable<Long> {
 		try {
 			out.write(cs, start, end - start);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 

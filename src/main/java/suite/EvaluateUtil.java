@@ -22,6 +22,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.os.LogUtil;
 import suite.primitive.IoSink;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.Memoize;
@@ -91,7 +92,7 @@ public class EvaluateUtil {
 		if (type != null)
 			return type;
 		else
-			throw new RuntimeException("type inference failure");
+			return Fail.t("type inference failure");
 	}
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
@@ -104,7 +105,7 @@ public class EvaluateUtil {
 			else
 				return new EagerFunInstructionExecutor(code);
 		else
-			throw new RuntimeException("function compilation failure");
+			return Fail.t("function compilation failure");
 	}
 
 	private Node doFcc(Node compileNode, FunCompilerConfig fcc) {

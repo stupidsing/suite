@@ -20,6 +20,7 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.os.LogUtil;
+import suite.util.Fail;
 
 public class InstructionExecutor implements AutoCloseable {
 
@@ -126,7 +127,7 @@ public class InstructionExecutor implements AutoCloseable {
 					current.frame = new Frame(parent, frameBegin.op0);
 					break;
 				case ERROR_________:
-					throw new RuntimeException("error termination");
+					Fail.t("error termination");
 				case EVALADD_______:
 					regs[insn.op0] = number(i(regs[insn.op1]) + i(regs[insn.op2]));
 					break;
@@ -240,7 +241,7 @@ public class InstructionExecutor implements AutoCloseable {
 					sp = exec.sp;
 				}
 			} catch (Exception ex) {
-				throw new RuntimeException("at IP = " + ip, ex);
+				Fail.t("at IP = " + ip, ex);
 			}
 	}
 
@@ -251,7 +252,7 @@ public class InstructionExecutor implements AutoCloseable {
 	}
 
 	protected void handle(Exec exec, Instruction insn) {
-		throw new RuntimeException("unknown instruction " + insn);
+		Fail.t("unknown instruction " + insn);
 	}
 
 	protected void postprocessInstructions(List<Instruction> list) {

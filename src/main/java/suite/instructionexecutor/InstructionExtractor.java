@@ -21,6 +21,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
+import suite.util.Fail;
 import suite.util.List_;
 
 public class InstructionExtractor implements AutoCloseable {
@@ -71,7 +72,7 @@ public class InstructionExtractor implements AutoCloseable {
 							extractInstructions(value, rsList);
 							rsList.add(List.of(Atom.of("FRAME-END")));
 						} else
-							throw new RuntimeException("bad frame definition");
+							Fail.t("bad frame definition");
 					else {
 						rsList.add(rs);
 						for (Node op : List_.right(rs, 1))
@@ -108,7 +109,7 @@ public class InstructionExtractor implements AutoCloseable {
 
 			return instruction;
 		} else
-			throw new RuntimeException("unknown opcode " + insnName);
+			return Fail.t("unknown opcode " + insnName);
 	}
 
 	private int getRegisterNumber(List<Node> rs, int index) {
@@ -137,7 +138,7 @@ public class InstructionExtractor implements AutoCloseable {
 					return 0;
 			}
 
-			throw new RuntimeException("cannot parse instruction " + rs.get(0) + " operand " + node);
+			return Fail.t("cannot parse instruction " + rs.get(0) + " operand " + node);
 		} else
 			return 0;
 	}

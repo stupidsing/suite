@@ -21,6 +21,7 @@ import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjOutlet;
 import suite.util.Array_;
+import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -240,10 +241,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 
 	public T min(Comparator<T> comparator) {
 		T t = minOrNull(comparator);
-		if (t != null)
-			return t;
-		else
-			throw new RuntimeException("no result");
+		return t != null ? t : Fail.t("no result");
 	}
 
 	public T minOrNull(Comparator<T> comparator) {
@@ -280,10 +278,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	public Opt<T> opt() {
 		T t = next();
 		if (t != null)
-			if (next() == null)
-				return Opt.of(t);
-			else
-				throw new RuntimeException("more than one result");
+			return next() == null ? Opt.of(t) : Fail.t("more than one result");
 		else
 			return Opt.none();
 	}

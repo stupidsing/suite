@@ -25,7 +25,7 @@ public class Util {
 			while (0 <= (c = is.read()) && c != 10) {
 				sb.append((char) c);
 				if (65536 <= sb.length())
-					throw new RuntimeException("line too long");
+					Fail.t("line too long");
 			}
 			return 0 <= c ? strip(sb) : null;
 		});
@@ -38,7 +38,7 @@ public class Util {
 			while (0 <= (c = reader.read()) && c != 10) {
 				sb.append((char) c);
 				if (65536 <= sb.length())
-					throw new RuntimeException("line too long");
+					Fail.t("line too long");
 			}
 			return 0 <= c ? strip(sb) : null;
 		});

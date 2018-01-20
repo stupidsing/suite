@@ -17,6 +17,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.pp.PrettyPrinter;
+import suite.util.Fail;
 
 public class RuleSetPredicates {
 
@@ -48,7 +49,7 @@ public class RuleSetPredicates {
 		try {
 			return Suite.importUrl(prover.ruleSet(), url);
 		} catch (Exception ex) {
-			throw new RuntimeException("exception when importing " + url, ex);
+			return Fail.t("exception when importing " + url, ex);
 		}
 	});
 

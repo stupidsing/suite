@@ -2,6 +2,8 @@ package suite.math;
 
 import org.junit.Test;
 
+import suite.util.Fail;
+
 public class JenkinsTraubTest {
 
 	private JenkinsTraub jt = new JenkinsTraub();
@@ -43,7 +45,7 @@ public class JenkinsTraubTest {
 
 	private void verifyEquals(Complex a, Complex b) {
 		if (.01d * Math.max(a.abs2(), b.abs2()) < Complex.sub(a, b).abs2())
-			throw new RuntimeException();
+			Fail.t();
 	}
 
 }

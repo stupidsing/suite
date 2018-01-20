@@ -14,6 +14,7 @@ import java.util.Map;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 
 public class DebianUtil {
 
@@ -21,7 +22,7 @@ public class DebianUtil {
 		try (InputStream is = new FileInputStream(file)) {
 			return readDpkgConfiguration(is);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			return Fail.t(ex);
 		}
 	}
 

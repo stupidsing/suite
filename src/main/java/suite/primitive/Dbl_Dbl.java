@@ -5,6 +5,7 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.DblStreamlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
 @FunctionalInterface
@@ -40,7 +41,7 @@ public interface Dbl_Dbl {
 			try {
 				return apply(t);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + t, ex);
+				return Fail.t("for key " + t, ex);
 			}
 		};
 	}

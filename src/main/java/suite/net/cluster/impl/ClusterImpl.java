@@ -18,6 +18,7 @@ import suite.net.nio.NioDispatcherImpl;
 import suite.net.nio.RequestResponseMatcher;
 import suite.primitive.Bytes;
 import suite.streamlet.Signal;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
@@ -91,7 +92,7 @@ public class ClusterImpl implements Cluster {
 			Bytes resp = matcher.requestForResponse(getChannel(peer), req);
 			return NetUtil.deserialize(resp);
 		} else
-			throw new RuntimeException("peer " + peer + " is not active");
+			return Fail.t("peer " + peer + " is not active");
 	}
 
 	private PersistentNioChannel getChannel(String peer) {

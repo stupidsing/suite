@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -255,10 +256,7 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 
 	public Pair<K, V> uniqueResult() {
 		Pair<K, V> pair = spawn().opt();
-		if (pair.t0 != null)
-			return pair;
-		else
-			throw new RuntimeException("no result");
+		return pair.t0 != null ? pair : Fail.t("no result");
 	}
 
 	public Streamlet<V> values() {

@@ -9,6 +9,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.primitive.IoSink;
 import suite.streamlet.Outlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 
@@ -72,7 +73,7 @@ public class ThunkUtil {
 				} else if (node_ == Atom.NIL)
 					return null;
 				else
-					throw new RuntimeException("not a list, unable to expand");
+					return Fail.t("not a list, unable to expand");
 			}
 		});
 	}

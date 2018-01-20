@@ -5,6 +5,7 @@ import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.primitive.streamlet.DblOutlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
 @FunctionalInterface
@@ -40,7 +41,7 @@ public interface Dbl_Chr {
 			try {
 				return apply(t);
 			} catch (Exception ex) {
-				throw new RuntimeException("for key " + t, ex);
+				return Fail.t("for key " + t, ex);
 			}
 		};
 	}

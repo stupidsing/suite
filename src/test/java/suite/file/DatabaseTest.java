@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import suite.Constants;
 import suite.file.impl.Database;
+import suite.util.Fail;
 
 public class DatabaseTest {
 
@@ -19,7 +20,7 @@ public class DatabaseTest {
 			database.transact(tx -> {
 				for (int i = 0; i < nRecords; i++)
 					tx.put(i, "sample");
-				throw new RuntimeException();
+				return Fail.t();
 			});
 		} catch (RuntimeException ex) {
 		}

@@ -10,6 +10,7 @@ import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.util.Fail;
 
 public class Amd64Dump {
 
@@ -39,7 +40,7 @@ public class Amd64Dump {
 		else if (pointerSize == 8)
 			regs = amd64.reg64;
 		else
-			throw new RuntimeException();
+			return Fail.t();
 
 		if (op0 instanceof OpImm) {
 			OpImm opImm = (OpImm) op0;

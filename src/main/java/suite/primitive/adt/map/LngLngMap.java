@@ -15,6 +15,7 @@ import suite.primitive.streamlet.LngObjOutlet;
 import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
 /**
@@ -181,7 +182,7 @@ public class LngLngMap {
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
-				throw new RuntimeException("duplicate key " + key);
+				Fail.t("duplicate key " + key);
 		ks[index] = key;
 		vs[index] = v1;
 		return v0;

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import suite.math.MathUtil;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
+import suite.util.Fail;
 
 public class Vector_ {
 
@@ -134,7 +135,7 @@ public class Vector_ {
 		if (size == n.length)
 			return size;
 		else
-			throw new RuntimeException("wrong input sizes");
+			return Fail.t("wrong input sizes");
 	}
 
 }

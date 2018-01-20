@@ -10,6 +10,7 @@ import suite.node.Node;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
+import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 
 public class InstructionUtil {
@@ -133,7 +134,7 @@ public class InstructionUtil {
 			this.previous = previous;
 			depth = previous != null ? 1 + previous.depth : 0;
 			if (Suite.stackSize < depth)
-				throw new RuntimeException("activation overflow");
+				Fail.t("activation overflow");
 		}
 	}
 

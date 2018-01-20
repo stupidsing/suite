@@ -12,6 +12,7 @@ import suite.fp.FunCompilerConfig;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
+import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.List_;
 import suite.util.String_;
@@ -65,7 +66,7 @@ public class CommandOptions {
 		else if (String_.equals(arg, "--use") && (arg1 = source.source()) != null)
 			libraries = List_.concat(libraries, List.of(arg1.split(",")));
 		else
-			throw new RuntimeException("unknown option " + arg);
+			Fail.t("unknown option " + arg);
 
 		return result;
 	}
@@ -93,7 +94,7 @@ public class CommandOptions {
 		}) {
 			return !isQuiet ? System.out : new PrintStream(os);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			return Fail.t(ex);
 		}
 	}
 

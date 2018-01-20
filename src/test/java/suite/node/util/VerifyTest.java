@@ -15,6 +15,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.os.LogUtil;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil2.Fun2;
 
@@ -141,19 +142,19 @@ public class VerifyTest {
 				for (Node node : Tree.iter(list, TermOp.AND___))
 					if (Binder.bind(node, new Generalizer().generalize(m[1]), new Trail()))
 						return node;
-				throw new RuntimeException("cannot verify " + proof);
+				return Fail.t("cannot verify " + proof);
 			} else if ((m = Suite.match(".0 | choose .1").apply(proof)) != null) {
 				Node list = verify(m[0]);
 				Tree tree;
 				for (Node node : Tree.iter(list, TermOp.AND___))
 					if ((tree = Tree.decompose(node, TermOp.NEXT__)) != null && tree.getLeft() == m[1])
 						return tree.getRight();
-				throw new RuntimeException("cannot verify " + proof);
+				return Fail.t("cannot verify " + proof);
 			} else if ((m = Suite.match("contradict .0 := .1 >> .2").apply(proof)) != null)
 				if (Binder.bind(new Verify(defs, rules.put(name(m[0]), m[1])).verify(m[2]), Atom.FALSE, new Trail()))
 					return Suite.substitute("not .0", m[1]);
 				else
-					throw new RuntimeException("cannot verify " + proof);
+					return Fail.t("cannot verify " + proof);
 			else if ((m = Suite.match(".0 | expand .1").apply(proof)) != null) {
 				Definition def = defs.get(name(m[1])).clone_();
 				return replace(verify(m[0]), def.t0, def.t1);
@@ -162,7 +163,7 @@ public class VerifyTest {
 						&& Binder.bind(verify(m[0]), m1[0], new Trail()))
 					return m1[1];
 				else
-					throw new RuntimeException("cannot verify " + proof);
+					return Fail.t("cannot verify " + proof);
 			else if ((m = Suite.match(".0 | fulfill-by .1").apply(proof)) != null)
 				return verify(Suite.substitute(".0 | fulfill .1", m[1], m[0]));
 			else if ((m = Suite.match("lemma .0 := .1 >> .2").apply(proof)) != null)
@@ -189,7 +190,7 @@ public class VerifyTest {
 			else if (proof instanceof Atom)
 				return new Cloner().clone(rules.get(name(proof)));
 			else
-				throw new RuntimeException("cannot verify " + proof);
+				return Fail.t("cannot verify " + proof);
 		}
 
 		public Verify extend(String lemma, String proof) {
@@ -197,7 +198,7 @@ public class VerifyTest {
 			if (Binder.bind(Suite.parse(lemma), node, new Trail()))
 				return new Verify(defs, rules.put(lemma, node));
 			else
-				throw new RuntimeException();
+				return Fail.t();
 		}
 
 		public Verify extend(String proof) {

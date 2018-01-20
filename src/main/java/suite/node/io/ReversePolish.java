@@ -21,6 +21,7 @@ import suite.node.Tree;
 import suite.node.io.Rewriter.NodeRead;
 import suite.node.io.Rewriter.NodeWrite;
 import suite.node.io.Rewriter.ReadType;
+import suite.util.Fail;
 import suite.util.Rethrow;
 import suite.util.String_;
 
@@ -67,7 +68,7 @@ public class ReversePolish {
 				Node right = deque.pop();
 				n = Tree.of(op, left, right);
 			} else
-				throw new RuntimeException("rPN conversion error: " + elem);
+				n = Fail.t("RPN conversion error: " + elem);
 
 			deque.push(n);
 		});

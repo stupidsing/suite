@@ -3,6 +3,7 @@ package suite.adt;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
@@ -46,10 +47,7 @@ public class Opt<T> {
 	}
 
 	public T get() {
-		if (!isEmpty())
-			return value;
-		else
-			throw new RuntimeException("no result");
+		return !isEmpty() ? value : Fail.t("no result");
 	}
 
 	@Override

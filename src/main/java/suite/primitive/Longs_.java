@@ -8,6 +8,7 @@ import suite.primitive.streamlet.LngOutlet;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
+import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
@@ -73,7 +74,7 @@ public class Longs_ {
 			try {
 				writer.write(longs.cs, longs.start, longs.end - longs.start);
 			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+				Fail.t(ex);
 			}
 	}
 

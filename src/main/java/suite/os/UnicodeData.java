@@ -11,6 +11,7 @@ import java.util.Set;
 import suite.adt.pair.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
+import suite.util.Fail;
 
 public class UnicodeData {
 
@@ -25,7 +26,7 @@ public class UnicodeData {
 					.map(a -> Pair.of(a[2], (char) Integer.parseInt(a[0], 16))) //
 					.collect(As::setMap);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 

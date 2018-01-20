@@ -7,6 +7,7 @@ import java.nio.file.Paths;
 import suite.ip.ImperativeCompiler;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
+import suite.util.Fail;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 import suite.util.RunUtil.RunOption;
@@ -37,7 +38,7 @@ public class BootMain extends ExecutableProgram {
 			System.out.println("qemu-system-x86_64 target/boot.bin");
 			return true;
 		} else
-			throw new RuntimeException("size not match");
+			return Fail.t("size not match");
 	}
 
 }

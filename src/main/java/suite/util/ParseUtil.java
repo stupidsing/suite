@@ -171,10 +171,7 @@ public class ParseUtil {
 				depth = checkDepth(depth, c);
 		}
 
-		if (!isThrow || 0 <= depth)
-			return quote == 0 && depth == 0;
-		else
-			throw new RuntimeException("parse error");
+		return !isThrow || 0 <= depth ? quote == 0 && depth == 0 : Fail.t("parse error");
 	}
 
 	private static int checkDepth(int depth, char c) {

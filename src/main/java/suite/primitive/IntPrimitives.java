@@ -12,6 +12,7 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Source2;
@@ -43,7 +44,7 @@ public class IntPrimitives {
 				try {
 					return apply(i);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + i, ex);
+					return Fail.t("for " + i, ex);
 				}
 			};
 		}
@@ -58,7 +59,7 @@ public class IntPrimitives {
 				try {
 					return apply(x, y);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + x + ":" + y, ex);
+					return Fail.t("for " + x + ":" + y, ex);
 				}
 			};
 		}
@@ -73,7 +74,7 @@ public class IntPrimitives {
 				try {
 					return test(c, t);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + c + ":" + t, ex);
+					return Fail.t("for " + c + ":" + t, ex);
 				}
 			};
 		}
@@ -88,7 +89,7 @@ public class IntPrimitives {
 				try {
 					sink2(c, t);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + t, ex);
+					Fail.t("for " + t, ex);
 				}
 			};
 		}
@@ -108,7 +109,7 @@ public class IntPrimitives {
 				try {
 					return test(c);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + c, ex);
+					return Fail.t("for " + c, ex);
 				}
 			};
 		}
@@ -123,7 +124,7 @@ public class IntPrimitives {
 				try {
 					sink(t);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + t, ex);
+					Fail.t("for " + t, ex);
 				}
 			};
 		}
@@ -166,7 +167,7 @@ public class IntPrimitives {
 				try {
 					return apply(t);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + t, ex);
+					return Fail.t("for " + t, ex);
 				}
 			};
 		}
@@ -193,7 +194,7 @@ public class IntPrimitives {
 				try {
 					return apply(x, y);
 				} catch (Exception ex) {
-					throw new RuntimeException("for " + x + ":" + y, ex);
+					return Fail.t("for " + x + ":" + y, ex);
 				}
 			};
 		}

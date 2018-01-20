@@ -6,6 +6,7 @@ import java.util.Deque;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Source;
 
 /**
@@ -93,8 +94,8 @@ public class IRbTree<T> implements ITree<T> {
 	}
 
 	/**
-	 * Replaces a value with another. Mainly for dictionary cases to replace
-	 * stored value for the same key.
+	 * Replaces a value with another. Mainly for dictionary cases to replace stored
+	 * value for the same key.
 	 *
 	 * Asserts comparator.compare(<original-value>, t) == 0.
 	 */
@@ -128,7 +129,7 @@ public class IRbTree<T> implements ITree<T> {
 			else if (isReplace)
 				node1 = new Node(node.isBlack, t, node.left, node.right);
 			else
-				throw new RuntimeException("duplicate node " + t);
+				node1 = Fail.t("duplicate node " + t);
 		} else
 			node1 = new Node(false, t, null, null);
 

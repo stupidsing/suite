@@ -1,10 +1,11 @@
 package suite.primitive;
 
+import suite.util.Fail;
 import suite.util.Object_;
 
 /**
- * An indirect reference to a primitive float. Float.MIN_VALUE is not allowed in
- * the value.
+ * An indirect reference to a primitive float. Float.MIN_VALUE is not allowed
+ * in the value.
  * 
  * @author ywsing
  */
@@ -30,7 +31,7 @@ public class FltMutable {
 		if (value == FltFunUtil.EMPTYVALUE)
 			update(c);
 		else
-			throw new RuntimeException("value already set");
+			Fail.t("value already set");
 	}
 
 	public void update(float c) {

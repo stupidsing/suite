@@ -9,6 +9,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.io.Escaper;
 import suite.streamlet.Read;
+import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 
 public class FunctionalTemplateRenderer {
@@ -27,7 +28,7 @@ public class FunctionalTemplateRenderer {
 			Suite.evaluateFunToWriter(Suite.fcc(fp2), sw);
 			return sw.toString();
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			return Fail.t(ex);
 		}
 	}
 

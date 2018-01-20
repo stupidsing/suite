@@ -6,6 +6,7 @@ import java.util.List;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 import suite.util.List_;
 
@@ -92,16 +93,16 @@ public class IbTree<T> implements ITree<T> {
 			T p = null;
 
 			if (size < minBranchFactor)
-				throw new RuntimeException("too few branches");
+				Fail.t("too few branches");
 			else if (maxBranchFactor <= size)
-				throw new RuntimeException("too many branches");
+				Fail.t("too many branches");
 
 			for (Slot slot_ : slots) {
 				if (!(comparator.compare(slot.pivot, slot_.pivot) <= 0))
-					throw new RuntimeException("wrong slot");
+					Fail.t("wrong slot");
 				validate(slot_);
 				if (p != null && !(comparator.compare(p, slot_.pivot) < 0))
-					throw new RuntimeException("wrong key order");
+					Fail.t("wrong key order");
 				p = slot_.pivot;
 			}
 		}
@@ -142,7 +143,7 @@ public class IbTree<T> implements ITree<T> {
 			if (t0 == null)
 				return t;
 			else
-				throw new RuntimeException("duplicate key " + t);
+				return Fail.t("duplicate key " + t);
 		});
 	}
 

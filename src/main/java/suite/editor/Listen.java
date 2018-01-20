@@ -22,6 +22,7 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
 import suite.streamlet.Signal;
+import suite.util.Fail;
 import suite.util.FunUtil.Sink;
 
 public class Listen {
@@ -55,7 +56,7 @@ public class Listen {
 			try {
 				sink.sink(t);
 			} catch (Exception ex) {
-				throw new RuntimeException(ex);
+				Fail.t(ex);
 			}
 		};
 	}

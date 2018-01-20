@@ -17,6 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
+import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 import suite.util.Rethrow;
@@ -195,7 +196,7 @@ public class Mapify {
 			} else
 				mapifier = getMapifier(rawType);
 		} else
-			throw new RuntimeException("unrecognized type " + type);
+			mapifier = Fail.t("unrecognized type " + type);
 
 		return mapifier;
 	}

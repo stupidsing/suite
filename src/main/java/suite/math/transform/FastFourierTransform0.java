@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.math.Complex;
+import suite.util.Fail;
 
 public class FastFourierTransform0 {
 
@@ -46,7 +47,7 @@ public class FastFourierTransform0 {
 
 			return f;
 		} else
-			throw new RuntimeException("size is not a power of 2");
+			return Fail.t("size is not a power of 2");
 	}
 
 	private Complex[] getCis(int count) {

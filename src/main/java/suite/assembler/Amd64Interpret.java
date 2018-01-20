@@ -15,6 +15,7 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntIntMap;
+import suite.util.Fail;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
@@ -135,9 +136,9 @@ public class Amd64Interpret {
 								bs[i] = mem.get(si++);
 							output.sink(Bytes.of(bs));
 						} else
-							throw new RuntimeException();
+							Fail.t();
 					else
-						throw new RuntimeException();
+						Fail.t();
 					break;
 				case JE:
 					if (c == 0)
@@ -190,7 +191,7 @@ public class Amd64Interpret {
 					assign.sink(source0 ^ source1);
 					break;
 				default:
-					throw new RuntimeException();
+					Fail.t();
 				}
 			} catch (Exception ex) {
 				LogUtil.info(state(instruction));

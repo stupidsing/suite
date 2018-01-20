@@ -9,6 +9,7 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 
 import suite.util.Copy;
+import suite.util.Fail;
 import suite.util.FunUtil.Source;
 
 public class FileUtil {
@@ -17,7 +18,7 @@ public class FileUtil {
 		try (OutputStream fos = new FileOutputStream(to)) {
 			Copy.stream(new FileInputStream(from), fos);
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 

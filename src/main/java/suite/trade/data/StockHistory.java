@@ -16,6 +16,7 @@ import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.DataSource.Datum;
+import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.BinOp;
 import suite.util.Object_;
@@ -68,7 +69,7 @@ public class StockHistory {
 				pairs.add(LngFltPair.of(time.epochSec(timeZone), price));
 			}
 		else
-			throw new RuntimeException();
+			Fail.t();
 
 		return pairs.toArray(new LngFltPair[0]);
 	}

@@ -9,6 +9,7 @@ import suite.net.NetUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Signal;
+import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 
@@ -41,7 +42,7 @@ public interface NioChannelFactory {
 				try {
 					nio.reconnect(this, address);
 				} catch (IOException ex) {
-					throw new RuntimeException(ex);
+					Fail.t(ex);
 				}
 		}
 	}

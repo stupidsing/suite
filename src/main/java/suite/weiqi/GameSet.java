@@ -2,6 +2,7 @@ package suite.weiqi;
 
 import java.util.HashSet;
 
+import suite.util.Fail;
 import suite.util.Object_;
 import suite.weiqi.Board.MoveType;
 import suite.weiqi.Weiqi.Occupation;
@@ -61,7 +62,7 @@ public class GameSet {
 
 	private void play(Move move) {
 		if (!playIfValid(move))
-			throw new RuntimeException("invalid move " + move.position + " for " + nextPlayer + "\n" + this);
+			Fail.t("invalid move " + move.position + " for " + nextPlayer + "\n" + this);
 	}
 
 	public void undo(Move move) {

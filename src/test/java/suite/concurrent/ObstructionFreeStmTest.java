@@ -15,6 +15,7 @@ import org.junit.Test;
 import suite.concurrent.ObstructionFreeStm.Memory;
 import suite.concurrent.Stm.Transaction;
 import suite.concurrent.Stm.TransactionStatus;
+import suite.util.Fail;
 
 public class ObstructionFreeStmTest {
 
@@ -75,7 +76,7 @@ public class ObstructionFreeStmTest {
 				if (read == readValues.get(mi))
 					stm.put(transaction, memory, read + adjustments.get(mi));
 				else
-					throw new RuntimeException("value changed between reads");
+					Fail.t("value changed between reads");
 			} else { // read a memory
 				int mi = order;
 				System.out.println(this + " READ " + mi);
@@ -116,10 +117,10 @@ public class ObstructionFreeStmTest {
 				sum += read;
 			}
 
-			if (sum != 0)
-				throw new RuntimeException("final sum is not zero, but is " + sum);
-
-			return true;
+			if (sum == 0)
+				return true;
+			else
+				return Fail.t("final sum is not zero, but is " + sum);
 		});
 	}
 

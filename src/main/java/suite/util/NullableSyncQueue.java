@@ -20,7 +20,7 @@ public class NullableSyncQueue<T> {
 		try {
 			offer(t);
 		} catch (InterruptedException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 
@@ -39,7 +39,7 @@ public class NullableSyncQueue<T> {
 		try {
 			return take();
 		} catch (InterruptedException ex) {
-			throw new RuntimeException(ex);
+			return Fail.t(ex);
 		}
 	}
 
