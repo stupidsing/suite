@@ -20,7 +20,7 @@ public class Complex {
 		return of(u.r * v.r - u.i * v.i, u.r * v.i + u.i * v.r);
 	}
 
-	public static Complex exp(double e) {
+	public static Complex expi(double e) {
 		return new Complex(Math.cos(e), Math.sin(e));
 	}
 

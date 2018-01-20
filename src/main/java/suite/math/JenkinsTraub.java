@@ -47,7 +47,7 @@ public class JenkinsTraub {
 				maxIterations *= 2;
 			}
 
-			Complex s = Complex.exp(2d * Math.PI * random.nextDouble()).scale(root);
+			Complex s = Complex.expi(2d * Math.PI * random.nextDouble()).scale(root);
 			Complex ph;
 
 			Complex ar0 = Complex.sub(s, ph = ph(poly, h, s));
