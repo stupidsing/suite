@@ -20,6 +20,11 @@ public class RunUtil {
 		}
 	}
 
+	public static boolean isUnix() {
+		String os = System.getenv("OS");
+		return os == null || !os.startsWith("Windows");
+	}
+
 	public static void run(Class<? extends ExecutableProgram> clazz, String[] args) {
 		run(clazz, args, RunOption.RUN____);
 	}

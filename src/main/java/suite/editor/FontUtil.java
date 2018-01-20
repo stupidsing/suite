@@ -3,17 +3,18 @@ package suite.editor;
 import java.awt.Font;
 import java.awt.Toolkit;
 
+import suite.util.RunUtil;
+
 public class FontUtil {
 
 	public Font monoFont;
 	public Font sansFont;
 
 	public FontUtil() {
-		String os = System.getenv("OS");
 		String monoFontName;
 		String sansFontName;
 
-		if (os != null && os.startsWith("Windows")) {
+		if (!RunUtil.isUnix()) {
 			System.setProperty("awt.useSystemAAFontSettings", "off");
 			System.setProperty("swing.aatext", "false");
 			monoFontName = "Courier New";

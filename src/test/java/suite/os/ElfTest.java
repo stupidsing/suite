@@ -11,6 +11,7 @@ import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64Interpret;
 import suite.funp.Funp_;
 import suite.primitive.Bytes;
+import suite.util.RunUtil;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfTest {
@@ -55,7 +56,7 @@ public class ElfTest {
 	private void test(String program, String input, int code) {
 		Bytes bytes = Bytes.of(input.getBytes(Constants.charset));
 
-		if (System.getenv("COMPUTERNAME") == null) { // not Windows => run ELF
+		if (RunUtil.isUnix()) { // not Windows => run ELF
 			Execute exec = elf.exec(bytes.toArray(), offset -> Funp_.main().compile(offset, program).t1);
 			assertEquals(code, exec.code);
 			assertEquals(input, exec.out);
