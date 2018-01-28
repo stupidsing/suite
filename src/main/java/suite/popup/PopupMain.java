@@ -15,7 +15,6 @@ import suite.editor.ClipboardUtil;
 import suite.editor.FontUtil;
 import suite.editor.LayoutCalculator;
 import suite.editor.LayoutCalculator.Node;
-import suite.editor.LayoutCalculator.Orientation;
 import suite.editor.Listen;
 import suite.os.Execute;
 import suite.util.FunUtil.Fun;
@@ -75,8 +74,8 @@ public class PopupMain extends ExecutableProgram {
 
 		LayoutCalculator lay = new LayoutCalculator(frame.getContentPane());
 
-		Node layout = lay.box(Orientation.VERTICAL, //
-				lay.fx(32, lay.box(Orientation.HORIZONTAL, //
+		Node layout = lay.boxv( //
+				lay.fx(32, lay.boxh( //
 						lay.ex(32, lay.c(inTextField)), //
 						lay.fx(64, lay.c(volLabel)), //
 						lay.fx(48, lay.c(volUpButton)), //

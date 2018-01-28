@@ -26,7 +26,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
 import javax.swing.text.JTextComponent;
 
-import suite.editor.LayoutCalculator.Orientation;
 import suite.streamlet.Streamlet;
 
 public class EditorView {
@@ -94,15 +93,15 @@ public class EditorView {
 		int u = 64, u3 = u * 3;
 
 		lay = new LayoutCalculator(frame.getContentPane());
-		layout = lay.box(Orientation.HORIZONTAL, //
-				lay.ex(u, lay.box(Orientation.VERTICAL, //
+		layout = lay.boxh( //
+				lay.ex(u, lay.boxv( //
 						lay.fx(24, lay.c(searchTextField)), //
 						lay.ex(u, lay.c(searchList)))), //
-				lay.ex(u3, lay.box(Orientation.VERTICAL, //
+				lay.ex(u3, lay.boxv( //
 						lay.fx(24, lay.c(filenameTextField)), //
 						lay.ex(u3, lay.c(editorScrollPane)), //
 						lay.fx(8, lay.b()), //
-						lay.fx(24, lay.box(Orientation.HORIZONTAL, //
+						lay.fx(24, lay.boxh( //
 								lay.ex(u3, lay.b()), //
 								lay.fx(64, lay.c(okButton)), //
 								lay.ex(u3, lay.b()))), //

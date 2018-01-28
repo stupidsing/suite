@@ -128,11 +128,12 @@ public class LayoutCalculator {
 		this.container = container;
 	}
 
-	public Node box(Orientation ori, Portion... portions) {
-		if (ori == Orientation.HORIZONTAL)
-			return new HBox(List.of(portions));
-		else
-			return new VBox(List.of(portions));
+	public Node boxh(Portion... portions) {
+		return new HBox(List.of(portions));
+	}
+
+	public Node boxv(Portion... portions) {
+		return new VBox(List.of(portions));
 	}
 
 	/**

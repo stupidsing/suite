@@ -32,11 +32,11 @@ public class Listen {
 	}
 
 	public static Signal<ActionEvent> action(AbstractButton component) {
-		return Signal.of(fire -> component.addActionListener(event -> fire.sink(event)));
+		return Signal.of(fire -> component.addActionListener(fire::sink));
 	}
 
 	public static Signal<ActionEvent> action(JTextField component) {
-		return Signal.of(fire -> component.addActionListener(event -> fire.sink(event)));
+		return Signal.of(fire -> component.addActionListener(fire::sink));
 	}
 
 	public static Signal<ActionEvent> actionPerformed(JComponent component, Object key) {
