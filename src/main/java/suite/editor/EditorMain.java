@@ -13,13 +13,9 @@ public class EditorMain extends ExecutableProgram {
 	}
 
 	@Override
-	protected boolean run(String[] args) {
-		open();
-		return true;
-	}
-
-	public void open() {
+	public boolean run(String[] args) {
 		new EditorController().newWindow();
+		return true;
 	}
 
 }
