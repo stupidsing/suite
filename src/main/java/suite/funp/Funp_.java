@@ -17,6 +17,7 @@ import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.util.AutoInterface;
 import suite.util.MapObject_;
+import suite.util.Switch;
 
 public class Funp_ {
 
@@ -69,46 +70,40 @@ public class Funp_ {
 	}
 
 	public static void dump(Funp node) {
-		Dump dump = new Dump();
-		dump.dump(node);
-		LogUtil.info(dump.sb.toString());
-	}
+		StringBuilder sb = new StringBuilder();
 
-	private static class Dump {
-		private StringBuilder sb = new StringBuilder();
-
-		private void dump(Object object) {
-			if (object instanceof Funp)
-				dump_((Funp) object);
-			else if (object instanceof Collection<?>) {
-				sb.append("[");
-				for (Object object1 : (Collection<?>) object) {
-					dump(object1);
-					sb.append(",");
-				}
-				sb.append("]");
-			} else if (object instanceof Pair<?, ?>) {
-				Pair<?, ?> pair = (Pair<?, ?>) object;
-				sb.append("<");
-				dump(pair.t0);
-				sb.append(", ");
-				dump(pair.t1);
-				sb.append(">");
-			} else
-				sb.append(object != null ? object.toString() : "null");
-		}
-
-		private void dump_(Funp node) {
-			List<?> list = MapObject_.list(node);
-
-			sb.append(node.getClass().getSimpleName());
-			sb.append("{");
-			for (Object object : list) {
-				dump(object);
-				sb.append(",");
+		new Object() {
+			private void dump(Object object) {
+				new Switch<Object>(object //
+				).doIf(Funp.class, node -> {
+					List<?> list = MapObject_.list(node);
+					sb.append(node.getClass().getSimpleName());
+					sb.append("{");
+					for (Object object1 : list) {
+						dump(object1);
+						sb.append(",");
+					}
+					sb.append("}");
+				}).doIf(Collection.class, collection -> {
+					sb.append("[");
+					for (Object object1 : collection) {
+						dump(object1);
+						sb.append(",");
+					}
+					sb.append("]");
+				}).doIf(Pair.class, pair -> {
+					sb.append("<");
+					dump(pair.t0);
+					sb.append(", ");
+					dump(pair.t1);
+					sb.append(">");
+				}).doIf(Object.class, o -> {
+					sb.append(object != null ? object.toString() : "null");
+				}).nonNullResult();
 			}
-			sb.append("}");
-		}
+		}.dump(node);
+
+		LogUtil.info(sb.toString());
 	}
 
 }
