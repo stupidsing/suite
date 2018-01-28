@@ -16,6 +16,7 @@ import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
@@ -32,15 +33,15 @@ public class Listen {
 	}
 
 	public static Signal<ActionEvent> action(AbstractButton component) {
-		return Signal.of(fire -> component.addActionListener(fire::sink));
+		return signal(fire -> component.addActionListener(fire::sink));
 	}
 
 	public static Signal<ActionEvent> action(JTextField component) {
-		return Signal.of(fire -> component.addActionListener(fire::sink));
+		return signal(fire -> component.addActionListener(fire::sink));
 	}
 
 	public static Signal<ActionEvent> actionPerformed(JComponent component, Object key) {
-		return Signal.of(fire -> component //
+		return signal(fire -> component //
 				.getActionMap() //
 				.put(key, new AbstractAction() {
 					private static final long serialVersionUID = 1l;
@@ -62,7 +63,7 @@ public class Listen {
 	}
 
 	public static Signal<ComponentEvent> componentResized(Component component) {
-		return Signal.of(fire -> component.addComponentListener(new ComponentAdapter() {
+		return signal(fire -> component.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent event) {
 				fire.sink(event);
 			}
@@ -74,7 +75,7 @@ public class Listen {
 	}
 
 	public static Signal<DocumentEvent> documentChanged(Document document) {
-		return Signal.of(fire -> document.addDocumentListener(new DocumentListener() {
+		return signal(fire -> document.addDocumentListener(new DocumentListener() {
 			public void removeUpdate(DocumentEvent event) {
 				fire.sink(event);
 			}
@@ -90,7 +91,7 @@ public class Listen {
 	}
 
 	public static Signal<KeyEvent> keyPressed(Component component) {
-		return Signal.of(fire -> component.addKeyListener(new KeyAdapter() {
+		return signal(fire -> component.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent event) {
 				fire.sink(event);
 			}
@@ -102,7 +103,7 @@ public class Listen {
 	}
 
 	public static Signal<MouseEvent> mouseClicked(Component component) {
-		return Signal.of(fire -> {
+		return signal(fire -> {
 			component.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent event) {
 					fire.sink(event);
@@ -116,11 +117,21 @@ public class Listen {
 	}
 
 	public static Signal<WindowEvent> windowClosing(Window window) {
-		return Signal.of(fire -> {
+		return signal(fire -> {
 			window.addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent event) {
 					fire.sink(event);
 				}
+			});
+		});
+	}
+
+	public static <T> Signal<T> signal(Sink<Sink<T>> sink) {
+		Signal<T> signal = Signal.of(sink);
+
+		return Signal.of(fire -> {
+			signal.wire(t -> {
+				SwingUtilities.invokeLater(() -> fire.sink(t));
 			});
 		});
 	}

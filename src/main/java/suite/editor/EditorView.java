@@ -108,10 +108,10 @@ public class EditorView {
 						lay.ex(u, lay.c(messageScrollPane)))), //
 				lay.ex(u, lay.c(rightLabel)));
 
-		Listen.action(searchTextField).wire(event -> controller.searchFiles(model.getSearchText()));
+		Listen.action(searchTextField).wire(event -> controller.searchFiles(model.searchText()));
 		Listen.componentResized(frame).wire(this::refresh);
-		Listen.documentChanged(filenameTextField).wire(event -> model.setFilename(filenameTextField.getText()));
-		Listen.documentChanged(searchTextField).wire(event -> model.setSearchText(searchTextField.getText()));
+		Listen.documentChanged(filenameTextField).wire(event -> model.changeFilename(filenameTextField.getText()));
+		Listen.documentChanged(searchTextField).wire(event -> model.changeSearchText(searchTextField.getText()));
 		Listen.keyPressed(searchTextField, KeyEvent.VK_DOWN).wire(event -> controller.downToSearchList());
 		Listen.keyPressed(searchList, KeyEvent.VK_ENTER).wire(event -> controller.selectList(searchList.getSelectedValue()));
 		Listen.mouseDoubleClicked(searchList).wire(event -> controller.selectList(searchList.getSelectedValue()));
@@ -137,7 +137,7 @@ public class EditorView {
 	}
 
 	public void repaint() {
-		frame.setTitle((model.getIsModified() ? "* " : "") + model.getFilename().replace(File.separatorChar, '/'));
+		frame.setTitle((model.isModified() ? "* " : "") + model.filename().replace(File.separatorChar, '/'));
 		frame.revalidate();
 		frame.repaint();
 	}

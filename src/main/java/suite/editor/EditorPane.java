@@ -54,7 +54,7 @@ public class EditorPane extends JEditorPane {
 		bind(KeyEvent.VK_Z, InputEvent.CTRL_DOWN_MASK).wire(undoManager::undo);
 
 		document.addUndoableEditListener(event -> undoManager.addEdit(event.getEdit()));
-		Listen.documentChanged(document).wire(event -> model.changeModified(true));
+		Listen.documentChanged(document).wire(event -> model.changeIsModified(true));
 	}
 
 	private void replaceLines(Fun<Segment, String> fun) throws BadLocationException {

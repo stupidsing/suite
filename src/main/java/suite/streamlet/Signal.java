@@ -1,6 +1,7 @@
 package suite.streamlet;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -105,7 +106,7 @@ public class Signal<T> {
 			private T previous = null;
 
 			public void accept(T t, Sink<T> fire) {
-				if (previous == null || !previous.equals(t))
+				if (previous == null || !Objects.equals(previous, t))
 					fire.sink(t);
 			}
 		});

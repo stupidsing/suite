@@ -4,63 +4,44 @@ import suite.streamlet.Signal;
 
 public class EditorModel {
 
-	private boolean isModified;
-	private String filename;
-	private String searchText;
+	private ValueSignal<Boolean> isModified = ValueSignal.of(false);
+	private ValueSignal<String> filename = ValueSignal.of("");
+	private ValueSignal<String> searchText = ValueSignal.of("");
 
-	private Signal<Boolean> modifiedChanged = Signal.of();
-	private Signal<String> filenameChanged = Signal.of();
-	private Signal<String> searchTextChanged = Signal.of();
-
-	public void changeModified(boolean modified) {
-		setIsModified(modified);
-		modifiedChanged.fire(modified);
+	public void changeIsModified(boolean modified_) {
+		isModified.change(modified_);
 	}
 
-	public void changeFilename(String filename) {
-		setFilename(filename);
-		filenameChanged.fire(filename);
+	public void changeFilename(String filename_) {
+		filename.change(filename_);
 	}
 
-	public void changeSearchText(String searchText) {
-		setSearchText(searchText);
-		searchTextChanged.fire(searchText);
+	public void changeSearchText(String searchText_) {
+		searchText.change(searchText_);
 	}
 
 	public Signal<Boolean> getModifiedChanged() {
-		return modifiedChanged;
+		return isModified.changed;
 	}
 
 	public Signal<String> getFilenameChanged() {
-		return filenameChanged;
+		return filename.changed;
 	}
 
 	public Signal<String> getSearchTextChanged() {
-		return searchTextChanged;
+		return searchText.changed;
 	}
 
-	public boolean getIsModified() {
-		return isModified;
+	public boolean isModified() {
+		return isModified.get();
 	}
 
-	public void setIsModified(boolean isModified) {
-		this.isModified = isModified;
+	public String filename() {
+		return filename.get();
 	}
 
-	public String getFilename() {
-		return filename;
-	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-
-	public String getSearchText() {
-		return searchText;
-	}
-
-	public void setSearchText(String searchText) {
-		this.searchText = searchText;
+	public String searchText() {
+		return searchText.get();
 	}
 
 }

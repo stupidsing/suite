@@ -112,7 +112,7 @@ public class EditorController {
 			editor.requestFocusInWindow();
 
 			model.changeFilename("pad");
-			model.changeModified(false);
+			model.changeIsModified(false);
 		});
 	}
 
@@ -129,7 +129,7 @@ public class EditorController {
 
 	public void open() {
 		confirmSave(() -> {
-			File dir = new File(model.getFilename()).getParentFile();
+			File dir = new File(model.filename()).getParentFile();
 			JFileChooser fileChooser = dir != null ? new JFileChooser(dir) : new JFileChooser();
 			if (fileChooser.showOpenDialog(view.getFrame()) == JFileChooser.APPROVE_OPTION)
 				load(fileChooser.getSelectedFile().getPath());
@@ -150,12 +150,12 @@ public class EditorController {
 	}
 
 	public void save() {
-		try (OutputStream os = FileUtil.out(model.getFilename())) {
+		try (OutputStream os = FileUtil.out(model.filename())) {
 			os.write(view.getEditor().getText().getBytes(Constants.charset));
 		} catch (IOException ex) {
 			Fail.t(ex);
 		}
-		model.changeModified(false);
+		model.changeIsModified(false);
 	}
 
 	public void right() {
@@ -215,12 +215,12 @@ public class EditorController {
 		editor.requestFocusInWindow();
 
 		model.changeFilename(filename);
-		model.changeModified(false);
+		model.changeIsModified(false);
 	}
 
 	private void confirmSave(Runnable action) {
 		JFrame frame = view.getFrame();
-		if (model.getIsModified())
+		if (model.isModified())
 			switch (JOptionPane.showConfirmDialog(frame, //
 					"Would you like to save your changes?" //
 					, "Close", //
