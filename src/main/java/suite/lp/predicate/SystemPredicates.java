@@ -171,8 +171,8 @@ public class SystemPredicates {
 	};
 
 	private BuiltinPredicate ifPredicate = PredicateUtil.p3((prover, p0, p1, p2) -> {
-		boolean result = PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(p0));
-		prover.setRemaining(Tree.of(TermOp.AND___, result ? p1 : p2, prover.getRemaining()));
+		boolean b = PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(p0));
+		prover.setRemaining(Tree.of(TermOp.AND___, b ? p1 : p2, prover.getRemaining()));
 		return true;
 	});
 

@@ -72,33 +72,33 @@ public class TermKey extends HashCodeComparable<TermKey> {
 		}
 
 		public boolean equals(Object object) {
-			boolean result = Object_.clazz(object) == TermLister.class;
+			boolean b = Object_.clazz(object) == TermLister.class;
 
-			if (result) {
+			if (b) {
 				List<IntObjPair<NodeHead>> list1 = ((TermLister) object).list;
 				int size0 = list.size();
 				int size1 = list1.size();
-				result &= size0 == size1;
+				b &= size0 == size1;
 
-				if (result)
-					for (int i = 0; result && i < size0; i++) {
+				if (b)
+					for (int i = 0; b && i < size0; i++) {
 						IntObjPair<NodeHead> p0 = list.get(i);
 						IntObjPair<NodeHead> p1 = list1.get(i);
-						result &= Objects.equals(p0.t0, p1.t0);
+						b &= Objects.equals(p0.t0, p1.t0);
 
 						NodeHead nh0 = p0.t1;
 						NodeHead nh1 = p1.t1;
 						boolean b0 = nh0 != null;
 						boolean b1 = nh1 != null;
-						result &= b0 == b1;
+						b &= b0 == b1;
 						if (b0 && b1)
-							result &= Objects.equals(nh0.type, nh1.type) //
+							b &= Objects.equals(nh0.type, nh1.type) //
 									&& Objects.equals(nh0.terminal, nh1.terminal) //
 									&& Objects.equals(nh0.op, nh1.op);
 					}
 			}
 
-			return result;
+			return b;
 		}
 
 		public int hashCode() {

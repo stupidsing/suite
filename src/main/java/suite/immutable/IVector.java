@@ -123,19 +123,19 @@ public class IVector<T> {
 
 	@Override
 	public boolean equals(Object object) {
-		boolean result = false;
+		boolean b = false;
 
 		if (Object_.clazz(object) == IVector.class) {
 			@SuppressWarnings("unchecked")
 			IVector<T> v = (IVector<T>) object;
-			result = end - start == v.end - v.start;
+			b = end - start == v.end - v.start;
 			int si = start, di = v.start;
 
-			while (result && si < end)
-				result &= Objects.equals(data.nodes[si++], v.data.nodes[di++]);
+			while (b && si < end)
+				b &= Objects.equals(data.nodes[si++], v.data.nodes[di++]);
 		}
 
-		return result;
+		return b;
 	}
 
 	@Override

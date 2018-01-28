@@ -116,10 +116,10 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public boolean isZeroes() {
-		boolean result = true;
-		for (int i = start; result && i < end; i++)
-			result &= bs[i] == 0;
-		return result;
+		boolean b = true;
+		for (int i = start; b && i < end; i++)
+			b &= bs[i] == 0;
+		return b;
 	}
 
 	public Bytes pad(int size) {
@@ -241,10 +241,10 @@ public class Bytes implements Iterable<Byte> {
 
 	private boolean startsWith_(Bytes bytes, int s) {
 		if (s + bytes.size_() <= size_()) {
-			boolean result = true;
-			for (int i = 0; result && i < bytes.size_(); i++)
-				result &= get(s + i) == bytes.get(i);
-			return result;
+			boolean b = true;
+			for (int i = 0; b && i < bytes.size_(); i++)
+				b &= get(s + i) == bytes.get(i);
+			return b;
 		} else
 			return false;
 	}

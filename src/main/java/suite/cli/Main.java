@@ -48,7 +48,7 @@ public class Main extends ExecutableProgram {
 	protected boolean run(String[] args) throws IOException {
 		opt = new CommandOptions();
 
-		boolean result = true;
+		boolean b = true;
 		List<String> inputs = new ArrayList<>();
 		Source<String> source = To.source(args);
 		String verb = null;
@@ -59,7 +59,7 @@ public class Main extends ExecutableProgram {
 				if (String_.equals(arg, "--file"))
 					inputs.add(readScript(source.source()));
 				else
-					result &= opt.processOption(arg, source);
+					b &= opt.processOption(arg, source);
 			else if (verb == null)
 				verb = arg;
 			else
@@ -67,17 +67,17 @@ public class Main extends ExecutableProgram {
 
 		dispatcher = new CommandDispatcher(opt);
 
-		if (result)
+		if (b)
 			if (String_.equals(verb, "evaluate"))
-				result &= dispatcher.dispatchEvaluate(inputs);
+				b &= dispatcher.dispatchEvaluate(inputs);
 			else if (String_.equals(verb, "filter"))
-				result &= dispatcher.dispatchFilter(inputs, reader, writer);
+				b &= dispatcher.dispatchFilter(inputs, reader, writer);
 			else if (String_.equals(verb, "precompile"))
-				result &= dispatcher.dispatchPrecompile(inputs);
+				b &= dispatcher.dispatchPrecompile(inputs);
 			else if (String_.equals(verb, "prove"))
-				result &= dispatcher.dispatchProve(inputs);
+				b &= dispatcher.dispatchProve(inputs);
 			else if (String_.equals(verb, "query"))
-				result &= runInteractive(inputs);
+				b &= runInteractive(inputs);
 			else if (String_.equals(verb, "serve"))
 				new SocketServer().run();
 			else if (verb != null && verb.startsWith("suite.")) {
@@ -87,13 +87,13 @@ public class Main extends ExecutableProgram {
 				Rethrow.ex(() -> Class.forName(verb_));
 				RunUtil.run(clazz, inputs.toArray(new String[0]));
 			} else if (String_.equals(verb, "type"))
-				result &= dispatcher.dispatchType(inputs);
+				b &= dispatcher.dispatchType(inputs);
 			else if (verb == null)
-				result &= runInteractive(inputs);
+				b &= runInteractive(inputs);
 			else
 				Fail.t("unknown action " + verb);
 
-		return result;
+		return b;
 	}
 
 	private String readScript(String filename) {

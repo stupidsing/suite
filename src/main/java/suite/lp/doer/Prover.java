@@ -126,9 +126,9 @@ public class Prover {
 				continue;
 			}
 
-			Boolean result = systemPredicates.call(query);
-			if (result != null)
-				query = isSuccess(result);
+			Boolean b = systemPredicates.call(query);
+			if (b != null)
+				query = isSuccess(b);
 
 			// not handled above
 			if (query == OK)

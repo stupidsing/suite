@@ -119,10 +119,10 @@ public class Ints implements Iterable<Integer> {
 	}
 
 	public boolean isWhitespaces() {
-		boolean result = true;
-		for (int i = start; result && i < end; i++)
-			result &= ParseUtil.isWhitespace(cs[i]);
-		return result;
+		boolean b = true;
+		for (int i = start; b && i < end; i++)
+			b &= ParseUtil.isWhitespace(cs[i]);
+		return b;
 	}
 
 	public IntStreamlet streamlet() {
@@ -269,10 +269,10 @@ public class Ints implements Iterable<Integer> {
 
 	private boolean startsWith_(Ints ints, int s) {
 		if (s + ints.size_() <= size_()) {
-			boolean result = true;
-			for (int i = 0; result && i < ints.size_(); i++)
-				result &= get(s + i) == ints.get(i);
-			return result;
+			boolean b = true;
+			for (int i = 0; b && i < ints.size_(); i++)
+				b &= get(s + i) == ints.get(i);
+			return b;
 		} else
 			return false;
 	}

@@ -136,10 +136,10 @@ public class ParseUtil {
 						depth = checkDepth(depth, c);
 
 					if (depth == 0 && pos + nameLength <= cs.length) {
-						boolean result = true; // cs.startsWith(name, pos)
-						for (int i = 0; result && i < nameLength; i++)
-							result &= cs[pos + i] == name.charAt(i);
-						if (result)
+						boolean b = true; // cs.startsWith(name, pos)
+						for (int i = 0; b && i < nameLength; i++)
+							b &= cs[pos + i] == name.charAt(i);
+						if (b)
 							return Segment.of(pos, pos + nameLength);
 					}
 				}

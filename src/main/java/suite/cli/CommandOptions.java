@@ -40,7 +40,7 @@ public class CommandOptions {
 	}
 
 	private boolean processOption(String arg, Source<String> source, boolean on) {
-		boolean result = true;
+		boolean b = true;
 		String arg1;
 
 		if (String_.equals(arg, "--do"))
@@ -58,7 +58,7 @@ public class CommandOptions {
 		else if (String_.equals(arg, "--libraries") && (arg1 = source.source()) != null)
 			libraries = List.of(arg1.split(","));
 		else if (arg.startsWith("--no-"))
-			result &= processOption("--" + arg.substring(5), source, false);
+			b &= processOption("--" + arg.substring(5), source, false);
 		else if (String_.equals(arg, "--quiet"))
 			isQuiet = on;
 		else if (String_.equals(arg, "--trace"))
@@ -68,7 +68,7 @@ public class CommandOptions {
 		else
 			Fail.t("unknown option " + arg);
 
-		return result;
+		return b;
 	}
 
 	public FunCompilerConfig fcc(Node node) {

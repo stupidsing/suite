@@ -63,7 +63,7 @@ public class ImportUtil {
 			rules.add(Rule.of(elem));
 
 		Prover prover = new Prover(ruleSet);
-		boolean result = true;
+		boolean b = true;
 		IList<Node> importing0 = importing.get();
 
 		try {
@@ -73,7 +73,7 @@ public class ImportUtil {
 					ruleSet.addRule(rule);
 				else {
 					Node goal = SewingGeneralizerImpl.generalize(rule.tail);
-					result &= prover.prove(goal);
+					b &= prover.prove(goal);
 				}
 		} finally {
 			importing.set(importing0);
@@ -82,7 +82,7 @@ public class ImportUtil {
 		if (importing0.isEmpty()) // check after all files are imported
 			new Checker().check(ruleSet.getRules());
 
-		return result;
+		return b;
 	}
 
 }

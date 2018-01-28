@@ -119,10 +119,10 @@ public class Longs implements Iterable<Long> {
 	}
 
 	public boolean isWhitespaces() {
-		boolean result = true;
-		for (int i = start; result && i < end; i++)
-			result &= ParseUtil.isWhitespace(cs[i]);
-		return result;
+		boolean b = true;
+		for (int i = start; b && i < end; i++)
+			b &= ParseUtil.isWhitespace(cs[i]);
+		return b;
 	}
 
 	public LngStreamlet streamlet() {
@@ -269,10 +269,10 @@ public class Longs implements Iterable<Long> {
 
 	private boolean startsWith_(Longs longs, int s) {
 		if (s + longs.size_() <= size_()) {
-			boolean result = true;
-			for (int i = 0; result && i < longs.size_(); i++)
-				result &= get(s + i) == longs.get(i);
-			return result;
+			boolean b = true;
+			for (int i = 0; b && i < longs.size_(); i++)
+				b &= get(s + i) == longs.get(i);
+			return b;
 		} else
 			return false;
 	}

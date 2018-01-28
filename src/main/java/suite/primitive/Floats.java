@@ -119,10 +119,10 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public boolean isWhitespaces() {
-		boolean result = true;
-		for (int i = start; result && i < end; i++)
-			result &= ParseUtil.isWhitespace(cs[i]);
-		return result;
+		boolean b = true;
+		for (int i = start; b && i < end; i++)
+			b &= ParseUtil.isWhitespace(cs[i]);
+		return b;
 	}
 
 	public FltStreamlet streamlet() {
@@ -269,10 +269,10 @@ public class Floats implements Iterable<Float> {
 
 	private boolean startsWith_(Floats floats, int s) {
 		if (s + floats.size_() <= size_()) {
-			boolean result = true;
-			for (int i = 0; result && i < floats.size_(); i++)
-				result &= get(s + i) == floats.get(i);
-			return result;
+			boolean b = true;
+			for (int i = 0; b && i < floats.size_(); i++)
+				b &= get(s + i) == floats.get(i);
+			return b;
 		} else
 			return false;
 	}

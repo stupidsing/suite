@@ -143,10 +143,10 @@ public class Account {
 	}
 
 	private boolean play_(Iterable<Trade> trades, boolean isValidate) {
-		boolean result = true;
+		boolean b = true;
 		for (Trade trade : trades)
-			result &= play_(trade, isValidate);
-		return result;
+			b &= play_(trade, isValidate);
+		return b;
 	}
 
 	private boolean play_(Trade trade, boolean isValidate) {

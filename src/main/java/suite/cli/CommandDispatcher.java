@@ -224,10 +224,10 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchPrecompile(List<String> filenames) {
-		boolean result = true;
+		boolean b = true;
 		for (String filename : filenames)
-			result &= Suite.precompile(filename, opt.pc(null));
-		return result;
+			b &= Suite.precompile(filename, opt.pc(null));
+		return b;
 	}
 
 	public boolean dispatchProve(List<String> inputs) throws IOException {
@@ -256,9 +256,9 @@ public class CommandDispatcher {
 	}
 
 	private boolean query(Builder builder, RuleSet ruleSet, Node node) {
-		boolean result = Suite.proveLogic(builder, ruleSet, node);
-		opt.prompt().println(yesNo(result));
-		return result;
+		boolean b = Suite.proveLogic(builder, ruleSet, node);
+		opt.prompt().println(yesNo(b));
+		return b;
 	}
 
 	private Node evaluateFunctional(Node node) {

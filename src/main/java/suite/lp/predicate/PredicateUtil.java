@@ -94,14 +94,14 @@ public class PredicateUtil {
 
 	public static boolean tryProve(Prover prover, Predicate<Prover> source) {
 		Prover prover1 = new Prover(prover);
-		boolean result = false;
+		boolean b = false;
 		try {
-			result = source.test(prover1);
+			b = source.test(prover1);
 		} finally {
-			if (!result) // roll back bindings if overall goal is failed
+			if (!b) // roll back bindings if overall goal is failed
 				prover1.unwindAll();
 		}
-		return result;
+		return b;
 	}
 
 }

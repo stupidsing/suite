@@ -18,13 +18,13 @@ public class TreeRewriter {
 	public boolean contains(Node from, Node node) {
 		return new Predicate<Node>() {
 			public boolean test(Node node) {
-				boolean result;
+				boolean b;
 				if (!eq(node, from)) {
 					NodeRead nr = NodeRead.of(node);
-					result = Read.from(nr.children).isAny(p -> test(p.t1));
+					b = Read.from(nr.children).isAny(p -> test(p.t1));
 				} else
-					result = true;
-				return result;
+					b = true;
+				return b;
 			}
 		}.test(node);
 	}

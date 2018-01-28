@@ -217,11 +217,11 @@ public class PrettyPrinter {
 	}
 
 	private boolean isLineBegin() {
-		boolean result = true;
+		boolean b = true;
 		String l = sb.substring(getLineBeginPosition(), getCurrentPosition());
 		for (char c : String_.chars(l))
-			result &= Character.isWhitespace(c);
-		return result;
+			b &= Character.isWhitespace(c);
+		return b;
 	}
 
 	private int getLineSize() {

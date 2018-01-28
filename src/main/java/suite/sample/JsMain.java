@@ -42,16 +42,16 @@ public class JsMain extends ExecutableProgram {
 		if (filenames.size() == 0)
 			filenames = defaultJsFiles;
 
-		boolean result = true;
+		boolean b = true;
 
 		for (String filename : filenames) {
 			Object r = engine.eval(new FileReader(filename));
-			result &= r == Boolean.TRUE //
+			b &= r == Boolean.TRUE //
 					|| r instanceof Number && ((Number) r).intValue() != 0 //
 					|| r instanceof String && String_.isNotBlank((String) r);
 		}
 
-		return result;
+		return b;
 	}
 
 }

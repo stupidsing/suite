@@ -119,10 +119,10 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public boolean isWhitespaces() {
-		boolean result = true;
-		for (int i = start; result && i < end; i++)
-			result &= ParseUtil.isWhitespace(cs[i]);
-		return result;
+		boolean b = true;
+		for (int i = start; b && i < end; i++)
+			b &= ParseUtil.isWhitespace(cs[i]);
+		return b;
 	}
 
 	public ChrStreamlet streamlet() {
@@ -269,10 +269,10 @@ public class Chars implements Iterable<Character> {
 
 	private boolean startsWith_(Chars chars, int s) {
 		if (s + chars.size_() <= size_()) {
-			boolean result = true;
-			for (int i = 0; result && i < chars.size_(); i++)
-				result &= get(s + i) == chars.get(i);
-			return result;
+			boolean b = true;
+			for (int i = 0; b && i < chars.size_(); i++)
+				b &= get(s + i) == chars.get(i);
+			return b;
 		} else
 			return false;
 	}

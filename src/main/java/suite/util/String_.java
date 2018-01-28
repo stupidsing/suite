@@ -44,19 +44,16 @@ public class String_ {
 	}
 
 	public static boolean isInteger(String s) {
-		boolean result;
-
 		if (!s.isEmpty()) {
 			if (s.charAt(0) == '-')
 				s = s.substring(1);
 
-			result = !s.isEmpty();
+			boolean b = !s.isEmpty();
 			for (char c : String_.chars(s))
-				result &= Character.isDigit(c);
+				b &= Character.isDigit(c);
+			return b;
 		} else
-			result = false;
-
-		return result;
+			return false;
 	}
 
 	public static boolean isNotBlank(String s) {

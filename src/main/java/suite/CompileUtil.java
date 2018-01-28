@@ -30,14 +30,14 @@ public class CompileUtil {
 
 		Builder builder = new SewingProverBuilder(pc);
 		RuleSet rs = funCompilerRuleSet();
-		boolean result = Suite.proveLogic(builder, rs, "fc-precompile-lib " + libraryName);
+		boolean b = Suite.proveLogic(builder, rs, "fc-precompile-lib " + libraryName);
 
-		if (result)
+		if (b)
 			System.out.println("Pre-compilation success [" + libraryName + "]");
 		else
 			System.out.println("Pre-compilation failed [" + libraryName + "]");
 
-		return result;
+		return b;
 	}
 
 }
