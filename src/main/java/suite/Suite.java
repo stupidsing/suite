@@ -136,7 +136,7 @@ public class Suite {
 	}
 
 	public static Node substitute(String pattern, Node... nodes) {
-		return bindArrayUtil.pattern(pattern).substitute(nodes);
+		return bindArrayUtil.pattern(pattern).subst(nodes);
 	}
 
 	// --------------------------------

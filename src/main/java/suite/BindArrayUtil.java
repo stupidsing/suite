@@ -26,7 +26,7 @@ public class BindArrayUtil {
 	public interface Pattern {
 		public Node[] match(Node node);
 
-		public Node substitute(Node... nodes);
+		public Node subst(Node... nodes);
 	}
 
 	public Pattern pattern(String pattern) {
@@ -63,7 +63,7 @@ public class BindArrayUtil {
 
 			}
 
-			public Node substitute(Node... nodes) {
+			public Node subst(Node... nodes) {
 				NodeEnv<Atom> ne = sgs.source();
 				Reference[] refs = ne.env.refs;
 				for (int i = 0; i < nodes.length; i++)

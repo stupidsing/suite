@@ -121,15 +121,15 @@ public class Symbolic {
 		private Node rewrite(Node node) {
 			return new SwitchNode<Node>(node //
 			).match(".0 - .1", m -> {
-				return m[0] != N0 ? add.apply(rewrite(m[0]), patNeg.substitute(rewrite(m[1]))) : null;
+				return m[0] != N0 ? add.apply(rewrite(m[0]), patNeg.subst(rewrite(m[1]))) : null;
 			}).match(".0 / .1", m -> {
-				return m[0] != N1 ? mul.apply(rewrite(m[0]), patInv.substitute(rewrite(m[1]))) : null;
+				return m[0] != N1 ? mul.apply(rewrite(m[0]), patInv.subst(rewrite(m[1]))) : null;
 			}).match(patPow, m -> {
-				return patExp.substitute(patLn.substitute(rewrite(m[0])), rewrite(m[1]));
+				return patExp.subst(patLn.subst(rewrite(m[0])), rewrite(m[1]));
 			}).applyIf(Int.class, i -> {
 				return intOf(i);
 			}).match(".0 .1", m -> {
-				return Suite.pattern(".0 .1").substitute(m[0], rewrite(m[1]));
+				return Suite.pattern(".0 .1").subst(m[0], rewrite(m[1]));
 			}).applyTree((op, l, r) -> {
 				return Tree.of(op, rewrite(l), rewrite(r));
 			}).applyIf(Node.class, n -> {
@@ -151,18 +151,18 @@ public class Symbolic {
 							int div2 = power / 2;
 							int mod2 = power % 2;
 							if (power < 0)
-								return pos(patInv.substitute(patPow.substitute(m[0], Int.of(-power))));
+								return pos(patInv.subst(patPow.subst(m[0], Int.of(-power))));
 							else if (power == 0) // TODO m[0] != 0
 								return Read.empty();
 							else {
-								Streamlet<Node> n0 = pos(patPow.substitute(m[0], Int.of(div2)));
+								Streamlet<Node> n0 = pos(patPow.subst(m[0], Int.of(div2)));
 								Streamlet<Node> n1 = Streamlet.concat(n0, n0);
 								return mod2 != 0 ? Streamlet.concat(n1, pos(node_)) : n1;
 							}
 						} else
-							return pos(m[0]).join2(sop(m[1])).map(patPow::substitute);
+							return pos(m[0]).join2(sop(m[1])).map(patPow::subst);
 					}).match(patExp, m -> {
-						return sop(m[0]).map(patExp::substitute);
+						return sop(m[0]).map(patExp::subst);
 					}).applyTree((op, l, r) -> {
 						return Read.each(sumOfProducts(node_));
 					}).applyIf(Node.class, n -> {
@@ -181,15 +181,15 @@ public class Symbolic {
 					}).match(patPow, m -> {
 						return sop(productOfSums(node_));
 					}).match(patLn, m -> {
-						return pos(m[0]).map(patLn::substitute);
+						return pos(m[0]).map(patLn::subst);
 					}).match("sin (.0 + .1)", m -> {
 						return Read.each( //
-								mul.recompose(x, Read.each(patSin.substitute(m[0]), patCos.substitute(m[1]))), //
-								mul.recompose(x, Read.each(patCos.substitute(m[0]), patSin.substitute(m[1]))));
+								mul.recompose(x, Read.each(patSin.subst(m[0]), patCos.subst(m[1]))), //
+								mul.recompose(x, Read.each(patCos.subst(m[0]), patSin.subst(m[1]))));
 					}).match("cos (.0 + .1)", m -> {
 						return Read.each( //
-								mul.recompose(x, Read.each(patCos.substitute(m[0]), patCos.substitute(m[1]))), //
-								mul.recompose(x, Read.each(neg.apply(patSin.substitute(m[0])), patSin.substitute(m[1]))));
+								mul.recompose(x, Read.each(patCos.subst(m[0]), patCos.subst(m[1]))), //
+								mul.recompose(x, Read.each(neg.apply(patSin.subst(m[0])), patSin.subst(m[1]))));
 					}).applyTree((op, l, r) -> {
 						return Read.each(productOfSums(node_));
 					}).applyIf(Node.class, n -> {
@@ -210,7 +210,7 @@ public class Symbolic {
 
 				private Node applyInv(Pattern pattern, Node node_) {
 					Node[] m = pattern.match(node_);
-					return m == null ? pattern.substitute(node_) : m[0];
+					return m == null ? pattern.subst(node_) : m[0];
 				}
 			}
 
@@ -300,19 +300,19 @@ public class Symbolic {
 			).match(patAdd, m -> {
 				return add.apply(d(m[0]), d(m[1]));
 			}).match(patNeg, m -> {
-				return patNeg.substitute(d(m[0]));
+				return patNeg.subst(d(m[0]));
 			}).match(patMul, m -> {
 				return add.apply(mul.apply(m[0], d(m[1])), mul.apply(m[1], d(m[0])));
 			}).match(patInv, m -> {
-				return mul.apply(patInv.substitute(mul.apply(m[0], m[0])), patNeg.substitute(d(m[0])));
+				return mul.apply(patInv.subst(mul.apply(m[0], m[0])), patNeg.subst(d(m[0])));
 			}).match(patExp, m -> {
-				return mul.apply(patExp.substitute(m[0]), d(m[0]));
+				return mul.apply(patExp.subst(m[0]), d(m[0]));
 			}).match(patLn, m -> {
-				return mul.apply(patInv.substitute(m[0]), d(m[0]));
+				return mul.apply(patInv.subst(m[0]), d(m[0]));
 			}).match(patSin, m -> {
-				return mul.apply(patCos.substitute(m[0]), d(m[0]));
+				return mul.apply(patCos.subst(m[0]), d(m[0]));
 			}).match(patCos, m -> {
-				return mul.apply(patNeg.substitute(patSin.substitute(m[0])), d(m[0]));
+				return mul.apply(patNeg.subst(patSin.subst(m[0])), d(m[0]));
 			}).applyIf(Node.class, n -> {
 				if (node == x)
 					return N1;
@@ -330,23 +330,23 @@ public class Symbolic {
 				Opt<Node> ivdxs = i(m[1]);
 				return iudxs.join(ivdxs, add::apply);
 			}).match(patNeg, m -> {
-				return i(m[0]).map(patNeg::substitute);
+				return i(m[0]).map(patNeg::subst);
 			}).match(patMul, m -> {
 				Node u = m[0];
 				Opt<Node> vs = i(m[1]);
 				Node dudx = d(u);
-				return vs.concatMap(v -> i(mul.apply(v, dudx)).map(ivdu -> add.apply(mul.apply(u, v), patNeg.substitute(ivdu))));
+				return vs.concatMap(v -> i(mul.apply(v, dudx)).map(ivdu -> add.apply(mul.apply(u, v), patNeg.subst(ivdu))));
 			}).match(patInv, m -> {
-				return m[0].compareTo(x) == 0 ? Opt.of(Suite.pattern("ln .0").substitute(x)) : null;
+				return m[0].compareTo(x) == 0 ? Opt.of(Suite.pattern("ln .0").subst(x)) : null;
 			}).match(patExp, m -> {
 				return m[0].compareTo(x) == 0 ? Opt.of(node) : null;
 			}).match(patSin, m -> {
-				return Opt.of(patNeg.substitute(patCos.match(x)));
+				return Opt.of(patNeg.subst(patCos.match(x)));
 			}).match(patCos, m -> {
-				return Opt.of(patSin.substitute(x));
+				return Opt.of(patSin.subst(x));
 			}).applyIf(Node.class, n -> {
 				if (node.compareTo(x) == 0)
-					return Opt.of(mul.apply(patInv.substitute(Int.of(2)), mul.apply(x, x)));
+					return Opt.of(mul.apply(patInv.subst(Int.of(2)), mul.apply(x, x)));
 				else if (node instanceof Int)
 					return Opt.of(mul.apply(node, x));
 				else
@@ -428,7 +428,7 @@ public class Symbolic {
 
 	private Node intOf(Node n) {
 		int i = ((Int) n).number;
-		return i < 0 ? patNeg.substitute(Int.of(-i)) : n;
+		return i < 0 ? patNeg.subst(Int.of(-i)) : n;
 	}
 
 	private Pattern patAdd = Suite.pattern(".0 + .1");

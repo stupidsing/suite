@@ -26,7 +26,7 @@ public class BindMapUtil {
 	public interface Pattern {
 		public Map<String, Node> match(Node node);
 
-		public Node substitute(Map<String, Node> map);
+		public Node subst(Map<String, Node> map);
 	}
 
 	public Pattern pattern(String pattern) {
@@ -52,7 +52,7 @@ public class BindMapUtil {
 				return pred.test(new BindEnv(env), node) ? Read.from2(cbm_).mapValue(env::get).toMap() : null;
 			}
 
-			public Node substitute(Map<String, Node> map_) {
+			public Node subst(Map<String, Node> map_) {
 				NodeEnv<Atom> ne = sgs.source();
 				Reference[] refs = ne.env.refs;
 				for (Entry<String, Node> e : map_.entrySet())

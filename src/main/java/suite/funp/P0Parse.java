@@ -129,11 +129,11 @@ public class P0Parse {
 			}).match("define .0 := .1 >> .2", m -> {
 				String var = name(m[0]);
 				return FunpDefine.of(true, var, parse(m[1]), parseNewVariable(m[2], var));
-				// return parse(Suite.substitute("poly .1 | (.0 => .2)", m));
+				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("let .0 := .1 >> .2", m -> {
 				String var = name(m[0]);
 				return FunpDefine.of(false, var, parse(m[1]), parseNewVariable(m[2], var));
-				// return parse(Suite.substitute(".1 | (.0 => .2)", m));
+				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 			}).match("recurse .0 >> .1", m -> {
 				Pattern pattern1 = Suite.pattern(".0 := .1");
 				Streamlet<Node[]> list = Tree.iter(m[0], TermOp.AND___).map(pattern1::match).collect(As::streamlet);
@@ -202,7 +202,7 @@ public class P0Parse {
 				Parse p1 = new Parse(variables.add(var));
 				return FunpIterate.of(var, parse(m[1]), p1.parse(m[2]), p1.parse(m[3]));
 			}).match("`.0` => .1", m -> {
-				return parse(Suite.pattern(".2 => if (`.0` = .2) then .1 else error").substitute(m[0], m[1], Atom.temp()));
+				return parse(Suite.pattern(".2 => if (`.0` = .2) then .1 else error").subst(m[0], m[1], Atom.temp()));
 			}).match(".0 => .1", m -> {
 				String var = name(m[0]);
 				return FunpLambda.of(var, parseNewVariable(m[1], var));
