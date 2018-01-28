@@ -3,7 +3,7 @@ package suite.asm;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.BindArrayUtil.Match;
+import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.node.Atom;
@@ -14,8 +14,8 @@ import suite.node.util.TreeUtil;
 
 public class PeepholeOptimizer {
 
-	private Match ADDI__ = Suite.match("ADDI (.0, .1)");
-	private Match MOV___ = Suite.match("MOV (.0, .1)");
+	private Pattern ADDI__ = Suite.pattern("ADDI (.0, .1)");
+	private Pattern MOV___ = Suite.pattern("MOV (.0, .1)");
 
 	public List<Pair<Reference, Node>> optimize(List<Pair<Reference, Node>> lnis0) {
 		List<Pair<Reference, Node>> lnis1 = new ArrayList<>();
@@ -25,7 +25,7 @@ public class PeepholeOptimizer {
 			Node node1;
 			Node[] m;
 
-			if ((m = ADDI__.apply(node0)) != null) {
+			if ((m = ADDI__.match(node0)) != null) {
 				Node m0 = m[0];
 				int i = TreeUtil.evaluate(m[1]);
 				if (i == 1)
@@ -38,7 +38,7 @@ public class PeepholeOptimizer {
 					node1 = Suite.substitute("SUB (.0, .1)", m0, Int.of(-i));
 				else
 					node1 = Atom.NIL;
-			} else if ((m = MOV___.apply(node0)) != null) {
+			} else if ((m = MOV___.match(node0)) != null) {
 				Node m0 = m[0];
 				Node m1 = m[1];
 				if (m0 == m1)

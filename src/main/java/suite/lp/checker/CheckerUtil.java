@@ -3,7 +3,7 @@ package suite.lp.checker;
 import java.util.List;
 import java.util.Map;
 
-import suite.BindArrayUtil.Match;
+import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
@@ -18,24 +18,24 @@ import suite.streamlet.Streamlet;
 
 public class CheckerUtil {
 
-	private List<Match> matchers = List.of( //
-			Suite.match(".0, .1"), //
-			Suite.match(".0; .1"), //
-			Suite.match("find.all _ .0 _"), //
-			Suite.match("find.all.memoized _ .0 _"), //
-			Suite.match("if .0 then .1 else .2"), //
-			Suite.match("list.fold _ _ .0"), //
-			Suite.match("list.query _ _ .0"), //
-			Suite.match("not .0"), //
-			Suite.match("once .0"), //
-			Suite.match("suspend _ _ .0"), //
-			Suite.match("try .0 _ .1"));
+	private List<Pattern> patterns = List.of( //
+			Suite.pattern(".0, .1"), //
+			Suite.pattern(".0; .1"), //
+			Suite.pattern("find.all _ .0 _"), //
+			Suite.pattern("find.all.memoized _ .0 _"), //
+			Suite.pattern("if .0 then .1 else .2"), //
+			Suite.pattern("list.fold _ _ .0"), //
+			Suite.pattern("list.query _ _ .0"), //
+			Suite.pattern("not .0"), //
+			Suite.pattern("once .0"), //
+			Suite.pattern("suspend _ _ .0"), //
+			Suite.pattern("try .0 _ .1"));
 
 	public Streamlet<Node> scan(Node node) {
 		Node[] m = null;
 
-		for (Match matcher : matchers)
-			if ((m = matcher.apply(node)) != null)
+		for (Pattern pattern : patterns)
+			if ((m = pattern.match(node)) != null)
 				return Read.from(m).concatMap(this::scan);
 
 		if (Tree.decompose(node, TermOp.TUPLE_) != null || node instanceof Atom)

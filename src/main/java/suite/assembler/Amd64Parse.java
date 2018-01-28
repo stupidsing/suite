@@ -40,13 +40,13 @@ public class Amd64Parse {
 
 		if ((operand = amd64.registerByName.get(node)) != null)
 			return operand;
-		else if ((m = Suite.match("BYTE `.0`").apply(node)) != null)
+		else if ((m = Suite.pattern("BYTE `.0`").match(node)) != null)
 			return parseOpMem(m, 1);
-		else if ((m = Suite.match("WORD `.0`").apply(node)) != null)
+		else if ((m = Suite.pattern("WORD `.0`").match(node)) != null)
 			return parseOpMem(m, 2);
-		else if ((m = Suite.match("DWORD `.0`").apply(node)) != null)
+		else if ((m = Suite.pattern("DWORD `.0`").match(node)) != null)
 			return parseOpMem(m, 4);
-		else if ((m = Suite.match("`.0`").apply(node)) != null)
+		else if ((m = Suite.pattern("`.0`").match(node)) != null)
 			return parseOpMem(m, 4);
 		else if (node instanceof Int) {
 			OpImm opImm = amd64.new OpImm();
@@ -65,7 +65,7 @@ public class Amd64Parse {
 		opMem.dispSize = 0;
 
 		for (Node component : scan(m[0], ".0 + .1"))
-			if ((m = Suite.match(".0 * .1").apply(component)) != null)
+			if ((m = Suite.pattern(".0 * .1").match(component)) != null)
 				if (opMem.indexReg < 0) {
 					opMem.indexReg = amd64.regByName.get(m[0]).reg;
 					opMem.scale = ((Int) m[1]).number;
@@ -87,7 +87,7 @@ public class Amd64Parse {
 	private Streamlet<Node> scan(Node ops, String pattern) {
 		List<Node> nodes = new ArrayList<>();
 		Node[] m;
-		while ((m = Suite.match(pattern).apply(ops)) != null) {
+		while ((m = Suite.pattern(pattern).match(ops)) != null) {
 			nodes.add(m[0]);
 			ops = m[1];
 		}

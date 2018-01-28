@@ -1,11 +1,11 @@
 package suite.node.io;
 
-import suite.BindArrayUtil.Match;
+import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 
 public class CustomStyles {
 
-	public static Match braceMatcher = Suite.match(".0 {.1}");
-	public static Match bracketMatcher = Suite.match("[.0]");
+	public static Pattern patBrace = Suite.pattern(".0 {.1}");
+	public static Pattern patBracket = Suite.pattern("[.0]");
 
 }

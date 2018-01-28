@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import suite.BindArrayUtil.Match;
+import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.fp.intrinsic.Intrinsics;
@@ -148,8 +148,8 @@ public class InterpretFunEager {
 						return else_.apply(frame);
 				};
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
-				Match tuple = Suite.match(".0 .1");
-				List<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple::apply).toList();
+				Pattern tuple = Suite.pattern(".0 .1");
+				List<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple::match).toList();
 				if (arrays.size() == 1) {
 					Node[] array = arrays.get(0);
 					IMap<Node, Fun<Frame, Node>> vm1 = vm.put(array[0], unwrap(getter(fs)));

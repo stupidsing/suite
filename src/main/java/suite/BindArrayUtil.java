@@ -23,17 +23,17 @@ import suite.util.To;
 
 public class BindArrayUtil {
 
-	public interface Match {
-		public Node[] apply(Node node);
+	public interface Pattern {
+		public Node[] match(Node node);
 
 		public Node substitute(Node... nodes);
 	}
 
-	public Match match(String pattern) {
-		return matches.apply(pattern);
+	public Pattern pattern(String pattern) {
+		return patterns.apply(pattern);
 	}
 
-	private Fun<String, Match> matches = Memoize.fun(pattern_ -> {
+	private Fun<String, Pattern> patterns = Memoize.fun(pattern_ -> {
 		GeneralizerFactory sg = new SewingGeneralizerImpl();
 		Source<NodeEnv<Atom>> sgs = sg.g(Suite.parse(pattern_));
 		NodeEnv<Atom> ne = sgs.source();
@@ -54,8 +54,8 @@ public class BindArrayUtil {
 		int[] sgi = Ints_.toArray(size, i -> sgm.getIndex(atoms.get(i)));
 		int[] cbi = Ints_.toArray(size, i -> cbm.getIndex(ne.env.refs[sgi[i]]));
 
-		return new Match() {
-			public Node[] apply(Node node) {
+		return new Pattern() {
+			public Node[] match(Node node) {
 				Env env = cbm.env();
 				return pred.test(new BindEnv(env), node) //
 						? To.array(size, Node.class, i -> env.get(cbi[i])) //

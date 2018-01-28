@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
-import suite.BindArrayUtil.Match;
+import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.lp.Trail;
@@ -26,14 +26,14 @@ public class StackAssembler {
 	private Node rsOp1 = Atom.of("$1");
 	private Node[] registers = { Atom.of("EAX"), Atom.of("EBX"), Atom.of("ESI") };
 
-	private Match FRBGN_ = Suite.match("FR-BEGIN ()");
-	private Match FREND_ = Suite.match("FR-END ()");
-	private Match FRGET_ = Suite.match("FR-GET .0");
-	private Match FRPOP_ = Suite.match("FR-POP .0");
-	private Match FRPOPN = Suite.match("FR-POPN .0");
-	private Match FRPSH_ = Suite.match("FR-PUSH .0");
-	private Match FRPSHN = Suite.match("FR-PUSHN .0");
-	private Match LET___ = Suite.match("LET (.0, .1)");
+	private Pattern FRBGN_ = Suite.pattern("FR-BEGIN ()");
+	private Pattern FREND_ = Suite.pattern("FR-END ()");
+	private Pattern FRGET_ = Suite.pattern("FR-GET .0");
+	private Pattern FRPOP_ = Suite.pattern("FR-POP .0");
+	private Pattern FRPOPN = Suite.pattern("FR-POPN .0");
+	private Pattern FRPSH_ = Suite.pattern("FR-PUSH .0");
+	private Pattern FRPSHN = Suite.pattern("FR-PUSHN .0");
+	private Pattern LET___ = Suite.pattern("LET (.0, .1)");
 	private Node RPOP__ = Atom.of("R-");
 	private Node RPSH__ = Atom.of("R+");
 	private Node RRESTA = Atom.of("RRESTORE-ALL");
@@ -56,12 +56,12 @@ public class StackAssembler {
 			Node node1;
 			Node[] m;
 
-			if ((m = FRBGN_.apply(node0)) != null) {
+			if ((m = FRBGN_.match(node0)) != null) {
 				deque.push(new int[] { fs, rs, });
 				fs = 0;
 				rs = 0;
 				node1 = Atom.NIL;
-			} else if ((m = FREND_.apply(node0)) != null) {
+			} else if ((m = FREND_.match(node0)) != null) {
 				if (fs != 0)
 					node1 = Fail.t("unbalanced frame stack in subroutine definition");
 				else if (rs != 0)
@@ -72,26 +72,26 @@ public class StackAssembler {
 					rs = arr[1];
 				}
 				node1 = Atom.NIL;
-			} else if ((m = FRGET_.apply(node0)) != null)
+			} else if ((m = FRGET_.match(node0)) != null)
 				if (Binder.bind(m[0], Int.of(-fs), trail))
 					node1 = Atom.NIL;
 				else
 					node1 = Fail.t("cannot bind local variable offset");
-			else if ((m = FRPOP_.apply(node0)) != null) {
+			else if ((m = FRPOP_.match(node0)) != null) {
 				fs -= 4;
 				node1 = Suite.substitute("POP .0", rewrite(rs, m[0]));
-			} else if ((m = FRPOPN.apply(node0)) != null) {
+			} else if ((m = FRPOPN.match(node0)) != null) {
 				Int int_ = (Int) m[0].finalNode();
 				fs -= int_.number;
 				node1 = Atom.NIL;
-			} else if ((m = FRPSH_.apply(node0)) != null) {
+			} else if ((m = FRPSH_.match(node0)) != null) {
 				fs += 4;
 				node1 = Suite.substitute("PUSH .0", rewrite(rs, m[0]));
-			} else if ((m = FRPSHN.apply(node0)) != null) {
+			} else if ((m = FRPSHN.match(node0)) != null) {
 				Int int_ = (Int) m[0].finalNode();
 				fs += int_.number;
 				node1 = Atom.NIL;
-			} else if ((m = LET___.apply(node0)) != null)
+			} else if ((m = LET___.match(node0)) != null)
 				if (Binder.bind(m[0], Int.of(TreeUtil.evaluate(m[1])), trail))
 					node1 = Atom.NIL;
 				else

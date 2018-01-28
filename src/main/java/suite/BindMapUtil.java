@@ -23,17 +23,17 @@ import suite.util.Memoize;
 
 public class BindMapUtil {
 
-	public interface Match {
-		public Map<String, Node> apply(Node node);
+	public interface Pattern {
+		public Map<String, Node> match(Node node);
 
 		public Node substitute(Map<String, Node> map);
 	}
 
-	public Match match(String pattern) {
-		return matches.apply(pattern);
+	public Pattern pattern(String pattern) {
+		return patterns.apply(pattern);
 	}
 
-	private Fun<String, Match> matches = Memoize.fun(pattern_ -> {
+	private Fun<String, Pattern> patterns = Memoize.fun(pattern_ -> {
 		GeneralizerFactory sg = new SewingGeneralizerImpl();
 		Source<NodeEnv<Atom>> sgs = sg.g(Suite.parse(pattern_));
 		NodeEnv<Atom> ne = sgs.source();
@@ -46,8 +46,8 @@ public class BindMapUtil {
 		Map<String, Integer> sgm_ = Read.from(sgm.getVariableNames()).toMap(Formatter::display, sgm::getIndex);
 		Map<String, Integer> cbm_ = Read.from2(sgm_).mapValue(v -> cbm.getIndex(ne.env.refs[v])).toMap();
 
-		return new Match() {
-			public Map<String, Node> apply(Node node) {
+		return new Pattern() {
+			public Map<String, Node> match(Node node) {
 				Env env = cbm.env();
 				return pred.test(new BindEnv(env), node) ? Read.from2(cbm_).mapValue(env::get).toMap() : null;
 			}

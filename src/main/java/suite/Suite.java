@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import suite.BindArrayUtil.Match;
+import suite.BindArrayUtil.Pattern;
 import suite.fp.FunCompilerConfig;
 import suite.fp.intrinsic.Intrinsics;
 import suite.immutable.IPointer;
@@ -131,12 +131,12 @@ public class Suite {
 	// --------------------------------
 	// bind utilities
 
-	public static Match match(String pattern) {
-		return bindArrayUtil.match(pattern);
+	public static Pattern pattern(String pattern) {
+		return bindArrayUtil.pattern(pattern);
 	}
 
 	public static Node substitute(String pattern, Node... nodes) {
-		return bindArrayUtil.match(pattern).substitute(nodes);
+		return bindArrayUtil.pattern(pattern).substitute(nodes);
 	}
 
 	// --------------------------------

@@ -175,7 +175,7 @@ public class Formatter {
 
 	private void formatTree(Tree tree) {
 		Node[] m;
-		if ((m = CustomStyles.braceMatcher.apply(tree)) != null) {
+		if ((m = CustomStyles.patBrace.match(tree)) != null) {
 			format(m[0], TermOp.getLeftPrec(TermOp.BRACES));
 			sb.append(" {");
 			format(m[1], 0);

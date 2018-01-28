@@ -131,44 +131,44 @@ public class VerifyTest {
 
 		private Node verify(Node proof) {
 			Node[] m, m1;
-			if ((m = Suite.match(".0, .1").apply(proof)) != null)
+			if ((m = Suite.pattern(".0, .1").match(proof)) != null)
 				return Tree.of(TermOp.AND___, verify(m[0]), verify(m[1]));
-			else if ((m = Suite.match(".0 # .1").apply(proof)) != null)
+			else if ((m = Suite.pattern(".0 # .1").match(proof)) != null)
 				return Tree.of(TermOp.NEXT__, m[0], verify(m[1]));
-			else if ((m = Suite.match("axiom .0").apply(proof)) != null)
+			else if ((m = Suite.pattern("axiom .0").match(proof)) != null)
 				return verify(Suite.substitute("true | fulfill .0", m));
-			else if ((m = Suite.match(".0 | choose {.1}").apply(proof)) != null) {
+			else if ((m = Suite.pattern(".0 | choose {.1}").match(proof)) != null) {
 				Node list = verify(m[0]);
 				for (Node node : Tree.iter(list, TermOp.AND___))
 					if (Binder.bind(node, new Generalizer().generalize(m[1]), new Trail()))
 						return node;
 				return Fail.t("cannot verify " + proof);
-			} else if ((m = Suite.match(".0 | choose .1").apply(proof)) != null) {
+			} else if ((m = Suite.pattern(".0 | choose .1").match(proof)) != null) {
 				Node list = verify(m[0]);
 				Tree tree;
 				for (Node node : Tree.iter(list, TermOp.AND___))
 					if ((tree = Tree.decompose(node, TermOp.NEXT__)) != null && tree.getLeft() == m[1])
 						return tree.getRight();
 				return Fail.t("cannot verify " + proof);
-			} else if ((m = Suite.match("contradict .0 := .1 >> .2").apply(proof)) != null)
+			} else if ((m = Suite.pattern("contradict .0 := .1 >> .2").match(proof)) != null)
 				if (Binder.bind(new Verify(defs, rules.put(name(m[0]), m[1])).verify(m[2]), Atom.FALSE, new Trail()))
 					return Suite.substitute("not .0", m[1]);
 				else
 					return Fail.t("cannot verify " + proof);
-			else if ((m = Suite.match(".0 | expand .1").apply(proof)) != null) {
+			else if ((m = Suite.pattern(".0 | expand .1").match(proof)) != null) {
 				Definition def = defs.get(name(m[1])).clone_();
 				return replace(verify(m[0]), def.t0, def.t1);
-			} else if ((m = Suite.match(".0 | fulfill .1").apply(proof)) != null)
-				if ((m1 = Suite.match(".0 => .1").apply(new Generalizer().generalize(verify(m[1])))) != null
+			} else if ((m = Suite.pattern(".0 | fulfill .1").match(proof)) != null)
+				if ((m1 = Suite.pattern(".0 => .1").match(new Generalizer().generalize(verify(m[1])))) != null
 						&& Binder.bind(verify(m[0]), m1[0], new Trail()))
 					return m1[1];
 				else
 					return Fail.t("cannot verify " + proof);
-			else if ((m = Suite.match(".0 | fulfill-by .1").apply(proof)) != null)
+			else if ((m = Suite.pattern(".0 | fulfill-by .1").match(proof)) != null)
 				return verify(Suite.substitute(".0 | fulfill .1", m[1], m[0]));
-			else if ((m = Suite.match("lemma .0 := .1 >> .2").apply(proof)) != null)
+			else if ((m = Suite.pattern("lemma .0 := .1 >> .2").match(proof)) != null)
 				return new Verify(defs, rules.put(name(m[0]), verify(m[1]))).verify(m[2]);
-			else if ((m = Suite.match(".0 | nat.mi .1 .2").apply(proof)) != null) {
+			else if ((m = Suite.pattern(".0 | nat.mi .1 .2").match(proof)) != null) {
 				Node[] m_ = m;
 				Fun<Node, Node> fun = value -> {
 					Generalizer generalizer = new Generalizer();
@@ -180,12 +180,12 @@ public class VerifyTest {
 				Node succ = Suite.substitute(".0 => .1", t, fun.apply(Suite.substitute("succ .0", t)));
 				Binder.bind(verify(m[0]), Tree.of(TermOp.AND___, init, succ), new Trail());
 				return Suite.substitute("is.nat .N => .0", fun.apply(Suite.parse(".N")));
-			} else if ((m = Suite.match(".0 | rexpand .1").apply(proof)) != null) {
+			} else if ((m = Suite.pattern(".0 | rexpand .1").match(proof)) != null) {
 				Definition def = defs.get(name(m[1])).clone_();
 				return replace(verify(m[0]), def.t1, def.t0);
-			} else if ((m = Suite.match("suppose .0 := .1 >> .2").apply(proof)) != null)
+			} else if ((m = Suite.pattern("suppose .0 := .1 >> .2").match(proof)) != null)
 				return Suite.substitute(".0 => .1", m[1], new Verify(defs, rules.put(name(m[0]), m[1])).verify(m[2]));
-			else if ((m = Suite.match("true").apply(proof)) != null)
+			else if ((m = Suite.pattern("true").match(proof)) != null)
 				return Atom.TRUE;
 			else if (proof instanceof Atom)
 				return new Cloner().clone(rules.get(name(proof)));

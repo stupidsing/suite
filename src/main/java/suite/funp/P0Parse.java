@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import suite.BindArrayUtil.Match;
+import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
@@ -79,7 +79,7 @@ public class P0Parse {
 				Node[] m;
 				Node[] ht;
 
-				if ((m = Suite.match("expand .0 := .1 >> .2").apply(node)) != null) {
+				if ((m = Suite.pattern("expand .0 := .1 >> .2").match(node)) != null) {
 					Node head = m[0];
 					return new Expand(macros.put(Prototype.of(head), new Node[] { head, m[1] })).expand(m[2]);
 				} else if ((ht = macros.get(Prototype.of(node))) != null) {
@@ -115,7 +115,7 @@ public class P0Parse {
 				return FunpArray.of(Tree.iter(m[0], TermOp.AND___).map(this::parse).toList());
 			}).match("asm .0 {.1}", m -> {
 				return FunpAsm.of(Tree.iter(m[0], TermOp.OR____).map(n -> {
-					Node[] ma = Suite.match(".0 = .1").apply(n);
+					Node[] ma = Suite.pattern(".0 = .1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), parse(ma[1]));
 				}).toList(), Tree.iter(m[1], TermOp.OR____).toList());
 			}).match(Atom.FALSE, m -> {
@@ -135,8 +135,8 @@ public class P0Parse {
 				return FunpDefine.of(false, var, parse(m[1]), parseNewVariable(m[2], var));
 				// return parse(Suite.substitute(".1 | (.0 => .2)", m));
 			}).match("recurse .0 >> .1", m -> {
-				Match match1 = Suite.match(".0 := .1");
-				Streamlet<Node[]> list = Tree.iter(m[0], TermOp.AND___).map(match1::apply).collect(As::streamlet);
+				Pattern pattern1 = Suite.pattern(".0 := .1");
+				Streamlet<Node[]> list = Tree.iter(m[0], TermOp.AND___).map(pattern1::match).collect(As::streamlet);
 				ISet<String> variables_ = variables;
 
 				for (Node[] array : list)
@@ -202,7 +202,7 @@ public class P0Parse {
 				Parse p1 = new Parse(variables.add(var));
 				return FunpIterate.of(var, parse(m[1]), p1.parse(m[2]), p1.parse(m[3]));
 			}).match("`.0` => .1", m -> {
-				return parse(Suite.match(".2 => if (`.0` = .2) then .1 else error").substitute(m[0], m[1], Atom.temp()));
+				return parse(Suite.pattern(".2 => if (`.0` = .2) then .1 else error").substitute(m[0], m[1], Atom.temp()));
 			}).match(".0 => .1", m -> {
 				String var = name(m[0]);
 				return FunpLambda.of(var, parseNewVariable(m[1], var));
@@ -220,7 +220,7 @@ public class P0Parse {
 				return FunpStruct.of(Tree //
 						.iter(m[0], TermOp.AND___) //
 						.map(n -> {
-							Node[] m1 = Suite.match(".0 .1").apply(n);
+							Node[] m1 = Suite.pattern(".0 .1").match(n);
 							return Pair.of(name(m1[0]), parse(m1[1]));
 						}) //
 						.toList());

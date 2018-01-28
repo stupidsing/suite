@@ -7,7 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import suite.BindArrayUtil.Match;
+import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.adt.Mutable;
 import suite.adt.pair.Pair;
@@ -188,7 +188,7 @@ public class InterpretFunLazy {
 					} else
 						return else_.apply(frame);
 				};
-			} else if ((m = Suite.match("DEF-VARS (.0 .1,) .2").apply(node)) != null) {
+			} else if ((m = Suite.pattern("DEF-VARS (.0 .1,) .2").match(node)) != null) {
 				Lazy_ lazy1 = put(m[0]);
 				Fun<Frame, Thunk_> value_ = lazy1.lazy_(m[1]);
 				Fun<Frame, Thunk_> expr = lazy1.lazy_(m[2]);
@@ -200,8 +200,8 @@ public class InterpretFunLazy {
 					return expr.apply(frame);
 				};
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
-				Match tuple = Suite.match(".0 .1");
-				Streamlet<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple::apply);
+				Pattern tuple = Suite.pattern(".0 .1");
+				Streamlet<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple::match);
 				int size = arrays.size();
 				Lazy_ lazy0 = this;
 
