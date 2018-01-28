@@ -49,10 +49,10 @@ public class Inspect {
 		return o0 == o1 || o0 != null && o1 != null //
 				&& o0.getClass() == o1.getClass() //
 				&& Rethrow.ex(() -> {
-					boolean result = true;
+					boolean b = true;
 					for (Field field : fields(o0.getClass()))
-						result &= Objects.equals(field.get(o0), field.get(o1));
-					return result;
+						b &= Objects.equals(field.get(o0), field.get(o1));
+					return b;
 				});
 	}
 
@@ -82,10 +82,10 @@ public class Inspect {
 					sb.append(object_);
 				else if (ids.add(id = System.identityHashCode(object_)))
 					try {
-						Extract inspect_ = new Extract(object_);
-						String prefix = inspect_.prefix;
-						Class<?> keyClass = inspect_.keyClass;
-						ExtractField iter = inspect_.children;
+						Extract extract_ = new Extract(object_);
+						String prefix = extract_.prefix;
+						Class<?> keyClass = extract_.keyClass;
+						ExtractField iter = extract_.children;
 
 						if (String_.equals(prefix, "[")) {
 							sb.append("[");
@@ -273,11 +273,10 @@ public class Inspect {
 					private Object element;
 
 					public boolean next() {
-						if (iter.hasNext()) {
+						boolean b = iter.hasNext();
+						if (b)
 							element = iter.next();
-							return true;
-						} else
-							return false;
+						return b;
 					}
 
 					public Object getKey() {
@@ -311,11 +310,10 @@ public class Inspect {
 					private Entry<Object, Object> entry;
 
 					public boolean next() {
-						if (iter.hasNext()) {
+						boolean b = iter.hasNext();
+						if (b)
 							entry = iter.next();
-							return true;
-						} else
-							return false;
+						return b;
 					}
 
 					public Object getKey() {
