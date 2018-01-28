@@ -117,11 +117,11 @@ public class EditorView {
 		Listen.mouseDoubleClicked(searchList).wire(event -> controller.selectList(searchList.getSelectedValue()));
 		Listen.windowClosing(frame).wire(controller::close);
 
-		model.getFilenameChanged().wire(filename -> {
+		model.filenameChanged().wire(filename -> {
 			filenameTextField.setText(filename);
 			repaint();
 		});
-		model.getModifiedChanged().wire(this::repaint);
+		model.isModifiedChanged().wire(this::repaint);
 
 		controller.newFile();
 		refresh();

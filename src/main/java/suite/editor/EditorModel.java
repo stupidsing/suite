@@ -20,15 +20,15 @@ public class EditorModel {
 		searchText.change(searchText_);
 	}
 
-	public Signal<Boolean> getModifiedChanged() {
+	public Signal<Boolean> isModifiedChanged() {
 		return isModified.changed;
 	}
 
-	public Signal<String> getFilenameChanged() {
+	public Signal<String> filenameChanged() {
 		return filename.changed;
 	}
 
-	public Signal<String> getSearchTextChanged() {
+	public Signal<String> searchTextChanged() {
 		return searchText.changed;
 	}
 
