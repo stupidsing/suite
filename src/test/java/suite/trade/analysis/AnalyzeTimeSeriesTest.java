@@ -18,7 +18,6 @@ import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntFltPair;
 import suite.streamlet.As;
-import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
@@ -32,7 +31,7 @@ public class AnalyzeTimeSeriesTest {
 
 	private static AnalyzeTimeSeriesTest me = new AnalyzeTimeSeriesTest();
 
-	private String symbol = Asset.hsiSymbol;
+	private String symbol = "2800.HK";
 	private TimeRange period = TimeRange.of(Time.of(2005, 1, 1), TimeRange.max);
 	// TimeRange.of(Time.of(2013, 1, 1), Time.of(2014, 1, 1));
 	// TimeRange.threeYears();
@@ -86,13 +85,15 @@ public class AnalyzeTimeSeriesTest {
 		};
 
 		IntFunction<BuySell> revert = d -> momFun.apply(d).scale(0f, -1f);
+		IntFunction<BuySell> trend_ = d -> momFun.apply(d).scale(0f, +1f);
 		BuySell[] reverts = To.array(8, BuySell.class, revert);
+		BuySell[] trends_ = To.array(8, BuySell.class, trend_);
 		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
 		float[] holds = mt.hold(prices, 1f, 1f, 1f);
 		float[] ma200 = ma.movingAvg(prices, 200);
 		BuySell mat = buySell(d -> {
 			int last = d - 1;
-			return ma200[last] < prices[last] ? 1f : -1f;
+			return Quant.sign(ma200[last], prices[last]);
 		}).start(1).longOnly();
 		BuySell mt_ = buySell(d -> holds[d]);
 
@@ -128,7 +129,15 @@ public class AnalyzeTimeSeriesTest {
 						.collect(As::joined) //
 				+ Ints_ //
 						.range(1, 8) //
+						.map(d -> "\ntrend_ [" + d + "d] " + trends_[d].invest(prices)) //
+						.collect(As::joined) //
+				+ Ints_ //
+						.range(1, 8) //
 						.map(d -> "\nrevert [" + d + "d] long-only " + reverts[d].longOnly().invest(prices)) //
+						.collect(As::joined) //
+				+ Ints_ //
+						.range(1, 8) //
+						.map(d -> "\ntrend_ [" + d + "d] long-only " + trends_[d].longOnly().invest(prices)) //
 						.collect(As::joined) //
 				+ "\ntanh " + tanh.invest(prices) //
 				+ "\ntimed " + mt_.invest(prices) //
