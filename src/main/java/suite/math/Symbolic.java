@@ -84,20 +84,27 @@ public class Symbolic {
 		}).nonNullResult();
 	}
 
-	public Node d(Node x, Node node0) {
+	public Node d(Node node0, Node x) {
 		Rewrite rewrite = new Rewrite(x);
 		Node node1 = rewrite.rewrite(node0);
 		Node node2 = Boolean.TRUE ? rewrite.d(node1) : rewrite.i(node1).get();
-		Node node3 = simplify(rewrite, node2);
+		Node node3 = rewrite.simplify(node2);
 		return node3;
 	}
 
-	public Node simplify(Node x, Node node) {
-		return simplify(new Rewrite(x), node);
+	public Node simplify(Node node, Node x) {
+		return new Rewrite(x).simplify(node);
 	}
 
-	private Node simplify(Rewrite rewrite, Node node) {
-		return rewrite.polyize(node).or(() -> rewrite.sumOfProducts(node));
+	public Node simplify(Node node, Node... xs) {
+		return simplify(node, xs, 0);
+	}
+
+	private Node simplify(Node node, Node[] xs, int i) {
+		if (i < xs.length)
+			return new Rewrite(xs[i]).polyize(node, coeff -> simplify(coeff, xs, i + 1)).or(() -> node);
+		else
+			return node;
 	}
 
 	private class Rewrite {
@@ -217,7 +224,11 @@ public class Symbolic {
 			return new Recurse().sumOfProducts(node);
 		}
 
-		private Opt<Node> polyize(Node node) { // polynomialize
+		private Node simplify(Node node) {
+			return polyize(node, coeff -> coeff).or(() -> sumOfProducts(node));
+		}
+
+		private Opt<Node> polyize(Node node, Fun<Node, Node> coefficientFun) { // polynomialize
 			class Map extends IntObjMap<Node> {
 				private void add(int power, Node term) {
 					update(power, t -> add.apply(t != null ? t : N0, term));
@@ -265,7 +276,7 @@ public class Symbolic {
 				}
 
 				private Opt<Map> pow(Node m0, int power) {
-					return polyize(m0).concatMap(n -> {
+					return polyize(m0, coeff -> coeff).concatMap(n -> {
 						if (power < 0)
 							return Opt.none();
 						else if (power == 0) { // TODO m[0] != 0
@@ -289,7 +300,7 @@ public class Symbolic {
 					Node power = N1;
 					for (int i = 0; i < pair.t0; i++)
 						power = mul.apply(x, power);
-					sum = add.apply(mul.apply(pair.t1, power), sum);
+					sum = add.apply(mul.apply(coefficientFun.apply(pair.t1), power), sum);
 				}
 				return sum;
 			});

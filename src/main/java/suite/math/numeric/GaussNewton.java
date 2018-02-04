@@ -35,7 +35,7 @@ public class GaussNewton {
 
 			for (int j = 0; j < nVars; j++) {
 				Node var = vars[j];
-				gradientFuns[i][j] = sym.fun(sym.d(r, var), var);
+				gradientFuns[i][j] = sym.fun(sym.d(var, r), var);
 			}
 		}
 

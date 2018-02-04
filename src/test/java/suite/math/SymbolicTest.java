@@ -12,6 +12,8 @@ import suite.node.util.TreeRewriter;
 
 public class SymbolicTest {
 
+	private Atom a = Atom.of("a");
+	private Atom b = Atom.of("b");
 	private Atom x = Atom.of("x");
 	private Atom y = Atom.of("y");
 	private Symbolic sym = new Symbolic();
@@ -19,19 +21,19 @@ public class SymbolicTest {
 
 	@Test
 	public void test() {
-		assertEquals("0", sym.d(x, Suite.parse("1")).toString());
-		assertEquals("1", sym.d(x, Suite.parse("x")).toString());
-		assertEquals("4 * x * x * x", sym.d(x, Suite.parse("x * x * x * x")).toString());
-		assertEquals("neg 2 * inv x * inv x", sym.d(x, Suite.parse("2 / x")).toString());
+		assertEquals("0", sym.d(Suite.parse("1"), x).toString());
+		assertEquals("1", sym.d(Suite.parse("x"), x).toString());
+		assertEquals("4 * x * x * x", sym.d(Suite.parse("x * x * x * x"), x).toString());
+		assertEquals("neg 2 * inv x * inv x", sym.d(Suite.parse("2 / x"), x).toString());
 
 		assertTrue(sym.fun(Suite.parse("x * x"), Atom.of("x")).apply(2f) == 4f);
 	}
 
 	@Test
 	public void testCubic() {
-		System.out.println(sym.simplify(x, Suite.parse("(a * x + b) ^ 3")));
+		System.out.println(sym.simplify(Suite.parse("(a * x + b) ^ 3"), x, a, b));
 		Node poly = trw.replace(x, Suite.parse("y + neg (b * inv (3 * a))"), Suite.parse("a * x * x * x + b * x * x + c * x + d"));
-		System.out.println(sym.simplify(y, poly));
+		System.out.println(sym.simplify(poly, y, a, b));
 	}
 
 }
