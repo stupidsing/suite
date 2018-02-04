@@ -19,9 +19,9 @@ import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
-import ts.Quant;
 import suite.trade.data.DataSourceView;
 import suite.trade.data.HkexUtil;
+import ts.Quant;
 
 public class FactorLr {
 

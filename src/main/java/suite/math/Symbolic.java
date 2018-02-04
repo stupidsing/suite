@@ -224,7 +224,7 @@ public class Symbolic {
 				}
 			}
 
-			class Poly {
+			Opt<Map> poly = new Object() {
 				private Opt<Map> poly(Node node) {
 					return new SwitchNode<Opt<Map>>(node //
 					).match(patAdd, m -> {
@@ -281,9 +281,9 @@ public class Symbolic {
 						}
 					});
 				}
-			}
+			}.poly(node);
 
-			return new Poly().poly(node).map(map -> {
+			return poly.map(map -> {
 				Node sum = N0;
 				for (IntObjPair<Node> pair : map.streamlet().sortByKey(Integer::compare)) {
 					Node power = N1;

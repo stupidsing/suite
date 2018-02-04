@@ -26,10 +26,10 @@ import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
-import ts.Quant;
 import suite.util.Object_;
 import suite.util.String_;
 import suite.util.To;
+import ts.Quant;
 
 public class Summarize {
 

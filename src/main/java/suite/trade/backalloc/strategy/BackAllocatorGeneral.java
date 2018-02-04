@@ -24,10 +24,10 @@ import suite.trade.data.DataSource;
 import suite.trade.data.DataSourceView;
 import suite.trade.singlealloc.Strategos;
 import suite.util.FunUtil.Fun;
+import suite.util.String_;
 import ts.BollingerBands;
 import ts.Quant;
 import ts.TimeSeries;
-import suite.util.String_;
 
 public class BackAllocatorGeneral {
 

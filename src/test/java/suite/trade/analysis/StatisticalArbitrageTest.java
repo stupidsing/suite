@@ -33,11 +33,11 @@ import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.Sina;
 import suite.util.FunUtil.Fun;
+import suite.util.String_;
+import suite.util.To;
 import ts.BollingerBands;
 import ts.Quant;
 import ts.TimeSeries;
-import suite.util.String_;
-import suite.util.To;
 
 public class StatisticalArbitrageTest {
 

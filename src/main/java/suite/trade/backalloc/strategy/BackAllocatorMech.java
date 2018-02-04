@@ -12,8 +12,8 @@ import suite.trade.analysis.Oscillator;
 import suite.trade.analysis.Oscillator.Dmi;
 import suite.trade.backalloc.BackAllocator;
 import ts.BollingerBands;
-import ts.Quant;
 import ts.BollingerBands.Bb;
+import ts.Quant;
 
 /**
  * "Mechanical Trading Systems."
