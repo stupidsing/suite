@@ -37,22 +37,22 @@ public class CompileExpressionImpl implements EvaluatorFactory {
 
 			private FunExpr compile_(Node node) {
 				return new SwitchNode<FunExpr>(node //
-				).match(".0 + .1", m -> {
-					return compileOperator(m, "+");
-				}).match(".0 - .1", m -> {
-					return compileOperator(m, "-");
-				}).match(".0 * .1", m -> {
-					return compileOperator(m, "*");
-				}).match(".0 / .1", m -> {
-					return compileOperator(m, "/");
-				}).match(".0 and .1", m -> {
-					return compileOperator(m, "&&");
-				}).match(".0 or .1", m -> {
-					return compileOperator(m, "||");
-				}).match(".0 shl .1", m -> {
-					return compileOperator(m, "<<");
-				}).match(".0 shr .1", m -> {
-					return compileOperator(m, ">>");
+				).match2(".0 + .1", (a, b) -> {
+					return compileOperator(a, b, "+");
+				}).match2(".0 - .1", (a, b) -> {
+					return compileOperator(a, b, "-");
+				}).match2(".0 * .1", (a, b) -> {
+					return compileOperator(a, b, "*");
+				}).match2(".0 / .1", (a, b) -> {
+					return compileOperator(a, b, "/");
+				}).match2(".0 and .1", (a, b) -> {
+					return compileOperator(a, b, "&&");
+				}).match2(".0 or .1", (a, b) -> {
+					return compileOperator(a, b, "||");
+				}).match2(".0 shl .1", (a, b) -> {
+					return compileOperator(a, b, "<<");
+				}).match2(".0 shr .1", (a, b) -> {
+					return compileOperator(a, b, ">>");
 				}).applyIf(Int.class, i -> {
 					return f.int_(i.number);
 				}).applyIf(Node.class, i -> {
@@ -62,9 +62,9 @@ public class CompileExpressionImpl implements EvaluatorFactory {
 				}).nonNullResult();
 			}
 
-			private FunExpr compileOperator(Node[] m, String op) {
-				FunExpr fe0 = compile_(m[0]);
-				FunExpr fe1 = compile_(m[1]);
+			private FunExpr compileOperator(Node a, Node b, String op) {
+				FunExpr fe0 = compile_(a);
+				FunExpr fe1 = compile_(b);
 				return f.bi(op, fe0, fe1);
 			}
 		}).apply(Map.ofEntries());
