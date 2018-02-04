@@ -24,7 +24,7 @@ public class SymbolicTest {
 		assertEquals("0", sym.d(Suite.parse("1"), x).toString());
 		assertEquals("1", sym.d(Suite.parse("x"), x).toString());
 		assertEquals("4 * x * x * x", sym.d(Suite.parse("x * x * x * x"), x).toString());
-		assertEquals("neg 2 * inv x * inv x", sym.d(Suite.parse("2 / x"), x).toString());
+		assertEquals("neg 2 * inv (x * x)", sym.d(Suite.parse("2 / x"), x).toString());
 
 		assertTrue(sym.fun(Suite.parse("x * x"), Atom.of("x")).apply(2f) == 4f);
 	}

@@ -18,6 +18,7 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
+import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjStreamlet;
@@ -128,9 +129,9 @@ public class Symbolic {
 		private Node rewrite(Node node) {
 			return new SwitchNode<Node>(node //
 			).match(".0 - .1", m -> {
-				return m[0] != N0 ? add.apply(rewrite(m[0]), patNeg.subst(rewrite(m[1]))) : null;
+				return m[0] != N0 ? add.apply(rewrite(m[0]), add.inverse(rewrite(m[1]))) : null;
 			}).match(".0 / .1", m -> {
-				return m[0] != N1 ? mul.apply(rewrite(m[0]), patInv.subst(rewrite(m[1]))) : null;
+				return m[0] != N1 ? mul.apply(rewrite(m[0]), mul.inverse(rewrite(m[1]))) : null;
 			}).match(patPow, m -> {
 				return patExp.subst(patLn.subst(rewrite(m[0])), rewrite(m[1]));
 			}).applyIf(Int.class, i -> {
@@ -158,7 +159,7 @@ public class Symbolic {
 							int div2 = power / 2;
 							int mod2 = power % 2;
 							if (power < 0)
-								return pos(patInv.subst(patPow.subst(m[0], Int.of(-power))));
+								return pos(mul.inverse(patPow.subst(m[0], Int.of(-power))));
 							else if (power == 0) // TODO m[0] != 0
 								return Read.empty();
 							else {
@@ -212,13 +213,8 @@ public class Symbolic {
 					return add.recompose(x, sop(node));
 				}
 
-				private Iterate<Node> inv = node_ -> applyInv(patInv, node_);
-				private Iterate<Node> neg = node_ -> applyInv(patNeg, node_);
-
-				private Node applyInv(Pattern pattern, Node node_) {
-					Node[] m = pattern.match(node_);
-					return m == null ? pattern.subst(node_) : m[0];
-				}
+				private Iterate<Node> neg = add::inverse;
+				private Iterate<Node> inv = mul::inverse;
 			}
 
 			return new Recurse().sumOfProducts(node);
@@ -229,45 +225,58 @@ public class Symbolic {
 		}
 
 		private Opt<Node> polyize(Node node, Fun<Node, Node> coefficientFun) { // polynomialize
-			class Map extends IntObjMap<Node> {
+			class Map_ extends IntObjMap<Node> {
+				Map_(IntObjStreamlet<Node> map) {
+					map.sink(this::put);
+				}
+
+				Map_(int p, Node t) {
+					put(p, t);
+				}
+
+				Map_() {
+				}
+
 				private void add(int power, Node term) {
 					update(power, t -> add.apply(t != null ? t : N0, term));
 				}
 			}
 
-			Opt<Map> poly = new Object() {
-				private Opt<Map> poly(Node node) {
-					return new SwitchNode<Opt<Map>>(node //
+			Opt<Map_> poly = new Object() {
+				private Opt<Map_> poly(Node node) {
+					return new SwitchNode<Opt<Map_>>(node //
 					).match(patAdd, m -> {
 						return poly(m[0]).join(poly(m[1]), (map0, map1) -> {
-							Map map = new Map();
+							Map_ map = new Map_();
 							for (IntObjPair<Node> pair : IntObjStreamlet.concat(map0.streamlet(), map1.streamlet()))
 								map.add(pair.t0, pair.t1);
 							return map;
 						});
+					}).match(patNeg, m -> {
+						return poly(m[0]).map(map -> {
+							return new Map_(map.streamlet().mapIntObj((p, t) -> p, (p, t) -> add.inverse(t)));
+						});
 					}).match(patMul, m -> {
 						return multiply(poly(m[0]), poly(m[1]));
+					}).match(patInv, m -> {
+						return poly(m[0]).concatMap(this::inv);
 					}).match(patPow, m -> {
 						return m[1] instanceof Int ? pow(m[0], ((Int) m[1]).number) : null;
 					}).applyIf(Node.class, n -> {
-						if (node.compareTo(x) == 0) {
-							Map map = new Map();
-							map.put(1, N1);
-							return Opt.of(map);
+						if (is_x(node)) {
+							return Opt.of(new Map_(1, N1));
 						} else if (node == N0)
-							return Opt.of(new Map());
+							return Opt.of(new Map_());
 						else if (!isContains_x(node)) {
-							Map map = new Map();
-							map.put(0, node);
-							return Opt.of(map);
+							return Opt.of(new Map_(0, node));
 						} else
 							return Opt.none();
 					}).nonNullResult();
 				}
 
-				private Opt<Map> multiply(Opt<Map> opt0, Opt<Map> opt1) {
+				private Opt<Map_> multiply(Opt<Map_> opt0, Opt<Map_> opt1) {
 					return opt0.join(opt1, (map0, map1) -> {
-						Map map = new Map();
+						Map_ map = new Map_();
 						for (IntObjPair<Node> pair0 : map0.streamlet())
 							for (IntObjPair<Node> pair1 : map1.streamlet())
 								map.add(pair0.t0 + pair1.t0, mul.apply(pair0.t1, pair1.t1));
@@ -275,31 +284,41 @@ public class Symbolic {
 					});
 				}
 
-				private Opt<Map> pow(Node m0, int power) {
+				private Opt<Map_> pow(Node m0, int power) {
 					return polyize(m0, coeff -> coeff).concatMap(n -> {
 						if (power < 0)
-							return Opt.none();
-						else if (power == 0) { // TODO m[0] != 0
-							Map map = new Map();
-							map.put(0, N1);
-							return Opt.of(map);
+							return pow(n, -power).concatMap(this::inv);
+						else if (power == 0) { // TODO assumed m[0] != 0
+							return Opt.of(new Map_());
 						} else {
 							int div2 = power / 2;
 							int mod2 = power % 2;
-							Opt<Map> opt0 = pow(m0, div2);
-							Opt<Map> opt1 = multiply(opt0, opt0);
+							Opt<Map_> opt0 = pow(m0, div2);
+							Opt<Map_> opt1 = multiply(opt0, opt0);
 							return mod2 != 0 ? multiply(opt1, poly(n)) : opt1;
 						}
 					});
 				}
+
+				private Opt<Map_> inv(Map_ map) {
+					return map.size() == 1 //
+							? Opt.of(new Map_(map.streamlet().mapIntObj((p, t) -> -p, (p, t) -> mul.inverse(t)))) //
+							: Opt.none();
+				}
 			}.poly(node);
+
+			Int_Obj<Node> powerFun = p -> {
+				Node power = N1;
+				for (int i = 0; i < p; i++)
+					power = mul.apply(x, power);
+				return power;
+			};
 
 			return poly.map(map -> {
 				Node sum = N0;
 				for (IntObjPair<Node> pair : map.streamlet().sortByKey(Integer::compare)) {
-					Node power = N1;
-					for (int i = 0; i < pair.t0; i++)
-						power = mul.apply(x, power);
+					int p = pair.t0;
+					Node power = p < 0 ? mul.inverse(powerFun.apply(-p)) : powerFun.apply(p);
 					sum = add.apply(mul.apply(coefficientFun.apply(pair.t1), power), sum);
 				}
 				return sum;
@@ -311,21 +330,21 @@ public class Symbolic {
 			).match(patAdd, m -> {
 				return add.apply(d(m[0]), d(m[1]));
 			}).match(patNeg, m -> {
-				return patNeg.subst(d(m[0]));
+				return add.inverse(d(m[0]));
 			}).match(patMul, m -> {
 				return add.apply(mul.apply(m[0], d(m[1])), mul.apply(m[1], d(m[0])));
 			}).match(patInv, m -> {
-				return mul.apply(patInv.subst(mul.apply(m[0], m[0])), patNeg.subst(d(m[0])));
+				return mul.apply(mul.inverse(mul.apply(m[0], m[0])), add.inverse(d(m[0])));
 			}).match(patExp, m -> {
 				return mul.apply(patExp.subst(m[0]), d(m[0]));
 			}).match(patLn, m -> {
-				return mul.apply(patInv.subst(m[0]), d(m[0]));
+				return mul.apply(mul.inverse(m[0]), d(m[0]));
 			}).match(patSin, m -> {
 				return mul.apply(patCos.subst(m[0]), d(m[0]));
 			}).match(patCos, m -> {
-				return mul.apply(patNeg.subst(patSin.subst(m[0])), d(m[0]));
+				return mul.apply(add.inverse(patSin.subst(m[0])), d(m[0]));
 			}).applyIf(Node.class, n -> {
-				if (node == x)
+				if (is_x(node))
 					return N1;
 				else if (node instanceof Int)
 					return N0;
@@ -346,18 +365,18 @@ public class Symbolic {
 				Node u = m[0];
 				Opt<Node> vs = i(m[1]);
 				Node dudx = d(u);
-				return vs.concatMap(v -> i(mul.apply(v, dudx)).map(ivdu -> add.apply(mul.apply(u, v), patNeg.subst(ivdu))));
+				return vs.concatMap(v -> i(mul.apply(v, dudx)).map(ivdu -> add.apply(mul.apply(u, v), add.inverse(ivdu))));
 			}).match(patInv, m -> {
-				return m[0].compareTo(x) == 0 ? Opt.of(Suite.pattern("ln .0").subst(x)) : null;
+				return is_x(m[0]) ? Opt.of(Suite.pattern("ln .0").subst(x)) : null;
 			}).match(patExp, m -> {
-				return m[0].compareTo(x) == 0 ? Opt.of(node) : null;
+				return is_x(m[0]) ? Opt.of(node) : null;
 			}).match(patSin, m -> {
-				return Opt.of(patNeg.subst(patCos.match(x)));
+				return is_x(m[0]) ? Opt.of(add.inverse(patCos.subst(x))) : Opt.none();
 			}).match(patCos, m -> {
-				return Opt.of(patSin.subst(x));
+				return is_x(m[0]) ? Opt.of(patSin.subst(x)) : Opt.none();
 			}).applyIf(Node.class, n -> {
-				if (node.compareTo(x) == 0)
-					return Opt.of(mul.apply(patInv.subst(Int.of(2)), mul.apply(x, x)));
+				if (is_x(node))
+					return Opt.of(mul.apply(mul.inverse(Int.of(2)), mul.apply(x, x)));
 				else if (node instanceof Int)
 					return Opt.of(mul.apply(node, x));
 				else
@@ -369,22 +388,43 @@ public class Symbolic {
 			Tree tree = Tree.decompose(node);
 			return tree != null //
 					? isContains_x(tree.getLeft()) || isContains_x(tree.getRight()) //
-					: node == x;
+					: is_x(node);
+		}
+
+		private boolean is_x(Node node) {
+			return node.compareTo(x) == 0;
 		}
 	}
 
-	private Group add = new Group(null, TermOp.PLUS__, N0);
-	private Group mul = new Group(add, TermOp.MULT__, N1);
+	private Node intOf(Node n) {
+		int i = ((Int) n).number;
+		return i < 0 ? mul.inverse(Int.of(-i)) : n;
+	}
+
+	private Pattern patAdd = Suite.pattern(".0 + .1");
+	private Pattern patNeg = Suite.pattern("neg .0");
+	private Pattern patMul = Suite.pattern(".0 * .1");
+	private Pattern patInv = Suite.pattern("inv .0");
+	private Pattern patPow = Suite.pattern(".0^.1");
+	private Pattern patExp = Suite.pattern("exp .0");
+	private Pattern patLn = Suite.pattern("ln .0");
+	private Pattern patSin = Suite.pattern("sin .0");
+	private Pattern patCos = Suite.pattern("cos .0");
+
+	private Group add = new Group(null, TermOp.PLUS__, N0, patNeg);
+	private Group mul = new Group(add, TermOp.MULT__, N1, patInv);
 
 	private class Group implements Fun2<Node, Node, Node> {
 		private Group group0;
 		private Operator operator;
 		private Node e;
+		private Pattern patInverse;
 
-		private Group(Group group0, Operator operator, Node e) {
+		private Group(Group group0, Operator operator, Node e, Pattern patInverse) {
 			this.group0 = group0;
 			this.operator = operator;
 			this.e = e;
+			this.patInverse = patInverse;
 		}
 
 		private Node recompose(Node x, Streamlet<Node> nodes0) {
@@ -418,6 +458,7 @@ public class Symbolic {
 					node = apply(node1, node);
 			else
 				node = e;
+
 			return node;
 		}
 
@@ -435,21 +476,16 @@ public class Symbolic {
 			else
 				return tree;
 		}
-	}
 
-	private Node intOf(Node n) {
-		int i = ((Int) n).number;
-		return i < 0 ? patNeg.subst(Int.of(-i)) : n;
+		public Node inverse(Node n) { // TODO for multiplication group, inv inv 0 is NaN
+			Node[] m;
+			if (n == e)
+				return e;
+			else if ((m = patInverse.match(n)) != null)
+				return m[0];
+			else
+				return patInverse.subst(n);
+		}
 	}
-
-	private Pattern patAdd = Suite.pattern(".0 + .1");
-	private Pattern patNeg = Suite.pattern("neg .0");
-	private Pattern patMul = Suite.pattern(".0 * .1");
-	private Pattern patInv = Suite.pattern("inv .0");
-	private Pattern patPow = Suite.pattern(".0^.1");
-	private Pattern patExp = Suite.pattern("exp .0");
-	private Pattern patLn = Suite.pattern("ln .0");
-	private Pattern patSin = Suite.pattern("sin .0");
-	private Pattern patCos = Suite.pattern("cos .0");
 
 }
