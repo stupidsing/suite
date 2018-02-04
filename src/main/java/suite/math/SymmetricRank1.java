@@ -4,7 +4,6 @@ import suite.math.linalg.Matrix_;
 import suite.math.linalg.Vector_;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.util.FunUtil.Fun;
-import suite.util.To;
 
 /**
  * https://en.wikipedia.org/wiki/Symmetric_rank-one
@@ -13,22 +12,13 @@ import suite.util.To;
  */
 public class SymmetricRank1 {
 
+	private FiniteDifference fd = new FiniteDifference();
 	private Matrix_ mtx = new Matrix_();
 	private Vector_ vec = new Vector_();
 
 	// using finite differences to find gradient
 	public float[] sr1(Obj_Dbl<float[]> fun, float[] initials) {
-		double step = .001d;
-		Fun<float[], float[]> gradientFun = xs -> {
-			double ys = fun.apply(xs);
-			return To.vector(xs.length, i -> {
-				float x0 = xs[i];
-				xs[i] += step;
-				double gradient = (fun.apply(xs) - ys) / step;
-				xs[i] = x0;
-				return gradient;
-			});
-		};
+		Fun<float[], float[]> gradientFun = fd.forward(fun);
 		return sr1(fun, gradientFun, initials);
 	}
 
