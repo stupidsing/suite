@@ -360,7 +360,7 @@ public class Symbolic {
 				Opt<Node> ivdxs = i(m[1]);
 				return iudxs.join(ivdxs, add::apply);
 			}).match(patNeg, m -> {
-				return i(m[0]).map(patNeg::subst);
+				return i(m[0]).map(add::inverse);
 			}).match(patMul, m -> {
 				Node u = m[0];
 				Opt<Node> vs = i(m[1]);
