@@ -160,7 +160,7 @@ public class Symbolic {
 							int mod2 = power % 2;
 							if (power < 0)
 								return pos(mul.inverse(patPow.subst(a, Int.of(-power))));
-							else if (power == 0) // TODO m[0] != 0
+							else if (power == 0) // TODO assumed a != 0
 								return Read.empty();
 							else {
 								Streamlet<Node> n0 = pos(patPow.subst(a, Int.of(div2)));
@@ -288,7 +288,7 @@ public class Symbolic {
 					return polyize(m0, coeff -> coeff).concatMap(n -> {
 						if (power < 0)
 							return pow(n, -power).concatMap(this::inv);
-						else if (power == 0) { // TODO assumed m[0] != 0
+						else if (power == 0) { // TODO assumed n != 0
 							return Opt.of(new Map_());
 						} else {
 							int div2 = power / 2;
@@ -477,7 +477,8 @@ public class Symbolic {
 				return tree;
 		}
 
-		public Node inverse(Node n) { // TODO for multiplication group, inv inv 0 is NaN
+		// TODO for multiplication group, inv inv 0 is NaN
+		public Node inverse(Node n) {
 			Node[] m;
 			if (n == e)
 				return e;
