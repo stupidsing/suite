@@ -367,7 +367,7 @@ public class Symbolic {
 				Node dudx = d(u);
 				return vs.concatMap(v -> i(mul.apply(v, dudx)).map(ivdu -> add.apply(mul.apply(u, v), add.inverse(ivdu))));
 			}).match(patInv, m -> {
-				return is_x(m[0]) ? Opt.of(Suite.pattern("ln .0").subst(x)) : null;
+				return is_x(m[0]) ? Opt.of(patLn.subst(x)) : null;
 			}).match(patExp, m -> {
 				return is_x(m[0]) ? Opt.of(node) : null;
 			}).match(patSin, m -> {
