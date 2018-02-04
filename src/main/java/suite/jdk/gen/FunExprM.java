@@ -6,8 +6,10 @@ import java.util.Map;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import suite.adt.Mutable;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.Ints.IntsBuilder;
 import suite.util.Util;
 
 /**
@@ -34,6 +36,20 @@ public class FunExprM {
 	public static class BinaryFunExpr extends FunExpr {
 		public String op;
 		public FunExpr left, right;
+	}
+
+	public static class BlockFunExpr extends FunExpr {
+		public IntsBuilder breaks;
+		public IntsBuilder continues;
+		public FunExpr expr;
+	}
+
+	public static class BlockBreakFunExpr extends FunExpr {
+		public Mutable<BlockFunExpr> block;
+	}
+
+	public static class BlockContFunExpr extends FunExpr {
+		public Mutable<BlockFunExpr> block;
 	}
 
 	public static class CastFunExpr extends FunExpr {
@@ -120,10 +136,6 @@ public class FunExprM {
 	public static class ProfileFunExpr extends FunExpr {
 		public String counterFieldName = "p" + Util.temp();
 		public FunExpr do_;
-	}
-
-	public static class RepeatFunExpr extends FunExpr {
-		public FunExpr expr;
 	}
 
 	public static class SeqFunExpr extends FunExpr {

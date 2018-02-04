@@ -8,6 +8,7 @@ import org.apache.bcel.Const;
 import org.apache.bcel.generic.BasicType;
 import org.apache.bcel.generic.Type;
 
+import suite.adt.Mutable;
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExprK.Declare0ParameterFunExpr;
 import suite.jdk.gen.FunExprK.Declare1ParameterFunExpr;
@@ -20,6 +21,9 @@ import suite.jdk.gen.FunExprL.ObjectFunExpr;
 import suite.jdk.gen.FunExprM.ArrayFunExpr;
 import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
 import suite.jdk.gen.FunExprM.BinaryFunExpr;
+import suite.jdk.gen.FunExprM.BlockBreakFunExpr;
+import suite.jdk.gen.FunExprM.BlockContFunExpr;
+import suite.jdk.gen.FunExprM.BlockFunExpr;
 import suite.jdk.gen.FunExprM.ConstantFunExpr;
 import suite.jdk.gen.FunExprM.If1FunExpr;
 import suite.jdk.gen.FunExprM.If2FunExpr;
@@ -37,6 +41,7 @@ import suite.streamlet.Read;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.BinOp;
+import suite.util.FunUtil2.Fun2;
 
 public class FunFactory {
 
@@ -195,6 +200,20 @@ public class FunFactory {
 	public FunExpr local(int number) { // 0 means this
 		LocalFunExpr expr = new LocalFunExpr();
 		expr.index = number;
+		return expr;
+	}
+
+	public FunExpr loop(Fun2<FunExpr, FunExpr, FunExpr> fun) {
+		BlockFunExpr expr = new BlockFunExpr();
+		Mutable<BlockFunExpr> m = Mutable.of(expr);
+
+		BlockBreakFunExpr b = new BlockBreakFunExpr();
+		b.block = m;
+
+		BlockContFunExpr c = new BlockContFunExpr();
+		c.block = m;
+
+		expr.expr = fun.apply(b, c);
 		return expr;
 	}
 

@@ -23,6 +23,9 @@ import suite.jdk.gen.FunExprM.ArrayFunExpr;
 import suite.jdk.gen.FunExprM.ArrayLengthFunExpr;
 import suite.jdk.gen.FunExprM.AssignLocalFunExpr;
 import suite.jdk.gen.FunExprM.BinaryFunExpr;
+import suite.jdk.gen.FunExprM.BlockBreakFunExpr;
+import suite.jdk.gen.FunExprM.BlockContFunExpr;
+import suite.jdk.gen.FunExprM.BlockFunExpr;
 import suite.jdk.gen.FunExprM.CastFunExpr;
 import suite.jdk.gen.FunExprM.CheckCastFunExpr;
 import suite.jdk.gen.FunExprM.ConstantFunExpr;
@@ -40,10 +43,10 @@ import suite.jdk.gen.FunExprM.LocalFunExpr;
 import suite.jdk.gen.FunExprM.NewFunExpr;
 import suite.jdk.gen.FunExprM.PrintlnFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
-import suite.jdk.gen.FunExprM.RepeatFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
 import suite.jdk.gen.FunExprM.VoidFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
+import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntIntMap;
 import suite.primitive.adt.map.IntObjMap;
 import suite.streamlet.Read;
@@ -120,6 +123,20 @@ public class FunGenerateBytecode {
 				visit_(e1.left);
 				visit_(e1.right);
 				list.add(InstructionFactory.createBinaryOperation(e1.op, fti.typeOf(e1.left)));
+			}).doIf(BlockFunExpr.class, e1 -> {
+				e1.breaks = new IntsBuilder();
+				e1.continues = new IntsBuilder();
+				int p0 = list.size();
+				visit_(e1.expr);
+				int px = list.size();
+				for (int source : e1.continues.toInts())
+					jumps.put(source, p0);
+				for (int source : e1.breaks.toInts())
+					jumps.put(source, px);
+			}).doIf(BlockBreakFunExpr.class, e1 -> {
+				e1.block.get().breaks.append(list.size());
+			}).doIf(BlockContFunExpr.class, e1 -> {
+				e1.block.get().continues.append(list.size());
 			}).doIf(CastFunExpr.class, e1 -> {
 				visit_(e1.expr);
 			}).doIf(CheckCastFunExpr.class, e1 -> {
@@ -216,12 +233,6 @@ public class FunGenerateBytecode {
 				list.add(InstructionFactory.createBinaryOperation("+", Type.INT));
 				list.add(factory.createPutField(className, e1.counterFieldName, Type.INT));
 				visit_(e1.do_);
-			}).doIf(RepeatFunExpr.class, e1 -> {
-				int target = list.size();
-				visit_(e1.expr);
-				int source = list.size();
-				list.add(InstructionFactory.createBranchInstruction(Const.GOTO, null));
-				jumps.put(source, target);
 			}).doIf(SeqFunExpr.class, e1 -> {
 				visit_(e1.left);
 				if (!Objects.equals(fti.typeOf(e1.left), Type.VOID))
