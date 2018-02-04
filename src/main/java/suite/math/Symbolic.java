@@ -25,7 +25,6 @@ import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.Fun2;
 
 public class Symbolic {
@@ -152,7 +151,7 @@ public class Symbolic {
 					).match2(patMul, (a, b) -> {
 						return Streamlet.concat(pos(a), pos(b));
 					}).match1(patInv, a -> {
-						return pos(a).map(inv::apply);
+						return pos(a).map(mul::inverse);
 					}).match2(patPow, (a, b) -> {
 						if (b instanceof Int) {
 							int power = ((Int) b).number;
@@ -183,7 +182,7 @@ public class Symbolic {
 					).match2(patAdd, (a, b) -> {
 						return Streamlet.concat(sop(a), sop(b));
 					}).match1(patNeg, a -> {
-						return sop(a).map(neg::apply);
+						return sop(a).map(add::inverse);
 					}).match2(patMul, (a, b) -> {
 						return sop(a).join2(sop(b)).map(mul::apply).map(this::productOfSums);
 					}).match2(patPow, (a, b) -> {
@@ -197,7 +196,7 @@ public class Symbolic {
 					}).match2("cos (.0 + .1)", (a, b) -> {
 						return Read.each( //
 								mul.recompose(x, Read.each(patCos.subst(a), patCos.subst(b))), //
-								mul.recompose(x, Read.each(neg.apply(patSin.subst(a)), patSin.subst(b))));
+								mul.recompose(x, Read.each(add.inverse(patSin.subst(a)), patSin.subst(b))));
 					}).applyTree((op, l, r) -> {
 						return Read.each(productOfSums(node_));
 					}).applyIf(Node.class, n -> {
@@ -212,9 +211,6 @@ public class Symbolic {
 				private Node sumOfProducts(Node node) {
 					return add.recompose(x, sop(node));
 				}
-
-				private Iterate<Node> neg = add::inverse;
-				private Iterate<Node> inv = mul::inverse;
 			}
 
 			return new Recurse().sumOfProducts(node);
