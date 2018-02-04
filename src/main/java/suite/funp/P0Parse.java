@@ -109,34 +109,34 @@ public class P0Parse {
 
 		private Funp parse(Node node) {
 			return new SwitchNode<Funp>(node //
-			).match(".0 | .1", m -> {
-				return FunpApply.of(parse(m[0]), parse(m[1]));
-			}).match("array .0", m -> {
-				return FunpArray.of(Tree.iter(m[0], TermOp.AND___).map(this::parse).toList());
-			}).match("asm .0 {.1}", m -> {
-				return FunpAsm.of(Tree.iter(m[0], TermOp.OR____).map(n -> {
+			).match2(".0 | .1", (a, b) -> {
+				return FunpApply.of(parse(a), parse(b));
+			}).match1("array .0", a -> {
+				return FunpArray.of(Tree.iter(a, TermOp.AND___).map(this::parse).toList());
+			}).match2("asm .0 {.1}", (a, b) -> {
+				return FunpAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
 					Node[] ma = Suite.pattern(".0 = .1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), parse(ma[1]));
-				}).toList(), Tree.iter(m[1], TermOp.OR____).toList());
+				}).toList(), Tree.iter(b, TermOp.OR____).toList());
 			}).match(Atom.FALSE, m -> {
 				return FunpBoolean.of(false);
 			}).match(Atom.TRUE, m -> {
 				return FunpBoolean.of(true);
-			}).match("type .0 = .1 >> .2", m -> {
-				return FunpCheckType.of(parse(m[0]), parse(m[1]), parse(m[2]));
-			}).match("byte .0", m -> {
-				return FunpCoerce.of("byte", parse(m[0]));
-			}).match("define .0 := .1 >> .2", m -> {
-				String var = name(m[0]);
-				return FunpDefine.of(true, var, parse(m[1]), parseNewVariable(m[2], var));
+			}).match3("type .0 = .1 >> .2", (a, b, c) -> {
+				return FunpCheckType.of(parse(a), parse(b), parse(c));
+			}).match1("byte .0", a -> {
+				return FunpCoerce.of("byte", parse(a));
+			}).match3("define .0 := .1 >> .2", (a, b, c) -> {
+				String var = name(a);
+				return FunpDefine.of(true, var, parse(b), parseNewVariable(c, var));
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
-			}).match("let .0 := .1 >> .2", m -> {
-				String var = name(m[0]);
-				return FunpDefine.of(false, var, parse(m[1]), parseNewVariable(m[2], var));
+			}).match3("let .0 := .1 >> .2", (a, b, c) -> {
+				String var = name(a);
+				return FunpDefine.of(false, var, parse(b), parseNewVariable(c, var));
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
-			}).match("recurse .0 >> .1", m -> {
+			}).match2("recurse .0 >> .1", (a, b) -> {
 				Pattern pattern1 = Suite.pattern(".0 := .1");
-				Streamlet<Node[]> list = Tree.iter(m[0], TermOp.AND___).map(pattern1::match).collect(As::streamlet);
+				Streamlet<Node[]> list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect(As::streamlet);
 				ISet<String> variables_ = variables;
 
 				for (Node[] array : list)
@@ -148,16 +148,16 @@ public class P0Parse {
 						.map(m1 -> {
 							return Pair.of(name(m1[0]), p1.parse(m1[1]));
 						}) //
-						.toList(), p1.parse(m[1]));
-			}).match("^.0", m -> {
-				return FunpDeref.of(parse(m[0]));
+						.toList(), p1.parse(b));
+			}).match1("^.0", a -> {
+				return FunpDeref.of(parse(a));
 			}).match(dontCare, m -> {
 				return FunpDontCare.of();
 			}).match("error", m -> {
 				return FunpError.of();
-			}).match(".0/.1", m -> {
-				return FunpField.of(FunpReference.of(parse(m[0])), name(m[1]));
-			}).match("if (`.0` = .1) then .2 else .3", m -> {
+			}).match2(".0/.1", (a, b) -> {
+				return FunpField.of(FunpReference.of(parse(a)), name(b));
+			}).match4("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				Set<String> variables = new HashSet<>();
 
 				Funp be = new Object() {
@@ -171,17 +171,17 @@ public class P0Parse {
 								return null;
 						}, be);
 					}
-				}.extract(parse(m[0]));
+				}.extract(parse(a));
 
-				Funp value = parse(m[1]);
+				Funp value = parse(b);
 				ISet<String> variables1 = new ISet<>();
 
 				for (String var : variables)
 					variables1 = variables1.add(var);
 
 				Bind bind = new Bind(variables);
-				Funp then = new Parse(variables1).parse(m[2]);
-				Funp else_ = parse(m[3]);
+				Funp then = new Parse(variables1).parse(c);
+				Funp else_ = parse(d);
 				Funp f0 = bind.bind(be, value, then, else_);
 				Funp f1 = FunpCheckType.of(be, value, f0);
 
@@ -189,36 +189,36 @@ public class P0Parse {
 					f1 = FunpDefine.of(false, var, FunpDontCare.of(), f1);
 
 				return f1;
-			}).match("if .0 then .1 else .2", m -> {
-				return FunpIf.of(parse(m[0]), parse(m[1]), parse(m[2]));
-			}).match(".0 {.1}", m -> {
-				return FunpIndex.of(FunpReference.of(parse(m[0])), parse(m[1]));
-			}).match("io .0", m -> {
-				return FunpIo.of(parse(m[0]));
-			}).match("io-cat .0", m -> {
-				return FunpIoCat.of(parse(m[0]));
-			}).match("iterate .0 .1 .2 .3", m -> {
-				String var = name(m[0]);
+			}).match3("if .0 then .1 else .2", (a, b, c) -> {
+				return FunpIf.of(parse(a), parse(b), parse(c));
+			}).match2(".0 {.1}", (a, b) -> {
+				return FunpIndex.of(FunpReference.of(parse(a)), parse(b));
+			}).match1("io .0", a -> {
+				return FunpIo.of(parse(a));
+			}).match1("io-cat .0", a -> {
+				return FunpIoCat.of(parse(a));
+			}).match4("iterate .0 .1 .2 .3", (a, b, c, d) -> {
+				String var = name(a);
 				Parse p1 = new Parse(variables.add(var));
-				return FunpIterate.of(var, parse(m[1]), p1.parse(m[2]), p1.parse(m[3]));
-			}).match("`.0` => .1", m -> {
-				return parse(Suite.pattern(".2 => if (`.0` = .2) then .1 else error").subst(m[0], m[1], Atom.temp()));
-			}).match(".0 => .1", m -> {
-				String var = name(m[0]);
-				return FunpLambda.of(var, parseNewVariable(m[1], var));
+				return FunpIterate.of(var, parse(b), p1.parse(c), p1.parse(d));
+			}).match2("`.0` => .1", (a, b) -> {
+				return parse(Suite.pattern(".2 => if (`.0` = .2) then .1 else error").subst(a, b, Atom.temp()));
+			}).match2(".0 => .1", (a, b) -> {
+				String var = name(a);
+				return FunpLambda.of(var, parseNewVariable(b, var));
 			}).applyIf(Int.class, n -> {
 				return FunpNumber.ofNumber(n.number);
-			}).match("predef .0", m -> {
-				return FunpPredefine.of(parse(m[0]));
-			}).match("address .0", m -> {
-				return FunpReference.of(parse(m[0]));
-			}).match(".0 * array .1", m -> {
-				return FunpRepeat.of(((Int) m[0]).number, parse(m[1]));
-			}).match(".0, .1", m -> {
-				return FunpStruct.of(List.of(Pair.of("t0", parse(m[0])), Pair.of("t1", parse(m[1]))));
-			}).match("struct .0", m -> {
+			}).match1("predef .0", a -> {
+				return FunpPredefine.of(parse(a));
+			}).match1("address .0", a -> {
+				return FunpReference.of(parse(a));
+			}).match2(".0 * array .1", (a, b) -> {
+				return FunpRepeat.of(((Int) a).number, parse(b));
+			}).match2(".0, .1", (a, b) -> {
+				return FunpStruct.of(List.of(Pair.of("t0", parse(a)), Pair.of("t1", parse(b))));
+			}).match1("struct .0", a -> {
 				return FunpStruct.of(Tree //
-						.iter(m[0], TermOp.AND___) //
+						.iter(a, TermOp.AND___) //
 						.map(n -> {
 							Node[] m1 = Suite.pattern(".0 .1").match(n);
 							return Pair.of(name(m1[0]), parse(m1[1]));

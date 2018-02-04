@@ -7,6 +7,7 @@ import suite.Suite;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
+import suite.adt.pair.Fixie_.FixieFun4;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -79,6 +80,14 @@ public class SwitchNode<R> {
 		return match2_(Suite.pattern(pattern), fun);
 	}
 
+	public SwitchNode<R> match3(String pattern, FixieFun3<Node, Node, Node, R> fun) {
+		return match3_(Suite.pattern(pattern), fun);
+	}
+
+	public SwitchNode<R> match4(String pattern, FixieFun4<Node, Node, Node, Node, R> fun) {
+		return match4_(Suite.pattern(pattern), fun);
+	}
+
 	public R nonNullResult() {
 		return result != null ? result : Fail.t("cannot handle " + in);
 	}
@@ -93,6 +102,14 @@ public class SwitchNode<R> {
 
 	private SwitchNode<R> match2_(Pattern pattern, FixieFun2<Node, Node, R> fun) {
 		return match_(pattern, m -> fun.apply(m[0], m[1]));
+	}
+
+	private SwitchNode<R> match3_(Pattern pattern, FixieFun3<Node, Node, Node, R> fun) {
+		return match_(pattern, m -> fun.apply(m[0], m[1], m[2]));
+	}
+
+	private SwitchNode<R> match4_(Pattern pattern, FixieFun4<Node, Node, Node, Node, R> fun) {
+		return match_(pattern, m -> fun.apply(m[0], m[1], m[2], m[3]));
 	}
 
 	private SwitchNode<R> match_(Pattern pattern, Fun<Node[], R> fun) {
