@@ -122,6 +122,10 @@ public class FunExprM {
 		public FunExpr do_;
 	}
 
+	public static class RepeatFunExpr extends FunExpr {
+		public FunExpr expr;
+	}
+
 	public static class SeqFunExpr extends FunExpr {
 		public FunExpr left, right;
 	}

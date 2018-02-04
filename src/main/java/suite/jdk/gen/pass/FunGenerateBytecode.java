@@ -40,6 +40,7 @@ import suite.jdk.gen.FunExprM.LocalFunExpr;
 import suite.jdk.gen.FunExprM.NewFunExpr;
 import suite.jdk.gen.FunExprM.PrintlnFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
+import suite.jdk.gen.FunExprM.RepeatFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
 import suite.jdk.gen.FunExprM.VoidFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
@@ -215,6 +216,12 @@ public class FunGenerateBytecode {
 				list.add(InstructionFactory.createBinaryOperation("+", Type.INT));
 				list.add(factory.createPutField(className, e1.counterFieldName, Type.INT));
 				visit_(e1.do_);
+			}).doIf(RepeatFunExpr.class, e1 -> {
+				int target = list.size();
+				visit_(e1.expr);
+				int source = list.size();
+				list.add(InstructionFactory.createBranchInstruction(Const.GOTO, null));
+				jumps.put(source, target);
 			}).doIf(SeqFunExpr.class, e1 -> {
 				visit_(e1.left);
 				if (!Objects.equals(fti.typeOf(e1.left), Type.VOID))
