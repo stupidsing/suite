@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
+import suite.adt.pair.Fixie_.FixieFun1;
+import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.node.Atom;
 import suite.node.Node;
@@ -54,14 +56,27 @@ public class SwitchNode<R> {
 	}
 
 	public SwitchNode<R> match(Pattern pattern, Fun<Node[], R> fun) {
-		Node[] m;
-		if (result == null && (m = pattern.match(in)) != null)
-			result = fun.apply(m);
-		return this;
+		return match_(pattern, fun);
 	}
 
 	public SwitchNode<R> match(String pattern, Fun<Node[], R> fun) {
-		return match(Suite.pattern(pattern), fun);
+		return match_(Suite.pattern(pattern), fun);
+	}
+
+	public SwitchNode<R> match1(Pattern pattern, FixieFun1<Node, R> fun) {
+		return match1_(pattern, fun);
+	}
+
+	public SwitchNode<R> match1(String pattern, FixieFun1<Node, R> fun) {
+		return match1_(Suite.pattern(pattern), fun);
+	}
+
+	public SwitchNode<R> match2(Pattern pattern, FixieFun2<Node, Node, R> fun) {
+		return match2_(pattern, fun);
+	}
+
+	public SwitchNode<R> match2(String pattern, FixieFun2<Node, Node, R> fun) {
+		return match2_(Suite.pattern(pattern), fun);
 	}
 
 	public R nonNullResult() {
@@ -70,6 +85,21 @@ public class SwitchNode<R> {
 
 	public R result() {
 		return result;
+	}
+
+	private SwitchNode<R> match1_(Pattern pattern, FixieFun1<Node, R> fun) {
+		return match_(pattern, m -> fun.apply(m[0]));
+	}
+
+	private SwitchNode<R> match2_(Pattern pattern, FixieFun2<Node, Node, R> fun) {
+		return match_(pattern, m -> fun.apply(m[0], m[1]));
+	}
+
+	private SwitchNode<R> match_(Pattern pattern, Fun<Node[], R> fun) {
+		Node[] m;
+		if (result == null && (m = pattern.match(in)) != null)
+			result = fun.apply(m);
+		return this;
 	}
 
 }
