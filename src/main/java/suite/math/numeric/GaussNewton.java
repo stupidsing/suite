@@ -1,5 +1,6 @@
-package suite.math;
+package suite.math.numeric;
 
+import suite.math.Symbolic;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix_;
 import suite.math.linalg.Vector_;

@@ -3,12 +3,12 @@ package suite.trade.singlealloc;
 import java.util.Arrays;
 
 import suite.math.linalg.Vector_;
-import suite.math.stat.Quant;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.primitive.Floats_;
 import suite.primitive.Ints_;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
+import ts.Quant;
 
 public class Strategos {
 

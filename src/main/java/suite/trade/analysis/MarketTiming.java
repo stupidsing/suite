@@ -1,6 +1,6 @@
 package suite.trade.analysis;
 
-import suite.math.stat.Statistic;
+import suite.math.numeric.Statistic;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.streamlet.IntStreamlet;

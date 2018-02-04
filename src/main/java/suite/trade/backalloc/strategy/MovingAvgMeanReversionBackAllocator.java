@@ -2,9 +2,7 @@ package suite.trade.backalloc.strategy;
 
 import java.util.Map;
 
-import suite.math.stat.Statistic.LinearRegression;
-import suite.math.stat.TimeSeries;
-import suite.math.stat.TimeSeries.ReturnsStat;
+import suite.math.numeric.Statistic.LinearRegression;
 import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.TimeRange;
@@ -14,6 +12,8 @@ import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSourceView;
 import suite.util.To;
+import ts.TimeSeries;
+import ts.TimeSeries.ReturnsStat;
 
 /**
  * Find some mean-reverting stock, make sure they are below their past moving

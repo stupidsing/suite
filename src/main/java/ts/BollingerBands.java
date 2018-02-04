@@ -1,8 +1,9 @@
-package suite.math.stat;
+package ts;
 
 import java.util.Arrays;
 
-import suite.math.stat.Statistic.MeanVariance;
+import suite.math.numeric.Statistic;
+import suite.math.numeric.Statistic.MeanVariance;
 
 /**
  * Auto-regressive distributed lag.

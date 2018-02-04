@@ -1,4 +1,4 @@
-package suite.math.stat;
+package suite.math.numeric;
 
 import java.util.Random;
 
@@ -7,7 +7,8 @@ import org.junit.Test;
 import suite.inspect.Dump;
 import suite.math.MathUtil;
 import suite.math.linalg.Vector_;
-import suite.math.stat.Statistic.LinearRegression;
+import suite.math.numeric.Statistic;
+import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.streamlet.Read;

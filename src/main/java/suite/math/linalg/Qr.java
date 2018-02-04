@@ -1,8 +1,6 @@
-package suite.math;
+package suite.math.linalg;
 
 import suite.adt.pair.Pair;
-import suite.math.linalg.Matrix_;
-import suite.math.linalg.Vector_;
 
 public class Qr {
 

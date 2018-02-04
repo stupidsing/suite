@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import suite.math.stat.TimeSeries;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs_;
@@ -20,6 +19,7 @@ import suite.util.Fail;
 import suite.util.Object_;
 import suite.util.Set_;
 import suite.util.To;
+import ts.TimeSeries;
 
 public class DataSource {
 

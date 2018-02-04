@@ -2,9 +2,6 @@ package suite.trade.backalloc.strategy;
 
 import java.util.function.IntPredicate;
 
-import suite.math.stat.BollingerBands;
-import suite.math.stat.BollingerBands.Bb;
-import suite.math.stat.Quant;
 import suite.primitive.IntInt_Int;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
@@ -14,6 +11,9 @@ import suite.trade.analysis.MovingAverage.MovingRange;
 import suite.trade.analysis.Oscillator;
 import suite.trade.analysis.Oscillator.Dmi;
 import suite.trade.backalloc.BackAllocator;
+import ts.BollingerBands;
+import ts.Quant;
+import ts.BollingerBands.Bb;
 
 /**
  * "Mechanical Trading Systems."

@@ -1,4 +1,4 @@
-package suite.math.stat;
+package ts;
 
 import java.util.function.IntPredicate;
 

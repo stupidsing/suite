@@ -5,7 +5,6 @@ import java.util.Map.Entry;
 
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
-import suite.math.stat.Quant;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.As;
@@ -27,6 +26,7 @@ import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
+import ts.Quant;
 import suite.util.Object_;
 import suite.util.String_;
 import suite.util.To;

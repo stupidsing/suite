@@ -6,10 +6,8 @@ import java.util.function.IntFunction;
 import org.junit.Test;
 
 import suite.math.Tanh;
-import suite.math.stat.Quant;
-import suite.math.stat.Statistic;
-import suite.math.stat.Statistic.MeanVariance;
-import suite.math.stat.TimeSeries;
+import suite.math.numeric.Statistic;
+import suite.math.numeric.Statistic.MeanVariance;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.os.LogUtil;
 import suite.primitive.Floats_;
@@ -25,6 +23,8 @@ import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.util.To;
+import ts.Quant;
+import ts.TimeSeries;
 
 // mvn test -Dtest=AnalyzeTimeSeriesTest#test
 public class AnalyzeTimeSeriesTest {

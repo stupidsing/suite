@@ -1,10 +1,11 @@
-package suite.math.stat;
+package ts;
 
 import java.util.Arrays;
 import java.util.Random;
 
 import suite.math.linalg.Vector_;
-import suite.math.stat.Statistic.LinearRegression;
+import suite.math.numeric.Statistic;
+import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.Floats;
 import suite.primitive.Floats_;

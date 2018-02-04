@@ -1,6 +1,7 @@
-package suite.math.stat;
+package ts;
 
-import suite.math.stat.Statistic.LinearRegression;
+import suite.math.numeric.Statistic;
+import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltObjPair;

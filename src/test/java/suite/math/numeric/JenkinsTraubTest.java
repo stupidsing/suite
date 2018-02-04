@@ -1,7 +1,9 @@
-package suite.math;
+package suite.math.numeric;
 
 import org.junit.Test;
 
+import suite.math.Complex;
+import suite.math.numeric.JenkinsTraub;
 import suite.util.Fail;
 
 public class JenkinsTraubTest {

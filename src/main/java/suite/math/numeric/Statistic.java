@@ -1,4 +1,4 @@
-package suite.math.stat;
+package suite.math.numeric;
 
 import java.util.List;
 

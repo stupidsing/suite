@@ -1,5 +1,6 @@
-package suite.math;
+package suite.math.numeric;
 
+import suite.math.FiniteDifference;
 import suite.math.linalg.Matrix_;
 import suite.math.linalg.Vector_;
 import suite.primitive.DblPrimitives.Obj_Dbl;

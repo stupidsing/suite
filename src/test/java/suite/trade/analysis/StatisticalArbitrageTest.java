@@ -9,11 +9,8 @@ import org.junit.Test;
 
 import suite.adt.pair.Pair;
 import suite.algo.KmeansCluster;
-import suite.math.stat.BollingerBands;
-import suite.math.stat.Quant;
-import suite.math.stat.Statistic;
-import suite.math.stat.Statistic.LinearRegression;
-import suite.math.stat.TimeSeries;
+import suite.math.numeric.Statistic;
+import suite.math.numeric.Statistic.LinearRegression;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.os.LogUtil;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -36,6 +33,9 @@ import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.Sina;
 import suite.util.FunUtil.Fun;
+import ts.BollingerBands;
+import ts.Quant;
+import ts.TimeSeries;
 import suite.util.String_;
 import suite.util.To;
 

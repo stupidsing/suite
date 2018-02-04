@@ -4,8 +4,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import suite.math.stat.Statistic;
-import suite.math.stat.Statistic.LinearRegression;
+import suite.math.numeric.Statistic;
+import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Ints_;
 import suite.primitive.Longs_;
 import suite.primitive.adt.pair.FltObjPair;

@@ -4,9 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import suite.math.linalg.Matrix_;
-import suite.math.stat.Quant;
-import suite.math.stat.Statistic;
-import suite.math.stat.Statistic.LinearRegression;
+import suite.math.numeric.Statistic;
+import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.streamlet.As;
@@ -20,6 +19,7 @@ import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
+import ts.Quant;
 import suite.trade.data.DataSourceView;
 import suite.trade.data.HkexUtil;
 

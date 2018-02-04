@@ -1,8 +1,8 @@
 package suite.trade.backalloc.run;
 
-import suite.math.stat.Statistic;
-import suite.math.stat.Statistic.MeanVariance;
 import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.math.numeric.Statistic;
+import suite.math.numeric.Statistic.MeanVariance;
 import suite.primitive.Floats_;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.streamlet.As;

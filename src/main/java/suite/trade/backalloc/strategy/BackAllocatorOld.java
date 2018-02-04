@@ -5,11 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.pair.Pair;
-import suite.math.stat.BollingerBands;
-import suite.math.stat.Quant;
-import suite.math.stat.Statistic;
-import suite.math.stat.Statistic.MeanVariance;
-import suite.math.stat.TimeSeries;
+import suite.math.numeric.Statistic;
+import suite.math.numeric.Statistic.MeanVariance;
 import suite.streamlet.Streamlet2;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.analysis.MovingAverage.MovingRange;
@@ -17,6 +14,9 @@ import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.util.String_;
+import ts.BollingerBands;
+import ts.Quant;
+import ts.TimeSeries;
 
 public class BackAllocatorOld {
 

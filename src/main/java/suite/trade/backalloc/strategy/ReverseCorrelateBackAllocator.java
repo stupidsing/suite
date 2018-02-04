@@ -2,14 +2,14 @@ package suite.trade.backalloc.strategy;
 
 import java.util.Map;
 
-import suite.math.stat.Statistic;
-import suite.math.stat.TimeSeries;
+import suite.math.numeric.Statistic;
 import suite.primitive.Floats_;
 import suite.streamlet.As;
 import suite.streamlet.Streamlet2;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
+import ts.TimeSeries;
 import suite.trade.data.DataSourceView;
 
 public class ReverseCorrelateBackAllocator implements BackAllocator {

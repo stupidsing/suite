@@ -5,13 +5,13 @@ import java.util.Map;
 
 import suite.adt.pair.Pair;
 import suite.math.linalg.CholeskyDecomposition;
-import suite.math.stat.Statistic;
-import suite.math.stat.TimeSeries;
+import suite.math.numeric.Statistic;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Trade_;
 import suite.util.To;
+import ts.TimeSeries;
 
 public class KellyCriterion {
 

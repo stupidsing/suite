@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.adt.pair.Pair;
-import suite.math.stat.Statistic;
-import suite.math.stat.TimeSeries;
-import suite.math.stat.TimeSeries.ReturnsStat;
+import suite.math.numeric.Statistic;
 import suite.os.LogUtil;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
@@ -28,6 +26,8 @@ import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSource.Eod;
 import suite.util.FunUtil.Sink;
+import ts.TimeSeries;
+import ts.TimeSeries.ReturnsStat;
 import suite.util.To;
 
 public class BackAllocTester {

@@ -4,14 +4,14 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.pair.Pair;
-import suite.math.stat.Ardl;
-import suite.math.stat.Statistic.LinearRegression;
+import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
+import ts.Ardl;
 
 public class ArdlBackAllocator implements BackAllocator {
 

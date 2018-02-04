@@ -1,11 +1,11 @@
 package suite.trade.analysis;
 
-import suite.math.stat.Quant;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.trade.data.DataSource;
 import suite.util.To;
+import ts.Quant;
 
 public class Oscillator {
 

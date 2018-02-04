@@ -1,9 +1,11 @@
-package suite.math;
+package suite.math.linalg;
 
 import org.junit.Test;
 
 import suite.adt.pair.Pair;
+import suite.math.MathUtil;
 import suite.math.linalg.Matrix_;
+import suite.math.linalg.Qr;
 import suite.util.FunUtil.Fun;
 
 public class QrTest {

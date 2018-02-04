@@ -1,4 +1,4 @@
-package suite.math.stat;
+package suite.math.ts;
 
 import static org.junit.Assert.assertTrue;
 
@@ -9,6 +9,7 @@ import suite.trade.TimeRange;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
+import ts.TimeSeries;
 
 public class TimeSeriesTest {
 

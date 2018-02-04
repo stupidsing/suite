@@ -1,4 +1,4 @@
-package suite.math.stat;
+package ts;
 
 import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.adt.pair.DblObjPair;

@@ -1,4 +1,4 @@
-package suite.math.stat;
+package ts;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -6,8 +6,9 @@ import java.util.List;
 
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Vector_;
-import suite.math.stat.Statistic.LinearRegression;
-import suite.math.stat.Statistic.MeanVariance;
+import suite.math.numeric.Statistic;
+import suite.math.numeric.Statistic.LinearRegression;
+import suite.math.numeric.Statistic.MeanVariance;
 import suite.primitive.Floats;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;

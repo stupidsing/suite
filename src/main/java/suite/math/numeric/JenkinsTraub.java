@@ -1,8 +1,9 @@
-package suite.math;
+package suite.math.numeric;
 
 import java.util.Arrays;
 import java.util.Random;
 
+import suite.math.Complex;
 import suite.primitive.Floats_;
 import suite.util.Fail;
 import suite.util.To;

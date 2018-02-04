@@ -7,9 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import suite.adt.pair.Pair;
-import suite.math.stat.Statistic;
-import suite.math.stat.TimeSeries;
-import suite.math.stat.TimeSeries.ReturnsStat;
+import suite.math.numeric.Statistic;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -24,6 +22,8 @@ import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSource.Eod;
 import suite.util.FunUtil.Sink;
+import ts.TimeSeries;
+import ts.TimeSeries.ReturnsStat;
 import suite.util.To;
 
 public class WalkForwardAllocTester {

@@ -3,9 +3,9 @@ package suite.trade.analysis;
 import java.util.Arrays;
 
 import suite.math.linalg.Vector_;
-import suite.math.stat.TimeSeries;
 import suite.primitive.Doubles_;
 import suite.util.To;
+import ts.TimeSeries;
 
 public class MovingAverage {
 

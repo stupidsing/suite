@@ -15,8 +15,7 @@ import java.util.function.Predicate;
 
 import suite.adt.Mutable;
 import suite.adt.pair.Pair;
-import suite.math.stat.Quant;
-import suite.math.stat.Statistic;
+import suite.math.numeric.Statistic;
 import suite.primitive.DblDbl_Dbl;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -36,6 +35,7 @@ import suite.trade.data.DataSource.Datum;
 import suite.trade.walkforwardalloc.WalkForwardAllocator;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
+import ts.Quant;
 import suite.util.Object_;
 import suite.util.Set_;
 import suite.util.String_;

@@ -1,6 +1,6 @@
 package suite.trade.singlealloc;
 
-import suite.math.stat.Statistic;
+import suite.math.numeric.Statistic;
 import suite.trade.Account;
 import suite.trade.Time;
 import suite.trade.Trade;

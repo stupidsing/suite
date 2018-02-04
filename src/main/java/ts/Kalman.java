@@ -1,4 +1,4 @@
-package suite.math.stat;
+package ts;
 
 import suite.math.linalg.Matrix_;
 import suite.math.linalg.Vector_;

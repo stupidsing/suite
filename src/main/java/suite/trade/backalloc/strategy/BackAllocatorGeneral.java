@@ -8,9 +8,6 @@ import java.util.function.IntFunction;
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie4;
 import suite.adt.pair.Pair;
-import suite.math.stat.BollingerBands;
-import suite.math.stat.Quant;
-import suite.math.stat.TimeSeries;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltFltPair;
@@ -27,6 +24,9 @@ import suite.trade.data.DataSource;
 import suite.trade.data.DataSourceView;
 import suite.trade.singlealloc.Strategos;
 import suite.util.FunUtil.Fun;
+import ts.BollingerBands;
+import ts.Quant;
+import ts.TimeSeries;
 import suite.util.String_;
 
 public class BackAllocatorGeneral {
