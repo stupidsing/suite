@@ -371,9 +371,9 @@ public class Symbolic {
 			}).match(patExp, m -> {
 				return is_x(m[0]) ? Opt.of(node) : null;
 			}).match(patSin, m -> {
-				return is_x(m[0]) ? Opt.of(add.inverse(patCos.subst(x))) : Opt.none();
+				return is_x(m[0]) ? Opt.of(add.inverse(patCos.subst(x))) : null;
 			}).match(patCos, m -> {
-				return is_x(m[0]) ? Opt.of(patSin.subst(x)) : Opt.none();
+				return is_x(m[0]) ? Opt.of(patSin.subst(x)) : null;
 			}).applyIf(Node.class, n -> {
 				if (is_x(node))
 					return Opt.of(mul.apply(mul.inverse(Int.of(2)), mul.apply(x, x)));
