@@ -270,22 +270,12 @@ public class Symbolic {
 					}).nonNullResult();
 				}
 
-				private Opt<Map_> multiply(Opt<Map_> opt0, Opt<Map_> opt1) {
-					return opt0.join(opt1, (map0, map1) -> {
-						Map_ map = new Map_();
-						for (IntObjPair<Node> pair0 : map0.streamlet())
-							for (IntObjPair<Node> pair1 : map1.streamlet())
-								map.add(pair0.t0 + pair1.t0, mul.apply(pair0.t1, pair1.t1));
-						return map;
-					});
-				}
-
 				private Opt<Map_> pow(Node m0, int power) {
 					return polyize(m0, coeff -> coeff).concatMap(n -> {
 						if (power < 0)
 							return pow(n, -power).concatMap(this::inv);
 						else if (power == 0) { // TODO assumed n != 0
-							return Opt.of(new Map_());
+							return Opt.of(new Map_(0, N1));
 						} else {
 							int div2 = power / 2;
 							int mod2 = power % 2;
@@ -300,6 +290,16 @@ public class Symbolic {
 					return map.size() == 1 //
 							? Opt.of(new Map_(map.streamlet().mapIntObj((p, t) -> -p, (p, t) -> mul.inverse(t)))) //
 							: Opt.none();
+				}
+
+				private Opt<Map_> multiply(Opt<Map_> opt0, Opt<Map_> opt1) {
+					return opt0.join(opt1, (map0, map1) -> {
+						Map_ map = new Map_();
+						for (IntObjPair<Node> pair0 : map0.streamlet())
+							for (IntObjPair<Node> pair1 : map1.streamlet())
+								map.add(pair0.t0 + pair1.t0, mul.apply(pair0.t1, pair1.t1));
+						return map;
+					});
 				}
 			}.poly(node);
 
