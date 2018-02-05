@@ -20,6 +20,7 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Read;
@@ -141,6 +142,65 @@ public class Symbolic {
 				return Tree.of(op, rewrite(l), rewrite(r));
 			}).applyIf(Node.class, n -> {
 				return n;
+			}).nonNullResult();
+		}
+
+		private Node d(Node node) { // differentiation
+			return new SwitchNode<Node>(node //
+			).match2(patAdd, (u, v) -> {
+				return add.apply(d(u), d(v));
+			}).match1(patNeg, u -> {
+				return add.inverse(d(u));
+			}).match2(patMul, (u, v) -> {
+				return add.apply(mul.apply(u, d(v)), mul.apply(v, d(u)));
+			}).match1(patInv, u -> {
+				return mul.apply(mul.inverse(mul.apply(u, u)), add.inverse(d(u)));
+			}).match1(patExp, u -> {
+				return mul.apply(patExp.subst(u), d(u));
+			}).match1(patLn, u -> {
+				return mul.apply(mul.inverse(u), d(u));
+			}).match1(patSin, u -> {
+				return mul.apply(patCos.subst(u), d(u));
+			}).match1(patCos, u -> {
+				return mul.apply(add.inverse(patSin.subst(u)), d(u));
+			}).applyIf(Node.class, n -> {
+				if (is_x(node))
+					return N1;
+				else if (node instanceof Int)
+					return N0;
+				else
+					return null;
+			}).nonNullResult();
+		}
+
+		private Opt<Node> i(Node node) { // integration
+			return new SwitchNode<Opt<Node>>(node //
+			).match2(patAdd, (u, v) -> {
+				Opt<Node> iudxs = i(u);
+				Opt<Node> ivdxs = i(v);
+				return iudxs.join(ivdxs, add::apply);
+			}).match1(patNeg, u -> {
+				return i(u).map(add::inverse);
+			}).match2(patMul, (m0, m1) -> {
+				Node u = m0;
+				Opt<Node> vs = i(m1);
+				Node dudx = d(u);
+				return vs.concatMap(v -> i(mul.apply(v, dudx)).map(ivdu -> add.apply(mul.apply(u, v), add.inverse(ivdu))));
+			}).match1(patInv, u -> {
+				return is_x(u) ? Opt.of(patLn.subst(x)) : null;
+			}).match1(patExp, u -> {
+				return is_x(u) ? Opt.of(node) : null;
+			}).match1(patSin, u -> {
+				return is_x(u) ? Opt.of(add.inverse(patCos.subst(x))) : null;
+			}).match1(patCos, u -> {
+				return is_x(u) ? Opt.of(patSin.subst(x)) : null;
+			}).applyIf(Node.class, n -> {
+				if (is_x(node))
+					return Opt.of(mul.apply(mul.inverse(Int.of(2)), mul.apply(x, x)));
+				else if (node instanceof Int)
+					return Opt.of(mul.apply(node, x));
+				else
+					return Opt.none();
 			}).nonNullResult();
 		}
 
@@ -274,15 +334,15 @@ public class Symbolic {
 					return polyize(m0, coeff -> coeff).concatMap(n -> {
 						if (power < 0)
 							return pow(n, -power).concatMap(this::inv);
-						else if (power == 0) { // TODO assumed n != 0
-							return Opt.of(new Map_(0, N1));
-						} else {
-							int div2 = power / 2;
-							int mod2 = power % 2;
-							Opt<Map_> opt0 = pow(m0, div2);
-							Opt<Map_> opt1 = multiply(opt0, opt0);
-							return mod2 != 0 ? multiply(opt1, poly(n)) : opt1;
-						}
+						else // TODO assumed m0 != 0 or power != 0
+							return poly(n).map(p -> {
+								Map_ r = new Map_(0, N1);
+								for (char ch : Integer.toBinaryString(power).toCharArray()) {
+									r = multiply(r, r);
+									r = ch != '0' ? multiply(p, r) : r;
+								}
+								return r;
+							});
 					});
 				}
 
@@ -293,13 +353,15 @@ public class Symbolic {
 				}
 
 				private Opt<Map_> multiply(Opt<Map_> opt0, Opt<Map_> opt1) {
-					return opt0.join(opt1, (map0, map1) -> {
-						Map_ map = new Map_();
-						for (IntObjPair<Node> pair0 : map0.streamlet())
-							for (IntObjPair<Node> pair1 : map1.streamlet())
-								map.add(pair0.t0 + pair1.t0, mul.apply(pair0.t1, pair1.t1));
-						return map;
-					});
+					return opt0.join(opt1, this::multiply);
+				}
+
+				private Map_ multiply(Map_ map0, Map_ map1) {
+					Map_ map = new Map_();
+					for (IntObjPair<Node> pair0 : map0.streamlet())
+						for (IntObjPair<Node> pair1 : map1.streamlet())
+							map.add(pair0.t0 + pair1.t0, mul.apply(pair0.t1, pair1.t1));
+					return map;
 				}
 			}.poly(node);
 
@@ -321,65 +383,6 @@ public class Symbolic {
 			});
 		}
 
-		private Node d(Node node) { // differentiation
-			return new SwitchNode<Node>(node //
-			).match2(patAdd, (u, v) -> {
-				return add.apply(d(u), d(v));
-			}).match1(patNeg, u -> {
-				return add.inverse(d(u));
-			}).match2(patMul, (u, v) -> {
-				return add.apply(mul.apply(u, d(v)), mul.apply(v, d(u)));
-			}).match1(patInv, u -> {
-				return mul.apply(mul.inverse(mul.apply(u, u)), add.inverse(d(u)));
-			}).match1(patExp, u -> {
-				return mul.apply(patExp.subst(u), d(u));
-			}).match1(patLn, u -> {
-				return mul.apply(mul.inverse(u), d(u));
-			}).match1(patSin, u -> {
-				return mul.apply(patCos.subst(u), d(u));
-			}).match1(patCos, u -> {
-				return mul.apply(add.inverse(patSin.subst(u)), d(u));
-			}).applyIf(Node.class, n -> {
-				if (is_x(node))
-					return N1;
-				else if (node instanceof Int)
-					return N0;
-				else
-					return null;
-			}).nonNullResult();
-		}
-
-		private Opt<Node> i(Node node) { // integration
-			return new SwitchNode<Opt<Node>>(node //
-			).match2(patAdd, (u, v) -> {
-				Opt<Node> iudxs = i(u);
-				Opt<Node> ivdxs = i(v);
-				return iudxs.join(ivdxs, add::apply);
-			}).match1(patNeg, u -> {
-				return i(u).map(add::inverse);
-			}).match2(patMul, (m0, m1) -> {
-				Node u = m0;
-				Opt<Node> vs = i(m1);
-				Node dudx = d(u);
-				return vs.concatMap(v -> i(mul.apply(v, dudx)).map(ivdu -> add.apply(mul.apply(u, v), add.inverse(ivdu))));
-			}).match1(patInv, u -> {
-				return is_x(u) ? Opt.of(patLn.subst(x)) : null;
-			}).match1(patExp, u -> {
-				return is_x(u) ? Opt.of(node) : null;
-			}).match1(patSin, u -> {
-				return is_x(u) ? Opt.of(add.inverse(patCos.subst(x))) : null;
-			}).match1(patCos, u -> {
-				return is_x(u) ? Opt.of(patSin.subst(x)) : null;
-			}).applyIf(Node.class, n -> {
-				if (is_x(node))
-					return Opt.of(mul.apply(mul.inverse(Int.of(2)), mul.apply(x, x)));
-				else if (node instanceof Int)
-					return Opt.of(mul.apply(node, x));
-				else
-					return Opt.none();
-			}).nonNullResult();
-		}
-
 		private boolean isContains_x(Node node) {
 			Tree tree = Tree.decompose(node);
 			return tree != null //
@@ -390,11 +393,57 @@ public class Symbolic {
 		private boolean is_x(Node node) {
 			return node.compareTo(x) == 0;
 		}
+
+		private Opt<Node> rational(Node node) {
+			return new Object() {
+				private Opt<IntIntPair> rat(Node node) {
+					return new SwitchNode<Opt<IntIntPair>>(node //
+					).match2(patAdd, (a, b) -> {
+						return rat(a).concatMap(p -> rat(b).map(q -> IntIntPair.of(p.t0 * q.t1 + q.t0 * p.t1, p.t1 * q.t1)));
+					}).match1(patNeg, a -> {
+						return rat(a).map(q -> IntIntPair.of(-q.t0, q.t1));
+					}).match2(patMul, (a, b) -> {
+						return rat(a).concatMap(p -> rat(b).map(q -> IntIntPair.of(p.t0 * q.t0, p.t1 * q.t1)));
+					}).match1(patInv, a -> {
+						return rat(a).map(q -> IntIntPair.of(q.t1, q.t0));
+					}).match2(patPow, (a, b) -> {
+						if (b instanceof Int) {
+							int power = ((Int) b).number;
+							if (power < 0)
+								return rat(mul.inverse(patPow.subst(a, Int.of(-power))));
+							else
+								return rat(a).map(pair -> { // TODO assummed a != 0 or b != 0
+									IntIntPair r = IntIntPair.of(1, 1);
+									for (char ch : Integer.toBinaryString(power).toCharArray()) {
+										r = IntIntPair.of(r.t0 * r.t0, r.t1 * r.t1);
+										r = ch != '0' ? IntIntPair.of(r.t0 * pair.t0, r.t1 * pair.t1) : r;
+									}
+									return r;
+								});
+						} else
+							return null;
+					}).applyIf(Node.class, a -> {
+						return Opt.none();
+					}).nonNullResult();
+				}
+			}.rat(node).map(pair -> {
+				int p = Math.max(pair.t0, pair.t1);
+				int q = Math.min(pair.t0, pair.t1);
+				while (1 < q) {
+					int mod = p % q;
+					p = q;
+					q = mod;
+				}
+				Int n = Int.of(pair.t0 / p);
+				Int d = Int.of(pair.t1 / p);
+				return mul.apply(n, mul.inverse(d));
+			});
+		}
 	}
 
 	private Node intOf(Node n) {
 		int i = ((Int) n).number;
-		return i < 0 ? mul.inverse(Int.of(-i)) : n;
+		return i < 0 ? add.inverse(Int.of(-i)) : n;
 	}
 
 	private Pattern patAdd = Suite.pattern(".0 + .1");
