@@ -446,14 +446,10 @@ public class Symbolic {
 			if (e != constant)
 				list.add(intOf(constant));
 
-			Streamlet<Node> nodes1 = Read.from(list);
-			Node node = nodes1.first();
+			Node node = e;
 
-			if (node != null)
-				for (Node node1 : nodes1.drop(1))
-					node = apply(node1, node);
-			else
-				node = e;
+			for (Node node_ : Read.from(list))
+				node = apply(node_, node);
 
 			return node;
 		}
