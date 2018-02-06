@@ -102,10 +102,12 @@ public class Symbolic {
 	}
 
 	private Node simplify(Node node, Node[] xs, int i) {
+		Opt<Node> opt;
 		if (i < xs.length)
-			return new Rewrite(xs[i]).polyize(node, coeff -> simplify(coeff, xs, i + 1)).or(() -> node);
+			opt = new Rewrite(xs[i]).polyize(node, coeff -> simplify(coeff, xs, i + 1));
 		else
-			return node;
+			opt = rational(node);
+		return opt.or(() -> node);
 	}
 
 	private class Rewrite {
@@ -163,13 +165,10 @@ public class Symbolic {
 				return mul.apply(patCos.subst(u), d(u));
 			}).match1(patCos, u -> {
 				return mul.apply(add.inverse(patSin.subst(u)), d(u));
+			}).applyIf(Int.class, n -> {
+				return N0;
 			}).applyIf(Node.class, n -> {
-				if (is_x(node))
-					return N1;
-				else if (node instanceof Int)
-					return N0;
-				else
-					return null;
+				return is_x(node) ? N1 : null;
 			}).nonNullResult();
 		}
 
@@ -214,18 +213,22 @@ public class Symbolic {
 						return pos(a).map(mul::inverse);
 					}).match2(patPow, (a, b) -> {
 						if (b instanceof Int) {
-							int power = ((Int) b).number;
-							int div2 = power / 2;
-							int mod2 = power % 2;
-							if (power < 0)
-								return pos(mul.inverse(patPow.subst(a, Int.of(-power))));
-							else if (power == 0) // TODO assumed a != 0
-								return Read.empty();
-							else {
-								Streamlet<Node> n0 = pos(patPow.subst(a, Int.of(div2)));
-								Streamlet<Node> n1 = Streamlet.concat(n0, n0);
-								return mod2 != 0 ? Streamlet.concat(n1, pos(node_)) : n1;
-							}
+							Streamlet<Node> pos = pos(a);
+							return new Object() {
+								private Streamlet<Node> pow(int power) {
+									int div2 = power / 2;
+									int mod2 = power % 2;
+									if (power < 0)
+										return pow(-power).map(mul::inverse);
+									else if (power == 0) // TODO assumed a != 0
+										return Read.empty();
+									else {
+										Streamlet<Node> n0 = pow(div2);
+										Streamlet<Node> n1 = Streamlet.concat(n0, n0);
+										return mod2 != 0 ? Streamlet.concat(n1, pos) : n1;
+									}
+								}
+							}.pow(((Int) b).number);
 						} else
 							return pos(a).join2(sop(b)).map(patPow::subst);
 					}).match1(patExp, a -> {
@@ -393,52 +396,63 @@ public class Symbolic {
 		private boolean is_x(Node node) {
 			return node.compareTo(x) == 0;
 		}
+	}
 
-		private Opt<Node> rational(Node node) {
-			return new Object() {
-				private Opt<IntIntPair> rat(Node node) {
-					return new SwitchNode<Opt<IntIntPair>>(node //
-					).match2(patAdd, (a, b) -> {
-						return rat(a).concatMap(p -> rat(b).map(q -> IntIntPair.of(p.t0 * q.t1 + q.t0 * p.t1, p.t1 * q.t1)));
-					}).match1(patNeg, a -> {
-						return rat(a).map(q -> IntIntPair.of(-q.t0, q.t1));
-					}).match2(patMul, (a, b) -> {
-						return rat(a).concatMap(p -> rat(b).map(q -> IntIntPair.of(p.t0 * q.t0, p.t1 * q.t1)));
-					}).match1(patInv, a -> {
-						return rat(a).map(q -> IntIntPair.of(q.t1, q.t0));
-					}).match2(patPow, (a, b) -> {
-						if (b instanceof Int) {
-							int power = ((Int) b).number;
-							if (power < 0)
-								return rat(mul.inverse(patPow.subst(a, Int.of(-power))));
-							else
-								return rat(a).map(pair -> { // TODO assummed a != 0 or b != 0
-									IntIntPair r = IntIntPair.of(1, 1);
-									for (char ch : Integer.toBinaryString(power).toCharArray()) {
-										r = IntIntPair.of(r.t0 * r.t0, r.t1 * r.t1);
-										r = ch != '0' ? IntIntPair.of(r.t0 * pair.t0, r.t1 * pair.t1) : r;
-									}
-									return r;
-								});
-						} else
-							return null;
-					}).applyIf(Node.class, a -> {
-						return Opt.none();
-					}).nonNullResult();
-				}
-			}.rat(node).map(pair -> {
-				int p = Math.max(pair.t0, pair.t1);
-				int q = Math.min(pair.t0, pair.t1);
-				while (1 < q) {
-					int mod = p % q;
-					p = q;
-					q = mod;
-				}
-				Int n = Int.of(pair.t0 / p);
-				Int d = Int.of(pair.t1 / p);
-				return mul.apply(n, mul.inverse(d));
-			});
-		}
+	private Opt<Node> rational(Node node) {
+		return new Object() {
+			private Opt<IntIntPair> rat(Node node) {
+				return new SwitchNode<Opt<IntIntPair>>(node //
+				).match2(patAdd, (a, b) -> {
+					return rat(a).concatMap(p -> rat(b).map(q -> IntIntPair.of(p.t0 * q.t1 + q.t0 * p.t1, p.t1 * q.t1)));
+				}).match1(patNeg, a -> {
+					return rat(a).map(q -> IntIntPair.of(-q.t0, q.t1));
+				}).match2(patMul, (a, b) -> {
+					return rat(a).concatMap(p -> rat(b).map(q -> IntIntPair.of(p.t0 * q.t0, p.t1 * q.t1)));
+				}).match1(patInv, a -> {
+					return rat(a).map(q -> {
+						int num = q.t0;
+						int denom = q.t1;
+						return 0 < num ? IntIntPair.of(denom, num) : IntIntPair.of(-denom, -num);
+					});
+				}).match2(patPow, (a, b) -> {
+					if (b instanceof Int) {
+						int power = ((Int) b).number;
+						if (power < 0)
+							return rat(mul.inverse(patPow.subst(a, Int.of(-power))));
+						else
+							return rat(a).map(pair -> { // TODO assummed a != 0 or b != 0
+								IntIntPair r = IntIntPair.of(1, 1);
+								for (char ch : Integer.toBinaryString(power).toCharArray()) {
+									r = IntIntPair.of(r.t0 * r.t0, r.t1 * r.t1);
+									r = ch != '0' ? IntIntPair.of(r.t0 * pair.t0, r.t1 * pair.t1) : r;
+								}
+								return r;
+							});
+					} else
+						return null;
+				}).applyIf(Int.class, i -> {
+					return Opt.of(IntIntPair.of(i.number, 1));
+				}).applyIf(Node.class, a -> {
+					return Opt.none();
+				}).nonNullResult();
+			}
+		}.rat(node).map(pair -> {
+			int t0 = pair.t0;
+			int denom = pair.t1;
+			int sign = 0 <= t0 ? 1 : -1;
+			int num = 0 <= t0 ? t0 : -t0;
+			int p = Math.max(num, denom);
+			int q = Math.min(num, denom);
+			while (1 < q) {
+				int mod = p % q;
+				p = q;
+				q = mod;
+			}
+			Int n = Int.of(num / p);
+			Int d = Int.of(denom / p);
+			Node fraction = mul.apply(n, mul.inverse(d));
+			return sign == -1 ? add.inverse(fraction) : fraction;
+		});
 	}
 
 	private Node intOf(Node n) {

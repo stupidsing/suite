@@ -37,14 +37,14 @@ public class Polynomial {
 				.toDouble(Int_Dbl.sum(j -> ps0[j] * ps1[i - j])));
 	}
 
-	public Pair<float[], float[]> div(float[] nom, float[] denom) {
+	public Pair<float[], float[]> div(float[] num, float[] denom) {
 		int denomLength = denom.length, denomLength1;
 		double head;
 
 		while ((head = denom[denomLength1 = denomLength - 1]) == 0d)
 			denomLength = denomLength1;
 
-		float[] rem = vec.of(nom);
+		float[] rem = vec.of(num);
 		int pd = rem.length - denomLength1;
 		float[] dividend = new float[pd];
 

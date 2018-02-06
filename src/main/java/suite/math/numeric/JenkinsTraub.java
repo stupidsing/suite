@@ -112,41 +112,41 @@ public class JenkinsTraub {
 		return div(evaluate(poly, s), evaluate(h, s));
 	}
 
-	private Complex[] divXms(Complex[] nom, Complex s) {
-		int lengthm1 = nom.length - 1;
+	private Complex[] divXms(Complex[] num, Complex s) {
+		int lengthm1 = num.length - 1;
 		Complex[] div = new Complex[lengthm1];
-		Complex nomx = nom[lengthm1];
+		Complex numx = num[lengthm1];
 		for (int i = lengthm1 - 1; 0 <= i; i--) {
-			div[i] = nomx;
-			nomx = Complex.add(nom[i], Complex.mul(nomx, s));
+			div[i] = numx;
+			numx = Complex.add(num[i], Complex.mul(numx, s));
 		}
 		return div;
 	}
 
-	private Complex[] div(Complex[] nom, Complex[] denom) {
-		int nomLength = nom.length;
+	private Complex[] div(Complex[] num, Complex[] denom) {
+		int numLength = num.length;
 		int denomLength = denom.length;
 		int diff;
-		while (0 <= (diff = nomLength - denomLength)) {
-			Complex scale = div(nom[nomLength - 1], denom[denomLength - 1]);
+		while (0 <= (diff = numLength - denomLength)) {
+			Complex scale = div(num[numLength - 1], denom[denomLength - 1]);
 			Complex[] scaled0 = scale(denom, scale);
-			Complex[] scaled1 = new Complex[nomLength];
+			Complex[] scaled1 = new Complex[numLength];
 			{
 				int i = -1;
 				while (++i < diff)
 					scaled1[i] = Complex.zero;
-				while (++i < nomLength)
+				while (++i < numLength)
 					scaled1[i] = scaled0[i - diff];
 			}
-			Complex[] nom_ = nom;
-			Complex[] sub = To.array(nomLength, Complex.class, i -> Complex.sub(nom_[i], scaled1[i]));
-			nom = Arrays.copyOfRange(sub, 0, nomLength - 1);
+			Complex[] num_ = num;
+			Complex[] sub = To.array(numLength, Complex.class, i -> Complex.sub(num_[i], scaled1[i]));
+			num = Arrays.copyOfRange(sub, 0, numLength - 1);
 		}
-		return nom;
+		return num;
 	}
 
-	private Complex div(Complex nom, Complex denom) {
-		return Complex.mul(nom, denom.inverse());
+	private Complex div(Complex num, Complex denom) {
+		return Complex.mul(num, denom.inverse());
 	}
 
 	private Complex[] scale(Complex[] cs, Complex scale) {
