@@ -37,4 +37,9 @@ public class SymbolicTest {
 		System.out.println(sym.simplify(poly, y, a, b));
 	}
 
+	@Test
+	public void testIntegration() {
+		assertEquals("cos x + x * sin x", sym.i(Suite.parse("x * cos x"), x).toString());
+	}
+
 }

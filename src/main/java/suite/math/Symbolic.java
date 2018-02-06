@@ -87,10 +87,12 @@ public class Symbolic {
 
 	public Node d(Node node0, Node x) {
 		Rewrite rewrite = new Rewrite(x);
-		Node node1 = rewrite.rewrite(node0);
-		Node node2 = Boolean.TRUE ? rewrite.d(node1) : rewrite.i(node1).get();
-		Node node3 = rewrite.simplify(node2);
-		return node3;
+		return Opt.of(node0).map(rewrite::rewrite).map(rewrite::d).map(rewrite::simplify).get();
+	}
+
+	public Node i(Node node0, Node x) {
+		Rewrite rewrite = new Rewrite(x);
+		return Opt.of(node0).map(rewrite::rewrite).concatMap(rewrite::i).map(rewrite::simplify).get();
 	}
 
 	public Node simplify(Node node, Node x) {
@@ -233,8 +235,6 @@ public class Symbolic {
 							return pos(a).join2(sop(b)).map(patPow::subst);
 					}).match1(patExp, a -> {
 						return sop(a).map(patExp::subst);
-					}).applyTree((op, l, r) -> {
-						return Read.each(sumOfProducts(node_));
 					}).applyIf(Node.class, n -> {
 						return node_ == N1 ? Read.empty() : Read.each(node_);
 					}).nonNullResult();
@@ -260,8 +260,6 @@ public class Symbolic {
 						return Read.each( //
 								mul.recompose(x, Read.each(patCos.subst(a), patCos.subst(b))), //
 								mul.recompose(x, Read.each(add.inverse(patSin.subst(a)), patSin.subst(b))));
-					}).applyTree((op, l, r) -> {
-						return Read.each(productOfSums(node_));
 					}).applyIf(Node.class, n -> {
 						return node_ == N0 ? Read.empty() : Read.each(node_);
 					}).nonNullResult();
