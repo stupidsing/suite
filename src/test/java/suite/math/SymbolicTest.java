@@ -36,9 +36,4 @@ public class SymbolicTest {
 		System.out.println(sym.simplify(poly, y, a, b));
 	}
 
-	@Test
-	public void testRat() {
-		System.out.println(sym.simplify(Suite.parse("neg inv 2 + neg inv 2")));
-	}
-
 }
