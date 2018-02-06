@@ -451,7 +451,7 @@ public class Symbolic {
 			Int n = Int.of(num / p);
 			Int d = Int.of(denom / p);
 			Node fraction = mul.apply(n, mul.inverse(d));
-			return sign == -1 ? add.inverse(fraction) : fraction;
+			return 0 < sign ? fraction : add.inverse(fraction);
 		});
 	}
 
