@@ -409,10 +409,13 @@ public class Symbolic {
 				}).match2(patMul, (a, b) -> {
 					return rat(a).concatMap(p -> rat(b).map(q -> IntIntPair.of(p.t0 * q.t0, p.t1 * q.t1)));
 				}).match1(patInv, a -> {
-					return rat(a).map(q -> {
+					return rat(a).concatMap(q -> {
 						int num = q.t0;
 						int denom = q.t1;
-						return 0 < num ? IntIntPair.of(denom, num) : IntIntPair.of(-denom, -num);
+						if (num != 0)
+							return Opt.of(0 < num ? IntIntPair.of(denom, num) : IntIntPair.of(-denom, -num));
+						else
+							return Opt.none();
 					});
 				}).match2(patPow, (a, b) -> {
 					if (b instanceof Int) {
