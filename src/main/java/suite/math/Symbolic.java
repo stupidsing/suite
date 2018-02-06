@@ -280,7 +280,7 @@ public class Symbolic {
 		}
 
 		private Node simplify(Node node) {
-			return polyize(node, coeff -> coeff).or(() -> sumOfProducts(node));
+			return polyize(node, coeff -> rational(coeff).or(() -> coeff)).or(() -> sumOfProducts(node));
 		}
 
 		private Opt<Node> polyize(Node node, Fun<Node, Node> coefficientFun) { // polynomialize
@@ -443,7 +443,7 @@ public class Symbolic {
 			int num = 0 <= t0 ? t0 : -t0;
 			int p = Math.max(num, denom);
 			int q = Math.min(num, denom);
-			while (1 < q) {
+			while (0 < q) {
 				int mod = p % q;
 				p = q;
 				q = mod;

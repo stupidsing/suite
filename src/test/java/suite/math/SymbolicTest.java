@@ -31,6 +31,7 @@ public class SymbolicTest {
 
 	@Test
 	public void testCubic() {
+		System.out.println(sym.simplify(Suite.parse("4")));
 		System.out.println(sym.simplify(Suite.parse("(a * x + b) ^ 3"), x, a, b));
 		Node poly = trw.replace(x, Suite.parse("y + neg (b * inv (3 * a))"), Suite.parse("a * x * x * x + b * x * x + c * x + d"));
 		System.out.println(sym.simplify(poly, y, a, b));
