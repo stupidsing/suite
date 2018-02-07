@@ -14,6 +14,8 @@ public class SymbolicTest {
 
 	private Atom a = Atom.of("a");
 	private Atom b = Atom.of("b");
+	private Atom c = Atom.of("c");
+	private Atom d = Atom.of("d");
 	private Atom x = Atom.of("x");
 	private Atom y = Atom.of("y");
 	private Symbolic sym = new Symbolic();
@@ -27,11 +29,11 @@ public class SymbolicTest {
 	@Test
 	public void testCubic() {
 		verifyEquals("4", sym.simplify(Suite.parse("4")));
-		System.out.println(sym.simplify(Suite.parse("(a * x + b) ^ 3"), x, a, b));
+		System.out.println(sym.simplify(Suite.parse("(a * x + b) ^ 3"), x, b, a));
 		Node poly = trw.replace(x, //
 				Suite.parse("y + neg (b * inv (3 * a))"), //
 				Suite.parse("a * x * x * x + b * x * x + c * x + d"));
-		System.out.println(sym.simplify(poly, y, a, b));
+		System.out.println(sym.simplify(poly, y, d, c, b, a));
 	}
 
 	@Test
