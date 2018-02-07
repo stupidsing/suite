@@ -20,26 +20,35 @@ public class SymbolicTest {
 	private TreeRewriter trw = new TreeRewriter();
 
 	@Test
-	public void test() {
-		assertEquals("0", sym.d(Suite.parse("1"), x).toString());
-		assertEquals("1", sym.d(Suite.parse("x"), x).toString());
-		assertEquals("4 * x * x * x", sym.d(Suite.parse("x * x * x * x"), x).toString());
-		assertEquals("neg 2 * inv (x * x)", sym.d(Suite.parse("2 / x"), x).toString());
-
+	public void testApply() {
 		assertTrue(sym.fun(Suite.parse("x * x"), Atom.of("x")).apply(2f) == 4f);
 	}
 
 	@Test
 	public void testCubic() {
-		System.out.println(sym.simplify(Suite.parse("4")));
+		verifyEquals("4", sym.simplify(Suite.parse("4")));
 		System.out.println(sym.simplify(Suite.parse("(a * x + b) ^ 3"), x, a, b));
-		Node poly = trw.replace(x, Suite.parse("y + neg (b * inv (3 * a))"), Suite.parse("a * x * x * x + b * x * x + c * x + d"));
+		Node poly = trw.replace(x, //
+				Suite.parse("y + neg (b * inv (3 * a))"), //
+				Suite.parse("a * x * x * x + b * x * x + c * x + d"));
 		System.out.println(sym.simplify(poly, y, a, b));
 	}
 
 	@Test
+	public void testDifferentiation() {
+		verifyEquals("0", sym.d(Suite.parse("1"), x));
+		verifyEquals("1", sym.d(Suite.parse("x"), x));
+		verifyEquals("4 * x * x * x", sym.d(Suite.parse("x * x * x * x"), x));
+		verifyEquals("neg 2 * inv (x * x)", sym.d(Suite.parse("2 / x"), x));
+	}
+
+	@Test
 	public void testIntegration() {
-		assertEquals("cos x + x * sin x", sym.i(Suite.parse("x * cos x"), x).toString());
+		verifyEquals("cos x + x * sin x", sym.i(Suite.parse("x * cos x"), x));
+	}
+
+	private void verifyEquals(String expected, Node node) {
+		assertEquals(expected, node.toString());
 	}
 
 }
