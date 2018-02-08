@@ -216,17 +216,16 @@ public class Symbolic {
 					}).match2(patPow, (a, b) -> {
 						if (b instanceof Int) {
 							Streamlet<Node> pos = pos(a);
+							int power = ((Int) b).number;
 
-							Int_Obj<Streamlet<Node>> f = power -> {
+							Int_Obj<Streamlet<Node>> f = power_ -> {
 								Streamlet<Node> n = Read.empty();
-								for (char ch : Integer.toBinaryString(power).toCharArray()) {
+								for (char ch : Integer.toBinaryString(power_).toCharArray()) {
 									n = Streamlet.concat(n, n);
 									n = ch != '0' ? Streamlet.concat(n, pos) : n;
 								}
 								return n;
 							};
-
-							int power = ((Int) b).number;
 
 							if (power < 0)
 								return f.apply(-power).map(mul::inverse);
