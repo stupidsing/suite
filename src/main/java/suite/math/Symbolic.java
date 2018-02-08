@@ -216,21 +216,22 @@ public class Symbolic {
 					}).match2(patPow, (a, b) -> {
 						if (b instanceof Int) {
 							Streamlet<Node> pos = pos(a);
-							return new Object() {
-								private Streamlet<Node> pow(int power) {
-									int div2 = power / 2;
-									int mod2 = power % 2;
-									if (power < 0)
-										return pow(-power).map(mul::inverse);
-									else if (power == 0) // TODO assumed a != 0
-										return Read.empty();
-									else {
-										Streamlet<Node> n0 = pow(div2);
-										Streamlet<Node> n1 = Streamlet.concat(n0, n0);
-										return mod2 != 0 ? Streamlet.concat(n1, pos) : n1;
-									}
+
+							Int_Obj<Streamlet<Node>> f = power -> {
+								Streamlet<Node> n = Read.empty();
+								for (char ch : Integer.toBinaryString(power).toCharArray()) {
+									n = Streamlet.concat(n, n);
+									n = ch != '0' ? Streamlet.concat(n, pos) : n;
 								}
-							}.pow(((Int) b).number);
+								return n;
+							};
+
+							int power = ((Int) b).number;
+
+							if (power < 0)
+								return f.apply(-power).map(mul::inverse);
+							else // TODO assumed a != 0 || power != 0
+								return f.apply(power);
 						} else
 							return pos(a).join2(sop(b)).map(patPow::subst);
 					}).match1(patExp, a -> {
