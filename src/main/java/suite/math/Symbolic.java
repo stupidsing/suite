@@ -23,11 +23,11 @@ import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjStreamlet;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil2.Fun2;
+import suite.util.List_;
 
 public class Symbolic {
 
@@ -216,16 +216,16 @@ public class Symbolic {
 						return pos(a).map(mul::inverse);
 					}).match2(patPow, (a, b) -> {
 						if (b instanceof Int) {
-							Streamlet<Node> pos = pos(a);
+							List<Node> pos = pos(a).toList();
 							int power = ((Int) b).number;
 
 							Int_Obj<Streamlet<Node>> f = power_ -> {
-								Streamlet<Node> n = Read.empty();
+								List<Node> n = new ArrayList<>();
 								for (char ch : Integer.toBinaryString(power_).toCharArray()) {
-									n = Streamlet.concat(n, n).collect(As::streamlet);
-									n = ch != '0' ? Streamlet.concat(n, pos) : n;
+									n = List_.concat(n, n);
+									n = ch != '0' ? List_.concat(n, pos) : n;
 								}
-								return n;
+								return Read.from(n);
 							};
 
 							if (power < 0)
