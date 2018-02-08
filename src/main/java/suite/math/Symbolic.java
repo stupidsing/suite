@@ -23,6 +23,7 @@ import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjStreamlet;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
@@ -221,7 +222,7 @@ public class Symbolic {
 							Int_Obj<Streamlet<Node>> f = power_ -> {
 								Streamlet<Node> n = Read.empty();
 								for (char ch : Integer.toBinaryString(power_).toCharArray()) {
-									n = Streamlet.concat(n, n);
+									n = Streamlet.concat(n, n).collect(As::streamlet);
 									n = ch != '0' ? Streamlet.concat(n, pos) : n;
 								}
 								return n;
