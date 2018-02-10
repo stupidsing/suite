@@ -343,7 +343,6 @@ public class Statistic {
 				size = 0;
 				min = max = sum = sumsq = mean = variance = 0d;
 			}
-
 		}
 
 		public double standardDeviation() {
