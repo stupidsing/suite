@@ -8,6 +8,11 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.util.FunUtil.Fun;
 
+/**
+ * https://en.wikipedia.org/wiki/Broyden%E2%80%93Fletcher%E2%80%93Goldfarb%E2%80%93Shanno_algorithm
+ *
+ * @author ywsing
+ */
 public class Bfgs {
 
 	private FiniteDifference fd = new FiniteDifference();
@@ -45,8 +50,6 @@ public class Bfgs {
 			float[] ys = vec.sub(gs1, gs);
 			float yts = vec.dot(ys, ss);
 
-			// b1 = mtx.add(b, mtx.add(mtx.scale(mtx.mul(ys), yts),
-			// bb/mtx.mul_mnT(mtx.mul(ss,ib), ss)));
 			float[][] ma = mtx.sub(id, mtx.scale(mtx.mul(ss, ys), yts));
 			float[][] mb = mtx.sub(id, mtx.scale(mtx.mul(ys, ss), yts));
 			float[][] ib1 = mtx.add(mtx.mul(ma, ib, mb), mtx.scale(mtx.mul(ss), yts));
