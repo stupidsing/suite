@@ -21,7 +21,6 @@ expression-not ::= "~"*  expression-add
 expression-add ::= expression-sub ("+" expression-add)?
 expression-sub ::= "-" expression-mul | expression-mul ("-" expression-mul)*
 expression-mul ::= expression-div ("*" expression-mul)?
-expression-div ::= expression-mod ("/" expression-mod)*
-expression-mod ::= expression-prop ("%" expression-prop)*
+expression-div ::= expression-prop ("/" expression-prop | "%" expression-prop)*
 expression-prop ::= expression-lit ("." <IDENTIFIER> | "[" expression "]" | "(" expression ")")*
 expression-lit ::= "(" expression ")" | <IDENTIFIER> ("=>" (expression | statement-block))* | "[" (expression ",")* "]" | "{" (<IDENTIFIER> ":" expression ",")* "}" | <INTEGER_LITERAL> | <STRING_LITERAL>
