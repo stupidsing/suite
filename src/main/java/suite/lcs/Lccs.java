@@ -1,15 +1,16 @@
 package suite.lcs;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
 import suite.text.RollingHashUtil;
 import suite.text.Segment;
+import suite.util.Set_;
 
 /**
  * Longest common continuous subsequence, using a simple rolling hash method.
@@ -28,8 +29,7 @@ public class Lccs {
 			Map<Integer, Segment> segments1 = hashSegments(bytes1, rollingSize);
 
 			while (true) {
-				HashSet<Integer> keys = new HashSet<>(segments0.keySet());
-				keys.retainAll(segments1.keySet());
+				Set<Integer> keys = Set_.intersect(segments0.keySet(), segments1.keySet());
 
 				for (int key : keys) {
 					Segment segment0 = segments0.get(key);
