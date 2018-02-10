@@ -45,7 +45,7 @@ public class Bfgs {
 					1d);
 
 			float[] ss = vec.scale(ps_, alpha);
-			float[] xs1 = vec.add(xs, ss);
+			float[] xs1 = vec.add(xs_, ss);
 			float[] gs1 = gradientFun.apply(xs1);
 			float[] ys = vec.sub(gs1, gs);
 			double yts = vec.dot(ys, ss);
