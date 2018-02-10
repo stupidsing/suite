@@ -2,25 +2,32 @@ crude-script ::= (statement1)*
 
 statement1 ::= statement ";" | statement-block
 statement-block ::= "{" statement1* "}"
-statement ::= statement-for | statement-if | statement-let | statement-return | statement-while | expression
+statement ::= statement-for | statement-if | statement-var | statement-return | statement-while | expression
 statement-for ::= "for" "(" expression? ";" expression? ";" expression? ")" statement1
 statement-if ::= "if" "(" expression ")" statement1 "else" statement1
-statement-let ::= "var" var "=" expression
 statement-return ::= "return" expression
+statement-var ::= "var" var "=" expression
 statement-while ::= "while" "(" expression ")" statement1
 
-expression ::= expression-invoke
-expression-invoke ::= expression-bool-and ("|" expression-bool-and)*
-expression-bool-and ::= expression-bool-or ("||" expression-bool-and)?
-expression-bool-or ::= expression-boot-not ("&&" expression-bool-or)?
-expression-bool-not ::= "!"* expression-and
-expression-and ::= expression-or ("|" expression-and)?
-expression-or ::= expression-xor ("&" expression-or)?
-expression-xor ::= expression-not ("^" expression-xor)?
-expression-not ::= "~"*  expression-add
+bind ::= "(" bind ")" | <IDENTIFIER> | "[" (bind ",")* "]" | "{" (<IDENTIFIER> ":" bind ",")* "}" | <INTEGER_LITERAL> | <STRING_LITERAL>
+
+expression ::= expression-assign
+expression-assign ::= expression-invoke ("=" expression-assign)?
+expression-invoke ::= expression-bool-or ("|" expression-bool-or)*
+expression-bool-or ::= expression-bool-and ("||" expression-bool-or)?
+expression-bool-and ::= expression-compare ("&&" expression-bool-and)?
+expression-compare ::= expression-bool-not (("<" | "<=" | "==" | "!=") expression-compare)?
+expression-bool-not ::= "!"* expression-or
+expression-or ::= expression-and ("or" expression-or)?
+expression-and ::= expression-xor ("and" expression-and)?
+expression-xor ::= expression-shift ("^" expression-xor)?
+expression-shift ::= expression-not (("<<" | ">>") expression-shift)*
+expression-not ::= "~"* expression-add
 expression-add ::= expression-sub ("+" expression-add)?
 expression-sub ::= "-" expression-mul | expression-mul ("-" expression-mul)*
 expression-mul ::= expression-div ("*" expression-mul)?
 expression-div ::= expression-prop ("/" expression-prop | "%" expression-prop)*
-expression-prop ::= expression-lit ("." <IDENTIFIER> | "[" expression "]" | "(" expression ")")*
-expression-lit ::= "(" expression ")" | <IDENTIFIER> ("=>" (expression | statement-block))* | "[" (expression ",")* "]" | "{" (<IDENTIFIER> ":" expression ",")* "}" | <INTEGER_LITERAL> | <STRING_LITERAL>
+expression-prop ::= expression-obj ("." <IDENTIFIER> | "[" expression "]" | "(" expression ")")*
+expression-obj ::= "(" expression ")" | <IDENTIFIER> ("=>" (expression | statement-block))? | expression-array | expression-dict | <INTEGER_LITERAL> | <STRING_LITERAL>
+expression-array ::= "[" (expression ",")* "]"
+expression-dict ::= "{" (<IDENTIFIER> ":" expression ",")* "}"
