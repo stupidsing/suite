@@ -28,7 +28,7 @@ public class Vector_ {
 		return m;
 	}
 
-	public float[] addScaleOn(float[] m, float[] n, float f) {
+	public float[] addScaleOn(float[] m, float[] n, double f) {
 		int length = sameLength_(m, n);
 		for (int i = 0; i < length; i++)
 			m[i] += n[i] * f;
@@ -44,15 +44,15 @@ public class Vector_ {
 		return Ints_.range(pm, pm + l).toDouble(Int_Dbl.sum(i -> m[i] * n[d - i]));
 	}
 
-	public float dot(float[] m) {
+	public double dot(float[] m) {
 		return dot_(m);
 	}
 
-	public float dot(float[] m, float[] n) {
+	public double dot(float[] m, float[] n) {
 		return dot_(m, n);
 	}
 
-	public float dotDiff(float[] m, float[] n) {
+	public double dotDiff(float[] m, float[] n) {
 		return dotDiff_(m, n);
 	}
 
@@ -115,21 +115,21 @@ public class Vector_ {
 		return Math.sqrt(dot_(m));
 	}
 
-	private float dot_(float[] m) {
+	private double dot_(float[] m) {
 		return dot_(m, m);
 	}
 
-	private float dot_(float[] m, float[] n) {
+	private double dot_(float[] m, float[] n) {
 		int length = sameLength_(m, n);
-		float sum = 0;
+		double sum = 0d;
 		for (int i = 0; i < length; i++)
 			sum += m[i] * n[i];
 		return sum;
 	}
 
-	private float dotDiff_(float[] m, float[] n) {
+	private double dotDiff_(float[] m, float[] n) {
 		int length = sameLength_(m, n);
-		float sum = 0;
+		double sum = 0d;
 		for (int i = 0; i < length; i++) {
 			double d = m[i] - n[i];
 			sum += d * d;

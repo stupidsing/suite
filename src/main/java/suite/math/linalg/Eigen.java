@@ -52,17 +52,17 @@ public class Eigen {
 		float[] vj1 = null;
 
 		for (int j = 1; j < nIterations; j++) {
-			float beta = 0f;
+			double beta = 0d;
 			float[] prevw;
 			float[] vj;
 
 			if (0 < j && (beta = vec.dot(prevw = ws[j - 1])) != 0d)
-				vj = vec.scale(prevw, 1d / (betas[j] = beta));
+				vj = vec.scale(prevw, 1d / (betas[j] = (float) beta));
 			else
 				vj = vec.normalize(Floats_.toArray(n, i -> random.nextFloat()));
 
 			float[] wp = mtx.mul(m, vs[j] = vj);
-			float[] sub0 = vec.scale(vj, alphas[0] = vec.dot(wp, vj));
+			float[] sub0 = vec.scale(vj, alphas[0] = (float) vec.dot(wp, vj));
 			float[] sub1 = 0 < j ? vec.add(sub0, vec.scale(vj1, beta)) : sub0;
 
 			vj1 = vj;

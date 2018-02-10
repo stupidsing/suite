@@ -126,7 +126,7 @@ public class Statistic {
 			standardError = Math.sqrt(ssr * invn2);
 		}
 
-		public float predict(float[] x) {
+		public double predict(float[] x) {
 			return vec.dot(coefficients, x);
 		}
 

@@ -58,7 +58,7 @@ public class MovingAvgMeanReversionBackAllocator {
 							double price = ds.prices[index - 1];
 
 							double lma = mrs.latestMovingAverage();
-							float diff = mrs.movingAvgMeanReversion.predict(new float[] { (float) lma, 1f, });
+							double diff = mrs.movingAvgMeanReversion.predict(new float[] { (float) lma, 1f, });
 							double dailyReturn = diff / price - dailyRiskFreeInterestRate;
 
 							ReturnsStat returnsStat = ts.returnsStatDaily(ds.prices);

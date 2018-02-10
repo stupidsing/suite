@@ -42,7 +42,7 @@ public class Ardl {
 	}
 
 	public float[] predict(LinearRegression[] lrs, float[][] fsList, int index) {
-		return Floats_.toArray(lrs.length, it -> lrs[it].predict(getExplanatoryVariables(fsList, it, index)));
+		return To.vector(lrs.length, it -> lrs[it].predict(getExplanatoryVariables(fsList, it, index)));
 	}
 
 	private float[] getExplanatoryVariables(float[][] fsList, int it, int t) {

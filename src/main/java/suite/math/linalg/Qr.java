@@ -35,7 +35,7 @@ public class Qr {
 
 		for (int i = 0; i < size; i++)
 			for (int j = 0; j <= i; j++)
-				r[i][j] = vec.dot(q[j], m[i]);
+				r[i][j] = (float) vec.dot(q[j], m[i]);
 
 		return Pair.of(q, r);
 	}

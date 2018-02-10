@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Random;
 
 import suite.math.linalg.Vector_;
+import suite.primitive.DblMutable;
 import suite.primitive.Floats_;
-import suite.primitive.FltMutable;
 import suite.primitive.Ints_;
 import suite.util.FunUtil.Sink;
 
@@ -31,13 +31,13 @@ public class SelfOrganizingMap {
 
 		for (int iteration = 0; iteration < 256; iteration++)
 			for (float[] in : ins) {
-				FltMutable nearestDistance = FltMutable.of(Float.MAX_VALUE);
+				DblMutable nearestDistance = DblMutable.of(Double.MAX_VALUE);
 				int[] nearestIndices = new int[nDim];
 
 				new Loop(is -> {
 					int index = index(is);
 					float[] som0 = som[index];
-					float distance = vec.dotDiff(in, som0);
+					double distance = vec.dotDiff(in, som0);
 					if (distance < nearestDistance.get()) {
 						nearestDistance.update(distance);
 						Ints_.copy(is, 0, nearestIndices, 0, nDim);

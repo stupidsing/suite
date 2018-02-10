@@ -10,7 +10,7 @@ import suite.primitive.Int_Int;
 import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
-import suite.primitive.adt.pair.IntFltPair;
+import suite.primitive.adt.pair.IntDblPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.List_;
@@ -79,7 +79,7 @@ public class KmeansCluster {
 		Read //
 				.from(points) //
 				.index() //
-				.map((i, point) -> IntFltPair.of(i, sqdist(point0, point))) //
+				.map((i, point) -> IntDblPair.of(i, sqdist(point0, point))) //
 				.sortBy(pair -> pair.t1) //
 				.take(points.size()) //
 				.forEach(bin -> map.computeIfAbsent(bin.t0, c -> new AtomicInteger()).incrementAndGet());
@@ -88,10 +88,10 @@ public class KmeansCluster {
 	}
 
 	private int findNearest(float[] point, List<float[]> points) {
-		float minDist = Float.MAX_VALUE;
+		double minDist = Double.MAX_VALUE;
 		int minj = 0;
 		for (int j = 0; j < points.size(); j++) {
-			float dist = sqdist(point, points.get(j));
+			double dist = sqdist(point, points.get(j));
 			if (dist < minDist) {
 				minDist = dist;
 				minj = j;
@@ -100,7 +100,7 @@ public class KmeansCluster {
 		return minj;
 	}
 
-	private float sqdist(float[] a, float[] b) {
+	private double sqdist(float[] a, float[] b) {
 		float[] d = vec.sub(a, b);
 		return vec.dot(d);
 	}
