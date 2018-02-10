@@ -5,7 +5,9 @@ import java.util.function.IntFunction;
 
 import org.junit.Test;
 
+import suite.adt.pair.Pair;
 import suite.math.Tanh;
+import suite.math.linalg.VirtualVector;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.MeanVariance;
 import suite.math.transform.DiscreteCosineTransform;
@@ -23,6 +25,7 @@ import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.util.To;
+import ts.BollingerBands;
 import ts.Quant;
 import ts.TimeSeries;
 
@@ -36,6 +39,7 @@ public class AnalyzeTimeSeriesTest {
 	// TimeRange.of(Time.of(2013, 1, 1), Time.of(2014, 1, 1));
 	// TimeRange.threeYears();
 
+	private BollingerBands bb = new BollingerBands();
 	private Configuration cfg = new ConfigurationImpl();
 	private DiscreteCosineTransform dct = new DiscreteCosineTransform();
 	private MarketTiming mt = new MarketTiming();
@@ -67,6 +71,8 @@ public class AnalyzeTimeSeriesTest {
 
 		float[] fds = dct.dct(Arrays.copyOfRange(prices, length - log2, length));
 		float[] returns = ts.returns(prices);
+		float[] logPrices = To.vector(prices, Math::log);
+		float[] logReturns = ts.differences(1, logPrices);
 		MeanVariance rmv = stat.meanVariance(returns);
 		double variance = rmv.variance;
 		double kelly = rmv.mean / variance;
@@ -96,6 +102,17 @@ public class AnalyzeTimeSeriesTest {
 			return Quant.sign(ma200[last], prices[last]);
 		}).start(1).longOnly();
 		BuySell mt_ = buySell(d -> holds[d]);
+
+		Pair<float[], float[]> bbmv = bb.meanVariances(VirtualVector.of(logReturns), 9, 0);
+		float[] bbmean = bbmv.t0;
+		float[] bbvariances = bbmv.t1;
+
+		BuySell ms2 = buySell(d -> {
+			int last = d - 1;
+			int ref = last - 250;
+			float mean = bbmean[last];
+			return Quant.sign(logPrices[last], logPrices[ref] - bbvariances[last] / (2d * mean * mean));
+		}).start(1 + 250);
 
 		LogUtil.info("" //
 				+ "\nsymbol = " + symbol //
@@ -139,6 +156,8 @@ public class AnalyzeTimeSeriesTest {
 						.range(1, 8) //
 						.map(d -> "\ntrend_ [" + d + "d] long-only " + trends_[d].longOnly().invest(prices)) //
 						.collect(As::joined) //
+				+ "\nms2 " + ms2.invest(prices) //
+				+ "\nms2 long-only " + ms2.longOnly().invest(prices) //
 				+ "\ntanh " + tanh.invest(prices) //
 				+ "\ntimed " + mt_.invest(prices) //
 				+ "\ntimed long-only " + mt_.longOnly().invest(prices));
