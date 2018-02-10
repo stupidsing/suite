@@ -2,11 +2,11 @@ crude-script ::= (statement1)*
 
 statement1 ::= statement ";" | statement-block
 statement-block ::= "{" statement1* "}"
-statement ::= statement-for | statement-if | statement-var | statement-return | statement-while | expression
-statement-for ::= "for" "(" expression? ";" expression? ";" expression? ")" statement1
+statement ::= statement-for | statement-if | statement-let | statement-return | statement-while | expression
+statement-for ::= "for" "(" expression? ";" expression? ";" expression? ")" statement1 | "for" "(" bind "in" expression ")" statement1
 statement-if ::= "if" "(" expression ")" statement1 "else" statement1
+statement-let ::= "let" bind "=" expression
 statement-return ::= "return" expression
-statement-var ::= "var" var "=" expression
 statement-while ::= "while" "(" expression ")" statement1
 
 bind ::= "(" bind ")" | <IDENTIFIER> | "[" (bind ",")* "]" | "{" (<IDENTIFIER> ":" bind ",")* "}" | <INTEGER_LITERAL> | <STRING_LITERAL>
