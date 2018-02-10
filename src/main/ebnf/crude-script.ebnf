@@ -9,8 +9,6 @@ statement-let ::= "let" bind "=" expression
 statement-return ::= "return" expression
 statement-while ::= "while" "(" expression ")" statement1
 
-bind ::= "(" bind ")" | <IDENTIFIER> | "[" (bind ",")* "]" | "{" (<IDENTIFIER> ":" bind ",")* "}" | <INTEGER_LITERAL> | <STRING_LITERAL>
-
 expression ::= expression-assign
 expression-assign ::= expression-invoke ("=" expression-assign)?
 expression-invoke ::= expression-bool-or ("|" expression-bool-or)*
@@ -26,8 +24,14 @@ expression-not ::= "~"* expression-add
 expression-add ::= expression-sub ("+" expression-add)?
 expression-sub ::= "-" expression-mul | expression-mul ("-" expression-mul)*
 expression-mul ::= expression-div ("*" expression-mul)?
-expression-div ::= expression-prop ("/" expression-prop | "%" expression-prop)*
+expression-div ::= expression-as ("/" expression-as | "%" expression-as)*
+expression-as ::= expression-prop ("as" expression-prop)*
 expression-prop ::= expression-obj ("." <IDENTIFIER> | "[" expression "]" | "(" expression ")")*
-expression-obj ::= "(" expression ")" | <IDENTIFIER> ("=>" (expression | statement-block))? | expression-array | expression-dict | <INTEGER_LITERAL> | <STRING_LITERAL>
+expression-obj ::= <IDENTIFIER> | bind "=>" (expression | statement-block) | expression-array | expression-dict | expression-tuple | constant
 expression-array ::= "[" (expression ",")* "]"
 expression-dict ::= "{" (<IDENTIFIER> ":" expression ",")* "}"
+expression-tuple ::= "(" expression ("," expression)* ")"
+
+bind ::= <IDENTIFIER> | "(" bind ("," bind)* ")" | "[" (bind ",")* "]" | "{" (<IDENTIFIER> ":" bind ",")* "}" | constant
+
+constant ::= <INTEGER_LITERAL> | <STRING_LITERAL>
