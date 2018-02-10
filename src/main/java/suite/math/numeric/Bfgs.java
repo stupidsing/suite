@@ -25,7 +25,7 @@ public class Bfgs {
 		return bfgs(fun, gradientFun, initials);
 	}
 
-	public float[] bfgs(Obj_Dbl<float[]> fun, Fun<float[], float[]> gradientFun, float[] initials) {
+	private float[] bfgs(Obj_Dbl<float[]> fun, Fun<float[], float[]> gradientFun, float[] initials) {
 		int length = initials.length;
 		float[][] id = mtx.identity(length);
 
