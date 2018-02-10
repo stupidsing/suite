@@ -45,7 +45,7 @@ public class TextUtil {
 		} else if (!bytesx.isEmpty() || !bytesy.isEmpty())
 			return List.of(Pair.of(bytesx, bytesy));
 		else
-			return new ArrayList<>();
+			return List.of();
 	}
 
 	public Bytes patch(Bytes bytes, List<Pair<Bytes, Bytes>> pairs) throws ConflictException {
@@ -112,7 +112,7 @@ public class TextUtil {
 			} else
 				throw new ConflictException();
 		} else
-			return new ArrayList<>();
+			return List.of();
 	}
 
 	private int detectSame(Bytes x, Bytes y) {

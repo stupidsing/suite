@@ -1,7 +1,6 @@
 package suite.rt;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import suite.math.MathUtil;
@@ -54,7 +53,7 @@ public class BoundingBox implements RtObject {
 				&& isIntersect(startZ, dirZ, minZ, maxZ, startX, dirX, minX, maxX) //
 		;
 
-		return isIntersect ? object.hit(ray) : Collections.<RayHit> emptyList();
+		return isIntersect ? object.hit(ray) : List.of();
 	}
 
 	private boolean isIntersect( //
