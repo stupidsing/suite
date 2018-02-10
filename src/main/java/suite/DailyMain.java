@@ -86,9 +86,9 @@ public class DailyMain extends ExecutableProgram {
 				alloc("bug", bacs.bac_sell, 0f), //
 				alloc(bacs.pair_donchian, 100000f), //
 				alloc(bacs.pair_ema, 0f), //
-				mamr(100000f), //
+				mamr(50000f), //
 				alloc(bacs.pair_pmamr, 150000f), //
-				alloc(bacs.pair_pmamr2, 183333f), //
+				alloc(bacs.pair_pmamr2, 366666f), //
 				alloc(bacs.pair_pmmmr, 80000f), //
 				alloc(bacs.pair_revco, 0f), //
 				alloc(bacs.pair_tma, 0f), //
