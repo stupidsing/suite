@@ -30,23 +30,19 @@ public class Kalman {
 		// predicted next state (stateLength)
 		// predicted next state covariance (stateLength x stateLength)
 		float[] predictedState1 = vec.add(mtx.mul(F, estimatedState0), mtx.mul(B, input0));
-		float[][] predictedStateCov1 = mtx.add(mul(F, estimatedStateCov0, Ft), Q);
+		float[][] predictedStateCov1 = mtx.add(mtx.mul(F, estimatedStateCov0, Ft), Q);
 
 		// update
 		// Kalman gain (stateLength x observeLength)
 		// estimated next state (stateLength)
 		// estimated next state covariance (stateLength x stateLength)
-		float[][] kalmanGain = mul(predictedStateCov1, Ht, mtx.inverse(mtx.add(R, mul(H, predictedStateCov1, Ht))));
+		float[][] kalmanGain = mtx.mul(predictedStateCov1, Ht, mtx.inverse(mtx.add(R, mtx.mul(H, predictedStateCov1, Ht))));
 		float[] estimatedState1 = vec.add(predictedState1, mtx.mul(kalmanGain, vec.sub(observed0, mtx.mul(H, predictedState1))));
-		float[][] estimatedStateCov1 = mtx.mul(mtx.add(identity, mtx.neg(mtx.mul(kalmanGain, H))), predictedStateCov1);
+		float[][] estimatedStateCov1 = mtx.mul(mtx.sub(identity, mtx.mul(kalmanGain, H)), predictedStateCov1);
 		// residual1 = observed0 - H * estimatedState1
 
 		estimatedStateCov0 = estimatedStateCov1;
 		estimatedState0 = estimatedState1;
-	}
-
-	private float[][] mul(float[][] m0, float[][] m1, float[][] m2) {
-		return mtx.mul(mtx.mul(m0, m1), m2);
 	}
 
 }

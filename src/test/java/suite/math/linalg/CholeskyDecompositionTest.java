@@ -49,7 +49,7 @@ public class CholeskyDecompositionTest {
 		vec.verifyEquals(actuald, expectd);
 
 		float[][] matrixd = To.matrix(actuald.length, actuald.length, (i, j) -> i == j ? actuald[i] : 0f);
-		float[][] m1 = mtx.mul(mtx.mul(actuall, matrixd), mtx.transpose(actuall));
+		float[][] m1 = mtx.mul(actuall, matrixd, mtx.transpose(actuall));
 		mtx.verifyEquals(m0, m1);
 	}
 

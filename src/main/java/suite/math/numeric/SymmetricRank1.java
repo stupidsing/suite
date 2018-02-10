@@ -35,9 +35,7 @@ public class SymmetricRank1 {
 			float[] gradient1 = gradientFun.apply(xs1);
 			float[] ys = vec.sub(gradient1, gradient);
 			float[] v = vec.sub(dxs, mtx.mul(invh, ys));
-			float[][] mt = new float[][] { v, };
-			float[][] m = mtx.transpose(mt);
-			float[][] invh1 = mtx.add(invh, mtx.scale(mtx.mul(m, mt), vec.dot(v, ys)));
+			float[][] invh1 = mtx.add(invh, mtx.scale(mtx.mul(v), vec.dot(v, ys)));
 
 			xs = xs1;
 			gradient = gradient1;

@@ -56,6 +56,17 @@ public class Vector_ {
 		return dotDiff_(m, n);
 	}
 
+	public float[] neg(float[] m) {
+		return negOn(copy(m));
+	}
+
+	public float[] negOn(float[] m) {
+		int length = m.length;
+		for (int i = 0; i < length; i++)
+			m[i] = -m[i];
+		return m;
+	}
+
 	public float[] normalize(float[] m) {
 		return scale(m, 1d / abs_(m));
 	}

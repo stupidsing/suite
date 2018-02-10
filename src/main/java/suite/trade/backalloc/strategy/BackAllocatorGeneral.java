@@ -204,7 +204,7 @@ public class BackAllocatorGeneral {
 
 			return index -> {
 				int last = index - 1;
-				return movingAvgs[last] < prices[last] ? 1d : -1d;
+				return Quant.sign(movingAvgs[last], prices[last]);
 			};
 		});
 	}
@@ -518,7 +518,7 @@ public class BackAllocatorGeneral {
 
 			return Quant.filterRange(1, index -> {
 				int last = index - 1;
-				return movingAvgs0[last] < movingAvgs1[last] ? -1d : 1d;
+				return -Quant.sign(movingAvgs0[last], movingAvgs1[last]);
 			});
 		});
 	}

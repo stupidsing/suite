@@ -1,11 +1,66 @@
 package suite.math.numeric;
 
+import suite.math.FiniteDifference;
+import suite.math.linalg.Matrix_;
+import suite.math.linalg.Vector_;
 import suite.primitive.DblDbl_Dbl;
+import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
+import suite.util.FunUtil.Fun;
 
 public class Bfgs {
 
-	public double lineSearch(Dbl_Dbl phi, Dbl_Dbl phiGradient, double alphax) {
+	private FiniteDifference fd = new FiniteDifference();
+	private Matrix_ mtx = new Matrix_();
+	private Vector_ vec = new Vector_();
+
+	// using finite differences to find gradient
+	public float[] bfgs(Obj_Dbl<float[]> fun, float[] initials) {
+		Fun<float[], float[]> gradientFun = fd.forward(fun);
+		return bfgs(fun, gradientFun, initials);
+	}
+
+	public float[] bfgs(Obj_Dbl<float[]> fun, Fun<float[], float[]> gradientFun, float[] initials) {
+		int length = initials.length;
+		float[][] id = mtx.identity(length);
+
+		float[] xs = initials;
+		float[] gs = gradientFun.apply(xs);
+		float[] ps = vec.neg(gs); // direction
+		float[][] ib = id;
+
+		for (int iter = 0; iter < 16; iter++) {
+			float[] xs_ = xs;
+			float[] ps_ = ps;
+			float[] ps1 = mtx.mul(ib, vec.neg(gradientFun.apply(xs_)));
+
+			double alpha = lineSearch( //
+					alpha_ -> fun.apply(vec.add(xs_, vec.scale(ps_, alpha_))), //
+					alpha_ -> vec.dot(gradientFun.apply(vec.add(xs_, vec.scale(ps_, alpha_))), ps_), //
+					1d);
+
+			float[] ss = vec.scale(ps_, alpha);
+			float[] xs1 = vec.add(xs, ss);
+			float[] gs1 = gradientFun.apply(xs1);
+			float[] ys = vec.sub(gs1, gs);
+			float yts = vec.dot(ys, ss);
+
+			// b1 = mtx.add(b, mtx.add(mtx.scale(mtx.mul(ys), yts),
+			// bb/mtx.mul_mnT(mtx.mul(ss,ib), ss)));
+			float[][] ma = mtx.sub(id, mtx.scale(mtx.mul(ss, ys), yts));
+			float[][] mb = mtx.sub(id, mtx.scale(mtx.mul(ys, ss), yts));
+			float[][] ib1 = mtx.add(mtx.mul(ma, ib, mb), mtx.scale(mtx.mul(ss), yts));
+
+			xs = xs1;
+			gs = gs1;
+			ps = ps1;
+			ib = ib1;
+		}
+
+		return xs;
+	}
+
+	private double lineSearch(Dbl_Dbl phi, Dbl_Dbl phiGradient, double alphax) {
 		double c1 = .0001d;
 		double c2 = .1d;
 

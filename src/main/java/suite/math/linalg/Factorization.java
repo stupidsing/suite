@@ -22,7 +22,7 @@ public class Factorization {
 			float[][] u0 = u;
 			float[][] v0 = v;
 
-			float[][] error = mtx.add(m, mtx.negOn(mtx.mul(u, v)));
+			float[][] error = mtx.sub(m, mtx.mul(u, v));
 			float alpha = .1f;
 
 			float[][] u1 = To.matrix(height, w, (i, q) -> {

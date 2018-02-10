@@ -153,6 +153,27 @@ public class Matrix_ {
 		return n;
 	}
 
+	// v is a column vector; return vvT
+	public float[][] mul(float[] v) {
+		return mul(v, v);
+	}
+
+	public float[][] mul(float[] u, float[] v) {
+		float[][] m = new float[u.length][v.length];
+		for (int i = 0; i < u.length; i++)
+			for (int j = 0; j < v.length; j++)
+				m[i][j] = u[i] * v[j];
+		return m;
+	}
+
+	public float[][] mul(float[][] m, float[][] n, float[][] o, float[][] p) {
+		return mul(m, mul(n, mul(o, p)));
+	}
+
+	public float[][] mul(float[][] m, float[][] n, float[][] o) {
+		return mul(m, mul(n, o));
+	}
+
 	public float[] mul(float[] m, float[][] n) {
 		int ix = m.length;
 		int jx = w(n);
@@ -342,6 +363,22 @@ public class Matrix_ {
 
 	public int sqSize(float[][] m) {
 		return sqSize_(m);
+	}
+
+	public float[][] sub(float[][] m, float[][] n) {
+		return subOn(copy(m), n);
+	}
+
+	public float[][] subOn(float[][] m, float[][] n) {
+		int height = h(m);
+		int width = w(m);
+		if (height == h(n) && width == w(n))
+			for (int i = 0; i < height; i++)
+				for (int j = 0; j < width; j++)
+					m[i][j] -= n[i][j];
+		else
+			Fail.t("wrong input sizes");
+		return m;
 	}
 
 	public void verifyEquals(float[][] m0, float[][] m1) {
