@@ -27,7 +27,7 @@ import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
-import suite.node.util.TreeRewriter;
+import suite.node.util.Rewrite;
 import suite.node.util.TreeUtil;
 import suite.os.LogUtil;
 import suite.util.Fail;
@@ -38,7 +38,7 @@ public class EvalPredicates {
 
 	private static Random random = new Random();
 	private static Specializer specializer = new Specializer();
-	private static TreeRewriter trw = new TreeRewriter();
+	private static Rewrite rw = new Rewrite();
 
 	private Comparer comparer = Comparer.comparer;
 	private Fun<String, ScriptEngine> engines = Memoize.fun(new ScriptEngineManager()::getEngineByExtension);
@@ -49,7 +49,7 @@ public class EvalPredicates {
 
 	public BuiltinPredicate complexity = PredicateUtil.fun(n -> Int.of(new Complexity().complexity(n)));
 
-	public BuiltinPredicate contains = PredicateUtil.p2((prover, p0, p1) -> trw.contains(p0, p1));
+	public BuiltinPredicate contains = PredicateUtil.p2((prover, p0, p1) -> rw.contains(p0, p1));
 
 	public BuiltinPredicate compare = (prover, ps) -> {
 		Tree tree = (Tree) ps;
@@ -144,9 +144,9 @@ public class EvalPredicates {
 
 	public BuiltinPredicate randomPredicate = PredicateUtil.fun(n -> Int.of(random.nextInt(((Int) n).number)));
 
-	public BuiltinPredicate replace = PredicateUtil.p4((prover, from, to, n0, nx) -> prover.bind(trw.replace(from, to, n0), nx));
+	public BuiltinPredicate replace = PredicateUtil.p4((prover, from, to, n0, nx) -> prover.bind(rw.replace(from, to, n0), nx));
 
-	public BuiltinPredicate rewrite = PredicateUtil.p4((prover, from, to, n0, nx) -> prover.bind(trw.rewrite(from, to, n0), nx));
+	public BuiltinPredicate rewrite = PredicateUtil.p4((prover, from, to, n0, nx) -> prover.bind(rw.rewrite(from, to, n0), nx));
 
 	public BuiltinPredicate same = PredicateUtil.p2((prover, p0, p1) -> p0 == p1);
 

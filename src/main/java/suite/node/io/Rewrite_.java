@@ -17,7 +17,7 @@ import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 
-public class Rewriter {
+public class Rewrite_ {
 
 	private static Node LEFT_ = Atom.of("l");
 	private static Node RIGHT = Atom.of("r");

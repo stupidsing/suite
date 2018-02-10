@@ -21,7 +21,7 @@ import suite.node.parser.FactorizeResult.FPair;
 import suite.node.parser.FactorizeResult.FTerminal;
 import suite.node.parser.FactorizeResult.FTree;
 import suite.node.util.Singleton;
-import suite.node.util.TreeRewriter;
+import suite.node.util.Rewrite;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
@@ -34,7 +34,7 @@ public class RecursiveFactorizerTest {
 
 	private Nodify nodify = Singleton.me.nodify;
 	private RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
-	private TreeRewriter tr = new TreeRewriter();
+	private Rewrite rw = new Rewrite();
 
 	@Test
 	public void testParseUnparse() {
@@ -120,7 +120,7 @@ public class RecursiveFactorizerTest {
 		FactorizeResult fr0 = recursiveFactorizer.parse(s0);
 		FNode fn0 = fr0.node;
 		Node node0 = nodify.nodify(FNode.class, fn0);
-		Node nodex = tr.rewrite(source, node0);
+		Node nodex = rw.rewrite(source, node0);
 		FNode fnx = nodify.unnodify(FNode.class, nodex);
 		FactorizeResult frx = new FactorizeResult(fr0.pre, fnx, fr0.post);
 		String sx = frx.unparse();

@@ -8,7 +8,7 @@ import suite.lp.kb.Rule;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
-import suite.node.io.Rewriter;
+import suite.node.io.Rewrite_;
 
 public class Cloner {
 
@@ -38,7 +38,7 @@ public class Cloner {
 				else if ((rt = Tree.decompose(right)) != null)
 					right1 = nextTree = Tree.of(rt.getOperator(), clone(rt.getLeft()), rt.getRight());
 				else
-					right1 = Rewriter.map(right, this::clone);
+					right1 = Rewrite_.map(right, this::clone);
 
 				clonedNodes.put(key, right1);
 			}
@@ -54,7 +54,7 @@ public class Cloner {
 			if (node_ instanceof Reference)
 				node_ = new Reference();
 			else
-				node_ = Rewriter.map(node, this::cloneOld);
+				node_ = Rewrite_.map(node, this::cloneOld);
 			return node_;
 		});
 	}

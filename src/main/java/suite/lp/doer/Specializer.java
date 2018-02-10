@@ -3,7 +3,7 @@ package suite.lp.doer;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
-import suite.node.io.Rewriter;
+import suite.node.io.Rewrite_;
 
 public class Specializer {
 
@@ -12,7 +12,7 @@ public class Specializer {
 			Reference ref = (Reference) node;
 			node = Atom.of(ref.name());
 		} else
-			node = Rewriter.map(node, this::specialize);
+			node = Rewrite_.map(node, this::specialize);
 		return node;
 	}
 

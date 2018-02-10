@@ -7,13 +7,13 @@ import suite.lp.doer.Binder;
 import suite.lp.doer.Cloner;
 import suite.node.Node;
 import suite.node.Reference;
-import suite.node.io.Rewriter;
-import suite.node.io.Rewriter.NodeRead;
+import suite.node.io.Rewrite_;
+import suite.node.io.Rewrite_.NodeRead;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 
-public class TreeRewriter {
+public class Rewrite {
 
 	public boolean contains(Node from, Node node) {
 		return new Predicate<Node>() {
@@ -62,7 +62,7 @@ public class TreeRewriter {
 	}
 
 	public Node rewrite(Iterate<Node> fun, Node node0) {
-		return fun.apply(Rewriter.map(node0, n -> rewrite(fun, n)));
+		return fun.apply(Rewrite_.map(node0, n -> rewrite(fun, n)));
 	}
 
 	private boolean eq(Node n0, Node n1) {

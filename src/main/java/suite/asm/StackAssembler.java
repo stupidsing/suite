@@ -14,13 +14,13 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
-import suite.node.util.TreeRewriter;
+import suite.node.util.Rewrite;
 import suite.node.util.TreeUtil;
 import suite.util.Fail;
 
 public class StackAssembler {
 
-	private TreeRewriter trw = new TreeRewriter();
+	private Rewrite rw = new Rewrite();
 
 	private Node rsOp0 = Atom.of("$0");
 	private Node rsOp1 = Atom.of("$1");
@@ -123,9 +123,9 @@ public class StackAssembler {
 
 	private Node rewrite(int sp, Node n) {
 		if (0 <= sp - 1)
-			n = trw.replace(rsOp0, getRegister(sp - 1), n);
+			n = rw.replace(rsOp0, getRegister(sp - 1), n);
 		if (0 <= sp - 2)
-			n = trw.replace(rsOp1, getRegister(sp - 2), n);
+			n = rw.replace(rsOp1, getRegister(sp - 2), n);
 		return n;
 	}
 

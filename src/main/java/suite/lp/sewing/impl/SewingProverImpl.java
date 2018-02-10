@@ -42,7 +42,7 @@ import suite.node.Tuple;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.util.SuiteException;
-import suite.node.util.TreeRewriter;
+import suite.node.util.Rewrite;
 import suite.node.util.TreeUtil;
 import suite.os.LogUtil;
 import suite.streamlet.As;
@@ -70,7 +70,7 @@ import suite.util.String_;
  */
 public class SewingProverImpl implements ProverFactory {
 
-	private static TreeRewriter trw = new TreeRewriter();
+	private static Rewrite rw = new Rewrite();
 
 	private enum TraceLevel {
 		NONE, STACK, TRACE,
@@ -273,7 +273,7 @@ public class SewingProverImpl implements ProverFactory {
 
 	private boolean isHasCut(List<Rule> rules) {
 		return Boolean.TRUE || Read.from(rules) //
-				.map(rule -> trw.contains(ProverConstant.cut, rule.tail)) //
+				.map(rule -> rw.contains(ProverConstant.cut, rule.tail)) //
 				.isAny(b -> b);
 	}
 

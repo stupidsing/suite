@@ -12,7 +12,7 @@ import suite.node.Dict;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.util.Singleton;
-import suite.node.util.TreeRewriter;
+import suite.node.util.Rewrite;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.util.FunUtil.Fun;
@@ -25,7 +25,7 @@ public class FactorizeResult {
 
 	private static Inspect inspect = Singleton.me.inspect;
 	private static Nodify nodify = Singleton.me.nodify;
-	private static TreeRewriter trw = new TreeRewriter();
+	private static Rewrite rw = new Rewrite();
 
 	public final Chars pre;
 	public final FNode node;
@@ -121,14 +121,14 @@ public class FactorizeResult {
 			return b ? generalizer.generalize(Atom.of(s)) : n0;
 		};
 
-		Fun<FactorizeResult, Node> parse = fr -> trw.rewrite(rewrite, nodify.nodify(FNode.class, fr.node));
+		Fun<FactorizeResult, Node> parse = fr -> rw.rewrite(rewrite, nodify.nodify(FNode.class, fr.node));
 
 		Node nodeFrom = parse.apply(frfrom);
 		Node nodeTo = parse.apply(frto);
 
 		FNode fn0 = fr0.node;
 		Node node0 = nodify.nodify(FNode.class, fn0);
-		Node nodex = trw.rewrite(nodeFrom, nodeTo, node0);
+		Node nodex = rw.rewrite(nodeFrom, nodeTo, node0);
 		FNode fnx = nodify.unnodify(FNode.class, nodex);
 		return new FactorizeResult(fr0.pre, fnx, fr0.post);
 	}

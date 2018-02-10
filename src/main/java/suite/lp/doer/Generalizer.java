@@ -8,7 +8,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
-import suite.node.io.Rewriter;
+import suite.node.io.Rewrite_;
 
 public class Generalizer {
 
@@ -36,7 +36,7 @@ public class Generalizer {
 			} else if ((rt = Tree.decompose(right)) != null)
 				right = nextTree = Tree.of(rt.getOperator(), generalize(rt.getLeft()), rt.getRight());
 			else
-				right = Rewriter.map(right, this::generalize);
+				right = Rewrite_.map(right, this::generalize);
 
 			Tree.forceSetRight(tree, right);
 			tree = nextTree;

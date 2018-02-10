@@ -13,7 +13,7 @@ import suite.lp.kb.Rule;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.io.Rewriter.NodeRead;
+import suite.node.io.Rewrite_.NodeRead;
 import suite.os.LogUtil;
 
 public class SingletonVariableChecker {

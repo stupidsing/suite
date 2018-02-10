@@ -8,7 +8,7 @@ import org.junit.Test;
 import suite.Suite;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.node.util.TreeRewriter;
+import suite.node.util.Rewrite;
 
 public class SymbolicTest {
 
@@ -19,7 +19,7 @@ public class SymbolicTest {
 	private Atom x = Atom.of("x");
 	private Atom y = Atom.of("y");
 	private Symbolic sym = new Symbolic();
-	private TreeRewriter trw = new TreeRewriter();
+	private Rewrite rw = new Rewrite();
 
 	@Test
 	public void testApply() {
@@ -30,7 +30,7 @@ public class SymbolicTest {
 	public void testCubic() {
 		verifyEquals("4", sym.simplify(Suite.parse("4")));
 		System.out.println(sym.simplify(Suite.parse("(a * x + b) ^ 3"), x, b, a));
-		Node poly = trw.replace(x, //
+		Node poly = rw.replace(x, //
 				Suite.parse("y + neg (b * inv (3 * a))"), //
 				Suite.parse("a * x * x * x + b * x * x + c * x + d"));
 		System.out.println(sym.simplify(poly, y, d, c, b, a));

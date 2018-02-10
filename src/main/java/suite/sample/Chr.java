@@ -19,7 +19,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.node.util.TreeRewriter;
+import suite.node.util.Rewrite;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
@@ -33,7 +33,7 @@ import suite.util.To;
  */
 public class Chr {
 
-	private TreeRewriter trw = new TreeRewriter();
+	private Rewrite rw = new Rewrite();
 
 	private List<Rule> rules = new ArrayList<>();
 	private Prover prover = new Prover(Suite.newRuleSet());
@@ -169,7 +169,7 @@ public class Chr {
 				private ISet<Node> replace(ISet<Node> facts) {
 					ISet<Node> facts1 = new ISet<>();
 					for (Node node : facts)
-						facts1 = facts1.replace(trw.replace(from, to, node));
+						facts1 = facts1.replace(rw.replace(from, to, node));
 					return facts1;
 				}
 			});
