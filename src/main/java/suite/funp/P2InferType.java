@@ -643,7 +643,7 @@ public class P2InferType {
 		private boolean isCompleted;
 
 		private static TypeStruct of() {
-			return new TypeStruct(List.of(), false);
+			return new TypeStruct(new ArrayList<>(), false);
 		}
 
 		private static TypeStruct of(List<Pair<String, UnNode<Type>>> pairs) {
