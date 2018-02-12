@@ -29,6 +29,10 @@ public class ElfTest {
 
 		String program = "" //
 				+ "expand size := 256 >> \n" //
+				+ "define linux-mmap := `length` => ( \n" //
+				+ "	type length = 0 >> \n" //
+				+ "	0 \n" //
+				+ ") >> \n" //
 				+ "define linux-munmap := `pointer, length` => ( \n" //
 				+ "	type pointer = address (size * array byte _) >> \n" //
 				+ "	asm (EAX = 91; EBX = pointer; ECX = length;) { \n" //
