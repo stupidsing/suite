@@ -10,29 +10,36 @@ statement-return ::= "return" expression
 statement-while ::= "while" "(" expression ")" statement1
 
 expression ::= expression-assign
-expression-assign ::= expression-invoke (("=" | "|=" | "&=" | "<<=" | ">>=" | "+=" | "-=" | "*=" | "/=") expression-assign)?
+expression-assign ::= expression-invoke (op-assign expression-assign)?
 expression-invoke ::= expression-bool-or ("|" expression-bool-or)*
 expression-bool-or ::= expression-bool-and ("||" expression-bool-or)?
 expression-bool-and ::= expression-compare ("&&" expression-bool-and)?
-expression-compare ::= expression-bool-not (("<" | "<=" | "==" | "!=") expression-compare)?
+expression-compare ::= expression-bool-not (op-compare expression-compare)?
 expression-bool-not ::= "!"* expression-or
 expression-or ::= expression-and ("or" expression-or)?
 expression-and ::= expression-xor ("and" expression-and)?
 expression-xor ::= expression-shift ("xor" expression-xor)?
-expression-shift ::= expression-not (("<<" | ">>") expression-shift)*
+expression-shift ::= expression-not (op-shift expression-shift)*
 expression-not ::= "~"* expression-add
 expression-add ::= expression-sub ("+" expression-add)?
-expression-sub ::= ("+" | "-") expression-mul | expression-mul ("-" expression-mul)*
+expression-sub ::= op-unary expression-mul | expression-mul ("-" expression-mul)*
 expression-mul ::= expression-div ("*" expression-mul)?
-expression-div ::= expression-as (("/" | "%") expression-as)*
+expression-div ::= expression-as (op-div-mod expression-as)*
 expression-as ::= expression-pp ("as" expression-pp)*
-expression-pp ::= ("++" | "--")* expression-prop ("++" | "--")*
+expression-pp ::= op-inc-dec* expression-prop op-inc-dec*
 expression-prop ::= expression-obj ("." <IDENTIFIER> | "[" expression "]" | "(" expression ")")*
 expression-obj ::= <IDENTIFIER> | expression-array | expression-dict | expression-lambda | expression-tuple | constant
 expression-array ::= "[" (expression ",")* "]"
 expression-dict ::= "{" (<IDENTIFIER> ":" expression ",")* "}"
 expression-lambda ::= bind "=>" (expression | statement-block)
 expression-tuple ::= "(" expression ("," expression)* ")"
+
+op-assign ::= "=" | "|=" | "&=" | "<<=" | ">>=" | "+=" | "-=" | "*=" | "/="
+op-compare ::= "<" | "<=" | "==" | "!="
+op-shift ::= "<<" | ">>"
+op-unary ::= "+" | "-"
+op-div-mod ::= "/" | "%"
+op-inc-dec ::= "++" | "--"
 
 bind ::= <IDENTIFIER> | bind-array | bind-dict | bind-tuple | constant
 bind-array ::= "[" (bind ",")* "]"
