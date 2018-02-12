@@ -65,11 +65,10 @@ public class Ebnf {
 
 	public Ebnf(Reader reader) throws IOException {
 		Map<String, Grammar> grammarByEntity = Grammar.parse(reader);
-
-		ReduceHeadRecursion headRecursion = new ReduceHeadRecursion(grammarByEntity);
+		ReduceHeadRecursion rhr = new ReduceHeadRecursion(grammarByEntity);
 
 		for (Entry<String, Grammar> e : grammarByEntity.entrySet())
-			e.setValue(headRecursion.reduce(e.getValue()));
+			e.setValue(rhr.reduce(e.getValue()));
 
 		engine = new TopDownParse(grammarByEntity);
 	}
