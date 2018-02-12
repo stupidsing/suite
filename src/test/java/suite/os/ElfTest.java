@@ -31,8 +31,10 @@ public class ElfTest {
 				+ "expand size := 256 >> \n" //
 				+ "define linux-mmap := `length` => ( \n" //
 				+ "	type length = 0 >> \n" //
-				+ "	let ps := array (0,) >> \n" //
-				+ "	0 \n" //
+				+ "	let ps := array (0, 0, 3, 34, -1, 0,) >> \n" //
+				+ "	asm (EAX = 90; EBX = address ps;) { \n" //
+				+ "		INT (-128); \n" //
+				+ "	} \n" //
 				+ ") >> \n" //
 				+ "define linux-munmap := `pointer, length` => ( \n" //
 				+ "	type pointer = address (size * array byte _) >> \n" //
