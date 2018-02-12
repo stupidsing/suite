@@ -34,6 +34,9 @@ expression-dict ::= "{" (<IDENTIFIER> ":" expression ",")* "}"
 expression-lambda ::= bind "=>" (expression | statement-block)
 expression-tuple ::= "(" expression ("," expression)* ")"
 
-bind ::= <IDENTIFIER> | "(" bind ("," bind)* ")" | "[" (bind ",")* "]" | "{" (<IDENTIFIER> ":" bind ",")* "}" | constant
+bind ::= <IDENTIFIER> | bind-array | bind-dict | bind-tuple | constant
+bind-array ::= "[" (bind ",")* "]"
+bind-dict ::= "{" (<IDENTIFIER> ":" bind ",")* "}"
+bind-tuple ::= "(" bind ("," bind)* ")"
 
 constant ::= <INTEGER_LITERAL> | <STRING_LITERAL>
