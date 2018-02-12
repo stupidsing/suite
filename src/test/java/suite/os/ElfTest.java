@@ -31,6 +31,7 @@ public class ElfTest {
 				+ "expand size := 256 >> \n" //
 				+ "define linux-mmap := `length` => ( \n" //
 				+ "	type length = 0 >> \n" //
+				+ "	let ps := array (0,) >> \n" //
 				+ "	0 \n" //
 				+ ") >> \n" //
 				+ "define linux-munmap := `pointer, length` => ( \n" //
