@@ -29,6 +29,12 @@ public class EbnfTest {
 	}
 
 	@Test
+	public void testCrudeScript() throws IOException {
+		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/crude-script.ebnf"));
+		System.out.println(ebnf.parse("crude-script", "{ return 1 + 2 * 3; }"));
+	}
+
+	@Test
 	public void testExpression() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/expression.ebnf"));
 		System.out.println(ebnf.parse("<expression>", "1 + 2 + 3"));
