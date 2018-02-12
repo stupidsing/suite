@@ -4,7 +4,6 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.pair.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.String_;
@@ -16,6 +15,7 @@ public class Grammar {
 		ENTITY, //
 		EXCEPT, //
 		NAMED_, //
+		ONCE__, //
 		OPTION, //
 		OR____, //
 		REPT0_, //
@@ -31,7 +31,7 @@ public class Grammar {
 	public static Map<String, Grammar> parse(Reader reader) {
 		Breakdown breakdown = new Breakdown();
 
-		List<Pair<String, String>> pairs = Read //
+		return Read //
 				.lines(reader) //
 				.filter(line -> !line.isEmpty() && !line.startsWith("#")) //
 				.map(line -> line.replace('\t', ' ')) //
@@ -39,9 +39,7 @@ public class Grammar {
 				.map(o -> o.fold("", String::concat)) //
 				.map(line -> String_.split2(line, " ::= ")) //
 				.filter(lr -> lr != null) //
-				.toList();
-
-		return Read.from(pairs) //
+				.collect(As::streamlet) //
 				.map2(lr -> lr.t0, lr -> breakdown.breakdown(lr.t0, lr.t1)) //
 				.collect(As::map);
 	}

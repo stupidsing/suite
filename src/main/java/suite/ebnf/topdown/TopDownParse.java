@@ -184,7 +184,7 @@ public class TopDownParse {
 	}
 
 	private Parser build(Grammar eg) {
-		Parser parser;
+		Parser parser, g;
 		List<Parser> parsers;
 
 		switch (eg.type) {
@@ -192,8 +192,8 @@ public class TopDownParse {
 			parsers = buildChildren(eg);
 			parser = (parse, st) -> {
 				Outlet<State> o = Outlet.of(st);
-				for (Parser g : parsers)
-					o = o.concatMap(st_ -> st_.pr(parse, g));
+				for (Parser g_ : parsers)
+					o = o.concatMap(st_ -> st_.pr(parse, g_));
 				return o;
 			};
 			break;
@@ -211,8 +211,12 @@ public class TopDownParse {
 		case NAMED_:
 			parser = deepen(build(eg.children.get(0)), eg.content);
 			break;
+		case ONCE__:
+			g = build(eg.children.get(0));
+			parser = (parse, st) -> Outlet.of(st.pr(parse, g).take(1));
+			break;
 		case OPTION:
-			Parser g = build(eg.children.get(0));
+			g = build(eg.children.get(0));
 			parser = (parse, st) -> st.pr(parse, g).cons(st);
 			break;
 		case OR____:

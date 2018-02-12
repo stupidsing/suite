@@ -1,6 +1,6 @@
 crude-script ::= (statement1)*
 
-statement1 ::= statement ";" | statement-block
+statement1 ::= (statement ";" | statement-block)!
 statement-block ::= "{" statement1* "}"
 statement ::= statement-for | statement-if | statement-let | statement-return | statement-while | expression
 statement-for ::= "for" "(" expression? ";" expression? ";" expression? ")" statement1 | "for" "(" bind "in" expression ")" statement1

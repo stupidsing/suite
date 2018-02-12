@@ -30,6 +30,8 @@ public class Breakdown {
 			eg = new Grammar(GrammarType.AND___, breakdown(list));
 		else if (s.equals(""))
 			eg = new Grammar(GrammarType.AND___);
+		else if (s.endsWith("!"))
+			eg = new Grammar(GrammarType.ONCE__, breakdown(String_.range(s, 0, -1)));
 		else if (s.endsWith("?"))
 			eg = new Grammar(GrammarType.OPTION, breakdown(String_.range(s, 0, -1)));
 		else if (s.endsWith("*"))
