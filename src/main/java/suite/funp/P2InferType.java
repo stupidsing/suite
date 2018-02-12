@@ -295,7 +295,7 @@ public class P2InferType {
 				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
 				for (Funp element : elements) {
 					int offset0 = offset;
-					list.add(Pair.of(element, IntIntPair.of(offset0, offset += elementSize)));
+					list.add(Pair.of(erase(element), IntIntPair.of(offset0, offset += elementSize)));
 				}
 				return FunpData.of(list);
 			})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
