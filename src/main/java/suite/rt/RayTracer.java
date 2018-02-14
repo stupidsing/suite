@@ -17,7 +17,7 @@ import suite.math.R3;
  */
 public class RayTracer {
 
-	public static float negligibleAdvance = .0001f;
+	public static double negligibleAdvance = .0001d;
 
 	private int depth = 4;
 
@@ -92,7 +92,7 @@ public class RayTracer {
 	}
 
 	public R3 test() {
-		return test(new Ray(R3.origin, new R3(0f, 0f, 1f)));
+		return test(new Ray(R3.origin, new R3(0d, 0d, 1d)));
 	}
 
 	public R3 test(Ray ray) {
@@ -118,7 +118,7 @@ public class RayTracer {
 			R3 normal0 = i.normal().norm();
 
 			double dot0 = R3.dot(ray.dir, normal0);
-			boolean isInside = 0f < dot0;
+			boolean isInside = 0d < dot0;
 			R3 normal;
 			double dot;
 
@@ -135,7 +135,7 @@ public class RayTracer {
 			double transparency = material.transparency();
 			R3 color;
 
-			if ((reflective || transparency < 0f) && 0 < depth) {
+			if ((reflective || transparency < 0d) && 0 < depth) {
 				double cos = -dot / Math.sqrt(ray.dir.abs2());
 
 				// account reflection
@@ -181,7 +181,7 @@ public class RayTracer {
 					R3 lightDir = R3.sub(lightSource.source(), hitPoint);
 					double lightDot = R3.dot(lightDir, normal);
 
-					if (0f < lightDot) { // facing the light
+					if (0d < lightDot) { // facing the light
 						R3 lightPoint = R3.add(hitPoint, negligible(normal));
 						RayHit lightRayHit = nearestHit(scene.hit(new Ray(lightPoint, lightDir)));
 
