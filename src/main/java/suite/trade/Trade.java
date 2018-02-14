@@ -47,7 +47,12 @@ public class Trade {
 	}
 
 	public String record() {
-		return date + "\t" + buySell + "\t" + symbol + "\t" + price + "\t" + strategy;
+		return date //
+				+ (!String_.equals(remark, "-") ? "remark" : "") //
+				+ "\t" + buySell //
+				+ "\t" + symbol //
+				+ "\t" + price //
+				+ "\t" + strategy;
 	}
 
 	public float amount() {
