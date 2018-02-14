@@ -139,7 +139,7 @@ public class RayTracer {
 				double cos = -dot / Math.sqrt(ray.dir.abs2());
 
 				// account reflection
-				R3 reflectDir = R3.add(ray.dir, normal.scale(-2f * dot));
+				R3 reflectDir = R3.add(ray.dir, normal.scale(-2d * dot));
 				R3 reflectPoint = R3.add(hitPoint, negligible(normal));
 				R3 reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
 
