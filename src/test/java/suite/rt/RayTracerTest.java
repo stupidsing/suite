@@ -26,13 +26,13 @@ import suite.util.Thread_;
 
 public class RayTracerTest {
 
-	private Vector cr = v(1f, .4f, .4f);
-	private Vector cg = v(.4f, 1f, .4f);
-	private Vector cb = v(.4f, .4f, 1f);
-	private Vector cy = v(1f, 1f, .4f);
-	private Vector cp = v(1f, .4f, 1f);
-	private Vector cc = v(.4f, 1f, 1f);
-	private Vector cw = v(1f, 1f, 1f);
+	private Vector cr = v(1d, .4d, .4d);
+	private Vector cg = v(.4d, 1d, .4d);
+	private Vector cb = v(.4d, .4d, 1d);
+	private Vector cy = v(1d, 1d, .4d);
+	private Vector cp = v(1d, .4d, 1d);
+	private Vector cc = v(.4d, 1d, 1d);
+	private Vector cw = v(1d, 1d, 1d);
 
 	@Test
 	public void testBlank() throws IOException {
@@ -42,12 +42,12 @@ public class RayTracerTest {
 
 	@Test
 	public void testCompositeIntersect() throws IOException {
-		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(.4f)));
-		RtObject sphere0 = Sphere.c(v(-.5f, 0f, 5f), 1f, solid(cb));
-		RtObject sphere1 = Sphere.c(v(.5f, 0f, 5f), 1f, solid(cb));
+		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(gray(.4d)));
+		RtObject sphere0 = Sphere.c(v(-.5d, 0d, 5d), 1d, solid(cb));
+		RtObject sphere1 = Sphere.c(v(.5d, 0d, 5d), 1d, solid(cb));
 		Scene scene = new Scene(List.of(sky, new Intersect(List.of(sphere0, sphere1))));
 
-		LightSource light = new PointLightSource(v(-10f, -10f, -7f), gray(1.5f));
+		LightSource light = new PointLightSource(v(-10d, -10d, -7d), gray(1.5d));
 		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
@@ -56,12 +56,12 @@ public class RayTracerTest {
 
 	@Test
 	public void testCompositeMinus() throws IOException {
-		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(.4f)));
-		RtObject sphere0 = Sphere.c(v(-.5f, 0f, 5f), 1f, solid(cb));
-		RtObject sphere1 = Sphere.c(v(.5f, 0f, 4f), 1f, solid(cb));
+		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(gray(.4d)));
+		RtObject sphere0 = Sphere.c(v(-.5d, 0d, 5d), 1d, solid(cb));
+		RtObject sphere1 = Sphere.c(v(.5d, 0d, 4d), 1d, solid(cb));
 		Scene scene = new Scene(List.of(sky, new Minus(sphere0, sphere1)));
 
-		LightSource light = new PointLightSource(v(-10f, -10f, -7f), gray(1.5f));
+		LightSource light = new PointLightSource(v(-10d, -10d, -7d), gray(1.5d));
 		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
@@ -70,12 +70,12 @@ public class RayTracerTest {
 
 	@Test
 	public void testCompositeUnion() throws IOException {
-		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(.4f)));
-		RtObject sphere0 = Sphere.c(v(-.5f, 0f, 5f), 1f, solid(cb));
-		RtObject sphere1 = Sphere.c(v(.5f, 0f, 5f), 1f, solid(cb));
+		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(gray(.4d)));
+		RtObject sphere0 = Sphere.c(v(-.5d, 0d, 5d), 1d, solid(cb));
+		RtObject sphere1 = Sphere.c(v(.5d, 0d, 5d), 1d, solid(cb));
 		Scene scene = new Scene(List.of(sky, new Union(List.of(sphere0, sphere1))));
 
-		LightSource light = new PointLightSource(v(-10f, -10f, -7f), gray(1.5f));
+		LightSource light = new PointLightSource(v(-10d, -10d, -7d), gray(1.5d));
 		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
@@ -84,31 +84,31 @@ public class RayTracerTest {
 
 	@Test
 	public void testCopyCat() throws IOException {
-		RtObject sphere0 = Sphere.c(v(0f, 1004f, 20f), 1000f, solid(v(.2f, .2f, .2f)));
-		RtObject sphere1 = Sphere.c(v(0f, 0f, 20f), 4f, glassy(v(1f, .32f, .36f)));
-		RtObject sphere2 = Sphere.c(v(5f, 1f, 15f), 2f, reflective(v(.9f, .76f, .46f)));
-		RtObject sphere3 = Sphere.c(v(5f, 0f, 25f), 3f, reflective(v(.65f, .77f, .97f)));
-		RtObject sphere4 = Sphere.c(v(-5.5f, 0f, 15f), 3f, reflective(gray(.9f)));
+		RtObject sphere0 = Sphere.c(v(0d, 1004d, 20d), 1000d, solid(v(.2d, .2d, .2d)));
+		RtObject sphere1 = Sphere.c(v(0d, 0d, 20d), 4d, glassy(v(1d, .32d, .36d)));
+		RtObject sphere2 = Sphere.c(v(5d, 1d, 15d), 2d, reflective(v(.9d, .76d, .46d)));
+		RtObject sphere3 = Sphere.c(v(5d, 0d, 25d), 3d, reflective(v(.65d, .77d, .97d)));
+		RtObject sphere4 = Sphere.c(v(-5.5d, 0d, 15d), 3d, reflective(gray(.9d)));
 		// rtObject sphere5 =
-		// sphere.c(v(0f, -20f, 30f), 3f, solid(v(0f, 0f, 0f)));
+		// sphere.c(v(0d, -20d, 30d), 3d, solid(v(0d, 0d, 0d)));
 
 		Scene scene = new Scene(List.of(sphere0, sphere1, sphere2, sphere3, sphere4));
 
-		LightSource light0 = new PointLightSource(v(0f, -20f, 30f), gray(3f));
+		LightSource light0 = new PointLightSource(v(0d, -20d, 30d), gray(3d));
 		List<LightSource> lights = List.of(light0);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
-		rayTracer.setAmbient(gray(2f));
+		rayTracer.setAmbient(gray(2d));
 
 		rasterize(rayTracer);
 	}
 
 	@Test
 	public void testLight() throws IOException {
-		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
+		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(cw));
 		Scene scene = new Scene(List.of(sky));
 
-		LightSource light = new PointLightSource(v(0f, 0f, 90f), cw);
+		LightSource light = new PointLightSource(v(0d, 0d, 90d), cw);
 		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
@@ -117,16 +117,16 @@ public class RayTracerTest {
 
 	@Test
 	public void testMess() throws IOException {
-		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(.4f)));
-		RtObject sphere0 = Sphere.c(v(1f, -1f, 4f), 1f, glassy(cr));
-		RtObject sphere1 = Sphere.c(v(0f, 0f, 6f), 1f, glassy(cg));
-		RtObject sphere2 = Sphere.c(v(-1f, 1f, 8f), 1f, glassy(cb));
-		RtObject plane0 = new Plane(v(0f, -1f, 0f), 20f, solid(cy));
-		RtObject triangle = Triangle.c(v(.5f, .5f, 3f), v(.5f, 0f, 0f), v(0f, .5f, 0f), glassy(cc));
+		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(gray(.4d)));
+		RtObject sphere0 = Sphere.c(v(1d, -1d, 4d), 1d, glassy(cr));
+		RtObject sphere1 = Sphere.c(v(0d, 0d, 6d), 1d, glassy(cg));
+		RtObject sphere2 = Sphere.c(v(-1d, 1d, 8d), 1d, glassy(cb));
+		RtObject plane0 = new Plane(v(0d, -1d, 0d), 20d, solid(cy));
+		RtObject triangle = Triangle.c(v(.5d, .5d, 3d), v(.5d, 0d, 0d), v(0d, .5d, 0d), glassy(cc));
 		Scene scene = new Scene(List.of(sky, sphere0, sphere1, sphere2, plane0, triangle));
 
-		LightSource light0 = new PointLightSource(v(10f, 10f, -10f), cp);
-		LightSource light1 = new PointLightSource(v(-10f, 10f, -10f), gray(2f));
+		LightSource light0 = new PointLightSource(v(10d, 10d, -10d), cp);
+		LightSource light1 = new PointLightSource(v(-10d, 10d, -10d), gray(2d));
 		List<LightSource> lights = List.of(light0, light1);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
@@ -135,11 +135,11 @@ public class RayTracerTest {
 
 	@Test
 	public void testSphereMirror() throws IOException {
-		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cb));
-		RtObject mirror = new Plane(v(1f, 0f, 0f), -.3f, glassy(cw));
+		RtObject sphere = Sphere.c(v(0d, 0d, 3d), 1d, solid(cb));
+		RtObject mirror = new Plane(v(1d, 0d, 0d), -.3d, glassy(cw));
 		Scene scene = new Scene(List.of(sphere, mirror));
 
-		LightSource light = new PointLightSource(v(10000f, 10000f, -10000f), gray(1.5f));
+		LightSource light = new PointLightSource(v(10000d, 10000d, -10000d), gray(1.5d));
 		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
@@ -148,11 +148,11 @@ public class RayTracerTest {
 
 	@Test
 	public void testSphereReflection() throws IOException {
-		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
-		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, reflective(cb));
+		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(cw));
+		RtObject sphere = Sphere.c(v(0d, 0d, 3d), 1d, reflective(cb));
 		Scene scene = new Scene(List.of(sky, sphere));
 
-		LightSource light = new PointLightSource(v(0f, 0f, 90f), cw);
+		LightSource light = new PointLightSource(v(0d, 0d, 90d), cw);
 		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
@@ -161,11 +161,11 @@ public class RayTracerTest {
 
 	@Test
 	public void testSphereRefraction() throws IOException {
-		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
-		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, glassy(cb));
+		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(cw));
+		RtObject sphere = Sphere.c(v(0d, 0d, 3d), 1d, glassy(cb));
 		Scene scene = new Scene(List.of(sky, sphere));
 
-		LightSource light = new PointLightSource(v(0f, 0f, 90f), cw);
+		LightSource light = new PointLightSource(v(0d, 0d, 90d), cw);
 		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
@@ -174,11 +174,11 @@ public class RayTracerTest {
 
 	@Test
 	public void testSphereSolid() throws IOException {
-		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(cw));
-		RtObject sphere = Sphere.c(v(0f, 0f, 3f), 1f, solid(cb));
+		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(cw));
+		RtObject sphere = Sphere.c(v(0d, 0d, 3d), 1d, solid(cb));
 		Scene scene = new Scene(List.of(sky, sphere));
 
-		LightSource light = new PointLightSource(v(0f, 0f, 90f), cw);
+		LightSource light = new PointLightSource(v(0d, 0d, 90d), cw);
 		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
@@ -187,12 +187,12 @@ public class RayTracerTest {
 
 	@Test
 	public void testSpheres() throws IOException {
-		RtObject sky = Sphere.c(v(0f, 0f, 0f), 100f, solid(gray(.4f)));
-		RtObject sphere0 = Sphere.c(v(-1.5f, 0f, 5f), 1f, glassy(cb));
-		RtObject sphere1 = Sphere.c(v(1.5f, 0f, 5f), 1f, glassy(cb));
+		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(gray(.4d)));
+		RtObject sphere0 = Sphere.c(v(-1.5d, 0d, 5d), 1d, glassy(cb));
+		RtObject sphere1 = Sphere.c(v(1.5d, 0d, 5d), 1d, glassy(cb));
 		Scene scene = new Scene(List.of(sky, sphere0, sphere1));
 
-		LightSource light = new PointLightSource(v(0f, 0f, 5f), gray(1.5f));
+		LightSource light = new PointLightSource(v(0d, 0d, 5d), gray(1.5d));
 		List<LightSource> lights = List.of(light);
 
 		RayTracer rayTracer = new RayTracer(lights, scene);
@@ -236,11 +236,11 @@ public class RayTracerTest {
 		};
 	}
 
-	private Vector gray(float f) {
+	private Vector gray(double f) {
 		return v(f, f, f);
 	}
 
-	private Vector v(float x, float y, float z) {
+	private Vector v(double x, double y, double z) {
 		return new Vector(x, y, z);
 	}
 
