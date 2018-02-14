@@ -40,7 +40,7 @@ public class PlotMain extends ExecutableProgram {
 					int b2 = fp.apply(fx, fy + 1);
 					int b3 = fp.apply(fx + 1, fy + 1);
 					double c = b0 != b1 || b1 != b2 || b2 != b3 ? 1d : 0d;
-					return new Vector(c, c, c);
+					return new R3(c, c, c);
 				}) //
 				.view();
 	}

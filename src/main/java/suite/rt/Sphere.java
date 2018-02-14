@@ -2,7 +2,7 @@ package suite.rt;
 
 import java.util.List;
 
-import suite.math.Vector;
+import suite.math.R3;
 import suite.rt.RayTracer.Material;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
@@ -11,29 +11,29 @@ import suite.rt.RayTracer.RtObject;
 
 public class Sphere implements RtObject {
 
-	private Vector center;
+	private R3 center;
 	private double radius;
 	private Material material;
 
-	public Sphere(Vector center, double radius, Material material) {
+	public Sphere(R3 center, double radius, Material material) {
 		this.center = center;
 		this.radius = radius;
 		this.material = material;
 	}
 
-	public static RtObject c(Vector center, double radius, Material material) {
-		Vector radiusRange = new Vector(radius, radius, radius);
-		Vector min = Vector.sub(center, radiusRange);
-		Vector max = Vector.add(center, radiusRange);
+	public static RtObject c(R3 center, double radius, Material material) {
+		R3 radiusRange = new R3(radius, radius, radius);
+		R3 min = R3.sub(center, radiusRange);
+		R3 max = R3.add(center, radiusRange);
 		return new BoundingBox(min, max, new Sphere(center, radius, material));
 	}
 
 	@Override
 	public List<RayHit> hit(Ray ray) {
-		Vector start0 = Vector.sub(ray.startPoint, center);
-		double a = Vector.abs2(ray.dir);
-		double b = 2f * Vector.dot(start0, ray.dir);
-		double c = Vector.abs2(start0) - radius * radius;
+		R3 start0 = R3.sub(ray.startPoint, center);
+		double a = ray.dir.abs2();
+		double b = 2f * R3.dot(start0, ray.dir);
+		double c = start0.abs2() - radius * radius;
 		double discriminant = b * b - 4f * a * c;
 		List<RayHit> rayHits;
 
@@ -54,15 +54,15 @@ public class Sphere implements RtObject {
 			}
 
 			public RayIntersection intersection() {
-				Vector hitPoint = ray.hitPoint(advance);
+				R3 hitPoint = ray.hitPoint(advance);
 
 				return new RayIntersection() {
-					public Vector hitPoint() {
+					public R3 hitPoint() {
 						return hitPoint;
 					}
 
-					public Vector normal() {
-						return Vector.sub(hitPoint, center);
+					public R3 normal() {
+						return R3.sub(hitPoint, center);
 					}
 
 					public Material material() {

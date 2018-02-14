@@ -10,7 +10,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 
 import suite.Constants;
-import suite.math.Vector;
+import suite.math.R3;
 import suite.os.LogUtil;
 import suite.primitive.Floats_;
 import suite.primitive.IntInt_Obj;
@@ -37,29 +37,29 @@ public class Render {
 		}
 	}
 
-	public Image render(int width, int height, BiFun<Float, Vector> f) {
+	public Image render(int width, int height, BiFun<Float, R3> f) {
 		float scale = 1f / Math.max(width, height);
 		int centerX = width / 2, centerY = height / 2;
 		float[] xs = Floats_.toArray(width + 1, x -> (x - centerX) * scale);
 		float[] ys = Floats_.toArray(height + 1, y -> (y - centerY) * scale);
 
-		return renderPixels(width, height, (IntInt_Obj<Vector>) (x, y) -> {
-			Vector color;
+		return renderPixels(width, height, (IntInt_Obj<R3>) (x, y) -> {
+			R3 color;
 			try {
 				color = f.apply(xs[x], ys[y]);
 			} catch (Exception ex) {
 				LogUtil.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
-				color = new Vector(1d, 1d, 1d);
+				color = new R3(1d, 1d, 1d);
 			}
 			return color;
 		});
 	}
 
-	public Image renderPixels(int width, int height, IntInt_Obj<Vector> f) {
+	public Image renderPixels(int width, int height, IntInt_Obj<R3> f) {
 		int nThreads = Constants.nThreads;
 
 		int[] txs = Ints_.toArray(nThreads + 1, i -> width * i / nThreads);
-		Vector[][] pixels = new Vector[width][height];
+		R3[][] pixels = new R3[width][height];
 
 		List<Thread> threads = Ints_ //
 				.range(nThreads) //
@@ -76,15 +76,15 @@ public class Render {
 
 		for (int x = 0; x < width; x++)
 			for (int y = 0; y < height; y++) {
-				Vector pixel = limit(pixels[x][y]);
+				R3 pixel = limit(pixels[x][y]);
 				image.setRGB(x, y, new Color(pixel.x, pixel.y, pixel.z).getRGB());
 			}
 
 		return image;
 	}
 
-	private Vector limit(Vector u) {
-		return new Vector(limit(u.x), limit(u.y), limit(u.z));
+	private R3 limit(R3 u) {
+		return new R3(limit(u.x), limit(u.y), limit(u.z));
 	}
 
 	private float limit(float f) {

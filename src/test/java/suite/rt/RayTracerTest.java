@@ -12,7 +12,7 @@ import javax.imageio.ImageIO;
 import org.junit.Test;
 
 import suite.Constants;
-import suite.math.Vector;
+import suite.math.R3;
 import suite.os.FileUtil;
 import suite.rt.RayTracer.LightSource;
 import suite.rt.RayTracer.Material;
@@ -26,13 +26,13 @@ import suite.util.Thread_;
 
 public class RayTracerTest {
 
-	private Vector cr = v(1d, .4d, .4d);
-	private Vector cg = v(.4d, 1d, .4d);
-	private Vector cb = v(.4d, .4d, 1d);
-	private Vector cy = v(1d, 1d, .4d);
-	private Vector cp = v(1d, .4d, 1d);
-	private Vector cc = v(.4d, 1d, 1d);
-	private Vector cw = v(1d, 1d, 1d);
+	private R3 cr = v(1d, .4d, .4d);
+	private R3 cg = v(.4d, 1d, .4d);
+	private R3 cb = v(.4d, .4d, 1d);
+	private R3 cy = v(1d, 1d, .4d);
+	private R3 cp = v(1d, .4d, 1d);
+	private R3 cc = v(.4d, 1d, 1d);
+	private R3 cw = v(1d, 1d, 1d);
 
 	@Test
 	public void testBlank() throws IOException {
@@ -208,21 +208,21 @@ public class RayTracerTest {
 		}
 	}
 
-	private Material solid(Vector color) {
+	private Material solid(R3 color) {
 		return material(color, false, false);
 	}
 
-	private Material glassy(Vector color) {
+	private Material glassy(R3 color) {
 		return material(color, true, true);
 	}
 
-	private Material reflective(Vector color) {
+	private Material reflective(R3 color) {
 		return material(color, true, false);
 	}
 
-	private Material material(Vector color, boolean isReflective, boolean isTransparent) {
+	private Material material(R3 color, boolean isReflective, boolean isTransparent) {
 		return new Material() {
-			public Vector surfaceColor() {
+			public R3 surfaceColor() {
 				return color;
 			}
 
@@ -236,12 +236,12 @@ public class RayTracerTest {
 		};
 	}
 
-	private Vector gray(double f) {
+	private R3 gray(double f) {
 		return v(f, f, f);
 	}
 
-	private Vector v(double x, double y, double z) {
-		return new Vector(x, y, z);
+	private R3 v(double x, double y, double z) {
+		return new R3(x, y, z);
 	}
 
 }

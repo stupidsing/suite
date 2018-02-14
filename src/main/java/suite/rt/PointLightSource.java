@@ -1,25 +1,25 @@
 package suite.rt;
 
-import suite.math.Vector;
+import suite.math.R3;
 import suite.rt.RayTracer.LightSource;
 
 public class PointLightSource implements LightSource {
 
-	private Vector source;
-	private Vector lum;
+	private R3 source;
+	private R3 lum;
 
-	public PointLightSource(Vector source, Vector lum) {
+	public PointLightSource(R3 source, R3 lum) {
 		this.source = source;
 		this.lum = lum;
 	}
 
 	@Override
-	public Vector source() {
+	public R3 source() {
 		return source;
 	}
 
 	@Override
-	public Vector lit(Vector point) {
+	public R3 lit(R3 point) {
 		return lum;
 	}
 

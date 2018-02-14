@@ -4,28 +4,28 @@ import java.util.Collection;
 import java.util.List;
 
 import suite.math.MathUtil;
-import suite.math.Vector;
+import suite.math.R3;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RtObject;
 
 public class BoundingBox implements RtObject {
 
-	private Vector min, max;
+	private R3 min, max;
 	private RtObject object;
 
-	public BoundingBox(Vector min, Vector max, RtObject object) {
+	public BoundingBox(R3 min, R3 max, RtObject object) {
 		this.min = min;
 		this.max = max;
 		this.object = object;
 	}
 
-	public static BoundingBox bound(Collection<Vector> points, RtObject object) {
+	public static BoundingBox bound(Collection<R3> points, RtObject object) {
 		double min = Double.NEGATIVE_INFINITY, max = Double.POSITIVE_INFINITY;
 		double minX = max, minY = max, minZ = max;
 		double maxX = min, maxY = min, maxZ = min;
 
-		for (Vector point : points) {
+		for (R3 point : points) {
 			double x = point.x, y = point.y, z = point.z;
 			minX = Math.min(minX, x);
 			minY = Math.min(minY, y);
@@ -35,7 +35,7 @@ public class BoundingBox implements RtObject {
 			maxZ = Math.max(maxZ, z);
 		}
 
-		return new BoundingBox(new Vector(minX, minY, minZ), new Vector(maxX, maxY, maxZ), object);
+		return new BoundingBox(new R3(minX, minY, minZ), new R3(maxX, maxY, maxZ), object);
 	}
 
 	@Override

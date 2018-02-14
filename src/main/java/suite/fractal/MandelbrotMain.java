@@ -2,7 +2,7 @@ package suite.fractal;
 
 import suite.image.Render;
 import suite.math.Complex;
-import suite.math.Vector;
+import suite.math.R3;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 
@@ -20,7 +20,7 @@ public class MandelbrotMain extends ExecutableProgram {
 		return new Render() //
 				.render(width, height, (fx, fy) -> {
 					float n = mandelbrot(Complex.of(fx * 4f, fy * 4f)) / 256f;
-					return new Vector(n, n, n);
+					return new R3(n, n, n);
 				}) //
 				.view();
 	}

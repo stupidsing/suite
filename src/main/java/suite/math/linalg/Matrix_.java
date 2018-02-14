@@ -3,7 +3,7 @@ package suite.math.linalg;
 import java.util.Arrays;
 
 import suite.math.MathUtil;
-import suite.math.Vector;
+import suite.math.R3;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
@@ -241,12 +241,12 @@ public class Matrix_ {
 		return o;
 	}
 
-	public Vector mul(float[][] m, Vector v) {
+	public R3 mul(float[][] m, R3 v) {
 		if (sqSize_(m) == 3) {
 			float x1 = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z;
 			float y1 = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z;
 			float z1 = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z;
-			return new Vector(x1, y1, z1);
+			return new R3(x1, y1, z1);
 		} else
 			return Fail.t("wrong input sizes");
 	}
