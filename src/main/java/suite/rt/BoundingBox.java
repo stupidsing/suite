@@ -21,12 +21,12 @@ public class BoundingBox implements RtObject {
 	}
 
 	public static BoundingBox bound(Collection<Vector> points, RtObject object) {
-		float min = Float.NEGATIVE_INFINITY, max = Float.POSITIVE_INFINITY;
-		float minX = max, minY = max, minZ = max;
-		float maxX = min, maxY = min, maxZ = min;
+		double min = Double.NEGATIVE_INFINITY, max = Double.POSITIVE_INFINITY;
+		double minX = max, minY = max, minZ = max;
+		double maxX = min, maxY = min, maxZ = min;
 
 		for (Vector point : points) {
-			float x = point.x, y = point.y, z = point.z;
+			double x = point.x, y = point.y, z = point.z;
 			minX = Math.min(minX, x);
 			minY = Math.min(minY, y);
 			minZ = Math.min(minZ, z);

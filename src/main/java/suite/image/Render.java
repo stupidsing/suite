@@ -49,7 +49,7 @@ public class Render {
 				color = f.apply(xs[x], ys[y]);
 			} catch (Exception ex) {
 				LogUtil.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
-				color = new Vector(1f, 1f, 1f);
+				color = new Vector(1d, 1d, 1d);
 			}
 			return color;
 		});

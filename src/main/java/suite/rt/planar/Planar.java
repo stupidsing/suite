@@ -14,11 +14,11 @@ public abstract class Planar implements RtObject {
 	private Vector origin;
 	private Vector axis0, axis1;
 	private Plane plane;
-	private float invAxis0, invAxis1;
+	private double invAxis0, invAxis1;
 	private IsHit isHit;
 
 	public interface IsHit {
-		public abstract boolean isHit(float x, float y);
+		public abstract boolean isHit(double x, double y);
 	}
 
 	public Planar(Vector origin, Vector axis0, Vector axis1, IsHit isHit, Material material) {
@@ -39,8 +39,8 @@ public abstract class Planar implements RtObject {
 
 		for (RayHit rayHit : plane.hit(ray)) {
 			Vector planarDir = Vector.sub(rayHit.intersection().hitPoint(), origin);
-			float x = Vector.dot(planarDir, axis0) * invAxis0;
-			float y = Vector.dot(planarDir, axis1) * invAxis1;
+			double x = Vector.dot(planarDir, axis0) * invAxis0;
+			double y = Vector.dot(planarDir, axis1) * invAxis1;
 
 			if (isHit.isHit(x, y))
 				rayHits.add(rayHit);

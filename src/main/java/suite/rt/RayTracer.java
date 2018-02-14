@@ -21,9 +21,9 @@ public class RayTracer {
 
 	private int depth = 4;
 
-	private float airRefractiveIndex = 1f;
-	private float glassRefractiveIndex = 1.1f;
-	private float adjustFresnel = 0f;
+	private double airRefractiveIndex = 1d;
+	private double glassRefractiveIndex = 1.1d;
+	private double adjustFresnel = 0d;
 
 	private Vector ambient = Vector.origin;
 
@@ -39,7 +39,7 @@ public class RayTracer {
 	}
 
 	public interface RayHit {
-		public float advance();
+		public double advance();
 
 		public RayIntersection intersection();
 
@@ -59,7 +59,7 @@ public class RayTracer {
 
 		public boolean isReflective();
 
-		public float transparency();
+		public double transparency();
 	}
 
 	public static class Ray {
@@ -71,8 +71,8 @@ public class RayTracer {
 			this.dir = dir;
 		}
 
-		public Vector hitPoint(float advance) {
-			return Vector.add(startPoint, Vector.mul(dir, advance));
+		public Vector hitPoint(double advance) {
+			return Vector.add(startPoint, Vector.scale(dir, advance));
 		}
 
 		public String toString() {
@@ -117,10 +117,10 @@ public class RayTracer {
 			Vector hitPoint = i.hitPoint();
 			Vector normal0 = Vector.norm(i.normal());
 
-			float dot0 = Vector.dot(ray.dir, normal0);
+			double dot0 = Vector.dot(ray.dir, normal0);
 			boolean isInside = 0f < dot0;
 			Vector normal;
-			float dot;
+			double dot;
 
 			if (!isInside) {
 				normal = normal0;
@@ -132,25 +132,25 @@ public class RayTracer {
 
 			Material material = i.material();
 			boolean reflective = material.isReflective();
-			float transparency = material.transparency();
+			double transparency = material.transparency();
 			Vector color;
 
 			if ((reflective || transparency < 0f) && 0 < depth) {
-				float cos = -dot / (float) Math.sqrt(Vector.abs2(ray.dir));
+				double cos = -dot / Math.sqrt(Vector.abs2(ray.dir));
 
 				// account reflection
-				Vector reflectDir = Vector.add(ray.dir, Vector.mul(normal, -2f * dot));
+				Vector reflectDir = Vector.add(ray.dir, Vector.scale(normal, -2f * dot));
 				Vector reflectPoint = Vector.add(hitPoint, negligible(normal));
 				Vector reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
 
 				// account refraction
-				float eta = isInside ? glassRefractiveIndex / airRefractiveIndex : airRefractiveIndex / glassRefractiveIndex;
-				float k = 1f - eta * eta * (1f - cos * cos);
+				double eta = isInside ? glassRefractiveIndex / airRefractiveIndex : airRefractiveIndex / glassRefractiveIndex;
+				double k = 1d - eta * eta * (1d - cos * cos);
 				Vector refractColor;
 
 				if (0 <= k) {
-					Vector refractDir = Vector.add(Vector.mul(ray.dir, eta / (float) Math.sqrt(Vector.abs2(ray.dir))),
-							Vector.mul(normal, eta * cos - (float) Math.sqrt(k)));
+					Vector refractDir = Vector.add(Vector.scale(ray.dir, eta / (float) Math.sqrt(Vector.abs2(ray.dir))),
+							Vector.scale(normal, eta * cos - (float) Math.sqrt(k)));
 					Vector refractPoint = Vector.sub(hitPoint, negligible(normal));
 					refractColor = traceRay(depth - 1, new Ray(refractPoint, refractDir));
 				} else
@@ -164,23 +164,24 @@ public class RayTracer {
 
 				// schlick approximation
 				boolean isDramaticMix = true;
-				float r = (airRefractiveIndex - glassRefractiveIndex) / (airRefractiveIndex + glassRefractiveIndex);
-				float mix = isDramaticMix ? .1f : r * r;
-				float cos1 = 1f - cos;
-				float cos2 = cos1 * cos1;
-				float fresnel = mix + (1f - mix) * cos1 * cos2 * cos2;
+				double r = (airRefractiveIndex - glassRefractiveIndex) / (airRefractiveIndex + glassRefractiveIndex);
+				double mix = isDramaticMix ? .1d : r * r;
+				double cos1 = 1d - cos;
+				double cos2 = cos1 * cos1;
+				double fresnel = mix + (1d - mix) * cos1 * cos2 * cos2;
 
 				// fresnel is often too low. Mark it up for visual effect.
-				float fresnel1 = adjustFresnel + fresnel * (1f - adjustFresnel);
+				double fresnel1 = adjustFresnel + fresnel * (1d - adjustFresnel);
 
-				color = Vector.add(Vector.mul(reflectColor, fresnel1), Vector.mul(refractColor, (1f - fresnel1) * transparency));
+				color = Vector.add(Vector.scale(reflectColor, fresnel1),
+						Vector.scale(refractColor, (1f - fresnel1) * transparency));
 			} else {
 				color = Vector.origin;
 
 				// account light sources
 				for (LightSource lightSource : lightSources) {
 					Vector lightDir = Vector.sub(lightSource.source(), hitPoint);
-					float lightDot = Vector.dot(lightDir, normal);
+					double lightDot = Vector.dot(lightDir, normal);
 
 					if (0f < lightDot) { // facing the light
 						Vector lightPoint = Vector.add(hitPoint, negligible(normal));
@@ -188,8 +189,8 @@ public class RayTracer {
 
 						if (lightRayHit == null || 1f < lightRayHit.advance()) {
 							Vector lightColor = lightSource.lit(hitPoint);
-							float cos = lightDot / (float) Math.sqrt(Vector.abs2(lightDir));
-							color = Vector.add(color, Vector.mul(lightColor, cos));
+							double cos = lightDot / Math.sqrt(Vector.abs2(lightDir));
+							color = Vector.add(color, Vector.scale(lightColor, cos));
 						}
 					}
 				}

@@ -12,16 +12,16 @@ import suite.rt.RayTracer.RtObject;
 public class Sphere implements RtObject {
 
 	private Vector center;
-	private float radius;
+	private double radius;
 	private Material material;
 
-	public Sphere(Vector center, float radius, Material material) {
+	public Sphere(Vector center, double radius, Material material) {
 		this.center = center;
 		this.radius = radius;
 		this.material = material;
 	}
 
-	public static RtObject c(Vector center, float radius, Material material) {
+	public static RtObject c(Vector center, double radius, Material material) {
 		Vector radiusRange = new Vector(radius, radius, radius);
 		Vector min = Vector.sub(center, radiusRange);
 		Vector max = Vector.add(center, radiusRange);
@@ -31,15 +31,15 @@ public class Sphere implements RtObject {
 	@Override
 	public List<RayHit> hit(Ray ray) {
 		Vector start0 = Vector.sub(ray.startPoint, center);
-		float a = Vector.abs2(ray.dir);
-		float b = 2f * Vector.dot(start0, ray.dir);
-		float c = Vector.abs2(start0) - radius * radius;
-		float discriminant = b * b - 4f * a * c;
+		double a = Vector.abs2(ray.dir);
+		double b = 2f * Vector.dot(start0, ray.dir);
+		double c = Vector.abs2(start0) - radius * radius;
+		double discriminant = b * b - 4f * a * c;
 		List<RayHit> rayHits;
 
 		if (0 < discriminant) { // hit?
-			float sqrt = (float) Math.sqrt(discriminant);
-			float denom = 1f / (2f * a);
+			double sqrt = Math.sqrt(discriminant);
+			double denom = 1d / (2d * a);
 			rayHits = List.of(rayHit(ray, (-b - sqrt) * denom), rayHit(ray, (-b + sqrt) * denom));
 		} else
 			rayHits = List.of();
@@ -47,9 +47,9 @@ public class Sphere implements RtObject {
 		return rayHits;
 	}
 
-	private RayHit rayHit(Ray ray, float advance) {
+	private RayHit rayHit(Ray ray, double advance) {
 		return new RayHit() {
-			public float advance() {
+			public double advance() {
 				return advance;
 			}
 

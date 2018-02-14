@@ -230,8 +230,8 @@ public class RayTracerTest {
 				return isReflective;
 			}
 
-			public float transparency() {
-				return isTransparent ? .5f : 0f;
+			public double transparency() {
+				return isTransparent ? .5d : 0d;
 			}
 		};
 	}
