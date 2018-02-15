@@ -48,7 +48,7 @@ public class Trade {
 
 	public String record() {
 		return date //
-				+ (!String_.equals(remark, "-") ? "remark" : "") //
+				+ (!String_.equals(remark, "-") ? remark : "") //
 				+ "\t" + buySell //
 				+ "\t" + symbol //
 				+ "\t" + price //
