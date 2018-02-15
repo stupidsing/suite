@@ -42,16 +42,24 @@ public class R3 {
 		return abs2_();
 	}
 
+	public double mag() {
+		return mag_();
+	}
+
 	public R3 neg() {
 		return neg_();
 	}
 
 	public R3 norm() {
-		return scale_(1d / Math.sqrt(abs2_()));
+		return scale_(1d / mag_());
 	}
 
 	public R3 scale(double f) {
 		return scale_(f);
+	}
+
+	private double mag_() {
+		return Math.sqrt(abs2_());
 	}
 
 	private double abs2_() {

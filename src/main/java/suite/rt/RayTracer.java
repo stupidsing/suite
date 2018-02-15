@@ -136,7 +136,7 @@ public class RayTracer {
 			R3 color;
 
 			if ((reflective || transparency < 0d) && 0 < depth) {
-				double cos = -dot / Math.sqrt(ray.dir.abs2());
+				double cos = -dot / ray.dir.mag();
 
 				// account reflection
 				R3 reflectDir = R3.add(ray.dir, normal.scale(-2d * dot));
@@ -149,7 +149,7 @@ public class RayTracer {
 				R3 refractColor;
 
 				if (0 <= k) {
-					R3 refractDir = R3.add(ray.dir.scale(eta / Math.sqrt(ray.dir.abs2())), normal.scale(eta * cos - Math.sqrt(k)));
+					R3 refractDir = R3.add(ray.dir.scale(eta / ray.dir.mag()), normal.scale(eta * cos - Math.sqrt(k)));
 					R3 refractPoint = R3.sub(hitPoint, negligible(normal));
 					refractColor = traceRay(depth - 1, new Ray(refractPoint, refractDir));
 				} else
@@ -187,7 +187,7 @@ public class RayTracer {
 
 						if (lightRayHit == null || 1d < lightRayHit.advance()) {
 							R3 lightColor = lightSource.lit(hitPoint);
-							double cos = lightDot / Math.sqrt(lightDir.abs2());
+							double cos = lightDot / lightDir.mag();
 							color = R3.add(color, lightColor.scale(cos));
 						}
 					}
