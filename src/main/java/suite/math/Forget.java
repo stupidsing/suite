@@ -1,10 +1,10 @@
 package suite.math;
 
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Vector;
 
 public class Forget {
 
-	private static Vector_ vec = new Vector_();
+	private static Vector vec = new Vector();
 
 	public static float[] forget(float[] fs, float[] n) {
 		return forgetOn(vec.of(fs), n);

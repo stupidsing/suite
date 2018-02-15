@@ -3,7 +3,7 @@ package suite.algo;
 import java.util.List;
 import java.util.Random;
 
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Vector;
 import suite.primitive.DblMutable;
 import suite.primitive.Floats_;
 import suite.primitive.Ints_;
@@ -18,7 +18,7 @@ public class SelfOrganizingMap {
 	private int nDim = bounds.length;
 
 	private Random random = new Random();
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	public void som(List<float[]> ins) {
 		int length = ins.get(0).length;

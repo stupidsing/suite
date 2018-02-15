@@ -5,14 +5,14 @@ import java.util.Random;
 import suite.math.Forget;
 import suite.math.Sigmoid;
 import suite.math.Tanh;
-import suite.math.linalg.Matrix_;
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Matrix;
+import suite.math.linalg.Vector;
 import suite.primitive.Floats_;
 
 public class LongShortTermMemory {
 
-	private Matrix_ mtx = new Matrix_();
-	private Vector_ vec = new Vector_();
+	private Matrix mtx = new Matrix();
+	private Vector vec = new Vector();
 
 	private float learningRate;
 	private int inputLength;

@@ -11,7 +11,7 @@ import suite.util.To;
 
 public class MatrixTest {
 
-	private Matrix_ mtx = new Matrix_();
+	private Matrix mtx = new Matrix();
 
 	@Test
 	public void testDet0() {

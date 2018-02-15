@@ -34,7 +34,7 @@ public class VirtualMatrix {
 	}
 
 	public static VirtualMatrix of(float[][] matrix) {
-		Matrix_ mtx = VirtualMatrixUtil.mtx;
+		Matrix mtx = VirtualMatrixUtil.mtx;
 		return of(mtx.height(matrix), mtx.width(matrix), (i, j) -> matrix[i][j]);
 	}
 
@@ -64,7 +64,7 @@ public class VirtualMatrix {
 	}
 
 	public VirtualMatrix convolute(float[][] k) {
-		Matrix_ mtx = VirtualMatrixUtil.mtx;
+		Matrix mtx = VirtualMatrixUtil.mtx;
 		int kh = mtx.height(k);
 		int kw = mtx.width(k);
 		return VirtualMatrix.of( //
@@ -186,7 +186,7 @@ public class VirtualMatrix {
 
 class VirtualMatrixUtil {
 
-	public static Matrix_ mtx = new Matrix_();
+	public static Matrix mtx = new Matrix();
 
 	public static VirtualMatrix checkSizes(VirtualMatrix vm0, VirtualMatrix vm1, IntInt_Flt fun) {
 		return vm0.apply((h0, w0, f0) -> vm1.apply((h1, w1, f1) -> {

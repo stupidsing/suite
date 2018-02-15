@@ -16,9 +16,9 @@ public class SingularValueDecomposition {
 	private int k = 9;
 
 	private Eigen eigen = new Eigen();
-	private Matrix_ mtx = new Matrix_();
+	private Matrix mtx = new Matrix();
 	private Random random = new Random();
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	// Machine Learning - An Algorithm Perspective
 	// 6.2 Principal Components Analysis

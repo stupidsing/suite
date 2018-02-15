@@ -2,7 +2,7 @@ package suite.trade.analysis;
 
 import java.util.Arrays;
 
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Vector;
 import suite.primitive.Doubles_;
 import suite.util.To;
 import ts.TimeSeries;
@@ -10,7 +10,7 @@ import ts.TimeSeries;
 public class MovingAverage {
 
 	private TimeSeries ts = new TimeSeries();
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	// exponential moving average convergence/divergence
 	public float[] emacd(float[] prices, double alpha0, double alpha1) {

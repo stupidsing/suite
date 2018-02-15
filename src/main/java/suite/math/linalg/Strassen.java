@@ -5,7 +5,7 @@ import suite.util.Fail;
 
 public class Strassen {
 
-	private Matrix_ mtx = new Matrix_();
+	private Matrix mtx = new Matrix();
 
 	// https://en.wikipedia.org/wiki/Strassen_algorithm
 	public float[][] mul(float[][] a, float[][] b) {

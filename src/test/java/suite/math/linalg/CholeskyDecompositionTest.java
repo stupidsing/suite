@@ -11,9 +11,9 @@ import suite.util.To;
 
 public class CholeskyDecompositionTest {
 
-	private Matrix_ mtx = new Matrix_();
+	private Matrix mtx = new Matrix();
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	private float[][] m0 = { //
 			{ 4f, 12f, -16f, }, //

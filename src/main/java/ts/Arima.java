@@ -3,7 +3,7 @@ package ts;
 import java.util.Arrays;
 import java.util.Random;
 
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.DblPrimitives.DblSource;
@@ -23,7 +23,7 @@ public class Arima {
 	private Statistic stat = new Statistic();
 	private Random random = new Random();
 	private TimeSeries ts = new TimeSeries();
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	public LinearRegression ar(float[] ys, int n) {
 		return stat.linearRegression(Ints_ //
