@@ -3,7 +3,7 @@ package suite.trade.analysis;
 import java.util.List;
 import java.util.Map;
 
-import suite.math.linalg.Matrix_;
+import suite.math.linalg.Matrix;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Int_Flt;
@@ -30,7 +30,7 @@ public class FactorLr {
 	private List<float[]> indexPrices;
 
 	private Configuration cfg;
-	private Matrix_ mtx = new Matrix_();
+	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 	private Time now = Time.now();
 

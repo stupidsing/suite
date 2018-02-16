@@ -8,14 +8,14 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.adt.pair.Pair;
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Vector;
 import suite.nn.NeuralNetwork.Layer;
 import suite.nn.NeuralNetwork.Out;
 import suite.util.FunUtil2.BinOp;
 
 public class NeuralNetworkTest {
 
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	@Test
 	public void test() {

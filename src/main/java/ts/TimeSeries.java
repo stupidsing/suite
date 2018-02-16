@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import suite.math.linalg.CholeskyDecomposition;
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.math.numeric.Statistic.MeanVariance;
@@ -21,7 +21,7 @@ public class TimeSeries {
 
 	private CholeskyDecomposition cd = new CholeskyDecomposition();
 	private Statistic stat = new Statistic();
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	// autocorrelation function
 	// "The Analysis of Time Series", Chris Chatfield

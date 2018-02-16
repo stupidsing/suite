@@ -7,9 +7,9 @@ import suite.primitive.Floats_;
 
 public class Eigen {
 
-	private Matrix_ mtx = new Matrix_();
+	private Matrix mtx = new Matrix();
 	private Random random = new Random();
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	// Paul Wilmott on Quantitative Finance, Second Edition
 	// 37.13.1 The Power Method, page 620

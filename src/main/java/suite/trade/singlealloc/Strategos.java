@@ -2,7 +2,7 @@ package suite.trade.singlealloc;
 
 import java.util.Arrays;
 
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Vector;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.primitive.Floats_;
 import suite.primitive.Ints_;
@@ -13,7 +13,7 @@ import ts.Quant;
 public class Strategos {
 
 	private MovingAverage ma = new MovingAverage();
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	public BuySellStrategy longHold = prices -> day -> day != 0 ? 0 : 1;
 

@@ -1,12 +1,12 @@
 package suite.math.numeric;
 
-import suite.math.linalg.Matrix_;
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Matrix;
+import suite.math.linalg.Vector;
 
 public class ConjugateGradient {
 
-	private Matrix_ mtx = new Matrix_();
-	private Vector_ vec = new Vector_();
+	private Matrix mtx = new Matrix();
+	private Vector vec = new Vector();
 
 	// https://en.wikipedia.org/wiki/Conjugate_gradient_method
 	public float[] linear(float[][] a, float[] b, float[] initials) {

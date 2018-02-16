@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Random;
 
 import suite.math.Sigmoid;
-import suite.math.linalg.Matrix_;
+import suite.math.linalg.Matrix;
 import suite.primitive.DblMutable;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntPrimitives.Int_Obj;
@@ -20,7 +20,7 @@ import suite.util.To;
 
 public class NeuralNetwork {
 
-	private Matrix_ mtx = new Matrix_();
+	private Matrix mtx = new Matrix();
 	private Random random = new Random();
 
 	private float learningRate = 1f;

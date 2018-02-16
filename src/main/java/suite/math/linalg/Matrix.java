@@ -11,7 +11,7 @@ import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.To;
 
-public class Matrix_ {
+public class Matrix {
 
 	public float[][] add(float[][] m, float[][] n) {
 		return addOn(copy(m), n);

@@ -7,7 +7,7 @@ import suite.util.To;
 
 public class CholeskyDecomposition {
 
-	private Matrix_ mtx = new Matrix_();
+	private Matrix mtx = new Matrix();
 
 	/**
 	 * @param m

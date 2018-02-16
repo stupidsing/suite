@@ -6,7 +6,7 @@ import org.junit.Test;
 
 import suite.inspect.Dump;
 import suite.math.MathUtil;
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.primitive.adt.pair.FltObjPair;
@@ -17,7 +17,7 @@ public class StatisticTest {
 
 	private Statistic stat = new Statistic();
 	private Random random = new Random();
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	@Test
 	public void testCovariance() {

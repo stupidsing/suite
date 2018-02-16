@@ -4,8 +4,8 @@ import suite.adt.pair.Pair;
 
 public class Qr {
 
-	private Matrix_ mtx = new Matrix_();
-	private Vector_ vec = new Vector_();
+	private Matrix mtx = new Matrix();
+	private Vector vec = new Vector();
 
 	public Pair<float[][], float[][]> decompose(float[][] m0) {
 		Pair<float[][], float[][]> qr = decompose_mT_T(mtx.transpose(m0));

@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Vector;
 import suite.primitive.Int_Int;
 import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
@@ -18,7 +18,7 @@ import suite.util.To;
 
 public class KmeansCluster {
 
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	private int dimension;
 

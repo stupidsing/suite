@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.pair.Pair;
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -29,7 +29,7 @@ public class Factor {
 	private Configuration cfg;
 	private Statistic stat = new Statistic();
 	private Time now = Time.now();
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	public static Factor ofCrudeOil(Configuration cfg) {
 		return of(cfg, Read.each(Usex.crudeOil));

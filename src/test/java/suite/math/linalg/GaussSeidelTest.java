@@ -7,7 +7,7 @@ import org.junit.Test;
 public class GaussSeidelTest {
 
 	private GaussSeidel gs = new GaussSeidel();
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	@Test
 	public void test() {

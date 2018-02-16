@@ -2,8 +2,8 @@ package suite.math.numeric;
 
 import suite.math.Symbolic;
 import suite.math.linalg.CholeskyDecomposition;
-import suite.math.linalg.Matrix_;
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Matrix;
+import suite.math.linalg.Vector;
 import suite.node.Node;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
@@ -18,9 +18,9 @@ import suite.util.FunUtil.Fun;
 public class GaussNewton {
 
 	private CholeskyDecomposition cd = new CholeskyDecomposition();
-	private Matrix_ mtx = new Matrix_();
+	private Matrix mtx = new Matrix();
 	private Symbolic sym = new Symbolic();
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	public float[] sym(Node[] vars, Node[] rs, float[] initials) {
 		int nVars = vars.length;

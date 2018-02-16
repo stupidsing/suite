@@ -2,7 +2,7 @@ package suite.math.linalg;
 
 public class GaussSeidel {
 
-	private Matrix_ mtx = new Matrix_();
+	private Matrix mtx = new Matrix();
 
 	// solve x in A*x = b
 	public float[] solve(float[][] a, float[] b) {

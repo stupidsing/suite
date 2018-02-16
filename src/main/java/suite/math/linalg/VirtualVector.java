@@ -81,7 +81,7 @@ public class VirtualVector {
 
 class VirtualVectorUtil {
 
-	public static Matrix_ mtx = new Matrix_();
+	public static Matrix mtx = new Matrix();
 
 	public static VirtualVector checkSizes(VirtualVector vv0, VirtualVector vv1, Int_Flt fun) {
 		return vv0.apply((length0, f0) -> vv1.apply((length1, f1) -> {

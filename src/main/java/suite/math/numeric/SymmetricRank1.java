@@ -1,8 +1,8 @@
 package suite.math.numeric;
 
 import suite.math.FiniteDifference;
-import suite.math.linalg.Matrix_;
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Matrix;
+import suite.math.linalg.Vector;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.util.FunUtil.Fun;
 
@@ -14,8 +14,8 @@ import suite.util.FunUtil.Fun;
 public class SymmetricRank1 {
 
 	private FiniteDifference fd = new FiniteDifference();
-	private Matrix_ mtx = new Matrix_();
-	private Vector_ vec = new Vector_();
+	private Matrix mtx = new Matrix();
+	private Vector vec = new Vector();
 
 	// using finite differences to find gradient
 	public float[] sr1(Obj_Dbl<float[]> fun, float[] initials) {

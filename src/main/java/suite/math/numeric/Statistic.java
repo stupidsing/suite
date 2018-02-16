@@ -3,8 +3,8 @@ package suite.math.numeric;
 import java.util.List;
 
 import suite.math.linalg.CholeskyDecomposition;
-import suite.math.linalg.Matrix_;
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Matrix;
+import suite.math.linalg.Vector;
 import suite.primitive.Floats_;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntObjSource;
@@ -22,8 +22,8 @@ import suite.util.To;
 public class Statistic {
 
 	private CholeskyDecomposition cholesky = new CholeskyDecomposition();
-	private Matrix_ mtx = new Matrix_();
-	private Vector_ vec = new Vector_();
+	private Matrix mtx = new Matrix();
+	private Vector vec = new Vector();
 
 	public double correlation(float[] xs, float[] ys) {
 		Int_Dbl xf = i -> xs[i];

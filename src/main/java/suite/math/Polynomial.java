@@ -3,7 +3,7 @@ package suite.math;
 import java.util.Arrays;
 
 import suite.adt.pair.Pair;
-import suite.math.linalg.Vector_;
+import suite.math.linalg.Vector;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
@@ -11,7 +11,7 @@ import suite.util.To;
 
 public class Polynomial {
 
-	private Vector_ vec = new Vector_();
+	private Vector vec = new Vector();
 
 	public double evaluate(float[] ps, float x) {
 		double y = 0d;
