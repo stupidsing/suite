@@ -345,6 +345,7 @@ public class Symbolic {
 					return div(new Map_(1, N1), map, 9);
 				}
 
+				// n / d = ((n - d * f) / (d * f) + 1) * f
 				private Opt<Map_> div(Map_ num, Map_ denom, int depth) {
 					Fun<Map_, IntObjPair<Node>> pf = poly -> poly.streamlet().min((pt0, pt1) -> pt1.t0 - pt0.t0);
 					Map_ one = new Map_(1, N1);
@@ -355,9 +356,9 @@ public class Symbolic {
 						IntObjPair<Node> pn = pf.apply(num);
 						IntObjPair<Node> pd = pf.apply(denom);
 						Map_ f = new Map_(pn.t0 - pd.t0, mul.apply(pn.t1, mul.inverse(pd.t1)));
-						Map_ denom1 = mul(denom, f);
-						Map_ num1 = add(num, neg(denom1));
-						return div(num1, denom1, depth - 1).map(r0 -> mul(add(r0, one), f));
+						Map_ df = mul(denom, f);
+						Map_ ndf = add(num, neg(df));
+						return div(ndf, df, depth - 1).map(r -> mul(add(r, one), f));
 					} else
 						return Opt.none();
 				}
