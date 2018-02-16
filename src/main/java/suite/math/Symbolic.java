@@ -304,18 +304,11 @@ public class Symbolic {
 				private Opt<Map_> poly(Node node) {
 					return new SwitchNode<Opt<Map_>>(node //
 					).match2(patAdd, (a, b) -> {
-						return poly(a).join(poly(b), (map0, map1) -> {
-							Map_ map = new Map_();
-							for (IntObjPair<Node> pair : IntObjStreamlet.concat(map0.streamlet(), map1.streamlet()))
-								map.add(pair.t0, pair.t1);
-							return map;
-						});
+						return poly(a).join(poly(b), this::add);
 					}).match1(patNeg, a -> {
-						return poly(a).map(map -> {
-							return new Map_(map.streamlet().mapIntObj((p, t) -> p, (p, t) -> add.inverse(t)));
-						});
+						return poly(a).map(this::neg);
 					}).match2(patMul, (a, b) -> {
-						return multiply(poly(a), poly(b));
+						return poly(a).join(poly(b), this::mul);
 					}).match1(patInv, a -> {
 						return poly(a).concatMap(this::inv);
 					}).match2(patPow, (a, b) -> {
@@ -340,8 +333,8 @@ public class Symbolic {
 							return poly(n).map(p -> {
 								Map_ r = new Map_(0, N1);
 								for (char ch : Integer.toBinaryString(power).toCharArray()) {
-									r = multiply(r, r);
-									r = ch != '0' ? multiply(p, r) : r;
+									r = mul(r, r);
+									r = ch != '0' ? mul(p, r) : r;
 								}
 								return r;
 							});
@@ -349,20 +342,42 @@ public class Symbolic {
 				}
 
 				private Opt<Map_> inv(Map_ map) {
-					return map.size() == 1 //
-							? Opt.of(new Map_(map.streamlet().mapIntObj((p, t) -> -p, (p, t) -> mul.inverse(t)))) //
-							: Opt.none();
+					return div(new Map_(1, N1), map, 9);
 				}
 
-				private Opt<Map_> multiply(Opt<Map_> opt0, Opt<Map_> opt1) {
-					return opt0.join(opt1, this::multiply);
+				private Opt<Map_> div(Map_ num, Map_ denom, int depth) {
+					Fun<Map_, IntObjPair<Node>> pf = poly -> poly.streamlet().min((pt0, pt1) -> pt1.t0 - pt0.t0);
+					Map_ one = new Map_(1, N1);
+
+					if (num.size() <= 0)
+						return Opt.of(num);
+					else if (0 < depth) {
+						IntObjPair<Node> pn = pf.apply(num);
+						IntObjPair<Node> pd = pf.apply(denom);
+						Map_ f = new Map_(pn.t0 - pd.t0, mul.apply(pn.t1, mul.inverse(pd.t1)));
+						Map_ denom1 = mul(denom, f);
+						Map_ num1 = add(num, neg(denom1));
+						return div(num1, denom1, depth - 1).map(r0 -> mul(add(r0, one), f));
+					} else
+						return Opt.none();
 				}
 
-				private Map_ multiply(Map_ map0, Map_ map1) {
+				private Map_ mul(Map_ map0, Map_ map1) {
 					Map_ map = new Map_();
 					for (IntObjPair<Node> pair0 : map0.streamlet())
 						for (IntObjPair<Node> pair1 : map1.streamlet())
 							map.add(pair0.t0 + pair1.t0, mul.apply(pair0.t1, pair1.t1));
+					return map;
+				}
+
+				private Map_ neg(Map_ a) {
+					return new Map_(a.streamlet().mapIntObj((p, t) -> p, (p, t) -> add.inverse(t)));
+				}
+
+				private Map_ add(Map_ map0, Map_ map1) {
+					Map_ map = new Map_();
+					for (IntObjPair<Node> pair : IntObjStreamlet.concat(map0.streamlet(), map1.streamlet()))
+						map.add(pair.t0, pair.t1);
 					return map;
 				}
 			}.poly(node);
