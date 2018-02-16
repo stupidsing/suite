@@ -20,7 +20,6 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.adt.map.IntObjMap;
-import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Read;
@@ -310,7 +309,7 @@ public class Symbolic {
 					}).match2(patMul, (a, b) -> {
 						return poly(a).join(poly(b), this::mul);
 					}).match1(patInv, a -> {
-						return poly(a).concatMap(this::inv);
+						return inv(poly(a));
 					}).match2(patPow, (a, b) -> {
 						return b instanceof Int ? pow(a, ((Int) b).number) : null;
 					}).applyIf(Node.class, n -> {
@@ -328,7 +327,7 @@ public class Symbolic {
 				private Opt<Map_> pow(Node m0, int power) {
 					return polyize(m0, coeff -> coeff).concatMap(n -> {
 						if (power < 0)
-							return pow(n, -power).concatMap(this::inv);
+							return inv(pow(n, -power));
 						else // TODO assumed m0 != 0 or power != 0
 							return poly(n).map(p -> {
 								Map_ r = new Map_(0, N1);
@@ -341,8 +340,8 @@ public class Symbolic {
 					});
 				}
 
-				private Opt<Map_> inv(Map_ map) {
-					return div(new Map_(1, N1), map, 9);
+				private Opt<Map_> inv(Opt<Map_> a) {
+					return a.concatMap(map -> div(new Map_(1, N1), map, 9));
 				}
 
 				// n / d = ((n - d * f) / (d * f) + 1) * f
@@ -414,45 +413,58 @@ public class Symbolic {
 	}
 
 	private Opt<Node> rational(Node node) {
+		class IntIntPair {
+			Integer t0, t1;
+
+			IntIntPair(Integer t0, Integer t1) {
+				this.t0 = t0;
+				this.t1 = t1;
+			}
+		}
+
 		return new Object() {
 			private Opt<IntIntPair> rat(Node node) {
 				return new SwitchNode<Opt<IntIntPair>>(node //
 				).match2(patAdd, (a, b) -> {
-					return rat(a).concatMap(p -> rat(b).map(q -> IntIntPair.of(p.t0 * q.t1 + q.t0 * p.t1, p.t1 * q.t1)));
+					return rat(a).concatMap(p -> rat(b).map(q -> new IntIntPair(p.t0 * q.t1 + q.t0 * p.t1, p.t1 * q.t1)));
 				}).match1(patNeg, a -> {
-					return rat(a).map(q -> IntIntPair.of(-q.t0, q.t1));
+					return rat(a).map(q -> new IntIntPair(-q.t0, q.t1));
 				}).match2(patMul, (a, b) -> {
-					return rat(a).concatMap(p -> rat(b).map(q -> IntIntPair.of(p.t0 * q.t0, p.t1 * q.t1)));
+					return rat(a).concatMap(p -> rat(b).map(q -> new IntIntPair(p.t0 * q.t0, p.t1 * q.t1)));
 				}).match1(patInv, a -> {
-					return rat(a).concatMap(q -> {
-						int num = q.t0;
-						int denom = q.t1;
-						if (num != 0)
-							return Opt.of(0 < num ? IntIntPair.of(denom, num) : IntIntPair.of(-denom, -num));
-						else
-							return Opt.none();
-					});
+					return inv(rat(a));
 				}).match2(patPow, (a, b) -> {
-					if (b instanceof Int) {
-						int power = ((Int) b).number;
-						if (power < 0)
-							return rat(mul.inverse(patPow.subst(a, Int.of(-power))));
-						else
-							return rat(a).map(pair -> { // TODO assummed a != 0 or b != 0
-								IntIntPair r = IntIntPair.of(1, 1);
-								for (char ch : Integer.toBinaryString(power).toCharArray()) {
-									r = IntIntPair.of(r.t0 * r.t0, r.t1 * r.t1);
-									r = ch != '0' ? IntIntPair.of(r.t0 * pair.t0, r.t1 * pair.t1) : r;
-								}
-								return r;
-							});
-					} else
-						return null;
+					return b instanceof Int ? pow(a, ((Int) b).number) : null;
 				}).applyIf(Int.class, i -> {
-					return Opt.of(IntIntPair.of(i.number, 1));
+					return Opt.of(new IntIntPair(i.number, 1));
 				}).applyIf(Node.class, a -> {
 					return Opt.none();
 				}).nonNullResult();
+			}
+
+			private Opt<IntIntPair> pow(Node a, int power) {
+				if (power < 0)
+					return inv(pow(a, -power));
+				else
+					return rat(a).map(pair -> { // TODO assummed a != 0 or b != 0
+						IntIntPair r = new IntIntPair(1, 1);
+						for (char ch : Integer.toBinaryString(power).toCharArray()) {
+							r = new IntIntPair(r.t0 * r.t0, r.t1 * r.t1);
+							r = ch != '0' ? new IntIntPair(r.t0 * pair.t0, r.t1 * pair.t1) : r;
+						}
+						return r;
+					});
+			}
+
+			private Opt<IntIntPair> inv(Opt<IntIntPair> a) {
+				return a.concatMap(q -> {
+					int num = q.t0;
+					int denom = q.t1;
+					if (num != 0)
+						return Opt.of(0 < num ? new IntIntPair(denom, num) : new IntIntPair(-denom, -num));
+					else
+						return Opt.none();
+				});
 			}
 		}.rat(node).map(pair -> {
 			int t0 = pair.t0;
