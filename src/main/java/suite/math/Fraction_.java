@@ -20,7 +20,7 @@ public class Fraction_<I> {
 	private Fun2<I, I, I> add_;
 	private Iterate<I> neg_;
 	private Fun2<I, I, I> mul_;
-	private Fun2<I, I, I> div_;
+	private Fun2<I, I, Pair<I, I>> divMod_;
 	private Fun<Node, Opt<I>> parse;
 
 	public static Fraction_<Integer> ofRational() {
@@ -30,7 +30,7 @@ public class Fraction_<I> {
 				(a, b) -> a + b, //
 				a -> -a, //
 				(a, b) -> a * b, //
-				(a, b) -> a / b, //
+				(a, b) -> Pair.of(a / b, a % b), //
 				node -> node instanceof Int ? Opt.of(((Int) node).number) : Opt.none());
 	}
 
@@ -40,7 +40,7 @@ public class Fraction_<I> {
 			Fun2<I, I, I> add_, //
 			Iterate<I> neg_, //
 			Fun2<I, I, I> mul_, //
-			Fun2<I, I, I> div_, //
+			Fun2<I, I, Pair<I, I>> divMod_, //
 			Fun<Node, Opt<I>> parse) {
 		N1 = n1;
 		this.isPositive = isPositive;
@@ -48,7 +48,7 @@ public class Fraction_<I> {
 		this.add_ = add_;
 		this.neg_ = neg_;
 		this.mul_ = mul_;
-		this.div_ = div_;
+		this.divMod_ = divMod_;
 		this.parse = parse;
 	}
 
@@ -76,9 +76,9 @@ public class Fraction_<I> {
 					m0 = n;
 					m1 = d;
 				} else {
-					I f = div_.apply(n, d);
-					I df = mul_.apply(d, f);
-					I ndf = add_.apply(n, neg_.apply(df));
+					Pair<I, I> divMod = divMod_.apply(n, d);
+					I f = divMod.t0; // div_.apply(n, d);
+					I ndf = divMod.t1; // add_.apply(n, neg_.apply(df));
 					Gcd gcd1 = new Gcd(d, ndf, depth - 1);
 
 					// n = gcd1.gcd * (gcd1.m0 * f + gcd1.m1)

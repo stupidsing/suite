@@ -6,6 +6,9 @@ import java.util.List;
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.adt.Opt;
+import suite.adt.pair.Fixie;
+import suite.adt.pair.Fixie_.Fixie3;
+import suite.adt.pair.Pair;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.jdk.lambda.LambdaInstance;
@@ -297,21 +300,15 @@ public class Symbolic {
 				private void add(int power, Node term) {
 					update(power, t -> add.apply(t != null ? t : N0, term));
 				}
+
+				private Fixie3<Integer, Node, Map_> decons() {
+					int min = streamlet().keys().min((p0, p1) -> p1 - p0);
+					return Fixie.of(min, get(min), new Map_(streamlet().filterKey(p -> p != min)));
+				}
 			}
 
 			Map_ zero = new Map_();
 			Map_ one_ = new Map_(0, N1);
-
-			Fun<Map_, IntObjPair<Node>> pf = poly -> poly.streamlet().min((pt0, pt1) -> pt1.t0 - pt0.t0);
-
-			Fun2<Map_, Map_, Map_> div = (a, b) -> {
-				if (0 < a.size()) {
-					IntObjPair<Node> pn = pf.apply(a);
-					IntObjPair<Node> pd = pf.apply(b);
-					return new Map_(pn.t0 - pd.t0, mul.apply(pn.t1, mul.inverse(pd.t1)));
-				} else
-					return a;
-			};
 
 			Opt<Map_> poly = new Object() {
 				private Opt<Map_> poly(Node node) {
@@ -321,7 +318,7 @@ public class Symbolic {
 							this::add, //
 							this::neg, //
 							this::mul, //
-							div, //
+							this::divMod, //
 							node_ -> {
 								if (is_x(node_))
 									return Opt.of(new Map_(1, N1));
@@ -389,13 +386,25 @@ public class Symbolic {
 					if (num.size() <= 0)
 						return Opt.of(num);
 					else if (0 < depth) {
-						Map_ f = div.apply(num, denom);
+						Pair<Map_, Map_> divMod = divMod(num, denom);
+						Map_ f = divMod.t0; // divIntegral(num, denom);
 						Map_ df = mul(denom, f);
-						Map_ ndf = add(num, neg(df));
+						Map_ ndf = divMod.t1; // add(num, neg(df));
 						return div(ndf, df, depth - 1).map(r -> mul(add(r, one_), f));
 					} else
 						return Opt.none();
 				}
+
+				private Pair<Map_, Map_> divMod(Map_ n, Map_ d) {
+					if (0 < n.size()) {
+						Fixie3<Integer, Node, Map_> n_ = n.decons();
+						Fixie3<Integer, Node, Map_> d_ = d.decons();
+						Map_ div = new Map_(n_.get0() - d_.get0(), mul.apply(n_.get1(), mul.inverse(d_.get1())));
+						Map_ mod = add(n_.get2(), mul(div, d_.get2()));
+						return Pair.of(div, mod);
+					} else
+						return Pair.of(n, zero);
+				};
 
 				private Map_ mul(Map_ a, Map_ b) {
 					Map_ c = new Map_();
@@ -448,10 +457,13 @@ public class Symbolic {
 	}
 
 	private Opt<Node> rational(Node node) {
+		Fun2<Integer, Integer, Node> nf0 = (n, d) -> mul.apply(Int.of(n), mul.inverse(Int.of(d)));
+		Fun2<Integer, Integer, Node> nf1 = (n, d) -> 0 <= n ? nf0.apply(n, d) : add.inverse(nf0.apply(-n, d));
+
 		return Fraction_ //
 				.ofRational() //
 				.rational(node) //
-				.map(pair -> pair.map((n, d) -> mul.apply(Int.of(n), mul.inverse(Int.of(d)))));
+				.map(pair -> pair.map(nf1));
 	}
 
 	private Node intOf(Node n) {

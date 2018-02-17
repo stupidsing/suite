@@ -41,7 +41,7 @@ public class SymbolicTest {
 		verifyEquals("0", sym.d(Suite.parse("1"), x));
 		verifyEquals("1", sym.d(Suite.parse("x"), x));
 		verifyEquals("4 * x * x * x", sym.d(Suite.parse("x * x * x * x"), x));
-		verifyEquals("neg 2 * inv x * inv x", sym.d(Suite.parse("2 / x"), x));
+		verifyEquals("neg 2 * inv (x * x)", sym.d(Suite.parse("2 / x"), x));
 	}
 
 	@Test
