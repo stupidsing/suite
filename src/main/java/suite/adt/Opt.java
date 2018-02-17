@@ -26,7 +26,7 @@ public class Opt<T> {
 	}
 
 	public <U> Opt<U> concatMap(Fun<T, Opt<U>> fun) {
-		return !isEmpty() ? fun.apply(value) : Opt.none();
+		return concatMap_(fun);
 	}
 
 	@Override
@@ -43,7 +43,7 @@ public class Opt<T> {
 	}
 
 	public <U, V> Opt<V> join(Opt<U> opt1, Fun2<T, U, V> fun) {
-		return !isEmpty() && !opt1.isEmpty() ? Opt.of(fun.apply(value, opt1.value)) : Opt.none();
+		return concatMap_(t -> opt1.map(u -> fun.apply(t, u)));
 	}
 
 	public T get() {
@@ -66,6 +66,10 @@ public class Opt<T> {
 	@Override
 	public String toString() {
 		return value != null ? value.toString() : "null";
+	}
+
+	private <U> Opt<U> concatMap_(Fun<T, Opt<U>> fun) {
+		return !isEmpty() ? fun.apply(value) : Opt.none();
 	}
 
 }

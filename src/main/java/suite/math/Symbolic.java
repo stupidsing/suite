@@ -324,8 +324,8 @@ public class Symbolic {
 					}).nonNullResult();
 				}
 
-				private Opt<Map_> pow(Node m0, int power) {
-					return polyize(m0, coeff -> coeff).concatMap(n -> {
+				private Opt<Map_> pow(Node a, int power) {
+					return polyize(a, coeff -> coeff).concatMap(n -> {
 						if (power < 0)
 							return inv(pow(n, -power));
 						else // TODO assumed m0 != 0 or power != 0
@@ -362,23 +362,23 @@ public class Symbolic {
 						return Opt.none();
 				}
 
-				private Map_ mul(Map_ map0, Map_ map1) {
-					Map_ map = new Map_();
-					for (IntObjPair<Node> pair0 : map0.streamlet())
-						for (IntObjPair<Node> pair1 : map1.streamlet())
-							map.add(pair0.t0 + pair1.t0, mul.apply(pair0.t1, pair1.t1));
-					return map;
+				private Map_ mul(Map_ a, Map_ b) {
+					Map_ c = new Map_();
+					for (IntObjPair<Node> pair0 : a.streamlet())
+						for (IntObjPair<Node> pair1 : b.streamlet())
+							c.add(pair0.t0 + pair1.t0, mul.apply(pair0.t1, pair1.t1));
+					return c;
 				}
 
 				private Map_ neg(Map_ a) {
 					return new Map_(a.streamlet().mapIntObj((p, t) -> p, (p, t) -> add.inverse(t)));
 				}
 
-				private Map_ add(Map_ map0, Map_ map1) {
-					Map_ map = new Map_();
-					for (IntObjPair<Node> pair : IntObjStreamlet.concat(map0.streamlet(), map1.streamlet()))
-						map.add(pair.t0, pair.t1);
-					return map;
+				private Map_ add(Map_ a, Map_ b) {
+					Map_ c = new Map_();
+					for (IntObjPair<Node> pair : IntObjStreamlet.concat(a.streamlet(), b.streamlet()))
+						c.add(pair.t0, pair.t1);
+					return c;
 				}
 			}.poly(node);
 
@@ -426,11 +426,11 @@ public class Symbolic {
 			private Opt<IntIntPair> rat(Node node) {
 				return new SwitchNode<Opt<IntIntPair>>(node //
 				).match2(patAdd, (a, b) -> {
-					return rat(a).concatMap(p -> rat(b).map(q -> new IntIntPair(p.t0 * q.t1 + q.t0 * p.t1, p.t1 * q.t1)));
+					return rat(a).join(rat(b), this::add);
 				}).match1(patNeg, a -> {
-					return rat(a).map(q -> new IntIntPair(-q.t0, q.t1));
+					return rat(a).map(this::neg);
 				}).match2(patMul, (a, b) -> {
-					return rat(a).concatMap(p -> rat(b).map(q -> new IntIntPair(p.t0 * q.t0, p.t1 * q.t1)));
+					return rat(a).join(rat(b), this::mul);
 				}).match1(patInv, a -> {
 					return inv(rat(a));
 				}).match2(patPow, (a, b) -> {
@@ -449,8 +449,8 @@ public class Symbolic {
 					return rat(a).map(pair -> { // TODO assummed a != 0 or b != 0
 						IntIntPair r = new IntIntPair(1, 1);
 						for (char ch : Integer.toBinaryString(power).toCharArray()) {
-							r = new IntIntPair(r.t0 * r.t0, r.t1 * r.t1);
-							r = ch != '0' ? new IntIntPair(r.t0 * pair.t0, r.t1 * pair.t1) : r;
+							r = mul(r, r);
+							r = ch != '0' ? mul(r, pair) : r;
 						}
 						return r;
 					});
@@ -465,6 +465,18 @@ public class Symbolic {
 					else
 						return Opt.none();
 				});
+			}
+
+			private IntIntPair mul(IntIntPair a, IntIntPair b) {
+				return new IntIntPair(a.t0 * b.t0, a.t1 * b.t1);
+			}
+
+			private IntIntPair neg(IntIntPair a) {
+				return new IntIntPair(-a.t0, a.t1);
+			}
+
+			private IntIntPair add(IntIntPair a, IntIntPair b) {
+				return new IntIntPair(a.t0 * b.t1 + b.t0 * a.t1, a.t1 * b.t1);
 			}
 		}.rat(node).map(pair -> {
 			int t0 = pair.t0;
