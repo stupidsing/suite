@@ -333,32 +333,32 @@ public class Symbolic {
 									return Opt.none();
 							});
 
-					// return fraction_ //
-					// .rational(node) //
-					// .concatMap(pair -> pair.map((n, d) -> d.size() == 1 && d.get(0) == N1 ?
-					// Opt.of(n) : Opt.none()));
-
-					return new SwitchNode<Opt<Map_>>(node //
-					).match2(patAdd, (a, b) -> {
-						return poly(a).join(poly(b), this::add);
-					}).match1(patNeg, a -> {
-						return poly(a).map(this::neg);
-					}).match2(patMul, (a, b) -> {
-						return poly(a).join(poly(b), this::mul);
-					}).match1(patInv, a -> {
-						return inv1(poly(a));
-					}).match2(patPow, (a, b) -> {
-						return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
-					}).applyIf(Node.class, n -> {
-						if (is_x(node))
-							return Opt.of(new Map_(1, N1));
-						else if (node == N0)
-							return Opt.of(zero);
-						else if (!isContains_x(node))
-							return Opt.of(new Map_(0, node));
-						else
-							return Opt.none();
-					}).nonNullResult();
+					if (Boolean.TRUE)
+						return fraction_ //
+								.rational(node) //
+								.concatMap(pair -> pair.map((n, d) -> d.size() == 1 && d.get(0) == N1 ? Opt.of(n) : Opt.none()));
+					else
+						return new SwitchNode<Opt<Map_>>(node //
+						).match2(patAdd, (a, b) -> {
+							return poly(a).join(poly(b), this::add);
+						}).match1(patNeg, a -> {
+							return poly(a).map(this::neg);
+						}).match2(patMul, (a, b) -> {
+							return poly(a).join(poly(b), this::mul);
+						}).match1(patInv, a -> {
+							return inv1(poly(a));
+						}).match2(patPow, (a, b) -> {
+							return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
+						}).applyIf(Node.class, n -> {
+							if (is_x(node))
+								return Opt.of(new Map_(1, N1));
+							else if (node == N0)
+								return Opt.of(zero);
+							else if (!isContains_x(node))
+								return Opt.of(new Map_(0, node));
+							else
+								return Opt.none();
+						}).nonNullResult();
 				}
 
 				private Opt<Map_> pow(Node a, int power) {
