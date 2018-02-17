@@ -307,13 +307,14 @@ public class Symbolic {
 				}
 			}
 
-			P_ zero = new P_();
-			P_ one_ = new P_(0, N1);
+			P_ p0 = new P_();
+			P_ p1 = new P_(0, N1);
+			P_ px = new P_(1, N1);
 
 			Opt<P_> poly = new Object() {
 				private Opt<P_> poly(Node node) {
 					Fraction_<P_> fraction_ = new Fraction_<>( //
-							one_, //
+							p1, //
 							a -> 0 < a.size(), //
 							this::add, //
 							this::neg, //
@@ -321,16 +322,16 @@ public class Symbolic {
 							this::divMod, //
 							node_ -> {
 								if (is_x(node_))
-									return Opt.of(new P_(1, N1));
+									return Opt.of(px);
 								else if (node_ == N0)
-									return Opt.of(zero);
+									return Opt.of(p0);
 								else if (!isContains_x(node_))
 									return Opt.of(new P_(0, node_));
 								else
 									return Opt.none();
 							});
 
-					if (Boolean.FALSE)
+					if (Boolean.TRUE)
 						return fraction_ //
 								.rational(node) //
 								.concatMap(pair -> pair.map((n, d) -> {
@@ -352,9 +353,9 @@ public class Symbolic {
 							return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 						}).applyIf(Node.class, n -> {
 							if (is_x(node))
-								return Opt.of(new P_(1, N1));
+								return Opt.of(px);
 							else if (node == N0)
-								return Opt.of(zero);
+								return Opt.of(p0);
 							else if (!isContains_x(node))
 								return Opt.of(new P_(0, node));
 							else
@@ -367,7 +368,7 @@ public class Symbolic {
 						return inv1(pow(a, -power));
 					else // TODO assumed m0 != 0 or power != 0
 						return poly(a).map(p -> {
-							P_ r = one_;
+							P_ r = p1;
 							for (char ch : Integer.toBinaryString(power).toCharArray()) {
 								r = mul(r, r);
 								r = ch != '0' ? mul(p, r) : r;
@@ -381,7 +382,7 @@ public class Symbolic {
 				}
 
 				private Opt<P_> inv(P_ a) {
-					return div(one_, a, 9);
+					return div(p1, a, 9);
 				}
 
 				// Euclidean
@@ -394,7 +395,7 @@ public class Symbolic {
 						P_ f = divMod.t0; // divIntegral(num, denom);
 						P_ df = mul(denom, f);
 						P_ ndf = divMod.t1; // add(num, neg(df));
-						return div(ndf, df, depth - 1).map(r -> mul(add(r, one_), f));
+						return div(ndf, df, depth - 1).map(r -> mul(add(r, p1), f));
 					} else
 						return Opt.none();
 				}
@@ -407,7 +408,7 @@ public class Symbolic {
 						P_ mod = add(n_.get2(), neg(mul(div, d_.get2())));
 						return Pair.of(div, mod);
 					} else
-						return Pair.of(zero, zero);
+						return Pair.of(p0, p0);
 				};
 
 				private P_ mul(P_ a, P_ b) {
