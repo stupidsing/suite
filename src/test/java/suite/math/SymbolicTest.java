@@ -67,10 +67,8 @@ public class SymbolicTest {
 
 	@Test
 	public void testSquare() {
-		verifySimplify("(a * x + b) ^ 2", "" //
-				+ "(a * a) * x * x" //
-				+ " + ((2 * a) * b) * x" //
-				+ " + b * b");
+		verifySimplify("(x + b) ^ 2", "" //
+				+ "x * x + 2 * b * x + 1");
 	}
 
 	private void verifySimplify(String poly, String expected) {
