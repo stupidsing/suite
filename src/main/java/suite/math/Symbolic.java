@@ -490,8 +490,8 @@ public class Symbolic {
 			int denom = pair.t1;
 			int sign = 0 <= t0 ? 1 : -1;
 			int num = 0 <= t0 ? t0 : -t0;
-			int p = Math.max(num, denom);
-			int q = Math.min(num, denom);
+			int p = num;
+			int q = denom;
 			while (0 < q) {
 				int mod = p % q;
 				p = q;
