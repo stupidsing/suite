@@ -309,7 +309,7 @@ public class Symbolic {
 					}).match2(patMul, (a, b) -> {
 						return poly(a).join(poly(b), this::mul);
 					}).match1(patInv, a -> {
-						return inv(poly(a));
+						return inv1(poly(a));
 					}).match2(patPow, (a, b) -> {
 						return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 					}).applyIf(Node.class, n -> {
@@ -327,7 +327,7 @@ public class Symbolic {
 				private Opt<Map_> pow(Node a, int power) {
 					return polyize(a, coeff -> coeff).concatMap(n -> {
 						if (power < 0)
-							return inv(pow(n, -power));
+							return inv1(pow(n, -power));
 						else // TODO assumed m0 != 0 or power != 0
 							return poly(n).map(p -> {
 								Map_ r = new Map_(0, N1);
@@ -340,8 +340,12 @@ public class Symbolic {
 					});
 				}
 
-				private Opt<Map_> inv(Opt<Map_> a) {
-					return a.concatMap(map -> div(new Map_(1, N1), map, 9));
+				private Opt<Map_> inv1(Opt<Map_> opt) {
+					return opt.concatMap(this::inv);
+				}
+
+				private Opt<Map_> inv(Map_ a) {
+					return div(new Map_(1, N1), a, 9);
 				}
 
 				// n / d = ((n - d * f) / (d * f) + 1) * f
@@ -432,7 +436,7 @@ public class Symbolic {
 				}).match2(patMul, (a, b) -> {
 					return rat(a).join(rat(b), this::mul);
 				}).match1(patInv, a -> {
-					return inv(rat(a));
+					return inv1(rat(a));
 				}).match2(patPow, (a, b) -> {
 					return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 				}).applyIf(Int.class, i -> {
@@ -444,7 +448,7 @@ public class Symbolic {
 
 			private Opt<IntIntPair> pow(Node a, int power) {
 				if (power < 0)
-					return inv(pow(a, -power));
+					return inv1(pow(a, -power));
 				else
 					return rat(a).map(pair -> { // TODO assummed a != 0 or b != 0
 						IntIntPair r = new IntIntPair(1, 1);
@@ -456,15 +460,17 @@ public class Symbolic {
 					});
 			}
 
-			private Opt<IntIntPair> inv(Opt<IntIntPair> a) {
-				return a.concatMap(q -> {
-					int num = q.t0;
-					int denom = q.t1;
-					if (num != 0)
-						return Opt.of(0 < num ? new IntIntPair(denom, num) : new IntIntPair(-denom, -num));
-					else
-						return Opt.none();
-				});
+			private Opt<IntIntPair> inv1(Opt<IntIntPair> opt) {
+				return opt.concatMap(this::inv);
+			}
+
+			private Opt<IntIntPair> inv(IntIntPair q) {
+				int num = q.t0;
+				int denom = q.t1;
+				if (num != 0)
+					return Opt.of(0 < num ? new IntIntPair(denom, num) : new IntIntPair(-denom, -num));
+				else
+					return Opt.none();
 			}
 
 			private IntIntPair mul(IntIntPair a, IntIntPair b) {
