@@ -313,13 +313,13 @@ public class Symbolic {
 					}).match2(patPow, (a, b) -> {
 						return b instanceof Int ? pow(a, ((Int) b).number) : null;
 					}).applyIf(Node.class, n -> {
-						if (is_x(node)) {
+						if (is_x(node))
 							return Opt.of(new Map_(1, N1));
-						} else if (node == N0)
+						else if (node == N0)
 							return Opt.of(new Map_());
-						else if (!isContains_x(node)) {
+						else if (!isContains_x(node))
 							return Opt.of(new Map_(0, node));
-						} else
+						else
 							return Opt.none();
 					}).nonNullResult();
 				}
