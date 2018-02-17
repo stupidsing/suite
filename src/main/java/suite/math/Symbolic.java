@@ -302,8 +302,42 @@ public class Symbolic {
 			Map_ zero = new Map_();
 			Map_ one_ = new Map_(0, N1);
 
+			Fun<Map_, IntObjPair<Node>> pf = poly -> poly.streamlet().min((pt0, pt1) -> pt1.t0 - pt0.t0);
+
+			Fun2<Map_, Map_, Map_> div = (a, b) -> {
+				if (0 < a.size()) {
+					IntObjPair<Node> pn = pf.apply(a);
+					IntObjPair<Node> pd = pf.apply(b);
+					return new Map_(pn.t0 - pd.t0, mul.apply(pn.t1, mul.inverse(pd.t1)));
+				} else
+					return a;
+			};
+
 			Opt<Map_> poly = new Object() {
 				private Opt<Map_> poly(Node node) {
+					Fraction_<Map_> fraction_ = new Fraction_<Map_>( //
+							one_, //
+							a -> 0 < a.size(), //
+							this::add, //
+							this::neg, //
+							this::mul, //
+							div, //
+							node_ -> {
+								if (is_x(node_))
+									return Opt.of(new Map_(1, N1));
+								else if (node_ == N0)
+									return Opt.of(zero);
+								else if (!isContains_x(node_))
+									return Opt.of(new Map_(0, node_));
+								else
+									return Opt.none();
+							});
+
+					// return fraction_ //
+					// .rational(node) //
+					// .concatMap(pair -> pair.map((n, d) -> d.size() == 1 && d.get(0) == N1 ?
+					// Opt.of(n) : Opt.none()));
+
 					return new SwitchNode<Opt<Map_>>(node //
 					).match2(patAdd, (a, b) -> {
 						return poly(a).join(poly(b), this::add);
@@ -352,14 +386,10 @@ public class Symbolic {
 				// Euclidean
 				// n / d = ((n - d * f) / (d * f) + 1) * f
 				private Opt<Map_> div(Map_ num, Map_ denom, int depth) {
-					Fun<Map_, IntObjPair<Node>> pf = poly -> poly.streamlet().min((pt0, pt1) -> pt1.t0 - pt0.t0);
-
 					if (num.size() <= 0)
 						return Opt.of(num);
 					else if (0 < depth) {
-						IntObjPair<Node> pn = pf.apply(num);
-						IntObjPair<Node> pd = pf.apply(denom);
-						Map_ f = new Map_(pn.t0 - pd.t0, mul.apply(pn.t1, mul.inverse(pd.t1)));
+						Map_ f = div.apply(num, denom);
 						Map_ df = mul(denom, f);
 						Map_ ndf = add(num, neg(df));
 						return div(ndf, df, depth - 1).map(r -> mul(add(r, one_), f));
