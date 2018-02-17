@@ -285,34 +285,34 @@ public class Symbolic {
 		}
 
 		private Opt<Node> polyize(Node node, Fun<Node, Node> coefficientFun) { // polynomialize
-			class Map_ extends IntObjMap<Node> {
-				Map_(IntObjStreamlet<Node> map) {
+			class P_ extends IntObjMap<Node> {
+				P_(IntObjStreamlet<Node> map) {
 					map.sink(this::put);
 				}
 
-				Map_(int p, Node t) {
+				P_(int p, Node t) {
 					put(p, t);
 				}
 
-				Map_() {
+				P_() {
 				}
 
 				private void add(int power, Node term) {
 					update(power, t -> add.apply(t != null ? t : N0, term));
 				}
 
-				private Fixie3<Integer, Node, Map_> decons() {
+				private Fixie3<Integer, Node, P_> decons() {
 					int min = streamlet().keys().min((p0, p1) -> p1 - p0);
-					return Fixie.of(min, get(min), new Map_(streamlet().filterKey(p -> p != min)));
+					return Fixie.of(min, get(min), new P_(streamlet().filterKey(p -> p != min)));
 				}
 			}
 
-			Map_ zero = new Map_();
-			Map_ one_ = new Map_(0, N1);
+			P_ zero = new P_();
+			P_ one_ = new P_(0, N1);
 
-			Opt<Map_> poly = new Object() {
-				private Opt<Map_> poly(Node node) {
-					Fraction_<Map_> fraction_ = new Fraction_<Map_>( //
+			Opt<P_> poly = new Object() {
+				private Opt<P_> poly(Node node) {
+					Fraction_<P_> fraction_ = new Fraction_<P_>( //
 							one_, //
 							a -> 0 < a.size(), //
 							this::add, //
@@ -321,21 +321,21 @@ public class Symbolic {
 							this::divMod, //
 							node_ -> {
 								if (is_x(node_))
-									return Opt.of(new Map_(1, N1));
+									return Opt.of(new P_(1, N1));
 								else if (node_ == N0)
 									return Opt.of(zero);
 								else if (!isContains_x(node_))
-									return Opt.of(new Map_(0, node_));
+									return Opt.of(new P_(0, node_));
 								else
 									return Opt.none();
 							});
 
-					if (Boolean.TRUE)
+					if (Boolean.FALSE)
 						return fraction_ //
 								.rational(node) //
 								.concatMap(pair -> pair.map((n, d) -> d.size() == 1 && d.get(0) == N1 ? Opt.of(n) : Opt.none()));
 					else
-						return new SwitchNode<Opt<Map_>>(node //
+						return new SwitchNode<Opt<P_>>(node //
 						).match2(patAdd, (a, b) -> {
 							return poly(a).join(poly(b), this::add);
 						}).match1(patNeg, a -> {
@@ -348,22 +348,22 @@ public class Symbolic {
 							return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 						}).applyIf(Node.class, n -> {
 							if (is_x(node))
-								return Opt.of(new Map_(1, N1));
+								return Opt.of(new P_(1, N1));
 							else if (node == N0)
 								return Opt.of(zero);
 							else if (!isContains_x(node))
-								return Opt.of(new Map_(0, node));
+								return Opt.of(new P_(0, node));
 							else
 								return Opt.none();
 						}).nonNullResult();
 				}
 
-				private Opt<Map_> pow(Node a, int power) {
+				private Opt<P_> pow(Node a, int power) {
 					if (power < 0)
 						return inv1(pow(a, -power));
 					else // TODO assumed m0 != 0 or power != 0
 						return poly(a).map(p -> {
-							Map_ r = one_;
+							P_ r = one_;
 							for (char ch : Integer.toBinaryString(power).toCharArray()) {
 								r = mul(r, r);
 								r = ch != '0' ? mul(p, r) : r;
@@ -372,54 +372,54 @@ public class Symbolic {
 						});
 				}
 
-				private Opt<Map_> inv1(Opt<Map_> opt) {
+				private Opt<P_> inv1(Opt<P_> opt) {
 					return opt.concatMap(this::inv);
 				}
 
-				private Opt<Map_> inv(Map_ a) {
+				private Opt<P_> inv(P_ a) {
 					return div(one_, a, 9);
 				}
 
 				// Euclidean
 				// n / d = ((n - d * f) / (d * f) + 1) * f
-				private Opt<Map_> div(Map_ num, Map_ denom, int depth) {
+				private Opt<P_> div(P_ num, P_ denom, int depth) {
 					if (num.size() <= 0)
 						return Opt.of(num);
 					else if (0 < depth) {
-						Pair<Map_, Map_> divMod = divMod(num, denom);
-						Map_ f = divMod.t0; // divIntegral(num, denom);
-						Map_ df = mul(denom, f);
-						Map_ ndf = divMod.t1; // add(num, neg(df));
+						Pair<P_, P_> divMod = divMod(num, denom);
+						P_ f = divMod.t0; // divIntegral(num, denom);
+						P_ df = mul(denom, f);
+						P_ ndf = divMod.t1; // add(num, neg(df));
 						return div(ndf, df, depth - 1).map(r -> mul(add(r, one_), f));
 					} else
 						return Opt.none();
 				}
 
-				private Pair<Map_, Map_> divMod(Map_ n, Map_ d) {
+				private Pair<P_, P_> divMod(P_ n, P_ d) {
 					if (0 < n.size()) {
-						Fixie3<Integer, Node, Map_> n_ = n.decons();
-						Fixie3<Integer, Node, Map_> d_ = d.decons();
-						Map_ div = new Map_(n_.get0() - d_.get0(), mul.apply(n_.get1(), mul.inverse(d_.get1())));
-						Map_ mod = add(n_.get2(), mul(div, d_.get2()));
+						Fixie3<Integer, Node, P_> n_ = n.decons();
+						Fixie3<Integer, Node, P_> d_ = d.decons();
+						P_ div = new P_(n_.get0() - d_.get0(), mul.apply(n_.get1(), mul.inverse(d_.get1())));
+						P_ mod = add(n_.get2(), mul(div, d_.get2()));
 						return Pair.of(div, mod);
 					} else
 						return Pair.of(n, zero);
 				};
 
-				private Map_ mul(Map_ a, Map_ b) {
-					Map_ c = new Map_();
+				private P_ mul(P_ a, P_ b) {
+					P_ c = new P_();
 					for (IntObjPair<Node> pair0 : a.streamlet())
 						for (IntObjPair<Node> pair1 : b.streamlet())
 							c.add(pair0.t0 + pair1.t0, mul.apply(pair0.t1, pair1.t1));
 					return c;
 				}
 
-				private Map_ neg(Map_ a) {
-					return new Map_(a.streamlet().mapIntObj((p, t) -> p, (p, t) -> add.inverse(t)));
+				private P_ neg(P_ a) {
+					return new P_(a.streamlet().mapIntObj((p, t) -> p, (p, t) -> add.inverse(t)));
 				}
 
-				private Map_ add(Map_ a, Map_ b) {
-					Map_ c = new Map_();
+				private P_ add(P_ a, P_ b) {
+					P_ c = new P_();
 					for (IntObjPair<Node> pair : IntObjStreamlet.concat(a.streamlet(), b.streamlet()))
 						c.add(pair.t0, pair.t1);
 					return c;
