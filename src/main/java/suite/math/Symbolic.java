@@ -299,6 +299,8 @@ public class Symbolic {
 				}
 			}
 
+			Map_ one = new Map_(1, N1);
+
 			Opt<Map_> poly = new Object() {
 				private Opt<Map_> poly(Node node) {
 					return new SwitchNode<Opt<Map_>>(node //
@@ -314,7 +316,7 @@ public class Symbolic {
 						return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 					}).applyIf(Node.class, n -> {
 						if (is_x(node))
-							return Opt.of(new Map_(1, N1));
+							return Opt.of(one);
 						else if (node == N0)
 							return Opt.of(new Map_());
 						else if (!isContains_x(node))
@@ -345,13 +347,12 @@ public class Symbolic {
 				}
 
 				private Opt<Map_> inv(Map_ a) {
-					return div(new Map_(1, N1), a, 9);
+					return div(one, a, 9);
 				}
 
 				// n / d = ((n - d * f) / (d * f) + 1) * f
 				private Opt<Map_> div(Map_ num, Map_ denom, int depth) {
 					Fun<Map_, IntObjPair<Node>> pf = poly -> poly.streamlet().min((pt0, pt1) -> pt1.t0 - pt0.t0);
-					Map_ one = new Map_(1, N1);
 
 					if (num.size() <= 0)
 						return Opt.of(num);
