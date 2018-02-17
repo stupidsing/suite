@@ -28,38 +28,28 @@ public class SymbolicTest {
 
 	@Test
 	public void testCubic() {
-		{
-			Node poly = Suite.parse("4");
-			verifySimplify(poly, "4");
-		}
+		verifySimplify("4", "4");
 
-		{
-			Node poly = Suite.parse("(a * x + b) ^ 3");
-			verifySimplify(poly, "" //
-					+ "(a * a * a) * x * x * x" //
-					+ " + ((3 * a * a) * b) * x * x" //
-					+ " + ((3 * a) * b * b) * x" //
-					+ " + b * b * b");
-		}
+		verifySimplify("(a * x + b) ^ 3", "" //
+				+ "(a * a * a) * x * x * x" //
+				+ " + ((3 * a * a) * b) * x * x" //
+				+ " + ((3 * a) * b * b) * x" //
+				+ " + b * b * b");
 
-		{
-			Node poly = Suite.parse("(a * x + neg b) ^ 3");
-			verifySimplify(poly, "" //
-					+ "(a * a * a) * x * x * x" //
-					+ " + ((neg 3 * a * a) * b) * x * x" //
-					+ " + ((3 * a) * b * b) * x" //
-					+ " + neg 1 * b * b * b");
-		}
+		verifySimplify("(a * x + neg b) ^ 3", "" //
+				+ "(a * a * a) * x * x * x" //
+				+ " + ((neg 3 * a * a) * b) * x * x" //
+				+ " + ((3 * a) * b * b) * x" //
+				+ " + neg 1 * b * b * b");
 
-		{
-			Node poly = rw.replace(x, //
-					Suite.parse("y + neg (b * inv (3 * a))"), //
-					Suite.parse("a * x * x * x + b * x * x + c * x + d"));
-			verifySimplify(poly, "" //
-					+ "a * y * y * y" //
-					+ " + (c + (neg inv 3 * inv a) * b * b) * y" //
-					+ " + d + ((neg inv 3 * inv a) * b) * c + ((2 * inv 27) * inv (a * a)) * b * b * b");
-		}
+		Node poly = rw.replace(x, //
+				Suite.parse("y + neg (b * inv (3 * a))"), //
+				Suite.parse("a * x * x * x + b * x * x + c * x + d"));
+
+		verifySimplify(poly, "" //
+				+ "a * y * y * y" //
+				+ " + (c + (neg inv 3 * inv a) * b * b) * y" //
+				+ " + d + ((neg inv 3 * inv a) * b) * c + ((2 * inv 27) * inv (a * a)) * b * b * b");
 	}
 
 	@Test
@@ -73,6 +63,10 @@ public class SymbolicTest {
 	@Test
 	public void testIntegration() {
 		verifyEquals("cos x + x * sin x", sym.i(Suite.parse("x * cos x"), x));
+	}
+
+	private void verifySimplify(String poly, String expected) {
+		verifyEquals(expected, sym.simplify(Suite.parse(poly), y, x, d, c, b, a));
 	}
 
 	private void verifySimplify(Node poly, String expected) {
