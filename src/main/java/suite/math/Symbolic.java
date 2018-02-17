@@ -350,6 +350,7 @@ public class Symbolic {
 					return div(one, a, 9);
 				}
 
+				// Euclidean
 				// n / d = ((n - d * f) / (d * f) + 1) * f
 				private Opt<Map_> div(Map_ num, Map_ denom, int depth) {
 					Fun<Map_, IntObjPair<Node>> pf = poly -> poly.streamlet().min((pt0, pt1) -> pt1.t0 - pt0.t0);
