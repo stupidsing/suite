@@ -419,90 +419,10 @@ public class Symbolic {
 	}
 
 	private Opt<Node> rational(Node node) {
-		class IntIntPair {
-			Integer t0, t1;
-
-			IntIntPair(Integer t0, Integer t1) {
-				this.t0 = t0;
-				this.t1 = t1;
-			}
-		}
-
-		return new Object() {
-			private Opt<IntIntPair> rat(Node node) {
-				return new SwitchNode<Opt<IntIntPair>>(node //
-				).match2(patAdd, (a, b) -> {
-					return rat(a).join(rat(b), this::add);
-				}).match1(patNeg, a -> {
-					return rat(a).map(this::neg);
-				}).match2(patMul, (a, b) -> {
-					return rat(a).join(rat(b), this::mul);
-				}).match1(patInv, a -> {
-					return inv1(rat(a));
-				}).match2(patPow, (a, b) -> {
-					return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
-				}).applyIf(Int.class, i -> {
-					return Opt.of(new IntIntPair(i.number, 1));
-				}).applyIf(Node.class, a -> {
-					return Opt.none();
-				}).nonNullResult();
-			}
-
-			private Opt<IntIntPair> pow(Node a, int power) {
-				if (power < 0)
-					return inv1(pow(a, -power));
-				else
-					return rat(a).map(pair -> { // TODO assummed a != 0 or b != 0
-						IntIntPair r = new IntIntPair(1, 1);
-						for (char ch : Integer.toBinaryString(power).toCharArray()) {
-							r = mul(r, r);
-							r = ch != '0' ? mul(r, pair) : r;
-						}
-						return r;
-					});
-			}
-
-			private Opt<IntIntPair> inv1(Opt<IntIntPair> opt) {
-				return opt.concatMap(this::inv);
-			}
-
-			private Opt<IntIntPair> inv(IntIntPair q) {
-				int num = q.t0;
-				int denom = q.t1;
-				if (num != 0)
-					return Opt.of(0 < num ? new IntIntPair(denom, num) : new IntIntPair(-denom, -num));
-				else
-					return Opt.none();
-			}
-
-			private IntIntPair mul(IntIntPair a, IntIntPair b) {
-				return new IntIntPair(a.t0 * b.t0, a.t1 * b.t1);
-			}
-
-			private IntIntPair neg(IntIntPair a) {
-				return new IntIntPair(-a.t0, a.t1);
-			}
-
-			private IntIntPair add(IntIntPair a, IntIntPair b) {
-				return new IntIntPair(a.t0 * b.t1 + b.t0 * a.t1, a.t1 * b.t1);
-			}
-		}.rat(node).map(pair -> {
-			int t0 = pair.t0;
-			int denom = pair.t1;
-			int sign = 0 <= t0 ? 1 : -1;
-			int num = 0 <= t0 ? t0 : -t0;
-			int p = num;
-			int q = denom;
-			while (0 < q) {
-				int mod = p % q;
-				p = q;
-				q = mod;
-			}
-			Int n = Int.of(num / p);
-			Int d = Int.of(denom / p);
-			Node fraction = mul.apply(n, mul.inverse(d));
-			return 0 < sign ? fraction : add.inverse(fraction);
-		});
+		return Fraction_ //
+				.ofRational() //
+				.rational(node) //
+				.map(pair -> pair.map((n, d) -> mul.apply(Int.of(n), mul.inverse(Int.of(d)))));
 	}
 
 	private Node intOf(Node n) {
@@ -510,15 +430,15 @@ public class Symbolic {
 		return i < 0 ? add.inverse(Int.of(-i)) : n;
 	}
 
-	private Pattern patAdd = Suite.pattern(".0 + .1");
-	private Pattern patNeg = Suite.pattern("neg .0");
-	private Pattern patMul = Suite.pattern(".0 * .1");
-	private Pattern patInv = Suite.pattern("inv .0");
-	private Pattern patPow = Suite.pattern(".0^.1");
-	private Pattern patExp = Suite.pattern("exp .0");
-	private Pattern patLn = Suite.pattern("ln .0");
-	private Pattern patSin = Suite.pattern("sin .0");
-	private Pattern patCos = Suite.pattern("cos .0");
+	private Pattern patAdd = Sym.me.patAdd;
+	private Pattern patNeg = Sym.me.patNeg;
+	private Pattern patMul = Sym.me.patMul;
+	private Pattern patInv = Sym.me.patInv;
+	private Pattern patPow = Sym.me.patPow;
+	private Pattern patExp = Sym.me.patExp;
+	private Pattern patLn = Sym.me.patLn;
+	private Pattern patSin = Sym.me.patSin;
+	private Pattern patCos = Sym.me.patCos;
 
 	private Group add = new Group(null, TermOp.PLUS__, N0, patNeg);
 	private Group mul = new Group(add, TermOp.MULT__, N1, patInv);
