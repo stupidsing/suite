@@ -30,7 +30,11 @@ public class Fraction_<I> {
 				(a, b) -> a + b, //
 				a -> -a, //
 				(a, b) -> a * b, //
-				(a, b) -> Pair.of(a / b, a % b), //
+				(a, b) -> {
+					int div = a / b;
+					int mod = a % b;
+					return 0 <= mod ? Pair.of(div, mod) : Pair.of(div - 1, mod + b);
+				}, //
 				node -> node instanceof Int ? Opt.of(((Int) node).number) : Opt.none());
 	}
 
@@ -126,9 +130,9 @@ public class Fraction_<I> {
 				return opt.concatMap(this::inv);
 			}
 
-			private Opt<Fraction> inv(Fraction q) {
-				I num = q.t0;
-				I denom = q.t1;
+			private Opt<Fraction> inv(Fraction a) {
+				I num = a.t0;
+				I denom = a.t1;
 				I numn = neg_.apply(num);
 				if (isPositive.test(num))
 					return Opt.of(new Fraction(denom, num));
