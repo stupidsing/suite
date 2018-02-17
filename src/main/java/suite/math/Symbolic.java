@@ -311,7 +311,7 @@ public class Symbolic {
 					}).match1(patInv, a -> {
 						return inv(poly(a));
 					}).match2(patPow, (a, b) -> {
-						return b instanceof Int ? pow(a, ((Int) b).number) : null;
+						return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 					}).applyIf(Node.class, n -> {
 						if (is_x(node))
 							return Opt.of(new Map_(1, N1));
@@ -434,7 +434,7 @@ public class Symbolic {
 				}).match1(patInv, a -> {
 					return inv(rat(a));
 				}).match2(patPow, (a, b) -> {
-					return b instanceof Int ? pow(a, ((Int) b).number) : null;
+					return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 				}).applyIf(Int.class, i -> {
 					return Opt.of(new IntIntPair(i.number, 1));
 				}).applyIf(Node.class, a -> {
