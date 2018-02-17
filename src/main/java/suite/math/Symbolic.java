@@ -312,7 +312,7 @@ public class Symbolic {
 
 			Opt<P_> poly = new Object() {
 				private Opt<P_> poly(Node node) {
-					Fraction_<P_> fraction_ = new Fraction_<P_>( //
+					Fraction_<P_> fraction_ = new Fraction_<>( //
 							one_, //
 							a -> 0 < a.size(), //
 							this::add, //
