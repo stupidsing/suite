@@ -65,6 +65,14 @@ public class SymbolicTest {
 		verifyEquals("cos x + x * sin x", sym.i(Suite.parse("x * cos x"), x));
 	}
 
+	@Test
+	public void testSquare() {
+		verifySimplify("(a * x + b) ^ 2", "" //
+				+ "(a * a) * x * x" //
+				+ " + ((2 * a) * b) * x" //
+				+ " + b * b");
+	}
+
 	private void verifySimplify(String poly, String expected) {
 		verifyEquals(expected, sym.simplify(Suite.parse(poly), y, x, d, c, b, a));
 	}

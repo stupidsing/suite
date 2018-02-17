@@ -287,7 +287,7 @@ public class Symbolic {
 		private Opt<Node> polyize(Node node, Fun<Node, Node> coefficientFun) { // polynomialize
 			class P_ extends IntObjMap<Node> {
 				P_(IntObjStreamlet<Node> map) {
-					map.sink(this::put);
+					map.filterValue(term -> term != N0).sink(this::put);
 				}
 
 				P_(int power, Node term) {
@@ -331,7 +331,7 @@ public class Symbolic {
 									return Opt.none();
 							});
 
-					if (Boolean.TRUE)
+					if (Boolean.FALSE)
 						return fraction_ //
 								.rational(node) //
 								.concatMap(pair -> pair.map((n, d) -> {
