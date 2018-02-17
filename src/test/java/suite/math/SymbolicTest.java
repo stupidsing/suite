@@ -29,43 +29,36 @@ public class SymbolicTest {
 	@Test
 	public void testCubic() {
 		{
-			Node poly0 = Suite.parse("4");
-			Node poly1 = sym.simplify(poly0);
-			verifyEquals("4", poly1);
+			Node poly = Suite.parse("4");
+			verifySimplify(poly, "4");
 		}
 
 		{
-			Node poly0 = Suite.parse("(a * x + b) ^ 3");
-			Node poly1 = sym.simplify(poly0, y, x, d, c, b, a);
-			verifyEquals("" //
+			Node poly = Suite.parse("(a * x + b) ^ 3");
+			verifySimplify(poly, "" //
 					+ "(a * a * a) * x * x * x" //
 					+ " + ((3 * a * a) * b) * x * x" //
 					+ " + ((3 * a) * b * b) * x" //
-					+ " + b * b * b", //
-					poly1);
+					+ " + b * b * b");
 		}
 
 		{
-			Node poly0 = Suite.parse("(a * x + neg b) ^ 3");
-			Node poly1 = sym.simplify(poly0, y, x, d, c, b, a);
-			verifyEquals("" //
+			Node poly = Suite.parse("(a * x + neg b) ^ 3");
+			verifySimplify(poly, "" //
 					+ "(a * a * a) * x * x * x" //
 					+ " + ((neg 3 * a * a) * b) * x * x" //
 					+ " + ((3 * a) * b * b) * x" //
-					+ " + neg 1 * b * b * b", //
-					poly1);
+					+ " + neg 1 * b * b * b");
 		}
 
 		{
-			Node poly0 = rw.replace(x, //
+			Node poly = rw.replace(x, //
 					Suite.parse("y + neg (b * inv (3 * a))"), //
 					Suite.parse("a * x * x * x + b * x * x + c * x + d"));
-			Node poly1 = sym.simplify(poly0, y, x, d, c, b, a);
-			verifyEquals("" //
+			verifySimplify(poly, "" //
 					+ "a * y * y * y" //
 					+ " + (c + (neg inv 3 * inv a) * b * b) * y" //
-					+ " + d + ((neg inv 3 * inv a) * b) * c + ((2 * inv 27) * inv (a * a)) * b * b * b", //
-					poly1);
+					+ " + d + ((neg inv 3 * inv a) * b) * c + ((2 * inv 27) * inv (a * a)) * b * b * b");
 		}
 	}
 
@@ -80,6 +73,10 @@ public class SymbolicTest {
 	@Test
 	public void testIntegration() {
 		verifyEquals("cos x + x * sin x", sym.i(Suite.parse("x * cos x"), x));
+	}
+
+	private void verifySimplify(Node poly, String expected) {
+		verifyEquals(expected, sym.simplify(poly, y, x, d, c, b, a));
 	}
 
 	private void verifyEquals(String expected, Node node) {
