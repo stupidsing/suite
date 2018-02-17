@@ -290,8 +290,8 @@ public class Symbolic {
 					map.sink(this::put);
 				}
 
-				P_(int p, Node t) {
-					put(p, t);
+				P_(int power, Node term) {
+					put(power, term);
 				}
 
 				P_() {
@@ -302,8 +302,8 @@ public class Symbolic {
 				}
 
 				private Fixie3<Integer, Node, P_> decons() {
-					int min = streamlet().keys().min((p0, p1) -> p1 - p0);
-					return Fixie.of(min, get(min), new P_(streamlet().filterKey(p -> p != min)));
+					int max = streamlet().keys().min((p0, p1) -> p1 - p0);
+					return Fixie.of(max, get(max), new P_(streamlet().filterKey(p -> p != max)));
 				}
 			}
 
@@ -333,7 +333,11 @@ public class Symbolic {
 					if (Boolean.FALSE)
 						return fraction_ //
 								.rational(node) //
-								.concatMap(pair -> pair.map((n, d) -> d.size() == 1 && d.get(0) == N1 ? Opt.of(n) : Opt.none()));
+								.concatMap(pair -> pair.map((n, d) -> {
+									P_ n1 = new P_(n.streamlet().mapValue(n_ -> rational(n_).or(() -> n_)));
+									P_ d1 = new P_(d.streamlet().mapValue(n_ -> rational(n_).or(() -> n_)));
+									return d1.size() == 1 && d1.get(0) == N1 ? Opt.of(n1) : Opt.none();
+								}));
 					else
 						return new SwitchNode<Opt<P_>>(node //
 						).match2(patAdd, (a, b) -> {
@@ -400,10 +404,10 @@ public class Symbolic {
 						Fixie3<Integer, Node, P_> n_ = n.decons();
 						Fixie3<Integer, Node, P_> d_ = d.decons();
 						P_ div = new P_(n_.get0() - d_.get0(), mul.apply(n_.get1(), mul.inverse(d_.get1())));
-						P_ mod = add(n_.get2(), mul(div, d_.get2()));
+						P_ mod = add(n_.get2(), neg(mul(div, d_.get2())));
 						return Pair.of(div, mod);
 					} else
-						return Pair.of(n, zero);
+						return Pair.of(zero, zero);
 				};
 
 				private P_ mul(P_ a, P_ b) {
