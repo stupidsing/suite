@@ -415,7 +415,7 @@ public class Symbolic {
 				}
 
 				private P_ neg(P_ a) {
-					return new P_(a.streamlet().mapIntObj((p, t) -> p, (p, t) -> add.inverse(t)));
+					return new P_(a.streamlet().mapValue(add::inverse));
 				}
 
 				private P_ add(P_ a, P_ b) {
