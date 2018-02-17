@@ -299,7 +299,8 @@ public class Symbolic {
 				}
 			}
 
-			Map_ one = new Map_(1, N1);
+			Map_ zero = new Map_();
+			Map_ one_ = new Map_(0, N1);
 
 			Opt<Map_> poly = new Object() {
 				private Opt<Map_> poly(Node node) {
@@ -316,9 +317,9 @@ public class Symbolic {
 						return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 					}).applyIf(Node.class, n -> {
 						if (is_x(node))
-							return Opt.of(one);
+							return Opt.of(new Map_(1, N1));
 						else if (node == N0)
-							return Opt.of(new Map_());
+							return Opt.of(zero);
 						else if (!isContains_x(node))
 							return Opt.of(new Map_(0, node));
 						else
@@ -327,19 +328,17 @@ public class Symbolic {
 				}
 
 				private Opt<Map_> pow(Node a, int power) {
-					return polyize(a, coeff -> coeff).concatMap(n -> {
-						if (power < 0)
-							return inv1(pow(n, -power));
-						else // TODO assumed m0 != 0 or power != 0
-							return poly(n).map(p -> {
-								Map_ r = new Map_(0, N1);
-								for (char ch : Integer.toBinaryString(power).toCharArray()) {
-									r = mul(r, r);
-									r = ch != '0' ? mul(p, r) : r;
-								}
-								return r;
-							});
-					});
+					if (power < 0)
+						return inv1(pow(a, -power));
+					else // TODO assumed m0 != 0 or power != 0
+						return poly(a).map(p -> {
+							Map_ r = one_;
+							for (char ch : Integer.toBinaryString(power).toCharArray()) {
+								r = mul(r, r);
+								r = ch != '0' ? mul(p, r) : r;
+							}
+							return r;
+						});
 				}
 
 				private Opt<Map_> inv1(Opt<Map_> opt) {
@@ -347,7 +346,7 @@ public class Symbolic {
 				}
 
 				private Opt<Map_> inv(Map_ a) {
-					return div(one, a, 9);
+					return div(one_, a, 9);
 				}
 
 				// Euclidean
@@ -363,7 +362,7 @@ public class Symbolic {
 						Map_ f = new Map_(pn.t0 - pd.t0, mul.apply(pn.t1, mul.inverse(pd.t1)));
 						Map_ df = mul(denom, f);
 						Map_ ndf = add(num, neg(df));
-						return div(ndf, df, depth - 1).map(r -> mul(add(r, one), f));
+						return div(ndf, df, depth - 1).map(r -> mul(add(r, one_), f));
 					} else
 						return Opt.none();
 				}
