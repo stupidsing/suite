@@ -293,7 +293,7 @@ public class Symbolic {
 				}
 
 				P_(int power, Node term) {
-					put(power, term);
+					add(power, term);
 				}
 
 				P_() {
