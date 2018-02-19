@@ -20,7 +20,8 @@ public class OtfTest {
 		List<String> keys = List.of(familyKey, subfamilyKey);
 
 		List<String> commands = Read //
-				.each(Paths.get("/tmp/fonts")) //
+				.each("/tmp/fonts") //
+				.map(Paths::get) //
 				.concatMap(FileUtil::findPaths) //
 				.map(Path::toString) //
 				.filter(path -> {
