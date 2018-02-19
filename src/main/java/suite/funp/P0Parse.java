@@ -16,6 +16,7 @@ import suite.funp.P0.FunpAssignReference;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
+import suite.funp.P0.FunpCoerce.Coerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
@@ -125,7 +126,7 @@ public class P0Parse {
 			}).match3("type .0 = .1 >> .2", (a, b, c) -> {
 				return FunpCheckType.of(parse(a), parse(b), parse(c));
 			}).match1("byte .0", a -> {
-				return FunpCoerce.of("byte", parse(a));
+				return FunpCoerce.of(Coerce.BYTE, parse(a));
 			}).match3("define .0 := .1 >> .2", (a, b, c) -> {
 				String var = name(a);
 				return FunpDefine.of(true, var, parse(b), parseNewVariable(c, var));

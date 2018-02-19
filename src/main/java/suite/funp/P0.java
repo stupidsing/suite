@@ -118,17 +118,21 @@ public class P0 {
 	}
 
 	public static class FunpCoerce implements Funp, P2.End {
-		public String coerce;
+		public enum Coerce {
+			BYTE,
+		};
+
+		public Coerce coerce;
 		public Funp expr;
 
-		public static FunpCoerce of(String coerce, Funp expr) {
+		public static FunpCoerce of(Coerce coerce, Funp expr) {
 			FunpCoerce f = new FunpCoerce();
 			f.coerce = coerce;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<String, Funp, R> fun) {
+		public <R> R apply(FixieFun2<Coerce, Funp, R> fun) {
 			return fun.apply(coerce, expr);
 		}
 	}
