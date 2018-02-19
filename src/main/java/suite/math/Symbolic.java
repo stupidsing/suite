@@ -288,7 +288,7 @@ public class Symbolic {
 		private Opt<Node> polyize(Node node, Fun<Node, Node> coefficientFun) { // polynomialize
 			class P_ extends IntObjMap<Node> {
 				P_(IntObjStreamlet<Node> map) {
-					map.filterValue(term -> term != N0).sink(this::put);
+					map.sink(this::add);
 				}
 
 				P_(int power, Node term) {
