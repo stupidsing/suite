@@ -158,10 +158,7 @@ public class Fraction_<I> {
 				I denom = mul_.apply(gcd.gcd, mul_.apply(gcd.m0, gcd.m1));
 				return new Fraction(add_.apply(num0, num1), denom);
 			}
-		}.rat(node).map(fraction -> {
-			Gcd gcd = new Gcd(fraction.t0, fraction.t1, 9);
-			return Pair.of(gcd.m0, gcd.m1);
-		});
+		}.rat(node).map(fraction -> Pair.of(fraction.t0, fraction.t1));
 	}
 
 	private Pattern patAdd = Sym.me.patAdd;
