@@ -66,6 +66,12 @@ public class SymbolicTest {
 	}
 
 	@Test
+	public void testRational() {
+		Fraction_<Integer> f = Fraction_.ofRational();
+		assertEquals("7:6", f.rational(Suite.parse("inv 3 + 5 * inv 6")).toString());
+	}
+
+	@Test
 	public void testSquare() {
 		verifySimplify("(x + b) ^ 2", "" //
 				+ "x * x + (2 * b) * x + b * b");

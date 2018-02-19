@@ -151,9 +151,10 @@ public class Fraction_<I> {
 			}
 
 			private Fraction add(Fraction a, Fraction b) {
-				I num0 = mul_.apply(a.t0, b.t1);
-				I num1 = mul_.apply(b.t0, a.t1);
-				I denom = mul_.apply(a.t1, b.t1);
+				Gcd gcd = new Gcd(a.t1, b.t1, 9);
+				I num0 = mul_.apply(a.t0, gcd.m1);
+				I num1 = mul_.apply(b.t0, gcd.m0);
+				I denom = mul_.apply(gcd.gcd, mul_.apply(gcd.m0, gcd.m1));
 				return new Fraction(add_.apply(num0, num1), denom);
 			}
 		}.rat(node).map(fraction -> {

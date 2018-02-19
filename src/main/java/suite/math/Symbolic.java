@@ -357,10 +357,10 @@ public class Symbolic {
 						}).match2(patPow, (a, b) -> {
 							return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 						}).applyIf(Node.class, n -> {
-							if (is_x(node))
-								return Opt.of(px);
-							else if (node == N0)
+							if (node == N0)
 								return Opt.of(p0);
+							else if (is_x(node))
+								return Opt.of(px);
 							else if (!isContains_x(node))
 								return Opt.of(new P_(0, node));
 							else

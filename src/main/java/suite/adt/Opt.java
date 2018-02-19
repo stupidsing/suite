@@ -69,7 +69,7 @@ public class Opt<T> {
 
 	@Override
 	public String toString() {
-		return value != null ? value.toString() : "null";
+		return value != null ? value.toString() : "none";
 	}
 
 	private <U> Opt<U> concatMap_(Fun<T, Opt<U>> fun) {
