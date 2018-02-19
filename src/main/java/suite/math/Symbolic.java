@@ -27,7 +27,6 @@ import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.Fun2;
@@ -478,11 +477,7 @@ public class Symbolic {
 	}
 
 	private Node intOf(Node n) {
-		return intOf(((Int) n).number);
-	}
-
-	private Node intOf(int i) {
-		return i < 0 ? add.inverse(Int.of(-i)) : Int.of(i);
+		return ((Int) n).number < 0 ? add.inverse(Int.of(-((Int) n).number)) : n;
 	}
 
 	private Pattern patAdd = Sym.me.patAdd;
