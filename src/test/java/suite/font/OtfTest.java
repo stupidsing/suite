@@ -21,7 +21,7 @@ public class OtfTest {
 
 		List<String> commands = Read //
 				.each(Paths.get("/tmp/fonts")) //
-				.concatMap(path -> FileUtil.findPaths(path)) //
+				.concatMap(FileUtil::findPaths) //
 				.map(Path::toString) //
 				.filter(path -> {
 					String pathl = path.toLowerCase();
