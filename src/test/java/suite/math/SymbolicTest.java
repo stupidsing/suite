@@ -28,8 +28,6 @@ public class SymbolicTest {
 
 	@Test
 	public void testCubic() {
-		verifySimplify("4", "4");
-
 		verifySimplify("(a * x + b) ^ 3", "" //
 				+ "(a * a * a) * x * x * x" //
 				+ " + ((3 * a * a) * b) * x * x" //
@@ -72,7 +70,9 @@ public class SymbolicTest {
 	}
 
 	@Test
-	public void testSquare() {
+	public void testSimplify() {
+		verifySimplify("4", "4");
+
 		verifySimplify("(x + b) ^ 2", "" //
 				+ "x * x + (2 * b) * x + b * b");
 	}
