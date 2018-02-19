@@ -468,8 +468,8 @@ public class Symbolic {
 	}
 
 	private Opt<Node> rational(Node node) {
-		Fun2<Integer, Integer, Node> nf0 = (n, d) -> mul.apply(intOf(n), mul.inverse(Int.of(d)));
-		Fun2<Integer, Integer, Node> nf1 = (n, d) -> 0 <= d ? nf0.apply(n, d) : nf0.apply(-n, -d);
+		Fun2<Integer, Integer, Node> nf0 = (n, d) -> mul.apply(Int.of(n), mul.inverse(Int.of(d)));
+		Fun2<Integer, Integer, Node> nf1 = (n, d) -> 0 <= n ? nf0.apply(n, d) : add.inverse(nf0.apply(-n, d));
 
 		return Fraction_ //
 				.ofRational() //

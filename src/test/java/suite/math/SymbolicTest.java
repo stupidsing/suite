@@ -46,8 +46,8 @@ public class SymbolicTest {
 
 		verifySimplify(poly, "" //
 				+ "a * y * y * y" //
-				+ " + (c + ((neg 1 * inv 3) * inv a) * b * b) * y" //
-				+ " + d + (((neg 1 * inv 3) * inv a) * b) * c + ((2 * inv 27) * inv (a * a)) * b * b * b");
+				+ " + (c + (neg inv 3 * inv a) * b * b) * y" //
+				+ " + d + ((neg inv 3 * inv a) * b) * c + ((2 * inv 27) * inv (a * a)) * b * b * b");
 	}
 
 	@Test
