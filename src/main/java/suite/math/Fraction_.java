@@ -143,7 +143,8 @@ public class Fraction_<I> {
 			}
 
 			private Fraction mul(Fraction a, Fraction b) {
-				return new Fraction(mul_.apply(a.t0, b.t0), mul_.apply(a.t1, b.t1));
+				Gcd gcd = new Gcd(mul_.apply(a.t0, b.t0), mul_.apply(a.t1, b.t1), 9);
+				return new Fraction(gcd.m0, gcd.m1);
 			}
 
 			private Fraction neg(Fraction a) {
