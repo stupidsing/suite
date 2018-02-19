@@ -67,14 +67,14 @@ public class SymbolicTest {
 	public void testRational() {
 		Fraction_<Integer> f = Fraction_.ofRational();
 		assertEquals("7:6", f.rational(Suite.parse("inv 3 + 5 * inv 6")).toString());
+		assertEquals("1:4", f.rational(Suite.parse("inv (6 * 4 * inv 6)")).toString());
 	}
 
 	@Test
 	public void testSimplify() {
 		verifySimplify("4", "4");
-
-		verifySimplify("(x + b) ^ 2", "" //
-				+ "x * x + (2 * b) * x + b * b");
+		verifySimplify("(x + 1) ^ 2", "x * x + 2 * x + 1");
+		verifySimplify("(x + b) ^ 2", "x * x + (2 * b) * x + b * b");
 	}
 
 	private void verifySimplify(String poly, String expected) {

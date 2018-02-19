@@ -27,6 +27,7 @@ import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.Fun2;
@@ -334,7 +335,7 @@ public class Symbolic {
 									return Opt.none();
 							});
 
-					Iterate<P_> sim = n -> new P_(n.streamlet().mapValue(coefficientFun));
+					Iterate<P_> sim = p -> new P_(p.streamlet().mapValue(coefficientFun));
 
 					if (Boolean.FALSE)
 						return fraction_ //
@@ -467,8 +468,8 @@ public class Symbolic {
 	}
 
 	private Opt<Node> rational(Node node) {
-		Fun2<Integer, Integer, Node> nf0 = (n, d) -> mul.apply(Int.of(n), mul.inverse(Int.of(d)));
-		Fun2<Integer, Integer, Node> nf1 = (n, d) -> 0 <= n ? nf0.apply(n, d) : add.inverse(nf0.apply(-n, d));
+		Fun2<Integer, Integer, Node> nf0 = (n, d) -> mul.apply(intOf(n), mul.inverse(Int.of(d)));
+		Fun2<Integer, Integer, Node> nf1 = (n, d) -> 0 <= d ? nf0.apply(n, d) : nf0.apply(-n, -d);
 
 		return Fraction_ //
 				.ofRational() //
@@ -477,8 +478,11 @@ public class Symbolic {
 	}
 
 	private Node intOf(Node n) {
-		int i = ((Int) n).number;
-		return i < 0 ? add.inverse(Int.of(-i)) : n;
+		return intOf(((Int) n).number);
+	}
+
+	private Node intOf(int i) {
+		return i < 0 ? add.inverse(Int.of(-i)) : Int.of(i);
 	}
 
 	private Pattern patAdd = Sym.me.patAdd;
