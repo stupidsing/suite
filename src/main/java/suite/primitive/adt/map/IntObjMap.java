@@ -114,6 +114,7 @@ public class IntObjMap<V> {
 					Object v = vs[index1];
 					if (v != null) {
 						int k = ks[index1];
+						vs[index1] = null;
 						rehash(index1);
 						store(k, v);
 					}

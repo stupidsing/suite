@@ -117,6 +117,7 @@ public class ObjDblMap<K> {
 					double v = vs[index1];
 					if (v != DblFunUtil.EMPTYVALUE) {
 						Object k = ks[index1];
+						vs[index1] = DblFunUtil.EMPTYVALUE;
 						rehash(index1);
 						store(k, v);
 					}

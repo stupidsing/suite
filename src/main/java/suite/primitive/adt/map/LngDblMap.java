@@ -131,6 +131,7 @@ public class LngDblMap {
 					double v_ = vs[index1];
 					if (v_ != DblFunUtil.EMPTYVALUE) {
 						long k = ks[index1];
+						vs[index1] = DblFunUtil.EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
 					}

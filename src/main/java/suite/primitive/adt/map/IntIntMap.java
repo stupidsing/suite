@@ -129,6 +129,7 @@ public class IntIntMap {
 					int v_ = vs[index1];
 					if (v_ != IntFunUtil.EMPTYVALUE) {
 						int k = ks[index1];
+						vs[index1] = IntFunUtil.EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
 					}

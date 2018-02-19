@@ -117,6 +117,7 @@ public class ObjIntMap<K> {
 					int v = vs[index1];
 					if (v != IntFunUtil.EMPTYVALUE) {
 						Object k = ks[index1];
+						vs[index1] = IntFunUtil.EMPTYVALUE;
 						rehash(index1);
 						store(k, v);
 					}

@@ -117,6 +117,7 @@ public class ObjChrMap<K> {
 					char v = vs[index1];
 					if (v != ChrFunUtil.EMPTYVALUE) {
 						Object k = ks[index1];
+						vs[index1] = ChrFunUtil.EMPTYVALUE;
 						rehash(index1);
 						store(k, v);
 					}

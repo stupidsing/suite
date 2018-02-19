@@ -129,6 +129,7 @@ public class LngLngMap {
 					long v_ = vs[index1];
 					if (v_ != LngFunUtil.EMPTYVALUE) {
 						long k = ks[index1];
+						vs[index1] = LngFunUtil.EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
 					}

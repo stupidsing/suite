@@ -131,6 +131,7 @@ public class LngIntMap {
 					int v_ = vs[index1];
 					if (v_ != IntFunUtil.EMPTYVALUE) {
 						long k = ks[index1];
+						vs[index1] = IntFunUtil.EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
 					}

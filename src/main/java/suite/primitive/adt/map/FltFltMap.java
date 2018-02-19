@@ -129,6 +129,7 @@ public class FltFltMap {
 					float v_ = vs[index1];
 					if (v_ != FltFunUtil.EMPTYVALUE) {
 						float k = ks[index1];
+						vs[index1] = FltFunUtil.EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
 					}

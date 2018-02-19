@@ -129,6 +129,7 @@ public class DblDblMap {
 					double v_ = vs[index1];
 					if (v_ != DblFunUtil.EMPTYVALUE) {
 						double k = ks[index1];
+						vs[index1] = DblFunUtil.EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
 					}

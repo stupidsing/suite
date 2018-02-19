@@ -131,6 +131,7 @@ public class FltChrMap {
 					char v_ = vs[index1];
 					if (v_ != ChrFunUtil.EMPTYVALUE) {
 						float k = ks[index1];
+						vs[index1] = ChrFunUtil.EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
 					}

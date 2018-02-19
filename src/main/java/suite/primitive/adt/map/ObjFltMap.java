@@ -117,6 +117,7 @@ public class ObjFltMap<K> {
 					float v = vs[index1];
 					if (v != FltFunUtil.EMPTYVALUE) {
 						Object k = ks[index1];
+						vs[index1] = FltFunUtil.EMPTYVALUE;
 						rehash(index1);
 						store(k, v);
 					}

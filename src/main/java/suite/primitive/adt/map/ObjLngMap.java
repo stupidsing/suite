@@ -117,6 +117,7 @@ public class ObjLngMap<K> {
 					long v = vs[index1];
 					if (v != LngFunUtil.EMPTYVALUE) {
 						Object k = ks[index1];
+						vs[index1] = LngFunUtil.EMPTYVALUE;
 						rehash(index1);
 						store(k, v);
 					}

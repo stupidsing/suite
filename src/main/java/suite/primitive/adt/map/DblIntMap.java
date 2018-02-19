@@ -131,6 +131,7 @@ public class DblIntMap {
 					int v_ = vs[index1];
 					if (v_ != IntFunUtil.EMPTYVALUE) {
 						double k = ks[index1];
+						vs[index1] = IntFunUtil.EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
 					}
