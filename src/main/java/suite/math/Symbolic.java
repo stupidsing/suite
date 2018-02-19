@@ -79,7 +79,7 @@ public class Symbolic {
 			return f.invokeStatic(Math.class, "pow", fun.apply(a), fun.apply(b));
 		}).match1(patExp, a -> {
 			return f.invokeStatic(Math.class, "exp", fun.apply(a));
-		}).match1(patLn, a -> {
+		}).match1(patLn_, a -> {
 			return f.invokeStatic(Math.class, "log", fun.apply(a));
 		}).match1(patSin, a -> {
 			return f.invokeStatic(Math.class, "sin", fun.apply(a));
@@ -142,7 +142,7 @@ public class Symbolic {
 			}).match2(".0 / .1", (a, b) -> {
 				return a != N1 ? mul.apply(rewrite(a), mul.inverse(rewrite(b))) : null;
 			}).match2(patPow, (a, b) -> {
-				return patExp.subst(patLn.subst(rewrite(a)), rewrite(b));
+				return patExp.subst(patLn_.subst(rewrite(a)), rewrite(b));
 			}).applyIf(Int.class, i -> {
 				return intOf(i);
 			}).match(".0 .1", m -> {
@@ -166,7 +166,7 @@ public class Symbolic {
 				return mul.apply(mul.inverse(mul.apply(u, u)), add.inverse(d(u)));
 			}).match1(patExp, u -> {
 				return mul.apply(patExp.subst(u), d(u));
-			}).match1(patLn, u -> {
+			}).match1(patLn_, u -> {
 				return mul.apply(mul.inverse(u), d(u));
 			}).match1(patSin, u -> {
 				return mul.apply(patCos.subst(u), d(u));
@@ -193,7 +193,7 @@ public class Symbolic {
 				Node dudx = d(u);
 				return vs.concatMap(v -> i(mul.apply(v, dudx)).map(ivdu -> add.apply(mul.apply(u, v), add.inverse(ivdu))));
 			}).match1(patInv, u -> {
-				return is_x(u) ? Opt.of(patLn.subst(x)) : null;
+				return is_x(u) ? Opt.of(patLn_.subst(x)) : null;
 			}).match1(patExp, u -> {
 				return is_x(u) ? Opt.of(node) : null;
 			}).match1(patSin, u -> {
@@ -255,8 +255,8 @@ public class Symbolic {
 						return sop(a).join2(sop(b)).map(mul::apply).map(this::productOfSums);
 					}).match2(patPow, (a, b) -> {
 						return sop(productOfSums(node_));
-					}).match1(patLn, a -> {
-						return pos(a).map(patLn::subst);
+					}).match1(patLn_, a -> {
+						return pos(a).map(patLn_::subst);
 					}).match2("sin (.0 + .1)", (a, b) -> {
 						return Read.each( //
 								mul.recompose(x, Read.each(patSin.subst(a), patCos.subst(b))), //
@@ -491,7 +491,7 @@ public class Symbolic {
 	private Pattern patInv = Sym.me.patInv;
 	private Pattern patPow = Sym.me.patPow;
 	private Pattern patExp = Sym.me.patExp;
-	private Pattern patLn = Sym.me.patLn;
+	private Pattern patLn_ = Sym.me.patLn_;
 	private Pattern patSin = Sym.me.patSin;
 	private Pattern patCos = Sym.me.patCos;
 
