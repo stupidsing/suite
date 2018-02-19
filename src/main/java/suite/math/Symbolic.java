@@ -28,6 +28,7 @@ import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.Fun2;
 import suite.util.List_;
 
@@ -298,7 +299,9 @@ public class Symbolic {
 				}
 
 				private void add(int power, Node term) {
-					update(power, t -> add.apply(t != null ? t : N0, term));
+					Iterate<Node> i0 = t -> t != null ? t : N0;
+					Iterate<Node> ix = t -> t != N0 ? t : null;
+					update(power, t -> ix.apply(add.apply(i0.apply(t), term)));
 				}
 
 				private Fixie3<Integer, Node, P_> decons() {
@@ -321,23 +324,25 @@ public class Symbolic {
 							this::mul, //
 							this::divMod, //
 							node_ -> {
-								if (is_x(node_))
-									return Opt.of(px);
-								else if (node_ == N0)
+								if (node_ == N0)
 									return Opt.of(p0);
+								else if (is_x(node_))
+									return Opt.of(px);
 								else if (!isContains_x(node_))
 									return Opt.of(new P_(0, node_));
 								else
 									return Opt.none();
 							});
 
+					Iterate<P_> sim = n -> new P_(n.streamlet().mapValue(coefficientFun));
+
 					if (Boolean.FALSE)
 						return fraction_ //
 								.rational(node) //
-								.concatMap(pair -> pair.map((n, d) -> {
-									P_ n1 = new P_(n.streamlet().mapValue(n_ -> rational(n_).or(() -> n_)));
-									P_ d1 = new P_(d.streamlet().mapValue(n_ -> rational(n_).or(() -> n_)));
-									return d1.size() == 1 && d1.get(0) == N1 ? Opt.of(n1) : Opt.none();
+								.concatMap(pair -> pair.map((n0, d0) -> {
+									P_ n1 = sim.apply(n0);
+									P_ d1 = sim.apply(d0);
+									return div(n1, d1, 9).cons(() -> d1.size() == 1 && d1.get(0) == N1 ? Opt.of(n1) : Opt.none());
 								}));
 					else
 						return new SwitchNode<Opt<P_>>(node //
