@@ -99,10 +99,6 @@ public class Symbolic {
 		return Opt.of(node0).map(rewrite::rewrite).concatMap(rewrite::i).map(rewrite::simplify).get();
 	}
 
-	public Node simplify(Node node, Node x) {
-		return new Rewrite(x).simplify(node);
-	}
-
 	public Node simplify(Node node, Node... xs) {
 		return simplify(node, xs, 0);
 	}
@@ -285,26 +281,37 @@ public class Symbolic {
 			return polyize(node, coeff -> rational(coeff).or(() -> coeff)).or(() -> sumOfProducts(node));
 		}
 
-		private Opt<Node> polyize(Node node, Fun<Node, Node> coefficientFun) { // polynomialize
-			class P_ extends IntObjMap<Node> {
-				P_(IntObjStreamlet<Node> map) {
+		private <N_ extends Node> Opt<N_> polyize(N_ node, Fun<N_, N_> coefficientFun) { // polynomialize
+			Symbolic sym = Symbolic.this;
+			@SuppressWarnings("unchecked")
+			Fun<Node, N_> cast = n -> (N_) n;
+			N_ N0 = cast.apply(sym.N0);
+			N_ N1 = cast.apply(sym.N1);
+			N_ Nx = cast.apply(x);
+			Fun2<N_, N_, N_> add = (a, b) -> cast.apply(sym.add.apply(a, b));
+			Iterate<N_> neg = a -> cast.apply(sym.add.inverse(a));
+			Fun2<N_, N_, N_> mul = (a, b) -> cast.apply(sym.mul.apply(a, b));
+			Iterate<N_> inv = a -> cast.apply(sym.mul.inverse(a));
+
+			class P_ extends IntObjMap<N_> {
+				P_(IntObjStreamlet<N_> map) {
 					map.sink(this::add);
 				}
 
-				P_(int power, Node term) {
+				P_(int power, N_ term) {
 					add(power, term);
 				}
 
 				P_() {
 				}
 
-				private void add(int power, Node term) {
-					Iterate<Node> i0 = t -> t != null ? t : N0;
-					Iterate<Node> ix = t -> t != N0 ? t : null;
+				private void add(int power, N_ term) {
+					Iterate<N_> i0 = t -> t != null ? t : N0;
+					Iterate<N_> ix = t -> t != N0 ? t : null;
 					update(power, t -> ix.apply(add.apply(i0.apply(t), term)));
 				}
 
-				private Fixie3<Integer, Node, P_> decons() {
+				private Fixie3<Integer, N_, P_> decons() {
 					int max = streamlet().keys().min((p0, p1) -> p1 - p0);
 					return Fixie.of(max, get(max), new P_(streamlet().filterKey(p -> p != max)));
 				}
@@ -315,7 +322,7 @@ public class Symbolic {
 			P_ px = new P_(1, N1);
 
 			Opt<P_> poly = new Object() {
-				private Opt<P_> poly(Node node) {
+				private Opt<P_> poly(N_ node) {
 					Fraction_<P_> fraction_ = new Fraction_<>( //
 							p1, //
 							a -> 0 < a.size(), //
@@ -324,12 +331,13 @@ public class Symbolic {
 							this::mul, //
 							this::divMod, //
 							node_ -> {
-								if (node_ == N0)
+								N_ n = cast.apply(node_);
+								if (n == N0)
 									return Opt.of(p0);
-								else if (is_x(node_))
+								else if (is_x(n))
 									return Opt.of(px);
-								else if (!isContains_x(node_))
-									return Opt.of(new P_(0, node_));
+								else if (!isContains_x(n))
+									return Opt.of(new P_(0, n));
 								else
 									return Opt.none();
 							});
@@ -347,13 +355,13 @@ public class Symbolic {
 					else
 						return new SwitchNode<Opt<P_>>(node //
 						).match2(patAdd, (a, b) -> {
-							return poly(a).join(poly(b), this::add);
+							return p(a).join(p(b), this::add);
 						}).match1(patNeg, a -> {
-							return poly(a).map(this::neg);
+							return p(a).map(this::neg);
 						}).match2(patMul, (a, b) -> {
-							return poly(a).join(poly(b), this::mul);
+							return p(a).join(p(b), this::mul);
 						}).match1(patInv, a -> {
-							return inv1(poly(a));
+							return inv1(p(a));
 						}).match2(patPow, (a, b) -> {
 							return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 						}).applyIf(Node.class, n -> {
@@ -368,11 +376,15 @@ public class Symbolic {
 						}).nonNullResult();
 				}
 
+				private Opt<P_> p(Node node) {
+					return poly(cast.apply(node));
+				}
+
 				private Opt<P_> pow(Node a, int power) {
 					if (power < 0)
 						return inv1(pow(a, -power));
 					else // TODO assumed m0 != 0 or power != 0
-						return poly(a).map(p -> {
+						return p(a).map(p -> {
 							P_ r = p1;
 							for (char ch : Integer.toBinaryString(power).toCharArray()) {
 								r = mul(r, r);
@@ -407,9 +419,9 @@ public class Symbolic {
 
 				private Pair<P_, P_> divMod(P_ n, P_ d) {
 					if (0 < n.size()) {
-						Fixie3<Integer, Node, P_> n_ = n.decons();
-						Fixie3<Integer, Node, P_> d_ = d.decons();
-						P_ div = new P_(n_.get0() - d_.get0(), mul.apply(n_.get1(), mul.inverse(d_.get1())));
+						Fixie3<Integer, N_, P_> n_ = n.decons();
+						Fixie3<Integer, N_, P_> d_ = d.decons();
+						P_ div = new P_(n_.get0() - d_.get0(), mul.apply(n_.get1(), inv.apply(d_.get1())));
 						P_ mod = add(n_.get2(), neg(mul(div, d_.get2())));
 						return Pair.of(div, mod);
 					} else
@@ -418,36 +430,36 @@ public class Symbolic {
 
 				private P_ mul(P_ a, P_ b) {
 					P_ c = new P_();
-					for (IntObjPair<Node> pair0 : a.streamlet())
-						for (IntObjPair<Node> pair1 : b.streamlet())
+					for (IntObjPair<N_> pair0 : a.streamlet())
+						for (IntObjPair<N_> pair1 : b.streamlet())
 							c.add(pair0.t0 + pair1.t0, mul.apply(pair0.t1, pair1.t1));
 					return c;
 				}
 
 				private P_ neg(P_ a) {
-					return new P_(a.streamlet().mapValue(add::inverse));
+					return new P_(a.streamlet().mapValue(neg));
 				}
 
 				private P_ add(P_ a, P_ b) {
 					P_ c = new P_();
-					for (IntObjPair<Node> pair : IntObjStreamlet.concat(a.streamlet(), b.streamlet()))
+					for (IntObjPair<N_> pair : IntObjStreamlet.concat(a.streamlet(), b.streamlet()))
 						c.add(pair.t0, pair.t1);
 					return c;
 				}
 			}.poly(node);
 
-			Int_Obj<Node> powerFun = p -> {
-				Node power = N1;
+			Int_Obj<N_> powerFun = p -> {
+				N_ power = N1;
 				for (int i = 0; i < p; i++)
-					power = mul.apply(x, power);
+					power = mul.apply(Nx, power);
 				return power;
 			};
 
 			return poly.map(map -> {
-				Node sum = N0;
-				for (IntObjPair<Node> pair : map.streamlet().sortByKey(Integer::compare)) {
+				N_ sum = N0;
+				for (IntObjPair<N_> pair : map.streamlet().sortByKey(Integer::compare)) {
 					int p = pair.t0;
-					Node power = p < 0 ? mul.inverse(powerFun.apply(-p)) : powerFun.apply(p);
+					N_ power = p < 0 ? inv.apply(powerFun.apply(-p)) : powerFun.apply(p);
 					sum = add.apply(mul.apply(coefficientFun.apply(pair.t1), power), sum);
 				}
 				return sum;
