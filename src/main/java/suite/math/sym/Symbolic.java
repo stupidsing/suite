@@ -1,4 +1,4 @@
-package suite.math;
+package suite.math.sym;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +27,7 @@ import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.Fun2;
@@ -107,8 +108,13 @@ public class Symbolic {
 		Opt<Node> opt;
 		if (i < xs.length)
 			opt = new Rewrite(xs[i]).polyize(node, coeff -> simplify(coeff, xs, i + 1));
-		else
+		else {
+			System.out.println("N " + node);
+			if (node != N1)
+				Fail.t();
 			opt = rational(node);
+			System.out.println("END");
+		}
 		return opt.or(() -> node);
 	}
 
@@ -344,7 +350,7 @@ public class Symbolic {
 
 					Iterate<P_> sim = p -> new P_(p.streamlet().mapValue(coefficientFun));
 
-					if (Boolean.FALSE)
+					if (Boolean.TRUE)
 						return fraction_ //
 								.rational(node) //
 								.concatMap(pair -> pair.map((n0, d0) -> {

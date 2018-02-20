@@ -1,4 +1,4 @@
-package suite.math;
+package suite.math.sym;
 
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;

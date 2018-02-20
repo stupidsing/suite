@@ -1,4 +1,4 @@
-package suite.math;
+package suite.math.sym;
 
 import java.util.function.Predicate;
 

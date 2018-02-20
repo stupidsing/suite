@@ -1,4 +1,4 @@
-package suite.math;
+package suite.math.sym;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -6,6 +6,8 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.Suite;
+import suite.math.sym.Fraction_;
+import suite.math.sym.Symbolic;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.util.Rewrite;

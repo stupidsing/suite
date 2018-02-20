@@ -1,9 +1,9 @@
 package suite.math.numeric;
 
-import suite.math.Symbolic;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
+import suite.math.sym.Symbolic;
 import suite.node.Node;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
