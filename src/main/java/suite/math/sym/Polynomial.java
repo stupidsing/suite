@@ -74,7 +74,7 @@ public class Polynomial<N> {
 
 		return new Object() {
 			private Opt<Poly> poly(Node node) {
-				Fractional<Poly> fractionalize = new Fractional<>( //
+				Fractional<Poly> fractional = new Fractional<>( //
 						ring, //
 						a -> 0 < a.size(), //
 						py::divMod, //
@@ -89,7 +89,7 @@ public class Polynomial<N> {
 
 				Iterate<Poly> sim = p -> new Poly(p.streamlet());
 
-				return fractionalize //
+				return fractional //
 						.fractionalize(node) //
 						.concatMap(pair -> pair.map((n0, d0) -> {
 							Poly n1 = sim.apply(n0);
