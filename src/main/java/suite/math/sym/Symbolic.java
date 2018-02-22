@@ -314,7 +314,7 @@ public class Symbolic {
 
 				opt = new Object() {
 					Opt<PN.Poly> poly(Node node) {
-						return new SwitchNode<Opt<Polynomial<Node>.Poly>>(node //
+						return new SwitchNode<Opt<PN.Poly>>(node //
 						).match2(patAdd, (a, b) -> {
 							return poly(a).join(poly(b), pr.add);
 						}).match1(patNeg, a -> {
@@ -342,7 +342,7 @@ public class Symbolic {
 							return inv1(pow(a, -power));
 						else // TODO assumed m0 != 0 or power != 0
 							return poly(a).map(p -> {
-								Polynomial<Node>.Poly r = pn.p1;
+								PN.Poly r = pn.p1;
 								for (char ch : Integer.toBinaryString(power).toCharArray()) {
 									r = pr.mul.apply(r, r);
 									r = ch != '0' ? pr.mul.apply(p, r) : r;
@@ -351,7 +351,7 @@ public class Symbolic {
 							});
 					}
 
-					private Opt<PN.Poly> inv1(Opt<Polynomial<Node>.Poly> opt) {
+					private Opt<PN.Poly> inv1(Opt<PN.Poly> opt) {
 						return opt.concatMap(pn::inv);
 					}
 				}.poly(node);
