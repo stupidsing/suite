@@ -6,8 +6,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.math.sym.Fraction_;
-import suite.math.sym.Symbolic;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.util.Rewrite;
@@ -22,6 +20,11 @@ public class SymbolicTest {
 	private Atom y = Atom.of("y");
 	private Symbolic sym = new Symbolic();
 	private Rewrite rw = new Rewrite();
+
+	@Test
+	public void test() {
+		verifySimplify("(x + 1) ^ 2", "x * x + 2 * x + 1", y, x, d, c, b, a);
+	}
 
 	@Test
 	public void testApply() {
@@ -67,16 +70,21 @@ public class SymbolicTest {
 
 	@Test
 	public void testRational() {
-		Fraction_<Integer> f = Fraction_.ofRational();
-		assertEquals("7:6", f.rational(Suite.parse("inv 3 + 5 * inv 6")).toString());
-		assertEquals("1:4", f.rational(Suite.parse("inv (6 * 4 * inv 6)")).toString());
+		Fractional<Integer> f = Fractional.ofIntegral();
+		assertEquals("7:6", f.fractionalize(Suite.parse("inv 3 + 5 * inv 6")).toString());
+		assertEquals("1:4", f.fractionalize(Suite.parse("inv (6 * 4 * inv 6)")).toString());
 	}
 
 	@Test
 	public void testSimplify() {
 		verifySimplify("4", "4");
-		verifySimplify("(x + 1) ^ 2", "x * x + 2 * x + 1");
-		verifySimplify("(x + b) ^ 2", "x * x + (2 * b) * x + b * b");
+		verifySimplify("(x + 1) ^ 1", "x + 1", x);
+		verifySimplify("(x + 1) ^ 2", "x * x + 2 * x + 1", x);
+		verifySimplify("(x + b) ^ 2", "x * x + (2 * b) * x + b * b", x, b);
+	}
+
+	private void verifySimplify(String poly, String expected, Node... xs) {
+		verifyEquals(expected, sym.simplify(Suite.parse(poly), xs));
 	}
 
 	private void verifySimplify(String poly, String expected) {

@@ -1,7 +1,7 @@
 package suite.math.sym;
 
-import suite.BindArrayUtil.Pattern;
-import suite.Suite;
+import suite.util.FunUtil.Iterate;
+import suite.util.FunUtil2.Fun2;
 
 public class Sym {
 
@@ -10,14 +10,43 @@ public class Sym {
 	private Sym() {
 	}
 
-	public Pattern patAdd = Suite.pattern(".0 + .1");
-	public Pattern patNeg = Suite.pattern("neg .0");
-	public Pattern patMul = Suite.pattern(".0 * .1");
-	public Pattern patInv = Suite.pattern("inv .0");
-	public Pattern patPow = Suite.pattern(".0^.1");
-	public Pattern patExp = Suite.pattern("exp .0");
-	public Pattern patLn_ = Suite.pattern("ln .0");
-	public Pattern patSin = Suite.pattern("sin .0");
-	public Pattern patCos = Suite.pattern("cos .0");
+	public static class Field<T> extends Ring<T> {
+		public final Iterate<T> inv;
+
+		public Field(T n0, T n1, Fun2<T, T, T> add, Iterate<T> neg, Fun2<T, T, T> mul, Iterate<T> inv) {
+			super(n0, n1, add, neg, mul);
+			this.inv = inv;
+		}
+	}
+
+	public static class Ring<T> extends Group<T> {
+		public final T n1;
+		public final Fun2<T, T, T> mul;
+
+		public Ring(T n0, T n1, Fun2<T, T, T> add, Iterate<T> neg, Fun2<T, T, T> mul) {
+			super(n0, add, neg);
+			this.n1 = n1;
+			this.mul = mul;
+		}
+	}
+
+	public static class Group<T> extends Monoid<T> {
+		public final Iterate<T> neg;
+
+		public Group(T n0, Fun2<T, T, T> add, Iterate<T> neg) {
+			super(n0, add);
+			this.neg = neg;
+		}
+	}
+
+	public static class Monoid<T> {
+		public final T n0;
+		public final Fun2<T, T, T> add;
+
+		public Monoid(T n0, Fun2<T, T, T> add) {
+			this.n0 = n0;
+			this.add = add;
+		}
+	}
 
 }
