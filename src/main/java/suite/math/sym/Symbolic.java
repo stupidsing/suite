@@ -301,11 +301,11 @@ public class Symbolic {
 						mul::inverse, //
 						n -> !isContains_x(n) ? Opt.of(n) : Opt.none()).polyize(node);
 			else {
-				Field<Node> f_ = ex.field;
+				Field<Node> nf = ex.field;
 
 				class PN extends Polynomial<Node> {
 					PN() {
-						super(f_, Rewrite.this::is_x, f_.inv, Opt::of);
+						super(nf, Rewrite.this::is_x, nf.inv, Opt::of);
 					}
 				}
 
@@ -326,7 +326,7 @@ public class Symbolic {
 						}).match2(patPow, (a, b) -> {
 							return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 						}).applyIf(Node.class, n -> {
-							if (n == f_.n0)
+							if (n == nf.n0)
 								return Opt.of(pn.p0);
 							else if (is_x(n))
 								return Opt.of(pn.px);
