@@ -284,7 +284,7 @@ public class Symbolic {
 				return power;
 			};
 
-			Ring<Node> ring = Boolean.TRUE ? ex.field
+			Ring<Node> ring = Boolean.FALSE ? ex.field
 					: new Ring<>( //
 							n0, //
 							n1, //
@@ -294,7 +294,7 @@ public class Symbolic {
 
 			Opt<Polynomial<Node>.Poly> opt;
 
-			if (Boolean.TRUE)
+			if (Boolean.FALSE)
 				opt = new Polynomial<>( //
 						ring, //
 						this::is_x, //
@@ -302,11 +302,18 @@ public class Symbolic {
 						n -> !isContains_x(n) ? Opt.of(n) : Opt.none()).polyize(node);
 			else {
 				Field<Node> f_ = ex.field;
-				Polynomial<Node> pn = new Polynomial<>(f_, this::is_x, f_.inv, Opt::of);
-				Ring<Polynomial<Node>.Poly> pr = pn.ring;
+
+				class PN extends Polynomial<Node> {
+					PN() {
+						super(f_, Rewrite.this::is_x, f_.inv, Opt::of);
+					}
+				}
+
+				Polynomial<Node> pn = new PN();
+				Ring<PN.Poly> pr = pn.ring;
 
 				opt = new Object() {
-					Opt<Polynomial<Node>.Poly> poly(Node node) {
+					Opt<PN.Poly> poly(Node node) {
 						return new SwitchNode<Opt<Polynomial<Node>.Poly>>(node //
 						).match2(patAdd, (a, b) -> {
 							return p(a).join(p(b), pr.add);
@@ -330,11 +337,11 @@ public class Symbolic {
 						}).nonNullResult();
 					}
 
-					Opt<Polynomial<Node>.Poly> p(Node node) {
+					Opt<PN.Poly> p(Node node) {
 						return poly(node);
 					}
 
-					private Opt<Polynomial<Node>.Poly> pow(Node a, int power) {
+					private Opt<PN.Poly> pow(Node a, int power) {
 						if (power < 0)
 							return inv1(pow(a, -power));
 						else // TODO assumed m0 != 0 or power != 0
@@ -348,7 +355,7 @@ public class Symbolic {
 							});
 					}
 
-					private Opt<Polynomial<Node>.Poly> inv1(Opt<Polynomial<Node>.Poly> opt) {
+					private Opt<PN.Poly> inv1(Opt<Polynomial<Node>.Poly> opt) {
 						return opt.concatMap(pn::inv);
 					}
 				}.poly(node);
