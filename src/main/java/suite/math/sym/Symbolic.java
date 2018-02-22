@@ -316,13 +316,13 @@ public class Symbolic {
 					Opt<PN.Poly> poly(Node node) {
 						return new SwitchNode<Opt<Polynomial<Node>.Poly>>(node //
 						).match2(patAdd, (a, b) -> {
-							return p(a).join(p(b), pr.add);
+							return poly(a).join(poly(b), pr.add);
 						}).match1(patNeg, a -> {
-							return p(a).map(pr.neg);
+							return poly(a).map(pr.neg);
 						}).match2(patMul, (a, b) -> {
-							return p(a).join(p(b), pr.mul);
+							return poly(a).join(poly(b), pr.mul);
 						}).match1(patInv, a -> {
-							return inv1(p(a));
+							return inv1(poly(a));
 						}).match2(patPow, (a, b) -> {
 							return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 						}).applyIf(Node.class, n -> {
@@ -337,15 +337,11 @@ public class Symbolic {
 						}).nonNullResult();
 					}
 
-					Opt<PN.Poly> p(Node node) {
-						return poly(node);
-					}
-
 					private Opt<PN.Poly> pow(Node a, int power) {
 						if (power < 0)
 							return inv1(pow(a, -power));
 						else // TODO assumed m0 != 0 or power != 0
-							return p(a).map(p -> {
+							return poly(a).map(p -> {
 								Polynomial<Node>.Poly r = pn.p1;
 								for (char ch : Integer.toBinaryString(power).toCharArray()) {
 									r = pr.mul.apply(r, r);
