@@ -284,7 +284,7 @@ public class Symbolic {
 				return power;
 			};
 
-			Ring<Node> ring = Boolean.FALSE ? ex.field
+			Ring<Node> ring = Boolean.TRUE ? ex.field
 					: new Ring<>( //
 							n0, //
 							n1, //
@@ -294,7 +294,7 @@ public class Symbolic {
 
 			Opt<Polynomial<Node>.Poly> opt;
 
-			if (Boolean.FALSE)
+			if (Boolean.TRUE)
 				opt = new Polynomial<>( //
 						ring, //
 						this::is_x, //
@@ -302,8 +302,8 @@ public class Symbolic {
 						n -> !isContains_x(n) ? Opt.of(n) : Opt.none()).polyize(node);
 			else {
 				Field<Node> f_ = ex.field;
-				Polynomial<Node> py = new Polynomial<>(f_, this::is_x, f_.inv, Opt::of);
-				Ring<Polynomial<Node>.Poly> pr = py.ring;
+				Polynomial<Node> pn = new Polynomial<>(f_, this::is_x, f_.inv, Opt::of);
+				Ring<Polynomial<Node>.Poly> pr = pn.ring;
 
 				opt = new Object() {
 					Opt<Polynomial<Node>.Poly> poly(Node node) {
@@ -320,11 +320,11 @@ public class Symbolic {
 							return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 						}).applyIf(Node.class, n -> {
 							if (n == f_.n0)
-								return Opt.of(py.p0);
+								return Opt.of(pn.p0);
 							else if (is_x(n))
-								return Opt.of(py.px);
+								return Opt.of(pn.px);
 							else if (!isContains_x(n))
-								return Opt.of(py.new Poly(0, n));
+								return Opt.of(pn.new Poly(0, n));
 							else
 								return Opt.none();
 						}).nonNullResult();
@@ -339,7 +339,7 @@ public class Symbolic {
 							return inv1(pow(a, -power));
 						else // TODO assumed m0 != 0 or power != 0
 							return p(a).map(p -> {
-								Polynomial<Node>.Poly r = py.p1;
+								Polynomial<Node>.Poly r = pn.p1;
 								for (char ch : Integer.toBinaryString(power).toCharArray()) {
 									r = pr.mul.apply(r, r);
 									r = ch != '0' ? pr.mul.apply(p, r) : r;
@@ -349,7 +349,7 @@ public class Symbolic {
 					}
 
 					private Opt<Polynomial<Node>.Poly> inv1(Opt<Polynomial<Node>.Poly> opt) {
-						return opt.concatMap(py::inv);
+						return opt.concatMap(pn::inv);
 					}
 				}.poly(node);
 			}
