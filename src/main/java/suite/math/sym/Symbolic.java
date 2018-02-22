@@ -302,9 +302,7 @@ public class Symbolic {
 						n -> !isContains_x(n) ? Opt.of(n) : Opt.none()).polyize(node);
 			else {
 				Field<Node> f_ = ex.field;
-
 				Polynomial<Node> py = new Polynomial<>(f_, this::is_x, f_.inv, Opt::of);
-
 				Ring<Polynomial<Node>.Poly> pr = py.ring;
 
 				opt = new Object() {
