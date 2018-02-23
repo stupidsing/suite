@@ -165,7 +165,7 @@ public class Fractional<I> {
 	}
 
 	private class Fract {
-		I t0, t1;
+		private I t0, t1;
 
 		private Fract(I t0, I t1) {
 			this.t0 = t0;
