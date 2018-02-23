@@ -284,7 +284,7 @@ public class Symbolic {
 				return power;
 			};
 
-			return polyize0(node, coefficientFun).map(map -> {
+			return polyize1(node, coefficientFun).map(map -> {
 				Node sum = n0;
 				for (IntObjPair<Node> pair : map.streamlet().sortByKey(Integer::compare)) {
 					int p = pair.t0;
@@ -296,80 +296,68 @@ public class Symbolic {
 		}
 
 		private Opt<Polynomial<Node>.Poly> polyize0(Node node, Fun<Node, Node> coefficientFun) {
-			Ring<Node> ring = Boolean.FALSE ? ex.field
-					: new Ring<>( //
-							n0, //
-							n1, //
-							(a, b) -> coefficientFun.apply(add(a, b)), //
-							add::inverse, //
-							(a, b) -> coefficientFun.apply(mul(a, b)));
+			return new Polynomial<>( //
+					ex.field, //
+					this::is_x, //
+					mul::inverse, //
+					n -> !isContains_x(n) ? Opt.of(n) : Opt.none()).polyize(node);
+		}
 
-			Opt<Polynomial<Node>.Poly> opt;
+		private Opt<Polynomial<Node>.Poly> polyize1(Node node, Fun<Node, Node> coefficientFun) {
+			Field<Node> nf = ex.field;
 
-			if (Boolean.FALSE)
-				opt = new Polynomial<>( //
-						ring, //
-						this::is_x, //
-						mul::inverse, //
-						n -> !isContains_x(n) ? Opt.of(n) : Opt.none()).polyize(node);
-			else {
-				Field<Node> nf = ex.field;
-
-				class PN extends Polynomial<Node> {
-					PN() {
-						super(nf, Rewrite.this::is_x, nf.inv, Opt::of);
-					}
+			class PN extends Polynomial<Node> {
+				PN() {
+					super(nf, Rewrite.this::is_x, nf.inv, Opt::of);
 				}
-
-				Polynomial<Node> pn = new PN();
-				Ring<PN.Poly> pr = pn.ring;
-
-				opt = new Object() {
-					Opt<PN.Poly> poly(Node node) {
-						return new SwitchNode<Opt<PN.Poly>>(node //
-						).match2(patAdd, (a, b) -> {
-							return poly(a).join(poly(b), pr.add);
-						}).match1(patNeg, a -> {
-							return poly(a).map(pr.neg);
-						}).match2(patMul, (a, b) -> {
-							return poly(a).join(poly(b), pr.mul);
-						}).match1(patInv, a -> {
-							return inv1(poly(a));
-						}).match2(patPow, (a, b) -> {
-							return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
-						}).applyIf(Node.class, n -> {
-							if (n == nf.n0)
-								return Opt.of(pn.p0);
-							else if (is_x(n))
-								return Opt.of(pn.px);
-							else if (!isContains_x(n))
-								return Opt.of(pn.new Poly(0, n));
-							else
-								return Opt.none();
-						}).nonNullResult();
-					}
-
-					private Opt<PN.Poly> pow(Node a, int power) {
-						if (power < 0)
-							return inv1(pow(a, -power));
-						else // TODO assumed m0 != 0 or power != 0
-							return poly(a).map(p -> {
-								PN.Poly r = pn.p1;
-								for (char ch : Integer.toBinaryString(power).toCharArray()) {
-									r = pr.mul.apply(r, r);
-									r = ch != '0' ? pr.mul.apply(p, r) : r;
-								}
-								return r;
-							});
-					}
-
-					private Opt<PN.Poly> inv1(Opt<PN.Poly> opt) {
-						return opt.concatMap(pn::inv);
-					}
-				}.poly(node);
 			}
 
-			return opt;
+			Polynomial<Node> pn = new PN();
+			Ring<PN.Poly> pr = pn.ring;
+
+			return new Object() {
+				Opt<PN.Poly> poly(Node node) {
+					return new SwitchNode<Opt<PN.Poly>>(node //
+					).match2(patAdd, (a, b) -> {
+						return poly(a).join(poly(b), pr.add);
+					}).match1(patNeg, a -> {
+						return poly(a).map(pr.neg);
+					}).match2(patMul, (a, b) -> {
+						return poly(a).join(poly(b), pr.mul);
+					}).match1(patInv, a -> {
+						return inv1(poly(a));
+					}).match2(patPow, (a, b) -> {
+						return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
+					}).applyIf(Node.class, n -> {
+						if (n == nf.n0)
+							return Opt.of(pn.p0);
+						else if (is_x(n))
+							return Opt.of(pn.px);
+						else if (!isContains_x(n))
+							return Opt.of(pn.new Poly(0, n));
+						else
+							return Opt.none();
+					}).nonNullResult();
+				}
+
+				private Opt<PN.Poly> pow(Node a, int power) {
+					if (power < 0)
+						return inv1(pow(a, -power));
+					else // TODO assumed m0 != 0 or power != 0
+						return poly(a).map(p -> {
+							PN.Poly r = pn.p1;
+							for (char ch : Integer.toBinaryString(power).toCharArray()) {
+								r = pr.mul.apply(r, r);
+								r = ch != '0' ? pr.mul.apply(p, r) : r;
+							}
+							return r;
+						});
+				}
+
+				private Opt<PN.Poly> inv1(Opt<PN.Poly> opt) {
+					return opt.concatMap(pn::inv);
+				}
+			}.poly(node);
 		}
 
 		private boolean isContains_x(Node node) {
