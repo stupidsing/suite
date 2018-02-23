@@ -53,6 +53,10 @@ public class Fractional<I> {
 		this.mul_ = ring0.mul;
 		this.divMod_ = divMod_;
 		this.parse = parse;
+
+		f0 = new Fract(n0, n1);
+		f1 = new Fract(n1, n1);
+		ring = new Ring<>(f0, f1, this::add, this::neg, this::mul);
 	}
 
 	public Opt<Pair<I, I>> fractionalize(Node node) {
@@ -99,15 +103,9 @@ public class Fractional<I> {
 		});
 	}
 
-	private Fract f0 = new Fract(n0, n1);
-	private Fract f1 = new Fract(n1, n1);
-
-	public Ring<Fract> ring = new Ring<>( //
-			f0, //
-			f1, //
-			this::add, //
-			this::neg, //
-			this::mul);
+	public Fract f0;
+	public Fract f1;
+	public Ring<Fract> ring;
 
 	private Opt<Fract> inv(Fract a) {
 		I num = a.t0;

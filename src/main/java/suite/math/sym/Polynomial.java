@@ -43,6 +43,7 @@ public class Polynomial<N> {
 		p0 = new Poly();
 		p1 = new Poly(0, n1);
 		px = new Poly(1, n1);
+		ring = new Ring<>(p0, p1, this::add, this::neg, this::mul);
 	}
 
 	public class Poly extends IntObjMap<N> {
@@ -106,13 +107,7 @@ public class Polynomial<N> {
 	public Poly p0;
 	public Poly p1;
 	public Poly px;
-
-	public Ring<Poly> ring = new Ring<>( //
-			p0, //
-			p1, //
-			this::add, //
-			this::neg, //
-			this::mul);
+	public Ring<Poly> ring;
 
 	public Opt<Poly> inv(Poly a) {
 		return div(p1, a, 9);
