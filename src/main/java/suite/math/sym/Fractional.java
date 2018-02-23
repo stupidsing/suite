@@ -59,16 +59,16 @@ public class Fractional<I> {
 		Fractional<I> fr = Fractional.this;
 
 		return new Object() {
-			private Opt<Fract> rat(Node node) {
+			private Opt<Fract> fract(Node node) {
 				return new SwitchNode<Opt<Fract>>(node //
 				).match2(patAdd, (a, b) -> {
-					return rat(a).join(rat(b), fr::add);
+					return fract(a).join(fract(b), fr::add);
 				}).match1(patNeg, a -> {
-					return rat(a).map(fr::neg);
+					return fract(a).map(fr::neg);
 				}).match2(patMul, (a, b) -> {
-					return rat(a).join(rat(b), fr::mul);
+					return fract(a).join(fract(b), fr::mul);
 				}).match1(patInv, a -> {
-					return inv1(rat(a));
+					return inv1(fract(a));
 				}).match2(patPow, (a, b) -> {
 					return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 				}).applyIf(Node.class, a -> {
@@ -80,7 +80,7 @@ public class Fractional<I> {
 				if (power < 0)
 					return inv1(pow(a, -power));
 				else
-					return rat(a).map(pair -> { // TODO assummed a != 0 or b != 0
+					return fract(a).map(pair -> { // TODO assummed a != 0 or b != 0
 						Fract r = f1;
 						for (char ch : Integer.toBinaryString(power).toCharArray()) {
 							r = mul(r, r);
@@ -93,7 +93,7 @@ public class Fractional<I> {
 			private Opt<Fract> inv1(Opt<Fract> opt) {
 				return opt.concatMap(fr::inv);
 			}
-		}.rat(node).map(fraction -> {
+		}.fract(node).map(fraction -> {
 			Gcd gcd = new Gcd(fraction.t0, fraction.t1, 9);
 			return Pair.of(gcd.m0, gcd.m1);
 		});
