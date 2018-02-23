@@ -284,6 +284,18 @@ public class Symbolic {
 				return power;
 			};
 
+			return polyize0(node, coefficientFun).map(map -> {
+				Node sum = n0;
+				for (IntObjPair<Node> pair : map.streamlet().sortByKey(Integer::compare)) {
+					int p = pair.t0;
+					Node power = p < 0 ? inv(powerFun.apply(-p)) : powerFun.apply(p);
+					sum = add(mul(coefficientFun.apply(pair.t1), power), sum);
+				}
+				return sum;
+			});
+		}
+
+		private Opt<Polynomial<Node>.Poly> polyize0(Node node, Fun<Node, Node> coefficientFun) {
 			Ring<Node> ring = Boolean.FALSE ? ex.field
 					: new Ring<>( //
 							n0, //
@@ -357,15 +369,7 @@ public class Symbolic {
 				}.poly(node);
 			}
 
-			return opt.map(map -> {
-				Node sum = n0;
-				for (IntObjPair<Node> pair : map.streamlet().sortByKey(Integer::compare)) {
-					int p = pair.t0;
-					Node power = p < 0 ? inv(powerFun.apply(-p)) : powerFun.apply(p);
-					sum = add(mul(coefficientFun.apply(pair.t1), power), sum);
-				}
-				return sum;
-			});
+			return opt;
 		}
 
 		private boolean isContains_x(Node node) {
