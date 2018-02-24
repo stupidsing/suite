@@ -149,7 +149,7 @@ public class Fractional<I> {
 	public Fract<I> inverse(Fract<I> a) {
 		I num = a.t0;
 		I denom = a.t1;
-		if (0 < sgn_.apply(num))
+		if (0 <= sgn_.apply(num))
 			return new Fract<>(denom, num);
 		else
 			return new Fract<>(neg_.apply(denom), neg_.apply(num));
