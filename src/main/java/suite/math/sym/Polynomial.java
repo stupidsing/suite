@@ -127,7 +127,7 @@ public class Polynomial<N> {
 			return Opt.none();
 	}
 
-	private Pair<Poly, Poly> divMod(Poly n, Poly d) {
+	public Pair<Poly, Poly> divMod(Poly n, Poly d) {
 		if (0 < n.size()) {
 			Fixie3<Integer, N, Poly> n_ = n.decons();
 			Fixie3<Integer, N, Poly> d_ = d.decons();
@@ -169,15 +169,15 @@ public class Polynomial<N> {
 		public Poly() {
 		}
 
+		public Fixie3<Integer, N, Poly> decons() {
+			int max = streamlet().keys().min((p0, p1) -> p1 - p0);
+			return Fixie.of(max, get(max), new Poly(streamlet().filterKey(p -> p != max)));
+		}
+
 		private void add(int power, N term) {
 			Iterate<N> i0 = t -> t != null ? t : n0;
 			Iterate<N> ix = t -> t != n0 ? t : null;
 			update(power, t -> ix.apply(add_.apply(i0.apply(t), term)));
-		}
-
-		private Fixie3<Integer, N, Poly> decons() {
-			int max = streamlet().keys().min((p0, p1) -> p1 - p0);
-			return Fixie.of(max, get(max), new Poly(streamlet().filterKey(p -> p != max)));
 		}
 	}
 

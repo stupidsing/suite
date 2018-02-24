@@ -68,7 +68,7 @@ public class Fractional<I> {
 		return parse(node).map(fraction -> Pair.of(fraction.t0, fraction.t1));
 	}
 
-	private Opt<Fract> parse(Node node) {
+	public Opt<Fract> parse(Node node) {
 		Fractional<I> fr = Fractional.this;
 
 		return new Object() {
@@ -148,6 +148,15 @@ public class Fractional<I> {
 			return Opt.none();
 	}
 
+	public Fract inverse(Fract a) {
+		I num = a.t0;
+		I denom = a.t1;
+		if (isPositive.test(num))
+			return new Fract(denom, num);
+		else
+			return new Fract(neg_.apply(denom), neg_.apply(num));
+	}
+
 	private Fract mul(Fract a, Fract b) {
 		Gcd gcd = new Gcd(mul_.apply(a.t0, b.t0), mul_.apply(a.t1, b.t1), 9);
 		return new Fract(gcd.m0, gcd.m1);
@@ -193,7 +202,7 @@ public class Fractional<I> {
 		}
 	}
 
-	private class Fract {
+	public class Fract {
 		private I t0, t1;
 
 		private Fract(I t0, I t1) {

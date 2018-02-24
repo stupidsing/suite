@@ -106,15 +106,22 @@ public class Symbolic {
 				n -> !rewrite0.isContains_x(n) ? parse0.apply(n) : Opt.none(), //
 				n -> n);
 
-		Rewrite rewrite1 = new Rewrite(Atom.of("x"));
-		Fun<Node, Opt<Polynomial<Node>.Poly>> parse1 = poly0::parse;
-
-		Polynomial<Polynomial<Node>.Poly> poly1 = new Polynomial<Polynomial<Node>.Poly>( //
+		Fractional<Polynomial<Node>.Poly> fract0 = new Fractional<>( //
 				poly0.ring, //
-				null, //
+				p -> 0 < p.size(), //
+				poly0::divMod, //
+				poly0::parse, //
+				poly0::format);
+
+		Rewrite rewrite1 = new Rewrite(Atom.of("x"));
+		Fun<Node, Opt<Fractional<Polynomial<Node>.Poly>.Fract>> parse1 = fract0::parse;
+
+		Polynomial<Fractional<Polynomial<Node>.Poly>.Fract> poly1 = new Polynomial<>( //
+				fract0.ring, //
+				fract0::inverse, //
 				rewrite1::is_x, //
 				n -> !rewrite1.isContains_x(n) ? parse1.apply(n) : Opt.none(), //
-				poly0::format);
+				fract0::format);
 
 		return poly1.parse(node).map(poly1::format);
 	}
