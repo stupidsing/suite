@@ -106,18 +106,14 @@ public class Symbolic {
 	}
 
 	public Opt<Node> polyize_xyn(Node node) {
-		return polyize_xy(Fractional.ofIntegral(), node);
-	}
+		class FractPoly<I> {
+			Fractional<I> fractional;
 
-	private <I> Opt<Node> polyize_xy(Fractional<I> fractional0, Node node) {
-		class FractPoly<I_> {
-			Fractional<I_> fractional;
-
-			FractPoly(Fractional<I_> fractional) {
+			FractPoly(Fractional<I> fractional) {
 				this.fractional = fractional;
 			}
 
-			FractPoly<Poly<Fract<I_>>> fp(Rewrite rewrite) {
+			FractPoly<Poly<Fract<I>>> fp(Rewrite rewrite) {
 				return new FractPoly<>(poly(rewrite, fractional).fractional());
 			}
 
@@ -128,7 +124,7 @@ public class Symbolic {
 
 		Rewrite rewrite_x = new Rewrite(Atom.of("x"));
 		Rewrite rewrite_y = new Rewrite(Atom.of("y"));
-		return new FractPoly<>(fractional0).fp(rewrite_y).fp(rewrite_x).format(node);
+		return new FractPoly<>(Fractional.ofIntegral()).fp(rewrite_y).fp(rewrite_x).format(node);
 	}
 
 	private <I> Polynomial<Fract<I>> poly(Rewrite rewrite, Fractional<I> fractional) {
