@@ -125,7 +125,6 @@ public class Symbolic {
 		return new Polynomial<>( //
 				fractional.field, //
 				fractional::sign, //
-				fractional::inverse, //
 				rewrite.x, //
 				rewrite::is_x, //
 				n -> !rewrite.isContains_x(n) ? fractional.parse(n) : Opt.none(), //
@@ -339,7 +338,7 @@ public class Symbolic {
 
 			class PN extends Polynomial<Node> {
 				PN() {
-					super(nf, sign, nf.inv, x, Rewrite.this::is_x, Opt::of, n -> n);
+					super(nf, sign, x, Rewrite.this::is_x, Opt::of, n -> n);
 				}
 			}
 

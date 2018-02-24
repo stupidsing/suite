@@ -8,6 +8,7 @@ import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
 import suite.adt.pair.Pair;
 import suite.math.sym.Express.OpGroup;
+import suite.math.sym.Sym.Field;
 import suite.math.sym.Sym.Ring;
 import suite.node.Int;
 import suite.node.Node;
@@ -38,22 +39,21 @@ public class Polynomial<N> {
 	private Fun<N, Node> format_;
 
 	public Polynomial( //
-			Ring<N> ring0, //
+			Field<N> field0, //
 			Obj_Int<N> sgn_, //
-			Iterate<N> inv_, //
 			Node nx, //
 			Predicate<Node> is_x, //
 			Fun<Node, Opt<N>> parse_, //
 			Fun<N, Node> format_) {
-		this.n0 = ring0.n0;
-		this.n1 = ring0.n1;
+		this.n0 = field0.n0;
+		this.n1 = field0.n1;
 		this.nx = nx;
 		this.is_x = is_x;
 		this.sgn_ = sgn_;
-		this.add_ = ring0.add;
-		this.neg_ = ring0.neg;
-		this.mul_ = ring0.mul;
-		this.inv_ = inv_;
+		this.add_ = field0.add;
+		this.neg_ = field0.neg;
+		this.mul_ = field0.mul;
+		this.inv_ = field0.inv;
 		this.parse_ = parse_;
 		this.format_ = format_;
 
