@@ -133,7 +133,7 @@ public class Symbolic {
 				rewrite::is_x, //
 				fractional.field, //
 				fractional::sign, //
-				n -> !rewrite.isContains_x(n) ? fractional.parse(n) : Opt.none(), //
+				fractional::parse, //
 				fractional::format);
 	}
 
