@@ -101,6 +101,10 @@ public class Express {
 				return tree;
 		}
 
+		public Node identity() {
+			return e;
+		}
+
 		// TODO for multiplication group, inv inv 0 is NaN
 		public Node inverse(Node n) {
 			Node[] m;
@@ -114,7 +118,12 @@ public class Express {
 	}
 
 	public Node intOf(Node n) {
-		return ((Int) n).number < 0 ? add.inverse(Int.of(-((Int) n).number)) : n;
+		int i = ((Int) n).number;
+		return i < 0 ? add.inverse(Int.of(-i)) : n;
+	}
+
+	public Node intOf(int i) {
+		return i < 0 ? add.inverse(Int.of(-i)) : Int.of(i);
 	}
 
 }

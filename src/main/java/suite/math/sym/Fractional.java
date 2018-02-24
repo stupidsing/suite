@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import suite.BindArrayUtil.Pattern;
 import suite.adt.Opt;
 import suite.adt.pair.Pair;
+import suite.math.sym.Express.OpGroup;
 import suite.math.sym.Sym.Ring;
 import suite.node.Int;
 import suite.node.Node;
@@ -15,7 +16,7 @@ import suite.util.FunUtil2.Fun2;
 
 public class Fractional<I> {
 
-	private Express ex = new Express();
+	private static Express ex = new Express();
 
 	private I n0;
 	private I n1;
@@ -26,6 +27,7 @@ public class Fractional<I> {
 	private Fun2<I, I, I> mul_;
 	private Fun2<I, I, Pair<I, I>> divMod_;
 	private Fun<Node, Opt<I>> parse;
+	private Fun<I, Node> format;
 
 	public static Fractional<Integer> ofIntegral() {
 		return new Fractional<>( //
@@ -36,14 +38,16 @@ public class Fractional<I> {
 					int mod = a % b;
 					return 0 <= mod ? Pair.of(div, mod) : Pair.of(div - 1, mod + b);
 				}, //
-				node -> node instanceof Int ? Opt.of(((Int) node).number) : Opt.none());
+				node -> node instanceof Int ? Opt.of(((Int) node).number) : Opt.none(), //
+				ex::intOf);
 	}
 
 	public Fractional( //
 			Ring<I> ring0, //
 			Predicate<I> isPositive, //
 			Fun2<I, I, Pair<I, I>> divMod_, //
-			Fun<Node, Opt<I>> parse) {
+			Fun<Node, Opt<I>> parse, //
+			Fun<I, Node> format) {
 		this.n0 = ring0.n0;
 		this.n1 = ring0.n1;
 		this.isPositive = isPositive;
@@ -53,6 +57,7 @@ public class Fractional<I> {
 		this.mul_ = ring0.mul;
 		this.divMod_ = divMod_;
 		this.parse = parse;
+		this.format = format;
 
 		f0 = new Fract(n0, n1);
 		f1 = new Fract(n1, n1);
@@ -105,6 +110,26 @@ public class Fractional<I> {
 			Gcd gcd = new Gcd(fraction.t0, fraction.t1, 9);
 			return new Fract(gcd.m0, gcd.m1);
 		});
+	}
+
+	public Node format(Fract fract) {
+		OpGroup add = ex.add;
+		OpGroup mul = ex.mul;
+
+		Fun2<I, I, Node> f = (n, d) -> {
+			Node i0 = format.apply(n);
+			Node i1 = format.apply(d);
+			return mul.apply(i0, mul.inverse(i1));
+		};
+
+		I n_ = fract.t0;
+		I d_ = fract.t1;
+		I nn = neg_.apply(n_);
+
+		if (!isPositive.test(nn))
+			return f.apply(n_, d_);
+		else
+			return add.inverse(f.apply(nn, d_));
 	}
 
 	public Fract f0;

@@ -6,6 +6,7 @@ import suite.adt.Opt;
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
 import suite.adt.pair.Pair;
+import suite.math.sym.Express.OpGroup;
 import suite.math.sym.Sym.Ring;
 import suite.node.Node;
 import suite.primitive.IntPrimitives.Int_Obj;
@@ -26,12 +27,14 @@ public class Polynomial<N> {
 	private Fun2<N, N, N> mul_;
 	private Iterate<N> inv_;
 	private Fun<Node, Opt<N>> parse;
+	private Fun<N, Node> format;
 
 	public Polynomial( //
 			Ring<N> ring0, //
 			Iterate<N> inv, //
 			Predicate<Node> is_x, //
-			Fun<Node, Opt<N>> parse) {
+			Fun<Node, Opt<N>> parse, //
+			Fun<N, Node> format) {
 		this.n0 = ring0.n0;
 		this.n1 = ring0.n1;
 		this.is_x = is_x;
@@ -40,6 +43,7 @@ public class Polynomial<N> {
 		this.mul_ = ring0.mul;
 		this.inv_ = inv;
 		this.parse = parse;
+		this.format = format;
 
 		p0 = new Poly();
 		p1 = new Poly(0, n1);
@@ -59,7 +63,8 @@ public class Polynomial<N> {
 						return Opt.of(px);
 					else
 						return parse.apply(node_).map(n -> new Poly(0, n));
-				});
+				}, //
+				this::format);
 
 		Iterate<Poly> sim = p -> new Poly(p.streamlet());
 
@@ -75,24 +80,28 @@ public class Polynomial<N> {
 				}));
 	}
 
-//	public Node format(Poly map) {
-//		Int_Obj<Node> powerFun = p -> {
-//			Node power = n1;
-//			for (int i = 0; i < p; i++)
-//				power = mul(x, power);
-//			return power;
-//		};
-//
-//		Node sum = n0;
-//
-//		for (IntObjPair<Node> pair : map.streamlet().sortByKey(Integer::compare)) {
-//			int p = pair.t0;
-//			Node power = p < 0 ? inv(powerFun.apply(-p)) : powerFun.apply(p);
-//			sum = add(mul(coefficientFun.apply(pair.t1), power), sum);
-//		}
-//
-//		return sum;
-//	}
+	public Node format(Poly poly) {
+		Express ex = new Express();
+		OpGroup add = ex.add;
+		OpGroup mul = ex.mul;
+
+		Int_Obj<Node> powerFun = p -> {
+			Node power = mul.identity();
+			for (int i = 0; i < p; i++)
+				power = mul.apply(format.apply(n1), power);
+			return power;
+		};
+
+		Node sum = format.apply(n0);
+
+		for (IntObjPair<N> pair : poly.streamlet().sortByKey(Integer::compare)) {
+			int p = pair.t0;
+			Node power = p < 0 ? mul.inverse(powerFun.apply(-p)) : powerFun.apply(p);
+			sum = add.apply(mul.apply(format.apply(pair.t1), power), sum);
+		}
+
+		return sum;
+	}
 
 	public Poly p0;
 	public Poly p1;

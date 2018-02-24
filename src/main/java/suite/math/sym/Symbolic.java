@@ -304,7 +304,8 @@ public class Symbolic {
 					ex.field, //
 					mul::inverse, //
 					rewrite0::is_x, //
-					n -> !rewrite0.isContains_x(n) ? parse0.apply(n) : Opt.none());
+					n -> !rewrite0.isContains_x(n) ? parse0.apply(n) : Opt.none(), //
+					n -> n);
 
 			Rewrite rewrite1 = new Rewrite(Atom.of("x"));
 			Fun<Node, Opt<Polynomial<Node>.Poly>> parse1 = poly0::parse;
@@ -313,7 +314,8 @@ public class Symbolic {
 					poly0.ring, //
 					null, //
 					rewrite1::is_x, //
-					n -> !rewrite1.isContains_x(n) ? parse1.apply(n) : Opt.none());
+					n -> !rewrite1.isContains_x(n) ? parse1.apply(n) : Opt.none(), //
+					poly0::format);
 
 			return poly1.parse(node);
 		}
@@ -323,7 +325,7 @@ public class Symbolic {
 
 			class PN extends Polynomial<Node> {
 				PN() {
-					super(nf, nf.inv, Rewrite.this::is_x, Opt::of);
+					super(nf, nf.inv, Rewrite.this::is_x, Opt::of, n -> n);
 				}
 			}
 
