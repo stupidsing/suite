@@ -26,8 +26,8 @@ public class Fractional<I> {
 	private Iterate<I> neg_;
 	private Fun2<I, I, I> mul_;
 	private Fun2<I, I, Pair<I, I>> divMod_;
-	private Fun<Node, Opt<I>> parse;
-	private Fun<I, Node> format;
+	private Fun<Node, Opt<I>> parse_;
+	private Fun<I, Node> format_;
 
 	public static Fractional<Integer> ofIntegral() {
 		return new Fractional<>( //
@@ -46,8 +46,8 @@ public class Fractional<I> {
 			Ring<I> ring0, //
 			Predicate<I> isPositive, //
 			Fun2<I, I, Pair<I, I>> divMod_, //
-			Fun<Node, Opt<I>> parse, //
-			Fun<I, Node> format) {
+			Fun<Node, Opt<I>> parse_, //
+			Fun<I, Node> format_) {
 		this.n0 = ring0.n0;
 		this.n1 = ring0.n1;
 		this.isPositive = isPositive;
@@ -56,8 +56,8 @@ public class Fractional<I> {
 		this.neg_ = ring0.neg;
 		this.mul_ = ring0.mul;
 		this.divMod_ = divMod_;
-		this.parse = parse;
-		this.format = format;
+		this.parse_ = parse_;
+		this.format_ = format_;
 
 		f0 = new Fract(n0, n1);
 		f1 = new Fract(n1, n1);
@@ -85,7 +85,7 @@ public class Fractional<I> {
 				}).match2(patPow, (a, b) -> {
 					return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 				}).applyIf(Node.class, a -> {
-					return parse.apply(a).map(i -> new Fract(i, n1));
+					return parse_.apply(a).map(i -> new Fract(i, n1));
 				}).nonNullResult();
 			}
 
@@ -117,8 +117,8 @@ public class Fractional<I> {
 		OpGroup mul = ex.mul;
 
 		Fun2<I, I, Node> f = (n, d) -> {
-			Node i0 = format.apply(n);
-			Node i1 = format.apply(d);
+			Node i0 = format_.apply(n);
+			Node i1 = format_.apply(d);
 			return mul.apply(i0, mul.inverse(i1));
 		};
 

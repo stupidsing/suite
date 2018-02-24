@@ -95,35 +95,68 @@ public class Symbolic {
 		return Opt.of(node0).map(rewrite::rewrite).concatMap(rewrite::i).map(rewrite::simplify).get();
 	}
 
+	public Opt<Node> polyize_xyi(Node node) {
+		Fractional<Integer> fractional0 = Fractional.ofIntegral();
+
+		Rewrite rewrite0 = new Rewrite(Atom.of("y"));
+
+		Polynomial<Fractional<Integer>.Fract> polynomial0 = new Polynomial<>( //
+				fractional0.ring, //
+				fractional0::inverse, //
+				rewrite0::is_x, //
+				n -> !rewrite0.isContains_x(n) ? fractional0.parse(n) : Opt.none(), //
+				fractional0::format);
+
+		Fractional<Polynomial<Fractional<Integer>.Fract>.Poly> fractional1 = new Fractional<>( //
+				polynomial0.ring, //
+				p -> 0 < p.size(), //
+				polynomial0::divMod, //
+				polynomial0::parse, //
+				polynomial0::format);
+
+		Rewrite rewrite1 = new Rewrite(Atom.of("x"));
+
+		Polynomial<Fractional<Polynomial<Fractional<Integer>.Fract>.Poly>.Fract> polynomial1 = new Polynomial<>( //
+				fractional1.ring, //
+				fractional1::inverse, //
+				rewrite1::is_x, //
+				n -> !rewrite1.isContains_x(n) ? fractional1.parse(n) : Opt.none(), //
+				fractional1::format);
+
+		return polynomial1.parse(node).map(polynomial1::format);
+	}
+
 	public Opt<Node> polyize_xy(Node node) {
 		Rewrite rewrite0 = new Rewrite(Atom.of("y"));
 		Fun<Node, Opt<Node>> parse0 = Opt::of;
 
-		Polynomial<Node> poly0 = new Polynomial<>( //
+		Fractional<Integer> fract0 = Fractional.ofIntegral();
+
+		Polynomial<Node> polynomial0 = new Polynomial<>( //
 				ex.field, //
 				mul::inverse, //
 				rewrite0::is_x, //
 				n -> !rewrite0.isContains_x(n) ? parse0.apply(n) : Opt.none(), //
 				n -> n);
 
-		Fractional<Polynomial<Node>.Poly> fract0 = new Fractional<>( //
-				poly0.ring, //
+		Fractional<Polynomial<Node>.Poly> fractional1 = new Fractional<>( //
+				polynomial0.ring, //
 				p -> 0 < p.size(), //
-				poly0::divMod, //
-				poly0::parse, //
-				poly0::format);
+				polynomial0::divMod, //
+				polynomial0::parse, //
+				polynomial0::format);
 
 		Rewrite rewrite1 = new Rewrite(Atom.of("x"));
-		Fun<Node, Opt<Fractional<Polynomial<Node>.Poly>.Fract>> parse1 = fract0::parse;
+		Fun<Node, Opt<Fractional<Polynomial<Node>.Poly>.Fract>> parse1 = fractional1::parse;
 
-		Polynomial<Fractional<Polynomial<Node>.Poly>.Fract> poly1 = new Polynomial<>( //
-				fract0.ring, //
-				fract0::inverse, //
+		Polynomial<Fractional<Polynomial<Node>.Poly>.Fract> polynomial1 = new Polynomial<>( //
+				fractional1.ring, //
+				fractional1::inverse, //
 				rewrite1::is_x, //
 				n -> !rewrite1.isContains_x(n) ? parse1.apply(n) : Opt.none(), //
-				fract0::format);
+				fractional1::format);
 
-		return poly1.parse(node).map(poly1::format);
+		return polynomial1.parse(node).map(polynomial1::format);
 	}
 
 	public Node simplify(Node node, Node... xs) {

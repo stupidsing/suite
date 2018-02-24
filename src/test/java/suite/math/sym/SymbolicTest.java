@@ -22,7 +22,12 @@ public class SymbolicTest {
 	private Rewrite rw = new Rewrite();
 
 	@Test
-	public void test() {
+	public void test0() {
+		verifyEquals("x * x + 2 * x + 1", sym.polyize_xy(Suite.parse("(x + 1) ^ 2")).get());
+	}
+
+	@Test
+	public void test1() {
 		verifySimplify("(x + 1) ^ 2", "x * x + 2 * x + 1", y, x, d, c, b, a);
 	}
 

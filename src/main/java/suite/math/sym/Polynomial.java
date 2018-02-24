@@ -2,13 +2,16 @@ package suite.math.sym;
 
 import java.util.function.Predicate;
 
+import suite.BindArrayUtil.Pattern;
 import suite.adt.Opt;
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
 import suite.adt.pair.Pair;
 import suite.math.sym.Express.OpGroup;
 import suite.math.sym.Sym.Ring;
+import suite.node.Int;
 import suite.node.Node;
+import suite.node.io.SwitchNode;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
@@ -19,6 +22,8 @@ import suite.util.FunUtil2.Fun2;
 
 public class Polynomial<N> {
 
+	private Express ex = new Express();
+
 	private N n0;
 	private N n1;
 	private Predicate<Node> is_x;
@@ -26,15 +31,15 @@ public class Polynomial<N> {
 	private Iterate<N> neg_;
 	private Fun2<N, N, N> mul_;
 	private Iterate<N> inv_;
-	private Fun<Node, Opt<N>> parse;
-	private Fun<N, Node> format;
+	private Fun<Node, Opt<N>> parse_;
+	private Fun<N, Node> format_;
 
 	public Polynomial( //
 			Ring<N> ring0, //
 			Iterate<N> inv, //
 			Predicate<Node> is_x, //
-			Fun<Node, Opt<N>> parse, //
-			Fun<N, Node> format) {
+			Fun<Node, Opt<N>> parse_, //
+			Fun<N, Node> format_) {
 		this.n0 = ring0.n0;
 		this.n1 = ring0.n1;
 		this.is_x = is_x;
@@ -42,8 +47,8 @@ public class Polynomial<N> {
 		this.neg_ = ring0.neg;
 		this.mul_ = ring0.mul;
 		this.inv_ = inv;
-		this.parse = parse;
-		this.format = format;
+		this.parse_ = parse_;
+		this.format_ = format_;
 
 		p0 = new Poly();
 		p1 = new Poly(0, n1);
@@ -52,6 +57,47 @@ public class Polynomial<N> {
 	}
 
 	public Opt<Poly> parse(Node node) { // polynomialize
+		Polynomial<N> py = Polynomial.this;
+
+		return new Object() {
+			private Opt<Poly> poly(Node node) {
+				return new SwitchNode<Opt<Poly>>(node //
+				).match2(patAdd, (a, b) -> {
+					return poly(a).join(poly(b), py::add);
+				}).match1(patNeg, a -> {
+					return poly(a).map(py::neg);
+				}).match2(patMul, (a, b) -> {
+					return poly(a).join(poly(b), py::mul);
+				}).match1(patInv, a -> {
+					return inv1(poly(a));
+				}).match2(patPow, (a, b) -> {
+					return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
+				}).applyIf(Node.class, a -> {
+					return parse_.apply(a).map(i -> new Poly(0, i));
+				}).nonNullResult();
+			}
+
+			private Opt<Poly> pow(Node a, int power) {
+				if (power < 0)
+					return inv1(pow(a, -power));
+				else
+					return poly(a).map(pair -> { // TODO assummed a != 0 or b != 0
+						Poly r = p1;
+						for (char ch : Integer.toBinaryString(power).toCharArray()) {
+							r = mul(r, r);
+							r = ch != '0' ? mul(r, pair) : r;
+						}
+						return r;
+					});
+			}
+
+			private Opt<Poly> inv1(Opt<Poly> opt) {
+				return opt.concatMap(py::inv);
+			}
+		}.poly(node);
+	}
+
+	private Opt<Poly> parseFraction(Node node) {
 		Fractional<Poly> fractional = new Fractional<>( //
 				ring, //
 				a -> 0 < a.size(), //
@@ -62,7 +108,7 @@ public class Polynomial<N> {
 					else if (is_x.test(node_))
 						return Opt.of(px);
 					else
-						return parse.apply(node_).map(n -> new Poly(0, n));
+						return parse_.apply(node_).map(n -> new Poly(0, n));
 				}, //
 				this::format);
 
@@ -88,16 +134,16 @@ public class Polynomial<N> {
 		Int_Obj<Node> powerFun = p -> {
 			Node power = mul.identity();
 			for (int i = 0; i < p; i++)
-				power = mul.apply(format.apply(n1), power);
+				power = mul.apply(format_.apply(n1), power);
 			return power;
 		};
 
-		Node sum = format.apply(n0);
+		Node sum = format_.apply(n0);
 
 		for (IntObjPair<N> pair : poly.streamlet().sortByKey(Integer::compare)) {
 			int p = pair.t0;
 			Node power = p < 0 ? mul.inverse(powerFun.apply(-p)) : powerFun.apply(p);
-			sum = add.apply(mul.apply(format.apply(pair.t1), power), sum);
+			sum = add.apply(mul.apply(format_.apply(pair.t1), power), sum);
 		}
 
 		return sum;
@@ -181,4 +227,9 @@ public class Polynomial<N> {
 		}
 	}
 
+	private Pattern patAdd = ex.patAdd;
+	private Pattern patNeg = ex.patNeg;
+	private Pattern patMul = ex.patMul;
+	private Pattern patInv = ex.patInv;
+	private Pattern patPow = ex.patPow;
 }
