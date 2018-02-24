@@ -59,8 +59,8 @@ public class Fractional<I> {
 		this.parse_ = parse_;
 		this.format_ = format_;
 
-		f0 = new Fract(n0, n1);
-		f1 = new Fract(n1, n1);
+		f0 = new Fract<>(n0, n1);
+		f1 = new Fract<>(n1, n1);
 		ring = new Ring<>(f0, f1, this::add, this::neg, this::mul);
 	}
 
@@ -68,12 +68,12 @@ public class Fractional<I> {
 		return parse(node).map(fraction -> Pair.of(fraction.t0, fraction.t1));
 	}
 
-	public Opt<Fract> parse(Node node) {
+	public Opt<Fract<I>> parse(Node node) {
 		Fractional<I> fr = Fractional.this;
 
 		return new Object() {
-			private Opt<Fract> fract(Node node) {
-				return new SwitchNode<Opt<Fract>>(node //
+			private Opt<Fract<I>> fract(Node node) {
+				return new SwitchNode<Opt<Fract<I>>>(node //
 				).match2(patAdd, (a, b) -> {
 					return fract(a).join(fract(b), fr::add);
 				}).match1(patNeg, a -> {
@@ -85,16 +85,16 @@ public class Fractional<I> {
 				}).match2(patPow, (a, b) -> {
 					return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 				}).applyIf(Node.class, a -> {
-					return parse_.apply(a).map(i -> new Fract(i, n1));
+					return parse_.apply(a).map(i -> new Fract<>(i, n1));
 				}).nonNullResult();
 			}
 
-			private Opt<Fract> pow(Node a, int power) {
+			private Opt<Fract<I>> pow(Node a, int power) {
 				if (power < 0)
 					return inv1(pow(a, -power));
 				else
 					return fract(a).map(pair -> { // TODO assummed a != 0 or b != 0
-						Fract r = f1;
+						Fract<I> r = f1;
 						for (char ch : Integer.toBinaryString(power).toCharArray()) {
 							r = mul(r, r);
 							r = ch != '0' ? mul(r, pair) : r;
@@ -103,16 +103,16 @@ public class Fractional<I> {
 					});
 			}
 
-			private Opt<Fract> inv1(Opt<Fract> opt) {
+			private Opt<Fract<I>> inv1(Opt<Fract<I>> opt) {
 				return opt.concatMap(fr::inv);
 			}
 		}.fract(node).map(fraction -> {
 			Gcd gcd = new Gcd(fraction.t0, fraction.t1, 9);
-			return new Fract(gcd.m0, gcd.m1);
+			return new Fract<>(gcd.m0, gcd.m1);
 		});
 	}
 
-	public Node format(Fract fract) {
+	public Node format(Fract<I> fract) {
 		OpGroup add = ex.add;
 		OpGroup mul = ex.mul;
 
@@ -132,46 +132,46 @@ public class Fractional<I> {
 			return add.inverse(f.apply(nn, d_));
 	}
 
-	public Fract f0;
-	public Fract f1;
-	public Ring<Fract> ring;
+	public Fract<I> f0;
+	public Fract<I> f1;
+	public Ring<Fract<I>> ring;
 
-	private Opt<Fract> inv(Fract a) {
+	private Opt<Fract<I>> inv(Fract<I> a) {
 		I num = a.t0;
 		I denom = a.t1;
 		I numn = neg_.apply(num);
 		if (isPositive.test(num))
-			return Opt.of(new Fract(denom, num));
+			return Opt.of(new Fract<>(denom, num));
 		else if (isPositive.test(numn))
-			return Opt.of(new Fract(neg_.apply(denom), numn));
+			return Opt.of(new Fract<>(neg_.apply(denom), numn));
 		else
 			return Opt.none();
 	}
 
-	public Fract inverse(Fract a) {
+	public Fract<I> inverse(Fract<I> a) {
 		I num = a.t0;
 		I denom = a.t1;
 		if (isPositive.test(num))
-			return new Fract(denom, num);
+			return new Fract<>(denom, num);
 		else
-			return new Fract(neg_.apply(denom), neg_.apply(num));
+			return new Fract<>(neg_.apply(denom), neg_.apply(num));
 	}
 
-	private Fract mul(Fract a, Fract b) {
+	private Fract<I> mul(Fract<I> a, Fract<I> b) {
 		Gcd gcd = new Gcd(mul_.apply(a.t0, b.t0), mul_.apply(a.t1, b.t1), 9);
-		return new Fract(gcd.m0, gcd.m1);
+		return new Fract<>(gcd.m0, gcd.m1);
 	}
 
-	private Fract neg(Fract a) {
-		return new Fract(neg_.apply(a.t0), a.t1);
+	private Fract<I> neg(Fract<I> a) {
+		return new Fract<>(neg_.apply(a.t0), a.t1);
 	}
 
-	private Fract add(Fract a, Fract b) {
+	private Fract<I> add(Fract<I> a, Fract<I> b) {
 		Gcd gcd = new Gcd(a.t1, b.t1, 9);
 		I num0 = mul_.apply(a.t0, gcd.m1);
 		I num1 = mul_.apply(b.t0, gcd.m0);
 		I denom = mul_.apply(gcd.gcd, mul_.apply(gcd.m0, gcd.m1));
-		return new Fract(add_.apply(num0, num1), denom);
+		return new Fract<>(add_.apply(num0, num1), denom);
 	}
 
 	private class Gcd {
@@ -202,7 +202,7 @@ public class Fractional<I> {
 		}
 	}
 
-	public class Fract {
+	public static class Fract<I> {
 		private I t0, t1;
 
 		private Fract(I t0, I t1) {

@@ -10,6 +10,7 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.jdk.lambda.LambdaInstance;
 import suite.math.sym.Express.OpGroup;
+import suite.math.sym.Fractional.Fract;
 import suite.math.sym.Sym.Field;
 import suite.math.sym.Sym.Ring;
 import suite.node.Atom;
@@ -100,14 +101,14 @@ public class Symbolic {
 
 		Rewrite rewrite0 = new Rewrite(Atom.of("y"));
 
-		Polynomial<Fractional<Integer>.Fract> polynomial0 = new Polynomial<>( //
+		Polynomial<Fract<Integer>> polynomial0 = new Polynomial<>( //
 				fractional0.ring, //
 				fractional0::inverse, //
 				rewrite0::is_x, //
 				n -> !rewrite0.isContains_x(n) ? fractional0.parse(n) : Opt.none(), //
 				fractional0::format);
 
-		Fractional<Polynomial<Fractional<Integer>.Fract>.Poly> fractional1 = new Fractional<>( //
+		Fractional<Polynomial<Fract<Integer>>.Poly> fractional1 = new Fractional<>( //
 				polynomial0.ring, //
 				p -> 0 < p.size(), //
 				polynomial0::divMod, //
@@ -116,7 +117,7 @@ public class Symbolic {
 
 		Rewrite rewrite1 = new Rewrite(Atom.of("x"));
 
-		Polynomial<Fractional<Polynomial<Fractional<Integer>.Fract>.Poly>.Fract> polynomial1 = new Polynomial<>( //
+		Polynomial<Fract<Polynomial<Fract<Integer>>.Poly>> polynomial1 = new Polynomial<>( //
 				fractional1.ring, //
 				fractional1::inverse, //
 				rewrite1::is_x, //
@@ -129,8 +130,6 @@ public class Symbolic {
 	public Opt<Node> polyize_xy(Node node) {
 		Rewrite rewrite0 = new Rewrite(Atom.of("y"));
 		Fun<Node, Opt<Node>> parse0 = Opt::of;
-
-		Fractional<Integer> fract0 = Fractional.ofIntegral();
 
 		Polynomial<Node> polynomial0 = new Polynomial<>( //
 				ex.field, //
@@ -147,9 +146,9 @@ public class Symbolic {
 				polynomial0::format);
 
 		Rewrite rewrite1 = new Rewrite(Atom.of("x"));
-		Fun<Node, Opt<Fractional<Polynomial<Node>.Poly>.Fract>> parse1 = fractional1::parse;
+		Fun<Node, Opt<Fract<Polynomial<Node>.Poly>>> parse1 = fractional1::parse;
 
-		Polynomial<Fractional<Polynomial<Node>.Poly>.Fract> polynomial1 = new Polynomial<>( //
+		Polynomial<Fract<Polynomial<Node>.Poly>> polynomial1 = new Polynomial<>( //
 				fractional1.ring, //
 				fractional1::inverse, //
 				rewrite1::is_x, //
