@@ -47,35 +47,31 @@ public class Polynomial<N> {
 	}
 
 	public Opt<Poly> polyize(Node node) { // polynomialize
-		return new Object() {
-			private Opt<Poly> poly(Node node) {
-				Fractional<Poly> fractional = new Fractional<>( //
-						ring, //
-						a -> 0 < a.size(), //
-						Polynomial.this::divMod, //
-						node_ -> {
-							if (node_ == n0)
-								return Opt.of(p0);
-							else if (is_x.test(node_))
-								return Opt.of(px);
-							else
-								return parse.apply(node_).map(n -> new Poly(0, n));
-						});
+		Fractional<Poly> fractional = new Fractional<>( //
+				ring, //
+				a -> 0 < a.size(), //
+				Polynomial.this::divMod, //
+				node_ -> {
+					if (node_ == n0)
+						return Opt.of(p0);
+					else if (is_x.test(node_))
+						return Opt.of(px);
+					else
+						return parse.apply(node_).map(n -> new Poly(0, n));
+				});
 
-				Iterate<Poly> sim = p -> new Poly(p.streamlet());
+		Iterate<Poly> sim = p -> new Poly(p.streamlet());
 
-				return fractional //
-						.fractionalize(node) //
-						.concatMap(pair -> pair.map((n0, d0) -> {
-							Poly n1 = sim.apply(n0);
-							Poly d1 = sim.apply(d0);
-							if (d1.size() == 1 && d1.get(0) == n1)
-								return Opt.of(n1);
-							else
-								return div(n1, d1, 9);
-						}));
-			}
-		}.poly(node);
+		return fractional //
+				.fractionalize(node) //
+				.concatMap(pair -> pair.map((n0, d0) -> {
+					Poly n1 = sim.apply(n0);
+					Poly d1 = sim.apply(d0);
+					if (d1.size() == 1 && d1.get(0) == n1)
+						return Opt.of(n1);
+					else
+						return div(n1, d1, 9);
+				}));
 	}
 
 	public Poly p0;
