@@ -47,14 +47,12 @@ public class Polynomial<N> {
 	}
 
 	public Opt<Poly> polyize(Node node) { // polynomialize
-		Polynomial<N> py = Polynomial.this;
-
 		return new Object() {
 			private Opt<Poly> poly(Node node) {
 				Fractional<Poly> fractional = new Fractional<>( //
 						ring, //
 						a -> 0 < a.size(), //
-						py::divMod, //
+						Polynomial.this::divMod, //
 						node_ -> {
 							if (node_ == n0)
 								return Opt.of(p0);
