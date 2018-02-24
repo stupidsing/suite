@@ -296,7 +296,7 @@ public class Symbolic {
 			});
 		}
 
-		private Opt<Polynomial<Polynomial<Node>.Poly>.Poly> polyize0(Node node) {
+		private Opt<Node> polyize_xy(Node node) {
 			Rewrite rewrite0 = new Rewrite(Atom.of("y"));
 			Fun<Node, Opt<Node>> parse0 = Opt::of;
 
@@ -317,7 +317,7 @@ public class Symbolic {
 					n -> !rewrite1.isContains_x(n) ? parse1.apply(n) : Opt.none(), //
 					poly0::format);
 
-			return poly1.parse(node);
+			return poly1.parse(node).map(poly1::format);
 		}
 
 		private Opt<Polynomial<Node>.Poly> polyize_(Node node, Fun<Node, Node> coefficientFun) {
