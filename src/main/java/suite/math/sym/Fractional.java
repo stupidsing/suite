@@ -59,7 +59,7 @@ public class Fractional<I> {
 
 		f0 = new Fract<>(n0, n1);
 		f1 = new Fract<>(n1, n1);
-		ring = new Field<>(f0, f1, this::add, this::neg, this::mul, this::inverse);
+		field = new Field<>(f0, f1, this::add, this::neg, this::mul, this::inverse);
 	}
 
 	public Opt<Pair<I, I>> fractionalize(Node node) {
@@ -132,7 +132,7 @@ public class Fractional<I> {
 
 	public Fract<I> f0;
 	public Fract<I> f1;
-	public Field<Fract<I>> ring;
+	public Field<Fract<I>> field;
 
 	private Opt<Fract<I>> inv(Fract<I> a) {
 		I num = a.t0;

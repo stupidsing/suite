@@ -99,20 +99,10 @@ public class Symbolic {
 	}
 
 	public Opt<Node> polyize_xn(Node node) {
-		Fractional<Integer> fractional0 = Fractional.ofIntegral();
-
-		Rewrite rewrite0 = new Rewrite(Atom.of("x"));
-
-		Polynomial<Fract<Integer>> polynomial0 = new Polynomial<>( //
-				fractional0.ring, //
-				fractional0::sign, //
-				fractional0::inverse, //
-				rewrite0.x, //
-				rewrite0::is_x, //
-				n -> !rewrite0.isContains_x(n) ? fractional0.parse(n) : Opt.none(), //
-				fractional0::format);
-
-		return polynomial0.parse(node).map(polynomial0::format);
+		Rewrite rewrite = new Rewrite(Atom.of("x"));
+		Fractional<Integer> fractional = Fractional.ofIntegral();
+		Polynomial<Fract<Integer>> polynomial = poly(rewrite, fractional);
+		return polynomial.parse(node).map(polynomial::format);
 	}
 
 	public Opt<Node> polyize_xyn(Node node) {
@@ -128,14 +118,18 @@ public class Symbolic {
 	}
 
 	private <I> Fractional<Poly<Fract<I>>> fractPoly(Rewrite rewrite, Fractional<I> fractional) {
+		return poly(rewrite, fractional).fractional();
+	}
+
+	private <I> Polynomial<Fract<I>> poly(Rewrite rewrite, Fractional<I> fractional) {
 		return new Polynomial<>( //
-				fractional.ring, //
+				fractional.field, //
 				fractional::sign, //
 				fractional::inverse, //
 				rewrite.x, //
 				rewrite::is_x, //
 				n -> !rewrite.isContains_x(n) ? fractional.parse(n) : Opt.none(), //
-				fractional::format).fractional();
+				fractional::format);
 	}
 
 	public Node simplify(Node node, Node... xs) {
