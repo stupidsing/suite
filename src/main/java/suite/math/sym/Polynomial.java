@@ -8,6 +8,7 @@ import suite.adt.pair.Fixie_.Fixie3;
 import suite.adt.pair.Pair;
 import suite.math.sym.Sym.Ring;
 import suite.node.Node;
+import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjStreamlet;
@@ -46,7 +47,7 @@ public class Polynomial<N> {
 		ring = new Ring<>(p0, p1, this::add, this::neg, this::mul);
 	}
 
-	public Opt<Poly> polyize(Node node) { // polynomialize
+	public Opt<Poly> parse(Node node) { // polynomialize
 		Fractional<Poly> fractional = new Fractional<>( //
 				ring, //
 				a -> 0 < a.size(), //
@@ -73,6 +74,25 @@ public class Polynomial<N> {
 						return div(n1, d1, 9);
 				}));
 	}
+
+//	public Node format(Poly map) {
+//		Int_Obj<Node> powerFun = p -> {
+//			Node power = n1;
+//			for (int i = 0; i < p; i++)
+//				power = mul(x, power);
+//			return power;
+//		};
+//
+//		Node sum = n0;
+//
+//		for (IntObjPair<Node> pair : map.streamlet().sortByKey(Integer::compare)) {
+//			int p = pair.t0;
+//			Node power = p < 0 ? inv(powerFun.apply(-p)) : powerFun.apply(p);
+//			sum = add(mul(coefficientFun.apply(pair.t1), power), sum);
+//		}
+//
+//		return sum;
+//	}
 
 	public Poly p0;
 	public Poly p1;

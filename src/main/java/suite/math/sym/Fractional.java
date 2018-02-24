@@ -60,6 +60,10 @@ public class Fractional<I> {
 	}
 
 	public Opt<Pair<I, I>> fractionalize(Node node) {
+		return parse(node).map(fraction -> Pair.of(fraction.t0, fraction.t1));
+	}
+
+	private Opt<Fract> parse(Node node) {
 		Fractional<I> fr = Fractional.this;
 
 		return new Object() {
@@ -99,7 +103,7 @@ public class Fractional<I> {
 			}
 		}.fract(node).map(fraction -> {
 			Gcd gcd = new Gcd(fraction.t0, fraction.t1, 9);
-			return Pair.of(gcd.m0, gcd.m1);
+			return new Fract(gcd.m0, gcd.m1);
 		});
 	}
 

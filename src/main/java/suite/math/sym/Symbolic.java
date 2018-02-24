@@ -12,6 +12,7 @@ import suite.jdk.lambda.LambdaInstance;
 import suite.math.sym.Express.OpGroup;
 import suite.math.sym.Sym.Field;
 import suite.math.sym.Sym.Ring;
+import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
@@ -284,7 +285,7 @@ public class Symbolic {
 				return power;
 			};
 
-			return polyize1(node, coefficientFun).map(map -> {
+			return polyize_(node, coefficientFun).map(map -> {
 				Node sum = n0;
 				for (IntObjPair<Node> pair : map.streamlet().sortByKey(Integer::compare)) {
 					int p = pair.t0;
@@ -296,22 +297,28 @@ public class Symbolic {
 		}
 
 		private Opt<Polynomial<Polynomial<Node>.Poly>.Poly> polyize0(Node node) {
+			Rewrite rewrite0 = new Rewrite(Atom.of("y"));
+			Fun<Node, Opt<Node>> parse0 = Opt::of;
+
 			Polynomial<Node> poly0 = new Polynomial<>( //
 					ex.field, //
 					mul::inverse, //
-					this::is_x, //
-					n -> !isContains_x(n) ? Opt.of(n) : Opt.none());
+					rewrite0::is_x, //
+					n -> !rewrite0.isContains_x(n) ? parse0.apply(n) : Opt.none());
+
+			Rewrite rewrite1 = new Rewrite(Atom.of("x"));
+			Fun<Node, Opt<Polynomial<Node>.Poly>> parse1 = poly0::parse;
 
 			Polynomial<Polynomial<Node>.Poly> poly1 = new Polynomial<Polynomial<Node>.Poly>( //
 					poly0.ring, //
 					null, //
-					this::is_x, //
-					n -> !isContains_x(n) ? poly0.polyize(n) : Opt.none());
+					rewrite1::is_x, //
+					n -> !rewrite1.isContains_x(n) ? parse1.apply(n) : Opt.none());
 
-			return poly1.polyize(node);
+			return poly1.parse(node);
 		}
 
-		private Opt<Polynomial<Node>.Poly> polyize1(Node node, Fun<Node, Node> coefficientFun) {
+		private Opt<Polynomial<Node>.Poly> polyize_(Node node, Fun<Node, Node> coefficientFun) {
 			Field<Node> nf = ex.field;
 
 			class PN extends Polynomial<Node> {
