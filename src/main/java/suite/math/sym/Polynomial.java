@@ -13,6 +13,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
 import suite.primitive.IntPrimitives.Int_Obj;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjStreamlet;
@@ -28,6 +29,7 @@ public class Polynomial<N> {
 	private N n1;
 	private Node nx;
 	private Predicate<Node> is_x;
+	private Obj_Int<N> sgn_;
 	private Fun2<N, N, N> add_;
 	private Iterate<N> neg_;
 	private Fun2<N, N, N> mul_;
@@ -37,6 +39,7 @@ public class Polynomial<N> {
 
 	public Polynomial( //
 			Ring<N> ring0, //
+			Obj_Int<N> sgn_, //
 			Iterate<N> inv, //
 			Node nx, //
 			Predicate<Node> is_x, //
@@ -46,6 +49,7 @@ public class Polynomial<N> {
 		this.n1 = ring0.n1;
 		this.nx = nx;
 		this.is_x = is_x;
+		this.sgn_ = sgn_;
 		this.add_ = ring0.add;
 		this.neg_ = ring0.neg;
 		this.mul_ = ring0.mul;
@@ -104,10 +108,12 @@ public class Polynomial<N> {
 	}
 
 	private Opt<Poly<N>> parseFraction(Node node) {
+		Polynomial<N> py = Polynomial.this;
+
 		Fractional<Poly<N>> fractional = new Fractional<>( //
 				ring, //
-				a -> 0 < a.size(), //
-				Polynomial.this::divMod, //
+				py::sign, //
+				py::divMod, //
 				node_ -> {
 					if (node_ == n0)
 						return Opt.of(p0);
@@ -207,6 +213,10 @@ public class Polynomial<N> {
 		for (IntObjPair<N> pair : IntObjStreamlet.concat(a.streamlet(), b.streamlet()))
 			c.add(pair.t0, pair.t1);
 		return c;
+	}
+
+	public int sign(Poly<N> a) {
+		return 0 < a.size() ? sgn_.apply(a.decons().get1()) : 0;
 	}
 
 	private Poly<N> polyOf(IntObjStreamlet<N> map) {

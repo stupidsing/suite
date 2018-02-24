@@ -1,7 +1,5 @@
 package suite.math.sym;
 
-import java.util.function.Predicate;
-
 import suite.BindArrayUtil.Pattern;
 import suite.adt.Opt;
 import suite.adt.pair.Pair;
@@ -10,6 +8,7 @@ import suite.math.sym.Sym.Ring;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.Fun2;
@@ -20,8 +19,7 @@ public class Fractional<I> {
 
 	private I n0;
 	private I n1;
-	private Predicate<I> isPositive;
-	private Predicate<I> isZero;
+	private Obj_Int<I> sgn_;
 	private Fun2<I, I, I> add_;
 	private Iterate<I> neg_;
 	private Fun2<I, I, I> mul_;
@@ -32,7 +30,7 @@ public class Fractional<I> {
 	public static Fractional<Integer> ofIntegral() {
 		return new Fractional<>( //
 				new Integral().ring, //
-				a -> 0 < a, //
+				a -> Integer.compare(a, 0), //
 				(a, b) -> {
 					int div = a / b;
 					int mod = a % b;
@@ -44,14 +42,13 @@ public class Fractional<I> {
 
 	public Fractional( //
 			Ring<I> ring0, //
-			Predicate<I> isPositive, //
+			Obj_Int<I> sgn_, //
 			Fun2<I, I, Pair<I, I>> divMod_, //
 			Fun<Node, Opt<I>> parse_, //
 			Fun<I, Node> format_) {
 		this.n0 = ring0.n0;
 		this.n1 = ring0.n1;
-		this.isPositive = isPositive;
-		this.isZero = a -> !isPositive.test(a) && !isPositive.test(neg_.apply(a));
+		this.sgn_ = sgn_;
 		this.add_ = ring0.add;
 		this.neg_ = ring0.neg;
 		this.mul_ = ring0.mul;
@@ -126,7 +123,7 @@ public class Fractional<I> {
 		I d_ = fract.t1;
 		I nn = neg_.apply(n_);
 
-		if (!isPositive.test(nn))
+		if (0 <= sgn_.apply(n_))
 			return f.apply(n_, d_);
 		else
 			return add.inverse(f.apply(nn, d_));
@@ -139,11 +136,11 @@ public class Fractional<I> {
 	private Opt<Fract<I>> inv(Fract<I> a) {
 		I num = a.t0;
 		I denom = a.t1;
-		I numn = neg_.apply(num);
-		if (isPositive.test(num))
+		int c = sgn_.apply(num);
+		if (0 < c)
 			return Opt.of(new Fract<>(denom, num));
-		else if (isPositive.test(numn))
-			return Opt.of(new Fract<>(neg_.apply(denom), numn));
+		else if (c < 0)
+			return Opt.of(new Fract<>(neg_.apply(denom), neg_.apply(num)));
 		else
 			return Opt.none();
 	}
@@ -151,7 +148,7 @@ public class Fractional<I> {
 	public Fract<I> inverse(Fract<I> a) {
 		I num = a.t0;
 		I denom = a.t1;
-		if (isPositive.test(num))
+		if (0 < sgn_.apply(num))
 			return new Fract<>(denom, num);
 		else
 			return new Fract<>(neg_.apply(denom), neg_.apply(num));
@@ -174,12 +171,16 @@ public class Fractional<I> {
 		return new Fract<>(add_.apply(num0, num1), denom);
 	}
 
+	public int sign(Fract<I> a) {
+		return sgn_.apply(a.t0);
+	}
+
 	private class Gcd {
 		private I gcd;
 		private I m0, m1;
 
 		private Gcd(I n, I d, int depth) {
-			if (isZero.test(d)) {
+			if (sgn_.apply(d) == 0) {
 				gcd = n;
 				m0 = n1;
 				m1 = d;

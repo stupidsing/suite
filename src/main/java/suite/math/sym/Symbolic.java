@@ -22,6 +22,7 @@ import suite.node.io.SwitchNode;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntPrimitives.Int_Obj;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -104,6 +105,7 @@ public class Symbolic {
 
 		Polynomial<Fract<Integer>> polynomial0 = new Polynomial<>( //
 				fractional0.ring, //
+				fractional0::sign, //
 				fractional0::inverse, //
 				rewrite0.x, //
 				rewrite0::is_x, //
@@ -118,8 +120,9 @@ public class Symbolic {
 
 		Rewrite rewrite0 = new Rewrite(Atom.of("y"));
 
-		Polynomial<Fract<Integer>> polynomial0 = new Polynomial<>( //
+		Polynomial<Fract<Integer>> polynomial1 = new Polynomial<>( //
 				fractional0.ring, //
+				fractional0::sign, //
 				fractional0::inverse, //
 				rewrite0.x, //
 				rewrite0::is_x, //
@@ -127,23 +130,31 @@ public class Symbolic {
 				fractional0::format);
 
 		Fractional<Poly<Fract<Integer>>> fractional1 = new Fractional<>( //
-				polynomial0.ring, //
-				p -> 0 < p.size(), //
-				polynomial0::divMod, //
-				polynomial0::parse, //
-				polynomial0::format);
+				polynomial1.ring, //
+				polynomial1::sign, //
+				polynomial1::divMod, //
+				polynomial1::parse, //
+				polynomial1::format);
 
 		Rewrite rewrite1 = new Rewrite(Atom.of("x"));
 
-		Polynomial<Fract<Poly<Fract<Integer>>>> polynomial1 = new Polynomial<>( //
+		Polynomial<Fract<Poly<Fract<Integer>>>> polynomial2 = new Polynomial<>( //
 				fractional1.ring, //
+				fractional1::sign, //
 				fractional1::inverse, //
 				rewrite1.x, //
 				rewrite1::is_x, //
 				n -> !rewrite1.isContains_x(n) ? fractional1.parse(n) : Opt.none(), //
 				fractional1::format);
 
-		return polynomial1.parse(node).map(polynomial1::format);
+		Fractional<Poly<Fract<Poly<Fract<Integer>>>>> fractional2 = new Fractional<>( //
+				polynomial2.ring, //
+				polynomial2::sign, //
+				polynomial2::divMod, //
+				polynomial2::parse, //
+				polynomial2::format);
+
+		return fractional2.parse(node).map(fractional2::format);
 	}
 
 	public Opt<Node> polyize_xy(Node node) {
@@ -152,6 +163,7 @@ public class Symbolic {
 
 		Polynomial<Node> polynomial0 = new Polynomial<>( //
 				ex.field, //
+				a -> a.compareTo(ex.n0), //
 				mul::inverse, //
 				rewrite0.x, //
 				rewrite0::is_x, //
@@ -160,7 +172,7 @@ public class Symbolic {
 
 		Fractional<Poly<Node>> fractional1 = new Fractional<>( //
 				polynomial0.ring, //
-				p -> 0 < p.size(), //
+				polynomial0::sign, //
 				polynomial0::divMod, //
 				polynomial0::parse, //
 				polynomial0::format);
@@ -170,6 +182,7 @@ public class Symbolic {
 
 		Polynomial<Fract<Poly<Node>>> polynomial1 = new Polynomial<>( //
 				fractional1.ring, //
+				fractional1::sign, //
 				fractional1::inverse, //
 				rewrite1.x, //
 				rewrite1::is_x, //
@@ -382,10 +395,11 @@ public class Symbolic {
 
 		private Opt<Poly<Node>> polyize_(Node node, Fun<Node, Node> coefficientFun) {
 			Field<Node> nf = ex.field;
+			Obj_Int<Node> sign = a -> a.compareTo(ex.n0);
 
 			class PN extends Polynomial<Node> {
 				PN() {
-					super(nf, nf.inv, x, Rewrite.this::is_x, Opt::of, n -> n);
+					super(nf, sign, nf.inv, x, Rewrite.this::is_x, Opt::of, n -> n);
 				}
 			}
 
