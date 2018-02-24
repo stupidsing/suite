@@ -40,7 +40,7 @@ public class Polynomial<N> {
 	public Polynomial( //
 			Ring<N> ring0, //
 			Obj_Int<N> sgn_, //
-			Iterate<N> inv, //
+			Iterate<N> inv_, //
 			Node nx, //
 			Predicate<Node> is_x, //
 			Fun<Node, Opt<N>> parse_, //
@@ -53,7 +53,7 @@ public class Polynomial<N> {
 		this.add_ = ring0.add;
 		this.neg_ = ring0.neg;
 		this.mul_ = ring0.mul;
-		this.inv_ = inv;
+		this.inv_ = inv_;
 		this.parse_ = parse_;
 		this.format_ = format_;
 
@@ -61,6 +61,15 @@ public class Polynomial<N> {
 		p1 = polyOf(0, n1);
 		px = polyOf(1, n1);
 		ring = new Ring<>(p0, p1, this::add, this::neg, this::mul);
+	}
+
+	public Fractional<Poly<N>> fractional() {
+		return new Fractional<>( //
+				this.ring, //
+				this::sign, //
+				this::divMod, //
+				this::parse, //
+				this::format);
 	}
 
 	public Opt<Poly<N>> parse(Node node) { // polynomialize

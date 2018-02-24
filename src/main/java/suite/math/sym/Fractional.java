@@ -4,6 +4,7 @@ import suite.BindArrayUtil.Pattern;
 import suite.adt.Opt;
 import suite.adt.pair.Pair;
 import suite.math.sym.Express.OpGroup;
+import suite.math.sym.Sym.Field;
 import suite.math.sym.Sym.Ring;
 import suite.node.Int;
 import suite.node.Node;
@@ -58,7 +59,7 @@ public class Fractional<I> {
 
 		f0 = new Fract<>(n0, n1);
 		f1 = new Fract<>(n1, n1);
-		ring = new Ring<>(f0, f1, this::add, this::neg, this::mul);
+		ring = new Field<>(f0, f1, this::add, this::neg, this::mul, this::inverse);
 	}
 
 	public Opt<Pair<I, I>> fractionalize(Node node) {
@@ -131,7 +132,7 @@ public class Fractional<I> {
 
 	public Fract<I> f0;
 	public Fract<I> f1;
-	public Ring<Fract<I>> ring;
+	public Field<Fract<I>> ring;
 
 	private Opt<Fract<I>> inv(Fract<I> a) {
 		I num = a.t0;

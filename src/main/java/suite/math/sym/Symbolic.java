@@ -116,80 +116,26 @@ public class Symbolic {
 	}
 
 	public Opt<Node> polyize_xyn(Node node) {
-		Fractional<Integer> fractional0 = Fractional.ofIntegral();
+		return polyize_xy(Fractional.ofIntegral(), node);
+	}
 
-		Rewrite rewrite0 = new Rewrite(Atom.of("y"));
-
-		Polynomial<Fract<Integer>> polynomial1 = new Polynomial<>( //
-				fractional0.ring, //
-				fractional0::sign, //
-				fractional0::inverse, //
-				rewrite0.x, //
-				rewrite0::is_x, //
-				n -> !rewrite0.isContains_x(n) ? fractional0.parse(n) : Opt.none(), //
-				fractional0::format);
-
-		Fractional<Poly<Fract<Integer>>> fractional1 = new Fractional<>( //
-				polynomial1.ring, //
-				polynomial1::sign, //
-				polynomial1::divMod, //
-				polynomial1::parse, //
-				polynomial1::format);
-
-		Rewrite rewrite1 = new Rewrite(Atom.of("x"));
-
-		Polynomial<Fract<Poly<Fract<Integer>>>> polynomial2 = new Polynomial<>( //
-				fractional1.ring, //
-				fractional1::sign, //
-				fractional1::inverse, //
-				rewrite1.x, //
-				rewrite1::is_x, //
-				n -> !rewrite1.isContains_x(n) ? fractional1.parse(n) : Opt.none(), //
-				fractional1::format);
-
-		Fractional<Poly<Fract<Poly<Fract<Integer>>>>> fractional2 = new Fractional<>( //
-				polynomial2.ring, //
-				polynomial2::sign, //
-				polynomial2::divMod, //
-				polynomial2::parse, //
-				polynomial2::format);
-
+	private <I> Opt<Node> polyize_xy(Fractional<I> fractional0, Node node) {
+		Rewrite rewrite_x = new Rewrite(Atom.of("x"));
+		Rewrite rewrite_y = new Rewrite(Atom.of("y"));
+		Fractional<Poly<Fract<I>>> fractional1 = fractPoly(rewrite_y, fractional0);
+		Fractional<Poly<Fract<Poly<Fract<I>>>>> fractional2 = fractPoly(rewrite_x, fractional1);
 		return fractional2.parse(node).map(fractional2::format);
 	}
 
-	public Opt<Node> polyize_xy(Node node) {
-		Rewrite rewrite0 = new Rewrite(Atom.of("y"));
-		Fun<Node, Opt<Node>> parse0 = Opt::of;
-
-		Polynomial<Node> polynomial0 = new Polynomial<>( //
-				ex.field, //
-				a -> a.compareTo(ex.n0), //
-				mul::inverse, //
-				rewrite0.x, //
-				rewrite0::is_x, //
-				n -> !rewrite0.isContains_x(n) ? parse0.apply(n) : Opt.none(), //
-				n -> n);
-
-		Fractional<Poly<Node>> fractional1 = new Fractional<>( //
-				polynomial0.ring, //
-				polynomial0::sign, //
-				polynomial0::divMod, //
-				polynomial0::parse, //
-				polynomial0::format);
-
-		Rewrite rewrite1 = new Rewrite(Atom.of("x"));
-		Fun<Node, Opt<Fract<Poly<Node>>>> parse1 = fractional1::parse;
-
-		Polynomial<Fract<Poly<Node>>> polynomial1 = new Polynomial<>( //
-				fractional1.ring, //
-				fractional1::sign, //
-				fractional1::inverse, //
-				rewrite1.x, //
-				rewrite1::is_x, //
-				n -> !rewrite1.isContains_x(n) ? parse1.apply(n) : Opt.none(), //
-				fractional1::format);
-
-		return polynomial1.parse(node).map(polynomial1::format);
+	private <I> Fractional<Poly<Fract<I>>> fractPoly(Rewrite rewrite, Fractional<I> fractional) {
+		return new Polynomial<>( //
+				fractional.ring, //
+				fractional::sign, //
+				fractional::inverse, //
+				rewrite.x, //
+				rewrite::is_x, //
+				n -> !rewrite.isContains_x(n) ? fractional.parse(n) : Opt.none(), //
+				fractional::format).fractional();
 	}
 
 	public Node simplify(Node node, Node... xs) {
