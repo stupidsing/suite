@@ -298,14 +298,14 @@ public class Symbolic {
 		private Opt<Polynomial<Polynomial<Node>.Poly>.Poly> polyize0(Node node) {
 			Polynomial<Node> poly0 = new Polynomial<>( //
 					ex.field, //
-					this::is_x, //
 					mul::inverse, //
+					this::is_x, //
 					n -> !isContains_x(n) ? Opt.of(n) : Opt.none());
 
 			Polynomial<Polynomial<Node>.Poly> poly1 = new Polynomial<Polynomial<Node>.Poly>( //
 					poly0.ring, //
-					this::is_x, //
 					null, //
+					this::is_x, //
 					n -> !isContains_x(n) ? poly0.polyize(n) : Opt.none());
 
 			return poly1.polyize(node);
@@ -316,7 +316,7 @@ public class Symbolic {
 
 			class PN extends Polynomial<Node> {
 				PN() {
-					super(nf, Rewrite.this::is_x, nf.inv, Opt::of);
+					super(nf, nf.inv, Rewrite.this::is_x, Opt::of);
 				}
 			}
 

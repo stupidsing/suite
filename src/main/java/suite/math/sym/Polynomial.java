@@ -28,8 +28,8 @@ public class Polynomial<N> {
 
 	public Polynomial( //
 			Ring<N> ring0, //
-			Predicate<Node> is_x, //
 			Iterate<N> inv, //
+			Predicate<Node> is_x, //
 			Fun<Node, Opt<N>> parse) {
 		this.n0 = ring0.n0;
 		this.n1 = ring0.n1;
