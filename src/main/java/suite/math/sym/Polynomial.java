@@ -181,7 +181,7 @@ public class Polynomial<N> {
 
 	// Euclidean
 	// n / d = ((n - d * f) / (d * f) + 1) * f
-	public Opt<Poly<N>> div(Poly<N> num, Poly<N> denom, int depth) {
+	private Opt<Poly<N>> div(Poly<N> num, Poly<N> denom, int depth) {
 		if (num.size() <= 0)
 			return Opt.of(num);
 		else if (0 < depth) {
@@ -194,7 +194,7 @@ public class Polynomial<N> {
 			return Opt.none();
 	}
 
-	public Pair<Poly<N>, Poly<N>> divMod(Poly<N> n, Poly<N> d) {
+	private Pair<Poly<N>, Poly<N>> divMod(Poly<N> n, Poly<N> d) {
 		if (0 < n.size()) {
 			Fixie3<Integer, N, Poly<N>> n_ = n.decons();
 			Fixie3<Integer, N, Poly<N>> d_ = d.decons();
