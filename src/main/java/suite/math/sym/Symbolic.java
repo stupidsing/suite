@@ -105,6 +105,15 @@ public class Symbolic {
 		return polynomial.parse(node).map(polynomial::format);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked", })
+	public Opt<Node> polyize(Node node, Atom... vars) {
+		Fractional<?> fractional = Fractional.ofIntegral();
+		for (Atom var : vars)
+			fractional = poly(new Rewrite(var), fractional).fractional();
+		Fractional<?> fractional_ = fractional;
+		return fractional_.parse(node).map(o -> fractional_.format((Fract) o));
+	}
+
 	public Opt<Node> polyize_xyn(Node node) {
 		class FractPoly<I> {
 			Fractional<I> fractional;
