@@ -23,7 +23,7 @@ public class SymbolicTest {
 
 	@Test
 	public void test0() {
-		verifyEquals("x * x + 2 * x + 1", sym.polyize_xn(Suite.parse("x")).get());
+		verifyEquals("x + 1", sym.polyize_xn(Suite.parse("x")).get());
 		verifyEquals("x * x + 2 * x + 1", sym.polyize_xn(Suite.parse("(x + 1) ^ 2")).get());
 		verifyEquals("x * x + 2 * x + 1", sym.polyize_xyn(Suite.parse("(x + 1) ^ 2")).get());
 	}

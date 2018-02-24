@@ -105,6 +105,7 @@ public class Symbolic {
 		Polynomial<Fract<Integer>> polynomial0 = new Polynomial<>( //
 				fractional0.ring, //
 				fractional0::inverse, //
+				rewrite0.x, //
 				rewrite0::is_x, //
 				n -> !rewrite0.isContains_x(n) ? fractional0.parse(n) : Opt.none(), //
 				fractional0::format);
@@ -120,6 +121,7 @@ public class Symbolic {
 		Polynomial<Fract<Integer>> polynomial0 = new Polynomial<>( //
 				fractional0.ring, //
 				fractional0::inverse, //
+				rewrite0.x, //
 				rewrite0::is_x, //
 				n -> !rewrite0.isContains_x(n) ? fractional0.parse(n) : Opt.none(), //
 				fractional0::format);
@@ -136,6 +138,7 @@ public class Symbolic {
 		Polynomial<Fract<Poly<Fract<Integer>>>> polynomial1 = new Polynomial<>( //
 				fractional1.ring, //
 				fractional1::inverse, //
+				rewrite1.x, //
 				rewrite1::is_x, //
 				n -> !rewrite1.isContains_x(n) ? fractional1.parse(n) : Opt.none(), //
 				fractional1::format);
@@ -150,6 +153,7 @@ public class Symbolic {
 		Polynomial<Node> polynomial0 = new Polynomial<>( //
 				ex.field, //
 				mul::inverse, //
+				rewrite0.x, //
 				rewrite0::is_x, //
 				n -> !rewrite0.isContains_x(n) ? parse0.apply(n) : Opt.none(), //
 				n -> n);
@@ -167,6 +171,7 @@ public class Symbolic {
 		Polynomial<Fract<Poly<Node>>> polynomial1 = new Polynomial<>( //
 				fractional1.ring, //
 				fractional1::inverse, //
+				rewrite1.x, //
 				rewrite1::is_x, //
 				n -> !rewrite1.isContains_x(n) ? parse1.apply(n) : Opt.none(), //
 				fractional1::format);
@@ -380,7 +385,7 @@ public class Symbolic {
 
 			class PN extends Polynomial<Node> {
 				PN() {
-					super(nf, nf.inv, Rewrite.this::is_x, Opt::of, n -> n);
+					super(nf, nf.inv, x, Rewrite.this::is_x, Opt::of, n -> n);
 				}
 			}
 

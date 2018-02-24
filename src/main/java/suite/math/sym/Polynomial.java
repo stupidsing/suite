@@ -26,6 +26,7 @@ public class Polynomial<N> {
 
 	private N n0;
 	private N n1;
+	private Node nx;
 	private Predicate<Node> is_x;
 	private Fun2<N, N, N> add_;
 	private Iterate<N> neg_;
@@ -37,11 +38,13 @@ public class Polynomial<N> {
 	public Polynomial( //
 			Ring<N> ring0, //
 			Iterate<N> inv, //
+			Node nx, //
 			Predicate<Node> is_x, //
 			Fun<Node, Opt<N>> parse_, //
 			Fun<N, Node> format_) {
 		this.n0 = ring0.n0;
 		this.n1 = ring0.n1;
+		this.nx = nx;
 		this.is_x = is_x;
 		this.add_ = ring0.add;
 		this.neg_ = ring0.neg;
@@ -73,7 +76,10 @@ public class Polynomial<N> {
 				}).match2(patPow, (a, b) -> {
 					return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 				}).applyIf(Node.class, a -> {
-					return parse_.apply(a).map(i -> polyOf(0, i));
+					if (is_x.test(a))
+						return Opt.of(px);
+					else
+						return parse_.apply(a).map(n -> polyOf(0, n));
 				}).nonNullResult();
 			}
 
@@ -134,7 +140,7 @@ public class Polynomial<N> {
 		Int_Obj<Node> powerFun = p -> {
 			Node power = mul.identity();
 			for (int i = 0; i < p; i++)
-				power = mul.apply(format_.apply(n1), power);
+				power = mul.apply(nx, power);
 			return power;
 		};
 
