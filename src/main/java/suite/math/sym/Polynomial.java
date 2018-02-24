@@ -26,10 +26,10 @@ public class Polynomial<N> {
 
 	private Express ex = new Express();
 
+	private Node x;
+	private Predicate<Node> is_x;
 	private N n0;
 	private N n1;
-	private Node nx;
-	private Predicate<Node> is_x;
 	private Obj_Int<N> sgn_;
 	private Fun2<N, N, N> add_;
 	private Iterate<N> neg_;
@@ -39,15 +39,15 @@ public class Polynomial<N> {
 	private Fun<N, Node> format_;
 
 	public Polynomial( //
+			Node x, //
+			Predicate<Node> is_x, //
 			Field<N> field0, //
 			Obj_Int<N> sgn_, //
-			Node nx, //
-			Predicate<Node> is_x, //
 			Fun<Node, Opt<N>> parse_, //
 			Fun<N, Node> format_) {
 		this.n0 = field0.n0;
 		this.n1 = field0.n1;
-		this.nx = nx;
+		this.x = x;
 		this.is_x = is_x;
 		this.sgn_ = sgn_;
 		this.add_ = field0.add;
@@ -155,7 +155,7 @@ public class Polynomial<N> {
 		Int_Obj<Node> powerFun = p -> {
 			Node power = mul.identity();
 			for (int i = 0; i < p; i++)
-				power = mul.apply(nx, power);
+				power = mul.apply(x, power);
 			return power;
 		};
 
