@@ -296,17 +296,19 @@ public class Symbolic {
 		}
 
 		private Opt<Polynomial<Polynomial<Node>.Poly>.Poly> polyize0(Node node) {
-			Polynomial<Node> poly = new Polynomial<>( //
+			Polynomial<Node> poly0 = new Polynomial<>( //
 					ex.field, //
 					this::is_x, //
 					mul::inverse, //
 					n -> !isContains_x(n) ? Opt.of(n) : Opt.none());
 
-			return new Polynomial<Polynomial<Node>.Poly>( //
-					poly.ring, //
+			Polynomial<Polynomial<Node>.Poly> poly1 = new Polynomial<Polynomial<Node>.Poly>( //
+					poly0.ring, //
 					this::is_x, //
 					null, //
-					n -> !isContains_x(n) ? poly.polyize(n) : Opt.none()).polyize(node);
+					n -> !isContains_x(n) ? poly0.polyize(n) : Opt.none());
+
+			return poly1.polyize(node);
 		}
 
 		private Opt<Polynomial<Node>.Poly> polyize1(Node node, Fun<Node, Node> coefficientFun) {
