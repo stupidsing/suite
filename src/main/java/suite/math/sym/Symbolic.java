@@ -95,6 +95,30 @@ public class Symbolic {
 		return Opt.of(node0).map(rewrite::rewrite).concatMap(rewrite::i).map(rewrite::simplify).get();
 	}
 
+	public Opt<Node> polyize_xy(Node node) {
+		Rewrite rewrite0 = new Rewrite(Atom.of("y"));
+		Fun<Node, Opt<Node>> parse0 = Opt::of;
+
+		Polynomial<Node> poly0 = new Polynomial<>( //
+				ex.field, //
+				mul::inverse, //
+				rewrite0::is_x, //
+				n -> !rewrite0.isContains_x(n) ? parse0.apply(n) : Opt.none(), //
+				n -> n);
+
+		Rewrite rewrite1 = new Rewrite(Atom.of("x"));
+		Fun<Node, Opt<Polynomial<Node>.Poly>> parse1 = poly0::parse;
+
+		Polynomial<Polynomial<Node>.Poly> poly1 = new Polynomial<Polynomial<Node>.Poly>( //
+				poly0.ring, //
+				null, //
+				rewrite1::is_x, //
+				n -> !rewrite1.isContains_x(n) ? parse1.apply(n) : Opt.none(), //
+				poly0::format);
+
+		return poly1.parse(node).map(poly1::format);
+	}
+
 	public Node simplify(Node node, Node... xs) {
 		return simplify(node, xs, 0);
 	}
@@ -294,30 +318,6 @@ public class Symbolic {
 				}
 				return sum;
 			});
-		}
-
-		private Opt<Node> polyize_xy(Node node) {
-			Rewrite rewrite0 = new Rewrite(Atom.of("y"));
-			Fun<Node, Opt<Node>> parse0 = Opt::of;
-
-			Polynomial<Node> poly0 = new Polynomial<>( //
-					ex.field, //
-					mul::inverse, //
-					rewrite0::is_x, //
-					n -> !rewrite0.isContains_x(n) ? parse0.apply(n) : Opt.none(), //
-					n -> n);
-
-			Rewrite rewrite1 = new Rewrite(Atom.of("x"));
-			Fun<Node, Opt<Polynomial<Node>.Poly>> parse1 = poly0::parse;
-
-			Polynomial<Polynomial<Node>.Poly> poly1 = new Polynomial<Polynomial<Node>.Poly>( //
-					poly0.ring, //
-					null, //
-					rewrite1::is_x, //
-					n -> !rewrite1.isContains_x(n) ? parse1.apply(n) : Opt.none(), //
-					poly0::format);
-
-			return poly1.parse(node).map(poly1::format);
 		}
 
 		private Opt<Polynomial<Node>.Poly> polyize_(Node node, Fun<Node, Node> coefficientFun) {
