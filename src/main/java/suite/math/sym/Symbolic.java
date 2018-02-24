@@ -295,7 +295,7 @@ public class Symbolic {
 			});
 		}
 
-		private Opt<Polynomial<Polynomial<Node>.Poly>.Poly> polyize0(Node node, Fun<Node, Node> coefficientFun) {
+		private Opt<Polynomial<Polynomial<Node>.Poly>.Poly> polyize0(Node node) {
 			Polynomial<Node> poly = new Polynomial<>( //
 					ex.field, //
 					this::is_x, //

@@ -46,30 +46,6 @@ public class Polynomial<N> {
 		ring = new Ring<>(p0, p1, this::add, this::neg, this::mul);
 	}
 
-	public class Poly extends IntObjMap<N> {
-		public Poly(IntObjStreamlet<N> map) {
-			map.sink(this::add);
-		}
-
-		public Poly(int power, N term) {
-			add(power, term);
-		}
-
-		public Poly() {
-		}
-
-		private void add(int power, N term) {
-			Iterate<N> i0 = t -> t != null ? t : n0;
-			Iterate<N> ix = t -> t != n0 ? t : null;
-			update(power, t -> ix.apply(add_.apply(i0.apply(t), term)));
-		}
-
-		private Fixie3<Integer, N, Poly> decons() {
-			int max = streamlet().keys().min((p0, p1) -> p1 - p0);
-			return Fixie.of(max, get(max), new Poly(streamlet().filterKey(p -> p != max)));
-		}
-	}
-
 	public Opt<Poly> polyize(Node node) { // polynomialize
 		Polynomial<N> py = Polynomial.this;
 
@@ -156,6 +132,30 @@ public class Polynomial<N> {
 		for (IntObjPair<N> pair : IntObjStreamlet.concat(a.streamlet(), b.streamlet()))
 			c.add(pair.t0, pair.t1);
 		return c;
+	}
+
+	public class Poly extends IntObjMap<N> {
+		public Poly(IntObjStreamlet<N> map) {
+			map.sink(this::add);
+		}
+
+		public Poly(int power, N term) {
+			add(power, term);
+		}
+
+		public Poly() {
+		}
+
+		private void add(int power, N term) {
+			Iterate<N> i0 = t -> t != null ? t : n0;
+			Iterate<N> ix = t -> t != n0 ? t : null;
+			update(power, t -> ix.apply(add_.apply(i0.apply(t), term)));
+		}
+
+		private Fixie3<Integer, N, Poly> decons() {
+			int max = streamlet().keys().min((p0, p1) -> p1 - p0);
+			return Fixie.of(max, get(max), new Poly(streamlet().filterKey(p -> p != max)));
+		}
 	}
 
 }
