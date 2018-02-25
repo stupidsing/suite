@@ -29,14 +29,11 @@ public class Fractional<I> {
 	private Fun<I, Node> format_;
 
 	public static Fractional<Integer> ofIntegral() {
+		Integral integral = new Integral();
 		return new Fractional<>( //
-				new Integral().ring, //
-				a -> Integer.compare(a, 0), //
-				(a, b) -> {
-					int div = a / b;
-					int mod = a % b;
-					return 0 <= mod ? Pair.of(div, mod) : Pair.of(div - 1, mod + b);
-				}, //
+				integral.ring, //
+				integral::sign, //
+				integral::divMod, //
 				node -> node instanceof Int ? Opt.of(((Int) node).number) : Opt.none(), //
 				ex::intOf);
 	}
