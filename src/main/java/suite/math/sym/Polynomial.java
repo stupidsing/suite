@@ -18,6 +18,7 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjStreamlet;
+import suite.streamlet.As;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil2.Fun2;
@@ -253,6 +254,13 @@ public class Polynomial<N> {
 		public Fixie3<Integer, N, Poly<N>> decons() {
 			int max = streamlet().keys().min((p0, p1) -> p1 - p0);
 			return Fixie.of(max, get(max), new Poly<>(py, streamlet().filterKey(p -> p != max)));
+		}
+
+		public String toString() {
+			return streamlet() //
+					.sortByKey((p0, p1) -> p1 - p0) //
+					.map((p, t) -> t + " * " + py.x + "^" + p) //
+					.collect(As.joinedBy(" + "));
 		}
 
 		private void add(int power, N term) {

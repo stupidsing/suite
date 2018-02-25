@@ -211,6 +211,10 @@ public class Fractional<I> {
 			this.t0 = t0;
 			this.t1 = t1;
 		}
+
+		public String toString() {
+			return "F[" + t0 + ", " + t1 + "]";
+		}
 	}
 
 	private Pattern patAdd = ex.patAdd;
