@@ -34,7 +34,7 @@ public class Fractional<I> {
 				integral.ring, //
 				integral::sign, //
 				integral::divMod, //
-				node -> node instanceof Int ? Opt.of(((Int) node).number) : Opt.none(), //
+				integral::parse, //
 				integral::format);
 	}
 

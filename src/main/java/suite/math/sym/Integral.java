@@ -1,7 +1,9 @@
 package suite.math.sym;
 
+import suite.adt.Opt;
 import suite.adt.pair.Pair;
 import suite.math.sym.Sym.Ring;
+import suite.node.Int;
 import suite.node.Node;
 
 public class Integral {
@@ -14,6 +16,10 @@ public class Integral {
 			(a, b) -> a + b, //
 			a -> -a, //
 			(a, b) -> a * b);
+
+	public Opt<Integer> parse(Node node) {
+		return node instanceof Int ? Opt.of(((Int) node).number) : Opt.none();
+	}
 
 	public Node format(int a) {
 		return ex.intOf(a);
