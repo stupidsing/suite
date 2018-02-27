@@ -101,7 +101,7 @@ public class Symbolic {
 	public Opt<Node> polyize_xn(Node node) {
 		Rewrite rewrite = new Rewrite(Atom.of("x"));
 		Fractional<Integer> fractional = Fractional.ofIntegral();
-		Polynomial<Fract<Integer>> polynomial = poly(rewrite, fractional);
+		DivisiblePolynomial<Fract<Integer>> polynomial = divPoly(rewrite, fractional);
 		return polynomial.parse(node).map(polynomial::format);
 	}
 
@@ -110,7 +110,7 @@ public class Symbolic {
 		Fractional<?> fractional = Fractional.ofIntegral();
 
 		for (Atom var : vars)
-			fractional = poly(new Rewrite(var), fractional).fractional();
+			fractional = divPoly(new Rewrite(var), fractional).fractional();
 
 		Fractional<?> fractional_ = fractional;
 		return fractional_.parse(node).map(o -> fractional_.format((Fract) o));
@@ -125,7 +125,7 @@ public class Symbolic {
 			}
 
 			FractPoly<Poly<Fract<I>>> fp(Rewrite rewrite) {
-				return new FractPoly<>(poly(rewrite, fractional).fractional());
+				return new FractPoly<>(divPoly(rewrite, fractional).fractional());
 			}
 
 			Opt<Node> format(Node node) {
@@ -138,8 +138,8 @@ public class Symbolic {
 		return new FractPoly<>(Fractional.ofIntegral()).fp(rewrite_y).fp(rewrite_x).format(node);
 	}
 
-	private <I> Polynomial<Fract<I>> poly(Rewrite rewrite, Fractional<I> fractional) {
-		return new Polynomial<>( //
+	private <I> DivisiblePolynomial<Fract<I>> divPoly(Rewrite rewrite, Fractional<I> fractional) {
+		return new DivisiblePolynomial<>( //
 				rewrite.x, //
 				rewrite::is_x, //
 				fractional.field, //
@@ -353,14 +353,14 @@ public class Symbolic {
 			Field<Node> nf = ex.field;
 			Obj_Int<Node> sign = a -> a.compareTo(ex.n0);
 
-			class PN extends Polynomial<Node> {
-				PN() {
+			class DPN extends DivisiblePolynomial<Node> {
+				DPN() {
 					super(x, Rewrite.this::is_x, nf, sign, Opt::of, n -> n);
 				}
 			}
 
-			Polynomial<Node> pn = new PN();
-			Ring<Poly<Node>> pr = pn.ring;
+			DivisiblePolynomial<Node> dpn = new DPN();
+			Ring<Poly<Node>> pr = dpn.ring;
 
 			return new Object() {
 				Opt<Poly<Node>> poly(Node node) {
@@ -377,11 +377,11 @@ public class Symbolic {
 						return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 					}).applyIf(Node.class, n -> {
 						if (n == nf.n0)
-							return Opt.of(pn.p0);
+							return Opt.of(dpn.p0);
 						else if (is_x(n))
-							return Opt.of(pn.px);
+							return Opt.of(dpn.px);
 						else if (!isContains_x(n))
-							return Opt.of(pn.polyOf(0, n));
+							return Opt.of(dpn.polyOf(0, n));
 						else
 							return Opt.none();
 					}).nonNullResult();
@@ -392,7 +392,7 @@ public class Symbolic {
 						return inv1(pow(a, -power));
 					else // TODO assumed m0 != 0 or power != 0
 						return poly(a).map(p -> {
-							Poly<Node> r = pn.p1;
+							Poly<Node> r = dpn.p1;
 							for (char ch : Integer.toBinaryString(power).toCharArray()) {
 								r = pr.mul.apply(r, r);
 								r = ch != '0' ? pr.mul.apply(p, r) : r;
@@ -402,7 +402,7 @@ public class Symbolic {
 				}
 
 				private Opt<Poly<Node>> inv1(Opt<Poly<Node>> opt) {
-					return opt.concatMap(pn::inv);
+					return opt.concatMap(dpn::inv);
 				}
 			}.poly(node);
 		}
