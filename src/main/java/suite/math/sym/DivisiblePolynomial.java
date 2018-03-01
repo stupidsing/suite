@@ -113,37 +113,6 @@ public class DivisiblePolynomial<N> {
 		}.poly(node);
 	}
 
-	private Opt<Poly<N>> parseFraction(Node node) {
-		DivisiblePolynomial<N> dpy = DivisiblePolynomial.this;
-
-		Fractional<Poly<N>> fractional = new Fractional<>( //
-				ring, //
-				py::sign, //
-				dpy::divMod, //
-				node_ -> {
-					if (node_ == n0)
-						return Opt.of(p0);
-					else if (is_x.test(node_))
-						return Opt.of(px);
-					else
-						return parse_.apply(node_).map(n -> py.polyOf(0, n));
-				}, //
-				this::format);
-
-		Iterate<Poly<N>> sim = p -> py.polyOf(p.streamlet());
-
-		return fractional //
-				.fractionalize(node) //
-				.concatMap(pair -> pair.map((n0, d0) -> {
-					Poly<N> n1 = sim.apply(n0);
-					Poly<N> d1 = sim.apply(d0);
-					if (d1.size() == 1 && d1.get(0) == n1)
-						return Opt.of(n1);
-					else
-						return div(n1, d1, 9);
-				}));
-	}
-
 	public Node format(Poly<N> poly) {
 		Express ex = new Express();
 		OpGroup add = ex.add;

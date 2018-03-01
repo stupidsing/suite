@@ -254,6 +254,41 @@ public class P2InferType {
 		}
 	}
 
+	private class PreErase {
+		private IMap<String, Funp> env;
+		private Map<Funp, IMap<String, Funp>> accesses;
+
+		private PreErase(IMap<String, Funp> env) {
+			this.env = env;
+		}
+
+		private Funp preErase(Funp n) {
+			return inspect.rewrite(Funp.class, this::preErase_, n);
+		}
+
+		private Funp preErase_(Funp n) {
+			return n.<Funp> switch_( //
+			).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
+				return new PreErase(env.replace(var, f)).preErase(expr);
+			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
+				IMap<String, Funp> env1 = env;
+				for (Pair<String, Funp> pair : vars)
+					env1 = env1.replace(pair.t0, f);
+				return new PreErase(env1).preErase(expr);
+			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
+				PreErase e1 = new PreErase(env.replace(var, f));
+				e1.preErase(cond);
+				return e1.preErase(iterate);
+			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+				return new PreErase(env.replace(var, f)).preErase(expr);
+			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
+				env.get(var);
+				// env.put(var, env);
+				return n;
+			})).result();
+		}
+	}
+
 	private class Erase {
 		private int scope;
 		private IMap<String, Var> env;
