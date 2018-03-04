@@ -190,7 +190,7 @@ public class P2InferType {
 					// TODO allocate cap on heap
 					// TODO free cap after use
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-					return locals.contains(var) ? f : accesses.apply(var);
+					return locals.contains(var) || globals.contains(var) ? f : accesses.apply(var);
 				})).result();
 			}
 		}

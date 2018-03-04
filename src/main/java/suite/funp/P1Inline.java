@@ -16,6 +16,7 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
+import suite.funp.P0.FunpGlobal;
 import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpReference;
@@ -89,6 +90,11 @@ public class P1Inline {
 									.map2((var, value) -> vars2.get(var), (var, value) -> r1.rename(value)) //
 									.toList(), //
 									r1.rename(expr));
+						})) //
+						.applyIf(FunpGlobal.class, f -> f.apply((var0, value, expr) -> {
+							String var1 = newVar.apply(var0);
+							Rename r1 = new Rename(vars.replace(var0, var1));
+							return FunpGlobal.of(var1, rename(value), r1.rename(expr));
 						})) //
 						.applyIf(FunpIterate.class, f -> f.apply((var0, init, cond, iterate) -> {
 							String var1 = newVar.apply(var0);
