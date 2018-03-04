@@ -78,11 +78,11 @@ public class P2 {
 		}
 	}
 
-	public static class FunpInvokeInt implements Funp, P4.End {
+	public static class FunpInvoke implements Funp, P4.End {
 		public Funp routine;
 
-		public static FunpInvokeInt of(Funp routine) {
-			FunpInvokeInt f = new FunpInvokeInt();
+		public static FunpInvoke of(Funp routine) {
+			FunpInvoke f = new FunpInvoke();
 			f.routine = routine;
 			return f;
 		}
@@ -92,11 +92,11 @@ public class P2 {
 		}
 	}
 
-	public static class FunpInvokeInt2 implements Funp, P4.End {
+	public static class FunpInvoke2 implements Funp, P4.End {
 		public Funp routine;
 
-		public static FunpInvokeInt2 of(Funp routine) {
-			FunpInvokeInt2 f = new FunpInvokeInt2();
+		public static FunpInvoke2 of(Funp routine) {
+			FunpInvoke2 f = new FunpInvoke2();
 			f.routine = routine;
 			return f;
 		}

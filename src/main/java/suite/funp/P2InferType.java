@@ -44,8 +44,8 @@ import suite.funp.P0.FunpVariable;
 import suite.funp.P2.FunpAllocStack;
 import suite.funp.P2.FunpAssign;
 import suite.funp.P2.FunpData;
-import suite.funp.P2.FunpInvokeInt;
-import suite.funp.P2.FunpInvokeInt2;
+import suite.funp.P2.FunpInvoke;
+import suite.funp.P2.FunpInvoke2;
 import suite.funp.P2.FunpInvokeIo;
 import suite.funp.P2.FunpMemory;
 import suite.funp.P2.FunpRoutine;
@@ -310,10 +310,10 @@ public class P2InferType {
 				Funp lambda1 = erase(lambda);
 				int size = getTypeSize(typeOf(value));
 				Funp invoke;
-				if (lt.os == ps)
-					invoke = allocStack(size, value, FunpInvokeInt.of(lambda1));
+				if (lt.os == is)
+					invoke = allocStack(size, value, FunpInvoke.of(lambda1));
 				else if (lt.os == ps * 2)
-					invoke = allocStack(size, value, FunpInvokeInt2.of(lambda1));
+					invoke = allocStack(size, value, FunpInvoke2.of(lambda1));
 				else
 					invoke = allocStack(lt.os, FunpDontCare.of(), allocStack(size, value, FunpInvokeIo.of(lambda1)));
 				return FunpSaveRegisters.of(invoke);
@@ -404,7 +404,7 @@ public class P2InferType {
 				int scope1 = scope + 1;
 				LambdaType lt = lambdaType(n);
 				Funp expr1 = new Erase(scope1, env.replace(var, new Var(scope1, Mutable.of(0), b, b + lt.is))).erase(expr);
-				if (lt.os == ps)
+				if (lt.os == is)
 					return FunpRoutine.of(expr1);
 				else if (lt.os == ps * 2)
 					return FunpRoutine2.of(expr1);

@@ -31,8 +31,8 @@ import suite.funp.P2.FunpAllocStack;
 import suite.funp.P2.FunpAssign;
 import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpFramePointer;
-import suite.funp.P2.FunpInvokeInt;
-import suite.funp.P2.FunpInvokeInt2;
+import suite.funp.P2.FunpInvoke;
+import suite.funp.P2.FunpInvoke2;
 import suite.funp.P2.FunpInvokeIo;
 import suite.funp.P2.FunpMemory;
 import suite.funp.P2.FunpRoutine;
@@ -75,6 +75,10 @@ public class P4GenerateCode {
 	private OpReg[] integerRegs = is == 4 ? amd64.reg32 : is == 8 ? amd64.reg64 : null;
 	private RegisterSet registerSet;
 	private boolean isUseEbp;
+
+	private OpReg i_eax = eax;
+	private OpReg p2_eax = eax;
+	private OpReg p2_edx = edx;
 
 	private Map<Object, Insn> insnByOp = Map.ofEntries( //
 			entry(TermOp.BIGOR_, Insn.OR), //
@@ -214,7 +218,7 @@ public class P4GenerateCode {
 						return new CompileOut();
 					} else if (type == CompileOut_.OP || type == CompileOut_.OPREG || type == CompileOut_.OPSPEC) {
 						OpReg op0 = isOutSpec ? pop0 : rs.get(is);
-						em.emit(amd64.instruction(Insn.PUSH, eax));
+						em.emit(amd64.instruction(Insn.PUSH, i_eax));
 						int fd1 = fd - is;
 						assign.sink2(new Compile1(rs, fd1), frame(fd1, fd));
 						em.mov(op0, compileFrame(fd1, is));
@@ -240,9 +244,9 @@ public class P4GenerateCode {
 
 				Source<CompileOut> postDontCare = () -> {
 					if (type == CompileOut_.OP || type == CompileOut_.OPREG)
-						return new CompileOut(eax);
+						return new CompileOut(i_eax);
 					else if (type == CompileOut_.TWOOP || type == CompileOut_.TWOOPREG)
-						return new CompileOut(eax, edx);
+						return new CompileOut(p2_eax, p2_edx);
 					else
 						return new CompileOut();
 				};
@@ -366,16 +370,16 @@ public class P4GenerateCode {
 					}
 
 					return out.source();
-				})).applyIf(FunpInvokeInt.class, f -> f.apply(routine -> {
-					if (!rs.contains(eax)) {
+				})).applyIf(FunpInvoke.class, f -> f.apply(routine -> {
+					if (!rs.contains(i_eax)) {
 						compileInvoke(routine);
-						return postOp.apply(eax);
+						return postOp.apply(i_eax);
 					} else
 						return Fail.t();
-				})).applyIf(FunpInvokeInt2.class, f -> f.apply(routine -> {
-					if (!rs.contains(eax, edx)) {
+				})).applyIf(FunpInvoke2.class, f -> f.apply(routine -> {
+					if (!rs.contains(p2_eax, p2_edx)) {
 						compileInvoke(routine);
-						return postTwoOp.apply(eax, edx);
+						return postTwoOp.apply(p2_eax, p2_edx);
 					} else
 						return Fail.t();
 				})).applyIf(FunpInvokeIo.class, f -> f.apply(routine -> {
@@ -420,9 +424,9 @@ public class P4GenerateCode {
 				})).applyIf(FunpNumber.class, f -> f.apply(i -> {
 					return postOp.apply(amd64.imm(i.get(), is));
 				})).applyIf(FunpRoutine.class, f -> f.apply(expr -> {
-					return postRoutine.apply(c1 -> c1.compileOpSpec(expr, eax));
+					return postRoutine.apply(c1 -> c1.compileOpSpec(expr, i_eax));
 				})).applyIf(FunpRoutine2.class, f -> f.apply(expr -> {
-					return postRoutine.apply(c1 -> c1.compileTwoOpSpec(expr, eax, edx));
+					return postRoutine.apply(c1 -> c1.compileTwoOpSpec(expr, p2_eax, p2_edx));
 				})).applyIf(FunpRoutineIo.class, f -> f.apply((expr, is, os) -> {
 					FunpMemory out = frame(ps + is, os);
 					return postRoutine.apply(c1 -> c1.compileAssign(expr, out));
