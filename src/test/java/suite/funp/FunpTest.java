@@ -31,6 +31,11 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testCapture() {
+		test(0, "define m := pointer => 0 >> 1 | (n => 2 | m) \n");
+	}
+
+	@Test
 	public void testCompare() {
 		test(1, "define v := 2 >> if (1 < v) then 1 else 0");
 	}
