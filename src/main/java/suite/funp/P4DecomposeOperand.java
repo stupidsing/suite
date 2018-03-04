@@ -91,7 +91,7 @@ public class P4DecomposeOperand {
 		class DecomposePlus {
 			private OpReg baseReg = null, indexReg = null;
 			private int scale = 1, disp = disp0;
-			private boolean ok = is1248(size);
+			private boolean ok = is124(size);
 
 			private DecomposePlus(Funp n0) {
 				for (Funp n1 : decompose.apply(TermOp.PLUS__, n0))
@@ -131,8 +131,12 @@ public class P4DecomposeOperand {
 		return new DecomposePlus(n0).op();
 	}
 
-	private boolean is1248(long scale_) {
-		return scale_ == 1 || scale_ == 2 || scale_ == 4 || scale_ == 8;
+	private boolean is1248(long scale) {
+		return is124(scale) || scale == 8;
+	}
+
+	private boolean is124(long scale) {
+		return scale == 1 || scale == 2 || scale == 4;
 	}
 
 }
