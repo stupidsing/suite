@@ -27,6 +27,7 @@ import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
+import suite.funp.P2.FunpAllocGlobal;
 import suite.funp.P2.FunpAllocStack;
 import suite.funp.P2.FunpAssign;
 import suite.funp.P2.FunpData;
@@ -35,6 +36,7 @@ import suite.funp.P2.FunpInvoke;
 import suite.funp.P2.FunpInvoke2;
 import suite.funp.P2.FunpInvokeIo;
 import suite.funp.P2.FunpMemory;
+import suite.funp.P2.FunpOperand;
 import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
@@ -256,12 +258,23 @@ public class P4GenerateCode {
 				};
 
 				return n.<CompileOut> switch_( //
-				).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, stack) -> {
+				).applyIf(FunpAllocGlobal.class, f -> f.apply((var, size, expr, address) -> {
+					Operand varLabel = em.label();
+					Operand endLabel = em.label();
+					em.emit(amd64.instruction(Insn.JMP, endLabel));
+					em.emit(amd64.instruction(Insn.LABEL, varLabel));
+					for (int i = 0; i < size; i++)
+						em.emit(amd64.instruction(Insn.NOP));
+					em.emit(amd64.instruction(Insn.LABEL, endLabel));
+
+					address.update(varLabel);
+					return compile(expr);
+				})).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, offset) -> {
 					Operand imm = amd64.imm(size), op;
 					int fd1 = fd - size;
 					Compile1 c1 = new Compile1(rs, fd1);
 
-					stack.update(fd1);
+					offset.update(fd1);
 
 					if ((op = deOp.decomposeOperand(fd, value)) != null && op.size == is)
 						em.emit(amd64.instruction(Insn.PUSH, op));
@@ -421,6 +434,8 @@ public class P4GenerateCode {
 						return Fail.t();
 				})).applyIf(FunpNumber.class, f -> f.apply(i -> {
 					return postOp.apply(amd64.imm(i.get(), is));
+				})).applyIf(FunpOperand.class, f -> f.apply(op -> {
+					return postOp.apply(op.get());
 				})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr) -> {
 					return postTwoOp.apply(compileOp(frame), compileRoutine(c1 -> c1.compileOpSpec(expr, i_eax)));
 				})).applyIf(FunpRoutine2.class, f -> f.apply((frame, expr) -> {

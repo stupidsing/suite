@@ -11,6 +11,7 @@ import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Fixie_.FixieFun4;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.OpReg;
+import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_.Funp;
 import suite.node.Atom;
 import suite.node.Node;
@@ -227,9 +228,9 @@ public class P0 {
 		public String var;
 		public Funp value;
 		public Funp expr;
-		public Mutable<Integer> address;
+		public Mutable<Operand> address;
 
-		public static FunpGlobal of(String var, Funp value, Funp expr, Mutable<Integer> address) {
+		public static FunpGlobal of(String var, Funp value, Funp expr, Mutable<Operand> address) {
 			FunpGlobal f = new FunpGlobal();
 			f.var = var;
 			f.value = value;
@@ -238,7 +239,7 @@ public class P0 {
 			return f;
 		}
 
-		public <R> R apply(FixieFun4<String, Funp, Funp, Mutable<Integer>, R> fun) {
+		public <R> R apply(FixieFun4<String, Funp, Funp, Mutable<Operand>, R> fun) {
 			return fun.apply(var, value, expr, address);
 		}
 	}

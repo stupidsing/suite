@@ -13,6 +13,7 @@ import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.OpReg;
+import suite.assembler.Amd64.Operand;
 import suite.fp.Unify;
 import suite.fp.Unify.UnNode;
 import suite.funp.Funp_.Funp;
@@ -45,6 +46,7 @@ import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
+import suite.funp.P2.FunpAllocGlobal;
 import suite.funp.P2.FunpAllocStack;
 import suite.funp.P2.FunpAssign;
 import suite.funp.P2.FunpData;
@@ -53,6 +55,7 @@ import suite.funp.P2.FunpInvoke;
 import suite.funp.P2.FunpInvoke2;
 import suite.funp.P2.FunpInvokeIo;
 import suite.funp.P2.FunpMemory;
+import suite.funp.P2.FunpOperand;
 import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
@@ -137,11 +140,13 @@ public class P2InferType {
 	private Funp captureLambdas(Funp node0) {
 		class Capture {
 			private Fun<String, Funp> accesses;
-			private ISet<String> env;
+			private ISet<String> locals;
+			private ISet<String> globals;
 
-			private Capture(Fun<String, Funp> accesses, ISet<String> env) {
+			private Capture(Fun<String, Funp> accesses, ISet<String> locals, ISet<String> globals) {
 				this.accesses = accesses;
-				this.env = env;
+				this.locals = locals;
+				this.globals = globals;
 			}
 
 			private Funp capture(Funp n) {
@@ -151,22 +156,22 @@ public class P2InferType {
 			private Funp capture_(Funp n) {
 				return n.<Funp> switch_( //
 				).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
-					Capture c1 = new Capture(accesses, env.add(var));
+					Capture c1 = new Capture(accesses, locals.add(var), globals);
 					return FunpDefine.of(isPolyType, var, value, c1.capture(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
-					ISet<String> env1 = env;
+					ISet<String> locals1 = locals;
 					for (Pair<String, Funp> pair : vars)
-						env1 = env1.add(pair.t0);
-					Capture c1 = new Capture(accesses, env1);
+						locals1 = locals1.add(pair.t0);
+					Capture c1 = new Capture(accesses, locals1, globals);
 					return FunpDefineRec.of(vars, c1.capture(expr));
 				})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr, address) -> {
-					Capture c1 = new Capture(accesses, env.add(var));
+					Capture c1 = new Capture(accesses, locals, globals.add(var));
 					return FunpGlobal.of(var, value, c1.capture(expr), address);
 				})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-					Capture c1 = new Capture(accesses, env.add(var));
+					Capture c1 = new Capture(accesses, locals.add(var), globals);
 					return FunpIterate.of(var, init, c1.capture(cond), c1.capture(iterate));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-					ISet<String> env1 = ISet.empty();
+					ISet<String> locals1 = ISet.empty();
 					String capn = "cap" + Util.temp();
 					FunpVariable cap = FunpVariable.of(capn);
 					FunpReference ref = FunpReference.of(cap);
@@ -178,19 +183,19 @@ public class P2InferType {
 						if (set.add(v))
 							list.add(Pair.of(v, FunpVariable.of(v)));
 						return FunpField.of(ref, v);
-					}, env1.add(capn).add(var));
+					}, locals1.add(capn).add(var), globals);
 
-					return FunpDefine.of(false, capn, struct, FunpLambdaCapture.of(var, capn, cap, c1.capture(expr)));
+					return FunpGlobal.of(capn, struct, FunpLambdaCapture.of(var, capn, cap, c1.capture(expr)), Mutable.nil());
 
 					// TODO allocate cap on heap
 					// TODO free cap after use
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-					return env.contains(var) ? f : accesses.apply(var);
+					return locals.contains(var) ? f : accesses.apply(var);
 				})).result();
 			}
 		}
 
-		return new Capture(v -> Fail.t(), ISet.empty()).capture(node0);
+		return new Capture(v -> Fail.t(), ISet.empty(), ISet.empty()).capture(node0);
 	}
 
 	private class Infer {
@@ -423,9 +428,10 @@ public class P2InferType {
 					}
 				return Fail.t();
 			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr, address) -> {
-				int size0 = getTypeSize(typeOf(value));
-				Erase e1 = new Erase(scope, env.replace(var, new Var(Integer.MIN_VALUE, address, 0, size0)));
-				return FunpGlobal.of(var, erase(value), e1.erase(expr), address);
+				int size = getTypeSize(typeOf(value));
+				Erase e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
+				FunpAssign expr1 = FunpAssign.of(FunpMemory.of(FunpOperand.of(address), 0, size), erase(value), e1.erase(expr));
+				return FunpAllocGlobal.of(var, size, expr1, address);
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
@@ -527,15 +533,17 @@ public class P2InferType {
 		}
 
 		private FunpMemory getVariable(Var vd) {
-			int scope0 = vd.scope;
+			Mutable<Operand> operand = vd.operand;
+			Integer scope0 = vd.scope;
 			Funp nfp;
-			if (scope0 == Integer.MIN_VALUE)
-				nfp = FunpNumber.of(Mutable.of(0));
-			else {
+			if (scope0 != null) {
 				nfp = Funp_.framePointer;
 				for (int i = scope0; i < scope; i++)
 					nfp = FunpMemory.of(nfp, 0, ps);
-			}
+			} else
+				nfp = FunpNumber.of(Mutable.of(0));
+			if (operand != null)
+				nfp = FunpTree.of(TermOp.PLUS__, nfp, FunpOperand.of(operand));
 			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp, FunpNumber.of(vd.offset)), vd.start, vd.end);
 		}
 
@@ -546,10 +554,18 @@ public class P2InferType {
 	}
 
 	private class Var {
-		private int scope;
+		private Integer scope;
 		private Mutable<Integer> offset;
+		private Mutable<Operand> operand;
 		private int start;
 		private int end;
+
+		public Var(Mutable<Operand> operand, int start, int end) {
+			this.offset = Mutable.of(0);
+			this.operand = operand;
+			this.start = start;
+			this.end = end;
+		}
 
 		public Var(int scope, Mutable<Integer> offset, int start, int end) {
 			this.scope = scope;

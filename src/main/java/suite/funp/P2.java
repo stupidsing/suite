@@ -9,12 +9,33 @@ import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Fixie_.FixieFun4;
 import suite.adt.pair.Pair;
+import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_.Funp;
 import suite.primitive.adt.pair.IntIntPair;
 
 public class P2 {
 
 	public interface End {
+	}
+
+	public static class FunpAllocGlobal implements Funp, P4.End {
+		public String var;
+		public int size;
+		public Funp expr;
+		public Mutable<Operand> address;
+
+		public static FunpAllocGlobal of(String var, int size, Funp expr, Mutable<Operand> address) {
+			FunpAllocGlobal f = new FunpAllocGlobal();
+			f.var = var;
+			f.size = size;
+			f.expr = expr;
+			f.address = address;
+			return f;
+		}
+
+		public <R> R apply(FixieFun4<String, Integer, Funp, Mutable<Operand>, R> fun) {
+			return fun.apply(var, size, expr, address);
+		}
 	}
 
 	public static class FunpAllocStack implements Funp, P4.End {
@@ -140,6 +161,20 @@ public class P2 {
 
 		public <R> R apply(FixieFun3<Funp, Integer, Integer, R> fun) {
 			return fun.apply(pointer, start, end);
+		}
+	}
+
+	public static class FunpOperand implements Funp, P4.End {
+		public Mutable<Operand> operand;
+
+		public static FunpOperand of(Mutable<Operand> operand) {
+			FunpOperand f = new FunpOperand();
+			f.operand = operand;
+			return f;
+		}
+
+		public <R> R apply(FixieFun1<Mutable<Operand>, R> fun) {
+			return fun.apply(operand);
 		}
 	}
 
