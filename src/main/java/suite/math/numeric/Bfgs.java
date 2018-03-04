@@ -4,6 +4,7 @@ import suite.math.FiniteDifference;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
 import suite.primitive.DblDbl_Dbl;
+import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.util.FunUtil.Fun;
@@ -38,14 +39,15 @@ public class Bfgs {
 			float[] xs_ = xs;
 			float[] ps_ = ps;
 			float[] ps1 = mtx.mul(ib, vec.neg(gradientFun.apply(xs_)));
+			Dbl_Obj<float[]> line = alpha -> vec.add(xs_, vec.scale(ps_, alpha));
 
 			double alpha = lineSearch( //
-					alpha_ -> fun.apply(vec.add(xs_, vec.scale(ps_, alpha_))), //
-					alpha_ -> vec.dot(gradientFun.apply(vec.add(xs_, vec.scale(ps_, alpha_))), ps_), //
+					alpha_ -> fun.apply(line.apply(alpha_)), //
+					alpha_ -> vec.dot(gradientFun.apply(line.apply(alpha_)), ps_), //
 					1d);
 
 			float[] ss = vec.scale(ps_, alpha);
-			float[] xs1 = vec.add(xs_, ss);
+			float[] xs1 = vec.add(xs_, ss); // line.apply(alpha);
 			float[] gs1 = gradientFun.apply(xs1);
 			float[] ys = vec.sub(gs1, gs);
 			double yts = vec.dot(ys, ss);

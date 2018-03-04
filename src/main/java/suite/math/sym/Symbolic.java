@@ -135,10 +135,13 @@ public class Symbolic {
 		}
 	}
 
-	public Opt<Node> polyize1(Node node) {
-		Rewrite rewrite_x = new Rewrite(Atom.of("x"));
-		Rewrite rewrite_y = new Rewrite(Atom.of("y"));
-		return Ringo.ofFractional(Fractional.ofIntegral()).poly(rewrite_y).poly(rewrite_x).pf(node);
+	public Opt<Node> polyize1(Node node, Atom... vars) {
+		Ringo<?> ringo = Ringo.ofFractional(Fractional.ofIntegral());
+
+		for (Atom var : vars)
+			ringo = ringo.poly(new Rewrite(var));
+
+		return ringo.pf(node);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked", })
