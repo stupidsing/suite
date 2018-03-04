@@ -448,13 +448,12 @@ public class P2InferType {
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
 				IMap<String, Var> env0 = IMap.empty();
 				int b = ps * 2; // return address and EBP
-				int scope1 = scope + 1;
 				LambdaType lt = lambdaType(n);
 				IMap<String, Var> env1 = env0 //
-						.replace(capn, new Var(scope, Mutable.of(0), 0, getTypeSize(typeOf(cap)))) //
-						.replace(var, new Var(scope1, Mutable.of(0), b, b + lt.is));
+						.replace(capn, new Var(0, Mutable.of(0), 0, getTypeSize(typeOf(cap)))) //
+						.replace(var, new Var(1, Mutable.of(0), b, b + lt.is));
 				Funp frame = FunpReference.of(erase(cap));
-				Funp expr1 = new Erase(scope1, env1).erase(expr);
+				Funp expr1 = new Erase(1, env1).erase(expr);
 				if (lt.os == is)
 					return FunpRoutine.of(frame, expr1);
 				else if (lt.os == ps * 2)
