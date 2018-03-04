@@ -167,7 +167,7 @@ public class Chr {
 				}
 
 				private ISet<Node> replace(ISet<Node> facts) {
-					ISet<Node> facts1 = new ISet<>();
+					ISet<Node> facts1 = ISet.empty();
 					for (Node node : facts)
 						facts1 = facts1.replace(rw.replace(from, to, node));
 					return facts1;
@@ -201,7 +201,7 @@ public class Chr {
 
 	private ISet<Node> getFacts(State state, Prototype prototype) {
 		ISet<Node> results = state.factsByPrototype.get(prototype);
-		return results != null ? results : new ISet<>();
+		return results != null ? results : ISet.empty();
 	}
 
 	private State setFacts(State state, Prototype prototype, ISet<Node> nodes) {

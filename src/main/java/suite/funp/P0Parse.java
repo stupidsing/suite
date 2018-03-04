@@ -64,7 +64,7 @@ public class P0Parse {
 
 	public Funp parse(Node node0) {
 		Node node1 = expandMacros(node0);
-		return new Parse(new ISet<>()).parse(node1);
+		return new Parse(ISet.empty()).parse(node1);
 	}
 
 	private Node expandMacros(Node node0) {
@@ -175,7 +175,7 @@ public class P0Parse {
 				}.extract(parse(a));
 
 				Funp value = parse(b);
-				ISet<String> variables1 = new ISet<>();
+				ISet<String> variables1 = ISet.empty();
 
 				for (String var : variables)
 					variables1 = variables1.add(var);

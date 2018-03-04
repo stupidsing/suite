@@ -33,6 +33,7 @@ import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpIoCat;
 import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpLambdaCapture;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpReference;
@@ -54,6 +55,7 @@ import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters;
 import suite.funp.P2.FunpWhile;
 import suite.immutable.IMap;
+import suite.immutable.ISet;
 import suite.inspect.Inspect;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
@@ -62,6 +64,7 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.util.AutoObject;
 import suite.util.Fail;
+import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.Switch;
@@ -87,9 +90,10 @@ public class P2InferType {
 	public Funp infer(Funp n0) {
 		UnNode<Type> t = unify.newRef();
 		Funp n1 = extractPredefine(n0);
+		Funp n2 = Boolean.TRUE ? n1 : captureLambdas(n1);
 
-		if (unify.unify(t, new Infer(IMap.empty()).infer(n1)))
-			return new Erase(0, IMap.empty()).erase(n1);
+		if (unify.unify(t, new Infer(IMap.empty()).infer(n2)))
+			return new Erase(0, IMap.empty()).erase(n2);
 		else
 			return Fail.t("cannot infer type for " + n0);
 	}
@@ -122,6 +126,61 @@ public class P2InferType {
 			node1 = FunpDefine.of(false, pair.t0, FunpDontCare.of(), node1);
 
 		return node1;
+	}
+
+	private Funp captureLambdas(Funp node0) {
+		class Capture {
+			private Fun<String, Funp> accesses;
+			private ISet<String> env;
+
+			private Capture(Fun<String, Funp> accesses, ISet<String> env) {
+				this.accesses = accesses;
+				this.env = env;
+			}
+
+			private Funp capture(Funp n) {
+				return inspect.rewrite(Funp.class, this::capture_, n);
+			}
+
+			private Funp capture_(Funp n) {
+				return n.<Funp> switch_( //
+				).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
+					Capture c1 = new Capture(accesses, env.add(var));
+					return FunpDefine.of(isPolyType, var, value, c1.capture(expr));
+				})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
+					ISet<String> env1 = env;
+					for (Pair<String, Funp> pair : vars)
+						env1 = env1.add(pair.t0);
+					Capture c1 = new Capture(accesses, env1);
+					return FunpDefineRec.of(vars, c1.capture(expr));
+				})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
+					Capture c1 = new Capture(accesses, env.add(var));
+					return FunpIterate.of(var, init, c1.capture(cond), c1.capture(iterate));
+				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+					String cap = "cap" + Util.temp();
+					String pcap = "p" + cap;
+					FunpVariable vcap = FunpVariable.of(cap);
+					FunpVariable vpcap = FunpVariable.of(pcap);
+					List<Pair<String, Funp>> list = new ArrayList<>();
+					FunpStruct struct = FunpStruct.of(list);
+
+					Capture c1 = new Capture(v -> {
+						list.add(Pair.of(v, FunpVariable.of(v)));
+						return FunpField.of(vpcap, v);
+					}, env.add(var));
+
+					FunpLambdaCapture lambda1 = FunpLambdaCapture.of(var, vcap, pcap, c1.capture(expr));
+					return FunpDefine.of(false, cap, struct, FunpDefine.of(false, pcap, FunpReference.of(vcap), lambda1));
+
+					// TODO allocate cap on heap
+					// TODO free cap after use
+				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
+					return env.contains(var) ? f : accesses.apply(var);
+				})).result();
+			}
+		}
+
+		return new Capture(v -> Fail.t(), ISet.empty()).capture(node0);
 	}
 
 	private class Infer {
@@ -225,6 +284,10 @@ public class P2InferType {
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> tv = unify.newRef();
 				return TypeLambda.of(tv, new Infer(env.replace(var, Pair.of(false, tv))).infer(expr));
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, cap, pcap, expr) -> {
+				IMap<String, Pair<Boolean, UnNode<Type>>> env1 = IMap.empty();
+				UnNode<Type> tv = unify.newRef();
+				return TypeLambda.of(tv, new Infer(env1.replace(pcap, env.get(pcap))).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
 				return typeNumber;
 			}).applyIf(FunpReference.class, f -> f.apply(expr -> {
@@ -250,41 +313,6 @@ public class P2InferType {
 				UnNode<Type> tv = pair.t1;
 				return pair.t0 ? unify.clone(tv) : tv;
 			})).nonNullResult();
-		}
-	}
-
-	private class Capture {
-		private IMap<String, Funp> env;
-		private Map<Funp, IMap<String, Funp>> accesses;
-
-		private Capture(IMap<String, Funp> env) {
-			this.env = env;
-		}
-
-		private Funp capture(Funp n) {
-			return inspect.rewrite(Funp.class, this::capture_, n);
-		}
-
-		private Funp capture_(Funp n) {
-			return n.<Funp> switch_( //
-			).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
-				return new Capture(env.replace(var, f)).capture(expr);
-			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
-				IMap<String, Funp> env1 = env;
-				for (Pair<String, Funp> pair : vars)
-					env1 = env1.replace(pair.t0, f);
-				return new Capture(env1).capture(expr);
-			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-				Capture e1 = new Capture(env.replace(var, f));
-				e1.capture(cond);
-				return e1.capture(iterate);
-			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-				return new Capture(env.replace(var, f)).capture(expr);
-			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-				env.get(var);
-				// env.put(var, env);
-				return n;
-			})).result();
 		}
 	}
 
@@ -404,6 +432,21 @@ public class P2InferType {
 				int scope1 = scope + 1;
 				LambdaType lt = lambdaType(n);
 				Funp expr1 = new Erase(scope1, env.replace(var, new Var(scope1, Mutable.of(0), b, b + lt.is))).erase(expr);
+				if (lt.os == is)
+					return FunpRoutine.of(expr1);
+				else if (lt.os == ps * 2)
+					return FunpRoutine2.of(expr1);
+				else
+					return FunpRoutineIo.of(expr1, lt.is, lt.os);
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, cap, pcap, expr) -> {
+				IMap<String, Var> env1 = IMap.empty();
+				int b = ps * 2; // return address and EBP
+				int scope1 = scope + 1;
+				LambdaType lt = lambdaType(n);
+				IMap<String, Var> env2 = env1 //
+						.replace(pcap, new Var(scope, Mutable.of(0), 0, getTypeSize(typeOf(cap)))) //
+						.replace(var, new Var(scope1, Mutable.of(0), b, b + lt.is));
+				Funp expr1 = new Erase(scope1, env2).erase(expr);
 				if (lt.os == is)
 					return FunpRoutine.of(expr1);
 				else if (lt.os == ps * 2)

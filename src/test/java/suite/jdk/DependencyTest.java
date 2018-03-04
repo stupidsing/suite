@@ -27,7 +27,7 @@ public class DependencyTest {
 
 	@Test
 	public void testDependency() {
-		dumpDependencies(new ISet<>(), "", "suite.util.Rethrow");
+		dumpDependencies(ISet.empty(), "", "suite.util.Rethrow");
 	}
 
 	@Test

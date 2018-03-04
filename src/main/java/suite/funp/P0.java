@@ -208,17 +208,17 @@ public class P0 {
 	}
 
 	public static class FunpField implements Funp, P2.End {
-		public FunpReference reference;
+		public Funp reference;
 		public String field;
 
-		public static FunpField of(FunpReference reference, String field) {
+		public static FunpField of(Funp reference, String field) {
 			FunpField f = new FunpField();
 			f.reference = reference;
 			f.field = field;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<FunpReference, String, R> fun) {
+		public <R> R apply(FixieFun2<Funp, String, R> fun) {
 			return fun.apply(reference, field);
 		}
 	}
@@ -318,6 +318,26 @@ public class P0 {
 
 		public <R> R apply(FixieFun2<String, Funp, R> fun) {
 			return fun.apply(var, expr);
+		}
+	}
+
+	public static class FunpLambdaCapture implements Funp, P2.End {
+		public String var;
+		public Funp cap;
+		public String pcap;
+		public Funp expr;
+
+		public static FunpLambdaCapture of(String var, Funp cap, String pcap, Funp expr) {
+			FunpLambdaCapture f = new FunpLambdaCapture();
+			f.var = var;
+			f.cap = cap;
+			f.pcap = pcap;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun4<String, Funp, String, Funp, R> fun) {
+			return fun.apply(var, cap, pcap, expr);
 		}
 	}
 
