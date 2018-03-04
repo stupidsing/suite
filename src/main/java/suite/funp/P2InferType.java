@@ -172,7 +172,7 @@ public class P2InferType {
 						if (set.add(v))
 							list.add(Pair.of(v, FunpVariable.of(v)));
 						return FunpField.of(vpcap, v);
-					}, env1.add(pcap));
+					}, env1.add(pcap).add(var));
 
 					FunpLambdaCapture lambda1 = FunpLambdaCapture.of(var, vcap, pcap, c1.capture(expr));
 					return FunpDefine.of(false, cap, struct, FunpDefine.of(false, pcap, FunpReference.of(vcap), lambda1));
@@ -292,7 +292,7 @@ public class P2InferType {
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, cap, pcap, expr) -> {
 				IMap<String, Pair<Boolean, UnNode<Type>>> env1 = IMap.empty();
 				UnNode<Type> tv = unify.newRef();
-				return TypeLambda.of(tv, new Infer(env1.replace(pcap, env.get(pcap))).infer(expr));
+				return TypeLambda.of(tv, new Infer(env1.replace(pcap, env.get(pcap)).replace(var, Pair.of(false, tv))).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
 				return typeNumber;
 			}).applyIf(FunpReference.class, f -> f.apply(expr -> {
