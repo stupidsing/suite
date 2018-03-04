@@ -34,6 +34,12 @@ public class FunpTest {
 	public void testCapture() {
 		test(31, "define m := 31 >> 15 | (n => m)");
 		test(0, "define m := pointer => 0 >> 1 | (n => 2 | m)");
+
+		test(0, "" //
+				+ "define f := j => 0 >> " //
+				+ "define g := j => 0 >> " //
+				+ "define h := j => 0 >> " //
+				+ "0 | (i => 0 | f | g | h)");
 	}
 
 	@Test
