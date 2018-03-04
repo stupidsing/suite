@@ -98,13 +98,6 @@ public class Symbolic {
 		return Opt.of(node0).map(rewrite::rewrite).concatMap(rewrite::i).map(rewrite::simplify).get();
 	}
 
-	public Opt<Node> polyize_xn(Node node) {
-		Rewrite rewrite = new Rewrite(Atom.of("x"));
-		Fractional<Integer> fractional = Fractional.ofIntegral();
-		DivisiblePolynomial<Fract<Integer>> polynomial = divPoly(rewrite, fractional);
-		return polynomial.parse(node).map(polynomial::format);
-	}
-
 	public static class Ringo<N> {
 		public final Ring<N> ring;
 		public final Obj_Int<N> sgn;
