@@ -6,7 +6,6 @@ import java.util.Set;
 
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
-import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
 import suite.funp.Funp_.Funp;
@@ -162,7 +161,7 @@ public class P0Parse {
 				return FunpField.of(FunpReference.of(parse(a)), name(b));
 			}).match3("global .0 := .1 >> .2", (a, b, c) -> {
 				String var = name(a);
-				return FunpGlobal.of(var, parse(b), parseNewVariable(c, var), Mutable.nil());
+				return FunpGlobal.of(var, parse(b), parseNewVariable(c, var));
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match4("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				Set<String> variables = new HashSet<>();

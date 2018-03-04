@@ -117,8 +117,8 @@ public class P2InferType {
 					})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
 						List<Pair<String, Funp>> pairs1 = Read.from2(pairs0).mapValue(P2InferType.this::extractPredefine).toList();
 						return FunpDefineRec.of(pairs1, extract_(expr));
-					})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr, address) -> {
-						return FunpGlobal.of(var, extractPredefine(value), extract_(expr), address);
+					})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
+						return FunpGlobal.of(var, extractPredefine(value), extract_(expr));
 					})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 						return FunpLambda.of(var, extractPredefine(expr));
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
@@ -164,9 +164,9 @@ public class P2InferType {
 						locals1 = locals1.add(pair.t0);
 					Capture c1 = new Capture(accesses, locals1, globals);
 					return FunpDefineRec.of(vars, c1.capture(expr));
-				})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr, address) -> {
+				})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
 					Capture c1 = new Capture(accesses, locals, globals.add(var));
-					return FunpGlobal.of(var, value, c1.capture(expr), address);
+					return FunpGlobal.of(var, value, c1.capture(expr));
 				})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 					Capture c1 = new Capture(accesses, locals.add(var), globals);
 					return FunpIterate.of(var, init, c1.capture(cond), c1.capture(iterate));
@@ -185,7 +185,7 @@ public class P2InferType {
 						return FunpField.of(ref, v);
 					}, locals1.add(capn).add(var), globals);
 
-					return FunpGlobal.of(capn, struct, FunpLambdaCapture.of(var, capn, cap, c1.capture(expr)), Mutable.nil());
+					return FunpGlobal.of(capn, struct, FunpLambdaCapture.of(var, capn, cap, c1.capture(expr)));
 
 					// TODO allocate cap on heap
 					// TODO free cap after use
@@ -270,7 +270,7 @@ public class P2InferType {
 				ts.pairs.add(Pair.of(field, tf));
 				unify(n, infer(reference), TypeReference.of(ts));
 				return tf;
-			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr, address) -> {
+			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
 				return new Infer(env.replace(var, Pair.of(false, infer(value)))).infer(expr);
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				UnNode<Type> t;
@@ -427,8 +427,9 @@ public class P2InferType {
 							return FunpMemory.of(erase(reference), offset, offset1);
 					}
 				return Fail.t();
-			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr, address) -> {
+			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
 				int size = getTypeSize(typeOf(value));
+				Mutable<Operand> address = Mutable.nil();
 				Erase e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
 				FunpAssign expr1 = FunpAssign.of(FunpMemory.of(FunpOperand.of(address), 0, size), erase(value), e1.erase(expr));
 				return FunpAllocGlobal.of(var, size, expr1, address);
