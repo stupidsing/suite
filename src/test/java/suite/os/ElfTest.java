@@ -7,6 +7,7 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.Constants;
+import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64Interpret;
 import suite.funp.Funp_;
@@ -74,10 +75,9 @@ public class ElfTest {
 			assertEquals(code, exec.code);
 			assertEquals(input, exec.out);
 		} else { // Windows => interpret assembly
-			List<Instruction> instructions = Funp_.main().compile(code, program).t0;
-
-			Amd64Interpret interpret = new Amd64Interpret(bytes);
-			assertEquals(code, interpret.interpret(instructions));
+			Pair<List<Instruction>, Bytes> pair = Funp_.main().compile(code, program);
+			Amd64Interpret interpret = new Amd64Interpret();
+			assertEquals(code, interpret.interpret(pair.t0, pair.t1, bytes));
 			assertEquals(bytes, interpret.out.toBytes());
 		}
 	}

@@ -23,8 +23,23 @@ public class Amd64Interpret {
 
 	public final BytesBuilder out = new BytesBuilder();
 
-	private int offset;
-	private ByteBuffer mem = ByteBuffer.allocate(262144);
+	private int position0 = 0;
+	private int positionCode0 = position0 + 0;
+	private int positionCodex = position0 + 65536;
+	private int positionStack0 = positionCodex + 0;
+	private int positionStackx = positionStack0 + 262144;
+	private int positionx = positionStackx + 0;
+
+	private int base0 = 0;
+	private int baseCode0 = base0 + 0;
+	private int baseCodex = baseCode0 + 0x10000000;
+	private int baseStack0 = baseCodex + 0;
+	private int baseStackx = baseStack0 + 0x40000;
+	// private int basex = baseStackx + 0;
+
+	private int offsetCode = baseCode0 - positionCode0;
+	private int offsetStack = baseStackx - positionStackx;
+	private ByteBuffer mem = ByteBuffer.allocate(positionx);
 	private int[] regs = new int[16];
 	private int c;
 
@@ -35,34 +50,32 @@ public class Amd64Interpret {
 	private int ecx = amd64.ecx.reg;
 	private int edx = amd64.edx.reg;
 	private int esp = amd64.esp.reg;
+	private int eip;
 
 	private int[] scales = new int[] { 1, 2, 4, 8, };
 
-	private Bytes input;
 	private Sink<Bytes> output = out::append;
 
 	public Amd64Interpret() {
-		this(Bytes.of());
 	}
 
-	public Amd64Interpret(Bytes input) {
-		this.input = input;
-		offset = (regs[esp] = 0xF0000000) - mem.capacity() + 16;
-	}
+	public int interpret(List<Instruction> instructions, Bytes code, Bytes input) {
+		mem.position(positionCode0);
+		mem.put(code.bs);
+		eip = positionCode0;
+		regs[esp] = baseStackx - 16;
 
-	public int interpret(List<Instruction> instructions) {
 		IntIntMap labels = new IntIntMap();
 
 		for (int i = 0; i < instructions.size(); i++) {
-			Instruction instruction = instructions.get(i);
+			int i_ = i;
+			Instruction instruction = instructions.get(i_);
 			if (instruction.insn == Insn.LABEL)
-				labels.put((int) ((OpImm) instruction.op0).imm, i + 1);
+				labels.update((int) ((OpImm) instruction.op0).imm, i0 -> i_ + 1);
 		}
 
-		int ip = 0;
-
 		while (true) {
-			Instruction instruction = instructions.get(ip++);
+			Instruction instruction = instructions.get(eip++);
 
 			if (Boolean.FALSE)
 				LogUtil.info(state(instruction));
@@ -105,8 +118,8 @@ public class Amd64Interpret {
 					assign.sink(source0 + source1);
 					break;
 				case CALL:
-					push(ip);
-					ip = labels.get(source0);
+					push(eip);
+					eip = labels.get(source0);
 					break;
 				case CMP:
 					c = Integer.compare(source0, source1);
@@ -142,30 +155,30 @@ public class Amd64Interpret {
 					break;
 				case JE:
 					if (c == 0)
-						ip = labels.get(source0);
+						eip = labels.get(source0);
 					break;
 				case JMP:
-					ip = labels.get(source0);
+					eip = labels.get(source0);
 					break;
 				case JG:
 					if (0 < c)
-						ip = labels.get(source0);
+						eip = labels.get(source0);
 					break;
 				case JGE:
 					if (0 <= c)
-						ip = labels.get(source0);
+						eip = labels.get(source0);
 					break;
 				case JL:
 					if (c < 0)
-						ip = labels.get(source0);
+						eip = labels.get(source0);
 					break;
 				case JLE:
 					if (c <= 0)
-						ip = labels.get(source0);
+						eip = labels.get(source0);
 					break;
 				case JNE:
 					if (c != 0)
-						ip = labels.get(source0);
+						eip = labels.get(source0);
 					break;
 				case LABEL:
 					break;
@@ -182,7 +195,7 @@ public class Amd64Interpret {
 					push(source0);
 					break;
 				case RET:
-					ip = pop();
+					eip = pop();
 					break;
 				case SUB:
 					assign.sink(source0 - source1);
@@ -218,7 +231,12 @@ public class Amd64Interpret {
 	}
 
 	private int index(int address) {
-		return address - offset;
+		if (address < baseCodex)
+			return address - offsetCode;
+		else if (address < baseStackx)
+			return address - offsetStack;
+		else
+			return Fail.t("Wild address " + Integer.toHexString(address));
 	}
 
 	private String state(Instruction instruction) {
