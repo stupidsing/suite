@@ -92,7 +92,7 @@ public class P2InferType {
 	public Funp infer(Funp n0) {
 		UnNode<Type> t = unify.newRef();
 		Funp n1 = extractPredefine(n0);
-		Funp n2 = Boolean.TRUE ? n1 : captureLambdas(n1);
+		Funp n2 = captureLambdas(n1);
 
 		if (unify.unify(t, new Infer(IMap.empty()).infer(n2)))
 			return new Erase(0, IMap.empty()).erase(n2);
@@ -160,10 +160,10 @@ public class P2InferType {
 					return FunpIterate.of(var, init, c1.capture(cond), c1.capture(iterate));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					ISet<String> env1 = ISet.empty();
-					String cap = "cap" + Util.temp();
-					String pcap = "p" + cap;
-					FunpVariable vcap = FunpVariable.of(cap);
-					FunpVariable vpcap = FunpVariable.of(pcap);
+					String vn_cap = "cap" + Util.temp();
+					String vn_pcap = "p" + vn_cap;
+					FunpVariable v_cap = FunpVariable.of(vn_cap);
+					FunpReference ref = FunpReference.of(v_cap);
 					Set<String> set = new HashSet<>();
 					List<Pair<String, Funp>> list = new ArrayList<>();
 					FunpStruct struct = FunpStruct.of(list);
@@ -171,11 +171,11 @@ public class P2InferType {
 					Capture c1 = new Capture(v -> {
 						if (set.add(v))
 							list.add(Pair.of(v, FunpVariable.of(v)));
-						return FunpField.of(vpcap, v);
-					}, env1.add(pcap).add(var));
+						return FunpField.of(ref, v);
+					}, env1.add(vn_pcap).add(var));
 
-					FunpLambdaCapture lambda1 = FunpLambdaCapture.of(var, vcap, pcap, c1.capture(expr));
-					return FunpDefine.of(false, cap, struct, FunpDefine.of(false, pcap, FunpReference.of(vcap), lambda1));
+					FunpLambdaCapture lambda1 = FunpLambdaCapture.of(var, vn_cap, v_cap, c1.capture(expr));
+					return FunpDefine.of(false, vn_cap, struct, FunpDefine.of(false, vn_pcap, ref, lambda1));
 
 					// TODO allocate cap on heap
 					// TODO free cap after use
@@ -289,10 +289,13 @@ public class P2InferType {
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> tv = unify.newRef();
 				return TypeLambda.of(tv, new Infer(env.replace(var, Pair.of(false, tv))).infer(expr));
-			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, cap, pcap, expr) -> {
-				IMap<String, Pair<Boolean, UnNode<Type>>> env1 = IMap.empty();
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, vn_cap, v_cap, expr) -> {
 				UnNode<Type> tv = unify.newRef();
-				return TypeLambda.of(tv, new Infer(env1.replace(pcap, env.get(pcap)).replace(var, Pair.of(false, tv))).infer(expr));
+				IMap<String, Pair<Boolean, UnNode<Type>>> env0 = IMap.empty();
+				IMap<String, Pair<Boolean, UnNode<Type>>> env1 = env0 //
+						.replace(vn_cap, env.get(vn_cap)) //
+						.replace(var, Pair.of(false, tv));
+				return TypeLambda.of(tv, new Infer(env1).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
 				return typeNumber;
 			}).applyIf(FunpReference.class, f -> f.apply(expr -> {
@@ -443,13 +446,13 @@ public class P2InferType {
 					return FunpRoutine2.of(expr1);
 				else
 					return FunpRoutineIo.of(expr1, lt.is, lt.os);
-			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, cap, pcap, expr) -> {
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, vn_cap, v_cap, expr) -> {
 				IMap<String, Var> env1 = IMap.empty();
 				int b = ps * 2; // return address and EBP
 				int scope1 = scope + 1;
 				LambdaType lt = lambdaType(n);
 				IMap<String, Var> env2 = env1 //
-						.replace(pcap, new Var(scope, Mutable.of(0), 0, getTypeSize(typeOf(cap)))) //
+						.replace(vn_cap, new Var(scope, Mutable.of(0), 0, getTypeSize(typeOf(v_cap)))) //
 						.replace(var, new Var(scope1, Mutable.of(0), b, b + lt.is));
 				Funp expr1 = new Erase(scope1, env2).erase(expr);
 				if (lt.os == is)
