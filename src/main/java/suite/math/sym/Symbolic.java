@@ -98,6 +98,32 @@ public class Symbolic {
 		return Opt.of(node0).map(rewrite::rewrite).concatMap(rewrite::i).map(rewrite::simplify).get();
 	}
 
+	public static class Fieldo<N> {
+		public final Field<N> field;
+		public final Obj_Int<N> sgn;
+		public final Fun<Node, Opt<N>> parse;
+		public final Fun<N, Node> format;
+
+		public static <N> Fieldo<Fract<N>> ofFractional(Fractional<N> p) {
+			return new Fieldo<>(p.field, p::sign, p::parse, p::format);
+		}
+
+		public Fieldo(Field<N> field, Obj_Int<N> sgn, Fun<Node, Opt<N>> parse, Fun<N, Node> format) {
+			this.field = field;
+			this.sgn = sgn;
+			this.parse = parse;
+			this.format = format;
+		}
+
+		public Fieldo<Fract<Poly<N>>> fp(Rewrite rewrite) {
+			return Fieldo.ofFractional(new DivisiblePolynomial<>(rewrite.x, rewrite::is_x, field, sgn, parse, format).fractional());
+		}
+
+		public Opt<Node> pf(Node node) {
+			return parse.apply(node).map(format);
+		}
+	}
+
 	public static class Ringo<N> {
 		public final Ring<N> ring;
 		public final Obj_Int<N> sgn;
@@ -149,28 +175,12 @@ public class Symbolic {
 	}
 
 	public Opt<Node> polyize_xyn(Node node) {
-		class FractPoly<I> {
-			Fractional<I> fractional;
-
-			FractPoly(Fractional<I> fractional) {
-				this.fractional = fractional;
-			}
-
-			FractPoly<Poly<Fract<I>>> fp(Rewrite rewrite) {
-				return new FractPoly<>(divPoly(rewrite, fractional).fractional());
-			}
-
-			Opt<Node> format(Node node) {
-				return fractional.parse(node).map(fractional::format);
-			}
-		}
-
 		Rewrite rewrite_x = new Rewrite(Atom.of("x"));
 		Rewrite rewrite_y = new Rewrite(Atom.of("y"));
-		return new FractPoly<>(Fractional.ofIntegral()).fp(rewrite_y).fp(rewrite_x).format(node);
+		return Fieldo.ofFractional(Fractional.ofIntegral()).fp(rewrite_y).fp(rewrite_x).pf(node);
 	}
 
-	private <I> DivisiblePolynomial<Fract<I>> divPoly(Rewrite rewrite, Fractional<I> fractional) {
+	private static <I> DivisiblePolynomial<Fract<I>> divPoly(Rewrite rewrite, Fractional<I> fractional) {
 		return new DivisiblePolynomial<>( //
 				rewrite.x, //
 				rewrite::is_x, //
