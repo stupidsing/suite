@@ -105,6 +105,42 @@ public class Symbolic {
 		return polynomial.parse(node).map(polynomial::format);
 	}
 
+	public static class Ringo<N> {
+		public final Ring<N> ring;
+		public final Obj_Int<N> sgn;
+		public final Fun<Node, Opt<N>> parse;
+		public final Fun<N, Node> format;
+
+		public static <N> Ringo<Fract<N>> ofFractional(Fractional<N> p) {
+			return new Ringo<>(p.field, p::sign, p::parse, p::format);
+		}
+
+		public static <N> Ringo<Poly<N>> ofPolynomial(Polynomial<N> p) {
+			return new Ringo<>(p.ring, p::sign, p::parse, p::format);
+		}
+
+		public Ringo(Ring<N> ring, Obj_Int<N> sgn, Fun<Node, Opt<N>> parse, Fun<N, Node> format) {
+			this.ring = ring;
+			this.sgn = sgn;
+			this.parse = parse;
+			this.format = format;
+		}
+
+		public Ringo<Poly<N>> poly(Rewrite rewrite) {
+			return Ringo.ofPolynomial(new Polynomial<>(rewrite.x, rewrite::is_x, ring, sgn, parse, format));
+		}
+
+		private Opt<Node> pf(Node node) {
+			return parse.apply(node).map(format);
+		}
+	}
+
+	public Opt<Node> polyize1(Node node) {
+		Rewrite rewrite_x = new Rewrite(Atom.of("x"));
+		Rewrite rewrite_y = new Rewrite(Atom.of("y"));
+		return Ringo.ofFractional(Fractional.ofIntegral()).poly(rewrite_y).poly(rewrite_x).pf(node);
+	}
+
 	@SuppressWarnings({ "rawtypes", "unchecked", })
 	public Opt<Node> polyize(Node node, Atom... vars) {
 		Fractional<?> fractional = Fractional.ofIntegral();
