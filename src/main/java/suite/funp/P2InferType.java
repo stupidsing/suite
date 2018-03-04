@@ -174,7 +174,7 @@ public class P2InferType {
 						return FunpField.of(ref, v);
 					}, env1.add(capn).add(var));
 
-					return FunpDefine.of(false, capn, cap, FunpLambdaCapture.of(var, capn, cap, c1.capture(expr)));
+					return FunpDefine.of(false, capn, struct, FunpLambdaCapture.of(var, capn, cap, c1.capture(expr)));
 
 					// TODO allocate cap on heap
 					// TODO free cap after use
