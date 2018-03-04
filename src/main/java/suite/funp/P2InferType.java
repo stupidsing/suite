@@ -2,8 +2,10 @@ package suite.funp;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import suite.adt.Mutable;
 import suite.adt.pair.Fixie_.FixieFun0;
@@ -161,11 +163,13 @@ public class P2InferType {
 					String pcap = "p" + cap;
 					FunpVariable vcap = FunpVariable.of(cap);
 					FunpVariable vpcap = FunpVariable.of(pcap);
+					Set<String> set = new HashSet<>();
 					List<Pair<String, Funp>> list = new ArrayList<>();
 					FunpStruct struct = FunpStruct.of(list);
 
 					Capture c1 = new Capture(v -> {
-						list.add(Pair.of(v, FunpVariable.of(v)));
+						if (set.add(v))
+							list.add(Pair.of(v, FunpVariable.of(v)));
 						return FunpField.of(vpcap, v);
 					}, env.add(var));
 
