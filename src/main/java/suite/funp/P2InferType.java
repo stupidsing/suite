@@ -29,6 +29,7 @@ import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
+import suite.funp.P0.FunpGlobal;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
@@ -113,6 +114,8 @@ public class P2InferType {
 					})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
 						List<Pair<String, Funp>> pairs1 = Read.from2(pairs0).mapValue(P2InferType.this::extractPredefine).toList();
 						return FunpDefineRec.of(pairs1, extract_(expr));
+					})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr, address) -> {
+						return FunpGlobal.of(var, extractPredefine(value), extract_(expr), address);
 					})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 						return FunpLambda.of(var, extractPredefine(expr));
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
@@ -156,6 +159,9 @@ public class P2InferType {
 						env1 = env1.add(pair.t0);
 					Capture c1 = new Capture(accesses, env1);
 					return FunpDefineRec.of(vars, c1.capture(expr));
+				})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr, address) -> {
+					Capture c1 = new Capture(accesses, env.add(var));
+					return FunpGlobal.of(var, value, c1.capture(expr), address);
 				})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 					Capture c1 = new Capture(accesses, env.add(var));
 					return FunpIterate.of(var, init, c1.capture(cond), c1.capture(iterate));
@@ -259,6 +265,8 @@ public class P2InferType {
 				ts.pairs.add(Pair.of(field, tf));
 				unify(n, infer(reference), TypeReference.of(ts));
 				return tf;
+			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr, address) -> {
+				return new Infer(env.replace(var, Pair.of(false, infer(value)))).infer(expr);
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				UnNode<Type> t;
 				unify(n, typeBoolean, infer(if_));
@@ -373,20 +381,20 @@ public class P2InferType {
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
-				Mutable<Integer> stack = Mutable.nil();
+				Mutable<Integer> offset = Mutable.nil();
 				int size0 = getTypeSize(typeOf(value));
-				Erase e1 = new Erase(scope, env.replace(var, new Var(scope, stack, 0, size0)));
-				return allocStack(size0, value, e1.erase(expr), stack);
+				Erase e1 = new Erase(scope, env.replace(var, new Var(scope, offset, 0, size0)));
+				return allocStack(size0, value, e1.erase(expr), offset);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				List<Pair<Var, Funp>> assigns = new ArrayList<>();
-				Mutable<Integer> stack = Mutable.nil();
+				Mutable<Integer> offsetStack = Mutable.nil();
 				IMap<String, Var> env1 = env;
 				int offset = 0;
 
 				for (Pair<String, Funp> pair : vars) {
 					int offset0 = offset;
 					Funp value = pair.t1;
-					Var var = new Var(scope, stack, offset0, offset += getTypeSize(typeOf(value)));
+					Var var = new Var(scope, offsetStack, offset0, offset += getTypeSize(typeOf(value)));
 					env1 = env1.replace(pair.t0, var);
 					assigns.add(Pair.of(var, value));
 				}
@@ -397,7 +405,7 @@ public class P2InferType {
 				for (Pair<Var, Funp> pair : assigns)
 					expr = FunpAssign.of(e1.getVariable(pair.t0), e1.erase(pair.t1), expr);
 
-				return FunpAllocStack.of(align(offset), FunpDontCare.of(), expr_, stack);
+				return FunpAllocStack.of(align(offset), FunpDontCare.of(), expr_, offsetStack);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
@@ -414,6 +422,10 @@ public class P2InferType {
 							return FunpMemory.of(erase(reference), offset, offset1);
 					}
 				return Fail.t();
+			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr, address) -> {
+				int size0 = getTypeSize(typeOf(value));
+				Erase e1 = new Erase(scope, env.replace(var, new Var(Integer.MIN_VALUE, address, 0, size0)));
+				return FunpGlobal.of(var, erase(value), e1.erase(expr), address);
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
@@ -427,18 +439,18 @@ public class P2InferType {
 				Funp address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-				Mutable<Integer> stack = Mutable.nil();
+				Mutable<Integer> offset = Mutable.nil();
 				int size = getTypeSize(typeOf(init));
-				Var var_ = new Var(scope, stack, 0, size);
+				Var var_ = new Var(scope, offset, 0, size);
 				Erase e1 = new Erase(scope, env.replace(var, var_));
 				FunpMemory m = getVariable(var_);
 				FunpWhile while_ = FunpWhile.of(e1.erase(cond), FunpAssign.of(m, e1.erase(iterate), FunpDontCare.of()), m);
-				return allocStack(size, init, while_, stack);
+				return allocStack(size, init, while_, offset);
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				int b = ps * 2; // return address and EBP
 				int scope1 = scope + 1;
 				LambdaType lt = lambdaType(n);
-				FunpFramePointer frame = FunpFramePointer.of();
+				FunpFramePointer frame = Funp_.framePointer;
 				Funp expr1 = new Erase(scope1, env.replace(var, new Var(scope1, Mutable.of(0), b, b + lt.is))).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
@@ -515,10 +527,16 @@ public class P2InferType {
 		}
 
 		private FunpMemory getVariable(Var vd) {
-			Funp nfp = Funp_.framePointer;
-			for (int i = vd.scope; i < scope; i++)
-				nfp = FunpMemory.of(nfp, 0, ps);
-			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp, FunpNumber.of(vd.stack)), vd.start, vd.end);
+			int scope0 = vd.scope;
+			Funp nfp;
+			if (scope0 == Integer.MIN_VALUE)
+				nfp = FunpNumber.of(Mutable.of(0));
+			else {
+				nfp = Funp_.framePointer;
+				for (int i = scope0; i < scope; i++)
+					nfp = FunpMemory.of(nfp, 0, ps);
+			}
+			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp, FunpNumber.of(vd.offset)), vd.start, vd.end);
 		}
 
 		private int align(int size0) {
@@ -529,13 +547,13 @@ public class P2InferType {
 
 	private class Var {
 		private int scope;
-		private Mutable<Integer> stack;
+		private Mutable<Integer> offset;
 		private int start;
 		private int end;
 
-		public Var(int scope, Mutable<Integer> stack, int start, int end) {
+		public Var(int scope, Mutable<Integer> offset, int start, int end) {
 			this.scope = scope;
-			this.stack = stack;
+			this.offset = offset;
 			this.start = start;
 			this.end = end;
 		}

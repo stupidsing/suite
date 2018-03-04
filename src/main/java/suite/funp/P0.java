@@ -223,6 +223,26 @@ public class P0 {
 		}
 	}
 
+	public static class FunpGlobal implements Funp, P2.End {
+		public String var;
+		public Funp value;
+		public Funp expr;
+		public Mutable<Integer> address;
+
+		public static FunpGlobal of(String var, Funp value, Funp expr, Mutable<Integer> address) {
+			FunpGlobal f = new FunpGlobal();
+			f.var = var;
+			f.value = value;
+			f.expr = expr;
+			f.address = address;
+			return f;
+		}
+
+		public <R> R apply(FixieFun4<String, Funp, Funp, Mutable<Integer>, R> fun) {
+			return fun.apply(var, value, expr, address);
+		}
+	}
+
 	public static class FunpIf implements Funp, P4.End {
 		public Funp if_;
 		public Funp then;
