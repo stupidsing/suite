@@ -323,21 +323,21 @@ public class P0 {
 
 	public static class FunpLambdaCapture implements Funp, P2.End {
 		public String var;
-		public Funp v_cap;
-		public String vn_cap;
+		public String capn;
+		public Funp cap;
 		public Funp expr;
 
-		public static FunpLambdaCapture of(String var, String vn_cap, Funp v_cap, Funp expr) {
+		public static FunpLambdaCapture of(String var, String capn, Funp cap, Funp expr) {
 			FunpLambdaCapture f = new FunpLambdaCapture();
 			f.var = var;
-			f.v_cap = v_cap;
-			f.vn_cap = vn_cap;
+			f.capn = capn;
+			f.cap = cap;
 			f.expr = expr;
 			return f;
 		}
 
 		public <R> R apply(FixieFun4<String, String, Funp, Funp, R> fun) {
-			return fun.apply(var, vn_cap, v_cap, expr);
+			return fun.apply(var, capn, cap, expr);
 		}
 	}
 

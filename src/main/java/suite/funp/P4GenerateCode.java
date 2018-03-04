@@ -240,8 +240,6 @@ public class P4GenerateCode {
 						return Fail.t();
 				};
 
-				Fun<Sink<Compile1>, CompileOut> postRoutine = routine -> compileRoutine(routine).map(postTwoOp);
-
 				Source<CompileOut> postDontCare = () -> {
 					if (type == CompileOut_.OP || type == CompileOut_.OPREG)
 						return new CompileOut(i_eax);
@@ -423,13 +421,13 @@ public class P4GenerateCode {
 						return Fail.t();
 				})).applyIf(FunpNumber.class, f -> f.apply(i -> {
 					return postOp.apply(amd64.imm(i.get(), is));
-				})).applyIf(FunpRoutine.class, f -> f.apply(expr -> {
-					return postRoutine.apply(c1 -> c1.compileOpSpec(expr, i_eax));
-				})).applyIf(FunpRoutine2.class, f -> f.apply(expr -> {
-					return postRoutine.apply(c1 -> c1.compileTwoOpSpec(expr, p2_eax, p2_edx));
-				})).applyIf(FunpRoutineIo.class, f -> f.apply((expr, is, os) -> {
+				})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr) -> {
+					return postTwoOp.apply(compileOp(frame), compileRoutine(c1 -> c1.compileOpSpec(expr, i_eax)));
+				})).applyIf(FunpRoutine2.class, f -> f.apply((frame, expr) -> {
+					return postTwoOp.apply(compileOp(frame), compileRoutine(c1 -> c1.compileTwoOpSpec(expr, p2_eax, p2_edx)));
+				})).applyIf(FunpRoutineIo.class, f -> f.apply((frame, expr, is, os) -> {
 					FunpMemory out = frame(ps + is, os);
-					return postRoutine.apply(c1 -> c1.compileAssign(expr, out));
+					return postTwoOp.apply(compileOp(frame), compileRoutine(c1 -> c1.compileAssign(expr, out)));
 				})).applyIf(FunpSaveRegisters.class, f -> f.apply(expr -> {
 					OpReg[] opRegs = rs.list(r -> r != ebp.reg && r != esp.reg);
 
@@ -576,7 +574,7 @@ public class P4GenerateCode {
 				}
 			}
 
-			private Pair<Operand, Operand> compileRoutine(Sink<Compile1> sink) {
+			private Operand compileRoutine(Sink<Compile1> sink) {
 				Operand routineLabel = em.label();
 				Operand endLabel = em.label();
 				em.emit(amd64.instruction(Insn.JMP, endLabel));
@@ -588,7 +586,7 @@ public class P4GenerateCode {
 				em.emit(amd64.instruction(Insn.POP, ebp));
 				em.emit(amd64.instruction(Insn.RET));
 				em.emit(amd64.instruction(Insn.LABEL, endLabel));
-				return Pair.of(compileFramePointer(), routineLabel);
+				return routineLabel;
 			}
 
 			private void compileInstruction(Insn insn, Operand op0, Funp f1) {

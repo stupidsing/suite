@@ -5,6 +5,7 @@ import java.util.List;
 import suite.adt.Mutable;
 import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
+import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Fixie_.FixieFun4;
 import suite.adt.pair.Pair;
@@ -143,48 +144,54 @@ public class P2 {
 	}
 
 	public static class FunpRoutine implements Funp, P4.End {
+		public Funp frame;
 		public Funp expr;
 
-		public static FunpRoutine of(Funp expr) {
+		public static FunpRoutine of(Funp frame, Funp expr) {
 			FunpRoutine f = new FunpRoutine();
+			f.frame = frame;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun1<Funp, R> fun) {
-			return fun.apply(expr);
+		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
+			return fun.apply(frame, expr);
 		}
 	}
 
 	public static class FunpRoutine2 implements Funp, P4.End {
+		public Funp frame;
 		public Funp expr;
 
-		public static FunpRoutine2 of(Funp expr) {
+		public static FunpRoutine2 of(Funp frame, Funp expr) {
 			FunpRoutine2 f = new FunpRoutine2();
+			f.frame = frame;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun1<Funp, R> fun) {
-			return fun.apply(expr);
+		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
+			return fun.apply(frame, expr);
 		}
 
 	}
 
 	public static class FunpRoutineIo implements Funp, P4.End {
+		public Funp frame;
 		public Funp expr;
 		public int is, os;
 
-		public static FunpRoutineIo of(Funp expr, int is, int os) {
+		public static FunpRoutineIo of(Funp frame, Funp expr, int is, int os) {
 			FunpRoutineIo f = new FunpRoutineIo();
+			f.frame = frame;
 			f.expr = expr;
 			f.is = is;
 			f.os = os;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<Funp, Integer, Integer, R> fun) {
-			return fun.apply(expr, is, os);
+		public <R> R apply(FixieFun4<Funp, Funp, Integer, Integer, R> fun) {
+			return fun.apply(frame, expr, is, os);
 		}
 	}
 

@@ -47,6 +47,7 @@ import suite.funp.P0.FunpVariable;
 import suite.funp.P2.FunpAllocStack;
 import suite.funp.P2.FunpAssign;
 import suite.funp.P2.FunpData;
+import suite.funp.P2.FunpFramePointer;
 import suite.funp.P2.FunpInvoke;
 import suite.funp.P2.FunpInvoke2;
 import suite.funp.P2.FunpInvokeIo;
@@ -92,7 +93,7 @@ public class P2InferType {
 	public Funp infer(Funp n0) {
 		UnNode<Type> t = unify.newRef();
 		Funp n1 = extractPredefine(n0);
-		Funp n2 = captureLambdas(n1);
+		Funp n2 = Boolean.FALSE ? captureLambdas(n1) : n1;
 
 		if (unify.unify(t, new Infer(IMap.empty()).infer(n2)))
 			return new Erase(0, IMap.empty()).erase(n2);
@@ -160,10 +161,9 @@ public class P2InferType {
 					return FunpIterate.of(var, init, c1.capture(cond), c1.capture(iterate));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					ISet<String> env1 = ISet.empty();
-					String vn_cap = "cap" + Util.temp();
-					String vn_pcap = "p" + vn_cap;
-					FunpVariable v_cap = FunpVariable.of(vn_cap);
-					FunpReference ref = FunpReference.of(v_cap);
+					String capn = "cap" + Util.temp();
+					FunpVariable cap = FunpVariable.of(capn);
+					FunpReference ref = FunpReference.of(cap);
 					Set<String> set = new HashSet<>();
 					List<Pair<String, Funp>> list = new ArrayList<>();
 					FunpStruct struct = FunpStruct.of(list);
@@ -172,10 +172,9 @@ public class P2InferType {
 						if (set.add(v))
 							list.add(Pair.of(v, FunpVariable.of(v)));
 						return FunpField.of(ref, v);
-					}, env1.add(vn_pcap).add(var));
+					}, env1.add(capn).add(var));
 
-					FunpLambdaCapture lambda1 = FunpLambdaCapture.of(var, vn_cap, v_cap, c1.capture(expr));
-					return FunpDefine.of(false, vn_cap, struct, FunpDefine.of(false, vn_pcap, ref, lambda1));
+					return FunpDefine.of(false, capn, cap, FunpLambdaCapture.of(var, capn, cap, c1.capture(expr)));
 
 					// TODO allocate cap on heap
 					// TODO free cap after use
@@ -289,11 +288,11 @@ public class P2InferType {
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				UnNode<Type> tv = unify.newRef();
 				return TypeLambda.of(tv, new Infer(env.replace(var, Pair.of(false, tv))).infer(expr));
-			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, vn_cap, v_cap, expr) -> {
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
 				UnNode<Type> tv = unify.newRef();
 				IMap<String, Pair<Boolean, UnNode<Type>>> env0 = IMap.empty();
 				IMap<String, Pair<Boolean, UnNode<Type>>> env1 = env0 //
-						.replace(vn_cap, env.get(vn_cap)) //
+						.replace(capn, env.get(capn)) //
 						.replace(var, Pair.of(false, tv));
 				return TypeLambda.of(tv, new Infer(env1).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
@@ -441,26 +440,27 @@ public class P2InferType {
 				LambdaType lt = lambdaType(n);
 				Funp expr1 = new Erase(scope1, env.replace(var, new Var(scope1, Mutable.of(0), b, b + lt.is))).erase(expr);
 				if (lt.os == is)
-					return FunpRoutine.of(expr1);
+					return FunpRoutine.of(FunpFramePointer.of(), expr1);
 				else if (lt.os == ps * 2)
-					return FunpRoutine2.of(expr1);
+					return FunpRoutine2.of(FunpFramePointer.of(), expr1);
 				else
-					return FunpRoutineIo.of(expr1, lt.is, lt.os);
-			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, vn_cap, v_cap, expr) -> {
-				IMap<String, Var> env1 = IMap.empty();
+					return FunpRoutineIo.of(FunpFramePointer.of(), expr1, lt.is, lt.os);
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
+				IMap<String, Var> env0 = IMap.empty();
 				int b = ps * 2; // return address and EBP
 				int scope1 = scope + 1;
 				LambdaType lt = lambdaType(n);
-				IMap<String, Var> env2 = env1 //
-						.replace(vn_cap, new Var(scope, Mutable.of(0), 0, getTypeSize(typeOf(v_cap)))) //
+				IMap<String, Var> env1 = env0 //
+						.replace(capn, new Var(scope, Mutable.of(0), 0, getTypeSize(typeOf(cap)))) //
 						.replace(var, new Var(scope1, Mutable.of(0), b, b + lt.is));
-				Funp expr1 = new Erase(scope1, env2).erase(expr);
+				Funp frame = erase(cap);
+				Funp expr1 = new Erase(scope1, env1).erase(expr);
 				if (lt.os == is)
-					return FunpRoutine.of(expr1);
+					return FunpRoutine.of(frame, expr1);
 				else if (lt.os == ps * 2)
-					return FunpRoutine2.of(expr1);
+					return FunpRoutine2.of(frame, expr1);
 				else
-					return FunpRoutineIo.of(expr1, lt.is, lt.os);
+					return FunpRoutineIo.of(frame, expr1, lt.is, lt.os);
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return new Object() {
 					private Funp getAddress(Funp n) {
