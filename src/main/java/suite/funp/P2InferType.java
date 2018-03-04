@@ -438,28 +438,20 @@ public class P2InferType {
 				int b = ps * 2; // return address and EBP
 				int scope1 = scope + 1;
 				LambdaType lt = lambdaType(n);
+				FunpFramePointer frame = FunpFramePointer.of();
 				Funp expr1 = new Erase(scope1, env.replace(var, new Var(scope1, Mutable.of(0), b, b + lt.is))).erase(expr);
-				if (lt.os == is)
-					return FunpRoutine.of(FunpFramePointer.of(), expr1);
-				else if (lt.os == ps * 2)
-					return FunpRoutine2.of(FunpFramePointer.of(), expr1);
-				else
-					return FunpRoutineIo.of(FunpFramePointer.of(), expr1, lt.is, lt.os);
+				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
-				IMap<String, Var> env0 = IMap.empty();
 				int b = ps * 2; // return address and EBP
 				LambdaType lt = lambdaType(n);
+				int size = getTypeSize(typeOf(cap));
+				IMap<String, Var> env0 = IMap.empty();
 				IMap<String, Var> env1 = env0 //
-						.replace(capn, new Var(0, Mutable.of(0), 0, getTypeSize(typeOf(cap)))) //
+						.replace(capn, new Var(0, Mutable.of(0), 0, size)) //
 						.replace(var, new Var(1, Mutable.of(0), b, b + lt.is));
 				Funp frame = FunpReference.of(erase(cap));
 				Funp expr1 = new Erase(1, env1).erase(expr);
-				if (lt.os == is)
-					return FunpRoutine.of(frame, expr1);
-				else if (lt.os == ps * 2)
-					return FunpRoutine2.of(frame, expr1);
-				else
-					return FunpRoutineIo.of(frame, expr1, lt.is, lt.os);
+				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return new Object() {
 					private Funp getAddress(Funp n) {
@@ -503,6 +495,15 @@ public class P2InferType {
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return getVariable(env.get(var));
 			})).result();
+		}
+
+		private Funp eraseRoutine(LambdaType lt, Funp frame, Funp expr) {
+			if (lt.os == is)
+				return FunpRoutine.of(frame, expr);
+			else if (lt.os == ps * 2)
+				return FunpRoutine2.of(frame, expr);
+			else
+				return FunpRoutineIo.of(frame, expr, lt.is, lt.os);
 		}
 
 		private FunpAllocStack allocStack(int size0, Funp value, Funp expr) {
