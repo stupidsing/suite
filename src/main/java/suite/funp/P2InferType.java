@@ -159,6 +159,7 @@ public class P2InferType {
 					Capture c1 = new Capture(accesses, env.add(var));
 					return FunpIterate.of(var, init, c1.capture(cond), c1.capture(iterate));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+					ISet<String> env1 = ISet.empty();
 					String cap = "cap" + Util.temp();
 					String pcap = "p" + cap;
 					FunpVariable vcap = FunpVariable.of(cap);
@@ -171,7 +172,7 @@ public class P2InferType {
 						if (set.add(v))
 							list.add(Pair.of(v, FunpVariable.of(v)));
 						return FunpField.of(vpcap, v);
-					}, env.add(var));
+					}, env1.add(pcap));
 
 					FunpLambdaCapture lambda1 = FunpLambdaCapture.of(var, vcap, pcap, c1.capture(expr));
 					return FunpDefine.of(false, cap, struct, FunpDefine.of(false, pcap, FunpReference.of(vcap), lambda1));
