@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import suite.adt.Mutable;
 import suite.adt.pair.Fixie_.FixieFun4;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
@@ -259,15 +260,7 @@ public class P4GenerateCode {
 
 				return n.<CompileOut> switch_( //
 				).applyIf(FunpAllocGlobal.class, f -> f.apply((var, size, expr, address) -> {
-					Operand varLabel = em.label();
-					Operand endLabel = em.label();
-					em.emit(amd64.instruction(Insn.JMP, endLabel));
-					em.emit(amd64.instruction(Insn.LABEL, varLabel));
-					for (int i = 0; i < size; i++)
-						em.emit(amd64.instruction(Insn.NOP));
-					em.emit(amd64.instruction(Insn.LABEL, endLabel));
-
-					address.update(varLabel);
+					compileGlobal(size, address);
 					return compile(expr);
 				})).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, offset) -> {
 					Operand imm = amd64.imm(size), op;
@@ -590,18 +583,31 @@ public class P4GenerateCode {
 			}
 
 			private Operand compileRoutine(Sink<Compile1> sink) {
-				Operand routineLabel = em.label();
+				return compileBlock(() -> {
+					em.emit(amd64.instruction(Insn.PUSH, ebp));
+					if (isUseEbp)
+						em.mov(ebp, esp);
+					sink.sink(new Compile1(registerSet, 0));
+					em.emit(amd64.instruction(Insn.POP, ebp));
+					em.emit(amd64.instruction(Insn.RET));
+				});
+			}
+
+			private void compileGlobal(Integer size, Mutable<Operand> address) {
+				address.update(compileBlock(() -> {
+					for (int i = 0; i < size; i++)
+						em.emit(amd64.instruction(Insn.NOP));
+				}));
+			}
+
+			private Operand compileBlock(Runnable runnable) {
 				Operand endLabel = em.label();
+				Operand refLabel = em.label();
 				em.emit(amd64.instruction(Insn.JMP, endLabel));
-				em.emit(amd64.instruction(Insn.LABEL, routineLabel));
-				em.emit(amd64.instruction(Insn.PUSH, ebp));
-				if (isUseEbp)
-					em.mov(ebp, esp);
-				sink.sink(new Compile1(registerSet, 0));
-				em.emit(amd64.instruction(Insn.POP, ebp));
-				em.emit(amd64.instruction(Insn.RET));
+				em.emit(amd64.instruction(Insn.LABEL, refLabel));
+				runnable.run();
 				em.emit(amd64.instruction(Insn.LABEL, endLabel));
-				return routineLabel;
+				return refLabel;
 			}
 
 			private void compileInstruction(Insn insn, Operand op0, Funp f1) {
