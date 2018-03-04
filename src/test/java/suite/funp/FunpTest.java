@@ -67,6 +67,11 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testGlobal() {
+		test(1, "global a := array (0, 1, 2,) >> a {1}");
+	}
+
+	@Test
 	public void testLambda() {
 		test(1, "0 | (a => a + 1)");
 	}
