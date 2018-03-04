@@ -292,7 +292,7 @@ public class P2InferType {
 				UnNode<Type> tv = unify.newRef();
 				IMap<String, Pair<Boolean, UnNode<Type>>> env0 = IMap.empty();
 				IMap<String, Pair<Boolean, UnNode<Type>>> env1 = env0 //
-						.replace(capn, env.get(capn)) //
+						.replace(capn, Pair.of(false, infer(cap))) //
 						.replace(var, Pair.of(false, tv));
 				return TypeLambda.of(tv, new Infer(env1).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
@@ -453,7 +453,7 @@ public class P2InferType {
 				IMap<String, Var> env1 = env0 //
 						.replace(capn, new Var(scope, Mutable.of(0), 0, getTypeSize(typeOf(cap)))) //
 						.replace(var, new Var(scope1, Mutable.of(0), b, b + lt.is));
-				Funp frame = erase(cap);
+				Funp frame = FunpReference.of(erase(cap));
 				Funp expr1 = new Erase(scope1, env1).erase(expr);
 				if (lt.os == is)
 					return FunpRoutine.of(frame, expr1);
