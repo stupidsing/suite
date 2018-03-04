@@ -62,7 +62,6 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.util.AutoObject;
 import suite.util.Fail;
-import suite.util.FunUtil2.Fun2;
 import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.Switch;
@@ -254,33 +253,33 @@ public class P2InferType {
 		}
 	}
 
-	private class PreErase {
+	private class Capture {
 		private IMap<String, Funp> env;
 		private Map<Funp, IMap<String, Funp>> accesses;
 
-		private PreErase(IMap<String, Funp> env) {
+		private Capture(IMap<String, Funp> env) {
 			this.env = env;
 		}
 
-		private Funp preErase(Funp n) {
-			return inspect.rewrite(Funp.class, this::preErase_, n);
+		private Funp capture(Funp n) {
+			return inspect.rewrite(Funp.class, this::capture_, n);
 		}
 
-		private Funp preErase_(Funp n) {
+		private Funp capture_(Funp n) {
 			return n.<Funp> switch_( //
 			).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
-				return new PreErase(env.replace(var, f)).preErase(expr);
+				return new Capture(env.replace(var, f)).capture(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				IMap<String, Funp> env1 = env;
 				for (Pair<String, Funp> pair : vars)
 					env1 = env1.replace(pair.t0, f);
-				return new PreErase(env1).preErase(expr);
+				return new Capture(env1).capture(expr);
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-				PreErase e1 = new PreErase(env.replace(var, f));
-				e1.preErase(cond);
-				return e1.preErase(iterate);
+				Capture e1 = new Capture(env.replace(var, f));
+				e1.capture(cond);
+				return e1.capture(iterate);
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-				return new PreErase(env.replace(var, f)).preErase(expr);
+				return new Capture(env.replace(var, f)).capture(expr);
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				env.get(var);
 				// env.put(var, env);
@@ -305,7 +304,8 @@ public class P2InferType {
 		private Funp erase_(Funp n) {
 			Type type0 = typeOf(n);
 
-			Fun2<Funp, Funp, Funp> apply = (value, lambda) -> {
+			return n.<Funp> switch_( //
+			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 				LambdaType lt = lambdaType(lambda);
 				Funp lambda1 = erase(lambda);
 				int size = getTypeSize(typeOf(value));
@@ -317,11 +317,6 @@ public class P2InferType {
 				else
 					invoke = allocStack(lt.os, FunpDontCare.of(), allocStack(size, value, FunpInvokeIo.of(lambda1)));
 				return FunpSaveRegisters.of(invoke);
-			};
-
-			return n.<Funp> switch_( //
-			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-				return apply.apply(value, lambda);
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
 				UnNode<Type> te = unify.newRef();
 				unify(n, type0, TypeArray.of(te));
