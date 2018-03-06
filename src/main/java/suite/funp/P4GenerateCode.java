@@ -525,7 +525,7 @@ public class P4GenerateCode {
 						opResult = opResult_;
 					} else if (operator == TermOp.MINUS_) {
 						Pair<Funp, OpReg> pair = compileCommutativeTree(Insn.SUB, assoc, lhs, rhs);
-						if (pair.t1 == rhs)
+						if ((opResult = pair.t1) == rhs)
 							em.emit(amd64.instruction(Insn.NEG, pair.t1));
 					} else if (setInsn != null) {
 						Pair<Funp, OpReg> pair = compileCommutativeTree(Insn.CMP, assoc, lhs, rhs);
