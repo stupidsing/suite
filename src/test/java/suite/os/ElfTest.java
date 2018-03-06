@@ -58,8 +58,10 @@ public class ElfTest {
 				+ "iterate n 1 (n != 0) ( \n" //
 				+ "	let buffer := (size * array byte _) >> \n" //
 				+ "	let pointer := address buffer >> \n" //
-				+ "	pointer, size | linux-read | io-cat ( \n" //
-				+ "		nBytesRead => pointer, nBytesRead | linux-write | io-cat (nBytesWrote => io nBytesRead) \n" //
+				+ "	pointer, size | linux-read | io-cat (nBytesRead => \n" //
+				+ "		pointer, nBytesRead | linux-write | io-cat (nBytesWrote => \n" //
+				+ "			io nBytesRead \n" //
+				+ "		) \n" //
 				+ "	) \n" //
 				+ ") \n" //
 		;
