@@ -226,7 +226,7 @@ public class P1Inline {
 				return inspect.rewrite(Funp.class, n_ -> n_ //
 						.<Funp> switch_() //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-							return lambda.cast(FunpLambda.class, n -> FunpDefine.of(false, n.var, inline(value), inline(n.expr)));
+							return lambda.cast(FunpLambda.class, l -> FunpDefine.of(false, l.var, inline(value), inline(l.expr)));
 						})) //
 						.result(), node_);
 			}
