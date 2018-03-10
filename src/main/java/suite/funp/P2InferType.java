@@ -157,19 +157,22 @@ public class P2InferType {
 				return n.<Funp> switch_( //
 				).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 					Capture c1 = new Capture(accesses, locals.add(var), globals);
-					return FunpDefine.of(isPolyType, var, value, c1.capture(expr));
+					return FunpDefine.of(isPolyType, var, capture(value), c1.capture(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
+					List<Pair<String, Funp>> vars1 = new ArrayList<>();
 					ISet<String> locals1 = locals;
-					for (Pair<String, Funp> pair : vars)
+					for (Pair<String, Funp> pair : vars) {
 						locals1 = locals1.add(pair.t0);
+						vars1.add(Pair.of(pair.t0, capture(pair.t1)));
+					}
 					Capture c1 = new Capture(accesses, locals1, globals);
-					return FunpDefineRec.of(vars, c1.capture(expr));
+					return FunpDefineRec.of(vars1, c1.capture(expr));
 				})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
 					Capture c1 = new Capture(accesses, locals, globals.add(var));
-					return FunpGlobal.of(var, value, c1.capture(expr));
+					return FunpGlobal.of(var, capture(value), c1.capture(expr));
 				})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 					Capture c1 = new Capture(accesses, locals.add(var), globals);
-					return FunpIterate.of(var, init, c1.capture(cond), c1.capture(iterate));
+					return FunpIterate.of(var, capture(init), c1.capture(cond), c1.capture(iterate));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					ISet<String> locals1 = ISet.empty();
 					String capn = "cap" + Util.temp();
