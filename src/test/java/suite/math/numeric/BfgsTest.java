@@ -10,9 +10,18 @@ public class BfgsTest {
 
 	private Bfgs bfgs = new Bfgs();
 
-	// https://en.wikipedia.org/wiki/Rosenbrock_function
 	@Test
 	public void test() {
+		Obj_Dbl<float[]> id = x -> x[0];
+
+		float[] xs = bfgs.bfgs(id, new float[] { 0f });
+
+		System.out.println(Arrays.toString(xs));
+	}
+
+	// https://en.wikipedia.org/wiki/Rosenbrock_function
+	@Test
+	public void testRosenbrock() {
 		double a = 1d;
 		double b = 1d;
 
