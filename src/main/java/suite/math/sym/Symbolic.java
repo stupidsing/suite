@@ -154,7 +154,7 @@ public class Symbolic {
 		}
 	}
 
-	public Opt<Node> polyize1(Node node, Atom... vars) {
+	public Opt<Node> polyize(Node node, Atom... vars) {
 		Ringo<?> ringo = Ringo.ofFractional(Fractional.ofIntegral());
 
 		for (Atom var : vars)
@@ -164,7 +164,7 @@ public class Symbolic {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked", })
-	public Opt<Node> polyize(Node node, Atom... vars) {
+	public Opt<Node> polyize0(Node node, Atom... vars) {
 		Fractional<?> fractional = Fractional.ofIntegral();
 
 		for (Atom var : vars)
