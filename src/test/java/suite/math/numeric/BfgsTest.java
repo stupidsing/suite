@@ -13,9 +13,7 @@ public class BfgsTest {
 	@Test
 	public void test() {
 		Obj_Dbl<float[]> id = x -> x[0];
-
 		float[] xs = bfgs.bfgs(id, new float[] { 0f });
-
 		System.out.println(Arrays.toString(xs));
 	}
 
