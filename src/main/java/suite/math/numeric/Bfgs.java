@@ -59,10 +59,9 @@ public class Bfgs {
 				float[][] mb = mtx.sub(id, mtx.scale(mtx.mul(ys, ss), yts));
 				ib1 = mtx.add(mtx.mul(ma, ib, mb), mtx.scale(mtx.mul(ss), yts));
 			} else {
-				double sty = vec.dot(ss, ys);
 				double ytiby = vec.dot(ys, mtx.mul(ib, ys));
-				float[][] ma = mtx.scale(mtx.mul(ss), sty + ytiby / (sty * sty));
-				float[][] mb = mtx.scale(mtx.add(mtx.mul(ib, mtx.mul(ys, ss)), mtx.mul(mtx.mul(ss, ys), ib)), sty);
+				float[][] ma = mtx.scale(mtx.mul(ss), yts + ytiby / (yts * yts));
+				float[][] mb = mtx.scale(mtx.add(mtx.mul(ib, mtx.mul(ys, ss)), mtx.mul(mtx.mul(ss, ys), ib)), yts);
 				ib1 = mtx.add(ib, mtx.sub(ma, mb));
 			}
 
