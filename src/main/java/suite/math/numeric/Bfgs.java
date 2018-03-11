@@ -32,21 +32,19 @@ public class Bfgs {
 
 		float[] xs = initials;
 		float[] gs = gradientFun.apply(xs);
-		float[] ps = vec.neg(gs); // direction
 		float[][] ib = id;
 
 		for (int iter = 0; iter < 16; iter++) {
 			float[] xs_ = xs;
-			float[] ps_ = ps;
-			float[] ps1 = mtx.mul(ib, vec.neg(gradientFun.apply(xs_)));
-			Dbl_Obj<float[]> line = alpha -> vec.add(xs_, vec.scale(ps_, alpha));
+			float[] ps = mtx.mul(ib, vec.neg(gs)); // direction
+			Dbl_Obj<float[]> line = alpha -> vec.add(xs_, vec.scale(ps, alpha));
 
 			double alpha = lineSearch( //
 					alpha_ -> fun.apply(line.apply(alpha_)), //
-					alpha_ -> vec.dot(gradientFun.apply(line.apply(alpha_)), ps_), //
+					alpha_ -> vec.dot(gradientFun.apply(line.apply(alpha_)), ps), //
 					1d);
 
-			float[] ss = vec.scale(ps_, alpha);
+			float[] ss = vec.scale(ps, alpha);
 			float[] xs1 = vec.add(xs_, ss); // line.apply(alpha);
 			float[] gs1 = gradientFun.apply(xs1);
 			float[] ys = vec.sub(gs1, gs);
@@ -67,7 +65,6 @@ public class Bfgs {
 
 			xs = xs1;
 			gs = gs1;
-			ps = ps1;
 			ib = ib1;
 		}
 
