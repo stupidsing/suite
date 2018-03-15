@@ -17,20 +17,20 @@ public class Keyboard {
 	private Trie<Integer, VK> trie;
 
 	public enum VK {
-		UP___, //
-		DOWN_, //
 		LEFT_, //
 		RIGHT, //
+		UP___, //
+		DOWN_, //
 	}
 
 	public Keyboard(LibcJna libc) {
 		this.libc = libc;
 
 		List<Pair<List<Integer>, VK>> pairs = new ArrayList<>();
-		pairs.add(Pair.of(List.of(27, 91, 65), VK.UP___));
-		pairs.add(Pair.of(List.of(27, 91, 66), VK.DOWN_));
 		pairs.add(Pair.of(List.of(27, 91, 68), VK.LEFT_));
 		pairs.add(Pair.of(List.of(27, 91, 67), VK.RIGHT));
+		pairs.add(Pair.of(List.of(27, 91, 65), VK.UP___));
+		pairs.add(Pair.of(List.of(27, 91, 66), VK.DOWN_));
 
 		trie = new Trie<>();
 
