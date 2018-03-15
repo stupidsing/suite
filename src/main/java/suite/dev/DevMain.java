@@ -56,21 +56,25 @@ public class DevMain {
 				termios.gotoxy(state.cursorX - state.offsetX, state.cursorY - state.offsetY);
 			};
 
-			keyboard.signal().map(pair -> pair.map((vk, c) -> {
-				Iterate<State> mutate = state -> state.apply((lines, offsetX, offsetY, cursorX, cursorY) -> {
-					if (vk == VK.LEFT_)
-						return new State(lines, offsetX, offsetY, cursorX - 1, cursorY);
-					else if (vk == VK.RIGHT)
-						return new State(lines, offsetX, offsetY, cursorX + 1, cursorY);
-					else if (vk == VK.UP___)
-						return new State(lines, offsetX, offsetY, cursorX, cursorY - 1);
-					else if (vk == VK.DOWN_)
-						return new State(lines, offsetX, offsetY, cursorX, cursorY + 1);
-					else
-						return new State(lines, offsetX, offsetY, cursorX, cursorY);
-				});
-				return mutate;
-			})).fold(new State(input, 0, 0, 0, 0), (state, mutate) -> mutate.apply(state)).wire(redraw);
+			keyboard //
+					.signal() //
+					.map(pair -> pair.map((vk, c) -> {
+						Iterate<State> mutate = state -> state.apply((lines, offsetX, offsetY, cursorX, cursorY) -> {
+							if (vk == VK.LEFT_)
+								return new State(lines, offsetX, offsetY, cursorX - 1, cursorY);
+							else if (vk == VK.RIGHT)
+								return new State(lines, offsetX, offsetY, cursorX + 1, cursorY);
+							else if (vk == VK.UP___)
+								return new State(lines, offsetX, offsetY, cursorX, cursorY - 1);
+							else if (vk == VK.DOWN_)
+								return new State(lines, offsetX, offsetY, cursorX, cursorY + 1);
+							else
+								return new State(lines, offsetX, offsetY, cursorX, cursorY);
+						});
+						return mutate;
+					})) //
+					.fold(new State(input, 0, 0, 0, 0), (state, mutate) -> mutate.apply(state)) //
+					.wire(redraw);
 		}
 	}
 
