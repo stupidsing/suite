@@ -2,7 +2,6 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
-import suite.adt.Opt;
 import suite.primitive.ChrChr_Obj;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
@@ -62,8 +61,8 @@ public class ChrChrPair {
 		return pair.t1;
 	}
 
-	public <O> Opt<O> map(ChrChr_Obj<O> fun) {
-		return t0 != ChrFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	public <O> O apply(ChrChr_Obj<O> fun) {
+		return fun.apply(t0, t1);
 	}
 
 	public void update(char t0_, char t1_) {

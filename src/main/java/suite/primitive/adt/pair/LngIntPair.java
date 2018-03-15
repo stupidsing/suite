@@ -2,7 +2,6 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
-import suite.adt.Opt;
 import suite.primitive.IntFunUtil;
 import suite.primitive.Int_Int;
 import suite.primitive.LngFunUtil;
@@ -64,8 +63,8 @@ public class LngIntPair {
 		return pair.t1;
 	}
 
-	public <O> Opt<O> map(LngInt_Obj<O> fun) {
-		return t0 != LngFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	public <O> O apply(LngInt_Obj<O> fun) {
+		return fun.apply(t0, t1);
 	}
 
 	public void update(long t0_, int t1_) {

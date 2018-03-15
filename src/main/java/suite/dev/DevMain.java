@@ -2,16 +2,18 @@ package suite.dev;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import com.sun.jna.Native;
 
-import suite.adt.pair.Fixie_.FixieFun5;
+import suite.adt.pair.Fixie_.FixieFun3;
 import suite.ansi.Keyboard;
 import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
 import suite.ansi.Termios;
+import suite.primitive.adt.pair.IntIntPair;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 import suite.util.Rethrow;
@@ -37,62 +39,71 @@ public class DevMain {
 		try (Termios termios = new Termios(libc);) {
 			Keyboard keyboard = new Keyboard(libc);
 
-			Sink<State> redraw = state -> {
+			Sink<State> redraw = state -> state.apply((lines, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
 				termios.clear();
 				termios.cursor(false);
 
-				List<String> lines_ = state.lines;
-
 				for (int screenY = 0; screenY < screenSizeY; screenY++) {
-					int y = screenY - state.offsetY;
-					String line = 0 <= y && y < lines_.size() ? lines_.get(y) : "";
-					String s = (line.substring(state.offsetX) + blankY).substring(0, screenSizeX);
+					int y = screenY - oy;
+					String line = 0 <= y && y < lines.size() ? lines.get(y) : "";
+					String s = (line.substring(ox) + blankY).substring(0, screenSizeX);
 
 					termios.gotoxy(0, screenY);
 					termios.puts(s);
 				}
 
 				termios.cursor(true);
-				termios.gotoxy(state.cursorX - state.offsetX, state.cursorY - state.offsetY);
-			};
+				termios.gotoxy(cx - ox, cy - oy);
+				return null;
+			})));
 
 			keyboard //
 					.signal() //
 					.map(pair -> pair.map((vk, c) -> {
-						Iterate<State> mutate = state -> state.apply((lines, offsetX, offsetY, cursorX, cursorY) -> {
+						Iterate<State> mutate = state -> state.apply((lines, oc, cc) -> cc.apply((cx, cy) -> {
 							if (vk == VK.LEFT_)
-								return new State(lines, offsetX, offsetY, cursorX - 1, cursorY);
+								return State.of(lines, oc, IntIntPair.of(cx - 1, cy));
 							else if (vk == VK.RIGHT)
-								return new State(lines, offsetX, offsetY, cursorX + 1, cursorY);
+								return State.of(lines, oc, IntIntPair.of(cx + 1, cy));
 							else if (vk == VK.UP___)
-								return new State(lines, offsetX, offsetY, cursorX, cursorY - 1);
+								return State.of(lines, oc, IntIntPair.of(cx, cy - 1));
 							else if (vk == VK.DOWN_)
-								return new State(lines, offsetX, offsetY, cursorX, cursorY + 1);
-							else
-								return new State(lines, offsetX, offsetY, cursorX, cursorY);
-						});
+								return State.of(lines, oc, IntIntPair.of(cx, cy + 1));
+							else if (c != null) {
+								List<String> lines1 = new ArrayList<>();
+								for (int y = 0; y < lines.size(); y++) {
+									String line = lines.get(y);
+									if (cy != y)
+										lines1.add(line);
+									else
+										lines1.add(line.substring(0, cx) + c + line.substring(cx));
+								}
+								return State.of(lines1, oc, IntIntPair.of(cx + 1, cy));
+							} else
+								return state;
+						}));
 						return mutate;
 					})) //
-					.fold(new State(input, 0, 0, 0, 0), (state, mutate) -> mutate.apply(state)) //
+					.fold(State.of(input, IntIntPair.of(0, 0), IntIntPair.of(0, 0)), (state, mutate) -> mutate.apply(state)) //
 					.wire(redraw);
 		}
 	}
 
-	private class State {
-		public final List<String> lines;
-		public final int offsetX, offsetY;
-		public final int cursorX, cursorY;
+	private static class State {
+		public List<String> lines;
+		public IntIntPair offsetCoord;
+		public IntIntPair cursorCoord;
 
-		public State(List<String> lines, int offsetX, int offsetY, int cursorX, int cursorY) {
-			this.lines = lines;
-			this.offsetX = offsetX;
-			this.offsetY = offsetY;
-			this.cursorX = cursorX;
-			this.cursorY = cursorY;
+		public static State of(List<String> lines, IntIntPair offsetCoord, IntIntPair cursorCoord) {
+			State s = new State();
+			s.lines = lines;
+			s.offsetCoord = offsetCoord;
+			s.cursorCoord = cursorCoord;
+			return s;
 		}
 
-		public <R> R apply(FixieFun5<List<String>, Integer, Integer, Integer, Integer, R> fun) {
-			return fun.apply(lines, offsetX, offsetY, cursorX, cursorY);
+		public <R> R apply(FixieFun3<List<String>, IntIntPair, IntIntPair, R> fun) {
+			return fun.apply(lines, offsetCoord, cursorCoord);
 		}
 	}
 

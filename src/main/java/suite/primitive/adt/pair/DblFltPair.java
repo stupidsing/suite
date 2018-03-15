@@ -2,7 +2,6 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
-import suite.adt.Opt;
 import suite.primitive.DblFlt_Obj;
 import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
@@ -64,8 +63,8 @@ public class DblFltPair {
 		return pair.t1;
 	}
 
-	public <O> Opt<O> map(DblFlt_Obj<O> fun) {
-		return t0 != DblFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	public <O> O apply(DblFlt_Obj<O> fun) {
+		return fun.apply(t0, t1);
 	}
 
 	public void update(double t0_, float t1_) {

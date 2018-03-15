@@ -2,7 +2,6 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
-import suite.adt.Opt;
 import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
 import suite.primitive.LngFlt_Obj;
@@ -64,8 +63,8 @@ public class LngFltPair {
 		return pair.t1;
 	}
 
-	public <O> Opt<O> map(LngFlt_Obj<O> fun) {
-		return t0 != LngFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	public <O> O apply(LngFlt_Obj<O> fun) {
+		return fun.apply(t0, t1);
 	}
 
 	public void update(long t0_, float t1_) {
