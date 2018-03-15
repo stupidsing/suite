@@ -14,11 +14,13 @@ public class IRope<T> {
 	private List<T> ts;
 	private List<IRope<T>> nodes;
 
+	// minBranchFactor <= ts.size() && ts.size() < maxBranchFactor
 	public IRope(List<T> ts) {
 		this.weight = ts.size();
 		this.ts = ts;
 	}
 
+	// minBranchFactor <= nodes.size() && nodes.size() < maxBranchFactor
 	public IRope(int depth, List<IRope<T>> nodes) {
 		int weight = 0;
 		for (IRope<T> node : nodes)
@@ -28,43 +30,46 @@ public class IRope<T> {
 		this.nodes = nodes;
 	}
 
-	public T at(int w) {
+	// 0 <= p && p < weight
+	public T at(int p) {
 		if (0 < depth) {
-			int index = 0, index1;
-			int aw = 0, aw1;
-			while ((index1 = index + 1) < nodes.size() && (aw1 = aw + nodes.get(index).weight) <= w) {
-				index = index1;
-				aw = aw1;
+			int index = 0, w;
+			IRope<T> node;
+			while (!(p < (w = (node = nodes.get(index)).weight))) {
+				p -= w;
+				index++;
 			}
-			return nodes.get(index).at(w - aw);
+			return node.at(p);
 		} else
-			return ts.get(w);
+			return ts.get(p);
 	}
 
-	public IRope<T> left(int w) {
+	// 0 < p && p <= weight
+	public IRope<T> left(int p) {
 		if (0 < depth) {
-			int index = nodes.size(), index1;
-			int aw = 0, aw1;
-			while (0 <= (index1 = index - 1) && (aw1 = aw + nodes.get(index).weight) <= weight - w) {
-				index = index1;
-				aw = aw1;
+			int index = 0, w;
+			IRope<T> node;
+			while (!(p <= (w = (node = nodes.get(index)).weight))) {
+				p -= w;
+				index++;
 			}
-			return meld(normalize(List_.left(nodes, index)), nodes.get(index).left(weight - w - aw));
+			return meld(normalize(List_.left(nodes, index)), node.left(p));
 		} else
-			return new IRope<>(List_.left(ts, w));
+			return new IRope<>(List_.left(ts, p));
 	}
 
-	public IRope<T> right(int w) {
+	// 0 <= p && p < weight
+	public IRope<T> right(int p) {
 		if (0 < depth) {
-			int index = 0, index1;
-			int aw = 0, aw1;
-			while ((index1 = index + 1) < nodes.size() && (aw1 = aw + nodes.get(index).weight) <= w) {
-				index = index1;
-				aw = aw1;
+			int index = 0, w;
+			IRope<T> node;
+			while (!(p < (w = (node = nodes.get(index)).weight))) {
+				p -= w;
+				index++;
 			}
-			return meld(nodes.get(index).right(w - aw), normalize(List_.right(nodes, index1)));
+			return meld(node.right(p), normalize(List_.right(nodes, index + 1)));
 		} else
-			return new IRope<>(List_.right(ts, w));
+			return new IRope<>(List_.right(ts, p));
 	}
 
 	public static <T> IRope<T> meld(IRope<T> rope0, IRope<T> rope1) {
