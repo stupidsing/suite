@@ -112,7 +112,7 @@ public class Yahoo {
 		Time time = HkexUtil.getCloseTimeBefore(Time.now());
 		StockHistory stockHistory1;
 
-		if (Time.compare(stockHistory0.time, time) < 0) {
+		if (stockHistory0.isActive && Time.compare(stockHistory0.time, time) < 0) {
 			JsonNode json = queryL1(symbol, TimeRange.of(stockHistory0.time.addDays(-14), Time.now()));
 
 			Streamlet<JsonNode> jsons = Read.each(json) //
@@ -172,7 +172,7 @@ public class Yahoo {
 
 			if (data.containsKey("close"))
 				stockHistory1 = StockHistory //
-						.of(exchange, time, data, dividends, splits) //
+						.of(exchange, time, true, data, dividends, splits) //
 						.merge(stockHistory0) //
 						.alignToDate();
 			else
@@ -196,13 +196,7 @@ public class Yahoo {
 				? Read.from(stockHistory1.splits).filter(splitFilter).toArray(LngFltPair.class) //
 				: stockHistory1.splits;
 
-		StockHistory stockHistory2 = StockHistory.of( //
-				stockHistory1.exchange, //
-				stockHistory1.time, //
-				stockHistory1.data, //
-				stockHistory1.dividends, //
-				splits2);
-
+		StockHistory stockHistory2 = stockHistory1.create(stockHistory1.data, stockHistory1.dividends, splits2);
 		StockHistory stockHistory3 = LogUtil.prefix("for " + symbol + ": ", () -> stockHistory2.cleanse());
 		return stockHistory3;
 	}

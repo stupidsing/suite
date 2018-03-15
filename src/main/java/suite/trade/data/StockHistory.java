@@ -29,6 +29,7 @@ public class StockHistory {
 
 	public final String exchange;
 	public final Time time;
+	public final boolean isActive;
 	public final Map<String, LngFltPair[]> data; // un-adjusted
 	public final LngFltPair[] dividends;
 	public final LngFltPair[] splits;
@@ -45,8 +46,9 @@ public class StockHistory {
 
 		String exchange = properties.get("exchange");
 		String timeZoneStr = properties.get("timeZone");
+		String isActive = properties.get("isActive");
+
 		int timeZone = timeZoneStr != null ? Integer.parseInt(timeZoneStr) : 0;
-		Time time = Time.ofYmdHms(line);
 		LngFltPair[] dividends = readPairs(timeZone, outlet);
 		LngFltPair[] splits = readPairs(timeZone, outlet);
 		String tag;
@@ -54,7 +56,13 @@ public class StockHistory {
 		while ((tag = outlet.next()) != null)
 			data.put(tag, readPairs(timeZone, outlet));
 
-		return StockHistory.of(exchange, time, data, dividends, splits);
+		return of( //
+				exchange, //
+				Time.ofYmdHms(line), //
+				String_.equals(isActive, "Y"), //
+				data, //
+				dividends, //
+				splits);
 	}
 
 	private static LngFltPair[] readPairs(int timeZone, Outlet<String> outlet) {
@@ -75,25 +83,29 @@ public class StockHistory {
 	}
 
 	public static StockHistory new_() {
-		return of(null, TimeRange.min, new HashMap<>(), new LngFltPair[0], new LngFltPair[0]);
-	}
-
-	public static StockHistory of(Time time, Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
-		return of(null, time, data, dividends, splits);
+		return of(null, TimeRange.min, true, new HashMap<>(), new LngFltPair[0], new LngFltPair[0]);
 	}
 
 	public static StockHistory of(//
 			String exchange, //
 			Time time, //
+			boolean isActive, //
 			Map<String, LngFltPair[]> data, //
 			LngFltPair[] dividends, //
 			LngFltPair[] splits) {
-		return new StockHistory(exchange, time, data, dividends, splits);
+		return new StockHistory(exchange, time, isActive, data, dividends, splits);
 	}
 
-	private StockHistory(String exchange, Time time, Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
+	private StockHistory( //
+			String exchange, //
+			Time time, //
+			boolean isActive, //
+			Map<String, LngFltPair[]> data, //
+			LngFltPair[] dividends, //
+			LngFltPair[] splits) {
 		this.exchange = exchange;
 		this.time = time;
+		this.isActive = isActive;
 		this.data = data;
 		this.dividends = dividends;
 		this.splits = splits;
@@ -114,7 +126,7 @@ public class StockHistory {
 				}) //
 				.toMap();
 
-		return StockHistory.of(time, data_, dividends, splits);
+		return create(data_, dividends, splits);
 	}
 
 	public StockHistory filter(TimeRange period) {
@@ -132,10 +144,13 @@ public class StockHistory {
 				.mapValue(filter_) //
 				.toMap();
 
-		return of(time, data1, filter_.apply(dividends), filter_.apply(splits));
+		return create(data1, filter_.apply(dividends), filter_.apply(splits));
 	}
 
 	public StockHistory merge(StockHistory other) {
+		boolean isActive_ = isActive && other.isActive;
+		Set<String> keys = Set_.union(data.keySet(), other.data.keySet());
+
 		BinOp<LngFltPair[]> merge_ = (pairs0, pairs1) -> {
 			List<LngFltPair> pairs = new ArrayList<>();
 			int length1 = pairs1.length;
@@ -158,13 +173,11 @@ public class StockHistory {
 			return pairs.toArray(new LngFltPair[0]);
 		};
 
-		Set<String> keys = Set_.union(data.keySet(), other.data.keySet());
-
 		Map<String, LngFltPair[]> data1 = Read.from(keys) //
 				.map2(key -> merge_.apply(get(key), other.get(key))) //
 				.toMap();
 
-		return of(exchange, time, data1, merge_.apply(dividends, other.dividends), merge_.apply(splits, other.splits));
+		return create(isActive_, data1, merge_.apply(dividends, other.dividends), merge_.apply(splits, other.splits));
 	}
 
 	public StockHistory alignToDate() {
@@ -179,10 +192,12 @@ public class StockHistory {
 			}
 			return pairs1.toArray(new LngFltPair[0]);
 		};
+
 		Map<String, LngFltPair[]> data1 = Read.from2(data) //
 				.mapValue(align_) //
 				.toMap();
-		return of(exchange, time, data1, align_.apply(dividends), align_.apply(splits));
+
+		return create(data1, align_.apply(dividends), align_.apply(splits));
 	}
 
 	public DataSource toDataSource() {
@@ -281,6 +296,14 @@ public class StockHistory {
 		}
 
 		return pairs1;
+	}
+
+	public StockHistory create(Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
+		return create(isActive, data, dividends, splits);
+	}
+
+	private StockHistory create(boolean isActive, Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
+		return of(null, time, isActive, data, dividends, splits);
 	}
 
 }
