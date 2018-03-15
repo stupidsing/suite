@@ -1,24 +1,19 @@
 package suite.ansi;
 
-import java.io.Closeable;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.sun.jna.Native;
-
 import suite.adt.Trie;
 import suite.adt.pair.Pair;
-import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Signal;
 import suite.streamlet.Signal.Redirector;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 
-public class Keyboard implements Closeable {
+public class Keyboard {
 
-	private LibcJna libc = (LibcJna) Native.loadLibrary("c", LibcJna.class);
-	private Termios termios = new Termios(libc);
+	private LibcJna libc;
 	private Trie<Integer, VK> trie;
 
 	public enum VK {
@@ -28,7 +23,9 @@ public class Keyboard implements Closeable {
 		RIGHT, //
 	}
 
-	public Keyboard() {
+	public Keyboard(LibcJna libc) {
+		this.libc = libc;
+
 		List<Pair<List<Integer>, VK>> pairs = new ArrayList<>();
 		pairs.add(Pair.of(List.of(27, 91, 65), VK.UP___));
 		pairs.add(Pair.of(List.of(27, 91, 66), VK.DOWN_));
@@ -41,18 +38,13 @@ public class Keyboard implements Closeable {
 			trie.add(pair.t0, pair.t1);
 	}
 
-	@Override
-	public void close() {
-		termios.close();
-	}
-
-	public Outlet<Pair<VK, Character>> keys() {
+	public Signal<Pair<VK, Character>> signal() {
 		Source<Character> source0 = () -> {
 			int ch = libc.getchar();
 			return 0 <= ch ? (char) ch : null;
 		};
 
-		Outlet<Pair<VK, Character>> keys = Signal //
+		return Signal //
 				.from(source0) //
 				.redirect(new Redirector<Character, Pair<VK, Character>>() {
 					private List<Character> chs = new ArrayList<>();
@@ -84,9 +76,7 @@ public class Keyboard implements Closeable {
 						chs.clear();
 						t = trie;
 					}
-				}) //
-				.outlet();
-		return keys;
+				});
 	}
 
 }

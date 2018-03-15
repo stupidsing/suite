@@ -2,6 +2,8 @@ package suite.ansi;
 
 import java.util.Objects;
 
+import com.sun.jna.Native;
+
 import suite.adt.pair.Pair;
 import suite.ansi.Keyboard.VK;
 import suite.streamlet.Outlet;
@@ -16,14 +18,13 @@ public class ReadLineMain extends ExecutableProgram {
 	}
 
 	protected boolean run(String[] args) {
-		try (Keyboard keyboard = new Keyboard()) {
-			Outlet<Pair<VK, Character>> keys = keyboard.keys();
-			Pair<VK, Character> pair;
+		Keyboard keyboard = new Keyboard((LibcJna) Native.loadLibrary("c", LibcJna.class));
+		Outlet<Pair<VK, Character>> keys = keyboard.signal().outlet();
+		Pair<VK, Character> pair;
 
-			while (!Objects.equals(pair = keys.next(), Pair.of(null, 'q')))
-				System.out.println(pair);
+		while (!Objects.equals(pair = keys.next(), Pair.of(null, 'q')))
+			System.out.println(pair);
 
-			return true;
-		}
+		return true;
 	}
 }
