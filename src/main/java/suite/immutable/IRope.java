@@ -53,10 +53,10 @@ public class IRope<T> {
 				p -= w;
 				index++;
 			}
-			IRope<T> r = node.left(p);
+			IRope<T> rope = node.left(p);
 			for (int i = index - 1; 0 <= index; i--)
-				r = meld(nodes.get(i), r);
-			return r;
+				rope = meld(nodes.get(i), rope);
+			return rope;
 		} else
 			return new IRope<>(List_.left(ts, p));
 	}
@@ -70,10 +70,10 @@ public class IRope<T> {
 				p -= w;
 				index++;
 			}
-			IRope<T> r = node.right(p);
+			IRope<T> rope = node.right(p);
 			for (int i = index + 1; index < nodes.size(); i--)
-				r = meld(r, nodes.get(i));
-			return r;
+				rope = meld(rope, nodes.get(i));
+			return rope;
 		} else
 			return new IRope<>(List_.right(ts, p));
 	}
