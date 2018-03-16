@@ -53,7 +53,10 @@ public class IRope<T> {
 				p -= w;
 				index++;
 			}
-			return meld(normalize(List_.left(nodes, index)), node.left(p));
+			IRope<T> r = node.left(p);
+			for (int i = index - 1; 0 <= index; i--)
+				r = meld(nodes.get(i), r);
+			return r;
 		} else
 			return new IRope<>(List_.left(ts, p));
 	}
@@ -67,7 +70,10 @@ public class IRope<T> {
 				p -= w;
 				index++;
 			}
-			return meld(node.right(p), normalize(List_.right(nodes, index + 1)));
+			IRope<T> r = node.right(p);
+			for (int i = index + 1; index < nodes.size(); i--)
+				r = meld(r, nodes.get(i));
+			return r;
 		} else
 			return new IRope<>(List_.right(ts, p));
 	}
