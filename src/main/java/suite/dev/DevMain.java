@@ -18,19 +18,19 @@ import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
 import suite.util.Rethrow;
 
-// mvn compile exec:java -Dexec.mainClass=suite.dev.DevMain
+// mvn compile exec:java -Dexec.mainClass=suite.dev.DevMain -Dexec.args="${COLUMNS} ${LINES}"
 public class DevMain {
 
 	private LibcJna libc = (LibcJna) Native.loadLibrary("c", LibcJna.class);
 
 	public static void main(String[] args) {
-		new DevMain().run();
+		int screenSizeX = Integer.valueOf(args[0]); // Integer.valueOf(System.getenv("COLUMNS"));
+		int screenSizeY = Integer.valueOf(args[1]); // Integer.valueOf(System.getenv("LINES"));
+		new DevMain().run(screenSizeX, screenSizeY);
 	}
 
-	private void run() {
+	private void run(int screenSizeX, int screenSizeY) {
 		List<String> input = Rethrow.ex(() -> Files.readAllLines(Paths.get("src/main/java/suite/dev/DevMain.java")));
-		int screenSizeX = Integer.valueOf(System.getenv("COLUMNS"));
-		int screenSizeY = Integer.valueOf(System.getenv("LINES"));
 
 		char[] cs = new char[screenSizeX];
 		Arrays.fill(cs, ' ');
@@ -52,8 +52,8 @@ public class DevMain {
 					termios.puts(s);
 				}
 
-				termios.cursor(true);
 				termios.gotoxy(cx - ox, cy - oy);
+				termios.cursor(true);
 				return null;
 			})));
 
