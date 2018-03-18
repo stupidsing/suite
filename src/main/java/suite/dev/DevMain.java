@@ -90,7 +90,7 @@ public class DevMain {
 							return state;
 					})).apply((text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int cx_ = Math.max(0, cx);
-						int cy_ = Math.max(0, Math.min(text.lines().length, cy));
+						int cy_ = Math.max(0, Math.min(text.lineLengths().length, cy));
 						return State.of(text, oc, IntIntPair.of(cx_, cy_));
 					}))).apply((text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int ox_ = Math.max(cx - viewSizeX + 1, Math.min(cx, ox));
@@ -124,7 +124,7 @@ public class DevMain {
 
 	private static class Text {
 		public String text;
-		public String[] lines;
+		public int[] lls;
 
 		private Text(String text) {
 			this(text, text.split("\n"));
@@ -136,72 +136,46 @@ public class DevMain {
 
 		private Text(String text, String[] lines) {
 			this.text = text;
-			this.lines = lines;
+			this.lls = Ints_.range(lines.length).mapInt(i -> lines[i].length()).toArray();
 		}
 
 		private String get(int px, int py, int length) {
-			String line = line(py);
-
-			return new String(Chars_.toArray(length, x -> {
-				int x_ = x + px;
-				return x_ < line.length() ? line.charAt(x) : ' ';
+			int i0 = index(px, py);
+			int ix = index(0, py + 1) - 1;
+			return new String(Chars_.toArray(length, i_ -> {
+				int i = i_ + i0;
+				return i < ix ? text.charAt(i) : ' ';
 			}));
 		}
 
 		private Text splice(int px, int py, int deletes, String s) {
-			if (Boolean.TRUE) {
-				int length = text.length();
-				int i0 = index(px, py);
-				int i1 = Math.min(length, i0 + deletes);
-				return new Text(text.substring(0, i0) + s + text.substring(i1, length));
-			} else {
-				String[] lines0 = lines();
-
-				List<String> lines1 = Ints_ //
-						.range(lines0.length) //
-						.map(y -> {
-							String line = lines0[y];
-							if (py != y)
-								return line;
-							else {
-								char[] cs_ = Chars_.toArray(px, i -> i < line.length() ? line.charAt(i) : ' ');
-								String s0 = new String(cs_);
-								String sx = 0 <= px && px < line.length() ? line.substring(px) : "";
-								return s0 + s + sx;
-							}
-						}) //
-						.toList();
-
-				return new Text(lines1);
-			}
-		}
-
-		private String line(int py) {
-			String[] lines = lines();
-			return py < lines.length ? lines[py] : "";
+			int length = text.length();
+			int i0 = index(px, py);
+			int i1 = Math.min(length, i0 + deletes);
+			return new Text(text.substring(0, i0) + s + text.substring(i1, length));
 		}
 
 		private int index(int px, int py) {
-			String[] lines = lines();
-			if (py < lines.length)
-				return Ints_.range(py).toInt(Int_Int.sum(y -> lines[y].length() + 1)) + Math.min(lines[py].length(), px);
+			int[] lls = lineLengths();
+			if (py < lls.length)
+				return Ints_.range(py).toInt(Int_Int.sum(y -> lls[y] + 1)) + Math.min(lls[py], px);
 			else
 				return text.length();
 		}
 
 		private IntIntPair coord(int index) {
-			String[] lines = lines();
+			int[] lls = lineLengths();
 			int index1;
 			int y = 0;
-			while (y < lines.length && 0 <= (index1 = index - (lines[y].length() + 1))) {
+			while (y < lls.length && 0 <= (index1 = index - (lls[y] + 1))) {
 				index = index1;
 				y++;
 			}
 			return IntIntPair.of(index, y);
 		}
 
-		private String[] lines() {
-			return lines;
+		private int[] lineLengths() {
+			return lls;
 		}
 	}
 
