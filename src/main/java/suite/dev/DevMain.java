@@ -44,7 +44,7 @@ public class DevMain {
 
 				for (int screenY = 0; screenY < viewSizeY; screenY++) {
 					termios.gotoxy(0, screenY);
-					termios.puts(text.get(ox, oy + screenY, viewSizeX));
+					termios.puts(text.get(ox, oy + screenY, viewSizeX).replace('\t', ' '));
 				}
 
 				termios.gotoxy(cx - ox, cy - oy);
@@ -69,7 +69,12 @@ public class DevMain {
 							return State.of(text, oc, IntIntPair.of(cx, cy - viewSizeY));
 						else if (vk == VK.PGDN_)
 							return State.of(text, oc, IntIntPair.of(cx, cy + viewSizeY));
-						else if (vk == VK.BKSP_) {
+						else if (vk == VK.HOME_)
+							return State.of(text, oc, IntIntPair.of(0, cy));
+						else if (vk == VK.END__) {
+							int index = text.index(0, cy + 1);
+							return 0 < index ? State.of(text, oc, text.coord(index - 1)) : state;
+						} else if (vk == VK.BKSP_) {
 							int index = text.index(cx, cy);
 							if (0 < index) {
 								IntIntPair cc1 = text.coord(index - 1);
