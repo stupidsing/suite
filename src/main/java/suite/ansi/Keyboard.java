@@ -17,6 +17,10 @@ public class Keyboard {
 
 	public enum VK {
 		BKSP_, //
+		CTRL_DOWN_, //
+		CTRL_LEFT_, //
+		CTRL_RIGHT, //
+		CTRL_UP___, //
 		DEL__, //
 		DOWN_, //
 		END__, //
@@ -33,6 +37,10 @@ public class Keyboard {
 		this.libc = libc;
 
 		List<Pair<List<Integer>, VK>> pairs = new ArrayList<>();
+		pairs.add(Pair.of(List.of(27, 91, 49, 59, 53, 65), VK.CTRL_UP___));
+		pairs.add(Pair.of(List.of(27, 91, 49, 59, 53, 66), VK.CTRL_DOWN_));
+		pairs.add(Pair.of(List.of(27, 91, 49, 59, 53, 67), VK.CTRL_RIGHT));
+		pairs.add(Pair.of(List.of(27, 91, 49, 59, 53, 68), VK.CTRL_LEFT_));
 		pairs.add(Pair.of(List.of(27, 91, 50, 126), VK.INS__));
 		pairs.add(Pair.of(List.of(27, 91, 51, 126), VK.DEL__));
 		pairs.add(Pair.of(List.of(27, 91, 53, 126), VK.PGUP_));
