@@ -12,8 +12,8 @@ public class BfgsTest {
 
 	@Test
 	public void test() {
-		Obj_Dbl<float[]> id = x -> x[0];
-		float[] xs = bfgs.bfgs(id, new float[] { 0f });
+		Obj_Dbl<float[]> id = x -> x[0] * x[0];
+		float[] xs = bfgs.bfgs(id, new float[] { 22f, });
 		System.out.println(Arrays.toString(xs));
 	}
 
@@ -32,7 +32,7 @@ public class BfgsTest {
 			return a_x * a_x + b * y_x * y_x;
 		};
 
-		float[] xs = bfgs.bfgs(rosenbrock, new float[] { 0f, 0f });
+		float[] xs = bfgs.bfgs(rosenbrock, new float[] { 0f, 0f, });
 
 		System.out.println(Arrays.toString(xs));
 	}
