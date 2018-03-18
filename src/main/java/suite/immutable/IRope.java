@@ -51,50 +51,12 @@ public class IRope<T> {
 
 	// 0 < p && p <= weight
 	public IRope<T> left(int p) {
-		if (0 < depth) {
-			int index = 0, w;
-			IRope<T> rope;
-			while (!(p <= (w = (rope = ropes.get(index)).weight))) {
-				p -= w;
-				index++;
-			}
-			IRope<T> rope_ = rope.left(p);
-			if (Boolean.TRUE) {
-				Deque<IRope<T>> deque = new ArrayDeque<>();
-				for (int i = 0; i < index; i++)
-					deque.push(ropes.get(i));
-				return meldLeft(deque, rope_);
-			} else {
-				for (int i = index - 1; 0 <= index; i--)
-					rope_ = meld(ropes.get(i), rope_);
-				return rope_;
-			}
-		} else
-			return new IRope<>(List_.left(ts, p));
+		return left(this, p);
 	}
 
 	// 0 <= p && p < weight
 	public IRope<T> right(int p) {
-		if (0 < depth) {
-			int index = 0, w;
-			IRope<T> rope;
-			while (!(p < (w = (rope = ropes.get(index)).weight))) {
-				p -= w;
-				index++;
-			}
-			IRope<T> rope_ = rope.right(p);
-			if (Boolean.TRUE) {
-				Deque<IRope<T>> deque = new ArrayDeque<>();
-				for (int i = ropes.size() - 1; index < i; i--)
-					deque.push(ropes.get(i));
-				return meldRight(rope_, deque);
-			} else {
-				for (int i = index + 1; index < ropes.size(); i++)
-					rope_ = meld(rope_, ropes.get(i));
-				return rope_;
-			}
-		} else
-			return new IRope<>(List_.right(ts, p));
+		return right(this, p);
 	}
 
 	public static <T> IRope<T> meld(IRope<T> rope0, IRope<T> rope1) {
@@ -134,13 +96,51 @@ public class IRope<T> {
 		return list;
 	}
 
-	private IRope<T> meldLeft(Deque<IRope<T>> queue, IRope<T> rope) {
+	private static <T> IRope<T> left(IRope<T> rope, int p) {
+		Deque<IRope<T>> deque = new ArrayDeque<>();
+		List<IRope<T>> ropes;
+
+		while ((ropes = rope.ropes) != null) {
+			int index = 0, w;
+			IRope<T> rope_;
+			while (!(p <= (w = (rope_ = ropes.get(index)).weight))) {
+				p -= w;
+				index++;
+			}
+			for (int i = 0; i < index; i++)
+				deque.push(ropes.get(i));
+			rope = rope_;
+		}
+
+		return meldLeft(deque, new IRope<>(List_.left(rope.ts, p)));
+	}
+
+	private static <T> IRope<T> right(IRope<T> rope, int p) {
+		Deque<IRope<T>> deque = new ArrayDeque<>();
+		List<IRope<T>> ropes;
+
+		while ((ropes = rope.ropes) != null) {
+			int index = 0, w;
+			IRope<T> rope_;
+			while (!(p < (w = (rope_ = ropes.get(index)).weight))) {
+				p -= w;
+				index++;
+			}
+			for (int i = ropes.size() - 1; index < i; i--)
+				deque.push(ropes.get(i));
+			rope = rope_;
+		}
+
+		return meldRight(new IRope<>(List_.right(rope.ts, p)), deque);
+	}
+
+	private static <T> IRope<T> meldLeft(Deque<IRope<T>> queue, IRope<T> rope) {
 		int branchFactor = minBranchFactor;
 
 		while (true) {
+			Deque<IRope<T>> queue1 = new ArrayDeque<>();
 			int depth = rope.depth;
 
-			Deque<IRope<T>> queue1 = new ArrayDeque<>();
 			queue1.push(rope);
 
 			Source<IRope<T>> pack = () -> {
@@ -173,13 +173,13 @@ public class IRope<T> {
 		}
 	}
 
-	private IRope<T> meldRight(IRope<T> rope, Deque<IRope<T>> queue) {
+	private static <T> IRope<T> meldRight(IRope<T> rope, Deque<IRope<T>> queue) {
 		int branchFactor = minBranchFactor;
 
 		while (true) {
+			Deque<IRope<T>> queue1 = new ArrayDeque<>();
 			int depth = rope.depth;
 
-			Deque<IRope<T>> queue1 = new ArrayDeque<>();
 			queue1.push(rope);
 
 			Source<IRope<T>> pack = () -> {
