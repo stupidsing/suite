@@ -23,7 +23,7 @@ public class TermiosMain {
 			termios.foreground(AnsiColor.RED___);
 			termios.puts("test red on green");
 
-			for (int i = 0; i < 40; i++) {
+			for (int i = 0; i < 3; i++) {
 				termios.resetColors();
 				termios.clear();
 

@@ -16,6 +16,7 @@ public class Keyboard {
 	private Trie<Integer, VK> trie = new Trie<>();
 
 	public enum VK {
+		BKSP_, //
 		DEL__, //
 		DOWN_, //
 		END__, //
@@ -42,6 +43,7 @@ public class Keyboard {
 		pairs.add(Pair.of(List.of(27, 91, 68), VK.LEFT_));
 		pairs.add(Pair.of(List.of(27, 91, 70), VK.END__));
 		pairs.add(Pair.of(List.of(27, 91, 72), VK.HOME_));
+		pairs.add(Pair.of(List.of(127), VK.BKSP_));
 
 		for (Pair<List<Integer>, VK> pair : pairs)
 			trie.add(pair.t0, pair.t1);

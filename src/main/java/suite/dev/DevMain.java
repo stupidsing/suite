@@ -12,6 +12,7 @@ import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
 import suite.ansi.Termios;
 import suite.primitive.Chars_;
+import suite.primitive.Int_Int;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.util.Fail;
@@ -64,15 +65,27 @@ public class DevMain {
 							return State.of(text, oc, IntIntPair.of(cx, cy - 1));
 						else if (vk == VK.DOWN_)
 							return State.of(text, oc, IntIntPair.of(cx, cy + 1));
-						else if (ch == 'q')
-							return Fail.t();
-						else if (ch != null)
-							return State.of(text.insert(cx, cy, ch), oc, IntIntPair.of(cx + 1, cy));
+						else if (vk == VK.PGUP_)
+							return State.of(text, oc, IntIntPair.of(cx, cy - viewSizeY));
+						else if (vk == VK.PGDN_)
+							return State.of(text, oc, IntIntPair.of(cx, cy + viewSizeY));
+						else if (vk == VK.BKSP_) {
+							int index = text.index(cx, cy);
+							if (0 < index) {
+								IntIntPair cc1 = text.coord(index - 1);
+								return State.of(text.splice(cc1.t0, cc1.t1, 1, ""), oc, cc1);
+							} else
+								return state;
+						} else if (ch != null)
+							if (ch != 'q')
+								return State.of(text.splice(cx, cy, 0, Character.toString(ch)), oc, IntIntPair.of(cx + 1, cy));
+							else
+								return Fail.t();
 						else
 							return state;
 					})).apply((text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int cx_ = Math.max(0, cx);
-						int cy_ = Math.max(0, Math.min(text.lines.size(), cy));
+						int cy_ = Math.max(0, Math.min(text.lines().length, cy));
 						return State.of(text, oc, IntIntPair.of(cx_, cy_));
 					}))).apply((text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int ox_ = Math.max(cx - viewSizeX + 1, Math.min(cx, ox));
@@ -105,37 +118,85 @@ public class DevMain {
 	}
 
 	private static class Text {
-		public List<String> lines;
+		public String text;
+		public String[] lines;
+
+		private Text(String text) {
+			this(text, text.split("\n"));
+		}
 
 		private Text(List<String> lines) {
+			this(String.join("\n", lines), lines.toArray(new String[0]));
+		}
+
+		private Text(String text, String[] lines) {
+			this.text = text;
 			this.lines = lines;
 		}
 
 		private String get(int px, int py, int length) {
-			String line = 0 <= py && py < lines.size() ? lines.get(py) : "";
+			String line = line(py);
+
 			return new String(Chars_.toArray(length, x -> {
 				int x_ = x + px;
-				return 0 <= x_ && x_ < line.length() ? line.charAt(x) : ' ';
+				return x_ < line.length() ? line.charAt(x) : ' ';
 			}));
 		}
 
-		private Text insert(int cx, int cy, char ch) {
-			List<String> lines1 = Ints_ //
-					.range(lines.size()) //
-					.map(y -> {
-						String line = lines.get(y);
-						if (cy != y)
-							return line;
-						else {
-							char[] cs_ = Chars_.toArray(cx, i -> i < line.length() ? line.charAt(i) : ' ');
-							String s0 = new String(cs_);
-							String sx = 0 <= cx && cx < line.length() ? line.substring(cx) : "";
-							return s0 + ch + sx;
-						}
-					}) //
-					.toList();
+		private Text splice(int px, int py, int deletes, String s) {
+			if (Boolean.TRUE) {
+				int length = text.length();
+				int i0 = index(px, py);
+				int i1 = Math.min(length, i0 + deletes);
+				return new Text(text.substring(0, i0) + s + text.substring(i1, length));
+			} else {
+				String[] lines0 = lines();
 
-			return new Text(lines1);
+				List<String> lines1 = Ints_ //
+						.range(lines0.length) //
+						.map(y -> {
+							String line = lines0[y];
+							if (py != y)
+								return line;
+							else {
+								char[] cs_ = Chars_.toArray(px, i -> i < line.length() ? line.charAt(i) : ' ');
+								String s0 = new String(cs_);
+								String sx = 0 <= px && px < line.length() ? line.substring(px) : "";
+								return s0 + s + sx;
+							}
+						}) //
+						.toList();
+
+				return new Text(lines1);
+			}
+		}
+
+		private String line(int py) {
+			String[] lines = lines();
+			return py < lines.length ? lines[py] : "";
+		}
+
+		private int index(int px, int py) {
+			String[] lines = lines();
+			if (py < lines.length)
+				return Ints_.range(py).toInt(Int_Int.sum(y -> lines[y].length() + 1)) + Math.min(lines[py].length(), px);
+			else
+				return text.length();
+		}
+
+		private IntIntPair coord(int index) {
+			String[] lines = lines();
+			int index1;
+			int y = 0;
+			while (y < lines.length && 0 <= (index1 = index - (lines[y].length() + 1))) {
+				index = index1;
+				y++;
+			}
+			return IntIntPair.of(index, y);
+		}
+
+		private String[] lines() {
+			return lines;
 		}
 	}
 
