@@ -74,6 +74,16 @@ public class DevMain {
 						else if (vk == VK.END__) {
 							int index = text.index(0, cy + 1);
 							return 0 < index ? State.of(text, oc, text.coord(index - 1)) : state;
+						} else if (vk == VK.CTRL_LEFT_) {
+							int index = text.index(cx, cy), index1;
+							while (0 <= (index1 = index - 1) && Character.isJavaIdentifierPart(text.at(index = index1)))
+								;
+							return State.of(text, oc, text.coord(index));
+						} else if (vk == VK.CTRL_RIGHT) {
+							int index = text.index(cx, cy), index1;
+							while ((index1 = index + 1) < text.length() && Character.isJavaIdentifierPart(text.at(index = index1)))
+								;
+							return State.of(text, oc, text.coord(index));
 						} else if (vk == VK.CTRL_UP___) {
 							int oy1 = Math.max(0, cy - viewSizeY + 1);
 							if (oy != oy1)
@@ -190,6 +200,14 @@ public class DevMain {
 
 		private int[] lineLengths() {
 			return lls;
+		}
+
+		private char at(int arg0) {
+			return text.charAt(arg0);
+		}
+
+		private int length() {
+			return text.length();
 		}
 	}
 
