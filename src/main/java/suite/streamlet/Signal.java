@@ -50,6 +50,16 @@ public class Signal<T> {
 		}));
 	}
 
+	public static <T> void loop(Source<T> source, Sink<Signal<T>> sink) {
+		Signal<T> signal = of();
+		T t;
+
+		executor.submit(() -> sink.sink(signal));
+
+		while ((t = source.source()) != null)
+			signal.fire(t);
+	}
+
 	public static <T, U, V> Signal<V> merge(Signal<T> n0, Signal<U> n1, Fun2<T, U, V> fun) {
 		return of(fire -> {
 			CasReference<Pair<T, U>> cr = new CasReference<>(Pair.of(null, null));
