@@ -81,7 +81,9 @@ public class DevMain {
 								return State.of(text.splice(cc1.t0, cc1.t1, 1, ""), oc, cc1);
 							} else
 								return state;
-						} else if (ch != null)
+						} else if (vk == VK.DEL__)
+							return State.of(text.splice(cx, cy, 1, ""), oc, cc);
+						else if (ch != null)
 							if (ch != 'q')
 								return State.of(text.splice(cx, cy, 0, Character.toString(ch)), oc, IntIntPair.of(cx + 1, cy));
 							else
