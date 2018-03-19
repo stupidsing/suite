@@ -59,7 +59,7 @@ public class StockHistory {
 		return of( //
 				exchange, //
 				Time.ofYmdHms(line), //
-				String_.equals(isActive, "Y"), //
+				!String_.equals(isActive, "N"), //
 				data, //
 				dividends, //
 				splits);
