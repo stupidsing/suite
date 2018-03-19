@@ -52,74 +52,85 @@ public class DevMain {
 				return null;
 			})));
 
-			State state0 = State.of(new Text(input), c(0, 0), c(0, 0));
+			State state0 = new State(null, new Text(input), c(0, 0), c(0, 0));
 			redraw.sink(state0);
 
 			FixieFun3<VK, Character, State, State> mutate = (vk, ch, state) -> state //
 					.apply((text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						if (vk == VK.LEFT_)
-							return State.of(text, oc, c(cx - 1, cy));
+							return state.next(text, oc, c(cx - 1, cy));
 						else if (vk == VK.RIGHT)
-							return State.of(text, oc, c(cx + 1, cy));
+							return state.next(text, oc, c(cx + 1, cy));
 						else if (vk == VK.UP___)
-							return State.of(text, oc, c(cx, cy - 1));
+							return state.next(text, oc, c(cx, cy - 1));
 						else if (vk == VK.DOWN_)
-							return State.of(text, oc, c(cx, cy + 1));
+							return state.next(text, oc, c(cx, cy + 1));
 						else if (vk == VK.PGUP_)
-							return State.of(text, oc, c(cx, cy - viewSizeY));
+							return state.next(text, oc, c(cx, cy - viewSizeY));
 						else if (vk == VK.PGDN_)
-							return State.of(text, oc, c(cx, cy + viewSizeY));
+							return state.next(text, oc, c(cx, cy + viewSizeY));
 						else if (vk == VK.HOME_)
-							return State.of(text, oc, c(0, cy));
+							return state.next(text, oc, c(0, cy));
 						else if (vk == VK.END__) {
 							int index = text.index(0, cy + 1);
-							return 0 < index ? State.of(text, oc, text.coord(index - 1)) : state;
+							return 0 < index ? state.next(text, oc, text.coord(index - 1)) : state;
 						} else if (vk == VK.CTRL_LEFT_) {
 							int index = text.index(cx, cy), index1;
 							while (0 <= (index1 = index - 1) && Character.isJavaIdentifierPart(text.at(index = index1)))
 								;
-							return State.of(text, oc, text.coord(index));
+							return state.next(text, oc, text.coord(index));
 						} else if (vk == VK.CTRL_RIGHT) {
 							int index = text.index(cx, cy), index1;
 							while ((index1 = index + 1) < text.length() && Character.isJavaIdentifierPart(text.at(index = index1)))
 								;
-							return State.of(text, oc, text.coord(index));
+							return state.next(text, oc, text.coord(index));
 						} else if (vk == VK.CTRL_UP___) {
 							int oy1 = Math.max(0, cy - viewSizeY + 1);
 							if (oy != oy1)
-								return State.of(text, c(ox, oy1), cc);
+								return state.next(text, c(ox, oy1), cc);
 							else
-								return State.of(text, c(ox, oy - viewSizeY), c(cx, cy - viewSizeY));
+								return state.next(text, c(ox, oy - viewSizeY), c(cx, cy - viewSizeY));
 						} else if (vk == VK.CTRL_DOWN_) {
 							int oy1 = Math.min(text.lineLengths().length, cy);
 							if (oy != oy1)
-								return State.of(text, c(ox, oy1), cc);
+								return state.next(text, c(ox, oy1), cc);
 							else
-								return State.of(text, c(ox, oy + viewSizeY), c(cx, cy + viewSizeY));
+								return state.next(text, c(ox, oy + viewSizeY), c(cx, cy + viewSizeY));
+						} else if (vk == VK.ALT_J____) {
+							int cy1 = cy + 1;
+							int index = text.index(0, cy1) - 1;
+							Text text1 = text.splice(index, 1, "");
+							return state.next(text1, oc, text1.coord(text1.index(0, cy1) - 1));
 						} else if (vk == VK.BKSP_) {
 							int index = text.index(cx, cy);
 							if (0 < index) {
 								IntIntPair cc1 = text.coord(index - 1);
-								return State.of(text.splice(cc1.t0, cc1.t1, 1, ""), oc, cc1);
+								return state.next(text.splice(cc1.t0, cc1.t1, 1, ""), oc, cc1);
 							} else
 								return state;
 						} else if (vk == VK.DEL__)
-							return State.of(text.splice(cx, cy, 1, ""), oc, cc);
+							return state.next(text.splice(cx, cy, 1, ""), oc, cc);
 						else if (ch != null)
-							if (ch != 'q')
-								return State.of(text.splice(cx, cy, 0, Character.toString(ch)), oc, c(cx + 1, cy));
-							else
+							if (ch == 13)
+								return state.next(text.splice(cx, cy, 0, "\n"), oc, c(0, cy + 1));
+							else if (ch == 26) { // ctrl-Z
+								State parent0 = state.previous;
+								State parent1 = parent0 != null ? parent0 : state;
+								return new State(parent1.previous, parent1.text, oc, parent1.cursorCoord);
+							} else if (ch == 'q')
 								return Fail.t();
+							else
+								return state.next(text.splice(cx, cy, 0, Character.toString(ch)), oc, c(cx + 1, cy));
 						else
 							return state;
 					}))).apply((text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int cx_ = Math.max(0, cx);
 						int cy_ = Math.max(0, Math.min(text.lineLengths().length, cy));
-						return State.of(text, oc, c(cx_, cy_));
+						return new State(state.previous, text, oc, c(cx_, cy_));
 					}))).apply((text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int ox_ = Math.max(0, Math.max(cx - viewSizeX + 1, Math.min(cx, ox)));
 						int oy_ = Math.max(0, Math.max(cy - viewSizeY + 1, Math.min(cy, oy)));
-						return State.of(text, c(ox_, oy_), cc);
+						return new State(state.previous, text, c(ox_, oy_), cc);
 					})));
 
 			keyboard.loop(signal -> signal //
@@ -129,16 +140,29 @@ public class DevMain {
 	}
 
 	private static class State {
+		public State previous;
 		public Text text;
 		public IntIntPair offsetCoord;
 		public IntIntPair cursorCoord;
 
-		public static State of(Text text, IntIntPair offsetCoord, IntIntPair cursorCoord) {
-			State s = new State();
-			s.text = text;
-			s.offsetCoord = offsetCoord;
-			s.cursorCoord = cursorCoord;
-			return s;
+		public State(State previous, Text text, IntIntPair offsetCoord, IntIntPair cursorCoord) {
+			this.previous = previous;
+			this.text = text;
+			this.offsetCoord = offsetCoord;
+			this.cursorCoord = cursorCoord;
+		}
+
+		public State next(Text text, IntIntPair offsetCoord, IntIntPair cursorCoord) {
+			State state = this;
+			for (int i = 0; i < 16; i++)
+				if (state != null)
+					state = state.previous;
+				else
+					break;
+			if (state != null)
+				state.previous = null;
+
+			return new State(this, text, offsetCoord, cursorCoord);
 		}
 
 		public <R> R apply(FixieFun3<Text, IntIntPair, IntIntPair, R> fun) {
@@ -173,10 +197,13 @@ public class DevMain {
 		}
 
 		private Text splice(int px, int py, int deletes, String s) {
+			return splice(index(px, py), deletes, s);
+		}
+
+		private Text splice(int index, int deletes, String s) {
 			int length = text.length();
-			int i0 = index(px, py);
-			int i1 = Math.min(length, i0 + deletes);
-			return new Text(text.substring(0, i0) + s + text.substring(i1, length));
+			int i1 = Math.min(length, index + deletes);
+			return new Text(text.substring(0, index) + s + text.substring(i1, length));
 		}
 
 		private int index(int px, int py) {
