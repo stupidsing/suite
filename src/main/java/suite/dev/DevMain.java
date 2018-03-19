@@ -52,25 +52,25 @@ public class DevMain {
 				return null;
 			})));
 
-			State state0 = State.of(new Text(input), IntIntPair.of(0, 0), IntIntPair.of(0, 0));
+			State state0 = State.of(new Text(input), c(0, 0), c(0, 0));
 			redraw.sink(state0);
 
 			FixieFun3<VK, Character, State, State> mutate = (vk, ch, state) -> state //
 					.apply((text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						if (vk == VK.LEFT_)
-							return State.of(text, oc, IntIntPair.of(cx - 1, cy));
+							return State.of(text, oc, c(cx - 1, cy));
 						else if (vk == VK.RIGHT)
-							return State.of(text, oc, IntIntPair.of(cx + 1, cy));
+							return State.of(text, oc, c(cx + 1, cy));
 						else if (vk == VK.UP___)
-							return State.of(text, oc, IntIntPair.of(cx, cy - 1));
+							return State.of(text, oc, c(cx, cy - 1));
 						else if (vk == VK.DOWN_)
-							return State.of(text, oc, IntIntPair.of(cx, cy + 1));
+							return State.of(text, oc, c(cx, cy + 1));
 						else if (vk == VK.PGUP_)
-							return State.of(text, oc, IntIntPair.of(cx, cy - viewSizeY));
+							return State.of(text, oc, c(cx, cy - viewSizeY));
 						else if (vk == VK.PGDN_)
-							return State.of(text, oc, IntIntPair.of(cx, cy + viewSizeY));
+							return State.of(text, oc, c(cx, cy + viewSizeY));
 						else if (vk == VK.HOME_)
-							return State.of(text, oc, IntIntPair.of(0, cy));
+							return State.of(text, oc, c(0, cy));
 						else if (vk == VK.END__) {
 							int index = text.index(0, cy + 1);
 							return 0 < index ? State.of(text, oc, text.coord(index - 1)) : state;
@@ -87,15 +87,15 @@ public class DevMain {
 						} else if (vk == VK.CTRL_UP___) {
 							int oy1 = Math.max(0, cy - viewSizeY + 1);
 							if (oy != oy1)
-								return State.of(text, IntIntPair.of(ox, oy1), cc);
+								return State.of(text, c(ox, oy1), cc);
 							else
-								return State.of(text, IntIntPair.of(ox, oy - viewSizeY), IntIntPair.of(cx, cy - viewSizeY));
+								return State.of(text, c(ox, oy - viewSizeY), c(cx, cy - viewSizeY));
 						} else if (vk == VK.CTRL_DOWN_) {
 							int oy1 = Math.min(text.lineLengths().length, cy);
 							if (oy != oy1)
-								return State.of(text, IntIntPair.of(ox, oy1), cc);
+								return State.of(text, c(ox, oy1), cc);
 							else
-								return State.of(text, IntIntPair.of(ox, oy + viewSizeY), IntIntPair.of(cx, cy + viewSizeY));
+								return State.of(text, c(ox, oy + viewSizeY), c(cx, cy + viewSizeY));
 						} else if (vk == VK.BKSP_) {
 							int index = text.index(cx, cy);
 							if (0 < index) {
@@ -107,7 +107,7 @@ public class DevMain {
 							return State.of(text.splice(cx, cy, 1, ""), oc, cc);
 						else if (ch != null)
 							if (ch != 'q')
-								return State.of(text.splice(cx, cy, 0, Character.toString(ch)), oc, IntIntPair.of(cx + 1, cy));
+								return State.of(text.splice(cx, cy, 0, Character.toString(ch)), oc, c(cx + 1, cy));
 							else
 								return Fail.t();
 						else
@@ -115,11 +115,11 @@ public class DevMain {
 					}))).apply((text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int cx_ = Math.max(0, cx);
 						int cy_ = Math.max(0, Math.min(text.lineLengths().length, cy));
-						return State.of(text, oc, IntIntPair.of(cx_, cy_));
+						return State.of(text, oc, c(cx_, cy_));
 					}))).apply((text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int ox_ = Math.max(0, Math.max(cx - viewSizeX + 1, Math.min(cx, ox)));
 						int oy_ = Math.max(0, Math.max(cy - viewSizeY + 1, Math.min(cy, oy)));
-						return State.of(text, IntIntPair.of(ox_, oy_), cc);
+						return State.of(text, c(ox_, oy_), cc);
 					})));
 
 			keyboard.loop(signal -> signal //
@@ -195,7 +195,7 @@ public class DevMain {
 				index = index1;
 				y++;
 			}
-			return IntIntPair.of(index, y);
+			return c(index, y);
 		}
 
 		private int[] lineLengths() {
@@ -209,6 +209,10 @@ public class DevMain {
 		private int length() {
 			return text.length();
 		}
+	}
+
+	private static IntIntPair c(int x, int y) {
+		return IntIntPair.of(x, y);
 	}
 
 }
