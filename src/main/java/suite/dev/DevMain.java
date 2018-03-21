@@ -13,9 +13,11 @@ import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
 import suite.ansi.Termios;
 import suite.primitive.Chars_;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
+import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Sink;
 import suite.util.Rethrow;
@@ -180,7 +182,7 @@ public class DevMain {
 
 	private static class Text {
 		public String text;
-		public int[] lls;
+		public int[] lineLengths;
 
 		private Text(String text) {
 			this(text, text.split("\n"));
@@ -192,7 +194,7 @@ public class DevMain {
 
 		private Text(String text, String[] lines) {
 			this.text = text;
-			this.lls = Ints_.range(lines.length).mapInt(i -> lines[i].length()).toArray();
+			this.lineLengths = Read.from(lines).collect(Obj_Int.lift(String::length)).toArray();
 		}
 
 		private String get(int px, int py, int length) {
@@ -215,18 +217,18 @@ public class DevMain {
 		}
 
 		private int index(int px, int py) {
-			int[] lls = lineLengths();
-			if (py < lls.length)
-				return Ints_.range(py).toInt(Int_Int.sum(y -> lls[y] + 1)) + Math.min(lls[py], px);
+			int[] lineLengths = lineLengths();
+			if (py < lineLengths.length)
+				return Ints_.range(py).toInt(Int_Int.sum(y -> lineLengths[y] + 1)) + Math.min(lineLengths[py], px);
 			else
 				return text.length();
 		}
 
 		private IntIntPair coord(int index) {
-			int[] lls = lineLengths();
+			int[] lineLengths = lineLengths();
 			int index1;
 			int y = 0;
-			while (y < lls.length && 0 <= (index1 = index - (lls[y] + 1))) {
+			while (y < lineLengths.length && 0 <= (index1 = index - (lineLengths[y] + 1))) {
 				index = index1;
 				y++;
 			}
@@ -234,7 +236,7 @@ public class DevMain {
 		}
 
 		private int[] lineLengths() {
-			return lls;
+			return lineLengths;
 		}
 
 		private char at(int arg0) {
