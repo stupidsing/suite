@@ -7,7 +7,7 @@ import java.util.List;
 import com.sun.jna.Native;
 
 import suite.adt.pair.Fixie_.FixieFun3;
-import suite.adt.pair.Fixie_.FixieFun4;
+import suite.adt.pair.Fixie_.FixieFun5;
 import suite.ansi.Keyboard;
 import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
@@ -40,7 +40,7 @@ public class DevMain {
 			termios.clear();
 			Keyboard keyboard = new Keyboard(libc);
 
-			Sink<State> redraw = state -> state.apply((prev, text, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
+			Sink<State> redraw = state -> state.apply((st, prev, text, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
 				termios.cursor(false);
 
 				for (int screenY = 0; screenY < viewSizeY; screenY++) {
@@ -57,81 +57,81 @@ public class DevMain {
 			redraw.sink(state0);
 
 			FixieFun3<VK, Character, State, State> mutate = (vk, ch, state) -> state //
-					.apply((prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+					.apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						if (vk == VK.LEFT_)
-							return state.cursorCoord(c(cx - 1, cy));
+							return st.cursorCoord(c(cx - 1, cy));
 						else if (vk == VK.RIGHT)
-							return state.cursorCoord(c(cx + 1, cy));
+							return st.cursorCoord(c(cx + 1, cy));
 						else if (vk == VK.UP___)
-							return state.cursorCoord(c(cx, cy - 1));
+							return st.cursorCoord(c(cx, cy - 1));
 						else if (vk == VK.DOWN_)
-							return state.cursorCoord(c(cx, cy + 1));
+							return st.cursorCoord(c(cx, cy + 1));
 						else if (vk == VK.PGUP_)
-							return state.cursorCoord(c(cx, cy - viewSizeY));
+							return st.cursorCoord(c(cx, cy - viewSizeY));
 						else if (vk == VK.PGDN_)
-							return state.cursorCoord(c(cx, cy + viewSizeY));
+							return st.cursorCoord(c(cx, cy + viewSizeY));
 						else if (vk == VK.HOME_)
-							return state.cursorCoord(c(0, cy));
+							return st.cursorCoord(c(0, cy));
 						else if (vk == VK.END__) {
 							int index = text.index(0, cy + 1);
-							return 0 < index ? state.cursorCoord(text.coord(index - 1)) : state;
+							return 0 < index ? st.cursorCoord(text.coord(index - 1)) : st;
 						} else if (vk == VK.CTRL_LEFT_) {
 							int index = text.index(cx, cy), index1;
 							while (0 <= (index1 = index - 1) && Character.isJavaIdentifierPart(text.at(index = index1)))
 								;
-							return state.cursorCoord(text.coord(index));
+							return st.cursorCoord(text.coord(index));
 						} else if (vk == VK.CTRL_RIGHT) {
 							int index = text.index(cx, cy), index1;
 							while ((index1 = index + 1) < text.length() && Character.isJavaIdentifierPart(text.at(index = index1)))
 								;
-							return state.cursorCoord(text.coord(index));
+							return st.cursorCoord(text.coord(index));
 						} else if (vk == VK.CTRL_UP___) {
 							int oy1 = Math.max(0, cy - viewSizeY + 1);
 							if (oy != oy1)
-								return state.offsetCoord(c(ox, oy1));
+								return st.offsetCoord(c(ox, oy1));
 							else
-								return state.text(text).offsetCoord(c(ox, oy - viewSizeY)).cursorCoord(c(cx, cy - viewSizeY));
+								return st.text(text).offsetCoord(c(ox, oy - viewSizeY)).cursorCoord(c(cx, cy - viewSizeY));
 						} else if (vk == VK.CTRL_DOWN_) {
 							int oy1 = Math.min(text.lineLengths().length, cy);
 							if (oy != oy1)
-								return state.offsetCoord(c(ox, oy1));
+								return st.offsetCoord(c(ox, oy1));
 							else
-								return state.text(text).offsetCoord(c(ox, oy + viewSizeY)).cursorCoord(c(cx, cy + viewSizeY));
+								return st.text(text).offsetCoord(c(ox, oy + viewSizeY)).cursorCoord(c(cx, cy + viewSizeY));
 						} else if (vk == VK.ALT_J____) {
 							int cy1 = cy + 1;
 							int index = text.index(0, cy1) - 1;
 							Text text1 = text.splice(index, 1, "");
-							return state.text(text1).cursorCoord(text1.coord(text1.index(0, cy1) - 1));
+							return st.text(text1).cursorCoord(text1.coord(text1.index(0, cy1) - 1));
 						} else if (vk == VK.BKSP_) {
 							int index = text.index(cx, cy);
 							if (0 < index) {
 								IntIntPair cc1 = text.coord(index - 1);
-								return state.text(text.splice(cc1.t0, cc1.t1, 1, "")).cursorCoord(cc1);
+								return st.text(text.splice(cc1.t0, cc1.t1, 1, "")).cursorCoord(cc1);
 							} else
-								return state;
+								return st;
 						} else if (vk == VK.DEL__)
-							return state.text(text.splice(cx, cy, 1, ""));
+							return st.text(text.splice(cx, cy, 1, ""));
 						else if (ch != null)
 							if (ch == 13)
-								return state.text(text.splice(cx, cy, 0, "\n")).cursorCoord(c(0, cy + 1));
+								return st.text(text.splice(cx, cy, 0, "\n")).cursorCoord(c(0, cy + 1));
 							else if (ch == 26) { // ctrl-Z
-								State parent0 = state.previous;
-								State parent1 = parent0 != null ? parent0 : state;
+								State parent0 = st.previous;
+								State parent1 = parent0 != null ? parent0 : st;
 								return new State(parent1.previous, parent1.text, oc, parent1.cursorCoord);
 							} else if (ch == 'q')
 								return Fail.t();
 							else
-								return state.text(text.splice(cx, cy, 0, Character.toString(ch))).cursorCoord(c(cx + 1, cy));
+								return st.text(text.splice(cx, cy, 0, Character.toString(ch))).cursorCoord(c(cx + 1, cy));
 						else
-							return state;
-					}))).apply((prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+							return st;
+					}))).apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int cx_ = Math.max(0, cx);
 						int cy_ = Math.max(0, Math.min(text.lineLengths().length, cy));
-						return state.cursorCoord(c(cx_, cy_));
-					}))).apply((prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+						return st.cursorCoord(c(cx_, cy_));
+					}))).apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int ox_ = Math.max(0, Math.max(cx - viewSizeX + 1, Math.min(cx, ox)));
 						int oy_ = Math.max(0, Math.max(cy - viewSizeY + 1, Math.min(cy, oy)));
-						return state.offsetCoord(c(ox_, oy_));
+						return st.offsetCoord(c(ox_, oy_));
 					})));
 
 			keyboard.loop(signal -> signal //
@@ -173,8 +173,8 @@ public class DevMain {
 			return new State(previous, text, offsetCoord, cursorCoord);
 		}
 
-		public <R> R apply(FixieFun4<State, Text, IntIntPair, IntIntPair, R> fun) {
-			return fun.apply(previous, text, offsetCoord, cursorCoord);
+		public <R> R apply(FixieFun5<State, State, Text, IntIntPair, IntIntPair, R> fun) {
+			return fun.apply(this, previous, text, offsetCoord, cursorCoord);
 		}
 	}
 
