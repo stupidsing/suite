@@ -80,7 +80,8 @@ public class Assembler {
 			start++;
 		}
 
-		List<Pair<Reference, Node>> lnis = Read.from(List_.right(lines, start)) //
+		List<Pair<Reference, Node>> lnis = Read //
+				.from(List_.right(lines, start)) //
 				.map(line -> {
 					Pair<String, String> pt = String_.split2(line, "\t");
 					String label = pt.t0;
