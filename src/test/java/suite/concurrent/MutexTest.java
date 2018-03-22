@@ -67,7 +67,8 @@ public class MutexTest {
 
 	private boolean isDeadlock(MutexTestRunnable... mtrs) throws InterruptedException {
 		BooMutable result = BooMutable.false_();
-		List<Thread> threads = Read.from(mtrs) //
+		List<Thread> threads = Read //
+				.from(mtrs) //
 				.map(mtr -> Thread_.newThread(() -> {
 					try {
 						mtr.run();
