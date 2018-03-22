@@ -27,7 +27,8 @@ public class HkexTest {
 					+ "|" + company.marketCap //
 					+ "\" //");
 
-		String name = Read.from(companies) //
+		String name = Read //
+				.from(companies) //
 				.filter(fixie -> String_.equals(fixie.symbol, "0005.HK")) //
 				.uniqueResult().name;
 

@@ -79,7 +79,8 @@ public class RecursiveFactorizerTest {
 		if (fnx == null)
 			if (fn0 instanceof FTree) {
 				FTree ft = (FTree) fn0;
-				List<FPair> pairs = Read.from(ft.pairs) //
+				List<FPair> pairs = Read //
+						.from(ft.pairs) //
 						.map(pair -> new FPair(transform(pair.node, fun), pair.chars)) //
 						.toList();
 				fnx = new FTree(ft.name, pairs);

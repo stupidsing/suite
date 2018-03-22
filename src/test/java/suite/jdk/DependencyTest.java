@@ -46,7 +46,8 @@ public class DependencyTest {
 
 		Set<String> vertices = dependenciesByClassName.keySet();
 
-		Set<Pair<String, String>> edges = Read.from2(dependenciesByClassName) //
+		Set<Pair<String, String>> edges = Read //
+				.from2(dependenciesByClassName) //
 				.concatMapValue(dependencies -> Read.from(dependencies)) //
 				.toSet();
 
@@ -70,7 +71,8 @@ public class DependencyTest {
 	private List<String> getDependencies(String className) {
 		String p = className.replace('.', '/') + ".java";
 
-		return Read.from(sourceDirs) //
+		return Read //
+				.from(sourceDirs) //
 				.map(sourceDir -> Paths.get(sourceDir + "/" + p)) //
 				.filter(path -> Files.exists(path)) //
 				.concatMap(path -> Rethrow.ex(() -> Read.from(Files.readAllLines(path)))) //
