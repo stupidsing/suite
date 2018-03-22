@@ -1,5 +1,8 @@
 package suite.image;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
@@ -38,7 +41,7 @@ public class Render {
 	}
 
 	public Image render(int width, int height, BiFun<Float, R3> f) {
-		float scale = 1f / Math.max(width, height);
+		float scale = 1f / max(width, height);
 		int centerX = width / 2, centerY = height / 2;
 		float[] xs = Floats_.toArray(width + 1, x -> (x - centerX) * scale);
 		float[] ys = Floats_.toArray(height + 1, y -> (y - centerY) * scale);
@@ -88,7 +91,7 @@ public class Render {
 	}
 
 	private float limit(float f) {
-		return Math.min(1f, Math.max(0f, f));
+		return min(1f, max(0f, f));
 	}
 
 }

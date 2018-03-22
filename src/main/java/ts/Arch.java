@@ -1,5 +1,7 @@
 package ts;
 
+import static suite.util.Friends.max;
+
 import java.util.Arrays;
 import java.util.Random;
 
@@ -68,7 +70,7 @@ public class Arch {
 
 	private float[] copyPadZeroes(float[] fs0, int from, int to) {
 		float[] fs1 = new float[to - from];
-		int p = -Math.max(0, from);
+		int p = -max(0, from);
 		Arrays.fill(fs1, 0, p, 0f);
 		Floats_.copy(fs0, 0, fs1, p, to - p);
 		return fs1;

@@ -1,5 +1,8 @@
 package suite.nn;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Random;
@@ -208,7 +211,7 @@ public class NeuralNetwork {
 				for (int iy = 0; iy < sy; iy++) {
 					int ox = ix >> shiftx;
 					int oy = iy >> shifty;
-					outputs[ox][oy] = Math.max(outputs[ox][oy], inputs[ix][iy]);
+					outputs[ox][oy] = max(outputs[ox][oy], inputs[ix][iy]);
 				}
 
 			return new Out<>(outputs, errors -> {
@@ -262,7 +265,7 @@ public class NeuralNetwork {
 		};
 	}
 
-	private Dbl_Dbl relu = d -> Math.min(0d, d);
+	private Dbl_Dbl relu = d -> min(0d, d);
 	private Dbl_Dbl reluGradient = value -> value < 0f ? 0f : 1f;
 
 }

@@ -1,5 +1,7 @@
 package suite.math.numeric;
 
+import static suite.util.Friends.max;
+
 import org.junit.Test;
 
 import suite.math.Complex;
@@ -45,7 +47,7 @@ public class JenkinsTraubTest {
 	}
 
 	private void verifyEquals(Complex a, Complex b) {
-		if (.01d * Math.max(a.abs2(), b.abs2()) < Complex.sub(a, b).abs2())
+		if (.01d * max(a.abs2(), b.abs2()) < Complex.sub(a, b).abs2())
 			Fail.t();
 	}
 

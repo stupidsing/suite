@@ -1,5 +1,8 @@
 package suite.math;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.util.Arrays;
 
 import suite.adt.pair.Pair;
@@ -21,7 +24,7 @@ public class Polynomial {
 	}
 
 	public float[] add(float[] ps0, float[] ps1) {
-		int length = Math.max(ps0.length, ps1.length);
+		int length = max(ps0.length, ps1.length);
 		return Floats_.toArray(length, i -> {
 			float p0 = length < ps0.length ? ps0[length] : 0f;
 			float p1 = length < ps1.length ? ps1[length] : 0f;
@@ -33,7 +36,7 @@ public class Polynomial {
 		int length0 = ps0.length;
 		int length1 = ps1.length;
 		return To.vector(length0 + length1, i -> Ints_ //
-				.range(Math.max(0, i - length1 + 1), Math.min(i + 1, length0)) //
+				.range(max(0, i - length1 + 1), min(i + 1, length0)) //
 				.toDouble(Int_Dbl.sum(j -> ps0[j] * ps1[i - j])));
 	}
 

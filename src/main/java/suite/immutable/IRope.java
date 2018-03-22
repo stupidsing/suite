@@ -1,5 +1,7 @@
 package suite.immutable;
 
+import static suite.util.Friends.max;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -64,7 +66,7 @@ public class IRope<T> {
 	}
 
 	private static <T> List<IRope<T>> meld_(IRope<T> rope0, IRope<T> rope1) {
-		int depth = Math.max(rope0.depth, rope1.depth);
+		int depth = max(rope0.depth, rope1.depth);
 		List<IRope<T>> ropes;
 
 		if (rope1.depth < rope0.depth)
@@ -144,7 +146,7 @@ public class IRope<T> {
 			queue1.push(rope);
 
 			Source<IRope<T>> pack = () -> {
-				int ix = Math.max(branchFactor, queue1.size());
+				int ix = max(branchFactor, queue1.size());
 				List<IRope<T>> ropes = new ArrayList<>(Collections.nCopies(ix, null));
 				for (int i = 0; i < ix; i++)
 					ropes.set(i, queue1.pop());
@@ -183,7 +185,7 @@ public class IRope<T> {
 			queue1.push(rope);
 
 			Source<IRope<T>> pack = () -> {
-				int ix = Math.max(branchFactor, queue1.size());
+				int ix = max(branchFactor, queue1.size());
 				List<IRope<T>> ropes = new ArrayList<>(Collections.nCopies(ix, null));
 				for (int i = 0; i < ix; i++)
 					ropes.set(ix - i - 1, queue1.pop());

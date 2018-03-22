@@ -1,5 +1,8 @@
 package suite.trade.backalloc.strategy;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -245,7 +248,7 @@ public class BackAllocatorGeneral {
 				float maOp = movingAvgOps[last];
 				float maCl = movingAvgCls[last];
 				float diff = maCl - maOp;
-				return Math.max(maOp, maCl) * .01d < Math.abs(diff) ? Quant.sign(diff) * 1d : 0d;
+				return max(maOp, maCl) * .01d < Math.abs(diff) ? Quant.sign(diff) * 1d : 0d;
 			};
 		});
 	}
@@ -306,14 +309,14 @@ public class BackAllocatorGeneral {
 
 			return Quant.fold(0, prices.length, (i, hold) -> {
 				float price = prices[i];
-				float min = Math.min(minMax.t0, price);
-				float max = Math.max(minMax.t1, price);
+				float min = min(minMax.t0, price);
+				float max = max(minMax.t1, price);
 				if (threshold <= Quant.return_(min, price)) {
-					hold = Math.max(0f, hold + daily);
+					hold = max(0f, hold + daily);
 					max = price;
 				}
 				if (threshold <= Quant.return_(price, max)) {
-					hold = Math.min(0f, hold - daily);
+					hold = min(0f, hold - daily);
 					min = price;
 				}
 				minMax.update(min, max);
@@ -453,7 +456,7 @@ public class BackAllocatorGeneral {
 					int n = pair.t1;
 					int sign = 0 < n ? 0 : 1;
 					int sum0 = sums[sign];
-					int sum1 = Math.max(-maxUnitsTotal, Math.min(maxUnitsTotal, sum0 + n));
+					int sum1 = max(-maxUnitsTotal, min(maxUnitsTotal, sum0 + n));
 					m1.add(Pair.of(pair.t0, (sums[sign] = sum1) - sum0));
 				}
 
@@ -462,7 +465,7 @@ public class BackAllocatorGeneral {
 						.map2((symbol, nHold) -> {
 							float[] atrs = atrBySymbol.get(symbol);
 							double unit = .01d / atrs[index - 1];
-							return Math.max(-maxUnits, Math.min(maxUnits, nHold)) * unit;
+							return max(-maxUnits, min(maxUnits, nHold)) * unit;
 						}) //
 						.toList();
 			};

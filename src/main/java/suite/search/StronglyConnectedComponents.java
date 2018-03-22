@@ -1,5 +1,7 @@
 package suite.search;
 
+import static suite.util.Friends.min;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -58,9 +60,9 @@ public class StronglyConnectedComponents<V> {
 		for (Scc wscc : forwards.get(vscc))
 			if (!wscc.isVisited) {
 				strongConnect(wscc);
-				vscc.lowestLink = Math.min(vscc.lowestLink, wscc.lowestLink);
+				vscc.lowestLink = min(vscc.lowestLink, wscc.lowestLink);
 			} else if (wscc.isStacked)
-				vscc.lowestLink = Math.min(vscc.lowestLink, wscc.index);
+				vscc.lowestLink = min(vscc.lowestLink, wscc.index);
 
 		if (vscc.index == vscc.lowestLink) {
 			Set<V> set = new HashSet<>();

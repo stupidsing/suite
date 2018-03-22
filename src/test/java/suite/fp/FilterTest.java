@@ -1,6 +1,7 @@
 package suite.fp;
 
 import static org.junit.Assert.assertEquals;
+import static suite.util.Friends.min;
 
 import java.io.Reader;
 import java.io.Writer;
@@ -42,7 +43,7 @@ public class FilterTest {
 			}
 
 			public int read(char[] buffer, int pos, int len) {
-				int nBytesRead = Math.min(count, len);
+				int nBytesRead = min(count, len);
 
 				// makes sure there are new line characters, otherwise lines
 				// function would blow off the stack

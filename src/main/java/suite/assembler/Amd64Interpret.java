@@ -1,5 +1,7 @@
 package suite.assembler;
 
+import static suite.util.Friends.min;
+
 import java.nio.ByteBuffer;
 import java.util.List;
 
@@ -135,7 +137,7 @@ public class Amd64Interpret {
 						if (regs[eax] == 1)
 							return regs[ebx];
 						else if (regs[eax] == 3) {
-							int length = Math.min(regs[edx], input.size());
+							int length = min(regs[edx], input.size());
 							int di = index(regs[ecx]);
 							for (int i = 0; i < length; i++)
 								mem.put(di++, input.get(i));

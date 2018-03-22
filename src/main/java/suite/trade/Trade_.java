@@ -1,5 +1,8 @@
 package suite.trade;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,7 +66,7 @@ public class Trade_ {
 
 			for (IntFltPair acquire : acquires0) {
 				int n0 = acquire.t0;
-				int diff = buySell < 0 ? Math.max(0, Math.min(-buySell, n0)) : Math.min(0, Math.max(-buySell, n0));
+				int diff = buySell < 0 ? max(0, min(-buySell, n0)) : min(0, max(-buySell, n0));
 				int n1 = n0 - diff;
 				buySell += diff;
 				if (n1 != 0)

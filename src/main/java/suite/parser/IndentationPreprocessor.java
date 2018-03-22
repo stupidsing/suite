@@ -1,5 +1,8 @@
 package suite.parser;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,11 +63,11 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 
 					if (!name.isEmpty()) {
 						if (line.startsWith(name + " "))
-							startPos = Math.max(startPos, name.length() + 1);
+							startPos = max(startPos, name.length() + 1);
 						if (String_.equals(line, name))
-							startPos = Math.max(startPos, name.length());
+							startPos = max(startPos, name.length());
 						if (line.endsWith(name))
-							endPos = Math.min(endPos, lineLength - name.length());
+							endPos = min(endPos, lineLength - name.length());
 					}
 				}
 

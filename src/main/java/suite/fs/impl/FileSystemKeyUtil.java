@@ -1,5 +1,7 @@
 package suite.fs.impl;
 
+import static suite.util.Friends.min;
+
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -83,7 +85,7 @@ public class FileSystemKeyUtil {
 
 			while (pos < size) {
 				int pathLength = sizeOffset - pathOffset;
-				int pos1 = Math.min(pos + pathLength, size);
+				int pos1 = min(pos + pathLength, size);
 				keys.add(toNameKey( //
 						hash(name.range(0, pos)), //
 						0, //

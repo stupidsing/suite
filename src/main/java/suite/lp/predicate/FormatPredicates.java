@@ -1,5 +1,7 @@
 package suite.lp.predicate;
 
+import static suite.util.Friends.min;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
@@ -107,7 +109,7 @@ public class FormatPredicates {
 			while (n <= 0)
 				n += length;
 
-			n = Math.min(n, length);
+			n = min(n, length);
 
 			return prover.bind(sx, new Str(name.substring(m, n)));
 		} else

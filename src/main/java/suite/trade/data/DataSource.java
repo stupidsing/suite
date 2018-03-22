@@ -1,5 +1,8 @@
 package suite.trade.data;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -317,8 +320,8 @@ public class DataSource {
 		float hi = Trade_.negligible;
 		float volume = 0f;
 		for (int i = start; i < end; i++) {
-			lo = Math.min(lo, lows[i]);
-			hi = Math.max(hi, highs[i]);
+			lo = min(lo, lows[i]);
+			hi = max(hi, highs[i]);
 			volume += volumes[i];
 		}
 		return new Datum(ts[start], ts[end - 1] + tickDuration, opens[start], closes[end - 1], lo, hi, volume);

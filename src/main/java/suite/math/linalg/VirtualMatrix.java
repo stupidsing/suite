@@ -1,5 +1,7 @@
 package suite.math.linalg;
 
+import static suite.util.Friends.min;
+
 import suite.primitive.IntInt_Flt;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
@@ -101,9 +103,9 @@ public class VirtualMatrix {
 
 			if (jx == length)
 				for (int i0 = 0; i0 < ix; i0 = i1) {
-					i1 = Math.min(i0 + 64, ix);
+					i1 = min(i0 + 64, ix);
 					for (int j0 = 0; j0 < jx; j0 = j1) {
-						j1 = Math.min(j0 + 64, jx);
+						j1 = min(j0 + 64, jx);
 						for (int i = i0; i < i1; i++)
 							for (int j = j0; j < j1; j++)
 								o[i] += f0.apply(i, j) * f1.apply(j);
@@ -123,11 +125,11 @@ public class VirtualMatrix {
 
 			if (ks0 == ks1)
 				for (int i0 = 0; i0 < height; i0 = i1) {
-					i1 = Math.min(i0 + 64, height);
+					i1 = min(i0 + 64, height);
 					for (int j0 = 0; j0 < width_; j0 = j1) {
-						j1 = Math.min(j0 + 64, width_);
+						j1 = min(j0 + 64, width_);
 						for (int k0 = 0; k0 < ks0; k0 = k1) {
-							k1 = Math.min(k0 + 64, ks0);
+							k1 = min(k0 + 64, ks0);
 							for (int i = i0; i < i1; i++)
 								for (int j = j0; j < j1; j++)
 									for (int k = k0; k < k1; k++)

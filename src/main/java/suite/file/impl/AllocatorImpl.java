@@ -1,5 +1,7 @@
 package suite.file.impl;
 
+import static suite.util.Friends.min;
+
 import java.io.IOException;
 
 import suite.file.ExtentAllocator;
@@ -108,7 +110,7 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 			int p = start / pageSize;
 			int s = p * pageSize;
 			int e = s + pageSize;
-			int end_ = Math.min(e, end);
+			int end_ = min(e, end);
 			int p0 = 0;
 			int p1 = start - s;
 			int p2 = end_ - s;
@@ -127,7 +129,7 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 	}
 
 	private int checkEmptyExtent(Int_Obj<Byte> read, int pos, int max) {
-		int end = Math.min(size, pos + max);
+		int end = min(size, pos + max);
 		while (pos < end && read.apply(pos) == 0)
 			pos++;
 		return pos;

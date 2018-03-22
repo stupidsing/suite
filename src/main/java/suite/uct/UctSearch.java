@@ -1,5 +1,8 @@
 package suite.uct;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.List;
@@ -16,8 +19,7 @@ import suite.weiqi.Weiqi;
 public class UctSearch<Move> {
 
 	/**
-	 * Larger values give uniform search; smaller values give very selective
-	 * search.
+	 * Larger values give uniform search; smaller values give very selective search.
 	 */
 	private static float explorationFactor = .4f;
 	private static float raveFactor = 5f;
@@ -87,8 +89,8 @@ public class UctSearch<Move> {
 	/**
 	 * Plays a simulation UCT.
 	 *
-	 * @return true if the next player will win after UCT selections and
-	 *         evaluation after random moves.
+	 * @return true if the next player will win after UCT selections and evaluation
+	 *         after random moves.
 	 */
 	private boolean playSimulation(UctVisitor<Move> visitor, UctNode<Move> node, int depth) {
 		boolean outcome;
@@ -162,7 +164,7 @@ public class UctSearch<Move> {
 
 	private float uct(UctNode<Move> child, double lnParentVisits, double lnParentRaveVisits) {
 		float beta = rave ? (float) (lnParentVisits / raveFactor) : 1f;
-		beta = Math.min(Math.max(beta, 0f), 1f);
+		beta = min(max(beta, 0f), 1f);
 
 		float raveWins = getMoveRave(nRaveWins, child.move);
 		float raveVisits = getMoveRave(nRaveVisits, child.move);

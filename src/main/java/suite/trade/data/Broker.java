@@ -1,5 +1,8 @@
 package suite.trade.data;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -35,13 +38,13 @@ public interface Broker {
 		}
 
 		public double dividendFee(double dividendAmount) {
-			return Math.min(30d, dividendAmount * .01d * .5d);
+			return min(30d, dividendAmount * .01d * .5d);
 		}
 
 		public double transactionFee(double transactionAmount) {
 
 			// .15d during promotion period
-			double hsbcInternetBanking = Math.max(transactionAmount * .01d * .25d, 100d);
+			double hsbcInternetBanking = max(transactionAmount * .01d * .25d, 100d);
 
 			double stampDuty = transactionAmount * .01d * .1d;
 			double sfcTxLevy = transactionAmount * .01d * .0027d;

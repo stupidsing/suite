@@ -1,5 +1,8 @@
 package suite.rt;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -27,12 +30,12 @@ public class BoundingBox implements RtObject {
 
 		for (R3 point : points) {
 			double x = point.x, y = point.y, z = point.z;
-			minX = Math.min(minX, x);
-			minY = Math.min(minY, y);
-			minZ = Math.min(minZ, z);
-			maxX = Math.max(maxX, x);
-			maxY = Math.max(maxY, y);
-			maxZ = Math.max(maxZ, z);
+			minX = min(minX, x);
+			minY = min(minY, y);
+			minZ = min(minZ, z);
+			maxX = max(maxX, x);
+			maxY = max(maxY, y);
+			maxZ = max(maxZ, z);
 		}
 
 		return new BoundingBox(new R3(minX, minY, minZ), new R3(maxX, maxY, maxZ), object);

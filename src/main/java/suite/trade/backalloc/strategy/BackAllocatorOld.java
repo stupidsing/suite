@@ -1,5 +1,7 @@
 package suite.trade.backalloc.strategy;
 
+import static suite.util.Friends.max;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -149,7 +151,7 @@ public class BackAllocatorOld {
 	public BackAllocator revDrawdown() {
 		return BackAllocator_.byPrices(prices -> index -> {
 			int i = index - 1;
-			int i0 = Math.max(0, i - 128);
+			int i0 = max(0, i - 128);
 			int ix = i;
 			int dir = 0;
 

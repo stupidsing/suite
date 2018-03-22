@@ -1,5 +1,7 @@
 package suite.fs.impl;
 
+import static suite.util.Friends.min;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -76,7 +78,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 			int pos = 0, seq = 0, size = bytes.size();
 
 			while (pos < size) {
-				int pos1 = Math.min(pos + pageSize, size);
+				int pos1 = min(pos + pageSize, size);
 				kdm.putPayload(key(hash, DATAID, seq++), bytes.range(pos, pos1));
 				pos = pos1;
 			}

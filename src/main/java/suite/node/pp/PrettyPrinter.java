@@ -1,5 +1,7 @@
 package suite.node.pp;
 
+import static suite.util.Friends.min;
+
 import java.util.Set;
 
 import suite.node.Atom;
@@ -208,7 +210,7 @@ public class PrettyPrinter {
 
 	private int incrementIndent() { // would not jump by two
 		int indent0 = indent;
-		indent = Math.min(indent, currentLineIndent) + 1;
+		indent = min(indent, currentLineIndent) + 1;
 		return indent0;
 	}
 

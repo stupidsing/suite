@@ -1,5 +1,7 @@
 package suite.gpu;
 
+import static suite.util.Friends.min;
+
 import java.nio.ByteOrder;
 
 import org.bridj.Pointer;
@@ -47,7 +49,7 @@ public class GpuTest {
 		for (CLDevice device : context.getDevices())
 			System.out.println(device);
 
-		for (int i = 0; i < Math.min(10, n); i++)
+		for (int i = 0; i < min(10, n); i++)
 			System.out.println("out[" + i + "] = " + outp.get(i));
 	}
 

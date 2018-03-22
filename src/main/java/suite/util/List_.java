@@ -1,5 +1,7 @@
 package suite.util;
 
+import static suite.util.Friends.min;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -12,7 +14,7 @@ public class List_ {
 		int s = 0;
 		List<List<T>> subsets = new ArrayList<>();
 		while (s < list.size()) {
-			int s1 = Math.min(s + n, list.size());
+			int s1 = min(s + n, list.size());
 			subsets.add(list.subList(s, s1));
 			s = s1;
 		}
@@ -39,7 +41,7 @@ public class List_ {
 		int size = list.size();
 		if (pos < 0)
 			pos += size;
-		return list.subList(0, Math.min(pos, size));
+		return list.subList(0, min(pos, size));
 	}
 
 	public static <T> List<T> reverse(List<T> list0) {
@@ -53,7 +55,7 @@ public class List_ {
 		int size = list.size();
 		if (pos < 0)
 			pos += size;
-		return list.subList(Math.min(pos, size), size);
+		return list.subList(min(pos, size), size);
 	}
 
 	public static <T extends Comparable<? super T>> List<T> sort(Collection<T> list) {

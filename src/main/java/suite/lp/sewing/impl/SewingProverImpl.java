@@ -1,5 +1,7 @@
 package suite.lp.sewing.impl;
 
+import static suite.util.Friends.max;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -919,7 +921,7 @@ public class SewingProverImpl implements ProverFactory {
 	private int complexity(Node node) {
 		Tree tree = Tree.decompose(node);
 		if (tree != null)
-			return 1 + Math.max(complexity(tree.getLeft()), complexity(tree.getRight()));
+			return 1 + max(complexity(tree.getLeft()), complexity(tree.getRight()));
 		else
 			return node instanceof Atom && ProverConstant.isVariable(((Atom) node).name) ? 0 : 1;
 	}

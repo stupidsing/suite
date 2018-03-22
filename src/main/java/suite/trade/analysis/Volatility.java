@@ -1,5 +1,7 @@
 package suite.trade.analysis;
 
+import static suite.util.Friends.max;
+
 import suite.trade.data.DataSource;
 import suite.util.To;
 
@@ -26,7 +28,7 @@ public class Volatility {
 		double a = 1d / (f * 2d);
 		double b = 1d / ((1d - f) * 2d);
 		return To.vector(length, t -> {
-			double opc = opens[t] - closes[Math.max(0, t - 1)];
+			double opc = opens[t] - closes[max(0, t - 1)];
 			double co = closes[t] - opens[t];
 			return opc * opc * a + co * co * b;
 		});
@@ -44,7 +46,7 @@ public class Volatility {
 		double a = .17d / f;
 		double b = .83d / (1d - f) * inv4ln2;
 		return To.vector(length, t -> {
-			double opc = opens[t] - closes[Math.max(0, t - 1)];
+			double opc = opens[t] - closes[max(0, t - 1)];
 			double hl = highs[t] - lows[t];
 			return opc * opc * a + hl * hl * b;
 		});
@@ -65,7 +67,7 @@ public class Volatility {
 		double a = .12d / f;
 		double b = .88d / (1d - f);
 		return To.vector(length, t -> {
-			double opc = opens[t] - closes[Math.max(0, t - 1)];
+			double opc = opens[t] - closes[max(0, t - 1)];
 			return opc * opc * a + vol3[t] * b;
 		});
 	}

@@ -1,5 +1,8 @@
 package suite.dev;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -88,13 +91,13 @@ public class DevMain {
 								;
 							return st.cursorCoord(text.coord(index));
 						} else if (vk == VK.CTRL_UP___) {
-							int oy1 = Math.max(0, cy - viewSizeY + 1);
+							int oy1 = max(0, cy - viewSizeY + 1);
 							if (oy != oy1)
 								return st.offsetCoord(c(ox, oy1));
 							else
 								return st.text(text).offsetCoord(c(ox, oy - viewSizeY)).cursorCoord(c(cx, cy - viewSizeY));
 						} else if (vk == VK.CTRL_DOWN_) {
-							int oy1 = Math.min(text.lineLengths().length, cy);
+							int oy1 = min(text.lineLengths().length, cy);
 							if (oy != oy1)
 								return st.offsetCoord(c(ox, oy1));
 							else
@@ -127,12 +130,12 @@ public class DevMain {
 						else
 							return st;
 					}))).apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						int cx_ = Math.max(0, cx);
-						int cy_ = Math.max(0, Math.min(text.lineLengths().length, cy));
+						int cx_ = max(0, cx);
+						int cy_ = max(0, min(text.lineLengths().length, cy));
 						return st.cursorCoord(c(cx_, cy_));
 					}))).apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						int ox_ = Math.max(0, Math.max(cx - viewSizeX + 1, Math.min(cx, ox)));
-						int oy_ = Math.max(0, Math.max(cy - viewSizeY + 1, Math.min(cy, oy)));
+						int ox_ = max(0, max(cx - viewSizeX + 1, min(cx, ox)));
+						int oy_ = max(0, max(cy - viewSizeY + 1, min(cy, oy)));
 						return st.offsetCoord(c(ox_, oy_));
 					})));
 
@@ -212,14 +215,14 @@ public class DevMain {
 
 		private Text splice(int index, int deletes, String s) {
 			int length = text.length();
-			int i1 = Math.min(length, index + deletes);
+			int i1 = min(length, index + deletes);
 			return new Text(text.substring(0, index) + s + text.substring(i1, length));
 		}
 
 		private int index(int px, int py) {
 			int[] lineLengths = lineLengths();
 			if (py < lineLengths.length)
-				return Ints_.range(py).toInt(Int_Int.sum(y -> lineLengths[y] + 1)) + Math.min(lineLengths[py], px);
+				return Ints_.range(py).toInt(Int_Int.sum(y -> lineLengths[y] + 1)) + min(lineLengths[py], px);
 			else
 				return text.length();
 		}

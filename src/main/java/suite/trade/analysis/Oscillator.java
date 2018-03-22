@@ -1,5 +1,8 @@
 package suite.trade.analysis;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
@@ -39,8 +42,8 @@ public class Oscillator {
 		float[] dmDns = new float[length];
 
 		for (int i = 1; i < length; i++) {
-			float upMove = Math.max(0, his[i] - his[i - 1]);
-			float dnMove = Math.max(0, los[i - 1] - los[i]);
+			float upMove = max(0, his[i] - his[i - 1]);
+			float dnMove = max(0, los[i - 1] - los[i]);
 			dmUps[i] = dnMove < upMove ? upMove : 0f;
 			dmDns[i] = upMove < dnMove ? dnMove : 0f;
 		}
@@ -82,7 +85,7 @@ public class Oscillator {
 		float[] ps = To.vector(length, i -> (ds.closes[i] + ds.lows[i] + ds.highs[i]) * i3);
 
 		return To.vector(length, i -> {
-			int i0 = Math.max(0, i - nDays + 1);
+			int i0 = max(0, i - nDays + 1);
 			int l = i - i0 + 1;
 			double sum = 0d, sumAbsDev = 0d;
 			for (int d = i0; d <= i; d++)
@@ -209,9 +212,9 @@ public class Oscillator {
 		for (int i = 0; i < length; i++) {
 			float lo = Float.MAX_VALUE;
 			float hi = Float.MIN_VALUE;
-			for (int j = Math.max(0, i - kDays + 1); j <= i; j++) {
-				lo = Math.min(lo, ds.lows[j]);
-				hi = Math.max(hi, ds.highs[j]);
+			for (int j = max(0, i - kDays + 1); j <= i; j++) {
+				lo = min(lo, ds.lows[j]);
+				hi = max(hi, ds.highs[j]);
 			}
 			los[i] = lo;
 			his[i] = hi;
@@ -235,8 +238,8 @@ public class Oscillator {
 			float hi = ds.highs[i];
 			float lo = ds.lows[i];
 			float prevClose = ds.closes[i - 1];
-			float max = Math.max(Math.abs(hi - prevClose), Math.abs(lo - prevClose));
-			trs[i] = Math.max(hi - lo, max);
+			float max = max(Math.abs(hi - prevClose), Math.abs(lo - prevClose));
+			trs[i] = max(hi - lo, max);
 		}
 
 		return trs;

@@ -1,5 +1,7 @@
 package ts;
 
+import static suite.util.Friends.max;
+
 import java.util.Arrays;
 
 import suite.adt.pair.Pair;
@@ -63,8 +65,8 @@ public class BollingerBands {
 
 			for (int i = 0; i < length; i++) {
 				int i1 = i + 1;
-				int s = Math.max(0, i1 - backPos0);
-				int e = Math.max(0, i1 - backPos1);
+				int s = max(0, i1 - backPos0);
+				int e = max(0, i1 - backPos1);
 				MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(fs, s, e));
 				double mean = mv.mean;
 				double ksd = k * mv.standardDeviation();

@@ -1,5 +1,8 @@
 package suite.util;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.util.Map;
 
 import suite.adt.pair.Pair;
@@ -18,7 +21,7 @@ public class CommandUtil<Command> {
 		this.commandByName = commandByName;
 		maxLength = 0;
 		for (String name : commandByName.keySet())
-			maxLength = Math.max(maxLength, name.length());
+			maxLength = max(maxLength, name.length());
 	}
 
 	public Pair<Command, String> recognize(String input) {
@@ -26,7 +29,7 @@ public class CommandUtil<Command> {
 	}
 
 	public Pair<Command, String> recognize(String input, int start) {
-		for (int end = Math.min(start + maxLength, input.length()); start <= end; end--) {
+		for (int end = min(start + maxLength, input.length()); start <= end; end--) {
 			String starts = input.substring(start, end);
 			Command command = commandByName.get(starts);
 			if (command != null)

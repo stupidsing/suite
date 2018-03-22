@@ -1,5 +1,8 @@
 package ts;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.util.function.IntPredicate;
 
 import suite.primitive.IntFltPredicate;
@@ -117,9 +120,9 @@ public class Quant {
 		if (ind <= th0)
 			return 1f;
 		else if (ind < th1)
-			return Math.max(0f, hold);
+			return max(0f, hold);
 		else if (ind < th2)
-			return Math.min(0f, hold);
+			return min(0f, hold);
 		else
 			return -1f;
 	}

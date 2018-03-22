@@ -1,5 +1,7 @@
 package suite.node.util;
 
+import static suite.util.Friends.max;
+
 import suite.node.Node;
 import suite.node.Tree;
 
@@ -13,7 +15,7 @@ public class Complexity {
 
 			if (tree != null) {
 				base++;
-				max = Math.max(max, base + complexity(tree.getLeft()));
+				max = max(max, base + complexity(tree.getLeft()));
 				node = tree.getRight();
 			} else
 				return max;

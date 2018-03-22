@@ -1,5 +1,7 @@
 package suite.immutable;
 
+import static suite.util.Friends.max;
+
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -98,7 +100,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	public Map<Extent, Extent> gc(List<Extent> roots, int back) {
 		synchronized (writeLock) {
 			int end = nPages;
-			int start = Math.max(0, end - back);
+			int start = max(0, end - back);
 			Set<Extent> isInUse = new HashSet<>();
 
 			Sink<List<Extent>> use = extents_ -> {

@@ -1,5 +1,7 @@
 package suite.node.util;
 
+import static suite.util.Friends.min;
+
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,7 +77,7 @@ public class Comparer implements Comparator<Node> {
 			} else if (clazz0 == Tuple.class) {
 				Node[] nodes0 = ((Tuple) n0).nodes;
 				Node[] nodes1 = ((Tuple) n1).nodes;
-				int i = 0, l = Math.min(nodes0.length, nodes1.length);
+				int i = 0, l = min(nodes0.length, nodes1.length);
 				while (c == 0 && i < l)
 					c = compare(nodes0[i], nodes1[i]);
 				if (c == 0)

@@ -1,5 +1,7 @@
 package suite.util;
 
+import static suite.util.Friends.min;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -242,7 +244,7 @@ public class Serialize {
 				dataOutput.writeBytes(bytes);
 				int i = bytes.size();
 				while (i < length) {
-					int i1 = Math.min(i + zeroes.length, length);
+					int i1 = min(i + zeroes.length, length);
 					dataOutput.write(zeroes, 0, i1 - i);
 					i = i1;
 				}

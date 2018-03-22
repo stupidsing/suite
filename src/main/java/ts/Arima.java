@@ -1,5 +1,8 @@
 package ts;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.util.Arrays;
 import java.util.Random;
 
@@ -154,7 +157,7 @@ public class Arima {
 		float[] ars = To.vector(p, i -> Math.scalb(.5d, -i));
 		float[] mas = To.vector(q, i -> Math.scalb(.5d, -i));
 		float[] xsp = new float[lengthp];
-		float[] epq = To.vector(lengthq, i -> xs[Math.max(0, Math.min(xsp.length, i - q))] * .25f);
+		float[] epq = To.vector(lengthq, i -> xs[max(0, min(xsp.length, i - q))] * .25f);
 
 		Arrays.fill(xsp, 0, p, xs[0]);
 		System.arraycopy(xs, 0, xsp, p, length);

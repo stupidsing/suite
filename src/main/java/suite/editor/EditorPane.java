@@ -1,5 +1,7 @@
 package suite.editor;
 
+import static suite.util.Friends.*;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -61,7 +63,7 @@ public class EditorPane extends JEditorPane {
 		Document document = getDocument();
 		int length = document.getLength();
 		int ss = getSelectionStart();
-		int se = Math.max(ss, getSelectionEnd() - 1);
+		int se = max(ss, getSelectionEnd() - 1);
 
 		while (0 < ss && document.getText(ss, 1).charAt(0) != 10)
 			ss--;

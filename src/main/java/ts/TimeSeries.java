@@ -1,5 +1,8 @@
 package ts;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -51,7 +54,7 @@ public class TimeSeries {
 
 	public float[] back(int index, int window, float[] fs) {
 		int index1 = index + 1;
-		return Arrays.copyOfRange(fs, Math.max(0, index1 - window), index1);
+		return Arrays.copyOfRange(fs, max(0, index1 - window), index1);
 	}
 
 	public float[] differences(int tor, float[] fs) {
@@ -106,8 +109,8 @@ public class TimeSeries {
 			double sum = 0d;
 			for (float dev : devs) {
 				sum += dev;
-				min = Math.min(sum, min);
-				max = Math.max(sum, max);
+				min = min(sum, min);
+				max = max(sum, max);
 			}
 			double x = Math.log(returns.length);
 			double y = (max - min) / mv.standardDeviation();

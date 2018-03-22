@@ -1,5 +1,8 @@
 package suite.primitive;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.util.Arrays;
@@ -34,7 +37,7 @@ public class Ints implements Iterable<Integer> {
 
 	public static Comparator<Ints> comparator = (ints0, ints1) -> {
 		int start0 = ints0.start, start1 = ints1.start;
-		int size0 = ints0.size_(), size1 = ints1.size_(), minSize = Math.min(size0, size1);
+		int size0 = ints0.size_(), size1 = ints1.size_(), minSize = min(size0, size1);
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
@@ -287,10 +290,10 @@ public class Ints implements Iterable<Integer> {
 			s += size;
 		if (e < 0)
 			e += size;
-		s = Math.min(size, s);
-		e = Math.min(size, e);
-		int start_ = start + Math.min(size, s);
-		int end_ = start + Math.min(size, e);
+		s = min(size, s);
+		e = min(size, e);
+		int start_ = start + min(size, s);
+		int end_ = start + min(size, e);
 		Ints result = of(cs, start_, end_);
 
 		// avoid small pack of ints object keeping a large buffer
@@ -356,7 +359,7 @@ public class Ints implements Iterable<Integer> {
 			int capacity0 = cs.length;
 
 			if (capacity0 < capacity1) {
-				int capacity = Math.max(capacity0, 4);
+				int capacity = max(capacity0, 4);
 				while (capacity < capacity1)
 					capacity = capacity < Constants.bufferSize ? capacity << 1 : capacity * 3 / 2;
 

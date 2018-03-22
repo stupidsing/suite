@@ -1,5 +1,8 @@
 package suite.primitive;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.io.IOException;
 import java.nio.DoubleBuffer;
 import java.util.Arrays;
@@ -34,7 +37,7 @@ public class Doubles implements Iterable<Double> {
 
 	public static Comparator<Doubles> comparator = (doubles0, doubles1) -> {
 		int start0 = doubles0.start, start1 = doubles1.start;
-		int size0 = doubles0.size_(), size1 = doubles1.size_(), minSize = Math.min(size0, size1);
+		int size0 = doubles0.size_(), size1 = doubles1.size_(), minSize = min(size0, size1);
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
@@ -287,10 +290,10 @@ public class Doubles implements Iterable<Double> {
 			s += size;
 		if (e < 0)
 			e += size;
-		s = Math.min(size, s);
-		e = Math.min(size, e);
-		int start_ = start + Math.min(size, s);
-		int end_ = start + Math.min(size, e);
+		s = min(size, s);
+		e = min(size, e);
+		int start_ = start + min(size, s);
+		int end_ = start + min(size, e);
 		Doubles result = of(cs, start_, end_);
 
 		// avoid small pack of doubles object keeping a large buffer
@@ -356,7 +359,7 @@ public class Doubles implements Iterable<Double> {
 			int capacity0 = cs.length;
 
 			if (capacity0 < capacity1) {
-				int capacity = Math.max(capacity0, 4);
+				int capacity = max(capacity0, 4);
 				while (capacity < capacity1)
 					capacity = capacity < Constants.bufferSize ? capacity << 1 : capacity * 3 / 2;
 

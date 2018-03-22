@@ -1,5 +1,6 @@
 package suite.math.linalg;
 
+import static suite.util.Friends.*;
 import java.util.Arrays;
 
 import suite.math.MathUtil;
@@ -181,9 +182,9 @@ public class Matrix {
 		int i1, j1;
 		if (ix == h(n))
 			for (int i0 = 0; i0 < ix; i0 = i1) {
-				i1 = Math.min(i0 + 64, ix);
+				i1 = min(i0 + 64, ix);
 				for (int j0 = 0; j0 < jx; j0 = j1) {
-					j1 = Math.min(j0 + 64, jx);
+					j1 = min(j0 + 64, jx);
 					for (int i = i0; i < i1; i++)
 						for (int j = j0; j < j1; j++)
 							o[j] += m[i] * n[i][j];
@@ -202,9 +203,9 @@ public class Matrix {
 		int i1, j1;
 		if (ix == 0 || jx == nT.length)
 			for (int i0 = 0; i0 < ix; i0 = i1) {
-				i1 = Math.min(i0 + 64, ix);
+				i1 = min(i0 + 64, ix);
 				for (int j0 = 0; j0 < jx; j0 = j1) {
-					j1 = Math.min(j0 + 64, jx);
+					j1 = min(j0 + 64, jx);
 					for (int i = i0; i < i1; i++)
 						for (int j = j0; j < j1; j++)
 							o[i] += m[i][j] * nT[j];
@@ -223,11 +224,11 @@ public class Matrix {
 		int i1, j1, k1;
 		if (height == 0 || ks == h(n))
 			for (int i0 = 0; i0 < height; i0 = i1) {
-				i1 = Math.min(i0 + 64, height);
+				i1 = min(i0 + 64, height);
 				for (int j0 = 0; j0 < width; j0 = j1) {
-					j1 = Math.min(j0 + 64, width);
+					j1 = min(j0 + 64, width);
 					for (int k0 = 0; k0 < ks; k0 = k1) {
-						k1 = Math.min(k0 + 64, ks);
+						k1 = min(k0 + 64, ks);
 						for (int i = i0; i < i1; i++)
 							for (int j = j0; j < j1; j++)
 								for (int k = k0; k < k1; k++)
@@ -260,11 +261,11 @@ public class Matrix {
 		int i1, j1, k1;
 		if (ks == w(n))
 			for (int i0 = 0; i0 < height; i0 = i1) {
-				i1 = Math.min(i0 + 64, height);
+				i1 = min(i0 + 64, height);
 				for (int j0 = 0; j0 < width; j0 = j1) {
-					j1 = Math.min(j0 + 64, width);
+					j1 = min(j0 + 64, width);
 					for (int k0 = 0; k0 < ks; k0 = k1) {
-						k1 = Math.min(k0 + 64, ks);
+						k1 = min(k0 + 64, ks);
 						for (int i = i0; i < i1; i++)
 							for (int j = j0; j < j1; j++)
 								for (int k = k0; k < k1; k++)
@@ -286,11 +287,11 @@ public class Matrix {
 		int i1, j1, k1;
 		if (ks == h(n))
 			for (int i0 = 0; i0 < height; i0 = i1) {
-				i1 = Math.min(i0 + 64, height);
+				i1 = min(i0 + 64, height);
 				for (int j0 = 0; j0 < width; j0 = j1) {
-					j1 = Math.min(j0 + 64, width);
+					j1 = min(j0 + 64, width);
 					for (int k0 = 0; k0 < ks; k0 = k1) {
-						k1 = Math.min(k0 + 64, ks);
+						k1 = min(k0 + 64, ks);
 						for (int i = i0; i < i1; i++)
 							for (int j = j0; j < j1; j++)
 								for (int k = k0; k < k1; k++)
@@ -420,9 +421,9 @@ public class Matrix {
 		float[][] o = of(width, height);
 		int i1, j1;
 		for (int i0 = 0; i0 < height; i0 = i1) {
-			i1 = Math.min(i0 + 64, height);
+			i1 = min(i0 + 64, height);
 			for (int j0 = 0; j0 < width; j0 = j1) {
-				j1 = Math.min(j0 + 64, width);
+				j1 = min(j0 + 64, width);
 				for (int i = i0; i < i1; i++)
 					for (int j = j0; j < j1; j++)
 						o[j][i] = m[i][j];

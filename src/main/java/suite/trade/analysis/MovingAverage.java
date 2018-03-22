@@ -1,5 +1,7 @@
 package suite.trade.analysis;
 
+import static suite.util.Friends.max;
+
 import java.util.Arrays;
 
 import suite.math.linalg.Vector;
@@ -73,7 +75,7 @@ public class MovingAverage {
 		double movingSum = 0 < length ? prices[0] * windowSize : 0d;
 
 		for (int day = 0; day < length; day++) {
-			movingSum += prices[day] - prices[Math.max(0, day - windowSize)];
+			movingSum += prices[day] - prices[max(0, day - windowSize)];
 			movingAvgs[day] = (float) (movingSum * div);
 		}
 

@@ -1,5 +1,7 @@
 package suite.trade.analysis;
 
+import static suite.util.Friends.max;
+
 import java.util.Arrays;
 import java.util.function.IntFunction;
 
@@ -57,7 +59,7 @@ public class AnalyzeTimeSeriesTest {
 		float[] ops = ds.opens;
 		float[] cls = ds.closes;
 		float[] ocgs = Floats_.toArray(length, i -> cls[i] - ops[i]);
-		float[] cogs = Floats_.toArray(length, i -> ops[i] - cls[Math.max(0, i - 1)]);
+		float[] cogs = Floats_.toArray(length, i -> ops[i] - cls[max(0, i - 1)]);
 		LogUtil.info("open/close gap = " + stat.meanVariance(ocgs));
 		LogUtil.info("close/open gap = " + stat.meanVariance(cogs));
 		LogUtil.info("ocg/cog covariance = " + stat.correlation(ocgs, cogs));
@@ -169,7 +171,7 @@ public class AnalyzeTimeSeriesTest {
 
 	public interface BuySell extends Int_Flt {
 		public default BuySell longOnly() {
-			return d -> Math.max(0f, apply(d));
+			return d -> max(0f, apply(d));
 		}
 
 		public default BuySell scale(float a, float b) {

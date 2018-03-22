@@ -1,5 +1,7 @@
 package suite.util;
 
+import static suite.util.Friends.min;
+
 import java.util.Iterator;
 import java.util.Objects;
 
@@ -66,7 +68,7 @@ public class String_ {
 			start += length;
 		if (end < 0)
 			end += length;
-		end = Math.min(length, end);
+		end = min(length, end);
 		return s.substring(start, end);
 	}
 

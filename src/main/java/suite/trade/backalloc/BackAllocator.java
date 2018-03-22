@@ -1,5 +1,8 @@
 package suite.trade.backalloc;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -353,9 +356,9 @@ public interface BackAllocator {
 						// a recent sell would cancel out the highest price buy
 						// a recent buy would cancel out the lowest price sell
 						if (bs == -1)
-							cancellation = Math.min(0, Math.max(diff, -potential0));
+							cancellation = min(0, max(diff, -potential0));
 						else if (bs == 1)
-							cancellation = Math.max(0, Math.min(diff, -potential0));
+							cancellation = max(0, min(diff, -potential0));
 						else
 							cancellation = 0d;
 

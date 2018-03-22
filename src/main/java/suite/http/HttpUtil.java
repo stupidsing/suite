@@ -1,5 +1,7 @@
 package suite.http;
 
+import static suite.util.Friends.max;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -81,7 +83,7 @@ public class HttpUtil {
 		long current, last, start, next;
 
 		do
-			next = 3000l + (start = Math.max(last = al.get(), current = System.currentTimeMillis()));
+			next = 3000l + (start = max(last = al.get(), current = System.currentTimeMillis()));
 		while (!al.compareAndSet(last, next) || backoff.exponentially());
 
 		Thread_.sleepQuietly(start - current);

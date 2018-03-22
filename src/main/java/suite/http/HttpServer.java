@@ -1,5 +1,7 @@
 package suite.http;
 
+import static suite.util.Friends.min;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
@@ -112,7 +114,7 @@ public class HttpServer {
 				int result;
 
 				if (0 < remaining) {
-					result = is.read(bytes, offset, Math.min(length, remaining));
+					result = is.read(bytes, offset, min(length, remaining));
 
 					if (0 <= result)
 						remaining -= result;

@@ -1,5 +1,7 @@
 package suite.immutable;
 
+import static suite.util.Friends.min;
+
 import java.util.Objects;
 
 import suite.util.Object_;
@@ -113,7 +115,7 @@ public class IVector<T> {
 			s += length;
 		while (e <= 0)
 			e += length;
-		e = Math.min(e, length);
+		e = min(e, length);
 		return new IVector<>(data, start + s, start + e);
 	}
 

@@ -1,5 +1,7 @@
 package suite.immutable;
 
+import static suite.util.Friends.max;
+
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -85,7 +87,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 	public Map<Integer, Integer> gc(List<Integer> pointers, int back) {
 		synchronized (writeLock) {
 			int end = nPages;
-			int start = Math.max(0, end - back);
+			int start = max(0, end - back);
 			boolean[] isInUse = new boolean[end - start];
 
 			Sink<List<Integer>> use = pointers_ -> {

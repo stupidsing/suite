@@ -1,5 +1,8 @@
 package suite.primitive;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -31,7 +34,7 @@ public class Bytes implements Iterable<Byte> {
 
 	public static Comparator<Bytes> comparator = (bytes0, bytes1) -> {
 		int start0 = bytes0.start, start1 = bytes1.start;
-		int size0 = bytes0.size_(), size1 = bytes1.size_(), minSize = Math.min(size0, size1);
+		int size0 = bytes0.size_(), size1 = bytes1.size_(), minSize = min(size0, size1);
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
@@ -259,10 +262,10 @@ public class Bytes implements Iterable<Byte> {
 			s += size;
 		if (e < 0)
 			e += size;
-		s = Math.min(size, s);
-		e = Math.min(size, e);
-		int start_ = start + Math.min(size, s);
-		int end_ = start + Math.min(size, e);
+		s = min(size, s);
+		e = min(size, e);
+		int start_ = start + min(size, s);
+		int end_ = start + min(size, e);
 		Bytes result = of(bs, start_, end_);
 
 		// avoid small pack of bytes object keeping a large buffer
@@ -328,7 +331,7 @@ public class Bytes implements Iterable<Byte> {
 			int capacity0 = bs.length;
 
 			if (capacity0 < capacity1) {
-				int capacity = Math.max(capacity0, 4);
+				int capacity = max(capacity0, 4);
 				while (capacity < capacity1)
 					capacity = capacity < Constants.bufferSize ? capacity << 1 : capacity * 3 / 2;
 

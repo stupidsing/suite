@@ -1,5 +1,7 @@
 package suite.ebnf.topdown;
 
+import static suite.util.Friends.min;
+
 import java.util.Set;
 
 import suite.os.UnicodeData;
@@ -13,7 +15,7 @@ public class Expect {
 		public int expect(String in, int length, int start);
 	}
 
-	public ExpectFun char_ = (in, length, start) -> Math.min(start + 1, length);
+	public ExpectFun char_ = (in, length, start) -> min(start + 1, length);
 
 	public ExpectFun charLiteral = (in, length, start) -> {
 		int pos = start, end;

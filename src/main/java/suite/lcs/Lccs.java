@@ -1,5 +1,7 @@
 package suite.lcs;
 
+import static suite.util.Friends.min;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -22,7 +24,7 @@ public class Lccs {
 	private RollingHashUtil rh = new RollingHashUtil();
 
 	public Pair<Segment, Segment> lccs(Bytes bytes0, Bytes bytes1) {
-		int rollingSize = Math.min(bytes0.size(), bytes1.size());
+		int rollingSize = min(bytes0.size(), bytes1.size());
 
 		if (0 < rollingSize) {
 			Map<Integer, Segment> segments0 = hashSegments(bytes0, rollingSize);

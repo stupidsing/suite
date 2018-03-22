@@ -1,5 +1,7 @@
 package suite.net;
 
+import static suite.util.Friends.min;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -30,7 +32,7 @@ public class SocketServer {
 		byte[] buffer = new byte[Constants.bufferSize];
 		int nBytesRead;
 
-		while ((nBytesRead = is.read(buffer, 0, Math.min(max - bb.size(), buffer.length))) != -1) {
+		while ((nBytesRead = is.read(buffer, 0, min(max - bb.size(), buffer.length))) != -1) {
 			bb.append(buffer, 0, nBytesRead);
 			if (max < bb.size())
 				Fail.t("input too long");

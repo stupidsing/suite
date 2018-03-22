@@ -1,5 +1,7 @@
 package suite.trade.analysis;
 
+import static suite.util.Friends.max;
+
 import suite.math.numeric.Statistic;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
@@ -49,7 +51,7 @@ public class MarketTiming {
 		int[] flags = new int[length];
 
 		for (int i = 0; i < length; i++) {
-			int past = Math.max(0, i - lookback);
+			int past = max(0, i - lookback);
 			IntStreamlet past_i = Ints_.range(past, i);
 			IntStreamlet past1_i = past_i.drop(1);
 

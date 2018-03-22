@@ -1,5 +1,6 @@
 package suite.text;
 
+import static suite.util.Friends.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -78,7 +79,7 @@ public class TextUtil {
 			List<Pair<Bytes, Bytes>> ptx = !isEmptyx ? List_.right(pairsx, 1) : pairsx;
 			List<Pair<Bytes, Bytes>> pty = !isEmptyy ? List_.right(pairsy, 1) : pairsy;
 
-			int c = Math.min(phx.t0.size(), phy.t0.size());
+			int c = min(phx.t0.size(), phy.t0.size());
 			Bytes commonx = phx.t0.range(0, c);
 			Bytes commony = phy.t0.range(0, c);
 
@@ -116,7 +117,7 @@ public class TextUtil {
 	}
 
 	private int detectSame(Bytes x, Bytes y) {
-		int s = Math.min(x.size(), y.size());
+		int s = min(x.size(), y.size());
 		int i = 0;
 		while (i < s && x.get(i) == y.get(i))
 			i++;

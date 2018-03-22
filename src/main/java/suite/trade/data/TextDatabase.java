@@ -1,5 +1,7 @@
 package suite.trade.data;
 
+import static suite.util.Friends.max;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -54,7 +56,7 @@ public class TextDatabase {
 			merge(datum);
 
 		// 30 seconds between every save
-		saveTime = Math.max(lastSaveTime + 30 * 1000l, System.currentTimeMillis());
+		saveTime = max(lastSaveTime + 30 * 1000l, System.currentTimeMillis());
 
 		if (saveThread == null) {
 			saveThread = new Thread(() -> {
