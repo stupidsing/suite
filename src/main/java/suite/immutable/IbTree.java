@@ -51,7 +51,8 @@ public class IbTree<T> implements ITree<T> {
 	public static <T> IbTree<T> of(Comparator<T> comparator, List<T> ts) {
 		IbTree<T> ibTree = new IbTree<>(comparator);
 
-		List<IbTree<T>.Slot> list = Read.from(ts) //
+		List<IbTree<T>.Slot> list = Read //
+				.from(ts) //
 				.cons(null) //
 				.map(t -> ibTree.new Slot(null, t)) //
 				.toList();

@@ -174,7 +174,9 @@ public class LayoutCalculator {
 
 	private void arrange(Group group, int startPos, int endPos, AssignToPortion assignToPortion) {
 		int totalAssigned = endPos - startPos;
-		List<Portion> portions = Read.from(group.portions) //
+
+		List<Portion> portions = Read //
+				.from(group.portions) //
 				.filter(portion -> portion.node.isVisible()) //
 				.toList();
 

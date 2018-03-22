@@ -63,10 +63,12 @@ public class DpkgUtil {
 	}
 
 	public Map<String, List<String>> getDependeesOf(List<Map<String, String>> packages) {
-		return Read.from(packages) //
+		return Read //
+				.from(packages) //
 				.map(pm -> {
 					String line = pm.getOrDefault("Depends", "");
-					List<String> list = Read.from(line.split(",")) //
+					List<String> list = Read //
+							.from(line.split(",")) //
 							.filter(s -> !s.isEmpty()) //
 							.map(s -> s.trim().split(" ")[0]) //
 							.toList();
@@ -77,7 +79,8 @@ public class DpkgUtil {
 	}
 
 	public Map<String, List<String>> getDependersOf(List<Map<String, String>> packages) {
-		return Read.multimap(getDependeesOf(packages)) //
+		return Read //
+				.multimap(getDependeesOf(packages)) //
 				.map2((k, v) -> v, (k, v) -> k) //
 				.toListMap();
 	}

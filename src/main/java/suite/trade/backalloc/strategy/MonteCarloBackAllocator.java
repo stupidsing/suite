@@ -38,7 +38,8 @@ public class MonteCarloBackAllocator implements BackAllocator {
 					.toList();
 
 			for (int i = 0; i < 128; i++) {
-				List<float[]> portfolios1 = Read.from(portfolios) //
+				List<float[]> portfolios1 = Read //
+						.from(portfolios) //
 						.map2(portfolio -> evaluate(symbols, portfolio, returnsBySymbol, index)) //
 						.sortByValue((o0, o1) -> Object_.compare(o1, o0)) //
 						.take(128) //

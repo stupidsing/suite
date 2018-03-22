@@ -36,7 +36,8 @@ public class Lister {
 		Streamlet<IList<Node>> st;
 
 		if (nr.type == ReadType.TUPLE)
-			st = Read.from(nr.children) //
+			st = Read //
+					.from(nr.children) //
 					.index() //
 					.map((i, p) -> leaves(p.t1, IList.cons(Int.of(i), prefix))) //
 					.collect(As::concat);

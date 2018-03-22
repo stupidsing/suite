@@ -114,7 +114,8 @@ public class Nodify {
 					return node;
 				};
 				nodifier = new Nodifier(forward, node -> {
-					List<Object> list = Read.from(Tree.iter(node, TermOp.OR____)) //
+					List<Object> list = Read //
+							.from(Tree.iter(node, TermOp.OR____)) //
 							.map(n -> apply_(nodifier1, n)) //
 							.toList();
 					int size = list.size();
@@ -143,7 +144,8 @@ public class Nodify {
 						return Fail.t("cannot instantiate enum from interfaces");
 				});
 			else {
-				List<FieldInfo> fieldInfos = Read.from(inspect.fields(clazz)) //
+				List<FieldInfo> fieldInfos = Read //
+						.from(inspect.fields(clazz)) //
 						.map(field -> {
 							Type type1 = field.getGenericType();
 							return new FieldInfo(field, field.getName(), getNodifier(type1));

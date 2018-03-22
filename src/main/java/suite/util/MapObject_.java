@@ -57,7 +57,8 @@ public class MapObject_ {
 	public static <T extends MapObject<T>> MapObject<T> construct(Class<?> clazz, List<?> list) {
 		return Rethrow.ex(() -> {
 			int size = list.size();
-			Method m = Read.from(clazz.getMethods()) //
+			Method m = Read //
+					.from(clazz.getMethods()) //
 					.filter(method -> String_.equals(method.getName(), "of") && method.getParameterCount() == size) //
 					.uniqueResult();
 			@SuppressWarnings("unchecked")
@@ -69,7 +70,8 @@ public class MapObject_ {
 	public static <T extends MapObject<T>> List<?> list(Object object) {
 		Class<?> clazz = object.getClass();
 
-		Method m = Read.from(clazz.getMethods()) //
+		Method m = Read //
+				.from(clazz.getMethods()) //
 				.filter(method -> String_.equals(method.getName(), "apply")) //
 				.uniqueResult();
 

@@ -28,7 +28,8 @@ public class HongKongGovernment {
 				.map(line -> line.split(":")) //
 				.filter(array -> 2 <= array.length) //
 				.split(array -> String_.equals(array[0], "BEGIN") && String_.equals(array[1], "VEVENT")) //
-				.map(arrays -> Read.from(arrays) //
+				.map(arrays -> Read //
+						.from(arrays) //
 						.map2(array -> array[0], array -> array[1]) //
 						.toMap()) //
 				.map2(map -> map.get("DTSTART;VALUE=DATE"), map -> map.get("SUMMARY")) //

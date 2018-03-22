@@ -26,7 +26,8 @@ public class Scheduler {
 			List<Schedule> schedules1 = new ArrayList<>();
 			LocalDateTime now = LocalDateTime.now();
 
-			LocalDateTime nextWakeUpDateTime = Read.from(schedules) //
+			LocalDateTime nextWakeUpDateTime = Read //
+					.from(schedules) //
 					.map(schedule -> schedule.nextRunDateTime) //
 					.min(Object_::compare);
 

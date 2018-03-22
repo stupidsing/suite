@@ -189,7 +189,8 @@ public class Grapher {
 	}
 
 	public void generalize() {
-		gns = Read.from(gns) //
+		gns = Read //
+				.from(gns) //
 				.map(gn -> {
 					Node node;
 					GN gn1;
@@ -205,7 +206,8 @@ public class Grapher {
 	}
 
 	public void specialize() {
-		gns = Read.from(gns) //
+		gns = Read //
+				.from(gns) //
 				.map(gn -> {
 					Node node;
 					GN gn1;
@@ -331,7 +333,8 @@ public class Grapher {
 			String s;
 			switch (gn.type) {
 			case DICT:
-				s = Read.from(gn.children) //
+				s = Read //
+						.from(gn.children) //
 						.map(p -> p.t0 + ":" + p.t1 + ", ") //
 						.collect(As.joinedBy("dict(", ", ", ")"));
 				break;
@@ -342,7 +345,8 @@ public class Grapher {
 				s = "tree(" + gn.children.get(0).t1 + gn.op.getName() + gn.children.get(1).t1 + ")";
 				break;
 			case TUPLE:
-				s = Read.from(gn.children) //
+				s = Read //
+						.from(gn.children) //
 						.map(p -> p.t1 + ", ") //
 						.collect(As.joinedBy("tuple(", ", ", ")"));
 				break;

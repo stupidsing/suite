@@ -77,7 +77,8 @@ public class Google {
 	}
 
 	private Map<String, Float> quote_(Set<String> symbols) {
-		Streamlet<String> querySymbols = Read.from(symbols) //
+		Streamlet<String> querySymbols = Read //
+				.from(symbols) //
 				.filter(symbol -> !Trade_.isCacheQuotes || !quotesBySymbol.containsKey(symbol)) //
 				.distinct();
 		quotesBySymbol.putAll(querySymbols //
@@ -103,7 +104,8 @@ public class Google {
 				}
 			});
 
-			return Read.from(json) //
+			return Read //
+					.from(json) //
 					.map2(json_ -> toSymbol(json_.get("t").textValue()),
 							json_ -> Float.parseFloat(json_.get("l").textValue().replace(",", ""))) //
 					.toMap();

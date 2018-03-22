@@ -139,7 +139,8 @@ public class Inspect {
 		// do not display same field of different base classes
 		Set<String> names = new HashSet<>();
 		List<Field> parentFields = superClass != null ? fields(superClass) : List.of();
-		List<Field> childFields = Read.from(clazz.getDeclaredFields()) //
+		List<Field> childFields = Read //
+				.from(clazz.getDeclaredFields()) //
 				.filter(field -> {
 					int modifiers = field.getModifiers();
 					String name = field.getName();
@@ -171,7 +172,8 @@ public class Inspect {
 		// do not display same method of different base classes
 		Set<String> names = new HashSet<>();
 		List<Method> parentMethods = superClass != null ? methods(superClass) : List.of();
-		List<Method> childMethods = Read.from(clazz.getDeclaredMethods()) //
+		List<Method> childMethods = Read //
+				.from(clazz.getDeclaredMethods()) //
 				.filter(method -> {
 					int modifiers = method.getModifiers();
 					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && names.add(method.getName());
@@ -186,7 +188,8 @@ public class Inspect {
 	private Fun<Class<?>, List<Property>> propertiesFun = Memoize.funRec(clazz -> {
 		List<Method> methods = methods(clazz);
 
-		Map<String, Method> getMethods = Read.from(methods) //
+		Map<String, Method> getMethods = Read //
+				.from(methods) //
 				.filter(getter -> {
 					String name = getter.getName();
 					return name.startsWith("get") && getter.getParameterTypes().length == 0;
@@ -194,7 +197,8 @@ public class Inspect {
 				.map2(getter -> getter.getName().substring(3), getter -> getter) //
 				.toMap();
 
-		Map<String, Method> setMethods = Read.from(methods) //
+		Map<String, Method> setMethods = Read //
+				.from(methods) //
 				.filter(setter -> {
 					String name = setter.getName();
 					return name.startsWith("set") && setter.getParameterTypes().length == 1;

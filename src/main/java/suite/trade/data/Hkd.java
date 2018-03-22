@@ -28,7 +28,8 @@ public class Hkd {
 	}
 
 	public Map<String, Float> quote(Set<String> symbols) {
-		return Read.from(symbols) //
+		return Read //
+				.from(symbols) //
 				.map2(symbol -> {
 					if (String_.equals(symbol, Asset.cashSymbol))
 						return 1f;

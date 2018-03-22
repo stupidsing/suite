@@ -144,7 +144,8 @@ public class DependencyMain extends ExecutableProgram {
 	}
 
 	protected boolean run(String[] args) throws IOException {
-		Read.from(getClass().getMethods()) //
+		Read //
+				.from(getClass().getMethods()) //
 				.filter(m -> m.getName().startsWith("list") && m.getParameters().length == 0) //
 				.sink(m -> {
 					System.out.println(m.getName() + "()");
@@ -158,7 +159,8 @@ public class DependencyMain extends ExecutableProgram {
 
 	public List<String> listDeinstalledPackages() {
 		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
-		return Read.from(packages) //
+		return Read //
+				.from(packages) //
 				.filter(pm -> pm.get("Status").contains("deinstall")) //
 				.map(pm -> "sudo dpkg --purge " + packageName(pm)) //
 				.sort(Object_::compare) //
@@ -176,7 +178,8 @@ public class DependencyMain extends ExecutableProgram {
 		packages = Rethrow.ex(() -> aptUtil.readRepoPackages(repo));
 		Set<String> required = new HashSet<>(List.of(packageName));
 		Set<String> required1 = dpkgUtil.getDependeeSet(packages, required);
-		return Read.from(required1) //
+		return Read //
+				.from(required1) //
 				.map(packageName_ -> aptUtil.getDownloadUrl(repo, packages, packageName_)) //
 				.sort(Object_::compare) //
 				.toList();
@@ -190,7 +193,8 @@ public class DependencyMain extends ExecutableProgram {
 		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
 		Map<String, List<String>> dependees = dpkgUtil.getDependersOf(packages);
 
-		return Read.from(packages) //
+		return Read //
+				.from(packages) //
 				.filter(pm -> !isEssential(pm)) //
 				.map(this::packageName) //
 				.filter(packageName -> !dependees.containsKey(packageName)) //
@@ -204,14 +208,16 @@ public class DependencyMain extends ExecutableProgram {
 		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
 		Set<String> required = new HashSet<>(requiredList);
 
-		required.addAll(Read.from(packages) //
+		required.addAll(Read //
+				.from(packages) //
 				.filter(this::isEssential) //
 				.map(this::packageName) //
 				.toList());
 
 		Set<String> required1 = dpkgUtil.getDependeeSet(packages, required);
 
-		return Read.from(packages) //
+		return Read //
+				.from(packages) //
 				.map(this::packageName) //
 				.filter(packageName -> !required1.contains(packageName)) //
 				.sort(Object_::compare) //
@@ -219,11 +225,13 @@ public class DependencyMain extends ExecutableProgram {
 	}
 
 	public List<String> listUnusedFiles() {
-		Set<String> files = Read.from(dpkgUtil.readInstalledPackages()) //
+		Set<String> files = Read //
+				.from(dpkgUtil.readInstalledPackages()) //
 				.concatMap(dpkgUtil::readFileList) //
 				.toSet();
 
-		return Read.each("/etc", "/usr") //
+		return Read //
+				.each("/etc", "/usr") //
 				.concatMap(p -> FileUtil.findPaths(Paths.get(p))) //
 				.map(Path::toString) //
 				.filter(p -> !files.contains(p)) //

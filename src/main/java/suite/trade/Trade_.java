@@ -158,21 +158,24 @@ public class Trade_ {
 	}
 
 	public static String format(Map<String, Integer> portfolio) {
-		return Read.from2(portfolio) //
+		return Read //
+				.from2(portfolio) //
 				.sortBy((code, i) -> !String_.equals(code, Asset.cashSymbol) ? code : "") //
 				.map((code, i) -> MathUtil.posNeg(i) + code + "*" + Math.abs(i)) //
 				.collect(As::joined);
 	}
 
 	public static String format(List<Trade> trades) {
-		return Read.from(trades) //
+		return Read //
+				.from(trades) //
 				.filter(trade -> trade.buySell != 0) //
 				.map(Trade::toString) //
 				.collect(As::joined);
 	}
 
 	public static Map<String, Integer> portfolio(Iterable<Trade> trades) {
-		return Read.from(trades) //
+		return Read //
+				.from(trades) //
 				.map2(r -> r.symbol, r -> r.buySell) //
 				.groupBy(sizes -> sizes.toInt(Obj_Int.sum(size -> size))) //
 				.filterValue(size -> size != 0) //

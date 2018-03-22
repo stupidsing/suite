@@ -78,7 +78,8 @@ public class TextDatabase {
 	}
 
 	private synchronized void save() {
-		Outlet<Bytes> outlet = Read.from(data) //
+		Outlet<Bytes> outlet = Read //
+				.from(data) //
 				.map(this::toBytes) //
 				.collect(Bytes_::buffer);
 

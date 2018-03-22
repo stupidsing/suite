@@ -23,7 +23,8 @@ public class ArdlBackAllocator implements BackAllocator {
 		Map<String, DataSource> dsBySymbol1 = dsBySymbol0.toMap();
 		String[] symbols = dsBySymbol0.keys().toArray(String.class);
 
-		float[][] fs = Read.from(symbols) //
+		float[][] fs = Read //
+				.from(symbols) //
 				.map(symbol -> dsBySymbol1.get(symbol).prices) //
 				.toArray(float[].class);
 

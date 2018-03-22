@@ -212,7 +212,8 @@ public class Hkex {
 		public String remark;
 
 		private Streamlet<List<String>> tableEntries() {
-			return Read.from(content) //
+			return Read //
+					.from(content) //
 					.flatMap(Content::getTables) //
 					.flatMap(table -> table.tr) //
 					.filter(tr -> !tr.thead) //
@@ -265,7 +266,8 @@ public class Hkex {
 	}
 
 	public Streamlet<Asset> queryCompanies() {
-		return Read.each(queryCompanies(0), queryCompanies(1), queryCompanies(2)) //
+		return Read //
+				.each(queryCompanies(0), queryCompanies(1), queryCompanies(2)) //
 				.flatMap(list -> list);
 	}
 
@@ -283,7 +285,8 @@ public class Hkex {
 		String url = "https://www.hkex.com.hk/eng/csm/ws/IndexMove.asmx/GetData?LangCode=en";
 
 		try (InputStream is = HttpUtil.get(To.url(url)).out.collect(To::inputStream)) {
-			return Read.each(mapper.readTree(is)) //
+			return Read //
+					.each(mapper.readTree(is)) //
 					.flatMap(json_ -> json_.path("data")) //
 					.filter(json_ -> String_.equals(json_.path("title").textValue(), "Hong Kong")) //
 					.flatMap(json_ -> json_.path("content")) //
@@ -316,7 +319,8 @@ public class Hkex {
 				+ "&TYYYY=";
 
 		try (InputStream is = HttpUtil.get(To.url(url)).out.collect(To::inputStream)) {
-			return Read.each(mapper.readTree(is)) //
+			return Read //
+					.each(mapper.readTree(is)) //
 					.flatMap(json_ -> json_.path("data")) //
 					.filter(json_ -> String_.equals(json_.path("title").textValue(), "Stock price HKD")) //
 					.flatMap(json_ -> json_.path("content")) //
@@ -353,11 +357,13 @@ public class Hkex {
 		Streamlet<List<String>> data0;
 
 		if (Boolean.TRUE)
-			data0 = Read.each(companySearch) //
+			data0 = Read //
+					.each(companySearch) //
 					.flatMap(cs -> cs.data) //
 					.concatMap(Data::tableEntries);
 		else
-			data0 = Read.each(json) //
+			data0 = Read //
+					.each(json) //
 					.flatMap(json_ -> json_.path("data")) //
 					.flatMap(json_ -> json_.path("content")) //
 					.flatMap(json_ -> json_.path("table")) //
@@ -399,7 +405,8 @@ public class Hkex {
 
 			CompanyInfo companyInfo = mapper.convertValue(json, CompanyInfo.class);
 
-			String boardLotStr = Read.each(companyInfo) //
+			String boardLotStr = Read //
+					.each(companyInfo) //
 					.flatMap(ci -> ci.data) //
 					.concatMap(Data::tableEntries) //
 					.filter(td -> String_.equals(td.get(0), "Board lot")) //

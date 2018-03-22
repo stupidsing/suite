@@ -234,7 +234,8 @@ public class SewingProverImpl implements ProverFactory {
 				Trampoline tr;
 
 				if (rulesByProto1 != null) {
-					Map<Prototype, Trampoline> trByProto1 = Read.from2(rulesByProto1) //
+					Map<Prototype, Trampoline> trByProto1 = Read //
+							.from2(rulesByProto1) //
 							.mapValue(rules_ -> compileTrRules(prototype, rules_, traceLevel)) //
 							.toMap();
 
@@ -255,7 +256,8 @@ public class SewingProverImpl implements ProverFactory {
 				Cps cps;
 
 				if (rulesByProto1 != null) {
-					Map<Prototype, Cps> cpsByProto1 = Read.from2(rulesByProto1) //
+					Map<Prototype, Cps> cpsByProto1 = Read //
+							.from2(rulesByProto1) //
 							.mapValue(rules_ -> compileCpsRules(prototype, rules_, traceLevel)) //
 							.toMap();
 
@@ -272,7 +274,8 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private boolean isHasCut(List<Rule> rules) {
-		return Boolean.TRUE || Read.from(rules) //
+		return Boolean.TRUE || Read //
+				.from(rules) //
 				.map(rule -> rw.contains(ProverConstant.cut, rule.tail)) //
 				.isAny(b -> b);
 	}

@@ -140,7 +140,8 @@ public class StockHistory {
 			return pairs1.toArray(new LngFltPair[0]);
 		};
 
-		Map<String, LngFltPair[]> data1 = Read.from2(data) //
+		Map<String, LngFltPair[]> data1 = Read //
+				.from2(data) //
 				.mapValue(filter_) //
 				.toMap();
 
@@ -173,7 +174,8 @@ public class StockHistory {
 			return pairs.toArray(new LngFltPair[0]);
 		};
 
-		Map<String, LngFltPair[]> data1 = Read.from(keys) //
+		Map<String, LngFltPair[]> data1 = Read //
+				.from(keys) //
 				.map2(key -> merge_.apply(get(key), other.get(key))) //
 				.toMap();
 
@@ -193,7 +195,8 @@ public class StockHistory {
 			return pairs1.toArray(new LngFltPair[0]);
 		};
 
-		Map<String, LngFltPair[]> data1 = Read.from2(data) //
+		Map<String, LngFltPair[]> data1 = Read //
+				.from2(data) //
 				.mapValue(align_) //
 				.toMap();
 

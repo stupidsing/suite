@@ -28,14 +28,16 @@ public class PackageManager {
 	public boolean install(String packageFilename) throws IOException {
 		PackageManifest packageManifest = getPackageManifest(packageFilename);
 
-		List<Pair<String, String>> filenameMappings = Read.from2(packageManifest.getFilenameMappings()) //
+		List<Pair<String, String>> filenameMappings = Read //
+				.from2(packageManifest.getFilenameMappings()) //
 				.sort((p0, p1) -> p1.t0.length() - p0.t0.length()) //
 				.toList();
 
 		List<InstallAction> installActions = new ArrayList<>();
 
 		try (ZipFile zipFile = new ZipFile(packageFilename)) {
-			installActions.addAll(Read.from(FileUtil.listZip(zipFile)) //
+			installActions.addAll(Read //
+					.from(FileUtil.listZip(zipFile)) //
 					.map(filename0 -> {
 						String filename1 = filename0;
 						for (Pair<String, String> filenameMapping : filenameMappings) {
@@ -50,7 +52,8 @@ public class PackageManager {
 					.toList());
 		}
 
-		installActions.addAll(Read.from(packageManifest.getCommands()) //
+		installActions.addAll(Read //
+				.from(packageManifest.getCommands()) //
 				.map(command -> new ExecCommandAction(command.getInstallCommand(), command.getUninstallCommand())) //
 				.toList());
 
