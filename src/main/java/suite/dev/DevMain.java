@@ -109,7 +109,7 @@ public class DevMain {
 							else
 								return st.text(text).offsetCoord(c(ox, oy - viewSizeY)).cursorCoord(c(cx, cy - viewSizeY));
 						} else if (vk == VK.CTRL_DOWN_) {
-							int oy1 = min(cy, text.lineLengths().length);
+							int oy1 = min(cy, text.nLines());
 							if (oy != oy1)
 								return st.offsetCoord(c(ox, oy1));
 							else
@@ -142,10 +142,9 @@ public class DevMain {
 						else
 							return st;
 					}))).apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						int[] lineLengths = text.lineLengths();
-						int nLines = lineLengths.length;
+						int nLines = text.nLines();
 						int cy_ = sat(cy, nLines);
-						int cx_ = cy_ < nLines ? sat(cx, lineLengths[cy_]) : 0;
+						int cx_ = cy_ < nLines ? sat(cx, text.lineLength(cy_)) : 0;
 						return st.cursorCoord(c(cx_, cy_));
 					}))).apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int ox_ = sat(ox, cx - viewSizeX + 1, cx);
@@ -252,6 +251,14 @@ public class DevMain {
 				y++;
 			}
 			return c(index, y);
+		}
+
+		private int nLines() {
+			return lineLengths().length;
+		}
+
+		private int lineLength(int y) {
+			return lineLengths()[y];
 		}
 
 		private int[] lineLengths() {
