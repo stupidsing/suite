@@ -143,8 +143,9 @@ public class DevMain {
 							return st;
 					}))).apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int[] lineLengths = text.lineLengths();
-						int cy_ = sat(cy, lineLengths.length);
-						int cx_ = sat(cx, lineLengths[cy_]);
+						int nLines = lineLengths.length;
+						int cy_ = sat(cy, nLines);
+						int cx_ = cy_ < nLines ? sat(cx, lineLengths[cy_]) : 0;
 						return st.cursorCoord(c(cx_, cy_));
 					}))).apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int ox_ = sat(ox, cx - viewSizeX + 1, cx);
