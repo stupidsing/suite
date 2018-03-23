@@ -159,19 +159,19 @@ public class DevMain {
 	}
 
 	private class State {
-		public State previous;
-		public Text text;
-		public IntIntPair offsetCoord;
-		public IntIntPair cursorCoord;
+		private State previous;
+		private Text text;
+		private IntIntPair offsetCoord;
+		private IntIntPair cursorCoord;
 
-		public State(State previous, Text text, IntIntPair offsetCoord, IntIntPair cursorCoord) {
+		private State(State previous, Text text, IntIntPair offsetCoord, IntIntPair cursorCoord) {
 			this.previous = previous;
 			this.text = text;
 			this.offsetCoord = offsetCoord;
 			this.cursorCoord = cursorCoord;
 		}
 
-		public State text(Text text) {
+		private State text(Text text) {
 			State state = this;
 			for (int i = 0; i < 16; i++)
 				if (state != null)
@@ -183,15 +183,15 @@ public class DevMain {
 			return new State(this, text, offsetCoord, cursorCoord);
 		}
 
-		public State offsetCoord(IntIntPair offsetCoord) {
+		private State offsetCoord(IntIntPair offsetCoord) {
 			return new State(previous, text, offsetCoord, cursorCoord);
 		}
 
-		public State cursorCoord(IntIntPair cursorCoord) {
+		private State cursorCoord(IntIntPair cursorCoord) {
 			return new State(previous, text, offsetCoord, cursorCoord);
 		}
 
-		public <R> R apply(FixieFun5<State, State, Text, IntIntPair, IntIntPair, R> fun) {
+		private <R> R apply(FixieFun5<State, State, Text, IntIntPair, IntIntPair, R> fun) {
 			return fun.apply(this, previous, text, offsetCoord, cursorCoord);
 		}
 	}
@@ -207,8 +207,8 @@ public class DevMain {
 	}
 
 	private class Text {
-		public String text;
-		public int[] lineLengths;
+		private String text;
+		private int[] lineLengths;
 
 		private Text(String text, int[] lineLengths) {
 			this.text = text;
