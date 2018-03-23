@@ -102,13 +102,13 @@ public class DevMain {
 								;
 							return st.cursorCoord(text.coord(index));
 						} else if (vk == VK.CTRL_UP___) {
-							int oy1 = max(0, cy - viewSizeY + 1);
+							int oy1 = max(cy - viewSizeY + 1, 0);
 							if (oy != oy1)
 								return st.offsetCoord(c(ox, oy1));
 							else
 								return st.text(text).offsetCoord(c(ox, oy - viewSizeY)).cursorCoord(c(cx, cy - viewSizeY));
 						} else if (vk == VK.CTRL_DOWN_) {
-							int oy1 = min(text.lineLengths().length, cy);
+							int oy1 = min(cy, text.lineLengths().length);
 							if (oy != oy1)
 								return st.offsetCoord(c(ox, oy1));
 							else
@@ -142,12 +142,12 @@ public class DevMain {
 							return st;
 					}))).apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int[] lineLengths = text.lineLengths();
-						int cy_ = max(0, min(lineLengths.length, cy));
-						int cx_ = max(0, min(lineLengths[cy_], cx));
+						int cy_ = sat(cy, lineLengths.length);
+						int cx_ = sat(cx, lineLengths[cy_]);
 						return st.cursorCoord(c(cx_, cy_));
 					}))).apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						int ox_ = max(0, max(cx - viewSizeX + 1, min(cx, ox)));
-						int oy_ = max(0, max(cy - viewSizeY + 1, min(cy, oy)));
+						int ox_ = sat(ox, cx - viewSizeX + 1, cx);
+						int oy_ = sat(oy, cy - viewSizeY + 1, cy);
 						return st.offsetCoord(c(ox_, oy_));
 					})));
 
@@ -227,14 +227,14 @@ public class DevMain {
 
 		private Text splice(int index, int deletes, String s) {
 			int length = text.length();
-			int i1 = min(length, index + deletes);
+			int i1 = min(index + deletes, length);
 			return new Text(text.substring(0, index) + s + text.substring(i1, length));
 		}
 
 		private int index(int px, int py) {
 			int[] lineLengths = lineLengths();
 			if (py < lineLengths.length)
-				return Ints_.range(py).toInt(Int_Int.sum(y -> lineLengths[y] + 1)) + min(lineLengths[py], px);
+				return Ints_.range(py).toInt(Int_Int.sum(y -> lineLengths[y] + 1)) + min(px, lineLengths[py]);
 			else
 				return text.length();
 		}
@@ -265,6 +265,14 @@ public class DevMain {
 
 	private static IntIntPair c(int x, int y) {
 		return IntIntPair.of(x, y);
+	}
+
+	private static int sat(int x, int max) {
+		return sat(x, 0, max);
+	}
+
+	private static int sat(int x, int min, int max) {
+		return min(max(x, min), max);
 	}
 
 }
