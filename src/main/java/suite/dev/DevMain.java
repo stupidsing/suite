@@ -5,6 +5,7 @@ import static suite.util.Friends.min;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.List;
 
 import com.sun.jna.Native;
@@ -16,10 +17,10 @@ import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
 import suite.ansi.Termios;
 import suite.primitive.Chars_;
-import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Sink;
@@ -69,7 +70,7 @@ public class DevMain {
 				return null;
 			})));
 
-			State state0 = new State(null, new Text(input), c(0, 0), c(0, 0));
+			State state0 = new State(null, text(input), c(0, 0), c(0, 0));
 			redraw.sink(state0);
 
 			FixieFun3<VK, Character, State, State> mutate = (vk, ch, state) -> state //
@@ -195,21 +196,23 @@ public class DevMain {
 		}
 	}
 
+	private Text text(String text) {
+		return text(Arrays.asList(text.split("\n")));
+	}
+
+	private Text text(List<String> lines) {
+		return new Text( //
+				Read.from(lines).map(line -> line + "\n").collect(As::joined), //
+				Ints_.range(lines.size()).mapInt(i -> lines.get(i).length()).toArray());
+	}
+
 	private class Text {
 		public String text;
 		public int[] lineLengths;
 
-		private Text(String text) {
-			this(text, text.split("\n"));
-		}
-
-		private Text(List<String> lines) {
-			this(String.join("\n", lines), lines.toArray(new String[0]));
-		}
-
-		private Text(String text, String[] lines) {
+		private Text(String text, int[] lineLengths) {
 			this.text = text;
-			this.lineLengths = Read.from(lines).collect(Obj_Int.lift(String::length)).toArray();
+			this.lineLengths = lineLengths;
 		}
 
 		private String get(int px, int py, int length) {
@@ -228,7 +231,7 @@ public class DevMain {
 		private Text splice(int index, int deletes, String s) {
 			int length = text.length();
 			int i1 = min(index + deletes, length);
-			return new Text(text.substring(0, index) + s + text.substring(i1, length));
+			return text(text.substring(0, index) + s + text.substring(i1, length));
 		}
 
 		private int index(int px, int py) {
