@@ -52,11 +52,16 @@ public class DevMain {
 			Keyboard keyboard = new Keyboard(libc);
 
 			Sink<State> redraw = state -> state.apply((st, prev, text, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
+				String[] lines = Ints_ //
+						.range(viewSizeY) //
+						.map(screenY -> text.get(ox, oy + screenY, viewSizeX).replace('\t', ' ')) //
+						.toArray(String.class);
+
 				termios.cursor(false);
 
 				for (int screenY = 0; screenY < viewSizeY; screenY++) {
 					termios.gotoxy(0, screenY);
-					termios.puts(text.get(ox, oy + screenY, viewSizeX).replace('\t', ' '));
+					termios.puts(lines[screenY]);
 				}
 
 				termios.gotoxy(cx - ox, cy - oy);
