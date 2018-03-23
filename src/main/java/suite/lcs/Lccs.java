@@ -4,7 +4,6 @@ import static suite.util.Friends.min;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -64,19 +63,17 @@ public class Lccs {
 		return segments;
 	}
 
-	private Map<Integer, Segment> reduceSegments(Map<Integer, Segment> segments, Bytes bytes, int rollingSize) {
+	private Map<Integer, Segment> reduceSegments(Map<Integer, Segment> segments0, Bytes bytes, int rollingSize) {
 		Map<Integer, Segment> segments1 = new HashMap<>();
 
-		for (Entry<Integer, Segment> e : segments.entrySet()) {
-			int hash = e.getKey();
-			Segment segment = e.getValue();
+		segments0.forEach((hash, segment) -> {
 			int start = segment.start, end = segment.end;
 
 			segments1.put(rh.unroll(hash, bytes.get(start), rollingSize), Segment.of(start + 1, end));
 
 			if (start == 0)
 				segments1.put(rh.unroll(hash, bytes.get(end - 1)), Segment.of(start, end - 1));
-		}
+		});
 
 		return segments1;
 	}
