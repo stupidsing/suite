@@ -30,15 +30,21 @@ public class DevMain {
 
 	private LibcJna libc = (LibcJna) Native.loadLibrary("c", LibcJna.class);
 
+	private int viewSizeX;
+	private int viewSizeY;
+
 	public static void main(String[] args) {
 		int screenSizeX = Integer.valueOf(args[0]); // Integer.valueOf(System.getenv("COLUMNS"));
 		int screenSizeY = Integer.valueOf(args[1]); // Integer.valueOf(System.getenv("LINES"));
-		new DevMain().run(screenSizeX, screenSizeY);
+		new DevMain(screenSizeX, screenSizeY).run();
 	}
 
-	private void run(int screenSizeX, int screenSizeY) {
-		int viewSizeX = screenSizeX;
-		int viewSizeY = screenSizeY - 1;
+	private DevMain(int screenSizeX, int screenSizeY) {
+		viewSizeX = screenSizeX;
+		viewSizeY = screenSizeY - 1;
+	}
+
+	private void run() {
 		List<String> input = Rethrow.ex(() -> Files.readAllLines(Paths.get("src/main/java/suite/dev/DevMain.java")));
 
 		try (Termios termios = new Termios(libc);) {
@@ -146,7 +152,7 @@ public class DevMain {
 		}
 	}
 
-	private static class State {
+	private class State {
 		public State previous;
 		public Text text;
 		public IntIntPair offsetCoord;
@@ -184,7 +190,7 @@ public class DevMain {
 		}
 	}
 
-	private static class Text {
+	private class Text {
 		public String text;
 		public int[] lineLengths;
 
