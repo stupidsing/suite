@@ -52,7 +52,9 @@ public class Bfgs {
 
 			float[][] ib1;
 
-			if (Boolean.FALSE) {
+			if (alpha == 0d)
+				break;
+			else if (Boolean.FALSE) {
 				float[][] ma = mtx.sub(id, mtx.scale(mtx.mul(ss, ys), yts));
 				float[][] mb = mtx.sub(id, mtx.scale(mtx.mul(ys, ss), yts));
 				ib1 = mtx.add(mtx.mul(ma, ib, mb), mtx.scale(mtx.mul(ss), yts));
