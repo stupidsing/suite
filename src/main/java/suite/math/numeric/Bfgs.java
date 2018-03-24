@@ -83,31 +83,30 @@ public class Bfgs {
 		DblDbl_Dbl choose = (a0, a1) -> (a0 + a1) * .5d; // TODO
 
 		DblDbl_Dbl zoom = (alphaLo, alphaHi) -> {
-			while (true) {
+			for (int iter = 0; iter < 16; iter++) {
 				double alpha = interpolate.apply(alphaLo, alphaHi);
 				double v = phi.apply(alpha);
+				double g;
 
 				if (v0 + c1 * alpha * g0 < v || phi.apply(alphaLo) <= v)
 					alphaHi = alpha;
+				else if (Math.abs(g = phiGradient.apply(alpha)) <= -c2 * g0)
+					return alpha;
 				else {
-					double g = phiGradient.apply(alpha);
-
-					if (Math.abs(g) <= -c2 * g0)
-						return alpha;
-
 					if (0d <= g * (alphaHi - alphaLo))
 						alphaHi = alphaLo;
-
 					alphaLo = alpha;
 				}
 			}
+
+			return alphaLo;
 		};
 
 		double alphap = alpha0;
 		double vp = v0;
 		double alpha = choose.apply(alphap, alphax);
 
-		for (int iter = 0;; iter++) {
+		for (int iter = 0; iter < 16; iter++) {
 			double v = phi.apply(alpha);
 
 			if (v0 + c1 * alpha * g0 < v || 0 < iter && vp <= v)
@@ -116,16 +115,18 @@ public class Bfgs {
 			double g = phiGradient.apply(alpha);
 
 			if (Math.abs(g) <= -c2 * g0)
-				return alpha;
-
-			if (0d <= g)
+				break;
+			else if (0d <= g)
 				return zoom.apply(alpha, alphap);
+			else {
+				alphap = alpha;
+				vp = v;
 
-			alphap = alpha;
-			vp = v;
-
-			alpha = choose.apply(alpha, alphax);
+				alpha = choose.apply(alpha, alphax);
+			}
 		}
+
+		return alpha;
 	}
 
 }
