@@ -17,11 +17,8 @@ import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
 import suite.ansi.Termios;
 import suite.primitive.Chars_;
-import suite.primitive.Int_Int;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
-import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Sink;
 import suite.util.Rethrow;
@@ -89,10 +86,9 @@ public class DevMain {
 							return st.cursorCoord(c(cx, cy + viewSizeY));
 						else if (vk == VK.HOME_)
 							return st.cursorCoord(c(0, cy));
-						else if (vk == VK.END__) {
-							int index = text.index(0, cy + 1);
-							return 0 < index ? st.cursorCoord(text.coord(index - 1)) : st;
-						} else if (vk == VK.CTRL_LEFT_) {
+						else if (vk == VK.END__)
+							return st.cursorCoord(text.coord(text.ends[cy]));
+						else if (vk == VK.CTRL_LEFT_) {
 							int index = text.index(cx, cy), index1;
 							while (0 <= (index1 = index - 1) && Character.isJavaIdentifierPart(text.at(index = index1)))
 								;
@@ -201,18 +197,30 @@ public class DevMain {
 	}
 
 	private Text text(List<String> lines) {
-		return new Text( //
-				Read.from(lines).map(line -> line + "\n").collect(As::joined), //
-				Ints_.range(lines.size()).mapInt(i -> lines.get(i).length()).toArray());
+		int size = lines.size();
+		int[] starts = new int[size];
+		int[] ends = new int[size];
+		StringBuilder sb = new StringBuilder();
+
+		for (int i = 0; i < size; i++) {
+			starts[i] = sb.length();
+			sb.append(lines.get(i));
+			ends[i] = sb.length();
+			sb.append("\n");
+		}
+
+		return new Text(sb.toString(), starts, ends);
 	}
 
 	private class Text {
 		private String text;
-		private int[] lineLengths;
+		private int[] starts;
+		private int[] ends;
 
-		private Text(String text, int[] lineLengths) {
+		private Text(String text, int[] starts, int[] ends) {
 			this.text = text;
-			this.lineLengths = lineLengths;
+			this.starts = starts;
+			this.ends = ends;
 		}
 
 		private String get(int px, int py, int length) {
@@ -235,34 +243,26 @@ public class DevMain {
 		}
 
 		private int index(int px, int py) {
-			int[] lineLengths = lineLengths();
-			if (py < lineLengths.length)
-				return Ints_.range(py).toInt(Int_Int.sum(y -> lineLengths[y] + 1)) + min(px, lineLengths[py]);
+			if (py < nLines())
+				return min(starts[py] + px, ends[py]);
 			else
 				return text.length();
 		}
 
 		private IntIntPair coord(int index) {
-			int[] lineLengths = lineLengths();
-			int index1;
-			int y = 0;
-			while (y < lineLengths.length && 0 <= (index1 = index - (lineLengths[y] + 1))) {
-				index = index1;
-				y++;
-			}
-			return c(index, y);
+			int nLines = nLines();
+			int y = 0, y1;
+			while ((y1 = y + 1) < nLines && starts[y1] < index)
+				y = y1;
+			return c(index - starts[y], y);
 		}
 
 		private int nLines() {
-			return lineLengths().length;
+			return starts.length;
 		}
 
 		private int lineLength(int y) {
-			return lineLengths()[y];
-		}
-
-		private int[] lineLengths() {
-			return lineLengths;
+			return ends[y] - starts[y];
 		}
 
 		private char at(int arg0) {
