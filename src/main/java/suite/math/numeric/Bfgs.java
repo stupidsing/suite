@@ -76,8 +76,8 @@ public class Bfgs {
 		double c2 = .1d;
 
 		double alpha0 = 0d;
-		double v0 = phi.apply(0d);
-		double g0 = phiGradient.apply(0d);
+		double v0 = phi.apply(alpha0);
+		double g0 = phiGradient.apply(alpha0);
 
 		DblDbl_Dbl interpolate = (a0, a1) -> (a0 + a1) * .5d; // TODO
 		DblDbl_Dbl choose = (a0, a1) -> (a0 + a1) * .5d; // TODO
