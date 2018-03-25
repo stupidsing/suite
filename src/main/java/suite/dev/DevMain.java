@@ -74,19 +74,19 @@ public class DevMain {
 			FixieFun3<VK, Character, State, State> mutate = (vk, ch, state) -> state //
 					.apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						if (vk == VK.LEFT_)
-							return st.cursorCoord(c(cx - 1, cy));
+							return st.cursorCoord(cx - 1, cy);
 						else if (vk == VK.RIGHT)
-							return st.cursorCoord(c(cx + 1, cy));
+							return st.cursorCoord(cx + 1, cy);
 						else if (vk == VK.UP___)
-							return st.cursorCoord(c(cx, cy - 1));
+							return st.cursorCoord(cx, cy - 1);
 						else if (vk == VK.DOWN_)
-							return st.cursorCoord(c(cx, cy + 1));
+							return st.cursorCoord(cx, cy + 1);
 						else if (vk == VK.PGUP_)
-							return st.cursorCoord(c(cx, cy - viewSizeY));
+							return st.cursorCoord(cx, cy - viewSizeY);
 						else if (vk == VK.PGDN_)
-							return st.cursorCoord(c(cx, cy + viewSizeY));
+							return st.cursorCoord(cx, cy + viewSizeY);
 						else if (vk == VK.HOME_)
-							return st.cursorCoord(c(0, cy));
+							return st.cursorCoord(0, cy);
 						else if (vk == VK.END__)
 							return st.cursor(text.end(cy));
 						else if (vk == VK.CTRL_HOME_)
@@ -106,15 +106,15 @@ public class DevMain {
 						} else if (vk == VK.CTRL_UP___) {
 							int oy1 = max(cy - viewSizeY + 1, 0);
 							if (oy != oy1)
-								return st.offsetCoord(c(ox, oy1));
+								return st.offsetCoord(ox, oy1);
 							else
-								return st.offsetCoord(c(ox, oy - viewSizeY)).cursorCoord(c(cx, cy - viewSizeY));
+								return st.offsetCoord(ox, oy - viewSizeY).cursorCoord(cx, cy - viewSizeY);
 						} else if (vk == VK.CTRL_DOWN_) {
 							int oy1 = min(cy, text.nLines());
 							if (oy != oy1)
-								return st.offsetCoord(c(ox, oy1));
+								return st.offsetCoord(ox, oy1);
 							else
-								return st.offsetCoord(c(ox, oy + viewSizeY)).cursorCoord(c(cx, cy + viewSizeY));
+								return st.offsetCoord(ox, oy + viewSizeY).cursorCoord(cx, cy + viewSizeY);
 						} else if (vk == VK.ALT_J____) {
 							int index = text.index(cx, cy);
 							while (index < text.length() && text.at(index) != '\n')
@@ -172,7 +172,7 @@ public class DevMain {
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int ox_ = sat(ox, cx - viewSizeX + 1, cx);
 						int oy_ = sat(oy, cy - viewSizeY + 1, cy);
-						return st.offsetCoord(c(ox_, oy_));
+						return st.offsetCoord(ox_, oy_);
 					})));
 
 			keyboard.loop(signal -> signal //
@@ -223,16 +223,17 @@ public class DevMain {
 			return new State(this, null, text, offsetCoord, cursorCoord);
 		}
 
-		private State offsetCoord(IntIntPair offsetCoord) {
-			return new State(prev, next, text, offsetCoord, cursorCoord);
+		private State offsetCoord(int ox, int oy) {
+			return new State(prev, next, text, c(ox, oy), cursorCoord);
 		}
 
 		private State cursor(int index) {
-			return cursorCoord(text.coord(index));
+			IntIntPair coord = text.coord(index);
+			return cursorCoord(coord.t0, coord.t1);
 		}
 
-		private State cursorCoord(IntIntPair cursorCoord) {
-			return new State(prev, next, text, offsetCoord, cursorCoord);
+		private State cursorCoord(int cx, int cy) {
+			return new State(prev, next, text, offsetCoord, c(cx, cy));
 		}
 
 		private <R> R apply(FixieFun6<State, State, State, Text, IntIntPair, IntIntPair, R> fun) {
