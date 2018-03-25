@@ -125,7 +125,7 @@ public class DevMain {
 								return st;
 						} else if (vk == VK.DEL__)
 							return st.text(text.splice(cc, 1, ""));
-						else if (vk == VK.CTRL_Q____)
+						else if (vk == VK.CTRL_C____)
 							return Fail.t();
 						else if (vk == VK.CTRL_Z____) {
 							State parent0 = st.previous;

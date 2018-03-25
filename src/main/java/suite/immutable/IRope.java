@@ -18,11 +18,21 @@ public class IRope<T> {
 
 	private int depth;
 	private int weight;
-	private List<T> ts;
+	private IRopeList<T> ts;
 	private List<IRope<T>> ropes;
 
+	public interface IRopeList<T> {
+		public int size();
+
+		public T get(int index);
+
+		public IRopeList<T> subList(int start, int end);
+
+		public IRopeList<T> concat(IRopeList<T> list);
+	}
+
 	// minBranchFactor <= ts.size() && ts.size() < maxBranchFactor
-	public IRope(List<T> ts) {
+	public IRope(IRopeList<T> ts) {
 		this.weight = ts.size();
 		this.ts = ts;
 	}
@@ -76,10 +86,10 @@ public class IRope<T> {
 		else if (0 < depth)
 			ropes = List_.concat(rope0.ropes, rope1.ropes);
 		else {
-			List<T> ts = List_.concat(rope0.ts, rope1.ts);
+			IRopeList<T> ts = rope0.ts.concat(rope1.ts);
 			if (maxBranchFactor <= ts.size()) {
-				List<T> left = List_.left(ts, minBranchFactor);
-				List<T> right = List_.right(ts, minBranchFactor);
+				IRopeList<T> left = ts.subList(0, minBranchFactor);
+				IRopeList<T> right = ts.subList(minBranchFactor, 0);
 				ropes = List.of(new IRope<>(left), new IRope<>(right));
 			} else
 				ropes = List.of(new IRope<>(ts));
@@ -114,7 +124,7 @@ public class IRope<T> {
 			rope = rope_;
 		}
 
-		return meldLeft(deque, new IRope<>(List_.left(rope.ts, p)));
+		return meldLeft(deque, new IRope<>(rope.ts.subList(0, p)));
 	}
 
 	private static <T> IRope<T> right(IRope<T> rope, int p) {
@@ -133,7 +143,7 @@ public class IRope<T> {
 			rope = rope_;
 		}
 
-		return meldRight(new IRope<>(List_.right(rope.ts, p)), deque);
+		return meldRight(new IRope<>(rope.ts.subList(p, 0)), deque);
 	}
 
 	private static <T> IRope<T> meldLeft(Deque<IRope<T>> queue, IRope<T> rope) {
