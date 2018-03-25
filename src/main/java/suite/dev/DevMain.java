@@ -119,14 +119,14 @@ public class DevMain {
 							int index = text.index(cx, cy);
 							if (0 < index) {
 								IntIntPair cc1 = text.coord(index - 1);
-								return st.text(text.splice(cc1.t0, cc1.t1, 1, "")).cursorCoord(cc1);
+								return st.text(text.splice(cc1, 1, "")).cursorCoord(cc1);
 							} else
 								return st;
 						} else if (vk == VK.DEL__)
-							return st.text(text.splice(cx, cy, 1, ""));
+							return st.text(text.splice(cc, 1, ""));
 						else if (ch != null)
 							if (ch == 13)
-								return st.text(text.splice(cx, cy, 0, "\n")).cursorCoord(c(0, cy + 1));
+								return st.text(text.splice(cc, 0, "\n")).cursorCoord(c(0, cy + 1));
 							else if (ch == 26) { // ctrl-Z
 								State parent0 = st.previous;
 								State parent1 = parent0 != null ? parent0 : st;
@@ -134,7 +134,7 @@ public class DevMain {
 							} else if (ch == 'q')
 								return Fail.t();
 							else
-								return st.text(text.splice(cx, cy, 0, Character.toString(ch))).cursorCoord(c(cx + 1, cy));
+								return st.text(text.splice(cc, 0, Character.toString(ch))).cursorCoord(c(cx + 1, cy));
 						else
 							return st;
 					}))).apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
@@ -232,8 +232,8 @@ public class DevMain {
 			}));
 		}
 
-		private Text splice(int px, int py, int deletes, String s) {
-			return splice(index(px, py), deletes, s);
+		private Text splice(IntIntPair p, int deletes, String s) {
+			return splice(index(p.t0, p.t1), deletes, s);
 		}
 
 		private Text splice(int index, int deletes, String s) {
