@@ -96,9 +96,9 @@ public class DevMain {
 						else if (vk == VK.CTRL_END__)
 							return st.cursor(text.length());
 						else if (vk == VK.CTRL_LEFT_)
-							return st.cursor(text.scan(text.index(cx, cy), -1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
+							return st.cursor(text.scanNext(text.index(cx, cy), -1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
 						else if (vk == VK.CTRL_RIGHT)
-							return st.cursor(text.scan(text.index(cx, cy), 1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
+							return st.cursor(text.scanNext(text.index(cx, cy), 1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
 						else if (vk == VK.CTRL_UP___) {
 							int oy1 = max(cy - viewSizeY + 1, 0);
 							if (oy != oy1)
@@ -112,9 +112,7 @@ public class DevMain {
 							else
 								return st.offset(ox, oy + viewSizeY).cursor(cx, cy + viewSizeY);
 						} else if (vk == VK.ALT_J____) {
-							int index = text.index(cx, cy);
-							while (index < text.length() && text.at(index) != '\n')
-								index++;
+							int index = text.scan(text.index(cx, cy), 1, ch_ -> ch_ == '\n');
 							Text text1 = text.splice(index, index + 1, empty);
 							return st.text(text1).cursor(index);
 						} else if (vk == VK.BKSP_) {
@@ -285,11 +283,15 @@ public class DevMain {
 			return text(text.subList(0, i0).concat(s.concat(text.subList(i1_, length))));
 		}
 
+		private int scanNext(int index, int dir, Predicate<Character> pred) {
+			return scan(index + dir, dir, pred);
+		}
+
 		private int scan(int index, int dir, Predicate<Character> pred) {
 			int size = text.size();
 			int index1;
-			while (0 <= (index1 = index + dir) && index1 < size && !pred.test(text.get(index = index1)))
-				;
+			while (0 <= (index1 = index + dir) && index1 < size && !pred.test(text.get(index)))
+				index = index1;
 			return index;
 		}
 
