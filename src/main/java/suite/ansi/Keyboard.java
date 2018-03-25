@@ -96,13 +96,15 @@ public class Keyboard {
 		pairs.add(Pair.of(List.of(27, 91, 53, 126), VK.PGUP_));
 		pairs.add(Pair.of(List.of(27, 91, 54, 126), VK.PGDN_));
 		pairs.add(Pair.of(List.of(27, 91, 55, 94), VK.CTRL_HOME_)); // urxvt
+		pairs.add(Pair.of(List.of(27, 91, 55, 126), VK.HOME_)); // urxvt
 		pairs.add(Pair.of(List.of(27, 91, 56, 94), VK.CTRL_END__)); // urxvt
+		pairs.add(Pair.of(List.of(27, 91, 56, 126), VK.END__)); // urxvt
 		pairs.add(Pair.of(List.of(27, 91, 65), VK.UP___));
 		pairs.add(Pair.of(List.of(27, 91, 66), VK.DOWN_));
 		pairs.add(Pair.of(List.of(27, 91, 67), VK.RIGHT));
 		pairs.add(Pair.of(List.of(27, 91, 68), VK.LEFT_));
-		pairs.add(Pair.of(List.of(27, 91, 70), VK.END__));
-		pairs.add(Pair.of(List.of(27, 91, 72), VK.HOME_));
+		pairs.add(Pair.of(List.of(27, 91, 70), VK.END__)); // terminator
+		pairs.add(Pair.of(List.of(27, 91, 72), VK.HOME_)); // terminator
 		pairs.add(Pair.of(List.of(27, 106), VK.ALT_J____)); // alt-j
 		pairs.add(Pair.of(List.of(127), VK.BKSP_));
 
