@@ -302,11 +302,11 @@ public class DevMain {
 		}
 
 		private int start(int y) {
-			return y < nLines() ? starts[y] : length();
+			return y < 0 ? 0 : nLines() <= y ? length() : starts[y];
 		}
 
 		private int end(int y) {
-			return y < nLines() ? ends[y] : length();
+			return y < 0 ? 0 : nLines() <= y ? length() : ends[y];
 		}
 
 		private int nLines() {
