@@ -88,21 +88,21 @@ public class DevMain {
 						else if (vk == VK.HOME_)
 							return st.cursorCoord(c(0, cy));
 						else if (vk == VK.END__)
-							return st.cursorCoord(text.coord(text.end(cy)));
+							return st.cursor(text.end(cy));
 						else if (vk == VK.CTRL_HOME_)
-							return st.cursorCoord(text.coord(0));
+							return st.cursor(0);
 						else if (vk == VK.CTRL_END__)
-							return st.cursorCoord(text.coord(text.length()));
+							return st.cursor(text.length());
 						else if (vk == VK.CTRL_LEFT_) {
 							int index = text.index(cx, cy), index1;
 							while (0 <= (index1 = index - 1) && Character.isJavaIdentifierPart(text.at(index = index1)))
 								;
-							return st.cursorCoord(text.coord(index));
+							return st.cursor(index);
 						} else if (vk == VK.CTRL_RIGHT) {
 							int index = text.index(cx, cy), index1;
 							while ((index1 = index + 1) < text.length() && Character.isJavaIdentifierPart(text.at(index = index1)))
 								;
-							return st.cursorCoord(text.coord(index));
+							return st.cursor(index);
 						} else if (vk == VK.CTRL_UP___) {
 							int oy1 = max(cy - viewSizeY + 1, 0);
 							if (oy != oy1)
@@ -120,7 +120,7 @@ public class DevMain {
 							while (index < text.length() && text.at(index) != '\n')
 								index++;
 							Text text1 = text.splice(index, index + 1, empty);
-							return st.text(text1).cursorCoord(text1.coord(index));
+							return st.text(text1).cursor(index);
 						} else if (vk == VK.BKSP_) {
 							int index = text.index(cx, cy);
 							return 0 < index ? st.splice(index - 1, index, empty) : st;
@@ -168,7 +168,7 @@ public class DevMain {
 						else
 							return st;
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						return st.cursorCoord(text.coord(text.index(cc.t0, cc.t1)));
+						return st.cursor(text.index(cc.t0, cc.t1));
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int ox_ = sat(ox, cx - viewSizeX + 1, cx);
 						int oy_ = sat(oy, cy - viewSizeY + 1, cy);
@@ -211,7 +211,7 @@ public class DevMain {
 			else
 				cursorIndex1 = cursorIndex0 - ix + i0 + s.size();
 			Text text1 = text.splice(i0, ix, s);
-			return text(text1).cursorCoord(text1.coord(cursorIndex1));
+			return text(text1).cursor(cursorIndex1);
 		}
 
 		private State text(Text text) {
@@ -225,6 +225,10 @@ public class DevMain {
 
 		private State offsetCoord(IntIntPair offsetCoord) {
 			return new State(prev, next, text, offsetCoord, cursorCoord);
+		}
+
+		private State cursor(int index) {
+			return cursorCoord(text.coord(index));
 		}
 
 		private State cursorCoord(IntIntPair cursorCoord) {
