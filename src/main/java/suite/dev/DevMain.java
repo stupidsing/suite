@@ -124,7 +124,7 @@ public class DevMain {
 							int index = text.index(cx, cy);
 							return 0 < index ? st.splice(index - 1, 1, "") : st;
 						} else if (vk == VK.DEL__)
-							return st.splice(cc, 1, "");
+							return st.splice(1, "");
 						else if (vk == VK.CTRL_C____)
 							return Fail.t();
 						else if (vk == VK.CTRL_D____) {
@@ -143,9 +143,9 @@ public class DevMain {
 								char ch_;
 								while ((ch_ = text.at(ix)) == ' ' || ch_ == '\t')
 									ix++;
-								return st.splice(cc, 0, "\n" + text.text.substring(i0, ix));
+								return st.splice(0, "\n" + text.text.substring(i0, ix));
 							} else
-								return st.splice(cc, 0, Character.toString(ch));
+								return st.splice(0, Character.toString(ch));
 						else
 							return st;
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
@@ -177,8 +177,8 @@ public class DevMain {
 			this.cursorCoord = cursorCoord;
 		}
 
-		private State splice(IntIntPair coord, int deletes, String s) {
-			return splice(text.index(coord.t0, coord.t1), deletes, s);
+		private State splice(int deletes, String s) {
+			return splice(text.index(cursorCoord.t0, cursorCoord.t1), deletes, s);
 		}
 
 		private State splice(int index, int deletes, String s) {
