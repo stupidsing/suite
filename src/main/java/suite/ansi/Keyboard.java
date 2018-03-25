@@ -17,11 +17,22 @@ public class Keyboard {
 
 	public enum VK {
 		ALT_J____, //
+		ALT_DOWN_, //
+		ALT_LEFT_, //
+		ALT_UP___, //
+		ALT_RIGHT, //
 		BKSP_, //
+		CTRL_C____, //
 		CTRL_DOWN_, //
 		CTRL_LEFT_, //
+		CTRL_Q____, //
 		CTRL_RIGHT, //
 		CTRL_UP___, //
+		CTRL_V____, //
+		CTRL_W____, //
+		CTRL_X____, //
+		CTRL_Y____, //
+		CTRL_Z____, //
 		DEL__, //
 		DOWN_, //
 		END__, //
@@ -31,6 +42,10 @@ public class Keyboard {
 		PGUP_, //
 		PGDN_, //
 		RIGHT, //
+		SHIFT_DOWN_, //
+		SHIFT_LEFT_, //
+		SHIFT_UP___, //
+		SHIFT_RIGHT, //
 		UP___, //
 	}
 
@@ -38,10 +53,34 @@ public class Keyboard {
 		this.libc = libc;
 
 		List<Pair<List<Integer>, VK>> pairs = new ArrayList<>();
-		pairs.add(Pair.of(List.of(27, 91, 49, 59, 53, 65), VK.CTRL_UP___));
-		pairs.add(Pair.of(List.of(27, 91, 49, 59, 53, 66), VK.CTRL_DOWN_));
-		pairs.add(Pair.of(List.of(27, 91, 49, 59, 53, 67), VK.CTRL_RIGHT));
-		pairs.add(Pair.of(List.of(27, 91, 49, 59, 53, 68), VK.CTRL_LEFT_));
+		pairs.add(Pair.of(List.of(3), VK.CTRL_C____));
+		pairs.add(Pair.of(List.of(17), VK.CTRL_Q____));
+		pairs.add(Pair.of(List.of(22), VK.CTRL_V____));
+		pairs.add(Pair.of(List.of(23), VK.CTRL_W____));
+		pairs.add(Pair.of(List.of(24), VK.CTRL_X____));
+		pairs.add(Pair.of(List.of(25), VK.CTRL_Y____));
+		pairs.add(Pair.of(List.of(26), VK.CTRL_Z____));
+		pairs.add(Pair.of(List.of(27, 27, 91, 65), VK.ALT_UP___));
+		pairs.add(Pair.of(List.of(27, 27, 91, 66), VK.ALT_DOWN_));
+		pairs.add(Pair.of(List.of(27, 27, 91, 67), VK.ALT_RIGHT));
+		pairs.add(Pair.of(List.of(27, 27, 91, 68), VK.ALT_LEFT_));
+		pairs.add(Pair.of(List.of(27, 74), VK.ALT_J____)); // alt-J
+		pairs.add(Pair.of(List.of(27, 79, 97), VK.CTRL_UP___));// urxvt
+		pairs.add(Pair.of(List.of(27, 79, 98), VK.CTRL_DOWN_));// urxvt
+		pairs.add(Pair.of(List.of(27, 79, 99), VK.CTRL_RIGHT));// urxvt
+		pairs.add(Pair.of(List.of(27, 79, 100), VK.CTRL_LEFT_));// urxvt
+		pairs.add(Pair.of(List.of(27, 91, 49, 59, 50, 65), VK.SHIFT_UP___)); // terminator
+		pairs.add(Pair.of(List.of(27, 91, 49, 59, 50, 66), VK.SHIFT_DOWN_)); // terminator
+		pairs.add(Pair.of(List.of(27, 91, 49, 59, 50, 67), VK.SHIFT_RIGHT)); // terminator
+		pairs.add(Pair.of(List.of(27, 91, 49, 59, 50, 68), VK.SHIFT_LEFT_)); // terminator
+		pairs.add(Pair.of(List.of(27, 91, 49, 59, 53, 65), VK.CTRL_UP___)); // terminator
+		pairs.add(Pair.of(List.of(27, 91, 49, 59, 53, 66), VK.CTRL_DOWN_)); // terminator
+		pairs.add(Pair.of(List.of(27, 91, 49, 59, 53, 67), VK.CTRL_RIGHT)); // terminator
+		pairs.add(Pair.of(List.of(27, 91, 49, 59, 53, 68), VK.CTRL_LEFT_)); // terminator
+		pairs.add(Pair.of(List.of(27, 91, 97), VK.SHIFT_UP___));// urxvt
+		pairs.add(Pair.of(List.of(27, 91, 98), VK.SHIFT_DOWN_));// urxvt
+		pairs.add(Pair.of(List.of(27, 91, 99), VK.SHIFT_RIGHT));// urxvt
+		pairs.add(Pair.of(List.of(27, 91, 100), VK.SHIFT_LEFT_));// urxvt
 		pairs.add(Pair.of(List.of(27, 91, 50, 126), VK.INS__));
 		pairs.add(Pair.of(List.of(27, 91, 51, 126), VK.DEL__));
 		pairs.add(Pair.of(List.of(27, 91, 53, 126), VK.PGUP_));
@@ -52,7 +91,7 @@ public class Keyboard {
 		pairs.add(Pair.of(List.of(27, 91, 68), VK.LEFT_));
 		pairs.add(Pair.of(List.of(27, 91, 70), VK.END__));
 		pairs.add(Pair.of(List.of(27, 91, 72), VK.HOME_));
-		pairs.add(Pair.of(List.of(27, 106), VK.ALT_J____));
+		pairs.add(Pair.of(List.of(27, 106), VK.ALT_J____)); // alt-j
 		pairs.add(Pair.of(List.of(127), VK.BKSP_));
 
 		for (Pair<List<Integer>, VK> pair : pairs)

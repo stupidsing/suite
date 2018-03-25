@@ -111,10 +111,11 @@ public class DevMain {
 							else
 								return st.text(text).offsetCoord(c(ox, oy + viewSizeY)).cursorCoord(c(cx, cy + viewSizeY));
 						} else if (vk == VK.ALT_J____) {
-							int cy1 = cy + 1;
-							int index = text.index(0, cy1) - 1;
+							int index = text.index(cx, cy);
+							while (index < text.length() && text.at(index) != '\n')
+								index++;
 							Text text1 = text.splice(index, 1, "");
-							return st.text(text1).cursorCoord(text1.coord(text1.index(0, cy1) - 1));
+							return st.text(text1).cursorCoord(text1.coord(index));
 						} else if (vk == VK.BKSP_) {
 							int index = text.index(cx, cy);
 							if (0 < index) {
@@ -124,15 +125,15 @@ public class DevMain {
 								return st;
 						} else if (vk == VK.DEL__)
 							return st.text(text.splice(cc, 1, ""));
-						else if (ch != null)
+						else if (vk == VK.CTRL_Q____)
+							return Fail.t();
+						else if (vk == VK.CTRL_Z____) {
+							State parent0 = st.previous;
+							State parent1 = parent0 != null ? parent0 : st;
+							return new State(parent1.previous, parent1.text, oc, parent1.cursorCoord);
+						} else if (ch != null)
 							if (ch == 13)
 								return st.text(text.splice(cc, 0, "\n")).cursorCoord(c(0, cy + 1));
-							else if (ch == 26) { // ctrl-Z
-								State parent0 = st.previous;
-								State parent1 = parent0 != null ? parent0 : st;
-								return new State(parent1.previous, parent1.text, oc, parent1.cursorCoord);
-							} else if (ch == 'q')
-								return Fail.t();
 							else
 								return st.text(text.splice(cc, 0, Character.toString(ch))).cursorCoord(c(cx + 1, cy));
 						else
@@ -224,8 +225,8 @@ public class DevMain {
 		}
 
 		private String get(int px, int py, int length) {
-			int i0 = index(px, py);
-			int ix = index(0, py + 1) - 1;
+			int i0 = starts[py] + px;
+			int ix = ends[py];
 			return new String(Chars_.toArray(length, i_ -> {
 				int i = i_ + i0;
 				return i < ix ? text.charAt(i) : ' ';
