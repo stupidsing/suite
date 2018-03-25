@@ -166,8 +166,10 @@ public class DevMain {
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						return st.cursor(text.index(cc.t0, cc.t1));
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						int ox_ = sat(ox, cx - viewSizeX + 1, cx);
-						int oy_ = sat(oy, cy - viewSizeY + 1, cy);
+						int x0 = Math.max(0, cx - viewSizeX + 1);
+						int y0 = Math.max(0, cy - viewSizeY + 1);
+						int ox_ = sat(ox, x0, cx);
+						int oy_ = sat(oy, y0, cy);
 						return st.offset(ox_, oy_);
 					})));
 
