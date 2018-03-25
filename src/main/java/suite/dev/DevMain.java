@@ -3,6 +3,8 @@ package suite.dev;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
+import java.util.function.Predicate;
+
 import com.sun.jna.Native;
 
 import suite.adt.pair.Fixie_.FixieFun3;
@@ -93,17 +95,11 @@ public class DevMain {
 							return st.cursor(0);
 						else if (vk == VK.CTRL_END__)
 							return st.cursor(text.length());
-						else if (vk == VK.CTRL_LEFT_) {
-							int index = text.index(cx, cy), index1;
-							while (0 <= (index1 = index - 1) && Character.isJavaIdentifierPart(text.at(index = index1)))
-								;
-							return st.cursor(index);
-						} else if (vk == VK.CTRL_RIGHT) {
-							int index = text.index(cx, cy), index1;
-							while ((index1 = index + 1) < text.length() && Character.isJavaIdentifierPart(text.at(index = index1)))
-								;
-							return st.cursor(index);
-						} else if (vk == VK.CTRL_UP___) {
+						else if (vk == VK.CTRL_LEFT_)
+							return st.cursor(text.scan(text.index(cx, cy), -1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
+						else if (vk == VK.CTRL_RIGHT)
+							return st.cursor(text.scan(text.index(cx, cy), 1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
+						else if (vk == VK.CTRL_UP___) {
 							int oy1 = max(cy - viewSizeY + 1, 0);
 							if (oy != oy1)
 								return st.offset(ox, oy1);
@@ -283,6 +279,14 @@ public class DevMain {
 		private Text splice(int i0, int i1, IRopeList<Character> s) {
 			int i1_ = min(i1, length());
 			return text(text.subList(0, i0).concat(s.concat(text.subList(i1_, 0))));
+		}
+
+		private int scan(int index, int dir, Predicate<Character> pred) {
+			int size = text.size();
+			int index1;
+			while (0 <= (index1 = index + dir) && index1 < size && !pred.test(text.get(index = index1)))
+				;
+			return index1;
 		}
 
 		private int index(int px, int py) {
