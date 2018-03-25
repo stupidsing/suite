@@ -286,7 +286,7 @@ public class DevMain {
 			int index1;
 			while (0 <= (index1 = index + dir) && index1 < size && !pred.test(text.get(index = index1)))
 				;
-			return index1;
+			return index;
 		}
 
 		private int index(int px, int py) {

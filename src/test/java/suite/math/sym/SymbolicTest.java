@@ -38,6 +38,7 @@ public class SymbolicTest {
 	@Test
 	public void test1() {
 		verifySimplify("(x + 1) ^ 2", "x * x + 2 * x + 1", y, x, d, c, b, a);
+		verifySimplify("(x + 1) ^ 3", "x * x * x + 3 * x * x + 3 * x + 1", y, x, d, c, b, a);
 	}
 
 	@Test
