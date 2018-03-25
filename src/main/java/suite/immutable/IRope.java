@@ -87,9 +87,10 @@ public class IRope<T> {
 			ropes = List_.concat(rope0.ropes, rope1.ropes);
 		else {
 			IRopeList<T> ts = rope0.ts.concat(rope1.ts);
-			if (maxBranchFactor <= ts.size()) {
+			int size = ts.size();
+			if (maxBranchFactor <= size) {
 				IRopeList<T> left = ts.subList(0, minBranchFactor);
-				IRopeList<T> right = ts.subList(minBranchFactor, 0);
+				IRopeList<T> right = ts.subList(minBranchFactor, size);
 				ropes = List.of(new IRope<>(left), new IRope<>(right));
 			} else
 				ropes = List.of(new IRope<>(ts));
@@ -143,7 +144,7 @@ public class IRope<T> {
 			rope = rope_;
 		}
 
-		return meldRight(new IRope<>(rope.ts.subList(p, 0)), deque);
+		return meldRight(new IRope<>(rope.ts.subList(p, rope.weight)), deque);
 	}
 
 	private static <T> IRope<T> meldLeft(Deque<IRope<T>> queue, IRope<T> rope) {

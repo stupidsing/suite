@@ -76,9 +76,9 @@ public class DevMain {
 			FixieFun3<VK, Character, State, State> mutate = (vk, ch, state) -> state //
 					.apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						if (vk == VK.LEFT_)
-							return st.cursor(cx - 1, cy);
+							return st.cursor(text.index(cx, cy) - 1);
 						else if (vk == VK.RIGHT)
-							return st.cursor(cx + 1, cy);
+							return st.cursor(text.index(cx, cy) + 1);
 						else if (vk == VK.UP___)
 							return st.cursor(cx, cy - 1);
 						else if (vk == VK.DOWN_)
@@ -254,7 +254,8 @@ public class DevMain {
 			if (ch == '\n' || wrapSize < p - p0.get())
 				lf.sink(p);
 		}
-		lf.sink(size);
+		if (1 < size - p0.get())
+			lf.sink(size);
 		return new Text(text, starts.toInts().toArray(), ends.toInts().toArray());
 	}
 
@@ -279,8 +280,9 @@ public class DevMain {
 		}
 
 		private Text splice(int i0, int i1, IRopeList<Character> s) {
-			int i1_ = min(i1, length());
-			return text(text.subList(0, i0).concat(s.concat(text.subList(i1_, 0))));
+			int length = length();
+			int i1_ = min(i1, length);
+			return text(text.subList(0, i0).concat(s.concat(text.subList(i1_, length))));
 		}
 
 		private int scan(int index, int dir, Predicate<Character> pred) {
@@ -339,9 +341,7 @@ public class DevMain {
 			}
 
 			public IRopeList<Character> subList(int i0, int ix) {
-				int s_ = i0 + (i0 < 0 ? size : 0);
-				int e_ = ix + (ix <= 0 ? size : 0);
-				return ropeList(s.substring(s_, e_));
+				return ropeList(s.substring(i0, ix));
 			}
 
 			public IRopeList<Character> concat(IRopeList<Character> list) {
