@@ -253,7 +253,7 @@ public class DevMain {
 			sb.append("\n");
 		}
 
-		return new Text(sb.toString(), starts, ends);
+		return new Text(ropeList(sb.toString()), starts, ends);
 	}
 
 	private class Text {
@@ -261,8 +261,8 @@ public class DevMain {
 		private int[] starts;
 		private int[] ends;
 
-		private Text(String text, int[] starts, int[] ends) {
-			this.text = ropeList(text);
+		private Text(IRopeList<Character> text, int[] starts, int[] ends) {
+			this.text = text;
 			this.starts = starts;
 			this.ends = ends;
 		}
@@ -305,8 +305,8 @@ public class DevMain {
 			return starts.length;
 		}
 
-		private char at(int arg0) {
-			return text.get(arg0);
+		private char at(int index) {
+			return text.get(index);
 		}
 
 		private int length() {
