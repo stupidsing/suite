@@ -123,7 +123,23 @@ public class DevMain {
 						} else if (vk == VK.BKSP_) {
 							int index = text.index(cx, cy);
 							return 0 < index ? st.splice(index - 1, index, "") : st;
-						} else if (vk == VK.DEL__)
+						} else if (vk == VK.ALT_UP___)
+							if (0 < cy) {
+								int i0 = text.start(cy - 1);
+								int i1 = text.start(cy);
+								int i2 = text.start(cy + 1);
+								return st.splice(i2, i2, text.text.substring(i0, i1)).splice(i0, i1, "");
+							} else
+								return st;
+						else if (vk == VK.ALT_DOWN_)
+							if (cy < text.length()) {
+								int i0 = text.start(cy);
+								int i1 = text.start(cy + 1);
+								int i2 = text.start(cy + 2);
+								return st.splice(i1, i2, "").splice(i0, i0, text.text.substring(i1, i2));
+							} else
+								return st;
+						else if (vk == VK.DEL__)
 							return st.splice(1, "");
 						else if (vk == VK.CTRL_K____)
 							return st.splice(text.index(cx, cy), text.end(cy), "");
