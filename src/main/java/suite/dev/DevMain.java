@@ -16,6 +16,7 @@ import suite.ansi.Keyboard;
 import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
 import suite.ansi.Termios;
+import suite.immutable.IRope.IRopeList;
 import suite.primitive.Chars_;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
@@ -118,17 +119,17 @@ public class DevMain {
 							int index = text.index(cx, cy);
 							while (index < text.length() && text.at(index) != '\n')
 								index++;
-							Text text1 = text.splice(index, index + 1, "");
+							Text text1 = text.splice(index, index + 1, empty);
 							return st.text(text1).cursorCoord(text1.coord(index));
 						} else if (vk == VK.BKSP_) {
 							int index = text.index(cx, cy);
-							return 0 < index ? st.splice(index - 1, index, "") : st;
+							return 0 < index ? st.splice(index - 1, index, empty) : st;
 						} else if (vk == VK.ALT_UP___)
 							if (0 < cy) {
 								int i0 = text.start(cy - 1);
 								int i1 = text.start(cy);
 								int i2 = text.start(cy + 1);
-								return st.splice(i2, i2, text.text.substring(i0, i1)).splice(i0, i1, "");
+								return st.splice(i2, i2, text.text.subList(i0, i1)).splice(i0, i1, empty);
 							} else
 								return st;
 						else if (vk == VK.ALT_DOWN_)
@@ -136,17 +137,17 @@ public class DevMain {
 								int i0 = text.start(cy);
 								int i1 = text.start(cy + 1);
 								int i2 = text.start(cy + 2);
-								return st.splice(i1, i2, "").splice(i0, i0, text.text.substring(i1, i2));
+								return st.splice(i1, i2, empty).splice(i0, i0, text.text.subList(i1, i2));
 							} else
 								return st;
 						else if (vk == VK.DEL__)
-							return st.splice(1, "");
+							return st.splice(1, empty);
 						else if (vk == VK.CTRL_K____)
-							return st.splice(text.index(cx, cy), text.end(cy), "");
+							return st.splice(text.index(cx, cy), text.end(cy), empty);
 						else if (vk == VK.CTRL_U____)
-							return st.splice(text.start(cy), text.index(cx, cy), "");
+							return st.splice(text.start(cy), text.index(cx, cy), empty);
 						else if (vk == VK.CTRL_D____)
-							return st.splice(text.index(0, cy), text.index(0, cy + 1), "");
+							return st.splice(text.index(0, cy), text.index(0, cy + 1), empty);
 						else if (vk == VK.CTRL_Y____)
 							return next != null ? next : st;
 						else if (vk == VK.CTRL_Z____) {
@@ -161,9 +162,9 @@ public class DevMain {
 								char ch_;
 								while ((ch_ = text.at(ix)) == ' ' || ch_ == '\t')
 									ix++;
-								return st.splice(0, "\n" + text.text.substring(i0, ix));
+								return st.splice(0, ropeList("\n").concat(text.text.subList(i0, ix)));
 							} else
-								return st.splice(0, Character.toString(ch));
+								return st.splice(0, ropeList(Character.toString(ch)));
 						else
 							return st;
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
@@ -195,12 +196,12 @@ public class DevMain {
 			this.cursorCoord = cursorCoord;
 		}
 
-		private State splice(int deletes, String s) {
+		private State splice(int deletes, IRopeList<Character> s) {
 			int index = text.index(cursorCoord.t0, cursorCoord.t1);
 			return splice(index, index + deletes, s);
 		}
 
-		private State splice(int i0, int ix, String s) {
+		private State splice(int i0, int ix, IRopeList<Character> s) {
 			int cursorIndex0 = text.index(cursorCoord.t0, cursorCoord.t1);
 			int cursorIndex1;
 			if (cursorIndex0 < i0)
@@ -208,7 +209,7 @@ public class DevMain {
 			else if (cursorIndex0 < ix)
 				cursorIndex1 = i0;
 			else
-				cursorIndex1 = cursorIndex0 - ix + i0 + s.length();
+				cursorIndex1 = cursorIndex0 - ix + i0 + s.size();
 			Text text1 = text.splice(i0, ix, s);
 			return text(text1).cursorCoord(text1.coord(cursorIndex1));
 		}
@@ -235,8 +236,8 @@ public class DevMain {
 		}
 	}
 
-	private Text text(String text) {
-		return text(Arrays.asList(text.split("\n")));
+	private Text text(IRopeList<Character> text) {
+		return text(Arrays.asList(text.toString().split("\n")));
 	}
 
 	private Text text(List<String> lines) {
@@ -256,12 +257,12 @@ public class DevMain {
 	}
 
 	private class Text {
-		private String text;
+		private IRopeList<Character> text;
 		private int[] starts;
 		private int[] ends;
 
 		private Text(String text, int[] starts, int[] ends) {
-			this.text = text;
+			this.text = ropeList(text);
 			this.starts = starts;
 			this.ends = ends;
 		}
@@ -271,14 +272,13 @@ public class DevMain {
 			int ix = end(py);
 			return new String(Chars_.toArray(length, i_ -> {
 				int i = i_ + i0;
-				return i < ix ? text.charAt(i) : ' ';
+				return i < ix ? text.get(i) : ' ';
 			}));
 		}
 
-		private Text splice(int i0, int i1, String s) {
-			int length = length();
-			int i1_ = min(i1, length);
-			return text(text.substring(0, i0) + s + text.substring(i1_, length));
+		private Text splice(int i0, int i1, IRopeList<Character> s) {
+			int i1_ = min(i1, length());
+			return text(text.subList(0, i0).concat(s.concat(text.subList(i1_, 0))));
 		}
 
 		private int index(int px, int py) {
@@ -306,12 +306,41 @@ public class DevMain {
 		}
 
 		private char at(int arg0) {
-			return text.charAt(arg0);
+			return text.get(arg0);
 		}
 
 		private int length() {
-			return text.length();
+			return text.size();
 		}
+	}
+
+	private IRopeList<Character> empty = ropeList("");
+
+	private IRopeList<Character> ropeList(String s) {
+		return new IRopeList<>() {
+			public int size() {
+				return s.length();
+			}
+
+			public Character get(int index) {
+				return s.charAt(index);
+			}
+
+			public IRopeList<Character> subList(int i0, int ix) {
+				int size = s.length();
+				int s_ = i0 + (i0 < 0 ? size : 0);
+				int e_ = ix + (ix <= 0 ? size : 0);
+				return ropeList(s.substring(s_, e_));
+			}
+
+			public IRopeList<Character> concat(IRopeList<Character> list) {
+				return ropeList(s + list.toString());
+			}
+
+			public String toString() {
+				return s;
+			}
+		};
 	}
 
 	private static IntIntPair c(int x, int y) {
