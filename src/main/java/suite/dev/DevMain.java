@@ -118,25 +118,27 @@ public class DevMain {
 							int index = text.index(cx, cy);
 							while (index < text.length() && text.at(index) != '\n')
 								index++;
-							Text text1 = text.splice(index, 1, "");
+							Text text1 = text.splice(index, index + 1, "");
 							return st.text(text1).cursorCoord(text1.coord(index));
 						} else if (vk == VK.BKSP_) {
 							int index = text.index(cx, cy);
-							return 0 < index ? st.splice(index - 1, 1, "") : st;
+							return 0 < index ? st.splice(index - 1, index, "") : st;
 						} else if (vk == VK.DEL__)
 							return st.splice(1, "");
-						else if (vk == VK.CTRL_C____)
-							return Fail.t();
-						else if (vk == VK.CTRL_D____) {
-							int p0 = text.index(0, cy);
-							int px = text.index(0, cy + 1);
-							return st.splice(p0, px - p0, "");
-						} else if (vk == VK.CTRL_Y____)
+						else if (vk == VK.CTRL_K____)
+							return st.splice(text.index(cx, cy), text.end(cy), "");
+						else if (vk == VK.CTRL_U____)
+							return st.splice(text.start(cy), text.index(cx, cy), "");
+						else if (vk == VK.CTRL_D____)
+							return st.splice(text.index(0, cy), text.index(0, cy + 1), "");
+						else if (vk == VK.CTRL_Y____)
 							return next != null ? next : st;
 						else if (vk == VK.CTRL_Z____) {
 							State prev1 = prev != null ? prev : st;
 							return new State(prev1.prev, st, prev1.text, oc, prev1.cursorCoord);
-						} else if (ch != null)
+						} else if (vk == VK.CTRL_C____)
+							return Fail.t();
+						else if (ch != null)
 							if (ch == 13) {
 								int i0 = text.index(0, cy);
 								int ix = i0;
@@ -178,29 +180,27 @@ public class DevMain {
 		}
 
 		private State splice(int deletes, String s) {
-			return splice(text.index(cursorCoord.t0, cursorCoord.t1), deletes, s);
+			int index = text.index(cursorCoord.t0, cursorCoord.t1);
+			return splice(index, index + deletes, s);
 		}
 
-		private State splice(int index, int deletes, String s) {
+		private State splice(int i0, int ix, String s) {
 			int cursorIndex0 = text.index(cursorCoord.t0, cursorCoord.t1);
 			int cursorIndex1;
-			if (cursorIndex0 < index)
+			if (cursorIndex0 < i0)
 				cursorIndex1 = cursorIndex0;
-			else if (cursorIndex0 < index + deletes)
-				cursorIndex1 = index;
+			else if (cursorIndex0 < ix)
+				cursorIndex1 = i0;
 			else
-				cursorIndex1 = cursorIndex0 - deletes + s.length();
-			Text text1 = text.splice(index, deletes, s);
+				cursorIndex1 = cursorIndex0 - ix + i0 + s.length();
+			Text text1 = text.splice(i0, ix, s);
 			return text(text1).cursorCoord(text1.coord(cursorIndex1));
 		}
 
 		private State text(Text text) {
-			State state = this;
-			for (int i = 0; i < 16; i++)
-				if (state != null)
-					state = state.prev;
-				else
-					break;
+			State state = this, state1;
+			for (int i = 0; i < 16 && (state1 = state.prev) != null; i++)
+				state = state1;
 			if (state != null)
 				state.prev = null;
 			return new State(this, null, text, offsetCoord, cursorCoord);
@@ -259,10 +259,10 @@ public class DevMain {
 			}));
 		}
 
-		private Text splice(int index, int deletes, String s) {
+		private Text splice(int i0, int i1, String s) {
 			int length = length();
-			int i1 = min(index + deletes, length);
-			return text(text.substring(0, index) + s + text.substring(i1, length));
+			int i1_ = min(i1, length);
+			return text(text.substring(0, i0) + s + text.substring(i1_, length));
 		}
 
 		private int index(int px, int py) {

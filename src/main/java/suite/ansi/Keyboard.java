@@ -27,8 +27,10 @@ public class Keyboard {
 		CTRL_DOWN_, //
 		CTRL_END__, //
 		CTRL_HOME_, //
+		CTRL_K____, //
 		CTRL_LEFT_, //
 		CTRL_Q____, //
+		CTRL_U____, //
 		CTRL_RIGHT, //
 		CTRL_UP___, //
 		CTRL_V____, //
@@ -58,7 +60,9 @@ public class Keyboard {
 		List<Pair<List<Integer>, VK>> pairs = new ArrayList<>();
 		pairs.add(Pair.of(List.of(3), VK.CTRL_C____));
 		pairs.add(Pair.of(List.of(4), VK.CTRL_D____));
+		pairs.add(Pair.of(List.of(11), VK.CTRL_K____));
 		pairs.add(Pair.of(List.of(17), VK.CTRL_Q____));
+		pairs.add(Pair.of(List.of(21), VK.CTRL_U____));
 		pairs.add(Pair.of(List.of(22), VK.CTRL_V____));
 		pairs.add(Pair.of(List.of(23), VK.CTRL_W____));
 		pairs.add(Pair.of(List.of(24), VK.CTRL_X____));
