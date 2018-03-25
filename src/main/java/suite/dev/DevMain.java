@@ -11,7 +11,7 @@ import java.util.List;
 import com.sun.jna.Native;
 
 import suite.adt.pair.Fixie_.FixieFun3;
-import suite.adt.pair.Fixie_.FixieFun5;
+import suite.adt.pair.Fixie_.FixieFun6;
 import suite.ansi.Keyboard;
 import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
@@ -49,7 +49,7 @@ public class DevMain {
 			termios.clear();
 			Keyboard keyboard = new Keyboard(libc);
 
-			Sink<State> redraw = state -> state.apply((st, prev, text, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
+			Sink<State> redraw = state -> state.apply((st, prev, next, text, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
 				String[] lines = Ints_ //
 						.range(viewSizeY) //
 						.map(screenY -> text.get(ox, oy + screenY, viewSizeX).replace('\t', ' ')) //
@@ -67,11 +67,11 @@ public class DevMain {
 				return null;
 			})));
 
-			State state0 = new State(null, text(input), c(0, 0), c(0, 0));
+			State state0 = new State(null, null, text(input), c(0, 0), c(0, 0));
 			redraw.sink(state0);
 
 			FixieFun3<VK, Character, State, State> mutate = (vk, ch, state) -> state //
-					.apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+					.apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						if (vk == VK.LEFT_)
 							return st.cursorCoord(c(cx - 1, cy));
 						else if (vk == VK.RIGHT)
@@ -127,10 +127,11 @@ public class DevMain {
 							return st.text(text.splice(cc, 1, ""));
 						else if (vk == VK.CTRL_C____)
 							return Fail.t();
+						else if (vk == VK.CTRL_Y____)
+							return next != null ? next : st;
 						else if (vk == VK.CTRL_Z____) {
-							State parent0 = st.previous;
-							State parent1 = parent0 != null ? parent0 : st;
-							return new State(parent1.previous, parent1.text, oc, parent1.cursorCoord);
+							State prev1 = prev != null ? prev : st;
+							return new State(prev1.prev, st, prev1.text, oc, prev1.cursorCoord);
 						} else if (ch != null)
 							if (ch == 13)
 								return st.text(text.splice(cc, 0, "\n")).cursorCoord(c(0, cy + 1));
@@ -138,12 +139,12 @@ public class DevMain {
 								return st.text(text.splice(cc, 0, Character.toString(ch))).cursorCoord(c(cx + 1, cy));
 						else
 							return st;
-					}))).apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int nLines = text.nLines();
 						int cy_ = sat(cy, nLines);
 						int cx_ = cy_ < nLines ? sat(cx, text.lineLength(cy_)) : 0;
 						return st.cursorCoord(c(cx_, cy_));
-					}))).apply((st, prev, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int ox_ = sat(ox, cx - viewSizeX + 1, cx);
 						int oy_ = sat(oy, cy - viewSizeY + 1, cy);
 						return st.offsetCoord(c(ox_, oy_));
@@ -156,13 +157,15 @@ public class DevMain {
 	}
 
 	private class State {
-		private State previous;
+		private State prev;
+		private State next;
 		private Text text;
 		private IntIntPair offsetCoord;
 		private IntIntPair cursorCoord;
 
-		private State(State previous, Text text, IntIntPair offsetCoord, IntIntPair cursorCoord) {
-			this.previous = previous;
+		private State(State prev, State next, Text text, IntIntPair offsetCoord, IntIntPair cursorCoord) {
+			this.prev = prev;
+			this.next = next;
 			this.text = text;
 			this.offsetCoord = offsetCoord;
 			this.cursorCoord = cursorCoord;
@@ -172,24 +175,24 @@ public class DevMain {
 			State state = this;
 			for (int i = 0; i < 16; i++)
 				if (state != null)
-					state = state.previous;
+					state = state.prev;
 				else
 					break;
 			if (state != null)
-				state.previous = null;
-			return new State(this, text, offsetCoord, cursorCoord);
+				state.prev = null;
+			return new State(this, null, text, offsetCoord, cursorCoord);
 		}
 
 		private State offsetCoord(IntIntPair offsetCoord) {
-			return new State(previous, text, offsetCoord, cursorCoord);
+			return new State(prev, next, text, offsetCoord, cursorCoord);
 		}
 
 		private State cursorCoord(IntIntPair cursorCoord) {
-			return new State(previous, text, offsetCoord, cursorCoord);
+			return new State(prev, next, text, offsetCoord, cursorCoord);
 		}
 
-		private <R> R apply(FixieFun5<State, State, Text, IntIntPair, IntIntPair, R> fun) {
-			return fun.apply(this, previous, text, offsetCoord, cursorCoord);
+		private <R> R apply(FixieFun6<State, State, State, Text, IntIntPair, IntIntPair, R> fun) {
+			return fun.apply(this, prev, next, text, offsetCoord, cursorCoord);
 		}
 	}
 
