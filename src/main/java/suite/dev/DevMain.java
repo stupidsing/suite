@@ -87,7 +87,11 @@ public class DevMain {
 						else if (vk == VK.HOME_)
 							return st.cursorCoord(c(0, cy));
 						else if (vk == VK.END__)
-							return st.cursorCoord(text.coord(text.ends[cy]));
+							return st.cursorCoord(text.coord(text.end(cy)));
+						else if (vk == VK.CTRL_HOME_)
+							return st.cursorCoord(text.coord(0));
+						else if (vk == VK.CTRL_END__)
+							return st.cursorCoord(text.coord(text.length()));
 						else if (vk == VK.CTRL_LEFT_) {
 							int index = text.index(cx, cy), index1;
 							while (0 <= (index1 = index - 1) && Character.isJavaIdentifierPart(text.at(index = index1)))
@@ -133,9 +137,14 @@ public class DevMain {
 							State prev1 = prev != null ? prev : st;
 							return new State(prev1.prev, st, prev1.text, oc, prev1.cursorCoord);
 						} else if (ch != null)
-							if (ch == 13)
-								return st.splice(cc, 0, "\n");
-							else
+							if (ch == 13) {
+								int i0 = text.index(0, cy);
+								int ix = i0;
+								char ch_;
+								while ((ch_ = text.at(ix)) == ' ' || ch_ == '\t')
+									ix++;
+								return st.splice(cc, 0, "\n" + text.text.substring(i0, ix));
+							} else
 								return st.splice(cc, 0, "" + ch);
 						else
 							return st;
@@ -242,8 +251,8 @@ public class DevMain {
 		}
 
 		private String get(int px, int py, int length) {
-			int i0 = starts[py] + px;
-			int ix = ends[py];
+			int i0 = start(py) + px;
+			int ix = end(py);
 			return new String(Chars_.toArray(length, i_ -> {
 				int i = i_ + i0;
 				return i < ix ? text.charAt(i) : ' ';
@@ -251,24 +260,29 @@ public class DevMain {
 		}
 
 		private Text splice(int index, int deletes, String s) {
-			int length = text.length();
+			int length = length();
 			int i1 = min(index + deletes, length);
 			return text(text.substring(0, index) + s + text.substring(i1, length));
 		}
 
 		private int index(int px, int py) {
-			if (py < nLines())
-				return min(starts[py] + px, ends[py]);
-			else
-				return text.length();
+			return min(start(py) + px, end(py));
 		}
 
 		private IntIntPair coord(int index) {
 			int nLines = nLines();
 			int y = 0, y1;
-			while ((y1 = y + 1) < nLines && starts[y1] <= index)
+			while ((y1 = y + 1) <= nLines && start(y1) <= index)
 				y = y1;
-			return c(index - starts[y], y);
+			return c(index - start(y), y);
+		}
+
+		private int start(int y) {
+			return y < nLines() ? starts[y] : length();
+		}
+
+		private int end(int y) {
+			return y < nLines() ? ends[y] : length();
 		}
 
 		private int nLines() {
