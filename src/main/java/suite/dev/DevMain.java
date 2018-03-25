@@ -3,11 +3,6 @@ package suite.dev;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.List;
-
 import com.sun.jna.Native;
 
 import suite.adt.pair.Fixie_.FixieFun3;
@@ -17,18 +12,22 @@ import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
 import suite.ansi.Termios;
 import suite.immutable.IRope.IRopeList;
+import suite.os.FileUtil;
 import suite.primitive.Chars_;
+import suite.primitive.IntMutable;
+import suite.primitive.IntPrimitives.IntSink;
+import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.util.Fail;
 import suite.util.FunUtil.Sink;
-import suite.util.Rethrow;
 
 // mvn compile exec:java -Dexec.mainClass=suite.dev.DevMain -Dexec.args="${COLUMNS} ${LINES}"
 public class DevMain {
 
 	private LibcJna libc = (LibcJna) Native.loadLibrary("c", LibcJna.class);
 
+	private int wrapSize = 80;
 	private int viewSizeX;
 	private int viewSizeY;
 
@@ -44,7 +43,8 @@ public class DevMain {
 	}
 
 	private void run() {
-		List<String> input = Rethrow.ex(() -> Files.readAllLines(Paths.get("src/main/java/suite/dev/DevMain.java")));
+		String input = FileUtil.read("src/main/java/suite/dev/DevMain.java");
+		Text inputText = text(ropeList(input));
 
 		try (Termios termios = new Termios(libc);) {
 			termios.clear();
@@ -68,7 +68,7 @@ public class DevMain {
 				return null;
 			})));
 
-			State state0 = new State(null, null, text(input), c(0, 0), c(0, 0));
+			State state0 = new State(null, null, inputText, c(0, 0), c(0, 0));
 			redraw.sink(state0);
 
 			FixieFun3<VK, Character, State, State> mutate = (vk, ch, state) -> state //
@@ -242,23 +242,22 @@ public class DevMain {
 	}
 
 	private Text text(IRopeList<Character> text) {
-		return text(Arrays.asList(text.toString().split("\n")));
-	}
-
-	private Text text(List<String> lines) {
-		int size = lines.size();
-		int[] starts = new int[size];
-		int[] ends = new int[size];
-		StringBuilder sb = new StringBuilder();
-
-		for (int i = 0; i < size; i++) {
-			starts[i] = sb.length();
-			sb.append(lines.get(i));
-			ends[i] = sb.length();
-			sb.append("\n");
+		IntsBuilder starts = new IntsBuilder();
+		IntsBuilder ends = new IntsBuilder();
+		IntMutable p0 = IntMutable.of(-1);
+		int size = text.size();
+		IntSink lf = px -> {
+			starts.append(p0.get() + 1);
+			ends.append(px);
+			p0.update(px);
+		};
+		for (int p = 0; p < size; p++) {
+			char ch = text.get(p);
+			if (ch == '\n' || wrapSize < p - p0.get())
+				lf.sink(p);
 		}
-
-		return new Text(ropeList(sb.toString()), starts, ends);
+		lf.sink(size);
+		return new Text(text, starts.toInts().toArray(), ends.toInts().toArray());
 	}
 
 	private class Text {
