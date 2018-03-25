@@ -317,9 +317,11 @@ public class DevMain {
 	private IRopeList<Character> empty = ropeList("");
 
 	private IRopeList<Character> ropeList(String s) {
+		int size = s.length();
+
 		return new IRopeList<>() {
 			public int size() {
-				return s.length();
+				return size;
 			}
 
 			public Character get(int index) {
@@ -327,7 +329,6 @@ public class DevMain {
 			}
 
 			public IRopeList<Character> subList(int i0, int ix) {
-				int size = s.length();
 				int s_ = i0 + (i0 < 0 ? size : 0);
 				int e_ = ix + (ix <= 0 ? size : 0);
 				return ropeList(s.substring(s_, e_));
