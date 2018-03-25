@@ -103,13 +103,13 @@ public class DevMain {
 							if (oy != oy1)
 								return st.offsetCoord(c(ox, oy1));
 							else
-								return st.text(text).offsetCoord(c(ox, oy - viewSizeY)).cursorCoord(c(cx, cy - viewSizeY));
+								return st.offsetCoord(c(ox, oy - viewSizeY)).cursorCoord(c(cx, cy - viewSizeY));
 						} else if (vk == VK.CTRL_DOWN_) {
 							int oy1 = min(cy, text.nLines());
 							if (oy != oy1)
 								return st.offsetCoord(c(ox, oy1));
 							else
-								return st.text(text).offsetCoord(c(ox, oy + viewSizeY)).cursorCoord(c(cx, cy + viewSizeY));
+								return st.offsetCoord(c(ox, oy + viewSizeY)).cursorCoord(c(cx, cy + viewSizeY));
 						} else if (vk == VK.ALT_J____) {
 							int index = text.index(cx, cy);
 							while (index < text.length() && text.at(index) != '\n')
@@ -118,25 +118,25 @@ public class DevMain {
 							return st.text(text1).cursorCoord(text1.coord(index));
 						} else if (vk == VK.BKSP_) {
 							int index = text.index(cx, cy);
-							if (0 < index) {
-								IntIntPair cc1 = text.coord(index - 1);
-								return st.text(text.splice(cc1, 1, "")).cursorCoord(cc1);
-							} else
-								return st;
+							return 0 < index ? st.splice(index - 1, 1, "") : st;
 						} else if (vk == VK.DEL__)
-							return st.text(text.splice(cc, 1, ""));
+							return st.splice(cc, 1, "");
 						else if (vk == VK.CTRL_C____)
 							return Fail.t();
-						else if (vk == VK.CTRL_Y____)
+						else if (vk == VK.CTRL_D____) {
+							int p0 = text.index(0, cy);
+							int px = text.index(0, cy + 1);
+							return st.splice(p0, px - p0, "");
+						} else if (vk == VK.CTRL_Y____)
 							return next != null ? next : st;
 						else if (vk == VK.CTRL_Z____) {
 							State prev1 = prev != null ? prev : st;
 							return new State(prev1.prev, st, prev1.text, oc, prev1.cursorCoord);
 						} else if (ch != null)
 							if (ch == 13)
-								return st.text(text.splice(cc, 0, "\n")).cursorCoord(c(0, cy + 1));
+								return st.splice(cc, 0, "\n");
 							else
-								return st.text(text.splice(cc, 0, Character.toString(ch))).cursorCoord(c(cx + 1, cy));
+								return st.splice(cc, 0, "" + ch);
 						else
 							return st;
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
@@ -169,6 +169,23 @@ public class DevMain {
 			this.text = text;
 			this.offsetCoord = offsetCoord;
 			this.cursorCoord = cursorCoord;
+		}
+
+		private State splice(IntIntPair coord, int deletes, String s) {
+			return splice(text.index(coord.t0, coord.t1), deletes, s);
+		}
+
+		private State splice(int index, int deletes, String s) {
+			int cursorIndex0 = text.index(cursorCoord.t0, cursorCoord.t1);
+			int cursorIndex1;
+			if (cursorIndex0 < index)
+				cursorIndex1 = cursorIndex0;
+			else if (cursorIndex0 < index + deletes)
+				cursorIndex1 = index;
+			else
+				cursorIndex1 = cursorIndex0 - deletes + s.length();
+			Text text1 = text.splice(index, deletes, s);
+			return text(text1).cursorCoord(text1.coord(cursorIndex1));
 		}
 
 		private State text(Text text) {
@@ -236,10 +253,6 @@ public class DevMain {
 			}));
 		}
 
-		private Text splice(IntIntPair p, int deletes, String s) {
-			return splice(index(p.t0, p.t1), deletes, s);
-		}
-
 		private Text splice(int index, int deletes, String s) {
 			int length = text.length();
 			int i1 = min(index + deletes, length);
@@ -256,7 +269,7 @@ public class DevMain {
 		private IntIntPair coord(int index) {
 			int nLines = nLines();
 			int y = 0, y1;
-			while ((y1 = y + 1) < nLines && starts[y1] < index)
+			while ((y1 = y + 1) < nLines && starts[y1] <= index)
 				y = y1;
 			return c(index - starts[y], y);
 		}
