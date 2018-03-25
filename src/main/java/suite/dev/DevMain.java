@@ -140,10 +140,7 @@ public class DevMain {
 						else
 							return st;
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						int nLines = text.nLines();
-						int cy_ = sat(cy, nLines);
-						int cx_ = cy_ < nLines ? sat(cx, text.lineLength(cy_)) : 0;
-						return st.cursorCoord(c(cx_, cy_));
+						return st.cursorCoord(text.coord(text.index(cc.t0, cc.t1)));
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int ox_ = sat(ox, cx - viewSizeX + 1, cx);
 						int oy_ = sat(oy, cy - viewSizeY + 1, cy);
@@ -278,10 +275,6 @@ public class DevMain {
 			return starts.length;
 		}
 
-		private int lineLength(int y) {
-			return ends[y] - starts[y];
-		}
-
 		private char at(int arg0) {
 			return text.charAt(arg0);
 		}
@@ -293,10 +286,6 @@ public class DevMain {
 
 	private static IntIntPair c(int x, int y) {
 		return IntIntPair.of(x, y);
-	}
-
-	private static int sat(int x, int max) {
-		return sat(x, 0, max);
 	}
 
 	private static int sat(int x, int min, int max) {
