@@ -145,7 +145,7 @@ public class DevMain {
 									ix++;
 								return st.splice(cc, 0, "\n" + text.text.substring(i0, ix));
 							} else
-								return st.splice(cc, 0, "" + ch);
+								return st.splice(cc, 0, Character.toString(ch));
 						else
 							return st;
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
