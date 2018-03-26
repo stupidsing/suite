@@ -165,7 +165,8 @@ public class DevMain {
 						else
 							return st;
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						return st.cursor(cc.t0, cc.t1);
+						IntIntPair cc_ = text.coord(text.index(cx, cy));
+						return st.cursor(cc_.t0, cc_.t1);
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int x0 = Math.max(0, cx - viewSizeX + 1);
 						int y0 = Math.max(0, cy - viewSizeY + 1);
