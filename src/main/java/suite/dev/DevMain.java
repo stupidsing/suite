@@ -76,10 +76,12 @@ public class DevMain {
 
 			FixieFun3<VK, Character, State, State> mutate = (vk, ch, state) -> state //
 					.apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+						int ci = text.index(cx, cy);
+
 						if (vk == VK.LEFT_)
-							return st.cursor(text.index(cx, cy) - 1);
+							return st.cursor(ci - 1);
 						else if (vk == VK.RIGHT)
-							return st.cursor(text.index(cx, cy) + 1);
+							return st.cursor(ci + 1);
 						else if (vk == VK.UP___)
 							return st.cursor(cx, cy - 1);
 						else if (vk == VK.DOWN_)
@@ -89,17 +91,17 @@ public class DevMain {
 						else if (vk == VK.PGDN_)
 							return st.cursor(cx, cy + viewSizeY);
 						else if (vk == VK.HOME_)
-							return st.cursor(0, cy);
+							return st.cursor(text.startOfLine(ci));
 						else if (vk == VK.END__)
-							return st.cursor(text.end(cy));
+							return st.cursor(text.endOfLine(ci));
 						else if (vk == VK.CTRL_HOME_)
 							return st.cursor(0);
 						else if (vk == VK.CTRL_END__)
 							return st.cursor(text.length());
 						else if (vk == VK.CTRL_LEFT_)
-							return st.cursor(text.scanNext(text.index(cx, cy), -1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
+							return st.cursor(text.scanNext(ci, -1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
 						else if (vk == VK.CTRL_RIGHT)
-							return st.cursor(text.scanNext(text.index(cx, cy), 1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
+							return st.cursor(text.scanNext(ci, 1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
 						else if (vk == VK.CTRL_UP___) {
 							int oy1 = max(cy - viewSizeY + 1, 0);
 							if (oy != oy1)
@@ -113,11 +115,11 @@ public class DevMain {
 							else
 								return st.offset(ox, oy + viewSizeY).cursor(cx, cy + viewSizeY);
 						} else if (vk == VK.ALT_J____) {
-							int index = text.scan(text.index(cx, cy), 1, ch_ -> ch_ == '\n');
+							int index = text.endOfLine(ci);
 							Text text1 = text.splice(index, index + 1, empty);
 							return st.text(text1).cursor(index);
 						} else if (vk == VK.BKSP_) {
-							int index = text.index(cx, cy);
+							int index = ci;
 							return 0 < index ? st.splice(index - 1, index, empty) : st;
 						} else if (vk == VK.ALT_UP___)
 							if (0 < cy) {
@@ -138,11 +140,11 @@ public class DevMain {
 						else if (vk == VK.DEL__)
 							return st.splice(1, empty);
 						else if (vk == VK.CTRL_K____)
-							return st.splice(text.index(cx, cy), text.end(cy), empty);
+							return st.splice(ci, text.endOfLine(ci), empty);
 						else if (vk == VK.CTRL_U____)
-							return st.splice(text.start(cy), text.index(cx, cy), empty);
+							return st.splice(text.startOfLine(cy), ci, empty);
 						else if (vk == VK.CTRL_D____)
-							return st.splice(text.index(0, cy), text.index(0, cy + 1), empty);
+							return st.splice(text.startOfLine(cy), text.nextLine(cy), empty);
 						else if (vk == VK.CTRL_Y____)
 							return next != null ? next : st;
 						else if (vk == VK.CTRL_Z____) {
@@ -152,7 +154,7 @@ public class DevMain {
 							return Fail.t();
 						else if (ch != null)
 							if (ch == 13) {
-								int i0 = text.index(0, cy);
+								int i0 = text.startOfLine(ci);
 								int ix = i0;
 								char ch_;
 								while ((ch_ = text.at(ix)) == ' ' || ch_ == '\t')
@@ -163,7 +165,7 @@ public class DevMain {
 						else
 							return st;
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						return st.cursor(text.index(cc.t0, cc.t1));
+						return st.cursor(cc.t0, cc.t1);
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int x0 = Math.max(0, cx - viewSizeX + 1);
 						int y0 = Math.max(0, cy - viewSizeY + 1);
@@ -283,14 +285,37 @@ public class DevMain {
 			return text(text.left(i0).concat(s.concat(text.right(i1_))));
 		}
 
+		private int prevLine(int index) {
+			return startOfLine(prevLineFeed(index));
+		}
+
+		private int nextLine(int index) {
+			return nextLineFeed(index) + 1;
+		}
+
+		private int startOfLine(int index) {
+			return prevLineFeed(index) + 1;
+		}
+
+		private int endOfLine(int index) {
+			return nextLineFeed(index);
+		}
+
+		private int prevLineFeed(int index) {
+			return scanNext(index, -1, ch -> ch == '\n');
+		}
+
+		private int nextLineFeed(int index) {
+			return scan(index, 1, ch -> ch == '\n');
+		}
+
 		private int scanNext(int index, int dir, Predicate<Character> pred) {
 			return scan(index + dir, dir, pred);
 		}
 
 		private int scan(int index, int dir, Predicate<Character> pred) {
-			int size = text.size();
 			int index1;
-			while (0 <= (index1 = index + dir) && index1 < size && !pred.test(text.get(index)))
+			while (!pred.test(text.get(index)) && 0 <= (index1 = index + dir) && index1 < text.size())
 				index = index1;
 			return index;
 		}
