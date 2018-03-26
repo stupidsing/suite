@@ -102,19 +102,15 @@ public class DevMain {
 							return st.cursor(text.scanNext(ci, -1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
 						else if (vk == VK.CTRL_RIGHT)
 							return st.cursor(text.scanNext(ci, 1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
-						else if (vk == VK.CTRL_UP___) {
-							int oy1 = max(cy - viewSizeY + 1, 0);
-							if (oy != oy1)
-								return st.offset(ox, oy1);
-							else
-								return st.offset(ox, oy - viewSizeY).cursor(cx, cy - viewSizeY);
-						} else if (vk == VK.CTRL_DOWN_) {
-							int oy1 = min(cy, text.nLines());
-							if (oy != oy1)
-								return st.offset(ox, oy1);
-							else
-								return st.offset(ox, oy + viewSizeY).cursor(cx, cy + viewSizeY);
-						} else if (vk == VK.ALT_J____) {
+						else if (vk == VK.CTRL_UP___)
+							return st.offset(ox, oy - 1).cursor(cx, cy - 1);
+						else if (vk == VK.CTRL_DOWN_)
+							return st.offset(ox, oy + 1).cursor(cx, cy + 1);
+						else if (vk == VK.F7___)
+							return st.offset(ox, max(cy - viewSizeY + 1, 0));
+						else if (vk == VK.F8___)
+							return st.offset(ox, min(cy, text.nLines()));
+						else if (vk == VK.ALT_J____) {
 							int index = text.endOfLine(ci);
 							Text text1 = text.splice(index, index + 1, empty);
 							return st.text(text1).cursor(index);

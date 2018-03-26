@@ -41,6 +41,8 @@ public class Keyboard {
 		DEL__, //
 		DOWN_, //
 		END__, //
+		F7___, //
+		F8___, //
 		HOME_, //
 		INS__, //
 		LEFT_, //
@@ -77,6 +79,8 @@ public class Keyboard {
 		pairs.add(Pair.of(List.of(27, 79, 98), VK.CTRL_DOWN_));// urxvt
 		pairs.add(Pair.of(List.of(27, 79, 99), VK.CTRL_RIGHT));// urxvt
 		pairs.add(Pair.of(List.of(27, 79, 100), VK.CTRL_LEFT_));// urxvt
+		pairs.add(Pair.of(List.of(27, 91, 49, 56, 126), VK.F7___)); // terminator
+		pairs.add(Pair.of(List.of(27, 91, 49, 57, 126), VK.F8___)); // terminator
 		pairs.add(Pair.of(List.of(27, 91, 49, 59, 50, 65), VK.SHIFT_UP___)); // terminator
 		pairs.add(Pair.of(List.of(27, 91, 49, 59, 50, 66), VK.SHIFT_DOWN_)); // terminator
 		pairs.add(Pair.of(List.of(27, 91, 49, 59, 50, 67), VK.SHIFT_RIGHT)); // terminator
