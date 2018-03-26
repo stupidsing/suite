@@ -121,23 +121,23 @@ public class DevMain {
 						} else if (vk == VK.BKSP_) {
 							int index = ci;
 							return 0 < index ? st.splice(index - 1, index, empty) : st;
-						} else if (vk == VK.ALT_UP___)
-							if (0 < cy) {
-								int i1 = text.startOfLine(ci);
+						} else if (vk == VK.ALT_UP___) {
+							int i1 = text.startOfLine(ci);
+							if (0 < i1) {
 								int i0 = text.prevLine(i1);
 								int i2 = text.nextLine(i1);
 								return st.splice(i2, i2, text.text.subList(i0, i1)).splice(i0, i1, empty);
 							} else
 								return st;
-						else if (vk == VK.ALT_DOWN_)
-							if (cy < text.length()) {
-								int i0 = text.startOfLine(ci);
-								int i1 = text.nextLine(i0);
+						} else if (vk == VK.ALT_DOWN_) {
+							int i0 = text.startOfLine(ci);
+							int i1 = text.nextLine(i0);
+							if (i1 < text.length()) {
 								int i2 = text.nextLine(i1);
 								return st.splice(i1, i2, empty).splice(i0, i0, text.text.subList(i1, i2));
 							} else
 								return st;
-						else if (vk == VK.DEL__)
+						} else if (vk == VK.DEL__)
 							return st.splice(1, empty);
 						else if (vk == VK.CTRL_K____)
 							return st.splice(ci, text.endOfLine(ci), empty);
@@ -165,7 +165,7 @@ public class DevMain {
 						else
 							return st;
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						IntIntPair cc_ = text.coord(text.index(cx, cy));
+						IntIntPair cc_ = text.coord(sat(text.index(cx, cy), 0, text.length()));
 						return st.cursor(cc_.t0, cc_.t1);
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int x0 = Math.max(0, cx - viewSizeX + 1);
@@ -315,9 +315,8 @@ public class DevMain {
 		}
 
 		private int scan(int index, int dir, Predicate<Character> pred) {
-			int index1;
-			while (!pred.test(text.get(index)) && 0 <= (index1 = index + dir) && index1 < text.size())
-				index = index1;
+			while (0 <= index && index < text.size() && !pred.test(text.get(index)))
+				index += dir;
 			return index;
 		}
 
