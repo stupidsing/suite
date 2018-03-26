@@ -123,17 +123,17 @@ public class DevMain {
 							return 0 < index ? st.splice(index - 1, index, empty) : st;
 						} else if (vk == VK.ALT_UP___)
 							if (0 < cy) {
-								int i0 = text.start(cy - 1);
-								int i1 = text.start(cy);
-								int i2 = text.start(cy + 1);
+								int i1 = text.startOfLine(ci);
+								int i0 = text.prevLine(i1);
+								int i2 = text.nextLine(i1);
 								return st.splice(i2, i2, text.text.subList(i0, i1)).splice(i0, i1, empty);
 							} else
 								return st;
 						else if (vk == VK.ALT_DOWN_)
 							if (cy < text.length()) {
-								int i0 = text.start(cy);
-								int i1 = text.start(cy + 1);
-								int i2 = text.start(cy + 2);
+								int i0 = text.startOfLine(ci);
+								int i1 = text.nextLine(i0);
+								int i2 = text.nextLine(i1);
 								return st.splice(i1, i2, empty).splice(i0, i0, text.text.subList(i1, i2));
 							} else
 								return st;
