@@ -13,6 +13,7 @@ import suite.ansi.Keyboard;
 import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
 import suite.ansi.Termios;
+import suite.immutable.IRope;
 import suite.immutable.IRope.IRopeList;
 import suite.os.FileUtil;
 import suite.primitive.Chars_;
@@ -46,7 +47,7 @@ public class DevMain {
 
 	private void run() {
 		String input = FileUtil.read("src/main/java/suite/dev/DevMain.java");
-		Text inputText = text(ropeList(input));
+		Text inputText = text(IRope.ropeList(input));
 
 		try (Termios termios = new Termios(libc);) {
 			termios.clear();
@@ -156,9 +157,9 @@ public class DevMain {
 								char ch_;
 								while ((ch_ = text.at(ix)) == ' ' || ch_ == '\t')
 									ix++;
-								return st.splice(0, ropeList("\n").concat(text.text.subList(i0, ix)));
+								return st.splice(0, IRope.ropeList("\n").concat(text.text.subList(i0, ix)));
 							} else
-								return st.splice(0, ropeList(Character.toString(ch)));
+								return st.splice(0, IRope.ropeList(Character.toString(ch)));
 						else
 							return st;
 					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
@@ -278,9 +279,8 @@ public class DevMain {
 		}
 
 		private Text splice(int i0, int i1, IRopeList<Character> s) {
-			int length = length();
-			int i1_ = min(i1, length);
-			return text(text.subList(0, i0).concat(s.concat(text.subList(i1_, length))));
+			int i1_ = min(i1, length());
+			return text(text.left(i0).concat(s.concat(text.right(i1_))));
 		}
 
 		private int scanNext(int index, int dir, Predicate<Character> pred) {
@@ -328,33 +328,7 @@ public class DevMain {
 		}
 	}
 
-	private IRopeList<Character> empty = ropeList("");
-
-	private IRopeList<Character> ropeList(String s) {
-		int size = s.length();
-
-		return new IRopeList<>() {
-			public int size() {
-				return size;
-			}
-
-			public Character get(int index) {
-				return s.charAt(index);
-			}
-
-			public IRopeList<Character> subList(int i0, int ix) {
-				return ropeList(s.substring(i0, ix));
-			}
-
-			public IRopeList<Character> concat(IRopeList<Character> list) {
-				return ropeList(s + list.toString());
-			}
-
-			public String toString() {
-				return s;
-			}
-		};
-	}
+	private IRopeList<Character> empty = IRope.ropeList("");
 
 	private static IntIntPair c(int x, int y) {
 		return IntIntPair.of(x, y);

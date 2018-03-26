@@ -29,6 +29,40 @@ public class IRope<T> {
 		public IRopeList<T> subList(int start, int end);
 
 		public IRopeList<T> concat(IRopeList<T> list);
+
+		public default IRopeList<T> left(int p) {
+			return subList(0, p);
+		}
+
+		public default IRopeList<T> right(int p) {
+			return subList(p, size());
+		}
+	}
+
+	public static IRopeList<Character> ropeList(String s) {
+		int size = s.length();
+
+		return new IRopeList<>() {
+			public int size() {
+				return size;
+			}
+
+			public Character get(int index) {
+				return s.charAt(index);
+			}
+
+			public IRopeList<Character> subList(int i0, int ix) {
+				return ropeList(s.substring(i0, ix));
+			}
+
+			public IRopeList<Character> concat(IRopeList<Character> list) {
+				return ropeList(s + list.toString());
+			}
+
+			public String toString() {
+				return s;
+			}
+		};
 	}
 
 	// minBranchFactor <= ts.size() && ts.size() < maxBranchFactor
