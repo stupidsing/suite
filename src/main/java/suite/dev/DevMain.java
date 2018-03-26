@@ -30,7 +30,7 @@ public class DevMain {
 
 	private LibcJna libc = (LibcJna) Native.loadLibrary("c", LibcJna.class);
 
-	private int wrapSize = 80;
+	private int wrapSize = 132;
 	private int viewSizeX;
 	private int viewSizeY;
 
@@ -142,9 +142,9 @@ public class DevMain {
 						else if (vk == VK.CTRL_K____)
 							return st.splice(ci, text.endOfLine(ci), empty);
 						else if (vk == VK.CTRL_U____)
-							return st.splice(text.startOfLine(cy), ci, empty);
+							return st.splice(text.startOfLine(ci), ci, empty);
 						else if (vk == VK.CTRL_D____)
-							return st.splice(text.startOfLine(cy), text.nextLine(cy), empty);
+							return st.splice(text.startOfLine(ci), text.nextLine(ci), empty);
 						else if (vk == VK.CTRL_Y____)
 							return next != null ? next : st;
 						else if (vk == VK.CTRL_Z____) {
