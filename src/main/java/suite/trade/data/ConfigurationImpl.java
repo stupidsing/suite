@@ -1,6 +1,6 @@
 package suite.trade.data;
 
-import static suite.util.Friends.*;
+import static suite.util.Friends.min;
 
 import java.util.HashMap;
 import java.util.HashSet;
