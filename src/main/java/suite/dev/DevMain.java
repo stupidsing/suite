@@ -53,7 +53,7 @@ public class DevMain {
 			termios.clear();
 			Keyboard keyboard = new Keyboard(libc);
 
-			Sink<State> redraw = state -> state.apply((st, prev, next, text, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
+			Sink<State> redraw = state -> state.apply((st, undo, redo, text, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
 				String[] lines = Ints_ //
 						.range(viewSizeY) //
 						.map(screenY -> text.get(ox, oy + screenY, viewSizeX).replace('\t', ' ')) //
@@ -75,7 +75,7 @@ public class DevMain {
 			redraw.sink(state0);
 
 			FixieFun3<VK, Character, State, State> mutate = (vk, ch, state) -> state //
-					.apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+					.apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int ci = text.index(cx, cy);
 
 						if (vk == VK.LEFT_)
@@ -142,10 +142,10 @@ public class DevMain {
 						else if (vk == VK.CTRL_D____)
 							return st.splice(text.startOfLine(ci), text.nextLine(ci), empty);
 						else if (vk == VK.CTRL_Y____)
-							return next != null ? next : st;
+							return redo != null ? redo : st;
 						else if (vk == VK.CTRL_Z____) {
-							State prev1 = prev != null ? prev : st;
-							return new State(prev1.prev, st, prev1.text, oc, prev1.cursorCoord);
+							State undo1 = undo != null ? undo : st;
+							return new State(undo1.undo, st, undo1.text, oc, undo1.cursorCoord);
 						} else if (vk == VK.CTRL_C____)
 							return Fail.t();
 						else if (ch != null)
@@ -160,10 +160,10 @@ public class DevMain {
 								return st.splice(0, IRope.ropeList(Character.toString(ch)));
 						else
 							return st;
-					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+					}))).apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						IntIntPair cc_ = text.coord(sat(text.index(cx, cy), 0, text.length()));
 						return st.cursor(cc_.t0, cc_.t1);
-					}))).apply((st, prev, next, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+					}))).apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						int x0 = Math.max(0, cx - viewSizeX + 1);
 						int y0 = Math.max(0, cy - viewSizeY + 1);
 						int ox_ = sat(ox, x0, cx);
@@ -178,15 +178,15 @@ public class DevMain {
 	}
 
 	private class State {
-		private State prev;
-		private State next;
+		private State undo;
+		private State redo;
 		private Text text;
 		private IntIntPair offsetCoord;
 		private IntIntPair cursorCoord;
 
-		private State(State prev, State next, Text text, IntIntPair offsetCoord, IntIntPair cursorCoord) {
-			this.prev = prev;
-			this.next = next;
+		private State(State undo, State redo, Text text, IntIntPair offsetCoord, IntIntPair cursorCoord) {
+			this.undo = undo;
+			this.redo = redo;
 			this.text = text;
 			this.offsetCoord = offsetCoord;
 			this.cursorCoord = cursorCoord;
@@ -212,15 +212,15 @@ public class DevMain {
 
 		private State text(Text text) {
 			State state = this, state1;
-			for (int i = 0; i < 16 && (state1 = state.prev) != null; i++)
+			for (int i = 0; i < 16 && (state1 = state.undo) != null; i++)
 				state = state1;
 			if (state != null)
-				state.prev = null;
+				state.undo = null;
 			return new State(this, null, text, offsetCoord, cursorCoord);
 		}
 
 		private State offset(int ox, int oy) {
-			return new State(prev, next, text, c(ox, oy), cursorCoord);
+			return new State(undo, redo, text, c(ox, oy), cursorCoord);
 		}
 
 		private State cursor(int index) {
@@ -229,11 +229,11 @@ public class DevMain {
 		}
 
 		private State cursor(int cx, int cy) {
-			return new State(prev, next, text, offsetCoord, c(cx, cy));
+			return new State(undo, redo, text, offsetCoord, c(cx, cy));
 		}
 
 		private <R> R apply(FixieFun6<State, State, State, Text, IntIntPair, IntIntPair, R> fun) {
-			return fun.apply(this, prev, next, text, offsetCoord, cursorCoord);
+			return fun.apply(this, undo, redo, text, offsetCoord, cursorCoord);
 		}
 	}
 
