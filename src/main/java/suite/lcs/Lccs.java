@@ -2,13 +2,12 @@ package suite.lcs;
 
 import static suite.util.Friends.min;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
+import suite.primitive.adt.map.IntObjMap;
 import suite.text.RollingHashUtil;
 import suite.text.Segment;
 import suite.util.Set_;
@@ -26,11 +25,13 @@ public class Lccs {
 		int rollingSize = min(bytes0.size(), bytes1.size());
 
 		if (0 < rollingSize) {
-			Map<Integer, Segment> segments0 = hashSegments(bytes0, rollingSize);
-			Map<Integer, Segment> segments1 = hashSegments(bytes1, rollingSize);
+			IntObjMap<Segment> segments0 = hashSegments(bytes0, rollingSize);
+			IntObjMap<Segment> segments1 = hashSegments(bytes1, rollingSize);
 
 			while (true) {
-				Set<Integer> keys = Set_.intersect(segments0.keySet(), segments1.keySet());
+				Set<Integer> keys0 = segments0.streamlet().keys().toSet();
+				Set<Integer> keys1 = segments1.streamlet().keys().toSet();
+				Set<Integer> keys = Set_.intersect(keys0, keys1);
 
 				for (int key : keys) {
 					Segment segment0 = segments0.get(key);
@@ -49,8 +50,8 @@ public class Lccs {
 			return Pair.of(Segment.of(0, 0), Segment.of(0, 0));
 	}
 
-	private Map<Integer, Segment> hashSegments(Bytes bytes, int rollingSize) {
-		Map<Integer, Segment> segments = new HashMap<>();
+	private IntObjMap<Segment> hashSegments(Bytes bytes, int rollingSize) {
+		IntObjMap<Segment> segments = new IntObjMap<>();
 		int hash = rh.hash(bytes.range(0, rollingSize - 1));
 		int size = bytes.size();
 
@@ -63,8 +64,8 @@ public class Lccs {
 		return segments;
 	}
 
-	private Map<Integer, Segment> reduceSegments(Map<Integer, Segment> segments0, Bytes bytes, int rollingSize) {
-		Map<Integer, Segment> segments1 = new HashMap<>();
+	private IntObjMap<Segment> reduceSegments(IntObjMap<Segment> segments0, Bytes bytes, int rollingSize) {
+		IntObjMap<Segment> segments1 = new IntObjMap<>();
 
 		segments0.forEach((hash, segment) -> {
 			int start = segment.start, end = segment.end;
