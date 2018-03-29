@@ -22,6 +22,8 @@ import suite.util.Fail;
  */
 public class ObjChrMap<K> {
 
+	private static char EMPTYVALUE = ChrFunUtil.EMPTYVALUE;
+
 	private int size;
 	private Object[] ks;
 	private char[] vs;
@@ -44,7 +46,7 @@ public class ObjChrMap<K> {
 
 	public char computeIfAbsent(K key, Obj_Chr<K> fun) {
 		char v = get(key);
-		if (v == ChrFunUtil.EMPTYVALUE)
+		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -73,7 +75,7 @@ public class ObjChrMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		char v;
-		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
@@ -102,22 +104,22 @@ public class ObjChrMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		char v0;
-		while ((v0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
 				break;
 		char v1 = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = v1) != ChrFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != ChrFunUtil.EMPTYVALUE ? 1 : 0);
-		if (v1 == ChrFunUtil.EMPTYVALUE)
+		size += ((vs[index] = v1) != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
+		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
 					int index1 = (index + 1) & mask;
 					char v = vs[index1];
-					if (v != ChrFunUtil.EMPTYVALUE) {
+					if (v != EMPTYVALUE) {
 						Object k = ks[index1];
-						vs[index1] = ChrFunUtil.EMPTYVALUE;
+						vs[index1] = EMPTYVALUE;
 						rehash(index1);
 						store(k, v);
 					}
@@ -154,7 +156,7 @@ public class ObjChrMap<K> {
 
 			for (int i = 0; i < capacity; i++) {
 				char v_ = vs0[i];
-				if (v_ != ChrFunUtil.EMPTYVALUE)
+				if (v_ != EMPTYVALUE)
 					store(ks0[i], v_);
 			}
 		}
@@ -164,7 +166,7 @@ public class ObjChrMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		char v0;
-		while ((v0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
@@ -182,7 +184,7 @@ public class ObjChrMap<K> {
 			public boolean source2(ChrObjPair<K> pair) {
 				char v;
 				while (index < capacity)
-					if ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
+					if ((v = vs[index]) == EMPTYVALUE)
 						index++;
 					else {
 						pair.update(v, cast(ks[index++]));
@@ -196,7 +198,7 @@ public class ObjChrMap<K> {
 	private void allocate(int capacity) {
 		ks = new Object[capacity];
 		vs = new char[capacity];
-		Arrays.fill(vs, ChrFunUtil.EMPTYVALUE);
+		Arrays.fill(vs, EMPTYVALUE);
 	}
 
 	private K cast(Object o) {

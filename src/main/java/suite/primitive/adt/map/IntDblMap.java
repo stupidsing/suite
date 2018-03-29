@@ -28,6 +28,8 @@ import suite.util.FunUtil.Fun;
  */
 public class IntDblMap {
 
+	private static double EMPTYVALUE = DblFunUtil.EMPTYVALUE;
+
 	private int size;
 	private int[] ks;
 	private double[] vs;
@@ -54,7 +56,7 @@ public class IntDblMap {
 
 	public double computeIfAbsent(int key, Int_Dbl fun) {
 		double v = get(key);
-		if (v == DblFunUtil.EMPTYVALUE)
+		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -92,7 +94,7 @@ public class IntDblMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		double v;
-		while ((v = vs[index]) != DblFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -116,22 +118,22 @@ public class IntDblMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		double v0;
-		while ((v0 = vs[index]) != DblFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
 		double v1 = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = v1) != DblFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != DblFunUtil.EMPTYVALUE ? 1 : 0);
-		if (v1 == DblFunUtil.EMPTYVALUE)
+		size += ((vs[index] = v1) != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
+		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
 					int index1 = (index + 1) & mask;
 					double v_ = vs[index1];
-					if (v_ != DblFunUtil.EMPTYVALUE) {
+					if (v_ != EMPTYVALUE) {
 						int k = ks[index1];
-						vs[index1] = DblFunUtil.EMPTYVALUE;
+						vs[index1] = EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
 					}
@@ -171,7 +173,7 @@ public class IntDblMap {
 
 			for (int i = 0; i < capacity; i++) {
 				double v_ = vs0[i];
-				if (v_ != DblFunUtil.EMPTYVALUE)
+				if (v_ != EMPTYVALUE)
 					store(ks0[i], v_);
 			}
 		}
@@ -181,7 +183,7 @@ public class IntDblMap {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
 		double v0;
-		while ((v0 = vs[index]) != DblFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -199,7 +201,7 @@ public class IntDblMap {
 			public boolean source2(IntDblPair pair) {
 				double v;
 				while (index < capacity)
-					if ((v = vs[index]) == DblFunUtil.EMPTYVALUE)
+					if ((v = vs[index]) == EMPTYVALUE)
 						index++;
 					else {
 						pair.update(ks[index++], v);
@@ -213,7 +215,7 @@ public class IntDblMap {
 	private void allocate(int capacity) {
 		ks = new int[capacity];
 		vs = new double[capacity];
-		Arrays.fill(vs, DblFunUtil.EMPTYVALUE);
+		Arrays.fill(vs, EMPTYVALUE);
 	}
 
 }

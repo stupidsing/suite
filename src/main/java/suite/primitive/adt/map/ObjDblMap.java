@@ -22,6 +22,8 @@ import suite.util.Fail;
  */
 public class ObjDblMap<K> {
 
+	private static double EMPTYVALUE = DblFunUtil.EMPTYVALUE;
+
 	private int size;
 	private Object[] ks;
 	private double[] vs;
@@ -44,7 +46,7 @@ public class ObjDblMap<K> {
 
 	public double computeIfAbsent(K key, Obj_Dbl<K> fun) {
 		double v = get(key);
-		if (v == DblFunUtil.EMPTYVALUE)
+		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -73,7 +75,7 @@ public class ObjDblMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		double v;
-		while ((v = vs[index]) != DblFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
@@ -102,22 +104,22 @@ public class ObjDblMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		double v0;
-		while ((v0 = vs[index]) != DblFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
 				break;
 		double v1 = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = v1) != DblFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != DblFunUtil.EMPTYVALUE ? 1 : 0);
-		if (v1 == DblFunUtil.EMPTYVALUE)
+		size += ((vs[index] = v1) != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
+		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
 					int index1 = (index + 1) & mask;
 					double v = vs[index1];
-					if (v != DblFunUtil.EMPTYVALUE) {
+					if (v != EMPTYVALUE) {
 						Object k = ks[index1];
-						vs[index1] = DblFunUtil.EMPTYVALUE;
+						vs[index1] = EMPTYVALUE;
 						rehash(index1);
 						store(k, v);
 					}
@@ -154,7 +156,7 @@ public class ObjDblMap<K> {
 
 			for (int i = 0; i < capacity; i++) {
 				double v_ = vs0[i];
-				if (v_ != DblFunUtil.EMPTYVALUE)
+				if (v_ != EMPTYVALUE)
 					store(ks0[i], v_);
 			}
 		}
@@ -164,7 +166,7 @@ public class ObjDblMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		double v0;
-		while ((v0 = vs[index]) != DblFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
@@ -182,7 +184,7 @@ public class ObjDblMap<K> {
 			public boolean source2(DblObjPair<K> pair) {
 				double v;
 				while (index < capacity)
-					if ((v = vs[index]) == DblFunUtil.EMPTYVALUE)
+					if ((v = vs[index]) == EMPTYVALUE)
 						index++;
 					else {
 						pair.update(v, cast(ks[index++]));
@@ -196,7 +198,7 @@ public class ObjDblMap<K> {
 	private void allocate(int capacity) {
 		ks = new Object[capacity];
 		vs = new double[capacity];
-		Arrays.fill(vs, DblFunUtil.EMPTYVALUE);
+		Arrays.fill(vs, EMPTYVALUE);
 	}
 
 	private K cast(Object o) {

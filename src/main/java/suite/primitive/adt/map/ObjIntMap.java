@@ -22,6 +22,8 @@ import suite.util.Fail;
  */
 public class ObjIntMap<K> {
 
+	private static int EMPTYVALUE = IntFunUtil.EMPTYVALUE;
+
 	private int size;
 	private Object[] ks;
 	private int[] vs;
@@ -44,7 +46,7 @@ public class ObjIntMap<K> {
 
 	public int computeIfAbsent(K key, Obj_Int<K> fun) {
 		int v = get(key);
-		if (v == IntFunUtil.EMPTYVALUE)
+		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -73,7 +75,7 @@ public class ObjIntMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		int v;
-		while ((v = vs[index]) != IntFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
@@ -102,22 +104,22 @@ public class ObjIntMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		int v0;
-		while ((v0 = vs[index]) != IntFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
 				break;
 		int v1 = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = v1) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != IntFunUtil.EMPTYVALUE ? 1 : 0);
-		if (v1 == IntFunUtil.EMPTYVALUE)
+		size += ((vs[index] = v1) != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
+		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
 					int index1 = (index + 1) & mask;
 					int v = vs[index1];
-					if (v != IntFunUtil.EMPTYVALUE) {
+					if (v != EMPTYVALUE) {
 						Object k = ks[index1];
-						vs[index1] = IntFunUtil.EMPTYVALUE;
+						vs[index1] = EMPTYVALUE;
 						rehash(index1);
 						store(k, v);
 					}
@@ -154,7 +156,7 @@ public class ObjIntMap<K> {
 
 			for (int i = 0; i < capacity; i++) {
 				int v_ = vs0[i];
-				if (v_ != IntFunUtil.EMPTYVALUE)
+				if (v_ != EMPTYVALUE)
 					store(ks0[i], v_);
 			}
 		}
@@ -164,7 +166,7 @@ public class ObjIntMap<K> {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
 		int v0;
-		while ((v0 = vs[index]) != IntFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
@@ -182,7 +184,7 @@ public class ObjIntMap<K> {
 			public boolean source2(IntObjPair<K> pair) {
 				int v;
 				while (index < capacity)
-					if ((v = vs[index]) == IntFunUtil.EMPTYVALUE)
+					if ((v = vs[index]) == EMPTYVALUE)
 						index++;
 					else {
 						pair.update(v, cast(ks[index++]));
@@ -196,7 +198,7 @@ public class ObjIntMap<K> {
 	private void allocate(int capacity) {
 		ks = new Object[capacity];
 		vs = new int[capacity];
-		Arrays.fill(vs, IntFunUtil.EMPTYVALUE);
+		Arrays.fill(vs, EMPTYVALUE);
 	}
 
 	private K cast(Object o) {

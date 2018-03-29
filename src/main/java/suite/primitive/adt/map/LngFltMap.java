@@ -28,6 +28,8 @@ import suite.util.FunUtil.Fun;
  */
 public class LngFltMap {
 
+	private static float EMPTYVALUE = FltFunUtil.EMPTYVALUE;
+
 	private int size;
 	private long[] ks;
 	private float[] vs;
@@ -54,7 +56,7 @@ public class LngFltMap {
 
 	public float computeIfAbsent(long key, Lng_Flt fun) {
 		float v = get(key);
-		if (v == FltFunUtil.EMPTYVALUE)
+		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -92,7 +94,7 @@ public class LngFltMap {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
 		float v;
-		while ((v = vs[index]) != FltFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -116,22 +118,22 @@ public class LngFltMap {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
 		float v0;
-		while ((v0 = vs[index]) != FltFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
 		float v1 = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = v1) != FltFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != FltFunUtil.EMPTYVALUE ? 1 : 0);
-		if (v1 == FltFunUtil.EMPTYVALUE)
+		size += ((vs[index] = v1) != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
+		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
 					int index1 = (index + 1) & mask;
 					float v_ = vs[index1];
-					if (v_ != FltFunUtil.EMPTYVALUE) {
+					if (v_ != EMPTYVALUE) {
 						long k = ks[index1];
-						vs[index1] = FltFunUtil.EMPTYVALUE;
+						vs[index1] = EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
 					}
@@ -171,7 +173,7 @@ public class LngFltMap {
 
 			for (int i = 0; i < capacity; i++) {
 				float v_ = vs0[i];
-				if (v_ != FltFunUtil.EMPTYVALUE)
+				if (v_ != EMPTYVALUE)
 					store(ks0[i], v_);
 			}
 		}
@@ -181,7 +183,7 @@ public class LngFltMap {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
 		float v0;
-		while ((v0 = vs[index]) != FltFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -199,7 +201,7 @@ public class LngFltMap {
 			public boolean source2(LngFltPair pair) {
 				float v;
 				while (index < capacity)
-					if ((v = vs[index]) == FltFunUtil.EMPTYVALUE)
+					if ((v = vs[index]) == EMPTYVALUE)
 						index++;
 					else {
 						pair.update(ks[index++], v);
@@ -213,7 +215,7 @@ public class LngFltMap {
 	private void allocate(int capacity) {
 		ks = new long[capacity];
 		vs = new float[capacity];
-		Arrays.fill(vs, FltFunUtil.EMPTYVALUE);
+		Arrays.fill(vs, EMPTYVALUE);
 	}
 
 }

@@ -28,6 +28,8 @@ import suite.util.FunUtil.Fun;
  */
 public class LngChrMap {
 
+	private static char EMPTYVALUE = ChrFunUtil.EMPTYVALUE;
+
 	private int size;
 	private long[] ks;
 	private char[] vs;
@@ -54,7 +56,7 @@ public class LngChrMap {
 
 	public char computeIfAbsent(long key, Lng_Chr fun) {
 		char v = get(key);
-		if (v == ChrFunUtil.EMPTYVALUE)
+		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -92,7 +94,7 @@ public class LngChrMap {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
 		char v;
-		while ((v = vs[index]) != ChrFunUtil.EMPTYVALUE)
+		while ((v = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -116,22 +118,22 @@ public class LngChrMap {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
 		char v0;
-		while ((v0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				break;
 		char v1 = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = v1) != ChrFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != ChrFunUtil.EMPTYVALUE ? 1 : 0);
-		if (v1 == ChrFunUtil.EMPTYVALUE)
+		size += ((vs[index] = v1) != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
+		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
 					int index1 = (index + 1) & mask;
 					char v_ = vs[index1];
-					if (v_ != ChrFunUtil.EMPTYVALUE) {
+					if (v_ != EMPTYVALUE) {
 						long k = ks[index1];
-						vs[index1] = ChrFunUtil.EMPTYVALUE;
+						vs[index1] = EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
 					}
@@ -171,7 +173,7 @@ public class LngChrMap {
 
 			for (int i = 0; i < capacity; i++) {
 				char v_ = vs0[i];
-				if (v_ != ChrFunUtil.EMPTYVALUE)
+				if (v_ != EMPTYVALUE)
 					store(ks0[i], v_);
 			}
 		}
@@ -181,7 +183,7 @@ public class LngChrMap {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
 		char v0;
-		while ((v0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
+		while ((v0 = vs[index]) != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
@@ -199,7 +201,7 @@ public class LngChrMap {
 			public boolean source2(LngChrPair pair) {
 				char v;
 				while (index < capacity)
-					if ((v = vs[index]) == ChrFunUtil.EMPTYVALUE)
+					if ((v = vs[index]) == EMPTYVALUE)
 						index++;
 					else {
 						pair.update(ks[index++], v);
@@ -213,7 +215,7 @@ public class LngChrMap {
 	private void allocate(int capacity) {
 		ks = new long[capacity];
 		vs = new char[capacity];
-		Arrays.fill(vs, ChrFunUtil.EMPTYVALUE);
+		Arrays.fill(vs, EMPTYVALUE);
 	}
 
 }
