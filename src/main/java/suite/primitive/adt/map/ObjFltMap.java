@@ -93,11 +93,10 @@ public class ObjFltMap<K> {
 		return h;
 	}
 
-	public float put(K key, float v) {
+	public void put(K key, float v) {
 		size++;
-		float v0 = store(key, v);
+		store(key, v);
 		rehash();
-		return v0;
 	}
 
 	public void update(K key, Flt_Flt fun) {
@@ -152,28 +151,26 @@ public class ObjFltMap<K> {
 		if (capacity * 3 / 4 < size) {
 			Object[] ks0 = ks;
 			float[] vs0 = vs;
+			float v_;
+
 			allocate(capacity * 2);
 
-			for (int i = 0; i < capacity; i++) {
-				float v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+			for (int i = 0; i < capacity; i++)
+				if ((v_ = vs0[i]) != EMPTYVALUE)
 					store(ks0[i], v_);
-			}
 		}
 	}
 
-	private float store(Object key, float v1) {
+	private void store(Object key, float v1) {
 		int mask = vs.length - 1;
 		int index = key.hashCode() & mask;
-		float v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while (vs[index] != EMPTYVALUE)
 			if (!ks[index].equals(key))
 				index = index + 1 & mask;
 			else
 				Fail.t("duplicate key");
 		ks[index] = key;
 		vs[index] = v1;
-		return v0;
 	}
 
 	private FltObjSource<K> source_() {

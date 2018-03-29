@@ -88,11 +88,10 @@ public class IntObjMap<V> {
 		return h;
 	}
 
-	public V put(int key, V v1) {
+	public void put(int key, V v1) {
 		size++;
-		V v0 = cast(store(key, v1));
+		store(key, v1);
 		rehash();
-		return v0;
 	}
 
 	public void update(int key, Iterate<V> fun) {
@@ -146,28 +145,26 @@ public class IntObjMap<V> {
 		if (capacity * 3 / 4 < size) {
 			int[] ks0 = ks;
 			Object[] vs0 = vs;
+			Object o;
+
 			allocate(capacity * 2);
 
-			for (int i = 0; i < capacity; i++) {
-				Object o = vs0[i];
-				if (o != null)
+			for (int i = 0; i < capacity; i++)
+				if ((o = vs0[i]) != null)
 					store(ks0[i], o);
-			}
 		}
 	}
 
-	private Object store(int key, Object v1) {
+	private void store(int key, Object v1) {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
-		Object v0;
-		while ((v0 = vs[index]) != null)
+		while (vs[index] != null)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
-				return Fail.t("duplicate key " + key);
+				Fail.t("duplicate key " + key);
 		ks[index] = key;
 		vs[index] = v1;
-		return v0;
 	}
 
 	private IntObjSource<V> source_() {

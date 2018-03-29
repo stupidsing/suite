@@ -88,11 +88,10 @@ public class LngObjMap<V> {
 		return h;
 	}
 
-	public V put(long key, V v1) {
+	public void put(long key, V v1) {
 		size++;
-		V v0 = cast(store(key, v1));
+		store(key, v1);
 		rehash();
-		return v0;
 	}
 
 	public void update(long key, Iterate<V> fun) {
@@ -146,28 +145,26 @@ public class LngObjMap<V> {
 		if (capacity * 3 / 4 < size) {
 			long[] ks0 = ks;
 			Object[] vs0 = vs;
+			Object o;
+
 			allocate(capacity * 2);
 
-			for (int i = 0; i < capacity; i++) {
-				Object o = vs0[i];
-				if (o != null)
+			for (int i = 0; i < capacity; i++)
+				if ((o = vs0[i]) != null)
 					store(ks0[i], o);
-			}
 		}
 	}
 
-	private Object store(long key, Object v1) {
+	private void store(long key, Object v1) {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
-		Object v0;
-		while ((v0 = vs[index]) != null)
+		while (vs[index] != null)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
-				return Fail.t("duplicate key " + key);
+				Fail.t("duplicate key " + key);
 		ks[index] = key;
 		vs[index] = v1;
-		return v0;
 	}
 
 	private LngObjSource<V> source_() {

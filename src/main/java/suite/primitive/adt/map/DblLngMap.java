@@ -102,11 +102,10 @@ public class DblLngMap {
 		return v;
 	}
 
-	public long put(double key, long v) {
+	public void put(double key, long v) {
 		size++;
-		long v0 = store(key, v);
+		store(key, v);
 		rehash();
-		return v0;
 	}
 
 	@Override
@@ -169,28 +168,26 @@ public class DblLngMap {
 		if (capacity * 3 / 4 < size) {
 			double[] ks0 = ks;
 			long[] vs0 = vs;
+			long v_;
+
 			allocate(capacity * 2);
 
-			for (int i = 0; i < capacity; i++) {
-				long v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+			for (int i = 0; i < capacity; i++)
+				if ((v_ = vs0[i]) != EMPTYVALUE)
 					store(ks0[i], v_);
-			}
 		}
 	}
 
-	private long store(double key, long v1) {
+	private void store(double key, long v1) {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;
-		long v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while (vs[index] != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				Fail.t("duplicate key " + key);
 		ks[index] = key;
 		vs[index] = v1;
-		return v0;
 	}
 
 	private DblLngSource source_() {

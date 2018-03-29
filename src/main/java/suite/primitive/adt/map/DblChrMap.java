@@ -102,11 +102,10 @@ public class DblChrMap {
 		return v;
 	}
 
-	public char put(double key, char v) {
+	public void put(double key, char v) {
 		size++;
-		char v0 = store(key, v);
+		store(key, v);
 		rehash();
-		return v0;
 	}
 
 	@Override
@@ -169,28 +168,26 @@ public class DblChrMap {
 		if (capacity * 3 / 4 < size) {
 			double[] ks0 = ks;
 			char[] vs0 = vs;
+			char v_;
+
 			allocate(capacity * 2);
 
-			for (int i = 0; i < capacity; i++) {
-				char v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+			for (int i = 0; i < capacity; i++)
+				if ((v_ = vs0[i]) != EMPTYVALUE)
 					store(ks0[i], v_);
-			}
 		}
 	}
 
-	private char store(double key, char v1) {
+	private void store(double key, char v1) {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(key) & mask;
-		char v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while (vs[index] != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				Fail.t("duplicate key " + key);
 		ks[index] = key;
 		vs[index] = v1;
-		return v0;
 	}
 
 	private DblChrSource source_() {

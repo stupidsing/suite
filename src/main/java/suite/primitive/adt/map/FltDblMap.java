@@ -102,11 +102,10 @@ public class FltDblMap {
 		return v;
 	}
 
-	public double put(float key, double v) {
+	public void put(float key, double v) {
 		size++;
-		double v0 = store(key, v);
+		store(key, v);
 		rehash();
-		return v0;
 	}
 
 	@Override
@@ -169,28 +168,26 @@ public class FltDblMap {
 		if (capacity * 3 / 4 < size) {
 			float[] ks0 = ks;
 			double[] vs0 = vs;
+			double v_;
+
 			allocate(capacity * 2);
 
-			for (int i = 0; i < capacity; i++) {
-				double v_ = vs0[i];
-				if (v_ != EMPTYVALUE)
+			for (int i = 0; i < capacity; i++)
+				if ((v_ = vs0[i]) != EMPTYVALUE)
 					store(ks0[i], v_);
-			}
 		}
 	}
 
-	private double store(float key, double v1) {
+	private void store(float key, double v1) {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(key) & mask;
-		double v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
+		while (vs[index] != EMPTYVALUE)
 			if (ks[index] != key)
 				index = index + 1 & mask;
 			else
 				Fail.t("duplicate key " + key);
 		ks[index] = key;
 		vs[index] = v1;
-		return v0;
 	}
 
 	private FltDblSource source_() {
