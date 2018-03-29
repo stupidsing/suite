@@ -1,6 +1,7 @@
 package suite.math.linalg;
 
-import static suite.util.Friends.*;
+import static suite.util.Friends.min;
+
 import java.util.Arrays;
 
 import suite.math.MathUtil;

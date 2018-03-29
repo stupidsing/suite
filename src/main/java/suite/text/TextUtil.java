@@ -1,6 +1,7 @@
 package suite.text;
 
-import static suite.util.Friends.*;
+import static suite.util.Friends.min;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
