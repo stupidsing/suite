@@ -109,7 +109,7 @@ public class ObjIntMap<K> {
 				break;
 		int v1 = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v0)) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != IntFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = v1) != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != IntFunUtil.EMPTYVALUE ? 1 : 0);
 		if (v1 == IntFunUtil.EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {

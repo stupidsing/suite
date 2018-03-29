@@ -109,7 +109,7 @@ public class ObjFltMap<K> {
 				break;
 		float v1 = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v0)) != FltFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != FltFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = v1) != FltFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != FltFunUtil.EMPTYVALUE ? 1 : 0);
 		if (v1 == FltFunUtil.EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {

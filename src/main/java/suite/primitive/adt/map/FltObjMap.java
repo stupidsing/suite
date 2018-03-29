@@ -106,7 +106,7 @@ public class FltObjMap<V> {
 				break;
 		V v1 = fun.apply(cast(v0));
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(cast(v0))) != null ? 1 : 0) - (v0 != null ? 1 : 0);
+		size += ((vs[index] = v1) != null ? 1 : 0) - (v0 != null ? 1 : 0);
 		if (v1 == null)
 			new Object() {
 				public void rehash(int index) {

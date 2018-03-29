@@ -109,7 +109,7 @@ public class ObjChrMap<K> {
 				break;
 		char v1 = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = fun.apply(v0)) != ChrFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != ChrFunUtil.EMPTYVALUE ? 1 : 0);
+		size += ((vs[index] = v1) != ChrFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != ChrFunUtil.EMPTYVALUE ? 1 : 0);
 		if (v1 == ChrFunUtil.EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
