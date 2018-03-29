@@ -1,6 +1,6 @@
 package suite.editor;
 
-import static suite.util.Friends.*;
+import static suite.util.Friends.max;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
