@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
+import suite.inspect.Dump;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -75,6 +76,7 @@ public class IRope<T> {
 		this.weight = ts.size();
 		this.ts = ts;
 		this.ropes = null;
+		validate(true);
 	}
 
 	// minBranchFactor <= ropes.size() && ropes.size() < maxBranchFactor
@@ -86,6 +88,7 @@ public class IRope<T> {
 		this.weight = weight;
 		this.ts = null;
 		this.ropes = ropes;
+		validate(true);
 	}
 
 	// 0 <= p && p < weight
@@ -113,18 +116,24 @@ public class IRope<T> {
 	}
 
 	public boolean validate() {
+		return validate(false);
+	}
+
+	public boolean validate(boolean isRoot) {
 		Streamlet<IRope<T>> rs;
-		return (ts == null || ropes == null) && (false //
+		int s;
+		return (false //
 				|| depth == 0 //
-						&& weight == ts.size() //
-						&& minBranchFactor <= weight //
-						&& weight < maxBranchFactor //
-				|| depth == (rs = Read.from(ropes)).first().depth + 1 //
-						&& minBranchFactor <= rs.size() //
-						&& rs.size() < maxBranchFactor //
-						&& rs.isAll(IRope::validate) //
-						&& rs.isAll(rope -> rope.depth + 1 == depth) //
-						&& rs.toInt(Obj_Int.sum(rope -> rope.weight)) == weight) ? true : Fail.t();
+						&& weight == (s = ts.size()) //
+						&& s < maxBranchFactor //
+						&& ropes == null //
+				|| (rs = Read.from(ropes)) != null //
+						&& rs.isAll(rope -> rope.depth + 1 == depth) // //
+						&& rs.toInt(Obj_Int.sum(rope -> rope.weight)) == weight //
+						&& ts == null //
+						&& (s = rs.size()) < maxBranchFactor //
+						&& rs.isAll(IRope::validate)) //
+				&& (isRoot || minBranchFactor <= s) ? true : Fail.t(Dump.object(this));
 	}
 
 	public static <T> IRope<T> meld(IRope<T> rope0, IRope<T> rope1) {
@@ -153,14 +162,15 @@ public class IRope<T> {
 		}
 
 		List<IRope<T>> list;
+		int depth1 = depth + 1;
 		int size1 = ropes.size();
 
 		if (maxBranchFactor <= size1) {
 			List<IRope<T>> left = List_.left(ropes, minBranchFactor);
 			List<IRope<T>> right = List_.right(ropes, minBranchFactor);
-			list = List.of(new IRope<>(depth, left), new IRope<>(depth, right));
+			list = List.of(new IRope<>(depth1, left), new IRope<>(depth1, right));
 		} else
-			list = List.of(new IRope<>(depth, ropes));
+			list = List.of(new IRope<>(depth1, ropes));
 
 		return list;
 	}

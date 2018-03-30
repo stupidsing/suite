@@ -28,8 +28,7 @@ public class Dump {
 	}
 
 	/**
-	 * Dumps object content (public data and getters) through Reflection to a
-	 * log4j.
+	 * Dumps object content (public data and getters) through Reflection to a log4j.
 	 */
 	public static void out(Object object) {
 		StackTraceElement trace = Thread_.getStackTrace(3);
@@ -37,8 +36,8 @@ public class Dump {
 	}
 
 	/**
-	 * Dumps object content (public data and getters) through Reflection to a
-	 * log4j, with a descriptive name which you gave.
+	 * Dumps object content (public data and getters) through Reflection to a log4j,
+	 * with a descriptive name which you gave.
 	 */
 	public static void out(String name, Object object) {
 		StringBuilder sb = new StringBuilder();
@@ -101,39 +100,12 @@ public class Dump {
 
 				sink.sink(" [" + clazz.getSimpleName() + "]\n");
 
-				// simple listings for simple classes
-				if (Type_.isSimple(clazz))
-					return;
-
-				for (Field field : inspect.fields(clazz))
-					try {
-						String name = field.getName();
-						Object o = field.get(object);
-						Class<?> type = field.getType();
-						if (Type_.isSimple(type))
-							d(prefix + "." + name, o, type);
-						else
-							d(prefix + "." + name, o);
-					} catch (Throwable ex) {
-						sink.sink(prefix + "." + field.getName());
-						sink.sink(" caught " + ex + "\n");
-					}
-
-				for (Method method : inspect.getters(clazz)) {
-					String name = method.getName();
-					try {
-						Object o = method.invoke(object);
-						if (!(o instanceof Class<?>))
-							d(prefix + "." + name + "()", o);
-					} catch (Throwable ex) {
-						sink.sink(prefix + "." + name + "()");
-						sink.sink(" caught " + ex + "\n");
-					}
-				}
-
 				int count = 0;
 
-				if (clazz.isArray())
+				// simple listings for simple classes
+				if (Type_.isSimple(clazz))
+					;
+				else if (clazz.isArray())
 					for (int i = 0; i < Array.getLength(object); i++)
 						d(prefix + "[" + count++ + "]", Array.get(object, i));
 				else if (Collection.class.isAssignableFrom(clazz))
@@ -146,6 +118,33 @@ public class Dump {
 						d(prefix + "[" + count + "].getValue()", value);
 						count++;
 					}
+				else {
+					for (Field field : inspect.fields(clazz))
+						try {
+							String name = field.getName();
+							Object o = field.get(object);
+							Class<?> type = field.getType();
+							if (Type_.isSimple(type))
+								d(prefix + "." + name, o, type);
+							else
+								d(prefix + "." + name, o);
+						} catch (Throwable ex) {
+							sink.sink(prefix + "." + field.getName());
+							sink.sink(" caught " + ex + "\n");
+						}
+
+					for (Method method : inspect.getters(clazz)) {
+						String name = method.getName();
+						try {
+							Object o = method.invoke(object);
+							if (!(o instanceof Class<?>))
+								d(prefix + "." + name + "()", o);
+						} catch (Throwable ex) {
+							sink.sink(prefix + "." + name + "()");
+							sink.sink(" caught " + ex + "\n");
+						}
+					}
+				}
 			} finally {
 				dumpedIds.remove(id);
 			}
