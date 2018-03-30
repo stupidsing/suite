@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
-import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.List_;
 
@@ -77,8 +76,6 @@ public class IRope<T> {
 	// minBranchFactor <= ropes.size() && ropes.size() < maxBranchFactor
 	public IRope(int depth, List<IRope<T>> ropes) {
 		int weight = 0;
-		if (depth != ropes.get(0).depth + 1)
-			Fail.t();
 		for (IRope<T> rope : ropes)
 			weight += rope.weight;
 		this.depth = depth;
