@@ -115,7 +115,7 @@ public class IRope<T> {
 		return right(this, p);
 	}
 
-	public boolean validate() {
+	public boolean validateRoot() {
 		return validate(false);
 	}
 
@@ -132,12 +132,12 @@ public class IRope<T> {
 						&& rs.toInt(Obj_Int.sum(rope -> rope.weight)) == weight //
 						&& ts == null //
 						&& (s = rs.size()) < maxBranchFactor //
-						&& rs.isAll(IRope::validate)) //
+						&& rs.isAll(IRope::validateRoot)) //
 				&& (isRoot || minBranchFactor <= s) ? true : Fail.t(Dump.object(this));
 	}
 
 	public static <T> IRope<T> meld(IRope<T> rope0, IRope<T> rope1) {
-		return normalize(meld_(rope0, rope1));
+		return newRoot(meld_(rope0, rope1));
 	}
 
 	private static <T> List<IRope<T>> meld_(IRope<T> rope0, IRope<T> rope1) {
@@ -291,7 +291,7 @@ public class IRope<T> {
 		}
 	}
 
-	private static <T> IRope<T> normalize(List<IRope<T>> ropes) {
+	private static <T> IRope<T> newRoot(List<IRope<T>> ropes) {
 		IRope<T> rope = ropes.get(0);
 		return ropes.size() != 1 ? new IRope<>(rope.depth + 1, ropes) : rope;
 	}
