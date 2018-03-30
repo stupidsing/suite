@@ -121,11 +121,8 @@ public class LngSet {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(c) & mask;
 		long c0;
-		while ((c0 = vs[index]) != EMPTYVALUE)
-			if (c0 != c)
-				index = index + 1 & mask;
-			else
-				break;
+		while ((c0 = vs[index]) != EMPTYVALUE && c0 != c)
+			index = index + 1 & mask;
 		return index;
 	}
 
