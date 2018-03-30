@@ -114,19 +114,17 @@ public class IRope<T> {
 
 	public boolean validate() {
 		Streamlet<IRope<T>> rs;
-		int d;
-		return (ts == null || ropes == null) //
-				&& (false //
-						|| depth == 0 //
-								&& weight == ts.size() //
-								&& minBranchFactor <= weight //
-								&& weight < maxBranchFactor //
-						|| depth == (d = (rs = Read.from(ropes)).first().depth) + 1 //
-								&& minBranchFactor <= rs.size() //
-								&& rs.size() < maxBranchFactor //
-								&& rs.isAll(IRope::validate) //
-								&& rs.isAll(rope -> rope.depth == d) //
-								&& rs.toInt(Obj_Int.sum(rope -> rope.weight)) == weight) ? true : Fail.t();
+		return (ts == null || ropes == null) && (false //
+				|| depth == 0 //
+						&& weight == ts.size() //
+						&& minBranchFactor <= weight //
+						&& weight < maxBranchFactor //
+				|| depth == (rs = Read.from(ropes)).first().depth + 1 //
+						&& minBranchFactor <= rs.size() //
+						&& rs.size() < maxBranchFactor //
+						&& rs.isAll(IRope::validate) //
+						&& rs.isAll(rope -> rope.depth + 1 == depth) //
+						&& rs.toInt(Obj_Int.sum(rope -> rope.weight)) == weight) ? true : Fail.t();
 	}
 
 	public static <T> IRope<T> meld(IRope<T> rope0, IRope<T> rope1) {
