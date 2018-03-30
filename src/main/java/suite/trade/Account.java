@@ -107,14 +107,12 @@ public class Account {
 			assets.remove(code);
 	}
 
-	public void validate() {
+	public boolean validate() {
 		int cash = cash_();
-		if (!Trade_.isValidCash(cash))
-			Fail.t("too much leverage: " + cash);
-		assets.forEach((symbol, nShares) -> {
-			if (!Trade_.isValidStock(symbol, nShares))
-				Fail.t("no short-selling " + symbol + " " + nShares);
-		});
+		return (Trade_.isValidCash(cash) || Fail.b("too much leverage: " + cash)) //
+				&& (Read.from2(assets).isAll((symbol, nShares) -> {
+					return Trade_.isValidStock(symbol, nShares) || Fail.b("no short-selling " + symbol + " " + nShares);
+				}));
 	}
 
 	public Valuation valuation(Obj_Flt<String> priceFun) {

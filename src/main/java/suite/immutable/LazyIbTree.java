@@ -81,29 +81,28 @@ public class LazyIbTree<T> implements ITree<T> {
 		this.root = source;
 	}
 
-	public void validate() {
-		Read.from(root).sink(this::validate);
+	public boolean validate() {
+		return Read.from(root).isAll(this::validate) ? true : Fail.t();
 	}
 
-	private void validate(Slot<T> slot) {
+	private boolean validate(Slot<T> slot) {
 		List<Slot<T>> slots = slot.readSlots();
 		int size = slots.size();
 		T p = null;
 
-		if (0 < size)
-			if (size < minBranchFactor)
-				Fail.t("too few branches");
-			else if (minBranchFactor <= size)
-				Fail.t("too many branches");
+		boolean b = size == 0 || true //
+				&& (minBranchFactor <= size || Fail.b("too few branches")) //
+				&& (size < maxBranchFactor || Fail.b("too many branches"));
 
 		for (Slot<T> slot_ : slots) {
-			if (!(comparator.compare(slot.pivot, slot_.pivot) <= 0))
-				Fail.t("wrong slot");
-			validate(slot_);
-			if (p != null && !(comparator.compare(p, slot_.pivot) < 0))
-				Fail.t("wrong key order");
+			b = b //
+					&& (comparator.compare(slot.pivot, slot_.pivot) <= 0 || Fail.b("wrong slot")) //
+					&& validate(slot_) //
+					&& (p == null || comparator.compare(p, slot_.pivot) < 0 || Fail.b("wrong key order"));
 			p = slot_.pivot;
 		}
+
+		return b;
 	}
 
 	@Override
