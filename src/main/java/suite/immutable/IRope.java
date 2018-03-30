@@ -8,6 +8,10 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
+import suite.primitive.IntPrimitives.Obj_Int;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
+import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.List_;
 
@@ -106,6 +110,23 @@ public class IRope<T> {
 	// 0 <= p && p < weight
 	public IRope<T> right(int p) {
 		return right(this, p);
+	}
+
+	public boolean validate() {
+		Streamlet<IRope<T>> rs;
+		int d;
+		return (ts == null || ropes == null) //
+				&& (false //
+						|| depth == 0 //
+								&& weight == ts.size() //
+								&& minBranchFactor <= weight //
+								&& weight < maxBranchFactor //
+						|| depth == (d = (rs = Read.from(ropes)).first().depth) + 1 //
+								&& minBranchFactor <= rs.size() //
+								&& rs.size() < maxBranchFactor //
+								&& rs.isAll(IRope::validate) //
+								&& rs.isAll(rope -> rope.depth == d) //
+								&& rs.toInt(Obj_Int.sum(rope -> rope.weight)) == weight) ? true : Fail.t();
 	}
 
 	public static <T> IRope<T> meld(IRope<T> rope0, IRope<T> rope1) {
