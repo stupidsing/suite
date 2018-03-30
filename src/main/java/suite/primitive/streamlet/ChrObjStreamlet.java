@@ -170,8 +170,8 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 		return spawn().isAny(pred);
 	}
 
-	public Streamlet<Character> keys() {
-		return new Streamlet<>(() -> spawn().keys());
+	public ChrStreamlet keys() {
+		return new ChrStreamlet(() -> spawn().keys());
 	}
 
 	public ChrObjPair<V> last() {

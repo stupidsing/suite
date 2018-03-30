@@ -170,8 +170,8 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 		return spawn().isAny(pred);
 	}
 
-	public Streamlet<Double> keys() {
-		return new Streamlet<>(() -> spawn().keys());
+	public DblStreamlet keys() {
+		return new DblStreamlet(() -> spawn().keys());
 	}
 
 	public DblObjPair<V> last() {

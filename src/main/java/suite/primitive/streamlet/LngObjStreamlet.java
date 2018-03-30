@@ -170,8 +170,8 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		return spawn().isAny(pred);
 	}
 
-	public Streamlet<Long> keys() {
-		return new Streamlet<>(() -> spawn().keys());
+	public LngStreamlet keys() {
+		return new LngStreamlet(() -> spawn().keys());
 	}
 
 	public LngObjPair<V> last() {

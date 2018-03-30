@@ -67,15 +67,9 @@ public class ChrObjMap<V> {
 	}
 
 	public V get(char key) {
-		int mask = vs.length - 1;
-		int index = Character.hashCode(key) & mask;
-		Object v;
-		while ((v = vs[index]) != null)
-			if (ks[index] != key)
-				index = index + 1 & mask;
-			else
-				break;
-		return cast(v);
+		int index = index(key);
+		Object v = vs[index];
+		return v != null && ks[index] == key ? cast(v) : null;
 	}
 
 	@Override
@@ -96,14 +90,9 @@ public class ChrObjMap<V> {
 
 	public void update(char key, Iterate<V> fun) {
 		int mask = vs.length - 1;
-		int index = Character.hashCode(key) & mask;
-		Object v0;
-		while ((v0 = vs[index]) != null)
-			if (ks[index] != key)
-				index = index + 1 & mask;
-			else
-				break;
-		V v1 = fun.apply(cast(v0));
+		int index = index(key);
+		V v0 = cast(vs[index]);
+		V v1 = fun.apply(v0);
 		ks[index] = key;
 		size += ((vs[index] = v1) != null ? 1 : 0) - (v0 != null ? 1 : 0);
 		if (v1 == null)
@@ -156,15 +145,20 @@ public class ChrObjMap<V> {
 	}
 
 	private void store(char key, Object v1) {
+		int index = index(key);
+		if (vs[index] == null) {
+			ks[index] = key;
+			vs[index] = v1;
+		} else
+			Fail.t("duplicate key " + key);
+	}
+
+	private int index(char key) {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(key) & mask;
-		while (vs[index] != null)
-			if (ks[index] != key)
-				index = index + 1 & mask;
-			else
-				Fail.t("duplicate key " + key);
-		ks[index] = key;
-		vs[index] = v1;
+		while (vs[index] != null && ks[index] != key)
+			index = index + 1 & mask;
+		return index;
 	}
 
 	private ChrObjSource<V> source_() {

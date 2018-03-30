@@ -14,6 +14,7 @@ import java.util.function.Predicate;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrObjFunUtil;
 import suite.primitive.ChrObj_Chr;
 import suite.primitive.ChrPrimitives.ChrObjPredicate;
@@ -257,8 +258,11 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 		return ChrObjFunUtil.isAny(pred, source);
 	}
 
-	public Outlet<Character> keys() {
-		return map_((k, v) -> k);
+	public ChrOutlet keys() {
+		return ChrOutlet.of(() -> {
+			ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+			return next(pair) ? pair.t0 : ChrFunUtil.EMPTYVALUE;
+		});
 	}
 
 	public ChrObjPair<V> last() {

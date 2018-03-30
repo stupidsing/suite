@@ -91,15 +91,9 @@ public class IntFltMap {
 	}
 
 	public float get(int key) {
-		int mask = vs.length - 1;
-		int index = Integer.hashCode(key) & mask;
-		float v;
-		while ((v = vs[index]) != EMPTYVALUE)
-			if (ks[index] != key)
-				index = index + 1 & mask;
-			else
-				break;
-		return v;
+		int index = index(key);
+		float v = vs[index];
+		return v != EMPTYVALUE && ks[index] == key ? v : EMPTYVALUE;
 	}
 
 	public void put(int key, float v) {
@@ -115,16 +109,11 @@ public class IntFltMap {
 
 	public void update(int key, Flt_Flt fun) {
 		int mask = vs.length - 1;
-		int index = Integer.hashCode(key) & mask;
-		float v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
-			if (ks[index] != key)
-				index = index + 1 & mask;
-			else
-				break;
-		float v1 = fun.apply(v0);
+		int index = index(key);
+		float v0 = vs[index];
+		float v1 = vs[index] = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = v1) != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
+		size += (v1 != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
 		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
@@ -179,15 +168,20 @@ public class IntFltMap {
 	}
 
 	private void store(int key, float v1) {
+		int index = index(key);
+		if (vs[index] == EMPTYVALUE) {
+			ks[index] = key;
+			vs[index] = v1;
+		} else
+			Fail.t("duplicate key " + key);
+	}
+
+	private int index(int key) {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(key) & mask;
-		while (vs[index] != EMPTYVALUE)
-			if (ks[index] != key)
-				index = index + 1 & mask;
-			else
-				Fail.t("duplicate key " + key);
-		ks[index] = key;
-		vs[index] = v1;
+		while (vs[index] != EMPTYVALUE && ks[index] != key)
+			index = index + 1 & mask;
+		return index;
 	}
 
 	private IntFltSource source_() {

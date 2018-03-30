@@ -14,6 +14,7 @@ import java.util.function.Predicate;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.primitive.FltFunUtil;
 import suite.primitive.FltObjFunUtil;
 import suite.primitive.FltObj_Flt;
 import suite.primitive.FltPrimitives.FltObjPredicate;
@@ -257,8 +258,11 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 		return FltObjFunUtil.isAny(pred, source);
 	}
 
-	public Outlet<Float> keys() {
-		return map_((k, v) -> k);
+	public FltOutlet keys() {
+		return FltOutlet.of(() -> {
+			FltObjPair<V> pair = FltObjPair.of((float) 0, null);
+			return next(pair) ? pair.t0 : FltFunUtil.EMPTYVALUE;
+		});
 	}
 
 	public FltObjPair<V> last() {

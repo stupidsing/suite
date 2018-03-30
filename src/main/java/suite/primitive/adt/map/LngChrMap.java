@@ -91,15 +91,9 @@ public class LngChrMap {
 	}
 
 	public char get(long key) {
-		int mask = vs.length - 1;
-		int index = Long.hashCode(key) & mask;
-		char v;
-		while ((v = vs[index]) != EMPTYVALUE)
-			if (ks[index] != key)
-				index = index + 1 & mask;
-			else
-				break;
-		return v;
+		int index = index(key);
+		char v = vs[index];
+		return v != EMPTYVALUE && ks[index] == key ? v : EMPTYVALUE;
 	}
 
 	public void put(long key, char v) {
@@ -115,16 +109,11 @@ public class LngChrMap {
 
 	public void update(long key, Chr_Chr fun) {
 		int mask = vs.length - 1;
-		int index = Long.hashCode(key) & mask;
-		char v0;
-		while ((v0 = vs[index]) != EMPTYVALUE)
-			if (ks[index] != key)
-				index = index + 1 & mask;
-			else
-				break;
-		char v1 = fun.apply(v0);
+		int index = index(key);
+		char v0 = vs[index];
+		char v1 = vs[index] = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = v1) != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
+		size += (v1 != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
 		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
@@ -179,15 +168,20 @@ public class LngChrMap {
 	}
 
 	private void store(long key, char v1) {
+		int index = index(key);
+		if (vs[index] == EMPTYVALUE) {
+			ks[index] = key;
+			vs[index] = v1;
+		} else
+			Fail.t("duplicate key " + key);
+	}
+
+	private int index(long key) {
 		int mask = vs.length - 1;
 		int index = Long.hashCode(key) & mask;
-		while (vs[index] != EMPTYVALUE)
-			if (ks[index] != key)
-				index = index + 1 & mask;
-			else
-				Fail.t("duplicate key " + key);
-		ks[index] = key;
-		vs[index] = v1;
+		while (vs[index] != EMPTYVALUE && ks[index] != key)
+			index = index + 1 & mask;
+		return index;
 	}
 
 	private LngChrSource source_() {

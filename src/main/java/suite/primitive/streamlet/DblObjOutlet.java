@@ -14,6 +14,7 @@ import java.util.function.Predicate;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.primitive.DblFunUtil;
 import suite.primitive.DblObjFunUtil;
 import suite.primitive.DblObj_Dbl;
 import suite.primitive.DblPrimitives.DblObjPredicate;
@@ -257,8 +258,11 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		return DblObjFunUtil.isAny(pred, source);
 	}
 
-	public Outlet<Double> keys() {
-		return map_((k, v) -> k);
+	public DblOutlet keys() {
+		return DblOutlet.of(() -> {
+			DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+			return next(pair) ? pair.t0 : DblFunUtil.EMPTYVALUE;
+		});
 	}
 
 	public DblObjPair<V> last() {

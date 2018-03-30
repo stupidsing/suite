@@ -14,6 +14,7 @@ import java.util.function.Predicate;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.primitive.IntFunUtil;
 import suite.primitive.IntObjFunUtil;
 import suite.primitive.IntObj_Int;
 import suite.primitive.IntPrimitives.IntObjPredicate;
@@ -257,8 +258,11 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		return IntObjFunUtil.isAny(pred, source);
 	}
 
-	public Outlet<Integer> keys() {
-		return map_((k, v) -> k);
+	public IntOutlet keys() {
+		return IntOutlet.of(() -> {
+			IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+			return next(pair) ? pair.t0 : IntFunUtil.EMPTYVALUE;
+		});
 	}
 
 	public IntObjPair<V> last() {

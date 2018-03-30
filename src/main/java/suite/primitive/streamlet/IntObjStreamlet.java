@@ -170,8 +170,8 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 		return spawn().isAny(pred);
 	}
 
-	public Streamlet<Integer> keys() {
-		return new Streamlet<>(() -> spawn().keys());
+	public IntStreamlet keys() {
+		return new IntStreamlet(() -> spawn().keys());
 	}
 
 	public IntObjPair<V> last() {

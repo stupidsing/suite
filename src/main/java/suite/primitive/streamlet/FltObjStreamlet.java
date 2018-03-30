@@ -170,8 +170,8 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 		return spawn().isAny(pred);
 	}
 
-	public Streamlet<Float> keys() {
-		return new Streamlet<>(() -> spawn().keys());
+	public FltStreamlet keys() {
+		return new FltStreamlet(() -> spawn().keys());
 	}
 
 	public FltObjPair<V> last() {
