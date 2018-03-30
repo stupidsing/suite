@@ -16,6 +16,8 @@ import suite.primitive.streamlet.DblStreamlet;
  */
 public class DblSet {
 
+	private static double EMPTYVALUE = DblFunUtil.EMPTYVALUE;
+
 	private int size;
 	private double[] vs;
 
@@ -49,13 +51,13 @@ public class DblSet {
 
 		if (capacity * 3 / 4 < size) {
 			double[] vs0 = vs;
+			double v_;
+
 			allocate(capacity * 2);
 
-			for (int i = 0; i < capacity; i++) {
-				double v_ = vs0[i];
-				if (v_ != DblFunUtil.EMPTYVALUE)
+			for (int i = 0; i < capacity; i++)
+				if ((v_ = vs0[i]) != EMPTYVALUE)
 					add_(v_);
-			}
 		}
 
 		return add_(c);
@@ -80,7 +82,7 @@ public class DblSet {
 	public void forEach(DblSink sink) {
 		DblSource source = source_();
 		double c;
-		while ((c = source.source()) != DblFunUtil.EMPTYVALUE)
+		while ((c = source.source()) != EMPTYVALUE)
 			sink.sink(c);
 	}
 
@@ -110,18 +112,17 @@ public class DblSet {
 
 	private boolean add_(double c) {
 		int index = index(c);
-		if (0 <= index) {
+		boolean b = 0 <= index;
+		if (b)
 			vs[index] = c;
-			return true;
-		} else
-			return false;
+		return b;
 	}
 
 	private int index(double c) {
 		int mask = vs.length - 1;
 		int index = Double.hashCode(c) & mask;
 		double c0;
-		while ((c0 = vs[index]) != DblFunUtil.EMPTYVALUE)
+		while ((c0 = vs[index]) != EMPTYVALUE)
 			if (c0 != c)
 				index = index + 1 & mask;
 			else
@@ -137,16 +138,16 @@ public class DblSet {
 			public double source() {
 				double v;
 				while (index < capacity)
-					if ((v = vs[index++]) != DblFunUtil.EMPTYVALUE)
+					if ((v = vs[index++]) != EMPTYVALUE)
 						return v;
-				return DblFunUtil.EMPTYVALUE;
+				return EMPTYVALUE;
 			}
 		};
 	}
 
 	private void allocate(int capacity) {
 		vs = new double[capacity];
-		Arrays.fill(vs, DblFunUtil.EMPTYVALUE);
+		Arrays.fill(vs, EMPTYVALUE);
 	}
 
 }

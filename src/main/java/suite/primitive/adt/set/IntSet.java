@@ -16,6 +16,8 @@ import suite.primitive.streamlet.IntStreamlet;
  */
 public class IntSet {
 
+	private static int EMPTYVALUE = IntFunUtil.EMPTYVALUE;
+
 	private int size;
 	private int[] vs;
 
@@ -49,13 +51,13 @@ public class IntSet {
 
 		if (capacity * 3 / 4 < size) {
 			int[] vs0 = vs;
+			int v_;
+
 			allocate(capacity * 2);
 
-			for (int i = 0; i < capacity; i++) {
-				int v_ = vs0[i];
-				if (v_ != IntFunUtil.EMPTYVALUE)
+			for (int i = 0; i < capacity; i++)
+				if ((v_ = vs0[i]) != EMPTYVALUE)
 					add_(v_);
-			}
 		}
 
 		return add_(c);
@@ -80,7 +82,7 @@ public class IntSet {
 	public void forEach(IntSink sink) {
 		IntSource source = source_();
 		int c;
-		while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
+		while ((c = source.source()) != EMPTYVALUE)
 			sink.sink(c);
 	}
 
@@ -110,18 +112,17 @@ public class IntSet {
 
 	private boolean add_(int c) {
 		int index = index(c);
-		if (0 <= index) {
+		boolean b = 0 <= index;
+		if (b)
 			vs[index] = c;
-			return true;
-		} else
-			return false;
+		return b;
 	}
 
 	private int index(int c) {
 		int mask = vs.length - 1;
 		int index = Integer.hashCode(c) & mask;
 		int c0;
-		while ((c0 = vs[index]) != IntFunUtil.EMPTYVALUE)
+		while ((c0 = vs[index]) != EMPTYVALUE)
 			if (c0 != c)
 				index = index + 1 & mask;
 			else
@@ -137,16 +138,16 @@ public class IntSet {
 			public int source() {
 				int v;
 				while (index < capacity)
-					if ((v = vs[index++]) != IntFunUtil.EMPTYVALUE)
+					if ((v = vs[index++]) != EMPTYVALUE)
 						return v;
-				return IntFunUtil.EMPTYVALUE;
+				return EMPTYVALUE;
 			}
 		};
 	}
 
 	private void allocate(int capacity) {
 		vs = new int[capacity];
-		Arrays.fill(vs, IntFunUtil.EMPTYVALUE);
+		Arrays.fill(vs, EMPTYVALUE);
 	}
 
 }

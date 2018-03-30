@@ -16,6 +16,8 @@ import suite.primitive.streamlet.ChrStreamlet;
  */
 public class ChrSet {
 
+	private static char EMPTYVALUE = ChrFunUtil.EMPTYVALUE;
+
 	private int size;
 	private char[] vs;
 
@@ -49,13 +51,13 @@ public class ChrSet {
 
 		if (capacity * 3 / 4 < size) {
 			char[] vs0 = vs;
+			char v_;
+
 			allocate(capacity * 2);
 
-			for (int i = 0; i < capacity; i++) {
-				char v_ = vs0[i];
-				if (v_ != ChrFunUtil.EMPTYVALUE)
+			for (int i = 0; i < capacity; i++)
+				if ((v_ = vs0[i]) != EMPTYVALUE)
 					add_(v_);
-			}
 		}
 
 		return add_(c);
@@ -80,7 +82,7 @@ public class ChrSet {
 	public void forEach(ChrSink sink) {
 		ChrSource source = source_();
 		char c;
-		while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
+		while ((c = source.source()) != EMPTYVALUE)
 			sink.sink(c);
 	}
 
@@ -110,18 +112,17 @@ public class ChrSet {
 
 	private boolean add_(char c) {
 		int index = index(c);
-		if (0 <= index) {
+		boolean b = 0 <= index;
+		if (b)
 			vs[index] = c;
-			return true;
-		} else
-			return false;
+		return b;
 	}
 
 	private int index(char c) {
 		int mask = vs.length - 1;
 		int index = Character.hashCode(c) & mask;
 		char c0;
-		while ((c0 = vs[index]) != ChrFunUtil.EMPTYVALUE)
+		while ((c0 = vs[index]) != EMPTYVALUE)
 			if (c0 != c)
 				index = index + 1 & mask;
 			else
@@ -137,16 +138,16 @@ public class ChrSet {
 			public char source() {
 				char v;
 				while (index < capacity)
-					if ((v = vs[index++]) != ChrFunUtil.EMPTYVALUE)
+					if ((v = vs[index++]) != EMPTYVALUE)
 						return v;
-				return ChrFunUtil.EMPTYVALUE;
+				return EMPTYVALUE;
 			}
 		};
 	}
 
 	private void allocate(int capacity) {
 		vs = new char[capacity];
-		Arrays.fill(vs, ChrFunUtil.EMPTYVALUE);
+		Arrays.fill(vs, EMPTYVALUE);
 	}
 
 }

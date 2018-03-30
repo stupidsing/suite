@@ -16,6 +16,8 @@ import suite.primitive.streamlet.FltStreamlet;
  */
 public class FltSet {
 
+	private static float EMPTYVALUE = FltFunUtil.EMPTYVALUE;
+
 	private int size;
 	private float[] vs;
 
@@ -49,13 +51,13 @@ public class FltSet {
 
 		if (capacity * 3 / 4 < size) {
 			float[] vs0 = vs;
+			float v_;
+
 			allocate(capacity * 2);
 
-			for (int i = 0; i < capacity; i++) {
-				float v_ = vs0[i];
-				if (v_ != FltFunUtil.EMPTYVALUE)
+			for (int i = 0; i < capacity; i++)
+				if ((v_ = vs0[i]) != EMPTYVALUE)
 					add_(v_);
-			}
 		}
 
 		return add_(c);
@@ -80,7 +82,7 @@ public class FltSet {
 	public void forEach(FltSink sink) {
 		FltSource source = source_();
 		float c;
-		while ((c = source.source()) != FltFunUtil.EMPTYVALUE)
+		while ((c = source.source()) != EMPTYVALUE)
 			sink.sink(c);
 	}
 
@@ -110,18 +112,17 @@ public class FltSet {
 
 	private boolean add_(float c) {
 		int index = index(c);
-		if (0 <= index) {
+		boolean b = 0 <= index;
+		if (b)
 			vs[index] = c;
-			return true;
-		} else
-			return false;
+		return b;
 	}
 
 	private int index(float c) {
 		int mask = vs.length - 1;
 		int index = Float.hashCode(c) & mask;
 		float c0;
-		while ((c0 = vs[index]) != FltFunUtil.EMPTYVALUE)
+		while ((c0 = vs[index]) != EMPTYVALUE)
 			if (c0 != c)
 				index = index + 1 & mask;
 			else
@@ -137,16 +138,16 @@ public class FltSet {
 			public float source() {
 				float v;
 				while (index < capacity)
-					if ((v = vs[index++]) != FltFunUtil.EMPTYVALUE)
+					if ((v = vs[index++]) != EMPTYVALUE)
 						return v;
-				return FltFunUtil.EMPTYVALUE;
+				return EMPTYVALUE;
 			}
 		};
 	}
 
 	private void allocate(int capacity) {
 		vs = new float[capacity];
-		Arrays.fill(vs, FltFunUtil.EMPTYVALUE);
+		Arrays.fill(vs, EMPTYVALUE);
 	}
 
 }
