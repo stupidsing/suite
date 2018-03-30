@@ -64,7 +64,7 @@ public class LngSet {
 	}
 
 	public boolean contains(long c) {
-		return 0 <= index(c);
+		return vs[index(c)] == c;
 	}
 
 	@Override
@@ -112,9 +112,8 @@ public class LngSet {
 
 	private boolean add_(long c) {
 		int index = index(c);
-		boolean b = 0 <= index;
-		if (b)
-			vs[index] = c;
+		boolean b = vs[index] != c;
+		vs[index] = c;
 		return b;
 	}
 
@@ -126,7 +125,7 @@ public class LngSet {
 			if (c0 != c)
 				index = index + 1 & mask;
 			else
-				return -1;
+				break;
 		return index;
 	}
 

@@ -64,7 +64,7 @@ public class DblSet {
 	}
 
 	public boolean contains(double c) {
-		return 0 <= index(c);
+		return vs[index(c)] == c;
 	}
 
 	@Override
@@ -112,9 +112,8 @@ public class DblSet {
 
 	private boolean add_(double c) {
 		int index = index(c);
-		boolean b = 0 <= index;
-		if (b)
-			vs[index] = c;
+		boolean b = vs[index] != c;
+		vs[index] = c;
 		return b;
 	}
 
@@ -126,7 +125,7 @@ public class DblSet {
 			if (c0 != c)
 				index = index + 1 & mask;
 			else
-				return -1;
+				break;
 		return index;
 	}
 
