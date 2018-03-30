@@ -132,7 +132,7 @@ public class IRope<T> {
 						&& rs.toInt(Obj_Int.sum(rope -> rope.weight)) == weight //
 						&& ts == null //
 						&& (s = rs.size()) < maxBranchFactor //
-						&& rs.isAll(IRope::validateRoot)) //
+						&& rs.isAll(rope -> rope.validate(false))) //
 				&& (isRoot || minBranchFactor <= s) ? true : Fail.t(Dump.object(this));
 	}
 
