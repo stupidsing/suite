@@ -3,14 +3,13 @@ package suite.lcs;
 import static suite.util.Friends.min;
 
 import java.util.Objects;
-import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.set.IntSet;
 import suite.text.RollingHashUtil;
 import suite.text.Segment;
-import suite.util.Set_;
 
 /**
  * Longest common continuous subsequence, using a simple rolling hash method.
@@ -29,9 +28,9 @@ public class Lccs {
 			IntObjMap<Segment> segments1 = hashSegments(bytes1, rollingSize);
 
 			while (true) {
-				Set<Integer> keys0 = segments0.streamlet().keys().toSet();
-				Set<Integer> keys1 = segments1.streamlet().keys().toSet();
-				Set<Integer> keys = Set_.intersect(keys0, keys1);
+				IntSet keys0 = segments0.streamlet().keys().toSet();
+				IntSet keys1 = segments1.streamlet().keys().toSet();
+				int[] keys = IntSet.intersect(keys0, keys1).streamlet().toArray();
 
 				for (int key : keys) {
 					Segment segment0 = segments0.get(key);
@@ -70,10 +69,10 @@ public class Lccs {
 		segments0.forEach((hash, segment) -> {
 			int start = segment.start, end = segment.end;
 
-			segments1.put(rh.unroll(hash, bytes.get(start), rollingSize), Segment.of(start + 1, end));
+			segments1.update(rh.unroll(hash, bytes.get(start), rollingSize), segment0 -> Segment.of(start + 1, end));
 
 			if (start == 0)
-				segments1.put(rh.unroll(hash, bytes.get(end - 1)), Segment.of(start, end - 1));
+				segments1.update(rh.unroll(hash, bytes.get(end - 1)), segment0 -> Segment.of(start, end - 1));
 		});
 
 		return segments1;
