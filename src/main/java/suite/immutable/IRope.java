@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
+import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.List_;
 
@@ -16,10 +17,10 @@ public class IRope<T> {
 	private static int maxBranchFactor = 64;
 	private static int minBranchFactor = maxBranchFactor / 2;
 
-	private int depth;
-	private int weight;
-	private IRopeList<T> ts;
-	private List<IRope<T>> ropes;
+	public final int depth;
+	public final int weight;
+	public final IRopeList<T> ts;
+	public final List<IRope<T>> ropes;
 
 	public interface IRopeList<T> {
 		public int size();
@@ -67,17 +68,22 @@ public class IRope<T> {
 
 	// minBranchFactor <= ts.size() && ts.size() < maxBranchFactor
 	public IRope(IRopeList<T> ts) {
+		this.depth = 0;
 		this.weight = ts.size();
 		this.ts = ts;
+		this.ropes = null;
 	}
 
 	// minBranchFactor <= ropes.size() && ropes.size() < maxBranchFactor
 	public IRope(int depth, List<IRope<T>> ropes) {
 		int weight = 0;
+		if (depth != ropes.get(0).depth + 1)
+			Fail.t();
 		for (IRope<T> rope : ropes)
 			weight += rope.weight;
 		this.depth = depth;
 		this.weight = weight;
+		this.ts = null;
 		this.ropes = ropes;
 	}
 
@@ -113,9 +119,9 @@ public class IRope<T> {
 		int depth = max(rope0.depth, rope1.depth);
 		List<IRope<T>> ropes;
 
-		if (rope1.depth < rope0.depth)
+		if (rope1.depth < depth)
 			ropes = List_.concat(List_.left(rope0.ropes, -1), meld_(List_.last(rope0.ropes), rope1));
-		else if (rope0.depth < rope1.depth)
+		else if (rope0.depth < depth)
 			ropes = List_.concat(meld_(rope0, List_.first(rope1.ropes)), List_.right(rope1.ropes, 1));
 		else if (0 < depth)
 			ropes = List_.concat(rope0.ropes, rope1.ropes);

@@ -32,8 +32,10 @@ public class IntObjMapTest {
 
 		IntObjSource<Integer> source = map.source();
 		IntObjPair<Integer> pair = IntObjPair.of(0, 0);
+
 		while (source.source2(pair))
 			actual.add(pair.t0 + ":" + pair.t1);
+
 		assertEquals(expected, actual);
 	}
 
