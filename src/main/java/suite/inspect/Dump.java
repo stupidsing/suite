@@ -40,7 +40,7 @@ public class Dump {
 		StringBuilder sb = new StringBuilder();
 		sb.append("Dumping ");
 		sb.append(name);
-		Dump.object(sb, "", object);
+		Dump.object("", object, sb);
 		LogUtil.info(sb.toString());
 	}
 
@@ -61,11 +61,11 @@ public class Dump {
 	 */
 	public static String object(String prefix, Object object) {
 		StringBuilder sb = new StringBuilder();
-		object(sb, prefix, object);
+		object(prefix, object, sb);
 		return sb.toString();
 	}
 
-	public static void object(StringBuilder sb, String prefix, Object object) {
+	public static void object(String prefix, Object object, StringBuilder sb) {
 		Set<Integer> dumpedIds = new HashSet<>();
 		Sink<String> sink = sb::append;
 
