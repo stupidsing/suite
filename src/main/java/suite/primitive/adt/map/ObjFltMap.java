@@ -173,14 +173,14 @@ public class ObjFltMap<K> {
 			private int index = 0;
 
 			public boolean source2(FltObjPair<K> pair) {
-				float v;
-				while (index < capacity)
-					if ((v = vs[index]) == EMPTYVALUE)
-						index++;
-					else {
-						pair.update(v, cast(ks[index++]));
+				while (index < capacity) {
+					Object k = ks[index];
+					float v = vs[index++];
+					if (v != EMPTYVALUE) {
+						pair.update(v, cast(k));
 						return true;
 					}
+				}
 				return false;
 			}
 		};

@@ -167,14 +167,14 @@ public class IntObjMap<V> {
 			private int index = 0;
 
 			public boolean source2(IntObjPair<V> pair) {
-				Object v;
-				while (index < capacity)
-					if ((v = vs[index]) == null)
-						index++;
-					else {
-						pair.update(ks[index++], cast(v));
+				while (index < capacity) {
+					int k = ks[index];
+					Object v = vs[index++];
+					if (v != null) {
+						pair.update(k, cast(v));
 						return true;
 					}
+				}
 				return false;
 			}
 		};

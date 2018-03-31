@@ -190,14 +190,14 @@ public class FltIntMap {
 			private int index = 0;
 
 			public boolean source2(FltIntPair pair) {
-				int v;
-				while (index < capacity)
-					if ((v = vs[index]) == EMPTYVALUE)
-						index++;
-					else {
-						pair.update(ks[index++], v);
+				while (index < capacity) {
+					float k = ks[index];
+					int v = vs[index++];
+					if (v != EMPTYVALUE) {
+						pair.update(k, v);
 						return true;
 					}
+				}
 				return false;
 			}
 		};

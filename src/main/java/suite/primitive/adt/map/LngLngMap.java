@@ -188,14 +188,14 @@ public class LngLngMap {
 			private int index = 0;
 
 			public boolean source2(LngLngPair pair) {
-				long v;
-				while (index < capacity)
-					if ((v = vs[index]) == EMPTYVALUE)
-						index++;
-					else {
-						pair.update(ks[index++], v);
+				while (index < capacity) {
+					long k = ks[index];
+					long v = vs[index++];
+					if (v != EMPTYVALUE) {
+						pair.update(k, v);
 						return true;
 					}
+				}
 				return false;
 			}
 		};
