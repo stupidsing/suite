@@ -45,11 +45,9 @@ public class IRope<T> {
 	}
 
 	public static IRopeList<Character> ropeList(String s) {
-		int size = s.length();
-
 		return new IRopeList<>() {
 			public int size() {
-				return size;
+				return s.length();
 			}
 
 			public Character get(int index) {
@@ -76,7 +74,8 @@ public class IRope<T> {
 		this.weight = ts.size();
 		this.ts = ts;
 		this.ropes = null;
-		validate(true);
+		if (maxBranchFactor <= ts.size())
+			Fail.t();
 	}
 
 	// minBranchFactor <= ropes.size() && ropes.size() < maxBranchFactor
@@ -88,7 +87,6 @@ public class IRope<T> {
 		this.weight = weight;
 		this.ts = null;
 		this.ropes = ropes;
-		validate(true);
 	}
 
 	// 0 <= p && p < weight
@@ -115,13 +113,14 @@ public class IRope<T> {
 		return right(this, p);
 	}
 
-	public boolean validateRoot() {
-		return validate(false);
+	public IRope<T> validateRoot() {
+		return validate(true) ? this : null;
 	}
 
 	public boolean validate(boolean isRoot) {
 		Streamlet<IRope<T>> rs;
 		int s;
+		Dump.out(this);
 		return (false //
 				|| depth == 0 //
 						&& weight == (s = ts.size()) //
@@ -137,42 +136,49 @@ public class IRope<T> {
 	}
 
 	public static <T> IRope<T> meld(IRope<T> rope0, IRope<T> rope1) {
-		return newRoot(meld_(rope0, rope1));
+		return newRoot(meld_(rope0, rope1)).validateRoot();
 	}
 
 	private static <T> List<IRope<T>> meld_(IRope<T> rope0, IRope<T> rope1) {
-		int depth = max(rope0.depth, rope1.depth);
-		List<IRope<T>> ropes;
+		int depth0 = rope0.depth;
+		int depth1 = rope1.depth;
+		int depth = max(depth0, depth1);
 
-		if (rope1.depth < depth)
-			ropes = List_.concat(List_.left(rope0.ropes, -1), meld_(List_.last(rope0.ropes), rope1));
-		else if (rope0.depth < depth)
-			ropes = List_.concat(meld_(rope0, List_.first(rope1.ropes)), List_.right(rope1.ropes, 1));
-		else if (0 < depth)
-			ropes = List_.concat(rope0.ropes, rope1.ropes);
-		else {
+		if (depth0 != depth1) {
+			List<IRope<T>> ropes;
+
+			if (depth1 < depth0)
+				ropes = List_.concat(List_.left(rope0.ropes, -1), meld_(List_.last(rope0.ropes), rope1));
+			else if (depth0 < depth1)
+				ropes = List_.concat(meld_(rope0, List_.first(rope1.ropes)), List_.right(rope1.ropes, 1));
+			else
+				ropes = List_.concat(rope0.ropes, rope1.ropes);
+
+			List<IRope<T>> list;
+			int size = ropes.size();
+
+			if (maxBranchFactor <= size) {
+				int p = size / 2;
+				List<IRope<T>> left = List_.left(ropes, p);
+				List<IRope<T>> right = List_.right(ropes, p);
+				list = List.of(new IRope<>(depth, left), new IRope<>(depth, right));
+			} else
+				list = List.of(new IRope<>(depth, ropes));
+
+			return list;
+		} else {
 			IRopeList<T> ts = rope0.ts.concat(rope1.ts);
 			int size = ts.size();
+
 			if (maxBranchFactor <= size) {
-				IRopeList<T> left = ts.subList(0, minBranchFactor);
-				IRopeList<T> right = ts.subList(minBranchFactor, size);
-				ropes = List.of(new IRope<>(left), new IRope<>(right));
+				int p = size / 2;
+				IRopeList<T> left = ts.subList(0, p);
+				IRopeList<T> right = ts.subList(p, size);
+				System.out.println("M " + left.size() + right.size());
+				return List.of(new IRope<>(left), new IRope<>(right));
 			} else
-				ropes = List.of(new IRope<>(ts));
+				return List.of(new IRope<>(ts));
 		}
-
-		List<IRope<T>> list;
-		int depth1 = depth + 1;
-		int size1 = ropes.size();
-
-		if (maxBranchFactor <= size1) {
-			List<IRope<T>> left = List_.left(ropes, minBranchFactor);
-			List<IRope<T>> right = List_.right(ropes, minBranchFactor);
-			list = List.of(new IRope<>(depth1, left), new IRope<>(depth1, right));
-		} else
-			list = List.of(new IRope<>(depth1, ropes));
-
-		return list;
 	}
 
 	private static <T> IRope<T> left(IRope<T> rope, int p) {

@@ -66,15 +66,15 @@ public class Dump {
 	}
 
 	public static void object(String prefix, Object object, StringBuilder sb) {
+		object(prefix, object, sb::append);
+	}
+
+	private static void object(String prefix, Object object, Sink<String> sink) {
 		Set<Integer> dumpedIds = new HashSet<>();
-		Sink<String> sink = sb::append;
 
 		new Object() {
 			private void d(String prefix, Object object) {
-				if (object != null)
-					d(prefix, object.getClass(), object);
-				else
-					d(prefix, void.class, object);
+				d(prefix, object != null ? object.getClass() : void.class, object);
 			}
 
 			private void d(String prefix, Class<?> clazz, Object object) {
@@ -146,7 +146,6 @@ public class Dump {
 					sink.sink(" <<recursed>>");
 			}
 		}.d(prefix, object);
-
 	}
 
 }
