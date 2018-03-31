@@ -28,6 +28,7 @@ import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.map.FltObjMap;
+import suite.primitive.adt.map.ObjFltMap;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.adt.set.FltSet;
 import suite.streamlet.As;
@@ -432,8 +433,13 @@ public class FltOutlet implements OutletDefaults<Float> {
 		return map;
 	}
 
-	public <K> Map<K, Float> toMap(Flt_Obj<K> keyFun) {
-		return toMap(keyFun, value -> (Float) value);
+	public <K> ObjFltMap<K> toMap(Flt_Obj<K> keyFun) {
+		Flt_Obj<K> kf1 = keyFun.rethrow();
+		ObjFltMap<K> map = new ObjFltMap<>();
+		float c;
+		while ((c = next()) != FltFunUtil.EMPTYVALUE)
+			map.put(kf1.apply(c), c);
+		return map;
 	}
 
 	public <K, V> Map<K, V> toMap(Flt_Obj<K> kf0, Flt_Obj<V> vf0) {

@@ -19,6 +19,7 @@ import suite.primitive.Lng_Lng;
 import suite.primitive.Longs;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.map.LngObjMap;
+import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.set.LngSet;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -244,7 +245,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		return spawn().toListMap(valueFun);
 	}
 
-	public <K> Map<K, Long> toMap(Lng_Obj<K> keyFun) {
+	public <K> ObjLngMap<K> toMap(Lng_Obj<K> keyFun) {
 		return spawn().toMap(keyFun);
 	}
 

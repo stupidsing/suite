@@ -28,6 +28,7 @@ import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.map.ChrObjMap;
+import suite.primitive.adt.map.ObjChrMap;
 import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.adt.set.ChrSet;
 import suite.streamlet.As;
@@ -432,8 +433,13 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		return map;
 	}
 
-	public <K> Map<K, Character> toMap(Chr_Obj<K> keyFun) {
-		return toMap(keyFun, value -> (Character) value);
+	public <K> ObjChrMap<K> toMap(Chr_Obj<K> keyFun) {
+		Chr_Obj<K> kf1 = keyFun.rethrow();
+		ObjChrMap<K> map = new ObjChrMap<>();
+		char c;
+		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
+			map.put(kf1.apply(c), c);
+		return map;
 	}
 
 	public <K, V> Map<K, V> toMap(Chr_Obj<K> kf0, Chr_Obj<V> vf0) {

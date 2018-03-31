@@ -28,6 +28,7 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.map.DblObjMap;
+import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.adt.set.DblSet;
 import suite.streamlet.As;
@@ -432,8 +433,13 @@ public class DblOutlet implements OutletDefaults<Double> {
 		return map;
 	}
 
-	public <K> Map<K, Double> toMap(Dbl_Obj<K> keyFun) {
-		return toMap(keyFun, value -> (Double) value);
+	public <K> ObjDblMap<K> toMap(Dbl_Obj<K> keyFun) {
+		Dbl_Obj<K> kf1 = keyFun.rethrow();
+		ObjDblMap<K> map = new ObjDblMap<>();
+		double c;
+		while ((c = next()) != DblFunUtil.EMPTYVALUE)
+			map.put(kf1.apply(c), c);
+		return map;
 	}
 
 	public <K, V> Map<K, V> toMap(Dbl_Obj<K> kf0, Dbl_Obj<V> vf0) {

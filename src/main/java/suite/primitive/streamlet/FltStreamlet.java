@@ -19,6 +19,7 @@ import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.Flt_Flt;
 import suite.primitive.adt.map.FltObjMap;
+import suite.primitive.adt.map.ObjFltMap;
 import suite.primitive.adt.set.FltSet;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -244,7 +245,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return spawn().toListMap(valueFun);
 	}
 
-	public <K> Map<K, Float> toMap(Flt_Obj<K> keyFun) {
+	public <K> ObjFltMap<K> toMap(Flt_Obj<K> keyFun) {
 		return spawn().toMap(keyFun);
 	}
 

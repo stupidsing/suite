@@ -19,6 +19,7 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.map.DblObjMap;
+import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.set.DblSet;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -244,7 +245,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return spawn().toListMap(valueFun);
 	}
 
-	public <K> Map<K, Double> toMap(Dbl_Obj<K> keyFun) {
+	public <K> ObjDblMap<K> toMap(Dbl_Obj<K> keyFun) {
 		return spawn().toMap(keyFun);
 	}
 

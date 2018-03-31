@@ -19,6 +19,7 @@ import suite.primitive.Int_Int;
 import suite.primitive.Ints;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.set.IntSet;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -244,7 +245,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		return spawn().toListMap(valueFun);
 	}
 
-	public <K> Map<K, Integer> toMap(Int_Obj<K> keyFun) {
+	public <K> ObjIntMap<K> toMap(Int_Obj<K> keyFun) {
 		return spawn().toMap(keyFun);
 	}
 

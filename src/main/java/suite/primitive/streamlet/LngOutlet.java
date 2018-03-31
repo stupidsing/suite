@@ -28,6 +28,7 @@ import suite.primitive.Lng_Lng;
 import suite.primitive.Longs;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.map.LngObjMap;
+import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.adt.set.LngSet;
 import suite.streamlet.As;
@@ -432,8 +433,13 @@ public class LngOutlet implements OutletDefaults<Long> {
 		return map;
 	}
 
-	public <K> Map<K, Long> toMap(Lng_Obj<K> keyFun) {
-		return toMap(keyFun, value -> (Long) value);
+	public <K> ObjLngMap<K> toMap(Lng_Obj<K> keyFun) {
+		Lng_Obj<K> kf1 = keyFun.rethrow();
+		ObjLngMap<K> map = new ObjLngMap<>();
+		long c;
+		while ((c = next()) != LngFunUtil.EMPTYVALUE)
+			map.put(kf1.apply(c), c);
+		return map;
 	}
 
 	public <K, V> Map<K, V> toMap(Lng_Obj<K> kf0, Lng_Obj<V> vf0) {

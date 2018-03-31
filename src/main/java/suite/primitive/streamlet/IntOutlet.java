@@ -28,6 +28,7 @@ import suite.primitive.Int_Int;
 import suite.primitive.Ints;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.adt.set.IntSet;
 import suite.streamlet.As;
@@ -432,8 +433,13 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		return map;
 	}
 
-	public <K> Map<K, Integer> toMap(Int_Obj<K> keyFun) {
-		return toMap(keyFun, value -> (Integer) value);
+	public <K> ObjIntMap<K> toMap(Int_Obj<K> keyFun) {
+		Int_Obj<K> kf1 = keyFun.rethrow();
+		ObjIntMap<K> map = new ObjIntMap<>();
+		int c;
+		while ((c = next()) != IntFunUtil.EMPTYVALUE)
+			map.put(kf1.apply(c), c);
+		return map;
 	}
 
 	public <K, V> Map<K, V> toMap(Int_Obj<K> kf0, Int_Obj<V> vf0) {

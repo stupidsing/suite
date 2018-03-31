@@ -19,6 +19,7 @@ import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.primitive.Chr_Chr;
 import suite.primitive.adt.map.ChrObjMap;
+import suite.primitive.adt.map.ObjChrMap;
 import suite.primitive.adt.set.ChrSet;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -244,7 +245,7 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 		return spawn().toListMap(valueFun);
 	}
 
-	public <K> Map<K, Character> toMap(Chr_Obj<K> keyFun) {
+	public <K> ObjChrMap<K> toMap(Chr_Obj<K> keyFun) {
 		return spawn().toMap(keyFun);
 	}
 
