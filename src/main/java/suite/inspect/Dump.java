@@ -19,9 +19,6 @@ public class Dump {
 
 	private static Inspect inspect = Singleton.me.inspect;
 
-	private Set<Integer> dumpedIds = new HashSet<>();
-	private Sink<String> sink;
-
 	public static <T> T t(T t) {
 		out(t);
 		return t;
@@ -69,87 +66,87 @@ public class Dump {
 	}
 
 	public static void object(StringBuilder sb, String prefix, Object object) {
-		new Dump(sb::append).d(prefix, object);
-	}
+		Set<Integer> dumpedIds = new HashSet<>();
+		Sink<String> sink = sb::append;
 
-	public Dump(Sink<String> sink) {
-		this.sink = sink;
-	}
-
-	private void d(String prefix, Object object) {
-		if (object != null)
-			d(prefix, object, object.getClass());
-		else
-			d(prefix, object, void.class);
-	}
-
-	private void d(String prefix, Object object, Class<?> clazz) {
-		int id = System.identityHashCode(object);
-		sink.sink(prefix);
-		sink.sink(" =");
-
-		if (object == null)
-			sink.sink(" null\n");
-		else if (dumpedIds.add(id))
-			try {
-				if (clazz == String.class)
-					sink.sink(" \"" + object + "\"");
-
-				if (!Collection.class.isAssignableFrom(clazz))
-					sink.sink(" " + object);
-
-				sink.sink(" [" + clazz.getSimpleName() + "]\n");
-
-				int count = 0;
-
-				// simple listings for simple classes
-				if (Type_.isSimple(clazz))
-					;
-				else if (clazz.isArray())
-					for (int i = 0; i < Array.getLength(object); i++)
-						d(prefix + "[" + count++ + "]", Array.get(object, i));
-				else if (Collection.class.isAssignableFrom(clazz))
-					for (Object o1 : (Collection<?>) object)
-						d(prefix + "[" + count++ + "]", o1);
-				else if (Map.class.isAssignableFrom(clazz))
-					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet()) {
-						Object key = e.getKey(), value = e.getValue();
-						d(prefix + "[" + count + "].getKey()", key);
-						d(prefix + "[" + count + "].getValue()", value);
-						count++;
-					}
-				else {
-					for (Field field : inspect.fields(clazz))
-						try {
-							String name = field.getName();
-							Object o = field.get(object);
-							Class<?> type = field.getType();
-							if (Type_.isSimple(type))
-								d(prefix + "." + name, o, type);
-							else
-								d(prefix + "." + name, o);
-						} catch (Throwable ex) {
-							sink.sink(prefix + "." + field.getName());
-							sink.sink(" caught " + ex + "\n");
-						}
-
-					for (Method method : inspect.getters(clazz)) {
-						String name = method.getName();
-						try {
-							Object o = method.invoke(object);
-							if (!(o instanceof Class<?>))
-								d(prefix + "." + name + "()", o);
-						} catch (Throwable ex) {
-							sink.sink(prefix + "." + name + "()");
-							sink.sink(" caught " + ex + "\n");
-						}
-					}
-				}
-			} finally {
-				dumpedIds.remove(id);
+		new Object() {
+			private void d(String prefix, Object object) {
+				if (object != null)
+					d(prefix, object.getClass(), object);
+				else
+					d(prefix, void.class, object);
 			}
-		else
-			sink.sink(" <<recursed>>");
+
+			private void d(String prefix, Class<?> clazz, Object object) {
+				int id = System.identityHashCode(object);
+				sink.sink(prefix);
+				sink.sink(" =");
+
+				if (object == null)
+					sink.sink(" null\n");
+				else if (dumpedIds.add(id))
+					try {
+						if (clazz == String.class)
+							sink.sink(" \"" + object + "\"");
+
+						if (!Collection.class.isAssignableFrom(clazz))
+							sink.sink(" " + object);
+
+						sink.sink(" [" + clazz.getSimpleName() + "]\n");
+
+						int count = 0;
+
+						// simple listings for simple classes
+						if (Type_.isSimple(clazz))
+							;
+						else if (clazz.isArray())
+							for (int i = 0; i < Array.getLength(object); i++)
+								d(prefix + "[" + count++ + "]", Array.get(object, i));
+						else if (Collection.class.isAssignableFrom(clazz))
+							for (Object o1 : (Collection<?>) object)
+								d(prefix + "[" + count++ + "]", o1);
+						else if (Map.class.isAssignableFrom(clazz))
+							for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet()) {
+								Object key = e.getKey(), value = e.getValue();
+								d(prefix + "[" + count + "].getKey()", key);
+								d(prefix + "[" + count + "].getValue()", value);
+								count++;
+							}
+						else {
+							for (Field field : inspect.fields(clazz))
+								try {
+									String name = field.getName();
+									Object o = field.get(object);
+									Class<?> type = field.getType();
+									if (Type_.isSimple(type))
+										d(prefix + "." + name, type, o);
+									else
+										d(prefix + "." + name, o);
+								} catch (Throwable ex) {
+									sink.sink(prefix + "." + field.getName());
+									sink.sink(" caught " + ex + "\n");
+								}
+
+							for (Method method : inspect.getters(clazz)) {
+								String name = method.getName();
+								try {
+									Object o = method.invoke(object);
+									if (!(o instanceof Class<?>))
+										d(prefix + "." + name + "()", o);
+								} catch (Throwable ex) {
+									sink.sink(prefix + "." + name + "()");
+									sink.sink(" caught " + ex + "\n");
+								}
+							}
+						}
+					} finally {
+						dumpedIds.remove(id);
+					}
+				else
+					sink.sink(" <<recursed>>");
+			}
+		}.d(prefix, object);
+
 	}
 
 }
