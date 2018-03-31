@@ -1,5 +1,7 @@
 package suite.immutable;
 
+import static org.junit.Assert.assertEquals;
+
 import java.util.Random;
 
 import org.junit.Test;
@@ -10,18 +12,19 @@ public class IRopeTest {
 
 	@Test
 	public void test() {
-		String s = new String(Chars_.toArray(1024, c -> (char) c));
+		int length = 1024;
+		String s = new String(Chars_.toArray(length, c -> (char) c));
 		IRope<Character> rope = new IRope<>(IRope.ropeList(""));
+		int p = 0;
 
-		for (int i = 0; i < s.length(); i++) {
-			int i1 = Math.min(s.length(), i + 32 + new Random().nextInt(16));
-			rope = IRope.meld(rope, new IRope<>(IRope.ropeList(s.substring(i, i1))));
-			i = i1;
+		while (p < length) {
+			int p1 = Math.min(length, p + 32 + new Random().nextInt(16));
+			rope = IRope.meld(rope, new IRope<>(IRope.ropeList(s.substring(p, p1))));
+			p = p1;
 		}
 
 		for (int i = 0; i < rope.weight; i++)
-			System.out.println(rope.at(i));
-		;
+			assertEquals(i, rope.at(i).charValue());
 	}
 
 }
