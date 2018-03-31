@@ -6,11 +6,8 @@ import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
@@ -30,8 +27,11 @@ import suite.node.Tuple;
 import suite.node.io.Rewrite_.NodeHead;
 import suite.node.io.Rewrite_.NodeRead;
 import suite.node.io.Rewrite_.ReadType;
+import suite.primitive.IntFunUtil;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntIntPair;
+import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Fail;
@@ -59,18 +59,18 @@ public class Grapher {
 	}
 
 	public void graph(Node node) {
-		id = graph_(new HashMap<>(), node);
+		id = graph_(new ObjIntMap<>(), node);
 	}
 
 	public Node ungraph() {
 		return ungraph_(id);
 	}
 
-	private int graph_(Map<IdentityKey<Node>, Integer> ids, Node node) {
+	private int graph_(ObjIntMap<IdentityKey<Node>> ids, Node node) {
 		IdentityKey<Node> key = IdentityKey.of(node);
-		Integer id = ids.get(key);
+		int id = ids.get(key);
 
-		if (id == null) {
+		if (id == IntFunUtil.EMPTYVALUE) {
 			ids.put(key, id = gns.size());
 			gns.add(null);
 
@@ -135,8 +135,8 @@ public class Grapher {
 	}
 
 	public static boolean bind(Node n0, Node n1, Trail trail) {
-		Map<IdentityKey<Node>, Integer> mapn0 = new HashMap<>();
-		Map<IdentityKey<Node>, Integer> mapn1 = new HashMap<>();
+		ObjIntMap<IdentityKey<Node>> mapn0 = new ObjIntMap<>();
+		ObjIntMap<IdentityKey<Node>> mapn1 = new ObjIntMap<>();
 		Grapher g0 = new Grapher();
 		Grapher g1 = new Grapher();
 		g0.id = g0.graph_(mapn0, n0);
@@ -144,10 +144,10 @@ public class Grapher {
 
 		IntObjMap<IdentityKey<Node>> mapi0 = new IntObjMap<>();
 		IntObjMap<IdentityKey<Node>> mapi1 = new IntObjMap<>();
-		for (Entry<IdentityKey<Node>, Integer> e : mapn0.entrySet())
-			mapi0.put(e.getValue(), e.getKey());
-		for (Entry<IdentityKey<Node>, Integer> e : mapn1.entrySet())
-			mapi1.put(e.getValue(), e.getKey());
+		for (IntObjPair<IdentityKey<Node>> e : mapn0.streamlet())
+			mapi0.put(e.t0, e.t1);
+		for (IntObjPair<IdentityKey<Node>> e : mapn1.streamlet())
+			mapi1.put(e.t0, e.t1);
 
 		Set<IntIntPair> set = new HashSet<>();
 		Deque<IntIntPair> deque = new ArrayDeque<>();
@@ -221,7 +221,7 @@ public class Grapher {
 	}
 
 	public static Node replace(Node from, Node to, Node node) {
-		HashMap<IdentityKey<Node>, Integer> ids = new HashMap<>();
+		ObjIntMap<IdentityKey<Node>> ids = new ObjIntMap<>();
 
 		Grapher grapher = new Grapher();
 		int n0 = grapher.graph_(ids, from);
