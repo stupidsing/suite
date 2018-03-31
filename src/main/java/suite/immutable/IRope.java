@@ -118,7 +118,6 @@ public class IRope<T> {
 	public boolean validate(boolean isRoot) {
 		Streamlet<IRope<T>> rs;
 		int s;
-		Dump.out(this);
 		return (false //
 				|| depth == 0 //
 						&& weight == (s = ts.size()) //
@@ -172,7 +171,6 @@ public class IRope<T> {
 				int p = size / 2;
 				IRopeList<T> left = ts.subList(0, p);
 				IRopeList<T> right = ts.subList(p, size);
-				System.out.println("M " + left.size() + right.size());
 				return List.of(new IRope<>(left), new IRope<>(right));
 			} else
 				return List.of(new IRope<>(ts));
