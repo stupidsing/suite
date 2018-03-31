@@ -74,8 +74,6 @@ public class IRope<T> {
 		this.weight = ts.size();
 		this.ts = ts;
 		this.ropes = null;
-		if (maxBranchFactor <= ts.size())
-			Fail.t();
 	}
 
 	// minBranchFactor <= ropes.size() && ropes.size() < maxBranchFactor
