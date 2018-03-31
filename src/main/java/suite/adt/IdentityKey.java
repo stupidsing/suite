@@ -11,8 +11,8 @@ public class IdentityKey<K> extends HashCodeComparable<IdentityKey<K>> {
 		return new IdentityKey<>(key);
 	}
 
-	private IdentityKey(K node) {
-		this.key = node;
+	private IdentityKey(K key) {
+		this.key = key;
 	}
 
 	@Override
