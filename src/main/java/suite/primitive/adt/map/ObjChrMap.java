@@ -73,8 +73,7 @@ public class ObjChrMap<K> {
 
 	public char get(K key) {
 		int index = index(key);
-		char v = vs[index];
-		return v != EMPTYVALUE && ks[index] == key ? v : EMPTYVALUE;
+		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
 	@Override

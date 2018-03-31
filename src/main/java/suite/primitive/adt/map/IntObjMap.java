@@ -68,8 +68,7 @@ public class IntObjMap<V> {
 
 	public V get(int key) {
 		int index = index(key);
-		Object v = vs[index];
-		return v != null && ks[index] == key ? cast(v) : null;
+		return ks[index] == key ? cast(vs[index]) : null;
 	}
 
 	@Override

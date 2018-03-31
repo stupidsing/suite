@@ -92,8 +92,7 @@ public class DblLngMap {
 
 	public long get(double key) {
 		int index = index(key);
-		long v = vs[index];
-		return v != EMPTYVALUE && ks[index] == key ? v : EMPTYVALUE;
+		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
 	public void put(double key, long v) {

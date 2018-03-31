@@ -92,8 +92,7 @@ public class FltLngMap {
 
 	public long get(float key) {
 		int index = index(key);
-		long v = vs[index];
-		return v != EMPTYVALUE && ks[index] == key ? v : EMPTYVALUE;
+		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
 	public void put(float key, long v) {

@@ -73,8 +73,7 @@ public class ObjIntMap<K> {
 
 	public int get(K key) {
 		int index = index(key);
-		int v = vs[index];
-		return v != EMPTYVALUE && ks[index] == key ? v : EMPTYVALUE;
+		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
 	@Override

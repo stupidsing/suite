@@ -90,8 +90,7 @@ public class DblDblMap {
 
 	public double get(double key) {
 		int index = index(key);
-		double v = vs[index];
-		return v != EMPTYVALUE && ks[index] == key ? v : EMPTYVALUE;
+		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
 	public void put(double key, double v) {

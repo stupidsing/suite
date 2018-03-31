@@ -92,8 +92,7 @@ public class IntLngMap {
 
 	public long get(int key) {
 		int index = index(key);
-		long v = vs[index];
-		return v != EMPTYVALUE && ks[index] == key ? v : EMPTYVALUE;
+		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
 	public void put(int key, long v) {

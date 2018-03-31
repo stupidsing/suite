@@ -73,8 +73,7 @@ public class ObjDblMap<K> {
 
 	public double get(K key) {
 		int index = index(key);
-		double v = vs[index];
-		return v != EMPTYVALUE && ks[index] == key ? v : EMPTYVALUE;
+		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
 	@Override

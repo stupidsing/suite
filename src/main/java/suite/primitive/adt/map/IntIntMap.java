@@ -90,8 +90,7 @@ public class IntIntMap {
 
 	public int get(int key) {
 		int index = index(key);
-		int v = vs[index];
-		return v != EMPTYVALUE && ks[index] == key ? v : EMPTYVALUE;
+		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
 	public void put(int key, int v) {

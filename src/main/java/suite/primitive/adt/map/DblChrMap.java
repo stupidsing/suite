@@ -92,8 +92,7 @@ public class DblChrMap {
 
 	public char get(double key) {
 		int index = index(key);
-		char v = vs[index];
-		return v != EMPTYVALUE && ks[index] == key ? v : EMPTYVALUE;
+		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
 	public void put(double key, char v) {

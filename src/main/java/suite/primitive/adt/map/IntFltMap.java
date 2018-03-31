@@ -92,8 +92,7 @@ public class IntFltMap {
 
 	public float get(int key) {
 		int index = index(key);
-		float v = vs[index];
-		return v != EMPTYVALUE && ks[index] == key ? v : EMPTYVALUE;
+		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
 	public void put(int key, float v) {
