@@ -1,6 +1,7 @@
 package suite.immutable;
 
 import static suite.util.Friends.max;
+import static suite.util.Friends.min;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -225,7 +226,7 @@ public class IRope<T> {
 			queue1.push(rope);
 
 			Source<IRope<T>> pack = () -> {
-				int ix = max(branchFactor, queue1.size());
+				int ix = min(branchFactor, queue1.size());
 				List<IRope<T>> ropes = new ArrayList<>(Collections.nCopies(ix, null));
 				for (int i = 0; i < ix; i++)
 					ropes.set(i, queue1.pop());
@@ -264,7 +265,7 @@ public class IRope<T> {
 			queue1.push(rope);
 
 			Source<IRope<T>> pack = () -> {
-				int ix = max(branchFactor, queue1.size());
+				int ix = min(branchFactor, queue1.size());
 				List<IRope<T>> ropes = new ArrayList<>(Collections.nCopies(ix, null));
 				for (int i = 0; i < ix; i++)
 					ropes.set(ix - i - 1, queue1.pop());

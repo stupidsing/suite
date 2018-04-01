@@ -25,6 +25,17 @@ public class IRopeTest {
 
 		for (int i = 0; i < rope.weight; i++)
 			assertEquals(i, rope.at(i).charValue());
+
+		int halfLength = length / 2;
+		IRope<Character> rope0 = rope.left(halfLength);
+		IRope<Character> rope1 = rope.right(halfLength);
+
+		for (int i = 0; i < halfLength; i++) {
+			int l = i;
+			int r = l + halfLength;
+			assertEquals(l, rope0.at(l).charValue());
+			assertEquals(r, rope1.at(l).charValue());
+		}
 	}
 
 }
