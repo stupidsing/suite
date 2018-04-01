@@ -23,7 +23,7 @@ public class IRopeTest {
 			p = p1;
 		}
 
-		for (int i = 0; i < rope.weight; i++)
+		for (int i = 0; i < length; i++)
 			assertEquals(i, rope.at(i).charValue());
 
 		int halfLength = length / 2;
