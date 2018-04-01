@@ -2,11 +2,14 @@ package suite.lcs;
 
 import static suite.util.Friends.min;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import suite.adt.pair.Pair;
 import suite.primitive.Bytes;
 import suite.primitive.adt.map.IntObjMap;
+import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.adt.set.IntSet;
 import suite.text.RollingHashUtil;
 import suite.text.Segment;
@@ -21,61 +24,59 @@ public class Lccs {
 	private RollingHashUtil rh = new RollingHashUtil();
 
 	public Pair<Segment, Segment> lccs(Bytes bytes0, Bytes bytes1) {
-		int rollingSize = min(bytes0.size(), bytes1.size());
+		int size0 = bytes0.size();
+		int size1 = bytes1.size();
+		int rollingSize = min(size0, size1);
 
 		if (0 < rollingSize) {
-			IntObjMap<Segment> segments0 = hashSegments(bytes0, rollingSize);
-			IntObjMap<Segment> segments1 = hashSegments(bytes1, rollingSize);
+			IntObjPair<Pair<Segment, Segment>> longest = IntObjPair.of(Integer.MIN_VALUE, null);
 
-			while (true) {
-				IntSet keys0 = segments0.streamlet().keys().toSet();
-				IntSet keys1 = segments1.streamlet().keys().toSet();
+			while (longest.t1 == null) {
+				IntObjMap<List<Segment>> segmentLists0 = hashSegments(bytes0, rollingSize);
+				IntObjMap<List<Segment>> segmentLists1 = hashSegments(bytes1, rollingSize);
+				IntSet keys0 = segmentLists0.streamlet().keys().toSet();
+				IntSet keys1 = segmentLists1.streamlet().keys().toSet();
 				int[] keys = IntSet.intersect(keys0, keys1).streamlet().toArray();
 
-				for (int key : keys) {
-					Segment segment0 = segments0.get(key);
-					Segment segment1 = segments1.get(key);
-					Bytes b0 = bytes0.range(segment0.start, segment0.end);
-					Bytes b1 = bytes1.range(segment1.start, segment1.end);
-					if (Objects.equals(b0, b1))
-						return Pair.of(segment0, segment1);
-				}
+				for (int key : keys)
+					for (Segment segment0 : segmentLists0.get(key))
+						for (Segment segment1 : segmentLists1.get(key)) {
+							int start0 = segment0.start, end0 = segment0.end;
+							int start1 = segment1.start, end1 = segment1.end;
+							Bytes b0 = bytes0.range(start0, end0);
+							Bytes b1 = bytes1.range(start1, end1);
 
-				segments0 = reduceSegments(segments0, bytes0, rollingSize);
-				segments1 = reduceSegments(segments1, bytes1, rollingSize);
-				rollingSize--;
+							if (Objects.equals(b0, b1)) {
+								int ix = Math.min(size0 - start0, size1 - start1);
+								int i = rollingSize;
+								while (i < ix && bytes0.get(start0 + i) == bytes1.get(start1 + i))
+									i++;
+								if (longest.t0 < i)
+									longest.update(i, Pair.of(Segment.of(start0, start0 + i), Segment.of(start1, start1 + i)));
+							}
+						}
+
+				rollingSize /= 2;
 			}
+
+			return longest.t1;
 		} else
 			return Pair.of(Segment.of(0, 0), Segment.of(0, 0));
 	}
 
-	private IntObjMap<Segment> hashSegments(Bytes bytes, int rollingSize) {
-		IntObjMap<Segment> segments = new IntObjMap<>();
+	private IntObjMap<List<Segment>> hashSegments(Bytes bytes, int rollingSize) {
+		IntObjMap<List<Segment>> segments = new IntObjMap<>();
 		int hash = rh.hash(bytes.range(0, rollingSize - 1));
 		int size = bytes.size();
 
 		for (int pos = 0; pos <= size - rollingSize; pos++) {
-			hash = rh.roll(hash, bytes.get(pos + rollingSize - 1));
-			segments.put(hash, Segment.of(pos, pos + rollingSize));
-			hash = rh.unroll(hash, bytes.get(pos), rollingSize);
+			int pos_ = pos;
+			hash = rh.roll(hash, bytes.get(pos_ + rollingSize - 1));
+			segments.computeIfAbsent(hash, segment0 -> new ArrayList<>()).add(Segment.of(pos_, pos_ + rollingSize));
+			hash = rh.unroll(hash, bytes.get(pos_), rollingSize);
 		}
 
 		return segments;
-	}
-
-	private IntObjMap<Segment> reduceSegments(IntObjMap<Segment> segments0, Bytes bytes, int rollingSize) {
-		IntObjMap<Segment> segments1 = new IntObjMap<>();
-
-		segments0.forEach((hash, segment) -> {
-			int start = segment.start, end = segment.end;
-
-			segments1.update(rh.unroll(hash, bytes.get(start), rollingSize), segment0 -> Segment.of(start + 1, end));
-
-			if (start == 0)
-				segments1.update(rh.unroll(hash, bytes.get(end - 1)), segment0 -> Segment.of(start, end - 1));
-		});
-
-		return segments1;
 	}
 
 }
