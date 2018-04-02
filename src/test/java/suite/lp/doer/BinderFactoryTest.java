@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.lp.compile.impl.CompileBinderImpl;
-import suite.lp.compile.impl.CompileBinderImpl0;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.Bind_;
 import suite.lp.sewing.impl.SewingBinderImpl;
@@ -25,10 +24,7 @@ public class BinderFactoryTest {
 	}
 
 	private void test(String pattern, String match) {
-		for (BinderFactory bf : new BinderFactory[] { //
-				new CompileBinderImpl0(), //
-				new CompileBinderImpl(), //
-				new SewingBinderImpl(), }) {
+		for (BinderFactory bf : new BinderFactory[] { new CompileBinderImpl(), new SewingBinderImpl(), }) {
 			Node node = new Generalizer().generalize(Suite.parse(pattern));
 			Bind_ p = bf.binder(node);
 			BindEnv be = new BindEnv(bf.mapper().env());
