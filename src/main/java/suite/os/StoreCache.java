@@ -111,7 +111,7 @@ public class StoreCache {
 
 			Pair<Boolean, Path> pair = match(key);
 
-			if (pair.t0 || reget.get()) {
+			if (!reget.get() && pair.t0) {
 				InputStream vis = Files.newInputStream(pair.t1);
 				DataInputStream vdis = new DataInputStream(vis);
 				return read(vdis).closeAtEnd(vis);
