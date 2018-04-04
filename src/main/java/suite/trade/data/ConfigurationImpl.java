@@ -74,7 +74,7 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	public Streamlet<Asset> queryCompaniesByMarketCap(Time time) {
-		int year = time.year() - 1;
+		var year = time.year() - 1;
 		return Read //
 				.from(hkexFactBook.queryLeadingCompaniesByMarketCap(year)) //
 				.map(this::queryCompany) //

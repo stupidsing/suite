@@ -82,7 +82,7 @@ public class IntDblMap {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (IntObjPair<Double> pair : streamlet()) {
 			h = h * 31 + Integer.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
@@ -91,7 +91,7 @@ public class IntDblMap {
 	}
 
 	public double get(int key) {
-		int index = index(key);
+		var index = index(key);
 		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
@@ -107,8 +107,8 @@ public class IntDblMap {
 	}
 
 	public void update(int key, Dbl_Dbl fun) {
-		int mask = vs.length - 1;
-		int index = index(key);
+		var mask = vs.length - 1;
+		var index = index(key);
 		double v0 = vs[index];
 		double v1 = vs[index] = fun.apply(v0);
 		ks[index] = key;
@@ -116,10 +116,10 @@ public class IntDblMap {
 		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
-					int index1 = (index + 1) & mask;
+					var index1 = (index + 1) & mask;
 					double v_ = vs[index1];
 					if (v_ != EMPTYVALUE) {
-						int k = ks[index1];
+						var k = ks[index1];
 						vs[index1] = EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
@@ -151,7 +151,7 @@ public class IntDblMap {
 	}
 
 	private void rehash() {
-		int capacity = vs.length;
+		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
 			int[] ks0 = ks;
@@ -167,7 +167,7 @@ public class IntDblMap {
 	}
 
 	private void store(int key, double v1) {
-		int index = index(key);
+		var index = index(key);
 		if (vs[index] == EMPTYVALUE) {
 			ks[index] = key;
 			vs[index] = v1;
@@ -176,8 +176,8 @@ public class IntDblMap {
 	}
 
 	private int index(int key) {
-		int mask = vs.length - 1;
-		int index = Integer.hashCode(key) & mask;
+		var mask = vs.length - 1;
+		var index = Integer.hashCode(key) & mask;
 		while (vs[index] != EMPTYVALUE && ks[index] != key)
 			index = index + 1 & mask;
 		return index;
@@ -190,7 +190,7 @@ public class IntDblMap {
 
 			public boolean source2(IntDblPair pair) {
 				while (index < capacity) {
-					int k = ks[index];
+					var k = ks[index];
 					double v = vs[index++];
 					if (v != EMPTYVALUE) {
 						pair.update(k, v);

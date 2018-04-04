@@ -38,7 +38,7 @@ public class IncludePreprocessor implements Fun<String, List<Run>> {
 	}
 
 	private void doIncludes(Path dir, String in, boolean isInput, List<Run> runs) {
-		int start = 0;
+		var start = 0;
 
 		while (true) {
 			int pos0 = ParseUtil.search(in, start, open);

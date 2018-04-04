@@ -68,7 +68,7 @@ public class Statistic {
 	// ordinary least squares
 	public LinearRegression linearRegression(Streamlet<FltObjPair<float[]>> pairs) {
 		List<FltObjPair<float[]>> list = pairs.toList();
-		int size = list.size();
+		var size = list.size();
 		float[][] x = To.array(size, float[].class, i -> list.get(i).t1);
 		float[] y = Floats_.toArray(size, i -> list.get(i).t0);
 		return linearRegression(x, y, null);
@@ -91,8 +91,8 @@ public class Statistic {
 		public final double standardError;
 
 		private LinearRegression(float[][] x, float[] y, String[] coefficientNames_) {
-			int nDataPoints_ = y.length;
-			int nDepVariables_ = mtx.width(x);
+			var nDataPoints_ = y.length;
+			var nDepVariables_ = mtx.width(x);
 			float[][] xt = mtx.transpose(x);
 			float[] coeffs = cholesky.inverseMul(mtx.mul(xt, x)).apply(mtx.mul(xt, y));
 			float[] estimatedy = mtx.mul(x, coeffs);
@@ -181,8 +181,8 @@ public class Statistic {
 		private float[] w;
 
 		private LogisticRegression(float[][] x, boolean[] bs) {
-			int nSamples = mtx.height(x);
-			int sampleLength = mtx.width(x);
+			var nSamples = mtx.height(x);
+			var sampleLength = mtx.width(x);
 			w = new float[sampleLength];
 
 			if (nSamples == bs.length) {
@@ -228,8 +228,8 @@ public class Statistic {
 	public Obj_Int<int[]> naiveBayes0(int[][] x, int[] y) {
 		IntObjMap<IntMutable> xcounts = new IntObjMap<>();
 		IntObjMap<IntMutable> ycounts = new IntObjMap<>();
-		int ix = x.length; // number of samples
-		int jx = x[0].length; // number of features
+		var ix = x.length; // number of samples
+		var jx = x[0].length; // number of features
 
 		for (int i = 0; i < ix; i++) {
 			ycounts.computeIfAbsent(y[i], y_ -> IntMutable.of(0)).increment();
@@ -240,7 +240,7 @@ public class Statistic {
 		return ins -> {
 			IntObjPair<IntMutable> pair = IntObjPair.of(0, null);
 			IntObjSource<IntMutable> source2 = ycounts.source();
-			int result = 0;
+			var result = 0;
 			double maxp = Double.MIN_VALUE;
 
 			while (source2.source2(pair)) {
@@ -272,7 +272,7 @@ public class Statistic {
 	}
 
 	private double mean_(float[] fs) {
-		int length = fs.length;
+		var length = fs.length;
 		double sum = 0f;
 		for (float f : fs)
 			sum += f;

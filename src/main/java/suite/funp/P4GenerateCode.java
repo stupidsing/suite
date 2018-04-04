@@ -222,7 +222,7 @@ public class P4GenerateCode {
 					} else if (result == Result.OP || result == Result.OPREG || result == Result.OPSPEC) {
 						OpReg op0 = isOutSpec ? pop0 : rs.get(is);
 						em.emit(amd64.instruction(Insn.PUSH, i_eax));
-						int fd1 = fd - is;
+						var fd1 = fd - is;
 						assign.sink2(new Compile1(rs, fd1), frame(fd1, fd));
 						em.mov(op0, compileFrame(fd1, is));
 						em.emit(amd64.instruction(Insn.POP, rs.mask(op0).get(is)));
@@ -230,8 +230,8 @@ public class P4GenerateCode {
 					} else if (result == Result.TWOOP || result == Result.TWOOPREG || result == Result.TWOOPSPEC) {
 						OpReg op0 = isOutSpec ? pop0 : rs.get(is);
 						OpReg op1 = isOutSpec ? pop1 : rs.mask(op0).get(is);
-						int size = ps * 2;
-						int fd1 = fd - size;
+						var size = ps * 2;
+						var fd1 = fd - size;
 						Operand imm = amd64.imm(size);
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
 						assign.sink2(new Compile1(rs, fd1), frame(fd1, fd));
@@ -264,7 +264,7 @@ public class P4GenerateCode {
 					return compile(expr);
 				})).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, offset) -> {
 					Operand imm = amd64.imm(size), op;
-					int fd1 = fd - size;
+					var fd1 = fd - size;
 					Compile1 c1 = new Compile1(rs, fd1);
 
 					offset.update(fd1);
@@ -394,7 +394,7 @@ public class P4GenerateCode {
 						c2.compileMove(r0, target.start, c2.compileFramePointer(), c2.fd, target.size());
 					});
 				})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
-					int size = end - start;
+					var size = end - start;
 					Operand op0, op1;
 					if (result == Result.ASSIGN)
 						if (size == target.size())
@@ -682,7 +682,7 @@ public class P4GenerateCode {
 
 			private void compileMove(OpReg r0, int start0, OpReg r1, int start1, int size) {
 				Sink2<Compile1, OpReg> sink = (c1, r) -> {
-					int s = r.size;
+					var s = r.size;
 					em.mov(r, amd64.mem(r1, start1, s));
 					em.mov(amd64.mem(r0, start0, s), r);
 					c1.compileMove(r0, start0 + s, r1, start1 + s, size - s);

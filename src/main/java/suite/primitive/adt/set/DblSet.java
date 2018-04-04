@@ -46,7 +46,7 @@ public class DblSet {
 	}
 
 	public boolean add(double c) {
-		int capacity = vs.length;
+		var capacity = vs.length;
 		size++;
 
 		if (capacity * 3 / 4 < size) {
@@ -88,7 +88,7 @@ public class DblSet {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (double c : streamlet())
 			h = h * 31 + Double.hashCode(c);
 		return h;
@@ -111,15 +111,15 @@ public class DblSet {
 	}
 
 	private boolean add_(double c) {
-		int index = index(c);
+		var index = index(c);
 		boolean b = vs[index] != c;
 		vs[index] = c;
 		return b;
 	}
 
 	private int index(double c) {
-		int mask = vs.length - 1;
-		int index = Double.hashCode(c) & mask;
+		var mask = vs.length - 1;
+		var index = Double.hashCode(c) & mask;
 		double c0;
 		while ((c0 = vs[index]) != EMPTYVALUE && c0 != c)
 			index = index + 1 & mask;

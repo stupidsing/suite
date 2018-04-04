@@ -30,7 +30,7 @@ public class Subst {
 
 	public void subst(String s, Iterate<String> fun, StringBuilder sb) {
 		while (true) {
-			int pos0 = s.indexOf(openSubst);
+			var pos0 = s.indexOf(openSubst);
 			int pos1 = s.indexOf(closeSubst, pos0);
 
 			if (0 <= pos0 && 0 <= pos1) {

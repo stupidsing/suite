@@ -26,14 +26,14 @@ public class Sha2 {
 	public byte[] sha256(byte[] bs0) {
 		int h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a;
 		int h4 = 0x510e527f, h5 = 0x9b05688c, h6 = 0x1f83d9ab, h7 = 0x5be0cd19;
-		int L0 = bs0.length * 8;
-		int L1 = L0 + 1;
-		int L2 = L1 + 64;
-		int L3 = L2 + 511 & 0xFFFFFE00;
-		int K = L3 - L2;
+		var L0 = bs0.length * 8;
+		var L1 = L0 + 1;
+		var L2 = L1 + 64;
+		var L3 = L2 + 511 & 0xFFFFFE00;
+		var K = L3 - L2;
 
 		int[] is = Ints_.toArray(bs0.length / 4, i -> {
-			int i4 = i * 4;
+			var i4 = i * 4;
 			return bs0[i4] + (bs0[i4 + 1] << 8) + (bs0[i4 + 2] << 16) + (bs0[i4 + 3] << 24);
 		});
 
@@ -45,12 +45,12 @@ public class Sha2 {
 			set.sink2(L1 + K, L0 >> (63 - i) & 1);
 
 		for (int pos = 0; pos < is.length;) {
-			int i0 = pos;
+			var i0 = pos;
 			int[] w = Arrays.copyOfRange(is, i0, pos += 512 / 32);
 
 			for (int i = 16; i < 64; i++) {
-				int wi2 = w[i - 2];
-				int wi15 = w[i - 15];
+				var wi2 = w[i - 2];
+				var wi15 = w[i - 15];
 				int s0 = Integer.rotateRight(wi15, 7) ^ Integer.rotateRight(wi15, 18) ^ wi15 >> 3;
 				int s1 = Integer.rotateRight(wi2, 17) ^ Integer.rotateRight(wi2, 19) ^ wi2 >> 10;
 				w[i] = w[i - 16] + s0 + w[i - 7] + s1;
@@ -61,11 +61,11 @@ public class Sha2 {
 
 			for (int i = 0; i < 64; i++) {
 				int s1 = Integer.rotateRight(e, 6) ^ Integer.rotateRight(e, 11) ^ Integer.rotateRight(e, 25);
-				int ch = e & f ^ ~e & g;
-				int temp1 = h + s1 + ch + k[i] + w[i];
+				var ch = e & f ^ ~e & g;
+				var temp1 = h + s1 + ch + k[i] + w[i];
 				int s0 = Integer.rotateRight(a, 2) ^ Integer.rotateRight(a, 13) ^ Integer.rotateRight(a, 22);
-				int maj = a & b ^ a & c ^ b & c;
-				int temp2 = s0 + maj;
+				var maj = a & b ^ a & c ^ b & c;
+				var temp2 = s0 + maj;
 
 				h = g;
 				g = f;

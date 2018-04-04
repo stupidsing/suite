@@ -108,7 +108,7 @@ public class To {
 			}
 
 			public int read(byte[] bs, int offset, int length) throws IOException {
-				int nBytesRead = -1;
+				var nBytesRead = -1;
 				while (is == null || (nBytesRead = is.read(bs, offset, length)) < 0) {
 					Bytes bytes = outlet.next();
 					if (isOpen = (bytes != null))
@@ -164,7 +164,7 @@ public class To {
 		InputStream bis = new BufferedInputStream(is);
 		return Outlet.of(() -> {
 			byte[] bs = new byte[Constants.bufferSize];
-			int nBytesRead = Rethrow.ex(() -> bis.read(bs));
+			var nBytesRead = Rethrow.ex(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
 		}).closeAtEnd(bis).closeAtEnd(is);
 	}
@@ -204,7 +204,7 @@ public class To {
 	public static Source<Bytes> source(InputStream is) {
 		return () -> {
 			byte[] bs = new byte[Constants.bufferSize];
-			int nBytesRead = Rethrow.ex(() -> is.read(bs));
+			var nBytesRead = Rethrow.ex(() -> is.read(bs));
 
 			if (0 <= nBytesRead)
 				return Bytes.of(bs, 0, nBytesRead);
@@ -270,7 +270,7 @@ public class To {
 			StringBuilder sb = new StringBuilder();
 
 			while (reader_.ready()) {
-				int n = reader_.read(buffer);
+				var n = reader_.read(buffer);
 				sb.append(new String(buffer, 0, n));
 			}
 

@@ -80,14 +80,14 @@ public class Ebnf {
 
 	private FactorizeResult toFactorizeResult(char[] cs, int p0, int px, Ast ast) {
 		List<Ast> children = ast.children;
-		int size = children.size();
+		var size = children.size();
 
 		if (0 < size) {
 			List<FactorizeResult> frs = new ArrayList<>();
-			int pos = p0;
+			var pos = p0;
 			for (int i = 0; i < size; i++) {
 				Ast child = children.get(i);
-				int pos0 = pos;
+				var pos0 = pos;
 				pos = i != size - 1 ? child.end : px;
 				frs.add(toFactorizeResult(cs, pos0, pos, child));
 			}

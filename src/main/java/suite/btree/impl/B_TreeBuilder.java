@@ -63,8 +63,8 @@ public class B_TreeBuilder<Key, Value> {
 		}
 
 		public B_TreeImpl<Key, Value>.Page read(DataInput_ dataInput) throws IOException {
-			int pointer = dataInput.readInt();
-			int size = dataInput.readInt();
+			var pointer = dataInput.readInt();
+			var size = dataInput.readInt();
 
 			B_TreeImpl<Key, Value>.Page page = b_tree.new Page(pointer);
 
@@ -73,13 +73,13 @@ public class B_TreeBuilder<Key, Value> {
 				char nodeType = dataInput.readChar();
 
 				if (nodeType == BRANCH) {
-					int branch = dataInput.readInt();
+					var branch = dataInput.readInt();
 					page.add(b_tree.new KeyPointer(key, b_tree.new Branch(branch)));
 				} else if (nodeType == LEAF) {
 					Value value = valueSerializer.read(dataInput);
 					page.add(b_tree.new KeyPointer(key, b_tree.new Leaf(value)));
 				} else if (nodeType == PAYLOAD) {
-					int pointer1 = dataInput.readInt();
+					var pointer1 = dataInput.readInt();
 					page.add(b_tree.new KeyPointer(key, b_tree.new Payload(pointer1)));
 				} else if (nodeType == TERMINAL)
 					page.add(b_tree.new KeyPointer(key, b_tree.new Terminal()));
@@ -137,8 +137,8 @@ public class B_TreeBuilder<Key, Value> {
 	}
 
 	public B_Tree<Key, Value> build(PageFile f, Comparator<Key> cmp, int nPages) {
-		int nSuperblockPages = 1;
-		int nAllocatorPages = nPages / pageSize;
+		var nSuperblockPages = 1;
+		var nAllocatorPages = nPages / pageSize;
 		int p0 = 0, p1 = p0 + nAllocatorPages, p2 = p1 + nSuperblockPages, p3 = p2 + nPages;
 		PageFile[] pfs = FileFactory.subPageFiles(f, p0, p1, p2, p3);
 		return build(cmp, pfs[0], pfs[1], pfs[2]);

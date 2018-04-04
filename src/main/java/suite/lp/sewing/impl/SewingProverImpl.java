@@ -905,7 +905,7 @@ public class SewingProverImpl implements ProverFactory {
 		Node query0 = rt.query;
 		IList<Trampoline> cutPoint0 = rt.cutPoint;
 		IList<Trampoline> rems0 = rt.rems;
-		int pit0 = rt.trail.getPointInTime();
+		var pit0 = rt.trail.getPointInTime();
 		Sink<Node> handler0 = rt.handler;
 		return rt_ -> {
 			rt_.cps = cps0;

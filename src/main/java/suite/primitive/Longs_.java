@@ -34,13 +34,13 @@ public class Longs_ {
 	}
 
 	public static long[] concat(long[]... array) {
-		int length = 0;
+		var length = 0;
 		for (long[] fs : array)
 			length += fs.length;
 		long[] fs1 = new long[length];
-		int i = 0;
+		var i = 0;
 		for (long[] fs : array) {
-			int length_ = fs.length;
+			var length_ = fs.length;
 			copy(fs, 0, fs1, i, length_);
 			i += length_;
 		}
@@ -48,13 +48,13 @@ public class Longs_ {
 	}
 
 	public static Longs concat(Longs... array) {
-		int length = 0;
+		var length = 0;
 		for (Longs longs : array)
 			length += longs.size();
 		long[] cs1 = new long[length];
-		int i = 0;
+		var i = 0;
 		for (Longs longs : array) {
-			int size_ = longs.size();
+			var size_ = longs.size();
 			copy(longs.cs, longs.start, cs1, i, size_);
 			i += size_;
 		}
@@ -105,11 +105,11 @@ public class Longs_ {
 	}
 
 	public static Fun<Outlet<Longs>, Outlet<Longs>> split(Longs delim) {
-		int ds = delim.size();
+		var ds = delim.size();
 
 		return outlet -> Outlet.of(new BufferedSource(outlet) {
 			protected boolean search() {
-				int size = buffer.size();
+				var size = buffer.size();
 				while ((p1 = p0 + ds) <= size)
 					if (!delim.equals(buffer.range(p0, p1)))
 						p0++;

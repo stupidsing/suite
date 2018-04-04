@@ -19,7 +19,7 @@ public class Strategos {
 
 	public BuySellStrategy lowPassPrediction(int windowSize, int nFutureDays, int nLowPass, float threshold) {
 		DiscreteCosineTransform dct = new DiscreteCosineTransform();
-		int nPastDays = windowSize - nFutureDays;
+		var nPastDays = windowSize - nFutureDays;
 
 		return prices -> holdFixedDays(prices.length, nFutureDays, day -> {
 			if (nPastDays <= day) {
@@ -74,8 +74,8 @@ public class Strategos {
 		int[] buySells = Ints_.toArray(nDays, gbs::get);
 
 		return day -> {
-			int buySell0 = nHoldDays < day ? -buySells[day - nHoldDays] : 0;
-			int buySell1 = buySells[day];
+			var buySell0 = nHoldDays < day ? -buySells[day - nHoldDays] : 0;
+			var buySell1 = buySells[day];
 			return buySell0 + buySell1;
 		};
 	}
@@ -98,8 +98,8 @@ public class Strategos {
 	private GetBuySell crossover(float[] diff) {
 		return day -> {
 			if (0 < day) {
-				int signum0 = signum(diff[day - 1]);
-				int signum1 = signum(diff[day]);
+				var signum0 = signum(diff[day - 1]);
+				var signum1 = signum(diff[day]);
 				return signum0 != signum1 ? signum1 : 0;
 			} else
 				return 0;

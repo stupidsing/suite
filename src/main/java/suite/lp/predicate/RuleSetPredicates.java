@@ -74,7 +74,7 @@ public class RuleSetPredicates {
 
 		RuleSet ruleSet = prover.ruleSet();
 		Trail trail = prover.getTrail();
-		int pit = trail.getPointInTime();
+		var pit = trail.getPointInTime();
 		List<Rule> targets = new ArrayList<>();
 
 		for (Rule rule : ruleSet.getRules()) {

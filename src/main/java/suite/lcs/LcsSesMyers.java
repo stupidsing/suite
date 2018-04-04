@@ -18,12 +18,12 @@ public class LcsSesMyers<T> {
 
 	public List<T> myers(List<T> list0, List<T> list1) {
 		int size0 = list0.size(), size1 = list1.size();
-		int nm = size0 + size1;
+		var nm = size0 + size1;
 
 		int d, i1 = 0;
 		int[] vdummy = new int[] { 0, };
 		int[] v0 = vdummy, v1 = null;
-		int k1 = 0;
+		var k1 = 0;
 		int x2 = 0, y2 = 0;
 
 		List<int[]> vs = new ArrayList<>();
@@ -37,12 +37,12 @@ public class LcsSesMyers<T> {
 
 				// move down or move right?
 				boolean down = k1 == -d || k1 != d && v0[i1 - 1] < v0[i1];
-				int i0 = i1 + (down ? 0 : -1);
+				var i0 = i1 + (down ? 0 : -1);
 
 				// moves like a snake; down or right for 1 step, then
 				// diagonals
-				int x0 = v0[i0];
-				int x1 = x0 + (down ? 0 : 1);
+				var x0 = v0[i0];
+				var x1 = x0 + (down ? 0 : 1);
 				x2 = x1;
 				y2 = x2 - k1;
 
@@ -69,11 +69,11 @@ public class LcsSesMyers<T> {
 
 			// move down or move right?
 			boolean down = k1 == -d || k1 != d && v0[i1 - 1] < v0[i1];
-			int i0 = i1 + (down ? 0 : -1);
+			var i0 = i1 + (down ? 0 : -1);
 
 			// moves back the snake
-			int x0 = v0[i0];
-			int x1 = x0 + (down ? 0 : 1);
+			var x0 = v0[i0];
+			var x1 = x0 + (down ? 0 : 1);
 			x2 = v1[i1];
 
 			// saves end point

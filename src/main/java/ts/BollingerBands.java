@@ -19,12 +19,12 @@ public class BollingerBands {
 	}
 
 	public Pair<float[], float[]> meanVariances(VirtualVector v, int backPos0, int backPos1) {
-		int length = v.length;
+		var length = v.length;
 		Int_Flt fun = v.get;
 
 		float[] means = new float[length];
 		float[] variances = new float[length];
-		int d = backPos0 - backPos1;
+		var d = backPos0 - backPos1;
 		double il = 1d / d;
 		int i = 0, j;
 		double sum = 0d;
@@ -57,14 +57,14 @@ public class BollingerBands {
 		public final float[] bandwidths;
 
 		private Bb(float[] fs, int backPos0, int backPos1, float k) {
-			int length = fs.length;
+			var length = fs.length;
 			lowers = new float[length];
 			uppers = new float[length];
 			sds = new float[length];
 			bandwidths = new float[length];
 
 			for (int i = 0; i < length; i++) {
-				int i1 = i + 1;
+				var i1 = i + 1;
 				int s = max(0, i1 - backPos0);
 				int e = max(0, i1 - backPos1);
 				MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(fs, s, e));

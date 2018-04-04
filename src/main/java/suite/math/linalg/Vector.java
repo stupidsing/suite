@@ -40,7 +40,7 @@ public class Vector {
 	}
 
 	public double convolute(int l, float[] m, int pm, float[] n, int pn) {
-		int d = pm + pn - 1;
+		var d = pm + pn - 1;
 		return Ints_.range(pm, pm + l).toDouble(Int_Dbl.sum(i -> m[i] * n[d - i]));
 	}
 
@@ -61,7 +61,7 @@ public class Vector {
 	}
 
 	public float[] negOn(float[] m) {
-		int length = m.length;
+		var length = m.length;
 		for (int i = 0; i < length; i++)
 			m[i] = -m[i];
 		return m;
@@ -84,7 +84,7 @@ public class Vector {
 	}
 
 	public float[] scaleOn(float[] m, double d) {
-		int length = m.length;
+		var length = m.length;
 		for (int i = 0; i < length; i++)
 			m[i] *= d;
 		return m;
@@ -142,7 +142,7 @@ public class Vector {
 	}
 
 	private int sameLength_(float[] m, float[] n) {
-		int size = m.length;
+		var size = m.length;
 		if (size == n.length)
 			return size;
 		else

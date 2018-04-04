@@ -19,7 +19,7 @@ public class ClusterProbeTest {
 
 	@Test
 	public void test() throws IOException {
-		int nNodes = 3;
+		var nNodes = 3;
 		InetAddress localHost = InetAddress.getLocalHost();
 
 		Map<String, InetSocketAddress> peers = new HashMap<>();

@@ -51,8 +51,8 @@ public class ArimaTest {
 	}
 
 	private float[] generate(int length, float[] ars, float[] mas) {
-		int p = ars.length;
-		int q = mas.length;
+		var p = ars.length;
+		var q = mas.length;
 		float[] xsp = Floats_.concat(To.vector(p, i -> 8f * random.nextDouble()), new float[length]);
 		float[] epq = To.vector(length + q, i -> random.nextGaussian());
 

@@ -187,7 +187,7 @@ public class Chr {
 	}
 
 	private Predicate<Node> bindFun(Trail trail, Node node0) {
-		int pit = trail.getPointInTime();
+		var pit = trail.getPointInTime();
 
 		return node1 -> {
 			trail.unwind(pit);

@@ -51,13 +51,13 @@ public class PrettyPrinter {
 	// op0 for avoiding unnecessary indenting; prec0 for parenthesizing
 	private void prettyPrint_(Node node, Operator op0, int prec0) {
 		int x = getX(), y = getY();
-		int length = lengthEstimator.getEstimatedLength(node);
+		var length = lengthEstimator.getEstimatedLength(node);
 
 		// line too long?
 		if (node instanceof Tree) {
 			Tree tree = (Tree) node;
 			Operator op = tree.getOperator();
-			int prec = op.getPrecedence();
+			var prec = op.getPrecedence();
 			boolean isNeedPars = prec <= prec0;
 			int parsIndent = 0, parsIndent0 = 0;
 
@@ -75,16 +75,16 @@ public class PrettyPrinter {
 					Node right = tree.getRight();
 					Assoc assoc = op.getAssoc();
 
-					int leftPrec = prec - (assoc == Assoc.LEFT ? 1 : 0);
-					int rightPrec = prec - (assoc == Assoc.RIGHT ? 1 : 0);
+					var leftPrec = prec - (assoc == Assoc.LEFT ? 1 : 0);
+					var rightPrec = prec - (assoc == Assoc.RIGHT ? 1 : 0);
 					if (op == TermOp.BRACES)
 						leftPrec = rightPrec = 0;
 
 					Tree tree1 = Tree.decompose(right, op);
 					Node r0 = tree1 != null ? tree1.getLeft() : null;
-					int es0 = lengthEstimator.getEstimatedLength(left);
-					int es1 = r0 != null ? lengthEstimator.getEstimatedLength(r0) : lineLength;
-					int opLength = op.getName().length();
+					var es0 = lengthEstimator.getEstimatedLength(left);
+					var es1 = r0 != null ? lengthEstimator.getEstimatedLength(r0) : lineLength;
+					var opLength = op.getName().length();
 
 					// breaks "a + b + xxx" in the second operator
 					if (assoc == Assoc.RIGHT //
@@ -96,7 +96,7 @@ public class PrettyPrinter {
 						closeBraces(op, opPos);
 					} else { // breaks after the operator
 						boolean isIncRightIndent = op != op0;
-						int indent0 = 0;
+						var indent0 = 0;
 
 						prettyPrint_(left, op, leftPrec);
 
@@ -163,7 +163,7 @@ public class PrettyPrinter {
 	}
 
 	private void prettyPrintIndented(Node left, int prec) {
-		int indent0 = incrementIndent();
+		var indent0 = incrementIndent();
 		prettyPrint_(left, null, prec);
 		revertIndent(indent0);
 	}
@@ -209,7 +209,7 @@ public class PrettyPrinter {
 	}
 
 	private int incrementIndent() { // would not jump by two
-		int indent0 = indent;
+		var indent0 = indent;
 		indent = min(indent, currentLineIndent) + 1;
 		return indent0;
 	}
@@ -239,14 +239,14 @@ public class PrettyPrinter {
 	}
 
 	private int getLineContentBeginPosition() {
-		int pos = getLineBeginPosition();
+		var pos = getLineBeginPosition();
 		while (pos < getCurrentPosition() && Character.isWhitespace(sb.charAt(pos)))
 			pos++;
 		return pos;
 	}
 
 	private int getLineBeginPosition() {
-		int pos = getCurrentPosition();
+		var pos = getCurrentPosition();
 		while (0 < --pos && sb.charAt(pos) != '\n')
 			;
 		return pos + 1;

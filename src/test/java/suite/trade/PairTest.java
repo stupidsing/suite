@@ -39,7 +39,7 @@ public class PairTest {
 		long[] tradeTimes = Longs_.concat(ts0, ts1).distinct().sort().toArray();
 		float[] prices0 = ds0.alignBeforePrices(tradeTimes).prices;
 		float[] prices1 = ds1.alignBeforePrices(tradeTimes).prices;
-		int length = prices0.length;
+		var length = prices0.length;
 
 		LinearRegression lr = statistic.linearRegression(Ints_ //
 				.range(length) //

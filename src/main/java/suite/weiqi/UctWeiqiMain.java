@@ -32,9 +32,9 @@ public class UctWeiqiMain<Move> {
 		InputStreamReader isr = new InputStreamReader(System.in, Constants.charset);
 		BufferedReader br = new BufferedReader(isr);
 		DecimalFormat df = new DecimalFormat("0.000");
-		int nThreads = Constants.nThreads;
-		int nSimulations = 10000 * nThreads;
-		int boundedTime = 30000;
+		var nThreads = Constants.nThreads;
+		var nSimulations = 10000 * nThreads;
+		var boundedTime = 30000;
 		Weiqi.adjustSize(7);
 
 		Board board = new Board();
@@ -95,8 +95,8 @@ public class UctWeiqiMain<Move> {
 						default:
 							if (!String_.isBlank(line)) {
 								Pair<String, String> pos = String_.split2(line, ",");
-								int x = Integer.parseInt(pos.t0);
-								int y = Integer.parseInt(pos.t1);
+								var x = Integer.parseInt(pos.t0);
+								var y = Integer.parseInt(pos.t1);
 								gameSet.play(Coordinate.c(x, y));
 							}
 						}
@@ -127,7 +127,7 @@ public class UctWeiqiMain<Move> {
 	}
 
 	protected static void deepThink() {
-		int seed = 760903274;
+		var seed = 760903274;
 		System.out.println("RANDOM SEED = " + seed);
 		ShuffleUtil.setSeed(seed);
 

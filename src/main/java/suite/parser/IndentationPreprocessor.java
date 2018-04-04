@@ -31,20 +31,20 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 	@Override
 	public List<Run> apply(String in) {
 		List<Run> runs = new ArrayList<>();
-		int nLastIndents = 0;
+		var nLastIndents = 0;
 		String lastIndent = "";
-		int pos = 0;
-		int length = in.length();
+		var pos = 0;
+		var length = in.length();
 
 		while (pos < length) {
-			int pos0 = pos;
+			var pos0 = pos;
 			char ch;
 			while (pos0 < length && (ch = in.charAt(pos0)) != '\n' && Character.isWhitespace(ch))
 				pos0++;
 
 			Segment segment = ParseUtil.searchPosition(in.toCharArray(), Segment.of(pos0, length), "\n", Assoc.RIGHT, false);
-			int pos1 = segment != null ? segment.start : length;
-			int pos2 = segment != null ? segment.end : length; // includes LF
+			var pos1 = segment != null ? segment.start : length;
+			var pos2 = segment != null ? segment.end : length; // includes LF
 
 			String indent = in.substring(pos, pos0);
 			String line = in.substring(pos0, pos1);

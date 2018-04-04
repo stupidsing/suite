@@ -83,7 +83,7 @@ public class GameSet {
 	 */
 	private boolean playIfValid(Move move, boolean rollBack) {
 		Occupation opponent = nextPlayer.opponent();
-		int i = 0;
+		var i = 0;
 
 		for (Coordinate c1 : move.position.neighbors)
 			move.neighborColors[i++] = board.get(c1);
@@ -92,7 +92,7 @@ public class GameSet {
 		boolean success = move.type != MoveType.INVALID;
 
 		if (success) {
-			int newHashCode = board.hashCode();
+			var newHashCode = board.hashCode();
 			success &= !previousStates.contains(newHashCode);
 
 			if (success && !rollBack) {
@@ -121,7 +121,7 @@ public class GameSet {
 		Occupation opponent = nextPlayer.opponent();
 
 		if (move.type == MoveType.CAPTURE) {
-			int i = 0;
+			var i = 0;
 
 			for (Coordinate c1 : move.position.neighbors)
 				if (move.neighborColors[i++] != board.get(c1))

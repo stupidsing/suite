@@ -32,10 +32,10 @@ public class IndexedSourceReader<T> {
 						T t = source != null ? source.source() : null;
 
 						if (t != null) {
-							int size1 = queue.size() + 1;
+							var size1 = queue.size() + 1;
 
 							if (maxBuffers < size1) {
-								int shift = size1 - maxBuffers / 2;
+								var shift = size1 - maxBuffers / 2;
 								queue = new ArrayList<>(List_.right(queue, shift));
 								offset += shift;
 							}
@@ -47,7 +47,7 @@ public class IndexedSourceReader<T> {
 						}
 					}
 
-					int index = position - offset;
+					var index = position - offset;
 
 					if (0 <= index)
 						return index < queue.size() ? queue.get(index) : null;

@@ -86,7 +86,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 	@Override
 	public Map<Integer, Integer> gc(List<Integer> pointers, int back) {
 		synchronized (writeLock) {
-			int end = nPages;
+			var end = nPages;
 			int start = max(0, end - back);
 			boolean[] isInUse = new boolean[end - start];
 
@@ -103,7 +103,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 					use.sink(Read.from(pageFile.load(pointer).pairs).map(Pair::second).toList());
 
 			Map<Integer, Integer> map = new HashMap<>();
-			int p1 = start;
+			var p1 = start;
 
 			for (int p0 = start; p0 < end; p0++)
 				if (isInUse[p0]) {

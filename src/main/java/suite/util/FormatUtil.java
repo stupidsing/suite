@@ -11,7 +11,7 @@ public class FormatUtil {
 
 	public static String tablize(String s) {
 		Streamlet<String[]> arrays = Read.from(s.split("\n")).map(line -> line.split("\t")).collect(As::streamlet);
-		int nColumns = arrays.collect(Obj_Int.lift(array -> array.length)).max();
+		var nColumns = arrays.collect(Obj_Int.lift(array -> array.length)).max();
 
 		Streamlet<String[]> rows = arrays //
 				.map(array -> To.array(nColumns, String.class, column -> column < array.length ? array[column] : ""));
@@ -27,7 +27,7 @@ public class FormatUtil {
 		for (String[] row : rows) {
 			for (int column = 0; column < nColumns; column++) {
 				String cell = row[column];
-				int width = widths[column];
+				var width = widths[column];
 
 				sb.append(cell);
 
@@ -42,8 +42,8 @@ public class FormatUtil {
 	}
 
 	public static String trimLeft(String s) {
-		int length = s.length();
-		int pos = 0;
+		var length = s.length();
+		var pos = 0;
 		do
 			if (!Character.isWhitespace(s.charAt(pos)))
 				break;
@@ -52,7 +52,7 @@ public class FormatUtil {
 	}
 
 	public static String trimRight(String s) {
-		int pos = s.length();
+		var pos = s.length();
 		while (0 <= --pos)
 			if (!Character.isWhitespace(s.charAt(pos)))
 				break;

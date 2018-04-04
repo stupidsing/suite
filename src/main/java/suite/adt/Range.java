@@ -38,7 +38,7 @@ public class Range<T extends Comparable<? super T>> implements Comparable<Range<
 
 	@Override
 	public int compareTo(Range<T> other) {
-		int c = 0;
+		var c = 0;
 		c = c == 0 ? from.compareTo(other.from) : c;
 		c = c == 0 ? to.compareTo(other.to) : c;
 		return c;

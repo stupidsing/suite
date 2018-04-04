@@ -55,7 +55,7 @@ public class AnalyzeTimeSeriesTest {
 	}
 
 	private void analyze(DataSource ds) {
-		int length = ds.ts.length;
+		var length = ds.ts.length;
 		float[] ops = ds.opens;
 		float[] cls = ds.closes;
 		float[] ocgs = Floats_.toArray(length, i -> cls[i] - ops[i]);
@@ -67,8 +67,8 @@ public class AnalyzeTimeSeriesTest {
 	}
 
 	private void analyze(float[] prices) {
-		int length = prices.length;
-		int log2 = Quant.log2trunc(length);
+		var length = prices.length;
+		var log2 = Quant.log2trunc(length);
 		double nYears = length * Trade_.invTradeDaysPerYear;
 
 		float[] fds = dct.dct(Arrays.copyOfRange(prices, length - log2, length));
@@ -87,8 +87,8 @@ public class AnalyzeTimeSeriesTest {
 		}
 
 		IntFunction<BuySell> momFun = n -> {
-			int d0 = 1 + n;
-			int d1 = 1;
+			var d0 = 1 + n;
+			var d1 = 1;
 			return buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		};
 
@@ -100,7 +100,7 @@ public class AnalyzeTimeSeriesTest {
 		float[] holds = mt.hold(prices, 1f, 1f, 1f);
 		float[] ma200 = ma.movingAvg(prices, 200);
 		BuySell mat = buySell(d -> {
-			int last = d - 1;
+			var last = d - 1;
 			return Quant.sign(ma200[last], prices[last]);
 		}).start(1).longOnly();
 		BuySell mt_ = buySell(d -> holds[d]);
@@ -110,8 +110,8 @@ public class AnalyzeTimeSeriesTest {
 		float[] bbvariances = bbmv.t1;
 
 		BuySell ms2 = buySell(d -> {
-			int last = d - 1;
-			int ref = last - 250;
+			var last = d - 1;
+			var ref = last - 250;
 			float mean = bbmean[last];
 			return Quant.sign(logPrices[last], logPrices[ref] - bbvariances[last] / (2d * mean * mean));
 		}).start(1 + 250);
@@ -192,7 +192,7 @@ public class AnalyzeTimeSeriesTest {
 	}
 
 	private Returns engage_(float[] prices, float[] holds) {
-		int length = prices.length;
+		var length = prices.length;
 		float[] returns = new float[length];
 		double val;
 		returns[0] = (float) (val = 1d);
@@ -202,7 +202,7 @@ public class AnalyzeTimeSeriesTest {
 	}
 
 	private Returns invest_(float[] prices, float[] holds) {
-		int length = prices.length;
+		var length = prices.length;
 		float[] returns = new float[length];
 		double val;
 		returns[0] = (float) (val = 1d);

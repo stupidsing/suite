@@ -45,8 +45,8 @@ public class MapObject_ {
 	public static <T extends MapObject<T>> boolean equals(T t0, T t1) {
 		List<?> list0 = list(t0);
 		List<?> list1 = list(t1);
-		int size0 = list0.size();
-		int size1 = list1.size();
+		var size0 = list0.size();
+		var size1 = list1.size();
 		boolean b = true;
 		if (size0 == size1)
 			for (int i = 0; i < size0; i++)
@@ -56,7 +56,7 @@ public class MapObject_ {
 
 	public static <T extends MapObject<T>> MapObject<T> construct(Class<?> clazz, List<?> list) {
 		return Rethrow.ex(() -> {
-			int size = list.size();
+			var size = list.size();
 			Method m = Read //
 					.from(clazz.getMethods()) //
 					.filter(method -> String_.equals(method.getName(), "of") && method.getParameterCount() == size) //

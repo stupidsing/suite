@@ -29,7 +29,7 @@ public class RadialBasisFunctionNetwork {
 	private float[] invVariances;
 
 	public Fun<float[], float[]> train(float[][] ins, float[][] outs) {
-		int length = ins[0].length;
+		var length = ins[0].length;
 		int[] kmc = new KmeansCluster(length).kMeansCluster(List.of(ins), nHiddens, nHiddens);
 
 		int[] sizes = new int[nHiddens];
@@ -37,7 +37,7 @@ public class RadialBasisFunctionNetwork {
 		float[] variances = new float[nHiddens];
 
 		for (int i = 0; i < ins.length; i++) {
-			int cl = kmc[i];
+			var cl = kmc[i];
 			sizes[cl]++;
 			vec.addOn(sums[cl], ins[i]);
 		}
@@ -45,7 +45,7 @@ public class RadialBasisFunctionNetwork {
 		centers = To.array(nHiddens, float[].class, cl -> vec.scale(sums[cl], 1d / sizes[cl]));
 
 		for (int i = 0; i < ins.length; i++) {
-			int cl = kmc[i];
+			var cl = kmc[i];
 			variances[cl] += vec.dotDiff(ins[i], centers[cl]);
 		}
 

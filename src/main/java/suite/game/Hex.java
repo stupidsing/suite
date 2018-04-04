@@ -32,17 +32,17 @@ public class Hex {
 	}
 
 	public int distance(XY diff) {
-		int dx = diff.x;
-		int dy = diff.y;
-		int sum = dx + dy;
+		var dx = diff.x;
+		var dy = diff.y;
+		var sum = dx + dy;
 		XY xy0 = XY.of(dx - sum, dy + sum);
 		XY xy1 = XY.of(dx + sum, dy - sum);
 		return min(Math.abs(xy0.x) + Math.abs(xy0.y), Math.abs(xy1.x) + Math.abs(xy1.y));
 	}
 
 	public XY towards(XY diff) {
-		int dx = diff.x;
-		int dy = diff.y;
+		var dx = diff.x;
+		var dy = diff.y;
 
 		if (0 < dx)
 			return XY.of(1, dy < 0 ? -1 : 0);

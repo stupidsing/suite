@@ -122,7 +122,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public float average() {
-		int count = 0;
+		var count = 0;
 		float result = 0, c1;
 		while ((c1 = next()) != FltFunUtil.EMPTYVALUE) {
 			result += c1;
@@ -165,7 +165,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public int count() {
-		int i = 0;
+		var i = 0;
 		while (next() != FltFunUtil.EMPTYVALUE)
 			i++;
 		return i;
@@ -245,7 +245,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		float c;
 		while ((c = source.source()) != FltFunUtil.EMPTYVALUE)
 			h = h * 31 + Objects.hashCode(c);

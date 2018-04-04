@@ -102,7 +102,7 @@ public class As {
 			T t = source.source();
 			int result1;
 			if (t != null) {
-				int result = fun.apply(t);
+				var result = fun.apply(t);
 				while ((t = source.source()) != null)
 					if ((result1 = fun.apply(t)) < result)
 						result = result1;
@@ -178,10 +178,10 @@ public class As {
 			private Chars decode() {
 				Bytes bytes = bb.toBytes();
 				CharsBuilder cb = new CharsBuilder();
-				int s = 0;
+				var s = 0;
 
 				while (s < bytes.size()) {
-					int b0 = Byte.toUnsignedInt(bytes.get(s++));
+					var b0 = Byte.toUnsignedInt(bytes.get(s++));
 					int ch, e;
 					if (b0 < 0x80) {
 						ch = b0;
@@ -205,7 +205,7 @@ public class As {
 						throw new RuntimeException();
 					if (e <= bytes.size()) {
 						while (s < e) {
-							int b = Byte.toUnsignedInt(bytes.get(s++));
+							var b = Byte.toUnsignedInt(bytes.get(s++));
 							if ((b & 0xC0) == 0x80)
 								ch = (ch << 6) + (b & 0x3F);
 							else
@@ -264,8 +264,8 @@ public class As {
 	private static String[] csvLine(String line) {
 		List<String> list = new ArrayList<>();
 		StringBuilder sb = new StringBuilder();
-		int length = line.length();
-		int p = 0;
+		var length = line.length();
+		var p = 0;
 		if (0 < length) {
 			while (p < length) {
 				char ch = line.charAt(p++);

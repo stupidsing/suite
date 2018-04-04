@@ -115,7 +115,7 @@ public class TopDownParse {
 					stack.push(root);
 
 					for (State state_ : states) {
-						int d = state_.sign;
+						var d = state_.sign;
 						if (d < 0)
 							stack.pop().end = state_.pos;
 						else if (0 < d)

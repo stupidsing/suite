@@ -45,7 +45,7 @@ public class TreeIntern {
 		private Node left, right;
 
 		public TreeKey(Operator operator, Node left, Node right) {
-			int h = 7;
+			var h = 7;
 			h = h * 31 + System.identityHashCode(left);
 			h = h * 31 + System.identityHashCode(operator);
 			h = h * 31 + System.identityHashCode(right);

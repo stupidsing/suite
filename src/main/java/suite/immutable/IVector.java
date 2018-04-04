@@ -46,13 +46,13 @@ public class IVector<T> {
 		}
 
 		private void insertBefore(T[] n, int s, int e) {
-			int l1 = e - s;
+			var l1 = e - s;
 			startUsed -= l1;
 			System.arraycopy(n, s, nodes, startUsed, l1);
 		}
 
 		private void insertAfter(T[] n, int s, int e) {
-			int l1 = e - s;
+			var l1 = e - s;
 			System.arraycopy(n, s, nodes, endUsed, l1);
 			endUsed += l1;
 		}
@@ -75,7 +75,7 @@ public class IVector<T> {
 	}
 
 	public IVector<T> cons(T n, IVector<T> v) {
-		int vlen = v.length();
+		var vlen = v.length();
 
 		if (v.start == v.data.startUsed && 1 <= v.start) {
 			v.data.insertBefore(n);
@@ -110,7 +110,7 @@ public class IVector<T> {
 	}
 
 	public IVector<T> range(int s, int e) {
-		int length = length();
+		var length = length();
 		while (s < 0)
 			s += length;
 		while (e <= 0)
@@ -142,9 +142,9 @@ public class IVector<T> {
 
 	@Override
 	public int hashCode() {
-		int hashCode = 7;
+		var hashCode = 7;
 		for (int i = start; i < end; i++) {
-			int h = Objects.hashCode(data.nodes[i]);
+			var h = Objects.hashCode(data.nodes[i]);
 			hashCode = hashCode * 31 + h;
 		}
 		return hashCode;

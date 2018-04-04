@@ -85,7 +85,7 @@ public class R3 {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		h = h * 31 + Float.floatToIntBits(x);
 		h = h * 31 + Float.floatToIntBits(y);
 		h = h * 31 + Float.floatToIntBits(z);

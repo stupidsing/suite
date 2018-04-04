@@ -100,14 +100,14 @@ public class Mapify {
 				Mapifier mapifier1 = getMapifier(componentType);
 				mapifier = new Mapifier(object -> {
 					Map<Object, Object> map = newMap();
-					int length = Array.getLength(object);
+					var length = Array.getLength(object);
 					for (int i = 0; i < length; i++)
 						map.put(i, apply_(mapifier1.mapify, Array.get(object, i)));
 					return map;
 				}, object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					Object objects = Array.newInstance(componentType, map.size());
-					int i = 0;
+					var i = 0;
 					while (map.containsKey(i)) {
 						Array.set(objects, i, apply_(mapifier1.unmapify, map.get(i)));
 						i++;
@@ -167,14 +167,14 @@ public class Mapify {
 				Mapifier mapifier1 = getMapifier(typeArgs[0]);
 				mapifier = new Mapifier(object -> {
 					Map<Object, Object> map = newMap();
-					int i = 0;
+					var i = 0;
 					for (Object o : (Collection<?>) object)
 						map.put(i++, apply_(mapifier1.mapify, o));
 					return map;
 				}, object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					Collection<Object> object1 = (Collection<Object>) instantiate(clazz);
-					int i = 0;
+					var i = 0;
 					while (map.containsKey(i))
 						object1.add(apply_(mapifier1.unmapify, map.get(i++)));
 					return object1;

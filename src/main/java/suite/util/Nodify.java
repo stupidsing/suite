@@ -118,7 +118,7 @@ public class Nodify {
 							.from(Tree.iter(node, TermOp.OR____)) //
 							.map(n -> apply_(nodifier1, n)) //
 							.toList();
-					int size = list.size();
+					var size = list.size();
 					Object objects = Array.newInstance(componentType, size);
 					for (int i = 0; i < size; i++)
 						Array.set(objects, i, list.get(i));

@@ -84,7 +84,7 @@ public class FileSystemKeyUtil {
 			int pos = 0, size = name.size();
 
 			while (pos < size) {
-				int pathLength = sizeOffset - pathOffset;
+				var pathLength = sizeOffset - pathOffset;
 				int pos1 = min(pos + pathLength, size);
 				keys.add(toNameKey( //
 						hash(name.range(0, pos)), //

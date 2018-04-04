@@ -29,7 +29,7 @@ public interface Dbl_Int {
 		return outlet -> {
 			DblSource source = outlet.source();
 			double c;
-			int result = (int) 0;
+			var result = (int) 0;
 			while ((c = source.source()) != DblFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

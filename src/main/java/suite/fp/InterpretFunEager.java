@@ -163,7 +163,7 @@ public class InterpretFunEager {
 				} else {
 					List<Fun<Frame, Node>> values_ = new ArrayList<>();
 					IMap<Node, Fun<Frame, Node>> vm1 = vm;
-					int fs1 = fs;
+					var fs1 = fs;
 
 					for (Node[] array : arrays) {
 						Fun<Frame, Node> getter = getter(fs1);
@@ -330,9 +330,9 @@ public class InterpretFunEager {
 	}
 
 	private int compare(Node n0, Node n1) {
-		int t0 = n0 instanceof Fun_ ? 1 : 0;
-		int t1 = n1 instanceof Fun_ ? 1 : 0;
-		int c = t0 - t1;
+		var t0 = n0 instanceof Fun_ ? 1 : 0;
+		var t1 = n1 instanceof Fun_ ? 1 : 0;
+		var c = t0 - t1;
 		if (c == 0)
 			switch (t0) {
 			case 0:

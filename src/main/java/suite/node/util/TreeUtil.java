@@ -124,7 +124,7 @@ public class TreeUtil {
 	}
 
 	public static int nElements(Node node) {
-		int n = 1;
+		var n = 1;
 		Tree tree;
 		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
 			node = tree.getRight();
@@ -140,7 +140,7 @@ public class TreeUtil {
 			return 1;
 		else {
 			int p = intPow(a, b / 2);
-			int pp = p * p;
+			var pp = p * p;
 			return (b % 2 == 1 ? pp * a : pp);
 		}
 	}

@@ -34,13 +34,13 @@ public class Ints_ {
 	}
 
 	public static int[] concat(int[]... array) {
-		int length = 0;
+		var length = 0;
 		for (int[] fs : array)
 			length += fs.length;
 		int[] fs1 = new int[length];
-		int i = 0;
+		var i = 0;
 		for (int[] fs : array) {
-			int length_ = fs.length;
+			var length_ = fs.length;
 			copy(fs, 0, fs1, i, length_);
 			i += length_;
 		}
@@ -48,13 +48,13 @@ public class Ints_ {
 	}
 
 	public static Ints concat(Ints... array) {
-		int length = 0;
+		var length = 0;
 		for (Ints ints : array)
 			length += ints.size();
 		int[] cs1 = new int[length];
-		int i = 0;
+		var i = 0;
 		for (Ints ints : array) {
-			int size_ = ints.size();
+			var size_ = ints.size();
 			copy(ints.cs, ints.start, cs1, i, size_);
 			i += size_;
 		}
@@ -94,7 +94,7 @@ public class Ints_ {
 		return new IntStreamlet(() -> {
 			IntMutable m = IntMutable.of(s);
 			return IntOutlet.of(() -> {
-				int c = m.increment();
+				var c = m.increment();
 				return c < e ? c : IntFunUtil.EMPTYVALUE;
 			});
 		});
@@ -105,11 +105,11 @@ public class Ints_ {
 	}
 
 	public static Fun<Outlet<Ints>, Outlet<Ints>> split(Ints delim) {
-		int ds = delim.size();
+		var ds = delim.size();
 
 		return outlet -> Outlet.of(new BufferedSource(outlet) {
 			protected boolean search() {
-				int size = buffer.size();
+				var size = buffer.size();
 				while ((p1 = p0 + ds) <= size)
 					if (!delim.equals(buffer.range(p0, p1)))
 						p0++;

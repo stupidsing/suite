@@ -15,7 +15,7 @@ public class RollingHashUtilTest {
 	public void test0() {
 		byte b = 1, b1 = 1;
 
-		int rollingHash = 0;
+		var rollingHash = 0;
 		rollingHash = rollingHashUtil.roll(rollingHash, b);
 		rollingHash = rollingHashUtil.roll(rollingHash, b1);
 		rollingHash = rollingHashUtil.unroll(rollingHash, b, 2);
@@ -27,9 +27,9 @@ public class RollingHashUtilTest {
 	@Test
 	public void test1() {
 		Bytes bytes = To.bytes("0123456789abcdef");
-		int size = bytes.size();
+		var size = bytes.size();
 
-		int rollingHash = rollingHashUtil.hash(bytes);
+		var rollingHash = rollingHashUtil.hash(bytes);
 
 		for (int pos = 0; pos < size; pos++)
 			rollingHash = rollingHashUtil.unroll(rollingHash, bytes.get(pos), size - pos);
@@ -40,7 +40,7 @@ public class RollingHashUtilTest {
 	@Test
 	public void test2() {
 		Bytes bytes = To.bytes("0123456789abcdef");
-		int size = bytes.size();
+		var size = bytes.size();
 
 		int rollingHash = rollingHashUtil.hash(bytes.range(0, 10));
 

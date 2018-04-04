@@ -82,7 +82,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 			private int i = start;
 
 			public int source() {
-				int c = pred.test(i) ? ts[i] : IntFunUtil.EMPTYVALUE;
+				var c = pred.test(i) ? ts[i] : IntFunUtil.EMPTYVALUE;
 				i += inc;
 				return c;
 			}
@@ -122,7 +122,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public int average() {
-		int count = 0;
+		var count = 0;
 		int result = 0, c1;
 		while ((c1 = next()) != IntFunUtil.EMPTYVALUE) {
 			result += c1;
@@ -137,7 +137,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	public IntOutlet closeAtEnd(Closeable c) {
 		return of(() -> {
-			int next = next();
+			var next = next();
 			if (next == IntFunUtil.EMPTYVALUE)
 				Object_.closeQuietly(c);
 			return next;
@@ -165,7 +165,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public int count() {
-		int i = 0;
+		var i = 0;
 		while (next() != IntFunUtil.EMPTYVALUE)
 			i++;
 		return i;
@@ -245,7 +245,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		int c;
 		while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
 			h = h * 31 + Objects.hashCode(c);
@@ -257,7 +257,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 			private int i = 0;
 
 			public boolean source2(IntObjPair<Integer> pair) {
-				int c = next();
+				var c = next();
 				if (c != IntFunUtil.EMPTYVALUE) {
 					pair.update(c, i++);
 					return true;
@@ -307,7 +307,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public int min(IntComparator comparator) {
-		int c = minOrEmpty(comparator);
+		var c = minOrEmpty(comparator);
 		if (c != IntFunUtil.EMPTYVALUE)
 			return c;
 		else
@@ -341,13 +341,13 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 		return new IntOutlet(() -> {
 			Mutable<Integer> mutable = Mutable.nil();
-			int c = queue.poll(mutable) ? mutable.get() : c0;
+			var c = queue.poll(mutable) ? mutable.get() : c0;
 			return c;
 		});
 	}
 
 	public IntOpt opt() {
-		int c = next();
+		var c = next();
 		if (c != IntFunUtil.EMPTYVALUE)
 			if (next() == IntFunUtil.EMPTYVALUE)
 				return IntOpt.of(c);

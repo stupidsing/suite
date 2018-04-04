@@ -14,7 +14,7 @@ public class PlotMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		int size = 1024;
+		var size = 1024;
 		double scale = 1d / (size + 1);
 
 		DblDbl_Dbl variety = (x, y) -> {

@@ -24,9 +24,9 @@ public class WhitespacePreprocessor implements Fun<String, List<Run>> {
 	@Override
 	public List<Run> apply(String in) {
 		List<Run> runs = new ArrayList<>();
-		int length = in.length();
+		var length = in.length();
 		int pos0 = 0, pos = 0;
-		int quote = 0;
+		var quote = 0;
 		boolean backquote = false;
 
 		while (pos < length) {
@@ -39,7 +39,7 @@ public class WhitespacePreprocessor implements Fun<String, List<Run>> {
 					pos0 = pos;
 				}
 			} else if (quote == 0) {
-				int split = (backquote = !backquote) ? pos : pos - 1;
+				var split = (backquote = !backquote) ? pos : pos - 1;
 				runs.add(new Run(pos0, split));
 				runs.add(new Run(" "));
 				pos0 = split;

@@ -11,7 +11,7 @@ public class IIntMapTest {
 		IIntMap<Integer> map = new IIntMap<>();
 
 		for (int i = 0; i < 256; i++) {
-			int i_ = i;
+			var i_ = i;
 			map = map.update(i, v -> i_);
 		}
 

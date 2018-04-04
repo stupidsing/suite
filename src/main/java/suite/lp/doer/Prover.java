@@ -103,7 +103,7 @@ public class Prover {
 
 				switch ((TermOp) tree.getOperator()) {
 				case OR____:
-					int pit = trail.getPointInTime();
+					var pit = trail.getPointInTime();
 					Node bt = new Data<Source<Boolean>>(() -> {
 						trail.unwind(pit);
 						return Boolean.TRUE;

@@ -27,7 +27,7 @@ public class BackAllocatorTest {
 		BackAllocator ba0 = (akds, ts) -> index -> List.of(Pair.of(symbol, 1d));
 		BackAllocator ba1 = ba0.stopLoss(.98d);
 
-		int length = prices.length;
+		var length = prices.length;
 		long[] ts = Longs_.toArray(length, i -> start.addDays(i).epochSec());
 
 		DataSource ds = DataSource.of(ts, prices);

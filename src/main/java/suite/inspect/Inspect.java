@@ -61,7 +61,7 @@ public class Inspect {
 	 */
 	public int hashCode(Object object) {
 		return Rethrow.ex(() -> {
-			int h = 7;
+			var h = 7;
 			for (Field field : fields(object.getClass()))
 				h = h * 31 + Objects.hashCode(field.get(object));
 			return h;
@@ -142,7 +142,7 @@ public class Inspect {
 		List<Field> childFields = Read //
 				.from(clazz.getDeclaredFields()) //
 				.filter(field -> {
-					int modifiers = field.getModifiers();
+					var modifiers = field.getModifiers();
 					String name = field.getName();
 					return !Modifier.isStatic(modifiers) //
 							&& !Modifier.isTransient(modifiers) //
@@ -175,7 +175,7 @@ public class Inspect {
 		List<Method> childMethods = Read //
 				.from(clazz.getDeclaredMethods()) //
 				.filter(method -> {
-					int modifiers = method.getModifiers();
+					var modifiers = method.getModifiers();
 					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && names.add(method.getName());
 				}) //
 				.toList();
@@ -240,7 +240,7 @@ public class Inspect {
 			Class<?> clazz = object.getClass();
 
 			if (clazz.isArray()) {
-				int length = Array.getLength(object);
+				var length = Array.getLength(object);
 
 				prefix = "[";
 				keyClass = clazz.getComponentType();

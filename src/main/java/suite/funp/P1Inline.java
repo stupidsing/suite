@@ -53,7 +53,7 @@ public class P1Inline {
 
 		Iterate<String> newVar = var -> {
 			String var1 = var.split("\\$")[0];
-			int i = 0;
+			var i = 0;
 			while (!vars.add(var1))
 				var1 = var + "$" + i++;
 			return var1;

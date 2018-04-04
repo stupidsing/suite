@@ -79,7 +79,7 @@ public class IRope<T> {
 
 	// minBranchFactor <= ropes.size() && ropes.size() < maxBranchFactor
 	public IRope(int depth, List<IRope<T>> ropes) {
-		int weight = 0;
+		var weight = 0;
 		for (IRope<T> rope : ropes)
 			weight += rope.weight;
 		this.depth = depth;
@@ -138,8 +138,8 @@ public class IRope<T> {
 	}
 
 	private static <T> List<IRope<T>> meld_(IRope<T> rope0, IRope<T> rope1) {
-		int depth0 = rope0.depth;
-		int depth1 = rope1.depth;
+		var depth0 = rope0.depth;
+		var depth1 = rope1.depth;
 		int depth = max(depth0, depth1);
 
 		if (depth0 != depth1) {
@@ -153,10 +153,10 @@ public class IRope<T> {
 				ropes = List_.concat(rope0.ropes, rope1.ropes);
 
 			List<IRope<T>> list;
-			int size = ropes.size();
+			var size = ropes.size();
 
 			if (maxBranchFactor <= size) {
-				int p = size / 2;
+				var p = size / 2;
 				List<IRope<T>> left = List_.left(ropes, p);
 				List<IRope<T>> right = List_.right(ropes, p);
 				list = List.of(new IRope<>(depth, left), new IRope<>(depth, right));
@@ -166,10 +166,10 @@ public class IRope<T> {
 			return list;
 		} else {
 			IRopeList<T> ts = rope0.ts.concat(rope1.ts);
-			int size = ts.size();
+			var size = ts.size();
 
 			if (maxBranchFactor <= size) {
-				int p = size / 2;
+				var p = size / 2;
 				IRopeList<T> left = ts.subList(0, p);
 				IRopeList<T> right = ts.subList(p, size);
 				return List.of(new IRope<>(left), new IRope<>(right));
@@ -217,11 +217,11 @@ public class IRope<T> {
 	}
 
 	private static <T> IRope<T> meldLeft(Deque<IRope<T>> queue, IRope<T> rope) {
-		int branchFactor = minBranchFactor;
+		var branchFactor = minBranchFactor;
 
 		while (true) {
 			Deque<IRope<T>> queue1 = new ArrayDeque<>();
-			int depth = rope.depth;
+			var depth = rope.depth;
 
 			queue1.push(rope);
 
@@ -256,11 +256,11 @@ public class IRope<T> {
 	}
 
 	private static <T> IRope<T> meldRight(IRope<T> rope, Deque<IRope<T>> queue) {
-		int branchFactor = minBranchFactor;
+		var branchFactor = minBranchFactor;
 
 		while (true) {
 			Deque<IRope<T>> queue1 = new ArrayDeque<>();
-			int depth = rope.depth;
+			var depth = rope.depth;
 
 			queue1.push(rope);
 

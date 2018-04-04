@@ -25,7 +25,7 @@ public class JenkinsTraub {
 	}
 
 	private Complex jt_(Complex[] poly) {
-		int length = poly.length;
+		var length = poly.length;
 		Complex[] h = d(poly);
 
 		// stage 1 no-shift process
@@ -37,9 +37,9 @@ public class JenkinsTraub {
 		equation[0] = -equation[0];
 
 		double root = newtonRaphson(equation, 0f);
-		int n = 0;
-		int nSteps = 0;
-		int maxIterations = 9;
+		var n = 0;
+		var nSteps = 0;
+		var maxIterations = 9;
 
 		re: while (true) {
 			if (21 < ++n)
@@ -58,7 +58,7 @@ public class JenkinsTraub {
 			h = shift(poly, h, s, ph);
 			Complex ar2 = Complex.sub(s, ph = ph(poly, h, s));
 			{
-				int i = 3;
+				var i = 3;
 				while (!(Complex.sub(ar0, ar1).abs2() <= .25d * ar0.abs2() && Complex.sub(ar1, ar2).abs2() <= .25d * ar1.abs2())) {
 					h = shift(poly, h, s, ph);
 					ar0 = ar1;
@@ -74,7 +74,7 @@ public class JenkinsTraub {
 			h = shift(poly, h, ar0_, ph);
 			Complex ar1_ = Complex.sub(ar0_, ph = ph(poly, h, ar0_));
 			{
-				int i = 2;
+				var i = 2;
 				while (!(Complex.sub(ar0_, ar1_).abs2() <= epsilon2 * ar0_.abs2())) {
 					h = shift(poly, h, ar1_, ph);
 					ar0_ = ar1_;
@@ -113,7 +113,7 @@ public class JenkinsTraub {
 	}
 
 	private Complex[] divXms(Complex[] num, Complex s) {
-		int lengthm1 = num.length - 1;
+		var lengthm1 = num.length - 1;
 		Complex[] div = new Complex[lengthm1];
 		Complex numx = num[lengthm1];
 		for (int i = lengthm1 - 1; 0 <= i; i--) {
@@ -124,15 +124,15 @@ public class JenkinsTraub {
 	}
 
 	private Complex[] div(Complex[] num, Complex[] denom) {
-		int numLength = num.length;
-		int denomLength = denom.length;
+		var numLength = num.length;
+		var denomLength = denom.length;
 		int diff;
 		while (0 <= (diff = numLength - denomLength)) {
 			Complex scale = div(num[numLength - 1], denom[denomLength - 1]);
 			Complex[] scaled0 = scale(denom, scale);
 			Complex[] scaled1 = new Complex[numLength];
 			{
-				int i = -1;
+				var i = -1;
 				while (++i < diff)
 					scaled1[i] = Complex.zero;
 				while (++i < numLength)
@@ -155,14 +155,14 @@ public class JenkinsTraub {
 
 	private Complex[] d(Complex[] poly) {
 		return To.array(poly.length - 1, Complex.class, i -> {
-			int i1 = i + 1;
+			var i1 = i + 1;
 			return poly[i1].scale(i1);
 		});
 	}
 
 	private float[] d(float[] poly) {
 		return Floats_.toArray(poly.length - 1, i -> {
-			int i1 = i + 1;
+			var i1 = i + 1;
 			return poly[i1] * i1;
 		});
 	}

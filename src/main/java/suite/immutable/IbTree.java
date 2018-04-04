@@ -62,7 +62,7 @@ public class IbTree<T> implements ITree<T> {
 		while (maxBranchFactor <= (size = list.size())) {
 			List<IbTree<T>.Slot> list1 = new ArrayList<>();
 			for (int i = 0; i < size;) {
-				int i1 = i + maxBranchFactor <= size ? i + minBranchFactor : size;
+				var i1 = i + maxBranchFactor <= size ? i + minBranchFactor : size;
 				list1.add(ibTree.new Slot(list.subList(i, i1), list.get(i).pivot));
 				i = i1;
 			}
@@ -90,7 +90,7 @@ public class IbTree<T> implements ITree<T> {
 		List<Slot> slots = slot.slots;
 
 		if (slots != null) {
-			int size = slots.size();
+			var size = slots.size();
 			T p = null;
 
 			boolean b = true //
@@ -170,7 +170,7 @@ public class IbTree<T> implements ITree<T> {
 
 		// finds appropriate slot
 		FindSlot fs = new FindSlot(node0, t);
-		int size = node0.size();
+		var size = node0.size();
 		int s0 = fs.i, s1 = fs.i + 1;
 		List<Slot> replaceSlots;
 

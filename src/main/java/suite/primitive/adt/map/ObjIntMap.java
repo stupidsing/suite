@@ -45,7 +45,7 @@ public class ObjIntMap<K> {
 	}
 
 	public int computeIfAbsent(K key, Obj_Int<K> fun) {
-		int v = get(key);
+		var v = get(key);
 		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
@@ -72,13 +72,13 @@ public class ObjIntMap<K> {
 	}
 
 	public int get(K key) {
-		int index = index(key);
+		var index = index(key);
 		return Objects.equals(ks[index], key) ? vs[index] : EMPTYVALUE;
 	}
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (IntObjPair<K> pair : streamlet()) {
 			h = h * 31 + Integer.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
@@ -93,17 +93,17 @@ public class ObjIntMap<K> {
 	}
 
 	public void update(K key, Int_Int fun) {
-		int mask = vs.length - 1;
-		int index = index(key);
-		int v0 = vs[index];
-		int v1 = vs[index] = fun.apply(v0);
+		var mask = vs.length - 1;
+		var index = index(key);
+		var v0 = vs[index];
+		var v1 = vs[index] = fun.apply(v0);
 		ks[index] = key;
 		size += (v1 != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
 		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
-					int index1 = (index + 1) & mask;
-					int v = vs[index1];
+					var index1 = (index + 1) & mask;
+					var v = vs[index1];
 					if (v != EMPTYVALUE) {
 						Object k = ks[index1];
 						vs[index1] = EMPTYVALUE;
@@ -134,7 +134,7 @@ public class ObjIntMap<K> {
 	}
 
 	private void rehash() {
-		int capacity = vs.length;
+		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
 			Object[] ks0 = ks;
@@ -150,7 +150,7 @@ public class ObjIntMap<K> {
 	}
 
 	private void store(Object key, int v1) {
-		int index = index(key);
+		var index = index(key);
 		if (vs[index] == EMPTYVALUE) {
 			ks[index] = key;
 			vs[index] = v1;
@@ -159,8 +159,8 @@ public class ObjIntMap<K> {
 	}
 
 	private int index(Object key) {
-		int mask = vs.length - 1;
-		int index = key.hashCode() & mask;
+		var mask = vs.length - 1;
+		var index = key.hashCode() & mask;
 		while (vs[index] != EMPTYVALUE && !ks[index].equals(key))
 			index = index + 1 & mask;
 		return index;
@@ -174,7 +174,7 @@ public class ObjIntMap<K> {
 			public boolean source2(IntObjPair<K> pair) {
 				while (index < capacity) {
 					Object k = ks[index];
-					int v = vs[index++];
+					var v = vs[index++];
 					if (v != EMPTYVALUE) {
 						pair.update(v, cast(k));
 						return true;

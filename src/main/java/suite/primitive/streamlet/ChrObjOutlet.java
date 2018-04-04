@@ -169,7 +169,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public int count() {
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
-		int i = 0;
+		var i = 0;
 		while (next(pair))
 			i++;
 		return i;
@@ -244,7 +244,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	@Override
 	public int hashCode() {
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
-		int h = 7;
+		var h = 7;
 		while (next(pair))
 			h = h * 31 + pair.hashCode();
 		return h;

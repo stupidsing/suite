@@ -24,8 +24,8 @@ public class Lccs {
 	private RollingHashUtil rh = new RollingHashUtil();
 
 	public Pair<Segment, Segment> lccs(Bytes bytes0, Bytes bytes1) {
-		int size0 = bytes0.size();
-		int size1 = bytes1.size();
+		var size0 = bytes0.size();
+		var size1 = bytes1.size();
 		int rollingSize = min(size0, size1);
 		IntObjPair<Pair<Segment, Segment>> longest = IntObjPair.of(Integer.MIN_VALUE, null);
 
@@ -46,7 +46,7 @@ public class Lccs {
 
 						if (Objects.equals(b0, b1)) {
 							int ix = Math.min(size0 - start0, size1 - start1);
-							int i = rollingSize;
+							var i = rollingSize;
 							while (i < ix && bytes0.get(start0 + i) == bytes1.get(start1 + i))
 								i++;
 							if (longest.t0 < i)
@@ -63,10 +63,10 @@ public class Lccs {
 	private IntObjMap<List<Segment>> hashSegments(Bytes bytes, int rollingSize) {
 		IntObjMap<List<Segment>> segments = new IntObjMap<>();
 		int hash = rh.hash(bytes.range(0, rollingSize - 1));
-		int size = bytes.size();
+		var size = bytes.size();
 
 		for (int pos = 0; pos <= size - rollingSize; pos++) {
-			int pos_ = pos;
+			var pos_ = pos;
 			hash = rh.roll(hash, bytes.get(pos_ + rollingSize - 1));
 			segments.computeIfAbsent(hash, segment0 -> new ArrayList<>()).add(Segment.of(pos_, pos_ + rollingSize));
 			hash = rh.unroll(hash, bytes.get(pos_), rollingSize);

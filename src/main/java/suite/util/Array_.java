@@ -6,16 +6,16 @@ public class Array_ {
 
 	@SafeVarargs
 	public static <T> T[] concat(Class<T> clazz, T[]... lists) {
-		int size = 0;
+		var size = 0;
 
 		for (T[] list : lists)
 			size += list.length;
 
 		T[] result = Array_.newArray(clazz, size);
-		int i = 0;
+		var i = 0;
 
 		for (T[] list : lists) {
-			int length = list.length;
+			var length = list.length;
 			Array_.copy(list, 0, result, i, length);
 			i += length;
 		}

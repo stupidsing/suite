@@ -25,10 +25,10 @@ public class HtmlUtil {
 
 		if (in != null) {
 			StringBuilder sb = new StringBuilder();
-			int index = 0;
+			var index = 0;
 
 			while (index < in.length()) {
-				int start = index;
+				var start = index;
 				char ch = in.charAt(index++);
 
 				if (ch == '&') {
@@ -115,25 +115,25 @@ public class HtmlUtil {
 				} else
 					d = 1;
 
-				int ps0 = tag.indexOf(' ');
-				int ps1 = 0 <= ps0 ? ps0 : px;
+				var ps0 = tag.indexOf(' ');
+				var ps1 = 0 <= ps0 ? ps0 : px;
 				return IntObjPair.of(d, tag.substring(p1, ps1));
 			}
 		};
 
 		Deque<HtmlNode> deque = new ArrayDeque<>(List.of(new HtmlNode(null)));
-		int prevp = 0;
+		var prevp = 0;
 
 		for (IntIntPair pair : pairs) {
 			HtmlNode htmlNode = deque.element(), htmlNode1;
-			int p0 = pair.t0;
-			int px = pair.t1;
+			var p0 = pair.t0;
+			var px = pair.t1;
 
 			htmlNode.children.add(new HtmlNode(in.substring(prevp, p0)));
 
 			String tag = in.substring(p0, px);
 			IntObjPair<String> dn = getNameFun.apply(tag);
-			int d = dn.t0;
+			var d = dn.t0;
 			String name = dn.t1;
 
 			if (d == -1)

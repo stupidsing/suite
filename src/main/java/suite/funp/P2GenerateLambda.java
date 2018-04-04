@@ -113,7 +113,7 @@ public class P2GenerateLambda {
 				Thunk index1 = compile_(index);
 				return rt -> ((Vec) array.apply(rt)).values[i(rt, index1)];
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-				int fs1 = fs + 1;
+				var fs1 = fs + 1;
 				IMap<String, Integer> env1 = env.replace(var, fs1);
 				Thunk init_ = compile_(init);
 				Thunk cond_ = compile(fs1, env1, cond);
@@ -125,7 +125,7 @@ public class P2GenerateLambda {
 					return rt1.var;
 				};
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-				int fs1 = fs + 1;
+				var fs1 = fs + 1;
 				Thunk thunk = compile(fs1, env.replace(var, fs1), expr);
 				return rt -> (Fun_) p -> thunk.apply(new Rt(rt, p));
 			})).applyIf(FunpNumber.class, f -> f.apply(i -> {
@@ -145,7 +145,7 @@ public class P2GenerateLambda {
 					return rt -> new Int(fun.apply(i(rt, v0), i(rt, v1)));
 				}
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-				int fd = fs - env.get(var);
+				var fd = fs - env.get(var);
 				return rt -> {
 					for (int i = 0; i < fd; i++)
 						rt = rt.parent;

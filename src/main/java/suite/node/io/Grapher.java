@@ -68,7 +68,7 @@ public class Grapher {
 
 	private int graph_(ObjIntMap<IdentityKey<Node>> ids, Node node) {
 		IdentityKey<Node> key = IdentityKey.of(node);
-		int id = ids.get(key);
+		var id = ids.get(key);
 
 		if (id == IntFunUtil.EMPTYVALUE) {
 			ids.put(key, id = gns.size());
@@ -88,7 +88,7 @@ public class Grapher {
 	}
 
 	private Node ungraph_(int id) {
-		int size = gns.size();
+		var size = gns.size();
 
 		List<Node> nodes = Read //
 				.from(gns) //
@@ -170,8 +170,8 @@ public class Grapher {
 				else if (gn0.type == gn1.type && Objects.equals(gn0.terminal, gn1.terminal) && gn0.op == gn1.op) {
 					List<IntIntPair> children0 = gn0.children;
 					List<IntIntPair> children1 = gn1.children;
-					int size0 = children0.size();
-					int size1 = children1.size();
+					var size0 = children0.size();
+					var size1 = children1.size();
 					if (size0 == size1)
 						for (int i = 0; i < size0; i++) {
 							IntIntPair p0 = children0.get(i);
@@ -233,7 +233,7 @@ public class Grapher {
 	}
 
 	public void load(DataInputStream dis) throws IOException {
-		int size = dis.readInt();
+		var size = dis.readInt();
 		id = dis.readInt();
 
 		for (int index = 0; index < size; index++) {
@@ -272,10 +272,10 @@ public class Grapher {
 				op = null;
 
 			if (type == ReadType.DICT || type == ReadType.TUPLE) {
-				int size1 = dis.readInt();
+				var size1 = dis.readInt();
 				for (int i = 0; i < size1; i++) {
-					int i0 = type != ReadType.DICT ? 0 : dis.readInt() + index;
-					int i1 = dis.readInt() + index;
+					var i0 = type != ReadType.DICT ? 0 : dis.readInt() + index;
+					var i1 = dis.readInt() + index;
 					children.add(IntIntPair.of(i0, i1));
 				}
 			}
@@ -285,7 +285,7 @@ public class Grapher {
 	}
 
 	public void save(DataOutputStream dos) throws IOException {
-		int size = gns.size();
+		var size = gns.size();
 		dos.writeInt(size);
 		dos.writeInt(id);
 

@@ -54,8 +54,8 @@ public class CharsIntrinsics {
 	};
 
 	public Intrinsic subchars = (callback, inputs) -> {
-		int start = ((Int) inputs.get(0)).number;
-		int end = ((Int) inputs.get(1)).number;
+		var start = ((Int) inputs.get(0)).number;
+		var end = ((Int) inputs.get(1)).number;
 		Chars chars = Data.get(inputs.get(2));
 		return new Data<>(chars.range(start, end));
 	};

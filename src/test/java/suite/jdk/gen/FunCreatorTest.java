@@ -104,7 +104,7 @@ public class FunCreatorTest {
 	public void testField() {
 		String fieldName = "f";
 		FunCreator<Int_Int> fc = intFun(fieldName, Type.INT);
-		int result = fc //
+		var result = fc //
 				.create(i -> f.add(fc.field(fieldName), i)) //
 				.apply(Map.of(fieldName, 1)) //
 				.apply(5);

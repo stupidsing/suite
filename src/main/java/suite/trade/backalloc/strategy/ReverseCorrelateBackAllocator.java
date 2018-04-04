@@ -42,10 +42,10 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 		DataSourceView<String, Double> dsv = DataSourceView.of(0, 512, akds, (symbol, ds, samplePeriod) -> {
 			float[] prices = ds.range(samplePeriod).prices;
 			float[] logReturns = ts.logReturns(prices);
-			int ll = logReturns.length;
+			var ll = logReturns.length;
 			double sum = 0d;
 			for (int i = tor; i < ll - tor; i++) {
-				int i_ = i;
+				var i_ = i;
 				sum += stat.correlation(j -> logReturns[i_ - j], j -> logReturns[i_ + j], tor);
 			}
 			return sum / (ll - 2 * tor);
@@ -65,7 +65,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 					.filterKey(reverseCorrelationBySymbol::containsKey) //
 					.mapValue(ds -> {
 						float[] prices = ds.prices;
-						int last = index - 1;
+						var last = index - 1;
 						return Floats_.toArray(tor, i -> prices[last - i]);
 					}) //
 					.collect(As::streamlet2);

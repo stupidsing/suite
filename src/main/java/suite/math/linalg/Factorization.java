@@ -11,8 +11,8 @@ public class Factorization {
 	private Random random = new Random();
 
 	public Pair<float[][], float[][]> factorize(float[][] m, int w) {
-		int height = mtx.height(m);
-		int width = mtx.width(m);
+		var height = mtx.height(m);
+		var width = mtx.width(m);
 		float[][] u = To.matrix(height, w, (i, j) -> random.nextFloat());
 		float[][] v = To.matrix(w, width, (i, j) -> random.nextFloat());
 

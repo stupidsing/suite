@@ -122,7 +122,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public double average() {
-		int count = 0;
+		var count = 0;
 		double result = 0, c1;
 		while ((c1 = next()) != DblFunUtil.EMPTYVALUE) {
 			result += c1;
@@ -165,7 +165,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public int count() {
-		int i = 0;
+		var i = 0;
 		while (next() != DblFunUtil.EMPTYVALUE)
 			i++;
 		return i;
@@ -245,7 +245,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		double c;
 		while ((c = source.source()) != DblFunUtil.EMPTYVALUE)
 			h = h * 31 + Objects.hashCode(c);

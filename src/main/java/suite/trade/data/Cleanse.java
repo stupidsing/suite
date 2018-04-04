@@ -35,7 +35,7 @@ public class Cleanse {
 
 		// fill zeroes in the middle
 		float ppos = 0f;
-		int i0 = 0;
+		var i0 = 0;
 		for (int i = 0; i < length; i++) {
 			float price = get.apply(i);
 			if (price != 0f) {

@@ -39,7 +39,7 @@ public enum TermOp implements Operator {
 	public int precedence;
 
 	static {
-		int precedence = 0;
+		var precedence = 0;
 		for (TermOp operator : values())
 			operator.precedence = ++precedence;
 	}

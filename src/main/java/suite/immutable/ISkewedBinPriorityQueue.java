@@ -90,7 +90,7 @@ public class ISkewedBinPriorityQueue<T> {
 	}
 
 	private int count(IList<Node> trees) {
-		int c = 0;
+		var c = 0;
 		for (Node tree : trees)
 			c += 1 + count(tree.nodes);
 		return c;
@@ -184,7 +184,7 @@ public class ISkewedBinPriorityQueue<T> {
 	}
 
 	private Node link(Node node0, Node node1) {
-		int rank = node0.rank;
+		var rank = node0.rank;
 		Node smaller, greater;
 
 		if (comparator.compare(node0.value, node1.value) <= 0) {

@@ -48,7 +48,7 @@ public class Google {
 
 		Map<String, String> properties = new HashMap<>();
 		String[] array;
-		int i = 0;
+		var i = 0;
 
 		properties.put("EXCHANGE", lines[i++]);
 

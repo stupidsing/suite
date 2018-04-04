@@ -23,7 +23,7 @@ public class LexerTest {
 				sb.append(buffer, 0, nCharsRead);
 		}
 
-		int nTokens = 0;
+		var nTokens = 0;
 
 		for (String token : FunUtil.iter(new Lexer(sb.toString()).tokens())) {
 			assertNotNull(token);

@@ -70,7 +70,7 @@ public class LockFreeLazyQueue<T> {
 	}
 
 	private BackFront make(BackFront back, BackFront front, T t) {
-		int size = back.size + front.size + 1;
+		var size = back.size + front.size + 1;
 		if (back.size <= front.size)
 			return new BackFront(size, back, front, t);
 		else {

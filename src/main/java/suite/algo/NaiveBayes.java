@@ -17,18 +17,18 @@ public class NaiveBayes {
 	private final float[][] ps;
 
 	public NaiveBayes(List<Pair<int[], Boolean>> records, double threshold) {
-		int nCategories = 2;
-		int length_ = records.get(0).t0.length;
+		var nCategories = 2;
+		var length_ = records.get(0).t0.length;
 		int[] ms = new int[nCategories];
 		int[] ws = Ints_.toArray(nCategories, cat -> 1);
 		int[][] is = To.array(nCategories, int[].class, cat -> Ints_.toArray(length_, i -> 1));
 
 		for (Pair<int[], Boolean> record : records) {
 			int[] xs = record.t0;
-			int cat = i(record.t1);
+			var cat = i(record.t1);
 			ms[cat]++;
 			for (int i = 0; i < length_; i++) {
-				int x = xs[i];
+				var x = xs[i];
 				ws[cat] += x;
 				is[cat][i] += x;
 			}

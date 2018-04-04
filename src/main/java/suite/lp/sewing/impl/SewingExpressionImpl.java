@@ -40,7 +40,7 @@ public class SewingExpressionImpl implements EvaluatorFactory {
 
 			return env -> fun.apply(lhs.evaluate(env), rhs.evaluate(env));
 		} else if (node instanceof Int) {
-			int i = ((Int) node).number;
+			var i = ((Int) node).number;
 			return env -> i;
 		} else {
 			Clone_ f = clonerFactory.cloner(node);

@@ -71,7 +71,7 @@ public class FileFactory {
 
 			public void save(Extent extent, Bytes bytes) {
 				for (int pointer = extent.start, p = 0; pointer < extent.end; pointer++) {
-					int p1 = p + blockSize;
+					var p1 = p + blockSize;
 					pageFile.save(pointer, new Block(extent, bytes.range(p, p1)));
 					p = p1;
 				}
@@ -79,7 +79,7 @@ public class FileFactory {
 
 			public List<Extent> scan(int start, int end) {
 				List<Extent> extents = new ArrayList<>();
-				int pointer = start;
+				var pointer = start;
 				while (pointer < end) {
 					Extent extent = pageFile.load(pointer).extent;
 					if (start <= extent.start && extent.end <= end)
@@ -164,7 +164,7 @@ public class FileFactory {
 			}
 
 			private Integer convert(Integer pointer0) {
-				int pointer1 = pointer0 + startPointer;
+				var pointer1 = pointer0 + startPointer;
 
 				if (startPointer <= pointer1 && pointer1 < endPointer)
 					return pointer1;

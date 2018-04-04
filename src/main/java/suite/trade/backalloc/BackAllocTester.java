@@ -100,7 +100,7 @@ public class BackAllocTester {
 					}) //
 					.toArray();
 
-			int size = indices.length;
+			var size = indices.length;
 
 			OnDateTime onDateTime = backAllocator.allocate(akds, indices);
 			Map<String, Eod> eodBySymbol = Map.ofEntries();
@@ -110,7 +110,7 @@ public class BackAllocTester {
 
 			try {
 				for (int i = 0; i < size; i++) {
-					int index = indices[i];
+					var index = indices[i];
 					Time time = Time.ofEpochSec(tradeTs[index]);
 
 					ymd = time.ymd();
@@ -156,7 +156,7 @@ public class BackAllocTester {
 
 		public String conclusion() {
 			StringBuilder sb = new StringBuilder();
-			int length = valuations.length;
+			var length = valuations.length;
 
 			for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
 				sb.append(e.t0 + ":" + String.format("%.0f", e.t1 * 100d) + "%,");

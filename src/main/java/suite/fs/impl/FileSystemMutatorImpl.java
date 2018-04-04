@@ -37,7 +37,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 		Integer size = kvm.get(key(hash, SIZEID, 0));
 
 		if (size != null) {
-			int seq = 0;
+			var seq = 0;
 			BytesBuilder bb = new BytesBuilder();
 			for (int s = 0; s < size; s += pageSize)
 				bb.append(kdm.getPayload(key(hash, DATAID, seq++)));
@@ -105,9 +105,9 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 
 		Bytes hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
-		int size0 = kvm.get(sizeKey);
-		int nPages0 = (size0 + pageSize - 1) / pageSize;
-		int nPages1 = (size1 + pageSize - 1) / pageSize;
+		var size0 = kvm.get(sizeKey);
+		var nPages0 = (size0 + pageSize - 1) / pageSize;
+		var nPages1 = (size1 + pageSize - 1) / pageSize;
 
 		for (int page = nPages1; page < nPages0; page++)
 			kdm.removePayload(key(hash, DATAID, page));

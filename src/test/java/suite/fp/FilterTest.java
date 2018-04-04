@@ -34,7 +34,7 @@ public class FilterTest {
 	// of Thunk, Frame, Tree or Node exists.
 	@Test
 	public void testMemoryUsage() {
-		int size = 524288;
+		var size = 524288;
 
 		Reader reader = new Reader() {
 			private int count = size;

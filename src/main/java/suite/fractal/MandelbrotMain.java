@@ -26,7 +26,7 @@ public class MandelbrotMain extends ExecutableProgram {
 	}
 
 	private int mandelbrot(Complex z) {
-		int n = 0;
+		var n = 0;
 		Complex c = z;
 		while (n++ < 240 && z.abs2() < 4f)
 			z = Complex.add(Complex.mul(z, z), c);

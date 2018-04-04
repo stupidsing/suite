@@ -39,7 +39,7 @@ public class BackAllocatorOld {
 			float[] diffs = ts.differences(3, ma_);
 
 			return index -> {
-				int last = index - 1;
+				var last = index - 1;
 				float sd = ma_[last];
 				float diff = diffs[last];
 				if (sd < -.3d && .015d < diff)
@@ -54,7 +54,7 @@ public class BackAllocatorOld {
 
 	public BackAllocator bbVariable() {
 		return BackAllocator_.byPrices(prices -> Quant.filterRange(1, index -> {
-			int last = index - 1;
+			var last = index - 1;
 			double hold = 0d;
 
 			for (int window = 1; hold == 0d && window < 256; window++) {
@@ -74,8 +74,8 @@ public class BackAllocatorOld {
 	}
 
 	public BackAllocator movingAvgMedian() {
-		int windowSize0 = 4;
-		int windowSize1 = 12;
+		var windowSize0 = 4;
+		var windowSize1 = 12;
 
 		return BackAllocator_.byPrices(prices -> {
 			float[] movingAvgs0 = ma.movingAvg(prices, windowSize0);
@@ -84,7 +84,7 @@ public class BackAllocatorOld {
 			MovingRange[] movingRanges1 = ma.movingRange(prices, windowSize1);
 
 			return index -> {
-				int last = index - 1;
+				var last = index - 1;
 				float movingAvg0 = movingAvgs0[last];
 				float movingAvg1 = movingAvgs1[last];
 				float movingMedian0 = movingRanges0[last].median;
@@ -97,15 +97,15 @@ public class BackAllocatorOld {
 	}
 
 	public BackAllocator movingMedianMeanRevn() {
-		int windowSize0 = 1;
-		int windowSize1 = 32;
+		var windowSize0 = 1;
+		var windowSize1 = 32;
 
 		return BackAllocator_.byPrices(prices -> {
 			MovingRange[] movingRanges0 = ma.movingRange(prices, windowSize0);
 			MovingRange[] movingRanges1 = ma.movingRange(prices, windowSize1);
 
 			return index -> {
-				int last = index - 1;
+				var last = index - 1;
 				return Quant.return_(movingRanges0[last].median, movingRanges1[last].median);
 			};
 		});
@@ -118,7 +118,7 @@ public class BackAllocatorOld {
 	}
 
 	public BackAllocator questoQuella(String symbol0, String symbol1) {
-		int tor = 64;
+		var tor = 64;
 		double threshold = 0d;
 
 		BackAllocator ba0 = (akds, indices) -> {
@@ -128,8 +128,8 @@ public class BackAllocatorOld {
 			DataSource ds1 = dsBySymbol_.get(symbol1);
 
 			return index -> {
-				int ix = index - 1;
-				int i0 = ix - tor;
+				var ix = index - 1;
+				var i0 = ix - tor;
 				double p0 = ds0.get(i0).t1, px = ds0.get(ix).t1;
 				double q0 = ds1.get(i0).t1, qx = ds1.get(ix).t1;
 				double pdiff = Quant.return_(p0, px);
@@ -150,14 +150,14 @@ public class BackAllocatorOld {
 	// reverse draw-down; trendy strategy
 	public BackAllocator revDrawdown() {
 		return BackAllocator_.byPrices(prices -> index -> {
-			int i = index - 1;
+			var i = index - 1;
 			int i0 = max(0, i - 128);
-			int ix = i;
-			int dir = 0;
+			var ix = i;
+			var dir = 0;
 
 			float lastPrice = prices[ix];
 			float priceo = lastPrice;
-			int io = i;
+			var io = i;
 
 			for (; i0 <= i; i--) {
 				float price = prices[i];

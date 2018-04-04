@@ -122,7 +122,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public char average() {
-		int count = 0;
+		var count = 0;
 		char result = 0, c1;
 		while ((c1 = next()) != ChrFunUtil.EMPTYVALUE) {
 			result += c1;
@@ -165,7 +165,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public int count() {
-		int i = 0;
+		var i = 0;
 		while (next() != ChrFunUtil.EMPTYVALUE)
 			i++;
 		return i;
@@ -245,7 +245,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		char c;
 		while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
 			h = h * 31 + Objects.hashCode(c);

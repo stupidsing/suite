@@ -122,7 +122,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public long average() {
-		int count = 0;
+		var count = 0;
 		long result = 0, c1;
 		while ((c1 = next()) != LngFunUtil.EMPTYVALUE) {
 			result += c1;
@@ -165,7 +165,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public int count() {
-		int i = 0;
+		var i = 0;
 		while (next() != LngFunUtil.EMPTYVALUE)
 			i++;
 		return i;
@@ -245,7 +245,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		long c;
 		while ((c = source.source()) != LngFunUtil.EMPTYVALUE)
 			h = h * 31 + Objects.hashCode(c);

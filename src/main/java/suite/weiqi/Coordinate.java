@@ -101,8 +101,8 @@ public class Coordinate implements Comparable<Coordinate> {
 	}
 
 	private IntIntPair getLocation() {
-		int x = index >> Weiqi.shift;
-		int y = index & (1 << Weiqi.shift) - 1;
+		var x = index >> Weiqi.shift;
+		var y = index & (1 << Weiqi.shift) - 1;
 		return IntIntPair.of(x, y);
 	}
 

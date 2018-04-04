@@ -25,7 +25,7 @@ public class EbnfOperatorTest {
 
 	private String ebnf() {
 		StringBuilder sb = new StringBuilder();
-		int i = 0;
+		var i = 0;
 
 		for (TermOp operator : TermOp.values()) {
 			String op = "\"" + operator.getName().trim() + "\"";

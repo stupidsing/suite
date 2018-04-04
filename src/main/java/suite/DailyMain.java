@@ -162,7 +162,7 @@ public class DailyMain extends ExecutableProgram {
 	// moving average mean reversion
 	private Result mamr(float factor) {
 		String tag = "mamr";
-		int nHoldDays = 8;
+		var nHoldDays = 8;
 		Streamlet<Asset> assets = cfg.queryCompanies();
 		BuySellStrategy strategy = new Strategos().movingAvgMeanReverting(64, nHoldDays, .15f);
 
@@ -197,11 +197,11 @@ public class DailyMain extends ExecutableProgram {
 				try {
 					DataSource ds = cfg.dataSource(symbol, period).validate();
 					float[] prices = ds.prices;
-					int last = prices.length - 1;
+					var last = prices.length - 1;
 					float latestPrice = prices[last];
 
-					int signal = strategy.analyze(prices).get(last);
-					int nShares = signal * asset.lotSize * Math.round(factor / nHoldDays / (asset.lotSize * latestPrice));
+					var signal = strategy.analyze(prices).get(last);
+					var nShares = signal * asset.lotSize * Math.round(factor / nHoldDays / (asset.lotSize * latestPrice));
 					Trade trade = Trade.of(nShares, symbol, latestPrice);
 
 					if (signal != 0)

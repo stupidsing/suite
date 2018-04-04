@@ -120,10 +120,10 @@ public class InstructionAnalyzer {
 	}
 
 	private void analyzeFrameRegisters(List<Instruction> instructions) {
-		int ip = 0;
+		var ip = 0;
 
 		while (ip < instructions.size()) {
-			int currentIp = ip;
+			var currentIp = ip;
 			Instruction insn = instructions.get(ip++);
 			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
 			AnalyzedFrame frame = frameByIp.get(currentIp);

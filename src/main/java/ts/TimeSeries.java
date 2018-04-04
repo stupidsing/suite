@@ -30,7 +30,7 @@ public class TimeSeries {
 	// "The Analysis of Time Series", Chris Chatfield
 	// 2.7 Autocorrelation and the Correlogram
 	public float[] acf(float[] ys, int n) {
-		int length = ys.length;
+		var length = ys.length;
 		double meany = stat.mean(ys);
 		float[] ydevs = To.vector(length, i -> ys[i] - meany);
 		float[] acovs = To.vector(length, k -> Ints_ //
@@ -43,7 +43,7 @@ public class TimeSeries {
 	// Augmented Dickey-Fuller test
 	public double adf(float[] ys, int tor) {
 		float[] ydiffs = differences_(1, ys);
-		int length = ys.length;
+		var length = ys.length;
 		LinearRegression lr = stat.linearRegression(Ints_ //
 				.range(tor, length) //
 				.map(i -> FltObjPair.of(ydiffs[i],
@@ -53,7 +53,7 @@ public class TimeSeries {
 	}
 
 	public float[] back(int index, int window, float[] fs) {
-		int index1 = index + 1;
+		var index1 = index + 1;
 		return Arrays.copyOfRange(fs, max(0, index1 - window), index1);
 	}
 
@@ -97,7 +97,7 @@ public class TimeSeries {
 	public double hurstFwf(float[] ys, int tor) {
 		float[] logys = To.vector(ys, Math::log);
 		float[] returns0 = dropDiff_(1, logys);
-		int length = returns0.length;
+		var length = returns0.length;
 		List<FltObjPair<float[]>> pairs = new ArrayList<>();
 		for (int n = 0; n < length * 3 / 4; n++) {
 			float[] returns = Arrays.copyOfRange(returns0, n, length);
@@ -136,7 +136,7 @@ public class TimeSeries {
 	}
 
 	public float[] logReturns(float[] ys) {
-		int length = ys.length;
+		var length = ys.length;
 		if (0 < length) {
 			float[] logReturns = new float[length - 1];
 			float f0 = ys[0];
@@ -203,7 +203,7 @@ public class TimeSeries {
 		}
 
 		private ReturnsStat(float[] prices, double scale, double interestRate) {
-			int length = prices.length;
+			var length = prices.length;
 			double v0, vx;
 			if (0 < length) {
 				v0 = prices[0];
@@ -257,7 +257,7 @@ public class TimeSeries {
 	}
 
 	private float[] differencesOn_(int tor, float[] fs) {
-		int i = fs.length - 1;
+		var i = fs.length - 1;
 		while (tor <= i) {
 			float f0 = fs[i - tor];
 			fs[i--] -= f0;
@@ -268,7 +268,7 @@ public class TimeSeries {
 	}
 
 	private float[] returns_(float[] fs) {
-		int length = fs.length;
+		var length = fs.length;
 		float[] returns = new float[length];
 		float price0 = 0 < length ? fs[0] : 0f;
 		for (int i = 0; i < returns.length; i++) {

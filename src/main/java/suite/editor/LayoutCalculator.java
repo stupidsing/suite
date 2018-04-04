@@ -173,40 +173,40 @@ public class LayoutCalculator {
 	}
 
 	private void arrange(Group group, int startPos, int endPos, AssignToPortion assignToPortion) {
-		int totalAssigned = endPos - startPos;
+		var totalAssigned = endPos - startPos;
 
 		List<Portion> portions = Read //
 				.from(group.portions) //
 				.filter(portion -> portion.node.isVisible()) //
 				.toList();
 
-		int totalMin = portions.stream().mapToInt(p -> p.minUnit).sum();
-		int totalMax = portions.stream().mapToInt(p -> p.maxUnit).sum();
+		var totalMin = portions.stream().mapToInt(p -> p.minUnit).sum();
+		var totalMax = portions.stream().mapToInt(p -> p.maxUnit).sum();
 
 		if (totalMin < totalAssigned) {
-			int num = totalAssigned - totalMin;
-			int denom = totalMax - totalMin;
+			var num = totalAssigned - totalMin;
+			var denom = totalMax - totalMin;
 			float ratio = (float) num / denom;
-			int accumulatedBase = 0;
-			int accumulatedExpand = 0;
-			int assignedPos = 0;
+			var accumulatedBase = 0;
+			var accumulatedExpand = 0;
+			var assignedPos = 0;
 
 			for (Portion portion : portions) {
-				int assignedPos0 = assignedPos;
+				var assignedPos0 = assignedPos;
 				accumulatedBase += portion.minUnit;
 				accumulatedExpand += portion.maxUnit - portion.minUnit;
 				assignedPos = startPos + accumulatedBase + (int) (accumulatedExpand * ratio);
 				assignToPortion.assign(portion, assignedPos0, assignedPos);
 			}
 		} else {
-			int nom = totalAssigned;
-			int denom = totalMin;
+			var nom = totalAssigned;
+			var denom = totalMin;
 			float ratio = nom / denom;
-			int accumulated = 0;
-			int assignedPos = 0;
+			var accumulated = 0;
+			var assignedPos = 0;
 
 			for (Portion portion : portions) {
-				int assignedPos0 = assignedPos;
+				var assignedPos0 = assignedPos;
 				accumulated += portion.minUnit;
 				assignedPos = startPos + (int) (accumulated * ratio);
 				assignToPortion.assign(portion, assignedPos0, assignedPos);

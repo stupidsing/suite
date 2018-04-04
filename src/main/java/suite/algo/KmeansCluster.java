@@ -53,7 +53,7 @@ public class KmeansCluster {
 
 	public int[] kMeansCluster(List<float[]> points, int k, int nIterations) {
 		List<float[]> centers = List_.left(points, k);
-		int iteration = 0;
+		var iteration = 0;
 
 		while (true) {
 			KmeansBin[] bins = To.array(k, KmeansBin.class, j -> new KmeansBin());
@@ -89,7 +89,7 @@ public class KmeansCluster {
 
 	private int findNearest(float[] point, List<float[]> points) {
 		double minDist = Double.MAX_VALUE;
-		int minj = 0;
+		var minj = 0;
 		for (int j = 0; j < points.size(); j++) {
 			double dist = sqdist(point, points.get(j));
 			if (dist < minDist) {

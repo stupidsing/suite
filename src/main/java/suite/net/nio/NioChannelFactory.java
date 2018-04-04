@@ -150,7 +150,7 @@ public interface NioChannelFactory {
 
 			public void sink(Bytes message) {
 				received = received.append(message);
-				int size = received.size();
+				var size = received.size();
 
 				if (4 <= size) {
 					int end = 4 + NetUtil.bytesToInt(received.range(0, 4));

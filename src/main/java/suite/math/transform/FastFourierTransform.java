@@ -7,7 +7,7 @@ import suite.util.To;
 public class FastFourierTransform {
 
 	public Complex[] ifft(Complex[] cs0) {
-		int size = cs0.length;
+		var size = cs0.length;
 		Complex[] cs1 = To.array(size, Complex.class, i -> cs0[i].conjugate());
 		Complex[] cs2 = fft(cs1);
 		float inv = 1.0f / size;
@@ -19,10 +19,10 @@ public class FastFourierTransform {
 	}
 
 	public Complex[] fft(Complex[] tds) {
-		int size = tds.length;
+		var size = tds.length;
 		Complex[] fds = new Complex[size];
-		int s = size;
-		int bits = 0;
+		var s = size;
+		var bits = 0;
 
 		while (1 < s) {
 			s >>= 1;
@@ -41,12 +41,12 @@ public class FastFourierTransform {
 				cis[i] = Complex.of((float) Math.cos(angle), (float) -Math.sin(angle));
 			}
 
-			int step = g / 2;
+			var step = g / 2;
 
 			for (int i = 0; i < size; i += g)
 				for (int k = 0; k < step; k++) {
-					int ie = i + k;
-					int io = i + k + step;
+					var ie = i + k;
+					var io = i + k + step;
 
 					Complex ce = fds[ie];
 					Complex co = fds[io];
@@ -61,8 +61,8 @@ public class FastFourierTransform {
 	}
 
 	public float[] ifft(float[] fs0) {
-		int size2 = fs0.length;
-		int size = size2 / 2;
+		var size2 = fs0.length;
+		var size = size2 / 2;
 		float[] fs1 = new float[size2];
 
 		for (int i2 = 0; i2 < size2; i2 += 2) {
@@ -82,11 +82,11 @@ public class FastFourierTransform {
 	}
 
 	public float[] fft(float[] tds) {
-		int size2 = tds.length;
-		int size = size2 / 2;
+		var size2 = tds.length;
+		var size = size2 / 2;
 		float[] fds = new float[size2];
-		int s = size;
-		int bits = 0;
+		var s = size;
+		var bits = 0;
 
 		while (1 < s) {
 			s >>= 1;
@@ -94,13 +94,13 @@ public class FastFourierTransform {
 		}
 
 		for (int i = 0; i < size; i++) {
-			int i2 = i * 2;
+			var i2 = i * 2;
 			fds[reverseBits(bits, i) * 2 + 0] = tds[i2 + 0];
 			fds[reverseBits(bits, i) * 2 + 1] = tds[i2 + 1];
 		}
 
 		for (int g = 2; g <= size; g <<= 1) {
-			int g2 = g * 2;
+			var g2 = g * 2;
 			float[] cis = new float[g2];
 			double angleDiff = Math.PI / g;
 
@@ -112,8 +112,8 @@ public class FastFourierTransform {
 
 			for (int i2 = 0; i2 < size2; i2 += g2)
 				for (int k2 = 0; k2 < g; k2 += 2) {
-					int ie = i2 + k2;
-					int io = ie + g;
+					var ie = i2 + k2;
+					var io = ie + g;
 
 					float ceReal = fds[ie + 0];
 					float ceImag = fds[ie + 1];
@@ -135,7 +135,7 @@ public class FastFourierTransform {
 	}
 
 	private static int reverseBits(int bits, int n0) {
-		int n1 = 0;
+		var n1 = 0;
 		while (0 < bits--) {
 			n1 = n1 << 1 | n0 & 1;
 			n0 >>= 1;

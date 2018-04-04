@@ -18,11 +18,11 @@ public class SoundEx {
 
 		StringBuilder sb = new StringBuilder();
 		char[] a = word.toCharArray();
-		int len = a.length;
-		int p = 0;
+		var len = a.length;
+		var p = 0;
 
 		while (p < len) {
-			int p1 = p;
+			var p1 = p;
 			while (p1 < len)
 				if (p1 + 1 < len //
 						&& index(a[p]) == index(a[p1 + 1]))

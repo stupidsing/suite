@@ -27,10 +27,10 @@ public class UctTest {
 
 	@Test
 	public void testRandomEvaluation() {
-		int seed = 214636368;
+		var seed = 214636368;
 		System.out.println("RANDOM SEED = " + seed);
 		ShuffleUtil.setSeed(seed);
-		int mid = Weiqi.size / 2;
+		var mid = Weiqi.size / 2;
 
 		String corner = evaluateRandomOutcome(Coordinate.c(0, 0));
 		String faraway = evaluateRandomOutcome(Coordinate.c(1, 1));
@@ -61,7 +61,7 @@ public class UctTest {
 	@Test
 	public void testRandomEvaluationTime() {
 		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
-		int i = 0;
+		var i = 0;
 		int[] ss = { 1000, 10000, };
 		float duration = 0f;
 
@@ -80,7 +80,7 @@ public class UctTest {
 
 	@Test
 	public void testUctSearchTime() {
-		int nSimulations = 1000;
+		var nSimulations = 1000;
 		float duration = 0f;
 
 		for (int time = 0; time < 2; time++) {
@@ -112,7 +112,7 @@ public class UctTest {
 
 	@Test
 	public void testUctFirstMove() {
-		int seed = 760903274;
+		var seed = 760903274;
 		System.out.println("RANDOM SEED = " + seed);
 		ShuffleUtil.setSeed(seed);
 
@@ -137,9 +137,9 @@ public class UctTest {
 	public void testUctGame() {
 		new Profiler().profile(() -> {
 			DecimalFormat df = new DecimalFormat("0.000");
-			int nSimulations = 5000; // 20000
-			int boundedTime = 300000;
-			int seed = new Random().nextInt();
+			var nSimulations = 5000; // 20000
+			var boundedTime = 300000;
+			var seed = new Random().nextInt();
 
 			System.out.println("RANDOM SEED = " + seed);
 			ShuffleUtil.setSeed(seed);

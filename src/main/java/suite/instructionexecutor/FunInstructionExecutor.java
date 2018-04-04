@@ -49,7 +49,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		Object[] regs = frame != null ? frame.registers : null;
 
 		Object[] ds = exec.stack;
-		int dsp = exec.sp;
+		var dsp = exec.sp;
 
 		Node n0, n1, result;
 		Data<?> data;

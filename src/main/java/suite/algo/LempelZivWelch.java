@@ -42,7 +42,7 @@ public class LempelZivWelch<Unit> {
 
 	private void encode(Source<Unit> source, Sink<Integer> sink) {
 		Trie root = new Trie(null);
-		int index = 0;
+		var index = 0;
 
 		for (Unit unit : units)
 			root.branches.put(unit, new Trie(index++));

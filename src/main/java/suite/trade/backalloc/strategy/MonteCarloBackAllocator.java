@@ -46,7 +46,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 						.keys() //
 						.toList();
 
-				int size = portfolios.size();
+				var size = portfolios.size();
 
 				for (int j = 0; j < 12; j++) {
 					float[] portfolio = portfolios.get(random.nextInt(size));
@@ -72,7 +72,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 	}
 
 	private double evaluate(String[] symbols, float[] p, Map<String, float[]> returnsBySymbol, int index) {
-		int d = random.nextInt(index);
+		var d = random.nextInt(index);
 		double sum = 0d;
 		for (int i = 0; i < symbols.length; i++) {
 			String symbol = symbols[i];
@@ -86,7 +86,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 	}
 
 	private float[] mutate(String[] symbols, float[] portfolio) {
-		int size = symbols.length;
+		var size = symbols.length;
 		for (int i = 0; i < 3; i++)
 			portfolio[random.nextInt(size)] = 1f;
 		fair(portfolio);

@@ -52,9 +52,9 @@ public class TextUtil {
 
 	public Bytes patch(Bytes bytes, List<Pair<Bytes, Bytes>> pairs) throws ConflictException {
 		BytesBuilder bb = new BytesBuilder();
-		int p = 0;
+		var p = 0;
 		for (Pair<Bytes, Bytes> pair : pairs) {
-			int p1 = p + pair.t0.size();
+			var p1 = p + pair.t0.size();
 			if (Objects.equals(bytes.range(p, p1), pair.t0))
 				bb.append(pair.t1);
 			else
@@ -119,7 +119,7 @@ public class TextUtil {
 
 	private int detectSame(Bytes x, Bytes y) {
 		int s = min(x.size(), y.size());
-		int i = 0;
+		var i = 0;
 		while (i < s && x.get(i) == y.get(i))
 			i++;
 		return i;

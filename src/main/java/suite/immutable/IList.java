@@ -124,7 +124,7 @@ public class IList<T> implements Iterable<T> {
 	@Override
 	public int hashCode() {
 		IList<T> list = this;
-		int h = 7;
+		var h = 7;
 		while (!list.isEmpty()) {
 			h = h * 31 + Objects.hashCode(list.head);
 			list = list.tail;

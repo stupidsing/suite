@@ -49,10 +49,10 @@ public class ObstructionFreeStmTest {
 
 			orders.add(nMemories * 2);
 
-			int sum = 0;
+			var sum = 0;
 
 			for (int i = 1; i < nMemories; i++) {
-				int adjustment = random.nextInt(100) - 50;
+				var adjustment = random.nextInt(100) - 50;
 				adjustments.add(adjustment);
 				sum += adjustment;
 			}
@@ -61,13 +61,13 @@ public class ObstructionFreeStmTest {
 		}
 
 		private void work(List<Memory<Integer>> memories) throws InterruptedException {
-			int order = orders.get(step++);
+			var order = orders.get(step++);
 
 			if (nMemories * 2 <= order) { // commit or rollback
 				System.out.println(this + " COMMIT");
 				transaction.end(TransactionStatus.DONE____);
 			} else if (nMemories <= order) { // write a memory
-				int mi = order - nMemories;
+				var mi = order - nMemories;
 				System.out.println(this + " WRITE " + mi);
 
 				Memory<Integer> memory = memories.get(mi);
@@ -78,7 +78,7 @@ public class ObstructionFreeStmTest {
 				else
 					Fail.t("value changed between reads");
 			} else { // read a memory
-				int mi = order;
+				var mi = order;
 				System.out.println(this + " READ " + mi);
 
 				Memory<Integer> memory = memories.get(mi);
@@ -109,7 +109,7 @@ public class ObstructionFreeStmTest {
 			workers.get(workingOrder).work(memories);
 
 		stm.transaction(transaction -> {
-			int sum = 0;
+			var sum = 0;
 
 			for (Memory<Integer> memory : memories) {
 				int read = stm.get(transaction, memory);

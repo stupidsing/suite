@@ -49,7 +49,7 @@ public class Util {
 	}
 
 	private static String strip(StringBuilder sb) {
-		int length = sb.length();
+		var length = sb.length();
 		if (0 < length && sb.charAt(length - 1) == 13)
 			sb.deleteCharAt(length - 1);
 		return sb.toString();

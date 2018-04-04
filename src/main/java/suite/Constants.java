@@ -41,7 +41,7 @@ public class Constants {
 
 		if (secrets().prove(generalizer.generalize(Suite.parse(pattern)))) {
 			List<String> list = new ArrayList<>();
-			int i = 0;
+			var i = 0;
 			Node n;
 			while (!((n = generalizer.getVariable(Atom.of("." + i++))).finalNode() instanceof Reference))
 				list.add(Formatter.display(n));
@@ -50,7 +50,7 @@ public class Constants {
 			m = null;
 
 		if (m != null) {
-			int length = m.length;
+			var length = m.length;
 			return Fixie.of( //
 					0 < length ? m[0] : null, //
 					1 < length ? m[1] : null, //
@@ -71,7 +71,7 @@ public class Constants {
 
 		if (secrets().prove(generalizer.generalize(Suite.parse(pattern)))) {
 			List<String> list = new ArrayList<>();
-			int i = 0;
+			var i = 0;
 			Node n;
 			while (!((n = generalizer.getVariable(Atom.of("." + i++))).finalNode() instanceof Reference))
 				list.add(Formatter.display(n));

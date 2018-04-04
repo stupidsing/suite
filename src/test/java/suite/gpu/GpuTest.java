@@ -30,7 +30,7 @@ public class GpuTest {
 		CLQueue queue = context.createDefaultQueue();
 		ByteOrder byteOrder = context.getByteOrder();
 
-		int n = 1024;
+		var n = 1024;
 		Pointer<Float> inp0 = Pointer.allocateFloats(n).order(byteOrder);
 		Pointer<Float> inp1 = Pointer.allocateFloats(n).order(byteOrder);
 

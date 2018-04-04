@@ -29,7 +29,7 @@ public class CasReference<T> {
 			int[] arr = new int[1];
 			T t0 = asr.get(arr);
 			T t1 = fun.apply(t0);
-			int stamp = arr[0];
+			var stamp = arr[0];
 			if (stamp != -1)
 				if (asr.compareAndSet(t0, t1, stamp, stamp + 1))
 					return t1;

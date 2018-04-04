@@ -67,7 +67,7 @@ public class IBinPriorityQueue<T> {
 				forest0[rank] = trees[rank];
 			forest0[rank] = null;
 
-			int rank = 0;
+			var rank = 0;
 
 			for (Node node : tree.nodes)
 				forest1[rank++] = node;
@@ -113,7 +113,7 @@ public class IBinPriorityQueue<T> {
 				if (t != null)
 					list1.add(t);
 
-			int size = list1.size();
+			var size = list1.size();
 
 			if (2 <= size) {
 				tree = link(rank, list1.get(0), list1.get(1));

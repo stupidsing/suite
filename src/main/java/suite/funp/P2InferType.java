@@ -359,7 +359,7 @@ public class P2InferType {
 			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 				LambdaType lt = lambdaType(lambda);
 				Funp lambda1 = erase(lambda);
-				int size = getTypeSize(typeOf(value));
+				var size = getTypeSize(typeOf(value));
 				Funp invoke;
 				if (lt.os == is)
 					invoke = allocStack(size, value, FunpInvoke.of(lambda1));
@@ -371,11 +371,11 @@ public class P2InferType {
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
 				UnNode<Type> te = unify.newRef();
 				unify(n, type0, TypeArray.of(te));
-				int elementSize = getTypeSize(te);
-				int offset = 0;
+				var elementSize = getTypeSize(te);
+				var offset = 0;
 				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
 				for (Funp element : elements) {
-					int offset0 = offset;
+					var offset0 = offset;
 					list.add(Pair.of(erase(element), IntIntPair.of(offset0, offset += elementSize)));
 				}
 				return FunpData.of(list);
@@ -384,23 +384,23 @@ public class P2InferType {
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
 				UnNode<Type> t = unify.newRef();
 				unify(n, typeOf(reference), TypeReference.of(t));
-				int size = getTypeSize(t);
+				var size = getTypeSize(t);
 				return FunpAssign.of(FunpMemory.of(erase(reference), 0, size), erase(value), erase(expr));
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				Mutable<Integer> offset = Mutable.nil();
-				int size0 = getTypeSize(typeOf(value));
+				var size0 = getTypeSize(typeOf(value));
 				Erase e1 = new Erase(scope, env.replace(var, new Var(scope, offset, 0, size0)));
 				return allocStack(size0, value, e1.erase(expr), offset);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				List<Pair<Var, Funp>> assigns = new ArrayList<>();
 				Mutable<Integer> offsetStack = Mutable.nil();
 				IMap<String, Var> env1 = env;
-				int offset = 0;
+				var offset = 0;
 
 				for (Pair<String, Funp> pair : vars) {
-					int offset0 = offset;
+					var offset0 = offset;
 					Funp value = pair.t1;
 					Var var = new Var(scope, offsetStack, offset0, offset += getTypeSize(typeOf(value)));
 					env1 = env1.replace(pair.t0, var);
@@ -420,10 +420,10 @@ public class P2InferType {
 				TypeStruct ts = TypeStruct.of();
 				unify(n, typeOf(reference), TypeReference.of(ts));
 				TypeStruct ts1 = ts.finalStruct();
-				int offset = 0;
+				var offset = 0;
 				if (ts1.isCompleted)
 					for (Pair<String, UnNode<Type>> pair : ts1.pairs) {
-						int offset1 = offset + getTypeSize(pair.t1);
+						var offset1 = offset + getTypeSize(pair.t1);
 						if (!String_.equals(pair.t0, field))
 							offset = offset1;
 						else
@@ -431,7 +431,7 @@ public class P2InferType {
 					}
 				return Fail.t();
 			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
-				int size = getTypeSize(typeOf(value));
+				var size = getTypeSize(typeOf(value));
 				Mutable<Operand> address = Mutable.nil();
 				Erase e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
 				FunpAssign expr1 = FunpAssign.of(FunpMemory.of(FunpOperand.of(address), 0, size), erase(value), e1.erase(expr));
@@ -443,30 +443,30 @@ public class P2InferType {
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				UnNode<Type> te = unify.newRef();
 				unify(n, typeOf(reference), TypeReference.of(TypeArray.of(te)));
-				int size = getTypeSize(te);
+				var size = getTypeSize(te);
 				Funp address0 = erase(reference);
 				FunpTree inc = FunpTree.of(TermOp.MULT__, erase(index), FunpNumber.ofNumber(size));
 				Funp address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 				Mutable<Integer> offset = Mutable.nil();
-				int size = getTypeSize(typeOf(init));
+				var size = getTypeSize(typeOf(init));
 				Var var_ = new Var(scope, offset, 0, size);
 				Erase e1 = new Erase(scope, env.replace(var, var_));
 				FunpMemory m = getVariable(var_);
 				FunpWhile while_ = FunpWhile.of(e1.erase(cond), FunpAssign.of(m, e1.erase(iterate), FunpDontCare.of()), m);
 				return allocStack(size, init, while_, offset);
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-				int b = ps * 2; // return address and EBP
-				int scope1 = scope + 1;
+				var b = ps * 2; // return address and EBP
+				var scope1 = scope + 1;
 				LambdaType lt = lambdaType(n);
 				FunpFramePointer frame = Funp_.framePointer;
 				Funp expr1 = new Erase(scope1, env.replace(var, new Var(scope1, Mutable.of(0), b, b + lt.is))).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
-				int b = ps * 2; // return address and EBP
+				var b = ps * 2; // return address and EBP
 				LambdaType lt = lambdaType(n);
-				int size = getTypeSize(typeOf(cap));
+				var size = getTypeSize(typeOf(cap));
 				IMap<String, Var> env0 = IMap.empty();
 				IMap<String, Var> env1 = env0 //
 						.replace(capn, new Var(0, Mutable.of(0), 0, size)) //
@@ -488,11 +488,11 @@ public class P2InferType {
 					}
 				}.getAddress(erase(expr));
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
-				int elementSize = getTypeSize(typeOf(expr));
-				int offset = 0;
+				var elementSize = getTypeSize(typeOf(expr));
+				var offset = 0;
 				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
 				for (int i = 0; i < count; i++) {
-					int offset0 = offset;
+					var offset0 = offset;
 					list.add(Pair.of(expr, IntIntPair.of(offset0, offset += elementSize)));
 				}
 				return FunpData.of(list);
@@ -503,11 +503,11 @@ public class P2InferType {
 				TypeStruct ts1 = ts0.finalStruct();
 				Map<String, Funp> values = Read.from2(fvs).toMap();
 				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
-				int offset = 0;
+				var offset = 0;
 
 				if (ts1.isCompleted)
 					for (Pair<String, UnNode<Type>> pair : ts1.pairs) {
-						int offset0 = offset;
+						var offset0 = offset;
 						list.add(Pair.of(erase(values.get(pair.t0)), IntIntPair.of(offset0, offset += getTypeSize(pair.t1))));
 					}
 				else
@@ -552,7 +552,7 @@ public class P2InferType {
 		}
 
 		private int align(int size0) {
-			int is1 = is - 1;
+			var is1 = is - 1;
 			return (size0 + is1) & ~is1;
 		}
 	}

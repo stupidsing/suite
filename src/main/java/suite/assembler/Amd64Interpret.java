@@ -70,7 +70,7 @@ public class Amd64Interpret {
 		IntIntMap labels = new IntIntMap();
 
 		for (int i = 0; i < instructions.size(); i++) {
-			int i_ = i;
+			var i_ = i;
 			Instruction instruction = instructions.get(i_);
 			if (instruction.insn == Insn.LABEL)
 				labels.update((int) ((OpImm) instruction.op0).imm, i0 -> i_ + 1);
@@ -92,11 +92,11 @@ public class Amd64Interpret {
 					source0 = (int) ((OpImm) op0).imm;
 					assign = null;
 				} else if (op0 instanceof OpMem) {
-					int index = index(address((OpMem) op0));
+					var index = index(address((OpMem) op0));
 					source0 = mem.getInt(index);
 					assign = i -> mem.putInt(index, i);
 				} else if (op0 instanceof OpReg) {
-					int reg = ((OpReg) op0).reg;
+					var reg = ((OpReg) op0).reg;
 					source0 = regs[reg];
 					assign = i -> {
 						regs[reg] = i;
@@ -138,14 +138,14 @@ public class Amd64Interpret {
 							return regs[ebx];
 						else if (regs[eax] == 3) {
 							int length = min(regs[edx], input.size());
-							int di = index(regs[ecx]);
+							var di = index(regs[ecx]);
 							for (int i = 0; i < length; i++)
 								mem.put(di++, input.get(i));
 							input = input.range(length);
 							regs[eax] = length;
 						} else if (regs[eax] == 4) {
-							int length = regs[edx];
-							int si = index(regs[ecx]);
+							var length = regs[edx];
+							var si = index(regs[ecx]);
 							byte[] bs = new byte[length];
 							for (int i = 0; i < length; i++)
 								bs[i] = mem.get(si++);
@@ -221,14 +221,14 @@ public class Amd64Interpret {
 	}
 
 	private int pop() {
-		int i = mem.getInt(index(regs[esp]));
+		var i = mem.getInt(index(regs[esp]));
 		regs[esp] += Funp_.integerSize;
 		return i;
 	}
 
 	private int address(OpMem opMem) {
-		int br = opMem.baseReg;
-		int ir = opMem.indexReg;
+		var br = opMem.baseReg;
+		var ir = opMem.indexReg;
 		return (int) opMem.disp + (0 <= br ? regs[br] : 0) + (0 <= ir ? regs[ir] * scales[opMem.scale] : 0);
 	}
 

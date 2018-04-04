@@ -49,7 +49,7 @@ public class GroupAnalysis {
 	}
 
 	private void assignGroups() {
-		int nGroups = 0;
+		var nGroups = 0;
 
 		for (Coordinate c : Coordinate.all()) {
 			Occupation color = board.get(c);

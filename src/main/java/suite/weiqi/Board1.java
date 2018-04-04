@@ -157,7 +157,7 @@ public class Board1 {
 	}
 
 	private Group getGroup(Coordinate c) {
-		int index = c.index();
+		var index = c.index();
 		Group group = board[index];
 		if (group != null)
 			group = board[index] = group.root();

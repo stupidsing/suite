@@ -20,8 +20,8 @@ public class Matrix {
 	}
 
 	public float[][] addOn(float[][] m, float[][] n) {
-		int height = h(m);
-		int width = w(m);
+		var height = h(m);
+		var width = w(m);
 		if (height == h(n) && width == w(n))
 			for (int i = 0; i < height; i++)
 				for (int j = 0; j < width; j++)
@@ -33,8 +33,8 @@ public class Matrix {
 
 	public float[][] convolute(float[][] m, float[][] k) {
 		int kh = h(k), kw = w(k);
-		int h1 = h(m) - kh + 1;
-		int w1 = w(m) - kw + 1;
+		var h1 = h(m) - kh + 1;
+		var w1 = w(m) - kw + 1;
 		float[][] o = of(h1, w1);
 		for (int i = 0; i < h1; i++)
 			for (int j = 0; j < w1; j++)
@@ -46,8 +46,8 @@ public class Matrix {
 
 	// https://en.wikipedia.org/wiki/Covariance_matrix
 	public float[][] covariance(float[][] vs) {
-		int h = h(vs);
-		int w = w(vs);
+		var h = h(vs);
+		var w = w(vs);
 		float[] means = To.vector(h, j -> Read.from(vs).toDouble(Obj_Dbl.sum(vector -> vector[j])) / w);
 
 		return To.matrix(h, h, (i0, i1) -> Ints_ //
@@ -56,7 +56,7 @@ public class Matrix {
 	}
 
 	public double det(float[][] m) {
-		int size = sqSize_(m);
+		var size = sqSize_(m);
 		int[] cols = Ints_.range(size).toArray();
 
 		class Det {
@@ -64,10 +64,10 @@ public class Matrix {
 
 			private void det(int i0, double d) {
 				if (i0 < size) {
-					int col0 = cols[i0];
-					int i1 = i0 + 1;
+					var col0 = cols[i0];
+					var i1 = i0 + 1;
 					for (int it = i0; it < size; it++) {
-						int colt = cols[it];
+						var colt = cols[it];
 						cols[it] = col0;
 						det(i1, (it == i0 ? d : -d) * m[i0][colt]);
 						cols[it] = colt;
@@ -83,8 +83,8 @@ public class Matrix {
 	}
 
 	public boolean equals(float[][] m, float[][] n) {
-		int h = h(m);
-		int w = w(m);
+		var h = h(m);
+		var w = w(m);
 		if (h == h(n) && w == w(n)) {
 			for (int i = 0; i < h; i++)
 				for (int j = 0; j < w; j++)
@@ -96,7 +96,7 @@ public class Matrix {
 	}
 
 	public int hashCode(float[][] m) {
-		int h = 7;
+		var h = 7;
 		for (float[] row : m)
 			h = h * 31 + Arrays.hashCode(row);
 		return h;
@@ -118,7 +118,7 @@ public class Matrix {
 	 */
 	public float[][] inverse(float[][] m0) {
 		float[][] m = of(m0); // do not alter input matrix
-		int size = h(m);
+		var size = h(m);
 
 		if (size != w(m))
 			Fail.t("wrong input sizes");
@@ -126,7 +126,7 @@ public class Matrix {
 		float[][] n = identity(size);
 
 		for (int r = 0; r < size; r++) {
-			int c = r;
+			var c = r;
 
 			for (; c < size; c++)
 				if (m[c][r] != 0f)
@@ -177,8 +177,8 @@ public class Matrix {
 	}
 
 	public float[] mul(float[] m, float[][] n) {
-		int ix = m.length;
-		int jx = w(n);
+		var ix = m.length;
+		var jx = w(n);
 		float[] o = new float[jx];
 		int i1, j1;
 		if (ix == h(n))
@@ -198,8 +198,8 @@ public class Matrix {
 
 	// nT is a column vector; returns a column vector
 	public float[] mul(float[][] m, float[] nT) {
-		int ix = h(m);
-		int jx = w(m);
+		var ix = h(m);
+		var jx = w(m);
 		float[] o = new float[ix];
 		int i1, j1;
 		if (ix == 0 || jx == nT.length)
@@ -218,9 +218,9 @@ public class Matrix {
 	}
 
 	public float[][] mul(float[][] m, float[][] n) {
-		int ks = w(m);
-		int height = h(m);
-		int width = w(n);
+		var ks = w(m);
+		var height = h(m);
+		var width = w(n);
 		float[][] o = of(height, width);
 		int i1, j1, k1;
 		if (height == 0 || ks == h(n))
@@ -255,9 +255,9 @@ public class Matrix {
 
 	// calculate m * nT
 	public float[][] mul_mnT(float[][] m, float[][] n) {
-		int ks = w(m);
-		int height = h(m);
-		int width = h(n);
+		var ks = w(m);
+		var height = h(m);
+		var width = h(n);
 		float[][] o = of(height, width);
 		int i1, j1, k1;
 		if (ks == w(n))
@@ -281,9 +281,9 @@ public class Matrix {
 
 	// calculate mT * n
 	public float[][] mul_mTn(float[][] m, float[][] n) {
-		int ks = h(m);
-		int height = w(m);
-		int width = w(n);
+		var ks = h(m);
+		var height = w(m);
+		var width = w(n);
 		float[][] o = of(height, width);
 		int i1, j1, k1;
 		if (ks == h(n))
@@ -310,8 +310,8 @@ public class Matrix {
 	}
 
 	public float[][] negOn(float[][] m) {
-		int height = h(m);
-		int width = w(m);
+		var height = h(m);
+		var width = w(m);
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
 				m[i][j] = -m[i][j];
@@ -355,8 +355,8 @@ public class Matrix {
 	}
 
 	public float[][] scaleOn(float[][] m, double d) {
-		int height = h(m);
-		int width = w(m);
+		var height = h(m);
+		var width = w(m);
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
 				m[i][j] *= d;
@@ -372,8 +372,8 @@ public class Matrix {
 	}
 
 	public float[][] subOn(float[][] m, float[][] n) {
-		int height = h(m);
-		int width = w(m);
+		var height = h(m);
+		var width = w(m);
 		if (height == h(n) && width == w(n))
 			for (int i = 0; i < height; i++)
 				for (int j = 0; j < width; j++)
@@ -388,8 +388,8 @@ public class Matrix {
 	}
 
 	public void verifyEquals(float[][] m0, float[][] m1, float epsilon) {
-		int height = h(m0);
-		int width = w(m0);
+		var height = h(m0);
+		var width = w(m0);
 		if (height == h(m1) && width == w(m1))
 			for (int i = 0; i < height; i++)
 				for (int j = 0; j < width; j++)
@@ -417,8 +417,8 @@ public class Matrix {
 	}
 
 	public float[][] transpose(float[][] m) {
-		int height = h(m);
-		int width = w(m);
+		var height = h(m);
+		var width = w(m);
 		float[][] o = of(width, height);
 		int i1, j1;
 		for (int i0 = 0; i0 < height; i0 = i1) {
@@ -448,8 +448,8 @@ public class Matrix {
 	}
 
 	private float[][] copy(float[][] m0) {
-		int height = h(m0);
-		int width = w(m0);
+		var height = h(m0);
+		var width = w(m0);
 		float[][] m1 = of(height, width);
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
@@ -472,7 +472,7 @@ public class Matrix {
 	}
 
 	private int sqSize_(float[][] m) {
-		int height = h(m);
+		var height = h(m);
 		if (height == w(m))
 			return height;
 		else

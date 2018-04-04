@@ -73,7 +73,7 @@ public class Assembler {
 		Generalizer generalizer = new Generalizer();
 		List<String> lines = List.of(in1.split("\n"));
 		Pair<String, String> pe;
-		int start = 0;
+		var start = 0;
 
 		while (!(pe = String_.split2(lines.get(start), "=")).t1.isEmpty()) {
 			generalizer.getVariable(Atom.of(pe.t0)).bound(Suite.parse(pe.t1));
@@ -119,7 +119,7 @@ public class Assembler {
 	}
 
 	private Bytes assemble(Generalizer generalizer, List<Pair<Reference, Node>> lnis) {
-		int org = ((Int) generalizer.getVariable(Atom.of(".org")).finalNode()).number;
+		var org = ((Int) generalizer.getVariable(Atom.of(".org")).finalNode()).number;
 		BytesBuilder out = new BytesBuilder();
 
 		for (boolean isPass2 : new boolean[] { false, true, }) {
@@ -127,7 +127,7 @@ public class Assembler {
 			out.clear();
 
 			for (Pair<Reference, Node> lni : lnis) {
-				int address = org + out.size();
+				var address = org + out.size();
 
 				if (lni.t0 != null)
 					if (!isPass2)

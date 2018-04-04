@@ -28,7 +28,7 @@ public class Thread_ {
 
 	public static String currentPackage() {
 		String cls = getStackTrace(3).getClassName();
-		int pos = cls.lastIndexOf(".");
+		var pos = cls.lastIndexOf(".");
 		return cls.substring(0, pos);
 	}
 
@@ -41,7 +41,7 @@ public class Thread_ {
 	}
 
 	public static ThreadPoolExecutor newExecutorByProcessors() {
-		int nProcessors = Runtime.getRuntime().availableProcessors();
+		var nProcessors = Runtime.getRuntime().availableProcessors();
 		return newExecutor(nProcessors, nProcessors);
 	}
 

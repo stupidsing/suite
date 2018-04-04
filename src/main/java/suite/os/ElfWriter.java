@@ -21,7 +21,7 @@ public class ElfWriter {
 
 	public Execute exec(byte[] input, Int_Obj<Bytes> source) {
 		Path path = Constants.tmp("a.out." + Util.temp());
-		int org = 0x08048000;
+		var org = 0x08048000;
 
 		write(org, source.apply(org + 84), path);
 		return new Execute(new String[] { path.toString(), }, input);

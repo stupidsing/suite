@@ -35,7 +35,7 @@ public class Alphabeta<State> {
 					moves.push(state1);
 
 					IntObjPair<List<State>> result = search_(state1, depth - 1, -beta, -alpha);
-					int score = -result.t0;
+					var score = -result.t0;
 
 					if (alpha < score) {
 						alpha = score;

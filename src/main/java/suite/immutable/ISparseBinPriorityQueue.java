@@ -69,7 +69,7 @@ public class ISparseBinPriorityQueue<T> {
 					trees0 = IList.cons(t, trees0);
 
 			Deque<Node> nr = tree.root.nodes.reverse();
-			int rank = nr.size();
+			var rank = nr.size();
 
 			for (Node node_ : nr)
 				trees1 = IList.cons(new Tree(--rank, node_), trees1);
@@ -140,7 +140,7 @@ public class ISparseBinPriorityQueue<T> {
 	}
 
 	private Tree link(Tree tree0, Tree tree1) {
-		int rank = tree0.rank;
+		var rank = tree0.rank;
 		Tree smaller, greater;
 
 		if (comparator.compare(tree0.root.value, tree1.root.value) <= 0) {

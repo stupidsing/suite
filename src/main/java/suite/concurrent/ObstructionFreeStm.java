@@ -30,7 +30,7 @@ public class ObstructionFreeStm {
 			while (snapshot.owner.status == TransactionStatus.ROLLBACK)
 				snapshot = snapshot.previous;
 
-			int i = 0;
+			var i = 0;
 			while (snapshot != null && ++i < nSnapshots)
 				snapshot = snapshot.previous;
 			if (snapshot != null)

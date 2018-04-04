@@ -130,13 +130,13 @@ public class DataSource {
 	}
 
 	public DataSource alignAfterPrices(long[] ts1) {
-		int length0 = ts.length;
-		int length1 = ts1.length;
+		var length0 = ts.length;
+		var length1 = ts1.length;
 		Datum[] data = new Datum[length1];
-		int si = length0 - 1;
+		var si = length0 - 1;
 
 		for (int di = length1 - 1; 0 <= di; di--) {
-			int si_ = si;
+			var si_ = si;
 			long t1 = ts1[di];
 			while (0 <= si && t1 <= ts[si])
 				si--;
@@ -147,13 +147,13 @@ public class DataSource {
 	}
 
 	public DataSource alignBeforePrices(long[] ts1) {
-		int length0 = ts.length;
-		int length1 = ts1.length;
+		var length0 = ts.length;
+		var length1 = ts1.length;
 		Datum[] data = new Datum[length1];
-		int si = 0;
+		var si = 0;
 
 		for (int di = 0; di < length1; di++) {
-			int si_ = si;
+			var si_ = si;
 			long t1 = ts1[di];
 			while (si < length0 && ts[si] + tickDuration <= t1 + tickDuration)
 				si++;
@@ -181,7 +181,7 @@ public class DataSource {
 	}
 
 	public Eod getEod(int pos) {
-		int pos1 = pos + 1;
+		var pos1 = pos + 1;
 		if (pos1 < ts.length)
 			return new Eod(prices[pos], opens[pos1], lows[pos1], highs[pos1]);
 		else
@@ -244,7 +244,7 @@ public class DataSource {
 	}
 
 	private void validate(float[] prices_) {
-		int length = prices_.length;
+		var length = prices_.length;
 		long t0 = 0 < length ? ts[0] : Long.MIN_VALUE;
 		float price0 = 0 < length ? prices_[0] : Float.MAX_VALUE;
 		String date0 = Time.ofEpochSec(t0).ymd();

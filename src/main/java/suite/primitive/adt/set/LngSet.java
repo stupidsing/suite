@@ -46,7 +46,7 @@ public class LngSet {
 	}
 
 	public boolean add(long c) {
-		int capacity = vs.length;
+		var capacity = vs.length;
 		size++;
 
 		if (capacity * 3 / 4 < size) {
@@ -88,7 +88,7 @@ public class LngSet {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (long c : streamlet())
 			h = h * 31 + Long.hashCode(c);
 		return h;
@@ -111,15 +111,15 @@ public class LngSet {
 	}
 
 	private boolean add_(long c) {
-		int index = index(c);
+		var index = index(c);
 		boolean b = vs[index] != c;
 		vs[index] = c;
 		return b;
 	}
 
 	private int index(long c) {
-		int mask = vs.length - 1;
-		int index = Long.hashCode(c) & mask;
+		var mask = vs.length - 1;
+		var index = Long.hashCode(c) & mask;
 		long c0;
 		while ((c0 = vs[index]) != EMPTYVALUE && c0 != c)
 			index = index + 1 & mask;

@@ -57,7 +57,7 @@ public class Express {
 
 		public Node recompose(Node x, Streamlet<Node> nodes0) {
 			List<Node> list = new ArrayList<>();
-			int xn = 0;
+			var xn = 0;
 			Node constant = e;
 			Node[] m;
 			Node n;
@@ -118,7 +118,7 @@ public class Express {
 	}
 
 	public Node intOf(Node n) {
-		int i = ((Int) n).number;
+		var i = ((Int) n).number;
 		return i < 0 ? add.inverse(Int.of(-i)) : n;
 	}
 

@@ -23,7 +23,7 @@ public class VirtualMatrix {
 	}
 
 	public static VirtualMatrix ofDiagonal(float[] fs) {
-		int rank = fs.length;
+		var rank = fs.length;
 		return of(rank, rank, (i, j) -> i != j ? 0f : fs[i]);
 	}
 
@@ -67,8 +67,8 @@ public class VirtualMatrix {
 
 	public VirtualMatrix convolute(float[][] k) {
 		Matrix mtx = VirtualMatrixUtil.mtx;
-		int kh = mtx.height(k);
-		int kw = mtx.width(k);
+		var kh = mtx.height(k);
+		var kw = mtx.width(k);
 		return VirtualMatrix.of( //
 				height - kh + 1, //
 				width_ - kw + 1, //

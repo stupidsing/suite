@@ -126,9 +126,9 @@ public class FunGenerateBytecode {
 			}).doIf(BlockFunExpr.class, e1 -> {
 				e1.breaks = new IntsBuilder();
 				e1.continues = new IntsBuilder();
-				int p0 = list.size();
+				var p0 = list.size();
 				visit_(e1.expr);
-				int px = list.size();
+				var px = list.size();
 				for (int source : e1.continues.toInts())
 					jumps.put(source, p0);
 				for (int source : e1.breaks.toInts())
@@ -206,7 +206,7 @@ public class FunGenerateBytecode {
 			}).doIf(NewFunExpr.class, e1 -> {
 				Class<?> implClass = e1.implementationClass;
 				String implClassName = e1.className;
-				int classIndex = cpg.addClass(implClassName);
+				var classIndex = cpg.addClass(implClassName);
 				list.add(new NEW(classIndex));
 				list.add(InstructionFactory.createDup(1));
 				list.add(factory.createInvoke(implClassName, "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
@@ -243,10 +243,10 @@ public class FunGenerateBytecode {
 		}
 
 		private void visitIf(short opcode, IfFunExpr expr) {
-			int p0 = list.size();
+			var p0 = list.size();
 			list.add(InstructionFactory.createBranchInstruction(opcode, null));
 			visit_(expr.then);
-			int p1 = list.size();
+			var p1 = list.size();
 			list.add(InstructionFactory.createBranchInstruction(Const.GOTO, null));
 			jumps.put(p0, list.size());
 			visit_(expr.else_);

@@ -30,8 +30,8 @@ public class ArrayIntrinsics {
 	};
 
 	public Intrinsic slice = (callback, inputs) -> {
-		int s = ((Int) inputs.get(0)).number;
-		int e = ((Int) inputs.get(1)).number;
+		var s = ((Int) inputs.get(0)).number;
+		var e = ((Int) inputs.get(1)).number;
 		Node[] array = ((Tuple) inputs.get(2)).nodes;
 		if (s < 0)
 			s += array.length;

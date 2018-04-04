@@ -49,7 +49,7 @@ public abstract class Tree extends Node {
 
 	public static Node of(Operator operator, List<Node> nodes) {
 		Node result = Atom.NIL;
-		int i = nodes.size();
+		var i = nodes.size();
 		while (0 <= --i)
 			result = of(operator, nodes.get(i), result);
 		return result;

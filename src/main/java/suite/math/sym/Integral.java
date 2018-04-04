@@ -26,8 +26,8 @@ public class Integral {
 	}
 
 	public Pair<Integer, Integer> divMod(int a, int b) {
-		int div = a / b;
-		int mod = a % b;
+		var div = a / b;
+		var mod = a % b;
 		return 0 <= mod ? Pair.of(div, mod) : Pair.of(div - 1, mod + b);
 	}
 

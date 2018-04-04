@@ -81,8 +81,8 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 			T t1 = (T) object;
 			List<Comparable<?>> values0 = t0.values();
 			List<Comparable<?>> values1 = t1.values();
-			int size0 = values0.size();
-			int size1 = values1.size();
+			var size0 = values0.size();
+			var size1 = values1.size();
 			b = true;
 			if (size0 == size1)
 				for (int i = 0; i < size0; i++)
@@ -98,7 +98,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (Comparable<?> value : values())
 			h = h * 31 + Objects.hashCode(value);
 		return h;

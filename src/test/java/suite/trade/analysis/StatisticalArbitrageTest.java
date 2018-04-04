@@ -55,7 +55,7 @@ public class StatisticalArbitrageTest {
 
 	@Test
 	public void testAutoRegressivePowersOfTwo() {
-		int power = 6;
+		var power = 6;
 
 		DataSource ds = cfg.dataSource(Asset.hsiSymbol).cleanse();
 		float[] prices = ds.prices;
@@ -75,14 +75,14 @@ public class StatisticalArbitrageTest {
 
 		// 0004.HK, 0020.HK
 		// 0011.HK, 0005.HK
-		int tor = 8;
+		var tor = 8;
 		String symbol0 = "0004.HK";
 		String symbol1 = "0945.HK";
 
 		AlignKeyDataSource<String> akds = cfg.dataSources(period, Read.each(symbol0, symbol1));
 		Map<String, float[]> pricesBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
 
-		int length = akds.ts.length;
+		var length = akds.ts.length;
 		float[] prices0 = pricesBySymbol.get(symbol0);
 		float[] prices1 = pricesBySymbol.get(symbol1);
 
@@ -136,8 +136,8 @@ public class StatisticalArbitrageTest {
 
 	@Test
 	public void testMonteCarloBestBet() {
-		int nTrials = 10000;
-		int nBets = 40;
+		var nTrials = 10000;
+		var nBets = 40;
 
 		DataSource ds = cfg.dataSource(Asset.hsiSymbol).range(period).cleanse();
 		float[] returns = ds.returns();
@@ -175,7 +175,7 @@ public class StatisticalArbitrageTest {
 	// find the period of various stocks using FFT
 	@Test
 	public void testPeriod() {
-		int minPeriod = 4;
+		var minPeriod = 4;
 		DctDataSource dctDataSources = dctDataSources();
 
 		for (Pair<String, float[]> e : dctDataSources.dctByKey) {
@@ -196,7 +196,7 @@ public class StatisticalArbitrageTest {
 	@Test
 	public void testReturnDistribution() {
 		float[] prices = cfg.dataSource(Asset.hsiSymbol).range(period).prices;
-		int maxTor = 16;
+		var maxTor = 16;
 
 		IntObjMap<float[]> differencesByTor = Ints_ //
 				.range(1, maxTor) //
@@ -215,14 +215,14 @@ public class StatisticalArbitrageTest {
 					.range(1, maxTor) //
 					.map(tor -> {
 						float[] differences = differencesByTor.get(tor);
-						int length = differences.length;
+						var length = differences.length;
 
 						// cumulative probabilities
 						double[] cps = new double[11];
 
 						for (int cpsi = 0, predDiff = -500; predDiff <= 500; cpsi++, predDiff += 100) {
 							float f = prices[t - 1] + predDiff - prices[t - tor];
-							int i = 0;
+							var i = 0;
 							while (i < length && differences[i] < f)
 								i++;
 							cps[cpsi] = i / (double) length;
@@ -235,7 +235,7 @@ public class StatisticalArbitrageTest {
 			Map<Double, Double> probabilities = new HashMap<>();
 
 			for (int cpsi = 0, predDiff = -500; predDiff < 500; cpsi++, predDiff += 100) {
-				int cpsi_ = cpsi;
+				var cpsi_ = cpsi;
 
 				double sum = Ints_ //
 						.range(1, maxTor) //
@@ -281,9 +281,9 @@ public class StatisticalArbitrageTest {
 
 	private DctDataSource dctDataSources() {
 		AlignKeyDataSource<String> akds = dataSources();
-		int length0 = akds.ts.length;
-		int log2 = Quant.log2trunc(length0);
-		int fr = length0 - log2;
+		var length0 = akds.ts.length;
+		var log2 = Quant.log2trunc(length0);
+		var fr = length0 - log2;
 		return new DctDataSource(log2, akds.dsByKey.mapValue(ds -> dct.dct(Arrays.copyOfRange(ds.prices, fr, length0))));
 	}
 

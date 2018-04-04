@@ -99,7 +99,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	@Override
 	public Map<Extent, Extent> gc(List<Extent> roots, int back) {
 		synchronized (writeLock) {
-			int end = nPages;
+			var end = nPages;
 			int start = max(0, end - back);
 			Set<Extent> isInUse = new HashSet<>();
 
@@ -120,7 +120,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 			Map<Extent, Extent> map = new HashMap<>();
 
 			if (!extents.isEmpty()) {
-				int pointer = extents.get(0).start;
+				var pointer = extents.get(0).start;
 
 				for (Extent extent0 : extents)
 					if (isInUse.contains(extent0)) {
@@ -173,7 +173,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	}
 
 	private Extent saveSlot(int start, PersistSlot<T> value) {
-		int bs = ExtentFile.blockSize;
+		var bs = ExtentFile.blockSize;
 		Bytes bytes = To.bytes(dataOutput -> serializer.write(dataOutput, value));
 		Extent extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);
 		extentFile.save(extent, bytes);

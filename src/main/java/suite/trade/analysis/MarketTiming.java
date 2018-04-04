@@ -20,7 +20,7 @@ public class MarketTiming {
 
 	public float[] hold(float[] prices, float h0, float h1, float h2) {
 		int[] flags = time(prices);
-		int length = flags.length;
+		var length = flags.length;
 		float[] holds = new float[length];
 		float hold = 0f;
 
@@ -42,8 +42,8 @@ public class MarketTiming {
 	}
 
 	public int[] time(float[] prices) {
-		int length = prices.length;
-		int lookback = 40;
+		var length = prices.length;
+		var lookback = 40;
 
 		float[] ma20 = ma.movingAvg(prices, 20);
 		float[] ma50 = ma.movingAvg(prices, 50);
@@ -55,8 +55,8 @@ public class MarketTiming {
 			IntStreamlet past_i = Ints_.range(past, i);
 			IntStreamlet past1_i = past_i.drop(1);
 
-			int ma20abovema50 = past_i.filter(j -> ma50[j] < ma20[j]).size();
-			int ma50abovema20 = past_i.filter(j -> ma20[j] < ma50[j]).size();
+			var ma20abovema50 = past_i.filter(j -> ma50[j] < ma20[j]).size();
+			var ma50abovema20 = past_i.filter(j -> ma20[j] < ma50[j]).size();
 			double r = ma50abovema20 / (double) ma20abovema50;
 
 			boolean isStrglyBullish = true //
@@ -89,7 +89,7 @@ public class MarketTiming {
 					&& .02d < stat.meanVariance(past_i.collect(Int_Flt.lift(j -> ma20[j])).toArray()).volatility() //
 					&& (ma20[i] + ma50[i]) * .02d <= Math.abs(ma20[i] - ma50[i]);
 
-			int flag = 0 //
+			var flag = 0 //
 					+ (isStrglyBearish ? strgBear : 0) //
 					+ (isWeaklyBearish ? weakBear : 0) //
 					+ (isRangeBound__ ? rngBound : 0) //

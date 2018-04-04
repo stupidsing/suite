@@ -60,12 +60,12 @@ public class NeuralNetwork {
 	}
 
 	public Layer<float[][], float[]> conv() {
-		int nKernels = 9;
-		int inputSize = 19;
-		int kernelSize = 5;
-		int maxPoolSize = 3;
-		int flattenSize = (inputSize - kernelSize + 1) / maxPoolSize;
-		int outputSize = 1;
+		var nKernels = 9;
+		var inputSize = 19;
+		var kernelSize = 5;
+		var maxPoolSize = 3;
+		var flattenSize = (inputSize - kernelSize + 1) / maxPoolSize;
+		var outputSize = 1;
 
 		// input 19x19
 		return nil2dLayer() //
@@ -124,7 +124,7 @@ public class NeuralNetwork {
 			Streamlet<Layer<I, O>> layers, //
 			Iterate<I> cloneInputs, //
 			Fun<Outlet<I>, I> combineErrors) {
-		int size = layers.size();
+		var size = layers.size();
 
 		return inputs -> {
 			List<Out<I, O>> outs = layers.map(layer -> layer.feed(cloneInputs.apply(inputs))).toList();
@@ -142,8 +142,8 @@ public class NeuralNetwork {
 		DblMutable bias = DblMutable.of(0d);
 
 		return inputs -> {
-			int hsx = mtx.height(inputs) - sx + 1;
-			int hsy = mtx.width(inputs) - sy + 1;
+			var hsx = mtx.height(inputs) - sx + 1;
+			var hsy = mtx.width(inputs) - sy + 1;
 
 			float[][] outputs = To.matrix(hsx, hsy, (ox, oy) -> {
 				double sum = bias.get();
@@ -162,8 +162,8 @@ public class NeuralNetwork {
 						bias.update(bias.get() + e);
 						for (int x = 0; x < sx; x++)
 							for (int y = 0; y < sy; y++) {
-								int ix = ox + x;
-								int iy = oy + y;
+								var ix = ox + x;
+								var iy = oy + y;
 								errors1[ix][iy] += e * (double) (kernel[x][y] += learningRate * inputs[ix][iy] * e);
 							}
 					}
@@ -174,14 +174,14 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[][], float[][]> averagePoolLayer(int ux, int uy) {
-		int maskx = ux - 1;
-		int masky = uy - 1;
-		int shiftx = Integer.numberOfTrailingZeros(ux);
-		int shifty = Integer.numberOfTrailingZeros(uy);
+		var maskx = ux - 1;
+		var masky = uy - 1;
+		var shiftx = Integer.numberOfTrailingZeros(ux);
+		var shifty = Integer.numberOfTrailingZeros(uy);
 
 		return inputs -> {
-			int sx = mtx.height(inputs);
-			int sy = mtx.width(inputs);
+			var sx = mtx.height(inputs);
+			var sy = mtx.width(inputs);
 			float[][] outputs = new float[sx + maskx >> shiftx][sy + masky >> shifty];
 
 			for (int ix = 0; ix < sx; ix++) {
@@ -197,28 +197,28 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[][], float[][]> maxPoolLayer(int ux, int uy) {
-		int maskx = ux - 1;
-		int masky = uy - 1;
-		int shiftx = Integer.numberOfTrailingZeros(ux);
-		int shifty = Integer.numberOfTrailingZeros(uy);
+		var maskx = ux - 1;
+		var masky = uy - 1;
+		var shiftx = Integer.numberOfTrailingZeros(ux);
+		var shifty = Integer.numberOfTrailingZeros(uy);
 
 		return inputs -> {
-			int sx = mtx.height(inputs);
-			int sy = mtx.width(inputs);
+			var sx = mtx.height(inputs);
+			var sy = mtx.width(inputs);
 			float[][] outputs = To.matrix(sx + maskx >> shiftx, sy + masky >> shifty, (x, y) -> Float.MIN_VALUE);
 
 			for (int ix = 0; ix < sx; ix++)
 				for (int iy = 0; iy < sy; iy++) {
-					int ox = ix >> shiftx;
-					int oy = iy >> shifty;
+					var ox = ix >> shiftx;
+					var oy = iy >> shifty;
 					outputs[ox][oy] = max(outputs[ox][oy], inputs[ix][iy]);
 				}
 
 			return new Out<>(outputs, errors -> {
 				for (int ix = 0; ix < sx; ix++)
 					for (int iy = 0; iy < sy; iy++) {
-						int ox = ix >> shiftx;
-						int oy = iy >> shifty;
+						var ox = ix >> shiftx;
+						var oy = iy >> shifty;
 						inputs[ix][iy] = inputs[ix][iy] == outputs[ox][oy] ? errors[ox][oy] : 0f;
 					}
 				return inputs;
@@ -236,7 +236,7 @@ public class NeuralNetwork {
 		return inputs -> {
 			@SuppressWarnings("unchecked")
 			T outputs = (T) Array_.newArray(clazz, inputs.length * stride);
-			int di = 0;
+			var di = 0;
 
 			for (T row : inputs) {
 				System.arraycopy(row, 0, outputs, di, stride);
@@ -245,7 +245,7 @@ public class NeuralNetwork {
 
 			return new Out<>(outputs, errors -> {
 				T[] errors1 = Array_.newArray(arrayClazz, Array.getLength(errors) / stride);
-				int si = 0;
+				var si = 0;
 
 				for (int i = 0; i < errors1.length; i++) {
 					@SuppressWarnings("unchecked")

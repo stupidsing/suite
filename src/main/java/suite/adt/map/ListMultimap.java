@@ -58,7 +58,7 @@ public class ListMultimap<K, V> {
 	}
 
 	public int size() {
-		int size = 0;
+		var size = 0;
 		for (List<V> value : map.values())
 			size += value.size();
 		return size;

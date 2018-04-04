@@ -65,7 +65,7 @@ public class UctSearch<Move> {
 		List<Thread> threads = Ints_ //
 				.range(numberOfThreads) //
 				.map(i -> Thread_.newThread(() -> {
-					int j = 0;
+					var j = 0;
 
 					while (count.getAndIncrement() < numberOfSimulations) {
 						playSimulation(visitor.cloneVisitor(), root, 0);
@@ -231,7 +231,7 @@ public class UctSearch<Move> {
 	}
 
 	public void dumpRave() {
-		int n = 0;
+		var n = 0;
 		for (Move move : visitor.getAllMoves()) {
 			float nWins = getMoveRave(nRaveWins, move);
 			float nTotals = getMoveRave(nRaveVisits, move);

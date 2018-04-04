@@ -40,7 +40,7 @@ public class B_TreeTest {
 
 	@Test
 	public void testDump() throws IOException {
-		int pageSize = 4096;
+		var pageSize = 4096;
 		Path path = Constants.tmp("b_tree-dump");
 
 		Files.deleteIfExists(path);
@@ -62,7 +62,7 @@ public class B_TreeTest {
 
 	@Test
 	public void testAccess() throws IOException {
-		int pageSize = 4096;
+		var pageSize = 4096;
 		Path path = Constants.tmp("b_tree-file");
 
 		Files.deleteIfExists(path);
@@ -98,13 +98,13 @@ public class B_TreeTest {
 
 	@Test
 	public void testInsertPerformance() throws IOException {
-		int nKeys = 16384;
+		var nKeys = 16384;
 		keys = Ints_.toArray(nKeys, i -> i);
-		int pageSize = 4096;
+		var pageSize = 4096;
 		Path path = Constants.tmp("b_tree-file");
 
 		for (int i = 0; i < nKeys; i++) {
-			int j = random.nextInt(nKeys);
+			var j = random.nextInt(nKeys);
 			Integer temp = keys[i];
 			keys[i] = keys[j];
 			keys[j] = temp;
@@ -118,7 +118,7 @@ public class B_TreeTest {
 			new Profiler().profile(() -> {
 				b_tree.create();
 				for (int i = 0; i < nKeys; i++) {
-					int key = keys[i];
+					var key = keys[i];
 					b_tree.put(key, To.bytes(Integer.toString(key)));
 				}
 				jpf.commit();
@@ -135,7 +135,7 @@ public class B_TreeTest {
 			assertEquals(Integer.toString(i), b_tree.get(i));
 
 		assertEquals(nKeys / 2, To.list(b_tree.keys(0, nKeys / 2)).size());
-		int count = 0;
+		var count = 0;
 
 		for (Pair<Integer, String> e : b_tree.range(0, nKeys)) {
 			Integer key = count++;
@@ -166,7 +166,7 @@ public class B_TreeTest {
 
 	private void shuffleNumbers() {
 		for (int i = 0; i < nKeys; i++) {
-			int j = random.nextInt(nKeys);
+			var j = random.nextInt(nKeys);
 			Integer temp = keys[i];
 			keys[i] = keys[j];
 			keys[j] = temp;

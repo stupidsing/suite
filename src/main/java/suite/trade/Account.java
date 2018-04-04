@@ -108,7 +108,7 @@ public class Account {
 	}
 
 	public boolean validate() {
-		int cash = cash_();
+		var cash = cash_();
 		return (Trade_.isValidCash(cash) || Fail.b("too much leverage: " + cash)) //
 				&& (Read.from2(assets).isAll((symbol, nShares) -> {
 					return Trade_.isValidStock(symbol, nShares) || Fail.b("no short-selling " + symbol + " " + nShares);
@@ -152,13 +152,13 @@ public class Account {
 
 		if (Trade_.negligible < price && price < Trade_.max) {
 			String symbol = trade.symbol;
-			int buySell = trade.buySell;
+			var buySell = trade.buySell;
 			float cost = trade.amount();
 
-			int cash0 = get(cashCode);
-			int cash1 = (int) (cash0 - cost);
-			int nShares0 = get(symbol);
-			int nShares1 = nShares0 + buySell;
+			var cash0 = get(cashCode);
+			var cash1 = (int) (cash0 - cost);
+			var nShares0 = get(symbol);
+			var nShares1 = nShares0 + buySell;
 			boolean isPlayable = !isValidate || Trade_.isValidCash(cash1) && Trade_.isValidStock(symbol, nShares1);
 
 			if (isPlayable) {

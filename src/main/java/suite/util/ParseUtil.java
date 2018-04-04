@@ -25,7 +25,7 @@ public class ParseUtil {
 	public static String[] fit(String in, Iterate<String> lower, String... parts) {
 		List<String> outs = new ArrayList<>();
 		String inl = lower.apply(in);
-		int p = 0;
+		var p = 0;
 		for (String part : parts) {
 			int p1 = inl.indexOf(lower.apply(part), p);
 			if (0 <= p1) {
@@ -52,9 +52,9 @@ public class ParseUtil {
 	}
 
 	public static int search(String s, int start, String toMatch) {
-		int nameLength = toMatch.length();
-		int end = s.length() - nameLength;
-		int quote = 0;
+		var nameLength = toMatch.length();
+		var end = s.length() - nameLength;
+		var quote = 0;
 
 		for (int pos = start; pos <= end; pos++) {
 			char c = s.charAt(pos);
@@ -84,7 +84,7 @@ public class ParseUtil {
 
 	public static Streamlet<String> split(String in, String name) {
 		char[] chars = in.toCharArray();
-		int length = chars.length;
+		var length = chars.length;
 
 		return new Streamlet<>(() -> Outlet.of(new Source<String>() {
 			private int pos = 0;
@@ -92,7 +92,7 @@ public class ParseUtil {
 			public String source() {
 				if (pos < length) {
 					Segment segment = searchPosition(chars, Segment.of(pos, length), name, Assoc.LEFT, true);
-					int pos0 = pos;
+					var pos0 = pos;
 					int end;
 					if (segment != null) {
 						end = segment.start;
@@ -111,7 +111,7 @@ public class ParseUtil {
 	}
 
 	public static Segment searchPosition(char[] cs, Segment segment, String name, Assoc assoc, boolean isCheckDepth) {
-		int nameLength = name.length();
+		var nameLength = name.length();
 		int start1 = segment.start, end1 = segment.end - 1;
 		int quote = 0, depth = 0;
 		int pos0, posx, step;

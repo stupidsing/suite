@@ -59,7 +59,7 @@ public class Render {
 	}
 
 	public Image renderPixels(int width, int height, IntInt_Obj<R3> f) {
-		int nThreads = Constants.nThreads;
+		var nThreads = Constants.nThreads;
 
 		int[] txs = Ints_.toArray(nThreads + 1, i -> width * i / nThreads);
 		R3[][] pixels = new R3[width][height];

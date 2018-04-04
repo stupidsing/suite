@@ -82,7 +82,7 @@ public class LngChrMap {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (LngObjPair<Character> pair : streamlet()) {
 			h = h * 31 + Long.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
@@ -91,7 +91,7 @@ public class LngChrMap {
 	}
 
 	public char get(long key) {
-		int index = index(key);
+		var index = index(key);
 		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
@@ -107,8 +107,8 @@ public class LngChrMap {
 	}
 
 	public void update(long key, Chr_Chr fun) {
-		int mask = vs.length - 1;
-		int index = index(key);
+		var mask = vs.length - 1;
+		var index = index(key);
 		char v0 = vs[index];
 		char v1 = vs[index] = fun.apply(v0);
 		ks[index] = key;
@@ -116,7 +116,7 @@ public class LngChrMap {
 		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
-					int index1 = (index + 1) & mask;
+					var index1 = (index + 1) & mask;
 					char v_ = vs[index1];
 					if (v_ != EMPTYVALUE) {
 						long k = ks[index1];
@@ -151,7 +151,7 @@ public class LngChrMap {
 	}
 
 	private void rehash() {
-		int capacity = vs.length;
+		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
 			long[] ks0 = ks;
@@ -167,7 +167,7 @@ public class LngChrMap {
 	}
 
 	private void store(long key, char v1) {
-		int index = index(key);
+		var index = index(key);
 		if (vs[index] == EMPTYVALUE) {
 			ks[index] = key;
 			vs[index] = v1;
@@ -176,8 +176,8 @@ public class LngChrMap {
 	}
 
 	private int index(long key) {
-		int mask = vs.length - 1;
-		int index = Long.hashCode(key) & mask;
+		var mask = vs.length - 1;
+		var index = Long.hashCode(key) & mask;
 		while (vs[index] != EMPTYVALUE && ks[index] != key)
 			index = index + 1 & mask;
 		return index;

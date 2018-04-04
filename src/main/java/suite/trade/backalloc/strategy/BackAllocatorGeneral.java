@@ -141,7 +141,7 @@ public class BackAllocatorGeneral {
 		return BackAllocator_.byPrices(prices -> {
 			MovingRange[] movingRanges = ma.movingRange(prices, window);
 			return index -> {
-				int last = index - 1;
+				var last = index - 1;
 				MovingRange movingRange = movingRanges[last];
 				double min = movingRange.min;
 				double max = movingRange.max;
@@ -166,7 +166,7 @@ public class BackAllocatorGeneral {
 			float[] ema = ma.exponentialMovingAvg(prices, halfLife);
 
 			return Quant.filterRange(1, index -> {
-				int last = index - 1;
+				var last = index - 1;
 				double lastEma = ema[last];
 				double latest = prices[last];
 				return Quant.logReturn(lastEma, latest) * scale;
@@ -192,7 +192,7 @@ public class BackAllocatorGeneral {
 					.keys() //
 					.toList();
 
-			int size = list.size();
+			var size = list.size();
 
 			return Streamlet //
 					.concat(Read.from(list.subList(0, nWorsts)), Read.from(list.subList(size - nBests, size))) //
@@ -206,7 +206,7 @@ public class BackAllocatorGeneral {
 			float[] movingAvgs = ma.movingAvg(prices, tor);
 
 			return index -> {
-				int last = index - 1;
+				var last = index - 1;
 				return Quant.sign(movingAvgs[last], prices[last]);
 			};
 		});
@@ -219,15 +219,15 @@ public class BackAllocatorGeneral {
 
 	private BackAllocator momentum(int nDays) {
 		return BackAllocator_.byPrices(prices -> index -> {
-			int last = index - 1;
+			var last = index - 1;
 			return nDays <= last ? 30d * Quant.return_(prices[last - nDays], prices[last]) : 0d;
 		});
 	}
 
 	private BackAllocator momentumAcceleration(int nDays, int nAccelDays) {
 		return BackAllocator_.byPrices(prices -> index -> {
-			int last1 = index - 1;
-			int last0 = last1 - nAccelDays;
+			var last1 = index - 1;
+			var last0 = last1 - nAccelDays;
 			if (nDays <= last0) {
 				double return0 = Quant.return_(prices[last0 - nDays], prices[last0]);
 				double return1 = Quant.return_(prices[last1 - nDays], prices[last1]);
@@ -244,7 +244,7 @@ public class BackAllocatorGeneral {
 			float[] movingAvgCls = ma.movingAvg(ds.closes, tor);
 
 			return index -> {
-				int last = index - 1;
+				var last = index - 1;
 				float maOp = movingAvgOps[last];
 				float maCl = movingAvgCls[last];
 				float diff = maCl - maOp;
@@ -277,7 +277,7 @@ public class BackAllocatorGeneral {
 			Movement movement = osc.movement(prices, window);
 
 			return Quant.filterRange(0, index -> {
-				int last = index - 1;
+				var last = index - 1;
 				double dec = movement.decs[last];
 				double inc = movement.incs[last];
 				if (threshold < dec) // over-sold
@@ -295,7 +295,7 @@ public class BackAllocatorGeneral {
 			float[] sars = osc.sar(ds);
 
 			return Quant.filterRange(1, index -> {
-				int last = index - 1;
+				var last = index - 1;
 				return (double) Quant.sign(sars[last], ds.prices[last]);
 			});
 		});
@@ -332,7 +332,7 @@ public class BackAllocatorGeneral {
 			float[] movingAvgs2 = ma.exponentialGeometricMovingAvg(prices, d2);
 
 			return Quant.filterRange(1, index -> {
-				int last = index - 1;
+				var last = index - 1;
 				float movingAvg0 = movingAvgs0[last];
 				float movingAvg1 = movingAvgs1[last];
 				float movingAvg2 = movingAvgs2[last];
@@ -345,9 +345,9 @@ public class BackAllocatorGeneral {
 
 	// http://www.metastocktools.com/downloads/turtlerules.pdf
 	private BackAllocator turtles(int sys1EnterDays, int sys1ExitDays, int sys2EnterDays, int sys2ExitDays) {
-		int maxUnits = 4;
-		int maxUnitsTotal = 12;
-		int stopN = 2;
+		var maxUnits = 4;
+		var maxUnitsTotal = 12;
+		var stopN = 2;
 
 		return (akds, indices) -> {
 			Streamlet2<String, DataSource> dsByKey = akds.dsByKey;
@@ -357,7 +357,7 @@ public class BackAllocatorGeneral {
 					.map2((symbol, ds) -> {
 						float[] atrs = atrBySymbol.get(symbol);
 						float[] prices = ds.prices;
-						int length = prices.length;
+						var length = prices.length;
 
 						IntFunction<int[]> getDays = c -> Ints_.toArray(length, i -> {
 							float price = prices[i];
@@ -373,13 +373,13 @@ public class BackAllocatorGeneral {
 						IntInt_Obj<int[]> enterExit = (nEnterDays, nExitDays) -> {
 							int[] holds = new int[length];
 							float stopper = 0f;
-							int nHold = 0;
+							var nHold = 0;
 
 							for (int i = 0; i < length; i++) {
 								float price = prices[i];
-								int dlo = dlos[i];
-								int dhi = dhis[i];
-								int sign = Quant.sign(nHold);
+								var dlo = dlos[i];
+								var dhi = dhis[i];
+								var sign = Quant.sign(nHold);
 
 								if (sign == Quant.sign(price, stopper) // stops
 										|| sign == 1 && nExitDays <= dlo // exit
@@ -409,11 +409,11 @@ public class BackAllocatorGeneral {
 							boolean[] wasWons = new boolean[length];
 							boolean wasWon = false;
 							boolean isWin = false;
-							int i = 0;
+							var i = 0;
 
 							while (i < length) {
-								int sign = Quant.sign(nHolds[i]);
-								int j = i;
+								var sign = Quant.sign(nHolds[i]);
+								var j = i;
 
 								while (j < length && sign == Quant.sign(nHolds[j]))
 									j++;
@@ -443,7 +443,7 @@ public class BackAllocatorGeneral {
 						.map2(symbol -> fixieBySymbol //
 								.get(symbol) //
 								.map((nHolds1, nHolds2, wasWons1) -> {
-									int last = index - 1;
+									var last = index - 1;
 									return (!wasWons1[last] ? nHolds1[last] : 0) + nHolds2[last];
 								})) //
 						.sortByValue((nHold0, nHold1) -> Integer.compare(Math.abs(nHold1), Math.abs(nHold0))) //
@@ -453,9 +453,9 @@ public class BackAllocatorGeneral {
 				int[] sums = new int[2];
 
 				for (Pair<String, Integer> pair : m0) {
-					int n = pair.t1;
-					int sign = 0 < n ? 0 : 1;
-					int sum0 = sums[sign];
+					var n = pair.t1;
+					var sign = 0 < n ? 0 : 1;
+					var sum0 = sums[sign];
 					int sum1 = max(-maxUnitsTotal, min(maxUnitsTotal, sum0 + n));
 					m1.add(Pair.of(pair.t0, (sums[sign] = sum1) - sum0));
 				}
@@ -484,7 +484,7 @@ public class BackAllocatorGeneral {
 			Map<String, float[]> holdsBySymbol = akds.dsByKey //
 					.map2((symbol, ds) -> {
 						float[] prices = ds.prices;
-						int length = prices.length;
+						var length = prices.length;
 						float[] holds = new float[length];
 						float hold = 0f;
 						for (int index = tor; index < length; index++) {
@@ -520,7 +520,7 @@ public class BackAllocatorGeneral {
 			float[] movingAvgs1 = ma.exponentialMovingAvg(prices, halfLife1);
 
 			return Quant.filterRange(1, index -> {
-				int last = index - 1;
+				var last = index - 1;
 				return -Quant.sign(movingAvgs0[last], movingAvgs1[last]);
 			});
 		});

@@ -103,7 +103,7 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 	}
 
 	private String getPeerByHash(K key) {
-		int hash = Objects.hashCode(key);
+		var hash = Objects.hashCode(key);
 		return peers.get(hash % peers.size());
 	}
 

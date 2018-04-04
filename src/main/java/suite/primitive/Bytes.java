@@ -61,7 +61,7 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public static Bytes of(ByteBuffer bb) {
-		int offset = bb.arrayOffset();
+		var offset = bb.arrayOffset();
 		return of(bb.array(), offset, offset + bb.limit());
 	}
 
@@ -102,7 +102,7 @@ public class Bytes implements Iterable<Byte> {
 	public byte get(int index) {
 		if (index < 0)
 			index += size_();
-		int i1 = index + start;
+		var i1 = index + start;
 		checkClosedBounds(i1);
 		return bs[i1];
 	}
@@ -177,8 +177,8 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public Bytes trim() {
-		int s = start;
-		int e = end;
+		var s = start;
+		var e = end;
 		while (s < e && bs[s] == 0)
 			s++;
 		while (s < e && bs[e - 1] == 0)
@@ -215,7 +215,7 @@ public class Bytes implements Iterable<Byte> {
 			Bytes other = (Bytes) object;
 
 			if (size_() == other.size_()) {
-				int diff = other.start - start;
+				var diff = other.start - start;
 				for (int i = start; i < end; i++)
 					if (bs[i] != other.bs[i + diff])
 						return false;
@@ -228,7 +228,7 @@ public class Bytes implements Iterable<Byte> {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (int i = start; i < end; i++)
 			h = h * 31 + bs[i];
 		return h;
@@ -257,7 +257,7 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	private Bytes range_(int s, int e) {
-		int size = size_();
+		var size = size_();
 		if (s < 0)
 			s += size;
 		if (e < 0)
@@ -303,7 +303,7 @@ public class Bytes implements Iterable<Byte> {
 		}
 
 		public BytesBuilder append(byte[] bs_, int start, int end) {
-			int inc = end - start;
+			var inc = end - start;
 			extendBuffer(size + inc);
 			Bytes_.copy(bs_, start, bs, size, inc);
 			size += inc;
@@ -328,7 +328,7 @@ public class Bytes implements Iterable<Byte> {
 		}
 
 		private void extendBuffer(int capacity1) {
-			int capacity0 = bs.length;
+			var capacity0 = bs.length;
 
 			if (capacity0 < capacity1) {
 				int capacity = max(capacity0, 4);

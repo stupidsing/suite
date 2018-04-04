@@ -75,7 +75,7 @@ public class HttpServer {
 			}
 
 			String cls = requestHeaders.get("Content-Length");
-			int contentLength = cls != null ? Integer.parseInt(cls) : 0;
+			var contentLength = cls != null ? Integer.parseInt(cls) : 0;
 			InputStream cis = sizeLimitedInputStream(is, contentLength);
 
 			HttpRequest request = new HttpRequest(method, server, path2, query, requestHeaders, cis);

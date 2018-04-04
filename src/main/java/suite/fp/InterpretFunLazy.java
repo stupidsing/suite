@@ -202,7 +202,7 @@ public class InterpretFunLazy {
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
 				Pattern tuple = Suite.pattern(".0 .1");
 				Streamlet<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple::match);
-				int size = arrays.size();
+				var size = arrays.size();
 				Lazy_ lazy0 = this;
 
 				for (Node[] array : arrays)
@@ -217,7 +217,7 @@ public class InterpretFunLazy {
 				result = frame -> {
 					List<Thunk_> values = new ArrayList<>(size);
 					for (int i = 0; i < size; i++) {
-						int i1 = i;
+						var i1 = i;
 						frame.add(() -> values.get(i1).get());
 					}
 					for (Fun<Frame, Thunk_> value_ : values_)
@@ -294,9 +294,9 @@ public class InterpretFunLazy {
 	}
 
 	private int compare(Node n0, Node n1) {
-		int t0 = n0 instanceof Fun_ ? 2 : (n0 instanceof Pair_ ? 1 : 0);
-		int t1 = n1 instanceof Fun_ ? 2 : (n0 instanceof Pair_ ? 1 : 0);
-		int c = t0 - t1;
+		var t0 = n0 instanceof Fun_ ? 2 : (n0 instanceof Pair_ ? 1 : 0);
+		var t1 = n1 instanceof Fun_ ? 2 : (n0 instanceof Pair_ ? 1 : 0);
+		var c = t0 - t1;
 		if (c == 0)
 			switch (t0) {
 			case 0:

@@ -116,7 +116,7 @@ public class EvalPredicates {
 	public BuiltinPredicate isCyclic = PredicateUtil.bool(n -> new Cyclic().isCyclic(n));
 
 	public BuiltinPredicate length = PredicateUtil.p2((prover, list, length) -> {
-		int size = 0;
+		var size = 0;
 		Tree tree;
 
 		while ((tree = Tree.decompose(list)) != null) {
@@ -127,7 +127,7 @@ public class EvalPredicates {
 		if (list == Atom.NIL)
 			return prover.bind(length, Int.of(size));
 		else {
-			int size1 = ((Int) length).number;
+			var size1 = ((Int) length).number;
 			Node list1 = Atom.NIL;
 			while (0 < size1--)
 				list1 = Tree.of(TermOp.AND___, new Reference(), list1);

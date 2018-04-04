@@ -284,7 +284,7 @@ public class FunFactory {
 	}
 
 	public FunExpr seq(FunExpr... fes) {
-		int i = fes.length;
+		var i = fes.length;
 		if (0 < i) {
 			FunExpr fe = fes[--i];
 			while (0 < i) {

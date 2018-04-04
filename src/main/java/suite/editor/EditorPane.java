@@ -61,8 +61,8 @@ public class EditorPane extends JEditorPane {
 
 	private void replaceLines(Fun<Segment, String> fun) throws BadLocationException {
 		Document document = getDocument();
-		int length = document.getLength();
-		int ss = getSelectionStart();
+		var length = document.getLength();
+		var ss = getSelectionStart();
 		int se = max(ss, getSelectionEnd() - 1);
 
 		while (0 < ss && document.getText(ss, 1).charAt(0) != 10)
@@ -72,7 +72,7 @@ public class EditorPane extends JEditorPane {
 
 		// do not include first and last LFs
 		int start = document.getText(ss, 1).charAt(0) == 10 ? ss + 1 : ss;
-		int end = se;
+		var end = se;
 
 		replace(document, start, end, fun);
 	}

@@ -48,7 +48,7 @@ public class Pipe {
 
 			return Read.lines(pis).closeAtEnd(() -> {
 				try {
-					int code = process.waitFor();
+					var code = process.waitFor();
 
 					if (code == 0)
 						for (Thread thread : threads)

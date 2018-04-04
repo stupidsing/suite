@@ -12,10 +12,10 @@ public class IRopeTest {
 
 	@Test
 	public void test() {
-		int length = 1024;
+		var length = 1024;
 		String s = new String(Chars_.toArray(length, c -> (char) c));
 		IRope<Character> rope = new IRope<>(IRope.ropeList(""));
-		int p = 0;
+		var p = 0;
 
 		while (p < length) {
 			int p1 = Math.min(length, p + 32 + new Random().nextInt(16));
@@ -26,13 +26,13 @@ public class IRopeTest {
 		for (int i = 0; i < length; i++)
 			assertEquals(i, rope.at(i).charValue());
 
-		int halfLength = length / 2;
+		var halfLength = length / 2;
 		IRope<Character> rope0 = rope.left(halfLength);
 		IRope<Character> rope1 = rope.right(halfLength);
 
 		for (int i = 0; i < halfLength; i++) {
-			int l = i;
-			int r = l + halfLength;
+			var l = i;
+			var r = l + halfLength;
 			assertEquals(l, rope0.at(l).charValue());
 			assertEquals(r, rope1.at(l).charValue());
 		}

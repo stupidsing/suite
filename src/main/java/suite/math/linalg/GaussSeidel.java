@@ -6,7 +6,7 @@ public class GaussSeidel {
 
 	// solve x in A*x = b
 	public float[] solve(float[][] a, float[] b) {
-		int size = mtx.sqSize(a);
+		var size = mtx.sqSize(a);
 		float[] phi = new float[size];
 		float[] phi0 = Boolean.TRUE ? phi : new float[size]; // Gauss-Seidel, or Jacobi
 

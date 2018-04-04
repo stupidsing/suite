@@ -128,7 +128,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 		byte[] buffer = new byte[Constants.bufferSize];
 		Object attachment = key.attachment();
 		SelectableChannel sc0 = key.channel();
-		int ops = key.readyOps();
+		var ops = key.readyOps();
 
 		if ((ops & SelectionKey.OP_ACCEPT) != 0) {
 			C channel = channelSource.source();
@@ -151,7 +151,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 				}
 
 				if ((ops & SelectionKey.OP_READ) != 0) {
-					int n = sc1.read(ByteBuffer.wrap(buffer));
+					var n = sc1.read(ByteBuffer.wrap(buffer));
 					if (0 <= n)
 						channel.onReceive.fire(Bytes.of(buffer, 0, n));
 					else {
@@ -171,9 +171,9 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 			// try to send immediately. If cannot sent all, wait for the
 			// writable event (and send again at that moment).
 			byte[] bytes = in.toArray();
-			int sent = Rethrow.ex(() -> sc.write(ByteBuffer.wrap(bytes)));
+			var sent = Rethrow.ex(() -> sc.write(ByteBuffer.wrap(bytes)));
 			Bytes out = in.range(sent);
-			int ops = SelectionKey.OP_READ | (!out.isEmpty() ? SelectionKey.OP_WRITE : 0);
+			var ops = SelectionKey.OP_READ | (!out.isEmpty() ? SelectionKey.OP_WRITE : 0);
 			SelectionKey key = sc.keyFor(selector);
 
 			if (key != null && key.interestOps() != ops)

@@ -39,11 +39,11 @@ public class Bytes_ {
 	}
 
 	public static Fun<Outlet<Bytes>, Outlet<Bytes>> split(Bytes delim) {
-		int ds = delim.size();
+		var ds = delim.size();
 
 		return outlet -> Outlet.of(new BufferedSource(outlet) {
 			protected boolean search() {
-				int size = buffer.size();
+				var size = buffer.size();
 				while ((p1 = p0 + ds) <= size)
 					if (!delim.equals(buffer.range(p0, p1)))
 						p0++;

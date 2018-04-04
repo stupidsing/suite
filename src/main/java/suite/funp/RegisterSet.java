@@ -69,7 +69,7 @@ public class RegisterSet {
 	}
 
 	private int flag(Operand... operands) {
-		int flag_ = 0;
+		var flag_ = 0;
 		for (Operand operand : operands)
 			if (operand instanceof OpReg)
 				flag_ |= flag(((OpReg) operand).reg);
@@ -85,7 +85,7 @@ public class RegisterSet {
 
 	private OpReg get_(int size) {
 		OpReg r = get_();
-		int reg = r.reg;
+		var reg = r.reg;
 		if (size == 1 && reg < 4) // AL, BL, CL or DL
 			return amd64.reg8[reg];
 		else if (size == 2)

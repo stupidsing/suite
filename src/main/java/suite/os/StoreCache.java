@@ -94,7 +94,7 @@ public class StoreCache {
 		return Rethrow.ex(() -> {
 			long current = System.currentTimeMillis();
 			Path path;
-			int i = 0;
+			var i = 0;
 
 			while (Files.exists(path = path(key, i++, "")))
 				if (isUpToDate(path, current)) {
@@ -136,7 +136,7 @@ public class StoreCache {
 	private Pair<Boolean, Path> match(Bytes key) {
 		return Rethrow.ex(() -> {
 			long current = System.currentTimeMillis();
-			int i = 0;
+			var i = 0;
 			Path path;
 
 			while (Files.exists(path = path(key, i, ".k"))) {
@@ -158,7 +158,7 @@ public class StoreCache {
 	}
 
 	private boolean isMatch(Bytes key, DataInputStream dis) throws IOException {
-		int keySize = key.size();
+		var keySize = key.size();
 
 		if (dis.readInt() == keySize) {
 			byte[] kb = new byte[keySize];

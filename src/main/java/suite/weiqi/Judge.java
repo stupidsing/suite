@@ -12,7 +12,7 @@ import suite.weiqi.Weiqi.Occupation;
 public class Judge {
 
 	public static Occupation checkByOccupationExistence(Board board) {
-		int nPiecesCount = 0;
+		var nPiecesCount = 0;
 		Set<Occupation> players = new HashSet<>();
 
 		for (Coordinate c : Coordinate.all()) {

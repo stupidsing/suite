@@ -16,7 +16,7 @@ public class MathUtil {
 	}
 
 	public static int steinGcd(int n0, int n1) {
-		int shift = 0;
+		var shift = 0;
 
 		while (isEven(n0) && isEven(n1)) {
 			n0 /= 2;
@@ -35,7 +35,7 @@ public class MathUtil {
 			if (n1 < n0)
 				n0 -= n1;
 			else {
-				int diff = n1 - n0;
+				var diff = n1 - n0;
 				n1 = n0;
 				n0 = diff;
 			}

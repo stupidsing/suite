@@ -61,7 +61,7 @@ public class SparseMatrix {
 		int[] js = new int[height];
 
 		IntSink enqRow = r -> {
-			int j = js[r];
+			var j = js[r];
 			if (j < matrix.get(r).size)
 				pq.insert(IntIntPair.of(r, j));
 		};
@@ -71,8 +71,8 @@ public class SparseMatrix {
 
 		while (!pq.isEmpty()) {
 			IntIntPair pair = pq.extractMin();
-			int r = pair.t0;
-			int j = js[r]++;
+			var r = pair.t0;
+			var j = js[r]++;
 			Spans spans = matrix.get(r);
 			matrix1.get(spans.columns[j]).add(r, spans.values[j]);
 			enqRow.sink(r);

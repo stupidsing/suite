@@ -32,7 +32,7 @@ public class KellyCriterion {
 				.toMap();
 
 		String[] symbols = returnsBySymbol.keySet().toArray(new String[0]);
-		int nSymbols = symbols.length;
+		var nSymbols = symbols.length;
 
 		float[][] cov = To.matrix(nSymbols, nSymbols, (i0, i1) -> {
 			float[] returns0 = returnsBySymbol.get(symbols[i0]);

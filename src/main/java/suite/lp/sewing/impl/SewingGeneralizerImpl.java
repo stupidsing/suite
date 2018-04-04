@@ -44,7 +44,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 				Atom atom = (Atom) node0;
 				String name = atom.name;
 				if (ProverConstant.isCut(node0) || ProverConstant.isVariable(name)) {
-					int index = vm.computeIndex(atom);
+					var index = vm.computeIndex(atom);
 					fun = env -> env.get(index);
 				} else if (ProverConstant.isWildcard(name))
 					fun = env -> new Reference();
@@ -55,7 +55,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 						.from2(((Dict) node0).map) //
 						.map((key, value) -> new Generalize_[] { generalizer(key), generalizer(value), }) //
 						.toArray(Generalize_[].class);
-				int length = array.length;
+				var length = array.length;
 				fun = env -> {
 					@SuppressWarnings("unchecked")
 					Pair<Node, Reference>[] pairs = new Pair[length];
@@ -77,7 +77,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 				}
 			} else if (node0 instanceof Tuple) {
 				Generalize_[] fs = Read.from(((Tuple) node0).nodes).map(this::generalizer).toArray(Generalize_.class);
-				int length = fs.length;
+				var length = fs.length;
 				fun = env -> {
 					Node[] array = new Node[length];
 					for (int i = 0; i < length; i++)

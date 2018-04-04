@@ -78,7 +78,7 @@ public class Dump {
 			}
 
 			private void d(String prefix, Class<?> clazz, Object object) {
-				int id = System.identityHashCode(object);
+				var id = System.identityHashCode(object);
 				sink.sink(prefix);
 				sink.sink(" =");
 
@@ -94,7 +94,7 @@ public class Dump {
 
 						sink.sink(" [" + clazz.getSimpleName() + "]\n");
 
-						int count = 0;
+						var count = 0;
 
 						// simple listings for simple classes
 						if (Type_.isSimple(clazz))

@@ -40,7 +40,7 @@ public class RecursiveFactorizer {
 		FactorizeResult parsed = parse_(To.chars(in1), 0);
 
 		// append possibly missed comments
-		int p = reverser.reverse(0);
+		var p = reverser.reverse(0);
 		return new FactorizeResult(Chars.concat(in.range(0, p), parsed.pre), parsed.node, parsed.post);
 	}
 
@@ -108,10 +108,10 @@ public class RecursiveFactorizer {
 
 	private FactorizeResult term(Chars chars) {
 		Chars chars1 = chars.trim();
-		int p0 = reverser.reverse(chars.start);
-		int p1 = reverser.reverse(chars1.start);
-		int p2 = reverser.reverse(chars1.end);
-		int px = reverser.reverse(chars.end);
+		var p0 = reverser.reverse(chars.start);
+		var p1 = reverser.reverse(chars1.start);
+		var p2 = reverser.reverse(chars1.end);
+		var px = reverser.reverse(chars.end);
 		return new FactorizeResult(Chars.of(in.cs, p0, p1), new FTerminal(Chars.of(in.cs, p1, p2)), Chars.of(in.cs, p2, px));
 	}
 

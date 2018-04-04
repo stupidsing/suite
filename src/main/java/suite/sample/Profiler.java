@@ -104,7 +104,7 @@ public class Profiler implements Service {
 					&& !String_.equals(threadInfo.getThreadName(), "ReaderThread")) {
 				StackTraceElement[] stackTrace = threadInfo.getStackTrace();
 				Set<String> elements = new HashSet<>();
-				int i = stackTrace.length;
+				var i = stackTrace.length;
 				Call call = callRoot;
 
 				// save line numbers as it is important to trace lambdas and
@@ -112,7 +112,7 @@ public class Profiler implements Service {
 				while (0 < i) {
 					StackTraceElement elem = stackTrace[--i];
 					String fileName = elem.getFileName();
-					int lineNumber = elem.getLineNumber();
+					var lineNumber = elem.getLineNumber();
 					String mn = elem.getClassName() + "." + elem.getMethodName();
 					String fn = fileName != null ? " " + fileName + (1 < lineNumber ? ":" + lineNumber : "") : "<unknown>";
 					String name = mn + fn;

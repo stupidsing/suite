@@ -24,7 +24,7 @@ public class FontUtil {
 			sansFontName = "Sans";
 		}
 
-		int size = Toolkit.getDefaultToolkit().getScreenSize().getWidth() > 1920 ? 24 : 12;
+		var size = Toolkit.getDefaultToolkit().getScreenSize().getWidth() > 1920 ? 24 : 12;
 
 		monoFont = new Font(monoFontName, Font.PLAIN, size);
 		sansFont = new Font(sansFontName, Font.PLAIN, size);

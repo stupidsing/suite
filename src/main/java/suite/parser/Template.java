@@ -9,7 +9,7 @@ public class Template {
 
 	public String render(String in, Iterate<String> fun) {
 		StringBuilder sb = new StringBuilder();
-		int start = 0;
+		var start = 0;
 
 		while (true) {
 			int pos0 = in.indexOf(open, start);

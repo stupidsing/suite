@@ -59,7 +59,7 @@ public class Wildcard {
 
 	public static String apply(String pattern, String[] input) {
 		StringBuilder sb = new StringBuilder();
-		int i = 0;
+		var i = 0;
 		for (char ch : String_.chars(pattern))
 			switch (ch) {
 			case '*':

@@ -23,7 +23,7 @@ public class Arch {
 	public float[] arch(float[] ys, int p, int q) {
 
 		// auto regressive
-		int length = ys.length;
+		var length = ys.length;
 		float[][] xs0 = To.array(length, float[].class, i -> copyPadZeroes(ys, i - p, i));
 		LinearRegression lr0 = stat.linearRegression(xs0, ys, null);
 		float[] variances = To.vector(lr0.residuals, residual -> residual * residual);
@@ -51,7 +51,7 @@ public class Arch {
 				double logLikelihood = 0d;
 
 				for (int t = p; t < xs.length; t++) {
-					int tm1 = t - 1;
+					var tm1 = t - 1;
 					double eps0 = eps;
 					double var0 = var;
 					double estx = c + Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[tm1 - i]));

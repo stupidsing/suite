@@ -50,7 +50,7 @@ public class Astar<Node> {
 			Node node = ni.node;
 
 			if (node != end && closed.add(node)) {
-				int sunkCost1 = ni.sunkCost + 1;
+				var sunkCost1 = ni.sunkCost + 1;
 				Source<Node> source = generate.apply(node);
 
 				while ((node1 = source.source()) != null)

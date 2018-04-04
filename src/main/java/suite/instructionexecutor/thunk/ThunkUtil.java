@@ -32,7 +32,7 @@ public class ThunkUtil {
 
 	public static void yawnWriter(Iterate<Node> yawn, Node node, Writer writer) throws IOException {
 		ThunkUtil.yawnSink(yawn, node, n -> {
-			int c = ((Int) n).number;
+			var c = ((Int) n).number;
 			writer.write(c);
 			if (c == 10)
 				writer.flush();

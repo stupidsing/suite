@@ -134,7 +134,7 @@ public class Fractional<I> {
 	private Opt<Fract<I>> inv(Fract<I> a) {
 		I num = a.t0;
 		I denom = a.t1;
-		int c = sgn_.apply(num);
+		var c = sgn_.apply(num);
 		if (0 < c)
 			return Opt.of(new Fract<>(denom, num));
 		else if (c < 0)

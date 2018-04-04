@@ -169,7 +169,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
 	public int count() {
 		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
-		int i = 0;
+		var i = 0;
 		while (next(pair))
 			i++;
 		return i;
@@ -244,7 +244,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	@Override
 	public int hashCode() {
 		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
-		int h = 7;
+		var h = 7;
 		while (next(pair))
 			h = h * 31 + pair.hashCode();
 		return h;

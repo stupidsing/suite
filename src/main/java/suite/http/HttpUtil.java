@@ -113,7 +113,7 @@ public class HttpUtil {
 		CloseableHttpResponse response = client.execute(request);
 
 		StatusLine statusLine = response.getStatusLine();
-		int statusCode = statusLine.getStatusCode();
+		var statusCode = statusLine.getStatusCode();
 		InputStream inputStream = response.getEntity().getContent();
 		Outlet<Bytes> out = To.outlet(inputStream) //
 				.closeAtEnd(inputStream) //
@@ -142,7 +142,7 @@ public class HttpUtil {
 			Bytes_.copy(in, os::write);
 		}
 
-		int responseCode = conn.getResponseCode();
+		var responseCode = conn.getResponseCode();
 		Outlet<Bytes> out = To.outlet(conn.getInputStream());
 
 		if (responseCode == HttpURLConnection.HTTP_MOVED_PERM //

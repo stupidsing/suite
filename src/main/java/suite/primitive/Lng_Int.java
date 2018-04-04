@@ -29,7 +29,7 @@ public interface Lng_Int {
 		return outlet -> {
 			LngSource source = outlet.source();
 			long c;
-			int result = (int) 0;
+			var result = (int) 0;
 			while ((c = source.source()) != LngFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

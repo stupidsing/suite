@@ -35,9 +35,9 @@ public class Bl<T> {
 			if (bl1 != null) {
 				long bitmap0 = bl0.bitmap;
 				long bitmap1 = bl1.bitmap;
-				int bitCount = 0;
-				int bitCount0 = 0;
-				int bitCount1 = 0;
+				var bitCount = 0;
+				var bitCount0 = 0;
+				var bitCount1 = 0;
 				long bitmap = bitmap0 | bitmap1;
 				Object[] ts = new Object[Long.bitCount(bitmap)];
 
@@ -73,16 +73,16 @@ public class Bl<T> {
 		long bits0 = bitmap0 & bit - 1;
 		long bits1 = bitmap0 & 0xFFFFFFFFFFFFFFFEl << index;
 
-		int diff0 = (bitmap0 & bit) != 0 ? 1 : 0;
-		int diff1 = t != null ? 1 : 0;
-		int diff = diff1 - diff0;
+		var diff0 = (bitmap0 & bit) != 0 ? 1 : 0;
+		var diff1 = t != null ? 1 : 0;
+		var diff = diff1 - diff0;
 
 		long bitmap1 = bits0 + ((long) diff1 << index) + bits1;
 
 		if (bitmap1 != 0) {
 			Object[] ts1 = new Object[ts0.length + diff];
-			int bitCount0 = Long.bitCount(bits0);
-			int bitCount1 = Long.bitCount(bits1);
+			var bitCount0 = Long.bitCount(bits0);
+			var bitCount1 = Long.bitCount(bits1);
 			Array_.copy(ts0, 0, ts1, 0, bitCount0);
 			ts1[bitCount0] = t;
 			Array_.copy(ts0, bitCount0 + diff0, ts1, bitCount0 + diff1, bitCount1);
@@ -94,7 +94,7 @@ public class Bl<T> {
 
 	public static <T> Bl<T> of(List<IntObjPair<T>> list) {
 		if (!list.isEmpty()) {
-			int size = list.size();
+			var size = list.size();
 			long bitmap = 0;
 			Object[] ts = new Object[size];
 			for (int i = 0; i < size; i++) {
@@ -118,7 +118,7 @@ public class Bl<T> {
 
 		if ((bitmap & bit) != 0) {
 			long mask = bit - 1;
-			int bitCount = Long.bitCount(bitmap & mask);
+			var bitCount = Long.bitCount(bitmap & mask);
 			return bl.get(bitCount);
 		} else
 			return null;

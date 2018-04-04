@@ -40,7 +40,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 
 		public void visit(Node node) {
 			if (node instanceof Reference) {
-				int id = ((Reference) node).getId();
+				var id = ((Reference) node).getId();
 				referenceSink.sink(aliases.computeIfAbsent(id, any -> nAliases++));
 			} else {
 				NodeRead nr = NodeRead.of(node);
@@ -76,8 +76,8 @@ public class TermKey extends HashCodeComparable<TermKey> {
 
 			if (b) {
 				List<IntObjPair<NodeHead>> list1 = ((TermLister) object).list;
-				int size0 = list.size();
-				int size1 = list1.size();
+				var size0 = list.size();
+				var size1 = list1.size();
 				b &= size0 == size1;
 
 				if (b)
@@ -102,7 +102,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 		}
 
 		public int hashCode() {
-			int h = 7;
+			var h = 7;
 			for (IntObjPair<NodeHead> pair : list) {
 				h = h * 31 + Objects.hash(pair.t0);
 				if (pair.t1 != null) {

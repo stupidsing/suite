@@ -34,7 +34,7 @@ public class IntIntMap1 {
 	}
 
 	public int computeIfAbsent(int key, Int_Int fun) {
-		int v = get(key);
+		var v = get(key);
 		if (v == IntFunUtil.EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
@@ -60,8 +60,8 @@ public class IntIntMap1 {
 	}
 
 	public int get(int key) {
-		int mask = kvs.length - 1;
-		int index = key & mask;
+		var mask = kvs.length - 1;
+		var index = key & mask;
 		long kv;
 		int v;
 		while ((v = v(kv = kvs[index])) != IntFunUtil.EMPTYVALUE)
@@ -74,7 +74,7 @@ public class IntIntMap1 {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (IntObjPair<Integer> pair : streamlet()) {
 			h = h * 31 + Integer.hashCode(pair.t0);
 			h = h * 31 + Integer.hashCode(pair.t1);
@@ -95,8 +95,8 @@ public class IntIntMap1 {
 	}
 
 	public void update(int key, Int_Int fun) {
-		int mask = kvs.length - 1;
-		int index = key & mask;
+		var mask = kvs.length - 1;
+		var index = key & mask;
 		long kv;
 		int v0;
 		while ((v0 = v(kv = kvs[index])) != IntFunUtil.EMPTYVALUE)
@@ -104,15 +104,15 @@ public class IntIntMap1 {
 				index = index + 1 & mask;
 			else
 				break;
-		int v1 = fun.apply(v0);
+		var v1 = fun.apply(v0);
 		kvs[index] = kv(key, v1);
 		size += (v1 != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != IntFunUtil.EMPTYVALUE ? 1 : 0);
 		if (v1 == IntFunUtil.EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
-					int index1 = (index + 1) & mask;
+					var index1 = (index + 1) & mask;
 					long kv_ = kvs[index1];
-					int v = v(kv_);
+					var v = v(kv_);
 					if (v != IntFunUtil.EMPTYVALUE) {
 						rehash(index1);
 						store(k(kv_), v);
@@ -142,7 +142,7 @@ public class IntIntMap1 {
 	}
 
 	private void rehash() {
-		int capacity = kvs.length;
+		var capacity = kvs.length;
 
 		if (capacity * 3 / 4 < size) {
 			long[] kvs0 = kvs;
@@ -150,7 +150,7 @@ public class IntIntMap1 {
 
 			for (int i = 0; i < capacity; i++) {
 				long kv0 = kvs0[i];
-				int v_ = v(kv0);
+				var v_ = v(kv0);
 				if (v_ != IntFunUtil.EMPTYVALUE)
 					store(k(kv0), v_);
 			}
@@ -158,9 +158,9 @@ public class IntIntMap1 {
 	}
 
 	private int store(int key, int v1) {
-		int capacity = kvs.length;
-		int mask = capacity - 1;
-		int index = key & mask;
+		var capacity = kvs.length;
+		var mask = capacity - 1;
+		var index = key & mask;
 		long kv;
 		int v0;
 		while ((v0 = v(kv = kvs[index])) != IntFunUtil.EMPTYVALUE)

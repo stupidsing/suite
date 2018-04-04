@@ -37,7 +37,7 @@ public class LcsBfs<T> {
 		}
 
 		public int hashCode() {
-			int j = 7;
+			var j = 7;
 			j = 31 * j + pos0;
 			j = 31 * j + pos1;
 			return j;
@@ -45,8 +45,8 @@ public class LcsBfs<T> {
 	}
 
 	public List<T> lcs(List<T> l0, List<T> l1) {
-		int size0 = l0.size();
-		int size1 = l1.size();
+		var size0 = l0.size();
+		var size1 = l1.size();
 
 		Node node = Search.breadthFirst(new Traverser<>() {
 			public List<Node> generate(Node node) {
@@ -78,8 +78,8 @@ public class LcsBfs<T> {
 		Node previous;
 
 		while ((previous = node.previous) != null) {
-			int pos0 = node.pos0;
-			int pos1 = node.pos1;
+			var pos0 = node.pos0;
+			var pos1 = node.pos1;
 
 			while (previous.pos0 < pos0 && previous.pos1 < pos1) {
 				pos0--;

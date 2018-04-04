@@ -26,8 +26,8 @@ public class Ardl {
 	}
 
 	public LinearRegression[] ardl(float[][] fsList) {
-		int n = fsList.length;
-		int length = fsList[0].length;
+		var n = fsList.length;
+		var length = fsList[0].length;
 
 		return To.array(n, LinearRegression.class, it -> {
 			float[] fs = fsList[it];

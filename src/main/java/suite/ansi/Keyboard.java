@@ -125,7 +125,7 @@ public class Keyboard {
 	}
 
 	private Character get() {
-		int ch = libc.getchar();
+		var ch = libc.getchar();
 		return 0 <= ch ? (char) ch : null;
 	}
 

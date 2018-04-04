@@ -106,7 +106,7 @@ public class FunExpand extends FunFactory {
 							return weight_(e1);
 						else if (e1 instanceof Iterable<?>) {
 							Iterable<?> iter = (Iterable<?>) e1;
-							int sum = 0;
+							var sum = 0;
 							for (Object e2 : iter)
 								sum += weight_(e2);
 							return sum;

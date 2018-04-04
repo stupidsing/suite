@@ -37,8 +37,8 @@ public class Dump {
 		if (children.size() != 1) {
 			String indent1 = indent + "  ";
 			String entity1 = ast.entity;
-			int start = ast.getStart();
-			int end = ast.getEnd();
+			var start = ast.getStart();
+			var end = ast.getEnd();
 
 			w.write(indent + entity0);
 			if (!String_.equals(entity0, entity1))

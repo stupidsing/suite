@@ -44,7 +44,7 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 
 	@Override
 	public synchronized void deallocate(int pointer) {
-		int count = 1;
+		var count = 1;
 		deallocate_(pointer, count);
 	}
 
@@ -59,7 +59,7 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 	}
 
 	private int allocate_(int count) {
-		int pointer = findFreeExtentPages(count);
+		var pointer = findFreeExtentPages(count);
 
 		// tODO extends allocation map if all pages are used
 
@@ -78,7 +78,7 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 
 			public Byte apply(int pointer) {
 				if (bytes == null || pointer < start || end <= pointer) {
-					int p = pointer / pageSize;
+					var p = pointer / pageSize;
 					start = p * pageSize;
 					end = start + pageSize;
 					bytes = allocMapFile.load(p);
@@ -87,17 +87,17 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 			}
 		};
 
-		int start = lastAllocatedPointer + 1;
-		int pos = start;
+		var start = lastAllocatedPointer + 1;
+		var pos = start;
 		while ((pos = checkNextEmptyExtent(read, pos)) < size) {
-			int pos0 = pos;
+			var pos0 = pos;
 			pos = checkEmptyExtent(read, pos, count);
 			if (count <= pos - pos0)
 				return pos0;
 		}
 		pos = 0;
 		while ((pos = checkNextEmptyExtent(read, pos)) < start) {
-			int pos0 = pos;
+			var pos0 = pos;
 			pos = checkEmptyExtent(read, pos, count);
 			if (count <= pos - pos0)
 				return pos0;
@@ -107,14 +107,14 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 
 	private void updateAllocMap(int start, int end, byte b) {
 		while (start < end) {
-			int p = start / pageSize;
-			int s = p * pageSize;
-			int e = s + pageSize;
+			var p = start / pageSize;
+			var s = p * pageSize;
+			var e = s + pageSize;
 			int end_ = min(e, end);
-			int p0 = 0;
-			int p1 = start - s;
-			int p2 = end_ - s;
-			int p3 = pageSize;
+			var p0 = 0;
+			var p1 = start - s;
+			var p2 = end_ - s;
+			var p3 = pageSize;
 			Bytes bytes = allocMapFile.load(p);
 
 			BytesBuilder bb = new BytesBuilder();

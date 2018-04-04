@@ -64,12 +64,12 @@ public class IIntMap<V> {
 	}
 
 	public V get(int key) {
-		int k0 = key >>> 30 & 63;
-		int k1 = key >>> 24 & 63;
-		int k2 = key >>> 18 & 63;
-		int k3 = key >>> 12 & 63;
-		int k4 = key >>> 6 & 63;
-		int k5 = key >>> 0 & 63;
+		var k0 = key >>> 30 & 63;
+		var k1 = key >>> 24 & 63;
+		var k2 = key >>> 18 & 63;
+		var k3 = key >>> 12 & 63;
+		var k4 = key >>> 6 & 63;
+		var k5 = key >>> 0 & 63;
 		Bl<Bl<Bl<Bl<Bl<V>>>>> bl1 = Bl.get(bl0, k0);
 		Bl<Bl<Bl<Bl<V>>>> bl2 = Bl.get(bl1, k1);
 		Bl<Bl<Bl<V>>> bl3 = Bl.get(bl2, k2);
@@ -79,12 +79,12 @@ public class IIntMap<V> {
 	}
 
 	public IIntMap<V> update(int key, Iterate<V> fun) {
-		int k0 = key >>> 30 & 63;
-		int k1 = key >>> 24 & 63;
-		int k2 = key >>> 18 & 63;
-		int k3 = key >>> 12 & 63;
-		int k4 = key >>> 6 & 63;
-		int k5 = key >>> 0 & 63;
+		var k0 = key >>> 30 & 63;
+		var k1 = key >>> 24 & 63;
+		var k2 = key >>> 18 & 63;
+		var k3 = key >>> 12 & 63;
+		var k4 = key >>> 6 & 63;
+		var k5 = key >>> 0 & 63;
 		Bl<Bl<Bl<Bl<Bl<V>>>>> bl1 = Bl.get(bl0, k0);
 		Bl<Bl<Bl<Bl<V>>>> Bl2 = Bl.get(bl1, k1);
 		Bl<Bl<Bl<V>>> bl3 = Bl.get(Bl2, k2);

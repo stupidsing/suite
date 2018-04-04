@@ -13,7 +13,7 @@ public class Int extends Node {
 	public static Int of(int i) {
 		Int ret;
 		if (poolLo <= i && i < poolHi) {
-			int index = i - poolLo;
+			var index = i - poolLo;
 			ret = pool[index];
 			if (ret == null)
 				ret = pool[index] = new Int(i);

@@ -55,7 +55,7 @@ public class FltIntMap {
 	}
 
 	public int computeIfAbsent(float key, Flt_Int fun) {
-		int v = get(key);
+		var v = get(key);
 		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
@@ -82,7 +82,7 @@ public class FltIntMap {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (FltObjPair<Integer> pair : streamlet()) {
 			h = h * 31 + Float.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
@@ -91,7 +91,7 @@ public class FltIntMap {
 	}
 
 	public int get(float key) {
-		int index = index(key);
+		var index = index(key);
 		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
@@ -107,17 +107,17 @@ public class FltIntMap {
 	}
 
 	public void update(float key, Int_Int fun) {
-		int mask = vs.length - 1;
-		int index = index(key);
-		int v0 = vs[index];
-		int v1 = vs[index] = fun.apply(v0);
+		var mask = vs.length - 1;
+		var index = index(key);
+		var v0 = vs[index];
+		var v1 = vs[index] = fun.apply(v0);
 		ks[index] = key;
 		size += (v1 != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
 		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
-					int index1 = (index + 1) & mask;
-					int v_ = vs[index1];
+					var index1 = (index + 1) & mask;
+					var v_ = vs[index1];
 					if (v_ != EMPTYVALUE) {
 						float k = ks[index1];
 						vs[index1] = EMPTYVALUE;
@@ -151,7 +151,7 @@ public class FltIntMap {
 	}
 
 	private void rehash() {
-		int capacity = vs.length;
+		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
 			float[] ks0 = ks;
@@ -167,7 +167,7 @@ public class FltIntMap {
 	}
 
 	private void store(float key, int v1) {
-		int index = index(key);
+		var index = index(key);
 		if (vs[index] == EMPTYVALUE) {
 			ks[index] = key;
 			vs[index] = v1;
@@ -176,8 +176,8 @@ public class FltIntMap {
 	}
 
 	private int index(float key) {
-		int mask = vs.length - 1;
-		int index = Float.hashCode(key) & mask;
+		var mask = vs.length - 1;
+		var index = Float.hashCode(key) & mask;
 		while (vs[index] != EMPTYVALUE && ks[index] != key)
 			index = index + 1 & mask;
 		return index;
@@ -191,7 +191,7 @@ public class FltIntMap {
 			public boolean source2(FltIntPair pair) {
 				while (index < capacity) {
 					float k = ks[index];
-					int v = vs[index++];
+					var v = vs[index++];
 					if (v != EMPTYVALUE) {
 						pair.update(k, v);
 						return true;

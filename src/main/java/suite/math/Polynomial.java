@@ -33,8 +33,8 @@ public class Polynomial {
 	}
 
 	public float[] mul(float[] ps0, float[] ps1) {
-		int length0 = ps0.length;
-		int length1 = ps1.length;
+		var length0 = ps0.length;
+		var length1 = ps1.length;
 		return To.vector(length0 + length1, i -> Ints_ //
 				.range(max(0, i - length1 + 1), min(i + 1, length0)) //
 				.toDouble(Int_Dbl.sum(j -> ps0[j] * ps1[i - j])));
@@ -48,7 +48,7 @@ public class Polynomial {
 			denomLength = denomLength1;
 
 		float[] rem = vec.of(num);
-		int pd = rem.length - denomLength1;
+		var pd = rem.length - denomLength1;
 		float[] dividend = new float[pd];
 
 		while (0 <= --pd) {

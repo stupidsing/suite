@@ -15,7 +15,7 @@ public class Eigen {
 	// 37.13.1 The Power Method, page 620
 	public float[][] power(float[][] m0) {
 		float[][] m = mtx.of(m0);
-		int size = mtx.sqSize(m);
+		var size = mtx.sqSize(m);
 		float[][] eigenVectors = new float[size][];
 		float eigenValue = 0f;
 
@@ -43,8 +43,8 @@ public class Eigen {
 	// https://en.wikipedia.org/wiki/Lanczos_algorithm
 	// returns V and T, where m ~= V T V*
 	public Pair<float[][], float[][]> lanczos(float[][] m) {
-		int n = mtx.sqSize(m);
-		int nIterations = 20; // n
+		var n = mtx.sqSize(m);
+		var nIterations = 20; // n
 		float[] alphas = new float[nIterations];
 		float[] betas = new float[nIterations];
 		float[][] vs = new float[nIterations][];

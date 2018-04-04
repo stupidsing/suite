@@ -49,7 +49,7 @@ public class HkexFactBook {
 					if (0 <= p1) {
 						List<String> list = new ArrayList<>();
 						int[] ps = { p0, p1, };
-						int s = 0;
+						var s = 0;
 						for (int p : ps) {
 							list.add(line.substring(s, p));
 							s = p + 1;
@@ -62,7 +62,7 @@ public class HkexFactBook {
 				.toList();
 
 		List<List<String>> list1 = new ArrayList<>();
-		int i = 1;
+		var i = 1;
 
 		for (List<String> list_ : list0)
 			if (Integer.parseInt(list_.get(0)) == i++)

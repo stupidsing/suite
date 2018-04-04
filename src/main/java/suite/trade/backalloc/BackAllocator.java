@@ -65,7 +65,7 @@ public interface BackAllocator {
 
 	public default BackAllocator byRiskOfReturn() {
 		Statistic stat = new Statistic();
-		int nDays = 32;
+		var nDays = 32;
 
 		return (akds, indices) -> {
 			Map<String, float[]> returnsByKey = akds.dsByKey.mapValue(DataSource::returns).toMap();
@@ -122,7 +122,7 @@ public interface BackAllocator {
 						.from2(onDateTime.onDateTime(index)) //
 						.collect(As::streamlet2);
 
-				int size = potentialBySymbol.size();
+				var size = potentialBySymbol.size();
 
 				if (0 < size) {
 					double each = 1d / size;
@@ -273,7 +273,7 @@ public interface BackAllocator {
 			Streamlet2<String, DataSource> dsBySymbol1 = akds0.dsByKey //
 					.mapValue(ds0 -> {
 						float[] indexPrices = indexDataSource.alignBeforePrices(ds0.ts).prices;
-						int length = ds0.ts.length;
+						var length = ds0.ts.length;
 						Datum[] data1 = new Datum[length];
 
 						for (int i = 0; i < length; i++) {
@@ -321,7 +321,7 @@ public interface BackAllocator {
 			Map<String, List<DblFltPair>> entriesBySymbol = new HashMap<>();
 
 			return index -> {
-				int last = index - 1;
+				var last = index - 1;
 				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(index);
 				Map<String, Double> potentialBySymbol0 = mutable.get();
 				Map<String, Double> potentialBySymbol1 = Read.from2(potentialBySymbol).toMap();
@@ -340,7 +340,7 @@ public interface BackAllocator {
 				for (Entry<String, Double> e : diffBySymbol.entrySet()) {
 					String symbol = e.getKey();
 					double diff = e.getValue();
-					int bs = Quant.sign(diff);
+					var bs = Quant.sign(diff);
 					float price = dsBySymbol.get(symbol).prices[last];
 
 					List<DblFltPair> entries0 = entriesBySymbol.getOrDefault(symbol, new ArrayList<>());

@@ -55,7 +55,7 @@ public class LngIntMap {
 	}
 
 	public int computeIfAbsent(long key, Lng_Int fun) {
-		int v = get(key);
+		var v = get(key);
 		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
@@ -82,7 +82,7 @@ public class LngIntMap {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (LngObjPair<Integer> pair : streamlet()) {
 			h = h * 31 + Long.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
@@ -91,7 +91,7 @@ public class LngIntMap {
 	}
 
 	public int get(long key) {
-		int index = index(key);
+		var index = index(key);
 		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
@@ -107,17 +107,17 @@ public class LngIntMap {
 	}
 
 	public void update(long key, Int_Int fun) {
-		int mask = vs.length - 1;
-		int index = index(key);
-		int v0 = vs[index];
-		int v1 = vs[index] = fun.apply(v0);
+		var mask = vs.length - 1;
+		var index = index(key);
+		var v0 = vs[index];
+		var v1 = vs[index] = fun.apply(v0);
 		ks[index] = key;
 		size += (v1 != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
 		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
-					int index1 = (index + 1) & mask;
-					int v_ = vs[index1];
+					var index1 = (index + 1) & mask;
+					var v_ = vs[index1];
 					if (v_ != EMPTYVALUE) {
 						long k = ks[index1];
 						vs[index1] = EMPTYVALUE;
@@ -151,7 +151,7 @@ public class LngIntMap {
 	}
 
 	private void rehash() {
-		int capacity = vs.length;
+		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
 			long[] ks0 = ks;
@@ -167,7 +167,7 @@ public class LngIntMap {
 	}
 
 	private void store(long key, int v1) {
-		int index = index(key);
+		var index = index(key);
 		if (vs[index] == EMPTYVALUE) {
 			ks[index] = key;
 			vs[index] = v1;
@@ -176,8 +176,8 @@ public class LngIntMap {
 	}
 
 	private int index(long key) {
-		int mask = vs.length - 1;
-		int index = Long.hashCode(key) & mask;
+		var mask = vs.length - 1;
+		var index = Long.hashCode(key) & mask;
 		while (vs[index] != EMPTYVALUE && ks[index] != key)
 			index = index + 1 & mask;
 		return index;
@@ -191,7 +191,7 @@ public class LngIntMap {
 			public boolean source2(LngIntPair pair) {
 				while (index < capacity) {
 					long k = ks[index];
-					int v = vs[index++];
+					var v = vs[index++];
 					if (v != EMPTYVALUE) {
 						pair.update(k, v);
 						return true;

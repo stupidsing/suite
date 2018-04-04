@@ -16,8 +16,8 @@ public class Oscillator {
 
 	// active true range
 	public float[] atr(DataSource ds) {
-		int n = 20;
-		int length = ds.ts.length;
+		var n = 20;
+		var length = ds.ts.length;
 		float[] trs = trueRange(ds);
 		float[] atrs = new float[length];
 		float atr = atrs[0] = Ints_.range(n).collect(Int_Flt.lift(i -> trs[i])).sum() / n;
@@ -37,7 +37,7 @@ public class Oscillator {
 	public Dmi dmi(DataSource ds, int nDays) {
 		float[] los = ds.lows;
 		float[] his = ds.highs;
-		int length = ds.ts.length;
+		var length = ds.ts.length;
 		float[] dmUps = new float[length];
 		float[] dmDns = new float[length];
 
@@ -81,12 +81,12 @@ public class Oscillator {
 	public float[] cci(DataSource ds, int nDays) {
 		double r = 1d / .015d;
 		double i3 = 1d / 3d;
-		int length = ds.ts.length;
+		var length = ds.ts.length;
 		float[] ps = To.vector(length, i -> (ds.closes[i] + ds.lows[i] + ds.highs[i]) * i3);
 
 		return To.vector(length, i -> {
 			int i0 = max(0, i - nDays + 1);
-			int l = i - i0 + 1;
+			var l = i - i0 + 1;
 			double sum = 0d, sumAbsDev = 0d;
 			for (int d = i0; d <= i; d++)
 				sum += ps[d];
@@ -99,7 +99,7 @@ public class Oscillator {
 	}
 
 	public Movement movement(float[] prices, int window) {
-		int length = prices.length;
+		var length = prices.length;
 		byte[] cs = new byte[length];
 
 		for (int index = 1; index < length; index++)
@@ -111,7 +111,7 @@ public class Oscillator {
 		for (int index = window; index < length; index++) {
 			int decs = 0, incs = 0;
 			for (int i = index - window; i < index; i++) {
-				int compare = cs[i];
+				var compare = cs[i];
 				if (compare < 0)
 					incs++;
 				else if (0 < compare)
@@ -136,7 +136,7 @@ public class Oscillator {
 
 	// on-balance volume
 	public float[] obv(DataSource ds) {
-		int length = ds.ts.length;
+		var length = ds.ts.length;
 		float[] obvs = new float[length];
 		double obv = 0d;
 		for (int i = 1; i < length; i++) {
@@ -152,7 +152,7 @@ public class Oscillator {
 	}
 
 	public float[] rsi(float[] prices, int nDays) {
-		int length = prices.length;
+		var length = prices.length;
 		float[] us = new float[length];
 		float[] ds = new float[length];
 		for (int i = 1; i < length; i++) {
@@ -169,13 +169,13 @@ public class Oscillator {
 	// Parabolic stop and reverse
 	public float[] sar(DataSource ds) {
 		float alpha = .02f;
-		int length = ds.ts.length;
+		var length = ds.ts.length;
 		float[] sars = new float[length];
 
 		if (0 < length) {
 			float ep = ds.lows[0];
 			float sar;
-			int i = 0;
+			var i = 0;
 
 			while (i < length) {
 				sar = ep;
@@ -204,8 +204,8 @@ public class Oscillator {
 	}
 
 	public float[] stochastic(DataSource ds, int kDays) {
-		int dDays = 3;
-		int length = ds.ts.length;
+		var dDays = 3;
+		var length = ds.ts.length;
 		float[] los = new float[length];
 		float[] his = new float[length];
 
@@ -229,7 +229,7 @@ public class Oscillator {
 	}
 
 	private float[] trueRange(DataSource ds) {
-		int length = ds.ts.length;
+		var length = ds.ts.length;
 		float[] trs = new float[length];
 
 		trs[0] = ds.highs[0] - ds.lows[0];

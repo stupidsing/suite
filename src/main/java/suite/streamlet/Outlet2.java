@@ -163,7 +163,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	public int count() {
 		Pair<K, V> pair = Pair.of(null, null);
-		int i = 0;
+		var i = 0;
 		while (next(pair))
 			i++;
 		return i;
@@ -239,7 +239,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	@Override
 	public int hashCode() {
 		Pair<K, V> pair = Pair.of(null, null);
-		int h = 7;
+		var h = 7;
 		while (next(pair))
 			h = h * 31 + pair.hashCode();
 		return h;

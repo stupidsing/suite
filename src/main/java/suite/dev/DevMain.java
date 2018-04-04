@@ -35,8 +35,8 @@ public class DevMain {
 	private int viewSizeY;
 
 	public static void main(String[] args) {
-		int screenSizeX = Integer.valueOf(args[0]); // Integer.valueOf(System.getenv("COLUMNS"));
-		int screenSizeY = Integer.valueOf(args[1]); // Integer.valueOf(System.getenv("LINES"));
+		var screenSizeX = Integer.valueOf(args[0]); // Integer.valueOf(System.getenv("COLUMNS"));
+		var screenSizeY = Integer.valueOf(args[1]); // Integer.valueOf(System.getenv("LINES"));
 		new DevMain(screenSizeX, screenSizeY).run();
 	}
 
@@ -111,25 +111,25 @@ public class DevMain {
 						else if (vk == VK.F8___)
 							return st.offset(ox, min(cy, text.nLines()));
 						else if (vk == VK.ALT_J____) {
-							int index = text.endOfLine(ci);
+							var index = text.endOfLine(ci);
 							Text text1 = text.splice(index, index + 1, empty);
 							return st.text(text1).cursor(index);
 						} else if (vk == VK.BKSP_) {
-							int index = ci;
+							var index = ci;
 							return 0 < index ? st.splice(index - 1, index, empty) : st;
 						} else if (vk == VK.ALT_UP___) {
-							int i1 = text.startOfLine(ci);
+							var i1 = text.startOfLine(ci);
 							if (0 < i1) {
-								int i0 = text.prevLine(i1);
-								int i2 = text.nextLine(i1);
+								var i0 = text.prevLine(i1);
+								var i2 = text.nextLine(i1);
 								return st.splice(i2, i2, text.text.subList(i0, i1)).splice(i0, i1, empty);
 							} else
 								return st;
 						} else if (vk == VK.ALT_DOWN_) {
-							int i0 = text.startOfLine(ci);
-							int i1 = text.nextLine(i0);
+							var i0 = text.startOfLine(ci);
+							var i1 = text.nextLine(i0);
 							if (i1 < text.length()) {
-								int i2 = text.nextLine(i1);
+								var i2 = text.nextLine(i1);
 								return st.splice(i1, i2, empty).splice(i0, i0, text.text.subList(i1, i2));
 							} else
 								return st;
@@ -150,8 +150,8 @@ public class DevMain {
 							return Fail.t();
 						else if (ch != null)
 							if (ch == 13) {
-								int i0 = text.startOfLine(ci);
-								int ix = i0;
+								var i0 = text.startOfLine(ci);
+								var ix = i0;
 								char ch_;
 								while ((ch_ = text.at(ix)) == ' ' || ch_ == '\t')
 									ix++;
@@ -241,7 +241,7 @@ public class DevMain {
 		IntsBuilder starts = new IntsBuilder();
 		IntsBuilder ends = new IntsBuilder();
 		IntMutable p0 = IntMutable.of(-1);
-		int size = text.size();
+		var size = text.size();
 		IntSink lf = px -> {
 			starts.append(p0.get() + 1);
 			ends.append(px);
@@ -269,10 +269,10 @@ public class DevMain {
 		}
 
 		private String get(int px, int py, int length) {
-			int i0 = start(py) + px;
-			int ix = end(py);
+			var i0 = start(py) + px;
+			var ix = end(py);
 			return new String(Chars_.toArray(length, i_ -> {
-				int i = i_ + i0;
+				var i = i_ + i0;
 				return i < ix ? text.get(i) : ' ';
 			}));
 		}
@@ -321,7 +321,7 @@ public class DevMain {
 		}
 
 		private IntIntPair coord(int index) {
-			int nLines = nLines();
+			var nLines = nLines();
 			int y = 0, y1;
 			while ((y1 = y + 1) <= nLines && start(y1) <= index)
 				y = y1;

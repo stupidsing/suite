@@ -20,9 +20,9 @@ public class HttpSessionManager implements SessionManager {
 
 	@Override
 	public void put(String id, Session session) {
-		int size0 = sessions.size();
+		var size0 = sessions.size();
 		sessions.put(id, session);
-		int size1 = sessions.size();
+		var size1 = sessions.size();
 
 		if (lg2(size0) < lg2(size1)) // exceeded a power of two?
 			if (isCleaning.getAndSet(true)) { // one thread cleaning is enough
@@ -43,7 +43,7 @@ public class HttpSessionManager implements SessionManager {
 	}
 
 	private int lg2(int n) {
-		int i = 0;
+		var i = 0;
 		while (0 < n) {
 			n /= 2;
 			i++;

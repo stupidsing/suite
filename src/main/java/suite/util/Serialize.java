@@ -149,7 +149,7 @@ public class Serialize {
 
 	public Serializer<Bytes> variableLengthBytes = new Serializer<>() {
 		public Bytes read(DataInput_ dataInput) throws IOException {
-			int length = dataInput.readInt();
+			var length = dataInput.readInt();
 			byte[] bs = new byte[length];
 			dataInput.readFully(bs);
 			return Bytes.of(bs);
@@ -180,7 +180,7 @@ public class Serialize {
 	public <T> Serializer<T[]> array(Class<T> clazz, Serializer<T> serializer) {
 		return new Serializer<>() {
 			public T[] read(DataInput_ dataInput) throws IOException {
-				int size = int_.read(dataInput);
+				var size = int_.read(dataInput);
 				T[] array = Array_.newArray(clazz, size);
 				for (int i = 0; i < size; i++)
 					array[i] = serializer.read(dataInput);
@@ -197,7 +197,7 @@ public class Serialize {
 
 	public Serializer<float[]> vector = new Serializer<>() {
 		public float[] read(DataInput_ dataInput) throws IOException {
-			int size = int_.read(dataInput);
+			var size = int_.read(dataInput);
 			float[] array = new float[size];
 			for (int i = 0; i < size; i++)
 				array[i] = dataInput.readFloat();
@@ -213,7 +213,7 @@ public class Serialize {
 
 	public Serializer<int[]> arrayOfInts = new Serializer<>() {
 		public int[] read(DataInput_ dataInput) throws IOException {
-			int size = int_.read(dataInput);
+			var size = int_.read(dataInput);
 			int[] array = new int[size];
 			for (int i = 0; i < size; i++)
 				array[i] = dataInput.readInt();
@@ -242,7 +242,7 @@ public class Serialize {
 
 			public void write(DataOutput_ dataOutput, Bytes bytes) throws IOException {
 				dataOutput.writeBytes(bytes);
-				int i = bytes.size();
+				var i = bytes.size();
 				while (i < length) {
 					int i1 = min(i + zeroes.length, length);
 					dataOutput.write(zeroes, 0, i1 - i);
@@ -255,7 +255,7 @@ public class Serialize {
 	public <T> Serializer<Collection<T>> collection(Serializer<T> serializer) {
 		return new Serializer<>() {
 			public Collection<T> read(DataInput_ dataInput) throws IOException {
-				int size = int_.read(dataInput);
+				var size = int_.read(dataInput);
 				List<T> list = new ArrayList<>();
 				for (int i = 0; i < size; i++)
 					list.add(serializer.read(dataInput));
@@ -273,8 +273,8 @@ public class Serialize {
 	public Serializer<Extent> extent() {
 		return new Serializer<>() {
 			public Extent read(DataInput_ dataInput) throws IOException {
-				int start = dataInput.readInt();
-				int end = dataInput.readInt();
+				var start = dataInput.readInt();
+				var end = dataInput.readInt();
 				return new Extent(start, end);
 			}
 
@@ -293,7 +293,7 @@ public class Serialize {
 	public <T> Serializer<List<T>> list(Serializer<T> serializer) {
 		return new Serializer<>() {
 			public List<T> read(DataInput_ dataInput) throws IOException {
-				int size = int_.read(dataInput);
+				var size = int_.read(dataInput);
 				List<T> list = new ArrayList<>();
 				for (int i = 0; i < size; i++)
 					list.add(serializer.read(dataInput));
@@ -361,7 +361,7 @@ public class Serialize {
 		return new Serializer<>() {
 			public String read(DataInput_ dataInput) throws IOException {
 				byte[] bs = new byte[length];
-				int l = dataInput.readInt();
+				var l = dataInput.readInt();
 				dataInput.readFully(bs);
 				return To.string(bs).substring(0, l);
 			}
@@ -375,7 +375,7 @@ public class Serialize {
 	}
 
 	public <T> Serializer<T> verify(Object o, Serializer<T> serializer) {
-		int c = o.hashCode();
+		var c = o.hashCode();
 
 		return new Serializer<>() {
 			public T read(DataInput_ dataInput) throws IOException {
@@ -460,7 +460,7 @@ public class Serialize {
 	private <K, V> Serializer<Map<K, V>> map_(Serializer<K> ks, Serializer<V> vs) {
 		return new Serializer<>() {
 			public Map<K, V> read(DataInput_ dataInput) throws IOException {
-				int size = int_.read(dataInput);
+				var size = int_.read(dataInput);
 				Map<K, V> map = new HashMap<>();
 				for (int i = 0; i < size; i++) {
 					K k = ks.read(dataInput);

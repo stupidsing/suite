@@ -293,7 +293,7 @@ public class P0Parse {
 							.applyIf(FunpStruct.class, g -> g.pairs) //
 							.result();
 
-					int size0 = pairs0.size();
+					var size0 = pairs0.size();
 					Funp then_ = then;
 
 					Int_Obj<Funp> fun = pairs1 != null && size0 == pairs1.size() //

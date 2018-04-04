@@ -58,12 +58,12 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 		zeroPositions.flip();
 
 		Map<String, String> headers = new HashMap<>();
-		int start = 0;
-		int i = 0;
+		var start = 0;
+		var i = 0;
 
 		while (i < zeroPositions.limit() - 1) {
-			int z0 = zeroPositions.get(i++);
-			int z1 = zeroPositions.get(i++);
+			var z0 = zeroPositions.get(i++);
+			var z1 = zeroPositions.get(i++);
 			String key = header.substring(start, z0);
 			String value = header.substring(z0 + 1, z1);
 			start = z1 + 1;
@@ -74,7 +74,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 	}
 
 	private String readNetstring(InputStream sis) throws IOException {
-		int length = 0;
+		var length = 0;
 		int c;
 
 		while (0 <= (c = sis.read()) && c != ':' && length < 65536)
@@ -86,7 +86,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 		if (c != ':')
 			Fail.t("netstring length not ended with ':'");
 
-		int nBytesRead = 0;
+		var nBytesRead = 0;
 		byte[] bytes = new byte[length];
 		while (nBytesRead < length)
 			nBytesRead += sis.read(bytes);

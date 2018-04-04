@@ -62,7 +62,7 @@ public class Quant {
 			double exitThreshold, //
 			IntFltPredicate isEnterShort, //
 			IntFltPredicate isEnterLong) {
-		int length = prices.length;
+		var length = prices.length;
 		float[] holds = new float[length];
 		float hold = 0f;
 		float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
@@ -96,7 +96,7 @@ public class Quant {
 	public static Int_Dbl fold(int start, int end, int nDaysExit, IntFlt_Flt fun) {
 		float[] holds = new float[end];
 		float hold = 0f;
-		int nDays = 0;
+		var nDays = 0;
 		for (int i = start; i < end; i++) {
 			float hold1 = nDays < nDaysExit ? fun.apply(i, hold) : 0f;
 			nDays = hold1 != 0f && hold == hold1 ? nDays + 1 : 0;

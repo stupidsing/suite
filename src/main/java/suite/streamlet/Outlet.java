@@ -115,7 +115,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public int count() {
-		int i = 0;
+		var i = 0;
 		while (next() != null)
 			i++;
 		return i;
@@ -195,7 +195,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		T t;
 		while ((t = source.source()) != null)
 			h = h * 31 + Objects.hashCode(t);

@@ -9,9 +9,9 @@ public class Strassen {
 
 	// https://en.wikipedia.org/wiki/Strassen_algorithm
 	public float[][] mul(float[][] a, float[][] b) {
-		int ks = mtx.width(a);
-		int height = mtx.height(a);
-		int width = mtx.width(b);
+		var ks = mtx.width(a);
+		var height = mtx.height(a);
+		var width = mtx.width(b);
 		return ks == mtx.height(b) ? mul_(a, 0, height, 0, ks, b, 0, ks, 0, width) : Fail.t("wrong input sizes");
 	}
 
@@ -19,10 +19,10 @@ public class Strassen {
 			float[][] a, int ai0, int aix, int aj0, int ajx, //
 			float[][] b, int bi0, int bix, int bj0, int bjx) {
 		if (8 <= aix - ai0 || 8 <= ajx - aj0 || 8 <= bjx - bj0) {
-			int aim = (ai0 + aix) / 2;
-			int ajm = (aj0 + ajx) / 2;
-			int bim = (bi0 + bix) / 2;
-			int bjm = (bj0 + bjx) / 2;
+			var aim = (ai0 + aix) / 2;
+			var ajm = (aj0 + ajx) / 2;
+			var bim = (bi0 + bix) / 2;
+			var bjm = (bj0 + bjx) / 2;
 
 			float[][] m1 = mtx.of(aim, bjm); // (a11 + a22) * (b11 + b22)
 			float[][] m2 = mtx.of(aim, bjm); // (a21 + a22) * b11
@@ -67,10 +67,10 @@ public class Strassen {
 					(i, j) -> b[i + bim][j + bj0] + b[i + bim][j + bjm], bim, bjm, //
 					(i, j, f) -> m7[i][j] = f);
 
-			int ci0 = 0;
-			int cj0 = 0;
-			int cim = aim;
-			int cjm = bjm;
+			var ci0 = 0;
+			var cj0 = 0;
+			var cim = aim;
+			var cjm = bjm;
 			float[][] c = mtx.of(ajx, bix);
 
 			for (int i = 0; i < aim; i++)
@@ -89,9 +89,9 @@ public class Strassen {
 	private float[][] mul0( //
 			float[][] m, int mi0, int mix, int mj0, int mjx, //
 			float[][] n, int ni0, int nix, int nj0, int njx) {
-		int ks = mjx - mj0;
-		int height = mix - mi0;
-		int width = njx - nj0;
+		var ks = mjx - mj0;
+		var height = mix - mi0;
+		var width = njx - nj0;
 		float[][] o = mtx.of(height, width);
 		mul0( //
 				(i, j) -> m[i + mi0][j + mj0], height, ks, //
@@ -104,9 +104,9 @@ public class Strassen {
 			IntInt_Flt a, int ah, int aw, //
 			IntInt_Flt b, int bh, int bw, //
 			Add add) {
-		int ks = aw;
-		int height = bh;
-		int width = bw;
+		var ks = aw;
+		var height = bh;
+		var width = bw;
 
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)

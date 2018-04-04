@@ -34,13 +34,13 @@ public class Doubles_ {
 	}
 
 	public static double[] concat(double[]... array) {
-		int length = 0;
+		var length = 0;
 		for (double[] fs : array)
 			length += fs.length;
 		double[] fs1 = new double[length];
-		int i = 0;
+		var i = 0;
 		for (double[] fs : array) {
-			int length_ = fs.length;
+			var length_ = fs.length;
 			copy(fs, 0, fs1, i, length_);
 			i += length_;
 		}
@@ -48,13 +48,13 @@ public class Doubles_ {
 	}
 
 	public static Doubles concat(Doubles... array) {
-		int length = 0;
+		var length = 0;
 		for (Doubles doubles : array)
 			length += doubles.size();
 		double[] cs1 = new double[length];
-		int i = 0;
+		var i = 0;
 		for (Doubles doubles : array) {
-			int size_ = doubles.size();
+			var size_ = doubles.size();
 			copy(doubles.cs, doubles.start, cs1, i, size_);
 			i += size_;
 		}
@@ -105,11 +105,11 @@ public class Doubles_ {
 	}
 
 	public static Fun<Outlet<Doubles>, Outlet<Doubles>> split(Doubles delim) {
-		int ds = delim.size();
+		var ds = delim.size();
 
 		return outlet -> Outlet.of(new BufferedSource(outlet) {
 			protected boolean search() {
-				int size = buffer.size();
+				var size = buffer.size();
 				while ((p1 = p0 + ds) <= size)
 					if (!delim.equals(buffer.range(p0, p1)))
 						p0++;

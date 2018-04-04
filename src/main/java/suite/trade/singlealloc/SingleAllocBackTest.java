@@ -27,13 +27,13 @@ public class SingleAllocBackTest {
 
 	private SingleAllocBackTest(DataSource ds, BuySellStrategy strategy) {
 		float[] prices = ds.prices;
-		int length = prices.length;
+		var length = prices.length;
 		float[] valuations = new float[length];
 
 		GetBuySell getBuySell = strategy.analyze(prices);
 
 		for (int day = 0; day < length; day++) {
-			int buySell = getBuySell.get(day);
+			var buySell = getBuySell.get(day);
 			valuations[day] = buySell(ds, day, buySell);
 
 			if (Boolean.FALSE) // do not validate yet

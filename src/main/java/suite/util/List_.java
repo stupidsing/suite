@@ -11,7 +11,7 @@ import java.util.List;
 public class List_ {
 
 	public static <T> List<List<T>> chunk(List<T> list, int n) {
-		int s = 0;
+		var s = 0;
 		List<List<T>> subsets = new ArrayList<>();
 		while (s < list.size()) {
 			int s1 = min(s + n, list.size());
@@ -38,7 +38,7 @@ public class List_ {
 	}
 
 	public static <T> List<T> left(List<T> list, int pos) {
-		int size = list.size();
+		var size = list.size();
 		if (pos < 0)
 			pos += size;
 		return list.subList(0, min(pos, size));
@@ -52,7 +52,7 @@ public class List_ {
 	}
 
 	public static <T> List<T> right(List<T> list, int pos) {
-		int size = list.size();
+		var size = list.size();
 		if (pos < 0)
 			pos += size;
 		return list.subList(min(pos, size), size);

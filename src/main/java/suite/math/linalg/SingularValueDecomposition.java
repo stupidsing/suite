@@ -24,11 +24,11 @@ public class SingularValueDecomposition {
 	// 6.2 Principal Components Analysis
 	public float[] pca(float[][] m0) {
 		float[][] m1 = mtx.of(m0);
-		int height = mtx.height(m1);
-		int width_ = mtx.width(m1);
+		var height = mtx.height(m1);
+		var width_ = mtx.width(m1);
 
 		for (int j = 0; j < width_; j++) {
-			int j_ = j;
+			var j_ = j;
 			double mean = Ints_.range(0, height).toDouble(Int_Dbl.sum(i -> m1[i][j_])) / height;
 			for (int i = 0; i < height; i++)
 				m1[i][j_] -= mean;
@@ -50,7 +50,7 @@ public class SingularValueDecomposition {
 		for (int i = 0; i < k; i++) {
 			Fixie3<Double, float[], float[]> fixie = f.apply(a);
 			float[][] a0 = a;
-			int i_ = i;
+			var i_ = i;
 
 			a = fixie.map((s, u, v) -> {
 				ss[i_] = s.floatValue();
@@ -74,7 +74,7 @@ public class SingularValueDecomposition {
 	}
 
 	private Fixie3<Double, float[], float[]> svd0(float[][] a) {
-		int n = mtx.width(a);
+		var n = mtx.width(a);
 		float[] x = Floats_.toArray(n, i -> random.nextFloat());
 		float[][] at = mtx.transpose(a);
 

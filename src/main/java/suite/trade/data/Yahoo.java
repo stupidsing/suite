@@ -84,7 +84,7 @@ public class Yahoo {
 		// the latest time stamp may fluctuate; adjust it to previous market
 		// close time
 		if (0 < ts.length) {
-			int last = ts.length - 1;
+			var last = ts.length - 1;
 			ts[last] = getTradeTimeBefore(stockHistory.exchange, ts[last]);
 		}
 
@@ -127,7 +127,7 @@ public class Yahoo {
 					.collect(Obj_Lng.lift(t -> getOpenTimeBefore(exchange, t.longValue()))) //
 					.toArray();
 
-			int length = ts.length;
+			var length = ts.length;
 
 			Streamlet2<String, Streamlet<JsonNode>> dataJsons0 = Read //
 					.<String> empty() //

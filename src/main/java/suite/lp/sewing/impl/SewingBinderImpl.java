@@ -31,7 +31,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 		}).applyIf(Int.class, n -> {
 			return compileBindInt(n);
 		}).applyIf(Reference.class, n -> {
-			int index = mapper().computeIndex(n);
+			var index = mapper().computeIndex(n);
 			return (be, n_) -> Binder.bind(n_, be.env.get(index), be.trail);
 		}).applyIf(Str.class, n -> {
 			return compileBindStr(n);
@@ -56,7 +56,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 		}).applyIf(Tuple.class, tuple -> {
 			Clone_ f = cloner(node);
 			Bind_[] cs = Read.from(tuple.nodes).map(this::binder).toArray(Bind_.class);
-			int length = cs.length;
+			var length = cs.length;
 			return (be, n) -> {
 				Node n_ = n.finalNode();
 				if (n_ instanceof Tuple) {
@@ -95,7 +95,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 	}
 
 	private Bind_ compileBindInt(Int i_) {
-		int i = i_.number;
+		var i = i_.number;
 		return (be, n) -> {
 			Node n_ = n.finalNode();
 			if (n_ instanceof Reference) {

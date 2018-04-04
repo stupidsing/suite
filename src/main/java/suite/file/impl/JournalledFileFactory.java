@@ -37,7 +37,7 @@ public class JournalledFileFactory {
 
 		Serializer<JournalEntry> journalEntrySerializer = new Serializer<>() {
 			public JournalEntry read(DataInput_ dataInput) throws IOException {
-				int pointer = dataInput.readInt();
+				var pointer = dataInput.readInt();
 				Bytes bytes = bytesSerializer.read(dataInput);
 				return new JournalEntry(pointer, bytes);
 			}
@@ -51,7 +51,7 @@ public class JournalledFileFactory {
 		PageFile dataFile = df;
 		SerializedPageFile<JournalEntry> journalPageFile = SerializedFileFactory.serialized(jpf, journalEntrySerializer);
 		SerializedPageFile<Integer> pointerPageFile = SerializedFileFactory.serialized(ppf, serialize.int_);
-		int nCommittedJournalEntries0 = pointerPageFile.load(0);
+		var nCommittedJournalEntries0 = pointerPageFile.load(0);
 
 		List<JournalEntry> journalEntries = new ArrayList<>();
 

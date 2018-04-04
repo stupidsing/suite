@@ -57,7 +57,7 @@ public class PackageManager {
 				.map(command -> new ExecCommandAction(command.getInstallCommand(), command.getUninstallCommand())) //
 				.toList());
 
-		int progress = 0;
+		var progress = 0;
 		boolean isSuccess = true;
 
 		for (; progress < installActions.size(); progress++)

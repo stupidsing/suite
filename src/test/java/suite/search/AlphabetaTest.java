@@ -68,7 +68,7 @@ public class AlphabetaTest {
 	}
 
 	private int evaluate(TicTacToe state) {
-		int score = 0;
+		var score = 0;
 		for (int[] line : lines)
 			score += evaluateLine(state, line);
 		return score;
@@ -83,7 +83,7 @@ public class AlphabetaTest {
 			else if (state.grid[line[c]] == 'X')
 				nx++;
 
-		int o = no == 0 || nx == 0 ? scores[no] - scores[nx] : 0;
+		var o = no == 0 || nx == 0 ? scores[no] - scores[nx] : 0;
 		return state.player == 'O' ? o : -o;
 	}
 

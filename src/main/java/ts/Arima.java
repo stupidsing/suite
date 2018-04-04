@@ -38,7 +38,7 @@ public class Arima {
 	private float[] arLevinsonDurbin(float[] ys, int p) {
 		double mean = stat.meanVariance(ys).mean;
 		double mean2 = mean * mean;
-		int length = ys.length;
+		var length = ys.length;
 
 		float[] r = Ints_ //
 				.range(p + 1) //
@@ -54,7 +54,7 @@ public class Arima {
 
 		for (int n = 0; n < p; n++) {
 			float[] alpha0 = alpha;
-			int n_ = n;
+			var n_ = n;
 
 			double k1 = Ints_.range(n).toDouble(Int_Dbl.sum(k -> alpha0[k] * r[n_ + 1 - k])) / d;
 			d = d * (1d - k1 * k1);
@@ -90,9 +90,9 @@ public class Arima {
 	// http://math.unice.fr/~frapetti/CorsoP/Chapitre_4_IMEA_1.pdf
 	// "Least squares estimation using backcasting procedure"
 	public Arima_ armaBackcast(float[] xs, float[] ars, float[] mas) {
-		int length = xs.length;
-		int p = ars.length;
-		int q = mas.length;
+		var length = xs.length;
+		var p = ars.length;
+		var q = mas.length;
 		float[] xsp = Floats_.concat(new float[p], xs);
 		float[] epq = new float[length + q];
 		Arma arma = new Arma(ars, mas);
@@ -151,9 +151,9 @@ public class Arima {
 	// xs[t] - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 	// = ep[t] + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 	private Arima_ armaEm(float[] xs, int p, int q) { // ARMA
-		int length = xs.length;
-		int lengthp = length + p;
-		int lengthq = length + q;
+		var length = xs.length;
+		var lengthp = length + p;
+		var lengthq = length + q;
 		float[] ars = To.vector(p, i -> Math.scalb(.5d, -i));
 		float[] mas = To.vector(q, i -> Math.scalb(.5d, -i));
 		float[] xsp = new float[lengthp];
@@ -171,8 +171,8 @@ public class Arima {
 				float[] coeffs = stat.linearRegression(Ints_ //
 						.range(length) //
 						.map(t -> {
-							int tp = t + p;
-							int tq = t + q;
+							var tp = t + p;
+							var tq = t + q;
 							float[] lrxs = Floats_ //
 									.concat(Floats_.reverse(xsp, t, tp), Floats_.reverse(epq, t, tq)) //
 									.toArray();
@@ -191,8 +191,8 @@ public class Arima {
 						.range(length) //
 						.map(t -> {
 							float[] lrxs = new float[lengthq];
-							int tp = t + p;
-							int tq = t + q;
+							var tp = t + p;
+							var tq = t + q;
 							lrxs[tq--] = 1f;
 							for (int i = 0; i < q; i++)
 								lrxs[tq--] = mas[i];
@@ -230,10 +230,10 @@ public class Arima {
 	// + ep[t]
 	// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 	private Arima_ armaIa(float[] xs, int p, int q) {
-		int length = xs.length;
+		var length = xs.length;
 		int lengthp = length + p, lengthpm1 = lengthp - 1;
 		int lengthq = length + q, lengthqm1 = lengthq - 1;
-		int iter = 0;
+		var iter = 0;
 		float[] xsp = new float[lengthp];
 		float[][] epqByIter = new float[q][];
 
@@ -241,12 +241,12 @@ public class Arima {
 		System.arraycopy(xs, 0, xsp, p, length);
 
 		while (true) {
-			int iter_ = iter;
+			var iter_ = iter;
 
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
-						int tp = t + p;
+						var tp = t + p;
 						int tq = t + q, tqm1 = tq - 1;
 						float[] lrxs = Floats_ //
 								.concat(Floats_.reverse(xsp, t, tp),
@@ -280,7 +280,7 @@ public class Arima {
 	}
 
 	private Arima_ armaMle(float[] xs, int p, int q) {
-		int length = xs.length;
+		var length = xs.length;
 		float[] xsp = Floats_.concat(new float[p], xs);
 		float[] epq = new float[length + q];
 
@@ -318,18 +318,18 @@ public class Arima {
 	// + ep[t]
 	@SuppressWarnings("unused")
 	private float[] maIa(float[] xs, int q) {
-		int length = xs.length;
+		var length = xs.length;
 		float[][] epqByIter = new float[q][];
-		int iter = 0;
-		int qm1 = q - 1;
+		var iter = 0;
+		var qm1 = q - 1;
 
 		while (true) {
-			int iter_ = iter;
+			var iter_ = iter;
 
 			LinearRegression lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
-						int tqm1 = t + qm1;
+						var tqm1 = t + qm1;
 						float[] lrxs = Floats_
 								.concat(Floats_.of(1f), Ints_.range(iter_).collect(Int_Flt.lift(i -> epqByIter[i][tqm1 - i])))
 								.toArray();
@@ -368,7 +368,7 @@ public class Arima {
 		}
 
 		private void backcast(float[] xsp, float[] epq) {
-			int qm1 = q - 1;
+			var qm1 = q - 1;
 
 			for (int t = qm1; 0 <= t; t--) {
 				double sum = sum(xsp, epq, t, p, qm1);
@@ -377,12 +377,12 @@ public class Arima {
 		}
 
 		private double forwardRecursion(float[] xsp, float[] epq) {
-			int length = xsp.length - p;
+			var length = xsp.length - p;
 			double error = 0d;
 
 			for (int t = 0; t < length; t++) {
-				int tp = t + p;
-				int tq = t + q;
+				var tp = t + p;
+				var tq = t + q;
 				double ep = xsp[tp] - sum(xsp, epq, t, p, q);
 				epq[tq] = (float) ep;
 				error += ep * ep;
@@ -407,11 +407,11 @@ public class Arima {
 	}
 
 	private float nSums(float[] xs, int d) {
-		int lengthm1 = xs.length - 1;
+		var lengthm1 = xs.length - 1;
 		for (int i = 0; i < d; i++) {
-			int l = lengthm1;
+			var l = lengthm1;
 			for (int j = i; j < d; j++) {
-				int l0 = l;
+				var l0 = l;
 				xs[l0] += xs[--l];
 			}
 		}

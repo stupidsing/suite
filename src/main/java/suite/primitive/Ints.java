@@ -41,8 +41,8 @@ public class Ints implements Iterable<Integer> {
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
-			int c0 = ints0.cs[start0 + index];
-			int c1 = ints1.cs[start1 + index];
+			var c0 = ints0.cs[start0 + index];
+			var c1 = ints1.cs[start1 + index];
 			c = Compare.compare(c0, c1);
 			index++;
 		}
@@ -64,7 +64,7 @@ public class Ints implements Iterable<Integer> {
 	}
 
 	public static Ints of(IntBuffer cb) {
-		int offset = cb.arrayOffset();
+		var offset = cb.arrayOffset();
 		return of(cb.array(), offset, offset + cb.limit());
 	}
 
@@ -105,7 +105,7 @@ public class Ints implements Iterable<Integer> {
 	public int get(int index) {
 		if (index < 0)
 			index += size_();
-		int i1 = index + start;
+		var i1 = index + start;
 		checkClosedBounds(i1);
 		return cs[i1];
 	}
@@ -205,8 +205,8 @@ public class Ints implements Iterable<Integer> {
 	}
 
 	public Ints trim() {
-		int s = start;
-		int e = end;
+		var s = start;
+		var e = end;
 		while (s < e && ParseUtil.isWhitespace(cs[s]))
 			s++;
 		while (s < e && ParseUtil.isWhitespace(cs[e - 1]))
@@ -243,7 +243,7 @@ public class Ints implements Iterable<Integer> {
 			Ints other = (Ints) object;
 
 			if (size_() == other.size_()) {
-				int diff = other.start - start;
+				var diff = other.start - start;
 				for (int i = start; i < end; i++)
 					if (cs[i] != other.cs[i + diff])
 						return false;
@@ -256,7 +256,7 @@ public class Ints implements Iterable<Integer> {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (int i = start; i < end; i++)
 			h = h * 31 + Integer.hashCode(cs[i]);
 		return h;
@@ -285,7 +285,7 @@ public class Ints implements Iterable<Integer> {
 	}
 
 	private Ints range_(int s, int e) {
-		int size = size_();
+		var size = size_();
 		if (s < 0)
 			s += size;
 		if (e < 0)
@@ -331,7 +331,7 @@ public class Ints implements Iterable<Integer> {
 		}
 
 		public IntsBuilder append(int[] cs_, int start, int end) {
-			int inc = end - start;
+			var inc = end - start;
 			extendBuffer(size + inc);
 			Ints_.copy(cs_, start, cs, size, inc);
 			size += inc;
@@ -356,7 +356,7 @@ public class Ints implements Iterable<Integer> {
 		}
 
 		private void extendBuffer(int capacity1) {
-			int capacity0 = cs.length;
+			var capacity0 = cs.length;
 
 			if (capacity0 < capacity1) {
 				int capacity = max(capacity0, 4);

@@ -27,7 +27,7 @@ public class PeepholeOptimizer {
 
 			if ((m = ADDI__.match(node0)) != null) {
 				Node m0 = m[0];
-				int i = TreeUtil.evaluate(m[1]);
+				var i = TreeUtil.evaluate(m[1]);
 				if (i == 1)
 					node1 = Suite.substitute("INC .0", m0);
 				else if (i == -1)

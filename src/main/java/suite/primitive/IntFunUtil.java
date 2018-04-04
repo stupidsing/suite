@@ -28,7 +28,7 @@ public class IntFunUtil {
 
 			public int source() {
 				if (!isAppended) {
-					int c_ = source.source();
+					var c_ = source.source();
 					if (c_ != EMPTYVALUE)
 						return c_;
 					else {
@@ -66,7 +66,7 @@ public class IntFunUtil {
 			private IntSource source0 = nullSource();
 
 			public int source() {
-				int c = EMPTYVALUE;
+				var c = EMPTYVALUE;
 				while (source0 != null && (c = source0.source()) == EMPTYVALUE)
 					source0 = source.source();
 				return c;
@@ -92,7 +92,7 @@ public class IntFunUtil {
 	public static IntSource filter(IntTest fun0, IntSource source) {
 		IntTest fun1 = fun0.rethrow();
 		return () -> {
-			int c = EMPTYVALUE;
+			var c = EMPTYVALUE;
 			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
 				;
 			return c;
@@ -152,7 +152,7 @@ public class IntFunUtil {
 			}
 
 			public Integer next() {
-				int next0 = next;
+				var next0 = next;
 				next = EMPTYVALUE;
 				return next0;
 			}
@@ -167,7 +167,7 @@ public class IntFunUtil {
 	public static <T1> Source<T1> map(Int_Obj<T1> fun0, IntSource source) {
 		Int_Obj<T1> fun1 = fun0.rethrow();
 		return () -> {
-			int c0 = source.source();
+			var c0 = source.source();
 			return c0 != IntFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
@@ -176,7 +176,7 @@ public class IntFunUtil {
 		Int_Obj<K> kf1 = kf0.rethrow();
 		Int_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
-			int c = source.source();
+			var c = source.source();
 			boolean b = c != EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
@@ -187,7 +187,7 @@ public class IntFunUtil {
 	public static IntSource mapInt(Int_Int fun0, IntSource source) {
 		Int_Int fun1 = fun0.rethrow();
 		return () -> {
-			int c = source.source();
+			var c = source.source();
 			return c != IntFunUtil.EMPTYVALUE ? fun1.apply(c) : IntFunUtil.EMPTYVALUE;
 		};
 	}
@@ -195,7 +195,7 @@ public class IntFunUtil {
 	public static <V> IntObjSource<V> mapIntObj(Int_Obj<V> fun0, IntSource source) {
 		Int_Obj<V> fun1 = fun0.rethrow();
 		return pair -> {
-			int c = source.source();
+			var c = source.source();
 			if (c != IntFunUtil.EMPTYVALUE) {
 				pair.update(c, fun1.apply(c));
 				return true;

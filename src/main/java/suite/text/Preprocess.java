@@ -51,18 +51,18 @@ public class Preprocess {
 	}
 
 	private static int reverse(List<Run> runs, int targetPosition) {
-		int sourcePosition = 0;
+		var sourcePosition = 0;
 		for (Run run : runs) {
 			Segment segment = run.segment;
 			if (segment != null) {
-				int runLength = segment.end - segment.start;
+				var runLength = segment.end - segment.start;
 				if (runLength <= targetPosition) {
 					sourcePosition = segment.start + runLength;
 					targetPosition -= runLength;
 				} else
 					return segment.start + targetPosition;
 			} else {
-				int runLength = run.text.length();
+				var runLength = run.text.length();
 				if (runLength <= targetPosition)
 					targetPosition -= runLength;
 				else

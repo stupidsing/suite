@@ -59,15 +59,15 @@ public class Trade_ {
 
 		for (Trade trade : outlet) {
 			String symbol = trade.symbol;
-			int buySell = trade.buySell;
+			var buySell = trade.buySell;
 			float price = trade.price;
 			List<IntFltPair> acquires0 = acquireBySymbol.getOrDefault(symbol, List.of());
 			List<IntFltPair> acquires1 = new ArrayList<>();
 
 			for (IntFltPair acquire : acquires0) {
-				int n0 = acquire.t0;
+				var n0 = acquire.t0;
 				int diff = buySell < 0 ? max(0, min(-buySell, n0)) : min(0, max(-buySell, n0));
-				int n1 = n0 - diff;
+				var n1 = n0 - diff;
 				buySell += diff;
 				if (n1 != 0)
 					acquires1.add(IntFltPair.of(n1, acquire.t1));
@@ -93,8 +93,8 @@ public class Trade_ {
 	public static Streamlet<Trade> collectBrokeredTrades(Outlet<Trade> outlet) {
 		Trade[] trades0 = outlet.toArray(Trade.class);
 		List<Trade> trades1 = new ArrayList<>();
-		int length0 = trades0.length;
-		int i0 = 0;
+		var length0 = trades0.length;
+		var i0 = 0;
 
 		IntIntSink tx = (i0_, i1_) -> {
 			if (Ints_.range(i0_, i1_).mapInt(i -> trades0[i].buySell).sum() != 0)
@@ -221,7 +221,7 @@ public class Trade_ {
 					.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
 					.map2((symbol, potential) -> {
 						float price = eodBySymbol.get(symbol).price;
-						int lotSize = assetBySymbol.get(symbol).lotSize;
+						var lotSize = assetBySymbol.get(symbol).lotSize;
 						return lotSize * (int) Math.floor(valuation * potential / (price * lotSize));
 					}) //
 					.toMap();
@@ -239,7 +239,7 @@ public class Trade_ {
 						double price = trade.price;
 						double priceBuy = price / barrier;
 						double priceSell = price * barrier;
-						int buySell = trade.buySell;
+						var buySell = trade.buySell;
 
 						// cannot buy liquidated stock
 						boolean isTradeable = negligible < price;

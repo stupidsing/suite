@@ -72,7 +72,7 @@ public class WalkForwardAllocTester {
 	}
 
 	public String tick(Time time, Map<String, Float> priceBySymbol) {
-		int last = windowSize - 1;
+		var last = windowSize - 1;
 
 		System.arraycopy(times, 0, times, 1, last);
 		times[last] = time.epochSec();
@@ -113,7 +113,7 @@ public class WalkForwardAllocTester {
 
 	public String conclusion() {
 		float[] valuations_ = valuations.toFloats().toArray();
-		int length = valuations_.length;
+		var length = valuations_.length;
 		double deltaMs = (start - System.currentTimeMillis()) / length;
 		ReturnsStat rs = ts.returnsStat(valuations_, deltaMs);
 		StringBuilder sb = new StringBuilder();

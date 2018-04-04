@@ -36,7 +36,7 @@ public class DebianUtil {
 			while ((line = br.readLine()) != null) {
 				if (!line.startsWith(" ") && 0 < sb.length()) {
 					String kv = sb.toString();
-					int pos = kv.indexOf(':');
+					var pos = kv.indexOf(':');
 					pm.put(kv.substring(0, pos).trim(), kv.substring(pos + 1).trim());
 					sb.setLength(0);
 				}

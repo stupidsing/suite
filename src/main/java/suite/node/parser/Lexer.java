@@ -59,7 +59,7 @@ public class Lexer {
 
 	private Token lex_() {
 		if (pos < in.length()) {
-			int start = pos;
+			var start = pos;
 			Token token = detect();
 			LexType type = token.type;
 

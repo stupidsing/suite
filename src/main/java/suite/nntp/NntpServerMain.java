@@ -112,14 +112,14 @@ public class NntpServerMain extends ExecutableProgram {
 						break;
 					case POST:
 						pw.println("340 Okay");
-						int size = 0;
+						var size = 0;
 						List<String> lines = new ArrayList<>();
 						while (!String_.equals(line = Util.readLine(sis), ".") && size < 1048576) {
 							lines.add(line);
 							size += line.length();
 						}
 						article = new HashMap<>();
-						int pos = 0;
+						var pos = 0;
 						while (!(line = lines.get(pos++)).isEmpty()) {
 							Pair<String, String> lr = String_.split2(line, ":");
 							article.put(lr.t0, lr.t1);

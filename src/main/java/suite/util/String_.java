@@ -63,7 +63,7 @@ public class String_ {
 	}
 
 	public static String range(String s, int start, int end) {
-		int length = s.length();
+		var length = s.length();
 		if (start < 0)
 			start += length;
 		if (end < 0)
@@ -73,14 +73,14 @@ public class String_ {
 	}
 
 	public static String right(String s, int pos) {
-		int size = s.length();
+		var size = s.length();
 		if (pos < 0)
 			pos += size;
 		return s.substring(pos);
 	}
 
 	public static Pair<String, String> split2(String s, String delimiter) {
-		int pos = s.indexOf(delimiter);
+		var pos = s.indexOf(delimiter);
 		if (0 <= pos)
 			return Pair.of(s.substring(0, pos).trim(), s.substring(pos + delimiter.length()).trim());
 		else

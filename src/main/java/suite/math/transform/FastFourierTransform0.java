@@ -23,25 +23,25 @@ public class FastFourierTransform0 {
 	}
 
 	public Complex[] fft(Complex[] inputs, Ind ind) {
-		int count = ind.count;
+		var count = ind.count;
 
 		if (count == 1)
 			return new Complex[] { inputs[ind.start], };
 		else if (count % 2 == 0) {
 			Complex[] cis = getCis(count);
-			int count1 = count / 2;
-			int inc1 = ind.inc * 2;
+			var count1 = count / 2;
+			var inc1 = ind.inc * 2;
 			Complex[] f0 = fft(inputs, new Ind(ind.start, count1, inc1));
 			Complex[] f1 = fft(inputs, new Ind(ind.start + ind.inc, count1, inc1));
 			Complex[] f = new Complex[count];
 
 			for (int di = 0; di < count1; di++) {
-				int si = di;
+				var si = di;
 				f[di] = Complex.add(f0[si], Complex.mul(f1[si], cis[di]));
 			}
 
 			for (int di = count1; di < count; di++) {
-				int si = di - count1;
+				var si = di - count1;
 				f[di] = Complex.add(f0[si], Complex.mul(f1[si], cis[di]));
 			}
 

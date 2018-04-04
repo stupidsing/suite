@@ -22,19 +22,19 @@ public class TemplateRenderer implements Iterate<String> {
 
 	@Override
 	public String apply(String in) {
-		int start = 0;
+		var start = 0;
 		StringBuilder sb = new StringBuilder();
 
 		while (true) {
 			int pos0 = in.indexOf(openTemplate, start);
 			if (pos0 == -1)
 				break;
-			int pos1 = pos0 + openTemplate.length();
+			var pos1 = pos0 + openTemplate.length();
 
 			int pos2 = in.indexOf(closeTemplate, pos1);
 			if (pos2 == -1)
 				break;
-			int pos3 = pos2 + closeTemplate.length();
+			var pos3 = pos2 + closeTemplate.length();
 
 			sb.append(wrapText.apply(in.substring(start, pos0)));
 			sb.append(wrapExpression.apply(in.substring(pos1, pos2)));

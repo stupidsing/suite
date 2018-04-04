@@ -307,7 +307,7 @@ public class Symbolic {
 					}).match2(patPow, (a, b) -> {
 						if (b instanceof Int) {
 							List<Node> pos = pos(a).toList();
-							int power = ((Int) b).number;
+							var power = ((Int) b).number;
 
 							Int_Obj<Streamlet<Node>> f = power_ -> {
 								List<Node> n = new ArrayList<>();
@@ -383,7 +383,7 @@ public class Symbolic {
 			return polyize_(node, coefficientFun).map(map -> {
 				Node sum = n0;
 				for (IntObjPair<Node> pair : map.streamlet().sortByKey(Integer::compare)) {
-					int p = pair.t0;
+					var p = pair.t0;
 					Node power = p < 0 ? inv(powerFun.apply(-p)) : powerFun.apply(p);
 					sum = add(mul(coefficientFun.apply(pair.t1), power), sum);
 				}

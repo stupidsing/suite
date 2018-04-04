@@ -80,7 +80,7 @@ public class FltFltMap {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (FltObjPair<Float> pair : streamlet()) {
 			h = h * 31 + Float.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
@@ -89,7 +89,7 @@ public class FltFltMap {
 	}
 
 	public float get(float key) {
-		int index = index(key);
+		var index = index(key);
 		return ks[index] == key ? vs[index] : EMPTYVALUE;
 	}
 
@@ -105,8 +105,8 @@ public class FltFltMap {
 	}
 
 	public void update(float key, Flt_Flt fun) {
-		int mask = vs.length - 1;
-		int index = index(key);
+		var mask = vs.length - 1;
+		var index = index(key);
 		float v0 = vs[index];
 		float v1 = vs[index] = fun.apply(v0);
 		ks[index] = key;
@@ -114,7 +114,7 @@ public class FltFltMap {
 		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
-					int index1 = (index + 1) & mask;
+					var index1 = (index + 1) & mask;
 					float v_ = vs[index1];
 					if (v_ != EMPTYVALUE) {
 						float k = ks[index1];
@@ -149,7 +149,7 @@ public class FltFltMap {
 	}
 
 	private void rehash() {
-		int capacity = vs.length;
+		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
 			float[] ks0 = ks;
@@ -165,7 +165,7 @@ public class FltFltMap {
 	}
 
 	private void store(float key, float v1) {
-		int index = index(key);
+		var index = index(key);
 		if (vs[index] == EMPTYVALUE) {
 			ks[index] = key;
 			vs[index] = v1;
@@ -174,8 +174,8 @@ public class FltFltMap {
 	}
 
 	private int index(float key) {
-		int mask = vs.length - 1;
-		int index = Float.hashCode(key) & mask;
+		var mask = vs.length - 1;
+		var index = Float.hashCode(key) & mask;
 		while (vs[index] != EMPTYVALUE && ks[index] != key)
 			index = index + 1 & mask;
 		return index;

@@ -55,7 +55,7 @@ public class Pmamr2BackAllocator {
 						.map2((symbol, mrs) -> {
 							DataSource ds = dsBySymbol.get(symbol);
 							float[] prices = ds.prices;
-							int last = index - 1;
+							var last = index - 1;
 							float price0 = prices[last - tor / 2];
 							double price = prices[last];
 

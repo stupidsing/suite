@@ -33,7 +33,7 @@ public class QueryRewriter {
 		private int length;
 
 		private PrototypeInfo(Collection<Rule> rules) {
-			int n = Read.from(rules).collect(As.min(rule -> TreeUtil.nElements(rule.head)));
+			var n = Read.from(rules).collect(As.min(rule -> TreeUtil.nElements(rule.head)));
 			isSkipFirst = 0 < n
 					&& Read.from(rules).map(rule -> rule.head).isAll(head -> TreeUtil.elements(head, 1)[0] instanceof Atom);
 			length = n - (isSkipFirst ? 1 : 0);
@@ -90,7 +90,7 @@ public class QueryRewriter {
 		PrototypeInfo pi;
 
 		if ((pi = infoByPrototype.get(prototype)) != null) {
-			int length = pi.length;
+			var length = pi.length;
 
 			if (length <= 0)
 				nodex = node0;

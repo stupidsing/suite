@@ -21,8 +21,8 @@ public class SelfOrganizingMap {
 	private Vector vec = new Vector();
 
 	public void som(List<float[]> ins) {
-		int length = ins.get(0).length;
-		int size = index(bounds);
+		var length = ins.get(0).length;
+		var size = index(bounds);
 		float[][] som = new float[size][length];
 		double alpha = 1f;
 
@@ -35,7 +35,7 @@ public class SelfOrganizingMap {
 				int[] nearestIndices = new int[nDim];
 
 				new Loop(is -> {
-					int index = index(is);
+					var index = index(is);
 					float[] som0 = som[index];
 					double distance = vec.dotDiff(in, som0);
 					if (distance < nearestDistance.get()) {
@@ -48,7 +48,7 @@ public class SelfOrganizingMap {
 				double alpha_ = alpha;
 
 				new Loop(is -> {
-					int index = index(is);
+					var index = index(is);
 					float[] som0 = som[index];
 					double theta = Math.exp(-vec.dotDiff(nearestSom, som0) / (2d * var));
 					som[index] = vec.add(som0, vec.scale(vec.sub(in, som0), theta * alpha_));
@@ -68,8 +68,8 @@ public class SelfOrganizingMap {
 
 		private void findMin(int index) {
 			if (index < nDim) {
-				int ix = bounds[index];
-				int index1 = index + 1;
+				var ix = bounds[index];
+				var index1 = index + 1;
 				for (int i = 0; i < ix; i++) {
 					is[index] = i;
 					findMin(index1);
@@ -80,8 +80,8 @@ public class SelfOrganizingMap {
 
 		private void updateNeighbours(int[] is0, int index) {
 			if (index < nDim) {
-				int fr = is0[index] - updateDistance;
-				int to = is0[index] + updateDistance;
+				var fr = is0[index] - updateDistance;
+				var to = is0[index] + updateDistance;
 				for (int i = fr; i <= to; i++) {
 					is[index] = i;
 					updateNeighbours(is0, index);
@@ -92,7 +92,7 @@ public class SelfOrganizingMap {
 	}
 
 	private int index(int[] is) {
-		int i = 0;
+		var i = 0;
 		for (int index = 0; index < nDim; index++)
 			i = bounds[index] * i + is[index];
 		return i;

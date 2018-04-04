@@ -9,9 +9,9 @@ public class ConwayGameOfLife {
 
 	public ConwayGameOfLife(String s) {
 		this(new boolean[size][size]);
-		int x = 0;
+		var x = 0;
 		for (String line : s.split("\n")) {
-			int y = 0;
+			var y = 0;
 			for (char ch : String_.chars(line))
 				game[x][y++] = !Character.isWhitespace(ch);
 			x++;
@@ -23,7 +23,7 @@ public class ConwayGameOfLife {
 	}
 
 	public int population() {
-		int population = 0;
+		var population = 0;
 		for (int x = 1; x < size; x++)
 			for (int y = 1; y < size; y++)
 				population += game[x][y] ? 1 : 0;
@@ -37,7 +37,7 @@ public class ConwayGameOfLife {
 
 		for (int x = 1; x < size - 1; x++)
 			for (int y = 1; y < size - 1; y++) {
-				int sum = 0 //
+				var sum = 0 //
 						+ (game0[x - 1][y - 1] ? 1 : 0) //
 						+ (game0[x - 1][y] ? 1 : 0) //
 						+ (game0[x - 1][y + 1] ? 1 : 0) //

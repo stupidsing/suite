@@ -16,7 +16,7 @@ public class Fun23TreeTest {
 
 	@Test
 	public void test() throws IOException {
-		int n = 100;
+		var n = 100;
 		String list100 = "0 until " + n + " | map {insert} | apply | {Tree (9999, Empty;)}";
 
 		Node fp0 = Suite.substitute("use 23-TREE >> " + list100);
@@ -24,7 +24,7 @@ public class Fun23TreeTest {
 		String out0 = Formatter.dump(result0);
 		System.out.println("OUT:\n" + out0);
 
-		int nPars0 = Read.from(String_.chars(out0)).filter(c -> c == '(').size();
+		var nPars0 = Read.from(String_.chars(out0)).filter(c -> c == '(').size();
 		assertTrue(3 <= nPars0);
 
 		Node fp1 = Suite.substitute("use 23-TREE >> 0 until " + n / 2 + " | map {remove} | apply | {" + list100 + "}");
@@ -32,7 +32,7 @@ public class Fun23TreeTest {
 		String out1 = Formatter.dump(result1);
 		System.out.println("OUT:\n" + out1);
 
-		int nPars1 = Read.from(String_.chars(out1)).filter(c -> c == '(').size();
+		var nPars1 = Read.from(String_.chars(out1)).filter(c -> c == '(').size();
 		assertTrue(3 <= nPars1);
 	}
 

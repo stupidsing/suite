@@ -59,7 +59,7 @@ public class ProveTracer {
 
 		if (currentDepth < 64) {
 			Record record0 = currentRecord;
-			int depth0 = currentDepth;
+			var depth0 = currentDepth;
 			Record record = new Record(record0, query1, currentDepth + 1);
 
 			Data<Source<Boolean>> enter = new Data<>(() -> {
@@ -109,8 +109,8 @@ public class ProveTracer {
 	public String getFailTrace() {
 		if (!records.isEmpty() && records.get(0).nOkays == 0)
 			return log(Collections.max(records, (record0, record1) -> {
-				int depth0 = isDecidinglyFail(record0) ? record0.depth : 0;
-				int depth1 = isDecidinglyFail(record1) ? record1.depth : 0;
+				var depth0 = isDecidinglyFail(record0) ? record0.depth : 0;
+				var depth1 = isDecidinglyFail(record1) ? record1.depth : 0;
 				return depth0 - depth1;
 			}));
 		else
@@ -136,7 +136,7 @@ public class ProveTracer {
 	}
 
 	private String log(List<Record> records) {
-		int size = records.size();
+		var size = records.size();
 
 		// this method could be invoked in shutdown hook and the prover might
 		// still be running. Do not use iterator/for-each loop access, those

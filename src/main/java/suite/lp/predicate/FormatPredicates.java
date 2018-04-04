@@ -36,7 +36,7 @@ public class FormatPredicates {
 
 	public BuiltinPredicate concat = PredicateUtil.ps((prover, nodes) -> {
 		StringBuilder sb = new StringBuilder();
-		int n = nodes.length;
+		var n = nodes.length;
 		for (int i = 0; i < n - 1; i++)
 			sb.append(Formatter.display(nodes[i]));
 		return prover.bind(new Str(sb.toString()), nodes[n - 1]);
@@ -99,7 +99,7 @@ public class FormatPredicates {
 
 	public BuiltinPredicate substring = PredicateUtil.p4((prover, s0, p0, px, sx) -> {
 		String name = ((Str) s0).value;
-		int length = name.length();
+		var length = name.length();
 
 		if (p0 instanceof Int && px instanceof Int) {
 			int m = ((Int) p0).number, n = ((Int) px).number;

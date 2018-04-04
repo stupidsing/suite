@@ -20,8 +20,8 @@ public class CholeskyDecomposition {
 		float[] d = ldlt.t1;
 		float[] reciprocalsD = To.vector(d, f -> 1f / f);
 		return fs0 -> {
-			int height = mtx.height(m);
-			int width = mtx.width(m);
+			var height = mtx.height(m);
+			var width = mtx.width(m);
 			float[] fs1 = new float[height]; // will be inverse(L) * fs0
 
 			for (int i = 0; i < height; i++) {
@@ -56,7 +56,7 @@ public class CholeskyDecomposition {
 	 * @return lower-triangular matrix L that satisfy m = L * L*
 	 */
 	public float[][] decompose(float[][] m) {
-		int size = mtx.sqSize(m);
+		var size = mtx.sqSize(m);
 		float[][] l = mtx.identity(size);
 
 		for (int c = 0; c < size; c++) {
@@ -91,13 +91,13 @@ public class CholeskyDecomposition {
 	 *         satisfies m = L * D * L*.
 	 */
 	public Pair<float[][], float[]> ldlt(float[][] m) {
-		int size = mtx.height(m);
+		var size = mtx.height(m);
 		float[][] l = mtx.identity(size);
 		float[] d = new float[size];
 
 		for (int c = 0; c < size; c++) {
 			float imii = 1f / (d[c] = m[c][c]);
-			int c1 = c + 1;
+			var c1 = c + 1;
 
 			for (int i = c1; i < size; i++)
 				for (int j = c1; j < size; j++) {

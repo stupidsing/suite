@@ -181,7 +181,7 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements FixieA<T0,
 			, T9 extends Comparable<? super T9> //
 	> Comparator<Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>> comparator() {
 		return (fixie0, fixie1) -> {
-			int c = 0;
+			var c = 0;
 			c = c == 0 ? Object_.compare(fixie0.t0, fixie1.t0) : c;
 			c = c == 0 ? Object_.compare(fixie0.t1, fixie1.t1) : c;
 			c = c == 0 ? Object_.compare(fixie0.t2, fixie1.t2) : c;
@@ -218,7 +218,7 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements FixieA<T0,
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		h = h * 31 + Objects.hashCode(t0);
 		h = h * 31 + Objects.hashCode(t1);
 		h = h * 31 + Objects.hashCode(t2);

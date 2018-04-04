@@ -48,7 +48,7 @@ public class StockHistory {
 		String timeZoneStr = properties.get("timeZone");
 		String isActive = properties.get("isActive");
 
-		int timeZone = timeZoneStr != null ? Integer.parseInt(timeZoneStr) : 0;
+		var timeZone = timeZoneStr != null ? Integer.parseInt(timeZoneStr) : 0;
 		LngFltPair[] dividends = readPairs(timeZone, outlet);
 		LngFltPair[] splits = readPairs(timeZone, outlet);
 		String tag;
@@ -71,7 +71,7 @@ public class StockHistory {
 
 		if (String_.equals(line = outlet.next(), "{"))
 			while (!String_.equals(line = outlet.next(), "}")) {
-				int p = line.lastIndexOf(":");
+				var p = line.lastIndexOf(":");
 				Time time = Time.of(line.substring(0, p));
 				float price = Float.parseFloat(line.substring(p + 1));
 				pairs.add(LngFltPair.of(time.epochSec(timeZone), price));
@@ -154,8 +154,8 @@ public class StockHistory {
 
 		BinOp<LngFltPair[]> merge_ = (pairs0, pairs1) -> {
 			List<LngFltPair> pairs = new ArrayList<>();
-			int length1 = pairs1.length;
-			int i1 = 0;
+			var length1 = pairs1.length;
+			var i1 = 0;
 			for (LngFltPair pair0 : pairs0) {
 				long l0 = pair0.t0;
 				while (i1 < length1) {
@@ -210,7 +210,7 @@ public class StockHistory {
 		LngFltPair[] hiPairs = adjustPrices("high");
 		LngFltPair[] vlPairs = data.get("volume");
 		LngFltPair[] ps = clPairs;
-		int length = ps.length;
+		var length = ps.length;
 
 		Datum[] data = new Datum[length];
 		int io = 0, ic = 0, il = 0, ih = 0, iv = 0;
@@ -236,7 +236,7 @@ public class StockHistory {
 	}
 
 	private int scan(LngFltPair[] pairs, int i, long t) {
-		int length = pairs.length;
+		var length = pairs.length;
 		while (i < length && pairs[i].t0 <= t)
 			i++;
 		return i;
@@ -263,11 +263,11 @@ public class StockHistory {
 
 	private LngFltPair[] adjustPrices(String tag) {
 		LngFltPair[] pairs0 = data.get(tag);
-		int length = pairs0.length;
+		var length = pairs0.length;
 		LngFltPair[] pairs1 = new LngFltPair[length];
 
-		int si = splits.length - 1;
-		int di = dividends.length - 1;
+		var si = splits.length - 1;
+		var di = dividends.length - 1;
 		float a = 0f, b = 1f;
 
 		for (int i = length - 1; 0 <= i; i--) {

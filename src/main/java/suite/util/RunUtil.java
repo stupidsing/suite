@@ -61,7 +61,7 @@ public class RunUtil {
 			});
 		}
 
-		int code = mutableCode.get();
+		var code = mutableCode.get();
 		if (code != 0)
 			System.exit(code);
 	}

@@ -64,7 +64,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public static Doubles of(DoubleBuffer cb) {
-		int offset = cb.arrayOffset();
+		var offset = cb.arrayOffset();
 		return of(cb.array(), offset, offset + cb.limit());
 	}
 
@@ -105,7 +105,7 @@ public class Doubles implements Iterable<Double> {
 	public double get(int index) {
 		if (index < 0)
 			index += size_();
-		int i1 = index + start;
+		var i1 = index + start;
 		checkClosedBounds(i1);
 		return cs[i1];
 	}
@@ -205,8 +205,8 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public Doubles trim() {
-		int s = start;
-		int e = end;
+		var s = start;
+		var e = end;
 		while (s < e && ParseUtil.isWhitespace(cs[s]))
 			s++;
 		while (s < e && ParseUtil.isWhitespace(cs[e - 1]))
@@ -243,7 +243,7 @@ public class Doubles implements Iterable<Double> {
 			Doubles other = (Doubles) object;
 
 			if (size_() == other.size_()) {
-				int diff = other.start - start;
+				var diff = other.start - start;
 				for (int i = start; i < end; i++)
 					if (cs[i] != other.cs[i + diff])
 						return false;
@@ -256,7 +256,7 @@ public class Doubles implements Iterable<Double> {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (int i = start; i < end; i++)
 			h = h * 31 + Double.hashCode(cs[i]);
 		return h;
@@ -285,7 +285,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	private Doubles range_(int s, int e) {
-		int size = size_();
+		var size = size_();
 		if (s < 0)
 			s += size;
 		if (e < 0)
@@ -331,7 +331,7 @@ public class Doubles implements Iterable<Double> {
 		}
 
 		public DoublesBuilder append(double[] cs_, int start, int end) {
-			int inc = end - start;
+			var inc = end - start;
 			extendBuffer(size + inc);
 			Doubles_.copy(cs_, start, cs, size, inc);
 			size += inc;
@@ -356,7 +356,7 @@ public class Doubles implements Iterable<Double> {
 		}
 
 		private void extendBuffer(int capacity1) {
-			int capacity0 = cs.length;
+			var capacity0 = cs.length;
 
 			if (capacity0 < capacity1) {
 				int capacity = max(capacity0, 4);

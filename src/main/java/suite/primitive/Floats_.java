@@ -34,13 +34,13 @@ public class Floats_ {
 	}
 
 	public static float[] concat(float[]... array) {
-		int length = 0;
+		var length = 0;
 		for (float[] fs : array)
 			length += fs.length;
 		float[] fs1 = new float[length];
-		int i = 0;
+		var i = 0;
 		for (float[] fs : array) {
-			int length_ = fs.length;
+			var length_ = fs.length;
 			copy(fs, 0, fs1, i, length_);
 			i += length_;
 		}
@@ -48,13 +48,13 @@ public class Floats_ {
 	}
 
 	public static Floats concat(Floats... array) {
-		int length = 0;
+		var length = 0;
 		for (Floats floats : array)
 			length += floats.size();
 		float[] cs1 = new float[length];
-		int i = 0;
+		var i = 0;
 		for (Floats floats : array) {
-			int size_ = floats.size();
+			var size_ = floats.size();
 			copy(floats.cs, floats.start, cs1, i, size_);
 			i += size_;
 		}
@@ -105,11 +105,11 @@ public class Floats_ {
 	}
 
 	public static Fun<Outlet<Floats>, Outlet<Floats>> split(Floats delim) {
-		int ds = delim.size();
+		var ds = delim.size();
 
 		return outlet -> Outlet.of(new BufferedSource(outlet) {
 			protected boolean search() {
-				int size = buffer.size();
+				var size = buffer.size();
 				while ((p1 = p0 + ds) <= size)
 					if (!delim.equals(buffer.range(p0, p1)))
 						p0++;

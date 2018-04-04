@@ -109,12 +109,12 @@ public class Sgf {
 	}
 
 	private PosPair<String> readIf(String in, int pos, IntPredicate predicate) {
-		int pos0 = pos;
+		var pos0 = pos;
 
 		while (pos0 < in.length() && Character.isWhitespace(in.charAt(pos0)))
 			pos0++;
 
-		int pos1 = pos0;
+		var pos1 = pos0;
 
 		while (pos1 < in.length()) {
 			char ch = in.charAt(pos1);

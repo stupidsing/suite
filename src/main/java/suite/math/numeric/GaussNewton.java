@@ -23,8 +23,8 @@ public class GaussNewton {
 	private Vector vec = new Vector();
 
 	public float[] sym(Node[] vars, Node[] rs, float[] initials) {
-		int nVars = vars.length;
-		int nrs = rs.length;
+		var nVars = vars.length;
+		var nrs = rs.length;
 		@SuppressWarnings("unchecked")
 		Obj_Dbl<float[]>[] residualFuns = Array_.newArray(Obj_Dbl.class, nrs);
 		Dbl_Dbl[][] gradientFuns = new Dbl_Dbl[nrs][nVars];

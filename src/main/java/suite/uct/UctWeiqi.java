@@ -73,7 +73,7 @@ public class UctWeiqi {
 			Set<Coordinate> capturedPositions = new HashSet<>();
 			Occupation me = gameSet.getNextPlayer();
 			Move move, chosenMove;
-			int nPasses = 0;
+			var nPasses = 0;
 
 			// move until someone cannot move anymore, or maximum number of
 			// passes is reached between both players
@@ -96,7 +96,7 @@ public class UctWeiqi {
 
 				if (chosenMove != null) {
 					if (chosenMove.type == MoveType.CAPTURE) {
-						int i = 0;
+						var i = 0;
 						capturedPositions.clear();
 
 						// add captured positions back to empty group
@@ -146,7 +146,7 @@ public class UctWeiqi {
 					move = removePossibleMove(empties.iterator());
 
 				if (move != null) { // add empty positions back to empty group
-					int j = 0;
+					var j = 0;
 
 					for (Coordinate c1 : move.position.neighbors)
 						if (move.neighborColors[j++] != board.get(c1))

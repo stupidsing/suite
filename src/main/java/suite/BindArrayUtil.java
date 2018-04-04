@@ -45,12 +45,12 @@ public class BindArrayUtil {
 		VariableMapper<Reference> cbm = cb.mapper();
 		List<Atom> atoms = new ArrayList<>();
 		Atom atom;
-		int n = 0;
+		var n = 0;
 
 		while (sgm.getIndex(atom = Atom.of("." + n++)) != null)
 			atoms.add(atom);
 
-		int size = atoms.size();
+		var size = atoms.size();
 		int[] sgi = Ints_.toArray(size, i -> sgm.getIndex(atoms.get(i)));
 		int[] cbi = Ints_.toArray(size, i -> cbm.getIndex(ne.env.refs[sgi[i]]));
 

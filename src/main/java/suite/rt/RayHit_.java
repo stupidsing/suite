@@ -65,7 +65,7 @@ public class RayHit_ {
 
 	private static List<RayHit> removeDuplicates(List<RayHit> rayHits0) {
 		List<RayHit> rayHits1 = new ArrayList<>();
-		int size = rayHits0.size();
+		var size = rayHits0.size();
 		RayHit rayHit;
 
 		for (int i = 0; i < size; i++)

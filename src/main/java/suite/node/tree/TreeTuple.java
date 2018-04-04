@@ -27,7 +27,7 @@ public class TreeTuple extends Tree {
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		h = h * 31 + Objects.hashCode(getLeft());
 		h = h * 31 + Objects.hashCode(operator);
 		h = h * 31 + Objects.hashCode(getRight());

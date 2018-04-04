@@ -100,8 +100,8 @@ public class Amd64Assemble {
 		}
 
 		private InsnCode pre(byte[] pre) {
-			int length0 = pre.length;
-			int length1 = bs.length;
+			var length0 = pre.length;
+			var length1 = bs.length;
 			byte[] bs1 = Arrays.copyOf(pre, length0 + length1);
 			Bytes_.copy(bs, 0, bs1, length0, length1);
 			return set(size, bs1, imm, immSize);
@@ -502,7 +502,7 @@ public class Amd64Assemble {
 			break;
 		case PUSH:
 			if (instruction.op0 instanceof OpImm) {
-				int size = instruction.op0.size;
+				var size = instruction.op0.size;
 				encode = new InsnCode(size, (OpImm) instruction.op0).setByte(0x68 + (1 < size ? 0 : 2));
 			} else if (1 < instruction.op0.size)
 				if (isRm.test(instruction.op0))
@@ -708,7 +708,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleJumpImm(OpImm op0, long offset, int b1, byte[] bs4) {
-		int size = op0.size;
+		var size = op0.size;
 		byte[] bs0;
 
 		switch (size) {
@@ -797,7 +797,7 @@ public class Amd64Assemble {
 		if (isAcc.test(op0))
 			insnCode.bs = bs(bAccImm + (op0.size <= 1 ? 0 : 1));
 		else if (isRm.test(op0)) {
-			int b0 = ((1 < op0.size && op1.size <= 1) ? 2 : 0) + (op0.size <= 1 ? 0 : 1);
+			var b0 = ((1 < op0.size && op1.size <= 1) ? 2 : 0) + (op0.size <= 1 ? 0 : 1);
 			insnCode.bs = bs(bRmImm + b0);
 			insnCode.modrm = modrm(op0, num);
 		} else
@@ -906,9 +906,9 @@ public class Amd64Assemble {
 			disp = 0;
 		} else if (operand instanceof OpMem) {
 			OpMem op = (OpMem) operand;
-			int baseReg = op.baseReg;
+			var baseReg = op.baseReg;
 			int indexReg;
-			int ds0 = op.dispSize;
+			var ds0 = op.dispSize;
 
 			if ((op.indexReg & 7) != 4)
 				indexReg = op.indexReg;
@@ -923,14 +923,14 @@ public class Amd64Assemble {
 			} else if (0 <= baseReg && indexReg < 0)
 				if ((baseReg & 7) != 4) {
 					// [EAX], [EAX + 0x1234]
-					int ds1 = (baseReg & 7) == 5 && ds0 == 0 ? 1 : ds0;
+					var ds1 = (baseReg & 7) == 5 && ds0 == 0 ? 1 : ds0;
 					mod = dispMod(ds1);
 					rm = baseReg;
 					s = i = b = -1;
 					dispSize = ds1;
 				} else {
 					// [ESP + 0], [ESP + 0x1234]
-					int ds1 = baseReg == 4 && ds0 == 0 ? 1 : ds0;
+					var ds1 = baseReg == 4 && ds0 == 0 ? 1 : ds0;
 					mod = dispMod(ds1);
 					rm = 4;
 					s = 0;
@@ -1013,7 +1013,7 @@ public class Amd64Assemble {
 	}
 
 	private int rex(int size, int r, int x, int b) {
-		int b04 = ((size != 8 ? 0 : 1) << 3) //
+		var b04 = ((size != 8 ? 0 : 1) << 3) //
 				+ (bit4(r) << 2) //
 				+ (bit4(x) << 1) //
 				+ (bit4(b) << 0);
@@ -1022,21 +1022,21 @@ public class Amd64Assemble {
 
 	// https://en.wikipedia.org/wiki/VEX_prefix
 	private byte[] vex(int m, int p, int size, Modrm modrm, int w, int v) {
-		int x = bit4(modrm.i);
-		int b = bit4(modrm.b);
-		int w_ = bit4(w);
+		var x = bit4(modrm.i);
+		var b = bit4(modrm.b);
+		var w_ = bit4(w);
 		if (m == 1 && x == 0 && b == 0 && w == 0) {
-			int b1 = ((bit4(modrm.num) ^ 1) << 7) //
+			var b1 = ((bit4(modrm.num) ^ 1) << 7) //
 					+ (~v << 3)//
 					+ ((size != 16 ? 1 : 0) << 2) //
 					+ (p << 0);
 			return bs(0xC5, b1);
 		} else {
-			int b1 = ((bit4(modrm.num) ^ 1) << 7) //
+			var b1 = ((bit4(modrm.num) ^ 1) << 7) //
 					+ ((x ^ 1) << 6) //
 					+ ((b ^ 1) << 5) //
 					+ (~m << 0);
-			int b2 = (w_ << 7) //
+			var b2 = (w_ << 7) //
 					+ (~v << 3)//
 					+ ((size != 16 ? 1 : 0) << 2) //
 					+ (p << 0);
@@ -1049,7 +1049,7 @@ public class Amd64Assemble {
 	}
 
 	private byte[] bs(int... is) {
-		int length = is.length;
+		var length = is.length;
 		byte[] bs = new byte[length];
 		for (int i = 0; i < length; i++)
 			bs[i] = (byte) is[i];

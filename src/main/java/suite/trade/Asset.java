@@ -60,7 +60,7 @@ public class Asset {
 
 	private String shortName_() {
 		String[] array = name.split(" ");
-		int i = 0;
+		var i = 0;
 		String s = "", name = "";
 		while (Hkex.commonFirstNames.contains(s) && i < array.length)
 			name += s = array[i++];

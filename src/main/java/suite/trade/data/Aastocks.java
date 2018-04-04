@@ -19,7 +19,7 @@ public class Aastocks {
 		String urlString = "http://www.aastocks.com/en/mobile/Quote.aspx?symbol=00005";
 		URL url = To.url(urlString);
 		List<String> lines = HttpUtil.get(url).out.collect(As::lines).toList();
-		int i0 = Ints_.range(lines.size()).filter(i -> lines.get(i).contains("HSI")).first();
+		var i0 = Ints_.range(lines.size()).filter(i -> lines.get(i).contains("HSI")).first();
 		return toFloat(lines.get(i0 + 1));
 	}
 
@@ -34,7 +34,7 @@ public class Aastocks {
 		String urlString = "http://www.aastocks.com/en/mobile/Quote.aspx?symbol=0" + symbol.substring(0, 4);
 		URL url = To.url(urlString);
 		List<String> lines = HttpUtil.get(url).out.collect(As::lines).toList();
-		int i0 = Ints_.range(lines.size()).filter(i -> lines.get(i).contains("text_last")).first();
+		var i0 = Ints_.range(lines.size()).filter(i -> lines.get(i).contains("text_last")).first();
 		return toFloat(lines.get(i0 + 1).replace("0px", "").replace(".png", ""));
 	}
 

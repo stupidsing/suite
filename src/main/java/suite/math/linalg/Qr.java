@@ -16,7 +16,7 @@ public class Qr {
 	 * Perform QR decomposition by Gram-Schmidt process.
 	 */
 	public Pair<float[][], float[][]> decompose_mT_T(float[][] m) { // a
-		int size = mtx.sqSize(m);
+		var size = mtx.sqSize(m);
 		float[][] q = new float[size][]; // e
 
 		for (int i = 0; i < size; i++) {
@@ -42,15 +42,15 @@ public class Qr {
 
 	public Pair<float[][], float[][]> decomposeByGivensRotation(float[][] m) {
 		float[][] r = mtx.of(m);
-		int size = mtx.sqSize(r);
+		var size = mtx.sqSize(r);
 		float[][] q = mtx.identity(size);
 
 		for (int k = 0; k < size; k++)
 			for (int i = size - 1; k < i; i--) {
 				mtx.verifyEquals(m, mtx.mul(q, r));
 
-				int i0 = i - 1;
-				int i1 = i - 0;
+				var i0 = i - 1;
+				var i1 = i - 0;
 				float f0 = r[i0][k];
 				float f1 = r[i1][k];
 

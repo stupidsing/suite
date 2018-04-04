@@ -123,7 +123,7 @@ public class InstructionExtractor implements AutoCloseable {
 
 				// allocates new register in current local frame
 				Instruction frameBegin = frameBegins.getFirst();
-				int registerNumber = frameBegin.op0++;
+				var registerNumber = frameBegin.op0++;
 
 				Binder.bind(node, Int.of(registerNumber), trail);
 				return registerNumber;
@@ -155,7 +155,7 @@ public class InstructionExtractor implements AutoCloseable {
 		Integer pointer = constantPool.inverse().get(node);
 
 		if (pointer == null) {
-			int pointer1 = constantPool.size();
+			var pointer1 = constantPool.size();
 			constantPool.put(pointer1, node);
 			return pointer1;
 		} else

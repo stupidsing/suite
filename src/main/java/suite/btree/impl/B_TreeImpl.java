@@ -164,7 +164,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	@Override
 	public void create() {
 		allocator.create();
-		int root = allocator.allocate();
+		var root = allocator.allocate();
 
 		Superblock superblock = new Superblock();
 		superblock.root = root;
@@ -232,7 +232,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	@Override
 	public void putPayload(Key key, Bytes bytes) {
-		int pointer = allocator.allocate();
+		var pointer = allocator.allocate();
 		payloadFile.save(pointer, bytes);
 		put(key, new Payload(pointer));
 	}
@@ -255,7 +255,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	private void addAndSplit(Slots slots, KeyPointer toInsert) {
-		int half = branchFactor / 2;
+		var half = branchFactor / 2;
 		boolean done;
 
 		// traversed to deepest. Inserts key-value pair
@@ -264,7 +264,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 			Page page = slot.page;
 			page.add(slot.index + 1, toInsert);
 
-			int size = page.size();
+			var size = page.size();
 			done = size <= branchFactor;
 
 			if (!done) { // splits list into two pages
@@ -301,8 +301,8 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	@Override
 	public void remove(Key key) {
-		int half = branchFactor / 2;
-		int root = getRoot();
+		var half = branchFactor / 2;
+		var root = getRoot();
 		Traverse t = new Traverse(key);
 		Stack<Slot> slots = t.traverse;
 
@@ -327,8 +327,8 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 			Page lp = loadBranch(page, index - 1);
 			Page rp = loadBranch(page, index + 1);
-			int lsize = lp != null ? lp.size() : 0;
-			int rsize = rp != null ? rp.size() : 0;
+			var lsize = lp != null ? lp.size() : 0;
+			var rsize = rp != null ? rp.size() : 0;
 
 			if (rsize <= lsize && lsize != 0)
 				if (half < lsize) { // shift

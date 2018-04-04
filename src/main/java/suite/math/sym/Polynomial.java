@@ -115,7 +115,7 @@ public class Polynomial<N> {
 		Node sum = format_.apply(n0);
 
 		for (IntObjPair<N> pair : poly.streamlet().sortByKey(Integer::compare)) {
-			int p = pair.t0;
+			var p = pair.t0;
 			Node power = p < 0 ? mul.inverse(powerFun.apply(-p)) : powerFun.apply(p);
 			sum = add.apply(mul.apply(format_.apply(pair.t1), power), sum);
 		}

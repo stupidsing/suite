@@ -88,7 +88,7 @@ public class BackAllocatorMech {
 		return BackAllocator_.byPrices(prices -> {
 			Macd macd = ma.macd(prices, d26, d12, d9);
 			return index -> {
-				int last = index - 1;
+				var last = index - 1;
 				float macd_ = macd.macds[last];
 				float movingAvgMacd = macd.movingAvgMacds[last];
 				int sign0 = Quant.sign(movingAvgMacd, macd_);
@@ -103,7 +103,7 @@ public class BackAllocatorMech {
 			float[] movingAvgs0 = ma.movingAvg(prices, d26);
 			float[] movingAvgs1 = ma.movingAvg(prices, d9);
 			return Quant.filterRange(1, index -> {
-				int last = index - 1;
+				var last = index - 1;
 				return (double) Quant.sign(movingAvgs0[last], movingAvgs1[last]);
 			});
 		});
@@ -115,7 +115,7 @@ public class BackAllocatorMech {
 			float[] movingAvgs0 = ma.movingAvg(prices, d26);
 			float[] movingAvgs1 = ma.movingAvg(prices, d9);
 			return Quant.filterRange(2, index -> {
-				int last = index - 1;
+				var last = index - 1;
 				float movingAvg0 = movingAvgs0[last];
 				float movingAvg1 = movingAvgs1[last];
 				float movingAvg0ytd = movingAvgs0[last - 1];
@@ -132,7 +132,7 @@ public class BackAllocatorMech {
 			float[] movingAvgs1 = ma.movingAvg(prices, d26);
 			float[] movingAvgs2 = ma.movingAvg(prices, d9);
 			return Quant.filterRange(1, index -> {
-				int last = index - 1;
+				var last = index - 1;
 				float movingAvg0 = movingAvgs0[last];
 				float movingAvg1 = movingAvgs1[last];
 				float movingAvg2 = movingAvgs2[last];
@@ -146,13 +146,13 @@ public class BackAllocatorMech {
 	// Ichimoku three moving average cross-over
 	private BackAllocator ma3ichimoku(int d9, int d26, int d52) {
 		return BackAllocator_.byPrices(prices -> {
-			int length = prices.length;
+			var length = prices.length;
 			float[] movingAvgs0 = ma.movingAvg(prices, d52);
 			float[] movingAvgs1 = ma.movingAvg(prices, d26);
 			float[] movingAvgs2 = ma.movingAvg(prices, d9);
 
 			return Quant.fold(1, length, (i, hold) -> {
-				int im1 = i - 1;
+				var im1 = i - 1;
 				float movingAvg0 = movingAvgs0[i];
 				float movingAvg1 = movingAvgs1[i];
 				float movingAvg2 = movingAvgs2[i];
@@ -233,7 +233,7 @@ public class BackAllocatorMech {
 		return BackAllocator_ //
 				.byPrices(prices -> {
 					IntInt_Int signs = (s, e) -> {
-						int n = 0;
+						var n = 0;
 						for (int i = s; i < e; i++)
 							n += Quant.sign(prices[i - 1], prices[i]);
 						return n;

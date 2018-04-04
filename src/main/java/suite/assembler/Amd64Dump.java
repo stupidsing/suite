@@ -31,7 +31,7 @@ public class Amd64Dump {
 	}
 
 	private String dump(Operand op0) {
-		int pointerSize = 4;
+		var pointerSize = 4;
 		OpReg[] regs;
 		String name;
 
@@ -47,8 +47,8 @@ public class Amd64Dump {
 			return dump(opImm.imm, opImm.size);
 		} else if (op0 instanceof OpMem) {
 			OpMem opMem = (OpMem) op0;
-			int baseReg = opMem.baseReg;
-			int indexReg = opMem.indexReg;
+			var baseReg = opMem.baseReg;
+			var indexReg = opMem.indexReg;
 			String s = "" //
 					+ (0 <= baseReg ? " + " + dump(regs[baseReg]) : "") //
 					+ (0 <= indexReg ? " + " + dump(regs[indexReg]) + " * " + (1 << opMem.scale) : "") //

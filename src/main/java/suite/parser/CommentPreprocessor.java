@@ -41,8 +41,8 @@ public class CommentPreprocessor implements Fun<String, List<Run>> {
 
 	@Override
 	public List<Run> apply(String in) {
-		int closeLength = !isWhitespaces(closeComment) ? closeComment.length() : 0;
-		int start = 0;
+		var closeLength = !isWhitespaces(closeComment) ? closeComment.length() : 0;
+		var start = 0;
 		List<Run> runs = new ArrayList<>();
 
 		while (true) {

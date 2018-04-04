@@ -50,7 +50,7 @@ public class NewPrettyPrinter {
 
 		if ((tree = Tree.decompose(node)) != null) {
 			Operator operator = tree.getOperator();
-			int prec = operator.getPrecedence();
+			var prec = operator.getPrecedence();
 			boolean isParenthesesRequired = operator != null ? prec <= parentPrec : false;
 			String indent1 = indent + ind;
 			Node[] m;

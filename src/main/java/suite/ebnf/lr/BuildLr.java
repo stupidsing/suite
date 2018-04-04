@@ -64,8 +64,8 @@ public class BuildLr {
 		// shift-reduce conflict ends in reduce
 		private boolean put_(String key, Pair<State, Reduce> value1) {
 			Pair<State, Reduce> value0 = get(key);
-			int order0 = order(value0);
-			int order1 = order(value1);
+			var order0 = order(value0);
+			var order1 = order(value1);
 			if (order0 < order1) {
 				put(key, value1);
 				return true;

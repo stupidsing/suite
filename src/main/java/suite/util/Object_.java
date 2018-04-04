@@ -69,14 +69,14 @@ public class Object_ {
 
 				mapper = new Mapper(object -> {
 					Map<Object, Object> map = new HashMap<>();
-					int length = Array.getLength(object);
+					var length = Array.getLength(object);
 					for (int i = 0; i < length; i++)
 						map.put(i, Array.get(object, i));
 					return map;
 				}, object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					Object objects = Array.newInstance(componentType, map.size());
-					int i = 0;
+					var i = 0;
 					while (map.containsKey(i)) {
 						Array.set(objects, i, map.get(i));
 						i++;
@@ -134,14 +134,14 @@ public class Object_ {
 			if (List.class.isAssignableFrom(clazz))
 				mapper = new Mapper(object -> {
 					Map<Object, Object> map = new HashMap<>();
-					int i = 0;
+					var i = 0;
 					for (Object o : (Collection<?>) object)
 						map.put(i++, o);
 					return map;
 				}, object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					Collection<Object> object1 = new ArrayList<>();
-					int i = 0;
+					var i = 0;
 					while (map.containsKey(i))
 						object1.add(map.get(i++));
 					return object1;

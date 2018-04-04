@@ -67,13 +67,13 @@ public class IntObjMap<V> {
 	}
 
 	public V get(int key) {
-		int index = index(key);
+		var index = index(key);
 		return ks[index] == key ? cast(vs[index]) : null;
 	}
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (IntObjPair<V> pair : streamlet()) {
 			h = h * 31 + Integer.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
@@ -88,8 +88,8 @@ public class IntObjMap<V> {
 	}
 
 	public void update(int key, Iterate<V> fun) {
-		int mask = vs.length - 1;
-		int index = index(key);
+		var mask = vs.length - 1;
+		var index = index(key);
 		V v0 = cast(vs[index]);
 		V v1 = fun.apply(v0);
 		ks[index] = key;
@@ -97,10 +97,10 @@ public class IntObjMap<V> {
 		if (v1 == null)
 			new Object() {
 				public void rehash(int index) {
-					int index1 = (index + 1) & mask;
+					var index1 = (index + 1) & mask;
 					Object v = vs[index1];
 					if (v != null) {
-						int k = ks[index1];
+						var k = ks[index1];
 						vs[index1] = null;
 						rehash(index1);
 						store(k, v);
@@ -128,7 +128,7 @@ public class IntObjMap<V> {
 	}
 
 	private void rehash() {
-		int capacity = vs.length;
+		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
 			int[] ks0 = ks;
@@ -144,7 +144,7 @@ public class IntObjMap<V> {
 	}
 
 	private void store(int key, Object v1) {
-		int index = index(key);
+		var index = index(key);
 		if (vs[index] == null) {
 			ks[index] = key;
 			vs[index] = v1;
@@ -153,8 +153,8 @@ public class IntObjMap<V> {
 	}
 
 	private int index(int key) {
-		int mask = vs.length - 1;
-		int index = Integer.hashCode(key) & mask;
+		var mask = vs.length - 1;
+		var index = Integer.hashCode(key) & mask;
 		while (vs[index] != null && ks[index] != key)
 			index = index + 1 & mask;
 		return index;
@@ -167,7 +167,7 @@ public class IntObjMap<V> {
 
 			public boolean source2(IntObjPair<V> pair) {
 				while (index < capacity) {
-					int k = ks[index];
+					var k = ks[index];
 					Object v = vs[index++];
 					if (v != null) {
 						pair.update(k, cast(v));

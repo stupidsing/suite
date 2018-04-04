@@ -23,7 +23,7 @@ public class BackAllocator_ {
 			GetBuySell getBuySell = mamr.analyze(prices);
 
 			return index -> {
-				int hold = 0;
+				var hold = 0;
 				for (int i = 0; i < index; i++)
 					hold += getBuySell.get(i);
 				return (double) hold;

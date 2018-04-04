@@ -142,8 +142,8 @@ public class EditorController {
 		String pasteText = new ClipboardUtil().getClipboardText();
 
 		if (pasteText != null) {
-			int s = editor.getSelectionStart();
-			int e = editor.getSelectionEnd();
+			var s = editor.getSelectionStart();
+			var e = editor.getSelectionEnd();
 			editor.setText(orig.substring(0, s) + pasteText + orig.substring(e, orig.length()));
 			editor.setCaretPosition(s + pasteText.length());
 		}

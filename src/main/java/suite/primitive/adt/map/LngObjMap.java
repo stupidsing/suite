@@ -67,13 +67,13 @@ public class LngObjMap<V> {
 	}
 
 	public V get(long key) {
-		int index = index(key);
+		var index = index(key);
 		return ks[index] == key ? cast(vs[index]) : null;
 	}
 
 	@Override
 	public int hashCode() {
-		int h = 7;
+		var h = 7;
 		for (LngObjPair<V> pair : streamlet()) {
 			h = h * 31 + Long.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
@@ -88,8 +88,8 @@ public class LngObjMap<V> {
 	}
 
 	public void update(long key, Iterate<V> fun) {
-		int mask = vs.length - 1;
-		int index = index(key);
+		var mask = vs.length - 1;
+		var index = index(key);
 		V v0 = cast(vs[index]);
 		V v1 = fun.apply(v0);
 		ks[index] = key;
@@ -97,7 +97,7 @@ public class LngObjMap<V> {
 		if (v1 == null)
 			new Object() {
 				public void rehash(int index) {
-					int index1 = (index + 1) & mask;
+					var index1 = (index + 1) & mask;
 					Object v = vs[index1];
 					if (v != null) {
 						long k = ks[index1];
@@ -128,7 +128,7 @@ public class LngObjMap<V> {
 	}
 
 	private void rehash() {
-		int capacity = vs.length;
+		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
 			long[] ks0 = ks;
@@ -144,7 +144,7 @@ public class LngObjMap<V> {
 	}
 
 	private void store(long key, Object v1) {
-		int index = index(key);
+		var index = index(key);
 		if (vs[index] == null) {
 			ks[index] = key;
 			vs[index] = v1;
@@ -153,8 +153,8 @@ public class LngObjMap<V> {
 	}
 
 	private int index(long key) {
-		int mask = vs.length - 1;
-		int index = Long.hashCode(key) & mask;
+		var mask = vs.length - 1;
+		var index = Long.hashCode(key) & mask;
 		while (vs[index] != null && ks[index] != key)
 			index = index + 1 & mask;
 		return index;

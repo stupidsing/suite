@@ -18,7 +18,7 @@ public class LengthEstimator {
 	}
 
 	public int estimateLengths(Node node) {
-		int key = getKey(node);
+		var key = getKey(node);
 		Integer length = lengthByIds.get(key);
 
 		if (length == null) {
@@ -28,9 +28,9 @@ public class LengthEstimator {
 				Tree tree = (Tree) node;
 
 				Operator op = tree.getOperator();
-				int len0 = estimateLengths(tree.getLeft());
-				int len1 = estimateLengths(tree.getRight());
-				int opLength = op.getName().length();
+				var len0 = estimateLengths(tree.getLeft());
+				var len1 = estimateLengths(tree.getRight());
+				var opLength = op.getName().length();
 
 				len = len0 + len1 + opLength + 2; // rough estimation
 			} else

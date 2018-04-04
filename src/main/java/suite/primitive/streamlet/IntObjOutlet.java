@@ -169,7 +169,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
 	public int count() {
 		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
-		int i = 0;
+		var i = 0;
 		while (next(pair))
 			i++;
 		return i;
@@ -244,7 +244,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	@Override
 	public int hashCode() {
 		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
-		int h = 7;
+		var h = 7;
 		while (next(pair))
 			h = h * 31 + pair.hashCode();
 		return h;

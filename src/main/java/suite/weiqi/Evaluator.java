@@ -12,7 +12,7 @@ public class Evaluator {
 	private static int territoryScore = 100;
 
 	public static int evaluate(Occupation player, Board board) {
-		int score = 0;
+		var score = 0;
 		Occupation opponent = player.opponent();
 
 		// count territories by counting groups
@@ -42,7 +42,7 @@ public class Evaluator {
 				theirs = true;
 
 			if (!us || !theirs) { // do not count when it is nearby both colours
-				int scoreDelta = territoryScore * group.coords.size();
+				var scoreDelta = territoryScore * group.coords.size();
 				score += !theirs ? scoreDelta : -scoreDelta;
 			}
 		}

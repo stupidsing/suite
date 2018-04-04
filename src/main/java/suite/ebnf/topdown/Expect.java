@@ -38,7 +38,7 @@ public class Expect {
 	public ExpectFun fail = (in, length, start) -> start;
 
 	public ExpectFun identifier = (in, length, start) -> {
-		int pos = start;
+		var pos = start;
 		if (pos < length && Character.isJavaIdentifierStart(in.charAt(pos))) {
 			pos++;
 			while (pos < length && Character.isJavaIdentifierPart(in.charAt(pos)))
@@ -48,7 +48,7 @@ public class Expect {
 	};
 
 	public ExpectFun integerLiteral = (in, length, start) -> {
-		int pos = start;
+		var pos = start;
 		while (pos < length && Character.isDigit(in.charAt(pos)))
 			pos++;
 		if (pos < length && in.charAt(pos) == 'l')
@@ -57,7 +57,7 @@ public class Expect {
 	};
 
 	public ExpectFun realLiteral = (in, length, start) -> {
-		int pos = start;
+		var pos = start;
 		pos = integerLiteral.expect(in, length, pos);
 		if (pos < length && in.charAt(pos) == '.') {
 			pos++;
@@ -145,7 +145,7 @@ public class Expect {
 	};
 
 	public int whitespace(String in, int length, int start) {
-		int pos = start;
+		var pos = start;
 		while (pos < length && Character.isWhitespace(in.charAt(pos)))
 			pos++;
 		pos = comment(in, length, pos, "/*", "*/");

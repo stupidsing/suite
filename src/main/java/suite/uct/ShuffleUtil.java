@@ -13,12 +13,12 @@ public class ShuffleUtil {
 	}
 
 	public static <T> void add(List<T> list, T t) {
-		int size = list.size();
+		var size = list.size();
 
 		if (0 < size) {
 
 			// quickly finds a value smaller than size
-			int position = (int) random.nextLong() & size - 1;
+			var position = (int) random.nextLong() & size - 1;
 			list.add(list.get(position));
 			list.set(position, t);
 		} else
