@@ -31,12 +31,12 @@ public class TimeSeries {
 	// 2.7 Autocorrelation and the Correlogram
 	public float[] acf(float[] ys, int n) {
 		var length = ys.length;
-		double meany = stat.mean(ys);
+		var meany = stat.mean(ys);
 		float[] ydevs = To.vector(length, i -> ys[i] - meany);
 		float[] acovs = To.vector(length, k -> Ints_ //
 				.range(length - k) //
 				.toDouble(Int_Dbl.sum(i -> (ydevs[i] * ydevs[i + k]))));
-		double inv = 1d / acovs[0];
+		var inv = 1d / acovs[0];
 		return To.vector(acovs.length, k -> acovs[k] * inv);
 	}
 
@@ -89,7 +89,7 @@ public class TimeSeries {
 		LinearRegression lr = stat.linearRegression(Ints_ //
 				.range(logVrs.length) //
 				.map(i -> FltObjPair.of((float) Math.log(tors[i]), new float[] { logVrs[i], 1f, })));
-		float beta0 = lr.coefficients[0];
+		var beta0 = lr.coefficients[0];
 		return beta0 / 2d;
 	}
 
@@ -102,18 +102,18 @@ public class TimeSeries {
 		for (int n = 0; n < length * 3 / 4; n++) {
 			float[] returns = Arrays.copyOfRange(returns0, n, length);
 			MeanVariance mv = stat.meanVariance(returns);
-			double mean = mv.mean;
+			var mean = mv.mean;
 			float[] devs = To.vector(returns, r -> r - mean);
-			double min = Double.MAX_VALUE;
-			double max = Double.MIN_VALUE;
-			double sum = 0d;
+			var min = Double.MAX_VALUE;
+			var max = Double.MIN_VALUE;
+			var sum = 0d;
 			for (float dev : devs) {
 				sum += dev;
 				min = min(sum, min);
 				max = max(sum, max);
 			}
-			double x = Math.log(returns.length);
-			double y = (max - min) / mv.standardDeviation();
+			var x = Math.log(returns.length);
+			var y = (max - min) / mv.standardDeviation();
 			pairs.add(FltObjPair.of((float) y, new float[] { (float) x, 1f, }));
 		}
 		return stat.linearRegression(Read.from(pairs)).coefficients[0];
@@ -139,7 +139,7 @@ public class TimeSeries {
 		var length = ys.length;
 		if (0 < length) {
 			float[] logReturns = new float[length - 1];
-			float f0 = ys[0];
+			var f0 = ys[0];
 			for (int i = 0; i < logReturns.length; i++) {
 				logReturns[i] = (float) Quant.logReturn(f0, ys[i + 1]);
 				f0 = ys[i + 1];
@@ -179,12 +179,12 @@ public class TimeSeries {
 	}
 
 	public ReturnsStat returnsStat(float[] prices, double deltaMs) {
-		double scale = Trade_.invTradeDaysPerYear * Trade_.nTradeSecondsPerDay * 1000d / deltaMs;
+		var scale = Trade_.invTradeDaysPerYear * Trade_.nTradeSecondsPerDay * 1000d / deltaMs;
 		return new ReturnsStat(prices, 1d, scale);
 	}
 
 	public ReturnsStat returnsStatDaily(float[] prices) {
-		double dailyInterestRate = Math.expm1(Trade_.logRiskFreeInterestRate * Trade_.invTradeDaysPerYear);
+		var dailyInterestRate = Math.expm1(Trade_.logRiskFreeInterestRate * Trade_.invTradeDaysPerYear);
 		return new ReturnsStat(prices, 1d, dailyInterestRate);
 	}
 
@@ -259,7 +259,7 @@ public class TimeSeries {
 	private float[] differencesOn_(int tor, float[] fs) {
 		var i = fs.length - 1;
 		while (tor <= i) {
-			float f0 = fs[i - tor];
+			var f0 = fs[i - tor];
 			fs[i--] -= f0;
 		}
 		while (0 <= i)
@@ -270,9 +270,9 @@ public class TimeSeries {
 	private float[] returns_(float[] fs) {
 		var length = fs.length;
 		float[] returns = new float[length];
-		float price0 = 0 < length ? fs[0] : 0f;
+		var price0 = 0 < length ? fs[0] : 0f;
 		for (int i = 0; i < returns.length; i++) {
-			float price = fs[i];
+			var price = fs[i];
 			returns[i] = (float) Quant.return_(price0, price);
 			price0 = price;
 		}

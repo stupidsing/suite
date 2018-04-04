@@ -46,15 +46,15 @@ public class Arch {
 			private double p2 = .9d + random.nextDouble() * .001d;
 
 			public double source() {
-				double eps = 0d;
-				double var = 0d;
-				double logLikelihood = 0d;
+				var eps = 0d;
+				var var = 0d;
+				var logLikelihood = 0d;
 
 				for (int t = p; t < xs.length; t++) {
 					var tm1 = t - 1;
-					double eps0 = eps;
-					double var0 = var;
-					double estx = c + Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[tm1 - i]));
+					var eps0 = eps;
+					var var0 = var;
+					var estx = c + Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[tm1 - i]));
 					eps = xs[t] - estx;
 					var = p0 + p1 * eps0 * eps0 + p2 * var0;
 					logLikelihood += -.5d * (Math.log(var) + eps * eps / var);

@@ -29,7 +29,7 @@ public interface Int_Lng {
 		return outlet -> {
 			IntSource source = outlet.source();
 			int c;
-			long result = (long) 0;
+			var result = (long) 0;
 			while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

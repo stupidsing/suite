@@ -33,12 +33,12 @@ public class Bl<T> {
 	public static <T> Bl<T> meld(Bl<T> bl0, Bl<T> bl1, BinOp<T> f) {
 		if (bl0 != null) {
 			if (bl1 != null) {
-				long bitmap0 = bl0.bitmap;
-				long bitmap1 = bl1.bitmap;
+				var bitmap0 = bl0.bitmap;
+				var bitmap1 = bl1.bitmap;
 				var bitCount = 0;
 				var bitCount0 = 0;
 				var bitCount1 = 0;
-				long bitmap = bitmap0 | bitmap1;
+				var bitmap = bitmap0 | bitmap1;
 				Object[] ts = new Object[Long.bitCount(bitmap)];
 
 				for (long bit = 1; bit != 0; bit <<= 1) {
@@ -69,15 +69,15 @@ public class Bl<T> {
 			ts0 = empty;
 		}
 
-		long bit = 1l << index;
-		long bits0 = bitmap0 & bit - 1;
-		long bits1 = bitmap0 & 0xFFFFFFFFFFFFFFFEl << index;
+		var bit = 1l << index;
+		var bits0 = bitmap0 & bit - 1;
+		var bits1 = bitmap0 & 0xFFFFFFFFFFFFFFFEl << index;
 
 		var diff0 = (bitmap0 & bit) != 0 ? 1 : 0;
 		var diff1 = t != null ? 1 : 0;
 		var diff = diff1 - diff0;
 
-		long bitmap1 = bits0 + ((long) diff1 << index) + bits1;
+		var bitmap1 = bits0 + ((long) diff1 << index) + bits1;
 
 		if (bitmap1 != 0) {
 			Object[] ts1 = new Object[ts0.length + diff];
@@ -95,7 +95,7 @@ public class Bl<T> {
 	public static <T> Bl<T> of(List<IntObjPair<T>> list) {
 		if (!list.isEmpty()) {
 			var size = list.size();
-			long bitmap = 0;
+			var bitmap = 0;
 			Object[] ts = new Object[size];
 			for (int i = 0; i < size; i++) {
 				IntObjPair<T> pair = list.get(i);
@@ -113,11 +113,11 @@ public class Bl<T> {
 	}
 
 	public static <T> T get(Bl<T> bl, int index) {
-		long bitmap = bl != null ? bl.bitmap : 0;
-		long bit = 1l << index;
+		var bitmap = bl != null ? bl.bitmap : 0;
+		var bit = 1l << index;
 
 		if ((bitmap & bit) != 0) {
-			long mask = bit - 1;
+			var mask = bit - 1;
 			var bitCount = Long.bitCount(bitmap & mask);
 			return bl.get(bitCount);
 		} else

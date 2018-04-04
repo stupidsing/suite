@@ -29,7 +29,7 @@ public interface Int_Flt {
 		return outlet -> {
 			IntSource source = outlet.source();
 			int c;
-			float result = (float) 0;
+			var result = (float) 0;
 			while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

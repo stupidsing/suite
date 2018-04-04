@@ -25,7 +25,7 @@ public class CholeskyDecomposition {
 			float[] fs1 = new float[height]; // will be inverse(L) * fs0
 
 			for (int i = 0; i < height; i++) {
-				float sum = fs0[i];
+				var sum = fs0[i];
 				for (int j = 0; j < i; j++)
 					sum -= l[i][j] * fs1[j];
 				fs1[i] = sum;
@@ -36,7 +36,7 @@ public class CholeskyDecomposition {
 			float[] fs3 = new float[width]; // will be inverse(L*) * fs2
 
 			for (int i = width - 1; 0 <= i; i--) {
-				float sum = fs2[i];
+				var sum = fs2[i];
 				for (int j = height - 1; i < j; j--)
 					sum -= l[j][i] * fs3[j];
 				fs3[i] = sum;
@@ -60,13 +60,13 @@ public class CholeskyDecomposition {
 		float[][] l = mtx.identity(size);
 
 		for (int c = 0; c < size; c++) {
-			float mii = m[c][c];
-			double mii_sqrt = Math.sqrt(mii);
-			float imii = 1f / mii;
-			double imii_sqrt = 1f / mii_sqrt;
+			var mii = m[c][c];
+			var mii_sqrt = Math.sqrt(mii);
+			var imii = 1f / mii;
+			var imii_sqrt = 1f / mii_sqrt;
 
 			for (int i = c; i < size; i++) {
-				double sum = l[i][c] * mii_sqrt;
+				var sum = l[i][c] * mii_sqrt;
 				for (int j = c + 1; j < size; j++)
 					sum += imii_sqrt * l[i][j] * m[j][c];
 				l[i][c] = (float) sum;
@@ -96,12 +96,12 @@ public class CholeskyDecomposition {
 		float[] d = new float[size];
 
 		for (int c = 0; c < size; c++) {
-			float imii = 1f / (d[c] = m[c][c]);
+			var imii = 1f / (d[c] = m[c][c]);
 			var c1 = c + 1;
 
 			for (int i = c1; i < size; i++)
 				for (int j = c1; j < size; j++) {
-					float imii_mjc = imii * m[j][c];
+					var imii_mjc = imii * m[j][c];
 					l[i][c] += imii_mjc * l[i][j];
 					m[i][j] -= imii_mjc * m[i][c];
 				}

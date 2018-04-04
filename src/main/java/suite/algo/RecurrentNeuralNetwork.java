@@ -41,7 +41,7 @@ public class RecurrentNeuralNetwork {
 
 		public Unit() {
 			Random random = new Random();
-			double isll = 1f / Math.sqrt(ll);
+			var isll = 1f / Math.sqrt(ll);
 
 			// random weights, bias 0; Xavier initialization
 			for (int i = 0; i < memoryLength; i++)

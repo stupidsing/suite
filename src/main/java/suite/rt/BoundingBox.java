@@ -65,7 +65,7 @@ public class BoundingBox implements RtObject {
 		boolean isIntersect;
 
 		if (MathUtil.epsilon < Math.abs(dirX)) {
-			float gradient = dirY / dirX;
+			var gradient = dirY / dirX;
 			float y0, y1;
 
 			if (0 < gradient) {

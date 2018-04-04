@@ -94,7 +94,7 @@ public class Doubles_ {
 		return new DblStreamlet(() -> {
 			DblMutable m = DblMutable.of(s);
 			return DblOutlet.of(() -> {
-				double c = m.increment();
+				var c = m.increment();
 				return c < e ? c : DblFunUtil.EMPTYVALUE;
 			});
 		});

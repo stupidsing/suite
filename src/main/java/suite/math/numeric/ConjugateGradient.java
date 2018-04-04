@@ -18,7 +18,7 @@ public class ConjugateGradient {
 			double alpha = vec.dot(rs) / vec.dot(ps, mtx.mul(a, ps));
 			float[] xs1 = vec.add(xs, vec.scale(ps, alpha));
 			float[] rs1 = vec.sub(rs, vec.scale(mtx.mul(a, ps), alpha));
-			double beta = vec.dot(rs1) / vec.dot(rs);
+			var beta = vec.dot(rs1) / vec.dot(rs);
 			float[] ps1 = vec.add(rs1, vec.scale(ps, beta));
 
 			xs = xs1;

@@ -270,7 +270,7 @@ public class Amd64Assemble {
 			break;
 		case INT:
 			if (instruction.op0 instanceof OpImm) {
-				long iv = ((OpImm) instruction.op0).imm;
+				var iv = ((OpImm) instruction.op0).imm;
 				if (iv != 3)
 					encode = assemble(instruction, 0xCD).imm(iv, 1);
 				else
@@ -722,7 +722,7 @@ public class Amd64Assemble {
 			return invalid;
 		}
 
-		long rel = op0.imm - (offset + bs0.length + size);
+		var rel = op0.imm - (offset + bs0.length + size);
 		InsnCode insnCode;
 
 		if (1 < size || -128 <= rel && rel < 128) {

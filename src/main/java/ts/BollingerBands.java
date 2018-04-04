@@ -25,24 +25,24 @@ public class BollingerBands {
 		float[] means = new float[length];
 		float[] variances = new float[length];
 		var d = backPos0 - backPos1;
-		double il = 1d / d;
+		var il = 1d / d;
 		int i = 0, j;
-		double sum = 0d;
-		double sumSq = 0d;
+		var sum = 0d;
+		var sumSq = 0d;
 
 		for (; i < d; i++) {
-			float f = fun.apply(i);
+			var f = fun.apply(i);
 			sum += f;
 			sumSq += f * f;
 		}
 
 		for (; (j = i + backPos1) < length; i++) {
-			double mean = sum * il;
+			var mean = sum * il;
 			means[j] = (float) mean;
 			variances[j] = (float) (sumSq * il - mean * mean);
 
-			float f0 = fun.apply(i - d);
-			float fx = fun.apply(i);
+			var f0 = fun.apply(i - d);
+			var fx = fun.apply(i);
 			sum += fx - f0;
 			sumSq += fx * fx - f0 * f0;
 		}
@@ -68,11 +68,11 @@ public class BollingerBands {
 				int s = max(0, i1 - backPos0);
 				int e = max(0, i1 - backPos1);
 				MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(fs, s, e));
-				double mean = mv.mean;
-				double ksd = k * mv.standardDeviation();
-				double bbl = mean - ksd;
-				double bbu = mean + ksd;
-				double diff = bbu - bbl;
+				var mean = mv.mean;
+				var ksd = k * mv.standardDeviation();
+				var bbl = mean - ksd;
+				var bbu = mean + ksd;
+				var diff = bbu - bbl;
 				lowers[i] = (float) bbl;
 				uppers[i] = (float) bbu;
 				sds[i] = (float) ((fs[i] - mean) / diff);

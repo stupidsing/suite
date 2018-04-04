@@ -90,7 +90,7 @@ public class Profiler implements Service {
 	}
 
 	private void recordStats() {
-		long currentThreadId = Thread.currentThread().getId();
+		var currentThreadId = Thread.currentThread().getId();
 		ThreadMXBean mx = ManagementFactory.getThreadMXBean();
 
 		long[] threadIds = mx.getAllThreadIds();

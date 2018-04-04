@@ -119,7 +119,7 @@ public class LngIntMap {
 					var index1 = (index + 1) & mask;
 					var v_ = vs[index1];
 					if (v_ != EMPTYVALUE) {
-						long k = ks[index1];
+						var k = ks[index1];
 						vs[index1] = EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
@@ -190,7 +190,7 @@ public class LngIntMap {
 
 			public boolean source2(LngIntPair pair) {
 				while (index < capacity) {
-					long k = ks[index];
+					var k = ks[index];
 					var v = vs[index++];
 					if (v != EMPTYVALUE) {
 						pair.update(k, v);

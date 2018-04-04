@@ -43,14 +43,14 @@ public class BackTester {
 		Streamlet<String> results1 = simulationsByKey //
 				.filterValue(sim -> sim.exception == null) //
 				.groupBy(sims -> {
-					double txFee = sims.toDouble(Obj_Dbl.sum(sim -> cfg.transactionFee(sim.account.transactionAmount())));
+					var txFee = sims.toDouble(Obj_Dbl.sum(sim -> cfg.transactionFee(sim.account.transactionAmount())));
 
 					float[] returns = sims //
 							.collect(Obj_Flt.lift(sim -> (float) sim.annualReturn)) //
 							.toArray();
 
 					MeanVariance mv = stat.meanVariance(returns);
-					double logCagr = Floats_.of(returns).mapFlt(return_ -> (float) Math.log1p(return_)).average();
+					var logCagr = Floats_.of(returns).mapFlt(return_ -> (float) Math.log1p(return_)).average();
 
 					return ">> cagr = " + To.string(Math.expm1(logCagr)) //
 							+ ", sharpe = " + To.string(mv.mean / mv.standardDeviation()) //

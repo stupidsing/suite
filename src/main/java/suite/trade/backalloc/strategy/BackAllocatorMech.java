@@ -89,8 +89,8 @@ public class BackAllocatorMech {
 			Macd macd = ma.macd(prices, d26, d12, d9);
 			return index -> {
 				var last = index - 1;
-				float macd_ = macd.macds[last];
-				float movingAvgMacd = macd.movingAvgMacds[last];
+				var macd_ = macd.macds[last];
+				var movingAvgMacd = macd.movingAvgMacds[last];
 				int sign0 = Quant.sign(movingAvgMacd, macd_);
 				return sign0 == Quant.sign(0d, movingAvgMacd) ? (double) sign0 : 0d;
 			};
@@ -116,9 +116,9 @@ public class BackAllocatorMech {
 			float[] movingAvgs1 = ma.movingAvg(prices, d9);
 			return Quant.filterRange(2, index -> {
 				var last = index - 1;
-				float movingAvg0 = movingAvgs0[last];
-				float movingAvg1 = movingAvgs1[last];
-				float movingAvg0ytd = movingAvgs0[last - 1];
+				var movingAvg0 = movingAvgs0[last];
+				var movingAvg1 = movingAvgs1[last];
+				var movingAvg0ytd = movingAvgs0[last - 1];
 				int sign = Quant.sign(movingAvg0, movingAvg1);
 				return sign == Quant.sign(movingAvg0ytd, movingAvg0) ? (double) sign : 0d;
 			});
@@ -133,9 +133,9 @@ public class BackAllocatorMech {
 			float[] movingAvgs2 = ma.movingAvg(prices, d9);
 			return Quant.filterRange(1, index -> {
 				var last = index - 1;
-				float movingAvg0 = movingAvgs0[last];
-				float movingAvg1 = movingAvgs1[last];
-				float movingAvg2 = movingAvgs2[last];
+				var movingAvg0 = movingAvgs0[last];
+				var movingAvg1 = movingAvgs1[last];
+				var movingAvg2 = movingAvgs2[last];
 				int sign0 = Quant.sign(movingAvg0, movingAvg1);
 				int sign1 = Quant.sign(movingAvg1, movingAvg2);
 				return sign0 == sign1 ? (double) -sign0 : 0d;
@@ -153,11 +153,11 @@ public class BackAllocatorMech {
 
 			return Quant.fold(1, length, (i, hold) -> {
 				var im1 = i - 1;
-				float movingAvg0 = movingAvgs0[i];
-				float movingAvg1 = movingAvgs1[i];
-				float movingAvg2 = movingAvgs2[i];
-				float movingAvg1ytd = movingAvgs1[im1];
-				float movingAvg2ytd = movingAvgs2[im1];
+				var movingAvg0 = movingAvgs0[i];
+				var movingAvg1 = movingAvgs1[i];
+				var movingAvg2 = movingAvgs2[i];
+				var movingAvg1ytd = movingAvgs1[im1];
+				var movingAvg2ytd = movingAvgs2[im1];
 				int sign0 = Quant.sign(movingAvg0, movingAvg1);
 				int sign1 = Quant.sign(movingAvg1, movingAvg2);
 				int sign2 = Quant.sign(movingAvg1, movingAvg1ytd);

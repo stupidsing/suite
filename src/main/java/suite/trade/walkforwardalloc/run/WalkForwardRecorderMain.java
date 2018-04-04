@@ -43,7 +43,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) {
 		Streamlet<Asset> assets = cfg.queryCompaniesByMarketCap(Time.now());
-		float fund0 = 1000000f;
+		var fund0 = 1000000f;
 
 		Trade_.isCacheQuotes = false;
 		Trade_.isShortSell = true;
@@ -85,7 +85,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 					String[] array = br.readLine().split(",");
 					Time time = Time.of(array[0].trim());
 					var symbol = array[1].trim();
-					float price = Float.parseFloat(array[2].trim());
+					var price = Float.parseFloat(array[2].trim());
 					data.computeIfAbsent(time, s -> new HashMap<>()).put(symbol, price);
 				}
 			} catch (IOException ex) {

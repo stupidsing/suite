@@ -56,14 +56,14 @@ public class Pmamr2BackAllocator {
 							DataSource ds = dsBySymbol.get(symbol);
 							float[] prices = ds.prices;
 							var last = index - 1;
-							float price0 = prices[last - tor / 2];
-							double price = prices[last];
+							var price0 = prices[last - tor / 2];
+							var price = prices[last];
 
-							double mamrRatio = mrs.movingAvgMeanReversionRatio();
+							var mamrRatio = mrs.movingAvgMeanReversionRatio();
 							double dailyReturn = Quant.return_(price0, price) * mamrRatio;
 							ReturnsStat returnsStat = ts.returnsStatDaily(prices);
-							double sharpe = returnsStat.sharpeRatio();
-							double kelly = returnsStat.kellyCriterion();
+							var sharpe = returnsStat.sharpeRatio();
+							var kelly = returnsStat.kellyCriterion();
 							return new PotentialStat(dailyReturn, sharpe, kelly);
 						}) //
 						.filterValue(ps -> ps.dailyReturn < 0d) //

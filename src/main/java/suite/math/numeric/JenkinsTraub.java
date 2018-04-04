@@ -175,7 +175,7 @@ public class JenkinsTraub {
 	}
 
 	private double evaluate(float[] poly, double x) {
-		double y = 0d;
+		var y = 0d;
 		for (int i = poly.length - 1; 0 <= i; i--)
 			y = y * x + poly[i];
 		return y;

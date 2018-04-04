@@ -22,7 +22,7 @@ public class P4Emit {
 
 	public OpReg emitRegInsn(Insn insn, OpReg op0, Operand op1) {
 		if (op1 instanceof OpImm) {
-			long i = ((OpImm) op1).imm;
+			var i = ((OpImm) op1).imm;
 			if (insn == Insn.AND)
 				andImm(op0, i);
 			else if (insn == Insn.OR)

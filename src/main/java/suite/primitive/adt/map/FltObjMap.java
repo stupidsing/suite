@@ -100,7 +100,7 @@ public class FltObjMap<V> {
 					var index1 = (index + 1) & mask;
 					Object v = vs[index1];
 					if (v != null) {
-						float k = ks[index1];
+						var k = ks[index1];
 						vs[index1] = null;
 						rehash(index1);
 						store(k, v);
@@ -167,7 +167,7 @@ public class FltObjMap<V> {
 
 			public boolean source2(FltObjPair<V> pair) {
 				while (index < capacity) {
-					float k = ks[index];
+					var k = ks[index];
 					Object v = vs[index++];
 					if (v != null) {
 						pair.update(k, cast(v));

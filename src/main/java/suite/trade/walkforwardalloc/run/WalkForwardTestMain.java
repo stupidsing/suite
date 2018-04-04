@@ -25,7 +25,7 @@ public class WalkForwardTestMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		float fund0 = 1000000f;
+		var fund0 = 1000000f;
 
 		Trade_.isCacheQuotes = false;
 		Trade_.isShortSell = true;

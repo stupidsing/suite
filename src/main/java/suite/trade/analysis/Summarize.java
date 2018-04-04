@@ -84,9 +84,9 @@ public class Summarize {
 					|| HkexUtil.isMarketOpen(now.addHours(1));
 
 			DataSource ds = cfg.dataSource(symbol);
-			float price0 = acquiredPrices.get(symbol); // acquisition price
-			float price1 = ds.get(isMarketOpen ? -1 : -2).t1; // previous close
-			float pricex = isMarketOpen ? priceBySymbol.get(symbol) : ds.get(-1).t1; // now
+			var price0 = acquiredPrices.get(symbol); // acquisition price
+			var price1 = ds.get(isMarketOpen ? -1 : -2).t1; // previous close
+			var pricex = isMarketOpen ? priceBySymbol.get(symbol) : ds.get(-1).t1; // now
 
 			var keys = Read //
 					.from2(nSharesByKeyBySymbol.getOrDefault(symbol, Map.ofEntries())) //
@@ -140,7 +140,7 @@ public class Summarize {
 				.from2(Trade_.portfolio(trades0)) //
 				.map((symbol, nShares) -> {
 					Asset asset = cfg.queryCompany(symbol);
-					float price = priceBySymbol.get(symbol);
+					var price = priceBySymbol.get(symbol);
 					var info = infoFun.apply(symbol);
 					return asset //
 							+ ": " + price + " * " + nShares //
@@ -164,8 +164,8 @@ public class Summarize {
 			Account accountTx = Account.ofHistory(trades0.collect(Trade_::collectBrokeredTrades));
 			Account account0 = Account.ofHistory(trades0);
 			Account account1 = Account.ofHistory(trades1);
-			double amount0 = account0.cash();
-			double amount1 = account1.cash();
+			var amount0 = account0.cash();
+			var amount1 = account1.cash();
 
 			this.details = details;
 			this.trades = trades0;

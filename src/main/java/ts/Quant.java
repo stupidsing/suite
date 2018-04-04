@@ -13,12 +13,12 @@ import suite.trade.Trade_;
 public class Quant {
 
 	public static double div(double n, double d0) {
-		double d1 = d0 != 0d ? d0 : Trade_.negligible;
+		var d1 = d0 != 0d ? d0 : Trade_.negligible;
 		return n / d1;
 	}
 
 	public static float div(float n, float d0) {
-		float d1 = d0 != 0d ? d0 : Trade_.negligible;
+		var d1 = d0 != 0d ? d0 : Trade_.negligible;
 		return n / d1;
 	}
 
@@ -64,11 +64,11 @@ public class Quant {
 			IntFltPredicate isEnterLong) {
 		var length = prices.length;
 		float[] holds = new float[length];
-		float hold = 0f;
+		var hold = 0f;
 		float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
 
 		for (int i = 0; i < length; i++) {
-			float price = prices[i];
+			var price = prices[i];
 			min = Float.min(min, price);
 			max = Float.max(max, price);
 			if (hold < 0f) // exit short
@@ -95,7 +95,7 @@ public class Quant {
 	// hold with fixed day exit
 	public static Int_Dbl fold(int start, int end, int nDaysExit, IntFlt_Flt fun) {
 		float[] holds = new float[end];
-		float hold = 0f;
+		var hold = 0f;
 		var nDays = 0;
 		for (int i = start; i < end; i++) {
 			float hold1 = nDays < nDaysExit ? fun.apply(i, hold) : 0f;

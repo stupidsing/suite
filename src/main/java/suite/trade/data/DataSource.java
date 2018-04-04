@@ -137,7 +137,7 @@ public class DataSource {
 
 		for (int di = length1 - 1; 0 <= di; di--) {
 			var si_ = si;
-			long t1 = ts1[di];
+			var t1 = ts1[di];
 			while (0 <= si && t1 <= ts[si])
 				si--;
 			data[di] = tickDatum(si + 1, si_ + 1);
@@ -154,7 +154,7 @@ public class DataSource {
 
 		for (int di = 0; di < length1; di++) {
 			var si_ = si;
-			long t1 = ts1[di];
+			var t1 = ts1[di];
 			while (si < length0 && ts[si] + tickDuration <= t1 + tickDuration)
 				si++;
 			data[di] = tickDatum(si_, si);
@@ -193,7 +193,7 @@ public class DataSource {
 	}
 
 	public LngFltPair last(Time time) {
-		long t = time.epochSec();
+		var t = time.epochSec();
 		for (int i = ts.length - 1; 0 <= i; i--)
 			if (ts[i] <= t)
 				return LngFltPair.of(ts[i], prices[i]);
@@ -201,8 +201,8 @@ public class DataSource {
 	}
 
 	public double lastReturn(int index) {
-		double price0 = prices[index - 2];
-		double price1 = prices[index - 1];
+		var price0 = prices[index - 2];
+		var price1 = prices[index - 1];
 		return (price1 - price0) / price0;
 	}
 
@@ -245,13 +245,13 @@ public class DataSource {
 
 	private void validate(float[] prices_) {
 		var length = prices_.length;
-		long t0 = 0 < length ? ts[0] : Long.MIN_VALUE;
-		float price0 = 0 < length ? prices_[0] : Float.MAX_VALUE;
+		var t0 = 0 < length ? ts[0] : Long.MIN_VALUE;
+		var price0 = 0 < length ? prices_[0] : Float.MAX_VALUE;
 		var date0 = Time.ofEpochSec(t0).ymd();
 
 		for (int i = 1; i < length; i++) {
-			long t1 = ts[i];
-			float price1 = prices_[i];
+			var t1 = ts[i];
+			var price1 = prices_[i];
 			var date1 = Time.ofEpochSec(t1).ymd();
 
 			if (t1 <= t0)
@@ -276,8 +276,8 @@ public class DataSource {
 	}
 
 	private DataSource range_(TimeRange period) {
-		long t0 = period.from.epochSec();
-		long tx = period.to.epochSec();
+		var t0 = period.from.epochSec();
+		var tx = period.to.epochSec();
 		return range_(t0, tx);
 	}
 
@@ -302,10 +302,10 @@ public class DataSource {
 	private Datum tickDatum(int start, int end) {
 		if (start <= end)
 			if (end <= 0) {
-				long t = TimeRange.min.epochSec();
+				var t = TimeRange.min.epochSec();
 				return Datum.of(t, t, Trade_.max);
 			} else if (ts.length <= start) {
-				long t = TimeRange.max.epochSec();
+				var t = TimeRange.max.epochSec();
 				return Datum.of(t, t, Trade_.negligible);
 			} else if (start < end)
 				return datum_(start, end);
@@ -316,9 +316,9 @@ public class DataSource {
 	}
 
 	private Datum datum_(int start, int end) {
-		float lo = Trade_.max;
-		float hi = Trade_.negligible;
-		float volume = 0f;
+		var lo = Trade_.max;
+		var hi = Trade_.negligible;
+		var volume = 0f;
 		for (int i = start; i < end; i++) {
 			lo = min(lo, lows[i]);
 			hi = max(hi, highs[i]);
@@ -328,12 +328,12 @@ public class DataSource {
 	}
 
 	private Datum datum_(int pos) {
-		long t0 = ts[pos];
+		var t0 = ts[pos];
 		return new Datum(t0, t0 + tickDuration, opens[pos], closes[pos], lows[pos], highs[pos], volumes[pos]);
 	}
 
 	private Datum instant(int pos) {
-		long t0 = ts[pos];
+		var t0 = ts[pos];
 		return Datum.of(t0, t0, opens[pos]);
 	}
 

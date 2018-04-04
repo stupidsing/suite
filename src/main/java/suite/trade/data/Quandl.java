@@ -14,9 +14,9 @@ public class Quandl {
 
 	public DataSource dataSourceCsv(String symbol, TimeRange period) {
 		String[] m = Constants.secrets("quandl .0");
-		long usMarketClose = 16l;
-		long ph0 = period.to.epochSec() - (usMarketClose + 4) * 24 * 3600;
-		long ph1 = ph0 - (ph0 % 86400l);
+		var usMarketClose = 16l;
+		var ph0 = period.to.epochSec() - (usMarketClose + 4) * 24 * 3600;
+		var ph1 = ph0 - (ph0 % 86400l);
 
 		var urlString = "https://www.quandl.com/api/v1/datasets/CHRIS/CME_CL1.csv" //
 				+ "?ph=" + ph1 //

@@ -89,13 +89,13 @@ public class BackAllocTester {
 			AlignKeyDataSource<String> akds = cfg.dataSources(historyPeriod, Read.from(symbols));
 			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
 			long[] tradeTs = akds.ts;
-			long t0 = period.from.epochSec();
-			long tx = period.to.epochSec();
+			var t0 = period.from.epochSec();
+			var tx = period.to.epochSec();
 
 			int[] indices = Ints_ //
 					.range(tradeTs.length) //
 					.filter(i -> {
-						long t = tradeTs[i];
+						var t = tradeTs[i];
 						return t0 <= t && t < tx;
 					}) //
 					.toArray();
@@ -118,7 +118,7 @@ public class BackAllocTester {
 
 					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(index + 1);
 					UpdatePortfolio up = Trade_.updatePortfolio(ymd, account, ratioBySymbol, assetBySymbol, eodBySymbol);
-					float valuation_ = valuations_[i] = up.valuation0;
+					var valuation_ = valuations_[i] = up.valuation0;
 
 					for (Pair<String, Float> e : up.val0.streamlet())
 						holdBySymbol_.compute(e.t0, (s, h) -> e.t1 / (valuation_ * size) + (h != null ? h : 0d));

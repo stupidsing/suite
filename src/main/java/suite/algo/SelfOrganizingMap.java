@@ -24,7 +24,7 @@ public class SelfOrganizingMap {
 		var length = ins.get(0).length;
 		var size = index(bounds);
 		float[][] som = new float[size][length];
-		double alpha = 1f;
+		var alpha = 1f;
 
 		for (int i = 0; i < size; i++)
 			som[i] = Floats_.toArray(length, i_ -> random.nextFloat());
@@ -45,7 +45,7 @@ public class SelfOrganizingMap {
 				}).findMin(0);
 
 				float[] nearestSom = som[index(nearestIndices)];
-				double alpha_ = alpha;
+				var alpha_ = alpha;
 
 				new Loop(is -> {
 					var index = index(is);

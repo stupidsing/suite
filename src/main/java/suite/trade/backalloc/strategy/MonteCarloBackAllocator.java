@@ -73,7 +73,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 
 	private double evaluate(String[] symbols, float[] p, Map<String, float[]> returnsBySymbol, int index) {
 		var d = random.nextInt(index);
-		double sum = 0d;
+		var sum = 0d;
 		for (int i = 0; i < symbols.length; i++) {
 			var symbol = symbols[i];
 			sum += p[i] * returnsBySymbol.get(symbol)[d];
@@ -98,10 +98,10 @@ public class MonteCarloBackAllocator implements BackAllocator {
 	}
 
 	private float[] fair(float[] p) {
-		double sum = 0d;
+		var sum = 0d;
 		for (int i = 0; i < p.length; i++)
 			sum += p[i];
-		double invSum = 1d / sum;
+		var invSum = 1d / sum;
 		for (int i = 0; i < p.length; i++)
 			p[i] *= invSum;
 		return p;

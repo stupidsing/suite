@@ -83,8 +83,8 @@ public class TimeRange extends Range<Time> {
 	}
 
 	private static Streamlet<TimeRange> backTestDaysBefore_(Time frDate, Time toDate, int nDays, int alignment) {
-		long epd0 = frDate.epochDay();
-		long epd1 = toDate.epochDay() - 1;
+		var epd0 = frDate.epochDay();
+		var epd1 = toDate.epochDay() - 1;
 		epd0 -= epd0 % alignment;
 		epd1 -= epd1 % alignment;
 		List<TimeRange> periods = new ArrayList<>();

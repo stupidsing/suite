@@ -143,13 +143,13 @@ public class StatisticalArbitrageTest {
 		float[] returns = ds.returns();
 
 		for (float bet = 0f - 2f; bet < 1f + 2f; bet += .02f) {
-			float notBet = 1f - bet;
-			double sum = 0d;
+			var notBet = 1f - bet;
+			var sum = 0d;
 
 			for (int i = 0; i < nTrials; i++) {
-				double account = 1d;
+				var account = 1d;
 				for (int j = 0; j < nBets; j++) {
-					double return_ = returns[random.nextInt(returns.length)];
+					var return_ = returns[random.nextInt(returns.length)];
 					account = notBet * account + bet * account * (1d + return_);
 				}
 				sum += account;
@@ -183,7 +183,7 @@ public class StatisticalArbitrageTest {
 			IntFltPair max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
 
 			for (int i = minPeriod; i < dct.length; i++) {
-				float f = Math.abs(dct[i]);
+				var f = Math.abs(dct[i]);
 				if (max.t1 < f)
 					max = IntFltPair.of(i, f);
 			}
@@ -221,7 +221,7 @@ public class StatisticalArbitrageTest {
 						double[] cps = new double[11];
 
 						for (int cpsi = 0, predDiff = -500; predDiff <= 500; cpsi++, predDiff += 100) {
-							float f = prices[t - 1] + predDiff - prices[t - tor];
+							var f = prices[t - 1] + predDiff - prices[t - tor];
 							var i = 0;
 							while (i < length && differences[i] < f)
 								i++;
@@ -237,11 +237,11 @@ public class StatisticalArbitrageTest {
 			for (int cpsi = 0, predDiff = -500; predDiff < 500; cpsi++, predDiff += 100) {
 				var cpsi_ = cpsi;
 
-				double sum = Ints_ //
+				var sum = Ints_ //
 						.range(1, maxTor) //
 						.map(i -> i) //
 						.toDouble(Obj_Dbl.sum(tor -> {
-							double probability = cpsArray[tor - 1][cpsi_ + 1] - cpsArray[tor - 1][cpsi_];
+							var probability = cpsArray[tor - 1][cpsi_ + 1] - cpsArray[tor - 1][cpsi_];
 							return 1d / probability;
 						}));
 
@@ -254,7 +254,7 @@ public class StatisticalArbitrageTest {
 		};
 
 		for (int t = maxTor + 1; t < prices.length; t++) {
-			float predicted = prices[t - 1] + predictFun.apply(t);
+			var predicted = prices[t - 1] + predictFun.apply(t);
 
 			System.out.println("t = " + t //
 					+ ", actual = " + prices[t] //

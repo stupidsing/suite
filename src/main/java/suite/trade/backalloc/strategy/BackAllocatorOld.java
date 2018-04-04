@@ -40,8 +40,8 @@ public class BackAllocatorOld {
 
 			return index -> {
 				var last = index - 1;
-				float sd = ma_[last];
-				float diff = diffs[last];
+				var sd = ma_[last];
+				var diff = diffs[last];
 				if (sd < -.3d && .015d < diff)
 					return 1d;
 				else if (.3d < sd && diff < -.015d)
@@ -55,13 +55,13 @@ public class BackAllocatorOld {
 	public BackAllocator bbVariable() {
 		return BackAllocator_.byPrices(prices -> Quant.filterRange(1, index -> {
 			var last = index - 1;
-			double hold = 0d;
+			var hold = 0d;
 
 			for (int window = 1; hold == 0d && window < 256; window++) {
-				float price = prices[last];
+				var price = prices[last];
 				MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(prices, last - window, last));
-				double mean = mv.mean;
-				double diff = 3d * mv.standardDeviation();
+				var mean = mv.mean;
+				var diff = 3d * mv.standardDeviation();
 
 				if (price < mean - diff)
 					hold = 1d;
@@ -85,10 +85,10 @@ public class BackAllocatorOld {
 
 			return index -> {
 				var last = index - 1;
-				float movingAvg0 = movingAvgs0[last];
-				float movingAvg1 = movingAvgs1[last];
-				float movingMedian0 = movingRanges0[last].median;
-				float movingMedian1 = movingRanges1[last].median;
+				var movingAvg0 = movingAvgs0[last];
+				var movingAvg1 = movingAvgs1[last];
+				var movingMedian0 = movingRanges0[last].median;
+				var movingMedian1 = movingRanges1[last].median;
 				int sign0 = Quant.sign(movingAvg0, movingMedian0);
 				int sign1 = Quant.sign(movingAvg1, movingMedian1);
 				return sign0 == sign1 ? (double) sign0 : 0d;
@@ -119,7 +119,7 @@ public class BackAllocatorOld {
 
 	public BackAllocator questoQuella(String symbol0, String symbol1) {
 		var tor = 64;
-		double threshold = 0d;
+		var threshold = 0d;
 
 		BackAllocator ba0 = (akds, indices) -> {
 			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
@@ -155,16 +155,16 @@ public class BackAllocatorOld {
 			var ix = i;
 			var dir = 0;
 
-			float lastPrice = prices[ix];
-			float priceo = lastPrice;
+			var lastPrice = prices[ix];
+			var priceo = lastPrice;
 			var io = i;
 
 			for (; i0 <= i; i--) {
-				float price = prices[i];
+				var price = prices[i];
 				int dir1 = Quant.sign(price, lastPrice);
 
 				if (dir != 0 && dir != dir1) {
-					double r = (index - io) / (double) (index - i);
+					var r = (index - io) / (double) (index - i);
 					return .36d < r ? Quant.return_(priceo, lastPrice) * r * 4d : 0d;
 				} else
 					dir = dir1;

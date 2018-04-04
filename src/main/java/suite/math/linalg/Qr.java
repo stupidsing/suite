@@ -51,22 +51,22 @@ public class Qr {
 
 				var i0 = i - 1;
 				var i1 = i - 0;
-				float f0 = r[i0][k];
-				float f1 = r[i1][k];
+				var f0 = r[i0][k];
+				var f1 = r[i1][k];
 
 				if (f1 != 0f) {
-					double radius = Math.sqrt(f0 * f0 + f1 * f1);
-					double ir = 1d / radius;
+					var radius = Math.sqrt(f0 * f0 + f1 * f1);
+					var ir = 1d / radius;
 					double cos = f0 * ir, sin = f1 * ir;
 
 					for (int j = 0; j < size; j++) {
-						double m0 = r[i0][j];
-						double m1 = r[i1][j];
+						var m0 = r[i0][j];
+						var m1 = r[i1][j];
 						r[i0][j] = (float) (m0 * cos + m1 * sin);
 						r[i1][j] = (float) (m1 * cos - m0 * sin);
 
-						double q0 = q[j][i0];
-						double q1 = q[j][i1];
+						var q0 = q[j][i0];
+						var q1 = q[j][i1];
 						q[j][i0] = (float) (q0 * cos + q1 * sin);
 						q[j][i1] = (float) (q1 * cos - q0 * sin);
 					}

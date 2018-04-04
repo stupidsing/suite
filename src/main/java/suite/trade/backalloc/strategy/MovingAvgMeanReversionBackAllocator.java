@@ -34,7 +34,7 @@ public class MovingAvgMeanReversionBackAllocator {
 	public BackAllocator backAllocator() {
 		return (akds, indices) -> {
 			Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
-			double dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
+			var dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
 			DataSourceView<String, MeanReversionStat> dsv = DataSourceView //
 					.of(tor, 256, akds, (symbol, ds, period) -> new MeanReversionStat(ds, period));
@@ -55,15 +55,15 @@ public class MovingAvgMeanReversionBackAllocator {
 								&& mrs.movingAvgMeanReversionRatio() < 0d) //
 						.map2((symbol, mrs) -> {
 							DataSource ds = dsBySymbol.get(symbol);
-							double price = ds.prices[index - 1];
+							var price = ds.prices[index - 1];
 
-							double lma = mrs.latestMovingAverage();
+							var lma = mrs.latestMovingAverage();
 							double diff = mrs.movingAvgMeanReversion.predict(new float[] { (float) lma, 1f, });
-							double dailyReturn = diff / price - dailyRiskFreeInterestRate;
+							var dailyReturn = diff / price - dailyRiskFreeInterestRate;
 
 							ReturnsStat returnsStat = ts.returnsStatDaily(ds.prices);
-							double sharpe = returnsStat.sharpeRatio();
-							double kelly = dailyReturn * price * price / mrs.movingAvgMeanReversion.sse;
+							var sharpe = returnsStat.sharpeRatio();
+							var kelly = dailyReturn * price * price / mrs.movingAvgMeanReversion.sse;
 							return new PotentialStat(dailyReturn, sharpe, kelly);
 						}) //
 						.filterValue(ps -> 0d < ps.kelly) //

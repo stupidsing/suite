@@ -29,7 +29,7 @@ public interface Flt_Dbl {
 		return outlet -> {
 			FltSource source = outlet.source();
 			float c;
-			double result = (double) 0;
+			var result = (double) 0;
 			while ((c = source.source()) != FltFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

@@ -190,7 +190,7 @@ public class Memoize {
 			private T result;
 
 			public synchronized T source() {
-				long current = System.currentTimeMillis();
+				var current = System.currentTimeMillis();
 				if (result == null || timestamp + duration < current) {
 					timestamp = current;
 					result = source.source();

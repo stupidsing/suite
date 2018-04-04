@@ -155,7 +155,7 @@ public class DblPrimitives {
 			return outlet -> {
 				Source<T> source = outlet.source();
 				T t;
-				double result = (double) 0;
+				var result = (double) 0;
 				while ((t = source.source()) != null)
 					result += fun1.apply(t);
 				return result;
@@ -182,7 +182,7 @@ public class DblPrimitives {
 			return outlet -> {
 				Pair<K, V> pair = Pair.of(null, null);
 				Source2<K, V> source = outlet.source();
-				double result = (double) 0;
+				var result = (double) 0;
 				while (source.source2(pair))
 					result += fun1.apply(pair.t0, pair.t1);
 				return result;

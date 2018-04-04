@@ -60,7 +60,7 @@ public class UctSearch<Move> {
 
 		root = new UctNode<>();
 		AtomicInteger count = new AtomicInteger();
-		long end = System.currentTimeMillis() + boundedTime;
+		var end = System.currentTimeMillis() + boundedTime;
 
 		List<Thread> threads = Ints_ //
 				.range(numberOfThreads) //
@@ -116,9 +116,9 @@ public class UctSearch<Move> {
 			UctNode<Move> child = node.child;
 			UctNode<Move> bestSelected = null;
 			int pnRaveVisits = getMoveRave(nRaveVisits, node.move);
-			double lnPnVisits = logp1(node.nVisits);
-			double lnPnRaveVisits = logp1(pnRaveVisits);
-			float bestUct = -Float.MAX_VALUE;
+			var lnPnVisits = logp1(node.nVisits);
+			var lnPnRaveVisits = logp1(pnRaveVisits);
+			var bestUct = -Float.MAX_VALUE;
 
 			while (child != null) {
 				float uct;
@@ -163,16 +163,16 @@ public class UctSearch<Move> {
 	}
 
 	private float uct(UctNode<Move> child, double lnParentVisits, double lnParentRaveVisits) {
-		float beta = rave ? (float) (lnParentVisits / raveFactor) : 1f;
+		var beta = rave ? (float) (lnParentVisits / raveFactor) : 1f;
 		beta = min(max(beta, 0f), 1f);
 
 		float raveWins = getMoveRave(nRaveWins, child.move);
 		float raveVisits = getMoveRave(nRaveVisits, child.move);
-		float rave = raveWins / raveVisits + explorationFactor * (float) Math.sqrt(lnParentRaveVisits / (5f * raveVisits));
+		var rave = raveWins / raveVisits + explorationFactor * (float) Math.sqrt(lnParentRaveVisits / (5f * raveVisits));
 
-		float wins = child.nWins;
-		float visits = child.nVisits;
-		float uct = wins / visits + explorationFactor * (float) Math.sqrt(lnParentVisits / (5f * visits));
+		var wins = child.nWins;
+		var visits = child.nVisits;
+		var uct = wins / visits + explorationFactor * (float) Math.sqrt(lnParentVisits / (5f * visits));
 
 		return (1f - beta) * rave + beta * uct;
 	}
@@ -198,7 +198,7 @@ public class UctSearch<Move> {
 				for (int i = 0; i < indent; i++)
 					sb.append('\t');
 
-				float winRate = (float) child.nWins / child.nVisits;
+				var winRate = (float) child.nWins / child.nVisits;
 				String uct;
 				if (parent != null)
 					uct = df3.format(uct(child //

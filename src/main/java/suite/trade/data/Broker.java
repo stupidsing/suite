@@ -46,10 +46,10 @@ public interface Broker {
 			// .15d during promotion period
 			double hsbcInternetBanking = max(transactionAmount * .01d * .25d, 100d);
 
-			double stampDuty = transactionAmount * .01d * .1d;
-			double sfcTxLevy = transactionAmount * .01d * .0027d;
-			double sfcInvestorLevy = transactionAmount * .01d * .002d; // suspended
-			double hkex = transactionAmount * .01d * .005d;
+			var stampDuty = transactionAmount * .01d * .1d;
+			var sfcTxLevy = transactionAmount * .01d * .0027d;
+			var sfcInvestorLevy = transactionAmount * .01d * .002d; // suspended
+			var hkex = transactionAmount * .01d * .005d;
 
 			// TODO deposit transaction charge (for purchase transaction only)
 			// HKD5/RMB5 per board lot (minimum charge: HKD30/RMB30, maximum

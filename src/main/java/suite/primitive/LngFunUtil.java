@@ -28,7 +28,7 @@ public class LngFunUtil {
 
 			public long source() {
 				if (!isAppended) {
-					long c_ = source.source();
+					var c_ = source.source();
 					if (c_ != EMPTYVALUE)
 						return c_;
 					else {
@@ -66,7 +66,7 @@ public class LngFunUtil {
 			private LngSource source0 = nullSource();
 
 			public long source() {
-				long c = EMPTYVALUE;
+				var c = EMPTYVALUE;
 				while (source0 != null && (c = source0.source()) == EMPTYVALUE)
 					source0 = source.source();
 				return c;
@@ -92,7 +92,7 @@ public class LngFunUtil {
 	public static LngSource filter(LngTest fun0, LngSource source) {
 		LngTest fun1 = fun0.rethrow();
 		return () -> {
-			long c = EMPTYVALUE;
+			var c = EMPTYVALUE;
 			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
 				;
 			return c;
@@ -152,7 +152,7 @@ public class LngFunUtil {
 			}
 
 			public Long next() {
-				long next0 = next;
+				var next0 = next;
 				next = EMPTYVALUE;
 				return next0;
 			}
@@ -167,7 +167,7 @@ public class LngFunUtil {
 	public static <T1> Source<T1> map(Lng_Obj<T1> fun0, LngSource source) {
 		Lng_Obj<T1> fun1 = fun0.rethrow();
 		return () -> {
-			long c0 = source.source();
+			var c0 = source.source();
 			return c0 != LngFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
@@ -176,7 +176,7 @@ public class LngFunUtil {
 		Lng_Obj<K> kf1 = kf0.rethrow();
 		Lng_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
-			long c = source.source();
+			var c = source.source();
 			boolean b = c != EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
@@ -187,7 +187,7 @@ public class LngFunUtil {
 	public static LngSource mapLng(Lng_Lng fun0, LngSource source) {
 		Lng_Lng fun1 = fun0.rethrow();
 		return () -> {
-			long c = source.source();
+			var c = source.source();
 			return c != LngFunUtil.EMPTYVALUE ? fun1.apply(c) : LngFunUtil.EMPTYVALUE;
 		};
 	}
@@ -195,7 +195,7 @@ public class LngFunUtil {
 	public static <V> LngObjSource<V> mapLngObj(Lng_Obj<V> fun0, LngSource source) {
 		Lng_Obj<V> fun1 = fun0.rethrow();
 		return pair -> {
-			long c = source.source();
+			var c = source.source();
 			if (c != LngFunUtil.EMPTYVALUE) {
 				pair.update(c, fun1.apply(c));
 				return true;

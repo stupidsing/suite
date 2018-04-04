@@ -53,7 +53,7 @@ public class StoreCache {
 	}
 
 	public StoreCache() {
-		long current = System.currentTimeMillis();
+		var current = System.currentTimeMillis();
 
 		LogUtil.info(FileUtil.findPaths(dir) //
 				.filter(path -> !isUpToDate(path, current)) //
@@ -92,7 +92,7 @@ public class StoreCache {
 
 	public Outlet<Bytes> getOutlet(Bytes key, Source<Outlet<Bytes>> source) {
 		return Rethrow.ex(() -> {
-			long current = System.currentTimeMillis();
+			var current = System.currentTimeMillis();
 			Path path;
 			var i = 0;
 
@@ -135,7 +135,7 @@ public class StoreCache {
 
 	private Pair<Boolean, Path> match(Bytes key) {
 		return Rethrow.ex(() -> {
-			long current = System.currentTimeMillis();
+			var current = System.currentTimeMillis();
 			var i = 0;
 			Path path;
 

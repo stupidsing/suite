@@ -26,7 +26,7 @@ public class HttpSessionManager implements SessionManager {
 
 		if (lg2(size0) < lg2(size1)) // exceeded a power of two?
 			if (isCleaning.getAndSet(true)) { // one thread cleaning is enough
-				long current = System.currentTimeMillis();
+				var current = System.currentTimeMillis();
 				Iterator<Session> iter = sessions.values().iterator();
 
 				while (iter.hasNext())

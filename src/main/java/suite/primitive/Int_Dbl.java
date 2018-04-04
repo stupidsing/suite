@@ -29,7 +29,7 @@ public interface Int_Dbl {
 		return outlet -> {
 			IntSource source = outlet.source();
 			int c;
-			double result = (double) 0;
+			var result = (double) 0;
 			while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

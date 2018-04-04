@@ -47,7 +47,7 @@ public class NeuralNetworkTest {
 					for (boolean b1 : booleans) {
 						float[] in = input(b0, b1);
 						boolean out = oper.apply(b0, b1);
-						float f = train.feed(in).output[0];
+						var f = train.feed(in).output[0];
 						System.out.println(b0 + " " + name + " " + b1 + " = " + f);
 						result_ &= out == .5f < f;
 					}

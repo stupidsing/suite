@@ -45,7 +45,7 @@ public class ObjFltMap<K> {
 	}
 
 	public float computeIfAbsent(K key, Obj_Flt<K> fun) {
-		float v = get(key);
+		var v = get(key);
 		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
@@ -95,15 +95,15 @@ public class ObjFltMap<K> {
 	public void update(K key, Flt_Flt fun) {
 		var mask = vs.length - 1;
 		var index = index(key);
-		float v0 = vs[index];
-		float v1 = vs[index] = fun.apply(v0);
+		var v0 = vs[index];
+		var v1 = vs[index] = fun.apply(v0);
 		ks[index] = key;
 		size += (v1 != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
 		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
 					var index1 = (index + 1) & mask;
-					float v = vs[index1];
+					var v = vs[index1];
 					if (v != EMPTYVALUE) {
 						Object k = ks[index1];
 						vs[index1] = EMPTYVALUE;
@@ -174,7 +174,7 @@ public class ObjFltMap<K> {
 			public boolean source2(FltObjPair<K> pair) {
 				while (index < capacity) {
 					Object k = ks[index];
-					float v = vs[index++];
+					var v = vs[index++];
 					if (v != EMPTYVALUE) {
 						pair.update(v, cast(k));
 						return true;

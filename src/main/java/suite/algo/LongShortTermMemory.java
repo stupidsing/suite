@@ -46,7 +46,7 @@ public class LongShortTermMemory {
 
 		public Unit() {
 			Random random = new Random();
-			double isll = 1f / Math.sqrt(ll);
+			var isll = 1f / Math.sqrt(ll);
 
 			for (int i = 0; i < memoryLength; i++) {
 				for (int j = 0; j < ll; j++) { // random weights, bias 0
@@ -114,7 +114,7 @@ public class LongShortTermMemory {
 
 				for (int i = 0; i < memoryLength; i++)
 					for (int j = 0; j < ll1; j++) {
-						float d = learningRate * iv[j];
+						var d = learningRate * iv[j];
 						wo[i][j] += d * e_wo[i];
 						wm[i][j] += d * e_wm[i];
 						wi[i][j] += d * e_wi[i];

@@ -29,7 +29,7 @@ public interface Chr_Lng {
 		return outlet -> {
 			ChrSource source = outlet.source();
 			char c;
-			long result = (long) 0;
+			var result = (long) 0;
 			while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

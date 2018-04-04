@@ -121,7 +121,7 @@ public class Vector {
 
 	private double dot_(float[] m, float[] n) {
 		int length = sameLength_(m, n);
-		double sum = 0d;
+		var sum = 0d;
 		for (int i = 0; i < length; i++)
 			sum += m[i] * n[i];
 		return sum;
@@ -129,9 +129,9 @@ public class Vector {
 
 	private double dotDiff_(float[] m, float[] n) {
 		int length = sameLength_(m, n);
-		double sum = 0d;
+		var sum = 0d;
 		for (int i = 0; i < length; i++) {
-			double d = m[i] - n[i];
+			var d = m[i] - n[i];
 			sum += d * d;
 		}
 		return sum;

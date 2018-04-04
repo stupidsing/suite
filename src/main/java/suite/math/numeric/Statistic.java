@@ -35,7 +35,7 @@ public class Statistic {
 	public double correlation(Int_Dbl xf, Int_Dbl yf, int length) {
 		double sumx = 0d, sumy = 0d;
 		double sumx2 = 0d, sumy2 = 0d;
-		double sumxy = 0d;
+		var sumxy = 0d;
 		for (int i = 0; i < length; i++) {
 			double x = xf.apply(i), y = yf.apply(i);
 			sumx += x;
@@ -50,14 +50,14 @@ public class Statistic {
 	public double covariance(float[] xs, float[] ys) {
 		int length = vec.sameLength(xs, ys);
 		double sumx = 0d, sumy = 0d;
-		double sumxy = 0d;
+		var sumxy = 0d;
 		for (int i = 0; i < length; i++) {
 			double x = xs[i], y = ys[i];
 			sumx += x;
 			sumy += y;
 			sumxy += x * y;
 		}
-		double il = 1d / length;
+		var il = 1d / length;
 		return (sumxy - sumx * sumy * il) * il;
 	}
 
@@ -97,14 +97,14 @@ public class Statistic {
 			float[] coeffs = cholesky.inverseMul(mtx.mul(xt, x)).apply(mtx.mul(xt, y));
 			float[] estimatedy = mtx.mul(x, coeffs);
 			float[] residuals_ = vec.sub(y, estimatedy);
-			double meany = mean_(y);
-			double sst_ = 0d; // total sum of squares
-			double ssr = 0d; // estimated sum of squares
-			double sse_ = vec.dot(residuals_); // sum of squared residuals
+			var meany = mean_(y);
+			var sst_ = 0d; // total sum of squares
+			var ssr = 0d; // estimated sum of squares
+			var sse_ = vec.dot(residuals_); // sum of squared residuals
 
 			for (int i = 0; i < nDataPoints_; i++) {
-				double d0 = y[i] - meany;
-				double d1 = estimatedy[i] - meany;
+				var d0 = y[i] - meany;
+				var d1 = estimatedy[i] - meany;
 				sst_ += d0 * d0;
 				ssr += d1 * d1;
 			}
@@ -143,7 +143,7 @@ public class Statistic {
 		}
 
 		public double logLikelihood() {
-			double variance = sst / (nDataPoints - nDepVariables - 1);
+			var variance = sst / (nDataPoints - nDepVariables - 1);
 			return -.5d * (nDataPoints * (Math.log(2 * Math.PI) + Math.log(variance)) + sse / variance);
 		}
 
@@ -156,7 +156,7 @@ public class Statistic {
 		public float[] tStatistic() {
 			return Floats_.toArray(nDepVariables, i -> {
 				MeanVariance mv = new MeanVariance(in.length, j -> in[j][i]);
-				double invsd = Math.sqrt(mv.variance / (sse * invn2));
+				var invsd = Math.sqrt(mv.variance / (sse * invn2));
 				return (float) (coefficients[i] * invsd);
 			});
 		}
@@ -241,10 +241,10 @@ public class Statistic {
 			IntObjPair<IntMutable> pair = IntObjPair.of(0, null);
 			IntObjSource<IntMutable> source2 = ycounts.source();
 			var result = 0;
-			double maxp = Double.MIN_VALUE;
+			var maxp = Double.MIN_VALUE;
 
 			while (source2.source2(pair)) {
-				double p = ((double) pair.t1.get()) / ix;
+				var p = ((double) pair.t1.get()) / ix;
 
 				for (int j = 0; j < jx; j++)
 					p *= xcounts.computeIfAbsent(ins[j], x_ -> IntMutable.of(0)).get() / (double) jx;
@@ -273,7 +273,7 @@ public class Statistic {
 
 	private double mean_(float[] fs) {
 		var length = fs.length;
-		double sum = 0f;
+		var sum = 0f;
 		for (float f : fs)
 			sum += f;
 		return sum / length;
@@ -284,29 +284,29 @@ public class Statistic {
 	}
 
 	private double skewness_(MeanVariance mv, float[] fs) {
-		double mean = mv.mean;
-		double sd = mv.standardDeviation();
-		double sum = 0d;
+		var mean = mv.mean;
+		var sd = mv.standardDeviation();
+		var sum = 0d;
 		for (float f : fs) {
-			double d = f - mean;
+			var d = f - mean;
 			sum += d * d * d;
 		}
-		double length = fs.length;
-		double length1 = length - 1;
-		double adjustment = Math.sqrt(length * length1) / length1;
+		var length = fs.length;
+		var length1 = length - 1;
+		var adjustment = Math.sqrt(length * length1) / length1;
 		return adjustment * sum / (length * sd * sd * sd);
 	}
 
 	private double kurtosis_(MeanVariance mv, float[] fs) {
-		double mean = mv.mean;
-		double sd = mv.standardDeviation();
-		double sum = 0d;
+		var mean = mv.mean;
+		var sd = mv.standardDeviation();
+		var sum = 0d;
 		for (float f : fs) {
-			double d = f - mean;
-			double d2 = d * d;
+			var d = f - mean;
+			var d2 = d * d;
 			sum += d2 * d2;
 		}
-		double sd2 = sd * sd;
+		var sd2 = sd * sd;
 		return sum / (fs.length * sd2 * sd2);
 	}
 
@@ -318,20 +318,20 @@ public class Statistic {
 
 		private MeanVariance(int length, Int_Flt fun) {
 			if (0 < length) {
-				float first = fun.apply(0);
+				var first = fun.apply(0);
 				double min_ = first, max_ = first;
 				double sum_ = first, sumsq_ = first * first;
 
 				for (int i = 1; i < length; i++) {
-					float f = fun.apply(i);
+					var f = fun.apply(i);
 					min_ = Double.min(min_, f);
 					max_ = Double.max(max_, f);
 					sum_ += f;
 					sumsq_ += f * f;
 				}
 
-				double il = 1d / length;
-				double mean_ = sum_ * il;
+				var il = 1d / length;
+				var mean_ = sum_ * il;
 				size = length;
 				min = min_;
 				max = max_;

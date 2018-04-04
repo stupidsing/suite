@@ -36,8 +36,8 @@ public class Arima {
 
 	// Digital Processing of Random Signals, Boaz Porat, page 159
 	private float[] arLevinsonDurbin(float[] ys, int p) {
-		double mean = stat.meanVariance(ys).mean;
-		double mean2 = mean * mean;
+		var mean = stat.meanVariance(ys).mean;
+		var mean2 = mean * mean;
 		var length = ys.length;
 
 		float[] r = Ints_ //
@@ -48,7 +48,7 @@ public class Arima {
 				})) //
 				.toArray();
 
-		double d = r[0];
+		var d = r[0];
 		float[] alpha = new float[p];
 		alpha[0] = 1;
 
@@ -56,7 +56,7 @@ public class Arima {
 			float[] alpha0 = alpha;
 			var n_ = n;
 
-			double k1 = Ints_.range(n).toDouble(Int_Dbl.sum(k -> alpha0[k] * r[n_ + 1 - k])) / d;
+			var k1 = Ints_.range(n).toDouble(Int_Dbl.sum(k -> alpha0[k] * r[n_ + 1 - k])) / d;
 			d = d * (1d - k1 * k1);
 
 			float[] alpha1 = new float[p];
@@ -176,7 +176,7 @@ public class Arima {
 							float[] lrxs = Floats_ //
 									.concat(Floats_.reverse(xsp, t, tp), Floats_.reverse(epq, t, tq)) //
 									.toArray();
-							float lry = xsp[tp] - epq[tq];
+							var lry = xsp[tp] - epq[tq];
 							return FltObjPair.of(lry, lrxs);
 						})).coefficients();
 
@@ -263,7 +263,7 @@ public class Arima {
 				float[] ars = Floats.of(coeffs, 0, p).toArray();
 				float[] mas = Floats.of(coeffs, p).toArray();
 
-				double x1 = 0d //
+				var x1 = 0d //
 						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[lengthpm1 - i])) //
 						+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * epqByIter[i][lengthqm1 - i]));
 
@@ -378,7 +378,7 @@ public class Arima {
 
 		private double forwardRecursion(float[] xsp, float[] epq) {
 			var length = xsp.length - p;
-			double error = 0d;
+			var error = 0d;
 
 			for (int t = 0; t < length; t++) {
 				var tp = t + p;

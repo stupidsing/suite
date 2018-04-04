@@ -29,7 +29,7 @@ public interface Lng_Flt {
 		return outlet -> {
 			LngSource source = outlet.source();
 			long c;
-			float result = (float) 0;
+			var result = (float) 0;
 			while ((c = source.source()) != LngFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

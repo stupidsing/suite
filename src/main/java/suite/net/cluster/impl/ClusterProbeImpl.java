@@ -150,7 +150,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 				selector.select(500); // handle network events
 
 				synchronized (lock) {
-					long current = System.currentTimeMillis();
+					var current = System.currentTimeMillis();
 					nodeJoined(me, current);
 					processSelectedKeys();
 					keepAlive(current);
@@ -199,7 +199,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			// refreshes member time accordingly
 			for (int i = 2; i < splitted.length; i += 2) {
 				var node = splitted[i];
-				long newTime = Long.parseLong(splitted[i + 1]);
+				var newTime = Long.parseLong(splitted[i + 1]);
 				nodeJoined(node, newTime);
 			}
 

@@ -45,8 +45,8 @@ public class DataSourceView<K, V> {
 			int alignment, //
 			AlignKeyDataSource<K> akds, //
 			DataSourceViewFun<K, V> fun) {
-		long fr = TimeRange.min.epochSec();
-		long to = TimeRange.max.epochSec();
+		var fr = TimeRange.min.epochSec();
+		var to = TimeRange.max.epochSec();
 
 		for (long t : akds.ts) {
 			fr = Long.min(t, fr);

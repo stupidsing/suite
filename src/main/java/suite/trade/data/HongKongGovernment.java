@@ -41,7 +41,7 @@ public class HongKongGovernment {
 
 	public Map<String, DataSource> queryWeather() {
 		long t0 = Time.of(2000, 1, 1).epochSec();
-		long tx = Time.today().epochSec();
+		var tx = Time.today().epochSec();
 
 		LongsBuilder ts = new LongsBuilder();
 		FloatsBuilder fs0 = new FloatsBuilder();

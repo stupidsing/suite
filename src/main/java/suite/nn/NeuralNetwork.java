@@ -97,7 +97,7 @@ public class NeuralNetwork {
 
 			return new Out<>(outputs, errors -> {
 				for (int j = 0; j < nOutputs; j++) {
-					float e = errors[j] *= (float) Sigmoid.sigmoidGradient(outputs[j]);
+					var e = errors[j] *= (float) Sigmoid.sigmoidGradient(outputs[j]);
 					for (int i = 0; i < nInputs; i++)
 						weights[i][j] += learningRate * inputs[i] * e;
 				}
@@ -146,7 +146,7 @@ public class NeuralNetwork {
 			var hsy = mtx.width(inputs) - sy + 1;
 
 			float[][] outputs = To.matrix(hsx, hsy, (ox, oy) -> {
-				double sum = bias.get();
+				var sum = bias.get();
 				for (int x = 0; x < sx; x++)
 					for (int y = 0; y < sy; y++)
 						sum += inputs[ox + x][oy + y] * (double) kernel[x][y];
@@ -154,11 +154,11 @@ public class NeuralNetwork {
 			});
 
 			return new Out<>(outputs, errors -> {
-				float errors1[][] = new float[hsx][hsy];
+				var errors1[][] = new float[hsx][hsy];
 
 				for (int ox = 0; ox < hsx; ox++)
 					for (int oy = 0; oy < hsy; oy++) {
-						float e = errors[ox][oy] *= outputs[ox][oy];
+						var e = errors[ox][oy] *= outputs[ox][oy];
 						bias.update(bias.get() + e);
 						for (int x = 0; x < sx; x++)
 							for (int y = 0; y < sy; y++) {

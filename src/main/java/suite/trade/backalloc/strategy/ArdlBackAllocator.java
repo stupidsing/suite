@@ -33,11 +33,11 @@ public class ArdlBackAllocator implements BackAllocator {
 		return index -> {
 			float[] prices = ardl.predict(lrs, fs, index);
 			float[] returns = Floats_.toArray(prices.length, i -> prices[i] / fs[i][index]);
-			float maxReturns = 0f;
+			var maxReturns = 0f;
 			Integer maxi = null;
 
 			for (int i = 0; i < returns.length; i++) {
-				float return_ = returns[i];
+				var return_ = returns[i];
 				if (maxReturns < return_) {
 					maxReturns = return_;
 					maxi = i;

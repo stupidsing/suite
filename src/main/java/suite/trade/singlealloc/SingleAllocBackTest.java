@@ -43,8 +43,8 @@ public class SingleAllocBackTest {
 		// sell all stocks at the end
 		buySell(ds, length - 1, -account.nShares(symbol));
 
-		float return_ = account.cash();
-		double sharpe = return_ / (Math.sqrt(stat.variance(valuations) * Trade_.nTradeDaysPerYear / length));
+		var return_ = account.cash();
+		var sharpe = return_ / (Math.sqrt(stat.variance(valuations) * Trade_.nTradeDaysPerYear / length));
 		// new TimeSeries().sharpeRatio(valuations, nApproxYears);
 
 		concludeLogSink.sink("" //
@@ -54,9 +54,9 @@ public class SingleAllocBackTest {
 	}
 
 	private float buySell(DataSource ds, int day, int buySell) {
-		float price = ds.prices[day];
+		var price = ds.prices[day];
 		account.play(Trade.of(buySell, symbol, price), false);
-		float valuation = account.valuation(symbol -> price).sum();
+		var valuation = account.valuation(symbol -> price).sum();
 
 		if (day == 0 || buySell != 0)
 			tradeLogSink.sink("" //

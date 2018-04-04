@@ -82,7 +82,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 			private int i = start;
 
 			public long source() {
-				long c = pred.test(i) ? ts[i] : LngFunUtil.EMPTYVALUE;
+				var c = pred.test(i) ? ts[i] : LngFunUtil.EMPTYVALUE;
 				i += inc;
 				return c;
 			}
@@ -137,7 +137,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	public LngOutlet closeAtEnd(Closeable c) {
 		return of(() -> {
-			long next = next();
+			var next = next();
 			if (next == LngFunUtil.EMPTYVALUE)
 				Object_.closeQuietly(c);
 			return next;
@@ -257,7 +257,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 			private int i = 0;
 
 			public boolean source2(LngObjPair<Integer> pair) {
-				long c = next();
+				var c = next();
 				if (c != LngFunUtil.EMPTYVALUE) {
 					pair.update(c, i++);
 					return true;
@@ -307,7 +307,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public long min(LngComparator comparator) {
-		long c = minOrEmpty(comparator);
+		var c = minOrEmpty(comparator);
 		if (c != LngFunUtil.EMPTYVALUE)
 			return c;
 		else
@@ -341,13 +341,13 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 		return new LngOutlet(() -> {
 			Mutable<Long> mutable = Mutable.nil();
-			long c = queue.poll(mutable) ? mutable.get() : c0;
+			var c = queue.poll(mutable) ? mutable.get() : c0;
 			return c;
 		});
 	}
 
 	public LngOpt opt() {
-		long c = next();
+		var c = next();
 		if (c != LngFunUtil.EMPTYVALUE)
 			if (next() == LngFunUtil.EMPTYVALUE)
 				return LngOpt.of(c);

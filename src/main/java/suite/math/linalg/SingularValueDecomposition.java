@@ -83,7 +83,7 @@ public class SingularValueDecomposition {
 
 		float[] v = vec.normalize(x);
 		float[] av = mtx.mul(a, v);
-		double s = vec.abs(av);
+		var s = vec.abs(av);
 		float[] u = vec.scale(av, 1d / s);
 		return Fixie.of(s, u, v);
 	}
@@ -97,8 +97,8 @@ public class SingularValueDecomposition {
 		for (int i = 0; i < 256; i++) {
 			float[] u = vec.normalize(mtx.mul(a, v));
 			float[] z = mtx.mul(at, u);
-			double beta = vec.abs(z);
-			double invBeta = 1d / beta;
+			var beta = vec.abs(z);
+			var invBeta = 1d / beta;
 			v = vec.scale(z, invBeta);
 			double error = vec.abs(vec.sub(mtx.mul(a, v), vec.scale(u, invBeta)));
 			if (error < .01d)

@@ -125,7 +125,7 @@ public interface BackAllocator {
 				var size = potentialBySymbol.size();
 
 				if (0 < size) {
-					double each = 1d / size;
+					var each = 1d / size;
 
 					return potentialBySymbol //
 							.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
@@ -157,12 +157,12 @@ public interface BackAllocator {
 
 			return index -> {
 				Time date = Time.ofEpochSec(akds.ts[index - 1]).date();
-				long t0 = date.addDays(-7).epochSec();
-				long tx = date.epochSec();
+				var t0 = date.addDays(-7).epochSec();
+				var tx = date.epochSec();
 				DataSource ids = indexDataSource.range(t0, tx);
 
-				double indexPrice0 = ids.get(-1).t1;
-				double indexPricex = ids.get(-2).t1;
+				var indexPrice0 = ids.get(-1).t1;
+				var indexPricex = ids.get(-2).t1;
 				double indexReturn = Quant.return_(indexPrice0, indexPricex);
 
 				return -.03f < indexReturn //
@@ -277,8 +277,8 @@ public interface BackAllocator {
 						Datum[] data1 = new Datum[length];
 
 						for (int i = 0; i < length; i++) {
-							double r = 1d / indexPrices[i];
-							long t = ds0.ts[i];
+							var r = 1d / indexPrices[i];
+							var t = ds0.ts[i];
 							data1[i] = new Datum( //
 									t, //
 									t + DataSource.tickDuration, //
@@ -339,9 +339,9 @@ public interface BackAllocator {
 				// check on each stock symbol
 				for (Entry<String, Double> e : diffBySymbol.entrySet()) {
 					var symbol = e.getKey();
-					double diff = e.getValue();
+					var diff = e.getValue();
 					var bs = Quant.sign(diff);
-					float price = dsBySymbol.get(symbol).prices[last];
+					var price = dsBySymbol.get(symbol).prices[last];
 
 					List<DblFltPair> entries0 = entriesBySymbol.getOrDefault(symbol, new ArrayList<>());
 					List<DblFltPair> entries1 = new ArrayList<>();
@@ -349,8 +349,8 @@ public interface BackAllocator {
 					Collections.sort(entries0, (pair0, pair1) -> -bs * Float.compare(pair0.t1, pair1.t1));
 
 					for (DblFltPair entry0 : entries0) {
-						double potential0 = entry0.t0;
-						float entryPrice = entry0.t1;
+						var potential0 = entry0.t0;
+						var entryPrice = entry0.t1;
 						double cancellation;
 
 						// a recent sell would cancel out the highest price buy
@@ -362,11 +362,11 @@ public interface BackAllocator {
 						else
 							cancellation = 0d;
 
-						double potential1 = potential0 + cancellation;
+						var potential1 = potential0 + cancellation;
 						diff -= cancellation;
 
-						double min = entryPrice * (potential1 < 0 ? stopGain : stopLoss);
-						double max = entryPrice * (potential1 < 0 ? stopLoss : stopGain);
+						var min = entryPrice * (potential1 < 0 ? stopGain : stopLoss);
+						var max = entryPrice * (potential1 < 0 ? stopLoss : stopGain);
 
 						// drop entries that got past their stopping prices
 						if (min < price && price < max)
@@ -401,7 +401,7 @@ public interface BackAllocator {
 
 				return index -> {
 					List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(index);
-					double totalPotential = BackAllocatorUtil.totalPotential(potentialBySymbol);
+					var totalPotential = BackAllocatorUtil.totalPotential(potentialBySymbol);
 					if (1d < totalPotential)
 						return BackAllocatorUtil.scale(potentialBySymbol, 1d / totalPotential);
 					else

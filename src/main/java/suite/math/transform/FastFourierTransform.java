@@ -10,7 +10,7 @@ public class FastFourierTransform {
 		var size = cs0.length;
 		Complex[] cs1 = To.array(size, Complex.class, i -> cs0[i].conjugate());
 		Complex[] cs2 = fft(cs1);
-		float inv = 1.0f / size;
+		var inv = 1.0f / size;
 
 		for (int i = 0; i < size; i++)
 			cs2[i] = cs2[i].conjugate().scale(inv);
@@ -33,11 +33,11 @@ public class FastFourierTransform {
 			fds[reverseBits(bits, i)] = tds[i];
 
 		for (int g = 2; g <= size; g <<= 1) {
-			double angleDiff = 2 * Math.PI / g;
+			var angleDiff = 2 * Math.PI / g;
 			Complex[] cis = new Complex[g];
 
 			for (int i = 0; i < g; i++) {
-				double angle = angleDiff * i;
+				var angle = angleDiff * i;
 				cis[i] = Complex.of((float) Math.cos(angle), (float) -Math.sin(angle));
 			}
 
@@ -71,7 +71,7 @@ public class FastFourierTransform {
 		}
 
 		float[] fs2 = fft(fs1);
-		float inv = 1.0f / size;
+		var inv = 1.0f / size;
 
 		for (int i2 = 0; i2 < size2; i2 += 2) {
 			fs2[i2 + 0] = fs2[i2 + 0] * inv;
@@ -102,10 +102,10 @@ public class FastFourierTransform {
 		for (int g = 2; g <= size; g <<= 1) {
 			var g2 = g * 2;
 			float[] cis = new float[g2];
-			double angleDiff = Math.PI / g;
+			var angleDiff = Math.PI / g;
 
 			for (int i2 = 0; i2 < g2; i2 += 2) {
-				double angle = angleDiff * i2;
+				var angle = angleDiff * i2;
 				cis[i2 + 0] = (float) Math.cos(angle);
 				cis[i2 + 1] = (float) -Math.sin(angle);
 			}
@@ -115,14 +115,14 @@ public class FastFourierTransform {
 					var ie = i2 + k2;
 					var io = ie + g;
 
-					float ceReal = fds[ie + 0];
-					float ceImag = fds[ie + 1];
-					float coReal = fds[io + 0];
-					float coImag = fds[io + 1];
-					float cisReal = cis[k2 + 0];
-					float cisImag = cis[k2 + 1];
-					float expReal = cisReal * coReal - cisImag * coImag;
-					float expImag = cisReal * coImag + cisImag * coReal;
+					var ceReal = fds[ie + 0];
+					var ceImag = fds[ie + 1];
+					var coReal = fds[io + 0];
+					var coImag = fds[io + 1];
+					var cisReal = cis[k2 + 0];
+					var cisImag = cis[k2 + 1];
+					var expReal = cisReal * coReal - cisImag * coImag;
+					var expImag = cisReal * coImag + cisImag * coReal;
 
 					fds[ie + 0] = ceReal + expReal;
 					fds[ie + 1] = ceImag + expImag;

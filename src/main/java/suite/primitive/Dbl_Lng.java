@@ -29,7 +29,7 @@ public interface Dbl_Lng {
 		return outlet -> {
 			DblSource source = outlet.source();
 			double c;
-			long result = (long) 0;
+			var result = (long) 0;
 			while ((c = source.source()) != DblFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

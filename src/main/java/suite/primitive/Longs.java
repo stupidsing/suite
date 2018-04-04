@@ -41,8 +41,8 @@ public class Longs implements Iterable<Long> {
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
-			long c0 = longs0.cs[start0 + index];
-			long c1 = longs1.cs[start1 + index];
+			var c0 = longs0.cs[start0 + index];
+			var c1 = longs1.cs[start1 + index];
 			c = Compare.compare(c0, c1);
 			index++;
 		}

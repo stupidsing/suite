@@ -92,9 +92,9 @@ public class FailedTests {
 	// takes 11 seconds to type check
 	@Test
 	public void testTypeCheck() throws IOException {
-		long start = System.currentTimeMillis();
+		var start = System.currentTimeMillis();
 		new FunRbTreeTest().test();
-		long end = System.currentTimeMillis();
+		var end = System.currentTimeMillis();
 		assertTrue(end - start < 1000l);
 	}
 

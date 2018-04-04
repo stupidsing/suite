@@ -94,7 +94,7 @@ public class Longs_ {
 		return new LngStreamlet(() -> {
 			LngMutable m = LngMutable.of(s);
 			return LngOutlet.of(() -> {
-				long c = m.increment();
+				var c = m.increment();
 				return c < e ? c : LngFunUtil.EMPTYVALUE;
 			});
 		});

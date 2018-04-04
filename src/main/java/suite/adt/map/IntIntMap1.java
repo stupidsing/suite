@@ -111,7 +111,7 @@ public class IntIntMap1 {
 			new Object() {
 				public void rehash(int index) {
 					var index1 = (index + 1) & mask;
-					long kv_ = kvs[index1];
+					var kv_ = kvs[index1];
 					var v = v(kv_);
 					if (v != IntFunUtil.EMPTYVALUE) {
 						rehash(index1);
@@ -149,7 +149,7 @@ public class IntIntMap1 {
 			allocate(capacity * 2);
 
 			for (int i = 0; i < capacity; i++) {
-				long kv0 = kvs0[i];
+				var kv0 = kvs0[i];
 				var v_ = v(kv0);
 				if (v_ != IntFunUtil.EMPTYVALUE)
 					store(k(kv0), v_);

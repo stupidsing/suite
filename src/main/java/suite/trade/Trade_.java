@@ -60,7 +60,7 @@ public class Trade_ {
 		for (Trade trade : outlet) {
 			var symbol = trade.symbol;
 			var buySell = trade.buySell;
-			float price = trade.price;
+			var price = trade.price;
 			List<IntFltPair> acquires0 = acquireBySymbol.getOrDefault(symbol, List.of());
 			List<IntFltPair> acquires1 = new ArrayList<>();
 
@@ -131,7 +131,7 @@ public class Trade_ {
 	}
 
 	public static float dividend(Streamlet<Trade> trades, Fun<String, LngFltPair[]> fun, Dbl_Dbl feeFun) {
-		float sum = 0f;
+		var sum = 0f;
 
 		for (Pair<String, List<Trade>> pair : trades.toMultimap(trade -> trade.symbol).listEntries()) {
 			LngFltPair[] dividends = fun.apply(pair.t0);
@@ -140,7 +140,7 @@ public class Trade_ {
 
 			Source<LngIntPair> tradeSource = () -> {
 				Trade trade = outlet.next();
-				long t = trade != null ? Time.of(trade.date + " 12:00:00").epochSec(8) : Long.MAX_VALUE;
+				var t = trade != null ? Time.of(trade.date + " 12:00:00").epochSec(8) : Long.MAX_VALUE;
 				return LngIntPair.of(t, tn.t1 + (trade != null ? trade.buySell : 0));
 			};
 
@@ -152,7 +152,7 @@ public class Trade_ {
 					tn1 = tradeSource.source();
 				}
 
-				float amount = tn.t1 * dividend.t1;
+				var amount = tn.t1 * dividend.t1;
 				sum += amount - feeFun.apply(amount);
 			}
 		}
@@ -214,13 +214,13 @@ public class Trade_ {
 				Map<String, Asset> assetBySymbol, //
 				Map<String, Eod> eodBySymbol) {
 			Valuation val = account.valuation(symbol -> eodBySymbol.get(symbol).price);
-			float valuation = val.sum();
+			var valuation = val.sum();
 
 			Map<String, Integer> portfolio = Read //
 					.from2(ratioBySymbol) //
 					.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
 					.map2((symbol, potential) -> {
-						float price = eodBySymbol.get(symbol).price;
+						var price = eodBySymbol.get(symbol).price;
 						var lotSize = assetBySymbol.get(symbol).lotSize;
 						return lotSize * (int) Math.floor(valuation * potential / (price * lotSize));
 					}) //
@@ -236,9 +236,9 @@ public class Trade_ {
 					.diff(time, account.assets(), portfolio, priceFun) //
 					.partition(trade -> { // can be executed in next open price?
 						Eod eod = eodBySymbol.get(trade.symbol);
-						double price = trade.price;
-						double priceBuy = price / barrier;
-						double priceSell = price * barrier;
+						var price = trade.price;
+						var priceBuy = price / barrier;
+						var priceSell = price * barrier;
 						var buySell = trade.buySell;
 
 						// cannot buy liquidated stock

@@ -55,7 +55,7 @@ public class IntFltMap {
 	}
 
 	public float computeIfAbsent(int key, Int_Flt fun) {
-		float v = get(key);
+		var v = get(key);
 		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
@@ -109,15 +109,15 @@ public class IntFltMap {
 	public void update(int key, Flt_Flt fun) {
 		var mask = vs.length - 1;
 		var index = index(key);
-		float v0 = vs[index];
-		float v1 = vs[index] = fun.apply(v0);
+		var v0 = vs[index];
+		var v1 = vs[index] = fun.apply(v0);
 		ks[index] = key;
 		size += (v1 != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
 		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
 					var index1 = (index + 1) & mask;
-					float v_ = vs[index1];
+					var v_ = vs[index1];
 					if (v_ != EMPTYVALUE) {
 						var k = ks[index1];
 						vs[index1] = EMPTYVALUE;
@@ -191,7 +191,7 @@ public class IntFltMap {
 			public boolean source2(IntFltPair pair) {
 				while (index < capacity) {
 					var k = ks[index];
-					float v = vs[index++];
+					var v = vs[index++];
 					if (v != EMPTYVALUE) {
 						pair.update(k, v);
 						return true;

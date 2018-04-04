@@ -140,13 +140,13 @@ public class Matrix {
 				swapRows(n, r, c);
 			}
 
-			float factor = 1f / m[r][r];
+			var factor = 1f / m[r][r];
 			mulRow(m, r, factor);
 			mulRow(n, r, factor);
 
 			for (int r1 = 0; r1 < size; r1++)
 				if (r != r1) {
-					float factor1 = -m[r1][r];
+					var factor1 = -m[r1][r];
 					addMultipliedRow(m, r, factor1, r1);
 					addMultipliedRow(n, r, factor1, r1);
 				}
@@ -245,9 +245,9 @@ public class Matrix {
 
 	public R3 mul(float[][] m, R3 v) {
 		if (sqSize_(m) == 3) {
-			float x1 = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z;
-			float y1 = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z;
-			float z1 = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z;
+			var x1 = m[0][0] * v.x + m[0][1] * v.y + m[0][2] * v.z;
+			var y1 = m[1][0] * v.x + m[1][1] * v.y + m[1][2] * v.z;
+			var z1 = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z;
 			return new R3(x1, y1, z1);
 		} else
 			return Fail.t("wrong input sizes");
@@ -327,26 +327,26 @@ public class Matrix {
 	}
 
 	public float[][] rotate(float angle) {
-		float sin = (float) Math.sin(angle);
-		float cos = (float) Math.cos(angle);
+		var sin = (float) Math.sin(angle);
+		var cos = (float) Math.cos(angle);
 		return new float[][] { { cos, -sin, }, { sin, cos, }, };
 	}
 
 	public float[][] rotateX(float angle) {
-		float sin = (float) Math.sin(angle);
-		float cos = (float) Math.cos(angle);
+		var sin = (float) Math.sin(angle);
+		var cos = (float) Math.cos(angle);
 		return new float[][] { { 0f, 0f, 0f, }, { 0f, cos, -sin, }, { 0f, sin, cos, }, };
 	}
 
 	public float[][] rotateY(float angle) {
-		float sin = (float) Math.sin(angle);
-		float cos = (float) Math.cos(angle);
+		var sin = (float) Math.sin(angle);
+		var cos = (float) Math.cos(angle);
 		return new float[][] { { cos, 0f, -sin, }, { 0f, 0f, 0f, }, { sin, 0f, cos, }, };
 	}
 
 	public float[][] rotateZ(float angle) {
-		float sin = (float) Math.sin(angle);
-		float cos = (float) Math.cos(angle);
+		var sin = (float) Math.sin(angle);
+		var cos = (float) Math.cos(angle);
 		return new float[][] { { cos, -sin, 0f, }, { sin, cos, 0f, }, { 0f, 0f, 0f, }, };
 	}
 

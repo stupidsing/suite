@@ -34,10 +34,10 @@ public class Cleanse {
 	private void cleanse(int length, Int_Flt get, IntFlt_Flt set) {
 
 		// fill zeroes in the middle
-		float ppos = 0f;
+		var ppos = 0f;
 		var i0 = 0;
 		for (int i = 0; i < length; i++) {
-			float price = get.apply(i);
+			var price = get.apply(i);
 			if (price != 0f) {
 				while (i0 < i)
 					set.apply(i0++, ppos);
@@ -47,9 +47,9 @@ public class Cleanse {
 
 		// eliminate spikes
 		for (int i = 2; i < length; i++) {
-			float price0 = get.apply(i - 2);
-			float price1 = get.apply(i - 1);
-			float price2 = get.apply(i - 0);
+			var price0 = get.apply(i - 2);
+			var price1 = get.apply(i - 1);
+			var price2 = get.apply(i - 0);
 			if (isValid(price0, price2) && !isValid(price0, price1) && !isValid(price1, price2)) {
 				set.apply(i - 1, price0);
 				if (Boolean.FALSE)
@@ -59,7 +59,7 @@ public class Cleanse {
 	}
 
 	private boolean isValid_(float price0, float price1) {
-		float ratio = price1 / price0;
+		var ratio = price1 / price0;
 		return Float.isFinite(ratio) && 1f / 2f < ratio && ratio < 2f / 1f;
 	}
 

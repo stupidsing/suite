@@ -82,7 +82,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 			private int i = start;
 
 			public double source() {
-				double c = pred.test(i) ? ts[i] : DblFunUtil.EMPTYVALUE;
+				var c = pred.test(i) ? ts[i] : DblFunUtil.EMPTYVALUE;
 				i += inc;
 				return c;
 			}
@@ -137,7 +137,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 	public DblOutlet closeAtEnd(Closeable c) {
 		return of(() -> {
-			double next = next();
+			var next = next();
 			if (next == DblFunUtil.EMPTYVALUE)
 				Object_.closeQuietly(c);
 			return next;
@@ -257,7 +257,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 			private int i = 0;
 
 			public boolean source2(DblObjPair<Integer> pair) {
-				double c = next();
+				var c = next();
 				if (c != DblFunUtil.EMPTYVALUE) {
 					pair.update(c, i++);
 					return true;
@@ -307,7 +307,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public double min(DblComparator comparator) {
-		double c = minOrEmpty(comparator);
+		var c = minOrEmpty(comparator);
 		if (c != DblFunUtil.EMPTYVALUE)
 			return c;
 		else
@@ -341,13 +341,13 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 		return new DblOutlet(() -> {
 			Mutable<Double> mutable = Mutable.nil();
-			double c = queue.poll(mutable) ? mutable.get() : c0;
+			var c = queue.poll(mutable) ? mutable.get() : c0;
 			return c;
 		});
 	}
 
 	public DblOpt opt() {
-		double c = next();
+		var c = next();
 		if (c != DblFunUtil.EMPTYVALUE)
 			if (next() == DblFunUtil.EMPTYVALUE)
 				return DblOpt.of(c);

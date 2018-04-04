@@ -29,7 +29,7 @@ public interface Chr_Flt {
 		return outlet -> {
 			ChrSource source = outlet.source();
 			char c;
-			float result = (float) 0;
+			var result = (float) 0;
 			while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

@@ -13,7 +13,7 @@ public class GaussSeidel {
 		for (int iteration = 0; iteration < 16; iteration++) {
 			for (int i = 0; i < size; i++) {
 				float[] ai = a[i];
-				double o = 0d;
+				var o = 0d;
 				for (int j = 0; j < size; j++)
 					if (i != j)
 						o += ai[j] * phi0[j];

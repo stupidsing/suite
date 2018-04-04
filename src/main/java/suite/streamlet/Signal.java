@@ -102,7 +102,7 @@ public class Signal<T> {
 	public Signal<T> delayAccum(int ms) {
 		AtomicLong al = new AtomicLong();
 		return redirect_((t, fire) -> {
-			long current = System.currentTimeMillis();
+			var current = System.currentTimeMillis();
 			al.set(current);
 			executor.schedule(() -> {
 				if (al.get() == current)

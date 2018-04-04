@@ -76,7 +76,7 @@ public class MathUtil {
 	}
 
 	public static void verifyEquals(double f0, double f1, double epsilon) {
-		double diff = Math.abs(f0 - f1);
+		var diff = Math.abs(f0 - f1);
 		if (!Double.isFinite(diff) || epsilon < diff)
 			Fail.t("values differ" //
 					+ ": f0 = " + To.string(f0) //

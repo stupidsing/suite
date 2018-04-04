@@ -41,8 +41,8 @@ public class Floats implements Iterable<Float> {
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
-			float c0 = floats0.cs[start0 + index];
-			float c1 = floats1.cs[start1 + index];
+			var c0 = floats0.cs[start0 + index];
+			var c1 = floats1.cs[start1 + index];
 			c = Compare.compare(c0, c1);
 			index++;
 		}

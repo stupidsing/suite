@@ -24,15 +24,15 @@ public class BfgsTest {
 	// https://en.wikipedia.org/wiki/Rosenbrock_function
 	@Test
 	public void testRosenbrock() {
-		double a = 1d;
-		double b = 1d;
+		var a = 1d;
+		var b = 1d;
 
 		// global minimum (a, a * a)
 		Obj_Dbl<float[]> rosenbrock = xy -> {
-			double x = xy[0];
-			double y = xy[1];
-			double a_x = a - x;
-			double y_x = y - x;
+			var x = xy[0];
+			var y = xy[1];
+			var a_x = a - x;
+			var y_x = y - x;
 			return a_x * a_x + b * y_x * y_x;
 		};
 

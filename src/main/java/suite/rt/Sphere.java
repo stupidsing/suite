@@ -31,15 +31,15 @@ public class Sphere implements RtObject {
 	@Override
 	public List<RayHit> hit(Ray ray) {
 		R3 start0 = R3.sub(ray.startPoint, center);
-		double a = ray.dir.abs2();
+		var a = ray.dir.abs2();
 		double b = 2f * R3.dot(start0, ray.dir);
-		double c = start0.abs2() - radius * radius;
-		double discriminant = b * b - 4f * a * c;
+		var c = start0.abs2() - radius * radius;
+		var discriminant = b * b - 4f * a * c;
 		List<RayHit> rayHits;
 
 		if (0 < discriminant) { // hit?
-			double sqrt = Math.sqrt(discriminant);
-			double denom = 1d / (2d * a);
+			var sqrt = Math.sqrt(discriminant);
+			var denom = 1d / (2d * a);
 			rayHits = List.of(rayHit(ray, (-b - sqrt) * denom), rayHit(ray, (-b + sqrt) * denom));
 		} else
 			rayHits = List.of();

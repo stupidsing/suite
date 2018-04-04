@@ -29,7 +29,7 @@ public interface Chr_Dbl {
 		return outlet -> {
 			ChrSource source = outlet.source();
 			char c;
-			double result = (double) 0;
+			var result = (double) 0;
 			while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

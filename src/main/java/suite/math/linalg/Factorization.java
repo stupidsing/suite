@@ -23,17 +23,17 @@ public class Factorization {
 			float[][] v0 = v;
 
 			float[][] error = mtx.sub(m, mtx.mul(u, v));
-			float alpha = .1f;
+			var alpha = .1f;
 
 			float[][] u1 = To.matrix(height, w, (i, q) -> {
-				double sum = 0d;
+				var sum = 0d;
 				for (int j = 0; j < width; j++)
 					sum += error[i][j] * v0[q][j];
 				return (float) (u0[i][q] + alpha * sum);
 			});
 
 			float[][] v1 = To.matrix(w, width, (q, j) -> {
-				double sum = 0d;
+				var sum = 0d;
 				for (int i = 0; i < height; i++)
 					sum += error[i][j] * u0[i][q];
 				return (float) (v0[q][j] + alpha * sum);

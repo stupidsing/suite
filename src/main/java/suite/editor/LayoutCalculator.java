@@ -186,7 +186,7 @@ public class LayoutCalculator {
 		if (totalMin < totalAssigned) {
 			var num = totalAssigned - totalMin;
 			var denom = totalMax - totalMin;
-			float ratio = (float) num / denom;
+			var ratio = (float) num / denom;
 			var accumulatedBase = 0;
 			var accumulatedExpand = 0;
 			var assignedPos = 0;
@@ -201,7 +201,7 @@ public class LayoutCalculator {
 		} else {
 			var nom = totalAssigned;
 			var denom = totalMin;
-			float ratio = nom / denom;
+			var ratio = nom / denom;
 			var accumulated = 0;
 			var assignedPos = 0;
 

@@ -100,7 +100,7 @@ public class RayTracer {
 	}
 
 	public BufferedImage trace(int width, int height, int viewDistance) {
-		double ivd = viewDistance / width;
+		var ivd = viewDistance / width;
 
 		return new Render().render(width, height, (x, y) -> {
 			R3 dir = new R3(x, y, ivd);
@@ -132,11 +132,11 @@ public class RayTracer {
 
 			Material material = i.material();
 			boolean reflective = material.isReflective();
-			double transparency = material.transparency();
+			var transparency = material.transparency();
 			R3 color;
 
 			if ((reflective || transparency < 0d) && 0 < depth) {
-				double cos = -dot / ray.dir.mag();
+				var cos = -dot / ray.dir.mag();
 
 				// account reflection
 				R3 reflectDir = R3.add(ray.dir, normal.scale(-2d * dot));
@@ -144,8 +144,8 @@ public class RayTracer {
 				R3 reflectColor = traceRay(depth - 1, new Ray(reflectPoint, reflectDir));
 
 				// account refraction
-				double eta = isInside ? glassRefractiveIndex / airRefractiveIndex : airRefractiveIndex / glassRefractiveIndex;
-				double k = 1d - eta * eta * (1d - cos * cos);
+				var eta = isInside ? glassRefractiveIndex / airRefractiveIndex : airRefractiveIndex / glassRefractiveIndex;
+				var k = 1d - eta * eta * (1d - cos * cos);
 				R3 refractColor;
 
 				if (0 <= k) {
@@ -163,14 +163,14 @@ public class RayTracer {
 
 				// schlick approximation
 				boolean isDramaticMix = true;
-				double r = (airRefractiveIndex - glassRefractiveIndex) / (airRefractiveIndex + glassRefractiveIndex);
-				double mix = isDramaticMix ? .1d : r * r;
-				double cos1 = 1d - cos;
-				double cos2 = cos1 * cos1;
-				double fresnel = mix + (1d - mix) * cos1 * cos2 * cos2;
+				var r = (airRefractiveIndex - glassRefractiveIndex) / (airRefractiveIndex + glassRefractiveIndex);
+				var mix = isDramaticMix ? .1d : r * r;
+				var cos1 = 1d - cos;
+				var cos2 = cos1 * cos1;
+				var fresnel = mix + (1d - mix) * cos1 * cos2 * cos2;
 
 				// fresnel is often too low. Mark it up for visual effect.
-				double fresnel1 = adjustFresnel + fresnel * (1d - adjustFresnel);
+				var fresnel1 = adjustFresnel + fresnel * (1d - adjustFresnel);
 
 				color = R3.add(reflectColor.scale(fresnel1), refractColor.scale((1d - fresnel1) * transparency));
 			} else {
@@ -187,7 +187,7 @@ public class RayTracer {
 
 						if (lightRayHit == null || 1d < lightRayHit.advance()) {
 							R3 lightColor = lightSource.lit(hitPoint);
-							double cos = lightDot / lightDir.mag();
+							var cos = lightDot / lightDir.mag();
 							color = R3.add(color, lightColor.scale(cos));
 						}
 					}

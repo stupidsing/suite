@@ -73,7 +73,7 @@ public class VirtualMatrix {
 				height - kh + 1, //
 				width_ - kw + 1, //
 				(i, j) -> {
-					double sum = 0d;
+					var sum = 0d;
 					for (int di = 0; di < kh; di++)
 						for (int dj = 0; dj < kw; dj++)
 							sum += get.apply(i + di, j + dj) * k[di][dj];

@@ -33,7 +33,7 @@ public class Plane implements RtObject {
 		else
 			adv = -1d; // treats as not-hit
 
-		double advance = adv;
+		var advance = adv;
 
 		if (RayTracer.negligibleAdvance < advance) {
 			RayHit rayHit = new RayHit() {

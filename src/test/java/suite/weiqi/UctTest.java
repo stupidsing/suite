@@ -63,7 +63,7 @@ public class UctTest {
 		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
 		var i = 0;
 		int[] ss = { 1000, 10000, };
-		float duration = 0f;
+		var duration = 0f;
 
 		for (int time = 0; time < 2; time++)
 			for (; i < ss[time]; i++)
@@ -74,14 +74,14 @@ public class UctTest {
 					return null;
 				}).duration;
 
-		float ms = duration / (ss[1] - ss[0]);
+		var ms = duration / (ss[1] - ss[0]);
 		System.out.println("Random move: " + ms + "ms per evaluation");
 	}
 
 	@Test
 	public void testUctSearchTime() {
 		var nSimulations = 1000;
-		float duration = 0f;
+		var duration = 0f;
 
 		for (int time = 0; time < 2; time++) {
 			GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
@@ -92,7 +92,7 @@ public class UctTest {
 			duration = Stopwatch.of(search::search).duration;
 		}
 
-		float ms = duration / nSimulations;
+		var ms = duration / nSimulations;
 		System.out.println("UCT: " + ms + "ms/simulation");
 	}
 

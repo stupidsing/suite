@@ -47,7 +47,7 @@ public class Complex {
 	}
 
 	public Complex inverse() {
-		double iabs2 = 1d / abs2_();
+		var iabs2 = 1d / abs2_();
 		return new Complex(r * iabs2, -i * iabs2);
 	}
 
@@ -56,8 +56,8 @@ public class Complex {
 	}
 
 	private double abs2_() {
-		double r_ = r;
-		double i_ = i;
+		var r_ = r;
+		var i_ = i;
 		return r_ * r_ + i_ * i_;
 	}
 

@@ -22,16 +22,16 @@ public class Stopwatch<T> {
 
 	public static <T> Stopwatch<T> of(Source<T> source) {
 		List<GarbageCollectorMXBean> gcBeans0 = ManagementFactory.getGarbageCollectorMXBeans();
-		long t0 = System.nanoTime();
-		long nGcs0 = gcBeans0.stream().mapToLong(GarbageCollectorMXBean::getCollectionCount).sum();
-		long gcDuration0 = gcBeans0.stream().mapToLong(GarbageCollectorMXBean::getCollectionTime).sum();
+		var t0 = System.nanoTime();
+		var nGcs0 = gcBeans0.stream().mapToLong(GarbageCollectorMXBean::getCollectionCount).sum();
+		var gcDuration0 = gcBeans0.stream().mapToLong(GarbageCollectorMXBean::getCollectionTime).sum();
 
 		T t = source.source();
 
 		List<GarbageCollectorMXBean> gcBeans1 = ManagementFactory.getGarbageCollectorMXBeans();
-		long t1 = System.nanoTime();
-		long nGcs1 = gcBeans1.stream().mapToLong(GarbageCollectorMXBean::getCollectionCount).sum();
-		long gcDuration1 = gcBeans1.stream().mapToLong(GarbageCollectorMXBean::getCollectionTime).sum();
+		var t1 = System.nanoTime();
+		var nGcs1 = gcBeans1.stream().mapToLong(GarbageCollectorMXBean::getCollectionCount).sum();
+		var gcDuration1 = gcBeans1.stream().mapToLong(GarbageCollectorMXBean::getCollectionTime).sum();
 
 		return new Stopwatch<>(t, (t1 - t0) / 1000000, nGcs1 - nGcs0, gcDuration1 - gcDuration0);
 	}

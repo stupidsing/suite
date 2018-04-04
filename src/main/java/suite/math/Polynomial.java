@@ -17,7 +17,7 @@ public class Polynomial {
 	private Vector vec = new Vector();
 
 	public double evaluate(float[] ps, float x) {
-		double y = 0d;
+		var y = 0d;
 		for (float p : ps)
 			y = y * x + p;
 		return y;
@@ -26,8 +26,8 @@ public class Polynomial {
 	public float[] add(float[] ps0, float[] ps1) {
 		int length = max(ps0.length, ps1.length);
 		return Floats_.toArray(length, i -> {
-			float p0 = length < ps0.length ? ps0[length] : 0f;
-			float p1 = length < ps1.length ? ps1[length] : 0f;
+			var p0 = length < ps0.length ? ps0[length] : 0f;
+			var p1 = length < ps1.length ? ps1[length] : 0f;
 			return p0 + p1;
 		});
 	}
@@ -52,7 +52,7 @@ public class Polynomial {
 		float[] dividend = new float[pd];
 
 		while (0 <= --pd) {
-			double r = rem[pd + denomLength1] / head;
+			var r = rem[pd + denomLength1] / head;
 			dividend[pd] = (float) r;
 			for (int i = 0; i < denomLength; i++)
 				rem[i + pd] -= denom[i] * r;

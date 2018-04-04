@@ -11,11 +11,11 @@ public class FiniteDifference {
 
 	public Fun<float[], float[]> forward(Obj_Dbl<float[]> fun) {
 		return xs -> {
-			double ys = fun.apply(xs);
+			var ys = fun.apply(xs);
 			return To.vector(xs.length, i -> {
-				float x0 = xs[i];
+				var x0 = xs[i];
 				xs[i] += step;
-				double gradient = (fun.apply(xs) - ys) * invStep;
+				var gradient = (fun.apply(xs) - ys) * invStep;
 				xs[i] = x0;
 				return gradient;
 			});

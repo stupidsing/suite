@@ -17,7 +17,7 @@ public class Eigen {
 		float[][] m = mtx.of(m0);
 		var size = mtx.sqSize(m);
 		float[][] eigenVectors = new float[size][];
-		float eigenValue = 0f;
+		var eigenValue = 0f;
 
 		for (int v = 0; v < size; v++) {
 			float[] xs = Floats_.toArray(size, i -> random.nextFloat());
@@ -52,7 +52,7 @@ public class Eigen {
 		float[] vj1 = null;
 
 		for (int j = 1; j < nIterations; j++) {
-			double beta = 0d;
+			var beta = 0d;
 			float[] prevw;
 			float[] vj;
 

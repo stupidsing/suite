@@ -20,8 +20,8 @@ public class Oscillator {
 		var length = ds.ts.length;
 		float[] trs = trueRange(ds);
 		float[] atrs = new float[length];
-		float atr = atrs[0] = Ints_.range(n).collect(Int_Flt.lift(i -> trs[i])).sum() / n;
-		double invn = 1d / n;
+		var atr = atrs[0] = Ints_.range(n).collect(Int_Flt.lift(i -> trs[i])).sum() / n;
+		var invn = 1d / n;
 
 		for (int i = 1; i < length; i++)
 			atrs[i] = atr = (float) ((atr * (n - 1) + trs[i]) * invn);
@@ -55,8 +55,8 @@ public class Oscillator {
 		float[] diDns = Floats_.toArray(length, i -> maDmDns[i] * invAtrs[i]);
 
 		return new Dmi(Floats_.toArray(length, i -> {
-			float diDn = diDns[i];
-			float diUp = diUps[i];
+			var diDn = diDns[i];
+			var diUp = diUps[i];
 			return Quant.div(diUp - diDn, diUp + diDn);
 		}));
 	}
@@ -79,8 +79,8 @@ public class Oscillator {
 	}
 
 	public float[] cci(DataSource ds, int nDays) {
-		double r = 1d / .015d;
-		double i3 = 1d / 3d;
+		var r = 1d / .015d;
+		var i3 = 1d / 3d;
 		var length = ds.ts.length;
 		float[] ps = To.vector(length, i -> (ds.closes[i] + ds.lows[i] + ds.highs[i]) * i3);
 
@@ -90,10 +90,10 @@ public class Oscillator {
 			double sum = 0d, sumAbsDev = 0d;
 			for (int d = i0; d <= i; d++)
 				sum += ps[d];
-			double mean = sum / l;
+			var mean = sum / l;
 			for (int d = i0; d <= i; d++)
 				sumAbsDev += Math.abs(ps[d] - mean);
-			double meanAbsDev = sumAbsDev / l;
+			var meanAbsDev = sumAbsDev / l;
 			return r * (ps[i] - mean) / meanAbsDev;
 		});
 	}
@@ -138,10 +138,10 @@ public class Oscillator {
 	public float[] obv(DataSource ds) {
 		var length = ds.ts.length;
 		float[] obvs = new float[length];
-		double obv = 0d;
+		var obv = 0d;
 		for (int i = 1; i < length; i++) {
 			int c = Float.compare(ds.closes[i - 1], ds.closes[i]);
-			float volume = ds.volumes[i];
+			var volume = ds.volumes[i];
 			if (c < 0)
 				obv += volume;
 			else if (0 < c)
@@ -156,11 +156,11 @@ public class Oscillator {
 		float[] us = new float[length];
 		float[] ds = new float[length];
 		for (int i = 1; i < length; i++) {
-			float diff = prices[i] - prices[i - 1];
+			var diff = prices[i] - prices[i - 1];
 			us[i] = 0f < diff ? diff : 0f;
 			ds[i] = diff < 0f ? -diff : 0f;
 		}
-		double a = 1d / nDays;
+		var a = 1d / nDays;
 		float[] usMa = ma.exponentialMovingAvg(us, a);
 		float[] dsMa = ma.exponentialMovingAvg(ds, a);
 		return To.vector(length, i -> 1d - 1d / (1d + usMa[i] / dsMa[i]));
@@ -168,12 +168,12 @@ public class Oscillator {
 
 	// Parabolic stop and reverse
 	public float[] sar(DataSource ds) {
-		float alpha = .02f;
+		var alpha = .02f;
 		var length = ds.ts.length;
 		float[] sars = new float[length];
 
 		if (0 < length) {
-			float ep = ds.lows[0];
+			var ep = ds.lows[0];
 			float sar;
 			var i = 0;
 
@@ -210,8 +210,8 @@ public class Oscillator {
 		float[] his = new float[length];
 
 		for (int i = 0; i < length; i++) {
-			float lo = Float.MAX_VALUE;
-			float hi = Float.MIN_VALUE;
+			var lo = Float.MAX_VALUE;
+			var hi = Float.MIN_VALUE;
 			for (int j = max(0, i - kDays + 1); j <= i; j++) {
 				lo = min(lo, ds.lows[j]);
 				hi = max(hi, ds.highs[j]);
@@ -221,7 +221,7 @@ public class Oscillator {
 		}
 
 		float[] k = To.vector(length, i -> {
-			double low = los[i];
+			var low = los[i];
 			return (ds.closes[i] - low) / (his[i] - low);
 		});
 
@@ -235,9 +235,9 @@ public class Oscillator {
 		trs[0] = ds.highs[0] - ds.lows[0];
 
 		for (int i = 1; i < length; i++) {
-			float hi = ds.highs[i];
-			float lo = ds.lows[i];
-			float prevClose = ds.closes[i - 1];
+			var hi = ds.highs[i];
+			var lo = ds.lows[i];
+			var prevClose = ds.closes[i - 1];
 			float max = max(Math.abs(hi - prevClose), Math.abs(lo - prevClose));
 			trs[i] = max(hi - lo, max);
 		}

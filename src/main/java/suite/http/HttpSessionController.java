@@ -63,7 +63,7 @@ public class HttpSessionController {
 		}
 
 		public HttpResponse handle(HttpRequest request) {
-			long current = System.currentTimeMillis();
+			var current = System.currentTimeMillis();
 			var cookie = request.headers.get("Cookie");
 			var sessionId = cookie != null ? HttpHeaderUtil.getCookieAttrs(cookie).get("session") : null;
 			Session session = sessionId != null ? sessionManager.get(sessionId) : null;

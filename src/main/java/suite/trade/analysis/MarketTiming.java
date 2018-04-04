@@ -22,7 +22,7 @@ public class MarketTiming {
 		int[] flags = time(prices);
 		var length = flags.length;
 		float[] holds = new float[length];
-		float hold = 0f;
+		var hold = 0f;
 
 		for (int i = 0; i < length; i++) {
 			if ((flags[i] & strgBear) != 0)
@@ -47,7 +47,7 @@ public class MarketTiming {
 
 		float[] ma20 = ma.movingAvg(prices, 20);
 		float[] ma50 = ma.movingAvg(prices, 50);
-		double lookback80 = lookback * .8d;
+		var lookback80 = lookback * .8d;
 		int[] flags = new int[length];
 
 		for (int i = 0; i < length; i++) {
@@ -57,7 +57,7 @@ public class MarketTiming {
 
 			var ma20abovema50 = past_i.filter(j -> ma50[j] < ma20[j]).size();
 			var ma50abovema20 = past_i.filter(j -> ma20[j] < ma50[j]).size();
-			double r = ma50abovema20 / (double) ma20abovema50;
+			var r = ma50abovema20 / (double) ma20abovema50;
 
 			boolean isStrglyBullish = true //
 					&& lookback <= ma20abovema50 //

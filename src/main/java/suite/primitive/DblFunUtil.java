@@ -28,7 +28,7 @@ public class DblFunUtil {
 
 			public double source() {
 				if (!isAppended) {
-					double c_ = source.source();
+					var c_ = source.source();
 					if (c_ != EMPTYVALUE)
 						return c_;
 					else {
@@ -66,7 +66,7 @@ public class DblFunUtil {
 			private DblSource source0 = nullSource();
 
 			public double source() {
-				double c = EMPTYVALUE;
+				var c = EMPTYVALUE;
 				while (source0 != null && (c = source0.source()) == EMPTYVALUE)
 					source0 = source.source();
 				return c;
@@ -92,7 +92,7 @@ public class DblFunUtil {
 	public static DblSource filter(DblTest fun0, DblSource source) {
 		DblTest fun1 = fun0.rethrow();
 		return () -> {
-			double c = EMPTYVALUE;
+			var c = EMPTYVALUE;
 			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
 				;
 			return c;
@@ -152,7 +152,7 @@ public class DblFunUtil {
 			}
 
 			public Double next() {
-				double next0 = next;
+				var next0 = next;
 				next = EMPTYVALUE;
 				return next0;
 			}
@@ -167,7 +167,7 @@ public class DblFunUtil {
 	public static <T1> Source<T1> map(Dbl_Obj<T1> fun0, DblSource source) {
 		Dbl_Obj<T1> fun1 = fun0.rethrow();
 		return () -> {
-			double c0 = source.source();
+			var c0 = source.source();
 			return c0 != DblFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
@@ -176,7 +176,7 @@ public class DblFunUtil {
 		Dbl_Obj<K> kf1 = kf0.rethrow();
 		Dbl_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
-			double c = source.source();
+			var c = source.source();
 			boolean b = c != EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
@@ -187,7 +187,7 @@ public class DblFunUtil {
 	public static DblSource mapDbl(Dbl_Dbl fun0, DblSource source) {
 		Dbl_Dbl fun1 = fun0.rethrow();
 		return () -> {
-			double c = source.source();
+			var c = source.source();
 			return c != DblFunUtil.EMPTYVALUE ? fun1.apply(c) : DblFunUtil.EMPTYVALUE;
 		};
 	}
@@ -195,7 +195,7 @@ public class DblFunUtil {
 	public static <V> DblObjSource<V> mapDblObj(Dbl_Obj<V> fun0, DblSource source) {
 		Dbl_Obj<V> fun1 = fun0.rethrow();
 		return pair -> {
-			double c = source.source();
+			var c = source.source();
 			if (c != DblFunUtil.EMPTYVALUE) {
 				pair.update(c, fun1.apply(c));
 				return true;

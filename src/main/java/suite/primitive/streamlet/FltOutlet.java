@@ -82,7 +82,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 			private int i = start;
 
 			public float source() {
-				float c = pred.test(i) ? ts[i] : FltFunUtil.EMPTYVALUE;
+				var c = pred.test(i) ? ts[i] : FltFunUtil.EMPTYVALUE;
 				i += inc;
 				return c;
 			}
@@ -137,7 +137,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	public FltOutlet closeAtEnd(Closeable c) {
 		return of(() -> {
-			float next = next();
+			var next = next();
 			if (next == FltFunUtil.EMPTYVALUE)
 				Object_.closeQuietly(c);
 			return next;
@@ -257,7 +257,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 			private int i = 0;
 
 			public boolean source2(FltObjPair<Integer> pair) {
-				float c = next();
+				var c = next();
 				if (c != FltFunUtil.EMPTYVALUE) {
 					pair.update(c, i++);
 					return true;
@@ -307,7 +307,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public float min(FltComparator comparator) {
-		float c = minOrEmpty(comparator);
+		var c = minOrEmpty(comparator);
 		if (c != FltFunUtil.EMPTYVALUE)
 			return c;
 		else
@@ -341,13 +341,13 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 		return new FltOutlet(() -> {
 			Mutable<Float> mutable = Mutable.nil();
-			float c = queue.poll(mutable) ? mutable.get() : c0;
+			var c = queue.poll(mutable) ? mutable.get() : c0;
 			return c;
 		});
 	}
 
 	public FltOpt opt() {
-		float c = next();
+		var c = next();
 		if (c != FltFunUtil.EMPTYVALUE)
 			if (next() == FltFunUtil.EMPTYVALUE)
 				return FltOpt.of(c);

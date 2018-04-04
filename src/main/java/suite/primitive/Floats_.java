@@ -94,7 +94,7 @@ public class Floats_ {
 		return new FltStreamlet(() -> {
 			FltMutable m = FltMutable.of(s);
 			return FltOutlet.of(() -> {
-				float c = m.increment();
+				var c = m.increment();
 				return c < e ? c : FltFunUtil.EMPTYVALUE;
 			});
 		});

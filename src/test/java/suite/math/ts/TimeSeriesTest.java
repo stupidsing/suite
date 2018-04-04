@@ -20,7 +20,7 @@ public class TimeSeriesTest {
 	public void testSharpeRatio() {
 		TimeRange period = TimeRange.of(Time.of(2016, 1, 1), Time.of(2017, 5, 1));
 		DataSource ds = cfg.dataSource("0002.HK").range(period);
-		double sharpe = ts.returnsStatDailyAnnualized(ds.prices).sharpeRatio();
+		var sharpe = ts.returnsStatDailyAnnualized(ds.prices).sharpeRatio();
 		System.out.println("sharpe = " + sharpe);
 		assertTrue(.04d < sharpe);
 	}

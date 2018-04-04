@@ -73,7 +73,7 @@ public class StockHistory {
 			while (!String_.equals(line = outlet.next(), "}")) {
 				var p = line.lastIndexOf(":");
 				Time time = Time.of(line.substring(0, p));
-				float price = Float.parseFloat(line.substring(p + 1));
+				var price = Float.parseFloat(line.substring(p + 1));
 				pairs.add(LngFltPair.of(time.epochSec(timeZone), price));
 			}
 		else
@@ -130,8 +130,8 @@ public class StockHistory {
 	}
 
 	public StockHistory filter(TimeRange period) {
-		long t0 = period.from.epochSec();
-		long tx = period.to.epochSec();
+		var t0 = period.from.epochSec();
+		var tx = period.to.epochSec();
 		Iterate<LngFltPair[]> filter_ = pairs0 -> {
 			List<LngFltPair> pairs1 = new ArrayList<>();
 			for (LngFltPair pair : pairs0)
@@ -157,10 +157,10 @@ public class StockHistory {
 			var length1 = pairs1.length;
 			var i1 = 0;
 			for (LngFltPair pair0 : pairs0) {
-				long l0 = pair0.t0;
+				var l0 = pair0.t0;
 				while (i1 < length1) {
 					LngFltPair pair1 = pairs1[i1];
-					long l1 = pair1.t0;
+					var l1 = pair1.t0;
 					if (l1 < l0)
 						pairs.add(pair1);
 					else if (l0 < l1)
@@ -216,7 +216,7 @@ public class StockHistory {
 		int io = 0, ic = 0, il = 0, ih = 0, iv = 0;
 
 		for (int i = 0; i < length; i++) {
-			long t = ps[i].t0;
+			var t = ps[i].t0;
 			int io_ = io, il_ = il, ih_ = ih, iv_ = iv;
 
 			io = scan(opPairs, io, t);
@@ -272,7 +272,7 @@ public class StockHistory {
 
 		for (int i = length - 1; 0 <= i; i--) {
 			LngFltPair pair = pairs0[i];
-			long t = pair.t0;
+			var t = pair.t0;
 
 			if (0 <= di) {
 				LngFltPair dividend = dividends[di];

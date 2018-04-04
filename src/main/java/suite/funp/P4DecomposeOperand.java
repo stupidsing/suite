@@ -103,7 +103,7 @@ public class P4DecomposeOperand {
 						dec.decompose(n1);
 						if (dec.mults.isEmpty()) {
 							OpReg reg_ = dec.reg;
-							long scale_ = dec.scale;
+							var scale_ = dec.scale;
 							if (reg_ != null)
 								addReg(reg_, scale_);
 							else

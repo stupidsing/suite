@@ -24,7 +24,7 @@ public class Strategos {
 		return prices -> holdFixedDays(prices.length, nFutureDays, day -> {
 			if (nPastDays <= day) {
 				float[] fs0 = new float[windowSize]; // moving window
-				float price0 = prices[day];
+				var price0 = prices[day];
 
 				Floats_.copy(prices, day - nPastDays, fs0, 0, nPastDays);
 				Arrays.fill(fs0, nPastDays, windowSize, price0);
@@ -33,7 +33,7 @@ public class Strategos {
 				float[] fs2 = Floats_.toArray(windowSize, j -> j < nLowPass ? fs1[j] : 0f);
 				float[] fs3 = dct.idct(fs2);
 
-				float predict = fs3[fs3.length - 1];
+				var predict = fs3[fs3.length - 1];
 				return getSignal(price0, predict, threshold);
 			} else
 				return 0;
@@ -60,8 +60,8 @@ public class Strategos {
 
 			return holdFixedDays(prices.length, nHoldDays, day -> {
 				if (nPastDays <= day) {
-					float price0 = prices[day];
-					float predict = movingAvgs[day];
+					var price0 = prices[day];
+					var predict = movingAvgs[day];
 					return getSignal(price0, predict, threshold);
 				} else
 					return 0;

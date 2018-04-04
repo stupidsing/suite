@@ -44,7 +44,7 @@ public class BackAllocBackTestTest {
 	private void assertGrowth(Simulate sim) {
 		float[] valuations = sim.valuations;
 		var last = valuations.length - 1;
-		double r = Trade_.riskFreeInterestRate(last);
+		var r = Trade_.riskFreeInterestRate(last);
 		assertTrue(initial * r < valuations[last]);
 	}
 

@@ -28,7 +28,7 @@ public class FltFunUtil {
 
 			public float source() {
 				if (!isAppended) {
-					float c_ = source.source();
+					var c_ = source.source();
 					if (c_ != EMPTYVALUE)
 						return c_;
 					else {
@@ -66,7 +66,7 @@ public class FltFunUtil {
 			private FltSource source0 = nullSource();
 
 			public float source() {
-				float c = EMPTYVALUE;
+				var c = EMPTYVALUE;
 				while (source0 != null && (c = source0.source()) == EMPTYVALUE)
 					source0 = source.source();
 				return c;
@@ -92,7 +92,7 @@ public class FltFunUtil {
 	public static FltSource filter(FltTest fun0, FltSource source) {
 		FltTest fun1 = fun0.rethrow();
 		return () -> {
-			float c = EMPTYVALUE;
+			var c = EMPTYVALUE;
 			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
 				;
 			return c;
@@ -152,7 +152,7 @@ public class FltFunUtil {
 			}
 
 			public Float next() {
-				float next0 = next;
+				var next0 = next;
 				next = EMPTYVALUE;
 				return next0;
 			}
@@ -167,7 +167,7 @@ public class FltFunUtil {
 	public static <T1> Source<T1> map(Flt_Obj<T1> fun0, FltSource source) {
 		Flt_Obj<T1> fun1 = fun0.rethrow();
 		return () -> {
-			float c0 = source.source();
+			var c0 = source.source();
 			return c0 != FltFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
@@ -176,7 +176,7 @@ public class FltFunUtil {
 		Flt_Obj<K> kf1 = kf0.rethrow();
 		Flt_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
-			float c = source.source();
+			var c = source.source();
 			boolean b = c != EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
@@ -187,7 +187,7 @@ public class FltFunUtil {
 	public static FltSource mapFlt(Flt_Flt fun0, FltSource source) {
 		Flt_Flt fun1 = fun0.rethrow();
 		return () -> {
-			float c = source.source();
+			var c = source.source();
 			return c != FltFunUtil.EMPTYVALUE ? fun1.apply(c) : FltFunUtil.EMPTYVALUE;
 		};
 	}
@@ -195,7 +195,7 @@ public class FltFunUtil {
 	public static <V> FltObjSource<V> mapFltObj(Flt_Obj<V> fun0, FltSource source) {
 		Flt_Obj<V> fun1 = fun0.rethrow();
 		return pair -> {
-			float c = source.source();
+			var c = source.source();
 			if (c != FltFunUtil.EMPTYVALUE) {
 				pair.update(c, fun1.apply(c));
 				return true;

@@ -16,7 +16,7 @@ public class DiscreteCosineTransform {
 		// [0, a, 0, b, 0, c, 0, d, 0, d, 0, c, 0, b, 0, a]
 		for (int i = 0; i < size; i++) {
 			var j = size21 - i;
-			float v = fs0[i];
+			var v = fs0[i];
 			fs1[i * 4 + 2] = v;
 			fs1[j * 4 + 2] = v;
 		}
@@ -40,7 +40,7 @@ public class DiscreteCosineTransform {
 
 		for (int i = 0; i < size; i++) {
 			var i2 = i * 2;
-			float v = fs3[i];
+			var v = fs3[i];
 			fs2[size0 + i2] = v;
 			fs2[size4 + i2] = -v;
 			if (0 < i) {

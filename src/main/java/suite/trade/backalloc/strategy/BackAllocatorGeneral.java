@@ -90,8 +90,8 @@ public class BackAllocatorGeneral {
 	}
 
 	private BackAllocator bb1(int tor) {
-		float entry = .48f;
-		float exit = -.08f;
+		var entry = .48f;
+		var exit = -.08f;
 
 		return BackAllocator_.byPrices(prices -> {
 			float[] sds = bb.bb(prices, tor, 0, 2f).sds;
@@ -121,16 +121,16 @@ public class BackAllocatorGeneral {
 	}
 
 	private BackAllocator donchian(int window) {
-		float threshold = .05f;
+		var threshold = .05f;
 
 		return BackAllocator_.byPrices(prices -> {
 			MovingRange[] movingRanges = ma.movingRange(prices, window);
 
 			return Quant.fold(0, movingRanges.length, (i, hold) -> {
 				MovingRange range = movingRanges[i];
-				double min = range.min;
-				double max = range.max;
-				double price = prices[i];
+				var min = range.min;
+				var max = range.max;
+				var price = prices[i];
 				boolean b = price * threshold < (max - min); // channel wide?
 				return b ? Quant.hold(hold, price, min, range.median, max) : hold;
 			});
@@ -143,8 +143,8 @@ public class BackAllocatorGeneral {
 			return index -> {
 				var last = index - 1;
 				MovingRange movingRange = movingRanges[last];
-				double min = movingRange.min;
-				double max = movingRange.max;
+				var min = movingRange.min;
+				var max = movingRange.max;
 				return (max - prices[last]) / (max - min);
 			};
 		});
@@ -160,15 +160,15 @@ public class BackAllocatorGeneral {
 	}
 
 	private BackAllocator ema(int halfLife) {
-		double scale = 1d / Math.log(.8d);
+		var scale = 1d / Math.log(.8d);
 
 		return BackAllocator_.byPrices(prices -> {
 			float[] ema = ma.exponentialMovingAvg(prices, halfLife);
 
 			return Quant.filterRange(1, index -> {
 				var last = index - 1;
-				double lastEma = ema[last];
-				double latest = prices[last];
+				var lastEma = ema[last];
+				var latest = prices[last];
 				return Quant.logReturn(lastEma, latest) * scale;
 			});
 		});
@@ -245,28 +245,28 @@ public class BackAllocatorGeneral {
 
 			return index -> {
 				var last = index - 1;
-				float maOp = movingAvgOps[last];
-				float maCl = movingAvgCls[last];
-				float diff = maCl - maOp;
+				var maOp = movingAvgOps[last];
+				var maCl = movingAvgCls[last];
+				var diff = maCl - maOp;
 				return max(maOp, maCl) * .01d < Math.abs(diff) ? Quant.sign(diff) * 1d : 0d;
 			};
 		});
 	}
 
 	private BackAllocator priceProRata(String symbol) {
-		double scale = 320d;
+		var scale = 320d;
 
 		return (akds, indices) -> {
 			float[] prices = akds.dsByKey //
 					.filter((symbol_, ds) -> String_.equals(symbol, symbol_)) //
 					.uniqueResult().t1.prices;
 
-			float price0 = prices[indices[0]];
+			var price0 = prices[indices[0]];
 
 			return index -> {
 				double ratio0 = Quant.return_(price0, prices[index - 1]);
-				double ratio1 = scale * ratio0;
-				double ratio2 = .5d + ratio1;
+				var ratio1 = scale * ratio0;
+				var ratio2 = .5d + ratio1;
 				return List.of(Pair.of(symbol, ratio2));
 			};
 		};
@@ -278,8 +278,8 @@ public class BackAllocatorGeneral {
 
 			return Quant.filterRange(0, index -> {
 				var last = index - 1;
-				double dec = movement.decs[last];
-				double inc = movement.incs[last];
+				var dec = movement.decs[last];
+				var inc = movement.incs[last];
 				if (threshold < dec) // over-sold
 					return dec - .5d;
 				else if (threshold < inc) // over-bought
@@ -302,13 +302,13 @@ public class BackAllocatorGeneral {
 	}
 
 	private BackAllocator trend2(double threshold) {
-		float daily = .1f;
+		var daily = .1f;
 
 		return BackAllocator_.byPrices(prices -> {
 			FltFltPair minMax = FltFltPair.of(Float.MAX_VALUE, Float.MIN_VALUE);
 
 			return Quant.fold(0, prices.length, (i, hold) -> {
-				float price = prices[i];
+				var price = prices[i];
 				float min = min(minMax.t0, price);
 				float max = max(minMax.t1, price);
 				if (threshold <= Quant.return_(min, price)) {
@@ -333,9 +333,9 @@ public class BackAllocatorGeneral {
 
 			return Quant.filterRange(1, index -> {
 				var last = index - 1;
-				float movingAvg0 = movingAvgs0[last];
-				float movingAvg1 = movingAvgs1[last];
-				float movingAvg2 = movingAvgs2[last];
+				var movingAvg0 = movingAvgs0[last];
+				var movingAvg1 = movingAvgs1[last];
+				var movingAvg2 = movingAvgs2[last];
 				int sign0 = Quant.sign(movingAvg0, movingAvg1);
 				int sign1 = Quant.sign(movingAvg1, movingAvg2);
 				return sign0 == sign1 ? (double) -sign0 : 0d;
@@ -360,7 +360,7 @@ public class BackAllocatorGeneral {
 						var length = prices.length;
 
 						IntFunction<int[]> getDays = c -> Ints_.toArray(length, i -> {
-							float price = prices[i];
+							var price = prices[i];
 							int j = i, j1;
 							while (0 <= (j1 = j - 1) && Quant.sign(prices[j1], price) == c)
 								j = j1;
@@ -372,11 +372,11 @@ public class BackAllocatorGeneral {
 
 						IntInt_Obj<int[]> enterExit = (nEnterDays, nExitDays) -> {
 							int[] holds = new int[length];
-							float stopper = 0f;
+							var stopper = 0f;
 							var nHold = 0;
 
 							for (int i = 0; i < length; i++) {
-								float price = prices[i];
+								var price = prices[i];
 								var dlo = dlos[i];
 								var dhi = dhis[i];
 								var sign = Quant.sign(nHold);
@@ -464,7 +464,7 @@ public class BackAllocatorGeneral {
 						.from2(m1) //
 						.map2((symbol, nHold) -> {
 							float[] atrs = atrBySymbol.get(symbol);
-							double unit = .01d / atrs[index - 1];
+							var unit = .01d / atrs[index - 1];
 							return max(-maxUnits, min(maxUnits, nHold)) * unit;
 						}) //
 						.toList();
@@ -473,9 +473,9 @@ public class BackAllocatorGeneral {
 	}
 
 	private BackAllocator varianceRatio(int tor) {
-		double vr = .95d;
-		double threshold = .95d;
-		double invThreshold = 1d / threshold;
+		var vr = .95d;
+		var threshold = .95d;
+		var invThreshold = 1d / threshold;
 
 		return (akds, indices) -> {
 			DataSourceView<String, Double> dsv = DataSourceView //
@@ -486,7 +486,7 @@ public class BackAllocatorGeneral {
 						float[] prices = ds.prices;
 						var length = prices.length;
 						float[] holds = new float[length];
-						float hold = 0f;
+						var hold = 0f;
 						for (int index = tor; index < length; index++) {
 							if (dsv.get(symbol, index) < vr) {
 								double return_ = Quant.return_(prices[index - tor / 2], prices[index]);

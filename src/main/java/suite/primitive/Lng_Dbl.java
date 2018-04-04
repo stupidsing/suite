@@ -29,7 +29,7 @@ public interface Lng_Dbl {
 		return outlet -> {
 			LngSource source = outlet.source();
 			long c;
-			double result = (double) 0;
+			var result = (double) 0;
 			while ((c = source.source()) != LngFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

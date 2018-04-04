@@ -53,7 +53,7 @@ public class LngLngMap {
 	}
 
 	public long computeIfAbsent(long key, Lng_Lng fun) {
-		long v = get(key);
+		var v = get(key);
 		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
@@ -107,17 +107,17 @@ public class LngLngMap {
 	public void update(long key, Lng_Lng fun) {
 		var mask = vs.length - 1;
 		var index = index(key);
-		long v0 = vs[index];
-		long v1 = vs[index] = fun.apply(v0);
+		var v0 = vs[index];
+		var v1 = vs[index] = fun.apply(v0);
 		ks[index] = key;
 		size += (v1 != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
 		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
 					var index1 = (index + 1) & mask;
-					long v_ = vs[index1];
+					var v_ = vs[index1];
 					if (v_ != EMPTYVALUE) {
-						long k = ks[index1];
+						var k = ks[index1];
 						vs[index1] = EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
@@ -188,8 +188,8 @@ public class LngLngMap {
 
 			public boolean source2(LngLngPair pair) {
 				while (index < capacity) {
-					long k = ks[index];
-					long v = vs[index++];
+					var k = ks[index];
+					var v = vs[index++];
 					if (v != EMPTYVALUE) {
 						pair.update(k, v);
 						return true;

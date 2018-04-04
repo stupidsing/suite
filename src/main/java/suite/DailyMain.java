@@ -111,8 +111,8 @@ public class DailyMain extends ExecutableProgram {
 
 		Streamlet2<String, Trade> requestTrades = strategyTrades.filterKey(strategy -> !String_.equals(strategy, sellPool));
 		DblStreamlet amounts = strategyTrades.values().collect(Obj_Dbl.lift(Trade::amount));
-		double buys_ = amounts.filter(amount -> 0d < amount).sum();
-		double sells = amounts.filter(amount -> amount < 0d).sum();
+		var buys_ = amounts.filter(amount -> 0d < amount).sum();
+		var sells = amounts.filter(amount -> amount < 0d).sum();
 
 		sb.append(sbs.log //
 				+ "\n" + sbs.pnlByKey //
@@ -198,7 +198,7 @@ public class DailyMain extends ExecutableProgram {
 					DataSource ds = cfg.dataSource(symbol, period).validate();
 					float[] prices = ds.prices;
 					var last = prices.length - 1;
-					float latestPrice = prices[last];
+					var latestPrice = prices[last];
 
 					var signal = strategy.analyze(prices).get(last);
 					var nShares = signal * asset.lotSize * Math.round(factor / nHoldDays / (asset.lotSize * latestPrice));
@@ -236,7 +236,7 @@ public class DailyMain extends ExecutableProgram {
 		List<Trade> trades = account //
 				.portfolio() //
 				.map((symbol, sell) -> {
-					double targetPrice = (1d + 3 * Trade_.riskFreeInterestRate) * faceValueBySymbol.get(symbol) / sell;
+					var targetPrice = (1d + 3 * Trade_.riskFreeInterestRate) * faceValueBySymbol.get(symbol) / sell;
 					return Trade.of(-sell, symbol, (float) targetPrice);
 				}) //
 				.toList();

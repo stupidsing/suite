@@ -69,19 +69,19 @@ public class AnalyzeTimeSeriesTest {
 	private void analyze(float[] prices) {
 		var length = prices.length;
 		var log2 = Quant.log2trunc(length);
-		double nYears = length * Trade_.invTradeDaysPerYear;
+		var nYears = length * Trade_.invTradeDaysPerYear;
 
 		float[] fds = dct.dct(Arrays.copyOfRange(prices, length - log2, length));
 		float[] returns = ts.returns(prices);
 		float[] logPrices = To.vector(prices, Math::log);
 		float[] logReturns = ts.differences(1, logPrices);
 		MeanVariance rmv = stat.meanVariance(returns);
-		double variance = rmv.variance;
-		double kelly = rmv.mean / variance;
+		var variance = rmv.variance;
+		var kelly = rmv.mean / variance;
 		IntFltPair max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
 
 		for (int i = 4; i < fds.length; i++) {
-			float f = Math.abs(fds[i]);
+			var f = Math.abs(fds[i]);
 			if (max.t1 < f)
 				max.update(i, f);
 		}
@@ -112,7 +112,7 @@ public class AnalyzeTimeSeriesTest {
 		BuySell ms2 = buySell(d -> {
 			var last = d - 1;
 			var ref = last - 250;
-			float mean = bbmean[last];
+			var mean = bbmean[last];
 			return Quant.sign(logPrices[last], logPrices[ref] - bbvariances[last] / (2d * mean * mean));
 		}).start(1 + 250);
 
@@ -223,8 +223,8 @@ public class AnalyzeTimeSeriesTest {
 		}
 
 		public String toString() {
-			double return_ = return_();
-			double yearPeriod = Trade_.nTradeDaysPerYear / (double) vals.length;
+			var return_ = return_();
+			var yearPeriod = Trade_.nTradeDaysPerYear / (double) vals.length;
 			return "o/c =" //
 					+ " rtn:" + To.string(return_) //
 					+ " yearRtn:" + To.string(Math.expm1(Math.log1p(return_) * yearPeriod)) //
