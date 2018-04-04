@@ -29,7 +29,7 @@ public interface Dbl_Chr {
 		return outlet -> {
 			DblSource source = outlet.source();
 			double c;
-			char result = (char) 0;
+			var result = (char) 0;
 			while ((c = source.source()) != DblFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

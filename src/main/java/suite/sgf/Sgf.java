@@ -117,7 +117,7 @@ public class Sgf {
 		var pos1 = pos0;
 
 		while (pos1 < in.length()) {
-			char ch = in.charAt(pos1);
+			var ch = in.charAt(pos1);
 			if (predicate.test(ch))
 				pos1++;
 			else

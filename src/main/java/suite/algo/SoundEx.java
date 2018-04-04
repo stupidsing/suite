@@ -38,7 +38,7 @@ public class SoundEx {
 		}
 
 		word = sb.toString();
-		char first = word.charAt(0);
+		var first = word.charAt(0);
 		var word1 = word.substring(1);
 
 		word1 = replace(word1, CHARS0, "");

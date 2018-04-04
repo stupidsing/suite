@@ -29,7 +29,7 @@ public class HtmlUtil {
 
 			while (index < in.length()) {
 				var start = index;
-				char ch = in.charAt(index++);
+				var ch = in.charAt(index++);
 
 				if (ch == '&') {
 					while (in.charAt(index++) != ';')
@@ -61,7 +61,7 @@ public class HtmlUtil {
 			StringBuilder sb = new StringBuilder();
 
 			for (int index = 0; index < in.length(); index++) {
-				char ch = in.charAt(index);
+				var ch = in.charAt(index);
 
 				if (ch < 32 || 128 <= ch || ch == '"' || ch == '<' || ch == '>') {
 					var escaped = escapeTokenByChar.get("" + ch);
@@ -99,8 +99,8 @@ public class HtmlUtil {
 
 		Fun<String, IntObjPair<String>> getNameFun = tag -> {
 			int p0 = 1, p1 = p0 + 1, px = tag.length() - 1;
-			char first = tag.charAt(p1);
-			char last = tag.charAt(px - 1);
+			var first = tag.charAt(p1);
+			var last = tag.charAt(px - 1);
 			int d;
 
 			if (first == '!')

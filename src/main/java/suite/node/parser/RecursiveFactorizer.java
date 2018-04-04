@@ -48,8 +48,8 @@ public class RecursiveFactorizer {
 		Chars chars1 = chars.trim();
 
 		if (0 < chars1.size()) {
-			char first = chars1.get(0);
-			char last = chars1.get(-1);
+			var first = chars1.get(0);
+			var last = chars1.get(-1);
 
 			for (int i = fromOp; i < operators.length; i++) {
 				Operator operator = operators[i];

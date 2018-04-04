@@ -29,7 +29,7 @@ public interface Chr_Chr {
 		return outlet -> {
 			ChrSource source = outlet.source();
 			char c;
-			char result = (char) 0;
+			var result = (char) 0;
 			while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

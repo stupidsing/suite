@@ -155,7 +155,7 @@ public class ChrPrimitives {
 			return outlet -> {
 				Source<T> source = outlet.source();
 				T t;
-				char result = (char) 0;
+				var result = (char) 0;
 				while ((t = source.source()) != null)
 					result += fun1.apply(t);
 				return result;
@@ -182,7 +182,7 @@ public class ChrPrimitives {
 			return outlet -> {
 				Pair<K, V> pair = Pair.of(null, null);
 				Source2<K, V> source = outlet.source();
-				char result = (char) 0;
+				var result = (char) 0;
 				while (source.source2(pair))
 					result += fun1.apply(pair.t0, pair.t1);
 				return result;

@@ -94,7 +94,7 @@ public class Expect {
 		return (in, length, start) -> {
 			int end;
 			if (start < length) {
-				char ch = in.charAt(start);
+				var ch = in.charAt(start);
 				end = start + (s <= ch && ch <= e ? 1 : 0);
 			} else
 				end = start;
@@ -128,7 +128,7 @@ public class Expect {
 		return (in, length, start) -> {
 			int end;
 			if (start < length) {
-				char ch = in.charAt(start);
+				var ch = in.charAt(start);
 				end = start + (chars.contains(ch) ? 1 : 0);
 			} else
 				end = start;

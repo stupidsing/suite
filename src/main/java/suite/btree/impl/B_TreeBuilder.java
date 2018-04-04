@@ -70,7 +70,7 @@ public class B_TreeBuilder<Key, Value> {
 
 			for (int i = 0; i < size; i++) {
 				Key key = keySerializer.read(dataInput);
-				char nodeType = dataInput.readChar();
+				var nodeType = dataInput.readChar();
 
 				if (nodeType == BRANCH) {
 					var branch = dataInput.readInt();

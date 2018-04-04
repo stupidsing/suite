@@ -60,7 +60,7 @@ public class Lexer {
 	private String nextToken() {
 		if (!eof) {
 			boolean isEscape = false;
-			char ch = peeked;
+			var ch = peeked;
 
 			StringBuilder sb = new StringBuilder();
 			sb.append(nextChar());
@@ -111,7 +111,7 @@ public class Lexer {
 	}
 
 	private char nextChar() {
-		char ch = peeked;
+		var ch = peeked;
 		try {
 			var read = reader.read();
 			if (0 <= read)

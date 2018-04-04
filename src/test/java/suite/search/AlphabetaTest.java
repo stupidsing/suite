@@ -9,8 +9,8 @@ import org.junit.Test;
 public class AlphabetaTest {
 
 	private static class TicTacToe {
-		char player = 'O';
-		char[] grid = new char[9];
+		private char player = 'O';
+		private char[] grid = new char[9];
 
 		public String toString() {
 			return "" //
@@ -56,9 +56,9 @@ public class AlphabetaTest {
 
 	private boolean isEnd(TicTacToe state) {
 		for (int[] line : lines) {
-			char c0 = state.grid[line[0]];
-			char c1 = state.grid[line[1]];
-			char c2 = state.grid[line[2]];
+			var c0 = state.grid[line[0]];
+			var c1 = state.grid[line[1]];
+			var c2 = state.grid[line[2]];
 
 			if (c0 != 0 && c0 == c1 && c1 == c2)
 				return true;

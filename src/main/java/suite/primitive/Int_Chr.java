@@ -29,7 +29,7 @@ public interface Int_Chr {
 		return outlet -> {
 			IntSource source = outlet.source();
 			int c;
-			char result = (char) 0;
+			var result = (char) 0;
 			while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

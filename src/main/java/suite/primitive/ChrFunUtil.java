@@ -28,7 +28,7 @@ public class ChrFunUtil {
 
 			public char source() {
 				if (!isAppended) {
-					char c_ = source.source();
+					var c_ = source.source();
 					if (c_ != EMPTYVALUE)
 						return c_;
 					else {
@@ -66,7 +66,7 @@ public class ChrFunUtil {
 			private ChrSource source0 = nullSource();
 
 			public char source() {
-				char c = EMPTYVALUE;
+				var c = EMPTYVALUE;
 				while (source0 != null && (c = source0.source()) == EMPTYVALUE)
 					source0 = source.source();
 				return c;
@@ -92,7 +92,7 @@ public class ChrFunUtil {
 	public static ChrSource filter(ChrTest fun0, ChrSource source) {
 		ChrTest fun1 = fun0.rethrow();
 		return () -> {
-			char c = EMPTYVALUE;
+			var c = EMPTYVALUE;
 			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
 				;
 			return c;
@@ -152,7 +152,7 @@ public class ChrFunUtil {
 			}
 
 			public Character next() {
-				char next0 = next;
+				var next0 = next;
 				next = EMPTYVALUE;
 				return next0;
 			}
@@ -167,7 +167,7 @@ public class ChrFunUtil {
 	public static <T1> Source<T1> map(Chr_Obj<T1> fun0, ChrSource source) {
 		Chr_Obj<T1> fun1 = fun0.rethrow();
 		return () -> {
-			char c0 = source.source();
+			var c0 = source.source();
 			return c0 != ChrFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
@@ -176,7 +176,7 @@ public class ChrFunUtil {
 		Chr_Obj<K> kf1 = kf0.rethrow();
 		Chr_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
-			char c = source.source();
+			var c = source.source();
 			boolean b = c != EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
@@ -187,7 +187,7 @@ public class ChrFunUtil {
 	public static ChrSource mapChr(Chr_Chr fun0, ChrSource source) {
 		Chr_Chr fun1 = fun0.rethrow();
 		return () -> {
-			char c = source.source();
+			var c = source.source();
 			return c != ChrFunUtil.EMPTYVALUE ? fun1.apply(c) : ChrFunUtil.EMPTYVALUE;
 		};
 	}
@@ -195,7 +195,7 @@ public class ChrFunUtil {
 	public static <V> ChrObjSource<V> mapChrObj(Chr_Obj<V> fun0, ChrSource source) {
 		Chr_Obj<V> fun1 = fun0.rethrow();
 		return pair -> {
-			char c = source.source();
+			var c = source.source();
 			if (c != ChrFunUtil.EMPTYVALUE) {
 				pair.update(c, fun1.apply(c));
 				return true;

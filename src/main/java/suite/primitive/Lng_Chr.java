@@ -29,7 +29,7 @@ public interface Lng_Chr {
 		return outlet -> {
 			LngSource source = outlet.source();
 			long c;
-			char result = (char) 0;
+			var result = (char) 0;
 			while ((c = source.source()) != LngFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;

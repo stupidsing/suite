@@ -130,7 +130,7 @@ public interface NioChannelFactory {
 		channel.onConnected.wire(sender -> channel.setConnected(sender != null));
 		channel.onReceivePacket.wire(packet -> {
 			if (5 <= packet.size()) {
-				char type = (char) packet.get(0);
+				var type = (char) packet.get(0);
 				int token = NetUtil.bytesToInt(packet.range(1, 5));
 				Bytes contents = packet.range(5);
 

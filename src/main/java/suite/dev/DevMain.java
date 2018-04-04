@@ -248,7 +248,7 @@ public class DevMain {
 			p0.update(px);
 		};
 		for (int p = 0; p < size; p++) {
-			char ch = text.get(p);
+			var ch = text.get(p);
 			if (ch == '\n' || wrapSize < p - p0.get())
 				lf.sink(p);
 		}

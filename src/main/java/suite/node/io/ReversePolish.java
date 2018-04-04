@@ -37,7 +37,7 @@ public class ReversePolish {
 		Deque<Node> deque = new ArrayDeque<>();
 
 		br.lines().filter(elem -> !elem.isEmpty()).forEach(elem -> {
-			char type = elem.charAt(0);
+			var type = elem.charAt(0);
 			var s = elem.substring(1);
 			Node n;
 

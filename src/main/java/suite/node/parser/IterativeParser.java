@@ -57,7 +57,7 @@ public class IterativeParser {
 			while ((token = lex.lex()) != null) {
 				Operator operator = token.operator;
 				var data = token.getData();
-				char ch = data.charAt(0);
+				var ch = data.charAt(0);
 
 				if (operator != null) {
 					addOperator(operator);

@@ -75,7 +75,7 @@ public class Lexer {
 			} else if (type == LexType.OPER_)
 				pos += token.operator.getName().length();
 			else if (type == LexType.STR__) {
-				char quote = in.charAt(pos);
+				var quote = in.charAt(pos);
 				while (pos < in.length() && in.charAt(pos) == quote) {
 					pos++;
 					while (pos < in.length() && in.charAt(pos) != quote)
@@ -112,7 +112,7 @@ public class Lexer {
 		Operator operator = Pair.first_(commandUtil.recognize(in, pos));
 
 		if (pos < in.length()) {
-			char ch = in.charAt(pos);
+			var ch = in.charAt(pos);
 
 			if (operator != null)
 				type = LexType.OPER_;

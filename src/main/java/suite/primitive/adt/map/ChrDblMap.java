@@ -119,7 +119,7 @@ public class ChrDblMap {
 					var index1 = (index + 1) & mask;
 					double v_ = vs[index1];
 					if (v_ != EMPTYVALUE) {
-						char k = ks[index1];
+						var k = ks[index1];
 						vs[index1] = EMPTYVALUE;
 						rehash(index1);
 						store(k, v_);
@@ -190,7 +190,7 @@ public class ChrDblMap {
 
 			public boolean source2(ChrDblPair pair) {
 				while (index < capacity) {
-					char k = ks[index];
+					var k = ks[index];
 					double v = vs[index++];
 					if (v != EMPTYVALUE) {
 						pair.update(k, v);

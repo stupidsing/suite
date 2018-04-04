@@ -233,7 +233,7 @@ public class As {
 				if (chars != null) {
 					BytesBuilder bb = new BytesBuilder();
 					for (int i = 0; i < chars.size(); i++) {
-						char ch = chars.get(i);
+						var ch = chars.get(i);
 						if (ch < 0x80)
 							bb.append((byte) ch);
 						else if (ch < 0x800) {
@@ -268,7 +268,7 @@ public class As {
 		var p = 0;
 		if (0 < length) {
 			while (p < length) {
-				char ch = line.charAt(p++);
+				var ch = line.charAt(p++);
 				if (ch == '"')
 					while (p < length)
 						if ((ch = line.charAt(p++)) == '"' && p < length && line.charAt(p) == '"') {

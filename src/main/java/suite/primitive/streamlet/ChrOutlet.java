@@ -82,7 +82,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 			private int i = start;
 
 			public char source() {
-				char c = pred.test(i) ? ts[i] : ChrFunUtil.EMPTYVALUE;
+				var c = pred.test(i) ? ts[i] : ChrFunUtil.EMPTYVALUE;
 				i += inc;
 				return c;
 			}
@@ -137,7 +137,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	public ChrOutlet closeAtEnd(Closeable c) {
 		return of(() -> {
-			char next = next();
+			var next = next();
 			if (next == ChrFunUtil.EMPTYVALUE)
 				Object_.closeQuietly(c);
 			return next;
@@ -257,7 +257,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 			private int i = 0;
 
 			public boolean source2(ChrObjPair<Integer> pair) {
-				char c = next();
+				var c = next();
 				if (c != ChrFunUtil.EMPTYVALUE) {
 					pair.update(c, i++);
 					return true;
@@ -307,7 +307,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public char min(ChrComparator comparator) {
-		char c = minOrEmpty(comparator);
+		var c = minOrEmpty(comparator);
 		if (c != ChrFunUtil.EMPTYVALUE)
 			return c;
 		else
@@ -341,13 +341,13 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 		return new ChrOutlet(() -> {
 			Mutable<Character> mutable = Mutable.nil();
-			char c = queue.poll(mutable) ? mutable.get() : c0;
+			var c = queue.poll(mutable) ? mutable.get() : c0;
 			return c;
 		});
 	}
 
 	public ChrOpt opt() {
-		char c = next();
+		var c = next();
 		if (c != ChrFunUtil.EMPTYVALUE)
 			if (next() == ChrFunUtil.EMPTYVALUE)
 				return ChrOpt.of(c);

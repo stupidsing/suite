@@ -57,7 +57,7 @@ public class ParseUtil {
 		var quote = 0;
 
 		for (int pos = start; pos <= end; pos++) {
-			char c = s.charAt(pos);
+			var c = s.charAt(pos);
 			quote = getQuoteChange(quote, c);
 
 			if (quote == 0 && s.startsWith(toMatch, pos))
@@ -128,7 +128,7 @@ public class ParseUtil {
 			}
 
 			for (int pos = pos0; pos != posx + step; pos += step) {
-				char c = cs[pos];
+				var c = cs[pos];
 				quote = getQuoteChange(quote, c);
 
 				if (quote == 0) {

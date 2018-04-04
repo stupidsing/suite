@@ -243,7 +243,7 @@ public class Grapher {
 			List<IntIntPair> children = new ArrayList<>();
 
 			if (type == ReadType.TERM) {
-				char ch = (char) dis.readByte();
+				var ch = (char) dis.readByte();
 
 				switch (ch) {
 				case 'a':

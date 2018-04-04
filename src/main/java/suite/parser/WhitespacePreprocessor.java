@@ -30,7 +30,7 @@ public class WhitespacePreprocessor implements Fun<String, List<Run>> {
 		boolean backquote = false;
 
 		while (pos < length) {
-			char ch = in.charAt(pos++);
+			var ch = in.charAt(pos++);
 
 			if (ch != '`') {
 				if ((quote = ParseUtil.getQuoteChange(quote, ch)) == 0 && whitespaces.contains(ch)) {

@@ -94,7 +94,7 @@ public class Chars_ {
 		return new ChrStreamlet(() -> {
 			ChrMutable m = ChrMutable.of(s);
 			return ChrOutlet.of(() -> {
-				char c = m.increment();
+				var c = m.increment();
 				return c < e ? c : ChrFunUtil.EMPTYVALUE;
 			});
 		});
