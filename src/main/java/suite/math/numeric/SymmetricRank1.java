@@ -26,7 +26,7 @@ public class SymmetricRank1 {
 	private float[] sr1(Obj_Dbl<float[]> fun, Fun<float[], float[]> gradientFun, float[] initials) {
 		var xs = initials;
 		var gradient = gradientFun.apply(initials);
-		float[][] invh = mtx.identity(xs.length); // approximated inverse of Hessian
+		var invh = mtx.identity(xs.length); // approximated inverse of Hessian
 
 		for (int iter = 0; iter < 9; iter++) {
 			float[] dxs = mtx.mul(invh, gradient);

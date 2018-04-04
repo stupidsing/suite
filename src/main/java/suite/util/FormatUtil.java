@@ -16,7 +16,7 @@ public class FormatUtil {
 		Streamlet<String[]> rows = arrays //
 				.map(array -> To.array(nColumns, String.class, column -> column < array.length ? array[column] : ""));
 
-		int[] widths = Ints_ //
+		var widths = Ints_ //
 				.range(nColumns) //
 				.collect(Int_Int.lift(column -> rows //
 						.collect(Obj_Int.lift(row -> row[column].length())).max())) //

@@ -30,7 +30,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 
 		return index -> {
 			Map<String, float[]> returnsBySymbol = dsBySymbol.mapValue(DataSource::returns).toMap();
-			String[] symbols = returnsBySymbol.keySet().toArray(new String[0]);
+			var symbols = returnsBySymbol.keySet().toArray(new String[0]);
 
 			List<float[]> portfolios = Ints_ //
 					.range(99) //

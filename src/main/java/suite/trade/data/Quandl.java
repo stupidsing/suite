@@ -13,7 +13,7 @@ import suite.util.String_;
 public class Quandl {
 
 	public DataSource dataSourceCsv(String symbol, TimeRange period) {
-		String[] m = Constants.secrets("quandl .0");
+		var m = Constants.secrets("quandl .0");
 		var usMarketClose = 16l;
 		var ph0 = period.to.epochSec() - (usMarketClose + 4) * 24 * 3600;
 		var ph1 = ph0 - (ph0 % 86400l);

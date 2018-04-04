@@ -28,11 +28,11 @@ public class Bfgs {
 
 	private float[] bfgs(Obj_Dbl<float[]> fun, Fun<float[], float[]> gradientFun, float[] initials) {
 		var length = initials.length;
-		float[][] id = mtx.identity(length);
+		var id = mtx.identity(length);
 
 		var xs = initials;
 		var gs = gradientFun.apply(xs);
-		float[][] ib = id;
+		var ib = id;
 
 		for (int iter = 0; iter < 16; iter++) {
 			var xs_ = xs;

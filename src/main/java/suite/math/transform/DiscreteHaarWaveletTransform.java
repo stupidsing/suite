@@ -6,7 +6,7 @@ public class DiscreteHaarWaveletTransform {
 	// assumes input.length >= 2 and input.length = 2^n
 	public int[] dhwt(int[] input) {
 		var length2 = input.length;
-		int[] output = new int[length2];
+		var output = new int[length2];
 
 		while (1 < length2) {
 			var length = length2 / 2;
@@ -27,7 +27,7 @@ public class DiscreteHaarWaveletTransform {
 
 	public int[] idhwt(int[] input) {
 		int length = 1, length2;
-		int[] output = new int[input.length];
+		var output = new int[input.length];
 
 		while ((length2 = length * 2) <= input.length) {
 			for (int i = 0; i < length; i++) {

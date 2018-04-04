@@ -19,7 +19,7 @@ public class MarketTiming {
 	private Statistic stat = new Statistic();
 
 	public float[] hold(float[] prices, float h0, float h1, float h2) {
-		int[] flags = time(prices);
+		var flags = time(prices);
 		var length = flags.length;
 		var holds = new float[length];
 		var hold = 0f;
@@ -48,7 +48,7 @@ public class MarketTiming {
 		float[] ma20 = ma.movingAvg(prices, 20);
 		float[] ma50 = ma.movingAvg(prices, 50);
 		var lookback80 = lookback * .8d;
-		int[] flags = new int[length];
+		var flags = new int[length];
 
 		for (int i = 0; i < length; i++) {
 			int past = max(0, i - lookback);

@@ -111,8 +111,8 @@ public class NeuralNetwork {
 
 		return this.<float[][], float[]> spawnLayer(float[].class, layers, input -> input, errors0 -> {
 			List<float[][]> errors1 = errors0.toList();
-			float[][] e = errors1.get(0);
-			float[][] sums = new float[mtx.height(e)][mtx.width(e)];
+			var e = errors1.get(0);
+			var sums = new float[mtx.height(e)][mtx.width(e)];
 			for (float[][] error : errors1)
 				sums = mtx.add(sums, error);
 			return sums;
@@ -182,7 +182,7 @@ public class NeuralNetwork {
 		return inputs -> {
 			var sx = mtx.height(inputs);
 			var sy = mtx.width(inputs);
-			float[][] outputs = new float[sx + maskx >> shiftx][sy + masky >> shifty];
+			var outputs = new float[sx + maskx >> shiftx][sy + masky >> shifty];
 
 			for (int ix = 0; ix < sx; ix++) {
 				var in = inputs[ix];

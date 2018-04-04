@@ -235,7 +235,7 @@ public class Arima {
 		int lengthq = length + q, lengthqm1 = lengthq - 1;
 		var iter = 0;
 		var xsp = new float[lengthp];
-		float[][] epqByIter = new float[q][];
+		var epqByIter = new float[q][];
 
 		Arrays.fill(xsp, 0, p, xs[0]);
 		System.arraycopy(xs, 0, xsp, p, length);
@@ -319,7 +319,7 @@ public class Arima {
 	@SuppressWarnings("unused")
 	private float[] maIa(float[] xs, int q) {
 		var length = xs.length;
-		float[][] epqByIter = new float[q][];
+		var epqByIter = new float[q][];
 		var iter = 0;
 		var qm1 = q - 1;
 

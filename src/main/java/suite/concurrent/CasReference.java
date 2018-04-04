@@ -26,7 +26,7 @@ public class CasReference<T> {
 
 	public T apply(Iterate<T> fun) {
 		while (true) {
-			int[] arr = new int[1];
+			var arr = new int[1];
 			T t0 = asr.get(arr);
 			T t1 = fun.apply(t0);
 			var stamp = arr[0];

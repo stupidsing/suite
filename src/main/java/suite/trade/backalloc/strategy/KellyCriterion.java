@@ -31,7 +31,7 @@ public class KellyCriterion {
 				.mapValue(returns -> (float) (stat.meanVariance(returns).mean - dailyInterestRate)) //
 				.toMap();
 
-		String[] symbols = returnsBySymbol.keySet().toArray(new String[0]);
+		var symbols = returnsBySymbol.keySet().toArray(new String[0]);
 		var nSymbols = symbols.length;
 
 		float[][] cov = To.matrix(nSymbols, nSymbols, (i0, i1) -> {

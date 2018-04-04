@@ -17,7 +17,7 @@ public class Qr {
 	 */
 	public Pair<float[][], float[][]> decompose_mT_T(float[][] m) { // a
 		var size = mtx.sqSize(m);
-		float[][] q = new float[size][]; // e
+		var q = new float[size][]; // e
 
 		for (int i = 0; i < size; i++) {
 			var a = m[i];
@@ -31,7 +31,7 @@ public class Qr {
 			q[i] = vec.scaleOn(u1, Math.sqrt(1f / vec.dot(u1, u1)));
 		}
 
-		float[][] r = new float[size][size];
+		var r = new float[size][size];
 
 		for (int i = 0; i < size; i++)
 			for (int j = 0; j <= i; j++)
@@ -41,9 +41,9 @@ public class Qr {
 	}
 
 	public Pair<float[][], float[][]> decomposeByGivensRotation(float[][] m) {
-		float[][] r = mtx.of(m);
+		var r = mtx.of(m);
 		var size = mtx.sqSize(r);
-		float[][] q = mtx.identity(size);
+		var q = mtx.identity(size);
 
 		for (int k = 0; k < size; k++)
 			for (int i = size - 1; k < i; i--) {

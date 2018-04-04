@@ -23,7 +23,7 @@ public class SelfOrganizingMap {
 	public void som(List<float[]> ins) {
 		var length = ins.get(0).length;
 		var size = index(bounds);
-		float[][] som = new float[size][length];
+		var som = new float[size][length];
 		var alpha = 1f;
 
 		for (int i = 0; i < size; i++)
@@ -32,7 +32,7 @@ public class SelfOrganizingMap {
 		for (int iteration = 0; iteration < 256; iteration++)
 			for (float[] in : ins) {
 				DblMutable nearestDistance = DblMutable.of(Double.MAX_VALUE);
-				int[] nearestIndices = new int[nDim];
+				var nearestIndices = new int[nDim];
 
 				new Loop(is -> {
 					var index = index(is);

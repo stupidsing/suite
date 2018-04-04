@@ -93,7 +93,7 @@ public class Statistic {
 		private LinearRegression(float[][] x, float[] y, String[] coefficientNames_) {
 			var nDataPoints_ = y.length;
 			var nDepVariables_ = mtx.width(x);
-			float[][] xt = mtx.transpose(x);
+			var xt = mtx.transpose(x);
 			float[] coeffs = cholesky.inverseMul(mtx.mul(xt, x)).apply(mtx.mul(xt, y));
 			float[] estimatedy = mtx.mul(x, coeffs);
 			float[] residuals_ = vec.sub(y, estimatedy);
@@ -186,13 +186,13 @@ public class Statistic {
 			w = new float[sampleLength];
 
 			if (nSamples == bs.length) {
-				float[][] xt = mtx.transpose(x);
+				var xt = mtx.transpose(x);
 				float[] y = Floats_.toArray(nSamples, i -> bs[i] ? 1f : 0f);
 
 				for (int n = 0; n < 256; n++) {
 					float[] bernoulli = To.vector(x, this::predict);
 					float[] s = To.vector(bernoulli, b -> b * (1f - b));
-					float[][] sx = mtx.of(x);
+					var sx = mtx.of(x);
 					for (int i = 0; i < nSamples; i++)
 						for (int j = 0; j < sampleLength; j++)
 							sx[i][j] *= s[i];

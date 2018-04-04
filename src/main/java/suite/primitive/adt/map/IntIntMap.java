@@ -152,8 +152,8 @@ public class IntIntMap {
 		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
-			int[] ks0 = ks;
-			int[] vs0 = vs;
+			var ks0 = ks;
+			var vs0 = vs;
 			int v_;
 
 			allocate(capacity * 2);

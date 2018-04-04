@@ -32,8 +32,8 @@ public class RadialBasisFunctionNetwork {
 		var length = ins[0].length;
 		int[] kmc = new KmeansCluster(length).kMeansCluster(List.of(ins), nHiddens, nHiddens);
 
-		int[] sizes = new int[nHiddens];
-		float[][] sums = new float[nHiddens][length];
+		var sizes = new int[nHiddens];
+		var sums = new float[nHiddens][length];
 		var variances = new float[nHiddens];
 
 		for (int i = 0; i < ins.length; i++) {
@@ -50,10 +50,10 @@ public class RadialBasisFunctionNetwork {
 		}
 
 		invVariances = Floats_.toArray(variances.length, i -> 1f / variances[i]);
-		float[][] rbfs = Read.from(ins).map(this::evaluateRbfs).toArray(float[].class);
-		float[][] rbfs_t = mtx.transpose(rbfs);
+		var rbfs = Read.from(ins).map(this::evaluateRbfs).toArray(float[].class);
+		var rbfs_t = mtx.transpose(rbfs);
 		Iterate<float[]> cdf = cd.inverseMul(mtx.mul(rbfs_t, rbfs));
-		float[][] psi = Read.from(rbfs).map(cdf).toArray(float[].class);
+		var psi = Read.from(rbfs).map(cdf).toArray(float[].class);
 		return in -> mtx.mul(evaluateRbfs(in), psi);
 	}
 

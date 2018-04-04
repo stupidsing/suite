@@ -15,10 +15,10 @@ public class UserInterface {
 
 	public static Board importBoard(String s) {
 		Board board = new Board();
-		String[] rows = s.split("\n");
+		var rows = s.split("\n");
 
 		for (int x = 0; x < Weiqi.size; x++) {
-			String[] cols = rows[x].split(" ");
+			var cols = rows[x].split(" ");
 
 			for (int y = 0; y < Weiqi.size; y++) {
 				Occupation occupation = Occupation.EMPTY;

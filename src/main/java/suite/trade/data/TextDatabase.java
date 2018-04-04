@@ -105,7 +105,7 @@ public class TextDatabase {
 	}
 
 	private Datum toDatum(String line) {
-		String[] array = line.split(",");
+		var array = line.split(",");
 		return datum(array[0], array[1]);
 	}
 

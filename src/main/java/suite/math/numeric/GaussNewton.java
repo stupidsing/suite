@@ -45,7 +45,7 @@ public class GaussNewton {
 				residuals[i] = (float) residualFuns[i].apply(r);
 			return residuals;
 		}, betas -> {
-			float[][] jacobian = new float[nrs][nVars];
+			var jacobian = new float[nrs][nVars];
 			for (int i = 0; i < nrs; i++)
 				for (int j = 0; j < nVars; j++)
 					jacobian[i][j] = (float) gradientFuns[i][j].apply(betas[j]);
@@ -64,8 +64,8 @@ public class GaussNewton {
 		var betas = initials;
 
 		for (int iter = 0; iter < 16; iter++) {
-			float[][] j = jacobianFun.apply(betas);
-			float[][] jt = mtx.transpose(j);
+			var j = jacobianFun.apply(betas);
+			var jt = mtx.transpose(j);
 			vec.subOn(betas, cd.inverseMul(mtx.mul(jt, j)).apply(mtx.mul(jt, residualFun.apply(betas))));
 		}
 

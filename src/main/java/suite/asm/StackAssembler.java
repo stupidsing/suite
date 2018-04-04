@@ -67,7 +67,7 @@ public class StackAssembler {
 				else if (rs != 0)
 					node1 = Fail.t("unbalanced register stack in subroutine definition");
 				else {
-					int[] arr = deque.pop();
+					var arr = deque.pop();
 					fs = arr[0];
 					rs = arr[1];
 				}

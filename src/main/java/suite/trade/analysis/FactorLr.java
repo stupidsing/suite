@@ -84,12 +84,12 @@ public class FactorLr {
 	private LinearRegression ols(DataSource rds0, TimeRange period) {
 		DataSource ys = rds0.range(period);
 
-		float[][] returns_ = Read //
+		var returns_ = Read //
 				.from(indexPrices) //
 				.map(prices -> DataSource.of(timestamps, prices).range(period).alignBeforePrices(ys.ts).returns()) //
 				.toArray(float[].class);
 
-		float[][] xs = mtx.transpose(returns_);
+		var xs = mtx.transpose(returns_);
 		return stat.linearRegression(xs, ys.returns(), indexSymbols.toArray(String.class));
 	}
 

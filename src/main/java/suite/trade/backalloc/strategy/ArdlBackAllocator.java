@@ -21,9 +21,9 @@ public class ArdlBackAllocator implements BackAllocator {
 	public OnDateTime allocate(AlignKeyDataSource<String> akds, int[] indices) {
 		Streamlet2<String, DataSource> dsBySymbol0 = akds.dsByKey;
 		Map<String, DataSource> dsBySymbol1 = dsBySymbol0.toMap();
-		String[] symbols = dsBySymbol0.keys().toArray(String.class);
+		var symbols = dsBySymbol0.keys().toArray(String.class);
 
-		float[][] fs = Read //
+		var fs = Read //
 				.from(symbols) //
 				.map(symbol -> dsBySymbol1.get(symbol).prices) //
 				.toArray(float[].class);

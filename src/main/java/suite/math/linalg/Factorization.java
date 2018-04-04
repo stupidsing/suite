@@ -19,8 +19,8 @@ public class Factorization {
 		for (int iter = 0; iter < 20; iter++) {
 			// TODO check if error is small enough
 
-			float[][] u0 = u;
-			float[][] v0 = v;
+			var u0 = u;
+			var v0 = v;
 
 			float[][] error = mtx.sub(m, mtx.mul(u, v));
 			var alpha = .1f;

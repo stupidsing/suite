@@ -40,7 +40,7 @@ public class StockHistory {
 		String line;
 
 		while ('9' < (line = outlet.next()).charAt(0)) {
-			String[] array = line.split("=");
+			var array = line.split("=");
 			properties.put(array[0].trim(), array[1].trim());
 		}
 

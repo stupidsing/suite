@@ -33,7 +33,7 @@ public class MatrixTest {
 
 	@Test
 	public void testInverse() {
-		float[][] id = mtx.identity(3);
+		var id = mtx.identity(3);
 		assertTrue(mtx.equals(id, mtx.inverse(id)));
 
 		float[][] mul8 = mtx.scale(id, 8f);
@@ -41,7 +41,7 @@ public class MatrixTest {
 		assertTrue(mtx.equals(mul8, mtx.inverse(div8)));
 		assertTrue(mtx.equals(div8, mtx.inverse(mul8)));
 
-		float[][] o = new float[2][2];
+		var o = new float[2][2];
 		o[0][1] = 1;
 		o[1][0] = 1;
 		assertTrue(mtx.equals(o, mtx.inverse(o)));
@@ -51,9 +51,9 @@ public class MatrixTest {
 	public void testInversePerformance() {
 		Random random = new Random();
 		float[][] large0 = To.matrix(128, 128, (i, j) -> random.nextFloat());
-		float[][] large1 = mtx.inverse(large0);
+		var large1 = mtx.inverse(large0);
 		float[][] actual = mtx.mul(large0, large1);
-		float[][] expect = mtx.identity(128);
+		var expect = mtx.identity(128);
 		mtx.verifyEquals(expect, actual, .05f);
 	}
 

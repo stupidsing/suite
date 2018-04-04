@@ -43,7 +43,7 @@ public class CholeskyDecompositionTest {
 		float[] expectd = { 4f, 1f, 9f, };
 
 		Pair<float[][], float[]> ldlt = cholesky.ldlt(mtx.of(m0));
-		float[][] actuall = ldlt.t0;
+		var actuall = ldlt.t0;
 		var actuald = ldlt.t1;
 		mtx.verifyEquals(actuall, expectl);
 		vec.verifyEquals(actuald, expectd);
@@ -61,10 +61,10 @@ public class CholeskyDecompositionTest {
 				{ -8f, 5f, 3f, }, //
 		};
 
-		float[][] actual = cholesky.decompose(mtx.of(m0));
+		var actual = cholesky.decompose(mtx.of(m0));
 		mtx.verifyEquals(actual, expect);
 
-		float[][] conjugate = mtx.transpose(actual);
+		var conjugate = mtx.transpose(actual);
 		float[][] m1 = mtx.mul(actual, conjugate);
 		mtx.verifyEquals(m0, m1);
 	}

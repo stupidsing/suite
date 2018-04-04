@@ -118,7 +118,7 @@ public class StatisticalArbitrageTest {
 	@Test
 	public void testMarketDirection() {
 		DataSource ds = cfg.dataSource(Asset.hsiSymbol).cleanse();
-		int[] flagsArray = mt.time(ds.prices);
+		var flagsArray = mt.time(ds.prices);
 		var flags0 = "-----";
 
 		for (int i = 0; i < ds.ts.length; i++) {

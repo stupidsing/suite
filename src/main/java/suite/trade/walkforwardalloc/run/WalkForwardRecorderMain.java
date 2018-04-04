@@ -82,7 +82,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 					InputStreamReader isr = new InputStreamReader(is); //
 					BufferedReader br = new BufferedReader(isr)) {
 				while (br.ready()) {
-					String[] array = br.readLine().split(",");
+					var array = br.readLine().split(",");
 					Time time = Time.of(array[0].trim());
 					var symbol = array[1].trim();
 					var price = Float.parseFloat(array[2].trim());

@@ -22,9 +22,9 @@ public class Kalman {
 	// observation1 = H * state1 + noise(0, R)
 
 	public void kalman(float[] input0, float[] observed0) {
-		float[][] identity = mtx.identity(stateLength);
-		float[][] Ft = mtx.transpose(F);
-		float[][] Ht = mtx.transpose(H);
+		var identity = mtx.identity(stateLength);
+		var Ft = mtx.transpose(F);
+		var Ht = mtx.transpose(H);
 
 		// predict
 		// predicted next state (stateLength)

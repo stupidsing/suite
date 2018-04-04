@@ -16,7 +16,7 @@ import suite.util.String_;
 public class HttpHeaderUtil {
 
 	public static IList<String> getPath(String pathString) {
-		String[] arr = pathString.split("/");
+		var arr = pathString.split("/");
 		IList<String> path = IList.end();
 		for (int i = arr.length - 1; i >= 0; i--)
 			if (!arr[i].isEmpty())
@@ -25,7 +25,7 @@ public class HttpHeaderUtil {
 	}
 
 	public static Map<String, String> getCookieAttrs(String query) {
-		String[] qs = query != null ? query.split(";") : new String[0];
+		var qs = query != null ? query.split(";") : new String[0];
 		Map<String, String> attrs = new HashMap<>();
 
 		for (String q : qs) {
@@ -49,7 +49,7 @@ public class HttpHeaderUtil {
 	}
 
 	public static Map<String, String> getAttrs(String query) {
-		String[] qs = query != null ? query.split("&") : new String[0];
+		var qs = query != null ? query.split("&") : new String[0];
 		Map<String, String> attrs = new HashMap<>();
 
 		for (String q : qs) {

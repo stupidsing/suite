@@ -192,7 +192,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			buffer.get(bytes);
 			buffer.rewind();
 
-			String[] splitted = To.string(bytes).split(",");
+			var splitted = To.string(bytes).split(",");
 			Command data = Command.valueOf(splitted[0]);
 			var remote = splitted[1];
 

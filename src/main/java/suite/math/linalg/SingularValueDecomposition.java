@@ -23,7 +23,7 @@ public class SingularValueDecomposition {
 	// Machine Learning - An Algorithm Perspective
 	// 6.2 Principal Components Analysis
 	public float[] pca(float[][] m0) {
-		float[][] m1 = mtx.of(m0);
+		var m1 = mtx.of(m0);
 		var height = mtx.height(m1);
 		var width_ = mtx.width(m1);
 
@@ -35,7 +35,7 @@ public class SingularValueDecomposition {
 		}
 
 		float[][] cov = mtx.scale(mtx.mul_mTn(m1, m1), 1d / height);
-		float[][] evs = eigen.power(cov);
+		var evs = eigen.power(cov);
 		return eigen.values(cov, evs);
 	}
 
@@ -44,12 +44,12 @@ public class SingularValueDecomposition {
 	public Fixie3<float[], float[][], float[][]> svd(float[][] a) {
 		Fun<float[][], Fixie3<Double, float[], float[]>> f = Boolean.TRUE ? this::svd0 : this::svd1;
 		var ss = new float[k];
-		float[][] us = new float[k][];
-		float[][] vs = new float[k][];
+		var us = new float[k][];
+		var vs = new float[k][];
 
 		for (int i = 0; i < k; i++) {
 			Fixie3<Double, float[], float[]> fixie = f.apply(a);
-			float[][] a0 = a;
+			var a0 = a;
 			var i_ = i;
 
 			a = fixie.map((s, u, v) -> {
@@ -76,7 +76,7 @@ public class SingularValueDecomposition {
 	private Fixie3<Double, float[], float[]> svd0(float[][] a) {
 		var n = mtx.width(a);
 		float[] x = Floats_.toArray(n, i -> random.nextFloat());
-		float[][] at = mtx.transpose(a);
+		var at = mtx.transpose(a);
 
 		for (int i = 0; i < 16; i++)
 			x = mtx.mul(at, mtx.mul(a, x));
@@ -92,7 +92,7 @@ public class SingularValueDecomposition {
 	// "3 SVD Power Method"
 	private Fixie3<Double, float[], float[]> svd1(float[][] a) {
 		float[] v = Floats_.toArray(mtx.width(a), i -> random.nextFloat());
-		float[][] at = mtx.transpose(a);
+		var at = mtx.transpose(a);
 
 		for (int i = 0; i < 256; i++) {
 			float[] u = vec.normalize(mtx.mul(a, v));
@@ -113,8 +113,8 @@ public class SingularValueDecomposition {
 	// Image and Video Analysis"
 	// 5.7.3 Whitening Transformation
 	public float[][] whiten(float[][] omega) {
-		float[][] covs = mtx.covariance(omega);
-		float[][] evs = eigen.power(covs);
+		var covs = mtx.covariance(omega);
+		var evs = eigen.power(covs);
 		float[] evals = eigen.values(omega, covs);
 		float[][] m = To.matrix(mtx.height(evs), mtx.width(evs), (i, j) -> evs[i][j] / Math.sqrt(evals[j]));
 		return mtx.mul(m, omega);

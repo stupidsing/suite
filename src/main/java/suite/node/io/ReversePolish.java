@@ -44,7 +44,7 @@ public class ReversePolish {
 			if (type == '\\')
 				n = Atom.of(s);
 			else if (type == '^') {
-				String[] a = s.split(":");
+				var a = s.split(":");
 				var size = Integer.valueOf(a[3]);
 				List<Pair<Node, Node>> children = new ArrayList<>();
 				for (int i = 0; i < size; i++) {

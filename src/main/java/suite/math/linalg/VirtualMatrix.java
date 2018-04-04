@@ -120,7 +120,7 @@ public class VirtualMatrix {
 
 	public VirtualMatrix mul(VirtualMatrix vm1) {
 		return apply((height, ks0, f0) -> vm1.apply((ks1, width_, f1) -> {
-			float[][] o = new float[height][width_];
+			var o = new float[height][width_];
 			int i1, j1, k1;
 
 			if (ks0 == ks1)
@@ -173,7 +173,7 @@ public class VirtualMatrix {
 	}
 
 	public float[][] matrix() {
-		float[][] matrix = new float[height][width_];
+		var matrix = new float[height][width_];
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width_; j++)
 				matrix[i][j] = get.apply(i, j);

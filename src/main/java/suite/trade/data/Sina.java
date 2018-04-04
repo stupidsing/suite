@@ -99,7 +99,7 @@ public class Sina {
 					// |0,Y
 
 					String[] a0 = ParseUtil.fit(line, "var hq_str_", "=\"", "\"");
-					String[] a1 = a0[2].split(",");
+					var a1 = a0[2].split(",");
 
 					Factor factor = new Factor();
 					factor.symbol = toYahoo(a0[1]);

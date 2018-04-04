@@ -149,7 +149,7 @@ public class To {
 	}
 
 	public static float[][] matrix(int height, int width_, IntInt_Dbl fun) {
-		float[][] matrix = new float[height][width_];
+		var matrix = new float[height][width_];
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width_; j++)
 				matrix[i][j] = (float) fun.apply(i, j);

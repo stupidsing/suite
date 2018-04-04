@@ -367,11 +367,11 @@ public class BackAllocatorGeneral {
 							return i - j;
 						});
 
-						int[] dlos = getDays.apply(-1);
-						int[] dhis = getDays.apply(1);
+						var dlos = getDays.apply(-1);
+						var dhis = getDays.apply(1);
 
 						IntInt_Obj<int[]> enterExit = (nEnterDays, nExitDays) -> {
-							int[] holds = new int[length];
+							var holds = new int[length];
 							var stopper = 0f;
 							var nHold = 0;
 
@@ -450,7 +450,7 @@ public class BackAllocatorGeneral {
 						.toList();
 
 				List<Pair<String, Integer>> m1 = new ArrayList<>();
-				int[] sums = new int[2];
+				var sums = new int[2];
 
 				for (Pair<String, Integer> pair : m0) {
 					var n = pair.t1;

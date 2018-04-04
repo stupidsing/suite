@@ -22,7 +22,7 @@ public class DiscreteHaarWaveletTransformTest {
 			data[j] = temp;
 		}
 
-		int[] expect = data.clone();
+		var expect = data.clone();
 
 		DiscreteHaarWaveletTransform dhwt = new DiscreteHaarWaveletTransform();
 		data = dhwt.dhwt(data);

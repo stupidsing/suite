@@ -54,7 +54,7 @@ public class DevMain {
 			Keyboard keyboard = new Keyboard(libc);
 
 			Sink<State> redraw = state -> state.apply((st, undo, redo, text, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
-				String[] lines = Ints_ //
+				var lines = Ints_ //
 						.range(viewSizeY) //
 						.map(screenY -> text.get(ox, oy + screenY, viewSizeX).replace('\t', ' ')) //
 						.toArray(String.class);

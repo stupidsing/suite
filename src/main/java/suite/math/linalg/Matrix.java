@@ -57,7 +57,7 @@ public class Matrix {
 
 	public double det(float[][] m) {
 		var size = sqSize_(m);
-		int[] cols = Ints_.range(size).toArray();
+		var cols = Ints_.range(size).toArray();
 
 		class Det {
 			private double sum;
@@ -117,13 +117,13 @@ public class Matrix {
 	 * Calculates matric inverse by Gaussian-Jordan elimination.
 	 */
 	public float[][] inverse(float[][] m0) {
-		float[][] m = of(m0); // do not alter input matrix
+		var m = of(m0); // do not alter input matrix
 		var size = h(m);
 
 		if (size != w(m))
 			Fail.t("wrong input sizes");
 
-		float[][] n = identity(size);
+		var n = identity(size);
 
 		for (int r = 0; r < size; r++) {
 			var c = r;
@@ -161,7 +161,7 @@ public class Matrix {
 	}
 
 	public float[][] mul(float[] u, float[] v) {
-		float[][] m = new float[u.length][v.length];
+		var m = new float[u.length][v.length];
 		for (int i = 0; i < u.length; i++)
 			for (int j = 0; j < v.length; j++)
 				m[i][j] = u[i] * v[j];

@@ -309,12 +309,12 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		// remove the entry
 		Slot slot = slots.pop();
 		Page page = slot.page;
-		int index = slot.index;
+		var index = slot.index;
 		KeyPointer kp = slot.getKeyPointer();
 
 		if (kp != null && Objects.equals(kp.key, key)) {
 			discard(kp);
-			page.remove(index);
+			page.remove(index.intValue());
 		}
 
 		// rotates nodes around to maintain invariant

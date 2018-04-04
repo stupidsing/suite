@@ -14,9 +14,9 @@ public class Eigen {
 	// Paul Wilmott on Quantitative Finance, Second Edition
 	// 37.13.1 The Power Method, page 620
 	public float[][] power(float[][] m0) {
-		float[][] m = mtx.of(m0);
+		var m = mtx.of(m0);
 		var size = mtx.sqSize(m);
-		float[][] eigenVectors = new float[size][];
+		var eigenVectors = new float[size][];
 		var eigenValue = 0f;
 
 		for (int v = 0; v < size; v++) {
@@ -47,8 +47,8 @@ public class Eigen {
 		var nIterations = 20; // n
 		var alphas = new float[nIterations];
 		var betas = new float[nIterations];
-		float[][] vs = new float[nIterations][];
-		float[][] ws = new float[nIterations][];
+		var vs = new float[nIterations][];
+		var ws = new float[nIterations][];
 		float[] vj1 = null;
 
 		for (int j = 1; j < nIterations; j++) {
@@ -69,7 +69,7 @@ public class Eigen {
 			ws[j] = vec.sub(wp, sub1);
 		}
 
-		float[][] t = new float[nIterations][nIterations];
+		var t = new float[nIterations][nIterations];
 
 		for (int i = 0; i < nIterations; i++)
 			t[i][i] = alphas[i];

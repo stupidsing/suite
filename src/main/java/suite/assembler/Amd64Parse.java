@@ -7,7 +7,6 @@ import suite.Suite;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
-import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.Operand;
 import suite.node.Atom;
 import suite.node.Int;

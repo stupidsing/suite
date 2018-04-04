@@ -19,12 +19,12 @@ public class NaiveBayes {
 	public NaiveBayes(List<Pair<int[], Boolean>> records, double threshold) {
 		var nCategories = 2;
 		var length_ = records.get(0).t0.length;
-		int[] ms = new int[nCategories];
+		var ms = new int[nCategories];
 		int[] ws = Ints_.toArray(nCategories, cat -> 1);
 		int[][] is = To.array(nCategories, int[].class, cat -> Ints_.toArray(length_, i -> 1));
 
 		for (Pair<int[], Boolean> record : records) {
-			int[] xs = record.t0;
+			var xs = record.t0;
 			var cat = i(record.t1);
 			ms[cat]++;
 			for (int i = 0; i < length_; i++) {
@@ -39,7 +39,7 @@ public class NaiveBayes {
 
 		ps = To.array(nCategories, float[].class, i -> {
 			IntStreamlet range = Ints_.range(length_);
-			int[] is_ = is[i];
+			var is_ = is[i];
 			return range.collect(Int_Flt.lift(j -> (float) (is_[j] / ws[i]))).toArray();
 		});
 	}

@@ -28,7 +28,7 @@ public class Pipe {
 		else
 			Fail.t("cannot find shell executable");
 
-		String[] command1 = command0;
+		var command1 = command0;
 
 		return new Streamlet<>(() -> Rethrow.ex(() -> {
 			InputStream bis = new ByteArrayInputStream(sh.getBytes(Constants.charset));

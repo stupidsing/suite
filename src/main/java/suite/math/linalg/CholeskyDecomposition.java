@@ -16,7 +16,7 @@ public class CholeskyDecomposition {
 	 */
 	public Iterate<float[]> inverseMul(float[][] m) {
 		Pair<float[][], float[]> ldlt = ldlt(m);
-		float[][] l = ldlt.t0;
+		var l = ldlt.t0;
 		var d = ldlt.t1;
 		float[] reciprocalsD = To.vector(d, f -> 1f / f);
 		return fs0 -> {
@@ -57,7 +57,7 @@ public class CholeskyDecomposition {
 	 */
 	public float[][] decompose(float[][] m) {
 		var size = mtx.sqSize(m);
-		float[][] l = mtx.identity(size);
+		var l = mtx.identity(size);
 
 		for (int c = 0; c < size; c++) {
 			var mii = m[c][c];
@@ -92,7 +92,7 @@ public class CholeskyDecomposition {
 	 */
 	public Pair<float[][], float[]> ldlt(float[][] m) {
 		var size = mtx.height(m);
-		float[][] l = mtx.identity(size);
+		var l = mtx.identity(size);
 		var d = new float[size];
 
 		for (int c = 0; c < size; c++) {

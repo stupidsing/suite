@@ -41,7 +41,7 @@ public class Google {
 		// + "&ts=" //
 		;
 
-		String[] lines = Singleton.me.storeCache //
+		var lines = Singleton.me.storeCache //
 				.http(url) //
 				.collect(As::lines) //
 				.toArray(String.class);

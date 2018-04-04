@@ -25,7 +25,7 @@ public class ObstructionFreeStm {
 		}
 
 		private void trim() {
-			int[] lastReadTime = new int[1];
+			var lastReadTime = new int[1];
 			Snapshot<V> snapshot = asr.get(lastReadTime);
 			while (snapshot.owner.status == TransactionStatus.ROLLBACK)
 				snapshot = snapshot.previous;
@@ -81,7 +81,7 @@ public class ObstructionFreeStm {
 
 	public <V> V get(Transaction transaction, Memory<V> memory) {
 		while (true) {
-			int[] lastReadTime = new int[1];
+			var lastReadTime = new int[1];
 			Snapshot<V> snapshot = memory.asr.get(lastReadTime);
 			Snapshot<V> snapshot1 = snapshot;
 
@@ -104,7 +104,7 @@ public class ObstructionFreeStm {
 
 	public <V> void put(Transaction transaction, Memory<V> memory, V value) {
 		while (true) {
-			int[] lastReadTime = new int[1];
+			var lastReadTime = new int[1];
 			Snapshot<V> snapshot = memory.asr.get(lastReadTime);
 
 			// serializable

@@ -24,7 +24,7 @@ public class EigenTest {
 	}
 
 	private void test(float[][] m) {
-		float[][] eigenVectors = eigen.power(m);
+		var eigenVectors = eigen.power(m);
 
 		for (float[] eigenVector : eigenVectors) {
 			var n0 = norm(eigenVector);
