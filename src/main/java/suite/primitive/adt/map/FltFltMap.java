@@ -152,8 +152,8 @@ public class FltFltMap {
 		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
-			float[] ks0 = ks;
-			float[] vs0 = vs;
+			var ks0 = ks;
+			var vs0 = vs;
 			float v_;
 
 			allocate(capacity * 2);

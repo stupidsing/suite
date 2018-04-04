@@ -104,7 +104,7 @@ public class BackAllocTester {
 
 			OnDateTime onDateTime = backAllocator.allocate(akds, indices);
 			Map<String, Eod> eodBySymbol = Map.ofEntries();
-			float[] valuations_ = new float[size];
+			var valuations_ = new float[size];
 			String ymd = null;
 			Exception exception_;
 

@@ -155,7 +155,7 @@ public class LngFltMap {
 
 		if (capacity * 3 / 4 < size) {
 			long[] ks0 = ks;
-			float[] vs0 = vs;
+			var vs0 = vs;
 			float v_;
 
 			allocate(capacity * 2);

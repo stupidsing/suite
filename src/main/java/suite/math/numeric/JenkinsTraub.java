@@ -88,7 +88,7 @@ public class JenkinsTraub {
 	}
 
 	private double newtonRaphson(float[] poly, double x) {
-		float[] d = d(poly);
+		var d = d(poly);
 		double diff;
 		do
 			x = x - (diff = evaluate(poly, x) / evaluate(d, x));

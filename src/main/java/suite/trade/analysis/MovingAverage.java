@@ -55,7 +55,7 @@ public class MovingAverage {
 
 	public float[] exponentialMovingAvg(float[] prices, double alpha) {
 		var length = prices.length;
-		float[] emas = new float[length];
+		var emas = new float[length];
 		var ema = 0 < length ? prices[0] : 0d;
 		for (int day = 0; day < length; day++)
 			emas[day] = (float) (ema += alpha * (prices[day] - ema));
@@ -70,7 +70,7 @@ public class MovingAverage {
 
 	public float[] movingAvg(float[] prices, int windowSize) {
 		var length = prices.length;
-		float[] movingAvgs = new float[length];
+		var movingAvgs = new float[length];
 		var div = 1d / windowSize;
 		var movingSum = 0 < length ? prices[0] * windowSize : 0d;
 
@@ -118,7 +118,7 @@ public class MovingAverage {
 			b *= b;
 		}
 
-		float[] remas = new float[prices.length];
+		var remas = new float[prices.length];
 		remas[0] = price0;
 
 		for (int t = 1; t < prices.length; t++) {

@@ -40,8 +40,8 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 		Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
 
 		DataSourceView<String, Double> dsv = DataSourceView.of(0, 512, akds, (symbol, ds, samplePeriod) -> {
-			float[] prices = ds.range(samplePeriod).prices;
-			float[] logReturns = ts.logReturns(prices);
+			var prices = ds.range(samplePeriod).prices;
+			var logReturns = ts.logReturns(prices);
 			var ll = logReturns.length;
 			var sum = 0d;
 			for (int i = tor; i < ll - tor; i++) {
@@ -64,7 +64,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 			Streamlet2<String, float[]> reversePricesBySymbol = dsBySymbol //
 					.filterKey(reverseCorrelationBySymbol::containsKey) //
 					.mapValue(ds -> {
-						float[] prices = ds.prices;
+						var prices = ds.prices;
 						var last = index - 1;
 						return Floats_.toArray(tor, i -> prices[last - i]);
 					}) //

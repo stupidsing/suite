@@ -69,7 +69,7 @@ public class Arch {
 	}
 
 	private float[] copyPadZeroes(float[] fs0, int from, int to) {
-		float[] fs1 = new float[to - from];
+		var fs1 = new float[to - from];
 		int p = -max(0, from);
 		Arrays.fill(fs1, 0, p, 0f);
 		Floats_.copy(fs0, 0, fs1, p, to - p);

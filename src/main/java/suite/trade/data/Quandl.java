@@ -32,11 +32,11 @@ public class Quandl {
 				.collect(As::streamlet);
 
 		long[] ts = arrays.collect(Obj_Lng.lift(array -> Time.of(array[0] + " 18:00:00").epochSec(-4))).toArray();
-		float[] opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
-		float[] settles = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[6]))).toArray();
-		float[] lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
-		float[] highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
-		float[] volumes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[7]))).toArray();
+		var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
+		var settles = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[6]))).toArray();
+		var lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
+		var highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
+		var volumes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[7]))).toArray();
 
 		return DataSource.ofOhlcv(ts, opens, settles, lows, highs, volumes).range(period);
 	}

@@ -56,8 +56,8 @@ public class AnalyzeTimeSeriesTest {
 
 	private void analyze(DataSource ds) {
 		var length = ds.ts.length;
-		float[] ops = ds.opens;
-		float[] cls = ds.closes;
+		var ops = ds.opens;
+		var cls = ds.closes;
 		float[] ocgs = Floats_.toArray(length, i -> cls[i] - ops[i]);
 		float[] cogs = Floats_.toArray(length, i -> ops[i] - cls[max(0, i - 1)]);
 		LogUtil.info("open/close gap = " + stat.meanVariance(ocgs));
@@ -72,7 +72,7 @@ public class AnalyzeTimeSeriesTest {
 		var nYears = length * Trade_.invTradeDaysPerYear;
 
 		float[] fds = dct.dct(Arrays.copyOfRange(prices, length - log2, length));
-		float[] returns = ts.returns(prices);
+		var returns = ts.returns(prices);
 		float[] logPrices = To.vector(prices, Math::log);
 		float[] logReturns = ts.differences(1, logPrices);
 		MeanVariance rmv = stat.meanVariance(returns);
@@ -106,8 +106,8 @@ public class AnalyzeTimeSeriesTest {
 		BuySell mt_ = buySell(d -> holds[d]);
 
 		Pair<float[], float[]> bbmv = bb.meanVariances(VirtualVector.of(logReturns), 9, 0);
-		float[] bbmean = bbmv.t0;
-		float[] bbvariances = bbmv.t1;
+		var bbmean = bbmv.t0;
+		var bbvariances = bbmv.t1;
 
 		BuySell ms2 = buySell(d -> {
 			var last = d - 1;
@@ -193,7 +193,7 @@ public class AnalyzeTimeSeriesTest {
 
 	private Returns engage_(float[] prices, float[] holds) {
 		var length = prices.length;
-		float[] returns = new float[length];
+		var returns = new float[length];
 		double val;
 		returns[0] = (float) (val = 1d);
 		for (int d = 1; d < length; d++)
@@ -203,7 +203,7 @@ public class AnalyzeTimeSeriesTest {
 
 	private Returns invest_(float[] prices, float[] holds) {
 		var length = prices.length;
-		float[] returns = new float[length];
+		var returns = new float[length];
 		double val;
 		returns[0] = (float) (val = 1d);
 		for (int d = 1; d < length; d++)

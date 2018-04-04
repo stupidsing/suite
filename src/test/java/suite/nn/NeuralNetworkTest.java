@@ -37,7 +37,7 @@ public class NeuralNetworkTest {
 					float[] in = input(b0, b1);
 					float[] expect = new float[] { f(oper.apply(b0, b1)), };
 					Out<float[], float[]> out = train.feed(in);
-					float[] actual = out.output;
+					var actual = out.output;
 					out.backprop.apply(vec.sub(expect, actual));
 				}
 

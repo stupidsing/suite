@@ -49,20 +49,20 @@ public class MonteCarloBackAllocator implements BackAllocator {
 				var size = portfolios.size();
 
 				for (int j = 0; j < 12; j++) {
-					float[] portfolio = portfolios.get(random.nextInt(size));
+					var portfolio = portfolios.get(random.nextInt(size));
 					portfolios.add(mutate(symbols, portfolio));
 				}
 
 				for (int j = 0; j < 12; j++) {
-					float[] pa = portfolios.get(random.nextInt(size));
-					float[] pb = portfolios.get(random.nextInt(size));
+					var pa = portfolios.get(random.nextInt(size));
+					var pb = portfolios.get(random.nextInt(size));
 					portfolios1.add(crossover(pa, pb));
 				}
 
 				portfolios = portfolios1;
 			}
 
-			float[] portfolio = portfolios.get(0);
+			var portfolio = portfolios.get(0);
 
 			return Ints_ //
 					.range(symbols.length) //

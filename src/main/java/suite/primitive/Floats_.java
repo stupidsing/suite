@@ -37,7 +37,7 @@ public class Floats_ {
 		var length = 0;
 		for (float[] fs : array)
 			length += fs.length;
-		float[] fs1 = new float[length];
+		var fs1 = new float[length];
 		var i = 0;
 		for (float[] fs : array) {
 			var length_ = fs.length;
@@ -51,7 +51,7 @@ public class Floats_ {
 		var length = 0;
 		for (Floats floats : array)
 			length += floats.size();
-		float[] cs1 = new float[length];
+		var cs1 = new float[length];
 		var i = 0;
 		for (Floats floats : array) {
 			var size_ = floats.size();
@@ -125,7 +125,7 @@ public class Floats_ {
 	}
 
 	public static float[] toArray(int length, Int_Flt f) {
-		float[] cs = new float[length];
+		var cs = new float[length];
 		for (int i = 0; i < length; i++)
 			cs[i] = f.apply(i);
 		return cs;

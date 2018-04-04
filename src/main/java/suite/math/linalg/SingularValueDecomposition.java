@@ -43,7 +43,7 @@ public class SingularValueDecomposition {
 	// "Computing the SVD: The power method"
 	public Fixie3<float[], float[][], float[][]> svd(float[][] a) {
 		Fun<float[][], Fixie3<Double, float[], float[]>> f = Boolean.TRUE ? this::svd0 : this::svd1;
-		float[] ss = new float[k];
+		var ss = new float[k];
 		float[][] us = new float[k][];
 		float[][] vs = new float[k][];
 
@@ -81,7 +81,7 @@ public class SingularValueDecomposition {
 		for (int i = 0; i < 16; i++)
 			x = mtx.mul(at, mtx.mul(a, x));
 
-		float[] v = vec.normalize(x);
+		var v = vec.normalize(x);
 		float[] av = mtx.mul(a, v);
 		var s = vec.abs(av);
 		float[] u = vec.scale(av, 1d / s);

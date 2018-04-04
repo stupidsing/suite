@@ -26,9 +26,9 @@ public class SingleAllocBackTest {
 	}
 
 	private SingleAllocBackTest(DataSource ds, BuySellStrategy strategy) {
-		float[] prices = ds.prices;
+		var prices = ds.prices;
 		var length = prices.length;
-		float[] valuations = new float[length];
+		var valuations = new float[length];
 
 		GetBuySell getBuySell = strategy.analyze(prices);
 

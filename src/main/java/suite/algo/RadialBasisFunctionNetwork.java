@@ -34,7 +34,7 @@ public class RadialBasisFunctionNetwork {
 
 		int[] sizes = new int[nHiddens];
 		float[][] sums = new float[nHiddens][length];
-		float[] variances = new float[nHiddens];
+		var variances = new float[nHiddens];
 
 		for (int i = 0; i < ins.length; i++) {
 			var cl = kmc[i];

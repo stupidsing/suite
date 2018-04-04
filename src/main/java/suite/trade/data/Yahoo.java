@@ -55,11 +55,11 @@ public class Yahoo {
 				.collect(As::streamlet);
 
 		long[] ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
-		float[] opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
-		float[] closes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
-		float[] lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
-		float[] highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
-		float[] volumes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[5]))).toArray();
+		var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
+		var closes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
+		var lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
+		var highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
+		var volumes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[5]))).toArray();
 
 		adjust(symbol, ts, opens);
 		adjust(symbol, ts, closes);
@@ -255,11 +255,11 @@ public class Yahoo {
 						.collect(As::streamlet);
 
 				long[] ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
-				float[] opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
-				float[] closes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
-				float[] lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
-				float[] highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
-				float[] volumes = new float[ts.length];
+				var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
+				var closes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
+				var lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
+				var highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
+				var volumes = new float[ts.length];
 				return DataSource.ofOhlcv(ts, opens, closes, lows, highs, volumes);
 			}
 		});

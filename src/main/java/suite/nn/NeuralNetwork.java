@@ -185,8 +185,8 @@ public class NeuralNetwork {
 			float[][] outputs = new float[sx + maskx >> shiftx][sy + masky >> shifty];
 
 			for (int ix = 0; ix < sx; ix++) {
-				float[] in = inputs[ix];
-				float[] out = outputs[ix >> shiftx];
+				var in = inputs[ix];
+				var out = outputs[ix >> shiftx];
 				for (int iy = 0; iy < sy; iy++)
 					out[iy >> shifty] += in[iy];
 			}

@@ -33,8 +33,8 @@ public class FastFourierTransformTest {
 	@Test
 	public void testFftFloat() {
 		float[] fs0 = { 1f, 0f, 1f, 0f, 1f, 0f, 1f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, 0f, };
-		float[] fs1 = fft.fft(fs0);
-		float[] fs2 = fft.ifft(fs1);
+		var fs1 = fft.fft(fs0);
+		var fs2 = fft.ifft(fs1);
 
 		MathUtil.verifyEquals(fs1[0], 4f);
 		MathUtil.verifyEquals(fs1[1], 0f);

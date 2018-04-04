@@ -63,7 +63,7 @@ public class Volatility {
 	}
 
 	public float[] vol4(float f) {
-		float[] vol3 = vol3();
+		var vol3 = vol3();
 		var a = .12d / f;
 		var b = .88d / (1d - f);
 		return To.vector(length, t -> {

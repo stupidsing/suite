@@ -17,12 +17,12 @@ public class CholeskyDecomposition {
 	public Iterate<float[]> inverseMul(float[][] m) {
 		Pair<float[][], float[]> ldlt = ldlt(m);
 		float[][] l = ldlt.t0;
-		float[] d = ldlt.t1;
+		var d = ldlt.t1;
 		float[] reciprocalsD = To.vector(d, f -> 1f / f);
 		return fs0 -> {
 			var height = mtx.height(m);
 			var width = mtx.width(m);
-			float[] fs1 = new float[height]; // will be inverse(L) * fs0
+			var fs1 = new float[height]; // will be inverse(L) * fs0
 
 			for (int i = 0; i < height; i++) {
 				var sum = fs0[i];
@@ -33,7 +33,7 @@ public class CholeskyDecomposition {
 
 			// will be inverse(D) * fs1
 			float[] fs2 = Floats_.toArray(fs1.length, i -> fs1[i] * reciprocalsD[i]);
-			float[] fs3 = new float[width]; // will be inverse(L*) * fs2
+			var fs3 = new float[width]; // will be inverse(L*) * fs2
 
 			for (int i = width - 1; 0 <= i; i--) {
 				var sum = fs2[i];
@@ -93,7 +93,7 @@ public class CholeskyDecomposition {
 	public Pair<float[][], float[]> ldlt(float[][] m) {
 		var size = mtx.height(m);
 		float[][] l = mtx.identity(size);
-		float[] d = new float[size];
+		var d = new float[size];
 
 		for (int c = 0; c < size; c++) {
 			var imii = 1f / (d[c] = m[c][c]);

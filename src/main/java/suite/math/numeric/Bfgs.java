@@ -30,12 +30,12 @@ public class Bfgs {
 		var length = initials.length;
 		float[][] id = mtx.identity(length);
 
-		float[] xs = initials;
-		float[] gs = gradientFun.apply(xs);
+		var xs = initials;
+		var gs = gradientFun.apply(xs);
 		float[][] ib = id;
 
 		for (int iter = 0; iter < 16; iter++) {
-			float[] xs_ = xs;
+			var xs_ = xs;
 			float[] ps = mtx.mul(ib, vec.neg(gs)); // direction
 			Dbl_Obj<float[]> line = alpha -> vec.add(xs_, vec.scale(ps, alpha));
 
@@ -46,7 +46,7 @@ public class Bfgs {
 
 			float[] ss = vec.scale(ps, alpha);
 			float[] xs1 = vec.add(xs_, ss); // line.apply(alpha);
-			float[] gs1 = gradientFun.apply(xs1);
+			var gs1 = gradientFun.apply(xs1);
 			float[] ys = vec.sub(gs1, gs);
 			double yts = vec.dot(ys, ss);
 

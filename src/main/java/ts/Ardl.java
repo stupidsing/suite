@@ -30,7 +30,7 @@ public class Ardl {
 		var length = fsList[0].length;
 
 		return To.array(n, LinearRegression.class, it -> {
-			float[] fs = fsList[it];
+			var fs = fsList[it];
 
 			if (length == fs.length)
 				return stat.linearRegression(Ints_ //
@@ -47,8 +47,8 @@ public class Ardl {
 
 	private float[] getExplanatoryVariables(float[][] fsList, int it, int t) {
 		return Floats_.concat(To.array(fsList.length, float[].class, is -> {
-			float[] fsi = fsList[is];
-			float[] xs = new float[maxLag + (isIncludeCurrent ? 1 : 0)];
+			var fsi = fsList[is];
+			var xs = new float[maxLag + (isIncludeCurrent ? 1 : 0)];
 			Floats_.copy(fsi, t, xs, 0, maxLag);
 			if (isIncludeCurrent)
 				xs[maxLag] = is != it ? fsi[t + maxLag] : 1f;

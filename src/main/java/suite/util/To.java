@@ -312,7 +312,7 @@ public class To {
 	}
 
 	public static float[] vector(int length, Int_Dbl f) {
-		float[] fs = new float[length];
+		var fs = new float[length];
 		for (int i = 0; i < length; i++)
 			fs[i] = (float) f.apply(i);
 		return fs;

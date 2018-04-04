@@ -54,7 +54,7 @@ public class PmamrBackAllocator {
 						.filterValue(mrs -> mrs.adf < 0d && mrs.hurst < .5d) //
 						.map2((symbol, mrs) -> {
 							DataSource ds = dsBySymbol.get(symbol);
-							float[] prices = ds.prices;
+							var prices = ds.prices;
 							var price = prices[index - 1];
 
 							var lma = mrs.latestMovingAverage();
@@ -103,7 +103,7 @@ public class PmamrBackAllocator {
 		private final LinearRegression movingAvgMeanReversion;
 
 		private MeanReversionStat(DataSource ds, TimeRange mrsPeriod) {
-			float[] prices = ds.range(mrsPeriod).prices;
+			var prices = ds.range(mrsPeriod).prices;
 			movingAverage = ma.geometricMovingAvg(prices, tor);
 
 			if (tor * 2 <= prices.length) {

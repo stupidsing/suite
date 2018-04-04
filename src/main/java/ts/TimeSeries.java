@@ -138,7 +138,7 @@ public class TimeSeries {
 	public float[] logReturns(float[] ys) {
 		var length = ys.length;
 		if (0 < length) {
-			float[] logReturns = new float[length - 1];
+			var logReturns = new float[length - 1];
 			var f0 = ys[0];
 			for (int i = 0; i < logReturns.length; i++) {
 				logReturns[i] = (float) Quant.logReturn(f0, ys[i + 1]);
@@ -211,7 +211,7 @@ public class TimeSeries {
 			} else
 				v0 = vx = 1d;
 
-			float[] returns_ = returns_(prices);
+			var returns_ = returns_(prices);
 			MeanVariance mv = stat.meanVariance(returns_);
 
 			return_ = Math.expm1(Quant.logReturn(v0, vx) * returns_.length * scale);
@@ -269,7 +269,7 @@ public class TimeSeries {
 
 	private float[] returns_(float[] fs) {
 		var length = fs.length;
-		float[] returns = new float[length];
+		var returns = new float[length];
 		var price0 = 0 < length ? fs[0] : 0f;
 		for (int i = 0; i < returns.length; i++) {
 			var price = fs[i];

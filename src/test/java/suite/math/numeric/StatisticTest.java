@@ -37,7 +37,7 @@ public class StatisticTest {
 
 		Dump.out(lr);
 
-		float[] actual = lr.coefficients();
+		var actual = lr.coefficients();
 		vec.verifyEquals(expect, actual, .1f);
 
 		float[] xtest = Floats_.toArray(m, j -> random.nextFloat());

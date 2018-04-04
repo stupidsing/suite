@@ -27,14 +27,14 @@ public class EigenTest {
 		float[][] eigenVectors = eigen.power(m);
 
 		for (float[] eigenVector : eigenVectors) {
-			float[] n0 = norm(eigenVector);
+			var n0 = norm(eigenVector);
 			float[] n1 = norm(mtx.mul(m, eigenVector));
 			vec.verifyEquals(n0, n1, .01f);
 		}
 	}
 
 	private float[] norm(float[] v0) {
-		float[] v1 = vec.normalize(v0);
+		var v1 = vec.normalize(v0);
 		if (v1[0] < 0f)
 			return vec.scale(v1, -1d);
 		else

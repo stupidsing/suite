@@ -36,7 +36,7 @@ public class SelfOrganizingMap {
 
 				new Loop(is -> {
 					var index = index(is);
-					float[] som0 = som[index];
+					var som0 = som[index];
 					double distance = vec.dotDiff(in, som0);
 					if (distance < nearestDistance.get()) {
 						nearestDistance.update(distance);
@@ -44,12 +44,12 @@ public class SelfOrganizingMap {
 					}
 				}).findMin(0);
 
-				float[] nearestSom = som[index(nearestIndices)];
+				var nearestSom = som[index(nearestIndices)];
 				var alpha_ = alpha;
 
 				new Loop(is -> {
 					var index = index(is);
-					float[] som0 = som[index];
+					var som0 = som[index];
 					double theta = Math.exp(-vec.dotDiff(nearestSom, som0) / (2d * var));
 					som[index] = vec.add(som0, vec.scale(vec.sub(in, som0), theta * alpha_));
 				}).updateNeighbours(nearestIndices, nDim);

@@ -48,7 +48,7 @@ public class Factor {
 
 		AlignKeyDataSource<String> akds = cfg.dataSources(TimeRange.of(Time.MIN, now), indices);
 
-		float[] indexPrices = akds.dsByKey //
+		var indexPrices = akds.dsByKey //
 				.map((symbol, ds) -> ds.prices) //
 				.fold(new float[akds.ts.length], vec::add);
 
@@ -73,7 +73,7 @@ public class Factor {
 					(symbol, ds, period) -> project(ids, dsBySymbol_.get(symbol), period));
 
 			return index -> {
-				float[] indexPrices = ids.prices;
+				var indexPrices = ids.prices;
 				double indexReturn = Quant.return_(indexPrices[index - 2], indexPrices[index - 1]);
 
 				return dsBySymbol //

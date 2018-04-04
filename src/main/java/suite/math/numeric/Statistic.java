@@ -163,7 +163,7 @@ public class Statistic {
 
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
-			float[] tStatistic = tStatistic();
+			var tStatistic = tStatistic();
 			for (int i = 0; i < nDepVariables; i++)
 				sb.append("\n" + coefficientNames[i] + " = " + To.string(coefficients[i]) //
 						+ ", t-statistic = " + To.string(tStatistic[i]));

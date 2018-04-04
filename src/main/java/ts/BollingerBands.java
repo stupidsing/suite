@@ -22,8 +22,8 @@ public class BollingerBands {
 		var length = v.length;
 		Int_Flt fun = v.get;
 
-		float[] means = new float[length];
-		float[] variances = new float[length];
+		var means = new float[length];
+		var variances = new float[length];
 		var d = backPos0 - backPos1;
 		var il = 1d / d;
 		int i = 0, j;

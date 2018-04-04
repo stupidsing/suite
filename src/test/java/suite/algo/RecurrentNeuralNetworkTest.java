@@ -22,7 +22,7 @@ public class RecurrentNeuralNetworkTest {
 			lstm.propagateBackward(inputs, expected);
 		}
 
-		float[] outputs = lstm.activateForward(inputs);
+		var outputs = lstm.activateForward(inputs);
 		System.out.println("actual = " + mtx.toString(outputs));
 		System.out.println("expected = " + mtx.toString(expected));
 

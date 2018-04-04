@@ -58,9 +58,9 @@ public class StatisticalArbitrageTest {
 		var power = 6;
 
 		DataSource ds = cfg.dataSource(Asset.hsiSymbol).cleanse();
-		float[] prices = ds.prices;
+		var prices = ds.prices;
 		float[][] mas = To.array(power, float[].class, p -> ma.movingAvg(prices, 1 << p));
-		float[] returns = ts.returns(prices);
+		var returns = ts.returns(prices);
 
 		LinearRegression lr = stat.linearRegression(Ints_ //
 				.range(1 << power, prices.length) //
@@ -83,8 +83,8 @@ public class StatisticalArbitrageTest {
 		Map<String, float[]> pricesBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
 
 		var length = akds.ts.length;
-		float[] prices0 = pricesBySymbol.get(symbol0);
-		float[] prices1 = pricesBySymbol.get(symbol1);
+		var prices0 = pricesBySymbol.get(symbol0);
+		var prices1 = pricesBySymbol.get(symbol1);
 
 		LinearRegression lr = stat.linearRegression(Ints_ //
 				.range(tor, length) //
@@ -140,7 +140,7 @@ public class StatisticalArbitrageTest {
 		var nBets = 40;
 
 		DataSource ds = cfg.dataSource(Asset.hsiSymbol).range(period).cleanse();
-		float[] returns = ds.returns();
+		var returns = ds.returns();
 
 		for (float bet = 0f - 2f; bet < 1f + 2f; bet += .02f) {
 			var notBet = 1f - bet;
@@ -179,7 +179,7 @@ public class StatisticalArbitrageTest {
 		DctDataSource dctDataSources = dctDataSources();
 
 		for (Pair<String, float[]> e : dctDataSources.dctByKey) {
-			float[] dct = e.t1;
+			var dct = e.t1;
 			IntFltPair max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
 
 			for (int i = minPeriod; i < dct.length; i++) {
@@ -195,7 +195,7 @@ public class StatisticalArbitrageTest {
 	// Naive Bayes return prediction
 	@Test
 	public void testReturnDistribution() {
-		float[] prices = cfg.dataSource(Asset.hsiSymbol).range(period).prices;
+		var prices = cfg.dataSource(Asset.hsiSymbol).range(period).prices;
 		var maxTor = 16;
 
 		IntObjMap<float[]> differencesByTor = Ints_ //
@@ -214,7 +214,7 @@ public class StatisticalArbitrageTest {
 			double[][] cpsArray = Ints_ //
 					.range(1, maxTor) //
 					.map(tor -> {
-						float[] differences = differencesByTor.get(tor);
+						var differences = differencesByTor.get(tor);
 						var length = differences.length;
 
 						// cumulative probabilities
@@ -272,7 +272,7 @@ public class StatisticalArbitrageTest {
 	public void testVolatility() {
 		System.out.println(showStats(ds -> {
 			float[] bandwidths0 = bb.bb(ds.prices, 32, 0, 2f).bandwidths;
-			float[] returns0 = ds.returns();
+			var returns0 = ds.returns();
 			float[] bandwidths1 = ts.drop(1, bandwidths0);
 			float[] returns1 = ts.drop(1, returns0);
 			return stat.project(bandwidths1, returns1);

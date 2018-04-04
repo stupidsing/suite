@@ -18,8 +18,8 @@ public class Oscillator {
 	public float[] atr(DataSource ds) {
 		var n = 20;
 		var length = ds.ts.length;
-		float[] trs = trueRange(ds);
-		float[] atrs = new float[length];
+		var trs = trueRange(ds);
+		var atrs = new float[length];
 		var atr = atrs[0] = Ints_.range(n).collect(Int_Flt.lift(i -> trs[i])).sum() / n;
 		var invn = 1d / n;
 
@@ -35,11 +35,11 @@ public class Oscillator {
 
 	// https://www.tradingview.com/wiki/Directional_Movement_(DMI)
 	public Dmi dmi(DataSource ds, int nDays) {
-		float[] los = ds.lows;
-		float[] his = ds.highs;
+		var los = ds.lows;
+		var his = ds.highs;
 		var length = ds.ts.length;
-		float[] dmUps = new float[length];
-		float[] dmDns = new float[length];
+		var dmUps = new float[length];
+		var dmDns = new float[length];
 
 		for (int i = 1; i < length; i++) {
 			float upMove = max(0, his[i] - his[i - 1]);
@@ -105,8 +105,8 @@ public class Oscillator {
 		for (int index = 1; index < length; index++)
 			cs[index] = (byte) Float.compare(prices[index - 1], prices[index]);
 
-		float[] mvmdecs = new float[length];
-		float[] mvmincs = new float[length];
+		var mvmdecs = new float[length];
+		var mvmincs = new float[length];
 
 		for (int index = window; index < length; index++) {
 			int decs = 0, incs = 0;
@@ -137,7 +137,7 @@ public class Oscillator {
 	// on-balance volume
 	public float[] obv(DataSource ds) {
 		var length = ds.ts.length;
-		float[] obvs = new float[length];
+		var obvs = new float[length];
 		var obv = 0d;
 		for (int i = 1; i < length; i++) {
 			int c = Float.compare(ds.closes[i - 1], ds.closes[i]);
@@ -153,8 +153,8 @@ public class Oscillator {
 
 	public float[] rsi(float[] prices, int nDays) {
 		var length = prices.length;
-		float[] us = new float[length];
-		float[] ds = new float[length];
+		var us = new float[length];
+		var ds = new float[length];
 		for (int i = 1; i < length; i++) {
 			var diff = prices[i] - prices[i - 1];
 			us[i] = 0f < diff ? diff : 0f;
@@ -170,7 +170,7 @@ public class Oscillator {
 	public float[] sar(DataSource ds) {
 		var alpha = .02f;
 		var length = ds.ts.length;
-		float[] sars = new float[length];
+		var sars = new float[length];
 
 		if (0 < length) {
 			var ep = ds.lows[0];
@@ -206,8 +206,8 @@ public class Oscillator {
 	public float[] stochastic(DataSource ds, int kDays) {
 		var dDays = 3;
 		var length = ds.ts.length;
-		float[] los = new float[length];
-		float[] his = new float[length];
+		var los = new float[length];
+		var his = new float[length];
 
 		for (int i = 0; i < length; i++) {
 			var lo = Float.MAX_VALUE;
@@ -230,7 +230,7 @@ public class Oscillator {
 
 	private float[] trueRange(DataSource ds) {
 		var length = ds.ts.length;
-		float[] trs = new float[length];
+		var trs = new float[length];
 
 		trs[0] = ds.highs[0] - ds.lows[0];
 

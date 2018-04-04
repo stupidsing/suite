@@ -45,8 +45,8 @@ public class Eigen {
 	public Pair<float[][], float[][]> lanczos(float[][] m) {
 		var n = mtx.sqSize(m);
 		var nIterations = 20; // n
-		float[] alphas = new float[nIterations];
-		float[] betas = new float[nIterations];
+		var alphas = new float[nIterations];
+		var betas = new float[nIterations];
 		float[][] vs = new float[nIterations][];
 		float[][] ws = new float[nIterations][];
 		float[] vj1 = null;
@@ -81,7 +81,7 @@ public class Eigen {
 
 	public float[] values(float[][] m, float[][] vs) {
 		return Floats_.toArray(vs.length, i -> {
-			float[] v = vs[i];
+			var v = vs[i];
 			return (float) (vec.abs(mtx.mul(m, v)) / vec.abs(v));
 		});
 	}

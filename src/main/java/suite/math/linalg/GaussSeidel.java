@@ -7,12 +7,12 @@ public class GaussSeidel {
 	// solve x in A*x = b
 	public float[] solve(float[][] a, float[] b) {
 		var size = mtx.sqSize(a);
-		float[] phi = new float[size];
+		var phi = new float[size];
 		float[] phi0 = Boolean.TRUE ? phi : new float[size]; // Gauss-Seidel, or Jacobi
 
 		for (int iteration = 0; iteration < 16; iteration++) {
 			for (int i = 0; i < size; i++) {
-				float[] ai = a[i];
+				var ai = a[i];
 				var o = 0d;
 				for (int j = 0; j < size; j++)
 					if (i != j)
@@ -20,7 +20,7 @@ public class GaussSeidel {
 				phi[i] = (float) ((b[i] - o) / a[i][i]);
 			}
 
-			float[] t = phi;
+			var t = phi;
 			phi = phi0;
 			phi0 = t;
 		}

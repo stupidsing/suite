@@ -196,7 +196,7 @@ public class DailyMain extends ExecutableProgram {
 			if (backTestBySymbol.get(symbol))
 				try {
 					DataSource ds = cfg.dataSource(symbol, period).validate();
-					float[] prices = ds.prices;
+					var prices = ds.prices;
 					var last = prices.length - 1;
 					var latestPrice = prices[last];
 

@@ -10,7 +10,7 @@ public class DiscreteCosineTransform {
 	public float[] dct(float[] fs0) {
 		var size = fs0.length;
 		var size21 = size * 2 - 1;
-		float[] fs1 = new float[size * 8];
+		var fs1 = new float[size * 8];
 
 		// signal [a, b, c, d] becomes
 		// [0, a, 0, b, 0, c, 0, d, 0, d, 0, c, 0, b, 0, a]
@@ -23,7 +23,7 @@ public class DiscreteCosineTransform {
 
 		// take the FFT to get the spectrum
 		// [A, B, C, D, 0, -D, -C, -B, -A, -B, -C, -D, 0, D, C, B]
-		float[] fs2 = fft.fft(fs1);
+		var fs2 = fft.fft(fs1);
 
 		// throw away everything but the first [A, B, C, D]
 		float[] fs3 = Floats_.toArray(size, i -> fs2[i * 2]);
@@ -36,7 +36,7 @@ public class DiscreteCosineTransform {
 		var size = fs3.length;
 		var size0 = 0;
 		var size4 = size * 4;
-		float[] fs2 = new float[size * 8];
+		var fs2 = new float[size * 8];
 
 		for (int i = 0; i < size; i++) {
 			var i2 = i * 2;
@@ -50,7 +50,7 @@ public class DiscreteCosineTransform {
 			}
 		}
 
-		float[] fs1 = fft.ifft(fs2);
+		var fs1 = fft.ifft(fs2);
 		float[] fs0 = Floats_.toArray(size, i -> fs1[i * 4 + 2]);
 		return fs0;
 	}

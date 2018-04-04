@@ -45,7 +45,7 @@ public class BackTester {
 				.groupBy(sims -> {
 					var txFee = sims.toDouble(Obj_Dbl.sum(sim -> cfg.transactionFee(sim.account.transactionAmount())));
 
-					float[] returns = sims //
+					var returns = sims //
 							.collect(Obj_Flt.lift(sim -> (float) sim.annualReturn)) //
 							.toArray();
 

@@ -40,7 +40,7 @@ public class GaussNewton {
 		}
 
 		return gn(r -> {
-			float[] residuals = new float[nrs];
+			var residuals = new float[nrs];
 			for (int i = 0; i < nrs; i++)
 				residuals[i] = (float) residualFuns[i].apply(r);
 			return residuals;
@@ -61,7 +61,7 @@ public class GaussNewton {
 	 * @return
 	 */
 	private float[] gn(Fun<float[], float[]> residualFun, Fun<float[], float[][]> jacobianFun, float[] initials) {
-		float[] betas = initials;
+		var betas = initials;
 
 		for (int iter = 0; iter < 16; iter++) {
 			float[][] j = jacobianFun.apply(betas);

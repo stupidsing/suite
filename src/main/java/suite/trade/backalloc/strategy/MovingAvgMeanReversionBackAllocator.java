@@ -102,7 +102,7 @@ public class MovingAvgMeanReversionBackAllocator {
 		private final LinearRegression movingAvgMeanReversion;
 
 		private MeanReversionStat(DataSource ds, TimeRange mrsPeriod) {
-			float[] prices = ds.range(mrsPeriod).prices;
+			var prices = ds.range(mrsPeriod).prices;
 
 			movingAverage = ma.geometricMovingAvg(prices, tor);
 

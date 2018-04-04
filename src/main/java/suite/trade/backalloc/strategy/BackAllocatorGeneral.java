@@ -257,7 +257,7 @@ public class BackAllocatorGeneral {
 		var scale = 320d;
 
 		return (akds, indices) -> {
-			float[] prices = akds.dsByKey //
+			var prices = akds.dsByKey //
 					.filter((symbol_, ds) -> String_.equals(symbol, symbol_)) //
 					.uniqueResult().t1.prices;
 
@@ -292,7 +292,7 @@ public class BackAllocatorGeneral {
 
 	private BackAllocator sar() {
 		return BackAllocator_.byDataSource(ds -> {
-			float[] sars = osc.sar(ds);
+			var sars = osc.sar(ds);
 
 			return Quant.filterRange(1, index -> {
 				var last = index - 1;
@@ -355,8 +355,8 @@ public class BackAllocatorGeneral {
 
 			Map<String, Fixie4<int[], int[], boolean[], boolean[]>> fixieBySymbol = dsByKey //
 					.map2((symbol, ds) -> {
-						float[] atrs = atrBySymbol.get(symbol);
-						float[] prices = ds.prices;
+						var atrs = atrBySymbol.get(symbol);
+						var prices = ds.prices;
 						var length = prices.length;
 
 						IntFunction<int[]> getDays = c -> Ints_.toArray(length, i -> {
@@ -463,7 +463,7 @@ public class BackAllocatorGeneral {
 				return Read //
 						.from2(m1) //
 						.map2((symbol, nHold) -> {
-							float[] atrs = atrBySymbol.get(symbol);
+							var atrs = atrBySymbol.get(symbol);
 							var unit = .01d / atrs[index - 1];
 							return max(-maxUnits, min(maxUnits, nHold)) * unit;
 						}) //
@@ -483,9 +483,9 @@ public class BackAllocatorGeneral {
 
 			Map<String, float[]> holdsBySymbol = akds.dsByKey //
 					.map2((symbol, ds) -> {
-						float[] prices = ds.prices;
+						var prices = ds.prices;
 						var length = prices.length;
-						float[] holds = new float[length];
+						var holds = new float[length];
 						var hold = 0f;
 						for (int index = tor; index < length; index++) {
 							if (dsv.get(symbol, index) < vr) {

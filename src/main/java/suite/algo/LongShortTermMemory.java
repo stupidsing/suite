@@ -83,9 +83,9 @@ public class LongShortTermMemory {
 		}
 
 		private float[] activate_(float[] input, float[] expected) {
-			float[] memory0 = memory;
-			float[] output0 = output;
-			float[] iv = new float[ll1];
+			var memory0 = memory;
+			var output0 = output;
+			var iv = new float[ll1];
 
 			Floats_.copy(input, 0, iv, 0, inputLength);
 			Floats_.copy(output0, 0, iv, inputLength, memoryLength);
@@ -96,7 +96,7 @@ public class LongShortTermMemory {
 			float[] tanh_ms = Tanh.tanhOn(mtx.mul(wm, iv));
 			float[] sig_os = Sigmoid.sigmoidOn(mtx.mul(wo, iv));
 			float[] memory1 = copy(memory = vec.addOn(Forget.forget(memory0, sig_fs), Forget.forget(tanh_ms, sig_is)));
-			float[] tanh_memory1 = Tanh.tanhOn(memory1);
+			var tanh_memory1 = Tanh.tanhOn(memory1);
 			float[] output1 = output = Forget.forget(sig_os, tanh_memory1);
 
 			if (expected != null) {

@@ -40,7 +40,7 @@ public class Arima {
 		var mean2 = mean * mean;
 		var length = ys.length;
 
-		float[] r = Ints_ //
+		var r = Ints_ //
 				.range(p + 1) //
 				.collect(Int_Flt.lift(i -> {
 					double sum = Ints_.range(i, length).toDouble(Int_Dbl.sum(j -> ys[j - i] * ys[j]));
@@ -49,17 +49,17 @@ public class Arima {
 				.toArray();
 
 		double d = r[0];
-		float[] alpha = new float[p];
+		var alpha = new float[p];
 		alpha[0] = 1;
 
 		for (int n = 0; n < p; n++) {
-			float[] alpha0 = alpha;
+			var alpha0 = alpha;
 			var n_ = n;
 
 			var k1 = Ints_.range(n).toDouble(Int_Dbl.sum(k -> alpha0[k] * r[n_ + 1 - k])) / d;
 			d = d * (1d - k1 * k1);
 
-			float[] alpha1 = new float[p];
+			var alpha1 = new float[p];
 			alpha1[0] = 1f;
 			for (int k = 1; k <= n; k++)
 				alpha1[k] = (float) (alpha0[k] - k1 * alpha0[n + 1 - k]);
@@ -94,7 +94,7 @@ public class Arima {
 		var p = ars.length;
 		var q = mas.length;
 		float[] xsp = Floats_.concat(new float[p], xs);
-		float[] epq = new float[length + q];
+		var epq = new float[length + q];
 		Arma arma = new Arma(ars, mas);
 
 		for (int iter = 0; iter < 64; iter++) {
@@ -131,7 +131,7 @@ public class Arima {
 			System.out.println("iter " + iter + ", error = " + To.string(error) + lr);
 			System.out.println();
 
-			float[] coefficients = lr.coefficients();
+			var coefficients = lr.coefficients();
 			Floats_.copy(coefficients, 0, ars, 0, p);
 			Floats_.copy(coefficients, p, mas, 0, q);
 		}
@@ -156,7 +156,7 @@ public class Arima {
 		var lengthq = length + q;
 		float[] ars = To.vector(p, i -> Math.scalb(.5d, -i));
 		float[] mas = To.vector(q, i -> Math.scalb(.5d, -i));
-		float[] xsp = new float[lengthp];
+		var xsp = new float[lengthp];
 		float[] epq = To.vector(lengthq, i -> xs[max(0, min(xsp.length, i - q))] * .25f);
 
 		Arrays.fill(xsp, 0, p, xs[0]);
@@ -168,12 +168,12 @@ public class Arima {
 			// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
 			// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 			{
-				float[] coeffs = stat.linearRegression(Ints_ //
+				var coeffs = stat.linearRegression(Ints_ //
 						.range(length) //
 						.map(t -> {
 							var tp = t + p;
 							var tq = t + q;
-							float[] lrxs = Floats_ //
+							var lrxs = Floats_ //
 									.concat(Floats_.reverse(xsp, t, tp), Floats_.reverse(epq, t, tq)) //
 									.toArray();
 							var lry = xsp[tp] - epq[tq];
@@ -187,10 +187,10 @@ public class Arima {
 			{
 				// xs[t] - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 				// = ep[t] + ep[t - 1] * mas[0] + ... + ep[t - q] * mas[q - 1]
-				float[] epq1 = stat.linearRegression(Ints_ //
+				var epq1 = stat.linearRegression(Ints_ //
 						.range(length) //
 						.map(t -> {
-							float[] lrxs = new float[lengthq];
+							var lrxs = new float[lengthq];
 							var tp = t + p;
 							var tq = t + q;
 							lrxs[tq--] = 1f;
@@ -234,7 +234,7 @@ public class Arima {
 		int lengthp = length + p, lengthpm1 = lengthp - 1;
 		int lengthq = length + q, lengthqm1 = lengthq - 1;
 		var iter = 0;
-		float[] xsp = new float[lengthp];
+		var xsp = new float[lengthp];
 		float[][] epqByIter = new float[q][];
 
 		Arrays.fill(xsp, 0, p, xs[0]);
@@ -248,14 +248,14 @@ public class Arima {
 					.map(t -> {
 						var tp = t + p;
 						int tq = t + q, tqm1 = tq - 1;
-						float[] lrxs = Floats_ //
+						var lrxs = Floats_ //
 								.concat(Floats_.reverse(xsp, t, tp),
 										Ints_.range(iter_).collect(Int_Flt.lift(i -> epqByIter[i][tqm1 - i]))) //
 								.toArray();
 						return FltObjPair.of(xsp[tp], lrxs);
 					}));
 
-			float[] coeffs = lr.coefficients();
+			var coeffs = lr.coefficients();
 
 			if (iter < q)
 				System.arraycopy(lr.residuals, 0, epqByIter[iter++] = new float[lengthq], q, length);
@@ -282,7 +282,7 @@ public class Arima {
 	private Arima_ armaMle(float[] xs, int p, int q) {
 		var length = xs.length;
 		float[] xsp = Floats_.concat(new float[p], xs);
-		float[] epq = new float[length + q];
+		var epq = new float[length + q];
 
 		class LogLikelihood implements DblSource {
 			private float[] ars = To.vector(p, i -> random.nextGaussian());
@@ -296,8 +296,8 @@ public class Arima {
 		}
 
 		LogLikelihood ll = mle.max(LogLikelihood::new);
-		float[] ars = ll.ars;
-		float[] mas = ll.mas;
+		var ars = ll.ars;
+		var mas = ll.mas;
 
 		double x1 = ll.arma.sum(xsp, epq);
 		return new Arima_(ars, mas, (float) x1);
@@ -330,7 +330,7 @@ public class Arima {
 					.range(length) //
 					.map(t -> {
 						var tqm1 = t + qm1;
-						float[] lrxs = Floats_
+						var lrxs = Floats_
 								.concat(Floats_.of(1f), Ints_.range(iter_).collect(Int_Flt.lift(i -> epqByIter[i][tqm1 - i])))
 								.toArray();
 						return FltObjPair.of(xs[t], lrxs);

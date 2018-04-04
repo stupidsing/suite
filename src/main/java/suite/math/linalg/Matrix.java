@@ -179,7 +179,7 @@ public class Matrix {
 	public float[] mul(float[] m, float[][] n) {
 		var ix = m.length;
 		var jx = w(n);
-		float[] o = new float[jx];
+		var o = new float[jx];
 		int i1, j1;
 		if (ix == h(n))
 			for (int i0 = 0; i0 < ix; i0 = i1) {
@@ -200,7 +200,7 @@ public class Matrix {
 	public float[] mul(float[][] m, float[] nT) {
 		var ix = h(m);
 		var jx = w(m);
-		float[] o = new float[ix];
+		var o = new float[ix];
 		int i1, j1;
 		if (ix == 0 || jx == nT.length)
 			for (int i0 = 0; i0 < ix; i0 = i1) {
@@ -399,7 +399,7 @@ public class Matrix {
 	}
 
 	private void swapRows(float[][] m, int row0, int row1) {
-		float[] temp = m[row0];
+		var temp = m[row0];
 		m[row0] = m[row1];
 		m[row1] = temp;
 	}

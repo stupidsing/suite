@@ -79,7 +79,7 @@ public class WalkForwardAllocTester {
 
 		for (Entry<String, DataSource> e : dsBySymbol.entrySet()) {
 			var symbol = e.getKey();
-			float[] prices = e.getValue().prices;
+			var prices = e.getValue().prices;
 			System.arraycopy(prices, 0, prices, 1, last);
 			prices[last] = priceBySymbol.get(symbol);
 		}
@@ -112,7 +112,7 @@ public class WalkForwardAllocTester {
 	}
 
 	public String conclusion() {
-		float[] valuations_ = valuations.toFloats().toArray();
+		var valuations_ = valuations.toFloats().toArray();
 		var length = valuations_.length;
 		var deltaMs = (start - System.currentTimeMillis()) / length;
 		ReturnsStat rs = ts.returnsStat(valuations_, deltaMs);

@@ -78,8 +78,8 @@ public class BackAllocatorMech {
 	private BackAllocator dmiAdx(int d10, int d9) {
 		return BackAllocator_.byDataSource(ds -> {
 			Dmi dmi = osc.dmi(ds, d10);
-			float[] dmis = dmi.dmi;
-			float[] adxs = dmi.adx(d9);
+			var dmis = dmi.dmi;
+			var adxs = dmi.adx(d9);
 			return Quant.fold(0, dmis.length, (i, hold) -> .2d <= adxs[i] ? -Quant.hold(hold, dmis[i], -.2d, 0d, .2d) : 0f);
 		});
 	}
@@ -171,9 +171,9 @@ public class BackAllocatorMech {
 	private BackAllocator mrBbAdx(int d20, int d9) {
 		return BackAllocator_ //
 				.byDataSource(ds -> {
-					float[] prices = ds.prices;
+					var prices = ds.prices;
 					Bb bb_ = bb.bb(prices, d20, 0, 2f);
-					float[] adxs = osc.dmi(ds).adx(d9);
+					var adxs = osc.dmi(ds).adx(d9);
 
 					return Quant.enterKeep(1, prices.length, //
 							i -> adxs[i] < .2f && cross(i, bb_.uppers, prices), //
@@ -189,9 +189,9 @@ public class BackAllocatorMech {
 				.byPrices(prices -> {
 					float[] movingAvgs = ma.movingAvg(prices, 200);
 					Bb bb_ = bb.bb(prices, d20, 0, 2f);
-					float[] lowers = bb_.lowers;
-					float[] uppers = bb_.uppers;
-					float[] sds = bb_.sds;
+					var lowers = bb_.lowers;
+					var uppers = bb_.uppers;
+					var sds = bb_.sds;
 
 					return Quant.enterKeep(1, prices.length, //
 							i -> cross(i, uppers, prices) && prices[i] < movingAvgs[i], //
@@ -275,7 +275,7 @@ public class BackAllocatorMech {
 	private BackAllocator mrSseCciTimedExit(int timedExit) {
 		return BackAllocator_ //
 				.byDataSource(ds -> {
-					float[] prices = ds.prices;
+					var prices = ds.prices;
 					float[] stos = osc.stochastic(ds, 14);
 					float[] stoSlows = ma.movingAvg(stos, 3);
 					float[] ccis = osc.cci(ds, 10);

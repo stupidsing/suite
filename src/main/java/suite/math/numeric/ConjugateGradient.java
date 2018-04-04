@@ -10,9 +10,9 @@ public class ConjugateGradient {
 
 	// https://en.wikipedia.org/wiki/Conjugate_gradient_method
 	public float[] linear(float[][] a, float[] b, float[] initials) {
-		float[] xs = initials;
+		var xs = initials;
 		float[] rs = vec.sub(b, mtx.mul(a, xs));
-		float[] ps = rs;
+		var ps = rs;
 
 		for (int iter = 0; iter < initials.length; iter++) {
 			double alpha = vec.dot(rs) / vec.dot(ps, mtx.mul(a, ps));

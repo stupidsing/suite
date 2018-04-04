@@ -154,7 +154,7 @@ public class FltDblMap {
 		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
-			float[] ks0 = ks;
+			var ks0 = ks;
 			double[] vs0 = vs;
 			double v_;
 

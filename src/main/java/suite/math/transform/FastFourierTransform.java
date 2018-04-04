@@ -63,14 +63,14 @@ public class FastFourierTransform {
 	public float[] ifft(float[] fs0) {
 		var size2 = fs0.length;
 		var size = size2 / 2;
-		float[] fs1 = new float[size2];
+		var fs1 = new float[size2];
 
 		for (int i2 = 0; i2 < size2; i2 += 2) {
 			fs1[i2 + 0] = fs0[i2 + 0];
 			fs1[i2 + 1] = -fs0[i2 + 1];
 		}
 
-		float[] fs2 = fft(fs1);
+		var fs2 = fft(fs1);
 		var inv = 1.0f / size;
 
 		for (int i2 = 0; i2 < size2; i2 += 2) {
@@ -84,7 +84,7 @@ public class FastFourierTransform {
 	public float[] fft(float[] tds) {
 		var size2 = tds.length;
 		var size = size2 / 2;
-		float[] fds = new float[size2];
+		var fds = new float[size2];
 		var s = size;
 		var bits = 0;
 
@@ -101,7 +101,7 @@ public class FastFourierTransform {
 
 		for (int g = 2; g <= size; g <<= 1) {
 			var g2 = g * 2;
-			float[] cis = new float[g2];
+			var cis = new float[g2];
 			var angleDiff = Math.PI / g;
 
 			for (int i2 = 0; i2 < g2; i2 += 2) {

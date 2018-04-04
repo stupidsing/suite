@@ -19,8 +19,8 @@ public class DiscreteCosineTransformTest {
 	}
 
 	private void test(float[] fs0) {
-		float[] fs1 = dct.dct(fs0);
-		float[] fs2 = dct.idct(fs1);
+		var fs1 = dct.dct(fs0);
+		var fs2 = dct.idct(fs1);
 		for (int i = 0; i < fs0.length; i++)
 			MathUtil.verifyEquals(fs0[i], fs2[i]);
 	}

@@ -63,7 +63,7 @@ public class Quant {
 			IntFltPredicate isEnterShort, //
 			IntFltPredicate isEnterLong) {
 		var length = prices.length;
-		float[] holds = new float[length];
+		var holds = new float[length];
 		var hold = 0f;
 		float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
 
@@ -94,7 +94,7 @@ public class Quant {
 
 	// hold with fixed day exit
 	public static Int_Dbl fold(int start, int end, int nDaysExit, IntFlt_Flt fun) {
-		float[] holds = new float[end];
+		var holds = new float[end];
 		var hold = 0f;
 		var nDays = 0;
 		for (int i = start; i < end; i++) {

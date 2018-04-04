@@ -21,7 +21,7 @@ public class MarketTiming {
 	public float[] hold(float[] prices, float h0, float h1, float h2) {
 		int[] flags = time(prices);
 		var length = flags.length;
-		float[] holds = new float[length];
+		var holds = new float[length];
 		var hold = 0f;
 
 		for (int i = 0; i < length; i++) {

@@ -44,7 +44,7 @@ public class CholeskyDecompositionTest {
 
 		Pair<float[][], float[]> ldlt = cholesky.ldlt(mtx.of(m0));
 		float[][] actuall = ldlt.t0;
-		float[] actuald = ldlt.t1;
+		var actuald = ldlt.t1;
 		mtx.verifyEquals(actuall, expectl);
 		vec.verifyEquals(actuald, expectd);
 

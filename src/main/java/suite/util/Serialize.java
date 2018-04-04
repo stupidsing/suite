@@ -198,7 +198,7 @@ public class Serialize {
 	public Serializer<float[]> vector = new Serializer<>() {
 		public float[] read(DataInput_ dataInput) throws IOException {
 			var size = int_.read(dataInput);
-			float[] array = new float[size];
+			var array = new float[size];
 			for (int i = 0; i < size; i++)
 				array[i] = dataInput.readFloat();
 			return array;

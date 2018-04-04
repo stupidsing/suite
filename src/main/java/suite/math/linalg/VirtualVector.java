@@ -66,7 +66,7 @@ public class VirtualVector {
 
 	public float[] matrix() {
 		return apply((l, get) -> {
-			float[] matrix = new float[l];
+			var matrix = new float[l];
 			for (int i = 0; i < l; i++)
 				matrix[i] = get.apply(i);
 			return matrix;

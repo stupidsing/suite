@@ -47,9 +47,9 @@ public class Polynomial {
 		while ((head = denom[denomLength1 = denomLength - 1]) == 0d)
 			denomLength = denomLength1;
 
-		float[] rem = vec.of(num);
+		var rem = vec.of(num);
 		var pd = rem.length - denomLength1;
-		float[] dividend = new float[pd];
+		var dividend = new float[pd];
 
 		while (0 <= --pd) {
 			var r = rem[pd + denomLength1] / head;

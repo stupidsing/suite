@@ -272,7 +272,7 @@ public interface BackAllocator {
 		return (akds0, times_) -> {
 			Streamlet2<String, DataSource> dsBySymbol1 = akds0.dsByKey //
 					.mapValue(ds0 -> {
-						float[] indexPrices = indexDataSource.alignBeforePrices(ds0.ts).prices;
+						var indexPrices = indexDataSource.alignBeforePrices(ds0.ts).prices;
 						var length = ds0.ts.length;
 						Datum[] data1 = new Datum[length];
 

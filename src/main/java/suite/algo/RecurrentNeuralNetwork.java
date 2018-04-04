@@ -66,8 +66,8 @@ public class RecurrentNeuralNetwork {
 		}
 
 		private float[] activate_(float[] input, float[] expected) {
-			float[] memory0 = memory;
-			float[] iv = new float[ll1];
+			var memory0 = memory;
+			var iv = new float[ll1];
 
 			Floats_.copy(input, 0, iv, 0, inputLength);
 			Floats_.copy(memory0, 0, iv, inputLength, memoryLength);

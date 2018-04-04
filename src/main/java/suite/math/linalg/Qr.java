@@ -20,11 +20,11 @@ public class Qr {
 		float[][] q = new float[size][]; // e
 
 		for (int i = 0; i < size; i++) {
-			float[] a = m[i];
-			float[] u1 = vec.of(a);
+			var a = m[i];
+			var u1 = vec.of(a);
 
 			for (int j = 0; j < i; j++) {
-				float[] u = q[j];
+				var u = q[j];
 				vec.addScaleOn(u1, u, -vec.dot(u, a));
 			}
 

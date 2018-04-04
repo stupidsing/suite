@@ -98,7 +98,7 @@ public class VirtualMatrix {
 
 	public VirtualVector mul(VirtualVector vv) {
 		return apply((ix, jx, f0) -> vv.apply((length, f1) -> {
-			float[] o = new float[ix];
+			var o = new float[ix];
 			int i1, j1;
 
 			if (jx == length)
