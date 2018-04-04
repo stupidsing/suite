@@ -101,10 +101,8 @@ public class HkexFactBook {
 			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf";
 		else if (year <= 2015)
 			return dir + "/HKEx-Fact-Book-" + year + "/fb_" + year + ".pdf";
-		else if (year == 2016)
+		else if (year <= 2017)
 			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf";
-		else if (year == 2017)
-			return dir + "/HKEX-Fact-Book-2016/FB_2016.pdf";
 		else
 			return Fail.t();
 	}
