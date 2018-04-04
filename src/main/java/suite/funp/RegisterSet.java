@@ -74,7 +74,7 @@ public class RegisterSet {
 			if (operand instanceof OpReg)
 				flag_ |= flag(((OpReg) operand).reg);
 			else if (operand instanceof OpMem) {
-				OpMem operand1 = (OpMem) operand;
+				var operand1 = (OpMem) operand;
 				if (0 <= operand1.baseReg)
 					flag_ |= flag(operand1.baseReg);
 				if (0 <= operand1.indexReg)

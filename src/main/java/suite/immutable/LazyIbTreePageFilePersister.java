@@ -136,7 +136,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 
 	private Integer save_(List<Slot<T>> slots) {
 		IdentityKey<List<Slot<T>>> key = IdentityKey.of(slots);
-		Integer pointer = slotsByPointer.inverse().get(key);
+		var pointer = slotsByPointer.inverse().get(key);
 		if (pointer == null) {
 			List<Pair<T, Integer>> pairs = Read //
 					.from(slots) //

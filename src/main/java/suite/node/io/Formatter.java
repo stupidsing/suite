@@ -104,7 +104,7 @@ public class Formatter {
 	 */
 	private void format(Node node0, int parentPrec) {
 		var node = node0.finalNode();
-		Integer objectId = System.identityHashCode(node);
+		var objectId = System.identityHashCode(node);
 
 		// avoids infinite recursion if object is recursive
 		if (set.add(objectId)) {

@@ -43,7 +43,7 @@ public class ObstructionFreeStmTest {
 			Set<Integer> isRead = new HashSet<>();
 
 			IntStream.range(0, nMemories * 2).forEach(i -> {
-				Integer mi = orders.get(i);
+				var mi = orders.get(i);
 				orders.set(i, isRead.add(mi) ? mi : mi + nMemories);
 			});
 

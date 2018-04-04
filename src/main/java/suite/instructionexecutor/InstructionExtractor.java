@@ -60,7 +60,7 @@ public class InstructionExtractor implements AutoCloseable {
 		while (!deque.isEmpty())
 			if ((tree = Tree.decompose(deque.pop(), TermOp.AND___)) != null) {
 				IdentityKey<Node> key = IdentityKey.of(tree);
-				Integer ip = ipByLabelId.get(key);
+				var ip = ipByLabelId.get(key);
 
 				if (ip == null) {
 					ipByLabelId.put(key, ip = rsList.size());
@@ -152,7 +152,7 @@ public class InstructionExtractor implements AutoCloseable {
 	}
 
 	private int allocateInPool(Node node) {
-		Integer pointer = constantPool.inverse().get(node);
+		var pointer = constantPool.inverse().get(node);
 
 		if (pointer == null) {
 			var pointer1 = constantPool.size();

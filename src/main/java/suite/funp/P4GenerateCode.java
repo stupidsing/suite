@@ -275,7 +275,7 @@ public class P4GenerateCode {
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
 						c1.compileAssign(value, frame(fd1, fd));
 					}
-					CompileOut out = c1.compile(expr);
+					var out = c1.compile(expr);
 					if (size == is)
 						em.emit(amd64.instruction(Insn.POP, rs.mask(pop0, pop1, out.op0, out.op1).get(size)));
 					else
@@ -339,7 +339,7 @@ public class P4GenerateCode {
 					} else if (result == Result.TWOOP || result == Result.TWOOPREG) {
 						OpReg[] ops = new OpReg[2];
 						compile0 = node_ -> {
-							CompileOut co1 = compileTwoOp(node_);
+							var co1 = compileTwoOp(node_);
 							em.mov(ops[0] = rs.mask(co1.op1).get(co1.op0), co1.op0);
 							em.mov(ops[1] = rs.mask(ops[0]).get(co1.op1), co1.op1);
 						};
@@ -490,10 +490,10 @@ public class P4GenerateCode {
 
 			private Operand compileTree(Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
 				Integer numRhs = rhs.cast(FunpNumber.class, n_ -> n_.i.get());
-				Insn insn = insnByOp.get(operator);
-				Insn setInsn = setInsnByOp.get(operator);
-				Insn setRevInsn = setRevInsnByOp.get(operator);
-				Insn shInsn = shInsnByOp.get(operator);
+				var insn = insnByOp.get(operator);
+				var setInsn = setInsnByOp.get(operator);
+				var setRevInsn = setRevInsnByOp.get(operator);
+				var shInsn = shInsnByOp.get(operator);
 				OpMem op = deOp.decomposeOpMem(fd, n, 0, is);
 				Operand opResult = null;
 
@@ -628,7 +628,7 @@ public class P4GenerateCode {
 			}
 
 			private void compileInvoke(Funp n) {
-				CompileOut out = compileTwoOp(n);
+				var out = compileTwoOp(n);
 				Operand op;
 				if (!new RegisterSet().mask(out.op1).contains(ebp))
 					op = out.op1;

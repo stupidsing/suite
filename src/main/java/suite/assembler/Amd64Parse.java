@@ -58,7 +58,7 @@ public class Amd64Parse {
 	}
 
 	private Operand parseOpMem(Node[] m, int size) {
-		OpMem opMem = amd64.new OpMem();
+		var opMem = amd64.new OpMem();
 		opMem.size = size;
 		opMem.indexReg = -1;
 		opMem.baseReg = -1;

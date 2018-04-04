@@ -905,7 +905,7 @@ public class Amd64Assemble {
 			dispSize = 0;
 			disp = 0;
 		} else if (operand instanceof OpMem) {
-			OpMem op = (OpMem) operand;
+			var op = (OpMem) operand;
 			var baseReg = op.baseReg;
 			int indexReg;
 			var ds0 = op.dispSize;

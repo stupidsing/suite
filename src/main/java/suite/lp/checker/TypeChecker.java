@@ -39,7 +39,7 @@ public class TypeChecker {
 			return checkerUtil.scan(tail).cons(head);
 		}).forEach(pred -> {
 			Prototype prototype = Prototype.of(pred);
-			Integer nElements = prototype != null ? nElementsByPrototype.get(prototype) : null;
+			var nElements = prototype != null ? nElementsByPrototype.get(prototype) : null;
 			Node[] ps = nElements != null ? TreeUtil.elements(pred, nElements) : new Node[0];
 
 			try {

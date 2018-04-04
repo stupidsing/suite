@@ -94,15 +94,15 @@ public class P3Optimize {
 
 	private FunpNumber evaluate(IntInt_Int fun, Funp lhs0, Funp rhs0) {
 		Integer[] pair = evaluate(lhs0, rhs0);
-		Integer lhs1 = pair[0];
-		Integer rhs1 = pair[1];
+		var lhs1 = pair[0];
+		var rhs1 = pair[1];
 		return fun != null && lhs1 != null && rhs1 != null ? FunpNumber.ofNumber(fun.apply(lhs1, rhs1)) : null;
 	}
 
 	private FunpBoolean evaluate(IntInt_Bool fun, Funp lhs0, Funp rhs0) {
 		Integer[] pair = evaluate(lhs0, rhs0);
-		Integer lhs1 = pair[0];
-		Integer rhs1 = pair[1];
+		var lhs1 = pair[0];
+		var rhs1 = pair[1];
 		return fun != null && lhs1 != null && rhs1 != null ? FunpBoolean.of(fun.apply(lhs1, rhs1)) : null;
 	}
 

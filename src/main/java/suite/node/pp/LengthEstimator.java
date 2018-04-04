@@ -19,7 +19,7 @@ public class LengthEstimator {
 
 	public int estimateLengths(Node node) {
 		var key = getKey(node);
-		Integer length = lengthByIds.get(key);
+		var length = lengthByIds.get(key);
 
 		if (length == null) {
 			int len;
@@ -44,7 +44,7 @@ public class LengthEstimator {
 	}
 
 	public int getEstimatedLength(Node node) {
-		Integer length = lengthByIds.get(getKey(node));
+		var length = lengthByIds.get(getKey(node));
 		return length != null ? length : defaultLength; // maximum if not found
 	}
 

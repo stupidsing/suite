@@ -538,7 +538,7 @@ public class P2InferType {
 
 		private FunpMemory getVariable(Var vd) {
 			Mutable<Operand> operand = vd.operand;
-			Integer scope0 = vd.scope;
+			var scope0 = vd.scope;
 			Funp nfp;
 			if (scope0 != null) {
 				nfp = Funp_.framePointer;
@@ -607,7 +607,7 @@ public class P2InferType {
 	}
 
 	private int getTypeSize(UnNode<Type> n) {
-		Integer result = new Switch<Integer>(n.final_() //
+		var result = new Switch<Integer>(n.final_() //
 		).applyIf(TypeArray.class, t -> t.apply((elementType, size) -> {
 			return getTypeSize(elementType) * size;
 		})).applyIf(TypeBoolean.class, t -> t.apply(() -> {

@@ -105,7 +105,7 @@ public class B_TreeTest {
 
 		for (int i = 0; i < nKeys; i++) {
 			var j = random.nextInt(nKeys);
-			Integer temp = keys[i];
+			var temp = keys[i];
 			keys[i] = keys[j];
 			keys[j] = temp;
 		}
@@ -167,7 +167,7 @@ public class B_TreeTest {
 	private void shuffleNumbers() {
 		for (int i = 0; i < nKeys; i++) {
 			var j = random.nextInt(nKeys);
-			Integer temp = keys[i];
+			var temp = keys[i];
 			keys[i] = keys[j];
 			keys[j] = temp;
 		}

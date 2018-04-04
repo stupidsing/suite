@@ -316,7 +316,7 @@ public class Amd64 {
 	}
 
 	public OpMem mem(OpReg baseReg, OpReg indexReg, int scale, long disp, int size) {
-		OpMem op = new OpMem();
+		var op = new OpMem();
 		op.baseReg = baseReg != null ? baseReg.reg : -1;
 		op.indexReg = indexReg != null ? indexReg.reg : -1;
 		op.scale = scale;

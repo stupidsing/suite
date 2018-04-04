@@ -46,7 +46,7 @@ public class Amd64Dump {
 			OpImm opImm = (OpImm) op0;
 			return dump(opImm.imm, opImm.size);
 		} else if (op0 instanceof OpMem) {
-			OpMem opMem = (OpMem) op0;
+			var opMem = (OpMem) op0;
 			var baseReg = opMem.baseReg;
 			var indexReg = opMem.indexReg;
 			var s = "" //
