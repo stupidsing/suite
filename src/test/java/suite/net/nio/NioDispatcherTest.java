@@ -32,13 +32,13 @@ public class NioDispatcherTest {
 
 	@Test
 	public void testTextExchange() throws IOException {
-		String hello = "HELLO";
+		var hello = "HELLO";
 		Charset charset = Constants.charset;
 
 		Source<NioChannel> source = () -> {
 			BufferedNioChannel channel = new BufferedNioChannel();
 			channel.onConnected.wire(sender -> {
-				String s = hello + "\n";
+				var s = hello + "\n";
 				channel.send(To.bytes(s));
 
 			});
@@ -55,7 +55,7 @@ public class NioDispatcherTest {
 				InputStreamReader isr = new InputStreamReader(is, charset);
 				BufferedReader reader = new BufferedReader(isr);
 				PrintWriter writer = new PrintWriter(os)) {
-			String m = "testing nio";
+			var m = "testing nio";
 			writer.println(m);
 			writer.flush();
 

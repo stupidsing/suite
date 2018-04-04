@@ -42,7 +42,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 
 			if (node0 instanceof Atom) {
 				Atom atom = (Atom) node0;
-				String name = atom.name;
+				var name = atom.name;
 				if (ProverConstant.isCut(node0) || ProverConstant.isVariable(name)) {
 					var index = vm.computeIndex(atom);
 					fun = env -> env.get(index);

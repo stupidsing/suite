@@ -44,9 +44,9 @@ public class StockHistory {
 			properties.put(array[0].trim(), array[1].trim());
 		}
 
-		String exchange = properties.get("exchange");
-		String timeZoneStr = properties.get("timeZone");
-		String isActive = properties.get("isActive");
+		var exchange = properties.get("exchange");
+		var timeZoneStr = properties.get("timeZone");
+		var isActive = properties.get("isActive");
 
 		var timeZone = timeZoneStr != null ? Integer.parseInt(timeZoneStr) : 0;
 		LngFltPair[] dividends = readPairs(timeZone, outlet);

@@ -28,19 +28,19 @@ public class EbnfOperatorTest {
 		var i = 0;
 
 		for (TermOp operator : TermOp.values()) {
-			String op = "\"" + operator.getName().trim() + "\"";
-			String v = v(i++);
-			String v1 = v(i);
+			var op = "\"" + operator.getName().trim() + "\"";
+			var v = v(i++);
+			var v1 = v(i);
 			if (operator.getAssoc() == Assoc.LEFT)
 				sb.append(v + " ::= " + v1 + " | " + v + " " + op + " " + v1 + "\n");
 			else
 				sb.append(v + " ::= " + v1 + " | " + v1 + " " + op + " " + v + "\n");
 		}
 
-		String vx = v(i);
+		var vx = v(i);
 		sb.append(vx + " ::= \"1\" | \"2\" | \"3\" | \"(\" " + v(0) + " \")\"\n");
 
-		String s = sb.toString();
+		var s = sb.toString();
 		System.out.println(s);
 
 		return s;

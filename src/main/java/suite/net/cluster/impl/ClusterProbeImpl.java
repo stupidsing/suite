@@ -194,11 +194,11 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 			String[] splitted = To.string(bytes).split(",");
 			Command data = Command.valueOf(splitted[0]);
-			String remote = splitted[1];
+			var remote = splitted[1];
 
 			// refreshes member time accordingly
 			for (int i = 2; i < splitted.length; i += 2) {
-				String node = splitted[i];
+				var node = splitted[i];
 				long newTime = Long.parseLong(splitted[i + 1]);
 				nodeJoined(node, newTime);
 			}
@@ -241,7 +241,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 		while (peerIter.hasNext()) {
 			Entry<String, Long> e = peerIter.next();
-			String node = e.getKey();
+			var node = e.getKey();
 
 			if (timeoutDuration < current - e.getValue()) {
 				peerIter.remove();

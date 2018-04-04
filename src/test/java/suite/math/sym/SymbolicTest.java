@@ -111,7 +111,7 @@ public class SymbolicTest {
 	}
 
 	private void verifyEquals(String expected, Node node) {
-		String actual = node.toString();
+		var actual = node.toString();
 		System.out.println(actual);
 		assertEquals(expected, actual);
 	}

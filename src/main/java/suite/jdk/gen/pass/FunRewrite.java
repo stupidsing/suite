@@ -97,13 +97,13 @@ public class FunRewrite extends FunFactory {
 					FunExpr fieldValue;
 					if (e instanceof FieldStaticFunExpr) {
 						FieldStaticFunExpr e_ = (FieldStaticFunExpr) e;
-						String fieldName = e_.fieldName;
+						var fieldName = e_.fieldName;
 						Type fieldType = fieldTypes.get(fieldName);
 						fieldTypes.put(fieldName, fieldType);
 						fieldValues.put(fieldName, e_);
 						return e;
 					} else if (e instanceof PlaceholderFunExpr && (fieldValue = placeholders.get(e)) != null) {
-						String fieldName = "e" + Util.temp();
+						var fieldName = "e" + Util.temp();
 						Type fieldType = fti.typeOf(fieldValue);
 						fieldTypes.put(fieldName, fieldType);
 						fieldValues.put(fieldName, fieldValue);
@@ -138,7 +138,7 @@ public class FunRewrite extends FunFactory {
 		}).applyIf(FieldFunExpr_.class, e1 -> {
 			FunExpr set = e1 instanceof FieldSetFunExpr ? ((FieldSetFunExpr) e1).value : null;
 			FunExpr object0 = rewrite(e1.object);
-			String fieldName = e1.fieldName;
+			var fieldName = e1.fieldName;
 			Class<?> clazz = fti.classOf(object0);
 			Field field = Rethrow.ex(() -> clazz.getField(fieldName));
 			FunExpr object1 = object0.cast_(field.getDeclaringClass());
@@ -172,7 +172,7 @@ public class FunRewrite extends FunFactory {
 	}
 
 	private FunExpr objectField(Object object, Type type) {
-		String fieldName = "o" + Util.temp();
+		var fieldName = "o" + Util.temp();
 		fieldTypeValues.put(fieldName, Pair.of(type, object));
 		return rewrite(this_().field(fieldName, type));
 	}

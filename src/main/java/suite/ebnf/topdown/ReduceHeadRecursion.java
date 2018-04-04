@@ -43,7 +43,7 @@ public class ReduceHeadRecursion {
 
 		if (en1.type == GrammarType.NAMED_) {
 			Grammar en2 = en1.children.get(0);
-			String entity = en1.content;
+			var entity = en1.content;
 			HeadRecursionForm hrf = getHeadRecursionForm(en2, entity);
 			Grammar en3;
 

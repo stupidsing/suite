@@ -27,9 +27,9 @@ public class DpkgUtil {
 	}
 
 	public Streamlet<String> readFileList(Map<String, String> pm) {
-		String packageName = pm.get("Package");
-		String arch = pm.get("Architecture");
-		String dir = dpkgDir + "/info/";
+		var packageName = pm.get("Package");
+		var arch = pm.get("Architecture");
+		var dir = dpkgDir + "/info/";
 
 		List<File> files = new ArrayList<>();
 		files.add(new File(dir + packageName + ".list"));
@@ -50,7 +50,7 @@ public class DpkgUtil {
 		Set<String> set1 = new HashSet<>(set0);
 
 		while (!nl.isEmpty()) {
-			String p = nl.remove(nl.size() - 1);
+			var p = nl.remove(nl.size() - 1);
 			List<String> list = dependees.get(p);
 
 			if (list != null)

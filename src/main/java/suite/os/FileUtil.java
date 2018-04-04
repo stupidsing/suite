@@ -35,7 +35,7 @@ public class FileUtil {
 	}
 
 	public static String getFileExtension(Path path) {
-		String filename = path.toString();
+		var filename = path.toString();
 		return filename.substring(filename.lastIndexOf('.') + 1);
 	}
 
@@ -60,7 +60,7 @@ public class FileUtil {
 	}
 
 	public static String homeDir() {
-		String homeDir = System.getProperty("home.dir");
+		var homeDir = System.getProperty("home.dir");
 		return homeDir != null ? homeDir : ".";
 	}
 

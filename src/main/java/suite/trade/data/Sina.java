@@ -59,11 +59,11 @@ public class Sina {
 	}
 
 	private Streamlet<Factor> queryFactor_(Streamlet<String> symbols, boolean isCache) {
-		String urlString = "http://hq.sinajs.cn/?list=" + symbols //
+		var urlString = "http://hq.sinajs.cn/?list=" + symbols //
 				.map(this::toSina) //
 				.collect(As.joinedBy(","));
 
-		String data = Rethrow.ex(() -> {
+		var data = Rethrow.ex(() -> {
 			Outlet<Bytes> in;
 
 			if (isCache)
@@ -127,7 +127,7 @@ public class Sina {
 	}
 
 	private String toYahoo(String sina) {
-		String prefix = "rt_hk0";
+		var prefix = "rt_hk0";
 		if (sina.startsWith(prefix))
 			return sina.substring(prefix.length()) + ".HK";
 		else

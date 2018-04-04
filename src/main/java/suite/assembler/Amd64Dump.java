@@ -49,7 +49,7 @@ public class Amd64Dump {
 			OpMem opMem = (OpMem) op0;
 			var baseReg = opMem.baseReg;
 			var indexReg = opMem.indexReg;
-			String s = "" //
+			var s = "" //
 					+ (0 <= baseReg ? " + " + dump(regs[baseReg]) : "") //
 					+ (0 <= indexReg ? " + " + dump(regs[indexReg]) + " * " + (1 << opMem.scale) : "") //
 					+ (0 < opMem.dispSize ? dumpDisp(opMem.disp, pointerSize) : "");
@@ -70,7 +70,7 @@ public class Amd64Dump {
 	}
 
 	private String dump(long imm, int size) {
-		String s = "";
+		var s = "";
 		for (int i = 0; i < size * 2; i++) {
 			s = "0123456789ABCDEF".charAt((int) (imm & 15)) + s;
 			imm >>= 4;

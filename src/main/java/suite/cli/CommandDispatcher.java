@@ -193,7 +193,7 @@ public class CommandDispatcher {
 		Node node1 = ne.node;
 
 		Node elab = new Data<Source<Boolean>>(() -> {
-			String dump = ne.dumpVariables();
+			var dump = ne.dumpVariables();
 			if (!dump.isEmpty())
 				opt.prompt().println(dump);
 
@@ -231,7 +231,7 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchProve(List<String> inputs) throws IOException {
-		String in = parseInput(inputs);
+		var in = parseInput(inputs);
 		RuleSet ruleSet = Suite.newRuleSet();
 		return Suite.importPath(ruleSet, "auto.sl") && Suite.proveLogic(ruleSet, in);
 	}

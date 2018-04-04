@@ -17,25 +17,25 @@ public class LempelZivWelchTest {
 
 	@Test
 	public void test0() {
-		String s = "";
+		var s = "";
 		assertEquals(s, doTest(s));
 	}
 
 	@Test
 	public void test1() {
-		String s = "abababa";
+		var s = "abababa";
 		assertEquals(s, doTest(s));
 	}
 
 	@Test
 	public void test2() {
-		String s = "abababababababababababababababab";
+		var s = "abababababababababababababababab";
 		assertEquals(s, doTest(s));
 	}
 
 	@Test
 	public void test3() {
-		String s = FileUtil.read("src/main/java/suite/algo/LempelZivWelch.java");
+		var s = FileUtil.read("src/main/java/suite/algo/LempelZivWelch.java");
 		assertEquals(s, doTest(s));
 	}
 

@@ -129,11 +129,11 @@ public class P0Parse {
 			}).match1("byte .0", a -> {
 				return FunpCoerce.of(Coerce.BYTE, parse(a));
 			}).match3("define .0 := .1 >> .2", (a, b, c) -> {
-				String var = name(a);
+				var var = name(a);
 				return FunpDefine.of(true, var, parse(b), parseNewVariable(c, var));
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match3("let .0 := .1 >> .2", (a, b, c) -> {
-				String var = name(a);
+				var var = name(a);
 				return FunpDefine.of(false, var, parse(b), parseNewVariable(c, var));
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 			}).match2("recurse .0 >> .1", (a, b) -> {
@@ -160,7 +160,7 @@ public class P0Parse {
 			}).match2(".0/.1", (a, b) -> {
 				return FunpField.of(FunpReference.of(parse(a)), name(b));
 			}).match3("global .0 := .1 >> .2", (a, b, c) -> {
-				String var = name(a);
+				var var = name(a);
 				return FunpGlobal.of(var, parse(b), parseNewVariable(c, var));
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match4("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
@@ -170,7 +170,7 @@ public class P0Parse {
 					private Funp extract(Funp be) {
 						return inspect.rewrite(Funp.class, n_ -> {
 							if (n_ instanceof FunpVariableNew) {
-								String var = ((FunpVariableNew) n_).var;
+								var var = ((FunpVariableNew) n_).var;
 								variables.add(var);
 								return FunpVariable.of(var);
 							} else
@@ -204,13 +204,13 @@ public class P0Parse {
 			}).match1("io-cat .0", a -> {
 				return FunpIoCat.of(parse(a));
 			}).match4("iterate .0 .1 .2 .3", (a, b, c, d) -> {
-				String var = name(a);
+				var var = name(a);
 				Parse p1 = new Parse(variables.add(var));
 				return FunpIterate.of(var, parse(b), p1.parse(c), p1.parse(d));
 			}).match2("`.0` => .1", (a, b) -> {
 				return parse(Suite.pattern(".2 => if (`.0` = .2) then .1 else error").subst(a, b, Atom.temp()));
 			}).match2(".0 => .1", (a, b) -> {
-				String var = name(a);
+				var var = name(a);
 				return FunpLambda.of(var, parseNewVariable(b, var));
 			}).applyIf(Int.class, n -> {
 				return FunpNumber.ofNumber(n.number);
@@ -235,7 +235,7 @@ public class P0Parse {
 				Funp right = parse(tree.getRight());
 				return FunpTree.of(tree.getOperator(), left, right);
 			}).applyIf(Atom.class, atom -> {
-				String var = atom.name;
+				var var = atom.name;
 				if (variables.contains(var))
 					return FunpVariable.of(var);
 				else

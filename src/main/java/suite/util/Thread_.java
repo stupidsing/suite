@@ -27,7 +27,7 @@ public class Thread_ {
 	}
 
 	public static String currentPackage() {
-		String cls = getStackTrace(3).getClassName();
+		var cls = getStackTrace(3).getClassName();
 		var pos = cls.lastIndexOf(".");
 		return cls.substring(0, pos);
 	}

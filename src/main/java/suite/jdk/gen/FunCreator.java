@@ -113,8 +113,8 @@ public class FunCreator<I> extends FunFactory {
 
 		private CreateClass(FunExpr expr0) {
 			Class<I> interfaceClass = lambdaClass.interfaceClass;
-			String clsName = interfaceClass.getName() + Util.temp();
-			String methodName = lambdaClass.methodName;
+			var clsName = interfaceClass.getName() + Util.temp();
+			var methodName = lambdaClass.methodName;
 
 			List<Type> localTypes = new ArrayList<>();
 			localTypes.add(ObjectType.getInstance(clsName));
@@ -165,7 +165,7 @@ public class FunCreator<I> extends FunFactory {
 
 					for (int i = 0; i < instructions.length; i++) {
 						Instruction instruction = instructions[i];
-						String s = instruction.toString(false);
+						var s = instruction.toString(false);
 						String p;
 						if (instruction instanceof BranchInstruction)
 							p = Integer.toString(visit.jumps.get(i));
@@ -222,7 +222,7 @@ public class FunCreator<I> extends FunFactory {
 
 			return Rethrow.ex(() -> {
 				for (Field field : clazz.getDeclaredFields()) {
-					String fieldName = field.getName();
+					var fieldName = field.getName();
 					Pair<Type, Object> typeValue;
 					Object value;
 
@@ -237,7 +237,7 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	public FunExpr constant(Object object) {
-		String fieldName = "s" + Util.temp();
+		var fieldName = "s" + Util.temp();
 		Type fieldType = object != null ? Type.getType(object.getClass()) : Type.OBJECT;
 		fieldStaticTypeValues.put(fieldName, Pair.of(fieldType, object));
 

@@ -98,7 +98,7 @@ public class Object_ {
 				}, object -> {
 					if (object instanceof Map) {
 						Map<?, ?> map = (Map<?, ?>) object;
-						String className = map.get("@class").toString();
+						var className = map.get("@class").toString();
 						Class<?> clazz1 = Rethrow.ex(() -> Class.forName(className));
 						return apply_(mapper(clazz1).unmap, object);
 					} else

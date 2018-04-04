@@ -36,8 +36,8 @@ public class Subst {
 			if (0 <= pos0 && 0 <= pos1) {
 				String left = s.substring(0, pos0);
 				String key = s.substring(pos0 + 2, pos1);
-				String right = s.substring(pos1 + 1);
-				String value = fun.apply(key);
+				var right = s.substring(pos1 + 1);
+				var value = fun.apply(key);
 
 				if (value != null) {
 					sb.append(left);

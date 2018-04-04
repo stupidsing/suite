@@ -46,7 +46,7 @@ public class YahooTest {
 	}
 
 	private void test(Fun2<String, TimeRange, DataSource> fun) {
-		String symbol = "0005.HK";
+		var symbol = "0005.HK";
 
 		DataSource ds = fun.apply(symbol, TimeRange.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1))).validate();
 		System.out.println(ds.recent(symbol, 9));

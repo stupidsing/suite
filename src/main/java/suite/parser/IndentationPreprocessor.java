@@ -32,7 +32,7 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 	public List<Run> apply(String in) {
 		List<Run> runs = new ArrayList<>();
 		var nLastIndents = 0;
-		String lastIndent = "";
+		var lastIndent = "";
 		var pos = 0;
 		var length = in.length();
 
@@ -59,7 +59,7 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 
 				// find operators at beginning and end of line
 				for (Operator operator : operators) {
-					String name = operator.getName().trim();
+					var name = operator.getName().trim();
 
 					if (!name.isEmpty()) {
 						if (line.startsWith(name + " "))

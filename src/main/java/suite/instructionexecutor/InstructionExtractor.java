@@ -86,7 +86,7 @@ public class InstructionExtractor implements AutoCloseable {
 	}
 
 	private Instruction extract(List<Node> rs) {
-		String insnName = ((Atom) rs.get(0)).name;
+		var insnName = ((Atom) rs.get(0)).name;
 		Insn insn;
 
 		if (Objects.equals(insnName, "EVALUATE")) {

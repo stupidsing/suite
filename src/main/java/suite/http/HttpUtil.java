@@ -65,11 +65,11 @@ public class HttpUtil {
 	}
 
 	public static Map<String, URI> resolveLinks(URI uri) {
-		String out = get(Rethrow.ex(() -> uri.toURL())).out.collect(As::utf8decode).map(Chars::toString).collect(As::joined);
+		var out = get(Rethrow.ex(() -> uri.toURL())).out.collect(As::utf8decode).map(Chars::toString).collect(As::joined);
 		Map<String, URI> links = new HashMap<>();
 		String[] m;
 		while ((m = ParseUtil.fitCaseInsensitive(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
-			String href = m[2];
+			var href = m[2];
 			if (!href.startsWith("javascript:"))
 				links.putIfAbsent(m[4], uri.resolve(href));
 			out = m[5];
@@ -148,7 +148,7 @@ public class HttpUtil {
 		if (responseCode == HttpURLConnection.HTTP_MOVED_PERM //
 				|| responseCode == HttpURLConnection.HTTP_MOVED_TEMP //
 				|| responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
-			String cookies1 = conn.getHeaderField("Set-Cookie");
+			var cookies1 = conn.getHeaderField("Set-Cookie");
 			URL url1 = To.url(conn.getHeaderField("Location"));
 
 			Map<String, String> headers1 = new HashMap<>(headers);

@@ -15,7 +15,7 @@ public class CircularProgrammingTest {
 
 	@Test
 	public void test() throws IOException {
-		String fp = "" //
+		var fp = "" //
 				+ "data (Binary-tree :t) over :t as Tree (Binary-tree :t, Binary-tree :t) >> \n " //
 				+ "data (Binary-tree :t) over :t as Leaf :t >> \n " //
 				+ "let mintree := t => \n " //

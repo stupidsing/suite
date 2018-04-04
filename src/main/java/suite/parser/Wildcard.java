@@ -16,7 +16,7 @@ public class Wildcard {
 	public static boolean isMatch(String pattern, String s) {
 		if (!pattern.isEmpty()) {
 			char ph = pattern.charAt(0);
-			String pt = pattern.substring(1);
+			var pt = pattern.substring(1);
 
 			if (ph != '*')
 				return !s.isEmpty() && s.charAt(0) == ph && isMatch(pt, s.substring(1));

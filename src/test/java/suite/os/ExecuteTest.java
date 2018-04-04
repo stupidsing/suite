@@ -22,7 +22,7 @@ public class ExecuteTest {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 1024; i++)
 			sb.append("01234567890123456789012345678901234567890123456789012345678901234567890123456789\n");
-		String in = sb.toString();
+		var in = sb.toString();
 
 		Execute exec = new Execute(new String[] { "cat", }, in);
 

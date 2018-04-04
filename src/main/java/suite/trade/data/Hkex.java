@@ -282,7 +282,7 @@ public class Hkex {
 	}
 
 	public float queryHangSengIndex() {
-		String url = "https://www.hkex.com.hk/eng/csm/ws/IndexMove.asmx/GetData?LangCode=en";
+		var url = "https://www.hkex.com.hk/eng/csm/ws/IndexMove.asmx/GetData?LangCode=en";
 
 		try (InputStream is = HttpUtil.get(To.url(url)).out.collect(To::inputStream)) {
 			return Read //
@@ -299,7 +299,7 @@ public class Hkex {
 	}
 
 	public float queryPreviousClose(String symbol) {
-		String url = "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
+		var url = "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
 				+ "?LangCode=en" //
 				+ "&StockCode=" + HkexUtil.toStockCode(symbol) //
 				+ "&mkt=hk" //
@@ -405,7 +405,7 @@ public class Hkex {
 
 			CompanyInfo companyInfo = mapper.convertValue(json, CompanyInfo.class);
 
-			String boardLotStr = Read //
+			var boardLotStr = Read //
 					.each(companyInfo) //
 					.flatMap(ci -> ci.data) //
 					.concatMap(Data::tableEntries) //
@@ -436,7 +436,7 @@ public class Hkex {
 	}
 
 	private Asset toAsset(List<String> list, Map<String, Integer> lotSizeBySymbol) {
-		String symbol = toSymbol(list);
+		var symbol = toSymbol(list);
 		return Asset.of( //
 				symbol, //
 				list.get(2).trim(), //

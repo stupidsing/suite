@@ -111,11 +111,11 @@ public class Profiler implements Service {
 				// anonymous classes
 				while (0 < i) {
 					StackTraceElement elem = stackTrace[--i];
-					String fileName = elem.getFileName();
+					var fileName = elem.getFileName();
 					var lineNumber = elem.getLineNumber();
-					String mn = elem.getClassName() + "." + elem.getMethodName();
-					String fn = fileName != null ? " " + fileName + (1 < lineNumber ? ":" + lineNumber : "") : "<unknown>";
-					String name = mn + fn;
+					var mn = elem.getClassName() + "." + elem.getMethodName();
+					var fn = fileName != null ? " " + fileName + (1 < lineNumber ? ":" + lineNumber : "") : "<unknown>";
+					var name = mn + fn;
 
 					(call = call.callees.computeIfAbsent(mn, any -> new Call())).count++;
 					if (elements.add(name))

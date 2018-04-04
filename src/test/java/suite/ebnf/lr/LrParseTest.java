@@ -16,11 +16,11 @@ public class LrParseTest {
 
 	@Test
 	public void testComplexity() {
-		String e = "e0";
+		var e = "e0";
 		StringBuilder sb = new StringBuilder(e + " ::= \"0\" | \"1\"\n");
 		for (int i = 0; i < 6; i++) {
-			String enext = "e" + (i + 1);
-			String op = "op" + i;
+			var enext = "e" + (i + 1);
+			var op = "op" + i;
 			sb.append(enext + " ::= " + e + " | " + e + " \"" + op + "\" " + enext + "\n");
 			e = enext;
 		}
@@ -32,7 +32,7 @@ public class LrParseTest {
 
 	@Test
 	public void testEntity() throws IOException {
-		String grammar = "" //
+		var grammar = "" //
 				+ "<digit> ::= \"0\" | \"1\"\n" //
 				+ "<digit2> ::= <digit> <digit>\n";
 		LrParse lrParse = LrParse.of(grammar, "<digit2>");
@@ -48,7 +48,7 @@ public class LrParseTest {
 
 	@Test
 	public void testExpression0() throws IOException {
-		String grammar = "" //
+		var grammar = "" //
 				+ "<expression> ::= <number> | <number> \"+\" <expression>\n" //
 				+ "<number> ::= <digit> | <digit> <number>\n" //
 				+ "<digit> ::= \"1\" | \"2\" | \"3\"\n";
@@ -59,7 +59,7 @@ public class LrParseTest {
 
 	@Test
 	public void testExpression1() throws IOException {
-		String grammar = "" //
+		var grammar = "" //
 				+ "<e> ::= <e> \"*\" <b> | <e> \"+\" <b> | <b>\n" //
 				+ "<b> ::= \"0\" | \"1\"\n";
 		LrParse lrParse = LrParse.of(grammar, "<e>");

@@ -20,7 +20,7 @@ public class LogicCompilerTest {
 
 	@Test
 	public void testAuto() {
-		String preds = FileUtil.read("src/main/ll/auto.sl");
+		var preds = FileUtil.read("src/main/ll/auto.sl");
 		String goal = "(" + preds + ") >> member (a, b, c,) c";
 		assertTrue(Suite.proveLogic(goal));
 	}

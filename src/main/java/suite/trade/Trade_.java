@@ -58,7 +58,7 @@ public class Trade_ {
 		Map<String, List<IntFltPair>> acquireBySymbol = new HashMap<>();
 
 		for (Trade trade : outlet) {
-			String symbol = trade.symbol;
+			var symbol = trade.symbol;
 			var buySell = trade.buySell;
 			float price = trade.price;
 			List<IntFltPair> acquires0 = acquireBySymbol.getOrDefault(symbol, List.of());

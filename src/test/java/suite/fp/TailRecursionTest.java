@@ -12,18 +12,18 @@ public class TailRecursionTest {
 	@Test
 	public void testTailRecursion() {
 		Suite.useLibraries(() -> {
-			String fp0 = "" //
+			var fp0 = "" //
 					+ "define dec := n => if (1 < n) then (dec {n - 1}) else 0 \n" //
 					+ ">> \n" //
 					+ "dec {65536}";
 			assertEquals(Int.of(0), Suite.evaluateFun(fp0, false));
 
-			String fp1 = "" //
+			var fp1 = "" //
 					+ "define sum := n => s => if (0 < n) then (sum {n - 1} {s + n}) else s >> \n" //
 					+ "sum {16384} {0}";
 			assertEquals(Int.of((1 + 16384) * 16384 / 2), Suite.evaluateFun(fp1, false));
 
-			String fp2 = "" //
+			var fp2 = "" //
 					+ "define or := \n" //
 					+ "  x => y => if x then true else y \n" //
 					+ ">> \n" //

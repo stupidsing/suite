@@ -33,8 +33,8 @@ public class IoPredicates {
 	};
 
 	public BuiltinPredicate dumpStack = (prover, ps) -> {
-		String date = LocalDateTime.now().toString();
-		String trace = prover.getTracer().getStackTrace();
+		var date = LocalDateTime.now().toString();
+		var trace = prover.getTracer().getStackTrace();
 		LogUtil.info("-- stack trace at " + date + " --\n" + trace);
 		return true;
 	};
@@ -42,7 +42,7 @@ public class IoPredicates {
 	public BuiltinPredicate exec = PredicateUtil.p1((prover, p0) -> {
 		if (p0 instanceof Str)
 			try {
-				String cmd = ((Str) p0).value;
+				var cmd = ((Str) p0).value;
 				return Runtime.getRuntime().exec(cmd).waitFor() == 0;
 			} catch (Exception ex) { // iOException or InterruptedException
 				LogUtil.error(ex);
@@ -55,7 +55,7 @@ public class IoPredicates {
 	public BuiltinPredicate fileExists = PredicateUtil.bool(n -> Files.exists(Paths.get(Formatter.display(n))));
 
 	public BuiltinPredicate fileRead = PredicateUtil.fun(n -> {
-		String filename = Formatter.display(n);
+		var filename = Formatter.display(n);
 		return new Str(FileUtil.read(filename));
 	});
 
@@ -67,8 +67,8 @@ public class IoPredicates {
 	});
 
 	public BuiltinPredicate fileWrite = PredicateUtil.p2((prover, fn, contents) -> {
-		String filename = Formatter.display(fn);
-		String content = Formatter.display(contents);
+		var filename = Formatter.display(fn);
+		var content = Formatter.display(contents);
 
 		try (OutputStream fos = FileUtil.out(filename)) {
 			fos.write(content.getBytes(Constants.charset));
@@ -90,7 +90,7 @@ public class IoPredicates {
 		byte b;
 		while (0 <= (b = (byte) System.in.read()) && b != 10)
 			bb.append(b);
-		String s = To.string(bb.toBytes());
+		var s = To.string(bb.toBytes());
 		return prover.bind(new Str(s), p0);
 	}));
 

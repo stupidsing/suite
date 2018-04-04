@@ -44,7 +44,7 @@ public class EditorPane extends JEditorPane {
 		SinkEx<ActionEvent, BadLocationException> untabize = event -> {
 			if (isSelectedText())
 				replaceLines(segment -> {
-					String s = segment.toString();
+					var s = segment.toString();
 					s = s.charAt(0) == '\t' ? s.substring(1) : s;
 					return s.replace("\n\t", "\n");
 				});
@@ -92,7 +92,7 @@ public class EditorPane extends JEditorPane {
 		Segment segment_ = new Segment();
 		document.getText(start, end - start, segment_);
 
-		String s = f.apply(segment_);
+		var s = f.apply(segment_);
 		document.remove(start, end - start);
 		document.insertString(start, s, null);
 		setSelectionStart(start);

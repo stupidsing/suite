@@ -45,7 +45,7 @@ public class AptUtil {
 				.from(packages) //
 				.filter(pm -> String_.equals(pm.get("Package"), packageName)) //
 				.map(pm -> {
-					String p = pm.get("Filename");
+					var p = pm.get("Filename");
 					if (p != null)
 						return repo.urlAddress //
 								+ "/" + p;

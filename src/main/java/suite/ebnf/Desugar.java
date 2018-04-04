@@ -41,7 +41,7 @@ public class Desugar {
 			if (Boolean.TRUE)
 				egx = new Grammar(GrammarType.AND___, List.of(bs, repeat(cs)));
 			else {
-				String name = "$" + counter++;
+				var name = "$" + counter++;
 				Grammar ege = new Grammar(GrammarType.ENTITY, name);
 				egx = new Grammar(GrammarType.NAMED_, name //
 						, new Grammar(GrammarType.OR____, //
@@ -61,7 +61,7 @@ public class Desugar {
 	}
 
 	private Grammar repeat(Grammar child) {
-		String name = "$" + counter++;
+		var name = "$" + counter++;
 		Grammar ege = new Grammar(GrammarType.ENTITY, name);
 		Grammar ega = new Grammar(GrammarType.AND___, List.of(child, ege));
 		Grammar ego = new Grammar(GrammarType.OR____, List.of(nil, ega));

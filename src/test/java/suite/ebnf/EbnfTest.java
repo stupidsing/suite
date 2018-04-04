@@ -60,7 +60,7 @@ public class EbnfTest {
 	@Test
 	public void testJava() throws IOException {
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
-		String s = FileUtil.read("src/test/java/suite/ebnf/EbnfTest.java");
+		var s = FileUtil.read("src/test/java/suite/ebnf/EbnfTest.java");
 		System.out.println(new Dump(ebnf.parse("CompilationUnit", s), s));
 	}
 
@@ -78,19 +78,19 @@ public class EbnfTest {
 
 	@Test
 	public void testRefactor() throws IOException {
-		String sql0 = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
+		var sql0 = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
 		FactorizeResult fr = rewrite(ebnf, "intersect-select" //
 				, "SELECT .0 FROM DUAL" //
 				, "SELECT .0 FROM DUAL WHERE COL2 = 1" //
 				, ebnf.parseFNode(sql0, "sql"));
-		String sql1 = fr.unparse();
+		var sql1 = fr.unparse();
 		assertEquals(sql1, "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL WHERE COL2 = 1) ORDER BY COL DESC");
 	}
 
 	@Test
 	public void testSql() throws IOException {
-		String sql = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
+		var sql = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
 		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
 		System.out.println(ebnf.parse("sql", sql));
 	}

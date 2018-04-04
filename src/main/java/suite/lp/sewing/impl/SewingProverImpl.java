@@ -323,7 +323,7 @@ public class SewingProverImpl implements ProverFactory {
 		} else if ((m = Suite.pattern(".0 .1").match(node)) != null && m[0] instanceof Atom)
 			cps = compileCpsCallPredicate(bf, ((Atom) m[0]).name, m[1], node, cpsx);
 		else if (node instanceof Atom) {
-			String name = ((Atom) node).name;
+			var name = ((Atom) node).name;
 			if (String_.equals(name, ""))
 				cps = cpsx;
 			else if (String_.equals(name, "fail"))
@@ -466,8 +466,8 @@ public class SewingProverImpl implements ProverFactory {
 			Clone_ f = bf.cloner(n0);
 			tr = rt -> p.test(rt, f.apply(rt.env)) ? okay : fail;
 		} else if ((m = Suite.pattern("builtin:.0:.1 .2").match(node)) != null) {
-			String className = ((Atom) m[0]).name;
-			String fieldName = ((Atom) m[1]).name;
+			var className = ((Atom) m[0]).name;
+			var fieldName = ((Atom) m[1]).name;
 			BuiltinPredicate predicate = Rethrow.ex(() -> {
 				Class<?> clazz = Class.forName(className);
 				return (BuiltinPredicate) clazz.getField(fieldName).get(Object_.new_(clazz));
@@ -669,7 +669,7 @@ public class SewingProverImpl implements ProverFactory {
 		} else if ((m = Suite.pattern(".0 .1").match(node)) != null && m[0] instanceof Atom)
 			tr = compileTrCallPredicate(bf, ((Atom) m[0]).name, m[1], node);
 		else if (node instanceof Atom) {
-			String name = ((Atom) node).name;
+			var name = ((Atom) node).name;
 			if (node == ProverConstant.cut)
 				tr = cutEnd();
 			else if (String_.equals(name, ""))
@@ -879,8 +879,8 @@ public class SewingProverImpl implements ProverFactory {
 
 		if (traceLevel == TraceLevel.TRACE)
 			tr2 = rt -> {
-				String m = Formatter.dump(rt.query);
-				String indent = rt.debug.indent;
+				var m = Formatter.dump(rt.query);
+				var indent = rt.debug.indent;
 
 				LogUtil.info(indent + "QUERY " + m);
 				rt.pushRem(rt_ -> {
@@ -938,7 +938,7 @@ public class SewingProverImpl implements ProverFactory {
 		TraceLevel traceLevel;
 		if (Suite.isProverTrace) {
 			Node head = prototype.head;
-			String name = head instanceof Atom ? ((Atom) head).name : null;
+			var name = head instanceof Atom ? ((Atom) head).name : null;
 
 			traceLevel = name != null //
 					&& !name.startsWith("member") //

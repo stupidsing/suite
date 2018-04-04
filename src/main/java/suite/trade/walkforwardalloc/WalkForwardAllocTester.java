@@ -78,7 +78,7 @@ public class WalkForwardAllocTester {
 		times[last] = time.epochSec();
 
 		for (Entry<String, DataSource> e : dsBySymbol.entrySet()) {
-			String symbol = e.getKey();
+			var symbol = e.getKey();
 			float[] prices = e.getValue().prices;
 			System.arraycopy(prices, 0, prices, 1, last);
 			prices[last] = priceBySymbol.get(symbol);

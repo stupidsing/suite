@@ -199,7 +199,7 @@ public class PrettyPrinter {
 	}
 
 	private OperatorPosition appendOperator(Operator op) {
-		String name = op.getName();
+		var name = op.getName();
 		name = (op == TermOp.BRACES ? " " : "") + name;
 		name += op == TermOp.AND___ || op == TermOp.OR____ ? " " : "";
 		if (isLineBegin())

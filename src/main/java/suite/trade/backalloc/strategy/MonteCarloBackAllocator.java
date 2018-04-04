@@ -75,7 +75,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 		var d = random.nextInt(index);
 		double sum = 0d;
 		for (int i = 0; i < symbols.length; i++) {
-			String symbol = symbols[i];
+			var symbol = symbols[i];
 			sum += p[i] * returnsBySymbol.get(symbol)[d];
 		}
 		return sum;

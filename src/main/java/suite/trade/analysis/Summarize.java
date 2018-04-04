@@ -88,7 +88,7 @@ public class Summarize {
 			float price1 = ds.get(isMarketOpen ? -1 : -2).t1; // previous close
 			float pricex = isMarketOpen ? priceBySymbol.get(symbol) : ds.get(-1).t1; // now
 
-			String keys = Read //
+			var keys = Read //
 					.from2(nSharesByKeyBySymbol.getOrDefault(symbol, Map.ofEntries())) //
 					.keys() //
 					.map(Object::toString) //
@@ -141,7 +141,7 @@ public class Summarize {
 				.map((symbol, nShares) -> {
 					Asset asset = cfg.queryCompany(symbol);
 					float price = priceBySymbol.get(symbol);
-					String info = infoFun.apply(symbol);
+					var info = infoFun.apply(symbol);
 					return asset //
 							+ ": " + price + " * " + nShares //
 							+ " = " + ((long) (nShares * price)) //

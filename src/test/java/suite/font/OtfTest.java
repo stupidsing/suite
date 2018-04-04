@@ -15,8 +15,8 @@ public class OtfTest {
 
 	@Test
 	public void otfTest() {
-		String familyKey = "Family";
-		String subfamilyKey = "Subfamily";
+		var familyKey = "Family";
+		var subfamilyKey = "Subfamily";
 		List<String> keys = List.of(familyKey, subfamilyKey);
 
 		List<String> commands = Read //
@@ -25,7 +25,7 @@ public class OtfTest {
 				.concatMap(FileUtil::findPaths) //
 				.map(Path::toString) //
 				.filter(path -> {
-					String pathl = path.toLowerCase();
+					var pathl = path.toLowerCase();
 					return pathl.endsWith(".otf") || pathl.endsWith(".ttf");
 				}) //
 				.map2(path -> {
@@ -39,10 +39,10 @@ public class OtfTest {
 							.toMap();
 				}) //
 				.map((k, m) -> {
-					String f = m.get(familyKey);
-					String sf = m.get(subfamilyKey);
-					String dir = "/home/ywsing/.fonts/" + f + "/";
-					String ext = k.substring(k.lastIndexOf(".") + 1).toLowerCase();
+					var f = m.get(familyKey);
+					var sf = m.get(subfamilyKey);
+					var dir = "/home/ywsing/.fonts/" + f + "/";
+					var ext = k.substring(k.lastIndexOf(".") + 1).toLowerCase();
 
 					return "mkdir -p '" + dir + "'; mv '" + k + "' '" + dir + f + " " + sf + "." + ext + "'";
 				}) //

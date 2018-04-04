@@ -72,7 +72,7 @@ public class TwoPassIndexer {
 		Iterator<String> iter = keys.tailSet(searchKey).iterator();
 
 		Source<String> source = () -> {
-			String key = iter.hasNext() ? iter.next() : null;
+			var key = iter.hasNext() ? iter.next() : null;
 			return key != null && key.startsWith(searchKey) ? key : null;
 		};
 

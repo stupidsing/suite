@@ -115,7 +115,7 @@ public class Dump {
 						else {
 							for (Field field : inspect.fields(clazz))
 								try {
-									String name = field.getName();
+									var name = field.getName();
 									Object o = field.get(object);
 									Class<?> type = field.getType();
 									if (Type_.isSimple(type))
@@ -128,7 +128,7 @@ public class Dump {
 								}
 
 							for (Method method : inspect.getters(clazz)) {
-								String name = method.getName();
+								var name = method.getName();
 								try {
 									Object o = method.invoke(object);
 									if (!(o instanceof Class<?>))

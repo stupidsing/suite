@@ -11,8 +11,8 @@ import suite.util.String_;
 public class Handler extends URLStreamHandler {
 
 	public static void register() {
-		String property = System.getProperty("java.protocol.handler.pkgs");
-		String packageName = "suite";
+		var property = System.getProperty("java.protocol.handler.pkgs");
+		var packageName = "suite";
 
 		if (String_.isBlank(property))
 			property = packageName;

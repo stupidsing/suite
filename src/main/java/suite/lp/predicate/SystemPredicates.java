@@ -182,7 +182,7 @@ public class SystemPredicates {
 
 	private BuiltinPredicate systemPredicate = PredicateUtil.p1((prover, p0) -> {
 		Atom atom = p0 instanceof Atom ? (Atom) p0 : null;
-		String name = atom != null ? atom.name : null;
+		var name = atom != null ? atom.name : null;
 		return name != null && predicates.containsKey(name);
 	});
 

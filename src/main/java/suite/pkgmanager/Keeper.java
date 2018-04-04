@@ -37,7 +37,7 @@ public class Keeper {
 	}
 
 	public void savePackageMemento(PackageMemento packageMemento) throws IOException {
-		String packageName = packageMemento.getPackageManifest().getName();
+		var packageName = packageMemento.getPackageManifest().getName();
 
 		try (OutputStream os = FileUtil.out(keeperDir.resolve(packageName))) {
 			objectMapper.writeValue(os, mapify.mapify(PackageMemento.class, packageMemento));

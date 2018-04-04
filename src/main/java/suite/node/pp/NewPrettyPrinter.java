@@ -52,7 +52,7 @@ public class NewPrettyPrinter {
 			Operator operator = tree.getOperator();
 			var prec = operator.getPrecedence();
 			boolean isParenthesesRequired = operator != null ? prec <= parentPrec : false;
-			String indent1 = indent + ind;
+			var indent1 = indent + ind;
 			Node[] m;
 
 			if (isParenthesesRequired) {

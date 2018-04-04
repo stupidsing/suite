@@ -108,7 +108,7 @@ public class Intrinsics {
 
 			for (Field field : clazz.getFields())
 				if (Intrinsic.class.isAssignableFrom(field.getType())) {
-					String name = clazz.getSimpleName() + "." + field.getName();
+					var name = clazz.getSimpleName() + "." + field.getName();
 					Rethrow.ex(() -> intrinsics.put(name, (Intrinsic) field.get(instance)));
 				}
 		}

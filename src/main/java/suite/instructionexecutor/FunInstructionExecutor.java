@@ -82,7 +82,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			break;
 		case GETINTRINSIC__:
 			Atom atom = (Atom) ds[--dsp];
-			String intrinsicName = atom.name.split("!")[1];
+			var intrinsicName = atom.name.split("!")[1];
 			result = new Data<>(Intrinsics.intrinsics.get(intrinsicName));
 			break;
 		case HEAD__________:

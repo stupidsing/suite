@@ -239,7 +239,7 @@ public class DataSource {
 
 	@Override
 	public String toString() {
-		String range = 0 < prices.length ? first() + "~" + last() : "";
+		var range = 0 < prices.length ? first() + "~" + last() : "";
 		return getClass().getSimpleName() + "(" + range + ")";
 	}
 
@@ -247,12 +247,12 @@ public class DataSource {
 		var length = prices_.length;
 		long t0 = 0 < length ? ts[0] : Long.MIN_VALUE;
 		float price0 = 0 < length ? prices_[0] : Float.MAX_VALUE;
-		String date0 = Time.ofEpochSec(t0).ymd();
+		var date0 = Time.ofEpochSec(t0).ymd();
 
 		for (int i = 1; i < length; i++) {
 			long t1 = ts[i];
 			float price1 = prices_[i];
-			String date1 = Time.ofEpochSec(t1).ymd();
+			var date1 = Time.ofEpochSec(t1).ymd();
 
 			if (t1 <= t0)
 				Fail.t("wrong date order: " + date0 + "/" + date1);

@@ -26,7 +26,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testDataStructure() {
-		String s = "" //
+		var s = "" //
 				+ "constant p = fix :p struct ( | pointer::p next);" //
 				+ "declare pnext = function [pointer:p e,] e/*/next;" //
 				+ "declare object = new p (next = null,);" //
@@ -39,7 +39,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testDataStructureType() {
-		String s = "" //
+		var s = "" //
 				+ "declare object = new (prev = 0, next = 1,);" //
 				+ "object/next";
 		Bytes bytes = imperativeCompiler.compile(0, s);
@@ -91,7 +91,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testTag() {
-		String s = "constant optional = (tag ( | 0 struct () | 1 int));" //
+		var s = "constant optional = (tag ( | 0 struct () | 1 int));" //
 				+ "declare optional i = newt optional 0 new ();" //
 				+ "declare optional j = newt optional 1 2;" //
 				+ "0";

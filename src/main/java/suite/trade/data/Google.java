@@ -31,7 +31,7 @@ public class Google {
 	private static ObjectMapper mapper = new ObjectMapper();
 
 	public Fixie3<Map<String, String>, String, List<String[]>> historical(String symbol) {
-		String url = "" //
+		var url = "" //
 				+ "http://finance.google.com/finance/getprices" //
 				+ "?q=" + fromSymbol(symbol) //
 				+ "&x=HKG" //
@@ -57,7 +57,7 @@ public class Google {
 			i++;
 		}
 
-		String header = lines[i++];
+		var header = lines[i++];
 		List<String[]> data = new ArrayList<>();
 
 		while (i < lines.length)

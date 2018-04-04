@@ -21,8 +21,8 @@ public class LogUtil {
 		Log log = LogFactory.getLog(clazz);
 
 		InvocationHandler handler = (proxy, method, ps) -> {
-			String methodName = method.getName();
-			String prefix = methodName + "()\n";
+			var methodName = method.getName();
+			var prefix = methodName + "()\n";
 			StringBuilder sb = new StringBuilder();
 
 			sb.append(prefix);

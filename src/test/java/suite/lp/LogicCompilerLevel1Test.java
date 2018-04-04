@@ -26,7 +26,7 @@ public class LogicCompilerLevel1Test {
 	@Test
 	public void testCompileFunProgram() {
 		RuleSet rs = Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl"));
-		String gs = "" //
+		var gs = "" //
 				+ "source .in" //
 				+ ", compile-function .0 .in .out" //
 				+ ", sink .out";

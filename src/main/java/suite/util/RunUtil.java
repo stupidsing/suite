@@ -21,7 +21,7 @@ public class RunUtil {
 	}
 
 	public static boolean isUnix() {
-		String os = System.getenv("OS");
+		var os = System.getenv("OS");
 		return os == null || !os.startsWith("Windows");
 	}
 

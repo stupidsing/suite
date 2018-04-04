@@ -73,7 +73,7 @@ public class EvalPredicates {
 	public BuiltinPredicate evalFun = PredicateUtil.fun(n -> Suite.evaluateFun(Suite.fcc(n, true)));
 
 	public BuiltinPredicate evalJs = PredicateUtil.p2((prover, p0, p1) -> {
-		String js = Formatter.display(p0);
+		var js = Formatter.display(p0);
 		Object result;
 
 		try {

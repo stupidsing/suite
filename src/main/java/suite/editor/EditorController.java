@@ -49,7 +49,7 @@ public class EditorController {
 
 	public void copy(boolean isAppend) {
 		ClipboardUtil clipboardUtil = new ClipboardUtil();
-		String selectedText = view.getEditor().getSelectedText();
+		var selectedText = view.getEditor().getSelectedText();
 		if (selectedText != null)
 			clipboardUtil.setClipboardText((isAppend ? clipboardUtil.getClipboardText() : "") + selectedText);
 	}
@@ -95,7 +95,7 @@ public class EditorController {
 		JFrame frame = view.getFrame();
 		JEditorPane editor = view.getEditor();
 
-		String fun = JOptionPane.showInputDialog(frame //
+		var fun = JOptionPane.showInputDialog(frame //
 				, "Enter " + (isDo ? "do " : "") + "function:", "Functional Filter", JOptionPane.PLAIN_MESSAGE);
 
 		editor.setText(Suite.evaluateFilterFun(fun, editor.getText(), false, false));
@@ -138,8 +138,8 @@ public class EditorController {
 
 	public void paste() {
 		JEditorPane editor = view.getEditor();
-		String orig = editor.getText();
-		String pasteText = new ClipboardUtil().getClipboardText();
+		var orig = editor.getText();
+		var pasteText = new ClipboardUtil().getClipboardText();
 
 		if (pasteText != null) {
 			var s = editor.getSelectionStart();
@@ -188,7 +188,7 @@ public class EditorController {
 		JFrame frame = view.getFrame();
 		JEditorPane editor = view.getEditor();
 
-		String command = JOptionPane.showInputDialog(frame //
+		var command = JOptionPane.showInputDialog(frame //
 				, "Enter command:", "Unix Filter", JOptionPane.PLAIN_MESSAGE);
 
 		try {
@@ -207,7 +207,7 @@ public class EditorController {
 	}
 
 	private void load(String filename) {
-		String text = FileUtil.read(filename);
+		var text = FileUtil.read(filename);
 
 		JEditorPane editor = view.getEditor();
 		editor.setText(text);
@@ -238,8 +238,8 @@ public class EditorController {
 
 	private void run(Iterate<String> fun) {
 		JEditorPane editor = view.getEditor();
-		String selectedText = editor.getSelectedText();
-		String text = selectedText != null ? selectedText : editor.getText();
+		var selectedText = editor.getSelectedText();
+		var text = selectedText != null ? selectedText : editor.getText();
 
 		if (runThread == null || !runThread.isAlive())
 			runThread = Thread_.startThread(() -> {

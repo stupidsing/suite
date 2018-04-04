@@ -27,7 +27,7 @@ public class Preprocess {
 	}
 
 	public static Pair<String, Reverser> transform(List<Fun<String, List<Run>>> funs, String in) {
-		String fwd = in;
+		var fwd = in;
 		Reverser rev = position -> position;
 
 		for (Fun<String, List<Run>> fun : funs) {

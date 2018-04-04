@@ -41,7 +41,7 @@ public class Formatter {
 		private StringBuilder sb = new StringBuilder();
 
 		private void treeize(Node node, String indent) {
-			String indent1 = indent + "  ";
+			var indent1 = indent + "  ";
 
 			new SwitchNode<Node>(node //
 			).doIf(Dict.class, n -> {
@@ -50,7 +50,7 @@ public class Formatter {
 					treeize(e.getValue().finalNode(), indent1);
 				}
 			}).doIf(Tree.class, tree -> {
-				String op = tree.getOperator().getName();
+				var op = tree.getOperator().getName();
 				op = String_.equals(op, " ") ? "<>" : op.trim();
 
 				treeize(tree.getLeft(), indent1);

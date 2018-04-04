@@ -21,7 +21,7 @@ public class Fun23TreeTest {
 
 		Node fp0 = Suite.substitute("use 23-TREE >> " + list100);
 		Node result0 = Suite.evaluateFun(Suite.fcc(fp0, false));
-		String out0 = Formatter.dump(result0);
+		var out0 = Formatter.dump(result0);
 		System.out.println("OUT:\n" + out0);
 
 		var nPars0 = Read.from(String_.chars(out0)).filter(c -> c == '(').size();
@@ -29,7 +29,7 @@ public class Fun23TreeTest {
 
 		Node fp1 = Suite.substitute("use 23-TREE >> 0 until " + n / 2 + " | map {remove} | apply | {" + list100 + "}");
 		Node result1 = Suite.evaluateFun(Suite.fcc(fp1, false));
-		String out1 = Formatter.dump(result1);
+		var out1 = Formatter.dump(result1);
 		System.out.println("OUT:\n" + out1);
 
 		var nPars1 = Read.from(String_.chars(out1)).filter(c -> c == '(').size();

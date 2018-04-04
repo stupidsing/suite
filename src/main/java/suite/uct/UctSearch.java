@@ -235,7 +235,7 @@ public class UctSearch<Move> {
 		for (Move move : visitor.getAllMoves()) {
 			float nWins = getMoveRave(nRaveWins, move);
 			float nTotals = getMoveRave(nRaveVisits, move);
-			String s = 0 < nTotals ? df3.format(nWins / nTotals) : "  -  ";
+			var s = 0 < nTotals ? df3.format(nWins / nTotals) : "  -  ";
 			System.out.print(s + " ");
 
 			if (++n % Weiqi.size == 0)

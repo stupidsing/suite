@@ -26,7 +26,7 @@ public class FormatUtil {
 
 		for (String[] row : rows) {
 			for (int column = 0; column < nColumns; column++) {
-				String cell = row[column];
+				var cell = row[column];
 				var width = widths[column];
 
 				sb.append(cell);

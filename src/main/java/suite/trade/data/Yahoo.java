@@ -118,7 +118,7 @@ public class Yahoo {
 			Streamlet<JsonNode> jsons = Read.each(json) //
 					.flatMap(json_ -> json_.path("chart").path("result"));
 
-			String exchange = jsons //
+			var exchange = jsons //
 					.map(json_ -> json_.path("meta").path("exchangeName").textValue()) //
 					.uniqueResult();
 
@@ -222,13 +222,13 @@ public class Yahoo {
 	}
 
 	public DataSource dataSourceYql(String symbol, TimeRange period) {
-		String yql = "select *" //
+		var yql = "select *" //
 				+ " from yahoo.finance.historicaldata" //
 				+ " where symbol = \"" + symbol + "\"" //
 				+ " and startDate = \"" + period.from.ymd() + "\"" //
 				+ " and endDate = \"" + period.to.ymd() + "\"";
 
-		String urlString = "http://query.yahooapis.com/v1/public/yql" //
+		var urlString = "http://query.yahooapis.com/v1/public/yql" //
 				+ "?q=" + encode(yql) //
 				+ "&format=json" //
 				+ "&diagnostics=true" //
@@ -281,7 +281,7 @@ public class Yahoo {
 
 	private Map<String, Float> quote_(Streamlet<String> symbols, String field) {
 		if (0 < symbols.size()) {
-			String urlString = "https://download.finance.yahoo.com/d/quotes.csv" //
+			var urlString = "https://download.finance.yahoo.com/d/quotes.csv" //
 					+ "?s=" + symbols.sort(Object_::compare).map(this::encode).collect(As.joinedBy("+")) //
 					+ "&f=s" + field;
 

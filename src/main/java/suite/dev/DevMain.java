@@ -46,7 +46,7 @@ public class DevMain {
 	}
 
 	private void run() {
-		String input = FileUtil.read("src/main/java/suite/dev/DevMain.java");
+		var input = FileUtil.read("src/main/java/suite/dev/DevMain.java");
 		Text inputText = text(IRope.ropeList(input));
 
 		try (Termios termios = new Termios(libc);) {

@@ -39,7 +39,7 @@ public class PackageManager {
 			installActions.addAll(Read //
 					.from(FileUtil.listZip(zipFile)) //
 					.map(filename0 -> {
-						String filename1 = filename0;
+						var filename1 = filename0;
 						for (Pair<String, String> filenameMapping : filenameMappings) {
 							String[] match;
 							if ((match = Wildcard.match(filenameMapping.t0, filename1)) != null) {

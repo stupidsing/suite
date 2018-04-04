@@ -23,7 +23,7 @@ public class FunTypeTest {
 
 	@Test
 	public void testBind() {
-		String data = "" //
+		var data = "" //
 				+ "data Clazz as Link Clazz >> \n" //
 				+ "data Clazz as Leaf number >> \n";
 
@@ -110,21 +110,21 @@ public class FunTypeTest {
 
 	@Test
 	public void testGeneric() {
-		String fp0 = "" //
+		var fp0 = "" //
 				+ "data (Rb-tree :t) over :t as Empty >> \n" //
 				+ "define map := (:a => :b => (:a -> :b) -> [:a] -> [:b]) of error () >> \n" //
 				+ "define add := (:t => :t -> Rb-tree :t) of (v => Empty) >> \n" //
 				+ "1; | map {add} \n";
 		assertType("[Rb-tree number]", fp0);
 
-		String fp1 = "" //
+		var fp1 = "" //
 				+ "define id := (:t => :t -> :t) of (a => a) >> (id {3} + (id {4;} | head))";
 		assertType("number", fp1);
 	}
 
 	@Test
 	public void testInstance() {
-		String define = "" //
+		var define = "" //
 				+ "data (List :t) over :t as Nil >> \n" //
 				+ "data (List :t) over :t as Node (:t, List :t) >> \n" //
 				+ "data (List :t) over :t as Node2 (:t, :t, List :t) >> \n" //
@@ -154,7 +154,7 @@ public class FunTypeTest {
 
 	@Test
 	public void testRbTree() {
-		String fps = "use RB-TREE >> 0 until 10 | map {dict-insert/ {1}} | apply | {Empty}";
+		var fps = "use RB-TREE >> 0 until 10 | map {dict-insert/ {1}} | apply | {Empty}";
 		assertType("Rb-tree (number, number)", fps);
 	}
 
@@ -173,7 +173,7 @@ public class FunTypeTest {
 
 	@Test
 	public void testTuple() {
-		String variant = "" //
+		var variant = "" //
 				+ "data C as A >> \n" //
 				+ "data C as B number >> \n" //
 				+ "data C as C boolean >> \n" //

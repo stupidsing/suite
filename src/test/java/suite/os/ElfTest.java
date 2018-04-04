@@ -26,9 +26,9 @@ public class ElfTest {
 
 	@Test
 	public void testIo() {
-		String text = "garbage\n";
+		var text = "garbage\n";
 
-		String program = "" //
+		var program = "" //
 				+ "expand size := 256 >> \n" //
 				+ "define linux-mmap := `length` => ( \n" //
 				+ "	let ps := array (0, length, 3, 34, -1, 0,) >> \n" //

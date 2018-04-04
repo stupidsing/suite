@@ -28,8 +28,8 @@ public class CompareZipMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) throws IOException {
-		String filename0 = "/tmp/a";
-		String filename1 = "/tmp/b";
+		var filename0 = "/tmp/a";
+		var filename1 = "/tmp/b";
 		ZipFile zf0 = new ZipFile(filename0);
 		ZipFile zf1 = new ZipFile(filename1);
 

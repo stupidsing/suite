@@ -76,7 +76,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseAuto() {
-		String in = FileUtil.read("src/main/ll/auto.sl");
+		var in = FileUtil.read("src/main/ll/auto.sl");
 		Node node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node));
@@ -84,7 +84,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseFile() {
-		String in = FileUtil.read("src/main/ll/fc/fc.sl");
+		var in = FileUtil.read("src/main/ll/fc/fc.sl");
 		Node node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node));
@@ -92,7 +92,7 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParsePerformance() {
-		String in = FileUtil.read("src/main/fl/STANDARD.slf");
+		var in = FileUtil.read("src/main/fl/STANDARD.slf");
 		Source<Boolean> test = () -> {
 			for (int i = 0; i < 20; i++)
 				iterativeParser.parse(in);
@@ -107,7 +107,7 @@ public class IterativeParserTest {
 	}
 
 	private void test(String sx, String s0) {
-		String s1 = Formatter.dump(iterativeParser.parse(s0));
+		var s1 = Formatter.dump(iterativeParser.parse(s0));
 		assertEquals(sx, s1);
 	}
 

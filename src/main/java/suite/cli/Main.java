@@ -81,7 +81,7 @@ public class Main extends ExecutableProgram {
 			else if (String_.equals(verb, "serve"))
 				new SocketServer().run();
 			else if (verb != null && verb.startsWith("suite.")) {
-				String verb_ = verb;
+				var verb_ = verb;
 				@SuppressWarnings("unchecked")
 				Class<? extends ExecutableProgram> clazz = (Class<? extends ExecutableProgram>) //
 				Rethrow.ex(() -> Class.forName(verb_));
@@ -97,7 +97,7 @@ public class Main extends ExecutableProgram {
 	}
 
 	private String readScript(String filename) {
-		String contents = FileUtil.read(filename);
+		var contents = FileUtil.read(filename);
 		if (contents.startsWith("#")) // skips first line comment
 			contents = contents.substring(contents.indexOf('\n') + 1);
 		return contents;

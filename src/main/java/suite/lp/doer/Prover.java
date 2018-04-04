@@ -71,7 +71,7 @@ public class Prover {
 	 */
 	public boolean prove(Node query) {
 		Thread hook = new Thread(() -> {
-			String d = LocalDateTime.now().toString();
+			var d = LocalDateTime.now().toString();
 			LogUtil.info("-- trace dump at " + d + " --\n" + tracer.getTrace());
 			LogUtil.info("-- fail dump at " + d + " --\n" + tracer.getFailTrace());
 		});
@@ -154,7 +154,7 @@ public class Prover {
 					Prototype prototype = Prototype.of(query);
 					Node head = prototype != null ? prototype.head : null;
 					Atom atom = head instanceof Atom ? (Atom) head : null;
-					String name = atom != null ? atom.name : null;
+					var name = atom != null ? atom.name : null;
 					isTrace &= whites == null || whites.contains(name);
 					isTrace &= blacks == null || !blacks.contains(name);
 				}

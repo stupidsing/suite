@@ -58,10 +58,10 @@ public class HttpServer {
 			}
 
 			Pair<String, String> pq = String_.split2(pqs, "?");
-			String path = pq.t0;
-			String query = pq.t1;
+			var path = pq.t0;
+			var query = pq.t1;
 
-			String path1 = path.startsWith("/") ? path : "/" + path;
+			var path1 = path.startsWith("/") ? path : "/" + path;
 			String path2 = URLDecoder.decode(path1, "UTF-8");
 
 			if (!String_.equals(protocol, "HTTP/1.1"))
@@ -74,7 +74,7 @@ public class HttpServer {
 				requestHeaders.put(pair.t0, pair.t1);
 			}
 
-			String cls = requestHeaders.get("Content-Length");
+			var cls = requestHeaders.get("Content-Length");
 			var contentLength = cls != null ? Integer.parseInt(cls) : 0;
 			InputStream cis = sizeLimitedInputStream(is, contentLength);
 

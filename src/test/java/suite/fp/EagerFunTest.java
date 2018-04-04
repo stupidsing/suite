@@ -60,7 +60,7 @@ public class EagerFunTest {
 
 	@Test
 	public void testCross() {
-		String fp0 = "" //
+		var fp0 = "" //
 				+ "cross {a => b => a; b;} {7; 8; 9;} {1; 2;}";
 		assertEquals(Suite.parse("" //
 				+ "((7; 1;); (7; 2;);); " //
@@ -68,7 +68,7 @@ public class EagerFunTest {
 				+ "((9; 1;); (9; 2;););") //
 				, eval(fp0));
 
-		String fp1 = "" //
+		var fp1 = "" //
 				+ "data T as A >> \n" //
 				+ "data T as B >> \n" //
 				+ "data T as C >> \n" //

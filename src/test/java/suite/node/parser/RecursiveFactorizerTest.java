@@ -38,9 +38,9 @@ public class RecursiveFactorizerTest {
 
 	@Test
 	public void testParseUnparse() {
-		String s0 = FileUtil.read("src/main/ll/auto.sl").trim();
+		var s0 = FileUtil.read("src/main/ll/auto.sl").trim();
 		FactorizeResult fr = recursiveFactorizer.parse(s0);
-		String sx = fr.unparse();
+		var sx = fr.unparse();
 		assertEquals(s0, sx);
 	}
 
@@ -56,10 +56,10 @@ public class RecursiveFactorizerTest {
 
 	@Test
 	public void testDirectReplace() {
-		String s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
+		var s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
 		FactorizeResult fr0 = recursiveFactorizer.parse(s0);
 		FactorizeResult frx = transform(fr0);
-		String sx = frx.unparse();
+		var sx = frx.unparse();
 		System.out.println(sx);
 	}
 
@@ -91,8 +91,8 @@ public class RecursiveFactorizerTest {
 
 	@Test
 	public void testRefactorRewrite0() {
-		String pred0 = "ic-compile-better-option";
-		String predx = "ic-new-compile-better-option";
+		var pred0 = "ic-compile-better-option";
+		var predx = "ic-new-compile-better-option";
 		String sx = rewriteNewArgument(pred0, predx, ".type", FileUtil.read("src/main/ll/ic/ic.sl").trim());
 
 		System.out.println(sx);
@@ -124,7 +124,7 @@ public class RecursiveFactorizerTest {
 		Node nodex = rw.rewrite(source, node0);
 		FNode fnx = nodify.unnodify(FNode.class, nodex);
 		FactorizeResult frx = new FactorizeResult(fr0.pre, fnx, fr0.post);
-		String sx = frx.unparse();
+		var sx = frx.unparse();
 		return sx;
 	}
 
@@ -163,8 +163,8 @@ public class RecursiveFactorizerTest {
 
 	@Test
 	public void testRefactorRewrite1() {
-		String pred0 = "ic-compile-better-option .0 .1 .2";
-		String predx = "ic-new-compile-better-option .0 .1 .2 .type";
+		var pred0 = "ic-compile-better-option .0 .1 .2";
+		var predx = "ic-new-compile-better-option .0 .1 .2 .type";
 		String sx = recursiveFactorizer.rewrite(pred0, predx, FileUtil.read("src/main/ll/ic/ic.sl").trim());
 
 		System.out.println(sx);

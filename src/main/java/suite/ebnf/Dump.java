@@ -28,15 +28,15 @@ public class Dump {
 	}
 
 	private void prettyPrint(Ast ast, String indent) throws IOException {
-		String entity0 = ast.entity;
+		var entity0 = ast.entity;
 		List<Ast> children;
 
 		while ((children = ast.children).size() == 1)
 			ast = children.get(0);
 
 		if (children.size() != 1) {
-			String indent1 = indent + "  ";
-			String entity1 = ast.entity;
+			var indent1 = indent + "  ";
+			var entity1 = ast.entity;
 			var start = ast.getStart();
 			var end = ast.getEnd();
 

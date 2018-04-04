@@ -19,7 +19,7 @@ public class GpuTest {
 
 	@Test
 	public void test() {
-		String openCl = "" //
+		var openCl = "" //
 				+ "__kernel void add_floats(__global float *a, __global float *b, __global float *o, int n) { \n" //
 				+ "    int i = get_global_id(0); \n" //
 				+ "    if (i < n) o[i] = a[i] * a[i] + b[i] * b[i]; \n" //

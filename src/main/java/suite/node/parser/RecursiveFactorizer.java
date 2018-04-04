@@ -34,7 +34,7 @@ public class RecursiveFactorizer {
 	public FactorizeResult parse(String s) {
 		in = To.chars(s);
 		Pair<String, Reverser> pair = Preprocess.transform(PreprocessorFactory.create(operators), s);
-		String in1 = pair.t0;
+		var in1 = pair.t0;
 		reverser = pair.t1;
 
 		FactorizeResult parsed = parse_(To.chars(in1), 0);

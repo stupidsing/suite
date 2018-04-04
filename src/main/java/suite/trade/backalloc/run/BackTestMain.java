@@ -41,9 +41,9 @@ public class BackTestMain extends ExecutableProgram {
 		// BEGIN
 		// END
 
-		String arg0 = 0 < args.length ? args[0] : "";
-		String arg1 = 1 < args.length ? args[1] : "";
-		String arg2 = 2 < args.length ? args[2] : "";
+		var arg0 = 0 < args.length ? args[0] : "";
+		var arg1 = 1 < args.length ? args[1] : "";
+		var arg2 = 2 < args.length ? args[2] : "";
 
 		Streamlet<String> strategyMatches = !arg0.isEmpty() ? Read.from(arg0.split(",")) : null;
 
@@ -75,7 +75,7 @@ public class BackTestMain extends ExecutableProgram {
 				}) //
 				.collect(As::streamlet2);
 
-		String content0 = Read //
+		var content0 = Read //
 				.bytes(Paths.get("src/main/java/" + getClass().getName().replace('.', '/') + ".java")) //
 				.collect(As::utf8decode) //
 				.map(Chars::toString) //

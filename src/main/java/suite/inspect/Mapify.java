@@ -128,7 +128,7 @@ public class Mapify {
 				}, object -> {
 					if (object instanceof Map) {
 						Map<?, ?> map = (Map<?, ?>) object;
-						String className = map.get("@class").toString();
+						var className = map.get("@class").toString();
 						Class<?> clazz1 = Rethrow.ex(() -> Class.forName(className));
 						return apply_(getMapifier(clazz1).unmapify, object);
 					} else

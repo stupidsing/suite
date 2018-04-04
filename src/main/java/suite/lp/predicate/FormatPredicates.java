@@ -98,7 +98,7 @@ public class FormatPredicates {
 	public BuiltinPredicate stringLength = PredicateUtil.fun(n -> Int.of(((Str) n).value.length()));
 
 	public BuiltinPredicate substring = PredicateUtil.p4((prover, s0, p0, px, sx) -> {
-		String name = ((Str) s0).value;
+		var name = ((Str) s0).value;
 		var length = name.length();
 
 		if (p0 instanceof Int && px instanceof Int) {

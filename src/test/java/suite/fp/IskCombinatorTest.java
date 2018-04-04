@@ -16,14 +16,14 @@ public class IskCombinatorTest {
 
 	@Test
 	public void testSksk() {
-		String sksk = "s {k} {s} {k}";
+		var sksk = "s {k} {s} {k}";
 		assertEquals(Suite.parse("1"), eval(isk //
 				+ "(" + sksk + ") {1} {2}"));
 	}
 
 	@Test
 	public void testTf() {
-		String tf = "" //
+		var tf = "" //
 				+ "define t := k >> " //
 				+ "define f := k {i} >> " //
 				+ "define not_ := f {t} >> " //

@@ -45,7 +45,7 @@ public class RuleSetPredicates {
 	public BuiltinPredicate importPredicate = PredicateUtil.p1((prover, p0) -> Suite.importFrom(prover.ruleSet(), p0));
 
 	public BuiltinPredicate importUrl = PredicateUtil.p1((prover, p0) -> {
-		String url = Formatter.display(p0);
+		var url = Formatter.display(p0);
 		try {
 			return Suite.importUrl(prover.ruleSet(), url);
 		} catch (Exception ex) {

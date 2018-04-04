@@ -83,7 +83,7 @@ public class Inspect {
 				else if (ids.add(id = System.identityHashCode(object_)))
 					try {
 						Extract extract_ = new Extract(object_);
-						String prefix = extract_.prefix;
+						var prefix = extract_.prefix;
 						Class<?> keyClass = extract_.keyClass;
 						ExtractField iter = extract_.children;
 
@@ -143,7 +143,7 @@ public class Inspect {
 				.from(clazz.getDeclaredFields()) //
 				.filter(field -> {
 					var modifiers = field.getModifiers();
-					String name = field.getName();
+					var name = field.getName();
 					return !Modifier.isStatic(modifiers) //
 							&& !Modifier.isTransient(modifiers) //
 							&& !name.startsWith("this") //
@@ -160,7 +160,7 @@ public class Inspect {
 		return Read //
 				.from(methods(clazz)) //
 				.filter(getter -> {
-					String name = getter.getName();
+					var name = getter.getName();
 					return name.startsWith("get") && getter.getParameterTypes().length == 0;
 				}) //
 				.toList();
@@ -191,7 +191,7 @@ public class Inspect {
 		Map<String, Method> getMethods = Read //
 				.from(methods) //
 				.filter(getter -> {
-					String name = getter.getName();
+					var name = getter.getName();
 					return name.startsWith("get") && getter.getParameterTypes().length == 0;
 				}) //
 				.map2(getter -> getter.getName().substring(3), getter -> getter) //
@@ -200,7 +200,7 @@ public class Inspect {
 		Map<String, Method> setMethods = Read //
 				.from(methods) //
 				.filter(setter -> {
-					String name = setter.getName();
+					var name = setter.getName();
 					return name.startsWith("set") && setter.getParameterTypes().length == 1;
 				}) //
 				.map2(setter -> setter.getName().substring(3), setter -> setter) //

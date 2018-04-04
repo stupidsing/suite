@@ -37,8 +37,8 @@ public class FunCreatorTest {
 
 	@Test
 	public void testApply0() {
-		String fieldName0 = "f0";
-		String fieldName1 = "f1";
+		var fieldName0 = "f0";
+		var fieldName1 = "f1";
 		FunCreator<Int_Int> fc0 = intFun(fieldName0, Type.INT);
 		FunCreator<Int_Int> fc1 = intFun(fieldName1, Type.getType(Int_Int.class));
 		Int_Int f0 = fc0 //
@@ -102,7 +102,7 @@ public class FunCreatorTest {
 
 	@Test
 	public void testField() {
-		String fieldName = "f";
+		var fieldName = "f";
 		FunCreator<Int_Int> fc = intFun(fieldName, Type.INT);
 		var result = fc //
 				.create(i -> f.add(fc.field(fieldName), i)) //

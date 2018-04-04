@@ -51,7 +51,7 @@ public class NntpServerMain extends ExecutableProgram {
 
 				while (!(line = Util.readLine(sis)).isEmpty()) {
 					Pair<NntpCommand, String> pair = new CommandUtil<>(NntpCommand.values()).recognize(line.toUpperCase());
-					String options = pair.t1;
+					var options = pair.t1;
 
 					switch (pair.t0) {
 					case ARTICLE:
@@ -140,7 +140,7 @@ public class NntpServerMain extends ExecutableProgram {
 
 		private void printHead(PrintWriter pw, Map<String, String> article) {
 			for (Entry<String, String> e : article.entrySet()) {
-				String key = e.getKey();
+				var key = e.getKey();
 				if (!String_.equals(key, Nntp.contentKey))
 					pw.println(key + ": " + e.getValue());
 			}

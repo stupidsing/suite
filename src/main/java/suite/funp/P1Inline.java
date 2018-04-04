@@ -52,7 +52,7 @@ public class P1Inline {
 		Set<String> vars = new HashSet<>();
 
 		Iterate<String> newVar = var -> {
-			String var1 = var.split("\\$")[0];
+			var var1 = var.split("\\$")[0];
 			var i = 0;
 			while (!vars.add(var1))
 				var1 = var + "$" + i++;
@@ -69,7 +69,7 @@ public class P1Inline {
 			private Funp rename(Funp node_) {
 				return inspect.rewrite(Funp.class, n_ -> n_.<Funp> switch_( //
 				).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var0, value, expr) -> {
-					String var1 = newVar.apply(var0);
+					var var1 = newVar.apply(var0);
 					Rename r1 = new Rename(vars.replace(var0, var1));
 					return FunpDefine.of(isPolyType, var1, rename(value), r1.rename(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
@@ -84,15 +84,15 @@ public class P1Inline {
 							.toList(), //
 							r1.rename(expr));
 				})).applyIf(FunpGlobal.class, f -> f.apply((var0, value, expr) -> {
-					String var1 = newVar.apply(var0);
+					var var1 = newVar.apply(var0);
 					Rename r1 = new Rename(vars.replace(var0, var1));
 					return FunpGlobal.of(var1, rename(value), r1.rename(expr));
 				})).applyIf(FunpIterate.class, f -> f.apply((var0, init, cond, iterate) -> {
-					String var1 = newVar.apply(var0);
+					var var1 = newVar.apply(var0);
 					Rename r1 = new Rename(vars.replace(var0, var1));
 					return FunpIterate.of(var1, rename(init), r1.rename(cond), r1.rename(iterate));
 				})).applyIf(FunpLambda.class, f -> f.apply((var0, expr) -> {
-					String var1 = newVar.apply(var0);
+					var var1 = newVar.apply(var0);
 					Rename r1 = new Rename(vars.replace(var0, var1));
 					return FunpLambda.of(var1, r1.rename(expr));
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
@@ -126,7 +126,7 @@ public class P1Inline {
 
 					if ((assign = n0.cast(FunpAssignReference.class)) != null //
 							&& (variable = assign.reference.expr.cast(FunpVariable.class)) != null) {
-						String vn = variable.var;
+						var vn = variable.var;
 						Funp n1 = assign.expr;
 						Funp n2 = check != null ? FunpCheckType.of(check.left, check.right, n1) : n1;
 						boolean b = false;

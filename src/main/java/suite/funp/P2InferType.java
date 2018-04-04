@@ -122,7 +122,7 @@ public class P2InferType {
 					})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 						return FunpLambda.of(var, extractPredefine(expr));
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
-						String ev = "ev" + Util.temp();
+						var ev = "ev" + Util.temp();
 						evs.add(Pair.of(ev, expr));
 						Funp var = FunpVariable.of(ev);
 						return FunpAssignReference.of(FunpReference.of(var), expr, var);
@@ -175,7 +175,7 @@ public class P2InferType {
 					return FunpIterate.of(var, capture(init), c1.capture(cond), c1.capture(iterate));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					ISet<String> locals1 = ISet.empty();
-					String capn = "cap" + Util.temp();
+					var capn = "cap" + Util.temp();
 					FunpVariable cap = FunpVariable.of(capn);
 					FunpReference ref = FunpReference.of(cap);
 					Set<String> set = new HashSet<>();
@@ -794,7 +794,7 @@ public class P2InferType {
 				Map<String, UnNode<Type>> typeByField1 = Read.from2(ts1.pairs).toMap();
 
 				for (Pair<String, UnNode<Type>> e : ts1.pairs) {
-					String field = e.t0;
+					var field = e.t0;
 					UnNode<Type> type0 = typeByField0.get(field);
 					UnNode<Type> type1 = e.t1;
 					if (type0 != null)

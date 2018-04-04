@@ -24,7 +24,7 @@ public class ParseUtil {
 
 	public static String[] fit(String in, Iterate<String> lower, String... parts) {
 		List<String> outs = new ArrayList<>();
-		String inl = lower.apply(in);
+		var inl = lower.apply(in);
 		var p = 0;
 		for (String part : parts) {
 			int p1 = inl.indexOf(lower.apply(part), p);

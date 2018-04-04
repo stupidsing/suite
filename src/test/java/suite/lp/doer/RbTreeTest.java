@@ -18,7 +18,7 @@ public class RbTreeTest {
 	@Test
 	public void test() throws IOException {
 		RuleSet rs = Suite.newRuleSet(List.of("auto.sl", "rbt.sl"));
-		String gs = "" //
+		var gs = "" //
 				+ "rbt-insert-list (6, 7, 8, 9, 10, 1, 2, 3, 4, 5,) ()/.t \n" //
 				+ ", rbt-get .t 8" //
 				+ ", rbt-member .t 4";

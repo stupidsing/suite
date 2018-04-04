@@ -46,7 +46,7 @@ public class SingleAllocBackTestTest {
 	private void backTest(Asset asset) {
 		backTest(asset.symbol, asset.toString()) //
 				.forEach((sn, backTest) -> {
-					String conclusion = backTest.concludeLog.toString();
+					var conclusion = backTest.concludeLog.toString();
 					LogUtil.info("BEGIN strategy = " + sn + conclusion);
 					LogUtil.info(backTest.tradeLog.toString());
 					LogUtil.info("END__ strategy = " + sn + conclusion);

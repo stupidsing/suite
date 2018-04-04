@@ -15,7 +15,7 @@ public class ProverConstant {
 	 */
 	public static boolean isVariant(Node node) {
 		if (node instanceof Atom) {
-			String name = ((Atom) node).name;
+			var name = ((Atom) node).name;
 			return isWildcard(name) || isVariable(name) || isCut(node);
 		} else
 			return false;

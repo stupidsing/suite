@@ -64,15 +64,15 @@ public class HttpSessionController {
 
 		public HttpResponse handle(HttpRequest request) {
 			long current = System.currentTimeMillis();
-			String cookie = request.headers.get("Cookie");
-			String sessionId = cookie != null ? HttpHeaderUtil.getCookieAttrs(cookie).get("session") : null;
+			var cookie = request.headers.get("Cookie");
+			var sessionId = cookie != null ? HttpHeaderUtil.getCookieAttrs(cookie).get("session") : null;
 			Session session = sessionId != null ? sessionManager.get(sessionId) : null;
 			HttpResponse response;
 
 			if (Objects.equals(request.path, IList.of("login"))) {
 				Map<String, String> attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
-				String username = attrs.get("username");
-				String password = attrs.get("password");
+				var username = attrs.get("username");
+				var password = attrs.get("password");
 				IList<String> path = HttpHeaderUtil.getPath(attrs.get("path"));
 
 				if (authenticator.authenticate(username, password)) {
@@ -116,7 +116,7 @@ public class HttpSessionController {
 		}
 
 		private HttpResponse showLoginPage(IList<String> redirectPath, boolean isLoginFailed) {
-			String redirectPath1 = Read.from(redirectPath).map(p -> "/" + p).collect(As::joined);
+			var redirectPath1 = Read.from(redirectPath).map(p -> "/" + p).collect(As::joined);
 
 			return HttpResponse.of(To.outlet("<html>" //
 					+ "<head><title>Login</title></head>" //

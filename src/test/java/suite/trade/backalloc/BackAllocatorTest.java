@@ -21,7 +21,7 @@ public class BackAllocatorTest {
 	@Test
 	public void testStop() {
 		Time start = Time.of(2017, 1, 1);
-		String symbol = "S";
+		var symbol = "S";
 		float[] prices = { 1f, .99f, .98f, .5f, .5f, .5f, 0f, 0f, 0f, };
 
 		BackAllocator ba0 = (akds, ts) -> index -> List.of(Pair.of(symbol, 1d));

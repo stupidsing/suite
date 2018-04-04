@@ -84,8 +84,8 @@ public class Assembler {
 				.from(List_.right(lines, start)) //
 				.map(line -> {
 					Pair<String, String> pt = String_.split2(line, "\t");
-					String label = pt.t0;
-					String command = pt.t1;
+					var label = pt.t0;
+					var command = pt.t1;
 
 					Reference reference = String_.isNotBlank(label) ? generalizer.getVariable(Atom.of(label)) : null;
 					Node instruction = generalizer.generalize(Suite.parse(command));

@@ -39,7 +39,7 @@ public class SingletonVariableChecker {
 			while (true) {
 				if (node instanceof Atom) {
 					Atom atom = (Atom) node;
-					String name = atom.name;
+					var name = atom.name;
 
 					// check all variables starting with alphabets; ignore
 					// computer-generated code

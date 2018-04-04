@@ -18,7 +18,7 @@ public class Quandl {
 		long ph0 = period.to.epochSec() - (usMarketClose + 4) * 24 * 3600;
 		long ph1 = ph0 - (ph0 % 86400l);
 
-		String urlString = "https://www.quandl.com/api/v1/datasets/CHRIS/CME_CL1.csv" //
+		var urlString = "https://www.quandl.com/api/v1/datasets/CHRIS/CME_CL1.csv" //
 				+ "?ph=" + ph1 //
 				+ (m != null ? "&api_key=" + m[0] : "");
 

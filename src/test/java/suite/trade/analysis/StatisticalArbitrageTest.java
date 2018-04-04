@@ -76,8 +76,8 @@ public class StatisticalArbitrageTest {
 		// 0004.HK, 0020.HK
 		// 0011.HK, 0005.HK
 		var tor = 8;
-		String symbol0 = "0004.HK";
-		String symbol1 = "0945.HK";
+		var symbol0 = "0004.HK";
+		var symbol1 = "0945.HK";
 
 		AlignKeyDataSource<String> akds = cfg.dataSources(period, Read.each(symbol0, symbol1));
 		Map<String, float[]> pricesBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
@@ -119,10 +119,10 @@ public class StatisticalArbitrageTest {
 	public void testMarketDirection() {
 		DataSource ds = cfg.dataSource(Asset.hsiSymbol).cleanse();
 		int[] flagsArray = mt.time(ds.prices);
-		String flags0 = "-----";
+		var flags0 = "-----";
 
 		for (int i = 0; i < ds.ts.length; i++) {
-			String flags = String_ //
+			var flags = String_ //
 					.right("00000" + Integer.toBinaryString(flagsArray[i]), -5) //
 					.replace('0', '-') //
 					.replace('1', 'M');
@@ -161,7 +161,7 @@ public class StatisticalArbitrageTest {
 
 	@Test
 	public void testPeRatio() {
-		String out = cfg //
+		var out = cfg //
 				.queryCompaniesByMarketCap(Time.now()) //
 				.map(asset -> asset.symbol) //
 				.collect(symbols -> sina.queryFactors(As.streamlet(symbols), true)) //

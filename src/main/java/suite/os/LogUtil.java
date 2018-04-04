@@ -88,7 +88,7 @@ public class LogUtil {
 	}
 
 	public static <T> T prefix(String s, Source<T> source) {
-		String prefix0 = prefix.get();
+		var prefix0 = prefix.get();
 		prefix.set(prefix0 + s);
 		try {
 			return source.source();
@@ -126,8 +126,8 @@ public class LogUtil {
 		Log log = LogFactory.getLog(object.getClass());
 
 		return Intercept.object(interface_, object, invocation -> (m, ps) -> {
-			String methodName = m.getName();
-			String prefix = methodName + "()\n";
+			var methodName = m.getName();
+			var prefix = methodName + "()\n";
 			StringBuilder sb = new StringBuilder();
 
 			sb.append(prefix);

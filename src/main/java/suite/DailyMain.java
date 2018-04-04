@@ -76,9 +76,9 @@ public class DailyMain extends ExecutableProgram {
 	protected boolean run(String[] args) {
 		Trade_.blackList = Set_.union(Trade_.blackList, blackList);
 
-		String sellPool = "sellpool";
-		String ymd = Time.now().ymd();
-		String td = ymd + "#";
+		var sellPool = "sellpool";
+		var ymd = Time.now().ymd();
+		var td = ymd + "#";
 
 		// perform systematic trading
 		List<Result> results = List.of( //
@@ -151,7 +151,7 @@ public class DailyMain extends ExecutableProgram {
 				+ "\n- for mamr, check actual execution using SingleAllocBackTestTest.testBackTestHkexDetails()" //
 				+ "\n");
 
-		String result = sb.toString();
+		var result = sb.toString();
 		LogUtil.info(result);
 
 		SmtpSslGmail smtp = new SmtpSslGmail();
@@ -161,7 +161,7 @@ public class DailyMain extends ExecutableProgram {
 
 	// moving average mean reversion
 	private Result mamr(float factor) {
-		String tag = "mamr";
+		var tag = "mamr";
 		var nHoldDays = 8;
 		Streamlet<Asset> assets = cfg.queryCompanies();
 		BuySellStrategy strategy = new Strategos().movingAvgMeanReverting(64, nHoldDays, .15f);
@@ -191,7 +191,7 @@ public class DailyMain extends ExecutableProgram {
 
 		// capture signals
 		for (Asset asset : assets) {
-			String symbol = asset.symbol;
+			var symbol = asset.symbol;
 
 			if (backTestBySymbol.get(symbol))
 				try {

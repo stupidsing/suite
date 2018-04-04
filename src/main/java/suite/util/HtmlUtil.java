@@ -40,7 +40,7 @@ public class HtmlUtil {
 					if (String_.charAt(key, 1) == '#')
 						sb.append((char) Integer.parseInt(String_.range(key, 2, -1)));
 					else {
-						String entity = charByEscapeToken.get(key);
+						var entity = charByEscapeToken.get(key);
 						sb.append(entity != null ? entity : key);
 					}
 				} else
@@ -64,7 +64,7 @@ public class HtmlUtil {
 				char ch = in.charAt(index);
 
 				if (ch < 32 || 128 <= ch || ch == '"' || ch == '<' || ch == '>') {
-					String escaped = escapeTokenByChar.get("" + ch);
+					var escaped = escapeTokenByChar.get("" + ch);
 
 					if (escaped != null)
 						sb.append(escaped);
@@ -134,7 +134,7 @@ public class HtmlUtil {
 			String tag = in.substring(p0, px);
 			IntObjPair<String> dn = getNameFun.apply(tag);
 			var d = dn.t0;
-			String name = dn.t1;
+			var name = dn.t1;
 
 			if (d == -1)
 				while (!deque.isEmpty() && !String_.equals(getNameFun.apply(deque.pop().tag).t1, name))

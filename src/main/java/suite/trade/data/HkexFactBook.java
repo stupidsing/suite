@@ -19,7 +19,7 @@ import suite.util.To;
 public class HkexFactBook {
 
 	public Streamlet<String> queryDelisted() {
-		String url = "http://www.hkexnews.hk/reports/prolongedsusp/Documents/psuspenrep_mb.doc";
+		var url = "http://www.hkexnews.hk/reports/prolongedsusp/Documents/psuspenrep_mb.doc";
 
 		return Singleton.me.storeCache //
 				.pipe(url) //
@@ -96,7 +96,7 @@ public class HkexFactBook {
 	}
 
 	private String getUrl(int year) {
-		String dir = "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book";
+		var dir = "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book";
 		if (year <= 2008)
 			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf";
 		else if (year <= 2015)
@@ -115,7 +115,7 @@ public class HkexFactBook {
 		Map<String, URI> links1 = HttpUtil.resolveLinks(uri1);
 
 		for (Entry<String, URI> e : links1.entrySet()) {
-			String link = e.getKey();
+			var link = e.getKey();
 			if (link.startsWith(section) || link.startsWith("- " + section))
 				return e.getValue().toString();
 		}

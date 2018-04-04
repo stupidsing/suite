@@ -147,7 +147,7 @@ public class FunGenerateBytecode {
 			}).doIf(FieldStaticFunExpr.class, e1 -> {
 				list.add(factory.createGetStatic(className, e1.fieldName, e1.fieldType));
 			}).doIf(FieldTypeFunExpr_.class, e1 -> {
-				String className = ((ObjectType) fti.typeOf(e1.object)).getClassName();
+				var className = ((ObjectType) fti.typeOf(e1.object)).getClassName();
 				FunExpr set = e1 instanceof FieldTypeSetFunExpr ? ((FieldTypeSetFunExpr) e1).value : null;
 				Instruction instruction;
 				visit_(e1.object);
@@ -179,7 +179,7 @@ public class FunGenerateBytecode {
 				Type[] array = Read.from(e1.parameters).map(fti::typeOf).toArray(Type.class);
 				Class<?> clazz = e1.clazz;
 				FunExpr object = e1.object;
-				String className = clazz != null ? clazz.getName() : ((ObjectType) fti.typeOf(object)).getClassName();
+				var className = clazz != null ? clazz.getName() : ((ObjectType) fti.typeOf(object)).getClassName();
 				short opcode;
 
 				if (object == null)
@@ -205,7 +205,7 @@ public class FunGenerateBytecode {
 				list.add(InstructionFactory.createLoad(fti.typeOf(e1), e1.index));
 			}).doIf(NewFunExpr.class, e1 -> {
 				Class<?> implClass = e1.implementationClass;
-				String implClassName = e1.className;
+				var implClassName = e1.className;
 				var classIndex = cpg.addClass(implClassName);
 				list.add(new NEW(classIndex));
 				list.add(InstructionFactory.createDup(1));
@@ -220,8 +220,8 @@ public class FunGenerateBytecode {
 
 				constants.put(classIndex, implClass);
 			}).doIf(PrintlnFunExpr.class, e1 -> {
-				String name = PrintStream.class.getName();
-				String sys = System.class.getName();
+				var name = PrintStream.class.getName();
+				var sys = System.class.getName();
 				list.add(factory.createGetStatic(sys, "out", Type.getType(PrintStream.class)));
 				visit_(e1.expression);
 				list.add(factory.createInvoke(name, "println", fti.typeOf(e1), new Type[] { Type.STRING, }, Const.INVOKEVIRTUAL));

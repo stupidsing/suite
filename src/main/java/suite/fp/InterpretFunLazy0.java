@@ -77,7 +77,7 @@ public class InterpretFunLazy0 {
 		Node[] m;
 
 		if ((m = Suite.pattern("define .0 := .1 >> .2").match(node)) != null) {
-			String vk = v(m[0]);
+			var vk = v(m[0]);
 			Fun<IMap<String, Thunk_>, Thunk_> value = lazy_(m[1]);
 			Fun<IMap<String, Thunk_>, Thunk_> expr = lazy_(m[2]);
 			result = env -> {
@@ -92,7 +92,7 @@ public class InterpretFunLazy0 {
 			Fun<IMap<String, Thunk_>, Thunk_> else_ = lazy_(m[2]);
 			result = env -> (if_.apply(env).get() == Atom.TRUE ? then_ : else_).apply(env);
 		} else if ((m = Suite.pattern(".0 => .1").match(node)) != null) {
-			String vk = v(m[0]);
+			var vk = v(m[0]);
 			Fun<IMap<String, Thunk_>, Thunk_> value = lazy_(m[1]);
 			result = env -> () -> new Fun_(in -> value.apply(env.put(vk, in)));
 		} else if ((m = Suite.pattern(".0 {.1}").match(node)) != null) {
@@ -110,7 +110,7 @@ public class InterpretFunLazy0 {
 				return r2;
 			};
 		} else if (node instanceof Atom) {
-			String vk = v(node);
+			var vk = v(node);
 			result = env -> env.get(vk);
 		} else
 			result = env -> () -> node;

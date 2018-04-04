@@ -51,11 +51,11 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 
 		if (Boolean.FALSE) { // record
 			String ts = Time.now().ymdHms().replace("-", "").replace(" ", "-").replace(":", "");
-			String filename = "wfa." + ts + ".csv";
+			var filename = "wfa." + ts + ".csv";
 
 			Schedule schedule = Schedule //
 					.ofRepeat(5, () -> {
-						String ymdHms = Time.now().ymdHms();
+						var ymdHms = Time.now().ymdHms();
 						Map<String, Float> priceBySymbol = cfg.quote(assets.map(asset -> asset.symbol).toSet());
 
 						try (OutputStream os = Files.newOutputStream( //
@@ -73,8 +73,8 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 
 			Scheduler.of(schedule.filterTime(dt -> HkexUtil.isMarketOpen(Time.of(dt)))).run();
 		} else { // replay
-			String ts = "20170612-092616";
-			String filename = "wfa." + ts + ".csv";
+			var ts = "20170612-092616";
+			var filename = "wfa." + ts + ".csv";
 
 			Map<Time, Map<String, Float>> data = new TreeMap<>();
 
@@ -84,7 +84,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 				while (br.ready()) {
 					String[] array = br.readLine().split(",");
 					Time time = Time.of(array[0].trim());
-					String symbol = array[1].trim();
+					var symbol = array[1].trim();
 					float price = Float.parseFloat(array[2].trim());
 					data.computeIfAbsent(time, s -> new HashMap<>()).put(symbol, price);
 				}

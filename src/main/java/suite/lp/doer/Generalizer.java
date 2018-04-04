@@ -28,7 +28,7 @@ public class Generalizer {
 
 			if (right instanceof Atom) {
 				Atom atom = (Atom) right;
-				String name = atom.name;
+				var name = atom.name;
 				if (name.startsWith(ProverConstant.wildcardPrefix))
 					right = new Reference();
 				if (name.startsWith(ProverConstant.variablePrefix))

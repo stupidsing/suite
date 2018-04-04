@@ -202,7 +202,7 @@ public class BuildLr {
 		case OR____:
 			List<Pair<String, Transition>> pairs = new ArrayList<>();
 			for (Grammar eg1 : Read.from(eg.children)) {
-				String egn = "OR." + System.identityHashCode(eg1);
+				var egn = "OR." + System.identityHashCode(eg1);
 				pairs.add(Pair.of(egn, build(ps, new Grammar(GrammarType.NAMED_, egn, eg1), nextx).next));
 			}
 			blr = mergeAll.apply(Read.from2(pairs));

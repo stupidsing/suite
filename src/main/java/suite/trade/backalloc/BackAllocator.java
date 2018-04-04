@@ -338,7 +338,7 @@ public interface BackAllocator {
 
 				// check on each stock symbol
 				for (Entry<String, Double> e : diffBySymbol.entrySet()) {
-					String symbol = e.getKey();
+					var symbol = e.getKey();
 					double diff = e.getValue();
 					var bs = Quant.sign(diff);
 					float price = dsBySymbol.get(symbol).prices[last];

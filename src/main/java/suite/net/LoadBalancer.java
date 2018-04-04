@@ -53,7 +53,7 @@ public class LoadBalancer {
 			var count = counter.getAndIncrement();
 			List<String> alives0 = alives;
 
-			String server = alives0.get(count % alives0.size());
+			var server = alives0.get(count % alives0.size());
 
 			try (Socket socket = new Socket(server, port)) {
 				InputStream sis = socket.getInputStream();

@@ -47,7 +47,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 	}
 
 	private Map<String, String> readHeaders(InputStream sis) throws IOException {
-		String header = readNetstring(sis);
+		var header = readNetstring(sis);
 
 		IntBuffer zeroPositions = IntBuffer.allocate(256);
 

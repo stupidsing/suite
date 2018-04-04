@@ -172,7 +172,7 @@ public class DependencyMain extends ExecutableProgram {
 				, "xenial" //
 				, "main" //
 				, "amd64");
-		String packageName = "dkms";
+		var packageName = "dkms";
 
 		List<Map<String, String>> packages;
 		packages = Rethrow.ex(() -> aptUtil.readRepoPackages(repo));

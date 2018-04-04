@@ -30,7 +30,7 @@ public class BootMain extends ExecutableProgram {
 			Bytes disk0 = Bytes.concat(bootLoader, kernel);
 			Bytes disk1 = disk0.pad(disk0.size() + 511 & 0xFFFFFE00);
 
-			String image = "target/boot.bin";
+			var image = "target/boot.bin";
 			Files.write(Paths.get(image), disk1.toArray());
 
 			System.out.println("cat " + image + " | dd bs=512 count=1 | /opt/udis86-1.7.2/udcli/udcli -16 | less");

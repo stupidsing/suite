@@ -151,7 +151,7 @@ public class Account {
 		float price = trade.price;
 
 		if (Trade_.negligible < price && price < Trade_.max) {
-			String symbol = trade.symbol;
+			var symbol = trade.symbol;
 			var buySell = trade.buySell;
 			float cost = trade.amount();
 

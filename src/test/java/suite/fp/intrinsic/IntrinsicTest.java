@@ -12,7 +12,7 @@ public class IntrinsicTest {
 
 	@Test
 	public void testCharsReplace() {
-		String fp = "cs-replace {\"abc\" | cs-from-string} {\"def\" | cs-from-string}  {\"012abcdefghi\" | cs-from-string} | cs-to-string";
+		var fp = "cs-replace {\"abc\" | cs-from-string} {\"def\" | cs-from-string}  {\"012abcdefghi\" | cs-from-string} | cs-to-string";
 		Node expect = Suite.evaluateFun("\"012defdefghi\"", true);
 		Node actual = Suite.evaluateFun(fp, true);
 		assertTrue(Comparer.comparer.compare(expect, actual) == 0);

@@ -15,7 +15,7 @@ public class ElfTest0 {
 
 	@Test
 	public void test() {
-		String program = "" //
+		var program = "" //
 				+ "declare inc = function [i0, out ix,] ( {ix} = i0 + 1; ); \n" //
 				+ "signature j = int; \n" //
 				+ "inc [41, out j,]; \n" //
@@ -29,7 +29,7 @@ public class ElfTest0 {
 
 	@Test
 	public void testCat() {
-		String program = "" //
+		var program = "" //
 				+ "declare linux-read = function [pointer:(byte * 256) buffer, int length,] ( \n" //
 				+ "    buffer; \n" //
 				+ "    asm _ MOV (ECX, EAX); \n" //
@@ -61,7 +61,7 @@ public class ElfTest0 {
 				+ "0; \n" //
 		;
 
-		String text = "garbage\n";
+		var text = "garbage\n";
 		Execute exec = test(program, text);
 		assertEquals(0, exec.code);
 		assertEquals(text, exec.out);

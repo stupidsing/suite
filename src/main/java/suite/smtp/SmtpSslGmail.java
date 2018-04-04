@@ -37,7 +37,7 @@ public class SmtpSslGmail {
 			});
 
 			try {
-				String sender = username + "@gmail.com";
+				var sender = username + "@gmail.com";
 
 				Message message = new MimeMessage(session);
 				message.setFrom(new InternetAddress(sender));
@@ -56,7 +56,7 @@ public class SmtpSslGmail {
 
 	public static void main(String[] args) {
 		char[] salt = "abc123".toCharArray();
-		String in = "def456";
+		var in = "def456";
 		String encoded = encode(salt, in);
 		String decoded = decode(salt, encoded);
 		System.out.println("encoded = " + encoded);

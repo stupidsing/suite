@@ -26,7 +26,7 @@ public class ImperativeCompiler {
 					+ ", sink .code"));
 
 	public Bytes compile(int org, Path path) {
-		String s0 = To.string(path);
+		var s0 = To.string(path);
 		String s1 = Preprocess.transform(List.of(new IncludePreprocessor(path.getParent())), s0).t0;
 		return compile(org, s1);
 	}

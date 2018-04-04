@@ -41,7 +41,7 @@ public class UctWeiqiMain<Move> {
 		MovingGameSet gameSet = new MovingGameSet(board, startingPlayer);
 		boolean auto = false;
 		boolean quit = false;
-		String status = "LET'S PLAY!";
+		var status = "LET'S PLAY!";
 
 		while (!quit) {
 			GameSet gameSet1 = new GameSet(gameSet);
@@ -77,7 +77,7 @@ public class UctWeiqiMain<Move> {
 				try {
 					display(gameSet, status);
 
-					String line = br.readLine();
+					var line = br.readLine();
 
 					if (line != null)
 						switch (line) {

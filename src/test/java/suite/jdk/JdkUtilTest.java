@@ -14,12 +14,12 @@ public class JdkUtilTest {
 	public void test() throws IOException {
 		Path srcDir = Constants.tmp("src");
 		Path binDir = Constants.tmp("bin");
-		String className = "HelloWorld";
+		var className = "HelloWorld";
 
 		FileUtil.mkdir(srcDir);
 		FileUtil.mkdir(binDir);
 
-		String src = "" //
+		var src = "" //
 				+ "public class " + className + " implements Runnable {" //
 				+ "  public void run() {" //
 				+ "    System.out.println(\"TEST\");" //

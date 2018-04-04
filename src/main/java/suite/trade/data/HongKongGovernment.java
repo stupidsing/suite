@@ -50,7 +50,7 @@ public class HongKongGovernment {
 		for (long t = t0; t < tx; t += 86400l) {
 			Time time = Time.ofEpochSec(t);
 
-			String html = Singleton.me.storeCache //
+			var html = Singleton.me.storeCache //
 					.http("http://www.hko.gov.hk/cgi-bin/hko/yes.pl" //
 							+ "?year=" + time.year() //
 							+ "&month=" + time.month() //

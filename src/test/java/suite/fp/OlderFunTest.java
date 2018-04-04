@@ -36,7 +36,7 @@ public class OlderFunTest {
 
 	@Test
 	public void testConcat() {
-		String fp0 = "" //
+		var fp0 = "" //
 				+ ifTree + split + concatList0 //
 				+ "concat-list0 {(1; 2;); (3; 4;); (5; 6;);}";
 		assertEquals(Suite.parse("1; 2; 3; 4; 5; 6;"), eval(fp0));
@@ -44,7 +44,7 @@ public class OlderFunTest {
 
 	@Test
 	public void testFilter() {
-		String fp1 = "" //
+		var fp1 = "" //
 				+ ifTree + split + filter0 //
 				+ "filter0 {n => n % 2 = 0} {3; 4; 5; 6;}";
 		assertEquals(Suite.parse("4; 6;"), eval(fp1));
@@ -52,7 +52,7 @@ public class OlderFunTest {
 
 	@Test
 	public void testMap() {
-		String fp2 = "" //
+		var fp2 = "" //
 				+ ifTree + split + map0 //
 				+ "map0 {n => n + 2} {3; 4; 5;}";
 		assertEquals(Suite.parse("5; 6; 7;"), eval(fp2));

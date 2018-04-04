@@ -50,7 +50,7 @@ public class LrParse {
 		Ast token = tokens.source();
 
 		while (true) {
-			String lookahead = token != null ? token.entity : "EOF";
+			var lookahead = token != null ? token.entity : "EOF";
 			Pair<State, Reduce> sr = shift(stack, state, lookahead);
 
 			if (sr.t0 != null) { // shift

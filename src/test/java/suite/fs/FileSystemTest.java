@@ -85,7 +85,7 @@ public class FileSystemTest {
 	}
 
 	private void testReadFile(FileSystem fs) throws IOException {
-		String filename = "src/test/java/suite/fs/FileSystemTest.java";
+		var filename = "src/test/java/suite/fs/FileSystemTest.java";
 		FileSystemMutator fsm = fs.mutate();
 		Bytes name = Bytes.of(filename.getBytes(Constants.charset));
 		Copy.stream(fsm.read(name).collect(As::inputStream), System.out);

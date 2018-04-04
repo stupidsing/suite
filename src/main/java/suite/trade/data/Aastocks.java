@@ -16,7 +16,7 @@ public class Aastocks {
 	private ObjFltMap<String> quoteCache = new ObjFltMap<>();
 
 	public float hsi() {
-		String urlString = "http://www.aastocks.com/en/mobile/Quote.aspx?symbol=00005";
+		var urlString = "http://www.aastocks.com/en/mobile/Quote.aspx?symbol=00005";
 		URL url = To.url(urlString);
 		List<String> lines = HttpUtil.get(url).out.collect(As::lines).toList();
 		var i0 = Ints_.range(lines.size()).filter(i -> lines.get(i).contains("HSI")).first();

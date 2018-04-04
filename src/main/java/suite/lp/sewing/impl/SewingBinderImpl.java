@@ -107,7 +107,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 	}
 
 	private Bind_ compileBindStr(Str str) {
-		String s = str.value;
+		var s = str.value;
 		return (be, n) -> {
 			Node n_ = n.finalNode();
 			if (n_ instanceof Reference) {

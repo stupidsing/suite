@@ -36,7 +36,7 @@ public class StoreCache {
 		}
 
 		public Piper pipe(String command0) {
-			String command1 = sh + " | (" + command0 + ")";
+			var command1 = sh + " | (" + command0 + ")";
 			Bytes key = Bytes.of(command1.getBytes(Constants.charset));
 
 			return match(key).map((isCached, file) -> {
@@ -201,7 +201,7 @@ public class StoreCache {
 	}
 
 	private Path path(Bytes key, int i, String suffix) {
-		String hex8 = To.hex8(key.hashCode());
+		var hex8 = To.hex8(key.hashCode());
 		Path dir1 = dir.resolve(hex8.substring(0, 2));
 		return dir1.resolve(hex8 + "." + i + suffix);
 	}

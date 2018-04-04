@@ -13,8 +13,8 @@ public class FunRbTreeTest {
 
 	@Test
 	public void test() {
-		String s = FileUtil.read("src/main/fl/RB-TREE.slf");
-		String fp = s + "0 until 10 | map {rbt-insert} | apply | {Empty}\n";
+		var s = FileUtil.read("src/main/fl/RB-TREE.slf");
+		var fp = s + "0 until 10 | map {rbt-insert} | apply | {Empty}\n";
 		Node result = Suite.evaluateFun(fp, false);
 		assertNotNull(result);
 		System.out.println("OUT:\n" + Formatter.dump(result));

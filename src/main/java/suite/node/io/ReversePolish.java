@@ -38,7 +38,7 @@ public class ReversePolish {
 
 		br.lines().filter(elem -> !elem.isEmpty()).forEach(elem -> {
 			char type = elem.charAt(0);
-			String s = elem.substring(1);
+			var s = elem.substring(1);
 			Node n;
 
 			if (type == '\\')
@@ -83,7 +83,7 @@ public class ReversePolish {
 		List<String> list = new ArrayList<>();
 
 		while (!deque.isEmpty()) {
-			String s = new SwitchNode<String>(deque.pop() //
+			var s = new SwitchNode<String>(deque.pop() //
 			).applyIf(Atom.class, n_ -> {
 				return "\\" + n_.name;
 			}).applyIf(Int.class, n_ -> {

@@ -10,7 +10,7 @@ public class StoreCacheTest {
 
 	@Test
 	public void test() {
-		String url = Constants.secrets("stockUrl .0")[0];
+		var url = Constants.secrets("stockUrl .0")[0];
 
 		var size = Singleton.me.storeCache //
 				.http(url) //
