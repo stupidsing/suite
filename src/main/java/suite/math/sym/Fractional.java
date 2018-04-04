@@ -3,7 +3,6 @@ package suite.math.sym;
 import suite.BindArrayUtil.Pattern;
 import suite.adt.Opt;
 import suite.adt.pair.Pair;
-import suite.math.sym.Express.OpGroup;
 import suite.math.sym.Sym.Field;
 import suite.math.sym.Sym.Ring;
 import suite.node.Int;
@@ -29,7 +28,7 @@ public class Fractional<I> {
 	private Fun<I, Node> format_;
 
 	public static Fractional<Integer> ofIntegral() {
-		Integral integral = new Integral();
+		var integral = new Integral();
 		return new Fractional<>( //
 				integral.ring, //
 				integral::sign, //
@@ -108,8 +107,8 @@ public class Fractional<I> {
 	}
 
 	public Node format(Fract<I> fract) {
-		OpGroup add = ex.add;
-		OpGroup mul = ex.mul;
+		var add = ex.add;
+		var mul = ex.mul;
 
 		Fun2<I, I, Node> f = (n, d) -> {
 			var i0 = format_.apply(n);
@@ -117,9 +116,9 @@ public class Fractional<I> {
 			return mul.apply(i0, mul.inverse(i1));
 		};
 
-		I n_ = fract.t0;
-		I d_ = fract.t1;
-		I nn = neg_.apply(n_);
+		var n_ = fract.t0;
+		var d_ = fract.t1;
+		var nn = neg_.apply(n_);
 
 		if (0 <= sgn_.apply(n_))
 			return f.apply(n_, d_);
@@ -132,8 +131,8 @@ public class Fractional<I> {
 	public Field<Fract<I>> field;
 
 	private Opt<Fract<I>> inv(Fract<I> a) {
-		I num = a.t0;
-		I denom = a.t1;
+		var num = a.t0;
+		var denom = a.t1;
 		var c = sgn_.apply(num);
 		if (0 < c)
 			return Opt.of(new Fract<>(denom, num));
@@ -144,8 +143,8 @@ public class Fractional<I> {
 	}
 
 	public Fract<I> inverse(Fract<I> a) {
-		I num = a.t0;
-		I denom = a.t1;
+		var num = a.t0;
+		var denom = a.t1;
 		if (0 <= sgn_.apply(num))
 			return new Fract<>(denom, num);
 		else
@@ -153,7 +152,7 @@ public class Fractional<I> {
 	}
 
 	private Fract<I> mul(Fract<I> a, Fract<I> b) {
-		Gcd gcd = new Gcd(mul_.apply(a.t0, b.t0), mul_.apply(a.t1, b.t1), 9);
+		var gcd = new Gcd(mul_.apply(a.t0, b.t0), mul_.apply(a.t1, b.t1), 9);
 		return new Fract<>(gcd.m0, gcd.m1);
 	}
 
@@ -163,9 +162,9 @@ public class Fractional<I> {
 
 	private Fract<I> add(Fract<I> a, Fract<I> b) {
 		Gcd gcd = new Gcd(a.t1, b.t1, 9);
-		I num0 = mul_.apply(a.t0, gcd.m1);
-		I num1 = mul_.apply(b.t0, gcd.m0);
-		I denom = mul_.apply(gcd.gcd, mul_.apply(gcd.m0, gcd.m1));
+		var num0 = mul_.apply(a.t0, gcd.m1);
+		var num1 = mul_.apply(b.t0, gcd.m0);
+		var denom = mul_.apply(gcd.gcd, mul_.apply(gcd.m0, gcd.m1));
 		return new Fract<>(add_.apply(num0, num1), denom);
 	}
 
@@ -188,8 +187,8 @@ public class Fractional<I> {
 				m1 = d;
 			} else {
 				Pair<I, I> divMod = divMod_.apply(n, d);
-				I f = divMod.t0; // div_.apply(n, d);
-				I ndf = divMod.t1; // add_.apply(n, neg_.apply(df));
+				var f = divMod.t0; // div_.apply(n, d);
+				var ndf = divMod.t1; // add_.apply(n, neg_.apply(df));
 				Gcd gcd1 = new Gcd(d, ndf, depth - 1);
 
 				// n = gcd1.gcd * (gcd1.m0 * f + gcd1.m1)
