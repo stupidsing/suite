@@ -36,8 +36,6 @@ import suite.jdk.gen.pass.FunGenerateBytecode.Visit;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
 import suite.os.LogUtil;
-import suite.primitive.IntPrimitives.IntObjSource;
-import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
@@ -115,7 +113,7 @@ public class FunCreator<I> extends FunFactory {
 
 		private CreateClass(FunExpr expr0) {
 			Class<I> interfaceClass = lambdaClass.interfaceClass;
-			String clsName = interfaceClass.getSimpleName() + Util.temp();
+			String clsName = interfaceClass.getName() + Util.temp();
 			String methodName = lambdaClass.methodName;
 
 			List<Type> localTypes = new ArrayList<>();
@@ -204,11 +202,8 @@ public class FunCreator<I> extends FunFactory {
 
 			byte[] bytes = cg.getJavaClass().getBytes();
 			Object[] array = new Object[cp.getSize()];
-			IntObjSource<Object> source = fgb.constants.source();
-			IntObjPair<Object> pair = IntObjPair.of(0, null);
 
-			while (source.source2(pair))
-				array[pair.t0] = pair.t1;
+			fgb.constants.streamlet().sink((i, object) -> array[i] = object);
 
 			className = clsName;
 			clazz = new UnsafeUtil().defineClass(interfaceClass, clsName, bytes, array);
