@@ -64,6 +64,7 @@ public class StoreCache {
 	public <T> T reget(Source<T> source) {
 		boolean reget0 = reget.get();
 		try {
+			reget.set(true);
 			return source.source();
 		} finally {
 			reget.set(reget0);
