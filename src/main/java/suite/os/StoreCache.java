@@ -24,6 +24,7 @@ import suite.util.To;
 
 public class StoreCache {
 
+	private ThreadLocal<Boolean> reget = ThreadLocal.withInitial(() -> false);
 	private int documentAge = 30;
 	private Path dir = HomeDir.dir("store-cache");
 
@@ -58,6 +59,15 @@ public class StoreCache {
 				.filter(path -> !isUpToDate(path, current)) //
 				.map(path -> "\nrm '" + path + "'") //
 				.collect(As::joined));
+	}
+
+	public <T> T reget(Source<T> source) {
+		boolean reget0 = reget.get();
+		try {
+			return source.source();
+		} finally {
+			reget.set(reget0);
+		}
 	}
 
 	public Piper pipe(String in) {
@@ -100,7 +110,7 @@ public class StoreCache {
 
 			Pair<Boolean, Path> pair = match(key);
 
-			if (pair.t0) {
+			if (pair.t0 || reget.get()) {
 				InputStream vis = Files.newInputStream(pair.t1);
 				DataInputStream vdis = new DataInputStream(vis);
 				return read(vdis).closeAtEnd(vis);
