@@ -8,7 +8,7 @@ import org.junit.Test;
 import suite.cli.Main;
 import suite.util.Object_;
 
-public class UnsafeTest {
+public class UnsafeUtilTest {
 
 	@Test
 	public void test() throws Exception {
