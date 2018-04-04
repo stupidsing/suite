@@ -60,8 +60,8 @@ public class IBinPriorityQueue<T> {
 		private IBinPriorityQueue<T> deleteMin() {
 			findMin();
 
-			Node[] forest0 = newForest();
-			Node[] forest1 = newForest();
+			var forest0 = newForest();
+			var forest1 = newForest();
 
 			for (int rank = 0; rank < maxRank; rank++)
 				forest0[rank] = trees[rank];
@@ -97,13 +97,13 @@ public class IBinPriorityQueue<T> {
 	}
 
 	public IBinPriorityQueue<T> add(T value) {
-		Node[] forest = newForest();
+		var forest = newForest();
 		forest[0] = new Node(value);
 		return meld(new IBinPriorityQueue<>(comparator, forest));
 	}
 
 	public IBinPriorityQueue<T> meld(IBinPriorityQueue<T> pq) {
-		Node[] forest = newForest();
+		var forest = newForest();
 		Node tree = null;
 
 		for (int rank = 0; rank < maxRank; rank++) {

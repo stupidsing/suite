@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.Test;
 
-import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
@@ -56,7 +55,7 @@ public class IterativeParserTest {
 	@Test
 	public void testParseException() {
 		try {
-			Node node = iterativeParser.parse("(a");
+			var node = iterativeParser.parse("(a");
 			System.out.println(node);
 			assertNotNull(Tree.decompose(node).getLeft());
 			throw new AssertionError();
@@ -77,7 +76,7 @@ public class IterativeParserTest {
 	@Test
 	public void testParseAuto() {
 		var in = FileUtil.read("src/main/ll/auto.sl");
-		Node node = iterativeParser.parse(in);
+		var node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node));
 	}
@@ -85,7 +84,7 @@ public class IterativeParserTest {
 	@Test
 	public void testParseFile() {
 		var in = FileUtil.read("src/main/ll/fc/fc.sl");
-		Node node = iterativeParser.parse(in);
+		var node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node));
 	}

@@ -106,17 +106,17 @@ public class Polynomial<N> {
 		OpGroup mul = ex.mul;
 
 		Int_Obj<Node> powerFun = p -> {
-			Node power = mul.identity();
+			var power = mul.identity();
 			for (int i = 0; i < p; i++)
 				power = mul.apply(x, power);
 			return power;
 		};
 
-		Node sum = format_.apply(n0);
+		var sum = format_.apply(n0);
 
 		for (IntObjPair<N> pair : poly.streamlet().sortByKey(Integer::compare)) {
 			var p = pair.t0;
-			Node power = p < 0 ? mul.inverse(powerFun.apply(-p)) : powerFun.apply(p);
+			var power = p < 0 ? mul.inverse(powerFun.apply(-p)) : powerFun.apply(p);
 			sum = add.apply(mul.apply(format_.apply(pair.t1), power), sum);
 		}
 

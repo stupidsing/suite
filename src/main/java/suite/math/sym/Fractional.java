@@ -112,8 +112,8 @@ public class Fractional<I> {
 		OpGroup mul = ex.mul;
 
 		Fun2<I, I, Node> f = (n, d) -> {
-			Node i0 = format_.apply(n);
-			Node i1 = format_.apply(d);
+			var i0 = format_.apply(n);
+			var i1 = format_.apply(d);
 			return mul.apply(i0, mul.inverse(i1));
 		};
 

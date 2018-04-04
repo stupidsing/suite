@@ -48,7 +48,7 @@ public class CompileClonerImpl implements ClonerFactory {
 				).applyIf(Atom.class, n -> {
 					return f.object(node_);
 				}).applyIf(Dict.class, n -> {
-					FunExpr[] exprs = Read //
+					var exprs = Read //
 							.from2(n.map) //
 							.map((key, value) -> f.invokeStatic(Pair.class, "of", compile_(key), compile_(value))) //
 							.toArray(FunExpr.class);
@@ -60,11 +60,11 @@ public class CompileClonerImpl implements ClonerFactory {
 				}).applyIf(Str.class, n -> {
 					return f.object(node_);
 				}).applyIf(Tree.class, tree -> {
-					FunExpr fe0 = compile_(tree.getLeft()).cast_(Node.class);
-					FunExpr fe1 = compile_(tree.getRight()).cast_(Node.class);
+					var fe0 = compile_(tree.getLeft()).cast_(Node.class);
+					var fe1 = compile_(tree.getRight()).cast_(Node.class);
 					return f.invokeStatic(Tree.class, "of", f.object(tree.getOperator()), fe0, fe1);
 				}).applyIf(Tuple.class, n -> {
-					FunExpr[] exprs = Read.from(n.nodes).map(this::compile_).toArray(FunExpr.class);
+					var exprs = Read.from(n.nodes).map(this::compile_).toArray(FunExpr.class);
 					return f.invokeStatic(Tuple.class, "of", f.array(Node.class, exprs));
 				}).nonNullResult();
 			}

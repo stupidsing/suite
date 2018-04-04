@@ -52,7 +52,7 @@ public class StackAssembler {
 		int fs = 0, rs = 0;
 
 		for (Pair<Reference, Node> lni0 : lnis0) {
-			Node node0 = lni0.t1;
+			var node0 = lni0.t1;
 			Node node1;
 			Node[] m;
 

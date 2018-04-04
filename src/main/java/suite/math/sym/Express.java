@@ -58,7 +58,7 @@ public class Express {
 		public Node recompose(Node x, Streamlet<Node> nodes0) {
 			List<Node> list = new ArrayList<>();
 			var xn = 0;
-			Node constant = e;
+			var constant = e;
 			Node[] m;
 			Node n;
 
@@ -78,7 +78,7 @@ public class Express {
 			if (e != constant)
 				list.add(intOf(constant));
 
-			Node node = e;
+			var node = e;
 
 			for (Node node_ : Read.from(list))
 				node = apply(node_, node);
@@ -88,7 +88,7 @@ public class Express {
 
 		public Node apply(Node a, Node b) {
 			Tree tree = Tree.of(operator, a, b);
-			Node e0 = group0 != null ? group0.e : null;
+			var e0 = group0 != null ? group0.e : null;
 			if (a == e0 || b == e0)
 				return e0;
 			else if (a == e)

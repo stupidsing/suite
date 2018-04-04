@@ -66,8 +66,8 @@ public class TreeUtil {
 	}
 
 	public static Node[] elements(Node node0, int n) {
-		Node[] params = new Node[n];
-		Node node = node0;
+		var params = new Node[n];
+		var node = node0;
 		Tree tree;
 		for (int i = 0; i < n - 1; i++)
 			if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {

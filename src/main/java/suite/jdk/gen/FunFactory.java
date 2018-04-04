@@ -69,7 +69,7 @@ public class FunFactory {
 	public FunExpr and(FunExpr... exprs) {
 		if (0 < exprs.length) {
 			List<FunExpr> list = Read.from(exprs).reverse().toList();
-			FunExpr expr = list.get(0);
+			var expr = list.get(0);
 			for (int i = 1; i < exprs.length; i++)
 				expr = if_(list.get(i), expr, _false());
 			return expr;
@@ -286,7 +286,7 @@ public class FunFactory {
 	public FunExpr seq(FunExpr... fes) {
 		var i = fes.length;
 		if (0 < i) {
-			FunExpr fe = fes[--i];
+			var fe = fes[--i];
 			while (0 < i) {
 				SeqFunExpr expr = new SeqFunExpr();
 				expr.left = fes[--i];

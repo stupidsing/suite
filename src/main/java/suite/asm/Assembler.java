@@ -88,7 +88,7 @@ public class Assembler {
 					var command = pt.t1;
 
 					Reference reference = String_.isNotBlank(label) ? generalizer.getVariable(Atom.of(label)) : null;
-					Node instruction = generalizer.generalize(Suite.parse(command));
+					var instruction = generalizer.generalize(Suite.parse(command));
 					return Pair.of(reference, instruction);
 				}).toList();
 
@@ -101,7 +101,7 @@ public class Assembler {
 		List<Pair<Reference, Node>> lnis = new ArrayList<>();
 
 		for (Node node0 : Tree.iter(input)) {
-			Node node = generalizer.generalize(node0);
+			var node = generalizer.generalize(node0);
 			Tree tree;
 
 			if ((tree = Tree.decompose(node, TermOp.EQUAL_)) != null)

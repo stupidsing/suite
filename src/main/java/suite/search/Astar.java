@@ -47,7 +47,7 @@ public class Astar<Node> {
 		Node node1;
 
 		while ((ni = open.remove()) != null) {
-			Node node = ni.node;
+			var node = ni.node;
 
 			if (node != end && closed.add(node)) {
 				var sunkCost1 = ni.sunkCost + 1;

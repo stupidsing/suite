@@ -14,7 +14,7 @@ public class SldResolutionTest {
 
 	@Test
 	public void test() {
-		Node node = Suite.parse("AND (OR (VAR A) (VAR B)) (OR (NOT (VAR A)) (VAR C))");
+		var node = Suite.parse("AND (OR (VAR A) (VAR B)) (OR (NOT (VAR A)) (VAR C))");
 		List<Node> results = new SldResolution().resolve(node);
 		System.out.println(results);
 		assertTrue(results != Atom.NIL);

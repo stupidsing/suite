@@ -18,11 +18,11 @@ public class CompileProverImpl implements ProverFactory {
 
 	@Override
 	public Prove_ prover(Node node) {
-		FunExpr rt = f.input();
+		var rt = f.input();
 
 		Fun<FunExpr, ProveRt> cf = cps -> FunCreator.of(ProveRt.class, false).create(rt_ -> cps).apply(Map.ofEntries());
 
-		FunExpr compiled = new Object() {
+		var compiled = new Object() {
 			private FunExpr compile_(Node node, FunExpr cps) {
 				return new SwitchNode<FunExpr>(node //
 				).match(".0, .1", m -> {

@@ -75,7 +75,7 @@ public class Rewrite_ {
 				op = tree.getOperator();
 				children = List.of(p0, p1);
 			} else if (node instanceof Tuple) {
-				Node[] nodes = ((Tuple) node).nodes;
+				var nodes = ((Tuple) node).nodes;
 				type = ReadType.TUPLE;
 				terminal = null;
 				op = null;
@@ -125,8 +125,8 @@ public class Rewrite_ {
 		boolean isSame = true;
 
 		for (Pair<Node, Node> pair : nr.children) {
-			Node child0 = pair.t1;
-			Node childx = fun.apply(child0);
+			var child0 = pair.t1;
+			var childx = fun.apply(child0);
 			if (child0 != childx) {
 				isSame = false;
 				children1.add(Pair.of(pair.t0, childx));

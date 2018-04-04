@@ -124,7 +124,7 @@ public class EagerFunTest {
 
 	@Test
 	public void testGcd() {
-		Node f = Suite.parse("gcd {6} {9}");
+		var f = Suite.parse("gcd {6} {9}");
 		FunCompilerConfig c = Suite.fcc(f);
 		c.addLibrary("MATH");
 		assertEquals(Int.of(3), Suite.evaluateFun(c));

@@ -31,7 +31,7 @@ public class SewingClonerImpl implements ClonerFactory {
 		Clone_ fun;
 
 		while (true) {
-			Node node0 = node;
+			var node0 = node;
 			Tree tree;
 
 			if (node0 instanceof Dict) {
@@ -66,7 +66,7 @@ public class SewingClonerImpl implements ClonerFactory {
 				Clone_[] ps = Read.from(((Tuple) node0).nodes).map(this::cloner).toArray(Clone_.class);
 				var size = ps.length;
 				fun = env -> {
-					Node[] nodes = new Node[size];
+					var nodes = new Node[size];
 					for (int i = 0; i < size; i++)
 						nodes[i] = ps[i].apply(env);
 					return Tuple.of(nodes);

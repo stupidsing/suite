@@ -114,7 +114,7 @@ public class InstructionExtractor implements AutoCloseable {
 
 	private int getRegisterNumber(List<Node> rs, int index) {
 		if (index < rs.size()) {
-			Node node = rs.get(index).finalNode();
+			var node = rs.get(index).finalNode();
 			Tree tree;
 
 			if (node instanceof Int)

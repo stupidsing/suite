@@ -51,7 +51,7 @@ public class Funp_ {
 		}
 
 		public Pair<List<Instruction>, Bytes> compile(int offset, String fp) {
-			Node node = Suite.parse(fp);
+			var node = Suite.parse(fp);
 			Funp f0 = p0.parse(node);
 			Funp f1 = p1.inline(f0, isOptimize ? 3 : 0, 1, 1, 1, 1);
 			Funp f2 = p2.infer(f1);

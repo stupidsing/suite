@@ -64,7 +64,7 @@ public class ThunkUtil {
 					first = false;
 
 				if ((tree = Tree.decompose(node_)) != null) {
-					Node result = yawn.apply(tree.getLeft());
+					var result = yawn.apply(tree.getLeft());
 					node_ = tree.getRight();
 
 					if (isFacilitateGc)

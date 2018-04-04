@@ -138,13 +138,13 @@ public class VerifyTest {
 			else if ((m = Suite.pattern("axiom .0").match(proof)) != null)
 				return verify(Suite.substitute("true | fulfill .0", m));
 			else if ((m = Suite.pattern(".0 | choose {.1}").match(proof)) != null) {
-				Node list = verify(m[0]);
+				var list = verify(m[0]);
 				for (Node node : Tree.iter(list, TermOp.AND___))
 					if (Binder.bind(node, new Generalizer().generalize(m[1]), new Trail()))
 						return node;
 				return Fail.t("cannot verify " + proof);
 			} else if ((m = Suite.pattern(".0 | choose .1").match(proof)) != null) {
-				Node list = verify(m[0]);
+				var list = verify(m[0]);
 				Tree tree;
 				for (Node node : Tree.iter(list, TermOp.AND___))
 					if ((tree = Tree.decompose(node, TermOp.NEXT__)) != null && tree.getLeft() == m[1])
@@ -169,14 +169,14 @@ public class VerifyTest {
 			else if ((m = Suite.pattern("lemma .0 := .1 >> .2").match(proof)) != null)
 				return new Verify(defs, rules.put(name(m[0]), verify(m[1]))).verify(m[2]);
 			else if ((m = Suite.pattern(".0 | nat.mi .1 .2").match(proof)) != null) {
-				Node[] m_ = m;
+				var m_ = m;
 				Fun<Node, Node> fun = value -> {
 					Generalizer generalizer = new Generalizer();
 					Binder.bind(generalizer.generalize(m_[1]), value, new Trail());
 					return generalizer.generalize(m_[2]);
 				};
-				Node t = Atom.temp();
-				Node init = fun.apply(Suite.parse("0"));
+				var t = Atom.temp();
+				var init = fun.apply(Suite.parse("0"));
 				Node succ = Suite.substitute(".0 => .1", t, fun.apply(Suite.substitute("succ .0", t)));
 				Binder.bind(verify(m[0]), Tree.of(TermOp.AND___, init, succ), new Trail());
 				return Suite.substitute("is.nat .N => .0", fun.apply(Suite.parse(".N")));
@@ -194,7 +194,7 @@ public class VerifyTest {
 		}
 
 		public Verify extend(String lemma, String proof) {
-			Node node = extend_(proof);
+			var node = extend_(proof);
 			if (Binder.bind(Suite.parse(lemma), node, new Trail()))
 				return new Verify(defs, rules.put(lemma, node));
 			else
@@ -202,12 +202,12 @@ public class VerifyTest {
 		}
 
 		public Verify extend(String proof) {
-			Node node = extend_(proof);
+			var node = extend_(proof);
 			return new Verify(defs, rules.put(Formatter.dump(node), node));
 		}
 
 		private Node extend_(String proof) {
-			Node node = verify(Suite.parse(proof));
+			var node = verify(Suite.parse(proof));
 			LogUtil.info("proven :: " + node);
 			return node;
 		}
@@ -217,8 +217,8 @@ public class VerifyTest {
 		return new Object() {
 			private Node replace(Node node_) {
 				Generalizer generalizer = new Generalizer();
-				Node t0 = generalizer.generalize(from);
-				Node t1 = generalizer.generalize(to);
+				var t0 = generalizer.generalize(from);
+				var t1 = generalizer.generalize(to);
 				Trail trail = new Trail();
 
 				if (Binder.bind(node_, t0, trail))

@@ -34,8 +34,8 @@ public class TypeChecker {
 
 		Read.from(rules).concatMap(rule -> {
 			Generalizer generalizer = new Generalizer();
-			Node head = generalizer.generalize(rule.head);
-			Node tail = generalizer.generalize(rule.tail);
+			var head = generalizer.generalize(rule.head);
+			var tail = generalizer.generalize(rule.tail);
 			return checkerUtil.scan(tail).cons(head);
 		}).forEach(pred -> {
 			Prototype prototype = Prototype.of(pred);
@@ -46,9 +46,9 @@ public class TypeChecker {
 				if (nElements != null)
 					for (int i = 1; i < nElements; i++) {
 						Pair<Prototype, Integer> key = Pair.of(prototype, i);
-						Node p = ps[i];
+						var p = ps[i];
 						Node type0 = types.computeIfAbsent(key, k -> new Reference());
-						Node type1 = getType(p);
+						var type1 = getType(p);
 						bind(type0, type1);
 					}
 			} catch (Exception ex) {
@@ -70,17 +70,17 @@ public class TypeChecker {
 				type = Suite.substitute(".0;", getType(tree.getLeft()));
 				bind(type, getType(tree.getRight()));
 			} else if (tree.getOperator() == TermOp.TUPLE_) {
-				Node name = tree.getLeft();
+				var name = tree.getLeft();
 				if (name instanceof Atom) {
-					Node node = tree.getRight();
+					var node = tree.getRight();
 					Node[] ps = TreeUtil.elements(node, TreeUtil.nElements(node));
 					type = getEnumType(name, Tree.of(TermOp.TUPLE_, Read.from(ps).map(this::getType).toList()));
 				} else
 					return new Reference(); // free type
 			} else {
 				Atom name = Atom.of(tree.getOperator().getName());
-				Node lt = getType(tree.getLeft());
-				Node rt = getType(tree.getRight());
+				var lt = getType(tree.getLeft());
+				var rt = getType(tree.getRight());
 				type = getEnumType(name, Tree.of(TermOp.TUPLE_, lt, rt));
 			}
 		else if (data == Atom.NIL)

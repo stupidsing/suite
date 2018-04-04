@@ -30,7 +30,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 	protected void handle(Exec exec, Instruction insn) {
 		Activation current = exec.current;
 		Frame frame = current.frame;
-		Node[] regs = frame != null ? frame.registers : null;
+		var regs = frame != null ? frame.registers : null;
 		Trail trail = prover.getTrail();
 		Instruction insn1;
 
@@ -52,7 +52,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			trail.unwind(i(regs[insn.op0]));
 			break;
 		case DECOMPOSETREE0:
-			Node node = regs[insn.op0].finalNode();
+			var node = regs[insn.op0].finalNode();
 
 			insn1 = getInstructions()[current.ip++];
 			TermOp op = TermOp.find(((Atom) constantPool.get(insn1.op0)).name);

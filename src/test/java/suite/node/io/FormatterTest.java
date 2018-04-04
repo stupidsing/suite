@@ -7,7 +7,6 @@ import org.junit.Test;
 import suite.Suite;
 import suite.inspect.Dump;
 import suite.node.Int;
-import suite.node.Node;
 import suite.node.Reference;
 import suite.util.Thread_;
 
@@ -35,12 +34,12 @@ public class FormatterTest {
 	}
 
 	private void testDisplay(String s) {
-		Node node = Suite.parse(s);
+		var node = Suite.parse(s);
 		assertEquals(s, Formatter.display(node));
 	}
 
 	private void testDump(String s) {
-		Node node = Suite.parse(s);
+		var node = Suite.parse(s);
 		assertEquals(s, Formatter.dump(node));
 	}
 

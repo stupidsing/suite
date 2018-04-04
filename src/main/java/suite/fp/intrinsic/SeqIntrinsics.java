@@ -15,7 +15,7 @@ public class SeqIntrinsics {
 	};
 
 	private Node deepSeq(IntrinsicCallback callback, Node node) {
-		Node node1 = callback.yawn(node);
+		var node1 = callback.yawn(node);
 		Tree tree;
 		if ((tree = Tree.decompose(node1)) != null)
 			node1 = Tree.of(tree.getOperator(), deepSeq(callback, tree.getLeft()), deepSeq(callback, tree.getRight()));

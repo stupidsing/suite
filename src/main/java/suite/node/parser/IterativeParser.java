@@ -71,7 +71,7 @@ public class IterativeParser {
 					if (section.kind == '(' && ch == ')' //
 							|| section.kind == '[' && ch == ']' //
 							|| section.kind == '{' && ch == '}') {
-						Node node = section.unwind(null).getRight();
+						var node = section.unwind(null).getRight();
 						if (ch == ']')
 							node = Tree.of(TermOp.TUPLE_, Atom.of("["), node);
 						add(node);
@@ -79,7 +79,7 @@ public class IterativeParser {
 						Fail.t("cannot parse " + in);
 				} else if (ch == '`')
 					if (stack.peek().kind == ch) {
-						Node node = stack.pop().unwind(null).getRight();
+						var node = stack.pop().unwind(null).getRight();
 						node = Tree.of(TermOp.TUPLE_, Atom.of("`"), node);
 						add(node);
 					} else

@@ -64,7 +64,7 @@ public class P0Parse {
 	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp parse(Node node0) {
-		Node node1 = expandMacros(node0);
+		var node1 = expandMacros(node0);
 		return new Parse(ISet.empty()).parse(node1);
 	}
 
@@ -82,12 +82,12 @@ public class P0Parse {
 				Node[] ht;
 
 				if ((m = Suite.pattern("expand .0 := .1 >> .2").match(node)) != null) {
-					Node head = m[0];
+					var head = m[0];
 					return new Expand(macros.put(Prototype.of(head), new Node[] { head, m[1] })).expand(m[2]);
 				} else if ((ht = macros.get(Prototype.of(node))) != null) {
 					Generalizer g = new Generalizer();
-					Node t0_ = g.generalize(ht[0]);
-					Node t1_ = g.generalize(ht[1]);
+					var t0_ = g.generalize(ht[0]);
+					var t1_ = g.generalize(ht[1]);
 					if (Binder.bind(node, t0_, new Trail()))
 						return expand(t1_);
 				}
@@ -117,7 +117,7 @@ public class P0Parse {
 				return FunpArray.of(Tree.iter(a, TermOp.AND___).map(this::parse).toList());
 			}).match2("asm .0 {.1}", (a, b) -> {
 				return FunpAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
-					Node[] ma = Suite.pattern(".0 = .1").match(n);
+					var ma = Suite.pattern(".0 = .1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), parse(ma[1]));
 				}).toList(), Tree.iter(b, TermOp.OR____).toList());
 			}).match(Atom.FALSE, m -> {
@@ -226,7 +226,7 @@ public class P0Parse {
 				return FunpStruct.of(Tree //
 						.iter(a, TermOp.AND___) //
 						.map(n -> {
-							Node[] m1 = Suite.pattern(".0 .1").match(n);
+							var m1 = Suite.pattern(".0 .1").match(n);
 							return Pair.of(name(m1[0]), parse(m1[1]));
 						}) //
 						.toList());

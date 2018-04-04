@@ -104,7 +104,7 @@ public class Prover {
 				switch ((TermOp) tree.getOperator()) {
 				case OR____:
 					var pit = trail.getPointInTime();
-					Node bt = new Data<Source<Boolean>>(() -> {
+					var bt = new Data<Source<Boolean>>(() -> {
 						trail.unwind(pit);
 						return Boolean.TRUE;
 					});
@@ -152,7 +152,7 @@ public class Prover {
 					Set<String> blacks = Suite.noTracePredicates;
 
 					Prototype prototype = Prototype.of(query);
-					Node head = prototype != null ? prototype.head : null;
+					var head = prototype != null ? prototype.head : null;
 					Atom atom = head instanceof Atom ? (Atom) head : null;
 					var name = atom != null ? atom.name : null;
 					isTrace &= whites == null || whites.contains(name);
@@ -175,7 +175,7 @@ public class Prover {
 	 * @return The chained node.
 	 */
 	private Node expand(Node query) {
-		Node alt0 = alt;
+		var alt0 = alt;
 
 		Data<Source<Boolean>> cut = new Data<>(() -> {
 			alt = alt0;

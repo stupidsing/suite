@@ -66,7 +66,7 @@ public class InstructionExecutor implements AutoCloseable {
 
 		Activation current = new Activation(f0, yawnEntryPoint, null);
 
-		Node[] stack = new Node[Suite.stackSize];
+		var stack = new Node[Suite.stackSize];
 		int ip = 0, sp = 0;
 		Node returnValue = null;
 
@@ -79,7 +79,7 @@ public class InstructionExecutor implements AutoCloseable {
 		while (true)
 			try {
 				Frame frame = current.frame;
-				Node[] regs = frame != null ? frame.registers : null;
+				var regs = frame != null ? frame.registers : null;
 				Instruction insn = instructions[ip = current.ip++];
 				Thunk thunk;
 				TermOp op;
@@ -162,8 +162,8 @@ public class InstructionExecutor implements AutoCloseable {
 				case EXIT__________:
 					return returnValue;
 				case FORMTREE0_____:
-					Node left = regs[insn.op0];
-					Node right = regs[insn.op1];
+					var left = regs[insn.op0];
+					var right = regs[insn.op1];
 					insn = instructions[current.ip++];
 					op = TermOp.find(((Atom) constantPool.get(insn.op0)).name);
 					regs[insn.op1] = Tree.of(op, left, right);

@@ -118,8 +118,8 @@ public class InterpretFunEager {
 				Fun<Frame, Node> param_ = eager_(APPLY.param);
 				Fun<Frame, Node> fun_ = eager_(APPLY.fun);
 				result = frame -> {
-					Node fun = fun_.apply(frame);
-					Node param = param_.apply(frame);
+					var fun = fun_.apply(frame);
+					var param = param_.apply(frame);
 					return fun(fun).apply(param);
 				};
 			} else if ((ATOM = Matcher.atom.match(node)) != null)
@@ -151,7 +151,7 @@ public class InterpretFunEager {
 				Pattern tuple = Suite.pattern(".0 .1");
 				List<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple::match).toList();
 				if (arrays.size() == 1) {
-					Node[] array = arrays.get(0);
+					var array = arrays.get(0);
 					IMap<Node, Fun<Frame, Node>> vm1 = vm.put(array[0], unwrap(getter(fs)));
 					Eager_ eager1 = new Eager_(fs + 1, vm1);
 					Fun<Frame, Node> value_ = wrap(eager1.eager_(array[1]));
@@ -214,10 +214,10 @@ public class InterpretFunEager {
 				Fun<Frame, Node> in_ = eager_(TCO.in_);
 				result = frame -> {
 					Iterate<Node> iter = fun(iter_.apply(frame));
-					Node in = in_.apply(frame);
+					var in = in_.apply(frame);
 					Tree p0, p1;
 					do {
-						Node out = iter.apply(in);
+						var out = iter.apply(in);
 						p0 = Tree.decompose(out, TermOp.AND___);
 						p1 = Tree.decompose(p0.getRight(), TermOp.AND___);
 						in = p1.getLeft();
@@ -244,7 +244,7 @@ public class InterpretFunEager {
 	}
 
 	public Node eager(Node node) {
-		Node mode = isLazyify ? Atom.of("LAZY") : Atom.of("EAGER");
+		var mode = isLazyify ? Atom.of("LAZY") : Atom.of("EAGER");
 		Node query = Suite.substitute("source .in, fc-process-function .0 .in .out, sink .out", mode);
 
 		RuleSet rs = Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl"));

@@ -29,7 +29,7 @@ public class BasicIntrinsics {
 	public Intrinsic id = Intrinsics.id_;
 
 	public Intrinsic log1 = (callback, inputs) -> {
-		Node node = inputs.get(0);
+		var node = inputs.get(0);
 		LogUtil.info(Formatter.display(ThunkUtil.deepYawn(callback::yawn, node)));
 		return node;
 	};
@@ -40,7 +40,7 @@ public class BasicIntrinsics {
 	};
 
 	public Intrinsic typeOf = (callback, inputs) -> {
-		Node node = inputs.get(0);
+		var node = inputs.get(0);
 
 		return new SwitchNode<Atom>(node //
 		).applyIf(Atom.class, n -> {

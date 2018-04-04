@@ -274,9 +274,9 @@ public class Symbolic {
 			}).match1(patNeg, u -> {
 				return i(u).map(add::inverse);
 			}).match2(patMul, (m0, m1) -> {
-				Node u = m0;
+				var u = m0;
 				Opt<Node> vs = i(m1);
-				Node dudx = d(u);
+				var dudx = d(u);
 				return vs.concatMap(v -> i(mul(v, dudx)).map(ivdu -> add(mul(u, v), neg(ivdu))));
 			}).match1(patInv, u -> {
 				return is_x(u) ? Opt.of(patLn_.subst(x)) : null;
@@ -384,7 +384,7 @@ public class Symbolic {
 				Node sum = n0;
 				for (IntObjPair<Node> pair : map.streamlet().sortByKey(Integer::compare)) {
 					var p = pair.t0;
-					Node power = p < 0 ? inv(powerFun.apply(-p)) : powerFun.apply(p);
+					var power = p < 0 ? inv(powerFun.apply(-p)) : powerFun.apply(p);
 					sum = add(mul(coefficientFun.apply(pair.t1), power), sum);
 				}
 				return sum;

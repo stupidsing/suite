@@ -14,7 +14,6 @@ import java.util.List;
 import suite.Constants;
 import suite.Suite;
 import suite.net.SocketServer;
-import suite.node.Node;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.util.Fail;
@@ -111,7 +110,7 @@ public class Main extends ExecutableProgram {
 		code &= dispatcher.importFiles(filenames);
 
 		try (Writer sw = new StringWriter()) {
-			Node node = Suite.applyWriter(Suite.parse("\"READY\""));
+			var node = Suite.applyWriter(Suite.parse("\"READY\""));
 			Suite.evaluateFunToWriter(opt.fcc(node), sw);
 			ready = sw.toString();
 		} catch (Exception ex) {

@@ -196,7 +196,7 @@ public class FunTypeTest {
 
 	private void checkType(String fps, String bindTo, String ts) {
 		Trail trail = new Trail();
-		Node type = getType(fps);
+		var type = getType(fps);
 
 		assertTrue(Binder.bind(type, SewingGeneralizerImpl.generalize(Suite.parse(bindTo)), trail));
 		assertTrue(Comparer.comparer.compare(Suite.parse(ts), type) == 0);

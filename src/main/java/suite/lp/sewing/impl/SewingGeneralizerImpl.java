@@ -37,7 +37,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 		Generalize_ fun;
 
 		while (true) {
-			Node node0 = node;
+			var node0 = node;
 			Tree tree;
 
 			if (node0 instanceof Atom) {
@@ -79,7 +79,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 				Generalize_[] fs = Read.from(((Tuple) node0).nodes).map(this::generalizer).toArray(Generalize_.class);
 				var length = fs.length;
 				fun = env -> {
-					Node[] array = new Node[length];
+					var array = new Node[length];
 					for (int i = 0; i < length; i++)
 						array[i] = fs[i].apply(env);
 					return Tuple.of(array);

@@ -55,7 +55,7 @@ public class ProveTracer {
 	}
 
 	public Node expandWithTrace(Node query, Prover prover, Iterate<Node> expand) {
-		Node query1 = new Cloner().clone(query);
+		var query1 = new Cloner().clone(query);
 
 		if (currentDepth < 64) {
 			Record record0 = currentRecord;
@@ -84,8 +84,8 @@ public class ProveTracer {
 				return Boolean.FALSE;
 			});
 
-			Node alt = prover.getAlternative();
-			Node rem = prover.getRemaining();
+			var alt = prover.getAlternative();
+			var rem = prover.getRemaining();
 
 			prover.setAlternative(Tree.of(TermOp.OR____, leaveFail, alt));
 			prover.setRemaining(Tree.of(TermOp.AND___, leaveOk, rem));

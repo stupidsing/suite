@@ -103,7 +103,7 @@ public class Formatter {
 	 *            Minimum operator precedence without adding parentheses.
 	 */
 	private void format(Node node0, int parentPrec) {
-		Node node = node0.finalNode();
+		var node = node0.finalNode();
 		Integer objectId = System.identityHashCode(node);
 
 		// avoids infinite recursion if object is recursive
@@ -186,8 +186,8 @@ public class Formatter {
 
 	private void formatTree_(Tree tree) {
 		Operator operator = tree.getOperator();
-		Node left = tree.getLeft();
-		Node right = tree.getRight();
+		var left = tree.getLeft();
+		var right = tree.getRight();
 		boolean isSpaceBefore = TermOp.isSpaceBefore(operator);
 		boolean isSpaceAfter = TermOp.isSpaceAfter(operator);
 

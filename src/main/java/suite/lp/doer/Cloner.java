@@ -27,9 +27,9 @@ public class Cloner {
 	private void cloneRight(Tree tree) {
 		while (tree != null) {
 			Tree nextTree = null;
-			Node right = tree.getRight();
+			var right = tree.getRight();
 			IdentityKey<Node> key = IdentityKey.of(right);
-			Node right1 = clonedNodes.get(key);
+			var right1 = clonedNodes.get(key);
 			Tree rt;
 
 			if (right1 == null) {
@@ -50,7 +50,7 @@ public class Cloner {
 
 	public Node cloneOld(Node node) {
 		return clonedNodes.computeIfAbsent(IdentityKey.of(node), key -> {
-			Node node_ = key.key;
+			var node_ = key.key;
 			if (node_ instanceof Reference)
 				node_ = new Reference();
 			else

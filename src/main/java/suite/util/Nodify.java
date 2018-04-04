@@ -166,7 +166,7 @@ public class Nodify {
 					var object1 = Object_.new_(clazz);
 					for (Pair<Atom, FieldInfo> pair : pairs) {
 						FieldInfo fieldInfo = pair.t1;
-						Node value = map.get(pair.t0).finalNode();
+						var value = map.get(pair.t0).finalNode();
 						fieldInfo.field.set(object1, apply_(fieldInfo.nodifier, value));
 					}
 					return object1;

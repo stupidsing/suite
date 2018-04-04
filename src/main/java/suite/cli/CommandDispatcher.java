@@ -109,7 +109,7 @@ public class CommandDispatcher {
 		if (input.endsWith("#"))
 			input = String_.range(input, 0, -1);
 
-		Node node = Suite.parse(input.trim());
+		var node = Suite.parse(input.trim());
 
 		switch (type) {
 		case EVALUATE:
@@ -190,9 +190,9 @@ public class CommandDispatcher {
 	private void elaborate(Node node0, Sink<Node> sink) {
 		int[] count = { 0 };
 		NodeEnv<Atom> ne = new CompileGeneralizerImpl().g(node0).source();
-		Node node1 = ne.node;
+		var node1 = ne.node;
 
-		Node elab = new Data<Source<Boolean>>(() -> {
+		var elab = new Data<Source<Boolean>>(() -> {
 			var dump = ne.dumpVariables();
 			if (!dump.isEmpty())
 				opt.prompt().println(dump);
@@ -215,7 +215,7 @@ public class CommandDispatcher {
 
 	public boolean dispatchFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
 		boolean isChars = opt.isChars();
-		Node node = parseNode(inputs);
+		var node = parseNode(inputs);
 		node = isChars ? Suite.applyCharsReader(node, reader) : Suite.applyStringReader(node, reader);
 		if (opt.isDo())
 			node = Suite.applyPerform(node, isChars ? Suite.parse("[n^Chars]") : Atom.of("string"));
@@ -237,7 +237,7 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchType(List<String> inputs) throws IOException {
-		Node node = parseNode(inputs);
+		var node = parseNode(inputs);
 		System.out.println(Formatter.dump(Suite.evaluateFunType(opt.fcc(node))));
 		return true;
 	}

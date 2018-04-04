@@ -58,21 +58,21 @@ public class CompileBinderImpl extends CompileClonerImpl implements BinderFactor
 				}).applyIf(Int.class, n -> {
 					return f.ifInstance(Int.class, target, i -> f.ifEquals(i.field("number"), f.int_(n.number), ok, fail), br);
 				}).applyIf(Reference.class, n -> {
-					FunExpr ref = env.field("refs").index(f.int_(mapper().computeIndex(n)));
+					var ref = env.field("refs").index(f.int_(mapper().computeIndex(n)));
 					return f.invokeStatic(Binder.class, "bind", target, ref.cast_(Node.class), trail);
 				}).applyIf(Str.class, n -> {
 					return f.ifInstance(Str.class, target,
 							s -> f.object(n.value).invoke("equals", s.field("value").cast_(Object.class)), br);
 				}).applyIf(Tree.class, tree -> {
 					return f.declare(f.invokeStatic(Tree.class, "decompose", target, f.object(tree.getOperator())), t -> {
-						Node lt = tree.getLeft();
-						Node rt = tree.getRight();
+						var lt = tree.getLeft();
+						var rt = tree.getRight();
 						return f.ifNonNull(t, compile_(lt, t.invoke("getLeft"), compile_(rt, t.invoke("getRight"), ok)), brc);
 					});
 				}).applyIf(Tuple.class, n -> {
 					return f.ifInstance(Tuple.class, target, tuple -> f.declare(tuple.field("nodes"), targets -> {
-						Node[] nodes = n.nodes;
-						FunExpr fe = ok;
+						var nodes = n.nodes;
+						var fe = ok;
 						for (int i = 0; i < nodes.length; i++)
 							fe = compile_(nodes[i], targets.index(f.int_(i)), fe);
 						return f.if_(targets.length(), fe, brc);

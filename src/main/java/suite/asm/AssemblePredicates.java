@@ -3,7 +3,6 @@ package suite.asm;
 import suite.lp.predicate.PredicateUtil;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Int;
-import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
@@ -20,7 +19,7 @@ public class AssemblePredicates {
 		return PredicateUtil.p3((prover, n0, p0, px) -> {
 			var i = isPass2 ? TreeUtil.evaluate(n0) : 0;
 			byte[] bytes = new byte[n];
-			Node p = px;
+			var p = px;
 
 			for (int j = 0; j < n; j++) {
 				bytes[j] = (byte) (i & 0xFF);

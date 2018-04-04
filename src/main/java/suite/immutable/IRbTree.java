@@ -55,7 +55,7 @@ public class IRbTree<T> implements ITree<T> {
 				T result;
 
 				if (!nodes.isEmpty()) {
-					Node node = nodes.pop();
+					var node = nodes.pop();
 					pushLefts(node.right);
 					result = node.pivot;
 				} else
@@ -74,7 +74,7 @@ public class IRbTree<T> implements ITree<T> {
 	}
 
 	public T find(T t) {
-		Node node = root;
+		var node = root;
 
 		while (node != null) {
 			int c = comparator.compare(node.pivot, t);
@@ -108,7 +108,7 @@ public class IRbTree<T> implements ITree<T> {
 	}
 
 	private IRbTree<T> add(T t, boolean isReplace) {
-		Node node = root;
+		var node = root;
 
 		if (node != null && !node.isBlack) // turns red node into black
 			node = new Node(true, node.pivot, node.left, node.right);

@@ -63,8 +63,8 @@ public class CompileExpressionImpl implements EvaluatorFactory {
 			}
 
 			private FunExpr compileOperator(Node a, Node b, String op) {
-				FunExpr fe0 = compile_(a);
-				FunExpr fe1 = compile_(b);
+				var fe0 = compile_(a);
+				var fe1 = compile_(b);
 				return f.bi(op, fe0, fe1);
 			}
 		}).apply(Map.ofEntries());

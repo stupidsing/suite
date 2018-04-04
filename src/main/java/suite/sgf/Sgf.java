@@ -37,7 +37,7 @@ public class Sgf {
 	}
 
 	private PosPair<Node> readNode(String in, int pos) {
-		Node node = new Node();
+		var node = new Node();
 
 		while (pos < in.length())
 			switch (in.charAt(pos++)) {

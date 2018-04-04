@@ -121,8 +121,8 @@ public class ISkewedBinPriorityQueue<T> {
 					ts1 = trees0;
 				}
 
-				Node head0 = ts0.head;
-				Node head1 = ts1.head;
+				var head0 = ts0.head;
+				var head1 = ts1.head;
 				IList<Node> tail0 = ts0.tail;
 				IList<Node> tail1 = ts1.tail;
 

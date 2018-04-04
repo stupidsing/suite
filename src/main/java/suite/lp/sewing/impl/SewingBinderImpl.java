@@ -40,7 +40,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 			Bind_ c0 = binder(l);
 			Bind_ c1 = binder(r);
 			return (be, n) -> {
-				Node n_ = n.finalNode();
+				var n_ = n.finalNode();
 				Tree t;
 				if (n_ instanceof Reference)
 					if (isBindTrees) {
@@ -58,9 +58,9 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 			Bind_[] cs = Read.from(tuple.nodes).map(this::binder).toArray(Bind_.class);
 			var length = cs.length;
 			return (be, n) -> {
-				Node n_ = n.finalNode();
+				var n_ = n.finalNode();
 				if (n_ instanceof Tuple) {
-					Node[] nodes = ((Tuple) n_).nodes;
+					var nodes = ((Tuple) n_).nodes;
 					if (nodes.length == length) {
 						for (int i = 0; i < length; i++)
 							if (!cs[i].test(be, nodes[i]))
@@ -85,7 +85,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 
 	private Bind_ compileBindAtom(Atom a) {
 		return (be, n) -> {
-			Node n_ = n.finalNode();
+			var n_ = n.finalNode();
 			if (n_ instanceof Reference) {
 				be.trail.addBind((Reference) n_, a);
 				return true;
@@ -97,7 +97,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 	private Bind_ compileBindInt(Int i_) {
 		var i = i_.number;
 		return (be, n) -> {
-			Node n_ = n.finalNode();
+			var n_ = n.finalNode();
 			if (n_ instanceof Reference) {
 				be.trail.addBind((Reference) n_, i_);
 				return true;
@@ -109,7 +109,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 	private Bind_ compileBindStr(Str str) {
 		var s = str.value;
 		return (be, n) -> {
-			Node n_ = n.finalNode();
+			var n_ = n.finalNode();
 			if (n_ instanceof Reference) {
 				be.trail.addBind((Reference) n_, str);
 				return true;

@@ -75,7 +75,7 @@ public class EditorController {
 		run(text -> {
 			String result;
 			try {
-				Node node = Suite.evaluateFunType(text);
+				var node = Suite.evaluateFunType(text);
 				result = Formatter.dump(node);
 			} catch (Exception ex) {
 				result = To.string(ex);
@@ -86,7 +86,7 @@ public class EditorController {
 
 	public void format() {
 		JEditorPane editor = view.getEditor();
-		Node node = Suite.parse(editor.getText());
+		var node = Suite.parse(editor.getText());
 		editor.setText(new PrettyPrinter().prettyPrint(node));
 	}
 

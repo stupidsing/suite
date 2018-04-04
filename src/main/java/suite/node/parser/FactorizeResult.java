@@ -112,10 +112,10 @@ public class FactorizeResult {
 		Generalizer generalizer = new Generalizer();
 
 		Iterate<Node> rewrite = n0 -> {
-			Node[] m = Suite.pattern(FTerminal.class.getName() + ":.0").match(n0);
-			Node n1 = m != null ? m[0] : null;
-			Node n2 = n1 instanceof Dict ? ((Dict) n1).map.get(Atom.of("chars")) : null;
-			Node n3 = n2 != null ? n2.finalNode() : null;
+			var m = Suite.pattern(FTerminal.class.getName() + ":.0").match(n0);
+			var n1 = m != null ? m[0] : null;
+			var n2 = n1 instanceof Dict ? ((Dict) n1).map.get(Atom.of("chars")) : null;
+			var n3 = n2 != null ? n2.finalNode() : null;
 			var s = n3 instanceof Str ? ((Str) n3).value : null;
 			boolean b = s != null && s.startsWith(ProverConstant.variablePrefix) && s.substring(1).matches("[0-9]*");
 			return b ? generalizer.generalize(Atom.of(s)) : n0;
@@ -123,8 +123,8 @@ public class FactorizeResult {
 
 		Fun<FactorizeResult, Node> parse = fr -> rw.rewrite(rewrite, nodify.nodify(FNode.class, fr.node));
 
-		Node nodeFrom = parse.apply(frfrom);
-		Node nodeTo = parse.apply(frto);
+		var nodeFrom = parse.apply(frfrom);
+		var nodeTo = parse.apply(frto);
 
 		FNode fn0 = fr0.node;
 		Node node0 = nodify.nodify(FNode.class, fn0);

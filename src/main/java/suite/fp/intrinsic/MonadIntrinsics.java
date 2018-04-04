@@ -40,7 +40,7 @@ public class MonadIntrinsics {
 				.map(node -> ThunkUtil.yawnString(yawn, node)) //
 				.toArray(String.class);
 
-		Node in = inputs.get(1);
+		var in = inputs.get(1);
 
 		return Rethrow.ex(() -> {
 			Process process = Runtime.getRuntime().exec(array);
@@ -74,7 +74,7 @@ public class MonadIntrinsics {
 	};
 
 	private Map<Node, Node> getFrame(List<Node> inputs) {
-		Node frame = inputs.get(0);
+		var frame = inputs.get(0);
 		return mutables.computeIfAbsent(frame, f -> new HashMap<>());
 	}
 

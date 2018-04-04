@@ -28,7 +28,7 @@ public class SewingProverBuilder implements Builder {
 		ProverFactory sewingProver = new SewingProverImpl(ruleSet);
 
 		return goal -> {
-			Node goal1 = SewingGeneralizerImpl.generalize(goal);
+			var goal1 = SewingGeneralizerImpl.generalize(goal);
 			Prove_ pred = sewingProver.prover(goal1);
 
 			return (source, sink) -> {

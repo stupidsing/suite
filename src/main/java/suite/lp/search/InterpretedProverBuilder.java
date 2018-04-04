@@ -24,7 +24,7 @@ public class InterpretedProverBuilder implements Builder {
 	@Override
 	public Fun<Node, Finder> build(RuleSet ruleSet) {
 		return goal -> {
-			Node goal1 = SewingGeneralizerImpl.generalize(goal);
+			var goal1 = SewingGeneralizerImpl.generalize(goal);
 
 			return (source, sink) -> {
 				ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);

@@ -43,9 +43,9 @@ public class LcsDp<T> {
 
 		for (int i0 = 0; i0 < size0; i0++)
 			for (int i1 = 0; i1 < size1; i1++) {
-				Node u = 0 < i0 ? dp[i0 - 1][i1] : emptyNode;
-				Node l = 0 < i1 ? dp[i0][i1 - 1] : emptyNode;
-				Node lu = 0 < i0 && 0 < i1 ? dp[i0 - 1][i1 - 1] : emptyNode;
+				var u = 0 < i0 ? dp[i0 - 1][i1] : emptyNode;
+				var l = 0 < i1 ? dp[i0][i1 - 1] : emptyNode;
+				var lu = 0 < i0 && 0 < i1 ? dp[i0 - 1][i1 - 1] : emptyNode;
 
 				T t0 = l0.get(i0);
 				T t1 = l1.get(i1);
@@ -54,7 +54,7 @@ public class LcsDp<T> {
 				dp[i0][i1] = Collections.max(List.of(u, l, lu1), comparator);
 			}
 
-		Node node = dp[size0 - 1][size1 - 1];
+		var node = dp[size0 - 1][size1 - 1];
 		Source<T> source = node.source;
 		List<T> result = new ArrayList<>(Collections.<T> nCopies(node.length, null));
 

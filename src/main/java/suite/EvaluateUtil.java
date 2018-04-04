@@ -66,7 +66,7 @@ public class EvaluateUtil {
 
 	public Node evaluateFun(FunCompilerConfig fcc) {
 		try (FunInstructionExecutor executor = configureFunExecutor(fcc)) {
-			Node result = executor.execute();
+			var result = executor.execute();
 			return fcc.isLazy() ? ThunkUtil.deepYawn(executor.getYawnFun(), result) : result;
 		}
 	}
@@ -78,7 +78,7 @@ public class EvaluateUtil {
 	}
 
 	public Node evaluateFunType(FunCompilerConfig fcc) {
-		Node node = Suite.parse("" //
+		var node = Suite.parse("" //
 				+ "source .in" //
 				+ ", fc-parse .in .p" //
 				+ ", fc-infer-type .p .t0" //
@@ -96,7 +96,7 @@ public class EvaluateUtil {
 	}
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
-		Node node = fccNodeFun.apply(fcc.isLazy());
+		var node = fccNodeFun.apply(fcc.isLazy());
 		Node code = doFcc(node, fcc);
 
 		if (code != null)
@@ -117,7 +117,7 @@ public class EvaluateUtil {
 	}
 
 	private Node appendLibraries(FunCompilerConfig fcc) {
-		Node node = fcc.getNode();
+		var node = fcc.getNode();
 		List<String> libraries = fcc.getLibraries();
 
 		for (int i = libraries.size() - 1; 0 <= i; i--) {

@@ -72,7 +72,7 @@ public class ImportUtil {
 				if (rule.head != Atom.NIL)
 					ruleSet.addRule(rule);
 				else {
-					Node goal = SewingGeneralizerImpl.generalize(rule.tail);
+					var goal = SewingGeneralizerImpl.generalize(rule.tail);
 					b &= prover.prove(goal);
 				}
 		} finally {

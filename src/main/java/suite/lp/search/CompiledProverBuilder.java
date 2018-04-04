@@ -39,7 +39,7 @@ public class CompiledProverBuilder implements Builder {
 
 	@Override
 	public Fun<Node, Finder> build(RuleSet ruleSet) {
-		Node rules = Suite.getRules(ruleSet);
+		var rules = Suite.getRules(ruleSet);
 
 		return goal -> {
 			Node code = compile(Suite.substitute(".0 >> .1", rules, goal));

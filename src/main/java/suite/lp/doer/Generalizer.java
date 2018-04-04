@@ -23,7 +23,7 @@ public class Generalizer {
 	private void generalizeRight(Tree tree) {
 		while (tree != null) {
 			Tree nextTree = null;
-			Node right = tree.getRight();
+			var right = tree.getRight();
 			Tree rt;
 
 			if (right instanceof Atom) {

@@ -48,8 +48,8 @@ public class ReversePolish {
 				var size = Integer.valueOf(a[3]);
 				List<Pair<Node, Node>> children = new ArrayList<>();
 				for (int i = 0; i < size; i++) {
-					Node key = deque.pop();
-					Node value = deque.pop();
+					var key = deque.pop();
+					var value = deque.pop();
 					children.add(Pair.of(key, value));
 				}
 				n = new NodeWrite( //
@@ -64,8 +64,8 @@ public class ReversePolish {
 				n = references.computeIfAbsent(s, key -> new Reference());
 			else if (type == 't') {
 				TermOp op = TermOp.valueOf(s);
-				Node left = deque.pop();
-				Node right = deque.pop();
+				var left = deque.pop();
+				var right = deque.pop();
 				n = Tree.of(op, left, right);
 			} else
 				n = Fail.t("RPN conversion error: " + elem);

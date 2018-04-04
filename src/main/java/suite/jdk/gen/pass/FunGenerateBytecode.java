@@ -101,11 +101,11 @@ public class FunGenerateBytecode {
 		public void visit_(FunExpr e0) {
 			e0.<FunExpr> switch_( //
 			).doIf(ArrayFunExpr.class, e1 -> {
-				FunExpr[] elements = e1.elements;
+				var elements = e1.elements;
 				list.add(factory.createConstant(elements.length));
 				list.add(factory.createNewArray(Type.getType(e1.clazz), (short) 1));
 				for (int i = 0; i < elements.length; i++) {
-					FunExpr element = elements[i];
+					var element = elements[i];
 					if (element != null) {
 						list.add(InstructionFactory.createDup(1));
 						list.add(factory.createConstant(i));
@@ -148,7 +148,7 @@ public class FunGenerateBytecode {
 				list.add(factory.createGetStatic(className, e1.fieldName, e1.fieldType));
 			}).doIf(FieldTypeFunExpr_.class, e1 -> {
 				var className = ((ObjectType) fti.typeOf(e1.object)).getClassName();
-				FunExpr set = e1 instanceof FieldTypeSetFunExpr ? ((FieldTypeSetFunExpr) e1).value : null;
+				var set = e1 instanceof FieldTypeSetFunExpr ? ((FieldTypeSetFunExpr) e1).value : null;
 				Instruction instruction;
 				visit_(e1.object);
 				if (set != null) {
@@ -178,7 +178,7 @@ public class FunGenerateBytecode {
 			}).doIf(InvokeMethodFunExpr.class, e1 -> {
 				Type[] array = Read.from(e1.parameters).map(fti::typeOf).toArray(Type.class);
 				Class<?> clazz = e1.clazz;
-				FunExpr object = e1.object;
+				var object = e1.object;
 				var className = clazz != null ? clazz.getName() : ((ObjectType) fti.typeOf(object)).getClassName();
 				short opcode;
 
@@ -212,7 +212,7 @@ public class FunGenerateBytecode {
 				list.add(factory.createInvoke(implClassName, "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
 
 				for (Entry<String, FunExpr> e : e1.fieldValues.entrySet()) {
-					FunExpr value = e.getValue();
+					var value = e.getValue();
 					list.add(InstructionFactory.createDup(1));
 					visit_(value);
 					list.add(factory.createPutField(implClassName, e.getKey(), fti.typeOf(value)));

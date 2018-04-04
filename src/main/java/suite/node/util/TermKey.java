@@ -124,7 +124,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == TermKey.class) {
-			Node node1 = ((TermKey) object).node;
+			var node1 = ((TermKey) object).node;
 			TermLister tl0 = new TermLister(node);
 			TermLister tl1 = new TermLister(node1);
 			return Objects.equals(tl0, tl1);

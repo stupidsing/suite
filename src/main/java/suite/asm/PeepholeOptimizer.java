@@ -21,12 +21,12 @@ public class PeepholeOptimizer {
 		List<Pair<Reference, Node>> lnis1 = new ArrayList<>();
 
 		for (Pair<Reference, Node> lni0 : lnis0) {
-			Node node0 = lni0.t1;
+			var node0 = lni0.t1;
 			Node node1;
 			Node[] m;
 
 			if ((m = ADDI__.match(node0)) != null) {
-				Node m0 = m[0];
+				var m0 = m[0];
 				var i = TreeUtil.evaluate(m[1]);
 				if (i == 1)
 					node1 = Suite.substitute("INC .0", m0);
@@ -39,8 +39,8 @@ public class PeepholeOptimizer {
 				else
 					node1 = Atom.NIL;
 			} else if ((m = MOV___.match(node0)) != null) {
-				Node m0 = m[0];
-				Node m1 = m[1];
+				var m0 = m[0];
+				var m1 = m[1];
 				if (m0 == m1)
 					node1 = Atom.NIL;
 				else if (m0 instanceof Atom && m1 instanceof Int && ((Int) m1).number == 0)

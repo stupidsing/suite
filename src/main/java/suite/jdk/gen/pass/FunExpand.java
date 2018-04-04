@@ -38,8 +38,8 @@ public class FunExpand extends FunFactory {
 	private FunExpr expand_(FunExpr e0, int depth) {
 		return e0.<FunExpr> switch_( //
 		).applyIf(ApplyFunExpr.class, e1 -> {
-			FunExpr object0 = e1.object;
-			FunExpr object1 = object0 instanceof CastFunExpr ? ((CastFunExpr) object0).expr : object0;
+			var object0 = e1.object;
+			var object1 = object0 instanceof CastFunExpr ? ((CastFunExpr) object0).expr : object0;
 			if (object1 instanceof Declare0ParameterFunExpr) {
 				Declare0ParameterFunExpr object_ = (Declare0ParameterFunExpr) object1;
 				return expand(object_.do_, depth);
@@ -48,7 +48,7 @@ public class FunExpand extends FunFactory {
 				return expand(replace(object_.do_, object_.parameter, e1.parameters.get(0)), depth);
 			} else if (object1 instanceof Declare2ParameterFunExpr) {
 				Declare2ParameterFunExpr object_ = (Declare2ParameterFunExpr) object1;
-				FunExpr do0 = object_.do_;
+				var do0 = object_.do_;
 				FunExpr do1 = replace(do0, object_.p0, e1.parameters.get(0));
 				FunExpr do2 = replace(do1, object_.p1, e1.parameters.get(1));
 				return expand(do2, depth);
@@ -62,7 +62,7 @@ public class FunExpand extends FunFactory {
 				LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
 				if (e1.isExpand || weight(l_impl.expr) <= 5) {
 					LambdaInterface<?> l_iface = l_impl.lambdaInterface;
-					FunExpr fe = l_impl.expr;
+					var fe = l_impl.expr;
 					for (String fieldName : l_impl.fieldTypes.keySet())
 						fe = replaceFieldInject(fe, fieldName,
 								object(l_inst.fieldValues.get(fieldName), l_impl.fieldTypes.get(fieldName)));
@@ -72,7 +72,7 @@ public class FunExpand extends FunFactory {
 			} else
 				return null;
 		}).applyIf(If1FunExpr.class, e1 -> {
-			FunExpr if_ = e1.if_;
+			var if_ = e1.if_;
 			if (if_ instanceof ConstantFunExpr) {
 				ConstantFunExpr e2 = (ConstantFunExpr) if_;
 				if (e2.type == Type.INT)

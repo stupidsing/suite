@@ -86,7 +86,7 @@ public class InterpretFunLazy {
 	}
 
 	public Thunk_ lazy(Node node) {
-		Node parsed = parse(node);
+		var parsed = parse(node);
 
 		Map<String, Thunk_> df = new HashMap<>();
 		df.put(TermOp.AND___.name, binary((a, b) -> new Pair_(a, b)));
@@ -179,7 +179,7 @@ public class InterpretFunLazy {
 				Fun<Frame, Thunk_> else_ = lazy_(DECONS.else_);
 
 				result = frame -> {
-					Node value = value_.apply(frame).get();
+					var value = value_.apply(frame).get();
 					if (value instanceof Pair_) {
 						Pair_ pair = (Pair_) value;
 						frame.add(pair.first_);

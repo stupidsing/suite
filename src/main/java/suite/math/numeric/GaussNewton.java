@@ -30,11 +30,11 @@ public class GaussNewton {
 		Dbl_Dbl[][] gradientFuns = new Dbl_Dbl[nrs][nVars];
 
 		for (int i = 0; i < nrs; i++) {
-			Node r = rs[i];
+			var r = rs[i];
 			residualFuns[i] = sym.fun(r, vars);
 
 			for (int j = 0; j < nVars; j++) {
-				Node var = vars[j];
+				var var = vars[j];
 				gradientFuns[i][j] = sym.fun(sym.d(var, r), var);
 			}
 		}

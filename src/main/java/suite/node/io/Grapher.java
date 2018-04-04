@@ -110,7 +110,7 @@ public class Grapher {
 
 		for (int i = 0; i < size; i++) {
 			GN gn = gns.get(i);
-			Node node = nodes.get(i);
+			var node = nodes.get(i);
 			List<Pair<Node, Node>> children = Read.from(gn.children).map(p -> Pair.of(nodes.get(p.t0), nodes.get(p.t1))).toList();
 
 			switch (gn.type) {
@@ -125,7 +125,7 @@ public class Grapher {
 				Tree.forceSetRight(tree, children.get(1).t1);
 				break;
 			case TUPLE:
-				Node[] list = ((Tuple) node).nodes;
+				var list = ((Tuple) node).nodes;
 				for (int j = 0; j < children.size(); j++)
 					list[j] = children.get(j).t1;
 			}

@@ -54,8 +54,8 @@ public class Binder {
 					&& bind(t0.getLeft(), t1.getLeft(), trail) //
 					&& bind(t0.getRight(), t1.getRight(), trail);
 		} else if (clazz0 == Tuple.class && clazz1 == Tuple.class) {
-			Node[] nodes0 = ((Tuple) n0).nodes;
-			Node[] nodes1 = ((Tuple) n1).nodes;
+			var nodes0 = ((Tuple) n0).nodes;
+			var nodes1 = ((Tuple) n1).nodes;
 			boolean b = nodes0.length == nodes1.length;
 			if (b) {
 				for (int i = 0; i < nodes0.length; i++)

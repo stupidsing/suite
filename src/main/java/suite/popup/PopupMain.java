@@ -14,7 +14,6 @@ import suite.Suite;
 import suite.editor.ClipboardUtil;
 import suite.editor.FontUtil;
 import suite.editor.LayoutCalculator;
-import suite.editor.LayoutCalculator.Node;
 import suite.editor.Listen;
 import suite.os.Execute;
 import suite.util.FunUtil.Fun;
@@ -74,7 +73,7 @@ public class PopupMain extends ExecutableProgram {
 
 		LayoutCalculator lay = new LayoutCalculator(frame.getContentPane());
 
-		Node layout = lay.boxv( //
+		var layout = lay.boxv( //
 				lay.fx(32, lay.boxh( //
 						lay.ex(32, lay.c(inTextField)), //
 						lay.fx(64, lay.c(volLabel)), //

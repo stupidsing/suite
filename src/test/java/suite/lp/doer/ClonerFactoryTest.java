@@ -9,7 +9,6 @@ import suite.lp.Trail;
 import suite.lp.compile.impl.CompileClonerImpl;
 import suite.lp.doer.ClonerFactory.Clone_;
 import suite.lp.sewing.impl.SewingClonerImpl;
-import suite.node.Node;
 
 public class ClonerFactoryTest {
 
@@ -25,7 +24,7 @@ public class ClonerFactoryTest {
 
 	private void test(String pattern, String match) {
 		for (ClonerFactory cf : new ClonerFactory[] { new CompileClonerImpl(), new SewingClonerImpl(), }) {
-			Node node = new Generalizer().generalize(Suite.parse(pattern));
+			var node = new Generalizer().generalize(Suite.parse(pattern));
 			Clone_ p = cf.cloner(node);
 
 			assertTrue(Binder.bind(p.apply(cf.mapper().env()), Suite.parse(match), new Trail()));

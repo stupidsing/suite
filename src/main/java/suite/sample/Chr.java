@@ -61,8 +61,8 @@ public class Chr {
 			Tree t1 = t0 != null ? Tree.decompose(t0.getRight(), TermOp.TUPLE_) : null;
 
 			if (t1 != null) {
-				Node key = t0.getLeft();
-				Node value = t1.getLeft();
+				var key = t0.getLeft();
+				var value = t1.getLeft();
 				node = t1.getRight();
 
 				if (key == Atom.of("given"))

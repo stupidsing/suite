@@ -71,8 +71,8 @@ public class PrettyPrinter {
 				if (isLookingLikeList(op, node))
 					prettyPrintList(op, node);
 				else {
-					Node left = tree.getLeft();
-					Node right = tree.getRight();
+					var left = tree.getLeft();
+					var right = tree.getRight();
 					Assoc assoc = op.getAssoc();
 
 					var leftPrec = prec - (assoc == Assoc.LEFT ? 1 : 0);
@@ -81,7 +81,7 @@ public class PrettyPrinter {
 						leftPrec = rightPrec = 0;
 
 					Tree tree1 = Tree.decompose(right, op);
-					Node r0 = tree1 != null ? tree1.getLeft() : null;
+					var r0 = tree1 != null ? tree1.getLeft() : null;
 					var es0 = lengthEstimator.getEstimatedLength(left);
 					var es1 = r0 != null ? lengthEstimator.getEstimatedLength(r0) : lineLength;
 					var opLength = op.getName().length();
@@ -181,7 +181,7 @@ public class PrettyPrinter {
 
 		if (tree != null && tree.getOperator() == op) {
 			boolean isLeftAssoc = op.getAssoc() == Assoc.LEFT;
-			Node child = isLeftAssoc ? tree.getLeft() : tree.getRight();
+			var child = isLeftAssoc ? tree.getLeft() : tree.getRight();
 			return isLookingLikeList(op, child);
 		}
 
