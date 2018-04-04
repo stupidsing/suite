@@ -39,7 +39,7 @@ public class Bl<T> {
 				var bitCount0 = 0;
 				var bitCount1 = 0;
 				var bitmap = bitmap0 | bitmap1;
-				Object[] ts = new Object[Long.bitCount(bitmap)];
+				var ts = new Object[Long.bitCount(bitmap)];
 
 				for (long bit = 1; bit != 0; bit <<= 1) {
 					T t0 = (bitmap0 & bit) != 0 ? bl0.get(bitCount0++) : null;
@@ -80,7 +80,7 @@ public class Bl<T> {
 		var bitmap1 = bits0 + ((long) diff1 << index) + bits1;
 
 		if (bitmap1 != 0) {
-			Object[] ts1 = new Object[ts0.length + diff];
+			var ts1 = new Object[ts0.length + diff];
 			var bitCount0 = Long.bitCount(bits0);
 			var bitCount1 = Long.bitCount(bits1);
 			Array_.copy(ts0, 0, ts1, 0, bitCount0);
@@ -96,7 +96,7 @@ public class Bl<T> {
 		if (!list.isEmpty()) {
 			var size = list.size();
 			var bitmap = 0;
-			Object[] ts = new Object[size];
+			var ts = new Object[size];
 			for (int i = 0; i < size; i++) {
 				IntObjPair<T> pair = list.get(i);
 				bitmap |= 1l << (pair.t0 & 0xFFFFFC00);

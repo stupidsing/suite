@@ -151,7 +151,7 @@ public class Mapify {
 					return map;
 				}), object -> Rethrow.ex(() -> {
 					Map<?, ?> map = (Map<?, ?>) object;
-					Object object1 = Object_.new_(clazz);
+					var object1 = Object_.new_(clazz);
 					for (FieldInfo fi : fis)
 						fi.field.set(object1, apply_(fi.mapifier.unmapify, map.get(fi.name)));
 					return object1;

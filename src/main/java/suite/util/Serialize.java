@@ -123,7 +123,7 @@ public class Serialize {
 						for (Pair<Field, ?> pair : pairs)
 							pair.t0.set(object, ((Serializer<?>) pair.t1).read(dataInput));
 					} else {
-						Object[] ps = new Object[immutableCtor.getParameterCount()];
+						var ps = new Object[immutableCtor.getParameterCount()];
 						for (int i = 0; i < ps.length; i++) {
 							Pair<Field, ?> pair = pairs[i];
 							ps[i] = ((Serializer<?>) pair.t1).read(dataInput);

@@ -679,7 +679,7 @@ public class SewingProverImpl implements ProverFactory {
 			else
 				tr = compileTrCallPredicate(bf, name, Atom.NIL, node);
 		} else if (node instanceof Data<?>) {
-			Object data = ((Data<?>) node).data;
+			var data = ((Data<?>) node).data;
 			if (data instanceof Source<?>)
 				tr = rt -> ((Source<?>) data).source() != Boolean.TRUE ? okay : fail;
 			else

@@ -104,7 +104,7 @@ public class Intrinsics {
 				, MonadIntrinsics.class //
 				, SeqIntrinsics.class //
 				, SuiteIntrinsics.class)) {
-			Object instance = Object_.new_(clazz);
+			var instance = Object_.new_(clazz);
 
 			for (Field field : clazz.getFields())
 				if (Intrinsic.class.isAssignableFrom(field.getType())) {

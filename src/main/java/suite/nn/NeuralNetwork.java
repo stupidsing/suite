@@ -154,7 +154,7 @@ public class NeuralNetwork {
 			});
 
 			return new Out<>(outputs, errors -> {
-				var errors1[][] = new float[hsx][hsy];
+				var errors1 = new float[hsx][hsy];
 
 				for (int ox = 0; ox < hsx; ox++)
 					for (int oy = 0; oy < hsy; oy++) {

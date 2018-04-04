@@ -126,7 +126,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 		// logUtil.info("KEY", dumpKey(key));
 
 		byte[] buffer = new byte[Constants.bufferSize];
-		Object attachment = key.attachment();
+		var attachment = key.attachment();
 		SelectableChannel sc0 = key.channel();
 		var ops = key.readyOps();
 

@@ -32,8 +32,8 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 					@SuppressWarnings("unchecked")
 					AutoObject<T> t1 = (AutoObject<T>) tx;
 					for (Field field : t0.fields_()) {
-						Object v0 = field.get(t0);
-						Object v1 = v0 instanceof AutoObject ? clone((AutoObject<?>) v0) : v0;
+						var v0 = field.get(t0);
+						var v1 = v0 instanceof AutoObject ? clone((AutoObject<?>) v0) : v0;
 						field.set(t1, v1);
 					}
 				}

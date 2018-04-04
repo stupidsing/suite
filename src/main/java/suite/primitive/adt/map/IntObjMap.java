@@ -98,7 +98,7 @@ public class IntObjMap<V> {
 			new Object() {
 				public void rehash(int index) {
 					var index1 = (index + 1) & mask;
-					Object v = vs[index1];
+					var v = vs[index1];
 					if (v != null) {
 						var k = ks[index1];
 						vs[index1] = null;
@@ -132,7 +132,7 @@ public class IntObjMap<V> {
 
 		if (capacity * 3 / 4 < size) {
 			int[] ks0 = ks;
-			Object[] vs0 = vs;
+			var vs0 = vs;
 			Object o;
 
 			allocate(capacity * 2);
@@ -168,7 +168,7 @@ public class IntObjMap<V> {
 			public boolean source2(IntObjPair<V> pair) {
 				while (index < capacity) {
 					var k = ks[index];
-					Object v = vs[index++];
+					var v = vs[index++];
 					if (v != null) {
 						pair.update(k, cast(v));
 						return true;

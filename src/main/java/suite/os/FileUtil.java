@@ -46,7 +46,7 @@ public class FileUtil {
 			Field jvm = runtime.getClass().getDeclaredField("jvm");
 			jvm.setAccessible(true);
 
-			Object vmm = jvm.get(runtime);
+			var vmm = jvm.get(runtime);
 
 			Method method = vmm.getClass().getDeclaredMethod("getProcessId");
 			method.setAccessible(true);

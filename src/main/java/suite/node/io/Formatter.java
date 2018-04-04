@@ -119,7 +119,7 @@ public class Formatter {
 		).doIf(Atom.class, n -> {
 			sb.append(quoteAtomIfRequired(n.name));
 		}).doIf(Data.class, n -> {
-			Object data = n.data;
+			var data = n.data;
 			if (data instanceof Chars)
 				sb.append("Chars<" + quoteStringIfRequired(data.toString()) + ">");
 			else if (data instanceof Node)

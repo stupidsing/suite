@@ -8,7 +8,7 @@ public class StreamletTest {
 
 	@Test
 	public void testChunk() {
-		Object[] objects = new Object[29];
+		var objects = new Object[29];
 
 		for (int i = 0; i < objects.length; i++)
 			objects[i] = new Object();

@@ -120,7 +120,7 @@ public class Object_ {
 					return map;
 				}), object -> Rethrow.ex(() -> {
 					Map<?, ?> map = (Map<?, ?>) object;
-					Object object1 = new_(clazz);
+					var object1 = new_(clazz);
 					for (Pair<String, Field> sf : sfs)
 						sf.t1.set(object1, map.get(sf.t0));
 					return object1;

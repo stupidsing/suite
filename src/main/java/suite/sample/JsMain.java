@@ -45,7 +45,7 @@ public class JsMain extends ExecutableProgram {
 		boolean b = true;
 
 		for (String filename : filenames) {
-			Object r = engine.eval(new FileReader(filename));
+			var r = engine.eval(new FileReader(filename));
 			b &= r == Boolean.TRUE //
 					|| r instanceof Number && ((Number) r).intValue() != 0 //
 					|| r instanceof String && String_.isNotBlank((String) r);

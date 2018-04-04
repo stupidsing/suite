@@ -25,7 +25,7 @@ public class NullableSyncQueue<T> {
 	}
 
 	public boolean poll(Mutable<T> mutable) {
-		Object object = queue.poll();
+		var object = queue.poll();
 		boolean b = object != nullObject;
 		if (b) {
 			@SuppressWarnings("unchecked")
@@ -48,7 +48,7 @@ public class NullableSyncQueue<T> {
 	}
 
 	public T take() throws InterruptedException {
-		Object object = queue.take();
+		var object = queue.take();
 		if (object != nullObject) {
 			@SuppressWarnings("unchecked")
 			T t = (T) object;

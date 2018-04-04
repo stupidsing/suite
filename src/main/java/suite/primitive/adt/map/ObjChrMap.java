@@ -105,7 +105,7 @@ public class ObjChrMap<K> {
 					var index1 = (index + 1) & mask;
 					var v = vs[index1];
 					if (v != EMPTYVALUE) {
-						Object k = ks[index1];
+						var k = ks[index1];
 						vs[index1] = EMPTYVALUE;
 						rehash(index1);
 						store(k, v);
@@ -137,7 +137,7 @@ public class ObjChrMap<K> {
 		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
-			Object[] ks0 = ks;
+			var ks0 = ks;
 			char[] vs0 = vs;
 			char v_;
 
@@ -173,7 +173,7 @@ public class ObjChrMap<K> {
 
 			public boolean source2(ChrObjPair<K> pair) {
 				while (index < capacity) {
-					Object k = ks[index];
+					var k = ks[index];
 					var v = vs[index++];
 					if (v != EMPTYVALUE) {
 						pair.update(v, cast(k));

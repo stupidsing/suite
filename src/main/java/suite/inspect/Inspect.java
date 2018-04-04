@@ -448,8 +448,8 @@ public class Inspect {
 		@SuppressWarnings("unchecked")
 		T t1 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance();
 		for (Field field : fields(clazz)) {
-			Object v0 = field.get(t0);
-			Object v1 = mapper.apply(v0);
+			var v0 = field.get(t0);
+			var v1 = mapper.apply(v0);
 			field.set(t1, v1);
 		}
 		return t1;

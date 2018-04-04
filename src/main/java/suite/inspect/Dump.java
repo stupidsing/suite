@@ -116,7 +116,7 @@ public class Dump {
 							for (Field field : inspect.fields(clazz))
 								try {
 									var name = field.getName();
-									Object o = field.get(object);
+									var o = field.get(object);
 									Class<?> type = field.getType();
 									if (Type_.isSimple(type))
 										d(prefix + "." + name, type, o);
@@ -130,7 +130,7 @@ public class Dump {
 							for (Method method : inspect.getters(clazz)) {
 								var name = method.getName();
 								try {
-									Object o = method.invoke(object);
+									var o = method.invoke(object);
 									if (!(o instanceof Class<?>))
 										d(prefix + "." + name + "()", o);
 								} catch (Throwable ex) {

@@ -113,7 +113,7 @@ public class ClusterImpl implements Cluster {
 	}
 
 	private Bytes respondToRequest(Bytes req) {
-		Object request = NetUtil.deserialize(req);
+		var request = NetUtil.deserialize(req);
 		@SuppressWarnings("unchecked")
 		Iterate<Object> handler = (Iterate<Object>) onReceive.get(request.getClass());
 		return NetUtil.serialize(handler.apply(request));
