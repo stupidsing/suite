@@ -31,11 +31,11 @@ public class Subst {
 	public void subst(String s, Iterate<String> fun, StringBuilder sb) {
 		while (true) {
 			var pos0 = s.indexOf(openSubst);
-			int pos1 = s.indexOf(closeSubst, pos0);
+			var pos1 = s.indexOf(closeSubst, pos0);
 
 			if (0 <= pos0 && 0 <= pos1) {
-				String left = s.substring(0, pos0);
-				String key = s.substring(pos0 + 2, pos1);
+				var left = s.substring(0, pos0);
+				var key = s.substring(pos0 + 2, pos1);
 				var right = s.substring(pos1 + 1);
 				var value = fun.apply(key);
 

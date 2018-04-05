@@ -26,12 +26,12 @@ public class TemplateRenderer implements Iterate<String> {
 		var sb = new StringBuilder();
 
 		while (true) {
-			int pos0 = in.indexOf(openTemplate, start);
+			var pos0 = in.indexOf(openTemplate, start);
 			if (pos0 == -1)
 				break;
 			var pos1 = pos0 + openTemplate.length();
 
-			int pos2 = in.indexOf(closeTemplate, pos1);
+			var pos2 = in.indexOf(closeTemplate, pos1);
 			if (pos2 == -1)
 				break;
 			var pos3 = pos2 + closeTemplate.length();

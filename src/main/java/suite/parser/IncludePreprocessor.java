@@ -41,10 +41,10 @@ public class IncludePreprocessor implements Fun<String, List<Run>> {
 		var start = 0;
 
 		while (true) {
-			int pos0 = ParseUtil.search(in, start, open);
+			var pos0 = ParseUtil.search(in, start, open);
 			if (pos0 == -1)
 				break;
-			int pos1 = ParseUtil.search(in, pos0 + open.length(), close);
+			var pos1 = ParseUtil.search(in, pos0 + open.length(), close);
 			if (pos1 == -1)
 				break;
 
@@ -53,7 +53,7 @@ public class IncludePreprocessor implements Fun<String, List<Run>> {
 			else
 				runs.add(new Run(in.substring(start, pos0)));
 
-			Path path = dir.resolve(in.substring(pos0 + open.length(), pos1));
+			var path = dir.resolve(in.substring(pos0 + open.length(), pos1));
 
 			if (included.add(path.toAbsolutePath()))
 				doIncludes(path.getParent(), To.string(path), false, runs);

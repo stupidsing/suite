@@ -42,13 +42,14 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 			while (pos0 < length && (ch = in.charAt(pos0)) != '\n' && Character.isWhitespace(ch))
 				pos0++;
 
-			Segment segment = ParseUtil.searchPosition(in.toCharArray(), Segment.of(pos0, length), "\n", Assoc.RIGHT, false);
+			var segment = ParseUtil.searchPosition(in.toCharArray(), Segment.of(pos0, length), "\n", Assoc.RIGHT, false);
 			var pos1 = segment != null ? segment.start : length;
 			var pos2 = segment != null ? segment.end : length; // includes LF
 
-			String indent = in.substring(pos, pos0);
-			String line = in.substring(pos0, pos1);
-			int nIndents = pos0 - pos, lineLength = pos1 - pos0;
+			var indent = in.substring(pos, pos0);
+			var line = in.substring(pos0, pos1);
+			var nIndents = pos0 - pos;
+			int lineLength = pos1 - pos0;
 
 			if (!lastIndent.startsWith(indent) && !indent.startsWith(lastIndent))
 				Fail.t("indent mismatch");

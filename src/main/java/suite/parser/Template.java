@@ -12,10 +12,10 @@ public class Template {
 		var start = 0;
 
 		while (true) {
-			int pos0 = in.indexOf(open, start);
+			var pos0 = in.indexOf(open, start);
 			if (pos0 == -1)
 				break;
-			int pos1 = in.indexOf(close, pos0 + open.length());
+			var pos1 = in.indexOf(close, pos0 + open.length());
 			if (pos1 == -1)
 				break;
 

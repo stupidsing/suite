@@ -46,10 +46,10 @@ public class CommentPreprocessor implements Fun<String, List<Run>> {
 		var runs = new ArrayList<Run>();
 
 		while (true) {
-			int pos0 = ParseUtil.search(in, start, openComment);
+			var pos0 = ParseUtil.search(in, start, openComment);
 			if (pos0 == -1)
 				break;
-			int pos1 = in.indexOf(closeComment, pos0 + openComment.length());
+			var pos1 = in.indexOf(closeComment, pos0 + openComment.length());
 			if (pos1 == -1)
 				break;
 			runs.add(new Run(start, pos0));

@@ -108,7 +108,7 @@ class Matcher {
 	}
 
 	Pair<String[], String> matchStart(String pattern, String input) {
-		State state = applyPattern(pattern, input).first();
+		var state = applyPattern(pattern, input).first();
 		return Pair.of(state.matches.reverse().toArray(new String[0]), input.substring(state.pos));
 	}
 
