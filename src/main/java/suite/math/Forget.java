@@ -11,7 +11,7 @@ public class Forget {
 	}
 
 	public static float[] forgetOn(float[] m, float[] n) {
-		int length = vec.sameLength(m, n);
+		var length = vec.sameLength(m, n);
 		for (var i = 0; i < length; i++)
 			m[i] *= n[i];
 		return m;

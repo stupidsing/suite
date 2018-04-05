@@ -24,7 +24,7 @@ public class Polynomial {
 	}
 
 	public float[] add(float[] ps0, float[] ps1) {
-		int length = max(ps0.length, ps1.length);
+		var length = max(ps0.length, ps1.length);
 		return Floats_.toArray(length, i -> {
 			var p0 = length < ps0.length ? ps0[length] : 0f;
 			var p1 = length < ps1.length ? ps1[length] : 0f;
