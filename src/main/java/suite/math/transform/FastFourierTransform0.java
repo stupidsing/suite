@@ -28,12 +28,12 @@ public class FastFourierTransform0 {
 		if (count == 1)
 			return new Complex[] { inputs[ind.start], };
 		else if (count % 2 == 0) {
-			Complex[] cis = getCis(count);
+			var cis = getCis(count);
 			var count1 = count / 2;
 			var inc1 = ind.inc * 2;
-			Complex[] f0 = fft(inputs, new Ind(ind.start, count1, inc1));
-			Complex[] f1 = fft(inputs, new Ind(ind.start + ind.inc, count1, inc1));
-			Complex[] f = new Complex[count];
+			var f0 = fft(inputs, new Ind(ind.start, count1, inc1));
+			var f1 = fft(inputs, new Ind(ind.start + ind.inc, count1, inc1));
+			var f = new Complex[count];
 
 			for (var di = 0; di < count1; di++) {
 				var si = di;
@@ -51,7 +51,7 @@ public class FastFourierTransform0 {
 	}
 
 	private Complex[] getCis(int count) {
-		Complex[] cis = cisMap.get(count);
+		var cis = cisMap.get(count);
 		if (cis != null) {
 			cisMap.put(count, cis = new Complex[count]);
 			for (var i = 0; i < count; i++) {

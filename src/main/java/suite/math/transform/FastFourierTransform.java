@@ -9,7 +9,7 @@ public class FastFourierTransform {
 	public Complex[] ifft(Complex[] cs0) {
 		var size = cs0.length;
 		Complex[] cs1 = To.array(size, Complex.class, i -> cs0[i].conjugate());
-		Complex[] cs2 = fft(cs1);
+		var cs2 = fft(cs1);
 		var inv = 1.0f / size;
 
 		for (var i = 0; i < size; i++)
@@ -20,7 +20,7 @@ public class FastFourierTransform {
 
 	public Complex[] fft(Complex[] tds) {
 		var size = tds.length;
-		Complex[] fds = new Complex[size];
+		var fds = new Complex[size];
 		var s = size;
 		var bits = 0;
 
@@ -34,7 +34,7 @@ public class FastFourierTransform {
 
 		for (var g = 2; g <= size; g <<= 1) {
 			var angleDiff = 2 * Math.PI / g;
-			Complex[] cis = new Complex[g];
+			var cis = new Complex[g];
 
 			for (var i = 0; i < g; i++) {
 				var angle = angleDiff * i;

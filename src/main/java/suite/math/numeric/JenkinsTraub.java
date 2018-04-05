@@ -26,7 +26,7 @@ public class JenkinsTraub {
 
 	private Complex jt_(Complex[] poly) {
 		var length = poly.length;
-		Complex[] h = d(poly);
+		var h = d(poly);
 
 		// stage 1 no-shift process
 		for (var i = 0; i < 5; i++)
@@ -101,8 +101,8 @@ public class JenkinsTraub {
 	}
 
 	private Complex[] shift(Complex[] poly, Complex[] h, Complex s, Complex ph) {
-		Complex[] scaled0 = scale(h, ph);
-		Complex[] scaled1 = Arrays.copyOf(scaled0, scaled0.length + 1);
+		var scaled0 = scale(h, ph);
+		var scaled1 = Arrays.copyOf(scaled0, scaled0.length + 1);
 		scaled1[h.length] = Complex.zero;
 		Complex[] sub = To.array(poly.length, Complex.class, i -> Complex.sub(poly[i], scaled1[i]));
 		return Boolean.TRUE ? divXms(sub, s) : div(sub, new Complex[] { s.scale(-1d), Complex.of(1f, 0f), });
@@ -114,7 +114,7 @@ public class JenkinsTraub {
 
 	private Complex[] divXms(Complex[] num, Complex s) {
 		var lengthm1 = num.length - 1;
-		Complex[] div = new Complex[lengthm1];
+		var div = new Complex[lengthm1];
 		var numx = num[lengthm1];
 		for (var i = lengthm1 - 1; 0 <= i; i--) {
 			div[i] = numx;
@@ -129,8 +129,8 @@ public class JenkinsTraub {
 		int diff;
 		while (0 <= (diff = numLength - denomLength)) {
 			Complex scale = div(num[numLength - 1], denom[denomLength - 1]);
-			Complex[] scaled0 = scale(denom, scale);
-			Complex[] scaled1 = new Complex[numLength];
+			var scaled0 = scale(denom, scale);
+			var scaled1 = new Complex[numLength];
 			{
 				var i = -1;
 				while (++i < diff)
@@ -138,7 +138,7 @@ public class JenkinsTraub {
 				while (++i < numLength)
 					scaled1[i] = scaled0[i - diff];
 			}
-			Complex[] num_ = num;
+			var num_ = num;
 			Complex[] sub = To.array(numLength, Complex.class, i -> Complex.sub(num_[i], scaled1[i]));
 			num = Arrays.copyOfRange(sub, 0, numLength - 1);
 		}
