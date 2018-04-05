@@ -64,7 +64,7 @@ public class HashBiMap<K, V> implements BiMap<K, V> {
 
 	@Override
 	public V put(K key, V value) {
-		V value0 = map.put(key, value);
+		var value0 = map.put(key, value);
 		inverseMap.put(value, key);
 		return value0;
 	}

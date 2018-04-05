@@ -19,8 +19,8 @@ public class NaiveBayes {
 		var nCategories = 2;
 		var length_ = records.get(0).t0.length;
 		var ms = new int[nCategories];
-		int[] ws = Ints_.toArray(nCategories, cat -> 1);
-		int[][] is = To.array(nCategories, int[].class, cat -> Ints_.toArray(length_, i -> 1));
+		var ws = Ints_.toArray(nCategories, cat -> 1);
+		var is = To.array(nCategories, int[].class, cat -> Ints_.toArray(length_, i -> 1));
 
 		for (var record : records) {
 			var xs = record.t0;

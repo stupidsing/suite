@@ -7,15 +7,12 @@ import java.util.Comparator;
 
 import suite.adt.pair.Pair;
 import suite.btree.B_Tree;
-import suite.file.JournalledPageFile;
 import suite.file.PageFile;
-import suite.file.SerializedPageFile;
 import suite.file.impl.AllocatorImpl;
 import suite.file.impl.FileFactory;
 import suite.file.impl.JournalledFileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.fs.KeyDataStore;
-import suite.primitive.Bytes;
 import suite.util.DataInput_;
 import suite.util.DataOutput_;
 import suite.util.Object_;
@@ -45,7 +42,7 @@ public class B_TreeBuilder<Key, Value> {
 		}
 
 		public B_TreeImpl<Key, Value>.Superblock read(DataInput_ dataInput) throws IOException {
-			B_TreeImpl<Key, Value>.Superblock superblock = b_tree.new Superblock();
+			var superblock = b_tree.new Superblock();
 			superblock.root = serialize.int_.read(dataInput);
 			return superblock;
 		}
@@ -65,8 +62,7 @@ public class B_TreeBuilder<Key, Value> {
 		public B_TreeImpl<Key, Value>.Page read(DataInput_ dataInput) throws IOException {
 			var pointer = dataInput.readInt();
 			var size = dataInput.readInt();
-
-			B_TreeImpl<Key, Value>.Page page = b_tree.new Page(pointer);
+			var page = b_tree.new Page(pointer);
 
 			for (var i = 0; i < size; i++) {
 				var key = keySerializer.read(dataInput);
@@ -120,8 +116,8 @@ public class B_TreeBuilder<Key, Value> {
 		if (isNew)
 			Rethrow.ex(() -> Files.deleteIfExists(path));
 
-		JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
-		B_Tree<Key, Integer> b_tree = new B_TreeBuilder<>(ks, serialize.int_).build(jpf, cmp, nPages);
+		var jpf = JournalledFileFactory.journalled(path, pageSize);
+		var b_tree = new B_TreeBuilder<>(ks, serialize.int_).build(jpf, cmp, nPages);
 
 		if (isNew) {
 			b_tree.create();
@@ -140,7 +136,7 @@ public class B_TreeBuilder<Key, Value> {
 		var nSuperblockPages = 1;
 		var nAllocatorPages = nPages / pageSize;
 		int p0 = 0, p1 = p0 + nAllocatorPages, p2 = p1 + nSuperblockPages, p3 = p2 + nPages;
-		PageFile[] pfs = FileFactory.subPageFiles(f, p0, p1, p2, p3);
+		var pfs = FileFactory.subPageFiles(f, p0, p1, p2, p3);
 		return build(cmp, pfs[0], pfs[1], pfs[2]);
 	}
 
@@ -168,15 +164,15 @@ public class B_TreeBuilder<Key, Value> {
 	private B_Tree<Key, Value> build(Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0) {
 		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(Object_.nullsFirst(comparator));
 
-		Serializer<Bytes> als = serialize.bytes(pageSize);
+		var als = serialize.bytes(pageSize);
 		var sbs = new B_TreeSuperblockSerializer(b_tree);
-		Serializer<Bytes> pys = serialize.bytes(pageSize);
+		var pys = serialize.bytes(pageSize);
 		var ps = new B_TreePageSerializer(b_tree);
 
-		SerializedPageFile<Bytes> alf = SerializedFileFactory.serialized(alf0, als);
-		SerializedPageFile<B_TreeImpl<Key, Value>.Superblock> sbf = SerializedFileFactory.serialized(sbf0, sbs);
-		SerializedPageFile<Bytes> pyf = SerializedFileFactory.serialized(pf0, pys);
-		SerializedPageFile<B_TreeImpl<Key, Value>.Page> pf = SerializedFileFactory.serialized(pf0, ps);
+		var alf = SerializedFileFactory.serialized(alf0, als);
+		var sbf = SerializedFileFactory.serialized(sbf0, sbs);
+		var pyf = SerializedFileFactory.serialized(pf0, pys);
+		var pf = SerializedFileFactory.serialized(pf0, ps);
 
 		b_tree.setAllocator(new AllocatorImpl(alf));
 		b_tree.setSuperblockPageFile(sbf);
