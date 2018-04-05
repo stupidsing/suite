@@ -2,7 +2,6 @@ package suite.fs.impl;
 
 import java.util.List;
 
-import suite.fs.KeyDataMutator;
 import suite.fs.KeyDataStore;
 import suite.fs.impl.FileSystemKeyUtil.NameKey;
 import suite.primitive.Bytes;
@@ -35,17 +34,17 @@ public class FileSystemKeySet {
 
 	private Streamlet<Bytes> list(List<NameKey> prefix, List<NameKey> keys0, List<NameKey> keys1) {
 		var hash = keyUtil.hash(keyUtil.toName(prefix));
-		NameKey minKey = keys0 != null && !keys0.isEmpty() ? List_.first(keys0) : boundingKey(hash, 0);
-		NameKey maxKey = keys1 != null && !keys1.isEmpty() ? List_.first(keys1) : boundingKey(hash, 1);
+		var minKey = keys0 != null && !keys0.isEmpty() ? List_.first(keys0) : boundingKey(hash, 0);
+		var maxKey = keys1 != null && !keys1.isEmpty() ? List_.first(keys1) : boundingKey(hash, 1);
 		var st = store.mutateData().keys(keyUtil.toBytes(minKey), increment(keyUtil.toBytes(maxKey)));
 
 		return st.concatMap(bytes -> {
 			var key = keyUtil.toNameKey(bytes);
-			List<NameKey> prefix1 = List_.concat(prefix, List.of(key));
+			var prefix1 = List_.concat(prefix, List.of(key));
 
 			if (key.size == 0) {
-				List<NameKey> tailKeys0 = key == minKey ? !keys0.isEmpty() ? List_.right(keys0, 1) : emptyKeys : null;
-				List<NameKey> tailKeys1 = key == maxKey ? !keys1.isEmpty() ? List_.right(keys1, 1) : emptyKeys : null;
+				var tailKeys0 = key == minKey ? !keys0.isEmpty() ? List_.right(keys0, 1) : emptyKeys : null;
+				var tailKeys1 = key == maxKey ? !keys1.isEmpty() ? List_.right(keys1, 1) : emptyKeys : null;
 				return list(prefix1, tailKeys0, tailKeys1);
 			} else
 				return Read.each(keyUtil.toName(prefix1));
@@ -53,22 +52,22 @@ public class FileSystemKeySet {
 	}
 
 	public void add(Bytes name) {
-		KeyDataMutator<Bytes> mutator = store.mutateData();
+		var mutator = store.mutateData();
 		for (var key : keyUtil.toNameKeys(name))
 			mutator.putTerminal(keyUtil.toBytes(key));
 	}
 
 	public void remove(Bytes name) {
-		KeyDataMutator<Bytes> mutator = store.mutateData();
+		var mutator = store.mutateData();
 		var keys = keyUtil.toNameKeys(name);
 
 		for (var i = keys.size() - 1; 0 <= i; i--) {
 			var key = keys.get(i);
 
 			if (key.size == 0) {
-				Bytes hash = keyUtil.hash(keyUtil.toName(keys.subList(0, i + 1)));
-				NameKey minKey = boundingKey(hash, 0);
-				NameKey maxKey = boundingKey(hash, 1);
+				var hash = keyUtil.hash(keyUtil.toName(keys.subList(0, i + 1)));
+				var minKey = boundingKey(hash, 0);
+				var maxKey = boundingKey(hash, 1);
 				if (mutator.keys(keyUtil.toBytes(minKey), keyUtil.toBytes(maxKey)) == null)
 					mutator.removeTerminal(keyUtil.toBytes(key));
 			} else
@@ -82,7 +81,7 @@ public class FileSystemKeySet {
 
 	private Bytes increment(Bytes bytes) {
 		if (!bytes.isEmpty()) {
-			Bytes bytes1 = bytes.range(0, -1);
+			var bytes1 = bytes.range(0, -1);
 			var b1 = (byte) (bytes.get(-1) + 1);
 			if (b1 != 0)
 				return Bytes.concat(bytes1, Bytes.of(b1));

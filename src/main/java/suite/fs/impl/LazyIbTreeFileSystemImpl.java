@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import suite.file.JournalledPageFile;
-import suite.file.PageFile;
 import suite.file.impl.FileFactory;
 import suite.file.impl.JournalledFileFactory;
 import suite.fs.FileSystem;
@@ -28,7 +27,7 @@ public class LazyIbTreeFileSystemImpl implements FileSystem {
 
 	public LazyIbTreeFileSystemImpl(Path path, int pageSize) {
 		jpf = JournalledFileFactory.journalled(path, pageSize);
-		PageFile[] pfs = FileFactory.subPageFiles(jpf, 0, 10240, 20480, 30720);
+		var pfs = FileFactory.subPageFiles(jpf, 0, 10240, 20480, 30720);
 
 		mutator = new FileSystemMutatorImpl(keyUtil, () -> new KeyDataStore<>() {
 			private KeyValueStore<Bytes, Bytes> kvss = LazyIbTreeStore.ofExtent( //

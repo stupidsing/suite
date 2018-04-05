@@ -2,7 +2,6 @@ package suite.fs.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -39,7 +38,7 @@ public class TransactionManager<Key, Value> {
 
 		@Override
 		public KeyValueMutator<Key, Value> mutate() {
-			KeyValueMutator<Key, Value> mutator = store.mutate();
+			var mutator = store.mutate();
 
 			return new KeyValueMutator<>() {
 				public Streamlet<Key> keys(Key start, Key end) {
@@ -79,8 +78,8 @@ public class TransactionManager<Key, Value> {
 	private synchronized void flush() {
 		Map<Key, Value> map = new HashMap<>();
 
-		boolean ok = stm.transaction(transaction -> {
-			List<Key> keys = new ArrayList<>(memoryByKey.keySet());
+		var ok = stm.transaction(transaction -> {
+			var keys = new ArrayList<>(memoryByKey.keySet());
 			for (var key : keys)
 				memoryByKey.compute(key, (key_, memory) -> {
 					if (memory != null)
@@ -91,8 +90,8 @@ public class TransactionManager<Key, Value> {
 		});
 
 		if (ok) {
-			KeyValueStore<Key, Value> store = source.source();
-			KeyValueMutator<Key, Value> mutator = store.mutate();
+			var store = source.source();
+			var mutator = store.mutate();
 			map.forEach((k, v) -> {
 				if (v != null)
 					mutator.put(k, v);
@@ -104,7 +103,7 @@ public class TransactionManager<Key, Value> {
 	}
 
 	public <T> T begin(Fun<KeyValueMutator<Key, Value>, T> fun) {
-		KeyValueStore<Key, Value> store = new Transaction(source.source());
+		var store = new Transaction(source.source());
 		var ok = false;
 		try {
 			var t = fun.apply(store.mutate());

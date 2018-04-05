@@ -80,12 +80,12 @@ public class FileSystemKeyUtil {
 
 	public List<NameKey> toNameKeys(Bytes name) {
 		if (name != null) {
-			List<NameKey> keys = new ArrayList<>();
+			var keys = new ArrayList<NameKey>();
 			int pos = 0, size = name.size();
 
 			while (pos < size) {
 				var pathLength = sizeOffset - pathOffset;
-				int pos1 = min(pos + pathLength, size);
+				var pos1 = min(pos + pathLength, size);
 				keys.add(toNameKey( //
 						hash(name.range(0, pos)), //
 						0, //
