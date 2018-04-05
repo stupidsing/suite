@@ -1,8 +1,6 @@
 package suite.pkgmanager;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
@@ -31,7 +29,7 @@ public class Keeper {
 	}
 
 	public PackageMemento loadPackageMemento(String packageName) throws IOException {
-		try (InputStream is = Files.newInputStream(keeperDir.resolve(packageName))) {
+		try (var is = Files.newInputStream(keeperDir.resolve(packageName))) {
 			return mapify.unmapify(PackageMemento.class, objectMapper.readValue(is, Map.class));
 		}
 	}
@@ -39,7 +37,7 @@ public class Keeper {
 	public void savePackageMemento(PackageMemento packageMemento) throws IOException {
 		var packageName = packageMemento.getPackageManifest().getName();
 
-		try (OutputStream os = FileUtil.out(keeperDir.resolve(packageName))) {
+		try (var os = FileUtil.out(keeperDir.resolve(packageName))) {
 			objectMapper.writeValue(os, mapify.mapify(PackageMemento.class, packageMemento));
 		}
 	}

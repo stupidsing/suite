@@ -1,7 +1,6 @@
 package suite.lp.search;
 
 import suite.Suite;
-import suite.instructionexecutor.InstructionExecutor;
 import suite.instructionexecutor.LogicInstructionExecutor;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
@@ -49,7 +48,7 @@ public class CompiledProverBuilder implements Builder {
 				proverConfig1.setSource(source);
 				proverConfig1.setSink(sink);
 
-				try (InstructionExecutor executor = new LogicInstructionExecutor(code, proverConfig1)) {
+				try (var executor = new LogicInstructionExecutor(code, proverConfig1)) {
 					executor.execute();
 				}
 			};

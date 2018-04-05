@@ -3,7 +3,6 @@ package suite.net.nio;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -44,7 +43,7 @@ public class NioDispatcherTest {
 		NioDispatcher<NioChannel> dispatcher = new NioDispatcherImpl<>(source);
 		dispatcher.start();
 
-		try (Closeable closeServer = dispatcher.listen(5151);
+		try (var closeServer = dispatcher.listen(5151);
 				Socket socket = new Socket("localhost", 5151);
 				var is = socket.getInputStream();
 				var os = socket.getOutputStream();
@@ -72,7 +71,7 @@ public class NioDispatcherTest {
 				() -> NioChannelFactory.requestResponse(new RequestResponseNioChannel(), matcher, executor, handler));
 		dispatcher.start();
 
-		try (Closeable closeServer = dispatcher.listen(5151)) {
+		try (var closeServer = dispatcher.listen(5151)) {
 			var localHost = InetAddress.getLocalHost();
 			InetSocketAddress address = new InetSocketAddress(localHost, 5151);
 			var client = dispatcher.connect(address);

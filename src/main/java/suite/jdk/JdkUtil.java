@@ -1,11 +1,9 @@
 package suite.jdk;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.List;
 
-import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
 import suite.Constants;
@@ -28,7 +26,7 @@ public class JdkUtil {
 		Path binFilePath = binDir.resolve(canonicalName.replace('.', '/') + ".class");
 
 		LogUtil.info("Writing " + srcFilePath);
-		try (OutputStream os = FileUtil.out(srcFilePath)) {
+		try (var os = FileUtil.out(srcFilePath)) {
 			os.write(java.getBytes(Constants.charset));
 		}
 
@@ -38,7 +36,7 @@ public class JdkUtil {
 
 		var jc = ToolProvider.getSystemJavaCompiler();
 
-		try (StandardJavaFileManager sjfm = jc.getStandardFileManager(null, null, null)) {
+		try (var sjfm = jc.getStandardFileManager(null, null, null)) {
 			if (!jc.getTask( //
 					null, //
 					null, //

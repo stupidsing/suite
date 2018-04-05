@@ -166,7 +166,7 @@ public class Suite {
 	}
 
 	public static String evaluateFilterFun(String program, String in, boolean isLazy, boolean isDo) {
-		try (Reader reader = new StringReader(in); Writer writer = new StringWriter()) {
+		try (var reader = new StringReader(in); var writer = new StringWriter()) {
 			evaluateFilterFun(program, reader, writer, isLazy, isDo);
 			return writer.toString();
 		} catch (IOException ex) {

@@ -1,7 +1,6 @@
 package suite.filelib;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -79,7 +78,7 @@ public class LibraryMain extends ExecutableProgram {
 				});
 
 		// construct file listing
-		try (OutputStream os = FileUtil.out(inputDir + ".listing"); PrintWriter pw = new PrintWriter(os)) {
+		try (var os = FileUtil.out(inputDir + ".listing"); var pw = new PrintWriter(os)) {
 			for (Pair<Path, FileInfo> path_fileInfo : path_fileInfos)
 				pw.println(path_fileInfo.t0 + path_fileInfo.t1.md5);
 		} catch (IOException ex) {

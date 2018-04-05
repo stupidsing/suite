@@ -2,7 +2,6 @@ package suite.os;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Map;
 import java.util.Set;
@@ -17,7 +16,7 @@ public class UnicodeData {
 	private Map<String, Set<Character>> classByChars;
 
 	public UnicodeData() {
-		try (InputStream is = getClass().getResourceAsStream("UnicodeData.txt");
+		try (var is = getClass().getResourceAsStream("UnicodeData.txt");
 				var isr = new InputStreamReader(is);
 				var br = new BufferedReader(isr)) {
 			classByChars = Read.lines(is) //

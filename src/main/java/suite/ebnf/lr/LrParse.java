@@ -22,7 +22,7 @@ public class LrParse {
 	private BuildLr buildLr;
 
 	public static LrParse of(String grammar, String rootEntity) {
-		try (StringReader reader = new StringReader(grammar)) {
+		try (var reader = new StringReader(grammar)) {
 			return new LrParse(Grammar.parse(reader), rootEntity);
 		}
 	}

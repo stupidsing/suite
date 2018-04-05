@@ -38,7 +38,7 @@ public class SerializedStoreCache<K, V> {
 		Bytes valueBytes = storeCache.get(keyBytes, () -> serialize(valueSerializer, source.source()));
 
 		return Rethrow.ex(() -> {
-			try (ByteArrayInputStream bais = new ByteArrayInputStream(valueBytes.toArray()); DataInput_ dis = DataInput_.of(bais)) {
+			try (var bais = new ByteArrayInputStream(valueBytes.toArray()); var dis = DataInput_.of(bais)) {
 				return valueSerializer.read(dis);
 			}
 		});
@@ -47,7 +47,7 @@ public class SerializedStoreCache<K, V> {
 	private static <T> Bytes serialize(Serializer<T> serializer, T t) {
 		var baosKey = new ByteArrayOutputStream();
 
-		try (DataOutput_ dos = DataOutput_.of(baosKey)) {
+		try (var dos = DataOutput_.of(baosKey)) {
 			serializer.write(dos, t);
 		} catch (IOException ex) {
 			Fail.t(ex);

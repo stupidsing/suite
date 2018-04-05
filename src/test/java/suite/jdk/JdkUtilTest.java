@@ -25,7 +25,7 @@ public class JdkUtilTest {
 				+ "  }" //
 				+ "}";
 
-		try (JdkLoadClassUtil jdkLoadClassUtil = new JdkLoadClassUtil(srcDir, binDir)) {
+		try (var jdkLoadClassUtil = new JdkLoadClassUtil(srcDir, binDir)) {
 			jdkLoadClassUtil.newInstance(Runnable.class, className, src).run();
 		}
 

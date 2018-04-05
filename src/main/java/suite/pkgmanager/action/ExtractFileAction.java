@@ -20,7 +20,7 @@ public class ExtractFileAction implements InstallAction {
 	}
 
 	public void act() throws IOException {
-		try (ZipFile zipFile = new ZipFile(packageFile);
+		try (var zipFile = new ZipFile(packageFile);
 				var is = zipFile.getInputStream(zipFile.getEntry(filename0));
 				var fos = new FileOutputStream(filename1)) {
 			Copy.stream(is, fos);

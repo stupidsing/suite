@@ -1,7 +1,6 @@
 package suite.os;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
@@ -28,7 +27,7 @@ public class ElfWriter {
 	}
 
 	private void write(int org, Bytes code, Path path) {
-		try (OutputStream os = FileUtil.out(path); DataOutput_ do_ = DataOutput_.of(os)) {
+		try (var os = FileUtil.out(path); var do_ = DataOutput_.of(os)) {
 			write(org, code, do_);
 		} catch (IOException ex) {
 			Fail.t(ex);

@@ -34,7 +34,7 @@ public class PackageManager {
 
 		List<InstallAction> installActions = new ArrayList<>();
 
-		try (ZipFile zipFile = new ZipFile(packageFilename)) {
+		try (var zipFile = new ZipFile(packageFilename)) {
 			installActions.addAll(Read //
 					.from(FileUtil.listZip(zipFile)) //
 					.map(filename0 -> {
@@ -95,7 +95,7 @@ public class PackageManager {
 	}
 
 	private PackageManifest getPackageManifest(String packageFilename) throws IOException {
-		try (ZipFile zipFile = new ZipFile(packageFilename);
+		try (var zipFile = new ZipFile(packageFilename);
 				var fis = zipFile.getInputStream(zipFile.getEntry("pm.json"))) {
 			return objectMapper.readValue(fis, PackageManifest.class);
 		}

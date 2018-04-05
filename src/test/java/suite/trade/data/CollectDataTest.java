@@ -29,7 +29,7 @@ public class CollectDataTest {
 			String urlString = yahoo.tableUrl(code, TimeRange.ages());
 			var url = To.url(urlString);
 
-			try (FileOutputStream fos = new FileOutputStream("/data/storey/markets/" + code + ".csv")) {
+			try (var fos = new FileOutputStream("/data/storey/markets/" + code + ".csv")) {
 				Copy.stream(To.inputStream(HttpUtil.get(url).out), fos);
 			}
 

@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
-import java.io.Writer;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -54,7 +53,7 @@ public class XmlUtil {
 	}
 
 	public String format(String xml) throws SAXException {
-		try (InputStream is = new ByteArrayInputStream(xml.getBytes(Constants.charset)); Writer writer = new StringWriter()) {
+		try (var is = new ByteArrayInputStream(xml.getBytes(Constants.charset)); var writer = new StringWriter()) {
 			var lso = di.createLSOutput();
 			lso.setEncoding(Constants.charset.name());
 			lso.setCharacterStream(writer);

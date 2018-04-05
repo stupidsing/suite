@@ -15,7 +15,7 @@ public class TermiosMain {
 	}
 
 	private void run() {
-		try (Termios termios = new Termios(libc)) {
+		try (var termios = new Termios(libc)) {
 			termios.clear();
 			termios.cursor(false);
 

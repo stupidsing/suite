@@ -25,8 +25,7 @@ public class SocketUtil {
 
 	public void listenRw(int port, Rw rw) throws IOException {
 		listenIo(port, (is, os) -> {
-			try (Reader reader = new BufferedReader(new InputStreamReader(is, Constants.charset));
-					var writer = new PrintWriter(os)) {
+			try (var reader = new BufferedReader(new InputStreamReader(is, Constants.charset)); var writer = new PrintWriter(os)) {
 				rw.serve(reader, writer);
 			}
 		});
@@ -35,12 +34,12 @@ public class SocketUtil {
 	public void listenIo(int port, Io io) throws IOException {
 		var executor = Thread_.newExecutor();
 
-		try (ServerSocket server = new ServerSocket(port)) {
+		try (var server = new ServerSocket(port)) {
 			while (true) {
 				var socket = server.accept();
 
 				executor.execute(() -> {
-					try (InputStream is = socket.getInputStream(); OutputStream os = socket.getOutputStream()) {
+					try (var is = socket.getInputStream(); var os = socket.getOutputStream()) {
 						io.serve(is, os);
 					} catch (Exception ex) {
 						LogUtil.error(ex);

@@ -18,7 +18,7 @@ public class LexerTest {
 		var sb = new StringBuilder();
 		int nCharsRead;
 
-		try (FileReader reader = new FileReader("src/main/java/suite/parser/Lexer.java")) {
+		try (var reader = new FileReader("src/main/java/suite/parser/Lexer.java")) {
 			while (0 <= (nCharsRead = reader.read(buffer)))
 				sb.append(buffer, 0, nCharsRead);
 		}

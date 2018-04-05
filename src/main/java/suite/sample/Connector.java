@@ -15,7 +15,7 @@ public class Connector {
 	public void connect() throws IOException {
 		var charset = Constants.charset;
 
-		try (Socket socket = new Socket("wwww.google.com", 80);
+		try (var socket = new Socket("wwww.google.com", 80);
 				var is = socket.getInputStream();
 				var os = socket.getOutputStream();
 				Reader reader = new BufferedReader(new InputStreamReader(is, charset));

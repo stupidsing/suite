@@ -35,7 +35,7 @@ public class LoadBalancer {
 					List<String> alives1 = new ArrayList<>();
 
 					for (var server : servers)
-						try (Socket socket = new Socket(server, port)) {
+						try (var socket = new Socket(server, port)) {
 							alives1.add(server);
 						} catch (SocketException ex) {
 						}
@@ -53,7 +53,7 @@ public class LoadBalancer {
 
 			var server = alives0.get(count % alives0.size());
 
-			try (Socket socket = new Socket(server, port)) {
+			try (var socket = new Socket(server, port)) {
 				var sis = socket.getInputStream();
 				var sos = socket.getOutputStream();
 				List<Thread> threads = List.of(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os));

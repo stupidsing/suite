@@ -1,6 +1,5 @@
 package suite.trade.data;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -96,7 +95,7 @@ public class Google {
 					+ symbols.sort(Object_::compare).map(this::fromSymbol).collect(As.joinedBy(",")));
 
 			JsonNode json = Rethrow.ex(() -> {
-				try (InputStream is = HttpUtil.get(url).out.collect(To::inputStream)) {
+				try (var is = HttpUtil.get(url).out.collect(To::inputStream)) {
 					for (var i = 0; i < 4; i++)
 						is.read();
 					return mapper.readTree(is);

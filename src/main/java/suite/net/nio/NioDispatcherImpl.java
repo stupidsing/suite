@@ -90,7 +90,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 	}
 
 	private void serve() throws IOException {
-		try (Closeable started = threadService.started()) {
+		try (var started = threadService.started()) {
 			while (threadService.isRunning()) {
 
 				// unfortunately Selector.wakeup() does not work on my Linux

@@ -6,8 +6,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -55,7 +53,7 @@ public class FormatPredicates {
 	public BuiltinPredicate parse = PredicateUtil.fun(n -> Suite.parse(Formatter.display(n)));
 
 	public BuiltinPredicate persistLoad = PredicateUtil.p2((prover, node, filename) -> {
-		try (InputStream is = new FileInputStream(((Str) filename).value);
+		try (var is = new FileInputStream(((Str) filename).value);
 				var gis = new GZIPInputStream(is);
 				var dis = new DataInputStream(gis)) {
 			var grapher = new Grapher();
@@ -67,7 +65,7 @@ public class FormatPredicates {
 	});
 
 	public BuiltinPredicate persistSave = PredicateUtil.p2((prover, node, filename) -> {
-		try (OutputStream os = FileUtil.out(((Str) filename).value);
+		try (var os = FileUtil.out(((Str) filename).value);
 				var gos = new GZIPOutputStream(os);
 				var dos = new DataOutputStream(gos)) {
 			var grapher = new Grapher();

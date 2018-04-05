@@ -2,9 +2,7 @@ package suite.trade.walkforwardalloc.run;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -57,11 +55,8 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 						var ymdHms = Time.now().ymdHms();
 						Map<String, Float> priceBySymbol = cfg.quote(assets.map(asset -> asset.symbol).toSet());
 
-						try (OutputStream os = Files.newOutputStream( //
-								HomeDir.resolve(filename), //
-								StandardOpenOption.APPEND, //
-								StandardOpenOption.CREATE, //
-								StandardOpenOption.WRITE); //
+						try (var os = Files.newOutputStream(HomeDir.resolve(filename), //
+								StandardOpenOption.APPEND, StandardOpenOption.CREATE, StandardOpenOption.WRITE); //
 								var bw = new PrintWriter(os)) {
 							for (var e : priceBySymbol.entrySet())
 								bw.println(ymdHms + ", " + e.getKey() + ", " + e.getValue());
@@ -77,7 +72,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 
 			Map<Time, Map<String, Float>> data = new TreeMap<>();
 
-			try (InputStream is = Files.newInputStream(HomeDir.resolve(filename)); //
+			try (var is = Files.newInputStream(HomeDir.resolve(filename)); //
 					var isr = new InputStreamReader(is); //
 					var br = new BufferedReader(isr)) {
 				while (br.ready()) {

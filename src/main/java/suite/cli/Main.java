@@ -109,7 +109,7 @@ public class Main extends ExecutableProgram {
 
 		code &= dispatcher.importFiles(filenames);
 
-		try (Writer sw = new StringWriter()) {
+		try (var sw = new StringWriter()) {
 			var node = Suite.applyWriter(Suite.parse("\"READY\""));
 			Suite.evaluateFunToWriter(opt.fcc(node), sw);
 			ready = sw.toString();

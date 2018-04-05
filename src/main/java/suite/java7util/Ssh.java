@@ -3,7 +3,6 @@ package suite.java7util;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 import com.jcraft.jsch.Channel;
@@ -49,7 +48,7 @@ public class Ssh {
 		Session session = null;
 		ChannelSftp channel = null;
 
-		try (InputStream fis = new FileInputStream(src)) {
+		try (var fis = new FileInputStream(src)) {
 			session = newSession("kenchi.no-ip.org", 22, "sing", "abc123");
 
 			channel = (ChannelSftp) session.openChannel("sftp");

@@ -3,9 +3,7 @@ package suite.fp.intrinsic;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +53,7 @@ public class MonadIntrinsics {
 			// the input stream is also closed by this thread.
 			// have to make sure the executors are thread-safe!
 			Thread_.startThread(() -> {
-				try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos)) {
+				try (var pos = process.getOutputStream(); var writer = new OutputStreamWriter(pos)) {
 					ThunkUtil.yawnWriter(yawn, in, writer);
 				}
 

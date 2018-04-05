@@ -1,6 +1,5 @@
 package suite.net.cluster.impl;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -145,7 +144,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 		dc.socket().bind(address);
 		dc.register(selector, SelectionKey.OP_READ);
 
-		try (Closeable started = threadService.started()) {
+		try (var started = threadService.started()) {
 			while (threadService.isRunning()) {
 				selector.select(500); // handle network events
 

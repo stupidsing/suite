@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -15,7 +14,7 @@ import suite.util.FunUtil.Source;
 public class FileUtil {
 
 	public static void copyFile(File from, File to) {
-		try (OutputStream fos = new FileOutputStream(to)) {
+		try (var fos = new FileOutputStream(to)) {
 			Copy.stream(new FileInputStream(from), fos);
 		} catch (IOException ex) {
 			Fail.t(ex);

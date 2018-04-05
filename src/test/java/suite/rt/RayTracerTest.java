@@ -2,7 +2,6 @@ package suite.rt;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 import java.util.Set;
 
@@ -202,7 +201,7 @@ public class RayTracerTest {
 		var path = Constants.tmp(Thread_.getStackTrace(3).getMethodName() + ".png");
 		BufferedImage bufferedImage = rayTracer.trace(640, 480, 640);
 
-		try (OutputStream os = FileUtil.out(path)) {
+		try (var os = FileUtil.out(path)) {
 			ImageIO.write(bufferedImage, "png", os);
 		}
 	}

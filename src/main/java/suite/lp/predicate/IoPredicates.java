@@ -1,7 +1,6 @@
 package suite.lp.predicate;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -69,7 +68,7 @@ public class IoPredicates {
 		var filename = Formatter.display(fn);
 		var content = Formatter.display(contents);
 
-		try (OutputStream fos = FileUtil.out(filename)) {
+		try (var fos = FileUtil.out(filename)) {
 			fos.write(content.getBytes(Constants.charset));
 		} catch (IOException ex) {
 			Fail.t(ex);

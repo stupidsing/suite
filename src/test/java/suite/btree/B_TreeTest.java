@@ -14,7 +14,6 @@ import org.junit.Test;
 import suite.Constants;
 import suite.adt.pair.Pair;
 import suite.btree.impl.B_TreeBuilder;
-import suite.file.JournalledPageFile;
 import suite.file.impl.JournalledFileFactory;
 import suite.primitive.Bytes;
 import suite.primitive.Ints_;
@@ -45,8 +44,7 @@ public class B_TreeTest {
 		Files.deleteIfExists(path);
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
 
-		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
-				B_Tree<Integer, String> b_tree = builder.build(jpf, comparator, pageSize)) {
+		try (var jpf = JournalledFileFactory.journalled(path, pageSize); var b_tree = builder.build(jpf, comparator, pageSize)) {
 			b_tree.create();
 
 			for (var i = 0; i < 32; i++)
@@ -69,8 +67,7 @@ public class B_TreeTest {
 
 		shuffleNumbers();
 
-		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
-				B_Tree<Integer, String> b_tree = builder.build(jpf, comparator, pageSize)) {
+		try (var jpf = JournalledFileFactory.journalled(path, pageSize); var b_tree = builder.build(jpf, comparator, pageSize)) {
 			b_tree.create();
 			testStep0(b_tree);
 			jpf.commit();
@@ -79,15 +76,13 @@ public class B_TreeTest {
 
 		shuffleNumbers();
 
-		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
-				B_Tree<Integer, String> b_tree = builder.build(jpf, comparator, pageSize)) {
+		try (var jpf = JournalledFileFactory.journalled(path, pageSize); var b_tree = builder.build(jpf, comparator, pageSize)) {
 			testStep1(b_tree);
 			jpf.commit();
 			jpf.sync();
 		}
 
-		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
-				B_Tree<Integer, String> b_tree = builder.build(jpf, comparator, pageSize)) {
+		try (var jpf = JournalledFileFactory.journalled(path, pageSize); var b_tree = builder.build(jpf, comparator, pageSize)) {
 			testStep2(b_tree);
 			jpf.commit();
 			jpf.sync();
@@ -112,8 +107,7 @@ public class B_TreeTest {
 		Files.deleteIfExists(path);
 		B_TreeBuilder<Integer, Bytes> builder = new B_TreeBuilder<>(serialize.int_, serialize.bytes(64));
 
-		try (JournalledPageFile jpf = JournalledFileFactory.journalled(path, pageSize);
-				B_Tree<Integer, Bytes> b_tree = builder.build(jpf, comparator, 9999)) {
+		try (var jpf = JournalledFileFactory.journalled(path, pageSize); var b_tree = builder.build(jpf, comparator, 9999)) {
 			new Profiler().profile(() -> {
 				b_tree.create();
 				for (var i = 0; i < nKeys; i++) {

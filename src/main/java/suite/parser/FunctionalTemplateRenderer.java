@@ -24,7 +24,7 @@ public class FunctionalTemplateRenderer {
 				(fp_, p) -> Suite.substitute("let .1 := .2 >> .0", fp_, Atom.of(p.t0), p.t1));
 		var fp2 = Suite.applyWriter(fp1);
 
-		try (StringWriter sw = new StringWriter()) {
+		try (var sw = new StringWriter()) {
 			Suite.evaluateFunToWriter(Suite.fcc(fp2), sw);
 			return sw.toString();
 		} catch (IOException ex) {

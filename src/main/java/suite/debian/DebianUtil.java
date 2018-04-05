@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +18,7 @@ import suite.util.Fail;
 public class DebianUtil {
 
 	public Streamlet<Map<String, String>> readDpkgConfiguration(File file) {
-		try (InputStream is = new FileInputStream(file)) {
+		try (var is = new FileInputStream(file)) {
 			return readDpkgConfiguration(is);
 		} catch (IOException ex) {
 			return Fail.t(ex);
@@ -27,7 +26,7 @@ public class DebianUtil {
 	}
 
 	public Streamlet<Map<String, String>> readDpkgConfiguration(InputStream is) throws IOException {
-		try (Reader isr = new InputStreamReader(is); BufferedReader br = new BufferedReader(isr)) {
+		try (var isr = new InputStreamReader(is); var br = new BufferedReader(isr)) {
 			List<Map<String, String>> pms = new ArrayList<>();
 			Map<String, String> pm = new HashMap<>();
 			var sb = new StringBuilder();

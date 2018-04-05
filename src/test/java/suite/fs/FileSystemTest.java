@@ -49,13 +49,13 @@ public class FileSystemTest {
 	}
 
 	private void testB_Tree(Path path, boolean isNew, TestCase testCase) throws IOException {
-		try (FileSystem fs = new B_TreeFileSystemImpl(path, isNew, 4096)) {
+		try (var fs = new B_TreeFileSystemImpl(path, isNew, 4096)) {
 			testCase.test(fs);
 		}
 	}
 
 	private void testLazyIbTree(Path path, boolean isNew, TestCase testCase) throws IOException {
-		try (FileSystem fs = new LazyIbTreeFileSystemImpl(path, 4096)) {
+		try (var fs = new LazyIbTreeFileSystemImpl(path, 4096)) {
 			testCase.test(fs);
 		}
 	}

@@ -88,7 +88,7 @@ public class CommandOptions {
 	}
 
 	public PrintStream prompt() {
-		try (OutputStream os = new OutputStream() {
+		try (var os = new OutputStream() {
 			public void write(int c) {
 			}
 		}) {

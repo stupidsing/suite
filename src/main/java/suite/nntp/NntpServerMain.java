@@ -43,7 +43,7 @@ public class NntpServerMain extends ExecutableProgram {
 
 	private class Server {
 		private void serve(InputStream sis, OutputStream sos) throws IOException {
-			try (OutputStreamWriter osw = new OutputStreamWriter(sos); PrintWriter pw = new PrintWriter(osw)) {
+			try (var osw = new OutputStreamWriter(sos); var pw = new PrintWriter(osw)) {
 				String currentGroupId = null;
 				Map<String, String> article;
 				String line;

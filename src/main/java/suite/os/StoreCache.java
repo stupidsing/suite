@@ -2,8 +2,6 @@ package suite.os;
 
 import java.io.DataInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -140,7 +138,7 @@ public class StoreCache {
 
 			while (Files.exists(path = path(key, i, ".k"))) {
 				if (isUpToDate(path, current))
-					try (InputStream kis = Files.newInputStream(path); DataInputStream kdis = new DataInputStream(kis)) {
+					try (var kis = Files.newInputStream(path); var kdis = new DataInputStream(kis)) {
 						if (isMatch(key, kdis) && Files.exists(path = path(key, i, ".v")))
 							return Pair.of(true, path);
 					}
@@ -168,7 +166,7 @@ public class StoreCache {
 	}
 
 	private void writeKey(Path path, Bytes key) throws IOException {
-		try (OutputStream kos = FileUtil.out(path); DataOutput_ kdo = DataOutput_.of(kos)) {
+		try (var kos = FileUtil.out(path); DataOutput_ kdo = DataOutput_.of(kos)) {
 			kdo.writeInt(key.size());
 			kdo.writeBytes(key);
 		}

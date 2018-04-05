@@ -25,16 +25,16 @@ public class MutexTest {
 		var b = new Mutex();
 
 		MutexTestRunnable ra = () -> {
-			try (MutexLock mla = new MutexLock(a)) {
+			try (var mla = new MutexLock(a)) {
 				Thread_.sleepQuietly(500);
-				try (MutexLock mlb = new MutexLock(b)) {
+				try (var mlb = new MutexLock(b)) {
 				}
 			}
 		};
 		MutexTestRunnable rb = () -> {
-			try (MutexLock mlb = new MutexLock(b)) {
+			try (var mlb = new MutexLock(b)) {
 				Thread_.sleepQuietly(500);
-				try (MutexLock mla = new MutexLock(a)) {
+				try (var mla = new MutexLock(a)) {
 				}
 			}
 		};
@@ -48,16 +48,16 @@ public class MutexTest {
 		var b = new Mutex();
 
 		MutexTestRunnable ra = () -> {
-			try (MutexLock mla = new MutexLock(a)) {
+			try (var mla = new MutexLock(a)) {
 				Thread_.sleepQuietly(500);
-				try (MutexLock mlb = new MutexLock(b)) {
+				try (var mlb = new MutexLock(b)) {
 				}
 			}
 		};
 		MutexTestRunnable rb = () -> {
-			try (MutexLock mla = new MutexLock(a)) {
+			try (var mla = new MutexLock(a)) {
 				Thread_.sleepQuietly(500);
-				try (MutexLock mlb = new MutexLock(b)) {
+				try (var mlb = new MutexLock(b)) {
 				}
 			}
 		};

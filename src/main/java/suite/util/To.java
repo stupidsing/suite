@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.io.Writer;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
@@ -235,9 +234,7 @@ public class To {
 	}
 
 	public static String string(InputStream in) {
-		try (InputStream is = in;
-				InputStreamReader isr = new InputStreamReader(is, Constants.charset);
-				var br = new BufferedReader(isr)) {
+		try (var is = in; var isr = new InputStreamReader(is, Constants.charset); var br = new BufferedReader(isr)) {
 			return string(br);
 		} catch (IOException ex) {
 			return Fail.t(ex);
@@ -265,7 +262,7 @@ public class To {
 	}
 
 	public static String string(Reader reader) {
-		try (Reader reader_ = reader) {
+		try (var reader_ = reader) {
 			var buffer = new char[Constants.bufferSize];
 			var sb = new StringBuilder();
 
@@ -283,7 +280,7 @@ public class To {
 	public static String string(Throwable th) {
 		var sw = new StringWriter();
 
-		try (Writer sw_ = sw; PrintWriter pw = new PrintWriter(sw_)) {
+		try (var sw_ = sw; var pw = new PrintWriter(sw_)) {
 			th.printStackTrace(pw);
 		} catch (IOException ex) {
 		}

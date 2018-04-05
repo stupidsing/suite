@@ -29,7 +29,7 @@ public interface HttpHandler {
 			for (var p : request.path)
 				path = path.resolve(p);
 
-			try (RandomAccessFile file = new RandomAccessFile(path.toFile(), "r")) {
+			try (var file = new RandomAccessFile(path.toFile(), "r")) {
 				size = file.getChannel().size();
 			}
 

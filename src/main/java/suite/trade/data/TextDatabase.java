@@ -3,7 +3,6 @@ package suite.trade.data;
 import static suite.util.Friends.max;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -85,7 +84,7 @@ public class TextDatabase {
 				.map(this::toBytes) //
 				.collect(Bytes_::buffer);
 
-		try (OutputStream os = FileUtil.out(path)) {
+		try (var os = FileUtil.out(path)) {
 			Bytes_.copy(outlet, os::write);
 		} catch (IOException ex) {
 			Fail.t(ex);

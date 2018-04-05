@@ -3,7 +3,6 @@ package suite.http;
 import static suite.util.Friends.max;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -134,7 +133,7 @@ public class HttpUtil {
 
 		headers.entrySet().forEach(e -> conn.setRequestProperty(e.getKey(), e.getValue()));
 
-		try (OutputStream os = conn.getOutputStream()) {
+		try (var os = conn.getOutputStream()) {
 			Bytes_.copy(in, os::write);
 		}
 

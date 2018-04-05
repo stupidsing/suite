@@ -3,7 +3,6 @@ package suite.sample;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Properties;
 
 import com.jcraft.jsch.ChannelExec;
@@ -41,7 +40,7 @@ public class Ssh {
 
 	public void putFile(String src, String dest) throws IOException, SftpException, JSchException {
 		session(session -> channelSftp(session, channel -> {
-			try (InputStream fis = new FileInputStream(src)) {
+			try (var fis = new FileInputStream(src)) {
 				channel.put(fis, dest);
 				return true;
 			}

@@ -1,7 +1,6 @@
 package suite.trade.data;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -284,7 +283,7 @@ public class Hkex {
 	public float queryHangSengIndex() {
 		var url = "https://www.hkex.com.hk/eng/csm/ws/IndexMove.asmx/GetData?LangCode=en";
 
-		try (InputStream is = HttpUtil.get(To.url(url)).out.collect(To::inputStream)) {
+		try (var is = HttpUtil.get(To.url(url)).out.collect(To::inputStream)) {
 			return Read //
 					.each(mapper.readTree(is)) //
 					.flatMap(json_ -> json_.path("data")) //
@@ -318,7 +317,7 @@ public class Hkex {
 				+ "&TMM=" //
 				+ "&TYYYY=";
 
-		try (InputStream is = HttpUtil.get(To.url(url)).out.collect(To::inputStream)) {
+		try (var is = HttpUtil.get(To.url(url)).out.collect(To::inputStream)) {
 			return Read //
 					.each(mapper.readTree(is)) //
 					.flatMap(json_ -> json_.path("data")) //
@@ -422,7 +421,7 @@ public class Hkex {
 		JsonNode json;
 
 		if (Boolean.TRUE)
-			try (InputStream is = Singleton.me.storeCache.http(url).collect(To::inputStream)) {
+			try (var is = Singleton.me.storeCache.http(url).collect(To::inputStream)) {
 				json = mapper.readTree(is);
 			} catch (IOException ex) {
 				json = Fail.t(ex);

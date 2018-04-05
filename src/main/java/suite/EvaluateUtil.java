@@ -65,14 +65,14 @@ public class EvaluateUtil {
 	}
 
 	public Node evaluateFun(FunCompilerConfig fcc) {
-		try (FunInstructionExecutor executor = configureFunExecutor(fcc)) {
+		try (var executor = configureFunExecutor(fcc)) {
 			var result = executor.execute();
 			return fcc.isLazy() ? ThunkUtil.deepYawn(executor.getYawnFun(), result) : result;
 		}
 	}
 
 	public void evaluateCallback(FunCompilerConfig fcc, IoSink<FunInstructionExecutor> sink) throws IOException {
-		try (FunInstructionExecutor executor = configureFunExecutor(fcc)) {
+		try (var executor = configureFunExecutor(fcc)) {
 			sink.sink(executor);
 		}
 	}

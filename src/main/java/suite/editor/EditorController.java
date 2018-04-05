@@ -2,9 +2,7 @@ package suite.editor;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -148,7 +146,7 @@ public class EditorController {
 	}
 
 	public void save() {
-		try (OutputStream os = FileUtil.out(model.filename())) {
+		try (var os = FileUtil.out(model.filename())) {
 			os.write(view.getEditor().getText().getBytes(Constants.charset));
 		} catch (IOException ex) {
 			Fail.t(ex);
@@ -192,7 +190,7 @@ public class EditorController {
 		try {
 			var process = Runtime.getRuntime().exec(command);
 
-			try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos, Constants.charset)) {
+			try (var pos = process.getOutputStream(); var writer = new OutputStreamWriter(pos, Constants.charset)) {
 				writer.write(editor.getText());
 			}
 

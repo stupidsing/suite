@@ -119,8 +119,8 @@ public class FileUtil {
 	}
 
 	public static void write(Path path, String contents) {
-		try (OutputStream os = FileUtil.out(path); //
-				OutputStreamWriter w = new OutputStreamWriter(os, Constants.charset)) {
+		try (var os = FileUtil.out(path); //
+				var w = new OutputStreamWriter(os, Constants.charset)) {
 			w.write(contents);
 		} catch (IOException ex) {
 			Fail.t(ex);

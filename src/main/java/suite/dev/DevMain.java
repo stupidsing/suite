@@ -49,7 +49,7 @@ public class DevMain {
 		var input = FileUtil.read("src/main/java/suite/dev/DevMain.java");
 		var inputText = text(IRope.ropeList(input));
 
-		try (Termios termios = new Termios(libc);) {
+		try (var termios = new Termios(libc);) {
 			termios.clear();
 			var keyboard = new Keyboard(libc);
 

@@ -1,6 +1,5 @@
 package suite.trade.data;
 
-import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -213,7 +212,7 @@ public class Yahoo {
 				+ "&corsDomain=finance.yahoo.com");
 
 		return Rethrow.ex(() -> {
-			try (InputStream is = HttpUtil.get(url).out.collect(To::inputStream)) {
+			try (var is = HttpUtil.get(url).out.collect(To::inputStream)) {
 				return mapper.readTree(is);
 			}
 		});
@@ -234,7 +233,7 @@ public class Yahoo {
 				+ "&callback=";
 
 		return Rethrow.ex(() -> {
-			try (InputStream is = Singleton.me.storeCache.http(urlString).collect(To::inputStream)) {
+			try (var is = Singleton.me.storeCache.http(urlString).collect(To::inputStream)) {
 				var json = mapper.readTree(is);
 
 				Streamlet<JsonNode> quotes = Read.each(json) //
