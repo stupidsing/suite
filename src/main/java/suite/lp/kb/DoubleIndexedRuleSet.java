@@ -37,7 +37,7 @@ public class DoubleIndexedRuleSet extends IndexedRuleSet {
 
 		var p0 = Prototype.of(rule);
 		var p1 = Prototype.of(rule, 1);
-		ListMultimap<Prototype, Rule> index1 = index0.get(p0);
+		var index1 = index0.get(p0);
 
 		if (index1 != null) {
 			index1.remove(p1, rule);
@@ -53,7 +53,7 @@ public class DoubleIndexedRuleSet extends IndexedRuleSet {
 		var p1 = Prototype.of(node, 1);
 
 		if (p0 != null && p1 != null && !index0.containsKey(null)) {
-			ListMultimap<Prototype, Rule> index1 = index0.get(p0);
+			var index1 = index0.get(p0);
 
 			if (index1 != null && !index1.containsKey(null))
 				return index1.get(p1);
@@ -65,7 +65,7 @@ public class DoubleIndexedRuleSet extends IndexedRuleSet {
 	private List<Rule> ruleList(Rule rule) {
 		var p0 = Prototype.of(rule);
 		var p1 = Prototype.of(rule, 1);
-		ListMultimap<Prototype, Rule> index1 = index0.computeIfAbsent(p0, any -> new ListMultimap<>());
+		var index1 = index0.computeIfAbsent(p0, any -> new ListMultimap<>());
 		return index1.getMutable(p1);
 	}
 
