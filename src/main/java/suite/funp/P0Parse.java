@@ -187,7 +187,7 @@ public class P0Parse {
 				var bind = new Bind(variables);
 				var then = new Parse(variables1).parse(c);
 				var else_ = parse(d);
-				Funp f0 = bind.bind(be, value, then, else_);
+				var f0 = bind.bind(be, value, then, else_);
 				Funp f1 = FunpCheckType.of(be, value, f0);
 
 				for (var var : variables)
@@ -256,7 +256,7 @@ public class P0Parse {
 
 		private Funp bind(Funp be, Funp value, Funp then, Funp else_) {
 			IntObj_Obj<Int_Obj<Funp>, Funp> bindArray = (size0, fun0) -> {
-				Int_Obj<Funp> fun1 = new Switch<Int_Obj<Funp>>(value //
+				var fun1 = new Switch<Int_Obj<Funp>>(value //
 				).applyIf(FunpArray.class, g -> {
 					var elements = g.elements;
 					return size0 == elements.size() ? elements::get : null;
@@ -288,10 +288,7 @@ public class P0Parse {
 				}).applyIf(FunpRepeat.class, f -> f.apply((size0, expr0) -> {
 					return bindArray.apply(size0, i -> expr0);
 				})).applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
-					List<Pair<String, Funp>> pairs1 = new Switch<List<Pair<String, Funp>>>(value)
-							.applyIf(FunpStruct.class, g -> g.pairs) //
-							.result();
-
+					var pairs1 = new Switch<List<Pair<String, Funp>>>(value).applyIf(FunpStruct.class, g -> g.pairs).result();
 					var size0 = pairs0.size();
 					var then_ = then;
 

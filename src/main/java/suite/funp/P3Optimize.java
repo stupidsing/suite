@@ -93,22 +93,22 @@ public class P3Optimize {
 	}
 
 	private FunpNumber evaluate(IntInt_Int fun, Funp lhs0, Funp rhs0) {
-		Integer[] pair = evaluate(lhs0, rhs0);
+		var pair = evaluate(lhs0, rhs0);
 		var lhs1 = pair[0];
 		var rhs1 = pair[1];
 		return fun != null && lhs1 != null && rhs1 != null ? FunpNumber.ofNumber(fun.apply(lhs1, rhs1)) : null;
 	}
 
 	private FunpBoolean evaluate(IntInt_Bool fun, Funp lhs0, Funp rhs0) {
-		Integer[] pair = evaluate(lhs0, rhs0);
+		var pair = evaluate(lhs0, rhs0);
 		var lhs1 = pair[0];
 		var rhs1 = pair[1];
 		return fun != null && lhs1 != null && rhs1 != null ? FunpBoolean.of(fun.apply(lhs1, rhs1)) : null;
 	}
 
 	private Integer[] evaluate(Funp lhs0, Funp rhs0) {
-		Integer lhs2 = optimize(lhs0).cast(FunpNumber.class, n -> n.i.get());
-		Integer rhs2 = optimize(rhs0).cast(FunpNumber.class, n -> n.i.get());
+		var lhs2 = optimize(lhs0).cast(FunpNumber.class, n -> n.i.get());
+		var rhs2 = optimize(rhs0).cast(FunpNumber.class, n -> n.i.get());
 		return new Integer[] { lhs2, rhs2, };
 	}
 
