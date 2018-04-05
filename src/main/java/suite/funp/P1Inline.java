@@ -3,7 +3,6 @@ package suite.funp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 
 import suite.funp.Funp_.Funp;
@@ -68,13 +67,13 @@ public class P1Inline {
 				return inspect.rewrite(Funp.class, n_ -> n_.<Funp> switch_( //
 				).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var0, value, expr) -> {
 					var var1 = newVar.apply(var0);
-					Rename r1 = new Rename(vars.replace(var0, var1));
+					var r1 = new Rename(vars.replace(var0, var1));
 					return FunpDefine.of(isPolyType, var1, rename(value), r1.rename(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
-					IMap<String, String> vars1 = vars;
+					var vars1 = vars;
 					for (var pair : pairs0)
 						vars1 = vars1.replace(pair.t0, newVar.apply(pair.t0));
-					IMap<String, String> vars2 = vars1;
+					var vars2 = vars1;
 					var r1 = new Rename(vars2);
 					return FunpDefineRec.of(Read //
 							.from2(pairs0) //
@@ -83,15 +82,15 @@ public class P1Inline {
 							r1.rename(expr));
 				})).applyIf(FunpGlobal.class, f -> f.apply((var0, value, expr) -> {
 					var var1 = newVar.apply(var0);
-					Rename r1 = new Rename(vars.replace(var0, var1));
+					var r1 = new Rename(vars.replace(var0, var1));
 					return FunpGlobal.of(var1, rename(value), r1.rename(expr));
 				})).applyIf(FunpIterate.class, f -> f.apply((var0, init, cond, iterate) -> {
 					var var1 = newVar.apply(var0);
-					Rename r1 = new Rename(vars.replace(var0, var1));
+					var r1 = new Rename(vars.replace(var0, var1));
 					return FunpIterate.of(var1, rename(init), r1.rename(cond), r1.rename(iterate));
 				})).applyIf(FunpLambda.class, f -> f.apply((var0, expr) -> {
 					var var1 = newVar.apply(var0);
-					Rename r1 = new Rename(vars.replace(var0, var1));
+					var r1 = new Rename(vars.replace(var0, var1));
 					return FunpLambda.of(var1, r1.rename(expr));
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 					return FunpVariable.of(vars.get(var));
@@ -106,7 +105,7 @@ public class P1Inline {
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(Funp.class, n0 -> {
-					List<String> vars = new ArrayList<>();
+					var vars = new ArrayList<String>();
 					FunpAssignReference assign;
 					FunpCheckType check;
 					FunpDefine define;
@@ -126,7 +125,7 @@ public class P1Inline {
 							&& (variable = assign.reference.expr.cast(FunpVariable.class)) != null) {
 						var vn = variable.var;
 						var n1 = assign.expr;
-						Funp n2 = check != null ? FunpCheckType.of(check.left, check.right, n1) : n1;
+						var n2 = check != null ? FunpCheckType.of(check.left, check.right, n1) : n1;
 						var b = false;
 
 						for (var var_ : List_.reverse(vars))
@@ -147,7 +146,7 @@ public class P1Inline {
 
 	private Funp inlineDefines(Funp node) {
 		var defByVariables = associateDefinitions(node);
-		Map<Funp, IntMutable> countByDefs = new HashMap<>();
+		var countByDefs = new HashMap<Funp, IntMutable>();
 
 		inspect.rewrite(Funp.class, n_ -> n_.<Funp> switch_( //
 		).applyIf(FunpReference.class, f -> f.apply(expr -> {
@@ -223,7 +222,7 @@ public class P1Inline {
 	}
 
 	private Map<FunpVariable, Funp> associateDefinitions(Funp node) {
-		Map<FunpVariable, Funp> defByVariables = new HashMap<>();
+		var defByVariables = new HashMap<FunpVariable, Funp>();
 
 		new Object() {
 			private Funp associate(IMap<String, Funp> vars, Funp node_) {
@@ -233,7 +232,7 @@ public class P1Inline {
 					associate(vars.replace(var, f), expr);
 					return n_;
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-					IMap<String, Funp> vars1 = vars;
+					var vars1 = vars;
 					for (var pair : pairs)
 						vars1 = vars1.replace(pair.t0, f);
 					for (var pair : pairs)
@@ -241,7 +240,7 @@ public class P1Inline {
 					associate(vars1, expr);
 					return n_;
 				})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-					IMap<String, Funp> vars1 = vars.replace(var, f);
+					var vars1 = vars.replace(var, f);
 					associate(vars, init);
 					associate(vars1, cond);
 					associate(vars1, iterate);
