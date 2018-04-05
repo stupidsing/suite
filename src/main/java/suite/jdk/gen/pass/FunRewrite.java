@@ -89,8 +89,8 @@ public class FunRewrite extends FunFactory {
 
 			if (e2 instanceof DeclareParameterFunExpr) {
 				Class<?> interfaceClass = Type_.classOf(e1.type);
-				Map<String, Type> fieldTypes = new HashMap<>();
-				Map<String, FunExpr> fieldValues = new HashMap<>();
+				var fieldTypes = new HashMap<String, Type>();
+				var fieldValues = new HashMap<String, FunExpr>();
 
 				var e3 = rewrite(e -> {
 					FunExpr fieldValue;

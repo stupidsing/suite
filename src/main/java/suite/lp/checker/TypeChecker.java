@@ -30,7 +30,7 @@ public class TypeChecker {
 
 	public void check(List<Rule> rules) {
 		var nElementsByPrototype = checkerUtil.getNumberOfElements(rules);
-		Map<Pair<Prototype, Integer>, Reference> types = new HashMap<>();
+		var types = new HashMap<Pair<Prototype, Integer>, Reference>();
 
 		Read.from(rules).concatMap(rule -> {
 			var generalizer = new Generalizer();

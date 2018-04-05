@@ -130,7 +130,7 @@ public class BuildLr {
 
 	public Blr buildLrs(String entity, Set<String> follows) {
 		var k = Pair.of(entity, follows);
-		Set<Pair<String, Set<String>>> keys0 = new HashSet<>();
+		var keys0 = new HashSet<Pair<String, Set<String>>>();
 		transitions.put(k, new Transition());
 
 		while (keys0.size() < transitions.size()) {

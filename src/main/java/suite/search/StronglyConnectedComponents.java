@@ -78,7 +78,7 @@ public class StronglyConnectedComponents<V> {
 	public DirectedGraph<Set<V>> group() {
 		Map<V, Set<V>> map = Read.from(components).concatMap2(vs -> Read.from(vs).map2(v -> vs)).toMap();
 		var vertices = Read.from(components).toSet();
-		Set<Pair<Set<V>, Set<V>>> edges = new HashSet<>();
+		var edges = new HashSet<Pair<Set<V>, Set<V>>>();
 
 		for (var v0 : dg.vertices)
 			for (var v1 : dg.forwards.get(v0)) {

@@ -66,7 +66,7 @@ public class Object_ {
 				Class<?> componentType = clazz.getComponentType();
 
 				mapper = new Mapper(object -> {
-					Map<Object, Object> map = new HashMap<>();
+					var map = new HashMap<Object, Object>();
 					var length = Array.getLength(object);
 					for (var i = 0; i < length; i++)
 						map.put(i, Array.get(object, i));
@@ -112,7 +112,7 @@ public class Object_ {
 						.toList();
 
 				mapper = new Mapper(object -> Rethrow.ex(() -> {
-					Map<Object, Object> map = new HashMap<>();
+					var map = new HashMap<Object, Object>();
 					for (var sf : sfs)
 						map.put(sf.t0, sf.t1.get(object));
 					return map;
@@ -131,7 +131,7 @@ public class Object_ {
 
 			if (List.class.isAssignableFrom(clazz))
 				mapper = new Mapper(object -> {
-					Map<Object, Object> map = new HashMap<>();
+					var map = new HashMap<Object, Object>();
 					var i = 0;
 					for (var o : (Collection<?>) object)
 						map.put(i++, o);

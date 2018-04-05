@@ -2,7 +2,6 @@ package suite.weiqi;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 
 import suite.weiqi.GroupAnalysis.Group;
 import suite.weiqi.Weiqi.Array;
@@ -32,7 +31,7 @@ public class Judge {
 		var ga = new GroupAnalysis(board);
 
 		// judge which groups are eyes, i.e. surrounded by only one colour
-		Map<Group, Boolean> groupIsEye = new HashMap<>();
+		var groupIsEye = new HashMap<Group, Boolean>();
 
 		for (var group : ga.getGroups())
 			if (group.color == Occupation.EMPTY) {

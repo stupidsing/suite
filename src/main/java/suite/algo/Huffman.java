@@ -59,7 +59,7 @@ public class Huffman {
 	}
 
 	private <Unit> Dictionary<Unit> load(Pair<List<Unit>, List<Boolean>> input) {
-		Map<Unit, Node<Unit>> nodeByUnit = new HashMap<>();
+		var nodeByUnit = new HashMap<Unit, Node<Unit>>();
 		var deque = new ArrayDeque<Node<Unit>>();
 
 		for (var unit : input.t0)

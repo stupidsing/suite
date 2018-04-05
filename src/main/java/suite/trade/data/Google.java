@@ -44,7 +44,7 @@ public class Google {
 				.collect(As::lines) //
 				.toArray(String.class);
 
-		Map<String, String> properties = new HashMap<>();
+		var properties = new HashMap<String, String>();
 		String[] array;
 		var i = 0;
 

@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import org.junit.Test;
@@ -27,13 +26,13 @@ public class ClusterMapTest {
 		var nNodes = 3;
 		var localHost = InetAddress.getLocalHost();
 
-		Map<String, InetSocketAddress> peers = new HashMap<>();
+		var peers = new HashMap<String, InetSocketAddress>();
 		for (var i = 0; i < nNodes; i++)
 			peers.put("NODE" + i, new InetSocketAddress(localHost, 3000 + i));
 
 		List<String> peerNames = new ArrayList<>(peers.keySet());
-		Map<String, Cluster> clusters = new HashMap<>();
-		Map<String, ClusterMap<Integer, String>> clMap = new HashMap<>();
+		var clusters = new HashMap<String, Cluster>();
+		var clMap = new HashMap<String, ClusterMap<Integer, String>>();
 
 		for (var name : peers.keySet()) {
 			var cluster = new ClusterImpl(name, peers);

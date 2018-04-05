@@ -18,7 +18,7 @@ public class Account {
 	private static String cashCode = Asset.cashSymbol;
 
 	public static Account ofCash(float cash) {
-		Map<String, Integer> assets = new HashMap<>();
+		var assets = new HashMap<String, Integer>();
 		assets.put(cashCode, (int) cash);
 		return new Account(assets);
 	}

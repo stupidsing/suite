@@ -57,7 +57,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 
 		zeroPositions.flip();
 
-		Map<String, String> headers = new HashMap<>();
+		var headers = new HashMap<String, String>();
 		var start = 0;
 		var i = 0;
 

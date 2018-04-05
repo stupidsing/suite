@@ -27,7 +27,7 @@ public class DebianUtil {
 	public Streamlet<Map<String, String>> readDpkgConfiguration(InputStream is) throws IOException {
 		try (var isr = new InputStreamReader(is); var br = new BufferedReader(isr)) {
 			var pms = new ArrayList<Map<String, String>>();
-			Map<String, String> pm = new HashMap<>();
+			var pm = new HashMap<String, String>();
 			var sb = new StringBuilder();
 			String line;
 

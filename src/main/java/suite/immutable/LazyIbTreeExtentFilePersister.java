@@ -116,7 +116,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 				if (isInUse.contains(extent))
 					use.sink(Read.from(loadSlot(extent).pairs).map(Pair::second).toList());
 
-			Map<Extent, Extent> map = new HashMap<>();
+			var map = new HashMap<Extent, Extent>();
 
 			if (!extents.isEmpty()) {
 				var pointer = extents.get(0).start;

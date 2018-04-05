@@ -460,7 +460,7 @@ public class Serialize {
 		return new Serializer<>() {
 			public Map<K, V> read(DataInput_ dataInput) throws IOException {
 				var size = int_.read(dataInput);
-				Map<K, V> map = new HashMap<>();
+				var map = new HashMap<K, V>();
 				for (var i = 0; i < size; i++) {
 					var k = ks.read(dataInput);
 					var v = vs.read(dataInput);

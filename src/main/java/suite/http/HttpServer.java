@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLDecoder;
 import java.util.HashMap;
-import java.util.Map;
 
 import suite.Constants;
 import suite.os.LogUtil;
@@ -66,7 +65,7 @@ public class HttpServer {
 			if (!String_.equals(protocol, "HTTP/1.1"))
 				Fail.t("only HTTP/1.1 is supported");
 
-			Map<String, String> requestHeaders = new HashMap<>();
+			var requestHeaders = new HashMap<String, String>();
 
 			while (!(line = Util.readLine(is)).isEmpty()) {
 				var pair = String_.split2(line, ":");

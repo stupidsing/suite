@@ -300,7 +300,7 @@ public class Yahoo {
 	}
 
 	private void adjust(String symbol, long[] ts, float[] prices) {
-		Map<String, FoldOp<Long, Float>> adjusters = new HashMap<>();
+		var adjusters = new HashMap<String, FoldOp<Long, Float>>();
 		adjusters.put("0700.HK", (d, p) -> String_.compare(Time.ofEpochSec(d).ymd(), "2014-05-14") <= 0 ? p * .2f : p);
 		adjusters.put("2318.HK", (d, p) -> String_.compare(Time.ofEpochSec(d).ymd(), "2014-03-23") <= 0 ? p * .5f : p);
 

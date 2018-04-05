@@ -82,13 +82,13 @@ public class As {
 	}
 
 	public static <K, V> Map<K, List<V>> listMap(Outlet<Pair<K, V>> outlet) {
-		Map<K, List<V>> map = new HashMap<>();
+		var map = new HashMap<K, List<V>>();
 		outlet.sink(pair -> map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1));
 		return map;
 	}
 
 	public static <K, V> Map<K, V> map(Outlet2<K, V> outlet) {
-		Map<K, V> map = new HashMap<>();
+		var map = new HashMap<K, V>();
 		outlet.sink((k, v) -> {
 			if (map.put(k, v) != null)
 				Fail.t("duplicate key " + k);
@@ -132,7 +132,7 @@ public class As {
 	}
 
 	public static <K, V> Map<K, Set<V>> setMap(Outlet<Pair<K, V>> outlet) {
-		Map<K, Set<V>> map = new HashMap<>();
+		var map = new HashMap<K, Set<V>>();
 		outlet.sink(pair -> map.computeIfAbsent(pair.t0, k_ -> new HashSet<>()).add(pair.t1));
 		return map;
 	}

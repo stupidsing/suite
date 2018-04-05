@@ -34,7 +34,7 @@ public class StockHistory {
 	public final LngFltPair[] splits;
 
 	public static StockHistory of(Outlet<String> outlet) {
-		Map<String, String> properties = new HashMap<>();
+		var properties = new HashMap<String, String>();
 		Map<String, LngFltPair[]> data = new HashMap<>();
 		String line;
 

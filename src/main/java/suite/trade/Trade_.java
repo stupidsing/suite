@@ -55,7 +55,7 @@ public class Trade_ {
 	}
 
 	public static Map<String, Float> collectAcquiredPrices(Outlet<Trade> outlet) {
-		Map<String, List<IntFltPair>> acquireBySymbol = new HashMap<>();
+		var acquireBySymbol = new HashMap<String, List<IntFltPair>>();
 
 		for (var trade : outlet) {
 			var symbol = trade.symbol;

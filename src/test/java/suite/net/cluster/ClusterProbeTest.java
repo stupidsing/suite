@@ -21,11 +21,11 @@ public class ClusterProbeTest {
 		var nNodes = 3;
 		var localHost = InetAddress.getLocalHost();
 
-		Map<String, InetSocketAddress> peers = new HashMap<>();
+		var peers = new HashMap<String, InetSocketAddress>();
 		for (var i = 0; i < nNodes; i++)
 			peers.put("NODE" + i, new InetSocketAddress(localHost, 3000 + i));
 
-		Map<String, ClusterProbe> probes = new HashMap<>();
+		var probes = new HashMap<String, ClusterProbe>();
 		for (var name : peers.keySet()) {
 			var probe = new ClusterProbeImpl(name, peers);
 			probes.put(name, probe);

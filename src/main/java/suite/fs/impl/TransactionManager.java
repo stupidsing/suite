@@ -76,7 +76,7 @@ public class TransactionManager<Key, Value> {
 	}
 
 	private synchronized void flush() {
-		Map<Key, Value> map = new HashMap<>();
+		var map = new HashMap<Key, Value>();
 
 		var ok = stm.transaction(transaction -> {
 			var keys = new ArrayList<>(memoryByKey.keySet());

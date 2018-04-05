@@ -61,7 +61,7 @@ public class HttpUtil {
 
 	public static Map<String, URI> resolveLinks(URI uri) {
 		var out = get(Rethrow.ex(() -> uri.toURL())).out.collect(As::utf8decode).map(Chars::toString).collect(As::joined);
-		Map<String, URI> links = new HashMap<>();
+		var links = new HashMap<String, URI>();
 		String[] m;
 		while ((m = ParseUtil.fitCaseInsensitive(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
 			var href = m[2];

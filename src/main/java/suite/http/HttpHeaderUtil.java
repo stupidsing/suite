@@ -25,7 +25,7 @@ public class HttpHeaderUtil {
 
 	public static Map<String, String> getCookieAttrs(String query) {
 		var qs = query != null ? query.split(";") : new String[0];
-		Map<String, String> attrs = new HashMap<>();
+		var attrs = new HashMap<String, String>();
 
 		for (var q : qs) {
 			var pair = String_.split2(q, "=");
@@ -49,7 +49,7 @@ public class HttpHeaderUtil {
 
 	public static Map<String, String> getAttrs(String query) {
 		var qs = query != null ? query.split("&") : new String[0];
-		Map<String, String> attrs = new HashMap<>();
+		var attrs = new HashMap<String, String>();
 
 		for (var q : qs) {
 			var pair = String_.split2(q, "=");

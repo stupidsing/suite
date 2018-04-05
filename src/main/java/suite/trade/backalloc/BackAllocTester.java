@@ -77,7 +77,7 @@ public class BackAllocTester {
 			trades = new ArrayList<>();
 
 			Map<String, Asset> assetBySymbol = assets.toMap(asset -> asset.symbol);
-			Map<String, Double> holdBySymbol_ = new HashMap<>();
+			var holdBySymbol_ = new HashMap<String, Double>();
 			var symbols = assetBySymbol.keySet();
 			TimeRange historyPeriod = TimeRange.of(period.from.addYears(-1), period.to);
 

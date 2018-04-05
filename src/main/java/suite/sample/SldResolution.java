@@ -3,7 +3,6 @@ package suite.sample;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
@@ -41,7 +40,7 @@ public class SldResolution {
 				+ ", sink .n6"));
 
 		Node n0 = FindUtil.collectSingle(finder, node);
-		Map<Node, Source<List<Node>>> orsMap = new HashMap<>();
+		var orsMap = new HashMap<Node, Source<List<Node>>>();
 
 		for (var n1 : Tree.iter(n0, TermOp.AND___)) {
 			var ors = To.list(Tree.iter(n1, TermOp.AND___));

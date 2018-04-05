@@ -213,7 +213,7 @@ public interface BackAllocator {
 				while (period < queue.size())
 					queue.removeFirst();
 
-				Map<String, Double> map = new HashMap<>();
+				var map = new HashMap<String, Double>();
 
 				for (var m : queue)
 					for (var e : m.entrySet())

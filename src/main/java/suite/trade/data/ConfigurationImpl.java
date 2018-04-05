@@ -94,7 +94,7 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	private Map<String, Float> quote_(Set<String> symbols) {
-		Map<Fun<Set<String>, Map<String, Float>>, Set<String>> map = new HashMap<>();
+		var map = new HashMap<Fun<Set<String>, Map<String, Float>>, Set<String>>();
 
 		for (var symbol : symbols)
 			if (filter(symbol))
