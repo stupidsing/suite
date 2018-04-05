@@ -22,7 +22,7 @@ public class MovesTest {
 		var board = blackBoard();
 		board.set(Coordinate.c(2, 2), Occupation.EMPTY);
 
-		GameSet gameSet = new GameSet(board, Occupation.BLACK);
+		var gameSet = new GameSet(board, Occupation.BLACK);
 		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 		assertTrue(visitor.elaborateMoves().isEmpty());
 	}
@@ -38,7 +38,7 @@ public class MovesTest {
 		board.set(Coordinate.c(8, 8), Occupation.EMPTY);
 		board.set(Coordinate.c(9, 8), Occupation.EMPTY);
 
-		GameSet gameSet = new GameSet(board, Occupation.WHITE);
+		var gameSet = new GameSet(board, Occupation.WHITE);
 		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 		assertEquals(2, visitor.elaborateMoves().size());
 	}
@@ -52,7 +52,7 @@ public class MovesTest {
 
 	@Test
 	public void testRandom() {
-		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
+		var gameSet = new GameSet(new Board(), Occupation.BLACK);
 		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 		var isWon = visitor.evaluateRandomOutcome();
 		UserInterface.display(gameSet);

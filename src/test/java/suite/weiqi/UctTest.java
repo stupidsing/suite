@@ -49,7 +49,7 @@ public class UctTest {
 		int nWins = 0, nTotal = 1000;
 
 		for (var i = 0; i < nTotal; i++) {
-			GameSet gameSet = new GameSet(new Board(), player);
+			var gameSet = new GameSet(new Board(), player);
 			UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 			visitor.playMove(move);
 			nWins += visitor.evaluateRandomOutcome() ? 0 : 1;
@@ -60,7 +60,7 @@ public class UctTest {
 
 	@Test
 	public void testRandomEvaluationTime() {
-		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
+		var gameSet = new GameSet(new Board(), Occupation.BLACK);
 		var i = 0;
 		int[] ss = { 1000, 10000, };
 		var duration = 0f;
@@ -84,7 +84,7 @@ public class UctTest {
 		var duration = 0f;
 
 		for (var time = 0; time < 2; time++) {
-			GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
+			var gameSet = new GameSet(new Board(), Occupation.BLACK);
 			UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 			UctSearch<Coordinate> search = new UctSearch<>(visitor);
 			search.setNumberOfSimulations(nSimulations);
@@ -98,7 +98,7 @@ public class UctTest {
 
 	@Test
 	public void testUctSearch() {
-		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
+		var gameSet = new GameSet(new Board(), Occupation.BLACK);
 		gameSet.play(Coordinate.c(3, 3));
 
 		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
@@ -116,7 +116,7 @@ public class UctTest {
 		System.out.println("RANDOM SEED = " + seed);
 		ShuffleUtil.setSeed(seed);
 
-		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
+		var gameSet = new GameSet(new Board(), Occupation.BLACK);
 
 		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 		UctSearch<Coordinate> search = new UctSearch<>(visitor);
@@ -145,7 +145,7 @@ public class UctTest {
 			ShuffleUtil.setSeed(seed);
 
 			var board = new Board();
-			GameSet gameSet = new GameSet(board, Occupation.BLACK);
+			var gameSet = new GameSet(board, Occupation.BLACK);
 
 			while (true) {
 				var gameSet1 = new GameSet(gameSet);

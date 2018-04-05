@@ -58,7 +58,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	}
 
 	public static <V> IntObjOutlet<List<V>> of(ListMultimap<Integer, V> multimap) {
-		Iterator<Pair<Integer, List<V>>> iter = multimap.listEntries().iterator();
+		var iter = multimap.listEntries().iterator();
 		return of(pair -> {
 			var b = iter.hasNext();
 			if (b) {
@@ -91,7 +91,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	}
 
 	public static <V> IntObjOutlet<V> of(Iterable<IntObjPair<V>> col) {
-		Iterator<IntObjPair<V>> iter = col.iterator();
+		var iter = col.iterator();
 		return of(new IntObjSource<>() {
 			public boolean source2(IntObjPair<V> pair) {
 				var b = iter.hasNext();

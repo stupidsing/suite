@@ -130,7 +130,7 @@ public class UctWeiqiMain<Move> {
 		System.out.println("RANDOM SEED = " + seed);
 		ShuffleUtil.setSeed(seed);
 
-		GameSet gameSet = new GameSet(new Board(), startingPlayer);
+		var gameSet = new GameSet(new Board(), startingPlayer);
 
 		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 		UctSearch<Coordinate> search = new UctSearch<>(visitor);

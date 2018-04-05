@@ -77,7 +77,7 @@ public class UctWeiqi {
 			// move until someone cannot move anymore, or maximum number of
 			// passes is reached between both players
 			while (nPasses < 2) {
-				Iterator<Coordinate> iter = empties.iterator();
+				var iter = empties.iterator();
 				chosenMove = null;
 
 				while (chosenMove == null && iter.hasNext()) {

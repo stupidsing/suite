@@ -58,7 +58,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public static <V> LngObjOutlet<List<V>> of(ListMultimap<Long, V> multimap) {
-		Iterator<Pair<Long, List<V>>> iter = multimap.listEntries().iterator();
+		var iter = multimap.listEntries().iterator();
 		return of(pair -> {
 			var b = iter.hasNext();
 			if (b) {
@@ -91,7 +91,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public static <V> LngObjOutlet<V> of(Iterable<LngObjPair<V>> col) {
-		Iterator<LngObjPair<V>> iter = col.iterator();
+		var iter = col.iterator();
 		return of(new LngObjSource<>() {
 			public boolean source2(LngObjPair<V> pair) {
 				var b = iter.hasNext();

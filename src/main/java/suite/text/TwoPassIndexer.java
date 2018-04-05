@@ -3,7 +3,6 @@ package suite.text;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -69,7 +68,7 @@ public class TwoPassIndexer {
 	public Streamlet<Reference> search(String searchKey) {
 		dictionary.clear(); // saves memory
 
-		Iterator<String> iter = keys.tailSet(searchKey).iterator();
+		var iter = keys.tailSet(searchKey).iterator();
 
 		Source<String> source = () -> {
 			var key = iter.hasNext() ? iter.next() : null;

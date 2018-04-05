@@ -58,7 +58,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public static <V> FltObjOutlet<List<V>> of(ListMultimap<Float, V> multimap) {
-		Iterator<Pair<Float, List<V>>> iter = multimap.listEntries().iterator();
+		var iter = multimap.listEntries().iterator();
 		return of(pair -> {
 			var b = iter.hasNext();
 			if (b) {
@@ -91,7 +91,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public static <V> FltObjOutlet<V> of(Iterable<FltObjPair<V>> col) {
-		Iterator<FltObjPair<V>> iter = col.iterator();
+		var iter = col.iterator();
 		return of(new FltObjSource<>() {
 			public boolean source2(FltObjPair<V> pair) {
 				var b = iter.hasNext();

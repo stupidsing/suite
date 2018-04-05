@@ -4,7 +4,6 @@ import static suite.util.Friends.max;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +16,6 @@ import suite.lp.compile.impl.CompileExpressionImpl;
 import suite.lp.doer.Binder;
 import suite.lp.doer.BinderFactory;
 import suite.lp.doer.BinderFactory.BindEnv;
-import suite.lp.doer.BinderFactory.Bind_;
 import suite.lp.doer.Cloner;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
@@ -580,7 +578,7 @@ public class SewingProverImpl implements ProverFactory {
 			var elems_ = Read.from(Tree.iter(m[0])).map(bf::binder).toList();
 			var f = bf.cloner(m[1]);
 			tr = rt -> {
-				Iterator<Bind_> iter = elems_.iterator();
+				var iter = elems_.iterator();
 				Trampoline[] alt = new Trampoline[1];
 				var restore = save(rt);
 				return alt[0] = rt_ -> {

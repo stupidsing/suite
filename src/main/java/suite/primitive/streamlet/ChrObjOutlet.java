@@ -58,7 +58,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public static <V> ChrObjOutlet<List<V>> of(ListMultimap<Character, V> multimap) {
-		Iterator<Pair<Character, List<V>>> iter = multimap.listEntries().iterator();
+		var iter = multimap.listEntries().iterator();
 		return of(pair -> {
 			var b = iter.hasNext();
 			if (b) {
@@ -91,7 +91,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public static <V> ChrObjOutlet<V> of(Iterable<ChrObjPair<V>> col) {
-		Iterator<ChrObjPair<V>> iter = col.iterator();
+		var iter = col.iterator();
 		return of(new ChrObjSource<>() {
 			public boolean source2(ChrObjPair<V> pair) {
 				var b = iter.hasNext();

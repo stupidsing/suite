@@ -49,7 +49,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public static <K, V> Outlet2<K, List<V>> of(ListMultimap<K, V> multimap) {
-		Iterator<Pair<K, List<V>>> iter = multimap.listEntries().iterator();
+		var iter = multimap.listEntries().iterator();
 		return of(pair -> {
 			var b = iter.hasNext();
 			if (b) {
@@ -61,7 +61,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public static <K, V> Outlet2<K, V> of(Map<K, V> map) {
-		Iterator<Entry<K, V>> iter = map.entrySet().iterator();
+		var iter = map.entrySet().iterator();
 		return of(pair -> {
 			var b = iter.hasNext();
 			if (b) {
@@ -89,7 +89,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public static <K, V> Outlet2<K, V> of(Iterable<Pair<K, V>> col) {
-		Iterator<Pair<K, V>> iter = col.iterator();
+		var iter = col.iterator();
 		return of(new Source2<>() {
 			public boolean source2(Pair<K, V> pair) {
 				var b = iter.hasNext();

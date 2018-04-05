@@ -8,7 +8,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
-import java.util.Iterator;
 
 import suite.Constants;
 import suite.net.ThreadService;
@@ -103,7 +102,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 				// the behavior as documented in NIO, but anyway.
 				selector.wakeup();
 
-				Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
+				var iter = selector.selectedKeys().iterator();
 
 				while (iter.hasNext()) {
 					var key = iter.next();

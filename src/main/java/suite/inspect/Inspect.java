@@ -363,7 +363,7 @@ public class Inspect {
 						}
 					};
 				} else {
-					Iterator<Field> iter = fields(clazz).iterator();
+					var iter = fields(clazz).iterator();
 
 					children = new ExtractField() {
 						private Field field;

@@ -11,7 +11,6 @@ import java.nio.channels.Selector;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -166,7 +165,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	private void processSelectedKeys() {
-		Iterator<SelectionKey> keyIter = selector.selectedKeys().iterator();
+		var keyIter = selector.selectedKeys().iterator();
 		while (keyIter.hasNext()) {
 			var key = keyIter.next();
 			keyIter.remove();
@@ -236,7 +235,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 	private void eliminateOutdatedPeers(long current) {
 		Set<Entry<String, Long>> entries = lastActiveTimes.entrySet();
-		Iterator<Entry<String, Long>> peerIter = entries.iterator();
+		var peerIter = entries.iterator();
 
 		while (peerIter.hasNext()) {
 			Entry<String, Long> e = peerIter.next();

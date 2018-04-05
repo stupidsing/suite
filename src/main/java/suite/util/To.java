@@ -196,7 +196,7 @@ public class To {
 	}
 
 	public static <T> Source<T> source(Iterable<T> iterable) {
-		Iterator<T> iterator = iterable.iterator();
+		var iterator = iterable.iterator();
 		return () -> iterator.hasNext() ? iterator.next() : null;
 	}
 

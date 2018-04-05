@@ -58,7 +58,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public static <V> DblObjOutlet<List<V>> of(ListMultimap<Double, V> multimap) {
-		Iterator<Pair<Double, List<V>>> iter = multimap.listEntries().iterator();
+		var iter = multimap.listEntries().iterator();
 		return of(pair -> {
 			var b = iter.hasNext();
 			if (b) {
@@ -91,7 +91,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public static <V> DblObjOutlet<V> of(Iterable<DblObjPair<V>> col) {
-		Iterator<DblObjPair<V>> iter = col.iterator();
+		var iter = col.iterator();
 		return of(new DblObjSource<>() {
 			public boolean source2(DblObjPair<V> pair) {
 				var b = iter.hasNext();
