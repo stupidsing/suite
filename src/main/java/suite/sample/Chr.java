@@ -128,7 +128,7 @@ public class Chr {
 		var prototype = Prototype.of(if_);
 
 		Fun<State, Streamlet<State>> fun = state -> {
-			ISet<Node> facts = getFacts(state, prototype);
+			var facts = getFacts(state, prototype);
 			Predicate<Node> bindFun = bindFun(trail, if_);
 			return facts.streamlet().filter(bindFun).map(node -> setFacts(state, prototype, facts.remove(node)));
 		};
@@ -140,7 +140,7 @@ public class Chr {
 		var prototype = Prototype.of(given);
 
 		return states.filter(state -> {
-			ISet<Node> facts = getFacts(state, prototype);
+			var facts = getFacts(state, prototype);
 			Predicate<Node> bindFun = bindFun(trail, given);
 			return facts.streamlet().isAny(bindFun);
 		});
@@ -175,7 +175,7 @@ public class Chr {
 
 		return states.map(state -> {
 			var prototype = Prototype.of(then);
-			ISet<Node> facts = getFacts(state, prototype);
+			var facts = getFacts(state, prototype);
 			return setFacts(state, prototype, facts.replace(then));
 		});
 	}
@@ -198,12 +198,12 @@ public class Chr {
 	}
 
 	private ISet<Node> getFacts(State state, Prototype prototype) {
-		ISet<Node> results = state.factsByPrototype.get(prototype);
+		var results = state.factsByPrototype.get(prototype);
 		return results != null ? results : ISet.empty();
 	}
 
 	private State setFacts(State state, Prototype prototype, ISet<Node> nodes) {
-		IMap<Prototype, ISet<Node>> facts = state.factsByPrototype;
+		var facts = state.factsByPrototype;
 		return new State(nodes.streamlet().first() != null ? facts.replace(prototype, nodes) : facts.remove(prototype));
 	}
 

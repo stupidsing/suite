@@ -5,7 +5,6 @@ import java.util.Objects;
 import java.util.Random;
 
 import suite.immutable.IList;
-import suite.immutable.IMap;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.HtmlUtil;
@@ -110,7 +109,7 @@ public class HttpSessionController {
 
 		private HttpResponse showProtectedPage(HttpRequest request, String sessionId) {
 			var r = protectedHandler.handle(request);
-			IMap<String, String> headers1 = r.headers.put("Set-Cookie", "session=" + sessionId + "; Path=/site");
+			var headers1 = r.headers.put("Set-Cookie", "session=" + sessionId + "; Path=/site");
 			return new HttpResponse(r.status, headers1, r.out);
 		}
 

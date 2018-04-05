@@ -42,7 +42,7 @@ public class VerifyTest {
 		Fun2<String, String, Definition> def2 = (t0, t1) -> def_.apply(t0, Suite.parse(t1));
 		Fun2<String, IList<String>, Definition> defn = (t0, t1) -> def_.apply(t0, and.apply(t1));
 
-		IMap<String, Definition> defs = IMap //
+		var defs = IMap //
 				.<String, Definition> empty() //
 				.put("def$iff", defn.apply("iff .A .B", IList.of( //
 						"fore # .A => .B", //
@@ -72,7 +72,7 @@ public class VerifyTest {
 						"group0 .class .eq .op1 .inv1 .one", //
 						".class .P => .P .eq .zero; (.P .op1 (.inv1 .P)) .eq .one")));
 
-		IMap<String, Node> axioms = IMap //
+		var axioms = IMap //
 				.<String, Node> empty() //
 				.put("@complement", Suite.parse(".P, not .P => false")) //
 				.put("@and-lhs", Suite.parse(".P, .Q => .P")) //

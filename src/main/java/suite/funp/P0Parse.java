@@ -138,7 +138,7 @@ public class P0Parse {
 			}).match2("recurse .0 >> .1", (a, b) -> {
 				var pattern1 = Suite.pattern(".0 := .1");
 				Streamlet<Node[]> list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect(As::streamlet);
-				ISet<String> variables_ = variables;
+				var variables_ = variables;
 
 				for (var array : list)
 					variables_ = variables_.add(name(array[0]));

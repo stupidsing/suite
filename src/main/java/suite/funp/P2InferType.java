@@ -393,7 +393,7 @@ public class P2InferType {
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				List<Pair<Var, Funp>> assigns = new ArrayList<>();
 				Mutable<Integer> offsetStack = Mutable.nil();
-				IMap<String, Var> env1 = env;
+				var env1 = env;
 				var offset = 0;
 
 				for (var pair : vars) {

@@ -113,7 +113,7 @@ public class P2GenerateLambda {
 				return rt -> ((Vec) array.apply(rt)).values[i(rt, index1)];
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 				var fs1 = fs + 1;
-				IMap<String, Integer> env1 = env.replace(var, fs1);
+				var env1 = env.replace(var, fs1);
 				var init_ = compile_(init);
 				var cond_ = compile(fs1, env1, cond);
 				var iterate_ = compile(fs1, env1, iterate);
