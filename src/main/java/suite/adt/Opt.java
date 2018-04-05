@@ -20,7 +20,7 @@ public class Opt<T> {
 	}
 
 	public static <T> Opt<T> of(T t) {
-		Opt<T> p = new Opt<>();
+		var p = new Opt<T>();
 		p.value = t;
 		return p;
 	}

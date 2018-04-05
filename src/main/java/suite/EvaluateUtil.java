@@ -110,7 +110,7 @@ public class EvaluateUtil {
 	private Node doFcc(Node compileNode, FunCompilerConfig fcc) {
 		return LogUtil.duration("Code compiled", () -> {
 			var pc = fcc.getProverConfig();
-			Finder finder = fccFinderFun.apply(Pair.of(pc, compileNode));
+			var finder = fccFinderFun.apply(Pair.of(pc, compileNode));
 			return FindUtil.collectSingle(finder, appendLibraries(fcc));
 		});
 	}

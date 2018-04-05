@@ -20,7 +20,7 @@ public class Trie<K, V> {
 
 	public V get(List<K> ks) {
 		if (!ks.isEmpty()) {
-			Trie<K, V> trie = map.get(ks.get(0));
+			var trie = map.get(ks.get(0));
 			return trie != null ? trie.get(List_.right(ks, 1)) : null;
 		} else
 			return value;

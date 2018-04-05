@@ -4,15 +4,11 @@ import java.util.ArrayList;
 
 import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory.BindEnv;
-import suite.lp.sewing.VariableMapper;
-import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.node.Reference;
 import suite.primitive.Ints_;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 import suite.util.Memoize;
 import suite.util.To;
 
@@ -30,14 +26,14 @@ public class BindArrayUtil {
 
 	private Fun<String, Pattern> patterns = Memoize.fun(pattern_ -> {
 		var sg = new SewingGeneralizerImpl();
-		Source<NodeEnv<Atom>> sgs = sg.g(Suite.parse(pattern_));
-		NodeEnv<Atom> ne = sgs.source();
+		var sgs = sg.g(Suite.parse(pattern_));
+		var ne = sgs.source();
 
 		var cb = new CompileBinderImpl(false);
 		var pred = cb.binder(ne.node);
 
-		VariableMapper<Atom> sgm = sg.mapper();
-		VariableMapper<Reference> cbm = cb.mapper();
+		var sgm = sg.mapper();
+		var cbm = cb.mapper();
 		var atoms = new ArrayList<Atom>();
 		Atom atom;
 		var n = 0;
@@ -59,7 +55,7 @@ public class BindArrayUtil {
 			}
 
 			public Node subst(Node... nodes) {
-				NodeEnv<Atom> ne = sgs.source();
+				var ne = sgs.source();
 				var refs = ne.env.refs;
 				for (var i = 0; i < nodes.length; i++)
 					refs[sgi[i]].bound(nodes[i]);

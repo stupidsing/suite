@@ -3,7 +3,6 @@ package suite.adt;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.util.FunUtil.Source;
 import suite.util.Object_;
 import suite.util.To;
 
@@ -25,11 +24,11 @@ public class Ranges<T extends Comparable<? super T>> {
 	}
 
 	public static <T extends Comparable<? super T>> Ranges<T> intersect(Ranges<T> ranges0, Ranges<T> ranges1) {
-		Source<Range<T>> source0 = To.source(ranges0.ranges);
-		Source<Range<T>> source1 = To.source(ranges1.ranges);
-		Range<T> range0 = source0.source();
-		Range<T> range1 = source1.source();
-		Builder<T> intersects = new Builder<>();
+		var source0 = To.source(ranges0.ranges);
+		var source1 = To.source(ranges1.ranges);
+		var range0 = source0.source();
+		var range1 = source1.source();
+		var intersects = new Builder<T>();
 		T to;
 
 		while (range0 != null && range1 != null) {
@@ -64,7 +63,7 @@ public class Ranges<T extends Comparable<? super T>> {
 	}
 
 	public Ranges<T> negate(T min, T max) {
-		Builder<T> builder = new Builder<>();
+		var builder = new Builder<T>();
 		var t = min;
 		for (var range : ranges) {
 			ranges.add(Range.of(t, range.from));

@@ -14,7 +14,7 @@ public class Mutable<T> {
 	}
 
 	public static <T> Mutable<T> of(T t) {
-		Mutable<T> p = new Mutable<>();
+		var p = new Mutable<T>();
 		p.update(t);
 		return p;
 	}

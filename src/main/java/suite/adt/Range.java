@@ -47,7 +47,7 @@ public class Range<T extends Comparable<? super T>> implements Comparable<Range<
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Range.class) {
-			Range<?> other = (Range<?>) object;
+			var other = (Range<?>) object;
 			return Objects.equals(from, other.from) && Objects.equals(to, other.to);
 		} else
 			return false;

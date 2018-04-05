@@ -41,7 +41,7 @@ public class IntIntMap1 {
 	}
 
 	public void forEach(IntIntSink sink) {
-		IntIntPair pair = IntIntPair.of(0, 0);
+		var pair = IntIntPair.of(0, 0);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
@@ -129,7 +129,7 @@ public class IntIntMap1 {
 	public IntObjStreamlet<Integer> streamlet() {
 		return new IntObjStreamlet<>(() -> {
 			var source = source_();
-			IntIntPair pair0 = IntIntPair.of(0, 0);
+			var pair0 = IntIntPair.of(0, 0);
 			return IntObjOutlet.of(new IntObjSource<Integer>() {
 				public boolean source2(IntObjPair<Integer> pair) {
 					var b = source.source2(pair0);
