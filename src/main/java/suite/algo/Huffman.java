@@ -34,14 +34,14 @@ public class Huffman {
 		Comparator<Node<Unit>> comparator = (node0, node1) -> node0.size - node1.size;
 
 		@SuppressWarnings("unchecked")
-		Class<Node<Unit>> clazz = (Class<Node<Unit>>) (Class<?>) Node.class;
+		var clazz = (Class<Node<Unit>>) (Class<?>) Node.class;
 
 		var nodes = Read //
 				.from2(histogram(input)) //
 				.map(Node<Unit>::new) //
 				.toList();
 
-		PriorityQueue<Node<Unit>> priorityQueue = new PriorityQueue<>(clazz, 0, comparator);
+		var priorityQueue = new PriorityQueue<>(clazz, 0, comparator);
 
 		for (var node : nodes)
 			priorityQueue.insert(node);

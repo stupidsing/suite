@@ -199,7 +199,7 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements FixieA<T0,
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Fixie.class) {
-			Fixie<?, ?, ?, ?, ?, ?, ?, ?, ?, ?> other = (Fixie<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) object;
+			var other = (Fixie<?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) object;
 			return true //
 					&& Objects.equals(t0, other.t0) //
 					&& Objects.equals(t1, other.t1) //
