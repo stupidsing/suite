@@ -21,7 +21,7 @@ public class SmtpSslGmail {
 
 	public void send(String to, String subject, String body) {
 		Constants.bindSecrets("gmail .0 .1").map((username, enc) -> {
-			String password = decode(System.getenv("USER").toCharArray(), enc);
+			var password = decode(System.getenv("USER").toCharArray(), enc);
 
 			var props = new Properties();
 			props.put("mail.smtp.auth", "true");
@@ -57,8 +57,8 @@ public class SmtpSslGmail {
 	public static void main(String[] args) {
 		var salt = "abc123".toCharArray();
 		var in = "def456";
-		String encoded = encode(salt, in);
-		String decoded = decode(salt, encoded);
+		var encoded = encode(salt, in);
+		var decoded = decode(salt, encoded);
 		System.out.println("encoded = " + encoded);
 		System.out.println("decoded = " + decoded);
 	}
@@ -76,7 +76,7 @@ public class SmtpSslGmail {
 		var in1 = in0.toCharArray();
 
 		for (var i = 0; i < in1.length; i++) {
-			int a = f.apply(in1[i], salt[i % salt.length]);
+			var a = f.apply(in1[i], salt[i % salt.length]);
 			while (a < 32)
 				a += 128 - 32;
 			while (128 < a)

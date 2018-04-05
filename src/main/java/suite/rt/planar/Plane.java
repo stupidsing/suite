@@ -25,7 +25,7 @@ public class Plane implements RtObject {
 
 	@Override
 	public List<RayHit> hit(Ray ray) {
-		double denum = R3.dot(normal, ray.dir);
+		var denum = R3.dot(normal, ray.dir);
 		double adv;
 
 		if (MathUtil.epsilon < Math.abs(denum))

@@ -27,7 +27,7 @@ public abstract class Planar implements RtObject {
 		this.axis1 = axis1;
 		this.isHit = isHit;
 
-		R3 normal = R3.cross(axis0, axis1);
+		var normal = R3.cross(axis0, axis1);
 		plane = new Plane(normal, R3.dot(origin, normal), material);
 		invAxis0 = 1d / axis0.abs2();
 		invAxis1 = 1d / axis1.abs2();
@@ -38,9 +38,9 @@ public abstract class Planar implements RtObject {
 		var rayHits = new ArrayList<RayHit>();
 
 		for (var rayHit : plane.hit(ray)) {
-			R3 planarDir = R3.sub(rayHit.intersection().hitPoint(), origin);
-			double x = R3.dot(planarDir, axis0) * invAxis0;
-			double y = R3.dot(planarDir, axis1) * invAxis1;
+			var planarDir = R3.sub(rayHit.intersection().hitPoint(), origin);
+			var x = R3.dot(planarDir, axis0) * invAxis0;
+			var y = R3.dot(planarDir, axis1) * invAxis1;
 
 			if (isHit.isHit(x, y))
 				rayHits.add(rayHit);
