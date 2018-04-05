@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
@@ -57,7 +56,7 @@ public class SldResolution {
 
 		List<Node> results = new ArrayList<>();
 
-		for (Entry<Node, Source<List<Node>>> e : orsMap.entrySet()) {
+		for (var e : orsMap.entrySet()) {
 			Source<List<Node>> value0 = e.getValue();
 			Source<List<Node>> value1 = orsMap.get(negate(e.getKey()));
 

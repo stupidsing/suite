@@ -205,7 +205,7 @@ public class Nodify {
 				}, node -> {
 					Map<Node, Reference> map = ((Dict) node).map;
 					Map<Object, Object> object1 = (Map<Object, Object>) instantiate(clazz);
-					for (Entry<Node, Reference> e : map.entrySet())
+					for (var e : map.entrySet())
 						object1.put(apply_(kn, e.getKey()), apply_(vn, e.getValue().finalNode()));
 					return object1;
 				});

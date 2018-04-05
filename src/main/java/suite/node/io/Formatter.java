@@ -1,7 +1,6 @@
 package suite.node.io;
 
 import java.util.HashSet;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import suite.lp.doer.ProverConstant;
@@ -45,7 +44,7 @@ public class Formatter {
 
 			new SwitchNode<Node>(node //
 			).doIf(Dict.class, n -> {
-				for (Entry<Node, Reference> e : ((Dict) node).map.entrySet()) {
+				for (var e : ((Dict) node).map.entrySet()) {
 					sb.append(indent + "d:" + dump(e.getKey()) + "\n");
 					treeize(e.getValue().finalNode(), indent1);
 				}
@@ -128,7 +127,7 @@ public class Formatter {
 				sb.append("Data<" + data.getClass().getSimpleName() + ">");
 		}).doIf(Dict.class, n -> {
 			sb.append("dict<");
-			for (Entry<Node, Reference> e : n.map.entrySet()) {
+			for (var e : n.map.entrySet()) {
 				format(e.getKey(), TermOp.getLeftPrec(TermOp.AND___));
 				sb.append(":");
 				format(e.getValue(), TermOp.getLeftPrec(TermOp.AND___));

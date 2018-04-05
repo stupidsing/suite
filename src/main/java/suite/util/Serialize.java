@@ -14,7 +14,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 import suite.Constants;
@@ -472,7 +471,7 @@ public class Serialize {
 
 			public void write(DataOutput_ dataOutput, Map<K, V> map) throws IOException {
 				int_.write(dataOutput, map.size());
-				for (Entry<K, V> e : map.entrySet()) {
+				for (var e : map.entrySet()) {
 					ks.write(dataOutput, e.getKey());
 					vs.write(dataOutput, e.getValue());
 				}

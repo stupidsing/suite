@@ -275,7 +275,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	private byte[] formMessage(Command data) {
 		StringBuilder sb = new StringBuilder(data.name() + "," + me);
 
-		for (Entry<String, Long> e : lastActiveTimes.entrySet())
+		for (var e : lastActiveTimes.entrySet())
 			sb.append("," + e.getKey() + "," + e.getValue());
 
 		return sb.toString().getBytes(Constants.charset);
@@ -299,7 +299,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	private void setPeers(Map<String, InetSocketAddress> peers) {
-		for (Entry<String, InetSocketAddress> e : peers.entrySet())
+		for (var e : peers.entrySet())
 			this.peers.put(e.getKey(), new IpPort(e.getValue()));
 	}
 

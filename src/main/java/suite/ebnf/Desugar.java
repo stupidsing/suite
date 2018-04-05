@@ -3,7 +3,6 @@ package suite.ebnf;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.ebnf.Grammar.GrammarType;
 
@@ -14,7 +13,7 @@ public class Desugar {
 	private int counter;
 
 	public Desugar(Map<String, Grammar> grammarByEntity0) {
-		for (Entry<String, Grammar> e : grammarByEntity0.entrySet())
+		for (var e : grammarByEntity0.entrySet())
 			grammarByEntity.put(e.getKey(), desugar(e.getValue()));
 	}
 

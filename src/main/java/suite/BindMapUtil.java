@@ -1,7 +1,6 @@
 package suite;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory;
@@ -55,7 +54,7 @@ public class BindMapUtil {
 			public Node subst(Map<String, Node> map_) {
 				NodeEnv<Atom> ne = sgs.source();
 				Reference[] refs = ne.env.refs;
-				for (Entry<String, Node> e : map_.entrySet())
+				for (var e : map_.entrySet())
 					refs[sgm_.get(e.getKey())].bound(e.getValue());
 				return ne.node;
 			}

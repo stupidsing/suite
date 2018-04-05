@@ -5,7 +5,6 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.ebnf.topdown.ReduceHeadRecursion;
 import suite.ebnf.topdown.TopDownParse;
@@ -67,7 +66,7 @@ public class Ebnf {
 		Map<String, Grammar> grammarByEntity = Grammar.parse(reader);
 		ReduceHeadRecursion rhr = new ReduceHeadRecursion(grammarByEntity);
 
-		for (Entry<String, Grammar> e : grammarByEntity.entrySet())
+		for (var e : grammarByEntity.entrySet())
 			e.setValue(rhr.reduce(e.getValue()));
 
 		engine = new TopDownParse(grammarByEntity);

@@ -1,7 +1,5 @@
 package suite.fp;
 
-import java.util.Map.Entry;
-
 import suite.Suite;
 import suite.adt.Mutable;
 import suite.immutable.IMap;
@@ -58,12 +56,12 @@ public class InterpretFunLazy0 {
 		env = env.put(FST__.name, () -> new Fun_(in -> ((Pair_) in.get()).first));
 		env = env.put(SND__.name, () -> new Fun_(in -> ((Pair_) in.get()).second));
 
-		for (Entry<Operator, IntInt_Bool> e : TreeUtil.boolOperations.entrySet()) {
+		for (var e : TreeUtil.boolOperations.entrySet()) {
 			IntInt_Bool fun = e.getValue();
 			env = env.put(e.getKey().getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(fun.apply(i(a), i(b))))));
 		}
 
-		for (Entry<Operator, IntInt_Int> e : TreeUtil.intOperations.entrySet()) {
+		for (var e : TreeUtil.intOperations.entrySet()) {
 			IntInt_Int fun = e.getValue();
 			env = env.put(e.getKey().getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(fun.apply(i(a), i(b))))));
 		}

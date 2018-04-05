@@ -1,7 +1,6 @@
 package suite.trade.analysis;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
@@ -104,7 +103,7 @@ public class Summarize {
 		StringBuilder sb = new StringBuilder();
 		Sink<String> log = sb::append;
 
-		for (Entry<K, String> e : outByKey.entrySet())
+		for (var e : outByKey.entrySet())
 			log.sink("\nFor strategy " + e.getKey() + ":" + e.getValue());
 
 		log.sink(FormatUtil.tablize("\nOverall:\t" + Time.now().ymdHms() + overall.out1()));

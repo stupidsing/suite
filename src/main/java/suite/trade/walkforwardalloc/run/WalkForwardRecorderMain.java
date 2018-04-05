@@ -10,7 +10,6 @@ import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import suite.os.Schedule;
@@ -64,7 +63,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 								StandardOpenOption.CREATE, //
 								StandardOpenOption.WRITE); //
 								PrintWriter bw = new PrintWriter(os)) {
-							for (Entry<String, Float> e : priceBySymbol.entrySet())
+							for (var e : priceBySymbol.entrySet())
 								bw.println(ymdHms + ", " + e.getKey() + ", " + e.getValue());
 						} catch (IOException ex) {
 							Fail.t(ex);
@@ -98,7 +97,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 
 			WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
 
-			for (Entry<Time, Map<String, Float>> e : data.entrySet())
+			for (var e : data.entrySet())
 				System.out.println(tester.tick(e.getKey(), e.getValue()));
 
 			System.out.println(tester.conclusion());

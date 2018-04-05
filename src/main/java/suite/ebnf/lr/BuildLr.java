@@ -56,7 +56,7 @@ public class BuildLr {
 
 		private boolean putAll(Transition sourceMap) {
 			boolean b = false;
-			for (Entry<String, Pair<State, Reduce>> e1 : sourceMap.entrySet())
+			for (var e1 : sourceMap.entrySet())
 				b |= put_(e1.getKey(), e1.getValue());
 			return b;
 		}

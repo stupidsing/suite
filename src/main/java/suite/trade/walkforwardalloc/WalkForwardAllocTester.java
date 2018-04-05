@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.adt.pair.Pair;
 import suite.math.numeric.Statistic;
@@ -65,7 +64,7 @@ public class WalkForwardAllocTester {
 		Time time = Time.now();
 		Map<String, Float> priceBySymbol = cfg.quote(dsBySymbol.keySet());
 
-		for (Entry<String, Float> e : priceBySymbol.entrySet())
+		for (var e : priceBySymbol.entrySet())
 			log.sink(time.ymdHms() + "," + e.getKey() + "," + e.getValue());
 
 		return tick(time, priceBySymbol);
@@ -77,7 +76,7 @@ public class WalkForwardAllocTester {
 		System.arraycopy(times, 0, times, 1, last);
 		times[last] = time.epochSec();
 
-		for (Entry<String, DataSource> e : dsBySymbol.entrySet()) {
+		for (var e : dsBySymbol.entrySet()) {
 			var symbol = e.getKey();
 			var prices = e.getValue().prices;
 			System.arraycopy(prices, 0, prices, 1, last);

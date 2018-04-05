@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
@@ -114,7 +113,7 @@ public class HkexFactBook {
 		URI uri1 = links0.get(Integer.toString(year));
 		Map<String, URI> links1 = HttpUtil.resolveLinks(uri1);
 
-		for (Entry<String, URI> e : links1.entrySet()) {
+		for (var e : links1.entrySet()) {
 			var link = e.getKey();
 			if (link.startsWith(section) || link.startsWith("- " + section))
 				return e.getValue().toString();

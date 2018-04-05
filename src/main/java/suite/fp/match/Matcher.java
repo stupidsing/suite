@@ -1,7 +1,6 @@
 package suite.fp.match;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.BindMapUtil;
 import suite.fp.match.Matchers.APPLY;
@@ -63,7 +62,7 @@ public class Matcher<T> {
 			if (map != null) {
 				T t = ctor.source();
 				Class<? extends Object> clazz = t.getClass();
-				for (Entry<String, Node> e : map.entrySet())
+				for (var e : map.entrySet())
 					clazz.getField(e.getKey().substring(1)).set(t, e.getValue());
 				return t;
 			} else

@@ -3,7 +3,6 @@ package suite.lp.checker;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
@@ -69,7 +68,7 @@ public class SingletonVariableChecker {
 		}
 
 		private void warn(Prototype prototype) {
-			for (Entry<Atom, Boolean> entry1 : isSingleton.entrySet())
+			for (var entry1 : isSingleton.entrySet())
 				if (entry1.getValue() == Boolean.TRUE)
 					LogUtil.warn("Variable only used once: " + prototype + "/" + entry1.getKey());
 		}

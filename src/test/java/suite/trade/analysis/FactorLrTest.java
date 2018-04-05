@@ -1,7 +1,6 @@
 package suite.trade.analysis;
 
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.junit.Test;
 
@@ -32,7 +31,7 @@ public class FactorLrTest {
 
 		Map<Asset, String> pairs = FactorLr.of(cfg, indices).query(assets);
 
-		for (Entry<Asset, String> pair : pairs.entrySet())
+		for (var pair : pairs.entrySet())
 			System.out.println(pair);
 	}
 

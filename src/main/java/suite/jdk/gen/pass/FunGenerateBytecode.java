@@ -3,7 +3,6 @@ package suite.jdk.gen.pass;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 import org.apache.bcel.Const;
@@ -211,7 +210,7 @@ public class FunGenerateBytecode {
 				list.add(InstructionFactory.createDup(1));
 				list.add(factory.createInvoke(implClassName, "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
 
-				for (Entry<String, FunExpr> e : e1.fieldValues.entrySet()) {
+				for (var e : e1.fieldValues.entrySet()) {
 					var value = e.getValue();
 					list.add(InstructionFactory.createDup(1));
 					visit_(value);

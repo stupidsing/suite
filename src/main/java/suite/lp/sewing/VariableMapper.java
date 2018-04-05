@@ -2,7 +2,6 @@ package suite.lp.sewing;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import suite.node.Node;
@@ -58,7 +57,7 @@ public class VariableMapper<K> {
 
 	public <L> VariableMapper<L> mapKeys(Fun<K, L> fun) {
 		VariableMapper<L> vm = new VariableMapper<>();
-		for (Entry<K, Integer> e : indices.entrySet())
+		for (var e : indices.entrySet())
 			vm.indices.put(fun.apply(e.getKey()), e.getValue());
 		vm.nVariables = nVariables;
 		return vm;

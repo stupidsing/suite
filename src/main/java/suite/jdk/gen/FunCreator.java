@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.BranchInstruction;
@@ -186,11 +185,11 @@ public class FunCreator<I> extends FunFactory {
 			String[] ifs = { interfaceClass.getName(), };
 			var cg = new ClassGen(clsName, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
 
-			for (Entry<String, Pair<Type, Object>> e : fieldStaticTypeValues.entrySet())
+			for (var e : fieldStaticTypeValues.entrySet())
 				cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, e.getValue().t0, e.getKey(), cp).getField());
-			for (Entry<String, Type> e : fieldTypes.entrySet())
+			for (var e : fieldTypes.entrySet())
 				cg.addField(new FieldGen(ACC_PUBLIC, e.getValue(), e.getKey(), cp).getField());
-			for (Entry<String, Pair<Type, Object>> e : ftvs.entrySet())
+			for (var e : ftvs.entrySet())
 				cg.addField(new FieldGen(ACC_PUBLIC, e.getValue().t0, e.getKey(), cp).getField());
 
 			cg.addMethod(m0);
@@ -205,7 +204,7 @@ public class FunCreator<I> extends FunFactory {
 			clazz = new UnsafeUtil().defineClass(interfaceClass, clsName, bytes, array);
 			fieldTypeValues = ftvs;
 
-			for (Entry<String, Pair<Type, Object>> e : fieldStaticTypeValues.entrySet())
+			for (var e : fieldStaticTypeValues.entrySet())
 				try {
 					clazz.getField(e.getKey()).set(null, e.getValue().t1);
 				} catch (ReflectiveOperationException ex) {

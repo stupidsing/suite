@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.adt.pair.Pair;
 import suite.os.SocketUtil;
@@ -139,7 +138,7 @@ public class NntpServerMain extends ExecutableProgram {
 		}
 
 		private void printHead(PrintWriter pw, Map<String, String> article) {
-			for (Entry<String, String> e : article.entrySet()) {
+			for (var e : article.entrySet()) {
 				var key = e.getKey();
 				if (!String_.equals(key, Nntp.contentKey))
 					pw.println(key + ": " + e.getValue());

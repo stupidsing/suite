@@ -11,7 +11,6 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
@@ -219,7 +218,7 @@ public interface BackAllocator {
 				Map<String, Double> map = new HashMap<>();
 
 				for (Map<String, Double> m : queue)
-					for (Entry<String, Double> e : m.entrySet())
+					for (var e : m.entrySet())
 						map.compute(e.getKey(), (k, v) -> fun.apply(v != null ? v : 0d, e.getValue()));
 
 				return Read.from2(map).toList();
@@ -337,7 +336,7 @@ public interface BackAllocator {
 						.toMap();
 
 				// check on each stock symbol
-				for (Entry<String, Double> e : diffBySymbol.entrySet()) {
+				for (var e : diffBySymbol.entrySet()) {
 					var symbol = e.getKey();
 					var diff = e.getValue();
 					var bs = Quant.sign(diff);

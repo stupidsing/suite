@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import suite.BindArrayUtil.Pattern;
@@ -271,12 +270,12 @@ public class InterpretFunEager {
 		df.put("+pleft", f1(a -> Tree.decompose(a).getLeft()));
 		df.put("+pright", f1(a -> Tree.decompose(a).getRight()));
 
-		for (Entry<Operator, IntInt_Bool> e : TreeUtil.boolOperations.entrySet()) {
+		for (var e : TreeUtil.boolOperations.entrySet()) {
 			IntInt_Bool fun = e.getValue();
 			df.put(e.getKey().getName(), f2((a, b) -> b(fun.apply(compare(a, b), 0))));
 		}
 
-		for (Entry<Operator, IntInt_Int> e : TreeUtil.intOperations.entrySet()) {
+		for (var e : TreeUtil.intOperations.entrySet()) {
 			IntInt_Int fun = e.getValue();
 			df.put(e.getKey().getName(), f2((a, b) -> Int.of(fun.apply(i(a), i(b)))));
 		}

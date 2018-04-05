@@ -8,7 +8,6 @@ import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.junit.Test;
 
@@ -50,7 +49,7 @@ public class ClusterProbeTest {
 	}
 
 	private void dumpActivePeers(Map<String, ClusterProbe> probes) {
-		for (Entry<String, ClusterProbe> e : probes.entrySet()) {
+		for (var e : probes.entrySet()) {
 			System.out.println("HOST " + e.getKey() + " -");
 			System.out.println(e.getValue());
 		}

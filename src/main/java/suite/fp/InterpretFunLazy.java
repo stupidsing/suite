@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import suite.BindArrayUtil.Pattern;
@@ -39,7 +38,6 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
@@ -94,12 +92,12 @@ public class InterpretFunLazy {
 		df.put("if", () -> new Fun_(a -> () -> new Fun_(b -> () -> new Fun_(c -> a.get() == Atom.TRUE ? b : c))));
 		df.put("snd", () -> new Fun_(in -> ((Pair_) in.get()).second));
 
-		for (Entry<Operator, IntInt_Bool> e : TreeUtil.boolOperations.entrySet()) {
+		for (var e : TreeUtil.boolOperations.entrySet()) {
 			IntInt_Bool fun = e.getValue();
 			df.put(e.getKey().getName(), binary((a, b) -> b(fun.apply(compare(a.get(), b.get()), 0))));
 		}
 
-		for (Entry<Operator, IntInt_Int> e : TreeUtil.intOperations.entrySet()) {
+		for (var e : TreeUtil.intOperations.entrySet()) {
 			IntInt_Int fun = e.getValue();
 			df.put(e.getKey().getName(), binary((a, b) -> Int.of(fun.apply(i(a), i(b)))));
 		}
