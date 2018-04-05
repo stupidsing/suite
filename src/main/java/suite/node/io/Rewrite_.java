@@ -120,7 +120,7 @@ public class Rewrite_ {
 
 	public static Node map(Node node, Iterate<Node> fun) {
 		var nr = NodeRead.of(node);
-		List<Pair<Node, Node>> children1 = new ArrayList<>();
+		var children1 = new ArrayList<Pair<Node, Node>>();
 		var isSame = true;
 
 		for (var pair : nr.children) {

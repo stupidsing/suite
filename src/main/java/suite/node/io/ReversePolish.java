@@ -7,8 +7,6 @@ import java.io.StringReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import suite.Suite;
 import suite.adt.pair.Pair;
@@ -32,7 +30,7 @@ public class ReversePolish {
 
 	public Node fromRpn(Reader reader) throws IOException {
 		var br = new BufferedReader(reader);
-		Map<String, Reference> references = new HashMap<>();
+		var references = new HashMap<String, Reference>();
 		var deque = new ArrayDeque<Node>();
 
 		br.lines().filter(elem -> !elem.isEmpty()).forEach(elem -> {
@@ -79,7 +77,7 @@ public class ReversePolish {
 		var deque = new ArrayDeque<Node>();
 		deque.push(node);
 
-		List<String> list = new ArrayList<>();
+		var list = new ArrayList<String>();
 
 		while (!deque.isEmpty()) {
 			var s = new SwitchNode<String>(deque.pop() //

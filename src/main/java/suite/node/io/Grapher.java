@@ -64,7 +64,7 @@ public class Grapher {
 	}
 
 	private int graph_(ObjIntMap<IdentityKey<Node>> ids, Node node) {
-		IdentityKey<Node> key = IdentityKey.of(node);
+		var key = IdentityKey.of(node);
 		var id = ids.get(key);
 
 		if (id == IntFunUtil.EMPTYVALUE) {
@@ -132,15 +132,15 @@ public class Grapher {
 	}
 
 	public static boolean bind(Node n0, Node n1, Trail trail) {
-		ObjIntMap<IdentityKey<Node>> mapn0 = new ObjIntMap<>();
-		ObjIntMap<IdentityKey<Node>> mapn1 = new ObjIntMap<>();
+		var mapn0 = new ObjIntMap<IdentityKey<Node>>();
+		var mapn1 = new ObjIntMap<IdentityKey<Node>>();
 		var g0 = new Grapher();
 		var g1 = new Grapher();
 		g0.id = g0.graph_(mapn0, n0);
 		g1.id = g1.graph_(mapn1, n1);
 
-		IntObjMap<IdentityKey<Node>> mapi0 = new IntObjMap<>();
-		IntObjMap<IdentityKey<Node>> mapi1 = new IntObjMap<>();
+		var mapi0 = new IntObjMap<IdentityKey<Node>>();
+		var mapi1 = new IntObjMap<IdentityKey<Node>>();
 		for (var e : mapn0.streamlet())
 			mapi0.put(e.t0, e.t1);
 		for (var e : mapn1.streamlet())
@@ -218,12 +218,12 @@ public class Grapher {
 	}
 
 	public static Node replace(Node from, Node to, Node node) {
-		ObjIntMap<IdentityKey<Node>> ids = new ObjIntMap<>();
+		var ids = new ObjIntMap<IdentityKey<Node>>();
 
 		var grapher = new Grapher();
-		int n0 = grapher.graph_(ids, from);
-		int nx = grapher.graph_(ids, to);
-		int id = grapher.graph_(ids, node);
+		var n0 = grapher.graph_(ids, from);
+		var nx = grapher.graph_(ids, to);
+		var id = grapher.graph_(ids, node);
 
 		grapher.gns.set(n0, grapher.gns.get(nx));
 		return grapher.ungraph_(id);
@@ -237,7 +237,7 @@ public class Grapher {
 			var type = ReadType.of(dis.readByte());
 			Node terminal;
 			Operator op;
-			List<IntIntPair> children = new ArrayList<>();
+			var children = new ArrayList<IntIntPair>();
 
 			if (type == ReadType.TERM) {
 				var ch = (char) dis.readByte();
