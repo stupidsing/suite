@@ -17,7 +17,6 @@ import suite.net.SocketServer;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.util.Fail;
-import suite.util.FunUtil.Source;
 import suite.util.Object_;
 import suite.util.ParseUtil;
 import suite.util.Rethrow;
@@ -49,7 +48,7 @@ public class Main extends ExecutableProgram {
 
 		var b = true;
 		var inputs = new ArrayList<String>();
-		Source<String> source = To.source(args);
+		var source = To.source(args);
 		String verb = null;
 		String arg;
 

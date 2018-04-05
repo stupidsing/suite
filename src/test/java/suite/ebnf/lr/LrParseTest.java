@@ -10,7 +10,7 @@ public class LrParseTest {
 
 	@Test
 	public void testAnd() throws IOException {
-		LrParse lrParse = LrParse.of("<digit> ::= \"0\" \"1\"\n", "<digit>");
+		var lrParse = LrParse.of("<digit> ::= \"0\" \"1\"\n", "<digit>");
 		assertNotNull(lrParse.parse("0 1"));
 	}
 
@@ -26,7 +26,7 @@ public class LrParseTest {
 		}
 
 		System.out.println(sb.toString());
-		LrParse lrParse = LrParse.of(sb.toString(), e);
+		var lrParse = LrParse.of(sb.toString(), e);
 		assertNotNull(lrParse.parse("0 op1 1"));
 	}
 
@@ -35,14 +35,14 @@ public class LrParseTest {
 		var grammar = "" //
 				+ "<digit> ::= \"0\" | \"1\"\n" //
 				+ "<digit2> ::= <digit> <digit>\n";
-		LrParse lrParse = LrParse.of(grammar, "<digit2>");
+		var lrParse = LrParse.of(grammar, "<digit2>");
 
 		assertNotNull(lrParse.parse("0 1"));
 	}
 
 	@Test
 	public void testEof() throws IOException {
-		LrParse lrParse = LrParse.of("<nil> ::= ()\n", "<nil>");
+		var lrParse = LrParse.of("<nil> ::= ()\n", "<nil>");
 		assertNotNull(lrParse.parse(""));
 	}
 
@@ -52,7 +52,7 @@ public class LrParseTest {
 				+ "<expression> ::= <number> | <number> \"+\" <expression>\n" //
 				+ "<number> ::= <digit> | <digit> <number>\n" //
 				+ "<digit> ::= \"1\" | \"2\" | \"3\"\n";
-		LrParse lrParse = LrParse.of(grammar, "<expression>");
+		var lrParse = LrParse.of(grammar, "<expression>");
 
 		System.out.println(lrParse.parse("1 + 2 + 3"));
 	}
@@ -62,33 +62,33 @@ public class LrParseTest {
 		var grammar = "" //
 				+ "<e> ::= <e> \"*\" <b> | <e> \"+\" <b> | <b>\n" //
 				+ "<b> ::= \"0\" | \"1\"\n";
-		LrParse lrParse = LrParse.of(grammar, "<e>");
+		var lrParse = LrParse.of(grammar, "<e>");
 
 		System.out.println(lrParse.parse("0 * 0 + 1"));
 	}
 
 	@Test
 	public void testList() throws IOException {
-		LrParse lrParse = LrParse.of("<list> ::= () | <list> \"0\"\n", "<list>");
+		var lrParse = LrParse.of("<list> ::= () | <list> \"0\"\n", "<list>");
 		assertNotNull(lrParse.parse("0"));
 	}
 
 	@Test
 	public void testOr() throws IOException {
-		LrParse lrParse = LrParse.of("<digit> ::= \"0\" | \"1\"\n", "<digit>");
+		var lrParse = LrParse.of("<digit> ::= \"0\" | \"1\"\n", "<digit>");
 		assertNotNull(lrParse.parse("0"));
 		assertNotNull(lrParse.parse("1"));
 	}
 
 	@Test
 	public void testShiftReduceConflict() throws IOException {
-		LrParse lrParse = LrParse.of("<list> ::= () | \"0\" <list>\n", "<list>");
+		var lrParse = LrParse.of("<list> ::= () | \"0\" <list>\n", "<list>");
 		assertNotNull(lrParse.parse("0 0 0 0 0"));
 	}
 
 	@Test
 	public void testToken() throws IOException {
-		LrParse lrParse = LrParse.of("<digit> ::= \"0\"\n", "<digit>");
+		var lrParse = LrParse.of("<digit> ::= \"0\"\n", "<digit>");
 		assertNotNull(lrParse.parse("0"));
 	}
 
