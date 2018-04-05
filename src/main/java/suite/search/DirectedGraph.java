@@ -37,7 +37,7 @@ public class DirectedGraph<V> {
 	}
 
 	public List<Set<V>> layers() {
-		ArrayList<Set<V>> results = new ArrayList<>();
+		var results = new ArrayList<Set<V>>();
 		var set = new HashSet<V>();
 		boolean b;
 

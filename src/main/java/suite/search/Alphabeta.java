@@ -52,7 +52,7 @@ public class Alphabeta<State> {
 			}
 		}
 
-		List<State> moves1 = new ArrayList<>(moves);
+		var moves1 = new ArrayList<>(moves);
 		return IntObjPair.of(evaluate.apply(state), moves1);
 	}
 

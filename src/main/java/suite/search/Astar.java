@@ -50,7 +50,7 @@ public class Astar<Node> {
 
 			if (node != end && closed.add(node)) {
 				var sunkCost1 = ni.sunkCost + 1;
-				Source<Node> source = generate.apply(node);
+				var source = generate.apply(node);
 
 				while ((node1 = source.source()) != null)
 					open.add(new NodeInfo(ni, node1, sunkCost1, sunkCost1 + estimate.apply(node1)));

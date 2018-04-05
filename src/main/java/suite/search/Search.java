@@ -34,7 +34,7 @@ public class Search<State> {
 	public static <State> State depthFirst(Traverser<State> traverser, State state0) {
 		if (!traverser.evaluate(state0)) {
 			for (var state1 : traverser.generate(state0)) {
-				State statex = depthFirst(traverser, state1);
+				var statex = depthFirst(traverser, state1);
 				if (statex != null)
 					return statex;
 			}
