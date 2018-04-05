@@ -14,7 +14,6 @@ import suite.trade.Usex;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
-import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSourceView;
 import suite.trade.data.HkexUtil;
 import suite.util.Object_;
@@ -44,7 +43,7 @@ public class Factor {
 	private Factor(Configuration cfg, Streamlet<String> indices) {
 		this.cfg = cfg;
 
-		AlignKeyDataSource<String> akds = cfg.dataSources(TimeRange.of(Time.MIN, now), indices);
+		var akds = cfg.dataSources(TimeRange.of(Time.MIN, now), indices);
 
 		var indexPrices = akds.dsByKey //
 				.map((symbol, ds) -> ds.prices) //
@@ -54,7 +53,7 @@ public class Factor {
 	}
 
 	public List<Pair<Asset, Double>> query(Streamlet<Asset> assets) {
-		TimeRange period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(now), 250 * 3);
+		var period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(now), 250 * 3);
 
 		return assets //
 				.map2(asset -> project(ids, cfg.dataSource(asset.symbol), period)) //
@@ -67,12 +66,11 @@ public class Factor {
 			var dsBySymbol = akds.dsByKey;
 			var dsBySymbol_ = dsBySymbol.toMap();
 
-			DataSourceView<String, Double> dsv = DataSourceView.of(0, 64, akds,
-					(symbol, ds, period) -> project(ids, dsBySymbol_.get(symbol), period));
+			var dsv = DataSourceView.of(0, 64, akds, (symbol, ds, period) -> project(ids, dsBySymbol_.get(symbol), period));
 
 			return index -> {
 				var indexPrices = ids.prices;
-				double indexReturn = Quant.return_(indexPrices[index - 2], indexPrices[index - 1]);
+				var indexReturn = Quant.return_(indexPrices[index - 2], indexPrices[index - 1]);
 
 				return dsBySymbol //
 						.map2((symbol, ds) -> indexReturn * dsv.get(symbol, index)) //

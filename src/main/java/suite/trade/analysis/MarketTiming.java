@@ -5,7 +5,6 @@ import static suite.util.Friends.max;
 import suite.math.numeric.Statistic;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
-import suite.primitive.streamlet.IntStreamlet;
 
 public class MarketTiming {
 
@@ -51,8 +50,8 @@ public class MarketTiming {
 		var flags = new int[length];
 
 		for (var i = 0; i < length; i++) {
-			int past = max(0, i - lookback);
-			IntStreamlet past_i = Ints_.range(past, i);
+			var past = max(0, i - lookback);
+			var past_i = Ints_.range(past, i);
 			var past1_i = past_i.drop(1);
 
 			var ma20abovema50 = past_i.filter(j -> ma50[j] < ma20[j]).size();

@@ -74,7 +74,7 @@ public class Summarize {
 		var acquiredPrices = trades.collect(Trade_::collectBrokeredTrades).collect(Trade_::collectAcquiredPrices);
 		var now = Time.now();
 
-		Summarize_ overall = summarize_(trades, priceBySymbol, symbol -> {
+		var overall = summarize_(trades, priceBySymbol, symbol -> {
 			var isMarketOpen = false //
 					|| HkexUtil.isMarketOpen(now) //
 					|| HkexUtil.isMarketOpen(now.addHours(1));
@@ -195,7 +195,7 @@ public class Summarize {
 	}
 
 	private String percent(float price1, float pricex) {
-		String pc = String.format("%.1f", 100d * Quant.return_(price1, pricex)) + "%";
+		var pc = String.format("%.1f", 100d * Quant.return_(price1, pricex)) + "%";
 		return (pc.startsWith("-") ? "" : "+") + pc;
 	}
 

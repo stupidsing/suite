@@ -85,7 +85,7 @@ public class Oscillator {
 		var ps = To.vector(length, i -> (ds.closes[i] + ds.lows[i] + ds.highs[i]) * i3);
 
 		return To.vector(length, i -> {
-			int i0 = max(0, i - nDays + 1);
+			var i0 = max(0, i - nDays + 1);
 			var l = i - i0 + 1;
 			double sum = 0d, sumAbsDev = 0d;
 			for (var d = i0; d <= i; d++)
@@ -140,7 +140,7 @@ public class Oscillator {
 		var obvs = new float[length];
 		var obv = 0d;
 		for (var i = 1; i < length; i++) {
-			int c = Float.compare(ds.closes[i - 1], ds.closes[i]);
+			var c = Float.compare(ds.closes[i - 1], ds.closes[i]);
 			var volume = ds.volumes[i];
 			if (c < 0)
 				obv += volume;

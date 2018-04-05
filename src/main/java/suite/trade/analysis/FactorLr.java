@@ -49,7 +49,7 @@ public class FactorLr {
 	}
 
 	public Map<Asset, String> query(Streamlet<Asset> assets) {
-		TimeRange period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(now), 250 * 3);
+		var period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(now), 250 * 3);
 
 		return assets //
 				.map2(asset -> ols(cfg.dataSource(asset.symbol), period).toString()) //
@@ -61,8 +61,7 @@ public class FactorLr {
 			var dsBySymbol = akds.dsByKey;
 			var dsBySymbol_ = dsBySymbol.toMap();
 
-			DataSourceView<String, LinearRegression> dsv = DataSourceView.of(0, 64, akds,
-					(symbol, ds, period) -> ols(dsBySymbol_.get(symbol), period));
+			var dsv = DataSourceView.of(0, 64, akds, (symbol, ds, period) -> ols(dsBySymbol_.get(symbol), period));
 
 			return index -> {
 				var xs = Ints_ //
