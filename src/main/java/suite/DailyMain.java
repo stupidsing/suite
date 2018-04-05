@@ -27,7 +27,6 @@ import suite.trade.backalloc.BackAllocConfiguration;
 import suite.trade.backalloc.BackAllocConfigurations;
 import suite.trade.backalloc.BackAllocConfigurations.Bacs;
 import suite.trade.backalloc.BackAllocTester;
-import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.backalloc.strategy.BackAllocatorOld;
 import suite.trade.data.Configuration;
@@ -254,8 +253,8 @@ public class DailyMain extends ExecutableProgram {
 
 	private Result alloc(String tag, float fund, BackAllocator backAllocator, Streamlet<Asset> assets) {
 		var period = TimeRange.daysBefore(64);
-		Simulate sim = BackAllocTester.of(cfg, period, assets, backAllocator, log).simulate(fund);
-		Account account0 = Account.ofPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
+		var sim = BackAllocTester.of(cfg, period, assets, backAllocator, log).simulate(fund);
+		var account0 = Account.ofPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
 		var account1 = sim.account;
 		Map<String, Integer> assets0 = account0.assets();
 		Map<String, Integer> assets1 = account1.assets();
