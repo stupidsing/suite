@@ -118,8 +118,8 @@ public class ChrDblFunUtil {
 	}
 
 	public static <K, V, R> R fold(Fun<Pair<R, ChrDblPair>, R> fun0, R init, ChrDblSource source2) {
-		Fun<Pair<R, ChrDblPair>, R> fun1 = fun0.rethrow();
-		ChrDblPair pair = ChrDblPair.of((char) 0, (double) 0);
+		var fun1 = fun0.rethrow();
+		var pair = ChrDblPair.of((char) 0, (double) 0);
 		while (source2.source2(pair))
 			init = fun1.apply(Pair.of(init, pair));
 		return init;
@@ -127,7 +127,7 @@ public class ChrDblFunUtil {
 
 	public static boolean isAll(ChrDblPredicate pred0, ChrDblSource source2) {
 		var pred1 = pred0.rethrow();
-		ChrDblPair pair = ChrDblPair.of((char) 0, (double) 0);
+		var pair = ChrDblPair.of((char) 0, (double) 0);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
 				return false;
@@ -136,7 +136,7 @@ public class ChrDblFunUtil {
 
 	public static <V> boolean isAny(ChrDblPredicate pred0, ChrDblSource source2) {
 		var pred1 = pred0.rethrow();
-		ChrDblPair pair = ChrDblPair.of((char) 0, (double) 0);
+		var pair = ChrDblPair.of((char) 0, (double) 0);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
 				return true;
@@ -149,7 +149,7 @@ public class ChrDblFunUtil {
 
 			public boolean hasNext() {
 				if (next == null) {
-					ChrDblPair next1 = ChrDblPair.of((char) 0, (double) 0);
+					var next1 = ChrDblPair.of((char) 0, (double) 0);
 					if (source2.source2(next1))
 						next = next1;
 				}
@@ -169,15 +169,15 @@ public class ChrDblFunUtil {
 	}
 
 	public static <T> Source<T> map(ChrDbl_Obj<T> fun0, ChrDblSource source2) {
-		ChrDbl_Obj<T> fun1 = fun0.rethrow();
-		ChrDblPair pair = ChrDblPair.of((char) 0, (double) 0);
+		var fun1 = fun0.rethrow();
+		var pair = ChrDblPair.of((char) 0, (double) 0);
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
 	}
 
 	public static <K1, V1, T> Source2<K1, V1> map2(ChrDbl_Obj<K1> kf0, ChrDbl_Obj<V1> vf0, ChrDblSource source2) {
-		ChrDbl_Obj<K1> kf1 = kf0.rethrow();
-		ChrDbl_Obj<V1> vf1 = vf0.rethrow();
-		ChrDblPair pair1 = ChrDblPair.of((char) 0, (double) 0);
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
+		var pair1 = ChrDblPair.of((char) 0, (double) 0);
 		return pair -> {
 			var b = source2.source2(pair1);
 			if (b)
@@ -189,7 +189,7 @@ public class ChrDblFunUtil {
 	public static ChrDblSource mapChrDbl(ChrDbl_Chr kf0, ChrDbl_Dbl vf0, ChrDblSource source2) {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
-		ChrDblPair pair1 = ChrDblPair.of((char) 0, (double) 0);
+		var pair1 = ChrDblPair.of((char) 0, (double) 0);
 		return pair -> {
 			var b = source2.source2(pair1);
 			if (b)
@@ -232,10 +232,10 @@ public class ChrDblFunUtil {
 	 * Sucks data from a sink and produce into a source.
 	 */
 	public static <V> ChrDblSource suck(Sink<Sink<ChrDblPair>> fun) {
-		NullableSyncQueue<ChrDblPair> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<ChrDblPair>();
 		Sink<ChrDblPair> enqueue = pair -> enqueue(queue, pair);
 
-		Thread thread = Thread_.startThread(() -> {
+		var thread = Thread_.startThread(() -> {
 			try {
 				fun.sink(enqueue);
 			} finally {
@@ -246,7 +246,7 @@ public class ChrDblFunUtil {
 		return pair -> {
 			try {
 				var p = queue.take();
-				boolean b = p != null;
+				var b = p != null;
 				if (b)
 					pair.update(p.t0, p.t1);
 				return b;

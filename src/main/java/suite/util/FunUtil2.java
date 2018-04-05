@@ -130,7 +130,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V> Source2<K, V> filter(BiPredicate<K, V> fun0, Source2<K, V> source2) {
-		BiPredicate<K, V> fun1 = Rethrow.biPredicate(fun0);
+		var fun1 = Rethrow.biPredicate(fun0);
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
@@ -140,7 +140,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V> Source2<K, V> filterKey(Predicate<K> fun0, Source2<K, V> source2) {
-		Predicate<K> fun1 = Rethrow.predicate(fun0);
+		var fun1 = Rethrow.predicate(fun0);
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -150,7 +150,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V> Source2<K, V> filterValue(Predicate<V> fun0, Source2<K, V> source2) {
-		Predicate<V> fun1 = Rethrow.predicate(fun0);
+		var fun1 = Rethrow.predicate(fun0);
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t1))
@@ -160,7 +160,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V, R> R fold(Fun<Pair<R, Pair<K, V>>, R> fun0, R init, Source2<K, V> source2) {
-		Fun<Pair<R, Pair<K, V>>, R> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		Pair<K, V> pair = Pair.of(null, null);
 		while (source2.source2(pair))
 			init = fun1.apply(Pair.of(init, pair));
@@ -168,7 +168,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V> boolean isAll(BiPredicate<K, V> pred0, Source2<K, V> source2) {
-		BiPredicate<K, V> pred1 = Rethrow.biPredicate(pred0);
+		var pred1 = Rethrow.biPredicate(pred0);
 		Pair<K, V> pair = Pair.of(null, null);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
@@ -177,7 +177,7 @@ public class FunUtil2 {
 	}
 
 	public static <K, V> boolean isAny(BiPredicate<K, V> pred0, Source2<K, V> source2) {
-		BiPredicate<K, V> pred1 = Rethrow.biPredicate(pred0);
+		var pred1 = Rethrow.biPredicate(pred0);
 		Pair<K, V> pair = Pair.of(null, null);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
@@ -211,14 +211,14 @@ public class FunUtil2 {
 	}
 
 	public static <K, V, T> Source<T> map(Fun2<K, V, T> fun0, Source2<K, V> source2) {
-		Fun2<K, V, T> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		Pair<K, V> pair = Pair.of(null, null);
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
 	}
 
 	public static <K, V, K1, V1, T> Source2<K1, V1> map2(Fun2<K, V, K1> kf0, Fun2<K, V, V1> vf0, Source2<K, V> source2) {
-		Fun2<K, V, K1> kf1 = kf0.rethrow();
-		Fun2<K, V, V1> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		Pair<K, V> pair1 = Pair.of(null, null);
 		return pair -> {
 			var b = source2.source2(pair1);
@@ -263,10 +263,10 @@ public class FunUtil2 {
 	 * Sucks data from a sink and produce into a source.
 	 */
 	public static <K, V> Source2<K, V> suck(Sink<Sink<Pair<K, V>>> fun) {
-		NullableSyncQueue<Pair<K, V>> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<Pair<K, V>>();
 		Sink<Pair<K, V>> enqueue = pair -> enqueue(queue, pair);
 
-		Thread thread = Thread_.startThread(() -> {
+		var thread = Thread_.startThread(() -> {
 			try {
 				fun.sink(enqueue);
 			} finally {
@@ -277,7 +277,7 @@ public class FunUtil2 {
 		return pair -> {
 			try {
 				var p = queue.take();
-				boolean b = p != null;
+				var b = p != null;
 				if (b)
 					pair.update(p.t0, p.t1);
 				return b;

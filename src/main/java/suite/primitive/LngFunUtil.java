@@ -116,7 +116,7 @@ public class LngFunUtil {
 	}
 
 	public static <R> R fold(Fun<LngObjPair<R>, R> fun0, R init, LngSource source) {
-		Fun<LngObjPair<R>, R> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		long c;
 		while ((c = source.source()) != EMPTYVALUE)
 			init = fun1.apply(LngObjPair.of(c, init));
@@ -165,7 +165,7 @@ public class LngFunUtil {
 	}
 
 	public static <T1> Source<T1> map(Lng_Obj<T1> fun0, LngSource source) {
-		Lng_Obj<T1> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return () -> {
 			var c0 = source.source();
 			return c0 != LngFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
@@ -173,8 +173,8 @@ public class LngFunUtil {
 	}
 
 	public static <K, V> Source2<K, V> map2(Lng_Obj<K> kf0, Lng_Obj<V> vf0, LngSource source) {
-		Lng_Obj<K> kf1 = kf0.rethrow();
-		Lng_Obj<V> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return pair -> {
 			var c = source.source();
 			var b = c != EMPTYVALUE;
@@ -193,7 +193,7 @@ public class LngFunUtil {
 	}
 
 	public static <V> LngObjSource<V> mapLngObj(Lng_Obj<V> fun0, LngSource source) {
-		Lng_Obj<V> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return pair -> {
 			var c = source.source();
 			if (c != LngFunUtil.EMPTYVALUE) {
@@ -236,10 +236,10 @@ public class LngFunUtil {
 	 * Sucks data from a sink and produce into a source.
 	 */
 	public static LngSource suck(Sink<LngSink> fun) {
-		NullableSyncQueue<Long> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<Long>();
 		LngSink enqueue = c -> enqueue(queue, c);
 
-		Thread thread = Thread_.startThread(() -> {
+		var thread = Thread_.startThread(() -> {
 			try {
 				fun.sink(enqueue);
 			} finally {

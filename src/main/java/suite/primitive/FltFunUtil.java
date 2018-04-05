@@ -116,7 +116,7 @@ public class FltFunUtil {
 	}
 
 	public static <R> R fold(Fun<FltObjPair<R>, R> fun0, R init, FltSource source) {
-		Fun<FltObjPair<R>, R> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		float c;
 		while ((c = source.source()) != EMPTYVALUE)
 			init = fun1.apply(FltObjPair.of(c, init));
@@ -165,7 +165,7 @@ public class FltFunUtil {
 	}
 
 	public static <T1> Source<T1> map(Flt_Obj<T1> fun0, FltSource source) {
-		Flt_Obj<T1> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return () -> {
 			var c0 = source.source();
 			return c0 != FltFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
@@ -173,8 +173,8 @@ public class FltFunUtil {
 	}
 
 	public static <K, V> Source2<K, V> map2(Flt_Obj<K> kf0, Flt_Obj<V> vf0, FltSource source) {
-		Flt_Obj<K> kf1 = kf0.rethrow();
-		Flt_Obj<V> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return pair -> {
 			var c = source.source();
 			var b = c != EMPTYVALUE;
@@ -193,7 +193,7 @@ public class FltFunUtil {
 	}
 
 	public static <V> FltObjSource<V> mapFltObj(Flt_Obj<V> fun0, FltSource source) {
-		Flt_Obj<V> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return pair -> {
 			var c = source.source();
 			if (c != FltFunUtil.EMPTYVALUE) {
@@ -236,10 +236,10 @@ public class FltFunUtil {
 	 * Sucks data from a sink and produce into a source.
 	 */
 	public static FltSource suck(Sink<FltSink> fun) {
-		NullableSyncQueue<Float> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<Float>();
 		FltSink enqueue = c -> enqueue(queue, c);
 
-		Thread thread = Thread_.startThread(() -> {
+		var thread = Thread_.startThread(() -> {
 			try {
 				fun.sink(enqueue);
 			} finally {

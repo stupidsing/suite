@@ -116,7 +116,7 @@ public class FunUtil {
 	}
 
 	public static <T> Source<T> filter(Predicate<T> fun0, Source<T> source) {
-		Predicate<T> fun1 = Rethrow.predicate(fun0);
+		var fun1 = Rethrow.predicate(fun0);
 		return () -> {
 			T t = null;
 			while ((t = source.source()) != null && !fun1.test(t))
@@ -142,7 +142,7 @@ public class FunUtil {
 	}
 
 	public static <T, R> R fold(Fun<Pair<R, T>, R> fun0, R init, Source<T> source) {
-		Fun<Pair<R, T>, R> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		T t;
 		while ((t = source.source()) != null)
 			init = fun1.apply(Pair.of(init, t));
@@ -150,7 +150,7 @@ public class FunUtil {
 	}
 
 	public static <T> boolean isAll(Predicate<T> pred0, Source<T> source) {
-		Predicate<T> pred1 = Rethrow.predicate(pred0);
+		var pred1 = Rethrow.predicate(pred0);
 		T t;
 		while ((t = source.source()) != null)
 			if (!pred1.test(t))
@@ -190,7 +190,7 @@ public class FunUtil {
 	}
 
 	public static <T0, T1> Source<T1> map(Fun<T0, T1> fun0, Source<T0> source) {
-		Fun<T0, T1> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return () -> {
 			var t0 = source.source();
 			return t0 != null ? fun1.apply(t0) : null;
@@ -198,8 +198,8 @@ public class FunUtil {
 	}
 
 	public static <T, K, V> Source2<K, V> map2(Fun<T, K> kf0, Fun<T, V> vf0, Source<T> source) {
-		Fun<T, K> kf1 = kf0.rethrow();
-		Fun<T, V> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return pair -> {
 			var t = source.source();
 			boolean b = t != null;
@@ -223,7 +223,7 @@ public class FunUtil {
 	 * skipped.
 	 */
 	public static <T> Source<Source<T>> split(Predicate<T> fun0, Source<T> source) {
-		Predicate<T> fun1 = Rethrow.predicate(fun0);
+		var fun1 = Rethrow.predicate(fun0);
 		return new Source<>() {
 			private T t = source.source();
 			private boolean isAvail = t != null;
@@ -239,10 +239,10 @@ public class FunUtil {
 	 * Sucks data from a sink and produce into a source.
 	 */
 	public static <T> Source<T> suck(Sink<Sink<T>> fun) {
-		NullableSyncQueue<T> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<T>();
 		Sink<T> enqueue = t -> enqueue(queue, t);
 
-		Thread thread = Thread_.startThread(() -> {
+		var thread = Thread_.startThread(() -> {
 			try {
 				fun.sink(enqueue);
 			} finally {

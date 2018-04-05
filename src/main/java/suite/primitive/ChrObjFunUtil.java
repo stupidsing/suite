@@ -92,7 +92,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> ChrObjSource<V> filter(ChrObjPredicate<V> fun0, ChrObjSource<V> source2) {
-		ChrObjPredicate<V> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
@@ -112,7 +112,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> ChrObjSource<V> filterValue(Predicate<V> fun0, ChrObjSource<V> source2) {
-		Predicate<V> fun1 = Rethrow.predicate(fun0);
+		var fun1 = Rethrow.predicate(fun0);
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t1))
@@ -122,7 +122,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <K, V, R> R fold(Fun<Pair<R, ChrObjPair<V>>, R> fun0, R init, ChrObjSource<V> source2) {
-		Fun<Pair<R, ChrObjPair<V>>, R> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		while (source2.source2(pair))
 			init = fun1.apply(Pair.of(init, pair));
@@ -130,7 +130,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> boolean isAll(ChrObjPredicate<V> pred0, ChrObjSource<V> source2) {
-		ChrObjPredicate<V> pred1 = pred0.rethrow();
+		var pred1 = pred0.rethrow();
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
@@ -139,7 +139,7 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V> boolean isAny(ChrObjPredicate<V> pred0, ChrObjSource<V> source2) {
-		ChrObjPredicate<V> pred1 = pred0.rethrow();
+		var pred1 = pred0.rethrow();
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
@@ -161,7 +161,7 @@ public class ChrObjFunUtil {
 			}
 
 			public ChrObjPair<V> next() {
-				ChrObjPair<V> next0 = next;
+				var next0 = next;
 				next = null;
 				return next0;
 			}
@@ -173,14 +173,14 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V, T> Source<T> map(ChrObj_Obj<V, T> fun0, ChrObjSource<V> source2) {
-		ChrObj_Obj<V, T> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		return () -> source2.source2(pair) ? fun1.apply(pair.t0, pair.t1) : null;
 	}
 
 	public static <V, K1, V1, T> Source2<K1, V1> map2(ChrObj_Obj<V, K1> kf0, ChrObj_Obj<V, V1> vf0, ChrObjSource<V> source2) {
-		ChrObj_Obj<V, K1> kf1 = kf0.rethrow();
-		ChrObj_Obj<V, V1> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		ChrObjPair<V> pair1 = ChrObjPair.of((char) 0, null);
 		return pair -> {
 			var b = source2.source2(pair1);
@@ -191,8 +191,8 @@ public class ChrObjFunUtil {
 	}
 
 	public static <V, V1, T> ChrObjSource<V1> mapChrObj(ChrObj_Chr<V> kf0, ChrObj_Obj<V, V1> vf0, ChrObjSource<V> source2) {
-		ChrObj_Chr<V> kf1 = kf0.rethrow();
-		ChrObj_Obj<V, V1> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		ChrObjPair<V> pair1 = ChrObjPair.of((char) 0, null);
 		return pair -> {
 			var b = source2.source2(pair1);
@@ -236,10 +236,10 @@ public class ChrObjFunUtil {
 	 * Sucks data from a sink and produce into a source.
 	 */
 	public static <V> ChrObjSource<V> suck(Sink<Sink<ChrObjPair<V>>> fun) {
-		NullableSyncQueue<ChrObjPair<V>> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<ChrObjPair<V>>();
 		Sink<ChrObjPair<V>> enqueue = pair -> enqueue(queue, pair);
 
-		Thread thread = Thread_.startThread(() -> {
+		var thread = Thread_.startThread(() -> {
 			try {
 				fun.sink(enqueue);
 			} finally {
@@ -249,8 +249,8 @@ public class ChrObjFunUtil {
 
 		return pair -> {
 			try {
-				ChrObjPair<V> p = queue.take();
-				boolean b = p != null;
+				var p = queue.take();
+				var b = p != null;
 				if (b)
 					pair.update(p.t0, p.t1);
 				return b;

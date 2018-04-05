@@ -155,7 +155,7 @@ public class ChrIntMap {
 
 		if (capacity * 3 / 4 < size) {
 			var ks0 = ks;
-			int[] vs0 = vs;
+			var vs0 = vs;
 			int v_;
 
 			allocate(capacity * 2);

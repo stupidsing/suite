@@ -116,7 +116,7 @@ public class ChrFunUtil {
 	}
 
 	public static <R> R fold(Fun<ChrObjPair<R>, R> fun0, R init, ChrSource source) {
-		Fun<ChrObjPair<R>, R> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		char c;
 		while ((c = source.source()) != EMPTYVALUE)
 			init = fun1.apply(ChrObjPair.of(c, init));
@@ -165,7 +165,7 @@ public class ChrFunUtil {
 	}
 
 	public static <T1> Source<T1> map(Chr_Obj<T1> fun0, ChrSource source) {
-		Chr_Obj<T1> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return () -> {
 			var c0 = source.source();
 			return c0 != ChrFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
@@ -173,8 +173,8 @@ public class ChrFunUtil {
 	}
 
 	public static <K, V> Source2<K, V> map2(Chr_Obj<K> kf0, Chr_Obj<V> vf0, ChrSource source) {
-		Chr_Obj<K> kf1 = kf0.rethrow();
-		Chr_Obj<V> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return pair -> {
 			var c = source.source();
 			var b = c != EMPTYVALUE;
@@ -193,7 +193,7 @@ public class ChrFunUtil {
 	}
 
 	public static <V> ChrObjSource<V> mapChrObj(Chr_Obj<V> fun0, ChrSource source) {
-		Chr_Obj<V> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return pair -> {
 			var c = source.source();
 			if (c != ChrFunUtil.EMPTYVALUE) {
@@ -236,10 +236,10 @@ public class ChrFunUtil {
 	 * Sucks data from a sink and produce into a source.
 	 */
 	public static ChrSource suck(Sink<ChrSink> fun) {
-		NullableSyncQueue<Character> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<Character>();
 		ChrSink enqueue = c -> enqueue(queue, c);
 
-		Thread thread = Thread_.startThread(() -> {
+		var thread = Thread_.startThread(() -> {
 			try {
 				fun.sink(enqueue);
 			} finally {

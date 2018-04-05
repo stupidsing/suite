@@ -155,7 +155,7 @@ public class ChrLngMap {
 
 		if (capacity * 3 / 4 < size) {
 			var ks0 = ks;
-			long[] vs0 = vs;
+			var vs0 = vs;
 			long v_;
 
 			allocate(capacity * 2);

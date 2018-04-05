@@ -155,7 +155,7 @@ public class DblFltMap {
 
 		if (capacity * 3 / 4 < size) {
 			var ks0 = ks;
-			float[] vs0 = vs;
+			var vs0 = vs;
 			float v_;
 
 			allocate(capacity * 2);

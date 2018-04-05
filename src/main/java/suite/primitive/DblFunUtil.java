@@ -116,7 +116,7 @@ public class DblFunUtil {
 	}
 
 	public static <R> R fold(Fun<DblObjPair<R>, R> fun0, R init, DblSource source) {
-		Fun<DblObjPair<R>, R> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		double c;
 		while ((c = source.source()) != EMPTYVALUE)
 			init = fun1.apply(DblObjPair.of(c, init));
@@ -165,7 +165,7 @@ public class DblFunUtil {
 	}
 
 	public static <T1> Source<T1> map(Dbl_Obj<T1> fun0, DblSource source) {
-		Dbl_Obj<T1> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return () -> {
 			var c0 = source.source();
 			return c0 != DblFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
@@ -173,8 +173,8 @@ public class DblFunUtil {
 	}
 
 	public static <K, V> Source2<K, V> map2(Dbl_Obj<K> kf0, Dbl_Obj<V> vf0, DblSource source) {
-		Dbl_Obj<K> kf1 = kf0.rethrow();
-		Dbl_Obj<V> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return pair -> {
 			var c = source.source();
 			var b = c != EMPTYVALUE;
@@ -193,7 +193,7 @@ public class DblFunUtil {
 	}
 
 	public static <V> DblObjSource<V> mapDblObj(Dbl_Obj<V> fun0, DblSource source) {
-		Dbl_Obj<V> fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return pair -> {
 			var c = source.source();
 			if (c != DblFunUtil.EMPTYVALUE) {
@@ -236,10 +236,10 @@ public class DblFunUtil {
 	 * Sucks data from a sink and produce into a source.
 	 */
 	public static DblSource suck(Sink<DblSink> fun) {
-		NullableSyncQueue<Double> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<Double>();
 		DblSink enqueue = c -> enqueue(queue, c);
 
-		Thread thread = Thread_.startThread(() -> {
+		var thread = Thread_.startThread(() -> {
 			try {
 				fun.sink(enqueue);
 			} finally {
