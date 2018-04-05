@@ -95,7 +95,7 @@ public class ReversePolish {
 				return "t" + tree.getOperator();
 			}).applyIf(Node.class, n_ -> {
 				var nr = NodeRead.of(n_);
-				for (Pair<Node, Node> pair : nr.children) {
+				for (var pair : nr.children) {
 					deque.push(pair.t1);
 					deque.push(pair.t0);
 				}

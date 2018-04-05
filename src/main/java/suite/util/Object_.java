@@ -4,7 +4,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -114,13 +113,13 @@ public class Object_ {
 
 				mapper = new Mapper(object -> Rethrow.ex(() -> {
 					Map<Object, Object> map = new HashMap<>();
-					for (Pair<String, Field> sf : sfs)
+					for (var sf : sfs)
 						map.put(sf.t0, sf.t1.get(object));
 					return map;
 				}), object -> Rethrow.ex(() -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					var object1 = new_(clazz);
-					for (Pair<String, Field> sf : sfs)
+					for (var sf : sfs)
 						sf.t1.set(object1, map.get(sf.t0));
 					return object1;
 				}));

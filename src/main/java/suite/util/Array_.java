@@ -8,13 +8,13 @@ public class Array_ {
 	public static <T> T[] concat(Class<T> clazz, T[]... lists) {
 		var size = 0;
 
-		for (T[] list : lists)
+		for (var list : lists)
 			size += list.length;
 
 		T[] result = Array_.newArray(clazz, size);
 		var i = 0;
 
-		for (T[] list : lists) {
+		for (var list : lists) {
 			var length = list.length;
 			Array_.copy(list, 0, result, i, length);
 			i += length;

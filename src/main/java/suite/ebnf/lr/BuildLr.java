@@ -138,7 +138,7 @@ public class BuildLr {
 			Set<Pair<String, Set<String>>> keys1 = new HashSet<>(transitions.keySet());
 			keys1.removeAll(keys0);
 
-			for (Pair<String, Set<String>> pair : keys1) {
+			for (var pair : keys1) {
 				var next_ = transitions.get(pair);
 				var nextx_ = newTransition(pair.t1);
 
@@ -151,7 +151,7 @@ public class BuildLr {
 		boolean b;
 		do {
 			b = false;
-			for (Pair<Transition, Transition> merge : new ArrayList<>(merges))
+			for (var merge : new ArrayList<>(merges))
 				b |= merge.t0.putAll(merge.t1);
 		} while (b);
 

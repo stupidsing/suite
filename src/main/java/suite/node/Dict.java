@@ -12,7 +12,7 @@ public class Dict extends Node {
 
 	public static Dict of(Pair<Node, Reference>[] pairs) {
 		Map<Node, Reference> map = new HashMap<>();
-		for (Pair<Node, Reference> pair : pairs)
+		for (var pair : pairs)
 			map.put(pair.t0, pair.t1);
 		return new Dict(map);
 	}

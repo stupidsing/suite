@@ -61,7 +61,7 @@ public class P3Optimize {
 			return optimize(pointer) //
 					.<Funp> switch_() //
 					.applyIf(FunpData.class, g -> g.apply(pairs -> {
-						for (Pair<Funp, IntIntPair> pair : pairs) {
+						for (var pair : pairs) {
 							var range = pair.t1;
 							if (start == range.t0 && end == range.t1)
 								return pair.t0;

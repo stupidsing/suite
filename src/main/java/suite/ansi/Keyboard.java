@@ -112,7 +112,7 @@ public class Keyboard {
 		pairs.add(Pair.of(List.of(27, 106), VK.ALT_J____)); // alt-j
 		pairs.add(Pair.of(List.of(127), VK.BKSP_));
 
-		for (Pair<List<Integer>, VK> pair : pairs)
+		for (var pair : pairs)
 			trie.add(pair.t0, pair.t1);
 	}
 

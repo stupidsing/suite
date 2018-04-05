@@ -32,7 +32,7 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 				.forEach(path -> {
 					var recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
 					var s = To.string(path);
-					for (Pair<String, String> ft : fts)
+					for (var ft : fts)
 						s = recursiveFactorizer.rewrite(ft.t0, ft.t1, s);
 					try {
 						Files.write(path, s.getBytes(Constants.charset));

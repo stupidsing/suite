@@ -20,7 +20,7 @@ public class PeepholeOptimizer {
 	public List<Pair<Reference, Node>> optimize(List<Pair<Reference, Node>> lnis0) {
 		List<Pair<Reference, Node>> lnis1 = new ArrayList<>();
 
-		for (Pair<Reference, Node> lni0 : lnis0) {
+		for (var lni0 : lnis0) {
 			var node0 = lni0.t1;
 			Node node1;
 			Node[] m;

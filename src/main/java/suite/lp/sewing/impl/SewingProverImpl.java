@@ -11,7 +11,6 @@ import java.util.Map;
 import suite.Suite;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
-import suite.adt.pair.Pair;
 import suite.immutable.IList;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.compile.impl.CompileExpressionImpl;
@@ -215,7 +214,7 @@ public class SewingProverImpl implements ProverFactory {
 	private void compileAll() {
 		isHasCutByPrototype = rules.listEntries().mapValue(this::isHasCut).toMap();
 
-		for (Pair<Prototype, List<Rule>> e : rules.listEntries()) {
+		for (var e : rules.listEntries()) {
 			var prototype = e.t0;
 			List<Rule> rules = new ArrayList<>(e.t1);
 			var traceLevel = traceLevel(prototype);

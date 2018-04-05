@@ -133,7 +133,7 @@ public class Trade_ {
 	public static float dividend(Streamlet<Trade> trades, Fun<String, LngFltPair[]> fun, Dbl_Dbl feeFun) {
 		var sum = 0f;
 
-		for (Pair<String, List<Trade>> pair : trades.toMultimap(trade -> trade.symbol).listEntries()) {
+		for (var pair : trades.toMultimap(trade -> trade.symbol).listEntries()) {
 			LngFltPair[] dividends = fun.apply(pair.t0);
 			Outlet<Trade> outlet = Outlet.of(pair.t1);
 			LngIntPair tn = LngIntPair.of(0l, 0);

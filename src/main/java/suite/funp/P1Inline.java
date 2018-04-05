@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpAssignReference;
@@ -73,7 +72,7 @@ public class P1Inline {
 					return FunpDefine.of(isPolyType, var1, rename(value), r1.rename(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
 					IMap<String, String> vars1 = vars;
-					for (Pair<String, Funp> pair : pairs0)
+					for (var pair : pairs0)
 						vars1 = vars1.replace(pair.t0, newVar.apply(pair.t0));
 					IMap<String, String> vars2 = vars1;
 					var r1 = new Rename(vars2);
@@ -235,9 +234,9 @@ public class P1Inline {
 					return n_;
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 					IMap<String, Funp> vars1 = vars;
-					for (Pair<String, Funp> pair : pairs)
+					for (var pair : pairs)
 						vars1 = vars1.replace(pair.t0, f);
-					for (Pair<String, Funp> pair : pairs)
+					for (var pair : pairs)
 						associate(vars1, pair.t1);
 					associate(vars1, expr);
 					return n_;

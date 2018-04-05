@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import suite.Suite;
 import suite.adt.Mutable;
-import suite.adt.pair.Pair;
 import suite.fp.match.Matcher;
 import suite.fp.match.Matchers.APPLY;
 import suite.fp.match.Matchers.ATOM;
@@ -223,7 +222,7 @@ public class InterpretFunLazy {
 				result = frame -> () -> Fail.t("error termination " + Formatter.display(ERROR.m));
 			else if ((FUN = Matcher.fun.match(node)) != null) {
 				IMap<Node, Fun<Frame, Thunk_>> vm1 = IMap.empty();
-				for (Pair<Node, Fun<Frame, Thunk_>> e : vm) {
+				for (var e : vm) {
 					Fun<Frame, Thunk_> getter0 = e.t1;
 					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));
 				}

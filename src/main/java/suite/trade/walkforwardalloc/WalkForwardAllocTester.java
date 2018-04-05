@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.pair.Pair;
 import suite.math.numeric.Statistic;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.streamlet.Read;
@@ -93,7 +92,7 @@ public class WalkForwardAllocTester {
 
 		valuations.append(valuation_ = up.valuation0);
 
-		for (Pair<String, Float> e : up.val0.streamlet())
+		for (var e : up.val0.streamlet())
 			holdBySymbol.compute(e.t0, (s, h) -> e.t1 / valuation_ + (h != null ? h : 0d));
 
 		var trades_ = up.trades;
@@ -117,7 +116,7 @@ public class WalkForwardAllocTester {
 		ReturnsStat rs = ts.returnsStat(valuations_, deltaMs);
 		var sb = new StringBuilder();
 
-		for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
+		for (var e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
 			sb.append(e.t0 + ":" + String.format("%.0f", e.t1 * 100d / length) + "%,");
 
 		return "nTicks:" + length //

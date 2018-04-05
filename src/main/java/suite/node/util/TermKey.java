@@ -44,7 +44,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 				referenceSink.sink(aliases.computeIfAbsent(id, any -> nAliases++));
 			} else {
 				var nr = NodeRead.of(node);
-				for (Pair<Node, Node> p : nr.children) {
+				for (var p : nr.children) {
 					visit(p.t0);
 					visit(p.t1);
 				}

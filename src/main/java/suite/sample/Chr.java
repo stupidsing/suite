@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import suite.Suite;
-import suite.adt.pair.Pair;
 import suite.immutable.IMap;
 import suite.immutable.ISet;
 import suite.lp.Trail;
@@ -96,7 +95,7 @@ public class Chr {
 
 		List<Node> nodes1 = new ArrayList<>();
 
-		for (Pair<Prototype, ISet<Node>> e : state.factsByPrototype)
+		for (var e : state.factsByPrototype)
 			nodes1.addAll(To.list(e.t1));
 
 		return nodes1;
@@ -160,7 +159,7 @@ public class Chr {
 			states = states.map(new Fun<>() {
 				public State apply(State state) {
 					IMap<Prototype, ISet<Node>> factsByPrototype1 = IMap.empty();
-					for (Pair<Prototype, ISet<Node>> e : state.factsByPrototype)
+					for (var e : state.factsByPrototype)
 						factsByPrototype1 = factsByPrototype1.put(e.t0, replace(e.t1));
 					return new State(factsByPrototype1);
 				}

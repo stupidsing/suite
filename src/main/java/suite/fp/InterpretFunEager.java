@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import suite.Suite;
-import suite.adt.pair.Pair;
 import suite.fp.intrinsic.Intrinsics;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
@@ -183,7 +182,7 @@ public class InterpretFunEager {
 				result = frame -> Fail.t("error termination " + Formatter.display(ERROR.m));
 			else if ((FUN = Matcher.fun.match(node)) != null) {
 				IMap<Node, Fun<Frame, Node>> vm1 = IMap.empty();
-				for (Pair<Node, Fun<Frame, Node>> e : vm) {
+				for (var e : vm) {
 					Fun<Frame, Node> getter0 = e.t1;
 					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));
 				}

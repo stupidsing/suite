@@ -12,7 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import suite.Constants;
-import suite.adt.pair.Pair;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.impl.JournalledFileFactory;
 import suite.primitive.Bytes;
@@ -130,7 +129,7 @@ public class B_TreeTest {
 		assertEquals(nKeys / 2, To.list(b_tree.keys(0, nKeys / 2)).size());
 		var count = 0;
 
-		for (Pair<Integer, String> e : b_tree.range(0, nKeys)) {
+		for (var e : b_tree.range(0, nKeys)) {
 			var key = count++;
 			assertEquals(key, e.t0.intValue());
 			assertEquals(Integer.toString(key), e.t1);

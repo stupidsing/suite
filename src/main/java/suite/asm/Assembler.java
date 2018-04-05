@@ -125,7 +125,7 @@ public class Assembler {
 			AssemblePredicates.isPass2 = isPass2;
 			out.clear();
 
-			for (Pair<Reference, Node> lni : lnis) {
+			for (var lni : lnis) {
 				var address = org + out.size();
 
 				if (lni.t0 != null)
@@ -137,7 +137,7 @@ public class Assembler {
 				out.append(assemble(isPass2, address, lni.t1));
 			}
 
-			for (Pair<Reference, Node> lni : lnis)
+			for (var lni : lnis)
 				if (lni.t0 != null && isPass2)
 					lni.t0.unbound();
 		}

@@ -48,7 +48,6 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.Bytes;
-import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
@@ -307,7 +306,7 @@ public class P4GenerateCode {
 					return postOp.apply(r1);
 				})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 					return postAssign.apply((c1, target) -> {
-						for (Pair<Funp, IntIntPair> pair : pairs) {
+						for (var pair : pairs) {
 							var offset = pair.t1;
 							FunpMemory target_ = FunpMemory.of(target.pointer, target.start + offset.t0, target.start + offset.t1);
 							c1.compileAssign(pair.t0, target_);

@@ -65,7 +65,7 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 		var sb = new StringBuilder();
 		sb.append("{");
 
-		for (Pair<K, V> e : this)
+		for (var e : this)
 			sb.append(e.t0 + " = " + e.t1 + ", ");
 
 		sb.append("}");

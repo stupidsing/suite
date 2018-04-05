@@ -11,7 +11,6 @@ import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Pair;
-import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.fp.Unify;
 import suite.fp.Unify.UnNode;
@@ -129,7 +128,7 @@ public class P2InferType {
 			}
 		}.extract_(node0);
 
-		for (Pair<String, Funp> pair : evs)
+		for (var pair : evs)
 			node1 = FunpDefine.of(false, pair.t0, FunpDontCare.of(), node1);
 
 		return node1;
@@ -159,7 +158,7 @@ public class P2InferType {
 				})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 					List<Pair<String, Funp>> vars1 = new ArrayList<>();
 					ISet<String> locals1 = locals;
-					for (Pair<String, Funp> pair : vars) {
+					for (var pair : vars) {
 						locals1 = locals1.add(pair.t0);
 						vars1.add(Pair.of(pair.t0, capture(pair.t1)));
 					}
@@ -225,7 +224,7 @@ public class P2InferType {
 					unify(n, te, infer(element));
 				return TypeArray.of(te, elements.size());
 			})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
-				for (Pair<OpReg, Funp> assign : assigns) {
+				for (var assign : assigns) {
 					UnNode<Type> tp = infer(assign.t1);
 					if (tp.final_() instanceof Type)
 						if (assign.t0.size == getTypeSize(tp))
@@ -254,7 +253,7 @@ public class P2InferType {
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				return new Infer(env.replace(var, Pair.of(isPolyType, infer(value)))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-				for (Pair<String, Funp> pair : pairs)
+				for (var pair : pairs)
 					env = env.replace(pair.t0, Pair.of(true, infer(pair.t1)));
 				return new Infer(env).infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
@@ -397,7 +396,7 @@ public class P2InferType {
 				IMap<String, Var> env1 = env;
 				var offset = 0;
 
-				for (Pair<String, Funp> pair : vars) {
+				for (var pair : vars) {
 					var offset0 = offset;
 					var value = pair.t1;
 					Var var = new Var(scope, offsetStack, offset0, offset += getTypeSize(typeOf(value)));
@@ -408,7 +407,7 @@ public class P2InferType {
 				Erase e1 = new Erase(scope, env1);
 				var expr_ = e1.erase(expr);
 
-				for (Pair<Var, Funp> pair : assigns)
+				for (var pair : assigns)
 					expr = FunpAssign.of(e1.getVariable(pair.t0), e1.erase(pair.t1), expr);
 
 				return FunpAllocStack.of(align(offset), FunpDontCare.of(), expr_, offsetStack);
@@ -420,7 +419,7 @@ public class P2InferType {
 				var ts1 = ts.finalStruct();
 				var offset = 0;
 				if (ts1.isCompleted)
-					for (Pair<String, UnNode<Type>> pair : ts1.pairs) {
+					for (var pair : ts1.pairs) {
 						var offset1 = offset + getTypeSize(pair.t1);
 						if (!String_.equals(pair.t0, field))
 							offset = offset1;
@@ -504,7 +503,7 @@ public class P2InferType {
 				var offset = 0;
 
 				if (ts1.isCompleted)
-					for (Pair<String, UnNode<Type>> pair : ts1.pairs) {
+					for (var pair : ts1.pairs) {
 						var offset0 = offset;
 						list.add(Pair.of(erase(values.get(pair.t0)), IntIntPair.of(offset0, offset += getTypeSize(pair.t1))));
 					}
@@ -791,7 +790,7 @@ public class P2InferType {
 				var typeByField0 = Read.from2(ts0.pairs).toMap();
 				var typeByField1 = Read.from2(ts1.pairs).toMap();
 
-				for (Pair<String, UnNode<Type>> e : ts1.pairs) {
+				for (var e : ts1.pairs) {
 					var field = e.t0;
 					UnNode<Type> type0 = typeByField0.get(field);
 					UnNode<Type> type1 = e.t1;

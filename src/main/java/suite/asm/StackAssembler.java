@@ -51,7 +51,7 @@ public class StackAssembler {
 		var trail = new Trail();
 		int fs = 0, rs = 0;
 
-		for (Pair<Reference, Node> lni0 : lnis0) {
+		for (var lni0 : lnis0) {
 			var node0 = lni0.t1;
 			Node node1;
 			Node[] m;

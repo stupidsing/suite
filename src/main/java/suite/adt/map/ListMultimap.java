@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.pair.Pair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 
@@ -68,7 +67,7 @@ public class ListMultimap<K, V> {
 	public String toString() {
 		var sb = new StringBuilder();
 		sb.append("{");
-		for (Pair<K, List<V>> e : listEntries())
+		for (var e : listEntries())
 			sb.append(e.t0 + "=" + e.t1 + ", ");
 		sb.append("}");
 		return sb.toString();

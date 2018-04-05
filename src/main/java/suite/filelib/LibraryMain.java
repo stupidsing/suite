@@ -78,7 +78,7 @@ public class LibraryMain extends ExecutableProgram {
 
 		// construct file listing
 		try (var os = FileUtil.out(inputDir + ".listing"); var pw = new PrintWriter(os)) {
-			for (Pair<Path, FileInfo> path_fileInfo : path_fileInfos)
+			for (var path_fileInfo : path_fileInfos)
 				pw.println(path_fileInfo.t0 + path_fileInfo.t1.md5);
 		} catch (IOException ex) {
 			Fail.t(ex);

@@ -26,7 +26,7 @@ public class NeuralNetworkTest {
 		var random = new Random();
 		var result = true;
 
-		for (Pair<String, BinOp<Boolean>> pair : List.of(op0, op1, op2))
+		for (var pair : List.of(op0, op1, op2))
 			result &= pair.map((name, oper) -> {
 				var nn = new NeuralNetwork();
 				Layer<float[], float[]> train = nn.ml(new int[] { 2, 4, 1, });

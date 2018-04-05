@@ -451,7 +451,7 @@ public class BackAllocatorGeneral {
 				List<Pair<String, Integer>> m1 = new ArrayList<>();
 				var sums = new int[2];
 
-				for (Pair<String, Integer> pair : m0) {
+				for (var pair : m0) {
 					var n = pair.t1;
 					var sign = 0 < n ? 0 : 1;
 					var sum0 = sums[sign];

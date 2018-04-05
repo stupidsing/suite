@@ -53,7 +53,7 @@ public class TextUtil {
 	public Bytes patch(Bytes bytes, List<Pair<Bytes, Bytes>> pairs) throws ConflictException {
 		var bb = new BytesBuilder();
 		var p = 0;
-		for (Pair<Bytes, Bytes> pair : pairs) {
+		for (var pair : pairs) {
 			var p1 = p + pair.t0.size();
 			if (Objects.equals(bytes.range(p, p1), pair.t0))
 				bb.append(pair.t1);
@@ -127,7 +127,7 @@ public class TextUtil {
 
 	public String toString(List<Pair<Bytes, Bytes>> pairs) {
 		var sb = new StringBuilder();
-		for (Pair<Bytes, Bytes> pair : pairs)
+		for (var pair : pairs)
 			if (pair.t0 == pair.t1)
 				sb.append(To.string(pair.t0));
 			else

@@ -123,7 +123,7 @@ public class Rewrite_ {
 		List<Pair<Node, Node>> children1 = new ArrayList<>();
 		var isSame = true;
 
-		for (Pair<Node, Node> pair : nr.children) {
+		for (var pair : nr.children) {
 			var child0 = pair.t1;
 			var childx = fun.apply(child0);
 			if (child0 != childx) {

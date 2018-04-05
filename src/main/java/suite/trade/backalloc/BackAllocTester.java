@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.pair.Pair;
 import suite.math.numeric.Statistic;
 import suite.os.LogUtil;
 import suite.primitive.Ints_;
@@ -116,7 +115,7 @@ public class BackAllocTester {
 					UpdatePortfolio up = Trade_.updatePortfolio(ymd, account, ratioBySymbol, assetBySymbol, eodBySymbol);
 					var valuation_ = valuations_[i] = up.valuation0;
 
-					for (Pair<String, Float> e : up.val0.streamlet())
+					for (var e : up.val0.streamlet())
 						holdBySymbol_.compute(e.t0, (s, h) -> e.t1 / (valuation_ * size) + (h != null ? h : 0d));
 
 					var actions = play(up.trades);
@@ -154,7 +153,7 @@ public class BackAllocTester {
 			var sb = new StringBuilder();
 			var length = valuations.length;
 
-			for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
+			for (var e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
 				sb.append(e.t0 + ":" + String.format("%.0f", e.t1 * 100d) + "%,");
 
 			if (exception == null)

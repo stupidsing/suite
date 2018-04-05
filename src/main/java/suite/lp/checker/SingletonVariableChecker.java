@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.map.ListMultimap;
-import suite.adt.pair.Pair;
 import suite.lp.doer.ProverConstant;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
@@ -20,7 +19,7 @@ public class SingletonVariableChecker {
 	public void check(List<Rule> rules) {
 		ListMultimap<Prototype, Rule> rulesByPrototype = Prototype.multimap(rules);
 
-		for (Pair<Prototype, Rule> e : rulesByPrototype.entries()) {
+		for (var e : rulesByPrototype.entries()) {
 			var prototype = e.t0;
 			var rule = e.t1;
 

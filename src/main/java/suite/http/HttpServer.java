@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.Constants;
-import suite.adt.pair.Pair;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.util.Copy;
@@ -93,7 +92,7 @@ public class HttpServer {
 			var sb = new StringBuilder();
 
 			sb.append("HTTP/1.1 " + response.status + "\r\n");
-			for (Pair<String, String> e : response.headers)
+			for (var e : response.headers)
 				sb.append(e.t0 + ": " + e.t1 + "\r\n");
 			sb.append("\r\n");
 

@@ -42,7 +42,7 @@ public class IHashMap<K, V> {
 	}
 
 	public V get(K key) {
-		for (Pair<K, V> e : set.get(key.hashCode()))
+		for (var e : set.get(key.hashCode()))
 			if (Objects.equals(key, e.t0))
 				return e.t1;
 		return null;

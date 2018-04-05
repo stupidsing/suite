@@ -10,7 +10,6 @@ import org.apache.commons.logging.LogFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import suite.adt.pair.Pair;
 import suite.os.FileUtil;
 import suite.parser.Wildcard;
 import suite.pkgmanager.action.ExecCommandAction;
@@ -39,7 +38,7 @@ public class PackageManager {
 					.from(FileUtil.listZip(zipFile)) //
 					.map(filename0 -> {
 						var filename1 = filename0;
-						for (Pair<String, String> filenameMapping : filenameMappings) {
+						for (var filenameMapping : filenameMappings) {
 							String[] match;
 							if ((match = Wildcard.match(filenameMapping.t0, filename1)) != null) {
 								filename1 = Wildcard.apply(filenameMapping.t1, match);

@@ -155,7 +155,7 @@ public class Nodify {
 				List<Pair<Atom, FieldInfo>> pairs = Read.from(fieldInfos).map(f -> Pair.of(Atom.of(f.name), f)).toList();
 				nodifier = new Nodifier(object -> Rethrow.ex(() -> {
 					var dict = new Dict();
-					for (Pair<Atom, FieldInfo> pair : pairs) {
+					for (var pair : pairs) {
 						var fieldInfo = pair.t1;
 						Node value = apply_(fieldInfo.nodifier, fieldInfo.field.get(object));
 						dict.map.put(pair.t0, Reference.of(value));
@@ -164,7 +164,7 @@ public class Nodify {
 				}), node -> Rethrow.ex(() -> {
 					var map = ((Dict) node).map;
 					var object1 = Object_.new_(clazz);
-					for (Pair<Atom, FieldInfo> pair : pairs) {
+					for (var pair : pairs) {
 						var fieldInfo = pair.t1;
 						var value = map.get(pair.t0).finalNode();
 						fieldInfo.field.set(object1, apply_(fieldInfo.nodifier, value));
