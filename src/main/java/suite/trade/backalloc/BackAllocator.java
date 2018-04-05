@@ -66,8 +66,8 @@ public interface BackAllocator {
 		var nDays = 32;
 
 		return (akds, indices) -> {
-			Map<String, float[]> returnsByKey = akds.dsByKey.mapValue(DataSource::returns).toMap();
-			OnDateTime ba0 = allocate(akds, indices);
+			var returnsByKey = akds.dsByKey.mapValue(DataSource::returns).toMap();
+			var ba0 = allocate(akds, indices);
 
 			return index -> Read //
 					.from2(ba0.onDateTime(index)) //
@@ -81,7 +81,7 @@ public interface BackAllocator {
 
 	public default BackAllocator byTime(IntPredicate monthPred) {
 		return (akds, indices) -> {
-			OnDateTime onDateTime = allocate(akds, indices);
+			var onDateTime = allocate(akds, indices);
 
 			return index -> monthPred.test(Time.ofEpochSec(akds.ts[index - 1]).month()) //
 					? onDateTime.onDateTime(index) //
@@ -99,10 +99,10 @@ public interface BackAllocator {
 
 	public default BackAllocator dump() {
 		return (akds, indices) -> {
-			OnDateTime onDateTime = allocate(akds, indices);
+			var onDateTime = allocate(akds, indices);
 
 			return index -> {
-				List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(index);
+				var ratioBySymbol = onDateTime.onDateTime(index);
 				System.out.println("ratioBySymbol = " + ratioBySymbol);
 				return ratioBySymbol;
 			};
@@ -113,7 +113,7 @@ public interface BackAllocator {
 		var ba1 = longOnly();
 
 		return (akds, indices) -> {
-			OnDateTime onDateTime = ba1.allocate(akds, indices);
+			var onDateTime = ba1.allocate(akds, indices);
 
 			return index -> {
 				Streamlet2<String, Double> potentialBySymbol = Read //
@@ -137,7 +137,7 @@ public interface BackAllocator {
 
 	public default BackAllocator filterByAsset(Predicate<String> pred) {
 		return (akds0, indices) -> {
-			AlignKeyDataSource<String> akds1 = new AlignKeyDataSource<>(akds0.ts, akds0.dsByKey.filterKey(pred));
+			var akds1 = new AlignKeyDataSource<>(akds0.ts, akds0.dsByKey.filterKey(pred));
 
 			return allocate(akds1, indices)::onDateTime;
 		};
@@ -151,7 +151,7 @@ public interface BackAllocator {
 		var indexDataSource = cfg.dataSource(indexSymbol);
 
 		return (akds, indices) -> {
-			OnDateTime onDateTime = allocate(akds, indices);
+			var onDateTime = allocate(akds, indices);
 
 			return index -> {
 				var date = Time.ofEpochSec(akds.ts[index - 1]).date();
@@ -172,7 +172,7 @@ public interface BackAllocator {
 
 	public default BackAllocator frequency(int freq) {
 		return (akds, indices) -> {
-			OnDateTime onDateTime = allocate(akds, indices);
+			var onDateTime = allocate(akds, indices);
 
 			return new OnDateTime() {
 				private Time time0;
@@ -204,7 +204,7 @@ public interface BackAllocator {
 	public default BackAllocator hold(int period, DblDbl_Dbl fun) {
 		return (akds, indices) -> {
 			var queue = new ArrayDeque<Map<String, Double>>();
-			OnDateTime onDateTime = allocate(akds, indices);
+			var onDateTime = allocate(akds, indices);
 
 			return index -> {
 				queue.addLast(Read //
@@ -231,7 +231,7 @@ public interface BackAllocator {
 
 	public default BackAllocator longOnly() {
 		return (akds, indices) -> {
-			OnDateTime onDateTime = allocate(akds, indices);
+			var onDateTime = allocate(akds, indices);
 
 			return index -> Read //
 					.from2(onDateTime.onDateTime(index)) //
@@ -245,7 +245,7 @@ public interface BackAllocator {
 
 	public default BackAllocator pick(int top) {
 		return (akds, indices) -> {
-			OnDateTime onDateTime = allocate(akds, indices);
+			var onDateTime = allocate(akds, indices);
 
 			return index -> Read //
 					.from2(onDateTime.onDateTime(index)) //
@@ -257,10 +257,10 @@ public interface BackAllocator {
 
 	public default BackAllocator reallocate() {
 		return (akds, indices) -> {
-			OnDateTime onDateTime = allocate(akds, indices);
+			var onDateTime = allocate(akds, indices);
 
 			return index -> {
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(index);
+				var potentialBySymbol = onDateTime.onDateTime(index);
 				return BackAllocatorUtil.scale(potentialBySymbol, 1d / BackAllocatorUtil.totalPotential(potentialBySymbol));
 			};
 		};
@@ -272,7 +272,7 @@ public interface BackAllocator {
 					.mapValue(ds0 -> {
 						var indexPrices = indexDataSource.alignBeforePrices(ds0.ts).prices;
 						var length = ds0.ts.length;
-						Datum[] data1 = new Datum[length];
+						var data1 = new Datum[length];
 
 						for (var i = 0; i < length; i++) {
 							var r = 1d / indexPrices[i];
@@ -313,19 +313,19 @@ public interface BackAllocator {
 
 	public default BackAllocator stop(double stopLoss, double stopGain) {
 		return (akds, indices) -> {
-			OnDateTime onDateTime = allocate(akds, indices);
-			Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
+			var onDateTime = allocate(akds, indices);
+			var dsBySymbol = akds.dsByKey.toMap();
 			Mutable<Map<String, Double>> mutable = Mutable.of(new HashMap<>());
-			Map<String, List<DblFltPair>> entriesBySymbol = new HashMap<>();
+			var entriesBySymbol = new HashMap<String, List<DblFltPair>>();
 
 			return index -> {
 				var last = index - 1;
-				List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(index);
-				Map<String, Double> potentialBySymbol0 = mutable.get();
-				Map<String, Double> potentialBySymbol1 = Read.from2(potentialBySymbol).toMap();
+				var potentialBySymbol = onDateTime.onDateTime(index);
+				var potentialBySymbol0 = mutable.get();
+				var potentialBySymbol1 = Read.from2(potentialBySymbol).toMap();
 
 				// find out the transactions
-				Map<String, Double> diffBySymbol = Read //
+				var diffBySymbol = Read //
 						.from(Set_.union(potentialBySymbol0.keySet(), potentialBySymbol1.keySet())) //
 						.map2(symbol -> {
 							double potential0 = potentialBySymbol0.getOrDefault(symbol, 0d);
@@ -341,8 +341,8 @@ public interface BackAllocator {
 					var bs = Quant.sign(diff);
 					var price = dsBySymbol.get(symbol).prices[last];
 
-					List<DblFltPair> entries0 = entriesBySymbol.getOrDefault(symbol, new ArrayList<>());
-					List<DblFltPair> entries1 = new ArrayList<>();
+					var entries0 = entriesBySymbol.getOrDefault(symbol, new ArrayList<>());
+					var entries1 = new ArrayList<DblFltPair>();
 
 					Collections.sort(entries0, (pair0, pair1) -> -bs * Float.compare(pair0.t1, pair1.t1));
 
@@ -395,10 +395,10 @@ public interface BackAllocator {
 
 		if (Trade_.leverageAmount < 999999f)
 			ba2 = (akds, indices) -> {
-				OnDateTime onDateTime = ba1.allocate(akds, indices);
+				var onDateTime = ba1.allocate(akds, indices);
 
 				return index -> {
-					List<Pair<String, Double>> potentialBySymbol = onDateTime.onDateTime(index);
+					var potentialBySymbol = onDateTime.onDateTime(index);
 					var totalPotential = BackAllocatorUtil.totalPotential(potentialBySymbol);
 					if (1d < totalPotential)
 						return BackAllocatorUtil.scale(potentialBySymbol, 1d / totalPotential);
@@ -421,7 +421,8 @@ public interface BackAllocator {
 class BackAllocatorUtil {
 
 	static List<Pair<String, Double>> scale(List<Pair<String, Double>> potentialBySymbol, double scale) {
-		return Read.from2(potentialBySymbol) //
+		return Read //
+				.from2(potentialBySymbol) //
 				.filterValue(potential -> potential != 0d) //
 				.mapValue(potential -> potential * scale) //
 				.toList();

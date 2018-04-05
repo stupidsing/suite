@@ -5,12 +5,10 @@ import java.nio.file.Paths;
 import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
 
-import suite.adt.pair.Pair;
 import suite.immutable.ISet;
 import suite.os.FileUtil;
 import suite.search.DirectedGraph;
@@ -32,7 +30,7 @@ public class DependencyTest {
 	@Test
 	public void testStronglyConnectedComponents() {
 		var classes = new ArrayDeque<>(List.of("suite.jdk.DependencyTest"));
-		Map<String, List<String>> dependenciesByClassName = new HashMap<>();
+		var dependenciesByClassName = new HashMap<String, List<String>>();
 		String className;
 
 		while ((className = classes.pollLast()) != null) {
@@ -45,12 +43,12 @@ public class DependencyTest {
 
 		var vertices = dependenciesByClassName.keySet();
 
-		Set<Pair<String, String>> edges = Read //
+		var edges = Read //
 				.from2(dependenciesByClassName) //
 				.concatMapValue(dependencies -> Read.from(dependencies)) //
 				.toSet();
 
-		StronglyConnectedComponents<String> scc = new StronglyConnectedComponents<>(DirectedGraph.of(vertices, edges));
+		var scc = new StronglyConnectedComponents<>(DirectedGraph.of(vertices, edges));
 
 		for (Set<Set<String>> layer : scc.group().layers()) {
 			Read.from(layer).flatMap(iterable -> iterable).sort(Object_::compare).forEach(System.out::println);
@@ -62,13 +60,13 @@ public class DependencyTest {
 		if (!set.contains(className)) {
 			System.out.println(indent + className);
 
-			ISet<String> set1 = set.add(className);
+			var set1 = set.add(className);
 			getDependencies(className).forEach(className1 -> dumpDependencies(set1, indent + "  ", className1));
 		}
 	}
 
 	private List<String> getDependencies(String className) {
-		String p = className.replace('.', '/') + ".java";
+		var p = className.replace('.', '/') + ".java";
 
 		return Read //
 				.from(sourceDirs) //
