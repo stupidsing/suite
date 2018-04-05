@@ -115,8 +115,8 @@ public class P2GenerateLambda {
 				var fs1 = fs + 1;
 				IMap<String, Integer> env1 = env.replace(var, fs1);
 				var init_ = compile_(init);
-				Thunk cond_ = compile(fs1, env1, cond);
-				Thunk iterate_ = compile(fs1, env1, iterate);
+				var cond_ = compile(fs1, env1, cond);
+				var iterate_ = compile(fs1, env1, iterate);
 				return rt -> {
 					Rt rt1 = new Rt(rt, init_.apply(rt));
 					while (b(rt1, cond_))
@@ -125,7 +125,7 @@ public class P2GenerateLambda {
 				};
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				var fs1 = fs + 1;
-				Thunk thunk = compile(fs1, env.replace(var, fs1), expr);
+				var thunk = compile(fs1, env.replace(var, fs1), expr);
 				return rt -> (Fun_) p -> thunk.apply(new Rt(rt, p));
 			})).applyIf(FunpNumber.class, f -> f.apply(i -> {
 				var i1 = new Int(i.get());
