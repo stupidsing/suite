@@ -181,7 +181,7 @@ public class DailyMain extends ExecutableProgram {
 						.toMap());
 
 		var period = TimeRange.daysBefore(128);
-		List<Trade> trades = new ArrayList<>();
+		var trades = new ArrayList<Trade>();
 
 		// capture signals
 		for (var asset : assets) {

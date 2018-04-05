@@ -18,7 +18,7 @@ public class PeepholeOptimizer {
 	private Pattern MOV___ = Suite.pattern("MOV (.0, .1)");
 
 	public List<Pair<Reference, Node>> optimize(List<Pair<Reference, Node>> lnis0) {
-		List<Pair<Reference, Node>> lnis1 = new ArrayList<>();
+		var lnis1 = new ArrayList<Pair<Reference, Node>>();
 
 		for (var lni0 : lnis0) {
 			var node0 = lni0.t1;

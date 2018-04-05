@@ -48,7 +48,7 @@ public class Main extends ExecutableProgram {
 		opt = new CommandOptions();
 
 		var b = true;
-		List<String> inputs = new ArrayList<>();
+		var inputs = new ArrayList<String>();
 		Source<String> source = To.source(args);
 		String verb = null;
 		String arg;

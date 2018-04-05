@@ -51,7 +51,7 @@ public class TreeUtil {
 			entry(XOR, (a, b) -> a ^ b));
 
 	public static List<Node> breakdown(Operator operator, Node node) {
-		List<Node> list = new ArrayList<>();
+		var list = new ArrayList<Node>();
 		new Object() {
 			private void breakdown(Node node_) {
 				Tree tree;

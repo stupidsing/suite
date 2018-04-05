@@ -1,7 +1,6 @@
 package suite;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import suite.lp.compile.impl.CompileBinderImpl;
 import suite.lp.doer.BinderFactory.BindEnv;
@@ -39,7 +38,7 @@ public class BindArrayUtil {
 
 		VariableMapper<Atom> sgm = sg.mapper();
 		VariableMapper<Reference> cbm = cb.mapper();
-		List<Atom> atoms = new ArrayList<>();
+		var atoms = new ArrayList<Atom>();
 		Atom atom;
 		var n = 0;
 

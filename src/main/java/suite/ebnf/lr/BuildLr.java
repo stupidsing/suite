@@ -3,7 +3,6 @@ package suite.ebnf.lr;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -200,7 +199,7 @@ public class BuildLr {
 			blr = new Blr(1, blr1.next);
 			break;
 		case OR____:
-			List<Pair<String, Transition>> pairs = new ArrayList<>();
+			var pairs = new ArrayList<Pair<String, Transition>>();
 			for (var eg1 : Read.from(eg.children)) {
 				var egn = "OR." + System.identityHashCode(eg1);
 				pairs.add(Pair.of(egn, build(ps, new Grammar(GrammarType.NAMED_, egn, eg1), nextx).next));

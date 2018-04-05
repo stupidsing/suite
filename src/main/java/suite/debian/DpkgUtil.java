@@ -31,7 +31,7 @@ public class DpkgUtil {
 		var arch = pm.get("Architecture");
 		var dir = dpkgDir + "/info/";
 
-		List<File> files = new ArrayList<>();
+		var files = new ArrayList<File>();
 		files.add(new File(dir + packageName + ".list"));
 		if (arch != null)
 			files.add(new File(dir + packageName + ":" + arch + ".list"));

@@ -31,7 +31,7 @@ public class PackageManager {
 				.sort((p0, p1) -> p1.t0.length() - p0.t0.length()) //
 				.toList();
 
-		List<InstallAction> installActions = new ArrayList<>();
+		var installActions = new ArrayList<InstallAction>();
 
 		try (var zipFile = new ZipFile(packageFilename)) {
 			installActions.addAll(Read //

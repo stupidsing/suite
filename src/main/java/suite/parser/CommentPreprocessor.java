@@ -43,7 +43,7 @@ public class CommentPreprocessor implements Fun<String, List<Run>> {
 	public List<Run> apply(String in) {
 		var closeLength = !isWhitespaces(closeComment) ? closeComment.length() : 0;
 		var start = 0;
-		List<Run> runs = new ArrayList<>();
+		var runs = new ArrayList<Run>();
 
 		while (true) {
 			int pos0 = ParseUtil.search(in, start, openComment);

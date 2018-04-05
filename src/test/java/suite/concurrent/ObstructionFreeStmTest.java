@@ -100,7 +100,7 @@ public class ObstructionFreeStmTest {
 		var workers = IntStream.range(0, nTransactions) //
 				.mapToObj(i -> new Worker(stm)).collect(Collectors.toList());
 
-		List<Integer> workingOrders = new ArrayList<>();
+		var workingOrders = new ArrayList<Integer>();
 		IntStream.range(0, nMemories * 2 + 1).forEach(mi -> IntStream.range(0, nTransactions).forEach(workingOrders::add));
 		Collections.shuffle(workingOrders, random);
 

@@ -44,7 +44,7 @@ public class HkexFactBook {
 					int p0 = line.indexOf(" ", 0);
 					int p1 = 0 <= p0 ? line.indexOf(" ", p0 + 1) : -1;
 					if (0 <= p1) {
-						List<String> list = new ArrayList<>();
+						var list = new ArrayList<String>();
 						int[] ps = { p0, p1, };
 						var s = 0;
 						for (var p : ps) {
@@ -58,7 +58,7 @@ public class HkexFactBook {
 				}) //
 				.toList();
 
-		List<List<String>> list1 = new ArrayList<>();
+		var list1 = new ArrayList<List<String>>();
 		var i = 1;
 
 		for (var list_ : list0)

@@ -50,7 +50,7 @@ public class FastFourierTransform {
 
 					var ce = fds[ie];
 					var co = fds[io];
-					Complex exp = Complex.mul(cis[k], co);
+					var exp = Complex.mul(cis[k], co);
 
 					fds[ie] = Complex.add(ce, exp);
 					fds[io] = Complex.sub(ce, exp);

@@ -467,7 +467,7 @@ public class P0 {
 		}
 
 		public static List<Funp> unfold(Funp n, Atom op) {
-			List<Funp> list = new ArrayList<>();
+			var list = new ArrayList<Funp>();
 			FunpTree2 tree;
 			while (n instanceof FunpTree && (tree = (FunpTree2) n).operator == op) {
 				list.add(tree.left);

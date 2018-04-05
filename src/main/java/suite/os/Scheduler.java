@@ -23,7 +23,7 @@ public class Scheduler {
 
 	public void run() {
 		while (!schedules.isEmpty()) {
-			List<Schedule> schedules1 = new ArrayList<>();
+			var schedules1 = new ArrayList<Schedule>();
 			var now = LocalDateTime.now();
 
 			var nextWakeUpDateTime = Read //

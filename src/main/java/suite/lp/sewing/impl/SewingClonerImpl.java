@@ -1,7 +1,6 @@
 package suite.lp.sewing.impl;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.lp.doer.ClonerFactory;
@@ -26,7 +25,7 @@ public class SewingClonerImpl implements ClonerFactory {
 
 	@Override
 	public Clone_ cloner(Node node) {
-		List<Clone_> funs = new ArrayList<>();
+		var funs = new ArrayList<Clone_>();
 		Clone_ fun;
 
 		while (true) {

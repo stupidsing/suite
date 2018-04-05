@@ -2,7 +2,6 @@ package suite.trade.data;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -66,7 +65,7 @@ public class StockHistory {
 	}
 
 	private static LngFltPair[] readPairs(int timeZone, Outlet<String> outlet) {
-		List<LngFltPair> pairs = new ArrayList<>();
+		var pairs = new ArrayList<LngFltPair>();
 		String line;
 
 		if (String_.equals(line = outlet.next(), "{"))
@@ -133,7 +132,7 @@ public class StockHistory {
 		var t0 = period.from.epochSec();
 		var tx = period.to.epochSec();
 		Iterate<LngFltPair[]> filter_ = pairs0 -> {
-			List<LngFltPair> pairs1 = new ArrayList<>();
+			var pairs1 = new ArrayList<LngFltPair>();
 			for (var pair : pairs0)
 				if (t0 <= pair.t0 && pair.t0 < tx)
 					pairs1.add(pair);
@@ -153,7 +152,7 @@ public class StockHistory {
 		Set<String> keys = Set_.union(data.keySet(), other.data.keySet());
 
 		BinOp<LngFltPair[]> merge_ = (pairs0, pairs1) -> {
-			List<LngFltPair> pairs = new ArrayList<>();
+			var pairs = new ArrayList<LngFltPair>();
 			var length1 = pairs1.length;
 			var i1 = 0;
 			for (var pair0 : pairs0) {
@@ -184,7 +183,7 @@ public class StockHistory {
 
 	public StockHistory alignToDate() {
 		Iterate<LngFltPair[]> align_ = pairs0 -> {
-			List<LngFltPair> pairs1 = new ArrayList<>();
+			var pairs1 = new ArrayList<LngFltPair>();
 			var date = TimeRange.min;
 			for (var pair : pairs0) {
 				var date1 = Time.ofEpochSec(pair.t0).startOfDay();

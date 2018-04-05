@@ -34,8 +34,8 @@ public class UctWeiqi {
 		@Override
 		public List<Coordinate> elaborateMoves() {
 			var move = new Move();
-			List<Coordinate> captureMoves = new ArrayList<>();
-			List<Coordinate> otherMoves = new ArrayList<>();
+			var captureMoves = new ArrayList<Coordinate>();
+			var otherMoves = new ArrayList<Coordinate>();
 
 			for (var c : Coordinate.all())
 				if (board.get(c) == Occupation.EMPTY) {
@@ -175,7 +175,7 @@ public class UctWeiqi {
 		}
 
 		private List<Coordinate> findAllEmptyPositions() {
-			List<Coordinate> moves = new ArrayList<>();
+			var moves = new ArrayList<Coordinate>();
 
 			for (var c : Coordinate.all())
 				if (board.get(c) == Occupation.EMPTY)

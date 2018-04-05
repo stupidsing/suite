@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -57,7 +56,7 @@ public class IbTreeTest {
 
 	@Test
 	public void test2() {
-		List<Integer> list = new ArrayList<>();
+		var list = new ArrayList<Integer>();
 		for (var i = 0; i < max; i++)
 			list.add(i);
 

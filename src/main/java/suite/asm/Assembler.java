@@ -97,7 +97,7 @@ public class Assembler {
 	public Bytes assemble(Node input) {
 		var generalizer = new Generalizer();
 		var trail = new Trail();
-		List<Pair<Reference, Node>> lnis = new ArrayList<>();
+		var lnis = new ArrayList<Pair<Reference, Node>>();
 
 		for (var node0 : Tree.iter(input)) {
 			var node = generalizer.generalize(node0);
@@ -148,7 +148,7 @@ public class Assembler {
 	private Bytes assemble(boolean isPass2, int address, Node instruction) {
 		try {
 			List<Node> ins = List.of(Int.of(bits), Int.of(address), instruction);
-			List<Bytes> bytesList = new ArrayList<>();
+			var bytesList = new ArrayList<Bytes>();
 			finder.find(To.source(Tree.of(TermOp.AND___, ins)), node -> bytesList.add(convertByteStream(node)));
 			return Read.from(bytesList).min((bytes0, bytes1) -> bytes0.size() - bytes1.size());
 		} catch (Exception ex) {

@@ -87,7 +87,7 @@ public class Lexer {
 			String data = in.substring(start, pos);
 
 			if (type == LexType.SPACE) {
-				List<Integer> precs = new ArrayList<>();
+				var precs = new ArrayList<Integer>();
 
 				for (var t : List.of(token0, detect()))
 					if (t != null && t.operator != null)

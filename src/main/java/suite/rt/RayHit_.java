@@ -30,7 +30,7 @@ public class RayHit_ {
 	}
 
 	public static List<RayHit> join(List<RayHit> rayHits0, List<RayHit> rayHits1, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
-		List<RayHit> rayHits2 = new ArrayList<>();
+		var rayHits2 = new ArrayList<RayHit>();
 		int size0 = rayHits0.size(), size1 = rayHits1.size();
 		int index0 = 0, index1 = 0;
 		boolean b0, b1;
@@ -64,7 +64,7 @@ public class RayHit_ {
 	}
 
 	private static List<RayHit> removeDuplicates(List<RayHit> rayHits0) {
-		List<RayHit> rayHits1 = new ArrayList<>();
+		var rayHits1 = new ArrayList<RayHit>();
 		var size = rayHits0.size();
 		RayHit rayHit;
 

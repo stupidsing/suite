@@ -64,7 +64,7 @@ public class Sgf {
 	}
 
 	private PosPair<List<Pair<String, List<String>>>> readCommands(String in, int pos) {
-		List<Pair<String, List<String>>> commands = new ArrayList<>();
+		var commands = new ArrayList<Pair<String, List<String>>>();
 
 		while (pos < in.length())
 			switch (in.charAt(pos)) {
@@ -86,7 +86,7 @@ public class Sgf {
 	}
 
 	private PosPair<Pair<String, List<String>>> readCommand(String in, int pos) {
-		List<String> ids = new ArrayList<>();
+		var ids = new ArrayList<String>();
 		PosPair<String> ipId = readIf(in, pos, ch -> Character.isAlphabetic(ch) || Character.isDigit(ch));
 		pos = ipId.pos;
 

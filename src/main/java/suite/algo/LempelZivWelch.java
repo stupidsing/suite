@@ -65,7 +65,7 @@ public class LempelZivWelch<Unit> {
 	}
 
 	private void decode(Source<Integer> source, Sink<Unit> sink) {
-		List<List<Unit>> dict = new ArrayList<>();
+		var dict = new ArrayList<List<Unit>>();
 
 		for (var unit : units)
 			dict.add(List.of(unit));

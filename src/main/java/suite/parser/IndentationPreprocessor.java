@@ -30,7 +30,7 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 
 	@Override
 	public List<Run> apply(String in) {
-		List<Run> runs = new ArrayList<>();
+		var runs = new ArrayList<Run>();
 		var nLastIndents = 0;
 		var lastIndent = "";
 		var pos = 0;

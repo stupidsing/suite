@@ -31,7 +31,7 @@ public class IncludePreprocessor implements Fun<String, List<Run>> {
 
 	public List<Run> apply(String in) {
 		return Rethrow.ex(() -> {
-			List<Run> runs = new ArrayList<>();
+			var runs = new ArrayList<Run>();
 			doIncludes(dir, in, true, runs);
 			return runs;
 		});

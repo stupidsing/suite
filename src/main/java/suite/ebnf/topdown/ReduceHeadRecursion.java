@@ -71,7 +71,7 @@ public class ReduceHeadRecursion {
 			var tail = List_.right(en.children, 1);
 
 			Fun<List<Grammar>, List<Grammar>> fun = list -> Read.from(list).map(en_ -> {
-				List<Grammar> ens1 = new ArrayList<>();
+				var ens1 = new ArrayList<Grammar>();
 				ens1.add(en_);
 				ens1.addAll(tail);
 				return new Grammar(GrammarType.AND___, ens1);

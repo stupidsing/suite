@@ -39,7 +39,7 @@ public class TextUtil {
 		Bytes common = bytesx.range(x1, x2);
 
 		if (!sx.isEmpty() && !sy.isEmpty()) {
-			List<Pair<Bytes, Bytes>> patch = new ArrayList<>();
+			var patch = new ArrayList<Pair<Bytes, Bytes>>();
 			patch.addAll(diff(bytesx.range(x0, x1), bytesy.range(y0, y1)));
 			patch.add(Pair.of(common, common));
 			patch.addAll(diff(bytesx.range(x2, xx), bytesy.range(y2, yx)));

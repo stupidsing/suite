@@ -201,7 +201,7 @@ public class InterpretFunLazy {
 				for (var array : arrays)
 					lazy0 = lazy0.put(array[0]);
 
-				List<Fun<Frame, Thunk_>> values_ = new ArrayList<>();
+				var values_ = new ArrayList<Fun<Frame, Thunk_>>();
 				for (var array : arrays)
 					values_.add(lazy0.lazy_(array[1]));
 

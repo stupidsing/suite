@@ -93,7 +93,7 @@ public class Chr {
 		while ((state1 = chr(state)) != null)
 			state = state1;
 
-		List<Node> nodes1 = new ArrayList<>();
+		var nodes1 = new ArrayList<Node>();
 
 		for (var e : state.factsByPrototype)
 			nodes1.addAll(To.list(e.t1));

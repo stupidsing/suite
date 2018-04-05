@@ -3,7 +3,6 @@ package suite.weiqi;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
 
 import suite.util.FunUtil.Fun;
@@ -39,7 +38,7 @@ public class Board1 {
 
 	public Board1(Board1 board1) {
 		Map<Group, Group> map = new IdentityHashMap<>();
-		List<Fun<Group, Group>> clone = new ArrayList<>();
+		var clone = new ArrayList<Fun<Group, Group>>();
 		clone.add(group0 -> {
 			Group group1;
 			if (group0 != null) {
@@ -72,7 +71,7 @@ public class Board1 {
 				group.nBreaths++;
 		}
 
-		List<Coordinate> list = new ArrayList<>();
+		var list = new ArrayList<Coordinate>();
 
 		for (var c1 : c.neighbors) {
 			var group1 = getGroup(c1);

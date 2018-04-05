@@ -472,7 +472,7 @@ public class SewingProverImpl implements ProverFactory {
 			var f = bf.cloner(m[0]);
 			Trampoline tr1 = compileTr(bf, m[1]);
 			var p = bf.binder(m[2]);
-			List<Node> vs = new ArrayList<>();
+			var vs = new ArrayList<Node>();
 			tr = rt -> {
 				var restore = save(rt);
 				rt.pushRem(rt_ -> {
@@ -610,7 +610,7 @@ public class SewingProverImpl implements ProverFactory {
 			Trampoline tr0 = compileTr(bf, m[2]);
 
 			tr = rt -> {
-				List<Node> results = new ArrayList<>();
+				var results = new ArrayList<Node>();
 				var env = rt.env;
 
 				Trampoline tr_ = andTr(Read.each(tr0, rt_ -> {

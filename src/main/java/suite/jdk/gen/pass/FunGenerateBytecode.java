@@ -85,7 +85,7 @@ public class FunGenerateBytecode {
 
 		public InstructionList instructionList() {
 			var il = new InstructionList();
-			List<InstructionHandle> ihs = new ArrayList<>();
+			var ihs = new ArrayList<InstructionHandle>();
 
 			for (var instruction : list)
 				ihs.add(instruction instanceof BranchInstruction //

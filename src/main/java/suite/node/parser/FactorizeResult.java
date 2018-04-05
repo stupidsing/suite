@@ -87,7 +87,7 @@ public class FactorizeResult {
 	public static FactorizeResult merge(String name, List<FactorizeResult> list) {
 		var pre = List_.first(list).pre;
 		var post = List_.last(list).post;
-		List<FPair> pairs = new ArrayList<>();
+		var pairs = new ArrayList<FPair>();
 
 		for (var i = 0; i < list.size(); i++) {
 			Chars space;

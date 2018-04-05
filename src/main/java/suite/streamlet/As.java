@@ -44,7 +44,7 @@ public class As {
 	}
 
 	public static <T> Streamlet<T> concat(Outlet<Streamlet<T>> outlet) {
-		List<T> list = new ArrayList<>();
+		var list = new ArrayList<T>();
 		outlet.sink(st1 -> st1.sink(list::add));
 		return Read.from(list);
 	}
@@ -262,7 +262,7 @@ public class As {
 	}
 
 	private static String[] csvLine(String line) {
-		List<String> list = new ArrayList<>();
+		var list = new ArrayList<String>();
 		var sb = new StringBuilder();
 		var length = line.length();
 		var p = 0;

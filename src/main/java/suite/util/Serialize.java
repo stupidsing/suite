@@ -255,7 +255,7 @@ public class Serialize {
 		return new Serializer<>() {
 			public Collection<T> read(DataInput_ dataInput) throws IOException {
 				var size = int_.read(dataInput);
-				List<T> list = new ArrayList<>();
+				var list = new ArrayList<T>();
 				for (var i = 0; i < size; i++)
 					list.add(serializer.read(dataInput));
 				return list;
@@ -293,7 +293,7 @@ public class Serialize {
 		return new Serializer<>() {
 			public List<T> read(DataInput_ dataInput) throws IOException {
 				var size = int_.read(dataInput);
-				List<T> list = new ArrayList<>();
+				var list = new ArrayList<T>();
 				for (var i = 0; i < size; i++)
 					list.add(serializer.read(dataInput));
 				return list;

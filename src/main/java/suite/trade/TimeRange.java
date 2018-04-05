@@ -1,7 +1,6 @@
 package suite.trade;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import suite.adt.Range;
@@ -87,7 +86,7 @@ public class TimeRange extends Range<Time> {
 		var epd1 = toDate.epochDay() - 1;
 		epd0 -= epd0 % alignment;
 		epd1 -= epd1 % alignment;
-		List<TimeRange> periods = new ArrayList<>();
+		var periods = new ArrayList<TimeRange>();
 		while (epd0 <= epd1) {
 			periods.add(daysBefore_(Time.ofEpochDay(epd0), nDays));
 			epd0 += alignment;

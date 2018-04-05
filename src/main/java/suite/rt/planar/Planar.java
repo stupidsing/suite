@@ -35,7 +35,7 @@ public abstract class Planar implements RtObject {
 
 	@Override
 	public List<RayHit> hit(Ray ray) {
-		List<RayHit> rayHits = new ArrayList<>();
+		var rayHits = new ArrayList<RayHit>();
 
 		for (var rayHit : plane.hit(ray)) {
 			R3 planarDir = R3.sub(rayHit.intersection().hitPoint(), origin);

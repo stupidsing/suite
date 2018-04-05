@@ -23,7 +23,7 @@ public class WhitespacePreprocessor implements Fun<String, List<Run>> {
 
 	@Override
 	public List<Run> apply(String in) {
-		List<Run> runs = new ArrayList<>();
+		var runs = new ArrayList<Run>();
 		var length = in.length();
 		int pos0 = 0, pos = 0;
 		var quote = 0;

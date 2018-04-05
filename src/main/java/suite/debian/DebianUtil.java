@@ -8,7 +8,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import suite.streamlet.Read;
@@ -27,7 +26,7 @@ public class DebianUtil {
 
 	public Streamlet<Map<String, String>> readDpkgConfiguration(InputStream is) throws IOException {
 		try (var isr = new InputStreamReader(is); var br = new BufferedReader(isr)) {
-			List<Map<String, String>> pms = new ArrayList<>();
+			var pms = new ArrayList<Map<String, String>>();
 			Map<String, String> pm = new HashMap<>();
 			var sb = new StringBuilder();
 			String line;

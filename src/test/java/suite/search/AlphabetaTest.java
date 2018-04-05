@@ -39,7 +39,7 @@ public class AlphabetaTest {
 	private int[] scores = new int[] { 0, 1, 10, 10000, };
 
 	private List<TicTacToe> generate(TicTacToe state) {
-		List<TicTacToe> states = new ArrayList<>();
+		var states = new ArrayList<TicTacToe>();
 
 		if (!isEnd(state))
 			for (var i = 0; i < 9; i++)

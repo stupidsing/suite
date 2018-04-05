@@ -23,7 +23,7 @@ public class ParseUtil {
 	}
 
 	public static String[] fit(String in, Iterate<String> lower, String... parts) {
-		List<String> outs = new ArrayList<>();
+		var outs = new ArrayList<String>();
 		var inl = lower.apply(in);
 		var p = 0;
 		for (var part : parts) {
@@ -39,7 +39,7 @@ public class ParseUtil {
 	}
 
 	public static List<String> searchn(String s, String name, Assoc assoc) {
-		List<String> list = new ArrayList<>();
+		var list = new ArrayList<String>();
 		Pair<String, String> pair;
 
 		while ((pair = search(s, name, assoc)) != null) {

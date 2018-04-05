@@ -282,7 +282,7 @@ public class DataSource {
 	}
 
 	private DataSource range_(long t0, long tx) {
-		List<Datum> data1 = new ArrayList<>();
+		var data1 = new ArrayList<Datum>();
 
 		for (var i = 0; i < prices.length; i++) {
 			var datum = datum_(i);

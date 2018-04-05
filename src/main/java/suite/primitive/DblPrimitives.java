@@ -1,7 +1,6 @@
 package suite.primitive;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.primitive.Doubles.DoublesBuilder;
@@ -31,7 +30,7 @@ public class DblPrimitives {
 		public static <T> Fun<DblOutlet, Streamlet<T>> lift(Dbl_Obj<T> fun0) {
 			Dbl_Obj<T> fun1 = fun0.rethrow();
 			return s -> {
-				List<T> ts = new ArrayList<>();
+				var ts = new ArrayList<T>();
 				double c;
 				while ((c = s.next()) != DblFunUtil.EMPTYVALUE)
 					ts.add(fun1.apply(c));

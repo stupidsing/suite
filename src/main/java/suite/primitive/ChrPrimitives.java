@@ -1,7 +1,6 @@
 package suite.primitive;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.primitive.Chars.CharsBuilder;
@@ -31,7 +30,7 @@ public class ChrPrimitives {
 		public static <T> Fun<ChrOutlet, Streamlet<T>> lift(Chr_Obj<T> fun0) {
 			Chr_Obj<T> fun1 = fun0.rethrow();
 			return s -> {
-				List<T> ts = new ArrayList<>();
+				var ts = new ArrayList<T>();
 				char c;
 				while ((c = s.next()) != ChrFunUtil.EMPTYVALUE)
 					ts.add(fun1.apply(c));

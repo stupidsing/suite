@@ -1,7 +1,6 @@
 package suite.lp.sewing.impl;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.lp.doer.GeneralizerFactory;
@@ -32,7 +31,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 
 	@Override
 	public Generalize_ generalizer(Node node) {
-		List<Generalize_> funs = new ArrayList<>();
+		var funs = new ArrayList<Generalize_>();
 		Generalize_ fun;
 
 		while (true) {

@@ -1,7 +1,6 @@
 package suite.primitive;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.primitive.Floats.FloatsBuilder;
@@ -31,7 +30,7 @@ public class FltPrimitives {
 		public static <T> Fun<FltOutlet, Streamlet<T>> lift(Flt_Obj<T> fun0) {
 			Flt_Obj<T> fun1 = fun0.rethrow();
 			return s -> {
-				List<T> ts = new ArrayList<>();
+				var ts = new ArrayList<T>();
 				float c;
 				while ((c = s.next()) != FltFunUtil.EMPTYVALUE)
 					ts.add(fun1.apply(c));

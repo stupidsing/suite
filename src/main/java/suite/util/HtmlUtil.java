@@ -91,7 +91,7 @@ public class HtmlUtil {
 	}
 
 	public HtmlNode parse(String in) {
-		List<IntIntPair> pairs = new ArrayList<>();
+		var pairs = new ArrayList<IntIntPair>();
 		int pos0, pos1 = 0;
 
 		while (0 <= (pos0 = in.indexOf("<", pos1)) && 0 <= (pos1 = in.indexOf(">", pos0 + 1)))

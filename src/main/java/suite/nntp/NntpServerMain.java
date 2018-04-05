@@ -7,7 +7,6 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import suite.os.SocketUtil;
@@ -111,7 +110,7 @@ public class NntpServerMain extends ExecutableProgram {
 					case POST:
 						pw.println("340 Okay");
 						var size = 0;
-						List<String> lines = new ArrayList<>();
+						var lines = new ArrayList<String>();
 						while (!String_.equals(line = Util.readLine(sis), ".") && size < 1048576) {
 							lines.add(line);
 							size += line.length();

@@ -24,7 +24,7 @@ public class FindUtil {
 	}
 
 	public static List<Node> collectList(Finder finder, Node in) {
-		List<Node> nodes = new ArrayList<>();
+		var nodes = new ArrayList<Node>();
 		finder.find(To.source(in), node -> nodes.add(new Cloner().clone(node)));
 		return nodes;
 	}

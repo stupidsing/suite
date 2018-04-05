@@ -133,14 +133,14 @@ public class To {
 	}
 
 	public static <T> List<T> list(Iterator<T> iter) {
-		List<T> list = new ArrayList<>();
+		var list = new ArrayList<T>();
 		while (iter.hasNext())
 			list.add(iter.next());
 		return list;
 	}
 
 	public static <T> List<T> list(Source<T> source) {
-		List<T> list = new ArrayList<>();
+		var list = new ArrayList<T>();
 		T t;
 		while ((t = source.source()) != null)
 			list.add(t);

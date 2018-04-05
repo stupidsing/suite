@@ -3,7 +3,6 @@ package suite.file.impl;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.List;
 
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
@@ -53,7 +52,7 @@ public class JournalledFileFactory {
 		SerializedPageFile<Integer> pointerPageFile = SerializedFileFactory.serialized(ppf, serialize.int_);
 		var nCommittedJournalEntries0 = pointerPageFile.load(0);
 
-		List<JournalEntry> journalEntries = new ArrayList<>();
+		var journalEntries = new ArrayList<JournalEntry>();
 
 		for (var jp = 0; jp < nCommittedJournalEntries0; jp++)
 			journalEntries.add(journalPageFile.load(jp));

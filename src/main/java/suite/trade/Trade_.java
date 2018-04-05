@@ -62,7 +62,7 @@ public class Trade_ {
 			var buySell = trade.buySell;
 			var price = trade.price;
 			List<IntFltPair> acquires0 = acquireBySymbol.getOrDefault(symbol, List.of());
-			List<IntFltPair> acquires1 = new ArrayList<>();
+			var acquires1 = new ArrayList<IntFltPair>();
 
 			for (var acquire : acquires0) {
 				var n0 = acquire.t0;
@@ -92,7 +92,7 @@ public class Trade_ {
 
 	public static Streamlet<Trade> collectBrokeredTrades(Outlet<Trade> outlet) {
 		Trade[] trades0 = outlet.toArray(Trade.class);
-		List<Trade> trades1 = new ArrayList<>();
+		var trades1 = new ArrayList<Trade>();
 		var length0 = trades0.length;
 		var i0 = 0;
 

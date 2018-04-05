@@ -46,7 +46,7 @@ public class InstructionExtractor implements AutoCloseable {
 	}
 
 	public List<Instruction> extractInstructions(Node node) {
-		List<List<Node>> rsList = new ArrayList<>();
+		var rsList = new ArrayList<List<Node>>();
 		extractInstructions(node, rsList);
 		return Read.from(rsList).map(this::extract).toList();
 	}
@@ -163,7 +163,7 @@ public class InstructionExtractor implements AutoCloseable {
 	}
 
 	private List<Node> tupleToList(Node node) {
-		List<Node> results = new ArrayList<>();
+		var results = new ArrayList<Node>();
 		Tree tree;
 		while ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
 			results.add(tree.getLeft());

@@ -78,7 +78,7 @@ public class FileFactory {
 			}
 
 			public List<Extent> scan(int start, int end) {
-				List<Extent> extents = new ArrayList<>();
+				var extents = new ArrayList<Extent>();
 				var pointer = start;
 				while (pointer < end) {
 					var extent = pageFile.load(pointer).extent;

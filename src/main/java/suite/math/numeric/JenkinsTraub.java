@@ -128,7 +128,7 @@ public class JenkinsTraub {
 		var denomLength = denom.length;
 		int diff;
 		while (0 <= (diff = numLength - denomLength)) {
-			Complex scale = div(num[numLength - 1], denom[denomLength - 1]);
+			var scale = div(num[numLength - 1], denom[denomLength - 1]);
 			var scaled0 = scale(denom, scale);
 			var scaled1 = new Complex[numLength];
 			{

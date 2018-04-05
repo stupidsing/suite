@@ -103,7 +103,7 @@ public class P2InferType {
 	}
 
 	private Funp extractPredefine(Funp node0) {
-		List<Pair<String, Funp>> evs = new ArrayList<>();
+		var evs = new ArrayList<Pair<String, Funp>>();
 
 		var node1 = new Object() {
 			private Funp extract_(Funp n) {
@@ -370,7 +370,7 @@ public class P2InferType {
 				unify(n, type0, TypeArray.of(te));
 				var elementSize = getTypeSize(te);
 				var offset = 0;
-				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
+				var list = new ArrayList<Pair<Funp, IntIntPair>>();
 				for (var element : elements) {
 					var offset0 = offset;
 					list.add(Pair.of(erase(element), IntIntPair.of(offset0, offset += elementSize)));
@@ -391,7 +391,7 @@ public class P2InferType {
 				var e1 = new Erase(scope, env.replace(var, new Var(scope, offset, 0, size0)));
 				return allocStack(size0, value, e1.erase(expr), offset);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
-				List<Pair<Var, Funp>> assigns = new ArrayList<>();
+				var assigns = new ArrayList<Pair<Var, Funp>>();
 				Mutable<Integer> offsetStack = Mutable.nil();
 				var env1 = env;
 				var offset = 0;

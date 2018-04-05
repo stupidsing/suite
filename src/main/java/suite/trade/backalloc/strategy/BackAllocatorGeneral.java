@@ -448,7 +448,7 @@ public class BackAllocatorGeneral {
 						.sortByValue((nHold0, nHold1) -> Integer.compare(Math.abs(nHold1), Math.abs(nHold0))) //
 						.toList();
 
-				List<Pair<String, Integer>> m1 = new ArrayList<>();
+				var m1 = new ArrayList<Pair<String, Integer>>();
 				var sums = new int[2];
 
 				for (var pair : m0) {

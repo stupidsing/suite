@@ -80,7 +80,7 @@ public class Huffman {
 	}
 
 	private <Unit> List<Unit> save(Dictionary<Unit> dictionary) {
-		List<Unit> list = new ArrayList<>();
+		var list = new ArrayList<Unit>();
 		save(list, dictionary.root);
 		return list;
 	}

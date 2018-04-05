@@ -59,7 +59,7 @@ public class Keyboard {
 	public Keyboard(LibcJna libc) {
 		this.libc = libc;
 
-		List<Pair<List<Integer>, VK>> pairs = new ArrayList<>();
+		var pairs = new ArrayList<Pair<List<Integer>, VK>>();
 		pairs.add(Pair.of(List.of(3), VK.CTRL_C____));
 		pairs.add(Pair.of(List.of(4), VK.CTRL_D____));
 		pairs.add(Pair.of(List.of(11), VK.CTRL_K____));

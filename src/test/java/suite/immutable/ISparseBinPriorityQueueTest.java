@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import org.junit.Test;
 
@@ -16,7 +15,7 @@ public class ISparseBinPriorityQueueTest {
 	public void test() {
 		var size = 4096;
 
-		List<Integer> list = new ArrayList<>();
+		var list = new ArrayList<Integer>();
 		for (var i = 0; i < size; i++)
 			list.add(i);
 		Collections.shuffle(list);

@@ -11,8 +11,8 @@ public class FastFourierTransformTest {
 
 	@Test
 	public void testFft() {
-		Complex zero = Complex.of(0f, 0f);
-		Complex one = Complex.of(1f, 0f);
+		var zero = Complex.of(0f, 0f);
+		var one = Complex.of(1f, 0f);
 		Complex[] fs0 = { one, one, one, one, zero, zero, zero, zero, };
 		var fs1 = fft.fft(fs0);
 		var fs2 = fft.ifft(fs1);

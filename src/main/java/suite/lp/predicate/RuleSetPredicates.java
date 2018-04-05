@@ -1,7 +1,6 @@
 package suite.lp.predicate;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import suite.Suite;
 import suite.lp.doer.Binder;
@@ -32,7 +31,7 @@ public class RuleSetPredicates {
 	public BuiltinPredicate getAllRules = PredicateUtil.p1((prover, p0) -> {
 		var ruleSet = prover.ruleSet();
 		var rules = ruleSet.getRules();
-		List<Node> nodes = new ArrayList<>();
+		var nodes = new ArrayList<Node>();
 
 		for (var rule : rules)
 			nodes.add(Tree.of(TermOp.IS____, rule.head, rule.tail));
@@ -73,7 +72,7 @@ public class RuleSetPredicates {
 		var ruleSet = prover.ruleSet();
 		var trail = prover.getTrail();
 		var pit = trail.getPointInTime();
-		List<Rule> targets = new ArrayList<>();
+		var targets = new ArrayList<Rule>();
 
 		for (var rule : ruleSet.getRules()) {
 			if (Binder.bind(rule0.head, rule.head, trail) //

@@ -49,7 +49,7 @@ public class LcsBfs<T> {
 
 		var node = Search.breadthFirst(new Traverser<>() {
 			public List<Node> generate(Node node) {
-				List<Node> nodes = new ArrayList<>();
+				var nodes = new ArrayList<Node>();
 				if (node.pos0 < size0)
 					nodes.add(jump(new Node(node, node.pos0 + 1, node.pos1)));
 				if (node.pos1 < size1)

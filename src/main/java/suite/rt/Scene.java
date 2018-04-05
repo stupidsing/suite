@@ -18,7 +18,7 @@ public class Scene implements RtObject {
 
 	@Override
 	public List<RayHit> hit(Ray ray) {
-		List<RayHit> rayHits = new ArrayList<>();
+		var rayHits = new ArrayList<RayHit>();
 
 		for (var object : objects)
 			rayHits.addAll(object.hit(new Ray(ray.startPoint, ray.dir)));

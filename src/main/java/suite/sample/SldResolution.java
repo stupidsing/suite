@@ -53,7 +53,7 @@ public class SldResolution {
 			}
 		}
 
-		List<Node> results = new ArrayList<>();
+		var results = new ArrayList<Node>();
 
 		for (var e : orsMap.entrySet()) {
 			Source<List<Node>> value0 = e.getValue();

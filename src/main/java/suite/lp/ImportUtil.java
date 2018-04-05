@@ -57,7 +57,7 @@ public class ImportUtil {
 	}
 
 	public synchronized boolean importFrom(RuleSet ruleSet, Node node) {
-		List<Rule> rules = new ArrayList<>();
+		var rules = new ArrayList<Rule>();
 
 		for (var elem : Tree.iter(node, TermOp.NEXT__))
 			rules.add(Rule.of(elem));

@@ -46,7 +46,7 @@ public class StackAssembler {
 	}
 
 	private List<Pair<Reference, Node>> preassemble(List<Pair<Reference, Node>> lnis0) {
-		List<Pair<Reference, Node>> lnis1 = new ArrayList<>();
+		var lnis1 = new ArrayList<Pair<Reference, Node>>();
 		Deque<int[]> deque = new ArrayDeque<>();
 		var trail = new Trail();
 		int fs = 0, rs = 0;

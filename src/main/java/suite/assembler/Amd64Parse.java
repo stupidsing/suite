@@ -1,7 +1,6 @@
 package suite.assembler;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import suite.Suite;
 import suite.assembler.Amd64.Insn;
@@ -83,7 +82,7 @@ public class Amd64Parse {
 	}
 
 	private Streamlet<Node> scan(Node ops, String pattern) {
-		List<Node> nodes = new ArrayList<>();
+		var nodes = new ArrayList<Node>();
 		Node[] m;
 		while ((m = Suite.pattern(pattern).match(ops)) != null) {
 			nodes.add(m[0]);
