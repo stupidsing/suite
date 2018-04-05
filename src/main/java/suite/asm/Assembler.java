@@ -23,7 +23,6 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Read;
 import suite.text.Preprocess;
-import suite.text.Preprocess.Run;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.List_;
@@ -65,12 +64,12 @@ public class Assembler {
 
 	public Bytes assemble(String in0) {
 		var whitespaces = Collections.singleton('\n');
-		Fun<String, List<Run>> gct = CommentPreprocessor.groupCommentPreprocessor(whitespaces);
-		Fun<String, List<Run>> lct = CommentPreprocessor.lineCommentPreprocessor(whitespaces);
-		String in1 = Preprocess.transform(List.of(gct, lct), in0).t0;
+		var gct = CommentPreprocessor.groupCommentPreprocessor(whitespaces);
+		var lct = CommentPreprocessor.lineCommentPreprocessor(whitespaces);
+		var in1 = Preprocess.transform(List.of(gct, lct), in0).t0;
 
 		var generalizer = new Generalizer();
-		List<String> lines = List.of(in1.split("\n"));
+		var lines = List.of(in1.split("\n"));
 		Pair<String, String> pe;
 		var start = 0;
 
@@ -86,7 +85,7 @@ public class Assembler {
 					var label = pt.t0;
 					var command = pt.t1;
 
-					Reference reference = String_.isNotBlank(label) ? generalizer.getVariable(Atom.of(label)) : null;
+					var reference = String_.isNotBlank(label) ? generalizer.getVariable(Atom.of(label)) : null;
 					var instruction = generalizer.generalize(Suite.parse(command));
 					return Pair.of(reference, instruction);
 				}).toList();
@@ -147,7 +146,7 @@ public class Assembler {
 
 	private Bytes assemble(boolean isPass2, int address, Node instruction) {
 		try {
-			List<Node> ins = List.of(Int.of(bits), Int.of(address), instruction);
+			var ins = List.of(Int.of(bits), Int.of(address), instruction);
 			var bytesList = new ArrayList<Bytes>();
 			finder.find(To.source(Tree.of(TermOp.AND___, ins)), node -> bytesList.add(convertByteStream(node)));
 			return Read.from(bytesList).min((bytes0, bytes1) -> bytes0.size() - bytes1.size());

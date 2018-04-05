@@ -2,7 +2,6 @@ package suite.asm;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 
 import suite.BindArrayUtil.Pattern;
@@ -47,7 +46,7 @@ public class StackAssembler {
 
 	private List<Pair<Reference, Node>> preassemble(List<Pair<Reference, Node>> lnis0) {
 		var lnis1 = new ArrayList<Pair<Reference, Node>>();
-		Deque<int[]> deque = new ArrayDeque<>();
+		var deque = new ArrayDeque<int[]>();
 		var trail = new Trail();
 		int fs = 0, rs = 0;
 
