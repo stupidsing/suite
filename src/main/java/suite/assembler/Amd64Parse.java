@@ -20,8 +20,8 @@ public class Amd64Parse {
 	private static Amd64 amd64 = Amd64.me;
 
 	public Instruction parse(Node node) {
-		Tree tree = Tree.decompose(node, TermOp.TUPLE_);
-		Insn insn = Enum.valueOf(Insn.class, ((Atom) tree.getLeft()).name);
+		var tree = Tree.decompose(node, TermOp.TUPLE_);
+		var insn = Enum.valueOf(Insn.class, ((Atom) tree.getLeft()).name);
 		var ops = tree.getRight();
 		var operands = scan(ops, ".0, .1").map(this::parseOperand).toList();
 
