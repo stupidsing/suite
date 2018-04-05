@@ -58,7 +58,7 @@ public class IHashSet<V> {
 
 	public IHashSet<V> remove(V v) {
 		return new IHashSet<>(intMap.update(v.hashCode(), list -> {
-			IList<V> list1 = list.remove(v);
+			var list1 = list.remove(v);
 			return !list1.isEmpty() ? list1 : null;
 		}));
 	}

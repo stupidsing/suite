@@ -30,8 +30,8 @@ public class LockFreeQueue<T> {
 		List<T> result = new ArrayList<>(List.of((T) null));
 
 		cas.apply(fb0 -> {
-			IList<T> back = fb0.back;
-			IList<T> front = fb0.front;
+			var back = fb0.back;
+			var front = fb0.front;
 			if (front.isEmpty()) { // reverse elements from back to front
 				for (T t_ : fb0.back)
 					front = IList.cons(t_, front);

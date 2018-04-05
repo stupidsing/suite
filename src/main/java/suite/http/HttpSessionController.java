@@ -73,7 +73,7 @@ public class HttpSessionController {
 				Map<String, String> attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
 				var username = attrs.get("username");
 				var password = attrs.get("password");
-				IList<String> path = HttpHeaderUtil.getPath(attrs.get("path"));
+				var path = HttpHeaderUtil.getPath(attrs.get("path"));
 
 				if (authenticator.authenticate(username, password)) {
 					sessionId = generateRandomSessionId();

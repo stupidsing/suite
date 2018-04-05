@@ -64,7 +64,7 @@ public class ImportUtil {
 
 		Prover prover = new Prover(ruleSet);
 		boolean b = true;
-		IList<Node> importing0 = importing.get();
+		var importing0 = importing.get();
 
 		try {
 			importing.set(IList.cons(node, importing0));

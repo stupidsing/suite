@@ -58,7 +58,7 @@ public class LrParse {
 				state = sr.t0;
 				token = tokens.source();
 			} else { // reduce
-				Reduce reduce = sr.t1;
+				var reduce = sr.t1;
 				IList<Ast> nodes = IList.end();
 
 				for (var i = 0; i < reduce.n(); i++) {
@@ -67,7 +67,7 @@ public class LrParse {
 					state = ns.t1;
 				}
 
-				Ast token1 = new Ast(reduce.name(), 0, 0, Read.from(nodes).toList());
+				var token1 = new Ast(reduce.name(), 0, 0, Read.from(nodes).toList());
 
 				if (rootEntity.equals(reduce.name()) && stack.size() == 0 && token == null)
 					return token1;

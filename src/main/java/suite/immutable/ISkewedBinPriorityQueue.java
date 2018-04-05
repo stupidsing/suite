@@ -49,9 +49,9 @@ public class ISkewedBinPriorityQueue<T> {
 		private ISkewedBinPriorityQueue<T> deleteMin() {
 			findMin();
 
-			IList<T> values0 = IList.<T> end();
-			IList<Node> trees0 = IList.<Node> end();
-			IList<Node> trees1 = IList.<Node> end();
+			var values0 = IList.<T> end();
+			var trees0 = IList.<Node> end();
+			var trees1 = IList.<Node> end();
 
 			for (Node node : trees.reverse())
 				if (node != tree)
@@ -123,8 +123,8 @@ public class ISkewedBinPriorityQueue<T> {
 
 				var head0 = ts0.head;
 				var head1 = ts1.head;
-				IList<Node> tail0 = ts0.tail;
-				IList<Node> tail1 = ts1.tail;
+				var tail0 = ts0.tail;
+				var tail1 = ts1.tail;
 
 				if (head0.rank != head1.rank)
 					return IList.cons(head0, meld(tail0, IList.cons(head1, tail1)));

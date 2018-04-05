@@ -379,7 +379,7 @@ public class SewingProverImpl implements ProverFactory {
 					return fail;
 				};
 				cps = rt -> {
-					IList<Trampoline> rems = rt.rems;
+					var rems = rt.rems;
 					rt.rems = IList.cons(fail, IList.end());
 					new Runtime(rt, rt_ -> {
 						rt_.query = f.apply(rt.env);
@@ -602,7 +602,7 @@ public class SewingProverImpl implements ProverFactory {
 		else if ((m = Suite.pattern("once .0").match(node)) != null) {
 			Trampoline tr0 = compileTr(bf, m[0]);
 			tr = rt -> {
-				IList<Trampoline> alts0 = rt.alts;
+				var alts0 = rt.alts;
 				rt.pushRem(rt_ -> {
 					rt_.alts = alts0;
 					return okay;
@@ -650,7 +650,7 @@ public class SewingProverImpl implements ProverFactory {
 			tr = rt -> {
 				BindEnv be = rt;
 				Restore restore = save(rt);
-				IList<Trampoline> alts0 = rt.alts;
+				var alts0 = rt.alts;
 				Sink<Node> handler0 = rt.handler;
 				rt.handler = node_ -> {
 					restore.restore(rt);
@@ -756,7 +756,7 @@ public class SewingProverImpl implements ProverFactory {
 	private Trampoline if_(Trampoline tr0, Trampoline tr1, Trampoline tr2) {
 		return rt -> {
 			Restore restore = save(rt);
-			IList<Trampoline> alts0 = rt.alts;
+			var alts0 = rt.alts;
 			rt.pushRem(rt_ -> {
 				rt.alts = alts0;
 				return tr1;
@@ -794,7 +794,7 @@ public class SewingProverImpl implements ProverFactory {
 				Mutable<Cps> mcps = getCpsByPrototype(prototype);
 
 				Cps cpsx = rt -> {
-					IList<Trampoline> rems = rt.rems;
+					var rems = rt.rems;
 					rt.rems = IList.cons(fail, IList.end());
 					new Runtime(rt, rt_ -> {
 						rt_.rems = rems;
@@ -840,7 +840,7 @@ public class SewingProverImpl implements ProverFactory {
 
 	private Trampoline cutBegin(Trampoline tr) {
 		return rt -> {
-			IList<Trampoline> cutPoint0 = rt.cutPoint;
+			var cutPoint0 = rt.cutPoint;
 			rt.pushRem(rt_ -> {
 				rt_.cutPoint = cutPoint0;
 				return okay;
@@ -903,8 +903,8 @@ public class SewingProverImpl implements ProverFactory {
 		Cps cps0 = rt.cps;
 		Env env0 = rt.env;
 		var query0 = rt.query;
-		IList<Trampoline> cutPoint0 = rt.cutPoint;
-		IList<Trampoline> rems0 = rt.rems;
+		var cutPoint0 = rt.cutPoint;
+		var rems0 = rt.rems;
 		var pit0 = rt.trail.getPointInTime();
 		Sink<Node> handler0 = rt.handler;
 		return rt_ -> {

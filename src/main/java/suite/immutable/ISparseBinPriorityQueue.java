@@ -61,8 +61,8 @@ public class ISparseBinPriorityQueue<T> {
 		private ISparseBinPriorityQueue<T> deleteMin() {
 			findMin();
 
-			IList<Tree> trees0 = IList.<Tree> end();
-			IList<Tree> trees1 = IList.<Tree> end();
+			var trees0 = IList.<Tree> end();
+			var trees1 = IList.<Tree> end();
 
 			for (Tree t : trees.reverse())
 				if (t.rank != tree.rank)
@@ -118,8 +118,8 @@ public class ISparseBinPriorityQueue<T> {
 
 				Tree head0 = ts0.head;
 				Tree head1 = ts1.head;
-				IList<Tree> tail0 = ts0.tail;
-				IList<Tree> tail1 = ts1.tail;
+				var tail0 = ts0.tail;
+				var tail1 = ts1.tail;
 
 				if (head0.rank != head1.rank)
 					return IList.cons(head0, meld(tail0, IList.cons(head1, tail1)));
