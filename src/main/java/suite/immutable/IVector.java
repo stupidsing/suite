@@ -32,7 +32,7 @@ public class IVector<T> {
 
 		private Data(int len, int startUsed) {
 			@SuppressWarnings("unchecked")
-			T[] array = (T[]) new Object[len];
+			var array = (T[]) new Object[len];
 			nodes = array;
 			endUsed = this.startUsed = startUsed;
 		}

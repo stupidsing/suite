@@ -98,7 +98,7 @@ public class Sina {
 					// 100|0,N|Y|Y,73.200|69.600|75.450,0|||0.000|0.000|0.000,
 					// |0,Y
 
-					String[] a0 = ParseUtil.fit(line, "var hq_str_", "=\"", "\"");
+					var a0 = ParseUtil.fit(line, "var hq_str_", "=\"", "\"");
 					var a1 = a0[2].split(",");
 
 					var factor = new Factor();

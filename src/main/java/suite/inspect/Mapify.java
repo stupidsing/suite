@@ -159,7 +159,7 @@ public class Mapify {
 		} else if (type instanceof ParameterizedType) {
 			var pt = (ParameterizedType) type;
 			var rawType = pt.getRawType();
-			Type[] typeArgs = pt.getActualTypeArguments();
+			var typeArgs = pt.getActualTypeArguments();
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (collectionClasses.contains(clazz)) {

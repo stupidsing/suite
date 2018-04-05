@@ -61,8 +61,8 @@ public class Eigen {
 			else
 				vj = vec.normalize(Floats_.toArray(n, i -> random.nextFloat()));
 
-			float[] wp = mtx.mul(m, vs[j] = vj);
-			float[] sub0 = vec.scale(vj, alphas[0] = (float) vec.dot(wp, vj));
+			var wp = mtx.mul(m, vs[j] = vj);
+			var sub0 = vec.scale(vj, alphas[0] = (float) vec.dot(wp, vj));
 			var sub1 = 0 < j ? vec.add(sub0, vec.scale(vj1, beta)) : sub0;
 
 			vj1 = vj;

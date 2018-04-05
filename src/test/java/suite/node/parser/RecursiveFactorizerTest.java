@@ -101,7 +101,7 @@ public class RecursiveFactorizerTest {
 
 	private String rewriteNewArgument(String pred0, String predx, String newArgument, String s0) {
 		Source<Node[]> source = () -> {
-			Reference[] r = new Reference[64];
+			var r = new Reference[64];
 
 			for (var i = 0; i < r.length; i++)
 				r[i] = new Reference();

@@ -9,7 +9,6 @@ import suite.adt.pair.Pair;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.MeanVariance;
 import suite.trade.analysis.MovingAverage;
-import suite.trade.analysis.MovingAverage.MovingRange;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.Configuration;
 import suite.util.String_;
@@ -77,8 +76,8 @@ public class BackAllocatorOld {
 		return BackAllocator_.byPrices(prices -> {
 			var movingAvgs0 = ma.movingAvg(prices, windowSize0);
 			var movingAvgs1 = ma.movingAvg(prices, windowSize1);
-			MovingRange[] movingRanges0 = ma.movingRange(prices, windowSize0);
-			MovingRange[] movingRanges1 = ma.movingRange(prices, windowSize1);
+			var movingRanges0 = ma.movingRange(prices, windowSize0);
+			var movingRanges1 = ma.movingRange(prices, windowSize1);
 
 			return index -> {
 				var last = index - 1;
@@ -98,8 +97,8 @@ public class BackAllocatorOld {
 		var windowSize1 = 32;
 
 		return BackAllocator_.byPrices(prices -> {
-			MovingRange[] movingRanges0 = ma.movingRange(prices, windowSize0);
-			MovingRange[] movingRanges1 = ma.movingRange(prices, windowSize1);
+			var movingRanges0 = ma.movingRange(prices, windowSize0);
+			var movingRanges1 = ma.movingRange(prices, windowSize1);
 
 			return index -> {
 				var last = index - 1;

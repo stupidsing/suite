@@ -175,7 +175,7 @@ public class FunGenerateBytecode {
 				visit_(e1.object);
 				list.add(factory.createInstanceOf(e1.instanceType));
 			}).doIf(InvokeMethodFunExpr.class, e1 -> {
-				Type[] array = Read.from(e1.parameters).map(fti::typeOf).toArray(Type.class);
+				var array = Read.from(e1.parameters).map(fti::typeOf).toArray(Type.class);
 				Class<?> clazz = e1.clazz;
 				var object = e1.object;
 				var className = clazz != null ? clazz.getName() : ((ObjectType) fti.typeOf(object)).getClassName();

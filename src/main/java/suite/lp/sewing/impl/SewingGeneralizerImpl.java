@@ -74,7 +74,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
 			} else if (node0 instanceof Tuple) {
-				Generalize_[] fs = Read.from(((Tuple) node0).nodes).map(this::generalizer).toArray(Generalize_.class);
+				var fs = Read.from(((Tuple) node0).nodes).map(this::generalizer).toArray(Generalize_.class);
 				var length = fs.length;
 				fun = env -> {
 					var array = new Node[length];

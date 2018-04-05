@@ -2,7 +2,6 @@ package suite.sample;
 
 import java.lang.Thread.State;
 import java.lang.management.ManagementFactory;
-import java.lang.management.ThreadInfo;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -91,8 +90,8 @@ public class Profiler implements Service {
 		var currentThreadId = Thread.currentThread().getId();
 		var mx = ManagementFactory.getThreadMXBean();
 
-		long[] threadIds = mx.getAllThreadIds();
-		ThreadInfo[] threadInfos = mx.getThreadInfo(threadIds, stackTraceDepth);
+		var threadIds = mx.getAllThreadIds();
+		var threadInfos = mx.getThreadInfo(threadIds, stackTraceDepth);
 		count.getAndIncrement();
 
 		for (var threadInfo : threadInfos)
@@ -100,7 +99,7 @@ public class Profiler implements Service {
 					&& threadInfo.getThreadId() != currentThreadId //
 					&& threadInfo.getThreadState() == State.RUNNABLE //
 					&& !String_.equals(threadInfo.getThreadName(), "ReaderThread")) {
-				StackTraceElement[] stackTrace = threadInfo.getStackTrace();
+				var stackTrace = threadInfo.getStackTrace();
 				var elements = new HashSet<>();
 				var i = stackTrace.length;
 				var call = callRoot;

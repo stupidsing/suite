@@ -65,7 +65,7 @@ public class AptUtil {
 	}
 
 	public List<Map<String, String>> readRepoPackages() {
-		File[] files = new File(aptDir + "/lists").listFiles();
+		var files = new File(aptDir + "/lists").listFiles();
 		return Read //
 				.from(files) //
 				.filter(File::isFile) //

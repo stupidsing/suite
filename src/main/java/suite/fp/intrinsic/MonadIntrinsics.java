@@ -34,7 +34,7 @@ public class MonadIntrinsics {
 
 	public Intrinsic popen = (callback, inputs) -> {
 		Iterate<Node> yawn = callback::yawn;
-		String[] array = ThunkUtil.yawnList(yawn, inputs.get(0), false) //
+		var array = ThunkUtil.yawnList(yawn, inputs.get(0), false) //
 				.map(node -> ThunkUtil.yawnString(yawn, node)) //
 				.toArray(String.class);
 

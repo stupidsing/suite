@@ -46,8 +46,8 @@ public class BindArrayUtil {
 			atoms.add(atom);
 
 		var size = atoms.size();
-		int[] sgi = Ints_.toArray(size, i -> sgm.getIndex(atoms.get(i)));
-		int[] cbi = Ints_.toArray(size, i -> cbm.getIndex(ne.env.refs[sgi[i]]));
+		var sgi = Ints_.toArray(size, i -> sgm.getIndex(atoms.get(i)));
+		var cbi = Ints_.toArray(size, i -> cbm.getIndex(ne.env.refs[sgi[i]]));
 
 		return new Pattern() {
 			public Node[] match(Node node) {
@@ -60,7 +60,7 @@ public class BindArrayUtil {
 
 			public Node subst(Node... nodes) {
 				NodeEnv<Atom> ne = sgs.source();
-				Reference[] refs = ne.env.refs;
+				var refs = ne.env.refs;
 				for (var i = 0; i < nodes.length; i++)
 					refs[sgi[i]].bound(nodes[i]);
 				return ne.node;

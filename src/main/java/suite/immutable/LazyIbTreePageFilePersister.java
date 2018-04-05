@@ -56,7 +56,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 			}
 		};
 
-		PageFile[] pfs = FileFactory.subPageFiles(pf, 0, 1, Integer.MAX_VALUE);
+		var pfs = FileFactory.subPageFiles(pf, 0, 1, Integer.MAX_VALUE);
 
 		this.comparator = comparator;
 		nPagesFile = SerializedFileFactory.serialized(pfs[0], serialize.int_);

@@ -34,7 +34,7 @@ public class PairTest {
 		DataSource ds1 = cfg.dataSource(symbol1, period);
 		var ts0 = Longs_.of(ds0.ts);
 		var ts1 = Longs_.of(ds1.ts);
-		long[] tradeTimes = Longs_.concat(ts0, ts1).distinct().sort().toArray();
+		var tradeTimes = Longs_.concat(ts0, ts1).distinct().sort().toArray();
 		var prices0 = ds0.alignBeforePrices(tradeTimes).prices;
 		var prices1 = ds1.alignBeforePrices(tradeTimes).prices;
 		var length = prices0.length;

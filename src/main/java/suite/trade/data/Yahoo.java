@@ -51,7 +51,7 @@ public class Yahoo {
 				.sort((a0, a1) -> Object_.compare(a0[0], a1[0])) //
 				.collect(As::streamlet);
 
-		long[] ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
+		var ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
 		var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
 		var closes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
 		var lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
@@ -76,7 +76,7 @@ public class Yahoo {
 	public DataSource dataSourceL1(String symbol, TimeRange period) {
 		var stockHistory = getStockHistory(symbol);
 		var ds = stockHistory.filter(period).toDataSource();
-		long[] ts = ds.ts;
+		var ts = ds.ts;
 
 		// the latest time stamp may fluctuate; adjust it to previous market
 		// close time
@@ -119,7 +119,7 @@ public class Yahoo {
 					.map(json_ -> json_.path("meta").path("exchangeName").textValue()) //
 					.uniqueResult();
 
-			long[] ts = jsons //
+			var ts = jsons //
 					.flatMap(json_ -> json_.path("timestamp")) //
 					.collect(Obj_Lng.lift(t -> getOpenTimeBefore(exchange, t.longValue()))) //
 					.toArray();
@@ -154,13 +154,13 @@ public class Yahoo {
 					.mapValue(fs -> To.array(length, LngFltPair.class, i -> LngFltPair.of(ts[i], fs[i]))) //
 					.toMap();
 
-			LngFltPair[] dividends = jsons //
+			var dividends = jsons //
 					.flatMap(json_ -> json_.path("events").path("dividends")) //
 					.map(json_ -> LngFltPair.of(json_.path("date").longValue(), json_.path("amount").floatValue())) //
 					.sort(LngFltPair.comparatorByFirst()) //
 					.toArray(LngFltPair.class);
 
-			LngFltPair[] splits = jsons //
+			var splits = jsons //
 					.flatMap(json_ -> json_.path("events").path("splits")) //
 					.map(json_ -> LngFltPair.of(json_.path("date").longValue(),
 							json_.path("numerator").floatValue() / json_.path("denominator").floatValue())) //
@@ -251,7 +251,7 @@ public class Yahoo {
 								json_.path("High").textValue(), }) //
 						.collect(As::streamlet);
 
-				long[] ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
+				var ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
 				var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
 				var closes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
 				var lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();

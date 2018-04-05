@@ -32,7 +32,7 @@ public class Sha2 {
 		var L3 = L2 + 511 & 0xFFFFFE00;
 		var K = L3 - L2;
 
-		int[] is = Ints_.toArray(bs0.length / 4, i -> {
+		var is = Ints_.toArray(bs0.length / 4, i -> {
 			var i4 = i * 4;
 			return bs0[i4] + (bs0[i4 + 1] << 8) + (bs0[i4 + 2] << 16) + (bs0[i4 + 3] << 24);
 		});
@@ -46,7 +46,7 @@ public class Sha2 {
 
 		for (var pos = 0; pos < is.length;) {
 			var i0 = pos;
-			int[] w = Arrays.copyOfRange(is, i0, pos += 512 / 32);
+			var w = Arrays.copyOfRange(is, i0, pos += 512 / 32);
 
 			for (var i = 16; i < 64; i++) {
 				var wi2 = w[i - 2];

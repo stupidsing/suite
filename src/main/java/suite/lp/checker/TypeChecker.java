@@ -40,7 +40,7 @@ public class TypeChecker {
 		}).forEach(pred -> {
 			var prototype = Prototype.of(pred);
 			var nElements = prototype != null ? nElementsByPrototype.get(prototype) : null;
-			Node[] ps = nElements != null ? TreeUtil.elements(pred, nElements) : new Node[0];
+			var ps = nElements != null ? TreeUtil.elements(pred, nElements) : new Node[0];
 
 			try {
 				if (nElements != null)
@@ -73,7 +73,7 @@ public class TypeChecker {
 				var name = tree.getLeft();
 				if (name instanceof Atom) {
 					var node = tree.getRight();
-					Node[] ps = TreeUtil.elements(node, TreeUtil.nElements(node));
+					var ps = TreeUtil.elements(node, TreeUtil.nElements(node));
 					type = getEnumType(name, Tree.of(TermOp.TUPLE_, Read.from(ps).map(this::getType).toList()));
 				} else
 					return new Reference(); // free type

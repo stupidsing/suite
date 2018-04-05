@@ -79,7 +79,7 @@ public class TimeSeries {
 	// epchan
 	public double hurst(float[] ys, int tor) {
 		var logys = To.vector(ys, Math::log);
-		int[] tors = Ints_.toArray(tor, t -> t + 1);
+		var tors = Ints_.toArray(tor, t -> t + 1);
 		var logVrs = To.vector(tor, t -> {
 			var diffs = dropDiff_(tors[t], logys);
 			var diffs2 = To.vector(diffs, diff -> diff * diff);

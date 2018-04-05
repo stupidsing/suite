@@ -86,7 +86,7 @@ public class Serialize {
 		} else if (type instanceof ParameterizedType) {
 			var pt = (ParameterizedType) type;
 			var rawType = pt.getRawType();
-			Type[] typeArgs = pt.getActualTypeArguments();
+			var typeArgs = pt.getActualTypeArguments();
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (Collection.class.isAssignableFrom(clazz))
@@ -180,7 +180,7 @@ public class Serialize {
 		return new Serializer<>() {
 			public T[] read(DataInput_ dataInput) throws IOException {
 				var size = int_.read(dataInput);
-				T[] array = Array_.newArray(clazz, size);
+				var array = Array_.newArray(clazz, size);
 				for (var i = 0; i < size; i++)
 					array[i] = serializer.read(dataInput);
 				return array;
@@ -366,7 +366,7 @@ public class Serialize {
 			}
 
 			public void write(DataOutput_ dataOutput, String value) throws IOException {
-				byte[] bs = Arrays.copyOf(value.getBytes(Constants.charset), length);
+				var bs = Arrays.copyOf(value.getBytes(Constants.charset), length);
 				dataOutput.writeInt(value.length());
 				dataOutput.write(bs);
 			}

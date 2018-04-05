@@ -42,7 +42,7 @@ public class KmeansCluster {
 	public <K> ObjIntMap<K> kMeansCluster(Map<K, float[]> points, int k, int nIterations) {
 		List<K> keys = new ArrayList<>(points.keySet());
 		List<float[]> values = Read.from(keys).map(points::get).toList();
-		int[] ks = kMeansCluster(values, k, nIterations);
+		var ks = kMeansCluster(values, k, nIterations);
 		ObjIntMap<K> map = new ObjIntMap<>();
 
 		for (var i : Ints_.range(ks.length))
@@ -56,7 +56,7 @@ public class KmeansCluster {
 		var iteration = 0;
 
 		while (true) {
-			KmeansBin[] bins = To.array(k, KmeansBin.class, j -> new KmeansBin());
+			var bins = To.array(k, KmeansBin.class, j -> new KmeansBin());
 
 			for (var point : points) {
 				KmeansBin bin = bins[findNearest(point, centers)];

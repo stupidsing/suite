@@ -71,7 +71,7 @@ public class Strategos {
 
 	// buy/sell if ratio is positive/negative; sell/buy nHoldDays after
 	private GetBuySell holdFixedDays(int nDays, int nHoldDays, GetBuySell gbs) {
-		int[] buySells = Ints_.toArray(nDays, gbs::get);
+		var buySells = Ints_.toArray(nDays, gbs::get);
 
 		return day -> {
 			var buySell0 = nHoldDays < day ? -buySells[day - nHoldDays] : 0;

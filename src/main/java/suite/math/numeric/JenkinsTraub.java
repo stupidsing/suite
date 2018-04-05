@@ -17,7 +17,7 @@ public class JenkinsTraub {
 
 	public Complex jt(Complex[] poly0) {
 		var inv0 = poly0[0].inverse();
-		Complex[] poly1 = To.array(poly0.length, Complex.class, i -> Complex.mul(poly0[i], inv0));
+		var poly1 = To.array(poly0.length, Complex.class, i -> Complex.mul(poly0[i], inv0));
 		if (poly0[0].abs2() != 0d)
 			return jt_(poly1);
 		else
@@ -104,7 +104,7 @@ public class JenkinsTraub {
 		var scaled0 = scale(h, ph);
 		var scaled1 = Arrays.copyOf(scaled0, scaled0.length + 1);
 		scaled1[h.length] = Complex.zero;
-		Complex[] sub = To.array(poly.length, Complex.class, i -> Complex.sub(poly[i], scaled1[i]));
+		var sub = To.array(poly.length, Complex.class, i -> Complex.sub(poly[i], scaled1[i]));
 		return Boolean.TRUE ? divXms(sub, s) : div(sub, new Complex[] { s.scale(-1d), Complex.of(1f, 0f), });
 	}
 
@@ -139,7 +139,7 @@ public class JenkinsTraub {
 					scaled1[i] = scaled0[i - diff];
 			}
 			var num_ = num;
-			Complex[] sub = To.array(numLength, Complex.class, i -> Complex.sub(num_[i], scaled1[i]));
+			var sub = To.array(numLength, Complex.class, i -> Complex.sub(num_[i], scaled1[i]));
 			num = Arrays.copyOfRange(sub, 0, numLength - 1);
 		}
 		return num;

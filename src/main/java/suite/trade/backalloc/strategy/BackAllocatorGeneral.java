@@ -19,7 +19,6 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.analysis.MovingAverage;
-import suite.trade.analysis.MovingAverage.MovingRange;
 import suite.trade.analysis.Oscillator;
 import suite.trade.analysis.Oscillator.Movement;
 import suite.trade.backalloc.BackAllocator;
@@ -123,7 +122,7 @@ public class BackAllocatorGeneral {
 		var threshold = .05f;
 
 		return BackAllocator_.byPrices(prices -> {
-			MovingRange[] movingRanges = ma.movingRange(prices, window);
+			var movingRanges = ma.movingRange(prices, window);
 
 			return Quant.fold(0, movingRanges.length, (i, hold) -> {
 				var range = movingRanges[i];
@@ -138,7 +137,7 @@ public class BackAllocatorGeneral {
 
 	private BackAllocator donchianAllocate(int window) {
 		return BackAllocator_.byPrices(prices -> {
-			MovingRange[] movingRanges = ma.movingRange(prices, window);
+			var movingRanges = ma.movingRange(prices, window);
 			return index -> {
 				var last = index - 1;
 				var movingRange = movingRanges[last];
@@ -151,7 +150,7 @@ public class BackAllocatorGeneral {
 
 	private BackAllocator donchianTrend(int window, double exitThreshold) {
 		return BackAllocator_.byPrices(prices -> {
-			MovingRange[] movingRanges = ma.movingRange(prices, window);
+			var movingRanges = ma.movingRange(prices, window);
 			return Quant.enterUntilDrawDown(prices, exitThreshold, //
 					(i, price) -> movingRanges[i].max <= price, //
 					(i, price) -> price <= movingRanges[i].min);
@@ -401,8 +400,8 @@ public class BackAllocatorGeneral {
 							return holds;
 						};
 
-						int[] nHolds1 = enterExit.apply(sys1EnterDays, sys1ExitDays);
-						int[] nHolds2 = enterExit.apply(sys2EnterDays, sys2ExitDays);
+						var nHolds1 = enterExit.apply(sys1EnterDays, sys1ExitDays);
+						var nHolds2 = enterExit.apply(sys2EnterDays, sys2ExitDays);
 
 						Fun<int[], boolean[]> getWons = nHolds -> {
 							var wasWons = new boolean[length];

@@ -128,7 +128,7 @@ public class NeuralNetwork {
 
 		return inputs -> {
 			List<Out<I, O>> outs = layers.map(layer -> layer.feed(cloneInputs.apply(inputs))).toList();
-			O[] outputs = Read.from(outs).map(out -> out.output).toArray(clazz);
+			var outputs = Read.from(outs).map(out -> out.output).toArray(clazz);
 
 			return new Out<>(outputs, errors -> Ints_ //
 					.range(size) //
@@ -244,7 +244,7 @@ public class NeuralNetwork {
 			}
 
 			return new Out<>(outputs, errors -> {
-				T[] errors1 = Array_.newArray(arrayClazz, Array.getLength(errors) / stride);
+				var errors1 = Array_.newArray(arrayClazz, Array.getLength(errors) / stride);
 				var si = 0;
 
 				for (var i = 0; i < errors1.length; i++) {

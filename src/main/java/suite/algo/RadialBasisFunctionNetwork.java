@@ -30,7 +30,7 @@ public class RadialBasisFunctionNetwork {
 
 	public Fun<float[], float[]> train(float[][] ins, float[][] outs) {
 		var length = ins[0].length;
-		int[] kmc = new KmeansCluster(length).kMeansCluster(List.of(ins), nHiddens, nHiddens);
+		var kmc = new KmeansCluster(length).kMeansCluster(List.of(ins), nHiddens, nHiddens);
 
 		var sizes = new int[nHiddens];
 		var sums = new float[nHiddens][length];

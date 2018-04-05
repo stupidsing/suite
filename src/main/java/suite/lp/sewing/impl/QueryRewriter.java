@@ -95,7 +95,7 @@ public class QueryRewriter {
 			if (length <= 0)
 				nodex = node0;
 			else {
-				Node[] ps = TreeUtil.elements(node0, length);
+				var ps = TreeUtil.elements(node0, length);
 				if (pi.isSkipFirst)
 					ps = Arrays.copyOfRange(ps, 1, ps.length, Node[].class);
 				nodex = Tuple.of(ps);

@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.node.Node;
-import suite.node.Reference;
 import suite.node.io.Formatter;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -30,7 +29,7 @@ public class VariableMapper<K> {
 		}
 
 		public String dumpVariables() {
-			Reference[] refs = env.refs;
+			var refs = env.refs;
 			return Read //
 					.from2(indices) //
 					.map2((key, index) -> display(key), (key, index) -> refs[index].finalNode()) //

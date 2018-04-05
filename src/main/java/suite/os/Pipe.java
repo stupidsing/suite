@@ -26,7 +26,7 @@ public class Pipe {
 		else
 			Fail.t("cannot find shell executable");
 
-		var command1 = command0;
+		String[] command1 = command0;
 
 		return new Streamlet<>(() -> Rethrow.ex(() -> {
 			var bis = new ByteArrayInputStream(sh.getBytes(Constants.charset));
@@ -37,7 +37,7 @@ public class Pipe {
 			var pes = process.getErrorStream();
 			var pos = process.getOutputStream();
 
-			Thread[] threads = new Thread[] { //
+			var threads = new Thread[] { //
 					Copy.streamByThread(pes, System.err), //
 					Copy.streamByThread(bis, pos), };
 

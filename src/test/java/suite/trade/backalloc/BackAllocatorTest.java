@@ -28,11 +28,11 @@ public class BackAllocatorTest {
 		var ba1 = ba0.stopLoss(.98d);
 
 		var length = prices.length;
-		long[] ts = Longs_.toArray(length, i -> start.addDays(i).epochSec());
+		var ts = Longs_.toArray(length, i -> start.addDays(i).epochSec());
 
 		DataSource ds = DataSource.of(ts, prices);
 		AlignKeyDataSource<String> akds = DataSource.alignAll(Read.from2(List.of(Pair.of(symbol, ds))));
-		int[] indices = Ints_.toArray(length, i -> i);
+		var indices = Ints_.toArray(length, i -> i);
 
 		OnDateTime odt = ba1.allocate(akds, indices);
 

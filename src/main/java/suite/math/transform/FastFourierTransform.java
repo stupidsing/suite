@@ -8,7 +8,7 @@ public class FastFourierTransform {
 
 	public Complex[] ifft(Complex[] cs0) {
 		var size = cs0.length;
-		Complex[] cs1 = To.array(size, Complex.class, i -> cs0[i].conjugate());
+		var cs1 = To.array(size, Complex.class, i -> cs0[i].conjugate());
 		var cs2 = fft(cs1);
 		var inv = 1.0f / size;
 

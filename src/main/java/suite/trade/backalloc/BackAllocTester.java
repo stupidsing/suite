@@ -83,7 +83,7 @@ public class BackAllocTester {
 
 			AlignKeyDataSource<String> akds = cfg.dataSources(historyPeriod, Read.from(symbols));
 			var dsBySymbol = akds.dsByKey;
-			long[] tradeTs = akds.ts;
+			var tradeTs = akds.ts;
 			var t0 = period.from.epochSec();
 			var tx = period.to.epochSec();
 

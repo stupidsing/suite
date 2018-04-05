@@ -20,7 +20,7 @@ public class LcsSesMyers<T> {
 		var nm = size0 + size1;
 
 		int d, i1 = 0;
-		int[] vdummy = new int[] { 0, };
+		var vdummy = new int[] { 0, };
 		int[] v0 = vdummy, v1 = null;
 		var k1 = 0;
 		int x2 = 0, y2 = 0;

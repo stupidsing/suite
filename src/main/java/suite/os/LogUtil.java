@@ -156,10 +156,10 @@ public class LogUtil {
 
 		// trims stack trace to appropriate length
 		while (th != null) {
-			StackTraceElement[] st0 = th.getStackTrace();
+			var st0 = th.getStackTrace();
 
 			if (maxStackTraceLength < st0.length) {
-				StackTraceElement[] st1 = new StackTraceElement[maxStackTraceLength];
+				var st1 = new StackTraceElement[maxStackTraceLength];
 				Array_.copy(st0, 0, st1, 0, maxStackTraceLength);
 				th.setStackTrace(st1);
 

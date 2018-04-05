@@ -109,7 +109,7 @@ public class MovingAverage {
 		var beta = 1d - alpha;
 		var price0 = prices[0];
 
-		double[] re = Doubles_.toArray(w1, i -> price0);
+		var re = Doubles_.toArray(w1, i -> price0);
 		var betas = new double[w];
 		var b = beta;
 
@@ -122,7 +122,7 @@ public class MovingAverage {
 		remas[0] = price0;
 
 		for (var t = 1; t < prices.length; t++) {
-			double[] re0 = Doubles_.toArray(w1, i -> re[i]);
+			var re0 = Doubles_.toArray(w1, i -> re[i]);
 			re[0] = beta * re0[0] + alpha * prices[t];
 			for (var j = 0; j < w; j++)
 				re[j + 1] = betas[j] * re[j] + re0[j];

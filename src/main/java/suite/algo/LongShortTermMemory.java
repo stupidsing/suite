@@ -95,9 +95,9 @@ public class LongShortTermMemory {
 			var sig_is = Sigmoid.sigmoidOn(mtx.mul(wi, iv));
 			var tanh_ms = Tanh.tanhOn(mtx.mul(wm, iv));
 			var sig_os = Sigmoid.sigmoidOn(mtx.mul(wo, iv));
-			float[] memory1 = copy(memory = vec.addOn(Forget.forget(memory0, sig_fs), Forget.forget(tanh_ms, sig_is)));
+			var memory1 = copy(memory = vec.addOn(Forget.forget(memory0, sig_fs), Forget.forget(tanh_ms, sig_is)));
 			var tanh_memory1 = Tanh.tanhOn(memory1);
-			float[] output1 = output = Forget.forget(sig_os, tanh_memory1);
+			var output1 = output = Forget.forget(sig_os, tanh_memory1);
 
 			if (expected != null) {
 				var e_output1 = vec.sub(expected, output1);

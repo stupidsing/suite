@@ -3,7 +3,6 @@ package suite.trade.backalloc.strategy;
 import java.util.List;
 
 import suite.adt.pair.Pair;
-import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.streamlet.Read;
 import suite.trade.backalloc.BackAllocator;
@@ -25,7 +24,7 @@ public class ArdlBackAllocator implements BackAllocator {
 				.map(symbol -> dsBySymbol1.get(symbol).prices) //
 				.toArray(float[].class);
 
-		LinearRegression[] lrs = ardl.ardl(fs);
+		var lrs = ardl.ardl(fs);
 
 		return index -> {
 			var prices = ardl.predict(lrs, fs, index);

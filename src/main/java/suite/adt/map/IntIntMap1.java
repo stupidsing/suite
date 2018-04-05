@@ -145,7 +145,7 @@ public class IntIntMap1 {
 		var capacity = kvs.length;
 
 		if (capacity * 3 / 4 < size) {
-			long[] kvs0 = kvs;
+			var kvs0 = kvs;
 			allocate(capacity * 2);
 
 			for (var i = 0; i < capacity; i++) {

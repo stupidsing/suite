@@ -94,8 +94,8 @@ public class AnalyzeTimeSeriesTest {
 
 		IntFunction<BuySell> revert = d -> momFun.apply(d).scale(0f, -1f);
 		IntFunction<BuySell> trend_ = d -> momFun.apply(d).scale(0f, +1f);
-		BuySell[] reverts = To.array(8, BuySell.class, revert);
-		BuySell[] trends_ = To.array(8, BuySell.class, trend_);
+		var reverts = To.array(8, BuySell.class, revert);
+		var trends_ = To.array(8, BuySell.class, trend_);
 		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
 		var holds = mt.hold(prices, 1f, 1f, 1f);
 		var ma200 = ma.movingAvg(prices, 200);

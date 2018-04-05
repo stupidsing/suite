@@ -31,7 +31,7 @@ public class Quandl {
 				.sort((a0, a1) -> String_.compare(a0[0], a1[0])) //
 				.collect(As::streamlet);
 
-		long[] ts = arrays.collect(Obj_Lng.lift(array -> Time.of(array[0] + " 18:00:00").epochSec(-4))).toArray();
+		var ts = arrays.collect(Obj_Lng.lift(array -> Time.of(array[0] + " 18:00:00").epochSec(-4))).toArray();
 		var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
 		var settles = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[6]))).toArray();
 		var lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();

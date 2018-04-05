@@ -55,7 +55,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 			};
 		}).applyIf(Tuple.class, tuple -> {
 			var f = cloner(node);
-			Bind_[] cs = Read.from(tuple.nodes).map(this::binder).toArray(Bind_.class);
+			var cs = Read.from(tuple.nodes).map(this::binder).toArray(Bind_.class);
 			var length = cs.length;
 			return (be, n) -> {
 				var n_ = n.finalNode();

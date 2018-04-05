@@ -11,7 +11,7 @@ public class Array_ {
 		for (var list : lists)
 			size += list.length;
 
-		T[] result = Array_.newArray(clazz, size);
+		var result = Array_.newArray(clazz, size);
 		var i = 0;
 
 		for (var list : lists) {

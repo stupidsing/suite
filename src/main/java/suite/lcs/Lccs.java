@@ -34,7 +34,7 @@ public class Lccs {
 			IntObjMap<List<Segment>> segmentLists1 = hashSegments(bytes1, rollingSize);
 			var keys0 = segmentLists0.streamlet().keys().toSet();
 			var keys1 = segmentLists1.streamlet().keys().toSet();
-			int[] keys = IntSet.intersect(keys0, keys1).streamlet().toArray();
+			var keys = IntSet.intersect(keys0, keys1).streamlet().toArray();
 
 			for (var key : keys)
 				for (var segment0 : segmentLists0.get(key))

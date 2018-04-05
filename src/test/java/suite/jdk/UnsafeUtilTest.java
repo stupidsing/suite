@@ -13,7 +13,7 @@ public class UnsafeUtilTest {
 	@Test
 	public void test() throws Exception {
 		var className = "suite.cli.Main";
-		byte[] bytes = Files.readAllBytes(Paths.get("target/classes/" + className.replace(".", "/") + ".class"));
+		var bytes = Files.readAllBytes(Paths.get("target/classes/" + className.replace(".", "/") + ".class"));
 		Class<? extends AutoCloseable> clazz = new UnsafeUtil().defineClass(Main.class, className, bytes);
 		Object_.new_(clazz).close();
 	}

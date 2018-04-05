@@ -91,7 +91,7 @@ public class Trade_ {
 	}
 
 	public static Streamlet<Trade> collectBrokeredTrades(Outlet<Trade> outlet) {
-		Trade[] trades0 = outlet.toArray(Trade.class);
+		var trades0 = outlet.toArray(Trade.class);
 		var trades1 = new ArrayList<Trade>();
 		var length0 = trades0.length;
 		var i0 = 0;
@@ -134,7 +134,7 @@ public class Trade_ {
 		var sum = 0f;
 
 		for (var pair : trades.toMultimap(trade -> trade.symbol).listEntries()) {
-			LngFltPair[] dividends = fun.apply(pair.t0);
+			var dividends = fun.apply(pair.t0);
 			Outlet<Trade> outlet = Outlet.of(pair.t1);
 			LngIntPair tn = LngIntPair.of(0l, 0);
 

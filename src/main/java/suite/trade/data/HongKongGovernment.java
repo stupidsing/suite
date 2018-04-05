@@ -65,7 +65,7 @@ public class HongKongGovernment {
 			fs1.append(getFloatValue(data, "Rainfall", "mm"));
 		}
 
-		long[] ts_ = ts.toLongs().toArray();
+		var ts_ = ts.toLongs().toArray();
 
 		return Map.ofEntries( //
 				entry("hko.TEMP", DataSource.of(ts_, fs0.toFloats().toArray())), //

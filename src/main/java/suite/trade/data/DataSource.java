@@ -132,7 +132,7 @@ public class DataSource {
 	public DataSource alignAfterPrices(long[] ts1) {
 		var length0 = ts.length;
 		var length1 = ts1.length;
-		Datum[] data = new Datum[length1];
+		var data = new Datum[length1];
 		var si = length0 - 1;
 
 		for (var di = length1 - 1; 0 <= di; di--) {
@@ -149,7 +149,7 @@ public class DataSource {
 	public DataSource alignBeforePrices(long[] ts1) {
 		var length0 = ts.length;
 		var length1 = ts1.length;
-		Datum[] data = new Datum[length1];
+		var data = new Datum[length1];
 		var si = 0;
 
 		for (var di = 0; di < length1; di++) {

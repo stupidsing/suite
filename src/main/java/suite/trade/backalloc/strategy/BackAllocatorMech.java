@@ -7,7 +7,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.analysis.MovingAverage.Macd;
-import suite.trade.analysis.MovingAverage.MovingRange;
 import suite.trade.analysis.Oscillator;
 import suite.trade.analysis.Oscillator.Dmi;
 import suite.trade.backalloc.BackAllocator;
@@ -59,7 +58,7 @@ public class BackAllocatorMech {
 
 	private BackAllocator channelBreakout(int d20) {
 		return BackAllocator_.byPrices(prices -> {
-			MovingRange[] movingRanges = ma.movingRange(prices, d20);
+			var movingRanges = ma.movingRange(prices, d20);
 
 			return Quant.fold(0, prices.length, (i, hold) -> {
 				var movingRange = movingRanges[i];

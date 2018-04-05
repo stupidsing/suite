@@ -340,7 +340,7 @@ public class SewingProverImpl implements ProverFactory {
 
 	private Cps orCps(Streamlet<Cps> cpss) {
 		var cpsList = cpss.toList();
-		Cps[] cpsArray = List_.left(cpsList, -1).toArray(new Cps[0]);
+		var cpsArray = List_.left(cpsList, -1).toArray(new Cps[0]);
 		var cps_ = List_.last(cpsList);
 		return rt -> {
 			var restore = save(rt);
@@ -579,7 +579,7 @@ public class SewingProverImpl implements ProverFactory {
 			var f = bf.cloner(m[1]);
 			tr = rt -> {
 				var iter = elems_.iterator();
-				Trampoline[] alt = new Trampoline[1];
+				var alt = new Trampoline[1];
 				var restore = save(rt);
 				return alt[0] = rt_ -> {
 					while (iter.hasNext()) {

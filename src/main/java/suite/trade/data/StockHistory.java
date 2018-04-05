@@ -48,8 +48,8 @@ public class StockHistory {
 		var isActive = properties.get("isActive");
 
 		var timeZone = timeZoneStr != null ? Integer.parseInt(timeZoneStr) : 0;
-		LngFltPair[] dividends = readPairs(timeZone, outlet);
-		LngFltPair[] splits = readPairs(timeZone, outlet);
+		var dividends = readPairs(timeZone, outlet);
+		var splits = readPairs(timeZone, outlet);
 		String tag;
 
 		while ((tag = outlet.next()) != null)
@@ -203,15 +203,15 @@ public class StockHistory {
 	}
 
 	public DataSource toDataSource() {
-		LngFltPair[] opPairs = adjustPrices("open");
-		LngFltPair[] clPairs = adjustPrices("close");
-		LngFltPair[] loPairs = adjustPrices("low");
-		LngFltPair[] hiPairs = adjustPrices("high");
-		LngFltPair[] vlPairs = data.get("volume");
-		LngFltPair[] ps = clPairs;
+		var opPairs = adjustPrices("open");
+		var clPairs = adjustPrices("close");
+		var loPairs = adjustPrices("low");
+		var hiPairs = adjustPrices("high");
+		var vlPairs = data.get("volume");
+		var ps = clPairs;
 		var length = ps.length;
 
-		Datum[] data = new Datum[length];
+		var data = new Datum[length];
 		int io = 0, ic = 0, il = 0, ih = 0, iv = 0;
 
 		for (var i = 0; i < length; i++) {
@@ -261,9 +261,9 @@ public class StockHistory {
 	}
 
 	private LngFltPair[] adjustPrices(String tag) {
-		LngFltPair[] pairs0 = data.get(tag);
+		var pairs0 = data.get(tag);
 		var length = pairs0.length;
-		LngFltPair[] pairs1 = new LngFltPair[length];
+		var pairs1 = new LngFltPair[length];
 
 		var si = splits.length - 1;
 		var di = dividends.length - 1;

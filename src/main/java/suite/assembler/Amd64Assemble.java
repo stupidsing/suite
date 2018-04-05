@@ -102,7 +102,7 @@ public class Amd64Assemble {
 		private InsnCode pre(byte[] pre) {
 			var length0 = pre.length;
 			var length1 = bs.length;
-			byte[] bs1 = Arrays.copyOf(pre, length0 + length1);
+			var bs1 = Arrays.copyOf(pre, length0 + length1);
 			Bytes_.copy(bs, 0, bs1, length0, length1);
 			return set(size, bs1, imm, immSize);
 		}
