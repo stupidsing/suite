@@ -35,8 +35,8 @@ public class ChrFltMap {
 	private float[] vs;
 
 	public static <T> Fun<Outlet<T>, ChrFltMap> collect(Obj_Chr<T> kf0, Obj_Flt<T> vf0) {
-		Obj_Chr<T> kf1 = kf0.rethrow();
-		Obj_Flt<T> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return outlet -> {
 			var map = new ChrFltMap();
 			T t;
@@ -66,7 +66,7 @@ public class ChrFltMap {
 		if (object instanceof ChrFltMap) {
 			var other = (ChrFltMap) object;
 			var b = size == other.size;
-			for (ChrObjPair<Float> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
 		} else
@@ -74,7 +74,7 @@ public class ChrFltMap {
 	}
 
 	public void forEach(ChrFltSink sink) {
-		ChrFltPair pair = ChrFltPair.of((char) 0, (float) 0);
+		var pair = ChrFltPair.of((char) 0, (float) 0);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
@@ -83,7 +83,7 @@ public class ChrFltMap {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (ChrObjPair<Float> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Character.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
 		}

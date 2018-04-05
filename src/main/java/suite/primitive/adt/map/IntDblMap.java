@@ -35,8 +35,8 @@ public class IntDblMap {
 	private double[] vs;
 
 	public static <T> Fun<Outlet<T>, IntDblMap> collect(Obj_Int<T> kf0, Obj_Dbl<T> vf0) {
-		Obj_Int<T> kf1 = kf0.rethrow();
-		Obj_Dbl<T> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return outlet -> {
 			var map = new IntDblMap();
 			T t;
@@ -66,7 +66,7 @@ public class IntDblMap {
 		if (object instanceof IntDblMap) {
 			var other = (IntDblMap) object;
 			var b = size == other.size;
-			for (IntObjPair<Double> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
 		} else
@@ -74,7 +74,7 @@ public class IntDblMap {
 	}
 
 	public void forEach(IntDblSink sink) {
-		IntDblPair pair = IntDblPair.of((int) 0, (double) 0);
+		var pair = IntDblPair.of((int) 0, (double) 0);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
@@ -83,7 +83,7 @@ public class IntDblMap {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (IntObjPair<Double> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Integer.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
 		}

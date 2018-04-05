@@ -33,8 +33,8 @@ public class IntIntMap {
 	private int[] vs;
 
 	public static <T> Fun<Outlet<T>, IntIntMap> collect(Obj_Int<T> kf0, Obj_Int<T> vf0) {
-		Obj_Int<T> kf1 = kf0.rethrow();
-		Obj_Int<T> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return outlet -> {
 			var map = new IntIntMap();
 			T t;
@@ -64,7 +64,7 @@ public class IntIntMap {
 		if (object instanceof IntIntMap) {
 			var other = (IntIntMap) object;
 			var b = size == other.size;
-			for (IntObjPair<Integer> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
 		} else
@@ -72,7 +72,7 @@ public class IntIntMap {
 	}
 
 	public void forEach(IntIntSink sink) {
-		IntIntPair pair = IntIntPair.of((int) 0, (int) 0);
+		var pair = IntIntPair.of((int) 0, (int) 0);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
@@ -81,7 +81,7 @@ public class IntIntMap {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (IntObjPair<Integer> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Integer.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
 		}

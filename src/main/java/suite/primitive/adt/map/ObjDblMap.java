@@ -29,7 +29,7 @@ public class ObjDblMap<K> {
 	private double[] vs;
 
 	public static <K> ObjDblMap<K> collect(DblObjOutlet<K> outlet) {
-		ObjDblMap<K> map = new ObjDblMap<>();
+		var map = new ObjDblMap<K>();
 		DblObjPair<K> pair = DblObjPair.of((double) 0, null);
 		while (outlet.source().source2(pair))
 			map.put(pair.t1, pair.t0);
@@ -55,9 +55,9 @@ public class ObjDblMap<K> {
 	public boolean equals(Object object) {
 		if (object instanceof ObjDblMap) {
 			@SuppressWarnings("unchecked")
-			ObjDblMap<Object> other = (ObjDblMap<Object>) object;
+			var other = (ObjDblMap<Object>) object;
 			var b = size == other.size;
-			for (DblObjPair<K> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t1) == pair.t0;
 			return b;
 		} else
@@ -66,7 +66,7 @@ public class ObjDblMap<K> {
 
 	public void forEach(DblObjSink<K> sink) {
 		DblObjPair<K> pair = DblObjPair.of((double) 0, null);
-		DblObjSource<K> source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -79,7 +79,7 @@ public class ObjDblMap<K> {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (DblObjPair<K> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Double.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
 		}

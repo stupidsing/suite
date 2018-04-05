@@ -35,8 +35,8 @@ public class ChrDblMap {
 	private double[] vs;
 
 	public static <T> Fun<Outlet<T>, ChrDblMap> collect(Obj_Chr<T> kf0, Obj_Dbl<T> vf0) {
-		Obj_Chr<T> kf1 = kf0.rethrow();
-		Obj_Dbl<T> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return outlet -> {
 			var map = new ChrDblMap();
 			T t;
@@ -66,7 +66,7 @@ public class ChrDblMap {
 		if (object instanceof ChrDblMap) {
 			var other = (ChrDblMap) object;
 			var b = size == other.size;
-			for (ChrObjPair<Double> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
 		} else
@@ -74,7 +74,7 @@ public class ChrDblMap {
 	}
 
 	public void forEach(ChrDblSink sink) {
-		ChrDblPair pair = ChrDblPair.of((char) 0, (double) 0);
+		var pair = ChrDblPair.of((char) 0, (double) 0);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
@@ -83,7 +83,7 @@ public class ChrDblMap {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (ChrObjPair<Double> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Character.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
 		}

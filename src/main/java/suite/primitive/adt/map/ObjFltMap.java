@@ -29,7 +29,7 @@ public class ObjFltMap<K> {
 	private float[] vs;
 
 	public static <K> ObjFltMap<K> collect(FltObjOutlet<K> outlet) {
-		ObjFltMap<K> map = new ObjFltMap<>();
+		var map = new ObjFltMap<K>();
 		FltObjPair<K> pair = FltObjPair.of((float) 0, null);
 		while (outlet.source().source2(pair))
 			map.put(pair.t1, pair.t0);
@@ -55,9 +55,9 @@ public class ObjFltMap<K> {
 	public boolean equals(Object object) {
 		if (object instanceof ObjFltMap) {
 			@SuppressWarnings("unchecked")
-			ObjFltMap<Object> other = (ObjFltMap<Object>) object;
+			var other = (ObjFltMap<Object>) object;
 			var b = size == other.size;
-			for (FltObjPair<K> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t1) == pair.t0;
 			return b;
 		} else
@@ -66,7 +66,7 @@ public class ObjFltMap<K> {
 
 	public void forEach(FltObjSink<K> sink) {
 		FltObjPair<K> pair = FltObjPair.of((float) 0, null);
-		FltObjSource<K> source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -79,7 +79,7 @@ public class ObjFltMap<K> {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (FltObjPair<K> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Float.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
 		}

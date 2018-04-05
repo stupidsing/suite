@@ -35,8 +35,8 @@ public class DblChrMap {
 	private char[] vs;
 
 	public static <T> Fun<Outlet<T>, DblChrMap> collect(Obj_Dbl<T> kf0, Obj_Chr<T> vf0) {
-		Obj_Dbl<T> kf1 = kf0.rethrow();
-		Obj_Chr<T> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return outlet -> {
 			var map = new DblChrMap();
 			T t;
@@ -66,7 +66,7 @@ public class DblChrMap {
 		if (object instanceof DblChrMap) {
 			var other = (DblChrMap) object;
 			var b = size == other.size;
-			for (DblObjPair<Character> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
 		} else
@@ -74,7 +74,7 @@ public class DblChrMap {
 	}
 
 	public void forEach(DblChrSink sink) {
-		DblChrPair pair = DblChrPair.of((double) 0, (char) 0);
+		var pair = DblChrPair.of((double) 0, (char) 0);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
@@ -83,7 +83,7 @@ public class DblChrMap {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (DblObjPair<Character> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Double.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
 		}

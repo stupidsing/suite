@@ -29,7 +29,7 @@ public class ObjIntMap<K> {
 	private int[] vs;
 
 	public static <K> ObjIntMap<K> collect(IntObjOutlet<K> outlet) {
-		ObjIntMap<K> map = new ObjIntMap<>();
+		var map = new ObjIntMap<K>();
 		IntObjPair<K> pair = IntObjPair.of((int) 0, null);
 		while (outlet.source().source2(pair))
 			map.put(pair.t1, pair.t0);
@@ -55,9 +55,9 @@ public class ObjIntMap<K> {
 	public boolean equals(Object object) {
 		if (object instanceof ObjIntMap) {
 			@SuppressWarnings("unchecked")
-			ObjIntMap<Object> other = (ObjIntMap<Object>) object;
+			var other = (ObjIntMap<Object>) object;
 			var b = size == other.size;
-			for (IntObjPair<K> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t1) == pair.t0;
 			return b;
 		} else
@@ -66,7 +66,7 @@ public class ObjIntMap<K> {
 
 	public void forEach(IntObjSink<K> sink) {
 		IntObjPair<K> pair = IntObjPair.of((int) 0, null);
-		IntObjSource<K> source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -79,7 +79,7 @@ public class ObjIntMap<K> {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (IntObjPair<K> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Integer.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
 		}

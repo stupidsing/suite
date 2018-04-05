@@ -24,7 +24,7 @@ public class FltSet {
 	public static FltSet intersect(FltSet... sets) {
 		return sets[0].streamlet().filter(c -> {
 			var b = true;
-			for (FltSet set_ : sets)
+			for (var set_ : sets)
 				b &= set_.contains(c);
 			return b;
 		}).toSet();
@@ -32,7 +32,7 @@ public class FltSet {
 
 	public static FltSet union(FltSet... sets) {
 		var set = new FltSet();
-		for (FltSet set_ : sets)
+		for (var set_ : sets)
 			set_.streamlet().sink(set::add);
 		return set;
 	}

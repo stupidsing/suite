@@ -24,7 +24,7 @@ public class DblSet {
 	public static DblSet intersect(DblSet... sets) {
 		return sets[0].streamlet().filter(c -> {
 			var b = true;
-			for (DblSet set_ : sets)
+			for (var set_ : sets)
 				b &= set_.contains(c);
 			return b;
 		}).toSet();
@@ -32,7 +32,7 @@ public class DblSet {
 
 	public static DblSet union(DblSet... sets) {
 		var set = new DblSet();
-		for (DblSet set_ : sets)
+		for (var set_ : sets)
 			set_.streamlet().sink(set::add);
 		return set;
 	}

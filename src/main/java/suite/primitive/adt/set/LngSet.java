@@ -24,7 +24,7 @@ public class LngSet {
 	public static LngSet intersect(LngSet... sets) {
 		return sets[0].streamlet().filter(c -> {
 			var b = true;
-			for (LngSet set_ : sets)
+			for (var set_ : sets)
 				b &= set_.contains(c);
 			return b;
 		}).toSet();
@@ -32,7 +32,7 @@ public class LngSet {
 
 	public static LngSet union(LngSet... sets) {
 		var set = new LngSet();
-		for (LngSet set_ : sets)
+		for (var set_ : sets)
 			set_.streamlet().sink(set::add);
 		return set;
 	}

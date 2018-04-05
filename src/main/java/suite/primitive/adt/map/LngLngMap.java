@@ -33,8 +33,8 @@ public class LngLngMap {
 	private long[] vs;
 
 	public static <T> Fun<Outlet<T>, LngLngMap> collect(Obj_Lng<T> kf0, Obj_Lng<T> vf0) {
-		Obj_Lng<T> kf1 = kf0.rethrow();
-		Obj_Lng<T> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return outlet -> {
 			var map = new LngLngMap();
 			T t;
@@ -64,7 +64,7 @@ public class LngLngMap {
 		if (object instanceof LngLngMap) {
 			var other = (LngLngMap) object;
 			var b = size == other.size;
-			for (LngObjPair<Long> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
 		} else
@@ -72,7 +72,7 @@ public class LngLngMap {
 	}
 
 	public void forEach(LngLngSink sink) {
-		LngLngPair pair = LngLngPair.of((long) 0, (long) 0);
+		var pair = LngLngPair.of((long) 0, (long) 0);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
@@ -81,7 +81,7 @@ public class LngLngMap {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (LngObjPair<Long> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Long.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
 		}

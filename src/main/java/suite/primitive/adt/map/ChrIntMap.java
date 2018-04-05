@@ -35,8 +35,8 @@ public class ChrIntMap {
 	private int[] vs;
 
 	public static <T> Fun<Outlet<T>, ChrIntMap> collect(Obj_Chr<T> kf0, Obj_Int<T> vf0) {
-		Obj_Chr<T> kf1 = kf0.rethrow();
-		Obj_Int<T> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return outlet -> {
 			var map = new ChrIntMap();
 			T t;
@@ -66,7 +66,7 @@ public class ChrIntMap {
 		if (object instanceof ChrIntMap) {
 			var other = (ChrIntMap) object;
 			var b = size == other.size;
-			for (ChrObjPair<Integer> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
 		} else
@@ -74,7 +74,7 @@ public class ChrIntMap {
 	}
 
 	public void forEach(ChrIntSink sink) {
-		ChrIntPair pair = ChrIntPair.of((char) 0, (int) 0);
+		var pair = ChrIntPair.of((char) 0, (int) 0);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
@@ -83,7 +83,7 @@ public class ChrIntMap {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (ChrObjPair<Integer> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Character.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
 		}

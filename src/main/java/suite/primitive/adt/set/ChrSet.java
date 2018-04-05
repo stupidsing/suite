@@ -24,7 +24,7 @@ public class ChrSet {
 	public static ChrSet intersect(ChrSet... sets) {
 		return sets[0].streamlet().filter(c -> {
 			var b = true;
-			for (ChrSet set_ : sets)
+			for (var set_ : sets)
 				b &= set_.contains(c);
 			return b;
 		}).toSet();
@@ -32,7 +32,7 @@ public class ChrSet {
 
 	public static ChrSet union(ChrSet... sets) {
 		var set = new ChrSet();
-		for (ChrSet set_ : sets)
+		for (var set_ : sets)
 			set_.streamlet().sink(set::add);
 		return set;
 	}

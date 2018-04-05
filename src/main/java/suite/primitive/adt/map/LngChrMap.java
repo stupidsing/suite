@@ -35,8 +35,8 @@ public class LngChrMap {
 	private char[] vs;
 
 	public static <T> Fun<Outlet<T>, LngChrMap> collect(Obj_Lng<T> kf0, Obj_Chr<T> vf0) {
-		Obj_Lng<T> kf1 = kf0.rethrow();
-		Obj_Chr<T> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return outlet -> {
 			var map = new LngChrMap();
 			T t;
@@ -66,7 +66,7 @@ public class LngChrMap {
 		if (object instanceof LngChrMap) {
 			var other = (LngChrMap) object;
 			var b = size == other.size;
-			for (LngObjPair<Character> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
 		} else
@@ -74,7 +74,7 @@ public class LngChrMap {
 	}
 
 	public void forEach(LngChrSink sink) {
-		LngChrPair pair = LngChrPair.of((long) 0, (char) 0);
+		var pair = LngChrPair.of((long) 0, (char) 0);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
@@ -83,7 +83,7 @@ public class LngChrMap {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (LngObjPair<Character> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Long.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
 		}

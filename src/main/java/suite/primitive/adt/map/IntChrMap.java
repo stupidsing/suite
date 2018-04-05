@@ -35,8 +35,8 @@ public class IntChrMap {
 	private char[] vs;
 
 	public static <T> Fun<Outlet<T>, IntChrMap> collect(Obj_Int<T> kf0, Obj_Chr<T> vf0) {
-		Obj_Int<T> kf1 = kf0.rethrow();
-		Obj_Chr<T> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return outlet -> {
 			var map = new IntChrMap();
 			T t;
@@ -66,7 +66,7 @@ public class IntChrMap {
 		if (object instanceof IntChrMap) {
 			var other = (IntChrMap) object;
 			var b = size == other.size;
-			for (IntObjPair<Character> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
 		} else
@@ -74,7 +74,7 @@ public class IntChrMap {
 	}
 
 	public void forEach(IntChrSink sink) {
-		IntChrPair pair = IntChrPair.of((int) 0, (char) 0);
+		var pair = IntChrPair.of((int) 0, (char) 0);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
@@ -83,7 +83,7 @@ public class IntChrMap {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (IntObjPair<Character> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Integer.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
 		}

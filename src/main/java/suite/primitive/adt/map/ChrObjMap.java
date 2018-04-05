@@ -25,7 +25,7 @@ public class ChrObjMap<V> {
 	private Object[] vs;
 
 	public static <V> ChrObjMap<V> collect(ChrObjOutlet<V> outlet) {
-		ChrObjMap<V> map = new ChrObjMap<>();
+		var map = new ChrObjMap<V>();
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		while (outlet.source().source2(pair))
 			map.put(pair.t0, pair.t1);
@@ -50,9 +50,9 @@ public class ChrObjMap<V> {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof ChrObjMap) {
-			ChrObjMap<?> other = (ChrObjMap<?>) object;
+			var other = (ChrObjMap<?>) object;
 			var b = size == other.size;
-			for (ChrObjPair<V> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t0).equals(pair.t1);
 			return b;
 		} else
@@ -61,7 +61,7 @@ public class ChrObjMap<V> {
 
 	public void forEach(ChrObjSink<V> sink) {
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
-		ChrObjSource<V> source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -74,7 +74,7 @@ public class ChrObjMap<V> {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (ChrObjPair<V> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Character.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
 		}

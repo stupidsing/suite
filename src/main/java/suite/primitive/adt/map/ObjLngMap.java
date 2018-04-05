@@ -29,7 +29,7 @@ public class ObjLngMap<K> {
 	private long[] vs;
 
 	public static <K> ObjLngMap<K> collect(LngObjOutlet<K> outlet) {
-		ObjLngMap<K> map = new ObjLngMap<>();
+		var map = new ObjLngMap<K>();
 		LngObjPair<K> pair = LngObjPair.of((long) 0, null);
 		while (outlet.source().source2(pair))
 			map.put(pair.t1, pair.t0);
@@ -55,9 +55,9 @@ public class ObjLngMap<K> {
 	public boolean equals(Object object) {
 		if (object instanceof ObjLngMap) {
 			@SuppressWarnings("unchecked")
-			ObjLngMap<Object> other = (ObjLngMap<Object>) object;
+			var other = (ObjLngMap<Object>) object;
 			var b = size == other.size;
-			for (LngObjPair<K> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t1) == pair.t0;
 			return b;
 		} else
@@ -66,7 +66,7 @@ public class ObjLngMap<K> {
 
 	public void forEach(LngObjSink<K> sink) {
 		LngObjPair<K> pair = LngObjPair.of((long) 0, null);
-		LngObjSource<K> source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -79,7 +79,7 @@ public class ObjLngMap<K> {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (LngObjPair<K> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Long.hashCode(pair.t0);
 			h = h * 31 + Objects.hashCode(pair.t1);
 		}
