@@ -24,7 +24,7 @@ public class FormatUtil {
 
 		var sb = new StringBuilder();
 
-		for (String[] row : rows) {
+		for (var row : rows) {
 			for (var column = 0; column < nColumns; column++) {
 				var cell = row[column];
 				var width = widths[column];

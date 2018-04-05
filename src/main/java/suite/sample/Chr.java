@@ -110,7 +110,7 @@ public class Chr {
 		var trail = new Trail();
 		var states = Read.each(state);
 
-		for (Node if_ : rule.ifs)
+		for (var if_ : rule.ifs)
 			states = chrIf(states, trail, generalizer.generalize(if_));
 
 		for (var given : rule.givens)

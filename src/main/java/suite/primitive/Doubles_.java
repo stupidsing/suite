@@ -35,11 +35,11 @@ public class Doubles_ {
 
 	public static double[] concat(double[]... array) {
 		var length = 0;
-		for (double[] fs : array)
+		for (var fs : array)
 			length += fs.length;
 		var fs1 = new double[length];
 		var i = 0;
-		for (double[] fs : array) {
+		for (var fs : array) {
 			var length_ = fs.length;
 			copy(fs, 0, fs1, i, length_);
 			i += length_;

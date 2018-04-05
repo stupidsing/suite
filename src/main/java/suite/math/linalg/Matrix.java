@@ -97,7 +97,7 @@ public class Matrix {
 
 	public int hashCode(float[][] m) {
 		var h = 7;
-		for (float[] row : m)
+		for (var row : m)
 			h = h * 31 + Arrays.hashCode(row);
 		return h;
 	}
@@ -182,9 +182,9 @@ public class Matrix {
 		var o = new float[jx];
 		int i1, j1;
 		if (ix == h(n))
-			for (int i0 = 0; i0 < ix; i0 = i1) {
+			for (var i0 = 0; i0 < ix; i0 = i1) {
 				i1 = min(i0 + 64, ix);
-				for (int j0 = 0; j0 < jx; j0 = j1) {
+				for (var j0 = 0; j0 < jx; j0 = j1) {
 					j1 = min(j0 + 64, jx);
 					for (var i = i0; i < i1; i++)
 						for (var j = j0; j < j1; j++)
@@ -203,9 +203,9 @@ public class Matrix {
 		var o = new float[ix];
 		int i1, j1;
 		if (ix == 0 || jx == nT.length)
-			for (int i0 = 0; i0 < ix; i0 = i1) {
+			for (var i0 = 0; i0 < ix; i0 = i1) {
 				i1 = min(i0 + 64, ix);
-				for (int j0 = 0; j0 < jx; j0 = j1) {
+				for (var j0 = 0; j0 < jx; j0 = j1) {
 					j1 = min(j0 + 64, jx);
 					for (var i = i0; i < i1; i++)
 						for (var j = j0; j < j1; j++)
@@ -224,11 +224,11 @@ public class Matrix {
 		var o = of(height, width);
 		int i1, j1, k1;
 		if (height == 0 || ks == h(n))
-			for (int i0 = 0; i0 < height; i0 = i1) {
+			for (var i0 = 0; i0 < height; i0 = i1) {
 				i1 = min(i0 + 64, height);
-				for (int j0 = 0; j0 < width; j0 = j1) {
+				for (var j0 = 0; j0 < width; j0 = j1) {
 					j1 = min(j0 + 64, width);
-					for (int k0 = 0; k0 < ks; k0 = k1) {
+					for (var k0 = 0; k0 < ks; k0 = k1) {
 						k1 = min(k0 + 64, ks);
 						for (var i = i0; i < i1; i++)
 							for (var j = j0; j < j1; j++)
@@ -261,11 +261,11 @@ public class Matrix {
 		var o = of(height, width);
 		int i1, j1, k1;
 		if (ks == w(n))
-			for (int i0 = 0; i0 < height; i0 = i1) {
+			for (var i0 = 0; i0 < height; i0 = i1) {
 				i1 = min(i0 + 64, height);
-				for (int j0 = 0; j0 < width; j0 = j1) {
+				for (var j0 = 0; j0 < width; j0 = j1) {
 					j1 = min(j0 + 64, width);
-					for (int k0 = 0; k0 < ks; k0 = k1) {
+					for (var k0 = 0; k0 < ks; k0 = k1) {
 						k1 = min(k0 + 64, ks);
 						for (var i = i0; i < i1; i++)
 							for (var j = j0; j < j1; j++)
@@ -287,11 +287,11 @@ public class Matrix {
 		var o = of(height, width);
 		int i1, j1, k1;
 		if (ks == h(n))
-			for (int i0 = 0; i0 < height; i0 = i1) {
+			for (var i0 = 0; i0 < height; i0 = i1) {
 				i1 = min(i0 + 64, height);
-				for (int j0 = 0; j0 < width; j0 = j1) {
+				for (var j0 = 0; j0 < width; j0 = j1) {
 					j1 = min(j0 + 64, width);
-					for (int k0 = 0; k0 < ks; k0 = k1) {
+					for (var k0 = 0; k0 < ks; k0 = k1) {
 						k1 = min(k0 + 64, ks);
 						for (var i = i0; i < i1; i++)
 							for (var j = j0; j < j1; j++)
@@ -421,9 +421,9 @@ public class Matrix {
 		var width = w(m);
 		var o = of(width, height);
 		int i1, j1;
-		for (int i0 = 0; i0 < height; i0 = i1) {
+		for (var i0 = 0; i0 < height; i0 = i1) {
 			i1 = min(i0 + 64, height);
-			for (int j0 = 0; j0 < width; j0 = j1) {
+			for (var j0 = 0; j0 < width; j0 = j1) {
 				j1 = min(j0 + 64, width);
 				for (var i = i0; i < i1; i++)
 					for (var j = j0; j < j1; j++)
@@ -458,7 +458,7 @@ public class Matrix {
 	}
 
 	private void dump(StringBuilder sb, float[][] m) {
-		for (float[] row : m) {
+		for (var row : m) {
 			dump(sb, row);
 			sb.append("\n");
 		}

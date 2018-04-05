@@ -47,7 +47,7 @@ public class HongKongGovernment {
 		var fs0 = new FloatsBuilder();
 		var fs1 = new FloatsBuilder();
 
-		for (long t = t0; t < tx; t += 86400l) {
+		for (var t = t0; t < tx; t += 86400l) {
 			var time = Time.ofEpochSec(t);
 
 			var html = Singleton.me.storeCache //

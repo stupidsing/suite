@@ -33,7 +33,7 @@ public class LockFreeQueue<T> {
 			var back = fb0.back;
 			var front = fb0.front;
 			if (front.isEmpty()) { // reverse elements from back to front
-				for (T t_ : fb0.back)
+				for (var t_ : fb0.back)
 					front = IList.cons(t_, front);
 				back = IList.end();
 			}

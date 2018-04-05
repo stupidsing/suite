@@ -49,7 +49,7 @@ public class LongShortTermMemory {
 			var isll = 1f / Math.sqrt(ll);
 
 			for (var i = 0; i < memoryLength; i++) {
-				for (int j = 0; j < ll; j++) { // random weights, bias 0
+				for (var j = 0; j < ll; j++) { // random weights, bias 0
 
 					// Xavier initialization
 					wi[i][j] = (float) (random.nextGaussian() * isll);

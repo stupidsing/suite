@@ -140,7 +140,7 @@ public class StatisticalArbitrageTest {
 		var ds = cfg.dataSource(Asset.hsiSymbol).range(period).cleanse();
 		var returns = ds.returns();
 
-		for (float bet = 0f - 2f; bet < 1f + 2f; bet += .02f) {
+		for (var bet = 0f - 2f; bet < 1f + 2f; bet += .02f) {
 			var notBet = 1f - bet;
 			var sum = 0d;
 

@@ -73,7 +73,7 @@ public class IList<T> implements Iterable<T> {
 
 	public IList<T> remove(T t) {
 		IList<T> result = end();
-		for (T t_ : reverse())
+		for (var t_ : reverse())
 			if (!Objects.equals(t, t_))
 				result = IList.cons(t_, result);
 		return result;

@@ -129,7 +129,7 @@ public class P1Inline {
 						Funp n2 = check != null ? FunpCheckType.of(check.left, check.right, n1) : n1;
 						var b = false;
 
-						for (String var_ : List_.reverse(vars))
+						for (var var_ : List_.reverse(vars))
 							if (!String_.equals(vn, var_))
 								n2 = FunpDefine.of(false, var_, FunpDontCare.of(), n2);
 							else

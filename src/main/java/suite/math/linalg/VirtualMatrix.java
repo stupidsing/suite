@@ -102,9 +102,9 @@ public class VirtualMatrix {
 			int i1, j1;
 
 			if (jx == length)
-				for (int i0 = 0; i0 < ix; i0 = i1) {
+				for (var i0 = 0; i0 < ix; i0 = i1) {
 					i1 = min(i0 + 64, ix);
-					for (int j0 = 0; j0 < jx; j0 = j1) {
+					for (var j0 = 0; j0 < jx; j0 = j1) {
 						j1 = min(j0 + 64, jx);
 						for (var i = i0; i < i1; i++)
 							for (var j = j0; j < j1; j++)
@@ -124,11 +124,11 @@ public class VirtualMatrix {
 			int i1, j1, k1;
 
 			if (ks0 == ks1)
-				for (int i0 = 0; i0 < height; i0 = i1) {
+				for (var i0 = 0; i0 < height; i0 = i1) {
 					i1 = min(i0 + 64, height);
-					for (int j0 = 0; j0 < width_; j0 = j1) {
+					for (var j0 = 0; j0 < width_; j0 = j1) {
 						j1 = min(j0 + 64, width_);
-						for (int k0 = 0; k0 < ks0; k0 = k1) {
+						for (var k0 = 0; k0 < ks0; k0 = k1) {
 							k1 = min(k0 + 64, ks0);
 							for (var i = i0; i < i1; i++)
 								for (var j = j0; j < j1; j++)

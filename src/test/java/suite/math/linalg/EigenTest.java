@@ -26,7 +26,7 @@ public class EigenTest {
 	private void test(float[][] m) {
 		var eigenVectors = eigen.power(m);
 
-		for (float[] eigenVector : eigenVectors) {
+		for (var eigenVector : eigenVectors) {
 			var n0 = norm(eigenVector);
 			var n1 = norm(mtx.mul(m, eigenVector));
 			vec.verifyEquals(n0, n1, .01f);

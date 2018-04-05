@@ -70,7 +70,7 @@ public class ISparseBinPriorityQueue<T> {
 			var nr = tree.root.nodes.reverse();
 			var rank = nr.size();
 
-			for (Node node_ : nr)
+			for (var node_ : nr)
 				trees1 = IList.cons(new Tree(--rank, node_), trees1);
 
 			return new ISparseBinPriorityQueue<>(comparator, meld(trees0, trees1));

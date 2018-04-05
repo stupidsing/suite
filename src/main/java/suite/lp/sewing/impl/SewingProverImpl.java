@@ -709,7 +709,7 @@ public class SewingProverImpl implements ProverFactory {
 			var trh = trs_.get(0);
 			var trt = List_.reverse(List_.right(trs_, 1));
 			return rt -> {
-				for (Trampoline tr_ : trt)
+				for (var tr_ : trt)
 					rt.pushRem(tr_);
 				return trh;
 			};
@@ -738,7 +738,7 @@ public class SewingProverImpl implements ProverFactory {
 			var trt = List_.reverse(List_.right(trs_, 1));
 			return rt -> {
 				var restore = save(rt);
-				for (Trampoline tr_ : trt)
+				for (var tr_ : trt)
 					rt.pushAlt(rt_ -> {
 						restore.restore(rt);
 						return tr_;

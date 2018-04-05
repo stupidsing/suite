@@ -43,7 +43,7 @@ public class GpuTest {
 		for (var device : context.getDevices())
 			System.out.println(device);
 
-		for (int i = 0; i < min(10, n); i++)
+		for (var i = 0; i < min(10, n); i++)
 			System.out.println("out[" + i + "] = " + outp.get(i));
 	}
 

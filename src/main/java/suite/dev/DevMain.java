@@ -212,7 +212,7 @@ public class DevMain {
 
 		private State text(Text text) {
 			State state = this, state1;
-			for (int i = 0; i < 16 && (state1 = state.undo) != null; i++)
+			for (var i = 0; i < 16 && (state1 = state.undo) != null; i++)
 				state = state1;
 			if (state != null)
 				state.undo = null;

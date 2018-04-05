@@ -114,7 +114,7 @@ public class TopDownParse {
 					var stack = new ArrayDeque<Ast>();
 					stack.push(root);
 
-					for (State state_ : states) {
+					for (var state_ : states) {
 						var d = state_.sign;
 						if (d < 0)
 							stack.pop().end = state_.pos;
@@ -192,7 +192,7 @@ public class TopDownParse {
 			parsers = buildChildren(eg);
 			parser = (parse, st) -> {
 				Outlet<State> o = Outlet.of(st);
-				for (Parser g_ : parsers)
+				for (var g_ : parsers)
 					o = o.concatMap(st_ -> st_.pr(parse, g_));
 				return o;
 			};

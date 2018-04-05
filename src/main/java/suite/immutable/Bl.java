@@ -41,7 +41,7 @@ public class Bl<T> {
 				var bitmap = bitmap0 | bitmap1;
 				var ts = new Object[Long.bitCount(bitmap)];
 
-				for (long bit = 1; bit != 0; bit <<= 1) {
+				for (var bit = 1; bit != 0; bit <<= 1) {
 					T t0 = (bitmap0 & bit) != 0 ? bl0.get(bitCount0++) : null;
 					T t1 = (bitmap1 & bit) != 0 ? bl1.get(bitCount1++) : null;
 					T t = t0 != null ? t1 != null ? f.apply(t0, t1) : t0 : t1;

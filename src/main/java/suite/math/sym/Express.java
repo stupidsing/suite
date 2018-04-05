@@ -80,7 +80,7 @@ public class Express {
 
 			var node = e;
 
-			for (Node node_ : Read.from(list))
+			for (var node_ : Read.from(list))
 				node = apply(node_, node);
 
 			return node;

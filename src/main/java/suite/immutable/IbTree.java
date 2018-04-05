@@ -97,7 +97,7 @@ public class IbTree<T> implements ITree<T> {
 					&& (minBranchFactor <= size || Fail.b("too few branches")) //
 					&& (size < maxBranchFactor || Fail.b("too many branches"));
 
-			for (Slot slot_ : slots) {
+			for (var slot_ : slots) {
 				b = b //
 						&& (comparator.compare(slot.pivot, slot_.pivot) <= 0 || Fail.b("wrong slot")) //
 						&& validate(slot_) //

@@ -151,7 +151,7 @@ public class B_TreeBuilder<Key, Value> {
 		var p = path.resolveSibling(filename + ".pages");
 
 		if (isNew)
-			for (Path p_ : new Path[] { sbp, alp, p, })
+			for (var p_ : new Path[] { sbp, alp, p, })
 				Rethrow.ex(() -> Files.deleteIfExists(p_));
 
 		B_Tree<Key, Value> b_tree = build(cmp //

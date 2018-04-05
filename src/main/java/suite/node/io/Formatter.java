@@ -144,7 +144,7 @@ public class Formatter {
 			formatTree(parentPrec, n);
 		}).doIf(Tuple.class, n -> {
 			sb.append("tuple<");
-			for (Node n_ : n.nodes) {
+			for (var n_ : n.nodes) {
 				format(n_, TermOp.getLeftPrec(TermOp.AND___));
 				sb.append(", ");
 			}

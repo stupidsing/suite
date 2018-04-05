@@ -231,7 +231,7 @@ public class DataSource {
 
 	public DataSource validate() {
 		validate(prices);
-		for (float[] prices1 : List.of(opens, closes, lows, highs))
+		for (var prices1 : List.of(opens, closes, lows, highs))
 			if (prices != prices1)
 				validate(prices1);
 		return this;

@@ -35,11 +35,11 @@ public class Chars_ {
 
 	public static char[] concat(char[]... array) {
 		var length = 0;
-		for (char[] fs : array)
+		for (var fs : array)
 			length += fs.length;
 		var fs1 = new char[length];
 		var i = 0;
-		for (char[] fs : array) {
+		for (var fs : array) {
 			var length_ = fs.length;
 			copy(fs, 0, fs1, i, length_);
 			i += length_;

@@ -35,11 +35,11 @@ public class Ints_ {
 
 	public static int[] concat(int[]... array) {
 		var length = 0;
-		for (int[] fs : array)
+		for (var fs : array)
 			length += fs.length;
 		var fs1 = new int[length];
 		var i = 0;
-		for (int[] fs : array) {
+		for (var fs : array) {
 			var length_ = fs.length;
 			copy(fs, 0, fs1, i, length_);
 			i += length_;

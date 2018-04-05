@@ -81,7 +81,7 @@ public class SewingClonerImpl implements ClonerFactory {
 			return env -> {
 				var t = Tree.of(null, null, null);
 				Node node_ = t;
-				for (Clone_ fun_ : funs) {
+				for (var fun_ : funs) {
 					var t_ = Tree.decompose(node_);
 					Tree.forceSetRight(t_, fun_.apply(env));
 					node_ = t_.getRight();

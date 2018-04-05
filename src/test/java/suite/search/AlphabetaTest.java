@@ -55,7 +55,7 @@ public class AlphabetaTest {
 	}
 
 	private boolean isEnd(TicTacToe state) {
-		for (int[] line : lines) {
+		for (var line : lines) {
 			var c0 = state.grid[line[0]];
 			var c1 = state.grid[line[1]];
 			var c2 = state.grid[line[2]];
@@ -69,7 +69,7 @@ public class AlphabetaTest {
 
 	private int evaluate(TicTacToe state) {
 		var score = 0;
-		for (int[] line : lines)
+		for (var line : lines)
 			score += evaluateLine(state, line);
 		return score;
 	}

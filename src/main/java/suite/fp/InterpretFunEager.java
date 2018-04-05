@@ -159,7 +159,7 @@ public class InterpretFunEager {
 					IMap<Node, Fun<Frame, Node>> vm1 = vm;
 					var fs1 = fs;
 
-					for (Node[] array : arrays) {
+					for (var array : arrays) {
 						Fun<Frame, Node> getter = getter(fs1);
 						vm1 = vm1.put(array[0], unwrap(getter));
 						fs1++;
@@ -167,7 +167,7 @@ public class InterpretFunEager {
 
 					Eager_ eager1 = new Eager_(fs1, vm1);
 
-					for (Node[] array : arrays)
+					for (var array : arrays)
 						values_.add(wrap(eager1.eager_(array[1])));
 
 					Fun<Frame, Node> expr = eager1.eager_(DEFVARS.do_);

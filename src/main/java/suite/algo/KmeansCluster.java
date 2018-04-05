@@ -58,7 +58,7 @@ public class KmeansCluster {
 		while (true) {
 			KmeansBin[] bins = To.array(k, KmeansBin.class, j -> new KmeansBin());
 
-			for (float[] point : points) {
+			for (var point : points) {
 				KmeansBin bin = bins[findNearest(point, centers)];
 				bin.sum = vec.add(point, bin.sum);
 				bin.count++;

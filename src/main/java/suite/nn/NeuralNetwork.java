@@ -113,7 +113,7 @@ public class NeuralNetwork {
 			List<float[][]> errors1 = errors0.toList();
 			var e = errors1.get(0);
 			var sums = new float[mtx.height(e)][mtx.width(e)];
-			for (float[][] error : errors1)
+			for (var error : errors1)
 				sums = mtx.add(sums, error);
 			return sums;
 		});

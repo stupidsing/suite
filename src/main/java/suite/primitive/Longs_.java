@@ -35,11 +35,11 @@ public class Longs_ {
 
 	public static long[] concat(long[]... array) {
 		var length = 0;
-		for (long[] fs : array)
+		for (var fs : array)
 			length += fs.length;
 		var fs1 = new long[length];
 		var i = 0;
-		for (long[] fs : array) {
+		for (var fs : array) {
 			var length_ = fs.length;
 			copy(fs, 0, fs1, i, length_);
 			i += length_;

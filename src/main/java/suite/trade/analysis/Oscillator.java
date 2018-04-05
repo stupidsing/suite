@@ -212,7 +212,7 @@ public class Oscillator {
 		for (var i = 0; i < length; i++) {
 			var lo = Float.MAX_VALUE;
 			var hi = Float.MIN_VALUE;
-			for (int j = max(0, i - kDays + 1); j <= i; j++) {
+			for (var j = max(0, i - kDays + 1); j <= i; j++) {
 				lo = min(lo, ds.lows[j]);
 				hi = max(hi, ds.highs[j]);
 			}
