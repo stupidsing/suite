@@ -174,7 +174,7 @@ public class FunCreatorTest {
 		PrintlnFunExpr pfe = new PrintlnFunExpr();
 		pfe.expression = f.object(1).cast_(String.class);
 
-		FunCreator<Runnable> fc = FunCreator.of(Runnable.class);
+		var fc = FunCreator.of(Runnable.class);
 		fc.create(() -> pfe).apply(void_).run();
 	}
 
