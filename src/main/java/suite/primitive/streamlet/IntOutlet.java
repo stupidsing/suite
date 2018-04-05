@@ -443,8 +443,8 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public <K, V> Map<K, V> toMap(Int_Obj<K> kf0, Int_Obj<V> vf0) {
-		Int_Obj<K> kf1 = kf0.rethrow();
-		Int_Obj<V> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		var map = new HashMap<K, V>();
 		int c;
 		while ((c = next()) != IntFunUtil.EMPTYVALUE) {

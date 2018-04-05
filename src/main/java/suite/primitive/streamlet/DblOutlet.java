@@ -443,8 +443,8 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public <K, V> Map<K, V> toMap(Dbl_Obj<K> kf0, Dbl_Obj<V> vf0) {
-		Dbl_Obj<K> kf1 = kf0.rethrow();
-		Dbl_Obj<V> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		var map = new HashMap<K, V>();
 		double c;
 		while ((c = next()) != DblFunUtil.EMPTYVALUE) {

@@ -443,8 +443,8 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public <K, V> Map<K, V> toMap(Chr_Obj<K> kf0, Chr_Obj<V> vf0) {
-		Chr_Obj<K> kf1 = kf0.rethrow();
-		Chr_Obj<V> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		var map = new HashMap<K, V>();
 		char c;
 		while ((c = next()) != ChrFunUtil.EMPTYVALUE) {

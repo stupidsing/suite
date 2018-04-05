@@ -443,8 +443,8 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public <K, V> Map<K, V> toMap(Lng_Obj<K> kf0, Lng_Obj<V> vf0) {
-		Lng_Obj<K> kf1 = kf0.rethrow();
-		Lng_Obj<V> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		var map = new HashMap<K, V>();
 		long c;
 		while ((c = next()) != LngFunUtil.EMPTYVALUE) {

@@ -443,8 +443,8 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public <K, V> Map<K, V> toMap(Flt_Obj<K> kf0, Flt_Obj<V> vf0) {
-		Flt_Obj<K> kf1 = kf0.rethrow();
-		Flt_Obj<V> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		var map = new HashMap<K, V>();
 		float c;
 		while ((c = next()) != FltFunUtil.EMPTYVALUE) {
