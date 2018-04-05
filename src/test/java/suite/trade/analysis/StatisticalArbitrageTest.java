@@ -16,7 +16,6 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
-import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.adt.pair.IntFltPair;
 import suite.streamlet.As;
@@ -98,8 +97,8 @@ public class StatisticalArbitrageTest {
 
 	@Test
 	public void testKMeansCluster() {
-		AlignKeyDataSource<String> akds = dataSources();
-		Map<String, float[]> returnsBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
+		var akds = dataSources();
+		var returnsBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
 		System.out.println(kmc(akds.ts.length, returnsBySymbol));
 	}
 
@@ -178,7 +177,7 @@ public class StatisticalArbitrageTest {
 
 		for (var e : dctDataSources.dctByKey) {
 			var dct = e.t1;
-			IntFltPair max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
+			var max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
 
 			for (var i = minPeriod; i < dct.length; i++) {
 				var f = Math.abs(dct[i]);
@@ -196,7 +195,7 @@ public class StatisticalArbitrageTest {
 		var prices = cfg.dataSource(Asset.hsiSymbol).range(period).prices;
 		var maxTor = 16;
 
-		IntObjMap<float[]> differencesByTor = Ints_ //
+		var differencesByTor = Ints_ //
 				.range(1, maxTor) //
 				.mapIntObj(tor -> {
 					var differences = ts.differences(tor, prices);
@@ -230,7 +229,7 @@ public class StatisticalArbitrageTest {
 					}) //
 					.toArray(double[].class);
 
-			Map<Double, Double> probabilities = new HashMap<>();
+			var probabilities = new HashMap<Double, Double>();
 
 			for (int cpsi = 0, predDiff = -500; predDiff < 500; cpsi++, predDiff += 100) {
 				var cpsi_ = cpsi;
@@ -246,7 +245,8 @@ public class StatisticalArbitrageTest {
 				probabilities.put(predDiff + 100d / 2d, sum);
 			}
 
-			return Read.from2(probabilities) //
+			return Read //
+					.from2(probabilities) //
 					.sortByValue((p0, p1) -> Double.compare(p1, p0)) //
 					.first().t0.floatValue();
 		};
