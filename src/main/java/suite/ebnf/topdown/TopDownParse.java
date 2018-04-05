@@ -145,7 +145,7 @@ public class TopDownParse {
 		}
 
 		private Outlet<State> expect(State state, ExpectFun expect, int pos) {
-			int end = expect.expect(in, length, pos);
+			var end = expect.expect(in, length, pos);
 			return state.pos < end ? Outlet.of(state.pos(end)) : noResult;
 		}
 
