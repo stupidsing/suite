@@ -68,7 +68,7 @@ public class FunFactory {
 
 	public FunExpr and(FunExpr... exprs) {
 		if (0 < exprs.length) {
-			List<FunExpr> list = Read.from(exprs).reverse().toList();
+			var list = Read.from(exprs).reverse().toList();
 			var expr = list.get(0);
 			for (var i = 1; i < exprs.length; i++)
 				expr = if_(list.get(i), expr, _false());
@@ -205,7 +205,7 @@ public class FunFactory {
 
 	public FunExpr loop(Fun2<FunExpr, FunExpr, FunExpr> fun) {
 		var expr = new BlockFunExpr();
-		Mutable<BlockFunExpr> m = Mutable.of(expr);
+		var m = Mutable.of(expr);
 
 		var b = new BlockBreakFunExpr();
 		b.block = m;
@@ -227,8 +227,8 @@ public class FunFactory {
 	}
 
 	public <T> FunExpr object(T object) {
-		Class<? extends Object> clazz = object.getClass();
-		Class<?>[] interfaces = clazz.getInterfaces();
+		var clazz = object.getClass();
+		var interfaces = clazz.getInterfaces();
 		return object_(object, interfaces.length == 1 ? interfaces[0] : clazz);
 	}
 

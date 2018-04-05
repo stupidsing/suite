@@ -328,8 +328,8 @@ public interface BackAllocator {
 				var diffBySymbol = Read //
 						.from(Set_.union(potentialBySymbol0.keySet(), potentialBySymbol1.keySet())) //
 						.map2(symbol -> {
-							double potential0 = potentialBySymbol0.getOrDefault(symbol, 0d);
-							double potential1 = potentialBySymbol1.getOrDefault(symbol, 0d);
+							var potential0 = potentialBySymbol0.getOrDefault(symbol, 0d);
+							var potential1 = potentialBySymbol1.getOrDefault(symbol, 0d);
 							return potential1 - potential0;
 						}) //
 						.toMap();
