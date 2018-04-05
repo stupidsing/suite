@@ -92,7 +92,7 @@ public class P2InferType {
 	private Map<Funp, UnNode<Type>> typeByNode = new HashMap<>();
 
 	public Funp infer(Funp n0) {
-		UnNode<Type> t = unify.newRef();
+		var t = unify.newRef();
 		var n1 = extractPredefine(n0);
 		var n2 = Boolean.FALSE ? captureLambdas(n1) : n1;
 
@@ -206,7 +206,7 @@ public class P2InferType {
 		}
 
 		private UnNode<Type> infer(Funp n) {
-			UnNode<Type> t = typeByNode.get(n);
+			var t = typeByNode.get(n);
 			if (t == null)
 				typeByNode.put(n, t = infer_(n));
 			return t;
@@ -215,17 +215,17 @@ public class P2InferType {
 		private UnNode<Type> infer_(Funp n) {
 			return new Switch<UnNode<Type>>(n //
 			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-				UnNode<Type> tr = unify.newRef();
+				var tr = unify.newRef();
 				unify(n, TypeLambda.of(infer(value), tr), infer(lambda));
 				return tr;
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
-				UnNode<Type> te = unify.newRef();
+				var te = unify.newRef();
 				for (var element : elements)
 					unify(n, te, infer(element));
 				return TypeArray.of(te, elements.size());
 			})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
 				for (var assign : assigns) {
-					UnNode<Type> tp = infer(assign.t1);
+					var tp = infer(assign.t1);
 					if (tp.final_() instanceof Type)
 						if (assign.t0.size == getTypeSize(tp))
 							;
@@ -257,7 +257,7 @@ public class P2InferType {
 					env = env.replace(pair.t0, Pair.of(true, infer(pair.t1)));
 				return new Infer(env).infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
-				UnNode<Type> t = unify.newRef();
+				var t = unify.newRef();
 				unify(n, TypeReference.of(t), infer(pointer));
 				return t;
 			})).applyIf(FunpDontCare.class, f -> {
@@ -265,7 +265,7 @@ public class P2InferType {
 			}).applyIf(FunpError.class, f -> {
 				return unify.newRef();
 			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
-				UnNode<Type> tf = unify.newRef();
+				var tf = unify.newRef();
 				var ts = TypeStruct.of();
 				ts.pairs.add(Pair.of(field, tf));
 				unify(n, infer(reference), TypeReference.of(ts));
@@ -280,29 +280,29 @@ public class P2InferType {
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return TypeIo.of(infer(expr));
 			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
-				UnNode<Type> ta = unify.newRef();
-				UnNode<Type> tb = unify.newRef();
-				UnNode<Type> tbio = TypeIo.of(tb);
+				var ta = unify.newRef();
+				var tb = unify.newRef();
+				var tbio = TypeIo.of(tb);
 				unify(n, TypeLambda.of(ta, tbio), infer(expr));
 				return TypeLambda.of(TypeIo.of(ta), tbio);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
-				UnNode<Type> te = unify.newRef();
+				var te = unify.newRef();
 				unify(n, TypeReference.of(TypeArray.of(te)), infer(reference));
 				unify(n, infer(index), typeNumber);
 				return te;
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-				UnNode<Type> tv = unify.newRef();
-				UnNode<Type> tv1 = TypeIo.of(tv);
+				var tv = unify.newRef();
+				var tv1 = TypeIo.of(tv);
 				Infer i1 = new Infer(env.replace(var, Pair.of(false, tv)));
 				unify(n, tv, infer(init));
 				unify(n, typeBoolean, i1.infer(cond));
 				unify(n, tv1, i1.infer(iterate));
 				return tv1;
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-				UnNode<Type> tv = unify.newRef();
+				var tv = unify.newRef();
 				return TypeLambda.of(tv, new Infer(env.replace(var, Pair.of(false, tv))).infer(expr));
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
-				UnNode<Type> tv = unify.newRef();
+				var tv = unify.newRef();
 				IMap<String, Pair<Boolean, UnNode<Type>>> env0 = IMap.empty();
 				IMap<String, Pair<Boolean, UnNode<Type>>> env1 = env0 //
 						.replace(capn, Pair.of(false, infer(cap))) //
@@ -317,7 +317,7 @@ public class P2InferType {
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
 				return TypeStruct.of(Read.from2(pairs).mapValue(this::infer).toList());
 			})).applyIf(FunpTree.class, f -> f.apply((op, left, right) -> {
-				UnNode<Type> ti = op == TermOp.BIGAND || op == TermOp.BIGOR_ ? typeBoolean : typeNumber;
+				var ti = op == TermOp.BIGAND || op == TermOp.BIGOR_ ? typeBoolean : typeNumber;
 				unify(n, infer(left), ti);
 				unify(n, infer(right), ti);
 				if (op == TermOp.EQUAL_ || op == TermOp.NOTEQ_ || op == TermOp.LE____ || op == TermOp.LT____)
@@ -330,7 +330,7 @@ public class P2InferType {
 				return typeNumber;
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				var pair = env.get(var);
-				UnNode<Type> tv = pair.t1;
+				var tv = pair.t1;
 				return pair.t0 ? unify.clone(tv) : tv;
 			})).nonNullResult();
 		}
@@ -366,7 +366,7 @@ public class P2InferType {
 					invoke = allocStack(lt.os, FunpDontCare.of(), allocStack(size, value, FunpInvokeIo.of(lambda1)));
 				return FunpSaveRegisters.of(invoke);
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
-				UnNode<Type> te = unify.newRef();
+				var te = unify.newRef();
 				unify(n, type0, TypeArray.of(te));
 				var elementSize = getTypeSize(te);
 				var offset = 0;
@@ -379,7 +379,7 @@ public class P2InferType {
 			})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
 				return FunpSaveRegisters.of(FunpAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
-				UnNode<Type> t = unify.newRef();
+				var t = unify.newRef();
 				unify(n, typeOf(reference), TypeReference.of(t));
 				var size = getTypeSize(t);
 				return FunpAssign.of(FunpMemory.of(erase(reference), 0, size), erase(value), erase(expr));
@@ -388,7 +388,7 @@ public class P2InferType {
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				Mutable<Integer> offset = Mutable.nil();
 				var size0 = getTypeSize(typeOf(value));
-				Erase e1 = new Erase(scope, env.replace(var, new Var(scope, offset, 0, size0)));
+				var e1 = new Erase(scope, env.replace(var, new Var(scope, offset, 0, size0)));
 				return allocStack(size0, value, e1.erase(expr), offset);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				List<Pair<Var, Funp>> assigns = new ArrayList<>();
@@ -404,7 +404,7 @@ public class P2InferType {
 					assigns.add(Pair.of(var, value));
 				}
 
-				Erase e1 = new Erase(scope, env1);
+				var e1 = new Erase(scope, env1);
 				var expr_ = e1.erase(expr);
 
 				for (var pair : assigns)
@@ -430,7 +430,7 @@ public class P2InferType {
 			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
 				var size = getTypeSize(typeOf(value));
 				Mutable<Operand> address = Mutable.nil();
-				Erase e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
+				var e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
 				FunpAssign expr1 = FunpAssign.of(FunpMemory.of(FunpOperand.of(address), 0, size), erase(value), e1.erase(expr));
 				return FunpAllocGlobal.of(var, size, expr1, address);
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
@@ -438,7 +438,7 @@ public class P2InferType {
 			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
-				UnNode<Type> te = unify.newRef();
+				var te = unify.newRef();
 				unify(n, typeOf(reference), TypeReference.of(TypeArray.of(te)));
 				var size = getTypeSize(te);
 				var address0 = erase(reference);
@@ -449,7 +449,7 @@ public class P2InferType {
 				Mutable<Integer> offset = Mutable.nil();
 				var size = getTypeSize(typeOf(init));
 				Var var_ = new Var(scope, offset, 0, size);
-				Erase e1 = new Erase(scope, env.replace(var, var_));
+				var e1 = new Erase(scope, env.replace(var, var_));
 				var m = getVariable(var_);
 				FunpWhile while_ = FunpWhile.of(e1.erase(cond), FunpAssign.of(m, e1.erase(iterate), FunpDontCare.of()), m);
 				return allocStack(size, init, while_, offset);
@@ -465,11 +465,11 @@ public class P2InferType {
 				var lt = lambdaType(n);
 				var size = getTypeSize(typeOf(cap));
 				IMap<String, Var> env0 = IMap.empty();
-				IMap<String, Var> env1 = env0 //
+				var env1 = env0 //
 						.replace(capn, new Var(0, Mutable.of(0), 0, size)) //
 						.replace(var, new Var(1, Mutable.of(0), b, b + lt.is));
 				var frame = FunpReference.of(erase(cap));
-				Funp expr1 = new Erase(1, env1).erase(expr);
+				var expr1 = new Erase(1, env1).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return new Object() {
@@ -487,7 +487,7 @@ public class P2InferType {
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
 				var elementSize = getTypeSize(typeOf(expr));
 				var offset = 0;
-				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
+				var list = new ArrayList<Pair<Funp, IntIntPair>>();
 				for (var i = 0; i < count; i++) {
 					var offset0 = offset;
 					list.add(Pair.of(expr, IntIntPair.of(offset0, offset += elementSize)));
@@ -499,7 +499,7 @@ public class P2InferType {
 
 				var ts1 = ts0.finalStruct();
 				var values = Read.from2(fvs).toMap();
-				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
+				var list = new ArrayList<Pair<Funp, IntIntPair>>();
 				var offset = 0;
 
 				if (ts1.isCompleted)
@@ -586,8 +586,8 @@ public class P2InferType {
 		private int is, os;
 
 		private LambdaType(Funp lambda) {
-			UnNode<Type> tp = unify.newRef();
-			UnNode<Type> tr = unify.newRef();
+			var tp = unify.newRef();
+			var tr = unify.newRef();
 			unify(lambda, typeOf(lambda), TypeLambda.of(tp, tr));
 			is = getTypeSize(tp);
 			os = getTypeSize(tr);
@@ -826,7 +826,7 @@ public class P2InferType {
 
 		private static UnNode<Type> cast(Object object) {
 			@SuppressWarnings("unchecked")
-			UnNode<Type> node = (UnNode<Type>) object;
+			var node = (UnNode<Type>) object;
 			return node;
 		}
 	}
