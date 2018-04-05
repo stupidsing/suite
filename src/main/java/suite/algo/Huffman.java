@@ -21,12 +21,12 @@ import suite.util.To;
 public class Huffman {
 
 	public <Unit> Pair<List<Unit>, List<Boolean>> encode(List<Unit> input) {
-		Dictionary<Unit> dictionary = build(input);
+		var dictionary = build(input);
 		return Pair.of(save(dictionary), To.list(encode(dictionary, To.source(input))));
 	}
 
 	public <Unit> List<Unit> decode(Pair<List<Unit>, List<Boolean>> input) {
-		Dictionary<Unit> dictionary = load(input);
+		var dictionary = load(input);
 		return To.list(decode(dictionary, To.source(input.t1)));
 	}
 
@@ -47,12 +47,12 @@ public class Huffman {
 			priorityQueue.insert(node);
 
 		while (1 < priorityQueue.size()) {
-			Node<Unit> node0 = priorityQueue.extractMin();
-			Node<Unit> node1 = priorityQueue.extractMin();
+			var node0 = priorityQueue.extractMin();
+			var node1 = priorityQueue.extractMin();
 			priorityQueue.insert(new Node<>(node0, node1));
 		}
 
-		Dictionary<Unit> dictionary = new Dictionary<>();
+		var dictionary = new Dictionary<Unit>();
 		dictionary.root = !priorityQueue.isEmpty() ? priorityQueue.extractMin() : null;
 		dictionary.nodeByUnit = Read.from(nodes).toMap(node -> node.unit, node -> node);
 		return dictionary;
@@ -64,16 +64,16 @@ public class Huffman {
 
 		for (var unit : input.t0)
 			if (unit == null) {
-				Node<Unit> node0 = deque.pop();
-				Node<Unit> node1 = deque.pop();
+				var node0 = deque.pop();
+				var node1 = deque.pop();
 				deque.push(new Node<>(node0, node1));
 			} else {
-				Node<Unit> node = new Node<>(unit, 0);
+				var node = new Node<>(unit, 0);
 				deque.push(node);
 				nodeByUnit.put(unit, node);
 			}
 
-		Dictionary<Unit> dictionary = new Dictionary<>();
+		var dictionary = new Dictionary<Unit>();
 		dictionary.root = deque.pop();
 		dictionary.nodeByUnit = nodeByUnit;
 		return dictionary;
@@ -101,7 +101,8 @@ public class Huffman {
 			Unit unit;
 
 			while (stack.isEmpty() && (unit = source.source()) != null) {
-				Node<Unit> node = dictionary.nodeByUnit.get(unit), parent;
+				var node = dictionary.nodeByUnit.get(unit);
+				Node<Unit> parent;
 
 				while ((parent = node.parent) != null) {
 					stack.push(parent.node0 == node ? Boolean.FALSE : Boolean.TRUE);
@@ -118,7 +119,7 @@ public class Huffman {
 			Boolean b;
 
 			if ((b = source.source()) != null) {
-				Node<Unit> node = dictionary.root;
+				var node = dictionary.root;
 
 				while (node.unit == null) {
 					node = b ? node.node0 : node.node1;
@@ -156,7 +157,7 @@ public class Huffman {
 	}
 
 	private static <Unit> Map<Unit, Integer> histogram(List<Unit> input) {
-		Map<Unit, Integer> histogram = new HashMap<>();
+		var histogram = new HashMap<Unit, Integer>();
 		for (var unit : input)
 			histogram.put(unit, histogram.getOrDefault(unit, 0) + 1);
 		return histogram;
