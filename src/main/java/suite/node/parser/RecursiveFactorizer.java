@@ -58,9 +58,9 @@ public class RecursiveFactorizer {
 				if (ops == null)
 					continue;
 
-				Chars left = Chars.of(chars.cs, chars.start, ops.start);
-				Chars middle = Chars.of(chars.cs, ops.start, ops.end);
-				Chars right = Chars.of(chars.cs, ops.end, chars.end);
+				var left = Chars.of(chars.cs, chars.start, ops.start);
+				var middle = Chars.of(chars.cs, ops.start, ops.end);
+				var right = Chars.of(chars.cs, ops.end, chars.end);
 				Chars post = null;
 				int li, ri;
 
@@ -95,9 +95,9 @@ public class RecursiveFactorizer {
 			if (first == '(' && last == ')' //
 					|| first == '[' && last == ']' //
 					|| first == '`' && last == '`') {
-				Chars left = Chars.of(chars.cs, chars.start, chars1.start + 1);
-				Chars middle = Chars.of(chars.cs, chars1.start + 1, chars1.end - 1);
-				Chars right = Chars.of(chars.cs, chars1.end - 1, chars.end);
+				var left = Chars.of(chars.cs, chars.start, chars1.start + 1);
+				var middle = Chars.of(chars.cs, chars1.start + 1, chars1.end - 1);
+				var right = Chars.of(chars.cs, chars1.end - 1, chars.end);
 				return FactorizeResult.merge("" + first, List.of(term(left), parse_(middle, 0), term(right)));
 			}
 		}

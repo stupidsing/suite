@@ -33,9 +33,9 @@ public class CharsIntrinsics {
 
 	public Intrinsic concatSplit = (callback, inputs) -> {
 		Chars delim = Data.get(inputs.get(0));
-		Outlet<Node> s0 = ThunkUtil.yawnList(callback::yawn, inputs.get(1), true);
-		Outlet<Chars> s1 = s0.map(n -> Data.<Chars> get(callback.yawn(n)));
-		Outlet<Chars> s2 = Chars_.split(delim).apply(s1);
+		var s0 = ThunkUtil.yawnList(callback::yawn, inputs.get(1), true);
+		var s1 = s0.map(n -> Data.<Chars> get(callback.yawn(n)));
+		var s2 = Chars_.split(delim).apply(s1);
 		Outlet<Node> s3 = s2.map(Data<Chars>::new);
 		IPointer<Node> p = IndexedSourceReader.of(s3.source());
 		return Intrinsics.drain(callback, p);
@@ -49,7 +49,7 @@ public class CharsIntrinsics {
 	};
 
 	public Intrinsic stringChars = (callback, inputs) -> {
-		String value = ThunkUtil.yawnString(callback::yawn, inputs.get(0));
+		var value = ThunkUtil.yawnString(callback::yawn, inputs.get(0));
 		return new Data<>(To.chars(value));
 	};
 
