@@ -5,7 +5,6 @@ import static org.apache.bcel.Const.ACC_STATIC;
 import static org.apache.bcel.Const.ACC_SUPER;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,13 +12,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.generic.BranchInstruction;
 import org.apache.bcel.generic.CPInstruction;
 import org.apache.bcel.generic.ClassGen;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldGen;
-import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionFactory;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.MethodGen;
@@ -32,7 +29,6 @@ import suite.jdk.gen.FunExprM.FieldStaticFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.pass.FunExpand;
 import suite.jdk.gen.pass.FunGenerateBytecode;
-import suite.jdk.gen.pass.FunGenerateBytecode.Visit;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
 import suite.os.LogUtil;
@@ -64,15 +60,15 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	public static <I> FunCreator<I> of(Class<I> clazz, boolean isExpand) {
-		FunCreator<I> fc = of(LambdaInterface.of(clazz), Map.ofEntries());
+		var fc = of(LambdaInterface.of(clazz), Map.ofEntries());
 		fc.isExpand = isExpand;
 		return fc;
 	}
 
 	public static <I> FunCreator<I> of(LambdaInterface<I> lc, Map<String, Type> fs) {
-		Method method = lc.method();
-		Type rt = Type.getType(method.getReturnType());
-		List<Type> pts = Read.from(method.getParameterTypes()).map(Type::getType).toList();
+		var method = lc.method();
+		var rt = Type.getType(method.getReturnType());
+		var pts = Read.from(method.getParameterTypes()).map(Type::getType).toList();
 		return new FunCreator<>(lc, rt, pts, fs);
 	}
 
@@ -116,31 +112,31 @@ public class FunCreator<I> extends FunFactory {
 			var clsName = interfaceClass.getName() + Util.temp();
 			var methodName = lambdaClass.methodName;
 
-			List<Type> localTypes = new ArrayList<>();
+			var localTypes = new ArrayList<Type>();
 			localTypes.add(ObjectType.getInstance(clsName));
 			localTypes.addAll(parameterTypes);
 
-			ConstantPoolGen cp = new ConstantPoolGen();
-			InstructionFactory factory = new InstructionFactory(cp);
+			var cp = new ConstantPoolGen();
+			var factory = new InstructionFactory(cp);
 
-			FunExpand fe = new FunExpand();
+			var fe = new FunExpand();
 			FunRewrite fr;
 			FunGenerateBytecode fgb;
 
-			FunExpr expr1 = isExpand ? fe.expand(expr0, 3) : expr0;
-			FunExpr expr2 = (fr = new FunRewrite(fieldTypes, localTypes, expr1.cast_(interfaceClass))).expr;
+			var expr1 = isExpand ? fe.expand(expr0, 3) : expr0;
+			var expr2 = (fr = new FunRewrite(fieldTypes, localTypes, expr1.cast_(interfaceClass))).expr;
 
 			org.apache.bcel.classfile.Method m0, m1;
-			Map<String, Pair<Type, Object>> ftvs = fr.fieldTypeValues;
+			var ftvs = fr.fieldTypeValues;
 
 			{
-				InstructionList il = new InstructionList();
+				var il = new InstructionList();
 				try {
 					il.append(InstructionFactory.createLoad(Type.OBJECT, 0));
 					il.append(factory.createInvoke(superClass.getName(), "<init>", Type.VOID, Type.NO_ARGS, Const.INVOKESPECIAL));
 					il.append(InstructionFactory.createReturn(Type.VOID));
 
-					MethodGen mg = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", clsName, il, cp);
+					var mg = new MethodGen(ACC_PUBLIC, Type.VOID, Type.NO_ARGS, new String[] {}, "<init>", clsName, il, cp);
 					mg.setMaxStack();
 					mg.setMaxLocals();
 					m0 = mg.getMethod();
@@ -150,9 +146,9 @@ public class FunCreator<I> extends FunFactory {
 			}
 
 			{
-				Visit visit = (fgb = new FunGenerateBytecode(clsName, fr.fti, cp)).visit(expr2, returnType);
-				InstructionList il = visit.instructionList();
-				Type[] paramTypes = parameterTypes.toArray(new Type[0]);
+				var visit = (fgb = new FunGenerateBytecode(clsName, fr.fti, cp)).visit(expr2, returnType);
+				var il = visit.instructionList();
+				var paramTypes = parameterTypes.toArray(new Type[0]);
 
 				if (isLog) {
 					LogUtil.info("expr0 = " + expr0);
@@ -160,11 +156,11 @@ public class FunCreator<I> extends FunFactory {
 					LogUtil.info("expr2 = " + expr2);
 					LogUtil.info("class = " + clsName + " implements " + interfaceClass.getName());
 					LogUtil.info("fields = " + fieldTypes);
-					ConstantPool constantPool = cp.getConstantPool();
-					Instruction[] instructions = il.getInstructions();
+					var constantPool = cp.getConstantPool();
+					var instructions = il.getInstructions();
 
 					for (var i = 0; i < instructions.length; i++) {
-						Instruction instruction = instructions[i];
+						var instruction = instructions[i];
 						var s = instruction.toString(false);
 						String p;
 						if (instruction instanceof BranchInstruction)
@@ -178,7 +174,7 @@ public class FunCreator<I> extends FunFactory {
 				}
 
 				try {
-					MethodGen mg = new MethodGen(ACC_PUBLIC, returnType, paramTypes, null, methodName, clsName, il, cp);
+					var mg = new MethodGen(ACC_PUBLIC, returnType, paramTypes, null, methodName, clsName, il, cp);
 					mg.setMaxStack();
 					mg.setMaxLocals();
 					m1 = mg.getMethod();
@@ -187,8 +183,8 @@ public class FunCreator<I> extends FunFactory {
 				}
 			}
 
-			String[] ifs = new String[] { interfaceClass.getName(), };
-			ClassGen cg = new ClassGen(clsName, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
+			String[] ifs = { interfaceClass.getName(), };
+			var cg = new ClassGen(clsName, superClass.getName(), ".java", ACC_PUBLIC | ACC_SUPER, ifs, cp);
 
 			for (Entry<String, Pair<Type, Object>> e : fieldStaticTypeValues.entrySet())
 				cg.addField(new FieldGen(ACC_PUBLIC | ACC_STATIC, e.getValue().t0, e.getKey(), cp).getField());
@@ -218,7 +214,7 @@ public class FunCreator<I> extends FunFactory {
 		}
 
 		private I create(Map<String, Object> fieldValues) {
-			I t = Object_.new_(clazz);
+			var t = Object_.new_(clazz);
 
 			return Rethrow.ex(() -> {
 				for (Field field : clazz.getDeclaredFields()) {
@@ -238,10 +234,10 @@ public class FunCreator<I> extends FunFactory {
 
 	public FunExpr constant(Object object) {
 		var fieldName = "s" + Util.temp();
-		Type fieldType = object != null ? Type.getType(object.getClass()) : Type.OBJECT;
+		var fieldType = object != null ? Type.getType(object.getClass()) : Type.OBJECT;
 		fieldStaticTypeValues.put(fieldName, Pair.of(fieldType, object));
 
-		FieldStaticFunExpr expr = new FieldStaticFunExpr();
+		var expr = new FieldStaticFunExpr();
 		expr.fieldName = fieldName;
 		expr.fieldType = fieldType;
 		return expr;
