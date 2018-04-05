@@ -24,8 +24,8 @@ public class ClusterTest {
 				entry("NODE0", new InetSocketAddress(localHost, 3000)), //
 				entry("NODE1", new InetSocketAddress(localHost, 3001)));
 
-		Cluster cluster0 = new ClusterImpl("NODE0", peers);
-		Cluster cluster1 = new ClusterImpl("NODE1", peers);
+		var cluster0 = new ClusterImpl("NODE0", peers);
+		var cluster1 = new ClusterImpl("NODE1", peers);
 
 		cluster1.setOnReceive(Integer.class, i -> i + 1);
 
