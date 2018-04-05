@@ -11,7 +11,6 @@ import javax.swing.JOptionPane;
 
 import suite.Constants;
 import suite.Suite;
-import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
@@ -57,7 +56,7 @@ public class EditorController {
 		run(text -> {
 			String result;
 			try {
-				Node node = Suite.evaluateFun(text, true);
+				var node = Suite.evaluateFun(text, true);
 				result = Formatter.dump(node);
 			} catch (Exception ex) {
 				result = To.string(ex);
@@ -163,7 +162,8 @@ public class EditorController {
 
 	public void searchFiles(String text) {
 		if (!text.isEmpty()) {
-			var files = FileUtil.findPaths(Paths.get(".")) //
+			var files = FileUtil //
+					.findPaths(Paths.get(".")) //
 					.map(Path::toString) //
 					.filter(filename -> filename.contains(text));
 

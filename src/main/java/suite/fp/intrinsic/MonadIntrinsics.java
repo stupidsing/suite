@@ -12,7 +12,6 @@ import java.util.WeakHashMap;
 import suite.Constants;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
-import suite.immutable.IPointer;
 import suite.instructionexecutor.thunk.ThunkUtil;
 import suite.node.Atom;
 import suite.node.Data;
@@ -21,7 +20,6 @@ import suite.node.Node;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.primitive.Chars;
 import suite.util.FunUtil.Iterate;
 import suite.util.Rethrow;
 import suite.util.Thread_;
@@ -43,10 +41,10 @@ public class MonadIntrinsics {
 		return Rethrow.ex(() -> {
 			var process = Runtime.getRuntime().exec(array);
 
-			Node n0 = Intrinsics.enclose(callback, new Suspend(() -> Rethrow.ex(() -> Int.of(process.waitFor()))));
+			var n0 = Intrinsics.enclose(callback, new Suspend(() -> Rethrow.ex(() -> Int.of(process.waitFor()))));
 
-			Node n1 = newReader(callback, process.getInputStream());
-			Node n2 = newReader(callback, process.getErrorStream());
+			var n1 = newReader(callback, process.getInputStream());
+			var n2 = newReader(callback, process.getErrorStream());
 
 			// use a separate thread to write to the process, so that read
 			// and write occur at the same time and would not block up.
@@ -78,7 +76,7 @@ public class MonadIntrinsics {
 
 	private Node newReader(IntrinsicCallback callback, InputStream is) {
 		var br = new BufferedReader(new InputStreamReader(is, Constants.charset));
-		IPointer<Chars> icrp = Intrinsics.read(br);
+		var icrp = Intrinsics.read(br);
 		return callback.enclose(new CharsIntrinsics().drain, new Data<>(icrp));
 	}
 

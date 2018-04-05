@@ -127,7 +127,7 @@ public class Listen {
 	}
 
 	public static <T> Signal<T> signal(Sink<Sink<T>> sink) {
-		Signal<T> signal = Signal.of(sink);
+		var signal = Signal.of(sink);
 
 		return Signal.of(fire -> {
 			signal.wire(t -> {

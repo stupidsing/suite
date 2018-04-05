@@ -63,7 +63,7 @@ public class EditorPane extends JEditorPane {
 		var document = getDocument();
 		var length = document.getLength();
 		var ss = getSelectionStart();
-		int se = max(ss, getSelectionEnd() - 1);
+		var se = max(ss, getSelectionEnd() - 1);
 
 		while (0 < ss && document.getText(ss, 1).charAt(0) != 10)
 			ss--;
@@ -78,8 +78,8 @@ public class EditorPane extends JEditorPane {
 	}
 
 	private Signal<ActionEvent> bind(int keyCode, int modifiers) {
-		KeyStroke keyStroke = KeyStroke.getKeyStroke(keyCode, modifiers);
-		Object key = Pair.of(keyCode, modifiers);
+		var keyStroke = KeyStroke.getKeyStroke(keyCode, modifiers);
+		var key = Pair.of(keyCode, modifiers);
 		getInputMap().put(keyStroke, key);
 		return Listen.actionPerformed(this, key);
 	}
