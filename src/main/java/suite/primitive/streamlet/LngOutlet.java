@@ -60,7 +60,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	@SafeVarargs
 	public static LngOutlet concat(LngOutlet... outlets) {
-		List<LngSource> sources = new ArrayList<>();
+		var sources = new ArrayList<LngSource>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(LngFunUtil.concat(To.source(sources)));
@@ -276,8 +276,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public long last() {
-		long c;
-		var c1 = LngFunUtil.EMPTYVALUE;
+		long c, c1 = LngFunUtil.EMPTYVALUE;
 		while ((c = next()) != LngFunUtil.EMPTYVALUE)
 			c1 = c;
 		return c1;
@@ -316,8 +315,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public long minOrEmpty(LngComparator comparator) {
-		var c = next();
-		long c1;
+		long c = next(), c1;
 		if (c != LngFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != LngFunUtil.EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
@@ -332,7 +330,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public LngOutlet nonBlock(long c0) {
-		NullableSyncQueue<Long> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<Long>();
 
 		new Thread(() -> {
 			long c;
@@ -394,8 +392,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public long sum() {
-		long result = 0;
-		long c1;
+		long result = 0, c1;
 		while ((c1 = next()) != LngFunUtil.EMPTYVALUE)
 			result += c1;
 		return result;
@@ -429,7 +426,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public <K> LngObjMap<LongsBuilder> toListMap(Lng_Lng valueFun) {
-		LngObjMap<LongsBuilder> map = new LngObjMap<>();
+		var map = new LngObjMap<LongsBuilder>();
 		long c;
 		while ((c = next()) != LngFunUtil.EMPTYVALUE)
 			map.computeIfAbsent(c, k_ -> new LongsBuilder()).append(valueFun.apply(c));
@@ -437,8 +434,8 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public <K> ObjLngMap<K> toMap(Lng_Obj<K> keyFun) {
-		Lng_Obj<K> kf1 = keyFun.rethrow();
-		ObjLngMap<K> map = new ObjLngMap<>();
+		var kf1 = keyFun.rethrow();
+		var map = new ObjLngMap<K>();
 		long c;
 		while ((c = next()) != LngFunUtil.EMPTYVALUE)
 			map.put(kf1.apply(c), c);
@@ -448,7 +445,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	public <K, V> Map<K, V> toMap(Lng_Obj<K> kf0, Lng_Obj<V> vf0) {
 		Lng_Obj<K> kf1 = kf0.rethrow();
 		Lng_Obj<V> vf1 = vf0.rethrow();
-		Map<K, V> map = new HashMap<>();
+		var map = new HashMap<K, V>();
 		long c;
 		while ((c = next()) != LngFunUtil.EMPTYVALUE) {
 			var key = kf1.apply(c);

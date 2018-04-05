@@ -33,7 +33,6 @@ import suite.util.Array_;
 import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
@@ -47,8 +46,8 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> LngObjOutlet<V> concat(LngObjOutlet<V>... outlets) {
-		List<LngObjSource<V>> sources = new ArrayList<>();
-		for (LngObjOutlet<V> outlet : outlets)
+		var sources = new ArrayList<LngObjSource<V>>();
+		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(LngObjFunUtil.concat(To.source(sources)));
 	}
@@ -152,10 +151,10 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
 	public <V1> LngObjOutlet<V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
 		return of(LngObjFunUtil.concat(LngObjFunUtil.map((k, v) -> {
-			Source<V1> source = fun.apply(v).source();
+			var source = fun.apply(v).source();
 			return pair -> {
 				var value1 = source.source();
-				boolean b = value1 != null;
+				var b = value1 != null;
 				if (b)
 					pair.update(k, value1);
 				return b;
@@ -197,8 +196,8 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == LngObjOutlet.class) {
 			@SuppressWarnings("unchecked")
-			LngObjOutlet<V> outlet = (LngObjOutlet<V>) (LngObjOutlet<?>) object;
-			LngObjSource<V> source2 = outlet.source;
+			var outlet = (LngObjOutlet<V>) (LngObjOutlet<?>) object;
+			var source2 = outlet.source;
 			boolean b, b0, b1;
 			LngObjPair<V> pair0 = LngObjPair.of((long) 0, null);
 			LngObjPair<V> pair1 = LngObjPair.of((long) 0, null);
@@ -292,7 +291,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public LngObjPair<V> min(Comparator<LngObjPair<V>> comparator) {
-		LngObjPair<V> pair = minOrNull(comparator);
+		var pair = minOrNull(comparator);
 		if (pair != null)
 			return pair;
 		else
@@ -313,7 +312,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public LngObjOutlet<V> nonBlocking(Long k0, V v0) {
-		NullableSyncQueue<LngObjPair<V>> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<LngObjPair<V>>();
 
 		new Thread(() -> {
 			boolean b;
@@ -328,7 +327,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 			Mutable<LngObjPair<V>> mutable = Mutable.nil();
 			var b = queue.poll(mutable);
 			if (b) {
-				LngObjPair<V> p = mutable.get();
+				var p = mutable.get();
 				pair.update(p.t0, p.t1);
 			} else
 				pair.update(k0, v0);
@@ -363,7 +362,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public void sink(BiConsumer<Long, V> sink0) {
-		BiConsumer<Long, V> sink1 = Rethrow.biConsumer(sink0);
+		var sink1 = Rethrow.biConsumer(sink0);
 		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
@@ -378,7 +377,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public LngObjOutlet<V> sort(Comparator<LngObjPair<V>> comparator) {
-		List<LngObjPair<V>> list = new ArrayList<>();
+		var list = new ArrayList<LngObjPair<V>>();
 		LngObjPair<V> pair;
 		while (next(pair = LngObjPair.of((long) 0, null)))
 			list.add(pair);
@@ -423,7 +422,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public List<LngObjPair<V>> toList() {
-		List<LngObjPair<V>> list = new ArrayList<>();
+		List<LngObjPair<V>> list = new ArrayList<LngObjPair<V>>();
 		LngObjPair<V> pair;
 		while (next(pair = LngObjPair.of((long) 0, null)))
 			list.add(pair);
@@ -431,7 +430,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public LngObjMap<List<V>> toListMap() {
-		LngObjMap<List<V>> map = new LngObjMap<>();
+		var map = new LngObjMap<List<V>>();
 		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
@@ -439,22 +438,22 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public LngObjMap<V> toMap() {
+		var map = new LngObjMap<V>();
 		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
-		LngObjMap<V> map = new LngObjMap<>();
 		while (source.source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
 	}
 
 	public ListMultimap<Long, V> toMultimap() {
-		ListMultimap<Long, V> map = new ListMultimap<>();
+		var map = new ListMultimap<Long, V>();
 		groupBy().concatMapValue(Outlet::of).sink(map::put);
 		return map;
 	}
 
 	public ObjLngMap<V> toObjLngMap() {
 		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
-		ObjLngMap<V> map = new ObjLngMap<>();
+		var map = new ObjLngMap<V>();
 		while (source.source2(pair))
 			map.put(pair.t1, pair.t0);
 		return map;

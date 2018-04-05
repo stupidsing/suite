@@ -33,7 +33,6 @@ import suite.util.Array_;
 import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
@@ -47,8 +46,8 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> DblObjOutlet<V> concat(DblObjOutlet<V>... outlets) {
-		List<DblObjSource<V>> sources = new ArrayList<>();
-		for (DblObjOutlet<V> outlet : outlets)
+		var sources = new ArrayList<DblObjSource<V>>();
+		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(DblObjFunUtil.concat(To.source(sources)));
 	}
@@ -152,10 +151,10 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	public <V1> DblObjOutlet<V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
 		return of(DblObjFunUtil.concat(DblObjFunUtil.map((k, v) -> {
-			Source<V1> source = fun.apply(v).source();
+			var source = fun.apply(v).source();
 			return pair -> {
 				var value1 = source.source();
-				boolean b = value1 != null;
+				var b = value1 != null;
 				if (b)
 					pair.update(k, value1);
 				return b;
@@ -197,8 +196,8 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == DblObjOutlet.class) {
 			@SuppressWarnings("unchecked")
-			DblObjOutlet<V> outlet = (DblObjOutlet<V>) (DblObjOutlet<?>) object;
-			DblObjSource<V> source2 = outlet.source;
+			var outlet = (DblObjOutlet<V>) (DblObjOutlet<?>) object;
+			var source2 = outlet.source;
 			boolean b, b0, b1;
 			DblObjPair<V> pair0 = DblObjPair.of((double) 0, null);
 			DblObjPair<V> pair1 = DblObjPair.of((double) 0, null);
@@ -292,7 +291,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjPair<V> min(Comparator<DblObjPair<V>> comparator) {
-		DblObjPair<V> pair = minOrNull(comparator);
+		var pair = minOrNull(comparator);
 		if (pair != null)
 			return pair;
 		else
@@ -313,7 +312,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjOutlet<V> nonBlocking(Double k0, V v0) {
-		NullableSyncQueue<DblObjPair<V>> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<DblObjPair<V>>();
 
 		new Thread(() -> {
 			boolean b;
@@ -328,7 +327,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 			Mutable<DblObjPair<V>> mutable = Mutable.nil();
 			var b = queue.poll(mutable);
 			if (b) {
-				DblObjPair<V> p = mutable.get();
+				var p = mutable.get();
 				pair.update(p.t0, p.t1);
 			} else
 				pair.update(k0, v0);
@@ -363,7 +362,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public void sink(BiConsumer<Double, V> sink0) {
-		BiConsumer<Double, V> sink1 = Rethrow.biConsumer(sink0);
+		var sink1 = Rethrow.biConsumer(sink0);
 		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
@@ -378,7 +377,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjOutlet<V> sort(Comparator<DblObjPair<V>> comparator) {
-		List<DblObjPair<V>> list = new ArrayList<>();
+		var list = new ArrayList<DblObjPair<V>>();
 		DblObjPair<V> pair;
 		while (next(pair = DblObjPair.of((double) 0, null)))
 			list.add(pair);
@@ -423,7 +422,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public List<DblObjPair<V>> toList() {
-		List<DblObjPair<V>> list = new ArrayList<>();
+		List<DblObjPair<V>> list = new ArrayList<DblObjPair<V>>();
 		DblObjPair<V> pair;
 		while (next(pair = DblObjPair.of((double) 0, null)))
 			list.add(pair);
@@ -431,7 +430,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjMap<List<V>> toListMap() {
-		DblObjMap<List<V>> map = new DblObjMap<>();
+		var map = new DblObjMap<List<V>>();
 		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
@@ -439,22 +438,22 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjMap<V> toMap() {
+		var map = new DblObjMap<V>();
 		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
-		DblObjMap<V> map = new DblObjMap<>();
 		while (source.source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
 	}
 
 	public ListMultimap<Double, V> toMultimap() {
-		ListMultimap<Double, V> map = new ListMultimap<>();
+		var map = new ListMultimap<Double, V>();
 		groupBy().concatMapValue(Outlet::of).sink(map::put);
 		return map;
 	}
 
 	public ObjDblMap<V> toObjDblMap() {
 		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
-		ObjDblMap<V> map = new ObjDblMap<>();
+		var map = new ObjDblMap<V>();
 		while (source.source2(pair))
 			map.put(pair.t1, pair.t0);
 		return map;

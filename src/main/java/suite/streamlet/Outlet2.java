@@ -22,7 +22,6 @@ import suite.util.Array_;
 import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Fun2;
 import suite.util.FunUtil2.Source2;
@@ -38,8 +37,8 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	@SafeVarargs
 	public static <K, V> Outlet2<K, V> concat(Outlet2<K, V>... outlets) {
-		List<Source2<K, V>> sources = new ArrayList<>();
-		for (Outlet2<K, V> outlet : outlets)
+		var sources = new ArrayList<Source2<K, V>>();
+		for (var outlet : outlets)
 			sources.add(outlet.source2);
 		return of(FunUtil2.concat(To.source(sources)));
 	}
@@ -146,10 +145,10 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	public <V1> Outlet2<K, V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
 		return of(FunUtil2.concat(FunUtil2.map((k, v) -> {
-			Source<V1> source = fun.apply(v).source();
+			var source = fun.apply(v).source();
 			return pair -> {
 				var value1 = source.source();
-				boolean b = value1 != null;
+				var b = value1 != null;
 				if (b)
 					pair.update(k, value1);
 				return b;
@@ -170,7 +169,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public Outlet2<K, V> distinct() {
-		Set<Pair<K, V>> set = new HashSet<>();
+		var set = new HashSet<>();
 		return of(pair -> {
 			boolean b;
 			while ((b = next(pair)) && !set.add(Pair.of(pair.t0, pair.t1)))
@@ -191,8 +190,8 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Outlet2.class) {
 			@SuppressWarnings("unchecked")
-			Outlet2<K, V> outlet = (Outlet2<K, V>) (Outlet2<?, ?>) object;
-			Source2<K, V> source2 = outlet.source2;
+			var outlet = (Outlet2<K, V>) (Outlet2<?, ?>) object;
+			var source2 = outlet.source2;
 			boolean b, b0, b1;
 			Pair<K, V> pair0 = Pair.of(null, null);
 			Pair<K, V> pair1 = Pair.of(null, null);
@@ -351,7 +350,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public void sink(BiConsumer<K, V> sink0) {
-		BiConsumer<K, V> sink1 = Rethrow.biConsumer(sink0);
+		var sink1 = Rethrow.biConsumer(sink0);
 		Pair<K, V> pair = Pair.of(null, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
@@ -366,7 +365,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public Outlet2<K, V> sort(Comparator<Pair<K, V>> comparator) {
-		List<Pair<K, V>> list = new ArrayList<>();
+		var list = new ArrayList<Pair<K, V>>();
 		Pair<K, V> pair;
 		while (next(pair = Pair.of(null, null)))
 			list.add(pair);
@@ -411,7 +410,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public List<Pair<K, V>> toList() {
-		List<Pair<K, V>> list = new ArrayList<>();
+		var list = new ArrayList<Pair<K, V>>();
 		Pair<K, V> pair;
 		while (next(pair = Pair.of(null, null)))
 			list.add(pair);
@@ -419,7 +418,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public Map<K, List<V>> toListMap() {
-		Map<K, List<V>> map = new HashMap<>();
+		var map = new HashMap<K, List<V>>();
 		Pair<K, V> pair = Pair.of(null, null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
@@ -427,8 +426,8 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public Map<K, V> toMap() {
+		var map = new HashMap<K, V>();
 		Pair<K, V> pair = Pair.of(null, null);
-		Map<K, V> map = new HashMap<>();
 		while (next(pair))
 			if (map.put(pair.t0, pair.t1) != null)
 				Fail.t("duplicate key " + pair.t0);
@@ -436,13 +435,13 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public ListMultimap<K, V> toMultimap() {
-		ListMultimap<K, V> map = new ListMultimap<>();
+		var map = new ListMultimap<K, V>();
 		groupBy().concatMapValue(Outlet::of).sink(map::put);
 		return map;
 	}
 
 	public Set<Pair<K, V>> toSet() {
-		Set<Pair<K, V>> set = new HashSet<>();
+		var set = new HashSet<Pair<K, V>>();
 		Pair<K, V> pair;
 		while (next(pair = Pair.of(null, null)))
 			set.add(pair);

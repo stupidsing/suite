@@ -60,7 +60,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	@SafeVarargs
 	public static ChrOutlet concat(ChrOutlet... outlets) {
-		List<ChrSource> sources = new ArrayList<>();
+		var sources = new ArrayList<ChrSource>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(ChrFunUtil.concat(To.source(sources)));
@@ -276,8 +276,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public char last() {
-		char c;
-		var c1 = ChrFunUtil.EMPTYVALUE;
+		char c, c1 = ChrFunUtil.EMPTYVALUE;
 		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
 			c1 = c;
 		return c1;
@@ -316,8 +315,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public char minOrEmpty(ChrComparator comparator) {
-		var c = next();
-		char c1;
+		char c = next(), c1;
 		if (c != ChrFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != ChrFunUtil.EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
@@ -332,7 +330,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public ChrOutlet nonBlock(char c0) {
-		NullableSyncQueue<Character> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<Character>();
 
 		new Thread(() -> {
 			char c;
@@ -394,8 +392,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public char sum() {
-		char result = 0;
-		char c1;
+		char result = 0, c1;
 		while ((c1 = next()) != ChrFunUtil.EMPTYVALUE)
 			result += c1;
 		return result;
@@ -429,7 +426,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public <K> ChrObjMap<CharsBuilder> toListMap(Chr_Chr valueFun) {
-		ChrObjMap<CharsBuilder> map = new ChrObjMap<>();
+		var map = new ChrObjMap<CharsBuilder>();
 		char c;
 		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
 			map.computeIfAbsent(c, k_ -> new CharsBuilder()).append(valueFun.apply(c));
@@ -437,8 +434,8 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public <K> ObjChrMap<K> toMap(Chr_Obj<K> keyFun) {
-		Chr_Obj<K> kf1 = keyFun.rethrow();
-		ObjChrMap<K> map = new ObjChrMap<>();
+		var kf1 = keyFun.rethrow();
+		var map = new ObjChrMap<K>();
 		char c;
 		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
 			map.put(kf1.apply(c), c);
@@ -448,7 +445,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	public <K, V> Map<K, V> toMap(Chr_Obj<K> kf0, Chr_Obj<V> vf0) {
 		Chr_Obj<K> kf1 = kf0.rethrow();
 		Chr_Obj<V> vf1 = vf0.rethrow();
-		Map<K, V> map = new HashMap<>();
+		var map = new HashMap<K, V>();
 		char c;
 		while ((c = next()) != ChrFunUtil.EMPTYVALUE) {
 			var key = kf1.apply(c);

@@ -33,7 +33,6 @@ import suite.util.Array_;
 import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
@@ -47,8 +46,8 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> FltObjOutlet<V> concat(FltObjOutlet<V>... outlets) {
-		List<FltObjSource<V>> sources = new ArrayList<>();
-		for (FltObjOutlet<V> outlet : outlets)
+		var sources = new ArrayList<FltObjSource<V>>();
+		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(FltObjFunUtil.concat(To.source(sources)));
 	}
@@ -152,10 +151,10 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 
 	public <V1> FltObjOutlet<V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
 		return of(FltObjFunUtil.concat(FltObjFunUtil.map((k, v) -> {
-			Source<V1> source = fun.apply(v).source();
+			var source = fun.apply(v).source();
 			return pair -> {
 				var value1 = source.source();
-				boolean b = value1 != null;
+				var b = value1 != null;
 				if (b)
 					pair.update(k, value1);
 				return b;
@@ -197,8 +196,8 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == FltObjOutlet.class) {
 			@SuppressWarnings("unchecked")
-			FltObjOutlet<V> outlet = (FltObjOutlet<V>) (FltObjOutlet<?>) object;
-			FltObjSource<V> source2 = outlet.source;
+			var outlet = (FltObjOutlet<V>) (FltObjOutlet<?>) object;
+			var source2 = outlet.source;
 			boolean b, b0, b1;
 			FltObjPair<V> pair0 = FltObjPair.of((float) 0, null);
 			FltObjPair<V> pair1 = FltObjPair.of((float) 0, null);
@@ -292,7 +291,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public FltObjPair<V> min(Comparator<FltObjPair<V>> comparator) {
-		FltObjPair<V> pair = minOrNull(comparator);
+		var pair = minOrNull(comparator);
 		if (pair != null)
 			return pair;
 		else
@@ -313,7 +312,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public FltObjOutlet<V> nonBlocking(Float k0, V v0) {
-		NullableSyncQueue<FltObjPair<V>> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<FltObjPair<V>>();
 
 		new Thread(() -> {
 			boolean b;
@@ -328,7 +327,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 			Mutable<FltObjPair<V>> mutable = Mutable.nil();
 			var b = queue.poll(mutable);
 			if (b) {
-				FltObjPair<V> p = mutable.get();
+				var p = mutable.get();
 				pair.update(p.t0, p.t1);
 			} else
 				pair.update(k0, v0);
@@ -363,7 +362,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public void sink(BiConsumer<Float, V> sink0) {
-		BiConsumer<Float, V> sink1 = Rethrow.biConsumer(sink0);
+		var sink1 = Rethrow.biConsumer(sink0);
 		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
@@ -378,7 +377,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public FltObjOutlet<V> sort(Comparator<FltObjPair<V>> comparator) {
-		List<FltObjPair<V>> list = new ArrayList<>();
+		var list = new ArrayList<FltObjPair<V>>();
 		FltObjPair<V> pair;
 		while (next(pair = FltObjPair.of((float) 0, null)))
 			list.add(pair);
@@ -423,7 +422,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public List<FltObjPair<V>> toList() {
-		List<FltObjPair<V>> list = new ArrayList<>();
+		List<FltObjPair<V>> list = new ArrayList<FltObjPair<V>>();
 		FltObjPair<V> pair;
 		while (next(pair = FltObjPair.of((float) 0, null)))
 			list.add(pair);
@@ -431,7 +430,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public FltObjMap<List<V>> toListMap() {
-		FltObjMap<List<V>> map = new FltObjMap<>();
+		var map = new FltObjMap<List<V>>();
 		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
@@ -439,22 +438,22 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public FltObjMap<V> toMap() {
+		var map = new FltObjMap<V>();
 		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
-		FltObjMap<V> map = new FltObjMap<>();
 		while (source.source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
 	}
 
 	public ListMultimap<Float, V> toMultimap() {
-		ListMultimap<Float, V> map = new ListMultimap<>();
+		var map = new ListMultimap<Float, V>();
 		groupBy().concatMapValue(Outlet::of).sink(map::put);
 		return map;
 	}
 
 	public ObjFltMap<V> toObjFltMap() {
 		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
-		ObjFltMap<V> map = new ObjFltMap<>();
+		var map = new ObjFltMap<V>();
 		while (source.source2(pair))
 			map.put(pair.t1, pair.t0);
 		return map;

@@ -60,7 +60,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 	@SafeVarargs
 	public static DblOutlet concat(DblOutlet... outlets) {
-		List<DblSource> sources = new ArrayList<>();
+		var sources = new ArrayList<DblSource>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(DblFunUtil.concat(To.source(sources)));
@@ -276,8 +276,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public double last() {
-		double c;
-		var c1 = DblFunUtil.EMPTYVALUE;
+		double c, c1 = DblFunUtil.EMPTYVALUE;
 		while ((c = next()) != DblFunUtil.EMPTYVALUE)
 			c1 = c;
 		return c1;
@@ -316,8 +315,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public double minOrEmpty(DblComparator comparator) {
-		var c = next();
-		double c1;
+		double c = next(), c1;
 		if (c != DblFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != DblFunUtil.EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
@@ -332,7 +330,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public DblOutlet nonBlock(double c0) {
-		NullableSyncQueue<Double> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<Double>();
 
 		new Thread(() -> {
 			double c;
@@ -394,8 +392,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public double sum() {
-		double result = 0;
-		double c1;
+		double result = 0, c1;
 		while ((c1 = next()) != DblFunUtil.EMPTYVALUE)
 			result += c1;
 		return result;
@@ -429,7 +426,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public <K> DblObjMap<DoublesBuilder> toListMap(Dbl_Dbl valueFun) {
-		DblObjMap<DoublesBuilder> map = new DblObjMap<>();
+		var map = new DblObjMap<DoublesBuilder>();
 		double c;
 		while ((c = next()) != DblFunUtil.EMPTYVALUE)
 			map.computeIfAbsent(c, k_ -> new DoublesBuilder()).append(valueFun.apply(c));
@@ -437,8 +434,8 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public <K> ObjDblMap<K> toMap(Dbl_Obj<K> keyFun) {
-		Dbl_Obj<K> kf1 = keyFun.rethrow();
-		ObjDblMap<K> map = new ObjDblMap<>();
+		var kf1 = keyFun.rethrow();
+		var map = new ObjDblMap<K>();
 		double c;
 		while ((c = next()) != DblFunUtil.EMPTYVALUE)
 			map.put(kf1.apply(c), c);
@@ -448,7 +445,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	public <K, V> Map<K, V> toMap(Dbl_Obj<K> kf0, Dbl_Obj<V> vf0) {
 		Dbl_Obj<K> kf1 = kf0.rethrow();
 		Dbl_Obj<V> vf1 = vf0.rethrow();
-		Map<K, V> map = new HashMap<>();
+		var map = new HashMap<K, V>();
 		double c;
 		while ((c = next()) != DblFunUtil.EMPTYVALUE) {
 			var key = kf1.apply(c);

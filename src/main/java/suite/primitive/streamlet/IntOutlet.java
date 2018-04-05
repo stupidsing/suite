@@ -60,7 +60,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	@SafeVarargs
 	public static IntOutlet concat(IntOutlet... outlets) {
-		List<IntSource> sources = new ArrayList<>();
+		var sources = new ArrayList<IntSource>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(IntFunUtil.concat(To.source(sources)));
@@ -276,8 +276,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public int last() {
-		int c;
-		var c1 = IntFunUtil.EMPTYVALUE;
+		int c, c1 = IntFunUtil.EMPTYVALUE;
 		while ((c = next()) != IntFunUtil.EMPTYVALUE)
 			c1 = c;
 		return c1;
@@ -316,8 +315,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public int minOrEmpty(IntComparator comparator) {
-		var c = next();
-		int c1;
+		int c = next(), c1;
 		if (c != IntFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != IntFunUtil.EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
@@ -332,7 +330,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public IntOutlet nonBlock(int c0) {
-		NullableSyncQueue<Integer> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<Integer>();
 
 		new Thread(() -> {
 			int c;
@@ -394,8 +392,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public int sum() {
-		int result = 0;
-		int c1;
+		int result = 0, c1;
 		while ((c1 = next()) != IntFunUtil.EMPTYVALUE)
 			result += c1;
 		return result;
@@ -429,7 +426,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public <K> IntObjMap<IntsBuilder> toListMap(Int_Int valueFun) {
-		IntObjMap<IntsBuilder> map = new IntObjMap<>();
+		var map = new IntObjMap<IntsBuilder>();
 		int c;
 		while ((c = next()) != IntFunUtil.EMPTYVALUE)
 			map.computeIfAbsent(c, k_ -> new IntsBuilder()).append(valueFun.apply(c));
@@ -437,8 +434,8 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public <K> ObjIntMap<K> toMap(Int_Obj<K> keyFun) {
-		Int_Obj<K> kf1 = keyFun.rethrow();
-		ObjIntMap<K> map = new ObjIntMap<>();
+		var kf1 = keyFun.rethrow();
+		var map = new ObjIntMap<K>();
 		int c;
 		while ((c = next()) != IntFunUtil.EMPTYVALUE)
 			map.put(kf1.apply(c), c);
@@ -448,7 +445,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	public <K, V> Map<K, V> toMap(Int_Obj<K> kf0, Int_Obj<V> vf0) {
 		Int_Obj<K> kf1 = kf0.rethrow();
 		Int_Obj<V> vf1 = vf0.rethrow();
-		Map<K, V> map = new HashMap<>();
+		var map = new HashMap<K, V>();
 		int c;
 		while ((c = next()) != IntFunUtil.EMPTYVALUE) {
 			var key = kf1.apply(c);

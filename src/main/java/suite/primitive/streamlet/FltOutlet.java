@@ -60,7 +60,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	@SafeVarargs
 	public static FltOutlet concat(FltOutlet... outlets) {
-		List<FltSource> sources = new ArrayList<>();
+		var sources = new ArrayList<FltSource>();
 		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(FltFunUtil.concat(To.source(sources)));
@@ -276,8 +276,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public float last() {
-		float c;
-		var c1 = FltFunUtil.EMPTYVALUE;
+		float c, c1 = FltFunUtil.EMPTYVALUE;
 		while ((c = next()) != FltFunUtil.EMPTYVALUE)
 			c1 = c;
 		return c1;
@@ -316,8 +315,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public float minOrEmpty(FltComparator comparator) {
-		var c = next();
-		float c1;
+		float c = next(), c1;
 		if (c != FltFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != FltFunUtil.EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
@@ -332,7 +330,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public FltOutlet nonBlock(float c0) {
-		NullableSyncQueue<Float> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<Float>();
 
 		new Thread(() -> {
 			float c;
@@ -394,8 +392,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public float sum() {
-		float result = 0;
-		float c1;
+		float result = 0, c1;
 		while ((c1 = next()) != FltFunUtil.EMPTYVALUE)
 			result += c1;
 		return result;
@@ -429,7 +426,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public <K> FltObjMap<FloatsBuilder> toListMap(Flt_Flt valueFun) {
-		FltObjMap<FloatsBuilder> map = new FltObjMap<>();
+		var map = new FltObjMap<FloatsBuilder>();
 		float c;
 		while ((c = next()) != FltFunUtil.EMPTYVALUE)
 			map.computeIfAbsent(c, k_ -> new FloatsBuilder()).append(valueFun.apply(c));
@@ -437,8 +434,8 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public <K> ObjFltMap<K> toMap(Flt_Obj<K> keyFun) {
-		Flt_Obj<K> kf1 = keyFun.rethrow();
-		ObjFltMap<K> map = new ObjFltMap<>();
+		var kf1 = keyFun.rethrow();
+		var map = new ObjFltMap<K>();
 		float c;
 		while ((c = next()) != FltFunUtil.EMPTYVALUE)
 			map.put(kf1.apply(c), c);
@@ -448,7 +445,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	public <K, V> Map<K, V> toMap(Flt_Obj<K> kf0, Flt_Obj<V> vf0) {
 		Flt_Obj<K> kf1 = kf0.rethrow();
 		Flt_Obj<V> vf1 = vf0.rethrow();
-		Map<K, V> map = new HashMap<>();
+		var map = new HashMap<K, V>();
 		float c;
 		while ((c = next()) != FltFunUtil.EMPTYVALUE) {
 			var key = kf1.apply(c);

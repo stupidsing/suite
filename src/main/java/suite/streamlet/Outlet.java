@@ -45,8 +45,8 @@ public class Outlet<T> implements OutletDefaults<T> {
 
 	@SafeVarargs
 	public static <T> Outlet<T> concat(Outlet<T>... outlets) {
-		List<Source<T>> sources = new ArrayList<>();
-		for (Outlet<T> outlet : outlets)
+		var sources = new ArrayList<Source<T>>();
+		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(FunUtil.concat(To.source(sources)));
 	}
@@ -156,7 +156,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Outlet.class) {
-			Source<?> source1 = ((Outlet<?>) object).source;
+			var source1 = ((Outlet<?>) object).source;
 			Object o0, o1;
 			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
 				if (o0 == null && o1 == null)
@@ -260,7 +260,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public Outlet<T> nonBlocking(T t0) {
-		NullableSyncQueue<T> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<T>();
 
 		new Thread(() -> {
 			T t;
@@ -292,7 +292,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public void sink(Sink<T> sink0) {
-		Sink<T> sink1 = sink0.rethrow();
+		var sink1 = sink0.rethrow();
 		T t;
 		while ((t = next()) != null)
 			sink1.sink(t);
@@ -333,12 +333,12 @@ public class Outlet<T> implements OutletDefaults<T> {
 
 	public T[] toArray(Class<T> clazz) {
 		var list = toList();
-		T[] array = Array_.newArray(clazz, list.size());
+		var array = Array_.newArray(clazz, list.size());
 		return list.toArray(array);
 	}
 
 	public List<T> toList() {
-		List<T> list = new ArrayList<>();
+		var list = new ArrayList<T>();
 		T t;
 		while ((t = next()) != null)
 			list.add(t);
@@ -350,7 +350,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public <K, V> Map<K, List<V>> toListMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		Map<K, List<V>> map = new HashMap<>();
+		var map = new HashMap<K, List<V>>();
 		T t;
 		while ((t = next()) != null)
 			map.computeIfAbsent(keyFun.apply(t), k_ -> new ArrayList<>()).add(valueFun.apply(t));

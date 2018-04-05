@@ -33,7 +33,6 @@ import suite.util.Array_;
 import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
@@ -47,8 +46,8 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	@SafeVarargs
 	public static <V> ChrObjOutlet<V> concat(ChrObjOutlet<V>... outlets) {
-		List<ChrObjSource<V>> sources = new ArrayList<>();
-		for (ChrObjOutlet<V> outlet : outlets)
+		var sources = new ArrayList<ChrObjSource<V>>();
+		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(ChrObjFunUtil.concat(To.source(sources)));
 	}
@@ -152,10 +151,10 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public <V1> ChrObjOutlet<V1> concatMapValue(Fun<V, Outlet<V1>> fun) {
 		return of(ChrObjFunUtil.concat(ChrObjFunUtil.map((k, v) -> {
-			Source<V1> source = fun.apply(v).source();
+			var source = fun.apply(v).source();
 			return pair -> {
 				var value1 = source.source();
-				boolean b = value1 != null;
+				var b = value1 != null;
 				if (b)
 					pair.update(k, value1);
 				return b;
@@ -197,8 +196,8 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == ChrObjOutlet.class) {
 			@SuppressWarnings("unchecked")
-			ChrObjOutlet<V> outlet = (ChrObjOutlet<V>) (ChrObjOutlet<?>) object;
-			ChrObjSource<V> source2 = outlet.source;
+			var outlet = (ChrObjOutlet<V>) (ChrObjOutlet<?>) object;
+			var source2 = outlet.source;
 			boolean b, b0, b1;
 			ChrObjPair<V> pair0 = ChrObjPair.of((char) 0, null);
 			ChrObjPair<V> pair1 = ChrObjPair.of((char) 0, null);
@@ -292,7 +291,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjPair<V> min(Comparator<ChrObjPair<V>> comparator) {
-		ChrObjPair<V> pair = minOrNull(comparator);
+		var pair = minOrNull(comparator);
 		if (pair != null)
 			return pair;
 		else
@@ -313,7 +312,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjOutlet<V> nonBlocking(Character k0, V v0) {
-		NullableSyncQueue<ChrObjPair<V>> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<ChrObjPair<V>>();
 
 		new Thread(() -> {
 			boolean b;
@@ -328,7 +327,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 			Mutable<ChrObjPair<V>> mutable = Mutable.nil();
 			var b = queue.poll(mutable);
 			if (b) {
-				ChrObjPair<V> p = mutable.get();
+				var p = mutable.get();
 				pair.update(p.t0, p.t1);
 			} else
 				pair.update(k0, v0);
@@ -363,7 +362,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public void sink(BiConsumer<Character, V> sink0) {
-		BiConsumer<Character, V> sink1 = Rethrow.biConsumer(sink0);
+		var sink1 = Rethrow.biConsumer(sink0);
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
@@ -378,7 +377,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjOutlet<V> sort(Comparator<ChrObjPair<V>> comparator) {
-		List<ChrObjPair<V>> list = new ArrayList<>();
+		var list = new ArrayList<ChrObjPair<V>>();
 		ChrObjPair<V> pair;
 		while (next(pair = ChrObjPair.of((char) 0, null)))
 			list.add(pair);
@@ -423,7 +422,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public List<ChrObjPair<V>> toList() {
-		List<ChrObjPair<V>> list = new ArrayList<>();
+		List<ChrObjPair<V>> list = new ArrayList<ChrObjPair<V>>();
 		ChrObjPair<V> pair;
 		while (next(pair = ChrObjPair.of((char) 0, null)))
 			list.add(pair);
@@ -431,7 +430,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjMap<List<V>> toListMap() {
-		ChrObjMap<List<V>> map = new ChrObjMap<>();
+		var map = new ChrObjMap<List<V>>();
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
@@ -439,22 +438,22 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjMap<V> toMap() {
+		var map = new ChrObjMap<V>();
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
-		ChrObjMap<V> map = new ChrObjMap<>();
 		while (source.source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
 	}
 
 	public ListMultimap<Character, V> toMultimap() {
-		ListMultimap<Character, V> map = new ListMultimap<>();
+		var map = new ListMultimap<Character, V>();
 		groupBy().concatMapValue(Outlet::of).sink(map::put);
 		return map;
 	}
 
 	public ObjChrMap<V> toObjChrMap() {
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
-		ObjChrMap<V> map = new ObjChrMap<>();
+		var map = new ObjChrMap<V>();
 		while (source.source2(pair))
 			map.put(pair.t1, pair.t0);
 		return map;
