@@ -90,7 +90,7 @@ public class InstructionAnalyzer {
 	}
 
 	private void analyzeFrames(List<Instruction> instructions) {
-		Deque<AnalyzedFrame> analyzedFrames = new ArrayDeque<>();
+		var analyzedFrames = new ArrayDeque<>();
 
 		// find out the parent of closures.
 		// assumes every FRAME-BEGIN has a ASSIGN-THUNK referencing it.

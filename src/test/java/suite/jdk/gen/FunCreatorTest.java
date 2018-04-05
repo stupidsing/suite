@@ -39,8 +39,8 @@ public class FunCreatorTest {
 	public void testApply0() {
 		var fieldName0 = "f0";
 		var fieldName1 = "f1";
-		FunCreator<Int_Int> fc0 = intFun(fieldName0, Type.INT);
-		FunCreator<Int_Int> fc1 = intFun(fieldName1, Type.getType(Int_Int.class));
+		var fc0 = intFun(fieldName0, Type.INT);
+		var fc1 = intFun(fieldName1, Type.getType(Int_Int.class));
 		var f0 = fc0 //
 				.create((i -> f.add(fc0.field(fieldName0), i))) //
 				.apply(Map.of(fieldName0, 1));
@@ -52,14 +52,14 @@ public class FunCreatorTest {
 
 	@Test
 	public void testApply1() {
-		LambdaInstance<Int_Int> lambda0 = LambdaInstance.of(Int_Int.class, i -> f.add(f.int_(1), i));
-		LambdaInstance<Int_Int> lambda1 = LambdaInstance.of(Int_Int.class, i -> f.add(f.int_(1), lambda0.invoke(i)));
+		var lambda0 = LambdaInstance.of(Int_Int.class, i -> f.add(f.int_(1), i));
+		var lambda1 = LambdaInstance.of(Int_Int.class, i -> f.add(f.int_(1), lambda0.invoke(i)));
 		assertEquals(2, lambda1.newFun().apply(0));
 	}
 
 	@Test
 	public void testArray() {
-		LambdaInstance<Int_Int> lambda = LambdaInstance.of(Int_Int.class, i -> f.array(int.class, f.int_(1), f.int_(0)).index(i));
+		var lambda = LambdaInstance.of(Int_Int.class, i -> f.array(int.class, f.int_(1), f.int_(0)).index(i));
 		assertEquals(1, lambda.newFun().apply(0));
 	}
 
@@ -103,7 +103,7 @@ public class FunCreatorTest {
 	@Test
 	public void testField() {
 		var fieldName = "f";
-		FunCreator<Int_Int> fc = intFun(fieldName, Type.INT);
+		var fc = intFun(fieldName, Type.INT);
 		var result = fc //
 				.create(i -> f.add(fc.field(fieldName), i)) //
 				.apply(Map.of(fieldName, 1)) //
@@ -113,8 +113,8 @@ public class FunCreatorTest {
 
 	@Test
 	public void testFloat() {
-		LambdaInstance<Flt_Flt> lambda0 = LambdaInstance.of(Flt_Flt.class, i -> f.add(f.float_(1), i));
-		LambdaInstance<Flt_Flt> lambda1 = LambdaInstance.of(Flt_Flt.class, i -> f.add(f.float_(1), lambda0.invoke(i)));
+		var lambda0 = LambdaInstance.of(Flt_Flt.class, i -> f.add(f.float_(1), i));
+		var lambda1 = LambdaInstance.of(Flt_Flt.class, i -> f.add(f.float_(1), lambda0.invoke(i)));
 		assertTrue(lambda1.newFun().apply(0) == 2f);
 	}
 
@@ -136,7 +136,7 @@ public class FunCreatorTest {
 	@Test
 	public void testIndex() {
 		int[] ints = { 0, 1, 4, 9, 16, };
-		Int_Int fun = LambdaInstance.of(Int_Int.class, i -> f.object(ints).index(i)).newFun();
+		var fun = LambdaInstance.of(Int_Int.class, i -> f.object(ints).index(i)).newFun();
 		assertEquals(9, fun.apply(3));
 		assertEquals(16, fun.apply(4));
 	}
@@ -164,7 +164,7 @@ public class FunCreatorTest {
 	@Test
 	public void testProfile() {
 		Iterate<FunExpr> fun = i -> (ProfileFunExpr) f.profile(f.int_(1));
-		IntSource instance = LambdaInstance.of(IntSource.class, fun).newFun();
+		var instance = LambdaInstance.of(IntSource.class, fun).newFun();
 		assertEquals(1, instance.source());
 		Dump.out(instance);
 	}

@@ -56,7 +56,7 @@ public class Astar<Node> {
 				while ((node1 = source.source()) != null)
 					open.add(new NodeInfo(ni, node1, sunkCost1, sunkCost1 + estimate.apply(node1)));
 			} else {
-				Deque<Node> deque = new ArrayDeque<>();
+				var deque = new ArrayDeque<>();
 				while (ni != null) {
 					deque.addFirst(ni.node);
 					ni = ni.previous;

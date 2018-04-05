@@ -68,7 +68,7 @@ public class ISparseBinPriorityQueue<T> {
 				if (t.rank != tree.rank)
 					trees0 = IList.cons(t, trees0);
 
-			Deque<Node> nr = tree.root.nodes.reverse();
+			var nr = tree.root.nodes.reverse();
 			var rank = nr.size();
 
 			for (Node node_ : nr)

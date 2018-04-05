@@ -22,7 +22,7 @@ public class FileUtil {
 	}
 
 	public static Source<File> findFiles(File file) {
-		Deque<File> stack = new ArrayDeque<>();
+		var stack = new ArrayDeque<>();
 		stack.push(file);
 
 		return new Source<File>() {

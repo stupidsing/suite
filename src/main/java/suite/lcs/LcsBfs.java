@@ -74,7 +74,7 @@ public class LcsBfs<T> {
 			}
 		}, new Node(null, 0, 0));
 
-		Deque<T> deque = new ArrayDeque<>();
+		var deque = new ArrayDeque<>();
 		Node previous;
 
 		while ((previous = node.previous) != null) {

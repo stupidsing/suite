@@ -204,7 +204,7 @@ public interface BackAllocator {
 
 	public default BackAllocator hold(int period, DblDbl_Dbl fun) {
 		return (akds, indices) -> {
-			Deque<Map<String, Double>> queue = new ArrayDeque<>();
+			var queue = new ArrayDeque<>();
 			OnDateTime onDateTime = allocate(akds, indices);
 
 			return index -> {

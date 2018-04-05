@@ -32,7 +32,7 @@ public class DependencyTest {
 
 	@Test
 	public void testStronglyConnectedComponents() {
-		Deque<String> classes = new ArrayDeque<>(List.of("suite.jdk.DependencyTest"));
+		var classes = new ArrayDeque<>(List.of("suite.jdk.DependencyTest"));
 		Map<String, List<String>> dependenciesByClassName = new HashMap<>();
 		String className;
 

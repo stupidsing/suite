@@ -3,7 +3,6 @@ package suite.lp.doer;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.List;
 
 import suite.Suite;
@@ -127,7 +126,7 @@ public class ProveTracer {
 	}
 
 	private String log(Record record) {
-		Deque<Record> deque = new ArrayDeque<>();
+		var deque = new ArrayDeque<Record>();
 		while (record != null) {
 			deque.addFirst(record);
 			record = record.parent;

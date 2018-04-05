@@ -5,7 +5,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -149,7 +148,7 @@ public class Grapher {
 			mapi1.put(e.t0, e.t1);
 
 		var set = new HashSet<>();
-		Deque<IntIntPair> deque = new ArrayDeque<>();
+		var deque = new ArrayDeque<IntIntPair>();
 		deque.add(IntIntPair.of(g0.id, g1.id));
 		IntIntPair pair;
 

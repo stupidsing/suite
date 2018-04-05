@@ -17,7 +17,7 @@ public class Bag<S> implements Iterable<S> {
 
 	public void remove(S s) {
 		cr.apply(list0 -> {
-			Deque<S> queue = new ArrayDeque<>();
+			var queue = new ArrayDeque<>();
 			for (S s_ : list0)
 				if (!Objects.equal(s, s_))
 					queue.addLast(s_);

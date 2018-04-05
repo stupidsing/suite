@@ -60,7 +60,7 @@ public class Huffman {
 
 	private <Unit> Dictionary<Unit> load(Pair<List<Unit>, List<Boolean>> input) {
 		Map<Unit, Node<Unit>> nodeByUnit = new HashMap<>();
-		Deque<Node<Unit>> deque = new ArrayDeque<>();
+		var deque = new ArrayDeque<>();
 
 		for (var unit : input.t0)
 			if (unit == null) {
@@ -95,7 +95,7 @@ public class Huffman {
 	}
 
 	private static <Unit> Source<Boolean> encode(Dictionary<Unit> dictionary, Source<Unit> source) {
-		Deque<Boolean> stack = new ArrayDeque<>();
+		var stack = new ArrayDeque<>();
 
 		return () -> {
 			Unit unit;

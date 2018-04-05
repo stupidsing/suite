@@ -37,7 +37,7 @@ public class LrParse {
 	}
 
 	public Ast parse(String in) {
-		Source<Ast> source = Read.from(() -> new Lexer(in).tokens()).map(token -> new Ast(token, 0)).source();
+		var source = Read.from(() -> new Lexer(in).tokens()).map(token -> new Ast(token, 0)).source();
 
 		System.out.println("shifts/reduces = " + list(buildLr.fsm));
 		System.out.println("Initial state = " + buildLr.state0);
@@ -46,7 +46,7 @@ public class LrParse {
 	}
 
 	private Ast parse(Source<Ast> tokens, State state) {
-		Deque<Pair<Ast, State>> stack = new ArrayDeque<>();
+		var stack = new ArrayDeque<Pair<Ast, State>>();
 		var token = tokens.source();
 
 		while (true) {

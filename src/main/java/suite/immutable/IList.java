@@ -80,7 +80,7 @@ public class IList<T> implements Iterable<T> {
 	}
 
 	public Deque<T> reverse() {
-		Deque<T> deque = new ArrayDeque<>();
+		var deque = new ArrayDeque<T>();
 		for (var t : this)
 			deque.addFirst(t);
 		return deque;
