@@ -59,7 +59,7 @@ public class Matcher<T> {
 		return Rethrow.ex(() -> {
 			if (map != null) {
 				var t = ctor.source();
-				Class<? extends Object> clazz = t.getClass();
+				var clazz = t.getClass();
 				for (var e : map.entrySet())
 					clazz.getField(e.getKey().substring(1)).set(t, e.getValue());
 				return t;

@@ -81,7 +81,7 @@ public class Main extends ExecutableProgram {
 			else if (verb != null && verb.startsWith("suite.")) {
 				var verb_ = verb;
 				@SuppressWarnings("unchecked")
-				Class<? extends ExecutableProgram> clazz = (Class<? extends ExecutableProgram>) //
+				var clazz = (Class<? extends ExecutableProgram>) //
 				Rethrow.ex(() -> Class.forName(verb_));
 				RunUtil.run(clazz, inputs.toArray(new String[0]));
 			} else if (String_.equals(verb, "type"))

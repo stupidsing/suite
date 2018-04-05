@@ -44,7 +44,7 @@ public class ReduceHeadRecursion {
 		if (en1.type == GrammarType.NAMED_) {
 			var en2 = en1.children.get(0);
 			var entity = en1.content;
-			HeadRecursionForm hrf = getHeadRecursionForm(en2, entity);
+			var hrf = getHeadRecursionForm(en2, entity);
 			Grammar en3;
 
 			if (!hrf.listc.isEmpty()) {
@@ -67,7 +67,7 @@ public class ReduceHeadRecursion {
 		if (en.type == GrammarType.AND___ && en.children.isEmpty())
 			hrf = new HeadRecursionForm(empty, empty);
 		else if (en.type == GrammarType.AND___) {
-			HeadRecursionForm hrf0 = getHeadRecursionForm(en.children.get(0), entity);
+			var hrf0 = getHeadRecursionForm(en.children.get(0), entity);
 			var tail = List_.right(en.children, 1);
 
 			Fun<List<Grammar>, List<Grammar>> fun = list -> Read.from(list).map(en_ -> {
@@ -81,9 +81,9 @@ public class ReduceHeadRecursion {
 		} else if (en.type == GrammarType.NAMED_ && String_.equals(en.content, entity))
 			hrf = new HeadRecursionForm(empty, List.of(new Grammar(GrammarType.AND___)));
 		else if (en.type == GrammarType.OR____) {
-			List<HeadRecursionForm> hrfs = Read.from(en.children).map(en_ -> getHeadRecursionForm(en_, entity)).toList();
-			List<Grammar> listb = Read.from(hrfs).flatMap(hrf_ -> hrf_.listb).toList();
-			List<Grammar> listc = Read.from(hrfs).flatMap(hrf_ -> hrf_.listc).toList();
+			var hrfs = Read.from(en.children).map(en_ -> getHeadRecursionForm(en_, entity)).toList();
+			var listb = Read.from(hrfs).flatMap(hrf_ -> hrf_.listb).toList();
+			var listc = Read.from(hrfs).flatMap(hrf_ -> hrf_.listc).toList();
 			hrf = new HeadRecursionForm(listb, listc);
 		} else
 			hrf = new HeadRecursionForm(List.of(en), empty);

@@ -340,7 +340,7 @@ public class TopDownParse {
 
 	private Parser skipWhitespaces(Parser parser) {
 		return (parse, st) -> {
-			int pos1 = expect.whitespaces(parse.in, parse.length, st.pos);
+			var pos1 = expect.whitespaces(parse.in, parse.length, st.pos);
 			return st.pos(pos1).p(parse, parser);
 		};
 	}
