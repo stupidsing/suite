@@ -214,7 +214,7 @@ public class DailyMain extends ExecutableProgram {
 
 	public BackAllocConfiguration pairs(String symbol0, String symbol1) {
 		var assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
-		BackAllocator backAllocator = BackAllocatorOld.me.pairs(cfg, symbol0, symbol1).unleverage();
+		var backAllocator = BackAllocatorOld.me.pairs(cfg, symbol0, symbol1).unleverage();
 		return new BackAllocConfiguration(time -> assets, backAllocator);
 	}
 
@@ -255,7 +255,7 @@ public class DailyMain extends ExecutableProgram {
 		var assets0 = account0.assets();
 		var assets1 = account1.assets();
 
-		Set<String> symbols = Set_.union(assets0.keySet(), assets1.keySet());
+		var symbols = Set_.union(assets0.keySet(), assets1.keySet());
 		var priceBySymbol = cfg.quote(symbols);
 		var trades = Trade_.diff(Trade.NA, assets0, assets1, priceBySymbol::get).toList();
 
