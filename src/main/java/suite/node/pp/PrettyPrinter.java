@@ -220,7 +220,7 @@ public class PrettyPrinter {
 
 	private boolean isLineBegin() {
 		var b = true;
-		String l = sb.substring(getLineBeginPosition(), getCurrentPosition());
+		var l = sb.substring(getLineBeginPosition(), getCurrentPosition());
 		for (var c : String_.chars(l))
 			b &= Character.isWhitespace(c);
 		return b;

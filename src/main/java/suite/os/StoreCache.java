@@ -199,7 +199,7 @@ public class StoreCache {
 
 	private Path path(Bytes key, int i, String suffix) {
 		var hex8 = To.hex8(key.hashCode());
-		Path dir1 = dir.resolve(hex8.substring(0, 2));
+		var dir1 = dir.resolve(hex8.substring(0, 2));
 		return dir1.resolve(hex8 + "." + i + suffix);
 	}
 
