@@ -7,10 +7,8 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Int_Dbl;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.backalloc.BackAllocator;
-import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy;
 import suite.util.FunUtil.Fun;
@@ -44,7 +42,7 @@ public class BackAllocator_ {
 
 	public static BackAllocator sum(BackAllocator... bas) {
 		return (akds, indices) -> {
-			Streamlet<OnDateTime> odts = Read //
+			var odts = Read //
 					.from(bas) //
 					.map(ba -> ba.allocate(akds, indices)) //
 					.collect(As::streamlet);

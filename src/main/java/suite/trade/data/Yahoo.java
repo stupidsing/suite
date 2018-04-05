@@ -112,7 +112,7 @@ public class Yahoo {
 		if (stockHistory0.isActive && Time.compare(stockHistory0.time, time) < 0) {
 			JsonNode json = queryL1(symbol, TimeRange.of(stockHistory0.time.addDays(-14), Time.now()));
 
-			Streamlet<JsonNode> jsons = Read.each(json) //
+			var jsons = Read.each(json) //
 					.flatMap(json_ -> json_.path("chart").path("result"));
 
 			var exchange = jsons //
@@ -236,7 +236,7 @@ public class Yahoo {
 			try (var is = Singleton.me.storeCache.http(urlString).collect(To::inputStream)) {
 				var json = mapper.readTree(is);
 
-				Streamlet<JsonNode> quotes = Read.each(json) //
+				var quotes = Read.each(json) //
 						.flatMap(json_ -> json_.path("query")) //
 						.flatMap(json_ -> json_.path("results")) //
 						.flatMap(json_ -> json_.path("quote")) //

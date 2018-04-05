@@ -15,7 +15,6 @@ import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
-import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 import suite.util.Thread_;
@@ -164,7 +163,7 @@ public class EditorController {
 
 	public void searchFiles(String text) {
 		if (!text.isEmpty()) {
-			Streamlet<String> files = FileUtil.findPaths(Paths.get(".")) //
+			var files = FileUtil.findPaths(Paths.get(".")) //
 					.map(Path::toString) //
 					.filter(filename -> filename.contains(text));
 

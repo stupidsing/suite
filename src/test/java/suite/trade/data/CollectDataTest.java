@@ -21,7 +21,7 @@ public class CollectDataTest {
 
 	@Test
 	public void test() throws IOException {
-		Streamlet<String> equities = Streamlet.concat( //
+		var equities = Streamlet.concat( //
 				hkex.queryCompanies().map(company -> company.symbol), //
 				forex.invertedCurrencies.keys());
 

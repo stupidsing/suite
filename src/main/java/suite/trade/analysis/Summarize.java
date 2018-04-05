@@ -130,10 +130,10 @@ public class Summarize {
 			Streamlet<Trade> trades_, //
 			Map<String, Float> priceBySymbol, //
 			Iterate<String> infoFun) {
-		Streamlet<Trade> trades0 = trades_;
-		Streamlet<Trade> trades1 = sellAll(trades0, priceBySymbol);
+		var trades0 = trades_;
+		var trades1 = sellAll(trades0, priceBySymbol);
 
-		Streamlet<String> details = Read //
+		var details = Read //
 				.from2(Trade_.portfolio(trades0)) //
 				.map((symbol, nShares) -> {
 					var asset = cfg.queryCompany(symbol);

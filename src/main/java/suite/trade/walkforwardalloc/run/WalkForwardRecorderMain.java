@@ -12,8 +12,6 @@ import java.util.TreeMap;
 
 import suite.os.Schedule;
 import suite.os.Scheduler;
-import suite.streamlet.Streamlet;
-import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.Trade_;
 import suite.trade.backalloc.strategy.BackAllocatorGeneral;
@@ -39,7 +37,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		Streamlet<Asset> assets = cfg.queryCompaniesByMarketCap(Time.now());
+		var assets = cfg.queryCompaniesByMarketCap(Time.now());
 		var fund0 = 1000000f;
 
 		Trade_.isCacheQuotes = false;

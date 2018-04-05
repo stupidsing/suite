@@ -7,7 +7,6 @@ import java.util.HashSet;
 import org.junit.Test;
 
 import suite.primitive.Ints_;
-import suite.streamlet.Streamlet;
 import suite.trade.Trade_;
 import suite.util.String_;
 
@@ -31,14 +30,14 @@ public class HkexFactBookTest {
 
 	@Test
 	public void testLeadingCompanies() {
-		Streamlet<String> companies = hkexFactBook.queryLeadingCompaniesByMarketCap(2016);
+		var companies = hkexFactBook.queryLeadingCompaniesByMarketCap(2016);
 		System.out.println(companies.toList());
 		assertTrue(companies.isAny(symbol -> String_.equals(symbol, "0005.HK")));
 	}
 
 	@Test
 	public void testMainBoard() {
-		Streamlet<String> companies = hkexFactBook.queryMainBoardCompanies(2012);
+		var companies = hkexFactBook.queryMainBoardCompanies(2012);
 		System.out.println(companies.toList());
 		assertTrue(companies.isAny(symbol -> String_.equals(symbol, "0005.HK")));
 	}

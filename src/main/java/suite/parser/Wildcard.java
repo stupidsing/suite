@@ -113,7 +113,7 @@ class Matcher {
 	}
 
 	private Streamlet<State> applyPattern(String pattern, String input) {
-		Streamlet<State> st = Read.each(new State(input));
+		var st = Read.each(new State(input));
 
 		for (var ch : String_.chars(pattern))
 			switch (ch) {

@@ -16,7 +16,6 @@ import suite.fs.impl.LazyIbTreeFileSystemImpl;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.As;
-import suite.streamlet.Streamlet;
 import suite.util.Copy;
 import suite.util.To;
 
@@ -74,7 +73,7 @@ public class FileSystemTest {
 	}
 
 	private void testWriteFiles(FileSystem fs) throws IOException {
-		Streamlet<Path> paths = FileUtil.findPaths(Paths.get("src/test/java/"));
+		var paths = FileUtil.findPaths(Paths.get("src/test/java/"));
 		var fsm = fs.mutate();
 
 		for (var path : paths) {

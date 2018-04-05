@@ -243,11 +243,11 @@ public class StockHistory {
 	}
 
 	public String write() {
-		Streamlet<String> s0 = Read.each( //
+		var s0 = Read.each( //
 				"exchange = " + exchange, //
 				"timeZone = 8", //
 				time.ymdHms());
-		Streamlet<String> s1 = Read.each(dividends, splits).concatMap(this::concat);
+		var s1 = Read.each(dividends, splits).concatMap(this::concat);
 		Streamlet<String> s2 = Read.from2(data).concatMap((tag, fs) -> concat(fs).cons(tag));
 		return Streamlet //
 				.concat(s0, s1, s2) //

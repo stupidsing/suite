@@ -47,7 +47,7 @@ public class BackTestMain extends ExecutableProgram {
 
 		Streamlet<String> strategyMatches = !arg0.isEmpty() ? Read.from(arg0.split(",")) : null;
 
-		Streamlet<Integer> years = !arg1.isEmpty() ? Read //
+		var years = !arg1.isEmpty() ? Read //
 				.from(arg1.split(",")) //
 				.concatMap(s -> {
 					var pair = ParseUtil.search(s, "-", Assoc.RIGHT);
@@ -70,7 +70,7 @@ public class BackTestMain extends ExecutableProgram {
 				.join2(years.sort(Object_::compare).map(TimeRange::ofYear)) //
 				.map2((pair, period) -> pair.t0, (pair, period) -> {
 					var bac = pair.t1;
-					Streamlet<Asset> assets = bac.assetsFun.apply(period.from);
+					var assets = bac.assetsFun.apply(period.from);
 					return runner.backTest(bac.backAllocator, period, assets);
 				}) //
 				.collect(As::streamlet2);

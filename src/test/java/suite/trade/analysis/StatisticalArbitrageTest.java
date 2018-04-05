@@ -21,7 +21,6 @@ import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.adt.pair.IntFltPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.Time;
@@ -305,7 +304,7 @@ public class StatisticalArbitrageTest {
 	}
 
 	private AlignKeyDataSource<String> dataSources() {
-		Streamlet<String> symbols = cfg //
+		var symbols = cfg //
 				.queryCompaniesByMarketCap(Time.now()) //
 				.map(asset -> asset.symbol);
 

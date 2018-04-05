@@ -109,7 +109,7 @@ public class Chr {
 	private Streamlet<State> chr(State state, Rule rule) {
 		var generalizer = new Generalizer();
 		var trail = new Trail();
-		Streamlet<State> states = Read.each(state);
+		var states = Read.each(state);
 
 		for (Node if_ : rule.ifs)
 			states = chrIf(states, trail, generalizer.generalize(if_));

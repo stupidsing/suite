@@ -75,7 +75,7 @@ public class Google {
 	}
 
 	private Map<String, Float> quote_(Set<String> symbols) {
-		Streamlet<String> querySymbols = Read //
+		var querySymbols = Read //
 				.from(symbols) //
 				.filter(symbol -> !Trade_.isCacheQuotes || !quotesBySymbol.containsKey(symbol)) //
 				.distinct();

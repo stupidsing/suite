@@ -19,12 +19,12 @@ public class FactorTest {
 
 	@Test
 	public void test() {
-		Streamlet<String> indices = Read.each(Usex.crudeOil);
+		var indices = Read.each(Usex.crudeOil);
 
-		Streamlet<Asset> assets0 = cfg.queryCompaniesByMarketCap(Time.now());
+		var assets0 = cfg.queryCompaniesByMarketCap(Time.now());
 		Streamlet<Asset> assets1 = cfg.queryHistory().map(trade -> trade.symbol).distinct().map(cfg::queryCompany);
 
-		Streamlet<Asset> assets = Streamlet //
+		var assets = Streamlet //
 				.concat(assets0, assets1) //
 				.cons(Asset.hsi) //
 				.cons(cfg.queryCompany("0753.HK")) //

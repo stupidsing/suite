@@ -41,7 +41,7 @@ public class P3Optimize {
 			return FunpData.of(Read.from2(pairs).concatMap((expr, range) -> {
 				var expr1 = optimize(expr);
 				var start = range.t0;
-				Streamlet<Pair<Funp, IntIntPair>> pairsx = new Switch<Streamlet<Pair<Funp, IntIntPair>>>(expr1 //
+				var pairsx = new Switch<Streamlet<Pair<Funp, IntIntPair>>>(expr1 //
 				).applyIf(FunpData.class, g -> g.apply(pairs1 -> {
 					return Read //
 							.from2(pairs1) //

@@ -27,7 +27,7 @@ public class BackTester {
 	private Statistic stat = new Statistic();
 
 	public Simulate backTest(BackAllocator backAllocator, TimeRange period) {
-		Streamlet<Asset> assets0 = cfg.queryCompaniesByMarketCap(period.from); // hkex.getCompanies()
+		var assets0 = cfg.queryCompaniesByMarketCap(period.from); // hkex.getCompanies()
 		return backTest(backAllocator, period, assets0);
 	}
 
@@ -36,10 +36,10 @@ public class BackTester {
 	}
 
 	public <T> String conclude(Streamlet2<T, Simulate> simulationsByKey) {
-		Streamlet<String> results0 = simulationsByKey //
+		var results0 = simulationsByKey //
 				.map((key, simulate) -> "\nTEST = " + key + ", " + simulate.conclusion());
 
-		Streamlet<String> results1 = simulationsByKey //
+		var results1 = simulationsByKey //
 				.filterValue(sim -> sim.exception == null) //
 				.groupBy(sims -> {
 					var txFee = sims.toDouble(Obj_Dbl.sum(sim -> cfg.transactionFee(sim.account.transactionAmount())));
