@@ -91,7 +91,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 			boolean[] isInUse = new boolean[end - start];
 
 			Sink<List<Integer>> use = pointers_ -> {
-				for (int pointer : pointers_)
+				for (var pointer : pointers_)
 					if (start <= pointer)
 						isInUse[pointer - start] = true;
 			};

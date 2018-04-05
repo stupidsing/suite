@@ -2,7 +2,6 @@ package suite.weiqi;
 
 import java.util.HashSet;
 
-import suite.weiqi.GroupAnalysis.Group;
 import suite.weiqi.Weiqi.Occupation;
 
 public class Evaluator {
@@ -17,7 +16,7 @@ public class Evaluator {
 		// count territories by counting groups
 		GroupAnalysis ga = new GroupAnalysis(board);
 
-		for (Group group : ga.getGroups()) {
+		for (var group : ga.getGroups()) {
 			Occupation color = group.color;
 			var colors = new HashSet<>();
 			boolean us = false, theirs = false;
@@ -30,7 +29,7 @@ public class Evaluator {
 
 			// count territory
 			if (color == Occupation.EMPTY) {
-				for (Group neighborGroup : group.touches)
+				for (var neighborGroup : group.touches)
 					colors.add(neighborGroup.color);
 
 				us = colors.contains(player);

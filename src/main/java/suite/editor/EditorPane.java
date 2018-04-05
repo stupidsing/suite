@@ -31,7 +31,7 @@ public class EditorPane extends JEditorPane {
 			if (isSelectedText())
 				replaceLines(segment -> {
 					StringBuilder sb = new StringBuilder("\t");
-					for (char ch : String_.chars(segment)) {
+					for (var ch : String_.chars(segment)) {
 						sb.append(ch);
 						sb.append(ch == 10 ? "\t" : "");
 					}

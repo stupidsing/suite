@@ -26,7 +26,7 @@ public class CollectDataTest {
 				hkex.queryCompanies().map(company -> company.symbol), //
 				forex.invertedCurrencies.keys());
 
-		for (String code : equities) {
+		for (var code : equities) {
 			String urlString = yahoo.tableUrl(code, TimeRange.ages());
 			URL url = To.url(urlString);
 

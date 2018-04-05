@@ -49,7 +49,7 @@ public class HkexFactBook {
 						List<String> list = new ArrayList<>();
 						int[] ps = { p0, p1, };
 						var s = 0;
-						for (int p : ps) {
+						for (var p : ps) {
 							list.add(line.substring(s, p));
 							s = p + 1;
 						}

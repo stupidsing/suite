@@ -51,11 +51,11 @@ public class GroupAnalysis {
 	private void assignGroups() {
 		var nGroups = 0;
 
-		for (Coordinate c : Coordinate.all()) {
+		for (var c : Coordinate.all()) {
 			Occupation color = board.get(c);
 			Group group = null; // must be root
 
-			for (Coordinate c1 : c.leftOrUp)
+			for (var c1 : c.leftOrUp)
 				if (board.get(c1) == color) {
 					Group group1 = groupByCoord.get(c1).root();
 
@@ -72,7 +72,7 @@ public class GroupAnalysis {
 			groupByCoord.put(c, group);
 		}
 
-		for (Coordinate c : Coordinate.all()) {
+		for (var c : Coordinate.all()) {
 			Group group = groupByCoord.get(c).root();
 			groupByCoord.put(c, group);
 			group.coords.add(c);
@@ -81,10 +81,10 @@ public class GroupAnalysis {
 	}
 
 	private void assignGroupSurroundings() {
-		for (Coordinate c : Coordinate.all()) {
+		for (var c : Coordinate.all()) {
 			Group group = groupByCoord.get(c);
 
-			for (Coordinate c1 : c.leftOrUp) {
+			for (var c1 : c.leftOrUp) {
 				Group group1 = groupByCoord.get(c1);
 
 				if (group != group1) {
@@ -94,7 +94,7 @@ public class GroupAnalysis {
 			}
 
 			if (board.get(c) == Occupation.EMPTY)
-				for (Coordinate c1 : c.neighbors)
+				for (var c1 : c.neighbors)
 					groupByCoord.get(c1).breathes.add(c);
 		}
 	}

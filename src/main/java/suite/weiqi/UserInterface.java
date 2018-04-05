@@ -23,7 +23,7 @@ public class UserInterface {
 			for (var y = 0; y < Weiqi.size; y++) {
 				Occupation occupation = Occupation.EMPTY;
 
-				for (Occupation o : Occupation.values())
+				for (var o : Occupation.values())
 					if (String_.equals(cols[y], o.display()))
 						occupation = o;
 

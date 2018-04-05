@@ -316,7 +316,7 @@ public class Grapher {
 			} else if (type == ReadType.DICT || type == ReadType.TUPLE) {
 				dos.writeInt(children.size());
 
-				for (IntIntPair child : children) {
+				for (var child : children) {
 					if (type == ReadType.DICT)
 						dos.writeInt(child.t0 - index);
 					dos.writeInt(child.t1 - index);
@@ -328,7 +328,7 @@ public class Grapher {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 
-		for (GN gn : gns) {
+		for (var gn : gns) {
 			String s;
 			switch (gn.type) {
 			case DICT:

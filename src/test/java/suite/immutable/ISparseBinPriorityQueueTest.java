@@ -23,7 +23,7 @@ public class ISparseBinPriorityQueueTest {
 
 		ISparseBinPriorityQueue<Integer> pq = new ISparseBinPriorityQueue<>(Object_::compare);
 
-		for (int i : list)
+		for (var i : list)
 			pq = pq.add(i);
 
 		for (var i = 0; i < size; i++) {

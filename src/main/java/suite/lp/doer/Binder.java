@@ -37,7 +37,7 @@ public class Binder {
 			Map<Node, Reference> map0 = ((Dict) n0).map;
 			Map<Node, Reference> map1 = ((Dict) n1).map;
 			boolean b = true;
-			for (Node key : List_.concat(map0.keySet(), map1.keySet())) {
+			for (var key : List_.concat(map0.keySet(), map1.keySet())) {
 				Node v0 = map0.computeIfAbsent(key, k -> new Reference());
 				Node v1 = map1.computeIfAbsent(key, k -> new Reference());
 				b &= bind(v0, v1, trail);

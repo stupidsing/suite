@@ -36,7 +36,7 @@ public class RuleSetPredicates {
 		List<Rule> rules = ruleSet.getRules();
 		List<Node> nodes = new ArrayList<>();
 
-		for (Rule rule : rules)
+		for (var rule : rules)
 			nodes.add(Tree.of(TermOp.IS____, rule.head, rule.tail));
 
 		return prover.bind(Tree.of(TermOp.NEXT__, nodes), p0);
@@ -77,7 +77,7 @@ public class RuleSetPredicates {
 		var pit = trail.getPointInTime();
 		List<Rule> targets = new ArrayList<>();
 
-		for (Rule rule : ruleSet.getRules()) {
+		for (var rule : ruleSet.getRules()) {
 			if (Binder.bind(rule0.head, rule.head, trail) //
 					&& Binder.bind(rule0.tail, rule.tail, trail))
 				targets.add(rule);
@@ -85,7 +85,7 @@ public class RuleSetPredicates {
 			trail.unwind(pit);
 		}
 
-		for (Rule rule : targets)
+		for (var rule : targets)
 			ruleSet.removeRule(rule);
 
 		return true;

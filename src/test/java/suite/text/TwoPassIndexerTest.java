@@ -24,10 +24,10 @@ public class TwoPassIndexerTest {
 
 		TwoPassIndexer indexer = new TwoPassIndexer();
 
-		for (String filename : filenames)
+		for (var filename : filenames)
 			indexer.pass0(filename, FileUtil.read(filename));
 
-		for (String filename : filenames)
+		for (var filename : filenames)
 			indexer.pass1(filename, FileUtil.read(filename));
 
 		Map<String, List<Reference>> map = indexer.getReferencesByWord();
@@ -44,7 +44,7 @@ public class TwoPassIndexerTest {
 
 		System.out.println();
 
-		for (Reference key : indexer.search("IOException"))
+		for (var key : indexer.search("IOException"))
 			System.out.println("IOException found in " + key);
 	}
 

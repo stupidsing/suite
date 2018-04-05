@@ -62,7 +62,7 @@ public class Board1 {
 		Group group = new Group(o);
 		setGroup(c, group);
 
-		for (Coordinate c1 : c.neighbors) {
+		for (var c1 : c.neighbors) {
 			Group group1 = getGroup(c1);
 			if (group1 != null) {
 				group1.nBreaths--;
@@ -74,7 +74,7 @@ public class Board1 {
 
 		List<Coordinate> list = new ArrayList<>();
 
-		for (Coordinate c1 : c.neighbors) {
+		for (var c1 : c.neighbors) {
 			Group group1 = getGroup(c1);
 			if (group1 != null && group1.nBreaths == 0) {
 				removeGroup(group1, c1);
@@ -89,7 +89,7 @@ public class Board1 {
 		} else
 			return () -> {
 				removeGroup(getGroup(c), c);
-				for (Coordinate c1 : list)
+				for (var c1 : list)
 					fillGroup(new Group(o.opponent()), c1);
 			};
 	}
@@ -120,7 +120,7 @@ public class Board1 {
 		var neighbourGroups = new HashSet<>();
 		setGroup(c, group);
 
-		for (Coordinate c1 : c.neighbors) {
+		for (var c1 : c.neighbors) {
 			Group g = getGroup(c1);
 			if (g == null)
 				fillGroup(group, c1);
@@ -133,7 +133,7 @@ public class Board1 {
 		var neighbourGroups = new HashSet<>();
 		setGroup(c, null);
 
-		for (Coordinate c1 : c.neighbors) {
+		for (var c1 : c.neighbors) {
 			Group g = getGroup(c1);
 			if (g == group)
 				removeGroup(g, c1);

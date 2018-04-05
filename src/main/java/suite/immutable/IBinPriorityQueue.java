@@ -69,7 +69,7 @@ public class IBinPriorityQueue<T> {
 
 			var rank = 0;
 
-			for (Node node : tree.nodes)
+			for (var node : tree.nodes)
 				forest1[rank++] = node;
 
 			IBinPriorityQueue<T> pq0 = new IBinPriorityQueue<>(comparator, forest0);
@@ -109,7 +109,7 @@ public class IBinPriorityQueue<T> {
 		for (var rank = 0; rank < maxRank; rank++) {
 			List<Node> list1 = new ArrayList<>();
 
-			for (Node t : List.of(tree, trees[rank], pq.trees[rank]))
+			for (var t : List.of(tree, trees[rank], pq.trees[rank]))
 				if (t != null)
 					list1.add(t);
 

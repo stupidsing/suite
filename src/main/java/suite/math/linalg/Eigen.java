@@ -25,7 +25,7 @@ public class Eigen {
 			for (var iteration = 0; iteration < 256; iteration++) {
 				float[] ys = mtx.mul(m, xs);
 				eigenValue = 0f;
-				for (float y : ys)
+				for (var y : ys)
 					if (Math.abs(eigenValue) < Math.abs(y))
 						eigenValue = y;
 				xs = vec.scale(ys, 1d / eigenValue);

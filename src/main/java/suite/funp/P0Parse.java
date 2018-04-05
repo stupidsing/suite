@@ -182,7 +182,7 @@ public class P0Parse {
 				Funp value = parse(b);
 				ISet<String> variables1 = ISet.empty();
 
-				for (String var : variables)
+				for (var var : variables)
 					variables1 = variables1.add(var);
 
 				Bind bind = new Bind(variables);
@@ -191,7 +191,7 @@ public class P0Parse {
 				Funp f0 = bind.bind(be, value, then, else_);
 				Funp f1 = FunpCheckType.of(be, value, f0);
 
-				for (String var : variables)
+				for (var var : variables)
 					f1 = FunpDefine.of(false, var, FunpDontCare.of(), f1);
 
 				return f1;

@@ -14,14 +14,14 @@ public class Judge {
 		var nPiecesCount = 0;
 		var players = new HashSet<>();
 
-		for (Coordinate c : Coordinate.all()) {
+		for (var c : Coordinate.all()) {
 			Occupation color = board.get(c);
 			players.add(color);
 			nPiecesCount += color != Occupation.EMPTY ? 1 : 0;
 		}
 
 		if (1 < nPiecesCount)
-			for (Occupation player : Weiqi.players)
+			for (var player : Weiqi.players)
 				if (players.contains(player) && !players.contains(player.opponent()))
 					return player;
 
@@ -34,11 +34,11 @@ public class Judge {
 		// judge which groups are eyes, i.e. surrounded by only one colour
 		Map<Group, Boolean> groupIsEye = new HashMap<>();
 
-		for (Group group : ga.getGroups())
+		for (var group : ga.getGroups())
 			if (group.color == Occupation.EMPTY) {
 				var colors = new HashSet<>();
 
-				for (Group neighborGroup : group.touches) {
+				for (var neighborGroup : group.touches) {
 					Occupation color = neighborGroup.color;
 					if (color != Occupation.EMPTY)
 						colors.add(color);

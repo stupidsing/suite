@@ -49,11 +49,11 @@ public class Longs_ {
 
 	public static Longs concat(Longs... array) {
 		var length = 0;
-		for (Longs longs : array)
+		for (var longs : array)
 			length += longs.size();
 		long[] cs1 = new long[length];
 		var i = 0;
-		for (Longs longs : array) {
+		for (var longs : array) {
 			var size_ = longs.size();
 			copy(longs.cs, longs.start, cs1, i, size_);
 			i += size_;

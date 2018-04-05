@@ -27,7 +27,7 @@ public class EbnfOperatorTest {
 		StringBuilder sb = new StringBuilder();
 		var i = 0;
 
-		for (TermOp operator : TermOp.values()) {
+		for (var operator : TermOp.values()) {
 			var op = "\"" + operator.getName().trim() + "\"";
 			var v = v(i++);
 			var v1 = v(i);

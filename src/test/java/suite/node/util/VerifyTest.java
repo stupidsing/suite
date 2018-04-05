@@ -139,14 +139,14 @@ public class VerifyTest {
 				return verify(Suite.substitute("true | fulfill .0", m));
 			else if ((m = Suite.pattern(".0 | choose {.1}").match(proof)) != null) {
 				var list = verify(m[0]);
-				for (Node node : Tree.iter(list, TermOp.AND___))
+				for (var node : Tree.iter(list, TermOp.AND___))
 					if (Binder.bind(node, new Generalizer().generalize(m[1]), new Trail()))
 						return node;
 				return Fail.t("cannot verify " + proof);
 			} else if ((m = Suite.pattern(".0 | choose .1").match(proof)) != null) {
 				var list = verify(m[0]);
 				Tree tree;
-				for (Node node : Tree.iter(list, TermOp.AND___))
+				for (var node : Tree.iter(list, TermOp.AND___))
 					if ((tree = Tree.decompose(node, TermOp.NEXT__)) != null && tree.getLeft() == m[1])
 						return tree.getRight();
 				return Fail.t("cannot verify " + proof);

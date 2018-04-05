@@ -36,7 +36,7 @@ public class LoadBalancer {
 				try {
 					List<String> alives1 = new ArrayList<>();
 
-					for (String server : servers)
+					for (var server : servers)
 						try (Socket socket = new Socket(server, port)) {
 							alives1.add(server);
 						} catch (SocketException ex) {

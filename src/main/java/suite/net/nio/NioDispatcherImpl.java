@@ -69,7 +69,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 	 */
 	@Override
 	public void disconnect(NioChannel channel) throws IOException {
-		for (SelectionKey key : selector.keys())
+		for (var key : selector.keys())
 			if (key.attachment() == channel)
 				key.channel().close();
 	}

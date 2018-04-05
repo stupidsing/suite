@@ -50,7 +50,7 @@ public class FunTypeInformation {
 		return e0.<Type> switch_( //
 		).applyIf(ArrayFunExpr.class, e1 -> {
 			Type type = Type.getType(e1.clazz);
-			for (FunExpr element : e1.elements)
+			for (var element : e1.elements)
 				if (element != null && type != typeOf(element))
 					Fail.t();
 			return e1.clazz.isPrimitive() ? new ArrayType(type.getType(), 1) : new ArrayType(type, 1);

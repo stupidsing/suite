@@ -23,7 +23,7 @@ public class GeneralizerFactoryTest {
 	}
 
 	private void test(String pattern, String match) {
-		for (GeneralizerFactory gf : new GeneralizerFactory[] { new CompileGeneralizerImpl(), new SewingGeneralizerImpl(), }) {
+		for (var gf : new GeneralizerFactory[] { new CompileGeneralizerImpl(), new SewingGeneralizerImpl(), }) {
 			Generalize_ p = gf.generalizer(Suite.parse(pattern));
 
 			assertTrue(Binder.bind(p.apply(gf.mapper().env()), Suite.parse(match), new Trail()));

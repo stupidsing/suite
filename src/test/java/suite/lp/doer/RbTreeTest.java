@@ -10,7 +10,6 @@ import org.junit.Test;
 import suite.Suite;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.InterpretedProverBuilder;
-import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.SewingProverBuilder2;
 
 public class RbTreeTest {
@@ -23,7 +22,7 @@ public class RbTreeTest {
 				+ ", rbt-get .t 8" //
 				+ ", rbt-member .t 4";
 
-		for (Builder builder : List.of(new InterpretedProverBuilder(), new SewingProverBuilder2()))
+		for (var builder : List.of(new InterpretedProverBuilder(), new SewingProverBuilder2()))
 			assertTrue(Suite.proveLogic(builder, rs, gs));
 	}
 

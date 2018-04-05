@@ -63,7 +63,7 @@ public class Amd64Parse {
 		opMem.baseReg = -1;
 		opMem.dispSize = 0;
 
-		for (Node component : scan(m[0], ".0 + .1"))
+		for (var component : scan(m[0], ".0 + .1"))
 			if ((m = Suite.pattern(".0 * .1").match(component)) != null)
 				if (opMem.indexReg < 0) {
 					opMem.indexReg = amd64.regByName.get(m[0]).reg;

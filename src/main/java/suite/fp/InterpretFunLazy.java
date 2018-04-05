@@ -106,7 +106,7 @@ public class InterpretFunLazy {
 		Lazy_ lazy0 = new Lazy_(0, IMap.empty());
 		Frame frame = new Frame(null);
 
-		for (String key : keys) {
+		for (var key : keys) {
 			lazy0 = lazy0.put(Atom.of(key));
 			frame.add(df.get(key));
 		}

@@ -18,7 +18,7 @@ public class Polynomial {
 
 	public double evaluate(float[] ps, float x) {
 		var y = 0d;
-		for (float p : ps)
+		for (var p : ps)
 			y = y * x + p;
 		return y;
 	}

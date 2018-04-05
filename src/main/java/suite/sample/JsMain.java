@@ -32,7 +32,7 @@ public class JsMain extends ExecutableProgram {
 	protected synchronized boolean run(String[] args) throws IOException, ScriptException {
 		List<String> filenames = new ArrayList<>();
 
-		for (String arg : args)
+		for (var arg : args)
 			if (!arg.isEmpty())
 				if (arg.charAt(0) == '-')
 					engine.eval(arg.substring(1));
@@ -44,7 +44,7 @@ public class JsMain extends ExecutableProgram {
 
 		boolean b = true;
 
-		for (String filename : filenames) {
+		for (var filename : filenames) {
 			var r = engine.eval(new FileReader(filename));
 			b &= r == Boolean.TRUE //
 					|| r instanceof Number && ((Number) r).intValue() != 0 //

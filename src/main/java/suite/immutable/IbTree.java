@@ -267,7 +267,7 @@ public class IbTree<T> implements ITree<T> {
 
 	private void dump(StringBuilder sb, List<Slot> node, String indent) {
 		if (node != null)
-			for (Slot slot : node) {
+			for (var slot : node) {
 				sb.append(indent + (slot.pivot != null ? slot.pivot : "<-inf>") + "\n");
 				dump(sb, slot.slots, indent + "  ");
 			}

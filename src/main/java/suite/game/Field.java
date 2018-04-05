@@ -20,7 +20,7 @@ public class Field<O> {
 
 	public O getObject(XY xy) {
 		Hex hex = new Hex();
-		for (Occupation occupation : occupations)
+		for (var occupation : occupations)
 			if (hex.distance(hex.diff(xy, occupation.xy)) < occupation.radius)
 				return occupation.object;
 		return null;

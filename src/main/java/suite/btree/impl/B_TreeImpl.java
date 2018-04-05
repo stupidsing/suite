@@ -378,7 +378,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	private void dump(PrintStream w, String pfx, int pointer) {
 		Page page = loadPage(pointer);
 
-		for (KeyPointer kp : page) {
+		for (var kp : page) {
 			Pointer ptr = kp.pointer;
 			w.print(pfx + (kp.key != null ? kp.key : "MIN-KEY"));
 

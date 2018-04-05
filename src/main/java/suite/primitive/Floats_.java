@@ -49,11 +49,11 @@ public class Floats_ {
 
 	public static Floats concat(Floats... array) {
 		var length = 0;
-		for (Floats floats : array)
+		for (var floats : array)
 			length += floats.size();
 		float[] cs1 = new float[length];
 		var i = 0;
-		for (Floats floats : array) {
+		for (var floats : array) {
 			var size_ = floats.size();
 			copy(floats.cs, floats.start, cs1, i, size_);
 			i += size_;

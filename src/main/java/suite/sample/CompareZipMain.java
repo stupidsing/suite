@@ -37,7 +37,7 @@ public class CompareZipMain extends ExecutableProgram {
 
 		boolean isChanged = false;
 
-		for (String name : names) {
+		for (var name : names) {
 			ZipEntry e0 = zf0.getEntry(name);
 			ZipEntry e1 = zf1.getEntry(name);
 			boolean b = e0 != null && e1 != null;

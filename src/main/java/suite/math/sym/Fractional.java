@@ -89,7 +89,7 @@ public class Fractional<I> {
 				else
 					return fract(a).map(pair -> { // TODO assummed a != 0 or b != 0
 						Fract<I> r = f1;
-						for (char ch : Integer.toBinaryString(power).toCharArray()) {
+						for (var ch : Integer.toBinaryString(power).toCharArray()) {
 							r = mul(r, r);
 							r = ch != '0' ? mul(r, pair) : r;
 						}

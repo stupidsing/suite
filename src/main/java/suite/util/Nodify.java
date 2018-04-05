@@ -182,7 +182,7 @@ public class Nodify {
 				Nodifier nodifier1 = getNodifier(typeArgs[0]);
 				nodifier = new Nodifier(object -> {
 					Tree start = Tree.of(null, null, null), tree = start;
-					for (Object o : (Collection<?>) object) {
+					for (var o : (Collection<?>) object) {
 						Tree tree0 = tree;
 						Tree.forceSetRight(tree0, tree = Tree.of(TermOp.OR____, apply_(nodifier1, o), null));
 					}

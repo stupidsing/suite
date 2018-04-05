@@ -96,7 +96,7 @@ public class ConfigurationImpl implements Configuration {
 	private Map<String, Float> quote_(Set<String> symbols) {
 		Map<Fun<Set<String>, Map<String, Float>>, Set<String>> map = new HashMap<>();
 
-		for (String symbol : symbols)
+		for (var symbol : symbols)
 			if (filter(symbol))
 				map.computeIfAbsent(src(symbol).quoteFun, s -> new HashSet<>()).add(symbol);
 

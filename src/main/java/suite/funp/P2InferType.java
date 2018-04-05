@@ -222,7 +222,7 @@ public class P2InferType {
 				return tr;
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
 				UnNode<Type> te = unify.newRef();
-				for (Funp element : elements)
+				for (var element : elements)
 					unify(n, te, infer(element));
 				return TypeArray.of(te, elements.size());
 			})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
@@ -373,7 +373,7 @@ public class P2InferType {
 				var elementSize = getTypeSize(te);
 				var offset = 0;
 				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
-				for (Funp element : elements) {
+				for (var element : elements) {
 					var offset0 = offset;
 					list.add(Pair.of(erase(element), IntIntPair.of(offset0, offset += elementSize)));
 				}

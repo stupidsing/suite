@@ -47,7 +47,7 @@ public class ISparseBinPriorityQueue<T> {
 		private T findMin() {
 			T min = null;
 
-			for (Tree tree : trees) {
+			for (var tree : trees) {
 				T value = tree.root.value;
 				if (min == null || comparator.compare(value, min) < 0) {
 					this.tree = tree;
@@ -64,7 +64,7 @@ public class ISparseBinPriorityQueue<T> {
 			var trees0 = IList.<Tree> end();
 			var trees1 = IList.<Tree> end();
 
-			for (Tree t : trees.reverse())
+			for (var t : trees.reverse())
 				if (t.rank != tree.rank)
 					trees0 = IList.cons(t, trees0);
 

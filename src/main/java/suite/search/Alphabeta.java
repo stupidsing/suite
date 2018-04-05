@@ -31,7 +31,7 @@ public class Alphabeta<State> {
 			if (!states.isEmpty()) {
 				List<State> principalVariation = null;
 
-				for (State state1 : states) {
+				for (var state1 : states) {
 					moves.push(state1);
 
 					IntObjPair<List<State>> result = search_(state1, depth - 1, -beta, -alpha);

@@ -37,7 +37,7 @@ public abstract class Planar implements RtObject {
 	public List<RayHit> hit(Ray ray) {
 		List<RayHit> rayHits = new ArrayList<>();
 
-		for (RayHit rayHit : plane.hit(ray)) {
+		for (var rayHit : plane.hit(ray)) {
 			R3 planarDir = R3.sub(rayHit.intersection().hitPoint(), origin);
 			double x = R3.dot(planarDir, axis0) * invAxis0;
 			double y = R3.dot(planarDir, axis1) * invAxis1;

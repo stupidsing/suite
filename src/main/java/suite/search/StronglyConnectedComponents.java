@@ -47,7 +47,7 @@ public class StronglyConnectedComponents<V> {
 		Map<V, Scc> sccs = Read.from(dg.vertices).map2(v -> new Scc(v)).toMap();
 		forwards = dg.forwards.entries().map2((u, v) -> sccs.get(u), (u, v) -> sccs.get(v)).toMultimap();
 
-		for (Scc vscc : sccs.values())
+		for (var vscc : sccs.values())
 			if (!vscc.isVisited)
 				strongConnect(vscc);
 	}
@@ -57,7 +57,7 @@ public class StronglyConnectedComponents<V> {
 		vscc.index = vscc.lowestLink = index++;
 		stack.push(vscc);
 
-		for (Scc wscc : forwards.get(vscc))
+		for (var wscc : forwards.get(vscc))
 			if (!wscc.isVisited) {
 				strongConnect(wscc);
 				vscc.lowestLink = min(vscc.lowestLink, wscc.lowestLink);
@@ -80,8 +80,8 @@ public class StronglyConnectedComponents<V> {
 		var vertices = Read.from(components).toSet();
 		Set<Pair<Set<V>, Set<V>>> edges = new HashSet<>();
 
-		for (V v0 : dg.vertices)
-			for (V v1 : dg.forwards.get(v0)) {
+		for (var v0 : dg.vertices)
+			for (var v1 : dg.forwards.get(v0)) {
 				var vs0 = map.get(v0);
 				var vs1 = map.get(v1);
 				if (vs0 != vs1)

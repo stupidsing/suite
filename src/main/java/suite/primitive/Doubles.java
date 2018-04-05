@@ -52,7 +52,7 @@ public class Doubles implements Iterable<Double> {
 
 	public static Doubles concat(Doubles... array) {
 		DoublesBuilder bb = new DoublesBuilder();
-		for (Doubles doubles : array)
+		for (var doubles : array)
 			bb.append(doubles);
 		return bb.toDoubles();
 	}

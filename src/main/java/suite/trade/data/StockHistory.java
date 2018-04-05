@@ -134,7 +134,7 @@ public class StockHistory {
 		var tx = period.to.epochSec();
 		Iterate<LngFltPair[]> filter_ = pairs0 -> {
 			List<LngFltPair> pairs1 = new ArrayList<>();
-			for (LngFltPair pair : pairs0)
+			for (var pair : pairs0)
 				if (t0 <= pair.t0 && pair.t0 < tx)
 					pairs1.add(pair);
 			return pairs1.toArray(new LngFltPair[0]);
@@ -156,7 +156,7 @@ public class StockHistory {
 			List<LngFltPair> pairs = new ArrayList<>();
 			var length1 = pairs1.length;
 			var i1 = 0;
-			for (LngFltPair pair0 : pairs0) {
+			for (var pair0 : pairs0) {
 				var l0 = pair0.t0;
 				while (i1 < length1) {
 					LngFltPair pair1 = pairs1[i1];
@@ -186,7 +186,7 @@ public class StockHistory {
 		Iterate<LngFltPair[]> align_ = pairs0 -> {
 			List<LngFltPair> pairs1 = new ArrayList<>();
 			Time date = TimeRange.min;
-			for (LngFltPair pair : pairs0) {
+			for (var pair : pairs0) {
 				Time date1 = Time.ofEpochSec(pair.t0).startOfDay();
 				if (Object_.compare(date, date1) < 0)
 					pairs1.add(pair);

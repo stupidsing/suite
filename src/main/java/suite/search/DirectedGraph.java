@@ -43,7 +43,7 @@ public class DirectedGraph<V> {
 
 		do {
 			var set1 = new HashSet<V>();
-			for (V v : vertices)
+			for (var v : vertices)
 				if (!set.contains(v) && Read.from(forwards.get(v)).isAll(set::contains))
 					set1.add(v);
 			results.add(set1);

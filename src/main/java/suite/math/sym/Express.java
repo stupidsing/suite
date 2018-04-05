@@ -62,7 +62,7 @@ public class Express {
 			Node[] m;
 			Node n;
 
-			for (Node child : nodes0)
+			for (var child : nodes0)
 				if (child instanceof Int)
 					constant = apply(child, constant);
 				else if ((m = patNeg.match(child)) != null && (n = m[0]) instanceof Int)

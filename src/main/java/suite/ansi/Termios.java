@@ -98,7 +98,7 @@ public class Termios implements Closeable {
 	}
 
 	public void puts(String s) {
-		for (char ch : String_.chars(s))
+		for (var ch : String_.chars(s))
 			libc.putchar(ch);
 	}
 

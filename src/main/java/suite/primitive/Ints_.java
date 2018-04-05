@@ -49,11 +49,11 @@ public class Ints_ {
 
 	public static Ints concat(Ints... array) {
 		var length = 0;
-		for (Ints ints : array)
+		for (var ints : array)
 			length += ints.size();
 		int[] cs1 = new int[length];
 		var i = 0;
-		for (Ints ints : array) {
+		for (var ints : array) {
 			var size_ = ints.size();
 			copy(ints.cs, ints.start, cs1, i, size_);
 			i += size_;

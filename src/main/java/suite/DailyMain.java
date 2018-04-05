@@ -190,7 +190,7 @@ public class DailyMain extends ExecutableProgram {
 		List<Trade> trades = new ArrayList<>();
 
 		// capture signals
-		for (Asset asset : assets) {
+		for (var asset : assets) {
 			var symbol = asset.symbol;
 
 			if (backTestBySymbol.get(symbol))

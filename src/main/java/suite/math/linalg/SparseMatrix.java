@@ -20,7 +20,7 @@ public class SparseMatrix {
 		private float[] values = new float[4];
 
 		private Spans(Span... spans) {
-			for (Span span : spans)
+			for (var span : spans)
 				add(span.column, span.value);
 		}
 

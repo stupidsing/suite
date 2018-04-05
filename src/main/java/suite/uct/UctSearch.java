@@ -53,7 +53,7 @@ public class UctSearch<Move> {
 	}
 
 	public Move search() {
-		for (Move move : visitor.getAllMoves()) {
+		for (var move : visitor.getAllMoves()) {
 			nRaveWins.put(move, new AtomicInteger());
 			nRaveVisits.put(move, new AtomicInteger());
 		}
@@ -102,7 +102,7 @@ public class UctSearch<Move> {
 				if (node.child == null) {
 					UctNode<Move> child = null;
 
-					for (Move move : visitor.elaborateMoves()) {
+					for (var move : visitor.elaborateMoves()) {
 						UctNode<Move> newChild = new UctNode<>(move);
 						newChild.sibling = child;
 						child = newChild;
@@ -232,7 +232,7 @@ public class UctSearch<Move> {
 
 	public void dumpRave() {
 		var n = 0;
-		for (Move move : visitor.getAllMoves()) {
+		for (var move : visitor.getAllMoves()) {
 			float nWins = getMoveRave(nRaveWins, move);
 			float nTotals = getMoveRave(nRaveVisits, move);
 			var s = 0 < nTotals ? df3.format(nWins / nTotals) : "  -  ";

@@ -19,7 +19,7 @@ public class Pipe {
 	public static Streamlet<String> shell(String sh) {
 		String[] command0 = null;
 
-		for (String s : List.of("/bin/sh", "C:\\cygwin\\bin\\sh.exe", "C:\\cygwin64\\bin\\sh.exe"))
+		for (var s : List.of("/bin/sh", "C:\\cygwin\\bin\\sh.exe", "C:\\cygwin64\\bin\\sh.exe"))
 			if (Files.exists(Paths.get(s)))
 				command0 = new String[] { s, };
 
@@ -43,7 +43,7 @@ public class Pipe {
 					Copy.streamByThread(pes, System.err), //
 					Copy.streamByThread(bis, pos), };
 
-			for (Thread thread : threads)
+			for (var thread : threads)
 				thread.start();
 
 			return Read.lines(pis).closeAtEnd(() -> {
@@ -51,7 +51,7 @@ public class Pipe {
 					var code = process.waitFor();
 
 					if (code == 0)
-						for (Thread thread : threads)
+						for (var thread : threads)
 							thread.join();
 					else
 						Fail.t("code = " + code);

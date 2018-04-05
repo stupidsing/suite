@@ -38,8 +38,8 @@ public class KMeansClusterTest {
 
 		assertEquals(9, clusters.size());
 
-		for (String prefix : seeds.keySet())
-			for (int i : Ints_.range(n))
+		for (var prefix : seeds.keySet())
+			for (var i : Ints_.range(n))
 				assertEquals(clusters.get(prefix + "0"), clusters.get(prefix + i));
 	}
 

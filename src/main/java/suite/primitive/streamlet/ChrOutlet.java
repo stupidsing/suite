@@ -61,7 +61,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	@SafeVarargs
 	public static ChrOutlet concat(ChrOutlet... outlets) {
 		List<ChrSource> sources = new ArrayList<>();
-		for (ChrOutlet outlet : outlets)
+		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(ChrFunUtil.concat(To.source(sources)));
 	}

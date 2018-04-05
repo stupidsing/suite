@@ -72,7 +72,7 @@ public class IntSet {
 		if (object instanceof IntSet) {
 			IntSet other = (IntSet) object;
 			boolean b = size == other.size;
-			for (int c : streamlet())
+			for (var c : streamlet())
 				b &= other.contains(c);
 			return b;
 		} else
@@ -89,7 +89,7 @@ public class IntSet {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (int c : streamlet())
+		for (var c : streamlet())
 			h = h * 31 + Integer.hashCode(c);
 		return h;
 	}
@@ -105,7 +105,7 @@ public class IntSet {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (int c : streamlet())
+		for (var c : streamlet())
 			sb.append(c + ",");
 		return sb.toString();
 	}

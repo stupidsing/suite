@@ -28,7 +28,7 @@ public class BoundingBox implements RtObject {
 		double minX = max, minY = max, minZ = max;
 		double maxX = min, maxY = min, maxZ = min;
 
-		for (R3 point : points) {
+		for (var point : points) {
 			double x = point.x, y = point.y, z = point.z;
 			minX = min(minX, x);
 			minY = min(minY, y);

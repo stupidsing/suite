@@ -20,7 +20,7 @@ public class HkexTest {
 		List<Asset> companies = hkex.queryCompanies().toList();
 		System.out.println(companies);
 
-		for (Asset company : companies)
+		for (var company : companies)
 			System.out.println("+ \"\\n" + company.symbol //
 					+ "|" + company.name //
 					+ "|" + company.lotSize //

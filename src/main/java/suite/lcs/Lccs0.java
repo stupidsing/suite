@@ -36,7 +36,7 @@ public class Lccs0 {
 				IntSet keys1 = segments1.streamlet().keys().toSet();
 				int[] keys = IntSet.intersect(keys0, keys1).streamlet().toArray();
 
-				for (int key : keys) {
+				for (var key : keys) {
 					Segment segment0 = segments0.get(key);
 					Segment segment1 = segments1.get(key);
 					var end0 = segment0.end;

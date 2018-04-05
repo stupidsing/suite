@@ -44,7 +44,7 @@ public class LempelZivWelch<Unit> {
 		Trie root = new Trie(null);
 		var index = 0;
 
-		for (Unit unit : units)
+		for (var unit : units)
 			root.branches.put(unit, new Trie(index++));
 
 		Trie trie = root;
@@ -67,7 +67,7 @@ public class LempelZivWelch<Unit> {
 	private void decode(Source<Integer> source, Sink<Unit> sink) {
 		List<List<Unit>> dict = new ArrayList<>();
 
-		for (Unit unit : units)
+		for (var unit : units)
 			dict.add(List.of(unit));
 
 		Integer index;
@@ -75,7 +75,7 @@ public class LempelZivWelch<Unit> {
 		if ((index = source.source()) != null) {
 			List<Unit> word;
 
-			for (Unit unit : word = dict.get(index))
+			for (var unit : word = dict.get(index))
 				sink.sink(unit);
 
 			while ((index = source.source()) != null) {
@@ -89,7 +89,7 @@ public class LempelZivWelch<Unit> {
 
 				dict.add(newWord);
 
-				for (Unit unit : word)
+				for (var unit : word)
 					sink.sink(unit);
 			}
 		}

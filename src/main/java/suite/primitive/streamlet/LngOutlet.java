@@ -61,7 +61,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	@SafeVarargs
 	public static LngOutlet concat(LngOutlet... outlets) {
 		List<LngSource> sources = new ArrayList<>();
-		for (LngOutlet outlet : outlets)
+		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(LngFunUtil.concat(To.source(sources)));
 	}

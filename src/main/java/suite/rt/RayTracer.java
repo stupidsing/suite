@@ -177,7 +177,7 @@ public class RayTracer {
 				color = R3.origin;
 
 				// account light sources
-				for (LightSource lightSource : lightSources) {
+				for (var lightSource : lightSources) {
 					R3 lightDir = R3.sub(lightSource.source(), hitPoint);
 					double lightDot = R3.dot(lightDir, normal);
 

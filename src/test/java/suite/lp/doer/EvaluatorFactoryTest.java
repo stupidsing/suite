@@ -20,7 +20,7 @@ public class EvaluatorFactoryTest {
 	}
 
 	private void test(String pattern, int result) {
-		for (EvaluatorFactory ef : new EvaluatorFactory[] { //
+		for (var ef : new EvaluatorFactory[] { //
 				new CompileExpressionImpl(new CompileClonerImpl()), //
 				new SewingExpressionImpl(new SewingClonerImpl()), }) {
 			Evaluate_ e = ef.evaluator(Suite.parse(pattern));

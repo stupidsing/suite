@@ -27,14 +27,14 @@ public class Blit {
 
 	private int min(int... l) {
 		var min = Integer.MIN_VALUE;
-		for (int i : l)
+		for (var i : l)
 			min = min(i, min);
 		return min;
 	}
 
 	private int max(int... l) {
 		var max = Integer.MAX_VALUE;
-		for (int i : l)
+		for (var i : l)
 			max = max(i, max);
 		return max;
 	}

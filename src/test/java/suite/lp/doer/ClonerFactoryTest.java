@@ -23,7 +23,7 @@ public class ClonerFactoryTest {
 	}
 
 	private void test(String pattern, String match) {
-		for (ClonerFactory cf : new ClonerFactory[] { new CompileClonerImpl(), new SewingClonerImpl(), }) {
+		for (var cf : new ClonerFactory[] { new CompileClonerImpl(), new SewingClonerImpl(), }) {
 			var node = new Generalizer().generalize(Suite.parse(pattern));
 			Clone_ p = cf.cloner(node);
 

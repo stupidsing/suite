@@ -149,7 +149,7 @@ public class DependencyMain extends ExecutableProgram {
 				.filter(m -> m.getName().startsWith("list") && m.getParameters().length == 0) //
 				.sink(m -> {
 					System.out.println(m.getName() + "()");
-					for (Object object : Rethrow.ex(() -> (List<?>) m.invoke(this, new Object[] {})))
+					for (var object : Rethrow.ex(() -> (List<?>) m.invoke(this, new Object[] {})))
 						System.out.println(object);
 					System.out.println();
 					System.out.println();

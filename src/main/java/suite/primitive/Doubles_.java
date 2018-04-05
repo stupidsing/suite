@@ -49,11 +49,11 @@ public class Doubles_ {
 
 	public static Doubles concat(Doubles... array) {
 		var length = 0;
-		for (Doubles doubles : array)
+		for (var doubles : array)
 			length += doubles.size();
 		double[] cs1 = new double[length];
 		var i = 0;
-		for (Doubles doubles : array) {
+		for (var doubles : array) {
 			var size_ = doubles.size();
 			copy(doubles.cs, doubles.start, cs1, i, size_);
 			i += size_;

@@ -57,7 +57,7 @@ public class Comparer implements Comparator<Node> {
 				var keys = new HashSet<Node>();
 				keys.addAll(m0.keySet());
 				keys.addAll(m1.keySet());
-				for (Node key : Read.from(keys).sort(this::compare))
+				for (var key : Read.from(keys).sort(this::compare))
 					c = c != 0 ? c : Object_.compare(m0.get(key), m1.get(key));
 				return c;
 			} else if (clazz0 == Int.class)

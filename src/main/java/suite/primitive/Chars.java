@@ -52,7 +52,7 @@ public class Chars implements Iterable<Character> {
 
 	public static Chars concat(Chars... array) {
 		CharsBuilder bb = new CharsBuilder();
-		for (Chars chars : array)
+		for (var chars : array)
 			bb.append(chars);
 		return bb.toChars();
 	}

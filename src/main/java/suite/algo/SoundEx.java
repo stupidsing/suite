@@ -59,7 +59,7 @@ public class SoundEx {
 
 	private String replace(String word, String match, String replace) {
 		StringBuilder sb = new StringBuilder();
-		for (char ch : String_.chars(word))
+		for (var ch : String_.chars(word))
 			sb.append(match.indexOf(ch) < 0 ? ch : replace);
 		word = sb.toString();
 		return word;

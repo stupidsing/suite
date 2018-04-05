@@ -52,7 +52,7 @@ public class Ints implements Iterable<Integer> {
 
 	public static Ints concat(Ints... array) {
 		IntsBuilder bb = new IntsBuilder();
-		for (Ints ints : array)
+		for (var ints : array)
 			bb.append(ints);
 		return bb.toInts();
 	}

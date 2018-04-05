@@ -70,7 +70,7 @@ public class RegisterSet {
 
 	private int flag(Operand... operands) {
 		var flag_ = 0;
-		for (Operand operand : operands)
+		for (var operand : operands)
 			if (operand instanceof OpReg)
 				flag_ |= flag(((OpReg) operand).reg);
 			else if (operand instanceof OpMem) {

@@ -52,7 +52,7 @@ public class Longs implements Iterable<Long> {
 
 	public static Longs concat(Longs... array) {
 		LongsBuilder bb = new LongsBuilder();
-		for (Longs longs : array)
+		for (var longs : array)
 			bb.append(longs);
 		return bb.toLongs();
 	}

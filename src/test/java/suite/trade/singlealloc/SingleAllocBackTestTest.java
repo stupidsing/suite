@@ -26,7 +26,7 @@ public class SingleAllocBackTestTest {
 
 	@Test
 	public void testBackTestHkex() {
-		for (String code : List.of( //
+		for (var code : List.of( //
 				"0004", //
 				"0020", //
 				"0175", //

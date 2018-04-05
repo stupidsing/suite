@@ -49,7 +49,7 @@ public class Inspect {
 				&& o0.getClass() == o1.getClass() //
 				&& Rethrow.ex(() -> {
 					boolean b = true;
-					for (Field field : fields(o0.getClass()))
+					for (var field : fields(o0.getClass()))
 						b &= Objects.equals(field.get(o0), field.get(o1));
 					return b;
 				});
@@ -61,7 +61,7 @@ public class Inspect {
 	public int hashCode(Object object) {
 		return Rethrow.ex(() -> {
 			var h = 7;
-			for (Field field : fields(object.getClass()))
+			for (var field : fields(object.getClass()))
 				h = h * 31 + Objects.hashCode(field.get(object));
 			return h;
 		});
@@ -260,7 +260,7 @@ public class Inspect {
 				Type[] typeArgs;
 				Type typeArg;
 
-				for (Type genericInterface : clazz.getGenericInterfaces())
+				for (var genericInterface : clazz.getGenericInterfaces())
 					if (genericInterface instanceof ParameterizedType //
 							&& (pt = (ParameterizedType) genericInterface).getRawType() == Collection.class //
 							&& 1 < (typeArgs = pt.getActualTypeArguments()).length //
@@ -292,7 +292,7 @@ public class Inspect {
 				Type[] typeArgs;
 				Type typeArg0, typeArg1;
 
-				for (Type genericInterface : clazz.getGenericInterfaces())
+				for (var genericInterface : clazz.getGenericInterfaces())
 					if (genericInterface instanceof ParameterizedType //
 							&& (pt = (ParameterizedType) genericInterface).getRawType() == Map.class //
 							&& 1 < (typeArgs = pt.getActualTypeArguments()).length //
@@ -446,7 +446,7 @@ public class Inspect {
 		Class<?> clazz = t0.getClass();
 		@SuppressWarnings("unchecked")
 		T t1 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance();
-		for (Field field : fields(clazz)) {
+		for (var field : fields(clazz)) {
 			var v0 = field.get(t0);
 			var v1 = mapper.apply(v0);
 			field.set(t1, v1);

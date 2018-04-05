@@ -66,7 +66,7 @@ public class ReadLookahead {
 			ls.merge(readLookahead(eg.children.get(0)));
 			break;
 		case OR____:
-			for (Grammar eg1 : eg.children)
+			for (var eg1 : eg.children)
 				ls.merge(readLookahead(eg1));
 			break;
 		case STRING:

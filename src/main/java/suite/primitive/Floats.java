@@ -52,7 +52,7 @@ public class Floats implements Iterable<Float> {
 
 	public static Floats concat(Floats... array) {
 		FloatsBuilder bb = new FloatsBuilder();
-		for (Floats floats : array)
+		for (var floats : array)
 			bb.append(floats);
 		return bb.toFloats();
 	}

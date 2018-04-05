@@ -86,7 +86,7 @@ public class Grammar {
 
 	private void toString(String indent, StringBuilder sb) {
 		sb.append(indent + type + " (" + content + ")\n");
-		for (Grammar child : children)
+		for (var child : children)
 			child.toString(indent + "| ", sb);
 	}
 

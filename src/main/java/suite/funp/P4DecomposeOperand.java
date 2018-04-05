@@ -73,7 +73,7 @@ public class P4DecomposeOperand {
 			private void decompose(Funp n0) {
 				FunpTree2 tree;
 				Funp r;
-				for (Funp n1 : decompose.apply(TermOp.MULT__, n0))
+				for (var n1 : decompose.apply(TermOp.MULT__, n0))
 					if (n1 instanceof FunpFramePointer && isUseEbp && reg == null)
 						reg = amd64.ebp;
 					else if (n1 instanceof FunpNumber)
@@ -94,7 +94,7 @@ public class P4DecomposeOperand {
 			private boolean ok = is124(size);
 
 			private DecomposePlus(Funp n0) {
-				for (Funp n1 : decompose.apply(TermOp.PLUS__, n0))
+				for (var n1 : decompose.apply(TermOp.PLUS__, n0))
 					if (n1 instanceof FunpFramePointer && !isUseEbp) {
 						addReg(amd64.esp, 1);
 						disp -= fd;

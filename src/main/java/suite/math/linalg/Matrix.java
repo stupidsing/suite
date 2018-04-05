@@ -466,7 +466,7 @@ public class Matrix {
 
 	private void dump(StringBuilder sb, float[] m) {
 		sb.append("[ ");
-		for (float f : m)
+		for (var f : m)
 			sb.append(To.string(f) + " ");
 		sb.append("]");
 	}

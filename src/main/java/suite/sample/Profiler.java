@@ -96,7 +96,7 @@ public class Profiler implements Service {
 		ThreadInfo[] threadInfos = mx.getThreadInfo(threadIds, stackTraceDepth);
 		count.getAndIncrement();
 
-		for (ThreadInfo threadInfo : threadInfos)
+		for (var threadInfo : threadInfos)
 			if (threadInfo != null //
 					&& threadInfo.getThreadId() != currentThreadId //
 					&& threadInfo.getThreadState() == State.RUNNABLE //

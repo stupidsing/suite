@@ -49,11 +49,11 @@ public class Chars_ {
 
 	public static Chars concat(Chars... array) {
 		var length = 0;
-		for (Chars chars : array)
+		for (var chars : array)
 			length += chars.size();
 		var cs1 = new char[length];
 		var i = 0;
-		for (Chars chars : array) {
+		for (var chars : array) {
 			var size_ = chars.size();
 			copy(chars.cs, chars.start, cs1, i, size_);
 			i += size_;

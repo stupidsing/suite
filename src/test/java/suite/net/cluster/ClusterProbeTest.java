@@ -26,7 +26,7 @@ public class ClusterProbeTest {
 			peers.put("NODE" + i, new InetSocketAddress(localHost, 3000 + i));
 
 		Map<String, ClusterProbe> probes = new HashMap<>();
-		for (String name : peers.keySet()) {
+		for (var name : peers.keySet()) {
 			ClusterProbe probe = new ClusterProbeImpl(name, peers);
 			probes.put(name, probe);
 			probe.start();
@@ -38,7 +38,7 @@ public class ClusterProbeTest {
 		dumpActivePeers(probes);
 		assertActiveNodesSize(nNodes, probes);
 
-		for (ClusterProbe probe : probes.values())
+		for (var probe : probes.values())
 			probe.stop();
 
 		Thread_.sleepQuietly(5 * 1000);
@@ -56,7 +56,7 @@ public class ClusterProbeTest {
 	}
 
 	private void assertActiveNodesSize(int nNodes, Map<String, ClusterProbe> probes) {
-		for (ClusterProbe probe : probes.values())
+		for (var probe : probes.values())
 			assertEquals(nNodes, probe.getActivePeers().size());
 	}
 

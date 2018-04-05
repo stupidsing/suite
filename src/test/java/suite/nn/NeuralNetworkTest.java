@@ -43,8 +43,8 @@ public class NeuralNetworkTest {
 
 				boolean result_ = true;
 
-				for (boolean b0 : booleans)
-					for (boolean b1 : booleans) {
+				for (var b0 : booleans)
+					for (var b1 : booleans) {
 						float[] in = input(b0, b1);
 						boolean out = oper.apply(b0, b1);
 						var f = train.feed(in).output[0];

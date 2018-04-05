@@ -62,7 +62,7 @@ public class Huffman {
 		Map<Unit, Node<Unit>> nodeByUnit = new HashMap<>();
 		Deque<Node<Unit>> deque = new ArrayDeque<>();
 
-		for (Unit unit : input.t0)
+		for (var unit : input.t0)
 			if (unit == null) {
 				Node<Unit> node0 = deque.pop();
 				Node<Unit> node1 = deque.pop();
@@ -157,7 +157,7 @@ public class Huffman {
 
 	private static <Unit> Map<Unit, Integer> histogram(List<Unit> input) {
 		Map<Unit, Integer> histogram = new HashMap<>();
-		for (Unit unit : input)
+		for (var unit : input)
 			histogram.put(unit, histogram.getOrDefault(unit, 0) + 1);
 		return histogram;
 	}

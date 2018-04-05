@@ -82,7 +82,7 @@ public class FunTypeTest {
 		// there is a problem in deriving type of 1:(fib {i2})...
 		// rule specified that right hand side of CONS should be a list,
 		// however fib {i2} is a closure.
-		for (String c : cases)
+		for (var c : cases)
 			getTypeMustFail(c);
 	}
 

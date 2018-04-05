@@ -278,7 +278,7 @@ public class InstructionAnalyzer {
 	}
 
 	public void transform(List<Instruction> instructions) {
-		for (int ip : tailCalls)
+		for (var ip : tailCalls)
 			instructions.get(ip).insn = Insn.JUMPCLOSURE___;
 	}
 

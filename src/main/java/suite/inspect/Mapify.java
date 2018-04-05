@@ -146,13 +146,13 @@ public class Mapify {
 
 				mapifier = new Mapifier(object -> Rethrow.ex(() -> {
 					Map<Object, Object> map = newMap();
-					for (FieldInfo fi : fis)
+					for (var fi : fis)
 						map.put(fi.name, apply_(fi.mapifier.mapify, fi.field.get(object)));
 					return map;
 				}), object -> Rethrow.ex(() -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					var object1 = Object_.new_(clazz);
-					for (FieldInfo fi : fis)
+					for (var fi : fis)
 						fi.field.set(object1, apply_(fi.mapifier.unmapify, map.get(fi.name)));
 					return object1;
 				}));
@@ -168,7 +168,7 @@ public class Mapify {
 				mapifier = new Mapifier(object -> {
 					Map<Object, Object> map = newMap();
 					var i = 0;
-					for (Object o : (Collection<?>) object)
+					for (var o : (Collection<?>) object)
 						map.put(i++, apply_(mapifier1.mapify, o));
 					return map;
 				}, object -> {

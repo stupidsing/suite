@@ -172,7 +172,7 @@ public class To {
 	@SafeVarargs
 	public static <T> Set<T> set(T... ts) {
 		var set = new HashSet<T>();
-		for (T t : ts)
+		for (var t : ts)
 			set.add(t);
 		return set;
 	}

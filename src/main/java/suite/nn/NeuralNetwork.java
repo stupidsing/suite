@@ -238,7 +238,7 @@ public class NeuralNetwork {
 			T outputs = (T) Array_.newArray(clazz, inputs.length * stride);
 			var di = 0;
 
-			for (T row : inputs) {
+			for (var row : inputs) {
 				System.arraycopy(row, 0, outputs, di, stride);
 				di += stride;
 			}

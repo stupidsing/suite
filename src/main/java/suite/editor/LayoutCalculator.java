@@ -191,7 +191,7 @@ public class LayoutCalculator {
 			var accumulatedExpand = 0;
 			var assignedPos = 0;
 
-			for (Portion portion : portions) {
+			for (var portion : portions) {
 				var assignedPos0 = assignedPos;
 				accumulatedBase += portion.minUnit;
 				accumulatedExpand += portion.maxUnit - portion.minUnit;
@@ -205,7 +205,7 @@ public class LayoutCalculator {
 			var accumulated = 0;
 			var assignedPos = 0;
 
-			for (Portion portion : portions) {
+			for (var portion : portions) {
 				var assignedPos0 = assignedPos;
 				accumulated += portion.minUnit;
 				assignedPos = startPos + (int) (accumulated * ratio);

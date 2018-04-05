@@ -28,7 +28,7 @@ public class ChrTest {
 
 	private Chr chr(List<String> rules) {
 		Chr chr = new Chr();
-		for (String s : rules)
+		for (var s : rules)
 			chr.addRule(Suite.parse(s));
 		return chr;
 	}

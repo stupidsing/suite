@@ -4,7 +4,6 @@ import static org.apache.bcel.Const.ACC_PUBLIC;
 import static org.apache.bcel.Const.ACC_STATIC;
 import static org.apache.bcel.Const.ACC_SUPER;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -216,7 +215,7 @@ public class FunCreator<I> extends FunFactory {
 			var t = Object_.new_(clazz);
 
 			return Rethrow.ex(() -> {
-				for (Field field : clazz.getDeclaredFields()) {
+				for (var field : clazz.getDeclaredFields()) {
 					var fieldName = field.getName();
 					Pair<Type, Object> typeValue;
 					Object value;

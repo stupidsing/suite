@@ -76,7 +76,7 @@ public class ClusterImpl implements Cluster {
 
 	@Override
 	public void stop() {
-		for (PersistentNioChannel channel : channels.values())
+		for (var channel : channels.values())
 			channel.stop();
 
 		probe.stop();

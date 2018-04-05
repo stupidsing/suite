@@ -77,7 +77,7 @@ public class FileSystemTest {
 		Streamlet<Path> paths = FileUtil.findPaths(Paths.get("src/test/java/"));
 		FileSystemMutator fsm = fs.mutate();
 
-		for (Path path : paths) {
+		for (var path : paths) {
 			String filename = path.toString().replace(File.separatorChar, '/');
 			Bytes name = Bytes.of(filename.getBytes(Constants.charset));
 			fsm.replace(name, Bytes.of(Files.readAllBytes(path)));

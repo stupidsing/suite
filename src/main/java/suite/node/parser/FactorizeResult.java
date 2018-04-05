@@ -145,7 +145,7 @@ public class FactorizeResult {
 		if (fn instanceof FTree) {
 			FTree ft = (FTree) fn;
 			List<FPair> pairs = ft.pairs;
-			for (FPair pair : pairs) {
+			for (var pair : pairs) {
 				unparse(cb, pair.node);
 				cb.append(pair.chars);
 			}

@@ -61,7 +61,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	@SafeVarargs
 	public static FltOutlet concat(FltOutlet... outlets) {
 		List<FltSource> sources = new ArrayList<>();
-		for (FltOutlet outlet : outlets)
+		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(FltFunUtil.concat(To.source(sources)));
 	}

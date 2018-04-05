@@ -42,7 +42,7 @@ public class Preprocess {
 
 	private static String forward(String in, List<Run> runs) {
 		StringBuilder sb = new StringBuilder();
-		for (Run run : runs)
+		for (var run : runs)
 			if (run.segment != null)
 				sb.append(in.substring(run.segment.start, run.segment.end));
 			else
@@ -52,7 +52,7 @@ public class Preprocess {
 
 	private static int reverse(List<Run> runs, int targetPosition) {
 		var sourcePosition = 0;
-		for (Run run : runs) {
+		for (var run : runs) {
 			Segment segment = run.segment;
 			if (segment != null) {
 				var runLength = segment.end - segment.start;

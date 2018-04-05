@@ -37,7 +37,7 @@ public class UctWeiqi {
 			List<Coordinate> captureMoves = new ArrayList<>();
 			List<Coordinate> otherMoves = new ArrayList<>();
 
-			for (Coordinate c : Coordinate.all())
+			for (var c : Coordinate.all())
 				if (board.get(c) == Occupation.EMPTY) {
 					move.position = c;
 
@@ -84,7 +84,7 @@ public class UctWeiqi {
 					Coordinate c = iter.next();
 					boolean isFillEye = true;
 
-					for (Coordinate c1 : c.neighbors)
+					for (var c1 : c.neighbors)
 						isFillEye &= board.get(c1) == gameSet.getNextPlayer();
 
 					if (!isFillEye && gameSet.playIfValid(move = new Move(c))) {
@@ -99,13 +99,13 @@ public class UctWeiqi {
 						capturedPositions.clear();
 
 						// add captured positions back to empty group
-						for (Coordinate c1 : chosenMove.position.neighbors) {
+						for (var c1 : chosenMove.position.neighbors) {
 							Occupation neighborColor = chosenMove.neighborColors[i++];
 							if (neighborColor != board.get(c1))
 								capturedPositions.addAll(board.findGroup(c1));
 						}
 
-						for (Coordinate c2 : capturedPositions)
+						for (var c2 : capturedPositions)
 							ShuffleUtil.add(empties, c2);
 					}
 
@@ -147,9 +147,9 @@ public class UctWeiqi {
 				if (move != null) { // add empty positions back to empty group
 					var j = 0;
 
-					for (Coordinate c1 : move.position.neighbors)
+					for (var c1 : move.position.neighbors)
 						if (move.neighborColors[j++] != board.get(c1))
-							for (Coordinate c2 : board.findGroup(c1))
+							for (var c2 : board.findGroup(c1))
 								ShuffleUtil.add(empties, c2);
 				} else
 					break; // no moves can be played, current player lost
@@ -177,7 +177,7 @@ public class UctWeiqi {
 		private List<Coordinate> findAllEmptyPositions() {
 			List<Coordinate> moves = new ArrayList<>();
 
-			for (Coordinate c : Coordinate.all())
+			for (var c : Coordinate.all())
 				if (board.get(c) == Occupation.EMPTY)
 					ShuffleUtil.add(moves, c);
 

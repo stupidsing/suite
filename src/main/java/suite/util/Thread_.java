@@ -59,10 +59,10 @@ public class Thread_ {
 	}
 
 	public static void startJoin(Collection<Thread> threads) {
-		for (Thread thread : threads)
+		for (var thread : threads)
 			thread.start();
 
-		for (Thread thread : threads)
+		for (var thread : threads)
 			try {
 				thread.join();
 			} catch (InterruptedException ex) {

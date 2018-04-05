@@ -23,7 +23,7 @@ public class BinderFactoryTest {
 	}
 
 	private void test(String pattern, String match) {
-		for (BinderFactory bf : new BinderFactory[] { new CompileBinderImpl(), new SewingBinderImpl(), }) {
+		for (var bf : new BinderFactory[] { new CompileBinderImpl(), new SewingBinderImpl(), }) {
 			var node = new Generalizer().generalize(Suite.parse(pattern));
 			Bind_ p = bf.binder(node);
 			BindEnv be = new BindEnv(bf.mapper().env());

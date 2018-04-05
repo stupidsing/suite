@@ -34,7 +34,7 @@ public class CheckerUtil {
 	public Streamlet<Node> scan(Node node) {
 		Node[] m = null;
 
-		for (Pattern pattern : patterns)
+		for (var pattern : patterns)
 			if ((m = pattern.match(node)) != null)
 				return Read.from(m).concatMap(this::scan);
 

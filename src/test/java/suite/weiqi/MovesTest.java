@@ -45,7 +45,7 @@ public class MovesTest {
 
 	private Board blackBoard() {
 		Board board = new Board();
-		for (Coordinate c : Coordinate.all())
+		for (var c : Coordinate.all())
 			board.set(c, Occupation.BLACK);
 		return board;
 	}

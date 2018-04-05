@@ -43,7 +43,7 @@ public class TelnetServerMain extends ExecutableProgram {
 					// if we are not being interrupted by another thread, issue
 					// interrupt signal to other threads
 					if (!isInterrupted())
-						for (Thread thread : threads)
+						for (var thread : threads)
 							if (thread != this)
 								thread.interrupt();
 				}

@@ -188,7 +188,7 @@ public class Serialize {
 
 			public void write(DataOutput_ dataOutput, T[] array) throws IOException {
 				int_.write(dataOutput, array.length);
-				for (T t : array)
+				for (var t : array)
 					serializer.write(dataOutput, t);
 			}
 		};
@@ -205,7 +205,7 @@ public class Serialize {
 
 		public void write(DataOutput_ dataOutput, float[] array) throws IOException {
 			int_.write(dataOutput, array.length);
-			for (float f : array)
+			for (var f : array)
 				dataOutput.writeFloat(f);
 		}
 	};
@@ -221,7 +221,7 @@ public class Serialize {
 
 		public void write(DataOutput_ dataOutput, int[] array) throws IOException {
 			int_.write(dataOutput, array.length);
-			for (int i : array)
+			for (var i : array)
 				dataOutput.writeInt(i);
 		}
 	};
@@ -263,7 +263,7 @@ public class Serialize {
 
 			public void write(DataOutput_ dataOutput, Collection<T> list) throws IOException {
 				int_.write(dataOutput, list.size());
-				for (T t : list)
+				for (var t : list)
 					serializer.write(dataOutput, t);
 			}
 		};
@@ -301,7 +301,7 @@ public class Serialize {
 
 			public void write(DataOutput_ dataOutput, List<T> list) throws IOException {
 				int_.write(dataOutput, list.size());
-				for (T t : list)
+				for (var t : list)
 					serializer.write(dataOutput, t);
 			}
 		};

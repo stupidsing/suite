@@ -26,7 +26,7 @@ public interface HttpHandler {
 			Path path = root;
 			long size;
 
-			for (String p : request.path)
+			for (var p : request.path)
 				path = path.resolve(p);
 
 			try (RandomAccessFile file = new RandomAccessFile(path.toFile(), "r")) {

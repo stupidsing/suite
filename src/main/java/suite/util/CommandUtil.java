@@ -20,7 +20,7 @@ public class CommandUtil<Command> {
 	public CommandUtil(Map<String, Command> commandByName) {
 		this.commandByName = commandByName;
 		maxLength = 0;
-		for (String name : commandByName.keySet())
+		for (var name : commandByName.keySet())
 			maxLength = max(maxLength, name.length());
 	}
 

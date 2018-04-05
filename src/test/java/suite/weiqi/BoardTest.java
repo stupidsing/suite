@@ -24,7 +24,7 @@ public class BoardTest {
 		Coordinate c = Coordinate.c(10, 10);
 		var neighbors = new HashSet<>();
 
-		for (Coordinate c1 : c.neighbors)
+		for (var c1 : c.neighbors)
 			neighbors.add(c1);
 
 		assertEquals(To.set( //
@@ -68,7 +68,7 @@ public class BoardTest {
 
 	private Board blackBoard() {
 		Board board = new Board();
-		for (Coordinate c : Coordinate.all())
+		for (var c : Coordinate.all())
 			board.set(c, Occupation.BLACK);
 		return board;
 	}

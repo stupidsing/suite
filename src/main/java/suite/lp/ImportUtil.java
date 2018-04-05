@@ -38,7 +38,7 @@ public class ImportUtil {
 	public RuleSet newRuleSet(List<String> toImports) {
 		return Rethrow.ex(() -> {
 			RuleSet rs = newRuleSet();
-			for (String toImport : toImports)
+			for (var toImport : toImports)
 				importPath(rs, toImport);
 			return rs;
 		});
@@ -59,7 +59,7 @@ public class ImportUtil {
 	public synchronized boolean importFrom(RuleSet ruleSet, Node node) {
 		List<Rule> rules = new ArrayList<>();
 
-		for (Node elem : Tree.iter(node, TermOp.NEXT__))
+		for (var elem : Tree.iter(node, TermOp.NEXT__))
 			rules.add(Rule.of(elem));
 
 		Prover prover = new Prover(ruleSet);
@@ -68,7 +68,7 @@ public class ImportUtil {
 
 		try {
 			importing.set(IList.cons(node, importing0));
-			for (Rule rule : rules)
+			for (var rule : rules)
 				if (rule.head != Atom.NIL)
 					ruleSet.addRule(rule);
 				else {

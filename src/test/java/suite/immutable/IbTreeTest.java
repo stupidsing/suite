@@ -64,7 +64,7 @@ public class IbTreeTest {
 		IbTree<Integer> ibTree = new IbTree<>(comparator);
 
 		Collections.shuffle(list);
-		for (int i : list)
+		for (var i : list)
 			ibTree = ibTree.add(i);
 
 		ibTree.validate();
@@ -72,7 +72,7 @@ public class IbTreeTest {
 		assertEquals(max, ibTree.streamlet().size());
 
 		Collections.shuffle(list);
-		for (int i : list)
+		for (var i : list)
 			ibTree = ibTree.remove(i);
 
 		ibTree.validate();

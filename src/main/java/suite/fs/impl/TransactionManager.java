@@ -81,7 +81,7 @@ public class TransactionManager<Key, Value> {
 
 		boolean ok = stm.transaction(transaction -> {
 			List<Key> keys = new ArrayList<>(memoryByKey.keySet());
-			for (Key key : keys)
+			for (var key : keys)
 				memoryByKey.compute(key, (key_, memory) -> {
 					if (memory != null)
 						map.put(key_, stm.get(transaction, memory));

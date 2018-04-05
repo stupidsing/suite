@@ -33,7 +33,7 @@ public class Scheduler {
 
 			Thread_.sleepQuietly(Duration.between(now, nextWakeUpDateTime).toMillis());
 
-			for (Schedule schedule : schedules)
+			for (var schedule : schedules)
 				if (now.isBefore(schedule.nextRunDateTime))
 					schedules1.add(schedule);
 				else

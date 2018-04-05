@@ -39,7 +39,7 @@ public class DependencyTest {
 		while ((className = classes.pollLast()) != null) {
 			List<String> dependencies = getDependencies(className);
 			dependenciesByClassName.put(className, dependencies);
-			for (String className1 : dependencies)
+			for (var className1 : dependencies)
 				if (!dependenciesByClassName.containsKey(className1))
 					classes.addLast(className1);
 		}

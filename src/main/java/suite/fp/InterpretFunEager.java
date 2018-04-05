@@ -284,7 +284,7 @@ public class InterpretFunEager {
 		Eager_ eager0 = new Eager_(0, IMap.empty());
 		Frame frame = new Frame(null);
 
-		for (String key : keys) {
+		for (var key : keys) {
 			eager0 = eager0.put(Atom.of(key));
 			frame.add(df.get(key));
 		}

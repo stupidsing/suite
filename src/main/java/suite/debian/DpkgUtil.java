@@ -36,7 +36,7 @@ public class DpkgUtil {
 		if (arch != null)
 			files.add(new File(dir + packageName + ":" + arch + ".list"));
 
-		for (File file : files)
+		for (var file : files)
 			if (file.exists())
 				return Read.lines(file);
 
@@ -54,7 +54,7 @@ public class DpkgUtil {
 			List<String> list = dependees.get(p);
 
 			if (list != null)
-				for (String np : list)
+				for (var np : list)
 					if (set1.add(np))
 						nl.add(np);
 		}

@@ -9,7 +9,7 @@ public class Escaper {
 		StringBuilder sb = new StringBuilder();
 		sb.append(quote);
 
-		for (char ch : String_.chars(s))
+		for (var ch : String_.chars(s))
 			if (Character.isWhitespace(ch) && ch != ' ')
 				if (256 <= ch)
 					sb.append(encodeHex16(ch >> 8));

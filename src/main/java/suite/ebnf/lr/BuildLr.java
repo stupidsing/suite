@@ -201,7 +201,7 @@ public class BuildLr {
 			break;
 		case OR____:
 			List<Pair<String, Transition>> pairs = new ArrayList<>();
-			for (Grammar eg1 : Read.from(eg.children)) {
+			for (var eg1 : Read.from(eg.children)) {
 				var egn = "OR." + System.identityHashCode(eg1);
 				pairs.add(Pair.of(egn, build(ps, new Grammar(GrammarType.NAMED_, egn, eg1), nextx).next));
 			}
@@ -231,7 +231,7 @@ public class BuildLr {
 
 	private Transition newTransition(Set<String> keys, Pair<State, Reduce> value) {
 		Transition transition = new Transition();
-		for (String key : keys)
+		for (var key : keys)
 			transition.put(key, value);
 		return transition;
 	}

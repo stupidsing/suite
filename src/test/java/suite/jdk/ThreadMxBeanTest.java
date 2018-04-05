@@ -16,7 +16,7 @@ public class ThreadMxBeanTest {
 
 		ThreadInfo[] threadInfos = threadBean.dumpAllThreads(false, false);
 
-		for (ThreadInfo threadInfo : threadInfos)
+		for (var threadInfo : threadInfos)
 			if (threadInfo.getThreadState() == State.RUNNABLE)
 				System.out.println(threadInfo.toString());
 	}

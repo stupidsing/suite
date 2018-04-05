@@ -99,7 +99,7 @@ public class Assembler {
 		Trail trail = new Trail();
 		List<Pair<Reference, Node>> lnis = new ArrayList<>();
 
-		for (Node node0 : Tree.iter(input)) {
+		for (var node0 : Tree.iter(input)) {
 			var node = generalizer.generalize(node0);
 			Tree tree;
 
@@ -121,7 +121,7 @@ public class Assembler {
 		var org = ((Int) generalizer.getVariable(Atom.of(".org")).finalNode()).number;
 		BytesBuilder out = new BytesBuilder();
 
-		for (boolean isPass2 : new boolean[] { false, true, }) {
+		for (var isPass2 : new boolean[] { false, true, }) {
 			AssemblePredicates.isPass2 = isPass2;
 			out.clear();
 

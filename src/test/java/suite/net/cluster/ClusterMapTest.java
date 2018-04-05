@@ -35,7 +35,7 @@ public class ClusterMapTest {
 		Map<String, Cluster> clusters = new HashMap<>();
 		Map<String, ClusterMap<Integer, String>> clMap = new HashMap<>();
 
-		for (String name : peers.keySet()) {
+		for (var name : peers.keySet()) {
 			Cluster cluster = new ClusterImpl(name, peers);
 			clusters.put(name, cluster);
 			cluster.start();
@@ -57,7 +57,7 @@ public class ClusterMapTest {
 			assertEquals(Integer.toString(i), clMap.get(peer).get(i));
 		}
 
-		for (Cluster cluster : clusters.values())
+		for (var cluster : clusters.values())
 			cluster.stop();
 
 		System.out.println("=== CLUSTER STOPPED (" + LocalDateTime.now() + ") ===\n");

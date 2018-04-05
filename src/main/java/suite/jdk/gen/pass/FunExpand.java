@@ -63,7 +63,7 @@ public class FunExpand extends FunFactory {
 				if (e1.isExpand || weight(l_impl.expr) <= 5) {
 					LambdaInterface<?> l_iface = l_impl.lambdaInterface;
 					var fe = l_impl.expr;
-					for (String fieldName : l_impl.fieldTypes.keySet())
+					for (var fieldName : l_impl.fieldTypes.keySet())
 						fe = replaceFieldInject(fe, fieldName,
 								object(l_inst.fieldValues.get(fieldName), l_impl.fieldTypes.get(fieldName)));
 					return expand(fe.cast_(l_iface.interfaceClass).apply(e1.parameters), depth - 1);
@@ -107,7 +107,7 @@ public class FunExpand extends FunFactory {
 						else if (e1 instanceof Iterable<?>) {
 							Iterable<?> iter = (Iterable<?>) e1;
 							var sum = 0;
-							for (Object e2 : iter)
+							for (var e2 : iter)
 								sum += weight_(e2);
 							return sum;
 						} else

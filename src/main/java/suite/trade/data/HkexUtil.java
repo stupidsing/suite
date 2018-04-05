@@ -55,7 +55,7 @@ public class HkexUtil {
 		if (!pred.test(time)) {
 			time = time.thisSecond().addSeconds(dir < 0 ? 0 : 1);
 			Time time1 = null;
-			for (int d : new int[] { 14400, 3600, 300, 30, 5, 1, })
+			for (var d : new int[] { 14400, 3600, 300, 30, 5, 1, })
 				while (!pred.test(time1 = time.addSeconds(dir * d)))
 					time = time1;
 			time = time1;

@@ -56,7 +56,7 @@ public class Formatter {
 				sb.append(indent + op + "\n");
 				treeize(tree.getRight(), indent1);
 			}).doIf(Tuple.class, n -> {
-				for (Node child : ((Tuple) node).nodes)
+				for (var child : ((Tuple) node).nodes)
 					sb.append(indent + "t:" + dump(child) + "\n");
 			}).doIf(Node.class, n -> {
 				sb.append(indent + dump(node) + "\n");
@@ -210,7 +210,7 @@ public class Formatter {
 				quote |= s0.startsWith(ProverConstant.variablePrefix) //
 						|| s0.startsWith(ProverConstant.wildcardPrefix);
 
-				for (char c : String_.chars(s0))
+				for (var c : String_.chars(s0))
 					quote |= !('0' <= c && c <= '9') //
 							&& !('a' <= c && c <= 'z') //
 							&& !('A' <= c && c <= 'Z') //

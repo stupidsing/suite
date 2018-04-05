@@ -58,7 +58,7 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 				lastIndent = indent;
 
 				// find operators at beginning and end of line
-				for (Operator operator : operators) {
+				for (var operator : operators) {
 					var name = operator.getName().trim();
 
 					if (!name.isEmpty()) {

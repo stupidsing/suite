@@ -45,7 +45,7 @@ public class KmeansCluster {
 		int[] ks = kMeansCluster(values, k, nIterations);
 		ObjIntMap<K> map = new ObjIntMap<>();
 
-		for (int i : Ints_.range(ks.length))
+		for (var i : Ints_.range(ks.length))
 			map.put(keys.get(i), ks[i]);
 
 		return map;

@@ -72,7 +72,7 @@ public class DblSet {
 		if (object instanceof DblSet) {
 			DblSet other = (DblSet) object;
 			boolean b = size == other.size;
-			for (double c : streamlet())
+			for (var c : streamlet())
 				b &= other.contains(c);
 			return b;
 		} else
@@ -89,7 +89,7 @@ public class DblSet {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (double c : streamlet())
+		for (var c : streamlet())
 			h = h * 31 + Double.hashCode(c);
 		return h;
 	}
@@ -105,7 +105,7 @@ public class DblSet {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (double c : streamlet())
+		for (var c : streamlet())
 			sb.append(c + ",");
 		return sb.toString();
 	}

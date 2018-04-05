@@ -158,7 +158,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 				}
 			}
 
-			for (String peer : lastActiveTimes.keySet())
+			for (var peer : lastActiveTimes.keySet())
 				onLeft.fire(peer);
 		}
 
@@ -222,7 +222,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	private void keepAlive(long current) {
 		var bytes = formMessage(Command.HELO);
 
-		for (String remote : peers.keySet()) {
+		for (var remote : peers.keySet()) {
 			Long lastActive = lastActiveTimes.get(remote);
 			Long lastSent = lastSentTimes.get(remote);
 
@@ -258,7 +258,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	private void broadcast(Command data) {
 		var bytes = formMessage(data);
 
-		for (String remote : peers.keySet())
+		for (var remote : peers.keySet())
 			if (!String_.equals(remote, me))
 				sendMessage(remote, bytes);
 	}

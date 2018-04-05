@@ -36,9 +36,9 @@ public class Lccs {
 			IntSet keys1 = segmentLists1.streamlet().keys().toSet();
 			int[] keys = IntSet.intersect(keys0, keys1).streamlet().toArray();
 
-			for (int key : keys)
-				for (Segment segment0 : segmentLists0.get(key))
-					for (Segment segment1 : segmentLists1.get(key)) {
+			for (var key : keys)
+				for (var segment0 : segmentLists0.get(key))
+					for (var segment1 : segmentLists1.get(key)) {
 						int start0 = segment0.start, end0 = segment0.end;
 						int start1 = segment1.start, end1 = segment1.end;
 						Bytes b0 = bytes0.range(start0, end0);

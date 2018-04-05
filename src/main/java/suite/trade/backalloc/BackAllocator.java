@@ -347,7 +347,7 @@ public interface BackAllocator {
 
 					Collections.sort(entries0, (pair0, pair1) -> -bs * Float.compare(pair0.t1, pair1.t1));
 
-					for (DblFltPair entry0 : entries0) {
+					for (var entry0 : entries0) {
 						var potential0 = entry0.t0;
 						var entryPrice = entry0.t1;
 						double cancellation;

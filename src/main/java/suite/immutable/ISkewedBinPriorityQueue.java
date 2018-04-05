@@ -35,7 +35,7 @@ public class ISkewedBinPriorityQueue<T> {
 		private T findMin() {
 			T min = null;
 
-			for (Node tree : trees) {
+			for (var tree : trees) {
 				T value = tree.value;
 				if (min == null || comparator.compare(value, min) < 0) {
 					this.tree = tree;
@@ -53,19 +53,19 @@ public class ISkewedBinPriorityQueue<T> {
 			var trees0 = IList.<Node> end();
 			var trees1 = IList.<Node> end();
 
-			for (Node node : trees.reverse())
+			for (var node : trees.reverse())
 				if (node != tree)
 					if (node.rank != 0)
 						trees0 = IList.cons(node, trees0);
 					else
 						values0 = IList.cons(node.value, values0);
 
-			for (Node node : tree.nodes.reverse())
+			for (var node : tree.nodes.reverse())
 				trees1 = IList.cons(node, trees1);
 
 			trees1 = meld(trees0, trees1);
 
-			for (T value : values0.reverse())
+			for (var value : values0.reverse())
 				trees1 = skewInsert(new Node(value), trees1);
 
 			return new ISkewedBinPriorityQueue<>(comparator, trees1);
@@ -91,7 +91,7 @@ public class ISkewedBinPriorityQueue<T> {
 
 	private int count(IList<Node> trees) {
 		var c = 0;
-		for (Node tree : trees)
+		for (var tree : trees)
 			c += 1 + count(tree.nodes);
 		return c;
 	}

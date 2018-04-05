@@ -54,7 +54,7 @@ public class FileSystemKeySet {
 
 	public void add(Bytes name) {
 		KeyDataMutator<Bytes> mutator = store.mutateData();
-		for (NameKey key : keyUtil.toNameKeys(name))
+		for (var key : keyUtil.toNameKeys(name))
 			mutator.putTerminal(keyUtil.toBytes(key));
 	}
 

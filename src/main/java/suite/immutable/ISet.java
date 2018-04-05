@@ -68,7 +68,7 @@ public class ISet<V extends Comparable<V>> implements Iterable<V> {
 		StringBuilder sb = new StringBuilder();
 		sb.append("(");
 
-		for (V v : this)
+		for (var v : this)
 			sb.append(v + ", ");
 
 		sb.append(")");

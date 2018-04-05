@@ -52,7 +52,7 @@ public class TextDatabase {
 	}
 
 	public synchronized void merge(Streamlet<Datum> data_) {
-		for (Datum datum : data_)
+		for (var datum : data_)
 			merge(datum);
 
 		// 30 seconds between every save

@@ -274,7 +274,7 @@ public class Statistic {
 	private double mean_(float[] fs) {
 		var length = fs.length;
 		var sum = 0f;
-		for (float f : fs)
+		for (var f : fs)
 			sum += f;
 		return sum / length;
 	}
@@ -287,7 +287,7 @@ public class Statistic {
 		var mean = mv.mean;
 		var sd = mv.standardDeviation();
 		var sum = 0d;
-		for (float f : fs) {
+		for (var f : fs) {
 			var d = f - mean;
 			sum += d * d * d;
 		}
@@ -301,7 +301,7 @@ public class Statistic {
 		var mean = mv.mean;
 		var sd = mv.standardDeviation();
 		var sum = 0d;
-		for (float f : fs) {
+		for (var f : fs) {
 			var d = f - mean;
 			var d2 = d * d;
 			sum += d2 * d2;

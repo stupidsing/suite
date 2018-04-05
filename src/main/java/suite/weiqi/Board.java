@@ -12,7 +12,7 @@ import suite.weiqi.Weiqi.Occupation;
 public class Board extends Array<Occupation> {
 
 	public Board() {
-		for (Coordinate c : Coordinate.all())
+		for (var c : Coordinate.all())
 			set(c, Occupation.EMPTY);
 	}
 
@@ -40,7 +40,7 @@ public class Board extends Array<Occupation> {
 			type = MoveType.PLACEMENT;
 			set(c, player);
 
-			for (Coordinate neighbor : c.neighbors)
+			for (var neighbor : c.neighbors)
 				if (get(neighbor) == opponent && killIfDead(neighbor))
 					type = MoveType.CAPTURE;
 
@@ -58,7 +58,7 @@ public class Board extends Array<Occupation> {
 		boolean isKilled = !hasBreath(c);
 
 		if (isKilled)
-			for (Coordinate c1 : findGroup(c))
+			for (var c1 : findGroup(c))
 				set(c1, Occupation.EMPTY);
 
 		return isKilled;
@@ -73,7 +73,7 @@ public class Board extends Array<Occupation> {
 		unexplored.push(c);
 
 		while (!unexplored.isEmpty())
-			for (Coordinate c1 : unexplored.pop().neighbors) {
+			for (var c1 : unexplored.pop().neighbors) {
 				Occupation color1 = get(c1);
 
 				if (color1 == color) {
@@ -95,7 +95,7 @@ public class Board extends Array<Occupation> {
 		unexplored.push(c);
 
 		while (!unexplored.isEmpty())
-			for (Coordinate c1 : unexplored.pop().neighbors)
+			for (var c1 : unexplored.pop().neighbors)
 				if (get(c1) == color && group.add(c1))
 					unexplored.push(c1);
 
@@ -113,7 +113,7 @@ public class Board extends Array<Occupation> {
 			set(c, player);
 			GroupAnalysis ga = new GroupAnalysis(this);
 
-			for (Coordinate neighbor : c.neighbors)
+			for (var neighbor : c.neighbors)
 				if (get(neighbor) == opponent)
 					killIfDead1(ga, neighbor);
 
@@ -128,7 +128,7 @@ public class Board extends Array<Occupation> {
 		boolean isKilled = group.breathes.isEmpty();
 
 		if (isKilled)
-			for (Coordinate c1 : group.coords)
+			for (var c1 : group.coords)
 				set(c1, Occupation.EMPTY);
 
 		return isKilled;

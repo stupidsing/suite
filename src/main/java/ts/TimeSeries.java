@@ -107,7 +107,7 @@ public class TimeSeries {
 			var min = Double.MAX_VALUE;
 			var max = Double.MIN_VALUE;
 			var sum = 0d;
-			for (float dev : devs) {
+			for (var dev : devs) {
 				sum += dev;
 				min = min(sum, min);
 				max = max(sum, max);

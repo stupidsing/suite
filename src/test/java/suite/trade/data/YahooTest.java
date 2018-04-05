@@ -31,7 +31,7 @@ public class YahooTest {
 		HkexFactBook hkexFactBook = new HkexFactBook();
 		Iterable<String> symbols = hkexFactBook.queryMainBoardCompanies(2016);
 		// hkexFactBook.queryLeadingCompaniesByMarketCap(2016);
-		for (String symbol : symbols) {
+		for (var symbol : symbols) {
 			try {
 				yahoo.dataSourceL1(symbol, TimeRange.daysBefore(31));
 			} catch (Exception ex) {

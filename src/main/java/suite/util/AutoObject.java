@@ -31,7 +31,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 					map.put(key, tx = Object_.new_(t0.getClass()));
 					@SuppressWarnings("unchecked")
 					AutoObject<T> t1 = (AutoObject<T>) tx;
-					for (Field field : t0.fields_()) {
+					for (var field : t0.fields_()) {
 						var v0 = field.get(t0);
 						var v1 = v0 instanceof AutoObject ? clone((AutoObject<?>) v0) : v0;
 						field.set(t1, v1);
@@ -113,7 +113,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 			try {
 				recurse.set(IList.cons(this, recurse0));
 				sb.append(getClass().getSimpleName() + "(");
-				for (Object value : values())
+				for (var value : values())
 					sb.append(value + ",");
 				sb.append(")");
 				return sb.toString();

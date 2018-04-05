@@ -23,7 +23,7 @@ public class ProverFactoryTest {
 	}
 
 	private void test(String query, boolean result) {
-		for (ProverFactory pf : new ProverFactory[] { //
+		for (var pf : new ProverFactory[] { //
 				new CompileProverImpl(), //
 				new SewingProverImpl(Suite.newRuleSet(List.of("auto.sl"))), }) {
 			Prove_ p = pf.prover(Suite.parse(query));

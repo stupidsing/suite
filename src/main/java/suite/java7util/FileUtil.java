@@ -32,7 +32,7 @@ public class FileUtil {
 					File f = stack.pop();
 
 					if (f.isDirectory())
-						for (File child : f.listFiles())
+						for (var child : f.listFiles())
 							stack.push(child);
 					else
 						return f;

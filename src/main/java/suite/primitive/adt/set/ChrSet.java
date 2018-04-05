@@ -72,7 +72,7 @@ public class ChrSet {
 		if (object instanceof ChrSet) {
 			ChrSet other = (ChrSet) object;
 			boolean b = size == other.size;
-			for (char c : streamlet())
+			for (var c : streamlet())
 				b &= other.contains(c);
 			return b;
 		} else
@@ -89,7 +89,7 @@ public class ChrSet {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (char c : streamlet())
+		for (var c : streamlet())
 			h = h * 31 + Character.hashCode(c);
 		return h;
 	}
@@ -105,7 +105,7 @@ public class ChrSet {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (char c : streamlet())
+		for (var c : streamlet())
 			sb.append(c + ",");
 		return sb.toString();
 	}

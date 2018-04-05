@@ -77,7 +77,7 @@ public class QueryRewriter {
 	private Node rewriteClause(String s, List<Integer> indices, Node node0) {
 		Node[] m;
 		if ((m = Suite.pattern(s).match(node0)) != null) {
-			for (int i : indices)
+			for (var i : indices)
 				m[i] = rewriteClause(m[i]);
 			return Suite.substitute(s, m);
 		} else

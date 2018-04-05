@@ -79,14 +79,14 @@ public class Funp_ {
 					List<?> list = MapObject_.list(node);
 					sb.append(node.getClass().getSimpleName());
 					sb.append("{");
-					for (Object object1 : list) {
+					for (var object1 : list) {
 						dump(object1);
 						sb.append(",");
 					}
 					sb.append("}");
 				}).doIf(Collection.class, collection -> {
 					sb.append("[");
-					for (Object object1 : collection) {
+					for (var object1 : collection) {
 						dump(object1);
 						sb.append(",");
 					}

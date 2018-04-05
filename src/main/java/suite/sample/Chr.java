@@ -85,7 +85,7 @@ public class Chr {
 	public Collection<Node> chr(Collection<Node> facts) {
 		State state = new State(IMap.empty());
 
-		for (Node fact : facts) {
+		for (var fact : facts) {
 			Prototype prototype = Prototype.of(fact);
 			state = setFacts(state, prototype, getFacts(state, prototype).replace(fact));
 		}
@@ -115,12 +115,12 @@ public class Chr {
 		for (Node if_ : rule.ifs)
 			states = chrIf(states, trail, generalizer.generalize(if_));
 
-		for (Node given : rule.givens)
+		for (var given : rule.givens)
 			states = chrGiven(states, trail, generalizer.generalize(given));
 
 		states = chrWhen(states, generalizer.generalize(rule.when));
 
-		for (Node then : rule.thens)
+		for (var then : rule.thens)
 			states = chrThen(states, generalizer.generalize(then));
 
 		return states;
@@ -168,7 +168,7 @@ public class Chr {
 
 				private ISet<Node> replace(ISet<Node> facts) {
 					ISet<Node> facts1 = ISet.empty();
-					for (Node node : facts)
+					for (var node : facts)
 						facts1 = facts1.replace(rw.replace(from, to, node));
 					return facts1;
 				}

@@ -72,7 +72,7 @@ public class LngSet {
 		if (object instanceof LngSet) {
 			LngSet other = (LngSet) object;
 			boolean b = size == other.size;
-			for (long c : streamlet())
+			for (var c : streamlet())
 				b &= other.contains(c);
 			return b;
 		} else
@@ -89,7 +89,7 @@ public class LngSet {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (long c : streamlet())
+		for (var c : streamlet())
 			h = h * 31 + Long.hashCode(c);
 		return h;
 	}
@@ -105,7 +105,7 @@ public class LngSet {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (long c : streamlet())
+		for (var c : streamlet())
 			sb.append(c + ",");
 		return sb.toString();
 	}

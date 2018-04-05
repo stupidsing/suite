@@ -32,7 +32,7 @@ public class IList<T> implements Iterable<T> {
 	@SafeVarargs
 	public static <T> IList<T> of(T... ts) {
 		var list = IList.<T> end();
-		for (T t : ts)
+		for (var t : ts)
 			list = cons(t, list);
 		return list;
 	}
@@ -81,7 +81,7 @@ public class IList<T> implements Iterable<T> {
 
 	public Deque<T> reverse() {
 		Deque<T> deque = new ArrayDeque<>();
-		for (T t : this)
+		for (var t : this)
 			deque.addFirst(t);
 		return deque;
 	}

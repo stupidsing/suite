@@ -48,7 +48,7 @@ public class Dump {
 				w.write("[" + in.substring(start, end) + "]");
 			w.write("\n");
 
-			for (Ast child : children)
+			for (var child : children)
 				prettyPrint(child, indent1);
 		} else
 			prettyPrint(children.get(0), indent);

@@ -26,7 +26,7 @@ public class CompileGeneralizerImpl implements GeneralizerFactory {
 		Generalizer generalizer = new Generalizer();
 		Generalize_ generalize = cc.cloner(generalizer.generalize(node))::apply;
 		Map<Reference, Atom> indices = new IdentityHashMap<>();
-		for (Atom variableName : generalizer.getVariableNames())
+		for (var variableName : generalizer.getVariableNames())
 			indices.put(generalizer.getVariable(variableName), variableName);
 		vm = mapper.mapKeys(indices::get);
 		return generalize;

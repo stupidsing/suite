@@ -19,7 +19,7 @@ public class InstructionUtil {
 	private static Map<Operator, Insn> evalInsns = new HashMap<>();
 
 	static {
-		for (Insn insn : Insn.values())
+		for (var insn : Insn.values())
 			insnNames.put(insn, insn.name);
 
 		evalInsns.put(TermOp.PLUS__, Insn.EVALADD_______);

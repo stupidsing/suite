@@ -48,7 +48,7 @@ public class DataSourceView<K, V> {
 		var fr = TimeRange.min.epochSec();
 		var to = TimeRange.max.epochSec();
 
-		for (long t : akds.ts) {
+		for (var t : akds.ts) {
 			fr = Long.min(t, fr);
 			to = Long.max(t, to);
 		}

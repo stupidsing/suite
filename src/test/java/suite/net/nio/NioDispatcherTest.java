@@ -81,7 +81,7 @@ public class NioDispatcherTest {
 			InetSocketAddress address = new InetSocketAddress(localHost, 5151);
 			RequestResponseNioChannel client = dispatcher.connect(address);
 
-			for (String s : new String[] { "ABC", "WXYZ", "", }) {
+			for (var s : new String[] { "ABC", "WXYZ", "", }) {
 				var bs = s.getBytes(Constants.charset);
 				Bytes request = Bytes.of(bs);
 				Bytes response = matcher.requestForResponse(client, request);

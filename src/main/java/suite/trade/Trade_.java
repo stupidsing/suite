@@ -57,14 +57,14 @@ public class Trade_ {
 	public static Map<String, Float> collectAcquiredPrices(Outlet<Trade> outlet) {
 		Map<String, List<IntFltPair>> acquireBySymbol = new HashMap<>();
 
-		for (Trade trade : outlet) {
+		for (var trade : outlet) {
 			var symbol = trade.symbol;
 			var buySell = trade.buySell;
 			var price = trade.price;
 			List<IntFltPair> acquires0 = acquireBySymbol.getOrDefault(symbol, List.of());
 			List<IntFltPair> acquires1 = new ArrayList<>();
 
-			for (IntFltPair acquire : acquires0) {
+			for (var acquire : acquires0) {
 				var n0 = acquire.t0;
 				int diff = buySell < 0 ? max(0, min(-buySell, n0)) : min(0, max(-buySell, n0));
 				var n1 = n0 - diff;
@@ -83,7 +83,7 @@ public class Trade_ {
 				.from2(acquireBySymbol) //
 				.mapValue(acquires -> {
 					IntFltPair sum = IntFltPair.of(0, 0f);
-					for (IntFltPair acquire : acquires)
+					for (var acquire : acquires)
 						sum.update(sum.t0 + acquire.t0, sum.t1 + acquire.t0 * acquire.t1);
 					return sum.t1 / sum.t0;
 				}) //
@@ -146,7 +146,7 @@ public class Trade_ {
 
 			LngIntPair tn1 = tradeSource.source();
 
-			for (LngFltPair dividend : dividends) {
+			for (var dividend : dividends) {
 				while (tn1 != null && tn1.t0 < dividend.t0) {
 					tn.update(tn1.t0, tn1.t1);
 					tn1 = tradeSource.source();

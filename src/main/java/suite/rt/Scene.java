@@ -20,7 +20,7 @@ public class Scene implements RtObject {
 	public List<RayHit> hit(Ray ray) {
 		List<RayHit> rayHits = new ArrayList<>();
 
-		for (RtObject object : objects)
+		for (var object : objects)
 			rayHits.addAll(object.hit(new Ray(ray.startPoint, ray.dir)));
 
 		return rayHits;

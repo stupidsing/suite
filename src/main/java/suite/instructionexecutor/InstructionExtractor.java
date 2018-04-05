@@ -75,7 +75,7 @@ public class InstructionExtractor implements AutoCloseable {
 							Fail.t("bad frame definition");
 					else {
 						rsList.add(rs);
-						for (Node op : List_.right(rs, 1))
+						for (var op : List_.right(rs, 1))
 							if ((value = label(op)) != null)
 								deque.push(value);
 						deque.push(tree.getRight());

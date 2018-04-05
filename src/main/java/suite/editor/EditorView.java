@@ -239,7 +239,7 @@ public class EditorView {
 		JMenu menu = applyDefaults(new JMenu(title));
 		menu.setMnemonic(keyEvent);
 
-		for (Component component : menuItems)
+		for (var component : menuItems)
 			menu.add(component);
 
 		return menu;
@@ -284,7 +284,7 @@ public class EditorView {
 
 	public void showSearchFileResult(Streamlet<String> filenames) {
 		listModel.clear();
-		for (String filename : filenames)
+		for (var filename : filenames)
 			listModel.addElement(filename);
 
 	}
@@ -327,7 +327,7 @@ public class EditorView {
 	private boolean isOwningFocus(Component component) {
 		boolean isFocusOwner = component.isFocusOwner();
 		if (component instanceof JComponent)
-			for (Component c : ((JComponent) component).getComponents())
+			for (var c : ((JComponent) component).getComponents())
 				isFocusOwner |= isOwningFocus(c);
 		return isFocusOwner;
 	}

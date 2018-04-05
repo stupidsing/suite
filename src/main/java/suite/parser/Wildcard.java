@@ -36,9 +36,9 @@ public class Wildcard {
 					|| h0 == h1 && isMatch2(t0, t1);
 		} else {
 			boolean isWildcardPatterns = true;
-			for (char c0 : String_.chars(p0))
+			for (var c0 : String_.chars(p0))
 				isWildcardPatterns &= c0 == '*';
-			for (char c1 : String_.chars(p1))
+			for (var c1 : String_.chars(p1))
 				isWildcardPatterns &= c1 == '*';
 			return isWildcardPatterns;
 		}
@@ -60,7 +60,7 @@ public class Wildcard {
 	public static String apply(String pattern, String[] input) {
 		StringBuilder sb = new StringBuilder();
 		var i = 0;
-		for (char ch : String_.chars(pattern))
+		for (var ch : String_.chars(pattern))
 			switch (ch) {
 			case '*':
 			case '?':
@@ -115,7 +115,7 @@ class Matcher {
 	private Streamlet<State> applyPattern(String pattern, String input) {
 		Streamlet<State> st = Read.each(new State(input));
 
-		for (char ch : String_.chars(pattern))
+		for (var ch : String_.chars(pattern))
 			switch (ch) {
 			case '*':
 				st = st.concatMap(state -> Read.from(() -> new Source<State>() {

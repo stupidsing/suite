@@ -23,7 +23,7 @@ public class ISkewedBinPriorityQueueTest {
 
 		ISkewedBinPriorityQueue<Integer> pq = new ISkewedBinPriorityQueue<>(Object_::compare);
 
-		for (int i : list)
+		for (var i : list)
 			pq = pq.add(i);
 
 		for (var i = 0; i < size; i++) {

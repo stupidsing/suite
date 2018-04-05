@@ -1,7 +1,6 @@
 package suite.fp.intrinsic;
 
 import java.io.Reader;
-import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -106,7 +105,7 @@ public class Intrinsics {
 				, SuiteIntrinsics.class)) {
 			var instance = Object_.new_(clazz);
 
-			for (Field field : clazz.getFields())
+			for (var field : clazz.getFields())
 				if (Intrinsic.class.isAssignableFrom(field.getType())) {
 					var name = clazz.getSimpleName() + "." + field.getName();
 					Rethrow.ex(() -> intrinsics.put(name, (Intrinsic) field.get(instance)));

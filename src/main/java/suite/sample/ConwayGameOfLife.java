@@ -10,9 +10,9 @@ public class ConwayGameOfLife {
 	public ConwayGameOfLife(String s) {
 		this(new boolean[size][size]);
 		var x = 0;
-		for (String line : s.split("\n")) {
+		for (var line : s.split("\n")) {
 			var y = 0;
-			for (char ch : String_.chars(line))
+			for (var ch : String_.chars(line))
 				game[x][y++] = !Character.isWhitespace(ch);
 			x++;
 		}

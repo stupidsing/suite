@@ -89,7 +89,7 @@ public class CommandDispatcher {
 	public boolean importFiles(List<String> importFilenames) throws IOException {
 		boolean code = true;
 		code &= Suite.importPath(ruleSet, "auto.sl");
-		for (String importFilename : importFilenames)
+		for (var importFilename : importFilenames)
 			code &= Suite.importFile(ruleSet, importFilename);
 		return code;
 	}
@@ -225,7 +225,7 @@ public class CommandDispatcher {
 
 	public boolean dispatchPrecompile(List<String> filenames) {
 		boolean b = true;
-		for (String filename : filenames)
+		for (var filename : filenames)
 			b &= Suite.precompile(filename, opt.pc(null));
 		return b;
 	}

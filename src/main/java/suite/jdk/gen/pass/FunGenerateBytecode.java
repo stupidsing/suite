@@ -87,7 +87,7 @@ public class FunGenerateBytecode {
 			InstructionList il = new InstructionList();
 			List<InstructionHandle> ihs = new ArrayList<>();
 
-			for (Instruction instruction : list)
+			for (var instruction : list)
 				ihs.add(instruction instanceof BranchInstruction //
 						? il.append((BranchInstruction) instruction) //
 						: il.append(instruction));
@@ -128,9 +128,9 @@ public class FunGenerateBytecode {
 				var p0 = list.size();
 				visit_(e1.expr);
 				var px = list.size();
-				for (int source : e1.continues.toInts())
+				for (var source : e1.continues.toInts())
 					jumps.put(source, p0);
-				for (int source : e1.breaks.toInts())
+				for (var source : e1.breaks.toInts())
 					jumps.put(source, px);
 			}).doIf(BlockBreakFunExpr.class, e1 -> {
 				e1.block.get().breaks.append(list.size());
@@ -191,7 +191,7 @@ public class FunGenerateBytecode {
 				if (object != null)
 					visit_(object);
 
-				for (FunExpr parameter : e1.parameters)
+				for (var parameter : e1.parameters)
 					visit_(parameter);
 
 				list.add(factory.createInvoke( //

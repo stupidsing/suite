@@ -72,7 +72,7 @@ public class FltSet {
 		if (object instanceof FltSet) {
 			FltSet other = (FltSet) object;
 			boolean b = size == other.size;
-			for (float c : streamlet())
+			for (var c : streamlet())
 				b &= other.contains(c);
 			return b;
 		} else
@@ -89,7 +89,7 @@ public class FltSet {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (float c : streamlet())
+		for (var c : streamlet())
 			h = h * 31 + Float.hashCode(c);
 		return h;
 	}
@@ -105,7 +105,7 @@ public class FltSet {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (float c : streamlet())
+		for (var c : streamlet())
 			sb.append(c + ",");
 		return sb.toString();
 	}

@@ -24,7 +24,7 @@ public class Execute {
 	public static String shell(String sh) {
 		String[] command = null;
 
-		for (String s : List.of("/bin/sh", "C:\\cygwin\\bin\\sh.exe", "C:\\cygwin64\\bin\\sh.exe"))
+		for (var s : List.of("/bin/sh", "C:\\cygwin\\bin\\sh.exe", "C:\\cygwin64\\bin\\sh.exe"))
 			if (Files.exists(Paths.get(s)))
 				command = new String[] { s, };
 
@@ -65,12 +65,12 @@ public class Execute {
 					Copy.streamByThread(pes, bos1), //
 					Copy.streamByThread(bis, pos), };
 
-			for (Thread thread : threads)
+			for (var thread : threads)
 				thread.start();
 
 			code = process.waitFor();
 
-			for (Thread thread : threads)
+			for (var thread : threads)
 				thread.join();
 		} catch (InterruptedException ex) {
 			throw new RuntimeException(ex);

@@ -103,7 +103,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 			var isInUse = new HashSet<>();
 
 			Sink<List<Extent>> use = extents_ -> {
-				for (Extent extent : extents_)
+				for (var extent : extents_)
 					if (start <= extent.start)
 						isInUse.add(extent);
 			};
@@ -112,7 +112,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 
 			List<Extent> extents = extentFile.scan(start, end);
 
-			for (Extent extent : Read.from(extents).reverse())
+			for (var extent : Read.from(extents).reverse())
 				if (isInUse.contains(extent))
 					use.sink(Read.from(loadSlot(extent).pairs).map(Pair::second).toList());
 
@@ -121,7 +121,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 			if (!extents.isEmpty()) {
 				var pointer = extents.get(0).start;
 
-				for (Extent extent0 : extents)
+				for (var extent0 : extents)
 					if (isInUse.contains(extent0)) {
 						PersistSlot<T> ps0 = loadSlot(extent0);
 						List<Pair<T, Extent>> pairs0 = ps0.pairs;

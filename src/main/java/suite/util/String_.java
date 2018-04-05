@@ -40,7 +40,7 @@ public class String_ {
 	public static boolean isBlank(String s) {
 		boolean isBlank = true;
 		if (s != null)
-			for (char c : String_.chars(s))
+			for (var c : String_.chars(s))
 				isBlank &= Character.isWhitespace(c);
 		return isBlank;
 	}
@@ -51,7 +51,7 @@ public class String_ {
 				s = s.substring(1);
 
 			boolean b = !s.isEmpty();
-			for (char c : String_.chars(s))
+			for (var c : String_.chars(s))
 				b &= Character.isDigit(c);
 			return b;
 		} else

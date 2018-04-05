@@ -61,7 +61,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	@SafeVarargs
 	public static DblOutlet concat(DblOutlet... outlets) {
 		List<DblSource> sources = new ArrayList<>();
-		for (DblOutlet outlet : outlets)
+		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(DblFunUtil.concat(To.source(sources)));
 	}

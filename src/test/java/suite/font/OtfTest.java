@@ -49,7 +49,7 @@ public class OtfTest {
 				.sort(Object_::compare) //
 				.toList();
 
-		for (String command : commands)
+		for (var command : commands)
 			System.out.println(command);
 	}
 

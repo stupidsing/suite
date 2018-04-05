@@ -135,7 +135,7 @@ public class Object_ {
 				mapper = new Mapper(object -> {
 					Map<Object, Object> map = new HashMap<>();
 					var i = 0;
-					for (Object o : (Collection<?>) object)
+					for (var o : (Collection<?>) object)
 						map.put(i++, o);
 					return map;
 				}, object -> {

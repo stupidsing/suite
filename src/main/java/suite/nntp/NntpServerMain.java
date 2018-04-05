@@ -88,14 +88,14 @@ public class NntpServerMain extends ExecutableProgram {
 					case LIST:
 						if (String_.equals(options, "ACTIVE")) {
 							pw.println("215 Okay");
-							for (String groupId : nntp.listGroupIds()) {
+							for (var groupId : nntp.listGroupIds()) {
 								Pair<String, String> articleIdRange = nntp.getArticleIdRange(groupId);
 								pw.println(groupId + " " + articleIdRange.t0 + " " + articleIdRange.t1 + " y");
 							}
 							pw.println(".");
 						} else if (String_.equals(options, "NEWSGROUPS")) {
 							pw.println("215 Okay");
-							for (String group : nntp.listGroupIds())
+							for (var group : nntp.listGroupIds())
 								pw.println(group + " " + group);
 							pw.println(".");
 						} else
@@ -103,7 +103,7 @@ public class NntpServerMain extends ExecutableProgram {
 						break;
 					case LISTGROUP:
 						pw.println("211 Okay");
-						for (String articleId : nntp.listArticleIds(currentGroupId, 0))
+						for (var articleId : nntp.listArticleIds(currentGroupId, 0))
 							pw.println(articleId);
 						pw.println(".");
 						break;

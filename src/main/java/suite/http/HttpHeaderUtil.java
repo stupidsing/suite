@@ -28,7 +28,7 @@ public class HttpHeaderUtil {
 		var qs = query != null ? query.split(";") : new String[0];
 		Map<String, String> attrs = new HashMap<>();
 
-		for (String q : qs) {
+		for (var q : qs) {
 			Pair<String, String> pair = String_.split2(q, "=");
 			attrs.put(pair.t0, decode(pair.t1));
 		}
@@ -52,7 +52,7 @@ public class HttpHeaderUtil {
 		var qs = query != null ? query.split("&") : new String[0];
 		Map<String, String> attrs = new HashMap<>();
 
-		for (String q : qs) {
+		for (var q : qs) {
 			Pair<String, String> pair = String_.split2(q, "=");
 			attrs.put(pair.t0, decode(pair.t1));
 		}

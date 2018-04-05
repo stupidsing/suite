@@ -59,7 +59,7 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (Object value : MapObject_.list(this))
+		for (var value : MapObject_.list(this))
 			h = h * 31 + Objects.hashCode(value);
 		return h;
 	}
@@ -72,7 +72,7 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 		if (!recurse0.contains(this))
 			try {
 				sb.append(getClass().getSimpleName() + "(");
-				for (Object value : MapObject_.list(this))
+				for (var value : MapObject_.list(this))
 					sb.append(value + ",");
 				sb.append(")");
 				return sb.toString();

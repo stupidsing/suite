@@ -309,7 +309,7 @@ public class SewingProverImpl implements ProverFactory {
 
 		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size()) {
 			cps = cpsx;
-			for (Node n : List_.reverse(list))
+			for (var n : List_.reverse(list))
 				cps = compileCps(bf, n, cps);
 		} else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
 			cps = orCps(Read.from(list).map(n -> compileCps(bf, n, cpsx)));
@@ -349,7 +349,7 @@ public class SewingProverImpl implements ProverFactory {
 		Cps cps_ = List_.last(cpsList);
 		return rt -> {
 			Restore restore = save(rt);
-			for (Cps cps1 : cpsArray) {
+			for (var cps1 : cpsArray) {
 				rt.cont(cps1);
 				restore.restore(rt);
 			}
@@ -509,7 +509,7 @@ public class SewingProverImpl implements ProverFactory {
 				Trampoline tr1 = saveEnvTr(compileTrRule(ht[0], ht[1]));
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
 				rt.pushRem(rt_ -> valuex_.test(rt_, current.get()) ? okay : fail);
-				for (Node elem : Tree.iter(list0_.apply(rt.env))) {
+				for (var elem : Tree.iter(list0_.apply(rt.env))) {
 					Reference result = new Reference();
 					rt.pushRem(rt_ -> {
 						current.update(result.finalNode());
@@ -537,7 +537,7 @@ public class SewingProverImpl implements ProverFactory {
 					rt_.env = env0;
 					return valuex_.test(rt_, current.get()) ? okay : fail;
 				});
-				for (Node elem : Tree.iter(list0_.apply(rt.env))) {
+				for (var elem : Tree.iter(list0_.apply(rt.env))) {
 					rt.pushRem(rt_ -> {
 						current.update(vx_.apply(rt_.env));
 						return okay;
@@ -555,7 +555,7 @@ public class SewingProverImpl implements ProverFactory {
 			tr = rt -> {
 				var ht = Suite.pattern(".0 .1").match(ht_.apply(rt.env));
 				Trampoline tr1 = saveEnvTr(compileTrRule(ht[0], ht[1]));
-				for (Node n : Tree.iter(l_.apply(rt.env)))
+				for (var n : Tree.iter(l_.apply(rt.env)))
 					rt.pushRem(rt_ -> {
 						rt_.query = n;
 						return tr1;
@@ -572,7 +572,7 @@ public class SewingProverImpl implements ProverFactory {
 					rt_.env = env0;
 					return okay;
 				});
-				for (Node n : Tree.iter(f.apply(rt.env)))
+				for (var n : Tree.iter(f.apply(rt.env)))
 					rt.pushRem(rt_ -> {
 						rt_.env = env0.clone();
 						return p.test(rt_, n) ? tr1 : fail;

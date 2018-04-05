@@ -14,9 +14,9 @@ public class IHashSet<V> {
 	public static <V> IHashSet<V> meld(IHashSet<V> set0, IHashSet<V> set1, BinOp<V> f) {
 		return new IHashSet<>(IIntMap.meld(set0.intMap, set1.intMap, (l0, l1) -> {
 			IList<V> list = IList.end();
-			for (V v : l0)
+			for (var v : l0)
 				list = merge(list, v, f);
-			for (V v : l1)
+			for (var v : l1)
 				list = merge(list, v, f);
 			return list;
 		}));
@@ -24,7 +24,7 @@ public class IHashSet<V> {
 
 	private static <V> IList<V> merge(IList<V> list0, V v0, BinOp<V> f) {
 		IList<V> list1 = IList.end();
-		for (V v : list0)
+		for (var v : list0)
 			if (!v.equals(v0))
 				list1 = IList.cons(v, list1);
 			else

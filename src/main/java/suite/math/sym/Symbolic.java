@@ -157,7 +157,7 @@ public class Symbolic {
 	public Opt<Node> polyize(Node node, Atom... vars) {
 		Ringo<?> ringo = Ringo.ofFractional(Fractional.ofIntegral());
 
-		for (Atom var : vars)
+		for (var var : vars)
 			ringo = ringo.poly(new Rewrite(var));
 
 		return ringo.pf(node);
@@ -167,7 +167,7 @@ public class Symbolic {
 	public Opt<Node> polyize0(Node node, Atom... vars) {
 		Fractional<?> fractional = Fractional.ofIntegral();
 
-		for (Atom var : vars)
+		for (var var : vars)
 			fractional = divPoly(new Rewrite(var), fractional).fractional();
 
 		Fractional<?> fractional_ = fractional;
@@ -311,7 +311,7 @@ public class Symbolic {
 
 							Int_Obj<Streamlet<Node>> f = power_ -> {
 								List<Node> n = new ArrayList<>();
-								for (char ch : Integer.toBinaryString(power_).toCharArray()) {
+								for (var ch : Integer.toBinaryString(power_).toCharArray()) {
 									n = List_.concat(n, n);
 									n = ch != '0' ? List_.concat(n, pos) : n;
 								}
@@ -435,7 +435,7 @@ public class Symbolic {
 					else // TODO assumed m0 != 0 or power != 0
 						return poly(a).map(p -> {
 							Poly<Node> r = dpn.p1;
-							for (char ch : Integer.toBinaryString(power).toCharArray()) {
+							for (var ch : Integer.toBinaryString(power).toCharArray()) {
 								r = pr.mul.apply(r, r);
 								r = ch != '0' ? pr.mul.apply(p, r) : r;
 							}

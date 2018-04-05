@@ -26,7 +26,7 @@ public class ParseUtil {
 		List<String> outs = new ArrayList<>();
 		var inl = lower.apply(in);
 		var p = 0;
-		for (String part : parts) {
+		for (var part : parts) {
 			int p1 = inl.indexOf(lower.apply(part), p);
 			if (0 <= p1) {
 				outs.add(in.substring(p, p1));
@@ -165,7 +165,7 @@ public class ParseUtil {
 		int quote = 0, depth = 0;
 
 		// shows warning if the atom has mismatched quotes or brackets
-		for (char c : String_.chars(s)) {
+		for (var c : String_.chars(s)) {
 			quote = getQuoteChange(quote, c);
 			if (quote == 0)
 				depth = checkDepth(depth, c);

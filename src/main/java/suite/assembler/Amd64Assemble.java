@@ -168,7 +168,7 @@ public class Amd64Assemble {
 
 	private Bytes assemblePass(long offset, List<Instruction> instructions) {
 		BytesBuilder bb = new BytesBuilder();
-		for (Instruction instruction : instructions)
+		for (var instruction : instructions)
 			try {
 				Bytes bytes = assemble(offset, instruction);
 				bb.append(bytes);

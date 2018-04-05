@@ -1,8 +1,6 @@
 package suite.inspect;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -102,7 +100,7 @@ public class Dump {
 							for (var i = 0; i < Array.getLength(object); i++)
 								d(prefix + "[" + count++ + "]", Array.get(object, i));
 						else if (Collection.class.isAssignableFrom(clazz))
-							for (Object o1 : (Collection<?>) object)
+							for (var o1 : (Collection<?>) object)
 								d(prefix + "[" + count++ + "]", o1);
 						else if (Map.class.isAssignableFrom(clazz))
 							for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet()) {
@@ -112,7 +110,7 @@ public class Dump {
 								count++;
 							}
 						else {
-							for (Field field : inspect.fields(clazz))
+							for (var field : inspect.fields(clazz))
 								try {
 									var name = field.getName();
 									var o = field.get(object);
@@ -126,7 +124,7 @@ public class Dump {
 									sink.sink(" caught " + ex + "\n");
 								}
 
-							for (Method method : inspect.getters(clazz)) {
+							for (var method : inspect.getters(clazz)) {
 								var name = method.getName();
 								try {
 									var o = method.invoke(object);

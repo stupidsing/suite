@@ -124,7 +124,7 @@ public class HtmlUtil {
 		Deque<HtmlNode> deque = new ArrayDeque<>(List.of(new HtmlNode(null)));
 		var prevp = 0;
 
-		for (IntIntPair pair : pairs) {
+		for (var pair : pairs) {
 			HtmlNode htmlNode = deque.element(), htmlNode1;
 			var p0 = pair.t0;
 			var px = pair.t1;

@@ -40,7 +40,7 @@ public enum TermOp implements Operator {
 
 	static {
 		var precedence = 0;
-		for (TermOp operator : values())
+		for (var operator : values())
 			operator.precedence = ++precedence;
 	}
 
@@ -50,7 +50,7 @@ public enum TermOp implements Operator {
 	}
 
 	public static TermOp find(String name) {
-		for (TermOp operator : values())
+		for (var operator : values())
 			if (String_.equals(operator.name, name))
 				return operator;
 		return null;

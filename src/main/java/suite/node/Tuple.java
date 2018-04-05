@@ -24,7 +24,7 @@ public class Tuple extends Node {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (Node node : nodes)
+		for (var node : nodes)
 			h = h * 31 + node.hashCode();
 		return h;
 	}

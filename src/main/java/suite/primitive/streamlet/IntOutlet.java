@@ -61,7 +61,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	@SafeVarargs
 	public static IntOutlet concat(IntOutlet... outlets) {
 		List<IntSource> sources = new ArrayList<>();
-		for (IntOutlet outlet : outlets)
+		for (var outlet : outlets)
 			sources.add(outlet.source);
 		return of(IntFunUtil.concat(To.source(sources)));
 	}

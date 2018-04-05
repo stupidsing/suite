@@ -49,7 +49,7 @@ public class Bytes implements Iterable<Byte> {
 
 	public static Bytes concat(Bytes... array) {
 		BytesBuilder bb = new BytesBuilder();
-		for (Bytes bytes : array)
+		for (var bytes : array)
 			bb.append(bytes);
 		return bb.toBytes();
 	}

@@ -104,7 +104,7 @@ public class ObstructionFreeStmTest {
 		IntStream.range(0, nMemories * 2 + 1).forEach(mi -> IntStream.range(0, nTransactions).forEach(workingOrders::add));
 		Collections.shuffle(workingOrders, random);
 
-		for (int workingOrder : workingOrders)
+		for (var workingOrder : workingOrders)
 			workers.get(workingOrder).work(memories);
 
 		stm.transaction(transaction -> {
