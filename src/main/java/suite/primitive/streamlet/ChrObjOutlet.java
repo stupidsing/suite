@@ -372,7 +372,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	public ChrObjOutlet<V> skip(int n) {
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		boolean end = false;
-		for (int i = 0; !end && i < n; i++)
+		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
 		return !end ? of(source) : empty();
 	}

@@ -108,7 +108,7 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public int indexOf(Bytes bytes, int start) {
-		for (int i = start; i <= size_() - bytes.size_(); i++)
+		for (var i = start; i <= size_() - bytes.size_(); i++)
 			if (startsWith(bytes, i))
 				return i;
 		return -1;
@@ -120,7 +120,7 @@ public class Bytes implements Iterable<Byte> {
 
 	public boolean isZeroes() {
 		boolean b = true;
-		for (int i = start; b && i < end; i++)
+		for (var i = start; b && i < end; i++)
 			b &= bs[i] == 0;
 		return b;
 	}
@@ -216,7 +216,7 @@ public class Bytes implements Iterable<Byte> {
 
 			if (size_() == other.size_()) {
 				var diff = other.start - start;
-				for (int i = start; i < end; i++)
+				for (var i = start; i < end; i++)
 					if (bs[i] != other.bs[i + diff])
 						return false;
 				return true;
@@ -229,7 +229,7 @@ public class Bytes implements Iterable<Byte> {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (int i = start; i < end; i++)
+		for (var i = start; i < end; i++)
 			h = h * 31 + bs[i];
 		return h;
 	}
@@ -237,7 +237,7 @@ public class Bytes implements Iterable<Byte> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (int i = start; i < end; i++)
+		for (var i = start; i < end; i++)
 			sb.append(" " + To.hex2(bs[i]));
 		return sb.toString();
 	}
@@ -245,7 +245,7 @@ public class Bytes implements Iterable<Byte> {
 	private boolean startsWith_(Bytes bytes, int s) {
 		if (s + bytes.size_() <= size_()) {
 			boolean b = true;
-			for (int i = 0; b && i < bytes.size_(); i++)
+			for (var i = 0; b && i < bytes.size_(); i++)
 				b &= get(s + i) == bytes.get(i);
 			return b;
 		} else

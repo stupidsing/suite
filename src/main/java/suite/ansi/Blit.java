@@ -21,7 +21,7 @@ public class Blit {
 		int ye = min(w, source.height - y0, dest.height - y1);
 
 		if (xs < xe && ys < ye)
-			for (int xx = xs; xx < xe; xx++)
+			for (var xx = xs; xx < xe; xx++)
 				System.arraycopy(source.buffer[x0 + xx], y0 + ys, dest.buffer[x1 + xx], y1 + ys, ye - ys);
 	}
 

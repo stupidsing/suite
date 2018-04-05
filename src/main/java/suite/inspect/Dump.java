@@ -99,7 +99,7 @@ public class Dump {
 						if (Type_.isSimple(clazz))
 							;
 						else if (clazz.isArray())
-							for (int i = 0; i < Array.getLength(object); i++)
+							for (var i = 0; i < Array.getLength(object); i++)
 								d(prefix + "[" + count++ + "]", Array.get(object, i));
 						else if (Collection.class.isAssignableFrom(clazz))
 							for (Object o1 : (Collection<?>) object)

@@ -85,7 +85,7 @@ public class Ebnf {
 		if (0 < size) {
 			List<FactorizeResult> frs = new ArrayList<>();
 			var pos = p0;
-			for (int i = 0; i < size; i++) {
+			for (var i = 0; i < size; i++) {
 				Ast child = children.get(i);
 				var pos0 = pos;
 				pos = i != size - 1 ? child.end : px;

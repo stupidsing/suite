@@ -67,8 +67,8 @@ public class Render {
 		List<Thread> threads = Ints_ //
 				.range(nThreads) //
 				.map(t -> Thread_.newThread(() -> {
-					for (int x = txs[t]; x < txs[t + 1]; x++)
-						for (int y = 0; y < height; y++)
+					for (var x = txs[t]; x < txs[t + 1]; x++)
+						for (var y = 0; y < height; y++)
 							pixels[x][y] = f.apply(x, y);
 				})) //
 				.toList();
@@ -77,8 +77,8 @@ public class Render {
 
 		Image image = new Image(width, height, BufferedImage.TYPE_INT_RGB);
 
-		for (int x = 0; x < width; x++)
-			for (int y = 0; y < height; y++) {
+		for (var x = 0; x < width; x++)
+			for (var y = 0; y < height; y++) {
 				R3 pixel = limit(pixels[x][y]);
 				image.setRGB(x, y, new Color(pixel.x, pixel.y, pixel.z).getRGB());
 			}

@@ -31,7 +31,7 @@ public class NeuralNetworkTest {
 				NeuralNetwork nn = new NeuralNetwork();
 				Layer<float[], float[]> train = nn.ml(new int[] { 2, 4, 1, });
 
-				for (int i = 0; i < 16384; i++) {
+				for (var i = 0; i < 16384; i++) {
 					boolean b0 = random.nextBoolean();
 					boolean b1 = random.nextBoolean();
 					float[] in = input(b0, b1);

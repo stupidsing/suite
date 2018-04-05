@@ -85,7 +85,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 			var size1 = values1.size();
 			b = true;
 			if (size0 == size1)
-				for (int i = 0; i < size0; i++)
+				for (var i = 0; i < size0; i++)
 					b &= Objects.equals(values0.get(i), values1.get(i));
 		} else
 			b = false;

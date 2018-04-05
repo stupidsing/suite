@@ -98,7 +98,7 @@ public class Google {
 
 			JsonNode json = Rethrow.ex(() -> {
 				try (InputStream is = HttpUtil.get(url).out.collect(To::inputStream)) {
-					for (int i = 0; i < 4; i++)
+					for (var i = 0; i < 4; i++)
 						is.read();
 					return mapper.readTree(is);
 				}

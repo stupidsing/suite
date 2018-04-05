@@ -54,7 +54,7 @@ public class Polynomial {
 		while (0 <= --pd) {
 			var r = rem[pd + denomLength1] / head;
 			dividend[pd] = (float) r;
-			for (int i = 0; i < denomLength; i++)
+			for (var i = 0; i < denomLength; i++)
 				rem[i + pd] -= denom[i] * r;
 		}
 

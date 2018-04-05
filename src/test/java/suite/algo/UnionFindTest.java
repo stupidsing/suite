@@ -38,7 +38,7 @@ public class UnionFindTest {
 
 	private Set<Integer> find(UnionFind<Integer> unionFind, int start, int end) {
 		var set = new HashSet<Integer>();
-		for (int i = start; i <= end; i++)
+		for (var i = start; i <= end; i++)
 			set.add(unionFind.find(i));
 		return set;
 	}

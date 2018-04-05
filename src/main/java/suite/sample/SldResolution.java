@@ -48,7 +48,7 @@ public class SldResolution {
 		for (Node n1 : Tree.iter(n0, TermOp.AND___)) {
 			List<Node> ors = To.list(Tree.iter(n1, TermOp.AND___));
 
-			for (int i = 0; i < ors.size(); i++) {
+			for (var i = 0; i < ors.size(); i++) {
 				var index = i;
 
 				orsMap.put(ors.get(index), () -> List_.concat(ors.subList(0, index), ors.subList(index + 1, ors.size())));

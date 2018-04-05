@@ -31,7 +31,7 @@ public class RollingHashUtilTest {
 
 		var rollingHash = rollingHashUtil.hash(bytes);
 
-		for (int pos = 0; pos < size; pos++)
+		for (var pos = 0; pos < size; pos++)
 			rollingHash = rollingHashUtil.unroll(rollingHash, bytes.get(pos), size - pos);
 
 		assertEquals(rollingHashUtil.hash(Bytes.empty), rollingHash);
@@ -44,7 +44,7 @@ public class RollingHashUtilTest {
 
 		int rollingHash = rollingHashUtil.hash(bytes.range(0, 10));
 
-		for (int pos = 10; pos < size; pos++) {
+		for (var pos = 10; pos < size; pos++) {
 			rollingHash = rollingHashUtil.unroll(rollingHash, bytes.get(pos - 10), 10);
 			rollingHash = rollingHashUtil.roll(rollingHash, bytes.get(pos));
 		}

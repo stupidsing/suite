@@ -111,7 +111,7 @@ public class Ints implements Iterable<Integer> {
 	}
 
 	public int indexOf(Ints ints, int start) {
-		for (int i = start; i <= size_() - ints.size_(); i++)
+		for (var i = start; i <= size_() - ints.size_(); i++)
 			if (startsWith(ints, i))
 				return i;
 		return -1;
@@ -123,7 +123,7 @@ public class Ints implements Iterable<Integer> {
 
 	public boolean isWhitespaces() {
 		boolean b = true;
-		for (int i = start; b && i < end; i++)
+		for (var i = start; b && i < end; i++)
 			b &= ParseUtil.isWhitespace(cs[i]);
 		return b;
 	}
@@ -244,7 +244,7 @@ public class Ints implements Iterable<Integer> {
 
 			if (size_() == other.size_()) {
 				var diff = other.start - start;
-				for (int i = start; i < end; i++)
+				for (var i = start; i < end; i++)
 					if (cs[i] != other.cs[i + diff])
 						return false;
 				return true;
@@ -257,7 +257,7 @@ public class Ints implements Iterable<Integer> {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (int i = start; i < end; i++)
+		for (var i = start; i < end; i++)
 			h = h * 31 + Integer.hashCode(cs[i]);
 		return h;
 	}
@@ -265,7 +265,7 @@ public class Ints implements Iterable<Integer> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (int i = start; i < end; i++)
+		for (var i = start; i < end; i++)
 			sb.append(cs[i]);
 		return sb.toString();
 	}
@@ -273,7 +273,7 @@ public class Ints implements Iterable<Integer> {
 	private boolean startsWith_(Ints ints, int s) {
 		if (s + ints.size_() <= size_()) {
 			boolean b = true;
-			for (int i = 0; b && i < ints.size_(); i++)
+			for (var i = 0; b && i < ints.size_(); i++)
 				b &= get(s + i) == ints.get(i);
 			return b;
 		} else

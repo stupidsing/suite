@@ -41,7 +41,7 @@ public class ConwayGameOfLifeTest {
 	}
 
 	private ConwayGameOfLife evolve(ConwayGameOfLife cgol, int times) {
-		for (int i = 0; i < times; i++) {
+		for (var i = 0; i < times; i++) {
 			cgol = cgol.evolve(cgol);
 			System.out.println(cgol);
 		}

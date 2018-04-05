@@ -37,7 +37,7 @@ public class P1Inline {
 	public Funp inline(Funp node, int rounds, int f0, int f1, int f2, int f3) {
 		node = renameVariables(node);
 
-		for (int i = 0; i < rounds; i++) {
+		for (var i = 0; i < rounds; i++) {
 			node = 0 < f0 ? inlineDefineAssigns(node) : node;
 			node = 0 < f1 ? inlineDefines(node) : node;
 			node = 0 < f2 ? inlineFields(node) : node;

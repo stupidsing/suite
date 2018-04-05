@@ -104,7 +104,7 @@ public class FunGenerateBytecode {
 				var elements = e1.elements;
 				list.add(factory.createConstant(elements.length));
 				list.add(factory.createNewArray(Type.getType(e1.clazz), (short) 1));
-				for (int i = 0; i < elements.length; i++) {
+				for (var i = 0; i < elements.length; i++) {
 					var element = elements[i];
 					if (element != null) {
 						list.add(InstructionFactory.createDup(1));

@@ -28,7 +28,7 @@ public class ClusterMapTest {
 		InetAddress localHost = InetAddress.getLocalHost();
 
 		Map<String, InetSocketAddress> peers = new HashMap<>();
-		for (int i = 0; i < nNodes; i++)
+		for (var i = 0; i < nNodes; i++)
 			peers.put("NODE" + i, new InetSocketAddress(localHost, 3000 + i));
 
 		List<String> peerNames = new ArrayList<>(peers.keySet());
@@ -47,12 +47,12 @@ public class ClusterMapTest {
 
 		System.out.println("=== CLUSTER FORMED (" + LocalDateTime.now() + ") ===\n");
 
-		for (int i = 0; i < 100; i++) {
+		for (var i = 0; i < 100; i++) {
 			var peer = peerNames.get(random.nextInt(nNodes));
 			clMap.get(peer).set(i, Integer.toString(i));
 		}
 
-		for (int i = 0; i < 100; i++) {
+		for (var i = 0; i < 100; i++) {
 			var peer = peerNames.get(random.nextInt(nNodes));
 			assertEquals(Integer.toString(i), clMap.get(peer).get(i));
 		}

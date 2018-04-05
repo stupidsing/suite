@@ -23,7 +23,7 @@ public class Oscillator {
 		var atr = atrs[0] = Ints_.range(n).collect(Int_Flt.lift(i -> trs[i])).sum() / n;
 		var invn = 1d / n;
 
-		for (int i = 1; i < length; i++)
+		for (var i = 1; i < length; i++)
 			atrs[i] = atr = (float) ((atr * (n - 1) + trs[i]) * invn);
 
 		return atrs;
@@ -41,7 +41,7 @@ public class Oscillator {
 		var dmUps = new float[length];
 		var dmDns = new float[length];
 
-		for (int i = 1; i < length; i++) {
+		for (var i = 1; i < length; i++) {
 			float upMove = max(0, his[i] - his[i - 1]);
 			float dnMove = max(0, los[i - 1] - los[i]);
 			dmUps[i] = dnMove < upMove ? upMove : 0f;
@@ -88,10 +88,10 @@ public class Oscillator {
 			int i0 = max(0, i - nDays + 1);
 			var l = i - i0 + 1;
 			double sum = 0d, sumAbsDev = 0d;
-			for (int d = i0; d <= i; d++)
+			for (var d = i0; d <= i; d++)
 				sum += ps[d];
 			var mean = sum / l;
-			for (int d = i0; d <= i; d++)
+			for (var d = i0; d <= i; d++)
 				sumAbsDev += Math.abs(ps[d] - mean);
 			var meanAbsDev = sumAbsDev / l;
 			return r * (ps[i] - mean) / meanAbsDev;
@@ -102,15 +102,15 @@ public class Oscillator {
 		var length = prices.length;
 		byte[] cs = new byte[length];
 
-		for (int index = 1; index < length; index++)
+		for (var index = 1; index < length; index++)
 			cs[index] = (byte) Float.compare(prices[index - 1], prices[index]);
 
 		var mvmdecs = new float[length];
 		var mvmincs = new float[length];
 
-		for (int index = window; index < length; index++) {
+		for (var index = window; index < length; index++) {
 			int decs = 0, incs = 0;
-			for (int i = index - window; i < index; i++) {
+			for (var i = index - window; i < index; i++) {
 				var compare = cs[i];
 				if (compare < 0)
 					incs++;
@@ -139,7 +139,7 @@ public class Oscillator {
 		var length = ds.ts.length;
 		var obvs = new float[length];
 		var obv = 0d;
-		for (int i = 1; i < length; i++) {
+		for (var i = 1; i < length; i++) {
 			int c = Float.compare(ds.closes[i - 1], ds.closes[i]);
 			var volume = ds.volumes[i];
 			if (c < 0)
@@ -155,7 +155,7 @@ public class Oscillator {
 		var length = prices.length;
 		var us = new float[length];
 		var ds = new float[length];
-		for (int i = 1; i < length; i++) {
+		for (var i = 1; i < length; i++) {
 			var diff = prices[i] - prices[i - 1];
 			us[i] = 0f < diff ? diff : 0f;
 			ds[i] = diff < 0f ? -diff : 0f;
@@ -209,7 +209,7 @@ public class Oscillator {
 		var los = new float[length];
 		var his = new float[length];
 
-		for (int i = 0; i < length; i++) {
+		for (var i = 0; i < length; i++) {
 			var lo = Float.MAX_VALUE;
 			var hi = Float.MIN_VALUE;
 			for (int j = max(0, i - kDays + 1); j <= i; j++) {
@@ -234,7 +234,7 @@ public class Oscillator {
 
 		trs[0] = ds.highs[0] - ds.lows[0];
 
-		for (int i = 1; i < length; i++) {
+		for (var i = 1; i < length; i++) {
 			var hi = ds.highs[i];
 			var lo = ds.lows[i];
 			var prevClose = ds.closes[i - 1];

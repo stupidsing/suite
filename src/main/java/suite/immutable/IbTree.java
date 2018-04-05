@@ -61,7 +61,7 @@ public class IbTree<T> implements ITree<T> {
 
 		while (maxBranchFactor <= (size = list.size())) {
 			List<IbTree<T>.Slot> list1 = new ArrayList<>();
-			for (int i = 0; i < size;) {
+			for (var i = 0; i < size;) {
 				var i1 = i + maxBranchFactor <= size ? i + minBranchFactor : size;
 				list1.add(ibTree.new Slot(list.subList(i, i1), list.get(i).pivot));
 				i = i1;

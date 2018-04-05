@@ -107,7 +107,7 @@ public class Grapher {
 				}) //
 				.toList();
 
-		for (int i = 0; i < size; i++) {
+		for (var i = 0; i < size; i++) {
 			GN gn = gns.get(i);
 			var node = nodes.get(i);
 			List<Pair<Node, Node>> children = Read.from(gn.children).map(p -> Pair.of(nodes.get(p.t0), nodes.get(p.t1))).toList();
@@ -125,7 +125,7 @@ public class Grapher {
 				break;
 			case TUPLE:
 				var list = ((Tuple) node).nodes;
-				for (int j = 0; j < children.size(); j++)
+				for (var j = 0; j < children.size(); j++)
 					list[j] = children.get(j).t1;
 			}
 		}
@@ -172,7 +172,7 @@ public class Grapher {
 					var size0 = children0.size();
 					var size1 = children1.size();
 					if (size0 == size1)
-						for (int i = 0; i < size0; i++) {
+						for (var i = 0; i < size0; i++) {
 							IntIntPair p0 = children0.get(i);
 							IntIntPair p1 = children1.get(i);
 							deque.addLast(IntIntPair.of(p0.t0, p1.t0));
@@ -235,7 +235,7 @@ public class Grapher {
 		var size = dis.readInt();
 		id = dis.readInt();
 
-		for (int index = 0; index < size; index++) {
+		for (var index = 0; index < size; index++) {
 			ReadType type = ReadType.of(dis.readByte());
 			Node terminal;
 			Operator op;
@@ -272,7 +272,7 @@ public class Grapher {
 
 			if (type == ReadType.DICT || type == ReadType.TUPLE) {
 				var size1 = dis.readInt();
-				for (int i = 0; i < size1; i++) {
+				for (var i = 0; i < size1; i++) {
 					var i0 = type != ReadType.DICT ? 0 : dis.readInt() + index;
 					var i1 = dis.readInt() + index;
 					children.add(IntIntPair.of(i0, i1));
@@ -288,7 +288,7 @@ public class Grapher {
 		dos.writeInt(size);
 		dos.writeInt(id);
 
-		for (int index = 0; index < size; index++) {
+		for (var index = 0; index < size; index++) {
 			GN gn = gns.get(index);
 			ReadType type = gn.type;
 			List<IntIntPair> children = gn.children;

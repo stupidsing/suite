@@ -36,7 +36,7 @@ public class Statistic {
 		double sumx = 0d, sumy = 0d;
 		double sumx2 = 0d, sumy2 = 0d;
 		var sumxy = 0d;
-		for (int i = 0; i < length; i++) {
+		for (var i = 0; i < length; i++) {
 			double x = xf.apply(i), y = yf.apply(i);
 			sumx += x;
 			sumy += y;
@@ -51,7 +51,7 @@ public class Statistic {
 		int length = vec.sameLength(xs, ys);
 		double sumx = 0d, sumy = 0d;
 		var sumxy = 0d;
-		for (int i = 0; i < length; i++) {
+		for (var i = 0; i < length; i++) {
 			double x = xs[i], y = ys[i];
 			sumx += x;
 			sumy += y;
@@ -102,7 +102,7 @@ public class Statistic {
 			var ssr = 0d; // estimated sum of squares
 			var sse_ = vec.dot(residuals_); // sum of squared residuals
 
-			for (int i = 0; i < nDataPoints_; i++) {
+			for (var i = 0; i < nDataPoints_; i++) {
 				var d0 = y[i] - meany;
 				var d1 = estimatedy[i] - meany;
 				sst_ += d0 * d0;
@@ -164,7 +164,7 @@ public class Statistic {
 		public String toString() {
 			StringBuilder sb = new StringBuilder();
 			var tStatistic = tStatistic();
-			for (int i = 0; i < nDepVariables; i++)
+			for (var i = 0; i < nDepVariables; i++)
 				sb.append("\n" + coefficientNames[i] + " = " + To.string(coefficients[i]) //
 						+ ", t-statistic = " + To.string(tStatistic[i]));
 			sb.append("\nstandard error = " + To.string(standardError) + ", r2 = " + To.string(r2));
@@ -189,12 +189,12 @@ public class Statistic {
 				var xt = mtx.transpose(x);
 				float[] y = Floats_.toArray(nSamples, i -> bs[i] ? 1f : 0f);
 
-				for (int n = 0; n < 256; n++) {
+				for (var n = 0; n < 256; n++) {
 					float[] bernoulli = To.vector(x, this::predict);
 					float[] s = To.vector(bernoulli, b -> b * (1f - b));
 					var sx = mtx.of(x);
-					for (int i = 0; i < nSamples; i++)
-						for (int j = 0; j < sampleLength; j++)
+					for (var i = 0; i < nSamples; i++)
+						for (var j = 0; j < sampleLength; j++)
 							sx[i][j] *= s[i];
 
 					Fun<float[], float[]> cd = cholesky.inverseMul(mtx.mul_mTn(sx, x));
@@ -231,9 +231,9 @@ public class Statistic {
 		var ix = x.length; // number of samples
 		var jx = x[0].length; // number of features
 
-		for (int i = 0; i < ix; i++) {
+		for (var i = 0; i < ix; i++) {
 			ycounts.computeIfAbsent(y[i], y_ -> IntMutable.of(0)).increment();
-			for (int j = 0; j < jx; j++)
+			for (var j = 0; j < jx; j++)
 				xcounts.computeIfAbsent(x[i][j], x_ -> IntMutable.of(0)).increment();
 		}
 
@@ -246,7 +246,7 @@ public class Statistic {
 			while (source2.source2(pair)) {
 				var p = ((double) pair.t1.get()) / ix;
 
-				for (int j = 0; j < jx; j++)
+				for (var j = 0; j < jx; j++)
 					p *= xcounts.computeIfAbsent(ins[j], x_ -> IntMutable.of(0)).get() / (double) jx;
 
 				if (maxp < p) {
@@ -322,7 +322,7 @@ public class Statistic {
 				double min_ = first, max_ = first;
 				double sum_ = first, sumsq_ = first * first;
 
-				for (int i = 1; i < length; i++) {
+				for (var i = 1; i < length; i++) {
 					var f = fun.apply(i);
 					min_ = Double.min(min_, f);
 					max_ = Double.max(max_, f);

@@ -12,7 +12,7 @@ public class FastFourierTransform {
 		Complex[] cs2 = fft(cs1);
 		var inv = 1.0f / size;
 
-		for (int i = 0; i < size; i++)
+		for (var i = 0; i < size; i++)
 			cs2[i] = cs2[i].conjugate().scale(inv);
 
 		return cs2;
@@ -29,22 +29,22 @@ public class FastFourierTransform {
 			bits++;
 		}
 
-		for (int i = 0; i < size; i++)
+		for (var i = 0; i < size; i++)
 			fds[reverseBits(bits, i)] = tds[i];
 
-		for (int g = 2; g <= size; g <<= 1) {
+		for (var g = 2; g <= size; g <<= 1) {
 			var angleDiff = 2 * Math.PI / g;
 			Complex[] cis = new Complex[g];
 
-			for (int i = 0; i < g; i++) {
+			for (var i = 0; i < g; i++) {
 				var angle = angleDiff * i;
 				cis[i] = Complex.of((float) Math.cos(angle), (float) -Math.sin(angle));
 			}
 
 			var step = g / 2;
 
-			for (int i = 0; i < size; i += g)
-				for (int k = 0; k < step; k++) {
+			for (var i = 0; i < size; i += g)
+				for (var k = 0; k < step; k++) {
 					var ie = i + k;
 					var io = i + k + step;
 
@@ -65,7 +65,7 @@ public class FastFourierTransform {
 		var size = size2 / 2;
 		var fs1 = new float[size2];
 
-		for (int i2 = 0; i2 < size2; i2 += 2) {
+		for (var i2 = 0; i2 < size2; i2 += 2) {
 			fs1[i2 + 0] = fs0[i2 + 0];
 			fs1[i2 + 1] = -fs0[i2 + 1];
 		}
@@ -73,7 +73,7 @@ public class FastFourierTransform {
 		var fs2 = fft(fs1);
 		var inv = 1.0f / size;
 
-		for (int i2 = 0; i2 < size2; i2 += 2) {
+		for (var i2 = 0; i2 < size2; i2 += 2) {
 			fs2[i2 + 0] = fs2[i2 + 0] * inv;
 			fs2[i2 + 1] = fs2[i2 + 1] * -inv;
 		}
@@ -93,25 +93,25 @@ public class FastFourierTransform {
 			bits++;
 		}
 
-		for (int i = 0; i < size; i++) {
+		for (var i = 0; i < size; i++) {
 			var i2 = i * 2;
 			fds[reverseBits(bits, i) * 2 + 0] = tds[i2 + 0];
 			fds[reverseBits(bits, i) * 2 + 1] = tds[i2 + 1];
 		}
 
-		for (int g = 2; g <= size; g <<= 1) {
+		for (var g = 2; g <= size; g <<= 1) {
 			var g2 = g * 2;
 			var cis = new float[g2];
 			var angleDiff = Math.PI / g;
 
-			for (int i2 = 0; i2 < g2; i2 += 2) {
+			for (var i2 = 0; i2 < g2; i2 += 2) {
 				var angle = angleDiff * i2;
 				cis[i2 + 0] = (float) Math.cos(angle);
 				cis[i2 + 1] = (float) -Math.sin(angle);
 			}
 
-			for (int i2 = 0; i2 < size2; i2 += g2)
-				for (int k2 = 0; k2 < g; k2 += 2) {
+			for (var i2 = 0; i2 < size2; i2 += g2)
+				for (var k2 = 0; k2 < g; k2 += 2) {
 					var ie = i2 + k2;
 					var io = ie + g;
 

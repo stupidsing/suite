@@ -75,7 +75,7 @@ public class SmtpSslGmail {
 		CharsBuilder cb = new CharsBuilder();
 		char[] in1 = in0.toCharArray();
 
-		for (int i = 0; i < in1.length; i++) {
+		for (var i = 0; i < in1.length; i++) {
 			int a = f.apply(in1[i], salt[i % salt.length]);
 			while (a < 32)
 				a += 128 - 32;

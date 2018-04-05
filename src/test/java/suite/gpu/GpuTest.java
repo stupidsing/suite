@@ -34,7 +34,7 @@ public class GpuTest {
 		Pointer<Float> inp0 = Pointer.allocateFloats(n).order(byteOrder);
 		Pointer<Float> inp1 = Pointer.allocateFloats(n).order(byteOrder);
 
-		for (int i = 0; i < n; i++) {
+		for (var i = 0; i < n; i++) {
 			inp0.set(i, (float) Math.cos(i));
 			inp1.set(i, (float) Math.sin(i));
 		}

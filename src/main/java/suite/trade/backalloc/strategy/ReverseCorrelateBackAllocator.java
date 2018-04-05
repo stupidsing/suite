@@ -44,7 +44,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 			var logReturns = ts.logReturns(prices);
 			var ll = logReturns.length;
 			var sum = 0d;
-			for (int i = tor; i < ll - tor; i++) {
+			for (var i = tor; i < ll - tor; i++) {
 				var i_ = i;
 				sum += stat.correlation(j -> logReturns[i_ - j], j -> logReturns[i_ + j], tor);
 			}

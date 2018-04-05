@@ -21,14 +21,14 @@ public class IbTreeTest {
 	public void test0() {
 		IbTree<Integer> ibTree = new IbTree<>(comparator);
 
-		for (int i = 0; i < max; i++)
+		for (var i = 0; i < max; i++)
 			ibTree = ibTree.add(i);
 
 		ibTree.validate();
 		System.out.println(ibTree.toString());
 		assertEquals(max, ibTree.streamlet().size());
 
-		for (int i = 0; i < max; i++)
+		for (var i = 0; i < max; i++)
 			ibTree = ibTree.remove(i);
 
 		ibTree.validate();
@@ -40,16 +40,16 @@ public class IbTreeTest {
 	public void test1() {
 		IbTree<Integer> ibTree = new IbTree<>(comparator);
 
-		for (int i = 0; i < max; i += 2)
+		for (var i = 0; i < max; i += 2)
 			ibTree = ibTree.add(i);
-		for (int i = 1; i < max; i += 2)
+		for (var i = 1; i < max; i += 2)
 			ibTree = ibTree.add(i);
 		ibTree.validate();
 		assertEquals(max, ibTree.streamlet().size());
 
-		for (int i = 0; i < max; i += 2)
+		for (var i = 0; i < max; i += 2)
 			ibTree = ibTree.remove(i);
-		for (int i = 1; i < max; i += 2)
+		for (var i = 1; i < max; i += 2)
 			ibTree = ibTree.remove(i);
 		ibTree.validate();
 		assertEquals(0, ibTree.streamlet().size());
@@ -58,7 +58,7 @@ public class IbTreeTest {
 	@Test
 	public void test2() {
 		List<Integer> list = new ArrayList<>();
-		for (int i = 0; i < max; i++)
+		for (var i = 0; i < max; i++)
 			list.add(i);
 
 		IbTree<Integer> ibTree = new IbTree<>(comparator);

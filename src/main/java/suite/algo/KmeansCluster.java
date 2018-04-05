@@ -90,7 +90,7 @@ public class KmeansCluster {
 	private int findNearest(float[] point, List<float[]> points) {
 		var minDist = Double.MAX_VALUE;
 		var minj = 0;
-		for (int j = 0; j < points.size(); j++) {
+		for (var j = 0; j < points.size(); j++) {
 			double dist = sqdist(point, points.get(j));
 			if (dist < minDist) {
 				minDist = dist;

@@ -41,8 +41,8 @@ public class LcsDp<T> {
 		@SuppressWarnings("unchecked")
 		Node[][] dp = (Node[][]) Array.newInstance(Node.class, size0, size1);
 
-		for (int i0 = 0; i0 < size0; i0++)
-			for (int i1 = 0; i1 < size1; i1++) {
+		for (var i0 = 0; i0 < size0; i0++)
+			for (var i1 = 0; i1 < size1; i1++) {
 				var u = 0 < i0 ? dp[i0 - 1][i1] : emptyNode;
 				var l = 0 < i1 ? dp[i0][i1 - 1] : emptyNode;
 				var lu = 0 < i0 && 0 < i1 ? dp[i0 - 1][i1 - 1] : emptyNode;
@@ -58,7 +58,7 @@ public class LcsDp<T> {
 		Source<T> source = node.source;
 		List<T> result = new ArrayList<>(Collections.<T> nCopies(node.length, null));
 
-		for (int i = node.length - 1; 0 <= i; i--)
+		for (var i = node.length - 1; 0 <= i; i--)
 			result.set(i, source.source());
 
 		return result;

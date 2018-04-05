@@ -4,14 +4,14 @@ public class Sigmoid {
 
 	public static float[] sigmoidOn(float[] fs) {
 		var length = fs.length;
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			fs[i] = (float) sigmoid(fs[i]);
 		return fs;
 	}
 
 	public static float[] sigmoidGradientOn(float[] fs) {
 		var length = fs.length;
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			fs[i] = (float) sigmoidGradient(fs[i]);
 		return fs;
 	}

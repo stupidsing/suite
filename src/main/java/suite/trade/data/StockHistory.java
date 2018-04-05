@@ -215,7 +215,7 @@ public class StockHistory {
 		Datum[] data = new Datum[length];
 		int io = 0, ic = 0, il = 0, ih = 0, iv = 0;
 
-		for (int i = 0; i < length; i++) {
+		for (var i = 0; i < length; i++) {
 			var t = ps[i].t0;
 			int io_ = io, il_ = il, ih_ = ih, iv_ = iv;
 
@@ -270,7 +270,7 @@ public class StockHistory {
 		var di = dividends.length - 1;
 		float a = 0f, b = 1f;
 
-		for (int i = length - 1; 0 <= i; i--) {
+		for (var i = length - 1; 0 <= i; i--) {
 			LngFltPair pair = pairs0[i];
 			var t = pair.t0;
 

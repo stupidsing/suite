@@ -375,7 +375,7 @@ public class BackAllocatorGeneral {
 							var stopper = 0f;
 							var nHold = 0;
 
-							for (int i = 0; i < length; i++) {
+							for (var i = 0; i < length; i++) {
 								var price = prices[i];
 								var dlo = dlos[i];
 								var dhi = dhis[i];
@@ -487,7 +487,7 @@ public class BackAllocatorGeneral {
 						var length = prices.length;
 						var holds = new float[length];
 						var hold = 0f;
-						for (int index = tor; index < length; index++) {
+						for (var index = tor; index < length; index++) {
 							if (dsv.get(symbol, index) < vr) {
 								double return_ = Quant.return_(prices[index - tor / 2], prices[index]);
 								hold = Quant.hold(hold, return_, threshold, 1d, invThreshold);

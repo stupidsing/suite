@@ -439,7 +439,7 @@ public class P4GenerateCode {
 				})).applyIf(FunpSaveRegisters.class, f -> f.apply(expr -> {
 					OpReg[] opRegs = rs.list(r -> r != ebp.reg && r != esp.reg);
 
-					for (int i = 0; i <= opRegs.length - 1; i++)
+					for (var i = 0; i <= opRegs.length - 1; i++)
 						em.emit(amd64.instruction(Insn.PUSH, opRegs[i]));
 
 					CompileOut out0 = new Compile1(registerSet, fd - opRegs.length * is).compile(expr);
@@ -454,7 +454,7 @@ public class P4GenerateCode {
 
 					CompileOut out1 = new CompileOut(op0, op1);
 
-					for (int i = opRegs.length - 1; 0 <= i; i--)
+					for (var i = opRegs.length - 1; 0 <= i; i--)
 						em.emit(amd64.instruction(Insn.POP, opRegs[i]));
 
 					return out1;
@@ -595,7 +595,7 @@ public class P4GenerateCode {
 
 			private void compileGlobal(Integer size, Mutable<Operand> address) {
 				address.update(compileBlock(() -> {
-					for (int i = 0; i < size; i++)
+					for (var i = 0; i < size; i++)
 						em.emit(amd64.instruction(Insn.NOP));
 				}));
 			}
@@ -699,7 +699,7 @@ public class P4GenerateCode {
 							em.emit(amd64.instruction(Insn.CLD));
 							em.emit(amd64.instruction(Insn.REP));
 							em.emit(amd64.instruction(Insn.MOVSD));
-							for (int i = 0; i < size % 4; i++)
+							for (var i = 0; i < size % 4; i++)
 								em.emit(amd64.instruction(Insn.MOVSB));
 						}, ecx, esi, edi);
 					else if (is <= size)

@@ -70,7 +70,7 @@ public class FunFactory {
 		if (0 < exprs.length) {
 			List<FunExpr> list = Read.from(exprs).reverse().toList();
 			var expr = list.get(0);
-			for (int i = 1; i < exprs.length; i++)
+			for (var i = 1; i < exprs.length; i++)
 				expr = if_(list.get(i), expr, _false());
 			return expr;
 		} else

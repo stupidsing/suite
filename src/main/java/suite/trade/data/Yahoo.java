@@ -309,7 +309,7 @@ public class Yahoo {
 
 		FoldOp<Long, Float> adjuster = adjusters.get(symbol);
 		if (adjuster != null)
-			for (int d = 0; d < prices.length; d++)
+			for (var d = 0; d < prices.length; d++)
 				prices[d] = adjuster.apply(ts[d], prices[d]);
 	}
 

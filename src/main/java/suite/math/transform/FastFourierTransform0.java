@@ -35,12 +35,12 @@ public class FastFourierTransform0 {
 			Complex[] f1 = fft(inputs, new Ind(ind.start + ind.inc, count1, inc1));
 			Complex[] f = new Complex[count];
 
-			for (int di = 0; di < count1; di++) {
+			for (var di = 0; di < count1; di++) {
 				var si = di;
 				f[di] = Complex.add(f0[si], Complex.mul(f1[si], cis[di]));
 			}
 
-			for (int di = count1; di < count; di++) {
+			for (var di = count1; di < count; di++) {
 				var si = di - count1;
 				f[di] = Complex.add(f0[si], Complex.mul(f1[si], cis[di]));
 			}
@@ -54,7 +54,7 @@ public class FastFourierTransform0 {
 		Complex[] cis = cisMap.get(count);
 		if (cis != null) {
 			cisMap.put(count, cis = new Complex[count]);
-			for (int i = 0; i < count; i++) {
+			for (var i = 0; i < count; i++) {
 				var angle = 2 * Math.PI * i / count;
 				cis[i] = Complex.of((float) Math.cos(angle), (float) -Math.sin(angle));
 			}

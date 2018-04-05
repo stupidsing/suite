@@ -98,14 +98,14 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 
 			use.sink(pointers);
 
-			for (int pointer = end - 1; start <= pointer; pointer--)
+			for (var pointer = end - 1; start <= pointer; pointer--)
 				if (isInUse[pointer - start])
 					use.sink(Read.from(pageFile.load(pointer).pairs).map(Pair::second).toList());
 
 			Map<Integer, Integer> map = new HashMap<>();
 			var p1 = start;
 
-			for (int p0 = start; p0 < end; p0++)
+			for (var p0 = start; p0 < end; p0++)
 				if (isInUse[p0]) {
 					PersistSlot<T> ps0 = pageFile.load(p0);
 					List<Pair<T, Integer>> pairs0 = ps0.pairs;

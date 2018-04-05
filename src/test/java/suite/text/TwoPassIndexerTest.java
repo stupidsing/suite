@@ -37,7 +37,7 @@ public class TwoPassIndexerTest {
 
 		System.out.println("Most popular key words:");
 
-		for (int i = 0; i < 32; i++) {
+		for (var i = 0; i < 32; i++) {
 			Entry<String, List<Reference>> entry = entries.get(i);
 			System.out.println(String.format("%-5d \"%s\"", entry.getValue().size(), entry.getKey()));
 		}

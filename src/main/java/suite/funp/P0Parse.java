@@ -269,7 +269,7 @@ public class P0Parse {
 				}).result();
 
 				Funp then_ = then;
-				for (int i = 0; i < size0; i++)
+				for (var i = 0; i < size0; i++)
 					then_ = bind(fun0.apply(i), fun1.apply(i), then_, else_);
 				return then_;
 			};
@@ -300,7 +300,7 @@ public class P0Parse {
 							? i -> pairs1.get(i).t1 //
 							: i -> FunpField.of(FunpReference.of(value), pairs0.get(i).t0);
 
-					for (int i = 0; i < size0; i++)
+					for (var i = 0; i < size0; i++)
 						then_ = bind(pairs0.get(i).t1, fun.apply(i), then_, else_);
 
 					return then_;

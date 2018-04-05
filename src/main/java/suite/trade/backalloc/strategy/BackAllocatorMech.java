@@ -234,7 +234,7 @@ public class BackAllocatorMech {
 				.byPrices(prices -> {
 					IntInt_Int signs = (s, e) -> {
 						var n = 0;
-						for (int i = s; i < e; i++)
+						for (var i = s; i < e; i++)
 							n += Quant.sign(prices[i - 1], prices[i]);
 						return n;
 					};

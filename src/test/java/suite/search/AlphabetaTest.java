@@ -42,7 +42,7 @@ public class AlphabetaTest {
 		List<TicTacToe> states = new ArrayList<>();
 
 		if (!isEnd(state))
-			for (int i = 0; i < 9; i++)
+			for (var i = 0; i < 9; i++)
 				if (state.grid[i] == 0) {
 					TicTacToe state1 = new TicTacToe();
 					state1.player = (char) ('O' + 'X' - state.player);
@@ -77,7 +77,7 @@ public class AlphabetaTest {
 	private int evaluateLine(TicTacToe state, int[] line) {
 		int no = 0, nx = 0;
 
-		for (int c = 0; c < 3; c++)
+		for (var c = 0; c < 3; c++)
 			if (state.grid[line[c]] == 'O')
 				no++;
 			else if (state.grid[line[c]] == 'X')

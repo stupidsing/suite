@@ -36,7 +36,7 @@ public class Cleanse {
 		// fill zeroes in the middle
 		var ppos = 0f;
 		var i0 = 0;
-		for (int i = 0; i < length; i++) {
+		for (var i = 0; i < length; i++) {
 			var price = get.apply(i);
 			if (price != 0f) {
 				while (i0 < i)
@@ -46,7 +46,7 @@ public class Cleanse {
 		}
 
 		// eliminate spikes
-		for (int i = 2; i < length; i++) {
+		for (var i = 2; i < length; i++) {
 			var price0 = get.apply(i - 2);
 			var price1 = get.apply(i - 1);
 			var price2 = get.apply(i - 0);

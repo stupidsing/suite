@@ -53,7 +53,7 @@ public class Symbolic {
 		@SuppressWarnings("unchecked")
 		Obj_Dbl<float[]> fun = LambdaInstance.of(Obj_Dbl.class, x -> new Object() {
 			public FunExpr fun(Node n) {
-				for (int i = 0; i < vars.length; i++)
+				for (var i = 0; i < vars.length; i++)
 					if (n == vars[i])
 						return x.index(f.int_(i));
 				return m(n, this::fun);
@@ -375,7 +375,7 @@ public class Symbolic {
 		private Opt<Node> polyize(Node node, Fun<Node, Node> coefficientFun) { // polynomialize
 			Int_Obj<Node> powerFun = p -> {
 				Node power = n1;
-				for (int i = 0; i < p; i++)
+				for (var i = 0; i < p; i++)
 					power = mul(x, power);
 				return power;
 			};

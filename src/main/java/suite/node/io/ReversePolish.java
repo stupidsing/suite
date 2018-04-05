@@ -47,7 +47,7 @@ public class ReversePolish {
 				var a = s.split(":");
 				var size = Integer.valueOf(a[3]);
 				List<Pair<Node, Node>> children = new ArrayList<>();
-				for (int i = 0; i < size; i++) {
+				for (var i = 0; i < size; i++) {
 					var key = deque.pop();
 					var value = deque.pop();
 					children.add(Pair.of(key, value));
@@ -109,7 +109,7 @@ public class ReversePolish {
 
 		StringBuilder sb = new StringBuilder();
 
-		for (int i = list.size() - 1; 0 <= i; i--)
+		for (var i = list.size() - 1; 0 <= i; i--)
 			sb.append(list.get(i) + '\n');
 
 		return sb.toString();

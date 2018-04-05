@@ -119,7 +119,7 @@ public class TopDownParse {
 						if (d < 0)
 							stack.pop().end = state_.pos;
 						else if (0 < d)
-							for (int i = 0; i < state_.frame.depth; i++) {
+							for (var i = 0; i < state_.frame.depth; i++) {
 								Ast node = new Ast(state_.frame.entity, state_.pos);
 								stack.peek().children.add(node);
 								stack.push(node);
@@ -151,7 +151,7 @@ public class TopDownParse {
 
 		private IntIntPair findPosition(int position) {
 			int row = 1, col = 1;
-			for (int i = 0; i < position; i++) {
+			for (var i = 0; i < position; i++) {
 				col++;
 				if (in.charAt(i) == 10) {
 					row++;

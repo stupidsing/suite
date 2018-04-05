@@ -232,7 +232,7 @@ public class As {
 				Chars chars = source.source();
 				if (chars != null) {
 					BytesBuilder bb = new BytesBuilder();
-					for (int i = 0; i < chars.size(); i++) {
+					for (var i = 0; i < chars.size(); i++) {
 						var ch = chars.get(i);
 						if (ch < 0x80)
 							bb.append((byte) ch);

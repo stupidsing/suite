@@ -37,7 +37,7 @@ public class FormatPredicates {
 	public BuiltinPredicate concat = PredicateUtil.ps((prover, nodes) -> {
 		StringBuilder sb = new StringBuilder();
 		var n = nodes.length;
-		for (int i = 0; i < n - 1; i++)
+		for (var i = 0; i < n - 1; i++)
 			sb.append(Formatter.display(nodes[i]));
 		return prover.bind(new Str(sb.toString()), nodes[n - 1]);
 	});

@@ -74,8 +74,8 @@ public class VirtualMatrix {
 				width_ - kw + 1, //
 				(i, j) -> {
 					var sum = 0d;
-					for (int di = 0; di < kh; di++)
-						for (int dj = 0; dj < kw; dj++)
+					for (var di = 0; di < kh; di++)
+						for (var dj = 0; dj < kw; dj++)
 							sum += get.apply(i + di, j + dj) * k[di][dj];
 					return (float) sum;
 				});
@@ -89,8 +89,8 @@ public class VirtualMatrix {
 
 	public void dump(StringBuilder sb) {
 		sb.append("[ ");
-		for (int i = 0; i < height; i++) {
-			for (int j = 0; i < width_; j++)
+		for (var i = 0; i < height; i++) {
+			for (var j = 0; i < width_; j++)
 				sb.append(To.string(get.apply(i, j)) + " ");
 			sb.append("\n");
 		}
@@ -106,8 +106,8 @@ public class VirtualMatrix {
 					i1 = min(i0 + 64, ix);
 					for (int j0 = 0; j0 < jx; j0 = j1) {
 						j1 = min(j0 + 64, jx);
-						for (int i = i0; i < i1; i++)
-							for (int j = j0; j < j1; j++)
+						for (var i = i0; i < i1; i++)
+							for (var j = j0; j < j1; j++)
 								o[i] += f0.apply(i, j) * f1.apply(j);
 					}
 				}
@@ -130,9 +130,9 @@ public class VirtualMatrix {
 						j1 = min(j0 + 64, width_);
 						for (int k0 = 0; k0 < ks0; k0 = k1) {
 							k1 = min(k0 + 64, ks0);
-							for (int i = i0; i < i1; i++)
-								for (int j = j0; j < j1; j++)
-									for (int k = k0; k < k1; k++)
+							for (var i = i0; i < i1; i++)
+								for (var j = j0; j < j1; j++)
+									for (var k = k0; k < k1; k++)
 										o[i][j] += f0.apply(i, k) * f1.apply(k, j);
 						}
 					}
@@ -174,8 +174,8 @@ public class VirtualMatrix {
 
 	public float[][] matrix() {
 		var matrix = new float[height][width_];
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width_; j++)
+		for (var i = 0; i < height; i++)
+			for (var j = 0; j < width_; j++)
 				matrix[i][j] = get.apply(i, j);
 		return matrix;
 	}

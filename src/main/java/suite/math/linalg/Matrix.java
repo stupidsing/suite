@@ -23,8 +23,8 @@ public class Matrix {
 		var height = h(m);
 		var width = w(m);
 		if (height == h(n) && width == w(n))
-			for (int i = 0; i < height; i++)
-				for (int j = 0; j < width; j++)
+			for (var i = 0; i < height; i++)
+				for (var j = 0; j < width; j++)
 					m[i][j] += n[i][j];
 		else
 			Fail.t("wrong input sizes");
@@ -36,10 +36,10 @@ public class Matrix {
 		var h1 = h(m) - kh + 1;
 		var w1 = w(m) - kw + 1;
 		float[][] o = of(h1, w1);
-		for (int i = 0; i < h1; i++)
-			for (int j = 0; j < w1; j++)
-				for (int di = 0; di < kh; di++)
-					for (int dj = 0; dj < kw; dj++)
+		for (var i = 0; i < h1; i++)
+			for (var j = 0; j < w1; j++)
+				for (var di = 0; di < kh; di++)
+					for (var dj = 0; dj < kw; dj++)
 						o[i][j] += m[i + di][j + dj] * k[di][dj];
 		return o;
 	}
@@ -66,7 +66,7 @@ public class Matrix {
 				if (i0 < size) {
 					var col0 = cols[i0];
 					var i1 = i0 + 1;
-					for (int it = i0; it < size; it++) {
+					for (var it = i0; it < size; it++) {
 						var colt = cols[it];
 						cols[it] = col0;
 						det(i1, (it == i0 ? d : -d) * m[i0][colt]);
@@ -86,8 +86,8 @@ public class Matrix {
 		var h = h(m);
 		var w = w(m);
 		if (h == h(n) && w == w(n)) {
-			for (int i = 0; i < h; i++)
-				for (int j = 0; j < w; j++)
+			for (var i = 0; i < h; i++)
+				for (var j = 0; j < w; j++)
 					if (m[i][j] != n[i][j])
 						return false;
 			return true;
@@ -108,7 +108,7 @@ public class Matrix {
 
 	public float[][] identity(int size) {
 		float[][] m = of(size, size);
-		for (int r = 0; r < size; r++)
+		for (var r = 0; r < size; r++)
 			m[r][r] = 1f;
 		return m;
 	}
@@ -125,7 +125,7 @@ public class Matrix {
 
 		var n = identity(size);
 
-		for (int r = 0; r < size; r++) {
+		for (var r = 0; r < size; r++) {
 			var c = r;
 
 			for (; c < size; c++)
@@ -144,7 +144,7 @@ public class Matrix {
 			mulRow(m, r, factor);
 			mulRow(n, r, factor);
 
-			for (int r1 = 0; r1 < size; r1++)
+			for (var r1 = 0; r1 < size; r1++)
 				if (r != r1) {
 					var factor1 = -m[r1][r];
 					addMultipliedRow(m, r, factor1, r1);
@@ -162,8 +162,8 @@ public class Matrix {
 
 	public float[][] mul(float[] u, float[] v) {
 		var m = new float[u.length][v.length];
-		for (int i = 0; i < u.length; i++)
-			for (int j = 0; j < v.length; j++)
+		for (var i = 0; i < u.length; i++)
+			for (var j = 0; j < v.length; j++)
 				m[i][j] = u[i] * v[j];
 		return m;
 	}
@@ -186,8 +186,8 @@ public class Matrix {
 				i1 = min(i0 + 64, ix);
 				for (int j0 = 0; j0 < jx; j0 = j1) {
 					j1 = min(j0 + 64, jx);
-					for (int i = i0; i < i1; i++)
-						for (int j = j0; j < j1; j++)
+					for (var i = i0; i < i1; i++)
+						for (var j = j0; j < j1; j++)
 							o[j] += m[i] * n[i][j];
 				}
 			}
@@ -207,8 +207,8 @@ public class Matrix {
 				i1 = min(i0 + 64, ix);
 				for (int j0 = 0; j0 < jx; j0 = j1) {
 					j1 = min(j0 + 64, jx);
-					for (int i = i0; i < i1; i++)
-						for (int j = j0; j < j1; j++)
+					for (var i = i0; i < i1; i++)
+						for (var j = j0; j < j1; j++)
 							o[i] += m[i][j] * nT[j];
 				}
 			}
@@ -230,9 +230,9 @@ public class Matrix {
 					j1 = min(j0 + 64, width);
 					for (int k0 = 0; k0 < ks; k0 = k1) {
 						k1 = min(k0 + 64, ks);
-						for (int i = i0; i < i1; i++)
-							for (int j = j0; j < j1; j++)
-								for (int k = k0; k < k1; k++)
+						for (var i = i0; i < i1; i++)
+							for (var j = j0; j < j1; j++)
+								for (var k = k0; k < k1; k++)
 									o[i][j] += m[i][k] * n[k][j];
 					}
 				}
@@ -267,9 +267,9 @@ public class Matrix {
 					j1 = min(j0 + 64, width);
 					for (int k0 = 0; k0 < ks; k0 = k1) {
 						k1 = min(k0 + 64, ks);
-						for (int i = i0; i < i1; i++)
-							for (int j = j0; j < j1; j++)
-								for (int k = k0; k < k1; k++)
+						for (var i = i0; i < i1; i++)
+							for (var j = j0; j < j1; j++)
+								for (var k = k0; k < k1; k++)
 									o[i][j] += m[i][k] * n[j][k];
 					}
 				}
@@ -293,9 +293,9 @@ public class Matrix {
 					j1 = min(j0 + 64, width);
 					for (int k0 = 0; k0 < ks; k0 = k1) {
 						k1 = min(k0 + 64, ks);
-						for (int i = i0; i < i1; i++)
-							for (int j = j0; j < j1; j++)
-								for (int k = k0; k < k1; k++)
+						for (var i = i0; i < i1; i++)
+							for (var j = j0; j < j1; j++)
+								for (var k = k0; k < k1; k++)
 									o[i][j] += m[k][i] * n[k][j];
 					}
 				}
@@ -312,8 +312,8 @@ public class Matrix {
 	public float[][] negOn(float[][] m) {
 		var height = h(m);
 		var width = w(m);
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width; j++)
+		for (var i = 0; i < height; i++)
+			for (var j = 0; j < width; j++)
 				m[i][j] = -m[i][j];
 		return m;
 	}
@@ -357,8 +357,8 @@ public class Matrix {
 	public float[][] scaleOn(float[][] m, double d) {
 		var height = h(m);
 		var width = w(m);
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width; j++)
+		for (var i = 0; i < height; i++)
+			for (var j = 0; j < width; j++)
 				m[i][j] *= d;
 		return m;
 	}
@@ -375,8 +375,8 @@ public class Matrix {
 		var height = h(m);
 		var width = w(m);
 		if (height == h(n) && width == w(n))
-			for (int i = 0; i < height; i++)
-				for (int j = 0; j < width; j++)
+			for (var i = 0; i < height; i++)
+				for (var j = 0; j < width; j++)
 					m[i][j] -= n[i][j];
 		else
 			Fail.t("wrong input sizes");
@@ -391,8 +391,8 @@ public class Matrix {
 		var height = h(m0);
 		var width = w(m0);
 		if (height == h(m1) && width == w(m1))
-			for (int i = 0; i < height; i++)
-				for (int j = 0; j < width; j++)
+			for (var i = 0; i < height; i++)
+				for (var j = 0; j < width; j++)
 					MathUtil.verifyEquals(m0[i][j], m1[i][j], epsilon);
 		else
 			Fail.t("wrong input sizes");
@@ -425,8 +425,8 @@ public class Matrix {
 			i1 = min(i0 + 64, height);
 			for (int j0 = 0; j0 < width; j0 = j1) {
 				j1 = min(j0 + 64, width);
-				for (int i = i0; i < i1; i++)
-					for (int j = j0; j < j1; j++)
+				for (var i = i0; i < i1; i++)
+					for (var j = j0; j < j1; j++)
 						o[j][i] = m[i][j];
 			}
 		}
@@ -438,12 +438,12 @@ public class Matrix {
 	}
 
 	private void mulRow(float[][] m, int row, float factor) {
-		for (int col = 0; col < w(m); col++)
+		for (var col = 0; col < w(m); col++)
 			m[row][col] *= factor;
 	}
 
 	private void addMultipliedRow(float[][] m, int sourceRow, float factor, int targetRow) {
-		for (int col = 0; col < w(m); col++)
+		for (var col = 0; col < w(m); col++)
 			m[targetRow][col] = m[targetRow][col] + factor * m[sourceRow][col];
 	}
 
@@ -451,8 +451,8 @@ public class Matrix {
 		var height = h(m0);
 		var width = w(m0);
 		float[][] m1 = of(height, width);
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width; j++)
+		for (var i = 0; i < height; i++)
+			for (var j = 0; j < width; j++)
 				m1[i][j] = m0[i][j];
 		return m1;
 	}

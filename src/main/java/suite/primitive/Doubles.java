@@ -111,7 +111,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public int indexOf(Doubles doubles, int start) {
-		for (int i = start; i <= size_() - doubles.size_(); i++)
+		for (var i = start; i <= size_() - doubles.size_(); i++)
 			if (startsWith(doubles, i))
 				return i;
 		return -1;
@@ -123,7 +123,7 @@ public class Doubles implements Iterable<Double> {
 
 	public boolean isWhitespaces() {
 		boolean b = true;
-		for (int i = start; b && i < end; i++)
+		for (var i = start; b && i < end; i++)
 			b &= ParseUtil.isWhitespace(cs[i]);
 		return b;
 	}
@@ -244,7 +244,7 @@ public class Doubles implements Iterable<Double> {
 
 			if (size_() == other.size_()) {
 				var diff = other.start - start;
-				for (int i = start; i < end; i++)
+				for (var i = start; i < end; i++)
 					if (cs[i] != other.cs[i + diff])
 						return false;
 				return true;
@@ -257,7 +257,7 @@ public class Doubles implements Iterable<Double> {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (int i = start; i < end; i++)
+		for (var i = start; i < end; i++)
 			h = h * 31 + Double.hashCode(cs[i]);
 		return h;
 	}
@@ -265,7 +265,7 @@ public class Doubles implements Iterable<Double> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (int i = start; i < end; i++)
+		for (var i = start; i < end; i++)
 			sb.append(cs[i]);
 		return sb.toString();
 	}
@@ -273,7 +273,7 @@ public class Doubles implements Iterable<Double> {
 	private boolean startsWith_(Doubles doubles, int s) {
 		if (s + doubles.size_() <= size_()) {
 			boolean b = true;
-			for (int i = 0; b && i < doubles.size_(); i++)
+			for (var i = 0; b && i < doubles.size_(); i++)
 				b &= get(s + i) == doubles.get(i);
 			return b;
 		} else

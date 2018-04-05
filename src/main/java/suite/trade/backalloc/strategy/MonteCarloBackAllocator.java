@@ -37,7 +37,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 					.map(i -> randomPortfolio(symbols)) //
 					.toList();
 
-			for (int i = 0; i < 128; i++) {
+			for (var i = 0; i < 128; i++) {
 				List<float[]> portfolios1 = Read //
 						.from(portfolios) //
 						.map2(portfolio -> evaluate(symbols, portfolio, returnsBySymbol, index)) //
@@ -48,12 +48,12 @@ public class MonteCarloBackAllocator implements BackAllocator {
 
 				var size = portfolios.size();
 
-				for (int j = 0; j < 12; j++) {
+				for (var j = 0; j < 12; j++) {
 					var portfolio = portfolios.get(random.nextInt(size));
 					portfolios.add(mutate(symbols, portfolio));
 				}
 
-				for (int j = 0; j < 12; j++) {
+				for (var j = 0; j < 12; j++) {
 					var pa = portfolios.get(random.nextInt(size));
 					var pb = portfolios.get(random.nextInt(size));
 					portfolios1.add(crossover(pa, pb));
@@ -74,7 +74,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 	private double evaluate(String[] symbols, float[] p, Map<String, float[]> returnsBySymbol, int index) {
 		var d = random.nextInt(index);
 		var sum = 0d;
-		for (int i = 0; i < symbols.length; i++) {
+		for (var i = 0; i < symbols.length; i++) {
 			var symbol = symbols[i];
 			sum += p[i] * returnsBySymbol.get(symbol)[d];
 		}
@@ -87,7 +87,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 
 	private float[] mutate(String[] symbols, float[] portfolio) {
 		var size = symbols.length;
-		for (int i = 0; i < 3; i++)
+		for (var i = 0; i < 3; i++)
 			portfolio[random.nextInt(size)] = 1f;
 		fair(portfolio);
 		return portfolio;
@@ -99,10 +99,10 @@ public class MonteCarloBackAllocator implements BackAllocator {
 
 	private float[] fair(float[] p) {
 		var sum = 0d;
-		for (int i = 0; i < p.length; i++)
+		for (var i = 0; i < p.length; i++)
 			sum += p[i];
 		var invSum = 1d / sum;
-		for (int i = 0; i < p.length; i++)
+		for (var i = 0; i < p.length; i++)
 			p[i] *= invSum;
 		return p;
 	}

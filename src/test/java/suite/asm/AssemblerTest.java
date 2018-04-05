@@ -39,7 +39,7 @@ public class AssemblerTest {
 	@Test
 	public void testAssemblePerformance() {
 		Assembler assembler = new Assembler(32);
-		for (int i = 0; i < 4096; i++)
+		for (var i = 0; i < 4096; i++)
 			assembler.assemble(Suite.parse(".org = 0, .l CLD (),"));
 	}
 

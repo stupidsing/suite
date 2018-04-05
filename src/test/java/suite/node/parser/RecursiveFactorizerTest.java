@@ -103,7 +103,7 @@ public class RecursiveFactorizerTest {
 		Source<Node[]> source = () -> {
 			Reference[] r = new Reference[64];
 
-			for (int i = 0; i < r.length; i++)
+			for (var i = 0; i < r.length; i++)
 				r[i] = new Reference();
 
 			Fun<String, Fun<Boolean, Node>> fun = hs -> b -> {

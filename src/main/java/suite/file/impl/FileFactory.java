@@ -61,7 +61,7 @@ public class FileFactory {
 
 			public Bytes load(Extent extent) {
 				BytesBuilder bb = new BytesBuilder();
-				for (int pointer = extent.start; pointer < extent.end; pointer++) {
+				for (var pointer = extent.start; pointer < extent.end; pointer++) {
 					Block block = pageFile.load(pointer);
 					Util.assert_(Objects.equals(block.extent, extent));
 					bb.append(block.bytes);
@@ -141,7 +141,7 @@ public class FileFactory {
 
 	public static PageFile[] subPageFiles(PageFile parent, int... pointers) {
 		PageFile[] pageFiles = new PageFile[pointers.length - 1];
-		for (int i = 0; i < pointers.length - 1; i++)
+		for (var i = 0; i < pointers.length - 1; i++)
 			pageFiles[i] = subPageFile(parent, pointers[i], pointers[i + 1]);
 		return pageFiles;
 	}

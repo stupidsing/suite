@@ -41,14 +41,14 @@ public class Sha2 {
 
 		set.sink2(L1, 1);
 
-		for (int i = 0; i < 64; i++)
+		for (var i = 0; i < 64; i++)
 			set.sink2(L1 + K, L0 >> (63 - i) & 1);
 
-		for (int pos = 0; pos < is.length;) {
+		for (var pos = 0; pos < is.length;) {
 			var i0 = pos;
 			int[] w = Arrays.copyOfRange(is, i0, pos += 512 / 32);
 
-			for (int i = 16; i < 64; i++) {
+			for (var i = 16; i < 64; i++) {
 				var wi2 = w[i - 2];
 				var wi15 = w[i - 15];
 				int s0 = Integer.rotateRight(wi15, 7) ^ Integer.rotateRight(wi15, 18) ^ wi15 >> 3;
@@ -59,7 +59,7 @@ public class Sha2 {
 			int a = h0, b = h1, c = h2, d = h3;
 			int e = h4, f = h5, g = h6, h = h7;
 
-			for (int i = 0; i < 64; i++) {
+			for (var i = 0; i < 64; i++) {
 				int s1 = Integer.rotateRight(e, 6) ^ Integer.rotateRight(e, 11) ^ Integer.rotateRight(e, 25);
 				var ch = e & f ^ ~e & g;
 				var temp1 = h + s1 + ch + k[i] + w[i];

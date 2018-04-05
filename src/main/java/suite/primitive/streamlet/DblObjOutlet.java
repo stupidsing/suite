@@ -372,7 +372,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	public DblObjOutlet<V> skip(int n) {
 		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
 		boolean end = false;
-		for (int i = 0; !end && i < n; i++)
+		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
 		return !end ? of(source) : empty();
 	}

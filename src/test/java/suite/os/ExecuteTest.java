@@ -20,7 +20,7 @@ public class ExecuteTest {
 	@Test
 	public void test1() {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < 1024; i++)
+		for (var i = 0; i < 1024; i++)
 			sb.append("01234567890123456789012345678901234567890123456789012345678901234567890123456789\n");
 		var in = sb.toString();
 

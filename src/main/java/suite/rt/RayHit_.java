@@ -24,7 +24,7 @@ public class RayHit_ {
 	public static List<RayHit> join(Collection<RtObject> objects, Ray ray, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
 		List<List<RayHit>> rayHitsList = getHits(ray, objects);
 		List<RayHit> rayHits = !rayHitsList.isEmpty() ? rayHitsList.get(0) : List.of();
-		for (int i = 1; i < rayHitsList.size(); i++)
+		for (var i = 1; i < rayHitsList.size(); i++)
 			rayHits = join(rayHits, rayHitsList.get(i), fun);
 		return rayHits;
 	}
@@ -68,7 +68,7 @@ public class RayHit_ {
 		var size = rayHits0.size();
 		RayHit rayHit;
 
-		for (int i = 0; i < size; i++)
+		for (var i = 0; i < size; i++)
 			if (i != size - 1)
 				if ((rayHit = rayHits0.get(i)) != rayHits0.get(i + 1))
 					rayHits1.add(rayHit);

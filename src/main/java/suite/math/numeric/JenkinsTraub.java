@@ -29,7 +29,7 @@ public class JenkinsTraub {
 		Complex[] h = d(poly);
 
 		// stage 1 no-shift process
-		for (int i = 0; i < 5; i++)
+		for (var i = 0; i < 5; i++)
 			h = shift(poly, h, Complex.zero);
 
 		// stage 2 fixed-shift process
@@ -116,7 +116,7 @@ public class JenkinsTraub {
 		var lengthm1 = num.length - 1;
 		Complex[] div = new Complex[lengthm1];
 		Complex numx = num[lengthm1];
-		for (int i = lengthm1 - 1; 0 <= i; i--) {
+		for (var i = lengthm1 - 1; 0 <= i; i--) {
 			div[i] = numx;
 			numx = Complex.add(num[i], Complex.mul(numx, s));
 		}
@@ -169,14 +169,14 @@ public class JenkinsTraub {
 
 	private Complex evaluate(Complex[] poly, Complex x) {
 		Complex y = Complex.zero;
-		for (int i = poly.length - 1; 0 <= i; i--)
+		for (var i = poly.length - 1; 0 <= i; i--)
 			y = Complex.add(Complex.mul(y, x), poly[i]);
 		return y;
 	}
 
 	private double evaluate(float[] poly, double x) {
 		var y = 0d;
-		for (int i = poly.length - 1; 0 <= i; i--)
+		for (var i = poly.length - 1; 0 <= i; i--)
 			y = y * x + poly[i];
 		return y;
 	}

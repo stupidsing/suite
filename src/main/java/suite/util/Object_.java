@@ -70,7 +70,7 @@ public class Object_ {
 				mapper = new Mapper(object -> {
 					Map<Object, Object> map = new HashMap<>();
 					var length = Array.getLength(object);
-					for (int i = 0; i < length; i++)
+					for (var i = 0; i < length; i++)
 						map.put(i, Array.get(object, i));
 					return map;
 				}, object -> {

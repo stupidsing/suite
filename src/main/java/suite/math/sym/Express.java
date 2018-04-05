@@ -72,7 +72,7 @@ public class Express {
 				else
 					list.add(child);
 
-			for (int i = 0; i < xn; i++)
+			for (var i = 0; i < xn; i++)
 				list.add(x);
 
 			if (e != constant)

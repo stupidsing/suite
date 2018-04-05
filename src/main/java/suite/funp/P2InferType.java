@@ -490,7 +490,7 @@ public class P2InferType {
 				var elementSize = getTypeSize(typeOf(expr));
 				var offset = 0;
 				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
-				for (int i = 0; i < count; i++) {
+				for (var i = 0; i < count; i++) {
 					var offset0 = offset;
 					list.add(Pair.of(expr, IntIntPair.of(offset0, offset += elementSize)));
 				}
@@ -541,7 +541,7 @@ public class P2InferType {
 			Funp nfp;
 			if (scope0 != null) {
 				nfp = Funp_.framePointer;
-				for (int i = scope0; i < scope; i++)
+				for (var i = scope0; i < scope; i++)
 					nfp = FunpMemory.of(nfp, 0, ps);
 			} else
 				nfp = FunpNumber.of(Mutable.of(0));

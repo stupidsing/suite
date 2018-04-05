@@ -300,7 +300,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 
 	public Outlet<T> skip(int n) {
 		boolean end = false;
-		for (int i = 0; !end && i < n; i++)
+		for (var i = 0; !end && i < n; i++)
 			end = next() == null;
 		return !end ? of(source) : empty();
 	}

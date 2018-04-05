@@ -69,7 +69,7 @@ public class TreeUtil {
 		var params = new Node[n];
 		var node = node0;
 		Tree tree;
-		for (int i = 0; i < n - 1; i++)
+		for (var i = 0; i < n - 1; i++)
 			if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null) {
 				params[i] = tree.getLeft();
 				node = tree.getRight();

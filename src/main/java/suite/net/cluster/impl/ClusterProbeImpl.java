@@ -197,7 +197,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			var remote = splitted[1];
 
 			// refreshes member time accordingly
-			for (int i = 2; i < splitted.length; i += 2) {
+			for (var i = 2; i < splitted.length; i += 2) {
 				var node = splitted[i];
 				var newTime = Long.parseLong(splitted[i + 1]);
 				nodeJoined(node, newTime);

@@ -99,7 +99,7 @@ public class TimeSeries {
 		float[] returns0 = dropDiff_(1, logys);
 		var length = returns0.length;
 		List<FltObjPair<float[]>> pairs = new ArrayList<>();
-		for (int n = 0; n < length * 3 / 4; n++) {
+		for (var n = 0; n < length * 3 / 4; n++) {
 			float[] returns = Arrays.copyOfRange(returns0, n, length);
 			MeanVariance mv = stat.meanVariance(returns);
 			var mean = mv.mean;
@@ -140,7 +140,7 @@ public class TimeSeries {
 		if (0 < length) {
 			var logReturns = new float[length - 1];
 			var f0 = ys[0];
-			for (int i = 0; i < logReturns.length; i++) {
+			for (var i = 0; i < logReturns.length; i++) {
 				logReturns[i] = (float) Quant.logReturn(f0, ys[i + 1]);
 				f0 = ys[i + 1];
 			}
@@ -271,7 +271,7 @@ public class TimeSeries {
 		var length = fs.length;
 		var returns = new float[length];
 		var price0 = 0 < length ? fs[0] : 0f;
-		for (int i = 0; i < returns.length; i++) {
+		for (var i = 0; i < returns.length; i++) {
 			var price = fs[i];
 			returns[i] = (float) Quant.return_(price0, price);
 			price0 = price;

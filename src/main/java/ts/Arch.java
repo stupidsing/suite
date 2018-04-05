@@ -50,7 +50,7 @@ public class Arch {
 				var var = 0d;
 				var logLikelihood = 0d;
 
-				for (int t = p; t < xs.length; t++) {
+				for (var t = p; t < xs.length; t++) {
 					var tm1 = t - 1;
 					var eps0 = eps;
 					var var0 = var;

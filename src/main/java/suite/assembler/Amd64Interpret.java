@@ -69,7 +69,7 @@ public class Amd64Interpret {
 
 		IntIntMap labels = new IntIntMap();
 
-		for (int i = 0; i < instructions.size(); i++) {
+		for (var i = 0; i < instructions.size(); i++) {
 			var i_ = i;
 			Instruction instruction = instructions.get(i_);
 			if (instruction.insn == Insn.LABEL)
@@ -139,7 +139,7 @@ public class Amd64Interpret {
 						else if (regs[eax] == 3) {
 							int length = min(regs[edx], input.size());
 							var di = index(regs[ecx]);
-							for (int i = 0; i < length; i++)
+							for (var i = 0; i < length; i++)
 								mem.put(di++, input.get(i));
 							input = input.range(length);
 							regs[eax] = length;
@@ -147,7 +147,7 @@ public class Amd64Interpret {
 							var length = regs[edx];
 							var si = index(regs[ecx]);
 							byte[] bs = new byte[length];
-							for (int i = 0; i < length; i++)
+							for (var i = 0; i < length; i++)
 								bs[i] = mem.get(si++);
 							output.sink(Bytes.of(bs));
 						} else
@@ -243,7 +243,7 @@ public class Amd64Interpret {
 
 	private String state(Instruction instruction) {
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < 8; i++)
+		for (var i = 0; i < 8; i++)
 			sb.append((i % 2 == 0 ? "\n" : " ") + amd64.regByName.inverse().get(amd64.reg32[i]) + ":" + To.hex8(regs[i]));
 		sb.append("\nCMP = " + c);
 		sb.append("\nINSTRUCTION = " + dump.dump(instruction));

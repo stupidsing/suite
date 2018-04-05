@@ -99,7 +99,7 @@ public class RegisterSet {
 	}
 
 	private OpReg get_() {
-		for (int i = 0; i < nRegisters; i++)
+		for (var i = 0; i < nRegisters; i++)
 			if (!isSet(i))
 				return registers[i];
 		return Fail.t();

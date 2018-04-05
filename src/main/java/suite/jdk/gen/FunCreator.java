@@ -112,7 +112,7 @@ public class FunCreator<I> extends FunFactory {
 		public final Map<String, Pair<Type, Object>> fieldTypeValues;
 
 		private CreateClass(FunExpr expr0) {
-			Class<I> interfaceClass = lambdaClass.interfaceClass;
+			var interfaceClass = lambdaClass.interfaceClass;
 			var clsName = interfaceClass.getName() + Util.temp();
 			var methodName = lambdaClass.methodName;
 
@@ -163,7 +163,7 @@ public class FunCreator<I> extends FunFactory {
 					ConstantPool constantPool = cp.getConstantPool();
 					Instruction[] instructions = il.getInstructions();
 
-					for (int i = 0; i < instructions.length; i++) {
+					for (var i = 0; i < instructions.length; i++) {
 						Instruction instruction = instructions[i];
 						var s = instruction.toString(false);
 						String p;

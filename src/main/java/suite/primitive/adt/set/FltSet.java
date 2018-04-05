@@ -55,7 +55,7 @@ public class FltSet {
 
 			allocate(capacity * 2);
 
-			for (int i = 0; i < capacity; i++)
+			for (var i = 0; i < capacity; i++)
 				if ((v_ = vs0[i]) != EMPTYVALUE)
 					add_(v_);
 		}

@@ -105,7 +105,7 @@ public class Trade_ {
 				}
 		};
 
-		for (int i = 1; i < length0; i++) {
+		for (var i = 1; i < length0; i++) {
 			Trade trade0 = trades0[i0];
 			Trade trade1 = trades0[i];
 			boolean isGroup = true //

@@ -121,7 +121,7 @@ public class StatisticalArbitrageTest {
 		var flagsArray = mt.time(ds.prices);
 		var flags0 = "-----";
 
-		for (int i = 0; i < ds.ts.length; i++) {
+		for (var i = 0; i < ds.ts.length; i++) {
 			var flags = String_ //
 					.right("00000" + Integer.toBinaryString(flagsArray[i]), -5) //
 					.replace('0', '-') //
@@ -146,9 +146,9 @@ public class StatisticalArbitrageTest {
 			var notBet = 1f - bet;
 			var sum = 0d;
 
-			for (int i = 0; i < nTrials; i++) {
+			for (var i = 0; i < nTrials; i++) {
 				var account = 1d;
-				for (int j = 0; j < nBets; j++) {
+				for (var j = 0; j < nBets; j++) {
 					var return_ = returns[random.nextInt(returns.length)];
 					account = notBet * account + bet * account * (1d + return_);
 				}
@@ -182,7 +182,7 @@ public class StatisticalArbitrageTest {
 			var dct = e.t1;
 			IntFltPair max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
 
-			for (int i = minPeriod; i < dct.length; i++) {
+			for (var i = minPeriod; i < dct.length; i++) {
 				var f = Math.abs(dct[i]);
 				if (max.t1 < f)
 					max = IntFltPair.of(i, f);
@@ -207,7 +207,7 @@ public class StatisticalArbitrageTest {
 				}) //
 				.toMap();
 
-		for (int tor = 1; tor < maxTor; tor++)
+		for (var tor = 1; tor < maxTor; tor++)
 			System.out.println("tor = " + tor + ", " + stat.moments(differencesByTor.get(tor)));
 
 		Int_Flt predictFun = t -> {
@@ -253,7 +253,7 @@ public class StatisticalArbitrageTest {
 					.first().t0.floatValue();
 		};
 
-		for (int t = maxTor + 1; t < prices.length; t++) {
+		for (var t = maxTor + 1; t < prices.length; t++) {
 			var predicted = prices[t - 1] + predictFun.apply(t);
 
 			System.out.println("t = " + t //

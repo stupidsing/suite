@@ -58,7 +58,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case CALLINTRINSIC_:
 			data = (Data<?>) ds[--dsp];
 			List<Node> ps = new ArrayList<>(3);
-			for (int i = 1; i < insn.op1; i++)
+			for (var i = 1; i < insn.op1; i++)
 				ps.add((Node) ds[--dsp]);
 			result = Data.<Intrinsic> get(data).invoke(intrinsicCallback, ps);
 			break;

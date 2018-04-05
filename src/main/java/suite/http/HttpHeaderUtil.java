@@ -18,7 +18,7 @@ public class HttpHeaderUtil {
 	public static IList<String> getPath(String pathString) {
 		var arr = pathString.split("/");
 		IList<String> path = IList.end();
-		for (int i = arr.length - 1; i >= 0; i--)
+		for (var i = arr.length - 1; i >= 0; i--)
 			if (!arr[i].isEmpty())
 				path = IList.cons(arr[i], path);
 		return path;

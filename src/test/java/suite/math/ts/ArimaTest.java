@@ -56,7 +56,7 @@ public class ArimaTest {
 		float[] xsp = Floats_.concat(To.vector(p, i -> 8f * random.nextDouble()), new float[length]);
 		float[] epq = To.vector(length + q, i -> random.nextGaussian());
 
-		for (int t = 0; t < length; t++) {
+		for (var t = 0; t < length; t++) {
 			int tp = t + p, tpm1 = tp - 1;
 			int tq = t + q, tqm1 = tq - 1;
 			xsp[tp++] = (float) (epq[tq] //

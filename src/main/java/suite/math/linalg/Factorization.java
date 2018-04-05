@@ -16,7 +16,7 @@ public class Factorization {
 		float[][] u = To.matrix(height, w, (i, j) -> random.nextFloat());
 		float[][] v = To.matrix(w, width, (i, j) -> random.nextFloat());
 
-		for (int iter = 0; iter < 20; iter++) {
+		for (var iter = 0; iter < 20; iter++) {
 			// TODO check if error is small enough
 
 			var u0 = u;
@@ -27,14 +27,14 @@ public class Factorization {
 
 			float[][] u1 = To.matrix(height, w, (i, q) -> {
 				var sum = 0d;
-				for (int j = 0; j < width; j++)
+				for (var j = 0; j < width; j++)
 					sum += error[i][j] * v0[q][j];
 				return (float) (u0[i][q] + alpha * sum);
 			});
 
 			float[][] v1 = To.matrix(w, width, (q, j) -> {
 				var sum = 0d;
-				for (int i = 0; i < height; i++)
+				for (var i = 0; i < height; i++)
 					sum += error[i][j] * u0[i][q];
 				return (float) (v0[q][j] + alpha * sum);
 			});

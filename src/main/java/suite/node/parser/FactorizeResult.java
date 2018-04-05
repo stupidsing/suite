@@ -89,7 +89,7 @@ public class FactorizeResult {
 		Chars post = List_.last(list).post;
 		List<FPair> pairs = new ArrayList<>();
 
-		for (int i = 0; i < list.size(); i++) {
+		for (var i = 0; i < list.size(); i++) {
 			Chars space;
 			if (i != list.size() - 1)
 				space = Chars.of(pre.cs, list.get(i).post.start, list.get(i + 1).pre.end);

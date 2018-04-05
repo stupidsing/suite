@@ -137,7 +137,7 @@ public class IntObjMap<V> {
 
 			allocate(capacity * 2);
 
-			for (int i = 0; i < capacity; i++)
+			for (var i = 0; i < capacity; i++)
 				if ((o = vs0[i]) != null)
 					store(ks0[i], o);
 		}

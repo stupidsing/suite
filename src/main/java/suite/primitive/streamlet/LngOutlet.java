@@ -374,7 +374,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	public LngOutlet skip(int n) {
 		boolean end = false;
-		for (int i = 0; !end && i < n; i++)
+		for (var i = 0; !end && i < n; i++)
 			end = next() == LngFunUtil.EMPTYVALUE;
 		return !end ? of(source) : empty();
 	}

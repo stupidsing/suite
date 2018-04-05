@@ -15,7 +15,7 @@ public class DiscreteHaarWaveletTransformTest {
 	public void testFft() {
 		int[] data = Ints_.toArray(16, i -> i);
 
-		for (int i = 0; i < data.length; i++) {
+		for (var i = 0; i < data.length; i++) {
 			var j = new Random().nextInt(data.length);
 			var temp = data[i];
 			data[i] = data[j];

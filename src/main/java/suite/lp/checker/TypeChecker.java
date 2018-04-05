@@ -44,7 +44,7 @@ public class TypeChecker {
 
 			try {
 				if (nElements != null)
-					for (int i = 1; i < nElements; i++) {
+					for (var i = 1; i < nElements; i++) {
 						Pair<Prototype, Integer> key = Pair.of(prototype, i);
 						var p = ps[i];
 						Node type0 = types.computeIfAbsent(key, k -> new Reference());

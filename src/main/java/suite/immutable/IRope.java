@@ -189,7 +189,7 @@ public class IRope<T> {
 				p -= w;
 				index++;
 			}
-			for (int i = 0; i < index; i++)
+			for (var i = 0; i < index; i++)
 				deque.push(ropes.get(i));
 			rope = rope_;
 		}
@@ -208,7 +208,7 @@ public class IRope<T> {
 				p -= w;
 				index++;
 			}
-			for (int i = ropes.size() - 1; index < i; i--)
+			for (var i = ropes.size() - 1; index < i; i--)
 				deque.push(ropes.get(i));
 			rope = rope_;
 		}
@@ -228,7 +228,7 @@ public class IRope<T> {
 			Source<IRope<T>> pack = () -> {
 				int ix = min(branchFactor, queue1.size());
 				List<IRope<T>> ropes = new ArrayList<>(Collections.nCopies(ix, null));
-				for (int i = 0; i < ix; i++)
+				for (var i = 0; i < ix; i++)
 					ropes.set(i, queue1.pop());
 				return new IRope<>(depth + 1, ropes);
 			};
@@ -241,7 +241,7 @@ public class IRope<T> {
 						public void add(IRope<T> rope_) {
 							if (depth < rope_.depth) {
 								List<IRope<T>> ropes = rope_.ropes;
-								for (int i = ropes.size() - 1; 0 <= i; i--)
+								for (var i = ropes.size() - 1; 0 <= i; i--)
 									add(ropes.get(i));
 							} else
 								queue1.push(rope_);
@@ -267,7 +267,7 @@ public class IRope<T> {
 			Source<IRope<T>> pack = () -> {
 				int ix = min(branchFactor, queue1.size());
 				List<IRope<T>> ropes = new ArrayList<>(Collections.nCopies(ix, null));
-				for (int i = 0; i < ix; i++)
+				for (var i = 0; i < ix; i++)
 					ropes.set(ix - i - 1, queue1.pop());
 				return new IRope<>(depth + 1, ropes);
 			};
@@ -280,7 +280,7 @@ public class IRope<T> {
 						public void add(IRope<T> rope_) {
 							if (depth < rope_.depth) {
 								List<IRope<T>> ropes = rope_.ropes;
-								for (int i = 0; i < ropes.size(); i++)
+								for (var i = 0; i < ropes.size(); i++)
 									add(ropes.get(i));
 							} else
 								queue1.push(rope_);

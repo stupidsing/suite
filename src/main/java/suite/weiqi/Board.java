@@ -138,8 +138,8 @@ public class Board extends Array<Occupation> {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 
-		for (int x = 0; x < Weiqi.size; x++) {
-			for (int y = 0; y < Weiqi.size; y++) {
+		for (var x = 0; x < Weiqi.size; x++) {
+			for (var y = 0; y < Weiqi.size; y++) {
 				Coordinate c = Coordinate.c(x, y);
 				sb.append(get(c).display() + " ");
 			}

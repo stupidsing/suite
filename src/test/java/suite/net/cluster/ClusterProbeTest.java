@@ -23,7 +23,7 @@ public class ClusterProbeTest {
 		InetAddress localHost = InetAddress.getLocalHost();
 
 		Map<String, InetSocketAddress> peers = new HashMap<>();
-		for (int i = 0; i < nNodes; i++)
+		for (var i = 0; i < nNodes; i++)
 			peers.put("NODE" + i, new InetSocketAddress(localHost, 3000 + i));
 
 		Map<String, ClusterProbe> probes = new HashMap<>();

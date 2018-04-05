@@ -73,7 +73,7 @@ public class CompileBinderImpl extends CompileClonerImpl implements BinderFactor
 					return f.ifInstance(Tuple.class, target, tuple -> f.declare(tuple.field("nodes"), targets -> {
 						var nodes = n.nodes;
 						var fe = ok;
-						for (int i = 0; i < nodes.length; i++)
+						for (var i = 0; i < nodes.length; i++)
 							fe = compile_(nodes[i], targets.index(f.int_(i)), fe);
 						return f.if_(targets.length(), fe, brc);
 					}), brc);

@@ -38,7 +38,7 @@ public class TwoPassIndexer {
 	public void pass0(String id, String text) {
 		var length = text.length();
 
-		for (int start = 0; start < length; start++) {
+		for (var start = 0; start < length; start++) {
 			var end = start + minimumWordLength;
 
 			while (end <= length && dictionary.contains(text.substring(start, end)))
@@ -52,7 +52,7 @@ public class TwoPassIndexer {
 	public void pass1(String id, String text) {
 		var length = text.length();
 
-		for (int start = 0; start < length; start++) {
+		for (var start = 0; start < length; start++) {
 			var end = start + minimumWordLength;
 			Reference key = new Reference(id, start);
 

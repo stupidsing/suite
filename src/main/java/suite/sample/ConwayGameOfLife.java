@@ -24,8 +24,8 @@ public class ConwayGameOfLife {
 
 	public int population() {
 		var population = 0;
-		for (int x = 1; x < size; x++)
-			for (int y = 1; y < size; y++)
+		for (var x = 1; x < size; x++)
+			for (var y = 1; y < size; y++)
 				population += game[x][y] ? 1 : 0;
 		return population;
 
@@ -35,8 +35,8 @@ public class ConwayGameOfLife {
 		boolean[][] game0 = cgol.game;
 		boolean[][] game1 = new boolean[size][size];
 
-		for (int x = 1; x < size - 1; x++)
-			for (int y = 1; y < size - 1; y++) {
+		for (var x = 1; x < size - 1; x++)
+			for (var y = 1; y < size - 1; y++) {
 				var sum = 0 //
 						+ (game0[x - 1][y - 1] ? 1 : 0) //
 						+ (game0[x - 1][y] ? 1 : 0) //
@@ -57,11 +57,11 @@ public class ConwayGameOfLife {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (int y = 1; y < size; y++)
+		for (var y = 1; y < size; y++)
 			sb.append((char) 65309);
 		sb.append('\n');
-		for (int x = 1; x < size; x++) {
-			for (int y = 1; y < size; y++)
+		for (var x = 1; x < size; x++) {
+			for (var y = 1; y < size; y++)
 				sb.append((char) (game[x][y] ? 65327 : 12288));
 			sb.append('\n');
 		}

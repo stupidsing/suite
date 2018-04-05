@@ -374,7 +374,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	public FltOutlet skip(int n) {
 		boolean end = false;
-		for (int i = 0; !end && i < n; i++)
+		for (var i = 0; !end && i < n; i++)
 			end = next() == FltFunUtil.EMPTYVALUE;
 		return !end ? of(source) : empty();
 	}

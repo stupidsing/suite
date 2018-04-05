@@ -104,11 +104,11 @@ public class StackAssembler {
 				node1 = Atom.NIL;
 			} else if (node0 == RRESTA) {
 				fs -= 4 * rs;
-				for (int r = rs - 1; 0 <= r; r--)
+				for (var r = rs - 1; 0 <= r; r--)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("POP .0", getRegister(r))));
 				node1 = Atom.NIL;
 			} else if (node0 == RSAVEA) {
-				for (int r = 0; r < rs; r++)
+				for (var r = 0; r < rs; r++)
 					lnis1.add(Pair.of(new Reference(), Suite.substitute("PUSH .0", getRegister(r))));
 				fs += 4 * rs;
 				node1 = Atom.NIL;

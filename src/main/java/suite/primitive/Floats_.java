@@ -126,7 +126,7 @@ public class Floats_ {
 
 	public static float[] toArray(int length, Int_Flt f) {
 		float[] cs = new float[length];
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			cs[i] = f.apply(i);
 		return cs;
 	}

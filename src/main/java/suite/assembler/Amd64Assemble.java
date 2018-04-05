@@ -881,7 +881,7 @@ public class Amd64Assemble {
 	}
 
 	private void appendImm(BytesBuilder bb, int size, long v) {
-		for (int i = 0; i < size; i++) {
+		for (var i = 0; i < size; i++) {
 			bb.append((byte) (v & 0xFF));
 			v >>= 8;
 		}
@@ -1051,7 +1051,7 @@ public class Amd64Assemble {
 	private byte[] bs(int... is) {
 		var length = is.length;
 		byte[] bs = new byte[length];
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			bs[i] = (byte) is[i];
 		return bs;
 	}

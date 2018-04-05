@@ -54,7 +54,7 @@ public class Board1 {
 			return group1;
 		});
 
-		for (int i = 0; i < board1.board.length; i++)
+		for (var i = 0; i < board1.board.length; i++)
 			setGroup(i, clone.get(0).apply(board1.board[i]));
 	}
 

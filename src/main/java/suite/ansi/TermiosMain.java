@@ -23,13 +23,13 @@ public class TermiosMain {
 			termios.foreground(AnsiColor.RED___);
 			termios.puts("test red on green");
 
-			for (int i = 0; i < 3; i++) {
+			for (var i = 0; i < 3; i++) {
 				termios.resetColors();
 				termios.clear();
 
-				for (int r = 0; r < 6; r++)
-					for (int g = 0; g < 6; g++)
-						for (int b = 0; b < 6; b++) {
+				for (var r = 0; r < 6; r++)
+					for (var g = 0; g < 6; g++)
+						for (var b = 0; b < 6; b++) {
 							termios.gotoxy(b + 8 * r, g + 1);
 							termios.background(r, g, b);
 							termios.puts(" ");

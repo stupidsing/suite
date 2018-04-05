@@ -120,7 +120,7 @@ public class EvaluateUtil {
 		var node = fcc.getNode();
 		List<String> libraries = fcc.getLibraries();
 
-		for (int i = libraries.size() - 1; 0 <= i; i--) {
+		for (var i = libraries.size() - 1; 0 <= i; i--) {
 			var library = libraries.get(i);
 			if (!String_.isBlank(library))
 				node = Suite.substitute("use .0 >> .1", Atom.of(library), node);

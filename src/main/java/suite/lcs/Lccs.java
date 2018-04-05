@@ -65,7 +65,7 @@ public class Lccs {
 		int hash = rh.hash(bytes.range(0, rollingSize - 1));
 		var size = bytes.size();
 
-		for (int pos = 0; pos <= size - rollingSize; pos++) {
+		for (var pos = 0; pos <= size - rollingSize; pos++) {
 			var pos_ = pos;
 			hash = rh.roll(hash, bytes.get(pos_ + rollingSize - 1));
 			segments.computeIfAbsent(hash, segment0 -> new ArrayList<>()).add(Segment.of(pos_, pos_ + rollingSize));

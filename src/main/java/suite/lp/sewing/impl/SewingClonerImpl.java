@@ -43,7 +43,7 @@ public class SewingClonerImpl implements ClonerFactory {
 				return env -> {
 					@SuppressWarnings("unchecked")
 					Pair<Node, Reference>[] pairs = new Pair[length];
-					for (int i = 0; i < length; i++)
+					for (var i = 0; i < length; i++)
 						pairs[i] = Pair.of(array[i][0].apply(env), Reference.of(array[i][1].apply(env)));
 					return Dict.of(pairs);
 				};
@@ -67,7 +67,7 @@ public class SewingClonerImpl implements ClonerFactory {
 				var size = ps.length;
 				fun = env -> {
 					var nodes = new Node[size];
-					for (int i = 0; i < size; i++)
+					for (var i = 0; i < size; i++)
 						nodes[i] = ps[i].apply(env);
 					return Tuple.of(nodes);
 				};

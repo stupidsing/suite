@@ -109,7 +109,7 @@ public class Nodify {
 				Nodifier nodifier1 = getNodifier(componentType);
 				Fun<Object, Node> forward = object -> {
 					Node node = Atom.NIL;
-					for (int i = Array.getLength(object) - 1; 0 <= i; i--)
+					for (var i = Array.getLength(object) - 1; 0 <= i; i--)
 						node = Tree.of(TermOp.OR____, apply_(nodifier1, Array.get(object, i)), node);
 					return node;
 				};
@@ -120,7 +120,7 @@ public class Nodify {
 							.toList();
 					var size = list.size();
 					Object objects = Array.newInstance(componentType, size);
-					for (int i = 0; i < size; i++)
+					for (var i = 0; i < size; i++)
 						Array.set(objects, i, list.get(i));
 					return objects;
 				});

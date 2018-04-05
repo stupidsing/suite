@@ -60,7 +60,7 @@ public class HtmlUtil {
 		if (in != null) {
 			StringBuilder sb = new StringBuilder();
 
-			for (int index = 0; index < in.length(); index++) {
+			for (var index = 0; index < in.length(); index++) {
 				var ch = in.charAt(index);
 
 				if (ch < 32 || 128 <= ch || ch == '"' || ch == '<' || ch == '>') {

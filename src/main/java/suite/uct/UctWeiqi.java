@@ -130,7 +130,7 @@ public class UctWeiqi {
 
 			// move until someone cannot move anymore,
 			// or maximum iterations reached
-			for (int i = 0; i < 4 * Weiqi.area; i++) {
+			for (var i = 0; i < 4 * Weiqi.area; i++) {
 				move = null;
 
 				// try a random empty position, if that position does not work,

@@ -24,7 +24,7 @@ public class BackAllocator_ {
 
 			return index -> {
 				var hold = 0;
-				for (int i = 0; i < index; i++)
+				for (var i = 0; i < index; i++)
 					hold += getBuySell.get(i);
 				return (double) hold;
 			};

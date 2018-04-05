@@ -66,7 +66,7 @@ public class BindArrayUtil {
 			public Node subst(Node... nodes) {
 				NodeEnv<Atom> ne = sgs.source();
 				Reference[] refs = ne.env.refs;
-				for (int i = 0; i < nodes.length; i++)
+				for (var i = 0; i < nodes.length; i++)
 					refs[sgi[i]].bound(nodes[i]);
 				return ne.node;
 			}

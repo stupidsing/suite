@@ -27,7 +27,7 @@ public class NaiveBayes {
 			var xs = record.t0;
 			var cat = i(record.t1);
 			ms[cat]++;
-			for (int i = 0; i < length_; i++) {
+			for (var i = 0; i < length_; i++) {
 				var x = xs[i];
 				ws[cat] += x;
 				is[cat][i] += x;

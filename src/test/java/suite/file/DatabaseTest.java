@@ -18,7 +18,7 @@ public class DatabaseTest {
 	public void testRollback() throws IOException {
 		try (Database database = new Database(Constants.tmp("database"))) {
 			database.transact(tx -> {
-				for (int i = 0; i < nRecords; i++)
+				for (var i = 0; i < nRecords; i++)
 					tx.put(i, "sample");
 				return Fail.t();
 			});
@@ -30,15 +30,15 @@ public class DatabaseTest {
 	public void testUpdate() throws IOException {
 		try (Database database = new Database(Constants.tmp("database"))) {
 			database.transact(tx -> {
-				for (int i = 0; i < nRecords; i++)
+				for (var i = 0; i < nRecords; i++)
 					tx.put(i, "sample");
 				return true;
 			});
 
 			database.transact(tx -> {
-				for (int i = 0; i < nRecords; i += 4)
+				for (var i = 0; i < nRecords; i += 4)
 					tx.put(i, "updated-" + tx.get(i));
-				for (int i = 1; i < nRecords; i += 4)
+				for (var i = 1; i < nRecords; i += 4)
 					tx.remove(i);
 				return true;
 			});

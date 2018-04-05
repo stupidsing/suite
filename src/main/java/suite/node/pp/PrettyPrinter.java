@@ -267,7 +267,7 @@ public class PrettyPrinter {
 	}
 
 	private void pre(int indent) {
-		for (int i = 0; i < indent; i++)
+		for (var i = 0; i < indent; i++)
 			append(indentSpaces);
 	}
 

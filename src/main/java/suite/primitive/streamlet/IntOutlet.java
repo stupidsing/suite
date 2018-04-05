@@ -374,7 +374,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	public IntOutlet skip(int n) {
 		boolean end = false;
-		for (int i = 0; !end && i < n; i++)
+		for (var i = 0; !end && i < n; i++)
 			end = next() == IntFunUtil.EMPTYVALUE;
 		return !end ? of(source) : empty();
 	}

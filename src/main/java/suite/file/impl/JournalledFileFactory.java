@@ -55,7 +55,7 @@ public class JournalledFileFactory {
 
 		List<JournalEntry> journalEntries = new ArrayList<>();
 
-		for (int jp = 0; jp < nCommittedJournalEntries0; jp++)
+		for (var jp = 0; jp < nCommittedJournalEntries0; jp++)
 			journalEntries.add(journalPageFile.load(jp));
 
 		return new JournalledPageFile() {
@@ -138,7 +138,7 @@ public class JournalledFileFactory {
 				pointerPageFile.sync();
 
 				// write back entries for next commit
-				for (int jp = 0; jp < journalEntries.size(); jp++)
+				for (var jp = 0; jp < journalEntries.size(); jp++)
 					journalPageFile.save(jp, journalEntries.get(jp));
 			}
 
@@ -152,7 +152,7 @@ public class JournalledFileFactory {
 
 			private IntObjPair<JournalEntry> findPageInJournal(int pointer, int start) {
 				IntObjPair<JournalEntry> pair = null;
-				for (int jp = start; jp < journalEntries.size(); jp++) {
+				for (var jp = start; jp < journalEntries.size(); jp++) {
 					JournalEntry journalEntry = journalEntries.get(jp);
 					if (journalEntry.pointer == pointer)
 						pair = IntObjPair.of(jp, journalEntry);

@@ -360,7 +360,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	public Outlet2<K, V> skip(int n) {
 		Pair<K, V> pair = Pair.of(null, null);
 		boolean end = false;
-		for (int i = 0; !end && i < n; i++)
+		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
 		return !end ? of(source2) : empty();
 	}

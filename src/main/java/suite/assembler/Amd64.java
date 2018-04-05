@@ -284,7 +284,7 @@ public class Amd64 {
 			putAll(regByName);
 			putAll(cregByName);
 			putAll(sregByName);
-			for (int i = 0; i < 16; i++) {
+			for (var i = 0; i < 16; i++) {
 				put(Atom.of("XMM" + i), regXmm[i]);
 				put(Atom.of("YMM" + i), regYmm[i]);
 			}

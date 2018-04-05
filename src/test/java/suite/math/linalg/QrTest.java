@@ -53,8 +53,8 @@ public class QrTest {
 			mtx.verifyEquals(mtx.mul(q, mtx.transpose(q)), mtx.identity(length));
 
 			// verify R is upper-triangular
-			for (int i = 0; i < length; i++)
-				for (int j = 0; j < i; j++)
+			for (var i = 0; i < length; i++)
+				for (var j = 0; j < i; j++)
 					MathUtil.verifyEquals(r[i][j], 0f);
 
 			return true;

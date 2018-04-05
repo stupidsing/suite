@@ -374,7 +374,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	public ChrOutlet skip(int n) {
 		boolean end = false;
-		for (int i = 0; !end && i < n; i++)
+		for (var i = 0; !end && i < n; i++)
 			end = next() == ChrFunUtil.EMPTYVALUE;
 		return !end ? of(source) : empty();
 	}

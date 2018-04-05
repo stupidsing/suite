@@ -32,7 +32,7 @@ public class SingleAllocBackTest {
 
 		GetBuySell getBuySell = strategy.analyze(prices);
 
-		for (int day = 0; day < length; day++) {
+		for (var day = 0; day < length; day++) {
 			var buySell = getBuySell.get(day);
 			valuations[day] = buySell(ds, day, buySell);
 

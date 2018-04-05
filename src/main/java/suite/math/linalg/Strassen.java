@@ -73,8 +73,8 @@ public class Strassen {
 			var cjm = bjm;
 			float[][] c = mtx.of(ajx, bix);
 
-			for (int i = 0; i < aim; i++)
-				for (int j = 0; i < bjm; j++) {
+			for (var i = 0; i < aim; i++)
+				for (var j = 0; i < bjm; j++) {
 					c[i + ci0][j + cj0] = m1[i][j] + m4[i][j] - m5[i][j] + m7[i][j];
 					c[i + ci0][j + cjm] = m3[i][j] + m5[i][j];
 					c[i + cim][j + cj0] = m2[i][j] + m4[i][j];
@@ -108,9 +108,9 @@ public class Strassen {
 		var height = bh;
 		var width = bw;
 
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width; j++)
-				for (int k = 0; k < ks; k++)
+		for (var i = 0; i < height; i++)
+			for (var j = 0; j < width; j++)
+				for (var k = 0; k < ks; k++)
 					add.add(i, j, a.apply(i, k) * b.apply(k, j));
 	}
 

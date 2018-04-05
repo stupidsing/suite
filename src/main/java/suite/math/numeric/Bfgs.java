@@ -34,7 +34,7 @@ public class Bfgs {
 		var gs = gradientFun.apply(xs);
 		var ib = id;
 
-		for (int iter = 0; iter < 16; iter++) {
+		for (var iter = 0; iter < 16; iter++) {
 			var xs_ = xs;
 			float[] ps = mtx.mul(ib, vec.neg(gs)); // direction
 			Dbl_Obj<float[]> line = alpha -> vec.add(xs_, vec.scale(ps, alpha));
@@ -85,7 +85,7 @@ public class Bfgs {
 		DblDbl_Dbl choose = (a0, a1) -> (a0 + a1) * .5d; // TODO
 
 		DblDbl_Dbl zoom = (alphaLo, alphaHi) -> {
-			for (int iter = 0; iter < 16; iter++) {
+			for (var iter = 0; iter < 16; iter++) {
 				double alpha = interpolate.apply(alphaLo, alphaHi);
 				var v = phi.apply(alpha);
 				double g;
@@ -108,7 +108,7 @@ public class Bfgs {
 		var vp = v0;
 		double alpha = choose.apply(alphap, alphax);
 
-		for (int iter = 0; iter < 16; iter++) {
+		for (var iter = 0; iter < 16; iter++) {
 			var v = phi.apply(alpha);
 
 			if (v0 + c1 * alpha * g0 < v || 0 < iter && vp <= v)

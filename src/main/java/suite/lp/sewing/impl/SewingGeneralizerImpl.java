@@ -59,7 +59,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 				fun = env -> {
 					@SuppressWarnings("unchecked")
 					Pair<Node, Reference>[] pairs = new Pair[length];
-					for (int i = 0; i < length; i++)
+					for (var i = 0; i < length; i++)
 						pairs[i] = Pair.of(array[i][0].apply(env), Reference.of(array[i][1].apply(env)));
 					return Dict.of(pairs);
 				};
@@ -80,7 +80,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 				var length = fs.length;
 				fun = env -> {
 					var array = new Node[length];
-					for (int i = 0; i < length; i++)
+					for (var i = 0; i < length; i++)
 						array[i] = fs[i].apply(env);
 					return Tuple.of(array);
 				};

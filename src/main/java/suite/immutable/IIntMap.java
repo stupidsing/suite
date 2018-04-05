@@ -35,7 +35,7 @@ public class IIntMap<V> {
 	private static <V> List<IntObjPair<Bl<V>>> consolidate(List<IntObjPair<V>> list0) {
 		List<IntObjPair<Bl<V>>> list1 = new ArrayList<>();
 		int size = list0.size(), i0 = 0, prevKey = 0, key;
-		for (int i = 0; i < size; i++) {
+		for (var i = 0; i < size; i++) {
 			if (prevKey != (key = list0.get(i).t0 & 63)) {
 				list1.add(IntObjPair.of(prevKey >>> 6, Bl.of(list0.subList(i0, i))));
 				i0 = i;

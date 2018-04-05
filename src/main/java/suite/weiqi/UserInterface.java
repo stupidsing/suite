@@ -17,10 +17,10 @@ public class UserInterface {
 		Board board = new Board();
 		var rows = s.split("\n");
 
-		for (int x = 0; x < Weiqi.size; x++) {
+		for (var x = 0; x < Weiqi.size; x++) {
 			var cols = rows[x].split(" ");
 
-			for (int y = 0; y < Weiqi.size; y++) {
+			for (var y = 0; y < Weiqi.size; y++) {
 				Occupation occupation = Occupation.EMPTY;
 
 				for (Occupation o : Occupation.values())

@@ -36,7 +36,7 @@ public class ArdlBackAllocator implements BackAllocator {
 			var maxReturns = 0f;
 			Integer maxi = null;
 
-			for (int i = 0; i < returns.length; i++) {
+			for (var i = 0; i < returns.length; i++) {
 				var return_ = returns[i];
 				if (maxReturns < return_) {
 					maxReturns = return_;

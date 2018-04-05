@@ -51,7 +51,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 
 		IntBuffer zeroPositions = IntBuffer.allocate(256);
 
-		for (int i = 0; i < header.length(); i++)
+		for (var i = 0; i < header.length(); i++)
 			if (header.charAt(i) == 0)
 				zeroPositions.put(i);
 

@@ -17,7 +17,7 @@ public class IBinPriorityQueueTest {
 		var size = 4096;
 
 		List<Integer> list = new ArrayList<>();
-		for (int i = 0; i < size; i++)
+		for (var i = 0; i < size; i++)
 			list.add(i);
 		Collections.shuffle(list);
 
@@ -26,7 +26,7 @@ public class IBinPriorityQueueTest {
 		for (int i : list)
 			pq = pq.add(i);
 
-		for (int i = 0; i < size; i++) {
+		for (var i = 0; i < size; i++) {
 			assertEquals(i, (Object) pq.findMin());
 			pq = pq.deleteMin();
 		}

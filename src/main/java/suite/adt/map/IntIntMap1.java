@@ -148,7 +148,7 @@ public class IntIntMap1 {
 			long[] kvs0 = kvs;
 			allocate(capacity * 2);
 
-			for (int i = 0; i < capacity; i++) {
+			for (var i = 0; i < capacity; i++) {
 				var kv0 = kvs0[i];
 				var v_ = v(kv0);
 				if (v_ != IntFunUtil.EMPTYVALUE)

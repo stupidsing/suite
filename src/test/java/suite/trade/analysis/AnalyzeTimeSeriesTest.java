@@ -80,7 +80,7 @@ public class AnalyzeTimeSeriesTest {
 		var kelly = rmv.mean / variance;
 		IntFltPair max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
 
-		for (int i = 4; i < fds.length; i++) {
+		for (var i = 4; i < fds.length; i++) {
 			var f = Math.abs(fds[i]);
 			if (max.t1 < f)
 				max.update(i, f);
@@ -196,7 +196,7 @@ public class AnalyzeTimeSeriesTest {
 		var returns = new float[length];
 		double val;
 		returns[0] = (float) (val = 1d);
-		for (int d = 1; d < length; d++)
+		for (var d = 1; d < length; d++)
 			returns[d] = (float) (val += holds[d] * (prices[d] - prices[d - 1]));
 		return new Returns(returns);
 	}
@@ -206,7 +206,7 @@ public class AnalyzeTimeSeriesTest {
 		var returns = new float[length];
 		double val;
 		returns[0] = (float) (val = 1d);
-		for (int d = 1; d < length; d++)
+		for (var d = 1; d < length; d++)
 			returns[d] = (float) (val *= 1d + holds[d] * Quant.return_(prices[d - 1], prices[d]));
 		return new Returns(returns);
 	}

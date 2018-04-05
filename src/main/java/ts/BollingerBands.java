@@ -63,7 +63,7 @@ public class BollingerBands {
 			sds = new float[length];
 			bandwidths = new float[length];
 
-			for (int i = 0; i < length; i++) {
+			for (var i = 0; i < length; i++) {
 				var i1 = i + 1;
 				int s = max(0, i1 - backPos0);
 				int e = max(0, i1 - backPos1);

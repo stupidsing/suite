@@ -26,10 +26,10 @@ public class SelfOrganizingMap {
 		var som = new float[size][length];
 		var alpha = 1f;
 
-		for (int i = 0; i < size; i++)
+		for (var i = 0; i < size; i++)
 			som[i] = Floats_.toArray(length, i_ -> random.nextFloat());
 
-		for (int iteration = 0; iteration < 256; iteration++)
+		for (var iteration = 0; iteration < 256; iteration++)
 			for (float[] in : ins) {
 				DblMutable nearestDistance = DblMutable.of(Double.MAX_VALUE);
 				var nearestIndices = new int[nDim];
@@ -70,7 +70,7 @@ public class SelfOrganizingMap {
 			if (index < nDim) {
 				var ix = bounds[index];
 				var index1 = index + 1;
-				for (int i = 0; i < ix; i++) {
+				for (var i = 0; i < ix; i++) {
 					is[index] = i;
 					findMin(index1);
 				}
@@ -82,7 +82,7 @@ public class SelfOrganizingMap {
 			if (index < nDim) {
 				var fr = is0[index] - updateDistance;
 				var to = is0[index] + updateDistance;
-				for (int i = fr; i <= to; i++) {
+				for (var i = fr; i <= to; i++) {
 					is[index] = i;
 					updateNeighbours(is0, index);
 				}
@@ -93,7 +93,7 @@ public class SelfOrganizingMap {
 
 	private int index(int[] is) {
 		var i = 0;
-		for (int index = 0; index < nDim; index++)
+		for (var index = 0; index < nDim; index++)
 			i = bounds[index] * i + is[index];
 		return i;
 	}

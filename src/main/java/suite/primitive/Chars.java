@@ -111,7 +111,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public int indexOf(Chars chars, int start) {
-		for (int i = start; i <= size_() - chars.size_(); i++)
+		for (var i = start; i <= size_() - chars.size_(); i++)
 			if (startsWith(chars, i))
 				return i;
 		return -1;
@@ -123,7 +123,7 @@ public class Chars implements Iterable<Character> {
 
 	public boolean isWhitespaces() {
 		boolean b = true;
-		for (int i = start; b && i < end; i++)
+		for (var i = start; b && i < end; i++)
 			b &= ParseUtil.isWhitespace(cs[i]);
 		return b;
 	}
@@ -244,7 +244,7 @@ public class Chars implements Iterable<Character> {
 
 			if (size_() == other.size_()) {
 				var diff = other.start - start;
-				for (int i = start; i < end; i++)
+				for (var i = start; i < end; i++)
 					if (cs[i] != other.cs[i + diff])
 						return false;
 				return true;
@@ -257,7 +257,7 @@ public class Chars implements Iterable<Character> {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (int i = start; i < end; i++)
+		for (var i = start; i < end; i++)
 			h = h * 31 + Character.hashCode(cs[i]);
 		return h;
 	}
@@ -265,7 +265,7 @@ public class Chars implements Iterable<Character> {
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		for (int i = start; i < end; i++)
+		for (var i = start; i < end; i++)
 			sb.append(cs[i]);
 		return sb.toString();
 	}
@@ -273,7 +273,7 @@ public class Chars implements Iterable<Character> {
 	private boolean startsWith_(Chars chars, int s) {
 		if (s + chars.size_() <= size_()) {
 			boolean b = true;
-			for (int i = 0; b && i < chars.size_(); i++)
+			for (var i = 0; b && i < chars.size_(); i++)
 				b &= get(s + i) == chars.get(i);
 			return b;
 		} else

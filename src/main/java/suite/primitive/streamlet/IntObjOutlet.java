@@ -372,7 +372,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	public IntObjOutlet<V> skip(int n) {
 		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
 		boolean end = false;
-		for (int i = 0; !end && i < n; i++)
+		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
 		return !end ? of(source) : empty();
 	}

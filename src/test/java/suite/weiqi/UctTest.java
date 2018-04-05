@@ -48,7 +48,7 @@ public class UctTest {
 		Occupation player = Occupation.WHITE;
 		int nWins = 0, nTotal = 1000;
 
-		for (int i = 0; i < nTotal; i++) {
+		for (var i = 0; i < nTotal; i++) {
 			GameSet gameSet = new GameSet(new Board(), player);
 			UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 			visitor.playMove(move);
@@ -65,7 +65,7 @@ public class UctTest {
 		int[] ss = { 1000, 10000, };
 		var duration = 0f;
 
-		for (int time = 0; time < 2; time++)
+		for (var time = 0; time < 2; time++)
 			for (; i < ss[time]; i++)
 				duration = Stopwatch.of(() -> {
 					GameSet gameSet1 = new GameSet(gameSet);
@@ -83,7 +83,7 @@ public class UctTest {
 		var nSimulations = 1000;
 		var duration = 0f;
 
-		for (int time = 0; time < 2; time++) {
+		for (var time = 0; time < 2; time++) {
 			GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
 			UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 			UctSearch<Coordinate> search = new UctSearch<>(visitor);

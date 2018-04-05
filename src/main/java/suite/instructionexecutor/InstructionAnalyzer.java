@@ -94,7 +94,7 @@ public class InstructionAnalyzer {
 
 		// find out the parent of closures.
 		// assumes every FRAME-BEGIN has a ASSIGN-THUNK referencing it.
-		for (int ip = 0; ip < instructions.size(); ip++) {
+		for (var ip = 0; ip < instructions.size(); ip++) {
 			Instruction insn = instructions.get(ip);
 
 			if (insn.insn == Insn.FRAMEBEGIN____)
@@ -109,7 +109,7 @@ public class InstructionAnalyzer {
 	}
 
 	private void analyzeParentFrames(List<Instruction> instructions) {
-		for (int ip = 0; ip < instructions.size(); ip++) {
+		for (var ip = 0; ip < instructions.size(); ip++) {
 			Instruction insn = instructions.get(ip);
 
 			// recognize frames and their parents.
@@ -176,7 +176,7 @@ public class InstructionAnalyzer {
 				break;
 			case ASSIGNFRAMEREG:
 				AnalyzedFrame frame1 = frame;
-				for (int i = op1; i < 0; i++) {
+				for (var i = op1; i < 0; i++) {
 					frame1.isRequireParent = true;
 					frame1 = frame1.parent;
 				}
@@ -196,7 +196,7 @@ public class InstructionAnalyzer {
 				break;
 			case FRAMEBEGIN____:
 				registers = frame.registers = new ArrayList<>();
-				for (int i = 0; i < op0; i++)
+				for (var i = 0; i < op0; i++)
 					registers.add(new AnalyzedRegister());
 				break;
 			default:
@@ -205,7 +205,7 @@ public class InstructionAnalyzer {
 	}
 
 	private void analyzeFpTailCalls(List<Instruction> instructions) {
-		for (int ip = 0; ip < instructions.size() - 1; ip++) {
+		for (var ip = 0; ip < instructions.size() - 1; ip++) {
 			Source<Instruction> source = flow(instructions, ip);
 			Instruction instruction0 = source.source();
 			Instruction instruction1 = source.source();

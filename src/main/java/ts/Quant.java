@@ -67,7 +67,7 @@ public class Quant {
 		var hold = 0f;
 		float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
 
-		for (int i = 0; i < length; i++) {
+		for (var i = 0; i < length; i++) {
 			var price = prices[i];
 			min = Float.min(min, price);
 			max = Float.max(max, price);
@@ -97,7 +97,7 @@ public class Quant {
 		var holds = new float[end];
 		var hold = 0f;
 		var nDays = 0;
-		for (int i = start; i < end; i++) {
+		for (var i = start; i < end; i++) {
 			float hold1 = nDays < nDaysExit ? fun.apply(i, hold) : 0f;
 			nDays = hold1 != 0f && hold == hold1 ? nDays + 1 : 0;
 			holds[i] = hold = hold1;

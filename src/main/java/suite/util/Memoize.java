@@ -93,7 +93,7 @@ public class Memoize {
 			private int p = 0;
 
 			{
-				for (int i = 0; i < size; i++)
+				for (var i = 0; i < size; i++)
 					array[i] = new R();
 			}
 

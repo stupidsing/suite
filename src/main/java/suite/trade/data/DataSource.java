@@ -135,7 +135,7 @@ public class DataSource {
 		Datum[] data = new Datum[length1];
 		var si = length0 - 1;
 
-		for (int di = length1 - 1; 0 <= di; di--) {
+		for (var di = length1 - 1; 0 <= di; di--) {
 			var si_ = si;
 			var t1 = ts1[di];
 			while (0 <= si && t1 <= ts[si])
@@ -152,7 +152,7 @@ public class DataSource {
 		Datum[] data = new Datum[length1];
 		var si = 0;
 
-		for (int di = 0; di < length1; di++) {
+		for (var di = 0; di < length1; di++) {
 			var si_ = si;
 			var t1 = ts1[di];
 			while (si < length0 && ts[si] + tickDuration <= t1 + tickDuration)
@@ -194,7 +194,7 @@ public class DataSource {
 
 	public LngFltPair last(Time time) {
 		var t = time.epochSec();
-		for (int i = ts.length - 1; 0 <= i; i--)
+		for (var i = ts.length - 1; 0 <= i; i--)
 			if (ts[i] <= t)
 				return LngFltPair.of(ts[i], prices[i]);
 		return null;
@@ -216,7 +216,7 @@ public class DataSource {
 
 	public String recent(String prefix, int size) {
 		StringBuilder sb = new StringBuilder();
-		for (int i = ts.length - size; i < ts.length; i++)
+		for (var i = ts.length - size; i < ts.length; i++)
 			sb.append(prefix + "[" + Time.ofEpochSec(ts[i]) + "]" //
 					+ " o/c:" + To.string(opens[i]) + "/" + To.string(closes[i]) //
 					+ " l/h:" + To.string(lows[i]) + "/" + To.string(highs[i]) //
@@ -249,7 +249,7 @@ public class DataSource {
 		var price0 = 0 < length ? prices_[0] : Float.MAX_VALUE;
 		var date0 = Time.ofEpochSec(t0).ymd();
 
-		for (int i = 1; i < length; i++) {
+		for (var i = 1; i < length; i++) {
 			var t1 = ts[i];
 			var price1 = prices_[i];
 			var date1 = Time.ofEpochSec(t1).ymd();
@@ -284,7 +284,7 @@ public class DataSource {
 	private DataSource range_(long t0, long tx) {
 		List<Datum> data1 = new ArrayList<>();
 
-		for (int i = 0; i < prices.length; i++) {
+		for (var i = 0; i < prices.length; i++) {
 			Datum datum = datum_(i);
 			if (t0 <= datum.t0 && datum.tx <= tx)
 				data1.add(datum);
@@ -319,7 +319,7 @@ public class DataSource {
 		var lo = Trade_.max;
 		var hi = Trade_.negligible;
 		var volume = 0f;
-		for (int i = start; i < end; i++) {
+		for (var i = start; i < end; i++) {
 			lo = min(lo, lows[i]);
 			hi = max(hi, highs[i]);
 			volume += volumes[i];

@@ -276,7 +276,7 @@ public interface BackAllocator {
 						var length = ds0.ts.length;
 						Datum[] data1 = new Datum[length];
 
-						for (int i = 0; i < length; i++) {
+						for (var i = 0; i < length; i++) {
 							var r = 1d / indexPrices[i];
 							var t = ds0.ts[i];
 							data1[i] = new Datum( //

@@ -66,7 +66,7 @@ public class SparseMatrix {
 				pq.insert(IntIntPair.of(r, j));
 		};
 
-		for (int r = 0; r < height; r++)
+		for (var r = 0; r < height; r++)
 			enqRow.sink(r);
 
 		while (!pq.isEmpty()) {

@@ -46,7 +46,7 @@ public class List_ {
 
 	public static <T> List<T> reverse(List<T> list0) {
 		List<T> list1 = new ArrayList<>();
-		for (int i = list0.size() - 1; 0 <= i; i--)
+		for (var i = list0.size() - 1; 0 <= i; i--)
 			list1.add(list0.get(i));
 		return list1;
 	}

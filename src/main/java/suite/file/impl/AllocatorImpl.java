@@ -119,7 +119,7 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 
 			BytesBuilder bb = new BytesBuilder();
 			bb.append(bytes.range(p0, p1));
-			for (int i = p1; i < p2; i++)
+			for (var i = p1; i < p2; i++)
 				bb.append(b);
 			bb.append(bytes.range(p2, p3));
 

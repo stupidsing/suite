@@ -48,7 +48,7 @@ public class LongShortTermMemory {
 			Random random = new Random();
 			var isll = 1f / Math.sqrt(ll);
 
-			for (int i = 0; i < memoryLength; i++) {
+			for (var i = 0; i < memoryLength; i++) {
 				for (int j = 0; j < ll; j++) { // random weights, bias 0
 
 					// Xavier initialization
@@ -112,8 +112,8 @@ public class LongShortTermMemory {
 				float[] e_wi = Forget.forgetOn(e_sig_is, Sigmoid.sigmoidGradientOn(sig_is));
 				float[] e_wf = Forget.forgetOn(e_sig_fs, Sigmoid.sigmoidGradientOn(sig_fs));
 
-				for (int i = 0; i < memoryLength; i++)
-					for (int j = 0; j < ll1; j++) {
+				for (var i = 0; i < memoryLength; i++)
+					for (var j = 0; j < ll1; j++) {
 						var d = learningRate * iv[j];
 						wo[i][j] += d * e_wo[i];
 						wm[i][j] += d * e_wm[i];

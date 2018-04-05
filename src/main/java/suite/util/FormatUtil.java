@@ -25,13 +25,13 @@ public class FormatUtil {
 		StringBuilder sb = new StringBuilder();
 
 		for (String[] row : rows) {
-			for (int column = 0; column < nColumns; column++) {
+			for (var column = 0; column < nColumns; column++) {
 				var cell = row[column];
 				var width = widths[column];
 
 				sb.append(cell);
 
-				for (int i = cell.length(); i < width; i++)
+				for (var i = cell.length(); i < width; i++)
 					sb.append(" ");
 			}
 

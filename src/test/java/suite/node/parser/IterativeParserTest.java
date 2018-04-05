@@ -93,7 +93,7 @@ public class IterativeParserTest {
 	public void testParsePerformance() {
 		var in = FileUtil.read("src/main/fl/STANDARD.slf");
 		Source<Boolean> test = () -> {
-			for (int i = 0; i < 20; i++)
+			for (var i = 0; i < 20; i++)
 				iterativeParser.parse(in);
 			return true;
 		};

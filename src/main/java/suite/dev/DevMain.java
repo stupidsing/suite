@@ -61,7 +61,7 @@ public class DevMain {
 
 				termios.cursor(false);
 
-				for (int screenY = 0; screenY < viewSizeY; screenY++) {
+				for (var screenY = 0; screenY < viewSizeY; screenY++) {
 					termios.gotoxy(0, screenY);
 					termios.puts(lines[screenY]);
 				}
@@ -247,7 +247,7 @@ public class DevMain {
 			ends.append(px);
 			p0.update(px);
 		};
-		for (int p = 0; p < size; p++) {
+		for (var p = 0; p < size; p++) {
 			var ch = text.get(p);
 			if (ch == '\n' || wrapSize < p - p0.get())
 				lf.sink(p);

@@ -103,7 +103,7 @@ public class ElfWriter {
 		}
 
 		private Writer_ d(int n, int i) {
-			for (int j = 0; j < n; j++) {
+			for (var j = 0; j < n; j++) {
 				bb.append((byte) (i & 0xFF));
 				i = i >> 8;
 			}

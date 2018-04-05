@@ -81,7 +81,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 				b &= size0 == size1;
 
 				if (b)
-					for (int i = 0; b && i < size0; i++) {
+					for (var i = 0; b && i < size0; i++) {
 						IntObjPair<NodeHead> p0 = list.get(i);
 						IntObjPair<NodeHead> p1 = list1.get(i);
 						b &= Objects.equals(p0.t0, p1.t0);

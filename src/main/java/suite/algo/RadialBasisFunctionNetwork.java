@@ -36,7 +36,7 @@ public class RadialBasisFunctionNetwork {
 		var sums = new float[nHiddens][length];
 		var variances = new float[nHiddens];
 
-		for (int i = 0; i < ins.length; i++) {
+		for (var i = 0; i < ins.length; i++) {
 			var cl = kmc[i];
 			sizes[cl]++;
 			vec.addOn(sums[cl], ins[i]);
@@ -44,7 +44,7 @@ public class RadialBasisFunctionNetwork {
 
 		centers = To.array(nHiddens, float[].class, cl -> vec.scale(sums[cl], 1d / sizes[cl]));
 
-		for (int i = 0; i < ins.length; i++) {
+		for (var i = 0; i < ins.length; i++) {
 			var cl = kmc[i];
 			variances[cl] += vec.dotDiff(ins[i], centers[cl]);
 		}

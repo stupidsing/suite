@@ -19,11 +19,11 @@ public class Qr {
 		var size = mtx.sqSize(m);
 		var q = new float[size][]; // e
 
-		for (int i = 0; i < size; i++) {
+		for (var i = 0; i < size; i++) {
 			var a = m[i];
 			var u1 = vec.of(a);
 
-			for (int j = 0; j < i; j++) {
+			for (var j = 0; j < i; j++) {
 				var u = q[j];
 				vec.addScaleOn(u1, u, -vec.dot(u, a));
 			}
@@ -33,8 +33,8 @@ public class Qr {
 
 		var r = new float[size][size];
 
-		for (int i = 0; i < size; i++)
-			for (int j = 0; j <= i; j++)
+		for (var i = 0; i < size; i++)
+			for (var j = 0; j <= i; j++)
 				r[i][j] = (float) vec.dot(q[j], m[i]);
 
 		return Pair.of(q, r);
@@ -45,8 +45,8 @@ public class Qr {
 		var size = mtx.sqSize(r);
 		var q = mtx.identity(size);
 
-		for (int k = 0; k < size; k++)
-			for (int i = size - 1; k < i; i--) {
+		for (var k = 0; k < size; k++)
+			for (var i = size - 1; k < i; i--) {
 				mtx.verifyEquals(m, mtx.mul(q, r));
 
 				var i0 = i - 1;
@@ -59,7 +59,7 @@ public class Qr {
 					var ir = 1d / radius;
 					double cos = f0 * ir, sin = f1 * ir;
 
-					for (int j = 0; j < size; j++) {
+					for (var j = 0; j < size; j++) {
 						var m0 = r[i0][j];
 						var m1 = r[i1][j];
 						r[i0][j] = (float) (m0 * cos + m1 * sin);

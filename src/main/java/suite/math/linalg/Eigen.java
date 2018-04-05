@@ -19,10 +19,10 @@ public class Eigen {
 		var eigenVectors = new float[size][];
 		var eigenValue = 0f;
 
-		for (int v = 0; v < size; v++) {
+		for (var v = 0; v < size; v++) {
 			float[] xs = Floats_.toArray(size, i -> random.nextFloat());
 
-			for (int iteration = 0; iteration < 256; iteration++) {
+			for (var iteration = 0; iteration < 256; iteration++) {
 				float[] ys = mtx.mul(m, xs);
 				eigenValue = 0f;
 				for (float y : ys)
@@ -33,7 +33,7 @@ public class Eigen {
 
 			eigenVectors[v] = vec.normalize(xs);
 
-			for (int i = 0; i < size; i++)
+			for (var i = 0; i < size; i++)
 				m[i][i] -= eigenValue;
 		}
 
@@ -51,7 +51,7 @@ public class Eigen {
 		var ws = new float[nIterations][];
 		float[] vj1 = null;
 
-		for (int j = 1; j < nIterations; j++) {
+		for (var j = 1; j < nIterations; j++) {
 			var beta = 0d;
 			float[] prevw;
 			float[] vj;
@@ -71,9 +71,9 @@ public class Eigen {
 
 		var t = new float[nIterations][nIterations];
 
-		for (int i = 0; i < nIterations; i++)
+		for (var i = 0; i < nIterations; i++)
 			t[i][i] = alphas[i];
-		for (int i = 1; i < nIterations; i++)
+		for (var i = 1; i < nIterations; i++)
 			t[i - 1][i] = t[i][i - 1] = betas[i];
 
 		return Pair.of(mtx.transpose(vs), t);

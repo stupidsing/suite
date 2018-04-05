@@ -27,10 +27,10 @@ public class SingularValueDecomposition {
 		var height = mtx.height(m1);
 		var width_ = mtx.width(m1);
 
-		for (int j = 0; j < width_; j++) {
+		for (var j = 0; j < width_; j++) {
 			var j_ = j;
 			double mean = Ints_.range(0, height).toDouble(Int_Dbl.sum(i -> m1[i][j_])) / height;
-			for (int i = 0; i < height; i++)
+			for (var i = 0; i < height; i++)
 				m1[i][j_] -= mean;
 		}
 
@@ -47,7 +47,7 @@ public class SingularValueDecomposition {
 		var us = new float[k][];
 		var vs = new float[k][];
 
-		for (int i = 0; i < k; i++) {
+		for (var i = 0; i < k; i++) {
 			Fixie3<Double, float[], float[]> fixie = f.apply(a);
 			var a0 = a;
 			var i_ = i;
@@ -78,7 +78,7 @@ public class SingularValueDecomposition {
 		float[] x = Floats_.toArray(n, i -> random.nextFloat());
 		var at = mtx.transpose(a);
 
-		for (int i = 0; i < 16; i++)
+		for (var i = 0; i < 16; i++)
 			x = mtx.mul(at, mtx.mul(a, x));
 
 		var v = vec.normalize(x);
@@ -94,7 +94,7 @@ public class SingularValueDecomposition {
 		float[] v = Floats_.toArray(mtx.width(a), i -> random.nextFloat());
 		var at = mtx.transpose(a);
 
-		for (int i = 0; i < 256; i++) {
+		for (var i = 0; i < 256; i++) {
 			float[] u = vec.normalize(mtx.mul(a, v));
 			float[] z = mtx.mul(at, u);
 			var beta = vec.abs(z);

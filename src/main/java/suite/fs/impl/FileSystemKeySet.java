@@ -62,7 +62,7 @@ public class FileSystemKeySet {
 		KeyDataMutator<Bytes> mutator = store.mutateData();
 		List<NameKey> keys = keyUtil.toNameKeys(name);
 
-		for (int i = keys.size() - 1; 0 <= i; i--) {
+		for (var i = keys.size() - 1; 0 <= i; i--) {
 			NameKey key = keys.get(i);
 
 			if (key.size == 0) {

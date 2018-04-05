@@ -17,7 +17,7 @@ public class RecurrentNeuralNetworkTest {
 		float[] inputs = {};
 		float[] expected = { -.8f, };
 
-		for (int i = 0; i < 16; i++) {
+		for (var i = 0; i < 16; i++) {
 			System.out.print(lstm);
 			lstm.propagateBackward(inputs, expected);
 		}

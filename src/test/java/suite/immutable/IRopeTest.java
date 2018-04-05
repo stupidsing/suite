@@ -23,14 +23,14 @@ public class IRopeTest {
 			p = p1;
 		}
 
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			assertEquals(i, rope.at(i).charValue());
 
 		var halfLength = length / 2;
 		IRope<Character> rope0 = rope.left(halfLength);
 		IRope<Character> rope1 = rope.right(halfLength);
 
-		for (int i = 0; i < halfLength; i++) {
+		for (var i = 0; i < halfLength; i++) {
 			var l = i;
 			var r = l + halfLength;
 			assertEquals(l, rope0.at(l).charValue());

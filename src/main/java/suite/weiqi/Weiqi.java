@@ -77,8 +77,8 @@ public class Weiqi {
 		}
 
 		public void dump() {
-			for (int x = 0; x < Weiqi.size; x++) {
-				for (int y = 0; y < Weiqi.size; y++) {
+			for (var x = 0; x < Weiqi.size; x++) {
+				for (var y = 0; y < Weiqi.size; y++) {
 					Coordinate c = Coordinate.c(x, y);
 					System.out.print(get(c) + " ");
 				}

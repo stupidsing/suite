@@ -10,11 +10,11 @@ public class GaussSeidel {
 		var phi = new float[size];
 		float[] phi0 = Boolean.TRUE ? phi : new float[size]; // Gauss-Seidel, or Jacobi
 
-		for (int iteration = 0; iteration < 16; iteration++) {
-			for (int i = 0; i < size; i++) {
+		for (var iteration = 0; iteration < 16; iteration++) {
+			for (var i = 0; i < size; i++) {
 				var ai = a[i];
 				var o = 0d;
-				for (int j = 0; j < size; j++)
+				for (var j = 0; j < size; j++)
 					if (i != j)
 						o += ai[j] * phi0[j];
 				phi[i] = (float) ((b[i] - o) / a[i][i]);

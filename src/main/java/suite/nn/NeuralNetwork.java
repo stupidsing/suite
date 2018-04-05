@@ -54,7 +54,7 @@ public class NeuralNetwork {
 
 	public Layer<float[], float[]> ml(int[] sizes) {
 		Layer<float[], float[]> layer = nilLayer();
-		for (int i = 1; i < sizes.length; i++)
+		for (var i = 1; i < sizes.length; i++)
 			layer = layer.append(feedForwardLayer(sizes[i - 1], sizes[i]));
 		return layer;
 	}
@@ -92,13 +92,13 @@ public class NeuralNetwork {
 		return inputs -> {
 			float[] outputs = mtx.mul(inputs, weights);
 
-			for (int j = 0; j < nOutputs; j++)
+			for (var j = 0; j < nOutputs; j++)
 				outputs[j] = (float) Sigmoid.sigmoid(outputs[j]);
 
 			return new Out<>(outputs, errors -> {
-				for (int j = 0; j < nOutputs; j++) {
+				for (var j = 0; j < nOutputs; j++) {
 					var e = errors[j] *= (float) Sigmoid.sigmoidGradient(outputs[j]);
-					for (int i = 0; i < nInputs; i++)
+					for (var i = 0; i < nInputs; i++)
 						weights[i][j] += learningRate * inputs[i] * e;
 				}
 				return mtx.mul(weights, errors);
@@ -147,8 +147,8 @@ public class NeuralNetwork {
 
 			float[][] outputs = To.matrix(hsx, hsy, (ox, oy) -> {
 				var sum = bias.get();
-				for (int x = 0; x < sx; x++)
-					for (int y = 0; y < sy; y++)
+				for (var x = 0; x < sx; x++)
+					for (var y = 0; y < sy; y++)
 						sum += inputs[ox + x][oy + y] * (double) kernel[x][y];
 				return sum;
 			});
@@ -156,12 +156,12 @@ public class NeuralNetwork {
 			return new Out<>(outputs, errors -> {
 				var errors1 = new float[hsx][hsy];
 
-				for (int ox = 0; ox < hsx; ox++)
-					for (int oy = 0; oy < hsy; oy++) {
+				for (var ox = 0; ox < hsx; ox++)
+					for (var oy = 0; oy < hsy; oy++) {
 						var e = errors[ox][oy] *= outputs[ox][oy];
 						bias.update(bias.get() + e);
-						for (int x = 0; x < sx; x++)
-							for (int y = 0; y < sy; y++) {
+						for (var x = 0; x < sx; x++)
+							for (var y = 0; y < sy; y++) {
 								var ix = ox + x;
 								var iy = oy + y;
 								errors1[ix][iy] += e * (double) (kernel[x][y] += learningRate * inputs[ix][iy] * e);
@@ -184,10 +184,10 @@ public class NeuralNetwork {
 			var sy = mtx.width(inputs);
 			var outputs = new float[sx + maskx >> shiftx][sy + masky >> shifty];
 
-			for (int ix = 0; ix < sx; ix++) {
+			for (var ix = 0; ix < sx; ix++) {
 				var in = inputs[ix];
 				var out = outputs[ix >> shiftx];
-				for (int iy = 0; iy < sy; iy++)
+				for (var iy = 0; iy < sy; iy++)
 					out[iy >> shifty] += in[iy];
 			}
 
@@ -207,16 +207,16 @@ public class NeuralNetwork {
 			var sy = mtx.width(inputs);
 			float[][] outputs = To.matrix(sx + maskx >> shiftx, sy + masky >> shifty, (x, y) -> Float.MIN_VALUE);
 
-			for (int ix = 0; ix < sx; ix++)
-				for (int iy = 0; iy < sy; iy++) {
+			for (var ix = 0; ix < sx; ix++)
+				for (var iy = 0; iy < sy; iy++) {
 					var ox = ix >> shiftx;
 					var oy = iy >> shifty;
 					outputs[ox][oy] = max(outputs[ox][oy], inputs[ix][iy]);
 				}
 
 			return new Out<>(outputs, errors -> {
-				for (int ix = 0; ix < sx; ix++)
-					for (int iy = 0; iy < sy; iy++) {
+				for (var ix = 0; ix < sx; ix++)
+					for (var iy = 0; iy < sy; iy++) {
 						var ox = ix >> shiftx;
 						var oy = iy >> shifty;
 						inputs[ix][iy] = inputs[ix][iy] == outputs[ox][oy] ? errors[ox][oy] : 0f;
@@ -247,7 +247,7 @@ public class NeuralNetwork {
 				T[] errors1 = Array_.newArray(arrayClazz, Array.getLength(errors) / stride);
 				var si = 0;
 
-				for (int i = 0; i < errors1.length; i++) {
+				for (var i = 0; i < errors1.length; i++) {
 					@SuppressWarnings("unchecked")
 					T t = (T) Array_.newArray(clazz, stride);
 					System.arraycopy(errors, si, errors1[i] = t, 0, stride);

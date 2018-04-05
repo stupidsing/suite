@@ -57,7 +57,7 @@ public class MovingAverage {
 		var length = prices.length;
 		var emas = new float[length];
 		var ema = 0 < length ? prices[0] : 0d;
-		for (int day = 0; day < length; day++)
+		for (var day = 0; day < length; day++)
 			emas[day] = (float) (ema += alpha * (prices[day] - ema));
 		return emas;
 	}
@@ -74,7 +74,7 @@ public class MovingAverage {
 		var div = 1d / windowSize;
 		var movingSum = 0 < length ? prices[0] * windowSize : 0d;
 
-		for (int day = 0; day < length; day++) {
+		for (var day = 0; day < length; day++) {
 			movingSum += prices[day] - prices[max(0, day - windowSize)];
 			movingAvgs[day] = (float) (movingSum * div);
 		}
@@ -113,7 +113,7 @@ public class MovingAverage {
 		double[] betas = new double[w];
 		var b = beta;
 
-		for (int i = 0; i < w; i++) {
+		for (var i = 0; i < w; i++) {
 			betas[i] = b;
 			b *= b;
 		}
@@ -121,10 +121,10 @@ public class MovingAverage {
 		var remas = new float[prices.length];
 		remas[0] = price0;
 
-		for (int t = 1; t < prices.length; t++) {
+		for (var t = 1; t < prices.length; t++) {
 			double[] re0 = Doubles_.toArray(w1, i -> re[i]);
 			re[0] = beta * re0[0] + alpha * prices[t];
-			for (int j = 0; j < w; j++)
+			for (var j = 0; j < w; j++)
 				re[j + 1] = betas[j] * re[j] + re0[j];
 			remas[t] = (float) (re[0] - alpha * re[w]);
 		}

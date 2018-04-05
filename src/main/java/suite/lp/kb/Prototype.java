@@ -41,7 +41,7 @@ public class Prototype implements Comparable<Prototype> {
 	}
 
 	public static Prototype of(Node node, int n) {
-		for (int i = 0; i < n; i++) {
+		for (var i = 0; i < n; i++) {
 			Tree tree = decompose(node);
 			node = tree != null ? tree.getRight() : Atom.NIL;
 		}

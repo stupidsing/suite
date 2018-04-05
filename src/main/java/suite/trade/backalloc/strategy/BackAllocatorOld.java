@@ -57,7 +57,7 @@ public class BackAllocatorOld {
 			var last = index - 1;
 			var hold = 0d;
 
-			for (int window = 1; hold == 0d && window < 256; window++) {
+			for (var window = 1; hold == 0d && window < 256; window++) {
 				var price = prices[last];
 				MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(prices, last - window, last));
 				var mean = mv.mean;

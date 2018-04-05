@@ -49,7 +49,7 @@ public class MapObject_ {
 		var size1 = list1.size();
 		boolean b = true;
 		if (size0 == size1)
-			for (int i = 0; i < size0; i++)
+			for (var i = 0; i < size0; i++)
 				b &= Objects.equals(list0.get(i), list1.get(i));
 		return b;
 	}

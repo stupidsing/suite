@@ -133,7 +133,7 @@ public class LogUtil {
 			sb.append(prefix);
 
 			if (ps != null)
-				for (int i = 0; i < ps.length; i++)
+				for (var i = 0; i < ps.length; i++)
 					Dump.object("p" + i, ps[i], sb);
 
 			log.info(sb.toString());

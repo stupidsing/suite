@@ -372,7 +372,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	public LngObjOutlet<V> skip(int n) {
 		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
 		boolean end = false;
-		for (int i = 0; !end && i < n; i++)
+		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
 		return !end ? of(source) : empty();
 	}

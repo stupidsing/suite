@@ -47,7 +47,7 @@ public class ProveTracer {
 						, nOkays //
 						, 0 <= end ? String.valueOf(end) : ""));
 
-			for (int i = 1; i < depth; i++)
+			for (var i = 1; i < depth; i++)
 				sb.append("| ");
 			sb.append(Formatter.dump(query));
 			sb.append("\n");
@@ -142,7 +142,7 @@ public class ProveTracer {
 		// still be running. Do not use iterator/for-each loop access, those
 		// would cause ConcurrentModificationException.
 		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < size; i++)
+		for (var i = 0; i < size; i++)
 			records.get(i).appendTo(sb);
 		return sb.toString();
 	}

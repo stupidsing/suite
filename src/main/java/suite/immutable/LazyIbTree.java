@@ -61,7 +61,7 @@ public class LazyIbTree<T> implements ITree<T> {
 
 		while (maxBranchFactor <= (size = list.size())) {
 			List<Slot<T>> list1 = new ArrayList<>();
-			for (int i = 0; i < size;) {
+			for (var i = 0; i < size;) {
 				var i0 = i;
 				var i1 = i + maxBranchFactor <= size ? i + minBranchFactor : size;
 				list1.add(new Slot<>(() -> list.subList(i0, i1), list.get(i).pivot));

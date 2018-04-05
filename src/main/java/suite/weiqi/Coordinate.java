@@ -27,12 +27,12 @@ public class Coordinate implements Comparable<Coordinate> {
 		coords = new Coordinate[Weiqi.size][Weiqi.size];
 		all.clear();
 
-		for (int x = 0; x < Weiqi.size; x++)
-			for (int y = 0; y < Weiqi.size; y++)
+		for (var x = 0; x < Weiqi.size; x++)
+			for (var y = 0; y < Weiqi.size; y++)
 				all.add(coords[x][y] = new Coordinate(x, y));
 
-		for (int x = 0; x < Weiqi.size; x++)
-			for (int y = 0; y < Weiqi.size; y++) {
+		for (var x = 0; x < Weiqi.size; x++)
+			for (var y = 0; y < Weiqi.size; y++) {
 				Coordinate c0 = coords[x][y];
 
 				if (0 < x) {

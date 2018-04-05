@@ -98,7 +98,7 @@ public class SewingProverTest {
 		Atom pred = Atom.of("q");
 		Atom tail = Atom.NIL;
 
-		for (int i = 0; i < 65536; i++)
+		for (var i = 0; i < 65536; i++)
 			rs.addRule(Rule.of(Tree.of(TermOp.IS____, Tree.of(TermOp.TUPLE_, pred, Int.of(i)), tail)));
 
 		ProverFactory sp = new SewingProverImpl(rs);
@@ -107,13 +107,13 @@ public class SewingProverTest {
 
 		Source<Stopwatch<Boolean>> trial = () -> Stopwatch.of(() -> {
 			boolean isOk = true;
-			for (int i = 0; i < 65536; i++)
+			for (var i = 0; i < 65536; i++)
 				isOk &= test.test(pc);
 			assertTrue(isOk);
 			return isOk;
 		});
 
-		for (int i = 0; i < 8; i++)
+		for (var i = 0; i < 8; i++)
 			trial.source();
 
 		Stopwatch<Boolean> sw = trial.source();

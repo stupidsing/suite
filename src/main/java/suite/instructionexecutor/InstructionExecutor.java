@@ -39,7 +39,7 @@ public class InstructionExecutor implements AutoCloseable {
 		}
 
 		if (Suite.isInstructionDump)
-			for (int i = 0; i < list.size(); i++)
+			for (var i = 0; i < list.size(); i++)
 				System.err.println(i + ": " + list.get(i));
 
 		postprocessInstructions(list);

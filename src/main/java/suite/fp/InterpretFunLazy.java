@@ -216,7 +216,7 @@ public class InterpretFunLazy {
 
 				result = frame -> {
 					List<Thunk_> values = new ArrayList<>(size);
-					for (int i = 0; i < size; i++) {
+					for (var i = 0; i < size; i++) {
 						var i1 = i;
 						frame.add(() -> values.get(i1).get());
 					}

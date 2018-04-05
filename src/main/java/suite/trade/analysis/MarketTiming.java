@@ -24,7 +24,7 @@ public class MarketTiming {
 		var holds = new float[length];
 		var hold = 0f;
 
-		for (int i = 0; i < length; i++) {
+		for (var i = 0; i < length; i++) {
 			if ((flags[i] & strgBear) != 0)
 				hold = -h2;
 			else if ((flags[i] & strgBull) != 0)
@@ -50,7 +50,7 @@ public class MarketTiming {
 		var lookback80 = lookback * .8d;
 		var flags = new int[length];
 
-		for (int i = 0; i < length; i++) {
+		for (var i = 0; i < length; i++) {
 			int past = max(0, i - lookback);
 			IntStreamlet past_i = Ints_.range(past, i);
 			IntStreamlet past1_i = past_i.drop(1);

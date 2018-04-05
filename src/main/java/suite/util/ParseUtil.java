@@ -56,7 +56,7 @@ public class ParseUtil {
 		var end = s.length() - nameLength;
 		var quote = 0;
 
-		for (int pos = start; pos <= end; pos++) {
+		for (var pos = start; pos <= end; pos++) {
 			var c = s.charAt(pos);
 			quote = getQuoteChange(quote, c);
 
@@ -127,7 +127,7 @@ public class ParseUtil {
 				step = -1;
 			}
 
-			for (int pos = pos0; pos != posx + step; pos += step) {
+			for (var pos = pos0; pos != posx + step; pos += step) {
 				var c = cs[pos];
 				quote = getQuoteChange(quote, c);
 
@@ -137,7 +137,7 @@ public class ParseUtil {
 
 					if (depth == 0 && pos + nameLength <= cs.length) {
 						boolean b = true; // cs.startsWith(name, pos)
-						for (int i = 0; b && i < nameLength; i++)
+						for (var i = 0; b && i < nameLength; i++)
 							b &= cs[pos + i] == name.charAt(i);
 						if (b)
 							return Segment.of(pos, pos + nameLength);

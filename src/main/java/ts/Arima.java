@@ -52,7 +52,7 @@ public class Arima {
 		var alpha = new float[p];
 		alpha[0] = 1;
 
-		for (int n = 0; n < p; n++) {
+		for (var n = 0; n < p; n++) {
 			var alpha0 = alpha;
 			var n_ = n;
 
@@ -61,7 +61,7 @@ public class Arima {
 
 			var alpha1 = new float[p];
 			alpha1[0] = 1f;
-			for (int k = 1; k <= n; k++)
+			for (var k = 1; k <= n; k++)
 				alpha1[k] = (float) (alpha0[k] - k1 * alpha0[n + 1 - k]);
 			alpha1[n + 1] = (float) -k1;
 			alpha = alpha1;
@@ -97,7 +97,7 @@ public class Arima {
 		var epq = new float[length + q];
 		Arma arma = new Arma(ars, mas);
 
-		for (int iter = 0; iter < 64; iter++) {
+		for (var iter = 0; iter < 64; iter++) {
 
 			// backcast
 			// ep[t]
@@ -162,7 +162,7 @@ public class Arima {
 		Arrays.fill(xsp, 0, p, xs[0]);
 		System.arraycopy(xs, 0, xsp, p, length);
 
-		for (int iter = 0; iter < 9; iter++) {
+		for (var iter = 0; iter < 9; iter++) {
 
 			// xs[t] - ep[t]
 			// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
@@ -194,7 +194,7 @@ public class Arima {
 							var tp = t + p;
 							var tq = t + q;
 							lrxs[tq--] = 1f;
-							for (int i = 0; i < q; i++)
+							for (var i = 0; i < q; i++)
 								lrxs[tq--] = mas[i];
 							double lry = xsp[tp] - vec.convolute(p, ars, xsp, tp);
 							return FltObjPair.of((float) lry, lrxs);
@@ -370,7 +370,7 @@ public class Arima {
 		private void backcast(float[] xsp, float[] epq) {
 			var qm1 = q - 1;
 
-			for (int t = qm1; 0 <= t; t--) {
+			for (var t = qm1; 0 <= t; t--) {
 				double sum = sum(xsp, epq, t, p, qm1);
 				epq[t] = (float) ((xsp[t + p] - epq[t + q] - sum) / mas[qm1]);
 			}
@@ -380,7 +380,7 @@ public class Arima {
 			var length = xsp.length - p;
 			var error = 0d;
 
-			for (int t = 0; t < length; t++) {
+			for (var t = 0; t < length; t++) {
 				var tp = t + p;
 				var tq = t + q;
 				double ep = xsp[tp] - sum(xsp, epq, t, p, q);
@@ -401,16 +401,16 @@ public class Arima {
 	}
 
 	private float[] nDiffs(float[] xs, int d) {
-		for (int i = 0; i < d; i++)
+		for (var i = 0; i < d; i++)
 			xs = ts.dropDiff(1, xs);
 		return xs;
 	}
 
 	private float nSums(float[] xs, int d) {
 		var lengthm1 = xs.length - 1;
-		for (int i = 0; i < d; i++) {
+		for (var i = 0; i < d; i++) {
 			var l = lengthm1;
-			for (int j = i; j < d; j++) {
+			for (var j = i; j < d; j++) {
 				var l0 = l;
 				xs[l0] += xs[--l];
 			}

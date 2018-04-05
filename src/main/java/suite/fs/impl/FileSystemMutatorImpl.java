@@ -39,7 +39,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 		if (size != null) {
 			var seq = 0;
 			BytesBuilder bb = new BytesBuilder();
-			for (int s = 0; s < size; s += pageSize)
+			for (var s = 0; s < size; s += pageSize)
 				bb.append(kdm.getPayload(key(hash, DATAID, seq++)));
 			return bb.toBytes().range(0, size);
 		} else
@@ -70,7 +70,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 			if (!isCreate)
 				fsNameKeySet.remove(name);
 			kvm.remove(sizeKey);
-			for (int s = 0; s < size; s += pageSize)
+			for (var s = 0; s < size; s += pageSize)
 				kdm.removePayload(key(hash, DATAID, seq++));
 		}
 
@@ -109,9 +109,9 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 		var nPages0 = (size0 + pageSize - 1) / pageSize;
 		var nPages1 = (size1 + pageSize - 1) / pageSize;
 
-		for (int page = nPages1; page < nPages0; page++)
+		for (var page = nPages1; page < nPages0; page++)
 			kdm.removePayload(key(hash, DATAID, page));
-		for (int page = nPages0; page < nPages1; page++)
+		for (var page = nPages0; page < nPages1; page++)
 			kdm.putPayload(key(hash, DATAID, page), Bytes.empty);
 
 		kvm.put(sizeKey, size1);

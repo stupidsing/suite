@@ -147,7 +147,7 @@ public class P2GenerateLambda {
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				var fd = fs - env.get(var);
 				return rt -> {
-					for (int i = 0; i < fd; i++)
+					for (var i = 0; i < fd; i++)
 						rt = rt.parent;
 					return rt.var;
 				};

@@ -50,7 +50,7 @@ public class B_TreeTest {
 				B_Tree<Integer, String> b_tree = builder.build(jpf, comparator, pageSize)) {
 			b_tree.create();
 
-			for (int i = 0; i < 32; i++)
+			for (var i = 0; i < 32; i++)
 				b_tree.put(i, Integer.toString(i));
 
 			b_tree.dump(System.out);
@@ -103,7 +103,7 @@ public class B_TreeTest {
 		var pageSize = 4096;
 		Path path = Constants.tmp("b_tree-file");
 
-		for (int i = 0; i < nKeys; i++) {
+		for (var i = 0; i < nKeys; i++) {
 			var j = random.nextInt(nKeys);
 			var temp = keys[i];
 			keys[i] = keys[j];
@@ -117,7 +117,7 @@ public class B_TreeTest {
 				B_Tree<Integer, Bytes> b_tree = builder.build(jpf, comparator, 9999)) {
 			new Profiler().profile(() -> {
 				b_tree.create();
-				for (int i = 0; i < nKeys; i++) {
+				for (var i = 0; i < nKeys; i++) {
 					var key = keys[i];
 					b_tree.put(key, To.bytes(Integer.toString(key)));
 				}
@@ -128,10 +128,10 @@ public class B_TreeTest {
 	}
 
 	private void testStep0(B_Tree<Integer, String> b_tree) {
-		for (int i = 0; i < nKeys; i++)
+		for (var i = 0; i < nKeys; i++)
 			b_tree.put(keys[i], Integer.toString(keys[i]));
 
-		for (int i = 0; i < nKeys; i++)
+		for (var i = 0; i < nKeys; i++)
 			assertEquals(Integer.toString(i), b_tree.get(i));
 
 		assertEquals(nKeys / 2, To.list(b_tree.keys(0, nKeys / 2)).size());
@@ -145,27 +145,27 @@ public class B_TreeTest {
 	}
 
 	private void testStep1(B_Tree<Integer, String> b_tree) {
-		for (int i = 0; i < nKeys; i += 2)
+		for (var i = 0; i < nKeys; i += 2)
 			b_tree.remove(keys[i]);
 
 		b_tree.dump(System.out);
 
-		for (int i = 0; i < nKeys; i += 2)
+		for (var i = 0; i < nKeys; i += 2)
 			assertNull(b_tree.get(keys[i]));
 	}
 
 	private void testStep2(B_Tree<Integer, String> b_tree) {
-		for (int i = 1; i < nKeys; i += 2)
+		for (var i = 1; i < nKeys; i += 2)
 			b_tree.remove(keys[i]);
 
 		b_tree.dump(System.out);
 
-		for (int i = 0; i < nKeys; i++)
+		for (var i = 0; i < nKeys; i++)
 			assertNull(b_tree.get(keys[i]));
 	}
 
 	private void shuffleNumbers() {
-		for (int i = 0; i < nKeys; i++) {
+		for (var i = 0; i < nKeys; i++) {
 			var j = random.nextInt(nKeys);
 			var temp = keys[i];
 			keys[i] = keys[j];

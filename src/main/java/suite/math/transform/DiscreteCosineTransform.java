@@ -14,7 +14,7 @@ public class DiscreteCosineTransform {
 
 		// signal [a, b, c, d] becomes
 		// [0, a, 0, b, 0, c, 0, d, 0, d, 0, c, 0, b, 0, a]
-		for (int i = 0; i < size; i++) {
+		for (var i = 0; i < size; i++) {
 			var j = size21 - i;
 			var v = fs0[i];
 			fs1[i * 4 + 2] = v;
@@ -38,7 +38,7 @@ public class DiscreteCosineTransform {
 		var size4 = size * 4;
 		var fs2 = new float[size * 8];
 
-		for (int i = 0; i < size; i++) {
+		for (var i = 0; i < size; i++) {
 			var i2 = i * 2;
 			var v = fs3[i];
 			fs2[size0 + i2] = v;

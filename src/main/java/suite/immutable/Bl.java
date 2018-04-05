@@ -97,7 +97,7 @@ public class Bl<T> {
 			var size = list.size();
 			var bitmap = 0;
 			var ts = new Object[size];
-			for (int i = 0; i < size; i++) {
+			for (var i = 0; i < size; i++) {
 				IntObjPair<T> pair = list.get(i);
 				bitmap |= 1l << (pair.t0 & 0xFFFFFC00);
 				ts[i] = pair.t1;

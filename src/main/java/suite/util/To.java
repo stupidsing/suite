@@ -47,7 +47,7 @@ public class To {
 
 	public static <T> T[] array(int length, Class<T> clazz, IntFunction<T> f) {
 		T[] ts = Array_.newArray(clazz, length);
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			ts[i] = f.apply(i);
 		return ts;
 	}
@@ -150,8 +150,8 @@ public class To {
 
 	public static float[][] matrix(int height, int width_, IntInt_Dbl fun) {
 		var matrix = new float[height][width_];
-		for (int i = 0; i < height; i++)
-			for (int j = 0; j < width_; j++)
+		for (var i = 0; i < height; i++)
+			for (var j = 0; j < width_; j++)
 				matrix[i][j] = (float) fun.apply(i, j);
 		return matrix;
 	}
@@ -313,7 +313,7 @@ public class To {
 
 	public static float[] vector(int length, Int_Dbl f) {
 		var fs = new float[length];
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			fs[i] = (float) f.apply(i);
 		return fs;
 	}

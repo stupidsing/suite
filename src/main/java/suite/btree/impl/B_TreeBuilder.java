@@ -68,7 +68,7 @@ public class B_TreeBuilder<Key, Value> {
 
 			B_TreeImpl<Key, Value>.Page page = b_tree.new Page(pointer);
 
-			for (int i = 0; i < size; i++) {
+			for (var i = 0; i < size; i++) {
 				Key key = keySerializer.read(dataInput);
 				var nodeType = dataInput.readChar();
 

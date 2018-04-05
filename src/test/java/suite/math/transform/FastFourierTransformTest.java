@@ -26,7 +26,7 @@ public class FastFourierTransformTest {
 		Complex.verifyEquals(fs1[6], Complex.of(0f, 0f));
 		Complex.verifyEquals(fs1[7], Complex.of(1f, 2.414214f));
 
-		for (int i = 0; i < fs0.length; i++)
+		for (var i = 0; i < fs0.length; i++)
 			Complex.verifyEquals(fs0[i], fs2[i]);
 	}
 
@@ -53,7 +53,7 @@ public class FastFourierTransformTest {
 		MathUtil.verifyEquals(fs1[14], 1f);
 		MathUtil.verifyEquals(fs1[15], 2.414214f);
 
-		for (int i = 0; i < fs0.length; i++)
+		for (var i = 0; i < fs0.length; i++)
 			MathUtil.verifyEquals(fs0[i], fs2[i]);
 	}
 

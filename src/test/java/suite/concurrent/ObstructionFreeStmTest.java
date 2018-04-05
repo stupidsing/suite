@@ -50,7 +50,7 @@ public class ObstructionFreeStmTest {
 
 			var sum = 0;
 
-			for (int i = 1; i < nMemories; i++) {
+			for (var i = 1; i < nMemories; i++) {
 				var adjustment = random.nextInt(100) - 50;
 				adjustments.add(adjustment);
 				sum += adjustment;

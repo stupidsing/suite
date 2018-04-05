@@ -10,7 +10,7 @@ public class DiscreteHaarWaveletTransform {
 
 		while (1 < length2) {
 			var length = length2 / 2;
-			for (int i = 0; i < length; i++) {
+			for (var i = 0; i < length; i++) {
 				var i2 = i * 2;
 				var a = input[i2];
 				var b = input[i2 + 1];
@@ -30,7 +30,7 @@ public class DiscreteHaarWaveletTransform {
 		var output = new int[input.length];
 
 		while ((length2 = length * 2) <= input.length) {
-			for (int i = 0; i < length; i++) {
+			for (var i = 0; i < length; i++) {
 				var sum = input[i];
 				var diff = input[i + length];
 				var i2 = i * 2;

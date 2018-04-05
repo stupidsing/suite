@@ -21,12 +21,12 @@ public class AssemblePredicates {
 			byte[] bytes = new byte[n];
 			var p = px;
 
-			for (int j = 0; j < n; j++) {
+			for (var j = 0; j < n; j++) {
 				bytes[j] = (byte) (i & 0xFF);
 				i >>= 8;
 			}
 
-			for (int j = n - 1; 0 <= j; j--)
+			for (var j = n - 1; 0 <= j; j--)
 				p = Tree.of(TermOp.AND___, Int.of(Byte.toUnsignedInt(bytes[j])), p);
 
 			return prover.bind(p0, p);

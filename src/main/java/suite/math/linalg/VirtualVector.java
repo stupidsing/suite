@@ -55,7 +55,7 @@ public class VirtualVector {
 
 	public void dump(StringBuilder sb) {
 		sb.append("[ ");
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			sb.append(To.string(get.apply(i)) + " ");
 		sb.append("\n");
 	}
@@ -67,7 +67,7 @@ public class VirtualVector {
 	public float[] matrix() {
 		return apply((l, get) -> {
 			var matrix = new float[l];
-			for (int i = 0; i < l; i++)
+			for (var i = 0; i < l; i++)
 				matrix[i] = get.apply(i);
 			return matrix;
 		});

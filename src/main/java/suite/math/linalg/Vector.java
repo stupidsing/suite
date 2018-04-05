@@ -23,14 +23,14 @@ public class Vector {
 
 	public float[] addOn(float[] m, float[] n) {
 		int length = sameLength_(m, n);
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			m[i] += n[i];
 		return m;
 	}
 
 	public float[] addScaleOn(float[] m, float[] n, double f) {
 		int length = sameLength_(m, n);
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			m[i] += n[i] * f;
 		return m;
 	}
@@ -62,7 +62,7 @@ public class Vector {
 
 	public float[] negOn(float[] m) {
 		var length = m.length;
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			m[i] = -m[i];
 		return m;
 	}
@@ -85,7 +85,7 @@ public class Vector {
 
 	public float[] scaleOn(float[] m, double d) {
 		var length = m.length;
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			m[i] *= d;
 		return m;
 	}
@@ -96,7 +96,7 @@ public class Vector {
 
 	public float[] subOn(float[] m, float[] n) {
 		int length = sameLength_(m, n);
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			m[i] -= n[i];
 		return m;
 	}
@@ -107,7 +107,7 @@ public class Vector {
 
 	public void verifyEquals(float[] m0, float[] m1, float epsilon) {
 		int length = sameLength_(m0, m1);
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			MathUtil.verifyEquals(m0[i], m1[i], epsilon);
 	}
 
@@ -122,7 +122,7 @@ public class Vector {
 	private double dot_(float[] m, float[] n) {
 		int length = sameLength_(m, n);
 		var sum = 0d;
-		for (int i = 0; i < length; i++)
+		for (var i = 0; i < length; i++)
 			sum += m[i] * n[i];
 		return sum;
 	}
@@ -130,7 +130,7 @@ public class Vector {
 	private double dotDiff_(float[] m, float[] n) {
 		int length = sameLength_(m, n);
 		var sum = 0d;
-		for (int i = 0; i < length; i++) {
+		for (var i = 0; i < length; i++) {
 			var d = m[i] - n[i];
 			sum += d * d;
 		}

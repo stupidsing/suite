@@ -44,8 +44,8 @@ public class RecurrentNeuralNetwork {
 			var isll = 1f / Math.sqrt(ll);
 
 			// random weights, bias 0; Xavier initialization
-			for (int i = 0; i < memoryLength; i++)
-				for (int j = 0; j < ll; j++)
+			for (var i = 0; i < memoryLength; i++)
+				for (var j = 0; j < ll; j++)
 					weights[i][j] = (float) (random.nextGaussian() * isll);
 		}
 
@@ -79,8 +79,8 @@ public class RecurrentNeuralNetwork {
 				float[] e_memory1 = vec.sub(expected, memory1);
 				float[] e_weights = Forget.forgetOn(e_memory1, Tanh.tanhGradientOn(memory1));
 
-				for (int i = 0; i < memoryLength; i++)
-					for (int j = 0; j < ll1; j++)
+				for (var i = 0; i < memoryLength; i++)
+					for (var j = 0; j < ll1; j++)
 						weights[i][j] += learningRate * e_weights[i] * iv[j];
 			}
 

@@ -51,7 +51,7 @@ public class RecursiveFactorizer {
 			var first = chars1.get(0);
 			var last = chars1.get(-1);
 
-			for (int i = fromOp; i < operators.length; i++) {
+			for (var i = fromOp; i < operators.length; i++) {
 				Operator operator = operators[i];
 				Chars range = operator != TermOp.TUPLE_ ? chars : chars1;
 				Segment ops = ParseUtil.searchPosition(chars.cs, Segment.of(range.start, range.end), operator);

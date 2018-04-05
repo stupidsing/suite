@@ -74,7 +74,7 @@ public class Sina {
 			return in //
 					.map(bytes -> {
 						StringBuilder sb = new StringBuilder();
-						for (int i = 0; i < bytes.size(); i++)
+						for (var i = 0; i < bytes.size(); i++)
 							sb.append((char) bytes.get(i));
 						return sb.toString();
 					}) //

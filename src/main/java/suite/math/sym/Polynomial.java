@@ -107,7 +107,7 @@ public class Polynomial<N> {
 
 		Int_Obj<Node> powerFun = p -> {
 			var power = mul.identity();
-			for (int i = 0; i < p; i++)
+			for (var i = 0; i < p; i++)
 				power = mul.apply(x, power);
 			return power;
 		};

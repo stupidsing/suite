@@ -61,7 +61,7 @@ public class LrParse {
 				Reduce reduce = sr.t1;
 				IList<Ast> nodes = IList.end();
 
-				for (int i = 0; i < reduce.n(); i++) {
+				for (var i = 0; i < reduce.n(); i++) {
 					Pair<Ast, State> ns = stack.pop();
 					nodes = IList.cons(ns.t0, nodes);
 					state = ns.t1;

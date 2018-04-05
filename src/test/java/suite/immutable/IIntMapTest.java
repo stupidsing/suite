@@ -10,12 +10,12 @@ public class IIntMapTest {
 	public void test() {
 		IIntMap<Integer> map = new IIntMap<>();
 
-		for (int i = 0; i < 256; i++) {
+		for (var i = 0; i < 256; i++) {
 			var i_ = i;
 			map = map.update(i, v -> i_);
 		}
 
-		for (int i = 0; i < 256; i++)
+		for (var i = 0; i < 256; i++)
 			assertEquals(i, (int) map.get(i));
 	}
 

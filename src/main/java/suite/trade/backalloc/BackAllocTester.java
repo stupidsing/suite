@@ -108,7 +108,7 @@ public class BackAllocTester {
 			Exception exception_;
 
 			try {
-				for (int i = 0; i < size; i++) {
+				for (var i = 0; i < size; i++) {
 					var index = indices[i];
 					Time time = Time.ofEpochSec(tradeTs[index]);
 

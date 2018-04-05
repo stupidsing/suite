@@ -372,7 +372,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	public FltObjOutlet<V> skip(int n) {
 		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
 		boolean end = false;
-		for (int i = 0; !end && i < n; i++)
+		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
 		return !end ? of(source) : empty();
 	}

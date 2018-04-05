@@ -101,7 +101,7 @@ public class Mapify {
 				mapifier = new Mapifier(object -> {
 					Map<Object, Object> map = newMap();
 					var length = Array.getLength(object);
-					for (int i = 0; i < length; i++)
+					for (var i = 0; i < length; i++)
 						map.put(i, apply_(mapifier1.mapify, Array.get(object, i)));
 					return map;
 				}, object -> {

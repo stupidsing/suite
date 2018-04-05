@@ -124,7 +124,7 @@ public class Serialize {
 							pair.t0.set(object, ((Serializer<?>) pair.t1).read(dataInput));
 					} else {
 						var ps = new Object[immutableCtor.getParameterCount()];
-						for (int i = 0; i < ps.length; i++) {
+						for (var i = 0; i < ps.length; i++) {
 							Pair<Field, ?> pair = pairs[i];
 							ps[i] = ((Serializer<?>) pair.t1).read(dataInput);
 						}
@@ -182,7 +182,7 @@ public class Serialize {
 			public T[] read(DataInput_ dataInput) throws IOException {
 				var size = int_.read(dataInput);
 				T[] array = Array_.newArray(clazz, size);
-				for (int i = 0; i < size; i++)
+				for (var i = 0; i < size; i++)
 					array[i] = serializer.read(dataInput);
 				return array;
 			}
@@ -199,7 +199,7 @@ public class Serialize {
 		public float[] read(DataInput_ dataInput) throws IOException {
 			var size = int_.read(dataInput);
 			var array = new float[size];
-			for (int i = 0; i < size; i++)
+			for (var i = 0; i < size; i++)
 				array[i] = dataInput.readFloat();
 			return array;
 		}
@@ -215,7 +215,7 @@ public class Serialize {
 		public int[] read(DataInput_ dataInput) throws IOException {
 			var size = int_.read(dataInput);
 			var array = new int[size];
-			for (int i = 0; i < size; i++)
+			for (var i = 0; i < size; i++)
 				array[i] = dataInput.readInt();
 			return array;
 		}
@@ -257,7 +257,7 @@ public class Serialize {
 			public Collection<T> read(DataInput_ dataInput) throws IOException {
 				var size = int_.read(dataInput);
 				List<T> list = new ArrayList<>();
-				for (int i = 0; i < size; i++)
+				for (var i = 0; i < size; i++)
 					list.add(serializer.read(dataInput));
 				return list;
 			}
@@ -295,7 +295,7 @@ public class Serialize {
 			public List<T> read(DataInput_ dataInput) throws IOException {
 				var size = int_.read(dataInput);
 				List<T> list = new ArrayList<>();
-				for (int i = 0; i < size; i++)
+				for (var i = 0; i < size; i++)
 					list.add(serializer.read(dataInput));
 				return list;
 			}
@@ -462,7 +462,7 @@ public class Serialize {
 			public Map<K, V> read(DataInput_ dataInput) throws IOException {
 				var size = int_.read(dataInput);
 				Map<K, V> map = new HashMap<>();
-				for (int i = 0; i < size; i++) {
+				for (var i = 0; i < size; i++) {
 					K k = ks.read(dataInput);
 					V v = vs.read(dataInput);
 					map.put(k, v);

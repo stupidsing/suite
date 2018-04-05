@@ -195,7 +195,7 @@ public class UctSearch<Move> {
 
 		while (child != null) {
 			if (0 < child.nVisits) {
-				for (int i = 0; i < indent; i++)
+				for (var i = 0; i < indent; i++)
 					sb.append('\t');
 
 				var winRate = (float) child.nWins / child.nVisits;

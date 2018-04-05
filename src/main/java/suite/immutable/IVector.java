@@ -143,7 +143,7 @@ public class IVector<T> {
 	@Override
 	public int hashCode() {
 		var hashCode = 7;
-		for (int i = start; i < end; i++) {
+		for (var i = start; i < end; i++) {
 			var h = Objects.hashCode(data.nodes[i]);
 			hashCode = hashCode * 31 + h;
 		}
