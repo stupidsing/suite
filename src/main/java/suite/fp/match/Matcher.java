@@ -1,7 +1,5 @@
 package suite.fp.match;
 
-import java.util.Map;
-
 import suite.BindMapUtil;
 import suite.fp.match.Matchers.APPLY;
 import suite.fp.match.Matchers.ATOM;
@@ -57,7 +55,7 @@ public class Matcher<T> {
 	}
 
 	public T match(Node node) {
-		Map<String, Node> map = bindMapUtil.pattern(matcher).match(node);
+		var map = bindMapUtil.pattern(matcher).match(node);
 		return Rethrow.ex(() -> {
 			if (map != null) {
 				var t = ctor.source();

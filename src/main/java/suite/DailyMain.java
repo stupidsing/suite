@@ -2,7 +2,6 @@ package suite;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import suite.adt.pair.Pair;
@@ -165,7 +164,7 @@ public class DailyMain extends ExecutableProgram {
 		cfg.quote(assets.map(asset -> asset.symbol).toSet());
 
 		// identify stocks that are mean-reverting
-		Map<String, Boolean> backTestBySymbol = SerializedStoreCache //
+		var backTestBySymbol = SerializedStoreCache //
 				.of(serialize.mapOfString(serialize.boolean_)) //
 				.get(getClass().getSimpleName() + ".backTestBySymbol", () -> assets //
 						.map2(stock -> stock.symbol, stock -> {
@@ -224,7 +223,7 @@ public class DailyMain extends ExecutableProgram {
 		Streamlet<Trade> history = cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag));
 		var account = Account.ofPortfolio(history);
 
-		Map<String, Float> faceValueBySymbol = history //
+		var faceValueBySymbol = history //
 				.groupBy(record -> record.symbol, rs -> (float) Read.from(rs).toDouble(Obj_Dbl.sum(Trade::amount))) //
 				.toMap();
 
@@ -253,11 +252,11 @@ public class DailyMain extends ExecutableProgram {
 		var sim = BackAllocTester.of(cfg, period, assets, backAllocator, log).simulate(fund);
 		var account0 = Account.ofPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
 		var account1 = sim.account;
-		Map<String, Integer> assets0 = account0.assets();
-		Map<String, Integer> assets1 = account1.assets();
+		var assets0 = account0.assets();
+		var assets1 = account1.assets();
 
 		Set<String> symbols = Set_.union(assets0.keySet(), assets1.keySet());
-		Map<String, Float> priceBySymbol = cfg.quote(symbols);
+		var priceBySymbol = cfg.quote(symbols);
 		List<Trade> trades = Trade_.diff(Trade.NA, assets0, assets1, priceBySymbol::get).toList();
 
 		sb.append("\nstrategy = " + tag + ", " + sim.conclusion());

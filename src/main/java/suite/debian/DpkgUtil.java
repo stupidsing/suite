@@ -44,7 +44,7 @@ public class DpkgUtil {
 	}
 
 	public Set<String> getDependeeSet(List<Map<String, String>> packages, Set<String> set0) {
-		Map<String, List<String>> dependees = getDependeesOf(packages);
+		var dependees = getDependeesOf(packages);
 
 		List<String> nl = new ArrayList<>(set0);
 		var set1 = new HashSet<>(set0);

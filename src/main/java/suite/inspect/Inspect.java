@@ -187,7 +187,7 @@ public class Inspect {
 	private Fun<Class<?>, List<Property>> propertiesFun = Memoize.funRec(clazz -> {
 		List<Method> methods = methods(clazz);
 
-		Map<String, Method> getMethods = Read //
+		var getMethods = Read //
 				.from(methods) //
 				.filter(getter -> {
 					var name = getter.getName();
@@ -196,7 +196,7 @@ public class Inspect {
 				.map2(getter -> getter.getName().substring(3), getter -> getter) //
 				.toMap();
 
-		Map<String, Method> setMethods = Read //
+		var setMethods = Read //
 				.from(methods) //
 				.filter(setter -> {
 					var name = setter.getName();

@@ -61,7 +61,7 @@ public class Summarize {
 				.filterKey(key -> key != null) //
 				.collect(As::streamlet2);
 
-		Map<String, Map<K, Integer>> nSharesByKeyBySymbol = summaryByKey //
+		var nSharesByKeyBySymbol = summaryByKey //
 				.concatMap((key, summary) -> summary.account //
 						.portfolio() //
 						.map((symbol, n) -> Fixie.of(symbol, key, n))) //
@@ -71,7 +71,7 @@ public class Summarize {
 						.toMap()) //
 				.toMap();
 
-		Map<String, Float> acquiredPrices = trades.collect(Trade_::collectBrokeredTrades).collect(Trade_::collectAcquiredPrices);
+		var acquiredPrices = trades.collect(Trade_::collectBrokeredTrades).collect(Trade_::collectAcquiredPrices);
 		var now = Time.now();
 
 		Summarize_ overall = summarize_(trades, priceBySymbol, symbol -> {
@@ -96,7 +96,7 @@ public class Summarize {
 					+ (!keys.isEmpty() ? ", " + keys : "");
 		});
 
-		Map<K, String> outByKey = summaryByKey.mapValue(Summarize_::out0).toMap();
+		var outByKey = summaryByKey.mapValue(Summarize_::out0).toMap();
 		var sb = new StringBuilder();
 		Sink<String> log = sb::append;
 
@@ -106,7 +106,7 @@ public class Summarize {
 		log.sink(FormatUtil.tablize("\nOverall:\t" + Time.now().ymdHms() + overall.out1()));
 
 		// profit and loss
-		Map<K, Double> pnlByKey = sellAll(trades, priceBySymbol) //
+		var pnlByKey = sellAll(trades, priceBySymbol) //
 				.groupBy(fun, t -> (double) Account.ofHistory(t).cash()) //
 				.toMap();
 

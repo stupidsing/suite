@@ -1,7 +1,6 @@
 package suite.http;
 
 import java.security.SecureRandom;
-import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 
@@ -70,7 +69,7 @@ public class HttpSessionController {
 			HttpResponse response;
 
 			if (Objects.equals(request.path, IList.of("login"))) {
-				Map<String, String> attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
+				var attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
 				var username = attrs.get("username");
 				var password = attrs.get("password");
 				var path = HttpHeaderUtil.getPath(attrs.get("path"));

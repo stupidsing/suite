@@ -1,7 +1,5 @@
 package suite.funp;
 
-import java.util.Map;
-
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
@@ -20,7 +18,7 @@ public class RegisterSet {
 	public final int flag;
 
 	static {
-		Map<Integer, OpReg> map = Read //
+		var map = Read //
 				.from2(amd64.regByName) //
 				.values() //
 				.filter(opReg -> opReg.size == Funp_.integerSize) //

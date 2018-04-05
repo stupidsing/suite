@@ -132,7 +132,7 @@ public class BackAllocTester {
 				exception_ = new RuntimeException("at " + ymd, ex);
 			}
 
-			Map<String, Eod> eodBySymbol_ = eodBySymbol;
+			var eodBySymbol_ = eodBySymbol;
 			trades.addAll(Trade_.sellAll(ymd, Read.from(trades), symbol -> eodBySymbol_.get(symbol).nextOpen).toList());
 
 			var rs = ts.returnsStatDailyAnnualized(valuations_);

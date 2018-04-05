@@ -372,7 +372,7 @@ public class Hkex {
 					.map(json_ -> Read.from(json_).map(JsonNode::asText).toList());
 
 		var data1 = data0.collect(As::streamlet);
-		Map<String, Integer> lotSizeBySymbol = queryLotSizeBySymbol_(data1.map(this::toSymbol));
+		var lotSizeBySymbol = queryLotSizeBySymbol_(data1.map(this::toSymbol));
 		return data1.map(datum -> toAsset(datum, lotSizeBySymbol)).toList();
 	}
 

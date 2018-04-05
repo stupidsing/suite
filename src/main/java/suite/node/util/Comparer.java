@@ -52,8 +52,8 @@ public class Comparer implements Comparator<Node> {
 			if (clazz0 == Atom.class)
 				return ((Atom) n0).name.compareTo(((Atom) n1).name);
 			else if (clazz0 == Dict.class) {
-				Map<Node, Reference> m0 = ((Dict) n0).map;
-				Map<Node, Reference> m1 = ((Dict) n1).map;
+				var m0 = ((Dict) n0).map;
+				var m1 = ((Dict) n1).map;
 				var keys = new HashSet<Node>();
 				keys.addAll(m0.keySet());
 				keys.addAll(m1.keySet());

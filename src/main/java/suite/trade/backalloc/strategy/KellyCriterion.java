@@ -26,7 +26,7 @@ public class KellyCriterion {
 				.mapValue(ts::returns) //
 				.toMap();
 
-		Map<String, Float> excessReturnBySymbol = Read //
+		var excessReturnBySymbol = Read //
 				.from2(returnsBySymbol) //
 				.mapValue(returns -> (float) (stat.meanVariance(returns).mean - dailyInterestRate)) //
 				.toMap();

@@ -99,7 +99,7 @@ public class Mapify {
 				Class<?> componentType = clazz.getComponentType();
 				var mapifier1 = getMapifier(componentType);
 				mapifier = new Mapifier(object -> {
-					Map<Object, Object> map = newMap();
+					var map = newMap();
 					var length = Array.getLength(object);
 					for (var i = 0; i < length; i++)
 						map.put(i, apply_(mapifier1.mapify, Array.get(object, i)));
@@ -119,7 +119,7 @@ public class Mapify {
 					Class<?> clazz1 = object.getClass();
 					Object m = apply_(getMapifier(clazz1).mapify, object);
 					if (m instanceof Map) {
-						Map<String, String> map = (Map<String, String>) m;
+						var map = (Map<String, String>) m;
 						map.put("@class", clazz1.getName());
 						return map;
 					} else
@@ -145,7 +145,7 @@ public class Mapify {
 						.toList();
 
 				mapifier = new Mapifier(object -> Rethrow.ex(() -> {
-					Map<Object, Object> map = newMap();
+					var map = newMap();
 					for (var fi : fis)
 						map.put(fi.name, apply_(fi.mapifier.mapify, fi.field.get(object)));
 					return map;
@@ -166,7 +166,7 @@ public class Mapify {
 			if (collectionClasses.contains(clazz)) {
 				var mapifier1 = getMapifier(typeArgs[0]);
 				mapifier = new Mapifier(object -> {
-					Map<Object, Object> map = newMap();
+					var map = newMap();
 					var i = 0;
 					for (var o : (Collection<?>) object)
 						map.put(i++, apply_(mapifier1.mapify, o));
@@ -183,13 +183,13 @@ public class Mapify {
 				var km = getMapifier(typeArgs[0]);
 				var vm = getMapifier(typeArgs[1]);
 				mapifier = new Mapifier(object -> {
-					Map<Object, Object> map = newMap();
+					var map = newMap();
 					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
 						map.put(apply_(km.mapify, e.getKey()), apply_(vm.mapify, e.getValue()));
 					return map;
 				}, object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
-					Map<Object, Object> object1 = (Map<Object, Object>) instantiate(clazz);
+					var object1 = (Map<Object, Object>) instantiate(clazz);
 					for (Entry<?, ?> e : map.entrySet())
 						object1.put(apply_(km.unmapify, e.getKey()), apply_(vm.unmapify, e.getValue()));
 					return object1;

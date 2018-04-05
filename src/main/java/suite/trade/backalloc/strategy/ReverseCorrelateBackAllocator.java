@@ -1,7 +1,5 @@
 package suite.trade.backalloc.strategy;
 
-import java.util.Map;
-
 import suite.math.numeric.Statistic;
 import suite.primitive.Floats_;
 import suite.streamlet.As;
@@ -51,7 +49,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 		});
 
 		return index -> {
-			Map<String, Double> reverseCorrelationBySymbol = dsBySymbol //
+			var reverseCorrelationBySymbol = dsBySymbol //
 					.map2((symbol, ds) -> {
 						Double reverseCorrelation = dsv.get(symbol, index);
 						return reverseCorrelation != null ? reverseCorrelation : Double.NaN;

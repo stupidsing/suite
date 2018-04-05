@@ -3,7 +3,6 @@ package suite.text;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.junit.Test;
@@ -30,7 +29,7 @@ public class TwoPassIndexerTest {
 		for (var filename : filenames)
 			indexer.pass1(filename, FileUtil.read(filename));
 
-		Map<String, List<Reference>> map = indexer.getReferencesByWord();
+		var map = indexer.getReferencesByWord();
 
 		List<Entry<String, List<Reference>>> entries = List_.sort(map.entrySet() //
 				, (e0, e1) -> e1.getValue().size() - e0.getValue().size());

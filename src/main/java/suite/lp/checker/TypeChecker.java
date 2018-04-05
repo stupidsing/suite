@@ -29,7 +29,7 @@ public class TypeChecker {
 	private Map<IdentityKey<Node>, Reference> variableTypes = new HashMap<>();
 
 	public void check(List<Rule> rules) {
-		Map<Prototype, Integer> nElementsByPrototype = checkerUtil.getNumberOfElements(rules);
+		var nElementsByPrototype = checkerUtil.getNumberOfElements(rules);
 		Map<Pair<Prototype, Integer>, Reference> types = new HashMap<>();
 
 		Read.from(rules).concatMap(rule -> {

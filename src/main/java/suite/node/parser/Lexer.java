@@ -3,7 +3,6 @@ package suite.node.parser;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import suite.adt.pair.Pair;
 import suite.node.io.Operator;
@@ -45,7 +44,7 @@ public class Lexer {
 	public Lexer(Operator[] operators, String in) {
 		this.in = in;
 
-		Map<String, Operator> operatorByName = Read //
+		var operatorByName = Read //
 				.from(operators) //
 				.filter(operator -> operator != TermOp.TUPLE_) //
 				.toMap(Operator::getName);

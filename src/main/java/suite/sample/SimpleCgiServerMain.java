@@ -36,7 +36,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 
 	private void run(Handler handler) throws IOException {
 		new SocketUtil().listenIo(4000, (is, os) -> {
-			Map<String, String> headers = readHeaders(is);
+			var headers = readHeaders(is);
 
 			os.write(("Status: 200 OK\r\n" //
 					+ "Content-Type: text/html\r\n" //

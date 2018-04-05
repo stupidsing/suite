@@ -1,14 +1,12 @@
 package suite.trade.backalloc.strategy;
 
 import java.util.List;
-import java.util.Map;
 
 import suite.adt.pair.Pair;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.streamlet.Read;
 import suite.trade.backalloc.BackAllocator;
-import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import ts.Ardl;
 
@@ -19,7 +17,7 @@ public class ArdlBackAllocator implements BackAllocator {
 	@Override
 	public OnDateTime allocate(AlignKeyDataSource<String> akds, int[] indices) {
 		var dsBySymbol0 = akds.dsByKey;
-		Map<String, DataSource> dsBySymbol1 = dsBySymbol0.toMap();
+		var dsBySymbol1 = dsBySymbol0.toMap();
 		var symbols = dsBySymbol0.keys().toArray(String.class);
 
 		var fs = Read //

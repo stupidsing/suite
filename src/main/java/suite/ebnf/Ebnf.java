@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import suite.ebnf.topdown.ReduceHeadRecursion;
 import suite.ebnf.topdown.TopDownParse;
@@ -63,7 +62,7 @@ public class Ebnf {
 	}
 
 	public Ebnf(Reader reader) throws IOException {
-		Map<String, Grammar> grammarByEntity = Grammar.parse(reader);
+		var grammarByEntity = Grammar.parse(reader);
 		var rhr = new ReduceHeadRecursion(grammarByEntity);
 
 		for (var e : grammarByEntity.entrySet())

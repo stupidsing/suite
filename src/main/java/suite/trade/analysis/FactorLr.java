@@ -42,7 +42,7 @@ public class FactorLr {
 
 		indexSymbols = indexSymbols_.collect(As::streamlet);
 		AlignKeyDataSource<String> akds = cfg.dataSources(TimeRange.ages(), indexSymbols_);
-		Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
+		var dsBySymbol = akds.dsByKey.toMap();
 
 		timestamps = akds.ts;
 		indexPrices = indexSymbols.map(symbol -> dsBySymbol.get(symbol).prices).toList();
@@ -59,7 +59,7 @@ public class FactorLr {
 	public BackAllocator backAllocator() {
 		return (akds, indices) -> {
 			var dsBySymbol = akds.dsByKey;
-			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
+			var dsBySymbol_ = dsBySymbol.toMap();
 
 			DataSourceView<String, LinearRegression> dsv = DataSourceView.of(0, 64, akds,
 					(symbol, ds, period) -> ols(dsBySymbol_.get(symbol), period));

@@ -4,7 +4,6 @@ import static suite.util.Friends.max;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import suite.adt.pair.Pair;
 import suite.math.numeric.Statistic;
@@ -13,7 +12,6 @@ import suite.trade.analysis.MovingAverage;
 import suite.trade.analysis.MovingAverage.MovingRange;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.Configuration;
-import suite.trade.data.DataSource;
 import suite.util.String_;
 import ts.BollingerBands;
 import ts.Quant;
@@ -122,7 +120,7 @@ public class BackAllocatorOld {
 
 		BackAllocator ba0 = (akds, indices) -> {
 			var dsBySymbol = akds.dsByKey;
-			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
+			var dsBySymbol_ = dsBySymbol.toMap();
 			var ds0 = dsBySymbol_.get(symbol0);
 			var ds1 = dsBySymbol_.get(symbol1);
 

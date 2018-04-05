@@ -1,7 +1,5 @@
 package suite.trade.backalloc.strategy;
 
-import java.util.Map;
-
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.streamlet.Read;
 import suite.trade.Asset;
@@ -32,14 +30,14 @@ public class MovingAvgMeanReversionBackAllocator {
 
 	public BackAllocator backAllocator() {
 		return (akds, indices) -> {
-			Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
+			var dsBySymbol = akds.dsByKey.toMap();
 			var dailyRiskFreeInterestRate = Trade_.riskFreeInterestRate(1);
 
 			DataSourceView<String, MeanReversionStat> dsv = DataSourceView //
 					.of(tor, 256, akds, (symbol, ds, period) -> new MeanReversionStat(ds, period));
 
 			return index -> {
-				Map<String, MeanReversionStat> mrsBySymbol = akds.dsByKey //
+				var mrsBySymbol = akds.dsByKey //
 						.map2((symbol, ds) -> dsv.get(symbol, index)) //
 						.filterValue(mrsReversionStat -> mrsReversionStat != null) //
 						.toMap();

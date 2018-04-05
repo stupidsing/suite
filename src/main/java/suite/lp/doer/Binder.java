@@ -1,6 +1,5 @@
 package suite.lp.doer;
 
-import java.util.Map;
 import java.util.Objects;
 
 import suite.lp.Trail;
@@ -34,8 +33,8 @@ public class Binder {
 		}
 
 		if (clazz0 == Dict.class && clazz1 == Dict.class) {
-			Map<Node, Reference> map0 = ((Dict) n0).map;
-			Map<Node, Reference> map1 = ((Dict) n1).map;
+			var map0 = ((Dict) n0).map;
+			var map1 = ((Dict) n1).map;
 			var b = true;
 			for (var key : List_.concat(map0.keySet(), map1.keySet())) {
 				Node v0 = map0.computeIfAbsent(key, k -> new Reference());

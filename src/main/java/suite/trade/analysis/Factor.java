@@ -1,7 +1,6 @@
 package suite.trade.analysis;
 
 import java.util.List;
-import java.util.Map;
 
 import suite.adt.pair.Pair;
 import suite.math.linalg.Vector;
@@ -66,7 +65,7 @@ public class Factor {
 	public BackAllocator backAllocator() {
 		return (akds, indices) -> {
 			var dsBySymbol = akds.dsByKey;
-			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
+			var dsBySymbol_ = dsBySymbol.toMap();
 
 			DataSourceView<String, Double> dsv = DataSourceView.of(0, 64, akds,
 					(symbol, ds, period) -> project(ids, dsBySymbol_.get(symbol), period));

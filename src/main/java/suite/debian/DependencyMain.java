@@ -191,7 +191,7 @@ public class DependencyMain extends ExecutableProgram {
 
 	public List<String> listUndependedPackages() {
 		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
-		Map<String, List<String>> dependees = dpkgUtil.getDependersOf(packages);
+		var dependees = dpkgUtil.getDependersOf(packages);
 
 		return Read //
 				.from(packages) //

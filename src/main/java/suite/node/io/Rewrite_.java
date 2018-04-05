@@ -2,7 +2,6 @@ package suite.node.io;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import suite.adt.pair.Pair;
 import suite.node.Atom;
@@ -59,7 +58,7 @@ public class Rewrite_ {
 			Tree tree;
 
 			if (node instanceof Dict) {
-				Map<Node, Reference> map = ((Dict) node).map;
+				var map = ((Dict) node).map;
 				type = ReadType.DICT;
 				terminal = null;
 				op = null;

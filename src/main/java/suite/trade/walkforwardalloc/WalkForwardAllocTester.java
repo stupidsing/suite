@@ -62,7 +62,7 @@ public class WalkForwardAllocTester {
 
 	public String tick() {
 		var time = Time.now();
-		Map<String, Float> priceBySymbol = cfg.quote(dsBySymbol.keySet());
+		var priceBySymbol = cfg.quote(dsBySymbol.keySet());
 
 		for (var e : priceBySymbol.entrySet())
 			log.sink(time.ymdHms() + "," + e.getKey() + "," + e.getValue());

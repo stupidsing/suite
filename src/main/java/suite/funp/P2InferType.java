@@ -499,7 +499,7 @@ public class P2InferType {
 				unify(n, ts0, type0);
 
 				var ts1 = ts0.finalStruct();
-				Map<String, Funp> values = Read.from2(fvs).toMap();
+				var values = Read.from2(fvs).toMap();
 				List<Pair<Funp, IntIntPair>> list = new ArrayList<>();
 				var offset = 0;
 
@@ -788,8 +788,8 @@ public class P2InferType {
 				var ord = x.id < y.id;
 				var ts0 = ord ? x : y;
 				var ts1 = ord ? y : x;
-				Map<String, UnNode<Type>> typeByField0 = Read.from2(ts0.pairs).toMap();
-				Map<String, UnNode<Type>> typeByField1 = Read.from2(ts1.pairs).toMap();
+				var typeByField0 = Read.from2(ts0.pairs).toMap();
+				var typeByField1 = Read.from2(ts1.pairs).toMap();
 
 				for (Pair<String, UnNode<Type>> e : ts1.pairs) {
 					var field = e.t0;

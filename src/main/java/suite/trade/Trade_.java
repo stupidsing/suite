@@ -216,7 +216,7 @@ public class Trade_ {
 			Valuation val = account.valuation(symbol -> eodBySymbol.get(symbol).price);
 			var valuation = val.sum();
 
-			Map<String, Integer> portfolio = Read //
+			var portfolio = Read //
 					.from2(ratioBySymbol) //
 					.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
 					.map2((symbol, potential) -> {

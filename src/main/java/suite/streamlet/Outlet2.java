@@ -228,7 +228,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public Outlet2<K, List<V>> groupBy() {
-		Map<K, List<V>> map = toListMap();
+		var map = toListMap();
 		return Outlet.of(map.entrySet()).map2(Entry::getKey, Entry::getValue);
 	}
 

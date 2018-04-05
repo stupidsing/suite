@@ -162,7 +162,7 @@ public class Nodify {
 					}
 					return dict;
 				}), node -> Rethrow.ex(() -> {
-					Map<Node, Reference> map = ((Dict) node).map;
+					var map = ((Dict) node).map;
 					var object1 = Object_.new_(clazz);
 					for (Pair<Atom, FieldInfo> pair : pairs) {
 						var fieldInfo = pair.t1;
@@ -203,8 +203,8 @@ public class Nodify {
 						dict.map.put(apply_(kn, e.getKey()), Reference.of(apply_(vn, e.getValue())));
 					return dict;
 				}, node -> {
-					Map<Node, Reference> map = ((Dict) node).map;
-					Map<Object, Object> object1 = (Map<Object, Object>) instantiate(clazz);
+					var map = ((Dict) node).map;
+					var object1 = (Map<Object, Object>) instantiate(clazz);
 					for (var e : map.entrySet())
 						object1.put(apply_(kn, e.getKey()), apply_(vn, e.getValue().finalNode()));
 					return object1;

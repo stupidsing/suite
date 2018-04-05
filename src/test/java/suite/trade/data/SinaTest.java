@@ -2,8 +2,6 @@ package suite.trade.data;
 
 import static org.junit.Assert.assertNotNull;
 
-import java.util.Map;
-
 import org.junit.Test;
 
 import suite.inspect.Dump;
@@ -22,7 +20,7 @@ public class SinaTest {
 
 	@Test
 	public void testQuote() {
-		Map<String, Float> quotes = sina.quote(Read.each("0003.HK", "0005.HK").toSet());
+		var quotes = sina.quote(Read.each("0003.HK", "0005.HK").toSet());
 		assertNotNull(0f < quotes.get("0003.HK"));
 		assertNotNull(0f < quotes.get("0005.HK"));
 		Dump.out(quotes);

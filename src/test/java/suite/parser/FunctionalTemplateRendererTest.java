@@ -2,7 +2,6 @@ package suite.parser;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 
@@ -20,7 +19,7 @@ public class FunctionalTemplateRendererTest {
 	public void test() {
 		List<Node> fruits = Arrays.<Node> asList(new Str("orange"), new Str("apple"), new Str("pear"));
 
-		Map<String, Node> map = Read //
+		var map = Read //
 				.from2(List.of( //
 						Pair.of("list", Tree.of(TermOp.OR____, fruits)), //
 						Pair.of("title", new Str("My favourite things"))) //

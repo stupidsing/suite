@@ -1,7 +1,5 @@
 package suite.trade.backalloc.strategy;
 
-import java.util.Map;
-
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.streamlet.Read;
 import suite.trade.Asset;
@@ -33,7 +31,7 @@ public class Pmamr2BackAllocator {
 
 	public BackAllocator backAllocator() {
 		BackAllocator ba = (akds, indices) -> {
-			Map<String, DataSource> dsBySymbol = akds.dsByKey.toMap();
+			var dsBySymbol = akds.dsByKey.toMap();
 
 			DataSourceView<String, MeanReversionStat> dsv = DataSourceView //
 					.of(tor, 256, akds, (symbol, ds, period) -> new MeanReversionStat(ds, period));
@@ -41,7 +39,7 @@ public class Pmamr2BackAllocator {
 			return index -> {
 				// Time time = Time.ofEpochSec(akds.ts[index - 1]);
 
-				Map<String, MeanReversionStat> mrsBySymbol = akds.dsByKey //
+				var mrsBySymbol = akds.dsByKey //
 						.map2((symbol, ds) -> dsv.get(symbol, index)) //
 						.filterValue(mrsReversionStat -> mrsReversionStat != null) //
 						.toMap();

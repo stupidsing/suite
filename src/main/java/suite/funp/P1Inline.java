@@ -147,7 +147,7 @@ public class P1Inline {
 	}
 
 	private Funp inlineDefines(Funp node) {
-		Map<FunpVariable, Funp> defByVariables = associateDefinitions(node);
+		var defByVariables = associateDefinitions(node);
 		Map<Funp, IntMutable> countByDefs = new HashMap<>();
 
 		inspect.rewrite(Funp.class, n_ -> n_.<Funp> switch_( //
@@ -159,14 +159,14 @@ public class P1Inline {
 			return null;
 		})).result(), node);
 
-		Map<Funp, FunpDefine> defines = Read //
+		var defines = Read //
 				.from2(defByVariables) //
 				.values() //
 				.filter(def -> def instanceof FunpDefine && countByDefs.get(def).get() <= 1) //
 				.map2(def -> (FunpDefine) def) //
 				.toMap();
 
-		Map<FunpVariable, FunpDefine> expands = Read //
+		var expands = Read //
 				.from2(defByVariables) //
 				.mapValue(defines::get) //
 				.filterValue(def -> def != null) //
@@ -188,7 +188,7 @@ public class P1Inline {
 	}
 
 	private Funp inlineFields(Funp node) {
-		Map<FunpVariable, Funp> defs = associateDefinitions(node);
+		var defs = associateDefinitions(node);
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(Funp.class, n_ -> {
