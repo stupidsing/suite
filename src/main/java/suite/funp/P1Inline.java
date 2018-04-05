@@ -198,7 +198,7 @@ public class P1Inline {
 					if ((field = n_.cast(FunpField.class)) != null //
 							&& (variable = field.reference.cast(FunpReference.class, n -> n.expr).cast(FunpVariable.class)) != null //
 							&& (struct = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpStruct.class))) != null) {
-						Pair<String, Funp> pair = Read //
+						var pair = Read //
 								.from2(struct.pairs) //
 								.filterKey(field_ -> String_.equals(field_, field.field)) //
 								.first();

@@ -30,7 +30,7 @@ public class IHashMap<K, V> {
 			Source<Pair<K, V>> source = set.streamlet().source();
 			return Outlet2.of(new Source2<K, V>() {
 				public boolean source2(Pair<K, V> pair) {
-					Pair<K, V> pair1 = source.source();
+					var pair1 = source.source();
 					if (pair1 != null) {
 						pair.update(pair1.t0, pair1.t1);
 						return true;

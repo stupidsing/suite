@@ -68,8 +68,8 @@ public class Rewrite_ {
 						.mapValue(Node::finalNode) //
 						.toList();
 			} else if ((tree = Tree.decompose(node)) != null) {
-				Pair<Node, Node> p0 = Pair.of(LEFT_, tree.getLeft());
-				Pair<Node, Node> p1 = Pair.of(RIGHT, tree.getRight());
+				var p0 = Pair.of(LEFT_, tree.getLeft());
+				var p1 = Pair.of(RIGHT, tree.getRight());
 				type = ReadType.TREE;
 				terminal = null;
 				op = tree.getOperator();

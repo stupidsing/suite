@@ -3,12 +3,8 @@ package suite.funp;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
 import org.junit.Test;
 
-import suite.adt.pair.Pair;
-import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64Interpret;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
@@ -105,7 +101,7 @@ public class FunpTest {
 
 	private void test(int r, String p) {
 		LogUtil.info(p);
-		Pair<List<Instruction>, Bytes> pair = Funp_.main().compile(0, p);
+		var pair = Funp_.main().compile(0, p);
 		var bytes = pair.t1;
 		LogUtil.info("Hex" + bytes + "\n\n");
 		assertEquals(r, new Amd64Interpret().interpret(pair.t0, Bytes.of(), Bytes.of()));

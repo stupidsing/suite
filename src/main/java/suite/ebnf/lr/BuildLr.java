@@ -63,7 +63,7 @@ public class BuildLr {
 
 		// shift-reduce conflict ends in reduce
 		private boolean put_(String key, Pair<State, Reduce> value1) {
-			Pair<State, Reduce> value0 = get(key);
+			var value0 = get(key);
 			var order0 = order(value0);
 			var order1 = order(value1);
 			if (order0 < order1) {
@@ -130,7 +130,7 @@ public class BuildLr {
 	}
 
 	public Blr buildLrs(String entity, Set<String> follows) {
-		Pair<String, Set<String>> k = Pair.of(entity, follows);
+		var k = Pair.of(entity, follows);
 		Set<Pair<String, Set<String>>> keys0 = new HashSet<>();
 		transitions.put(k, new Transition());
 

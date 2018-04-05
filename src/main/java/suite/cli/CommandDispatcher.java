@@ -7,7 +7,6 @@ import java.io.Writer;
 import java.util.List;
 
 import suite.Suite;
-import suite.adt.pair.Pair;
 import suite.fp.InterpretFunEager;
 import suite.fp.InterpretFunLazy;
 import suite.fp.InterpretFunLazy0;
@@ -102,7 +101,7 @@ public class CommandDispatcher {
 		var pw = new PrintWriter(writer);
 		var code = true;
 
-		Pair<InputType, String> pair = new CommandUtil<>(InputType.values()).recognize(input);
+		var pair = new CommandUtil<>(InputType.values()).recognize(input);
 		var type = pair.t0;
 		input = pair.t1.trim();
 

@@ -106,7 +106,7 @@ public class StoreCache {
 					break;
 				}
 
-			Pair<Boolean, Path> pair = match(key);
+			var pair = match(key);
 
 			if (!reget.get() && pair.t0) {
 				var vis = Files.newInputStream(pair.t1);

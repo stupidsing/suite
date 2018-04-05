@@ -330,7 +330,7 @@ public class P2InferType {
 				unify(n, infer(right), typeNumber);
 				return typeNumber;
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-				Pair<Boolean, UnNode<Type>> pair = env.get(var);
+				var pair = env.get(var);
 				UnNode<Type> tv = pair.t1;
 				return pair.t0 ? unify.clone(tv) : tv;
 			})).nonNullResult();

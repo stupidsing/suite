@@ -62,7 +62,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 		return of(pair -> {
 			var b = iter.hasNext();
 			if (b) {
-				Pair<Character, List<V>> pair1 = iter.next();
+				var pair1 = iter.next();
 				pair.update(pair1.t0, pair1.t1);
 			}
 			return b;

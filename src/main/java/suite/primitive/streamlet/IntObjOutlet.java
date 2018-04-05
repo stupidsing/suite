@@ -62,7 +62,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		return of(pair -> {
 			var b = iter.hasNext();
 			if (b) {
-				Pair<Integer, List<V>> pair1 = iter.next();
+				var pair1 = iter.next();
 				pair.update(pair1.t0, pair1.t1);
 			}
 			return b;

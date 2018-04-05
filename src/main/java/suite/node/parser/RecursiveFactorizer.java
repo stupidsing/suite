@@ -3,7 +3,6 @@ package suite.node.parser;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.adt.pair.Pair;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
@@ -33,7 +32,7 @@ public class RecursiveFactorizer {
 
 	public FactorizeResult parse(String s) {
 		in = To.chars(s);
-		Pair<String, Reverser> pair = Preprocess.transform(PreprocessorFactory.create(operators), s);
+		var pair = Preprocess.transform(PreprocessorFactory.create(operators), s);
 		var in1 = pair.t0;
 		reverser = pair.t1;
 

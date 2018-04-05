@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
 import suite.Constants;
-import suite.adt.pair.Pair;
 import suite.os.LogUtil;
 import suite.os.Stopwatch;
 import suite.uct.ShuffleUtil;
@@ -94,7 +93,7 @@ public class UctWeiqiMain<Move> {
 							break;
 						default:
 							if (!String_.isBlank(line)) {
-								Pair<String, String> pos = String_.split2(line, ",");
+								var pos = String_.split2(line, ",");
 								var x = Integer.parseInt(pos.t0);
 								var y = Integer.parseInt(pos.t1);
 								gameSet.play(Coordinate.c(x, y));

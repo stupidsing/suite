@@ -255,7 +255,7 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 	}
 
 	public Pair<K, V> uniqueResult() {
-		Pair<K, V> pair = spawn().opt();
+		var pair = spawn().opt();
 		return pair.t0 != null ? pair : Fail.t("no result");
 	}
 

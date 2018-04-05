@@ -51,7 +51,7 @@ public class LrParse {
 
 		while (true) {
 			var lookahead = token != null ? token.entity : "EOF";
-			Pair<State, Reduce> sr = shift(stack, state, lookahead);
+			var sr = shift(stack, state, lookahead);
 
 			if (sr.t0 != null) { // shift
 				stack.push(Pair.of(token, state));
@@ -62,7 +62,7 @@ public class LrParse {
 				IList<Ast> nodes = IList.end();
 
 				for (var i = 0; i < reduce.n(); i++) {
-					Pair<Ast, State> ns = stack.pop();
+					var ns = stack.pop();
 					nodes = IList.cons(ns.t0, nodes);
 					state = ns.t1;
 				}
@@ -81,7 +81,7 @@ public class LrParse {
 
 	private Pair<State, Reduce> shift(Deque<Pair<Ast, State>> stack, State state, String next) {
 		System.out.print("(S=" + state + ", Next=" + next + ", Stack=" + stack.size() + ")");
-		Pair<State, Reduce> sr = buildLr.fsm.get(state).get(next);
+		var sr = buildLr.fsm.get(state).get(next);
 		System.out.println(" => " + sr);
 		return sr;
 	}

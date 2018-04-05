@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.adt.pair.Pair;
 import suite.os.SocketUtil;
 import suite.util.CommandUtil;
 import suite.util.Fail;
@@ -49,7 +48,7 @@ public class NntpServerMain extends ExecutableProgram {
 				String line;
 
 				while (!(line = Util.readLine(sis)).isEmpty()) {
-					Pair<NntpCommand, String> pair = new CommandUtil<>(NntpCommand.values()).recognize(line.toUpperCase());
+					var pair = new CommandUtil<>(NntpCommand.values()).recognize(line.toUpperCase());
 					var options = pair.t1;
 
 					switch (pair.t0) {
@@ -89,7 +88,7 @@ public class NntpServerMain extends ExecutableProgram {
 						if (String_.equals(options, "ACTIVE")) {
 							pw.println("215 Okay");
 							for (var groupId : nntp.listGroupIds()) {
-								Pair<String, String> articleIdRange = nntp.getArticleIdRange(groupId);
+								var articleIdRange = nntp.getArticleIdRange(groupId);
 								pw.println(groupId + " " + articleIdRange.t0 + " " + articleIdRange.t1 + " y");
 							}
 							pw.println(".");
@@ -120,7 +119,7 @@ public class NntpServerMain extends ExecutableProgram {
 						article = new HashMap<>();
 						var pos = 0;
 						while (!(line = lines.get(pos++)).isEmpty()) {
-							Pair<String, String> lr = String_.split2(line, ":");
+							var lr = String_.split2(line, ":");
 							article.put(lr.t0, lr.t1);
 						}
 						var sb = new StringBuilder();

@@ -3,7 +3,6 @@ package suite.fs.impl;
 import java.io.IOException;
 import java.nio.file.Path;
 
-import suite.adt.pair.Pair;
 import suite.btree.B_Tree;
 import suite.btree.impl.B_TreeBuilder;
 import suite.fs.FileSystem;
@@ -18,7 +17,7 @@ public class B_TreeFileSystemImpl implements FileSystem {
 	private FileSystemMutator mutator;
 
 	public B_TreeFileSystemImpl(Path path, boolean isNew, int pageSize) {
-		Pair<B_Tree<Bytes, Integer>, KeyDataStore<Bytes>> pair = B_TreeBuilder.build( //
+		var pair = B_TreeBuilder.build( //
 				path, //
 				isNew, //
 				keyUtil.serializer(), //

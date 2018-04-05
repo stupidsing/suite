@@ -199,7 +199,7 @@ public class FunUtil2 {
 			}
 
 			public Pair<K, V> next() {
-				Pair<K, V> next0 = next;
+				var next0 = next;
 				next = null;
 				return next0;
 			}
@@ -276,7 +276,7 @@ public class FunUtil2 {
 
 		return pair -> {
 			try {
-				Pair<K, V> p = queue.take();
+				var p = queue.take();
 				boolean b = p != null;
 				if (b)
 					pair.update(p.t0, p.t1);

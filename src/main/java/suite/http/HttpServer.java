@@ -46,10 +46,10 @@ public class HttpServer {
 			String method = ls[0], url = ls[1], protocol = ls[2];
 			String server, pqs;
 
-			Pair<String, String> pp = String_.split2(url, "://");
+			var pp = String_.split2(url, "://");
 
 			if (String_.isNotBlank(pp.t1)) {
-				Pair<String, String> sp = String_.split2(pp.t1, "/");
+				var sp = String_.split2(pp.t1, "/");
 				server = sp.t0;
 				pqs = sp.t1;
 			} else {
@@ -57,7 +57,7 @@ public class HttpServer {
 				pqs = url;
 			}
 
-			Pair<String, String> pq = String_.split2(pqs, "?");
+			var pq = String_.split2(pqs, "?");
 			var path = pq.t0;
 			var query = pq.t1;
 
@@ -70,7 +70,7 @@ public class HttpServer {
 			Map<String, String> requestHeaders = new HashMap<>();
 
 			while (!(line = Util.readLine(is)).isEmpty()) {
-				Pair<String, String> pair = String_.split2(line, ":");
+				var pair = String_.split2(line, ":");
 				requestHeaders.put(pair.t0, pair.t1);
 			}
 

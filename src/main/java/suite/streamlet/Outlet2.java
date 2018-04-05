@@ -53,7 +53,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		return of(pair -> {
 			var b = iter.hasNext();
 			if (b) {
-				Pair<K, List<V>> pair1 = iter.next();
+				var pair1 = iter.next();
 				pair.update(pair1.t0, pair1.t1);
 			}
 			return b;
@@ -80,7 +80,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			public boolean source2(Pair<K, V> pair) {
 				var b = i < kvs.length;
 				if (b) {
-					Pair<K, V> kv = kvs[i];
+					var kv = kvs[i];
 					pair.update(kv.t0, kv.t1);
 				}
 				return b;
@@ -94,7 +94,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			public boolean source2(Pair<K, V> pair) {
 				var b = iter.hasNext();
 				if (b) {
-					Pair<K, V> pair1 = iter.next();
+					var pair1 = iter.next();
 					pair.update(pair1.t0, pair1.t1);
 				}
 				return b;
@@ -280,7 +280,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public Pair<K, V> min(Comparator<Pair<K, V>> comparator) {
-		Pair<K, V> pair = minOrNull(comparator);
+		var pair = minOrNull(comparator);
 		if (pair != null)
 			return pair;
 		else
@@ -316,7 +316,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			Mutable<Pair<K, V>> mutable = Mutable.nil();
 			var b = queue.poll(mutable);
 			if (b) {
-				Pair<K, V> p = mutable.get();
+				var p = mutable.get();
 				pair.update(p.t0, p.t1);
 			} else
 				pair.update(k0, v0);

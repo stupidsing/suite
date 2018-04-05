@@ -50,7 +50,7 @@ public class BackTestMain extends ExecutableProgram {
 		Streamlet<Integer> years = !arg1.isEmpty() ? Read //
 				.from(arg1.split(",")) //
 				.concatMap(s -> {
-					Pair<String, String> pair = ParseUtil.search(s, "-", Assoc.RIGHT);
+					var pair = ParseUtil.search(s, "-", Assoc.RIGHT);
 					return pair != null //
 							? Ints_.range(Integer.valueOf(pair.t0), Integer.valueOf(pair.t1)).map(i -> i) //
 							: Read.each(Integer.valueOf(s));

@@ -82,7 +82,7 @@ public class Assembler {
 		List<Pair<Reference, Node>> lnis = Read //
 				.from(List_.right(lines, start)) //
 				.map(line -> {
-					Pair<String, String> pt = String_.split2(line, "\t");
+					var pt = String_.split2(line, "\t");
 					var label = pt.t0;
 					var command = pt.t1;
 

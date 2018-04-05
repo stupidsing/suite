@@ -4,8 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import suite.adt.pair.Pair;
-import suite.text.Segment;
 import suite.util.To;
 
 public class LccsTest {
@@ -13,7 +11,7 @@ public class LccsTest {
 	@Test
 	public void test() {
 		var lccs = new Lccs();
-		Pair<Segment, Segment> result = lccs.lccs(To.bytes("abczzzzz"), To.bytes("zzzzzabc"));
+		var result = lccs.lccs(To.bytes("abczzzzz"), To.bytes("zzzzzabc"));
 
 		assertEquals(3, result.t0.start);
 		assertEquals(8, result.t0.end);

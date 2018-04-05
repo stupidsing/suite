@@ -32,7 +32,7 @@ public class TextUtil {
 
 	public List<Pair<Bytes, Bytes>> diff(Bytes bytesx, Bytes bytesy) {
 		var lccs = new Lccs();
-		Pair<Segment, Segment> diff = lccs.lccs(bytesx, bytesy);
+		var diff = lccs.lccs(bytesx, bytesy);
 		Segment sx = diff.t0, sy = diff.t1;
 		int x0 = 0, x1 = sx.start, x2 = sx.end, xx = bytesx.size();
 		int y0 = 0, y1 = sy.start, y2 = sy.end, yx = bytesy.size();
@@ -75,8 +75,8 @@ public class TextUtil {
 		var isEmptyy = pairsy.isEmpty();
 
 		if (!isEmptyx || !isEmptyy) {
-			Pair<Bytes, Bytes> phx = !isEmptyx ? pairsx.get(0) : Pair.of(Bytes.empty, Bytes.empty);
-			Pair<Bytes, Bytes> phy = !isEmptyy ? pairsy.get(0) : Pair.of(Bytes.empty, Bytes.empty);
+			var phx = !isEmptyx ? pairsx.get(0) : Pair.of(Bytes.empty, Bytes.empty);
+			var phy = !isEmptyy ? pairsy.get(0) : Pair.of(Bytes.empty, Bytes.empty);
 			List<Pair<Bytes, Bytes>> ptx = !isEmptyx ? List_.right(pairsx, 1) : pairsx;
 			List<Pair<Bytes, Bytes>> pty = !isEmptyy ? List_.right(pairsy, 1) : pairsy;
 

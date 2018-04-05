@@ -252,7 +252,7 @@ public class P4GenerateCode {
 				};
 
 				Fun<Operand, FixieFun4<Insn, Insn, Funp, Funp, Boolean>> cmpJmp = label -> (insn, revInsn, lhs, rhs) -> {
-					Pair<Funp, OpReg> pair = compileCommutativeTree(Insn.CMP, Assoc.RIGHT, lhs, rhs);
+					var pair = compileCommutativeTree(Insn.CMP, Assoc.RIGHT, lhs, rhs);
 					em.emit(amd64.instruction(pair.t0 == lhs ? insn : revInsn, label));
 					return true;
 				};
@@ -285,7 +285,7 @@ public class P4GenerateCode {
 					new Object() {
 						private void assign(Compile1 c1, int i) {
 							if (i < assigns.size()) {
-								Pair<OpReg, Funp> assign = assigns.get(i);
+								var assign = assigns.get(i);
 								var op = assign.t0;
 								c1.compileOpSpec(assign.t1, op);
 								assign(c1.mask(op), i + 1);
@@ -523,11 +523,11 @@ public class P4GenerateCode {
 						saveRegs(sink1, edx);
 						opResult = opResult_;
 					} else if (operator == TermOp.MINUS_) {
-						Pair<Funp, OpReg> pair = compileCommutativeTree(Insn.SUB, assoc, lhs, rhs);
+						var pair = compileCommutativeTree(Insn.SUB, assoc, lhs, rhs);
 						if ((opResult = pair.t1) == rhs)
 							em.emit(amd64.instruction(Insn.NEG, pair.t1));
 					} else if (setInsn != null) {
-						Pair<Funp, OpReg> pair = compileCommutativeTree(Insn.CMP, assoc, lhs, rhs);
+						var pair = compileCommutativeTree(Insn.CMP, assoc, lhs, rhs);
 						em.emit(amd64.instruction(pair.t1 == lhs ? setInsn : setRevInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
 					} else if (shInsn != null) {
 						var op0 = compileLoad(lhs);

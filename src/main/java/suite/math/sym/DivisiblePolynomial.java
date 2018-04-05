@@ -150,7 +150,7 @@ public class DivisiblePolynomial<N> {
 		if (num.size() <= 0)
 			return Opt.of(num);
 		else if (0 < depth) {
-			Pair<Poly<N>, Poly<N>> divMod = divMod(num, denom);
+			var divMod = divMod(num, denom);
 			Poly<N> f = divMod.t0; // divIntegral(num, denom);
 			Poly<N> df = mul(denom, f);
 			Poly<N> ndf = divMod.t1; // add(num, neg(df));
