@@ -94,7 +94,7 @@ public class TopDownParse {
 
 		private Ast parse(int pos, Parser parser) {
 			var initialState = new State(null, pos, null, 0);
-			Outlet<State> o = initialState.pr(this, parser);
+			var o = initialState.pr(this, parser);
 			State state;
 
 			while ((state = o.next()) != null)
@@ -136,7 +136,7 @@ public class TopDownParse {
 			if (trace)
 				LogUtil.info("parse(" + parser + "): " + in.substring(state.pos));
 
-			Outlet<State> states = state.p(this, parser);
+			var states = state.p(this, parser);
 			if (states == noResult && 0 < state.sign && state.frame.entity != null && errorPosition <= state.pos) {
 				errorPosition = state.pos;
 				errorEntity = state.frame.entity;
@@ -191,7 +191,7 @@ public class TopDownParse {
 		case AND___:
 			parsers = buildChildren(eg);
 			parser = (parse, st) -> {
-				Outlet<State> o = Outlet.of(st);
+				var o = Outlet.of(st);
 				for (var g_ : parsers)
 					o = o.concatMap(st_ -> st_.pr(parse, g_));
 				return o;

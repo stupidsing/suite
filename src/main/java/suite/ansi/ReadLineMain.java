@@ -6,7 +6,6 @@ import com.sun.jna.Native;
 
 import suite.adt.pair.Pair;
 import suite.ansi.Keyboard.VK;
-import suite.streamlet.Outlet;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 
@@ -19,7 +18,7 @@ public class ReadLineMain extends ExecutableProgram {
 
 	protected boolean run(String[] args) {
 		var keyboard = new Keyboard((LibcJna) Native.loadLibrary("c", LibcJna.class));
-		Outlet<Pair<VK, Character>> keys = keyboard.signal().outlet();
+		var keys = keyboard.signal().outlet();
 		Pair<VK, Character> pair;
 
 		while (!Objects.equals(pair = keys.next(), Pair.of(null, 'q')))

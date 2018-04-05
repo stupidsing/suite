@@ -13,7 +13,6 @@ import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes_;
 import suite.streamlet.As;
-import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
@@ -79,7 +78,7 @@ public class TextDatabase {
 	}
 
 	private synchronized void save() {
-		Outlet<Bytes> outlet = Read //
+		var outlet = Read //
 				.from(data) //
 				.map(this::toBytes) //
 				.collect(Bytes_::buffer);

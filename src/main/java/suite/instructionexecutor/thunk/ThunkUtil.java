@@ -20,7 +20,7 @@ public class ThunkUtil {
 	 * string.
 	 */
 	public static String yawnString(Iterate<Node> yawn, Node node) {
-		Outlet<Node> st = yawnList(yawn, node, false);
+		var st = yawnList(yawn, node, false);
 		var sb = new StringBuilder();
 		Node n;
 
@@ -43,7 +43,7 @@ public class ThunkUtil {
 	 * Evaluates the whole (lazy) term to a list and feed the elements into a sink.
 	 */
 	public static void yawnSink(Iterate<Node> yawn, Node node, IoSink<Node> sink) throws IOException {
-		Outlet<Node> st = yawnList(yawn, node, true);
+		var st = yawnList(yawn, node, true);
 		Node n;
 		while ((n = st.next()) != null)
 			sink.sink(n);

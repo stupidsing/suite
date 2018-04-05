@@ -135,7 +135,7 @@ public class Trade_ {
 
 		for (var pair : trades.toMultimap(trade -> trade.symbol).listEntries()) {
 			var dividends = fun.apply(pair.t0);
-			Outlet<Trade> outlet = Outlet.of(pair.t1);
+			var outlet = Outlet.of(pair.t1);
 			LngIntPair tn = LngIntPair.of(0l, 0);
 
 			Source<LngIntPair> tradeSource = () -> {

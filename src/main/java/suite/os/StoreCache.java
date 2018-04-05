@@ -78,7 +78,7 @@ public class StoreCache {
 	}
 
 	public Bytes get(Bytes key, Source<Bytes> source) {
-		Outlet<Bytes> outlet = getOutlet(key, () -> Outlet.<Bytes> of(source.source()));
+		var outlet = getOutlet(key, () -> Outlet.<Bytes> of(source.source()));
 		return outlet.collect(Bytes::of);
 	}
 
@@ -113,7 +113,7 @@ public class StoreCache {
 				var vdis = new DataInputStream(vis);
 				return read(vdis).closeAtEnd(vis);
 			} else {
-				Outlet<Bytes> outlet = source.source();
+				var outlet = source.source();
 				var vos = FileUtil.out(pair.t1);
 				var vdo = DataOutput_.of(vos);
 

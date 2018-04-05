@@ -110,7 +110,7 @@ public class HttpUtil {
 		var statusLine = response.getStatusLine();
 		var statusCode = statusLine.getStatusCode();
 		var inputStream = response.getEntity().getContent();
-		Outlet<Bytes> out = To.outlet(inputStream) //
+		var out = To.outlet(inputStream) //
 				.closeAtEnd(inputStream) //
 				.closeAtEnd(response) //
 				.closeAtEnd(client) //
@@ -138,7 +138,7 @@ public class HttpUtil {
 		}
 
 		var responseCode = conn.getResponseCode();
-		Outlet<Bytes> out = To.outlet(conn.getInputStream());
+		var out = To.outlet(conn.getInputStream());
 
 		if (responseCode == HttpURLConnection.HTTP_MOVED_PERM //
 				|| responseCode == HttpURLConnection.HTTP_MOVED_TEMP //
