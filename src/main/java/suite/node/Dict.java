@@ -11,7 +11,7 @@ public class Dict extends Node {
 	public final Map<Node, Reference> map;
 
 	public static Dict of(Pair<Node, Reference>[] pairs) {
-		Map<Node, Reference> map = new HashMap<>();
+		var map = new HashMap<Node, Reference>();
 		for (var pair : pairs)
 			map.put(pair.t0, pair.t1);
 		return new Dict(map);
