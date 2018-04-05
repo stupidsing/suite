@@ -19,7 +19,7 @@ public class EbnfOperatorTest {
 
 	@Test
 	public void testLr() throws IOException {
-		LrParse elp = LrParse.of(ebnf(), "e0");
+		var elp = LrParse.of(ebnf(), "e0");
 		System.out.println(elp.parse("1 * 2 + 3"));
 	}
 

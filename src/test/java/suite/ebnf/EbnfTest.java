@@ -80,7 +80,7 @@ public class EbnfTest {
 	public void testRefactor() throws IOException {
 		var sql0 = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
 		var ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
-		FactorizeResult fr = rewrite(ebnf, "intersect-select" //
+		var fr = rewrite(ebnf, "intersect-select" //
 				, "SELECT .0 FROM DUAL" //
 				, "SELECT .0 FROM DUAL WHERE COL2 = 1" //
 				, ebnf.parseFNode(sql0, "sql"));
@@ -96,8 +96,8 @@ public class EbnfTest {
 	}
 
 	private FactorizeResult rewrite(Ebnf ebnf, String entity, String from, String to, FactorizeResult fr0) {
-		FactorizeResult frfrom = ebnf.parseFNode(from, entity);
-		FactorizeResult frto = ebnf.parseFNode(to, entity);
+		var frfrom = ebnf.parseFNode(from, entity);
+		var frto = ebnf.parseFNode(to, entity);
 		return FactorizeResult.rewrite(frfrom, frto, fr0);
 	}
 
