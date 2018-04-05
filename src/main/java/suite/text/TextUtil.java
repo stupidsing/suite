@@ -36,7 +36,7 @@ public class TextUtil {
 		Segment sx = diff.t0, sy = diff.t1;
 		int x0 = 0, x1 = sx.start, x2 = sx.end, xx = bytesx.size();
 		int y0 = 0, y1 = sy.start, y2 = sy.end, yx = bytesy.size();
-		Bytes common = bytesx.range(x1, x2);
+		var common = bytesx.range(x1, x2);
 
 		if (!sx.isEmpty() && !sy.isEmpty()) {
 			var patch = new ArrayList<Pair<Bytes, Bytes>>();
