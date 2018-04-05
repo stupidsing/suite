@@ -101,7 +101,7 @@ public class DailyMain extends ExecutableProgram {
 
 		SummarizeByStrategy<Object> sbs = Summarize.of(cfg).summarize();
 
-		Streamlet2<String, Trade> strategyTrades = Read //
+		var strategyTrades = Read //
 				.from(results) //
 				.concatMap2(result -> Read.from(result.trades).map2(trade -> result.strategy, trade -> trade)) //
 				.filterValue(trade -> trade.buySell != 0) //

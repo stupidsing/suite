@@ -11,7 +11,6 @@ import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
@@ -59,7 +58,7 @@ public class FactorLr {
 
 	public BackAllocator backAllocator() {
 		return (akds, indices) -> {
-			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
+			var dsBySymbol = akds.dsByKey;
 			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
 
 			DataSourceView<String, LinearRegression> dsv = DataSourceView.of(0, 64, akds,

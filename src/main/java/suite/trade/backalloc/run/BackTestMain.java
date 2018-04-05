@@ -10,14 +10,11 @@ import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
-import suite.trade.backalloc.BackAllocConfiguration;
 import suite.trade.backalloc.BackAllocConfigurations;
-import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.util.FunUtil.Fun;
@@ -62,9 +59,9 @@ public class BackTestMain extends ExecutableProgram {
 				: cfg::queryCompaniesByMarketCap;
 
 		BackAllocConfigurations bac_ = new BackAllocConfigurations(cfg, fun);
-		Streamlet2<String, BackAllocConfiguration> bacByTag = bac_.bacs().bacByName;
+		var bacByTag = bac_.bacs().bacByName;
 
-		Streamlet2<String, Simulate> simulationByKey = bacByTag //
+		var simulationByKey = bacByTag //
 				.filterKey(n -> strategyMatches == null || strategyMatches.isAny(sm -> Wildcard.match(sm, n) != null)) //
 				.map(Pair::of) //
 				.join2(years.sort(Object_::compare).map(TimeRange::ofYear)) //

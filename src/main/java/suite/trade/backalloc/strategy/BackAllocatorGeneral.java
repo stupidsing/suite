@@ -23,7 +23,6 @@ import suite.trade.analysis.MovingAverage.MovingRange;
 import suite.trade.analysis.Oscillator;
 import suite.trade.analysis.Oscillator.Movement;
 import suite.trade.backalloc.BackAllocator;
-import suite.trade.data.DataSource;
 import suite.trade.data.DataSourceView;
 import suite.trade.singlealloc.Strategos;
 import suite.util.FunUtil.Fun;
@@ -350,7 +349,7 @@ public class BackAllocatorGeneral {
 		var stopN = 2;
 
 		return (akds, indices) -> {
-			Streamlet2<String, DataSource> dsByKey = akds.dsByKey;
+			var dsByKey = akds.dsByKey;
 			Map<String, float[]> atrBySymbol = dsByKey.mapValue(osc::atr).toMap();
 
 			Map<String, Fixie4<int[], int[], boolean[], boolean[]>> fixieBySymbol = dsByKey //

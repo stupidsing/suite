@@ -7,7 +7,6 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Int_Dbl;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy;
@@ -56,7 +55,7 @@ public class BackAllocator_ {
 
 	private static BackAllocator byDataSource_(Fun<DataSource, Int_Dbl> fun) {
 		return (akds, indices) -> {
-			Streamlet2<String, Int_Dbl> allocBySymbol = akds.dsByKey.mapValue(fun).collect(As::streamlet2);
+			var allocBySymbol = akds.dsByKey.mapValue(fun).collect(As::streamlet2);
 
 			return index -> allocBySymbol.mapValue(alloc -> alloc.apply(index)).toList();
 		};

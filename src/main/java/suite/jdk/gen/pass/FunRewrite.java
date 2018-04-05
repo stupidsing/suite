@@ -113,7 +113,7 @@ public class FunRewrite extends FunFactory {
 
 				FunCreator<?>.CreateClass cc = FunCreator.of(LambdaInterface.of(interfaceClass), fieldTypes).create_(e3);
 				Streamlet2<String, FunExpr> fieldValues0 = Read.from2(cc.fieldTypeValues).mapValue(tv -> objectField(tv.t1, tv.t0));
-				Streamlet2<String, FunExpr> fieldValues1 = Read.from2(fieldValues);
+				var fieldValues1 = Read.from2(fieldValues);
 
 				var e4 = new NewFunExpr();
 				e4.className = cc.className;

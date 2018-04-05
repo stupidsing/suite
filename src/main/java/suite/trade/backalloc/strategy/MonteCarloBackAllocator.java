@@ -7,7 +7,6 @@ import java.util.Random;
 import suite.primitive.Floats_;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
@@ -26,7 +25,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 
 	@Override
 	public OnDateTime allocate(AlignKeyDataSource<String> akds, int[] indices) {
-		Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
+		var dsBySymbol = akds.dsByKey;
 
 		return index -> {
 			Map<String, float[]> returnsBySymbol = dsBySymbol.mapValue(DataSource::returns).toMap();

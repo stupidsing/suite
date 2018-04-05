@@ -24,7 +24,6 @@ import suite.primitive.adt.pair.DblFltPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.Trade_;
@@ -116,7 +115,7 @@ public interface BackAllocator {
 			var onDateTime = ba1.allocate(akds, indices);
 
 			return index -> {
-				Streamlet2<String, Double> potentialBySymbol = Read //
+				var potentialBySymbol = Read //
 						.from2(onDateTime.onDateTime(index)) //
 						.collect(As::streamlet2);
 
@@ -268,7 +267,7 @@ public interface BackAllocator {
 
 	public default BackAllocator relative(DataSource indexDataSource) {
 		return (akds0, times_) -> {
-			Streamlet2<String, DataSource> dsBySymbol1 = akds0.dsByKey //
+			var dsBySymbol1 = akds0.dsByKey //
 					.mapValue(ds0 -> {
 						var indexPrices = indexDataSource.alignBeforePrices(ds0.ts).prices;
 						var length = ds0.ts.length;

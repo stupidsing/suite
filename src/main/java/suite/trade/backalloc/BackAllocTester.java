@@ -11,7 +11,6 @@ import suite.os.LogUtil;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
 import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.Time;
@@ -21,7 +20,6 @@ import suite.trade.Trade_;
 import suite.trade.Trade_.UpdatePortfolio;
 import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.Configuration;
-import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSource.Eod;
 import suite.util.FunUtil.Sink;
@@ -85,7 +83,7 @@ public class BackAllocTester {
 			TimeRange historyPeriod = TimeRange.of(period.from.addYears(-1), period.to);
 
 			AlignKeyDataSource<String> akds = cfg.dataSources(historyPeriod, Read.from(symbols));
-			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
+			var dsBySymbol = akds.dsByKey;
 			long[] tradeTs = akds.ts;
 			var t0 = period.from.epochSec();
 			var tx = period.to.epochSec();

@@ -9,7 +9,6 @@ import java.util.Map;
 import suite.adt.pair.Pair;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.MeanVariance;
-import suite.streamlet.Streamlet2;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.analysis.MovingAverage.MovingRange;
 import suite.trade.backalloc.BackAllocator;
@@ -122,7 +121,7 @@ public class BackAllocatorOld {
 		var threshold = 0d;
 
 		BackAllocator ba0 = (akds, indices) -> {
-			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
+			var dsBySymbol = akds.dsByKey;
 			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
 			var ds0 = dsBySymbol_.get(symbol0);
 			var ds1 = dsBySymbol_.get(symbol1);

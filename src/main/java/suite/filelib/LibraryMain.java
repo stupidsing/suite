@@ -15,7 +15,6 @@ import suite.adt.pair.Pair;
 import suite.os.FileUtil;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet2;
 import suite.util.Fail;
 import suite.util.Rethrow;
 import suite.util.RunUtil;
@@ -60,7 +59,7 @@ public class LibraryMain extends ExecutableProgram {
 			}
 		});
 
-		Streamlet2<Path, FileInfo> path_fileInfos = partition.t0 //
+		var path_fileInfos = partition.t0 //
 				.map2((path, size) -> {
 					BasicFileAttributes attrs = Rethrow.ex(() -> Files.readAttributes(path, BasicFileAttributes.class));
 

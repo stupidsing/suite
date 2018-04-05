@@ -9,7 +9,6 @@ import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
 import suite.trade.Account;
 import suite.trade.Account.TransactionSummary;
 import suite.trade.Time;
@@ -57,7 +56,7 @@ public class Summarize {
 	}
 
 	public <K> SummarizeByStrategy<K> summarize(Fun<Trade, K> fun) {
-		Streamlet2<K, Summarize_> summaryByKey = trades //
+		var summaryByKey = trades //
 				.groupBy(fun, trades_ -> summarize_(trades_, priceBySymbol, s -> null)) //
 				.filterKey(key -> key != null) //
 				.collect(As::streamlet2);
