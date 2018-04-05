@@ -14,7 +14,6 @@ import org.junit.Test;
 import suite.Constants;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.impl.JournalledFileFactory;
-import suite.primitive.Bytes;
 import suite.primitive.Ints_;
 import suite.sample.Profiler;
 import suite.util.Object_;
@@ -41,7 +40,7 @@ public class B_TreeTest {
 		var path = Constants.tmp("b_tree-dump");
 
 		Files.deleteIfExists(path);
-		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
+		var builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
 
 		try (var jpf = JournalledFileFactory.journalled(path, pageSize); var b_tree = builder.build(jpf, comparator, pageSize)) {
 			b_tree.create();
@@ -62,7 +61,7 @@ public class B_TreeTest {
 		var path = Constants.tmp("b_tree-file");
 
 		Files.deleteIfExists(path);
-		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
+		var builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
 
 		shuffleNumbers();
 
@@ -104,7 +103,7 @@ public class B_TreeTest {
 		}
 
 		Files.deleteIfExists(path);
-		B_TreeBuilder<Integer, Bytes> builder = new B_TreeBuilder<>(serialize.int_, serialize.bytes(64));
+		var builder = new B_TreeBuilder<>(serialize.int_, serialize.bytes(64));
 
 		try (var jpf = JournalledFileFactory.journalled(path, pageSize); var b_tree = builder.build(jpf, comparator, 9999)) {
 			new Profiler().profile(() -> {
