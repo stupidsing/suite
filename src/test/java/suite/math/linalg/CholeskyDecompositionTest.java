@@ -24,10 +24,10 @@ public class CholeskyDecompositionTest {
 	@Test
 	public void testInverseMul() {
 		var random = new Random();
-		float[] fs = Floats_.toArray(3, i -> random.nextFloat());
+		var fs = Floats_.toArray(3, i -> random.nextFloat());
 		Iterate<float[]> invm0 = cholesky.inverseMul(mtx.of(m0));
-		float[] actual0 = mtx.mul(m0, invm0.apply(fs));
-		float[] actual1 = invm0.apply(mtx.mul(m0, fs));
+		var actual0 = mtx.mul(m0, invm0.apply(fs));
+		var actual1 = invm0.apply(mtx.mul(m0, fs));
 		vec.verifyEquals(fs, actual0, .01f);
 		vec.verifyEquals(fs, actual1, .01f);
 	}
@@ -48,8 +48,8 @@ public class CholeskyDecompositionTest {
 		mtx.verifyEquals(actuall, expectl);
 		vec.verifyEquals(actuald, expectd);
 
-		float[][] matrixd = To.matrix(actuald.length, actuald.length, (i, j) -> i == j ? actuald[i] : 0f);
-		float[][] m1 = mtx.mul(actuall, matrixd, mtx.transpose(actuall));
+		var matrixd = To.matrix(actuald.length, actuald.length, (i, j) -> i == j ? actuald[i] : 0f);
+		var m1 = mtx.mul(actuall, matrixd, mtx.transpose(actuall));
 		mtx.verifyEquals(m0, m1);
 	}
 
@@ -65,7 +65,7 @@ public class CholeskyDecompositionTest {
 		mtx.verifyEquals(actual, expect);
 
 		var conjugate = mtx.transpose(actual);
-		float[][] m1 = mtx.mul(actual, conjugate);
+		var m1 = mtx.mul(actual, conjugate);
 		mtx.verifyEquals(m0, m1);
 	}
 

@@ -24,13 +24,13 @@ public class Strassen {
 			var bim = (bi0 + bix) / 2;
 			var bjm = (bj0 + bjx) / 2;
 
-			float[][] m1 = mtx.of(aim, bjm); // (a11 + a22) * (b11 + b22)
-			float[][] m2 = mtx.of(aim, bjm); // (a21 + a22) * b11
-			float[][] m3 = mtx.of(aim, bjm); // a11 * (b12 - b22)
-			float[][] m4 = mtx.of(aim, bjm); // a22 * (b21 - b11)
-			float[][] m5 = mtx.of(aim, bjm); // (a11 + a12) * b22
-			float[][] m6 = mtx.of(aim, bjm); // (a21 - a11) * (b11 + b12)
-			float[][] m7 = mtx.of(aim, bjm); // (a12 - a22) * (b21 + b22)
+			var m1 = mtx.of(aim, bjm); // (a11 + a22) * (b11 + b22)
+			var m2 = mtx.of(aim, bjm); // (a21 + a22) * b11
+			var m3 = mtx.of(aim, bjm); // a11 * (b12 - b22)
+			var m4 = mtx.of(aim, bjm); // a22 * (b21 - b11)
+			var m5 = mtx.of(aim, bjm); // (a11 + a12) * b22
+			var m6 = mtx.of(aim, bjm); // (a21 - a11) * (b11 + b12)
+			var m7 = mtx.of(aim, bjm); // (a12 - a22) * (b21 + b22)
 
 			mul0( //
 					(i, j) -> a[i + ai0][j + aj0] + a[i + aim][j + ajm], aim, ajm, //
@@ -71,7 +71,7 @@ public class Strassen {
 			var cj0 = 0;
 			var cim = aim;
 			var cjm = bjm;
-			float[][] c = mtx.of(ajx, bix);
+			var c = mtx.of(ajx, bix);
 
 			for (var i = 0; i < aim; i++)
 				for (var j = 0; i < bjm; j++) {
@@ -92,7 +92,7 @@ public class Strassen {
 		var ks = mjx - mj0;
 		var height = mix - mi0;
 		var width = njx - nj0;
-		float[][] o = mtx.of(height, width);
+		var o = mtx.of(height, width);
 		mul0( //
 				(i, j) -> m[i + mi0][j + mj0], height, ks, //
 				(i, j) -> n[i + ni0][j + nj0], ks, width, //

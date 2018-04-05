@@ -34,7 +34,7 @@ public class SingularValueDecomposition {
 				m1[i][j_] -= mean;
 		}
 
-		float[][] cov = mtx.scale(mtx.mul_mTn(m1, m1), 1d / height);
+		var cov = mtx.scale(mtx.mul_mTn(m1, m1), 1d / height);
 		var evs = eigen.power(cov);
 		return eigen.values(cov, evs);
 	}
@@ -75,28 +75,28 @@ public class SingularValueDecomposition {
 
 	private Fixie3<Double, float[], float[]> svd0(float[][] a) {
 		var n = mtx.width(a);
-		float[] x = Floats_.toArray(n, i -> random.nextFloat());
+		var x = Floats_.toArray(n, i -> random.nextFloat());
 		var at = mtx.transpose(a);
 
 		for (var i = 0; i < 16; i++)
 			x = mtx.mul(at, mtx.mul(a, x));
 
 		var v = vec.normalize(x);
-		float[] av = mtx.mul(a, v);
+		var av = mtx.mul(a, v);
 		var s = vec.abs(av);
-		float[] u = vec.scale(av, 1d / s);
+		var u = vec.scale(av, 1d / s);
 		return Fixie.of(s, u, v);
 	}
 
 	// http://www.anstuocmath.ro/mathematics/anale2015vol2/Bentbib_A.H.__Kanber_A..pdf
 	// "3 SVD Power Method"
 	private Fixie3<Double, float[], float[]> svd1(float[][] a) {
-		float[] v = Floats_.toArray(mtx.width(a), i -> random.nextFloat());
+		var v = Floats_.toArray(mtx.width(a), i -> random.nextFloat());
 		var at = mtx.transpose(a);
 
 		for (var i = 0; i < 256; i++) {
-			float[] u = vec.normalize(mtx.mul(a, v));
-			float[] z = mtx.mul(at, u);
+			var u = vec.normalize(mtx.mul(a, v));
+			var z = mtx.mul(at, u);
 			var beta = vec.abs(z);
 			var invBeta = 1d / beta;
 			v = vec.scale(z, invBeta);
@@ -115,8 +115,8 @@ public class SingularValueDecomposition {
 	public float[][] whiten(float[][] omega) {
 		var covs = mtx.covariance(omega);
 		var evs = eigen.power(covs);
-		float[] evals = eigen.values(omega, covs);
-		float[][] m = To.matrix(mtx.height(evs), mtx.width(evs), (i, j) -> evs[i][j] / Math.sqrt(evals[j]));
+		var evals = eigen.values(omega, covs);
+		var m = To.matrix(mtx.height(evs), mtx.width(evs), (i, j) -> evs[i][j] / Math.sqrt(evals[j]));
 		return mtx.mul(m, omega);
 	}
 

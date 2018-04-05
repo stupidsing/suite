@@ -79,11 +79,11 @@ public class Arima {
 	}
 
 	public DblObjPair<Arima_> arimaBackcast(float[] xs0, int p, int d, int q) {
-		float[] ars = To.vector(p, i -> 1f);
-		float[] mas = To.vector(q, i -> 1f);
-		float[] xs1 = nDiffs(xs0, d);
+		var ars = To.vector(p, i -> 1f);
+		var mas = To.vector(q, i -> 1f);
+		var xs1 = nDiffs(xs0, d);
 		Arima_ arima = armaBackcast(xs1, ars, mas);
-		float[] xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
+		var xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
@@ -93,7 +93,7 @@ public class Arima {
 		var length = xs.length;
 		var p = ars.length;
 		var q = mas.length;
-		float[] xsp = Floats_.concat(new float[p], xs);
+		var xsp = Floats_.concat(new float[p], xs);
 		var epq = new float[length + q];
 		Arma arma = new Arma(ars, mas);
 
@@ -142,9 +142,9 @@ public class Arima {
 
 	@SuppressWarnings("unused")
 	private DblObjPair<Arima_> arimaEm(float[] xs0, int p, int d, int q) {
-		float[] xs1 = nDiffs(xs0, d);
+		var xs1 = nDiffs(xs0, d);
 		Arima_ arima = armaEm(xs1, p, q);
-		float[] xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
+		var xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
@@ -154,10 +154,10 @@ public class Arima {
 		var length = xs.length;
 		var lengthp = length + p;
 		var lengthq = length + q;
-		float[] ars = To.vector(p, i -> Math.scalb(.5d, -i));
-		float[] mas = To.vector(q, i -> Math.scalb(.5d, -i));
+		var ars = To.vector(p, i -> Math.scalb(.5d, -i));
+		var mas = To.vector(q, i -> Math.scalb(.5d, -i));
 		var xsp = new float[lengthp];
-		float[] epq = To.vector(lengthq, i -> xs[max(0, min(xsp.length, i - q))] * .25f);
+		var epq = To.vector(lengthq, i -> xs[max(0, min(xsp.length, i - q))] * .25f);
 
 		Arrays.fill(xsp, 0, p, xs[0]);
 		System.arraycopy(xs, 0, xsp, p, length);
@@ -216,9 +216,9 @@ public class Arima {
 
 	@SuppressWarnings("unused")
 	private DblObjPair<Arima_> arimaIa(float[] xs0, int p, int d, int q) {
-		float[] xs1 = nDiffs(xs0, d);
+		var xs1 = nDiffs(xs0, d);
 		Arima_ arima = armaIa(xs1, p, q);
-		float[] xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
+		var xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
@@ -260,8 +260,8 @@ public class Arima {
 			if (iter < q)
 				System.arraycopy(lr.residuals, 0, epqByIter[iter++] = new float[lengthq], q, length);
 			else {
-				float[] ars = Floats.of(coeffs, 0, p).toArray();
-				float[] mas = Floats.of(coeffs, p).toArray();
+				var ars = Floats.of(coeffs, 0, p).toArray();
+				var mas = Floats.of(coeffs, p).toArray();
 
 				var x1 = 0d //
 						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[lengthpm1 - i])) //
@@ -273,15 +273,15 @@ public class Arima {
 	}
 
 	public DblObjPair<Arima_> arimaMle(float[] xs0, int p, int d, int q) {
-		float[] xs1 = nDiffs(xs0, d);
+		var xs1 = nDiffs(xs0, d);
 		Arima_ arima = armaMle(xs1, p, q);
-		float[] xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
+		var xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
 	private Arima_ armaMle(float[] xs, int p, int q) {
 		var length = xs.length;
-		float[] xsp = Floats_.concat(new float[p], xs);
+		var xsp = Floats_.concat(new float[p], xs);
 		var epq = new float[length + q];
 
 		class LogLikelihood implements DblSource {
@@ -307,7 +307,7 @@ public class Arima {
 	// q << l << fs.length
 	@SuppressWarnings("unused")
 	private float[] maDurbin(float[] ys, int q, int l) {
-		float[] ar = arLevinsonDurbin(ys, l);
+		var ar = arLevinsonDurbin(ys, l);
 		return arLevinsonDurbin(ar, q);
 	}
 

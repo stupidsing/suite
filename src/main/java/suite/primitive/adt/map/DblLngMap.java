@@ -154,7 +154,7 @@ public class DblLngMap {
 		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
-			double[] ks0 = ks;
+			var ks0 = ks;
 			long[] vs0 = vs;
 			long v_;
 

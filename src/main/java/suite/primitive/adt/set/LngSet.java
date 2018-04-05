@@ -50,7 +50,7 @@ public class LngSet {
 		size++;
 
 		if (capacity * 3 / 4 < size) {
-			long[] vs0 = vs;
+			var vs0 = vs;
 			long v_;
 
 			allocate(capacity * 2);

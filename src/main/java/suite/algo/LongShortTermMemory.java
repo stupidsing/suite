@@ -91,26 +91,26 @@ public class LongShortTermMemory {
 			Floats_.copy(output0, 0, iv, inputLength, memoryLength);
 			iv[ll] = 1f;
 
-			float[] sig_fs = Sigmoid.sigmoidOn(mtx.mul(wf, iv));
-			float[] sig_is = Sigmoid.sigmoidOn(mtx.mul(wi, iv));
-			float[] tanh_ms = Tanh.tanhOn(mtx.mul(wm, iv));
-			float[] sig_os = Sigmoid.sigmoidOn(mtx.mul(wo, iv));
+			var sig_fs = Sigmoid.sigmoidOn(mtx.mul(wf, iv));
+			var sig_is = Sigmoid.sigmoidOn(mtx.mul(wi, iv));
+			var tanh_ms = Tanh.tanhOn(mtx.mul(wm, iv));
+			var sig_os = Sigmoid.sigmoidOn(mtx.mul(wo, iv));
 			float[] memory1 = copy(memory = vec.addOn(Forget.forget(memory0, sig_fs), Forget.forget(tanh_ms, sig_is)));
 			var tanh_memory1 = Tanh.tanhOn(memory1);
 			float[] output1 = output = Forget.forget(sig_os, tanh_memory1);
 
 			if (expected != null) {
-				float[] e_output1 = vec.sub(expected, output1);
-				float[] e_tanh_memory1 = Forget.forgetOn(sig_os, e_output1);
-				float[] e_memory1 = Forget.forgetOn(e_tanh_memory1, Tanh.tanhGradientOn(copy(tanh_memory1)));
-				float[] e_sig_os = Forget.forget(e_output1, tanh_memory1);
-				float[] e_tanh_ms = Forget.forget(e_memory1, sig_is);
-				float[] e_sig_is = Forget.forget(e_memory1, tanh_ms);
-				float[] e_sig_fs = Forget.forget(e_memory1, memory0);
-				float[] e_wo = Forget.forgetOn(e_sig_os, Sigmoid.sigmoidGradientOn(sig_os));
-				float[] e_wm = Forget.forgetOn(e_tanh_ms, Tanh.tanhGradientOn(tanh_ms));
-				float[] e_wi = Forget.forgetOn(e_sig_is, Sigmoid.sigmoidGradientOn(sig_is));
-				float[] e_wf = Forget.forgetOn(e_sig_fs, Sigmoid.sigmoidGradientOn(sig_fs));
+				var e_output1 = vec.sub(expected, output1);
+				var e_tanh_memory1 = Forget.forgetOn(sig_os, e_output1);
+				var e_memory1 = Forget.forgetOn(e_tanh_memory1, Tanh.tanhGradientOn(copy(tanh_memory1)));
+				var e_sig_os = Forget.forget(e_output1, tanh_memory1);
+				var e_tanh_ms = Forget.forget(e_memory1, sig_is);
+				var e_sig_is = Forget.forget(e_memory1, tanh_ms);
+				var e_sig_fs = Forget.forget(e_memory1, memory0);
+				var e_wo = Forget.forgetOn(e_sig_os, Sigmoid.sigmoidGradientOn(sig_os));
+				var e_wm = Forget.forgetOn(e_tanh_ms, Tanh.tanhGradientOn(tanh_ms));
+				var e_wi = Forget.forgetOn(e_sig_is, Sigmoid.sigmoidGradientOn(sig_is));
+				var e_wf = Forget.forgetOn(e_sig_fs, Sigmoid.sigmoidGradientOn(sig_fs));
 
 				for (var i = 0; i < memoryLength; i++)
 					for (var j = 0; j < ll1; j++) {

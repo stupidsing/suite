@@ -26,7 +26,7 @@ public class DiscreteCosineTransform {
 		var fs2 = fft.fft(fs1);
 
 		// throw away everything but the first [A, B, C, D]
-		float[] fs3 = Floats_.toArray(size, i -> fs2[i * 2]);
+		var fs3 = Floats_.toArray(size, i -> fs2[i * 2]);
 
 		// and you are done
 		return fs3;
@@ -51,7 +51,7 @@ public class DiscreteCosineTransform {
 		}
 
 		var fs1 = fft.ifft(fs2);
-		float[] fs0 = Floats_.toArray(size, i -> fs1[i * 4 + 2]);
+		var fs0 = Floats_.toArray(size, i -> fs1[i * 4 + 2]);
 		return fs0;
 	}
 

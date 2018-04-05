@@ -103,7 +103,7 @@ public class Pmamr2BackAllocator {
 
 		private MeanReversionStat(DataSource ds, TimeRange mrsPeriod) {
 			var prices = ds.range(mrsPeriod).prices;
-			float[] movingAverage = ma.geometricMovingAvg(prices, tor);
+			var movingAverage = ma.geometricMovingAvg(prices, tor);
 
 			if (tor * 2 <= prices.length) {
 				adf = ts.adf(prices, tor);

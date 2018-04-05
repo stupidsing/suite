@@ -13,8 +13,8 @@ public class Factorization {
 	public Pair<float[][], float[][]> factorize(float[][] m, int w) {
 		var height = mtx.height(m);
 		var width = mtx.width(m);
-		float[][] u = To.matrix(height, w, (i, j) -> random.nextFloat());
-		float[][] v = To.matrix(w, width, (i, j) -> random.nextFloat());
+		var u = To.matrix(height, w, (i, j) -> random.nextFloat());
+		var v = To.matrix(w, width, (i, j) -> random.nextFloat());
 
 		for (var iter = 0; iter < 20; iter++) {
 			// TODO check if error is small enough
@@ -22,17 +22,17 @@ public class Factorization {
 			var u0 = u;
 			var v0 = v;
 
-			float[][] error = mtx.sub(m, mtx.mul(u, v));
+			var error = mtx.sub(m, mtx.mul(u, v));
 			var alpha = .1f;
 
-			float[][] u1 = To.matrix(height, w, (i, q) -> {
+			var u1 = To.matrix(height, w, (i, q) -> {
 				var sum = 0d;
 				for (var j = 0; j < width; j++)
 					sum += error[i][j] * v0[q][j];
 				return (float) (u0[i][q] + alpha * sum);
 			});
 
-			float[][] v1 = To.matrix(w, width, (q, j) -> {
+			var v1 = To.matrix(w, width, (q, j) -> {
 				var sum = 0d;
 				for (var i = 0; i < height; i++)
 					sum += error[i][j] * u0[i][q];

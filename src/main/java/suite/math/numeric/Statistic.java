@@ -96,9 +96,9 @@ public class Statistic {
 			var nDataPoints_ = y.length;
 			var nDepVariables_ = mtx.width(x);
 			var xt = mtx.transpose(x);
-			float[] coeffs = cholesky.inverseMul(mtx.mul(xt, x)).apply(mtx.mul(xt, y));
-			float[] estimatedy = mtx.mul(x, coeffs);
-			float[] residuals_ = vec.sub(y, estimatedy);
+			var coeffs = cholesky.inverseMul(mtx.mul(xt, x)).apply(mtx.mul(xt, y));
+			var estimatedy = mtx.mul(x, coeffs);
+			var residuals_ = vec.sub(y, estimatedy);
 			var meany = mean_(y);
 			var sst_ = 0d; // total sum of squares
 			var ssr = 0d; // estimated sum of squares
@@ -189,11 +189,11 @@ public class Statistic {
 
 			if (nSamples == bs.length) {
 				var xt = mtx.transpose(x);
-				float[] y = Floats_.toArray(nSamples, i -> bs[i] ? 1f : 0f);
+				var y = Floats_.toArray(nSamples, i -> bs[i] ? 1f : 0f);
 
 				for (var n = 0; n < 256; n++) {
-					float[] bernoulli = To.vector(x, this::predict);
-					float[] s = To.vector(bernoulli, b -> b * (1f - b));
+					var bernoulli = To.vector(x, this::predict);
+					var s = To.vector(bernoulli, b -> b * (1f - b));
 					var sx = mtx.of(x);
 					for (var i = 0; i < nSamples; i++)
 						for (var j = 0; j < sampleLength; j++)

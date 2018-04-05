@@ -42,7 +42,7 @@ public class ArimaTest {
 	}
 
 	private void test(float[] ars, float[] mas, Estimate estimate) {
-		float[] xs = generate(256, ars, mas);
+		var xs = generate(256, ars, mas);
 		Arima_ a = estimate.arima(xs, ars.length, 0, mas.length).t1;
 		System.out.println("x = " + Arrays.toString(xs));
 		System.out.println("ar = " + Arrays.toString(a.ars));
@@ -53,8 +53,8 @@ public class ArimaTest {
 	private float[] generate(int length, float[] ars, float[] mas) {
 		var p = ars.length;
 		var q = mas.length;
-		float[] xsp = Floats_.concat(To.vector(p, i -> 8f * random.nextDouble()), new float[length]);
-		float[] epq = To.vector(length + q, i -> random.nextGaussian());
+		var xsp = Floats_.concat(To.vector(p, i -> 8f * random.nextDouble()), new float[length]);
+		var epq = To.vector(length + q, i -> random.nextGaussian());
 
 		for (var t = 0; t < length; t++) {
 			int tp = t + p, tpm1 = tp - 1;

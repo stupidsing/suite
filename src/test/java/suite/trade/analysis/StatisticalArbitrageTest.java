@@ -58,7 +58,7 @@ public class StatisticalArbitrageTest {
 
 		var ds = cfg.dataSource(Asset.hsiSymbol).cleanse();
 		var prices = ds.prices;
-		float[][] mas = To.array(power, float[].class, p -> ma.movingAvg(prices, 1 << p));
+		var mas = To.array(power, float[].class, p -> ma.movingAvg(prices, 1 << p));
 		var returns = ts.returns(prices);
 
 		var lr = stat.linearRegression(Ints_ //
@@ -200,7 +200,7 @@ public class StatisticalArbitrageTest {
 		IntObjMap<float[]> differencesByTor = Ints_ //
 				.range(1, maxTor) //
 				.mapIntObj(tor -> {
-					float[] differences = ts.differences(tor, prices);
+					var differences = ts.differences(tor, prices);
 					Arrays.sort(differences);
 					return differences;
 				}) //
@@ -270,10 +270,10 @@ public class StatisticalArbitrageTest {
 	@Test
 	public void testVolatility() {
 		System.out.println(showStats(ds -> {
-			float[] bandwidths0 = bb.bb(ds.prices, 32, 0, 2f).bandwidths;
+			var bandwidths0 = bb.bb(ds.prices, 32, 0, 2f).bandwidths;
 			var returns0 = ds.returns();
-			float[] bandwidths1 = ts.drop(1, bandwidths0);
-			float[] returns1 = ts.drop(1, returns0);
+			var bandwidths1 = ts.drop(1, bandwidths0);
+			var returns1 = ts.drop(1, returns0);
 			return stat.project(bandwidths1, returns1);
 		}));
 	}

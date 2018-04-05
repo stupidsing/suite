@@ -276,7 +276,8 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public float last() {
-		float c, c1 = FltFunUtil.EMPTYVALUE;
+		float c;
+		var c1 = FltFunUtil.EMPTYVALUE;
 		while ((c = next()) != FltFunUtil.EMPTYVALUE)
 			c1 = c;
 		return c1;
@@ -315,7 +316,8 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public float minOrEmpty(FltComparator comparator) {
-		float c = next(), c1;
+		var c = next();
+		float c1;
 		if (c != FltFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != FltFunUtil.EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
@@ -392,7 +394,8 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public float sum() {
-		float result = 0, c1;
+		float result = 0;
+		float c1;
 		while ((c1 = next()) != FltFunUtil.EMPTYVALUE)
 			result += c1;
 		return result;

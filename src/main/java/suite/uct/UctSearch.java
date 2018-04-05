@@ -166,8 +166,8 @@ public class UctSearch<Move> {
 		var beta = rave ? (float) (lnParentVisits / raveFactor) : 1f;
 		beta = min(max(beta, 0f), 1f);
 
-		float raveWins = getMoveRave(nRaveWins, child.move);
-		float raveVisits = getMoveRave(nRaveVisits, child.move);
+		var raveWins = getMoveRave(nRaveWins, child.move);
+		var raveVisits = getMoveRave(nRaveVisits, child.move);
 		var rave = raveWins / raveVisits + explorationFactor * (float) Math.sqrt(lnParentRaveVisits / (5f * raveVisits));
 
 		var wins = child.nWins;
@@ -233,8 +233,8 @@ public class UctSearch<Move> {
 	public void dumpRave() {
 		var n = 0;
 		for (var move : visitor.getAllMoves()) {
-			float nWins = getMoveRave(nRaveWins, move);
-			float nTotals = getMoveRave(nRaveVisits, move);
+			var nWins = getMoveRave(nRaveWins, move);
+			var nTotals = getMoveRave(nRaveVisits, move);
 			var s = 0 < nTotals ? df3.format(nWins / nTotals) : "  -  ";
 			System.out.print(s + " ");
 

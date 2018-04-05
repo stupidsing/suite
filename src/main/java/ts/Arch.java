@@ -24,9 +24,9 @@ public class Arch {
 
 		// auto regressive
 		var length = ys.length;
-		float[][] xs0 = To.array(length, float[].class, i -> copyPadZeroes(ys, i - p, i));
+		var xs0 = To.array(length, float[].class, i -> copyPadZeroes(ys, i - p, i));
 		LinearRegression lr0 = stat.linearRegression(xs0, ys, null);
-		float[] variances = To.vector(lr0.residuals, residual -> residual * residual);
+		var variances = To.vector(lr0.residuals, residual -> residual * residual);
 
 		// conditional heteroskedasticity
 		var lr1 = stat.linearRegression(Ints_ //

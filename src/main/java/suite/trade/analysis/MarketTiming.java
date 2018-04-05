@@ -45,8 +45,8 @@ public class MarketTiming {
 		var length = prices.length;
 		var lookback = 40;
 
-		float[] ma20 = ma.movingAvg(prices, 20);
-		float[] ma50 = ma.movingAvg(prices, 50);
+		var ma20 = ma.movingAvg(prices, 20);
+		var ma50 = ma.movingAvg(prices, 50);
 		var lookback80 = lookback * .8d;
 		var flags = new int[length];
 

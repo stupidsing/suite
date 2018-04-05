@@ -16,16 +16,16 @@ public class MovingAverage {
 
 	// exponential moving average convergence/divergence
 	public float[] emacd(float[] prices, double alpha0, double alpha1) {
-		float[] emas0 = exponentialMovingAvg(prices, alpha0); // long-term
-		float[] emas1 = exponentialMovingAvg(prices, alpha1); // short-term
+		var emas0 = exponentialMovingAvg(prices, alpha0); // long-term
+		var emas1 = exponentialMovingAvg(prices, alpha1); // short-term
 		return vec.sub(emas1, emas0);
 	}
 
 	// moving average convergence/divergence
 	public Macd macd(float[] prices, int nDays0, int nDays1, int nDays2) {
-		float[] mas0 = movingAvg(prices, nDays0); // long-term
-		float[] mas1 = movingAvg(prices, nDays1); // short-term
-		float[] diffs = vec.sub(mas1, mas0);
+		var mas0 = movingAvg(prices, nDays0); // long-term
+		var mas1 = movingAvg(prices, nDays1); // short-term
+		var diffs = vec.sub(mas1, mas0);
 		return new Macd(diffs, movingAvg(diffs, nDays2));
 	}
 
@@ -44,8 +44,8 @@ public class MovingAverage {
 	}
 
 	public float[] exponentialGeometricMovingAvg(float[] prices, double alpha) {
-		float[] logPrices = To.vector(prices, Math::log);
-		float[] movingAvgs = exponentialMovingAvg(logPrices, alpha);
+		var logPrices = To.vector(prices, Math::log);
+		var movingAvgs = exponentialMovingAvg(logPrices, alpha);
 		return To.vector(movingAvgs, Math::exp);
 	}
 
@@ -63,8 +63,8 @@ public class MovingAverage {
 	}
 
 	public float[] geometricMovingAvg(float[] prices, int windowSize) {
-		float[] logPrices = To.vector(prices, Math::log);
-		float[] movingAvgs = movingAvg(logPrices, windowSize);
+		var logPrices = To.vector(prices, Math::log);
+		var movingAvgs = movingAvg(logPrices, windowSize);
 		return To.vector(movingAvgs, Math::exp);
 	}
 
@@ -84,7 +84,7 @@ public class MovingAverage {
 
 	public MovingRange[] movingRange(float[] prices, int windowSize) {
 		return To.array(prices.length, MovingRange.class, i -> {
-			float[] window = ts.back(i, windowSize, prices);
+			var window = ts.back(i, windowSize, prices);
 			Arrays.sort(window);
 			var length = window.length;
 			return new MovingRange(window[0], window[length - 1], window[length / 2]);

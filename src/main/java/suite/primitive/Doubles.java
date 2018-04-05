@@ -92,7 +92,7 @@ public class Doubles implements Iterable<Double> {
 
 	public Doubles append(Doubles a) {
 		int size0 = size_(), size1 = a.size_(), newSize = size0 + size1;
-		double[] nb = new double[newSize];
+		var nb = new double[newSize];
 		System.arraycopy(cs, start, nb, 0, size0);
 		System.arraycopy(a.cs, a.start, nb, size0, size1);
 		return of(nb);
@@ -167,7 +167,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public Doubles reverse() {
-		double[] cs_ = new double[size_()];
+		var cs_ = new double[size_()];
 		int si = start, di = 0;
 		while (si < end)
 			cs_[di++] = cs[si++];
@@ -180,7 +180,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public Doubles sort() {
-		double[] cs = toArray();
+		var cs = toArray();
 		Arrays.sort(cs);
 		return Doubles.of(cs);
 	}

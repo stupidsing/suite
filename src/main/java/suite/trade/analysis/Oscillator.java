@@ -42,17 +42,17 @@ public class Oscillator {
 		var dmDns = new float[length];
 
 		for (var i = 1; i < length; i++) {
-			float upMove = max(0, his[i] - his[i - 1]);
-			float dnMove = max(0, los[i - 1] - los[i]);
+			var upMove = max(0, his[i] - his[i - 1]);
+			var dnMove = max(0, los[i - 1] - los[i]);
 			dmUps[i] = dnMove < upMove ? upMove : 0f;
 			dmDns[i] = upMove < dnMove ? dnMove : 0f;
 		}
 
-		float[] maDmUps = ma.movingAvg(dmUps, nDays);
-		float[] maDmDns = ma.movingAvg(dmDns, nDays);
-		float[] invAtrs = To.vector(ma.movingAvg(trueRange(ds), nDays), f -> Quant.div(1f, f));
-		float[] diUps = Floats_.toArray(length, i -> maDmUps[i] * invAtrs[i]);
-		float[] diDns = Floats_.toArray(length, i -> maDmDns[i] * invAtrs[i]);
+		var maDmUps = ma.movingAvg(dmUps, nDays);
+		var maDmDns = ma.movingAvg(dmDns, nDays);
+		var invAtrs = To.vector(ma.movingAvg(trueRange(ds), nDays), f -> Quant.div(1f, f));
+		var diUps = Floats_.toArray(length, i -> maDmUps[i] * invAtrs[i]);
+		var diDns = Floats_.toArray(length, i -> maDmDns[i] * invAtrs[i]);
 
 		return new Dmi(Floats_.toArray(length, i -> {
 			var diDn = diDns[i];
@@ -82,7 +82,7 @@ public class Oscillator {
 		var r = 1d / .015d;
 		var i3 = 1d / 3d;
 		var length = ds.ts.length;
-		float[] ps = To.vector(length, i -> (ds.closes[i] + ds.lows[i] + ds.highs[i]) * i3);
+		var ps = To.vector(length, i -> (ds.closes[i] + ds.lows[i] + ds.highs[i]) * i3);
 
 		return To.vector(length, i -> {
 			int i0 = max(0, i - nDays + 1);
@@ -161,8 +161,8 @@ public class Oscillator {
 			ds[i] = diff < 0f ? -diff : 0f;
 		}
 		var a = 1d / nDays;
-		float[] usMa = ma.exponentialMovingAvg(us, a);
-		float[] dsMa = ma.exponentialMovingAvg(ds, a);
+		var usMa = ma.exponentialMovingAvg(us, a);
+		var dsMa = ma.exponentialMovingAvg(ds, a);
 		return To.vector(length, i -> 1d - 1d / (1d + usMa[i] / dsMa[i]));
 	}
 
@@ -220,7 +220,7 @@ public class Oscillator {
 			his[i] = hi;
 		}
 
-		float[] k = To.vector(length, i -> {
+		var k = To.vector(length, i -> {
 			var low = los[i];
 			return (ds.closes[i] - low) / (his[i] - low);
 		});
@@ -238,7 +238,7 @@ public class Oscillator {
 			var hi = ds.highs[i];
 			var lo = ds.lows[i];
 			var prevClose = ds.closes[i - 1];
-			float max = max(Math.abs(hi - prevClose), Math.abs(lo - prevClose));
+			var max = max(Math.abs(hi - prevClose), Math.abs(lo - prevClose));
 			trs[i] = max(hi - lo, max);
 		}
 

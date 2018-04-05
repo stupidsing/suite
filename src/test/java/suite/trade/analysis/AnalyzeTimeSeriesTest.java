@@ -58,8 +58,8 @@ public class AnalyzeTimeSeriesTest {
 		var length = ds.ts.length;
 		var ops = ds.opens;
 		var cls = ds.closes;
-		float[] ocgs = Floats_.toArray(length, i -> cls[i] - ops[i]);
-		float[] cogs = Floats_.toArray(length, i -> ops[i] - cls[max(0, i - 1)]);
+		var ocgs = Floats_.toArray(length, i -> cls[i] - ops[i]);
+		var cogs = Floats_.toArray(length, i -> ops[i] - cls[max(0, i - 1)]);
 		LogUtil.info("open/close gap = " + stat.meanVariance(ocgs));
 		LogUtil.info("close/open gap = " + stat.meanVariance(cogs));
 		LogUtil.info("ocg/cog covariance = " + stat.correlation(ocgs, cogs));
@@ -71,10 +71,10 @@ public class AnalyzeTimeSeriesTest {
 		var log2 = Quant.log2trunc(length);
 		var nYears = length * Trade_.invTradeDaysPerYear;
 
-		float[] fds = dct.dct(Arrays.copyOfRange(prices, length - log2, length));
+		var fds = dct.dct(Arrays.copyOfRange(prices, length - log2, length));
 		var returns = ts.returns(prices);
-		float[] logPrices = To.vector(prices, Math::log);
-		float[] logReturns = ts.differences(1, logPrices);
+		var logPrices = To.vector(prices, Math::log);
+		var logReturns = ts.differences(1, logPrices);
 		var rmv = stat.meanVariance(returns);
 		var variance = rmv.variance;
 		var kelly = rmv.mean / variance;
@@ -97,8 +97,8 @@ public class AnalyzeTimeSeriesTest {
 		BuySell[] reverts = To.array(8, BuySell.class, revert);
 		BuySell[] trends_ = To.array(8, BuySell.class, trend_);
 		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
-		float[] holds = mt.hold(prices, 1f, 1f, 1f);
-		float[] ma200 = ma.movingAvg(prices, 200);
+		var holds = mt.hold(prices, 1f, 1f, 1f);
+		var ma200 = ma.movingAvg(prices, 200);
 		BuySell mat = buySell(d -> {
 			var last = d - 1;
 			return Quant.sign(ma200[last], prices[last]);

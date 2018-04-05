@@ -29,13 +29,13 @@ public class SymmetricRank1 {
 		var invh = mtx.identity(xs.length); // approximated inverse of Hessian
 
 		for (var iter = 0; iter < 9; iter++) {
-			float[] dxs = mtx.mul(invh, gradient);
-			float[] xs1 = vec.add(xs, dxs);
+			var dxs = mtx.mul(invh, gradient);
+			var xs1 = vec.add(xs, dxs);
 
 			var gradient1 = gradientFun.apply(xs1);
-			float[] ys = vec.sub(gradient1, gradient);
-			float[] v = vec.sub(dxs, mtx.mul(invh, ys));
-			float[][] invh1 = mtx.add(invh, mtx.scale(mtx.mul(v), vec.dot(v, ys)));
+			var ys = vec.sub(gradient1, gradient);
+			var v = vec.sub(dxs, mtx.mul(invh, ys));
+			var invh1 = mtx.add(invh, mtx.scale(mtx.mul(v), vec.dot(v, ys)));
 
 			xs = xs1;
 			gradient = gradient1;

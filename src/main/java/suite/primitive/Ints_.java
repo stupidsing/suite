@@ -37,7 +37,7 @@ public class Ints_ {
 		var length = 0;
 		for (int[] fs : array)
 			length += fs.length;
-		int[] fs1 = new int[length];
+		var fs1 = new int[length];
 		var i = 0;
 		for (int[] fs : array) {
 			var length_ = fs.length;
@@ -51,7 +51,7 @@ public class Ints_ {
 		var length = 0;
 		for (var ints : array)
 			length += ints.size();
-		int[] cs1 = new int[length];
+		var cs1 = new int[length];
 		var i = 0;
 		for (var ints : array) {
 			var size_ = ints.size();
@@ -125,7 +125,7 @@ public class Ints_ {
 	}
 
 	public static int[] toArray(int length, Int_Int f) {
-		int[] cs = new int[length];
+		var cs = new int[length];
 		for (var i = 0; i < length; i++)
 			cs[i] = f.apply(i);
 		return cs;

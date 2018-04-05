@@ -92,7 +92,7 @@ public class Floats implements Iterable<Float> {
 
 	public Floats append(Floats a) {
 		int size0 = size_(), size1 = a.size_(), newSize = size0 + size1;
-		float[] nb = new float[newSize];
+		var nb = new float[newSize];
 		System.arraycopy(cs, start, nb, 0, size0);
 		System.arraycopy(a.cs, a.start, nb, size0, size1);
 		return of(nb);
@@ -167,7 +167,7 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public Floats reverse() {
-		float[] cs_ = new float[size_()];
+		var cs_ = new float[size_()];
 		int si = start, di = 0;
 		while (si < end)
 			cs_[di++] = cs[si++];
@@ -180,7 +180,7 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public Floats sort() {
-		float[] cs = toArray();
+		var cs = toArray();
 		Arrays.sort(cs);
 		return Floats.of(cs);
 	}

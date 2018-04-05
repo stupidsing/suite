@@ -41,10 +41,10 @@ public class Render {
 	}
 
 	public Image render(int width, int height, BiFun<Float, R3> f) {
-		float scale = 1f / max(width, height);
+		var scale = 1f / max(width, height);
 		int centerX = width / 2, centerY = height / 2;
-		float[] xs = Floats_.toArray(width + 1, x -> (x - centerX) * scale);
-		float[] ys = Floats_.toArray(height + 1, y -> (y - centerY) * scale);
+		var xs = Floats_.toArray(width + 1, x -> (x - centerX) * scale);
+		var ys = Floats_.toArray(height + 1, y -> (y - centerY) * scale);
 
 		return renderPixels(width, height, (IntInt_Obj<R3>) (x, y) -> {
 			R3 color;

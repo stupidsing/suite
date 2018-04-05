@@ -37,7 +37,7 @@ public class Longs_ {
 		var length = 0;
 		for (long[] fs : array)
 			length += fs.length;
-		long[] fs1 = new long[length];
+		var fs1 = new long[length];
 		var i = 0;
 		for (long[] fs : array) {
 			var length_ = fs.length;
@@ -51,7 +51,7 @@ public class Longs_ {
 		var length = 0;
 		for (var longs : array)
 			length += longs.size();
-		long[] cs1 = new long[length];
+		var cs1 = new long[length];
 		var i = 0;
 		for (var longs : array) {
 			var size_ = longs.size();
@@ -125,7 +125,7 @@ public class Longs_ {
 	}
 
 	public static long[] toArray(int length, Int_Lng f) {
-		long[] cs = new long[length];
+		var cs = new long[length];
 		for (var i = 0; i < length; i++)
 			cs[i] = f.apply(i);
 		return cs;

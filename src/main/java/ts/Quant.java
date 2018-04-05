@@ -98,7 +98,7 @@ public class Quant {
 		var hold = 0f;
 		var nDays = 0;
 		for (var i = start; i < end; i++) {
-			float hold1 = nDays < nDaysExit ? fun.apply(i, hold) : 0f;
+			var hold1 = nDays < nDaysExit ? fun.apply(i, hold) : 0f;
 			nDays = hold1 != 0f && hold == hold1 ? nDays + 1 : 0;
 			holds[i] = hold = hold1;
 		}

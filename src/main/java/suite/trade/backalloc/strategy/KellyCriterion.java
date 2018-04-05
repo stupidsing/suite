@@ -34,13 +34,13 @@ public class KellyCriterion {
 		var symbols = returnsBySymbol.keySet().toArray(new String[0]);
 		var nSymbols = symbols.length;
 
-		float[][] cov = To.matrix(nSymbols, nSymbols, (i0, i1) -> {
+		var cov = To.matrix(nSymbols, nSymbols, (i0, i1) -> {
 			var returns0 = returnsBySymbol.get(symbols[i0]);
 			var returns1 = returnsBySymbol.get(symbols[i1]);
 			return (float) stat.covariance(returns0, returns1);
 		});
 
-		float[] returns = To.vector(symbols, excessReturnBySymbol::get);
+		var returns = To.vector(symbols, excessReturnBySymbol::get);
 		var allocations = cholesky.inverseMul(cov).apply(returns);
 
 		return Ints_ //

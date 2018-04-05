@@ -276,7 +276,8 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public long last() {
-		long c, c1 = LngFunUtil.EMPTYVALUE;
+		long c;
+		var c1 = LngFunUtil.EMPTYVALUE;
 		while ((c = next()) != LngFunUtil.EMPTYVALUE)
 			c1 = c;
 		return c1;
@@ -315,7 +316,8 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public long minOrEmpty(LngComparator comparator) {
-		long c = next(), c1;
+		var c = next();
+		long c1;
 		if (c != LngFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != LngFunUtil.EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
@@ -392,7 +394,8 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public long sum() {
-		long result = 0, c1;
+		long result = 0;
+		long c1;
 		while ((c1 = next()) != LngFunUtil.EMPTYVALUE)
 			result += c1;
 		return result;

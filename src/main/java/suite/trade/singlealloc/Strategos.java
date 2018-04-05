@@ -30,7 +30,7 @@ public class Strategos {
 				Arrays.fill(fs0, nPastDays, windowSize, price0);
 
 				var fs1 = dct.dct(fs0);
-				float[] fs2 = Floats_.toArray(windowSize, j -> j < nLowPass ? fs1[j] : 0f);
+				var fs2 = Floats_.toArray(windowSize, j -> j < nLowPass ? fs1[j] : 0f);
 				var fs3 = dct.idct(fs2);
 
 				var predict = fs3[fs3.length - 1];
@@ -42,9 +42,9 @@ public class Strategos {
 
 	public BuySellStrategy macdSignalLineX(float alpha0, float alpha1, float macdAlpha) {
 		return prices -> {
-			float[] macd = ma.emacd(prices, alpha0, alpha1);
-			float[] macdEmas = ma.exponentialMovingAvg(macd, macdAlpha);
-			float[] diff = vec.sub(macd, macdEmas);
+			var macd = ma.emacd(prices, alpha0, alpha1);
+			var macdEmas = ma.exponentialMovingAvg(macd, macdAlpha);
+			var diff = vec.sub(macd, macdEmas);
 			return crossover(diff);
 		};
 	}
@@ -56,7 +56,7 @@ public class Strategos {
 
 	public BuySellStrategy movingAvgMeanReverting(int nPastDays, int nHoldDays, float threshold) {
 		return prices -> {
-			float[] movingAvgs = ma.movingAvg(prices, nPastDays);
+			var movingAvgs = ma.movingAvg(prices, nPastDays);
 
 			return holdFixedDays(prices.length, nHoldDays, day -> {
 				if (nPastDays <= day) {

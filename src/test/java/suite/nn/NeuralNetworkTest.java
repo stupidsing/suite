@@ -34,8 +34,8 @@ public class NeuralNetworkTest {
 				for (var i = 0; i < 16384; i++) {
 					var b0 = random.nextBoolean();
 					var b1 = random.nextBoolean();
-					float[] in = input(b0, b1);
-					float[] expect = new float[] { f(oper.apply(b0, b1)), };
+					var in = input(b0, b1);
+					var expect = new float[] { f(oper.apply(b0, b1)), };
 					Out<float[], float[]> out = train.feed(in);
 					var actual = out.output;
 					out.backprop.apply(vec.sub(expect, actual));
@@ -45,7 +45,7 @@ public class NeuralNetworkTest {
 
 				for (var b0 : booleans)
 					for (var b1 : booleans) {
-						float[] in = input(b0, b1);
+						var in = input(b0, b1);
 						boolean out = oper.apply(b0, b1);
 						var f = train.feed(in).output[0];
 						System.out.println(b0 + " " + name + " " + b1 + " = " + f);

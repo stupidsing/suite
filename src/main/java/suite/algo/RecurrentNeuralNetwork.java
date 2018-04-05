@@ -76,8 +76,8 @@ public class RecurrentNeuralNetwork {
 			float[] memory1 = vec.of(memory = Tanh.tanhOn(mtx.mul(weights, iv)));
 
 			if (expected != null) {
-				float[] e_memory1 = vec.sub(expected, memory1);
-				float[] e_weights = Forget.forgetOn(e_memory1, Tanh.tanhGradientOn(memory1));
+				var e_memory1 = vec.sub(expected, memory1);
+				var e_weights = Forget.forgetOn(e_memory1, Tanh.tanhGradientOn(memory1));
 
 				for (var i = 0; i < memoryLength; i++)
 					for (var j = 0; j < ll1; j++)

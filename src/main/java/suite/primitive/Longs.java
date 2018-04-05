@@ -92,7 +92,7 @@ public class Longs implements Iterable<Long> {
 
 	public Longs append(Longs a) {
 		int size0 = size_(), size1 = a.size_(), newSize = size0 + size1;
-		long[] nb = new long[newSize];
+		var nb = new long[newSize];
 		System.arraycopy(cs, start, nb, 0, size0);
 		System.arraycopy(a.cs, a.start, nb, size0, size1);
 		return of(nb);
@@ -167,7 +167,7 @@ public class Longs implements Iterable<Long> {
 	}
 
 	public Longs reverse() {
-		long[] cs_ = new long[size_()];
+		var cs_ = new long[size_()];
 		int si = start, di = 0;
 		while (si < end)
 			cs_[di++] = cs[si++];
@@ -180,7 +180,7 @@ public class Longs implements Iterable<Long> {
 	}
 
 	public Longs sort() {
-		long[] cs = toArray();
+		var cs = toArray();
 		Arrays.sort(cs);
 		return Longs.of(cs);
 	}

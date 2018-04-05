@@ -276,7 +276,8 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public double last() {
-		double c, c1 = DblFunUtil.EMPTYVALUE;
+		double c;
+		var c1 = DblFunUtil.EMPTYVALUE;
 		while ((c = next()) != DblFunUtil.EMPTYVALUE)
 			c1 = c;
 		return c1;
@@ -315,7 +316,8 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public double minOrEmpty(DblComparator comparator) {
-		double c = next(), c1;
+		var c = next();
+		double c1;
 		if (c != DblFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != DblFunUtil.EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
@@ -392,7 +394,8 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public double sum() {
-		double result = 0, c1;
+		double result = 0;
+		double c1;
 		while ((c1 = next()) != DblFunUtil.EMPTYVALUE)
 			result += c1;
 		return result;

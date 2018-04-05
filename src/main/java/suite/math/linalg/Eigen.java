@@ -20,10 +20,10 @@ public class Eigen {
 		var eigenValue = 0f;
 
 		for (var v = 0; v < size; v++) {
-			float[] xs = Floats_.toArray(size, i -> random.nextFloat());
+			var xs = Floats_.toArray(size, i -> random.nextFloat());
 
 			for (var iteration = 0; iteration < 256; iteration++) {
-				float[] ys = mtx.mul(m, xs);
+				var ys = mtx.mul(m, xs);
 				eigenValue = 0f;
 				for (var y : ys)
 					if (Math.abs(eigenValue) < Math.abs(y))
@@ -63,7 +63,7 @@ public class Eigen {
 
 			float[] wp = mtx.mul(m, vs[j] = vj);
 			float[] sub0 = vec.scale(vj, alphas[0] = (float) vec.dot(wp, vj));
-			float[] sub1 = 0 < j ? vec.add(sub0, vec.scale(vj1, beta)) : sub0;
+			var sub1 = 0 < j ? vec.add(sub0, vec.scale(vj1, beta)) : sub0;
 
 			vj1 = vj;
 			ws[j] = vec.sub(wp, sub1);

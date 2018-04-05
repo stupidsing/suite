@@ -44,7 +44,7 @@ public class QrTest {
 		qr.map((q, r) -> {
 			System.out.println(mtx.toString(q));
 			System.out.println(mtx.toString(r));
-			float[][] m1 = mtx.mul(q, r);
+			var m1 = mtx.mul(q, r);
 
 			// verify m = QR
 			mtx.verifyEquals(m0, m1);

@@ -84,7 +84,7 @@ public class BackAllocatorGeneral {
 
 	private BackAllocator bb(int tor) { // Bollingers Band
 		return BackAllocator_.byPrices(prices -> {
-			float[] sds = bb.bb(prices, tor, 0, 2f).sds;
+			var sds = bb.bb(prices, tor, 0, 2f).sds;
 			return Quant.fold(0, sds.length, (i, hold) -> -Quant.hold(hold, sds[i], -.5d, 0d, .5d));
 		});
 	}
@@ -94,7 +94,7 @@ public class BackAllocatorGeneral {
 		var exit = -.08f;
 
 		return BackAllocator_.byPrices(prices -> {
-			float[] sds = bb.bb(prices, tor, 0, 2f).sds;
+			var sds = bb.bb(prices, tor, 0, 2f).sds;
 
 			return Quant.enterKeep(0, sds.length, //
 					i -> entry < sds[i], //
@@ -106,14 +106,14 @@ public class BackAllocatorGeneral {
 
 	private BackAllocator bbAllocate(int tor) {
 		return BackAllocator_.byPrices(prices -> {
-			float[] sds = bb.bb(prices, tor, 0, 1f).sds;
+			var sds = bb.bb(prices, tor, 0, 1f).sds;
 			return index -> .5d - sds[index - 1] * .5d;
 		});
 	}
 
 	private BackAllocator bbTrend(int tor, double exitThreshold) {
 		return BackAllocator_.byPrices(prices -> {
-			float[] sds = bb.bb(prices, tor, 0, 2f).sds;
+			var sds = bb.bb(prices, tor, 0, 2f).sds;
 			return Quant.enterUntilDrawDown(prices, exitThreshold, //
 					(i, price) -> .5d <= sds[i], //
 					(i, price) -> sds[i] <= -.5d);
@@ -163,7 +163,7 @@ public class BackAllocatorGeneral {
 		var scale = 1d / Math.log(.8d);
 
 		return BackAllocator_.byPrices(prices -> {
-			float[] ema = ma.exponentialMovingAvg(prices, halfLife);
+			var ema = ma.exponentialMovingAvg(prices, halfLife);
 
 			return Quant.filterRange(1, index -> {
 				var last = index - 1;
@@ -203,7 +203,7 @@ public class BackAllocatorGeneral {
 
 	private BackAllocator ma(int tor) {
 		return BackAllocator_.byPrices(prices -> {
-			float[] movingAvgs = ma.movingAvg(prices, tor);
+			var movingAvgs = ma.movingAvg(prices, tor);
 
 			return index -> {
 				var last = index - 1;
@@ -240,8 +240,8 @@ public class BackAllocatorGeneral {
 	// eight-days open close
 	private BackAllocator openClose(int tor) {
 		return BackAllocator_.byDataSource(ds -> {
-			float[] movingAvgOps = ma.movingAvg(ds.opens, tor);
-			float[] movingAvgCls = ma.movingAvg(ds.closes, tor);
+			var movingAvgOps = ma.movingAvg(ds.opens, tor);
+			var movingAvgCls = ma.movingAvg(ds.closes, tor);
 
 			return index -> {
 				var last = index - 1;
@@ -309,8 +309,8 @@ public class BackAllocatorGeneral {
 
 			return Quant.fold(0, prices.length, (i, hold) -> {
 				var price = prices[i];
-				float min = min(minMax.t0, price);
-				float max = max(minMax.t1, price);
+				var min = min(minMax.t0, price);
+				var max = max(minMax.t1, price);
 				if (threshold <= Quant.return_(min, price)) {
 					hold = max(0f, hold + daily);
 					max = price;
@@ -327,9 +327,9 @@ public class BackAllocatorGeneral {
 
 	private BackAllocator tripleExpGeometricMovingAvgs(int d2, int d6, int d18) {
 		return BackAllocator_.byPrices(prices -> {
-			float[] movingAvgs0 = ma.exponentialGeometricMovingAvg(prices, d18);
-			float[] movingAvgs1 = ma.exponentialGeometricMovingAvg(prices, d6);
-			float[] movingAvgs2 = ma.exponentialGeometricMovingAvg(prices, d2);
+			var movingAvgs0 = ma.exponentialGeometricMovingAvg(prices, d18);
+			var movingAvgs1 = ma.exponentialGeometricMovingAvg(prices, d6);
+			var movingAvgs2 = ma.exponentialGeometricMovingAvg(prices, d2);
 
 			return Quant.filterRange(1, index -> {
 				var last = index - 1;
@@ -508,7 +508,7 @@ public class BackAllocatorGeneral {
 	private BackAllocator volatile_(int nDays) {
 		return BackAllocator_ //
 				.byPrices(prices -> {
-					float[] bandwidths = bb.bb(prices, nDays, 0, .5f).bandwidths;
+					var bandwidths = bb.bb(prices, nDays, 0, .5f).bandwidths;
 					return index -> bandwidths[index - 1];
 				}) //
 				.pick(3);
@@ -516,8 +516,8 @@ public class BackAllocatorGeneral {
 
 	private BackAllocator xma(int halfLife0, int halfLife1) {
 		return BackAllocator_.byPrices(prices -> {
-			float[] movingAvgs0 = ma.exponentialMovingAvg(prices, halfLife0);
-			float[] movingAvgs1 = ma.exponentialMovingAvg(prices, halfLife1);
+			var movingAvgs0 = ma.exponentialMovingAvg(prices, halfLife0);
+			var movingAvgs1 = ma.exponentialMovingAvg(prices, halfLife1);
 
 			return Quant.filterRange(1, index -> {
 				var last = index - 1;

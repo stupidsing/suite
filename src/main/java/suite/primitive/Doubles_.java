@@ -37,7 +37,7 @@ public class Doubles_ {
 		var length = 0;
 		for (double[] fs : array)
 			length += fs.length;
-		double[] fs1 = new double[length];
+		var fs1 = new double[length];
 		var i = 0;
 		for (double[] fs : array) {
 			var length_ = fs.length;
@@ -51,7 +51,7 @@ public class Doubles_ {
 		var length = 0;
 		for (var doubles : array)
 			length += doubles.size();
-		double[] cs1 = new double[length];
+		var cs1 = new double[length];
 		var i = 0;
 		for (var doubles : array) {
 			var size_ = doubles.size();
@@ -125,7 +125,7 @@ public class Doubles_ {
 	}
 
 	public static double[] toArray(int length, Int_Dbl f) {
-		double[] cs = new double[length];
+		var cs = new double[length];
 		for (var i = 0; i < length; i++)
 			cs[i] = f.apply(i);
 		return cs;

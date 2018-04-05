@@ -36,7 +36,7 @@ public class Bfgs {
 
 		for (var iter = 0; iter < 16; iter++) {
 			var xs_ = xs;
-			float[] ps = mtx.mul(ib, vec.neg(gs)); // direction
+			var ps = mtx.mul(ib, vec.neg(gs)); // direction
 			Dbl_Obj<float[]> line = alpha -> vec.add(xs_, vec.scale(ps, alpha));
 
 			var alpha = lineSearch( //
@@ -44,10 +44,10 @@ public class Bfgs {
 					alpha_ -> vec.dot(gradientFun.apply(line.apply(alpha_)), ps), //
 					1d);
 
-			float[] ss = vec.scale(ps, alpha);
-			float[] xs1 = vec.add(xs_, ss); // line.apply(alpha);
+			var ss = vec.scale(ps, alpha);
+			var xs1 = vec.add(xs_, ss); // line.apply(alpha);
 			var gs1 = gradientFun.apply(xs1);
-			float[] ys = vec.sub(gs1, gs);
+			var ys = vec.sub(gs1, gs);
 			double yts = vec.dot(ys, ss);
 
 			float[][] ib1;
@@ -55,13 +55,13 @@ public class Bfgs {
 			if (alpha == 0d)
 				break;
 			else if (Boolean.FALSE) {
-				float[][] ma = mtx.sub(id, mtx.scale(mtx.mul(ss, ys), yts));
-				float[][] mb = mtx.sub(id, mtx.scale(mtx.mul(ys, ss), yts));
+				var ma = mtx.sub(id, mtx.scale(mtx.mul(ss, ys), yts));
+				var mb = mtx.sub(id, mtx.scale(mtx.mul(ys, ss), yts));
 				ib1 = mtx.add(mtx.mul(ma, ib, mb), mtx.scale(mtx.mul(ss), yts));
 			} else {
 				double ytiby = vec.dot(ys, mtx.mul(ib, ys));
-				float[][] ma = mtx.scale(mtx.mul(ss), yts + ytiby / (yts * yts));
-				float[][] mb = mtx.scale(mtx.add(mtx.mul(ib, mtx.mul(ys, ss)), mtx.mul(mtx.mul(ss, ys), ib)), yts);
+				var ma = mtx.scale(mtx.mul(ss), yts + ytiby / (yts * yts));
+				var mb = mtx.scale(mtx.add(mtx.mul(ib, mtx.mul(ys, ss)), mtx.mul(mtx.mul(ss, ys), ib)), yts);
 				ib1 = mtx.add(ib, mtx.sub(ma, mb));
 			}
 

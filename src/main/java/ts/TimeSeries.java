@@ -31,8 +31,8 @@ public class TimeSeries {
 	public float[] acf(float[] ys, int n) {
 		var length = ys.length;
 		var meany = stat.mean(ys);
-		float[] ydevs = To.vector(length, i -> ys[i] - meany);
-		float[] acovs = To.vector(length, k -> Ints_ //
+		var ydevs = To.vector(length, i -> ys[i] - meany);
+		var acovs = To.vector(length, k -> Ints_ //
 				.range(length - k) //
 				.toDouble(Int_Dbl.sum(i -> (ydevs[i] * ydevs[i + k]))));
 		var inv = 1d / acovs[0];
@@ -41,7 +41,7 @@ public class TimeSeries {
 
 	// Augmented Dickey-Fuller test
 	public double adf(float[] ys, int tor) {
-		float[] ydiffs = differences_(1, ys);
+		var ydiffs = differences_(1, ys);
 		var length = ys.length;
 		var lr = stat.linearRegression(Ints_ //
 				.range(tor, length) //
@@ -78,11 +78,11 @@ public class TimeSeries {
 
 	// epchan
 	public double hurst(float[] ys, int tor) {
-		float[] logys = To.vector(ys, Math::log);
+		var logys = To.vector(ys, Math::log);
 		int[] tors = Ints_.toArray(tor, t -> t + 1);
-		float[] logVrs = To.vector(tor, t -> {
-			float[] diffs = dropDiff_(tors[t], logys);
-			float[] diffs2 = To.vector(diffs, diff -> diff * diff);
+		var logVrs = To.vector(tor, t -> {
+			var diffs = dropDiff_(tors[t], logys);
+			var diffs2 = To.vector(diffs, diff -> diff * diff);
 			return Math.log(stat.variance(diffs2));
 		});
 		var lr = stat.linearRegression(Ints_ //
@@ -94,15 +94,15 @@ public class TimeSeries {
 
 	// http://www.financialwisdomforum.org/gummy-stuff/hurst.htm
 	public double hurstFwf(float[] ys, int tor) {
-		float[] logys = To.vector(ys, Math::log);
-		float[] returns0 = dropDiff_(1, logys);
+		var logys = To.vector(ys, Math::log);
+		var returns0 = dropDiff_(1, logys);
 		var length = returns0.length;
 		List<FltObjPair<float[]>> pairs = new ArrayList<>();
 		for (var n = 0; n < length * 3 / 4; n++) {
-			float[] returns = Arrays.copyOfRange(returns0, n, length);
+			var returns = Arrays.copyOfRange(returns0, n, length);
 			var mv = stat.meanVariance(returns);
 			var mean = mv.mean;
-			float[] devs = To.vector(returns, r -> r - mean);
+			var devs = To.vector(returns, r -> r - mean);
 			var min = Double.MAX_VALUE;
 			var max = Double.MIN_VALUE;
 			var sum = 0d;
@@ -149,7 +149,7 @@ public class TimeSeries {
 	}
 
 	public LinearRegression meanReversion(float[] ys, int tor) {
-		float[] diffs = differences_(1, ys);
+		var diffs = differences_(1, ys);
 
 		return stat.linearRegression(Ints_ //
 				.range(tor, ys.length) //
@@ -157,7 +157,7 @@ public class TimeSeries {
 	}
 
 	public LinearRegression movingAvgMeanReversion(float[] ys, float[] movingAvg, int tor) {
-		float[] diffs = differences_(1, ys);
+		var diffs = differences_(1, ys);
 
 		return stat.linearRegression(Ints_ //
 				.range(tor, ys.length) //
@@ -167,9 +167,9 @@ public class TimeSeries {
 	// partial autocorrelation function
 	// https://stats.stackexchange.com/questions/129052/acf-and-pacf-formula
 	public float[] pacf(float[] ys, int n) {
-		float[] acf = acf(ys, n);
-		float[][] m = To.matrix(n, n, (i, j) -> acf[Math.abs(i - j)]);
-		float[] acf1 = Arrays.copyOfRange(acf, 1, n - 1);
+		var acf = acf(ys, n);
+		var m = To.matrix(n, n, (i, j) -> acf[Math.abs(i - j)]);
+		var acf1 = Arrays.copyOfRange(acf, 1, n - 1);
 		return cd.inverseMul(m).apply(acf1);
 	}
 
@@ -233,9 +233,9 @@ public class TimeSeries {
 	}
 
 	public double varianceRatio(float[] prices, int tor) {
-		float[] logs = To.vector(prices, Math::log);
-		float[] diffsTor = dropDiff_(tor, logs);
-		float[] diffs1 = dropDiff_(1, logs);
+		var logs = To.vector(prices, Math::log);
+		var diffsTor = dropDiff_(tor, logs);
+		var diffs1 = dropDiff_(1, logs);
 		return stat.variance(diffsTor) / (tor * stat.variance(diffs1));
 	}
 

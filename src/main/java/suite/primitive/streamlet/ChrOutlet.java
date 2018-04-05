@@ -276,7 +276,8 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public char last() {
-		char c, c1 = ChrFunUtil.EMPTYVALUE;
+		char c;
+		var c1 = ChrFunUtil.EMPTYVALUE;
 		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
 			c1 = c;
 		return c1;
@@ -315,7 +316,8 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public char minOrEmpty(ChrComparator comparator) {
-		char c = next(), c1;
+		var c = next();
+		char c1;
 		if (c != ChrFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != ChrFunUtil.EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
@@ -392,7 +394,8 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public char sum() {
-		char result = 0, c1;
+		char result = 0;
+		char c1;
 		while ((c1 = next()) != ChrFunUtil.EMPTYVALUE)
 			result += c1;
 		return result;

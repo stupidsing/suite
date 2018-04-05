@@ -34,9 +34,9 @@ public class BackAllocatorOld {
 
 	public BackAllocator bbSlope() {
 		return BackAllocator_.byPrices(prices -> {
-			float[] sds = bb.bb(prices, 32, 0, 2f).sds;
-			float[] ma_ = ma.movingAvg(sds, 6);
-			float[] diffs = ts.differences(3, ma_);
+			var sds = bb.bb(prices, 32, 0, 2f).sds;
+			var ma_ = ma.movingAvg(sds, 6);
+			var diffs = ts.differences(3, ma_);
 
 			return index -> {
 				var last = index - 1;
@@ -78,8 +78,8 @@ public class BackAllocatorOld {
 		var windowSize1 = 12;
 
 		return BackAllocator_.byPrices(prices -> {
-			float[] movingAvgs0 = ma.movingAvg(prices, windowSize0);
-			float[] movingAvgs1 = ma.movingAvg(prices, windowSize1);
+			var movingAvgs0 = ma.movingAvg(prices, windowSize0);
+			var movingAvgs1 = ma.movingAvg(prices, windowSize1);
 			MovingRange[] movingRanges0 = ma.movingRange(prices, windowSize0);
 			MovingRange[] movingRanges1 = ma.movingRange(prices, windowSize1);
 

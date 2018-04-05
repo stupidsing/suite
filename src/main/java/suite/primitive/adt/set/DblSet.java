@@ -50,7 +50,7 @@ public class DblSet {
 		size++;
 
 		if (capacity * 3 / 4 < size) {
-			double[] vs0 = vs;
+			var vs0 = vs;
 			double v_;
 
 			allocate(capacity * 2);

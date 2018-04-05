@@ -35,7 +35,7 @@ public class Matrix {
 		int kh = h(k), kw = w(k);
 		var h1 = h(m) - kh + 1;
 		var w1 = w(m) - kw + 1;
-		float[][] o = of(h1, w1);
+		var o = of(h1, w1);
 		for (var i = 0; i < h1; i++)
 			for (var j = 0; j < w1; j++)
 				for (var di = 0; di < kh; di++)
@@ -48,7 +48,7 @@ public class Matrix {
 	public float[][] covariance(float[][] vs) {
 		var h = h(vs);
 		var w = w(vs);
-		float[] means = To.vector(h, j -> Read.from(vs).toDouble(Obj_Dbl.sum(vector -> vector[j])) / w);
+		var means = To.vector(h, j -> Read.from(vs).toDouble(Obj_Dbl.sum(vector -> vector[j])) / w);
 
 		return To.matrix(h, h, (i0, i1) -> Ints_ //
 				.range(w) //
@@ -107,7 +107,7 @@ public class Matrix {
 	}
 
 	public float[][] identity(int size) {
-		float[][] m = of(size, size);
+		var m = of(size, size);
 		for (var r = 0; r < size; r++)
 			m[r][r] = 1f;
 		return m;
@@ -221,7 +221,7 @@ public class Matrix {
 		var ks = w(m);
 		var height = h(m);
 		var width = w(n);
-		float[][] o = of(height, width);
+		var o = of(height, width);
 		int i1, j1, k1;
 		if (height == 0 || ks == h(n))
 			for (int i0 = 0; i0 < height; i0 = i1) {
@@ -258,7 +258,7 @@ public class Matrix {
 		var ks = w(m);
 		var height = h(m);
 		var width = h(n);
-		float[][] o = of(height, width);
+		var o = of(height, width);
 		int i1, j1, k1;
 		if (ks == w(n))
 			for (int i0 = 0; i0 < height; i0 = i1) {
@@ -284,7 +284,7 @@ public class Matrix {
 		var ks = h(m);
 		var height = w(m);
 		var width = w(n);
-		float[][] o = of(height, width);
+		var o = of(height, width);
 		int i1, j1, k1;
 		if (ks == h(n))
 			for (int i0 = 0; i0 < height; i0 = i1) {
@@ -419,7 +419,7 @@ public class Matrix {
 	public float[][] transpose(float[][] m) {
 		var height = h(m);
 		var width = w(m);
-		float[][] o = of(width, height);
+		var o = of(width, height);
 		int i1, j1;
 		for (int i0 = 0; i0 < height; i0 = i1) {
 			i1 = min(i0 + 64, height);
@@ -450,7 +450,7 @@ public class Matrix {
 	private float[][] copy(float[][] m0) {
 		var height = h(m0);
 		var width = w(m0);
-		float[][] m1 = of(height, width);
+		var m1 = of(height, width);
 		for (var i = 0; i < height; i++)
 			for (var j = 0; j < width; j++)
 				m1[i][j] = m0[i][j];

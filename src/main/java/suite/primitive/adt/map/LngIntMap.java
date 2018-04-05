@@ -154,7 +154,7 @@ public class LngIntMap {
 		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
-			long[] ks0 = ks;
+			var ks0 = ks;
 			int[] vs0 = vs;
 			int v_;
 

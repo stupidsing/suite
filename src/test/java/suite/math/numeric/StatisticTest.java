@@ -27,8 +27,8 @@ public class StatisticTest {
 	@Test
 	public void testLinearRegression() {
 		int m = 7, n = 9;
-		float[] expect = Floats_.toArray(m, j -> random.nextFloat());
-		float[][] xs = To.matrix(n, m, (i, j) -> random.nextFloat());
+		var expect = Floats_.toArray(m, j -> random.nextFloat());
+		var xs = To.matrix(n, m, (i, j) -> random.nextFloat());
 
 		var lr = stat.linearRegression(Read //
 				.from(xs) //
@@ -39,7 +39,7 @@ public class StatisticTest {
 		var actual = lr.coefficients();
 		vec.verifyEquals(expect, actual, .1f);
 
-		float[] xtest = Floats_.toArray(m, j -> random.nextFloat());
+		var xtest = Floats_.toArray(m, j -> random.nextFloat());
 		MathUtil.verifyEquals(vec.dot(expect, xtest), lr.predict(xtest), .1f);
 		MathUtil.verifyEquals(1f, (float) lr.r2, .1f);
 	}

@@ -276,7 +276,8 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public int last() {
-		int c, c1 = IntFunUtil.EMPTYVALUE;
+		int c;
+		var c1 = IntFunUtil.EMPTYVALUE;
 		while ((c = next()) != IntFunUtil.EMPTYVALUE)
 			c1 = c;
 		return c1;
@@ -315,7 +316,8 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public int minOrEmpty(IntComparator comparator) {
-		int c = next(), c1;
+		var c = next();
+		int c1;
 		if (c != IntFunUtil.EMPTYVALUE) {
 			while ((c1 = next()) != IntFunUtil.EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
@@ -392,7 +394,8 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public int sum() {
-		int result = 0, c1;
+		int result = 0;
+		int c1;
 		while ((c1 = next()) != IntFunUtil.EMPTYVALUE)
 			result += c1;
 		return result;

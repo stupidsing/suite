@@ -87,10 +87,10 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[], float[]> feedForwardLayer(int nInputs, int nOutputs) {
-		float[][] weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextFloat());
+		var weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextFloat());
 
 		return inputs -> {
-			float[] outputs = mtx.mul(inputs, weights);
+			var outputs = mtx.mul(inputs, weights);
 
 			for (var j = 0; j < nOutputs; j++)
 				outputs[j] = (float) Sigmoid.sigmoid(outputs[j]);
@@ -138,14 +138,14 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[][], float[][]> convLayer(int sx, int sy) {
-		float[][] kernel = To.matrix(sx, sy, (x, y) -> random.nextFloat());
+		var kernel = To.matrix(sx, sy, (x, y) -> random.nextFloat());
 		var bias = DblMutable.of(0d);
 
 		return inputs -> {
 			var hsx = mtx.height(inputs) - sx + 1;
 			var hsy = mtx.width(inputs) - sy + 1;
 
-			float[][] outputs = To.matrix(hsx, hsy, (ox, oy) -> {
+			var outputs = To.matrix(hsx, hsy, (ox, oy) -> {
 				var sum = bias.get();
 				for (var x = 0; x < sx; x++)
 					for (var y = 0; y < sy; y++)
@@ -205,7 +205,7 @@ public class NeuralNetwork {
 		return inputs -> {
 			var sx = mtx.height(inputs);
 			var sy = mtx.width(inputs);
-			float[][] outputs = To.matrix(sx + maskx >> shiftx, sy + masky >> shifty, (x, y) -> Float.MIN_VALUE);
+			var outputs = To.matrix(sx + maskx >> shiftx, sy + masky >> shifty, (x, y) -> Float.MIN_VALUE);
 
 			for (var ix = 0; ix < sx; ix++)
 				for (var iy = 0; iy < sy; iy++) {
@@ -260,7 +260,7 @@ public class NeuralNetwork {
 
 	private Layer<float[], float[]> reluLayer() {
 		return inputs -> {
-			float[] outputs = To.vector(inputs, relu::apply);
+			var outputs = To.vector(inputs, relu::apply);
 			return new Out<>(outputs, errors -> To.vector(errors, reluGradient::apply));
 		};
 	}

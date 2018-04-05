@@ -101,7 +101,7 @@ public class KmeansCluster {
 	}
 
 	private double sqdist(float[] a, float[] b) {
-		float[] d = vec.sub(a, b);
+		var d = vec.sub(a, b);
 		return vec.dot(d);
 	}
 

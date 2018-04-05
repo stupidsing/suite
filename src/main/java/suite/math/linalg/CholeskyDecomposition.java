@@ -18,7 +18,7 @@ public class CholeskyDecomposition {
 		Pair<float[][], float[]> ldlt = ldlt(m);
 		var l = ldlt.t0;
 		var d = ldlt.t1;
-		float[] reciprocalsD = To.vector(d, f -> 1f / f);
+		var reciprocalsD = To.vector(d, f -> 1f / f);
 		return fs0 -> {
 			var height = mtx.height(m);
 			var width = mtx.width(m);
@@ -32,7 +32,7 @@ public class CholeskyDecomposition {
 			}
 
 			// will be inverse(D) * fs1
-			float[] fs2 = Floats_.toArray(fs1.length, i -> fs1[i] * reciprocalsD[i]);
+			var fs2 = Floats_.toArray(fs1.length, i -> fs1[i] * reciprocalsD[i]);
 			var fs3 = new float[width]; // will be inverse(L*) * fs2
 
 			for (var i = width - 1; 0 <= i; i--) {

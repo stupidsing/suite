@@ -19,7 +19,7 @@ public class MandelbrotMain extends ExecutableProgram {
 	protected boolean run(String[] args) {
 		return new Render() //
 				.render(width, height, (fx, fy) -> {
-					float n = mandelbrot(Complex.of(fx * 4f, fy * 4f)) / 256f;
+					var n = mandelbrot(Complex.of(fx * 4f, fy * 4f)) / 256f;
 					return new R3(n, n, n);
 				}) //
 				.view();
