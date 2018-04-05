@@ -150,7 +150,7 @@ public class B_TreeBuilder<Key, Value> {
 			for (var p_ : new Path[] { sbp, alp, p, })
 				Rethrow.ex(() -> Files.deleteIfExists(p_));
 
-		B_Tree<Key, Value> b_tree = build(cmp //
+		var b_tree = build(cmp //
 				, FileFactory.pageFile(alp, pageSize) //
 				, FileFactory.pageFile(sbp, pageSize) //
 				, FileFactory.pageFile(p, pageSize));
@@ -162,7 +162,7 @@ public class B_TreeBuilder<Key, Value> {
 	}
 
 	private B_Tree<Key, Value> build(Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0) {
-		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(Object_.nullsFirst(comparator));
+		var b_tree = new B_TreeImpl<Key, Value>(Object_.nullsFirst(comparator));
 
 		var als = serialize.bytes(pageSize);
 		var sbs = new B_TreeSuperblockSerializer(b_tree);
