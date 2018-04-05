@@ -17,7 +17,7 @@ public class Parallelogram extends Planar implements RtObject {
 		R3 v0 = R3.add(origin, axis0);
 		R3 v1 = R3.add(origin, axis1);
 		R3 v2 = R3.add(origin, R3.add(axis0, axis1));
-		Parallelogram parallelogram = new Parallelogram(origin, axis0, axis1, material);
+		var parallelogram = new Parallelogram(origin, axis0, axis1, material);
 		return BoundingBox.bound(List.of(origin, v0, v1, v2), parallelogram);
 	}
 

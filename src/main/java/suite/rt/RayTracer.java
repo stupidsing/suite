@@ -103,7 +103,7 @@ public class RayTracer {
 		var ivd = viewDistance / width;
 
 		return new Render().render(width, height, (x, y) -> {
-			R3 dir = new R3(x, y, ivd);
+			var dir = new R3(x, y, ivd);
 			return traceRay(depth, new Ray(R3.origin, dir));
 		});
 	}

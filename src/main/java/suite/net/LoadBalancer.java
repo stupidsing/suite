@@ -29,7 +29,7 @@ public class LoadBalancer {
 	public void run() throws IOException {
 		var running = BooMutable.true_();
 
-		Thread probe = new Thread(() -> {
+		var probe = new Thread(() -> {
 			while (running.isTrue())
 				try {
 					List<String> alives1 = new ArrayList<>();

@@ -2,7 +2,6 @@ package suite.algo;
 
 import org.junit.Test;
 
-import suite.algo.RecurrentNeuralNetwork.Unit;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
 
@@ -13,7 +12,7 @@ public class RecurrentNeuralNetworkTest {
 
 	@Test
 	public void testNoInput() {
-		Unit lstm = new RecurrentNeuralNetwork(1f, 0, 1).unit();
+		var lstm = new RecurrentNeuralNetwork(1f, 0, 1).unit();
 		float[] inputs = {};
 		float[] expected = { -.8f, };
 

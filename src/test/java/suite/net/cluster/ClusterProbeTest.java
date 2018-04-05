@@ -27,7 +27,7 @@ public class ClusterProbeTest {
 
 		Map<String, ClusterProbe> probes = new HashMap<>();
 		for (var name : peers.keySet()) {
-			ClusterProbe probe = new ClusterProbeImpl(name, peers);
+			var probe = new ClusterProbeImpl(name, peers);
 			probes.put(name, probe);
 			probe.start();
 		}

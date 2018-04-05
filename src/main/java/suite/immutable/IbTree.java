@@ -169,7 +169,7 @@ public class IbTree<T> implements ITree<T> {
 	private List<Slot> update(List<Slot> node0, T t, Iterate<T> fun) {
 
 		// finds appropriate slot
-		FindSlot fs = new FindSlot(node0, t);
+		var fs = new FindSlot(node0, t);
 		var size = node0.size();
 		int s0 = fs.i, s1 = fs.i + 1;
 		List<Slot> replaceSlots;

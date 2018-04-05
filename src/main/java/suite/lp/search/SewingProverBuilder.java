@@ -30,7 +30,7 @@ public class SewingProverBuilder implements Builder {
 			var pred = sewingProver.prover(goal1);
 
 			return (source, sink) -> {
-				ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
+				var proverConfig1 = new ProverConfig(ruleSet, proverConfig);
 				proverConfig1.setSource(source);
 				proverConfig1.setSink(sink);
 				pred.test(proverConfig1);

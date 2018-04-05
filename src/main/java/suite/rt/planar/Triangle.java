@@ -16,7 +16,7 @@ public class Triangle extends Planar implements RtObject {
 	public static RtObject c(R3 origin, R3 axis0, R3 axis1, Material material) {
 		R3 v0 = R3.add(origin, axis0);
 		R3 v1 = R3.add(origin, axis1);
-		Triangle triangle = new Triangle(origin, axis0, axis1, material);
+		var triangle = new Triangle(origin, axis0, axis1, material);
 		return BoundingBox.bound(List.of(origin, v0, v1), triangle);
 	}
 

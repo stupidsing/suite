@@ -69,7 +69,7 @@ public class Prover {
 	 * @return true if success.
 	 */
 	public boolean prove(Node query) {
-		Thread hook = new Thread(() -> {
+		var hook = new Thread(() -> {
 			var d = LocalDateTime.now().toString();
 			LogUtil.info("-- trace dump at " + d + " --\n" + tracer.getTrace());
 			LogUtil.info("-- fail dump at " + d + " --\n" + tracer.getFailTrace());

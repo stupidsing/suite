@@ -35,7 +35,7 @@ public class WalkForwardTestMain extends ExecutableProgram {
 				cfg.queryCompaniesByMarketCap(Time.now()), //
 				bag.rsi.unleverage().walkForwardAllocator());
 
-		WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
+		var tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
 
 		var schedule = Schedule //
 				.ofRepeat(5, () -> System.out.println(tester.tick())) //

@@ -10,7 +10,6 @@ import suite.Suite;
 import suite.fp.FunRbTreeTest;
 import suite.ip.ImperativeCompiler;
 import suite.lp.Configuration.ProverConfig;
-import suite.primitive.Bytes;
 
 public class FailedTests {
 
@@ -34,7 +33,7 @@ public class FailedTests {
 	// cannot capture reference to a structure
 	@Test
 	public void testDataStructure() {
-		Bytes bytes = new ImperativeCompiler().compile(0, "" //
+		var bytes = new ImperativeCompiler().compile(0, "" //
 				+ "constant p = fix :p struct (() | pointer::p +next);" //
 				+ "declare r = & new p (+next = null,);" //
 				+ "0");

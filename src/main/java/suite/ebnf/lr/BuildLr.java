@@ -179,7 +179,7 @@ public class BuildLr {
 		switch (eg.type) {
 		case AND___:
 			if (!eg.children.isEmpty()) {
-				Grammar tail = new Grammar(GrammarType.AND___, List_.right(eg.children, 1));
+				var tail = new Grammar(GrammarType.AND___, List_.right(eg.children, 1));
 				Blr blr1 = build(ps, tail, nextx);
 				Blr blr0 = build(ps, eg.children.get(0), blr1.next);
 				blr = new Blr(blr0.nTokens + blr1.nTokens, blr0.next);

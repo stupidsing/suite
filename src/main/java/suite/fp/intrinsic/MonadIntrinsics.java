@@ -77,7 +77,7 @@ public class MonadIntrinsics {
 	}
 
 	private Node newReader(IntrinsicCallback callback, InputStream is) {
-		BufferedReader br = new BufferedReader(new InputStreamReader(is, Constants.charset));
+		var br = new BufferedReader(new InputStreamReader(is, Constants.charset));
 		IPointer<Chars> icrp = Intrinsics.read(br);
 		return callback.enclose(new CharsIntrinsics().drain, new Data<>(icrp));
 	}

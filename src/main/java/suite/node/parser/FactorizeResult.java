@@ -98,7 +98,7 @@ public class FactorizeResult {
 			pairs.add(new FPair(list.get(i).node, space));
 		}
 
-		FNode fn = new FTree(name, pairs);
+		var fn = new FTree(name, pairs);
 		return new FactorizeResult(pre, fn, post);
 	}
 

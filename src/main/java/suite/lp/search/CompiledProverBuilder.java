@@ -44,7 +44,7 @@ public class CompiledProverBuilder implements Builder {
 			Node code = compile(Suite.substitute(".0 >> .1", rules, goal));
 
 			return (source, sink) -> {
-				ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
+				var proverConfig1 = new ProverConfig(ruleSet, proverConfig);
 				proverConfig1.setSource(source);
 				proverConfig1.setSink(sink);
 

@@ -71,7 +71,7 @@ public class DevMain {
 				return null;
 			})));
 
-			State state0 = new State(null, null, inputText, c(0, 0), c(0, 0));
+			var state0 = new State(null, null, inputText, c(0, 0), c(0, 0));
 			redraw.sink(state0);
 
 			FixieFun3<VK, Character, State, State> mutate = (vk, ch, state) -> state //

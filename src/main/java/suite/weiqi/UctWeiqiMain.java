@@ -28,7 +28,7 @@ public class UctWeiqiMain<Move> {
 	private static Occupation startingPlayer = Occupation.BLACK;
 
 	public static void main(String[] args) {
-		InputStreamReader isr = new InputStreamReader(System.in, Constants.charset);
+		var isr = new InputStreamReader(System.in, Constants.charset);
 		var br = new BufferedReader(isr);
 		var df = new DecimalFormat("0.000");
 		var nThreads = Constants.nThreads;
@@ -37,7 +37,7 @@ public class UctWeiqiMain<Move> {
 		Weiqi.adjustSize(7);
 
 		var board = new Board();
-		MovingGameSet gameSet = new MovingGameSet(board, startingPlayer);
+		var gameSet = new MovingGameSet(board, startingPlayer);
 		var auto = false;
 		var quit = false;
 		var status = "LET'S PLAY!";

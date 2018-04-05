@@ -101,7 +101,7 @@ public class Fractional<I> {
 				return opt.concatMap(fr::inv);
 			}
 		}.fract(node).map(fraction -> {
-			Gcd gcd = new Gcd(fraction.t0, fraction.t1, 9);
+			var gcd = new Gcd(fraction.t0, fraction.t1, 9);
 			return new Fract<>(gcd.m0, gcd.m1);
 		});
 	}
@@ -161,7 +161,7 @@ public class Fractional<I> {
 	}
 
 	private Fract<I> add(Fract<I> a, Fract<I> b) {
-		Gcd gcd = new Gcd(a.t1, b.t1, 9);
+		var gcd = new Gcd(a.t1, b.t1, 9);
 		var num0 = mul_.apply(a.t0, gcd.m1);
 		var num1 = mul_.apply(b.t0, gcd.m0);
 		var denom = mul_.apply(gcd.gcd, mul_.apply(gcd.m0, gcd.m1));
@@ -189,7 +189,7 @@ public class Fractional<I> {
 				var divMod = divMod_.apply(n, d);
 				var f = divMod.t0; // div_.apply(n, d);
 				var ndf = divMod.t1; // add_.apply(n, neg_.apply(df));
-				Gcd gcd1 = new Gcd(d, ndf, depth - 1);
+				var gcd1 = new Gcd(d, ndf, depth - 1);
 
 				// n = gcd1.gcd * (gcd1.m0 * f + gcd1.m1)
 				// d = gcd1.gcd * gcd1.m0

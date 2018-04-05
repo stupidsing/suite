@@ -9,7 +9,7 @@ public class ExecuteTest {
 
 	@Test
 	public void test0() {
-		Execute exec = new Execute(new String[] { "git", "status", });
+		var exec = new Execute(new String[] { "git", "status", });
 		System.out.println(exec);
 
 		assertEquals(0, exec.code);
@@ -24,7 +24,7 @@ public class ExecuteTest {
 			sb.append("01234567890123456789012345678901234567890123456789012345678901234567890123456789\n");
 		var in = sb.toString();
 
-		Execute exec = new Execute(new String[] { "cat", }, in);
+		var exec = new Execute(new String[] { "cat", }, in);
 
 		assertEquals(0, exec.code);
 		assertEquals(in, exec.out);

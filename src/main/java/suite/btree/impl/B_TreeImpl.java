@@ -269,8 +269,8 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 			if (!done) { // splits list into two pages
 				int pointer0 = page.pointer, pointer1 = allocator.allocate();
-				Page p0 = new Page(pointer0, page.subList(0, half));
-				Page p1 = new Page(pointer1, page.subList(half, size));
+				var p0 = new Page(pointer0, page.subList(0, half));
+				var p1 = new Page(pointer1, page.subList(half, size));
 				savePage(p0);
 				savePage(p1);
 

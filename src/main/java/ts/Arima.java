@@ -95,7 +95,7 @@ public class Arima {
 		var q = mas.length;
 		var xsp = Floats_.concat(new float[p], xs);
 		var epq = new float[length + q];
-		Arma arma = new Arma(ars, mas);
+		var arma = new Arma(ars, mas);
 
 		for (var iter = 0; iter < 64; iter++) {
 
@@ -209,7 +209,7 @@ public class Arima {
 		// + ep[t]
 		// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 		// when t = xs.length
-		double x1 = new Arma(ars, mas).sum(xsp, epq);
+		var x1 = new Arma(ars, mas).sum(xsp, epq);
 
 		return new Arima_(ars, mas, (float) x1);
 	}

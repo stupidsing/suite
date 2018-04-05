@@ -98,7 +98,7 @@ public class InterpretFunLazy {
 		}
 
 		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
-		Lazy_ lazy0 = new Lazy_(0, IMap.empty());
+		var lazy0 = new Lazy_(0, IMap.empty());
 		var frame = new Frame(null);
 
 		for (var key : keys) {

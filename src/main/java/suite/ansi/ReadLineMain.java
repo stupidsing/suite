@@ -18,7 +18,7 @@ public class ReadLineMain extends ExecutableProgram {
 	}
 
 	protected boolean run(String[] args) {
-		Keyboard keyboard = new Keyboard((LibcJna) Native.loadLibrary("c", LibcJna.class));
+		var keyboard = new Keyboard((LibcJna) Native.loadLibrary("c", LibcJna.class));
 		Outlet<Pair<VK, Character>> keys = keyboard.signal().outlet();
 		Pair<VK, Character> pair;
 

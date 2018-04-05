@@ -93,7 +93,7 @@ public class TopDownParse {
 		}
 
 		private Ast parse(int pos, Parser parser) {
-			State initialState = new State(null, pos, null, 0);
+			var initialState = new State(null, pos, null, 0);
 			Outlet<State> o = initialState.pr(this, parser);
 			State state;
 
@@ -109,7 +109,7 @@ public class TopDownParse {
 						state = state.previous;
 					}
 
-					Ast root = new Ast(null, 0);
+					var root = new Ast(null, 0);
 
 					var stack = new ArrayDeque<Ast>();
 					stack.push(root);
@@ -120,7 +120,7 @@ public class TopDownParse {
 							stack.pop().end = state_.pos;
 						else if (0 < d)
 							for (var i = 0; i < state_.frame.depth; i++) {
-								Ast node = new Ast(state_.frame.entity, state_.pos);
+								var node = new Ast(state_.frame.entity, state_.pos);
 								stack.peek().children.add(node);
 								stack.push(node);
 							}

@@ -31,7 +31,7 @@ public class LogicCompilerLevel1Test {
 				+ ", compile-function .0 .in .out" //
 				+ ", sink .out";
 
-		Node goal = new Specializer().specialize(Suite.substitute(gs, Atom.of("LAZY")));
+		var goal = new Specializer().specialize(Suite.substitute(gs, Atom.of("LAZY")));
 		var input = Suite.parse("1 + 2");
 		Node result = FindUtil.collectSingle(finder(rs, goal), input);
 

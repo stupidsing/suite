@@ -27,7 +27,7 @@ public class InterpretedProverBuilder implements Builder {
 			var goal1 = SewingGeneralizerImpl.generalize(goal);
 
 			return (source, sink) -> {
-				ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);
+				var proverConfig1 = new ProverConfig(ruleSet, proverConfig);
 				proverConfig1.setSource(source);
 				proverConfig1.setSink(sink);
 				new Prover(proverConfig1).elaborate(goal1);

@@ -116,7 +116,7 @@ public class Amd64Assemble {
 		}
 
 		private InsnCode set(int size1, byte[] bs1, long imm, int immSize) {
-			InsnCode insnCode = new InsnCode(size1, bs1);
+			var insnCode = new InsnCode(size1, bs1);
 			insnCode.modrm = modrm;
 			insnCode.immSize = immSize;
 			insnCode.imm = imm;
@@ -237,7 +237,7 @@ public class Amd64Assemble {
 			break;
 		case IMM:
 			if (instruction.op0 instanceof OpImm) {
-				InsnCode insnCode_ = new InsnCode(0, (OpImm) instruction.op0);
+				var insnCode_ = new InsnCode(0, (OpImm) instruction.op0);
 				insnCode_.bs = new byte[] {};
 				encode = insnCode_;
 			} else
@@ -690,7 +690,7 @@ public class Amd64Assemble {
 			else
 				return invalid;
 
-			InsnCode insnCode = new InsnCode(acc.size, bs(b + (acc.size == 1 ? 0 : 1) + (portImm != null ? 0 : 8)));
+			var insnCode = new InsnCode(acc.size, bs(b + (acc.size == 1 ? 0 : 1) + (portImm != null ? 0 : 8)));
 			if (portImm != null) {
 				insnCode.immSize = 1;
 				insnCode.imm = portImm.imm;
@@ -792,7 +792,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRmImm(Operand op0, OpImm op1, int bAccImm, int bRmImm, int num) {
-		InsnCode insnCode = new InsnCode(op0.size, op1);
+		var insnCode = new InsnCode(op0.size, op1);
 
 		if (isAcc.test(op0))
 			insnCode.bs = bs(bAccImm + (op0.size <= 1 ? 0 : 1));
@@ -847,7 +847,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assemble(Operand operand, int b, int num) {
-		InsnCode insnCode = new InsnCode(operand.size, bs(b));
+		var insnCode = new InsnCode(operand.size, bs(b));
 		insnCode.modrm = modrm(operand, num);
 		return insnCode;
 	}

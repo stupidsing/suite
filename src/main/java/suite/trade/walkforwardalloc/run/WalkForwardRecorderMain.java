@@ -88,7 +88,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 					cfg.queryCompaniesByMarketCap(Time.now()), //
 					bag.rsi.unleverage().walkForwardAllocator());
 
-			WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
+			var tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
 
 			for (var e : data.entrySet())
 				System.out.println(tester.tick(e.getKey(), e.getValue()));

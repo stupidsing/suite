@@ -59,7 +59,7 @@ public class ProveTracer {
 		if (currentDepth < 64) {
 			var record0 = currentRecord;
 			var depth0 = currentDepth;
-			Record record = new Record(record0, query1, currentDepth + 1);
+			var record = new Record(record0, query1, currentDepth + 1);
 
 			Data<Source<Boolean>> enter = new Data<>(() -> {
 				currentRecord = record;

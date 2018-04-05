@@ -174,7 +174,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	private Extent saveSlot(int start, PersistSlot<T> value) {
 		var bs = ExtentFile.blockSize;
 		Bytes bytes = To.bytes(dataOutput -> serializer.write(dataOutput, value));
-		Extent extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);
+		var extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);
 		extentFile.save(extent, bytes);
 		return extent;
 	}

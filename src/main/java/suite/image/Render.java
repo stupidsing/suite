@@ -74,7 +74,7 @@ public class Render {
 
 		Thread_.startJoin(threads);
 
-		Image image = new Image(width, height, BufferedImage.TYPE_INT_RGB);
+		var image = new Image(width, height, BufferedImage.TYPE_INT_RGB);
 
 		for (var x = 0; x < width; x++)
 			for (var y = 0; y < height; y++) {

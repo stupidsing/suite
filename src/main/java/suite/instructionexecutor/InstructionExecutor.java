@@ -60,10 +60,10 @@ public class InstructionExecutor implements AutoCloseable {
 	}
 
 	private Node yawnThunk_(Thunk thunk0) {
-		Frame f0 = new Frame(null, 2);
+		var f0 = new Frame(null, 2);
 		f0.registers[0] = thunk0;
 
-		Activation current = new Activation(f0, yawnEntryPoint, null);
+		var current = new Activation(f0, yawnEntryPoint, null);
 
 		var stack = new Node[Suite.stackSize];
 		int ip = 0, sp = 0;

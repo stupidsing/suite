@@ -50,7 +50,7 @@ public class IterativeParser {
 		}
 
 		private Node parse() {
-			Lexer lex = new Lexer(operators, in);
+			var lex = new Lexer(operators, in);
 			stack.push(new Section(' '));
 			Token token;
 

@@ -123,7 +123,7 @@ public class RecursiveFactorizerTest {
 		Node node0 = nodify.nodify(FNode.class, fn0);
 		Node nodex = rw.rewrite(source, node0);
 		FNode fnx = nodify.unnodify(FNode.class, nodex);
-		FactorizeResult frx = new FactorizeResult(fr0.pre, fnx, fr0.post);
+		var frx = new FactorizeResult(fr0.pre, fnx, fr0.post);
 		var sx = frx.unparse();
 		return sx;
 	}

@@ -118,7 +118,7 @@ public class P2GenerateLambda {
 				var cond_ = compile(fs1, env1, cond);
 				var iterate_ = compile(fs1, env1, iterate);
 				return rt -> {
-					Rt rt1 = new Rt(rt, init_.apply(rt));
+					var rt1 = new Rt(rt, init_.apply(rt));
 					while (b(rt1, cond_))
 						rt1.var = iterate_.apply(rt1);
 					return rt1.var;

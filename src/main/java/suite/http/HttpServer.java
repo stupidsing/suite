@@ -77,7 +77,7 @@ public class HttpServer {
 			var contentLength = cls != null ? Integer.parseInt(cls) : 0;
 			InputStream cis = sizeLimitedInputStream(is, contentLength);
 
-			HttpRequest request = new HttpRequest(method, server, path2, query, requestHeaders, cis);
+			var request = new HttpRequest(method, server, path2, query, requestHeaders, cis);
 			HttpResponse response = null;
 
 			try {

@@ -28,7 +28,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) throws IOException {
 		run((headers, os) -> {
-			OutputStreamWriter writer = new OutputStreamWriter(os, Constants.charset);
+			var writer = new OutputStreamWriter(os, Constants.charset);
 			writer.write("<html>" + headers + "</html>");
 		});
 		return true;

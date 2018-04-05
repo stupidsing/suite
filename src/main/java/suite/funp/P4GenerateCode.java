@@ -263,7 +263,7 @@ public class P4GenerateCode {
 				})).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, offset) -> {
 					Operand imm = amd64.imm(size), op;
 					var fd1 = fd - size;
-					Compile1 c1 = new Compile1(rs, fd1);
+					var c1 = new Compile1(rs, fd1);
 
 					offset.update(fd1);
 
@@ -440,7 +440,7 @@ public class P4GenerateCode {
 					for (var i = 0; i <= opRegs.length - 1; i++)
 						em.emit(amd64.instruction(Insn.PUSH, opRegs[i]));
 
-					CompileOut out0 = new Compile1(registerSet, fd - opRegs.length * is).compile(expr);
+					var out0 = new Compile1(registerSet, fd - opRegs.length * is).compile(expr);
 					Operand oldOp0, oldOp1;
 					var op0 = oldOp0 = isOutSpec ? pop0 : out0.op0;
 					var op1 = oldOp1 = isOutSpec ? pop1 : out0.op1;
@@ -450,7 +450,7 @@ public class P4GenerateCode {
 					if (op1 != null)
 						em.mov(op1 = rs.contains(op1) ? rs.mask(op0).get(op1.size) : op1, oldOp1);
 
-					CompileOut out1 = new CompileOut(op0, op1);
+					var out1 = new CompileOut(op0, op1);
 
 					for (var i = opRegs.length - 1; 0 <= i; i--)
 						em.emit(amd64.instruction(Insn.POP, opRegs[i]));

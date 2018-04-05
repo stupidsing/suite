@@ -427,7 +427,7 @@ public class Hkex {
 				json = Fail.t(ex);
 			}
 		else {
-			Execute execute = new Execute(new String[] { "curl", url, });
+			var execute = new Execute(new String[] { "curl", url, });
 			json = Rethrow.ex(() -> mapper.readTree(execute.out));
 		}
 

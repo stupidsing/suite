@@ -22,7 +22,7 @@ public class BootMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) throws IOException {
 		var bootLoader = new Assembler(16).assemble(FileUtil.read("src/main/asm/bootloader.asm"));
-		Bytes kernel = new ImperativeCompiler().compile(0x40000, Paths.get("src/main/il/kernel.il"));
+		var kernel = new ImperativeCompiler().compile(0x40000, Paths.get("src/main/il/kernel.il"));
 
 		if (bootLoader.size() == 512 && kernel.size() < 65536) {
 

@@ -44,10 +44,10 @@ public class NioDispatcherTest {
 		dispatcher.start();
 
 		try (var closeServer = dispatcher.listen(5151);
-				Socket socket = new Socket("localhost", 5151);
+				var socket = new Socket("localhost", 5151);
 				var is = socket.getInputStream();
 				var os = socket.getOutputStream();
-				InputStreamReader isr = new InputStreamReader(is, charset);
+				var isr = new InputStreamReader(is, charset);
 				var reader = new BufferedReader(isr);
 				var writer = new PrintWriter(os)) {
 			var m = "testing nio";
@@ -73,7 +73,7 @@ public class NioDispatcherTest {
 
 		try (var closeServer = dispatcher.listen(5151)) {
 			var localHost = InetAddress.getLocalHost();
-			InetSocketAddress address = new InetSocketAddress(localHost, 5151);
+			var address = new InetSocketAddress(localHost, 5151);
 			var client = dispatcher.connect(address);
 
 			for (var s : new String[] { "ABC", "WXYZ", "", }) {

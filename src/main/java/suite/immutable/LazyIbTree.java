@@ -165,7 +165,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	private List<Slot<T>> update(List<Slot<T>> node0, T t, Iterate<T> fun) {
 
 		// finds appropriate slot
-		FindSlot fs = new FindSlot(node0, t);
+		var fs = new FindSlot(node0, t);
 		var size = node0.size();
 		int s0 = fs.i, s1 = fs.i + 1;
 		var slots0 = fs.slot.readSlots();

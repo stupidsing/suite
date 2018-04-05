@@ -22,7 +22,7 @@ public class RequestResponseMatcher {
 	public Bytes requestForResponse(RequestResponseNioChannel channel, Bytes request, int timeOut) {
 		var token = Util.temp();
 		Mutable<Bytes> holder = Mutable.nil();
-		Condition condition = new Condition(() -> holder.get() != null);
+		var condition = new Condition(() -> holder.get() != null);
 
 		return condition.waitThen(() -> {
 			requests.put(token, Pair.of(holder, condition));

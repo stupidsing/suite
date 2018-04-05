@@ -64,7 +64,7 @@ public class LayoutCalculator {
 		}
 
 		public void assign(Rect r) {
-			Rectangle awtRect = new Rectangle(r.v0.x, r.v0.y, r.v1.x - r.v0.x, r.v1.y - r.v0.y);
+			var awtRect = new Rectangle(r.v0.x, r.v0.y, r.v1.x - r.v0.x, r.v1.y - r.v0.y);
 			component.setBounds(awtRect);
 			container.add(component);
 		}
@@ -167,7 +167,7 @@ public class LayoutCalculator {
 	public void arrange(Node node) {
 		container.setLayout(null);
 		var size = container.getSize();
-		Rect rect = new Rect(new Vector(0, 0), new Vector(size.width, size.height));
+		var rect = new Rect(new Vector(0, 0), new Vector(size.width, size.height));
 		node.assign(rect);
 	}
 

@@ -29,7 +29,7 @@ public class OtfTest {
 					return pathl.endsWith(".otf") || pathl.endsWith(".ttf");
 				}) //
 				.map2(path -> {
-					Execute exec = new Execute(new String[] { "otfinfo", "-i", path, });
+					var exec = new Execute(new String[] { "otfinfo", "-i", path, });
 					return Read //
 							.from(exec.out.split("\n")) //
 							.map(line -> line.split(":")) //

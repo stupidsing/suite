@@ -53,7 +53,7 @@ public class TwoPassIndexer {
 
 		for (var start = 0; start < length; start++) {
 			var end = start + minimumWordLength;
-			Reference key = new Reference(id, start);
+			var key = new Reference(id, start);
 
 			while (end <= length && dictionary.contains(text.substring(start, end)))
 				end++;

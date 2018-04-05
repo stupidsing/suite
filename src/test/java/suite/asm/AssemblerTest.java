@@ -25,14 +25,14 @@ public class AssemblerTest {
 
 	@Test
 	public void testAssembleLongMode() throws IOException {
-		Assembler assembler = new Assembler(32, true);
+		var assembler = new Assembler(32, true);
 		Bytes bytes = assembler.assemble(Suite.parse(".org = 0, .l MOV (R9D, DWORD 16),"));
 		assertEquals(bytes.size(), 7);
 	}
 
 	@Test
 	public void testAssembleMisc() throws IOException {
-		Assembler assembler = new Assembler(32, true);
+		var assembler = new Assembler(32, true);
 		assembler.assemble(Suite.parse(".org = 0, _ JMP (BYTE .label), .label (),"));
 	}
 

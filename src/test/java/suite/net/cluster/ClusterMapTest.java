@@ -36,7 +36,7 @@ public class ClusterMapTest {
 		Map<String, ClusterMap<Integer, String>> clMap = new HashMap<>();
 
 		for (var name : peers.keySet()) {
-			Cluster cluster = new ClusterImpl(name, peers);
+			var cluster = new ClusterImpl(name, peers);
 			clusters.put(name, cluster);
 			cluster.start();
 

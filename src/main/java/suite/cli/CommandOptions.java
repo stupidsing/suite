@@ -74,7 +74,7 @@ public class CommandOptions {
 	public FunCompilerConfig fcc(Node node) {
 		var pc = pc(Suite.newRuleSet());
 
-		FunCompilerConfig fcc = new FunCompilerConfig(pc, libraries);
+		var fcc = new FunCompilerConfig(pc, libraries);
 		fcc.setLazy(isLazy);
 		fcc.setNode(node);
 

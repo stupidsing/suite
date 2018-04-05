@@ -48,8 +48,8 @@ public class ReduceHeadRecursion {
 			Grammar en3;
 
 			if (!hrf.listc.isEmpty()) {
-				Grammar enb = new Grammar(GrammarType.OR____, hrf.listb);
-				Grammar enc = new Grammar(GrammarType.OR____, hrf.listc);
+				var enb = new Grammar(GrammarType.OR____, hrf.listb);
+				var enc = new Grammar(GrammarType.OR____, hrf.listc);
 				en3 = new Grammar(GrammarType.REPT0H, entity, List.of(enb, enc));
 			} else
 				en3 = en1;

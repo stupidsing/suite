@@ -58,7 +58,7 @@ public class BackTestMain extends ExecutableProgram {
 				? time -> Read.from(arg2.split(",")).map(cfg::queryCompany).collect(As::streamlet) //
 				: cfg::queryCompaniesByMarketCap;
 
-		BackAllocConfigurations bac_ = new BackAllocConfigurations(cfg, fun);
+		var bac_ = new BackAllocConfigurations(cfg, fun);
 		var bacByTag = bac_.bacs().bacByName;
 
 		var simulationByKey = bacByTag //

@@ -34,7 +34,7 @@ public class RayTracerTest {
 
 	@Test
 	public void testBlank() throws IOException {
-		RayTracer rayTracer = new RayTracer(Set.of(), new Scene(Set.of()));
+		var rayTracer = new RayTracer(Set.of(), new Scene(Set.of()));
 		rasterize(rayTracer);
 	}
 
@@ -43,12 +43,12 @@ public class RayTracerTest {
 		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(gray(.4d)));
 		RtObject sphere0 = Sphere.c(v(-.5d, 0d, 5d), 1d, solid(cb));
 		RtObject sphere1 = Sphere.c(v(.5d, 0d, 5d), 1d, solid(cb));
-		Scene scene = new Scene(List.of(sky, new Intersect(List.of(sphere0, sphere1))));
+		var scene = new Scene(List.of(sky, new Intersect(List.of(sphere0, sphere1))));
 
-		LightSource light = new PointLightSource(v(-10d, -10d, -7d), gray(1.5d));
+		var light = new PointLightSource(v(-10d, -10d, -7d), gray(1.5d));
 		List<LightSource> lights = List.of(light);
 
-		RayTracer rayTracer = new RayTracer(lights, scene);
+		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
 	}
 
@@ -57,12 +57,12 @@ public class RayTracerTest {
 		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(gray(.4d)));
 		RtObject sphere0 = Sphere.c(v(-.5d, 0d, 5d), 1d, solid(cb));
 		RtObject sphere1 = Sphere.c(v(.5d, 0d, 4d), 1d, solid(cb));
-		Scene scene = new Scene(List.of(sky, new Minus(sphere0, sphere1)));
+		var scene = new Scene(List.of(sky, new Minus(sphere0, sphere1)));
 
-		LightSource light = new PointLightSource(v(-10d, -10d, -7d), gray(1.5d));
+		var light = new PointLightSource(v(-10d, -10d, -7d), gray(1.5d));
 		List<LightSource> lights = List.of(light);
 
-		RayTracer rayTracer = new RayTracer(lights, scene);
+		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
 	}
 
@@ -71,12 +71,12 @@ public class RayTracerTest {
 		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(gray(.4d)));
 		RtObject sphere0 = Sphere.c(v(-.5d, 0d, 5d), 1d, solid(cb));
 		RtObject sphere1 = Sphere.c(v(.5d, 0d, 5d), 1d, solid(cb));
-		Scene scene = new Scene(List.of(sky, new Union(List.of(sphere0, sphere1))));
+		var scene = new Scene(List.of(sky, new Union(List.of(sphere0, sphere1))));
 
-		LightSource light = new PointLightSource(v(-10d, -10d, -7d), gray(1.5d));
+		var light = new PointLightSource(v(-10d, -10d, -7d), gray(1.5d));
 		List<LightSource> lights = List.of(light);
 
-		RayTracer rayTracer = new RayTracer(lights, scene);
+		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
 	}
 
@@ -90,12 +90,12 @@ public class RayTracerTest {
 		// rtObject sphere5 =
 		// sphere.c(v(0d, -20d, 30d), 3d, solid(v(0d, 0d, 0d)));
 
-		Scene scene = new Scene(List.of(sphere0, sphere1, sphere2, sphere3, sphere4));
+		var scene = new Scene(List.of(sphere0, sphere1, sphere2, sphere3, sphere4));
 
-		LightSource light0 = new PointLightSource(v(0d, -20d, 30d), gray(3d));
+		var light0 = new PointLightSource(v(0d, -20d, 30d), gray(3d));
 		List<LightSource> lights = List.of(light0);
 
-		RayTracer rayTracer = new RayTracer(lights, scene);
+		var rayTracer = new RayTracer(lights, scene);
 		rayTracer.setAmbient(gray(2d));
 
 		rasterize(rayTracer);
@@ -106,10 +106,10 @@ public class RayTracerTest {
 		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(cw));
 		var scene = new Scene(List.of(sky));
 
-		LightSource light = new PointLightSource(v(0d, 0d, 90d), cw);
+		var light = new PointLightSource(v(0d, 0d, 90d), cw);
 		List<LightSource> lights = List.of(light);
 
-		RayTracer rayTracer = new RayTracer(lights, scene);
+		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
 	}
 
@@ -119,28 +119,28 @@ public class RayTracerTest {
 		RtObject sphere0 = Sphere.c(v(1d, -1d, 4d), 1d, glassy(cr));
 		RtObject sphere1 = Sphere.c(v(0d, 0d, 6d), 1d, glassy(cg));
 		RtObject sphere2 = Sphere.c(v(-1d, 1d, 8d), 1d, glassy(cb));
-		RtObject plane0 = new Plane(v(0d, -1d, 0d), 20d, solid(cy));
+		var plane0 = new Plane(v(0d, -1d, 0d), 20d, solid(cy));
 		RtObject triangle = Triangle.c(v(.5d, .5d, 3d), v(.5d, 0d, 0d), v(0d, .5d, 0d), glassy(cc));
-		Scene scene = new Scene(List.of(sky, sphere0, sphere1, sphere2, plane0, triangle));
+		var scene = new Scene(List.of(sky, sphere0, sphere1, sphere2, plane0, triangle));
 
-		LightSource light0 = new PointLightSource(v(10d, 10d, -10d), cp);
-		LightSource light1 = new PointLightSource(v(-10d, 10d, -10d), gray(2d));
+		var light0 = new PointLightSource(v(10d, 10d, -10d), cp);
+		var light1 = new PointLightSource(v(-10d, 10d, -10d), gray(2d));
 		List<LightSource> lights = List.of(light0, light1);
 
-		RayTracer rayTracer = new RayTracer(lights, scene);
+		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
 	}
 
 	@Test
 	public void testSphereMirror() throws IOException {
 		RtObject sphere = Sphere.c(v(0d, 0d, 3d), 1d, solid(cb));
-		RtObject mirror = new Plane(v(1d, 0d, 0d), -.3d, glassy(cw));
-		Scene scene = new Scene(List.of(sphere, mirror));
+		var mirror = new Plane(v(1d, 0d, 0d), -.3d, glassy(cw));
+		var scene = new Scene(List.of(sphere, mirror));
 
-		LightSource light = new PointLightSource(v(10000d, 10000d, -10000d), gray(1.5d));
+		var light = new PointLightSource(v(10000d, 10000d, -10000d), gray(1.5d));
 		List<LightSource> lights = List.of(light);
 
-		RayTracer rayTracer = new RayTracer(lights, scene);
+		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
 	}
 
@@ -148,12 +148,12 @@ public class RayTracerTest {
 	public void testSphereReflection() throws IOException {
 		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(cw));
 		RtObject sphere = Sphere.c(v(0d, 0d, 3d), 1d, reflective(cb));
-		Scene scene = new Scene(List.of(sky, sphere));
+		var scene = new Scene(List.of(sky, sphere));
 
-		LightSource light = new PointLightSource(v(0d, 0d, 90d), cw);
+		var light = new PointLightSource(v(0d, 0d, 90d), cw);
 		List<LightSource> lights = List.of(light);
 
-		RayTracer rayTracer = new RayTracer(lights, scene);
+		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
 	}
 
@@ -161,12 +161,12 @@ public class RayTracerTest {
 	public void testSphereRefraction() throws IOException {
 		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(cw));
 		RtObject sphere = Sphere.c(v(0d, 0d, 3d), 1d, glassy(cb));
-		Scene scene = new Scene(List.of(sky, sphere));
+		var scene = new Scene(List.of(sky, sphere));
 
-		LightSource light = new PointLightSource(v(0d, 0d, 90d), cw);
+		var light = new PointLightSource(v(0d, 0d, 90d), cw);
 		List<LightSource> lights = List.of(light);
 
-		RayTracer rayTracer = new RayTracer(lights, scene);
+		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
 	}
 
@@ -174,12 +174,12 @@ public class RayTracerTest {
 	public void testSphereSolid() throws IOException {
 		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(cw));
 		RtObject sphere = Sphere.c(v(0d, 0d, 3d), 1d, solid(cb));
-		Scene scene = new Scene(List.of(sky, sphere));
+		var scene = new Scene(List.of(sky, sphere));
 
-		LightSource light = new PointLightSource(v(0d, 0d, 90d), cw);
+		var light = new PointLightSource(v(0d, 0d, 90d), cw);
 		List<LightSource> lights = List.of(light);
 
-		RayTracer rayTracer = new RayTracer(lights, scene);
+		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
 	}
 
@@ -188,12 +188,12 @@ public class RayTracerTest {
 		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(gray(.4d)));
 		RtObject sphere0 = Sphere.c(v(-1.5d, 0d, 5d), 1d, glassy(cb));
 		RtObject sphere1 = Sphere.c(v(1.5d, 0d, 5d), 1d, glassy(cb));
-		Scene scene = new Scene(List.of(sky, sphere0, sphere1));
+		var scene = new Scene(List.of(sky, sphere0, sphere1));
 
-		LightSource light = new PointLightSource(v(0d, 0d, 5d), gray(1.5d));
+		var light = new PointLightSource(v(0d, 0d, 5d), gray(1.5d));
 		List<LightSource> lights = List.of(light);
 
-		RayTracer rayTracer = new RayTracer(lights, scene);
+		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
 	}
 

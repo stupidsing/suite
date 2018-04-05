@@ -13,7 +13,7 @@ public class IRopeTest {
 	@Test
 	public void test() {
 		var length = 1024;
-		String s = new String(Chars_.toArray(length, c -> (char) c));
+		var s = new String(Chars_.toArray(length, c -> (char) c));
 		IRope<Character> rope = new IRope<>(IRope.ropeList(""));
 		var p = 0;
 

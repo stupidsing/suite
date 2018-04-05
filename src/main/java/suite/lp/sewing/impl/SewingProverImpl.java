@@ -620,8 +620,8 @@ public class SewingProverImpl implements ProverFactory {
 
 				var n0 = f0.apply(rt.env);
 
-				Suspend suspend = new Suspend(() -> {
-					Runtime rt_ = new Runtime(rt, tr_);
+				var suspend = new Suspend(() -> {
+					var rt_ = new Runtime(rt, tr_);
 					rt_.trampoline();
 					return Read.from(results).uniqueResult();
 				});

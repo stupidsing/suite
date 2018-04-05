@@ -293,7 +293,7 @@ public class P2InferType {
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 				var tv = unify.newRef();
 				var tv1 = TypeIo.of(tv);
-				Infer i1 = new Infer(env.replace(var, Pair.of(false, tv)));
+				var i1 = new Infer(env.replace(var, Pair.of(false, tv)));
 				unify(n, tv, infer(init));
 				unify(n, typeBoolean, i1.infer(cond));
 				unify(n, tv1, i1.infer(iterate));
@@ -399,7 +399,7 @@ public class P2InferType {
 				for (var pair : vars) {
 					var offset0 = offset;
 					var value = pair.t1;
-					Var var = new Var(scope, offsetStack, offset0, offset += getTypeSize(typeOf(value)));
+					var var = new Var(scope, offsetStack, offset0, offset += getTypeSize(typeOf(value)));
 					env1 = env1.replace(pair.t0, var);
 					assigns.add(Pair.of(var, value));
 				}
