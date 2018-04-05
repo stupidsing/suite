@@ -96,7 +96,7 @@ public class Intrinsics {
 	}
 
 	static {
-		for (Class<?> clazz : List.of( //
+		for (var clazz : List.of( //
 				ArrayIntrinsics.class //
 				, BasicIntrinsics.class //
 				, CharsIntrinsics.class //

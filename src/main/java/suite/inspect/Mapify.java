@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -184,13 +183,13 @@ public class Mapify {
 				var vm = getMapifier(typeArgs[1]);
 				mapifier = new Mapifier(object -> {
 					var map = newMap();
-					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
+					for (var e : ((Map<?, ?>) object).entrySet())
 						map.put(apply_(km.mapify, e.getKey()), apply_(vm.mapify, e.getValue()));
 					return map;
 				}, object -> {
 					Map<?, ?> map = (Map<?, ?>) object;
 					var object1 = (Map<Object, Object>) instantiate(clazz);
-					for (Entry<?, ?> e : map.entrySet())
+					for (var e : map.entrySet())
 						object1.put(apply_(km.unmapify, e.getKey()), apply_(vm.unmapify, e.getValue()));
 					return object1;
 				});

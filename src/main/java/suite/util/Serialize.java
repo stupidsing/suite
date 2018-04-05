@@ -119,7 +119,7 @@ public class Serialize {
 					Object object;
 					if (defaultCtor != null) {
 						object = defaultCtor.newInstance();
-						for (Pair<Field, ?> pair : pairs)
+						for (var pair : pairs)
 							pair.t0.set(object, ((Serializer<?>) pair.t1).read(dataInput));
 					} else {
 						var ps = new Object[immutableCtor.getParameterCount()];
@@ -136,7 +136,7 @@ public class Serialize {
 			}
 
 			public void write(DataOutput_ dataOutput, T t) throws IOException {
-				for (Pair<Field, ?> pair : pairs) {
+				for (var pair : pairs) {
 					@SuppressWarnings("unchecked")
 					Serializer<Object> serializer1 = (Serializer<Object>) pair.t1;
 					serializer1.write(dataOutput, Rethrow.ex(() -> pair.t0.get(t)));

@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -199,7 +198,7 @@ public class Nodify {
 				var vn = getNodifier(typeArgs[1]);
 				nodifier = new Nodifier(object -> {
 					var dict = new Dict();
-					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
+					for (var e : ((Map<?, ?>) object).entrySet())
 						dict.map.put(apply_(kn, e.getKey()), Reference.of(apply_(vn, e.getValue())));
 					return dict;
 				}, node -> {

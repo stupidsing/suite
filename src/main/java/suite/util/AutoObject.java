@@ -99,7 +99,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (Comparable<?> value : values())
+		for (var value : values())
 			h = h * 31 + Objects.hashCode(value);
 		return h;
 	}

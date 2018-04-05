@@ -4,7 +4,6 @@ import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import suite.jdk.gen.Type_;
 import suite.node.util.Singleton;
@@ -103,7 +102,7 @@ public class Dump {
 							for (var o1 : (Collection<?>) object)
 								d(prefix + "[" + count++ + "]", o1);
 						else if (Map.class.isAssignableFrom(clazz))
-							for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet()) {
+							for (var e : ((Map<?, ?>) object).entrySet()) {
 								Object key = e.getKey(), value = e.getValue();
 								d(prefix + "[" + count + "].getKey()", key);
 								d(prefix + "[" + count + "].getValue()", value);
