@@ -210,14 +210,14 @@ public class StatisticalArbitrageTest {
 			System.out.println("tor = " + tor + ", " + stat.moments(differencesByTor.get(tor)));
 
 		Int_Flt predictFun = t -> {
-			double[][] cpsArray = Ints_ //
+			var cpsArray = Ints_ //
 					.range(1, maxTor) //
 					.map(tor -> {
 						var differences = differencesByTor.get(tor);
 						var length = differences.length;
 
 						// cumulative probabilities
-						double[] cps = new double[11];
+						var cps = new double[11];
 
 						for (int cpsi = 0, predDiff = -500; predDiff <= 500; cpsi++, predDiff += 100) {
 							var f = prices[t - 1] + predDiff - prices[t - tor];

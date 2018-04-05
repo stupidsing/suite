@@ -394,7 +394,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public double sum() {
-		double result = 0;
+		var result = 0;
 		double c1;
 		while ((c1 = next()) != DblFunUtil.EMPTYVALUE)
 			result += c1;

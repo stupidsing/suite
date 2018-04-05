@@ -110,7 +110,7 @@ public class MovingAverage {
 		var price0 = prices[0];
 
 		double[] re = Doubles_.toArray(w1, i -> price0);
-		double[] betas = new double[w];
+		var betas = new double[w];
 		var b = beta;
 
 		for (var i = 0; i < w; i++) {
