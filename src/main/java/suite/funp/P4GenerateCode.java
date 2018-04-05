@@ -116,7 +116,7 @@ public class P4GenerateCode {
 	}
 
 	public List<Instruction> compile0(Funp funp) {
-		List<Instruction> instructions = new ArrayList<>();
+		var instructions = new ArrayList<Instruction>();
 		var emit = new P4Emit(instructions::add);
 		if (isUseEbp)
 			emit.mov(ebp, esp);
@@ -184,8 +184,8 @@ public class P4GenerateCode {
 					var old0 = op0;
 					var old1 = op1;
 					if (result == Result.ASSIGN) {
-						OpMem opt0 = deOp.decomposeOpMem(fd, target.pointer, target.start, ps);
-						OpMem opt1 = deOp.decomposeOpMem(fd, target.pointer, target.start + ps, ps);
+						var opt0 = deOp.decomposeOpMem(fd, target.pointer, target.start, ps);
+						var opt1 = deOp.decomposeOpMem(fd, target.pointer, target.start + ps, ps);
 						if (opt0 == null || opt1 == null) {
 							var r = mask(op0, op1).compileOpReg(target.pointer);
 							opt0 = amd64.mem(r, target.start, ps);
@@ -327,7 +327,7 @@ public class P4GenerateCode {
 						compile0 = compile1 = this::compile;
 						out = CompileOut::new;
 					} else if (result == Result.OP || result == Result.OPREG) {
-						OpReg[] ops = new OpReg[1];
+						var ops = new OpReg[1];
 						compile0 = node_ -> {
 							var op0 = compileOp(node_);
 							em.mov(ops[0] = rs.get(op0), op0);
@@ -335,7 +335,7 @@ public class P4GenerateCode {
 						compile1 = node_ -> compileOpSpec(node_, ops[0]);
 						out = () -> postOp.apply(ops[0]);
 					} else if (result == Result.TWOOP || result == Result.TWOOPREG) {
-						OpReg[] ops = new OpReg[2];
+						var ops = new OpReg[2];
 						compile0 = node_ -> {
 							var co1 = compileTwoOp(node_);
 							em.mov(ops[0] = rs.mask(co1.op1).get(co1.op0), co1.op0);
@@ -435,7 +435,7 @@ public class P4GenerateCode {
 					FunpMemory out = frame(ps + is, os);
 					return postTwoOp.apply(compileOp(frame), compileRoutine(c1 -> c1.compileAssign(expr, out)));
 				})).applyIf(FunpSaveRegisters.class, f -> f.apply(expr -> {
-					OpReg[] opRegs = rs.list(r -> r != ebp.reg && r != esp.reg);
+					var opRegs = rs.list(r -> r != ebp.reg && r != esp.reg);
 
 					for (var i = 0; i <= opRegs.length - 1; i++)
 						em.emit(amd64.instruction(Insn.PUSH, opRegs[i]));
@@ -487,12 +487,12 @@ public class P4GenerateCode {
 			}
 
 			private Operand compileTree(Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
-				Integer numRhs = rhs.cast(FunpNumber.class, n_ -> n_.i.get());
+				var numRhs = rhs.cast(FunpNumber.class, n_ -> n_.i.get());
 				var insn = insnByOp.get(operator);
 				var setInsn = setInsnByOp.get(operator);
 				var setRevInsn = setRevInsnByOp.get(operator);
 				var shInsn = shInsnByOp.get(operator);
-				OpMem op = deOp.decomposeOpMem(fd, n, 0, is);
+				var op = deOp.decomposeOpMem(fd, n, 0, is);
 				Operand opResult = null;
 
 				if (opResult == null && op != null)
