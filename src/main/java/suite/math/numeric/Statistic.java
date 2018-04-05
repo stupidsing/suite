@@ -7,7 +7,6 @@ import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
 import suite.primitive.Floats_;
 import suite.primitive.IntMutable;
-import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
@@ -33,8 +32,10 @@ public class Statistic {
 	}
 
 	public double correlation(Int_Dbl xf, Int_Dbl yf, int length) {
-		double sumx = 0d, sumy = 0d;
-		double sumx2 = 0d, sumy2 = 0d;
+		var sumx = 0d;
+		var sumy = 0d;
+		var sumx2 = 0d;
+		var sumy2 = 0d;
 		var sumxy = 0d;
 		for (var i = 0; i < length; i++) {
 			double x = xf.apply(i), y = yf.apply(i);
@@ -48,8 +49,9 @@ public class Statistic {
 	}
 
 	public double covariance(float[] xs, float[] ys) {
-		int length = vec.sameLength(xs, ys);
-		double sumx = 0d, sumy = 0d;
+		var length = vec.sameLength(xs, ys);
+		var sumx = 0d;
+		var sumy = 0d;
 		var sumxy = 0d;
 		for (var i = 0; i < length; i++) {
 			double x = xs[i], y = ys[i];
@@ -69,8 +71,8 @@ public class Statistic {
 	public LinearRegression linearRegression(Streamlet<FltObjPair<float[]>> pairs) {
 		List<FltObjPair<float[]>> list = pairs.toList();
 		var size = list.size();
-		float[][] x = To.array(size, float[].class, i -> list.get(i).t1);
-		float[] y = Floats_.toArray(size, i -> list.get(i).t0);
+		var x = To.array(size, float[].class, i -> list.get(i).t1);
+		var y = Floats_.toArray(size, i -> list.get(i).t0);
 		return linearRegression(x, y, null);
 	}
 
@@ -155,7 +157,7 @@ public class Statistic {
 		// the t statistic is the coefficient divided by its standard error
 		public float[] tStatistic() {
 			return Floats_.toArray(nDepVariables, i -> {
-				MeanVariance mv = new MeanVariance(in.length, j -> in[j][i]);
+				var mv = new MeanVariance(in.length, j -> in[j][i]);
 				var invsd = Math.sqrt(mv.variance / (sse * invn2));
 				return (float) (coefficients[i] * invsd);
 			});
@@ -226,8 +228,8 @@ public class Statistic {
 	}
 
 	public Obj_Int<int[]> naiveBayes0(int[][] x, int[] y) {
-		IntObjMap<IntMutable> xcounts = new IntObjMap<>();
-		IntObjMap<IntMutable> ycounts = new IntObjMap<>();
+		var xcounts = new IntObjMap<IntMutable>();
+		var ycounts = new IntObjMap<IntMutable>();
 		var ix = x.length; // number of samples
 		var jx = x[0].length; // number of features
 
@@ -239,7 +241,7 @@ public class Statistic {
 
 		return ins -> {
 			IntObjPair<IntMutable> pair = IntObjPair.of(0, null);
-			IntObjSource<IntMutable> source2 = ycounts.source();
+			var source2 = ycounts.source();
 			var result = 0;
 			var maxp = Double.MIN_VALUE;
 
