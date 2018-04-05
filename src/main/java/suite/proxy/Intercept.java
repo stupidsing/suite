@@ -15,7 +15,7 @@ public class Intercept {
 
 	public static <I> I object(Class<I> interface_, I object, Fun<Invocation, Invocation> fun) {
 		@SuppressWarnings("unchecked")
-		Class<I> clazz = (Class<I>) object.getClass();
+		var clazz = (Class<I>) object.getClass();
 		var classLoader = clazz.getClassLoader();
 		Class<?>[] classes = { interface_, };
 
@@ -31,7 +31,7 @@ public class Intercept {
 		};
 
 		@SuppressWarnings("unchecked")
-		I proxied = (I) Proxy.newProxyInstance(classLoader, classes, handler);
+		var proxied = (I) Proxy.newProxyInstance(classLoader, classes, handler);
 		return proxied;
 	}
 
