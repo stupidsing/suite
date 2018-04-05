@@ -160,7 +160,7 @@ public class Mapify {
 			var pt = (ParameterizedType) type;
 			var rawType = pt.getRawType();
 			var typeArgs = pt.getActualTypeArguments();
-			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
+			var clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (collectionClasses.contains(clazz)) {
 				var mapifier1 = getMapifier(typeArgs[0]);
@@ -171,7 +171,7 @@ public class Mapify {
 						map.put(i++, apply_(mapifier1.mapify, o));
 					return map;
 				}, object -> {
-					Map<?, ?> map = (Map<?, ?>) object;
+					var map = (Map<?, ?>) object;
 					Collection<Object> object1 = (Collection<Object>) instantiate(clazz);
 					var i = 0;
 					while (map.containsKey(i))
