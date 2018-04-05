@@ -176,7 +176,7 @@ public class StatisticalArbitrageTest {
 		var minPeriod = 4;
 		var dctDataSources = dctDataSources();
 
-		for (Pair<String, float[]> e : dctDataSources.dctByKey) {
+		for (var e : dctDataSources.dctByKey) {
 			var dct = e.t1;
 			IntFltPair max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
 

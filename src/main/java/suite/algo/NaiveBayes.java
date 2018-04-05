@@ -22,7 +22,7 @@ public class NaiveBayes {
 		int[] ws = Ints_.toArray(nCategories, cat -> 1);
 		int[][] is = To.array(nCategories, int[].class, cat -> Ints_.toArray(length_, i -> 1));
 
-		for (Pair<int[], Boolean> record : records) {
+		for (var record : records) {
 			var xs = record.t0;
 			var cat = i(record.t1);
 			ms[cat]++;

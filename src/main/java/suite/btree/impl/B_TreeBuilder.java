@@ -92,7 +92,7 @@ public class B_TreeBuilder<Key, Value> {
 			dataOutput.writeInt(page.pointer);
 			dataOutput.writeInt(page.size());
 
-			for (B_TreeImpl<Key, Value>.KeyPointer kp : page) {
+			for (var kp : page) {
 				keySerializer.write(dataOutput, kp.key);
 
 				if (kp.pointer instanceof B_TreeImpl.Branch) {
