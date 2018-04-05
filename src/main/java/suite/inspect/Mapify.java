@@ -104,7 +104,7 @@ public class Mapify {
 						map.put(i, apply_(mapifier1.mapify, Array.get(object, i)));
 					return map;
 				}, object -> {
-					Map<?, ?> map = (Map<?, ?>) object;
+					var map = (Map<?, ?>) object;
 					Object objects = Array.newInstance(componentType, map.size());
 					var i = 0;
 					while (map.containsKey(i)) {
@@ -115,8 +115,8 @@ public class Mapify {
 				});
 			} else if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) // polymorphism
 				mapifier = new Mapifier(object -> {
-					Class<?> clazz1 = object.getClass();
-					Object m = apply_(getMapifier(clazz1).mapify, object);
+					var clazz1 = object.getClass();
+					var m = apply_(getMapifier(clazz1).mapify, object);
 					if (m instanceof Map) {
 						var map = (Map<String, String>) m;
 						map.put("@class", clazz1.getName());
@@ -126,9 +126,9 @@ public class Mapify {
 						return m;
 				}, object -> {
 					if (object instanceof Map) {
-						Map<?, ?> map = (Map<?, ?>) object;
+						var map = (Map<?, ?>) object;
 						var className = map.get("@class").toString();
-						Class<?> clazz1 = Rethrow.ex(() -> Class.forName(className));
+						var clazz1 = Rethrow.ex(() -> Class.forName(className));
 						return apply_(getMapifier(clazz1).unmapify, object);
 					} else
 						// happens when an enum implements an interface
@@ -149,7 +149,7 @@ public class Mapify {
 						map.put(fi.name, apply_(fi.mapifier.mapify, fi.field.get(object)));
 					return map;
 				}), object -> Rethrow.ex(() -> {
-					Map<?, ?> map = (Map<?, ?>) object;
+					var map = (Map<?, ?>) object;
 					var object1 = Object_.new_(clazz);
 					for (var fi : fis)
 						fi.field.set(object1, apply_(fi.mapifier.unmapify, map.get(fi.name)));
@@ -172,7 +172,7 @@ public class Mapify {
 					return map;
 				}, object -> {
 					var map = (Map<?, ?>) object;
-					Collection<Object> object1 = (Collection<Object>) instantiate(clazz);
+					var object1 = (Collection<Object>) instantiate(clazz);
 					var i = 0;
 					while (map.containsKey(i))
 						object1.add(apply_(mapifier1.unmapify, map.get(i++)));
@@ -187,7 +187,7 @@ public class Mapify {
 						map.put(apply_(km.mapify, e.getKey()), apply_(vm.mapify, e.getValue()));
 					return map;
 				}, object -> {
-					Map<?, ?> map = (Map<?, ?>) object;
+					var map = (Map<?, ?>) object;
 					var object1 = (Map<Object, Object>) instantiate(clazz);
 					for (var e : map.entrySet())
 						object1.put(apply_(km.unmapify, e.getKey()), apply_(vm.unmapify, e.getValue()));
