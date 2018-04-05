@@ -136,7 +136,7 @@ public class HttpSessionController {
 	}
 
 	private String generateRandomSessionId() {
-		byte[] bytes = new byte[16];
+		var bytes = new byte[16];
 		random.nextBytes(bytes);
 
 		StringBuilder sb = new StringBuilder();

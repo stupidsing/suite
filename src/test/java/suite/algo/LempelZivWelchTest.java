@@ -40,7 +40,7 @@ public class LempelZivWelchTest {
 	}
 
 	private String doTest(String s0) {
-		byte[] bs = s0.getBytes(Constants.charset);
+		var bs = s0.getBytes(Constants.charset);
 
 		Source<Byte> source0 = new Source<>() {
 			private int index;
@@ -64,7 +64,7 @@ public class LempelZivWelchTest {
 	}
 
 	private List<Byte> allBytes() {
-		List<Byte> bytes = new ArrayList<>();
+		var bytes = new ArrayList<Byte>();
 		byte b = 0;
 
 		do

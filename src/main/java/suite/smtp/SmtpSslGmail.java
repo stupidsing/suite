@@ -55,7 +55,7 @@ public class SmtpSslGmail {
 	}
 
 	public static void main(String[] args) {
-		char[] salt = "abc123".toCharArray();
+		var salt = "abc123".toCharArray();
 		var in = "def456";
 		String encoded = encode(salt, in);
 		String decoded = decode(salt, encoded);
@@ -73,7 +73,7 @@ public class SmtpSslGmail {
 
 	private static String convert(char[] salt, String in0, ChrChr_Int f) {
 		CharsBuilder cb = new CharsBuilder();
-		char[] in1 = in0.toCharArray();
+		var in1 = in0.toCharArray();
 
 		for (var i = 0; i < in1.length; i++) {
 			int a = f.apply(in1[i], salt[i % salt.length]);

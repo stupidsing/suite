@@ -92,7 +92,7 @@ public class Chars implements Iterable<Character> {
 
 	public Chars append(Chars a) {
 		int size0 = size_(), size1 = a.size_(), newSize = size0 + size1;
-		char[] nb = new char[newSize];
+		var nb = new char[newSize];
 		System.arraycopy(cs, start, nb, 0, size0);
 		System.arraycopy(a.cs, a.start, nb, size0, size1);
 		return of(nb);
@@ -167,7 +167,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public Chars reverse() {
-		char[] cs_ = new char[size_()];
+		var cs_ = new char[size_()];
 		int si = start, di = 0;
 		while (si < end)
 			cs_[di++] = cs[si++];
@@ -180,7 +180,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public Chars sort() {
-		char[] cs = toArray();
+		var cs = toArray();
 		Arrays.sort(cs);
 		return Chars.of(cs);
 	}

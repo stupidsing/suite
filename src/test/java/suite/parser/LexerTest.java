@@ -14,7 +14,7 @@ public class LexerTest {
 
 	@Test
 	public void test() throws IOException {
-		char[] buffer = new char[Constants.bufferSize];
+		var buffer = new char[Constants.bufferSize];
 		StringBuilder sb = new StringBuilder();
 		int nCharsRead;
 

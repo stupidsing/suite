@@ -21,7 +21,7 @@ public class NetUtil {
 	}
 
 	public static Bytes intToBytes(int value) {
-		byte[] bytes = new byte[4];
+		var bytes = new byte[4];
 		for (var i = 0; i < 4; i++) {
 			bytes[i] = (byte) (value & 0xFF);
 			value >>>= 8;
@@ -41,7 +41,7 @@ public class NetUtil {
 	}
 
 	public static <T> T deserialize(Bytes s) {
-		byte[] bytes = s.toArray();
+		var bytes = s.toArray();
 		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
 
 		try {

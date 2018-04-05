@@ -1050,7 +1050,7 @@ public class Amd64Assemble {
 
 	private byte[] bs(int... is) {
 		var length = is.length;
-		byte[] bs = new byte[length];
+		var bs = new byte[length];
 		for (var i = 0; i < length; i++)
 			bs[i] = (byte) is[i];
 		return bs;

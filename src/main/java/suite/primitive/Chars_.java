@@ -37,7 +37,7 @@ public class Chars_ {
 		var length = 0;
 		for (char[] fs : array)
 			length += fs.length;
-		char[] fs1 = new char[length];
+		var fs1 = new char[length];
 		var i = 0;
 		for (char[] fs : array) {
 			var length_ = fs.length;
@@ -51,7 +51,7 @@ public class Chars_ {
 		var length = 0;
 		for (Chars chars : array)
 			length += chars.size();
-		char[] cs1 = new char[length];
+		var cs1 = new char[length];
 		var i = 0;
 		for (Chars chars : array) {
 			var size_ = chars.size();
@@ -125,7 +125,7 @@ public class Chars_ {
 	}
 
 	public static char[] toArray(int length, Int_Chr f) {
-		char[] cs = new char[length];
+		var cs = new char[length];
 		for (var i = 0; i < length; i++)
 			cs[i] = f.apply(i);
 		return cs;

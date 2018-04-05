@@ -146,7 +146,7 @@ public class Amd64Interpret {
 						} else if (regs[eax] == 4) {
 							var length = regs[edx];
 							var si = index(regs[ecx]);
-							byte[] bs = new byte[length];
+							var bs = new byte[length];
 							for (var i = 0; i < length; i++)
 								bs[i] = mem.get(si++);
 							output.sink(Bytes.of(bs));

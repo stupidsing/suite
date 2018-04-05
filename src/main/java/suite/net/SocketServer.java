@@ -29,7 +29,7 @@ public class SocketServer {
 
 	private Bytes read(InputStream is, int max) throws IOException {
 		BytesBuilder bb = new BytesBuilder();
-		byte[] buffer = new byte[Constants.bufferSize];
+		var buffer = new byte[Constants.bufferSize];
 		int nBytesRead;
 
 		while ((nBytesRead = is.read(buffer, 0, min(max - bb.size(), buffer.length))) != -1) {

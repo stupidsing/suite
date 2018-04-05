@@ -102,7 +102,7 @@ public class To {
 			private boolean isOpen = true;
 
 			public int read() throws IOException {
-				byte[] b = new byte[1];
+				var b = new byte[1];
 				int nBytesRead = read(b, 0, 1);
 				return 0 < nBytesRead ? b[0] : nBytesRead;
 			}
@@ -121,7 +121,7 @@ public class To {
 
 			public void close() throws IOException {
 				if (isOpen) {
-					byte[] bs = new byte[Constants.bufferSize];
+					var bs = new byte[Constants.bufferSize];
 					while (0 <= read(bs, 0, bs.length))
 						;
 				}
@@ -163,7 +163,7 @@ public class To {
 	public static Outlet<Bytes> outlet(InputStream is) {
 		InputStream bis = new BufferedInputStream(is);
 		return Outlet.of(() -> {
-			byte[] bs = new byte[Constants.bufferSize];
+			var bs = new byte[Constants.bufferSize];
 			var nBytesRead = Rethrow.ex(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
 		}).closeAtEnd(bis).closeAtEnd(is);
@@ -203,7 +203,7 @@ public class To {
 
 	public static Source<Bytes> source(InputStream is) {
 		return () -> {
-			byte[] bs = new byte[Constants.bufferSize];
+			var bs = new byte[Constants.bufferSize];
 			var nBytesRead = Rethrow.ex(() -> is.read(bs));
 
 			if (0 <= nBytesRead)
@@ -266,7 +266,7 @@ public class To {
 
 	public static String string(Reader reader) {
 		try (Reader reader_ = reader) {
-			char[] buffer = new char[Constants.bufferSize];
+			var buffer = new char[Constants.bufferSize];
 			StringBuilder sb = new StringBuilder();
 
 			while (reader_.ready()) {
@@ -319,7 +319,7 @@ public class To {
 	}
 
 	private static String read_(Path path) throws IOException {
-		byte[] bytes = Files.readAllBytes(path);
+		var bytes = Files.readAllBytes(path);
 		boolean isBomExist = 3 <= bytes.length //
 				&& bytes[0] == (byte) 0xEF //
 				&& bytes[1] == (byte) 0xBB //

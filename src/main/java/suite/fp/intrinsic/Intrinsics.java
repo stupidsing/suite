@@ -85,7 +85,7 @@ public class Intrinsics {
 
 	public static IPointer<Chars> read(Reader reader) {
 		return IndexedSourceReader.of(() -> Rethrow.ex(() -> {
-			char[] buffer = new char[Constants.bufferSize];
+			var buffer = new char[Constants.bufferSize];
 			var nCharsRead = reader.read(buffer);
 			if (0 <= nCharsRead)
 				return Chars.of(buffer, 0, nCharsRead);

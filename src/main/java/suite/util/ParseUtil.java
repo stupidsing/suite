@@ -83,7 +83,7 @@ public class ParseUtil {
 	}
 
 	public static Streamlet<String> split(String in, String name) {
-		char[] chars = in.toCharArray();
+		var chars = in.toCharArray();
 		var length = chars.length;
 
 		return new Streamlet<>(() -> Outlet.of(new Source<String>() {

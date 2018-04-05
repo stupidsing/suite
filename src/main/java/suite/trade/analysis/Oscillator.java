@@ -100,7 +100,7 @@ public class Oscillator {
 
 	public Movement movement(float[] prices, int window) {
 		var length = prices.length;
-		byte[] cs = new byte[length];
+		var cs = new byte[length];
 
 		for (var index = 1; index < length; index++)
 			cs[index] = (byte) Float.compare(prices[index - 1], prices[index]);

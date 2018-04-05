@@ -18,7 +18,7 @@ public class Copy {
 	public static void readerToWriter(Reader in, Writer out) throws IOException {
 		try (Reader in_ = in) {
 			int len;
-			char[] buffer = new char[Constants.bufferSize];
+			var buffer = new char[Constants.bufferSize];
 			while (0 <= (len = in_.read(buffer)))
 				out.write(buffer, 0, len);
 		}
@@ -53,7 +53,7 @@ public class Copy {
 	public static void stream(InputStream in, OutputStream out) throws IOException {
 		try (InputStream in_ = in) {
 			int len;
-			byte[] buffer = new byte[Constants.bufferSize];
+			var buffer = new byte[Constants.bufferSize];
 			while (0 <= (len = in_.read(buffer))) {
 				out.write(buffer, 0, len);
 				out.flush();

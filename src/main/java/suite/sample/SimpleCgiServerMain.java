@@ -87,7 +87,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 			Fail.t("netstring length not ended with ':'");
 
 		var nBytesRead = 0;
-		byte[] bytes = new byte[length];
+		var bytes = new byte[length];
 		while (nBytesRead < length)
 			nBytesRead += sis.read(bytes);
 

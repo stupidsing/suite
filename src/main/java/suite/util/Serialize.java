@@ -150,7 +150,7 @@ public class Serialize {
 	public Serializer<Bytes> variableLengthBytes = new Serializer<>() {
 		public Bytes read(DataInput_ dataInput) throws IOException {
 			var length = dataInput.readInt();
-			byte[] bs = new byte[length];
+			var bs = new byte[length];
 			dataInput.readFully(bs);
 			return Bytes.of(bs);
 		}
@@ -235,7 +235,7 @@ public class Serialize {
 	public Serializer<Bytes> bytes(int length) {
 		return new Serializer<>() {
 			public Bytes read(DataInput_ dataInput) throws IOException {
-				byte[] bs = new byte[length];
+				var bs = new byte[length];
 				dataInput.readFully(bs);
 				return Bytes.of(bs);
 			}
@@ -360,7 +360,7 @@ public class Serialize {
 	public Serializer<String> string(int length) {
 		return new Serializer<>() {
 			public String read(DataInput_ dataInput) throws IOException {
-				byte[] bs = new byte[length];
+				var bs = new byte[length];
 				var l = dataInput.readInt();
 				dataInput.readFully(bs);
 				return To.string(bs).substring(0, l);

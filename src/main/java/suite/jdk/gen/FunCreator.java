@@ -200,7 +200,7 @@ public class FunCreator<I> extends FunFactory {
 			cg.addMethod(m0);
 			cg.addMethod(m1);
 
-			byte[] bytes = cg.getJavaClass().getBytes();
+			var bytes = cg.getJavaClass().getBytes();
 			var array = new Object[cp.getSize()];
 
 			fgb.constants.streamlet().sink((i, object) -> array[i] = object);

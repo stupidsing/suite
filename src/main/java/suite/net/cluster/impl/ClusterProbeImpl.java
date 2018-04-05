@@ -188,7 +188,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			dc.receive(buffer);
 			buffer.flip();
 
-			byte[] bytes = new byte[buffer.remaining()];
+			var bytes = new byte[buffer.remaining()];
 			buffer.get(bytes);
 			buffer.rewind();
 
@@ -220,7 +220,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	private void keepAlive(long current) {
-		byte[] bytes = formMessage(Command.HELO);
+		var bytes = formMessage(Command.HELO);
 
 		for (String remote : peers.keySet()) {
 			Long lastActive = lastActiveTimes.get(remote);
@@ -256,7 +256,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	 * TODO this is costly and un-scalable.
 	 */
 	private void broadcast(Command data) {
-		byte[] bytes = formMessage(data);
+		var bytes = formMessage(data);
 
 		for (String remote : peers.keySet())
 			if (!String_.equals(remote, me))

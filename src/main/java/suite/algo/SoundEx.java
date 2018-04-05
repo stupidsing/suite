@@ -17,7 +17,7 @@ public class SoundEx {
 		word = word.toUpperCase();
 
 		StringBuilder sb = new StringBuilder();
-		char[] a = word.toCharArray();
+		var a = word.toCharArray();
 		var len = a.length;
 		var p = 0;
 

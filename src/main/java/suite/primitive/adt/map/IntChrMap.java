@@ -155,7 +155,7 @@ public class IntChrMap {
 
 		if (capacity * 3 / 4 < size) {
 			int[] ks0 = ks;
-			char[] vs0 = vs;
+			var vs0 = vs;
 			char v_;
 
 			allocate(capacity * 2);

@@ -74,7 +74,7 @@ public class Ebnf {
 	}
 
 	public FactorizeResult parseFNode(String s, String entity) {
-		char[] cs = s.toCharArray();
+		var cs = s.toCharArray();
 		return toFactorizeResult(cs, 0, cs.length, parse(entity, s));
 	}
 

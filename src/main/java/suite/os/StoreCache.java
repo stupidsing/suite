@@ -161,7 +161,7 @@ public class StoreCache {
 		var keySize = key.size();
 
 		if (dis.readInt() == keySize) {
-			byte[] kb = new byte[keySize];
+			var kb = new byte[keySize];
 			dis.readFully(kb);
 			return Arrays.equals(key.toArray(), kb);
 		} else
@@ -182,7 +182,7 @@ public class StoreCache {
 			public Bytes source() {
 				return Rethrow.ex(() -> {
 					if (cont) {
-						byte[] vb = new byte[Constants.bufferSize];
+						var vb = new byte[Constants.bufferSize];
 						int n, nBytesRead = 0;
 						while (nBytesRead < vb.length && (cont &= 0 <= (n = dis.read(vb, nBytesRead, vb.length - nBytesRead))))
 							nBytesRead += n;

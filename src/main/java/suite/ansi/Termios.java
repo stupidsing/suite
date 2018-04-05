@@ -34,7 +34,7 @@ public class Termios implements Closeable {
 	public Termios(LibcJna libc) {
 		this.libc = libc;
 
-		byte[] termios1 = new byte[Constants.bufferSize];
+		var termios1 = new byte[Constants.bufferSize];
 		libc.tcgetattr(0, termios0);
 		libc.tcgetattr(0, termios1);
 		libc.cfmakeraw(termios1);

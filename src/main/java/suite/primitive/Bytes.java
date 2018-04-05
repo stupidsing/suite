@@ -38,8 +38,8 @@ public class Bytes implements Iterable<Byte> {
 		int index = 0, c = 0;
 
 		while (c == 0 && index < minSize) {
-			byte c0 = bytes0.bs[start0 + index];
-			byte c1 = bytes1.bs[start1 + index];
+			var c0 = bytes0.bs[start0 + index];
+			var c1 = bytes1.bs[start1 + index];
 			c = Compare.compare(c0, c1);
 			index++;
 		}
@@ -89,7 +89,7 @@ public class Bytes implements Iterable<Byte> {
 
 	public Bytes append(Bytes bytes1) {
 		int size0 = size_(), size1 = bytes1.size_(), newSize = size0 + size1;
-		byte[] bsx = new byte[newSize];
+		var bsx = new byte[newSize];
 		System.arraycopy(bs, start, bsx, 0, size0);
 		System.arraycopy(bytes1.bs, bytes1.start, bsx, size0, size1);
 		return of(bsx);

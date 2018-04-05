@@ -60,7 +60,7 @@ public class FileSystemKeyUtil {
 	}
 
 	public Bytes toBytes(DataKey key) {
-		byte[] bs = ByteBuffer.allocate(4).putInt(Integer.reverseBytes(key.seq)).array();
+		var bs = ByteBuffer.allocate(4).putInt(Integer.reverseBytes(key.seq)).array();
 		return Bytes.concat(toBytes_(key), Bytes.of(bs)).pad(keyLength);
 	}
 

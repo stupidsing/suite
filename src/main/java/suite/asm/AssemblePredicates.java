@@ -18,7 +18,7 @@ public class AssemblePredicates {
 	private BuiltinPredicate emitBytes(int n) {
 		return PredicateUtil.p3((prover, n0, p0, px) -> {
 			var i = isPass2 ? TreeUtil.evaluate(n0) : 0;
-			byte[] bytes = new byte[n];
+			var bytes = new byte[n];
 			var p = px;
 
 			for (var j = 0; j < n; j++) {

@@ -152,8 +152,8 @@ public class ChrChrMap {
 		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
-			char[] ks0 = ks;
-			char[] vs0 = vs;
+			var ks0 = ks;
+			var vs0 = vs;
 			char v_;
 
 			allocate(capacity * 2);
