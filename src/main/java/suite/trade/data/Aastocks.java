@@ -28,7 +28,7 @@ public class Aastocks {
 	}
 
 	private float quote_(String symbol) {
-		String urlString = "http://www.aastocks.com/en/mobile/Quote.aspx?symbol=0" + symbol.substring(0, 4);
+		var urlString = "http://www.aastocks.com/en/mobile/Quote.aspx?symbol=0" + symbol.substring(0, 4);
 		var url = To.url(urlString);
 		var lines = HttpUtil.get(url).out.collect(As::lines).toList();
 		var i0 = Ints_.range(lines.size()).filter(i -> lines.get(i).contains("text_last")).first();

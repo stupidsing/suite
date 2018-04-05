@@ -45,7 +45,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 		Trade_.leverageAmount = fund0;
 
 		if (Boolean.FALSE) { // record
-			String ts = Time.now().ymdHms().replace("-", "").replace(" ", "-").replace(":", "");
+			var ts = Time.now().ymdHms().replace("-", "").replace(" ", "-").replace(":", "");
 			var filename = "wfa." + ts + ".csv";
 
 			var schedule = Schedule //
@@ -68,7 +68,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 			var ts = "20170612-092616";
 			var filename = "wfa." + ts + ".csv";
 
-			Map<Time, Map<String, Float>> data = new TreeMap<>();
+			var data = new TreeMap<Time, Map<String, Float>>();
 
 			try (var is = Files.newInputStream(HomeDir.resolve(filename)); //
 					var isr = new InputStreamReader(is); //

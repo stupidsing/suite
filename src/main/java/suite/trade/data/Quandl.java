@@ -5,7 +5,6 @@ import suite.node.util.Singleton;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.streamlet.As;
-import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.util.String_;
@@ -24,7 +23,7 @@ public class Quandl {
 
 		// Date, Open, High, Low, Last, Change, Settle, Volume, Previous Day
 		// Open Interest
-		Streamlet<String[]> arrays = Singleton.me.storeCache //
+		var arrays = Singleton.me.storeCache //
 				.http(urlString) //
 				.collect(As::csv) //
 				.skip(1) //

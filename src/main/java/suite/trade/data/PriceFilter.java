@@ -21,7 +21,7 @@ public class PriceFilter {
 	}
 
 	public DataSource dataSource(String symbol, TimeRange period) {
-		DataSource ds = cfg.dataSource(s(symbol), period);
+		var ds = cfg.dataSource(s(symbol), period);
 		return DataSource.ofOhlcv(ds.ts, //
 				Floats_.of(ds.opens).mapFlt(priceFun).toArray(), //
 				Floats_.of(ds.closes).mapFlt(priceFun).toArray(), //

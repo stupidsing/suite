@@ -112,9 +112,9 @@ public class UctSearch<Move> {
 			}
 
 			// UCT selection
-			UctNode<Move> child = node.child;
+			var child = node.child;
 			UctNode<Move> bestSelected = null;
-			int pnRaveVisits = getMoveRave(nRaveVisits, node.move);
+			var pnRaveVisits = getMoveRave(nRaveVisits, node.move);
 			var lnPnVisits = logp1(node.nVisits);
 			var lnPnRaveVisits = logp1(pnRaveVisits);
 			var bestUct = -Float.MAX_VALUE;
@@ -225,7 +225,7 @@ public class UctSearch<Move> {
 	}
 
 	private String getPrincipalVar(UctNode<Move> node) {
-		UctNode<Move> bestChild = node.bestChild;
+		var bestChild = node.bestChild;
 		return (node.move != null ? node.move : "") + (bestChild != null ? " => " + getPrincipalVar(bestChild) : "");
 	}
 

@@ -53,7 +53,7 @@ public class DataSourceView<K, V> {
 			to = Long.max(t, to);
 		}
 
-		TimeRange period = TimeRange.of(Time.ofEpochSec(fr), Time.ofEpochSec(to).addDays(1));
+		var period = TimeRange.of(Time.ofEpochSec(fr), Time.ofEpochSec(to).addDays(1));
 
 		this.tor = tor;
 		this.nLookbackDays = nLookbackDays;

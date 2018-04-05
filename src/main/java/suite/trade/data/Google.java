@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import suite.adt.pair.Fixie;
@@ -56,7 +55,7 @@ public class Google {
 		}
 
 		var header = lines[i++];
-		List<String[]> data = new ArrayList<>();
+		var data = new ArrayList<String[]>();
 
 		while (i < lines.length)
 			data.add(lines[i++].split(","));
@@ -94,7 +93,7 @@ public class Google {
 			var url = To.url("http://finance.google.com/finance/info?client=ig&q=HKEX%3A" //
 					+ symbols.sort(Object_::compare).map(this::fromSymbol).collect(As.joinedBy(",")));
 
-			JsonNode json = Rethrow.ex(() -> {
+			var json = Rethrow.ex(() -> {
 				try (var is = HttpUtil.get(url).out.collect(To::inputStream)) {
 					for (var i = 0; i < 4; i++)
 						is.read();

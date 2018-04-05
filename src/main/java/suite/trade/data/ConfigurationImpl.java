@@ -107,9 +107,9 @@ public class ConfigurationImpl implements Configuration {
 	}
 
 	private DataSource dataSource_(String symbol, TimeRange period) {
-		DataSource ds = src(symbol).dataSourceFun.apply(symbol, period);
+		var ds = src(symbol).dataSourceFun.apply(symbol, period);
 		var epx = ds.last().t0;
-		long now = min(Time.now().epochSec(), period.to.epochSec());
+		var now = min(Time.now().epochSec(), period.to.epochSec());
 		if (epx + 7 * 86400 * 1000l < now)
 			LogUtil.warn("ancient data: " + symbol + " " + Time.ofEpochSec(epx));
 		return ds;

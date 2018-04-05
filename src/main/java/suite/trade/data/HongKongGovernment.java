@@ -20,7 +20,7 @@ import suite.util.String_;
 public class HongKongGovernment {
 
 	public List<Time> queryPublicHolidays() {
-		DateTimeFormatter yyyymmdd = DateTimeFormatter.ofPattern("yyyyMMdd", Locale.ENGLISH);
+		var yyyymmdd = DateTimeFormatter.ofPattern("yyyyMMdd", Locale.ENGLISH);
 
 		return Singleton.me.storeCache //
 				.http("http://www.1823.gov.hk/common/ical/gc/en.ics") //
@@ -40,7 +40,7 @@ public class HongKongGovernment {
 	}
 
 	public Map<String, DataSource> queryWeather() {
-		long t0 = Time.of(2000, 1, 1).epochSec();
+		var t0 = Time.of(2000, 1, 1).epochSec();
 		var tx = Time.today().epochSec();
 
 		var ts = new LongsBuilder();
@@ -58,7 +58,7 @@ public class HongKongGovernment {
 							+ "&language=english&B1=Confirm#") //
 					.collect(As::string);
 
-			String data = ParseUtil.fit(html, "<pre>", "</pre>")[1];
+			var data = ParseUtil.fit(html, "<pre>", "</pre>")[1];
 
 			ts.append(t);
 			fs0.append(getFloatValue(data, "Maximum Air Temperature", "C"));

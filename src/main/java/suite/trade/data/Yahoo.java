@@ -41,10 +41,10 @@ public class Yahoo {
 	private QuoteCache<String> quoteCache = new QuoteCache<>(this::quote_);
 
 	public DataSource dataSourceCsv(String symbol, TimeRange period) {
-		String urlString = tableUrl(symbol, period);
+		var urlString = tableUrl(symbol, period);
 
 		// Date, Open, High, Low, Close, Volume, Adj Close
-		Streamlet<String[]> arrays = Singleton.me.storeCache //
+		var arrays = Singleton.me.storeCache //
 				.http(urlString) //
 				.collect(As::csv) //
 				.skip(1) //
@@ -98,7 +98,7 @@ public class Yahoo {
 
 		if (Files.exists(path))
 			try {
-				List<String> lines = Rethrow.ex(() -> Files.readAllLines(path));
+				var lines = Rethrow.ex(() -> Files.readAllLines(path));
 				stockHistory0 = StockHistory.of(Read.from(lines).outlet());
 			} catch (Exception ex) {
 				stockHistory0 = StockHistory.new_();
@@ -110,7 +110,7 @@ public class Yahoo {
 		StockHistory stockHistory1;
 
 		if (stockHistory0.isActive && Time.compare(stockHistory0.time, time) < 0) {
-			JsonNode json = queryL1(symbol, TimeRange.of(stockHistory0.time.addDays(-14), Time.now()));
+			var json = queryL1(symbol, TimeRange.of(stockHistory0.time.addDays(-14), Time.now()));
 
 			var jsons = Read.each(json) //
 					.flatMap(json_ -> json_.path("chart").path("result"));
@@ -147,7 +147,7 @@ public class Yahoo {
 							.flatMap(json_ -> json_.path("indicators").path("quote")) //
 							.flatMap(json_ -> json_.path(tag)));
 
-			Map<String, LngFltPair[]> data = Streamlet2 //
+			var data = Streamlet2 //
 					.concat(dataJsons0, dataJsons1) //
 					.mapValue(json_ -> json_.collect(Obj_Flt.lift(JsonNode::floatValue)).toArray()) //
 					.filterValue(fs -> length <= fs.length) //
@@ -193,8 +193,8 @@ public class Yahoo {
 				? Read.from(stockHistory1.splits).filter(splitFilter).toArray(LngFltPair.class) //
 				: stockHistory1.splits;
 
-		StockHistory stockHistory2 = stockHistory1.create(stockHistory1.data, stockHistory1.dividends, splits2);
-		StockHistory stockHistory3 = LogUtil.prefix("for " + symbol + ": ", () -> stockHistory2.cleanse());
+		var stockHistory2 = stockHistory1.create(stockHistory1.data, stockHistory1.dividends, splits2);
+		var stockHistory3 = LogUtil.prefix("for " + symbol + ": ", () -> stockHistory2.cleanse());
 		return stockHistory3;
 	}
 
@@ -242,7 +242,7 @@ public class Yahoo {
 						.flatMap(json_ -> json_.path("quote")) //
 						.collect(As::streamlet);
 
-				Streamlet<String[]> arrays = quotes //
+				var arrays = quotes //
 						.map(json_ -> new String[] { //
 								json_.path("Date").textValue(), //
 								json_.path("Open").textValue(), //
@@ -304,7 +304,7 @@ public class Yahoo {
 		adjusters.put("0700.HK", (d, p) -> String_.compare(Time.ofEpochSec(d).ymd(), "2014-05-14") <= 0 ? p * .2f : p);
 		adjusters.put("2318.HK", (d, p) -> String_.compare(Time.ofEpochSec(d).ymd(), "2014-03-23") <= 0 ? p * .5f : p);
 
-		FoldOp<Long, Float> adjuster = adjusters.get(symbol);
+		var adjuster = adjusters.get(symbol);
 		if (adjuster != null)
 			for (var d = 0; d < prices.length; d++)
 				prices[d] = adjuster.apply(ts[d], prices[d]);

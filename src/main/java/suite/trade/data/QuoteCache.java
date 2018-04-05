@@ -19,7 +19,7 @@ public class QuoteCache<K> {
 	}
 
 	public synchronized Map<String, Float> quote(Set<String> symbols, K key) {
-		Map<String, Float> quotes = quotesByField.computeIfAbsent(key, f -> new HashMap<>());
+		var quotes = quotesByField.computeIfAbsent(key, f -> new HashMap<>());
 		var querySymbols = Read //
 				.from(symbols) //
 				.filter(symbol -> !Trade_.isCacheQuotes || !quotes.containsKey(symbol)) //

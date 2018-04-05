@@ -42,7 +42,7 @@ public interface Broker {
 		public double transactionFee(double transactionAmount) {
 
 			// .15d during promotion period
-			double hsbcInternetBanking = max(transactionAmount * .01d * .25d, 100d);
+			var hsbcInternetBanking = max(transactionAmount * .01d * .25d, 100d);
 
 			var stampDuty = transactionAmount * .01d * .1d;
 			var sfcTxLevy = transactionAmount * .01d * .0027d;

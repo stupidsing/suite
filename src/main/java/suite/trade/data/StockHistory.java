@@ -3,7 +3,6 @@ package suite.trade.data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
@@ -35,7 +34,7 @@ public class StockHistory {
 
 	public static StockHistory of(Outlet<String> outlet) {
 		var properties = new HashMap<String, String>();
-		Map<String, LngFltPair[]> data = new HashMap<>();
+		var data = new HashMap<String, LngFltPair[]>();
 		String line;
 
 		while ('9' < (line = outlet.next()).charAt(0)) {
@@ -71,7 +70,7 @@ public class StockHistory {
 		if (String_.equals(line = outlet.next(), "{"))
 			while (!String_.equals(line = outlet.next(), "}")) {
 				var p = line.lastIndexOf(":");
-				Time time = Time.of(line.substring(0, p));
+				var time = Time.of(line.substring(0, p));
 				var price = Float.parseFloat(line.substring(p + 1));
 				pairs.add(LngFltPair.of(time.epochSec(timeZone), price));
 			}
@@ -115,7 +114,7 @@ public class StockHistory {
 	}
 
 	public StockHistory cleanse() {
-		Map<String, LngFltPair[]> data_ = Read //
+		var data_ = Read //
 				.from2(data) //
 				.map2((name, pairs) -> {
 					if (!String_.equals(name, "volume"))
@@ -139,7 +138,7 @@ public class StockHistory {
 			return pairs1.toArray(new LngFltPair[0]);
 		};
 
-		Map<String, LngFltPair[]> data1 = Read //
+		var data1 = Read //
 				.from2(data) //
 				.mapValue(filter_) //
 				.toMap();
@@ -149,7 +148,7 @@ public class StockHistory {
 
 	public StockHistory merge(StockHistory other) {
 		var isActive_ = isActive && other.isActive;
-		Set<String> keys = Set_.union(data.keySet(), other.data.keySet());
+		var keys = Set_.union(data.keySet(), other.data.keySet());
 
 		BinOp<LngFltPair[]> merge_ = (pairs0, pairs1) -> {
 			var pairs = new ArrayList<LngFltPair>();
@@ -173,7 +172,7 @@ public class StockHistory {
 			return pairs.toArray(new LngFltPair[0]);
 		};
 
-		Map<String, LngFltPair[]> data1 = Read //
+		var data1 = Read //
 				.from(keys) //
 				.map2(key -> merge_.apply(get(key), other.get(key))) //
 				.toMap();
@@ -194,7 +193,7 @@ public class StockHistory {
 			return pairs1.toArray(new LngFltPair[0]);
 		};
 
-		Map<String, LngFltPair[]> data1 = Read //
+		var data1 = Read //
 				.from2(data) //
 				.mapValue(align_) //
 				.toMap();

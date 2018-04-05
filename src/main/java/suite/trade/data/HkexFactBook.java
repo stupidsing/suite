@@ -41,8 +41,8 @@ public class HkexFactBook {
 				.pipe("sed 's/\\(.*\\) [0-9]*$/\\1/g'") //
 				.read() //
 				.concatMap(line -> {
-					int p0 = line.indexOf(" ", 0);
-					int p1 = 0 <= p0 ? line.indexOf(" ", p0 + 1) : -1;
+					var p0 = line.indexOf(" ", 0);
+					var p1 = 0 <= p0 ? line.indexOf(" ", p0 + 1) : -1;
 					if (0 <= p1) {
 						var list = new ArrayList<String>();
 						int[] ps = { p0, p1, };
