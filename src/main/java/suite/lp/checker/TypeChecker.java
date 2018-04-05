@@ -47,7 +47,7 @@ public class TypeChecker {
 					for (var i = 1; i < nElements; i++) {
 						var key = Pair.of(prototype, i);
 						var p = ps[i];
-						Node type0 = types.computeIfAbsent(key, k -> new Reference());
+						var type0 = types.computeIfAbsent(key, k -> new Reference());
 						var type1 = getType(p);
 						bind(type0, type1);
 					}
