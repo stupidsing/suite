@@ -237,7 +237,7 @@ public class SewingProverImpl implements ProverFactory {
 							.toMap();
 
 					tr = rt -> {
-						Prototype proto = Prototype.of(rt.query, 1);
+						var proto = Prototype.of(rt.query, 1);
 						if (proto != null) {
 							var tr_ = trByProto1.get(proto);
 							return tr_ != null ? tr_ : fail;
@@ -259,7 +259,7 @@ public class SewingProverImpl implements ProverFactory {
 							.toMap();
 
 					cps = rt -> {
-						Prototype proto = Prototype.of(rt.query, 1);
+						var proto = Prototype.of(rt.query, 1);
 						return proto != null ? cpsByProto1.get(proto) : cps0;
 					};
 				} else
