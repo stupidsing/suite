@@ -108,7 +108,7 @@ public class Grapher {
 		for (var i = 0; i < size; i++) {
 			var gn = gns.get(i);
 			var node = nodes.get(i);
-			List<Pair<Node, Node>> children = Read.from(gn.children).map(p -> Pair.of(nodes.get(p.t0), nodes.get(p.t1))).toList();
+			var children = Read.from(gn.children).map(p -> Pair.of(nodes.get(p.t0), nodes.get(p.t1))).toList();
 
 			switch (gn.type) {
 			case DICT:
