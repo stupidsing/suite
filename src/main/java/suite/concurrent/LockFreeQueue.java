@@ -27,7 +27,7 @@ public class LockFreeQueue<T> {
 	 * @return null if the queue is empty.
 	 */
 	public T dequeue() {
-		List<T> result = new ArrayList<>(List.of((T) null));
+		var result = new ArrayList<>(List.of((T) null));
 
 		cas.apply(fb0 -> {
 			var back = fb0.back;

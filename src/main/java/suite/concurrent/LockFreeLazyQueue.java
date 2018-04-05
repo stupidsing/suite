@@ -37,7 +37,7 @@ public class LockFreeLazyQueue<T> {
 	 * @return null if the queue is empty.
 	 */
 	public T dequeue() {
-		List<T> list = new ArrayList<>(List.of((T) null));
+		var list = new ArrayList<>(List.of((T) null));
 		cas.apply(backFront -> {
 			var pair = dequeue_(backFront);
 			list.set(0, pair.t0);

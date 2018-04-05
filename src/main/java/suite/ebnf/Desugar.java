@@ -61,10 +61,10 @@ public class Desugar {
 
 	private Grammar repeat(Grammar child) {
 		var name = "$" + counter++;
-		Grammar ege = new Grammar(GrammarType.ENTITY, name);
-		Grammar ega = new Grammar(GrammarType.AND___, List.of(child, ege));
-		Grammar ego = new Grammar(GrammarType.OR____, List.of(nil, ega));
-		Grammar egn = new Grammar(GrammarType.NAMED_, name, ego);
+		var ege = new Grammar(GrammarType.ENTITY, name);
+		var ega = new Grammar(GrammarType.AND___, List.of(child, ege));
+		var ego = new Grammar(GrammarType.OR____, List.of(nil, ega));
+		var egn = new Grammar(GrammarType.NAMED_, name, ego);
 		grammarByEntity.put(name, egn);
 		return egn;
 	}

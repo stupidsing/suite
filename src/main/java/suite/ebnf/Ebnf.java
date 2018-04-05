@@ -81,7 +81,7 @@ public class Ebnf {
 		var size = children.size();
 
 		if (0 < size) {
-			List<FactorizeResult> frs = new ArrayList<>();
+			var frs = new ArrayList<FactorizeResult>();
 			var pos = p0;
 			for (var i = 0; i < size; i++) {
 				var child = children.get(i);
@@ -91,9 +91,9 @@ public class Ebnf {
 			}
 			return FactorizeResult.merge(ast.entity, frs);
 		} else {
-			Chars pre = Chars.of(cs, p0, ast.start);
-			Chars mid = Chars.of(cs, ast.start, ast.end);
-			Chars post = Chars.of(cs, ast.end, px);
+			var pre = Chars.of(cs, p0, ast.start);
+			var mid = Chars.of(cs, ast.start, ast.end);
+			var post = Chars.of(cs, ast.end, px);
 			return new FactorizeResult(pre, new FTerminal(mid), post);
 		}
 	}
