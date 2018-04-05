@@ -22,7 +22,7 @@ public class IIntMap<V> {
 	}
 
 	public static <V> IIntMap<V> of(List<IntObjPair<V>> list) {
-		List<IntObjPair<V>> list6 = new ArrayList<>(list);
+		var list6 = new ArrayList<>(list);
 		list6.sort((p0, p1) -> Integer.compare(p0.t0, p1.t0));
 		var list5 = consolidate(list6);
 		var list4 = consolidate(list5);
@@ -33,7 +33,7 @@ public class IIntMap<V> {
 	}
 
 	private static <V> List<IntObjPair<Bl<V>>> consolidate(List<IntObjPair<V>> list0) {
-		List<IntObjPair<Bl<V>>> list1 = new ArrayList<>();
+		var list1 = new ArrayList<IntObjPair<Bl<V>>>();
 		int size = list0.size(), i0 = 0, prevKey = 0, key;
 		for (var i = 0; i < size; i++) {
 			if (prevKey != (key = list0.get(i).t0 & 63)) {
@@ -70,11 +70,11 @@ public class IIntMap<V> {
 		var k3 = key >>> 12 & 63;
 		var k4 = key >>> 6 & 63;
 		var k5 = key >>> 0 & 63;
-		Bl<Bl<Bl<Bl<Bl<V>>>>> bl1 = Bl.get(bl0, k0);
-		Bl<Bl<Bl<Bl<V>>>> bl2 = Bl.get(bl1, k1);
-		Bl<Bl<Bl<V>>> bl3 = Bl.get(bl2, k2);
-		Bl<Bl<V>> bl4 = Bl.get(bl3, k3);
-		Bl<V> bl5 = Bl.get(bl4, k4);
+		var bl1 = Bl.get(bl0, k0);
+		var bl2 = Bl.get(bl1, k1);
+		var bl3 = Bl.get(bl2, k2);
+		var bl4 = Bl.get(bl3, k3);
+		var bl5 = Bl.get(bl4, k4);
 		return Bl.get(bl5, k5);
 	}
 
@@ -85,19 +85,19 @@ public class IIntMap<V> {
 		var k3 = key >>> 12 & 63;
 		var k4 = key >>> 6 & 63;
 		var k5 = key >>> 0 & 63;
-		Bl<Bl<Bl<Bl<Bl<V>>>>> bl1 = Bl.get(bl0, k0);
-		Bl<Bl<Bl<Bl<V>>>> Bl2 = Bl.get(bl1, k1);
-		Bl<Bl<Bl<V>>> bl3 = Bl.get(Bl2, k2);
-		Bl<Bl<V>> bl4 = Bl.get(bl3, k3);
-		Bl<V> bl5 = Bl.get(bl4, k4);
-		V v0 = Bl.get(bl5, k5);
+		var bl1 = Bl.get(bl0, k0);
+		var Bl2 = Bl.get(bl1, k1);
+		var bl3 = Bl.get(Bl2, k2);
+		var bl4 = Bl.get(bl3, k3);
+		var bl5 = Bl.get(bl4, k4);
+		var v0 = Bl.get(bl5, k5);
 		var v1 = fun.apply(v0);
-		Bl<V> new5 = Bl.update(bl5, k5, v1);
-		Bl<Bl<V>> new4 = Bl.update(bl4, k4, new5);
-		Bl<Bl<Bl<V>>> new3 = Bl.update(bl3, k3, new4);
-		Bl<Bl<Bl<Bl<V>>>> new2 = Bl.update(Bl2, k2, new3);
-		Bl<Bl<Bl<Bl<Bl<V>>>>> new1 = Bl.update(bl1, k1, new2);
-		Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>> new0 = Bl.update(bl0, k0, new1);
+		var new5 = Bl.update(bl5, k5, v1);
+		var new4 = Bl.update(bl4, k4, new5);
+		var new3 = Bl.update(bl3, k3, new4);
+		var new2 = Bl.update(Bl2, k2, new3);
+		var new1 = Bl.update(bl1, k1, new2);
+		var new0 = Bl.update(bl0, k0, new1);
 		return new IIntMap<>(new0);
 	}
 
