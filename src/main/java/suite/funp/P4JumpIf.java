@@ -64,8 +64,8 @@ public class P4JumpIf {
 
 		public Source<Boolean> jnxIf() {
 			if (operator == TermOp.BIGAND) {
-				Source<Boolean> r0 = new JumpIf(left).jnxIf();
-				Source<Boolean> r1 = new JumpIf(right).jnxIf();
+				var r0 = new JumpIf(left).jnxIf();
+				var r1 = new JumpIf(right).jnxIf();
 				return r0 != null && r1 != null ? () -> r0.source() && r1.source() : null;
 			} else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
 				return new JumpIf(left).jxxIf();
@@ -77,8 +77,8 @@ public class P4JumpIf {
 
 		public Source<Boolean> jxxIf() {
 			if (operator == TermOp.BIGOR_) {
-				Source<Boolean> r0 = new JumpIf(left).jxxIf();
-				Source<Boolean> r1 = new JumpIf(right).jxxIf();
+				var r0 = new JumpIf(left).jxxIf();
+				var r1 = new JumpIf(right).jxxIf();
 				return r0 != null && r1 != null ? () -> r0.source() && r1.source() : null;
 			} else if (operator == TermOp.NOTEQ_ && right instanceof FunpBoolean && ((FunpBoolean) right).b)
 				return new JumpIf(left).jnxIf();

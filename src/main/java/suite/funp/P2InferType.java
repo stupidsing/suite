@@ -179,7 +179,7 @@ public class P2InferType {
 					List<Pair<String, Funp>> list = new ArrayList<>();
 					var struct = FunpStruct.of(list);
 
-					Capture c1 = new Capture(v -> {
+					var c1 = new Capture(v -> {
 						if (set.add(v))
 							list.add(Pair.of(v, FunpVariable.of(v)));
 						return FunpField.of(ref, v);
@@ -792,8 +792,8 @@ public class P2InferType {
 
 				for (var e : ts1.pairs) {
 					var field = e.t0;
-					UnNode<Type> type0 = typeByField0.get(field);
-					UnNode<Type> type1 = e.t1;
+					var type0 = typeByField0.get(field);
+					var type1 = e.t1;
 					if (type0 != null)
 						b &= unify.unify(type0, type1);
 					else {
