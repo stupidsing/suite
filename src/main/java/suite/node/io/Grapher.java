@@ -29,7 +29,6 @@ import suite.primitive.IntFunUtil;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntIntPair;
-import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Fail;
