@@ -27,7 +27,7 @@ public class BootMain extends ExecutableProgram {
 		if (bootLoader.size() == 512 && kernel.size() < 65536) {
 
 			// combine the images and align to 512 bytes
-			Bytes disk0 = Bytes.concat(bootLoader, kernel);
+			var disk0 = Bytes.concat(bootLoader, kernel);
 			var disk1 = disk0.pad(disk0.size() + 511 & 0xFFFFFE00);
 
 			var image = "target/boot.bin";

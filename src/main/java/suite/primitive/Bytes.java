@@ -266,7 +266,7 @@ public class Bytes implements Iterable<Byte> {
 		e = min(size, e);
 		int start_ = start + min(size, s);
 		int end_ = start + min(size, e);
-		Bytes result = of(bs, start_, end_);
+		var result = of(bs, start_, end_);
 
 		// avoid small pack of bytes object keeping a large buffer
 		if (Boolean.FALSE && reallocSize <= bs.length && end_ - start_ < reallocSize / 4)

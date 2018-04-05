@@ -79,7 +79,7 @@ public class NioDispatcherTest {
 			for (var s : new String[] { "ABC", "WXYZ", "", }) {
 				var bs = s.getBytes(Constants.charset);
 				var request = Bytes.of(bs);
-				Bytes response = matcher.requestForResponse(client, request);
+				var response = matcher.requestForResponse(client, request);
 				assertEquals(request, response);
 				System.out.println("Request '" + s + "' is okay");
 			}

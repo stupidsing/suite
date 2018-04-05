@@ -80,9 +80,9 @@ public class TextUtil {
 			var ptx = !isEmptyx ? List_.right(pairsx, 1) : pairsx;
 			var pty = !isEmptyy ? List_.right(pairsy, 1) : pairsy;
 
-			int c = min(phx.t0.size(), phy.t0.size());
-			Bytes commonx = phx.t0.range(0, c);
-			Bytes commony = phy.t0.range(0, c);
+			var c = min(phx.t0.size(), phy.t0.size());
+			var commonx = phx.t0.range(0, c);
+			var commony = phy.t0.range(0, c);
 
 			if (Objects.equals(commonx, commony)) {
 				int s0, s1;
@@ -118,7 +118,7 @@ public class TextUtil {
 	}
 
 	private int detectSame(Bytes x, Bytes y) {
-		int s = min(x.size(), y.size());
+		var s = min(x.size(), y.size());
 		var i = 0;
 		while (i < s && x.get(i) == y.get(i))
 			i++;

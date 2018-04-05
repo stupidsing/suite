@@ -89,7 +89,7 @@ public class ClusterImpl implements Cluster {
 	public Object requestForResponse(String peer, Object request) {
 		if (probe.isActive(peer)) {
 			var req = NetUtil.serialize(request);
-			Bytes resp = matcher.requestForResponse(getChannel(peer), req);
+			var resp = matcher.requestForResponse(getChannel(peer), req);
 			return NetUtil.deserialize(resp);
 		} else
 			return Fail.t("peer " + peer + " is not active");

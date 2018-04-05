@@ -19,7 +19,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testBind() {
-		Bytes bytes = imperativeCompiler.compile(0, "if-bind (1 := $a) then a else 0");
+		var bytes = imperativeCompiler.compile(0, "if-bind (1 := $a) then a else 0");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
@@ -32,7 +32,7 @@ public class ImperativeCompilerTest {
 				+ "declare object = new p (next = null,);" //
 				+ "{object/next} = pnext [& object,];" //
 				+ "0";
-		Bytes bytes = imperativeCompiler.compile(0, s);
+		var bytes = imperativeCompiler.compile(0, s);
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
@@ -42,7 +42,7 @@ public class ImperativeCompilerTest {
 		var s = "" //
 				+ "declare object = new (prev = 0, next = 1,);" //
 				+ "object/next";
-		Bytes bytes = imperativeCompiler.compile(0, s);
+		var bytes = imperativeCompiler.compile(0, s);
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
@@ -70,7 +70,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testJump() {
-		Bytes bytes = imperativeCompiler.compile(0, "if (1 < 2) then 1 else 0;");
+		var bytes = imperativeCompiler.compile(0, "if (1 < 2) then 1 else 0;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
@@ -96,7 +96,7 @@ public class ImperativeCompilerTest {
 				+ "declare optional j = newt optional 1 2;" //
 				+ "0";
 
-		Bytes bytes = imperativeCompiler.compile(0, s);
+		var bytes = imperativeCompiler.compile(0, s);
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}

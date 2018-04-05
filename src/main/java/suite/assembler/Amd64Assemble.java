@@ -170,7 +170,7 @@ public class Amd64Assemble {
 		var bb = new BytesBuilder();
 		for (var instruction : instructions)
 			try {
-				Bytes bytes = assemble(offset, instruction);
+				var bytes = assemble(offset, instruction);
 				bb.append(bytes);
 				offset += bytes.size();
 			} catch (Exception ex) {

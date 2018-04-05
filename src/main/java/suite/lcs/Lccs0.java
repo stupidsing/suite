@@ -41,8 +41,8 @@ public class Lccs0 {
 					var segment1 = segments1.get(key);
 					var end0 = segment0.end;
 					var end1 = segment1.end;
-					Bytes b0 = bytes0.range(segment0.start, end0);
-					Bytes b1 = bytes1.range(segment1.start, end1);
+					var b0 = bytes0.range(segment0.start, end0);
+					var b1 = bytes1.range(segment1.start, end1);
 
 					if (Objects.equals(b0, b1)) {
 						var i = 0;

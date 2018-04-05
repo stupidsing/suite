@@ -156,7 +156,7 @@ public interface NioChannelFactory {
 					int end = 4 + NetUtil.bytesToInt(received.range(0, 4));
 
 					if (end <= size) {
-						Bytes in = received.range(4, end);
+						var in = received.range(4, end);
 						received = received.range(end);
 						channel.onReceivePacket.fire(in);
 					}

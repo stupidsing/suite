@@ -41,8 +41,8 @@ public class Lccs {
 					for (var segment1 : segmentLists1.get(key)) {
 						int start0 = segment0.start, end0 = segment0.end;
 						int start1 = segment1.start, end1 = segment1.end;
-						Bytes b0 = bytes0.range(start0, end0);
-						Bytes b1 = bytes1.range(start1, end1);
+						var b0 = bytes0.range(start0, end0);
+						var b1 = bytes1.range(start1, end1);
 
 						if (Objects.equals(b0, b1)) {
 							int ix = Math.min(size0 - start0, size1 - start1);

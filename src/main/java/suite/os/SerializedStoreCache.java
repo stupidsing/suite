@@ -34,7 +34,7 @@ public class SerializedStoreCache<K, V> {
 	}
 
 	public V get(K key, Source<V> source) {
-		Bytes keyBytes = serialize(keySerializer, key);
+		var keyBytes = serialize(keySerializer, key);
 		Bytes valueBytes = storeCache.get(keyBytes, () -> serialize(valueSerializer, source.source()));
 
 		return Rethrow.ex(() -> {
