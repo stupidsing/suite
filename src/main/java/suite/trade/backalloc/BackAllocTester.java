@@ -17,9 +17,7 @@ import suite.trade.TimeRange;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.Trade_.UpdatePortfolio;
-import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.Configuration;
-import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSource.Eod;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
@@ -76,12 +74,12 @@ public class BackAllocTester {
 			account = Account.ofCash(fund0);
 			trades = new ArrayList<>();
 
-			Map<String, Asset> assetBySymbol = assets.toMap(asset -> asset.symbol);
+			var assetBySymbol = assets.toMap(asset -> asset.symbol);
 			var holdBySymbol_ = new HashMap<String, Double>();
 			var symbols = assetBySymbol.keySet();
-			TimeRange historyPeriod = TimeRange.of(period.from.addYears(-1), period.to);
+			var historyPeriod = TimeRange.of(period.from.addYears(-1), period.to);
 
-			AlignKeyDataSource<String> akds = cfg.dataSources(historyPeriod, Read.from(symbols));
+			var akds = cfg.dataSources(historyPeriod, Read.from(symbols));
 			var dsBySymbol = akds.dsByKey;
 			var tradeTs = akds.ts;
 			var t0 = period.from.epochSec();
@@ -97,7 +95,7 @@ public class BackAllocTester {
 
 			var size = indices.length;
 
-			OnDateTime onDateTime = backAllocator.allocate(akds, indices);
+			var onDateTime = backAllocator.allocate(akds, indices);
 			Map<String, Eod> eodBySymbol = Map.ofEntries();
 			var valuations_ = new float[size];
 			String ymd = null;
