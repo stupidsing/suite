@@ -59,7 +59,7 @@ public class Polynomial<N> {
 	}
 
 	public Opt<Poly<N>> parse(Node node) { // polynomialize
-		Polynomial<N> py = Polynomial.this;
+		var py = Polynomial.this;
 
 		return new Object() {
 			private Opt<Poly<N>> poly(Node node) {
@@ -87,7 +87,7 @@ public class Polynomial<N> {
 					return Opt.none();
 				else
 					return poly(a).map(pair -> { // TODO assummed a != 0 or b != 0
-						Poly<N> r = p1;
+						var r = p1;
 						for (var ch : Integer.toBinaryString(power).toCharArray()) {
 							r = mul(r, r);
 							r = ch != '0' ? mul(r, pair) : r;
@@ -127,7 +127,7 @@ public class Polynomial<N> {
 	public Ring<Poly<N>> ring;
 
 	private Poly<N> mul(Poly<N> a, Poly<N> b) {
-		Poly<N> c = polyOf();
+		var c = polyOf();
 		for (var pair0 : a.streamlet())
 			for (var pair1 : b.streamlet())
 				c.add(pair0.t0 + pair1.t0, mul_.apply(pair0.t1, pair1.t1));
@@ -139,7 +139,7 @@ public class Polynomial<N> {
 	}
 
 	private Poly<N> add(Poly<N> a, Poly<N> b) {
-		Poly<N> c = polyOf();
+		var c = polyOf();
 		for (var pair : IntObjStreamlet.concat(a.streamlet(), b.streamlet()))
 			c.add(pair.t0, pair.t1);
 		return c;
@@ -154,7 +154,7 @@ public class Polynomial<N> {
 	}
 
 	public Poly<N> polyOf(int power, N term) {
-		Poly<N> poly = polyOf();
+		var poly = polyOf();
 		poly.add(power, term);
 		return poly;
 	}
@@ -176,7 +176,7 @@ public class Polynomial<N> {
 		}
 
 		public Fixie3<Integer, N, Poly<N>> decons() {
-			int max = streamlet().keys().min((p0, p1) -> p1 - p0);
+			var max = streamlet().keys().min((p0, p1) -> p1 - p0);
 			return Fixie.of(max, get(max), new Poly<>(py, streamlet().filterKey(p -> p != max)));
 		}
 
@@ -200,4 +200,5 @@ public class Polynomial<N> {
 	private Pattern patMul = ex.patMul;
 	private Pattern patInv = ex.patInv;
 	private Pattern patPow = ex.patPow;
+
 }

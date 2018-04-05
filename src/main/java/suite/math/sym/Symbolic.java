@@ -267,14 +267,14 @@ public class Symbolic {
 		private Opt<Node> i(Node node) { // integration
 			return new SwitchNode<Opt<Node>>(node //
 			).match2(patAdd, (u, v) -> {
-				Opt<Node> iudxs = i(u);
-				Opt<Node> ivdxs = i(v);
+				var iudxs = i(u);
+				var ivdxs = i(v);
 				return iudxs.join(ivdxs, add::apply);
 			}).match1(patNeg, u -> {
 				return i(u).map(add::inverse);
 			}).match2(patMul, (m0, m1) -> {
 				var u = m0;
-				Opt<Node> vs = i(m1);
+				var vs = i(m1);
 				var dudx = d(u);
 				return vs.concatMap(v -> i(mul(v, dudx)).map(ivdu -> add(mul(u, v), neg(ivdu))));
 			}).match1(patInv, u -> {
@@ -391,7 +391,7 @@ public class Symbolic {
 		}
 
 		private Opt<Poly<Node>> polyize_(Node node, Fun<Node, Node> coefficientFun) {
-			Field<Node> nf = ex.field;
+			var nf = ex.field;
 			Obj_Int<Node> sign = a -> a.compareTo(ex.n0);
 
 			class DPN extends DivisiblePolynomial<Node> {
@@ -401,7 +401,7 @@ public class Symbolic {
 			}
 
 			DivisiblePolynomial<Node> dpn = new DPN();
-			Ring<Poly<Node>> pr = dpn.ring;
+			var pr = dpn.ring;
 
 			return new Object() {
 				Opt<Poly<Node>> poly(Node node) {

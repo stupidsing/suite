@@ -1,7 +1,6 @@
 package suite.math.sym;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
@@ -56,7 +55,7 @@ public class Express {
 		}
 
 		public Node recompose(Node x, Streamlet<Node> nodes0) {
-			List<Node> list = new ArrayList<>();
+			var list = new ArrayList<Node>();
 			var xn = 0;
 			var constant = e;
 			Node[] m;
@@ -87,7 +86,7 @@ public class Express {
 		}
 
 		public Node apply(Node a, Node b) {
-			Tree tree = Tree.of(operator, a, b);
+			var tree = Tree.of(operator, a, b);
 			var e0 = group0 != null ? group0.e : null;
 			if (a == e0 || b == e0)
 				return e0;

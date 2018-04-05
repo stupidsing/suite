@@ -4,7 +4,6 @@ import java.util.function.Predicate;
 
 import suite.BindArrayUtil.Pattern;
 import suite.adt.Opt;
-import suite.adt.pair.Fixie_.Fixie3;
 import suite.adt.pair.Pair;
 import suite.math.sym.Polynomial.Poly;
 import suite.math.sym.Sym.Field;
@@ -150,9 +149,9 @@ public class DivisiblePolynomial<N> {
 			return Opt.of(num);
 		else if (0 < depth) {
 			var divMod = divMod(num, denom);
-			Poly<N> f = divMod.t0; // divIntegral(num, denom);
-			Poly<N> df = mul(denom, f);
-			Poly<N> ndf = divMod.t1; // add(num, neg(df));
+			var f = divMod.t0; // divIntegral(num, denom);
+			var df = mul(denom, f);
+			var ndf = divMod.t1; // add(num, neg(df));
 			return div(ndf, df, depth - 1).map(r -> mul(add(r, p1), f));
 		} else
 			return Opt.none();
@@ -160,10 +159,10 @@ public class DivisiblePolynomial<N> {
 
 	private Pair<Poly<N>, Poly<N>> divMod(Poly<N> n, Poly<N> d) {
 		if (0 < n.size()) {
-			Fixie3<Integer, N, Poly<N>> n_ = n.decons();
-			Fixie3<Integer, N, Poly<N>> d_ = d.decons();
-			Poly<N> div = py.polyOf(n_.get0() - d_.get0(), mul_.apply(n_.get1(), inv_.apply(d_.get1())));
-			Poly<N> mod = add(n_.get2(), neg(mul(div, d_.get2())));
+			var n_ = n.decons();
+			var d_ = d.decons();
+			var div = py.polyOf(n_.get0() - d_.get0(), mul_.apply(n_.get1(), inv_.apply(d_.get1())));
+			var mod = add(n_.get2(), neg(mul(div, d_.get2())));
 			return Pair.of(div, mod);
 		} else
 			return Pair.of(p0, p0);
