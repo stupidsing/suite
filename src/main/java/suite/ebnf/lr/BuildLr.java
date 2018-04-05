@@ -124,7 +124,7 @@ public class BuildLr {
 	public BuildLr(Map<String, Grammar> grammarByEntity, String rootEntity) {
 		this.grammarByEntity = grammarByEntity;
 		readLookahead = new ReadLookahead(grammarByEntity);
-		Transition nextx = kv("EOF", new State());
+		var nextx = kv("EOF", new State());
 		state0 = newState(buildLrs(rootEntity, nextx.keySet()).next);
 	}
 
@@ -134,14 +134,14 @@ public class BuildLr {
 		transitions.put(k, new Transition());
 
 		while (keys0.size() < transitions.size()) {
-			Set<Pair<String, Set<String>>> keys1 = new HashSet<>(transitions.keySet());
+			var keys1 = new HashSet<>(transitions.keySet());
 			keys1.removeAll(keys0);
 
 			for (var pair : keys1) {
 				var next_ = transitions.get(pair);
 				var nextx_ = newTransition(pair.t1);
 
-				Blr blr1 = build(pair.t0, nextx_);
+				var blr1 = build(pair.t0, nextx_);
 				merges.add(Pair.of(next_, blr1.next));
 				keys0.add(pair);
 			}
@@ -163,7 +163,7 @@ public class BuildLr {
 
 	private Blr build(IList<Pair<String, Set<String>>> ps, Grammar eg, Transition nextx) {
 		Fun<Streamlet2<String, Transition>, Blr> mergeAll = st2 -> {
-			Transition next = newTransition(readLookahead.readLookahead(eg, nextx.keySet()));
+			var next = newTransition(readLookahead.readLookahead(eg, nextx.keySet()));
 			var state1 = newState(nextx);
 			st2.sink((egn, next1) -> {
 				next.put_(egn, Pair.of(state1, null));
@@ -179,21 +179,21 @@ public class BuildLr {
 		case AND___:
 			if (!eg.children.isEmpty()) {
 				var tail = new Grammar(GrammarType.AND___, List_.right(eg.children, 1));
-				Blr blr1 = build(ps, tail, nextx);
-				Blr blr0 = build(ps, eg.children.get(0), blr1.next);
+				var blr1 = build(ps, tail, nextx);
+				var blr0 = build(ps, eg.children.get(0), blr1.next);
 				blr = new Blr(blr0.nTokens + blr1.nTokens, blr0.next);
 			} else
 				blr = new Blr(0, nextx);
 			break;
 		case ENTITY:
 			k = Pair.of(eg.content, nextx.keySet());
-			Transition next1 = transitions.computeIfAbsent(k, k_ -> new Transition());
+			var next1 = transitions.computeIfAbsent(k, k_ -> new Transition());
 			blr = mergeAll.apply(Read.each2(eg.content, next1));
 			break;
 		case NAMED_:
 			var reduce = new Reduce();
-			Transition next = newTransition(nextx.keySet(), Pair.of(null, reduce));
-			Blr blr1 = build(ps, eg.children.get(0), next);
+			var next = newTransition(nextx.keySet(), Pair.of(null, reduce));
+			var blr1 = build(ps, eg.children.get(0), next);
 			reduce.n = blr1.nTokens;
 			reduce.name = eg.content;
 			blr = new Blr(1, blr1.next);
