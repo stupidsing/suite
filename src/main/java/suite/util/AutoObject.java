@@ -2,9 +2,7 @@ package suite.util;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import suite.adt.IdentityKey;
@@ -21,16 +19,16 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 	@Override
 	public AutoObject<T> clone() {
-		Map<IdentityKey<?>, AutoObject<?>> map = new HashMap<>();
+		var map = new HashMap<IdentityKey<?>, AutoObject<?>>();
 
 		class Clone {
 			private AutoObject<?> clone(AutoObject<?> t0) throws IllegalAccessException {
-				IdentityKey<?> key = IdentityKey.of(t0);
-				AutoObject<?> tx = map.get(key);
+				var key = IdentityKey.of(t0);
+				var tx = map.get(key);
 				if (tx == null) {
 					map.put(key, tx = Object_.new_(t0.getClass()));
 					@SuppressWarnings("unchecked")
-					AutoObject<T> t1 = (AutoObject<T>) tx;
+					var t1 = (AutoObject<T>) tx;
 					for (var field : t0.fields_()) {
 						var v0 = field.get(t0);
 						var v1 = v0 instanceof AutoObject ? clone((AutoObject<?>) v0) : v0;
@@ -43,20 +41,20 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 		return Rethrow.ex(() -> {
 			@SuppressWarnings("unchecked")
-			AutoObject<T> object = (AutoObject<T>) new Clone().clone(this);
+			var object = (AutoObject<T>) new Clone().clone(this);
 			return object;
 		});
 	}
 
 	@Override
 	public int compareTo(T t1) {
-		Class<?> class0 = getClass();
-		Class<?> class1 = t1.getClass();
+		var class0 = getClass();
+		var class1 = t1.getClass();
 		int c;
 		if (class0 == class1) {
 			var t0 = self();
-			Iterator<Comparable<?>> iter0 = t0.values().iterator();
-			Iterator<Comparable<?>> iter1 = t1.values().iterator();
+			var iter0 = t0.values().iterator();
+			var iter1 = t1.values().iterator();
 			boolean b0, b1;
 			c = 0;
 			while (c == 0 && (c = Boolean.compare(b0 = iter0.hasNext(), b1 = iter1.hasNext())) == 0)
@@ -79,8 +77,8 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 			var t0 = self();
 			@SuppressWarnings("unchecked")
 			var t1 = (T) object;
-			List<Comparable<?>> values0 = t0.values();
-			List<Comparable<?>> values1 = t1.values();
+			var values0 = t0.values();
+			var values1 = t1.values();
 			var size0 = values0.size();
 			var size1 = values1.size();
 			b = true;
@@ -106,7 +104,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 	@Override
 	public String toString() {
-		IList<AutoObject<?>> recurse0 = recurse.get();
+		var recurse0 = recurse.get();
 		var sb = new StringBuilder();
 
 		if (!recurse0.contains(this))
@@ -129,7 +127,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 				.map(field -> Rethrow.ex(() -> field.get(this))) //
 				.toList();
 		@SuppressWarnings("unchecked")
-		List<Comparable<?>> list1 = (List<Comparable<?>>) list0;
+		var list1 = (List<Comparable<?>>) list0;
 		return list1;
 	}
 

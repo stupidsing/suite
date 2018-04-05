@@ -22,7 +22,7 @@ public class HomeDir {
 		String s = null;
 		s = s != null ? s : System.getenv("HOME");
 		s = s != null ? s : System.getenv("USERPROFILE");
-		Path path = s != null ? Paths.get(s) : null;
+		var path = s != null ? Paths.get(s) : null;
 		return path != null ? path : Constants.tmp;
 	}
 

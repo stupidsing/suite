@@ -243,7 +243,7 @@ public class FunUtil2 {
 	 * skipped.
 	 */
 	public static <K, V> Source<Source2<K, V>> split(BiPredicate<K, V> fun0, Source2<K, V> source2) {
-		BiPredicate<K, V> fun1 = Rethrow.biPredicate(fun0);
+		var fun1 = Rethrow.biPredicate(fun0);
 		return new Source<>() {
 			private Pair<K, V> pair = Pair.of(null, null);
 			private boolean isAvailable;

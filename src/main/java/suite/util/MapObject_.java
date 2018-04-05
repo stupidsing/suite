@@ -20,8 +20,8 @@ import suite.streamlet.Read;
 public class MapObject_ {
 
 	public static <T extends MapObject<T>> int compare(T t0, T t1) {
-		Class<?> class0 = t0.getClass();
-		Class<?> class1 = t1.getClass();
+		var class0 = t0.getClass();
+		var class1 = t1.getClass();
 		int c;
 		if (class0 == class1) {
 			@SuppressWarnings("unchecked")
@@ -42,8 +42,8 @@ public class MapObject_ {
 	}
 
 	public static <T extends MapObject<T>> boolean equals(T t0, T t1) {
-		List<?> list0 = list(t0);
-		List<?> list1 = list(t1);
+		var list0 = list(t0);
+		var list1 = list(t1);
 		var size0 = list0.size();
 		var size1 = list1.size();
 		var b = true;
@@ -61,20 +61,20 @@ public class MapObject_ {
 					.filter(method -> String_.equals(method.getName(), "of") && method.getParameterCount() == size) //
 					.uniqueResult();
 			@SuppressWarnings("unchecked")
-			MapObject<T> t = (MapObject<T>) m.invoke(null, list.toArray());
+			var t = (MapObject<T>) m.invoke(null, list.toArray());
 			return t;
 		});
 	}
 
 	public static <T extends MapObject<T>> List<?> list(Object object) {
-		Class<?> clazz = object.getClass();
+		var clazz = object.getClass();
 
 		var m = Read //
 				.from(clazz.getMethods()) //
 				.filter(method -> String_.equals(method.getName(), "apply")) //
 				.uniqueResult();
 
-		Class<?> type = m.getParameters()[0].getType();
+		var type = m.getParameters()[0].getType();
 		Object p;
 
 		if (type == FixieFun0.class)

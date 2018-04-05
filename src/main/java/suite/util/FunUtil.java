@@ -159,7 +159,7 @@ public class FunUtil {
 	}
 
 	public static <T> boolean isAny(Predicate<T> pred0, Source<T> source) {
-		Predicate<T> pred1 = Rethrow.predicate(pred0);
+		var pred1 = Rethrow.predicate(pred0);
 		T t;
 		while ((t = source.source()) != null)
 			if (pred1.test(t))

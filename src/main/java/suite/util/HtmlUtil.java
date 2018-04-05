@@ -2,7 +2,6 @@ package suite.util;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 
 import suite.adt.map.BiMap;
@@ -20,7 +19,7 @@ public class HtmlUtil {
 	}
 
 	public String decode(String in) {
-		BiMap<String, String> charByEscapeToken = escapeTokenByChar.inverse();
+		var charByEscapeToken = escapeTokenByChar.inverse();
 		String decoded;
 
 		if (in != null) {
@@ -35,7 +34,7 @@ public class HtmlUtil {
 					while (in.charAt(index++) != ';')
 						;
 
-					String key = in.substring(start, index);
+					var key = in.substring(start, index);
 
 					if (String_.charAt(key, 1) == '#')
 						sb.append((char) Integer.parseInt(String_.range(key, 2, -1)));
@@ -121,7 +120,7 @@ public class HtmlUtil {
 			}
 		};
 
-		Deque<HtmlNode> deque = new ArrayDeque<>(List.of(new HtmlNode(null)));
+		var deque = new ArrayDeque<>(List.of(new HtmlNode(null)));
 		var prevp = 0;
 
 		for (var pair : pairs) {
@@ -131,8 +130,8 @@ public class HtmlUtil {
 
 			htmlNode.children.add(new HtmlNode(in.substring(prevp, p0)));
 
-			String tag = in.substring(p0, px);
-			IntObjPair<String> dn = getNameFun.apply(tag);
+			var tag = in.substring(p0, px);
+			var dn = getNameFun.apply(tag);
 			var d = dn.t0;
 			var name = dn.t1;
 

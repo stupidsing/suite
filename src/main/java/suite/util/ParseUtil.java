@@ -27,7 +27,7 @@ public class ParseUtil {
 		var inl = lower.apply(in);
 		var p = 0;
 		for (var part : parts) {
-			int p1 = inl.indexOf(lower.apply(part), p);
+			var p1 = inl.indexOf(lower.apply(part), p);
 			if (0 <= p1) {
 				outs.add(in.substring(p, p1));
 				p = p1 + part.length();
@@ -72,11 +72,11 @@ public class ParseUtil {
 	}
 
 	private static Pair<String, String> search(String s, Segment segment, String name, Assoc assoc, boolean isCheckDepth) {
-		Segment ops = searchPosition(s.toCharArray(), segment, name, assoc, isCheckDepth);
+		var ops = searchPosition(s.toCharArray(), segment, name, assoc, isCheckDepth);
 
 		if (ops != null) {
-			String left = s.substring(segment.start, ops.start);
-			String right = s.substring(ops.end, segment.end);
+			var left = s.substring(segment.start, ops.start);
+			var right = s.substring(ops.end, segment.end);
 			return Pair.of(left, right);
 		} else
 			return null;
@@ -91,7 +91,7 @@ public class ParseUtil {
 
 			public String source() {
 				if (pos < length) {
-					Segment segment = searchPosition(chars, Segment.of(pos, length), name, Assoc.LEFT, true);
+					var segment = searchPosition(chars, Segment.of(pos, length), name, Assoc.LEFT, true);
 					var pos0 = pos;
 					int end;
 					if (segment != null) {

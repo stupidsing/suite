@@ -3,7 +3,6 @@ package suite.util;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -46,8 +45,8 @@ public class Object_ {
 	}
 
 	public static <T extends Comparable<? super T>> int compare(T t0, T t1) {
-		boolean b0 = t0 != null;
-		boolean b1 = t1 != null;
+		var b0 = t0 != null;
+		var b1 = t1 != null;
 		if (b0 && b1)
 			return t0.compareTo(t1);
 		else
@@ -58,22 +57,22 @@ public class Object_ {
 		Mapper mapper;
 
 		if (type instanceof Class) {
-			Class<?> clazz = (Class<?>) type;
+			var clazz = (Class<?>) type;
 
 			if (Type_.isSimple(clazz))
 				mapper = new Mapper(object -> object, object -> object);
 			else if (clazz.isArray()) {
-				Class<?> componentType = clazz.getComponentType();
+				var componentType = clazz.getComponentType();
 
 				mapper = new Mapper(object -> {
-					var map = new HashMap<Object, Object>();
+					var map = new HashMap<>();
 					var length = Array.getLength(object);
 					for (var i = 0; i < length; i++)
 						map.put(i, Array.get(object, i));
 					return map;
 				}, object -> {
-					Map<?, ?> map = (Map<?, ?>) object;
-					Object objects = Array.newInstance(componentType, map.size());
+					var map = (Map<?, ?>) object;
+					var objects = Array.newInstance(componentType, map.size());
 					var i = 0;
 					while (map.containsKey(i)) {
 						Array.set(objects, i, map.get(i));
@@ -83,8 +82,8 @@ public class Object_ {
 				});
 			} else if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) // polymorphism
 				mapper = new Mapper(object -> {
-					Class<?> clazz1 = object.getClass();
-					Object m = apply_(mapper(clazz1).map, object);
+					var clazz1 = object.getClass();
+					var m = apply_(mapper(clazz1).map, object);
 					if (m instanceof Map) {
 						@SuppressWarnings("unchecked")
 						Map<String, String> map = (Map<String, String>) m;
@@ -95,9 +94,9 @@ public class Object_ {
 						return m;
 				}, object -> {
 					if (object instanceof Map) {
-						Map<?, ?> map = (Map<?, ?>) object;
+						var map = (Map<?, ?>) object;
 						var className = map.get("@class").toString();
-						Class<?> clazz1 = Rethrow.ex(() -> Class.forName(className));
+						var clazz1 = Rethrow.ex(() -> Class.forName(className));
 						return apply_(mapper(clazz1).unmap, object);
 					} else
 						// happens when an enum implements an interface
@@ -112,12 +111,12 @@ public class Object_ {
 						.toList();
 
 				mapper = new Mapper(object -> Rethrow.ex(() -> {
-					var map = new HashMap<Object, Object>();
+					var map = new HashMap<>();
 					for (var sf : sfs)
 						map.put(sf.t0, sf.t1.get(object));
 					return map;
 				}), object -> Rethrow.ex(() -> {
-					Map<?, ?> map = (Map<?, ?>) object;
+					var map = (Map<?, ?>) object;
 					var object1 = new_(clazz);
 					for (var sf : sfs)
 						sf.t1.set(object1, map.get(sf.t0));
@@ -127,18 +126,18 @@ public class Object_ {
 		} else if (type instanceof ParameterizedType) {
 			var pt = (ParameterizedType) type;
 			var rawType = pt.getRawType();
-			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
+			var clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (List.class.isAssignableFrom(clazz))
 				mapper = new Mapper(object -> {
-					var map = new HashMap<Object, Object>();
+					var map = new HashMap<>();
 					var i = 0;
 					for (var o : (Collection<?>) object)
 						map.put(i++, o);
 					return map;
 				}, object -> {
-					Map<?, ?> map = (Map<?, ?>) object;
-					Collection<Object> object1 = new ArrayList<>();
+					var map = (Map<?, ?>) object;
+					var object1 = new ArrayList<>();
 					var i = 0;
 					while (map.containsKey(i))
 						object1.add(map.get(i++));
@@ -160,7 +159,7 @@ public class Object_ {
 
 	public static <T> T new_(Class<T> clazz) {
 		return Rethrow.ex(() -> {
-			Constructor<T> ctor = clazz.getDeclaredConstructor();
+			var ctor = clazz.getDeclaredConstructor();
 			ctor.setAccessible(true);
 			return ctor.newInstance();
 		});
@@ -168,8 +167,8 @@ public class Object_ {
 
 	public static <T> Comparator<T> nullsFirst(Comparator<T> cmp0) {
 		return (key0, key1) -> {
-			boolean b0 = key0 != null;
-			boolean b1 = key1 != null;
+			var b0 = key0 != null;
+			var b1 = key1 != null;
 
 			if (b0 && b1)
 				return cmp0.compare(key0, key1);

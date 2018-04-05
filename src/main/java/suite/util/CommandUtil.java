@@ -30,7 +30,7 @@ public class CommandUtil<Command> {
 
 	public Pair<Command, String> recognize(String input, int start) {
 		for (var end = min(start + maxLength, input.length()); start <= end; end--) {
-			String starts = input.substring(start, end);
+			var starts = input.substring(start, end);
 			var command = commandByName.get(starts);
 			if (command != null)
 				return Pair.of(command, input.substring(end));

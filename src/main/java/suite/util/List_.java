@@ -59,13 +59,13 @@ public class List_ {
 	}
 
 	public static <T extends Comparable<? super T>> List<T> sort(Collection<T> list) {
-		List<T> list1 = new ArrayList<>(list);
+		var list1 = new ArrayList<>(list);
 		Collections.sort(list1);
 		return list1;
 	}
 
 	public static <T> List<T> sort(Collection<T> list, Comparator<? super T> comparator) {
-		List<T> list1 = new ArrayList<>(list);
+		var list1 = new ArrayList<>(list);
 		Collections.sort(list1, comparator);
 		return list1;
 	}

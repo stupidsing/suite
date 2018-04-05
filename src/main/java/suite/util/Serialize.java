@@ -46,9 +46,9 @@ public class Serialize {
 	}
 
 	public <T> Serializer<T> auto(Class<T> clazz) {
-		Serializer<?> serializer0 = memoizeAutoSerializers.apply(clazz);
+		var serializer0 = memoizeAutoSerializers.apply(clazz);
 		@SuppressWarnings("unchecked")
-		Serializer<T> serializer = (Serializer<T>) serializer0;
+		var serializer = (Serializer<T>) serializer0;
 		return serializer;
 	}
 
@@ -58,7 +58,7 @@ public class Serialize {
 	private <T> Serializer<?> auto_(Type type) {
 		Serializer<?> serializer;
 		if (type instanceof Class) {
-			Class<?> clazz = (Class<?>) type;
+			var clazz = (Class<?>) type;
 			if (Objects.equals(clazz, boolean.class) || Objects.equals(clazz, Boolean.class))
 				serializer = boolean_;
 			else if (Objects.equals(clazz, Bytes.class))
@@ -87,7 +87,7 @@ public class Serialize {
 			var pt = (ParameterizedType) type;
 			var rawType = pt.getRawType();
 			var typeArgs = pt.getActualTypeArguments();
-			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
+			var clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (Collection.class.isAssignableFrom(clazz))
 				serializer = collection(auto_(typeArgs[0]));
@@ -482,7 +482,7 @@ public class Serialize {
 	private <T> Serializer<T> poly(Class<T> interface_) {
 		return new Serializer<>() {
 			public T read(DataInput_ dataInput) throws IOException {
-				Class<?> c = Rethrow.ex(() -> Class.forName(dataInput.readUTF()));
+				var c = Rethrow.ex(() -> Class.forName(dataInput.readUTF()));
 				if (interface_.isAssignableFrom(c)) {
 					@SuppressWarnings("unchecked")
 					var t = (T) auto(c).read(dataInput);
@@ -493,7 +493,7 @@ public class Serialize {
 
 			public void write(DataOutput_ dataOutput, T t) throws IOException {
 				@SuppressWarnings("unchecked")
-				Class<Object> c = (Class<Object>) t.getClass();
+				var c = (Class<Object>) t.getClass();
 				if (interface_.isAssignableFrom(c)) {
 					dataOutput.writeUTF(c.getName());
 					auto(c).write(dataOutput, t);

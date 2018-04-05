@@ -5,16 +5,14 @@ import suite.primitive.Int_Int;
 import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class FormatUtil {
 
 	public static String tablize(String s) {
-		Streamlet<String[]> arrays = Read.from(s.split("\n")).map(line -> line.split("\t")).collect(As::streamlet);
+		var arrays = Read.from(s.split("\n")).map(line -> line.split("\t")).collect(As::streamlet);
 		var nColumns = arrays.collect(Obj_Int.lift(array -> array.length)).max();
 
-		Streamlet<String[]> rows = arrays //
-				.map(array -> To.array(nColumns, String.class, column -> column < array.length ? array[column] : ""));
+		var rows = arrays.map(array -> To.array(nColumns, String.class, column -> column < array.length ? array[column] : ""));
 
 		var widths = Ints_ //
 				.range(nColumns) //

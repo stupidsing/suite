@@ -28,7 +28,7 @@ public class Memoize {
 	 * Cache results of a function call, no clean-up.
 	 */
 	public static <I, O> Fun<I, O> fun(Fun<I, O> fun) {
-		ThreadLocal<Boolean> isEnteredFun = ThreadLocal.withInitial(() -> false);
+		var isEnteredFun = ThreadLocal.withInitial(() -> false);
 		var results = new ConcurrentHashMap<I, O>();
 		return in -> {
 			var isEnteredFun0 = isEnteredFun.get();
