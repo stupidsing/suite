@@ -48,7 +48,7 @@ public class Bfgs {
 			var xs1 = vec.add(xs_, ss); // line.apply(alpha);
 			var gs1 = gradientFun.apply(xs1);
 			var ys = vec.sub(gs1, gs);
-			double yts = vec.dot(ys, ss);
+			var yts = vec.dot(ys, ss);
 
 			float[][] ib1;
 
@@ -86,7 +86,7 @@ public class Bfgs {
 
 		DblDbl_Dbl zoom = (alphaLo, alphaHi) -> {
 			for (var iter = 0; iter < 16; iter++) {
-				double alpha = interpolate.apply(alphaLo, alphaHi);
+				var alpha = interpolate.apply(alphaLo, alphaHi);
 				var v = phi.apply(alpha);
 				double g;
 
@@ -106,7 +106,7 @@ public class Bfgs {
 
 		var alphap = alpha0;
 		var vp = v0;
-		double alpha = choose.apply(alphap, alphax);
+		var alpha = choose.apply(alphap, alphax);
 
 		for (var iter = 0; iter < 16; iter++) {
 			var v = phi.apply(alpha);
