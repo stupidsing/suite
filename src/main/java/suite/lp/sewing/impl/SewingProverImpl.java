@@ -278,7 +278,7 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Cps compileCpsRules(Prototype prototype, List<Rule> rules, TraceLevel traceLevel) {
-		Streamlet<Cps> cpss = Read.from(rules).map(rule -> {
+		var cpss = Read.from(rules).map(rule -> {
 			var generalizer = new Generalizer();
 			var head = generalizer.generalize(rule.head);
 			var tail = generalizer.generalize(rule.tail);
@@ -423,7 +423,7 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Trampoline compileTrRules(Prototype prototype, List<Rule> rules, TraceLevel traceLevel) {
-		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
+		var trs = Read.from(rules).map(rule -> {
 			var generalizer = new Generalizer();
 			var head = generalizer.generalize(rule.head);
 			var tail = generalizer.generalize(rule.tail);

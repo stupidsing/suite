@@ -220,7 +220,7 @@ public class DailyMain extends ExecutableProgram {
 
 	// some orders caused by stupid bugs. need to sell those at suitable times.
 	private Result sellForEarn(String tag) {
-		Streamlet<Trade> history = cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag));
+		var history = cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag));
 		var account = Account.ofPortfolio(history);
 
 		var faceValueBySymbol = history //

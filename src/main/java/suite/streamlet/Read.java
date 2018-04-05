@@ -51,7 +51,7 @@ public class Read {
 
 	public static <T> Streamlet<T> empty() {
 		@SuppressWarnings("unchecked")
-		Streamlet<T> st = (Streamlet<T>) empty;
+		var st = (Streamlet<T>) empty;
 		return st;
 	}
 

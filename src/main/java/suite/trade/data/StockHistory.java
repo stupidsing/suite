@@ -247,7 +247,7 @@ public class StockHistory {
 				"timeZone = 8", //
 				time.ymdHms());
 		var s1 = Read.each(dividends, splits).concatMap(this::concat);
-		Streamlet<String> s2 = Read.from2(data).concatMap((tag, fs) -> concat(fs).cons(tag));
+		var s2 = Read.from2(data).concatMap((tag, fs) -> concat(fs).cons(tag));
 		return Streamlet //
 				.concat(s0, s1, s2) //
 				.collect(As.joinedBy("\n"));

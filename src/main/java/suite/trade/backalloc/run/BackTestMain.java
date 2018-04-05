@@ -42,7 +42,7 @@ public class BackTestMain extends ExecutableProgram {
 		var arg1 = 1 < args.length ? args[1] : "";
 		var arg2 = 2 < args.length ? args[2] : "";
 
-		Streamlet<String> strategyMatches = !arg0.isEmpty() ? Read.from(arg0.split(",")) : null;
+		var strategyMatches = !arg0.isEmpty() ? Read.from(arg0.split(",")) : null;
 
 		var years = !arg1.isEmpty() ? Read //
 				.from(arg1.split(",")) //

@@ -21,7 +21,7 @@ public class FactorLrTest {
 		var indices = Read.each(Usex.crudeOil, Usex.dowJones, Usex.nasdaq, Usex.sp500);
 
 		var assets0 = cfg.queryCompaniesByMarketCap(Time.now());
-		Streamlet<Asset> assets1 = cfg.queryHistory().map(trade -> trade.symbol).distinct().map(cfg::queryCompany);
+		var assets1 = cfg.queryHistory().map(trade -> trade.symbol).distinct().map(cfg::queryCompany);
 
 		var assets = Streamlet //
 				.concat(assets0, assets1) //

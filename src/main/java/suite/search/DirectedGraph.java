@@ -18,8 +18,8 @@ public class DirectedGraph<V> {
 	public final ListMultimap<V, V> backwards;
 
 	public static <V> DirectedGraph<V> of(Set<Pair<V, V>> edges) {
-		Streamlet<V> vertices0 = Read.from(edges).map(edge -> edge.t0);
-		Streamlet<V> vertices1 = Read.from(edges).map(edge -> edge.t1);
+		var vertices0 = Read.from(edges).map(edge -> edge.t0);
+		var vertices1 = Read.from(edges).map(edge -> edge.t1);
 		Set<V> vertices = Streamlet.concat(vertices0, vertices1).toSet();
 		return DirectedGraph.of(vertices, edges);
 	}

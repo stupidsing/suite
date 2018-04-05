@@ -20,7 +20,6 @@ import suite.immutable.IMap;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
@@ -89,7 +88,7 @@ public class P2GenerateLambda {
 				var value1 = compile_(value);
 				return rt -> ((Fun_) lambda1.apply(rt)).apply(value1.apply(rt));
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
-				Streamlet<Thunk> thunks = Read.from(elements).map(element -> compile_(element));
+				var thunks = Read.from(elements).map(element -> compile_(element));
 				return rt -> new Vec(thunks.map(thunk -> thunk.apply(rt)).toArray(Value.class));
 			})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 				var b1 = new Bool(b);

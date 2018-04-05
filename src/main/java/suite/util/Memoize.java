@@ -20,7 +20,7 @@ public class Memoize {
 	 * Cache results of a two-parameters function call, no clean-up.
 	 */
 	public static <I0, I1, O> Fun2<I0, I1, O> biFunction(Fun2<I0, I1, O> fun) {
-		Map<Pair<I0, I1>, O> results = new ConcurrentHashMap<>();
+		var results = new ConcurrentHashMap<Pair<I0, I1>, O>();
 		return (in0, in1) -> results.computeIfAbsent(Pair.of(in0, in1), p -> fun.apply(in0, in1));
 	}
 
@@ -29,7 +29,7 @@ public class Memoize {
 	 */
 	public static <I, O> Fun<I, O> fun(Fun<I, O> fun) {
 		ThreadLocal<Boolean> isEnteredFun = ThreadLocal.withInitial(() -> false);
-		Map<I, O> results = new ConcurrentHashMap<>();
+		var results = new ConcurrentHashMap<I, O>();
 		return in -> {
 			var isEnteredFun0 = isEnteredFun.get();
 			if (!isEnteredFun0) {
@@ -45,7 +45,7 @@ public class Memoize {
 	}
 
 	public static <I, O> Fun<I, O> funRec(Fun<I, O> fun) {
-		Map<I, O> results = new ConcurrentHashMap<>();
+		var results = new ConcurrentHashMap<I, O>();
 		return in -> {
 			var out = results.get(in);
 			if (out == null)
@@ -164,7 +164,7 @@ public class Memoize {
 	 * an input parameter. No clean-up.
 	 */
 	public static <I, O> Fun<I, O> reentrant(Fun<I, O> fun) {
-		Map<I, Source<O>> results = new ConcurrentHashMap<>();
+		var results = new ConcurrentHashMap<I, Source<O>>();
 		return in -> results.computeIfAbsent(in, in_ -> future(() -> fun.apply(in_))).source();
 	}
 
