@@ -65,7 +65,8 @@ public class Quant {
 		var length = prices.length;
 		var holds = new float[length];
 		var hold = 0f;
-		float min = Float.MAX_VALUE, max = Float.MIN_VALUE;
+		var min = Float.MAX_VALUE;
+		var max = Float.MIN_VALUE;
 
 		for (var i = 0; i < length; i++) {
 			var price = prices[i];
@@ -128,7 +129,8 @@ public class Quant {
 	}
 
 	public static int log2trunc(int length0) {
-		int size = 1, size1;
+		var size = 1;
+		int size1;
 		while ((size1 = size << 1) <= length0)
 			size = size1;
 		return size;
