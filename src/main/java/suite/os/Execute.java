@@ -51,7 +51,7 @@ public class Execute {
 		var bos0 = new ByteArrayOutputStream();
 		var bos1 = new ByteArrayOutputStream();
 
-		Process process = Rethrow.ex(() -> Runtime.getRuntime().exec(command));
+		var process = Rethrow.ex(() -> Runtime.getRuntime().exec(command));
 
 		try {
 			var pis = process.getInputStream();

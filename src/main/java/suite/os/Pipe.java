@@ -26,12 +26,12 @@ public class Pipe {
 		else
 			Fail.t("cannot find shell executable");
 
-		String[] command1 = command0;
+		var command1 = command0;
 
 		return new Streamlet<>(() -> Rethrow.ex(() -> {
 			var bis = new ByteArrayInputStream(sh.getBytes(Constants.charset));
 
-			Process process = Rethrow.ex(() -> Runtime.getRuntime().exec(command1));
+			var process = Rethrow.ex(() -> Runtime.getRuntime().exec(command1));
 
 			var pis = process.getInputStream();
 			var pes = process.getErrorStream();

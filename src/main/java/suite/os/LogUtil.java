@@ -138,8 +138,8 @@ public class LogUtil {
 			log.info(sb.toString());
 
 			try {
-				Object value = invocation.invoke(m, ps);
-				String rd = Dump.object("return", value);
+				var value = invocation.invoke(m, ps);
+				var rd = Dump.object("return", value);
 				log.info(prefix + rd);
 				return value;
 			} catch (InvocationTargetException ite) {
