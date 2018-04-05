@@ -22,7 +22,7 @@ public class Rule {
 	}
 
 	public static Rule of(Node node) {
-		Tree tree = Tree.decompose(node, TermOp.IS____);
+		var tree = Tree.decompose(node, TermOp.IS____);
 		if (tree != null)
 			return new Rule(tree.getLeft(), tree.getRight());
 		else

@@ -105,7 +105,7 @@ public class IterativeParser {
 		private void addOperator(Operator operator) {
 			var section = stack.peek();
 			var tree = section.unwind(operator);
-			Tree tree1 = Tree.of(operator, tree.getRight(), Atom.NIL);
+			var tree1 = Tree.of(operator, tree.getRight(), Atom.NIL);
 			Tree.forceSetRight(tree, tree1);
 			section.push(tree1);
 		}

@@ -131,7 +131,7 @@ public class InterpretFunEager {
 				var else_ = eager_(DECONS.else_);
 				var operator = oper(DECONS.type);
 				result = frame -> {
-					Tree tree = Tree.decompose(value_.apply(frame), operator);
+					var tree = Tree.decompose(value_.apply(frame), operator);
 					if (tree != null) {
 						frame.add(tree.getLeft());
 						frame.add(tree.getRight());

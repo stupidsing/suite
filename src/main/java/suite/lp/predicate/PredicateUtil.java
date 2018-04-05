@@ -66,24 +66,24 @@ public class PredicateUtil {
 
 	public static BuiltinPredicate p2(PredicateP2 pred) {
 		return (prover, t) -> {
-			Tree t0 = Tree.decompose(t, TermOp.TUPLE_);
+			var t0 = Tree.decompose(t, TermOp.TUPLE_);
 			return pred.prove(prover, t0.getLeft(), t0.getRight());
 		};
 	}
 
 	public static BuiltinPredicate p3(PredicateP3 pred) {
 		return (prover, t) -> {
-			Tree t0 = Tree.decompose(t, TermOp.TUPLE_);
-			Tree t1 = Tree.decompose(t0.getRight(), TermOp.TUPLE_);
+			var t0 = Tree.decompose(t, TermOp.TUPLE_);
+			var t1 = Tree.decompose(t0.getRight(), TermOp.TUPLE_);
 			return pred.prove(prover, t0.getLeft(), t1.getLeft(), t1.getRight());
 		};
 	}
 
 	public static BuiltinPredicate p4(PredicateP4 pred) {
 		return (prover, t) -> {
-			Tree t0 = Tree.decompose(t, TermOp.TUPLE_);
-			Tree t1 = Tree.decompose(t0.getRight(), TermOp.TUPLE_);
-			Tree t2 = Tree.decompose(t1.getRight(), TermOp.TUPLE_);
+			var t0 = Tree.decompose(t, TermOp.TUPLE_);
+			var t1 = Tree.decompose(t0.getRight(), TermOp.TUPLE_);
+			var t2 = Tree.decompose(t1.getRight(), TermOp.TUPLE_);
 			return pred.prove(prover, t0.getLeft(), t1.getLeft(), t2.getLeft(), t2.getRight());
 		};
 	}

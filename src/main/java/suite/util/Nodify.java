@@ -129,7 +129,7 @@ public class Nodify {
 					Node n = apply_(getNodifier(clazz1), object);
 					return Tree.of(TermOp.COLON_, Atom.of(clazz1.getName()), n);
 				}, node -> {
-					Tree tree = Tree.decompose(node, TermOp.COLON_);
+					var tree = Tree.decompose(node, TermOp.COLON_);
 					if (tree != null) {
 						Class<?> clazz1;
 						try {

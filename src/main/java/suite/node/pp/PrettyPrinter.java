@@ -80,7 +80,7 @@ public class PrettyPrinter {
 					if (op == TermOp.BRACES)
 						leftPrec = rightPrec = 0;
 
-					Tree tree1 = Tree.decompose(right, op);
+					var tree1 = Tree.decompose(right, op);
 					var r0 = tree1 != null ? tree1.getLeft() : null;
 					var es0 = lengthEstimator.getEstimatedLength(left);
 					var es1 = r0 != null ? lengthEstimator.getEstimatedLength(r0) : lineLength;

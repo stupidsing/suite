@@ -55,7 +55,7 @@ public class Chr {
 		var rule = new Rule();
 
 		while (node != Atom.of("end")) {
-			Tree t0 = Tree.decompose(node, TermOp.TUPLE_);
+			var t0 = Tree.decompose(node, TermOp.TUPLE_);
 			Tree t1 = t0 != null ? Tree.decompose(t0.getRight(), TermOp.TUPLE_) : null;
 
 			if (t1 != null) {

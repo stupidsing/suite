@@ -37,7 +37,7 @@ public abstract class Tree extends Node {
 			private Node node = node0;
 
 			public Node source() {
-				Tree tree = Tree.decompose(node, operator);
+				var tree = Tree.decompose(node, operator);
 				if (tree != null) {
 					node = tree.getRight();
 					return tree.getLeft();
