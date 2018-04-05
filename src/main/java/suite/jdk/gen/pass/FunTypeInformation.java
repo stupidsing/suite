@@ -111,14 +111,14 @@ public class FunTypeInformation {
 				.toArray(Type.class);
 
 		@SuppressWarnings("rawtypes")
-		Class<?>[] parameterTypes = Read //
+		var parameterTypes = Read //
 				.from(array) //
 				.<Class> map(Type_::classOf) //
 				.toArray(Class.class);
 
 		return Rethrow.ex(() -> {
-			Class<?> clazz0 = expr.clazz;
-			Class<?> clazz1 = clazz0 != null ? clazz0 : classOf(expr.object);
+			var clazz0 = expr.clazz;
+			var clazz1 = clazz0 != null ? clazz0 : classOf(expr.object);
 			return clazz1.getMethod(expr.methodName, parameterTypes);
 		});
 	}

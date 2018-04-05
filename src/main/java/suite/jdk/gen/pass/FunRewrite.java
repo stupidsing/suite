@@ -1,6 +1,5 @@
 package suite.jdk.gen.pass;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,8 +29,6 @@ import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.jdk.gen.Type_;
-import suite.jdk.lambda.LambdaImplementation;
-import suite.jdk.lambda.LambdaInstance;
 import suite.jdk.lambda.LambdaInterface;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
@@ -88,7 +85,7 @@ public class FunRewrite extends FunFactory {
 			var e2 = e1.expr;
 
 			if (e2 instanceof DeclareParameterFunExpr) {
-				Class<?> interfaceClass = Type_.classOf(e1.type);
+				var interfaceClass = Type_.classOf(e1.type);
 				var fieldTypes = new HashMap<String, Type>();
 				var fieldValues = new HashMap<String, FunExpr>();
 
@@ -111,8 +108,8 @@ public class FunRewrite extends FunFactory {
 						return null;
 				}, e2);
 
-				FunCreator<?>.CreateClass cc = FunCreator.of(LambdaInterface.of(interfaceClass), fieldTypes).create_(e3);
-				Streamlet2<String, FunExpr> fieldValues0 = Read.from2(cc.fieldTypeValues).mapValue(tv -> objectField(tv.t1, tv.t0));
+				var cc = FunCreator.of(LambdaInterface.of(interfaceClass), fieldTypes).create_(e3);
+				var fieldValues0 = Read.from2(cc.fieldTypeValues).mapValue(tv -> objectField(tv.t1, tv.t0));
 				var fieldValues1 = Read.from2(fieldValues);
 
 				var e4 = new NewFunExpr();
@@ -138,8 +135,8 @@ public class FunRewrite extends FunFactory {
 			var set = e1 instanceof FieldSetFunExpr ? ((FieldSetFunExpr) e1).value : null;
 			var object0 = rewrite(e1.object);
 			var fieldName = e1.fieldName;
-			Class<?> clazz = fti.classOf(object0);
-			Field field = Rethrow.ex(() -> clazz.getField(fieldName));
+			var clazz = fti.classOf(object0);
+			var field = Rethrow.ex(() -> clazz.getField(fieldName));
 			var object1 = object0.cast_(field.getDeclaringClass());
 			var fieldType = Type.getType(field.getType());
 			return set == null ? object1.field(fieldName, fieldType) : object1.fieldSet(fieldName, fieldType, set);
@@ -150,10 +147,10 @@ public class FunRewrite extends FunFactory {
 			else
 				return Fail.t(e1.fieldName);
 		}).applyIf(InvokeLambdaFunExpr.class, e1 -> {
-			LambdaInstance<?> l_inst = e1.lambda;
-			LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
-			LambdaInterface<?> l_iface = l_impl.lambdaInterface;
-			FunExpr object = object_(l_impl.newFun(l_inst.fieldValues), l_iface.interfaceClass);
+			var l_inst = e1.lambda;
+			var l_impl = l_inst.lambdaImplementation;
+			var l_iface = l_impl.lambdaInterface;
+			var object = object_(l_impl.newFun(l_inst.fieldValues), l_iface.interfaceClass);
 
 			return rewrite(object.invoke(l_iface.interfaceClass, l_iface.methodName, e1.parameters));
 		}).applyIf(ObjectFunExpr.class, e1 -> {

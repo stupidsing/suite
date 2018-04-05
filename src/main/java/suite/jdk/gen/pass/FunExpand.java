@@ -15,9 +15,6 @@ import suite.jdk.gen.FunExprM.ConstantFunExpr;
 import suite.jdk.gen.FunExprM.If1FunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
-import suite.jdk.lambda.LambdaImplementation;
-import suite.jdk.lambda.LambdaInstance;
-import suite.jdk.lambda.LambdaInterface;
 import suite.node.util.Singleton;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.Read;
@@ -58,10 +55,10 @@ public class FunExpand extends FunFactory {
 			return expand(replace(e1.do_, e1.var, e1.value), depth);
 		}).applyIf(InvokeLambdaFunExpr.class, e1 -> {
 			if (Boolean.FALSE) {
-				LambdaInstance<?> l_inst = e1.lambda;
-				LambdaImplementation<?> l_impl = l_inst.lambdaImplementation;
+				var l_inst = e1.lambda;
+				var l_impl = l_inst.lambdaImplementation;
 				if (e1.isExpand || weight(l_impl.expr) <= 5) {
-					LambdaInterface<?> l_iface = l_impl.lambdaInterface;
+					var l_iface = l_impl.lambdaInterface;
 					var fe = l_impl.expr;
 					for (var fieldName : l_impl.fieldTypes.keySet())
 						fe = replaceFieldInject(fe, fieldName,

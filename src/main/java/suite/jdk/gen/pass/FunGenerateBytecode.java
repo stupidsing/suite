@@ -203,7 +203,7 @@ public class FunGenerateBytecode {
 			}).doIf(LocalFunExpr.class, e1 -> {
 				list.add(InstructionFactory.createLoad(fti.typeOf(e1), e1.index));
 			}).doIf(NewFunExpr.class, e1 -> {
-				Class<?> implClass = e1.implementationClass;
+				var implClass = e1.implementationClass;
 				var implClassName = e1.className;
 				var classIndex = cpg.addClass(implClassName);
 				list.add(new NEW(classIndex));
