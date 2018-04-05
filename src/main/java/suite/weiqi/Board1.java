@@ -3,7 +3,6 @@ package suite.weiqi;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
-import java.util.Map;
 
 import suite.util.FunUtil.Fun;
 import suite.weiqi.Weiqi.Occupation;
@@ -37,7 +36,7 @@ public class Board1 {
 	}
 
 	public Board1(Board1 board1) {
-		Map<Group, Group> map = new IdentityHashMap<>();
+		var map = new IdentityHashMap<Group, Group>();
 		var clone = new ArrayList<Fun<Group, Group>>();
 		clone.add(group0 -> {
 			Group group1;

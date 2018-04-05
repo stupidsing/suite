@@ -10,7 +10,6 @@ import suite.os.LogUtil;
 import suite.os.Stopwatch;
 import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
-import suite.uct.UctVisitor;
 import suite.uct.UctWeiqi;
 import suite.util.String_;
 import suite.weiqi.Weiqi.Occupation;
@@ -44,8 +43,8 @@ public class UctWeiqiMain<Move> {
 
 		while (!quit) {
 			var gameSet1 = new GameSet(gameSet);
-			UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet1);
-			UctSearch<Coordinate> search = new UctSearch<>(visitor);
+			var visitor = UctWeiqi.newVisitor(gameSet1);
+			var search = new UctSearch<>(visitor);
 			search.setNumberOfThreads(nThreads);
 			search.setNumberOfSimulations(nSimulations);
 			search.setBoundedTime(boundedTime);
@@ -53,7 +52,7 @@ public class UctWeiqiMain<Move> {
 			if (auto || gameSet.getNextPlayer() == computerPlayer) {
 				System.out.println("THINKING...");
 
-				Stopwatch<Coordinate> sw = Stopwatch.of(search::search);
+				var sw = Stopwatch.of(search::search);
 				var coord = sw.result;
 
 				if (coord != null) {
@@ -132,8 +131,8 @@ public class UctWeiqiMain<Move> {
 
 		var gameSet = new GameSet(new Board(), startingPlayer);
 
-		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
-		UctSearch<Coordinate> search = new UctSearch<>(visitor);
+		var visitor = UctWeiqi.newVisitor(gameSet);
+		var search = new UctSearch<>(visitor);
 		search.setNumberOfThreads(1);
 		search.setNumberOfSimulations(80000);
 

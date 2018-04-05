@@ -68,7 +68,7 @@ public class Board extends Array<Occupation> {
 		var color = get(c);
 		group.add(c);
 
-		Stack<Coordinate> unexplored = new Stack<>();
+		var unexplored = new Stack<Coordinate>();
 		unexplored.push(c);
 
 		while (!unexplored.isEmpty())
@@ -90,7 +90,7 @@ public class Board extends Array<Occupation> {
 		var color = get(c);
 		group.add(c);
 
-		Stack<Coordinate> unexplored = new Stack<>();
+		var unexplored = new Stack<Coordinate>();
 		unexplored.push(c);
 
 		while (!unexplored.isEmpty())

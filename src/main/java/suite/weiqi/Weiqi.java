@@ -79,7 +79,7 @@ public class Weiqi {
 		public void dump() {
 			for (var x = 0; x < Weiqi.size; x++) {
 				for (var y = 0; y < Weiqi.size; y++) {
-					Coordinate c = Coordinate.c(x, y);
+					var c = Coordinate.c(x, y);
 					System.out.print(get(c) + " ");
 				}
 
@@ -90,7 +90,7 @@ public class Weiqi {
 		@Override
 		public boolean equals(Object object) {
 			if (Object_.clazz(object) == Array.class) {
-				Array<?> array = (Array<?>) object;
+				var array = (Array<?>) object;
 				return Arrays.equals(positions, array.positions);
 			} else
 				return false;
