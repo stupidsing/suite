@@ -3,7 +3,6 @@ package suite.fp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import suite.Suite;
@@ -29,7 +28,6 @@ import suite.fp.match.Matchers.UNWRAP;
 import suite.fp.match.Matchers.VAR;
 import suite.fp.match.Matchers.WRAP;
 import suite.immutable.IMap;
-import suite.lp.kb.RuleSet;
 import suite.lp.search.FindUtil;
 import suite.lp.search.SewingProverBuilder2;
 import suite.node.Atom;
@@ -109,8 +107,8 @@ public class InterpretFunEager {
 			WRAP WRAP;
 
 			if ((APPLY = Matcher.apply.match(node)) != null) {
-				Fun<Frame, Node> param_ = eager_(APPLY.param);
-				Fun<Frame, Node> fun_ = eager_(APPLY.fun);
+				var param_ = eager_(APPLY.param);
+				var fun_ = eager_(APPLY.fun);
 				result = frame -> {
 					var fun = fun_.apply(frame);
 					var param = param_.apply(frame);
@@ -123,14 +121,14 @@ public class InterpretFunEager {
 			else if ((CHARS = Matcher.chars.match(node)) != null)
 				result = immediate(new Data<>(To.chars(((Str) CHARS.value).value)));
 			else if ((CONS = Matcher.cons.match(node)) != null) {
-				Fun<Frame, Node> p0_ = eager_(CONS.head);
-				Fun<Frame, Node> p1_ = eager_(CONS.tail);
+				var p0_ = eager_(CONS.head);
+				var p1_ = eager_(CONS.tail);
 				var operator = oper(CONS.type);
 				result = frame -> Tree.of(operator, p0_.apply(frame), p1_.apply(frame));
 			} else if ((DECONS = Matcher.decons.match(node)) != null) {
-				Fun<Frame, Node> value_ = eager_(DECONS.value);
-				Fun<Frame, Node> then_ = put(DECONS.left).put(DECONS.right).eager_(DECONS.then);
-				Fun<Frame, Node> else_ = eager_(DECONS.else_);
+				var value_ = eager_(DECONS.value);
+				var then_ = put(DECONS.left).put(DECONS.right).eager_(DECONS.then);
+				var else_ = eager_(DECONS.else_);
 				var operator = oper(DECONS.type);
 				result = frame -> {
 					Tree tree = Tree.decompose(value_.apply(frame), operator);
@@ -143,34 +141,34 @@ public class InterpretFunEager {
 				};
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
 				var tuple = Suite.pattern(".0 .1");
-				List<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple::match).toList();
+				var arrays = Tree.iter(DEFVARS.list).map(tuple::match).toList();
 				if (arrays.size() == 1) {
 					var array = arrays.get(0);
-					IMap<Node, Fun<Frame, Node>> vm1 = vm.put(array[0], unwrap(getter(fs)));
-					Eager_ eager1 = new Eager_(fs + 1, vm1);
-					Fun<Frame, Node> value_ = wrap(eager1.eager_(array[1]));
-					Fun<Frame, Node> expr = eager1.eager_(DEFVARS.do_);
+					var vm1 = vm.put(array[0], unwrap(getter(fs)));
+					var eager1 = new Eager_(fs + 1, vm1);
+					var value_ = wrap(eager1.eager_(array[1]));
+					var expr = eager1.eager_(DEFVARS.do_);
 					result = frame -> {
 						frame.add(value_.apply(frame));
 						return expr.apply(frame);
 					};
 				} else {
-					List<Fun<Frame, Node>> values_ = new ArrayList<>();
-					IMap<Node, Fun<Frame, Node>> vm1 = vm;
+					var values_ = new ArrayList<Fun<Frame, Node>>();
+					var vm1 = vm;
 					var fs1 = fs;
 
 					for (var array : arrays) {
-						Fun<Frame, Node> getter = getter(fs1);
+						var getter = getter(fs1);
 						vm1 = vm1.put(array[0], unwrap(getter));
 						fs1++;
 					}
 
-					Eager_ eager1 = new Eager_(fs1, vm1);
+					var eager1 = new Eager_(fs1, vm1);
 
 					for (var array : arrays)
 						values_.add(wrap(eager1.eager_(array[1])));
 
-					Fun<Frame, Node> expr = eager1.eager_(DEFVARS.do_);
+					var expr = eager1.eager_(DEFVARS.do_);
 
 					result = frame -> {
 						for (var value_ : values_)
@@ -183,19 +181,19 @@ public class InterpretFunEager {
 			else if ((FUN = Matcher.fun.match(node)) != null) {
 				IMap<Node, Fun<Frame, Node>> vm1 = IMap.empty();
 				for (var e : vm) {
-					Fun<Frame, Node> getter0 = e.t1;
+					var getter0 = e.t1;
 					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));
 				}
-				Fun<Frame, Node> value_ = new Eager_(0, vm1).put(FUN.param).eager_(FUN.do_);
+				var value_ = new Eager_(0, vm1).put(FUN.param).eager_(FUN.do_);
 				result = frame -> new Fun_(in -> {
 					var frame1 = new Frame(frame);
 					frame1.add(in);
 					return value_.apply(frame1);
 				});
 			} else if ((IF = Matcher.if_.match(node)) != null) {
-				Fun<Frame, Node> if_ = eager_(IF.if_);
-				Fun<Frame, Node> then_ = eager_(IF.then_);
-				Fun<Frame, Node> else_ = eager_(IF.else_);
+				var if_ = eager_(IF.if_);
+				var then_ = eager_(IF.then_);
+				var else_ = eager_(IF.else_);
 				result = frame -> (if_.apply(frame) == Atom.TRUE ? then_ : else_).apply(frame);
 			} else if (Matcher.nil.match(node) != null)
 				result = immediate(Atom.NIL);
@@ -204,10 +202,10 @@ public class InterpretFunEager {
 			else if ((PRAGMA = Matcher.pragma.match(node)) != null)
 				result = eager_(PRAGMA.do_);
 			else if ((TCO = Matcher.tco.match(node)) != null) {
-				Fun<Frame, Node> iter_ = eager_(TCO.iter);
-				Fun<Frame, Node> in_ = eager_(TCO.in_);
+				var iter_ = eager_(TCO.iter);
+				var in_ = eager_(TCO.in_);
 				result = frame -> {
-					Iterate<Node> iter = fun(iter_.apply(frame));
+					var iter = fun(iter_.apply(frame));
 					var in = in_.apply(frame);
 					Tree p0, p1;
 					do {
@@ -239,14 +237,14 @@ public class InterpretFunEager {
 
 	public Node eager(Node node) {
 		var mode = isLazyify ? Atom.of("LAZY") : Atom.of("EAGER");
-		Node query = Suite.substitute("source .in, fc-process-function .0 .in .out, sink .out", mode);
+		var query = Suite.substitute("source .in, fc-process-function .0 .in .out, sink .out", mode);
 
-		RuleSet rs = Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl"));
+		var rs = Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl"));
 		var finder = new SewingProverBuilder2().build(rs).apply(query);
-		Node parsed = FindUtil.collectSingle(finder, node);
+		var parsed = FindUtil.collectSingle(finder, node);
 		var ic = isLazyify ? lazyIntrinsicCallback() : Intrinsics.eagerIntrinsicCallback;
 
-		Map<String, Node> df = new HashMap<>();
+		var df = new HashMap<String, Node>();
 		df.put(TermOp.AND___.name, f2((a, b) -> Tree.of(TermOp.AND___, a, b)));
 		df.put("+call%i-t1", f1(i -> fn(1, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
 		df.put("+call%i-t2", f1(i -> fn(2, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
@@ -276,7 +274,7 @@ public class InterpretFunEager {
 		}
 
 		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
-		Eager_ eager0 = new Eager_(0, IMap.empty());
+		var eager0 = new Eager_(0, IMap.empty());
 		var frame = new Frame(null);
 
 		for (var key : keys) {

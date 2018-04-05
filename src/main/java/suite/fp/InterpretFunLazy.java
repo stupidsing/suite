@@ -39,7 +39,6 @@ import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
-import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
@@ -111,7 +110,7 @@ public class InterpretFunLazy {
 	}
 
 	private Reference parse(Node node) {
-		Prover prover = new Prover(Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl")));
+		var prover = new Prover(Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl")));
 
 		var parsed = new Reference();
 		if (!prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)))
@@ -150,8 +149,8 @@ public class InterpretFunLazy {
 			WRAP WRAP;
 
 			if ((APPLY = Matcher.apply.match(node)) != null) {
-				Fun<Frame, Thunk_> param_ = lazy_(APPLY.param);
-				Fun<Frame, Thunk_> fun_ = lazy_(APPLY.fun);
+				var param_ = lazy_(APPLY.param);
+				var fun_ = lazy_(APPLY.fun);
 				result = frame -> {
 					var fun = fun_.apply(frame);
 					var param = param_.apply(frame);
@@ -164,13 +163,13 @@ public class InterpretFunLazy {
 			else if ((CHARS = Matcher.chars.match(node)) != null)
 				result = immediate(new Data<>(To.chars(((Str) CHARS.value).value)));
 			else if ((CONS = Matcher.cons.match(node)) != null) {
-				Fun<Frame, Thunk_> p0_ = lazy_(CONS.head);
-				Fun<Frame, Thunk_> p1_ = lazy_(CONS.tail);
+				var p0_ = lazy_(CONS.head);
+				var p1_ = lazy_(CONS.tail);
 				result = frame -> () -> new Pair_(p0_.apply(frame), p1_.apply(frame));
 			} else if ((DECONS = Matcher.decons.match(node)) != null) {
-				Fun<Frame, Thunk_> value_ = lazy_(DECONS.value);
-				Fun<Frame, Thunk_> then_ = put(DECONS.left).put(DECONS.right).lazy_(DECONS.then);
-				Fun<Frame, Thunk_> else_ = lazy_(DECONS.else_);
+				var value_ = lazy_(DECONS.value);
+				var then_ = put(DECONS.left).put(DECONS.right).lazy_(DECONS.then);
+				var else_ = lazy_(DECONS.else_);
 
 				result = frame -> {
 					var value = value_.apply(frame).get();
@@ -184,8 +183,8 @@ public class InterpretFunLazy {
 				};
 			} else if ((m = Suite.pattern("DEF-VARS (.0 .1,) .2").match(node)) != null) {
 				var lazy1 = put(m[0]);
-				Fun<Frame, Thunk_> value_ = lazy1.lazy_(m[1]);
-				Fun<Frame, Thunk_> expr = lazy1.lazy_(m[2]);
+				var value_ = lazy1.lazy_(m[1]);
+				var expr = lazy1.lazy_(m[2]);
 
 				result = frame -> {
 					Mutable<Thunk_> value = Mutable.nil();
@@ -195,7 +194,7 @@ public class InterpretFunLazy {
 				};
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
 				var tuple = Suite.pattern(".0 .1");
-				Streamlet<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple::match);
+				var arrays = Tree.iter(DEFVARS.list).map(tuple::match);
 				var size = arrays.size();
 				var lazy0 = this;
 
@@ -206,7 +205,7 @@ public class InterpretFunLazy {
 				for (var array : arrays)
 					values_.add(lazy0.lazy_(array[1]));
 
-				Fun<Frame, Thunk_> expr = lazy0.lazy_(DEFVARS.do_);
+				var expr = lazy0.lazy_(DEFVARS.do_);
 
 				result = frame -> {
 					List<Thunk_> values = new ArrayList<>(size);
@@ -223,11 +222,11 @@ public class InterpretFunLazy {
 			else if ((FUN = Matcher.fun.match(node)) != null) {
 				IMap<Node, Fun<Frame, Thunk_>> vm1 = IMap.empty();
 				for (var e : vm) {
-					Fun<Frame, Thunk_> getter0 = e.t1;
+					var getter0 = e.t1;
 					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));
 				}
 
-				Fun<Frame, Thunk_> value_ = new Lazy_(0, vm1).put(FUN.param).lazy_(FUN.do_);
+				var value_ = new Lazy_(0, vm1).put(FUN.param).lazy_(FUN.do_);
 				result = frame -> () -> new Fun_(in -> {
 					var frame1 = new Frame(frame);
 					frame1.add(in);
@@ -242,10 +241,10 @@ public class InterpretFunLazy {
 			else if ((PRAGMA = Matcher.pragma.match(node)) != null)
 				result = lazy_(PRAGMA.do_);
 			else if ((TCO = Matcher.tco.match(node)) != null) {
-				Fun<Frame, Thunk_> iter_ = lazy_(TCO.iter);
-				Fun<Frame, Thunk_> in_ = lazy_(TCO.in_);
+				var iter_ = lazy_(TCO.iter);
+				var in_ = lazy_(TCO.in_);
 				result = frame -> {
-					Iterate<Thunk_> iter = fun(iter_.apply(frame).get());
+					var iter = fun(iter_.apply(frame).get());
 					var in = in_.apply(frame);
 					Pair_ p0, p1;
 					do {

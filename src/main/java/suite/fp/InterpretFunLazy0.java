@@ -73,31 +73,31 @@ public class InterpretFunLazy0 {
 
 		if ((m = Suite.pattern("define .0 := .1 >> .2").match(node)) != null) {
 			var vk = v(m[0]);
-			Fun<IMap<String, Thunk_>, Thunk_> value = lazy_(m[1]);
-			Fun<IMap<String, Thunk_>, Thunk_> expr = lazy_(m[2]);
+			var value = lazy_(m[1]);
+			var expr = lazy_(m[2]);
 			result = env -> {
 				Mutable<Thunk_> val = Mutable.nil();
-				IMap<String, Thunk_> env1 = env.put(vk, () -> val.get().get());
+				var env1 = env.put(vk, () -> val.get().get());
 				val.set(value.apply(env1)::get);
 				return expr.apply(env1);
 			};
 		} else if ((m = Suite.pattern("if .0 then .1 else .2").match(node)) != null) {
-			Fun<IMap<String, Thunk_>, Thunk_> if_ = lazy_(m[0]);
-			Fun<IMap<String, Thunk_>, Thunk_> then_ = lazy_(m[1]);
-			Fun<IMap<String, Thunk_>, Thunk_> else_ = lazy_(m[2]);
+			var if_ = lazy_(m[0]);
+			var then_ = lazy_(m[1]);
+			var else_ = lazy_(m[2]);
 			result = env -> (if_.apply(env).get() == Atom.TRUE ? then_ : else_).apply(env);
 		} else if ((m = Suite.pattern(".0 => .1").match(node)) != null) {
 			var vk = v(m[0]);
-			Fun<IMap<String, Thunk_>, Thunk_> value = lazy_(m[1]);
+			var value = lazy_(m[1]);
 			result = env -> () -> new Fun_(in -> value.apply(env.put(vk, in)));
 		} else if ((m = Suite.pattern(".0 {.1}").match(node)) != null) {
-			Fun<IMap<String, Thunk_>, Thunk_> fun = lazy_(m[0]);
-			Fun<IMap<String, Thunk_>, Thunk_> param = lazy_(m[1]);
+			var fun = lazy_(m[0]);
+			var param = lazy_(m[1]);
 			result = env -> fun(fun.apply(env).get()).apply(param.apply(env));
 		} else if ((tree = Tree.decompose(node)) != null) {
 			var operator = tree.getOperator();
-			Fun<IMap<String, Thunk_>, Thunk_> p0 = lazy_(tree.getLeft());
-			Fun<IMap<String, Thunk_>, Thunk_> p1 = lazy_(tree.getRight());
+			var p0 = lazy_(tree.getLeft());
+			var p1 = lazy_(tree.getRight());
 			result = env -> {
 				var r0 = env.get(operator.getName());
 				var r1 = fun(r0.get()).apply(p0.apply(env));
