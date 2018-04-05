@@ -278,7 +278,7 @@ public class StatisticalArbitrageTest {
 	}
 
 	private DctDataSource dctDataSources() {
-		AlignKeyDataSource<String> akds = dataSources();
+		var akds = dataSources();
 		var length0 = akds.ts.length;
 		var log2 = Quant.log2trunc(length0);
 		var fr = length0 - log2;
