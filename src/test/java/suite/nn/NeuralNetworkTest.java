@@ -22,7 +22,7 @@ public class NeuralNetworkTest {
 		Pair<String, BinOp<Boolean>> op0 = Pair.of("and", (b0, b1) -> b0 && b1);
 		Pair<String, BinOp<Boolean>> op1 = Pair.of("or", (b0, b1) -> b0 || b1);
 		Pair<String, BinOp<Boolean>> op2 = Pair.of("xor", (b0, b1) -> b0 ^ b1);
-		boolean[] booleans = new boolean[] { false, true, };
+		var booleans = new boolean[] { false, true, };
 		var random = new Random();
 		var result = true;
 
@@ -46,7 +46,7 @@ public class NeuralNetworkTest {
 				for (var b0 : booleans)
 					for (var b1 : booleans) {
 						var in = input(b0, b1);
-						boolean out = oper.apply(b0, b1);
+						var out = oper.apply(b0, b1);
 						var f = train.feed(in).output[0];
 						System.out.println(b0 + " " + name + " " + b1 + " = " + f);
 						result_ &= out == .5f < f;

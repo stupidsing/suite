@@ -29,7 +29,7 @@ public class CompileUtil {
 
 		var builder = new SewingProverBuilder(pc);
 		var rs = funCompilerRuleSet();
-		boolean b = Suite.proveLogic(builder, rs, "fc-precompile-lib " + libraryName);
+		var b = Suite.proveLogic(builder, rs, "fc-precompile-lib " + libraryName);
 
 		if (b)
 			System.out.println("Pre-compilation success [" + libraryName + "]");

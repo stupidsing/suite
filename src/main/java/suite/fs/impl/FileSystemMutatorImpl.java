@@ -61,7 +61,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 		Bytes sizeKey = key(hash, SIZEID, 0);
 
 		Bytes nameBytes0 = fsNameKeySet.list(name, null).first();
-		boolean isRemove = Objects.equals(nameBytes0, name);
+		var isRemove = Objects.equals(nameBytes0, name);
 		boolean isCreate = bytes != null;
 
 		if (isRemove) {

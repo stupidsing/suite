@@ -32,8 +32,8 @@ public class ConwayGameOfLife {
 	}
 
 	public ConwayGameOfLife evolve(ConwayGameOfLife cgol) {
-		boolean[][] game0 = cgol.game;
-		boolean[][] game1 = new boolean[size][size];
+		var game0 = cgol.game;
+		var game1 = new boolean[size][size];
 
 		for (var x = 1; x < size - 1; x++)
 			for (var y = 1; y < size - 1; y++) {

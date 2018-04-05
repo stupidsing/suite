@@ -255,7 +255,7 @@ public class CommandDispatcher {
 	}
 
 	private boolean query(Builder builder, RuleSet ruleSet, Node node) {
-		boolean b = Suite.proveLogic(builder, ruleSet, node);
+		var b = Suite.proveLogic(builder, ruleSet, node);
 		opt.prompt().println(yesNo(b));
 		return b;
 	}

@@ -405,7 +405,7 @@ public class BackAllocatorGeneral {
 						int[] nHolds2 = enterExit.apply(sys2EnterDays, sys2ExitDays);
 
 						Fun<int[], boolean[]> getWons = nHolds -> {
-							boolean[] wasWons = new boolean[length];
+							var wasWons = new boolean[length];
 							var wasWon = false;
 							var isWin = false;
 							var i = 0;
@@ -429,8 +429,8 @@ public class BackAllocatorGeneral {
 							return wasWons;
 						};
 
-						boolean[] wasWons1 = getWons.apply(nHolds1);
-						boolean[] wasWons2 = getWons.apply(nHolds2);
+						var wasWons1 = getWons.apply(nHolds1);
+						var wasWons2 = getWons.apply(nHolds2);
 
 						return Fixie.of(nHolds1, nHolds2, wasWons1, wasWons2);
 					}) //

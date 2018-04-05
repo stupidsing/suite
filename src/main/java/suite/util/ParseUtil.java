@@ -136,7 +136,7 @@ public class ParseUtil {
 						depth = checkDepth(depth, c);
 
 					if (depth == 0 && pos + nameLength <= cs.length) {
-						boolean b = true; // cs.startsWith(name, pos)
+						var b = true; // cs.startsWith(name, pos)
 						for (var i = 0; b && i < nameLength; i++)
 							b &= cs[pos + i] == name.charAt(i);
 						if (b)

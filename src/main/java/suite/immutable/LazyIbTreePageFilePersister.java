@@ -88,7 +88,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 		synchronized (writeLock) {
 			var end = nPages;
 			int start = max(0, end - back);
-			boolean[] isInUse = new boolean[end - start];
+			var isInUse = new boolean[end - start];
 
 			Sink<List<Integer>> use = pointers_ -> {
 				for (var pointer : pointers_)

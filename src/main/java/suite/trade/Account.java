@@ -159,7 +159,7 @@ public class Account {
 			var cash1 = (int) (cash0 - cost);
 			var nShares0 = get(symbol);
 			var nShares1 = nShares0 + buySell;
-			boolean isPlayable = !isValidate || Trade_.isValidCash(cash1) && Trade_.isValidStock(symbol, nShares1);
+			var isPlayable = !isValidate || Trade_.isValidCash(cash1) && Trade_.isValidStock(symbol, nShares1);
 
 			if (isPlayable) {
 				update(cashCode, cash1);

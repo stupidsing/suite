@@ -41,7 +41,7 @@ public class PrecompileTest {
 		new Profiler().profile(() -> {
 			for (var i = 0; i < 3; i++)
 				LogUtil.duration("", () -> {
-					boolean b = Suite.precompile("STANDARD", new ProverConfig());
+					var b = Suite.precompile("STANDARD", new ProverConfig());
 					assertTrue(b);
 					return b;
 				});
