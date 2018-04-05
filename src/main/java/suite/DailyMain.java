@@ -14,7 +14,6 @@ import suite.smtp.SmtpSslGmail;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.streamlet.Streamlet2;
 import suite.trade.Account;
 import suite.trade.Asset;
 import suite.trade.Time;
@@ -22,7 +21,6 @@ import suite.trade.TimeRange;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.analysis.Summarize;
-import suite.trade.analysis.Summarize.SummarizeByStrategy;
 import suite.trade.backalloc.BackAllocConfiguration;
 import suite.trade.backalloc.BackAllocConfigurations;
 import suite.trade.backalloc.BackAllocConfigurations.Bacs;
@@ -32,7 +30,6 @@ import suite.trade.backalloc.strategy.BackAllocatorOld;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
-import suite.trade.singlealloc.BuySellStrategy;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
 import suite.util.FunUtil.Sink;
@@ -99,7 +96,7 @@ public class DailyMain extends ExecutableProgram {
 			sellForEarn(sellPool);
 		}
 
-		SummarizeByStrategy<Object> sbs = Summarize.of(cfg).summarize();
+		var sbs = Summarize.of(cfg).summarize();
 
 		var strategyTrades = Read //
 				.from(results) //
@@ -107,7 +104,7 @@ public class DailyMain extends ExecutableProgram {
 				.filterValue(trade -> trade.buySell != 0) //
 				.collect(As::streamlet2);
 
-		Streamlet2<String, Trade> requestTrades = strategyTrades.filterKey(strategy -> !String_.equals(strategy, sellPool));
+		var requestTrades = strategyTrades.filterKey(strategy -> !String_.equals(strategy, sellPool));
 		var amounts = strategyTrades.values().collect(Obj_Dbl.lift(Trade::amount));
 		var buys_ = amounts.filter(amount -> 0d < amount).sum();
 		var sells = amounts.filter(amount -> amount < 0d).sum();
@@ -162,7 +159,7 @@ public class DailyMain extends ExecutableProgram {
 		var tag = "mamr";
 		var nHoldDays = 8;
 		var assets = cfg.queryCompanies();
-		BuySellStrategy strategy = new Strategos().movingAvgMeanReverting(64, nHoldDays, .15f);
+		var strategy = new Strategos().movingAvgMeanReverting(64, nHoldDays, .15f);
 
 		// pre-fetch quotes
 		cfg.quote(assets.map(asset -> asset.symbol).toSet());
