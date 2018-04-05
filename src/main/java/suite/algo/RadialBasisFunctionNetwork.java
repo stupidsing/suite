@@ -10,7 +10,6 @@ import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
 import suite.util.To;
 
 /**
@@ -52,7 +51,7 @@ public class RadialBasisFunctionNetwork {
 		invVariances = Floats_.toArray(variances.length, i -> 1f / variances[i]);
 		var rbfs = Read.from(ins).map(this::evaluateRbfs).toArray(float[].class);
 		var rbfs_t = mtx.transpose(rbfs);
-		Iterate<float[]> cdf = cd.inverseMul(mtx.mul(rbfs_t, rbfs));
+		var cdf = cd.inverseMul(mtx.mul(rbfs_t, rbfs));
 		var psi = Read.from(rbfs).map(cdf).toArray(float[].class);
 		return in -> mtx.mul(evaluateRbfs(in), psi);
 	}

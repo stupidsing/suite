@@ -40,10 +40,10 @@ public class KmeansCluster {
 	}
 
 	public <K> ObjIntMap<K> kMeansCluster(Map<K, float[]> points, int k, int nIterations) {
-		List<K> keys = new ArrayList<>(points.keySet());
-		List<float[]> values = Read.from(keys).map(points::get).toList();
+		var keys = new ArrayList<>(points.keySet());
+		var values = Read.from(keys).map(points::get).toList();
 		var ks = kMeansCluster(values, k, nIterations);
-		ObjIntMap<K> map = new ObjIntMap<>();
+		var map = new ObjIntMap<K>();
 
 		for (var i : Ints_.range(ks.length))
 			map.put(keys.get(i), ks[i]);
@@ -52,14 +52,14 @@ public class KmeansCluster {
 	}
 
 	public int[] kMeansCluster(List<float[]> points, int k, int nIterations) {
-		List<float[]> centers = List_.left(points, k);
+		var centers = List_.left(points, k);
 		var iteration = 0;
 
 		while (true) {
 			var bins = To.array(k, KmeansBin.class, j -> new KmeansBin());
 
 			for (var point : points) {
-				KmeansBin bin = bins[findNearest(point, centers)];
+				var bin = bins[findNearest(point, centers)];
 				bin.sum = vec.add(point, bin.sum);
 				bin.count++;
 			}
@@ -67,14 +67,14 @@ public class KmeansCluster {
 			if (iteration++ <= nIterations)
 				centers = Read.from(bins).map(bin -> div(bin.sum, bin.count)).toList();
 			else {
-				List<float[]> kMeans0 = centers;
+				var kMeans0 = centers;
 				return Ints_.range(points.size()).collect(Int_Int.lift(i -> findNearest(points.get(i), kMeans0))).toArray();
 			}
 		}
 	}
 
 	public int kNearestNeighbor(List<float[]> points, float[] point0) {
-		IntObjMap<AtomicInteger> map = new IntObjMap<>();
+		var map = new IntObjMap<AtomicInteger>();
 
 		Read //
 				.from(points) //
@@ -91,7 +91,7 @@ public class KmeansCluster {
 		var minDist = Double.MAX_VALUE;
 		var minj = 0;
 		for (var j = 0; j < points.size(); j++) {
-			double dist = sqdist(point, points.get(j));
+			var dist = sqdist(point, points.get(j));
 			if (dist < minDist) {
 				minDist = dist;
 				minj = j;
