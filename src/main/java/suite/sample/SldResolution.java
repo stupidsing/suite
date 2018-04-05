@@ -6,7 +6,6 @@ import java.util.List;
 
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
-import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.FindUtil;
 import suite.node.Atom;
@@ -27,7 +26,7 @@ public class SldResolution {
 	private static Atom not = Atom.of("NOT");
 
 	public List<Node> resolve(Node node) {
-		RuleSet ruleSet = Suite.newRuleSet(List.of("auto.sl", "pt.sl"));
+		var ruleSet = Suite.newRuleSet(List.of("auto.sl", "pt.sl"));
 		var builder = CompiledProverBuilder.level1(new ProverConfig());
 		var finder = builder.build(ruleSet).apply(Suite.parse("" //
 				+ "source .n0" //
@@ -39,7 +38,7 @@ public class SldResolution {
 				+ ", pt-prove5 .n5 ()/.n6" //
 				+ ", sink .n6"));
 
-		Node n0 = FindUtil.collectSingle(finder, node);
+		var n0 = FindUtil.collectSingle(finder, node);
 		var orsMap = new HashMap<Node, Source<List<Node>>>();
 
 		for (var n1 : Tree.iter(n0, TermOp.AND___)) {
@@ -55,8 +54,8 @@ public class SldResolution {
 		var results = new ArrayList<Node>();
 
 		for (var e : orsMap.entrySet()) {
-			Source<List<Node>> value0 = e.getValue();
-			Source<List<Node>> value1 = orsMap.get(negate(e.getKey()));
+			var value0 = e.getValue();
+			var value1 = orsMap.get(negate(e.getKey()));
 
 			if (value1 != null)
 				results.add(Tree.of(TermOp.AND___, List_.concat(value0.source(), value1.source())));
@@ -66,7 +65,7 @@ public class SldResolution {
 	}
 
 	private Node negate(Node key) {
-		Tree tree = Tree.decompose(key, TermOp.TUPLE_);
+		var tree = Tree.decompose(key, TermOp.TUPLE_);
 		var isAlreadyNegated = tree != null && tree.getLeft() == not;
 		return isAlreadyNegated ? tree.getRight() : Tree.of(TermOp.TUPLE_, not, key);
 	}

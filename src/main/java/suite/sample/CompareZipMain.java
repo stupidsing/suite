@@ -1,7 +1,6 @@
 package suite.sample;
 
 import java.io.IOException;
-import java.util.Set;
 import java.util.zip.ZipFile;
 
 import suite.os.FileUtil;
@@ -31,14 +30,13 @@ public class CompareZipMain extends ExecutableProgram {
 		var zf0 = new ZipFile(filename0);
 		var zf1 = new ZipFile(filename1);
 
-		Set<String> names = Set_.union(FileUtil.listZip(zf0), FileUtil.listZip(zf1));
-
+		var names = Set_.union(FileUtil.listZip(zf0), FileUtil.listZip(zf1));
 		var isChanged = false;
 
 		for (var name : names) {
 			var e0 = zf0.getEntry(name);
 			var e1 = zf1.getEntry(name);
-			boolean b = e0 != null && e1 != null;
+			var b = e0 != null && e1 != null;
 
 			if (b) {
 				var bytes0 = To.bytes(zf0.getInputStream(e0));

@@ -64,8 +64,8 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 		while (i < zeroPositions.limit() - 1) {
 			var z0 = zeroPositions.get(i++);
 			var z1 = zeroPositions.get(i++);
-			String key = header.substring(start, z0);
-			String value = header.substring(z0 + 1, z1);
+			var key = header.substring(start, z0);
+			var value = header.substring(z0 + 1, z1);
 			start = z1 + 1;
 			headers.put(key, value);
 		}

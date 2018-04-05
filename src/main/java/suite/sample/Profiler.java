@@ -78,7 +78,8 @@ public class Profiler implements Service {
 
 	private void dumpCalls(StringBuilder sb, String indent, Call call) {
 		if (call != null)
-			Read.from2(call.callees) //
+			Read //
+					.from2(call.callees) //
 					.sort((e0, e1) -> -Integer.compare(e0.t1.count, e1.t1.count)) //
 					.sink((callee, call1) -> {
 						sb.append(String.format("%d\t%s%s\n", call1.count, indent, callee));

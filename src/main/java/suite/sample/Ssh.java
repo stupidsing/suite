@@ -84,7 +84,7 @@ public class Ssh {
 		var config = new Properties();
 		config.setProperty("StrictHostKeyChecking", "no");
 
-		Session session = jsch.getSession(user, host, port);
+		var session = jsch.getSession(user, host, port);
 		session.setUserInfo(new UserInfo() {
 			public String getPassphrase() {
 				return null;
