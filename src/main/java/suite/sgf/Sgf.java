@@ -87,7 +87,7 @@ public class Sgf {
 
 	private PosPair<Pair<String, List<String>>> readCommand(String in, int pos) {
 		var ids = new ArrayList<String>();
-		PosPair<String> ipId = readIf(in, pos, ch -> Character.isAlphabetic(ch) || Character.isDigit(ch));
+		var ipId = readIf(in, pos, ch -> Character.isAlphabetic(ch) || Character.isDigit(ch));
 		pos = ipId.pos;
 
 		while (pos < in.length())

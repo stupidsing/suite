@@ -22,7 +22,6 @@ import suite.trade.data.DataSource.Eod;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 import ts.TimeSeries;
-import ts.TimeSeries.ReturnsStat;
 
 public class WalkForwardAllocTester {
 
@@ -113,7 +112,7 @@ public class WalkForwardAllocTester {
 		var valuations_ = valuations.toFloats().toArray();
 		var length = valuations_.length;
 		var deltaMs = (start - System.currentTimeMillis()) / length;
-		ReturnsStat rs = ts.returnsStat(valuations_, deltaMs);
+		var rs = ts.returnsStat(valuations_, deltaMs);
 		var sb = new StringBuilder();
 
 		for (var e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
