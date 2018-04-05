@@ -39,10 +39,10 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	private Source<DblObjOutlet<V>> in;
 
 	public static <T, V> Fun<Outlet<T>, DblObjStreamlet<V>> collect(Obj_Dbl<T> kf0, Fun<T, V> vf0) {
-		Obj_Dbl<T> kf1 = kf0.rethrow();
-		Fun<T, V> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return outlet -> streamlet(() -> {
-			Source<T> source = outlet.source();
+			var source = outlet.source();
 			return DblObjOutlet.of(pair -> {
 				var t = source.source();
 				boolean b = t != null;
@@ -56,7 +56,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	@SafeVarargs
 	public static <V> DblObjStreamlet<V> concat(DblObjStreamlet<V>... streamlets) {
 		return streamlet(() -> {
-			Source<DblObjStreamlet<V>> source = Read.from(streamlets).outlet().source();
+			var source = Read.from(streamlets).outlet().source();
 			return DblObjOutlet.of(DblObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
@@ -88,7 +88,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 
 	public DblObjStreamlet<V> closeAtEnd(Closeable c) {
 		return streamlet(() -> {
-			DblObjOutlet<V> in = spawn();
+			var in = spawn();
 			in.closeAtEnd(c);
 			return in;
 		});
@@ -291,7 +291,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	}
 
 	public DblObjPair<V> uniqueResult() {
-		DblObjPair<V> pair = spawn().opt();
+		var pair = spawn().opt();
 		if (pair.t0 != DblFunUtil.EMPTYVALUE)
 			return pair;
 		else

@@ -39,10 +39,10 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	private Source<LngObjOutlet<V>> in;
 
 	public static <T, V> Fun<Outlet<T>, LngObjStreamlet<V>> collect(Obj_Lng<T> kf0, Fun<T, V> vf0) {
-		Obj_Lng<T> kf1 = kf0.rethrow();
-		Fun<T, V> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return outlet -> streamlet(() -> {
-			Source<T> source = outlet.source();
+			var source = outlet.source();
 			return LngObjOutlet.of(pair -> {
 				var t = source.source();
 				boolean b = t != null;
@@ -56,7 +56,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	@SafeVarargs
 	public static <V> LngObjStreamlet<V> concat(LngObjStreamlet<V>... streamlets) {
 		return streamlet(() -> {
-			Source<LngObjStreamlet<V>> source = Read.from(streamlets).outlet().source();
+			var source = Read.from(streamlets).outlet().source();
 			return LngObjOutlet.of(LngObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
@@ -88,7 +88,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	public LngObjStreamlet<V> closeAtEnd(Closeable c) {
 		return streamlet(() -> {
-			LngObjOutlet<V> in = spawn();
+			var in = spawn();
 			in.closeAtEnd(c);
 			return in;
 		});
@@ -291,7 +291,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public LngObjPair<V> uniqueResult() {
-		LngObjPair<V> pair = spawn().opt();
+		var pair = spawn().opt();
 		if (pair.t0 != LngFunUtil.EMPTYVALUE)
 			return pair;
 		else

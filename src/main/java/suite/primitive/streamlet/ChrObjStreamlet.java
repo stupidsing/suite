@@ -39,10 +39,10 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	private Source<ChrObjOutlet<V>> in;
 
 	public static <T, V> Fun<Outlet<T>, ChrObjStreamlet<V>> collect(Obj_Chr<T> kf0, Fun<T, V> vf0) {
-		Obj_Chr<T> kf1 = kf0.rethrow();
-		Fun<T, V> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return outlet -> streamlet(() -> {
-			Source<T> source = outlet.source();
+			var source = outlet.source();
 			return ChrObjOutlet.of(pair -> {
 				var t = source.source();
 				boolean b = t != null;
@@ -56,7 +56,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	@SafeVarargs
 	public static <V> ChrObjStreamlet<V> concat(ChrObjStreamlet<V>... streamlets) {
 		return streamlet(() -> {
-			Source<ChrObjStreamlet<V>> source = Read.from(streamlets).outlet().source();
+			var source = Read.from(streamlets).outlet().source();
 			return ChrObjOutlet.of(ChrObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
@@ -88,7 +88,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 
 	public ChrObjStreamlet<V> closeAtEnd(Closeable c) {
 		return streamlet(() -> {
-			ChrObjOutlet<V> in = spawn();
+			var in = spawn();
 			in.closeAtEnd(c);
 			return in;
 		});
@@ -291,7 +291,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	}
 
 	public ChrObjPair<V> uniqueResult() {
-		ChrObjPair<V> pair = spawn().opt();
+		var pair = spawn().opt();
 		if (pair.t0 != ChrFunUtil.EMPTYVALUE)
 			return pair;
 		else

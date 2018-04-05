@@ -39,10 +39,10 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	private Source<FltObjOutlet<V>> in;
 
 	public static <T, V> Fun<Outlet<T>, FltObjStreamlet<V>> collect(Obj_Flt<T> kf0, Fun<T, V> vf0) {
-		Obj_Flt<T> kf1 = kf0.rethrow();
-		Fun<T, V> vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		return outlet -> streamlet(() -> {
-			Source<T> source = outlet.source();
+			var source = outlet.source();
 			return FltObjOutlet.of(pair -> {
 				var t = source.source();
 				boolean b = t != null;
@@ -56,7 +56,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	@SafeVarargs
 	public static <V> FltObjStreamlet<V> concat(FltObjStreamlet<V>... streamlets) {
 		return streamlet(() -> {
-			Source<FltObjStreamlet<V>> source = Read.from(streamlets).outlet().source();
+			var source = Read.from(streamlets).outlet().source();
 			return FltObjOutlet.of(FltObjFunUtil.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
@@ -88,7 +88,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 
 	public FltObjStreamlet<V> closeAtEnd(Closeable c) {
 		return streamlet(() -> {
-			FltObjOutlet<V> in = spawn();
+			var in = spawn();
 			in.closeAtEnd(c);
 			return in;
 		});
@@ -291,7 +291,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	}
 
 	public FltObjPair<V> uniqueResult() {
-		FltObjPair<V> pair = spawn().opt();
+		var pair = spawn().opt();
 		if (pair.t0 != FltFunUtil.EMPTYVALUE)
 			return pair;
 		else

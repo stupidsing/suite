@@ -29,7 +29,7 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 	@SafeVarargs
 	public static <K, V> Streamlet2<K, V> concat(Streamlet2<K, V>... streamlets) {
 		return streamlet2(() -> {
-			Source<Streamlet2<K, V>> source = Read.from(streamlets).outlet().source();
+			var source = Read.from(streamlets).outlet().source();
 			return Outlet2.of(FunUtil2.concat(FunUtil.map(st -> st.spawn().source(), source)));
 		});
 	}
@@ -61,7 +61,7 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 
 	public Streamlet2<K, V> closeAtEnd(Closeable c) {
 		return streamlet2(() -> {
-			Outlet2<K, V> in = spawn();
+			var in = spawn();
 			in.closeAtEnd(c);
 			return in;
 		});
