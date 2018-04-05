@@ -56,7 +56,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public static <T> LazyIbTree<T> of(Comparator<T> comparator, List<T> ts) {
-		List<Slot<T>> list = Read.from(ts).cons(null).map(t -> new Slot<>(null, t)).toList();
+		var list = Read.from(ts).cons(null).map(t -> new Slot<>(null, t)).toList();
 		int size;
 
 		while (maxBranchFactor <= (size = list.size())) {
@@ -115,8 +115,8 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	private Streamlet<Slot<T>> stream_(List<Slot<T>> node, T start, T end) {
-		int i0 = start != null ? new FindSlot(node, start, false).i : 0;
-		int i1 = end != null ? new FindSlot(node, end, false).i + 1 : node.size();
+		var i0 = start != null ? new FindSlot(node, start, false).i : 0;
+		var i1 = end != null ? new FindSlot(node, end, false).i + 1 : node.size();
 
 		if (i0 < i1)
 			return Read.from(node.subList(i0, i1)).concatMap(slot -> {
@@ -187,7 +187,7 @@ public class LazyIbTree<T> implements ITree<T> {
 			else
 				slots2 = slots1;
 		} else {
-			T t0 = fs.c == 0 ? fs.slot.pivot : null;
+			var t0 = fs.c == 0 ? fs.slot.pivot : null;
 			var t1 = fun.apply(t0);
 
 			slots2 = new ArrayList<>();

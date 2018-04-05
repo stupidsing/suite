@@ -77,7 +77,7 @@ public class IRbTree<T> implements ITree<T> {
 		var node = root;
 
 		while (node != null) {
-			int c = comparator.compare(node.pivot, t);
+			var c = comparator.compare(node.pivot, t);
 			if (c < 0)
 				node = node.left;
 			else if (0 < c)
@@ -120,7 +120,7 @@ public class IRbTree<T> implements ITree<T> {
 		Node node1;
 
 		if (node != null) {
-			int c = comparator.compare(node.pivot, t);
+			var c = comparator.compare(node.pivot, t);
 
 			if (c < 0)
 				node1 = new Node(node.isBlack, node.pivot, add(node.left, t, isReplace), node.right);

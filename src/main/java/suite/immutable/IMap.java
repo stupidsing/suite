@@ -14,7 +14,7 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
 	public static <K extends Comparable<K>, V> IMap<K, V> empty() {
 		@SuppressWarnings("unchecked")
-		IMap<K, V> m = (IMap<K, V>) empty;
+		var m = (IMap<K, V>) empty;
 		return m;
 	}
 

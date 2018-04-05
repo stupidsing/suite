@@ -49,9 +49,9 @@ public class IbTree<T> implements ITree<T> {
 	}
 
 	public static <T> IbTree<T> of(Comparator<T> comparator, List<T> ts) {
-		IbTree<T> ibTree = new IbTree<>(comparator);
+		var ibTree = new IbTree<>(comparator);
 
-		List<IbTree<T>.Slot> list = Read //
+		var list = Read //
 				.from(ts) //
 				.cons(null) //
 				.map(t -> ibTree.new Slot(null, t)) //
@@ -60,7 +60,7 @@ public class IbTree<T> implements ITree<T> {
 		int size;
 
 		while (maxBranchFactor <= (size = list.size())) {
-			List<IbTree<T>.Slot> list1 = new ArrayList<>();
+			var list1 = new ArrayList<>();
 			for (var i = 0; i < size;) {
 				var i1 = i + maxBranchFactor <= size ? i + minBranchFactor : size;
 				list1.add(ibTree.new Slot(list.subList(i, i1), list.get(i).pivot));
@@ -115,8 +115,8 @@ public class IbTree<T> implements ITree<T> {
 	}
 
 	private Streamlet<T> stream(List<Slot> node, T start, T end) {
-		int i0 = start != null ? new FindSlot(node, start).i : 0;
-		int i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();
+		var i0 = start != null ? new FindSlot(node, start).i : 0;
+		var i1 = end != null ? new FindSlot(node, end, true).i + 1 : node.size();
 
 		if (i0 < i1)
 			return Read.from(node.subList(i0, i1)).concatMap(slot -> {
@@ -190,7 +190,7 @@ public class IbTree<T> implements ITree<T> {
 			else
 				replaceSlots = slots1;
 		} else {
-			T t0 = fs.c == 0 ? fs.slot.pivot : null;
+			var t0 = fs.c == 0 ? fs.slot.pivot : null;
 			var t1 = fun.apply(t0);
 
 			replaceSlots = new ArrayList<>();
@@ -249,8 +249,8 @@ public class IbTree<T> implements ITree<T> {
 	}
 
 	private int compare(T t0, T t1) {
-		boolean b0 = t0 != null;
-		boolean b1 = t1 != null;
+		var b0 = t0 != null;
+		var b1 = t1 != null;
 
 		if (b0 && b1)
 			return comparator.compare(t0, t1);

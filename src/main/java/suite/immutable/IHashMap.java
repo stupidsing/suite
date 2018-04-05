@@ -5,7 +5,6 @@ import java.util.Objects;
 import suite.adt.pair.Pair;
 import suite.streamlet.Outlet2;
 import suite.streamlet.Streamlet2;
-import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.BinOp;
 import suite.util.FunUtil2.Source2;
 
@@ -27,7 +26,7 @@ public class IHashMap<K, V> {
 
 	public Streamlet2<K, V> streamlet() {
 		return new Streamlet2<>(() -> {
-			Source<Pair<K, V>> source = set.streamlet().source();
+			var source = set.streamlet().source();
 			return Outlet2.of(new Source2<K, V>() {
 				public boolean source2(Pair<K, V> pair) {
 					var pair1 = source.source();

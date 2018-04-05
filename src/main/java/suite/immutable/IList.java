@@ -25,13 +25,13 @@ public class IList<T> implements Iterable<T> {
 
 	public static <T> IList<T> end() {
 		@SuppressWarnings("unchecked")
-		IList<T> end = (IList<T>) IList.end;
+		var end = (IList<T>) IList.end;
 		return end;
 	}
 
 	@SafeVarargs
 	public static <T> IList<T> of(T... ts) {
-		var list = IList.<T> end();
+		IList<T> list = IList.end();
 		for (var t : ts)
 			list = cons(t, list);
 		return list;
@@ -104,8 +104,8 @@ public class IList<T> implements Iterable<T> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == IList.class) {
-			IList<?> list0 = this;
-			IList<?> list1 = (IList<?>) object;
+			var list0 = this;
+			var list1 = (IList<?>) object;
 			boolean e0, e1;
 			while (true) {
 				e0 = list0.isEmpty();

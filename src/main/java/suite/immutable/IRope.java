@@ -140,7 +140,7 @@ public class IRope<T> {
 	private static <T> List<IRope<T>> meld_(IRope<T> rope0, IRope<T> rope1) {
 		var depth0 = rope0.depth;
 		var depth1 = rope1.depth;
-		int depth = max(depth0, depth1);
+		var depth = max(depth0, depth1);
 
 		if (depth0 != depth1) {
 			List<IRope<T>> ropes;
@@ -226,15 +226,15 @@ public class IRope<T> {
 			queue1.push(rope);
 
 			Source<IRope<T>> pack = () -> {
-				int ix = min(branchFactor, queue1.size());
-				List<IRope<T>> ropes = new ArrayList<>(Collections.nCopies(ix, null));
+				var ix = min(branchFactor, queue1.size());
+				var ropes = new ArrayList<IRope<T>>(Collections.nCopies(ix, null));
 				for (var i = 0; i < ix; i++)
 					ropes.set(i, queue1.pop());
 				return new IRope<>(depth + 1, ropes);
 			};
 
 			while (queue1.size() < branchFactor) {
-				IRope<T> rope1 = queue.pollFirst();
+				var rope1 = queue.pollFirst();
 
 				if (rope1 != null)
 					new Object() {
@@ -265,15 +265,15 @@ public class IRope<T> {
 			queue1.push(rope);
 
 			Source<IRope<T>> pack = () -> {
-				int ix = min(branchFactor, queue1.size());
-				List<IRope<T>> ropes = new ArrayList<>(Collections.nCopies(ix, null));
+				var ix = min(branchFactor, queue1.size());
+				var ropes = new ArrayList<IRope<T>>(Collections.nCopies(ix, null));
 				for (var i = 0; i < ix; i++)
 					ropes.set(ix - i - 1, queue1.pop());
 				return new IRope<>(depth + 1, ropes);
 			};
 
 			while (queue1.size() < branchFactor) {
-				IRope<T> rope1 = queue.pollFirst();
+				var rope1 = queue.pollFirst();
 
 				if (rope1 != null)
 					new Object() {
@@ -295,7 +295,7 @@ public class IRope<T> {
 	}
 
 	private static <T> IRope<T> newRoot(List<IRope<T>> ropes) {
-		IRope<T> rope = ropes.get(0);
+		var rope = ropes.get(0);
 		return ropes.size() != 1 ? new IRope<>(rope.depth + 1, ropes) : rope;
 	}
 

@@ -37,11 +37,11 @@ public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 			else
 				return b0 ? 1 : b1 ? -1 : 0;
 		};
-		Serializer<Pair<K, V>> ps = serialize.pair(ks, vs);
-		Serializer<Extent> xs = serialize.nullable(serialize.extent());
+		var ps = serialize.pair(ks, vs);
+		var xs = serialize.nullable(serialize.extent());
 		var pfs = FileFactory.subPageFiles(pageFile, 0, 1, Integer.MAX_VALUE);
-		SerializedPageFile<Extent> superblockFile = SerializedFileFactory.serialized(pfs[0], xs);
-		LazyIbTreePersister<Extent, Pair<K, V>> persister = new LazyIbTreeExtentFilePersister<>(pfs[1], pc, ps);
+		var superblockFile = SerializedFileFactory.serialized(pfs[0], xs);
+		var persister = new LazyIbTreeExtentFilePersister<>(pfs[1], pc, ps);
 		return new LazyIbTreeStore<>(superblockFile, persister, kc);
 	}
 
@@ -51,10 +51,10 @@ public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 			Serializer<K> ks, //
 			Serializer<V> vs) {
 		Comparator<Pair<K, V>> pc = (p0, p1) -> kc.compare(p0.t0, p1.t0);
-		Serializer<Pair<K, V>> ps = serialize.pair(ks, vs);
+		var ps = serialize.pair(ks, vs);
 		var pfs = FileFactory.subPageFiles(pageFile, 0, 1, Integer.MAX_VALUE);
-		SerializedPageFile<Integer> superblockFile = SerializedFileFactory.serialized(pfs[0], serialize.nullable(serialize.int_));
-		LazyIbTreePersister<Integer, Pair<K, V>> persister = new LazyIbTreePageFilePersister<>(pfs[1], pc, ps);
+		var superblockFile = SerializedFileFactory.serialized(pfs[0], serialize.nullable(serialize.int_));
+		var persister = new LazyIbTreePageFilePersister<>(pfs[1], pc, ps);
 		return new LazyIbTreeStore<>(superblockFile, persister, kc);
 	}
 
@@ -75,7 +75,7 @@ public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 	public synchronized void end(boolean isComplete) {
 		if (isComplete) {
 			var pointer1 = persister.save(mutator.get());
-			Pointer pointerx = persister.gc(List.of(pointer1), 9).getOrDefault(pointer1, pointer1);
+			var pointerx = persister.gc(List.of(pointer1), 9).getOrDefault(pointer1, pointer1);
 			superblockFile.save(0, pointerx);
 		}
 

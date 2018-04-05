@@ -98,7 +98,7 @@ public class IVector<T> {
 			v.data.insertBefore(u.data.nodes, u.start, u.end);
 			return new IVector<>(v.data, v.start - ulen, v.end);
 		} else {
-			Data<T> data = new Data<>(ulen + vlen + 16, 0);
+			var data = new Data<T>(ulen + vlen + 16, 0);
 			data.insertAfter(u.data.nodes, u.start, u.end);
 			data.insertAfter(v.data.nodes, v.start, v.end);
 			return new IVector<>(data, data.startUsed, data.endUsed);

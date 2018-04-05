@@ -20,7 +20,6 @@ import suite.file.SerializedPageFile;
 import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.immutable.LazyIbTree.Slot;
-import suite.primitive.Bytes;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.DataInput_;
@@ -53,10 +52,10 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	}
 
 	public LazyIbTreeExtentFilePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
-		Serializer<T> ts1 = serialize.nullable(ts);
-		Serializer<Extent> es = serialize.extent();
-		Serializer<Pair<T, Extent>> ps = serialize.pair(ts1, es);
-		Serializer<List<Pair<T, Extent>>> lps = serialize.list(ps);
+		var ts1 = serialize.nullable(ts);
+		var es = serialize.extent();
+		var ps = serialize.pair(ts1, es);
+		var lps = serialize.list(ps);
 		serializer = new Serializer<>() {
 			public PersistSlot<T> read(DataInput_ dataInput) throws IOException {
 				return new PersistSlot<>(lps.read(dataInput));
@@ -99,7 +98,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	public Map<Extent, Extent> gc(List<Extent> roots, int back) {
 		synchronized (writeLock) {
 			var end = nPages;
-			int start = max(0, end - back);
+			var start = max(0, end - back);
 			var isInUse = new HashSet<>();
 
 			Sink<List<Extent>> use = extents_ -> {
@@ -123,11 +122,11 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 
 				for (var extent0 : extents)
 					if (isInUse.contains(extent0)) {
-						PersistSlot<T> ps0 = loadSlot(extent0);
+						var ps0 = loadSlot(extent0);
 						var pairs0 = ps0.pairs;
-						List<Pair<T, Extent>> pairsx = Read.from(pairs0).map(Pair.map1(p -> map.getOrDefault(p, p))).toList();
-						PersistSlot<T> psx = new PersistSlot<>(pairsx);
-						Extent extentx = saveSlot(pointer, psx);
+						var pairsx = Read.from(pairs0).map(Pair.map1(p -> map.getOrDefault(p, p))).toList();
+						var psx = new PersistSlot<>(pairsx);
+						var extentx = saveSlot(pointer, psx);
 						pointer = extentx.end;
 						map.put(extent0, extentx);
 					}
@@ -141,9 +140,9 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	}
 
 	private List<Slot<T>> load_(Extent extent) {
-		IdentityKey<List<Slot<T>>> key = slotsByExtent.get(extent);
+		var key = slotsByExtent.get(extent);
 		if (key == null) {
-			PersistSlot<T> ps = loadSlot(extent);
+			var ps = loadSlot(extent);
 			var slots = Read //
 					.from(ps.pairs) //
 					.map(pair -> new Slot<>(() -> load_(pair.t1), pair.t0)) //
@@ -154,7 +153,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	}
 
 	private Extent save_(List<Slot<T>> slots) {
-		IdentityKey<List<Slot<T>>> key = IdentityKey.of(slots);
+		var key = IdentityKey.of(slots);
 		var extent = slotsByExtent.inverse().get(key);
 		if (extent == null) {
 			var pairs = Read //
@@ -173,7 +172,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 
 	private Extent saveSlot(int start, PersistSlot<T> value) {
 		var bs = ExtentFile.blockSize;
-		Bytes bytes = To.bytes(dataOutput -> serializer.write(dataOutput, value));
+		var bytes = To.bytes(dataOutput -> serializer.write(dataOutput, value));
 		var extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);
 		extentFile.save(extent, bytes);
 		return extent;

@@ -72,8 +72,8 @@ public class IBinPriorityQueue<T> {
 			for (var node : tree.nodes)
 				forest1[rank++] = node;
 
-			IBinPriorityQueue<T> pq0 = new IBinPriorityQueue<>(comparator, forest0);
-			IBinPriorityQueue<T> pq1 = new IBinPriorityQueue<>(comparator, forest1);
+			var pq0 = new IBinPriorityQueue<>(comparator, forest0);
+			var pq1 = new IBinPriorityQueue<>(comparator, forest1);
 			return pq0.meld(pq1);
 		}
 	}
