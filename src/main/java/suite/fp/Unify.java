@@ -14,15 +14,15 @@ public class Unify<T extends UnNode<T>> {
 		public boolean unify(UnNode<T> t);
 
 		public default <U extends UnNode<T>> U cast(Class<U> clazz) {
-			UnNode<T> t = final_();
+			var t = final_();
 			return clazz.isInstance(t) ? clazz.cast(t) : Fail.t("cannot cast " + t + " to " + clazz);
 		}
 
 		public default UnNode<T> final_() {
-			UnNode<T> object = this;
+			var object = this;
 			while (true)
 				if (object instanceof UnRef) {
-					UnNode<T> ref1 = ((UnRef<T>) object).target;
+					var ref1 = ((UnRef<T>) object).target;
 					if (object != ref1)
 						object = ref1;
 					else
@@ -46,14 +46,14 @@ public class Unify<T extends UnNode<T>> {
 	}
 
 	public UnNode<T> newRef() {
-		UnRef<T> ref = new UnRef<>();
+		var ref = new UnRef<T>();
 		ref.target = ref;
 		return ref;
 	}
 
 	public boolean unify(UnNode<T> u0, UnNode<T> u1) {
-		UnNode<T> target0 = u0.final_();
-		UnNode<T> target1 = u1.final_();
+		var target0 = u0.final_();
+		var target1 = u1.final_();
 		if (target0 instanceof UnRef)
 			return addBind((UnRef<T>) target0, target1);
 		else if (target1 instanceof UnRef)
@@ -67,7 +67,7 @@ public class Unify<T extends UnNode<T>> {
 
 	public boolean addBind(UnRef<T> reference, UnNode<T> target) {
 		if (target instanceof Unify.UnRef) {
-			UnRef<T> reference1 = (UnRef<T>) target;
+			var reference1 = (UnRef<T>) target;
 			if (reference.id < reference1.id)
 				return bindDirect(reference1, reference);
 			else
@@ -77,12 +77,12 @@ public class Unify<T extends UnNode<T>> {
 	}
 
 	private UnNode<T> clone(Map<UnRef<?>, UnNode<T>> map, UnNode<T> node0) {
-		UnNode<T> node1 = node0.final_();
+		var node1 = node0.final_();
 		if (node1 instanceof UnRef)
 			return (UnRef<T>) map.computeIfAbsent((UnRef<?>) node1, r -> newRef());
 		else {
 			@SuppressWarnings("unchecked")
-			UnNode<T> object1 = (UnNode<T>) ((AutoObject<?>) node1).clone();
+			var object1 = (UnNode<T>) ((AutoObject<?>) node1).clone();
 			return object1;
 		}
 	}

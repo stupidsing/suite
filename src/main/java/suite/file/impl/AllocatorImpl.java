@@ -110,14 +110,14 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 			var p = start / pageSize;
 			var s = p * pageSize;
 			var e = s + pageSize;
-			int end_ = min(e, end);
+			var end_ = min(e, end);
 			var p0 = 0;
 			var p1 = start - s;
 			var p2 = end_ - s;
 			var p3 = pageSize;
 			var bytes = allocMapFile.load(p);
-
 			var bb = new BytesBuilder();
+
 			bb.append(bytes.range(p0, p1));
 			for (var i = p1; i < p2; i++)
 				bb.append(b);
@@ -129,7 +129,7 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 	}
 
 	private int checkEmptyExtent(Int_Obj<Byte> read, int pos, int max) {
-		int end = min(size, pos + max);
+		var end = min(size, pos + max);
 		while (pos < end && read.apply(pos) == 0)
 			pos++;
 		return pos;
