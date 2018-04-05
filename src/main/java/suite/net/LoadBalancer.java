@@ -32,7 +32,7 @@ public class LoadBalancer {
 		var probe = new Thread(() -> {
 			while (running.isTrue())
 				try {
-					List<String> alives1 = new ArrayList<>();
+					var alives1 = new ArrayList<String>();
 
 					for (var server : servers)
 						try (var socket = new Socket(server, port)) {
