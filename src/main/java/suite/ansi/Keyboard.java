@@ -135,7 +135,7 @@ public class Keyboard {
 
 		public void accept(Character ch_, Sink<Pair<VK, Character>> fire) {
 			if (ch_ != null) {
-				Trie<Integer, VK> t1 = t.getMap().get((int) ch_);
+				var t1 = t.getMap().get((int) ch_);
 				VK vk;
 
 				chs.add(ch_);
