@@ -192,7 +192,7 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	public Prove_ prover(Node node) {
-		Trampoline tr = cutBegin(compileTr(passThru, node));
+		var tr = cutBegin(compileTr(passThru, node));
 
 		return pc -> {
 			Mutable<Boolean> result = Mutable.of(false);
@@ -214,20 +214,20 @@ public class SewingProverImpl implements ProverFactory {
 
 		for (var e : rules.listEntries()) {
 			var prototype = e.t0;
-			List<Rule> rules = new ArrayList<>(e.t1);
+			var rules = new ArrayList<>(e.t1);
 			var traceLevel = traceLevel(prototype);
 
 			// second-level indexing optimization
 			Map<Prototype, List<Rule>> rulesByProto1;
 
 			if (6 <= rules.size()) {
-				Map<Prototype, List<Rule>> rulesByProto_ = Read.from(rules).toListMap(rule -> Prototype.of(rule, 1));
+				var rulesByProto_ = Read.from(rules).toListMap(rule -> Prototype.of(rule, 1));
 				rulesByProto1 = !rulesByProto_.containsKey(null) ? rulesByProto_ : null;
 			} else
 				rulesByProto1 = null;
 
 			if (isHasCutByPrototype.get(prototype)) {
-				Trampoline tr0 = compileTrRules(prototype, rules, traceLevel);
+				var tr0 = compileTrRules(prototype, rules, traceLevel);
 				Trampoline tr;
 
 				if (rulesByProto1 != null) {
@@ -249,7 +249,7 @@ public class SewingProverImpl implements ProverFactory {
 
 				getTrampolineByPrototype(prototype).set(tr);
 			} else {
-				Cps cps0 = compileCpsRules(prototype, rules, traceLevel);
+				var cps0 = compileCpsRules(prototype, rules, traceLevel);
 				Cps cps;
 
 				if (rulesByProto1 != null) {
@@ -292,7 +292,7 @@ public class SewingProverImpl implements ProverFactory {
 	private Cps compileCpsRule(Node head, Node tail) {
 		var bf = new SewingBinderImpl();
 		var p = bf.binder(head);
-		Cps cps = compileCps(bf, tail, rt -> rt.cps);
+		var cps = compileCps(bf, tail, rt -> rt.cps);
 		return newEnvCps(bf, rt -> p.test(rt, rt.query) ? cps : null);
 	}
 
@@ -368,7 +368,7 @@ public class SewingProverImpl implements ProverFactory {
 			var f = bf.cloner(node);
 			Cps cps;
 			if (isHasCutByPrototype.get(prototype)) {
-				Mutable<Trampoline> mtr = getTrampolineByPrototype(prototype);
+				var mtr = getTrampolineByPrototype(prototype);
 				Trampoline rem = rt -> {
 					rt.cont(cpsx);
 					return fail;
@@ -386,7 +386,7 @@ public class SewingProverImpl implements ProverFactory {
 				};
 
 			} else {
-				Mutable<Cps> mcps = getCpsByPrototype(prototype);
+				var mcps = getCpsByPrototype(prototype);
 				cps = rt -> {
 					var cps0 = rt.cps;
 					rt.cps = rt_ -> {
@@ -415,7 +415,7 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Cps newEnvCps(BinderFactory bf, Cps cps) {
-		VariableMapper<Reference> mapper = bf.mapper();
+		var mapper = bf.mapper();
 		return rt -> {
 			rt.env = mapper.env();
 			return cps;
@@ -439,7 +439,7 @@ public class SewingProverImpl implements ProverFactory {
 	private Trampoline compileTrRule(Node head, Node tail) {
 		var bf = new SewingBinderImpl();
 		var p = bf.binder(head);
-		Trampoline tr1 = compileTr(bf, tail);
+		var tr1 = compileTr(bf, tail);
 		return newEnvTr(bf, rt -> p.test(rt, rt.query) ? tr1 : fail);
 	}
 
@@ -470,7 +470,7 @@ public class SewingProverImpl implements ProverFactory {
 			tr = compileTrCallPredicate(bf, predicate, m[2]);
 		} else if ((m = Suite.pattern("find.all .0 .1 .2").match(node)) != null) {
 			var f = bf.cloner(m[0]);
-			Trampoline tr1 = compileTr(bf, m[1]);
+			var tr1 = compileTr(bf, m[1]);
 			var p = bf.binder(m[2]);
 			var vs = new ArrayList<Node>();
 			tr = rt -> {
@@ -486,9 +486,9 @@ public class SewingProverImpl implements ProverFactory {
 				return tr1;
 			};
 		} else if ((m = Suite.pattern("if .0 .1 .2").match(node)) != null) {
-			Trampoline tr0 = compileTr(bf, m[0]);
-			Trampoline tr1 = compileTr(bf, m[1]);
-			Trampoline tr2 = compileTr(bf, m[2]);
+			var tr0 = compileTr(bf, m[0]);
+			var tr1 = compileTr(bf, m[1]);
+			var tr2 = compileTr(bf, m[2]);
 			tr = if_(tr0, tr1, tr2);
 		} else if ((m = Suite.pattern("let .0 .1").match(node)) != null) {
 			var p = bf.binder(m[0]);
@@ -501,7 +501,7 @@ public class SewingProverImpl implements ProverFactory {
 			var ht_ = bf.cloner(m[3]);
 			tr = rt -> {
 				var ht = Suite.pattern(".0 .1").match(ht_.apply(rt.env));
-				Trampoline tr1 = saveEnvTr(compileTrRule(ht[0], ht[1]));
+				var tr1 = saveEnvTr(compileTrRule(ht[0], ht[1]));
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
 				rt.pushRem(rt_ -> valuex_.test(rt_, current.get()) ? okay : fail);
 				for (var elem : Tree.iter(list0_.apply(rt.env))) {
@@ -524,7 +524,7 @@ public class SewingProverImpl implements ProverFactory {
 			var elem_ = bf.binder(m[3]);
 			var v0_ = bf.binder(m[4]);
 			var vx_ = bf.cloner(m[5]);
-			Trampoline tr1 = compileTr(bf, m[6]);
+			var tr1 = compileTr(bf, m[6]);
 			tr = rt -> {
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
 				var env0 = rt.env;
@@ -549,7 +549,7 @@ public class SewingProverImpl implements ProverFactory {
 			var ht_ = bf.cloner(m[1]);
 			tr = rt -> {
 				var ht = Suite.pattern(".0 .1").match(ht_.apply(rt.env));
-				Trampoline tr1 = saveEnvTr(compileTrRule(ht[0], ht[1]));
+				var tr1 = saveEnvTr(compileTrRule(ht[0], ht[1]));
 				for (var n : Tree.iter(l_.apply(rt.env)))
 					rt.pushRem(rt_ -> {
 						rt_.query = n;
@@ -560,7 +560,7 @@ public class SewingProverImpl implements ProverFactory {
 		} else if ((m = Suite.pattern("list.query.clone .0 .1 .2").match(node)) != null) {
 			var f = bf.cloner(m[0]);
 			var p = bf.binder(m[1]);
-			Trampoline tr1 = compileTr(bf, m[2]);
+			var tr1 = compileTr(bf, m[2]);
 			tr = rt -> {
 				var env0 = rt.env;
 				rt.pushRem(rt_ -> {
@@ -595,7 +595,7 @@ public class SewingProverImpl implements ProverFactory {
 		} else if ((m = Suite.pattern("not .0").match(node)) != null)
 			tr = if_(compileTr(bf, m[0]), fail, okay);
 		else if ((m = Suite.pattern("once .0").match(node)) != null) {
-			Trampoline tr0 = compileTr(bf, m[0]);
+			var tr0 = compileTr(bf, m[0]);
 			tr = rt -> {
 				var alts0 = rt.alts;
 				rt.pushRem(rt_ -> {
@@ -607,13 +607,13 @@ public class SewingProverImpl implements ProverFactory {
 		} else if ((m = Suite.pattern("suspend .0 .1 .2").match(node)) != null) {
 			var f0 = bf.cloner(m[0]);
 			var f1 = bf.cloner(m[1]);
-			Trampoline tr0 = compileTr(bf, m[2]);
+			var tr0 = compileTr(bf, m[2]);
 
 			tr = rt -> {
 				var results = new ArrayList<Node>();
 				var env = rt.env;
 
-				Trampoline tr_ = andTr(Read.each(tr0, rt_ -> {
+				var tr_ = andTr(Read.each(tr0, rt_ -> {
 					results.add(f1.apply(env));
 					return fail;
 				}));
@@ -639,14 +639,14 @@ public class SewingProverImpl implements ProverFactory {
 				return okay;
 			};
 		} else if ((m = Suite.pattern("try .0 .1 .2").match(node)) != null) {
-			Trampoline tr0 = compileTr(bf, m[0]);
+			var tr0 = compileTr(bf, m[0]);
 			var p = bf.binder(m[1]);
-			Trampoline catch0 = compileTr(bf, m[2]);
+			var catch0 = compileTr(bf, m[2]);
 			tr = rt -> {
 				var be = rt;
 				var restore = save(rt);
 				var alts0 = rt.alts;
-				Sink<Node> handler0 = rt.handler;
+				var handler0 = rt.handler;
 				rt.handler = node_ -> {
 					restore.restore(rt);
 					if (p.test(be, node_)) {
@@ -780,13 +780,13 @@ public class SewingProverImpl implements ProverFactory {
 			var f = bf.cloner(node);
 			Trampoline tr;
 			if (isHasCutByPrototype.get(prototype)) {
-				Mutable<Trampoline> mtr = getTrampolineByPrototype(prototype);
+				var mtr = getTrampolineByPrototype(prototype);
 				tr = rt -> {
 					rt.query = f.apply(rt.env);
 					return mtr.get()::prove;
 				};
 			} else {
-				Mutable<Cps> mcps = getCpsByPrototype(prototype);
+				var mcps = getCpsByPrototype(prototype);
 
 				Cps cpsx = rt -> {
 					var rems = rt.rems;
@@ -826,7 +826,7 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Trampoline newEnvTr(BinderFactory bf, Trampoline tr) {
-		VariableMapper<Reference> mapper = bf.mapper();
+		var mapper = bf.mapper();
 		return rt -> {
 			rt.env = mapper.env();
 			return tr;
@@ -901,7 +901,7 @@ public class SewingProverImpl implements ProverFactory {
 		var cutPoint0 = rt.cutPoint;
 		var rems0 = rt.rems;
 		var pit0 = rt.trail.getPointInTime();
-		Sink<Node> handler0 = rt.handler;
+		var handler0 = rt.handler;
 		return rt_ -> {
 			rt_.cps = cps0;
 			rt_.env = env0;

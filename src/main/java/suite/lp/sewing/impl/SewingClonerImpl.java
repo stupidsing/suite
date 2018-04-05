@@ -33,7 +33,7 @@ public class SewingClonerImpl implements ClonerFactory {
 			Tree tree;
 
 			if (node0 instanceof Dict) {
-				Clone_[][] array = Read //
+				var array = Read //
 						.from2(((Dict) node0).map) //
 						.map((key, value) -> new Clone_[] { cloner(key), cloner(value), }) //
 						.toArray(Clone_[].class);

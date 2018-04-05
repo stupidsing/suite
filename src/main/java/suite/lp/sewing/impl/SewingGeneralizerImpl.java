@@ -49,7 +49,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 				else
 					fun = env -> node0;
 			} else if (node0 instanceof Dict) {
-				Generalize_[][] array = Read //
+				var array = Read //
 						.from2(((Dict) node0).map) //
 						.map((key, value) -> new Generalize_[] { generalizer(key), generalizer(value), }) //
 						.toArray(Generalize_[].class);
@@ -91,7 +91,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 
 		if (1 < funs.size())
 			return env -> {
-				Tree t = Tree.of(null, null, null);
+				var t = Tree.of(null, null, null);
 				Node node_ = t;
 				for (var fun_ : funs) {
 					var t_ = Tree.decompose(node_);
