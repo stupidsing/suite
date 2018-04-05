@@ -8,7 +8,6 @@ import org.junit.Test;
 
 import suite.inspect.Dump;
 import suite.streamlet.Read;
-import suite.trade.data.Sina.Factor;
 
 public class SinaTest {
 
@@ -16,7 +15,7 @@ public class SinaTest {
 
 	@Test
 	public void testQueryFactor() {
-		Factor factor = sina.queryFactor("0005.HK");
+		var factor = sina.queryFactor("0005.HK");
 		assertNotNull(factor);
 		Dump.out(factor);
 	}

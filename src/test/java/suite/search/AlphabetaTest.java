@@ -44,7 +44,7 @@ public class AlphabetaTest {
 		if (!isEnd(state))
 			for (var i = 0; i < 9; i++)
 				if (state.grid[i] == 0) {
-					TicTacToe state1 = new TicTacToe();
+					var state1 = new TicTacToe();
 					state1.player = (char) ('O' + 'X' - state.player);
 					state1.grid = Arrays.copyOf(state.grid, 9);
 					state1.grid[i] = state.player;
@@ -91,7 +91,7 @@ public class AlphabetaTest {
 	public void test() {
 		Alphabeta<TicTacToe> ab = new Alphabeta<>(this::generate, this::evaluate);
 
-		TicTacToe state = new TicTacToe();
+		var state = new TicTacToe();
 		System.out.println(ab.search(state, 20));
 	}
 

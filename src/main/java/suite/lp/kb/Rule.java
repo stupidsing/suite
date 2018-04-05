@@ -2,7 +2,6 @@ package suite.lp.kb;
 
 import suite.lp.doer.GeneralizerFactory.Generalize_;
 import suite.lp.doer.ProverConstant;
-import suite.lp.sewing.Env;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
@@ -38,7 +37,7 @@ public class Rule {
 			cutIndex = sewingGeneralizer.mapper().computeIndex(ProverConstant.cut);
 		}
 
-		Env env = sewingGeneralizer.mapper().env();
+		var env = sewingGeneralizer.mapper().env();
 		env.refs[cutIndex].bound(cut);
 
 		return Tree.of(TermOp.AND___, //
@@ -56,7 +55,7 @@ public class Rule {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Rule.class) {
-			Rule other = (Rule) object;
+			var other = (Rule) object;
 			return head.equals(other.head) && tail.equals(other.tail);
 		} else
 			return false;

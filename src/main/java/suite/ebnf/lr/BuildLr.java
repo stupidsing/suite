@@ -55,7 +55,7 @@ public class BuildLr {
 		}
 
 		private boolean putAll(Transition sourceMap) {
-			boolean b = false;
+			var b = false;
 			for (var e1 : sourceMap.entrySet())
 				b |= put_(e1.getKey(), e1.getValue());
 			return b;
@@ -74,8 +74,8 @@ public class BuildLr {
 			else if (value0.t0 != null && value1.t0 != null) {
 
 				// merge each children if both are shifts
-				Transition transition0 = fsm.get(value0.t0);
-				Transition transition1 = fsm.get(value1.t0);
+				var transition0 = fsm.get(value0.t0);
+				var transition1 = fsm.get(value1.t0);
 				return merges.add(Pair.of(transition0, transition1));
 			} else
 				return Fail.t("duplicate key " + key + " old (" + value0 + ") new (" + value1 + ")");
@@ -139,8 +139,8 @@ public class BuildLr {
 			keys1.removeAll(keys0);
 
 			for (Pair<String, Set<String>> pair : keys1) {
-				Transition next_ = transitions.get(pair);
-				Transition nextx_ = newTransition(pair.t1);
+				var next_ = transitions.get(pair);
+				var nextx_ = newTransition(pair.t1);
 
 				Blr blr1 = build(pair.t0, nextx_);
 				merges.add(Pair.of(next_, blr1.next));
@@ -165,7 +165,7 @@ public class BuildLr {
 	private Blr build(IList<Pair<String, Set<String>>> ps, Grammar eg, Transition nextx) {
 		Fun<Streamlet2<String, Transition>, Blr> mergeAll = st2 -> {
 			Transition next = newTransition(readLookahead.readLookahead(eg, nextx.keySet()));
-			State state1 = newState(nextx);
+			var state1 = newState(nextx);
 			st2.sink((egn, next1) -> {
 				next.put_(egn, Pair.of(state1, null));
 				merges.add(Pair.of(next, next1));
@@ -192,7 +192,7 @@ public class BuildLr {
 			blr = mergeAll.apply(Read.each2(eg.content, next1));
 			break;
 		case NAMED_:
-			Reduce reduce = new Reduce();
+			var reduce = new Reduce();
 			Transition next = newTransition(nextx.keySet(), Pair.of(null, reduce));
 			Blr blr1 = build(ps, eg.children.get(0), next);
 			reduce.n = blr1.nTokens;
@@ -208,7 +208,7 @@ public class BuildLr {
 			blr = mergeAll.apply(Read.from2(pairs));
 			break;
 		case STRING:
-			State state1 = newState(nextx);
+			var state1 = newState(nextx);
 			blr = new Blr(1, kv(eg.content, state1));
 			break;
 		default:
@@ -219,7 +219,7 @@ public class BuildLr {
 	}
 
 	private State newState(Transition nextx) {
-		State state = new State();
+		var state = new State();
 		fsm.put(state, nextx);
 		return state;
 	}
@@ -230,14 +230,14 @@ public class BuildLr {
 	}
 
 	private Transition newTransition(Set<String> keys, Pair<State, Reduce> value) {
-		Transition transition = new Transition();
+		var transition = new Transition();
 		for (var key : keys)
 			transition.put(key, value);
 		return transition;
 	}
 
 	private Transition kv(String k, State v) {
-		Transition transition = new Transition();
+		var transition = new Transition();
 		transition.put(k, Pair.of(v, null));
 		return transition;
 	}

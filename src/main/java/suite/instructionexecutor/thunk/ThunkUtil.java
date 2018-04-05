@@ -21,7 +21,7 @@ public class ThunkUtil {
 	 */
 	public static String yawnString(Iterate<Node> yawn, Node node) {
 		Outlet<Node> st = yawnList(yawn, node, false);
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		Node n;
 
 		while ((n = st.next()) != null)
@@ -85,7 +85,7 @@ public class ThunkUtil {
 		node = yawn.apply(node);
 
 		if (node instanceof Tree) {
-			Tree tree = (Tree) node;
+			var tree = (Tree) node;
 			Node left = deepYawn(yawn, tree.getLeft());
 			Node right = deepYawn(yawn, tree.getRight());
 			node = Tree.of(tree.getOperator(), left, right);

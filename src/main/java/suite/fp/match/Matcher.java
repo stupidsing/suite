@@ -60,7 +60,7 @@ public class Matcher<T> {
 		Map<String, Node> map = bindMapUtil.pattern(matcher).match(node);
 		return Rethrow.ex(() -> {
 			if (map != null) {
-				T t = ctor.source();
+				var t = ctor.source();
 				Class<? extends Object> clazz = t.getClass();
 				for (var e : map.entrySet())
 					clazz.getField(e.getKey().substring(1)).set(t, e.getValue());

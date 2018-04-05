@@ -125,7 +125,7 @@ public class IVector<T> {
 
 	@Override
 	public boolean equals(Object object) {
-		boolean b = false;
+		var b = false;
 
 		if (Object_.clazz(object) == IVector.class) {
 			@SuppressWarnings("unchecked")

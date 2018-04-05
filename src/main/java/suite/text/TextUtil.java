@@ -31,7 +31,7 @@ public class TextUtil {
 	}
 
 	public List<Pair<Bytes, Bytes>> diff(Bytes bytesx, Bytes bytesy) {
-		Lccs lccs = new Lccs();
+		var lccs = new Lccs();
 		Pair<Segment, Segment> diff = lccs.lccs(bytesx, bytesy);
 		Segment sx = diff.t0, sy = diff.t1;
 		int x0 = 0, x1 = sx.start, x2 = sx.end, xx = bytesx.size();
@@ -51,7 +51,7 @@ public class TextUtil {
 	}
 
 	public Bytes patch(Bytes bytes, List<Pair<Bytes, Bytes>> pairs) throws ConflictException {
-		BytesBuilder bb = new BytesBuilder();
+		var bb = new BytesBuilder();
 		var p = 0;
 		for (Pair<Bytes, Bytes> pair : pairs) {
 			var p1 = p + pair.t0.size();
@@ -71,8 +71,8 @@ public class TextUtil {
 
 	public List<Pair<Bytes, Bytes>> merge(List<Pair<Bytes, Bytes>> pairsx, List<Pair<Bytes, Bytes>> pairsy,
 			boolean isDetectSameChanges) throws ConflictException {
-		boolean isEmptyx = pairsx.isEmpty();
-		boolean isEmptyy = pairsy.isEmpty();
+		var isEmptyx = pairsx.isEmpty();
+		var isEmptyy = pairsy.isEmpty();
 
 		if (!isEmptyx || !isEmptyy) {
 			Pair<Bytes, Bytes> phx = !isEmptyx ? pairsx.get(0) : Pair.of(Bytes.empty, Bytes.empty);
@@ -126,7 +126,7 @@ public class TextUtil {
 	}
 
 	public String toString(List<Pair<Bytes, Bytes>> pairs) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (Pair<Bytes, Bytes> pair : pairs)
 			if (pair.t0 == pair.t1)
 				sb.append(To.string(pair.t0));
@@ -144,7 +144,7 @@ public class TextUtil {
 
 	private Pair<Bytes, Bytes> skip(Pair<Bytes, Bytes> pair, int c) throws ConflictException {
 		if (pair.t0 == pair.t1 && c <= pair.t0.size()) {
-			Bytes bytes = pair.t0.range(c);
+			var bytes = pair.t0.range(c);
 			return Pair.of(bytes, bytes);
 		} else
 			throw new ConflictException();

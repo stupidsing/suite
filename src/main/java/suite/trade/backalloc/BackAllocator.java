@@ -63,7 +63,7 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator byRiskOfReturn() {
-		Statistic stat = new Statistic();
+		var stat = new Statistic();
 		var nDays = 32;
 
 		return (akds, indices) -> {
@@ -111,7 +111,7 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator even() {
-		BackAllocator ba1 = longOnly();
+		var ba1 = longOnly();
 
 		return (akds, indices) -> {
 			OnDateTime onDateTime = ba1.allocate(akds, indices);
@@ -149,13 +149,13 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator filterByIndexReturn(Configuration cfg, String indexSymbol) {
-		DataSource indexDataSource = cfg.dataSource(indexSymbol);
+		var indexDataSource = cfg.dataSource(indexSymbol);
 
 		return (akds, indices) -> {
 			OnDateTime onDateTime = allocate(akds, indices);
 
 			return index -> {
-				Time date = Time.ofEpochSec(akds.ts[index - 1]).date();
+				var date = Time.ofEpochSec(akds.ts[index - 1]).date();
 				var t0 = date.addDays(-7).epochSec();
 				var tx = date.epochSec();
 				DataSource ids = indexDataSource.range(t0, tx);
@@ -180,8 +180,8 @@ public interface BackAllocator {
 				private List<Pair<String, Double>> result0;
 
 				public List<Pair<String, Double>> onDateTime(int index) {
-					Time time_ = Time.ofEpochSec(akds.ts[index - 1]);
-					Time time1 = time_.addDays(-(time_.epochDay() % freq));
+					var time_ = Time.ofEpochSec(akds.ts[index - 1]);
+					var time1 = time_.addDays(-(time_.epochDay() % freq));
 
 					if (!Objects.equals(time0, time1)) {
 						time0 = time1;
@@ -390,8 +390,8 @@ public interface BackAllocator {
 	}
 
 	public default BackAllocator unleverage() {
-		BackAllocator ba0 = this;
-		BackAllocator ba1 = Trade_.isShortSell ? ba0 : ba0.longOnly();
+		var ba0 = this;
+		var ba1 = Trade_.isShortSell ? ba0 : ba0.longOnly();
 		BackAllocator ba2;
 
 		if (Trade_.leverageAmount < 999999f)

@@ -92,7 +92,7 @@ public class Ints_ {
 
 	public static IntStreamlet range(int s, int e) {
 		return new IntStreamlet(() -> {
-			IntMutable m = IntMutable.of(s);
+			var m = IntMutable.of(s);
 			return IntOutlet.of(() -> {
 				var c = m.increment();
 				return c < e ? c : IntFunUtil.EMPTYVALUE;
@@ -143,7 +143,7 @@ public class Ints_ {
 
 		public Ints source() {
 			Ints in;
-			IntsBuilder cb = new IntsBuilder();
+			var cb = new IntsBuilder();
 			cb.append(buffer);
 
 			p0 = 0;

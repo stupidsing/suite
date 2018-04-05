@@ -1,6 +1,5 @@
 package suite.primitive;
 
-import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.streamlet.ChrOutlet;
@@ -14,9 +13,9 @@ public interface Chr_Lng {
 	public long apply(char c);
 
 	public static Fun<ChrOutlet, LngStreamlet> lift(Chr_Lng fun0) {
-		Chr_Lng fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return ts -> {
-			LongsBuilder b = new LongsBuilder();
+			var b = new LongsBuilder();
 			char c;
 			while ((c = ts.next()) != ChrFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
@@ -25,9 +24,9 @@ public interface Chr_Lng {
 	}
 
 	public static Obj_Lng<ChrOutlet> sum(Chr_Lng fun0) {
-		Chr_Lng fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return outlet -> {
-			ChrSource source = outlet.source();
+			var source = outlet.source();
 			char c;
 			var result = (long) 0;
 			while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)

@@ -30,7 +30,7 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 		FileUtil.findPaths(Paths.get("src/main/ll/fc")) //
 				.filter(path -> Wildcard.isMatch("*.sl", path.getFileName().toString())) //
 				.forEach(path -> {
-					RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
+					var recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
 					var s = To.string(path);
 					for (Pair<String, String> ft : fts)
 						s = recursiveFactorizer.rewrite(ft.t0, ft.t1, s);

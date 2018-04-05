@@ -99,7 +99,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	public static IntOutlet of(Source<Integer> source) {
 		return IntOutlet.of(() -> {
-			Integer c = source.source();
+			var c = source.source();
 			return c != null ? c : IntFunUtil.EMPTYVALUE;
 		});
 	}
@@ -197,7 +197,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public IntOutlet drop(int n) {
-		boolean isAvailable = true;
+		var isAvailable = true;
 		while (0 < n && (isAvailable &= next() != IntFunUtil.EMPTYVALUE))
 			n--;
 		return isAvailable ? this : empty();
@@ -206,7 +206,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == IntOutlet.class) {
-			IntSource source1 = ((IntOutlet) object).source;
+			var source1 = ((IntOutlet) object).source;
 			int o0, o1;
 			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
 				if (o0 == IntFunUtil.EMPTYVALUE && o1 == IntFunUtil.EMPTYVALUE)
@@ -366,14 +366,14 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public void sink(IntSink sink0) {
-		IntSink sink1 = sink0.rethrow();
+		var sink1 = sink0.rethrow();
 		int c;
 		while ((c = next()) != IntFunUtil.EMPTYVALUE)
 			sink1.sink(c);
 	}
 
 	public IntOutlet skip(int n) {
-		boolean end = false;
+		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next() == IntFunUtil.EMPTYVALUE;
 		return !end ? of(source) : empty();
@@ -409,12 +409,12 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public int[] toArray() {
-		IntsBuilder list = toList();
+		var list = toList();
 		return list.toInts().toArray();
 	}
 
 	public IntsBuilder toList() {
-		IntsBuilder list = new IntsBuilder();
+		var list = new IntsBuilder();
 		int c;
 		while ((c = next()) != IntFunUtil.EMPTYVALUE)
 			list.append(c);
@@ -448,7 +448,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		Map<K, V> map = new HashMap<>();
 		int c;
 		while ((c = next()) != IntFunUtil.EMPTYVALUE) {
-			K key = kf1.apply(c);
+			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
 				Fail.t("duplicate key " + key);
 		}
@@ -464,7 +464,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public IntSet toSet() {
-		IntSet set = new IntSet();
+		var set = new IntSet();
 		int c;
 		while ((c = next()) != IntFunUtil.EMPTYVALUE)
 			set.add(c);

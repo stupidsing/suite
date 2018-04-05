@@ -1,6 +1,5 @@
 package suite.primitive;
 
-import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.streamlet.IntOutlet;
@@ -14,9 +13,9 @@ public interface Int_Lng {
 	public long apply(int c);
 
 	public static Fun<IntOutlet, LngStreamlet> lift(Int_Lng fun0) {
-		Int_Lng fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return ts -> {
-			LongsBuilder b = new LongsBuilder();
+			var b = new LongsBuilder();
 			int c;
 			while ((c = ts.next()) != IntFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
@@ -25,9 +24,9 @@ public interface Int_Lng {
 	}
 
 	public static Obj_Lng<IntOutlet> sum(Int_Lng fun0) {
-		Int_Lng fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return outlet -> {
-			IntSource source = outlet.source();
+			var source = outlet.source();
 			int c;
 			var result = (long) 0;
 			while ((c = source.source()) != IntFunUtil.EMPTYVALUE)

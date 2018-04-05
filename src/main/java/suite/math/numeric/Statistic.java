@@ -162,7 +162,7 @@ public class Statistic {
 		}
 
 		public String toString() {
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			var tStatistic = tStatistic();
 			for (var i = 0; i < nDepVariables; i++)
 				sb.append("\n" + coefficientNames[i] + " = " + To.string(coefficients[i]) //
@@ -218,7 +218,7 @@ public class Statistic {
 	}
 
 	public String moments(float[] fs) {
-		MeanVariance mv = meanVariance_(fs);
+		var mv = meanVariance_(fs);
 		return "mean = " + mv.mean //
 				+ ", variance = " + mv.variance //
 				+ ", skewness = " + skewness_(mv, fs) //

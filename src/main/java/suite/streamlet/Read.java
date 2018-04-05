@@ -111,7 +111,7 @@ public class Read {
 	}
 
 	public static Outlet<String> lines(Reader reader) {
-		BufferedReader br = new BufferedReader(reader);
+		var br = new BufferedReader(reader);
 		return Outlet.of(() -> Rethrow.ex(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
 	}
 

@@ -23,7 +23,7 @@ public class SmtpSslGmail {
 		Constants.bindSecrets("gmail .0 .1").map((username, enc) -> {
 			String password = decode(System.getenv("USER").toCharArray(), enc);
 
-			Properties props = new Properties();
+			var props = new Properties();
 			props.put("mail.smtp.auth", "true");
 			props.put("mail.smtp.host", "smtp.gmail.com");
 			props.put("mail.smtp.port", "465");
@@ -39,7 +39,7 @@ public class SmtpSslGmail {
 			try {
 				var sender = username + "@gmail.com";
 
-				Message message = new MimeMessage(session);
+				var message = new MimeMessage(session);
 				message.setFrom(new InternetAddress(sender));
 				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to != null ? to : sender));
 				message.setSubject(subject);
@@ -72,7 +72,7 @@ public class SmtpSslGmail {
 	}
 
 	private static String convert(char[] salt, String in0, ChrChr_Int f) {
-		CharsBuilder cb = new CharsBuilder();
+		var cb = new CharsBuilder();
 		var in1 = in0.toCharArray();
 
 		for (var i = 0; i < in1.length; i++) {

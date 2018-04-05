@@ -99,16 +99,16 @@ public class Trade_ {
 		IntIntSink tx = (i0_, i1_) -> {
 			if (Ints_.range(i0_, i1_).mapInt(i -> trades0[i].buySell).sum() != 0)
 				while (i0_ < i1_) {
-					Trade trade0 = trades0[i0_++];
+					var trade0 = trades0[i0_++];
 					if (!String_.equals(trade0.remark, "#"))
 						trades1.add(trade0);
 				}
 		};
 
 		for (var i = 1; i < length0; i++) {
-			Trade trade0 = trades0[i0];
-			Trade trade1 = trades0[i];
-			boolean isGroup = true //
+			var trade0 = trades0[i0];
+			var trade1 = trades0[i];
+			var isGroup = true //
 					&& String_.equals(trade0.date, trade1.date) //
 					&& String_.equals(trade0.symbol, trade1.symbol) //
 					&& trade0.price == trade1.price;
@@ -139,12 +139,12 @@ public class Trade_ {
 			LngIntPair tn = LngIntPair.of(0l, 0);
 
 			Source<LngIntPair> tradeSource = () -> {
-				Trade trade = outlet.next();
+				var trade = outlet.next();
 				var t = trade != null ? Time.of(trade.date + " 12:00:00").epochSec(8) : Long.MAX_VALUE;
 				return LngIntPair.of(t, tn.t1 + (trade != null ? trade.buySell : 0));
 			};
 
-			LngIntPair tn1 = tradeSource.source();
+			var tn1 = tradeSource.source();
 
 			for (var dividend : dividends) {
 				while (tn1 != null && tn1.t0 < dividend.t0) {
@@ -235,17 +235,17 @@ public class Trade_ {
 			List<Trade> trades_ = Trade_ //
 					.diff(time, account.assets(), portfolio, priceFun) //
 					.partition(trade -> { // can be executed in next open price?
-						Eod eod = eodBySymbol.get(trade.symbol);
+						var eod = eodBySymbol.get(trade.symbol);
 						var price = trade.price;
 						var priceBuy = price / barrier;
 						var priceSell = price * barrier;
 						var buySell = trade.buySell;
 
 						// cannot buy liquidated stock
-						boolean isTradeable = negligible < price;
+						var isTradeable = negligible < price;
 
 						// only if trade is within price range of next tick
-						boolean isMatch = isFreePlay //
+						var isMatch = isFreePlay //
 								|| 0 < buySell && eod.nextLow <= priceBuy //
 								|| buySell < 0 && priceSell <= eod.nextHigh;
 

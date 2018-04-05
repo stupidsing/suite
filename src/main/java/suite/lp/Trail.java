@@ -12,7 +12,7 @@ public class Trail {
 
 	public void addBind(Reference reference, Node target) {
 		if (target instanceof Reference) {
-			Reference reference1 = (Reference) target;
+			var reference1 = (Reference) target;
 			if (reference.getId() < reference1.getId())
 				addDirectedBind(reference1, reference);
 			else

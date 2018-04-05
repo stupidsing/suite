@@ -7,7 +7,6 @@ import org.junit.Test;
 import suite.inspect.Dump;
 import suite.math.MathUtil;
 import suite.math.linalg.Vector;
-import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.streamlet.Read;
@@ -31,7 +30,7 @@ public class StatisticTest {
 		float[] expect = Floats_.toArray(m, j -> random.nextFloat());
 		float[][] xs = To.matrix(n, m, (i, j) -> random.nextFloat());
 
-		LinearRegression lr = stat.linearRegression(Read //
+		var lr = stat.linearRegression(Read //
 				.from(xs) //
 				.map(x -> FltObjPair.of((float) (vec.dot(expect, x) + random.nextGaussian() * .01f), x)));
 

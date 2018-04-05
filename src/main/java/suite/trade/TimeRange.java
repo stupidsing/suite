@@ -71,7 +71,7 @@ public class TimeRange extends Range<Time> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == TimeRange.class) {
-			TimeRange other = (TimeRange) object;
+			var other = (TimeRange) object;
 			return Objects.equals(from, other.from) && Objects.equals(to, other.to);
 		} else
 			return false;

@@ -27,8 +27,8 @@ public class CasReference<T> {
 	public T apply(Iterate<T> fun) {
 		while (true) {
 			var arr = new int[1];
-			T t0 = asr.get(arr);
-			T t1 = fun.apply(t0);
+			var t0 = asr.get(arr);
+			var t1 = fun.apply(t0);
 			var stamp = arr[0];
 			if (stamp != -1)
 				if (asr.compareAndSet(t0, t1, stamp, stamp + 1))

@@ -23,12 +23,12 @@ public class Range<T extends Comparable<? super T>> implements Comparable<Range<
 	}
 
 	public Range<T> intersect(Range<T> other) {
-		T fr0 = from;
-		T fr1 = other.from;
-		T to0 = to;
-		T to1 = other.to;
-		T fr = fr0.compareTo(fr1) < 0 ? fr1 : fr0;
-		T to = to0.compareTo(to1) < 0 ? to0 : to1;
+		var fr0 = from;
+		var fr1 = other.from;
+		var to0 = to;
+		var to1 = other.to;
+		var fr = fr0.compareTo(fr1) < 0 ? fr1 : fr0;
+		var to = to0.compareTo(to1) < 0 ? to0 : to1;
 		return of(fr, to);
 	}
 

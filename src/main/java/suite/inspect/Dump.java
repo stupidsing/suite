@@ -25,7 +25,7 @@ public class Dump {
 	 * Dumps object content (public data and getters) through Reflection to a log4j.
 	 */
 	public static void out(Object object) {
-		StackTraceElement trace = Thread_.getStackTrace(3);
+		var trace = Thread_.getStackTrace(3);
 		out(trace.getClassName() + "." + trace.getMethodName(), object);
 	}
 
@@ -34,7 +34,7 @@ public class Dump {
 	 * with a descriptive name which you gave.
 	 */
 	public static void out(String name, Object object) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		sb.append("Dumping ");
 		sb.append(name);
 		Dump.object("", object, sb);
@@ -57,7 +57,7 @@ public class Dump {
 	 *            The monster.
 	 */
 	public static String object(String prefix, Object object) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		object(prefix, object, sb);
 		return sb.toString();
 	}

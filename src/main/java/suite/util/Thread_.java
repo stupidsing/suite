@@ -71,7 +71,7 @@ public class Thread_ {
 	}
 
 	public static Thread startThread(RunnableEx runnable) {
-		Thread thread = newThread_(runnable);
+		var thread = newThread_(runnable);
 		thread.start();
 		return thread;
 	}

@@ -296,14 +296,14 @@ public class Amd64 {
 	}
 
 	public Operand imm(long imm, int size) {
-		OpImm op = new OpImm();
+		var op = new OpImm();
 		op.imm = imm;
 		op.size = size;
 		return op;
 	}
 
 	public Instruction instruction(Insn insn, Operand... ops) {
-		Instruction instruction = new Instruction();
+		var instruction = new Instruction();
 		instruction.insn = insn;
 		instruction.op0 = 0 < ops.length ? ops[0] : none;
 		instruction.op1 = 1 < ops.length ? ops[1] : none;
@@ -334,35 +334,35 @@ public class Amd64 {
 	}
 
 	private OpReg newReg(int size, int reg) {
-		OpReg opReg = new OpReg();
+		var opReg = new OpReg();
 		opReg.size = size;
 		opReg.reg = reg;
 		return opReg;
 	}
 
 	private OpRegControl newRegControl(int creg) {
-		OpRegControl opRegControl = new OpRegControl();
+		var opRegControl = new OpRegControl();
 		opRegControl.size = 4;
 		opRegControl.creg = creg;
 		return opRegControl;
 	}
 
 	private OpRegSegment newRegSegment(int sreg) {
-		OpRegSegment opRegSegment = new OpRegSegment();
+		var opRegSegment = new OpRegSegment();
 		opRegSegment.size = 2;
 		opRegSegment.sreg = sreg;
 		return opRegSegment;
 	}
 
 	private OpRegXmm newRegXmm(int xreg) {
-		OpRegXmm opRegXmm = new OpRegXmm();
+		var opRegXmm = new OpRegXmm();
 		opRegXmm.size = 16;
 		opRegXmm.reg = xreg;
 		return opRegXmm;
 	}
 
 	private OpRegYmm newRegYmm(int yreg) {
-		OpRegYmm opRegYmm = new OpRegYmm();
+		var opRegYmm = new OpRegYmm();
 		opRegYmm.size = 32;
 		opRegYmm.reg = yreg;
 		return opRegYmm;

@@ -62,7 +62,7 @@ public class BackAllocatorMech {
 			MovingRange[] movingRanges = ma.movingRange(prices, d20);
 
 			return Quant.fold(0, prices.length, (i, hold) -> {
-				MovingRange movingRange = movingRanges[i];
+				var movingRange = movingRanges[i];
 				return -Quant.hold(hold, prices[i], movingRange.min, movingRange.max);
 			});
 		});
@@ -162,7 +162,7 @@ public class BackAllocatorMech {
 				int sign1 = Quant.sign(movingAvg1, movingAvg2);
 				int sign2 = Quant.sign(movingAvg1, movingAvg1ytd);
 				int sign3 = Quant.sign(movingAvg2, movingAvg2ytd);
-				boolean b1 = sign0 == sign1 && sign1 == sign2 && (hold != 0f || sign2 == sign3);
+				var b1 = sign0 == sign1 && sign1 == sign2 && (hold != 0f || sign2 == sign3);
 				return b1 ? (float) -sign0 : 0f;
 			});
 		});

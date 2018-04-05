@@ -39,15 +39,15 @@ public class RecursiveFactorizerTest {
 	@Test
 	public void testParseUnparse() {
 		var s0 = FileUtil.read("src/main/ll/auto.sl").trim();
-		FactorizeResult fr = recursiveFactorizer.parse(s0);
+		var fr = recursiveFactorizer.parse(s0);
 		var sx = fr.unparse();
 		assertEquals(s0, sx);
 	}
 
 	@Test
 	public void testPrologComments() {
-		RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
-		FactorizeResult rf = recursiveFactorizer.parse("" //
+		var recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
+		var rf = recursiveFactorizer.parse("" //
 				+ "-- comment\n" //
 				+ "0\n");
 		assertTrue(0 < rf.pre.size());
@@ -57,8 +57,8 @@ public class RecursiveFactorizerTest {
 	@Test
 	public void testDirectReplace() {
 		var s0 = FileUtil.read("src/main/ll/ic/ic.sl").trim();
-		FactorizeResult fr0 = recursiveFactorizer.parse(s0);
-		FactorizeResult frx = transform(fr0);
+		var fr0 = recursiveFactorizer.parse(s0);
+		var frx = transform(fr0);
 		var sx = frx.unparse();
 		System.out.println(sx);
 	}
@@ -68,17 +68,17 @@ public class RecursiveFactorizerTest {
 	}
 
 	private FNode transform(FNode fn0) {
-		FTerminal from = new FTerminal(To.chars("ic-compile-better-option"));
-		FTerminal to = new FTerminal(To.chars("ic-new-compile-better-option"));
+		var from = new FTerminal(To.chars("ic-compile-better-option"));
+		var to = new FTerminal(To.chars("ic-new-compile-better-option"));
 		Iterate<FNode> fun = fn_ -> fn_.equals(from) ? to : null;
 		return transform(fn0, fun);
 	}
 
 	private FNode transform(FNode fn0, Iterate<FNode> fun) {
-		FNode fnx = fun.apply(fn0);
+		var fnx = fun.apply(fn0);
 		if (fnx == null)
 			if (fn0 instanceof FTree) {
-				FTree ft = (FTree) fn0;
+				var ft = (FTree) fn0;
 				List<FPair> pairs = Read //
 						.from(ft.pairs) //
 						.map(pair -> new FPair(transform(pair.node, fun), pair.chars)) //
@@ -118,8 +118,8 @@ public class RecursiveFactorizerTest {
 			return new Node[] { fun.apply(pred0).apply(false), fun.apply(predx).apply(true) };
 		};
 
-		FactorizeResult fr0 = recursiveFactorizer.parse(s0);
-		FNode fn0 = fr0.node;
+		var fr0 = recursiveFactorizer.parse(s0);
+		var fn0 = fr0.node;
 		Node node0 = nodify.nodify(FNode.class, fn0);
 		Node nodex = rw.rewrite(source, node0);
 		FNode fnx = nodify.unnodify(FNode.class, nodex);
@@ -129,34 +129,34 @@ public class RecursiveFactorizerTest {
 	}
 
 	private Node operatorNode(Operator op, List<Node> nodes) {
-		Str s = new Str("");
-		Str name = new Str(op.toString());
+		var s = new Str("");
+		var name = new Str(op.toString());
 		return treeNode(() -> s, name, nodes);
 	}
 
 	private Node operatorNode(Source<Node> g, TermOp op, Node n0, Node n1) {
-		Str name = new Str(op.toString());
+		var name = new Str(op.toString());
 		List<Node> nodes = List.of(n0, terminalNode(op.getName().trim()), n1);
 		return treeNode(g, name, nodes);
 	}
 
 	private Node treeNode(Source<Node> g, Node name, List<Node> nodes) {
 		List<Node> pairs = Read.from(nodes).map(node -> pairNode(node, g.source())).toList();
-		Dict dict = new Dict();
+		var dict = new Dict();
 		dict.map.put(Atom.of("name"), Reference.of(name));
 		dict.map.put(Atom.of("pairs"), Reference.of(Tree.of(TermOp.OR____, pairs)));
 		return Tree.of(TermOp.COLON_, Atom.of(FTree.class.getName()), dict);
 	}
 
 	private Node pairNode(Node n0, Node n1) {
-		Dict dict = new Dict();
+		var dict = new Dict();
 		dict.map.put(Atom.of("node"), Reference.of(n0));
 		dict.map.put(Atom.of("chars"), Reference.of(n1));
 		return dict;
 	}
 
 	private Node terminalNode(String s) {
-		Dict dict = new Dict();
+		var dict = new Dict();
 		dict.map.put(Atom.of("chars"), Reference.of(new Str(s)));
 		return Tree.of(TermOp.COLON_, Atom.of(FTerminal.class.getName()), dict);
 	}

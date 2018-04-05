@@ -85,7 +85,7 @@ public class Suite {
 	}
 
 	public static FunCompilerConfig fcc(Node fp, boolean isLazy) {
-		FunCompilerConfig fcc = new FunCompilerConfig();
+		var fcc = new FunCompilerConfig();
 		fcc.setNode(fp);
 		fcc.setLazy(isLazy);
 		return fcc;
@@ -96,7 +96,7 @@ public class Suite {
 	}
 
 	public static RuleSet getRuleSet(Node node) {
-		RuleSet rs = newRuleSet();
+		var rs = newRuleSet();
 		importUtil.importFrom(rs, node);
 		return rs;
 	}

@@ -90,14 +90,14 @@ public class InstructionExtractor implements AutoCloseable {
 		Insn insn;
 
 		if (Objects.equals(insnName, "EVALUATE")) {
-			Atom atom = (Atom) rs.remove(3);
-			TermOp operator = TermOp.find(atom.name);
+			var atom = (Atom) rs.remove(3);
+			var operator = TermOp.find(atom.name);
 			insn = InstructionUtil.getEvalInsn(operator);
 		} else
 			insn = InstructionUtil.getInsn(insnName);
 
 		if (insn != null) {
-			Instruction instruction = new Instruction(insn //
+			var instruction = new Instruction(insn //
 					, getRegisterNumber(rs, 1) //
 					, getRegisterNumber(rs, 2) //
 					, getRegisterNumber(rs, 3));
@@ -122,7 +122,7 @@ public class InstructionExtractor implements AutoCloseable {
 			else if (node instanceof Reference) { // transient register
 
 				// allocates new register in current local frame
-				Instruction frameBegin = frameBegins.getFirst();
+				var frameBegin = frameBegins.getFirst();
 				var registerNumber = frameBegin.op0++;
 
 				Binder.bind(node, Int.of(registerNumber), trail);

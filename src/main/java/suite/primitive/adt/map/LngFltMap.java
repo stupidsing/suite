@@ -38,7 +38,7 @@ public class LngFltMap {
 		Obj_Lng<T> kf1 = kf0.rethrow();
 		Obj_Flt<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			LngFltMap map = new LngFltMap();
+			var map = new LngFltMap();
 			T t;
 			while ((t = outlet.source().source()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
@@ -64,8 +64,8 @@ public class LngFltMap {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof LngFltMap) {
-			LngFltMap other = (LngFltMap) object;
-			boolean b = size == other.size;
+			var other = (LngFltMap) object;
+			var b = size == other.size;
 			for (LngObjPair<Float> pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
@@ -75,7 +75,7 @@ public class LngFltMap {
 
 	public void forEach(LngFltSink sink) {
 		LngFltPair pair = LngFltPair.of((long) 0, (float) 0);
-		LngFltSource source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -143,7 +143,7 @@ public class LngFltMap {
 			private LngFltPair pair0 = LngFltPair.of((long) 0, (float) 0);
 
 			public boolean source2(LngObjPair<Float> pair) {
-				boolean b = source0.source2(pair0);
+				var b = source0.source2(pair0);
 				pair.update(pair0.t0, pair0.t1);
 				return b;
 			}

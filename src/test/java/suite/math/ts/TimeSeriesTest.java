@@ -8,7 +8,6 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
-import suite.trade.data.DataSource;
 import ts.TimeSeries;
 
 public class TimeSeriesTest {
@@ -19,7 +18,7 @@ public class TimeSeriesTest {
 	@Test
 	public void testSharpeRatio() {
 		TimeRange period = TimeRange.of(Time.of(2016, 1, 1), Time.of(2017, 5, 1));
-		DataSource ds = cfg.dataSource("0002.HK").range(period);
+		var ds = cfg.dataSource("0002.HK").range(period);
 		var sharpe = ts.returnsStatDailyAnnualized(ds.prices).sharpeRatio();
 		System.out.println("sharpe = " + sharpe);
 		assertTrue(.04d < sharpe);

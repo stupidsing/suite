@@ -29,7 +29,7 @@ public class Int extends Node {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Int.class) {
-			Int i = (Int) object;
+			var i = (Int) object;
 			return number == i.number;
 		} else
 			return false;

@@ -8,7 +8,7 @@ public class Template {
 	private static String close = "%>";
 
 	public String render(String in, Iterate<String> fun) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		var start = 0;
 
 		while (true) {

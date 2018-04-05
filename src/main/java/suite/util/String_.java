@@ -38,7 +38,7 @@ public class String_ {
 	}
 
 	public static boolean isBlank(String s) {
-		boolean isBlank = true;
+		var isBlank = true;
 		if (s != null)
 			for (var c : String_.chars(s))
 				isBlank &= Character.isWhitespace(c);
@@ -50,7 +50,7 @@ public class String_ {
 			if (s.charAt(0) == '-')
 				s = s.substring(1);
 
-			boolean b = !s.isEmpty();
+			var b = !s.isEmpty();
 			for (var c : String_.chars(s))
 				b &= Character.isDigit(c);
 			return b;

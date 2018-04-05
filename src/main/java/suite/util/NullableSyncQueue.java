@@ -26,10 +26,10 @@ public class NullableSyncQueue<T> {
 
 	public boolean poll(Mutable<T> mutable) {
 		var object = queue.poll();
-		boolean b = object != nullObject;
+		var b = object != nullObject;
 		if (b) {
 			@SuppressWarnings("unchecked")
-			T t = (T) object;
+			var t = (T) object;
 			mutable.set(t);
 		}
 		return b;
@@ -51,7 +51,7 @@ public class NullableSyncQueue<T> {
 		var object = queue.take();
 		if (object != nullObject) {
 			@SuppressWarnings("unchecked")
-			T t = (T) object;
+			var t = (T) object;
 			return t;
 		} else
 			return null;

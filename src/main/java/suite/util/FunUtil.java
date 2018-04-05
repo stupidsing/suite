@@ -54,7 +54,7 @@ public class FunUtil {
 
 			public T source() {
 				if (!isAppended) {
-					T t_ = source.source();
+					var t_ = source.source();
 					if (t_ != null)
 						return t_;
 					else {
@@ -178,7 +178,7 @@ public class FunUtil {
 			}
 
 			public T next() {
-				T next0 = next;
+				var next0 = next;
 				next = null;
 				return next0;
 			}
@@ -192,7 +192,7 @@ public class FunUtil {
 	public static <T0, T1> Source<T1> map(Fun<T0, T1> fun0, Source<T0> source) {
 		Fun<T0, T1> fun1 = fun0.rethrow();
 		return () -> {
-			T0 t0 = source.source();
+			var t0 = source.source();
 			return t0 != null ? fun1.apply(t0) : null;
 		};
 	}
@@ -201,7 +201,7 @@ public class FunUtil {
 		Fun<T, K> kf1 = kf0.rethrow();
 		Fun<T, V> vf1 = vf0.rethrow();
 		return pair -> {
-			T t = source.source();
+			var t = source.source();
 			boolean b = t != null;
 			if (b)
 				pair.update(kf1.apply(t), vf1.apply(t));

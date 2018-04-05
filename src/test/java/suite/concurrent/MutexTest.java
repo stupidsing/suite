@@ -21,8 +21,8 @@ public class MutexTest {
 
 	@Test
 	public void testDeadlock() throws InterruptedException {
-		Mutex a = new Mutex();
-		Mutex b = new Mutex();
+		var a = new Mutex();
+		var b = new Mutex();
 
 		MutexTestRunnable ra = () -> {
 			try (MutexLock mla = new MutexLock(a)) {
@@ -44,8 +44,8 @@ public class MutexTest {
 
 	@Test
 	public void testNoDeadlock() throws InterruptedException {
-		Mutex a = new Mutex();
-		Mutex b = new Mutex();
+		var a = new Mutex();
+		var b = new Mutex();
 
 		MutexTestRunnable ra = () -> {
 			try (MutexLock mla = new MutexLock(a)) {
@@ -66,7 +66,7 @@ public class MutexTest {
 	}
 
 	private boolean isDeadlock(MutexTestRunnable... mtrs) throws InterruptedException {
-		BooMutable result = BooMutable.false_();
+		var result = BooMutable.false_();
 		List<Thread> threads = Read //
 				.from(mtrs) //
 				.map(mtr -> Thread_.newThread(() -> {

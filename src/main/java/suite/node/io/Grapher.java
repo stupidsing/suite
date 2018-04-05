@@ -73,7 +73,7 @@ public class Grapher {
 			ids.put(key, id = gns.size());
 			gns.add(null);
 
-			NodeRead nr = NodeRead.of(node);
+			var nr = NodeRead.of(node);
 
 			List<IntIntPair> children = Read //
 					.from(nr.children) //
@@ -108,7 +108,7 @@ public class Grapher {
 				.toList();
 
 		for (var i = 0; i < size; i++) {
-			GN gn = gns.get(i);
+			var gn = gns.get(i);
 			var node = nodes.get(i);
 			List<Pair<Node, Node>> children = Read.from(gn.children).map(p -> Pair.of(nodes.get(p.t0), nodes.get(p.t1))).toList();
 
@@ -119,7 +119,7 @@ public class Grapher {
 			case TERM:
 				break;
 			case TREE:
-				Tree tree = (Tree) node;
+				var tree = (Tree) node;
 				Tree.forceSetLeft(tree, children.get(0).t1);
 				Tree.forceSetRight(tree, children.get(1).t1);
 				break;
@@ -136,8 +136,8 @@ public class Grapher {
 	public static boolean bind(Node n0, Node n1, Trail trail) {
 		ObjIntMap<IdentityKey<Node>> mapn0 = new ObjIntMap<>();
 		ObjIntMap<IdentityKey<Node>> mapn1 = new ObjIntMap<>();
-		Grapher g0 = new Grapher();
-		Grapher g1 = new Grapher();
+		var g0 = new Grapher();
+		var g1 = new Grapher();
 		g0.id = g0.graph_(mapn0, n0);
 		g1.id = g1.graph_(mapn1, n1);
 
@@ -155,8 +155,8 @@ public class Grapher {
 
 		while ((pair = deque.pollLast()) != null)
 			if (set.add(pair)) {
-				GN gn0 = g0.gns.get(pair.t0);
-				GN gn1 = g1.gns.get(pair.t1);
+				var gn0 = g0.gns.get(pair.t0);
+				var gn1 = g1.gns.get(pair.t1);
 
 				if (gn0.type == ReadType.TERM //
 						&& gn0.terminal instanceof Reference //
@@ -173,8 +173,8 @@ public class Grapher {
 					var size1 = children1.size();
 					if (size0 == size1)
 						for (var i = 0; i < size0; i++) {
-							IntIntPair p0 = children0.get(i);
-							IntIntPair p1 = children1.get(i);
+							var p0 = children0.get(i);
+							var p1 = children1.get(i);
 							deque.addLast(IntIntPair.of(p0.t0, p1.t0));
 							deque.addLast(IntIntPair.of(p0.t1, p1.t1));
 						}
@@ -222,7 +222,7 @@ public class Grapher {
 	public static Node replace(Node from, Node to, Node node) {
 		ObjIntMap<IdentityKey<Node>> ids = new ObjIntMap<>();
 
-		Grapher grapher = new Grapher();
+		var grapher = new Grapher();
 		int n0 = grapher.graph_(ids, from);
 		int nx = grapher.graph_(ids, to);
 		int id = grapher.graph_(ids, node);
@@ -236,7 +236,7 @@ public class Grapher {
 		id = dis.readInt();
 
 		for (var index = 0; index < size; index++) {
-			ReadType type = ReadType.of(dis.readByte());
+			var type = ReadType.of(dis.readByte());
 			Node terminal;
 			Operator op;
 			List<IntIntPair> children = new ArrayList<>();
@@ -289,8 +289,8 @@ public class Grapher {
 		dos.writeInt(id);
 
 		for (var index = 0; index < size; index++) {
-			GN gn = gns.get(index);
-			ReadType type = gn.type;
+			var gn = gns.get(index);
+			var type = gn.type;
 			List<IntIntPair> children = gn.children;
 
 			dos.writeByte(type.value);
@@ -326,7 +326,7 @@ public class Grapher {
 	}
 
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 
 		for (var gn : gns) {
 			String s;

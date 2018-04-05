@@ -2,7 +2,6 @@ package suite.primitive;
 
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltPrimitives.Obj_Flt;
-import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.primitive.streamlet.IntOutlet;
 import suite.util.Fail;
@@ -14,9 +13,9 @@ public interface Int_Flt {
 	public float apply(int c);
 
 	public static Fun<IntOutlet, FltStreamlet> lift(Int_Flt fun0) {
-		Int_Flt fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return ts -> {
-			FloatsBuilder b = new FloatsBuilder();
+			var b = new FloatsBuilder();
 			int c;
 			while ((c = ts.next()) != IntFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
@@ -25,9 +24,9 @@ public interface Int_Flt {
 	}
 
 	public static Obj_Flt<IntOutlet> sum(Int_Flt fun0) {
-		Int_Flt fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return outlet -> {
-			IntSource source = outlet.source();
+			var source = outlet.source();
 			int c;
 			var result = (float) 0;
 			while ((c = source.source()) != IntFunUtil.EMPTYVALUE)

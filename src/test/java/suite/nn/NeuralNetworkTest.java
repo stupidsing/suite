@@ -23,17 +23,17 @@ public class NeuralNetworkTest {
 		Pair<String, BinOp<Boolean>> op1 = Pair.of("or", (b0, b1) -> b0 || b1);
 		Pair<String, BinOp<Boolean>> op2 = Pair.of("xor", (b0, b1) -> b0 ^ b1);
 		boolean[] booleans = new boolean[] { false, true, };
-		Random random = new Random();
-		boolean result = true;
+		var random = new Random();
+		var result = true;
 
 		for (Pair<String, BinOp<Boolean>> pair : List.of(op0, op1, op2))
 			result &= pair.map((name, oper) -> {
-				NeuralNetwork nn = new NeuralNetwork();
+				var nn = new NeuralNetwork();
 				Layer<float[], float[]> train = nn.ml(new int[] { 2, 4, 1, });
 
 				for (var i = 0; i < 16384; i++) {
-					boolean b0 = random.nextBoolean();
-					boolean b1 = random.nextBoolean();
+					var b0 = random.nextBoolean();
+					var b1 = random.nextBoolean();
 					float[] in = input(b0, b1);
 					float[] expect = new float[] { f(oper.apply(b0, b1)), };
 					Out<float[], float[]> out = train.feed(in);
@@ -41,7 +41,7 @@ public class NeuralNetworkTest {
 					out.backprop.apply(vec.sub(expect, actual));
 				}
 
-				boolean result_ = true;
+				var result_ = true;
 
 				for (var b0 : booleans)
 					for (var b1 : booleans) {

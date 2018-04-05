@@ -20,7 +20,7 @@ public class Rewrite {
 			public boolean test(Node node) {
 				boolean b;
 				if (!eq(node, from)) {
-					NodeRead nr = NodeRead.of(node);
+					var nr = NodeRead.of(node);
 					b = Read.from(nr.children).isAny(p -> test(p.t1));
 				} else
 					b = true;
@@ -35,13 +35,13 @@ public class Rewrite {
 
 	public Node rewrite(Node from, Node to, Node node0) {
 		return rewrite(() -> {
-			Cloner cloner = new Cloner();
+			var cloner = new Cloner();
 			return new Node[] { cloner.clone(from), cloner.clone(to), };
 		}, node0);
 	}
 
 	public Node rewrite(Source<Node[]> source, Node node) {
-		Trail trail = new Trail();
+		var trail = new Trail();
 
 		return rewrite(node0 -> {
 			Node node1;

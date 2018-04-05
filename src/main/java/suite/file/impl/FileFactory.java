@@ -33,14 +33,14 @@ public class FileFactory {
 	}
 
 	public static ExtentFile extentFile(PageFile pf) {
-		Serialize serialize = Serialize.me;
+		var serialize = Serialize.me;
 		Serializer<Extent> extentSerializer = serialize.extent();
 		Serializer<Bytes> bytesSerializer = serialize.variableLengthBytes;
 
 		SerializedPageFile<Block> pageFile = SerializedFileFactory.serialized(pf, new Serializer<>() {
 			public Block read(DataInput_ dataInput) throws IOException {
-				Extent extent = extentSerializer.read(dataInput);
-				Bytes bytes = bytesSerializer.read(dataInput);
+				var extent = extentSerializer.read(dataInput);
+				var bytes = bytesSerializer.read(dataInput);
 				return new Block(extent, bytes);
 			}
 
@@ -60,9 +60,9 @@ public class FileFactory {
 			}
 
 			public Bytes load(Extent extent) {
-				BytesBuilder bb = new BytesBuilder();
+				var bb = new BytesBuilder();
 				for (var pointer = extent.start; pointer < extent.end; pointer++) {
-					Block block = pageFile.load(pointer);
+					var block = pageFile.load(pointer);
 					Util.assert_(Objects.equals(block.extent, extent));
 					bb.append(block.bytes);
 				}
@@ -81,7 +81,7 @@ public class FileFactory {
 				List<Extent> extents = new ArrayList<>();
 				var pointer = start;
 				while (pointer < end) {
-					Extent extent = pageFile.load(pointer).extent;
+					var extent = pageFile.load(pointer).extent;
 					if (start <= extent.start && extent.end <= end)
 						extents.add(extent);
 					pointer = extent.end;
@@ -116,7 +116,7 @@ public class FileFactory {
 	}
 
 	public static PageFile pageFile(Path path, int pageSize) {
-		RandomAccessibleFile file = new RandomAccessibleFile(path);
+		var file = new RandomAccessibleFile(path);
 
 		return new PageFile() {
 			public void close() {

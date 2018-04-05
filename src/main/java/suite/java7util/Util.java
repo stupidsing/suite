@@ -14,7 +14,7 @@ public class Util {
 	}
 
 	public static long newDate(int year, int month, int day, int hour, int minute, int second) {
-		Calendar cal = Calendar.getInstance();
+		var cal = Calendar.getInstance();
 		cal.clear();
 		cal.set(year, Calendar.JANUARY + month - 1, day, hour, minute, second);
 		return cal.getTimeInMillis();

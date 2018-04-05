@@ -35,7 +35,7 @@ public class NodifyTest {
 
 	@Test
 	public void testMapify() {
-		ProverConfig pc0 = new ProverConfig();
+		var pc0 = new ProverConfig();
 		pc0.setRuleSet(null);
 
 		Node node = nodify.nodify(ProverConfig.class, pc0);
@@ -53,9 +53,9 @@ public class NodifyTest {
 	// object type information (i.e. class name), and un-mapify accordingly.
 	@Test
 	public void testPolymorphism() {
-		A a = new A();
-		B b = new B();
-		Container object0 = new Container();
+		var a = new A();
+		var b = new B();
+		var object0 = new Container();
 		object0.is = List.of(a, b);
 
 		Node node = nodify.nodify(Container.class, object0);

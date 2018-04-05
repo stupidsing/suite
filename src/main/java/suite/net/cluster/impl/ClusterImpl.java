@@ -65,7 +65,7 @@ public class ClusterImpl implements Cluster {
 		onJoined = probe.getOnJoined();
 
 		onLeft = probe.getOnLeft().map(node -> {
-			PersistentNioChannel channel = channels.get(node);
+			var channel = channels.get(node);
 			if (channel != null)
 				channel.stop();
 			return node;
@@ -88,7 +88,7 @@ public class ClusterImpl implements Cluster {
 	@Override
 	public Object requestForResponse(String peer, Object request) {
 		if (probe.isActive(peer)) {
-			Bytes req = NetUtil.serialize(request);
+			var req = NetUtil.serialize(request);
 			Bytes resp = matcher.requestForResponse(getChannel(peer), req);
 			return NetUtil.deserialize(resp);
 		} else
@@ -96,7 +96,7 @@ public class ClusterImpl implements Cluster {
 	}
 
 	private PersistentNioChannel getChannel(String peer) {
-		PersistentNioChannel channel = channels.get(peer);
+		var channel = channels.get(peer);
 
 		if (channel == null || !channel.isConnected())
 			try {

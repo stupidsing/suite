@@ -32,7 +32,7 @@ public class As {
 
 	public static Fun<Outlet<String>, String> conc(String delimiter) {
 		return outlet -> {
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			outlet.sink(new Sink<>() {
 				public void sink(String s) {
 					sb.append(s);
@@ -67,7 +67,7 @@ public class As {
 
 	public static Fun<Outlet<String>, String> joinedBy(String before, String delimiter, String after) {
 		return outlet -> {
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			outlet.sink(s -> {
 				if (0 < sb.length())
 					sb.append(delimiter);
@@ -99,7 +99,7 @@ public class As {
 	public static <T> Fun<Outlet<T>, Integer> min(Obj_Int<T> fun) {
 		return outlet -> {
 			Source<T> source = outlet.source();
-			T t = source.source();
+			var t = source.source();
 			int result1;
 			if (t != null) {
 				var result = fun.apply(t);
@@ -125,7 +125,7 @@ public class As {
 			private int index;
 
 			public O source() {
-				I i = outlet.next();
+				var i = outlet.next();
 				return i != null ? seq.apply(index++, i) : null;
 			}
 		});
@@ -164,7 +164,7 @@ public class As {
 			public Chars source() {
 				Chars chars;
 				while ((chars = decode()).size() == 0) {
-					Bytes bytes = source.source();
+					var bytes = source.source();
 					if (bytes != null)
 						bb.append(bytes);
 					else if (bb.size() == 0)
@@ -176,8 +176,8 @@ public class As {
 			}
 
 			private Chars decode() {
-				Bytes bytes = bb.toBytes();
-				CharsBuilder cb = new CharsBuilder();
+				var bytes = bb.toBytes();
+				var cb = new CharsBuilder();
 				var s = 0;
 
 				while (s < bytes.size()) {
@@ -229,9 +229,9 @@ public class As {
 
 		return Outlet.of(new Source<>() {
 			public Bytes source() {
-				Chars chars = source.source();
+				var chars = source.source();
 				if (chars != null) {
-					BytesBuilder bb = new BytesBuilder();
+					var bb = new BytesBuilder();
 					for (var i = 0; i < chars.size(); i++) {
 						var ch = chars.get(i);
 						if (ch < 0x80)
@@ -263,7 +263,7 @@ public class As {
 
 	private static String[] csvLine(String line) {
 		List<String> list = new ArrayList<>();
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		var length = line.length();
 		var p = 0;
 		if (0 < length) {

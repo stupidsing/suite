@@ -15,7 +15,7 @@ public class Judge {
 		var players = new HashSet<>();
 
 		for (var c : Coordinate.all()) {
-			Occupation color = board.get(c);
+			var color = board.get(c);
 			players.add(color);
 			nPiecesCount += color != Occupation.EMPTY ? 1 : 0;
 		}
@@ -29,7 +29,7 @@ public class Judge {
 	}
 
 	public static void checkGroupsLiveness(Board board, Array<Boolean> alives) {
-		GroupAnalysis ga = new GroupAnalysis(board);
+		var ga = new GroupAnalysis(board);
 
 		// judge which groups are eyes, i.e. surrounded by only one colour
 		Map<Group, Boolean> groupIsEye = new HashMap<>();
@@ -39,7 +39,7 @@ public class Judge {
 				var colors = new HashSet<>();
 
 				for (var neighborGroup : group.touches) {
-					Occupation color = neighborGroup.color;
+					var color = neighborGroup.color;
 					if (color != Occupation.EMPTY)
 						colors.add(color);
 				}

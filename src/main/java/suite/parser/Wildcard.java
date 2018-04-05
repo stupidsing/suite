@@ -35,7 +35,7 @@ public class Wildcard {
 					|| h1 == '*' && (isMatch2(p0, t1) || isMatch2(t0, p1)) //
 					|| h0 == h1 && isMatch2(t0, t1);
 		} else {
-			boolean isWildcardPatterns = true;
+			var isWildcardPatterns = true;
 			for (var c0 : String_.chars(p0))
 				isWildcardPatterns &= c0 == '*';
 			for (var c1 : String_.chars(p1))
@@ -58,7 +58,7 @@ public class Wildcard {
 	}
 
 	public static String apply(String pattern, String[] input) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		var i = 0;
 		for (var ch : String_.chars(pattern))
 			switch (ch) {
@@ -136,7 +136,7 @@ class Matcher {
 				break;
 			default:
 				st = st.concatMap(state -> {
-					boolean isMatch = !state.eof() && state.input.charAt(state.pos) == ch;
+					var isMatch = !state.eof() && state.input.charAt(state.pos) == ch;
 					return isMatch ? Read.each(new State(state, 1)) : Read.empty();
 				});
 			}

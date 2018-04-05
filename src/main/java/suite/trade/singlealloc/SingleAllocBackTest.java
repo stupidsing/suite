@@ -6,7 +6,6 @@ import suite.trade.Time;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.data.DataSource;
-import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
@@ -30,7 +29,7 @@ public class SingleAllocBackTest {
 		var length = prices.length;
 		var valuations = new float[length];
 
-		GetBuySell getBuySell = strategy.analyze(prices);
+		var getBuySell = strategy.analyze(prices);
 
 		for (var day = 0; day < length; day++) {
 			var buySell = getBuySell.get(day);

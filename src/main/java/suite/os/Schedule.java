@@ -1,6 +1,5 @@
 package suite.os;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -12,9 +11,9 @@ import suite.util.FunUtil.Source;
 public class Schedule {
 
 	public static Schedule ofDaily(LocalTime time, Runnable runnable) {
-		LocalDateTime now = LocalDateTime.now();
-		LocalDate today = now.toLocalDate();
-		LocalDateTime firstRunDateTime0 = today.atTime(time);
+		var now = LocalDateTime.now();
+		var today = now.toLocalDate();
+		var firstRunDateTime0 = today.atTime(time);
 		LocalDateTime firstRunDateTime1;
 
 		if (firstRunDateTime0.isBefore(now))
@@ -59,7 +58,7 @@ public class Schedule {
 		return Schedule.of(nextRunDateTime, () -> Read //
 				.from(run.source()) //
 				.map(schedule -> {
-					LocalDateTime t = schedule.nextRunDateTime;
+					var t = schedule.nextRunDateTime;
 					while (!pred.test(t))
 						t = t.plusHours(1);
 					return Schedule.of(t, schedule.run);

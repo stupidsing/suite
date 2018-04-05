@@ -1,6 +1,5 @@
 package suite.primitive;
 
-import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.streamlet.ChrOutlet;
@@ -14,9 +13,9 @@ public interface Chr_Int {
 	public int apply(char c);
 
 	public static Fun<ChrOutlet, IntStreamlet> lift(Chr_Int fun0) {
-		Chr_Int fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return ts -> {
-			IntsBuilder b = new IntsBuilder();
+			var b = new IntsBuilder();
 			char c;
 			while ((c = ts.next()) != ChrFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
@@ -25,9 +24,9 @@ public interface Chr_Int {
 	}
 
 	public static Obj_Int<ChrOutlet> sum(Chr_Int fun0) {
-		Chr_Int fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return outlet -> {
-			ChrSource source = outlet.source();
+			var source = outlet.source();
 			char c;
 			var result = (int) 0;
 			while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)

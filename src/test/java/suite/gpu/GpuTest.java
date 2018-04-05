@@ -2,16 +2,11 @@ package suite.gpu;
 
 import static suite.util.Friends.min;
 
-import java.nio.ByteOrder;
-
 import org.bridj.Pointer;
 import org.junit.Test;
 
 import com.nativelibs4java.opencl.CLBuffer;
-import com.nativelibs4java.opencl.CLContext;
-import com.nativelibs4java.opencl.CLKernel;
 import com.nativelibs4java.opencl.CLMem.Usage;
-import com.nativelibs4java.opencl.CLQueue;
 import com.nativelibs4java.opencl.JavaCL;
 
 public class GpuTest {
@@ -25,9 +20,9 @@ public class GpuTest {
 				+ "} \n" //
 		;
 
-		CLContext context = JavaCL.createBestContext();
-		CLQueue queue = context.createDefaultQueue();
-		ByteOrder byteOrder = context.getByteOrder();
+		var context = JavaCL.createBestContext();
+		var queue = context.createDefaultQueue();
+		var byteOrder = context.getByteOrder();
 
 		var n = 1024;
 		Pointer<Float> inp0 = Pointer.allocateFloats(n).order(byteOrder);
@@ -40,7 +35,7 @@ public class GpuTest {
 
 		CLBuffer<Float> out = context.createBuffer(Usage.Output, Float.class, n);
 
-		CLKernel kernel = context.createProgram(openCl).createKernel("add_floats");
+		var kernel = context.createProgram(openCl).createKernel("add_floats");
 		kernel.setArgs(context.createBuffer(Usage.Input, inp0), context.createBuffer(Usage.Input, inp1), out, n);
 
 		Pointer<Float> outp = out.read(queue, kernel.enqueueNDRange(queue, new int[] { n, }));

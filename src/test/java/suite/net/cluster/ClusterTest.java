@@ -18,7 +18,7 @@ public class ClusterTest {
 
 	@Test
 	public void testCluster() throws IOException {
-		InetAddress localHost = InetAddress.getLocalHost();
+		var localHost = InetAddress.getLocalHost();
 
 		Map<String, InetSocketAddress> peers = Map.ofEntries( //
 				entry("NODE0", new InetSocketAddress(localHost, 3000)), //

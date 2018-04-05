@@ -36,7 +36,7 @@ public class FilterTest {
 	public void testMemoryUsage() {
 		var size = 524288;
 
-		Reader reader = new Reader() {
+		var reader = new Reader() {
 			private int count = size;
 
 			public void close() {
@@ -57,7 +57,7 @@ public class FilterTest {
 			}
 		};
 
-		Writer writer = new Writer() {
+		var writer = new Writer() {
 			private int count = 0;
 
 			public void write(char[] buffer, int pos, int len) {

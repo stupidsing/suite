@@ -70,10 +70,10 @@ public class SparseMatrix {
 			enqRow.sink(r);
 
 		while (!pq.isEmpty()) {
-			IntIntPair pair = pq.extractMin();
+			var pair = pq.extractMin();
 			var r = pair.t0;
 			var j = js[r]++;
-			Spans spans = matrix.get(r);
+			var spans = matrix.get(r);
 			matrix1.get(spans.columns[j]).add(r, spans.values[j]);
 			enqRow.sink(r);
 		}

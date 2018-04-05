@@ -92,7 +92,7 @@ public class Floats_ {
 
 	public static FltStreamlet range(float s, float e) {
 		return new FltStreamlet(() -> {
-			FltMutable m = FltMutable.of(s);
+			var m = FltMutable.of(s);
 			return FltOutlet.of(() -> {
 				var c = m.increment();
 				return c < e ? c : FltFunUtil.EMPTYVALUE;
@@ -143,7 +143,7 @@ public class Floats_ {
 
 		public Floats source() {
 			Floats in;
-			FloatsBuilder cb = new FloatsBuilder();
+			var cb = new FloatsBuilder();
 			cb.append(buffer);
 
 			p0 = 0;

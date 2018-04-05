@@ -47,8 +47,8 @@ public class LcsDp<T> {
 				var l = 0 < i1 ? dp[i0][i1 - 1] : emptyNode;
 				var lu = 0 < i0 && 0 < i1 ? dp[i0 - 1][i1 - 1] : emptyNode;
 
-				T t0 = l0.get(i0);
-				T t1 = l1.get(i1);
+				var t0 = l0.get(i0);
+				var t1 = l1.get(i1);
 				Node lu1 = Objects.equals(t0, t1) ? new Node(t0, lu) : lu;
 
 				dp[i0][i1] = Collections.max(List.of(u, l, lu1), comparator);

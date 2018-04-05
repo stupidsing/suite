@@ -18,7 +18,7 @@ public class IntMutable {
 	}
 
 	public static IntMutable of(int c) {
-		IntMutable p = new IntMutable();
+		var p = new IntMutable();
 		p.update(c);
 		return p;
 	}

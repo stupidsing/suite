@@ -44,7 +44,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 		return outlet -> streamlet(() -> {
 			Source<T> source = outlet.source();
 			return IntObjOutlet.of(pair -> {
-				T t = source.source();
+				var t = source.source();
 				boolean b = t != null;
 				if (b)
 					pair.update(kf1.apply(t), vf1.apply(t));

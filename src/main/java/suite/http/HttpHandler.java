@@ -16,14 +16,14 @@ public interface HttpHandler {
 	public static HttpHandler ofDispatch(IMap<String, HttpHandler> map) {
 		return request -> {
 			Pair<String, HttpRequest> p = request.split();
-			HttpHandler handler = map.get(p.t0);
+			var handler = map.get(p.t0);
 			return handler != null ? handler.handle(p.t1) : Fail.t("no handler for " + p.t0);
 		};
 	}
 
 	public static HttpHandler ofPath(Path root) {
 		return request -> Rethrow.ex(() -> {
-			Path path = root;
+			var path = root;
 			long size;
 
 			for (var p : request.path)

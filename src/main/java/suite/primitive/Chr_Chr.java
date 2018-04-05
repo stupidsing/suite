@@ -1,7 +1,6 @@
 package suite.primitive;
 
 import suite.primitive.Chars.CharsBuilder;
-import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.streamlet.ChrOutlet;
 import suite.primitive.streamlet.ChrStreamlet;
@@ -14,9 +13,9 @@ public interface Chr_Chr {
 	public char apply(char c);
 
 	public static Fun<ChrOutlet, ChrStreamlet> lift(Chr_Chr fun0) {
-		Chr_Chr fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return ts -> {
-			CharsBuilder b = new CharsBuilder();
+			var b = new CharsBuilder();
 			char c;
 			while ((c = ts.next()) != ChrFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
@@ -25,9 +24,9 @@ public interface Chr_Chr {
 	}
 
 	public static Obj_Chr<ChrOutlet> sum(Chr_Chr fun0) {
-		Chr_Chr fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return outlet -> {
-			ChrSource source = outlet.source();
+			var source = outlet.source();
 			char c;
 			var result = (char) 0;
 			while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)

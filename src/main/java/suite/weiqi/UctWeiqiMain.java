@@ -30,21 +30,21 @@ public class UctWeiqiMain<Move> {
 
 	public static void main(String[] args) {
 		InputStreamReader isr = new InputStreamReader(System.in, Constants.charset);
-		BufferedReader br = new BufferedReader(isr);
-		DecimalFormat df = new DecimalFormat("0.000");
+		var br = new BufferedReader(isr);
+		var df = new DecimalFormat("0.000");
 		var nThreads = Constants.nThreads;
 		var nSimulations = 10000 * nThreads;
 		var boundedTime = 30000;
 		Weiqi.adjustSize(7);
 
-		Board board = new Board();
+		var board = new Board();
 		MovingGameSet gameSet = new MovingGameSet(board, startingPlayer);
-		boolean auto = false;
-		boolean quit = false;
+		var auto = false;
+		var quit = false;
 		var status = "LET'S PLAY!";
 
 		while (!quit) {
-			GameSet gameSet1 = new GameSet(gameSet);
+			var gameSet1 = new GameSet(gameSet);
 			UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet1);
 			UctSearch<Coordinate> search = new UctSearch<>(visitor);
 			search.setNumberOfThreads(nThreads);
@@ -55,7 +55,7 @@ public class UctWeiqiMain<Move> {
 				System.out.println("THINKING...");
 
 				Stopwatch<Coordinate> sw = Stopwatch.of(search::search);
-				Coordinate coord = sw.result;
+				var coord = sw.result;
 
 				if (coord != null) {
 					status = gameSet.getNextPlayer() //
@@ -116,13 +116,13 @@ public class UctWeiqiMain<Move> {
 	private static MovingGameSet loadGameSet(BufferedReader br) throws IOException {
 		System.out.println("PLEASE ENTER BOARD DATA AND AN BLANK LINE:\n");
 		String s;
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 
 		do
 			sb.append((s = br.readLine()) + "\n");
 		while (!String_.isBlank(s));
 
-		Board board = UserInterface.importBoard(sb.toString());
+		var board = UserInterface.importBoard(sb.toString());
 		return new MovingGameSet(board, startingPlayer);
 	}
 
@@ -138,7 +138,7 @@ public class UctWeiqiMain<Move> {
 		search.setNumberOfThreads(1);
 		search.setNumberOfSimulations(80000);
 
-		Coordinate move = search.search();
+		var move = search.search();
 		gameSet.play(move);
 
 		// search.dumpSearch();

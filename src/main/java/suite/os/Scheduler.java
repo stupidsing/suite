@@ -24,9 +24,9 @@ public class Scheduler {
 	public void run() {
 		while (!schedules.isEmpty()) {
 			List<Schedule> schedules1 = new ArrayList<>();
-			LocalDateTime now = LocalDateTime.now();
+			var now = LocalDateTime.now();
 
-			LocalDateTime nextWakeUpDateTime = Read //
+			var nextWakeUpDateTime = Read //
 					.from(schedules) //
 					.map(schedule -> schedule.nextRunDateTime) //
 					.min(Object_::compare);

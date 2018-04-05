@@ -10,7 +10,6 @@ import org.junit.Test;
 import suite.adt.pair.Pair;
 import suite.algo.KmeansCluster;
 import suite.math.numeric.Statistic;
-import suite.math.numeric.Statistic.LinearRegression;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.os.LogUtil;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -57,12 +56,12 @@ public class StatisticalArbitrageTest {
 	public void testAutoRegressivePowersOfTwo() {
 		var power = 6;
 
-		DataSource ds = cfg.dataSource(Asset.hsiSymbol).cleanse();
+		var ds = cfg.dataSource(Asset.hsiSymbol).cleanse();
 		var prices = ds.prices;
 		float[][] mas = To.array(power, float[].class, p -> ma.movingAvg(prices, 1 << p));
 		var returns = ts.returns(prices);
 
-		LinearRegression lr = stat.linearRegression(Ints_ //
+		var lr = stat.linearRegression(Ints_ //
 				.range(1 << power, prices.length) //
 				.map(i -> FltObjPair.of(returns[i], Floats_.toArray(power, p -> mas[p][i - (1 << p)]))));
 
@@ -86,7 +85,7 @@ public class StatisticalArbitrageTest {
 		var prices0 = pricesBySymbol.get(symbol0);
 		var prices1 = pricesBySymbol.get(symbol1);
 
-		LinearRegression lr = stat.linearRegression(Ints_ //
+		var lr = stat.linearRegression(Ints_ //
 				.range(tor, length) //
 				.map(i -> FltObjPair.of(prices1[i], Floats_.toArray(tor, j -> prices0[i + j - tor]))));
 
@@ -107,7 +106,7 @@ public class StatisticalArbitrageTest {
 
 	@Test
 	public void testKMeansClusterDct() {
-		DctDataSource dctDataSource = dctDataSources();
+		var dctDataSource = dctDataSources();
 		System.out.println(kmc(dctDataSource.length, dctDataSource.dctByKey.toMap()));
 	}
 
@@ -117,7 +116,7 @@ public class StatisticalArbitrageTest {
 
 	@Test
 	public void testMarketDirection() {
-		DataSource ds = cfg.dataSource(Asset.hsiSymbol).cleanse();
+		var ds = cfg.dataSource(Asset.hsiSymbol).cleanse();
 		var flagsArray = mt.time(ds.prices);
 		var flags0 = "-----";
 
@@ -139,7 +138,7 @@ public class StatisticalArbitrageTest {
 		var nTrials = 10000;
 		var nBets = 40;
 
-		DataSource ds = cfg.dataSource(Asset.hsiSymbol).range(period).cleanse();
+		var ds = cfg.dataSource(Asset.hsiSymbol).range(period).cleanse();
 		var returns = ds.returns();
 
 		for (float bet = 0f - 2f; bet < 1f + 2f; bet += .02f) {
@@ -176,7 +175,7 @@ public class StatisticalArbitrageTest {
 	@Test
 	public void testPeriod() {
 		var minPeriod = 4;
-		DctDataSource dctDataSources = dctDataSources();
+		var dctDataSources = dctDataSources();
 
 		for (Pair<String, float[]> e : dctDataSources.dctByKey) {
 			var dct = e.t1;

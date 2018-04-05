@@ -61,9 +61,9 @@ public class FileSystemTest {
 	}
 
 	private void testWriteOneFile(FileSystem fs) {
-		Bytes filename = To.bytes("file");
-		Bytes data = To.bytes("data");
-		FileSystemMutator fsm = fs.mutate();
+		var filename = To.bytes("file");
+		var data = To.bytes("data");
+		var fsm = fs.mutate();
 
 		fsm.replace(filename, data);
 		assertEquals(1, fsm.list(filename, null).size());
@@ -75,19 +75,19 @@ public class FileSystemTest {
 
 	private void testWriteFiles(FileSystem fs) throws IOException {
 		Streamlet<Path> paths = FileUtil.findPaths(Paths.get("src/test/java/"));
-		FileSystemMutator fsm = fs.mutate();
+		var fsm = fs.mutate();
 
 		for (var path : paths) {
 			String filename = path.toString().replace(File.separatorChar, '/');
-			Bytes name = Bytes.of(filename.getBytes(Constants.charset));
+			var name = Bytes.of(filename.getBytes(Constants.charset));
 			fsm.replace(name, Bytes.of(Files.readAllBytes(path)));
 		}
 	}
 
 	private void testReadFile(FileSystem fs) throws IOException {
 		var filename = "src/test/java/suite/fs/FileSystemTest.java";
-		FileSystemMutator fsm = fs.mutate();
-		Bytes name = Bytes.of(filename.getBytes(Constants.charset));
+		var fsm = fs.mutate();
+		var name = Bytes.of(filename.getBytes(Constants.charset));
 		Copy.stream(fsm.read(name).collect(As::inputStream), System.out);
 	}
 

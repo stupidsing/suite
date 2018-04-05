@@ -106,7 +106,7 @@ public class FunpTest {
 	private void test(int r, String p) {
 		LogUtil.info(p);
 		Pair<List<Instruction>, Bytes> pair = Funp_.main().compile(0, p);
-		Bytes bytes = pair.t1;
+		var bytes = pair.t1;
 		LogUtil.info("Hex" + bytes + "\n\n");
 		assertEquals(r, new Amd64Interpret().interpret(pair.t0, Bytes.of(), Bytes.of()));
 		assertTrue(bytes != null);

@@ -31,7 +31,7 @@ public class SwitchNode<R> {
 	}
 
 	public <T extends Node> SwitchNode<R> applyTree(FixieFun3<Operator, Node, Node, R> fun) {
-		Tree tree = Tree.decompose(in);
+		var tree = Tree.decompose(in);
 		if (result == null && tree != null)
 			result = fun.apply(tree.getOperator(), tree.getLeft(), tree.getRight());
 		return this;
@@ -45,7 +45,7 @@ public class SwitchNode<R> {
 				Fail.t(ex);
 			}
 			@SuppressWarnings("unchecked")
-			R r = (R) t;
+			var r = (R) t;
 			return r;
 		});
 	}

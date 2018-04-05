@@ -21,14 +21,14 @@ public class BootMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) throws IOException {
-		Bytes bootLoader = new Assembler(16).assemble(FileUtil.read("src/main/asm/bootloader.asm"));
+		var bootLoader = new Assembler(16).assemble(FileUtil.read("src/main/asm/bootloader.asm"));
 		Bytes kernel = new ImperativeCompiler().compile(0x40000, Paths.get("src/main/il/kernel.il"));
 
 		if (bootLoader.size() == 512 && kernel.size() < 65536) {
 
 			// combine the images and align to 512 bytes
 			Bytes disk0 = Bytes.concat(bootLoader, kernel);
-			Bytes disk1 = disk0.pad(disk0.size() + 511 & 0xFFFFFE00);
+			var disk1 = disk0.pad(disk0.size() + 511 & 0xFFFFFE00);
 
 			var image = "target/boot.bin";
 			Files.write(Paths.get(image), disk1.toArray());

@@ -23,7 +23,7 @@ public class LngSet {
 
 	public static LngSet intersect(LngSet... sets) {
 		return sets[0].streamlet().filter(c -> {
-			boolean b = true;
+			var b = true;
 			for (LngSet set_ : sets)
 				b &= set_.contains(c);
 			return b;
@@ -31,7 +31,7 @@ public class LngSet {
 	}
 
 	public static LngSet union(LngSet... sets) {
-		LngSet set = new LngSet();
+		var set = new LngSet();
 		for (LngSet set_ : sets)
 			set_.streamlet().sink(set::add);
 		return set;
@@ -70,8 +70,8 @@ public class LngSet {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof LngSet) {
-			LngSet other = (LngSet) object;
-			boolean b = size == other.size;
+			var other = (LngSet) object;
+			var b = size == other.size;
 			for (var c : streamlet())
 				b &= other.contains(c);
 			return b;
@@ -80,7 +80,7 @@ public class LngSet {
 	}
 
 	public void forEach(LngSink sink) {
-		LngSource source = source_();
+		var source = source_();
 		long c;
 		while ((c = source.source()) != EMPTYVALUE)
 			sink.sink(c);
@@ -104,7 +104,7 @@ public class LngSet {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var c : streamlet())
 			sb.append(c + ",");
 		return sb.toString();
@@ -112,7 +112,7 @@ public class LngSet {
 
 	private boolean add_(long c) {
 		var index = index(c);
-		boolean b = vs[index] != c;
+		var b = vs[index] != c;
 		vs[index] = c;
 		return b;
 	}

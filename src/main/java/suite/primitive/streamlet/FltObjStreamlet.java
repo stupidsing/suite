@@ -44,7 +44,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 		return outlet -> streamlet(() -> {
 			Source<T> source = outlet.source();
 			return FltObjOutlet.of(pair -> {
-				T t = source.source();
+				var t = source.source();
 				boolean b = t != null;
 				if (b)
 					pair.update(kf1.apply(t), vf1.apply(t));

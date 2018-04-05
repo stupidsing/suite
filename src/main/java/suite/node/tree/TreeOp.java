@@ -19,7 +19,7 @@ public class TreeOp extends Tree {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == TreeOp.class) {
-			TreeOp t = (TreeOp) object;
+			var t = (TreeOp) object;
 			return operator == t.operator //
 					&& Objects.equals(getLeft(), t.getLeft()) //
 					&& Objects.equals(getRight(), t.getRight());

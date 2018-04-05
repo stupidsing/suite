@@ -90,7 +90,7 @@ public class LazyIbTree<T> implements ITree<T> {
 		var size = slots.size();
 		T p = null;
 
-		boolean b = size == 0 || true //
+		var b = size == 0 || true //
 				&& (minBranchFactor <= size || Fail.b("too few branches")) //
 				&& (size < maxBranchFactor || Fail.b("too many branches"));
 
@@ -188,7 +188,7 @@ public class LazyIbTree<T> implements ITree<T> {
 				slots2 = slots1;
 		} else {
 			T t0 = fs.c == 0 ? fs.slot.pivot : null;
-			T t1 = fun.apply(t0);
+			var t1 = fun.apply(t0);
 
 			slots2 = new ArrayList<>();
 			if (fs.c != 0)
@@ -247,7 +247,7 @@ public class LazyIbTree<T> implements ITree<T> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		dump(sb, root, "");
 		return sb.toString();
 	}

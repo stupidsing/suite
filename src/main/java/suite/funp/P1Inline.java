@@ -76,7 +76,7 @@ public class P1Inline {
 					for (Pair<String, Funp> pair : pairs0)
 						vars1 = vars1.replace(pair.t0, newVar.apply(pair.t0));
 					IMap<String, String> vars2 = vars1;
-					Rename r1 = new Rename(vars2);
+					var r1 = new Rename(vars2);
 					return FunpDefineRec.of(Read //
 							.from2(pairs0) //
 							.map2((var, value) -> vars2.get(var), (var, value) -> r1.rename(value)) //
@@ -126,9 +126,9 @@ public class P1Inline {
 					if ((assign = n0.cast(FunpAssignReference.class)) != null //
 							&& (variable = assign.reference.expr.cast(FunpVariable.class)) != null) {
 						var vn = variable.var;
-						Funp n1 = assign.expr;
+						var n1 = assign.expr;
 						Funp n2 = check != null ? FunpCheckType.of(check.left, check.right, n1) : n1;
-						boolean b = false;
+						var b = false;
 
 						for (String var_ : List_.reverse(vars))
 							if (!String_.equals(vn, var_))

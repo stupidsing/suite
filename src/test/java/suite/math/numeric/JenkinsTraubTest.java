@@ -13,7 +13,7 @@ public class JenkinsTraubTest {
 
 	@Test
 	public void test() {
-		Complex root = jt.jt(new Complex[] { //
+		var root = jt.jt(new Complex[] { //
 				Complex.of(1f, 0f), //
 				Complex.of(-2f, 0f), //
 				Complex.of(1f, 0f), //
@@ -23,7 +23,7 @@ public class JenkinsTraubTest {
 
 	@Test
 	public void test4() {
-		Complex root = jt.jt(new Complex[] { //
+		var root = jt.jt(new Complex[] { //
 				Complex.of(1f, 0f), //
 				Complex.of(4f, 0f), //
 				Complex.of(6f, 0f), //
@@ -35,7 +35,7 @@ public class JenkinsTraubTest {
 
 	@Test
 	public void test5() {
-		Complex root = jt.jt(new Complex[] { //
+		var root = jt.jt(new Complex[] { //
 				Complex.of(1f, 0f), //
 				Complex.of(5f, 0f), //
 				Complex.of(10f, 0f), //

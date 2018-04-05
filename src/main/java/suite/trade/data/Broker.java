@@ -4,7 +4,6 @@ import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 import suite.Constants;
 import suite.primitive.Bytes;
@@ -32,7 +31,7 @@ public interface Broker {
 
 		private static Streamlet<Trade> queryHistory_() {
 			var url = Constants.secrets("stockUrl .0")[0];
-			Path path = HomeDir.resolve("workspace").resolve("home-data").resolve("stock.txt");
+			var path = HomeDir.resolve("workspace").resolve("home-data").resolve("stock.txt");
 			Streamlet<Bytes> bytes = Files.exists(path) ? Read.bytes(path) : Read.url(url);
 			return bytes.collect(As::table).map(Trade::of).collect(As::streamlet);
 		}

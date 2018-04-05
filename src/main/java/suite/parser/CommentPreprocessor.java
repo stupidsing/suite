@@ -61,7 +61,7 @@ public class CommentPreprocessor implements Fun<String, List<Run>> {
 	}
 
 	private boolean isWhitespaces(String in) {
-		boolean b = true;
+		var b = true;
 		for (var ch : String_.chars(in))
 			b &= whitespaces.contains(ch);
 		return b;

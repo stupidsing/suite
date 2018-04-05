@@ -10,7 +10,6 @@ import suite.math.MathUtil;
 import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
 import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.streamlet.DblStreamlet;
 import suite.smtp.SmtpSslGmail;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -110,7 +109,7 @@ public class DailyMain extends ExecutableProgram {
 				.collect(As::streamlet2);
 
 		Streamlet2<String, Trade> requestTrades = strategyTrades.filterKey(strategy -> !String_.equals(strategy, sellPool));
-		DblStreamlet amounts = strategyTrades.values().collect(Obj_Dbl.lift(Trade::amount));
+		var amounts = strategyTrades.values().collect(Obj_Dbl.lift(Trade::amount));
 		var buys_ = amounts.filter(amount -> 0d < amount).sum();
 		var sells = amounts.filter(amount -> amount < 0d).sum();
 
@@ -154,7 +153,7 @@ public class DailyMain extends ExecutableProgram {
 		var result = sb.toString();
 		LogUtil.info(result);
 
-		SmtpSslGmail smtp = new SmtpSslGmail();
+		var smtp = new SmtpSslGmail();
 		smtp.send(null, getClass().getName(), result);
 		return true;
 	}
@@ -175,7 +174,7 @@ public class DailyMain extends ExecutableProgram {
 				.get(getClass().getSimpleName() + ".backTestBySymbol", () -> assets //
 						.map2(stock -> stock.symbol, stock -> {
 							try {
-								TimeRange period = TimeRange.threeYears();
+								var period = TimeRange.threeYears();
 								DataSource ds = cfg.dataSource(stock.symbol, period).range(period).validate();
 								SingleAllocBackTest backTest = SingleAllocBackTest.test(ds, strategy);
 								return MathUtil.isPositive(backTest.account.cash());
@@ -186,7 +185,7 @@ public class DailyMain extends ExecutableProgram {
 						}) //
 						.toMap());
 
-		TimeRange period = TimeRange.daysBefore(128);
+		var period = TimeRange.daysBefore(128);
 		List<Trade> trades = new ArrayList<>();
 
 		// capture signals
@@ -227,7 +226,7 @@ public class DailyMain extends ExecutableProgram {
 	// some orders caused by stupid bugs. need to sell those at suitable times.
 	private Result sellForEarn(String tag) {
 		Streamlet<Trade> history = cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag));
-		Account account = Account.ofPortfolio(history);
+		var account = Account.ofPortfolio(history);
 
 		Map<String, Float> faceValueBySymbol = history //
 				.groupBy(record -> record.symbol, rs -> (float) Read.from(rs).toDouble(Obj_Dbl.sum(Trade::amount))) //
@@ -245,7 +244,7 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	private Result alloc(Pair<String, BackAllocConfiguration> pair, float fund) {
-		BackAllocConfiguration bac = pair.t1;
+		var bac = pair.t1;
 		return alloc(pair.t0, fund, bac.backAllocator, bac.assetsFun.apply(today));
 	}
 
@@ -254,10 +253,10 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	private Result alloc(String tag, float fund, BackAllocator backAllocator, Streamlet<Asset> assets) {
-		TimeRange period = TimeRange.daysBefore(64);
+		var period = TimeRange.daysBefore(64);
 		Simulate sim = BackAllocTester.of(cfg, period, assets, backAllocator, log).simulate(fund);
 		Account account0 = Account.ofPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
-		Account account1 = sim.account;
+		var account1 = sim.account;
 		Map<String, Integer> assets0 = account0.assets();
 		Map<String, Integer> assets1 = account1.assets();
 

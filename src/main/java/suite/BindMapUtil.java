@@ -3,11 +3,7 @@ package suite;
 import java.util.Map;
 
 import suite.lp.compile.impl.CompileBinderImpl;
-import suite.lp.doer.BinderFactory;
 import suite.lp.doer.BinderFactory.BindEnv;
-import suite.lp.doer.BinderFactory.Bind_;
-import suite.lp.doer.GeneralizerFactory;
-import suite.lp.sewing.Env;
 import suite.lp.sewing.VariableMapper;
 import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
@@ -33,12 +29,12 @@ public class BindMapUtil {
 	}
 
 	private Fun<String, Pattern> patterns = Memoize.fun(pattern_ -> {
-		GeneralizerFactory sg = new SewingGeneralizerImpl();
+		var sg = new SewingGeneralizerImpl();
 		Source<NodeEnv<Atom>> sgs = sg.g(Suite.parse(pattern_));
 		NodeEnv<Atom> ne = sgs.source();
 
-		BinderFactory cb = new CompileBinderImpl(false);
-		Bind_ pred = cb.binder(ne.node);
+		var cb = new CompileBinderImpl(false);
+		var pred = cb.binder(ne.node);
 
 		VariableMapper<Atom> sgm = sg.mapper();
 		VariableMapper<Reference> cbm = cb.mapper();
@@ -47,7 +43,7 @@ public class BindMapUtil {
 
 		return new Pattern() {
 			public Map<String, Node> match(Node node) {
-				Env env = cbm.env();
+				var env = cbm.env();
 				return pred.test(new BindEnv(env), node) ? Read.from2(cbm_).mapValue(env::get).toMap() : null;
 			}
 

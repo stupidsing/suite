@@ -65,7 +65,7 @@ public class Ranges<T extends Comparable<? super T>> {
 
 	public Ranges<T> negate(T min, T max) {
 		Builder<T> builder = new Builder<>();
-		T t = min;
+		var t = min;
 		for (Range<T> range : ranges) {
 			ranges.add(Range.of(t, range.from));
 			t = range.to;

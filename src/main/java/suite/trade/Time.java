@@ -27,8 +27,8 @@ public class Time implements Comparable<Time> {
 	private LocalDateTime dateTime;
 
 	public static int compare(Time time0, Time time1) {
-		LocalDateTime ldt0 = time0.dateTime;
-		LocalDateTime ldt1 = time1.dateTime;
+		var ldt0 = time0.dateTime;
+		var ldt1 = time1.dateTime;
 		return Long.compare(ldt0.toEpochSecond(ZoneOffset.UTC), ldt1.toEpochSecond(ZoneOffset.UTC));
 	}
 

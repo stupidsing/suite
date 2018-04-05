@@ -50,7 +50,7 @@ public class VariableMapper<K> {
 
 	public Source<NodeEnv<K>> g(Fun<Env, Node> fun) {
 		return () -> {
-			Env env = env();
+			var env = env();
 			return new NodeEnv<>(indices, fun.apply(env), env);
 		};
 	}

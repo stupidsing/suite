@@ -25,7 +25,7 @@ public class BackAllocatorTest {
 		float[] prices = { 1f, .99f, .98f, .5f, .5f, .5f, 0f, 0f, 0f, };
 
 		BackAllocator ba0 = (akds, ts) -> index -> List.of(Pair.of(symbol, 1d));
-		BackAllocator ba1 = ba0.stopLoss(.98d);
+		var ba1 = ba0.stopLoss(.98d);
 
 		var length = prices.length;
 		long[] ts = Longs_.toArray(length, i -> start.addDays(i).epochSec());

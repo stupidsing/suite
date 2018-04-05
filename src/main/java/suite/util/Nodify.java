@@ -78,7 +78,7 @@ public class Nodify {
 	}
 
 	private Nodifier getNodifier(Type type) {
-		Nodifier nodifier = nodifiers.get(type);
+		var nodifier = nodifiers.get(type);
 		if (nodifier == null) {
 			nodifiers.put(type, new Nodifier(object -> apply_(getNodifier(type), object), node -> apply_(getNodifier(type), node)));
 			nodifiers.put(type, nodifier = newNodifier(type));
@@ -106,7 +106,7 @@ public class Nodify {
 						Read.from(clazz.getEnumConstants()).toMap(e -> Atom.of(e.toString()))::get);
 			else if (clazz.isArray()) {
 				Class<?> componentType = clazz.getComponentType();
-				Nodifier nodifier1 = getNodifier(componentType);
+				var nodifier1 = getNodifier(componentType);
 				Fun<Object, Node> forward = object -> {
 					Node node = Atom.NIL;
 					for (var i = Array.getLength(object) - 1; 0 <= i; i--)
@@ -147,16 +147,16 @@ public class Nodify {
 				List<FieldInfo> fieldInfos = Read //
 						.from(inspect.fields(clazz)) //
 						.map(field -> {
-							Type type1 = field.getGenericType();
+							var type1 = field.getGenericType();
 							return new FieldInfo(field, field.getName(), getNodifier(type1));
 						}) //
 						.toList();
 
 				List<Pair<Atom, FieldInfo>> pairs = Read.from(fieldInfos).map(f -> Pair.of(Atom.of(f.name), f)).toList();
 				nodifier = new Nodifier(object -> Rethrow.ex(() -> {
-					Dict dict = new Dict();
+					var dict = new Dict();
 					for (Pair<Atom, FieldInfo> pair : pairs) {
-						FieldInfo fieldInfo = pair.t1;
+						var fieldInfo = pair.t1;
 						Node value = apply_(fieldInfo.nodifier, fieldInfo.field.get(object));
 						dict.map.put(pair.t0, Reference.of(value));
 					}
@@ -165,7 +165,7 @@ public class Nodify {
 					Map<Node, Reference> map = ((Dict) node).map;
 					var object1 = Object_.new_(clazz);
 					for (Pair<Atom, FieldInfo> pair : pairs) {
-						FieldInfo fieldInfo = pair.t1;
+						var fieldInfo = pair.t1;
 						var value = map.get(pair.t0).finalNode();
 						fieldInfo.field.set(object1, apply_(fieldInfo.nodifier, value));
 					}
@@ -173,17 +173,17 @@ public class Nodify {
 				}));
 			}
 		} else if (type instanceof ParameterizedType) {
-			ParameterizedType pt = (ParameterizedType) type;
-			Type rawType = pt.getRawType();
+			var pt = (ParameterizedType) type;
+			var rawType = pt.getRawType();
 			Type[] typeArgs = pt.getActualTypeArguments();
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (collectionClasses.contains(clazz)) {
-				Nodifier nodifier1 = getNodifier(typeArgs[0]);
+				var nodifier1 = getNodifier(typeArgs[0]);
 				nodifier = new Nodifier(object -> {
 					Tree start = Tree.of(null, null, null), tree = start;
 					for (var o : (Collection<?>) object) {
-						Tree tree0 = tree;
+						var tree0 = tree;
 						Tree.forceSetRight(tree0, tree = Tree.of(TermOp.OR____, apply_(nodifier1, o), null));
 					}
 					Tree.forceSetRight(tree, Atom.NIL);
@@ -195,10 +195,10 @@ public class Nodify {
 					return object1;
 				});
 			} else if (mapClasses.contains(clazz)) {
-				Nodifier kn = getNodifier(typeArgs[0]);
-				Nodifier vn = getNodifier(typeArgs[1]);
+				var kn = getNodifier(typeArgs[0]);
+				var vn = getNodifier(typeArgs[1]);
 				nodifier = new Nodifier(object -> {
-					Dict dict = new Dict();
+					var dict = new Dict();
 					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
 						dict.map.put(apply_(kn, e.getKey()), Reference.of(apply_(vn, e.getValue())));
 					return dict;
@@ -229,7 +229,7 @@ public class Nodify {
 			return Object_.new_(clazz);
 
 		@SuppressWarnings("unchecked")
-		T t = (T) object;
+		var t = (T) object;
 		return t;
 	}
 

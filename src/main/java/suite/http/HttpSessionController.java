@@ -84,7 +84,7 @@ public class HttpSessionController {
 
 					sessionManager.put(sessionId, session);
 
-					HttpRequest request1 = new HttpRequest( //
+					var request1 = new HttpRequest( //
 							request.method, //
 							request.server, //
 							path, //
@@ -110,7 +110,7 @@ public class HttpSessionController {
 		}
 
 		private HttpResponse showProtectedPage(HttpRequest request, String sessionId) {
-			HttpResponse r = protectedHandler.handle(request);
+			var r = protectedHandler.handle(request);
 			IMap<String, String> headers1 = r.headers.put("Set-Cookie", "session=" + sessionId + "; Path=/site");
 			return new HttpResponse(r.status, headers1, r.out);
 		}
@@ -139,7 +139,7 @@ public class HttpSessionController {
 		var bytes = new byte[16];
 		random.nextBytes(bytes);
 
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var b : bytes)
 			sb.append(String.format("%02x", b));
 

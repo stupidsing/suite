@@ -18,7 +18,7 @@ public class Cyclic {
 
 		if (!checkedNodes.contains(idHashNode)) {
 			if (checkingNodes.add(idHashNode)) {
-				Tree tree = Tree.decompose(node);
+				var tree = Tree.decompose(node);
 				isCyclic = tree != null && (isCyclic(tree.getLeft()) || isCyclic(tree.getRight()));
 				checkingNodes.remove(idHashNode);
 			} else

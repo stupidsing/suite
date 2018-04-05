@@ -18,7 +18,7 @@ public class DblOpt {
 	}
 
 	public static DblOpt of(double t) {
-		DblOpt p = new DblOpt();
+		var p = new DblOpt();
 		p.value = t;
 		return p;
 	}

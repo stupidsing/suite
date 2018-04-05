@@ -51,14 +51,14 @@ public class Ints implements Iterable<Integer> {
 	};
 
 	public static Ints concat(Ints... array) {
-		IntsBuilder bb = new IntsBuilder();
+		var bb = new IntsBuilder();
 		for (var ints : array)
 			bb.append(ints);
 		return bb.toInts();
 	}
 
 	public static Ints of(Outlet<Ints> outlet) {
-		IntsBuilder cb = new IntsBuilder();
+		var cb = new IntsBuilder();
 		outlet.forEach(cb::append);
 		return cb.toInts();
 	}
@@ -122,7 +122,7 @@ public class Ints implements Iterable<Integer> {
 	}
 
 	public boolean isWhitespaces() {
-		boolean b = true;
+		var b = true;
 		for (var i = start; b && i < end; i++)
 			b &= ParseUtil.isWhitespace(cs[i]);
 		return b;
@@ -139,7 +139,7 @@ public class Ints implements Iterable<Integer> {
 	}
 
 	public Ints pad(int size) {
-		IntsBuilder cb = new IntsBuilder();
+		var cb = new IntsBuilder();
 		cb.append(this);
 		while (cb.size() < size)
 			cb.append((int) 0);
@@ -155,7 +155,7 @@ public class Ints implements Iterable<Integer> {
 	}
 
 	public Ints replace(Ints from, Ints to) {
-		IntsBuilder cb = new IntsBuilder();
+		var cb = new IntsBuilder();
 		int i0 = 0, i;
 		while (0 <= (i = indexOf(from, i0))) {
 			cb.append(range_(i0, i));
@@ -240,7 +240,7 @@ public class Ints implements Iterable<Integer> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Ints.class) {
-			Ints other = (Ints) object;
+			var other = (Ints) object;
 
 			if (size_() == other.size_()) {
 				var diff = other.start - start;
@@ -264,7 +264,7 @@ public class Ints implements Iterable<Integer> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var i = start; i < end; i++)
 			sb.append(cs[i]);
 		return sb.toString();
@@ -272,7 +272,7 @@ public class Ints implements Iterable<Integer> {
 
 	private boolean startsWith_(Ints ints, int s) {
 		if (s + ints.size_() <= size_()) {
-			boolean b = true;
+			var b = true;
 			for (var i = 0; b && i < ints.size_(); i++)
 				b &= get(s + i) == ints.get(i);
 			return b;

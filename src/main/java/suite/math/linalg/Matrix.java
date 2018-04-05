@@ -77,7 +77,7 @@ public class Matrix {
 			}
 		}
 
-		Det det = new Det();
+		var det = new Det();
 		det.det(0, 1d);
 		return det.sum;
 	}
@@ -405,13 +405,13 @@ public class Matrix {
 	}
 
 	public String toString(float[] m) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		dump(sb, m);
 		return sb.toString();
 	}
 
 	public String toString(float[][] m) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		dump(sb, m);
 		return sb.toString();
 	}

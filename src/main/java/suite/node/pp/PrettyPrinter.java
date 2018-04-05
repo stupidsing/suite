@@ -55,10 +55,10 @@ public class PrettyPrinter {
 
 		// line too long?
 		if (node instanceof Tree) {
-			Tree tree = (Tree) node;
-			Operator op = tree.getOperator();
+			var tree = (Tree) node;
+			var op = tree.getOperator();
 			var prec = op.getPrecedence();
-			boolean isNeedPars = prec <= prec0;
+			var isNeedPars = prec <= prec0;
 			int parsIndent = 0, parsIndent0 = 0;
 
 			if (isNeedPars) {
@@ -73,7 +73,7 @@ public class PrettyPrinter {
 				else {
 					var left = tree.getLeft();
 					var right = tree.getRight();
-					Assoc assoc = op.getAssoc();
+					var assoc = op.getAssoc();
 
 					var leftPrec = prec - (assoc == Assoc.LEFT ? 1 : 0);
 					var rightPrec = prec - (assoc == Assoc.RIGHT ? 1 : 0);
@@ -91,11 +91,11 @@ public class PrettyPrinter {
 							&& x + es0 + es1 + opLength < lineLength //
 							&& r0 != preferLineBreakBeforeKeyword) {
 						prettyPrint_(left, op, leftPrec);
-						OperatorPosition opPos = appendOperator(op);
+						var opPos = appendOperator(op);
 						prettyPrint_(right, op, rightPrec);
 						closeBraces(op, opPos);
 					} else { // breaks after the operator
-						boolean isIncRightIndent = op != op0;
+						var isIncRightIndent = op != op0;
 						var indent0 = 0;
 
 						prettyPrint_(left, op, leftPrec);
@@ -137,10 +137,10 @@ public class PrettyPrinter {
 		int prec = op.getPrecedence(), prec1 = prec - 1;
 
 		if (node instanceof Tree) {
-			Tree tree = (Tree) node;
+			var tree = (Tree) node;
 
 			if (tree.getOperator() == op) {
-				boolean isLeftAssoc = op.getAssoc() == Assoc.LEFT;
+				var isLeftAssoc = op.getAssoc() == Assoc.LEFT;
 				OperatorPosition opPos;
 
 				if (isLeftAssoc) {
@@ -177,10 +177,10 @@ public class PrettyPrinter {
 	}
 
 	private boolean isLookingLikeList(Operator op, Node node) {
-		Tree tree = Tree.decompose(node);
+		var tree = Tree.decompose(node);
 
 		if (tree != null && tree.getOperator() == op) {
-			boolean isLeftAssoc = op.getAssoc() == Assoc.LEFT;
+			var isLeftAssoc = op.getAssoc() == Assoc.LEFT;
 			var child = isLeftAssoc ? tree.getLeft() : tree.getRight();
 			return isLookingLikeList(op, child);
 		}
@@ -189,10 +189,10 @@ public class PrettyPrinter {
 	}
 
 	private OperatorPosition appendOperatorLineFeed(Operator op) {
-		boolean isLineFeedAfterOp = lineBreakAfterOperators.contains(op);
+		var isLineFeedAfterOp = lineBreakAfterOperators.contains(op);
 		if (!isLineFeedAfterOp)
 			nl();
-		OperatorPosition result = appendOperator(op);
+		var result = appendOperator(op);
 		if (isLineFeedAfterOp || op == TermOp.NEXT__)
 			nl();
 		return result;
@@ -219,7 +219,7 @@ public class PrettyPrinter {
 	}
 
 	private boolean isLineBegin() {
-		boolean b = true;
+		var b = true;
 		String l = sb.substring(getLineBeginPosition(), getCurrentPosition());
 		for (var c : String_.chars(l))
 			b &= Character.isWhitespace(c);

@@ -37,7 +37,7 @@ public class InterpretFunLazyTest {
 	}
 
 	private void expect(boolean isLazyify, String expr, Node expected) {
-		InterpretFunEager interpreter = new InterpretFunEager();
+		var interpreter = new InterpretFunEager();
 		interpreter.setLazyify(isLazyify);
 		assertEquals(expected, interpreter.eager(Suite.parse(expr)));
 	}

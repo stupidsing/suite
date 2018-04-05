@@ -1,8 +1,6 @@
 package suite.net;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -29,7 +27,7 @@ public class LoadBalancer {
 	}
 
 	public void run() throws IOException {
-		BooMutable running = BooMutable.true_();
+		var running = BooMutable.true_();
 
 		Thread probe = new Thread(() -> {
 			while (running.isTrue())
@@ -56,8 +54,8 @@ public class LoadBalancer {
 			var server = alives0.get(count % alives0.size());
 
 			try (Socket socket = new Socket(server, port)) {
-				InputStream sis = socket.getInputStream();
-				OutputStream sos = socket.getOutputStream();
+				var sis = socket.getInputStream();
+				var sos = socket.getOutputStream();
 				List<Thread> threads = List.of(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os));
 
 				Thread_.startJoin(threads);

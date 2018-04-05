@@ -26,7 +26,7 @@ public class Stopwatch<T> {
 		var nGcs0 = gcBeans0.stream().mapToLong(GarbageCollectorMXBean::getCollectionCount).sum();
 		var gcDuration0 = gcBeans0.stream().mapToLong(GarbageCollectorMXBean::getCollectionTime).sum();
 
-		T t = source.source();
+		var t = source.source();
 
 		List<GarbageCollectorMXBean> gcBeans1 = ManagementFactory.getGarbageCollectorMXBeans();
 		var t1 = System.nanoTime();

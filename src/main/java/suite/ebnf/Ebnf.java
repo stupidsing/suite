@@ -64,7 +64,7 @@ public class Ebnf {
 
 	public Ebnf(Reader reader) throws IOException {
 		Map<String, Grammar> grammarByEntity = Grammar.parse(reader);
-		ReduceHeadRecursion rhr = new ReduceHeadRecursion(grammarByEntity);
+		var rhr = new ReduceHeadRecursion(grammarByEntity);
 
 		for (var e : grammarByEntity.entrySet())
 			e.setValue(rhr.reduce(e.getValue()));
@@ -85,7 +85,7 @@ public class Ebnf {
 			List<FactorizeResult> frs = new ArrayList<>();
 			var pos = p0;
 			for (var i = 0; i < size; i++) {
-				Ast child = children.get(i);
+				var child = children.get(i);
 				var pos0 = pos;
 				pos = i != size - 1 ? child.end : px;
 				frs.add(toFactorizeResult(cs, pos0, pos, child));

@@ -70,7 +70,7 @@ public class Bytes_ {
 
 		public Bytes source() {
 			Bytes in;
-			BytesBuilder bb = new BytesBuilder();
+			var bb = new BytesBuilder();
 			bb.append(buffer);
 
 			p0 = 0;

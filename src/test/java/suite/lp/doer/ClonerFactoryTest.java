@@ -7,7 +7,6 @@ import org.junit.Test;
 import suite.Suite;
 import suite.lp.Trail;
 import suite.lp.compile.impl.CompileClonerImpl;
-import suite.lp.doer.ClonerFactory.Clone_;
 import suite.lp.sewing.impl.SewingClonerImpl;
 
 public class ClonerFactoryTest {
@@ -25,7 +24,7 @@ public class ClonerFactoryTest {
 	private void test(String pattern, String match) {
 		for (var cf : new ClonerFactory[] { new CompileClonerImpl(), new SewingClonerImpl(), }) {
 			var node = new Generalizer().generalize(Suite.parse(pattern));
-			Clone_ p = cf.cloner(node);
+			var p = cf.cloner(node);
 
 			assertTrue(Binder.bind(p.apply(cf.mapper().env()), Suite.parse(match), new Trail()));
 		}

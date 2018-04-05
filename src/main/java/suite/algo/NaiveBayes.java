@@ -6,7 +6,6 @@ import suite.adt.pair.Pair;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
-import suite.primitive.streamlet.IntStreamlet;
 import suite.util.To;
 
 // Introduction to Machine Learning, page 24
@@ -38,7 +37,7 @@ public class NaiveBayes {
 		b = Math.log(threshold) + Math.log(ms[i(true)]) - Math.log(ms[i(false)]);
 
 		ps = To.array(nCategories, float[].class, i -> {
-			IntStreamlet range = Ints_.range(length_);
+			var range = Ints_.range(length_);
 			var is_ = is[i];
 			return range.collect(Int_Flt.lift(j -> (float) (is_[j] / ws[i]))).toArray();
 		});

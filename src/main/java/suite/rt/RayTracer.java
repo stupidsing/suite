@@ -109,16 +109,16 @@ public class RayTracer {
 	}
 
 	private R3 traceRay(int depth, Ray ray) {
-		RayHit rayHit = nearestHit(scene.hit(ray));
+		var rayHit = nearestHit(scene.hit(ray));
 		R3 color1;
 
 		if (rayHit != null) {
-			RayIntersection i = rayHit.intersection();
-			R3 hitPoint = i.hitPoint();
-			R3 normal0 = i.normal().norm();
+			var i = rayHit.intersection();
+			var hitPoint = i.hitPoint();
+			var normal0 = i.normal().norm();
 
 			double dot0 = R3.dot(ray.dir, normal0);
-			boolean isInside = 0d < dot0;
+			var isInside = 0d < dot0;
 			R3 normal;
 			double dot;
 
@@ -130,8 +130,8 @@ public class RayTracer {
 				dot = -dot0;
 			}
 
-			Material material = i.material();
-			boolean reflective = material.isReflective();
+			var material = i.material();
+			var reflective = material.isReflective();
 			var transparency = material.transparency();
 			R3 color;
 
@@ -162,7 +162,7 @@ public class RayTracer {
 				// double fresnel = (f0 * f0 + f1 * f1) / 2d;
 
 				// schlick approximation
-				boolean isDramaticMix = true;
+				var isDramaticMix = true;
 				var r = (airRefractiveIndex - glassRefractiveIndex) / (airRefractiveIndex + glassRefractiveIndex);
 				var mix = isDramaticMix ? .1d : r * r;
 				var cos1 = 1d - cos;
@@ -186,7 +186,7 @@ public class RayTracer {
 						RayHit lightRayHit = nearestHit(scene.hit(new Ray(lightPoint, lightDir)));
 
 						if (lightRayHit == null || 1d < lightRayHit.advance()) {
-							R3 lightColor = lightSource.lit(hitPoint);
+							var lightColor = lightSource.lit(hitPoint);
 							var cos = lightDot / lightDir.mag();
 							color = R3.add(color, lightColor.scale(cos));
 						}

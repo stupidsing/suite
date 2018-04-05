@@ -9,13 +9,11 @@ import java.io.Writer;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
 import org.w3c.dom.ls.DOMImplementationLS;
-import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
@@ -57,7 +55,7 @@ public class XmlUtil {
 
 	public String format(String xml) throws SAXException {
 		try (InputStream is = new ByteArrayInputStream(xml.getBytes(Constants.charset)); Writer writer = new StringWriter()) {
-			LSOutput lso = di.createLSOutput();
+			var lso = di.createLSOutput();
 			lso.setEncoding(Constants.charset.name());
 			lso.setCharacterStream(writer);
 
@@ -70,7 +68,7 @@ public class XmlUtil {
 
 	public XmlNode read(InputStream is) throws SAXException {
 		return node(Rethrow.ex(() -> {
-			Document document = documentBuilder.parse(is);
+			var document = documentBuilder.parse(is);
 			document.normalize();
 			return document;
 		}));

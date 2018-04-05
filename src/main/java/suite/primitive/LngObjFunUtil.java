@@ -44,7 +44,7 @@ public class LngObjFunUtil {
 			private boolean isAvail;
 			private int i;
 			private LngObjSource<V> source_ = pair1 -> {
-				boolean b = (isAvail = isAvail && source.source2(pair)) && ++i < n;
+				var b = (isAvail = isAvail && source.source2(pair)) && ++i < n;
 				if (b)
 					pair1.update(pair.t0, pair.t1);
 				else
@@ -67,7 +67,7 @@ public class LngObjFunUtil {
 			private LngObjSource<V> source2 = nullSource();
 
 			public boolean source2(LngObjPair<V> pair) {
-				boolean b = false;
+				var b = false;
 				while (source2 != null && !(b = source2.source2(pair)))
 					source2 = source.source();
 				return b;
@@ -102,7 +102,7 @@ public class LngObjFunUtil {
 	}
 
 	public static <V> LngObjSource<V> filterKey(LngTest fun0, LngObjSource<V> source2) {
-		LngTest fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -183,7 +183,7 @@ public class LngObjFunUtil {
 		LngObj_Obj<V, V1> vf1 = vf0.rethrow();
 		LngObjPair<V> pair1 = LngObjPair.of((long) 0, null);
 		return pair -> {
-			boolean b = source2.source2(pair1);
+			var b = source2.source2(pair1);
 			if (b)
 				pair.update(kf1.apply(pair1.t0, pair1.t1), vf1.apply(pair1.t0, pair1.t1));
 			return b;
@@ -195,7 +195,7 @@ public class LngObjFunUtil {
 		LngObj_Obj<V, V1> vf1 = vf0.rethrow();
 		LngObjPair<V> pair1 = LngObjPair.of((long) 0, null);
 		return pair -> {
-			boolean b = source2.source2(pair1);
+			var b = source2.source2(pair1);
 			if (b)
 				pair.update(kf1.apply(pair1.t0, pair1.t1), vf1.apply(pair1.t0, pair1.t1));
 			return b;

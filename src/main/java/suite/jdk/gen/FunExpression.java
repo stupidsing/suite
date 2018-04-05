@@ -32,35 +32,35 @@ public class FunExpression {
 		}
 
 		public FunExpr apply(List<FunExpr> list) {
-			ApplyFunExpr expr = new ApplyFunExpr();
+			var expr = new ApplyFunExpr();
 			expr.object = this;
 			expr.parameters = list;
 			return expr;
 		}
 
 		public FunExpr cast_(Class<?> clazz) {
-			CastFunExpr expr = new CastFunExpr();
+			var expr = new CastFunExpr();
 			expr.type = Type.getType(clazz);
 			expr.expr = this;
 			return expr;
 		}
 
 		public FunExpr checkCast(Class<?> clazz) {
-			CheckCastFunExpr expr = new CheckCastFunExpr();
+			var expr = new CheckCastFunExpr();
 			expr.type = ObjectType.getInstance(clazz.getName());
 			expr.expr = this;
 			return expr;
 		}
 
 		public FunExpr field(String fieldName) {
-			FieldFunExpr expr = new FieldFunExpr();
+			var expr = new FieldFunExpr();
 			expr.fieldName = fieldName;
 			expr.object = this;
 			return expr;
 		}
 
 		public FunExpr field(String fieldName, Type fieldType) {
-			FieldTypeFunExpr expr = new FieldTypeFunExpr();
+			var expr = new FieldTypeFunExpr();
 			expr.fieldName = fieldName;
 			expr.fieldType = fieldType;
 			expr.object = this;
@@ -68,7 +68,7 @@ public class FunExpression {
 		}
 
 		public FunExpr fieldSet(String fieldName, FunExpr value) {
-			FieldSetFunExpr expr = new FieldSetFunExpr();
+			var expr = new FieldSetFunExpr();
 			expr.fieldName = fieldName;
 			expr.object = this;
 			expr.value = value;
@@ -76,7 +76,7 @@ public class FunExpression {
 		}
 
 		public FunExpr fieldSet(String fieldName, Type fieldType, FunExpr value) {
-			FieldTypeSetFunExpr expr = new FieldTypeSetFunExpr();
+			var expr = new FieldTypeSetFunExpr();
 			expr.fieldName = fieldName;
 			expr.fieldType = fieldType;
 			expr.object = this;
@@ -85,14 +85,14 @@ public class FunExpression {
 		}
 
 		public FunExpr index(FunExpr index) {
-			IndexFunExpr expr = new IndexFunExpr();
+			var expr = new IndexFunExpr();
 			expr.array = this;
 			expr.index = index;
 			return expr;
 		}
 
 		public FunExpr instanceOf(Class<?> clazz) {
-			InstanceOfFunExpr expr = new InstanceOfFunExpr();
+			var expr = new InstanceOfFunExpr();
 			expr.instanceType = (ReferenceType) Type.getType(clazz);
 			expr.object = this;
 			return expr;
@@ -107,7 +107,7 @@ public class FunExpression {
 		}
 
 		public FunExpr invoke(Class<?> clazz, String methodName, List<FunExpr> list) {
-			InvokeMethodFunExpr expr = new InvokeMethodFunExpr();
+			var expr = new InvokeMethodFunExpr();
 			expr.clazz = clazz;
 			expr.methodName = methodName;
 			expr.object = this;
@@ -116,7 +116,7 @@ public class FunExpression {
 		}
 
 		public FunExpr length() {
-			ArrayLengthFunExpr expr = new ArrayLengthFunExpr();
+			var expr = new ArrayLengthFunExpr();
 			expr.expr = this;
 			return expr;
 		}

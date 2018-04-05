@@ -169,12 +169,12 @@ public class TopDownParse {
 	}
 
 	public Ast parse(String entity, String s) {
-		Parse parse = new Parse(s);
+		var parse = new Parse(s);
 		Ast node = parse.parse(0, build(new Grammar(GrammarType.ENTITY, entity)));
 		if (node != null)
 			return node;
 		else {
-			IntIntPair pos = parse.findPosition(parse.errorPosition);
+			var pos = parse.findPosition(parse.errorPosition);
 			return Fail.t("syntax error for entity " + parse.errorEntity + " at " + pos);
 		}
 	}
@@ -201,8 +201,8 @@ public class TopDownParse {
 			parser = buildEntity(eg.content);
 			break;
 		case EXCEPT:
-			Parser parser0 = build(eg.children.get(0));
-			Parser parser1 = build(eg.children.get(1));
+			var parser0 = build(eg.children.get(0));
+			var parser1 = build(eg.children.get(1));
 			parser = (parse, st) -> st.p(parse, parser0).filter(st1 -> {
 				String in1 = parse.in.substring(st.pos, st1.pos);
 				return new State(null, 0, null, 0).p(new Parse(in1), parser1).count() == 0;
@@ -233,7 +233,7 @@ public class TopDownParse {
 			parser = buildRepeat(eg, false);
 			break;
 		case STRING:
-			ExpectFun e = expect.string(eg.content);
+			var e = expect.string(eg.content);
 			parser = skipWhitespaces((parse, st) -> parse.expect(st, e, st.pos));
 			break;
 		default:
@@ -248,11 +248,11 @@ public class TopDownParse {
 	}
 
 	private Parser buildRepeatHeadRecursion(Grammar eg) {
-		Parser gb = build(eg.children.get(0));
-		Parser gc = build(eg.children.get(1));
+		var gb = build(eg.children.get(0));
+		var gc = build(eg.children.get(1));
 
 		return (parse, st0) -> {
-			Frame frame = new Frame(eg.content);
+			var frame = new Frame(eg.content);
 			return st0.deepen(frame, 1) //
 					.p(parse, gb) //
 					.concatMap(st1 -> Outlet.of(new Source<State>() {
@@ -274,7 +274,7 @@ public class TopDownParse {
 	}
 
 	private Parser buildRepeat(Grammar eg, boolean isAllowNone) {
-		Parser g = build(eg.children.get(0));
+		var g = build(eg.children.get(0));
 
 		return (parse, st) -> {
 			Outlet<State> states = Outlet.of(new Source<>() {
@@ -282,7 +282,7 @@ public class TopDownParse {
 				private Deque<Outlet<State>> outlets = new ArrayDeque<>();
 
 				public State source() {
-					State state0 = state_;
+					var state0 = state_;
 					if (state0 != null) {
 						outlets.push(state0.pr(parse, g));
 						while (!outlets.isEmpty() && (state_ = outlets.peek().next()) == null)
@@ -301,7 +301,7 @@ public class TopDownParse {
 		Parser parser1;
 		if ((parser1 = buildLiteral(entity)) == null)
 			parser1 = (parse, st) -> {
-				Parser parser = parserByEntity.get(entity);
+				var parser = parserByEntity.get(entity);
 				if (parser != null)
 					return st.p(parse, parser);
 				else
@@ -347,7 +347,7 @@ public class TopDownParse {
 
 	private Parser deepen(Parser parser, String entity) {
 		return (parse, st0) -> {
-			Frame frame = new Frame(entity);
+			var frame = new Frame(entity);
 			return st0.deepen(frame, 1) //
 					.p(parse, parser) //
 					.map(st2 -> st2.deepen(frame, -1));

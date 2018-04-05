@@ -61,7 +61,7 @@ public class To {
 	}
 
 	public static Bytes bytes(IoSink<DataOutput_> ioSink) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		var baos = new ByteArrayOutputStream();
 		try {
 			ioSink.sink(DataOutput_.of(baos));
 		} catch (IOException ex) {
@@ -110,7 +110,7 @@ public class To {
 			public int read(byte[] bs, int offset, int length) throws IOException {
 				var nBytesRead = -1;
 				while (is == null || (nBytesRead = is.read(bs, offset, length)) < 0) {
-					Bytes bytes = outlet.next();
+					var bytes = outlet.next();
 					if (isOpen = (bytes != null))
 						is = bytes.collect(As::inputStream);
 					else
@@ -161,7 +161,7 @@ public class To {
 	}
 
 	public static Outlet<Bytes> outlet(InputStream is) {
-		InputStream bis = new BufferedInputStream(is);
+		var bis = new BufferedInputStream(is);
 		return Outlet.of(() -> {
 			var bs = new byte[Constants.bufferSize];
 			var nBytesRead = Rethrow.ex(() -> bis.read(bs));
@@ -237,7 +237,7 @@ public class To {
 	public static String string(InputStream in) {
 		try (InputStream is = in;
 				InputStreamReader isr = new InputStreamReader(is, Constants.charset);
-				BufferedReader br = new BufferedReader(isr)) {
+				var br = new BufferedReader(isr)) {
 			return string(br);
 		} catch (IOException ex) {
 			return Fail.t(ex);
@@ -267,7 +267,7 @@ public class To {
 	public static String string(Reader reader) {
 		try (Reader reader_ = reader) {
 			var buffer = new char[Constants.bufferSize];
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 
 			while (reader_.ready()) {
 				var n = reader_.read(buffer);
@@ -281,7 +281,7 @@ public class To {
 	}
 
 	public static String string(Throwable th) {
-		StringWriter sw = new StringWriter();
+		var sw = new StringWriter();
 
 		try (Writer sw_ = sw; PrintWriter pw = new PrintWriter(sw_)) {
 			th.printStackTrace(pw);
@@ -320,7 +320,7 @@ public class To {
 
 	private static String read_(Path path) throws IOException {
 		var bytes = Files.readAllBytes(path);
-		boolean isBomExist = 3 <= bytes.length //
+		var isBomExist = 3 <= bytes.length //
 				&& bytes[0] == (byte) 0xEF //
 				&& bytes[1] == (byte) 0xBB //
 				&& bytes[2] == (byte) 0xBF;

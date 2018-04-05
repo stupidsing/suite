@@ -61,19 +61,19 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 		public int getBranchPointer() {
 			@SuppressWarnings("unchecked")
-			Branch branch = (Branch) pointer;
+			var branch = (Branch) pointer;
 			return branch.pointer;
 		}
 
 		public Value getLeafValue() {
 			@SuppressWarnings("unchecked")
-			Leaf leaf = (Leaf) pointer;
+			var leaf = (Leaf) pointer;
 			return leaf.value;
 		}
 
 		public int getPayloadPointer() {
 			@SuppressWarnings("unchecked")
-			Payload payload = (Payload) pointer;
+			var payload = (Payload) pointer;
 			return payload.pointer;
 		}
 	}
@@ -166,7 +166,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		allocator.create();
 		var root = allocator.allocate();
 
-		Superblock superblock = new Superblock();
+		var superblock = new Superblock();
 		superblock.root = root;
 		superblockFile.save(0, superblock);
 
@@ -175,13 +175,13 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	@Override
 	public Value get(Key key) {
-		KeyPointer kp = loadKeyPointer(key);
+		var kp = loadKeyPointer(key);
 		return kp != null ? kp.getLeafValue() : null;
 	}
 
 	@Override
 	public Bytes getPayload(Key key) {
-		KeyPointer kp = loadKeyPointer(key);
+		var kp = loadKeyPointer(key);
 		return kp != null ? payloadFile.load(kp.getPayloadPointer()) : null;
 	}
 
@@ -191,7 +191,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	private KeyPointer loadKeyPointer(Key key) {
-		KeyPointer kp = new Traverse(key).kp;
+		var kp = new Traverse(key).kp;
 		return kp != null && Objects.equals(kp.key, key) ? kp : null;
 	}
 
@@ -210,7 +210,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	private Streamlet<KeyPointer> stream_(Integer pointer, Key start, Key end) {
-		Page page = pageFile.load(pointer);
+		var page = pageFile.load(pointer);
 		int i0 = start != null ? findPosition(page, start, false) : 0;
 		int i1 = end != null ? findPosition(page, end, false) + 1 : page.size();
 
@@ -243,8 +243,8 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	private void put(Key key, Pointer pointer) {
-		Traverse t = new Traverse(key);
-		KeyPointer kp = t.kp;
+		var t = new Traverse(key);
+		var kp = t.kp;
 
 		if (kp != null && Objects.equals(kp.key, key)) {
 			discard(kp);
@@ -260,8 +260,8 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 		// traversed to deepest. Inserts key-value pair
 		do {
-			Slot slot = slots.pop();
-			Page page = slot.page;
+			var slot = slots.pop();
+			var page = slot.page;
 			page.add(slot.index + 1, toInsert);
 
 			var size = page.size();
@@ -277,7 +277,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				toInsert = pointerTo(p1); // propagates to parent
 
 				if (slots.empty()) { // have to create a new root
-					KeyPointer kp = pointerTo(p0);
+					var kp = pointerTo(p0);
 
 					create();
 					page = new Page(getRoot(), List.of(kp, toInsert));
@@ -303,14 +303,14 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	public void remove(Key key) {
 		var half = branchFactor / 2;
 		var root = getRoot();
-		Traverse t = new Traverse(key);
+		var t = new Traverse(key);
 		Stack<Slot> slots = t.traverse;
 
 		// remove the entry
-		Slot slot = slots.pop();
-		Page page = slot.page;
+		var slot = slots.pop();
+		var page = slot.page;
 		var index = slot.index;
-		KeyPointer kp = slot.getKeyPointer();
+		var kp = slot.getKeyPointer();
 
 		if (kp != null && Objects.equals(kp.key, key)) {
 			discard(kp);
@@ -319,7 +319,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 		// rotates nodes around to maintain invariant
 		while (page.pointer != root && page.size() < half) {
-			Page mp = page;
+			var mp = page;
 
 			slot = slots.pop();
 			page = slot.page;
@@ -332,7 +332,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 			if (rsize <= lsize && lsize != 0)
 				if (half < lsize) { // shift
-					KeyPointer out = lp.remove(lsize - 1);
+					var out = lp.remove(lsize - 1);
 					mp.add(0, out);
 					savePage(mp);
 					savePage(lp);
@@ -341,7 +341,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 					merge(page, lp, mp, index - 1);
 			else if (lsize <= rsize && rsize != 0)
 				if (half < rsize) { // shift
-					KeyPointer out = rp.remove(0);
+					var out = rp.remove(0);
 					mp.add(out);
 					savePage(mp);
 					savePage(rp);
@@ -376,16 +376,16 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	private void dump(PrintStream w, String pfx, int pointer) {
-		Page page = loadPage(pointer);
+		var page = loadPage(pointer);
 
 		for (var kp : page) {
-			Pointer ptr = kp.pointer;
+			var ptr = kp.pointer;
 			w.print(pfx + (kp.key != null ? kp.key : "MIN-KEY"));
 
 			if (ptr instanceof B_TreeImpl.Branch) {
 				w.println();
 				@SuppressWarnings("unchecked")
-				Branch branch = (Branch) ptr;
+				var branch = (Branch) ptr;
 				dump(w, pfx + "\t", branch.pointer);
 			} else if (ptr instanceof B_TreeImpl.Leaf)
 				w.println(" = " + kp.getLeafValue());
@@ -415,7 +415,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	private KeyPointer pointerTo(Page page) {
-		Key smallest = page.get(0).key;
+		var smallest = page.get(0).key;
 		return new KeyPointer(smallest, new Branch(page.pointer));
 	}
 

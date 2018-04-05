@@ -38,7 +38,7 @@ public class ChrFltMap {
 		Obj_Chr<T> kf1 = kf0.rethrow();
 		Obj_Flt<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			ChrFltMap map = new ChrFltMap();
+			var map = new ChrFltMap();
 			T t;
 			while ((t = outlet.source().source()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
@@ -64,8 +64,8 @@ public class ChrFltMap {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof ChrFltMap) {
-			ChrFltMap other = (ChrFltMap) object;
-			boolean b = size == other.size;
+			var other = (ChrFltMap) object;
+			var b = size == other.size;
 			for (ChrObjPair<Float> pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
@@ -75,7 +75,7 @@ public class ChrFltMap {
 
 	public void forEach(ChrFltSink sink) {
 		ChrFltPair pair = ChrFltPair.of((char) 0, (float) 0);
-		ChrFltSource source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -143,7 +143,7 @@ public class ChrFltMap {
 			private ChrFltPair pair0 = ChrFltPair.of((char) 0, (float) 0);
 
 			public boolean source2(ChrObjPair<Float> pair) {
-				boolean b = source0.source2(pair0);
+				var b = source0.source2(pair0);
 				pair.update(pair0.t0, pair0.t1);
 				return b;
 			}

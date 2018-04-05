@@ -42,7 +42,7 @@ public class IntIntMap1 {
 
 	public void forEach(IntIntSink sink) {
 		IntIntPair pair = IntIntPair.of(0, 0);
-		IntIntSource source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -50,8 +50,8 @@ public class IntIntMap1 {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof IntIntMap1) {
-			IntIntMap1 other = (IntIntMap1) object;
-			boolean b = size == other.size;
+			var other = (IntIntMap1) object;
+			var b = size == other.size;
 			for (IntObjPair<Integer> pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
@@ -128,11 +128,11 @@ public class IntIntMap1 {
 
 	public IntObjStreamlet<Integer> streamlet() {
 		return new IntObjStreamlet<>(() -> {
-			IntIntSource source = source_();
+			var source = source_();
 			IntIntPair pair0 = IntIntPair.of(0, 0);
 			return IntObjOutlet.of(new IntObjSource<Integer>() {
 				public boolean source2(IntObjPair<Integer> pair) {
-					boolean b = source.source2(pair0);
+					var b = source.source2(pair0);
 					if (b)
 						pair.update(pair0.t0, pair0.t1);
 					return b;

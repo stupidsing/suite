@@ -23,7 +23,7 @@ public class CholeskyDecompositionTest {
 
 	@Test
 	public void testInverseMul() {
-		Random random = new Random();
+		var random = new Random();
 		float[] fs = Floats_.toArray(3, i -> random.nextFloat());
 		Iterate<float[]> invm0 = cholesky.inverseMul(mtx.of(m0));
 		float[] actual0 = mtx.mul(m0, invm0.apply(fs));

@@ -17,7 +17,7 @@ public class LrParseTest {
 	@Test
 	public void testComplexity() {
 		var e = "e0";
-		StringBuilder sb = new StringBuilder(e + " ::= \"0\" | \"1\"\n");
+		var sb = new StringBuilder(e + " ::= \"0\" | \"1\"\n");
 		for (var i = 0; i < 6; i++) {
 			var enext = "e" + (i + 1);
 			var op = "op" + i;

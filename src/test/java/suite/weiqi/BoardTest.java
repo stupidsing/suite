@@ -37,7 +37,7 @@ public class BoardTest {
 
 	@Test
 	public void testEat() {
-		Board board = new Board();
+		var board = new Board();
 		board.playIfSeemsPossible(Coordinate.c(0, 1), Occupation.BLACK);
 		board.playIfSeemsPossible(Coordinate.c(0, 0), Occupation.WHITE);
 		board.playIfSeemsPossible(Coordinate.c(1, 0), Occupation.BLACK);
@@ -46,7 +46,7 @@ public class BoardTest {
 
 	@Test
 	public void testGroupAnalysis() {
-		Board board = blackBoard();
+		var board = blackBoard();
 		board.set(Coordinate.c(3, 3), Occupation.EMPTY);
 		board.set(Coordinate.c(3, 4), Occupation.EMPTY);
 		board.set(Coordinate.c(7, 3), Occupation.EMPTY);
@@ -55,7 +55,7 @@ public class BoardTest {
 		board.set(Coordinate.c(17, 0), Occupation.WHITE);
 		board.set(Coordinate.c(18, 1), Occupation.WHITE);
 
-		GroupAnalysis ga = new GroupAnalysis(board);
+		var ga = new GroupAnalysis(board);
 		Group blackGroup = ga.getGroup(Coordinate.c(15, 15));
 		Group whiteGroup = ga.getGroup(Coordinate.c(17, 0));
 
@@ -67,7 +67,7 @@ public class BoardTest {
 	}
 
 	private Board blackBoard() {
-		Board board = new Board();
+		var board = new Board();
 		for (var c : Coordinate.all())
 			board.set(c, Occupation.BLACK);
 		return board;

@@ -37,20 +37,20 @@ public class PopupMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) throws Exception {
-		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+		var screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int centerX = screenSize.width / 2, centerY = screenSize.height / 2;
 		int width = screenSize.width / 2, height = screenSize.height / 8;
 
-		JTextField inTextField = new JTextField();
+		var inTextField = new JTextField();
 		inTextField.setFont(new FontUtil().monoFont);
 		inTextField.addActionListener(event -> {
 			execute(inTextField.getText());
 			System.exit(0);
 		});
 
-		JLabel outLabel = new JLabel();
+		var outLabel = new JLabel();
 
-		JFrame frame = new JFrame("Pop-up");
+		var frame = new JFrame("Pop-up");
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setLocation(centerX - width / 2, centerY - height / 2);
 		frame.setSize(new Dimension(width, height));
@@ -61,17 +61,17 @@ public class PopupMain extends ExecutableProgram {
 			return new Execute(new String[] { "/usr/bin/amixer", "set", "PCM", "2" + c, });
 		};
 
-		JLabel volLabel = new JLabel("Volume");
+		var volLabel = new JLabel("Volume");
 
-		JButton volUpButton = new JButton("+");
+		var volUpButton = new JButton("+");
 		volUpButton.setMnemonic(KeyEvent.VK_A);
 		volUpButton.addActionListener(event -> volumeControl.apply("+"));
 
-		JButton volDnButton = new JButton("-");
+		var volDnButton = new JButton("-");
 		volDnButton.setMnemonic(KeyEvent.VK_Z);
 		volDnButton.addActionListener(event -> volumeControl.apply("-"));
 
-		LayoutCalculator lay = new LayoutCalculator(frame.getContentPane());
+		var lay = new LayoutCalculator(frame.getContentPane());
 
 		var layout = lay.boxv( //
 				lay.fx(32, lay.boxh( //
@@ -95,7 +95,7 @@ public class PopupMain extends ExecutableProgram {
 
 	public void execute(String cmd) {
 		if (!String_.isBlank(cmd)) {
-			ClipboardUtil clipboardUtil = new ClipboardUtil();
+			var clipboardUtil = new ClipboardUtil();
 			var text0 = clipboardUtil.getClipboardText();
 			String text1 = Suite.evaluateFilterFun(cmd, text0, true, false);
 			clipboardUtil.setClipboardText(text1);

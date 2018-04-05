@@ -21,9 +21,9 @@ public class Amd64Dump {
 	}
 
 	public String dump(Instruction instruction) {
-		Operand op0 = instruction.op0;
-		Operand op1 = instruction.op1;
-		Operand op2 = instruction.op2;
+		var op0 = instruction.op0;
+		var op1 = instruction.op1;
+		var op2 = instruction.op2;
 		return instruction.insn //
 				+ (!(op0 instanceof OpNone) ? " " + dump(op0) : "") //
 				+ (!(op1 instanceof OpNone) ? "," + dump(op1) : "") //
@@ -43,7 +43,7 @@ public class Amd64Dump {
 			return Fail.t();
 
 		if (op0 instanceof OpImm) {
-			OpImm opImm = (OpImm) op0;
+			var opImm = (OpImm) op0;
 			return dump(opImm.imm, opImm.size);
 		} else if (op0 instanceof OpMem) {
 			var opMem = (OpMem) op0;

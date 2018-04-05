@@ -92,7 +92,7 @@ public class Longs_ {
 
 	public static LngStreamlet range(long s, long e) {
 		return new LngStreamlet(() -> {
-			LngMutable m = LngMutable.of(s);
+			var m = LngMutable.of(s);
 			return LngOutlet.of(() -> {
 				var c = m.increment();
 				return c < e ? c : LngFunUtil.EMPTYVALUE;
@@ -143,7 +143,7 @@ public class Longs_ {
 
 		public Longs source() {
 			Longs in;
-			LongsBuilder cb = new LongsBuilder();
+			var cb = new LongsBuilder();
 			cb.append(buffer);
 
 			p0 = 0;

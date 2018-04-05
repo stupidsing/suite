@@ -56,7 +56,7 @@ public class EditorView {
 	}
 
 	public JFrame run(EditorController controller, String title) {
-		JTextField searchTextField = this.searchTextField = applyDefaults(new JTextField(32));
+		var searchTextField = this.searchTextField = applyDefaults(new JTextField(32));
 
 		DefaultListModel<String> listModel = this.listModel = new DefaultListModel<>();
 		listModel.addElement("<Empty>");
@@ -64,27 +64,27 @@ public class EditorView {
 		JList<String> searchList = this.searchList = applyDefaults(new JList<>(listModel));
 		searchList.setFont(sansFont);
 
-		JLabel rightLabel = this.rightLabel = applyDefaults(new JLabel("Right"));
+		var rightLabel = this.rightLabel = applyDefaults(new JLabel("Right"));
 		rightLabel.setVisible(false);
 
-		JTextField filenameTextField = this.filenameTextField = applyDefaults(new JTextField("pad"));
+		var filenameTextField = this.filenameTextField = applyDefaults(new JTextField("pad"));
 		filenameTextField.setVisible(false);
 
-		JTextArea messageTextArea = this.messageTextArea = applyDefaults(new JTextArea("Bottom"));
+		var messageTextArea = this.messageTextArea = applyDefaults(new JTextArea("Bottom"));
 		messageTextArea.setEditable(false);
 		messageTextArea.setRows(12);
 
-		JScrollPane messageScrollPane = this.messageScrollPane = newScrollPane(messageTextArea);
+		var messageScrollPane = this.messageScrollPane = newScrollPane(messageTextArea);
 		messageScrollPane.setVisible(false);
 
-		JEditorPane editor = this.editor = applyDefaults(new EditorPane(model));
+		var editor = this.editor = applyDefaults(new EditorPane(model));
 
-		JScrollPane editorScrollPane = newScrollPane(editor);
+		var editorScrollPane = newScrollPane(editor);
 
-		JButton okButton = applyDefaults(new JButton("OK"));
+		var okButton = applyDefaults(new JButton("OK"));
 		Listen.mouseClicked(okButton).wire(controller::evaluate);
 
-		JFrame frame = this.frame = new JFrame(title);
+		var frame = this.frame = new JFrame(title);
 		frame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 		frame.setJMenuBar(newMenuBar(controller));
 		frame.setSize(new Dimension(windowWidth, windowHeight));
@@ -155,7 +155,7 @@ public class EditorView {
 		saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
 		Listen.action(saveMenuItem).wire(controller::save);
 
-		JMenuItem searchMenuItem = applyDefaults(new JMenuItem("Search"));
+		var searchMenuItem = applyDefaults(new JMenuItem("Search"));
 		searchMenuItem
 				.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
 		Listen.action(searchMenuItem).wire(controller::searchFor);
@@ -163,16 +163,16 @@ public class EditorView {
 		JMenuItem exitMenuItem = applyDefaults(new JMenuItem("Close", KeyEvent.VK_C));
 		Listen.action(exitMenuItem).wire(controller::close);
 
-		JMenuItem copyMenuItem = applyDefaults(new JMenuItem("Copy"));
+		var copyMenuItem = applyDefaults(new JMenuItem("Copy"));
 		copyMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK));
 		Listen.action(copyMenuItem).wire(event -> controller.copy(false));
 
-		JMenuItem copyAppendMenuItem = applyDefaults(new JMenuItem("Copy Append"));
+		var copyAppendMenuItem = applyDefaults(new JMenuItem("Copy Append"));
 		copyAppendMenuItem
 				.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_DOWN_MASK | InputEvent.SHIFT_DOWN_MASK));
 		Listen.action(copyAppendMenuItem).wire(event -> controller.copy(true));
 
-		JMenuItem pasteMenuItem = applyDefaults(new JMenuItem("Paste"));
+		var pasteMenuItem = applyDefaults(new JMenuItem("Paste"));
 		pasteMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_DOWN_MASK));
 		Listen.action(pasteMenuItem).wire(controller::paste);
 
@@ -225,7 +225,7 @@ public class EditorView {
 		JMenu windowMenu = newMenu("Window", KeyEvent.VK_W, //
 				newWindowMenuItem, newWindowMenuItem);
 
-		JMenuBar menuBar = new JMenuBar();
+		var menuBar = new JMenuBar();
 		menuBar.add(fileMenu);
 		menuBar.add(editMenu);
 		menuBar.add(viewMenu);
@@ -236,7 +236,7 @@ public class EditorView {
 	}
 
 	private JMenu newMenu(String title, int keyEvent, JMenuItem... menuItems) {
-		JMenu menu = applyDefaults(new JMenu(title));
+		var menu = applyDefaults(new JMenu(title));
 		menu.setMnemonic(keyEvent);
 
 		for (var component : menuItems)
@@ -269,7 +269,7 @@ public class EditorView {
 	}
 
 	public void showMessage(String text) {
-		JTextArea textArea = messageTextArea;
+		var textArea = messageTextArea;
 		textArea.setText(text);
 		textArea.setEnabled(true);
 		textArea.setVisible(true);
@@ -277,7 +277,7 @@ public class EditorView {
 	}
 
 	public void showMessageRunning() {
-		JTextArea textArea = messageTextArea;
+		var textArea = messageTextArea;
 		textArea.setEnabled(false);
 		textArea.setText("RUNNING...");
 	}
@@ -306,7 +306,7 @@ public class EditorView {
 	}
 
 	private boolean toggleVisible(JComponent component) {
-		boolean visible = !component.isVisible();
+		var visible = !component.isVisible();
 		component.setVisible(visible);
 		refresh();
 		if (visible)
@@ -325,7 +325,7 @@ public class EditorView {
 	}
 
 	private boolean isOwningFocus(Component component) {
-		boolean isFocusOwner = component.isFocusOwner();
+		var isFocusOwner = component.isFocusOwner();
 		if (component instanceof JComponent)
 			for (var c : ((JComponent) component).getComponents())
 				isFocusOwner |= isOwningFocus(c);

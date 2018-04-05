@@ -50,7 +50,7 @@ public class BoundingBox implements RtObject {
 		float minY = min.y, maxY = max.y;
 		float minZ = min.z, maxZ = max.z;
 
-		boolean isIntersect = true //
+		var isIntersect = true //
 				&& isIntersect(startX, dirX, minX, maxX, startY, dirY, minY, maxY) //
 				&& isIntersect(startY, dirY, minY, maxY, startZ, dirZ, minZ, maxZ) //
 				&& isIntersect(startZ, dirZ, minZ, maxZ, startX, dirX, minX, maxX) //

@@ -1,11 +1,9 @@
 package suite.telegram;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
-import org.telegram.telegrambots.api.objects.Message;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
@@ -26,15 +24,15 @@ public class TelegramBot {
 				}
 
 				public String getBotToken() {
-					Path path = Constants.tmp("kowloonbot.token");
+					var path = Constants.tmp("kowloonbot.token");
 					return Rethrow.ex(() -> Files.readAllLines(path)).iterator().next();
 				}
 
 				public void onUpdateReceived(Update update) {
 					if (update.hasMessage()) {
-						Message message = update.getMessage();
+						var message = update.getMessage();
 
-						SendMessage sendMessage = new SendMessage();
+						var sendMessage = new SendMessage();
 						sendMessage.setChatId(message.getChat().getId().toString());
 						sendMessage.setText(fun.apply(message.getFrom().getId(), message.getText()));
 

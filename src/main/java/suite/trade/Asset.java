@@ -42,7 +42,7 @@ public class Asset {
 	@Override
 	public boolean equals(Object object) {
 		if (object.getClass() == Asset.class) {
-			Asset other = (Asset) object;
+			var other = (Asset) object;
 			return String_.equals(symbol, other.symbol);
 		} else
 			return false;

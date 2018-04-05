@@ -108,9 +108,9 @@ public class HkexFactBook {
 
 	@SuppressWarnings("unused")
 	private String getUrl0(int year, String section) {
-		URI uri0 = To.uri("https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook.htm");
+		var uri0 = To.uri("https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook.htm");
 		Map<String, URI> links0 = HttpUtil.resolveLinks(uri0);
-		URI uri1 = links0.get(Integer.toString(year));
+		var uri1 = links0.get(Integer.toString(year));
 		Map<String, URI> links1 = HttpUtil.resolveLinks(uri1);
 
 		for (var e : links1.entrySet()) {

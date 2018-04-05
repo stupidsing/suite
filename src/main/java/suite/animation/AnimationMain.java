@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import javax.swing.JFrame;
@@ -26,12 +25,12 @@ public class AnimationMain extends ExecutableProgram {
 	}
 
 	protected boolean run(String[] args) throws InterruptedException {
-		JFrame frame = new JFrame("Animation");
+		var frame = new JFrame("Animation");
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setSize(new Dimension(1024, 768));
 		frame.setVisible(true);
 
-		PaintInput pi = new PaintInput();
+		var pi = new PaintInput();
 
 		frame.getContentPane().add(new JPanel() {
 			private static final long serialVersionUID = 1l;
@@ -39,13 +38,13 @@ public class AnimationMain extends ExecutableProgram {
 			protected void paintComponent(Graphics graphics) {
 				super.paintComponent(graphics);
 
-				Graphics2D g2d = (Graphics2D) graphics;
+				var g2d = (Graphics2D) graphics;
 				g2d.setColor(Color.BLACK);
 				g2d.fillRect(pi.i, pi.i, 32, 32);
 			}
 		});
 
-		ScheduledExecutorService executor = Executors.newScheduledThreadPool(4);
+		var executor = Executors.newScheduledThreadPool(4);
 
 		executor.scheduleAtFixedRate(() -> {
 			pi.i++;

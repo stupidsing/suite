@@ -75,7 +75,7 @@ public class DblChrPair {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == DblChrPair.class) {
-			DblChrPair other = (DblChrPair) object;
+			var other = (DblChrPair) object;
 			return t0 == other.t0 && t1 == other.t1;
 		} else
 			return false;

@@ -33,12 +33,12 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 		KeyValueMutator<Bytes, Integer> kvm = store.mutate();
 		KeyDataMutator<Bytes> kdm = store.mutateData();
 
-		Bytes hash = keyUtil.hash(name);
+		var hash = keyUtil.hash(name);
 		Integer size = kvm.get(key(hash, SIZEID, 0));
 
 		if (size != null) {
 			var seq = 0;
-			BytesBuilder bb = new BytesBuilder();
+			var bb = new BytesBuilder();
 			for (var s = 0; s < size; s += pageSize)
 				bb.append(kdm.getPayload(key(hash, DATAID, seq++)));
 			return bb.toBytes().range(0, size);
@@ -57,7 +57,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 		KeyDataMutator<Bytes> kdm = store.mutateData();
 
 		FileSystemKeySet fsNameKeySet = new FileSystemKeySet(keyUtil, store);
-		Bytes hash = keyUtil.hash(name);
+		var hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
 
 		Bytes nameBytes0 = fsNameKeySet.list(name, null).first();
@@ -103,7 +103,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 		KeyValueMutator<Bytes, Integer> kvm = store.mutate();
 		KeyDataMutator<Bytes> kdm = store.mutateData();
 
-		Bytes hash = keyUtil.hash(name);
+		var hash = keyUtil.hash(name);
 		Bytes sizeKey = key(hash, SIZEID, 0);
 		var size0 = kvm.get(sizeKey);
 		var nPages0 = (size0 + pageSize - 1) / pageSize;

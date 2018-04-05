@@ -31,13 +31,13 @@ public class WalkForwardTestMain extends ExecutableProgram {
 		Trade_.isShortSell = true;
 		Trade_.leverageAmount = fund0;
 
-		WalkForwardAllocConfiguration wfac = new WalkForwardAllocConfiguration( //
+		var wfac = new WalkForwardAllocConfiguration( //
 				cfg.queryCompaniesByMarketCap(Time.now()), //
 				bag.rsi.unleverage().walkForwardAllocator());
 
 		WalkForwardAllocTester tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
 
-		Schedule schedule = Schedule //
+		var schedule = Schedule //
 				.ofRepeat(5, () -> System.out.println(tester.tick())) //
 				.filterTime(dt -> HkexUtil.isMarketOpen(Time.of(dt)));
 

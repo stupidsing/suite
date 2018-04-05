@@ -2,8 +2,6 @@ package suite.os;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -49,16 +47,16 @@ public class Execute {
 	}
 
 	public Execute(String[] command, byte[] bytes) {
-		InputStream bis = new ByteArrayInputStream(bytes);
-		ByteArrayOutputStream bos0 = new ByteArrayOutputStream();
-		ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
+		var bis = new ByteArrayInputStream(bytes);
+		var bos0 = new ByteArrayOutputStream();
+		var bos1 = new ByteArrayOutputStream();
 
 		Process process = Rethrow.ex(() -> Runtime.getRuntime().exec(command));
 
 		try {
-			InputStream pis = process.getInputStream();
-			InputStream pes = process.getErrorStream();
-			OutputStream pos = process.getOutputStream();
+			var pis = process.getInputStream();
+			var pes = process.getErrorStream();
+			var pos = process.getOutputStream();
 
 			threads = new Thread[] { //
 					Copy.streamByThread(pis, bos0), //

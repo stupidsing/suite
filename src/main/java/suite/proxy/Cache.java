@@ -31,7 +31,7 @@ public class Cache {
 
 		public boolean equals(Object object) {
 			if (Object_.clazz(object) == Key.class) {
-				Key other = (Key) object;
+				var other = (Key) object;
 				return bean == other.bean //
 						&& Objects.equals(method, other.method) //
 						&& Arrays.deepEquals(arguments, other.arguments);
@@ -63,14 +63,14 @@ public class Cache {
 	public <I> I proxy(Class<I> interface_, I object, Collection<Method> methods) {
 		return Intercept.object(interface_, object, invocation -> (m, ps) -> {
 			Key key = methods.contains(m) ? new Key(object, m, ps) : null;
-			boolean isCached = key != null && results.containsKey(key);
+			var isCached = key != null && results.containsKey(key);
 			Object result;
 
 			if (!isCached)
 				try {
 					results.put(key, result = invocation.invoke(m, ps));
 				} catch (InvocationTargetException ite) {
-					Throwable th = ite.getTargetException();
+					var th = ite.getTargetException();
 					throw th instanceof Exception ? (Exception) th : ite;
 				}
 			else

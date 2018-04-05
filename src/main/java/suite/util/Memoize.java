@@ -31,7 +31,7 @@ public class Memoize {
 		ThreadLocal<Boolean> isEnteredFun = ThreadLocal.withInitial(() -> false);
 		Map<I, O> results = new ConcurrentHashMap<>();
 		return in -> {
-			boolean isEnteredFun0 = isEnteredFun.get();
+			var isEnteredFun0 = isEnteredFun.get();
 			if (!isEnteredFun0) {
 				isEnteredFun.set(true);
 				try {
@@ -47,7 +47,7 @@ public class Memoize {
 	public static <I, O> Fun<I, O> funRec(Fun<I, O> fun) {
 		Map<I, O> results = new ConcurrentHashMap<>();
 		return in -> {
-			O out = results.get(in);
+			var out = results.get(in);
 			if (out == null)
 				results.put(in, out = fun.apply(in));
 			return out;
@@ -83,9 +83,9 @@ public class Memoize {
 	public static <I, O> Fun<I, O> limited(Fun<I, O> fun, int size) {
 		return new Fun<>() {
 			class R {
-				State state = State.EMPTY__;
-				I input;
-				O output;
+				private State state = State.EMPTY__;
+				private I input;
+				private O output;
 			}
 
 			private Map<I, R> map = new HashMap<>();
@@ -98,7 +98,7 @@ public class Memoize {
 			}
 
 			public synchronized O apply(I in) {
-				R r = map.get(in);
+				var r = map.get(in);
 
 				if (r == null) {
 					while ((r = array[p]).state == State.FLAGGED) {
@@ -138,7 +138,7 @@ public class Memoize {
 			private PriorityQueue<R> queue = new PriorityQueue<>(R.class, size, (r0, r1) -> r0.age - r1.age);
 
 			public synchronized O apply(I in) {
-				R r = map.get(in);
+				var r = map.get(in);
 
 				if (r == null) {
 					if (size <= map.size())

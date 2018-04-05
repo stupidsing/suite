@@ -49,7 +49,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 	private Map<String, String> readHeaders(InputStream sis) throws IOException {
 		var header = readNetstring(sis);
 
-		IntBuffer zeroPositions = IntBuffer.allocate(256);
+		var zeroPositions = IntBuffer.allocate(256);
 
 		for (var i = 0; i < header.length(); i++)
 			if (header.charAt(i) == 0)

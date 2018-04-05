@@ -8,7 +8,7 @@ public class ConwayGameOfLifeTest {
 
 	@Test
 	public void testGlider() {
-		ConwayGameOfLife cgol = new ConwayGameOfLife("" //
+		var cgol = new ConwayGameOfLife("" //
 				+ "　　　　　　　　　　　　　　　　\n" //
 				+ "　　Ｏ　　　　　　　　　　　　　\n" //
 				+ "　　　Ｏ　　　　　　　　　　　　\n" //
@@ -25,7 +25,7 @@ public class ConwayGameOfLifeTest {
 
 	@Test
 	public void testSpaceship() {
-		ConwayGameOfLife cgol = new ConwayGameOfLife("" //
+		var cgol = new ConwayGameOfLife("" //
 				+ "　　　　　　　　　　　　　　　　\n" //
 				+ "　Ｏ　　Ｏ　　　　　　　　　　　\n" //
 				+ "　　　　　Ｏ　　　　　　　　　　\n" //

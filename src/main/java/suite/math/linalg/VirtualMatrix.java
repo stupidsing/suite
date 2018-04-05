@@ -36,7 +36,7 @@ public class VirtualMatrix {
 	}
 
 	public static VirtualMatrix of(float[][] matrix) {
-		Matrix mtx = VirtualMatrixUtil.mtx;
+		var mtx = VirtualMatrixUtil.mtx;
 		return of(mtx.height(matrix), mtx.width(matrix), (i, j) -> matrix[i][j]);
 	}
 
@@ -51,9 +51,9 @@ public class VirtualMatrix {
 	}
 
 	public VirtualMatrix add(VirtualMatrix vm1) {
-		VirtualMatrix vm0 = this;
-		IntInt_Flt f0 = vm0.get;
-		IntInt_Flt f1 = vm1.get;
+		var vm0 = this;
+		var f0 = vm0.get;
+		var f1 = vm1.get;
 		return VirtualMatrixUtil.checkSizes(vm0, vm1, (i, j) -> f0.apply(i, j) + f1.apply(i, j));
 	}
 
@@ -66,7 +66,7 @@ public class VirtualMatrix {
 	}
 
 	public VirtualMatrix convolute(float[][] k) {
-		Matrix mtx = VirtualMatrixUtil.mtx;
+		var mtx = VirtualMatrixUtil.mtx;
 		var kh = mtx.height(k);
 		var kw = mtx.width(k);
 		return VirtualMatrix.of( //
@@ -82,7 +82,7 @@ public class VirtualMatrix {
 	}
 
 	public String dump() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		dump(sb);
 		return sb.toString();
 	}

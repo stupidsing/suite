@@ -20,7 +20,7 @@ public class StatusMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		Summarize summarize = Summarize.of(cfg);
+		var summarize = Summarize.of(cfg);
 		SummarizeByStrategy<String> sbs = summarize.summarize(r -> r.strategy);
 		System.out.println(sbs.log);
 		System.out.println(new TreeMap<>(sbs.pnlByKey));

@@ -54,7 +54,7 @@ public interface NioChannelFactory {
 		private Condition condition = new Condition(() -> isConnected);
 
 		public void send(char type, int token, Bytes data) {
-			Bytes packet = new BytesBuilder() //
+			var packet = new BytesBuilder() //
 					.append((byte) type) //
 					.append(NetUtil.intToBytes(token)) //
 					.append(data) //
@@ -126,13 +126,13 @@ public interface NioChannelFactory {
 			RequestResponseMatcher matcher, //
 			ThreadPoolExecutor executor, //
 			Iterate<Bytes> handler) {
-		C channel = packeted(channel0);
+		var channel = packeted(channel0);
 		channel.onConnected.wire(sender -> channel.setConnected(sender != null));
 		channel.onReceivePacket.wire(packet -> {
 			if (5 <= packet.size()) {
 				var type = (char) packet.get(0);
 				int token = NetUtil.bytesToInt(packet.range(1, 5));
-				Bytes contents = packet.range(5);
+				var contents = packet.range(5);
 
 				if (type == RESPONSE)
 					matcher.onResponseReceived(token, contents);
@@ -144,7 +144,7 @@ public interface NioChannelFactory {
 	}
 
 	public static <C extends PacketedNioChannel> C packeted(C channel0) {
-		C channel = buffered(channel0);
+		var channel = buffered(channel0);
 		channel.onReceive.wire(new Sink<>() {
 			private Bytes received = Bytes.empty;
 

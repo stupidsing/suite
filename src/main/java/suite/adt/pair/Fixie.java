@@ -234,7 +234,7 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements FixieA<T0,
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		if (t0 != D)
 			sb.append(t0.toString());
 		if (t1 != D)

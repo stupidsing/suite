@@ -2,7 +2,6 @@ package suite.primitive;
 
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints.IntsBuilder;
-import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.primitive.streamlet.LngOutlet;
 import suite.util.Fail;
@@ -14,9 +13,9 @@ public interface Lng_Int {
 	public int apply(long c);
 
 	public static Fun<LngOutlet, IntStreamlet> lift(Lng_Int fun0) {
-		Lng_Int fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return ts -> {
-			IntsBuilder b = new IntsBuilder();
+			var b = new IntsBuilder();
 			long c;
 			while ((c = ts.next()) != LngFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
@@ -25,9 +24,9 @@ public interface Lng_Int {
 	}
 
 	public static Obj_Int<LngOutlet> sum(Lng_Int fun0) {
-		Lng_Int fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return outlet -> {
-			LngSource source = outlet.source();
+			var source = outlet.source();
 			long c;
 			var result = (int) 0;
 			while ((c = source.source()) != LngFunUtil.EMPTYVALUE)

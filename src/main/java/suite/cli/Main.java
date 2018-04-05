@@ -47,7 +47,7 @@ public class Main extends ExecutableProgram {
 	protected boolean run(String[] args) throws IOException {
 		opt = new CommandOptions();
 
-		boolean b = true;
+		var b = true;
 		List<String> inputs = new ArrayList<>();
 		Source<String> source = To.source(args);
 		String verb = null;
@@ -103,8 +103,8 @@ public class Main extends ExecutableProgram {
 	}
 
 	private boolean runInteractive(List<String> filenames) throws IOException {
-		BufferedReader br = new BufferedReader(reader);
-		boolean code = true;
+		var br = new BufferedReader(reader);
+		var code = true;
 		String ready;
 
 		code &= dispatcher.importFiles(filenames);
@@ -122,7 +122,7 @@ public class Main extends ExecutableProgram {
 
 		while (true)
 			try {
-				StringBuilder sb = new StringBuilder();
+				var sb = new StringBuilder();
 				String line;
 
 				do {

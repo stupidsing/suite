@@ -36,9 +36,9 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 		}).applyIf(Str.class, n -> {
 			return compileBindStr(n);
 		}).applyTree((operator, l, r) -> {
-			Clone_ f = cloner(node);
-			Bind_ c0 = binder(l);
-			Bind_ c1 = binder(r);
+			var f = cloner(node);
+			var c0 = binder(l);
+			var c1 = binder(r);
 			return (be, n) -> {
 				var n_ = n.finalNode();
 				Tree t;
@@ -54,7 +54,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 							&& c1.test(be, t.getRight());
 			};
 		}).applyIf(Tuple.class, tuple -> {
-			Clone_ f = cloner(node);
+			var f = cloner(node);
 			Bind_[] cs = Read.from(tuple.nodes).map(this::binder).toArray(Bind_.class);
 			var length = cs.length;
 			return (be, n) -> {
@@ -78,7 +78,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 					return false;
 			};
 		}).applyIf(Node.class, n -> {
-			Clone_ f = cloner(node);
+			var f = cloner(node);
 			return (be, n_) -> Binder.bind(n_, f.apply(be.env), be.trail);
 		}).result();
 	}

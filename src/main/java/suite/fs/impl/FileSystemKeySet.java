@@ -34,13 +34,13 @@ public class FileSystemKeySet {
 	}
 
 	private Streamlet<Bytes> list(List<NameKey> prefix, List<NameKey> keys0, List<NameKey> keys1) {
-		Bytes hash = keyUtil.hash(keyUtil.toName(prefix));
+		var hash = keyUtil.hash(keyUtil.toName(prefix));
 		NameKey minKey = keys0 != null && !keys0.isEmpty() ? List_.first(keys0) : boundingKey(hash, 0);
 		NameKey maxKey = keys1 != null && !keys1.isEmpty() ? List_.first(keys1) : boundingKey(hash, 1);
 		Streamlet<Bytes> st = store.mutateData().keys(keyUtil.toBytes(minKey), increment(keyUtil.toBytes(maxKey)));
 
 		return st.concatMap(bytes -> {
-			NameKey key = keyUtil.toNameKey(bytes);
+			var key = keyUtil.toNameKey(bytes);
 			List<NameKey> prefix1 = List_.concat(prefix, List.of(key));
 
 			if (key.size == 0) {
@@ -63,7 +63,7 @@ public class FileSystemKeySet {
 		List<NameKey> keys = keyUtil.toNameKeys(name);
 
 		for (var i = keys.size() - 1; 0 <= i; i--) {
-			NameKey key = keys.get(i);
+			var key = keys.get(i);
 
 			if (key.size == 0) {
 				Bytes hash = keyUtil.hash(keyUtil.toName(keys.subList(0, i + 1)));

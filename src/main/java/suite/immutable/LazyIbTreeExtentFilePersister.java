@@ -155,7 +155,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 
 	private Extent save_(List<Slot<T>> slots) {
 		IdentityKey<List<Slot<T>>> key = IdentityKey.of(slots);
-		Extent extent = slotsByExtent.inverse().get(key);
+		var extent = slotsByExtent.inverse().get(key);
 		if (extent == null) {
 			List<Pair<T, Extent>> pairs = Read //
 					.from(slots) //

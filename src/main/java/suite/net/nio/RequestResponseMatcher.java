@@ -36,7 +36,7 @@ public class RequestResponseMatcher {
 	public void onResponseReceived(int token, Bytes response) {
 		Pair<Mutable<Bytes>, Condition> pair = requests.get(token);
 		Mutable<Bytes> holder = pair.t0;
-		Condition condition = pair.t1;
+		var condition = pair.t1;
 		condition.thenNotify(() -> holder.set(response));
 	}
 

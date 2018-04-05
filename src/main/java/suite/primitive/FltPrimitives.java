@@ -142,7 +142,7 @@ public class FltPrimitives {
 		public static <T> Fun<Outlet<T>, FltStreamlet> lift(Obj_Flt<T> fun0) {
 			Obj_Flt<T> fun1 = fun0.rethrow();
 			return ts -> {
-				FloatsBuilder b = new FloatsBuilder();
+				var b = new FloatsBuilder();
 				T t;
 				while ((t = ts.next()) != null)
 					b.append(fun1.apply(t));

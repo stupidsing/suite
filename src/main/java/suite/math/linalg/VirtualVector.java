@@ -27,9 +27,9 @@ public class VirtualVector {
 	}
 
 	public VirtualVector add(VirtualVector vv1) {
-		VirtualVector vv0 = this;
-		Int_Flt f0 = vv0.get;
-		Int_Flt f1 = vv1.get;
+		var vv0 = this;
+		var f0 = vv0.get;
+		var f1 = vv1.get;
 		return VirtualVectorUtil.checkSizes(vv0, vv1, i -> f0.apply(i) + f1.apply(i));
 	}
 
@@ -48,7 +48,7 @@ public class VirtualVector {
 	}
 
 	public String dump() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		dump(sb);
 		return sb.toString();
 	}

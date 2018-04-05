@@ -32,13 +32,13 @@ public class Lccs0 {
 			while (longest.t1 == null) {
 				IntObjMap<Segment> segments0 = hashSegments(bytes0, rollingSize);
 				IntObjMap<Segment> segments1 = hashSegments(bytes1, rollingSize);
-				IntSet keys0 = segments0.streamlet().keys().toSet();
-				IntSet keys1 = segments1.streamlet().keys().toSet();
+				var keys0 = segments0.streamlet().keys().toSet();
+				var keys1 = segments1.streamlet().keys().toSet();
 				int[] keys = IntSet.intersect(keys0, keys1).streamlet().toArray();
 
 				for (var key : keys) {
-					Segment segment0 = segments0.get(key);
-					Segment segment1 = segments1.get(key);
+					var segment0 = segments0.get(key);
+					var segment1 = segments1.get(key);
 					var end0 = segment0.end;
 					var end1 = segment1.end;
 					Bytes b0 = bytes0.range(segment0.start, end0);

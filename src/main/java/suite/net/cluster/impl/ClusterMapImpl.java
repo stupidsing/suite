@@ -57,9 +57,9 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 
 	private Fun<PutQuery.Request, PutQuery.Response> onPut = request -> {
 		@SuppressWarnings("unchecked")
-		K key = (K) request.key;
+		var key = (K) request.key;
 		@SuppressWarnings("unchecked")
-		V value = (V) request.value;
+		var value = (V) request.value;
 		PutQuery.Response response = new PutQuery.Response();
 		response.value = localMap.put(key, value);
 		return response;
@@ -82,7 +82,7 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 		GetQuery.Response response = (GetQuery.Response) object;
 
 		@SuppressWarnings("unchecked")
-		V value = (V) response.value;
+		var value = (V) response.value;
 		return value;
 	}
 
@@ -94,7 +94,7 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 		PutQuery.Response response = (PutQuery.Response) object;
 
 		@SuppressWarnings("unchecked")
-		V value1 = (V) response.value;
+		var value1 = (V) response.value;
 		return value1;
 	}
 

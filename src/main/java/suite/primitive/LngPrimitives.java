@@ -142,7 +142,7 @@ public class LngPrimitives {
 		public static <T> Fun<Outlet<T>, LngStreamlet> lift(Obj_Lng<T> fun0) {
 			Obj_Lng<T> fun1 = fun0.rethrow();
 			return ts -> {
-				LongsBuilder b = new LongsBuilder();
+				var b = new LongsBuilder();
 				T t;
 				while ((t = ts.next()) != null)
 					b.append(fun1.apply(t));

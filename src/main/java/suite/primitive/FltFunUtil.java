@@ -90,7 +90,7 @@ public class FltFunUtil {
 	}
 
 	public static FltSource filter(FltTest fun0, FltSource source) {
-		FltTest fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = EMPTYVALUE;
 			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
@@ -124,7 +124,7 @@ public class FltFunUtil {
 	}
 
 	public static boolean isAll(FltTest pred0, FltSource source) {
-		FltTest pred1 = pred0.rethrow();
+		var pred1 = pred0.rethrow();
 		float c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (!pred1.test(c))
@@ -133,7 +133,7 @@ public class FltFunUtil {
 	}
 
 	public static boolean isAny(FltTest pred0, FltSource source) {
-		FltTest pred1 = pred0.rethrow();
+		var pred1 = pred0.rethrow();
 		float c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (pred1.test(c))
@@ -177,7 +177,7 @@ public class FltFunUtil {
 		Flt_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
 			var c = source.source();
-			boolean b = c != EMPTYVALUE;
+			var b = c != EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
 			return b;
@@ -185,7 +185,7 @@ public class FltFunUtil {
 	}
 
 	public static FltSource mapFlt(Flt_Flt fun0, FltSource source) {
-		Flt_Flt fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = source.source();
 			return c != FltFunUtil.EMPTYVALUE ? fun1.apply(c) : FltFunUtil.EMPTYVALUE;
@@ -219,7 +219,7 @@ public class FltFunUtil {
 	 * skipped.
 	 */
 	public static Source<FltSource> split(FltTest fun0, FltSource source) {
-		FltTest fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return new Source<>() {
 			private float c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;

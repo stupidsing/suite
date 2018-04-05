@@ -64,7 +64,7 @@ public class FunUtil2 {
 
 			public boolean source2(Pair<K, V> pair) {
 				if (!isAppended) {
-					boolean b = source.source2(pair);
+					var b = source.source2(pair);
 					if (!b) {
 						pair.update(key, value);
 						isAppended = true;
@@ -82,7 +82,7 @@ public class FunUtil2 {
 			private boolean isAvail;
 			private int i;
 			private Source2<K, V> source_ = pair1 -> {
-				boolean b = (isAvail = isAvail && source2.source2(pair)) && ++i < n;
+				var b = (isAvail = isAvail && source2.source2(pair)) && ++i < n;
 				if (b)
 					pair1.update(pair.t0, pair.t1);
 				else
@@ -105,7 +105,7 @@ public class FunUtil2 {
 			private Source2<K, V> source2 = nullSource();
 
 			public boolean source2(Pair<K, V> pair) {
-				boolean b = false;
+				var b = false;
 				while (source2 != null && !(b = source2.source2(pair)))
 					source2 = source.source();
 				return b;
@@ -221,7 +221,7 @@ public class FunUtil2 {
 		Fun2<K, V, V1> vf1 = vf0.rethrow();
 		Pair<K, V> pair1 = Pair.of(null, null);
 		return pair -> {
-			boolean b = source2.source2(pair1);
+			var b = source2.source2(pair1);
 			if (b) {
 				pair.update(kf1.apply(pair1.t0, pair1.t1), vf1.apply(pair1.t0, pair1.t1));
 			}

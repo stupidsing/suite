@@ -49,7 +49,7 @@ public class FunTypeInformation {
 	public Type typeOf(FunExpr e0) {
 		return e0.<Type> switch_( //
 		).applyIf(ArrayFunExpr.class, e1 -> {
-			Type type = Type.getType(e1.clazz);
+			var type = Type.getType(e1.clazz);
 			for (var element : e1.elements)
 				if (element != null && type != typeOf(element))
 					Fail.t();

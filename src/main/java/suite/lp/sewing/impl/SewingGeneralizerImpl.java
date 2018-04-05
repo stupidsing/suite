@@ -14,7 +14,6 @@ import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.Tuple;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
 
@@ -41,7 +40,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 			Tree tree;
 
 			if (node0 instanceof Atom) {
-				Atom atom = (Atom) node0;
+				var atom = (Atom) node0;
 				var name = atom.name;
 				if (ProverConstant.isCut(node0) || ProverConstant.isVariable(name)) {
 					var index = vm.computeIndex(atom);
@@ -64,15 +63,15 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 					return Dict.of(pairs);
 				};
 			} else if ((tree = Tree.decompose(node0)) != null) {
-				Operator operator = tree.getOperator();
+				var operator = tree.getOperator();
 				if (operator != TermOp.OR____) {
-					Generalize_ f = generalizer(tree.getLeft());
+					var f = generalizer(tree.getLeft());
 					funs.add(env -> Tree.of(operator, f.apply(env), null));
 					node = tree.getRight();
 					continue;
 				} else { // delay generalizing for performance
-					Generalize_ lf = generalizer(tree.getLeft());
-					Generalize_ rf = generalizer(tree.getRight());
+					var lf = generalizer(tree.getLeft());
+					var rf = generalizer(tree.getRight());
 					fun = env -> Tree.of(operator, lf.apply(env), new Suspend(() -> rf.apply(env)));
 				}
 			} else if (node0 instanceof Tuple) {
@@ -96,7 +95,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 				Tree t = Tree.of(null, null, null);
 				Node node_ = t;
 				for (Generalize_ fun_ : funs) {
-					Tree t_ = Tree.decompose(node_);
+					var t_ = Tree.decompose(node_);
 					Tree.forceSetRight(t_, fun_.apply(env));
 					node_ = t_.getRight();
 				}

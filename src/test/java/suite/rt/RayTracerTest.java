@@ -3,7 +3,6 @@ package suite.rt;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 
@@ -106,7 +105,7 @@ public class RayTracerTest {
 	@Test
 	public void testLight() throws IOException {
 		RtObject sky = Sphere.c(v(0d, 0d, 0d), 100d, solid(cw));
-		Scene scene = new Scene(List.of(sky));
+		var scene = new Scene(List.of(sky));
 
 		LightSource light = new PointLightSource(v(0d, 0d, 90d), cw);
 		List<LightSource> lights = List.of(light);
@@ -200,7 +199,7 @@ public class RayTracerTest {
 	}
 
 	private void rasterize(RayTracer rayTracer) throws IOException {
-		Path path = Constants.tmp(Thread_.getStackTrace(3).getMethodName() + ".png");
+		var path = Constants.tmp(Thread_.getStackTrace(3).getMethodName() + ".png");
 		BufferedImage bufferedImage = rayTracer.trace(640, 480, 640);
 
 		try (OutputStream os = FileUtil.out(path)) {

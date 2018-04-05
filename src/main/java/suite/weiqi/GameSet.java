@@ -55,7 +55,7 @@ public class GameSet {
 	}
 
 	public Move play(Coordinate c) {
-		Move move = new Move(c);
+		var move = new Move(c);
 		play(move);
 		return move;
 	}
@@ -82,14 +82,14 @@ public class GameSet {
 	 * Plays a move on the Weiqi board. Ensure no repeats in game state history.
 	 */
 	private boolean playIfValid(Move move, boolean rollBack) {
-		Occupation opponent = nextPlayer.opponent();
+		var opponent = nextPlayer.opponent();
 		var i = 0;
 
 		for (var c1 : move.position.neighbors)
 			move.neighborColors[i++] = board.get(c1);
 
 		move.type = board.playIfSeemsPossible(move.position, nextPlayer);
-		boolean success = move.type != MoveType.INVALID;
+		var success = move.type != MoveType.INVALID;
 
 		if (success) {
 			var newHashCode = board.hashCode();
@@ -118,7 +118,7 @@ public class GameSet {
 	}
 
 	private void unplay_(Move move) {
-		Occupation opponent = nextPlayer.opponent();
+		var opponent = nextPlayer.opponent();
 
 		if (move.type == MoveType.CAPTURE) {
 			var i = 0;
@@ -139,7 +139,7 @@ public class GameSet {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == GameSet.class) {
-			GameSet other = (GameSet) object;
+			var other = (GameSet) object;
 			return board.equals(other.board) && nextPlayer == other.nextPlayer && previousStates.equals(other.previousStates);
 		} else
 			return false;

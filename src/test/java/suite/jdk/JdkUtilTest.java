@@ -1,7 +1,6 @@
 package suite.jdk;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 import org.junit.Test;
 
@@ -12,8 +11,8 @@ public class JdkUtilTest {
 
 	@Test
 	public void test() throws IOException {
-		Path srcDir = Constants.tmp("src");
-		Path binDir = Constants.tmp("bin");
+		var srcDir = Constants.tmp("src");
+		var binDir = Constants.tmp("bin");
 		var className = "HelloWorld";
 
 		FileUtil.mkdir(srcDir);

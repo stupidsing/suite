@@ -56,7 +56,7 @@ public class ObjLngMap<K> {
 		if (object instanceof ObjLngMap) {
 			@SuppressWarnings("unchecked")
 			ObjLngMap<Object> other = (ObjLngMap<Object>) object;
-			boolean b = size == other.size;
+			var b = size == other.size;
 			for (LngObjPair<K> pair : streamlet())
 				b &= other.get(pair.t1) == pair.t0;
 			return b;
@@ -193,7 +193,7 @@ public class ObjLngMap<K> {
 
 	private K cast(Object o) {
 		@SuppressWarnings("unchecked")
-		K k = (K) o;
+		var k = (K) o;
 		return k;
 	}
 

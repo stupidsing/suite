@@ -59,10 +59,10 @@ public class Lexer {
 
 	private String nextToken() {
 		if (!eof) {
-			boolean isEscape = false;
+			var isEscape = false;
 			var ch = peeked;
 
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			sb.append(nextChar());
 
 			if (ch == '\'') {

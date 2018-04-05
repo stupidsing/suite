@@ -18,7 +18,7 @@ public class FltOpt {
 	}
 
 	public static FltOpt of(float t) {
-		FltOpt p = new FltOpt();
+		var p = new FltOpt();
 		p.value = t;
 		return p;
 	}

@@ -41,7 +41,7 @@ public class LogicCompilerLevel1Test {
 
 	@Test
 	public void testMemberOfMember() {
-		RuleSet rs = Suite.newRuleSet(List.of("auto.sl"));
+		var rs = Suite.newRuleSet(List.of("auto.sl"));
 		Node goal = Suite.parse("source .lln, member .lln .ln, member .ln .n, sink .n");
 		Node input = Suite.parse("((1, 2,), (3, 4,),)");
 		List<Node> results = FindUtil.collectList(finder(rs, goal), input);
@@ -56,7 +56,7 @@ public class LogicCompilerLevel1Test {
 	 */
 	@Test
 	public void testTailCalls() {
-		RuleSet rs = Suite.newRuleSet();
+		var rs = Suite.newRuleSet();
 		Suite.addRule(rs, "ab a");
 		Suite.addRule(rs, "ab b");
 

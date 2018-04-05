@@ -51,7 +51,7 @@ public class HkexUtil {
 	}
 
 	private static Time until(Time start, int dir, Predicate<Time> pred) {
-		Time time = start;
+		var time = start;
 		if (!pred.test(time)) {
 			time = time.thisSecond().addSeconds(dir < 0 ? 0 : 1);
 			Time time1 = null;

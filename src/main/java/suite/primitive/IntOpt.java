@@ -18,7 +18,7 @@ public class IntOpt {
 	}
 
 	public static IntOpt of(int t) {
-		IntOpt p = new IntOpt();
+		var p = new IntOpt();
 		p.value = t;
 		return p;
 	}

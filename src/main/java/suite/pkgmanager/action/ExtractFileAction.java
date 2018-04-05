@@ -3,7 +3,6 @@ package suite.pkgmanager.action;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.zip.ZipFile;
 
 import suite.util.Copy;
@@ -22,8 +21,8 @@ public class ExtractFileAction implements InstallAction {
 
 	public void act() throws IOException {
 		try (ZipFile zipFile = new ZipFile(packageFile);
-				InputStream is = zipFile.getInputStream(zipFile.getEntry(filename0));
-				FileOutputStream fos = new FileOutputStream(filename1)) {
+				var is = zipFile.getInputStream(zipFile.getEntry(filename0));
+				var fos = new FileOutputStream(filename1)) {
 			Copy.stream(is, fos);
 		}
 	}

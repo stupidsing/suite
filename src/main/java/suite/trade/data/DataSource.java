@@ -38,7 +38,7 @@ public class DataSource {
 	public final float[] volumes;
 
 	public static <K> AlignKeyDataSource<K> alignAll(Streamlet2<K, DataSource> dsByKey0) {
-		AlignDataSource alignDataSource = alignAll(dsByKey0.values());
+		var alignDataSource = alignAll(dsByKey0.values());
 
 		return dsByKey0 //
 				.mapValue(alignDataSource::align) //
@@ -215,7 +215,7 @@ public class DataSource {
 	}
 
 	public String recent(String prefix, int size) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var i = ts.length - size; i < ts.length; i++)
 			sb.append(prefix + "[" + Time.ofEpochSec(ts[i]) + "]" //
 					+ " o/c:" + To.string(opens[i]) + "/" + To.string(closes[i]) //
@@ -285,7 +285,7 @@ public class DataSource {
 		List<Datum> data1 = new ArrayList<>();
 
 		for (var i = 0; i < prices.length; i++) {
-			Datum datum = datum_(i);
+			var datum = datum_(i);
 			if (t0 <= datum.t0 && datum.tx <= tx)
 				data1.add(datum);
 		}

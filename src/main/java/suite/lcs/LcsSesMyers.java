@@ -36,7 +36,7 @@ public class LcsSesMyers<T> {
 				k1 = i1 * 2 - d;
 
 				// move down or move right?
-				boolean down = k1 == -d || k1 != d && v0[i1 - 1] < v0[i1];
+				var down = k1 == -d || k1 != d && v0[i1 - 1] < v0[i1];
 				var i0 = i1 + (down ? 0 : -1);
 
 				// moves like a snake; down or right for 1 step, then
@@ -68,7 +68,7 @@ public class LcsSesMyers<T> {
 			v0 = 0 < d ? vs.get(d - 1) : vdummy;
 
 			// move down or move right?
-			boolean down = k1 == -d || k1 != d && v0[i1 - 1] < v0[i1];
+			var down = k1 == -d || k1 != d && v0[i1 - 1] < v0[i1];
 			var i0 = i1 + (down ? 0 : -1);
 
 			// moves back the snake

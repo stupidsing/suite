@@ -61,7 +61,7 @@ public class Intrinsics {
 	}
 
 	public static Node drain(IntrinsicCallback callback, IPointer<Node> pointer) {
-		Intrinsic drain = new Intrinsic() {
+		var drain = new Intrinsic() {
 			public Node invoke(IntrinsicCallback callback1, List<Node> inputs) {
 				IPointer<Node> pointer1 = Data.get(inputs.get(0));
 				Node head;

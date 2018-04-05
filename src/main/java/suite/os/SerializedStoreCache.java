@@ -45,7 +45,7 @@ public class SerializedStoreCache<K, V> {
 	}
 
 	private static <T> Bytes serialize(Serializer<T> serializer, T t) {
-		ByteArrayOutputStream baosKey = new ByteArrayOutputStream();
+		var baosKey = new ByteArrayOutputStream();
 
 		try (DataOutput_ dos = DataOutput_.of(baosKey)) {
 			serializer.write(dos, t);

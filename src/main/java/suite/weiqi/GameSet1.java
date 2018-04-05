@@ -43,7 +43,7 @@ public class GameSet1 {
 		undos.push(board.move(c, nextPlayer));
 		nextPlayer = nextPlayer.opponent();
 
-		boolean isSuccess = previousStates.contains(board.hashCode());
+		var isSuccess = previousStates.contains(board.hashCode());
 		if (!isSuccess)
 			undo();
 		return isSuccess;
@@ -62,7 +62,7 @@ public class GameSet1 {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == GameSet1.class) {
-			GameSet1 other = (GameSet1) object;
+			var other = (GameSet1) object;
 			return board.equals(other.board) && nextPlayer == other.nextPlayer && previousStates.equals(other.previousStates);
 		} else
 			return false;

@@ -38,7 +38,7 @@ public class DblFltMap {
 		Obj_Dbl<T> kf1 = kf0.rethrow();
 		Obj_Flt<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			DblFltMap map = new DblFltMap();
+			var map = new DblFltMap();
 			T t;
 			while ((t = outlet.source().source()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
@@ -64,8 +64,8 @@ public class DblFltMap {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof DblFltMap) {
-			DblFltMap other = (DblFltMap) object;
-			boolean b = size == other.size;
+			var other = (DblFltMap) object;
+			var b = size == other.size;
 			for (DblObjPair<Float> pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
@@ -75,7 +75,7 @@ public class DblFltMap {
 
 	public void forEach(DblFltSink sink) {
 		DblFltPair pair = DblFltPair.of((double) 0, (float) 0);
-		DblFltSource source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -143,7 +143,7 @@ public class DblFltMap {
 			private DblFltPair pair0 = DblFltPair.of((double) 0, (float) 0);
 
 			public boolean source2(DblObjPair<Float> pair) {
-				boolean b = source0.source2(pair0);
+				var b = source0.source2(pair0);
 				pair.update(pair0.t0, pair0.t1);
 				return b;
 			}

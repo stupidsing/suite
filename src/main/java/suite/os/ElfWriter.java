@@ -20,7 +20,7 @@ import suite.util.Util;
 public class ElfWriter {
 
 	public Execute exec(byte[] input, Int_Obj<Bytes> source) {
-		Path path = Constants.tmp("a.out." + Util.temp());
+		var path = Constants.tmp("a.out." + Util.temp());
 		var org = 0x08048000;
 
 		write(org, source.apply(org + 84), path);
@@ -50,7 +50,7 @@ public class ElfWriter {
 	}
 
 	private void write(int org, Bytes code, DataOutput_ do_) throws IOException {
-		Bytes header = new Writer_() //
+		var header = new Writer_() //
 				.db(0x7F) // e_ident
 				.append("ELF".getBytes(Constants.charset)) //
 				.append(new byte[] { 1, 1, 1, 0, }) //

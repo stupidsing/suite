@@ -3,7 +3,6 @@ package suite.http;
 import static suite.util.Friends.max;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
@@ -12,10 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 
 import suite.concurrent.Backoff;
@@ -78,8 +74,8 @@ public class HttpUtil {
 	}
 
 	private static HttpResult http_(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) {
-		AtomicLong al = timestampFun.apply(url.getHost());
-		Backoff backoff = new Backoff();
+		var al = timestampFun.apply(url.getHost());
+		var backoff = new Backoff();
 		long current, last, start, next;
 
 		do
@@ -97,9 +93,9 @@ public class HttpUtil {
 
 	private static HttpResult httpApache(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) throws IOException {
 		LogUtil.info("START " + method + " " + url);
-		CloseableHttpClient client = HttpClients.createDefault();
+		var client = HttpClients.createDefault();
 
-		HttpRequestBase request = new HttpRequestBase() {
+		var request = new HttpRequestBase() {
 			{
 				setURI(URI.create(url.toString()));
 				headers.entrySet().forEach(e -> addHeader(e.getKey(), e.getValue()));
@@ -110,11 +106,11 @@ public class HttpUtil {
 			}
 		};
 
-		CloseableHttpResponse response = client.execute(request);
+		var response = client.execute(request);
 
-		StatusLine statusLine = response.getStatusLine();
+		var statusLine = response.getStatusLine();
 		var statusCode = statusLine.getStatusCode();
-		InputStream inputStream = response.getEntity().getContent();
+		var inputStream = response.getEntity().getContent();
 		Outlet<Bytes> out = To.outlet(inputStream) //
 				.closeAtEnd(inputStream) //
 				.closeAtEnd(response) //
@@ -132,7 +128,7 @@ public class HttpUtil {
 
 	@SuppressWarnings("unused")
 	private static HttpResult httpJre(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) throws IOException {
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		var conn = (HttpURLConnection) url.openConnection();
 		conn.setDoOutput(true);
 		conn.setRequestMethod(method);
 
@@ -149,7 +145,7 @@ public class HttpUtil {
 				|| responseCode == HttpURLConnection.HTTP_MOVED_TEMP //
 				|| responseCode == HttpURLConnection.HTTP_SEE_OTHER) {
 			var cookies1 = conn.getHeaderField("Set-Cookie");
-			URL url1 = To.url(conn.getHeaderField("Location"));
+			var url1 = To.url(conn.getHeaderField("Location"));
 
 			Map<String, String> headers1 = new HashMap<>(headers);
 			if (cookies1 != null)

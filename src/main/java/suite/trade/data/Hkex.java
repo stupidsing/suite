@@ -241,10 +241,10 @@ public class Hkex {
 	}
 
 	public Asset queryCompany(String symbol) {
-		Asset asset = companyBySymbol.get(symbol);
+		var asset = companyBySymbol.get(symbol);
 
 		if (asset == null && !delisted.contains(symbol)) {
-			JsonNode json = query("" //
+			var json = query("" //
 					+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
 					+ "?location=companySearch" //
 					+ "&SearchMethod=1" //
@@ -333,7 +333,7 @@ public class Hkex {
 	}
 
 	private List<Asset> queryCompanies_(int pageNo) {
-		JsonNode json = query("" //
+		var json = query("" //
 				+ "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
 				+ "?location=companySearch" //
 				+ "&SearchMethod=2" //
@@ -392,7 +392,7 @@ public class Hkex {
 		if (String_.equals(symbol, "0700.HK"))
 			return 100;
 		else {
-			JsonNode json = query("" //
+			var json = query("" //
 					+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
 					+ "?location=companySearch" //
 					+ "&SearchMethod=1" //

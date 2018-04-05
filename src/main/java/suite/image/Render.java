@@ -29,10 +29,10 @@ public class Render {
 		}
 
 		public boolean view() {
-			BufferedImage image = this;
-			JLabel label = new JLabel(new ImageIcon(image));
+			var image = this;
+			var label = new JLabel(new ImageIcon(image));
 
-			JFrame frame = new JFrame();
+			var frame = new JFrame();
 			frame.getContentPane().add(label, BorderLayout.CENTER);
 			frame.setSize(image.getWidth(), image.getHeight());
 			frame.setVisible(true);
@@ -79,7 +79,7 @@ public class Render {
 
 		for (var x = 0; x < width; x++)
 			for (var y = 0; y < height; y++) {
-				R3 pixel = limit(pixels[x][y]);
+				var pixel = limit(pixels[x][y]);
 				image.setRGB(x, y, new Color(pixel.x, pixel.y, pixel.z).getRGB());
 			}
 

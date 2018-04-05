@@ -24,7 +24,7 @@ public class HtmlUtil {
 		String decoded;
 
 		if (in != null) {
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			var index = 0;
 
 			while (index < in.length()) {
@@ -58,7 +58,7 @@ public class HtmlUtil {
 		String encoded;
 
 		if (in != null) {
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 
 			for (var index = 0; index < in.length(); index++) {
 				var ch = in.charAt(index);

@@ -139,7 +139,7 @@ public class NeuralNetwork {
 
 	private Layer<float[][], float[][]> convLayer(int sx, int sy) {
 		float[][] kernel = To.matrix(sx, sy, (x, y) -> random.nextFloat());
-		DblMutable bias = DblMutable.of(0d);
+		var bias = DblMutable.of(0d);
 
 		return inputs -> {
 			var hsx = mtx.height(inputs) - sx + 1;

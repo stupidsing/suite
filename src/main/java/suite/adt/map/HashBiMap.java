@@ -77,7 +77,7 @@ public class HashBiMap<K, V> implements BiMap<K, V> {
 
 	@Override
 	public V remove(Object key) {
-		V value0 = map.remove(key);
+		var value0 = map.remove(key);
 		inverseMap.remove(value0);
 		return value0;
 	}

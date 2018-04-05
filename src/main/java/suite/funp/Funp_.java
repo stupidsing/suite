@@ -52,16 +52,16 @@ public class Funp_ {
 
 		public Pair<List<Instruction>, Bytes> compile(int offset, String fp) {
 			var node = Suite.parse(fp);
-			Funp f0 = p0.parse(node);
+			var f0 = p0.parse(node);
 			Funp f1 = p1.inline(f0, isOptimize ? 3 : 0, 1, 1, 1, 1);
-			Funp f2 = p2.infer(f1);
-			Funp f3 = p3.optimize(f2);
+			var f2 = p2.infer(f1);
+			var f3 = p3.optimize(f2);
 			List<Instruction> instructions = p4.compile0(f3);
 			return Pair.of(instructions, p4.compile1(offset, instructions, true));
 		}
 
 		public int interpret(Node node) {
-			Funp f0 = p0.parse(node);
+			var f0 = p0.parse(node);
 			p2.infer(f0);
 			Thunk thunk = p2g.compile(0, IMap.empty(), f0);
 			Value value = thunk.apply(new Rt(null, null));
@@ -70,7 +70,7 @@ public class Funp_ {
 	}
 
 	public static void dump(Funp node) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 
 		new Object() {
 			private void dump(Object object) {

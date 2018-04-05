@@ -19,7 +19,7 @@ public class MovesTest {
 
 	@Test
 	public void testNoMoveToFind() {
-		Board board = blackBoard();
+		var board = blackBoard();
 		board.set(Coordinate.c(2, 2), Occupation.EMPTY);
 
 		GameSet gameSet = new GameSet(board, Occupation.BLACK);
@@ -29,7 +29,7 @@ public class MovesTest {
 
 	@Test
 	public void testFindMove() {
-		Board board = blackBoard();
+		var board = blackBoard();
 		board.set(Coordinate.c(3, 3), Occupation.EMPTY);
 		board.set(Coordinate.c(3, 5), Occupation.EMPTY);
 		board.set(Coordinate.c(5, 3), Occupation.EMPTY);
@@ -44,7 +44,7 @@ public class MovesTest {
 	}
 
 	private Board blackBoard() {
-		Board board = new Board();
+		var board = new Board();
 		for (var c : Coordinate.all())
 			board.set(c, Occupation.BLACK);
 		return board;
@@ -54,7 +54,7 @@ public class MovesTest {
 	public void testRandom() {
 		GameSet gameSet = new GameSet(new Board(), Occupation.BLACK);
 		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
-		boolean isWon = visitor.evaluateRandomOutcome();
+		var isWon = visitor.evaluateRandomOutcome();
 		UserInterface.display(gameSet);
 		System.out.println(isWon ? "WON" : "LOSS");
 	}

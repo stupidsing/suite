@@ -42,7 +42,7 @@ public class Prototype implements Comparable<Prototype> {
 
 	public static Prototype of(Node node, int n) {
 		for (var i = 0; i < n; i++) {
-			Tree tree = decompose(node);
+			var tree = decompose(node);
 			node = tree != null ? tree.getRight() : Atom.NIL;
 		}
 
@@ -57,7 +57,7 @@ public class Prototype implements Comparable<Prototype> {
 			node = t0.getLeft();
 		}
 
-		boolean indexable = !ProverConstant.isVariant(node) && !(node instanceof Reference);
+		var indexable = !ProverConstant.isVariant(node) && !(node instanceof Reference);
 		return indexable ? new Prototype(node) : null;
 	}
 
@@ -82,7 +82,7 @@ public class Prototype implements Comparable<Prototype> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Prototype.class) {
-			Prototype p = (Prototype) object;
+			var p = (Prototype) object;
 			return Objects.equals(head, p.head);
 		} else
 			return false;

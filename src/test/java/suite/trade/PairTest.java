@@ -5,11 +5,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.math.numeric.Statistic;
-import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Ints_;
 import suite.primitive.Longs_;
 import suite.primitive.adt.pair.FltObjPair;
-import suite.primitive.streamlet.LngStreamlet;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
@@ -34,14 +32,14 @@ public class PairTest {
 	private void test(TimeRange period, String symbol0, String symbol1) {
 		DataSource ds0 = cfg.dataSource(symbol0, period);
 		DataSource ds1 = cfg.dataSource(symbol1, period);
-		LngStreamlet ts0 = Longs_.of(ds0.ts);
-		LngStreamlet ts1 = Longs_.of(ds1.ts);
+		var ts0 = Longs_.of(ds0.ts);
+		var ts1 = Longs_.of(ds1.ts);
 		long[] tradeTimes = Longs_.concat(ts0, ts1).distinct().sort().toArray();
 		var prices0 = ds0.alignBeforePrices(tradeTimes).prices;
 		var prices1 = ds1.alignBeforePrices(tradeTimes).prices;
 		var length = prices0.length;
 
-		LinearRegression lr = statistic.linearRegression(Ints_ //
+		var lr = statistic.linearRegression(Ints_ //
 				.range(length) //
 				.map(i -> FltObjPair.of(prices1[i], new float[] { prices0[i], 1f, })));
 

@@ -142,7 +142,7 @@ public class DblPrimitives {
 		public static <T> Fun<Outlet<T>, DblStreamlet> lift(Obj_Dbl<T> fun0) {
 			Obj_Dbl<T> fun1 = fun0.rethrow();
 			return ts -> {
-				DoublesBuilder b = new DoublesBuilder();
+				var b = new DoublesBuilder();
 				T t;
 				while ((t = ts.next()) != null)
 					b.append(fun1.apply(t));

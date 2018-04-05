@@ -27,7 +27,6 @@ import suite.trade.data.DataSource.Eod;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 import ts.TimeSeries;
-import ts.TimeSeries.ReturnsStat;
 
 public class BackAllocTester {
 
@@ -110,7 +109,7 @@ public class BackAllocTester {
 			try {
 				for (var i = 0; i < size; i++) {
 					var index = indices[i];
-					Time time = Time.ofEpochSec(tradeTs[index]);
+					var time = Time.ofEpochSec(tradeTs[index]);
 
 					ymd = time.ymd();
 					eodBySymbol = dsBySymbol.mapValue(ds -> ds.getEod(index)).toMap();
@@ -138,7 +137,7 @@ public class BackAllocTester {
 			Map<String, Eod> eodBySymbol_ = eodBySymbol;
 			trades.addAll(Trade_.sellAll(ymd, Read.from(trades), symbol -> eodBySymbol_.get(symbol).nextOpen).toList());
 
-			ReturnsStat rs = ts.returnsStatDailyAnnualized(valuations_);
+			var rs = ts.returnsStatDailyAnnualized(valuations_);
 
 			valuations = valuations_;
 			holdBySymbol = holdBySymbol_;
@@ -154,7 +153,7 @@ public class BackAllocTester {
 		}
 
 		public String conclusion() {
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			var length = valuations.length;
 
 			for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))

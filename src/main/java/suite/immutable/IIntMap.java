@@ -91,7 +91,7 @@ public class IIntMap<V> {
 		Bl<Bl<V>> bl4 = Bl.get(bl3, k3);
 		Bl<V> bl5 = Bl.get(bl4, k4);
 		V v0 = Bl.get(bl5, k5);
-		V v1 = fun.apply(v0);
+		var v1 = fun.apply(v0);
 		Bl<V> new5 = Bl.update(bl5, k5, v1);
 		Bl<Bl<V>> new4 = Bl.update(bl4, k4, new5);
 		Bl<Bl<Bl<V>>> new3 = Bl.update(bl3, k3, new4);

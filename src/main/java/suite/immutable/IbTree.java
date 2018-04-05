@@ -93,7 +93,7 @@ public class IbTree<T> implements ITree<T> {
 			var size = slots.size();
 			T p = null;
 
-			boolean b = true //
+			var b = true //
 					&& (minBranchFactor <= size || Fail.b("too few branches")) //
 					&& (size < maxBranchFactor || Fail.b("too many branches"));
 
@@ -191,7 +191,7 @@ public class IbTree<T> implements ITree<T> {
 				replaceSlots = slots1;
 		} else {
 			T t0 = fs.c == 0 ? fs.slot.pivot : null;
-			T t1 = fun.apply(t0);
+			var t1 = fun.apply(t0);
 
 			replaceSlots = new ArrayList<>();
 			if (fs.c != 0)
@@ -260,7 +260,7 @@ public class IbTree<T> implements ITree<T> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		dump(sb, root, "");
 		return sb.toString();
 	}

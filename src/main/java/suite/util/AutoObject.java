@@ -54,7 +54,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 		Class<?> class1 = t1.getClass();
 		int c;
 		if (class0 == class1) {
-			T t0 = self();
+			var t0 = self();
 			Iterator<Comparable<?>> iter0 = t0.values().iterator();
 			Iterator<Comparable<?>> iter1 = t1.values().iterator();
 			boolean b0, b1;
@@ -76,9 +76,9 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 	public boolean equals(Object object) {
 		boolean b;
 		if (getClass() == object.getClass()) {
-			T t0 = self();
+			var t0 = self();
 			@SuppressWarnings("unchecked")
-			T t1 = (T) object;
+			var t1 = (T) object;
 			List<Comparable<?>> values0 = t0.values();
 			List<Comparable<?>> values1 = t1.values();
 			var size0 = values0.size();
@@ -107,7 +107,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 	@Override
 	public String toString() {
 		IList<AutoObject<?>> recurse0 = recurse.get();
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 
 		if (!recurse0.contains(this))
 			try {
@@ -139,7 +139,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 	private T self() {
 		@SuppressWarnings("unchecked")
-		T t = (T) this;
+		var t = (T) this;
 		return t;
 	}
 

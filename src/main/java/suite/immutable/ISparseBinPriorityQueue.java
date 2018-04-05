@@ -48,7 +48,7 @@ public class ISparseBinPriorityQueue<T> {
 			T min = null;
 
 			for (var tree : trees) {
-				T value = tree.root.value;
+				var value = tree.root.value;
 				if (min == null || comparator.compare(value, min) < 0) {
 					this.tree = tree;
 					min = value;
@@ -116,8 +116,8 @@ public class ISparseBinPriorityQueue<T> {
 					ts1 = trees0;
 				}
 
-				Tree head0 = ts0.head;
-				Tree head1 = ts1.head;
+				var head0 = ts0.head;
+				var head1 = ts1.head;
 				var tail0 = ts0.tail;
 				var tail1 = ts1.tail;
 

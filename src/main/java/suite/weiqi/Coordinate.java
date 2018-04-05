@@ -33,17 +33,17 @@ public class Coordinate implements Comparable<Coordinate> {
 
 		for (var x = 0; x < Weiqi.size; x++)
 			for (var y = 0; y < Weiqi.size; y++) {
-				Coordinate c0 = coords[x][y];
+				var c0 = coords[x][y];
 
 				if (0 < x) {
-					Coordinate c1 = coords[x - 1][y];
+					var c1 = coords[x - 1][y];
 					c0.leftOrUp.add(c1);
 					c0.neighbors.add(c1);
 					c1.neighbors.add(c0);
 				}
 
 				if (0 < y) {
-					Coordinate c2 = coords[x][y - 1];
+					var c2 = coords[x][y - 1];
 					c0.leftOrUp.add(c2);
 					c0.neighbors.add(c2);
 					c2.neighbors.add(c0);
@@ -79,7 +79,7 @@ public class Coordinate implements Comparable<Coordinate> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Coordinate.class) {
-			Coordinate c = (Coordinate) object;
+			var c = (Coordinate) object;
 			return index == c.index;
 		} else
 			return false;
@@ -92,7 +92,7 @@ public class Coordinate implements Comparable<Coordinate> {
 
 	@Override
 	public String toString() {
-		IntIntPair location = getLocation();
+		var location = getLocation();
 		return String.format("%d,%d", location.t0, location.t1);
 	}
 

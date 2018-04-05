@@ -9,7 +9,6 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.TreeIntern;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 
 public class InternPredicates {
@@ -32,7 +31,7 @@ public class InternPredicates {
 			.computeIfAbsent(IdentityKey.of(n), any -> new Reference()));
 
 	public BuiltinPredicate internTree = PredicateUtil.p4((prover, t, l, op, r) -> {
-		Operator operator = TermOp.find(((Atom) op).name);
+		var operator = TermOp.find(((Atom) op).name);
 		return prover.bind(t, treeIntern_.get().of(operator, l, r));
 	});
 

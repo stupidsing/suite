@@ -59,11 +59,11 @@ public class ObstructionFreeStm {
 	}
 
 	public <T> T transaction(Fun<Transaction, T> fun) {
-		Transaction transaction = begin();
-		boolean ok = false;
+		var transaction = begin();
+		var ok = false;
 
 		try {
-			T result = fun.apply(transaction);
+			var result = fun.apply(transaction);
 			ok = true;
 			return result;
 		} finally {

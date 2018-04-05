@@ -91,7 +91,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 
 	public Outlet<T> closeAtEnd(Closeable c) {
 		return of(() -> {
-			T next = next();
+			var next = next();
 			if (next == null)
 				Object_.closeQuietly(c);
 			return next;
@@ -147,7 +147,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public Outlet<T> drop(int n) {
-		boolean isAvailable = true;
+		var isAvailable = true;
 		while (0 < n && (isAvailable &= next() != null))
 			n--;
 		return isAvailable ? this : empty();
@@ -207,7 +207,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 			private int i = 0;
 
 			public boolean source2(IntObjPair<T> pair) {
-				T t = next();
+				var t = next();
 				boolean b = t != null;
 				if (b)
 					pair.update(i++, t);
@@ -240,7 +240,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public T min(Comparator<T> comparator) {
-		T t = minOrNull(comparator);
+		var t = minOrNull(comparator);
 		return t != null ? t : Fail.t("no result");
 	}
 
@@ -276,7 +276,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public Opt<T> opt() {
-		T t = next();
+		var t = next();
 		if (t != null)
 			return next() == null ? Opt.of(t) : Fail.t("more than one result");
 		else
@@ -299,7 +299,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public Outlet<T> skip(int n) {
-		boolean end = false;
+		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next() == null;
 		return !end ? of(source) : empty();

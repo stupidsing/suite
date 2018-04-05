@@ -24,7 +24,7 @@ public class SewingProverBuilder2 implements Builder {
 
 	@Override
 	public Fun<Node, Finder> build(RuleSet ruleSet) {
-		boolean isRewrite = !proverConfig.isTrace();
+		var isRewrite = !proverConfig.isTrace();
 		QueryRewriter qr = isRewrite ? new QueryRewriter(Prototype.multimap(ruleSet)) : null;
 		RuleSet ruleSet1;
 

@@ -93,8 +93,8 @@ public class PredicateUtil {
 	}
 
 	public static boolean tryProve(Prover prover, Predicate<Prover> source) {
-		Prover prover1 = new Prover(prover);
-		boolean b = false;
+		var prover1 = new Prover(prover);
+		var b = false;
 		try {
 			b = source.test(prover1);
 		} finally {

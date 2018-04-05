@@ -22,7 +22,7 @@ public class TwoPassIndexerTest {
 				.filter(filename -> filename.endsWith(".java")) //
 				.toList();
 
-		TwoPassIndexer indexer = new TwoPassIndexer();
+		var indexer = new TwoPassIndexer();
 
 		for (var filename : filenames)
 			indexer.pass0(filename, FileUtil.read(filename));

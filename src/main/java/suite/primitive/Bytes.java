@@ -48,14 +48,14 @@ public class Bytes implements Iterable<Byte> {
 	};
 
 	public static Bytes concat(Bytes... array) {
-		BytesBuilder bb = new BytesBuilder();
+		var bb = new BytesBuilder();
 		for (var bytes : array)
 			bb.append(bytes);
 		return bb.toBytes();
 	}
 
 	public static Bytes of(Outlet<Bytes> outlet) {
-		BytesBuilder bb = new BytesBuilder();
+		var bb = new BytesBuilder();
 		outlet.forEach(bb::append);
 		return bb.toBytes();
 	}
@@ -119,14 +119,14 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public boolean isZeroes() {
-		boolean b = true;
+		var b = true;
 		for (var i = start; b && i < end; i++)
 			b &= bs[i] == 0;
 		return b;
 	}
 
 	public Bytes pad(int size) {
-		BytesBuilder bb = new BytesBuilder();
+		var bb = new BytesBuilder();
 		bb.append(this);
 		while (bb.size() < size)
 			bb.append((byte) 0);
@@ -142,7 +142,7 @@ public class Bytes implements Iterable<Byte> {
 	}
 
 	public Bytes replace(Bytes from, Bytes to) {
-		BytesBuilder bb = new BytesBuilder();
+		var bb = new BytesBuilder();
 		int i0 = 0, i;
 		while (0 <= (i = indexOf(from, i0))) {
 			bb.append(range_(i0, i));
@@ -212,7 +212,7 @@ public class Bytes implements Iterable<Byte> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Bytes.class) {
-			Bytes other = (Bytes) object;
+			var other = (Bytes) object;
 
 			if (size_() == other.size_()) {
 				var diff = other.start - start;
@@ -236,7 +236,7 @@ public class Bytes implements Iterable<Byte> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var i = start; i < end; i++)
 			sb.append(" " + To.hex2(bs[i]));
 		return sb.toString();
@@ -244,7 +244,7 @@ public class Bytes implements Iterable<Byte> {
 
 	private boolean startsWith_(Bytes bytes, int s) {
 		if (s + bytes.size_() <= size_()) {
-			boolean b = true;
+			var b = true;
 			for (var i = 0; b && i < bytes.size_(); i++)
 				b &= get(s + i) == bytes.get(i);
 			return b;

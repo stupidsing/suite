@@ -12,7 +12,7 @@ public class QrTest {
 
 	@Test
 	public void test() {
-		Qr qr = new Qr();
+		var qr = new Qr();
 		test(qr::decompose);
 		test(qr::decomposeByGivensRotation);
 	}

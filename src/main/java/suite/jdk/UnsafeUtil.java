@@ -1,7 +1,5 @@
 package suite.jdk;
 
-import java.lang.reflect.Field;
-
 import suite.util.FunUtil.Source;
 import suite.util.Memoize;
 import suite.util.Rethrow;
@@ -10,7 +8,7 @@ import sun.misc.Unsafe;
 public class UnsafeUtil {
 
 	public Class<?> defineClass(byte[] bytes) {
-		Unsafe unsafe = source.source();
+		var unsafe = source.source();
 		return unsafe.defineAnonymousClass(getClass(), bytes, null);
 	}
 
@@ -19,14 +17,14 @@ public class UnsafeUtil {
 	}
 
 	public <T> Class<? extends T> defineClass(Class<T> interfaceClazz, String className, byte[] bytes, Object[] array) {
-		Unsafe unsafe = source.source();
+		var unsafe = source.source();
 		@SuppressWarnings("unchecked")
 		Class<? extends T> clazz = (Class<? extends T>) unsafe.defineAnonymousClass(interfaceClazz, bytes, array);
 		return clazz;
 	}
 
 	private static Source<Unsafe> source = Memoize.source(() -> Rethrow.ex(() -> {
-		Field f = Unsafe.class.getDeclaredField("theUnsafe");
+		var f = Unsafe.class.getDeclaredField("theUnsafe");
 		f.setAccessible(true);
 		return (Unsafe) f.get(null);
 	}));

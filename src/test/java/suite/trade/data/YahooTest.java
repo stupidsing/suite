@@ -21,14 +21,14 @@ public class YahooTest {
 
 	@Test
 	public void testL1Adjust() {
-		Time time0 = Time.ofEpochSec(1490578200l);
-		Time timex = Time.ofEpochSec(1497490200l);
+		var time0 = Time.ofEpochSec(1490578200l);
+		var timex = Time.ofEpochSec(1497490200l);
 		Dump.out(yahoo.dataSourceL1("0012.HK", TimeRange.of(time0, timex)));
 	}
 
 	@Test
 	public void testL1All() {
-		HkexFactBook hkexFactBook = new HkexFactBook();
+		var hkexFactBook = new HkexFactBook();
 		Iterable<String> symbols = hkexFactBook.queryMainBoardCompanies(2016);
 		// hkexFactBook.queryLeadingCompaniesByMarketCap(2016);
 		for (var symbol : symbols) {

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.Random;
 
@@ -41,7 +40,7 @@ public class B_TreeTest {
 	@Test
 	public void testDump() throws IOException {
 		var pageSize = 4096;
-		Path path = Constants.tmp("b_tree-dump");
+		var path = Constants.tmp("b_tree-dump");
 
 		Files.deleteIfExists(path);
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
@@ -63,7 +62,7 @@ public class B_TreeTest {
 	@Test
 	public void testAccess() throws IOException {
 		var pageSize = 4096;
-		Path path = Constants.tmp("b_tree-file");
+		var path = Constants.tmp("b_tree-file");
 
 		Files.deleteIfExists(path);
 		B_TreeBuilder<Integer, String> builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
@@ -101,7 +100,7 @@ public class B_TreeTest {
 		var nKeys = 16384;
 		keys = Ints_.toArray(nKeys, i -> i);
 		var pageSize = 4096;
-		Path path = Constants.tmp("b_tree-file");
+		var path = Constants.tmp("b_tree-file");
 
 		for (var i = 0; i < nKeys; i++) {
 			var j = random.nextInt(nKeys);
@@ -138,8 +137,8 @@ public class B_TreeTest {
 		var count = 0;
 
 		for (Pair<Integer, String> e : b_tree.range(0, nKeys)) {
-			Integer key = count++;
-			assertEquals(key, e.t0);
+			var key = count++;
+			assertEquals(key, e.t0.intValue());
 			assertEquals(Integer.toString(key), e.t1);
 		}
 	}

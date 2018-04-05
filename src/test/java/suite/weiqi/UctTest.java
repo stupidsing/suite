@@ -45,7 +45,7 @@ public class UctTest {
 	}
 
 	private String evaluateRandomOutcome(Coordinate move) {
-		Occupation player = Occupation.WHITE;
+		var player = Occupation.WHITE;
 		int nWins = 0, nTotal = 1000;
 
 		for (var i = 0; i < nTotal; i++) {
@@ -68,7 +68,7 @@ public class UctTest {
 		for (var time = 0; time < 2; time++)
 			for (; i < ss[time]; i++)
 				duration = Stopwatch.of(() -> {
-					GameSet gameSet1 = new GameSet(gameSet);
+					var gameSet1 = new GameSet(gameSet);
 					UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet1);
 					visitor.evaluateRandomOutcome();
 					return null;
@@ -104,7 +104,7 @@ public class UctTest {
 		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
 		UctSearch<Coordinate> search = new UctSearch<>(visitor);
 		search.setNumberOfSimulations(1000);
-		Coordinate bestMove = search.search();
+		var bestMove = search.search();
 
 		search.dumpSearch();
 		System.out.println("BEST MOVE = " + bestMove);
@@ -123,7 +123,7 @@ public class UctTest {
 		search.setNumberOfThreads(1);
 		search.setNumberOfSimulations(80000);
 
-		Coordinate move = search.search();
+		var move = search.search();
 		gameSet.play(move);
 
 		System.out.println(move);
@@ -136,7 +136,7 @@ public class UctTest {
 	@Test
 	public void testUctGame() {
 		new Profiler().profile(() -> {
-			DecimalFormat df = new DecimalFormat("0.000");
+			var df = new DecimalFormat("0.000");
 			var nSimulations = 5000; // 20000
 			var boundedTime = 300000;
 			var seed = new Random().nextInt();
@@ -144,11 +144,11 @@ public class UctTest {
 			System.out.println("RANDOM SEED = " + seed);
 			ShuffleUtil.setSeed(seed);
 
-			Board board = new Board();
+			var board = new Board();
 			GameSet gameSet = new GameSet(board, Occupation.BLACK);
 
 			while (true) {
-				GameSet gameSet1 = new GameSet(gameSet);
+				var gameSet1 = new GameSet(gameSet);
 				UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet1);
 				UctSearch<Coordinate> search = new UctSearch<>(visitor);
 				search.setNumberOfThreads(Constants.nThreads);
@@ -156,12 +156,12 @@ public class UctTest {
 				search.setBoundedTime(boundedTime);
 
 				Stopwatch<Coordinate> timed = Stopwatch.of(search::search);
-				Coordinate move = timed.result;
+				var move = timed.result;
 
 				if (move == null)
 					break;
 
-				Occupation player = gameSet.getNextPlayer();
+				var player = gameSet.getNextPlayer();
 
 				search.dumpPrincipalVariation();
 				System.out.println(player //

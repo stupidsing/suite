@@ -32,7 +32,7 @@ public class ReversePolish {
 	}
 
 	public Node fromRpn(Reader reader) throws IOException {
-		BufferedReader br = new BufferedReader(reader);
+		var br = new BufferedReader(reader);
 		Map<String, Reference> references = new HashMap<>();
 		Deque<Node> deque = new ArrayDeque<>();
 
@@ -63,7 +63,7 @@ public class ReversePolish {
 			else if (type == 'r')
 				n = references.computeIfAbsent(s, key -> new Reference());
 			else if (type == 't') {
-				TermOp op = TermOp.valueOf(s);
+				var op = TermOp.valueOf(s);
 				var left = deque.pop();
 				var right = deque.pop();
 				n = Tree.of(op, left, right);
@@ -95,7 +95,7 @@ public class ReversePolish {
 				deque.push(tree.getLeft());
 				return "t" + tree.getOperator();
 			}).applyIf(Node.class, n_ -> {
-				NodeRead nr = NodeRead.of(n_);
+				var nr = NodeRead.of(n_);
 				for (Pair<Node, Node> pair : nr.children) {
 					deque.push(pair.t1);
 					deque.push(pair.t0);
@@ -107,7 +107,7 @@ public class ReversePolish {
 			list.add(s);
 		}
 
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 
 		for (var i = list.size() - 1; 0 <= i; i--)
 			sb.append(list.get(i) + '\n');

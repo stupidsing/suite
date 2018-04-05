@@ -18,7 +18,7 @@ public class ChrOpt {
 	}
 
 	public static ChrOpt of(char t) {
-		ChrOpt p = new ChrOpt();
+		var p = new ChrOpt();
 		p.value = t;
 		return p;
 	}

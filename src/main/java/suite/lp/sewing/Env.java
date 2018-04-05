@@ -21,7 +21,7 @@ public class Env {
 
 	public Env clone() {
 		Reference[] refs1 = new Reference[refs.length];
-		Cloner cloner = new Cloner();
+		var cloner = new Cloner();
 		for (var i = 0; i < refs.length; i++)
 			refs1[i] = Reference.of(cloner.clone(refs[i]));
 		return new Env(refs1);

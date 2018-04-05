@@ -51,14 +51,14 @@ public class Chars implements Iterable<Character> {
 	};
 
 	public static Chars concat(Chars... array) {
-		CharsBuilder bb = new CharsBuilder();
+		var bb = new CharsBuilder();
 		for (var chars : array)
 			bb.append(chars);
 		return bb.toChars();
 	}
 
 	public static Chars of(Outlet<Chars> outlet) {
-		CharsBuilder cb = new CharsBuilder();
+		var cb = new CharsBuilder();
 		outlet.forEach(cb::append);
 		return cb.toChars();
 	}
@@ -122,7 +122,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public boolean isWhitespaces() {
-		boolean b = true;
+		var b = true;
 		for (var i = start; b && i < end; i++)
 			b &= ParseUtil.isWhitespace(cs[i]);
 		return b;
@@ -139,7 +139,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public Chars pad(int size) {
-		CharsBuilder cb = new CharsBuilder();
+		var cb = new CharsBuilder();
 		cb.append(this);
 		while (cb.size() < size)
 			cb.append((char) 0);
@@ -155,7 +155,7 @@ public class Chars implements Iterable<Character> {
 	}
 
 	public Chars replace(Chars from, Chars to) {
-		CharsBuilder cb = new CharsBuilder();
+		var cb = new CharsBuilder();
 		int i0 = 0, i;
 		while (0 <= (i = indexOf(from, i0))) {
 			cb.append(range_(i0, i));
@@ -240,7 +240,7 @@ public class Chars implements Iterable<Character> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Chars.class) {
-			Chars other = (Chars) object;
+			var other = (Chars) object;
 
 			if (size_() == other.size_()) {
 				var diff = other.start - start;
@@ -264,7 +264,7 @@ public class Chars implements Iterable<Character> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var i = start; i < end; i++)
 			sb.append(cs[i]);
 		return sb.toString();
@@ -272,7 +272,7 @@ public class Chars implements Iterable<Character> {
 
 	private boolean startsWith_(Chars chars, int s) {
 		if (s + chars.size_() <= size_()) {
-			boolean b = true;
+			var b = true;
 			for (var i = 0; b && i < chars.size_(); i++)
 				b &= get(s + i) == chars.get(i);
 			return b;

@@ -89,12 +89,12 @@ public class Symbolic {
 	}
 
 	public Node d(Node node0, Node x) {
-		Rewrite rewrite = new Rewrite(x);
+		var rewrite = new Rewrite(x);
 		return Opt.of(node0).map(rewrite::rewrite).map(rewrite::d).map(rewrite::simplify).get();
 	}
 
 	public Node i(Node node0, Node x) {
-		Rewrite rewrite = new Rewrite(x);
+		var rewrite = new Rewrite(x);
 		return Opt.of(node0).map(rewrite::rewrite).concatMap(rewrite::i).map(rewrite::simplify).get();
 	}
 
@@ -175,8 +175,8 @@ public class Symbolic {
 	}
 
 	public Opt<Node> polyize_xyn(Node node) {
-		Rewrite rewrite_x = new Rewrite(Atom.of("x"));
-		Rewrite rewrite_y = new Rewrite(Atom.of("y"));
+		var rewrite_x = new Rewrite(Atom.of("x"));
+		var rewrite_y = new Rewrite(Atom.of("y"));
 		return Fieldo.ofFractional(Fractional.ofIntegral()).fp(rewrite_y).fp(rewrite_x).pf(node);
 	}
 
@@ -450,7 +450,7 @@ public class Symbolic {
 		}
 
 		private boolean isContains_x(Node node) {
-			Tree tree = Tree.decompose(node);
+			var tree = Tree.decompose(node);
 			return tree != null //
 					? isContains_x(tree.getLeft()) || isContains_x(tree.getRight()) //
 					: is_x(node);

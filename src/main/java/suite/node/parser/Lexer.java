@@ -60,8 +60,8 @@ public class Lexer {
 	private Token lex_() {
 		if (pos < in.length()) {
 			var start = pos;
-			Token token = detect();
-			LexType type = token.type;
+			var token = detect();
+			var type = token.type;
 
 			if (type == LexType.ID___ || type == LexType.SPACE)
 				while (pos < in.length() && detect().type == type)

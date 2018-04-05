@@ -16,7 +16,6 @@ import suite.lp.doer.Prover;
 import suite.lp.kb.Prototype;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Rewrite;
@@ -54,7 +53,7 @@ public class Chr {
 	}
 
 	public void addRule(Node node) {
-		Rule rule = new Rule();
+		var rule = new Rule();
 
 		while (node != Atom.of("end")) {
 			Tree t0 = Tree.decompose(node, TermOp.TUPLE_);
@@ -83,10 +82,10 @@ public class Chr {
 	}
 
 	public Collection<Node> chr(Collection<Node> facts) {
-		State state = new State(IMap.empty());
+		var state = new State(IMap.empty());
 
 		for (var fact : facts) {
-			Prototype prototype = Prototype.of(fact);
+			var prototype = Prototype.of(fact);
 			state = setFacts(state, prototype, getFacts(state, prototype).replace(fact));
 		}
 
@@ -108,8 +107,8 @@ public class Chr {
 	}
 
 	private Streamlet<State> chr(State state, Rule rule) {
-		Generalizer generalizer = new Generalizer();
-		Trail trail = new Trail();
+		var generalizer = new Generalizer();
+		var trail = new Trail();
 		Streamlet<State> states = Read.each(state);
 
 		for (Node if_ : rule.ifs)
@@ -127,7 +126,7 @@ public class Chr {
 	}
 
 	private Streamlet<State> chrIf(Streamlet<State> states, Trail trail, Node if_) {
-		Prototype prototype = Prototype.of(if_);
+		var prototype = Prototype.of(if_);
 
 		Fun<State, Streamlet<State>> fun = state -> {
 			ISet<Node> facts = getFacts(state, prototype);
@@ -139,7 +138,7 @@ public class Chr {
 	}
 
 	private Streamlet<State> chrGiven(Streamlet<State> states, Trail trail, Node given) {
-		Prototype prototype = Prototype.of(given);
+		var prototype = Prototype.of(given);
 
 		return states.filter(state -> {
 			ISet<Node> facts = getFacts(state, prototype);
@@ -149,14 +148,14 @@ public class Chr {
 	}
 
 	private Streamlet<State> chrThen(Streamlet<State> states, Node then) {
-		Generalizer generalizer = new Generalizer();
+		var generalizer = new Generalizer();
 		Atom a = atom(".a"), b = atom(".b");
 
 		if (Binder.bind(then, generalizer.generalize(Suite.substitute(".0 = .1", a, b)), new Trail())) {
 
 			// built-in syntactic equality
-			Reference from = generalizer.getVariable(a);
-			Reference to = generalizer.getVariable(b);
+			var from = generalizer.getVariable(a);
+			var to = generalizer.getVariable(b);
 
 			states = states.map(new Fun<>() {
 				public State apply(State state) {
@@ -176,7 +175,7 @@ public class Chr {
 		}
 
 		return states.map(state -> {
-			Prototype prototype = Prototype.of(then);
+			var prototype = Prototype.of(then);
 			ISet<Node> facts = getFacts(state, prototype);
 			return setFacts(state, prototype, facts.replace(then));
 		});

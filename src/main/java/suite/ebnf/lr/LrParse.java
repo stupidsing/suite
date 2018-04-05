@@ -47,7 +47,7 @@ public class LrParse {
 
 	private Ast parse(Source<Ast> tokens, State state) {
 		Deque<Pair<Ast, State>> stack = new ArrayDeque<>();
-		Ast token = tokens.source();
+		var token = tokens.source();
 
 		while (true) {
 			var lookahead = token != null ? token.entity : "EOF";
@@ -87,7 +87,7 @@ public class LrParse {
 	}
 
 	private <K, V> String list(Map<K, V> map) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		sb.append("{\n");
 		Read.from2(map) //
 				.map2((k, v) -> k.toString(), (k, v) -> v) //

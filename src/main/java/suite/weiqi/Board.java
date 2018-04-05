@@ -5,7 +5,6 @@ import java.util.Set;
 import java.util.Stack;
 
 import suite.util.Fail;
-import suite.weiqi.GroupAnalysis.Group;
 import suite.weiqi.Weiqi.Array;
 import suite.weiqi.Weiqi.Occupation;
 
@@ -33,8 +32,8 @@ public class Board extends Array<Occupation> {
 	 */
 	public MoveType playIfSeemsPossible(Coordinate c, Occupation player) {
 		MoveType type;
-		Occupation current = get(c);
-		Occupation opponent = player.opponent();
+		var current = get(c);
+		var opponent = player.opponent();
 
 		if (current == Occupation.EMPTY) {
 			type = MoveType.PLACEMENT;
@@ -55,7 +54,7 @@ public class Board extends Array<Occupation> {
 	}
 
 	private boolean killIfDead(Coordinate c) {
-		boolean isKilled = !hasBreath(c);
+		var isKilled = !hasBreath(c);
 
 		if (isKilled)
 			for (var c1 : findGroup(c))
@@ -66,7 +65,7 @@ public class Board extends Array<Occupation> {
 
 	private boolean hasBreath(Coordinate c) {
 		var group = new HashSet<>();
-		Occupation color = get(c);
+		var color = get(c);
 		group.add(c);
 
 		Stack<Coordinate> unexplored = new Stack<>();
@@ -74,7 +73,7 @@ public class Board extends Array<Occupation> {
 
 		while (!unexplored.isEmpty())
 			for (var c1 : unexplored.pop().neighbors) {
-				Occupation color1 = get(c1);
+				var color1 = get(c1);
 
 				if (color1 == color) {
 					if (group.add(c1))
@@ -88,7 +87,7 @@ public class Board extends Array<Occupation> {
 
 	public Set<Coordinate> findGroup(Coordinate c) {
 		var group = new HashSet<Coordinate>();
-		Occupation color = get(c);
+		var color = get(c);
 		group.add(c);
 
 		Stack<Coordinate> unexplored = new Stack<>();
@@ -106,12 +105,12 @@ public class Board extends Array<Occupation> {
 	 * Plays a move on the Weiqi board. Uses group analysis which is slower.
 	 */
 	public void play1(Coordinate c, Occupation player) {
-		Occupation current = get(c);
-		Occupation opponent = player.opponent();
+		var current = get(c);
+		var opponent = player.opponent();
 
 		if (current == Occupation.EMPTY) {
 			set(c, player);
-			GroupAnalysis ga = new GroupAnalysis(this);
+			var ga = new GroupAnalysis(this);
 
 			for (var neighbor : c.neighbors)
 				if (get(neighbor) == opponent)
@@ -124,8 +123,8 @@ public class Board extends Array<Occupation> {
 	}
 
 	private boolean killIfDead1(GroupAnalysis ga, Coordinate c) {
-		Group group = ga.getGroup(c);
-		boolean isKilled = group.breathes.isEmpty();
+		var group = ga.getGroup(c);
+		var isKilled = group.breathes.isEmpty();
 
 		if (isKilled)
 			for (var c1 : group.coords)
@@ -136,7 +135,7 @@ public class Board extends Array<Occupation> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 
 		for (var x = 0; x < Weiqi.size; x++) {
 			for (var y = 0; y < Weiqi.size; y++) {

@@ -40,7 +40,7 @@ public class CommandOptions {
 	}
 
 	private boolean processOption(String arg, Source<String> source, boolean on) {
-		boolean b = true;
+		var b = true;
 		String arg1;
 
 		if (String_.equals(arg, "--do"))
@@ -72,7 +72,7 @@ public class CommandOptions {
 	}
 
 	public FunCompilerConfig fcc(Node node) {
-		ProverConfig pc = pc(Suite.newRuleSet());
+		var pc = pc(Suite.newRuleSet());
 
 		FunCompilerConfig fcc = new FunCompilerConfig(pc, libraries);
 		fcc.setLazy(isLazy);
@@ -82,7 +82,7 @@ public class CommandOptions {
 	}
 
 	public ProverConfig pc(RuleSet ruleSet) {
-		ProverConfig pc = new ProverConfig(ruleSet);
+		var pc = new ProverConfig(ruleSet);
 		pc.setTrace(isTrace);
 		return pc;
 	}

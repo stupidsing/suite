@@ -41,13 +41,13 @@ public class LempelZivWelch<Unit> {
 	}
 
 	private void encode(Source<Unit> source, Sink<Integer> sink) {
-		Trie root = new Trie(null);
+		var root = new Trie(null);
 		var index = 0;
 
 		for (var unit : units)
 			root.branches.put(unit, new Trie(index++));
 
-		Trie trie = root;
+		var trie = root;
 		Unit unit;
 
 		while ((unit = source.source()) != null) {

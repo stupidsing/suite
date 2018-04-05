@@ -2,7 +2,6 @@ package suite.trade.data;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
 
 import org.junit.Test;
 
@@ -28,7 +27,7 @@ public class CollectDataTest {
 
 		for (var code : equities) {
 			String urlString = yahoo.tableUrl(code, TimeRange.ages());
-			URL url = To.url(urlString);
+			var url = To.url(urlString);
 
 			try (FileOutputStream fos = new FileOutputStream("/data/storey/markets/" + code + ".csv")) {
 				Copy.stream(To.inputStream(HttpUtil.get(url).out), fos);

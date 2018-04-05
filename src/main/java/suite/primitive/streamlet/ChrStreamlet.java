@@ -64,7 +64,7 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 
 	public ChrStreamlet closeAtEnd(Closeable c) {
 		return streamlet(() -> {
-			ChrOutlet in = spawn();
+			var in = spawn();
 			in.closeAtEnd(c);
 			return in;
 		});
@@ -169,7 +169,7 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 	}
 
 	public ChrStreamlet memoize() {
-		Chars list = toList().toChars();
+		var list = toList().toChars();
 		return streamlet(() -> ChrOutlet.of(list));
 	}
 

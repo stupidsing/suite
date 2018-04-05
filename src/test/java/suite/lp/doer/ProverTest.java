@@ -18,7 +18,7 @@ public class ProverTest {
 
 	@Test
 	public void testAppend() {
-		RuleSet rs = Suite.newRuleSet();
+		var rs = Suite.newRuleSet();
 		Suite.addRule(rs, "app () .l .l");
 		Suite.addRule(rs, "app (.h, .r) .l (.h, .r1) :- app .r .l .r1");
 
@@ -27,7 +27,7 @@ public class ProverTest {
 
 	@Test
 	public void testCut() {
-		RuleSet rs = Suite.newRuleSet();
+		var rs = Suite.newRuleSet();
 		Suite.addRule(rs, "a :- !, fail");
 		Suite.addRule(rs, "a");
 		Suite.addRule(rs, "yes");
@@ -39,27 +39,27 @@ public class ProverTest {
 
 	@Test
 	public void testFindAll() {
-		RuleSet rs = Suite.newRuleSet();
+		var rs = Suite.newRuleSet();
 		assertTrue(test(rs, "find.all .v (.v = a; .v = b; .v = c) .results, .results = (a, b, c,)"));
 	}
 
 	@Test
 	public void testIsCyclic() {
-		RuleSet rs = Suite.newRuleSet();
+		var rs = Suite.newRuleSet();
 		assertFalse(test(rs, ".a = (a, b, c,), is.cyclic .a"));
 		assertTrue(test(rs, ".a = (a, b, .a, c,), is.cyclic .a"));
 	}
 
 	@Test
 	public void testLet() {
-		RuleSet rs = Suite.newRuleSet();
+		var rs = Suite.newRuleSet();
 		assertTrue(test(rs, "let 7 (2 * 3 + 1)"));
 		assertFalse(test(rs, "let 7 (2 * 3 - 1)"));
 	}
 
 	@Test
 	public void testMember() {
-		RuleSet rs = Suite.newRuleSet();
+		var rs = Suite.newRuleSet();
 		Suite.addRule(rs, "mem ((.e, _), .e)");
 		Suite.addRule(rs, "mem ((_, .remains), .e) :- mem (.remains, .e)");
 
@@ -76,7 +76,7 @@ public class ProverTest {
 
 	@Test
 	public void testProve() {
-		RuleSet rs = Suite.newRuleSet();
+		var rs = Suite.newRuleSet();
 		Suite.addRule(rs, "a");
 		Suite.addRule(rs, "b");
 		Suite.addRule(rs, "c");
@@ -108,7 +108,7 @@ public class ProverTest {
 
 	@Test
 	public void testSystemPredicates() {
-		RuleSet rs = Suite.newRuleSet();
+		var rs = Suite.newRuleSet();
 		Suite.addRule(rs, "mem ((.e, _), .e)");
 		Suite.addRule(rs, "mem ((_, .remains), .e) :- mem (.remains, .e)");
 
@@ -117,20 +117,20 @@ public class ProverTest {
 
 	@Test
 	public void testTree() {
-		RuleSet rs = Suite.newRuleSet();
+		var rs = Suite.newRuleSet();
 		assertFalse(test(rs, "tree .t0 a ':' b, tree .t1 a ':' b, same .t0 .t1"));
 		assertTrue(test(rs, "intern.tree .t0 a ':' b, intern.tree .t1 a ':' b, same .t0 .t1"));
 	}
 
 	@Test
 	public void testWrite() {
-		RuleSet rs = Suite.newRuleSet();
+		var rs = Suite.newRuleSet();
 		assertTrue(test(rs, "write (1 + 2 * 3), nl"));
 		assertTrue(test(rs, "write \"Don\"\"t forget%0A4 Jun 1989\", nl"));
 	}
 
 	private boolean test(RuleSet rs, String lp) {
-		ProverConfig pc = new ProverConfig();
+		var pc = new ProverConfig();
 		boolean b0 = Suite.proveLogic(new InterpretedProverBuilder(pc), rs, lp);
 		boolean b1 = Suite.proveLogic(new SewingProverBuilder2(pc), rs, lp);
 		if (b0 == b1)

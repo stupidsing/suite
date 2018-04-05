@@ -1,8 +1,6 @@
 package suite.os;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
@@ -31,13 +29,13 @@ public class Pipe {
 		var command1 = command0;
 
 		return new Streamlet<>(() -> Rethrow.ex(() -> {
-			InputStream bis = new ByteArrayInputStream(sh.getBytes(Constants.charset));
+			var bis = new ByteArrayInputStream(sh.getBytes(Constants.charset));
 
 			Process process = Rethrow.ex(() -> Runtime.getRuntime().exec(command1));
 
-			InputStream pis = process.getInputStream();
-			InputStream pes = process.getErrorStream();
-			OutputStream pos = process.getOutputStream();
+			var pis = process.getInputStream();
+			var pes = process.getErrorStream();
+			var pos = process.getOutputStream();
 
 			Thread[] threads = new Thread[] { //
 					Copy.streamByThread(pes, System.err), //

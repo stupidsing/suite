@@ -86,7 +86,7 @@ public class QueryRewriter {
 
 	private Node rewriteQuery(Node node0) {
 		Node nodex;
-		Prototype prototype = Prototype.of(node0);
+		var prototype = Prototype.of(node0);
 		PrototypeInfo pi;
 
 		if ((pi = infoByPrototype.get(prototype)) != null) {

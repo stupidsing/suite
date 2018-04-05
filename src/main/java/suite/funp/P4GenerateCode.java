@@ -43,7 +43,6 @@ import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters;
 import suite.funp.P2.FunpWhile;
-import suite.funp.P4JumpIf.JumpIf;
 import suite.node.Atom;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
@@ -119,7 +118,7 @@ public class P4GenerateCode {
 
 	public List<Instruction> compile0(Funp funp) {
 		List<Instruction> instructions = new ArrayList<>();
-		P4Emit emit = new P4Emit(instructions::add);
+		var emit = new P4Emit(instructions::add);
 		if (isUseEbp)
 			emit.mov(ebp, esp);
 		new Compile0(Result.OPSPEC, emit, null, ebx, null).new Compile1(registerSet, 0).compile(funp);
@@ -164,7 +163,7 @@ public class P4GenerateCode {
 			// invariant: fd = ESP - EBP
 			private CompileOut compile(Funp n) {
 				Fun<Operand, CompileOut> postOp = op -> {
-					Operand old = op;
+					var old = op;
 					if (result == Result.ASSIGN) {
 						Operand opt = deOp.decomposeOperand(fd, target);
 						opt = opt != null ? opt : amd64.mem(mask(op).compileOpReg(target.pointer), target.start, is);
@@ -183,8 +182,8 @@ public class P4GenerateCode {
 				};
 
 				Fun2<Operand, Operand, CompileOut> postTwoOp = (op0, op1) -> {
-					Operand old0 = op0;
-					Operand old1 = op1;
+					var old0 = op0;
+					var old1 = op1;
 					if (result == Result.ASSIGN) {
 						OpMem opt0 = deOp.decomposeOpMem(fd, target.pointer, target.start, ps);
 						OpMem opt1 = deOp.decomposeOpMem(fd, target.pointer, target.start + ps, ps);
@@ -220,7 +219,7 @@ public class P4GenerateCode {
 						assign.sink2(this, target);
 						return new CompileOut();
 					} else if (result == Result.OP || result == Result.OPREG || result == Result.OPSPEC) {
-						OpReg op0 = isOutSpec ? pop0 : rs.get(is);
+						var op0 = isOutSpec ? pop0 : rs.get(is);
 						em.emit(amd64.instruction(Insn.PUSH, i_eax));
 						var fd1 = fd - is;
 						assign.sink2(new Compile1(rs, fd1), frame(fd1, fd));
@@ -228,11 +227,11 @@ public class P4GenerateCode {
 						em.emit(amd64.instruction(Insn.POP, rs.mask(op0).get(is)));
 						return postOp.apply(op0);
 					} else if (result == Result.TWOOP || result == Result.TWOOPREG || result == Result.TWOOPSPEC) {
-						OpReg op0 = isOutSpec ? pop0 : rs.get(is);
-						OpReg op1 = isOutSpec ? pop1 : rs.mask(op0).get(is);
+						var op0 = isOutSpec ? pop0 : rs.get(is);
+						var op1 = isOutSpec ? pop1 : rs.mask(op0).get(is);
 						var size = ps * 2;
 						var fd1 = fd - size;
-						Operand imm = amd64.imm(size);
+						var imm = amd64.imm(size);
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
 						assign.sink2(new Compile1(rs, fd1), frame(fd1, fd));
 						em.mov(op0, compileFrame(fd1, ps));
@@ -282,12 +281,12 @@ public class P4GenerateCode {
 						em.emit(amd64.instruction(Insn.ADD, esp, imm));
 					return out;
 				})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
-					Amd64Parse p = new Amd64Parse();
+					var p = new Amd64Parse();
 					new Object() {
 						private void assign(Compile1 c1, int i) {
 							if (i < assigns.size()) {
 								Pair<OpReg, Funp> assign = assigns.get(i);
-								OpReg op = assign.t0;
+								var op = assign.t0;
 								c1.compileOpSpec(assign.t1, op);
 								assign(c1.mask(op), i + 1);
 							}
@@ -302,14 +301,14 @@ public class P4GenerateCode {
 				})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 					return postOp.apply(amd64.imm(b ? 1 : 0, Funp_.booleanSize));
 				})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
-					OpReg r1 = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
-					OpReg r0 = integerRegs[r1.reg];
+					var r1 = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
+					var r0 = integerRegs[r1.reg];
 					compileOpSpec(expr, r0);
 					return postOp.apply(r1);
 				})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 					return postAssign.apply((c1, target) -> {
 						for (Pair<Funp, IntIntPair> pair : pairs) {
-							IntIntPair offset = pair.t1;
+							var offset = pair.t1;
 							FunpMemory target_ = FunpMemory.of(target.pointer, target.start + offset.t0, target.start + offset.t1);
 							c1.compileAssign(pair.t0, target_);
 						}
@@ -331,7 +330,7 @@ public class P4GenerateCode {
 					} else if (result == Result.OP || result == Result.OPREG) {
 						OpReg[] ops = new OpReg[1];
 						compile0 = node_ -> {
-							Operand op0 = compileOp(node_);
+							var op0 = compileOp(node_);
 							em.mov(ops[0] = rs.get(op0), op0);
 						};
 						compile1 = node_ -> compileOpSpec(node_, ops[0]);
@@ -348,8 +347,8 @@ public class P4GenerateCode {
 					} else
 						throw new RuntimeException();
 
-					Operand condLabel = em.label();
-					Operand endLabel = em.label();
+					var condLabel = em.label();
+					var endLabel = em.label();
 
 					Sink2<Funp, Funp> thenElse = (condt, condf) -> {
 						compile0.sink(condt);
@@ -359,7 +358,7 @@ public class P4GenerateCode {
 						em.emit(amd64.instruction(Insn.LABEL, endLabel));
 					};
 
-					JumpIf jumpIf = new P4JumpIf(cmpJmp.apply(condLabel)).new JumpIf(if_);
+					var jumpIf = new P4JumpIf(cmpJmp.apply(condLabel)).new JumpIf(if_);
 					Source<Boolean> r;
 
 					if ((r = jumpIf.jnxIf()) != null && r.source())
@@ -367,7 +366,7 @@ public class P4GenerateCode {
 					else if ((r = jumpIf.jxxIf()) != null && r.source())
 						thenElse.sink2(else_, then);
 					else {
-						OpReg r0 = compileOpReg(if_);
+						var r0 = compileOpReg(if_);
 						em.emit(amd64.instruction(Insn.OR, r0, r0));
 						em.emit(amd64.instruction(Insn.JZ, condLabel));
 						thenElse.sink2(then, else_);
@@ -388,8 +387,8 @@ public class P4GenerateCode {
 						return Fail.t();
 				})).applyIf(FunpInvokeIo.class, f -> f.apply(routine -> {
 					return postAssign.apply((c1, target) -> {
-						OpReg r0 = c1.compileOpReg(target.pointer);
-						Compile1 c2 = c1.mask(r0);
+						var r0 = c1.compileOpReg(target.pointer);
+						var c2 = c1.mask(r0);
 						c2.compileInvoke(routine);
 						c2.compileMove(r0, target.start, c2.compileFramePointer(), c2.fd, target.size());
 					});
@@ -403,8 +402,8 @@ public class P4GenerateCode {
 								if (op_ != null)
 									c1.compileInstruction(Insn.MOV, op_, n);
 								else {
-									OpReg r0 = c1.compileOpReg(target.pointer);
-									OpReg r1 = c1.mask(r0).compileOpReg(pointer);
+									var r0 = c1.compileOpReg(target.pointer);
+									var r1 = c1.mask(r0).compileOpReg(pointer);
 									c1.mask(r0, r1).compileMove(r0, target.start, r1, start, size);
 								}
 							});
@@ -420,7 +419,7 @@ public class P4GenerateCode {
 								&& (op1 = deOp.decomposeOpMem(fd, pointer, start + ps, ps)) != null)
 							return postTwoOp.apply(op0, op1);
 						else {
-							OpReg r = compileOpReg(pointer);
+							var r = compileOpReg(pointer);
 							return postTwoOp.apply(amd64.mem(r, start, ps), amd64.mem(r, start + is, ps));
 						}
 					else
@@ -444,8 +443,8 @@ public class P4GenerateCode {
 
 					CompileOut out0 = new Compile1(registerSet, fd - opRegs.length * is).compile(expr);
 					Operand oldOp0, oldOp1;
-					Operand op0 = oldOp0 = isOutSpec ? pop0 : out0.op0;
-					Operand op1 = oldOp1 = isOutSpec ? pop1 : out0.op1;
+					var op0 = oldOp0 = isOutSpec ? pop0 : out0.op0;
+					var op1 = oldOp1 = isOutSpec ? pop1 : out0.op1;
 
 					if (op0 != null)
 						em.mov(op0 = rs.contains(op0) ? rs.mask(op1).get(op0.size) : op0, oldOp0);
@@ -463,9 +462,9 @@ public class P4GenerateCode {
 				})).applyIf(FunpTree2.class, f -> f.apply((operator, lhs, rhs) -> {
 					return postOp.apply(compileTree(n, operator, Assoc.RIGHT, lhs, rhs));
 				})).applyIf(FunpWhile.class, f -> f.apply((while_, do_, expr) -> {
-					Operand loopLabel = em.label();
-					Operand contLabel = em.label();
-					Operand exitLabel = em.label();
+					var loopLabel = em.label();
+					var contLabel = em.label();
+					var exitLabel = em.label();
 
 					em.emit(amd64.instruction(Insn.LABEL, loopLabel));
 					Source<Boolean> r;
@@ -476,7 +475,7 @@ public class P4GenerateCode {
 						em.emit(amd64.instruction(Insn.JMP, exitLabel));
 						em.emit(amd64.instruction(Insn.LABEL, contLabel));
 					} else {
-						OpReg r0 = compileOpReg(while_);
+						var r0 = compileOpReg(while_);
 						em.emit(amd64.instruction(Insn.OR, r0, r0));
 						em.emit(amd64.instruction(Insn.JZ, exitLabel));
 					}
@@ -510,10 +509,10 @@ public class P4GenerateCode {
 
 				if (opResult == null)
 					if (operator == TermOp.DIVIDE) {
-						OpReg opResult_ = isOutSpec ? pop0 : rs.get(eax);
+						var opResult_ = isOutSpec ? pop0 : rs.get(eax);
 						Sink<Compile1> sink0 = c1 -> {
 							c1.compileOpSpec(lhs, eax);
-							Operand opRhs0 = c1.mask(eax).compileOp(rhs);
+							var opRhs0 = c1.mask(eax).compileOp(rhs);
 							Operand opRhs1 = !(opRhs0 instanceof OpImm) ? opRhs0 : c1.rs.mask(eax, edx).get(is);
 							em.mov(opRhs1, opRhs0);
 							em.emit(amd64.instruction(Insn.XOR, edx, edx));
@@ -531,7 +530,7 @@ public class P4GenerateCode {
 						Pair<Funp, OpReg> pair = compileCommutativeTree(Insn.CMP, assoc, lhs, rhs);
 						em.emit(amd64.instruction(pair.t1 == lhs ? setInsn : setRevInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
 					} else if (shInsn != null) {
-						OpReg op0 = compileLoad(lhs);
+						var op0 = compileLoad(lhs);
 						if (numRhs != null)
 							em.emit(amd64.instruction(shInsn, op0, amd64.imm(numRhs, 1)));
 						else
@@ -573,11 +572,11 @@ public class P4GenerateCode {
 				else if (opRhs != null)
 					return Pair.of(lhs, em.emitRegInsn(insn, compileLoad(lhs), opRhs));
 				else {
-					boolean isRightAssoc = assoc == Assoc.RIGHT;
-					Funp first = isRightAssoc ? rhs : lhs;
-					Funp second = isRightAssoc ? lhs : rhs;
-					OpReg op0 = compileLoad(first);
-					Operand op1 = mask(op0).compileOp(second);
+					var isRightAssoc = assoc == Assoc.RIGHT;
+					var first = isRightAssoc ? rhs : lhs;
+					var second = isRightAssoc ? lhs : rhs;
+					var op0 = compileLoad(first);
+					var op1 = mask(op0).compileOp(second);
 					return Pair.of(first, em.emitRegInsn(insn, op0, op1));
 				}
 			}
@@ -601,8 +600,8 @@ public class P4GenerateCode {
 			}
 
 			private Operand compileBlock(Runnable runnable) {
-				Operand endLabel = em.label();
-				Operand refLabel = em.label();
+				var endLabel = em.label();
+				var refLabel = em.label();
 				em.emit(amd64.instruction(Insn.JMP, endLabel));
 				em.emit(amd64.instruction(Insn.LABEL, refLabel));
 				runnable.run();
@@ -617,7 +616,7 @@ public class P4GenerateCode {
 
 			private void compileInstruction(Insn insn, Operand op0, Operand op1) {
 				if (op0 instanceof OpMem && op1 instanceof OpMem || op0 instanceof OpImm) {
-					Operand oldOp1 = op1;
+					var oldOp1 = op1;
 					em.emit(amd64.instruction(Insn.MOV, op1 = rs.mask(op0).get(op1.size), oldOp1));
 				}
 				em.emit(amd64.instruction(insn, op0, op1));
@@ -641,7 +640,7 @@ public class P4GenerateCode {
 			}
 
 			private OpReg compileFramePointer() {
-				OpReg op = rs.get(isOutSpec ? pop0 : ebp);
+				var op = rs.get(isOutSpec ? pop0 : ebp);
 				em.lea(op, compileFrame(0, is));
 				return op;
 			}

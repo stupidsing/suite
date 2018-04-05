@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.adt.Mutable;
 import suite.adt.pair.Pair;
@@ -41,8 +40,6 @@ import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
-import suite.node.util.TreeUtil.IntInt_Bool;
-import suite.primitive.IntInt_Int;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
@@ -93,18 +90,18 @@ public class InterpretFunLazy {
 		df.put("snd", () -> new Fun_(in -> ((Pair_) in.get()).second));
 
 		for (var e : TreeUtil.boolOperations.entrySet()) {
-			IntInt_Bool fun = e.getValue();
+			var fun = e.getValue();
 			df.put(e.getKey().getName(), binary((a, b) -> b(fun.apply(compare(a.get(), b.get()), 0))));
 		}
 
 		for (var e : TreeUtil.intOperations.entrySet()) {
-			IntInt_Int fun = e.getValue();
+			var fun = e.getValue();
 			df.put(e.getKey().getName(), binary((a, b) -> Int.of(fun.apply(i(a), i(b)))));
 		}
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		Lazy_ lazy0 = new Lazy_(0, IMap.empty());
-		Frame frame = new Frame(null);
+		var frame = new Frame(null);
 
 		for (var key : keys) {
 			lazy0 = lazy0.put(Atom.of(key));
@@ -117,7 +114,7 @@ public class InterpretFunLazy {
 	private Reference parse(Node node) {
 		Prover prover = new Prover(Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl")));
 
-		Reference parsed = new Reference();
+		var parsed = new Reference();
 		if (!prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)))
 			Fail.t("cannot parse " + node);
 		return parsed;
@@ -157,8 +154,8 @@ public class InterpretFunLazy {
 				Fun<Frame, Thunk_> param_ = lazy_(APPLY.param);
 				Fun<Frame, Thunk_> fun_ = lazy_(APPLY.fun);
 				result = frame -> {
-					Thunk_ fun = fun_.apply(frame);
-					Thunk_ param = param_.apply(frame);
+					var fun = fun_.apply(frame);
+					var param = param_.apply(frame);
 					return () -> fun(fun.get()).apply(param).get();
 				};
 			} else if ((ATOM = Matcher.atom.match(node)) != null)
@@ -179,7 +176,7 @@ public class InterpretFunLazy {
 				result = frame -> {
 					var value = value_.apply(frame).get();
 					if (value instanceof Pair_) {
-						Pair_ pair = (Pair_) value;
+						var pair = (Pair_) value;
 						frame.add(pair.first_);
 						frame.add(pair.second);
 						return then_.apply(frame);
@@ -187,7 +184,7 @@ public class InterpretFunLazy {
 						return else_.apply(frame);
 				};
 			} else if ((m = Suite.pattern("DEF-VARS (.0 .1,) .2").match(node)) != null) {
-				Lazy_ lazy1 = put(m[0]);
+				var lazy1 = put(m[0]);
 				Fun<Frame, Thunk_> value_ = lazy1.lazy_(m[1]);
 				Fun<Frame, Thunk_> expr = lazy1.lazy_(m[2]);
 
@@ -198,10 +195,10 @@ public class InterpretFunLazy {
 					return expr.apply(frame);
 				};
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
-				Pattern tuple = Suite.pattern(".0 .1");
+				var tuple = Suite.pattern(".0 .1");
 				Streamlet<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple::match);
 				var size = arrays.size();
-				Lazy_ lazy0 = this;
+				var lazy0 = this;
 
 				for (Node[] array : arrays)
 					lazy0 = lazy0.put(array[0]);
@@ -233,7 +230,7 @@ public class InterpretFunLazy {
 
 				Fun<Frame, Thunk_> value_ = new Lazy_(0, vm1).put(FUN.param).lazy_(FUN.do_);
 				result = frame -> () -> new Fun_(in -> {
-					Frame frame1 = new Frame(frame);
+					var frame1 = new Frame(frame);
 					frame1.add(in);
 					return value_.apply(frame1);
 				});
@@ -250,10 +247,10 @@ public class InterpretFunLazy {
 				Fun<Frame, Thunk_> in_ = lazy_(TCO.in_);
 				result = frame -> {
 					Iterate<Thunk_> iter = fun(iter_.apply(frame).get());
-					Thunk_ in = in_.apply(frame);
+					var in = in_.apply(frame);
 					Pair_ p0, p1;
 					do {
-						Thunk_ out = iter.apply(in);
+						var out = iter.apply(in);
 						p0 = (Pair_) out.get();
 						p1 = (Pair_) p0.second.get();
 						in = p1.first_;
@@ -301,8 +298,8 @@ public class InterpretFunLazy {
 				c = Comparer.comparer.compare(n0, n1);
 				break;
 			case 1:
-				Pair_ p0 = (Pair_) n0;
-				Pair_ p1 = (Pair_) n1;
+				var p0 = (Pair_) n0;
+				var p1 = (Pair_) n1;
 				c = c == 0 ? compare(p0.first_.get(), p1.first_.get()) : c;
 				c = c == 0 ? compare(p0.second.get(), p1.second.get()) : c;
 				break;

@@ -168,7 +168,7 @@ public class DependencyMain extends ExecutableProgram {
 	}
 
 	public List<String> listDependeesOfDkms() {
-		Repo repo = new Repo("http://mirrors.kernel.org/ubuntu" //
+		var repo = new Repo("http://mirrors.kernel.org/ubuntu" //
 				, "xenial" //
 				, "main" //
 				, "amd64");

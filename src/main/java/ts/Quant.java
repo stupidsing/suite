@@ -31,8 +31,8 @@ public class Quant {
 			int timedExit, //
 			IntPredicate isEnterShort, IntPredicate isEnterLong, //
 			IntPredicate isExitShort, IntPredicate isExitLong) {
-		IntPredicate isKeepShort = isExitShort.negate();
-		IntPredicate isKeepLong = isExitLong.negate();
+		var isKeepShort = isExitShort.negate();
+		var isKeepLong = isExitLong.negate();
 		return enterKeep(start, end, timedExit, isEnterShort, isEnterLong, isKeepShort, isKeepLong);
 	}
 

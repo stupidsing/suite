@@ -6,7 +6,6 @@ import java.util.List;
 import suite.Suite;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
-import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.Operand;
 import suite.node.Atom;
 import suite.node.Int;
@@ -48,7 +47,7 @@ public class Amd64Parse {
 		else if ((m = Suite.pattern("`.0`").match(node)) != null)
 			return parseOpMem(m, 4);
 		else if (node instanceof Int) {
-			OpImm opImm = amd64.new OpImm();
+			var opImm = amd64.new OpImm();
 			opImm.imm = ((Int) node).number;
 			opImm.size = 4;
 			return opImm;

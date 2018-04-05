@@ -6,7 +6,6 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import suite.primitive.IntIntSource;
 import suite.primitive.adt.map.IntIntMap;
 import suite.primitive.adt.pair.IntIntPair;
 
@@ -14,7 +13,7 @@ public class IntIntMapTest {
 
 	@Test
 	public void test() {
-		IntIntMap map = new IntIntMap();
+		var map = new IntIntMap();
 		map.put(1, 2);
 		map.put(3, 4);
 		map.put(5, 6);
@@ -29,7 +28,7 @@ public class IntIntMapTest {
 
 		var actual = new HashSet<>();
 
-		IntIntSource source = map.source();
+		var source = map.source();
 		IntIntPair pair = IntIntPair.of(0, 0);
 		while (source.source2(pair))
 			actual.add(pair.t0 + ":" + pair.t1);

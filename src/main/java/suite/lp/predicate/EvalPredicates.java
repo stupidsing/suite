@@ -22,7 +22,6 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Grapher;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.Complexity;
@@ -52,7 +51,7 @@ public class EvalPredicates {
 	public BuiltinPredicate contains = PredicateUtil.p2((prover, p0, p1) -> rw.contains(p0, p1));
 
 	public BuiltinPredicate compare = (prover, ps) -> {
-		Tree tree = (Tree) ps;
+		var tree = (Tree) ps;
 		switch ((TermOp) tree.getOperator()) {
 		case LE____:
 			return comparer.compare(tree.getLeft(), tree.getRight()) <= 0;
@@ -64,8 +63,8 @@ public class EvalPredicates {
 	};
 
 	public BuiltinPredicate dictKeyValue = PredicateUtil.p3((prover, node, key, value) -> {
-		Reference reference = new Reference();
-		Dict dict = new Dict();
+		var reference = new Reference();
+		var dict = new Dict();
 		dict.map.put(key, reference);
 		return prover.bind(reference, value) && prover.bind(node, dict);
 	});
@@ -91,7 +90,7 @@ public class EvalPredicates {
 	public BuiltinPredicate graphBind = PredicateUtil.p2((prover, left, right) -> Grapher.bind(left, right, prover.getTrail()));
 
 	public BuiltinPredicate graphGeneralize = PredicateUtil.fun(n -> {
-		Grapher grapher = new Grapher();
+		var grapher = new Grapher();
 		grapher.graph(n);
 		grapher.generalize();
 		return grapher.ungraph();
@@ -103,7 +102,7 @@ public class EvalPredicates {
 	});
 
 	public BuiltinPredicate graphSpecialize = PredicateUtil.fun(n -> {
-		Grapher grapher = new Grapher();
+		var grapher = new Grapher();
 		grapher.graph(n);
 		grapher.specialize();
 		return grapher.ungraph();
@@ -138,7 +137,7 @@ public class EvalPredicates {
 	public BuiltinPredicate let = PredicateUtil.p2((prover, var, expr) -> prover.bind(Int.of(TreeUtil.evaluate(expr)), var));
 
 	public BuiltinPredicate notEquals = (prover, ps) -> {
-		Tree tree = (Tree) ps;
+		var tree = (Tree) ps;
 		return PredicateUtil.tryProve(prover, prover1 -> !prover1.bind(tree.getLeft(), tree.getRight()));
 	};
 
@@ -157,12 +156,12 @@ public class EvalPredicates {
 	public BuiltinPredicate tree = PredicateUtil.p4((prover, t, l, op, r) -> {
 		Tree tree;
 		if ((tree = Tree.decompose(t)) != null) {
-			Atom oper = Atom.of(tree.getOperator().getName());
+			var oper = Atom.of(tree.getOperator().getName());
 			return prover.bind(tree.getLeft(), l) //
 					&& prover.bind(oper, op) //
 					&& prover.bind(tree.getRight(), r);
 		} else if (op instanceof Atom) {
-			Operator operator = TermOp.find(((Atom) op).name);
+			var operator = TermOp.find(((Atom) op).name);
 			return prover.bind(t, Tree.of(operator, l, r));
 		} else
 			return false;

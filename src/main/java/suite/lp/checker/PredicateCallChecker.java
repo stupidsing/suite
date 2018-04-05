@@ -21,7 +21,7 @@ public class PredicateCallChecker {
 	}
 
 	private void check(Node node) {
-		Prototype prototype = Prototype.of(node);
+		var prototype = Prototype.of(node);
 		if (nElementsByPrototype.get(prototype) != null && TreeUtil.nElements(node) < nElementsByPrototype.get(prototype))
 			LogUtil.warn("Not enough number of elements: " + prototype);
 	}

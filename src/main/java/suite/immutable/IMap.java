@@ -62,7 +62,7 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		sb.append("{");
 
 		for (Pair<K, V> e : this)

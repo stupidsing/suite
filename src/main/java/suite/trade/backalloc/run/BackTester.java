@@ -1,7 +1,6 @@
 package suite.trade.backalloc.run;
 
 import suite.math.numeric.Statistic;
-import suite.math.numeric.Statistic.MeanVariance;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats_;
 import suite.primitive.FltPrimitives.Obj_Flt;
@@ -49,7 +48,7 @@ public class BackTester {
 							.collect(Obj_Flt.lift(sim -> (float) sim.annualReturn)) //
 							.toArray();
 
-					MeanVariance mv = stat.meanVariance(returns);
+					var mv = stat.meanVariance(returns);
 					var logCagr = Floats_.of(returns).mapFlt(return_ -> (float) Math.log1p(return_)).average();
 
 					return ">> cagr = " + To.string(Math.expm1(logCagr)) //

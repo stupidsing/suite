@@ -31,7 +31,7 @@ import suite.util.String_;
 public class EvaluateUtil {
 
 	private Fun<Boolean, Node> fccNodeFun = Memoize.fun(isLazy -> {
-		Atom mode = Atom.of(isLazy ? "LAZY" : "EAGER");
+		var mode = Atom.of(isLazy ? "LAZY" : "EAGER");
 
 		return new Specializer().specialize(Suite.substitute("" //
 				+ "source .in, compile-function .0 .in .out, sink .out", mode));
@@ -40,14 +40,14 @@ public class EvaluateUtil {
 	// using level 1 CompiledProverBuilder would break the test case
 	// FunRbTreeTest. it would blow up the stack in InstructionExecutor
 	private Fun<Pair<ProverConfig, Node>, Finder> fccFinderFun = Memoize.fun(pair -> {
-		Builder builder = new SewingProverBuilder(pair.t0);
+		var builder = new SewingProverBuilder(pair.t0);
 		// builder builder = new InterpretedProverBuilder(pair.t0);
 		// builder builder = new CompiledProverBuilder.level1(pair.t0);
 		return builder.build(Suite.funCompilerRuleSet()).apply(pair.t1);
 	});
 
 	public boolean proveLogic(Node lp) {
-		Builder builder = CompiledProverBuilder.level1(new ProverConfig());
+		var builder = CompiledProverBuilder.level1(new ProverConfig());
 		return proveLogic(builder, Suite.newRuleSet(), lp);
 	}
 
@@ -110,7 +110,7 @@ public class EvaluateUtil {
 
 	private Node doFcc(Node compileNode, FunCompilerConfig fcc) {
 		return LogUtil.duration("Code compiled", () -> {
-			ProverConfig pc = fcc.getProverConfig();
+			var pc = fcc.getProverConfig();
 			Finder finder = fccFinderFun.apply(Pair.of(pc, compileNode));
 			return FindUtil.collectSingle(finder, appendLibraries(fcc));
 		});

@@ -41,10 +41,10 @@ public class FunCreatorTest {
 		var fieldName1 = "f1";
 		FunCreator<Int_Int> fc0 = intFun(fieldName0, Type.INT);
 		FunCreator<Int_Int> fc1 = intFun(fieldName1, Type.getType(Int_Int.class));
-		Int_Int f0 = fc0 //
+		var f0 = fc0 //
 				.create((i -> f.add(fc0.field(fieldName0), i))) //
 				.apply(Map.of(fieldName0, 1));
-		Int_Int f1 = fc1 //
+		var f1 = fc1 //
 				.create(i -> fc1.field(fieldName1).apply(f.int_(3))) //
 				.apply(Map.of(fieldName1, f0));
 		assertEquals(4, f1.apply(5));
@@ -87,7 +87,7 @@ public class FunCreatorTest {
 
 	@Test
 	public void testExpression() {
-		Int N1 = Int.of(1);
+		var N1 = Int.of(1);
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		FunCreator<Source<Node>> fc = (FunCreator) FunCreator.of(Source.class);
 		assertEquals(Suite.parse("1"), fc.create(() -> f.object(N1)).apply(void_).source());
@@ -171,7 +171,7 @@ public class FunCreatorTest {
 
 	@Test
 	public void testRunnable() {
-		PrintlnFunExpr pfe = new PrintlnFunExpr();
+		var pfe = new PrintlnFunExpr();
 		pfe.expression = f.object(1).cast_(String.class);
 
 		var fc = FunCreator.of(Runnable.class);

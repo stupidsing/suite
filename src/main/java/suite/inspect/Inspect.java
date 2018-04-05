@@ -48,7 +48,7 @@ public class Inspect {
 		return o0 == o1 || o0 != null && o1 != null //
 				&& o0.getClass() == o1.getClass() //
 				&& Rethrow.ex(() -> {
-					boolean b = true;
+					var b = true;
 					for (var field : fields(o0.getClass()))
 						b &= Objects.equals(field.get(o0), field.get(o1));
 					return b;
@@ -68,7 +68,7 @@ public class Inspect {
 	}
 
 	public String toString(Object object) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		var ids = new HashSet<>();
 
 		new Object() {
@@ -81,10 +81,10 @@ public class Inspect {
 					sb.append(object_);
 				else if (ids.add(id = System.identityHashCode(object_)))
 					try {
-						Extract extract_ = new Extract(object_);
+						var extract_ = new Extract(object_);
 						var prefix = extract_.prefix;
 						Class<?> keyClass = extract_.keyClass;
-						ExtractField iter = extract_.children;
+						var iter = extract_.children;
 
 						if (String_.equals(prefix, "[")) {
 							sb.append("[");
@@ -211,8 +211,8 @@ public class Inspect {
 		return Read //
 				.from(propertyNames) //
 				.<Property> map(propertyName -> {
-					Method getMethod = getMethods.get(propertyName);
-					Method setMethod = setMethods.get(propertyName);
+					var getMethod = getMethods.get(propertyName);
+					var setMethod = setMethods.get(propertyName);
 					return new Property() {
 						public Object get(Object object) {
 							return Rethrow.ex(() -> getMethod.invoke(object));
@@ -276,7 +276,7 @@ public class Inspect {
 					private Object element;
 
 					public boolean next() {
-						boolean b = iter.hasNext();
+						var b = iter.hasNext();
 						if (b)
 							element = iter.next();
 						return b;
@@ -313,7 +313,7 @@ public class Inspect {
 					private Entry<Object, Object> entry;
 
 					public boolean next() {
-						boolean b = iter.hasNext();
+						var b = iter.hasNext();
 						if (b)
 							entry = iter.next();
 						return b;
@@ -421,7 +421,7 @@ public class Inspect {
 		return new Object() {
 			private T rewrite(T t0) {
 				return Rethrow.ex(() -> {
-					T t1 = fun.apply(t0);
+					var t1 = fun.apply(t0);
 					return t1 != null ? t1 : mapFields(t0, this::rewriteField);
 				});
 			}
@@ -429,7 +429,7 @@ public class Inspect {
 			private Object rewriteField(Object t0) {
 				if (baseClass.isInstance(t0)) {
 					@SuppressWarnings("unchecked")
-					T t1 = rewrite((T) t0);
+					var t1 = rewrite((T) t0);
 					return t1;
 				} else if (t0 instanceof Collection)
 					return Read.from((Collection<?>) t0).map(this::rewriteField).toList();
@@ -445,7 +445,7 @@ public class Inspect {
 	private <T> T mapFields(T t0, Fun<Object, Object> mapper) throws ReflectiveOperationException {
 		Class<?> clazz = t0.getClass();
 		@SuppressWarnings("unchecked")
-		T t1 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance();
+		var t1 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance();
 		for (var field : fields(clazz)) {
 			var v0 = field.get(t0);
 			var v1 = mapper.apply(v0);

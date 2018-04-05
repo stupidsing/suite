@@ -38,7 +38,7 @@ public class IntChrMap {
 		Obj_Int<T> kf1 = kf0.rethrow();
 		Obj_Chr<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			IntChrMap map = new IntChrMap();
+			var map = new IntChrMap();
 			T t;
 			while ((t = outlet.source().source()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
@@ -64,8 +64,8 @@ public class IntChrMap {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof IntChrMap) {
-			IntChrMap other = (IntChrMap) object;
-			boolean b = size == other.size;
+			var other = (IntChrMap) object;
+			var b = size == other.size;
 			for (IntObjPair<Character> pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
@@ -75,7 +75,7 @@ public class IntChrMap {
 
 	public void forEach(IntChrSink sink) {
 		IntChrPair pair = IntChrPair.of((int) 0, (char) 0);
-		IntChrSource source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -143,7 +143,7 @@ public class IntChrMap {
 			private IntChrPair pair0 = IntChrPair.of((int) 0, (char) 0);
 
 			public boolean source2(IntObjPair<Character> pair) {
-				boolean b = source0.source2(pair0);
+				var b = source0.source2(pair0);
 				pair.update(pair0.t0, pair0.t1);
 				return b;
 			}

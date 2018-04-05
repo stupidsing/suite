@@ -77,7 +77,7 @@ public class R3 {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == R3.class) {
-			R3 vector = (R3) object;
+			var vector = (R3) object;
 			return x == vector.x && y == vector.y && z == vector.z;
 		} else
 			return false;

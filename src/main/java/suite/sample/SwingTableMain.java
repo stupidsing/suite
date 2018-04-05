@@ -26,12 +26,12 @@ public class SwingTableMain extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
-		JLabel label = new JLabel("Hello World~~~");
+		var label = new JLabel("Hello World~~~");
 
-		JTextPane editor = new JTextPane();
+		var editor = new JTextPane();
 		editor.setFont(new Font("Monospac821 BT", Font.PLAIN, 10));
 
-		JTable table = new JTable(new AbstractTableModel() {
+		var table = new JTable(new AbstractTableModel() {
 			private static final long serialVersionUID = -1;
 
 			@Override
@@ -55,19 +55,19 @@ public class SwingTableMain extends ExecutableProgram {
 			}
 		});
 
-		JButton button = new JButton("Click Me!");
+		var button = new JButton("Click Me!");
 		button.setMnemonic(KeyEvent.VK_C); // alt-C as hot key
 		button.addActionListener(event -> System.out.println("GOT " + event));
 
 		// flow layout allows the components to be their preferred size
-		JPanel panel = new JPanel();
+		var panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
 		panel.add(label);
 		panel.add(editor);
 		panel.add(table);
 		panel.add(button);
 
-		JFrame frame = new JFrame();
+		var frame = new JFrame();
 		frame.setContentPane(panel);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 

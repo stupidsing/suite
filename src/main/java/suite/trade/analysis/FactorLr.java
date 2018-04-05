@@ -82,7 +82,7 @@ public class FactorLr {
 	}
 
 	private LinearRegression ols(DataSource rds0, TimeRange period) {
-		DataSource ys = rds0.range(period);
+		var ys = rds0.range(period);
 
 		var returns_ = Read //
 				.from(indexPrices) //

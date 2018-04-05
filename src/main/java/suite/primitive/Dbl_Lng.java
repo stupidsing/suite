@@ -1,6 +1,5 @@
 package suite.primitive;
 
-import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.streamlet.DblOutlet;
@@ -14,9 +13,9 @@ public interface Dbl_Lng {
 	public long apply(double c);
 
 	public static Fun<DblOutlet, LngStreamlet> lift(Dbl_Lng fun0) {
-		Dbl_Lng fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return ts -> {
-			LongsBuilder b = new LongsBuilder();
+			var b = new LongsBuilder();
 			double c;
 			while ((c = ts.next()) != DblFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
@@ -25,9 +24,9 @@ public interface Dbl_Lng {
 	}
 
 	public static Obj_Lng<DblOutlet> sum(Dbl_Lng fun0) {
-		Dbl_Lng fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return outlet -> {
-			DblSource source = outlet.source();
+			var source = outlet.source();
 			double c;
 			var result = (long) 0;
 			while ((c = source.source()) != DblFunUtil.EMPTYVALUE)

@@ -35,8 +35,8 @@ public class Desugar {
 			egx = repeat(eg0.children.get(0));
 			break;
 		case REPT0H:
-			Grammar bs = eg0.children.get(0);
-			Grammar cs = eg0.children.get(1);
+			var bs = eg0.children.get(0);
+			var cs = eg0.children.get(1);
 			if (Boolean.TRUE)
 				egx = new Grammar(GrammarType.AND___, List.of(bs, repeat(cs)));
 			else {
@@ -49,7 +49,7 @@ public class Desugar {
 			}
 			break;
 		case REPT1_:
-			Grammar child = eg0.children.get(0);
+			var child = eg0.children.get(0);
 			egx = new Grammar(GrammarType.AND___, List.of(child, repeat(child)));
 			break;
 		default:

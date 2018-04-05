@@ -36,7 +36,7 @@ public class IndexedRuleSet extends LinearRuleSet {
 
 	@Override
 	public List<Rule> searchRule(Node node) {
-		Prototype proto = Prototype.of(node);
+		var proto = Prototype.of(node);
 
 		// if the query is "un-prototype-able," or the rule set contains
 		// "un-prototype-able" entries, full traversal is required

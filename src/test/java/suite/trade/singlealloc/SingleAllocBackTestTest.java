@@ -54,7 +54,7 @@ public class SingleAllocBackTestTest {
 	}
 
 	private Map<String, SingleAllocBackTest> backTest(String code, String disp) {
-		Strategos sr = new Strategos();
+		var sr = new Strategos();
 		DataSource ds = cfg.dataSource(code, period);
 
 		return Read //

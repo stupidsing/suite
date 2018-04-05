@@ -61,7 +61,7 @@ public class WalkForwardAllocTester {
 	}
 
 	public String tick() {
-		Time time = Time.now();
+		var time = Time.now();
 		Map<String, Float> priceBySymbol = cfg.quote(dsBySymbol.keySet());
 
 		for (var e : priceBySymbol.entrySet())
@@ -115,7 +115,7 @@ public class WalkForwardAllocTester {
 		var length = valuations_.length;
 		var deltaMs = (start - System.currentTimeMillis()) / length;
 		ReturnsStat rs = ts.returnsStat(valuations_, deltaMs);
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 
 		for (Pair<String, Double> e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
 			sb.append(e.t0 + ":" + String.format("%.0f", e.t1 * 100d / length) + "%,");

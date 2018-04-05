@@ -2,7 +2,6 @@ package suite.editor;
 
 import java.awt.Component;
 import java.awt.Container;
-import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.util.ArrayList;
 import java.util.List;
@@ -167,7 +166,7 @@ public class LayoutCalculator {
 
 	public void arrange(Node node) {
 		container.setLayout(null);
-		Dimension size = container.getSize();
+		var size = container.getSize();
 		Rect rect = new Rect(new Vector(0, 0), new Vector(size.width, size.height));
 		node.assign(rect);
 	}

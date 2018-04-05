@@ -24,7 +24,7 @@ public class Account {
 	}
 
 	public static Account ofHistory(Iterable<Trade> trades) {
-		Account account = new Account(new HashMap<>());
+		var account = new Account(new HashMap<>());
 		account.play_(trades, false);
 		return account;
 	}
@@ -141,7 +141,7 @@ public class Account {
 	}
 
 	private boolean play_(Iterable<Trade> trades, boolean isValidate) {
-		boolean b = true;
+		var b = true;
 		for (var trade : trades)
 			b &= play_(trade, isValidate);
 		return b;

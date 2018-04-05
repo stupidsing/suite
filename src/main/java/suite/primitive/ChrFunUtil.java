@@ -90,7 +90,7 @@ public class ChrFunUtil {
 	}
 
 	public static ChrSource filter(ChrTest fun0, ChrSource source) {
-		ChrTest fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = EMPTYVALUE;
 			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
@@ -124,7 +124,7 @@ public class ChrFunUtil {
 	}
 
 	public static boolean isAll(ChrTest pred0, ChrSource source) {
-		ChrTest pred1 = pred0.rethrow();
+		var pred1 = pred0.rethrow();
 		char c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (!pred1.test(c))
@@ -133,7 +133,7 @@ public class ChrFunUtil {
 	}
 
 	public static boolean isAny(ChrTest pred0, ChrSource source) {
-		ChrTest pred1 = pred0.rethrow();
+		var pred1 = pred0.rethrow();
 		char c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (pred1.test(c))
@@ -177,7 +177,7 @@ public class ChrFunUtil {
 		Chr_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
 			var c = source.source();
-			boolean b = c != EMPTYVALUE;
+			var b = c != EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
 			return b;
@@ -185,7 +185,7 @@ public class ChrFunUtil {
 	}
 
 	public static ChrSource mapChr(Chr_Chr fun0, ChrSource source) {
-		Chr_Chr fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = source.source();
 			return c != ChrFunUtil.EMPTYVALUE ? fun1.apply(c) : ChrFunUtil.EMPTYVALUE;
@@ -219,7 +219,7 @@ public class ChrFunUtil {
 	 * skipped.
 	 */
 	public static Source<ChrSource> split(ChrTest fun0, ChrSource source) {
-		ChrTest fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return new Source<>() {
 			private char c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;

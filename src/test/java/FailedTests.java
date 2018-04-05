@@ -10,7 +10,6 @@ import suite.Suite;
 import suite.fp.FunRbTreeTest;
 import suite.ip.ImperativeCompiler;
 import suite.lp.Configuration.ProverConfig;
-import suite.lp.kb.RuleSet;
 import suite.primitive.Bytes;
 
 public class FailedTests {
@@ -68,7 +67,7 @@ public class FailedTests {
 	// alt = andTree(bt, orTree(andTree(right, rem), alt));
 	@Test
 	public void testRepeat() throws IOException {
-		RuleSet rs = Suite.newRuleSet();
+		var rs = Suite.newRuleSet();
 		Suite.importPath(rs, "auto.sl");
 		assertTrue(Suite.proveLogic(rs, "repeat, fail"));
 	}

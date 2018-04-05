@@ -31,7 +31,7 @@ public class SelfOrganizingMap {
 
 		for (var iteration = 0; iteration < 256; iteration++)
 			for (float[] in : ins) {
-				DblMutable nearestDistance = DblMutable.of(Double.MAX_VALUE);
+				var nearestDistance = DblMutable.of(Double.MAX_VALUE);
 				var nearestIndices = new int[nDim];
 
 				new Loop(is -> {

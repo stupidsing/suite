@@ -36,7 +36,7 @@ public class ChrChrMap {
 		Obj_Chr<T> kf1 = kf0.rethrow();
 		Obj_Chr<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			ChrChrMap map = new ChrChrMap();
+			var map = new ChrChrMap();
 			T t;
 			while ((t = outlet.source().source()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
@@ -62,8 +62,8 @@ public class ChrChrMap {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof ChrChrMap) {
-			ChrChrMap other = (ChrChrMap) object;
-			boolean b = size == other.size;
+			var other = (ChrChrMap) object;
+			var b = size == other.size;
 			for (ChrObjPair<Character> pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
@@ -73,7 +73,7 @@ public class ChrChrMap {
 
 	public void forEach(ChrChrSink sink) {
 		ChrChrPair pair = ChrChrPair.of((char) 0, (char) 0);
-		ChrChrSource source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -141,7 +141,7 @@ public class ChrChrMap {
 			private ChrChrPair pair0 = ChrChrPair.of((char) 0, (char) 0);
 
 			public boolean source2(ChrObjPair<Character> pair) {
-				boolean b = source0.source2(pair0);
+				var b = source0.source2(pair0);
 				pair.update(pair0.t0, pair0.t1);
 				return b;
 			}

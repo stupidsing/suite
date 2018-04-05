@@ -115,9 +115,9 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 			var p1 = start - s;
 			var p2 = end_ - s;
 			var p3 = pageSize;
-			Bytes bytes = allocMapFile.load(p);
+			var bytes = allocMapFile.load(p);
 
-			BytesBuilder bb = new BytesBuilder();
+			var bb = new BytesBuilder();
 			bb.append(bytes.range(p0, p1));
 			for (var i = p1; i < p2; i++)
 				bb.append(b);

@@ -64,7 +64,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 
 	public FltStreamlet closeAtEnd(Closeable c) {
 		return streamlet(() -> {
-			FltOutlet in = spawn();
+			var in = spawn();
 			in.closeAtEnd(c);
 			return in;
 		});
@@ -169,7 +169,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 	}
 
 	public FltStreamlet memoize() {
-		Floats list = toList().toFloats();
+		var list = toList().toFloats();
 		return streamlet(() -> FltOutlet.of(list));
 	}
 

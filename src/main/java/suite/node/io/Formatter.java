@@ -77,13 +77,13 @@ public class Formatter {
 	}
 
 	public static String graphize(Node node) {
-		Grapher grapher = new Grapher();
+		var grapher = new Grapher();
 		grapher.graph(node);
 		return grapher.toString();
 	}
 
 	public static String treeize(Node node) {
-		Treeizer treeize = new Treeizer();
+		var treeize = new Treeizer();
 		treeize.treeize(node, "");
 		return treeize.sb.toString();
 	}
@@ -184,11 +184,11 @@ public class Formatter {
 	}
 
 	private void formatTree_(Tree tree) {
-		Operator operator = tree.getOperator();
+		var operator = tree.getOperator();
 		var left = tree.getLeft();
 		var right = tree.getRight();
-		boolean isSpaceBefore = TermOp.isSpaceBefore(operator);
-		boolean isSpaceAfter = TermOp.isSpaceAfter(operator);
+		var isSpaceBefore = TermOp.isSpaceBefore(operator);
+		var isSpaceAfter = TermOp.isSpaceAfter(operator);
 
 		format(left, TermOp.getLeftPrec(operator));
 		if (isSpaceBefore)
@@ -205,7 +205,7 @@ public class Formatter {
 		String s1;
 		if (isDump)
 			if (!s0.isEmpty()) {
-				boolean quote = false;
+				var quote = false;
 
 				quote |= s0.startsWith(ProverConstant.variablePrefix) //
 						|| s0.startsWith(ProverConstant.wildcardPrefix);

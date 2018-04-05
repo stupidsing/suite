@@ -33,12 +33,12 @@ public class TypeChecker {
 		Map<Pair<Prototype, Integer>, Reference> types = new HashMap<>();
 
 		Read.from(rules).concatMap(rule -> {
-			Generalizer generalizer = new Generalizer();
+			var generalizer = new Generalizer();
 			var head = generalizer.generalize(rule.head);
 			var tail = generalizer.generalize(rule.tail);
 			return checkerUtil.scan(tail).cons(head);
 		}).forEach(pred -> {
-			Prototype prototype = Prototype.of(pred);
+			var prototype = Prototype.of(pred);
 			var nElements = prototype != null ? nElementsByPrototype.get(prototype) : null;
 			Node[] ps = nElements != null ? TreeUtil.elements(pred, nElements) : new Node[0];
 
@@ -78,7 +78,7 @@ public class TypeChecker {
 				} else
 					return new Reference(); // free type
 			} else {
-				Atom name = Atom.of(tree.getOperator().getName());
+				var name = Atom.of(tree.getOperator().getName());
 				var lt = getType(tree.getLeft());
 				var rt = getType(tree.getRight());
 				type = getEnumType(name, Tree.of(TermOp.TUPLE_, lt, rt));
@@ -94,7 +94,7 @@ public class TypeChecker {
 	}
 
 	private Node getEnumType(Node name, Node type1) {
-		Dict dict = new Dict();
+		var dict = new Dict();
 		dict.map.put(name, Reference.of(type1));
 		return dict;
 	}

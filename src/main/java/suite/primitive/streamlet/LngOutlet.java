@@ -99,7 +99,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	public static LngOutlet of(Source<Long> source) {
 		return LngOutlet.of(() -> {
-			Long c = source.source();
+			var c = source.source();
 			return c != null ? c : LngFunUtil.EMPTYVALUE;
 		});
 	}
@@ -197,7 +197,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public LngOutlet drop(int n) {
-		boolean isAvailable = true;
+		var isAvailable = true;
 		while (0 < n && (isAvailable &= next() != LngFunUtil.EMPTYVALUE))
 			n--;
 		return isAvailable ? this : empty();
@@ -206,7 +206,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == LngOutlet.class) {
-			LngSource source1 = ((LngOutlet) object).source;
+			var source1 = ((LngOutlet) object).source;
 			long o0, o1;
 			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
 				if (o0 == LngFunUtil.EMPTYVALUE && o1 == LngFunUtil.EMPTYVALUE)
@@ -366,14 +366,14 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public void sink(LngSink sink0) {
-		LngSink sink1 = sink0.rethrow();
+		var sink1 = sink0.rethrow();
 		long c;
 		while ((c = next()) != LngFunUtil.EMPTYVALUE)
 			sink1.sink(c);
 	}
 
 	public LngOutlet skip(int n) {
-		boolean end = false;
+		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next() == LngFunUtil.EMPTYVALUE;
 		return !end ? of(source) : empty();
@@ -409,12 +409,12 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public long[] toArray() {
-		LongsBuilder list = toList();
+		var list = toList();
 		return list.toLongs().toArray();
 	}
 
 	public LongsBuilder toList() {
-		LongsBuilder list = new LongsBuilder();
+		var list = new LongsBuilder();
 		long c;
 		while ((c = next()) != LngFunUtil.EMPTYVALUE)
 			list.append(c);
@@ -448,7 +448,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 		Map<K, V> map = new HashMap<>();
 		long c;
 		while ((c = next()) != LngFunUtil.EMPTYVALUE) {
-			K key = kf1.apply(c);
+			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
 				Fail.t("duplicate key " + key);
 		}
@@ -464,7 +464,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public LngSet toSet() {
-		LngSet set = new LngSet();
+		var set = new LngSet();
 		long c;
 		while ((c = next()) != LngFunUtil.EMPTYVALUE)
 			set.add(c);

@@ -14,7 +14,7 @@ public class Data<T> extends Node {
 
 	public static <T> T get(Node node) {
 		@SuppressWarnings("unchecked")
-		T t = (T) ((Data<?>) node).data;
+		var t = (T) ((Data<?>) node).data;
 		return t;
 	}
 

@@ -13,7 +13,7 @@ public class RecursiveFactorizerMain extends ExecutableProgram {
 	}
 
 	protected boolean run(String[] args) {
-		RecursiveFactorizer recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
+		var recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
 		var s0 = To.string(System.in);
 		String sx = recursiveFactorizer.rewrite(args[0], args[1], s0);
 		System.out.println(sx);

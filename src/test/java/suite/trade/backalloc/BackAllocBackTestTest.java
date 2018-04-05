@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.streamlet.Read;
-import suite.trade.Asset;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.analysis.Summarize;
@@ -27,7 +26,7 @@ public class BackAllocBackTestTest {
 
 	@Test
 	public void testBackTest() {
-		BackAllocator backAllocator = new PmamrBackAllocator().backAllocator();
+		var backAllocator = new PmamrBackAllocator().backAllocator();
 		Simulate sim = runner.backTest(backAllocator, period);
 		SummarizeByStrategy<String> sbs = Summarize.of(cfg, Read.from(sim.trades)).summarize(trade -> trade.symbol);
 		System.out.println(sbs.log);
@@ -36,8 +35,8 @@ public class BackAllocBackTestTest {
 
 	@Test
 	public void testBackTestSingle() {
-		Asset asset = cfg.queryCompany("0945.HK");
-		BackAllocator backAllocator = new MovingAvgMeanReversionBackAllocator().backAllocator();
+		var asset = cfg.queryCompany("0945.HK");
+		var backAllocator = new MovingAvgMeanReversionBackAllocator().backAllocator();
 		assertGrowth(out(runner.backTest(backAllocator, period, Read.each(asset))));
 	}
 

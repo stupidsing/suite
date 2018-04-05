@@ -6,7 +6,6 @@ import suite.BindArrayUtil.Pattern;
 import suite.adt.Opt;
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
-import suite.math.sym.Express.OpGroup;
 import suite.math.sym.Sym.Ring;
 import suite.node.Int;
 import suite.node.Node;
@@ -101,9 +100,9 @@ public class Polynomial<N> {
 	}
 
 	public Node format(Poly<N> poly) {
-		Express ex = new Express();
-		OpGroup add = ex.add;
-		OpGroup mul = ex.mul;
+		var ex = new Express();
+		var add = ex.add;
+		var mul = ex.mul;
 
 		Int_Obj<Node> powerFun = p -> {
 			var power = mul.identity();
@@ -190,7 +189,7 @@ public class Polynomial<N> {
 		}
 
 		private void add(int power, N term) {
-			N n0 = py.n0;
+			var n0 = py.n0;
 			Iterate<N> i0 = t -> t != null ? t : n0;
 			Iterate<N> ix = t -> t != n0 ? t : null;
 			update(power, t -> ix.apply(py.add_.apply(i0.apply(t), term)));

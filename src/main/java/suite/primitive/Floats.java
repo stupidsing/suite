@@ -51,14 +51,14 @@ public class Floats implements Iterable<Float> {
 	};
 
 	public static Floats concat(Floats... array) {
-		FloatsBuilder bb = new FloatsBuilder();
+		var bb = new FloatsBuilder();
 		for (var floats : array)
 			bb.append(floats);
 		return bb.toFloats();
 	}
 
 	public static Floats of(Outlet<Floats> outlet) {
-		FloatsBuilder cb = new FloatsBuilder();
+		var cb = new FloatsBuilder();
 		outlet.forEach(cb::append);
 		return cb.toFloats();
 	}
@@ -122,7 +122,7 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public boolean isWhitespaces() {
-		boolean b = true;
+		var b = true;
 		for (var i = start; b && i < end; i++)
 			b &= ParseUtil.isWhitespace(cs[i]);
 		return b;
@@ -139,7 +139,7 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public Floats pad(int size) {
-		FloatsBuilder cb = new FloatsBuilder();
+		var cb = new FloatsBuilder();
 		cb.append(this);
 		while (cb.size() < size)
 			cb.append((float) 0);
@@ -155,7 +155,7 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public Floats replace(Floats from, Floats to) {
-		FloatsBuilder cb = new FloatsBuilder();
+		var cb = new FloatsBuilder();
 		int i0 = 0, i;
 		while (0 <= (i = indexOf(from, i0))) {
 			cb.append(range_(i0, i));
@@ -240,7 +240,7 @@ public class Floats implements Iterable<Float> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Floats.class) {
-			Floats other = (Floats) object;
+			var other = (Floats) object;
 
 			if (size_() == other.size_()) {
 				var diff = other.start - start;
@@ -264,7 +264,7 @@ public class Floats implements Iterable<Float> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var i = start; i < end; i++)
 			sb.append(cs[i]);
 		return sb.toString();
@@ -272,7 +272,7 @@ public class Floats implements Iterable<Float> {
 
 	private boolean startsWith_(Floats floats, int s) {
 		if (s + floats.size_() <= size_()) {
-			boolean b = true;
+			var b = true;
 			for (var i = 0; b && i < floats.size_(); i++)
 				b &= get(s + i) == floats.get(i);
 			return b;

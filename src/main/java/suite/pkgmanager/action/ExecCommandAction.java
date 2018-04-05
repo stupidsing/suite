@@ -22,7 +22,7 @@ public class ExecCommandAction implements InstallAction {
 	}
 
 	private void exec(String[] command) {
-		Execute exec = new Execute(command);
+		var exec = new Execute(command);
 		if (exec.code != 0)
 			Fail.t("command return code = " + exec.code + ": " + exec.err);
 	}

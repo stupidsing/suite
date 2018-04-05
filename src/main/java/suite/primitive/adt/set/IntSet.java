@@ -23,7 +23,7 @@ public class IntSet {
 
 	public static IntSet intersect(IntSet... sets) {
 		return sets[0].streamlet().filter(c -> {
-			boolean b = true;
+			var b = true;
 			for (IntSet set_ : sets)
 				b &= set_.contains(c);
 			return b;
@@ -31,7 +31,7 @@ public class IntSet {
 	}
 
 	public static IntSet union(IntSet... sets) {
-		IntSet set = new IntSet();
+		var set = new IntSet();
 		for (IntSet set_ : sets)
 			set_.streamlet().sink(set::add);
 		return set;
@@ -70,8 +70,8 @@ public class IntSet {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof IntSet) {
-			IntSet other = (IntSet) object;
-			boolean b = size == other.size;
+			var other = (IntSet) object;
+			var b = size == other.size;
 			for (var c : streamlet())
 				b &= other.contains(c);
 			return b;
@@ -80,7 +80,7 @@ public class IntSet {
 	}
 
 	public void forEach(IntSink sink) {
-		IntSource source = source_();
+		var source = source_();
 		int c;
 		while ((c = source.source()) != EMPTYVALUE)
 			sink.sink(c);
@@ -104,7 +104,7 @@ public class IntSet {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var c : streamlet())
 			sb.append(c + ",");
 		return sb.toString();
@@ -112,7 +112,7 @@ public class IntSet {
 
 	private boolean add_(int c) {
 		var index = index(c);
-		boolean b = vs[index] != c;
+		var b = vs[index] != c;
 		vs[index] = c;
 		return b;
 	}

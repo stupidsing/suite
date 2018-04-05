@@ -60,7 +60,7 @@ public class P4DecomposeOperand {
 		}
 
 		Fun2<Operator, Funp, List<Funp>> decompose = (operator, n_) -> {
-			Decompose dec = new Decompose(operator);
+			var dec = new Decompose(operator);
 			dec.decompose(n_);
 			return dec.nodes;
 		};
@@ -99,10 +99,10 @@ public class P4DecomposeOperand {
 						addReg(amd64.esp, 1);
 						disp -= fd;
 					} else {
-						DecomposeMult dec = new DecomposeMult();
+						var dec = new DecomposeMult();
 						dec.decompose(n1);
 						if (dec.mults.isEmpty()) {
-							OpReg reg_ = dec.reg;
+							var reg_ = dec.reg;
 							var scale_ = dec.scale;
 							if (reg_ != null)
 								addReg(reg_, scale_);

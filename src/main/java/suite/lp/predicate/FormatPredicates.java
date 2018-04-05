@@ -35,7 +35,7 @@ public class FormatPredicates {
 	});
 
 	public BuiltinPredicate concat = PredicateUtil.ps((prover, nodes) -> {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		var n = nodes.length;
 		for (var i = 0; i < n - 1; i++)
 			sb.append(Formatter.display(nodes[i]));
@@ -56,9 +56,9 @@ public class FormatPredicates {
 
 	public BuiltinPredicate persistLoad = PredicateUtil.p2((prover, node, filename) -> {
 		try (InputStream is = new FileInputStream(((Str) filename).value);
-				GZIPInputStream gis = new GZIPInputStream(is);
-				DataInputStream dis = new DataInputStream(gis)) {
-			Grapher grapher = new Grapher();
+				var gis = new GZIPInputStream(is);
+				var dis = new DataInputStream(gis)) {
+			var grapher = new Grapher();
 			grapher.load(dis);
 			return prover.bind(node, grapher.ungraph());
 		} catch (IOException ex) {
@@ -68,9 +68,9 @@ public class FormatPredicates {
 
 	public BuiltinPredicate persistSave = PredicateUtil.p2((prover, node, filename) -> {
 		try (OutputStream os = FileUtil.out(((Str) filename).value);
-				GZIPOutputStream gos = new GZIPOutputStream(os);
-				DataOutputStream dos = new DataOutputStream(gos)) {
-			Grapher grapher = new Grapher();
+				var gos = new GZIPOutputStream(os);
+				var dos = new DataOutputStream(gos)) {
+			var grapher = new Grapher();
 			grapher.graph(node);
 			grapher.save(dos);
 			return true;

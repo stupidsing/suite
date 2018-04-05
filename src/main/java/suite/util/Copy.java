@@ -28,16 +28,16 @@ public class Copy {
 	 * Clones slowly by serializing and de-serializing.
 	 */
 	public static <T> T serializable(T clonee) throws IOException, ClassNotFoundException {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		ObjectOutputStream out = new ObjectOutputStream(baos);
+		var baos = new ByteArrayOutputStream();
+		var out = new ObjectOutputStream(baos);
 		out.writeObject(clonee);
 		out.flush();
 		out.close();
 
-		ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-		ObjectInputStream in = new ObjectInputStream(bais);
+		var bais = new ByteArrayInputStream(baos.toByteArray());
+		var in = new ObjectInputStream(bais);
 		@SuppressWarnings("unchecked")
-		T cloned = (T) in.readObject();
+		var cloned = (T) in.readObject();
 		return cloned;
 	}
 

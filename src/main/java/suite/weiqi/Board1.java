@@ -59,11 +59,11 @@ public class Board1 {
 	}
 
 	public Runnable move(Coordinate c, Occupation o) {
-		Group group = new Group(o);
+		var group = new Group(o);
 		setGroup(c, group);
 
 		for (var c1 : c.neighbors) {
-			Group group1 = getGroup(c1);
+			var group1 = getGroup(c1);
 			if (group1 != null) {
 				group1.nBreaths--;
 				if (group1.occupation == o)
@@ -75,7 +75,7 @@ public class Board1 {
 		List<Coordinate> list = new ArrayList<>();
 
 		for (var c1 : c.neighbors) {
-			Group group1 = getGroup(c1);
+			var group1 = getGroup(c1);
 			if (group1 != null && group1.nBreaths == 0) {
 				removeGroup(group1, c1);
 				list.add(c1);
@@ -104,7 +104,7 @@ public class Board1 {
 
 	private Group merge(Group g0, Group g1) {
 		if (g0.rank < g1.rank) {
-			Group tmp = g0;
+			var tmp = g0;
 			g0 = g1;
 			g1 = tmp;
 		}
@@ -121,7 +121,7 @@ public class Board1 {
 		setGroup(c, group);
 
 		for (var c1 : c.neighbors) {
-			Group g = getGroup(c1);
+			var g = getGroup(c1);
 			if (g == null)
 				fillGroup(group, c1);
 			else if (g != group && neighbourGroups.add(g))
@@ -134,7 +134,7 @@ public class Board1 {
 		setGroup(c, null);
 
 		for (var c1 : c.neighbors) {
-			Group g = getGroup(c1);
+			var g = getGroup(c1);
 			if (g == group)
 				removeGroup(g, c1);
 			else if (g != null && neighbourGroups.add(g))
@@ -147,7 +147,7 @@ public class Board1 {
 	}
 
 	private void setGroup(int i, Group group1) {
-		Group group0 = board[i];
+		var group0 = board[i];
 		board[i] = group1;
 		if (group0 != null)
 			hashCode ^= group0.occupation == Occupation.BLACK ? i : Integer.rotateLeft(i, 16);
@@ -157,7 +157,7 @@ public class Board1 {
 
 	private Group getGroup(Coordinate c) {
 		var index = c.index();
-		Group group = board[index];
+		var group = board[index];
 		if (group != null)
 			group = board[index] = group.root();
 		return group;

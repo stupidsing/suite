@@ -84,8 +84,8 @@ public class Factor {
 	}
 
 	private double project(DataSource irds0, DataSource rds0, TimeRange period) {
-		DataSource rds1 = rds0.range(period);
-		DataSource irds1 = irds0.range(period).alignBeforePrices(rds1.ts);
+		var rds1 = rds0.range(period);
+		var irds1 = irds0.range(period).alignBeforePrices(rds1.ts);
 		return stat.project(irds1.returns(), rds1.returns());
 	}
 

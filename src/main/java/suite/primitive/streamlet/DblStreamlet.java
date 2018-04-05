@@ -64,7 +64,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 
 	public DblStreamlet closeAtEnd(Closeable c) {
 		return streamlet(() -> {
-			DblOutlet in = spawn();
+			var in = spawn();
 			in.closeAtEnd(c);
 			return in;
 		});
@@ -169,7 +169,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 	}
 
 	public DblStreamlet memoize() {
-		Doubles list = toList().toDoubles();
+		var list = toList().toDoubles();
 		return streamlet(() -> DblOutlet.of(list));
 	}
 

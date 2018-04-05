@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.List;
 
-import javax.tools.JavaCompiler;
 import javax.tools.StandardJavaFileManager;
 import javax.tools.ToolProvider;
 
@@ -37,7 +36,7 @@ public class JdkUtil {
 		LogUtil.info("Compiling " + srcFilePath);
 		FileUtil.mkdir(binDir);
 
-		JavaCompiler jc = ToolProvider.getSystemJavaCompiler();
+		var jc = ToolProvider.getSystemJavaCompiler();
 
 		try (StandardJavaFileManager sjfm = jc.getStandardFileManager(null, null, null)) {
 			if (!jc.getTask( //

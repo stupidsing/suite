@@ -31,7 +31,7 @@ public class RunUtil {
 
 	public static void run(Class<? extends ExecutableProgram> clazz, String[] args, RunOption runOption) {
 		LogUtil.initLog4j(Level.INFO);
-		IntMutable mutableCode = IntMutable.nil();
+		var mutableCode = IntMutable.nil();
 
 		IntSource source = () -> {
 			try {

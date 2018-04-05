@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.fp.intrinsic.Intrinsics;
@@ -33,7 +32,6 @@ import suite.fp.match.Matchers.WRAP;
 import suite.immutable.IMap;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.FindUtil;
-import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder2;
 import suite.node.Atom;
 import suite.node.Data;
@@ -46,8 +44,6 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
-import suite.node.util.TreeUtil.IntInt_Bool;
-import suite.primitive.IntInt_Int;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
@@ -130,13 +126,13 @@ public class InterpretFunEager {
 			else if ((CONS = Matcher.cons.match(node)) != null) {
 				Fun<Frame, Node> p0_ = eager_(CONS.head);
 				Fun<Frame, Node> p1_ = eager_(CONS.tail);
-				Operator operator = oper(CONS.type);
+				var operator = oper(CONS.type);
 				result = frame -> Tree.of(operator, p0_.apply(frame), p1_.apply(frame));
 			} else if ((DECONS = Matcher.decons.match(node)) != null) {
 				Fun<Frame, Node> value_ = eager_(DECONS.value);
 				Fun<Frame, Node> then_ = put(DECONS.left).put(DECONS.right).eager_(DECONS.then);
 				Fun<Frame, Node> else_ = eager_(DECONS.else_);
-				Operator operator = oper(DECONS.type);
+				var operator = oper(DECONS.type);
 				result = frame -> {
 					Tree tree = Tree.decompose(value_.apply(frame), operator);
 					if (tree != null) {
@@ -147,7 +143,7 @@ public class InterpretFunEager {
 						return else_.apply(frame);
 				};
 			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
-				Pattern tuple = Suite.pattern(".0 .1");
+				var tuple = Suite.pattern(".0 .1");
 				List<Node[]> arrays = Tree.iter(DEFVARS.list).map(tuple::match).toList();
 				if (arrays.size() == 1) {
 					var array = arrays.get(0);
@@ -193,7 +189,7 @@ public class InterpretFunEager {
 				}
 				Fun<Frame, Node> value_ = new Eager_(0, vm1).put(FUN.param).eager_(FUN.do_);
 				result = frame -> new Fun_(in -> {
-					Frame frame1 = new Frame(frame);
+					var frame1 = new Frame(frame);
 					frame1.add(in);
 					return value_.apply(frame1);
 				});
@@ -247,9 +243,9 @@ public class InterpretFunEager {
 		Node query = Suite.substitute("source .in, fc-process-function .0 .in .out, sink .out", mode);
 
 		RuleSet rs = Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl"));
-		Finder finder = new SewingProverBuilder2().build(rs).apply(query);
+		var finder = new SewingProverBuilder2().build(rs).apply(query);
 		Node parsed = FindUtil.collectSingle(finder, node);
-		IntrinsicCallback ic = isLazyify ? lazyIntrinsicCallback() : Intrinsics.eagerIntrinsicCallback;
+		var ic = isLazyify ? lazyIntrinsicCallback() : Intrinsics.eagerIntrinsicCallback;
 
 		Map<String, Node> df = new HashMap<>();
 		df.put(TermOp.AND___.name, f2((a, b) -> Tree.of(TermOp.AND___, a, b)));
@@ -271,18 +267,18 @@ public class InterpretFunEager {
 		df.put("+pright", f1(a -> Tree.decompose(a).getRight()));
 
 		for (var e : TreeUtil.boolOperations.entrySet()) {
-			IntInt_Bool fun = e.getValue();
+			var fun = e.getValue();
 			df.put(e.getKey().getName(), f2((a, b) -> b(fun.apply(compare(a, b), 0))));
 		}
 
 		for (var e : TreeUtil.intOperations.entrySet()) {
-			IntInt_Int fun = e.getValue();
+			var fun = e.getValue();
 			df.put(e.getKey().getName(), f2((a, b) -> Int.of(fun.apply(i(a), i(b)))));
 		}
 
 		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		Eager_ eager0 = new Eager_(0, IMap.empty());
-		Frame frame = new Frame(null);
+		var frame = new Frame(null);
 
 		for (var key : keys) {
 			eager0 = eager0.put(Atom.of(key));

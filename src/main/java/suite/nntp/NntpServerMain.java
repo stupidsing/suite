@@ -123,7 +123,7 @@ public class NntpServerMain extends ExecutableProgram {
 							Pair<String, String> lr = String_.split2(line, ":");
 							article.put(lr.t0, lr.t1);
 						}
-						StringBuilder sb = new StringBuilder();
+						var sb = new StringBuilder();
 						while (pos < lines.size())
 							sb.append(lines.get(pos++));
 						article.put(Nntp.contentKey, sb.toString());

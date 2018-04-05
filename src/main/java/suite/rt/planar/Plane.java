@@ -36,13 +36,13 @@ public class Plane implements RtObject {
 		var advance = adv;
 
 		if (RayTracer.negligibleAdvance < advance) {
-			RayHit rayHit = new RayHit() {
+			var rayHit = new RayHit() {
 				public double advance() {
 					return advance;
 				}
 
 				public RayIntersection intersection() {
-					R3 hitPoint = ray.hitPoint(advance);
+					var hitPoint = ray.hitPoint(advance);
 
 					return new RayIntersection() {
 						public R3 hitPoint() {

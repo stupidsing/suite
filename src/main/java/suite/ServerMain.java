@@ -48,7 +48,7 @@ public class ServerMain extends ExecutableProgram {
 				+ "<br/>headers = " + request.headers //
 				+ "</html>"));
 
-		HttpHandler handler1 = HttpHandler.ofDispatch(IMap //
+		var handler1 = HttpHandler.ofDispatch(IMap //
 				.<String, HttpHandler>empty() //
 				.put("path", HttpHandler.ofPath(Constants.tmp)) //
 				.put("site", HttpHandler.ofSession(authenticator, handler0)));

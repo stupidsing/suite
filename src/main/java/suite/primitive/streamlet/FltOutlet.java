@@ -99,7 +99,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	public static FltOutlet of(Source<Float> source) {
 		return FltOutlet.of(() -> {
-			Float c = source.source();
+			var c = source.source();
 			return c != null ? c : FltFunUtil.EMPTYVALUE;
 		});
 	}
@@ -197,7 +197,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public FltOutlet drop(int n) {
-		boolean isAvailable = true;
+		var isAvailable = true;
 		while (0 < n && (isAvailable &= next() != FltFunUtil.EMPTYVALUE))
 			n--;
 		return isAvailable ? this : empty();
@@ -206,7 +206,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == FltOutlet.class) {
-			FltSource source1 = ((FltOutlet) object).source;
+			var source1 = ((FltOutlet) object).source;
 			float o0, o1;
 			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
 				if (o0 == FltFunUtil.EMPTYVALUE && o1 == FltFunUtil.EMPTYVALUE)
@@ -366,14 +366,14 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public void sink(FltSink sink0) {
-		FltSink sink1 = sink0.rethrow();
+		var sink1 = sink0.rethrow();
 		float c;
 		while ((c = next()) != FltFunUtil.EMPTYVALUE)
 			sink1.sink(c);
 	}
 
 	public FltOutlet skip(int n) {
-		boolean end = false;
+		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next() == FltFunUtil.EMPTYVALUE;
 		return !end ? of(source) : empty();
@@ -409,12 +409,12 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public float[] toArray() {
-		FloatsBuilder list = toList();
+		var list = toList();
 		return list.toFloats().toArray();
 	}
 
 	public FloatsBuilder toList() {
-		FloatsBuilder list = new FloatsBuilder();
+		var list = new FloatsBuilder();
 		float c;
 		while ((c = next()) != FltFunUtil.EMPTYVALUE)
 			list.append(c);
@@ -448,7 +448,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 		Map<K, V> map = new HashMap<>();
 		float c;
 		while ((c = next()) != FltFunUtil.EMPTYVALUE) {
-			K key = kf1.apply(c);
+			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
 				Fail.t("duplicate key " + key);
 		}
@@ -464,7 +464,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public FltSet toSet() {
-		FltSet set = new FltSet();
+		var set = new FltSet();
 		float c;
 		while ((c = next()) != FltFunUtil.EMPTYVALUE)
 			set.add(c);

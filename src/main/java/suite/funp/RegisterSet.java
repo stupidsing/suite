@@ -84,7 +84,7 @@ public class RegisterSet {
 	}
 
 	private OpReg get_(int size) {
-		OpReg r = get_();
+		var r = get_();
 		var reg = r.reg;
 		if (size == 1 && reg < 4) // AL, BL, CL or DL
 			return amd64.reg8[reg];

@@ -48,8 +48,8 @@ public class FastFourierTransform {
 					var ie = i + k;
 					var io = i + k + step;
 
-					Complex ce = fds[ie];
-					Complex co = fds[io];
+					var ce = fds[ie];
+					var co = fds[io];
 					Complex exp = Complex.mul(cis[k], co);
 
 					fds[ie] = Complex.add(ce, exp);

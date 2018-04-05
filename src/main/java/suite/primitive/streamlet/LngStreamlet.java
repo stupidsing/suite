@@ -64,7 +64,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 
 	public LngStreamlet closeAtEnd(Closeable c) {
 		return streamlet(() -> {
-			LngOutlet in = spawn();
+			var in = spawn();
 			in.closeAtEnd(c);
 			return in;
 		});
@@ -169,7 +169,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 	}
 
 	public LngStreamlet memoize() {
-		Longs list = toList().toLongs();
+		var list = toList().toLongs();
 		return streamlet(() -> LngOutlet.of(list));
 	}
 

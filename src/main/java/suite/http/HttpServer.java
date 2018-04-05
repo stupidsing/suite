@@ -90,7 +90,7 @@ public class HttpServer {
 				LogUtil.info(request.getLogString() + " " + response.getLogString());
 			}
 
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 
 			sb.append("HTTP/1.1 " + response.status + "\r\n");
 			for (Pair<String, String> e : response.headers)

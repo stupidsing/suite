@@ -44,7 +44,7 @@ public class FltObjFunUtil {
 			private boolean isAvail;
 			private int i;
 			private FltObjSource<V> source_ = pair1 -> {
-				boolean b = (isAvail = isAvail && source.source2(pair)) && ++i < n;
+				var b = (isAvail = isAvail && source.source2(pair)) && ++i < n;
 				if (b)
 					pair1.update(pair.t0, pair.t1);
 				else
@@ -67,7 +67,7 @@ public class FltObjFunUtil {
 			private FltObjSource<V> source2 = nullSource();
 
 			public boolean source2(FltObjPair<V> pair) {
-				boolean b = false;
+				var b = false;
 				while (source2 != null && !(b = source2.source2(pair)))
 					source2 = source.source();
 				return b;
@@ -102,7 +102,7 @@ public class FltObjFunUtil {
 	}
 
 	public static <V> FltObjSource<V> filterKey(FltTest fun0, FltObjSource<V> source2) {
-		FltTest fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -183,7 +183,7 @@ public class FltObjFunUtil {
 		FltObj_Obj<V, V1> vf1 = vf0.rethrow();
 		FltObjPair<V> pair1 = FltObjPair.of((float) 0, null);
 		return pair -> {
-			boolean b = source2.source2(pair1);
+			var b = source2.source2(pair1);
 			if (b)
 				pair.update(kf1.apply(pair1.t0, pair1.t1), vf1.apply(pair1.t0, pair1.t1));
 			return b;
@@ -195,7 +195,7 @@ public class FltObjFunUtil {
 		FltObj_Obj<V, V1> vf1 = vf0.rethrow();
 		FltObjPair<V> pair1 = FltObjPair.of((float) 0, null);
 		return pair -> {
-			boolean b = source2.source2(pair1);
+			var b = source2.source2(pair1);
 			if (b)
 				pair.update(kf1.apply(pair1.t0, pair1.t1), vf1.apply(pair1.t0, pair1.t1));
 			return b;

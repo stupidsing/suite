@@ -1,10 +1,8 @@
 package suite.trade.data;
 
 import java.io.InputStream;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,8 +75,8 @@ public class Yahoo {
 
 	// https://l1-query.finance.yahoo.com/v7/finance/chart/0012.HK?period1=0&period2=1497550133&interval=1d&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com
 	public DataSource dataSourceL1(String symbol, TimeRange period) {
-		StockHistory stockHistory = getStockHistory(symbol);
-		DataSource ds = stockHistory.filter(period).toDataSource();
+		var stockHistory = getStockHistory(symbol);
+		var ds = stockHistory.filter(period).toDataSource();
 		long[] ts = ds.ts;
 
 		// the latest time stamp may fluctuate; adjust it to previous market
@@ -96,7 +94,7 @@ public class Yahoo {
 	}
 
 	private StockHistory getStockHistory(String symbol) {
-		Path path = HomeDir.dir("yahoo").resolve(symbol + ".txt");
+		var path = HomeDir.dir("yahoo").resolve(symbol + ".txt");
 		StockHistory stockHistory0;
 
 		if (Files.exists(path))
@@ -109,7 +107,7 @@ public class Yahoo {
 		else
 			stockHistory0 = StockHistory.new_();
 
-		Time time = HkexUtil.getCloseTimeBefore(Time.now());
+		var time = HkexUtil.getCloseTimeBefore(Time.now());
 		StockHistory stockHistory1;
 
 		if (stockHistory0.isActive && Time.compare(stockHistory0.time, time) < 0) {
@@ -133,7 +131,7 @@ public class Yahoo {
 					.<String> empty() //
 					.map2(tag -> jsons //
 							.flatMap(json_ -> {
-								JsonNode json0 = json_.path("indicators");
+								var json0 = json_.path("indicators");
 								JsonNode json1;
 								if (false //
 										|| !(json1 = json0.path("unadjclose")).isMissingNode() //
@@ -202,7 +200,7 @@ public class Yahoo {
 	}
 
 	private JsonNode queryL1(String symbol, TimeRange period) {
-		URL url = To.url("" //
+		var url = To.url("" //
 				+ "https://l1-query.finance.yahoo.com/v7/finance/chart/" //
 				+ encode(symbol) //
 				+ "?period1=" + period.from.epochSec() //
@@ -237,7 +235,7 @@ public class Yahoo {
 
 		return Rethrow.ex(() -> {
 			try (InputStream is = Singleton.me.storeCache.http(urlString).collect(To::inputStream)) {
-				JsonNode json = mapper.readTree(is);
+				var json = mapper.readTree(is);
 
 				Streamlet<JsonNode> quotes = Read.each(json) //
 						.flatMap(json_ -> json_.path("query")) //
@@ -285,15 +283,15 @@ public class Yahoo {
 					+ "?s=" + symbols.sort(Object_::compare).map(this::encode).collect(As.joinedBy("+")) //
 					+ "&f=s" + field;
 
-			URL url = To.url(urlString);
+			var url = To.url(urlString);
 			return HttpUtil.get(url).out.collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
 		} else
 			return new HashMap<>();
 	}
 
 	public String tableUrl(String symbol, TimeRange period) {
-		Time frDate = period.from;
-		Time toDate = period.to;
+		var frDate = period.from;
+		var toDate = period.to;
 		return "https://chart.finance.yahoo.com/table.csv" //
 				+ "?s=" + encode(symbol) //
 				+ "&a=" + frDate.month() + "&b=" + frDate.dow() + "&c=" + frDate.year() //

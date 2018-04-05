@@ -6,7 +6,6 @@ import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.lp.doer.ClonerFactory;
-import suite.lp.doer.ClonerFactory.Clone_;
 import suite.lp.doer.EvaluatorFactory;
 import suite.node.Int;
 import suite.node.Node;
@@ -56,7 +55,7 @@ public class CompileExpressionImpl implements EvaluatorFactory {
 				}).applyIf(Int.class, i -> {
 					return f.int_(i.number);
 				}).applyIf(Node.class, i -> {
-					Clone_ n_ = clonerFactory.cloner(node);
+					var n_ = clonerFactory.cloner(node);
 					Evaluate_ evaluate = env -> TreeUtil.evaluate(n_.apply(env));
 					return f.object(evaluate).invoke("evaluate", env);
 				}).nonNullResult();

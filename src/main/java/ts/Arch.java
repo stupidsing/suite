@@ -29,7 +29,7 @@ public class Arch {
 		float[] variances = To.vector(lr0.residuals, residual -> residual * residual);
 
 		// conditional heteroskedasticity
-		LinearRegression lr1 = stat.linearRegression(Ints_ //
+		var lr1 = stat.linearRegression(Ints_ //
 				.range(length) //
 				.map(i -> FltObjPair.of(variances[i], copyPadZeroes(variances, i - p, i))));
 
@@ -64,7 +64,7 @@ public class Arch {
 			}
 		}
 
-		LogLikelihood ll = mle.max(LogLikelihood::new);
+		var ll = mle.max(LogLikelihood::new);
 		return new Object[] { ll.c, ll.ars, ll.p0, ll.p1, ll.p2, };
 	}
 

@@ -1,10 +1,8 @@
 package suite.instructionexecutor;
 
 import suite.instructionexecutor.InstructionUtil.Activation;
-import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.lp.Configuration.ProverConfig;
-import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.lp.predicate.SystemPredicates;
@@ -28,10 +26,10 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 
 	@Override
 	protected void handle(Exec exec, Instruction insn) {
-		Activation current = exec.current;
-		Frame frame = current.frame;
+		var current = exec.current;
+		var frame = current.frame;
 		var regs = frame != null ? frame.registers : null;
-		Trail trail = prover.getTrail();
+		var trail = prover.getTrail();
 		Instruction insn1;
 
 		switch (insn.insn) {
@@ -55,12 +53,12 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			var node = regs[insn.op0].finalNode();
 
 			insn1 = getInstructions()[current.ip++];
-			TermOp op = TermOp.find(((Atom) constantPool.get(insn1.op0)).name);
+			var op = TermOp.find(((Atom) constantPool.get(insn1.op0)).name);
 			var rl = insn1.op1;
 			var rr = insn1.op2;
 
 			if (node instanceof Tree) {
-				Tree tree = (Tree) node;
+				var tree = (Tree) node;
 
 				if (tree.getOperator() == op) {
 					regs[rl] = tree.getLeft();

@@ -90,7 +90,7 @@ public class IntFunUtil {
 	}
 
 	public static IntSource filter(IntTest fun0, IntSource source) {
-		IntTest fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = EMPTYVALUE;
 			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
@@ -124,7 +124,7 @@ public class IntFunUtil {
 	}
 
 	public static boolean isAll(IntTest pred0, IntSource source) {
-		IntTest pred1 = pred0.rethrow();
+		var pred1 = pred0.rethrow();
 		int c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (!pred1.test(c))
@@ -133,7 +133,7 @@ public class IntFunUtil {
 	}
 
 	public static boolean isAny(IntTest pred0, IntSource source) {
-		IntTest pred1 = pred0.rethrow();
+		var pred1 = pred0.rethrow();
 		int c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (pred1.test(c))
@@ -177,7 +177,7 @@ public class IntFunUtil {
 		Int_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
 			var c = source.source();
-			boolean b = c != EMPTYVALUE;
+			var b = c != EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
 			return b;
@@ -185,7 +185,7 @@ public class IntFunUtil {
 	}
 
 	public static IntSource mapInt(Int_Int fun0, IntSource source) {
-		Int_Int fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = source.source();
 			return c != IntFunUtil.EMPTYVALUE ? fun1.apply(c) : IntFunUtil.EMPTYVALUE;
@@ -219,7 +219,7 @@ public class IntFunUtil {
 	 * skipped.
 	 */
 	public static Source<IntSource> split(IntTest fun0, IntSource source) {
-		IntTest fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return new Source<>() {
 			private int c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;

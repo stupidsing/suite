@@ -46,8 +46,8 @@ public class MathUtil {
 
 	public static int steinGcd_(int n0, int n1) {
 		if (n0 != 0 && n1 != 0) {
-			boolean isEven0 = isEven(n0);
-			boolean isEven1 = isEven(n1);
+			var isEven0 = isEven(n0);
+			var isEven1 = isEven(n1);
 
 			if (isEven0 && isEven1)
 				return 2 * steinGcd_(n0 / 2, n1 / 2);

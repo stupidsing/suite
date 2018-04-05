@@ -29,7 +29,7 @@ public class Grammar {
 	public final List<Grammar> children;
 
 	public static Map<String, Grammar> parse(Reader reader) {
-		Breakdown breakdown = new Breakdown();
+		var breakdown = new Breakdown();
 
 		return Read //
 				.lines(reader) //
@@ -79,7 +79,7 @@ public class Grammar {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		toString("", sb);
 		return sb.toString();
 	}

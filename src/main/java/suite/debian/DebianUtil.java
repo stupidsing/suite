@@ -30,7 +30,7 @@ public class DebianUtil {
 		try (Reader isr = new InputStreamReader(is); BufferedReader br = new BufferedReader(isr)) {
 			List<Map<String, String>> pms = new ArrayList<>();
 			Map<String, String> pm = new HashMap<>();
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			String line;
 
 			while ((line = br.readLine()) != null) {

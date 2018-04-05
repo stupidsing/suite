@@ -47,11 +47,11 @@ public class DevMain {
 
 	private void run() {
 		var input = FileUtil.read("src/main/java/suite/dev/DevMain.java");
-		Text inputText = text(IRope.ropeList(input));
+		var inputText = text(IRope.ropeList(input));
 
 		try (Termios termios = new Termios(libc);) {
 			termios.clear();
-			Keyboard keyboard = new Keyboard(libc);
+			var keyboard = new Keyboard(libc);
 
 			Sink<State> redraw = state -> state.apply((st, undo, redo, text, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
 				var lines = Ints_ //
@@ -144,7 +144,7 @@ public class DevMain {
 						else if (vk == VK.CTRL_Y____)
 							return redo != null ? redo : st;
 						else if (vk == VK.CTRL_Z____) {
-							State undo1 = undo != null ? undo : st;
+							var undo1 = undo != null ? undo : st;
 							return new State(undo1.undo, st, undo1.text, oc, undo1.cursorCoord);
 						} else if (vk == VK.CTRL_C____)
 							return Fail.t();
@@ -224,7 +224,7 @@ public class DevMain {
 		}
 
 		private State cursor(int index) {
-			IntIntPair coord = text.coord(index);
+			var coord = text.coord(index);
 			return cursor(coord.t0, coord.t1);
 		}
 
@@ -238,9 +238,9 @@ public class DevMain {
 	}
 
 	private Text text(IRopeList<Character> text) {
-		IntsBuilder starts = new IntsBuilder();
-		IntsBuilder ends = new IntsBuilder();
-		IntMutable p0 = IntMutable.of(-1);
+		var starts = new IntsBuilder();
+		var ends = new IntsBuilder();
+		var p0 = IntMutable.of(-1);
 		var size = text.size();
 		IntSink lf = px -> {
 			starts.append(p0.get() + 1);

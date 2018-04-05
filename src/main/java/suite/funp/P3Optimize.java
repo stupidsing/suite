@@ -39,7 +39,7 @@ public class P3Optimize {
 			return !(expr instanceof FunpDontCare) ? n : optimize(expr);
 		})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 			return FunpData.of(Read.from2(pairs).concatMap((expr, range) -> {
-				Funp expr1 = optimize(expr);
+				var expr1 = optimize(expr);
 				var start = range.t0;
 				Streamlet<Pair<Funp, IntIntPair>> pairsx = new Switch<Streamlet<Pair<Funp, IntIntPair>>>(expr1 //
 				).applyIf(FunpData.class, g -> g.apply(pairs1 -> {
@@ -62,7 +62,7 @@ public class P3Optimize {
 					.<Funp> switch_() //
 					.applyIf(FunpData.class, g -> g.apply(pairs -> {
 						for (Pair<Funp, IntIntPair> pair : pairs) {
-							IntIntPair range = pair.t1;
+							var range = pair.t1;
 							if (start == range.t0 && end == range.t1)
 								return pair.t0;
 						}
@@ -73,8 +73,8 @@ public class P3Optimize {
 		})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 			return optimize(expr).<Funp> switch_().applyIf(FunpMemory.class, g -> g.pointer).result();
 		})).applyIf(FunpTree.class, f -> f.apply((operator, lhs, rhs) -> {
-			IntInt_Bool iib = TreeUtil.boolOperations.get(operator);
-			IntInt_Int iii = TreeUtil.intOperations.get(operator);
+			var iib = TreeUtil.boolOperations.get(operator);
+			var iii = TreeUtil.intOperations.get(operator);
 			if (iib != null)
 				return evaluate(iib, lhs, rhs);
 			else if (iii != null)

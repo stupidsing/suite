@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.pair.Pair;
-import suite.inspect.Inspect;
 import suite.jdk.gen.Type_;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
@@ -106,7 +105,7 @@ public class Object_ {
 						return object;
 				});
 			else {
-				Inspect inspect = Singleton.me.inspect;
+				var inspect = Singleton.me.inspect;
 
 				List<Pair<String, Field>> sfs = Read //
 						.from(inspect.fields(clazz)) //
@@ -127,8 +126,8 @@ public class Object_ {
 				}));
 			}
 		} else if (type instanceof ParameterizedType) {
-			ParameterizedType pt = (ParameterizedType) type;
-			Type rawType = pt.getRawType();
+			var pt = (ParameterizedType) type;
+			var rawType = pt.getRawType();
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (List.class.isAssignableFrom(clazz))

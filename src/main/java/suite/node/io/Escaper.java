@@ -6,7 +6,7 @@ import suite.util.String_;
 public class Escaper {
 
 	public static String escape(String s, char quote) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		sb.append(quote);
 
 		for (var ch : String_.chars(s))

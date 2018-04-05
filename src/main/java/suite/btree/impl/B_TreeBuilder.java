@@ -69,14 +69,14 @@ public class B_TreeBuilder<Key, Value> {
 			B_TreeImpl<Key, Value>.Page page = b_tree.new Page(pointer);
 
 			for (var i = 0; i < size; i++) {
-				Key key = keySerializer.read(dataInput);
+				var key = keySerializer.read(dataInput);
 				var nodeType = dataInput.readChar();
 
 				if (nodeType == BRANCH) {
 					var branch = dataInput.readInt();
 					page.add(b_tree.new KeyPointer(key, b_tree.new Branch(branch)));
 				} else if (nodeType == LEAF) {
-					Value value = valueSerializer.read(dataInput);
+					var value = valueSerializer.read(dataInput);
 					page.add(b_tree.new KeyPointer(key, b_tree.new Leaf(value)));
 				} else if (nodeType == PAYLOAD) {
 					var pointer1 = dataInput.readInt();
@@ -145,10 +145,10 @@ public class B_TreeBuilder<Key, Value> {
 	}
 
 	public B_Tree<Key, Value> build(boolean isNew, Path path, Comparator<Key> cmp) {
-		Path filename = path.getFileName();
-		Path sbp = path.resolveSibling(filename + ".superblock");
-		Path alp = path.resolveSibling(filename + ".alloc");
-		Path p = path.resolveSibling(filename + ".pages");
+		var filename = path.getFileName();
+		var sbp = path.resolveSibling(filename + ".superblock");
+		var alp = path.resolveSibling(filename + ".alloc");
+		var p = path.resolveSibling(filename + ".pages");
 
 		if (isNew)
 			for (Path p_ : new Path[] { sbp, alp, p, })
@@ -169,9 +169,9 @@ public class B_TreeBuilder<Key, Value> {
 		B_TreeImpl<Key, Value> b_tree = new B_TreeImpl<>(Object_.nullsFirst(comparator));
 
 		Serializer<Bytes> als = serialize.bytes(pageSize);
-		B_TreeSuperblockSerializer sbs = new B_TreeSuperblockSerializer(b_tree);
+		var sbs = new B_TreeSuperblockSerializer(b_tree);
 		Serializer<Bytes> pys = serialize.bytes(pageSize);
-		B_TreePageSerializer ps = new B_TreePageSerializer(b_tree);
+		var ps = new B_TreePageSerializer(b_tree);
 
 		SerializedPageFile<Bytes> alf = SerializedFileFactory.serialized(alf0, als);
 		SerializedPageFile<B_TreeImpl<Key, Value>.Superblock> sbf = SerializedFileFactory.serialized(sbf0, sbs);

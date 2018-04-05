@@ -36,7 +36,7 @@ public class ISkewedBinPriorityQueue<T> {
 			T min = null;
 
 			for (var tree : trees) {
-				T value = tree.value;
+				var value = tree.value;
 				if (min == null || comparator.compare(value, min) < 0) {
 					this.tree = tree;
 					min = value;

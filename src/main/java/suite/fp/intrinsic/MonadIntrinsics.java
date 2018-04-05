@@ -43,7 +43,7 @@ public class MonadIntrinsics {
 		var in = inputs.get(1);
 
 		return Rethrow.ex(() -> {
-			Process process = Runtime.getRuntime().exec(array);
+			var process = Runtime.getRuntime().exec(array);
 
 			Node n0 = Intrinsics.enclose(callback, new Suspend(() -> Rethrow.ex(() -> Int.of(process.waitFor()))));
 

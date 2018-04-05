@@ -38,14 +38,14 @@ public class Mutex {
 
 	public void lock() {
 		synchronized (bigLock) {
-			Thread currentThread = Thread.currentThread();
+			var currentThread = Thread.currentThread();
 			waitees.put(currentThread, this);
 			try {
 				while (!owner.compareAndSet(null, currentThread)) {
-					Mutex mutex = this;
+					var mutex = this;
 
 					while (mutex != null) {
-						Thread ownerThread = mutex.owner.get();
+						var ownerThread = mutex.owner.get();
 						mutex = ownerThread != null ? waitees.get(ownerThread) : null;
 						if (mutex == this)
 							throw new DeadlockException();

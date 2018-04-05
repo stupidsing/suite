@@ -36,7 +36,7 @@ public class ProveTracer {
 		}
 
 		private void appendTo(StringBuilder sb) {
-			TraceLevel traceLevel = Suite.traceLevel;
+			var traceLevel = Suite.traceLevel;
 
 			if (traceLevel == TraceLevel.SIMPLE)
 				sb.append(String.format("[%4s:%-2d]  ", 0 < nOkays ? "OK__" : "FAIL", depth));
@@ -58,7 +58,7 @@ public class ProveTracer {
 		var query1 = new Cloner().clone(query);
 
 		if (currentDepth < 64) {
-			Record record0 = currentRecord;
+			var record0 = currentRecord;
 			var depth0 = currentDepth;
 			Record record = new Record(record0, query1, currentDepth + 1);
 
@@ -141,7 +141,7 @@ public class ProveTracer {
 		// this method could be invoked in shutdown hook and the prover might
 		// still be running. Do not use iterator/for-each loop access, those
 		// would cause ConcurrentModificationException.
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var i = 0; i < size; i++)
 			records.get(i).appendTo(sb);
 		return sb.toString();

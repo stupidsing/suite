@@ -37,7 +37,7 @@ public class ImportUtil {
 
 	public RuleSet newRuleSet(List<String> toImports) {
 		return Rethrow.ex(() -> {
-			RuleSet rs = newRuleSet();
+			var rs = newRuleSet();
 			for (var toImport : toImports)
 				importPath(rs, toImport);
 			return rs;
@@ -62,8 +62,8 @@ public class ImportUtil {
 		for (var elem : Tree.iter(node, TermOp.NEXT__))
 			rules.add(Rule.of(elem));
 
-		Prover prover = new Prover(ruleSet);
-		boolean b = true;
+		var prover = new Prover(ruleSet);
+		var b = true;
 		var importing0 = importing.get();
 
 		try {

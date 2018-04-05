@@ -48,7 +48,7 @@ public class StackAssembler {
 	private List<Pair<Reference, Node>> preassemble(List<Pair<Reference, Node>> lnis0) {
 		List<Pair<Reference, Node>> lnis1 = new ArrayList<>();
 		Deque<int[]> deque = new ArrayDeque<>();
-		Trail trail = new Trail();
+		var trail = new Trail();
 		int fs = 0, rs = 0;
 
 		for (Pair<Reference, Node> lni0 : lnis0) {
@@ -81,14 +81,14 @@ public class StackAssembler {
 				fs -= 4;
 				node1 = Suite.substitute("POP .0", rewrite(rs, m[0]));
 			} else if ((m = FRPOPN.match(node0)) != null) {
-				Int int_ = (Int) m[0].finalNode();
+				var int_ = (Int) m[0].finalNode();
 				fs -= int_.number;
 				node1 = Atom.NIL;
 			} else if ((m = FRPSH_.match(node0)) != null) {
 				fs += 4;
 				node1 = Suite.substitute("PUSH .0", rewrite(rs, m[0]));
 			} else if ((m = FRPSHN.match(node0)) != null) {
-				Int int_ = (Int) m[0].finalNode();
+				var int_ = (Int) m[0].finalNode();
 				fs += int_.number;
 				node1 = Atom.NIL;
 			} else if ((m = LET___.match(node0)) != null)

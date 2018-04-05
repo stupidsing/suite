@@ -85,8 +85,8 @@ public class FactorizeResult {
 	}
 
 	public static FactorizeResult merge(String name, List<FactorizeResult> list) {
-		Chars pre = List_.first(list).pre;
-		Chars post = List_.last(list).post;
+		var pre = List_.first(list).pre;
+		var post = List_.last(list).post;
 		List<FPair> pairs = new ArrayList<>();
 
 		for (var i = 0; i < list.size(); i++) {
@@ -109,7 +109,7 @@ public class FactorizeResult {
 	}
 
 	public static FactorizeResult rewrite(FactorizeResult frfrom, FactorizeResult frto, FactorizeResult fr0) {
-		Generalizer generalizer = new Generalizer();
+		var generalizer = new Generalizer();
 
 		Iterate<Node> rewrite = n0 -> {
 			var m = Suite.pattern(FTerminal.class.getName() + ":.0").match(n0);
@@ -117,7 +117,7 @@ public class FactorizeResult {
 			var n2 = n1 instanceof Dict ? ((Dict) n1).map.get(Atom.of("chars")) : null;
 			var n3 = n2 != null ? n2.finalNode() : null;
 			var s = n3 instanceof Str ? ((Str) n3).value : null;
-			boolean b = s != null && s.startsWith(ProverConstant.variablePrefix) && s.substring(1).matches("[0-9]*");
+			var b = s != null && s.startsWith(ProverConstant.variablePrefix) && s.substring(1).matches("[0-9]*");
 			return b ? generalizer.generalize(Atom.of(s)) : n0;
 		};
 
@@ -126,7 +126,7 @@ public class FactorizeResult {
 		var nodeFrom = parse.apply(frfrom);
 		var nodeTo = parse.apply(frto);
 
-		FNode fn0 = fr0.node;
+		var fn0 = fr0.node;
 		Node node0 = nodify.nodify(FNode.class, fn0);
 		Node nodex = rw.rewrite(nodeFrom, nodeTo, node0);
 		FNode fnx = nodify.unnodify(FNode.class, nodex);
@@ -134,7 +134,7 @@ public class FactorizeResult {
 	}
 
 	public String unparse() {
-		CharsBuilder cb = new CharsBuilder();
+		var cb = new CharsBuilder();
 		cb.append(pre);
 		unparse(cb, node);
 		cb.append(post);
@@ -143,7 +143,7 @@ public class FactorizeResult {
 
 	private void unparse(CharsBuilder cb, FNode fn) {
 		if (fn instanceof FTree) {
-			FTree ft = (FTree) fn;
+			var ft = (FTree) fn;
 			List<FPair> pairs = ft.pairs;
 			for (var pair : pairs) {
 				unparse(cb, pair.node);

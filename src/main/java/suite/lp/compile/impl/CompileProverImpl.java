@@ -30,7 +30,7 @@ public class CompileProverImpl implements ProverFactory {
 				}).match(".0; .1", m -> {
 					FunExpr cps1;
 					if (Boolean.TRUE) {
-						ProveRt proveRt_ = cf.apply(cps);
+						var proveRt_ = cf.apply(cps);
 						cps1 = f.object(proveRt_).invoke("test", rt);
 					} else
 						cps1 = cps;
@@ -45,10 +45,10 @@ public class CompileProverImpl implements ProverFactory {
 			}
 		}.compile_(node, rt.fieldSet("ok", ok));
 
-		ProveRt proveRt = cf.apply(compiled);
+		var proveRt = cf.apply(compiled);
 
 		return proverConfig -> {
-			Runtime_ rt_ = new Runtime_();
+			var rt_ = new Runtime_();
 			rt_.proverConfig = proverConfig;
 			proveRt.test(rt_);
 			return rt_.ok;

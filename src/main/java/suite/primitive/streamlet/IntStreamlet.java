@@ -64,7 +64,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 
 	public IntStreamlet closeAtEnd(Closeable c) {
 		return streamlet(() -> {
-			IntOutlet in = spawn();
+			var in = spawn();
 			in.closeAtEnd(c);
 			return in;
 		});
@@ -169,7 +169,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 	}
 
 	public IntStreamlet memoize() {
-		Ints list = toList().toInts();
+		var list = toList().toInts();
 		return streamlet(() -> IntOutlet.of(list));
 	}
 

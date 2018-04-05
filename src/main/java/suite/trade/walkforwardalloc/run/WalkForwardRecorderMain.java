@@ -52,7 +52,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 			String ts = Time.now().ymdHms().replace("-", "").replace(" ", "-").replace(":", "");
 			var filename = "wfa." + ts + ".csv";
 
-			Schedule schedule = Schedule //
+			var schedule = Schedule //
 					.ofRepeat(5, () -> {
 						var ymdHms = Time.now().ymdHms();
 						Map<String, Float> priceBySymbol = cfg.quote(assets.map(asset -> asset.symbol).toSet());
@@ -62,7 +62,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 								StandardOpenOption.APPEND, //
 								StandardOpenOption.CREATE, //
 								StandardOpenOption.WRITE); //
-								PrintWriter bw = new PrintWriter(os)) {
+								var bw = new PrintWriter(os)) {
 							for (var e : priceBySymbol.entrySet())
 								bw.println(ymdHms + ", " + e.getKey() + ", " + e.getValue());
 						} catch (IOException ex) {
@@ -78,11 +78,11 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 			Map<Time, Map<String, Float>> data = new TreeMap<>();
 
 			try (InputStream is = Files.newInputStream(HomeDir.resolve(filename)); //
-					InputStreamReader isr = new InputStreamReader(is); //
-					BufferedReader br = new BufferedReader(isr)) {
+					var isr = new InputStreamReader(is); //
+					var br = new BufferedReader(isr)) {
 				while (br.ready()) {
 					var array = br.readLine().split(",");
-					Time time = Time.of(array[0].trim());
+					var time = Time.of(array[0].trim());
 					var symbol = array[1].trim();
 					var price = Float.parseFloat(array[2].trim());
 					data.computeIfAbsent(time, s -> new HashMap<>()).put(symbol, price);
@@ -91,7 +91,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 				Fail.t(ex);
 			}
 
-			WalkForwardAllocConfiguration wfac = new WalkForwardAllocConfiguration( //
+			var wfac = new WalkForwardAllocConfiguration( //
 					cfg.queryCompaniesByMarketCap(Time.now()), //
 					bag.rsi.unleverage().walkForwardAllocator());
 

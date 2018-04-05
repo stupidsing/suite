@@ -11,13 +11,13 @@ public class Evaluator {
 
 	public static int evaluate(Occupation player, Board board) {
 		var score = 0;
-		Occupation opponent = player.opponent();
+		var opponent = player.opponent();
 
 		// count territories by counting groups
-		GroupAnalysis ga = new GroupAnalysis(board);
+		var ga = new GroupAnalysis(board);
 
 		for (var group : ga.getGroups()) {
-			Occupation color = group.color;
+			var color = group.color;
 			var colors = new HashSet<>();
 			boolean us = false, theirs = false;
 

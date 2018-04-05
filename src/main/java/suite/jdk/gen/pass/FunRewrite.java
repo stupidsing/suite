@@ -1,7 +1,6 @@
 package suite.jdk.gen.pass;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -83,7 +82,7 @@ public class FunRewrite extends FunFactory {
 		).applyIf(ApplyFunExpr.class, e1 -> {
 			var object = rewrite(e1.object);
 			var parameters = Read.from(e1.parameters).map(this::rewrite).toArray(FunExpr.class);
-			Method method = fti.methodOf(object);
+			var method = fti.methodOf(object);
 			return object.invoke(method.getName(), parameters);
 		}).applyIf(CastFunExpr.class, e1 -> {
 			var e2 = e1.expr;
@@ -96,15 +95,15 @@ public class FunRewrite extends FunFactory {
 				var e3 = rewrite(e -> {
 					FunExpr fieldValue;
 					if (e instanceof FieldStaticFunExpr) {
-						FieldStaticFunExpr e_ = (FieldStaticFunExpr) e;
+						var e_ = (FieldStaticFunExpr) e;
 						var fieldName = e_.fieldName;
-						Type fieldType = fieldTypes.get(fieldName);
+						var fieldType = fieldTypes.get(fieldName);
 						fieldTypes.put(fieldName, fieldType);
 						fieldValues.put(fieldName, e_);
 						return e;
 					} else if (e instanceof PlaceholderFunExpr && (fieldValue = placeholders.get(e)) != null) {
 						var fieldName = "e" + Util.temp();
-						Type fieldType = fti.typeOf(fieldValue);
+						var fieldType = fti.typeOf(fieldValue);
 						fieldTypes.put(fieldName, fieldType);
 						fieldValues.put(fieldName, fieldValue);
 						return this_().field(fieldName, fieldType);
@@ -116,7 +115,7 @@ public class FunRewrite extends FunFactory {
 				Streamlet2<String, FunExpr> fieldValues0 = Read.from2(cc.fieldTypeValues).mapValue(tv -> objectField(tv.t1, tv.t0));
 				Streamlet2<String, FunExpr> fieldValues1 = Read.from2(fieldValues);
 
-				NewFunExpr e4 = new NewFunExpr();
+				var e4 = new NewFunExpr();
 				e4.className = cc.className;
 				e4.fieldValues = Streamlet2.concat(fieldValues0, fieldValues1).toMap();
 				e4.implementationClass = cc.clazz;
@@ -129,7 +128,7 @@ public class FunRewrite extends FunFactory {
 			var lfe = local(localTypes.size());
 			localTypes.add(fti.typeOf(value));
 
-			AssignLocalFunExpr alfe = new AssignLocalFunExpr();
+			var alfe = new AssignLocalFunExpr();
 			alfe.var = lfe;
 			alfe.value = value;
 
@@ -142,10 +141,10 @@ public class FunRewrite extends FunFactory {
 			Class<?> clazz = fti.classOf(object0);
 			Field field = Rethrow.ex(() -> clazz.getField(fieldName));
 			var object1 = object0.cast_(field.getDeclaringClass());
-			Type fieldType = Type.getType(field.getType());
+			var fieldType = Type.getType(field.getType());
 			return set == null ? object1.field(fieldName, fieldType) : object1.fieldSet(fieldName, fieldType, set);
 		}).applyIf(FieldInjectFunExpr.class, e1 -> {
-			Type type = fieldTypes.get(e1.fieldName);
+			var type = fieldTypes.get(e1.fieldName);
 			if (type != null)
 				return rewrite(this_().field(e1.fieldName, type));
 			else

@@ -19,7 +19,7 @@ public class TreeTuple extends Tree {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == TreeTuple.class) {
-			TreeTuple t = (TreeTuple) object;
+			var t = (TreeTuple) object;
 			return Objects.equals(getLeft(), t.getLeft()) && Objects.equals(getRight(), t.getRight());
 		} else
 			return false;

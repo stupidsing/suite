@@ -73,7 +73,7 @@ public class Sina {
 
 			return in //
 					.map(bytes -> {
-						StringBuilder sb = new StringBuilder();
+						var sb = new StringBuilder();
 						for (var i = 0; i < bytes.size(); i++)
 							sb.append((char) bytes.get(i));
 						return sb.toString();
@@ -101,7 +101,7 @@ public class Sina {
 					String[] a0 = ParseUtil.fit(line, "var hq_str_", "=\"", "\"");
 					var a1 = a0[2].split(",");
 
-					Factor factor = new Factor();
+					var factor = new Factor();
 					factor.symbol = toYahoo(a0[1]);
 					factor.name = a1[0];
 					factor.open = Float.parseFloat(a1[2]);

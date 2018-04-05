@@ -4,7 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import suite.BindArrayUtil.Pattern;
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
@@ -85,7 +84,7 @@ public class P0Parse {
 					var head = m[0];
 					return new Expand(macros.put(Prototype.of(head), new Node[] { head, m[1] })).expand(m[2]);
 				} else if ((ht = macros.get(Prototype.of(node))) != null) {
-					Generalizer g = new Generalizer();
+					var g = new Generalizer();
 					var t0_ = g.generalize(ht[0]);
 					var t1_ = g.generalize(ht[1]);
 					if (Binder.bind(node, t0_, new Trail()))
@@ -137,14 +136,14 @@ public class P0Parse {
 				return FunpDefine.of(false, var, parse(b), parseNewVariable(c, var));
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 			}).match2("recurse .0 >> .1", (a, b) -> {
-				Pattern pattern1 = Suite.pattern(".0 := .1");
+				var pattern1 = Suite.pattern(".0 := .1");
 				Streamlet<Node[]> list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect(As::streamlet);
 				ISet<String> variables_ = variables;
 
 				for (Node[] array : list)
 					variables_ = variables_.add(name(array[0]));
 
-				Parse p1 = new Parse(variables_);
+				var p1 = new Parse(variables_);
 
 				return FunpDefineRec.of(list //
 						.map(m1 -> {
@@ -166,7 +165,7 @@ public class P0Parse {
 			}).match4("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				var variables = new HashSet<String>();
 
-				Funp be = new Object() {
+				var be = new Object() {
 					private Funp extract(Funp be) {
 						return inspect.rewrite(Funp.class, n_ -> {
 							if (n_ instanceof FunpVariableNew) {
@@ -179,15 +178,15 @@ public class P0Parse {
 					}
 				}.extract(parse(a));
 
-				Funp value = parse(b);
+				var value = parse(b);
 				ISet<String> variables1 = ISet.empty();
 
 				for (var var : variables)
 					variables1 = variables1.add(var);
 
-				Bind bind = new Bind(variables);
-				Funp then = new Parse(variables1).parse(c);
-				Funp else_ = parse(d);
+				var bind = new Bind(variables);
+				var then = new Parse(variables1).parse(c);
+				var else_ = parse(d);
 				Funp f0 = bind.bind(be, value, then, else_);
 				Funp f1 = FunpCheckType.of(be, value, f0);
 
@@ -205,7 +204,7 @@ public class P0Parse {
 				return FunpIoCat.of(parse(a));
 			}).match4("iterate .0 .1 .2 .3", (a, b, c, d) -> {
 				var var = name(a);
-				Parse p1 = new Parse(variables.add(var));
+				var p1 = new Parse(variables.add(var));
 				return FunpIterate.of(var, parse(b), p1.parse(c), p1.parse(d));
 			}).match2("`.0` => .1", (a, b) -> {
 				return parse(Suite.pattern(".2 => if (`.0` = .2) then .1 else error").subst(a, b, Atom.temp()));
@@ -231,8 +230,8 @@ public class P0Parse {
 						}) //
 						.toList());
 			}).applyIf(Tree.class, tree -> {
-				Funp left = parse(tree.getLeft());
-				Funp right = parse(tree.getRight());
+				var left = parse(tree.getLeft());
+				var right = parse(tree.getRight());
 				return FunpTree.of(tree.getOperator(), left, right);
 			}).applyIf(Atom.class, atom -> {
 				var var = atom.name;
@@ -268,7 +267,7 @@ public class P0Parse {
 					return i -> FunpIndex.of(FunpReference.of(value), FunpNumber.ofNumber(i));
 				}).result();
 
-				Funp then_ = then;
+				var then_ = then;
 				for (var i = 0; i < size0; i++)
 					then_ = bind(fun0.apply(i), fun1.apply(i), then_, else_);
 				return then_;
@@ -281,7 +280,7 @@ public class P0Parse {
 			else
 
 			{
-				Funp result = be.<Funp> switch_( //
+				var result = be.<Funp> switch_( //
 				).applyIf(FunpArray.class, f -> f.apply(elements0 -> {
 					return bindArray.apply(elements0.size(), elements0::get);
 				})).applyIf(FunpDontCare.class, f -> {
@@ -294,7 +293,7 @@ public class P0Parse {
 							.result();
 
 					var size0 = pairs0.size();
-					Funp then_ = then;
+					var then_ = then;
 
 					Int_Obj<Funp> fun = pairs1 != null && size0 == pairs1.size() //
 							? i -> pairs1.get(i).t1 //

@@ -43,7 +43,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 				var id = ((Reference) node).getId();
 				referenceSink.sink(aliases.computeIfAbsent(id, any -> nAliases++));
 			} else {
-				NodeRead nr = NodeRead.of(node);
+				var nr = NodeRead.of(node);
 				for (Pair<Node, Node> p : nr.children) {
 					visit(p.t0);
 					visit(p.t1);
@@ -72,7 +72,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 		}
 
 		public boolean equals(Object object) {
-			boolean b = Object_.clazz(object) == TermLister.class;
+			var b = Object_.clazz(object) == TermLister.class;
 
 			if (b) {
 				List<IntObjPair<NodeHead>> list1 = ((TermLister) object).list;
@@ -86,8 +86,8 @@ public class TermKey extends HashCodeComparable<TermKey> {
 						IntObjPair<NodeHead> p1 = list1.get(i);
 						b &= Objects.equals(p0.t0, p1.t0);
 
-						NodeHead nh0 = p0.t1;
-						NodeHead nh1 = p1.t1;
+						var nh0 = p0.t1;
+						var nh1 = p1.t1;
 						boolean b0 = nh0 != null;
 						boolean b1 = nh1 != null;
 						b &= b0 == b1;
@@ -125,8 +125,8 @@ public class TermKey extends HashCodeComparable<TermKey> {
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == TermKey.class) {
 			var node1 = ((TermKey) object).node;
-			TermLister tl0 = new TermLister(node);
-			TermLister tl1 = new TermLister(node1);
+			var tl0 = new TermLister(node);
+			var tl1 = new TermLister(node1);
 			return Objects.equals(tl0, tl1);
 		} else
 			return false;

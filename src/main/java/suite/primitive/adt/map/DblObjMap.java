@@ -41,7 +41,7 @@ public class DblObjMap<V> {
 	}
 
 	public V computeIfAbsent(double key, Dbl_Obj<V> fun) {
-		V v = get(key);
+		var v = get(key);
 		if (v == null)
 			put(key, v = fun.apply(key));
 		return v;
@@ -51,7 +51,7 @@ public class DblObjMap<V> {
 	public boolean equals(Object object) {
 		if (object instanceof DblObjMap) {
 			DblObjMap<?> other = (DblObjMap<?>) object;
-			boolean b = size == other.size;
+			var b = size == other.size;
 			for (DblObjPair<V> pair : streamlet())
 				b &= other.get(pair.t0).equals(pair.t1);
 			return b;
@@ -90,8 +90,8 @@ public class DblObjMap<V> {
 	public void update(double key, Iterate<V> fun) {
 		var mask = vs.length - 1;
 		var index = index(key);
-		V v0 = cast(vs[index]);
-		V v1 = fun.apply(v0);
+		var v0 = cast(vs[index]);
+		var v1 = fun.apply(v0);
 		ks[index] = key;
 		size += ((vs[index] = v1) != null ? 1 : 0) - (v0 != null ? 1 : 0);
 		if (v1 == null)
@@ -186,7 +186,7 @@ public class DblObjMap<V> {
 
 	private V cast(Object o) {
 		@SuppressWarnings("unchecked")
-		V v = (V) o;
+		var v = (V) o;
 		return v;
 	}
 

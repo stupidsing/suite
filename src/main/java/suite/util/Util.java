@@ -20,7 +20,7 @@ public class Util {
 	 */
 	public static String readLine(InputStream is) {
 		return Rethrow.ex(() -> {
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			int c;
 			while (0 <= (c = is.read()) && c != 10) {
 				sb.append((char) c);
@@ -33,7 +33,7 @@ public class Util {
 
 	public static String readLine(Reader reader) {
 		return Rethrow.ex(() -> {
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			int c;
 			while (0 <= (c = reader.read()) && c != 10) {
 				sb.append((char) c);

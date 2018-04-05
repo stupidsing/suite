@@ -97,7 +97,7 @@ public class Prover {
 			query = query.finalNode();
 
 			if (query instanceof Tree) {
-				Tree tree = (Tree) query;
+				var tree = (Tree) query;
 				Node left = tree.getLeft(), right = tree.getRight();
 
 				switch ((TermOp) tree.getOperator()) {
@@ -125,7 +125,7 @@ public class Prover {
 				continue;
 			}
 
-			Boolean b = systemPredicates.call(query);
+			var b = systemPredicates.call(query);
 			if (b != null)
 				query = isSuccess(b);
 
@@ -144,13 +144,13 @@ public class Prover {
 				} else
 					return false;
 			else {
-				boolean isTrace = config.isTrace();
+				var isTrace = config.isTrace();
 
 				if (isTrace) {
 					var whites = Suite.tracePredicates;
 					var blacks = Suite.noTracePredicates;
 
-					Prototype prototype = Prototype.of(query);
+					var prototype = Prototype.of(query);
 					var head = prototype != null ? prototype.head : null;
 					Atom atom = head instanceof Atom ? (Atom) head : null;
 					var name = atom != null ? atom.name : null;

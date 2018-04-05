@@ -9,7 +9,7 @@ public class Specializer {
 
 	public Node specialize(Node node) {
 		if (node instanceof Reference) {
-			Reference ref = (Reference) node;
+			var ref = (Reference) node;
 			node = Atom.of(ref.name());
 		} else
 			node = Rewrite_.map(node, this::specialize);

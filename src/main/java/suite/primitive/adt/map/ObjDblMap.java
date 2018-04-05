@@ -56,7 +56,7 @@ public class ObjDblMap<K> {
 		if (object instanceof ObjDblMap) {
 			@SuppressWarnings("unchecked")
 			ObjDblMap<Object> other = (ObjDblMap<Object>) object;
-			boolean b = size == other.size;
+			var b = size == other.size;
 			for (DblObjPair<K> pair : streamlet())
 				b &= other.get(pair.t1) == pair.t0;
 			return b;
@@ -193,7 +193,7 @@ public class ObjDblMap<K> {
 
 	private K cast(Object o) {
 		@SuppressWarnings("unchecked")
-		K k = (K) o;
+		var k = (K) o;
 		return k;
 	}
 

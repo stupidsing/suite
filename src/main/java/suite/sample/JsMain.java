@@ -42,7 +42,7 @@ public class JsMain extends ExecutableProgram {
 		if (filenames.size() == 0)
 			filenames = defaultJsFiles;
 
-		boolean b = true;
+		var b = true;
 
 		for (var filename : filenames) {
 			var r = engine.eval(new FileReader(filename));

@@ -115,7 +115,7 @@ public class VerifyTest {
 		}
 
 		private Definition clone_() {
-			Cloner cloner = new Cloner();
+			var cloner = new Cloner();
 			return new Definition(cloner.clone(t0), cloner.clone(t1));
 		}
 	}
@@ -156,7 +156,7 @@ public class VerifyTest {
 				else
 					return Fail.t("cannot verify " + proof);
 			else if ((m = Suite.pattern(".0 | expand .1").match(proof)) != null) {
-				Definition def = defs.get(name(m[1])).clone_();
+				var def = defs.get(name(m[1])).clone_();
 				return replace(verify(m[0]), def.t0, def.t1);
 			} else if ((m = Suite.pattern(".0 | fulfill .1").match(proof)) != null)
 				if ((m1 = Suite.pattern(".0 => .1").match(new Generalizer().generalize(verify(m[1])))) != null
@@ -171,7 +171,7 @@ public class VerifyTest {
 			else if ((m = Suite.pattern(".0 | nat.mi .1 .2").match(proof)) != null) {
 				var m_ = m;
 				Fun<Node, Node> fun = value -> {
-					Generalizer generalizer = new Generalizer();
+					var generalizer = new Generalizer();
 					Binder.bind(generalizer.generalize(m_[1]), value, new Trail());
 					return generalizer.generalize(m_[2]);
 				};
@@ -181,7 +181,7 @@ public class VerifyTest {
 				Binder.bind(verify(m[0]), Tree.of(TermOp.AND___, init, succ), new Trail());
 				return Suite.substitute("is.nat .N => .0", fun.apply(Suite.parse(".N")));
 			} else if ((m = Suite.pattern(".0 | rexpand .1").match(proof)) != null) {
-				Definition def = defs.get(name(m[1])).clone_();
+				var def = defs.get(name(m[1])).clone_();
 				return replace(verify(m[0]), def.t1, def.t0);
 			} else if ((m = Suite.pattern("suppose .0 := .1 >> .2").match(proof)) != null)
 				return Suite.substitute(".0 => .1", m[1], new Verify(defs, rules.put(name(m[0]), m[1])).verify(m[2]));
@@ -216,17 +216,17 @@ public class VerifyTest {
 	private Node replace(Node node, Node from, Node to) {
 		return new Object() {
 			private Node replace(Node node_) {
-				Generalizer generalizer = new Generalizer();
+				var generalizer = new Generalizer();
 				var t0 = generalizer.generalize(from);
 				var t1 = generalizer.generalize(to);
-				Trail trail = new Trail();
+				var trail = new Trail();
 
 				if (Binder.bind(node_, t0, trail))
 					return t1;
 				else
 					trail.unwindAll();
 
-				Tree tree = Tree.decompose(node_);
+				var tree = Tree.decompose(node_);
 
 				return tree != null //
 						? Tree.of(tree.getOperator(), replace(tree.getLeft()), replace(tree.getRight())) //

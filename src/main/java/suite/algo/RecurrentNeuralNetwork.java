@@ -40,7 +40,7 @@ public class RecurrentNeuralNetwork {
 		private float[][] weights = new float[memoryLength][ll1];
 
 		public Unit() {
-			Random random = new Random();
+			var random = new Random();
 			var isll = 1f / Math.sqrt(ll);
 
 			// random weights, bias 0; Xavier initialization
@@ -59,7 +59,7 @@ public class RecurrentNeuralNetwork {
 
 		@Override
 		public String toString() {
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 			sb.append("weights = " + mtx.toString(weights));
 			sb.append("memory = " + mtx.toString(memory) + "\n");
 			return sb.toString();

@@ -10,8 +10,8 @@ public class HkexUtilTest {
 
 	@Test
 	public void test() {
-		Time on_ = Time.of("2017-06-29 12:48:00");
-		Time off = Time.of("2017-06-29 22:48:00");
+		var on_ = Time.of("2017-06-29 12:48:00");
+		var off = Time.of("2017-06-29 22:48:00");
 
 		assertEquals(Time.of("2017-06-29 12:48:00"), HkexUtil.getTradeTimeBefore(on_));
 		assertEquals(Time.of("2017-06-29 12:48:00"), HkexUtil.getTradeTimeAfter(on_));

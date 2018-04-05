@@ -31,7 +31,7 @@ public class ReadLookahead {
 	}
 
 	public Set<String> readLookahead(Grammar eg, Set<String> follows) {
-		LookaheadSet ls = readLookahead(eg);
+		var ls = readLookahead(eg);
 		var lookaheadSet = new HashSet<>(ls.lookaheads);
 		if (ls.isPassThru)
 			lookaheadSet.addAll(follows);
@@ -39,7 +39,7 @@ public class ReadLookahead {
 	}
 
 	private LookaheadSet readLookahead(Grammar eg) {
-		LookaheadSet ls = lookaheadSets.get(eg);
+		var ls = lookaheadSets.get(eg);
 		if (ls == null) {
 			lookaheadSets.put(eg, ls = new LookaheadSet());
 			mergeLookahead(eg, ls);
@@ -51,7 +51,7 @@ public class ReadLookahead {
 		switch (eg.type) {
 		case AND___:
 			if (!eg.children.isEmpty()) {
-				LookaheadSet ls0 = readLookahead(eg.children.get(0));
+				var ls0 = readLookahead(eg.children.get(0));
 				ls.lookaheads.addAll(ls0.lookaheads);
 				if (ls0.isPassThru) {
 					Grammar tail = new Grammar(GrammarType.AND___, List_.right(eg.children, 1));

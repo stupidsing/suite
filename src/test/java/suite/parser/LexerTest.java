@@ -15,7 +15,7 @@ public class LexerTest {
 	@Test
 	public void test() throws IOException {
 		var buffer = new char[Constants.bufferSize];
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		int nCharsRead;
 
 		try (FileReader reader = new FileReader("src/main/java/suite/parser/Lexer.java")) {

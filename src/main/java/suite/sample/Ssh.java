@@ -31,7 +31,7 @@ public class Ssh {
 			while (!channel.isClosed())
 				Thread_.sleepQuietly(100);
 
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			var baos = new ByteArrayOutputStream();
 			Copy.stream(channel.getInputStream(), baos);
 			baos.close();
 
@@ -50,7 +50,7 @@ public class Ssh {
 
 	private <T> T channelExec(Session session, String command, SshFun<ChannelExec, T> fun)
 			throws IOException, SftpException, JSchException {
-		ChannelExec channel = (ChannelExec) session.openChannel("exec");
+		var channel = (ChannelExec) session.openChannel("exec");
 		channel.setCommand(command);
 		channel.connect();
 		try {
@@ -61,7 +61,7 @@ public class Ssh {
 	}
 
 	private <T> T channelSftp(Session session, SshFun<ChannelSftp, T> fun) throws IOException, SftpException, JSchException {
-		ChannelSftp channel = (ChannelSftp) session.openChannel("sftp");
+		var channel = (ChannelSftp) session.openChannel("sftp");
 		channel.connect();
 		try {
 			return fun.apply(channel);
@@ -80,9 +80,9 @@ public class Ssh {
 
 	private <T> T session(String host, int port, String user, String password, SshFun<Session, T> fun)
 			throws IOException, SftpException, JSchException {
-		JSch jsch = new JSch();
+		var jsch = new JSch();
 
-		Properties config = new Properties();
+		var config = new Properties();
 		config.setProperty("StrictHostKeyChecking", "no");
 
 		Session session = jsch.getSession(user, host, port);

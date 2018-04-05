@@ -10,7 +10,6 @@ import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
-import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
@@ -67,24 +66,24 @@ public class Amd64Interpret {
 		eip = positionCode0;
 		regs[esp] = baseStackx - 16;
 
-		IntIntMap labels = new IntIntMap();
+		var labels = new IntIntMap();
 
 		for (var i = 0; i < instructions.size(); i++) {
 			var i_ = i;
-			Instruction instruction = instructions.get(i_);
+			var instruction = instructions.get(i_);
 			if (instruction.insn == Insn.LABEL)
 				labels.update((int) ((OpImm) instruction.op0).imm, i0 -> i_ + 1);
 		}
 
 		while (true) {
-			Instruction instruction = instructions.get(eip++);
+			var instruction = instructions.get(eip++);
 
 			if (Boolean.FALSE)
 				LogUtil.info(state(instruction));
 
 			try {
-				Operand op0 = instruction.op0;
-				Operand op1 = instruction.op1;
+				var op0 = instruction.op0;
+				var op1 = instruction.op1;
 				int source0, source1;
 				IntSink assign;
 
@@ -242,7 +241,7 @@ public class Amd64Interpret {
 	}
 
 	private String state(Instruction instruction) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var i = 0; i < 8; i++)
 			sb.append((i % 2 == 0 ? "\n" : " ") + amd64.regByName.inverse().get(amd64.reg32[i]) + ":" + To.hex8(regs[i]));
 		sb.append("\nCMP = " + c);

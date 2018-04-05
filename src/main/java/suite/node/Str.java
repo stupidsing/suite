@@ -14,7 +14,7 @@ public class Str extends Node {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Str.class) {
-			Str str = (Str) object;
+			var str = (Str) object;
 			return String_.equals(value, str.value);
 		} else
 			return false;

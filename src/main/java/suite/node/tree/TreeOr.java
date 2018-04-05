@@ -19,7 +19,7 @@ public class TreeOr extends Tree {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == TreeOr.class) {
-			TreeOr t = (TreeOr) object;
+			var t = (TreeOr) object;
 			return Objects.equals(getLeft(), t.getLeft()) && Objects.equals(getRight(), t.getRight());
 		} else
 			return false;

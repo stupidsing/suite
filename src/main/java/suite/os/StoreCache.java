@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -37,7 +36,7 @@ public class StoreCache {
 
 		public Piper pipe(String command0) {
 			var command1 = sh + " | (" + command0 + ")";
-			Bytes key = Bytes.of(command1.getBytes(Constants.charset));
+			var key = Bytes.of(command1.getBytes(Constants.charset));
 
 			return match(key).map((isCached, file) -> {
 				if (!isCached)
@@ -62,7 +61,7 @@ public class StoreCache {
 	}
 
 	public <T> T reget(Source<T> source) {
-		boolean reget0 = reget.get();
+		var reget0 = reget.get();
 		try {
 			reget.set(true);
 			return source.source();
@@ -76,7 +75,7 @@ public class StoreCache {
 	}
 
 	public Outlet<Bytes> http(String urlString) {
-		URL url = To.url(urlString);
+		var url = To.url(urlString);
 		return getOutlet(urlString, () -> HttpUtil.get(url).out);
 	}
 
@@ -86,7 +85,7 @@ public class StoreCache {
 	}
 
 	public Outlet<Bytes> getOutlet(String key, Source<Outlet<Bytes>> source) {
-		Bytes keyBytes = Bytes.of(key.getBytes(Constants.charset));
+		var keyBytes = Bytes.of(key.getBytes(Constants.charset));
 		return getOutlet(keyBytes, source);
 	}
 
@@ -98,8 +97,8 @@ public class StoreCache {
 
 			while (Files.exists(path = path(key, i++, "")))
 				if (isUpToDate(path, current)) {
-					InputStream is = Files.newInputStream(path);
-					DataInputStream dis = new DataInputStream(is);
+					var is = Files.newInputStream(path);
+					var dis = new DataInputStream(is);
 					if (isMatch(key, dis))
 						return read(dis).closeAtEnd(is);
 					dis.close();
@@ -112,17 +111,17 @@ public class StoreCache {
 			Pair<Boolean, Path> pair = match(key);
 
 			if (!reget.get() && pair.t0) {
-				InputStream vis = Files.newInputStream(pair.t1);
-				DataInputStream vdis = new DataInputStream(vis);
+				var vis = Files.newInputStream(pair.t1);
+				var vdis = new DataInputStream(vis);
 				return read(vdis).closeAtEnd(vis);
 			} else {
 				Outlet<Bytes> outlet = source.source();
-				OutputStream vos = FileUtil.out(pair.t1);
-				DataOutput_ vdo = DataOutput_.of(vos);
+				var vos = FileUtil.out(pair.t1);
+				var vdo = DataOutput_.of(vos);
 
 				return Outlet //
 						.of(() -> Rethrow.ex(() -> {
-							Bytes value = outlet.next();
+							var value = outlet.next();
 							if (value != null)
 								vdo.writeBytes(value);
 							return value;

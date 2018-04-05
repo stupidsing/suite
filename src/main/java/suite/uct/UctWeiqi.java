@@ -33,7 +33,7 @@ public class UctWeiqi {
 
 		@Override
 		public List<Coordinate> elaborateMoves() {
-			Move move = new Move();
+			var move = new Move();
 			List<Coordinate> captureMoves = new ArrayList<>();
 			List<Coordinate> otherMoves = new ArrayList<>();
 
@@ -70,7 +70,7 @@ public class UctWeiqi {
 		public boolean evaluateRandomOutcome() {
 			List<Coordinate> empties = findAllEmptyPositions();
 			var capturedPositions = new HashSet<Coordinate>();
-			Occupation me = gameSet.getNextPlayer();
+			var me = gameSet.getNextPlayer();
 			Move move, chosenMove;
 			var nPasses = 0;
 
@@ -81,8 +81,8 @@ public class UctWeiqi {
 				chosenMove = null;
 
 				while (chosenMove == null && iter.hasNext()) {
-					Coordinate c = iter.next();
-					boolean isFillEye = true;
+					var c = iter.next();
+					var isFillEye = true;
 
 					for (var c1 : c.neighbors)
 						isFillEye &= board.get(c1) == gameSet.getNextPlayer();
@@ -100,7 +100,7 @@ public class UctWeiqi {
 
 						// add captured positions back to empty group
 						for (var c1 : chosenMove.position.neighbors) {
-							Occupation neighborColor = chosenMove.neighborColors[i++];
+							var neighborColor = chosenMove.neighborColors[i++];
 							if (neighborColor != board.get(c1))
 								capturedPositions.addAll(board.findGroup(c1));
 						}
@@ -123,7 +123,7 @@ public class UctWeiqi {
 		 * The "play till any player cannot move" version of Monte Carlo.
 		 */
 		public boolean evaluateRandomOutcome_() {
-			Occupation me = gameSet.getNextPlayer();
+			var me = gameSet.getNextPlayer();
 			List<Coordinate> empties = findAllEmptyPositions();
 			Coordinate pos;
 			Move move = null;
@@ -163,7 +163,7 @@ public class UctWeiqi {
 
 		private Move removePossibleMove(Iterator<Coordinate> iter) {
 			while (iter.hasNext()) {
-				Move move = new Move(iter.next());
+				var move = new Move(iter.next());
 
 				if (gameSet.playIfValid(move)) {
 					iter.remove();

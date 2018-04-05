@@ -38,7 +38,7 @@ public class ChrDblMap {
 		Obj_Chr<T> kf1 = kf0.rethrow();
 		Obj_Dbl<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			ChrDblMap map = new ChrDblMap();
+			var map = new ChrDblMap();
 			T t;
 			while ((t = outlet.source().source()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
@@ -64,8 +64,8 @@ public class ChrDblMap {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof ChrDblMap) {
-			ChrDblMap other = (ChrDblMap) object;
-			boolean b = size == other.size;
+			var other = (ChrDblMap) object;
+			var b = size == other.size;
 			for (ChrObjPair<Double> pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
@@ -75,7 +75,7 @@ public class ChrDblMap {
 
 	public void forEach(ChrDblSink sink) {
 		ChrDblPair pair = ChrDblPair.of((char) 0, (double) 0);
-		ChrDblSource source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -143,7 +143,7 @@ public class ChrDblMap {
 			private ChrDblPair pair0 = ChrDblPair.of((char) 0, (double) 0);
 
 			public boolean source2(ChrObjPair<Double> pair) {
-				boolean b = source0.source2(pair0);
+				var b = source0.source2(pair0);
 				pair.update(pair0.t0, pair0.t1);
 				return b;
 			}

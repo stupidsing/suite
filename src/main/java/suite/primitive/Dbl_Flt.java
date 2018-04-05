@@ -1,6 +1,5 @@
 package suite.primitive;
 
-import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.streamlet.DblOutlet;
@@ -14,9 +13,9 @@ public interface Dbl_Flt {
 	public float apply(double c);
 
 	public static Fun<DblOutlet, FltStreamlet> lift(Dbl_Flt fun0) {
-		Dbl_Flt fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return ts -> {
-			FloatsBuilder b = new FloatsBuilder();
+			var b = new FloatsBuilder();
 			double c;
 			while ((c = ts.next()) != DblFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
@@ -25,9 +24,9 @@ public interface Dbl_Flt {
 	}
 
 	public static Obj_Flt<DblOutlet> sum(Dbl_Flt fun0) {
-		Dbl_Flt fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return outlet -> {
-			DblSource source = outlet.source();
+			var source = outlet.source();
 			double c;
 			var result = (float) 0;
 			while ((c = source.source()) != DblFunUtil.EMPTYVALUE)

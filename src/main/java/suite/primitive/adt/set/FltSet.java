@@ -23,7 +23,7 @@ public class FltSet {
 
 	public static FltSet intersect(FltSet... sets) {
 		return sets[0].streamlet().filter(c -> {
-			boolean b = true;
+			var b = true;
 			for (FltSet set_ : sets)
 				b &= set_.contains(c);
 			return b;
@@ -31,7 +31,7 @@ public class FltSet {
 	}
 
 	public static FltSet union(FltSet... sets) {
-		FltSet set = new FltSet();
+		var set = new FltSet();
 		for (FltSet set_ : sets)
 			set_.streamlet().sink(set::add);
 		return set;
@@ -70,8 +70,8 @@ public class FltSet {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof FltSet) {
-			FltSet other = (FltSet) object;
-			boolean b = size == other.size;
+			var other = (FltSet) object;
+			var b = size == other.size;
 			for (var c : streamlet())
 				b &= other.contains(c);
 			return b;
@@ -80,7 +80,7 @@ public class FltSet {
 	}
 
 	public void forEach(FltSink sink) {
-		FltSource source = source_();
+		var source = source_();
 		float c;
 		while ((c = source.source()) != EMPTYVALUE)
 			sink.sink(c);
@@ -104,7 +104,7 @@ public class FltSet {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var c : streamlet())
 			sb.append(c + ",");
 		return sb.toString();
@@ -112,7 +112,7 @@ public class FltSet {
 
 	private boolean add_(float c) {
 		var index = index(c);
-		boolean b = vs[index] != c;
+		var b = vs[index] != c;
 		vs[index] = c;
 		return b;
 	}

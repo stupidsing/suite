@@ -22,7 +22,7 @@ public class FormatUtil {
 						.collect(Obj_Int.lift(row -> row[column].length())).max())) //
 				.toArray();
 
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 
 		for (String[] row : rows) {
 			for (var column = 0; column < nColumns; column++) {

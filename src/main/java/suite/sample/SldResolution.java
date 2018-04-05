@@ -10,7 +10,6 @@ import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
 import suite.lp.search.FindUtil;
-import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -30,8 +29,8 @@ public class SldResolution {
 
 	public List<Node> resolve(Node node) {
 		RuleSet ruleSet = Suite.newRuleSet(List.of("auto.sl", "pt.sl"));
-		CompiledProverBuilder builder = CompiledProverBuilder.level1(new ProverConfig());
-		Finder finder = builder.build(ruleSet).apply(Suite.parse("" //
+		var builder = CompiledProverBuilder.level1(new ProverConfig());
+		var finder = builder.build(ruleSet).apply(Suite.parse("" //
 				+ "source .n0" //
 				+ ", pt-prove0 .n0 .n1" //
 				+ ", pt-prove1 .n1 .n2" //
@@ -69,7 +68,7 @@ public class SldResolution {
 
 	private Node negate(Node key) {
 		Tree tree = Tree.decompose(key, TermOp.TUPLE_);
-		boolean isAlreadyNegated = tree != null && tree.getLeft() == not;
+		var isAlreadyNegated = tree != null && tree.getLeft() == not;
 		return isAlreadyNegated ? tree.getRight() : Tree.of(TermOp.TUPLE_, not, key);
 	}
 

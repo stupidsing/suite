@@ -21,10 +21,10 @@ public class SingletonVariableChecker {
 		ListMultimap<Prototype, Rule> rulesByPrototype = Prototype.multimap(rules);
 
 		for (Pair<Prototype, Rule> e : rulesByPrototype.entries()) {
-			Prototype prototype = e.t0;
-			Rule rule = e.t1;
+			var prototype = e.t0;
+			var rule = e.t1;
 
-			Scanner scanner = new Scanner();
+			var scanner = new Scanner();
 			scanner.scan(rule.head);
 			scanner.scan(rule.tail);
 			scanner.warn(prototype);
@@ -37,7 +37,7 @@ public class SingletonVariableChecker {
 		private void scan(Node node) {
 			while (true) {
 				if (node instanceof Atom) {
-					Atom atom = (Atom) node;
+					var atom = (Atom) node;
 					var name = atom.name;
 
 					// check all variables starting with alphabets; ignore
@@ -45,7 +45,7 @@ public class SingletonVariableChecker {
 					if (name.startsWith(ProverConstant.variablePrefix) //
 							&& 1 < name.length() //
 							&& Character.isAlphabetic(name.charAt(1))) {
-						Boolean value = isSingleton.get(atom);
+						var value = isSingleton.get(atom);
 						if (value == null)
 							value = Boolean.TRUE;
 						else if (value == Boolean.TRUE)
@@ -53,7 +53,7 @@ public class SingletonVariableChecker {
 						isSingleton.put(atom, value);
 					}
 				} else if (node instanceof Tree) {
-					Tree tree = (Tree) node;
+					var tree = (Tree) node;
 					scan(tree.getLeft());
 					node = tree.getRight();
 					continue;

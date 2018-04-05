@@ -12,7 +12,7 @@ public class LccsTest {
 
 	@Test
 	public void test() {
-		Lccs lccs = new Lccs();
+		var lccs = new Lccs();
 		Pair<Segment, Segment> result = lccs.lccs(To.bytes("abczzzzz"), To.bytes("zzzzzabc"));
 
 		assertEquals(3, result.t0.start);

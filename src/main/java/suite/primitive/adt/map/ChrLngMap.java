@@ -38,7 +38,7 @@ public class ChrLngMap {
 		Obj_Chr<T> kf1 = kf0.rethrow();
 		Obj_Lng<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			ChrLngMap map = new ChrLngMap();
+			var map = new ChrLngMap();
 			T t;
 			while ((t = outlet.source().source()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
@@ -64,8 +64,8 @@ public class ChrLngMap {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof ChrLngMap) {
-			ChrLngMap other = (ChrLngMap) object;
-			boolean b = size == other.size;
+			var other = (ChrLngMap) object;
+			var b = size == other.size;
 			for (ChrObjPair<Long> pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
@@ -75,7 +75,7 @@ public class ChrLngMap {
 
 	public void forEach(ChrLngSink sink) {
 		ChrLngPair pair = ChrLngPair.of((char) 0, (long) 0);
-		ChrLngSource source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -143,7 +143,7 @@ public class ChrLngMap {
 			private ChrLngPair pair0 = ChrLngPair.of((char) 0, (long) 0);
 
 			public boolean source2(ChrObjPair<Long> pair) {
-				boolean b = source0.source2(pair0);
+				var b = source0.source2(pair0);
 				pair.update(pair0.t0, pair0.t1);
 				return b;
 			}

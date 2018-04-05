@@ -7,7 +7,6 @@ import suite.Suite;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 
 /**
@@ -49,9 +48,9 @@ public class NewPrettyPrinter {
 		Tree tree;
 
 		if ((tree = Tree.decompose(node)) != null) {
-			Operator operator = tree.getOperator();
+			var operator = tree.getOperator();
 			var prec = operator.getPrecedence();
-			boolean isParenthesesRequired = operator != null ? prec <= parentPrec : false;
+			var isParenthesesRequired = operator != null ? prec <= parentPrec : false;
 			var indent1 = indent + ind;
 			Node[] m;
 

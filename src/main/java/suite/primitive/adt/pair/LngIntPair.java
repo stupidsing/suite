@@ -75,7 +75,7 @@ public class LngIntPair {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == LngIntPair.class) {
-			LngIntPair other = (LngIntPair) object;
+			var other = (LngIntPair) object;
 			return t0 == other.t0 && t1 == other.t1;
 		} else
 			return false;

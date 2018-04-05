@@ -88,7 +88,7 @@ public class Sha2 {
 		}
 
 		var bs1 = new byte[256];
-		ByteBuffer bb = ByteBuffer.wrap(bs1);
+		var bb = ByteBuffer.wrap(bs1);
 		bb.putInt(h0);
 		bb.putInt(h1);
 		bb.putInt(h2);

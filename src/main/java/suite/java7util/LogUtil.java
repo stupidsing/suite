@@ -4,7 +4,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Proxy;
 
-import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import suite.inspect.Dump;
@@ -18,12 +17,12 @@ public class LogUtil {
 	public static <I> I proxy(Class<I> interface_, I object) {
 		@SuppressWarnings("unchecked")
 		Class<I> clazz = (Class<I>) object.getClass();
-		Log log = LogFactory.getLog(clazz);
+		var log = LogFactory.getLog(clazz);
 
 		InvocationHandler handler = (proxy, method, ps) -> {
 			var methodName = method.getName();
 			var prefix = methodName + "()\n";
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 
 			sb.append(prefix);
 
@@ -39,14 +38,14 @@ public class LogUtil {
 				log.info(prefix + rd);
 				return value;
 			} catch (InvocationTargetException ite) {
-				Throwable th = ite.getTargetException();
-				boolean isTrimmed = trimStackTrace(th);
+				var th = ite.getTargetException();
+				var isTrimmed = trimStackTrace(th);
 				log.error(prefix + (isTrimmed ? "(Trimmed)" : ""), th);
 				throw th instanceof Exception ? (Exception) th : ite;
 			}
 		};
 
-		ClassLoader classLoader = clazz.getClassLoader();
+		var classLoader = clazz.getClassLoader();
 		Class<?>[] classes = { interface_ };
 
 		@SuppressWarnings("unchecked")
@@ -55,7 +54,7 @@ public class LogUtil {
 	}
 
 	private static boolean trimStackTrace(Throwable th) {
-		boolean isTrimmed = false;
+		var isTrimmed = false;
 
 		// trims stack trace to appropriate length
 		while (th != null) {

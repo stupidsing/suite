@@ -51,7 +51,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	public static <K, V> Outlet2<K, List<V>> of(ListMultimap<K, V> multimap) {
 		Iterator<Pair<K, List<V>>> iter = multimap.listEntries().iterator();
 		return of(pair -> {
-			boolean b = iter.hasNext();
+			var b = iter.hasNext();
 			if (b) {
 				Pair<K, List<V>> pair1 = iter.next();
 				pair.update(pair1.t0, pair1.t1);
@@ -63,7 +63,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	public static <K, V> Outlet2<K, V> of(Map<K, V> map) {
 		Iterator<Entry<K, V>> iter = map.entrySet().iterator();
 		return of(pair -> {
-			boolean b = iter.hasNext();
+			var b = iter.hasNext();
 			if (b) {
 				Entry<K, V> pair1 = iter.next();
 				pair.update(pair1.getKey(), pair1.getValue());
@@ -78,7 +78,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			private int i;
 
 			public boolean source2(Pair<K, V> pair) {
-				boolean b = i < kvs.length;
+				var b = i < kvs.length;
 				if (b) {
 					Pair<K, V> kv = kvs[i];
 					pair.update(kv.t0, kv.t1);
@@ -92,7 +92,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		Iterator<Pair<K, V>> iter = col.iterator();
 		return of(new Source2<>() {
 			public boolean source2(Pair<K, V> pair) {
-				boolean b = iter.hasNext();
+				var b = iter.hasNext();
 				if (b) {
 					Pair<K, V> pair1 = iter.next();
 					pair.update(pair1.t0, pair1.t1);
@@ -125,7 +125,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	public Outlet2<K, V> closeAtEnd(Closeable c) {
 		return of(pair -> {
-			boolean b = next(pair);
+			var b = next(pair);
 			if (!b)
 				Object_.closeQuietly(c);
 			return b;
@@ -148,7 +148,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		return of(FunUtil2.concat(FunUtil2.map((k, v) -> {
 			Source<V1> source = fun.apply(v).source();
 			return pair -> {
-				V1 value1 = source.source();
+				var value1 = source.source();
 				boolean b = value1 != null;
 				if (b)
 					pair.update(k, value1);
@@ -181,7 +181,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	public Outlet2<K, V> drop(int n) {
 		Pair<K, V> pair = Pair.of(null, null);
-		boolean isAvailable = true;
+		var isAvailable = true;
 		while (0 < n && (isAvailable &= next(pair)))
 			n--;
 		return isAvailable ? this : empty();
@@ -290,7 +290,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	public Pair<K, V> minOrNull(Comparator<Pair<K, V>> comparator) {
 		Pair<K, V> pair = Pair.of(null, null);
 		Pair<K, V> pair1 = Pair.of(null, null);
-		boolean b = next(pair);
+		var b = next(pair);
 		if (b) {
 			while (next(pair1))
 				if (0 < comparator.compare(pair, pair1))
@@ -314,7 +314,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 		return new Outlet2<>(pair -> {
 			Mutable<Pair<K, V>> mutable = Mutable.nil();
-			boolean b = queue.poll(mutable);
+			var b = queue.poll(mutable);
 			if (b) {
 				Pair<K, V> p = mutable.get();
 				pair.update(p.t0, p.t1);
@@ -359,7 +359,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	public Outlet2<K, V> skip(int n) {
 		Pair<K, V> pair = Pair.of(null, null);
-		boolean end = false;
+		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
 		return !end ? of(source2) : empty();

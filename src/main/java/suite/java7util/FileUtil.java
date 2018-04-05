@@ -29,7 +29,7 @@ public class FileUtil {
 		return new Source<File>() {
 			public File source() {
 				while (!stack.isEmpty()) {
-					File f = stack.pop();
+					var f = stack.pop();
 
 					if (f.isDirectory())
 						for (var child : f.listFiles())

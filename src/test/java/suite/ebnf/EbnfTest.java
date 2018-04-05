@@ -17,7 +17,7 @@ public class EbnfTest {
 
 	@Test
 	public void testExcept() throws IOException {
-		Ebnf ebnf = new Ebnf(new StringReader("" //
+		var ebnf = new Ebnf(new StringReader("" //
 				+ "non-alphas ::= (non-alpha)* \n" //
 				+ "non-alpha ::= <CHARACTER> /except/ ([a-z] | [A-Z]) \n" //
 				+ "non-boolean ::= <IDENTIFIER> /except/ (\"true\" | \"false\") \n" //
@@ -30,19 +30,19 @@ public class EbnfTest {
 
 	@Test
 	public void testCrudeScript() throws IOException {
-		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/crude-script.ebnf"));
+		var ebnf = new Ebnf(new FileReader("src/main/ebnf/crude-script.ebnf"));
 		System.out.println(ebnf.parse("crude-script", "{ return 1 + 2 * 3; }"));
 	}
 
 	@Test
 	public void testExpression() throws IOException {
-		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/expression.ebnf"));
+		var ebnf = new Ebnf(new FileReader("src/main/ebnf/expression.ebnf"));
 		System.out.println(ebnf.parse("<expression>", "1 + 2 + 3"));
 	}
 
 	@Test
 	public void testHeadRecursion() throws IOException {
-		Ebnf ebnf = new Ebnf(new StringReader("" //
+		var ebnf = new Ebnf(new StringReader("" //
 				+ "number ::= number \"x\" digit | digit \n" //
 				+ "digit ::= [0-9] \n" //
 		));
@@ -53,33 +53,33 @@ public class EbnfTest {
 
 	@Test
 	public void testId() throws IOException {
-		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
+		var ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
 		System.out.println(ebnf.parse("<IDENTIFIER>", "abc"));
 	}
 
 	@Test
 	public void testJava() throws IOException {
-		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
+		var ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
 		var s = FileUtil.read("src/test/java/suite/ebnf/EbnfTest.java");
 		System.out.println(new Dump(ebnf.parse("CompilationUnit", s), s));
 	}
 
 	@Test
 	public void testJavaExpression() throws IOException {
-		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
+		var ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
 		System.out.println(ebnf.parse("Expression", "\"1\" + \"2\""));
 	}
 
 	@Test
 	public void testJavaSimple() throws IOException {
-		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
+		var ebnf = new Ebnf(new FileReader("src/main/ebnf/java.ebnf"));
 		System.out.println(ebnf.parse("CompilationUnit", "public class C { public void f() { int a; } }"));
 	}
 
 	@Test
 	public void testRefactor() throws IOException {
 		var sql0 = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
-		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
+		var ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
 		FactorizeResult fr = rewrite(ebnf, "intersect-select" //
 				, "SELECT .0 FROM DUAL" //
 				, "SELECT .0 FROM DUAL WHERE COL2 = 1" //
@@ -91,7 +91,7 @@ public class EbnfTest {
 	@Test
 	public void testSql() throws IOException {
 		var sql = "SELECT 0 FROM DUAL WHERE COL1 = 1 AND COL2 IN (SELECT 1 FROM DUAL) ORDER BY COL DESC";
-		Ebnf ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
+		var ebnf = new Ebnf(new FileReader("src/main/ebnf/sql.ebnf"));
 		System.out.println(ebnf.parse("sql", sql));
 	}
 

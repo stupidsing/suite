@@ -24,13 +24,13 @@ public class EditorPane extends JEditorPane {
 	private static final long serialVersionUID = 1l;
 
 	public EditorPane(EditorModel model) {
-		Document document = getDocument();
-		UndoManager undoManager = new UndoManager();
+		var document = getDocument();
+		var undoManager = new UndoManager();
 
 		SinkEx<ActionEvent, BadLocationException> tabize = event -> {
 			if (isSelectedText())
 				replaceLines(segment -> {
-					StringBuilder sb = new StringBuilder("\t");
+					var sb = new StringBuilder("\t");
 					for (var ch : String_.chars(segment)) {
 						sb.append(ch);
 						sb.append(ch == 10 ? "\t" : "");
@@ -60,7 +60,7 @@ public class EditorPane extends JEditorPane {
 	}
 
 	private void replaceLines(Fun<Segment, String> fun) throws BadLocationException {
-		Document document = getDocument();
+		var document = getDocument();
 		var length = document.getLength();
 		var ss = getSelectionStart();
 		int se = max(ss, getSelectionEnd() - 1);
@@ -89,7 +89,7 @@ public class EditorPane extends JEditorPane {
 	}
 
 	private void replace(Document document, int start, int end, Fun<Segment, String> f) throws BadLocationException {
-		Segment segment_ = new Segment();
+		var segment_ = new Segment();
 		document.getText(start, end - start, segment_);
 
 		var s = f.apply(segment_);

@@ -66,7 +66,7 @@ public class ListMultimap<K, V> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		sb.append("{");
 		for (Pair<K, List<V>> e : listEntries())
 			sb.append(e.t0 + "=" + e.t1 + ", ");

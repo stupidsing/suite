@@ -18,7 +18,7 @@ public class LngOpt {
 	}
 
 	public static LngOpt of(long t) {
-		LngOpt p = new LngOpt();
+		var p = new LngOpt();
 		p.value = t;
 		return p;
 	}

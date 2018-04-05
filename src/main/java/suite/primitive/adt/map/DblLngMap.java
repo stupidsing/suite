@@ -38,7 +38,7 @@ public class DblLngMap {
 		Obj_Dbl<T> kf1 = kf0.rethrow();
 		Obj_Lng<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			DblLngMap map = new DblLngMap();
+			var map = new DblLngMap();
 			T t;
 			while ((t = outlet.source().source()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
@@ -64,8 +64,8 @@ public class DblLngMap {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof DblLngMap) {
-			DblLngMap other = (DblLngMap) object;
-			boolean b = size == other.size;
+			var other = (DblLngMap) object;
+			var b = size == other.size;
 			for (DblObjPair<Long> pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
@@ -75,7 +75,7 @@ public class DblLngMap {
 
 	public void forEach(DblLngSink sink) {
 		DblLngPair pair = DblLngPair.of((double) 0, (long) 0);
-		DblLngSource source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -143,7 +143,7 @@ public class DblLngMap {
 			private DblLngPair pair0 = DblLngPair.of((double) 0, (long) 0);
 
 			public boolean source2(DblObjPair<Long> pair) {
-				boolean b = source0.source2(pair0);
+				var b = source0.source2(pair0);
 				pair.update(pair0.t0, pair0.t1);
 				return b;
 			}

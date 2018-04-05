@@ -16,16 +16,16 @@ public class Intercept {
 	public static <I> I object(Class<I> interface_, I object, Fun<Invocation, Invocation> fun) {
 		@SuppressWarnings("unchecked")
 		Class<I> clazz = (Class<I>) object.getClass();
-		ClassLoader classLoader = clazz.getClassLoader();
+		var classLoader = clazz.getClassLoader();
 		Class<?>[] classes = { interface_, };
 
 		InvocationHandler handler = (proxy, method, parameters) -> {
 			try {
 				Invocation invocation0 = (m, ps) -> m.invoke(object, ps);
-				Invocation invocation1 = fun.apply(invocation0);
+				var invocation1 = fun.apply(invocation0);
 				return invocation1.invoke(method, parameters);
 			} catch (InvocationTargetException ite) {
-				Throwable th = ite.getTargetException();
+				var th = ite.getTargetException();
 				throw th instanceof Exception ? (Exception) th : ite;
 			}
 		};

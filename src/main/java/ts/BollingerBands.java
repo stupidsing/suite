@@ -8,7 +8,6 @@ import suite.adt.pair.Pair;
 import suite.math.linalg.VirtualVector;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.MeanVariance;
-import suite.primitive.Int_Flt;
 
 public class BollingerBands {
 
@@ -20,7 +19,7 @@ public class BollingerBands {
 
 	public Pair<float[], float[]> meanVariances(VirtualVector v, int backPos0, int backPos1) {
 		var length = v.length;
-		Int_Flt fun = v.get;
+		var fun = v.get;
 
 		var means = new float[length];
 		var variances = new float[length];

@@ -54,7 +54,7 @@ public class LempelZivWelchTest {
 		Source<Integer> source1 = lzw.encode(source0);
 		Source<Byte> source2 = lzw.decode(source1);
 
-		BytesBuilder bb = new BytesBuilder();
+		var bb = new BytesBuilder();
 		Byte b;
 
 		while ((b = source2.source()) != null)

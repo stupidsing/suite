@@ -23,7 +23,7 @@ public class Subst {
 	}
 
 	public String subst(String s, Iterate<String> fun) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		subst(s, fun, sb);
 		return sb.toString();
 	}

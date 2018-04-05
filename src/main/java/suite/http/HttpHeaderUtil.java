@@ -38,7 +38,7 @@ public class HttpHeaderUtil {
 
 	public static Map<String, String> getPostedAttrs(InputStream is) {
 		BufferedReader br = new BufferedReader(new InputStreamReader(is, Constants.charset));
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		var buffer = new char[Constants.bufferSize];
 		int nCharsRead;
 

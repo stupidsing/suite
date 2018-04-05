@@ -33,12 +33,12 @@ public class RecursiveParser {
 
 	private Node node(FNode fn) {
 		if (fn instanceof FTree) {
-			FTree ft = (FTree) fn;
+			var ft = (FTree) fn;
 			var name = ft.name;
 			List<FPair> pairs = ft.pairs;
-			FNode fn0 = pairs.get(0).node;
-			FNode fn1 = pairs.get(1).node;
-			FNode fn2 = pairs.get(2).node;
+			var fn0 = pairs.get(0).node;
+			var fn1 = pairs.get(1).node;
+			var fn2 = pairs.get(2).node;
 
 			if (name.equals("("))
 				return node(fn1);

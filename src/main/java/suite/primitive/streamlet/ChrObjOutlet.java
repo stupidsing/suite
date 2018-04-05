@@ -60,7 +60,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	public static <V> ChrObjOutlet<List<V>> of(ListMultimap<Character, V> multimap) {
 		Iterator<Pair<Character, List<V>>> iter = multimap.listEntries().iterator();
 		return of(pair -> {
-			boolean b = iter.hasNext();
+			var b = iter.hasNext();
 			if (b) {
 				Pair<Character, List<V>> pair1 = iter.next();
 				pair.update(pair1.t0, pair1.t1);
@@ -79,7 +79,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 			private int i;
 
 			public boolean source2(ChrObjPair<V> pair) {
-				boolean b = i < kvs.length;
+				var b = i < kvs.length;
 				if (b) {
 					ChrObjPair<V> kv = kvs[i];
 					pair.update(kv.t0, kv.t1);
@@ -94,7 +94,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 		Iterator<ChrObjPair<V>> iter = col.iterator();
 		return of(new ChrObjSource<>() {
 			public boolean source2(ChrObjPair<V> pair) {
-				boolean b = iter.hasNext();
+				var b = iter.hasNext();
 				if (b) {
 					ChrObjPair<V> pair1 = iter.next();
 					pair.update(pair1.t0, pair1.t1);
@@ -127,7 +127,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public ChrObjOutlet<V> closeAtEnd(Closeable c) {
 		return of(pair -> {
-			boolean b = next(pair);
+			var b = next(pair);
 			if (!b)
 				Object_.closeQuietly(c);
 			return b;
@@ -154,7 +154,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 		return of(ChrObjFunUtil.concat(ChrObjFunUtil.map((k, v) -> {
 			Source<V1> source = fun.apply(v).source();
 			return pair -> {
-				V1 value1 = source.source();
+				var value1 = source.source();
 				boolean b = value1 != null;
 				if (b)
 					pair.update(k, value1);
@@ -187,7 +187,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public ChrObjOutlet<V> drop(int n) {
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
-		boolean isAvailable = true;
+		var isAvailable = true;
 		while (0 < n && (isAvailable &= next(pair)))
 			n--;
 		return isAvailable ? this : empty();
@@ -302,7 +302,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	public ChrObjPair<V> minOrNull(Comparator<ChrObjPair<V>> comparator) {
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
 		ChrObjPair<V> pair1 = ChrObjPair.of((char) 0, null);
-		boolean b = next(pair);
+		var b = next(pair);
 		if (b) {
 			while (next(pair1))
 				if (0 < comparator.compare(pair, pair1))
@@ -326,7 +326,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 		return new ChrObjOutlet<>(pair -> {
 			Mutable<ChrObjPair<V>> mutable = Mutable.nil();
-			boolean b = queue.poll(mutable);
+			var b = queue.poll(mutable);
 			if (b) {
 				ChrObjPair<V> p = mutable.get();
 				pair.update(p.t0, p.t1);
@@ -371,7 +371,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public ChrObjOutlet<V> skip(int n) {
 		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
-		boolean end = false;
+		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
 		return !end ? of(source) : empty();

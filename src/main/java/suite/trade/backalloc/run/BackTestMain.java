@@ -69,7 +69,7 @@ public class BackTestMain extends ExecutableProgram {
 				.map(Pair::of) //
 				.join2(years.sort(Object_::compare).map(TimeRange::ofYear)) //
 				.map2((pair, period) -> pair.t0, (pair, period) -> {
-					BackAllocConfiguration bac = pair.t1;
+					var bac = pair.t1;
 					Streamlet<Asset> assets = bac.assetsFun.apply(period.from);
 					return runner.backTest(bac.backAllocator, period, assets);
 				}) //

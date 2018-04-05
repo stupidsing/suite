@@ -10,7 +10,7 @@ public class Mle {
 		DblObjPair<T> max = null;
 
 		for (var iter = 0; iter < 10000; iter++) {
-			T t = source.source();
+			var t = source.source();
 			DblObjPair<T> pair = DblObjPair.of(t.source(), t);
 			if (max == null || max.t0 < pair.t0)
 				max = pair;

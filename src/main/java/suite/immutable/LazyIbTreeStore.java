@@ -65,7 +65,7 @@ public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 		this.superblockFile = superblockFile;
 		this.persister = persister;
 
-		Pointer pointer = superblockFile.load(0);
+		var pointer = superblockFile.load(0);
 		if (pointer == null)
 			superblockFile.save(0, pointer = persister.save(new LazyIbTree<>((p0, p1) -> kc.compare(p0.t0, p1.t0))));
 		mutator = new LazyIbTreeMutator<>(persister.load(pointer));
@@ -74,7 +74,7 @@ public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 	@Override
 	public synchronized void end(boolean isComplete) {
 		if (isComplete) {
-			Pointer pointer1 = persister.save(mutator.get());
+			var pointer1 = persister.save(mutator.get());
 			Pointer pointerx = persister.gc(List.of(pointer1), 9).getOrDefault(pointer1, pointer1);
 			superblockFile.save(0, pointerx);
 		}

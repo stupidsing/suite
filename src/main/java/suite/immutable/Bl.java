@@ -23,7 +23,7 @@ public class Bl<T> {
 		if (bl != null)
 			return Read.from(bl.ts).map(o -> {
 				@SuppressWarnings("unchecked")
-				T t = (T) o;
+				var t = (T) o;
 				return t;
 			});
 		else
@@ -126,7 +126,7 @@ public class Bl<T> {
 
 	private T get(int bitCount) {
 		@SuppressWarnings("unchecked")
-		T t = (T) ts[bitCount];
+		var t = (T) ts[bitCount];
 		return t;
 	}
 

@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.Suite;
-import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.lp.kb.CompositeRuleSet;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
-import suite.lp.kb.RuleSet;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Node;
 import suite.node.Tree;
@@ -32,7 +30,7 @@ public class RuleSetPredicates {
 	});
 
 	public BuiltinPredicate getAllRules = PredicateUtil.p1((prover, p0) -> {
-		RuleSet ruleSet = prover.ruleSet();
+		var ruleSet = prover.ruleSet();
 		List<Rule> rules = ruleSet.getRules();
 		List<Node> nodes = new ArrayList<>();
 
@@ -59,7 +57,7 @@ public class RuleSetPredicates {
 			proto = Prototype.of(ps[0]);
 
 		Node node = Suite.listRules(prover.ruleSet(), proto);
-		PrettyPrinter printer = new PrettyPrinter();
+		var printer = new PrettyPrinter();
 		System.out.println(printer.prettyPrint(node));
 		return true;
 	});
@@ -70,10 +68,10 @@ public class RuleSetPredicates {
 	});
 
 	public BuiltinPredicate retractAll = PredicateUtil.p1((prover, p0) -> {
-		Rule rule0 = Rule.of(p0);
+		var rule0 = Rule.of(p0);
 
-		RuleSet ruleSet = prover.ruleSet();
-		Trail trail = prover.getTrail();
+		var ruleSet = prover.ruleSet();
+		var trail = prover.getTrail();
 		var pit = trail.getPointInTime();
 		List<Rule> targets = new ArrayList<>();
 
@@ -92,8 +90,8 @@ public class RuleSetPredicates {
 	});
 
 	public BuiltinPredicate with = PredicateUtil.p2((prover, p0, p1) -> {
-		RuleSet ruleSet = prover.ruleSet();
-		RuleSet ruleSet1 = Suite.getRuleSet(p0);
+		var ruleSet = prover.ruleSet();
+		var ruleSet1 = Suite.getRuleSet(p0);
 		CompositeRuleSet ruleSet2 = new CompositeRuleSet(ruleSet1, ruleSet);
 		return new Prover(ruleSet2).prove(p1);
 	});

@@ -142,7 +142,7 @@ public class IntPrimitives {
 		public static <T> Fun<Outlet<T>, IntStreamlet> lift(Obj_Int<T> fun0) {
 			Obj_Int<T> fun1 = fun0.rethrow();
 			return ts -> {
-				IntsBuilder b = new IntsBuilder();
+				var b = new IntsBuilder();
 				T t;
 				while ((t = ts.next()) != null)
 					b.append(fun1.apply(t));

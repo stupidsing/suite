@@ -5,15 +5,11 @@ import static org.junit.Assert.assertEquals;
 import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.charset.Charset;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
@@ -33,10 +29,10 @@ public class NioDispatcherTest {
 	@Test
 	public void testTextExchange() throws IOException {
 		var hello = "HELLO";
-		Charset charset = Constants.charset;
+		var charset = Constants.charset;
 
 		Source<NioChannel> source = () -> {
-			BufferedNioChannel channel = new BufferedNioChannel();
+			var channel = new BufferedNioChannel();
 			channel.onConnected.wire(sender -> {
 				var s = hello + "\n";
 				channel.send(To.bytes(s));
@@ -50,11 +46,11 @@ public class NioDispatcherTest {
 
 		try (Closeable closeServer = dispatcher.listen(5151);
 				Socket socket = new Socket("localhost", 5151);
-				InputStream is = socket.getInputStream();
-				OutputStream os = socket.getOutputStream();
+				var is = socket.getInputStream();
+				var os = socket.getOutputStream();
 				InputStreamReader isr = new InputStreamReader(is, charset);
-				BufferedReader reader = new BufferedReader(isr);
-				PrintWriter writer = new PrintWriter(os)) {
+				var reader = new BufferedReader(isr);
+				var writer = new PrintWriter(os)) {
 			var m = "testing nio";
 			writer.println(m);
 			writer.flush();
@@ -68,8 +64,8 @@ public class NioDispatcherTest {
 
 	@Test
 	public void testRequestResponse() throws IOException, InterruptedException {
-		RequestResponseMatcher matcher = new RequestResponseMatcher();
-		ThreadPoolExecutor executor = Thread_.newExecutor();
+		var matcher = new RequestResponseMatcher();
+		var executor = Thread_.newExecutor();
 		Iterate<Bytes> handler = request -> request;
 
 		NioDispatcher<RequestResponseNioChannel> dispatcher = new NioDispatcherImpl<>(
@@ -77,13 +73,13 @@ public class NioDispatcherTest {
 		dispatcher.start();
 
 		try (Closeable closeServer = dispatcher.listen(5151)) {
-			InetAddress localHost = InetAddress.getLocalHost();
+			var localHost = InetAddress.getLocalHost();
 			InetSocketAddress address = new InetSocketAddress(localHost, 5151);
-			RequestResponseNioChannel client = dispatcher.connect(address);
+			var client = dispatcher.connect(address);
 
 			for (var s : new String[] { "ABC", "WXYZ", "", }) {
 				var bs = s.getBytes(Constants.charset);
-				Bytes request = Bytes.of(bs);
+				var request = Bytes.of(bs);
 				Bytes response = matcher.requestForResponse(client, request);
 				assertEquals(request, response);
 				System.out.println("Request '" + s + "' is okay");

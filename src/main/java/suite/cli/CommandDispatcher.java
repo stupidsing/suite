@@ -87,7 +87,7 @@ public class CommandDispatcher {
 	}
 
 	public boolean importFiles(List<String> importFilenames) throws IOException {
-		boolean code = true;
+		var code = true;
 		code &= Suite.importPath(ruleSet, "auto.sl");
 		for (var importFilename : importFilenames)
 			code &= Suite.importFile(ruleSet, importFilename);
@@ -99,11 +99,11 @@ public class CommandDispatcher {
 	}
 
 	private boolean dispatchCommand_(String input, Writer writer) throws IOException {
-		PrintWriter pw = new PrintWriter(writer);
-		boolean code = true;
+		var pw = new PrintWriter(writer);
+		var code = true;
 
 		Pair<InputType, String> pair = new CommandUtil<>(InputType.values()).recognize(input);
-		InputType type = pair.t0;
+		var type = pair.t0;
 		input = pair.t1.trim();
 
 		if (input.endsWith("#"))
@@ -128,7 +128,7 @@ public class CommandDispatcher {
 			printEvaluated(writer, Suite.applyWriter(node));
 			break;
 		case EVALUATEEFI:
-			InterpretFunEager efi = new InterpretFunEager();
+			var efi = new InterpretFunEager();
 			efi.setLazyify(opt.isLazy());
 			pw.println(efi.eager(node));
 			break;
@@ -214,7 +214,7 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchFilter(List<String> inputs, Reader reader, Writer writer) throws IOException {
-		boolean isChars = opt.isChars();
+		var isChars = opt.isChars();
 		var node = parseNode(inputs);
 		node = isChars ? Suite.applyCharsReader(node, reader) : Suite.applyStringReader(node, reader);
 		if (opt.isDo())
@@ -224,7 +224,7 @@ public class CommandDispatcher {
 	}
 
 	public boolean dispatchPrecompile(List<String> filenames) {
-		boolean b = true;
+		var b = true;
 		for (var filename : filenames)
 			b &= Suite.precompile(filename, opt.pc(null));
 		return b;
@@ -232,7 +232,7 @@ public class CommandDispatcher {
 
 	public boolean dispatchProve(List<String> inputs) throws IOException {
 		var in = parseInput(inputs);
-		RuleSet ruleSet = Suite.newRuleSet();
+		var ruleSet = Suite.newRuleSet();
 		return Suite.importPath(ruleSet, "auto.sl") && Suite.proveLogic(ruleSet, in);
 	}
 

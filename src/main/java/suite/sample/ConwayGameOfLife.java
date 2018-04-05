@@ -56,7 +56,7 @@ public class ConwayGameOfLife {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var y = 1; y < size; y++)
 			sb.append((char) 65309);
 		sb.append('\n');

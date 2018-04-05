@@ -12,7 +12,6 @@ import java.util.Locale;
 import suite.adt.pair.Fixie;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
-import suite.lp.kb.RuleSet;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
@@ -36,7 +35,7 @@ public class Constants {
 
 	public static Fixie<String, String, String, String, String, String, String, String, String, String> bindSecrets(
 			String pattern) {
-		Generalizer generalizer = new Generalizer();
+		var generalizer = new Generalizer();
 		String[] m;
 
 		if (secrets().prove(generalizer.generalize(Suite.parse(pattern)))) {
@@ -67,7 +66,7 @@ public class Constants {
 	}
 
 	public static String[] secrets(String pattern) {
-		Generalizer generalizer = new Generalizer();
+		var generalizer = new Generalizer();
 
 		if (secrets().prove(generalizer.generalize(Suite.parse(pattern)))) {
 			List<String> list = new ArrayList<>();
@@ -89,7 +88,7 @@ public class Constants {
 	}
 
 	private static Source<Prover> memoizeSecrets = Memoize.source(() -> {
-		RuleSet rs = Suite.newRuleSet();
+		var rs = Suite.newRuleSet();
 		var text = To.string(HomeDir.resolve("private/secrets.sl"));
 		Suite.importFrom(rs, Suite.parse(text));
 		return new Prover(rs);

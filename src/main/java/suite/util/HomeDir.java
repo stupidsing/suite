@@ -9,7 +9,7 @@ import suite.os.FileUtil;
 public class HomeDir {
 
 	public static Path dir(String path_) {
-		Path path = resolve(path_);
+		var path = resolve(path_);
 		FileUtil.mkdir(path);
 		return path;
 	}

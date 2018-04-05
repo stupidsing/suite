@@ -38,7 +38,7 @@ public class IntLngMap {
 		Obj_Int<T> kf1 = kf0.rethrow();
 		Obj_Lng<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			IntLngMap map = new IntLngMap();
+			var map = new IntLngMap();
 			T t;
 			while ((t = outlet.source().source()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
@@ -64,8 +64,8 @@ public class IntLngMap {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof IntLngMap) {
-			IntLngMap other = (IntLngMap) object;
-			boolean b = size == other.size;
+			var other = (IntLngMap) object;
+			var b = size == other.size;
 			for (IntObjPair<Long> pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
@@ -75,7 +75,7 @@ public class IntLngMap {
 
 	public void forEach(IntLngSink sink) {
 		IntLngPair pair = IntLngPair.of((int) 0, (long) 0);
-		IntLngSource source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -143,7 +143,7 @@ public class IntLngMap {
 			private IntLngPair pair0 = IntLngPair.of((int) 0, (long) 0);
 
 			public boolean source2(IntObjPair<Long> pair) {
-				boolean b = source0.source2(pair0);
+				var b = source0.source2(pair0);
 				pair.update(pair0.t0, pair0.t1);
 				return b;
 			}

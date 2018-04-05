@@ -36,7 +36,7 @@ public class MapifyTest {
 
 	@Test
 	public void testMapify() {
-		ProverConfig pc0 = new ProverConfig();
+		var pc0 = new ProverConfig();
 		pc0.setRuleSet(null);
 
 		Object map = mapify.mapify(ProverConfig.class, pc0);
@@ -54,9 +54,9 @@ public class MapifyTest {
 	// object type information (i.e. class name), and un-mapify accordingly.
 	@Test
 	public void testPolymorphism() {
-		A a = new A();
-		B b = new B();
-		Container object0 = new Container();
+		var a = new A();
+		var b = new B();
+		var object0 = new Container();
 		object0.is = List.of(a, b);
 
 		Object map = mapify.mapify(Container.class, object0);

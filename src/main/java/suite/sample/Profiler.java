@@ -3,7 +3,6 @@ package suite.sample;
 import java.lang.Thread.State;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
-import java.lang.management.ThreadMXBean;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -59,7 +58,7 @@ public class Profiler implements Service {
 	}
 
 	public String dump() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 
 		sb.append("PROFILING RESULT\n\n");
 		sb.append("TOTAL SAMPLES = " + count.get() + "\n");
@@ -90,7 +89,7 @@ public class Profiler implements Service {
 
 	private void recordStats() {
 		var currentThreadId = Thread.currentThread().getId();
-		ThreadMXBean mx = ManagementFactory.getThreadMXBean();
+		var mx = ManagementFactory.getThreadMXBean();
 
 		long[] threadIds = mx.getAllThreadIds();
 		ThreadInfo[] threadInfos = mx.getThreadInfo(threadIds, stackTraceDepth);
@@ -104,12 +103,12 @@ public class Profiler implements Service {
 				StackTraceElement[] stackTrace = threadInfo.getStackTrace();
 				var elements = new HashSet<>();
 				var i = stackTrace.length;
-				Call call = callRoot;
+				var call = callRoot;
 
 				// save line numbers as it is important to trace lambdas and
 				// anonymous classes
 				while (0 < i) {
-					StackTraceElement elem = stackTrace[--i];
+					var elem = stackTrace[--i];
 					var fileName = elem.getFileName();
 					var lineNumber = elem.getLineNumber();
 					var mn = elem.getClassName() + "." + elem.getMethodName();

@@ -195,7 +195,7 @@ public class FunTypeTest {
 	}
 
 	private void checkType(String fps, String bindTo, String ts) {
-		Trail trail = new Trail();
+		var trail = new Trail();
 		var type = getType(fps);
 
 		assertTrue(Binder.bind(type, SewingGeneralizerImpl.generalize(Suite.parse(bindTo)), trail));

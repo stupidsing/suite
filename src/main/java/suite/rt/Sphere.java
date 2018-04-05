@@ -54,7 +54,7 @@ public class Sphere implements RtObject {
 			}
 
 			public RayIntersection intersection() {
-				R3 hitPoint = ray.hitPoint(advance);
+				var hitPoint = ray.hitPoint(advance);
 
 				return new RayIntersection() {
 					public R3 hitPoint() {

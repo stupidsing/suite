@@ -2,7 +2,6 @@ package suite.primitive;
 
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Doubles.DoublesBuilder;
-import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.streamlet.DblStreamlet;
 import suite.primitive.streamlet.LngOutlet;
 import suite.util.Fail;
@@ -14,9 +13,9 @@ public interface Lng_Dbl {
 	public double apply(long c);
 
 	public static Fun<LngOutlet, DblStreamlet> lift(Lng_Dbl fun0) {
-		Lng_Dbl fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return ts -> {
-			DoublesBuilder b = new DoublesBuilder();
+			var b = new DoublesBuilder();
 			long c;
 			while ((c = ts.next()) != LngFunUtil.EMPTYVALUE)
 				b.append(fun1.apply(c));
@@ -25,9 +24,9 @@ public interface Lng_Dbl {
 	}
 
 	public static Obj_Dbl<LngOutlet> sum(Lng_Dbl fun0) {
-		Lng_Dbl fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return outlet -> {
-			LngSource source = outlet.source();
+			var source = outlet.source();
 			long c;
 			var result = (double) 0;
 			while ((c = source.source()) != LngFunUtil.EMPTYVALUE)

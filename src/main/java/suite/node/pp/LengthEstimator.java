@@ -6,7 +6,6 @@ import java.util.Map;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.Operator;
 
 public class LengthEstimator {
 
@@ -25,9 +24,9 @@ public class LengthEstimator {
 			int len;
 
 			if (node instanceof Tree) {
-				Tree tree = (Tree) node;
+				var tree = (Tree) node;
 
-				Operator op = tree.getOperator();
+				var op = tree.getOperator();
 				var len0 = estimateLengths(tree.getLeft());
 				var len1 = estimateLengths(tree.getRight());
 				var opLength = op.getName().length();

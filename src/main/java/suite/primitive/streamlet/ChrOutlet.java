@@ -99,7 +99,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	public static ChrOutlet of(Source<Character> source) {
 		return ChrOutlet.of(() -> {
-			Character c = source.source();
+			var c = source.source();
 			return c != null ? c : ChrFunUtil.EMPTYVALUE;
 		});
 	}
@@ -197,7 +197,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public ChrOutlet drop(int n) {
-		boolean isAvailable = true;
+		var isAvailable = true;
 		while (0 < n && (isAvailable &= next() != ChrFunUtil.EMPTYVALUE))
 			n--;
 		return isAvailable ? this : empty();
@@ -206,7 +206,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == ChrOutlet.class) {
-			ChrSource source1 = ((ChrOutlet) object).source;
+			var source1 = ((ChrOutlet) object).source;
 			char o0, o1;
 			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
 				if (o0 == ChrFunUtil.EMPTYVALUE && o1 == ChrFunUtil.EMPTYVALUE)
@@ -366,14 +366,14 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public void sink(ChrSink sink0) {
-		ChrSink sink1 = sink0.rethrow();
+		var sink1 = sink0.rethrow();
 		char c;
 		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
 			sink1.sink(c);
 	}
 
 	public ChrOutlet skip(int n) {
-		boolean end = false;
+		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next() == ChrFunUtil.EMPTYVALUE;
 		return !end ? of(source) : empty();
@@ -409,12 +409,12 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public char[] toArray() {
-		CharsBuilder list = toList();
+		var list = toList();
 		return list.toChars().toArray();
 	}
 
 	public CharsBuilder toList() {
-		CharsBuilder list = new CharsBuilder();
+		var list = new CharsBuilder();
 		char c;
 		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
 			list.append(c);
@@ -448,7 +448,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		Map<K, V> map = new HashMap<>();
 		char c;
 		while ((c = next()) != ChrFunUtil.EMPTYVALUE) {
-			K key = kf1.apply(c);
+			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
 				Fail.t("duplicate key " + key);
 		}
@@ -464,7 +464,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public ChrSet toSet() {
-		ChrSet set = new ChrSet();
+		var set = new ChrSet();
 		char c;
 		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
 			set.add(c);

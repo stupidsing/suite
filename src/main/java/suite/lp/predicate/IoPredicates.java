@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.attribute.FileTime;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
@@ -61,7 +60,7 @@ public class IoPredicates {
 
 	public BuiltinPredicate fileTime = PredicateUtil.fun(n -> {
 		return Rethrow.ex(() -> {
-			FileTime lastModifiedTime = Files.getLastModifiedTime(Paths.get(Formatter.display(n)));
+			var lastModifiedTime = Files.getLastModifiedTime(Paths.get(Formatter.display(n)));
 			return Int.of((int) lastModifiedTime.to(TimeUnit.SECONDS));
 		});
 	});
@@ -86,7 +85,7 @@ public class IoPredicates {
 	public BuiltinPredicate nl = PredicateUtil.run(System.out::println);
 
 	public BuiltinPredicate readLine = PredicateUtil.p1((prover, p0) -> Rethrow.ex(() -> {
-		BytesBuilder bb = new BytesBuilder();
+		var bb = new BytesBuilder();
 		byte b;
 		while (0 <= (b = (byte) System.in.read()) && b != 10)
 			bb.append(b);

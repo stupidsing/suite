@@ -34,7 +34,7 @@ public class CacheUtil {
 
 		public boolean equals(Object object) {
 			if (Object_.clazz(object) == Key.class) {
-				Key other = (Key) object;
+				var other = (Key) object;
 				return bean == other.bean //
 						&& Objects.equals(method, other.method) //
 						&& Arrays.deepEquals(arguments, other.arguments);
@@ -74,14 +74,14 @@ public class CacheUtil {
 	public <I> I proxy(Class<I> interface_, I object, Collection<Method> methods) {
 		InvocationHandler handler = (proxy, method, ps) -> {
 			Key key = methods.contains(method) ? new Key(object, method, ps) : null;
-			boolean isCached = key != null && results.containsKey(key);
+			var isCached = key != null && results.containsKey(key);
 			Object result;
 
 			if (!isCached)
 				try {
 					results.put(key, result = method.invoke(object, ps));
 				} catch (InvocationTargetException ite) {
-					Throwable th = ite.getTargetException();
+					var th = ite.getTargetException();
 					throw th instanceof Exception ? (Exception) th : ite;
 				}
 			else
@@ -92,7 +92,7 @@ public class CacheUtil {
 
 		@SuppressWarnings("unchecked")
 		Class<I> clazz = (Class<I>) object.getClass();
-		ClassLoader classLoader = clazz.getClassLoader();
+		var classLoader = clazz.getClassLoader();
 		Class<?>[] classes = { interface_ };
 
 		@SuppressWarnings("unchecked")

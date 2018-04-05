@@ -39,10 +39,10 @@ public class ReduceHeadRecursion {
 	}
 
 	public Grammar reduce(Grammar en0) {
-		Grammar en1 = expand(en0);
+		var en1 = expand(en0);
 
 		if (en1.type == GrammarType.NAMED_) {
-			Grammar en2 = en1.children.get(0);
+			var en2 = en1.children.get(0);
 			var entity = en1.content;
 			HeadRecursionForm hrf = getHeadRecursionForm(en2, entity);
 			Grammar en3;
@@ -61,7 +61,7 @@ public class ReduceHeadRecursion {
 
 	private HeadRecursionForm getHeadRecursionForm(Grammar en0, String entity) {
 		List<Grammar> empty = List.of();
-		Grammar en = expand(en0);
+		var en = expand(en0);
 		HeadRecursionForm hrf;
 
 		if (en.type == GrammarType.AND___ && en.children.isEmpty())
@@ -93,7 +93,7 @@ public class ReduceHeadRecursion {
 
 	private Grammar expand(Grammar en) {
 		if (en.type == GrammarType.ENTITY) {
-			Grammar en1 = grammarByEntity.get(en.content);
+			var en1 = grammarByEntity.get(en.content);
 			return en1 != null ? expand(en1) : en;
 		} else
 			return en;

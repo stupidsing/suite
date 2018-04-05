@@ -43,7 +43,7 @@ public class PriorityQueue<T> {
 
 	public T remove(int i) {
 		int c;
-		T t = ts[i];
+		var t = ts[i];
 		ts[i] = ts[size--];
 		for (; (c = 2 * i) <= size; i = c) {
 			if (c + 1 <= size && compare(ts[c + 1], ts[c]) < 0)
@@ -60,7 +60,7 @@ public class PriorityQueue<T> {
 	}
 
 	private void swap(int i0, int i1) {
-		T temp = ts[i0];
+		var temp = ts[i0];
 		ts[i0] = ts[i1];
 		ts[i1] = temp;
 	}

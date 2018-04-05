@@ -78,7 +78,7 @@ public class CompileBinderImpl extends CompileClonerImpl implements BinderFactor
 						return f.if_(targets.length(), fe, brc);
 					}), brc);
 				}).applyIf(Node.class, n -> {
-					Clone_ cloner = cloner(n);
+					var cloner = cloner(n);
 					return f.invokeStatic(Binder.class, "bind", target, f.object(cloner).invoke("apply", env), trail);
 				}).nonNullResult();
 			}

@@ -13,7 +13,7 @@ public class EbnfOperatorTest {
 
 	@Test
 	public void testEbnf() throws IOException {
-		Ebnf ebnf = new Ebnf(new StringReader(ebnf()));
+		var ebnf = new Ebnf(new StringReader(ebnf()));
 		System.out.println(ebnf.parse("e0", "1 * 2 + 3"));
 	}
 
@@ -24,7 +24,7 @@ public class EbnfOperatorTest {
 	}
 
 	private String ebnf() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		var i = 0;
 
 		for (var operator : TermOp.values()) {

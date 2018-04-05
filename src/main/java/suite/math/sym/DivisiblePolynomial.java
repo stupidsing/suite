@@ -6,7 +6,6 @@ import suite.BindArrayUtil.Pattern;
 import suite.adt.Opt;
 import suite.adt.pair.Fixie_.Fixie3;
 import suite.adt.pair.Pair;
-import suite.math.sym.Express.OpGroup;
 import suite.math.sym.Polynomial.Poly;
 import suite.math.sym.Sym.Field;
 import suite.math.sym.Sym.Ring;
@@ -114,9 +113,9 @@ public class DivisiblePolynomial<N> {
 	}
 
 	public Node format(Poly<N> poly) {
-		Express ex = new Express();
-		OpGroup add = ex.add;
-		OpGroup mul = ex.mul;
+		var ex = new Express();
+		var add = ex.add;
+		var mul = ex.mul;
 
 		Int_Obj<Node> powerFun = p -> {
 			var power = mul.identity();

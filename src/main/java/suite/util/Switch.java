@@ -28,7 +28,7 @@ public class Switch<R> {
 				Fail.t(ex);
 			}
 			@SuppressWarnings("unchecked")
-			R r = (R) t;
+			var r = (R) t;
 			return r;
 		});
 	}

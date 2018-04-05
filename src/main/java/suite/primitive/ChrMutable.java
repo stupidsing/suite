@@ -18,7 +18,7 @@ public class ChrMutable {
 	}
 
 	public static ChrMutable of(char c) {
-		ChrMutable p = new ChrMutable();
+		var p = new ChrMutable();
 		p.update(c);
 		return p;
 	}

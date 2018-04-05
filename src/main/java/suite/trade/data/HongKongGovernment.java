@@ -43,12 +43,12 @@ public class HongKongGovernment {
 		long t0 = Time.of(2000, 1, 1).epochSec();
 		var tx = Time.today().epochSec();
 
-		LongsBuilder ts = new LongsBuilder();
-		FloatsBuilder fs0 = new FloatsBuilder();
-		FloatsBuilder fs1 = new FloatsBuilder();
+		var ts = new LongsBuilder();
+		var fs0 = new FloatsBuilder();
+		var fs1 = new FloatsBuilder();
 
 		for (long t = t0; t < tx; t += 86400l) {
-			Time time = Time.ofEpochSec(t);
+			var time = Time.ofEpochSec(t);
 
 			var html = Singleton.me.storeCache //
 					.http("http://www.hko.gov.hk/cgi-bin/hko/yes.pl" //

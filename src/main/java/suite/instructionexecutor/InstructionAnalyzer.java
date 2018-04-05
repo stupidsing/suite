@@ -95,7 +95,7 @@ public class InstructionAnalyzer {
 		// find out the parent of closures.
 		// assumes every FRAME-BEGIN has a ASSIGN-THUNK referencing it.
 		for (var ip = 0; ip < instructions.size(); ip++) {
-			Instruction insn = instructions.get(ip);
+			var insn = instructions.get(ip);
 
 			if (insn.insn == Insn.FRAMEBEGIN____)
 				analyzedFrames.push(new AnalyzedFrame(ip));
@@ -110,7 +110,7 @@ public class InstructionAnalyzer {
 
 	private void analyzeParentFrames(List<Instruction> instructions) {
 		for (var ip = 0; ip < instructions.size(); ip++) {
-			Instruction insn = instructions.get(ip);
+			var insn = instructions.get(ip);
 
 			// recognize frames and their parents.
 			// assume ASSIGN-THUNK points to the FRAME-BEGIN instruction.
@@ -124,9 +124,9 @@ public class InstructionAnalyzer {
 
 		while (ip < instructions.size()) {
 			var currentIp = ip;
-			Instruction insn = instructions.get(ip++);
+			var insn = instructions.get(ip++);
 			int op0 = insn.op0, op1 = insn.op1, op2 = insn.op2;
-			AnalyzedFrame frame = frameByIp.get(currentIp);
+			var frame = frameByIp.get(currentIp);
 			List<AnalyzedRegister> registers = frame != null ? frame.registers : null;
 
 			switch (insn.insn) {
@@ -175,14 +175,14 @@ public class InstructionAnalyzer {
 				registers.get(insn.op1).clazz = Tree.class;
 				break;
 			case ASSIGNFRAMEREG:
-				AnalyzedFrame frame1 = frame;
+				var frame1 = frame;
 				for (var i = op1; i < 0; i++) {
 					frame1.isRequireParent = true;
 					frame1 = frame1.parent;
 				}
 
-				AnalyzedRegister op0register = registers.get(op0);
-				AnalyzedRegister op2Register = frame1.registers.get(op2);
+				var op0register = registers.get(op0);
+				var op2Register = frame1.registers.get(op2);
 
 				if (frame != frame1)
 					op2Register.isAccessedByChildFrames = true;
@@ -207,8 +207,8 @@ public class InstructionAnalyzer {
 	private void analyzeFpTailCalls(List<Instruction> instructions) {
 		for (var ip = 0; ip < instructions.size() - 1; ip++) {
 			Source<Instruction> source = flow(instructions, ip);
-			Instruction instruction0 = source.source();
-			Instruction instruction1 = source.source();
+			var instruction0 = source.source();
+			var instruction1 = source.source();
 
 			if (instruction0 != null && instruction0.insn == Insn.CALLTHUNK_____ //
 					&& instruction1 != null && instruction1.insn == Insn.ASSIGNRESULT__ //
@@ -251,7 +251,7 @@ public class InstructionAnalyzer {
 
 			public Instruction source() {
 				if (!end && ip_ < instructions.size()) {
-					Instruction instruction = instructions.get(ip_++);
+					var instruction = instructions.get(ip_++);
 
 					switch (instruction.insn) {
 					case ASSIGNFRAMEREG:

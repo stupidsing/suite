@@ -127,11 +127,11 @@ public class BackAllocatorGeneral {
 			MovingRange[] movingRanges = ma.movingRange(prices, window);
 
 			return Quant.fold(0, movingRanges.length, (i, hold) -> {
-				MovingRange range = movingRanges[i];
+				var range = movingRanges[i];
 				var min = range.min;
 				var max = range.max;
 				var price = prices[i];
-				boolean b = price * threshold < (max - min); // channel wide?
+				var b = price * threshold < (max - min); // channel wide?
 				return b ? Quant.hold(hold, price, min, range.median, max) : hold;
 			});
 		});
@@ -142,7 +142,7 @@ public class BackAllocatorGeneral {
 			MovingRange[] movingRanges = ma.movingRange(prices, window);
 			return index -> {
 				var last = index - 1;
-				MovingRange movingRange = movingRanges[last];
+				var movingRange = movingRanges[last];
 				var min = movingRange.min;
 				var max = movingRange.max;
 				return (max - prices[last]) / (max - min);
@@ -213,7 +213,7 @@ public class BackAllocatorGeneral {
 	}
 
 	private BackAllocator mamr(int nPastDays, int nHoldDays, float threshold) {
-		Strategos strategos = new Strategos();
+		var strategos = new Strategos();
 		return BackAllocator_.by(strategos.movingAvgMeanReverting(nPastDays, nHoldDays, threshold));
 	}
 
@@ -407,8 +407,8 @@ public class BackAllocatorGeneral {
 
 						Fun<int[], boolean[]> getWons = nHolds -> {
 							boolean[] wasWons = new boolean[length];
-							boolean wasWon = false;
-							boolean isWin = false;
+							var wasWon = false;
+							var isWin = false;
 							var i = 0;
 
 							while (i < length) {

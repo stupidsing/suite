@@ -25,7 +25,7 @@ public class P2 {
 		public Mutable<Operand> address;
 
 		public static FunpAllocGlobal of(String var, int size, Funp expr, Mutable<Operand> address) {
-			FunpAllocGlobal f = new FunpAllocGlobal();
+			var f = new FunpAllocGlobal();
 			f.var = var;
 			f.size = size;
 			f.expr = expr;
@@ -45,7 +45,7 @@ public class P2 {
 		public Mutable<Integer> stack;
 
 		public static FunpAllocStack of(int size, Funp value, Funp expr, Mutable<Integer> stack) {
-			FunpAllocStack f = new FunpAllocStack();
+			var f = new FunpAllocStack();
 			f.size = size;
 			f.value = value;
 			f.expr = expr;
@@ -64,7 +64,7 @@ public class P2 {
 		public Funp expr;
 
 		public static FunpAssign of(FunpMemory memory, Funp value, Funp expr) {
-			FunpAssign f = new FunpAssign();
+			var f = new FunpAssign();
 			f.memory = memory;
 			f.value = value;
 			f.expr = expr;
@@ -80,7 +80,7 @@ public class P2 {
 		public List<Pair<Funp, IntIntPair>> pairs;
 
 		public static FunpData of(List<Pair<Funp, IntIntPair>> pairs) {
-			FunpData f = new FunpData();
+			var f = new FunpData();
 			f.pairs = pairs;
 			return f;
 		}
@@ -104,7 +104,7 @@ public class P2 {
 		public Funp routine;
 
 		public static FunpInvoke of(Funp routine) {
-			FunpInvoke f = new FunpInvoke();
+			var f = new FunpInvoke();
 			f.routine = routine;
 			return f;
 		}
@@ -118,7 +118,7 @@ public class P2 {
 		public Funp routine;
 
 		public static FunpInvoke2 of(Funp routine) {
-			FunpInvoke2 f = new FunpInvoke2();
+			var f = new FunpInvoke2();
 			f.routine = routine;
 			return f;
 		}
@@ -132,7 +132,7 @@ public class P2 {
 		public Funp routine;
 
 		public static FunpInvokeIo of(Funp routine) {
-			FunpInvokeIo f = new FunpInvokeIo();
+			var f = new FunpInvokeIo();
 			f.routine = routine;
 			return f;
 		}
@@ -148,7 +148,7 @@ public class P2 {
 		public int end;
 
 		public static FunpMemory of(Funp pointer, int start, int end) {
-			FunpMemory f = new FunpMemory();
+			var f = new FunpMemory();
 			f.pointer = pointer;
 			f.start = start;
 			f.end = end;
@@ -168,7 +168,7 @@ public class P2 {
 		public Mutable<Operand> operand;
 
 		public static FunpOperand of(Mutable<Operand> operand) {
-			FunpOperand f = new FunpOperand();
+			var f = new FunpOperand();
 			f.operand = operand;
 			return f;
 		}
@@ -183,7 +183,7 @@ public class P2 {
 		public Funp expr;
 
 		public static FunpRoutine of(Funp frame, Funp expr) {
-			FunpRoutine f = new FunpRoutine();
+			var f = new FunpRoutine();
 			f.frame = frame;
 			f.expr = expr;
 			return f;
@@ -199,7 +199,7 @@ public class P2 {
 		public Funp expr;
 
 		public static FunpRoutine2 of(Funp frame, Funp expr) {
-			FunpRoutine2 f = new FunpRoutine2();
+			var f = new FunpRoutine2();
 			f.frame = frame;
 			f.expr = expr;
 			return f;
@@ -217,7 +217,7 @@ public class P2 {
 		public int is, os;
 
 		public static FunpRoutineIo of(Funp frame, Funp expr, int is, int os) {
-			FunpRoutineIo f = new FunpRoutineIo();
+			var f = new FunpRoutineIo();
 			f.frame = frame;
 			f.expr = expr;
 			f.is = is;
@@ -234,7 +234,7 @@ public class P2 {
 		public Funp expr;
 
 		public static FunpSaveRegisters of(Funp expr) {
-			FunpSaveRegisters f = new FunpSaveRegisters();
+			var f = new FunpSaveRegisters();
 			f.expr = expr;
 			return f;
 		}
@@ -250,7 +250,7 @@ public class P2 {
 		public Funp expr;
 
 		public static FunpWhile of(Funp while_, Funp do_, Funp expr) {
-			FunpWhile f = new FunpWhile();
+			var f = new FunpWhile();
 			f.while_ = while_;
 			f.do_ = do_;
 			f.expr = expr;

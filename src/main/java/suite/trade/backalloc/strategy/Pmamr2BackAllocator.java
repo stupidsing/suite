@@ -14,7 +14,6 @@ import suite.trade.data.DataSourceView;
 import suite.util.To;
 import ts.Quant;
 import ts.TimeSeries;
-import ts.TimeSeries.ReturnsStat;
 
 /**
  * Find some mean-reverting stock, make sure they are below their past moving
@@ -53,7 +52,7 @@ public class Pmamr2BackAllocator {
 				return Read.from2(mrsBySymbol) //
 						.filterValue(mrs -> mrs.adf < 0d && mrs.hurst < .5d) //
 						.map2((symbol, mrs) -> {
-							DataSource ds = dsBySymbol.get(symbol);
+							var ds = dsBySymbol.get(symbol);
 							var prices = ds.prices;
 							var last = index - 1;
 							var price0 = prices[last - tor / 2];
@@ -61,7 +60,7 @@ public class Pmamr2BackAllocator {
 
 							var mamrRatio = mrs.movingAvgMeanReversionRatio();
 							double dailyReturn = Quant.return_(price0, price) * mamrRatio;
-							ReturnsStat returnsStat = ts.returnsStatDaily(prices);
+							var returnsStat = ts.returnsStatDaily(prices);
 							var sharpe = returnsStat.sharpeRatio();
 							var kelly = returnsStat.kellyCriterion();
 							return new PotentialStat(dailyReturn, sharpe, kelly);

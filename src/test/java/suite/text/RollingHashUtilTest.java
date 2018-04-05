@@ -26,7 +26,7 @@ public class RollingHashUtilTest {
 
 	@Test
 	public void test1() {
-		Bytes bytes = To.bytes("0123456789abcdef");
+		var bytes = To.bytes("0123456789abcdef");
 		var size = bytes.size();
 
 		var rollingHash = rollingHashUtil.hash(bytes);
@@ -39,7 +39,7 @@ public class RollingHashUtilTest {
 
 	@Test
 	public void test2() {
-		Bytes bytes = To.bytes("0123456789abcdef");
+		var bytes = To.bytes("0123456789abcdef");
 		var size = bytes.size();
 
 		int rollingHash = rollingHashUtil.hash(bytes.range(0, 10));

@@ -18,7 +18,7 @@ public class Strategos {
 	public BuySellStrategy longHold = prices -> day -> day != 0 ? 0 : 1;
 
 	public BuySellStrategy lowPassPrediction(int windowSize, int nFutureDays, int nLowPass, float threshold) {
-		DiscreteCosineTransform dct = new DiscreteCosineTransform();
+		var dct = new DiscreteCosineTransform();
 		var nPastDays = windowSize - nFutureDays;
 
 		return prices -> holdFixedDays(prices.length, nFutureDays, day -> {

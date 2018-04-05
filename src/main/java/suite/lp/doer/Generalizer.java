@@ -27,7 +27,7 @@ public class Generalizer {
 			Tree rt;
 
 			if (right instanceof Atom) {
-				Atom atom = (Atom) right;
+				var atom = (Atom) right;
 				var name = atom.name;
 				if (name.startsWith(ProverConstant.wildcardPrefix))
 					right = new Reference();

@@ -21,7 +21,7 @@ public class UctScenarioTest {
 	@Test
 	public void testEat() {
 		ShuffleUtil.setSeed(-3089117486356251879l);
-		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
+		var gameSet = new GameSet(UserInterface.importBoard("" //
 				+ ". . . . . . . \n" //
 				+ ". . X X O . . \n" //
 				+ ". . X O O . . \n" //
@@ -36,7 +36,7 @@ public class UctScenarioTest {
 	@Test
 	public void testCapture() {
 		ShuffleUtil.setSeed(-5334561483001877403l);
-		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
+		var gameSet = new GameSet(UserInterface.importBoard("" //
 				+ ". . . . . . . \n" //
 				+ ". . . X O . . \n" //
 				+ ". . X O O . . \n" //
@@ -51,7 +51,7 @@ public class UctScenarioTest {
 	@Test
 	public void testLiveAndDeath() {
 		ShuffleUtil.setSeed(-1900234906508089780l);
-		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
+		var gameSet = new GameSet(UserInterface.importBoard("" //
 				+ "X X X X X X X \n" //
 				+ "X . . X X . X \n" //
 				+ "O X X O X . X \n" //
@@ -66,7 +66,7 @@ public class UctScenarioTest {
 	@Test
 	public void testLiveAndDeath1() {
 		ShuffleUtil.setSeed(1594738892904866155l);
-		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
+		var gameSet = new GameSet(UserInterface.importBoard("" //
 				+ ". . X O O O . \n" //
 				+ ". . X O . O . \n" //
 				+ ". X X X X X O \n" //
@@ -81,7 +81,7 @@ public class UctScenarioTest {
 	@Test
 	public void testLiveAndDeath2() {
 		ShuffleUtil.setSeed(2683853477210701753l);
-		GameSet gameSet = new GameSet(UserInterface.importBoard("" //
+		var gameSet = new GameSet(UserInterface.importBoard("" //
 				+ ". O . O X . . \n" //
 				+ "O . . O X . . \n" //
 				+ ". . . O X X X \n" //
@@ -99,7 +99,7 @@ public class UctScenarioTest {
 		search.setNumberOfSimulations(20000);
 		search.setNumberOfThreads(1);
 
-		Coordinate move = search.search();
+		var move = search.search();
 		search.dumpPrincipalVariation();
 		search.dumpSearch();
 		search.dumpRave();

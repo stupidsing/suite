@@ -23,7 +23,7 @@ public class DblSet {
 
 	public static DblSet intersect(DblSet... sets) {
 		return sets[0].streamlet().filter(c -> {
-			boolean b = true;
+			var b = true;
 			for (DblSet set_ : sets)
 				b &= set_.contains(c);
 			return b;
@@ -31,7 +31,7 @@ public class DblSet {
 	}
 
 	public static DblSet union(DblSet... sets) {
-		DblSet set = new DblSet();
+		var set = new DblSet();
 		for (DblSet set_ : sets)
 			set_.streamlet().sink(set::add);
 		return set;
@@ -70,8 +70,8 @@ public class DblSet {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof DblSet) {
-			DblSet other = (DblSet) object;
-			boolean b = size == other.size;
+			var other = (DblSet) object;
+			var b = size == other.size;
 			for (var c : streamlet())
 				b &= other.contains(c);
 			return b;
@@ -80,7 +80,7 @@ public class DblSet {
 	}
 
 	public void forEach(DblSink sink) {
-		DblSource source = source_();
+		var source = source_();
 		double c;
 		while ((c = source.source()) != EMPTYVALUE)
 			sink.sink(c);
@@ -104,7 +104,7 @@ public class DblSet {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var c : streamlet())
 			sb.append(c + ",");
 		return sb.toString();
@@ -112,7 +112,7 @@ public class DblSet {
 
 	private boolean add_(double c) {
 		var index = index(c);
-		boolean b = vs[index] != c;
+		var b = vs[index] != c;
 		vs[index] = c;
 		return b;
 	}

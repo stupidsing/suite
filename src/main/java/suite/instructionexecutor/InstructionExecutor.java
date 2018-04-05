@@ -6,7 +6,6 @@ import java.util.List;
 import suite.Suite;
 import suite.adt.map.BiMap;
 import suite.adt.map.HashBiMap;
-import suite.instructionexecutor.InstructionAnalyzer.AnalyzedFrame;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.Insn;
@@ -70,17 +69,17 @@ public class InstructionExecutor implements AutoCloseable {
 		int ip = 0, sp = 0;
 		Node returnValue = null;
 
-		Exec exec = new Exec();
+		var exec = new Exec();
 		exec.stack = stack;
 
-		Comparer comparer = comparer();
+		var comparer = comparer();
 		Tree tree;
 
 		while (true)
 			try {
-				Frame frame = current.frame;
+				var frame = current.frame;
 				var regs = frame != null ? frame.registers : null;
-				Instruction insn = instructions[ip = current.ip++];
+				var insn = instructions[ip = current.ip++];
 				Thunk thunk;
 				TermOp op;
 				int i;
@@ -121,9 +120,9 @@ public class InstructionExecutor implements AutoCloseable {
 						returnValue = thunk.result;
 					break;
 				case ENTER_________:
-					AnalyzedFrame af = analyzer.getFrame(ip);
+					var af = analyzer.getFrame(ip);
 					Frame parent = af.isRequireParent() ? frame : null;
-					Instruction frameBegin = instructions[af.getFrameBeginIp()];
+					var frameBegin = instructions[af.getFrameBeginIp()];
 					current.frame = new Frame(parent, frameBegin.op0);
 					break;
 				case ERROR_________:

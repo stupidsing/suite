@@ -92,7 +92,7 @@ public class Chars_ {
 
 	public static ChrStreamlet range(char s, char e) {
 		return new ChrStreamlet(() -> {
-			ChrMutable m = ChrMutable.of(s);
+			var m = ChrMutable.of(s);
 			return ChrOutlet.of(() -> {
 				var c = m.increment();
 				return c < e ? c : ChrFunUtil.EMPTYVALUE;
@@ -143,7 +143,7 @@ public class Chars_ {
 
 		public Chars source() {
 			Chars in;
-			CharsBuilder cb = new CharsBuilder();
+			var cb = new CharsBuilder();
 			cb.append(buffer);
 
 			p0 = 0;

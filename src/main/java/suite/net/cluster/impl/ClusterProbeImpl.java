@@ -83,7 +83,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 		@Override
 		public boolean equals(Object object) {
 			if (Object_.clazz(object) == IpPort.class) {
-				IpPort other = (IpPort) object;
+				var other = (IpPort) object;
 				return ip[0] == other.ip[0] //
 						&& ip[1] == other.ip[1] //
 						&& ip[2] == other.ip[2] //
@@ -136,11 +136,11 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	private void serve() throws IOException {
-		InetSocketAddress address = peers.get(me).get();
+		var address = peers.get(me).get();
 
 		selector = Selector.open();
 
-		DatagramChannel dc = DatagramChannel.open();
+		var dc = DatagramChannel.open();
 		dc.configureBlocking(false);
 		dc.socket().bind(address);
 		dc.register(selector, SelectionKey.OP_READ);
@@ -169,7 +169,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	private void processSelectedKeys() {
 		Iterator<SelectionKey> keyIter = selector.selectedKeys().iterator();
 		while (keyIter.hasNext()) {
-			SelectionKey key = keyIter.next();
+			var key = keyIter.next();
 			keyIter.remove();
 
 			try {
@@ -181,10 +181,10 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	private void processSelectedKey(SelectionKey key) throws IOException {
-		DatagramChannel dc = (DatagramChannel) key.channel();
+		var dc = (DatagramChannel) key.channel();
 
 		if (key.isReadable()) {
-			ByteBuffer buffer = ByteBuffer.allocate(bufferSize);
+			var buffer = ByteBuffer.allocate(bufferSize);
 			dc.receive(buffer);
 			buffer.flip();
 
@@ -193,7 +193,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			buffer.rewind();
 
 			var splitted = To.string(bytes).split(",");
-			Command data = Command.valueOf(splitted[0]);
+			var data = Command.valueOf(splitted[0]);
 			var remote = splitted[1];
 
 			// refreshes member time accordingly
@@ -212,7 +212,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	private void nodeJoined(String node, long time) {
-		Long oldTime = lastActiveTimes.get(node);
+		var oldTime = lastActiveTimes.get(node);
 
 		if (oldTime == null || oldTime < time)
 			if (lastActiveTimes.put(node, time) == null)
@@ -223,8 +223,8 @@ public class ClusterProbeImpl implements ClusterProbe {
 		var bytes = formMessage(Command.HELO);
 
 		for (var remote : peers.keySet()) {
-			Long lastActive = lastActiveTimes.get(remote);
-			Long lastSent = lastSentTimes.get(remote);
+			var lastActive = lastActiveTimes.get(remote);
+			var lastSent = lastSentTimes.get(remote);
 
 			// sends to those who are nearly forgotten, i.e.:
 			// - The node is not active, or node's active time is expired
@@ -273,7 +273,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	private byte[] formMessage(Command data) {
-		StringBuilder sb = new StringBuilder(data.name() + "," + me);
+		var sb = new StringBuilder(data.name() + "," + me);
 
 		for (var e : lastActiveTimes.entrySet())
 			sb.append("," + e.getKey() + "," + e.getValue());

@@ -22,7 +22,7 @@ public class BooMutable {
 	}
 
 	public static BooMutable of(int i) {
-		BooMutable p = new BooMutable();
+		var p = new BooMutable();
 		p.update(i);
 		return p;
 	}

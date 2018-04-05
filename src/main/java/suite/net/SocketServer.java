@@ -22,13 +22,13 @@ public class SocketServer {
 	private void listen(Fun<Bytes, Bytes> handle) throws IOException {
 		new SocketUtil().listenIo(5151, (is, os) -> {
 			Bytes in = read(is, 65536);
-			Bytes out = handle.apply(in);
+			var out = handle.apply(in);
 			os.write(out.bs);
 		});
 	}
 
 	private Bytes read(InputStream is, int max) throws IOException {
-		BytesBuilder bb = new BytesBuilder();
+		var bb = new BytesBuilder();
 		var buffer = new byte[Constants.bufferSize];
 		int nBytesRead;
 

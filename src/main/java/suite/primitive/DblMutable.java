@@ -18,7 +18,7 @@ public class DblMutable {
 	}
 
 	public static DblMutable of(double c) {
-		DblMutable p = new DblMutable();
+		var p = new DblMutable();
 		p.update(c);
 		return p;
 	}

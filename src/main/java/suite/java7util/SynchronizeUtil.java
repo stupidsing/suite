@@ -10,7 +10,7 @@ public class SynchronizeUtil {
 	public static <I> I proxy(Class<I> interface_, I object) {
 		@SuppressWarnings("unchecked")
 		Class<I> clazz = (Class<I>) object.getClass();
-		ClassLoader classLoader = clazz.getClassLoader();
+		var classLoader = clazz.getClassLoader();
 		Class<?>[] classes = { interface_ };
 
 		InvocationHandler handler = (proxy, method, ps) -> {
@@ -18,7 +18,7 @@ public class SynchronizeUtil {
 				try {
 					return method.invoke(object, ps);
 				} catch (InvocationTargetException ite) {
-					Throwable th = ite.getTargetException();
+					var th = ite.getTargetException();
 					throw th instanceof Exception ? (Exception) th : ite;
 				}
 			}

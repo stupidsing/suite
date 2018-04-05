@@ -149,7 +149,7 @@ public class StockHistory {
 	}
 
 	public StockHistory merge(StockHistory other) {
-		boolean isActive_ = isActive && other.isActive;
+		var isActive_ = isActive && other.isActive;
 		Set<String> keys = Set_.union(data.keySet(), other.data.keySet());
 
 		BinOp<LngFltPair[]> merge_ = (pairs0, pairs1) -> {
@@ -159,7 +159,7 @@ public class StockHistory {
 			for (var pair0 : pairs0) {
 				var l0 = pair0.t0;
 				while (i1 < length1) {
-					LngFltPair pair1 = pairs1[i1];
+					var pair1 = pairs1[i1];
 					var l1 = pair1.t0;
 					if (l1 < l0)
 						pairs.add(pair1);
@@ -185,9 +185,9 @@ public class StockHistory {
 	public StockHistory alignToDate() {
 		Iterate<LngFltPair[]> align_ = pairs0 -> {
 			List<LngFltPair> pairs1 = new ArrayList<>();
-			Time date = TimeRange.min;
+			var date = TimeRange.min;
 			for (var pair : pairs0) {
-				Time date1 = Time.ofEpochSec(pair.t0).startOfDay();
+				var date1 = Time.ofEpochSec(pair.t0).startOfDay();
 				if (Object_.compare(date, date1) < 0)
 					pairs1.add(pair);
 				date = date1;
@@ -271,11 +271,11 @@ public class StockHistory {
 		float a = 0f, b = 1f;
 
 		for (var i = length - 1; 0 <= i; i--) {
-			LngFltPair pair = pairs0[i];
+			var pair = pairs0[i];
 			var t = pair.t0;
 
 			if (0 <= di) {
-				LngFltPair dividend = dividends[di];
+				var dividend = dividends[di];
 				if (t < dividend.t0) {
 					if (Boolean.TRUE)
 						// may got negative prices
@@ -288,7 +288,7 @@ public class StockHistory {
 			}
 
 			if (0 <= si) {
-				LngFltPair split = splits[si];
+				var split = splits[si];
 				if (t < split.t0) {
 					b *= split.t1;
 					si--;

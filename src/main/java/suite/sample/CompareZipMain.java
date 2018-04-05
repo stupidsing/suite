@@ -2,11 +2,9 @@ package suite.sample;
 
 import java.io.IOException;
 import java.util.Set;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
 import suite.os.FileUtil;
-import suite.primitive.Bytes;
 import suite.text.TextUtil;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
@@ -30,21 +28,21 @@ public class CompareZipMain extends ExecutableProgram {
 	protected boolean run(String[] args) throws IOException {
 		var filename0 = "/tmp/a";
 		var filename1 = "/tmp/b";
-		ZipFile zf0 = new ZipFile(filename0);
-		ZipFile zf1 = new ZipFile(filename1);
+		var zf0 = new ZipFile(filename0);
+		var zf1 = new ZipFile(filename1);
 
 		Set<String> names = Set_.union(FileUtil.listZip(zf0), FileUtil.listZip(zf1));
 
-		boolean isChanged = false;
+		var isChanged = false;
 
 		for (var name : names) {
-			ZipEntry e0 = zf0.getEntry(name);
-			ZipEntry e1 = zf1.getEntry(name);
+			var e0 = zf0.getEntry(name);
+			var e1 = zf1.getEntry(name);
 			boolean b = e0 != null && e1 != null;
 
 			if (b) {
-				Bytes bytes0 = To.bytes(zf0.getInputStream(e0));
-				Bytes bytes1 = To.bytes(zf1.getInputStream(e1));
+				var bytes0 = To.bytes(zf0.getInputStream(e0));
+				var bytes1 = To.bytes(zf1.getInputStream(e1));
 				b = !textUtil.isDiff(textUtil.diff(bytes0, bytes1));
 				if (!b)
 					System.out.println(name + " differs");

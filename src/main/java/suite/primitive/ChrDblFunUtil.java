@@ -40,7 +40,7 @@ public class ChrDblFunUtil {
 			private boolean isAvail;
 			private int i;
 			private ChrDblSource source_ = pair1 -> {
-				boolean b = (isAvail = isAvail && source.source2(pair)) && ++i < n;
+				var b = (isAvail = isAvail && source.source2(pair)) && ++i < n;
 				if (b)
 					pair1.update(pair.t0, pair.t1);
 				else
@@ -63,7 +63,7 @@ public class ChrDblFunUtil {
 			private ChrDblSource source2 = nullSource();
 
 			public boolean source2(ChrDblPair pair) {
-				boolean b = false;
+				var b = false;
 				while (source2 != null && !(b = source2.source2(pair)))
 					source2 = source.source();
 				return b;
@@ -88,7 +88,7 @@ public class ChrDblFunUtil {
 	}
 
 	public static ChrDblSource filter(ChrDblPredicate fun0, ChrDblSource source2) {
-		ChrDblPredicate fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0, pair.t1))
@@ -98,7 +98,7 @@ public class ChrDblFunUtil {
 	}
 
 	public static <V> ChrDblSource filterKey(ChrTest fun0, ChrDblSource source2) {
-		ChrTest fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t0))
@@ -108,7 +108,7 @@ public class ChrDblFunUtil {
 	}
 
 	public static ChrDblSource filterValue(DblTest fun0, ChrDblSource source2) {
-		DblTest fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return pair -> {
 			boolean b;
 			while ((b = source2.source2(pair)) && !fun1.test(pair.t1))
@@ -126,7 +126,7 @@ public class ChrDblFunUtil {
 	}
 
 	public static boolean isAll(ChrDblPredicate pred0, ChrDblSource source2) {
-		ChrDblPredicate pred1 = pred0.rethrow();
+		var pred1 = pred0.rethrow();
 		ChrDblPair pair = ChrDblPair.of((char) 0, (double) 0);
 		while (source2.source2(pair))
 			if (!pred1.test(pair.t0, pair.t1))
@@ -135,7 +135,7 @@ public class ChrDblFunUtil {
 	}
 
 	public static <V> boolean isAny(ChrDblPredicate pred0, ChrDblSource source2) {
-		ChrDblPredicate pred1 = pred0.rethrow();
+		var pred1 = pred0.rethrow();
 		ChrDblPair pair = ChrDblPair.of((char) 0, (double) 0);
 		while (source2.source2(pair))
 			if (pred1.test(pair.t0, pair.t1))
@@ -157,7 +157,7 @@ public class ChrDblFunUtil {
 			}
 
 			public ChrDblPair next() {
-				ChrDblPair next0 = next;
+				var next0 = next;
 				next = null;
 				return next0;
 			}
@@ -179,7 +179,7 @@ public class ChrDblFunUtil {
 		ChrDbl_Obj<V1> vf1 = vf0.rethrow();
 		ChrDblPair pair1 = ChrDblPair.of((char) 0, (double) 0);
 		return pair -> {
-			boolean b = source2.source2(pair1);
+			var b = source2.source2(pair1);
 			if (b)
 				pair.update(kf1.apply(pair1.t0, pair1.t1), vf1.apply(pair1.t0, pair1.t1));
 			return b;
@@ -187,11 +187,11 @@ public class ChrDblFunUtil {
 	}
 
 	public static ChrDblSource mapChrDbl(ChrDbl_Chr kf0, ChrDbl_Dbl vf0, ChrDblSource source2) {
-		ChrDbl_Chr kf1 = kf0.rethrow();
-		ChrDbl_Dbl vf1 = vf0.rethrow();
+		var kf1 = kf0.rethrow();
+		var vf1 = vf0.rethrow();
 		ChrDblPair pair1 = ChrDblPair.of((char) 0, (double) 0);
 		return pair -> {
-			boolean b = source2.source2(pair1);
+			var b = source2.source2(pair1);
 			if (b)
 				pair.update(kf1.apply(pair1.t0, pair1.t1), vf1.apply(pair1.t0, pair1.t1));
 			return b;
@@ -212,7 +212,7 @@ public class ChrDblFunUtil {
 	 * skipped.
 	 */
 	public static Source<ChrDblSource> split(ChrDblPredicate fun0, ChrDblSource source2) {
-		ChrDblPredicate fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return new Source<>() {
 			private ChrDblPair pair = ChrDblPair.of((char) 0, (double) 0);
 			private boolean isAvailable;
@@ -245,7 +245,7 @@ public class ChrDblFunUtil {
 
 		return pair -> {
 			try {
-				ChrDblPair p = queue.take();
+				var p = queue.take();
 				boolean b = p != null;
 				if (b)
 					pair.update(p.t0, p.t1);

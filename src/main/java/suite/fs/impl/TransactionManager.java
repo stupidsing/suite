@@ -105,9 +105,9 @@ public class TransactionManager<Key, Value> {
 
 	public <T> T begin(Fun<KeyValueMutator<Key, Value>, T> fun) {
 		KeyValueStore<Key, Value> store = new Transaction(source.source());
-		boolean ok = false;
+		var ok = false;
 		try {
-			T t = fun.apply(store.mutate());
+			var t = fun.apply(store.mutate());
 			ok = true;
 			return t;
 		} finally {

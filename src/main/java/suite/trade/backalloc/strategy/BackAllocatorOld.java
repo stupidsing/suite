@@ -124,8 +124,8 @@ public class BackAllocatorOld {
 		BackAllocator ba0 = (akds, indices) -> {
 			Streamlet2<String, DataSource> dsBySymbol = akds.dsByKey;
 			Map<String, DataSource> dsBySymbol_ = dsBySymbol.toMap();
-			DataSource ds0 = dsBySymbol_.get(symbol0);
-			DataSource ds1 = dsBySymbol_.get(symbol1);
+			var ds0 = dsBySymbol_.get(symbol0);
+			var ds1 = dsBySymbol_.get(symbol1);
 
 			return index -> {
 				var ix = index - 1;

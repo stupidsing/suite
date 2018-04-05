@@ -47,7 +47,7 @@ public class RandomAccessibleFile implements Closeable {
 
 	public Bytes load(int start, int end) {
 		var size = end - start;
-		ByteBuffer bb = ByteBuffer.allocate(size);
+		var bb = ByteBuffer.allocate(size);
 
 		try {
 			channel.read(bb, start);

@@ -31,7 +31,7 @@ public class Preprocess {
 		Reverser rev = position -> position;
 
 		for (Fun<String, List<Run>> fun : funs) {
-			Reverser rev0 = rev;
+			var rev0 = rev;
 			List<Run> runs = fun.apply(fwd);
 			fwd = forward(fwd, runs);
 			rev = position -> rev0.reverse(reverse(runs, position));
@@ -41,7 +41,7 @@ public class Preprocess {
 	}
 
 	private static String forward(String in, List<Run> runs) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var run : runs)
 			if (run.segment != null)
 				sb.append(in.substring(run.segment.start, run.segment.end));
@@ -53,7 +53,7 @@ public class Preprocess {
 	private static int reverse(List<Run> runs, int targetPosition) {
 		var sourcePosition = 0;
 		for (var run : runs) {
-			Segment segment = run.segment;
+			var segment = run.segment;
 			if (segment != null) {
 				var runLength = segment.end - segment.start;
 				if (runLength <= targetPosition) {

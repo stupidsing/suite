@@ -14,7 +14,7 @@ public class ChrTest {
 
 	@Test
 	public void test() {
-		Chr chr = chr(List.of( //
+		var chr = chr(List.of( //
 				"if (LE.x .x,) then () end" //
 				, "if (LE .x .y, LE .y .x,) then (.x = .y,) end" //
 				, "given (LE .x .y,) if (LE .x .y,) then () end" //
@@ -27,7 +27,7 @@ public class ChrTest {
 	}
 
 	private Chr chr(List<String> rules) {
-		Chr chr = new Chr();
+		var chr = new Chr();
 		for (var s : rules)
 			chr.addRule(Suite.parse(s));
 		return chr;

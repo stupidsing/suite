@@ -35,7 +35,7 @@ public class Ssh {
 			while (!channel.isClosed())
 				Thread_.sleepQuietly(100);
 
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			var baos = new ByteArrayOutputStream();
 			Copy.stream(channel.getInputStream(), baos);
 			baos.close();
 
@@ -61,9 +61,9 @@ public class Ssh {
 	}
 
 	private Session newSession(String host, int port, String user, String password) throws JSchException {
-		JSch jsch = new JSch();
+		var jsch = new JSch();
 
-		Properties config = new Properties();
+		var config = new Properties();
 		config.setProperty("StrictHostKeyChecking", "no");
 
 		Session session = jsch.getSession(user, host, port);

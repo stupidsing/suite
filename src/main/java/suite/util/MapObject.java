@@ -45,11 +45,11 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 
 	@Override
 	public boolean equals(Object object) {
-		T t0 = self();
+		var t0 = self();
 		boolean b;
 		if (t0.getClass() == object.getClass()) {
 			@SuppressWarnings("unchecked")
-			T t1 = (T) object;
+			var t1 = (T) object;
 			b = MapObject_.equals(t0, t1);
 		} else
 			b = false;
@@ -67,7 +67,7 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 	@Override
 	public String toString() {
 		IList<MapObject<?>> recurse0 = recurse.get();
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 
 		if (!recurse0.contains(this))
 			try {
@@ -85,7 +85,7 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 
 	private T self() {
 		@SuppressWarnings("unchecked")
-		T t = (T) this;
+		var t = (T) this;
 		return t;
 	}
 

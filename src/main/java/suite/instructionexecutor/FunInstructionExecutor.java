@@ -8,8 +8,6 @@ import java.util.List;
 import suite.fp.intrinsic.Intrinsics;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
-import suite.instructionexecutor.InstructionUtil.Activation;
-import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.FunComparer;
 import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.instructionexecutor.thunk.ThunkUtil;
@@ -44,8 +42,8 @@ public class FunInstructionExecutor extends InstructionExecutor {
 
 	@Override
 	protected void handle(Exec exec, Instruction insn) {
-		Activation current = exec.current;
-		Frame frame = current.frame;
+		var current = exec.current;
+		var frame = current.frame;
 		var regs = frame != null ? frame.registers : null;
 
 		var ds = exec.stack;
@@ -81,7 +79,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = new Data<>(To.chars(((Str) regs[insn.op1]).value));
 			break;
 		case GETINTRINSIC__:
-			Atom atom = (Atom) ds[--dsp];
+			var atom = (Atom) ds[--dsp];
 			var intrinsicName = atom.name.split("!")[1];
 			result = new Data<>(Intrinsics.intrinsics.get(intrinsicName));
 			break;

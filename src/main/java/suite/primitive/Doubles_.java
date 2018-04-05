@@ -92,7 +92,7 @@ public class Doubles_ {
 
 	public static DblStreamlet range(double s, double e) {
 		return new DblStreamlet(() -> {
-			DblMutable m = DblMutable.of(s);
+			var m = DblMutable.of(s);
 			return DblOutlet.of(() -> {
 				var c = m.increment();
 				return c < e ? c : DblFunUtil.EMPTYVALUE;
@@ -143,7 +143,7 @@ public class Doubles_ {
 
 		public Doubles source() {
 			Doubles in;
-			DoublesBuilder cb = new DoublesBuilder();
+			var cb = new DoublesBuilder();
 			cb.append(buffer);
 
 			p0 = 0;

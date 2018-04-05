@@ -38,7 +38,7 @@ public class JournalledFileFactory {
 		Serializer<JournalEntry> journalEntrySerializer = new Serializer<>() {
 			public JournalEntry read(DataInput_ dataInput) throws IOException {
 				var pointer = dataInput.readInt();
-				Bytes bytes = bytesSerializer.read(dataInput);
+				var bytes = bytesSerializer.read(dataInput);
 				return new JournalEntry(pointer, bytes);
 			}
 
@@ -48,7 +48,7 @@ public class JournalledFileFactory {
 			}
 		};
 
-		PageFile dataFile = df;
+		var dataFile = df;
 		SerializedPageFile<JournalEntry> journalPageFile = SerializedFileFactory.serialized(jpf, journalEntrySerializer);
 		SerializedPageFile<Integer> pointerPageFile = SerializedFileFactory.serialized(ppf, serialize.int_);
 		var nCommittedJournalEntries0 = pointerPageFile.load(0);
@@ -97,7 +97,7 @@ public class JournalledFileFactory {
 			 */
 			public synchronized void commit() {
 				while (nCommittedJournalEntries < journalEntries.size()) {
-					JournalEntry journalEntry = journalEntries.get(nCommittedJournalEntries++);
+					var journalEntry = journalEntries.get(nCommittedJournalEntries++);
 					dataFile.save(journalEntry.pointer, journalEntry.bytes);
 				}
 
@@ -153,7 +153,7 @@ public class JournalledFileFactory {
 			private IntObjPair<JournalEntry> findPageInJournal(int pointer, int start) {
 				IntObjPair<JournalEntry> pair = null;
 				for (var jp = start; jp < journalEntries.size(); jp++) {
-					JournalEntry journalEntry = journalEntries.get(jp);
+					var journalEntry = journalEntries.get(jp);
 					if (journalEntry.pointer == pointer)
 						pair = IntObjPair.of(jp, journalEntry);
 				}

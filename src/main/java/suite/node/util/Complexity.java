@@ -11,7 +11,7 @@ public class Complexity {
 		int max = 0, base = 0;
 
 		while (true) {
-			Tree tree = Tree.decompose(node);
+			var tree = Tree.decompose(node);
 
 			if (tree != null) {
 				base++;

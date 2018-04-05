@@ -84,8 +84,8 @@ public class Serialize {
 			else
 				serializer = autoFields(clazz);
 		} else if (type instanceof ParameterizedType) {
-			ParameterizedType pt = (ParameterizedType) type;
-			Type rawType = pt.getRawType();
+			var pt = (ParameterizedType) type;
+			var rawType = pt.getRawType();
 			Type[] typeArgs = pt.getActualTypeArguments();
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
@@ -130,7 +130,7 @@ public class Serialize {
 						object = immutableCtor.newInstance(ps);
 					}
 					@SuppressWarnings("unchecked")
-					T t = (T) object;
+					var t = (T) object;
 					return t;
 				});
 			}
@@ -339,8 +339,8 @@ public class Serialize {
 	public <T0, T1> Serializer<Pair<T0, T1>> pair(Serializer<T0> serializer0, Serializer<T1> serializer1) {
 		return new Serializer<>() {
 			public Pair<T0, T1> read(DataInput_ dataInput) throws IOException {
-				T0 t0 = serializer0.read(dataInput);
-				T1 t1 = serializer1.read(dataInput);
+				var t0 = serializer0.read(dataInput);
+				var t1 = serializer1.read(dataInput);
 				return Pair.of(t0, t1);
 			}
 
@@ -462,8 +462,8 @@ public class Serialize {
 				var size = int_.read(dataInput);
 				Map<K, V> map = new HashMap<>();
 				for (var i = 0; i < size; i++) {
-					K k = ks.read(dataInput);
-					V v = vs.read(dataInput);
+					var k = ks.read(dataInput);
+					var v = vs.read(dataInput);
 					map.put(k, v);
 				}
 				return map;
@@ -485,7 +485,7 @@ public class Serialize {
 				Class<?> c = Rethrow.ex(() -> Class.forName(dataInput.readUTF()));
 				if (interface_.isAssignableFrom(c)) {
 					@SuppressWarnings("unchecked")
-					T t = (T) auto(c).read(dataInput);
+					var t = (T) auto(c).read(dataInput);
 					return t;
 				} else
 					return Fail.t(c.getSimpleName() + " does not implement " + interface_.getSimpleName());

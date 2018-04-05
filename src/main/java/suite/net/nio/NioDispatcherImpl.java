@@ -4,7 +4,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
@@ -46,7 +45,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 	 */
 	@Override
 	public C connect(InetSocketAddress address) throws IOException {
-		C cl = channelSource.source();
+		var cl = channelSource.source();
 		reconnect(cl, address);
 		return cl;
 	}
@@ -56,7 +55,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 	 */
 	@Override
 	public void reconnect(NioChannel channel, InetSocketAddress address) throws IOException {
-		SocketChannel sc = SocketChannel.open();
+		var sc = SocketChannel.open();
 		sc.configureBlocking(false);
 		sc.connect(address);
 		sc.register(selector, SelectionKey.OP_CONNECT, channel);
@@ -81,7 +80,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 	 */
 	@Override
 	public Closeable listen(int port) throws IOException {
-		ServerSocketChannel ssc = ServerSocketChannel.open();
+		var ssc = ServerSocketChannel.open();
 		ssc.configureBlocking(false);
 		ssc.socket().bind(new InetSocketAddress(port));
 		ssc.register(selector, SelectionKey.OP_ACCEPT);
@@ -107,7 +106,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 				Iterator<SelectionKey> iter = selector.selectedKeys().iterator();
 
 				while (iter.hasNext()) {
-					SelectionKey key = iter.next();
+					var key = iter.next();
 					iter.remove();
 
 					try {
@@ -127,12 +126,12 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 
 		var buffer = new byte[Constants.bufferSize];
 		var attachment = key.attachment();
-		SelectableChannel sc0 = key.channel();
+		var sc0 = key.channel();
 		var ops = key.readyOps();
 
 		if ((ops & SelectionKey.OP_ACCEPT) != 0) {
-			C channel = channelSource.source();
-			SocketChannel sc = ((ServerSocketChannel) sc0).accept().socket().getChannel();
+			var channel = channelSource.source();
+			var sc = ((ServerSocketChannel) sc0).accept().socket().getChannel();
 			sc.configureBlocking(false);
 			sc.register(selector, SelectionKey.OP_READ, channel);
 			channel.onConnected.fire(newSender(sc));
@@ -141,8 +140,8 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 		if ((ops & ~SelectionKey.OP_ACCEPT) != 0)
 			synchronized (attachment) {
 				@SuppressWarnings("unchecked")
-				C channel = (C) attachment;
-				SocketChannel sc1 = (SocketChannel) sc0;
+				var channel = (C) attachment;
+				var sc1 = (SocketChannel) sc0;
 
 				if ((ops & SelectionKey.OP_CONNECT) != 0) {
 					sc1.finishConnect();
@@ -172,9 +171,9 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 			// writable event (and send again at that moment).
 			var bytes = in.toArray();
 			var sent = Rethrow.ex(() -> sc.write(ByteBuffer.wrap(bytes)));
-			Bytes out = in.range(sent);
+			var out = in.range(sent);
 			var ops = SelectionKey.OP_READ | (!out.isEmpty() ? SelectionKey.OP_WRITE : 0);
-			SelectionKey key = sc.keyFor(selector);
+			var key = sc.keyFor(selector);
 
 			if (key != null && key.interestOps() != ops)
 				key.interestOps(ops);

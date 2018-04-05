@@ -25,7 +25,7 @@ public class ClusterMapTest {
 	@Test
 	public void testClusterMap() throws IOException {
 		var nNodes = 3;
-		InetAddress localHost = InetAddress.getLocalHost();
+		var localHost = InetAddress.getLocalHost();
 
 		Map<String, InetSocketAddress> peers = new HashMap<>();
 		for (var i = 0; i < nNodes; i++)

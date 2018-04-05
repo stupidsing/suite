@@ -11,7 +11,7 @@ public class Hex {
 		public int y;
 
 		public static XY of(int x, int y) {
-			XY xy = new XY();
+			var xy = new XY();
 			xy.x = x;
 			xy.y = y;
 			return xy;

@@ -8,9 +8,7 @@ import java.io.Writer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import javax.swing.JEditorPane;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import suite.Constants;
@@ -48,7 +46,7 @@ public class EditorController {
 	}
 
 	public void copy(boolean isAppend) {
-		ClipboardUtil clipboardUtil = new ClipboardUtil();
+		var clipboardUtil = new ClipboardUtil();
 		var selectedText = view.getEditor().getSelectedText();
 		if (selectedText != null)
 			clipboardUtil.setClipboardText((isAppend ? clipboardUtil.getClipboardText() : "") + selectedText);
@@ -85,15 +83,15 @@ public class EditorController {
 	}
 
 	public void format() {
-		JEditorPane editor = view.getEditor();
+		var editor = view.getEditor();
 		var node = Suite.parse(editor.getText());
 		editor.setText(new PrettyPrinter().prettyPrint(node));
 	}
 
 	public void funFilter() {
-		boolean isDo = false;
-		JFrame frame = view.getFrame();
-		JEditorPane editor = view.getEditor();
+		var isDo = false;
+		var frame = view.getFrame();
+		var editor = view.getEditor();
 
 		var fun = JOptionPane.showInputDialog(frame //
 				, "Enter " + (isDo ? "do " : "") + "function:", "Functional Filter", JOptionPane.PLAIN_MESSAGE);
@@ -107,7 +105,7 @@ public class EditorController {
 
 	public void newFile() {
 		confirmSave(() -> {
-			JEditorPane editor = view.getEditor();
+			var editor = view.getEditor();
 			editor.setText("");
 			editor.requestFocusInWindow();
 
@@ -117,9 +115,9 @@ public class EditorController {
 	}
 
 	public void newWindow() {
-		EditorModel model = new EditorModel();
-		EditorController controller = new EditorController();
-		EditorView view1 = new EditorView();
+		var model = new EditorModel();
+		var controller = new EditorController();
+		var view1 = new EditorView();
 
 		view1._init(model, view1, controller);
 		controller._init(model, view1, controller);
@@ -129,15 +127,15 @@ public class EditorController {
 
 	public void open() {
 		confirmSave(() -> {
-			File dir = new File(model.filename()).getParentFile();
-			JFileChooser fileChooser = dir != null ? new JFileChooser(dir) : new JFileChooser();
+			var dir = new File(model.filename()).getParentFile();
+			var fileChooser = dir != null ? new JFileChooser(dir) : new JFileChooser();
 			if (fileChooser.showOpenDialog(view.getFrame()) == JFileChooser.APPROVE_OPTION)
 				load(fileChooser.getSelectedFile().getPath());
 		});
 	}
 
 	public void paste() {
-		JEditorPane editor = view.getEditor();
+		var editor = view.getEditor();
 		var orig = editor.getText();
 		var pasteText = new ClipboardUtil().getClipboardText();
 
@@ -185,14 +183,14 @@ public class EditorController {
 	}
 
 	public void unixFilter() {
-		JFrame frame = view.getFrame();
-		JEditorPane editor = view.getEditor();
+		var frame = view.getFrame();
+		var editor = view.getEditor();
 
 		var command = JOptionPane.showInputDialog(frame //
 				, "Enter command:", "Unix Filter", JOptionPane.PLAIN_MESSAGE);
 
 		try {
-			Process process = Runtime.getRuntime().exec(command);
+			var process = Runtime.getRuntime().exec(command);
 
 			try (OutputStream pos = process.getOutputStream(); Writer writer = new OutputStreamWriter(pos, Constants.charset)) {
 				writer.write(editor.getText());
@@ -209,7 +207,7 @@ public class EditorController {
 	private void load(String filename) {
 		var text = FileUtil.read(filename);
 
-		JEditorPane editor = view.getEditor();
+		var editor = view.getEditor();
 		editor.setText(text);
 		editor.setCaretPosition(0);
 		editor.requestFocusInWindow();
@@ -219,7 +217,7 @@ public class EditorController {
 	}
 
 	private void confirmSave(Runnable action) {
-		JFrame frame = view.getFrame();
+		var frame = view.getFrame();
 		if (model.isModified())
 			switch (JOptionPane.showConfirmDialog(frame, //
 					"Would you like to save your changes?" //
@@ -237,7 +235,7 @@ public class EditorController {
 	}
 
 	private void run(Iterate<String> fun) {
-		JEditorPane editor = view.getEditor();
+		var editor = view.getEditor();
 		var selectedText = editor.getSelectedText();
 		var text = selectedText != null ? selectedText : editor.getText();
 

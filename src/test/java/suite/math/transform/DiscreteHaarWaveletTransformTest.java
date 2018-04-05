@@ -24,7 +24,7 @@ public class DiscreteHaarWaveletTransformTest {
 
 		var expect = data.clone();
 
-		DiscreteHaarWaveletTransform dhwt = new DiscreteHaarWaveletTransform();
+		var dhwt = new DiscreteHaarWaveletTransform();
 		data = dhwt.dhwt(data);
 		data = dhwt.idhwt(data);
 

@@ -23,7 +23,7 @@ public class MovingGameSet extends GameSet {
 
 	@Override
 	public Move play(Coordinate coord) {
-		Move move = super.play(coord);
+		var move = super.play(coord);
 		moves.push(move);
 		return move;
 	}

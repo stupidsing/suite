@@ -10,7 +10,7 @@ public class Reference extends Node {
 	private int id = Util.temp();
 
 	public static Reference of(Node node) {
-		Reference reference = new Reference();
+		var reference = new Reference();
 		reference.bound(node);
 		return reference;
 	}

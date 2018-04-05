@@ -7,9 +7,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,15 +37,15 @@ public class FileUtil {
 	}
 
 	public static int getPid() {
-		RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
+		var runtime = ManagementFactory.getRuntimeMXBean();
 
 		return Rethrow.ex(() -> {
-			Field jvm = runtime.getClass().getDeclaredField("jvm");
+			var jvm = runtime.getClass().getDeclaredField("jvm");
 			jvm.setAccessible(true);
 
 			var vmm = jvm.get(runtime);
 
-			Method method = vmm.getClass().getDeclaredMethod("getProcessId");
+			var method = vmm.getClass().getDeclaredMethod("getProcessId");
 			method.setAccessible(true);
 
 			return (Integer) method.invoke(jvm.get(runtime));
@@ -85,16 +82,16 @@ public class FileUtil {
 	}
 
 	public static OutputStream out(String filename) throws IOException {
-		Path path = Paths.get(filename);
+		var path = Paths.get(filename);
 		return out(path);
 	}
 
 	public static OutputStream out(Path path) throws IOException {
-		Path parent = path.getParent();
-		Path path1 = parent.resolve(path.getFileName() + ".new");
+		var parent = path.getParent();
+		var path1 = parent.resolve(path.getFileName() + ".new");
 
 		mkdir(parent);
-		OutputStream os = Files.newOutputStream(path1);
+		var os = Files.newOutputStream(path1);
 
 		return new OutputStream() {
 			private boolean isClosed = false;

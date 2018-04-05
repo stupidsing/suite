@@ -60,7 +60,7 @@ public class Unify<T extends UnNode<T>> {
 			return addBind((UnRef<T>) target1, target0);
 		else {
 			@SuppressWarnings("unchecked")
-			T t1 = (T) target1;
+			var t1 = (T) target1;
 			return target0.unify(t1);
 		}
 	}

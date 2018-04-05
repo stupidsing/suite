@@ -38,7 +38,7 @@ public class ChrIntMap {
 		Obj_Chr<T> kf1 = kf0.rethrow();
 		Obj_Int<T> vf1 = vf0.rethrow();
 		return outlet -> {
-			ChrIntMap map = new ChrIntMap();
+			var map = new ChrIntMap();
 			T t;
 			while ((t = outlet.source().source()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
@@ -64,8 +64,8 @@ public class ChrIntMap {
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof ChrIntMap) {
-			ChrIntMap other = (ChrIntMap) object;
-			boolean b = size == other.size;
+			var other = (ChrIntMap) object;
+			var b = size == other.size;
 			for (ChrObjPair<Integer> pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
@@ -75,7 +75,7 @@ public class ChrIntMap {
 
 	public void forEach(ChrIntSink sink) {
 		ChrIntPair pair = ChrIntPair.of((char) 0, (int) 0);
-		ChrIntSource source = source_();
+		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
 	}
@@ -143,7 +143,7 @@ public class ChrIntMap {
 			private ChrIntPair pair0 = ChrIntPair.of((char) 0, (int) 0);
 
 			public boolean source2(ChrObjPair<Integer> pair) {
-				boolean b = source0.source2(pair0);
+				var b = source0.source2(pair0);
 				pair.update(pair0.t0, pair0.t1);
 				return b;
 			}

@@ -90,7 +90,7 @@ public class DblFunUtil {
 	}
 
 	public static DblSource filter(DblTest fun0, DblSource source) {
-		DblTest fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = EMPTYVALUE;
 			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
@@ -124,7 +124,7 @@ public class DblFunUtil {
 	}
 
 	public static boolean isAll(DblTest pred0, DblSource source) {
-		DblTest pred1 = pred0.rethrow();
+		var pred1 = pred0.rethrow();
 		double c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (!pred1.test(c))
@@ -133,7 +133,7 @@ public class DblFunUtil {
 	}
 
 	public static boolean isAny(DblTest pred0, DblSource source) {
-		DblTest pred1 = pred0.rethrow();
+		var pred1 = pred0.rethrow();
 		double c;
 		while ((c = source.source()) != EMPTYVALUE)
 			if (pred1.test(c))
@@ -177,7 +177,7 @@ public class DblFunUtil {
 		Dbl_Obj<V> vf1 = vf0.rethrow();
 		return pair -> {
 			var c = source.source();
-			boolean b = c != EMPTYVALUE;
+			var b = c != EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
 			return b;
@@ -185,7 +185,7 @@ public class DblFunUtil {
 	}
 
 	public static DblSource mapDbl(Dbl_Dbl fun0, DblSource source) {
-		Dbl_Dbl fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = source.source();
 			return c != DblFunUtil.EMPTYVALUE ? fun1.apply(c) : DblFunUtil.EMPTYVALUE;
@@ -219,7 +219,7 @@ public class DblFunUtil {
 	 * skipped.
 	 */
 	public static Source<DblSource> split(DblTest fun0, DblSource source) {
-		DblTest fun1 = fun0.rethrow();
+		var fun1 = fun0.rethrow();
 		return new Source<>() {
 			private double c = source.source();
 			private boolean isAvail = c != EMPTYVALUE;

@@ -71,10 +71,10 @@ public class TelnetServerMain extends ExecutableProgram {
 			// kills the process if client closes the stream;
 			// closes the stream if process is terminated/ended output.
 			// therefore we need the interruption mechanism.
-			Process process = Runtime.getRuntime().exec("bash");
-			InputStream pis = process.getInputStream();
-			InputStream pes = process.getErrorStream();
-			OutputStream pos = process.getOutputStream();
+			var process = Runtime.getRuntime().exec("bash");
+			var pis = process.getInputStream();
+			var pes = process.getErrorStream();
+			var pos = process.getOutputStream();
 
 			try {
 				threads.add(new CopyThread(pis, sos));

@@ -14,7 +14,7 @@ public class ImportTest {
 
 	@Test
 	public void testImport() throws IOException {
-		RuleSet rs = Suite.newRuleSet(List.of("auto.sl"));
+		var rs = Suite.newRuleSet(List.of("auto.sl"));
 		assertTrue(Suite.proveLogic(rs, "list"));
 		assertTrue(Suite.proveLogic(rs, "list repeat"));
 	}

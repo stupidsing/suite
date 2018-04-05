@@ -69,7 +69,7 @@ public class FileSystemKeyUtil {
 	}
 
 	public Bytes toName(List<NameKey> keys) {
-		BytesBuilder bb = new BytesBuilder();
+		var bb = new BytesBuilder();
 		for (var key : keys)
 			if (0 < key.size)
 				bb.append(key.path.range(0, key.size));

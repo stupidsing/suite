@@ -2,7 +2,6 @@ package suite.os;
 
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Path;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,12 +34,12 @@ public class LogUtil {
 		}
 
 		public void error(Throwable th) {
-			boolean isTrimmed = trimStackTrace(th);
+			var isTrimmed = trimStackTrace(th);
 			log0.error(prefix.get() + (isTrimmed ? "(Trimmed)" : ""), th);
 		}
 
 		public void fatal(Throwable th) {
-			boolean isTrimmed = trimStackTrace(th);
+			var isTrimmed = trimStackTrace(th);
 			log0.fatal(prefix.get() + (isTrimmed ? "(Trimmed)" : ""), th);
 		}
 	};
@@ -60,21 +59,21 @@ public class LogUtil {
 	}
 
 	public static void initLog4j(Level level) {
-		Path logDir = Constants.tmp("logs");
+		var logDir = Constants.tmp("logs");
 
-		PatternLayout layout = new PatternLayout("%d %-5p [%c{1}] %m%n");
+		var layout = new PatternLayout("%d %-5p [%c{1}] %m%n");
 
-		ConsoleAppender console = new ConsoleAppender(layout);
+		var console = new ConsoleAppender(layout);
 		console.setWriter(new PrintWriter(System.err));
 		console.activateOptions();
 
-		DailyRollingFileAppender file = new DailyRollingFileAppender();
+		var file = new DailyRollingFileAppender();
 		file.setFile(logDir.resolve("suite.log").toString());
 		file.setDatePattern("'.'yyyyMMdd");
 		file.setLayout(layout);
 		file.activateOptions();
 
-		Logger logger = Logger.getRootLogger();
+		var logger = Logger.getRootLogger();
 		logger.setLevel(level);
 		logger.removeAllAppenders();
 		logger.addAppender(console);
@@ -123,12 +122,12 @@ public class LogUtil {
 	}
 
 	public static <I> I proxy(Class<I> interface_, I object) {
-		Log log = LogFactory.getLog(object.getClass());
+		var log = LogFactory.getLog(object.getClass());
 
 		return Intercept.object(interface_, object, invocation -> (m, ps) -> {
 			var methodName = m.getName();
 			var prefix = methodName + "()\n";
-			StringBuilder sb = new StringBuilder();
+			var sb = new StringBuilder();
 
 			sb.append(prefix);
 
@@ -144,8 +143,8 @@ public class LogUtil {
 				log.info(prefix + rd);
 				return value;
 			} catch (InvocationTargetException ite) {
-				Throwable th = ite.getTargetException();
-				boolean isTrimmed = trimStackTrace(th);
+				var th = ite.getTargetException();
+				var isTrimmed = trimStackTrace(th);
 				log.error(prefix + (isTrimmed ? "(Trimmed)" : ""), th);
 				throw th instanceof Exception ? (Exception) th : ite;
 			}
@@ -153,7 +152,7 @@ public class LogUtil {
 	}
 
 	private static boolean trimStackTrace(Throwable th) {
-		boolean isTrimmed = false;
+		var isTrimmed = false;
 
 		// trims stack trace to appropriate length
 		while (th != null) {

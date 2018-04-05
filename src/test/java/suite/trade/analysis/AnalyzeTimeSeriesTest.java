@@ -75,7 +75,7 @@ public class AnalyzeTimeSeriesTest {
 		var returns = ts.returns(prices);
 		float[] logPrices = To.vector(prices, Math::log);
 		float[] logReturns = ts.differences(1, logPrices);
-		MeanVariance rmv = stat.meanVariance(returns);
+		var rmv = stat.meanVariance(returns);
 		var variance = rmv.variance;
 		var kelly = rmv.mean / variance;
 		IntFltPair max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);

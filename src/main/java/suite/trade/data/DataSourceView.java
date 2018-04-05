@@ -69,7 +69,7 @@ public class DataSourceView<K, V> {
 	}
 
 	public V get(String symbol, int index) {
-		TimeRange period = period(index);
+		var period = period(index);
 		Map<TimeRange, V> m = viewByKey.get(symbol);
 		return m != null ? m.get(period) : null;
 	}

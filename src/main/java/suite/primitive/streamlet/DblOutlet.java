@@ -99,7 +99,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 	public static DblOutlet of(Source<Double> source) {
 		return DblOutlet.of(() -> {
-			Double c = source.source();
+			var c = source.source();
 			return c != null ? c : DblFunUtil.EMPTYVALUE;
 		});
 	}
@@ -197,7 +197,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public DblOutlet drop(int n) {
-		boolean isAvailable = true;
+		var isAvailable = true;
 		while (0 < n && (isAvailable &= next() != DblFunUtil.EMPTYVALUE))
 			n--;
 		return isAvailable ? this : empty();
@@ -206,7 +206,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == DblOutlet.class) {
-			DblSource source1 = ((DblOutlet) object).source;
+			var source1 = ((DblOutlet) object).source;
 			double o0, o1;
 			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
 				if (o0 == DblFunUtil.EMPTYVALUE && o1 == DblFunUtil.EMPTYVALUE)
@@ -366,14 +366,14 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public void sink(DblSink sink0) {
-		DblSink sink1 = sink0.rethrow();
+		var sink1 = sink0.rethrow();
 		double c;
 		while ((c = next()) != DblFunUtil.EMPTYVALUE)
 			sink1.sink(c);
 	}
 
 	public DblOutlet skip(int n) {
-		boolean end = false;
+		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next() == DblFunUtil.EMPTYVALUE;
 		return !end ? of(source) : empty();
@@ -409,12 +409,12 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public double[] toArray() {
-		DoublesBuilder list = toList();
+		var list = toList();
 		return list.toDoubles().toArray();
 	}
 
 	public DoublesBuilder toList() {
-		DoublesBuilder list = new DoublesBuilder();
+		var list = new DoublesBuilder();
 		double c;
 		while ((c = next()) != DblFunUtil.EMPTYVALUE)
 			list.append(c);
@@ -448,7 +448,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 		Map<K, V> map = new HashMap<>();
 		double c;
 		while ((c = next()) != DblFunUtil.EMPTYVALUE) {
-			K key = kf1.apply(c);
+			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
 				Fail.t("duplicate key " + key);
 		}
@@ -464,7 +464,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public DblSet toSet() {
-		DblSet set = new DblSet();
+		var set = new DblSet();
 		double c;
 		while ((c = next()) != DblFunUtil.EMPTYVALUE)
 			set.add(c);

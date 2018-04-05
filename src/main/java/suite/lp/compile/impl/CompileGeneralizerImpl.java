@@ -23,7 +23,7 @@ public class CompileGeneralizerImpl implements GeneralizerFactory {
 	@Override
 	public Generalize_ generalizer(Node node) {
 		VariableMapper<Reference> mapper = cc.mapper();
-		Generalizer generalizer = new Generalizer();
+		var generalizer = new Generalizer();
 		Generalize_ generalize = cc.cloner(generalizer.generalize(node))::apply;
 		Map<Reference, Atom> indices = new IdentityHashMap<>();
 		for (var variableName : generalizer.getVariableNames())

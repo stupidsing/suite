@@ -51,14 +51,14 @@ public class Doubles implements Iterable<Double> {
 	};
 
 	public static Doubles concat(Doubles... array) {
-		DoublesBuilder bb = new DoublesBuilder();
+		var bb = new DoublesBuilder();
 		for (var doubles : array)
 			bb.append(doubles);
 		return bb.toDoubles();
 	}
 
 	public static Doubles of(Outlet<Doubles> outlet) {
-		DoublesBuilder cb = new DoublesBuilder();
+		var cb = new DoublesBuilder();
 		outlet.forEach(cb::append);
 		return cb.toDoubles();
 	}
@@ -122,7 +122,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public boolean isWhitespaces() {
-		boolean b = true;
+		var b = true;
 		for (var i = start; b && i < end; i++)
 			b &= ParseUtil.isWhitespace(cs[i]);
 		return b;
@@ -139,7 +139,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public Doubles pad(int size) {
-		DoublesBuilder cb = new DoublesBuilder();
+		var cb = new DoublesBuilder();
 		cb.append(this);
 		while (cb.size() < size)
 			cb.append((double) 0);
@@ -155,7 +155,7 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public Doubles replace(Doubles from, Doubles to) {
-		DoublesBuilder cb = new DoublesBuilder();
+		var cb = new DoublesBuilder();
 		int i0 = 0, i;
 		while (0 <= (i = indexOf(from, i0))) {
 			cb.append(range_(i0, i));
@@ -240,7 +240,7 @@ public class Doubles implements Iterable<Double> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Doubles.class) {
-			Doubles other = (Doubles) object;
+			var other = (Doubles) object;
 
 			if (size_() == other.size_()) {
 				var diff = other.start - start;
@@ -264,7 +264,7 @@ public class Doubles implements Iterable<Double> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var i = start; i < end; i++)
 			sb.append(cs[i]);
 		return sb.toString();
@@ -272,7 +272,7 @@ public class Doubles implements Iterable<Double> {
 
 	private boolean startsWith_(Doubles doubles, int s) {
 		if (s + doubles.size_() <= size_()) {
-			boolean b = true;
+			var b = true;
 			for (var i = 0; b && i < doubles.size_(); i++)
 				b &= get(s + i) == doubles.get(i);
 			return b;

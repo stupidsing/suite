@@ -30,7 +30,7 @@ public class GroupAnalysis {
 		}
 
 		private Group root() {
-			Group root = this;
+			var root = this;
 			while (root.parent != null)
 				root = root.parent;
 			return root;
@@ -52,12 +52,12 @@ public class GroupAnalysis {
 		var nGroups = 0;
 
 		for (var c : Coordinate.all()) {
-			Occupation color = board.get(c);
+			var color = board.get(c);
 			Group group = null; // must be root
 
 			for (var c1 : c.leftOrUp)
 				if (board.get(c1) == color) {
-					Group group1 = groupByCoord.get(c1).root();
+					var group1 = groupByCoord.get(c1).root();
 
 					if (group != null) {
 						if (group != group1)
@@ -73,7 +73,7 @@ public class GroupAnalysis {
 		}
 
 		for (var c : Coordinate.all()) {
-			Group group = groupByCoord.get(c).root();
+			var group = groupByCoord.get(c).root();
 			groupByCoord.put(c, group);
 			group.coords.add(c);
 			groups.add(group);
@@ -82,10 +82,10 @@ public class GroupAnalysis {
 
 	private void assignGroupSurroundings() {
 		for (var c : Coordinate.all()) {
-			Group group = groupByCoord.get(c);
+			var group = groupByCoord.get(c);
 
 			for (var c1 : c.leftOrUp) {
-				Group group1 = groupByCoord.get(c1);
+				var group1 = groupByCoord.get(c1);
 
 				if (group != group1) {
 					group.touches.add(group1);

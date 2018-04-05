@@ -1,6 +1,5 @@
 package suite.util;
 
-import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -47,7 +46,7 @@ public class MapObject_ {
 		List<?> list1 = list(t1);
 		var size0 = list0.size();
 		var size1 = list1.size();
-		boolean b = true;
+		var b = true;
 		if (size0 == size1)
 			for (var i = 0; i < size0; i++)
 				b &= Objects.equals(list0.get(i), list1.get(i));
@@ -57,7 +56,7 @@ public class MapObject_ {
 	public static <T extends MapObject<T>> MapObject<T> construct(Class<?> clazz, List<?> list) {
 		return Rethrow.ex(() -> {
 			var size = list.size();
-			Method m = Read //
+			var m = Read //
 					.from(clazz.getMethods()) //
 					.filter(method -> String_.equals(method.getName(), "of") && method.getParameterCount() == size) //
 					.uniqueResult();
@@ -70,7 +69,7 @@ public class MapObject_ {
 	public static <T extends MapObject<T>> List<?> list(Object object) {
 		Class<?> clazz = object.getClass();
 
-		Method m = Read //
+		var m = Read //
 				.from(clazz.getMethods()) //
 				.filter(method -> String_.equals(method.getName(), "apply")) //
 				.uniqueResult();

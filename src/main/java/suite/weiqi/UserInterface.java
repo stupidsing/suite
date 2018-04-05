@@ -14,14 +14,14 @@ public class UserInterface {
 	}
 
 	public static Board importBoard(String s) {
-		Board board = new Board();
+		var board = new Board();
 		var rows = s.split("\n");
 
 		for (var x = 0; x < Weiqi.size; x++) {
 			var cols = rows[x].split(" ");
 
 			for (var y = 0; y < Weiqi.size; y++) {
-				Occupation occupation = Occupation.EMPTY;
+				var occupation = Occupation.EMPTY;
 
 				for (var o : Occupation.values())
 					if (String_.equals(cols[y], o.display()))

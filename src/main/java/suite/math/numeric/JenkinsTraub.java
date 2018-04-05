@@ -16,7 +16,7 @@ public class JenkinsTraub {
 	private Random random = new Random();
 
 	public Complex jt(Complex[] poly0) {
-		Complex inv0 = poly0[0].inverse();
+		var inv0 = poly0[0].inverse();
 		Complex[] poly1 = To.array(poly0.length, Complex.class, i -> Complex.mul(poly0[i], inv0));
 		if (poly0[0].abs2() != 0d)
 			return jt_(poly1);
@@ -49,7 +49,7 @@ public class JenkinsTraub {
 				maxIterations *= 2;
 			}
 
-			Complex s = Complex.expi(2d * Math.PI * random.nextDouble()).scale(root);
+			var s = Complex.expi(2d * Math.PI * random.nextDouble()).scale(root);
 			Complex ph;
 
 			Complex ar0 = Complex.sub(s, ph = ph(poly, h, s));
@@ -70,7 +70,7 @@ public class JenkinsTraub {
 			}
 
 			// stage 3 variable-shift process
-			Complex ar0_ = ar2;
+			var ar0_ = ar2;
 			h = shift(poly, h, ar0_, ph);
 			Complex ar1_ = Complex.sub(ar0_, ph = ph(poly, h, ar0_));
 			{
@@ -115,7 +115,7 @@ public class JenkinsTraub {
 	private Complex[] divXms(Complex[] num, Complex s) {
 		var lengthm1 = num.length - 1;
 		Complex[] div = new Complex[lengthm1];
-		Complex numx = num[lengthm1];
+		var numx = num[lengthm1];
 		for (var i = lengthm1 - 1; 0 <= i; i--) {
 			div[i] = numx;
 			numx = Complex.add(num[i], Complex.mul(numx, s));
@@ -168,7 +168,7 @@ public class JenkinsTraub {
 	}
 
 	private Complex evaluate(Complex[] poly, Complex x) {
-		Complex y = Complex.zero;
+		var y = Complex.zero;
 		for (var i = poly.length - 1; 0 <= i; i--)
 			y = Complex.add(Complex.mul(y, x), poly[i]);
 		return y;

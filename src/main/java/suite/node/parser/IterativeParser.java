@@ -55,7 +55,7 @@ public class IterativeParser {
 			Token token;
 
 			while ((token = lex.lex()) != null) {
-				Operator operator = token.operator;
+				var operator = token.operator;
 				var data = token.getData();
 				var ch = data.charAt(0);
 
@@ -66,7 +66,7 @@ public class IterativeParser {
 				} else if (ch == '(' || ch == '[' || ch == '{')
 					stack.push(new Section(ch));
 				else if (ch == ')' || ch == ']' || ch == '}') {
-					Section section = stack.pop();
+					var section = stack.pop();
 
 					if (section.kind == '(' && ch == ')' //
 							|| section.kind == '[' && ch == ']' //
@@ -95,7 +95,7 @@ public class IterativeParser {
 		}
 
 		private void add(Node node) {
-			Section section = stack.peek();
+			var section = stack.peek();
 			if (!section.isDanglingRight)
 				addOperator(TermOp.TUPLE_);
 			Tree.forceSetRight(section.list.getLast(), node);
@@ -103,8 +103,8 @@ public class IterativeParser {
 		}
 
 		private void addOperator(Operator operator) {
-			Section section = stack.peek();
-			Tree tree = section.unwind(operator);
+			var section = stack.peek();
+			var tree = section.unwind(operator);
 			Tree tree1 = Tree.of(operator, tree.getRight(), Atom.NIL);
 			Tree.forceSetRight(tree, tree1);
 			section.push(tree1);

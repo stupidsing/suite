@@ -26,8 +26,8 @@ public class RecursiveFactorizer {
 	}
 
 	public String rewrite(String from, String to, String s0) {
-		FactorizeResult frfrom = parse(from);
-		FactorizeResult frto = parse(to);
+		var frfrom = parse(from);
+		var frto = parse(to);
 		return FactorizeResult.rewrite(frfrom, frto, parse(s0)).unparse();
 	}
 
@@ -45,15 +45,15 @@ public class RecursiveFactorizer {
 	}
 
 	private FactorizeResult parse_(Chars chars, int fromOp) {
-		Chars chars1 = chars.trim();
+		var chars1 = chars.trim();
 
 		if (0 < chars1.size()) {
 			var first = chars1.get(0);
 			var last = chars1.get(-1);
 
 			for (var i = fromOp; i < operators.length; i++) {
-				Operator operator = operators[i];
-				Chars range = operator != TermOp.TUPLE_ ? chars : chars1;
+				var operator = operators[i];
+				var range = operator != TermOp.TUPLE_ ? chars : chars1;
 				Segment ops = ParseUtil.searchPosition(chars.cs, Segment.of(range.start, range.end), operator);
 
 				if (ops == null)
@@ -78,7 +78,7 @@ public class RecursiveFactorizer {
 						if (left.isWhitespaces() || right.isWhitespaces())
 							continue;
 
-					boolean isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
+					var isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
 					li = fromOp + (isLeftAssoc ? 0 : 1);
 					ri = fromOp + (isLeftAssoc ? 1 : 0);
 				}
@@ -107,7 +107,7 @@ public class RecursiveFactorizer {
 	}
 
 	private FactorizeResult term(Chars chars) {
-		Chars chars1 = chars.trim();
+		var chars1 = chars.trim();
 		var p0 = reverser.reverse(chars.start);
 		var p1 = reverser.reverse(chars1.start);
 		var p2 = reverser.reverse(chars1.end);

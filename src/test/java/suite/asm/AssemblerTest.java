@@ -13,10 +13,10 @@ public class AssemblerTest {
 
 	@Test
 	public void testAssemble() {
-		boolean isProverTrace0 = Suite.isProverTrace;
+		var isProverTrace0 = Suite.isProverTrace;
 		Suite.isProverTrace = true;
 		try {
-			Assembler assembler = new Assembler(32);
+			var assembler = new Assembler(32);
 			assembler.assemble(Suite.parse(".org = 0, .l LEA (EAX, `EAX * 4 + (0 - 4)`),"));
 		} finally {
 			Suite.isProverTrace = isProverTrace0;
@@ -38,14 +38,14 @@ public class AssemblerTest {
 
 	@Test
 	public void testAssemblePerformance() {
-		Assembler assembler = new Assembler(32);
+		var assembler = new Assembler(32);
 		for (var i = 0; i < 4096; i++)
 			assembler.assemble(Suite.parse(".org = 0, .l CLD (),"));
 	}
 
 	@Test
 	public void testAssembler() {
-		Bytes bytes = new Assembler(32).assemble("" //
+		var bytes = new Assembler(32).assemble("" //
 				+ ".org = 0 \n" //
 				+ "	JMP (.end) \n" //
 				+ "	MOV (AX, 16) \n" //

@@ -38,7 +38,7 @@ public class TextDatabase {
 	}
 
 	public void join() {
-		Thread thread = saveThread;
+		var thread = saveThread;
 		if (thread != null)
 			try {
 				thread.join();
@@ -97,7 +97,7 @@ public class TextDatabase {
 	}
 
 	private void merge(Datum datum) {
-		Datum datum0 = data.ceiling(datum);
+		var datum0 = data.ceiling(datum);
 		if (datum0 == null || !Objects.equals(datum, datum0))
 			data.add(datum);
 		else if (!Objects.equals(datum0.value, datum.value))
@@ -132,7 +132,7 @@ public class TextDatabase {
 
 		public boolean equals(Object object) {
 			if (object.getClass() == Datum.class) {
-				Datum other = (Datum) object;
+				var other = (Datum) object;
 				return String_.equals(key, other.key);
 			} else
 				return false;

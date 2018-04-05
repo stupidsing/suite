@@ -44,7 +44,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 		return outlet -> streamlet(() -> {
 			Source<T> source = outlet.source();
 			return ChrObjOutlet.of(pair -> {
-				T t = source.source();
+				var t = source.source();
 				boolean b = t != null;
 				if (b)
 					pair.update(kf1.apply(t), vf1.apply(t));

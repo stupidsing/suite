@@ -20,8 +20,6 @@ import suite.lp.doer.BinderFactory;
 import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.doer.BinderFactory.Bind_;
 import suite.lp.doer.Cloner;
-import suite.lp.doer.ClonerFactory.Clone_;
-import suite.lp.doer.EvaluatorFactory.Evaluate_;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.lp.doer.ProverConstant;
@@ -218,9 +216,9 @@ public class SewingProverImpl implements ProverFactory {
 		isHasCutByPrototype = rules.listEntries().mapValue(this::isHasCut).toMap();
 
 		for (Pair<Prototype, List<Rule>> e : rules.listEntries()) {
-			Prototype prototype = e.t0;
+			var prototype = e.t0;
 			List<Rule> rules = new ArrayList<>(e.t1);
-			TraceLevel traceLevel = traceLevel(prototype);
+			var traceLevel = traceLevel(prototype);
 
 			// second-level indexing optimization
 			Map<Prototype, List<Rule>> rulesByProto1;
@@ -244,7 +242,7 @@ public class SewingProverImpl implements ProverFactory {
 					tr = rt -> {
 						Prototype proto = Prototype.of(rt.query, 1);
 						if (proto != null) {
-							Trampoline tr_ = trByProto1.get(proto);
+							var tr_ = trByProto1.get(proto);
 							return tr_ != null ? tr_ : fail;
 						} else
 							return tr0;
@@ -284,19 +282,19 @@ public class SewingProverImpl implements ProverFactory {
 
 	private Cps compileCpsRules(Prototype prototype, List<Rule> rules, TraceLevel traceLevel) {
 		Streamlet<Cps> cpss = Read.from(rules).map(rule -> {
-			Generalizer generalizer = new Generalizer();
+			var generalizer = new Generalizer();
 			var head = generalizer.generalize(rule.head);
 			var tail = generalizer.generalize(rule.tail);
 			return compileCpsRule(head, tail);
 		});
 
-		Cps cps0 = orCps(cpss);
+		var cps0 = orCps(cpss);
 		return saveEnvCps(cps0);
 	}
 
 	private Cps compileCpsRule(Node head, Node tail) {
-		BinderFactory bf = new SewingBinderImpl();
-		Bind_ p = bf.binder(head);
+		var bf = new SewingBinderImpl();
+		var p = bf.binder(head);
 		Cps cps = compileCps(bf, tail, rt -> rt.cps);
 		return newEnvCps(bf, rt -> p.test(rt, rt.query) ? cps : null);
 	}
@@ -314,11 +312,11 @@ public class SewingProverImpl implements ProverFactory {
 		} else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
 			cps = orCps(Read.from(list).map(n -> compileCps(bf, n, cpsx)));
 		else if ((m = Suite.pattern(".0 = .1").match(node)) != null) {
-			boolean b = complexity(m[0]) <= complexity(m[1]);
+			var b = complexity(m[0]) <= complexity(m[1]);
 			var n0 = b ? m[0] : m[1];
 			var n1 = b ? m[1] : m[0];
-			Bind_ p = bf.binder(n1);
-			Clone_ f = bf.cloner(n0);
+			var p = bf.binder(n1);
+			var f = bf.cloner(n0);
 			cps = rt -> p.test(rt, f.apply(rt.env)) ? cpsx : null;
 		} else if ((m = Suite.pattern(".0 .1").match(node)) != null && m[0] instanceof Atom)
 			cps = compileCpsCallPredicate(bf, ((Atom) m[0]).name, m[1], node, cpsx);
@@ -331,7 +329,7 @@ public class SewingProverImpl implements ProverFactory {
 			else
 				cps = compileCpsCallPredicate(bf, name, Atom.NIL, node, cpsx);
 		} else if (node instanceof Reference) {
-			Clone_ f = bf.cloner(node);
+			var f = bf.cloner(node);
 			cps = rt -> compileCps(passThru, f.apply(rt.env), cpsx);
 		} else if ((tree = Tree.decompose(node)) != null)
 			cps = compileCpsCallPredicate(bf, tree.getOperator().getName(), node, node, cpsx);
@@ -346,9 +344,9 @@ public class SewingProverImpl implements ProverFactory {
 	private Cps orCps(Streamlet<Cps> cpss) {
 		List<Cps> cpsList = cpss.toList();
 		Cps[] cpsArray = List_.left(cpsList, -1).toArray(new Cps[0]);
-		Cps cps_ = List_.last(cpsList);
+		var cps_ = List_.last(cpsList);
 		return rt -> {
-			Restore restore = save(rt);
+			var restore = save(rt);
 			for (var cps1 : cpsArray) {
 				rt.cont(cps1);
 				restore.restore(rt);
@@ -358,19 +356,19 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Cps compileCpsCallPredicate(BinderFactory bf, String name, Node pass, Node node, Cps cpsx) {
-		BuiltinPredicate predicate = systemPredicates.get(name);
+		var predicate = systemPredicates.get(name);
 		return predicate != null ? compileCpsCallPredicate(bf, predicate, pass, cpsx) : compileCpsCallPredicate(bf, node, cpsx);
 	}
 
 	private Cps compileCpsCallPredicate(BinderFactory bf, BuiltinPredicate predicate, Node pass, Cps cpsx) {
-		Clone_ f = bf.cloner(pass);
+		var f = bf.cloner(pass);
 		return rt -> predicate.prove(rt.prover, f.apply(rt.env)) ? cpsx : null;
 	}
 
 	private Cps compileCpsCallPredicate(BinderFactory bf, Node node, Cps cpsx) {
-		Prototype prototype = Prototype.of(node);
+		var prototype = Prototype.of(node);
 		if (rules.containsKey(prototype)) {
-			Clone_ f = bf.cloner(node);
+			var f = bf.cloner(node);
 			Cps cps;
 			if (isHasCutByPrototype.get(prototype)) {
 				Mutable<Trampoline> mtr = getTrampolineByPrototype(prototype);
@@ -393,7 +391,7 @@ public class SewingProverImpl implements ProverFactory {
 			} else {
 				Mutable<Cps> mcps = getCpsByPrototype(prototype);
 				cps = rt -> {
-					Cps cps0 = rt.cps;
+					var cps0 = rt.cps;
 					rt.cps = rt_ -> {
 						rt.cps = cps0;
 						return cpsx;
@@ -409,8 +407,8 @@ public class SewingProverImpl implements ProverFactory {
 
 	private Cps saveEnvCps(Cps cps) {
 		return rt -> {
-			Cps cps0 = rt.cps;
-			Env env0 = rt.env;
+			var cps0 = rt.cps;
+			var env0 = rt.env;
 			rt.cps = rt_ -> {
 				rt.env = env0;
 				return cps0;
@@ -429,21 +427,21 @@ public class SewingProverImpl implements ProverFactory {
 
 	private Trampoline compileTrRules(Prototype prototype, List<Rule> rules, TraceLevel traceLevel) {
 		Streamlet<Trampoline> trs = Read.from(rules).map(rule -> {
-			Generalizer generalizer = new Generalizer();
+			var generalizer = new Generalizer();
 			var head = generalizer.generalize(rule.head);
 			var tail = generalizer.generalize(rule.tail);
 			return compileTrRule(head, tail);
 		});
 
-		Trampoline tr0 = orTr(trs);
-		Trampoline tr1 = cutBegin(tr0);
-		Trampoline tr2 = saveEnvTr(tr1);
+		var tr0 = orTr(trs);
+		var tr1 = cutBegin(tr0);
+		var tr2 = saveEnvTr(tr1);
 		return log(tr2, traceLevel);
 	}
 
 	private Trampoline compileTrRule(Node head, Node tail) {
-		BinderFactory bf = new SewingBinderImpl();
-		Bind_ p = bf.binder(head);
+		var bf = new SewingBinderImpl();
+		var p = bf.binder(head);
 		Trampoline tr1 = compileTr(bf, tail);
 		return newEnvTr(bf, rt -> p.test(rt, rt.query) ? tr1 : fail);
 	}
@@ -459,11 +457,11 @@ public class SewingProverImpl implements ProverFactory {
 		else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
 			tr = orTr(Read.from(list).map(n -> compileTr(bf, n)));
 		else if ((m = Suite.pattern(".0 = .1").match(node)) != null) {
-			boolean b = complexity(m[0]) <= complexity(m[1]);
+			var b = complexity(m[0]) <= complexity(m[1]);
 			var n0 = b ? m[0] : m[1];
 			var n1 = b ? m[1] : m[0];
-			Bind_ p = bf.binder(n1);
-			Clone_ f = bf.cloner(n0);
+			var p = bf.binder(n1);
+			var f = bf.cloner(n0);
 			tr = rt -> p.test(rt, f.apply(rt.env)) ? okay : fail;
 		} else if ((m = Suite.pattern("builtin:.0:.1 .2").match(node)) != null) {
 			var className = ((Atom) m[0]).name;
@@ -474,12 +472,12 @@ public class SewingProverImpl implements ProverFactory {
 			});
 			tr = compileTrCallPredicate(bf, predicate, m[2]);
 		} else if ((m = Suite.pattern("find.all .0 .1 .2").match(node)) != null) {
-			Clone_ f = bf.cloner(m[0]);
+			var f = bf.cloner(m[0]);
 			Trampoline tr1 = compileTr(bf, m[1]);
-			Bind_ p = bf.binder(m[2]);
+			var p = bf.binder(m[2]);
 			List<Node> vs = new ArrayList<>();
 			tr = rt -> {
-				Restore restore = save(rt);
+				var restore = save(rt);
 				rt.pushRem(rt_ -> {
 					vs.add(new Cloner().clone(f.apply(rt_.env)));
 					return fail;
@@ -496,21 +494,21 @@ public class SewingProverImpl implements ProverFactory {
 			Trampoline tr2 = compileTr(bf, m[2]);
 			tr = if_(tr0, tr1, tr2);
 		} else if ((m = Suite.pattern("let .0 .1").match(node)) != null) {
-			Bind_ p = bf.binder(m[0]);
-			Evaluate_ eval = new CompileExpressionImpl(bf).evaluator(m[1]);
+			var p = bf.binder(m[0]);
+			var eval = new CompileExpressionImpl(bf).evaluator(m[1]);
 			tr = rt -> p.test(rt, Int.of(eval.evaluate(rt.env))) ? okay : fail;
 		} else if ((m = Suite.pattern("list.fold .0/.1/.2 .3").match(node)) != null) {
-			Clone_ list0_ = bf.cloner(m[0]);
-			Clone_ value0_ = bf.cloner(m[1]);
-			Bind_ valuex_ = bf.binder(m[2]);
-			Clone_ ht_ = bf.cloner(m[3]);
+			var list0_ = bf.cloner(m[0]);
+			var value0_ = bf.cloner(m[1]);
+			var valuex_ = bf.binder(m[2]);
+			var ht_ = bf.cloner(m[3]);
 			tr = rt -> {
 				var ht = Suite.pattern(".0 .1").match(ht_.apply(rt.env));
 				Trampoline tr1 = saveEnvTr(compileTrRule(ht[0], ht[1]));
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
 				rt.pushRem(rt_ -> valuex_.test(rt_, current.get()) ? okay : fail);
 				for (var elem : Tree.iter(list0_.apply(rt.env))) {
-					Reference result = new Reference();
+					var result = new Reference();
 					rt.pushRem(rt_ -> {
 						current.update(result.finalNode());
 						return okay;
@@ -523,16 +521,16 @@ public class SewingProverImpl implements ProverFactory {
 				return okay;
 			};
 		} else if ((m = Suite.pattern("list.fold.clone .0/.1/.2 .3/.4/.5 .6").match(node)) != null) {
-			Clone_ list0_ = bf.cloner(m[0]);
-			Clone_ value0_ = bf.cloner(m[1]);
-			Bind_ valuex_ = bf.binder(m[2]);
-			Bind_ elem_ = bf.binder(m[3]);
-			Bind_ v0_ = bf.binder(m[4]);
-			Clone_ vx_ = bf.cloner(m[5]);
+			var list0_ = bf.cloner(m[0]);
+			var value0_ = bf.cloner(m[1]);
+			var valuex_ = bf.binder(m[2]);
+			var elem_ = bf.binder(m[3]);
+			var v0_ = bf.binder(m[4]);
+			var vx_ = bf.cloner(m[5]);
 			Trampoline tr1 = compileTr(bf, m[6]);
 			tr = rt -> {
 				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
-				Env env0 = rt.env;
+				var env0 = rt.env;
 				rt.pushRem(rt_ -> {
 					rt_.env = env0;
 					return valuex_.test(rt_, current.get()) ? okay : fail;
@@ -550,8 +548,8 @@ public class SewingProverImpl implements ProverFactory {
 				return okay;
 			};
 		} else if ((m = Suite.pattern("list.query .0 .1").match(node)) != null) {
-			Clone_ l_ = bf.cloner(m[0]);
-			Clone_ ht_ = bf.cloner(m[1]);
+			var l_ = bf.cloner(m[0]);
+			var ht_ = bf.cloner(m[1]);
 			tr = rt -> {
 				var ht = Suite.pattern(".0 .1").match(ht_.apply(rt.env));
 				Trampoline tr1 = saveEnvTr(compileTrRule(ht[0], ht[1]));
@@ -563,11 +561,11 @@ public class SewingProverImpl implements ProverFactory {
 				return okay;
 			};
 		} else if ((m = Suite.pattern("list.query.clone .0 .1 .2").match(node)) != null) {
-			Clone_ f = bf.cloner(m[0]);
-			Bind_ p = bf.binder(m[1]);
+			var f = bf.cloner(m[0]);
+			var p = bf.binder(m[1]);
 			Trampoline tr1 = compileTr(bf, m[2]);
 			tr = rt -> {
-				Env env0 = rt.env;
+				var env0 = rt.env;
 				rt.pushRem(rt_ -> {
 					rt_.env = env0;
 					return okay;
@@ -581,11 +579,11 @@ public class SewingProverImpl implements ProverFactory {
 			};
 		} else if ((m = Suite.pattern("member .0 .1").match(node)) != null && TreeUtil.isList(m[0], TermOp.AND___)) {
 			List<Bind_> elems_ = Read.from(Tree.iter(m[0])).map(bf::binder).toList();
-			Clone_ f = bf.cloner(m[1]);
+			var f = bf.cloner(m[1]);
 			tr = rt -> {
 				Iterator<Bind_> iter = elems_.iterator();
 				Trampoline[] alt = new Trampoline[1];
-				Restore restore = save(rt);
+				var restore = save(rt);
 				return alt[0] = rt_ -> {
 					while (iter.hasNext()) {
 						restore.restore(rt);
@@ -610,13 +608,13 @@ public class SewingProverImpl implements ProverFactory {
 				return tr0;
 			};
 		} else if ((m = Suite.pattern("suspend .0 .1 .2").match(node)) != null) {
-			Clone_ f0 = bf.cloner(m[0]);
-			Clone_ f1 = bf.cloner(m[1]);
+			var f0 = bf.cloner(m[0]);
+			var f1 = bf.cloner(m[1]);
 			Trampoline tr0 = compileTr(bf, m[2]);
 
 			tr = rt -> {
 				List<Node> results = new ArrayList<>();
-				Env env = rt.env;
+				var env = rt.env;
 
 				Trampoline tr_ = andTr(Read.each(tr0, rt_ -> {
 					results.add(f1.apply(env));
@@ -638,18 +636,18 @@ public class SewingProverImpl implements ProverFactory {
 					return fail;
 			};
 		} else if ((m = Suite.pattern("throw .0").match(node)) != null) {
-			Clone_ f = bf.cloner(m[0]);
+			var f = bf.cloner(m[0]);
 			tr = rt -> {
 				rt.handler.sink(new Cloner().clone(f.apply(rt.env)));
 				return okay;
 			};
 		} else if ((m = Suite.pattern("try .0 .1 .2").match(node)) != null) {
 			Trampoline tr0 = compileTr(bf, m[0]);
-			Bind_ p = bf.binder(m[1]);
+			var p = bf.binder(m[1]);
 			Trampoline catch0 = compileTr(bf, m[2]);
 			tr = rt -> {
-				BindEnv be = rt;
-				Restore restore = save(rt);
+				var be = rt;
+				var restore = save(rt);
 				var alts0 = rt.alts;
 				Sink<Node> handler0 = rt.handler;
 				rt.handler = node_ -> {
@@ -685,7 +683,7 @@ public class SewingProverImpl implements ProverFactory {
 			else
 				tr = Fail.t("cannot understand " + node);
 		} else if (node instanceof Reference) {
-			Clone_ f = bf.cloner(node);
+			var f = bf.cloner(node);
 			tr = rt -> compileTr(passThru, f.apply(rt.env));
 		} else if ((tree = Tree.decompose(node)) != null)
 			tr = compileTrCallPredicate(bf, tree.getOperator().getName(), node, node);
@@ -704,14 +702,14 @@ public class SewingProverImpl implements ProverFactory {
 		else if (trs_.size() == 1)
 			return trs_.get(0);
 		else if (trs_.size() == 2) {
-			Trampoline tr0 = trs_.get(0);
-			Trampoline tr1 = trs_.get(1);
+			var tr0 = trs_.get(0);
+			var tr1 = trs_.get(1);
 			return rt -> {
 				rt.pushRem(tr1);
 				return tr0;
 			};
 		} else {
-			Trampoline trh = trs_.get(0);
+			var trh = trs_.get(0);
 			List<Trampoline> trt = List_.reverse(List_.right(trs_, 1));
 			return rt -> {
 				for (Trampoline tr_ : trt)
@@ -728,10 +726,10 @@ public class SewingProverImpl implements ProverFactory {
 		else if (trs_.size() == 1)
 			return trs_.get(0);
 		else if (trs_.size() == 2) {
-			Trampoline tr0 = trs_.get(0);
-			Trampoline tr1 = trs_.get(1);
+			var tr0 = trs_.get(0);
+			var tr1 = trs_.get(1);
 			return rt -> {
-				Restore restore = save(rt);
+				var restore = save(rt);
 				rt.pushAlt(rt_ -> {
 					restore.restore(rt);
 					return tr1;
@@ -739,10 +737,10 @@ public class SewingProverImpl implements ProverFactory {
 				return tr0;
 			};
 		} else {
-			Trampoline trh = trs_.get(0);
+			var trh = trs_.get(0);
 			List<Trampoline> trt = List_.reverse(List_.right(trs_, 1));
 			return rt -> {
-				Restore restore = save(rt);
+				var restore = save(rt);
 				for (Trampoline tr_ : trt)
 					rt.pushAlt(rt_ -> {
 						restore.restore(rt);
@@ -755,7 +753,7 @@ public class SewingProverImpl implements ProverFactory {
 
 	private Trampoline if_(Trampoline tr0, Trampoline tr1, Trampoline tr2) {
 		return rt -> {
-			Restore restore = save(rt);
+			var restore = save(rt);
 			var alts0 = rt.alts;
 			rt.pushRem(rt_ -> {
 				rt.alts = alts0;
@@ -770,19 +768,19 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Trampoline compileTrCallPredicate(BinderFactory bf, String name, Node pass, Node node) {
-		BuiltinPredicate predicate = systemPredicates.get(name);
+		var predicate = systemPredicates.get(name);
 		return predicate != null ? compileTrCallPredicate(bf, predicate, pass) : compileTrCallPredicate(bf, node);
 	}
 
 	private Trampoline compileTrCallPredicate(BinderFactory bf, BuiltinPredicate predicate, Node pass) {
-		Clone_ f = bf.cloner(pass);
+		var f = bf.cloner(pass);
 		return rt -> predicate.prove(rt.prover, f.apply(rt.env)) ? okay : fail;
 	}
 
 	private Trampoline compileTrCallPredicate(BinderFactory bf, Node node) {
-		Prototype prototype = Prototype.of(node);
+		var prototype = Prototype.of(node);
 		if (rules.containsKey(prototype)) {
-			Clone_ f = bf.cloner(node);
+			var f = bf.cloner(node);
 			Trampoline tr;
 			if (isHasCutByPrototype.get(prototype)) {
 				Mutable<Trampoline> mtr = getTrampolineByPrototype(prototype);
@@ -804,7 +802,7 @@ public class SewingProverImpl implements ProverFactory {
 				};
 
 				tr = rt -> {
-					Cps cps0 = rt.cps;
+					var cps0 = rt.cps;
 					rt.cps = rt_ -> {
 						rt.cps = cps0;
 						return cpsx;
@@ -821,7 +819,7 @@ public class SewingProverImpl implements ProverFactory {
 
 	private Trampoline saveEnvTr(Trampoline tr) {
 		return rt -> {
-			Env env0 = rt.env;
+			var env0 = rt.env;
 			rt.pushRem(rt_ -> {
 				rt_.env = env0;
 				return okay;
@@ -862,7 +860,7 @@ public class SewingProverImpl implements ProverFactory {
 
 		if (traceLevel == TraceLevel.STACK || traceLevel == TraceLevel.TRACE)
 			tr1 = rt -> {
-				Debug debug0 = rt.debug;
+				var debug0 = rt.debug;
 				rt.debug = new Debug(debug0.indent + "| ", IList.cons(rt.query, rt.debug.stack));
 				rt.pushRem(rt2 -> {
 					rt.debug = debug0;
@@ -900,8 +898,8 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Restore save(Runtime rt) {
-		Cps cps0 = rt.cps;
-		Env env0 = rt.env;
+		var cps0 = rt.cps;
+		var env0 = rt.env;
 		var query0 = rt.query;
 		var cutPoint0 = rt.cutPoint;
 		var rems0 = rt.rems;
@@ -919,7 +917,7 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private int complexity(Node node) {
-		Tree tree = Tree.decompose(node);
+		var tree = Tree.decompose(node);
 		if (tree != null)
 			return 1 + max(complexity(tree.getLeft()), complexity(tree.getRight()));
 		else

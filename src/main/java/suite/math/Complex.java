@@ -64,7 +64,7 @@ public class Complex {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Complex.class) {
-			Complex other = (Complex) object;
+			var other = (Complex) object;
 			return r == other.r && i == other.i;
 		} else
 			return false;

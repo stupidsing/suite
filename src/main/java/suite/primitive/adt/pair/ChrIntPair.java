@@ -75,7 +75,7 @@ public class ChrIntPair {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == ChrIntPair.class) {
-			ChrIntPair other = (ChrIntPair) object;
+			var other = (ChrIntPair) object;
 			return t0 == other.t0 && t1 == other.t1;
 		} else
 			return false;

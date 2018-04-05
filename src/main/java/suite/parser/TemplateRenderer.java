@@ -23,7 +23,7 @@ public class TemplateRenderer implements Iterate<String> {
 	@Override
 	public String apply(String in) {
 		var start = 0;
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 
 		while (true) {
 			int pos0 = in.indexOf(openTemplate, start);

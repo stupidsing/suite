@@ -118,7 +118,7 @@ public class Arima {
 			// = ars[0] * xs[t - 1] + ... + ars[p - 1] * xs[t - p]
 			// + mas[0] * ep[t - 1] + ... + mas[q - 1] * ep[t - q]
 			// + ep[t]
-			LinearRegression lr = stat.linearRegression(Ints_ //
+			var lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
 						int tp = t + p, tpm1 = tp - 1;
@@ -243,7 +243,7 @@ public class Arima {
 		while (true) {
 			var iter_ = iter;
 
-			LinearRegression lr = stat.linearRegression(Ints_ //
+			var lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
 						var tp = t + p;
@@ -295,7 +295,7 @@ public class Arima {
 			}
 		}
 
-		LogLikelihood ll = mle.max(LogLikelihood::new);
+		var ll = mle.max(LogLikelihood::new);
 		var ars = ll.ars;
 		var mas = ll.mas;
 
@@ -326,7 +326,7 @@ public class Arima {
 		while (true) {
 			var iter_ = iter;
 
-			LinearRegression lr = stat.linearRegression(Ints_ //
+			var lr = stat.linearRegression(Ints_ //
 					.range(length) //
 					.map(t -> {
 						var tqm1 = t + qm1;

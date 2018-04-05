@@ -11,7 +11,6 @@ import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
-import suite.math.numeric.Statistic.MeanVariance;
 import suite.primitive.Floats;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
@@ -44,7 +43,7 @@ public class TimeSeries {
 	public double adf(float[] ys, int tor) {
 		float[] ydiffs = differences_(1, ys);
 		var length = ys.length;
-		LinearRegression lr = stat.linearRegression(Ints_ //
+		var lr = stat.linearRegression(Ints_ //
 				.range(tor, length) //
 				.map(i -> FltObjPair.of(ydiffs[i],
 						// i - drift term, necessary?
@@ -86,7 +85,7 @@ public class TimeSeries {
 			float[] diffs2 = To.vector(diffs, diff -> diff * diff);
 			return Math.log(stat.variance(diffs2));
 		});
-		LinearRegression lr = stat.linearRegression(Ints_ //
+		var lr = stat.linearRegression(Ints_ //
 				.range(logVrs.length) //
 				.map(i -> FltObjPair.of((float) Math.log(tors[i]), new float[] { logVrs[i], 1f, })));
 		var beta0 = lr.coefficients[0];
@@ -101,7 +100,7 @@ public class TimeSeries {
 		List<FltObjPair<float[]>> pairs = new ArrayList<>();
 		for (var n = 0; n < length * 3 / 4; n++) {
 			float[] returns = Arrays.copyOfRange(returns0, n, length);
-			MeanVariance mv = stat.meanVariance(returns);
+			var mv = stat.meanVariance(returns);
 			var mean = mv.mean;
 			float[] devs = To.vector(returns, r -> r - mean);
 			var min = Double.MAX_VALUE;
@@ -212,7 +211,7 @@ public class TimeSeries {
 				v0 = vx = 1d;
 
 			var returns_ = returns_(prices);
-			MeanVariance mv = stat.meanVariance(returns_);
+			var mv = stat.meanVariance(returns_);
 
 			return_ = Math.expm1(Quant.logReturn(v0, vx) * returns_.length * scale);
 			returns = returns_;

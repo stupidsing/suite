@@ -27,7 +27,7 @@ public class WhitespacePreprocessor implements Fun<String, List<Run>> {
 		var length = in.length();
 		int pos0 = 0, pos = 0;
 		var quote = 0;
-		boolean backquote = false;
+		var backquote = false;
 
 		while (pos < length) {
 			var ch = in.charAt(pos++);

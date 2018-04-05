@@ -12,13 +12,11 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Account;
 import suite.trade.Account.TransactionSummary;
-import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.data.Broker.Hsbc;
 import suite.trade.data.Configuration;
-import suite.trade.data.DataSource;
 import suite.trade.data.HkexUtil;
 import suite.trade.data.Yahoo;
 import suite.util.FormatUtil;
@@ -75,14 +73,14 @@ public class Summarize {
 				.toMap();
 
 		Map<String, Float> acquiredPrices = trades.collect(Trade_::collectBrokeredTrades).collect(Trade_::collectAcquiredPrices);
-		Time now = Time.now();
+		var now = Time.now();
 
 		Summarize_ overall = summarize_(trades, priceBySymbol, symbol -> {
-			boolean isMarketOpen = false //
+			var isMarketOpen = false //
 					|| HkexUtil.isMarketOpen(now) //
 					|| HkexUtil.isMarketOpen(now.addHours(1));
 
-			DataSource ds = cfg.dataSource(symbol);
+			var ds = cfg.dataSource(symbol);
 			var price0 = acquiredPrices.get(symbol); // acquisition price
 			var price1 = ds.get(isMarketOpen ? -1 : -2).t1; // previous close
 			var pricex = isMarketOpen ? priceBySymbol.get(symbol) : ds.get(-1).t1; // now
@@ -100,7 +98,7 @@ public class Summarize {
 		});
 
 		Map<K, String> outByKey = summaryByKey.mapValue(Summarize_::out0).toMap();
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		Sink<String> log = sb::append;
 
 		for (var e : outByKey.entrySet())
@@ -138,7 +136,7 @@ public class Summarize {
 		Streamlet<String> details = Read //
 				.from2(Trade_.portfolio(trades0)) //
 				.map((symbol, nShares) -> {
-					Asset asset = cfg.queryCompany(symbol);
+					var asset = cfg.queryCompany(symbol);
 					var price = priceBySymbol.get(symbol);
 					var info = infoFun.apply(symbol);
 					return asset //
@@ -160,9 +158,9 @@ public class Summarize {
 		public final TransactionSummary transactionSummary;
 
 		public Summarize_(Streamlet<String> details, Streamlet<Trade> trades0, Streamlet<Trade> trades1) {
-			Account accountTx = Account.ofHistory(trades0.collect(Trade_::collectBrokeredTrades));
-			Account account0 = Account.ofHistory(trades0);
-			Account account1 = Account.ofHistory(trades1);
+			var accountTx = Account.ofHistory(trades0.collect(Trade_::collectBrokeredTrades));
+			var account0 = Account.ofHistory(trades0);
+			var account1 = Account.ofHistory(trades1);
 			var amount0 = account0.cash();
 			var amount1 = account1.cash();
 

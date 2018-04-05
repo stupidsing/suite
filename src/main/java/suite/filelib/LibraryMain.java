@@ -72,7 +72,7 @@ public class LibraryMain extends ExecutableProgram {
 							.cons(To.string(attrs.lastModifiedTime().toInstant())) //
 							.toList();
 
-					FileInfo fileInfo = new FileInfo();
+					var fileInfo = new FileInfo();
 					fileInfo.md5 = Rethrow.ex(() -> Md5Crypt.md5Crypt(Files.readAllBytes(path)));
 					fileInfo.tags = tags;
 					return fileInfo;

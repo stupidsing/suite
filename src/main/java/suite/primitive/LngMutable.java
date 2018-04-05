@@ -18,7 +18,7 @@ public class LngMutable {
 	}
 
 	public static LngMutable of(long c) {
-		LngMutable p = new LngMutable();
+		var p = new LngMutable();
 		p.update(c);
 		return p;
 	}

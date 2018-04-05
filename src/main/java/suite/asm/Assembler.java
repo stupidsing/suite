@@ -69,7 +69,7 @@ public class Assembler {
 		Fun<String, List<Run>> lct = CommentPreprocessor.lineCommentPreprocessor(whitespaces);
 		String in1 = Preprocess.transform(List.of(gct, lct), in0).t0;
 
-		Generalizer generalizer = new Generalizer();
+		var generalizer = new Generalizer();
 		List<String> lines = List.of(in1.split("\n"));
 		Pair<String, String> pe;
 		var start = 0;
@@ -95,8 +95,8 @@ public class Assembler {
 	}
 
 	public Bytes assemble(Node input) {
-		Generalizer generalizer = new Generalizer();
-		Trail trail = new Trail();
+		var generalizer = new Generalizer();
+		var trail = new Trail();
 		List<Pair<Reference, Node>> lnis = new ArrayList<>();
 
 		for (var node0 : Tree.iter(input)) {
@@ -119,7 +119,7 @@ public class Assembler {
 
 	private Bytes assemble(Generalizer generalizer, List<Pair<Reference, Node>> lnis) {
 		var org = ((Int) generalizer.getVariable(Atom.of(".org")).finalNode()).number;
-		BytesBuilder out = new BytesBuilder();
+		var out = new BytesBuilder();
 
 		for (var isPass2 : new boolean[] { false, true, }) {
 			AssemblePredicates.isPass2 = isPass2;
@@ -157,7 +157,7 @@ public class Assembler {
 	}
 
 	private Bytes convertByteStream(Node node) {
-		BytesBuilder bb = new BytesBuilder();
+		var bb = new BytesBuilder();
 		Tree tree;
 		while ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
 			bb.append((byte) ((Int) tree.getLeft()).number);

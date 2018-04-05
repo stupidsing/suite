@@ -38,19 +38,19 @@ public class ElfTest {
 				+ "	p \n" //
 				+ ") >> \n" //
 				+ "define linux-munmap := `pointer, length` => ( \n" //
-				+ "	type pointer = address (size * array byte _) >> \n" //
+				+ "	var pointer = address (size * array byte _) >> \n" //
 				+ "	asm (EAX = 91; EBX = pointer; ECX = length;) { \n" //
 				+ "		INT (-128); \n" //
 				+ "	} \n" //
 				+ ") >> \n" //
 				+ "define linux-read := `pointer, length` => ( \n" //
-				+ "	type pointer = address (size * array byte _) >> \n" //
+				+ "	var pointer = address (size * array byte _) >> \n" //
 				+ "	asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { \n" //
 				+ "		INT (-128); -- length in EAX \n" //
 				+ "	} \n" //
 				+ ") >> \n" //
 				+ "define linux-write := `pointer, length` => ( \n" //
-				+ "	type pointer = address (size * array byte _) >> \n" //
+				+ "	var pointer = address (size * array byte _) >> \n" //
 				+ "	asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { \n" //
 				+ "		INT (-128); -- length in EAX \n" //
 				+ "	} \n" //
@@ -70,7 +70,7 @@ public class ElfTest {
 	}
 
 	private void test(String program, String input, int code) {
-		Bytes bytes = Bytes.of(input.getBytes(Constants.charset));
+		var bytes = Bytes.of(input.getBytes(Constants.charset));
 
 		if (RunUtil.isUnix()) { // not Windows => run ELF
 			Execute exec = elf.exec(bytes.toArray(), offset -> Funp_.main().compile(offset, program).t1);
@@ -78,7 +78,7 @@ public class ElfTest {
 			assertEquals(input, exec.out);
 		} else { // Windows => interpret assembly
 			Pair<List<Instruction>, Bytes> pair = Funp_.main().compile(code, program);
-			Amd64Interpret interpret = new Amd64Interpret();
+			var interpret = new Amd64Interpret();
 			assertEquals(code, interpret.interpret(pair.t0, pair.t1, bytes));
 			assertEquals(bytes, interpret.out.toBytes());
 		}

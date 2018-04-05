@@ -92,7 +92,7 @@ public class IList<T> implements Iterable<T> {
 
 			public T source() {
 				if (list != null) {
-					T t = list.head;
+					var t = list.head;
 					list = list.tail;
 					return t;
 				} else
@@ -134,7 +134,7 @@ public class IList<T> implements Iterable<T> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		var node = this;
 		while (!node.isEmpty()) {
 			sb.append(node.head + ", ");

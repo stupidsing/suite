@@ -16,7 +16,7 @@ public class SoundEx {
 	public String american(String word) {
 		word = word.toUpperCase();
 
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		var a = word.toCharArray();
 		var len = a.length;
 		var p = 0;
@@ -58,7 +58,7 @@ public class SoundEx {
 	}
 
 	private String replace(String word, String match, String replace) {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var ch : String_.chars(word))
 			sb.append(match.indexOf(ch) < 0 ? ch : replace);
 		word = sb.toString();

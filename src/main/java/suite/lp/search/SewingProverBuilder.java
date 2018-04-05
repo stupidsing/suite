@@ -1,8 +1,6 @@
 package suite.lp.search;
 
 import suite.lp.Configuration.ProverConfig;
-import suite.lp.doer.ProverFactory;
-import suite.lp.doer.ProverFactory.Prove_;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
@@ -25,11 +23,11 @@ public class SewingProverBuilder implements Builder {
 
 	@Override
 	public Fun<Node, Finder> build(RuleSet ruleSet) {
-		ProverFactory sewingProver = new SewingProverImpl(ruleSet);
+		var sewingProver = new SewingProverImpl(ruleSet);
 
 		return goal -> {
 			var goal1 = SewingGeneralizerImpl.generalize(goal);
-			Prove_ pred = sewingProver.prover(goal1);
+			var pred = sewingProver.prover(goal1);
 
 			return (source, sink) -> {
 				ProverConfig proverConfig1 = new ProverConfig(ruleSet, proverConfig);

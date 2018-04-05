@@ -41,13 +41,13 @@ public class FunExpand extends FunFactory {
 			var object0 = e1.object;
 			var object1 = object0 instanceof CastFunExpr ? ((CastFunExpr) object0).expr : object0;
 			if (object1 instanceof Declare0ParameterFunExpr) {
-				Declare0ParameterFunExpr object_ = (Declare0ParameterFunExpr) object1;
+				var object_ = (Declare0ParameterFunExpr) object1;
 				return expand(object_.do_, depth);
 			} else if (object1 instanceof Declare1ParameterFunExpr) {
-				Declare1ParameterFunExpr object_ = (Declare1ParameterFunExpr) object1;
+				var object_ = (Declare1ParameterFunExpr) object1;
 				return expand(replace(object_.do_, object_.parameter, e1.parameters.get(0)), depth);
 			} else if (object1 instanceof Declare2ParameterFunExpr) {
-				Declare2ParameterFunExpr object_ = (Declare2ParameterFunExpr) object1;
+				var object_ = (Declare2ParameterFunExpr) object1;
 				var do0 = object_.do_;
 				FunExpr do1 = replace(do0, object_.p0, e1.parameters.get(0));
 				FunExpr do2 = replace(do1, object_.p1, e1.parameters.get(1));
@@ -74,7 +74,7 @@ public class FunExpand extends FunFactory {
 		}).applyIf(If1FunExpr.class, e1 -> {
 			var if_ = e1.if_;
 			if (if_ instanceof ConstantFunExpr) {
-				ConstantFunExpr e2 = (ConstantFunExpr) if_;
+				var e2 = (ConstantFunExpr) if_;
 				if (e2.type == Type.INT)
 					return ((Integer) e2.constant).intValue() != 0 ? e1.then : e1.else_;
 				else
@@ -95,7 +95,7 @@ public class FunExpand extends FunFactory {
 
 	private int weight(FunExpr e0) {
 		if (e0 instanceof CastFunExpr) {
-			CastFunExpr e1 = (CastFunExpr) e0;
+			var e1 = (CastFunExpr) e0;
 			return weight(e1.expr);
 		} else
 			return Read //

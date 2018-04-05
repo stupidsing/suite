@@ -124,7 +124,7 @@ public class Amd64Assemble {
 		}
 
 		private Encode vex(Vexp vexp, Operand op, Vexm vexm) {
-			OpReg opReg = (OpReg) op;
+			var opReg = (OpReg) op;
 			if (opReg.size == size)
 				return vex(vexp, opReg.reg, vexm, size == 8 ? 1 : 0);
 			else
@@ -136,7 +136,7 @@ public class Amd64Assemble {
 		}
 
 		private VexCode vex(Vexp vexp, int v, Vexm vexm, int w) {
-			VexCode vex = new VexCode();
+			var vex = new VexCode();
 			vex.p = vexps.get(vexp);
 			vex.v = v;
 			vex.m = vexms.get(vexm);
@@ -167,7 +167,7 @@ public class Amd64Assemble {
 	}
 
 	private Bytes assemblePass(long offset, List<Instruction> instructions) {
-		BytesBuilder bb = new BytesBuilder();
+		var bb = new BytesBuilder();
 		for (var instruction : instructions)
 			try {
 				Bytes bytes = assemble(offset, instruction);
@@ -250,7 +250,7 @@ public class Amd64Assemble {
 				if (instruction.op2 instanceof OpNone)
 					encode = assembleRegRm(instruction.op0, instruction.op1, 0xAF).pre(0x0F);
 				else if (instruction.op2 instanceof OpImm) {
-					OpImm imm = (OpImm) instruction.op2;
+					var imm = (OpImm) instruction.op2;
 					if (imm.size <= 1)
 						encode = assembleRegRm(instruction.op0, instruction.op1, 0x6B).imm(imm);
 					else if (imm.size == instruction.op0.size)
@@ -384,32 +384,32 @@ public class Amd64Assemble {
 		case MOV:
 			if (instruction.op0.size == instruction.op1.size)
 				if (instruction.op1 instanceof OpImm) {
-					OpImm op1 = (OpImm) instruction.op1;
+					var op1 = (OpImm) instruction.op1;
 
 					if (instruction.op0 instanceof OpReg) {
-						OpReg op0 = (OpReg) instruction.op0;
+						var op0 = (OpReg) instruction.op0;
 						encode = new InsnCode(op1.size, op1).setByte(0xB0 + (op0.size <= 1 ? 0 : 8) + op0.reg);
 					} else if (isRm.test(instruction.op0))
 						encode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(op1);
 					else
 						encode = invalid;
 				} else if (instruction.op0 instanceof OpRegSegment) {
-					OpRegSegment regSegment = (OpRegSegment) instruction.op0;
+					var regSegment = (OpRegSegment) instruction.op0;
 					encode = assemble(instruction.op1, 0x8E, regSegment.sreg);
 				} else if (instruction.op1 instanceof OpRegSegment) {
-					OpRegSegment regSegment = (OpRegSegment) instruction.op1;
+					var regSegment = (OpRegSegment) instruction.op1;
 					encode = assemble(instruction.op0, 0x8C, regSegment.sreg);
 				} else if (instruction.op0.size == 4 //
 						&& instruction.op0 instanceof OpReg //
 						&& instruction.op1 instanceof OpRegControl) {
-					OpReg reg = (OpReg) instruction.op0;
-					OpRegControl regControl = (OpRegControl) instruction.op1;
+					var reg = (OpReg) instruction.op0;
+					var regControl = (OpRegControl) instruction.op1;
 					encode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x20, b(reg.reg, regControl.creg, 3), });
 				} else if (instruction.op0.size == 4 //
 						&& instruction.op0 instanceof OpRegControl //
 						&& instruction.op1 instanceof OpReg) {
-					OpRegControl regControl = (OpRegControl) instruction.op0;
-					OpReg reg = (OpReg) instruction.op1;
+					var regControl = (OpRegControl) instruction.op0;
+					var reg = (OpReg) instruction.op1;
 					encode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x22, b(reg.reg, regControl.creg, 3), });
 				} else if ((encode = assembleRmReg(instruction, 0x88)).isValid())
 					;
@@ -468,7 +468,7 @@ public class Amd64Assemble {
 				if (isRm.test(instruction.op0))
 					encode = assembleRm(instruction, 0x58, 0x8E, 0);
 				else if (instruction.op0 instanceof OpRegSegment) {
-					OpRegSegment sreg = (OpRegSegment) instruction.op0;
+					var sreg = (OpRegSegment) instruction.op0;
 					switch (sreg.sreg) {
 					case 0: // POP ES
 						encode = assemble(instruction, 0x07);
@@ -508,7 +508,7 @@ public class Amd64Assemble {
 				if (isRm.test(instruction.op0))
 					encode = assembleRm(instruction, 0x50, 0xFE, 6);
 				else if (instruction.op0 instanceof OpRegSegment) {
-					OpRegSegment sreg = (OpRegSegment) instruction.op0;
+					var sreg = (OpRegSegment) instruction.op0;
 					switch (sreg.sreg) {
 					case 0: // PUSH ES
 						encode = assemble(instruction, 0x06);
@@ -736,7 +736,7 @@ public class Amd64Assemble {
 
 	private InsnCode assembleRegRmExtended(Instruction instruction, int b) {
 		if (instruction.op0 instanceof OpReg && isRm.test(instruction.op1)) {
-			OpReg reg = (OpReg) instruction.op0;
+			var reg = (OpReg) instruction.op0;
 			return assemble(instruction.op1, b + (instruction.op1.size <= 1 ? 0 : 1), reg.reg);
 		} else
 			return invalid;
@@ -744,7 +744,7 @@ public class Amd64Assemble {
 
 	private InsnCode assembleRm(Instruction instruction, int bReg, int bModrm, int num) {
 		if (instruction.op0 instanceof OpReg && 1 < instruction.op0.size) {
-			OpReg op0 = (OpReg) instruction.op0;
+			var op0 = (OpReg) instruction.op0;
 			return new InsnCode(instruction.op0.size, bs(bReg + op0.reg));
 		} else if (isRm.test(instruction.op0))
 			return assembleByteFlag(instruction.op0, bModrm, num);
@@ -807,7 +807,7 @@ public class Amd64Assemble {
 
 	private InsnCode assembleShift(Instruction instruction, int b, int num) {
 		if (isRm.test(instruction.op0)) {
-			Operand shift = instruction.op1;
+			var shift = instruction.op1;
 			boolean isShiftImm;
 			OpImm shiftImm;
 			int b1;
@@ -854,8 +854,8 @@ public class Amd64Assemble {
 
 	private Bytes encode(InsnCode insnCode, byte[] vexs) {
 		if (insnCode.isValid()) {
-			Modrm modrm = insnCode.modrm;
-			BytesBuilder bb = new BytesBuilder();
+			var modrm = insnCode.modrm;
+			var bb = new BytesBuilder();
 			if (vexs != null)
 				bb.append(vexs);
 			else {
@@ -898,7 +898,7 @@ public class Amd64Assemble {
 		long disp;
 
 		if (operand instanceof OpReg) { // EAX
-			OpReg op = (OpReg) operand;
+			var op = (OpReg) operand;
 			mod = 3;
 			rm = op.reg;
 			s = i = b = -1;
@@ -963,7 +963,7 @@ public class Amd64Assemble {
 		} else
 			throw new RuntimeException("bad operand");
 
-		Modrm modrm = new Modrm();
+		var modrm = new Modrm();
 		modrm.size = operand.size;
 		modrm.mod = mod;
 		modrm.num = num;

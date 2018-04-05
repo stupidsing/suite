@@ -1,7 +1,6 @@
 package suite.pkgmanager;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipFile;
@@ -26,7 +25,7 @@ public class PackageManager {
 	private Log log = LogFactory.getLog(getClass());
 
 	public boolean install(String packageFilename) throws IOException {
-		PackageManifest packageManifest = getPackageManifest(packageFilename);
+		var packageManifest = getPackageManifest(packageFilename);
 
 		List<Pair<String, String>> filenameMappings = Read //
 				.from2(packageManifest.getFilenameMappings()) //
@@ -58,7 +57,7 @@ public class PackageManager {
 				.toList());
 
 		var progress = 0;
-		boolean isSuccess = true;
+		var isSuccess = true;
 
 		for (; progress < installActions.size(); progress++)
 			try {
@@ -78,7 +77,7 @@ public class PackageManager {
 	}
 
 	public boolean uninstall(String packageName) throws IOException {
-		PackageMemento packageMemento = keeper.loadPackageMemento(packageName);
+		var packageMemento = keeper.loadPackageMemento(packageName);
 		List<InstallAction> installActions = packageMemento.getInstallActions();
 		unact(installActions, installActions.size());
 		keeper.removePackageMemento(packageName);
@@ -97,7 +96,7 @@ public class PackageManager {
 
 	private PackageManifest getPackageManifest(String packageFilename) throws IOException {
 		try (ZipFile zipFile = new ZipFile(packageFilename);
-				InputStream fis = zipFile.getInputStream(zipFile.getEntry("pm.json"))) {
+				var fis = zipFile.getInputStream(zipFile.getEntry("pm.json"))) {
 			return objectMapper.readValue(fis, PackageManifest.class);
 		}
 	}

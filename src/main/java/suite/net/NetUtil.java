@@ -30,9 +30,9 @@ public class NetUtil {
 	}
 
 	public static Bytes serialize(Object o) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		var baos = new ByteArrayOutputStream();
 		return Rethrow.ex(() -> {
-			ObjectOutputStream out = new ObjectOutputStream(baos);
+			var out = new ObjectOutputStream(baos);
 			out.writeObject(o);
 			out.flush();
 			out.close();
@@ -42,12 +42,12 @@ public class NetUtil {
 
 	public static <T> T deserialize(Bytes s) {
 		var bytes = s.toArray();
-		ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+		var bais = new ByteArrayInputStream(bytes);
 
 		try {
-			ObjectInputStream in = new ObjectInputStream(bais);
+			var in = new ObjectInputStream(bais);
 			@SuppressWarnings("unchecked")
-			T t = (T) in.readObject();
+			var t = (T) in.readObject();
 			return t;
 		} catch (ClassNotFoundException | IOException ex) {
 			return Fail.t(ex);

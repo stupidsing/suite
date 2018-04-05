@@ -3,7 +3,6 @@ package suite.debian;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -77,7 +76,7 @@ public class AptUtil {
 	}
 
 	public List<Map<String, String>> readRepoPackages(Repo repo) throws IOException {
-		URL url = To.url(repo.urlAddress + "/dists/" + repo.dist + "/" + repo.tag + "/binary-" + repo.arch + "/Packages.gz");
+		var url = To.url(repo.urlAddress + "/dists/" + repo.dist + "/" + repo.tag + "/binary-" + repo.arch + "/Packages.gz");
 
 		try (InputStream is = url.openConnection().getInputStream(); InputStream gis = new GZIPInputStream(is)) {
 			return debianUtil.readDpkgConfiguration(gis).toList();

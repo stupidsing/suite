@@ -76,7 +76,7 @@ public class Mapify {
 	}
 
 	private Mapifier getMapifier(Type type) {
-		Mapifier mapifier = mapifiers.get(type);
+		var mapifier = mapifiers.get(type);
 		if (mapifier == null) {
 			mapifiers.put(type, new Mapifier( //
 					object -> apply_(getMapifier(type).mapify, object), //
@@ -97,7 +97,7 @@ public class Mapify {
 				mapifier = new Mapifier(id, id);
 			else if (clazz.isArray()) {
 				Class<?> componentType = clazz.getComponentType();
-				Mapifier mapifier1 = getMapifier(componentType);
+				var mapifier1 = getMapifier(componentType);
 				mapifier = new Mapifier(object -> {
 					Map<Object, Object> map = newMap();
 					var length = Array.getLength(object);
@@ -139,7 +139,7 @@ public class Mapify {
 				List<FieldInfo> fis = Read //
 						.from(inspect.fields(clazz)) //
 						.map(field -> {
-							Type type1 = field.getGenericType();
+							var type1 = field.getGenericType();
 							return new FieldInfo(field, field.getName(), getMapifier(type1));
 						}) //
 						.toList();
@@ -158,13 +158,13 @@ public class Mapify {
 				}));
 			}
 		} else if (type instanceof ParameterizedType) {
-			ParameterizedType pt = (ParameterizedType) type;
-			Type rawType = pt.getRawType();
+			var pt = (ParameterizedType) type;
+			var rawType = pt.getRawType();
 			Type[] typeArgs = pt.getActualTypeArguments();
 			Class<?> clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (collectionClasses.contains(clazz)) {
-				Mapifier mapifier1 = getMapifier(typeArgs[0]);
+				var mapifier1 = getMapifier(typeArgs[0]);
 				mapifier = new Mapifier(object -> {
 					Map<Object, Object> map = newMap();
 					var i = 0;
@@ -180,8 +180,8 @@ public class Mapify {
 					return object1;
 				});
 			} else if (mapClasses.contains(clazz)) {
-				Mapifier km = getMapifier(typeArgs[0]);
-				Mapifier vm = getMapifier(typeArgs[1]);
+				var km = getMapifier(typeArgs[0]);
+				var vm = getMapifier(typeArgs[1]);
 				mapifier = new Mapifier(object -> {
 					Map<Object, Object> map = newMap();
 					for (Entry<?, ?> e : ((Map<?, ?>) object).entrySet())
@@ -214,7 +214,7 @@ public class Mapify {
 			return Object_.new_(clazz);
 
 		@SuppressWarnings("unchecked")
-		T t = (T) object;
+		var t = (T) object;
 		return t;
 	}
 

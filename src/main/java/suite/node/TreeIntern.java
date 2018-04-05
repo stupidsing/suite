@@ -33,7 +33,7 @@ public class TreeIntern {
 
 		public boolean equals(Object object) {
 			if (Object_.clazz(object) == NodeKey.class) {
-				NodeKey key = (NodeKey) object;
+				var key = (NodeKey) object;
 				return hashCode == key.hashCode && node == key.node;
 			} else
 				return false;
@@ -58,7 +58,7 @@ public class TreeIntern {
 
 		public boolean equals(Object object) {
 			if (Object_.clazz(object) == TreeKey.class) {
-				TreeKey key = (TreeKey) object;
+				var key = (TreeKey) object;
 				return hashCode == key.hashCode && operator == key.operator && left == key.left && right == key.right;
 			} else
 				return false;
@@ -70,7 +70,7 @@ public class TreeIntern {
 	}
 
 	public Node internalize(Node node) {
-		Tree tree = Tree.decompose(node);
+		var tree = Tree.decompose(node);
 		Key key;
 		if (tree != null)
 			key = treeKey(tree.getOperator(), internalize(tree.getLeft()), internalize(tree.getRight()));

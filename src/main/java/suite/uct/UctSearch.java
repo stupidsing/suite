@@ -59,7 +59,7 @@ public class UctSearch<Move> {
 		}
 
 		root = new UctNode<>();
-		AtomicInteger count = new AtomicInteger();
+		var count = new AtomicInteger();
 		var end = System.currentTimeMillis() + boundedTime;
 
 		List<Thread> threads = Ints_ //
@@ -184,7 +184,7 @@ public class UctSearch<Move> {
 	private static DecimalFormat df3 = new DecimalFormat("0.000");
 
 	public void dumpSearch() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		dumpSearch(sb, 0, null, root);
 		System.out.println(sb);
 	}

@@ -13,14 +13,13 @@ import suite.trade.backalloc.BackAllocator;
 import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy;
-import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.util.FunUtil.Fun;
 
 public class BackAllocator_ {
 
 	public static BackAllocator by(BuySellStrategy mamr) {
 		return byPrices(prices -> {
-			GetBuySell getBuySell = mamr.analyze(prices);
+			var getBuySell = mamr.analyze(prices);
 
 			return index -> {
 				var hold = 0;

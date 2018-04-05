@@ -7,11 +7,8 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
-import suite.node.util.TreeUtil.IntInt_Bool;
-import suite.primitive.IntInt_Int;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
@@ -57,12 +54,12 @@ public class InterpretFunLazy0 {
 		env = env.put(SND__.name, () -> new Fun_(in -> ((Pair_) in.get()).second));
 
 		for (var e : TreeUtil.boolOperations.entrySet()) {
-			IntInt_Bool fun = e.getValue();
+			var fun = e.getValue();
 			env = env.put(e.getKey().getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(fun.apply(i(a), i(b))))));
 		}
 
 		for (var e : TreeUtil.intOperations.entrySet()) {
-			IntInt_Int fun = e.getValue();
+			var fun = e.getValue();
 			env = env.put(e.getKey().getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(fun.apply(i(a), i(b))))));
 		}
 
@@ -98,13 +95,13 @@ public class InterpretFunLazy0 {
 			Fun<IMap<String, Thunk_>, Thunk_> param = lazy_(m[1]);
 			result = env -> fun(fun.apply(env).get()).apply(param.apply(env));
 		} else if ((tree = Tree.decompose(node)) != null) {
-			Operator operator = tree.getOperator();
+			var operator = tree.getOperator();
 			Fun<IMap<String, Thunk_>, Thunk_> p0 = lazy_(tree.getLeft());
 			Fun<IMap<String, Thunk_>, Thunk_> p1 = lazy_(tree.getRight());
 			result = env -> {
-				Thunk_ r0 = env.get(operator.getName());
-				Thunk_ r1 = fun(r0.get()).apply(p0.apply(env));
-				Thunk_ r2 = fun(r1.get()).apply(p1.apply(env));
+				var r0 = env.get(operator.getName());
+				var r1 = fun(r0.get()).apply(p0.apply(env));
+				var r2 = fun(r1.get()).apply(p1.apply(env));
 				return r2;
 			};
 		} else if (node instanceof Atom) {

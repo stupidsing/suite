@@ -19,7 +19,6 @@ import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
-import suite.primitive.IntInt_Int;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
@@ -86,14 +85,14 @@ public class P2GenerateLambda {
 		private Thunk compile_(Funp n0) {
 			return n0.<Thunk> switch_( //
 			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-				Thunk lambda1 = compile_(lambda);
-				Thunk value1 = compile_(value);
+				var lambda1 = compile_(lambda);
+				var value1 = compile_(value);
 				return rt -> ((Fun_) lambda1.apply(rt)).apply(value1.apply(rt));
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
 				Streamlet<Thunk> thunks = Read.from(elements).map(element -> compile_(element));
 				return rt -> new Vec(thunks.map(thunk -> thunk.apply(rt)).toArray(Value.class));
 			})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
-				Bool b1 = new Bool(b);
+				var b1 = new Bool(b);
 				return rt -> b1;
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				return compile_(FunpApply.of(value, FunpLambda.of(var, expr)));
@@ -104,18 +103,18 @@ public class P2GenerateLambda {
 			}).applyIf(FunpError.class, f -> {
 				return Fail.t();
 			}).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
-				Thunk if1 = compile_(if_);
-				Thunk then1 = compile_(then);
-				Thunk else1 = compile_(else_);
+				var if1 = compile_(if_);
+				var then1 = compile_(then);
+				var else1 = compile_(else_);
 				return rt -> (b(rt, if1) ? then1 : else1).apply(rt);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
-				Thunk array = compile_(FunpDeref.of(reference));
-				Thunk index1 = compile_(index);
+				var array = compile_(FunpDeref.of(reference));
+				var index1 = compile_(index);
 				return rt -> ((Vec) array.apply(rt)).values[i(rt, index1)];
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 				var fs1 = fs + 1;
 				IMap<String, Integer> env1 = env.replace(var, fs1);
-				Thunk init_ = compile_(init);
+				var init_ = compile_(init);
 				Thunk cond_ = compile(fs1, env1, cond);
 				Thunk iterate_ = compile(fs1, env1, iterate);
 				return rt -> {
@@ -129,19 +128,19 @@ public class P2GenerateLambda {
 				Thunk thunk = compile(fs1, env.replace(var, fs1), expr);
 				return rt -> (Fun_) p -> thunk.apply(new Rt(rt, p));
 			})).applyIf(FunpNumber.class, f -> f.apply(i -> {
-				Int i1 = new Int(i.get());
+				var i1 = new Int(i.get());
 				return rt -> i1;
 			})).applyIf(FunpReference.class, f -> {
 				return Fail.t();
 			}).applyIf(FunpTree.class, f -> f.apply((operator, left, right) -> {
-				Thunk v0 = compile_(left);
-				Thunk v1 = compile_(right);
+				var v0 = compile_(left);
+				var v1 = compile_(right);
 				if (operator == TermOp.BIGAND)
 					return rt -> new Bool(b(rt, v0) && b(rt, v1));
 				else if (operator == TermOp.BIGOR_)
 					return rt -> new Bool(b(rt, v0) || b(rt, v1));
 				else {
-					IntInt_Int fun = TreeUtil.evaluateOp(operator);
+					var fun = TreeUtil.evaluateOp(operator);
 					return rt -> new Int(fun.apply(i(rt, v0), i(rt, v1)));
 				}
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {

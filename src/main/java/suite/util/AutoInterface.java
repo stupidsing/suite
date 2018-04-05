@@ -5,7 +5,7 @@ import suite.util.FunUtil.Fun;
 public interface AutoInterface<T> {
 
 	public default <U extends T, V> V cast(Class<U> clazz, Fun<U, V> fun) {
-		U u = cast(clazz);
+		var u = cast(clazz);
 		return u != null ? fun.apply(u) : null;
 	}
 

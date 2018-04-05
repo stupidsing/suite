@@ -51,14 +51,14 @@ public class Longs implements Iterable<Long> {
 	};
 
 	public static Longs concat(Longs... array) {
-		LongsBuilder bb = new LongsBuilder();
+		var bb = new LongsBuilder();
 		for (var longs : array)
 			bb.append(longs);
 		return bb.toLongs();
 	}
 
 	public static Longs of(Outlet<Longs> outlet) {
-		LongsBuilder cb = new LongsBuilder();
+		var cb = new LongsBuilder();
 		outlet.forEach(cb::append);
 		return cb.toLongs();
 	}
@@ -122,7 +122,7 @@ public class Longs implements Iterable<Long> {
 	}
 
 	public boolean isWhitespaces() {
-		boolean b = true;
+		var b = true;
 		for (var i = start; b && i < end; i++)
 			b &= ParseUtil.isWhitespace(cs[i]);
 		return b;
@@ -139,7 +139,7 @@ public class Longs implements Iterable<Long> {
 	}
 
 	public Longs pad(int size) {
-		LongsBuilder cb = new LongsBuilder();
+		var cb = new LongsBuilder();
 		cb.append(this);
 		while (cb.size() < size)
 			cb.append((long) 0);
@@ -155,7 +155,7 @@ public class Longs implements Iterable<Long> {
 	}
 
 	public Longs replace(Longs from, Longs to) {
-		LongsBuilder cb = new LongsBuilder();
+		var cb = new LongsBuilder();
 		int i0 = 0, i;
 		while (0 <= (i = indexOf(from, i0))) {
 			cb.append(range_(i0, i));
@@ -240,7 +240,7 @@ public class Longs implements Iterable<Long> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == Longs.class) {
-			Longs other = (Longs) object;
+			var other = (Longs) object;
 
 			if (size_() == other.size_()) {
 				var diff = other.start - start;
@@ -264,7 +264,7 @@ public class Longs implements Iterable<Long> {
 
 	@Override
 	public String toString() {
-		StringBuilder sb = new StringBuilder();
+		var sb = new StringBuilder();
 		for (var i = start; i < end; i++)
 			sb.append(cs[i]);
 		return sb.toString();
@@ -272,7 +272,7 @@ public class Longs implements Iterable<Long> {
 
 	private boolean startsWith_(Longs longs, int s) {
 		if (s + longs.size_() <= size_()) {
-			boolean b = true;
+			var b = true;
 			for (var i = 0; b && i < longs.size_(); i++)
 				b &= get(s + i) == longs.get(i);
 			return b;

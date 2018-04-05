@@ -80,16 +80,16 @@ public class TreeUtil {
 	}
 
 	public static int evaluate(Node node) {
-		Tree tree = Tree.decompose(node);
+		var tree = Tree.decompose(node);
 		int result;
 
 		if (tree != null) {
-			Operator op = tree.getOperator();
+			var op = tree.getOperator();
 			IntInt_Int fun;
 			int lhs, rhs;
 
 			if (op == TermOp.TUPLE_) {
-				Tree rightTree = Tree.decompose(tree.getRight());
+				var rightTree = Tree.decompose(tree.getRight());
 				lhs = evaluate(tree.getLeft());
 				rhs = evaluate(rightTree.getRight());
 				fun = evaluateOp(rightTree.getLeft());
@@ -109,12 +109,12 @@ public class TreeUtil {
 	}
 
 	public static IntInt_Int evaluateOp(Node op) {
-		IntInt_Int fun = tupleOperations.get(op);
+		var fun = tupleOperations.get(op);
 		return fun != null ? fun : Fail.t("cannot evaluate operator: " + op);
 	}
 
 	public static IntInt_Int evaluateOp(Operator op) {
-		IntInt_Int fun = intOperations.get(op);
+		var fun = intOperations.get(op);
 		return fun != null ? fun : Fail.t("cannot evaluate operator: " + op);
 	}
 

@@ -26,7 +26,7 @@ public class P0 {
 		public Funp lambda;
 
 		public static FunpApply of(Funp value, Funp lambda) {
-			FunpApply f = new FunpApply();
+			var f = new FunpApply();
 			f.value = value;
 			f.lambda = lambda;
 			return f;
@@ -41,7 +41,7 @@ public class P0 {
 		public List<Funp> elements;
 
 		public static FunpArray of(List<Funp> elements) {
-			FunpArray f = new FunpArray();
+			var f = new FunpArray();
 			f.elements = elements;
 			return f;
 		}
@@ -56,7 +56,7 @@ public class P0 {
 		public List<Node> asm;
 
 		public static FunpAsm of(List<Pair<OpReg, Funp>> assigns, List<Node> asm) {
-			FunpAsm f = new FunpAsm();
+			var f = new FunpAsm();
 			f.assigns = assigns;
 			f.asm = asm;
 			return f;
@@ -73,7 +73,7 @@ public class P0 {
 		public Funp expr;
 
 		public static FunpAssignReference of(FunpReference reference, Funp value, Funp expr) {
-			FunpAssignReference f = new FunpAssignReference();
+			var f = new FunpAssignReference();
 			f.reference = reference;
 			f.value = value;
 			f.expr = expr;
@@ -89,7 +89,7 @@ public class P0 {
 		public boolean b;
 
 		public static FunpBoolean of(boolean b) {
-			FunpBoolean f = new FunpBoolean();
+			var f = new FunpBoolean();
 			f.b = b;
 			return f;
 		}
@@ -105,7 +105,7 @@ public class P0 {
 		public Funp expr;
 
 		public static FunpCheckType of(Funp left, Funp right, Funp expr) {
-			FunpCheckType f = new FunpCheckType();
+			var f = new FunpCheckType();
 			f.left = left;
 			f.right = right;
 			f.expr = expr;
@@ -126,7 +126,7 @@ public class P0 {
 		public Funp expr;
 
 		public static FunpCoerce of(Coerce coerce, Funp expr) {
-			FunpCoerce f = new FunpCoerce();
+			var f = new FunpCoerce();
 			f.coerce = coerce;
 			f.expr = expr;
 			return f;
@@ -144,7 +144,7 @@ public class P0 {
 		public Funp expr;
 
 		public static FunpDefine of(boolean isPolyType, String var, Funp value, Funp expr) {
-			FunpDefine f = new FunpDefine();
+			var f = new FunpDefine();
 			f.isPolyType = isPolyType;
 			f.var = var;
 			f.value = value;
@@ -162,7 +162,7 @@ public class P0 {
 		public Funp expr;
 
 		public static FunpDefineRec of(List<Pair<String, Funp>> pairs, Funp expr) {
-			FunpDefineRec f = new FunpDefineRec();
+			var f = new FunpDefineRec();
 			f.pairs = pairs;
 			f.expr = expr;
 			return f;
@@ -177,7 +177,7 @@ public class P0 {
 		public Funp pointer;
 
 		public static FunpDeref of(Funp pointer) {
-			FunpDeref f = new FunpDeref();
+			var f = new FunpDeref();
 			f.pointer = pointer;
 			return f;
 		}
@@ -212,7 +212,7 @@ public class P0 {
 		public String field;
 
 		public static FunpField of(Funp reference, String field) {
-			FunpField f = new FunpField();
+			var f = new FunpField();
 			f.reference = reference;
 			f.field = field;
 			return f;
@@ -229,7 +229,7 @@ public class P0 {
 		public Funp expr;
 
 		public static FunpGlobal of(String var, Funp value, Funp expr) {
-			FunpGlobal f = new FunpGlobal();
+			var f = new FunpGlobal();
 			f.var = var;
 			f.value = value;
 			f.expr = expr;
@@ -247,7 +247,7 @@ public class P0 {
 		public Funp else_;
 
 		public static FunpIf of(Funp if_, Funp then, Funp else_) {
-			FunpIf f = new FunpIf();
+			var f = new FunpIf();
 			f.if_ = if_;
 			f.then = then;
 			f.else_ = else_;
@@ -264,7 +264,7 @@ public class P0 {
 		public Funp index;
 
 		public static FunpIndex of(FunpReference reference, Funp index) {
-			FunpIndex f = new FunpIndex();
+			var f = new FunpIndex();
 			f.reference = reference;
 			f.index = index;
 			return f;
@@ -279,7 +279,7 @@ public class P0 {
 		public Funp expr;
 
 		public static FunpIo of(Funp expr) {
-			FunpIo f = new FunpIo();
+			var f = new FunpIo();
 			f.expr = expr;
 			return f;
 		}
@@ -293,7 +293,7 @@ public class P0 {
 		public Funp expr;
 
 		public static FunpIoCat of(Funp expr) {
-			FunpIoCat f = new FunpIoCat();
+			var f = new FunpIoCat();
 			f.expr = expr;
 			return f;
 		}
@@ -310,7 +310,7 @@ public class P0 {
 		public Funp iterate;
 
 		public static FunpIterate of(String var, Funp init, Funp cond, Funp iterate) {
-			FunpIterate f = new FunpIterate();
+			var f = new FunpIterate();
 			f.var = var;
 			f.init = init;
 			f.cond = cond;
@@ -328,7 +328,7 @@ public class P0 {
 		public Funp expr;
 
 		public static FunpLambda of(String var, Funp expr) {
-			FunpLambda f = new FunpLambda();
+			var f = new FunpLambda();
 			f.var = var;
 			f.expr = expr;
 			return f;
@@ -346,7 +346,7 @@ public class P0 {
 		public Funp expr;
 
 		public static FunpLambdaCapture of(String var, String capn, Funp cap, Funp expr) {
-			FunpLambdaCapture f = new FunpLambdaCapture();
+			var f = new FunpLambdaCapture();
 			f.var = var;
 			f.capn = capn;
 			f.cap = cap;
@@ -367,7 +367,7 @@ public class P0 {
 		}
 
 		public static FunpNumber of(Mutable<Integer> i) {
-			FunpNumber f = new FunpNumber();
+			var f = new FunpNumber();
 			f.i = i;
 			return f;
 		}
@@ -381,7 +381,7 @@ public class P0 {
 		public Funp expr;
 
 		public static FunpPredefine of(Funp expr) {
-			FunpPredefine f = new FunpPredefine();
+			var f = new FunpPredefine();
 			f.expr = expr;
 			return f;
 		}
@@ -395,7 +395,7 @@ public class P0 {
 		public Funp expr;
 
 		public static FunpReference of(Funp expr) {
-			FunpReference f = new FunpReference();
+			var f = new FunpReference();
 			f.expr = expr;
 			return f;
 		}
@@ -410,7 +410,7 @@ public class P0 {
 		public Funp expr;
 
 		public static FunpRepeat of(int count, Funp expr) {
-			FunpRepeat f = new FunpRepeat();
+			var f = new FunpRepeat();
 			f.count = count;
 			f.expr = expr;
 			return f;
@@ -425,7 +425,7 @@ public class P0 {
 		public List<Pair<String, Funp>> pairs;
 
 		public static FunpStruct of(List<Pair<String, Funp>> pairs) {
-			FunpStruct f = new FunpStruct();
+			var f = new FunpStruct();
 			f.pairs = pairs;
 			return f;
 		}
@@ -441,7 +441,7 @@ public class P0 {
 		public Funp right;
 
 		public static FunpTree of(Operator operator, Funp left, Funp right) {
-			FunpTree f = new FunpTree();
+			var f = new FunpTree();
 			f.operator = operator;
 			f.left = left;
 			f.right = right;
@@ -459,7 +459,7 @@ public class P0 {
 		public Funp right;
 
 		public static FunpTree2 of(Atom operator, Funp left, Funp right) {
-			FunpTree2 f = new FunpTree2();
+			var f = new FunpTree2();
 			f.operator = operator;
 			f.left = left;
 			f.right = right;
@@ -486,7 +486,7 @@ public class P0 {
 		public String var;
 
 		public static FunpVariable of(String var) {
-			FunpVariable f = new FunpVariable();
+			var f = new FunpVariable();
 			f.var = var;
 			return f;
 		};
@@ -500,7 +500,7 @@ public class P0 {
 		public String var;
 
 		public static FunpVariableNew of(String var) {
-			FunpVariableNew f = new FunpVariableNew();
+			var f = new FunpVariableNew();
 			f.var = var;
 			return f;
 		};

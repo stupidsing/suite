@@ -18,7 +18,7 @@ public class FltMutable {
 	}
 
 	public static FltMutable of(float c) {
-		FltMutable p = new FltMutable();
+		var p = new FltMutable();
 		p.update(c);
 		return p;
 	}
