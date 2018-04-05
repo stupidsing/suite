@@ -2,7 +2,6 @@ package suite.lcs;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 import java.util.Objects;
 
@@ -74,7 +73,7 @@ public class LcsBfs<T> {
 			}
 		}, new Node(null, 0, 0));
 
-		var deque = new ArrayDeque<>();
+		var deque = new ArrayDeque<T>();
 		Node previous;
 
 		while ((previous = node.previous) != null) {

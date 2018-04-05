@@ -179,7 +179,7 @@ public class IRope<T> {
 	}
 
 	private static <T> IRope<T> left(IRope<T> rope, int p) {
-		var deque = new ArrayDeque<>();
+		var deque = new ArrayDeque<IRope<T>>();
 		List<IRope<T>> ropes;
 
 		while ((ropes = rope.ropes) != null) {
@@ -198,7 +198,7 @@ public class IRope<T> {
 	}
 
 	private static <T> IRope<T> right(IRope<T> rope, int p) {
-		var deque = new ArrayDeque<>();
+		var deque = new ArrayDeque<IRope<T>>();
 		List<IRope<T>> ropes;
 
 		while ((ropes = rope.ropes) != null) {
@@ -220,7 +220,7 @@ public class IRope<T> {
 		var branchFactor = minBranchFactor;
 
 		while (true) {
-			var queue1 = new ArrayDeque<>();
+			var queue1 = new ArrayDeque<IRope<T>>();
 			var depth = rope.depth;
 
 			queue1.push(rope);
@@ -259,7 +259,7 @@ public class IRope<T> {
 		var branchFactor = minBranchFactor;
 
 		while (true) {
-			var queue1 = new ArrayDeque<>();
+			var queue1 = new ArrayDeque<IRope<T>>();
 			var depth = rope.depth;
 
 			queue1.push(rope);

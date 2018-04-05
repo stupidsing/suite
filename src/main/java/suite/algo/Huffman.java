@@ -3,7 +3,6 @@ package suite.algo;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -60,7 +59,7 @@ public class Huffman {
 
 	private <Unit> Dictionary<Unit> load(Pair<List<Unit>, List<Boolean>> input) {
 		Map<Unit, Node<Unit>> nodeByUnit = new HashMap<>();
-		var deque = new ArrayDeque<>();
+		var deque = new ArrayDeque<Node<Unit>>();
 
 		for (var unit : input.t0)
 			if (unit == null) {
@@ -95,7 +94,7 @@ public class Huffman {
 	}
 
 	private static <Unit> Source<Boolean> encode(Dictionary<Unit> dictionary, Source<Unit> source) {
-		var stack = new ArrayDeque<>();
+		var stack = new ArrayDeque<Boolean>();
 
 		return () -> {
 			Unit unit;

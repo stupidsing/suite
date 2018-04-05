@@ -7,7 +7,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -204,7 +203,7 @@ public interface BackAllocator {
 
 	public default BackAllocator hold(int period, DblDbl_Dbl fun) {
 		return (akds, indices) -> {
-			var queue = new ArrayDeque<>();
+			var queue = new ArrayDeque<Map<String, Double>>();
 			OnDateTime onDateTime = allocate(akds, indices);
 
 			return index -> {

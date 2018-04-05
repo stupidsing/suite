@@ -2,7 +2,6 @@ package suite.lcs;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.List;
 
 /**
@@ -62,7 +61,7 @@ public class LcsSesMyers<T> {
 			v0 = v1;
 		}
 
-		var deque = new ArrayDeque<>();
+		var deque = new ArrayDeque<T>();
 
 		for (; 0 < x2 || 0 < y2; d--) {
 			v0 = 0 < d ? vs.get(d - 1) : vdummy;

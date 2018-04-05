@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayDeque;
-import java.util.Deque;
 
 import suite.util.Copy;
 import suite.util.Fail;
@@ -22,7 +21,7 @@ public class FileUtil {
 	}
 
 	public static Source<File> findFiles(File file) {
-		var stack = new ArrayDeque<>();
+		var stack = new ArrayDeque<File>();
 		stack.push(file);
 
 		return new Source<File>() {

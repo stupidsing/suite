@@ -99,7 +99,7 @@ public class TopDownParse {
 
 			while ((state = o.next()) != null)
 				if (expect.whitespaces(in, length, state.pos) == length) {
-					var states = new ArrayDeque<>();
+					var states = new ArrayDeque<State>();
 
 					while (state != null) {
 						if (state.sign < 0)
@@ -111,7 +111,7 @@ public class TopDownParse {
 
 					Ast root = new Ast(null, 0);
 
-					var stack = new ArrayDeque<>();
+					var stack = new ArrayDeque<Ast>();
 					stack.push(root);
 
 					for (State state_ : states) {

@@ -1,7 +1,6 @@
 package suite.concurrent;
 
 import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.Iterator;
 
 import jersey.repackaged.com.google.common.base.Objects;
@@ -17,7 +16,7 @@ public class Bag<S> implements Iterable<S> {
 
 	public void remove(S s) {
 		cr.apply(list0 -> {
-			var queue = new ArrayDeque<>();
+			var queue = new ArrayDeque<S>();
 			for (S s_ : list0)
 				if (!Objects.equal(s, s_))
 					queue.addLast(s_);

@@ -3,7 +3,6 @@ package suite.search;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.PriorityQueue;
@@ -56,7 +55,7 @@ public class Astar<Node> {
 				while ((node1 = source.source()) != null)
 					open.add(new NodeInfo(ni, node1, sunkCost1, sunkCost1 + estimate.apply(node1)));
 			} else {
-				var deque = new ArrayDeque<>();
+				var deque = new ArrayDeque<Node>();
 				while (ni != null) {
 					deque.addFirst(ni.node);
 					ni = ni.previous;

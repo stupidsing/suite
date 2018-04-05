@@ -1,7 +1,6 @@
 package suite.immutable;
 
 import java.util.Comparator;
-import java.util.Deque;
 
 /**
  * Immutable binomial priority queue, implemented using sparse-list of trees.

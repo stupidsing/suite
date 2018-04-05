@@ -52,7 +52,7 @@ public class InstructionExtractor implements AutoCloseable {
 	}
 
 	private void extractInstructions(Node snippet, List<List<Node>> rsList) {
-		var deque = new ArrayDeque<>();
+		var deque = new ArrayDeque<Node>();
 		deque.add(snippet);
 		Tree tree;
 		Node value;

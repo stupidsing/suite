@@ -2,7 +2,6 @@ package suite.instructionexecutor;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,8 +65,8 @@ public class InstructionAnalyzer {
 		}
 
 		/**
-		 * Analyzes whether the variable can be stored in a local variable,
-		 * instead of a instance variable in a frame.
+		 * Analyzes whether the variable can be stored in a local variable, instead of a
+		 * instance variable in a frame.
 		 */
 		public boolean isTemporal() {
 			return false;
@@ -90,7 +89,7 @@ public class InstructionAnalyzer {
 	}
 
 	private void analyzeFrames(List<Instruction> instructions) {
-		var analyzedFrames = new ArrayDeque<>();
+		var analyzedFrames = new ArrayDeque<AnalyzedFrame>();
 
 		// find out the parent of closures.
 		// assumes every FRAME-BEGIN has a ASSIGN-THUNK referencing it.
