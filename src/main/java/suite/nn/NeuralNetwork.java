@@ -4,7 +4,6 @@ import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
 import java.lang.reflect.Array;
-import java.util.List;
 import java.util.Random;
 
 import suite.math.Sigmoid;
@@ -32,11 +31,11 @@ public class NeuralNetwork {
 		public Out<I, O> feed(I input);
 
 		public default <U> Layer<I, U> append(Layer<O, U> layer) {
-			Layer<I, O> layer0 = this;
-			Layer<O, U> layer1 = layer;
+			var layer0 = this;
+			var layer1 = layer;
 			return inputs -> {
-				Out<I, O> out0 = layer0.feed(inputs);
-				Out<O, U> out1 = layer1.feed(out0.output);
+				var out0 = layer0.feed(inputs);
+				var out1 = layer1.feed(out0.output);
 				return new Out<>(out1.output, errors -> out0.backprop.apply(out1.backprop.apply(errors)));
 			};
 		}
@@ -79,7 +78,7 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[][], float[][]> nil2dLayer() {
-		return this.<float[][]> nilLayer();
+		return nilLayer();
 	}
 
 	private <T> Layer<T, T> nilLayer() {
@@ -107,10 +106,10 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[][], float[][]> spawnLayer(int n, Int_Obj<Layer<float[][], float[]>> fun) {
-		Streamlet<Layer<float[][], float[]>> layers = Ints_.range(n).map(fun::apply);
+		var layers = Ints_.range(n).map(fun::apply);
 
 		return this.<float[][], float[]> spawnLayer(float[].class, layers, input -> input, errors0 -> {
-			List<float[][]> errors1 = errors0.toList();
+			var errors1 = errors0.toList();
 			var e = errors1.get(0);
 			var sums = new float[mtx.height(e)][mtx.width(e)];
 			for (var error : errors1)
@@ -127,7 +126,7 @@ public class NeuralNetwork {
 		var size = layers.size();
 
 		return inputs -> {
-			List<Out<I, O>> outs = layers.map(layer -> layer.feed(cloneInputs.apply(inputs))).toList();
+			var outs = layers.map(layer -> layer.feed(cloneInputs.apply(inputs))).toList();
 			var outputs = Read.from(outs).map(out -> out.output).toArray(clazz);
 
 			return new Out<>(outputs, errors -> Ints_ //
@@ -235,7 +234,7 @@ public class NeuralNetwork {
 
 		return inputs -> {
 			@SuppressWarnings("unchecked")
-			T outputs = (T) Array_.newArray(clazz, inputs.length * stride);
+			var outputs = (T) Array_.newArray(clazz, inputs.length * stride);
 			var di = 0;
 
 			for (var row : inputs) {
@@ -249,7 +248,7 @@ public class NeuralNetwork {
 
 				for (var i = 0; i < errors1.length; i++) {
 					@SuppressWarnings("unchecked")
-					T t = (T) Array_.newArray(clazz, stride);
+					var t = (T) Array_.newArray(clazz, stride);
 					System.arraycopy(errors, si, errors1[i] = t, 0, stride);
 					si += stride;
 				}
