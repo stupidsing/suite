@@ -40,7 +40,6 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		public int pointer;
 
 		public Page(int pointer) {
-			super();
 			this.pointer = pointer;
 		}
 
@@ -211,8 +210,8 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	private Streamlet<KeyPointer> stream_(Integer pointer, Key start, Key end) {
 		var page = pageFile.load(pointer);
-		int i0 = start != null ? findPosition(page, start, false) : 0;
-		int i1 = end != null ? findPosition(page, end, false) + 1 : page.size();
+		var i0 = start != null ? findPosition(page, start, false) : 0;
+		var i1 = end != null ? findPosition(page, end, false) + 1 : page.size();
 
 		if (i0 < i1)
 			return Read.from(page.subList(i0, i1)).concatMap(kp -> {
@@ -304,7 +303,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		var half = branchFactor / 2;
 		var root = getRoot();
 		var t = new Traverse(key);
-		Stack<Slot> slots = t.traverse;
+		var slots = t.traverse;
 
 		// remove the entry
 		var slot = slots.pop();
@@ -325,8 +324,8 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 			page = slot.page;
 			index = slot.index;
 
-			Page lp = loadBranch(page, index - 1);
-			Page rp = loadBranch(page, index + 1);
+			var lp = loadBranch(page, index - 1);
+			var rp = loadBranch(page, index + 1);
 			var lsize = lp != null ? lp.size() : 0;
 			var rsize = rp != null ? rp.size() : 0;
 
@@ -402,7 +401,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	private Page loadBranch(Page page, int index) {
-		KeyPointer kp = getKeyPointer(page, index);
+		var kp = getKeyPointer(page, index);
 		return kp != null && kp.pointer instanceof B_TreeImpl.Branch ? loadPage(kp.getBranchPointer()) : null;
 	}
 
