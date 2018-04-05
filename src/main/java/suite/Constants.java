@@ -6,7 +6,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import suite.adt.pair.Fixie;
@@ -39,7 +38,7 @@ public class Constants {
 		String[] m;
 
 		if (secrets().prove(generalizer.generalize(Suite.parse(pattern)))) {
-			List<String> list = new ArrayList<>();
+			var list = new ArrayList<>();
 			var i = 0;
 			Node n;
 			while (!((n = generalizer.getVariable(Atom.of("." + i++))).finalNode() instanceof Reference))
@@ -69,7 +68,7 @@ public class Constants {
 		var generalizer = new Generalizer();
 
 		if (secrets().prove(generalizer.generalize(Suite.parse(pattern)))) {
-			List<String> list = new ArrayList<>();
+			var list = new ArrayList<>();
 			var i = 0;
 			Node n;
 			while (!((n = generalizer.getVariable(Atom.of("." + i++))).finalNode() instanceof Reference))
