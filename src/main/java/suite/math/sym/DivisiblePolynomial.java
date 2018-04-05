@@ -126,7 +126,7 @@ public class DivisiblePolynomial<N> {
 
 		var sum = format_.apply(n0);
 
-		for (IntObjPair<N> pair : poly.streamlet().sortByKey(Integer::compare)) {
+		for (var pair : poly.streamlet().sortByKey(Integer::compare)) {
 			var p = pair.t0;
 			var power = p < 0 ? mul.inverse(powerFun.apply(-p)) : powerFun.apply(p);
 			sum = add.apply(mul.apply(format_.apply(pair.t1), power), sum);

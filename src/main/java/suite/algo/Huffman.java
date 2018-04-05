@@ -43,7 +43,7 @@ public class Huffman {
 
 		PriorityQueue<Node<Unit>> priorityQueue = new PriorityQueue<>(clazz, 0, comparator);
 
-		for (Node<Unit> node : nodes)
+		for (var node : nodes)
 			priorityQueue.insert(node);
 
 		while (1 < priorityQueue.size()) {

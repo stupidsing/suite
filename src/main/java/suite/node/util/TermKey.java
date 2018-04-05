@@ -103,7 +103,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 
 		public int hashCode() {
 			var h = 7;
-			for (IntObjPair<NodeHead> pair : list) {
+			for (var pair : list) {
 				h = h * 31 + Objects.hash(pair.t0);
 				if (pair.t1 != null) {
 					h = h * 31 + Objects.hash(pair.t1.type);

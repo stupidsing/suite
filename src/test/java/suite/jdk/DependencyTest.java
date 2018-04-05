@@ -50,7 +50,7 @@ public class DependencyTest {
 
 		var scc = new StronglyConnectedComponents<>(DirectedGraph.of(vertices, edges));
 
-		for (Set<Set<String>> layer : scc.group().layers()) {
+		for (var layer : scc.group().layers()) {
 			Read.from(layer).flatMap(iterable -> iterable).sort(Object_::compare).forEach(System.out::println);
 			System.out.println();
 		}

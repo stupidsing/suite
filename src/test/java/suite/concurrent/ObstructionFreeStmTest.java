@@ -110,7 +110,7 @@ public class ObstructionFreeStmTest {
 		stm.transaction(transaction -> {
 			var sum = 0;
 
-			for (Memory<Integer> memory : memories) {
+			for (var memory : memories) {
 				int read = stm.get(transaction, memory);
 				System.out.println("FINAL MEMORY VALUE = " + read);
 				sum += read;

@@ -52,7 +52,7 @@ public class IntIntMap1 {
 		if (object instanceof IntIntMap1) {
 			var other = (IntIntMap1) object;
 			var b = size == other.size;
-			for (IntObjPair<Integer> pair : streamlet())
+			for (var pair : streamlet())
 				b &= other.get(pair.t0) == pair.t1;
 			return b;
 		} else
@@ -75,7 +75,7 @@ public class IntIntMap1 {
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (IntObjPair<Integer> pair : streamlet()) {
+		for (var pair : streamlet()) {
 			h = h * 31 + Integer.hashCode(pair.t0);
 			h = h * 31 + Integer.hashCode(pair.t1);
 		}

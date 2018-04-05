@@ -214,7 +214,7 @@ public class InterpretFunLazy {
 						var i1 = i;
 						frame.add(() -> values.get(i1).get());
 					}
-					for (Fun<Frame, Thunk_> value_ : values_)
+					for (var value_ : values_)
 						values.add(value_.apply(frame)::get);
 					return expr.apply(frame);
 				};

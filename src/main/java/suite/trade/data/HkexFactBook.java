@@ -61,7 +61,7 @@ public class HkexFactBook {
 		List<List<String>> list1 = new ArrayList<>();
 		var i = 1;
 
-		for (List<String> list_ : list0)
+		for (var list_ : list0)
 			if (Integer.parseInt(list_.get(0)) == i++)
 				list1.add(list_);
 			else

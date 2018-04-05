@@ -173,7 +173,7 @@ public class InterpretFunEager {
 					Fun<Frame, Node> expr = eager1.eager_(DEFVARS.do_);
 
 					result = frame -> {
-						for (Fun<Frame, Node> value_ : values_)
+						for (var value_ : values_)
 							frame.add(value_.apply(frame));
 						return expr.apply(frame);
 					};

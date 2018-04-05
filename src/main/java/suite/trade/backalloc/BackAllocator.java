@@ -215,7 +215,7 @@ public interface BackAllocator {
 
 				Map<String, Double> map = new HashMap<>();
 
-				for (Map<String, Double> m : queue)
+				for (var m : queue)
 					for (var e : m.entrySet())
 						map.compute(e.getKey(), (k, v) -> fun.apply(v != null ? v : 0d, e.getValue()));
 

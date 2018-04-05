@@ -38,7 +38,7 @@ public class ListMultimap<K, V> {
 	}
 
 	public boolean isEmpty() {
-		for (List<V> value : map.values())
+		for (var value : map.values())
 			if (!value.isEmpty())
 				return false;
 		return true;
@@ -58,7 +58,7 @@ public class ListMultimap<K, V> {
 
 	public int size() {
 		var size = 0;
-		for (List<V> value : map.values())
+		for (var value : map.values())
 			size += value.size();
 		return size;
 	}

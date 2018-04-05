@@ -142,9 +142,9 @@ public class Grapher {
 
 		IntObjMap<IdentityKey<Node>> mapi0 = new IntObjMap<>();
 		IntObjMap<IdentityKey<Node>> mapi1 = new IntObjMap<>();
-		for (IntObjPair<IdentityKey<Node>> e : mapn0.streamlet())
+		for (var e : mapn0.streamlet())
 			mapi0.put(e.t0, e.t1);
-		for (IntObjPair<IdentityKey<Node>> e : mapn1.streamlet())
+		for (var e : mapn1.streamlet())
 			mapi1.put(e.t0, e.t1);
 
 		var set = new HashSet<>();

@@ -24,7 +24,7 @@ public class List_ {
 	@SafeVarargs
 	public static <T> List<T> concat(Collection<T>... collections) {
 		List<T> list = new ArrayList<>();
-		for (Collection<T> collection : collections)
+		for (var collection : collections)
 			list.addAll(collection);
 		return list;
 	}

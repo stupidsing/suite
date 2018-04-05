@@ -94,7 +94,7 @@ public class LazyIbTree<T> implements ITree<T> {
 				&& (minBranchFactor <= size || Fail.b("too few branches")) //
 				&& (size < maxBranchFactor || Fail.b("too many branches"));
 
-		for (Slot<T> slot_ : slots) {
+		for (var slot_ : slots) {
 			b = b //
 					&& (comparator.compare(slot.pivot, slot_.pivot) <= 0 || Fail.b("wrong slot")) //
 					&& validate(slot_) //
@@ -254,7 +254,7 @@ public class LazyIbTree<T> implements ITree<T> {
 
 	private void dump(StringBuilder sb, List<Slot<T>> node, String indent) {
 		if (node != null)
-			for (Slot<T> slot : node) {
+			for (var slot : node) {
 				sb.append(indent + (slot.pivot != null ? slot.pivot : "<-inf>") + "\n");
 				dump(sb, slot.readSlots(), indent + "  ");
 			}

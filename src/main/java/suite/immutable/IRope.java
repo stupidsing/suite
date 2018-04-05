@@ -80,7 +80,7 @@ public class IRope<T> {
 	// minBranchFactor <= ropes.size() && ropes.size() < maxBranchFactor
 	public IRope(int depth, List<IRope<T>> ropes) {
 		var weight = 0;
-		for (IRope<T> rope : ropes)
+		for (var rope : ropes)
 			weight += rope.weight;
 		this.depth = depth;
 		this.weight = weight;
