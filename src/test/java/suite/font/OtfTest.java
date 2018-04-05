@@ -19,7 +19,7 @@ public class OtfTest {
 		var subfamilyKey = "Subfamily";
 		List<String> keys = List.of(familyKey, subfamilyKey);
 
-		List<String> commands = Read //
+		var commands = Read //
 				.each("/tmp/fonts") //
 				.map(Paths::get) //
 				.concatMap(FileUtil::findPaths) //

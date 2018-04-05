@@ -36,7 +36,7 @@ public class BackAllocatorTest {
 
 		OnDateTime odt = ba1.allocate(akds, indices);
 
-		List<Double> potentials = Ints_ //
+		var potentials = Ints_ //
 				.range(indices.length) //
 				.map(index -> 0 < index ? Read.from(odt.onDateTime(index)) : Read.<Pair<String, Double>> empty()) //
 				.map(pairs -> pairs.toDouble(Obj_Dbl.sum(pair -> pair.t1))) //

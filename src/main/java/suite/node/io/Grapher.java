@@ -74,7 +74,7 @@ public class Grapher {
 
 			var nr = NodeRead.of(node);
 
-			List<IntIntPair> children = Read //
+			var children = Read //
 					.from(nr.children) //
 					.map(p -> IntIntPair.of(graph_(ids, p.t0), graph_(ids, p.t1))) //
 					.toList();
@@ -88,7 +88,7 @@ public class Grapher {
 	private Node ungraph_(int id) {
 		var size = gns.size();
 
-		List<Node> nodes = Read //
+		var nodes = Read //
 				.from(gns) //
 				.map(gn -> {
 					switch (gn.type) {
@@ -166,8 +166,8 @@ public class Grapher {
 						&& Binder.bind(gn1.terminal, mapi0.get(pair.t0).key, trail))
 					;
 				else if (gn0.type == gn1.type && Objects.equals(gn0.terminal, gn1.terminal) && gn0.op == gn1.op) {
-					List<IntIntPair> children0 = gn0.children;
-					List<IntIntPair> children1 = gn1.children;
+					var children0 = gn0.children;
+					var children1 = gn1.children;
 					var size0 = children0.size();
 					var size1 = children1.size();
 					if (size0 == size1)
@@ -290,7 +290,7 @@ public class Grapher {
 		for (var index = 0; index < size; index++) {
 			var gn = gns.get(index);
 			var type = gn.type;
-			List<IntIntPair> children = gn.children;
+			var children = gn.children;
 
 			dos.writeByte(type.value);
 

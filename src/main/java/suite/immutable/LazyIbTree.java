@@ -86,7 +86,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	private boolean validate(Slot<T> slot) {
-		List<Slot<T>> slots = slot.readSlots();
+		var slots = slot.readSlots();
 		var size = slots.size();
 		T p = null;
 
@@ -120,7 +120,7 @@ public class LazyIbTree<T> implements ITree<T> {
 
 		if (i0 < i1)
 			return Read.from(node.subList(i0, i1)).concatMap(slot -> {
-				List<Slot<T>> slots = slot.readSlots();
+				var slots = slot.readSlots();
 				if (!slots.isEmpty())
 					return stream_(slots, start, end);
 				else
@@ -131,7 +131,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public T find(T t) {
-		List<Slot<T>> node = root;
+		var node = root;
 		FindSlot fs = null;
 		while (!node.isEmpty()) {
 			fs = new FindSlot(node, t);
@@ -168,12 +168,12 @@ public class LazyIbTree<T> implements ITree<T> {
 		FindSlot fs = new FindSlot(node0, t);
 		var size = node0.size();
 		int s0 = fs.i, s1 = fs.i + 1;
-		List<Slot<T>> slots0 = fs.slot.readSlots();
+		var slots0 = fs.slot.readSlots();
 		List<Slot<T>> slots2;
 
 		// adds the node into it
 		if (!slots0.isEmpty()) {
-			List<Slot<T>> slots1 = update(slots0, t, fun);
+			var slots1 = update(slots0, t, fun);
 			List<Slot<T>> inner;
 
 			// merges with a neighbor if less than minimum number of nodes
@@ -197,15 +197,15 @@ public class LazyIbTree<T> implements ITree<T> {
 				slots2.add(new Slot<>(() -> List.of(), t1));
 		}
 
-		List<Slot<T>> slots3 = List_.concat(List_.left(node0, s0), slots2, List_.right(node0, s1));
+		var slots3 = List_.concat(List_.left(node0, s0), slots2, List_.right(node0, s1));
 		List<Slot<T>> node1;
 
 		// checks if need to split
 		if (slots3.size() < maxBranchFactor)
 			node1 = List.of(slot(slots3));
 		else { // splits into two if reached maximum number of nodes
-			List<Slot<T>> leftSlots = List_.left(slots3, minBranchFactor);
-			List<Slot<T>> rightSlots = List_.right(slots3, minBranchFactor);
+			var leftSlots = List_.left(slots3, minBranchFactor);
+			var rightSlots = List_.right(slots3, minBranchFactor);
 			node1 = List.of(slot(leftSlots), slot(rightSlots));
 		}
 

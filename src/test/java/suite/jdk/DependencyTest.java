@@ -34,7 +34,7 @@ public class DependencyTest {
 		String className;
 
 		while ((className = classes.pollLast()) != null) {
-			List<String> dependencies = getDependencies(className);
+			var dependencies = getDependencies(className);
 			dependenciesByClassName.put(className, dependencies);
 			for (var className1 : dependencies)
 				if (!dependenciesByClassName.containsKey(className1))

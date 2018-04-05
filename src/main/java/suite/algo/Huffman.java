@@ -36,7 +36,8 @@ public class Huffman {
 		@SuppressWarnings("unchecked")
 		Class<Node<Unit>> clazz = (Class<Node<Unit>>) (Class<?>) Node.class;
 
-		List<Node<Unit>> nodes = Read.from2(histogram(input)) //
+		var nodes = Read //
+				.from2(histogram(input)) //
 				.map(Node<Unit>::new) //
 				.toList();
 

@@ -107,7 +107,7 @@ public class Suite {
 	 * May specify a prototype to limit the rules listed.
 	 */
 	public static Node listRules(RuleSet rs, Prototype proto) {
-		List<Node> nodes = Read.from(rs.getRules()) //
+		var nodes = Read.from(rs.getRules()) //
 				.filter(rule -> proto == null || proto.equals(Prototype.of(rule))) //
 				.map(Rule::clause) //
 				.toList();
@@ -119,7 +119,7 @@ public class Suite {
 	}
 
 	public static <T> T useLibraries(List<String> libraries, Source<T> source) {
-		List<String> libraries0 = Suite.libraries;
+		var libraries0 = Suite.libraries;
 		Suite.libraries = libraries;
 		try {
 			return source.source();

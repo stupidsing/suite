@@ -31,7 +31,7 @@ public class RuleSetPredicates {
 
 	public BuiltinPredicate getAllRules = PredicateUtil.p1((prover, p0) -> {
 		var ruleSet = prover.ruleSet();
-		List<Rule> rules = ruleSet.getRules();
+		var rules = ruleSet.getRules();
 		List<Node> nodes = new ArrayList<>();
 
 		for (var rule : rules)

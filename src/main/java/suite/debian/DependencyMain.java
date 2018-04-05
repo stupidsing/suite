@@ -158,7 +158,7 @@ public class DependencyMain extends ExecutableProgram {
 	}
 
 	public List<String> listDeinstalledPackages() {
-		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
+		var packages = dpkgUtil.readInstalledPackages();
 		return Read //
 				.from(packages) //
 				.filter(pm -> pm.get("Status").contains("deinstall")) //
@@ -190,7 +190,7 @@ public class DependencyMain extends ExecutableProgram {
 	}
 
 	public List<String> listUndependedPackages() {
-		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
+		var packages = dpkgUtil.readInstalledPackages();
 		var dependees = dpkgUtil.getDependersOf(packages);
 
 		return Read //
@@ -205,7 +205,7 @@ public class DependencyMain extends ExecutableProgram {
 	}
 
 	public List<String> listUnusedPackages() {
-		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
+		var packages = dpkgUtil.readInstalledPackages();
 		var required = new HashSet<>(requiredList);
 
 		required.addAll(Read //

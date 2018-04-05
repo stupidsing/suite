@@ -15,7 +15,7 @@ public class TwoPassIndexerTest {
 
 	@Test
 	public void test() {
-		List<String> filenames = FileUtil.findPaths(Paths.get("src/test/java")) //
+		var filenames = FileUtil.findPaths(Paths.get("src/test/java")) //
 				.map(Path::toAbsolutePath) //
 				.map(Path::toString) //
 				.filter(filename -> filename.endsWith(".java")) //
@@ -31,7 +31,7 @@ public class TwoPassIndexerTest {
 
 		var map = indexer.getReferencesByWord();
 
-		List<Entry<String, List<Reference>>> entries = List_.sort(map.entrySet() //
+		var entries = List_.sort(map.entrySet() //
 				, (e0, e1) -> e1.getValue().size() - e0.getValue().size());
 
 		System.out.println("Most popular key words:");

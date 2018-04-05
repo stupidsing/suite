@@ -112,7 +112,7 @@ public class BackAllocTester {
 					ymd = time.ymd();
 					eodBySymbol = dsBySymbol.mapValue(ds -> ds.getEod(index)).toMap();
 
-					List<Pair<String, Double>> ratioBySymbol = onDateTime.onDateTime(index + 1);
+					var ratioBySymbol = onDateTime.onDateTime(index + 1);
 					UpdatePortfolio up = Trade_.updatePortfolio(ymd, account, ratioBySymbol, assetBySymbol, eodBySymbol);
 					var valuation_ = valuations_[i] = up.valuation0;
 

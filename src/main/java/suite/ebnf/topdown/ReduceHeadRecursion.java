@@ -68,7 +68,7 @@ public class ReduceHeadRecursion {
 			hrf = new HeadRecursionForm(empty, empty);
 		else if (en.type == GrammarType.AND___) {
 			HeadRecursionForm hrf0 = getHeadRecursionForm(en.children.get(0), entity);
-			List<Grammar> tail = List_.right(en.children, 1);
+			var tail = List_.right(en.children, 1);
 
 			Fun<List<Grammar>, List<Grammar>> fun = list -> Read.from(list).map(en_ -> {
 				List<Grammar> ens1 = new ArrayList<>();

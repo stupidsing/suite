@@ -64,7 +64,7 @@ public class InstructionExtractor implements AutoCloseable {
 
 				if (ip == null) {
 					ipByLabelId.put(key, ip = rsList.size());
-					List<Node> rs = tupleToList(tree.getLeft());
+					var rs = tupleToList(tree.getLeft());
 
 					if (rs.get(0) == FRAME)
 						if ((value = label(rs.get(1))) != null) {

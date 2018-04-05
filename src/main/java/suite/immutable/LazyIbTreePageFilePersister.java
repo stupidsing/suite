@@ -108,7 +108,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 			for (var p0 = start; p0 < end; p0++)
 				if (isInUse[p0]) {
 					PersistSlot<T> ps0 = pageFile.load(p0);
-					List<Pair<T, Integer>> pairs0 = ps0.pairs;
+					var pairs0 = ps0.pairs;
 					List<Pair<T, Integer>> pairsx = Read.from(pairs0).map(Pair.map1(p -> map.getOrDefault(p, p))).toList();
 					PersistSlot<T> psx = new PersistSlot<>(pairsx);
 					pageFile.save(p1, psx);
@@ -125,7 +125,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 		IdentityKey<List<Slot<T>>> key = slotsByPointer.get(pointer);
 		if (key == null) {
 			PersistSlot<T> ps = pageFile.load(pointer);
-			List<Slot<T>> slots = Read //
+			var slots = Read //
 					.from(ps.pairs) //
 					.map(pair -> new Slot<>(() -> load_(pair.t1), pair.t0)) //
 					.toList();
@@ -138,7 +138,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 		IdentityKey<List<Slot<T>>> key = IdentityKey.of(slots);
 		var pointer = slotsByPointer.inverse().get(key);
 		if (pointer == null) {
-			List<Pair<T, Integer>> pairs = Read //
+			var pairs = Read //
 					.from(slots) //
 					.map(slot -> Pair.of(slot.pivot, save_(slot.readSlots()))) //
 					.toList();

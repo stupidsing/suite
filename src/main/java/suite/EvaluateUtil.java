@@ -1,7 +1,6 @@
 package suite;
 
 import java.io.IOException;
-import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.fp.FunCompilerConfig;
@@ -118,7 +117,7 @@ public class EvaluateUtil {
 
 	private Node appendLibraries(FunCompilerConfig fcc) {
 		var node = fcc.getNode();
-		List<String> libraries = fcc.getLibraries();
+		var libraries = fcc.getLibraries();
 
 		for (var i = libraries.size() - 1; 0 <= i; i--) {
 			var library = libraries.get(i);

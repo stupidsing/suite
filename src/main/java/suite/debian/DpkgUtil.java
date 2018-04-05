@@ -51,7 +51,7 @@ public class DpkgUtil {
 
 		while (!nl.isEmpty()) {
 			var p = nl.remove(nl.size() - 1);
-			List<String> list = dependees.get(p);
+			var list = dependees.get(p);
 
 			if (list != null)
 				for (var np : list)
@@ -67,7 +67,7 @@ public class DpkgUtil {
 				.from(packages) //
 				.map(pm -> {
 					String line = pm.getOrDefault("Depends", "");
-					List<String> list = Read //
+					var list = Read //
 							.from(line.split(",")) //
 							.filter(s -> !s.isEmpty()) //
 							.map(s -> s.trim().split(" ")[0]) //

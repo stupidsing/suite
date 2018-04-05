@@ -6,7 +6,6 @@ import static suite.util.Friends.min;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
-import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
@@ -64,7 +63,7 @@ public class Render {
 		int[] txs = Ints_.toArray(nThreads + 1, i -> width * i / nThreads);
 		R3[][] pixels = new R3[width][height];
 
-		List<Thread> threads = Ints_ //
+		var threads = Ints_ //
 				.range(nThreads) //
 				.map(t -> Thread_.newThread(() -> {
 					for (var x = txs[t]; x < txs[t + 1]; x++)

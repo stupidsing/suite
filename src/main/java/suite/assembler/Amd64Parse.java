@@ -24,7 +24,7 @@ public class Amd64Parse {
 		Tree tree = Tree.decompose(node, TermOp.TUPLE_);
 		Insn insn = Enum.valueOf(Insn.class, ((Atom) tree.getLeft()).name);
 		var ops = tree.getRight();
-		List<Operand> operands = scan(ops, ".0, .1").map(this::parseOperand).toList();
+		var operands = scan(ops, ".0, .1").map(this::parseOperand).toList();
 
 		return amd64.instruction(insn, //
 				0 < operands.size() ? operands.get(0) : amd64.none, //

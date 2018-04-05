@@ -416,7 +416,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public FltObjPair<V>[] toArray() {
-		List<FltObjPair<V>> list = toList();
+		var list = toList();
 		@SuppressWarnings("unchecked")
 		FltObjPair<V>[] array = Array_.newArray(FltObjPair.class, list.size());
 		return list.toArray(array);

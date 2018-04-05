@@ -75,7 +75,7 @@ public class TermKey extends HashCodeComparable<TermKey> {
 			var b = Object_.clazz(object) == TermLister.class;
 
 			if (b) {
-				List<IntObjPair<NodeHead>> list1 = ((TermLister) object).list;
+				var list1 = ((TermLister) object).list;
 				var size0 = list.size();
 				var size1 = list1.size();
 				b &= size0 == size1;

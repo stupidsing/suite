@@ -84,7 +84,7 @@ public class WalkForwardAllocTester {
 		}
 
 		AlignKeyDataSource<String> akds = new AlignKeyDataSource<>(times, Read.from2(dsBySymbol));
-		List<Pair<String, Double>> ratioBySymbol = wfa.allocate(akds, windowSize);
+		var ratioBySymbol = wfa.allocate(akds, windowSize);
 
 		UpdatePortfolio up = Trade_.updatePortfolio(time.ymdHms(), account, ratioBySymbol, assetBySymbol,
 				Read.from2(priceBySymbol).mapValue(Eod::of).toMap());
@@ -96,7 +96,7 @@ public class WalkForwardAllocTester {
 		for (Pair<String, Float> e : up.val0.streamlet())
 			holdBySymbol.compute(e.t0, (s, h) -> e.t1 / valuation_ + (h != null ? h : 0d));
 
-		List<Trade> trades_ = up.trades;
+		var trades_ = up.trades;
 		String actions;
 
 		if (windowSize <= valuations.size())

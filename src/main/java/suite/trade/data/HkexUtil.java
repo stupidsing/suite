@@ -64,7 +64,7 @@ public class HkexUtil {
 	}
 
 	private static boolean isMarketOpen_(Time time) {
-		List<Time> phs = publicHolidays.source();
+		var phs = publicHolidays.source();
 		var hhmm = time.hhmm();
 		return !phs.contains(time.date()) //
 				&& !weekends.contains(time.dow()) //

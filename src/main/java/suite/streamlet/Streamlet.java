@@ -160,7 +160,7 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 	}
 
 	public Streamlet<T> memoize() {
-		List<T> list = toList();
+		var list = toList();
 		return streamlet(() -> Outlet.of(list));
 	}
 

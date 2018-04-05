@@ -3,8 +3,6 @@ package suite.concurrent;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
 import org.junit.Test;
 
 import suite.concurrent.Concurrent.DeadlockException;
@@ -67,7 +65,7 @@ public class MutexTest {
 
 	private boolean isDeadlock(MutexTestRunnable... mtrs) throws InterruptedException {
 		var result = BooMutable.false_();
-		List<Thread> threads = Read //
+		var threads = Read //
 				.from(mtrs) //
 				.map(mtr -> Thread_.newThread(() -> {
 					try {

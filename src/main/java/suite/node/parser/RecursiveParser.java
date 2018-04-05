@@ -1,14 +1,11 @@
 package suite.node.parser;
 
-import java.util.List;
-
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.parser.FactorizeResult.FNode;
-import suite.node.parser.FactorizeResult.FPair;
 import suite.node.parser.FactorizeResult.FTerminal;
 import suite.node.parser.FactorizeResult.FTree;
 import suite.node.util.Singleton;
@@ -35,7 +32,7 @@ public class RecursiveParser {
 		if (fn instanceof FTree) {
 			var ft = (FTree) fn;
 			var name = ft.name;
-			List<FPair> pairs = ft.pairs;
+			var pairs = ft.pairs;
 			var fn0 = pairs.get(0).node;
 			var fn1 = pairs.get(1).node;
 			var fn2 = pairs.get(2).node;

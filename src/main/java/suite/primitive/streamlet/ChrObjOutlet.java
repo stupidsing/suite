@@ -416,7 +416,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjPair<V>[] toArray() {
-		List<ChrObjPair<V>> list = toList();
+		var list = toList();
 		@SuppressWarnings("unchecked")
 		ChrObjPair<V>[] array = Array_.newArray(ChrObjPair.class, list.size());
 		return list.toArray(array);

@@ -416,7 +416,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	}
 
 	public IntObjPair<V>[] toArray() {
-		List<IntObjPair<V>> list = toList();
+		var list = toList();
 		@SuppressWarnings("unchecked")
 		IntObjPair<V>[] array = Array_.newArray(IntObjPair.class, list.size());
 		return list.toArray(array);

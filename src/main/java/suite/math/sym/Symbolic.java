@@ -306,7 +306,7 @@ public class Symbolic {
 						return pos(a).map(mul::inverse);
 					}).match2(patPow, (a, b) -> {
 						if (b instanceof Int) {
-							List<Node> pos = pos(a).toList();
+							var pos = pos(a).toList();
 							var power = ((Int) b).number;
 
 							Int_Obj<Streamlet<Node>> f = power_ -> {

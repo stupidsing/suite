@@ -60,7 +60,7 @@ public class FileSystemKeySet {
 
 	public void remove(Bytes name) {
 		KeyDataMutator<Bytes> mutator = store.mutateData();
-		List<NameKey> keys = keyUtil.toNameKeys(name);
+		var keys = keyUtil.toNameKeys(name);
 
 		for (var i = keys.size() - 1; 0 <= i; i--) {
 			var key = keys.get(i);

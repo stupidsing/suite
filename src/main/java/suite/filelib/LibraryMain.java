@@ -64,7 +64,7 @@ public class LibraryMain extends ExecutableProgram {
 					BasicFileAttributes attrs = Rethrow.ex(() -> Files.readAttributes(path, BasicFileAttributes.class));
 
 					// get all file information
-					List<String> tags = Ints_ //
+					var tags = Ints_ //
 							.range(path.getNameCount()) //
 							.map(i -> path.getName(i).toString()) //
 							.cons(To.string(attrs.lastModifiedTime().toInstant())) //

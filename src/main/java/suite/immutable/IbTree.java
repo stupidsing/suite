@@ -87,7 +87,7 @@ public class IbTree<T> implements ITree<T> {
 	}
 
 	private boolean validate(Slot slot) {
-		List<Slot> slots = slot.slots;
+		var slots = slot.slots;
 
 		if (slots != null) {
 			var size = slots.size();
@@ -130,7 +130,7 @@ public class IbTree<T> implements ITree<T> {
 	}
 
 	public T find(T t) {
-		List<Slot> node = root;
+		var node = root;
 		FindSlot fs = null;
 		while (node != null) {
 			fs = new FindSlot(node, t);
@@ -176,7 +176,7 @@ public class IbTree<T> implements ITree<T> {
 
 		// adds the node into it
 		if (fs.slot.slots != null) {
-			List<Slot> slots1 = update(fs.slot.slots, t, fun);
+			var slots1 = update(fs.slot.slots, t, fun);
 			List<Slot> inner;
 
 			// merges with a neighbor if less than minimum number of nodes
@@ -200,15 +200,15 @@ public class IbTree<T> implements ITree<T> {
 				replaceSlots.add(new Slot(null, t1));
 		}
 
-		List<Slot> slots1 = List_.concat(List_.left(node0, s0), replaceSlots, List_.right(node0, s1));
+		var slots1 = List_.concat(List_.left(node0, s0), replaceSlots, List_.right(node0, s1));
 		List<Slot> node1;
 
 		// checks if need to split
 		if (slots1.size() < maxBranchFactor)
 			node1 = List.of(slot(slots1));
 		else { // splits into two if reached maximum number of nodes
-			List<Slot> leftSlots = List_.left(slots1, minBranchFactor);
-			List<Slot> rightSlots = List_.right(slots1, minBranchFactor);
+			var leftSlots = List_.left(slots1, minBranchFactor);
+			var rightSlots = List_.right(slots1, minBranchFactor);
 			node1 = List.of(slot(leftSlots), slot(rightSlots));
 		}
 

@@ -227,7 +227,7 @@ public class DailyMain extends ExecutableProgram {
 				.groupBy(record -> record.symbol, rs -> (float) Read.from(rs).toDouble(Obj_Dbl.sum(Trade::amount))) //
 				.toMap();
 
-		List<Trade> trades = account //
+		var trades = account //
 				.portfolio() //
 				.map((symbol, sell) -> {
 					var targetPrice = (1d + 3 * Trade_.riskFreeInterestRate) * faceValueBySymbol.get(symbol) / sell;
@@ -257,7 +257,7 @@ public class DailyMain extends ExecutableProgram {
 
 		Set<String> symbols = Set_.union(assets0.keySet(), assets1.keySet());
 		var priceBySymbol = cfg.quote(symbols);
-		List<Trade> trades = Trade_.diff(Trade.NA, assets0, assets1, priceBySymbol::get).toList();
+		var trades = Trade_.diff(Trade.NA, assets0, assets1, priceBySymbol::get).toList();
 
 		sb.append("\nstrategy = " + tag + ", " + sim.conclusion());
 

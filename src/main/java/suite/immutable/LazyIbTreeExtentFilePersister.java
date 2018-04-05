@@ -110,7 +110,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 
 			use.sink(roots);
 
-			List<Extent> extents = extentFile.scan(start, end);
+			var extents = extentFile.scan(start, end);
 
 			for (var extent : Read.from(extents).reverse())
 				if (isInUse.contains(extent))
@@ -124,7 +124,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 				for (var extent0 : extents)
 					if (isInUse.contains(extent0)) {
 						PersistSlot<T> ps0 = loadSlot(extent0);
-						List<Pair<T, Extent>> pairs0 = ps0.pairs;
+						var pairs0 = ps0.pairs;
 						List<Pair<T, Extent>> pairsx = Read.from(pairs0).map(Pair.map1(p -> map.getOrDefault(p, p))).toList();
 						PersistSlot<T> psx = new PersistSlot<>(pairsx);
 						Extent extentx = saveSlot(pointer, psx);
@@ -144,7 +144,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 		IdentityKey<List<Slot<T>>> key = slotsByExtent.get(extent);
 		if (key == null) {
 			PersistSlot<T> ps = loadSlot(extent);
-			List<Slot<T>> slots = Read //
+			var slots = Read //
 					.from(ps.pairs) //
 					.map(pair -> new Slot<>(() -> load_(pair.t1), pair.t0)) //
 					.toList();
@@ -157,7 +157,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 		IdentityKey<List<Slot<T>>> key = IdentityKey.of(slots);
 		var extent = slotsByExtent.inverse().get(key);
 		if (extent == null) {
-			List<Pair<T, Extent>> pairs = Read //
+			var pairs = Read //
 					.from(slots) //
 					.map(slot -> Pair.of(slot.pivot, save_(slot.readSlots()))) //
 					.toList();

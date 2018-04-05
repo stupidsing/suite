@@ -258,7 +258,7 @@ public class P0Parse {
 			IntObj_Obj<Int_Obj<Funp>, Funp> bindArray = (size0, fun0) -> {
 				Int_Obj<Funp> fun1 = new Switch<Int_Obj<Funp>>(value //
 				).applyIf(FunpArray.class, g -> {
-					List<Funp> elements = g.elements;
+					var elements = g.elements;
 					return size0 == elements.size() ? elements::get : null;
 				}).applyIf(FunpRepeat.class, g -> g.apply((count, expr) -> {
 					Int_Obj<Funp> fun_ = i -> expr;

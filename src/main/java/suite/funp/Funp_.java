@@ -56,7 +56,7 @@ public class Funp_ {
 			Funp f1 = p1.inline(f0, isOptimize ? 3 : 0, 1, 1, 1, 1);
 			var f2 = p2.infer(f1);
 			var f3 = p3.optimize(f2);
-			List<Instruction> instructions = p4.compile0(f3);
+			var instructions = p4.compile0(f3);
 			return Pair.of(instructions, p4.compile1(offset, instructions, true));
 		}
 

@@ -113,7 +113,7 @@ public class P2InferType {
 					).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 						return FunpDefine.of(isPolyType, var, extractPredefine(value), extract_(expr));
 					})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
-						List<Pair<String, Funp>> pairs1 = Read.from2(pairs0).mapValue(P2InferType.this::extractPredefine).toList();
+						var pairs1 = Read.from2(pairs0).mapValue(P2InferType.this::extractPredefine).toList();
 						return FunpDefineRec.of(pairs1, extract_(expr));
 					})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
 						return FunpGlobal.of(var, extractPredefine(value), extract_(expr));

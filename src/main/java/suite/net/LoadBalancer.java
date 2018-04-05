@@ -49,7 +49,7 @@ public class LoadBalancer {
 
 		Io io = (is, os) -> {
 			var count = counter.getAndIncrement();
-			List<String> alives0 = alives;
+			var alives0 = alives;
 
 			var server = alives0.get(count % alives0.size());
 

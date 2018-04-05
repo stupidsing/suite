@@ -3,12 +3,9 @@ package suite.trade.data;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
-
 import org.junit.Test;
 
 import suite.streamlet.Read;
-import suite.trade.Asset;
 import suite.util.String_;
 
 public class HkexTest {
@@ -17,7 +14,7 @@ public class HkexTest {
 
 	@Test
 	public void testList() {
-		List<Asset> companies = hkex.queryCompanies().toList();
+		var companies = hkex.queryCompanies().toList();
 		System.out.println(companies);
 
 		for (var company : companies)

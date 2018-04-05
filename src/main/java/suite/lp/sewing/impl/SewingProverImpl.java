@@ -342,7 +342,7 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Cps orCps(Streamlet<Cps> cpss) {
-		List<Cps> cpsList = cpss.toList();
+		var cpsList = cpss.toList();
 		Cps[] cpsArray = List_.left(cpsList, -1).toArray(new Cps[0]);
 		var cps_ = List_.last(cpsList);
 		return rt -> {
@@ -578,7 +578,7 @@ public class SewingProverImpl implements ProverFactory {
 				return okay;
 			};
 		} else if ((m = Suite.pattern("member .0 .1").match(node)) != null && TreeUtil.isList(m[0], TermOp.AND___)) {
-			List<Bind_> elems_ = Read.from(Tree.iter(m[0])).map(bf::binder).toList();
+			var elems_ = Read.from(Tree.iter(m[0])).map(bf::binder).toList();
 			var f = bf.cloner(m[1]);
 			tr = rt -> {
 				Iterator<Bind_> iter = elems_.iterator();
@@ -696,7 +696,7 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Trampoline andTr(Streamlet<Trampoline> trs) {
-		List<Trampoline> trs_ = trs.toList();
+		var trs_ = trs.toList();
 		if (trs_.size() == 0)
 			return okay;
 		else if (trs_.size() == 1)
@@ -710,7 +710,7 @@ public class SewingProverImpl implements ProverFactory {
 			};
 		} else {
 			var trh = trs_.get(0);
-			List<Trampoline> trt = List_.reverse(List_.right(trs_, 1));
+			var trt = List_.reverse(List_.right(trs_, 1));
 			return rt -> {
 				for (Trampoline tr_ : trt)
 					rt.pushRem(tr_);
@@ -720,7 +720,7 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Trampoline orTr(Streamlet<Trampoline> trs) {
-		List<Trampoline> trs_ = trs.toList();
+		var trs_ = trs.toList();
 		if (trs_.size() == 0)
 			return fail;
 		else if (trs_.size() == 1)
@@ -738,7 +738,7 @@ public class SewingProverImpl implements ProverFactory {
 			};
 		} else {
 			var trh = trs_.get(0);
-			List<Trampoline> trt = List_.reverse(List_.right(trs_, 1));
+			var trt = List_.reverse(List_.right(trs_, 1));
 			return rt -> {
 				var restore = save(rt);
 				for (Trampoline tr_ : trt)

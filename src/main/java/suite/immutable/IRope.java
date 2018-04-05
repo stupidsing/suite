@@ -157,8 +157,8 @@ public class IRope<T> {
 
 			if (maxBranchFactor <= size) {
 				var p = size / 2;
-				List<IRope<T>> left = List_.left(ropes, p);
-				List<IRope<T>> right = List_.right(ropes, p);
+				var left = List_.left(ropes, p);
+				var right = List_.right(ropes, p);
 				list = List.of(new IRope<>(depth, left), new IRope<>(depth, right));
 			} else
 				list = List.of(new IRope<>(depth, ropes));
@@ -240,7 +240,7 @@ public class IRope<T> {
 					new Object() {
 						public void add(IRope<T> rope_) {
 							if (depth < rope_.depth) {
-								List<IRope<T>> ropes = rope_.ropes;
+								var ropes = rope_.ropes;
 								for (var i = ropes.size() - 1; 0 <= i; i--)
 									add(ropes.get(i));
 							} else
@@ -279,7 +279,7 @@ public class IRope<T> {
 					new Object() {
 						public void add(IRope<T> rope_) {
 							if (depth < rope_.depth) {
-								List<IRope<T>> ropes = rope_.ropes;
+								var ropes = rope_.ropes;
 								for (var i = 0; i < ropes.size(); i++)
 									add(ropes.get(i));
 							} else

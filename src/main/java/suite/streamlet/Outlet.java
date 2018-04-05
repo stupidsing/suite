@@ -332,7 +332,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public T[] toArray(Class<T> clazz) {
-		List<T> list = toList();
+		var list = toList();
 		T[] array = Array_.newArray(clazz, list.size());
 		return list.toArray(array);
 	}

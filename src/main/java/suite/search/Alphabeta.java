@@ -26,7 +26,7 @@ public class Alphabeta<State> {
 
 	private IntObjPair<List<State>> search_(State state, int depth, int alpha, int beta) {
 		if (0 < depth) {
-			List<State> states = generate.apply(state);
+			var states = generate.apply(state);
 
 			if (!states.isEmpty()) {
 				List<State> principalVariation = null;

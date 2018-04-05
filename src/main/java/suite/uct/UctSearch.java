@@ -5,7 +5,6 @@ import static suite.util.Friends.min;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -62,7 +61,7 @@ public class UctSearch<Move> {
 		var count = new AtomicInteger();
 		var end = System.currentTimeMillis() + boundedTime;
 
-		List<Thread> threads = Ints_ //
+		var threads = Ints_ //
 				.range(numberOfThreads) //
 				.map(i -> Thread_.newThread(() -> {
 					var j = 0;

@@ -99,7 +99,7 @@ public class InterpretFunLazy {
 			df.put(e.getKey().getName(), binary((a, b) -> Int.of(fun.apply(i(a), i(b)))));
 		}
 
-		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
+		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		Lazy_ lazy0 = new Lazy_(0, IMap.empty());
 		var frame = new Frame(null);
 

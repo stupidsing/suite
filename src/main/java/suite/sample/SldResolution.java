@@ -44,7 +44,7 @@ public class SldResolution {
 		Map<Node, Source<List<Node>>> orsMap = new HashMap<>();
 
 		for (var n1 : Tree.iter(n0, TermOp.AND___)) {
-			List<Node> ors = To.list(Tree.iter(n1, TermOp.AND___));
+			var ors = To.list(Tree.iter(n1, TermOp.AND___));
 
 			for (var i = 0; i < ors.size(); i++) {
 				var index = i;

@@ -144,7 +144,7 @@ public class FactorizeResult {
 	private void unparse(CharsBuilder cb, FNode fn) {
 		if (fn instanceof FTree) {
 			var ft = (FTree) fn;
-			List<FPair> pairs = ft.pairs;
+			var pairs = ft.pairs;
 			for (var pair : pairs) {
 				unparse(cb, pair.node);
 				cb.append(pair.chars);

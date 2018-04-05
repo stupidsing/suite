@@ -24,11 +24,11 @@ public class IIntMap<V> {
 	public static <V> IIntMap<V> of(List<IntObjPair<V>> list) {
 		List<IntObjPair<V>> list6 = new ArrayList<>(list);
 		list6.sort((p0, p1) -> Integer.compare(p0.t0, p1.t0));
-		List<IntObjPair<Bl<V>>> list5 = consolidate(list6);
-		List<IntObjPair<Bl<Bl<V>>>> list4 = consolidate(list5);
-		List<IntObjPair<Bl<Bl<Bl<V>>>>> list3 = consolidate(list4);
-		List<IntObjPair<Bl<Bl<Bl<Bl<V>>>>>> list2 = consolidate(list3);
-		List<IntObjPair<Bl<Bl<Bl<Bl<Bl<V>>>>>>> list1 = consolidate(list2);
+		var list5 = consolidate(list6);
+		var list4 = consolidate(list5);
+		var list3 = consolidate(list4);
+		var list2 = consolidate(list3);
+		var list1 = consolidate(list2);
 		return new IIntMap<>(Bl.of(list1.subList(0, list1.size())));
 	}
 

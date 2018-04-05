@@ -416,7 +416,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjPair<V>[] toArray() {
-		List<DblObjPair<V>> list = toList();
+		var list = toList();
 		@SuppressWarnings("unchecked")
 		DblObjPair<V>[] array = Array_.newArray(DblObjPair.class, list.size());
 		return list.toArray(array);

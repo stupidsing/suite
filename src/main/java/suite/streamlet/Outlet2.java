@@ -404,7 +404,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public Pair<K, V>[] toArray() {
-		List<Pair<K, V>> list = toList();
+		var list = toList();
 		@SuppressWarnings("unchecked")
 		Pair<K, V>[] array = Array_.newArray(Pair.class, list.size());
 		return list.toArray(array);

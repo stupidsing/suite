@@ -77,7 +77,7 @@ public class Ebnf {
 	}
 
 	private FactorizeResult toFactorizeResult(char[] cs, int p0, int px, Ast ast) {
-		List<Ast> children = ast.children;
+		var children = ast.children;
 		var size = children.size();
 
 		if (0 < size) {

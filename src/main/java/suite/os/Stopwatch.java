@@ -2,7 +2,6 @@ package suite.os;
 
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
-import java.util.List;
 
 import suite.util.FunUtil.Source;
 
@@ -21,14 +20,14 @@ public class Stopwatch<T> {
 	}
 
 	public static <T> Stopwatch<T> of(Source<T> source) {
-		List<GarbageCollectorMXBean> gcBeans0 = ManagementFactory.getGarbageCollectorMXBeans();
+		var gcBeans0 = ManagementFactory.getGarbageCollectorMXBeans();
 		var t0 = System.nanoTime();
 		var nGcs0 = gcBeans0.stream().mapToLong(GarbageCollectorMXBean::getCollectionCount).sum();
 		var gcDuration0 = gcBeans0.stream().mapToLong(GarbageCollectorMXBean::getCollectionTime).sum();
 
 		var t = source.source();
 
-		List<GarbageCollectorMXBean> gcBeans1 = ManagementFactory.getGarbageCollectorMXBeans();
+		var gcBeans1 = ManagementFactory.getGarbageCollectorMXBeans();
 		var t1 = System.nanoTime();
 		var nGcs1 = gcBeans1.stream().mapToLong(GarbageCollectorMXBean::getCollectionCount).sum();
 		var gcDuration1 = gcBeans1.stream().mapToLong(GarbageCollectorMXBean::getCollectionTime).sum();

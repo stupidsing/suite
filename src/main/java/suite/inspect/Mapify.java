@@ -136,7 +136,7 @@ public class Mapify {
 						return object;
 				});
 			else {
-				List<FieldInfo> fis = Read //
+				var fis = Read //
 						.from(inspect.fields(clazz)) //
 						.map(field -> {
 							var type1 = field.getGenericType();

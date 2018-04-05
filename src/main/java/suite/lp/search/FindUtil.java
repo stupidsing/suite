@@ -14,7 +14,7 @@ import suite.util.To;
 public class FindUtil {
 
 	public static Node collectSingle(Finder finder, Node in) {
-		List<Node> list = collectList(finder, in);
+		var list = collectList(finder, in);
 		if (list.size() == 1)
 			return list.get(0);
 		else if (!list.isEmpty())

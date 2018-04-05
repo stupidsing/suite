@@ -138,7 +138,7 @@ public class Inspect {
 		// do not display same field of different base classes
 		var names = new HashSet<>();
 		List<Field> parentFields = superClass != null ? fields(superClass) : List.of();
-		List<Field> childFields = Read //
+		var childFields = Read //
 				.from(clazz.getDeclaredFields()) //
 				.filter(field -> {
 					var modifiers = field.getModifiers();
@@ -150,7 +150,7 @@ public class Inspect {
 				}) //
 				.toList();
 
-		List<Field> fields = List_.concat(parentFields, childFields);
+		var fields = List_.concat(parentFields, childFields);
 		fields.forEach(field -> field.setAccessible(true));
 		return fields;
 	});
@@ -171,7 +171,7 @@ public class Inspect {
 		// do not display same method of different base classes
 		var names = new HashSet<>();
 		List<Method> parentMethods = superClass != null ? methods(superClass) : List.of();
-		List<Method> childMethods = Read //
+		var childMethods = Read //
 				.from(clazz.getDeclaredMethods()) //
 				.filter(method -> {
 					var modifiers = method.getModifiers();
@@ -179,13 +179,13 @@ public class Inspect {
 				}) //
 				.toList();
 
-		List<Method> methods = List_.concat(parentMethods, childMethods);
+		var methods = List_.concat(parentMethods, childMethods);
 		Read.from(methods).filter(method -> method.getDeclaringClass() != Object.class).sink(method -> method.setAccessible(true));
 		return methods;
 	});
 
 	private Fun<Class<?>, List<Property>> propertiesFun = Memoize.funRec(clazz -> {
-		List<Method> methods = methods(clazz);
+		var methods = methods(clazz);
 
 		var getMethods = Read //
 				.from(methods) //

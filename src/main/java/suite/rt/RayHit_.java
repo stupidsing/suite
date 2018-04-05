@@ -22,7 +22,7 @@ public class RayHit_ {
 	}
 
 	public static List<RayHit> join(Collection<RtObject> objects, Ray ray, Fun<Pair<Boolean, Boolean>, Boolean> fun) {
-		List<List<RayHit>> rayHitsList = getHits(ray, objects);
+		var rayHitsList = getHits(ray, objects);
 		List<RayHit> rayHits = !rayHitsList.isEmpty() ? rayHitsList.get(0) : List.of();
 		for (var i = 1; i < rayHitsList.size(); i++)
 			rayHits = join(rayHits, rayHitsList.get(i), fun);

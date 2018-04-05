@@ -32,7 +32,7 @@ public class Preprocess {
 
 		for (Fun<String, List<Run>> fun : funs) {
 			var rev0 = rev;
-			List<Run> runs = fun.apply(fwd);
+			var runs = fun.apply(fwd);
 			fwd = forward(fwd, runs);
 			rev = position -> rev0.reverse(reverse(runs, position));
 		}

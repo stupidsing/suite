@@ -416,7 +416,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public LngObjPair<V>[] toArray() {
-		List<LngObjPair<V>> list = toList();
+		var list = toList();
 		@SuppressWarnings("unchecked")
 		LngObjPair<V>[] array = Array_.newArray(LngObjPair.class, list.size());
 		return list.toArray(array);

@@ -175,7 +175,7 @@ public class BackAllocatorGeneral {
 
 	private BackAllocator fixed(double r) {
 		return (akds, indices) -> {
-			List<Pair<String, Double>> potentialBySymbol = akds.dsByKey //
+			var potentialBySymbol = akds.dsByKey //
 					.map((symbol, ds) -> Pair.of(symbol, r)) //
 					.toList();
 
@@ -185,7 +185,7 @@ public class BackAllocatorGeneral {
 
 	private BackAllocator lastReturn(int nWorsts, int nBests) {
 		return (akds, indices) -> index -> {
-			List<String> list = akds.dsByKey //
+			var list = akds.dsByKey //
 					.mapValue(ds -> ds.lastReturn(index)) //
 					.sortBy((symbol, return_) -> return_) //
 					.keys() //
@@ -437,7 +437,7 @@ public class BackAllocatorGeneral {
 					.toMap();
 
 			return index -> {
-				List<Pair<String, Integer>> m0 = dsByKey //
+				var m0 = dsByKey //
 						.keys() //
 						.map2(symbol -> fixieBySymbol //
 								.get(symbol) //

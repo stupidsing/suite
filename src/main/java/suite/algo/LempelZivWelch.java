@@ -79,7 +79,7 @@ public class LempelZivWelch<Unit> {
 				sink.sink(unit);
 
 			while ((index = source.source()) != null) {
-				List<Unit> word0 = word;
+				var word0 = word;
 				List<Unit> newWord;
 
 				if (index < dict.size())

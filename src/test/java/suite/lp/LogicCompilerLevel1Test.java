@@ -44,7 +44,7 @@ public class LogicCompilerLevel1Test {
 		var rs = Suite.newRuleSet(List.of("auto.sl"));
 		Node goal = Suite.parse("source .lln, member .lln .ln, member .ln .n, sink .n");
 		Node input = Suite.parse("((1, 2,), (3, 4,),)");
-		List<Node> results = FindUtil.collectList(finder(rs, goal), input);
+		var results = FindUtil.collectList(finder(rs, goal), input);
 
 		System.out.println(results);
 		assertTrue(results.size() == 4);
@@ -61,7 +61,7 @@ public class LogicCompilerLevel1Test {
 		Suite.addRule(rs, "ab b");
 
 		Node goal = Suite.parse("ab .a, ab .b, sink (.a, .b,)");
-		List<Node> results = FindUtil.collectList(finder(rs, goal), Atom.NIL);
+		var results = FindUtil.collectList(finder(rs, goal), Atom.NIL);
 
 		System.out.println(results);
 		assertTrue(results.size() == 4);

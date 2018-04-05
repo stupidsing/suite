@@ -21,8 +21,8 @@ public class TextUtil {
 	}
 
 	public Bytes merge(Bytes bytes, Bytes bytesx, Bytes bytesy) throws ConflictException {
-		List<Pair<Bytes, Bytes>> pairsx = diff(bytes, bytesx);
-		List<Pair<Bytes, Bytes>> pairsy = diff(bytes, bytesy);
+		var pairsx = diff(bytes, bytesx);
+		var pairsy = diff(bytes, bytesy);
 		return patch(bytes, merge(pairsx, pairsy));
 	}
 
@@ -77,8 +77,8 @@ public class TextUtil {
 		if (!isEmptyx || !isEmptyy) {
 			var phx = !isEmptyx ? pairsx.get(0) : Pair.of(Bytes.empty, Bytes.empty);
 			var phy = !isEmptyy ? pairsy.get(0) : Pair.of(Bytes.empty, Bytes.empty);
-			List<Pair<Bytes, Bytes>> ptx = !isEmptyx ? List_.right(pairsx, 1) : pairsx;
-			List<Pair<Bytes, Bytes>> pty = !isEmptyy ? List_.right(pairsy, 1) : pairsy;
+			var ptx = !isEmptyx ? List_.right(pairsx, 1) : pairsx;
+			var pty = !isEmptyy ? List_.right(pairsy, 1) : pairsy;
 
 			int c = min(phx.t0.size(), phy.t0.size());
 			Bytes commonx = phx.t0.range(0, c);

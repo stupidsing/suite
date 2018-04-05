@@ -38,7 +38,7 @@ public class CompositeRuleSet implements RuleSet {
 	 */
 	@Override
 	public List<Rule> searchRule(Node head) {
-		List<Rule> rules = second.searchRule(head);
+		var rules = second.searchRule(head);
 		if (rules.isEmpty())
 			rules = first.searchRule(head);
 		return rules;

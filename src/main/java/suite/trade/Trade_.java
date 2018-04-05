@@ -232,7 +232,7 @@ public class Trade_ {
 			else
 				priceFun = symbol -> eodBySymbol.get(symbol).price;
 
-			List<Trade> trades_ = Trade_ //
+			var trades_ = Trade_ //
 					.diff(time, account.assets(), portfolio, priceFun) //
 					.partition(trade -> { // can be executed in next open price?
 						var eod = eodBySymbol.get(trade.symbol);

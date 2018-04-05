@@ -19,8 +19,8 @@ public class Minus implements RtObject {
 
 	@Override
 	public List<RayHit> hit(Ray ray) {
-		List<RayHit> subjectRayHits = RayHit_.filter(subject.hit(ray)).sort(RayHit.comparator).toList();
-		List<RayHit> objectRayHits = RayHit_.filter(object.hit(ray)).sort(RayHit.comparator).toList();
+		var subjectRayHits = RayHit_.filter(subject.hit(ray)).sort(RayHit.comparator).toList();
+		var objectRayHits = RayHit_.filter(object.hit(ray)).sort(RayHit.comparator).toList();
 		return RayHit_.join(subjectRayHits, objectRayHits, pair -> pair.t0 && !pair.t1);
 	}
 

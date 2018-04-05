@@ -276,7 +276,7 @@ public class InterpretFunEager {
 			df.put(e.getKey().getName(), f2((a, b) -> Int.of(fun.apply(i(a), i(b)))));
 		}
 
-		List<String> keys = df.keySet().stream().sorted().collect(Collectors.toList());
+		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		Eager_ eager0 = new Eager_(0, IMap.empty());
 		var frame = new Frame(null);
 

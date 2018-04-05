@@ -68,7 +68,7 @@ public class UctWeiqi {
 		 */
 		@Override
 		public boolean evaluateRandomOutcome() {
-			List<Coordinate> empties = findAllEmptyPositions();
+			var empties = findAllEmptyPositions();
 			var capturedPositions = new HashSet<Coordinate>();
 			var me = gameSet.getNextPlayer();
 			Move move, chosenMove;
@@ -124,7 +124,7 @@ public class UctWeiqi {
 		 */
 		public boolean evaluateRandomOutcome_() {
 			var me = gameSet.getNextPlayer();
-			List<Coordinate> empties = findAllEmptyPositions();
+			var empties = findAllEmptyPositions();
 			Coordinate pos;
 			Move move = null;
 

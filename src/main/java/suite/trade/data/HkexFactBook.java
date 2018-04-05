@@ -31,7 +31,7 @@ public class HkexFactBook {
 	}
 
 	public Streamlet<String> queryLeadingCompaniesByMarketCap(int year) {
-		List<List<String>> list0 = Singleton.me.storeCache //
+		var list0 = Singleton.me.storeCache //
 				.pipe(getUrl(year)) //
 				.pipe("xargs -I {} curl '{}'") //
 				.pipe("pdftotext -nopgbrk -raw - -") //

@@ -30,7 +30,7 @@ public class ListMultimap<K, V> {
 	}
 
 	public List<V> get(K k) {
-		List<V> list = map.get(k);
+		var list = map.get(k);
 		return list != null ? list : List.of();
 	}
 

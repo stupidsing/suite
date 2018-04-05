@@ -27,7 +27,7 @@ public class PackageManager {
 	public boolean install(String packageFilename) throws IOException {
 		var packageManifest = getPackageManifest(packageFilename);
 
-		List<Pair<String, String>> filenameMappings = Read //
+		var filenameMappings = Read //
 				.from2(packageManifest.getFilenameMappings()) //
 				.sort((p0, p1) -> p1.t0.length() - p0.t0.length()) //
 				.toList();
@@ -78,7 +78,7 @@ public class PackageManager {
 
 	public boolean uninstall(String packageName) throws IOException {
 		var packageMemento = keeper.loadPackageMemento(packageName);
-		List<InstallAction> installActions = packageMemento.getInstallActions();
+		var installActions = packageMemento.getInstallActions();
 		unact(installActions, installActions.size());
 		keeper.removePackageMemento(packageName);
 		return true;

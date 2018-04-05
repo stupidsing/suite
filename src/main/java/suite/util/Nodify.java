@@ -114,7 +114,7 @@ public class Nodify {
 					return node;
 				};
 				nodifier = new Nodifier(forward, node -> {
-					List<Object> list = Read //
+					var list = Read //
 							.from(Tree.iter(node, TermOp.OR____)) //
 							.map(n -> apply_(nodifier1, n)) //
 							.toList();
@@ -144,7 +144,7 @@ public class Nodify {
 						return Fail.t("cannot instantiate enum from interfaces");
 				});
 			else {
-				List<FieldInfo> fieldInfos = Read //
+				var fieldInfos = Read //
 						.from(inspect.fields(clazz)) //
 						.map(field -> {
 							var type1 = field.getGenericType();

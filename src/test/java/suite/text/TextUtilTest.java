@@ -2,12 +2,8 @@ package suite.text;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
-
 import org.junit.Test;
 
-import suite.adt.pair.Pair;
-import suite.primitive.Bytes;
 import suite.text.TextUtil.ConflictException;
 import suite.util.To;
 
@@ -27,9 +23,9 @@ public class TextUtilTest {
 		var version1_a = "abc567def890xyz";
 
 		// test diff
-		List<Pair<Bytes, Bytes>> patch_a = textUtil.diff(To.bytes(orig), To.bytes(version_a));
-		List<Pair<Bytes, Bytes>> patch_b = textUtil.diff(To.bytes(orig), To.bytes(version_b));
-		List<Pair<Bytes, Bytes>> patch_c = textUtil.diff(To.bytes(orig), To.bytes(version_c));
+		var patch_a = textUtil.diff(To.bytes(orig), To.bytes(version_a));
+		var patch_b = textUtil.diff(To.bytes(orig), To.bytes(version_b));
+		var patch_c = textUtil.diff(To.bytes(orig), To.bytes(version_c));
 
 		var expected = "abc" //
 				+ "[12|567]" //
@@ -43,13 +39,13 @@ public class TextUtilTest {
 		assertEquals(version1_a, To.string(textUtil.merge(To.bytes(orig), To.bytes(orig1), To.bytes(version_a))));
 
 		// test merge
-		List<Pair<Bytes, Bytes>> mergedPatch_ab = textUtil.merge(patch_a, patch_b);
+		var mergedPatch_ab = textUtil.merge(patch_a, patch_b);
 		assertEquals(merged_ab, To.string(textUtil.patch(To.bytes(orig), mergedPatch_ab)));
 
 		// test merge that requires agreeing on target content
 		System.out.println(textUtil.toString(patch_a));
 		System.out.println(textUtil.toString(patch_c));
-		List<Pair<Bytes, Bytes>> mergedPatch_ac = textUtil.merge(patch_a, patch_c, true);
+		var mergedPatch_ac = textUtil.merge(patch_a, patch_c, true);
 		assertEquals(merged_ac, To.string(textUtil.patch(To.bytes(orig), mergedPatch_ac)));
 	}
 

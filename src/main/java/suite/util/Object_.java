@@ -107,7 +107,7 @@ public class Object_ {
 			else {
 				var inspect = Singleton.me.inspect;
 
-				List<Pair<String, Field>> sfs = Read //
+				var sfs = Read //
 						.from(inspect.fields(clazz)) //
 						.map(field -> Pair.of(field.getName(), field)) //
 						.toList();
