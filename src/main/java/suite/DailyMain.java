@@ -193,14 +193,14 @@ public class DailyMain extends ExecutableProgram {
 
 			if (backTestBySymbol.get(symbol))
 				try {
-					DataSource ds = cfg.dataSource(symbol, period).validate();
+					var ds = cfg.dataSource(symbol, period).validate();
 					var prices = ds.prices;
 					var last = prices.length - 1;
 					var latestPrice = prices[last];
 
 					var signal = strategy.analyze(prices).get(last);
 					var nShares = signal * asset.lotSize * Math.round(factor / nHoldDays / (asset.lotSize * latestPrice));
-					Trade trade = Trade.of(nShares, symbol, latestPrice);
+					var trade = Trade.of(nShares, symbol, latestPrice);
 
 					if (signal != 0)
 						trades.add(trade);
