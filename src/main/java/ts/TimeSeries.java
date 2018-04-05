@@ -5,7 +5,6 @@ import static suite.util.Friends.min;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Vector;
@@ -97,7 +96,7 @@ public class TimeSeries {
 		var logys = To.vector(ys, Math::log);
 		var returns0 = dropDiff_(1, logys);
 		var length = returns0.length;
-		List<FltObjPair<float[]>> pairs = new ArrayList<>();
+		var pairs = new ArrayList<FltObjPair<float[]>>();
 		for (var n = 0; n < length * 3 / 4; n++) {
 			var returns = Arrays.copyOfRange(returns0, n, length);
 			var mv = stat.meanVariance(returns);
@@ -119,7 +118,7 @@ public class TimeSeries {
 	}
 
 	public boolean isUnitRootDetected(float[] ys, int tor) {
-		double tStatistic = adf(ys, tor);
+		var tStatistic = adf(ys, tor);
 		if (ys.length <= 25)
 			return -3d <= tStatistic;
 		else if (ys.length <= 50)

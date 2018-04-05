@@ -82,7 +82,7 @@ public class Arima {
 		var ars = To.vector(p, i -> 1f);
 		var mas = To.vector(q, i -> 1f);
 		var xs1 = nDiffs(xs0, d);
-		Arima_ arima = armaBackcast(xs1, ars, mas);
+		var arima = armaBackcast(xs1, ars, mas);
 		var xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
@@ -111,7 +111,7 @@ public class Arima {
 			// ep[t] = xs[t]
 			// - ars[0] * xs[t - 1] - ... - ars[p - 1] * xs[t - p]
 			// - mas[0] * ep[t - 1] - ... - mas[q - 1] * ep[t - q]
-			double error = arma.forwardRecursion(xsp, epq);
+			var error = arma.forwardRecursion(xsp, epq);
 
 			// minimization
 			// xs[t]
@@ -136,14 +136,14 @@ public class Arima {
 			Floats_.copy(coefficients, p, mas, 0, q);
 		}
 
-		double x1 = arma.sum(xsp, epq);
+		var x1 = arma.sum(xsp, epq);
 		return new Arima_(ars, mas, (float) x1);
 	}
 
 	@SuppressWarnings("unused")
 	private DblObjPair<Arima_> arimaEm(float[] xs0, int p, int d, int q) {
 		var xs1 = nDiffs(xs0, d);
-		Arima_ arima = armaEm(xs1, p, q);
+		var arima = armaEm(xs1, p, q);
 		var xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
@@ -217,7 +217,7 @@ public class Arima {
 	@SuppressWarnings("unused")
 	private DblObjPair<Arima_> arimaIa(float[] xs0, int p, int d, int q) {
 		var xs1 = nDiffs(xs0, d);
-		Arima_ arima = armaIa(xs1, p, q);
+		var arima = armaIa(xs1, p, q);
 		var xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
@@ -274,7 +274,7 @@ public class Arima {
 
 	public DblObjPair<Arima_> arimaMle(float[] xs0, int p, int d, int q) {
 		var xs1 = nDiffs(xs0, d);
-		Arima_ arima = armaMle(xs1, p, q);
+		var arima = armaMle(xs1, p, q);
 		var xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
@@ -371,7 +371,7 @@ public class Arima {
 			var qm1 = q - 1;
 
 			for (var t = qm1; 0 <= t; t--) {
-				double sum = sum(xsp, epq, t, p, qm1);
+				var sum = sum(xsp, epq, t, p, qm1);
 				epq[t] = (float) ((xsp[t + p] - epq[t + q] - sum) / mas[qm1]);
 			}
 		}
@@ -383,7 +383,7 @@ public class Arima {
 			for (var t = 0; t < length; t++) {
 				var tp = t + p;
 				var tq = t + q;
-				double ep = xsp[tp] - sum(xsp, epq, t, p, q);
+				var ep = xsp[tp] - sum(xsp, epq, t, p, q);
 				epq[tq] = (float) ep;
 				error += ep * ep;
 			}

@@ -6,7 +6,6 @@ import java.util.Arrays;
 import java.util.Random;
 
 import suite.math.numeric.Statistic;
-import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
@@ -25,7 +24,7 @@ public class Arch {
 		// auto regressive
 		var length = ys.length;
 		var xs0 = To.array(length, float[].class, i -> copyPadZeroes(ys, i - p, i));
-		LinearRegression lr0 = stat.linearRegression(xs0, ys, null);
+		var lr0 = stat.linearRegression(xs0, ys, null);
 		var variances = To.vector(lr0.residuals, residual -> residual * residual);
 
 		// conditional heteroskedasticity
@@ -70,7 +69,7 @@ public class Arch {
 
 	private float[] copyPadZeroes(float[] fs0, int from, int to) {
 		var fs1 = new float[to - from];
-		int p = -max(0, from);
+		var p = -max(0, from);
 		Arrays.fill(fs1, 0, p, 0f);
 		Floats_.copy(fs0, 0, fs1, p, to - p);
 		return fs1;

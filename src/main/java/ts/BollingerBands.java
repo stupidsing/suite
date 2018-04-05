@@ -7,7 +7,6 @@ import java.util.Arrays;
 import suite.adt.pair.Pair;
 import suite.math.linalg.VirtualVector;
 import suite.math.numeric.Statistic;
-import suite.math.numeric.Statistic.MeanVariance;
 
 public class BollingerBands {
 
@@ -64,9 +63,9 @@ public class BollingerBands {
 
 			for (var i = 0; i < length; i++) {
 				var i1 = i + 1;
-				int s = max(0, i1 - backPos0);
-				int e = max(0, i1 - backPos1);
-				MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(fs, s, e));
+				var s = max(0, i1 - backPos0);
+				var e = max(0, i1 - backPos1);
+				var mv = stat.meanVariance(Arrays.copyOfRange(fs, s, e));
 				var mean = mv.mean;
 				var ksd = k * mv.standardDeviation();
 				var bbl = mean - ksd;

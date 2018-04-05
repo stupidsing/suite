@@ -11,7 +11,7 @@ public class Mle {
 
 		for (var iter = 0; iter < 10000; iter++) {
 			var t = source.source();
-			DblObjPair<T> pair = DblObjPair.of(t.source(), t);
+			var pair = DblObjPair.of(t.source(), t);
 			if (max == null || max.t0 < pair.t0)
 				max = pair;
 		}
