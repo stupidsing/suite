@@ -41,7 +41,7 @@ public class CompiledProverBuilder implements Builder {
 		var rules = Suite.getRules(ruleSet);
 
 		return goal -> {
-			Node code = compile(Suite.substitute(".0 >> .1", rules, goal));
+			var code = compile(Suite.substitute(".0 >> .1", rules, goal));
 
 			return (source, sink) -> {
 				var proverConfig1 = new ProverConfig(ruleSet, proverConfig);
@@ -60,7 +60,7 @@ public class CompiledProverBuilder implements Builder {
 	}
 
 	private Finder newCompiler(Builder builder) {
-		String compile = "source .in, compile-logic .in .out, sink .out";
+		var compile = "source .in, compile-logic .in .out, sink .out";
 		return builder.build(Suite.logicCompilerRuleSet()).apply(Suite.parse(compile));
 	}
 

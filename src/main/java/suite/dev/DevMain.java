@@ -76,7 +76,7 @@ public class DevMain {
 
 			FixieFun3<VK, Character, State, State> mutate = (vk, ch, state) -> state //
 					.apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						int ci = text.index(cx, cy);
+						var ci = text.index(cx, cy);
 
 						if (vk == VK.LEFT_)
 							return st.cursor(ci - 1);
@@ -112,7 +112,7 @@ public class DevMain {
 							return st.offset(ox, min(cy, text.nLines()));
 						else if (vk == VK.ALT_J____) {
 							var index = text.endOfLine(ci);
-							Text text1 = text.splice(index, index + 1, empty);
+							var text1 = text.splice(index, index + 1, empty);
 							return st.text(text1).cursor(index);
 						} else if (vk == VK.BKSP_) {
 							var index = ci;
@@ -161,13 +161,13 @@ public class DevMain {
 						else
 							return st;
 					}))).apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						IntIntPair cc_ = text.coord(sat(text.index(cx, cy), 0, text.length()));
+						var cc_ = text.coord(sat(text.index(cx, cy), 0, text.length()));
 						return st.cursor(cc_.t0, cc_.t1);
 					}))).apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						int x0 = Math.max(0, cx - viewSizeX + 1);
-						int y0 = Math.max(0, cy - viewSizeY + 1);
-						int ox_ = sat(ox, x0, cx);
-						int oy_ = sat(oy, y0, cy);
+						var x0 = Math.max(0, cx - viewSizeX + 1);
+						var y0 = Math.max(0, cy - viewSizeY + 1);
+						var ox_ = sat(ox, x0, cx);
+						var oy_ = sat(oy, y0, cy);
 						return st.offset(ox_, oy_);
 					})));
 
@@ -193,12 +193,12 @@ public class DevMain {
 		}
 
 		private State splice(int deletes, IRopeList<Character> s) {
-			int index = text.index(cursorCoord.t0, cursorCoord.t1);
+			var index = text.index(cursorCoord.t0, cursorCoord.t1);
 			return splice(index, index + deletes, s);
 		}
 
 		private State splice(int i0, int ix, IRopeList<Character> s) {
-			int cursorIndex0 = text.index(cursorCoord.t0, cursorCoord.t1);
+			var cursorIndex0 = text.index(cursorCoord.t0, cursorCoord.t1);
 			int cursorIndex1;
 			if (cursorIndex0 < i0)
 				cursorIndex1 = cursorIndex0;
@@ -206,7 +206,7 @@ public class DevMain {
 				cursorIndex1 = i0;
 			else
 				cursorIndex1 = cursorIndex0 - ix + i0 + s.size();
-			Text text1 = text.splice(i0, ix, s);
+			var text1 = text.splice(i0, ix, s);
 			return text(text1).cursor(cursorIndex1);
 		}
 
@@ -278,7 +278,7 @@ public class DevMain {
 		}
 
 		private Text splice(int i0, int i1, IRopeList<Character> s) {
-			int i1_ = min(i1, length());
+			var i1_ = min(i1, length());
 			return text(text.left(i0).concat(s.concat(text.right(i1_))));
 		}
 

@@ -25,7 +25,7 @@ public class SewingProverBuilder2 implements Builder {
 	@Override
 	public Fun<Node, Finder> build(RuleSet ruleSet) {
 		var isRewrite = !proverConfig.isTrace();
-		QueryRewriter qr = isRewrite ? new QueryRewriter(Prototype.multimap(ruleSet)) : null;
+		var qr = isRewrite ? new QueryRewriter(Prototype.multimap(ruleSet)) : null;
 		RuleSet ruleSet1;
 
 		if (qr != null) {
@@ -34,7 +34,7 @@ public class SewingProverBuilder2 implements Builder {
 		} else
 			ruleSet1 = ruleSet;
 
-		Fun<Node, Finder> fun = new SewingProverBuilder(proverConfig).build(ruleSet1);
+		var fun = new SewingProverBuilder(proverConfig).build(ruleSet1);
 
 		if (qr != null)
 			return goal -> fun.apply(qr.rewriteClause(goal));
