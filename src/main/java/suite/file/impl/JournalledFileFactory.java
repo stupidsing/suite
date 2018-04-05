@@ -6,7 +6,6 @@ import java.util.ArrayList;
 
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
-import suite.file.SerializedPageFile;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.adt.pair.IntObjPair;
@@ -32,9 +31,9 @@ public class JournalledFileFactory {
 			PageFile jpf, //
 			PageFile ppf, //
 			int pageSize) {
-		Serializer<Bytes> bytesSerializer = serialize.bytes(pageSize);
+		var bytesSerializer = serialize.bytes(pageSize);
 
-		Serializer<JournalEntry> journalEntrySerializer = new Serializer<>() {
+		var journalEntrySerializer = new Serializer<JournalEntry>() {
 			public JournalEntry read(DataInput_ dataInput) throws IOException {
 				var pointer = dataInput.readInt();
 				var bytes = bytesSerializer.read(dataInput);
@@ -48,8 +47,8 @@ public class JournalledFileFactory {
 		};
 
 		var dataFile = df;
-		SerializedPageFile<JournalEntry> journalPageFile = SerializedFileFactory.serialized(jpf, journalEntrySerializer);
-		SerializedPageFile<Integer> pointerPageFile = SerializedFileFactory.serialized(ppf, serialize.int_);
+		var journalPageFile = SerializedFileFactory.serialized(jpf, journalEntrySerializer);
+		var pointerPageFile = SerializedFileFactory.serialized(ppf, serialize.int_);
 		var nCommittedJournalEntries0 = pointerPageFile.load(0);
 
 		var journalEntries = new ArrayList<JournalEntry>();
@@ -67,7 +66,7 @@ public class JournalledFileFactory {
 			}
 
 			public synchronized Bytes load(int pointer) {
-				IntObjPair<JournalEntry> pair = findPageInJournal(pointer);
+				var pair = findPageInJournal(pointer);
 				if (pair != null)
 					return pair.t1.bytes;
 				else
@@ -75,7 +74,7 @@ public class JournalledFileFactory {
 			}
 
 			public synchronized void save(int pointer, Bytes bytes) {
-				IntObjPair<JournalEntry> pair = findDirtyPageInJournal(pointer);
+				var pair = findDirtyPageInJournal(pointer);
 				int jp;
 				JournalEntry journalEntry;
 
@@ -105,8 +104,8 @@ public class JournalledFileFactory {
 			}
 
 			/**
-			 * Makes sure the current snapshot of data is saved and recoverable
-			 * on failure, upon the return of method call.
+			 * Makes sure the current snapshot of data is saved and recoverable on failure,
+			 * upon the return of method call.
 			 */
 			public synchronized void sync() {
 				journalPageFile.sync();

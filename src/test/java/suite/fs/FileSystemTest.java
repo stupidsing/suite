@@ -77,7 +77,7 @@ public class FileSystemTest {
 		var fsm = fs.mutate();
 
 		for (var path : paths) {
-			String filename = path.toString().replace(File.separatorChar, '/');
+			var filename = path.toString().replace(File.separatorChar, '/');
 			var name = Bytes.of(filename.getBytes(Constants.charset));
 			fsm.replace(name, Bytes.of(Files.readAllBytes(path)));
 		}
