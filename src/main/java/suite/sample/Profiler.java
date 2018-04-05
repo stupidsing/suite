@@ -7,7 +7,6 @@ import java.lang.management.ThreadMXBean;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -103,7 +102,7 @@ public class Profiler implements Service {
 					&& threadInfo.getThreadState() == State.RUNNABLE //
 					&& !String_.equals(threadInfo.getThreadName(), "ReaderThread")) {
 				StackTraceElement[] stackTrace = threadInfo.getStackTrace();
-				Set<String> elements = new HashSet<>();
+				var elements = new HashSet<>();
 				var i = stackTrace.length;
 				Call call = callRoot;
 

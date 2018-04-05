@@ -92,7 +92,7 @@ public class Ints implements Iterable<Integer> {
 
 	public Ints append(Ints a) {
 		int size0 = size_(), size1 = a.size_(), newSize = size0 + size1;
-		var nb = new int[newSize];
+		int[] nb = new int[newSize];
 		System.arraycopy(cs, start, nb, 0, size0);
 		System.arraycopy(a.cs, a.start, nb, size0, size1);
 		return of(nb);
@@ -167,7 +167,7 @@ public class Ints implements Iterable<Integer> {
 	}
 
 	public Ints reverse() {
-		var cs_ = new int[size_()];
+		int[] cs_ = new int[size_()];
 		int si = start, di = 0;
 		while (si < end)
 			cs_[di++] = cs[si++];
@@ -180,7 +180,7 @@ public class Ints implements Iterable<Integer> {
 	}
 
 	public Ints sort() {
-		var cs = toArray();
+		int[] cs = toArray();
 		Arrays.sort(cs);
 		return Ints.of(cs);
 	}

@@ -2,7 +2,6 @@ package suite.search;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class Search<State> {
 
@@ -13,12 +12,12 @@ public class Search<State> {
 	}
 
 	public static <State> State breadthFirst(Traverser<State> traverser, State state0) {
-		Set<State> states0 = new HashSet<>();
+		var states0 = new HashSet<State>();
 
 		states0.add(state0);
 
 		while (!states0.isEmpty()) {
-			Set<State> states1 = new HashSet<>();
+			var states1 = new HashSet<State>();
 
 			for (State state : states0)
 				if (!traverser.evaluate(state))

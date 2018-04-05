@@ -2,7 +2,6 @@ package suite.streamlet;
 
 import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -169,7 +168,7 @@ public class Signal<T> {
 	}
 
 	public Signal<T> unique() {
-		Set<T> set = new HashSet<>();
+		var set = new HashSet<>();
 		return redirect_((t, fire) -> {
 			if (set.add(t))
 				fire.sink(t);

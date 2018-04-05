@@ -50,7 +50,7 @@ public class IntSet {
 		size++;
 
 		if (capacity * 3 / 4 < size) {
-			var vs0 = vs;
+			int[] vs0 = vs;
 			int v_;
 
 			allocate(capacity * 2);

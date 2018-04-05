@@ -164,7 +164,7 @@ public class P0Parse {
 				return FunpGlobal.of(var, parse(b), parseNewVariable(c, var));
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match4("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
-				Set<String> variables = new HashSet<>();
+				var variables = new HashSet<String>();
 
 				Funp be = new Object() {
 					private Funp extract(Funp be) {

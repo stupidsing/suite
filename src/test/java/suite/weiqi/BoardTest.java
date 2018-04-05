@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.HashSet;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +22,7 @@ public class BoardTest {
 	@Test
 	public void testNeighbor() {
 		Coordinate c = Coordinate.c(10, 10);
-		Set<Coordinate> neighbors = new HashSet<>();
+		var neighbors = new HashSet<>();
 
 		for (Coordinate c1 : c.neighbors)
 			neighbors.add(c1);

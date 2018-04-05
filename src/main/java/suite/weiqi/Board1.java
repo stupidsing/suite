@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import suite.util.FunUtil.Fun;
 import suite.weiqi.Weiqi.Occupation;
@@ -118,7 +117,7 @@ public class Board1 {
 	}
 
 	private void fillGroup(Group group, Coordinate c) {
-		Set<Group> neighbourGroups = new HashSet<>();
+		var neighbourGroups = new HashSet<>();
 		setGroup(c, group);
 
 		for (Coordinate c1 : c.neighbors) {
@@ -131,7 +130,7 @@ public class Board1 {
 	}
 
 	private void removeGroup(Group group, Coordinate c) {
-		Set<Group> neighbourGroups = new HashSet<>();
+		var neighbourGroups = new HashSet<>();
 		setGroup(c, null);
 
 		for (Coordinate c1 : c.neighbors) {

@@ -9,7 +9,6 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import suite.adt.IdentityKey;
 import suite.adt.pair.Pair;
@@ -149,7 +148,7 @@ public class Grapher {
 		for (IntObjPair<IdentityKey<Node>> e : mapn1.streamlet())
 			mapi1.put(e.t0, e.t1);
 
-		Set<IntIntPair> set = new HashSet<>();
+		var set = new HashSet<>();
 		Deque<IntIntPair> deque = new ArrayDeque<>();
 		deque.add(IntIntPair.of(g0.id, g1.id));
 		IntIntPair pair;

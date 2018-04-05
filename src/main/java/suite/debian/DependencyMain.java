@@ -176,7 +176,7 @@ public class DependencyMain extends ExecutableProgram {
 
 		List<Map<String, String>> packages;
 		packages = Rethrow.ex(() -> aptUtil.readRepoPackages(repo));
-		Set<String> required = new HashSet<>(List.of(packageName));
+		var required = new HashSet<>(List.of(packageName));
 		Set<String> required1 = dpkgUtil.getDependeeSet(packages, required);
 		return Read //
 				.from(required1) //
@@ -206,7 +206,7 @@ public class DependencyMain extends ExecutableProgram {
 
 	public List<String> listUnusedPackages() {
 		List<Map<String, String>> packages = dpkgUtil.readInstalledPackages();
-		Set<String> required = new HashSet<>(requiredList);
+		var required = new HashSet<>(requiredList);
 
 		required.addAll(Read //
 				.from(packages) //
@@ -225,7 +225,7 @@ public class DependencyMain extends ExecutableProgram {
 	}
 
 	public List<String> listUnusedFiles() {
-		Set<String> files = Read //
+		var files = Read //
 				.from(dpkgUtil.readInstalledPackages()) //
 				.concatMap(dpkgUtil::readFileList) //
 				.toSet();

@@ -187,7 +187,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public FltOutlet distinct() {
-		Set<Float> set = new HashSet<>();
+		var set = new HashSet<>();
 		return of(() -> {
 			float c;
 			while ((c = next()) != FltFunUtil.EMPTYVALUE && !set.add(c))

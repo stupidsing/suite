@@ -62,7 +62,7 @@ public class CacheUtil {
 	}
 
 	public <I> I proxyByMethodNames(Class<I> interface_, I object, Set<String> methodNames) {
-		Set<Method> methods = new HashSet<>();
+		var methods = new HashSet<Method>();
 
 		for (Method method : interface_.getMethods())
 			if (methodNames.contains(method.getName()))

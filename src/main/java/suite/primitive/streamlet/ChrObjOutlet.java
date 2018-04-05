@@ -176,7 +176,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjOutlet<V> distinct() {
-		Set<ChrObjPair<V>> set = new HashSet<>();
+		var set = new HashSet<>();
 		return of(pair -> {
 			boolean b;
 			while ((b = next(pair)) && !set.add(ChrObjPair.of(pair.t0, pair.t1)))
@@ -461,7 +461,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public Set<ChrObjPair<V>> toSet() {
-		Set<ChrObjPair<V>> set = new HashSet<>();
+		var set = new HashSet<ChrObjPair<V>>();
 		ChrObjPair<V> pair;
 		while (next(pair = ChrObjPair.of((char) 0, null)))
 			set.add(pair);

@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.jdk.gen.Type_;
@@ -70,7 +69,7 @@ public class Inspect {
 
 	public String toString(Object object) {
 		StringBuilder sb = new StringBuilder();
-		Set<Integer> ids = new HashSet<>();
+		var ids = new HashSet<>();
 
 		new Object() {
 			private void append(Class<?> clazz, Object object_) {
@@ -137,7 +136,7 @@ public class Inspect {
 		Class<?> superClass = clazz.getSuperclass();
 
 		// do not display same field of different base classes
-		Set<String> names = new HashSet<>();
+		var names = new HashSet<>();
 		List<Field> parentFields = superClass != null ? fields(superClass) : List.of();
 		List<Field> childFields = Read //
 				.from(clazz.getDeclaredFields()) //
@@ -170,7 +169,7 @@ public class Inspect {
 		Class<?> superClass = clazz.getSuperclass();
 
 		// do not display same method of different base classes
-		Set<String> names = new HashSet<>();
+		var names = new HashSet<>();
 		List<Method> parentMethods = superClass != null ? methods(superClass) : List.of();
 		List<Method> childMethods = Read //
 				.from(clazz.getDeclaredMethods()) //
@@ -206,7 +205,7 @@ public class Inspect {
 				.map2(setter -> setter.getName().substring(3), setter -> setter) //
 				.toMap();
 
-		Set<String> propertyNames = new HashSet<>(getMethods.keySet());
+		var propertyNames = new HashSet<>(getMethods.keySet());
 		propertyNames.retainAll(setMethods.keySet());
 
 		return Read //

@@ -176,7 +176,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjOutlet<V> distinct() {
-		Set<DblObjPair<V>> set = new HashSet<>();
+		var set = new HashSet<>();
 		return of(pair -> {
 			boolean b;
 			while ((b = next(pair)) && !set.add(DblObjPair.of(pair.t0, pair.t1)))
@@ -461,7 +461,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public Set<DblObjPair<V>> toSet() {
-		Set<DblObjPair<V>> set = new HashSet<>();
+		var set = new HashSet<DblObjPair<V>>();
 		DblObjPair<V> pair;
 		while (next(pair = DblObjPair.of((double) 0, null)))
 			set.add(pair);

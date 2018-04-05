@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import suite.node.Atom;
 import suite.node.Dict;
@@ -55,7 +54,7 @@ public class Comparer implements Comparator<Node> {
 			else if (clazz0 == Dict.class) {
 				Map<Node, Reference> m0 = ((Dict) n0).map;
 				Map<Node, Reference> m1 = ((Dict) n1).map;
-				Set<Node> keys = new HashSet<>();
+				var keys = new HashSet<Node>();
 				keys.addAll(m0.keySet());
 				keys.addAll(m1.keySet());
 				for (Node key : Read.from(keys).sort(this::compare))

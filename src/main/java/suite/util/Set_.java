@@ -27,7 +27,7 @@ public class Set_ {
 	}
 
 	private static <T> Set<T> union_(Collection<Collection<T>> collections) {
-		Set<T> set = new HashSet<>();
+		var set = new HashSet<T>();
 		for (Collection<T> collection : collections)
 			set.addAll(collection);
 		return set;

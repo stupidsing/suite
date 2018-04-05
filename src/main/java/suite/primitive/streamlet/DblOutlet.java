@@ -187,7 +187,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public DblOutlet distinct() {
-		Set<Double> set = new HashSet<>();
+		var set = new HashSet<>();
 		return of(() -> {
 			double c;
 			while ((c = next()) != DblFunUtil.EMPTYVALUE && !set.add(c))

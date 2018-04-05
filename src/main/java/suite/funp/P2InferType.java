@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import suite.adt.Mutable;
 import suite.adt.pair.Fixie_.FixieFun0;
@@ -178,7 +177,7 @@ public class P2InferType {
 					var capn = "cap" + Util.temp();
 					FunpVariable cap = FunpVariable.of(capn);
 					FunpReference ref = FunpReference.of(cap);
-					Set<String> set = new HashSet<>();
+					var set = new HashSet<>();
 					List<Pair<String, Funp>> list = new ArrayList<>();
 					FunpStruct struct = FunpStruct.of(list);
 

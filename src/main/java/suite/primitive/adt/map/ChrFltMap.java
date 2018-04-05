@@ -155,7 +155,7 @@ public class ChrFltMap {
 
 		if (capacity * 3 / 4 < size) {
 			char[] ks0 = ks;
-			var vs0 = vs;
+			float[] vs0 = vs;
 			float v_;
 
 			allocate(capacity * 2);

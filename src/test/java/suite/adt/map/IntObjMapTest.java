@@ -3,7 +3,6 @@ package suite.adt.map;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashSet;
-import java.util.Set;
 
 import org.junit.Test;
 
@@ -23,12 +22,12 @@ public class IntObjMapTest {
 		assertEquals(Integer.valueOf(4), map.get(3));
 		assertEquals(Integer.valueOf(6), map.get(5));
 
-		Set<String> expected = new HashSet<>();
+		var expected = new HashSet<>();
 		expected.add("1:2");
 		expected.add("3:4");
 		expected.add("5:6");
 
-		Set<String> actual = new HashSet<>();
+		var actual = new HashSet<>();
 
 		IntObjSource<Integer> source = map.source();
 		IntObjPair<Integer> pair = IntObjPair.of(0, 0);

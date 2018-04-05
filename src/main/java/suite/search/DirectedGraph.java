@@ -38,11 +38,11 @@ public class DirectedGraph<V> {
 
 	public List<Set<V>> layers() {
 		ArrayList<Set<V>> results = new ArrayList<>();
-		Set<V> set = new HashSet<>();
+		var set = new HashSet<V>();
 		boolean b;
 
 		do {
-			Set<V> set1 = new HashSet<>();
+			var set1 = new HashSet<V>();
 			for (V v : vertices)
 				if (!set.contains(v) && Read.from(forwards.get(v)).isAll(set::contains))
 					set1.add(v);

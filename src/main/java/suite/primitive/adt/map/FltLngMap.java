@@ -154,7 +154,7 @@ public class FltLngMap {
 		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
-			var ks0 = ks;
+			float[] ks0 = ks;
 			long[] vs0 = vs;
 			long v_;
 

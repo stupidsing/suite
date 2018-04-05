@@ -137,7 +137,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public Outlet<T> distinct() {
-		Set<T> set = new HashSet<>();
+		var set = new HashSet<>();
 		return of(() -> {
 			T t;
 			while ((t = next()) != null && !set.add(t))
@@ -374,7 +374,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public Set<T> toSet() {
-		Set<T> set = new HashSet<>();
+		var set = new HashSet<T>();
 		T t;
 		while ((t = next()) != null)
 			set.add(t);

@@ -2,7 +2,6 @@ package suite.lp.doer;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
 
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
@@ -148,8 +147,8 @@ public class Prover {
 				boolean isTrace = config.isTrace();
 
 				if (isTrace) {
-					Set<String> whites = Suite.tracePredicates;
-					Set<String> blacks = Suite.noTracePredicates;
+					var whites = Suite.tracePredicates;
+					var blacks = Suite.noTracePredicates;
 
 					Prototype prototype = Prototype.of(query);
 					var head = prototype != null ? prototype.head : null;

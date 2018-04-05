@@ -50,7 +50,7 @@ public class FltSet {
 		size++;
 
 		if (capacity * 3 / 4 < size) {
-			var vs0 = vs;
+			float[] vs0 = vs;
 			float v_;
 
 			allocate(capacity * 2);

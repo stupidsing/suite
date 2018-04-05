@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -40,7 +39,7 @@ public class ObstructionFreeStmTest {
 			IntStream.range(0, nMemories * 2).forEach(i -> orders.add(i % nMemories));
 			Collections.shuffle(orders, random);
 
-			Set<Integer> isRead = new HashSet<>();
+			var isRead = new HashSet<>();
 
 			IntStream.range(0, nMemories * 2).forEach(i -> {
 				var mi = orders.get(i);

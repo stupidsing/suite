@@ -154,7 +154,7 @@ public class IntDblMap {
 		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
-			var ks0 = ks;
+			int[] ks0 = ks;
 			double[] vs0 = vs;
 			double v_;
 

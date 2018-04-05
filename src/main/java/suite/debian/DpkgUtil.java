@@ -47,7 +47,7 @@ public class DpkgUtil {
 		Map<String, List<String>> dependees = getDependeesOf(packages);
 
 		List<String> nl = new ArrayList<>(set0);
-		Set<String> set1 = new HashSet<>(set0);
+		var set1 = new HashSet<>(set0);
 
 		while (!nl.isEmpty()) {
 			var p = nl.remove(nl.size() - 1);

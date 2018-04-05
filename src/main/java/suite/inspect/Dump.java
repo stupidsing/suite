@@ -7,7 +7,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import suite.jdk.gen.Type_;
 import suite.node.util.Singleton;
@@ -70,7 +69,7 @@ public class Dump {
 	}
 
 	private static void object(String prefix, Object object, Sink<String> sink) {
-		Set<Integer> dumpedIds = new HashSet<>();
+		var dumpedIds = new HashSet<>();
 
 		new Object() {
 			private void d(String prefix, Object object) {

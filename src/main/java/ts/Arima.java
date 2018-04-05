@@ -48,7 +48,7 @@ public class Arima {
 				})) //
 				.toArray();
 
-		double d = r[0];
+		var d = (double) r[0];
 		var alpha = new float[p];
 		alpha[0] = 1;
 

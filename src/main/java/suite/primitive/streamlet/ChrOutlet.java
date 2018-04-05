@@ -187,7 +187,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public ChrOutlet distinct() {
-		Set<Character> set = new HashSet<>();
+		var set = new HashSet<>();
 		return of(() -> {
 			char c;
 			while ((c = next()) != ChrFunUtil.EMPTYVALUE && !set.add(c))

@@ -65,7 +65,7 @@ public class StronglyConnectedComponents<V> {
 				vscc.lowestLink = min(vscc.lowestLink, wscc.index);
 
 		if (vscc.index == vscc.lowestLink) {
-			Set<V> set = new HashSet<>();
+			var set = new HashSet<V>();
 			Scc wscc;
 			do {
 				(wscc = stack.pop()).isStacked = false;
@@ -77,13 +77,13 @@ public class StronglyConnectedComponents<V> {
 
 	public DirectedGraph<Set<V>> group() {
 		Map<V, Set<V>> map = Read.from(components).concatMap2(vs -> Read.from(vs).map2(v -> vs)).toMap();
-		Set<Set<V>> vertices = Read.from(components).toSet();
+		var vertices = Read.from(components).toSet();
 		Set<Pair<Set<V>, Set<V>>> edges = new HashSet<>();
 
 		for (V v0 : dg.vertices)
 			for (V v1 : dg.forwards.get(v0)) {
-				Set<V> vs0 = map.get(v0);
-				Set<V> vs1 = map.get(v1);
+				var vs0 = map.get(v0);
+				var vs1 = map.get(v1);
 				if (vs0 != vs1)
 					edges.add(Pair.of(vs0, vs1));
 			}

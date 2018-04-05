@@ -3,7 +3,6 @@ package suite.asm;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 import suite.Suite;
 import suite.adt.pair.Pair;
@@ -65,7 +64,7 @@ public class Assembler {
 	}
 
 	public Bytes assemble(String in0) {
-		Set<Character> whitespaces = Collections.singleton('\n');
+		var whitespaces = Collections.singleton('\n');
 		Fun<String, List<Run>> gct = CommentPreprocessor.groupCommentPreprocessor(whitespaces);
 		Fun<String, List<Run>> lct = CommentPreprocessor.lineCommentPreprocessor(whitespaces);
 		String in1 = Preprocess.transform(List.of(gct, lct), in0).t0;

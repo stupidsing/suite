@@ -2,8 +2,6 @@ package suite.ebnf.topdown;
 
 import static suite.util.Friends.min;
 
-import java.util.Set;
-
 import suite.os.UnicodeData;
 import suite.util.String_;
 
@@ -124,7 +122,7 @@ public class Expect {
 	};
 
 	public ExpectFun unicodeClass(String uc) {
-		Set<Character> chars = unicodeData.getCharsOfClass(uc);
+		var chars = unicodeData.getCharsOfClass(uc);
 		return (in, length, start) -> {
 			int end;
 			if (start < length) {

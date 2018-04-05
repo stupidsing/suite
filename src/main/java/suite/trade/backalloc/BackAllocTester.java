@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.math.numeric.Statistic;
@@ -83,7 +82,7 @@ public class BackAllocTester {
 
 			Map<String, Asset> assetBySymbol = assets.toMap(asset -> asset.symbol);
 			Map<String, Double> holdBySymbol_ = new HashMap<>();
-			Set<String> symbols = assetBySymbol.keySet();
+			var symbols = assetBySymbol.keySet();
 			TimeRange historyPeriod = TimeRange.of(period.from.addYears(-1), period.to);
 
 			AlignKeyDataSource<String> akds = cfg.dataSources(historyPeriod, Read.from(symbols));

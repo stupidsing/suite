@@ -65,7 +65,7 @@ public class Board extends Array<Occupation> {
 	}
 
 	private boolean hasBreath(Coordinate c) {
-		Set<Coordinate> group = new HashSet<>();
+		var group = new HashSet<>();
 		Occupation color = get(c);
 		group.add(c);
 
@@ -87,7 +87,7 @@ public class Board extends Array<Occupation> {
 	}
 
 	public Set<Coordinate> findGroup(Coordinate c) {
-		Set<Coordinate> group = new HashSet<>();
+		var group = new HashSet<Coordinate>();
 		Occupation color = get(c);
 		group.add(c);
 

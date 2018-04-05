@@ -154,7 +154,7 @@ public class FltChrMap {
 		var capacity = vs.length;
 
 		if (capacity * 3 / 4 < size) {
-			var ks0 = ks;
+			float[] ks0 = ks;
 			char[] vs0 = vs;
 			char v_;
 

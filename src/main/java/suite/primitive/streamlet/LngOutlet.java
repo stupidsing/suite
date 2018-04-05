@@ -187,7 +187,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public LngOutlet distinct() {
-		Set<Long> set = new HashSet<>();
+		var set = new HashSet<>();
 		return of(() -> {
 			long c;
 			while ((c = next()) != LngFunUtil.EMPTYVALUE && !set.add(c))

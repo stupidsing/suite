@@ -171,7 +171,7 @@ public class To {
 
 	@SafeVarargs
 	public static <T> Set<T> set(T... ts) {
-		Set<T> set = new HashSet<>();
+		var set = new HashSet<T>();
 		for (T t : ts)
 			set.add(t);
 		return set;

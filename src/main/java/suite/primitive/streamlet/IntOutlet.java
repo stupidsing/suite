@@ -99,7 +99,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	public static IntOutlet of(Source<Integer> source) {
 		return IntOutlet.of(() -> {
-			var c = source.source();
+			Integer c = source.source();
 			return c != null ? c : IntFunUtil.EMPTYVALUE;
 		});
 	}
@@ -187,7 +187,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public IntOutlet distinct() {
-		Set<Integer> set = new HashSet<>();
+		var set = new HashSet<>();
 		return of(() -> {
 			int c;
 			while ((c = next()) != IntFunUtil.EMPTYVALUE && !set.add(c))

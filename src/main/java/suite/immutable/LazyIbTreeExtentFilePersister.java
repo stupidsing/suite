@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import suite.adt.IdentityKey;
 import suite.adt.map.BiMap;
@@ -101,7 +100,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 		synchronized (writeLock) {
 			var end = nPages;
 			int start = max(0, end - back);
-			Set<Extent> isInUse = new HashSet<>();
+			var isInUse = new HashSet<>();
 
 			Sink<List<Extent>> use = extents_ -> {
 				for (Extent extent : extents_)

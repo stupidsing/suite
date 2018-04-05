@@ -176,7 +176,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public FltObjOutlet<V> distinct() {
-		Set<FltObjPair<V>> set = new HashSet<>();
+		var set = new HashSet<>();
 		return of(pair -> {
 			boolean b;
 			while ((b = next(pair)) && !set.add(FltObjPair.of(pair.t0, pair.t1)))
@@ -461,7 +461,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public Set<FltObjPair<V>> toSet() {
-		Set<FltObjPair<V>> set = new HashSet<>();
+		var set = new HashSet<FltObjPair<V>>();
 		FltObjPair<V> pair;
 		while (next(pair = FltObjPair.of((float) 0, null)))
 			set.add(pair);

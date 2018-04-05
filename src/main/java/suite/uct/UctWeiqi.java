@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import suite.util.List_;
 import suite.weiqi.Board;
@@ -70,7 +69,7 @@ public class UctWeiqi {
 		@Override
 		public boolean evaluateRandomOutcome() {
 			List<Coordinate> empties = findAllEmptyPositions();
-			Set<Coordinate> capturedPositions = new HashSet<>();
+			var capturedPositions = new HashSet<Coordinate>();
 			Occupation me = gameSet.getNextPlayer();
 			Move move, chosenMove;
 			var nPasses = 0;

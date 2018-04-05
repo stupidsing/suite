@@ -44,7 +44,7 @@ public class DependencyTest {
 					classes.addLast(className1);
 		}
 
-		Set<String> vertices = dependenciesByClassName.keySet();
+		var vertices = dependenciesByClassName.keySet();
 
 		Set<Pair<String, String>> edges = Read //
 				.from2(dependenciesByClassName) //

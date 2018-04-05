@@ -1,7 +1,6 @@
 package suite.weiqi;
 
 import java.util.HashSet;
-import java.util.Set;
 
 import suite.weiqi.GroupAnalysis.Group;
 import suite.weiqi.Weiqi.Occupation;
@@ -20,7 +19,7 @@ public class Evaluator {
 
 		for (Group group : ga.getGroups()) {
 			Occupation color = group.color;
-			Set<Occupation> colors = new HashSet<>();
+			var colors = new HashSet<>();
 			boolean us = false, theirs = false;
 
 			// count pieces

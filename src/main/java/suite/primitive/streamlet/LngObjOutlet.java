@@ -176,7 +176,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public LngObjOutlet<V> distinct() {
-		Set<LngObjPair<V>> set = new HashSet<>();
+		var set = new HashSet<>();
 		return of(pair -> {
 			boolean b;
 			while ((b = next(pair)) && !set.add(LngObjPair.of(pair.t0, pair.t1)))
@@ -461,7 +461,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public Set<LngObjPair<V>> toSet() {
-		Set<LngObjPair<V>> set = new HashSet<>();
+		var set = new HashSet<LngObjPair<V>>();
 		LngObjPair<V> pair;
 		while (next(pair = LngObjPair.of((long) 0, null)))
 			set.add(pair);

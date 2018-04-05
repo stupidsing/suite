@@ -53,7 +53,7 @@ public class Cache {
 	}
 
 	public <I> I proxyByMethodNames(Class<I> interface_, I object, Set<String> methodNames) {
-		Set<Method> methods = Read //
+		var methods = Read //
 				.from(interface_.getMethods()) //
 				.filter(m -> methodNames.contains(m.getName())) //
 				.toSet();

@@ -176,7 +176,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	}
 
 	public IntObjOutlet<V> distinct() {
-		Set<IntObjPair<V>> set = new HashSet<>();
+		var set = new HashSet<>();
 		return of(pair -> {
 			boolean b;
 			while ((b = next(pair)) && !set.add(IntObjPair.of(pair.t0, pair.t1)))
@@ -461,7 +461,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	}
 
 	public Set<IntObjPair<V>> toSet() {
-		Set<IntObjPair<V>> set = new HashSet<>();
+		var set = new HashSet<IntObjPair<V>>();
 		IntObjPair<V> pair;
 		while (next(pair = IntObjPair.of((int) 0, null)))
 			set.add(pair);

@@ -3,7 +3,6 @@ package suite.weiqi;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 import suite.weiqi.GroupAnalysis.Group;
 import suite.weiqi.Weiqi.Array;
@@ -13,7 +12,7 @@ public class Judge {
 
 	public static Occupation checkByOccupationExistence(Board board) {
 		var nPiecesCount = 0;
-		Set<Occupation> players = new HashSet<>();
+		var players = new HashSet<>();
 
 		for (Coordinate c : Coordinate.all()) {
 			Occupation color = board.get(c);
@@ -37,7 +36,7 @@ public class Judge {
 
 		for (Group group : ga.getGroups())
 			if (group.color == Occupation.EMPTY) {
-				Set<Occupation> colors = new HashSet<>();
+				var colors = new HashSet<>();
 
 				for (Group neighborGroup : group.touches) {
 					Occupation color = neighborGroup.color;

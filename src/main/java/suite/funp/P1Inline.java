@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
@@ -49,7 +48,7 @@ public class P1Inline {
 	}
 
 	private Funp renameVariables(Funp node) {
-		Set<String> vars = new HashSet<>();
+		var vars = new HashSet<>();
 
 		Iterate<String> newVar = var -> {
 			var var1 = var.split("\\$")[0];
