@@ -22,7 +22,7 @@ public class ElfTest0 {
 				+ "j; \n" //
 		;
 
-		Execute exec = test(program, "");
+		var exec = test(program, "");
 		assertEquals(42, exec.code);
 		assertEquals("", exec.out);
 	}
@@ -62,7 +62,7 @@ public class ElfTest0 {
 		;
 
 		var text = "garbage\n";
-		Execute exec = test(program, text);
+		var exec = test(program, text);
 		assertEquals(0, exec.code);
 		assertEquals(text, exec.out);
 	}

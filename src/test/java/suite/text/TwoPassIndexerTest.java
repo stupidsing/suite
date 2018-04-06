@@ -2,13 +2,10 @@ package suite.text;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.List;
-import java.util.Map.Entry;
 
 import org.junit.Test;
 
 import suite.os.FileUtil;
-import suite.text.TwoPassIndexer.Reference;
 import suite.util.List_;
 
 public class TwoPassIndexerTest {
@@ -37,7 +34,7 @@ public class TwoPassIndexerTest {
 		System.out.println("Most popular key words:");
 
 		for (var i = 0; i < 32; i++) {
-			Entry<String, List<Reference>> entry = entries.get(i);
+			var entry = entries.get(i);
 			System.out.println(String.format("%-5d \"%s\"", entry.getValue().size(), entry.getKey()));
 		}
 

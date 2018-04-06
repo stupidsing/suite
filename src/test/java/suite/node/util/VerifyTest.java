@@ -32,7 +32,7 @@ public class VerifyTest {
 
 	@Test
 	public void test() {
-		Fun<IList<String>, Node> and = new Fun<>() {
+		var and = new Fun<IList<String>, Node>() {
 			public Node apply(IList<String> list) {
 				return !list.isEmpty() ? Tree.of(TermOp.AND___, Suite.parse(list.head), apply(list.tail)) : Atom.TRUE;
 			}
@@ -177,7 +177,7 @@ public class VerifyTest {
 				};
 				var t = Atom.temp();
 				var init = fun.apply(Suite.parse("0"));
-				Node succ = Suite.substitute(".0 => .1", t, fun.apply(Suite.substitute("succ .0", t)));
+				var succ = Suite.substitute(".0 => .1", t, fun.apply(Suite.substitute("succ .0", t)));
 				Binder.bind(verify(m[0]), Tree.of(TermOp.AND___, init, succ), new Trail());
 				return Suite.substitute("is.nat .N => .0", fun.apply(Suite.parse(".N")));
 			} else if ((m = Suite.pattern(".0 | rexpand .1").match(proof)) != null) {

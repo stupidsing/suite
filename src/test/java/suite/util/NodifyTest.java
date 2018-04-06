@@ -9,7 +9,6 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.lp.Configuration.ProverConfig;
-import suite.node.Node;
 import suite.node.util.Singleton;
 
 public class NodifyTest {
@@ -38,11 +37,11 @@ public class NodifyTest {
 		var pc0 = new ProverConfig();
 		pc0.setRuleSet(null);
 
-		Node node = nodify.nodify(ProverConfig.class, pc0);
+		var node = nodify.nodify(ProverConfig.class, pc0);
 		assertNotNull(node);
 		System.out.println(node);
 
-		ProverConfig pc1 = nodify.unnodify(ProverConfig.class, node);
+		var pc1 = nodify.unnodify(ProverConfig.class, node);
 		System.out.println(pc1);
 
 		assertEquals(pc0, pc1);
@@ -58,11 +57,11 @@ public class NodifyTest {
 		var object0 = new Container();
 		object0.is = List.of(a, b);
 
-		Node node = nodify.nodify(Container.class, object0);
+		var node = nodify.nodify(Container.class, object0);
 		assertNotNull(node);
 		System.out.println(node);
 
-		Container object1 = nodify.unnodify(Container.class, node);
+		var object1 = nodify.unnodify(Container.class, node);
 		assertEquals(A.class, object1.is.get(0).getClass());
 		assertEquals(B.class, object1.is.get(1).getClass());
 		assertEquals(123, ((A) object1.is.get(0)).i);

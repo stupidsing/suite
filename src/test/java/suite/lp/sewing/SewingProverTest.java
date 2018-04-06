@@ -113,7 +113,7 @@ public class SewingProverTest {
 		for (var i = 0; i < 8; i++)
 			trial.source();
 
-		Stopwatch<Boolean> sw = trial.source();
+		var sw = trial.source();
 
 		System.out.println(sw.duration);
 		assertTrue(sw.duration < 300);

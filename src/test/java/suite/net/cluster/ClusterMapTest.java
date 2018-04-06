@@ -8,7 +8,6 @@ import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
 
 import org.junit.Test;
@@ -30,7 +29,7 @@ public class ClusterMapTest {
 		for (var i = 0; i < nNodes; i++)
 			peers.put("NODE" + i, new InetSocketAddress(localHost, 3000 + i));
 
-		List<String> peerNames = new ArrayList<>(peers.keySet());
+		var peerNames = new ArrayList<String>(peers.keySet());
 		var clusters = new HashMap<String, Cluster>();
 		var clMap = new HashMap<String, ClusterMap<Integer, String>>();
 

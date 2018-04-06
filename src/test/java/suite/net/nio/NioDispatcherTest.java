@@ -40,7 +40,7 @@ public class NioDispatcherTest {
 			channel.onReceive.wire(channel::send);
 			return NioChannelFactory.buffered(channel);
 		};
-		NioDispatcher<NioChannel> dispatcher = new NioDispatcherImpl<>(source);
+		var dispatcher = new NioDispatcherImpl<>(source);
 		dispatcher.start();
 
 		try (var closeServer = dispatcher.listen(5151);
@@ -67,7 +67,7 @@ public class NioDispatcherTest {
 		var executor = Thread_.newExecutor();
 		Iterate<Bytes> handler = request -> request;
 
-		NioDispatcher<RequestResponseNioChannel> dispatcher = new NioDispatcherImpl<>(
+		var dispatcher = new NioDispatcherImpl<>(
 				() -> NioChannelFactory.requestResponse(new RequestResponseNioChannel(), matcher, executor, handler));
 		dispatcher.start();
 

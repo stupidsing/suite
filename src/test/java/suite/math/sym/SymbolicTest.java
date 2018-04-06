@@ -60,7 +60,7 @@ public class SymbolicTest {
 				+ " + ((3 * a) * b * b) * x" //
 				+ " + neg 1 * b * b * b");
 
-		Node poly = rw.replace(x, //
+		var poly = rw.replace(x, //
 				Suite.parse("y + neg (b * inv (3 * a))"), //
 				Suite.parse("a * x * x * x + b * x * x + c * x + d"));
 
@@ -85,7 +85,7 @@ public class SymbolicTest {
 
 	@Test
 	public void testRational() {
-		Fractional<Integer> f = Fractional.ofIntegral();
+		var f = Fractional.ofIntegral();
 		assertEquals("7:6", f.fractionalize(Suite.parse("inv 3 + 5 * inv 6")).toString());
 		assertEquals("1:4", f.fractionalize(Suite.parse("inv (6 * 4 * inv 6)")).toString());
 	}

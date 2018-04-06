@@ -69,7 +69,7 @@ public class ElfTest {
 		var bytes = Bytes.of(input.getBytes(Constants.charset));
 
 		if (RunUtil.isUnix()) { // not Windows => run ELF
-			Execute exec = elf.exec(bytes.toArray(), offset -> Funp_.main().compile(offset, program).t1);
+			var exec = elf.exec(bytes.toArray(), offset -> Funp_.main().compile(offset, program).t1);
 			assertEquals(code, exec.code);
 			assertEquals(input, exec.out);
 		} else { // Windows => interpret assembly

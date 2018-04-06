@@ -25,7 +25,7 @@ public class QrTest {
 		};
 
 		var length = mtx.height(m0);
-		Pair<float[][], float[][]> qr = fun.apply(m0);
+		var qr = fun.apply(m0);
 
 		@SuppressWarnings("unused")
 		float[][] expectedq = { //

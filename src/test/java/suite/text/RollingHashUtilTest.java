@@ -42,7 +42,7 @@ public class RollingHashUtilTest {
 		var bytes = To.bytes("0123456789abcdef");
 		var size = bytes.size();
 
-		int rollingHash = rollingHashUtil.hash(bytes.range(0, 10));
+		var rollingHash = rollingHashUtil.hash(bytes.range(0, 10));
 
 		for (var pos = 10; pos < size; pos++) {
 			rollingHash = rollingHashUtil.unroll(rollingHash, bytes.get(pos - 10), 10);

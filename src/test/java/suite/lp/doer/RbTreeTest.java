@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.kb.RuleSet;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.SewingProverBuilder2;
 
@@ -16,7 +15,7 @@ public class RbTreeTest {
 
 	@Test
 	public void test() throws IOException {
-		RuleSet rs = Suite.newRuleSet(List.of("auto.sl", "rbt.sl"));
+		var rs = Suite.newRuleSet(List.of("auto.sl", "rbt.sl"));
 		var gs = "" //
 				+ "rbt-insert-list (6, 7, 8, 9, 10, 1, 2, 3, 4, 5,) ()/.t \n" //
 				+ ", rbt-get .t 8" //
