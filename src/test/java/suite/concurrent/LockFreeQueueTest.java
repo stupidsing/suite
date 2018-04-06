@@ -8,7 +8,7 @@ public class LockFreeQueueTest {
 
 	@Test
 	public void test() {
-		LockFreeQueue<Integer> lfq = new LockFreeQueue<>();
+		var lfq = new LockFreeQueue<>();
 		for (var i = 0; i < 256; i++) {
 			for (var j = 0; j < 256; j++)
 				lfq.enqueue(j);

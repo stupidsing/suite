@@ -69,8 +69,8 @@ public class ObstructionFreeStmTest {
 				var mi = order - nMemories;
 				System.out.println(this + " WRITE " + mi);
 
-				Memory<Integer> memory = memories.get(mi);
-				int read = stm.get(transaction, memory);
+				var memory = memories.get(mi);
+				var read = stm.get(transaction, memory);
 
 				if (read == readValues.get(mi))
 					stm.put(transaction, memory, read + adjustments.get(mi));
@@ -80,8 +80,8 @@ public class ObstructionFreeStmTest {
 				var mi = order;
 				System.out.println(this + " READ " + mi);
 
-				Memory<Integer> memory = memories.get(mi);
-				Integer read = stm.get(transaction, memory);
+				var memory = memories.get(mi);
+				var read = stm.get(transaction, memory);
 				readValues.set(mi, read);
 			}
 		}

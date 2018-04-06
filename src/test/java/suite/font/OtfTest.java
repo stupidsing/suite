@@ -17,7 +17,7 @@ public class OtfTest {
 	public void otfTest() {
 		var familyKey = "Family";
 		var subfamilyKey = "Subfamily";
-		List<String> keys = List.of(familyKey, subfamilyKey);
+		var keys = List.of(familyKey, subfamilyKey);
 
 		var commands = Read //
 				.each("/tmp/fonts") //

@@ -1,7 +1,6 @@
 package suite.concurrent;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import suite.adt.pair.Pair;
 
@@ -37,7 +36,8 @@ public class LockFreeLazyQueue<T> {
 	 * @return null if the queue is empty.
 	 */
 	public T dequeue() {
-		var list = new ArrayList<>(List.of((T) null));
+		var list = new ArrayList<T>();
+		list.add(null);
 		cas.apply(backFront -> {
 			var pair = dequeue_(backFront);
 			list.set(0, pair.t0);

@@ -1,7 +1,6 @@
 package suite.concurrent;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import suite.immutable.IList;
 
@@ -27,7 +26,8 @@ public class LockFreeQueue<T> {
 	 * @return null if the queue is empty.
 	 */
 	public T dequeue() {
-		var result = new ArrayList<>(List.of((T) null));
+		var result = new ArrayList<T>();
+		result.add(null);
 
 		cas.apply(fb0 -> {
 			var back = fb0.back;
