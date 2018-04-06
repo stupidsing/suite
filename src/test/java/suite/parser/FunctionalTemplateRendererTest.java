@@ -17,7 +17,7 @@ public class FunctionalTemplateRendererTest {
 
 	@Test
 	public void test() {
-		List<Node> fruits = Arrays.<Node> asList(new Str("orange"), new Str("apple"), new Str("pear"));
+		var fruits = Arrays.<Node> asList(new Str("orange"), new Str("apple"), new Str("pear"));
 
 		var map = Read //
 				.from2(List.of( //

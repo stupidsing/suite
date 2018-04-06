@@ -7,8 +7,6 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import suite.adt.pair.Pair;
-
 public class WildcardTest {
 
 	@Test
@@ -21,7 +19,7 @@ public class WildcardTest {
 
 	@Test
 	public void test1() {
-		Pair<String[], String> match = Wildcard.matchStart("if * then ", "if a = b then if c = d then e = f else g = h");
+		var match = Wildcard.matchStart("if * then ", "if a = b then if c = d then e = f else g = h");
 		assertTrue(Arrays.equals(match.t0, new String[] { "a = b", }));
 		assertEquals("if c = d then e = f else g = h", match.t1);
 	}
