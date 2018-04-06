@@ -10,7 +10,6 @@ public class MovingGameSet extends GameSet {
 	private Deque<Move> moves = new ArrayDeque<>();
 
 	public MovingGameSet() {
-		super();
 	}
 
 	public MovingGameSet(GameSet gameSet) {

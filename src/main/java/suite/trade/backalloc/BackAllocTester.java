@@ -16,7 +16,6 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade;
 import suite.trade.Trade_;
-import suite.trade.Trade_.UpdatePortfolio;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource.Eod;
 import suite.util.FunUtil.Sink;
@@ -110,7 +109,7 @@ public class BackAllocTester {
 					eodBySymbol = dsBySymbol.mapValue(ds -> ds.getEod(index)).toMap();
 
 					var ratioBySymbol = onDateTime.onDateTime(index + 1);
-					UpdatePortfolio up = Trade_.updatePortfolio(ymd, account, ratioBySymbol, assetBySymbol, eodBySymbol);
+					var up = Trade_.updatePortfolio(ymd, account, ratioBySymbol, assetBySymbol, eodBySymbol);
 					var valuation_ = valuations_[i] = up.valuation0;
 
 					for (var e : up.val0.streamlet())

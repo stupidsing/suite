@@ -110,7 +110,6 @@ public class DataSource {
 	}
 
 	private DataSource(long[] ts, float[] opens, float[] closes, float[] lows, float[] highs, float[] volumes) {
-		super();
 		this.ts = ts;
 		this.prices = closes;
 		this.opens = opens;

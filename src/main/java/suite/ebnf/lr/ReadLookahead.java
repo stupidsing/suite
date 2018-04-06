@@ -16,7 +16,6 @@ public class ReadLookahead {
 	private Map<Grammar, LookaheadSet> lookaheadSets = new HashMap<>();
 
 	public ReadLookahead(Map<String, Grammar> grammarByEntity) {
-		super();
 		this.grammarByEntity = grammarByEntity;
 	}
 

@@ -84,7 +84,6 @@ public class BackAllocConfigurations {
 	}
 
 	public BackAllocConfigurations(Configuration cfg, Fun<Time, Streamlet<Asset>> fun) {
-		super();
 		this.cfg = cfg;
 		this.fun = fun;
 	}

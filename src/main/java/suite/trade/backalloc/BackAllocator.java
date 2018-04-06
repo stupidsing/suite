@@ -156,7 +156,7 @@ public interface BackAllocator {
 				var date = Time.ofEpochSec(akds.ts[index - 1]).date();
 				var t0 = date.addDays(-7).epochSec();
 				var tx = date.epochSec();
-				DataSource ids = indexDataSource.range(t0, tx);
+				var ids = indexDataSource.range(t0, tx);
 
 				var indexPrice0 = ids.get(-1).t1;
 				var indexPricex = ids.get(-2).t1;
