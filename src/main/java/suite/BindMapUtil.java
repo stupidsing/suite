@@ -39,7 +39,8 @@ public class BindMapUtil {
 		return new Pattern() {
 			public Map<String, Node> match(Node node) {
 				var env = cbm.env();
-				return pred.test(new BindEnv(env), node) ? Read.from2(cbm_).mapValue(env::get).toMap() : null;
+				Fun<Integer, Node> envGet = env::get;
+				return pred.test(new BindEnv(env), node) ? Read.from2(cbm_).mapValue(envGet).toMap() : null;
 			}
 
 			public Node subst(Map<String, Node> map_) {
