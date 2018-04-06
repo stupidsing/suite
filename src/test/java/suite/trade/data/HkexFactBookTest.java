@@ -16,7 +16,7 @@ public class HkexFactBookTest {
 
 	@Test
 	public void testDelist() {
-		HashSet<String> delisted = new HashSet<>(hkexFactBook.queryDelisted().toList());
+		var delisted = new HashSet<String>(hkexFactBook.queryDelisted().toList());
 
 		System.out.println(delisted);
 		System.out.println(Ints_ //

@@ -8,7 +8,6 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.Trade;
 import suite.trade.analysis.Summarize;
-import suite.trade.analysis.Summarize.SummarizeByStrategy;
 import suite.util.FunUtil.Fun;
 import suite.util.To;
 
@@ -47,7 +46,8 @@ public class QuoteTest {
 
 	@Test
 	public void testQuotesByStock() {
-		System.out.println(Read.from2(summarizeOut(r -> r.symbol)) //
+		System.out.println(Read //
+				.from2(summarizeOut(r -> r.symbol)) //
 				.sortBy((symbol, gain) -> -gain) //
 				.map((symbol, gain) -> symbol + " " + To.string(gain) + "\n") //
 				.collect(As::joined));
@@ -59,7 +59,7 @@ public class QuoteTest {
 	}
 
 	private Map<String, Double> summarizeOut(Fun<Trade, String> fun) {
-		SummarizeByStrategy<String> sbs = summarize.summarize(fun);
+		var sbs = summarize.summarize(fun);
 		System.out.println(sbs.log);
 		return sbs.pnlByKey;
 	}

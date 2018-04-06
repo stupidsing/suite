@@ -55,7 +55,7 @@ public class SingleAllocBackTestTest {
 
 	private Map<String, SingleAllocBackTest> backTest(String code, String disp) {
 		var sr = new Strategos();
-		DataSource ds = cfg.dataSource(code, period);
+		var ds = cfg.dataSource(code, period);
 
 		return Read //
 				.<String, BuySellStrategy> empty2() //
@@ -69,7 +69,7 @@ public class SingleAllocBackTestTest {
 	}
 
 	private SingleAllocBackTest backTest_(DataSource ds, String disp, BuySellStrategy strategy) {
-		SingleAllocBackTest backTest = SingleAllocBackTest.test(ds, strategy);
+		var backTest = SingleAllocBackTest.test(ds, strategy);
 		LogUtil.info(disp + backTest.concludeLog);
 		return backTest;
 	}

@@ -29,7 +29,7 @@ public class YahooTest {
 	@Test
 	public void testL1All() {
 		var hkexFactBook = new HkexFactBook();
-		Iterable<String> symbols = hkexFactBook.queryMainBoardCompanies(2016);
+		var symbols = hkexFactBook.queryMainBoardCompanies(2016);
 		// hkexFactBook.queryLeadingCompaniesByMarketCap(2016);
 		for (var symbol : symbols) {
 			try {
@@ -48,7 +48,7 @@ public class YahooTest {
 	private void test(Fun2<String, TimeRange, DataSource> fun) {
 		var symbol = "0005.HK";
 
-		DataSource ds = fun.apply(symbol, TimeRange.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1))).validate();
+		var ds = fun.apply(symbol, TimeRange.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1))).validate();
 		System.out.println(ds.recent(symbol, 9));
 
 		var tsLength = ds.ts.length;
