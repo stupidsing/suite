@@ -291,8 +291,9 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 	@Override
 	public String toString() {
-		return Read.from2(lastActiveTimes) //
-				.map((peer, lastActiveTime) -> peer + " (last-active = " + To.string(lastActiveTime) + ")") //
+		return Read //
+				.from2(lastActiveTimes) //
+				.map((peer, lastActiveTime) -> peer + " (last-active = " + To.ymdHms(lastActiveTime) + ")") //
 				.collect(As.conc("\n"));
 	}
 

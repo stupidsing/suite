@@ -253,10 +253,6 @@ public class To {
 		return ymdHms(time);
 	}
 
-	public static String string(long time) {
-		return ymdHms(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
-	}
-
 	public static String string(Path path) {
 		return Rethrow.ex(() -> read_(path));
 	}
@@ -326,6 +322,10 @@ public class To {
 			return To.string(bytes);
 		else
 			return new String(bytes, 3, bytes.length - 3, Constants.charset);
+	}
+
+	public static String ymdHms(long time) {
+		return ymdHms(LocalDateTime.ofInstant(Instant.ofEpochMilli(time), ZoneId.systemDefault()));
 	}
 
 	private static String ymdHms(TemporalAccessor ta) {
