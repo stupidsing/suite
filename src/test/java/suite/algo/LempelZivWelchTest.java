@@ -50,9 +50,9 @@ public class LempelZivWelchTest {
 			}
 		};
 
-		LempelZivWelch<Byte> lzw = new LempelZivWelch<>(allBytes());
-		Source<Integer> source1 = lzw.encode(source0);
-		Source<Byte> source2 = lzw.decode(source1);
+		var lzw = new LempelZivWelch<>(allBytes());
+		var source1 = lzw.encode(source0);
+		var source2 = lzw.decode(source1);
 
 		var bb = new BytesBuilder();
 		Byte b;

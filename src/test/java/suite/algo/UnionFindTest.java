@@ -12,7 +12,7 @@ public class UnionFindTest {
 
 	@Test
 	public void test0() {
-		UnionFind<Integer> unionFind = new UnionFind<>();
+		var unionFind = new UnionFind<Integer>();
 		unionFind.union(4, 5);
 		unionFind.union(5, 6);
 		unionFind.union(1, 2);
@@ -29,7 +29,7 @@ public class UnionFindTest {
 
 	@Test
 	public void test1() {
-		UnionFind<Integer> unionFind = new UnionFind<>();
+		var unionFind = new UnionFind<>();
 		unionFind.union(2, 3);
 		unionFind.union(6, 3);
 

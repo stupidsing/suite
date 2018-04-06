@@ -9,7 +9,6 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.primitive.Ints_;
-import suite.primitive.adt.map.ObjIntMap;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 
@@ -26,7 +25,7 @@ public class KMeansClusterTest {
 				entry("B", () -> point(16f, -16f, 16f)), //
 				entry("C", () -> point(16f, 16f, -16f)));
 
-		Map<String, float[]> points = Read //
+		var points = Read //
 				.from2(seeds) //
 				.concatMap2((prefix, source) -> Ints_ //
 						.range(n) //
@@ -34,7 +33,7 @@ public class KMeansClusterTest {
 				.toMap();
 
 		var kmc = new KmeansCluster(seeds.size());
-		ObjIntMap<String> clusters = kmc.kMeansCluster(points, n, 9);
+		var clusters = kmc.kMeansCluster(points, n, 9);
 
 		assertEquals(9, clusters.size());
 
