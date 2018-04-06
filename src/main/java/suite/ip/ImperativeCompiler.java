@@ -6,7 +6,6 @@ import java.util.List;
 import suite.Suite;
 import suite.asm.StackAssembler;
 import suite.lp.kb.RuleSet;
-import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder2;
 import suite.node.Node;
@@ -32,7 +31,7 @@ public class ImperativeCompiler {
 	}
 
 	public Bytes compile(int org, String ip) {
-		Node code = FindUtil.collectSingle(finder, Suite.parse(ip));
+		Node code = finder.collectSingle(Suite.parse(ip));
 		return new StackAssembler(32).assembler.assemble(Suite.substitute(".0, .1", Suite.parse(".org = " + org), code));
 	}
 

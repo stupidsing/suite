@@ -7,7 +7,6 @@ import java.util.List;
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.search.CompiledProverBuilder;
-import suite.lp.search.FindUtil;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -38,7 +37,7 @@ public class SldResolution {
 				+ ", pt-prove5 .n5 ()/.n6" //
 				+ ", sink .n6"));
 
-		var n0 = FindUtil.collectSingle(finder, node);
+		var n0 = finder.collectSingle(node);
 		var orsMap = new HashMap<Node, Source<List<Node>>>();
 
 		for (var n1 : Tree.iter(n0, TermOp.AND___)) {

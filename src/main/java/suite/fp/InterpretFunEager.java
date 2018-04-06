@@ -28,7 +28,6 @@ import suite.fp.match.Matchers.UNWRAP;
 import suite.fp.match.Matchers.VAR;
 import suite.fp.match.Matchers.WRAP;
 import suite.immutable.IMap;
-import suite.lp.search.FindUtil;
 import suite.lp.search.SewingProverBuilder2;
 import suite.node.Atom;
 import suite.node.Data;
@@ -241,7 +240,7 @@ public class InterpretFunEager {
 
 		var rs = Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl"));
 		var finder = new SewingProverBuilder2().build(rs).apply(query);
-		var parsed = FindUtil.collectSingle(finder, node);
+		var parsed = finder.collectSingle(node);
 		var ic = isLazyify ? lazyIntrinsicCallback() : Intrinsics.eagerIntrinsicCallback;
 
 		var df = new HashMap<String, Node>();

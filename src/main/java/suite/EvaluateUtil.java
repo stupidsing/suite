@@ -12,7 +12,6 @@ import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.Specializer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
-import suite.lp.search.FindUtil;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
@@ -60,7 +59,7 @@ public class EvaluateUtil {
 	}
 
 	public Source<Node> evaluateLogic(Builder builder, RuleSet rs, Node lp) {
-		return FindUtil.collect(builder.build(rs).apply(lp), Atom.NIL);
+		return builder.build(rs).apply(lp).collect(Atom.NIL);
 	}
 
 	public Node evaluateFun(FunCompilerConfig fcc) {
@@ -111,7 +110,7 @@ public class EvaluateUtil {
 		return LogUtil.duration("Code compiled", () -> {
 			var pc = fcc.getProverConfig();
 			var finder = fccFinderFun.apply(Pair.of(pc, compileNode));
-			return FindUtil.collectSingle(finder, appendLibraries(fcc));
+			return finder.collectSingle(appendLibraries(fcc));
 		});
 	}
 

@@ -12,7 +12,6 @@ import suite.lp.Configuration.ProverConfig;
 import suite.lp.doer.Specializer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
-import suite.lp.search.FindUtil;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Atom;
 import suite.node.Node;
@@ -20,8 +19,8 @@ import suite.node.Node;
 public class LogicCompilerLevel1Test {
 
 	/**
-	 * Compiles the functional compiler and use it to compile a simple functional
-	 * program.
+	 * Compiles the functional compiler and use it to compile a simple
+	 * functional program.
 	 */
 	@Test
 	public void testCompileFunProgram() {
@@ -33,7 +32,7 @@ public class LogicCompilerLevel1Test {
 
 		var goal = new Specializer().specialize(Suite.substitute(gs, Atom.of("LAZY")));
 		var input = Suite.parse("1 + 2");
-		Node result = FindUtil.collectSingle(finder(rs, goal), input);
+		Node result = finder(rs, goal).collectSingle(input);
 
 		System.out.println(result);
 		assertNotNull(result);
@@ -44,7 +43,7 @@ public class LogicCompilerLevel1Test {
 		var rs = Suite.newRuleSet(List.of("auto.sl"));
 		Node goal = Suite.parse("source .lln, member .lln .ln, member .ln .n, sink .n");
 		Node input = Suite.parse("((1, 2,), (3, 4,),)");
-		var results = FindUtil.collectList(finder(rs, goal), input);
+		var results = finder(rs, goal).collectList(input);
 
 		System.out.println(results);
 		assertTrue(results.size() == 4);
@@ -61,7 +60,7 @@ public class LogicCompilerLevel1Test {
 		Suite.addRule(rs, "ab b");
 
 		Node goal = Suite.parse("ab .a, ab .b, sink (.a, .b,)");
-		var results = FindUtil.collectList(finder(rs, goal), Atom.NIL);
+		var results = finder(rs, goal).collectList(Atom.NIL);
 
 		System.out.println(results);
 		assertTrue(results.size() == 4);
