@@ -102,7 +102,7 @@ public class To {
 
 			public int read() throws IOException {
 				var b = new byte[1];
-				int nBytesRead = read(b, 0, 1);
+				var nBytesRead = read(b, 0, 1);
 				return 0 < nBytesRead ? b[0] : nBytesRead;
 			}
 
