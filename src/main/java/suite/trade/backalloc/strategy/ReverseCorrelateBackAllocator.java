@@ -3,7 +3,6 @@ package suite.trade.backalloc.strategy;
 import suite.math.numeric.Statistic;
 import suite.primitive.Floats_;
 import suite.streamlet.As;
-import suite.streamlet.Streamlet2;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSourceView;
@@ -36,7 +35,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 	public OnDateTime allocate(AlignKeyDataSource<String> akds, int[] indices) {
 		var dsBySymbol = akds.dsByKey;
 
-		DataSourceView<String, Double> dsv = DataSourceView.of(0, 512, akds, (symbol, ds, samplePeriod) -> {
+		var dsv = DataSourceView.of(0, 512, akds, (symbol, ds, samplePeriod) -> {
 			var prices = ds.range(samplePeriod).prices;
 			var logReturns = ts.logReturns(prices);
 			var ll = logReturns.length;
@@ -58,7 +57,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 					.filterValue(reverseCorrelation -> reverseCorrelationThreshold < Math.abs(reverseCorrelation)) //
 					.toMap();
 
-			Streamlet2<String, float[]> reversePricesBySymbol = dsBySymbol //
+			var reversePricesBySymbol = dsBySymbol //
 					.filterKey(reverseCorrelationBySymbol::containsKey) //
 					.mapValue(ds -> {
 						var prices = ds.prices;

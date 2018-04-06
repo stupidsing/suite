@@ -1,7 +1,6 @@
 package suite.trade.backalloc.strategy;
 
 import java.util.List;
-import java.util.Map;
 
 import suite.adt.pair.Pair;
 import suite.math.linalg.CholeskyDecomposition;
@@ -22,7 +21,7 @@ public class KellyCriterion {
 	private double dailyInterestRate = Trade_.riskFreeInterestRate(1);
 
 	public List<Pair<String, Double>> allocate(Streamlet2<String, float[]> predictedPricesBySymbol, double kellyReduction) {
-		Map<String, float[]> returnsBySymbol = predictedPricesBySymbol //
+		var returnsBySymbol = predictedPricesBySymbol //
 				.mapValue(ts::returns) //
 				.toMap();
 

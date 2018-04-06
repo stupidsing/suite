@@ -33,8 +33,7 @@ public class PmamrBackAllocator {
 		BackAllocator ba = (akds, indices) -> {
 			var dsBySymbol = akds.dsByKey.toMap();
 
-			DataSourceView<String, MeanReversionStat> dsv = DataSourceView //
-					.of(tor, 256, akds, (symbol, ds, period) -> new MeanReversionStat(ds, period));
+			var dsv = DataSourceView.of(tor, 256, akds, (symbol, ds, period) -> new MeanReversionStat(ds, period));
 
 			return index -> {
 				// Time time = Time.ofEpochSec(akds.ts[index - 1]);
@@ -47,7 +46,8 @@ public class PmamrBackAllocator {
 				// make sure all time-series are mean-reversions:
 				// ensure ADF < 0d: price is not random walk
 				// ensure Hurst exponent < .5d: price is weakly mean reverting
-				return Read.from2(mrsBySymbol) //
+				return Read //
+						.from2(mrsBySymbol) //
 						.filterValue(mrs -> mrs.adf < 0d && mrs.hurst < .5d) //
 						.map2((symbol, mrs) -> {
 							var ds = dsBySymbol.get(symbol);
@@ -56,7 +56,7 @@ public class PmamrBackAllocator {
 
 							var lma = mrs.latestMovingAverage();
 							var mamrRatio = mrs.movingAvgMeanReversionRatio();
-							double dailyReturn = Quant.return_(lma, price) * mamrRatio;
+							var dailyReturn = Quant.return_(lma, price) * mamrRatio;
 							var returnsStat = ts.returnsStatDaily(prices);
 							var sharpe = returnsStat.sharpeRatio();
 							var kelly = returnsStat.kellyCriterion();

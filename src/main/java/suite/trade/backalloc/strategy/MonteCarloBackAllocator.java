@@ -1,6 +1,5 @@
 package suite.trade.backalloc.strategy;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -28,16 +27,16 @@ public class MonteCarloBackAllocator implements BackAllocator {
 		var dsBySymbol = akds.dsByKey;
 
 		return index -> {
-			Map<String, float[]> returnsBySymbol = dsBySymbol.mapValue(DataSource::returns).toMap();
+			var returnsBySymbol = dsBySymbol.mapValue(DataSource::returns).toMap();
 			var symbols = returnsBySymbol.keySet().toArray(new String[0]);
 
-			List<float[]> portfolios = Ints_ //
+			var portfolios = Ints_ //
 					.range(99) //
 					.map(i -> randomPortfolio(symbols)) //
 					.toList();
 
 			for (var i = 0; i < 128; i++) {
-				List<float[]> portfolios1 = Read //
+				var portfolios1 = Read //
 						.from(portfolios) //
 						.map2(portfolio -> evaluate(symbols, portfolio, returnsBySymbol, index)) //
 						.sortByValue((o0, o1) -> Object_.compare(o1, o0)) //

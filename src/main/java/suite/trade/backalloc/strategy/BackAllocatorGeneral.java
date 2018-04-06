@@ -5,11 +5,9 @@ import static suite.util.Friends.min;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.function.IntFunction;
 
 import suite.adt.pair.Fixie;
-import suite.adt.pair.Fixie_.Fixie4;
 import suite.adt.pair.Pair;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Ints_;
@@ -20,7 +18,6 @@ import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.analysis.Oscillator;
-import suite.trade.analysis.Oscillator.Movement;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSourceView;
 import suite.trade.singlealloc.Strategos;
@@ -227,8 +224,8 @@ public class BackAllocatorGeneral {
 			var last1 = index - 1;
 			var last0 = last1 - nAccelDays;
 			if (nDays <= last0) {
-				double return0 = Quant.return_(prices[last0 - nDays], prices[last0]);
-				double return1 = Quant.return_(prices[last1 - nDays], prices[last1]);
+				var return0 = Quant.return_(prices[last0 - nDays], prices[last0]);
+				var return1 = Quant.return_(prices[last1 - nDays], prices[last1]);
 				return 30d * (return1 - return0);
 			} else
 				return 0d;
@@ -262,7 +259,7 @@ public class BackAllocatorGeneral {
 			var price0 = prices[indices[0]];
 
 			return index -> {
-				double ratio0 = Quant.return_(price0, prices[index - 1]);
+				var ratio0 = Quant.return_(price0, prices[index - 1]);
 				var ratio1 = scale * ratio0;
 				var ratio2 = .5d + ratio1;
 				return List.of(Pair.of(symbol, ratio2));
@@ -272,7 +269,7 @@ public class BackAllocatorGeneral {
 
 	private BackAllocator rsi(int window, double threshold) {
 		return BackAllocator_.byPrices(prices -> {
-			Movement movement = osc.movement(prices, window);
+			var movement = osc.movement(prices, window);
 
 			return Quant.filterRange(0, index -> {
 				var last = index - 1;
@@ -303,7 +300,7 @@ public class BackAllocatorGeneral {
 		var daily = .1f;
 
 		return BackAllocator_.byPrices(prices -> {
-			FltFltPair minMax = FltFltPair.of(Float.MAX_VALUE, Float.MIN_VALUE);
+			var minMax = FltFltPair.of(Float.MAX_VALUE, Float.MIN_VALUE);
 
 			return Quant.fold(0, prices.length, (i, hold) -> {
 				var price = prices[i];
@@ -334,8 +331,8 @@ public class BackAllocatorGeneral {
 				var movingAvg0 = movingAvgs0[last];
 				var movingAvg1 = movingAvgs1[last];
 				var movingAvg2 = movingAvgs2[last];
-				int sign0 = Quant.sign(movingAvg0, movingAvg1);
-				int sign1 = Quant.sign(movingAvg1, movingAvg2);
+				var sign0 = Quant.sign(movingAvg0, movingAvg1);
+				var sign1 = Quant.sign(movingAvg1, movingAvg2);
 				return sign0 == sign1 ? (double) -sign0 : 0d;
 			});
 		});
@@ -349,9 +346,9 @@ public class BackAllocatorGeneral {
 
 		return (akds, indices) -> {
 			var dsByKey = akds.dsByKey;
-			Map<String, float[]> atrBySymbol = dsByKey.mapValue(osc::atr).toMap();
+			var atrBySymbol = dsByKey.mapValue(osc::atr).toMap();
 
-			Map<String, Fixie4<int[], int[], boolean[], boolean[]>> fixieBySymbol = dsByKey //
+			var fixieBySymbol = dsByKey //
 					.map2((symbol, ds) -> {
 						var atrs = atrBySymbol.get(symbol);
 						var prices = ds.prices;
@@ -454,7 +451,7 @@ public class BackAllocatorGeneral {
 					var n = pair.t1;
 					var sign = 0 < n ? 0 : 1;
 					var sum0 = sums[sign];
-					int sum1 = max(-maxUnitsTotal, min(maxUnitsTotal, sum0 + n));
+					var sum1 = max(-maxUnitsTotal, min(maxUnitsTotal, sum0 + n));
 					m1.add(Pair.of(pair.t0, (sums[sign] = sum1) - sum0));
 				}
 
@@ -476,10 +473,9 @@ public class BackAllocatorGeneral {
 		var invThreshold = 1d / threshold;
 
 		return (akds, indices) -> {
-			DataSourceView<String, Double> dsv = DataSourceView //
-					.of(0, 256, akds, (symbol, ds, period) -> ts.varianceRatio(ds.prices, tor));
+			var dsv = DataSourceView.of(0, 256, akds, (symbol, ds, period) -> ts.varianceRatio(ds.prices, tor));
 
-			Map<String, float[]> holdsBySymbol = akds.dsByKey //
+			var holdsBySymbol = akds.dsByKey //
 					.map2((symbol, ds) -> {
 						var prices = ds.prices;
 						var length = prices.length;
@@ -487,7 +483,7 @@ public class BackAllocatorGeneral {
 						var hold = 0f;
 						for (var index = tor; index < length; index++) {
 							if (dsv.get(symbol, index) < vr) {
-								double return_ = Quant.return_(prices[index - tor / 2], prices[index]);
+								var return_ = Quant.return_(prices[index - tor / 2], prices[index]);
 								hold = Quant.hold(hold, return_, threshold, 1d, invThreshold);
 							} else
 								hold = 0f;

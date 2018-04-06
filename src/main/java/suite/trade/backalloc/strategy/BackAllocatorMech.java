@@ -6,12 +6,9 @@ import suite.primitive.IntInt_Int;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.analysis.MovingAverage;
-import suite.trade.analysis.MovingAverage.Macd;
 import suite.trade.analysis.Oscillator;
-import suite.trade.analysis.Oscillator.Dmi;
 import suite.trade.backalloc.BackAllocator;
 import ts.BollingerBands;
-import ts.BollingerBands.Bb;
 import ts.Quant;
 
 /**
@@ -24,7 +21,7 @@ public class BackAllocatorMech {
 	public static BackAllocatorMech me = new BackAllocatorMech();
 
 	public final Streamlet2<String, BackAllocator> baByName = Read //
-			.<String, BackAllocator>empty2() //
+			.<String, BackAllocator> empty2() //
 			.cons("bb", bollingerBands(20)) //
 			.cons("chanbrk", channelBreakout(20)) //
 			.cons("dmi", dmi(10)) //
@@ -76,7 +73,7 @@ public class BackAllocatorMech {
 
 	private BackAllocator dmiAdx(int d10, int d9) {
 		return BackAllocator_.byDataSource(ds -> {
-			Dmi dmi = osc.dmi(ds, d10);
+			var dmi = osc.dmi(ds, d10);
 			var dmis = dmi.dmi;
 			var adxs = dmi.adx(d9);
 			return Quant.fold(0, dmis.length, (i, hold) -> .2d <= adxs[i] ? -Quant.hold(hold, dmis[i], -.2d, 0d, .2d) : 0f);
@@ -85,12 +82,12 @@ public class BackAllocatorMech {
 
 	private BackAllocator macd(int d9, int d12, int d26) {
 		return BackAllocator_.byPrices(prices -> {
-			Macd macd = ma.macd(prices, d26, d12, d9);
+			var macd = ma.macd(prices, d26, d12, d9);
 			return index -> {
 				var last = index - 1;
 				var macd_ = macd.macds[last];
 				var movingAvgMacd = macd.movingAvgMacds[last];
-				int sign0 = Quant.sign(movingAvgMacd, macd_);
+				var sign0 = Quant.sign(movingAvgMacd, macd_);
 				return sign0 == Quant.sign(0d, movingAvgMacd) ? (double) sign0 : 0d;
 			};
 		});
@@ -118,7 +115,7 @@ public class BackAllocatorMech {
 				var movingAvg0 = movingAvgs0[last];
 				var movingAvg1 = movingAvgs1[last];
 				var movingAvg0ytd = movingAvgs0[last - 1];
-				int sign = Quant.sign(movingAvg0, movingAvg1);
+				var sign = Quant.sign(movingAvg0, movingAvg1);
 				return sign == Quant.sign(movingAvg0ytd, movingAvg0) ? (double) sign : 0d;
 			});
 		});
@@ -135,8 +132,8 @@ public class BackAllocatorMech {
 				var movingAvg0 = movingAvgs0[last];
 				var movingAvg1 = movingAvgs1[last];
 				var movingAvg2 = movingAvgs2[last];
-				int sign0 = Quant.sign(movingAvg0, movingAvg1);
-				int sign1 = Quant.sign(movingAvg1, movingAvg2);
+				var sign0 = Quant.sign(movingAvg0, movingAvg1);
+				var sign1 = Quant.sign(movingAvg1, movingAvg2);
 				return sign0 == sign1 ? (double) -sign0 : 0d;
 			});
 		});
@@ -157,10 +154,10 @@ public class BackAllocatorMech {
 				var movingAvg2 = movingAvgs2[i];
 				var movingAvg1ytd = movingAvgs1[im1];
 				var movingAvg2ytd = movingAvgs2[im1];
-				int sign0 = Quant.sign(movingAvg0, movingAvg1);
-				int sign1 = Quant.sign(movingAvg1, movingAvg2);
-				int sign2 = Quant.sign(movingAvg1, movingAvg1ytd);
-				int sign3 = Quant.sign(movingAvg2, movingAvg2ytd);
+				var sign0 = Quant.sign(movingAvg0, movingAvg1);
+				var sign1 = Quant.sign(movingAvg1, movingAvg2);
+				var sign2 = Quant.sign(movingAvg1, movingAvg1ytd);
+				var sign3 = Quant.sign(movingAvg2, movingAvg2ytd);
 				var b1 = sign0 == sign1 && sign1 == sign2 && (hold != 0f || sign2 == sign3);
 				return b1 ? (float) -sign0 : 0f;
 			});
@@ -171,7 +168,7 @@ public class BackAllocatorMech {
 		return BackAllocator_ //
 				.byDataSource(ds -> {
 					var prices = ds.prices;
-					Bb bb_ = bb.bb(prices, d20, 0, 2f);
+					var bb_ = bb.bb(prices, d20, 0, 2f);
 					var adxs = osc.dmi(ds).adx(d9);
 
 					return Quant.enterKeep(1, prices.length, //
@@ -187,7 +184,7 @@ public class BackAllocatorMech {
 		return BackAllocator_ //
 				.byPrices(prices -> {
 					var movingAvgs = ma.movingAvg(prices, 200);
-					Bb bb_ = bb.bb(prices, d20, 0, 2f);
+					var bb_ = bb.bb(prices, d20, 0, 2f);
 					var lowers = bb_.lowers;
 					var uppers = bb_.uppers;
 					var sds = bb_.sds;

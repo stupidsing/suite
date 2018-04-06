@@ -7,7 +7,6 @@ import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.math.numeric.Statistic;
-import suite.math.numeric.Statistic.MeanVariance;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.Configuration;
@@ -55,7 +54,7 @@ public class BackAllocatorOld {
 
 			for (var window = 1; hold == 0d && window < 256; window++) {
 				var price = prices[last];
-				MeanVariance mv = stat.meanVariance(Arrays.copyOfRange(prices, last - window, last));
+				var mv = stat.meanVariance(Arrays.copyOfRange(prices, last - window, last));
 				var mean = mv.mean;
 				var diff = 3d * mv.standardDeviation();
 
@@ -85,8 +84,8 @@ public class BackAllocatorOld {
 				var movingAvg1 = movingAvgs1[last];
 				var movingMedian0 = movingRanges0[last].median;
 				var movingMedian1 = movingRanges1[last].median;
-				int sign0 = Quant.sign(movingAvg0, movingMedian0);
-				int sign1 = Quant.sign(movingAvg1, movingMedian1);
+				var sign0 = Quant.sign(movingAvg0, movingMedian0);
+				var sign1 = Quant.sign(movingAvg1, movingMedian1);
 				return sign0 == sign1 ? (double) sign0 : 0d;
 			};
 		});
@@ -128,8 +127,8 @@ public class BackAllocatorOld {
 				var i0 = ix - tor;
 				double p0 = ds0.get(i0).t1, px = ds0.get(ix).t1;
 				double q0 = ds1.get(i0).t1, qx = ds1.get(ix).t1;
-				double pdiff = Quant.return_(p0, px);
-				double qdiff = Quant.return_(q0, qx);
+				var pdiff = Quant.return_(p0, px);
+				var qdiff = Quant.return_(q0, qx);
 
 				if (threshold < Math.abs(pdiff - qdiff))
 					return List.of( //
@@ -147,7 +146,7 @@ public class BackAllocatorOld {
 	public BackAllocator revDrawdown() {
 		return BackAllocator_.byPrices(prices -> index -> {
 			var i = index - 1;
-			int i0 = max(0, i - 128);
+			var i0 = max(0, i - 128);
 			var ix = i;
 			var dir = 0;
 
@@ -157,7 +156,7 @@ public class BackAllocatorOld {
 
 			for (; i0 <= i; i--) {
 				var price = prices[i];
-				int dir1 = Quant.sign(price, lastPrice);
+				var dir1 = Quant.sign(price, lastPrice);
 
 				if (dir != 0 && dir != dir1) {
 					var r = (index - io) / (double) (index - i);
