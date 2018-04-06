@@ -6,7 +6,6 @@ import java.util.HashSet;
 
 import org.junit.Test;
 
-import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
 
@@ -14,7 +13,7 @@ public class IntObjMapTest {
 
 	@Test
 	public void test() {
-		IntObjMap<Integer> map = new IntObjMap<>();
+		var map = new IntObjMap<Integer>();
 		map.put(1, 2);
 		map.put(3, 4);
 		map.put(5, 6);
@@ -29,8 +28,8 @@ public class IntObjMapTest {
 
 		var actual = new HashSet<>();
 
-		IntObjSource<Integer> source = map.source();
-		IntObjPair<Integer> pair = IntObjPair.of(0, 0);
+		var source = map.source();
+		var pair = IntObjPair.of(0, 0);
 
 		while (source.source2(pair))
 			actual.add(pair.t0 + ":" + pair.t1);

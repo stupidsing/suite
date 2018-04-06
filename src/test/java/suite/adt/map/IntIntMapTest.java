@@ -29,7 +29,7 @@ public class IntIntMapTest {
 		var actual = new HashSet<>();
 
 		var source = map.source();
-		IntIntPair pair = IntIntPair.of(0, 0);
+		var pair = IntIntPair.of(0, 0);
 		while (source.source2(pair))
 			actual.add(pair.t0 + ":" + pair.t1);
 		assertEquals(expected, actual);
