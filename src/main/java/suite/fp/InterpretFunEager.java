@@ -350,7 +350,7 @@ public class InterpretFunEager {
 	private Node fn(List<Node> ps, int n, Fun<List<Node>, Node> fun) {
 		if (n != 0)
 			return new Fun_(p -> {
-				List<Node> ps1 = new ArrayList<>(ps);
+				var ps1 = new ArrayList<>(ps);
 				ps1.add(p);
 				return fn(ps1, n - 1, fun);
 			});

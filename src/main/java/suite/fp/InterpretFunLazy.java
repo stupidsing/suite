@@ -207,7 +207,7 @@ public class InterpretFunLazy {
 				var expr = lazy0.lazy_(DEFVARS.do_);
 
 				result = frame -> {
-					List<Thunk_> values = new ArrayList<>(size);
+					var values = new ArrayList<Thunk_>(size);
 					for (var i = 0; i < size; i++) {
 						var i1 = i;
 						frame.add(() -> values.get(i1).get());
