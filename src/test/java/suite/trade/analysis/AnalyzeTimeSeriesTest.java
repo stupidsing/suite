@@ -7,7 +7,6 @@ import java.util.function.IntFunction;
 
 import org.junit.Test;
 
-import suite.adt.pair.Pair;
 import suite.math.Tanh;
 import suite.math.linalg.VirtualVector;
 import suite.math.numeric.Statistic;
@@ -78,7 +77,7 @@ public class AnalyzeTimeSeriesTest {
 		var rmv = stat.meanVariance(returns);
 		var variance = rmv.variance;
 		var kelly = rmv.mean / variance;
-		IntFltPair max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
+		var max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
 
 		for (var i = 4; i < fds.length; i++) {
 			var f = Math.abs(fds[i]);
@@ -96,20 +95,20 @@ public class AnalyzeTimeSeriesTest {
 		IntFunction<BuySell> trend_ = d -> momFun.apply(d).scale(0f, +1f);
 		var reverts = To.array(8, BuySell.class, revert);
 		var trends_ = To.array(8, BuySell.class, trend_);
-		BuySell tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
+		var tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
 		var holds = mt.hold(prices, 1f, 1f, 1f);
 		var ma200 = ma.movingAvg(prices, 200);
-		BuySell mat = buySell(d -> {
+		var mat = buySell(d -> {
 			var last = d - 1;
 			return Quant.sign(ma200[last], prices[last]);
 		}).start(1).longOnly();
-		BuySell mt_ = buySell(d -> holds[d]);
+		var mt_ = buySell(d -> holds[d]);
 
-		Pair<float[], float[]> bbmv = bb.meanVariances(VirtualVector.of(logReturns), 9, 0);
+		var bbmv = bb.meanVariances(VirtualVector.of(logReturns), 9, 0);
 		var bbmean = bbmv.t0;
 		var bbvariances = bbmv.t1;
 
-		BuySell ms2 = buySell(d -> {
+		var ms2 = buySell(d -> {
 			var last = d - 1;
 			var ref = last - 250;
 			var mean = bbmean[last];

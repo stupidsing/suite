@@ -1,10 +1,7 @@
 package suite.trade.analysis;
 
-import java.util.List;
-
 import org.junit.Test;
 
-import suite.adt.pair.Pair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
@@ -30,7 +27,7 @@ public class FactorTest {
 				.cons(cfg.queryCompany("0753.HK")) //
 				.distinct();
 
-		List<Pair<Asset, Double>> pairs = Factor.of(cfg, indices).query(assets);
+		var pairs = Factor.of(cfg, indices).query(assets);
 		pairs.forEach(System.out::println);
 	}
 

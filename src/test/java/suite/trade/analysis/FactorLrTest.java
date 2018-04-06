@@ -1,7 +1,5 @@
 package suite.trade.analysis;
 
-import java.util.Map;
-
 import org.junit.Test;
 
 import suite.streamlet.Read;
@@ -29,7 +27,7 @@ public class FactorLrTest {
 				.cons(cfg.queryCompany("0753.HK")) //
 				.distinct();
 
-		Map<Asset, String> pairs = FactorLr.of(cfg, indices).query(assets);
+		var pairs = FactorLr.of(cfg, indices).query(assets);
 
 		for (var pair : pairs.entrySet())
 			System.out.println(pair);

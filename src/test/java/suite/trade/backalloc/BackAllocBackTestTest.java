@@ -8,7 +8,6 @@ import suite.streamlet.Read;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.analysis.Summarize;
-import suite.trade.analysis.Summarize.SummarizeByStrategy;
 import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.run.BackTester;
 import suite.trade.backalloc.strategy.MovingAvgMeanReversionBackAllocator;
@@ -27,8 +26,8 @@ public class BackAllocBackTestTest {
 	@Test
 	public void testBackTest() {
 		var backAllocator = new PmamrBackAllocator().backAllocator();
-		Simulate sim = runner.backTest(backAllocator, period);
-		SummarizeByStrategy<String> sbs = Summarize.of(cfg, Read.from(sim.trades)).summarize(trade -> trade.symbol);
+		var sim = runner.backTest(backAllocator, period);
+		var sbs = Summarize.of(cfg, Read.from(sim.trades)).summarize(trade -> trade.symbol);
 		System.out.println(sbs.log);
 		assertGrowth(out(sim));
 	}
