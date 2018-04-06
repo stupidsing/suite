@@ -7,7 +7,6 @@ import java.io.IOException;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.streamlet.Read;
 import suite.util.String_;
@@ -17,10 +16,10 @@ public class Fun23TreeTest {
 	@Test
 	public void test() throws IOException {
 		var n = 100;
-		String list100 = "0 until " + n + " | map {insert} | apply | {Tree (9999, Empty;)}";
+		var list100 = "0 until " + n + " | map {insert} | apply | {Tree (9999, Empty;)}";
 
 		var fp0 = Suite.substitute("use 23-TREE >> " + list100);
-		Node result0 = Suite.evaluateFun(Suite.fcc(fp0, false));
+		var result0 = Suite.evaluateFun(Suite.fcc(fp0, false));
 		var out0 = Formatter.dump(result0);
 		System.out.println("OUT:\n" + out0);
 
@@ -28,7 +27,7 @@ public class Fun23TreeTest {
 		assertTrue(3 <= nPars0);
 
 		var fp1 = Suite.substitute("use 23-TREE >> 0 until " + n / 2 + " | map {remove} | apply | {" + list100 + "}");
-		Node result1 = Suite.evaluateFun(Suite.fcc(fp1, false));
+		var result1 = Suite.evaluateFun(Suite.fcc(fp1, false));
 		var out1 = Formatter.dump(result1);
 		System.out.println("OUT:\n" + out1);
 

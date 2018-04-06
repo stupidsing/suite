@@ -39,11 +39,11 @@ public class MapifyTest {
 		var pc0 = new ProverConfig();
 		pc0.setRuleSet(null);
 
-		Object map = mapify.mapify(ProverConfig.class, pc0);
+		var map = mapify.mapify(ProverConfig.class, pc0);
 		assertNotNull(map);
 		System.out.println(map);
 
-		ProverConfig pc1 = mapify.unmapify(ProverConfig.class, map);
+		var pc1 = mapify.unmapify(ProverConfig.class, map);
 		System.out.println(pc1);
 
 		assertEquals(pc0, pc1);
@@ -59,11 +59,11 @@ public class MapifyTest {
 		var object0 = new Container();
 		object0.is = List.of(a, b);
 
-		Object map = mapify.mapify(Container.class, object0);
+		var map = mapify.mapify(Container.class, object0);
 		assertNotNull(map);
 		System.out.println(map);
 
-		Container object1 = mapify.unmapify(Container.class, map);
+		var object1 = mapify.unmapify(Container.class, map);
 		assertEquals(A.class, object1.is.get(0).getClass());
 		assertEquals(B.class, object1.is.get(1).getClass());
 		assertEquals(123, ((A) object1.is.get(0)).i);
@@ -76,7 +76,7 @@ public class MapifyTest {
 
 	@Test
 	public void testTree() {
-		Object map = mapify.mapify(Node.class, Suite.parse("v = 1 + 2"));
+		var map = mapify.mapify(Node.class, Suite.parse("v = 1 + 2"));
 		assertNotNull(map);
 		System.out.println(map);
 

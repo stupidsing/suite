@@ -12,7 +12,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testArray() {
-		Bytes bytes = imperativeCompiler.compile(0, "declare (int * 2) array = array (1, 2,); {array/:3} = array/:4;");
+		var bytes = imperativeCompiler.compile(0, "declare (int * 2) array = array (1, 2,); {array/:3} = array/:4;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
@@ -63,7 +63,7 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testField() {
-		Bytes bytes = imperativeCompiler.compile(0, "signature x = struct ( | int i | int j); x/j = 3;");
+		var bytes = imperativeCompiler.compile(0, "signature x = struct ( | int i | int j); x/j = 3;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
@@ -77,14 +77,14 @@ public class ImperativeCompilerTest {
 
 	@Test
 	public void testLet() {
-		Bytes bytes = imperativeCompiler.compile(0, "{null/*} = 1 shl 3;");
+		var bytes = imperativeCompiler.compile(0, "{null/*} = 1 shl 3;");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}
 
 	@Test
 	public void testSubroutine() {
-		Bytes bytes = imperativeCompiler.compile(0, "declare s = function [i,] ( i; ); declare s1 = s; s1 [1,];");
+		var bytes = imperativeCompiler.compile(0, "declare s = function [i,] ( i; ); declare s1 = s; s1 [1,];");
 		assertNotNull(bytes);
 		System.out.println(bytes);
 	}

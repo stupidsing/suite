@@ -8,7 +8,6 @@ import java.io.IOException;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.node.Node;
 import suite.node.io.Formatter;
 
 public class CircularProgrammingTest {
@@ -35,7 +34,7 @@ public class CircularProgrammingTest {
 				+ "    t1 \n " //
 				+ ">> \n " //
 				+ "mintree {Tree (Tree (Leaf 1, Leaf 2), Tree (Leaf 3, Tree (Leaf 4, Leaf 5)))} \n ";
-		Node result = Suite.evaluateFun(fp, true);
+		var result = Suite.evaluateFun(fp, true);
 		assertNotNull(result);
 		assertEquals("Tree, (Tree, (Leaf, 1), Leaf, 1), Tree, (Leaf, 1), Tree, (Leaf, 1), Leaf, 1", Formatter.dump(result));
 	}

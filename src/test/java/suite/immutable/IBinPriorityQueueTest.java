@@ -20,7 +20,7 @@ public class IBinPriorityQueueTest {
 			list.add(i);
 		Collections.shuffle(list);
 
-		IBinPriorityQueue<Integer> pq = new IBinPriorityQueue<>(Object_::compare);
+		var pq = new IBinPriorityQueue<Integer>(Object_::compare);
 
 		for (var i : list)
 			pq = pq.add(i);

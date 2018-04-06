@@ -19,12 +19,12 @@ import suite.node.Node;
 public class LogicCompilerLevel1Test {
 
 	/**
-	 * Compiles the functional compiler and use it to compile a simple
-	 * functional program.
+	 * Compiles the functional compiler and use it to compile a simple functional
+	 * program.
 	 */
 	@Test
 	public void testCompileFunProgram() {
-		RuleSet rs = Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl"));
+		var rs = Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl"));
 		var gs = "" //
 				+ "source .in" //
 				+ ", compile-function .0 .in .out" //
@@ -32,7 +32,7 @@ public class LogicCompilerLevel1Test {
 
 		var goal = new Specializer().specialize(Suite.substitute(gs, Atom.of("LAZY")));
 		var input = Suite.parse("1 + 2");
-		Node result = finder(rs, goal).collectSingle(input);
+		var result = finder(rs, goal).collectSingle(input);
 
 		System.out.println(result);
 		assertNotNull(result);
@@ -41,8 +41,8 @@ public class LogicCompilerLevel1Test {
 	@Test
 	public void testMemberOfMember() {
 		var rs = Suite.newRuleSet(List.of("auto.sl"));
-		Node goal = Suite.parse("source .lln, member .lln .ln, member .ln .n, sink .n");
-		Node input = Suite.parse("((1, 2,), (3, 4,),)");
+		var goal = Suite.parse("source .lln, member .lln .ln, member .ln .n, sink .n");
+		var input = Suite.parse("((1, 2,), (3, 4,),)");
 		var results = finder(rs, goal).collectList(input);
 
 		System.out.println(results);
@@ -59,7 +59,7 @@ public class LogicCompilerLevel1Test {
 		Suite.addRule(rs, "ab a");
 		Suite.addRule(rs, "ab b");
 
-		Node goal = Suite.parse("ab .a, ab .b, sink (.a, .b,)");
+		var goal = Suite.parse("ab .a, ab .b, sink (.a, .b,)");
 		var results = finder(rs, goal).collectList(Atom.NIL);
 
 		System.out.println(results);

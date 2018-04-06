@@ -10,9 +10,9 @@ public class LcsBfsTest {
 
 	@Test
 	public void test() {
-		List<Integer> l0 = List.of(1, 3, 5, 7, 9);
-		List<Integer> l1 = List.of(2, 3, 5, 9, 11);
-		List<Integer> answer = List.of(3, 5, 9);
+		var l0 = List.of(1, 3, 5, 7, 9);
+		var l1 = List.of(2, 3, 5, 9, 11);
+		var answer = List.of(3, 5, 9);
 		assertEquals(answer, new LcsBfs<Integer>().lcs(l0, l1));
 	}
 

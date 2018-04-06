@@ -21,7 +21,7 @@ public class TextTest {
 
 	@Test
 	public void testSh() throws IOException {
-		Node node = Suite.applyPerform(Suite.parse("sh {\"git status\"} {}"), Atom.of("any"));
+		var node = Suite.applyPerform(Suite.parse("sh {\"git status\"} {}"), Atom.of("any"));
 		var writer = new StringWriter();
 		Suite.evaluateFunToWriter(Suite.fcc(Suite.applyWriter(node)), writer);
 		var out = writer.toString();

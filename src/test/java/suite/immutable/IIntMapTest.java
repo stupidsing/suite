@@ -8,7 +8,7 @@ public class IIntMapTest {
 
 	@Test
 	public void test() {
-		IIntMap<Integer> map = new IIntMap<>();
+		var map = new IIntMap<>();
 
 		for (var i = 0; i < 256; i++) {
 			var i_ = i;

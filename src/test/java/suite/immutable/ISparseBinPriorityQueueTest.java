@@ -20,7 +20,7 @@ public class ISparseBinPriorityQueueTest {
 			list.add(i);
 		Collections.shuffle(list);
 
-		ISparseBinPriorityQueue<Integer> pq = new ISparseBinPriorityQueue<>(Object_::compare);
+		var pq = new ISparseBinPriorityQueue<Integer>(Object_::compare);
 
 		for (var i : list)
 			pq = pq.add(i);

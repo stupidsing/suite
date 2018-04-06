@@ -8,7 +8,6 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.kb.RuleSet;
 
 public class ImportTest {
 
@@ -21,7 +20,7 @@ public class ImportTest {
 
 	@Test
 	public void testImportFunCompiler() throws IOException {
-		RuleSet rs = Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl"));
+		var rs = Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl"));
 		System.out.println(rs.getRules().size());
 	}
 

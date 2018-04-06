@@ -18,7 +18,7 @@ public class IbTreeTest {
 
 	@Test
 	public void test0() {
-		IbTree<Integer> ibTree = new IbTree<>(comparator);
+		var ibTree = new IbTree<>(comparator);
 
 		for (var i = 0; i < max; i++)
 			ibTree = ibTree.add(i);
@@ -37,7 +37,7 @@ public class IbTreeTest {
 
 	@Test
 	public void test1() {
-		IbTree<Integer> ibTree = new IbTree<>(comparator);
+		var ibTree = new IbTree<>(comparator);
 
 		for (var i = 0; i < max; i += 2)
 			ibTree = ibTree.add(i);
@@ -60,7 +60,7 @@ public class IbTreeTest {
 		for (var i = 0; i < max; i++)
 			list.add(i);
 
-		IbTree<Integer> ibTree = new IbTree<>(comparator);
+		var ibTree = new IbTree<>(comparator);
 
 		Collections.shuffle(list);
 		for (var i : list)

@@ -43,7 +43,7 @@ public class FilterTest {
 			}
 
 			public int read(char[] buffer, int pos, int len) {
-				int nBytesRead = min(count, len);
+				var nBytesRead = min(count, len);
 
 				// makes sure there are new line characters, otherwise lines
 				// function would blow off the stack

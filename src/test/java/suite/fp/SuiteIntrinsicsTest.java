@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.node.Data;
-import suite.node.Node;
 
 public class SuiteIntrinsicsTest {
 
@@ -29,7 +28,7 @@ public class SuiteIntrinsicsTest {
 				+ "| suite-parse \n" //
 				+ "| (n => suite-substitute {chars:\"fn {.0}\"} {n;}) \n" //
 				+ "| suite-to-chars";
-		Node n = Suite.evaluateFun(fp0, true);
+		var n = Suite.evaluateFun(fp0, true);
 		assertEquals("fn {1 + 2}", Data.get(n).toString());
 	}
 

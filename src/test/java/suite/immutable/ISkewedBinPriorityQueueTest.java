@@ -20,7 +20,7 @@ public class ISkewedBinPriorityQueueTest {
 			list.add(i);
 		Collections.shuffle(list);
 
-		ISkewedBinPriorityQueue<Integer> pq = new ISkewedBinPriorityQueue<>(Object_::compare);
+		var pq = new ISkewedBinPriorityQueue<Integer>(Object_::compare);
 
 		for (var i : list)
 			pq = pq.add(i);
