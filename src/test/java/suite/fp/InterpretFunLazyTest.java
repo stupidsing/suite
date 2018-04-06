@@ -41,4 +41,5 @@ public class InterpretFunLazyTest {
 		interpreter.setLazyify(isLazyify);
 		assertEquals(expected, interpreter.eager(Suite.parse(expr)));
 	}
+
 }
