@@ -17,7 +17,6 @@ import suite.trade.TimeRange;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
-import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSourceView;
 import suite.trade.data.HkexUtil;
 import ts.Quant;
@@ -41,7 +40,7 @@ public class FactorLr {
 		this.cfg = cfg;
 
 		indexSymbols = indexSymbols_.collect(As::streamlet);
-		AlignKeyDataSource<String> akds = cfg.dataSources(TimeRange.ages(), indexSymbols_);
+		var akds = cfg.dataSources(TimeRange.ages(), indexSymbols_);
 		var dsBySymbol = akds.dsByKey.toMap();
 
 		timestamps = akds.ts;

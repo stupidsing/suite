@@ -139,7 +139,7 @@ public class Board extends Array<Occupation> {
 
 		for (var x = 0; x < Weiqi.size; x++) {
 			for (var y = 0; y < Weiqi.size; y++) {
-				Coordinate c = Coordinate.c(x, y);
+				var c = Coordinate.c(x, y);
 				sb.append(get(c).display() + " ");
 			}
 			sb.append("\n");

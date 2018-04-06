@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import suite.util.To;
-import suite.weiqi.GroupAnalysis.Group;
 import suite.weiqi.Weiqi.Occupation;
 
 public class BoardTest {
@@ -21,7 +20,7 @@ public class BoardTest {
 
 	@Test
 	public void testNeighbor() {
-		Coordinate c = Coordinate.c(10, 10);
+		var c = Coordinate.c(10, 10);
 		var neighbors = new HashSet<>();
 
 		for (var c1 : c.neighbors)
@@ -56,8 +55,8 @@ public class BoardTest {
 		board.set(Coordinate.c(18, 1), Occupation.WHITE);
 
 		var ga = new GroupAnalysis(board);
-		Group blackGroup = ga.getGroup(Coordinate.c(15, 15));
-		Group whiteGroup = ga.getGroup(Coordinate.c(17, 0));
+		var blackGroup = ga.getGroup(Coordinate.c(15, 15));
+		var whiteGroup = ga.getGroup(Coordinate.c(17, 0));
 
 		assertEquals(361 - 7, blackGroup.coords.size());
 		assertEquals(3, whiteGroup.touches.size());

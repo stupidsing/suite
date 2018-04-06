@@ -76,8 +76,8 @@ public class StatisticalArbitrageTest {
 		var symbol0 = "0004.HK";
 		var symbol1 = "0945.HK";
 
-		AlignKeyDataSource<String> akds = cfg.dataSources(period, Read.each(symbol0, symbol1));
-		Map<String, float[]> pricesBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
+		var akds = cfg.dataSources(period, Read.each(symbol0, symbol1));
+		var pricesBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
 
 		var length = akds.ts.length;
 		var prices0 = pricesBySymbol.get(symbol0);

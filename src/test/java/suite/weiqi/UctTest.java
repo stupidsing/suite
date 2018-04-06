@@ -13,7 +13,6 @@ import suite.os.Stopwatch;
 import suite.sample.Profiler;
 import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
-import suite.uct.UctVisitor;
 import suite.uct.UctWeiqi;
 import suite.util.Object_;
 import suite.weiqi.Weiqi.Occupation;
@@ -32,9 +31,9 @@ public class UctTest {
 		ShuffleUtil.setSeed(seed);
 		var mid = Weiqi.size / 2;
 
-		String corner = evaluateRandomOutcome(Coordinate.c(0, 0));
-		String faraway = evaluateRandomOutcome(Coordinate.c(1, 1));
-		String center = evaluateRandomOutcome(Coordinate.c(mid, mid));
+		var corner = evaluateRandomOutcome(Coordinate.c(0, 0));
+		var faraway = evaluateRandomOutcome(Coordinate.c(1, 1));
+		var center = evaluateRandomOutcome(Coordinate.c(mid, mid));
 		System.out.println("CORNER: " + corner //
 				+ ", FAR-AWAY: " + faraway //
 				+ ", CENTER: " + center);
@@ -50,7 +49,7 @@ public class UctTest {
 
 		for (var i = 0; i < nTotal; i++) {
 			var gameSet = new GameSet(new Board(), player);
-			UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
+			var visitor = UctWeiqi.newVisitor(gameSet);
 			visitor.playMove(move);
 			nWins += visitor.evaluateRandomOutcome() ? 0 : 1;
 		}
@@ -69,7 +68,7 @@ public class UctTest {
 			for (; i < ss[time]; i++)
 				duration = Stopwatch.of(() -> {
 					var gameSet1 = new GameSet(gameSet);
-					UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet1);
+					var visitor = UctWeiqi.newVisitor(gameSet1);
 					visitor.evaluateRandomOutcome();
 					return null;
 				}).duration;
@@ -85,8 +84,8 @@ public class UctTest {
 
 		for (var time = 0; time < 2; time++) {
 			var gameSet = new GameSet(new Board(), Occupation.BLACK);
-			UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
-			UctSearch<Coordinate> search = new UctSearch<>(visitor);
+			var visitor = UctWeiqi.newVisitor(gameSet);
+			var search = new UctSearch<>(visitor);
 			search.setNumberOfSimulations(nSimulations);
 
 			duration = Stopwatch.of(search::search).duration;
@@ -101,8 +100,8 @@ public class UctTest {
 		var gameSet = new GameSet(new Board(), Occupation.BLACK);
 		gameSet.play(Coordinate.c(3, 3));
 
-		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
-		UctSearch<Coordinate> search = new UctSearch<>(visitor);
+		var visitor = UctWeiqi.newVisitor(gameSet);
+		var search = new UctSearch<>(visitor);
 		search.setNumberOfSimulations(1000);
 		var bestMove = search.search();
 
@@ -118,8 +117,8 @@ public class UctTest {
 
 		var gameSet = new GameSet(new Board(), Occupation.BLACK);
 
-		UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet);
-		UctSearch<Coordinate> search = new UctSearch<>(visitor);
+		var visitor = UctWeiqi.newVisitor(gameSet);
+		var search = new UctSearch<>(visitor);
 		search.setNumberOfThreads(1);
 		search.setNumberOfSimulations(80000);
 
@@ -149,13 +148,13 @@ public class UctTest {
 
 			while (true) {
 				var gameSet1 = new GameSet(gameSet);
-				UctVisitor<Coordinate> visitor = UctWeiqi.newVisitor(gameSet1);
-				UctSearch<Coordinate> search = new UctSearch<>(visitor);
+				var visitor = UctWeiqi.newVisitor(gameSet1);
+				var search = new UctSearch<>(visitor);
 				search.setNumberOfThreads(Constants.nThreads);
 				search.setNumberOfSimulations(nSimulations);
 				search.setBoundedTime(boundedTime);
 
-				Stopwatch<Coordinate> timed = Stopwatch.of(search::search);
+				var timed = Stopwatch.of(search::search);
 				var move = timed.result;
 
 				if (move == null)
