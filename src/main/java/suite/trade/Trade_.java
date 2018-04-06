@@ -33,7 +33,7 @@ import suite.util.String_;
 public class Trade_ {
 
 	public static double barrier = 1d;
-	public static Set<String> blackList = Set.of("0607.HK");
+	public static Set<String> blackList = Set.of("0805.HK");
 	public static boolean isCacheQuotes = true;
 	public static boolean isFreePlay = false;
 	public static boolean isMarketOrder = true;

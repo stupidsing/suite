@@ -187,7 +187,7 @@ public class DailyMain extends ExecutableProgram {
 		for (var asset : assets) {
 			var symbol = asset.symbol;
 
-			if (backTestBySymbol.get(symbol))
+			if (backTestBySymbol.get(symbol) == Boolean.TRUE)
 				try {
 					var ds = cfg.dataSource(symbol, period).validate();
 					var prices = ds.prices;
