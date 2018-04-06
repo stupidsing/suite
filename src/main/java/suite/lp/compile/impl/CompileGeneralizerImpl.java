@@ -1,7 +1,6 @@
 package suite.lp.compile.impl;
 
 import java.util.IdentityHashMap;
-import java.util.Map;
 
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.GeneralizerFactory;
@@ -22,10 +21,10 @@ public class CompileGeneralizerImpl implements GeneralizerFactory {
 
 	@Override
 	public Generalize_ generalizer(Node node) {
-		VariableMapper<Reference> mapper = cc.mapper();
+		var mapper = cc.mapper();
 		var generalizer = new Generalizer();
 		Generalize_ generalize = cc.cloner(generalizer.generalize(node))::apply;
-		Map<Reference, Atom> indices = new IdentityHashMap<>();
+		var indices = new IdentityHashMap<Reference, Atom>();
 		for (var variableName : generalizer.getVariableNames())
 			indices.put(generalizer.getVariable(variableName), variableName);
 		vm = mapper.mapKeys(indices::get);
