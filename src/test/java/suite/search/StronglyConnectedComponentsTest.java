@@ -30,10 +30,12 @@ public class StronglyConnectedComponentsTest {
 				, Pair.of("h", "g") //
 		)));
 
-		assertEquals(3, scc.components.size());
-		assertTrue(Read.from(scc.components).isAny(c -> c.equals(To.set("a", "b", "e"))));
-		assertTrue(Read.from(scc.components).isAny(c -> c.equals(To.set("c", "d", "h"))));
-		assertTrue(Read.from(scc.components).isAny(c -> c.equals(To.set("f", "g"))));
+		var components = scc.components;
+
+		assertEquals(3, components.size());
+		assertTrue(Read.from(components).isAny(c -> c.equals(To.set("a", "b", "e"))));
+		assertTrue(Read.from(components).isAny(c -> c.equals(To.set("c", "d", "h"))));
+		assertTrue(Read.from(components).isAny(c -> c.equals(To.set("f", "g"))));
 	}
 
 }
