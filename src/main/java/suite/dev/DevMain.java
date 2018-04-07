@@ -168,7 +168,7 @@ public class DevMain {
 						var y0 = Math.max(0, cy - viewSizeY + 1);
 						var ox_ = sat(ox, x0, cx);
 						var oy_ = sat(oy, y0, cy);
-						return st.offset(ox_, oy_);
+						return st.offset(ox_, Math.min(oy_, text.nLines() - viewSizeY + 1));
 					})));
 
 			keyboard.loop(signal -> signal //
