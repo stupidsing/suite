@@ -87,9 +87,9 @@ public class DevMain {
 						else if (vk == VK.DOWN_)
 							return st.cursor(cx, cy + 1);
 						else if (vk == VK.PGUP_)
-							return st.cursor(cx, cy - viewSizeY);
+							return st.offset(ox, oy - viewSizeY).cursor(cx, cy - viewSizeY);
 						else if (vk == VK.PGDN_)
-							return st.cursor(cx, cy + viewSizeY);
+							return st.offset(ox, oy + viewSizeY).cursor(cx, cy + viewSizeY);
 						else if (vk == VK.HOME_)
 							return st.cursor(text.startOfLine(ci));
 						else if (vk == VK.END__)
