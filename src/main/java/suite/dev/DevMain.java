@@ -53,8 +53,7 @@ public class DevMain {
 			termios.clear();
 			var keyboard = new Keyboard(libc);
 
-			var es0 = new EditSt(null, null, inputText, c(0, 0), c(0, 0));
-			var state0 = new State(es0, "");
+			var state0 = new State(new EditSt(null, null, inputText, c(0, 0), c(0, 0)), "");
 
 			FixieFun3<VK, Character, EditSt, EditSt> mutateEs = (vk, ch, es) -> es //
 					.apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
