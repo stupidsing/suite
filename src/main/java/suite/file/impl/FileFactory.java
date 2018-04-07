@@ -9,7 +9,6 @@ import java.util.Objects;
 import suite.file.ExtentAllocator.Extent;
 import suite.file.ExtentFile;
 import suite.file.PageFile;
-import suite.file.SerializedPageFile;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
@@ -23,8 +22,8 @@ import suite.util.Util;
 public class FileFactory {
 
 	private static class Block {
-		Extent extent;
-		Bytes bytes;
+		private Extent extent;
+		private Bytes bytes;
 
 		private Block(Extent extent, Bytes bytes) {
 			this.extent = extent;
@@ -34,10 +33,10 @@ public class FileFactory {
 
 	public static ExtentFile extentFile(PageFile pf) {
 		var serialize = Serialize.me;
-		Serializer<Extent> extentSerializer = serialize.extent();
-		Serializer<Bytes> bytesSerializer = serialize.variableLengthBytes;
+		var extentSerializer = serialize.extent();
+		var bytesSerializer = serialize.variableLengthBytes;
 
-		SerializedPageFile<Block> pageFile = SerializedFileFactory.serialized(pf, new Serializer<>() {
+		var pageFile = SerializedFileFactory.serialized(pf, new Serializer<Block>() {
 			public Block read(DataInput_ dataInput) throws IOException {
 				var extent = extentSerializer.read(dataInput);
 				var bytes = bytesSerializer.read(dataInput);
