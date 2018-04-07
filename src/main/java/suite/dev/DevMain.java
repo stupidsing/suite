@@ -102,7 +102,7 @@ public class DevMain {
 							if (0 < i1) {
 								var i0 = text.prevLine(i1);
 								var i2 = text.nextLine(i1);
-								return st.splice(i2, i2, text.text.subList(i0, i1)).splice(i0, i1, empty);
+								return st.splice(i2, i2, text.chars.subList(i0, i1)).splice(i0, i1, empty);
 							} else
 								return st;
 						} else if (vk == VK.ALT_DOWN_) {
@@ -110,7 +110,7 @@ public class DevMain {
 							var i1 = text.nextLine(i0);
 							if (i1 < text.length()) {
 								var i2 = text.nextLine(i1);
-								return st.splice(i1, i2, empty).splice(i0, i0, text.text.subList(i1, i2));
+								return st.splice(i1, i2, empty).splice(i0, i0, text.chars.subList(i1, i2));
 							} else
 								return st;
 						} else if (vk == VK.DEL__)
@@ -135,7 +135,7 @@ public class DevMain {
 								char ch_;
 								while ((ch_ = text.at(ix)) == ' ' || ch_ == '\t')
 									ix++;
-								return st.splice(0, IRope.ropeList("\n").concat(text.text.subList(i0, ix)));
+								return st.splice(0, IRope.ropeList("\n").concat(text.chars.subList(i0, ix)));
 							} else
 								return st.splice(0, IRope.ropeList(Character.toString(ch)));
 						else
@@ -278,12 +278,12 @@ public class DevMain {
 	}
 
 	private class Text {
-		private IRopeList<Character> text;
+		private IRopeList<Character> chars;
 		private int[] starts;
 		private int[] ends;
 
-		private Text(IRopeList<Character> text, int[] starts, int[] ends) {
-			this.text = text;
+		private Text(IRopeList<Character> chars, int[] starts, int[] ends) {
+			this.chars = chars;
 			this.starts = starts;
 			this.ends = ends;
 		}
@@ -293,13 +293,13 @@ public class DevMain {
 			var ix = end(py);
 			return new String(Chars_.toArray(length, i_ -> {
 				var i = i_ + i0;
-				return i < ix ? text.get(i) : ' ';
+				return i < ix ? chars.get(i) : ' ';
 			}));
 		}
 
 		private Text splice(int i0, int i1, IRopeList<Character> s) {
 			var i1_ = min(i1, length());
-			return text(text.left(i0).concat(s.concat(text.right(i1_))));
+			return text(chars.left(i0).concat(s.concat(chars.right(i1_))));
 		}
 
 		private int prevLine(int index) {
@@ -331,7 +331,7 @@ public class DevMain {
 		}
 
 		private int scan(int index, int dir, Predicate<Character> pred) {
-			while (0 <= index && index < text.size() && !pred.test(text.get(index)))
+			while (0 <= index && index < chars.size() && !pred.test(chars.get(index)))
 				index += dir;
 			return index;
 		}
@@ -361,11 +361,11 @@ public class DevMain {
 		}
 
 		private char at(int index) {
-			return text.get(index);
+			return chars.get(index);
 		}
 
 		private int length() {
-			return text.size();
+			return chars.size();
 		}
 	}
 
