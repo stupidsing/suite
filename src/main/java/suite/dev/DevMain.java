@@ -102,7 +102,7 @@ public class DevMain {
 							if (0 < i1) {
 								var i0 = text.prevLine(i1);
 								var i2 = text.nextLine(i1);
-								return st.splice(i2, i2, text.chars.subList(i0, i1)).splice(i0, i1, empty);
+								return st.splice(i2, i2, text.chars.subList.apply(i0, i1)).splice(i0, i1, empty);
 							} else
 								return st;
 						} else if (vk == VK.ALT_DOWN_) {
@@ -110,7 +110,7 @@ public class DevMain {
 							var i1 = text.nextLine(i0);
 							if (i1 < text.length()) {
 								var i2 = text.nextLine(i1);
-								return st.splice(i1, i2, empty).splice(i0, i0, text.chars.subList(i1, i2));
+								return st.splice(i1, i2, empty).splice(i0, i0, text.chars.subList.apply(i1, i2));
 							} else
 								return st;
 						} else if (vk == VK.DEL__)
@@ -135,7 +135,7 @@ public class DevMain {
 								char ch_;
 								while ((ch_ = text.at(ix)) == ' ' || ch_ == '\t')
 									ix++;
-								return st.splice(0, IRope.ropeList("\n").concat(text.chars.subList(i0, ix)));
+								return st.splice(0, IRope.ropeList("\n").concat.apply(text.chars.subList.apply(i0, ix)));
 							} else
 								return st.splice(0, IRope.ropeList(Character.toString(ch)));
 						else
@@ -225,7 +225,7 @@ public class DevMain {
 			else if (cursorIndex0 < ix)
 				cursorIndex1 = i0;
 			else
-				cursorIndex1 = cursorIndex0 - ix + i0 + s.size();
+				cursorIndex1 = cursorIndex0 - ix + i0 + s.size;
 			var text1 = text.splice(i0, ix, s);
 			return text(text1).cursor(cursorIndex1);
 		}
@@ -261,14 +261,14 @@ public class DevMain {
 		var starts = new IntsBuilder();
 		var ends = new IntsBuilder();
 		var p0 = IntMutable.of(-1);
-		var size = text.size();
+		var size = text.size;
 		IntSink lf = px -> {
 			starts.append(p0.get() + 1);
 			ends.append(px);
 			p0.update(px);
 		};
 		for (var p = 0; p < size; p++) {
-			var ch = text.get(p);
+			var ch = text.get.apply(p);
 			if (ch == '\n' || wrapSize < p - p0.get())
 				lf.sink(p);
 		}
@@ -293,13 +293,13 @@ public class DevMain {
 			var ix = end(py);
 			return new String(Chars_.toArray(length, i_ -> {
 				var i = i_ + i0;
-				return i < ix ? chars.get(i) : ' ';
+				return i < ix ? chars.get.apply(i) : ' ';
 			}));
 		}
 
 		private Text splice(int i0, int i1, IRopeList<Character> s) {
 			var i1_ = min(i1, length());
-			return text(chars.left(i0).concat(s.concat(chars.right(i1_))));
+			return text(chars.left(i0).concat.apply(s.concat.apply(chars.right(i1_))));
 		}
 
 		private int prevLine(int index) {
@@ -331,7 +331,7 @@ public class DevMain {
 		}
 
 		private int scan(int index, int dir, Predicate<Character> pred) {
-			while (0 <= index && index < chars.size() && !pred.test(chars.get(index)))
+			while (0 <= index && index < chars.size && !pred.test(chars.get.apply(index)))
 				index += dir;
 			return index;
 		}
@@ -361,11 +361,11 @@ public class DevMain {
 		}
 
 		private char at(int index) {
-			return chars.get(index);
+			return chars.get.apply(index);
 		}
 
 		private int length() {
-			return chars.size();
+			return chars.size;
 		}
 	}
 
