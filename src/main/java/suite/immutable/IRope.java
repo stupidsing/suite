@@ -69,6 +69,32 @@ public class IRope<T> {
 		};
 	}
 
+	public static <T> IRopeList<T> ropeList(IRope<T> r) {
+		class W implements IRopeList<T> {
+			private IRope<T> rope = r;
+
+			public int size() {
+				return rope.weight;
+			}
+
+			public T get(int index) {
+				return rope.at(index);
+			}
+
+			public IRopeList<T> subList(int i0, int ix) {
+				return ropeList(rope.right(ix).left(i0));
+			}
+
+			public IRopeList<T> concat(IRopeList<T> list) {
+				return ropeList(IRope.meld(r, ((W) list).rope));
+			}
+		}
+
+		W ropeList = new W();
+		ropeList.rope = r;
+		return ropeList;
+	}
+
 	// minBranchFactor <= ts.size() && ts.size() < maxBranchFactor
 	public IRope(IRopeList<T> ts) {
 		this.depth = 0;
