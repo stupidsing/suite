@@ -32,7 +32,7 @@ public class Sphere implements RtObject {
 	public List<RayHit> hit(Ray ray) {
 		R3 start0 = R3.sub(ray.startPoint, center);
 		var a = ray.dir.abs2();
-		double b = 2f * R3.dot(start0, ray.dir);
+		var b = 2d * R3.dot(start0, ray.dir);
 		var c = start0.abs2() - radius * radius;
 		var discriminant = b * b - 4f * a * c;
 		List<RayHit> rayHits;

@@ -117,7 +117,7 @@ public class RayTracer {
 			var hitPoint = i.hitPoint();
 			var normal0 = i.normal().norm();
 
-			double dot0 = R3.dot(ray.dir, normal0);
+			var dot0 = R3.dot(ray.dir, normal0);
 			var isInside = 0d < dot0;
 			R3 normal;
 			double dot;
@@ -178,12 +178,12 @@ public class RayTracer {
 
 				// account light sources
 				for (var lightSource : lightSources) {
-					R3 lightDir = R3.sub(lightSource.source(), hitPoint);
-					double lightDot = R3.dot(lightDir, normal);
+					var lightDir = R3.sub(lightSource.source(), hitPoint);
+					var lightDot = R3.dot(lightDir, normal);
 
 					if (0d < lightDot) { // facing the light
-						R3 lightPoint = R3.add(hitPoint, negligible(normal));
-						RayHit lightRayHit = nearestHit(scene.hit(new Ray(lightPoint, lightDir)));
+						var lightPoint = R3.add(hitPoint, negligible(normal));
+						var lightRayHit = nearestHit(scene.hit(new Ray(lightPoint, lightDir)));
 
 						if (lightRayHit == null || 1d < lightRayHit.advance()) {
 							var lightColor = lightSource.lit(hitPoint);
