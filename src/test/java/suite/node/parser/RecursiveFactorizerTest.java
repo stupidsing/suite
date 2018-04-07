@@ -93,7 +93,7 @@ public class RecursiveFactorizerTest {
 	public void testRefactorRewrite0() {
 		var pred0 = "ic-compile-better-option";
 		var predx = "ic-new-compile-better-option";
-		String sx = rewriteNewArgument(pred0, predx, ".type", FileUtil.read("src/main/ll/ic/ic.sl").trim());
+		var sx = rewriteNewArgument(pred0, predx, ".type", FileUtil.read("src/main/ll/ic/ic.sl").trim());
 
 		System.out.println(sx);
 		assertFalse(sx.contains(pred0));
@@ -111,7 +111,7 @@ public class RecursiveFactorizerTest {
 				var head = terminalNode(hs);
 				var n0 = !b ? g.source()
 						: operatorNode(TermOp.TUPLE_, List.of(g.source(), terminalNode(" "), terminalNode(newArgument)));
-				Node n1 = operatorNode(g, TermOp.TUPLE_, g.source(), n0);
+				var n1 = operatorNode(g, TermOp.TUPLE_, g.source(), n0);
 				return operatorNode(g, TermOp.TUPLE_, head, n1);
 			};
 
@@ -120,9 +120,9 @@ public class RecursiveFactorizerTest {
 
 		var fr0 = recursiveFactorizer.parse(s0);
 		var fn0 = fr0.node;
-		Node node0 = nodify.nodify(FNode.class, fn0);
-		Node nodex = rw.rewrite(source, node0);
-		FNode fnx = nodify.unnodify(FNode.class, nodex);
+		var node0 = nodify.nodify(FNode.class, fn0);
+		var nodex = rw.rewrite(source, node0);
+		var fnx = nodify.unnodify(FNode.class, nodex);
 		var frx = new FactorizeResult(fr0.pre, fnx, fr0.post);
 		var sx = frx.unparse();
 		return sx;
@@ -136,12 +136,12 @@ public class RecursiveFactorizerTest {
 
 	private Node operatorNode(Source<Node> g, TermOp op, Node n0, Node n1) {
 		var name = new Str(op.toString());
-		List<Node> nodes = List.of(n0, terminalNode(op.getName().trim()), n1);
+		var nodes = List.of(n0, terminalNode(op.getName().trim()), n1);
 		return treeNode(g, name, nodes);
 	}
 
 	private Node treeNode(Source<Node> g, Node name, List<Node> nodes) {
-		List<Node> pairs = Read.from(nodes).map(node -> pairNode(node, g.source())).toList();
+		var pairs = Read.from(nodes).map(node -> pairNode(node, g.source())).toList();
 		var dict = new Dict();
 		dict.map.put(Atom.of("name"), Reference.of(name));
 		dict.map.put(Atom.of("pairs"), Reference.of(Tree.of(TermOp.OR____, pairs)));
@@ -165,7 +165,7 @@ public class RecursiveFactorizerTest {
 	public void testRefactorRewrite1() {
 		var pred0 = "ic-compile-better-option .0 .1 .2";
 		var predx = "ic-new-compile-better-option .0 .1 .2 .type";
-		String sx = recursiveFactorizer.rewrite(pred0, predx, FileUtil.read("src/main/ll/ic/ic.sl").trim());
+		var sx = recursiveFactorizer.rewrite(pred0, predx, FileUtil.read("src/main/ll/ic/ic.sl").trim());
 
 		System.out.println(sx);
 		assertFalse(sx.contains(pred0));
