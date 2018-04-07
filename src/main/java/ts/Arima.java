@@ -17,7 +17,6 @@ import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.adt.pair.FltObjPair;
-import suite.primitive.streamlet.FltStreamlet;
 import suite.util.To;
 
 public class Arima {
@@ -123,8 +122,8 @@ public class Arima {
 					.map(t -> {
 						int tp = t + p, tpm1 = tp - 1;
 						int tq = t + q, tqm1 = tq - 1;
-						FltStreamlet lrxs0 = Ints_.range(p).collect(Int_Flt.lift(i -> xsp[tpm1 - i]));
-						FltStreamlet lrxs1 = Ints_.range(q).collect(Int_Flt.lift(i -> epq[tqm1 - i]));
+						var lrxs0 = Ints_.range(p).collect(Int_Flt.lift(i -> xsp[tpm1 - i]));
+						var lrxs1 = Ints_.range(q).collect(Int_Flt.lift(i -> epq[tqm1 - i]));
 						return FltObjPair.of(xsp[tp], Floats_.concat(lrxs0, lrxs1).toArray());
 					}));
 
@@ -299,7 +298,7 @@ public class Arima {
 		var ars = ll.ars;
 		var mas = ll.mas;
 
-		double x1 = ll.arma.sum(xsp, epq);
+		var x1 = ll.arma.sum(xsp, epq);
 		return new Arima_(ars, mas, (float) x1);
 	}
 
