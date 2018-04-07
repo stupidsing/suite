@@ -12,15 +12,13 @@ import suite.primitive.Ints_;
 import suite.primitive.Longs_;
 import suite.streamlet.Read;
 import suite.trade.Time;
-import suite.trade.backalloc.BackAllocator.OnDateTime;
 import suite.trade.data.DataSource;
-import suite.trade.data.DataSource.AlignKeyDataSource;
 
 public class BackAllocatorTest {
 
 	@Test
 	public void testStop() {
-		Time start = Time.of(2017, 1, 1);
+		var start = Time.of(2017, 1, 1);
 		var symbol = "S";
 		float[] prices = { 1f, .99f, .98f, .5f, .5f, .5f, 0f, 0f, 0f, };
 
@@ -30,11 +28,11 @@ public class BackAllocatorTest {
 		var length = prices.length;
 		var ts = Longs_.toArray(length, i -> start.addDays(i).epochSec());
 
-		DataSource ds = DataSource.of(ts, prices);
-		AlignKeyDataSource<String> akds = DataSource.alignAll(Read.from2(List.of(Pair.of(symbol, ds))));
+		var ds = DataSource.of(ts, prices);
+		var akds = DataSource.alignAll(Read.from2(List.of(Pair.of(symbol, ds))));
 		var indices = Ints_.toArray(length, i -> i);
 
-		OnDateTime odt = ba1.allocate(akds, indices);
+		var odt = ba1.allocate(akds, indices);
 
 		var potentials = Ints_ //
 				.range(indices.length) //
