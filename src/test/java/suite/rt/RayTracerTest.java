@@ -1,7 +1,7 @@
 package suite.rt;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -45,7 +45,7 @@ public class RayTracerTest {
 		var scene = new Scene(List.of(sky, new Intersect(List.of(sphere0, sphere1))));
 
 		var light = new PointLightSource(v(-10d, -10d, -7d), gray(1.5d));
-		List<LightSource> lights = List.of(light);
+		var lights = lights(light);
 
 		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -59,7 +59,7 @@ public class RayTracerTest {
 		var scene = new Scene(List.of(sky, new Minus(sphere0, sphere1)));
 
 		var light = new PointLightSource(v(-10d, -10d, -7d), gray(1.5d));
-		List<LightSource> lights = List.of(light);
+		var lights = lights(light);
 
 		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -73,7 +73,7 @@ public class RayTracerTest {
 		var scene = new Scene(List.of(sky, new Union(List.of(sphere0, sphere1))));
 
 		var light = new PointLightSource(v(-10d, -10d, -7d), gray(1.5d));
-		List<LightSource> lights = List.of(light);
+		var lights = lights(light);
 
 		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -92,7 +92,7 @@ public class RayTracerTest {
 		var scene = new Scene(List.of(sphere0, sphere1, sphere2, sphere3, sphere4));
 
 		var light0 = new PointLightSource(v(0d, -20d, 30d), gray(3d));
-		List<LightSource> lights = List.of(light0);
+		var lights = lights(light0);
 
 		var rayTracer = new RayTracer(lights, scene);
 		rayTracer.setAmbient(gray(2d));
@@ -106,7 +106,7 @@ public class RayTracerTest {
 		var scene = new Scene(List.of(sky));
 
 		var light = new PointLightSource(v(0d, 0d, 90d), cw);
-		List<LightSource> lights = List.of(light);
+		var lights = lights(light);
 
 		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -124,7 +124,7 @@ public class RayTracerTest {
 
 		var light0 = new PointLightSource(v(10d, 10d, -10d), cp);
 		var light1 = new PointLightSource(v(-10d, 10d, -10d), gray(2d));
-		List<LightSource> lights = List.of(light0, light1);
+		var lights = lights(light0, light1);
 
 		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -137,7 +137,7 @@ public class RayTracerTest {
 		var scene = new Scene(List.of(sphere, mirror));
 
 		var light = new PointLightSource(v(10000d, 10000d, -10000d), gray(1.5d));
-		List<LightSource> lights = List.of(light);
+		var lights = lights(light);
 
 		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -150,7 +150,7 @@ public class RayTracerTest {
 		var scene = new Scene(List.of(sky, sphere));
 
 		var light = new PointLightSource(v(0d, 0d, 90d), cw);
-		List<LightSource> lights = List.of(light);
+		var lights = lights(light);
 
 		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -163,7 +163,7 @@ public class RayTracerTest {
 		var scene = new Scene(List.of(sky, sphere));
 
 		var light = new PointLightSource(v(0d, 0d, 90d), cw);
-		List<LightSource> lights = List.of(light);
+		var lights = lights(light);
 
 		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -176,7 +176,7 @@ public class RayTracerTest {
 		var scene = new Scene(List.of(sky, sphere));
 
 		var light = new PointLightSource(v(0d, 0d, 90d), cw);
-		List<LightSource> lights = List.of(light);
+		var lights = lights(light);
 
 		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -190,7 +190,7 @@ public class RayTracerTest {
 		var scene = new Scene(List.of(sky, sphere0, sphere1));
 
 		var light = new PointLightSource(v(0d, 0d, 5d), gray(1.5d));
-		List<LightSource> lights = List.of(light);
+		var lights = lights(light);
 
 		var rayTracer = new RayTracer(lights, scene);
 		rasterize(rayTracer);
@@ -198,11 +198,15 @@ public class RayTracerTest {
 
 	private void rasterize(RayTracer rayTracer) throws IOException {
 		var path = Constants.tmp(Thread_.getStackTrace(3).getMethodName() + ".png");
-		BufferedImage bufferedImage = rayTracer.trace(640, 480, 640);
+		var bufferedImage = rayTracer.trace(640, 480, 640);
 
 		try (var os = FileUtil.out(path)) {
 			ImageIO.write(bufferedImage, "png", os);
 		}
+	}
+
+	private List<LightSource> lights(LightSource... lights) {
+		return Arrays.asList(lights);
 	}
 
 	private Material solid(R3 color) {
