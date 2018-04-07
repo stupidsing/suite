@@ -144,11 +144,11 @@ public class DevMain {
 						var cc_ = text.coord(sat(text.index(cx, cy), 0, text.length()));
 						return st.cursor(cc_.t0, cc_.t1);
 					}))).apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						var x0 = Math.max(0, cx - viewSizeX + 1);
-						var y0 = Math.max(0, cy - viewSizeY + 1);
+						var x0 = max(0, cx - viewSizeX + 1);
+						var y0 = max(0, cy - viewSizeY + 1);
 						var ox_ = sat(ox, x0, cx);
 						var oy_ = sat(oy, y0, cy);
-						return st.offset(ox_, Math.min(oy_, text.nLines() - viewSizeY + 1));
+						return st.offset(ox_, min(oy_, text.nLines() - viewSizeY + 1));
 					})));
 
 			FixieFun3<VK, Character, State, State> mutateState = (vk, ch, state) -> {
