@@ -168,18 +168,18 @@ public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements FixieA<T0,
 		return fun.apply(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9);
 	}
 
-	public static //
-	<T0 extends Comparable<? super T0> //
-			, T1 extends Comparable<? super T1> //
-			, T2 extends Comparable<? super T2> //
-			, T3 extends Comparable<? super T3> //
-			, T4 extends Comparable<? super T4> //
-			, T5 extends Comparable<? super T5> //
-			, T6 extends Comparable<? super T6> //
-			, T7 extends Comparable<? super T7> //
-			, T8 extends Comparable<? super T8> //
-			, T9 extends Comparable<? super T9> //
-	> Comparator<Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>> comparator() {
+	public static < //
+			T0 extends Comparable<? super T0>, //
+			T1 extends Comparable<? super T1>, //
+			T2 extends Comparable<? super T2>, //
+			T3 extends Comparable<? super T3>, //
+			T4 extends Comparable<? super T4>, //
+			T5 extends Comparable<? super T5>, //
+			T6 extends Comparable<? super T6>, //
+			T7 extends Comparable<? super T7>, //
+			T8 extends Comparable<? super T8>, //
+			T9 extends Comparable<? super T9>> //
+	Comparator<Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9>> comparator() {
 		return (fixie0, fixie1) -> {
 			var c = 0;
 			c = c == 0 ? Object_.compare(fixie0.t0, fixie1.t0) : c;
