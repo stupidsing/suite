@@ -23,8 +23,8 @@ public class Sphere implements RtObject {
 
 	public static RtObject c(R3 center, double radius, Material material) {
 		var radiusRange = new R3(radius, radius, radius);
-		R3 min = R3.sub(center, radiusRange);
-		R3 max = R3.add(center, radiusRange);
+		var min = R3.sub(center, radiusRange);
+		var max = R3.add(center, radiusRange);
 		return new BoundingBox(min, max, new Sphere(center, radius, material));
 	}
 
