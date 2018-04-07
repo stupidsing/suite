@@ -154,7 +154,7 @@ public class Longs_ {
 			}
 
 			if (cont && 0 < p0) {
-				Longs head = buffer.range(0, p0);
+				var head = buffer.range(0, p0);
 				buffer = buffer.range(p1);
 				return head;
 			} else

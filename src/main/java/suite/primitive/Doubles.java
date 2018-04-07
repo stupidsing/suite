@@ -294,7 +294,7 @@ public class Doubles implements Iterable<Double> {
 		e = min(size, e);
 		int start_ = start + min(size, s);
 		int end_ = start + min(size, e);
-		Doubles result = of(cs, start_, end_);
+		var result = of(cs, start_, end_);
 
 		// avoid small pack of doubles object keeping a large buffer
 		if (Boolean.FALSE && reallocSize <= cs.length && end_ - start_ < reallocSize / 4)

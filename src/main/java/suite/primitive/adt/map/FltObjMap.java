@@ -20,6 +20,8 @@ import suite.util.FunUtil.Iterate;
  */
 public class FltObjMap<V> {
 
+	private static Object EMPTYVALUE = null;
+
 	private int size;
 	private float[] ks;
 	private Object[] vs;
@@ -42,7 +44,7 @@ public class FltObjMap<V> {
 
 	public V computeIfAbsent(float key, Flt_Obj<V> fun) {
 		var v = get(key);
-		if (v == null)
+		if (v == EMPTYVALUE)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -68,7 +70,9 @@ public class FltObjMap<V> {
 
 	public V get(float key) {
 		var index = index(key);
-		return ks[index] == key ? cast(vs[index]) : null;
+		@SuppressWarnings("unchecked")
+		V v = ks[index] == key ? cast(vs[index]) : (V) EMPTYVALUE;
+		return v;
 	}
 
 	@Override
@@ -93,15 +97,15 @@ public class FltObjMap<V> {
 		var v0 = cast(vs[index]);
 		var v1 = fun.apply(v0);
 		ks[index] = key;
-		size += ((vs[index] = v1) != null ? 1 : 0) - (v0 != null ? 1 : 0);
-		if (v1 == null)
+		size += ((vs[index] = v1) != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
+		if (v1 == EMPTYVALUE)
 			new Object() {
 				public void rehash(int index) {
 					var index1 = (index + 1) & mask;
 					var v = vs[index1];
-					if (v != null) {
+					if (v != EMPTYVALUE) {
 						var k = ks[index1];
-						vs[index1] = null;
+						vs[index1] = EMPTYVALUE;
 						rehash(index1);
 						store(k, v);
 					}
@@ -138,14 +142,14 @@ public class FltObjMap<V> {
 			allocate(capacity * 2);
 
 			for (var i = 0; i < capacity; i++)
-				if ((o = vs0[i]) != null)
+				if ((o = vs0[i]) != EMPTYVALUE)
 					store(ks0[i], o);
 		}
 	}
 
 	private void store(float key, Object v1) {
 		var index = index(key);
-		if (vs[index] == null) {
+		if (vs[index] == EMPTYVALUE) {
 			ks[index] = key;
 			vs[index] = v1;
 		} else
@@ -155,7 +159,7 @@ public class FltObjMap<V> {
 	private int index(float key) {
 		var mask = vs.length - 1;
 		var index = Float.hashCode(key) & mask;
-		while (vs[index] != null && ks[index] != key)
+		while (vs[index] != EMPTYVALUE && ks[index] != key)
 			index = index + 1 & mask;
 		return index;
 	}
@@ -169,7 +173,7 @@ public class FltObjMap<V> {
 				while (index < capacity) {
 					var k = ks[index];
 					var v = vs[index++];
-					if (v != null) {
+					if (v != EMPTYVALUE) {
 						pair.update(k, cast(v));
 						return true;
 					}

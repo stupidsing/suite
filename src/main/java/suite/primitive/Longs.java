@@ -294,7 +294,7 @@ public class Longs implements Iterable<Long> {
 		e = min(size, e);
 		int start_ = start + min(size, s);
 		int end_ = start + min(size, e);
-		Longs result = of(cs, start_, end_);
+		var result = of(cs, start_, end_);
 
 		// avoid small pack of longs object keeping a large buffer
 		if (Boolean.FALSE && reallocSize <= cs.length && end_ - start_ < reallocSize / 4)
