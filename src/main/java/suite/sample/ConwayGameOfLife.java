@@ -39,12 +39,12 @@ public class ConwayGameOfLife {
 			for (var y = 1; y < size - 1; y++) {
 				var sum = 0 //
 						+ (game0[x - 1][y - 1] ? 1 : 0) //
-						+ (game0[x - 1][y] ? 1 : 0) //
+						+ (game0[x - 1][y + 0] ? 1 : 0) //
 						+ (game0[x - 1][y + 1] ? 1 : 0) //
-						+ (game0[x][y - 1] ? 1 : 0) //
-						+ (game0[x][y + 1] ? 1 : 0) //
+						+ (game0[x + 0][y - 1] ? 1 : 0) //
+						+ (game0[x + 0][y + 1] ? 1 : 0) //
 						+ (game0[x + 1][y - 1] ? 1 : 0) //
-						+ (game0[x + 1][y] ? 1 : 0) //
+						+ (game0[x + 1][y + 0] ? 1 : 0) //
 						+ (game0[x + 1][y + 1] ? 1 : 0) //
 				;
 

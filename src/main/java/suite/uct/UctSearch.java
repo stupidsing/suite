@@ -117,10 +117,10 @@ public class UctSearch<Move> {
 			var pnRaveVisits = getMoveRave(nRaveVisits, node.move);
 			var lnPnVisits = logp1(node.nVisits);
 			var lnPnRaveVisits = logp1(pnRaveVisits);
-			var bestUct = -Float.MAX_VALUE;
+			var bestUct = -Double.MAX_VALUE;
 
 			while (child != null) {
-				float uct;
+				double uct;
 
 				// only calculate UCT when required, that is, if all children
 				// have been evaluated at least once
@@ -161,19 +161,19 @@ public class UctSearch<Move> {
 		return !outcome;
 	}
 
-	private float uct(UctNode<Move> child, double lnParentVisits, double lnParentRaveVisits) {
-		var beta = rave ? (float) (lnParentVisits / raveFactor) : 1f;
-		beta = min(max(beta, 0f), 1f);
+	private double uct(UctNode<Move> child, double lnParentVisits, double lnParentRaveVisits) {
+		var beta = rave ? lnParentVisits / raveFactor : 1d;
+		beta = min(max(beta, 0d), 1d);
 
-		var raveWins = getMoveRave(nRaveWins, child.move);
-		var raveVisits = getMoveRave(nRaveVisits, child.move);
-		var rave = raveWins / raveVisits + explorationFactor * (float) Math.sqrt(lnParentRaveVisits / (5f * raveVisits));
+		double raveWins = getMoveRave(nRaveWins, child.move);
+		double raveVisits = getMoveRave(nRaveVisits, child.move);
+		var rave = raveWins / raveVisits + (float) explorationFactor * Math.sqrt(lnParentRaveVisits / (5d * raveVisits));
 
-		var wins = child.nWins;
-		var visits = child.nVisits;
+		double wins = child.nWins;
+		double visits = child.nVisits;
 		var uct = wins / visits + explorationFactor * (float) Math.sqrt(lnParentVisits / (5f * visits));
 
-		return (1f - beta) * rave + beta * uct;
+		return (1d - beta) * rave + beta * uct;
 	}
 
 	private void incrementMoveRave(Map<Move, AtomicInteger> raveMap, Move move) {
