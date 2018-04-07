@@ -19,12 +19,12 @@ public class NewPrettyPrinter {
 	private int lineLength = 80;
 	private String ind = "  ";
 
-	private LengthEstimator lengthEstimator = new LengthEstimator(lineLength);
+	private EstimateLength estimateLength;
 	private Set<Integer> set = new HashSet<>();
 	private StringBuilder sb = new StringBuilder();
 
 	public String prettyPrint(Node node) {
-		lengthEstimator.estimateLengths(node);
+		estimateLength = new EstimateLength(lineLength, node);
 		format(node, 0, "");
 		return sb.toString();
 	}
@@ -76,15 +76,15 @@ public class NewPrettyPrinter {
 				}
 				format_(node, prec, indent1, operator.getName());
 			} else if ((m = Suite.pattern("if .0 then .1 else .2").match(node)) != null //
-					&& lineLength < lengthEstimator.getEstimatedLength(node)) {
+					&& lineLength < estimateLength.getEstimatedLength(node)) {
 				format_(m[0], prec, indent, concatWithSpace(prefix, "if"));
 				format_(m[1], prec, indent, "then");
 				format_(m[2], prec, indent, "else");
 			} else if ((m = Suite.pattern("not .0").match(node)) != null //
-					&& lineLength < lengthEstimator.getEstimatedLength(node))
+					&& lineLength < estimateLength.getEstimatedLength(node))
 				format_(m[0], prec, indent, concatWithSpace(prefix, "not"));
 			else if ((m = Suite.pattern("once .0").match(node)) != null //
-					&& lineLength < lengthEstimator.getEstimatedLength(node))
+					&& lineLength < estimateLength.getEstimatedLength(node))
 				format_(m[0], prec, indent, concatWithSpace(prefix, "once"));
 			else
 				format_(node, indent, prefix);

@@ -30,7 +30,7 @@ public class PrettyPrinter {
 	private static Node preferLineBreakBeforeKeyword = Atom.of("else");
 	private static Set<Operator> lineBreakAfterOperators = To.set(TermOp.BRACES, TermOp.CONTD_, TermOp.FUN___);
 
-	private LengthEstimator lengthEstimator = new LengthEstimator(lineLength);
+	private EstimateLength estimateLength;
 
 	private static class OperatorPosition {
 		private int indent;
@@ -43,7 +43,7 @@ public class PrettyPrinter {
 	}
 
 	public String prettyPrint(Node node) {
-		lengthEstimator.estimateLengths(node);
+		estimateLength = new EstimateLength(lineLength, node);
 		prettyPrint_(node, null, 0);
 		return sb.toString();
 	}
@@ -51,7 +51,7 @@ public class PrettyPrinter {
 	// op0 for avoiding unnecessary indenting; prec0 for parenthesizing
 	private void prettyPrint_(Node node, Operator op0, int prec0) {
 		int x = getX(), y = getY();
-		var length = lengthEstimator.getEstimatedLength(node);
+		var length = estimateLength.getEstimatedLength(node);
 
 		// line too long?
 		if (node instanceof Tree) {
@@ -82,8 +82,8 @@ public class PrettyPrinter {
 
 					var tree1 = Tree.decompose(right, op);
 					var r0 = tree1 != null ? tree1.getLeft() : null;
-					var es0 = lengthEstimator.getEstimatedLength(left);
-					var es1 = r0 != null ? lengthEstimator.getEstimatedLength(r0) : lineLength;
+					var es0 = estimateLength.getEstimatedLength(left);
+					var es1 = r0 != null ? estimateLength.getEstimatedLength(r0) : lineLength;
 					var opLength = op.getName().length();
 
 					// breaks "a + b + xxx" in the second operator
@@ -104,7 +104,7 @@ public class PrettyPrinter {
 							indent0 = incrementIndent();
 
 						OperatorPosition opPos;
-						if (getLineSize() + lengthEstimator.getEstimatedLength(right) < squeezeLineLength)
+						if (getLineSize() + estimateLength.getEstimatedLength(right) < squeezeLineLength)
 							opPos = appendOperator(op);
 						else
 							opPos = appendOperatorLineFeed(op);
