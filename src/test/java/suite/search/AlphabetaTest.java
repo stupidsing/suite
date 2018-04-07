@@ -89,8 +89,7 @@ public class AlphabetaTest {
 
 	@Test
 	public void test() {
-		Alphabeta<TicTacToe> ab = new Alphabeta<>(this::generate, this::evaluate);
-
+		var ab = new Alphabeta<>(this::generate, this::evaluate);
 		var state = new TicTacToe();
 		System.out.println(ab.search(state, 20));
 	}

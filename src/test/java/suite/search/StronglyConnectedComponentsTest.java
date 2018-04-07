@@ -13,7 +13,7 @@ public class StronglyConnectedComponentsTest {
 
 	@Test
 	public void test() {
-		StronglyConnectedComponents<String> scc = new StronglyConnectedComponents<>(DirectedGraph.of(To.set( //
+		var scc = new StronglyConnectedComponents<>(DirectedGraph.of(To.set( //
 				Pair.of("a", "b") //
 				, Pair.of("b", "c") //
 				, Pair.of("b", "e") //
