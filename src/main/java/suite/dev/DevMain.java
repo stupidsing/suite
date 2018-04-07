@@ -42,7 +42,7 @@ public class DevMain {
 
 	private DevMain(int screenSizeX, int screenSizeY) {
 		viewSizeX = screenSizeX;
-		viewSizeY = screenSizeY - 1;
+		viewSizeY = screenSizeY - 2;
 	}
 
 	private void run() {
@@ -53,28 +53,10 @@ public class DevMain {
 			termios.clear();
 			var keyboard = new Keyboard(libc);
 
-			Sink<State> redraw = state -> state.apply((st, undo, redo, text, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
-				var lines = Ints_ //
-						.range(viewSizeY) //
-						.map(screenY -> text.get(ox, oy + screenY, viewSizeX).replace('\t', ' ')) //
-						.toArray(String.class);
+			var es0 = new EditSt(null, null, inputText, c(0, 0), c(0, 0));
+			var state0 = new State(es0, "");
 
-				termios.cursor(false);
-
-				for (var screenY = 0; screenY < viewSizeY; screenY++) {
-					termios.gotoxy(0, screenY);
-					termios.puts(lines[screenY]);
-				}
-
-				termios.gotoxy(cx - ox, cy - oy);
-				termios.cursor(true);
-				return null;
-			})));
-
-			var state0 = new State(null, null, inputText, c(0, 0), c(0, 0));
-			redraw.sink(state0);
-
-			FixieFun3<VK, Character, State, State> mutate = (vk, ch, state) -> state //
+			FixieFun3<VK, Character, EditSt, EditSt> mutateEs = (vk, ch, es) -> es //
 					.apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
 						var ci = text.index(cx, cy);
 
@@ -145,7 +127,7 @@ public class DevMain {
 							return redo != null ? redo : st;
 						else if (vk == VK.CTRL_Z____) {
 							var undo1 = undo != null ? undo : st;
-							return new State(undo1.undo, st, undo1.text, oc, undo1.cursorCoord);
+							return new EditSt(undo1.undo, st, undo1.text, oc, undo1.cursorCoord);
 						} else if (vk == VK.CTRL_C____)
 							return Fail.t();
 						else if (ch != null)
@@ -171,20 +153,60 @@ public class DevMain {
 						return st.offset(ox_, Math.min(oy_, text.nLines() - viewSizeY + 1));
 					})));
 
+			FixieFun3<VK, Character, State, State> mutateState = (vk, ch, state) -> {
+				var es = state.editState;
+				var cc = es.cursorCoord;
+				return new State(mutateEs.apply(vk, ch, es), "c" + cc.t1 + "," + cc.t0);
+			};
+
+			Sink<State> redraw = state -> state.editState
+					.apply((st, undo, redo, text, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
+						var lines = Ints_ //
+								.range(viewSizeY) //
+								.map(screenY -> text.get(ox, oy + screenY, viewSizeX).replace('\t', ' ')) //
+								.toArray(String.class);
+
+						termios.cursor(false);
+
+						for (var screenY = 0; screenY < viewSizeY; screenY++) {
+							termios.gotoxy(0, screenY);
+							termios.puts(lines[screenY]);
+						}
+
+						termios.gotoxy(0, viewSizeY);
+						termios.puts(state.status);
+
+						termios.gotoxy(cx - ox, cy - oy);
+						termios.cursor(true);
+						return null;
+					})));
+
+			redraw.sink(state0);
+
 			keyboard.loop(signal -> signal //
-					.fold(state0, (state, pair_) -> pair_.map((vk, ch) -> mutate.apply(vk, ch, state))) //
+					.fold(state0, (state, pair_) -> pair_.map((vk, ch) -> mutateState.apply(vk, ch, state))) //
 					.wire(redraw));
 		}
 	}
 
 	private class State {
-		private State undo;
-		private State redo;
+		private EditSt editState;
+		private String status;
+
+		private State(EditSt editState, String status) {
+			this.editState = editState;
+			this.status = status;
+		}
+	}
+
+	private class EditSt {
+		private EditSt undo;
+		private EditSt redo;
 		private Text text;
 		private IntIntPair offsetCoord;
 		private IntIntPair cursorCoord;
 
-		private State(State undo, State redo, Text text, IntIntPair offsetCoord, IntIntPair cursorCoord) {
+		private EditSt(EditSt undo, EditSt redo, Text text, IntIntPair offsetCoord, IntIntPair cursorCoord) {
 			this.undo = undo;
 			this.redo = redo;
 			this.text = text;
@@ -192,12 +214,12 @@ public class DevMain {
 			this.cursorCoord = cursorCoord;
 		}
 
-		private State splice(int deletes, IRopeList<Character> s) {
+		private EditSt splice(int deletes, IRopeList<Character> s) {
 			var index = text.index(cursorCoord.t0, cursorCoord.t1);
 			return splice(index, index + deletes, s);
 		}
 
-		private State splice(int i0, int ix, IRopeList<Character> s) {
+		private EditSt splice(int i0, int ix, IRopeList<Character> s) {
 			var cursorIndex0 = text.index(cursorCoord.t0, cursorCoord.t1);
 			int cursorIndex1;
 			if (cursorIndex0 < i0)
@@ -210,29 +232,29 @@ public class DevMain {
 			return text(text1).cursor(cursorIndex1);
 		}
 
-		private State text(Text text) {
-			State state = this, state1;
-			for (var i = 0; i < 16 && (state1 = state.undo) != null; i++)
-				state = state1;
-			if (state != null)
-				state.undo = null;
-			return new State(this, null, text, offsetCoord, cursorCoord);
+		private EditSt text(Text text) {
+			EditSt es = this, es1;
+			for (var i = 0; i < 16 && (es1 = es.undo) != null; i++)
+				es = es1;
+			if (es != null)
+				es.undo = null;
+			return new EditSt(this, null, text, offsetCoord, cursorCoord);
 		}
 
-		private State offset(int ox, int oy) {
-			return new State(undo, redo, text, c(ox, oy), cursorCoord);
+		private EditSt offset(int ox, int oy) {
+			return new EditSt(undo, redo, text, c(ox, oy), cursorCoord);
 		}
 
-		private State cursor(int index) {
+		private EditSt cursor(int index) {
 			var coord = text.coord(index);
 			return cursor(coord.t0, coord.t1);
 		}
 
-		private State cursor(int cx, int cy) {
-			return new State(undo, redo, text, offsetCoord, c(cx, cy));
+		private EditSt cursor(int cx, int cy) {
+			return new EditSt(undo, redo, text, offsetCoord, c(cx, cy));
 		}
 
-		private <R> R apply(FixieFun6<State, State, State, Text, IntIntPair, IntIntPair, R> fun) {
+		private <R> R apply(FixieFun6<EditSt, EditSt, EditSt, Text, IntIntPair, IntIntPair, R> fun) {
 			return fun.apply(this, undo, redo, text, offsetCoord, cursorCoord);
 		}
 	}
