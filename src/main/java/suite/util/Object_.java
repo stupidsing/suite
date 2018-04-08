@@ -98,7 +98,7 @@ public class Object_ {
 					var m = apply_(mapper(clazz1).map, object);
 					if (m instanceof Map) {
 						@SuppressWarnings("unchecked")
-						Map<String, String> map = (Map<String, String>) m;
+						var map = (Map<String, String>) m;
 						map.put("@class", clazz1.getName());
 						return map;
 					} else

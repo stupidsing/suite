@@ -25,15 +25,15 @@ public class MapObject_ {
 		int c;
 		if (class0 == class1) {
 			@SuppressWarnings("unchecked")
-			Iterator<Comparable<Object>> iter0 = (Iterator<Comparable<Object>>) list(t0).iterator();
+			var iter0 = (Iterator<Comparable<Object>>) list(t0).iterator();
 			@SuppressWarnings("unchecked")
-			Iterator<Comparable<Object>> iter1 = (Iterator<Comparable<Object>>) list(t1).iterator();
+			var iter1 = (Iterator<Comparable<Object>>) list(t1).iterator();
 			boolean b0, b1;
 			c = 0;
 			while (c == 0 && (c = Boolean.compare(b0 = iter0.hasNext(), b1 = iter1.hasNext())) == 0)
 				if (b0 && b1) {
-					Comparable<Object> value0 = iter0.next();
-					Comparable<Object> value1 = iter1.next();
+					var value0 = iter0.next();
+					var value1 = iter1.next();
 					c = value0.compareTo(value1);
 				}
 		} else
