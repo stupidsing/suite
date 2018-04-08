@@ -90,7 +90,7 @@ public class Mapify {
 		Mapifier mapifier;
 
 		if (type instanceof Class) {
-			Class<?> clazz = (Class<?>) type;
+			var clazz = (Class<?>) type;
 
 			if (Type_.isSimple(clazz))
 				mapifier = new Mapifier(id, id);
