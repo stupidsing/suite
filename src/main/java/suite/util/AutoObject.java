@@ -60,9 +60,9 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 			while (c == 0 && (c = Boolean.compare(b0 = iter0.hasNext(), b1 = iter1.hasNext())) == 0)
 				if (b0 && b1) {
 					@SuppressWarnings("unchecked")
-					Comparable<Object> value0 = (Comparable<Object>) iter0.next();
+					var value0 = (Comparable<Object>) iter0.next();
 					@SuppressWarnings("unchecked")
-					Comparable<Object> value1 = (Comparable<Object>) iter1.next();
+					var value1 = (Comparable<Object>) iter1.next();
 					c = value0.compareTo(value1);
 				}
 		} else
