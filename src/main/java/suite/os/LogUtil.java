@@ -81,7 +81,7 @@ public class LogUtil {
 	}
 
 	public static <T> T duration(String m, Source<T> source) {
-		Stopwatch<T> tr = Stopwatch.of(source);
+		var tr = Stopwatch.of(source);
 		LogUtil.info(m + " in " + tr.duration + "ms, GC occurred " + tr.nGcs + " times in " + tr.gcDuration + " ms");
 		return tr.result;
 	}

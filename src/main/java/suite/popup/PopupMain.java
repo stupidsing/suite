@@ -97,7 +97,7 @@ public class PopupMain extends ExecutableProgram {
 		if (!String_.isBlank(cmd)) {
 			var clipboardUtil = new ClipboardUtil();
 			var text0 = clipboardUtil.getClipboardText();
-			String text1 = Suite.evaluateFilterFun(cmd, text0, true, false);
+			var text1 = Suite.evaluateFilterFun(cmd, text0, true, false);
 			clipboardUtil.setClipboardText(text1);
 		}
 	}
