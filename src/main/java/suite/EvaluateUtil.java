@@ -85,7 +85,7 @@ public class EvaluateUtil {
 				+ ", graph.generalize .t2 .out" //
 				+ ", sink .out");
 
-		Node type = doFcc(node, fcc);
+		var type = doFcc(node, fcc);
 
 		if (type != null)
 			return type;
@@ -95,7 +95,7 @@ public class EvaluateUtil {
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
 		var node = fccNodeFun.apply(fcc.isLazy());
-		Node code = doFcc(node, fcc);
+		var code = doFcc(node, fcc);
 
 		if (code != null)
 			if (fcc.isLazy())

@@ -3,7 +3,6 @@ package suite;
 import java.util.TreeMap;
 
 import suite.trade.analysis.Summarize;
-import suite.trade.analysis.Summarize.SummarizeByStrategy;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.util.RunUtil;
@@ -21,7 +20,7 @@ public class StatusMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) {
 		var summarize = Summarize.of(cfg);
-		SummarizeByStrategy<String> sbs = summarize.summarize(r -> r.strategy);
+		var sbs = summarize.summarize(r -> r.strategy);
 		System.out.println(sbs.log);
 		System.out.println(new TreeMap<>(sbs.pnlByKey));
 		return true;
