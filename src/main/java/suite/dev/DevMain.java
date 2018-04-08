@@ -47,7 +47,7 @@ public class DevMain {
 
 	private void run() {
 		var input = FileUtil.read("src/main/java/suite/dev/DevMain.java");
-		var inputText = text(IRope.ropeList(input));
+		var inputText = text(ropeList(input));
 
 		try (var termios = new Termios(libc);) {
 			termios.clear();
@@ -135,9 +135,9 @@ public class DevMain {
 								char ch_;
 								while ((ch_ = text.at(ix)) == ' ' || ch_ == '\t')
 									ix++;
-								return st.splice(0, IRope.ropeList("\n").concat.apply(text.chars.subList.apply(i0, ix)));
+								return st.splice(0, ropeList("\n").concat.apply(text.chars.subList.apply(i0, ix)));
 							} else
-								return st.splice(0, IRope.ropeList(Character.toString(ch)));
+								return st.splice(0, ropeList(Character.toString(ch)));
 						else
 							return st;
 					}))).apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
@@ -369,7 +369,12 @@ public class DevMain {
 		}
 	}
 
-	private IRopeList<Character> empty = IRope.ropeList("");
+	private IRopeList<Character> empty = ropeList("");
+
+	private IRopeList<Character> ropeList(String s) {
+		return IRope.ropeList(s);
+		// return IRope.ropeList(new IRope<>(IRope.ropeList(s)));
+	}
 
 	private static IntIntPair c(int x, int y) {
 		return IntIntPair.of(x, y);
