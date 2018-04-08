@@ -177,8 +177,8 @@ public class Suite {
 	public static void evaluateFilterFun(String program, Reader reader, Writer writer, boolean isLazy, boolean isDo) {
 		try {
 			var node0 = parse(program);
-			Node node1 = applyStringReader(node0, reader);
-			Node node2 = isDo ? Suite.applyPerform(node1, Atom.of("string")) : node1;
+			var node1 = applyStringReader(node0, reader);
+			var node2 = isDo ? Suite.applyPerform(node1, Atom.of("string")) : node1;
 			var node3 = applyWriter(node2);
 			evaluateFunToWriter(fcc(node3, isLazy), writer);
 		} catch (IOException ex) {
