@@ -96,12 +96,16 @@ public class Summarize {
 					+ (!keys.isEmpty() ? ", " + keys : "");
 		});
 
-		var outByKey = summaryByKey.mapValue(Summarize_::out0).toMap();
 		var sb = new StringBuilder();
 		Sink<String> log = sb::append;
 
-		for (var e : outByKey.entrySet())
-			log.sink("\nFor strategy " + e.getKey() + ":" + e.getValue());
+		var outs = summaryByKey //
+				.mapValue(Summarize_::out0) //
+				.sortByKey(Object_::compareAnyway) //
+				.map((k, v) -> "\nFor strategy " + k + ":" + v);
+
+		for (var out : outs)
+			log.sink(out);
 
 		log.sink(FormatUtil.tablize("\nOverall:\t" + Time.now().ymdHms() + overall.out1()));
 

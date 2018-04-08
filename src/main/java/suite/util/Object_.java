@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import suite.adt.pair.Pair;
 import suite.jdk.gen.Type_;
@@ -51,6 +52,17 @@ public class Object_ {
 			return t0.compareTo(t1);
 		else
 			return b0 ? 1 : b1 ? -1 : 0;
+	}
+
+	public static <T> int compareAnyway(T t0, T t1) {
+		if (t0 instanceof Comparable && t1 instanceof Comparable && t0.getClass() == t1.getClass()) {
+			@SuppressWarnings("unchecked")
+			var c0 = (Comparable<Object>) t0;
+			@SuppressWarnings("unchecked")
+			var c1 = (Comparable<Object>) t1;
+			return c0.compareTo(c1);
+		} else
+			return Integer.compare(Objects.hashCode(t0), Objects.hashCode(t1));
 	}
 
 	public static Mapper mapper(Type type) {
