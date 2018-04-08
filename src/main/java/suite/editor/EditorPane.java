@@ -71,7 +71,7 @@ public class EditorPane extends JEditorPane {
 			se++;
 
 		// do not include first and last LFs
-		int start = document.getText(ss, 1).charAt(0) == 10 ? ss + 1 : ss;
+		var start = document.getText(ss, 1).charAt(0) == 10 ? ss + 1 : ss;
 		var end = se;
 
 		replace(document, start, end, fun);
