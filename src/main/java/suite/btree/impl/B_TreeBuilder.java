@@ -150,10 +150,10 @@ public class B_TreeBuilder<Key, Value> {
 			for (var p_ : new Path[] { sbp, alp, p, })
 				Rethrow.ex(() -> Files.deleteIfExists(p_));
 
-		var b_tree = build(cmp //
-				, FileFactory.pageFile(alp, pageSize) //
-				, FileFactory.pageFile(sbp, pageSize) //
-				, FileFactory.pageFile(p, pageSize));
+		var b_tree = build(cmp, //
+				FileFactory.pageFile(alp, pageSize), //
+				FileFactory.pageFile(sbp, pageSize), //
+				FileFactory.pageFile(p, pageSize));
 
 		if (isNew)
 			b_tree.create();
