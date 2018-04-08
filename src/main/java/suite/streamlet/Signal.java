@@ -146,7 +146,7 @@ public class Signal<T> {
 	}
 
 	public Outlet<T> outlet() {
-		NullableSyncQueue<T> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<T>();
 		wire_(queue::offerQuietly);
 		return Outlet.of(() -> {
 			try {
