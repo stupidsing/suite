@@ -60,7 +60,7 @@ public class Object_ {
 			var c0 = (Comparable<Object>) t0;
 			@SuppressWarnings("unchecked")
 			var c1 = (Comparable<Object>) t1;
-			return c0.compareTo(c1);
+			return compare(c0, c1);
 		} else
 			return Integer.compare(Objects.hashCode(t0), Objects.hashCode(t1));
 	}
