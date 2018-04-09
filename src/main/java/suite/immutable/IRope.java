@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
-import suite.inspect.Dump;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.IntPrimitives.Obj_Int;
@@ -199,12 +198,12 @@ public class IRope<T> {
 						&& s < maxBranchFactor //
 						&& ropes == null //
 				|| (rs = Read.from(ropes)) != null //
-						&& rs.isAll(rope -> rope.depth + 1 == depth) // //
+						&& rs.isAll(rope -> rope.depth + 1 == depth) //
 						&& rs.toInt(Obj_Int.sum(rope -> rope.weight)) == weight //
 						&& ts == null //
 						&& (s = rs.size()) < maxBranchFactor //
 						&& rs.isAll(rope -> rope.validate(false))) //
-				&& (isRoot || minBranchFactor <= s) ? true : Fail.t(Dump.object(this));
+				&& (isRoot || minBranchFactor <= s) ? true : Fail.t();
 	}
 
 	public static <T> IRope<T> meld(IRope<T> rope0, IRope<T> rope1) {
@@ -216,7 +215,7 @@ public class IRope<T> {
 		var depth1 = rope1.depth;
 		var depth = max(depth0, depth1);
 
-		if (depth0 != depth1) {
+		if (0 < depth) {
 			List<IRope<T>> ropes;
 
 			if (depth1 < depth0)
