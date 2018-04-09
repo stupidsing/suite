@@ -50,141 +50,150 @@ public class DevMain {
 		var inputText = text(ropeList(input));
 
 		try (var termios = new Termios(libc);) {
-			termios.clear();
-			var keyboard = new Keyboard(libc);
-			var state0 = new State(new EditSt(null, null, inputText, c(0, 0), c(0, 0)), "");
-
-			FixieFun3<VK, Character, EditSt, EditSt> mutateEs = (vk, ch, es) -> es //
-					.apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						var ci = text.index(cx, cy);
-
-						if (vk == VK.LEFT_)
-							return st.cursor(ci - 1);
-						else if (vk == VK.RIGHT)
-							return st.cursor(ci + 1);
-						else if (vk == VK.UP___)
-							return st.cursor(cx, cy - 1);
-						else if (vk == VK.DOWN_)
-							return st.cursor(cx, cy + 1);
-						else if (vk == VK.PGUP_)
-							return st.offset(ox, oy - viewSizeY).cursor(cx, cy - viewSizeY);
-						else if (vk == VK.PGDN_)
-							return st.offset(ox, oy + viewSizeY).cursor(cx, cy + viewSizeY);
-						else if (vk == VK.HOME_)
-							return st.cursor(text.startOfLine(ci));
-						else if (vk == VK.END__)
-							return st.cursor(text.endOfLine(ci));
-						else if (vk == VK.CTRL_HOME_)
-							return st.cursor(0);
-						else if (vk == VK.CTRL_END__)
-							return st.cursor(text.length());
-						else if (vk == VK.CTRL_LEFT_)
-							return st.cursor(text.scanNext(ci, -1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
-						else if (vk == VK.CTRL_RIGHT)
-							return st.cursor(text.scanNext(ci, 1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
-						else if (vk == VK.CTRL_UP___)
-							return st.offset(ox, oy - 1).cursor(cx, cy - 1);
-						else if (vk == VK.CTRL_DOWN_)
-							return st.offset(ox, oy + 1).cursor(cx, cy + 1);
-						else if (vk == VK.F7___)
-							return st.offset(ox, max(cy - viewSizeY + 1, 0));
-						else if (vk == VK.F8___)
-							return st.offset(ox, min(cy, text.nLines()));
-						else if (vk == VK.ALT_J____) {
-							var index = text.endOfLine(ci);
-							var text1 = text.splice(index, index + 1, empty);
-							return st.text(text1).cursor(index);
-						} else if (vk == VK.BKSP_) {
-							var index = ci;
-							return 0 < index ? st.splice(index - 1, index, empty) : st;
-						} else if (vk == VK.ALT_UP___) {
-							var i1 = text.startOfLine(ci);
-							if (0 < i1) {
-								var i0 = text.prevLine(i1);
-								var i2 = text.nextLine(i1);
-								return st.splice(i2, i2, text.subList(i0, i1)).splice(i0, i1, empty);
-							} else
-								return st;
-						} else if (vk == VK.ALT_DOWN_) {
-							var i0 = text.startOfLine(ci);
-							var i1 = text.nextLine(i0);
-							if (i1 < text.length()) {
-								var i2 = text.nextLine(i1);
-								return st.splice(i1, i2, empty).splice(i0, i0, text.subList(i1, i2));
-							} else
-								return st;
-						} else if (vk == VK.DEL__)
-							return st.splice(1, empty);
-						else if (vk == VK.CTRL_K____)
-							return st.splice(ci, text.endOfLine(ci), empty);
-						else if (vk == VK.CTRL_U____)
-							return st.splice(text.startOfLine(ci), ci, empty);
-						else if (vk == VK.CTRL_D____)
-							return st.splice(text.startOfLine(ci), text.nextLine(ci), empty);
-						else if (vk == VK.CTRL_Y____)
-							return redo != null ? redo : st;
-						else if (vk == VK.CTRL_Z____) {
-							var undo1 = undo != null ? undo : st;
-							return new EditSt(undo1.undo, st, undo1.text, oc, undo1.cursorCoord);
-						} else if (vk == VK.CTRL_C____)
-							return Fail.t();
-						else if (ch != null)
-							if (ch == 13) {
-								var i0 = text.startOfLine(ci);
-								var ix = i0;
-								char ch_;
-								while ((ch_ = text.at(ix)) == ' ' || ch_ == '\t')
-									ix++;
-								return st.splice(0, ropeList("\n").concat.apply(text.subList(i0, ix)));
-							} else
-								return st.splice(0, ropeList(Character.toString(ch)));
-						else
-							return st;
-					}))).apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						var cc_ = text.coord(sat(text.index(cx, cy), 0, text.length()));
-						return st.cursor(cc_.t0, cc_.t1);
-					}))).apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
-						var x0 = max(0, cx - viewSizeX + 1);
-						var y0 = max(0, cy - viewSizeY + 1);
-						var ox_ = sat(ox, x0, cx);
-						var oy_ = sat(oy, y0, cy);
-						return st.offset(ox_, min(oy_, text.nLines() - viewSizeY + 1));
-					})));
-
-			FixieFun3<VK, Character, State, State> mutateState = (vk, ch, state) -> {
-				var es = state.editState;
-				var cc = es.cursorCoord;
-				return new State(mutateEs.apply(vk, ch, es), "c" + cc.t1 + "," + cc.t0);
-			};
-
-			Sink<State> redraw = state -> state.editState
-					.apply((st, undo, redo, text, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
-						var lines = Ints_ //
-								.range(viewSizeY) //
-								.map(screenY -> text.get(ox, oy + screenY, viewSizeX).replace('\t', ' ')) //
-								.toArray(String.class);
-
-						termios.cursor(false);
-
-						for (var screenY = 0; screenY < viewSizeY; screenY++) {
-							termios.gotoxy(0, screenY);
-							termios.puts(lines[screenY]);
-						}
-
-						termios.gotoxy(0, viewSizeY);
-						termios.puts(state.status);
-
-						termios.gotoxy(cx - ox, cy - oy);
-						termios.cursor(true);
-						return null;
-					})));
-
-			redraw.sink(state0);
-
-			keyboard.loop(signal -> signal //
-					.fold(state0, (state, pair_) -> pair_.map((vk, ch) -> mutateState.apply(vk, ch, state))) //
-					.wire(redraw));
+			try {
+				var keyboard = new Keyboard(libc);
+				run(termios, keyboard, inputText);
+			} catch (Exception ex) {
+				termios.clear();
+				throw ex;
+			}
 		}
+	}
+
+	private void run(Termios termios, Keyboard keyboard, Text inputText) {
+		var state0 = new State(new EditSt(null, null, inputText, c(0, 0), c(0, 0)), "");
+
+		FixieFun3<VK, Character, EditSt, EditSt> mutateEs = (vk, ch, es) -> es //
+				.apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+					var ci = text.index(cx, cy);
+
+					if (vk == VK.LEFT_)
+						return st.cursor(ci - 1);
+					else if (vk == VK.RIGHT)
+						return st.cursor(ci + 1);
+					else if (vk == VK.UP___)
+						return st.cursor(cx, cy - 1);
+					else if (vk == VK.DOWN_)
+						return st.cursor(cx, cy + 1);
+					else if (vk == VK.PGUP_)
+						return st.offset(ox, oy - viewSizeY).cursor(cx, cy - viewSizeY);
+					else if (vk == VK.PGDN_)
+						return st.offset(ox, oy + viewSizeY).cursor(cx, cy + viewSizeY);
+					else if (vk == VK.HOME_)
+						return st.cursor(text.startOfLine(ci));
+					else if (vk == VK.END__)
+						return st.cursor(text.endOfLine(ci));
+					else if (vk == VK.CTRL_HOME_)
+						return st.cursor(0);
+					else if (vk == VK.CTRL_END__)
+						return st.cursor(text.length());
+					else if (vk == VK.CTRL_LEFT_)
+						return st.cursor(text.scanNext(ci, -1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
+					else if (vk == VK.CTRL_RIGHT)
+						return st.cursor(text.scanNext(ci, 1, ch_ -> !Character.isJavaIdentifierPart(ch_)));
+					else if (vk == VK.CTRL_UP___)
+						return st.offset(ox, oy - 1).cursor(cx, cy - 1);
+					else if (vk == VK.CTRL_DOWN_)
+						return st.offset(ox, oy + 1).cursor(cx, cy + 1);
+					else if (vk == VK.F7___)
+						return st.offset(ox, max(cy - viewSizeY + 1, 0));
+					else if (vk == VK.F8___)
+						return st.offset(ox, min(cy, text.nLines()));
+					else if (vk == VK.ALT_J____) {
+						var index = text.endOfLine(ci);
+						var text1 = text.splice(index, index + 1, empty);
+						return st.text(text1).cursor(index);
+					} else if (vk == VK.BKSP_) {
+						var index = ci;
+						return 0 < index ? st.splice(index - 1, index, empty) : st;
+					} else if (vk == VK.ALT_UP___) {
+						var i1 = text.startOfLine(ci);
+						if (0 < i1) {
+							var i0 = text.prevLine(i1);
+							var i2 = text.nextLine(i1);
+							return st.splice(i2, i2, text.subList(i0, i1)).splice(i0, i1, empty);
+						} else
+							return st;
+					} else if (vk == VK.ALT_DOWN_) {
+						var i0 = text.startOfLine(ci);
+						var i1 = text.nextLine(i0);
+						if (i1 < text.length()) {
+							var i2 = text.nextLine(i1);
+							return st.splice(i1, i2, empty).splice(i0, i0, text.subList(i1, i2));
+						} else
+							return st;
+					} else if (vk == VK.DEL__)
+						return st.splice(1, empty);
+					else if (vk == VK.CTRL_K____)
+						return st.splice(ci, text.endOfLine(ci), empty);
+					else if (vk == VK.CTRL_U____)
+						return st.splice(text.startOfLine(ci), ci, empty);
+					else if (vk == VK.CTRL_D____)
+						return st.splice(text.startOfLine(ci), text.nextLine(ci), empty);
+					else if (vk == VK.CTRL_Y____)
+						return redo != null ? redo : st;
+					else if (vk == VK.CTRL_Z____) {
+						var undo1 = undo != null ? undo : st;
+						return new EditSt(undo1.undo, st, undo1.text, oc, undo1.cursorCoord);
+					} else if (vk == VK.CTRL_C____)
+						return Fail.t();
+					else if (ch != null)
+						if (ch == 13) {
+							var i0 = text.startOfLine(ci);
+							var ix = i0;
+							char ch_;
+							while ((ch_ = text.at(ix)) == ' ' || ch_ == '\t')
+								ix++;
+							return st.splice(0, ropeList("\n").concat.apply(text.subList(i0, ix)));
+						} else
+							return st.splice(0, ropeList(Character.toString(ch)));
+					else
+						return st;
+				}))).apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+					var cc_ = text.coord(sat(text.index(cx, cy), 0, text.length()));
+					return st.cursor(cc_.t0, cc_.t1);
+				}))).apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+					var x0 = max(0, cx - viewSizeX + 1);
+					var y0 = max(0, cy - viewSizeY + 1);
+					var ox_ = sat(ox, x0, cx);
+					var oy_ = sat(oy, y0, cy);
+					return st.offset(ox_, min(oy_, text.nLines() - viewSizeY + 1));
+				})));
+
+		FixieFun3<VK, Character, State, State> mutateState = (vk, ch, state) -> {
+			var es = state.editState;
+			var cc = es.cursorCoord;
+			return new State(mutateEs.apply(vk, ch, es), "c" + cc.t1 + "," + cc.t0);
+		};
+
+		Sink<State> redraw = state -> state.editState
+				.apply((st, undo, redo, text, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
+					var lines = Ints_ //
+							.range(viewSizeY) //
+							.map(screenY -> text.get(ox, oy + screenY, viewSizeX).replace('\t', ' ')) //
+							.toArray(String.class);
+
+					termios.cursor(false);
+
+					for (var screenY = 0; screenY < viewSizeY; screenY++) {
+						termios.gotoxy(0, screenY);
+						termios.puts(lines[screenY]);
+					}
+
+					termios.gotoxy(0, viewSizeY);
+					termios.puts(state.status);
+
+					termios.gotoxy(cx - ox, cy - oy);
+					termios.cursor(true);
+					return null;
+				})));
+
+		termios.clear();
+		redraw.sink(state0);
+
+		keyboard.loop(signal -> signal //
+				.fold(state0, (state, pair_) -> pair_.map((vk, ch) -> mutateState.apply(vk, ch, state))) //
+				.wire(redraw));
 	}
 
 	private class State {
