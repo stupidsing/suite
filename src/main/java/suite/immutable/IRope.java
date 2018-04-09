@@ -193,14 +193,6 @@ public class IRope<T> {
 	public boolean validate(boolean isRoot) {
 		Streamlet<IRope<T>> rs;
 		int s;
-		if (depth == 0) {
-			if (ts.size != weight)
-				Fail.t();
-			if (maxBranchFactor <= ts.size)
-				Fail.t("" + maxBranchFactor + " <= " + ts.size);
-			if (ropes != null)
-				Fail.t();
-		}
 		return (false //
 				|| depth == 0 //
 						&& weight == (s = ts.size) //
