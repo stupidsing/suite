@@ -69,7 +69,7 @@ public class IRope<T> {
 			private IRope<T> rope_ = rope;
 
 			private W() {
-				super(rope.weight, rope::at, (i0, ix) -> ropeList(rope.right(ix).left(i0)), null);
+				super(rope.weight, rope::at, (i0, ix) -> ropeList(rope.left(ix).right(i0)), null);
 			}
 		}
 
