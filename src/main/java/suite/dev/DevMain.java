@@ -102,7 +102,7 @@ public class DevMain {
 							if (0 < i1) {
 								var i0 = text.prevLine(i1);
 								var i2 = text.nextLine(i1);
-								return st.splice(i2, i2, text.chars.subList.apply(i0, i1)).splice(i0, i1, empty);
+								return st.splice(i2, i2, text.subList(i0, i1)).splice(i0, i1, empty);
 							} else
 								return st;
 						} else if (vk == VK.ALT_DOWN_) {
@@ -110,7 +110,7 @@ public class DevMain {
 							var i1 = text.nextLine(i0);
 							if (i1 < text.length()) {
 								var i2 = text.nextLine(i1);
-								return st.splice(i1, i2, empty).splice(i0, i0, text.chars.subList.apply(i1, i2));
+								return st.splice(i1, i2, empty).splice(i0, i0, text.subList(i1, i2));
 							} else
 								return st;
 						} else if (vk == VK.DEL__)
@@ -135,7 +135,7 @@ public class DevMain {
 								char ch_;
 								while ((ch_ = text.at(ix)) == ' ' || ch_ == '\t')
 									ix++;
-								return st.splice(0, ropeList("\n").concat.apply(text.chars.subList.apply(i0, ix)));
+								return st.splice(0, ropeList("\n").concat.apply(text.subList(i0, ix)));
 							} else
 								return st.splice(0, ropeList(Character.toString(ch)));
 						else
@@ -346,6 +346,10 @@ public class DevMain {
 			while ((y1 = y + 1) <= nLines && start(y1) <= index)
 				y = y1;
 			return c(index - start(y), y);
+		}
+
+		private IRopeList<Character> subList(int i0, int ix) {
+			return chars.subList.apply(i0, ix);
 		}
 
 		private int start(int y) {
