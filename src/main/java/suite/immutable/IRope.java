@@ -114,12 +114,44 @@ public class IRope<T> {
 
 	// 0 < p && p <= weight
 	public IRope<T> left(int p) {
-		return left(this, p);
+		var rope = this;
+		var deque = new ArrayDeque<IRope<T>>();
+		List<IRope<T>> ropes;
+
+		while ((ropes = rope.ropes) != null) {
+			int index = 0, w;
+			IRope<T> rope_;
+			while (!(p <= (w = (rope_ = ropes.get(index)).weight))) {
+				p -= w;
+				index++;
+			}
+			for (var i = 0; i < index; i++)
+				deque.push(ropes.get(i));
+			rope = rope_;
+		}
+
+		return meldLeft(deque, new IRope<>(rope.ts.subList.apply(0, p)));
 	}
 
 	// 0 <= p && p < weight
 	public IRope<T> right(int p) {
-		return right(this, p);
+		var rope = this;
+		var deque = new ArrayDeque<IRope<T>>();
+		List<IRope<T>> ropes;
+
+		while ((ropes = rope.ropes) != null) {
+			int index = 0, w;
+			IRope<T> rope_;
+			while (!(p < (w = (rope_ = ropes.get(index)).weight))) {
+				p -= w;
+				index++;
+			}
+			for (var i = ropes.size() - 1; index < i; i--)
+				deque.push(ropes.get(i));
+			rope = rope_;
+		}
+
+		return meldRight(new IRope<>(rope.ts.subList.apply(p, rope.weight)), deque);
 	}
 
 	public IRope<T> validateRoot() {
@@ -186,44 +218,6 @@ public class IRope<T> {
 			} else
 				return List.of(new IRope<>(ts));
 		}
-	}
-
-	private static <T> IRope<T> left(IRope<T> rope, int p) {
-		var deque = new ArrayDeque<IRope<T>>();
-		List<IRope<T>> ropes;
-
-		while ((ropes = rope.ropes) != null) {
-			int index = 0, w;
-			IRope<T> rope_;
-			while (!(p <= (w = (rope_ = ropes.get(index)).weight))) {
-				p -= w;
-				index++;
-			}
-			for (var i = 0; i < index; i++)
-				deque.push(ropes.get(i));
-			rope = rope_;
-		}
-
-		return meldLeft(deque, new IRope<>(rope.ts.subList.apply(0, p)));
-	}
-
-	private static <T> IRope<T> right(IRope<T> rope, int p) {
-		var deque = new ArrayDeque<IRope<T>>();
-		List<IRope<T>> ropes;
-
-		while ((ropes = rope.ropes) != null) {
-			int index = 0, w;
-			IRope<T> rope_;
-			while (!(p < (w = (rope_ = ropes.get(index)).weight))) {
-				p -= w;
-				index++;
-			}
-			for (var i = ropes.size() - 1; index < i; i--)
-				deque.push(ropes.get(i));
-			rope = rope_;
-		}
-
-		return meldRight(new IRope<>(rope.ts.subList.apply(p, rope.weight)), deque);
 	}
 
 	private static <T> IRope<T> meldLeft(Deque<IRope<T>> queue, IRope<T> rope) {
