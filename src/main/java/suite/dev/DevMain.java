@@ -13,7 +13,6 @@ import suite.ansi.Keyboard;
 import suite.ansi.Keyboard.VK;
 import suite.ansi.LibcJna;
 import suite.ansi.Termios;
-import suite.immutable.IRope;
 import suite.immutable.IRope.IRopeList;
 import suite.os.FileUtil;
 import suite.primitive.Chars_;
@@ -47,7 +46,7 @@ public class DevMain {
 
 	private void run() {
 		var input = FileUtil.read("src/main/java/suite/dev/DevMain.java");
-		var inputText = text(ropeList(input));
+		var inputText = text(IRopeList.of(input));
 
 		try (var termios = new Termios(libc);) {
 			try {
@@ -144,9 +143,9 @@ public class DevMain {
 							char ch_;
 							while ((ch_ = text.at(ix)) == ' ' || ch_ == '\t')
 								ix++;
-							return st.splice(0, ropeList("\n").concat.apply(text.subList(i0, ix)));
+							return st.splice(0, IRopeList.of("\n").concat.apply(text.subList(i0, ix)));
 						} else
-							return st.splice(0, ropeList(Character.toString(ch)));
+							return st.splice(0, IRopeList.of(Character.toString(ch)));
 					else
 						return st;
 				}))).apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
@@ -382,12 +381,7 @@ public class DevMain {
 		}
 	}
 
-	private IRopeList<Character> empty = ropeList("");
-
-	private IRopeList<Character> ropeList(String s) {
-		// return IRope.ropeList(s);
-		return IRope.ropeList(new IRope<>(IRope.ropeList(s)));
-	}
+	private IRopeList<Character> empty = IRopeList.of("");
 
 	private static IntIntPair c(int x, int y) {
 		return IntIntPair.of(x, y);

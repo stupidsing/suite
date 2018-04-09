@@ -36,6 +36,10 @@ public class IRope<T> {
 		public IntInt_Obj<IRopeList<T>> subList;
 		public Iterate<IRopeList<T>> concat;
 
+		public static IRopeList<Character> of(String s) {
+			return ropeList(IRope.of(ropeList(s)));
+		}
+
 		public IRopeList(int size, Int_Obj<T> get, IntInt_Obj<IRopeList<T>> subList, Iterate<IRopeList<T>> concat) {
 			this.size = size;
 			this.get = get;
@@ -52,7 +56,19 @@ public class IRope<T> {
 		}
 	}
 
-	public static IRopeList<Character> ropeList(String s) {
+	public static <T> IRope<T> of(IRopeList<T> ts) {
+		var rope = new IRope<T>(ts.left(0));
+		var size = ts.size;
+		var p = 0;
+		while (p < size) {
+			var p1 = min(p + minBranchFactor, size);
+			rope = meld(rope, new IRope<T>(ts.subList.apply(p, p1)));
+			p = p1;
+		}
+		return rope;
+	}
+
+	private static IRopeList<Character> ropeList(String s) {
 		return new IRopeList<>( //
 				s.length(), //
 				s::charAt, //
@@ -64,7 +80,7 @@ public class IRope<T> {
 		};
 	}
 
-	public static <T> IRopeList<T> ropeList(IRope<T> rope) {
+	private static <T> IRopeList<T> ropeList(IRope<T> rope) {
 		class W extends IRopeList<T> {
 			private IRope<T> rope_ = rope;
 
@@ -75,7 +91,7 @@ public class IRope<T> {
 
 		var ropeList = new W();
 		ropeList.rope_ = rope;
-		ropeList.concat = list -> ropeList(IRope.meld(rope, ((W) list).rope_));
+		ropeList.concat = list -> ropeList(meld(rope, ((W) list).rope_));
 		return ropeList;
 	}
 
@@ -177,6 +193,14 @@ public class IRope<T> {
 	public boolean validate(boolean isRoot) {
 		Streamlet<IRope<T>> rs;
 		int s;
+		if (depth == 0) {
+			if (ts.size != weight)
+				Fail.t();
+			if (maxBranchFactor <= ts.size)
+				Fail.t("" + maxBranchFactor + " <= " + ts.size);
+			if (ropes != null)
+				Fail.t();
+		}
 		return (false //
 				|| depth == 0 //
 						&& weight == (s = ts.size) //
@@ -228,8 +252,8 @@ public class IRope<T> {
 
 			if (maxBranchFactor <= size) {
 				var p = size / 2;
-				IRopeList<T> left = ts.subList.apply(0, p);
-				IRopeList<T> right = ts.subList.apply(p, size);
+				IRopeList<T> left = ts.left(p);
+				IRopeList<T> right = ts.right(p);
 				return List.of(new IRope<>(left), new IRope<>(right));
 			} else
 				return List.of(new IRope<>(ts));
