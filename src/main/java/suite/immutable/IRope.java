@@ -114,8 +114,8 @@ public class IRope<T> {
 
 	// 0 < p && p <= weight
 	public IRope<T> left(int p) {
-		var rope = this;
 		var deque = new ArrayDeque<IRope<T>>();
+		var rope = this;
 		List<IRope<T>> ropes;
 
 		while ((ropes = rope.ropes) != null) {
@@ -135,8 +135,8 @@ public class IRope<T> {
 
 	// 0 <= p && p < weight
 	public IRope<T> right(int p) {
-		var rope = this;
 		var deque = new ArrayDeque<IRope<T>>();
+		var rope = this;
 		List<IRope<T>> ropes;
 
 		while ((ropes = rope.ropes) != null) {

@@ -297,9 +297,9 @@ public class DevMain {
 			}));
 		}
 
-		private Text splice(int i0, int i1, IRopeList<Character> s) {
-			var i1_ = min(i1, length());
-			return text(chars.left(i0).concat.apply(s.concat.apply(chars.right(i1_))));
+		private Text splice(int i0, int ix, IRopeList<Character> s) {
+			var ix_ = min(ix, length());
+			return text(chars.left(i0).concat.apply(s.concat.apply(chars.right(ix_))));
 		}
 
 		private int prevLine(int index) {
@@ -376,8 +376,8 @@ public class DevMain {
 	private IRopeList<Character> empty = ropeList("");
 
 	private IRopeList<Character> ropeList(String s) {
-		return IRope.ropeList(s);
-		// return IRope.ropeList(new IRope<>(IRope.ropeList(s)));
+		// return IRope.ropeList(s);
+		return IRope.ropeList(new IRope<>(IRope.ropeList(s)));
 	}
 
 	private static IntIntPair c(int x, int y) {
