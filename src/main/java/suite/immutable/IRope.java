@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
 
-import suite.adt.Mutable;
 import suite.inspect.Dump;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
@@ -80,12 +79,6 @@ public class IRope<T> {
 		return ropeList;
 	}
 
-	public static <T> IRopeList<T> emptyRopeList() {
-		var mut = Mutable.<IRopeList<T>> nil();
-		mut.set(new IRopeList<T>(0, i -> null, (i0, ix) -> mut.get(), rope -> rope));
-		return mut.get();
-	}
-
 	// minBranchFactor <= ts.size() && ts.size() < maxBranchFactor
 	public IRope(IRopeList<T> ts) {
 		this.depth = 0;
@@ -120,11 +113,19 @@ public class IRope<T> {
 	}
 
 	public IRope<T> left(int p) {
-		return 0 < p ? left_(p) : new IRope<T>(emptyRopeList());
+		return 0 < p ? left_(p) : empty();
 	}
 
 	public IRope<T> right(int p) {
-		return p < weight ? right_(p) : this;
+		return p < weight ? right_(p) : empty();
+	}
+
+	private IRope<T> empty() {
+		var rope = this;
+		List<IRope<T>> ropes;
+		while ((ropes = rope.ropes) != null)
+			rope = ropes.get(0);
+		return new IRope<T>(rope.ts.left(0));
 	}
 
 	// 0 < p && p <= weight
