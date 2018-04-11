@@ -255,10 +255,8 @@ public class IRope<T> {
 		var branchFactor = minBranchFactor;
 
 		while (true) {
-			var queue1 = new ArrayDeque<IRope<T>>();
+			var queue1 = new ArrayDeque<IRope<T>>(List.of(rope));
 			var depth = rope.depth;
-
-			queue1.push(rope);
 
 			Source<IRope<T>> pack = () -> {
 				var ix = min(branchFactor, queue1.size());
@@ -294,10 +292,8 @@ public class IRope<T> {
 		var branchFactor = minBranchFactor;
 
 		while (true) {
-			var queue1 = new ArrayDeque<IRope<T>>();
+			var queue1 = new ArrayDeque<IRope<T>>(List.of(rope));
 			var depth = rope.depth;
-
-			queue1.push(rope);
 
 			Source<IRope<T>> pack = () -> {
 				var ix = min(branchFactor, queue1.size());
