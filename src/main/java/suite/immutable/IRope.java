@@ -238,13 +238,13 @@ public class IRope<T> {
 
 			return list;
 		} else {
-			IRopeList<T> ts = rope0.ts.concat.apply(rope1.ts);
+			var ts = rope0.ts.concat.apply(rope1.ts);
 			var size = ts.size;
 
 			if (maxBranchFactor <= size) {
 				var p = size / 2;
-				IRopeList<T> left = ts.left(p);
-				IRopeList<T> right = ts.right(p);
+				var left = ts.left(p);
+				var right = ts.right(p);
 				return List.of(new IRope<>(left), new IRope<>(right));
 			} else
 				return List.of(new IRope<>(ts));
