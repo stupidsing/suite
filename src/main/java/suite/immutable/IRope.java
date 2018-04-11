@@ -259,7 +259,7 @@ public class IRope<T> {
 			var depth = rope.depth;
 
 			Source<IRope<T>> pack = () -> {
-				var ix = min(branchFactor, queue1.size());
+				var ix = queue1.size();
 				var ropes = new ArrayList<IRope<T>>(Collections.nCopies(ix, null));
 				for (var i = 0; i < ix; i++)
 					ropes.set(i, queue1.pop());
@@ -296,7 +296,7 @@ public class IRope<T> {
 			var depth = rope.depth;
 
 			Source<IRope<T>> pack = () -> {
-				var ix = min(branchFactor, queue1.size());
+				var ix = queue1.size();
 				var ropes = new ArrayList<IRope<T>>(Collections.nCopies(ix, null));
 				for (var i = 0; i < ix; i++)
 					ropes.set(ix - i - 1, queue1.pop());
