@@ -45,6 +45,8 @@ public class P1Inline {
 		return node;
 	}
 
+	// Before - v => v => v
+	// After - v => v$1 => v$1
 	private Funp renameVariables(Funp node) {
 		var vars = new HashSet<>();
 
@@ -101,6 +103,8 @@ public class P1Inline {
 		return new Rename(IMap.empty()).rename(node);
 	}
 
+	// Before - define i := memory >> assign (i <= value)
+	// After - define i := value
 	private Funp inlineDefineAssigns(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
@@ -144,6 +148,10 @@ public class P1Inline {
 		}.inline(node);
 	}
 
+	// Before - define i := 1 >> i + 1
+	// After - 1 + 1
+	// Before - expand i := 1 >> i + i
+	// After - 1 + 1
 	private Funp inlineDefines(Funp node) {
 		var defByVariables = associateDefinitions(node);
 		var countByDefs = new HashMap<Funp, IntMutable>();
@@ -185,6 +193,8 @@ public class P1Inline {
 		}.inline(node);
 	}
 
+	// Before - define s := (struct (a 1, b 2, c 3,)) >> s/c
+	// After - 3
 	private Funp inlineFields(Funp node) {
 		var defs = associateDefinitions(node);
 		return new Object() {
@@ -208,6 +218,8 @@ public class P1Inline {
 		}.inline(node);
 	}
 
+	// Before - 3 | (i => i)
+	// After - 3
 	private Funp inlineLambdas(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
