@@ -1,5 +1,7 @@
 package suite.algo;
 
+import static suite.util.Friends.sqrt;
+
 import java.util.Random;
 
 import suite.math.Forget;
@@ -41,7 +43,7 @@ public class RecurrentNeuralNetwork {
 
 		public Unit() {
 			var random = new Random();
-			var isll = 1f / Math.sqrt(ll);
+			var isll = 1f / sqrt(ll);
 
 			// random weights, bias 0; Xavier initialization
 			for (var i = 0; i < memoryLength; i++)

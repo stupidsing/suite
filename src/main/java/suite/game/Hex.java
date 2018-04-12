@@ -1,5 +1,6 @@
 package suite.game;
 
+import static suite.util.Friends.abs;
 import static suite.util.Friends.min;
 
 import java.util.List;
@@ -37,7 +38,7 @@ public class Hex {
 		var sum = dx + dy;
 		XY xy0 = XY.of(dx - sum, dy + sum);
 		XY xy1 = XY.of(dx + sum, dy - sum);
-		return min(Math.abs(xy0.x) + Math.abs(xy0.y), Math.abs(xy1.x) + Math.abs(xy1.y));
+		return min(abs(xy0.x) + abs(xy0.y), abs(xy1.x) + abs(xy1.y));
 	}
 
 	public XY towards(XY diff) {

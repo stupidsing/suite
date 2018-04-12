@@ -1,6 +1,7 @@
 package suite.immutable;
 
 import static org.junit.Assert.assertEquals;
+import static suite.util.Friends.min;
 
 import java.util.Random;
 
@@ -19,7 +20,7 @@ public class IRopeTest {
 		var p = 0;
 
 		while (p < length) {
-			var p1 = Math.min(length, p + 32 + new Random().nextInt(16));
+			var p1 = min(length, p + 32 + new Random().nextInt(16));
 			rope = IRope.meld(rope, new IRope<>(IRopeList.of(s.substring(p, p1))));
 			p = p1;
 		}

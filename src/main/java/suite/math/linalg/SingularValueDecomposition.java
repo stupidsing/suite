@@ -1,5 +1,7 @@
 package suite.math.linalg;
 
+import static suite.util.Friends.sqrt;
+
 import java.util.Random;
 
 import suite.adt.pair.Fixie;
@@ -116,7 +118,7 @@ public class SingularValueDecomposition {
 		var covs = mtx.covariance(omega);
 		var evs = eigen.power(covs);
 		var evals = eigen.values(omega, covs);
-		var m = To.matrix(mtx.height(evs), mtx.width(evs), (i, j) -> evs[i][j] / Math.sqrt(evals[j]));
+		var m = To.matrix(mtx.height(evs), mtx.width(evs), (i, j) -> evs[i][j] / sqrt(evals[j]));
 		return mtx.mul(m, omega);
 	}
 

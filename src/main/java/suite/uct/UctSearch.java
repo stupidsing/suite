@@ -2,6 +2,7 @@ package suite.uct;
 
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
+import static suite.util.Friends.sqrt;
 
 import java.text.DecimalFormat;
 import java.util.HashMap;
@@ -18,7 +19,8 @@ import suite.weiqi.Weiqi;
 public class UctSearch<Move> {
 
 	/**
-	 * Larger values give uniform search; smaller values give very selective search.
+	 * Larger values give uniform search; smaller values give very selective
+	 * search.
 	 */
 	private static float explorationFactor = .4f;
 	private static float raveFactor = 5f;
@@ -88,8 +90,8 @@ public class UctSearch<Move> {
 	/**
 	 * Plays a simulation UCT.
 	 *
-	 * @return true if the next player will win after UCT selections and evaluation
-	 *         after random moves.
+	 * @return true if the next player will win after UCT selections and
+	 *         evaluation after random moves.
 	 */
 	private boolean playSimulation(UctVisitor<Move> visitor, UctNode<Move> node, int depth) {
 		boolean outcome;
@@ -167,11 +169,11 @@ public class UctSearch<Move> {
 
 		double raveWins = getMoveRave(nRaveWins, child.move);
 		double raveVisits = getMoveRave(nRaveVisits, child.move);
-		var rave = raveWins / raveVisits + (float) explorationFactor * Math.sqrt(lnParentRaveVisits / (5d * raveVisits));
+		var rave = raveWins / raveVisits + (float) explorationFactor * sqrt(lnParentRaveVisits / (5d * raveVisits));
 
 		double wins = child.nWins;
 		double visits = child.nVisits;
-		var uct = wins / visits + explorationFactor * (float) Math.sqrt(lnParentVisits / (5f * visits));
+		var uct = wins / visits + explorationFactor * (float) sqrt(lnParentVisits / (5f * visits));
 
 		return (1d - beta) * rave + beta * uct;
 	}

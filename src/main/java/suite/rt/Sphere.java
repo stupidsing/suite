@@ -1,5 +1,7 @@
 package suite.rt;
 
+import static suite.util.Friends.sqrt;
+
 import java.util.List;
 
 import suite.math.R3;
@@ -38,7 +40,7 @@ public class Sphere implements RtObject {
 		List<RayHit> rayHits;
 
 		if (0 < discriminant) { // hit?
-			var sqrt = Math.sqrt(discriminant);
+			var sqrt = sqrt(discriminant);
 			var denom = 1d / (2d * a);
 			rayHits = List.of(rayHit(ray, (-b - sqrt) * denom), rayHit(ray, (-b + sqrt) * denom));
 		} else

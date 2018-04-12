@@ -1,5 +1,7 @@
 package suite.math;
 
+import static suite.util.Friends.sqrt;
+
 import suite.util.Object_;
 
 public class R3 {
@@ -59,7 +61,7 @@ public class R3 {
 	}
 
 	private double mag_() {
-		return Math.sqrt(abs2_());
+		return sqrt(abs2_());
 	}
 
 	private double abs2_() {

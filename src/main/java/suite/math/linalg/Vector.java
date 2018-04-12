@@ -1,5 +1,7 @@
 package suite.math.linalg;
 
+import static suite.util.Friends.sqrt;
+
 import java.util.Arrays;
 
 import suite.math.MathUtil;
@@ -14,7 +16,7 @@ public class Vector {
 	}
 
 	public double absDiff(float[] m, float[] n) {
-		return Math.sqrt(dotDiff_(m, n));
+		return sqrt(dotDiff_(m, n));
 	}
 
 	public float[] add(float[] m, float[] n) {
@@ -112,7 +114,7 @@ public class Vector {
 	}
 
 	private double abs_(float[] m) {
-		return Math.sqrt(dot_(m));
+		return sqrt(dot_(m));
 	}
 
 	private double dot_(float[] m) {

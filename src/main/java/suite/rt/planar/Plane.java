@@ -1,5 +1,7 @@
 package suite.rt.planar;
 
+import static suite.util.Friends.abs;
+
 import java.util.List;
 
 import suite.math.MathUtil;
@@ -28,7 +30,7 @@ public class Plane implements RtObject {
 		var denum = R3.dot(normal, ray.dir);
 		double adv;
 
-		if (MathUtil.epsilon < Math.abs(denum))
+		if (MathUtil.epsilon < abs(denum))
 			adv = (originIndex - R3.dot(normal, ray.startPoint)) / denum;
 		else
 			adv = -1d; // treats as not-hit

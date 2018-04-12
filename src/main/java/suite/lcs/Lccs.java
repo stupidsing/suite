@@ -45,7 +45,7 @@ public class Lccs {
 						var b1 = bytes1.range(start1, end1);
 
 						if (Objects.equals(b0, b1)) {
-							int ix = Math.min(size0 - start0, size1 - start1);
+							int ix = min(size0 - start0, size1 - start1);
 							var i = rollingSize;
 							while (i < ix && bytes0.get(start0 + i) == bytes1.get(start1 + i))
 								i++;

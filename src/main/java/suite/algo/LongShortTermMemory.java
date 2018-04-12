@@ -1,5 +1,7 @@
 package suite.algo;
 
+import static suite.util.Friends.sqrt;
+
 import java.util.Random;
 
 import suite.math.Forget;
@@ -46,7 +48,7 @@ public class LongShortTermMemory {
 
 		public Unit() {
 			var random = new Random();
-			var isll = 1f / Math.sqrt(ll);
+			var isll = 1f / sqrt(ll);
 
 			for (var i = 0; i < memoryLength; i++) {
 				for (var j = 0; j < ll; j++) { // random weights, bias 0

@@ -1,5 +1,7 @@
 package suite.math.linalg;
 
+import static suite.util.Friends.abs;
+
 import java.util.Random;
 
 import suite.adt.pair.Pair;
@@ -26,7 +28,7 @@ public class Eigen {
 				var ys = mtx.mul(m, xs);
 				eigenValue = 0f;
 				for (var y : ys)
-					if (Math.abs(eigenValue) < Math.abs(y))
+					if (abs(eigenValue) < abs(y))
 						eigenValue = y;
 				xs = vec.scale(ys, 1d / eigenValue);
 			}

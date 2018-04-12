@@ -1,5 +1,7 @@
 package suite.math.numeric;
 
+import static suite.util.Friends.abs;
+
 import suite.math.FiniteDifference;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
@@ -92,7 +94,7 @@ public class Bfgs {
 
 				if (v0 + c1 * alpha * g0 < v || phi.apply(alphaLo) <= v)
 					alphaHi = alpha;
-				else if (Math.abs(g = phiGradient.apply(alpha)) <= -c2 * g0)
+				else if (abs(g = phiGradient.apply(alpha)) <= -c2 * g0)
 					return alpha;
 				else {
 					if (0d <= g * (alphaHi - alphaLo))
@@ -116,7 +118,7 @@ public class Bfgs {
 
 			var g = phiGradient.apply(alpha);
 
-			if (Math.abs(g) <= -c2 * g0)
+			if (abs(g) <= -c2 * g0)
 				break;
 			else if (0d <= g)
 				return zoom.apply(alpha, alphap);

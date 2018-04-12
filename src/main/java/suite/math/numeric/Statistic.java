@@ -1,5 +1,7 @@
 package suite.math.numeric;
 
+import static suite.util.Friends.sqrt;
+
 import java.util.List;
 
 import suite.math.linalg.CholeskyDecomposition;
@@ -45,7 +47,7 @@ public class Statistic {
 			sumy2 += y * y;
 			sumxy += x * y;
 		}
-		return (length * sumxy - sumx * sumy) / Math.sqrt((length * sumx2 - sumx * sumx) * (length * sumy2 - sumy * sumy));
+		return (length * sumxy - sumx * sumy) / sqrt((length * sumx2 - sumx * sumx) * (length * sumy2 - sumy * sumy));
 	}
 
 	public double covariance(float[] xs, float[] ys) {
@@ -125,7 +127,7 @@ public class Statistic {
 			sst = sst_;
 			sse = sse_;
 			r2 = ssr / sst_; // 0 -> not accurate, 1 -> totally accurate
-			standardError = Math.sqrt(ssr * invn2);
+			standardError = sqrt(ssr * invn2);
 		}
 
 		public double predict(float[] x) {
@@ -158,7 +160,7 @@ public class Statistic {
 		public float[] tStatistic() {
 			return Floats_.toArray(nDepVariables, i -> {
 				var mv = new MeanVariance(in.length, j -> in[j][i]);
-				var invsd = Math.sqrt(mv.variance / (sse * invn2));
+				var invsd = sqrt(mv.variance / (sse * invn2));
 				return (float) (coefficients[i] * invsd);
 			});
 		}
@@ -295,7 +297,7 @@ public class Statistic {
 		}
 		var length = fs.length;
 		var length1 = length - 1;
-		var adjustment = Math.sqrt(length * length1) / length1;
+		var adjustment = sqrt(length * length1) / length1;
 		return adjustment * sum / (length * sd * sd * sd);
 	}
 
@@ -348,7 +350,7 @@ public class Statistic {
 		}
 
 		public double standardDeviation() {
-			return Math.sqrt(variance);
+			return sqrt(variance);
 		}
 
 		public double volatility() {

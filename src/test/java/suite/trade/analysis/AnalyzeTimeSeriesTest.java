@@ -1,6 +1,8 @@
 package suite.trade.analysis;
 
+import static suite.util.Friends.abs;
 import static suite.util.Friends.max;
+import static suite.util.Friends.sqrt;
 
 import java.util.Arrays;
 import java.util.function.IntFunction;
@@ -80,7 +82,7 @@ public class AnalyzeTimeSeriesTest {
 		var max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
 
 		for (var i = 4; i < fds.length; i++) {
-			var f = Math.abs(fds[i]);
+			var f = abs(fds[i]);
 			if (max.t1 < f)
 				max.update(i, f);
 		}
@@ -125,7 +127,7 @@ public class AnalyzeTimeSeriesTest {
 						.range(10) //
 						.map(d -> "\ndct component [" + d + "d] = " + fds[d]) //
 						.collect(As::joined) //
-				+ "\nreturn yearly sharpe = " + rmv.mean / Math.sqrt(variance / nYears) //
+				+ "\nreturn yearly sharpe = " + rmv.mean / sqrt(variance / nYears) //
 				+ "\nreturn kelly = " + kelly //
 				+ "\nreturn skew = " + stat.skewness(returns) //
 				+ "\nreturn kurt = " + stat.kurtosis(returns) //

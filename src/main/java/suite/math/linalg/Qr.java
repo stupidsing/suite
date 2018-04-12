@@ -1,5 +1,7 @@
 package suite.math.linalg;
 
+import static suite.util.Friends.sqrt;
+
 import suite.adt.pair.Pair;
 
 public class Qr {
@@ -28,7 +30,7 @@ public class Qr {
 				vec.addScaleOn(u1, u, -vec.dot(u, a));
 			}
 
-			q[i] = vec.scaleOn(u1, Math.sqrt(1f / vec.dot(u1, u1)));
+			q[i] = vec.scaleOn(u1, sqrt(1f / vec.dot(u1, u1)));
 		}
 
 		var r = new float[size][size];
@@ -55,7 +57,7 @@ public class Qr {
 				var f1 = r[i1][k];
 
 				if (f1 != 0f) {
-					var radius = Math.sqrt(f0 * f0 + f1 * f1);
+					var radius = sqrt(f0 * f0 + f1 * f1);
 					var ir = 1d / radius;
 					double cos = f0 * ir, sin = f1 * ir;
 

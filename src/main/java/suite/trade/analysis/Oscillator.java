@@ -1,5 +1,6 @@
 package suite.trade.analysis;
 
+import static suite.util.Friends.abs;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -92,7 +93,7 @@ public class Oscillator {
 				sum += ps[d];
 			var mean = sum / l;
 			for (var d = i0; d <= i; d++)
-				sumAbsDev += Math.abs(ps[d] - mean);
+				sumAbsDev += abs(ps[d] - mean);
 			var meanAbsDev = sumAbsDev / l;
 			return r * (ps[i] - mean) / meanAbsDev;
 		});
@@ -238,7 +239,7 @@ public class Oscillator {
 			var hi = ds.highs[i];
 			var lo = ds.lows[i];
 			var prevClose = ds.closes[i - 1];
-			var max = max(Math.abs(hi - prevClose), Math.abs(lo - prevClose));
+			var max = max(abs(hi - prevClose), abs(lo - prevClose));
 			trs[i] = max(hi - lo, max);
 		}
 

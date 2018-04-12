@@ -1,5 +1,6 @@
 package suite.rt;
 
+import static suite.util.Friends.abs;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -64,7 +65,7 @@ public class BoundingBox implements RtObject {
 			float startY, float dirY, float minY, float maxY) {
 		boolean isIntersect;
 
-		if (MathUtil.epsilon < Math.abs(dirX)) {
+		if (MathUtil.epsilon < abs(dirX)) {
 			var gradient = dirY / dirX;
 			float y0, y1;
 

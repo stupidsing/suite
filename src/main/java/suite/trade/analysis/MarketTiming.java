@@ -1,5 +1,6 @@
 package suite.trade.analysis;
 
+import static suite.util.Friends.abs;
 import static suite.util.Friends.max;
 
 import suite.math.numeric.Statistic;
@@ -86,7 +87,7 @@ public class MarketTiming {
 					&& 2d / 3d <= r && r <= 3d / 2d //
 					&& stat.meanVariance(past_i.collect(Int_Flt.lift(j -> ma50[j])).toArray()).volatility() < .02d //
 					&& .02d < stat.meanVariance(past_i.collect(Int_Flt.lift(j -> ma20[j])).toArray()).volatility() //
-					&& (ma20[i] + ma50[i]) * .02d <= Math.abs(ma20[i] - ma50[i]);
+					&& (ma20[i] + ma50[i]) * .02d <= abs(ma20[i] - ma50[i]);
 
 			var flag = 0 //
 					+ (isStrglyBearish ? strgBear : 0) //

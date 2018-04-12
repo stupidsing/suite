@@ -1,5 +1,7 @@
 package suite.math.linalg;
 
+import static suite.util.Friends.sqrt;
+
 import suite.adt.pair.Pair;
 import suite.primitive.Floats_;
 import suite.util.FunUtil.Iterate;
@@ -61,7 +63,7 @@ public class CholeskyDecomposition {
 
 		for (var c = 0; c < size; c++) {
 			var mii = m[c][c];
-			var mii_sqrt = Math.sqrt(mii);
+			var mii_sqrt = sqrt(mii);
 			var imii = 1f / mii;
 			var imii_sqrt = 1f / mii_sqrt;
 

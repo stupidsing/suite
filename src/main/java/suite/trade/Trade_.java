@@ -1,5 +1,6 @@
 package suite.trade;
 
+import static suite.util.Friends.abs;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -164,7 +165,7 @@ public class Trade_ {
 		return Read //
 				.from2(portfolio) //
 				.sortBy((code, i) -> !String_.equals(code, Asset.cashSymbol) ? code : "") //
-				.map((code, i) -> MathUtil.posNeg(i) + code + "*" + Math.abs(i)) //
+				.map((code, i) -> MathUtil.posNeg(i) + code + "*" + abs(i)) //
 				.collect(As::joined);
 	}
 

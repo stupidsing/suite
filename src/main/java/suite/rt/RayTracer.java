@@ -1,5 +1,7 @@
 package suite.rt;
 
+import static suite.util.Friends.sqrt;
+
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.Comparator;
@@ -149,14 +151,14 @@ public class RayTracer {
 				R3 refractColor;
 
 				if (0 <= k) {
-					R3 refractDir = R3.add(ray.dir.scale(eta / ray.dir.mag()), normal.scale(eta * cos - Math.sqrt(k)));
+					R3 refractDir = R3.add(ray.dir.scale(eta / ray.dir.mag()), normal.scale(eta * cos - sqrt(k)));
 					R3 refractPoint = R3.sub(hitPoint, negligible(normal));
 					refractColor = traceRay(depth - 1, new Ray(refractPoint, refractDir));
 				} else
 					refractColor = R3.origin;
 
 				// accurate Fresnel equation
-				// double cos1 = Math.sqrt(k);
+				// double cos1 = sqrt(k);
 				// double f0 = (eta * cos - cos1) / (eta * cos + cos1);
 				// double f1 = (cos - eta * cos1) / (cos + eta * cos1);
 				// double fresnel = (f0 * f0 + f1 * f1) / 2d;

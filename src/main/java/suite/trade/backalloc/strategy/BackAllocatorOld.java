@@ -1,5 +1,6 @@
 package suite.trade.backalloc.strategy;
 
+import static suite.util.Friends.abs;
 import static suite.util.Friends.max;
 
 import java.util.Arrays;
@@ -130,7 +131,7 @@ public class BackAllocatorOld {
 				var pdiff = Quant.return_(p0, px);
 				var qdiff = Quant.return_(q0, qx);
 
-				if (threshold < Math.abs(pdiff - qdiff))
+				if (threshold < abs(pdiff - qdiff))
 					return List.of( //
 							Pair.of(pdiff < qdiff ? symbol0 : symbol1, 1d), //
 							Pair.of(pdiff < qdiff ? symbol1 : symbol0, -1d));

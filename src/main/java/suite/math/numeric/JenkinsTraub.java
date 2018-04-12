@@ -1,5 +1,8 @@
 package suite.math.numeric;
 
+import static suite.util.Friends.abs;
+import static suite.util.Friends.sqrt;
+
 import java.util.Arrays;
 import java.util.Random;
 
@@ -33,7 +36,7 @@ public class JenkinsTraub {
 			h = shift(poly, h, Complex.zero);
 
 		// stage 2 fixed-shift process
-		var equation = To.vector(length, i -> Math.sqrt(poly[length - 1 - i].abs2()));
+		var equation = To.vector(length, i -> sqrt(poly[length - 1 - i].abs2()));
 		equation[0] = -equation[0];
 
 		double root = newtonRaphson(equation, 0f);
@@ -92,7 +95,7 @@ public class JenkinsTraub {
 		double diff;
 		do
 			x = x - (diff = evaluate(poly, x) / evaluate(d, x));
-		while (Math.abs(x * epsilon) < Math.abs(diff));
+		while (abs(x * epsilon) < abs(diff));
 		return x;
 	}
 

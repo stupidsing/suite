@@ -1,5 +1,7 @@
 package suite.trade;
 
+import static suite.util.Friends.abs;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -166,7 +168,7 @@ public class Account {
 				update(symbol, nShares1);
 				if (buySell != 0)
 					nTransactions++;
-				transactionAmount += Math.abs(cost);
+				transactionAmount += abs(cost);
 			}
 
 			return isPlayable;

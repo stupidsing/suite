@@ -1,5 +1,7 @@
 package suite.trade.singlealloc;
 
+import static suite.util.Friends.sqrt;
+
 import suite.math.numeric.Statistic;
 import suite.trade.Account;
 import suite.trade.Time;
@@ -43,7 +45,7 @@ public class SingleAllocBackTest {
 		buySell(ds, length - 1, -account.nShares(symbol));
 
 		var return_ = account.cash();
-		var sharpe = return_ / (Math.sqrt(stat.variance(valuations) * Trade_.nTradeDaysPerYear / length));
+		var sharpe = return_ / (sqrt(stat.variance(valuations) * Trade_.nTradeDaysPerYear / length));
 		// new TimeSeries().sharpeRatio(valuations, nApproxYears);
 
 		concludeLogSink.sink("" //

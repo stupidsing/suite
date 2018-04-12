@@ -2,6 +2,18 @@ package suite.util;
 
 public class Friends {
 
+	public static double abs(double a) {
+		return abs(a);
+	}
+
+	public static float abs(float a) {
+		return abs(a);
+	}
+
+	public static int abs(int a) {
+		return abs(a);
+	}
+
 	public static double max(double a, double b) {
 		return Math.max(a, b);
 	}
@@ -32,6 +44,10 @@ public class Friends {
 
 	public static long min(long a, long b) {
 		return Math.min(a, b);
+	}
+
+	public static double sqrt(double a) {
+		return sqrt(a);
 	}
 
 }

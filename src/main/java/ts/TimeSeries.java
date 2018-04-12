@@ -1,7 +1,9 @@
 package ts;
 
+import static suite.util.Friends.abs;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
+import static suite.util.Friends.sqrt;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -167,7 +169,7 @@ public class TimeSeries {
 	// https://stats.stackexchange.com/questions/129052/acf-and-pacf-formula
 	public float[] pacf(float[] ys, int n) {
 		var acf = acf(ys, n);
-		var m = To.matrix(n, n, (i, j) -> acf[Math.abs(i - j)]);
+		var m = To.matrix(n, n, (i, j) -> acf[abs(i - j)]);
 		var acf1 = Arrays.copyOfRange(acf, 1, n - 1);
 		return cd.inverseMul(m).apply(acf1);
 	}
@@ -223,7 +225,7 @@ public class TimeSeries {
 		}
 
 		public double sharpeRatio() {
-			return mean / Math.sqrt(variance);
+			return mean / sqrt(variance);
 		}
 
 		public double kellyCriterion() {

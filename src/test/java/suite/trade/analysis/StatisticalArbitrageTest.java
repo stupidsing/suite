@@ -1,5 +1,7 @@
 package suite.trade.analysis;
 
+import static suite.util.Friends.abs;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -180,7 +182,7 @@ public class StatisticalArbitrageTest {
 			var max = IntFltPair.of(Integer.MIN_VALUE, Float.MIN_VALUE);
 
 			for (var i = minPeriod; i < dct.length; i++) {
-				var f = Math.abs(dct[i]);
+				var f = abs(dct[i]);
 				if (max.t1 < f)
 					max = IntFltPair.of(i, f);
 			}

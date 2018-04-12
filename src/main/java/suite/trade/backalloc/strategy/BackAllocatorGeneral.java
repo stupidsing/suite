@@ -1,5 +1,6 @@
 package suite.trade.backalloc.strategy;
 
+import static suite.util.Friends.abs;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -243,7 +244,7 @@ public class BackAllocatorGeneral {
 				var maOp = movingAvgOps[last];
 				var maCl = movingAvgCls[last];
 				var diff = maCl - maOp;
-				return max(maOp, maCl) * .01d < Math.abs(diff) ? Quant.sign(diff) * 1d : 0d;
+				return max(maOp, maCl) * .01d < abs(diff) ? Quant.sign(diff) * 1d : 0d;
 			};
 		});
 	}
@@ -441,7 +442,7 @@ public class BackAllocatorGeneral {
 									var last = index - 1;
 									return (!wasWons1[last] ? nHolds1[last] : 0) + nHolds2[last];
 								})) //
-						.sortByValue((nHold0, nHold1) -> Integer.compare(Math.abs(nHold1), Math.abs(nHold0))) //
+						.sortByValue((nHold0, nHold1) -> Integer.compare(abs(nHold1), abs(nHold0))) //
 						.toList();
 
 				var m1 = new ArrayList<Pair<String, Integer>>();

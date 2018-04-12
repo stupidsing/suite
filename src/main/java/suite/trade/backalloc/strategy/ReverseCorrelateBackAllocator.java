@@ -1,5 +1,7 @@
 package suite.trade.backalloc.strategy;
 
+import static suite.util.Friends.abs;
+
 import suite.math.numeric.Statistic;
 import suite.primitive.Floats_;
 import suite.streamlet.As;
@@ -54,7 +56,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 						return reverseCorrelation != null ? reverseCorrelation : Double.NaN;
 					}) //
 					.filterValue(Double::isFinite) //
-					.filterValue(reverseCorrelation -> reverseCorrelationThreshold < Math.abs(reverseCorrelation)) //
+					.filterValue(reverseCorrelation -> reverseCorrelationThreshold < abs(reverseCorrelation)) //
 					.toMap();
 
 			var reversePricesBySymbol = dsBySymbol //
