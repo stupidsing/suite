@@ -8,6 +8,7 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.immutable.IRope.IRopeList;
+import suite.os.FileUtil;
 import suite.primitive.Chars_;
 
 public class IRopeTest {
@@ -38,6 +39,12 @@ public class IRopeTest {
 			assertEquals(l, rope0.at(l).charValue());
 			assertEquals(r, rope1.at(l).charValue());
 		}
+	}
+
+	@Test
+	public void testFile() {
+		var inputText = IRopeList.of(FileUtil.read("src/main/java/suite/dev/DevMain.java"));
+		inputText.right(inputText.size);
 	}
 
 }
