@@ -3,15 +3,15 @@ package suite.util;
 public class Friends {
 
 	public static double abs(double a) {
-		return abs(a);
+		return Math.abs(a);
 	}
 
 	public static float abs(float a) {
-		return abs(a);
+		return Math.abs(a);
 	}
 
 	public static int abs(int a) {
-		return abs(a);
+		return Math.abs(a);
 	}
 
 	public static double max(double a, double b) {
@@ -47,7 +47,7 @@ public class Friends {
 	}
 
 	public static double sqrt(double a) {
-		return sqrt(a);
+		return Math.sqrt(a);
 	}
 
 }
