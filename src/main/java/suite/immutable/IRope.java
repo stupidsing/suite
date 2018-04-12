@@ -258,7 +258,7 @@ public class IRope<T> {
 			var queue1 = new ArrayDeque<IRope<T>>(List.of(rope));
 			var depth = rope.depth;
 
-			Source<IRope<T>> pack = () -> {
+			Source<IRope<T>> deq1 = () -> {
 				var ix = queue1.size();
 				var ropes = new ArrayList<IRope<T>>(Collections.nCopies(ix, null));
 				for (var i = 0; i < ix; i++)
@@ -281,10 +281,10 @@ public class IRope<T> {
 						}
 					}.add(rope1);
 				else
-					return pack.source();
+					return deq1.source();
 			}
 
-			rope = pack.source();
+			rope = deq1.source();
 		}
 	}
 
@@ -295,7 +295,7 @@ public class IRope<T> {
 			var queue1 = new ArrayDeque<IRope<T>>(List.of(rope));
 			var depth = rope.depth;
 
-			Source<IRope<T>> pack = () -> {
+			Source<IRope<T>> deq1 = () -> {
 				var ix = queue1.size();
 				var ropes = new ArrayList<IRope<T>>(Collections.nCopies(ix, null));
 				for (var i = 0; i < ix; i++)
@@ -318,10 +318,10 @@ public class IRope<T> {
 						}
 					}.add(rope1);
 				else
-					return pack.source();
+					return deq1.source();
 			}
 
-			rope = pack.source();
+			rope = deq1.source();
 		}
 	}
 
