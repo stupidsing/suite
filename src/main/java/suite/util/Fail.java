@@ -22,4 +22,8 @@ public class Fail {
 		throw new RuntimeException(m, th);
 	}
 
+	public static boolean v(boolean b) {
+		return b ? b : Fail.t();
+	}
+
 }
