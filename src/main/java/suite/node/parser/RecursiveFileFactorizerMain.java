@@ -23,7 +23,7 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 	}
 
 	protected boolean run(String[] args) throws IOException {
-		List<Pair<String, String>> fts = List.of( //
+		var fts = List.of( //
 				Pair.of("fc-define-var-types .0 .1 .2 .3", "fc-define-var-types .1 .2 .3 .0") //
 		);
 

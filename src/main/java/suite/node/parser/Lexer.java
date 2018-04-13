@@ -84,7 +84,7 @@ public class Lexer {
 			} else if (type == LexType.SYM__)
 				pos++;
 
-			String data = in.substring(start, pos);
+			var data = in.substring(start, pos);
 
 			if (type == LexType.SPACE) {
 				var precs = new ArrayList<Integer>();
@@ -107,8 +107,8 @@ public class Lexer {
 	}
 
 	private Token detect() {
+		var operator = Pair.first_(commandUtil.recognize(in, pos));
 		LexType type;
-		Operator operator = Pair.first_(commandUtil.recognize(in, pos));
 
 		if (pos < in.length()) {
 			var ch = in.charAt(pos);

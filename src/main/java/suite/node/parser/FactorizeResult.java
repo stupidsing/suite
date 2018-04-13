@@ -127,9 +127,9 @@ public class FactorizeResult {
 		var nodeTo = parse.apply(frto);
 
 		var fn0 = fr0.node;
-		Node node0 = nodify.nodify(FNode.class, fn0);
-		Node nodex = rw.rewrite(nodeFrom, nodeTo, node0);
-		FNode fnx = nodify.unnodify(FNode.class, nodex);
+		var node0 = nodify.nodify(FNode.class, fn0);
+		var nodex = rw.rewrite(nodeFrom, nodeTo, node0);
+		var fnx = nodify.unnodify(FNode.class, nodex);
 		return new FactorizeResult(fr0.pre, fnx, fr0.post);
 	}
 

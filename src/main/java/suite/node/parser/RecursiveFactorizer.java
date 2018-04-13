@@ -36,7 +36,7 @@ public class RecursiveFactorizer {
 		var in1 = pair.t0;
 		reverser = pair.t1;
 
-		FactorizeResult parsed = parse_(To.chars(in1), 0);
+		var parsed = parse_(To.chars(in1), 0);
 
 		// append possibly missed comments
 		var p = reverser.reverse(0);
@@ -53,7 +53,7 @@ public class RecursiveFactorizer {
 			for (var i = fromOp; i < operators.length; i++) {
 				var operator = operators[i];
 				var range = operator != TermOp.TUPLE_ ? chars : chars1;
-				Segment ops = ParseUtil.searchPosition(chars.cs, Segment.of(range.start, range.end), operator);
+				var ops = ParseUtil.searchPosition(chars.cs, Segment.of(range.start, range.end), operator);
 
 				if (ops == null)
 					continue;
@@ -82,7 +82,7 @@ public class RecursiveFactorizer {
 					ri = fromOp + (isLeftAssoc ? 1 : 0);
 				}
 
-				List<FactorizeResult> list = new ArrayList<>(4);
+				var list = new ArrayList<FactorizeResult>(4);
 				list.add(parse_(left, li));
 				list.add(term(middle));
 				list.add(parse_(right, ri));

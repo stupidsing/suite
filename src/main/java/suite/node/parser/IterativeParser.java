@@ -37,7 +37,7 @@ public class IterativeParser {
 	}
 
 	public Node parse(String in0) {
-		String in1 = Preprocess.transform(PreprocessorFactory.create(operators), in0).t0;
+		var in1 = Preprocess.transform(PreprocessorFactory.create(operators), in0).t0;
 		return new Parse(in1).parse();
 	}
 

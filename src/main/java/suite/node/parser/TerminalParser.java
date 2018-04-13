@@ -20,7 +20,8 @@ public class TerminalParser {
 
 	public Node parseTerminal(String s) {
 		if (!s.isEmpty()) {
-			char first = String_.charAt(s, 0), last = String_.charAt(s, -1);
+			var first = String_.charAt(s, 0);
+			var last = String_.charAt(s, -1);
 
 			if (String_.isInteger(s))
 				return Int.of(Integer.parseInt(s));
