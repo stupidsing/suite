@@ -113,7 +113,7 @@ public class Dump {
 								try {
 									var name = field.getName();
 									var o = field.get(object);
-									Class<?> type = field.getType();
+									var type = field.getType();
 									if (Type_.isSimple(type))
 										d(prefix + "." + name, type, o);
 									else
