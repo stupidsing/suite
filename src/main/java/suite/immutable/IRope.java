@@ -257,6 +257,26 @@ public class IRope<T> {
 	}
 
 	private static <T> IRope<T> meldLeft(Deque<IRope<T>> queue, IRope<T> rope) {
+		IRope<T> r;
+		if (Boolean.TRUE)
+			while ((r = queue.pollFirst()) != null)
+				rope = meld(r, rope);
+		else
+			rope = meldLeft0(queue, rope);
+		return rope;
+	}
+
+	private static <T> IRope<T> meldRight(IRope<T> rope, Deque<IRope<T>> queue) {
+		IRope<T> r;
+		if (Boolean.TRUE)
+			while ((r = queue.pollFirst()) != null)
+				rope = meld(rope, r);
+		else
+			rope = meldRight0(rope, queue);
+		return rope;
+	}
+
+	private static <T> IRope<T> meldLeft0(Deque<IRope<T>> queue, IRope<T> rope) {
 		while (true) {
 			var branchFactor = minBranchFactor;
 			var depth = rope.depth;
@@ -309,7 +329,7 @@ public class IRope<T> {
 		}
 	}
 
-	private static <T> IRope<T> meldRight(IRope<T> rope, Deque<IRope<T>> queue) {
+	private static <T> IRope<T> meldRight0(IRope<T> rope, Deque<IRope<T>> queue) {
 		while (true) {
 			var branchFactor = minBranchFactor;
 			var depth = rope.depth;
