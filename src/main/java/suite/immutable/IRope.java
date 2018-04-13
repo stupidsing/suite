@@ -166,7 +166,15 @@ public class IRope<T> {
 			rope = rope_;
 		}
 
-		return meldLeft(deque, new IRope<>(rope.ts.subList.apply(0, p)));
+		var rope1 = new IRope<>(rope.ts.subList.apply(0, p));
+		IRope<T> rope_;
+
+		if (Boolean.TRUE)
+			while ((rope_ = deque.pollFirst()) != null)
+				rope1 = meld(rope_, rope1);
+		else
+			rope1 = meldLeft(deque, rope1);
+		return rope1;
 	}
 
 	// 0 <= p && p < weight
@@ -186,8 +194,15 @@ public class IRope<T> {
 				deque.push(ropes.get(i));
 			rope = rope_;
 		}
+		var rope1 = new IRope<>(rope.ts.subList.apply(p, rope.weight));
+		IRope<T> rope_;
 
-		return meldRight(new IRope<>(rope.ts.subList.apply(p, rope.weight)), deque);
+		if (Boolean.TRUE)
+			while ((rope_ = deque.pollFirst()) != null)
+				rope1 = meld(rope1, rope_);
+		else
+			rope1 = meldRight(rope1, deque);
+		return rope1;
 	}
 
 	public IRope<T> validateRoot() {
@@ -257,26 +272,6 @@ public class IRope<T> {
 	}
 
 	private static <T> IRope<T> meldLeft(Deque<IRope<T>> queue, IRope<T> rope) {
-		IRope<T> r;
-		if (Boolean.TRUE)
-			while ((r = queue.pollFirst()) != null)
-				rope = meld(r, rope);
-		else
-			rope = meldLeft0(queue, rope);
-		return rope;
-	}
-
-	private static <T> IRope<T> meldRight(IRope<T> rope, Deque<IRope<T>> queue) {
-		IRope<T> r;
-		if (Boolean.TRUE)
-			while ((r = queue.pollFirst()) != null)
-				rope = meld(rope, r);
-		else
-			rope = meldRight0(rope, queue);
-		return rope;
-	}
-
-	private static <T> IRope<T> meldLeft0(Deque<IRope<T>> queue, IRope<T> rope) {
 		while (true) {
 			var branchFactor = minBranchFactor;
 			var depth = rope.depth;
@@ -329,7 +324,7 @@ public class IRope<T> {
 		}
 	}
 
-	private static <T> IRope<T> meldRight0(IRope<T> rope, Deque<IRope<T>> queue) {
+	private static <T> IRope<T> meldRight(IRope<T> rope, Deque<IRope<T>> queue) {
 		while (true) {
 			var branchFactor = minBranchFactor;
 			var depth = rope.depth;
