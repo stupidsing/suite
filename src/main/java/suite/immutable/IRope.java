@@ -4,22 +4,15 @@ import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
 import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
 import java.util.List;
 
-import suite.adt.Mutable;
 import suite.primitive.IntInt_Obj;
-import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
 import suite.util.List_;
 
 public class IRope<T> {
@@ -169,11 +162,9 @@ public class IRope<T> {
 		var rope1 = new IRope<>(rope.ts.subList.apply(0, p));
 		IRope<T> rope_;
 
-		if (Boolean.TRUE)
-			while ((rope_ = deque.pollFirst()) != null)
-				rope1 = meld(rope_, rope1);
-		else
-			rope1 = meldLeft(deque, rope1);
+		while ((rope_ = deque.pollFirst()) != null)
+			rope1 = meld(rope_, rope1);
+
 		return rope1;
 	}
 
@@ -197,11 +188,9 @@ public class IRope<T> {
 		var rope1 = new IRope<>(rope.ts.subList.apply(p, rope.weight));
 		IRope<T> rope_;
 
-		if (Boolean.TRUE)
-			while ((rope_ = deque.pollFirst()) != null)
-				rope1 = meld(rope1, rope_);
-		else
-			rope1 = meldRight(rope1, deque);
+		while ((rope_ = deque.pollFirst()) != null)
+			rope1 = meld(rope1, rope_);
+
 		return rope1;
 	}
 
@@ -268,112 +257,6 @@ public class IRope<T> {
 				return List.of(new IRope<>(left), new IRope<>(right));
 			} else
 				return List.of(new IRope<>(ts));
-		}
-	}
-
-	private static <T> IRope<T> meldLeft(Deque<IRope<T>> queue, IRope<T> rope) {
-		while (true) {
-			var branchFactor = minBranchFactor;
-			var depth = rope.depth;
-			Source<IRope<T>> deq1;
-			Sink<IRope<T>> enq1;
-			IntSource size1;
-
-			if (0 < depth || branchFactor <= rope.ts.size) {
-				var queue1 = new ArrayDeque<IRope<T>>(List.of(rope));
-				deq1 = () -> {
-					var ix = queue1.size();
-					var ropes = new ArrayList<IRope<T>>(Collections.nCopies(ix, null));
-					for (var i = 0; i < ix; i++)
-						ropes.set(i, queue1.pop());
-					return new IRope<>(depth + 1, ropes);
-				};
-				enq1 = queue1::push;
-				size1 = queue1::size;
-			} else {
-				var queue1 = Mutable.of(rope.ts);
-				deq1 = () -> new IRope<>(queue1.get());
-				enq1 = rope_ -> {
-					var conc = rope_.ts.concat.apply(queue1.get());
-					var size_ = conc.size;
-					if (size_ < maxBranchFactor)
-						queue1.update(conc);
-					else {
-						var p = size_ / 2;
-						queue.push(new IRope<>(conc.left(p)));
-						queue1.update(conc.right(p));
-					}
-				};
-				size1 = () -> queue1.get().size;
-			}
-
-			while (size1.source() < branchFactor) {
-				var rope_ = queue.pollFirst();
-				if (rope_ != null) {
-					var ropes = rope_.ropes;
-					if (depth < rope_.depth)
-						for (var i = 0; i < ropes.size(); i++)
-							queue.push(ropes.get(i));
-					else
-						enq1.sink(rope_);
-				} else
-					return deq1.source();
-			}
-
-			rope = deq1.source();
-		}
-	}
-
-	private static <T> IRope<T> meldRight(IRope<T> rope, Deque<IRope<T>> queue) {
-		while (true) {
-			var branchFactor = minBranchFactor;
-			var depth = rope.depth;
-			Source<IRope<T>> deq1;
-			Sink<IRope<T>> enq1;
-			IntSource size1;
-
-			if (0 < depth || branchFactor <= rope.ts.size) {
-				var queue1 = new ArrayDeque<IRope<T>>(List.of(rope));
-				deq1 = () -> {
-					var ix = queue1.size();
-					var ropes = new ArrayList<IRope<T>>(Collections.nCopies(ix, null));
-					for (var i = 0; i < ix; i++)
-						ropes.set(ix - i - 1, queue1.pop());
-					return new IRope<>(depth + 1, ropes);
-				};
-				enq1 = queue1::push;
-				size1 = queue1::size;
-			} else {
-				var queue1 = Mutable.of(rope.ts);
-				deq1 = () -> new IRope<>(queue1.get());
-				enq1 = rope_ -> {
-					var conc = queue1.get().concat.apply(rope_.ts);
-					var size_ = conc.size;
-					if (size_ < maxBranchFactor)
-						queue1.update(conc);
-					else {
-						var p = size_ / 2;
-						queue.push(new IRope<>(conc.right(p)));
-						queue1.update(conc.left(p));
-					}
-				};
-				size1 = () -> queue1.get().size;
-			}
-
-			while (size1.source() < branchFactor) {
-				var rope_ = queue.pollFirst();
-				if (rope_ != null) {
-					var ropes = rope_.ropes;
-					if (depth < rope_.depth)
-						for (var i = ropes.size() - 1; 0 <= i; i--)
-							queue.push(ropes.get(i));
-					else
-						enq1.sink(rope_);
-				} else
-					return deq1.source();
-			}
-
-			rope = deq1.source();
 		}
 	}
 
