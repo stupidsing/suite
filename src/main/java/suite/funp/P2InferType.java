@@ -252,6 +252,8 @@ public class P2InferType {
 				unify(n, typeNumber, infer(expr));
 				if (coerce == Coerce.BYTE)
 					return typeByte;
+				else if (coerce == Coerce.POINTER)
+					return TypeReference.of(unify.newRef());
 				else
 					return Fail.t();
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
