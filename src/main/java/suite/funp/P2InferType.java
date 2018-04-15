@@ -22,6 +22,7 @@ import suite.funp.P0.FunpAssignReference;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
+import suite.funp.P0.FunpCoerce.Coerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
@@ -249,7 +250,10 @@ public class P2InferType {
 				return infer(expr);
 			})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
 				unify(n, typeNumber, infer(expr));
-				return typeByte;
+				if (coerce == Coerce.BYTE)
+					return typeByte;
+				else
+					return Fail.t();
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				return new Infer(env.replace(var, Pair.of(isPolyType, infer(value)))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
@@ -542,7 +546,7 @@ public class P2InferType {
 				for (var i = scope0; i < scope; i++)
 					nfp = FunpMemory.of(nfp, 0, ps);
 			} else
-				nfp = FunpNumber.of(Mutable.of(0));
+				nfp = FunpNumber.of(Mutable.of(0)); // globals
 			if (operand != null)
 				nfp = FunpTree.of(TermOp.PLUS__, nfp, FunpOperand.of(operand));
 			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp, FunpNumber.of(vd.offset)), vd.start, vd.end);

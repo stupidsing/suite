@@ -39,6 +39,11 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testCoerce() {
+		test(1, "define i := 1 >> define b := coerce-byte i >> i");
+	}
+
+	@Test
 	public void testCompare() {
 		test(1, "define v := 2 >> if (1 < v) then 1 else 0");
 	}

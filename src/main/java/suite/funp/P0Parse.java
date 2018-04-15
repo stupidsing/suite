@@ -125,7 +125,7 @@ public class P0Parse {
 				return FunpBoolean.of(true);
 			}).match3("type .0 = .1 >> .2", (a, b, c) -> {
 				return FunpCheckType.of(parse(a), parse(b), parse(c));
-			}).match1("byte .0", a -> {
+			}).match1("coerce-byte .0", a -> {
 				return FunpCoerce.of(Coerce.BYTE, parse(a));
 			}).match3("define .0 := .1 >> .2", (a, b, c) -> {
 				var var = name(a);

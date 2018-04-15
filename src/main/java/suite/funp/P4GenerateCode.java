@@ -22,6 +22,7 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpAsm;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCoerce;
+import suite.funp.P0.FunpCoerce.Coerce;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpIf;
@@ -300,10 +301,13 @@ public class P4GenerateCode {
 				})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 					return postOp.apply(amd64.imm(b ? 1 : 0, Funp_.booleanSize));
 				})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
-					var r1 = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
-					var r0 = integerRegs[r1.reg];
-					compileOpSpec(expr, r0);
-					return postOp.apply(r1);
+					if (coerce == Coerce.BYTE) {
+						var r1 = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
+						var r0 = integerRegs[r1.reg];
+						compileOpSpec(expr, r0);
+						return postOp.apply(r1);
+					} else
+						return Fail.t();
 				})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 					return postAssign.apply((c1, target) -> {
 						for (var pair : pairs) {
