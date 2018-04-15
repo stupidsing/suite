@@ -1,4 +1,4 @@
-crude-script ::= (statement1)*
+crude-script ::= statement1*
 
 statement1 ::= (statement ";" | statement-block)!
 statement-block ::= "{" statement1* "}"
