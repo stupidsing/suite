@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import suite.text.Preprocess.Run;
-import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
 import suite.util.String_;
 
@@ -14,7 +13,7 @@ import suite.util.String_;
  *
  * @author ywsing
  */
-public class CommentPreprocessor implements Fun<String, List<Run>> {
+public class CommentPreprocessor {
 
 	public static String openGroupComment = "-=";
 	public static String closeGroupComment = "=-";
@@ -39,8 +38,7 @@ public class CommentPreprocessor implements Fun<String, List<Run>> {
 		this.closeComment = closeComment;
 	}
 
-	@Override
-	public List<Run> apply(String in) {
+	public List<Run> preprocess(String in) {
 		var closeLength = !isWhitespaces(closeComment) ? closeComment.length() : 0;
 		var start = 0;
 		var runs = new ArrayList<Run>();

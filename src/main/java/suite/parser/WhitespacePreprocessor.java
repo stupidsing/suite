@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Set;
 
 import suite.text.Preprocess.Run;
-import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
 
 /**
@@ -13,7 +12,7 @@ import suite.util.ParseUtil;
  *
  * @author ywsing
  */
-public class WhitespacePreprocessor implements Fun<String, List<Run>> {
+public class WhitespacePreprocessor {
 
 	private Set<Character> whitespaces;
 
@@ -21,8 +20,7 @@ public class WhitespacePreprocessor implements Fun<String, List<Run>> {
 		this.whitespaces = whitespaces;
 	}
 
-	@Override
-	public List<Run> apply(String in) {
+	public List<Run> preprocess(String in) {
 		var runs = new ArrayList<Run>();
 		var length = in.length();
 		int pos0 = 0, pos = 0;

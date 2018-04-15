@@ -11,7 +11,6 @@ import suite.node.io.Operator.Assoc;
 import suite.text.Preprocess.Run;
 import suite.text.Segment;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
 import suite.util.String_;
 
@@ -20,7 +19,7 @@ import suite.util.String_;
  *
  * @author ywsing
  */
-public class IndentationPreprocessor implements Fun<String, List<Run>> {
+public class IndentationPreprocessor {
 
 	private Operator[] operators;
 
@@ -28,8 +27,7 @@ public class IndentationPreprocessor implements Fun<String, List<Run>> {
 		this.operators = operators;
 	}
 
-	@Override
-	public List<Run> apply(String in) {
+	public List<Run> preprocess(String in) {
 		var runs = new ArrayList<Run>();
 		var nLastIndents = 0;
 		var lastIndent = "";

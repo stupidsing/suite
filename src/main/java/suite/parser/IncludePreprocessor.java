@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import suite.text.Preprocess.Run;
-import suite.util.FunUtil.Fun;
 import suite.util.ParseUtil;
 import suite.util.Rethrow;
 import suite.util.To;
@@ -17,7 +16,7 @@ import suite.util.To;
  *
  * @author ywsing
  */
-public class IncludePreprocessor implements Fun<String, List<Run>> {
+public class IncludePreprocessor {
 
 	private static String open = "#include(";
 	private static String close = ")";
@@ -29,7 +28,7 @@ public class IncludePreprocessor implements Fun<String, List<Run>> {
 		this.dir = dir;
 	}
 
-	public List<Run> apply(String in) {
+	public List<Run> preprocess(String in) {
 		return Rethrow.ex(() -> {
 			var runs = new ArrayList<Run>();
 			doIncludes(dir, in, true, runs);

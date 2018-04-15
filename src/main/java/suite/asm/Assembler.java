@@ -23,6 +23,7 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Read;
 import suite.text.Preprocess;
+import suite.text.Preprocess.Run;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.List_;
@@ -64,8 +65,8 @@ public class Assembler {
 
 	public Bytes assemble(String in0) {
 		var whitespaces = Collections.singleton('\n');
-		var gct = CommentPreprocessor.groupCommentPreprocessor(whitespaces);
-		var lct = CommentPreprocessor.lineCommentPreprocessor(whitespaces);
+		Fun<String, List<Run>> gct = CommentPreprocessor.groupCommentPreprocessor(whitespaces)::preprocess;
+		Fun<String, List<Run>> lct = CommentPreprocessor.lineCommentPreprocessor(whitespaces)::preprocess;
 		var in1 = Preprocess.transform(List.of(gct, lct), in0).t0;
 
 		var generalizer = new Generalizer();
