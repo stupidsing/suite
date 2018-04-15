@@ -45,7 +45,8 @@ public class DevMain {
 	}
 
 	private void run() {
-		var input = FileUtil.read("src/main/java/suite/dev/DevMain.java");
+		// var input = FileUtil.read("src/main/java/suite/dev/DevMain.java");
+		var input = FileUtil.read("src/main/il/buddy-allocator.il");
 		var inputText = text(IRopeList.of(input));
 
 		try (var termios = new Termios(libc);) {

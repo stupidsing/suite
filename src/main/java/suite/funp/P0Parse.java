@@ -239,10 +239,7 @@ public class P0Parse {
 				return FunpTree.of(tree.getOperator(), left, right);
 			}).applyIf(Atom.class, atom -> {
 				var var = atom.name;
-				if (variables.contains(var))
-					return FunpVariable.of(var);
-				else
-					return FunpVariableNew.of(var);
+				return variables.contains(var) ? FunpVariable.of(var) : FunpVariableNew.of(var);
 			}).nonNullResult();
 		}
 
