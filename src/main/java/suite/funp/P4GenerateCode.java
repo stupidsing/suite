@@ -264,8 +264,6 @@ public class P4GenerateCode {
 				})).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, offset) -> {
 					var ism1 = is - 1;
 					var alignedSize = (size + ism1) & ~ism1;
-					System.out.println(size);
-					System.out.println(alignedSize);
 					var imm = amd64.imm(alignedSize);
 					var fd1 = fd - alignedSize;
 					var c1 = new Compile1(rs, fd1);

@@ -40,8 +40,7 @@ public class FunpTest {
 
 	@Test
 	public void testCoerce() {
-		// test(1, "define i := 1 >> define b := coerce-byte i >> i");
-		test(1, "define b := coerce-byte 1 >> 0");
+		test(1, "define i := 1 >> define b := coerce-byte i >> i");
 	}
 
 	@Test
