@@ -34,25 +34,25 @@ public class ElfTest {
 				+ "	p \n" //
 				+ ") >> \n" //
 				+ "define linux-munmap := `pointer, length` => ( \n" //
-				+ "	type pointer = address (size * array byte _) >> \n" //
+				+ "	type pointer = address (size * array coerce-byte _) >> \n" //
 				+ "	asm (EAX = 91; EBX = pointer; ECX = length;) { \n" //
 				+ "		INT (-128); \n" //
 				+ "	} \n" //
 				+ ") >> \n" //
 				+ "define linux-read := `pointer, length` => ( \n" //
-				+ "	type pointer = address (size * array byte _) >> \n" //
+				+ "	type pointer = address (size * array coerce-byte _) >> \n" //
 				+ "	asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { \n" //
 				+ "		INT (-128); -- length in EAX \n" //
 				+ "	} \n" //
 				+ ") >> \n" //
 				+ "define linux-write := `pointer, length` => ( \n" //
-				+ "	type pointer = address (size * array byte _) >> \n" //
+				+ "	type pointer = address (size * array coerce-byte _) >> \n" //
 				+ "	asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { \n" //
 				+ "		INT (-128); -- length in EAX \n" //
 				+ "	} \n" //
 				+ ") >> \n" //
 				+ "iterate n 1 (n != 0) ( \n" //
-				+ "	let buffer := (size * array byte _) >> \n" //
+				+ "	let buffer := (size * array coerce-byte _) >> \n" //
 				+ "	let pointer := address buffer >> \n" //
 				+ "	pointer, size | linux-read | io-cat (nBytesRead => \n" //
 				+ "		pointer, nBytesRead | linux-write | io-cat (nBytesWrote => \n" //

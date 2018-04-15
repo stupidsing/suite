@@ -391,9 +391,9 @@ public class P2InferType {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				Mutable<Integer> offset = Mutable.nil();
-				var size0 = getTypeSize(typeOf(value));
-				var e1 = new Erase(scope, env.replace(var, new Var(scope, offset, 0, size0)));
-				return allocStack(size0, value, e1.erase(expr), offset);
+				var size = getTypeSize(typeOf(value));
+				var e1 = new Erase(scope, env.replace(var, new Var(scope, offset, 0, size)));
+				return allocStack(size, value, e1.erase(expr), offset);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				var assigns = new ArrayList<Pair<Var, Funp>>();
 				Mutable<Integer> offsetStack = Mutable.nil();
@@ -414,7 +414,7 @@ public class P2InferType {
 				for (var pair : assigns)
 					expr = FunpAssign.of(e1.getVariable(pair.t0), e1.erase(pair.t1), expr);
 
-				return FunpAllocStack.of(align(offset), FunpDontCare.of(), expr_, offsetStack);
+				return FunpAllocStack.of(offset, FunpDontCare.of(), expr_, offsetStack);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
@@ -529,12 +529,12 @@ public class P2InferType {
 				return FunpRoutineIo.of(frame, expr, lt.is, lt.os);
 		}
 
-		private FunpAllocStack allocStack(int size0, Funp value, Funp expr) {
-			return allocStack(size0, value, expr, Mutable.nil());
+		private FunpAllocStack allocStack(int size, Funp value, Funp expr) {
+			return allocStack(size, value, expr, Mutable.nil());
 		}
 
-		private FunpAllocStack allocStack(int size0, Funp value, Funp expr, Mutable<Integer> stack) {
-			return FunpAllocStack.of(align(size0), erase(value), expr, stack);
+		private FunpAllocStack allocStack(int size, Funp value, Funp expr, Mutable<Integer> stack) {
+			return FunpAllocStack.of(size, erase(value), expr, stack);
 		}
 
 		private FunpMemory getVariable(Var vd) {
@@ -550,11 +550,6 @@ public class P2InferType {
 			if (operand != null)
 				nfp = FunpTree.of(TermOp.PLUS__, nfp, FunpOperand.of(operand));
 			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp, FunpNumber.of(vd.offset)), vd.start, vd.end);
-		}
-
-		private int align(int size0) {
-			var is1 = is - 1;
-			return (size0 + is1) & ~is1;
 		}
 	}
 

@@ -39,7 +39,7 @@ public class P2 {
 	}
 
 	public static class FunpAllocStack implements Funp, P4.End {
-		public int size; // allocate size
+		public int size;
 		public Funp value;
 		public Funp expr;
 		public Mutable<Integer> stack;

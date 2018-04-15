@@ -262,9 +262,14 @@ public class P4GenerateCode {
 					compileGlobal(size, address);
 					return compile(expr);
 				})).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, offset) -> {
-					Operand imm = amd64.imm(size), op;
-					var fd1 = fd - size;
+					var ism1 = is - 1;
+					var alignedSize = (size + ism1) & ~ism1;
+					System.out.println(size);
+					System.out.println(alignedSize);
+					var imm = amd64.imm(alignedSize);
+					var fd1 = fd - alignedSize;
 					var c1 = new Compile1(rs, fd1);
+					Operand op;
 
 					offset.update(fd1);
 
@@ -272,7 +277,7 @@ public class P4GenerateCode {
 						em.emit(amd64.instruction(Insn.PUSH, op));
 					else {
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
-						c1.compileAssign(value, frame(fd1, fd));
+						c1.compileAssign(value, FunpMemory.of(Funp_.framePointer, fd1, fd1 + size));
 					}
 					var out = c1.compile(expr);
 					if (size == is)
