@@ -252,6 +252,8 @@ public class P2InferType {
 				unify(n, typeNumber, infer(expr));
 				if (coerce == Coerce.BYTE)
 					return typeByte;
+				else if (coerce == Coerce.NUMBER)
+					return typeNumber;
 				else if (coerce == Coerce.POINTER)
 					return TypeReference.of(unify.newRef());
 				else

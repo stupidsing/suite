@@ -309,10 +309,8 @@ public class P4GenerateCode {
 						var r0 = integerRegs[r1.reg];
 						compileOpSpec(expr, r0);
 						return postOp.apply(r1);
-					} else if (coerce == Coerce.POINTER)
+					} else
 						return compile(expr);
-					else
-						return Fail.t();
 				})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 					return postAssign.apply((c1, target) -> {
 						for (var pair : pairs) {

@@ -127,6 +127,8 @@ public class P0Parse {
 				return FunpCheckType.of(parse(a), parse(b), parse(c));
 			}).match1("coerce-byte .0", a -> {
 				return FunpCoerce.of(Coerce.BYTE, parse(a));
+			}).match1("coerce-number .0", a -> {
+				return FunpCoerce.of(Coerce.NUMBER, parse(a));
 			}).match1("coerce-pointer .0", a -> {
 				return FunpCoerce.of(Coerce.POINTER, parse(a));
 			}).match3("define .0 := .1 >> .2", (a, b, c) -> {
