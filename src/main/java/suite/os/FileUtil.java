@@ -36,20 +36,8 @@ public class FileUtil {
 		return filename.substring(filename.lastIndexOf('.') + 1);
 	}
 
-	public static int getPid() {
-		var runtime = ManagementFactory.getRuntimeMXBean();
-
-		return Rethrow.ex(() -> {
-			var jvm = runtime.getClass().getDeclaredField("jvm");
-			jvm.setAccessible(true);
-
-			var vmm = jvm.get(runtime);
-
-			var method = vmm.getClass().getDeclaredMethod("getProcessId");
-			method.setAccessible(true);
-
-			return (Integer) method.invoke(jvm.get(runtime));
-		});
+	public static long getPid() {
+		return ManagementFactory.getRuntimeMXBean().getPid();
 	}
 
 	public static String jarFilename() {
