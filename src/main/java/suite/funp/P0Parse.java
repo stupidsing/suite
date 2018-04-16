@@ -82,7 +82,7 @@ public class P0Parse {
 
 				if ((m = Suite.pattern("expand .0 := .1 >> .2").match(node)) != null) {
 					var head = m[0];
-					return new Expand(macros.put(Prototype.of(head), new Node[] { head, m[1] })).expand(m[2]);
+					return new Expand(macros.put(Prototype.of(head), new Node[] { head, m[1], })).expand(m[2]);
 				} else if ((ht = macros.get(Prototype.of(node))) != null) {
 					var g = new Generalizer();
 					var t0_ = g.generalize(ht[0]);
