@@ -28,27 +28,25 @@ public class P0CrudeScript {
 		return new Object() {
 			private Funp expr(Ast a) {
 				var children = a.children;
+				var c0 = 0 < children.size() ? children.get(0) : null;
+				var c1 = 1 < children.size() ? children.get(1) : null;
 
 				if (Objects.equals(a.entity, "expression-invoke")) {
-					var funp = expr(children.get(0));
+					var funp = expr(c0);
 					for (var i = 1; i < children.size(); i++)
 						funp = FunpApply.of(funp, expr(children.get(i)));
 					return funp;
-				} else if (Objects.equals(a.entity, "expression-add")) {
-					var left = expr(children.get(0));
-					if (children.size() == 1)
-						return left;
-					else
-						return FunpTree.of(TermOp.PLUS__, left, expr(children.get(1)));
-				} else if (Objects.equals(a.entity, "expression-obj"))
-					return expr(children.get(0));
+				} else if (Objects.equals(a.entity, "expression-add"))
+					return c1 == null ? expr(c0) : FunpTree.of(TermOp.PLUS__, expr(c0), expr(c1));
+				else if (Objects.equals(a.entity, "expression-obj"))
+					return expr(c0);
 				else if (Objects.equals(a.entity, "expression-dict")) {
 					var list = new ArrayList<Pair<String, Funp>>();
 					var iter = children.iterator();
 					while (iter.hasNext()) {
 						var k = iter.next();
 						var v = iter.next();
-						list.add(Pair.of(in.substring(k.start, k.end), expr(v)));
+						list.add(Pair.of(str(k), expr(v)));
 					}
 					return FunpStruct.of(list);
 				} else if (Objects.equals(a.entity, "expression-array"))
@@ -60,15 +58,19 @@ public class P0CrudeScript {
 						list.add(Pair.of("t" + i++, expr(child)));
 					return FunpStruct.of(list);
 				} else if (Objects.equals(a.entity, "constant"))
-					return expr(children.get(0));
+					return expr(c0);
 				else if (Objects.equals(a.entity, "<IDENTIFIER>"))
-					return FunpVariable.of(in.substring(a.start, a.end));
+					return FunpVariable.of(str(a));
 				else if (Objects.equals(a.entity, "<INTEGER_LITERAL>"))
-					return FunpNumber.ofNumber(Integer.valueOf(in.substring(a.start, a.end)));
+					return FunpNumber.ofNumber(Integer.valueOf(str(a)));
 				else if (Objects.equals(a.entity, "<STRING_LITERAL>"))
 					return Fail.t();
 				else
 					return Fail.t();
+			}
+
+			private String str(Ast a) {
+				return in.substring(a.start, a.end);
 			}
 		}.expr(ast);
 	}
