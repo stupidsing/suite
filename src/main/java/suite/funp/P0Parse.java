@@ -54,7 +54,6 @@ import suite.node.util.Singleton;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.streamlet.As;
-import suite.streamlet.Streamlet;
 import suite.util.Switch;
 
 public class P0Parse {
@@ -141,7 +140,7 @@ public class P0Parse {
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 			}).match2("recurse .0 >> .1", (a, b) -> {
 				var pattern1 = Suite.pattern(".0 := .1");
-				Streamlet<Node[]> list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect(As::streamlet);
+				var list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect(As::streamlet);
 				var variables_ = variables;
 
 				for (var array : list)
