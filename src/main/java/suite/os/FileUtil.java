@@ -45,8 +45,7 @@ public class FileUtil {
 	}
 
 	public static String homeDir() {
-		var homeDir = System.getProperty("home.dir");
-		return homeDir != null ? homeDir : ".";
+		return System.getProperty("home.dir", ".");
 	}
 
 	public static List<String> listZip(ZipFile zipFile) {
@@ -70,8 +69,7 @@ public class FileUtil {
 	}
 
 	public static OutputStream out(String filename) throws IOException {
-		var path = Paths.get(filename);
-		return out(path);
+		return out(Paths.get(filename));
 	}
 
 	public static OutputStream out(Path path) throws IOException {
@@ -107,8 +105,7 @@ public class FileUtil {
 	}
 
 	public static void write(Path path, String contents) {
-		try (var os = FileUtil.out(path); //
-				var w = new OutputStreamWriter(os, Constants.charset)) {
+		try (var os = FileUtil.out(path); var w = new OutputStreamWriter(os, Constants.charset)) {
 			w.write(contents);
 		} catch (IOException ex) {
 			Fail.t(ex);
