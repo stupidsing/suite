@@ -122,10 +122,10 @@ public class Summarize {
 		public final Account overall;
 		public final Map<K, Double> pnlByKey;
 
-		private SummarizeByStrategy(String log, Account overall, Map<K, Double> pnlBySymbol) {
+		private SummarizeByStrategy(String log, Account overall, Map<K, Double> pnlByKey) {
 			this.log = log;
 			this.overall = overall;
-			this.pnlByKey = pnlBySymbol;
+			this.pnlByKey = pnlByKey;
 		}
 	}
 
