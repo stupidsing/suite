@@ -11,7 +11,7 @@ import suite.util.Set_;
 import suite.util.To;
 
 /**
- * Compare content of two zip files.
+ * Compare contents of two zip files.
  *
  * @author ywsing
  */
