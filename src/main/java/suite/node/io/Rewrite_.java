@@ -51,43 +51,27 @@ public class Rewrite_ {
 		public final List<Pair<Node, Node>> children;
 
 		public static NodeRead of(Node node) {
-			ReadType type;
-			Node terminal;
-			Operator op;
-			List<Pair<Node, Node>> children;
 			Tree tree;
 
 			if (node instanceof Dict) {
 				var map = ((Dict) node).map;
-				type = ReadType.DICT;
-				terminal = null;
-				op = null;
-				children = Read //
+				return new NodeRead(ReadType.DICT, null, null, Read //
 						.from2(map) //
 						.sort((p0, p1) -> Comparer.comparer.compare(p0.t0, p1.t0)) //
 						.mapValue(Node::finalNode) //
-						.toList();
+						.toList());
 			} else if ((tree = Tree.decompose(node)) != null) {
 				var p0 = Pair.of(LEFT_, tree.getLeft());
 				var p1 = Pair.of(RIGHT, tree.getRight());
-				type = ReadType.TREE;
-				terminal = null;
-				op = tree.getOperator();
-				children = List.of(p0, p1);
+				return new NodeRead(ReadType.TREE, null, tree.getOperator(), List.of(p0, p1));
 			} else if (node instanceof Tuple) {
 				var nodes = ((Tuple) node).nodes;
-				type = ReadType.TUPLE;
-				terminal = null;
-				op = null;
-				children = Read.from(nodes).map(n -> Pair.<Node, Node> of(Atom.NIL, n.finalNode())).toList();
-			} else {
-				type = ReadType.TERM;
-				terminal = node;
-				op = null;
-				children = List.of();
-			}
-
-			return new NodeRead(type, terminal, op, children);
+				return new NodeRead(ReadType.TUPLE, null, null, Read //
+						.from(nodes) //
+						.map(n -> Pair.<Node, Node> of(Atom.NIL, n.finalNode())) //
+						.toList());
+			} else
+				return new NodeRead(ReadType.TERM, node, null, List.of());
 		}
 
 		private NodeRead(ReadType type, Node terminal, Operator op, List<Pair<Node, Node>> children) {
@@ -134,10 +118,7 @@ public class Rewrite_ {
 				children1.add(pair);
 		}
 
-		if (isSame)
-			return node;
-		else
-			return new NodeWrite(nr.type, nr.terminal, nr.op, children1).node;
+		return isSame ? node : new NodeWrite(nr.type, nr.terminal, nr.op, children1).node;
 	}
 
 }
