@@ -40,6 +40,7 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
+import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
@@ -152,7 +153,6 @@ public class InterpretFunEager {
 						return expr.apply(frame);
 					};
 				} else {
-					var values_ = new ArrayList<Fun<Frame, Node>>();
 					var vm1 = vm;
 					var fs1 = fs;
 
@@ -163,10 +163,7 @@ public class InterpretFunEager {
 					}
 
 					var eager1 = new Eager_(fs1, vm1);
-
-					for (var array : arrays)
-						values_.add(wrap(eager1.eager_(array[1])));
-
+					var values_ = Read.from(arrays).map(array -> wrap(eager1.eager_(array[1]))).toList();
 					var expr = eager1.eager_(DEFVARS.do_);
 
 					result = frame -> {
@@ -262,15 +259,8 @@ public class InterpretFunEager {
 		df.put("+pleft", f1(a -> Tree.decompose(a).getLeft()));
 		df.put("+pright", f1(a -> Tree.decompose(a).getRight()));
 
-		for (var e : TreeUtil.boolOperations.entrySet()) {
-			var fun = e.getValue();
-			df.put(e.getKey().getName(), f2((a, b) -> b(fun.apply(compare(a, b), 0))));
-		}
-
-		for (var e : TreeUtil.intOperations.entrySet()) {
-			var fun = e.getValue();
-			df.put(e.getKey().getName(), f2((a, b) -> Int.of(fun.apply(i(a), i(b)))));
-		}
+		TreeUtil.boolOperations.forEach((k, fun) -> df.put(k.getName(), f2((a, b) -> b(fun.apply(compare(a, b), 0)))));
+		TreeUtil.intOperations.forEach((k, fun) -> df.put(k.getName(), f2((a, b) -> Int.of(fun.apply(i(a), i(b))))));
 
 		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		var eager0 = new Eager_(0, IMap.empty());
