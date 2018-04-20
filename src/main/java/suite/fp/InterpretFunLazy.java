@@ -79,8 +79,8 @@ public class InterpretFunLazy {
 
 	public Thunk_ lazy(Node node) {
 		var parsed = parse(node);
-
 		var df = new HashMap<String, Thunk_>();
+
 		df.put(TermOp.AND___.name, binary((a, b) -> new Pair_(a, b)));
 		df.put("fst", () -> new Fun_(in -> ((Pair_) in.get()).first_));
 		df.put("if", () -> new Fun_(a -> () -> new Fun_(b -> () -> new Fun_(c -> a.get() == Atom.TRUE ? b : c))));
