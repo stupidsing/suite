@@ -215,7 +215,7 @@ public class P0Parse {
 			}).match3("if .0 then .1 else .2", (a, b, c) -> {
 				return FunpIf.of(p(a), p(b), p(c));
 			}).match2(".0 {.1}", (a, b) -> {
-				return FunpIndex.of(FunpReference.of(p(a)), p(b));
+				return a != Atom.NIL ? FunpIndex.of(FunpReference.of(p(a)), p(b)) : null;
 			}).match1("io .0", a -> {
 				return FunpIo.of(p(a));
 			}).match1("io-cat .0", a -> {
@@ -239,11 +239,11 @@ public class P0Parse {
 				return FunpRepeat.of(((Int) a).number, p(b));
 			}).match2(".0, .1", (a, b) -> {
 				return FunpStruct.of(List.of(Pair.of("t0", p(a)), Pair.of("t1", p(b))));
-			}).match1("struct .0", a -> {
+			}).match1("{ .0 }", a -> {
 				return FunpStruct.of(Tree //
 						.iter(a, TermOp.AND___) //
 						.map(n -> {
-							var m1 = Suite.pattern(".0 .1").match(n);
+							var m1 = Suite.pattern(".0 = .1").match(n);
 							return Pair.of(name(m1[0]), p(m1[1]));
 						}) //
 						.toList());

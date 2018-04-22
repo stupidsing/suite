@@ -24,7 +24,7 @@ public class FunpTest {
 	@Test
 	public void testBind() {
 		test(1, "define a := array (0, 1,) >> if (`array (0, v,)` = a) then v else 0");
-		test(2, "define s := struct (a 1, b 2, c 3,) >> if (`struct (a a, b v, c c,)` = s) then v else 0");
+		test(2, "define s := { a = 1, b = 2, c = 3, } >> if (`{ a = a, b = v, c = c,}` = s) then v else 0");
 	}
 
 	@Test
@@ -107,7 +107,7 @@ public class FunpTest {
 
 	@Test
 	public void testStruct() {
-		test(3, "define s := struct (a 1, b 2, c 3,) >> s/c");
+		test(3, "define s := { a = 1, b = 2, c = 3, } >> s/c");
 	}
 
 	private void test(int r, String p) {
