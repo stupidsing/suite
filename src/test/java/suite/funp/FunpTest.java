@@ -25,7 +25,7 @@ public class FunpTest {
 	public void testBind() {
 		test(1, "define a := [0, 1,] >> if (`[0, v,]` = a) then v else 0");
 		test(0, "define a := [0, 1,] >> if (`[1, v,]` = a) then v else 0");
-		test(2, "define s := { a = 1, b = 2, c = 3, } >> if (`{ a = a, b = v, c = c,}` = s) then v else 0");
+		test(2, "define s := { a: 1, b: 2, c: 3, } >> if (`{ a: a, b: v, c: c,}` = s) then v else 0");
 	}
 
 	@Test
@@ -108,7 +108,7 @@ public class FunpTest {
 
 	@Test
 	public void testStruct() {
-		test(3, "define s := { a = 1, b = 2, c = 3, } >> s/c");
+		test(3, "define s := { a: 1, b: 2, c: 3, } >> s/c");
 	}
 
 	private void test(int r, String p) {

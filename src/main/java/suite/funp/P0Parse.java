@@ -243,7 +243,7 @@ public class P0Parse {
 				return FunpStruct.of(Tree //
 						.iter(a, TermOp.AND___) //
 						.map(n -> {
-							var m1 = Suite.pattern(".0 = .1").match(n);
+							var m1 = Suite.pattern(".0: .1").match(n);
 							return Pair.of(name(m1[0]), p(m1[1]));
 						}) //
 						.toList());

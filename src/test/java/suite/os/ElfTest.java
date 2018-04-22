@@ -27,10 +27,10 @@ public class ElfTest {
 		var program = "" //
 				+ "expand size := 256 >> \n" //
 				+ "let `{ \n" //
-				+ "	map = linux-map, \n" //
-				+ "	unmap = linux-unmap, \n" //
-				+ "	read = linux-read, \n" //
-				+ "	write = linux-write, \n" //
+				+ "	map: linux-map, \n" //
+				+ "	unmap: linux-unmap, \n" //
+				+ "	read: linux-read, \n" //
+				+ "	write: linux-write, \n" //
 				+ "}` := consult \"linux.fp\" >> \n" //
 				+ "iterate n 1 (n != 0) ( \n" //
 				+ "	let buffer := (size * array coerce-byte _) >> \n" //
