@@ -384,7 +384,6 @@ public class SewingProverImpl implements ProverFactory {
 					}).trampoline();
 					return null;
 				};
-
 			} else {
 				var mcps = getCpsByPrototype(prototype);
 				cps = rt -> {
