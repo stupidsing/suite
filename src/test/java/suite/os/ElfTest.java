@@ -26,31 +26,12 @@ public class ElfTest {
 
 		var program = "" //
 				+ "expand size := 256 >> \n" //
-				+ "define linux-mmap := `length` => ( \n" //
-				+ "	let ps := array (0, length, 3, 34, -1, 0,) >> \n" //
-				+ "	let p := asm (EAX = 90; EBX = address ps;) { \n" //
-				+ "		INT (-128); \n" //
-				+ "	} >> \n" //
-				+ "	p \n" //
-				+ ") >> \n" //
-				+ "define linux-munmap := `pointer, length` => ( \n" //
-				+ "	type pointer = address (size * array coerce-byte _) >> \n" //
-				+ "	asm (EAX = 91; EBX = pointer; ECX = length;) { \n" //
-				+ "		INT (-128); \n" //
-				+ "	} \n" //
-				+ ") >> \n" //
-				+ "define linux-read := `pointer, length` => ( \n" //
-				+ "	type pointer = address (size * array coerce-byte _) >> \n" //
-				+ "	asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { \n" //
-				+ "		INT (-128); -- length in EAX \n" //
-				+ "	} \n" //
-				+ ") >> \n" //
-				+ "define linux-write := `pointer, length` => ( \n" //
-				+ "	type pointer = address (size * array coerce-byte _) >> \n" //
-				+ "	asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { \n" //
-				+ "		INT (-128); -- length in EAX \n" //
-				+ "	} \n" //
-				+ ") >> \n" //
+				+ "let `struct ( \n" //
+				+ "	map linux-map, \n" //
+				+ "	unmap linux-unmap, \n" //
+				+ "	read linux-read, \n" //
+				+ "	write linux-write, \n" //
+				+ ")` := consult \"linux.fp\" >> \n" //
 				+ "iterate n 1 (n != 0) ( \n" //
 				+ "	let buffer := (size * array coerce-byte _) >> \n" //
 				+ "	let pointer := address buffer >> \n" //

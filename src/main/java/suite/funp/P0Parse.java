@@ -1,9 +1,12 @@
 package suite.funp;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import suite.Constants;
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
@@ -47,6 +50,7 @@ import suite.lp.kb.Prototype;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
+import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
@@ -54,7 +58,9 @@ import suite.node.util.Singleton;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.streamlet.As;
+import suite.util.Fail;
 import suite.util.Switch;
+import suite.util.To;
 
 public class P0Parse {
 
@@ -63,7 +69,7 @@ public class P0Parse {
 
 	public Funp parse(Node node0) {
 		var node1 = expandMacros(node0);
-		return new Parse(ISet.empty()).parse(node1);
+		return new Parse(ISet.empty()).p(node1);
 	}
 
 	private Node expandMacros(Node node0) {
@@ -107,36 +113,45 @@ public class P0Parse {
 			this.variables = variables;
 		}
 
-		private Funp parse(Node node) {
+		private Funp p(Node node) {
 			return new SwitchNode<Funp>(node //
 			).match2(".0 | .1", (a, b) -> {
-				return FunpApply.of(parse(a), parse(b));
+				return FunpApply.of(p(a), p(b));
 			}).match1("array .0", a -> {
-				return FunpArray.of(Tree.iter(a, TermOp.AND___).map(this::parse).toList());
+				return FunpArray.of(Tree.iter(a, TermOp.AND___).map(this::p).toList());
 			}).match2("asm .0 {.1}", (a, b) -> {
 				return FunpAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
 					var ma = Suite.pattern(".0 = .1").match(n);
-					return Pair.of(Amd64.me.regByName.get(ma[0]), parse(ma[1]));
+					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
 				}).toList(), Tree.iter(b, TermOp.OR____).toList());
 			}).match(Atom.FALSE, m -> {
 				return FunpBoolean.of(false);
 			}).match(Atom.TRUE, m -> {
 				return FunpBoolean.of(true);
 			}).match3("type .0 = .1 >> .2", (a, b, c) -> {
-				return FunpCheckType.of(parse(a), parse(b), parse(c));
+				return FunpCheckType.of(p(a), p(b), p(c));
 			}).match1("coerce-byte .0", a -> {
-				return FunpCoerce.of(Coerce.BYTE, parse(a));
+				return FunpCoerce.of(Coerce.BYTE, p(a));
 			}).match1("coerce-number .0", a -> {
-				return FunpCoerce.of(Coerce.NUMBER, parse(a));
+				return FunpCoerce.of(Coerce.NUMBER, p(a));
 			}).match1("coerce-pointer .0", a -> {
-				return FunpCoerce.of(Coerce.POINTER, parse(a));
+				return FunpCoerce.of(Coerce.POINTER, p(a));
+			}).match1("consult .0", a -> {
+				try (var is = getClass().getResourceAsStream(((Str) a).value);
+						var isr = new InputStreamReader(is, Constants.charset);) {
+					return FunpPredefine.of(parse(Suite.parse(To.string(isr))));
+				} catch (IOException ex) {
+					return Fail.t(ex);
+				}
 			}).match3("define .0 := .1 >> .2", (a, b, c) -> {
 				var var = name(a);
-				return FunpDefine.of(true, var, parse(b), parseNewVariable(c, var));
+				return FunpDefine.of(true, var, p(b), parseNewVariable(c, var));
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
+			}).match3("let `.0` := .1 >> .2", (a, b, c) -> {
+				return p(Suite.pattern("if (`.0` = .1) then .2 else error").subst(a, b, c));
 			}).match3("let .0 := .1 >> .2", (a, b, c) -> {
 				var var = name(a);
-				return FunpDefine.of(false, var, parse(b), parseNewVariable(c, var));
+				return FunpDefine.of(false, var, p(b), parseNewVariable(c, var));
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 			}).match2("recurse .0 >> .1", (a, b) -> {
 				var pattern1 = Suite.pattern(".0 := .1");
@@ -150,20 +165,20 @@ public class P0Parse {
 
 				return FunpDefineRec.of(list //
 						.map(m1 -> {
-							return Pair.of(name(m1[0]), p1.parse(m1[1]));
+							return Pair.of(name(m1[0]), p1.p(m1[1]));
 						}) //
-						.toList(), p1.parse(b));
+						.toList(), p1.p(b));
 			}).match1("^.0", a -> {
-				return FunpDeref.of(parse(a));
+				return FunpDeref.of(p(a));
 			}).match(dontCare, m -> {
 				return FunpDontCare.of();
 			}).match("error", m -> {
 				return FunpError.of();
 			}).match2(".0/.1", (a, b) -> {
-				return FunpField.of(FunpReference.of(parse(a)), name(b));
+				return FunpField.of(FunpReference.of(p(a)), name(b));
 			}).match3("global .0 := .1 >> .2", (a, b, c) -> {
 				var var = name(a);
-				return FunpGlobal.of(var, parse(b), parseNewVariable(c, var));
+				return FunpGlobal.of(var, p(b), parseNewVariable(c, var));
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match4("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				var variables = new HashSet<String>();
@@ -179,17 +194,17 @@ public class P0Parse {
 								return null;
 						}, be);
 					}
-				}.extract(parse(a));
+				}.extract(p(a));
 
-				var value = parse(b);
+				var value = p(b);
 				ISet<String> variables1 = ISet.empty();
 
 				for (var var : variables)
 					variables1 = variables1.add(var);
 
 				var bind = new Bind(variables);
-				var then = new Parse(variables1).parse(c);
-				var else_ = parse(d);
+				var then = new Parse(variables1).p(c);
+				var else_ = p(d);
 				var f0 = bind.bind(be, value, then, else_);
 				Funp f1 = FunpCheckType.of(be, value, f0);
 
@@ -198,43 +213,43 @@ public class P0Parse {
 
 				return f1;
 			}).match3("if .0 then .1 else .2", (a, b, c) -> {
-				return FunpIf.of(parse(a), parse(b), parse(c));
+				return FunpIf.of(p(a), p(b), p(c));
 			}).match2(".0 {.1}", (a, b) -> {
-				return FunpIndex.of(FunpReference.of(parse(a)), parse(b));
+				return FunpIndex.of(FunpReference.of(p(a)), p(b));
 			}).match1("io .0", a -> {
-				return FunpIo.of(parse(a));
+				return FunpIo.of(p(a));
 			}).match1("io-cat .0", a -> {
-				return FunpIoCat.of(parse(a));
+				return FunpIoCat.of(p(a));
 			}).match4("iterate .0 .1 .2 .3", (a, b, c, d) -> {
 				var var = name(a);
 				var p1 = new Parse(variables.add(var));
-				return FunpIterate.of(var, parse(b), p1.parse(c), p1.parse(d));
+				return FunpIterate.of(var, p(b), p1.p(c), p1.p(d));
 			}).match2("`.0` => .1", (a, b) -> {
-				return parse(Suite.pattern(".2 => if (`.0` = .2) then .1 else error").subst(a, b, Atom.temp()));
+				return p(Suite.pattern(".2 => if (`.0` = .2) then .1 else error").subst(a, b, Atom.temp()));
 			}).match2(".0 => .1", (a, b) -> {
 				var var = name(a);
 				return FunpLambda.of(var, parseNewVariable(b, var));
 			}).applyIf(Int.class, n -> {
 				return FunpNumber.ofNumber(n.number);
 			}).match1("predef .0", a -> {
-				return FunpPredefine.of(parse(a));
+				return FunpPredefine.of(p(a));
 			}).match1("address .0", a -> {
-				return FunpReference.of(parse(a));
+				return FunpReference.of(p(a));
 			}).match2(".0 * array .1", (a, b) -> {
-				return FunpRepeat.of(((Int) a).number, parse(b));
+				return FunpRepeat.of(((Int) a).number, p(b));
 			}).match2(".0, .1", (a, b) -> {
-				return FunpStruct.of(List.of(Pair.of("t0", parse(a)), Pair.of("t1", parse(b))));
+				return FunpStruct.of(List.of(Pair.of("t0", p(a)), Pair.of("t1", p(b))));
 			}).match1("struct .0", a -> {
 				return FunpStruct.of(Tree //
 						.iter(a, TermOp.AND___) //
 						.map(n -> {
 							var m1 = Suite.pattern(".0 .1").match(n);
-							return Pair.of(name(m1[0]), parse(m1[1]));
+							return Pair.of(name(m1[0]), p(m1[1]));
 						}) //
 						.toList());
 			}).applyIf(Tree.class, tree -> {
-				var left = parse(tree.getLeft());
-				var right = parse(tree.getRight());
+				var left = p(tree.getLeft());
+				var right = p(tree.getRight());
 				return FunpTree.of(tree.getOperator(), left, right);
 			}).applyIf(Atom.class, atom -> {
 				var var = atom.name;
@@ -243,7 +258,7 @@ public class P0Parse {
 		}
 
 		private Funp parseNewVariable(Node node, String var) {
-			return new Parse(variables.add(var)).parse(node);
+			return new Parse(variables.add(var)).p(node);
 		}
 	}
 
@@ -277,9 +292,7 @@ public class P0Parse {
 				return ((FunpBoolean) be).b == ((FunpBoolean) value).b ? then : else_;
 			else if (be instanceof FunpNumber && value instanceof FunpNumber)
 				return ((FunpNumber) be).i == ((FunpNumber) value).i ? then : else_;
-			else
-
-			{
+			else {
 				var result = be.<Funp> switch_( //
 				).applyIf(FunpArray.class, f -> f.apply(elements0 -> {
 					return bindArray.apply(elements0.size(), elements0::get);
