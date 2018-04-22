@@ -1,8 +1,8 @@
 package suite.lp.sewing.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import suite.adt.pair.Pair;
 import suite.lp.doer.ClonerFactory;
 import suite.lp.sewing.VariableMapper;
 import suite.node.Dict;
@@ -13,6 +13,7 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
+import suite.util.To;
 
 public class SewingClonerImpl implements ClonerFactory {
 
@@ -38,12 +39,11 @@ public class SewingClonerImpl implements ClonerFactory {
 						.map((key, value) -> new Clone_[] { cloner(key), cloner(value), }) //
 						.toArray(Clone_[].class);
 				var length = array.length;
-				return env -> {
-					@SuppressWarnings("unchecked")
-					Pair<Node, Reference>[] pairs = new Pair[length];
+				fun = env -> {
+					var map = new HashMap<Node, Reference>();
 					for (var i = 0; i < length; i++)
-						pairs[i] = Pair.of(array[i][0].apply(env), Reference.of(array[i][1].apply(env)));
-					return Dict.of(pairs);
+						map.put(array[i][0].apply(env), Reference.of(array[i][1].apply(env)));
+					return new Dict(map);
 				};
 			} else if ((tree = Tree.decompose(node0)) != null) {
 				var operator = tree.getOperator();
@@ -63,12 +63,7 @@ public class SewingClonerImpl implements ClonerFactory {
 			} else if (node0 instanceof Tuple) {
 				var ps = Read.from(((Tuple) node0).nodes).map(this::cloner).toArray(Clone_.class);
 				var size = ps.length;
-				fun = env -> {
-					var nodes = new Node[size];
-					for (var i = 0; i < size; i++)
-						nodes[i] = ps[i].apply(env);
-					return Tuple.of(nodes);
-				};
+				fun = env -> Tuple.of(To.array(size, Node.class, i -> ps[i].apply(env)));
 			} else
 				fun = env -> node0;
 

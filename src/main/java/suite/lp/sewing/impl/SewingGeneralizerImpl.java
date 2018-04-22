@@ -1,8 +1,8 @@
 package suite.lp.sewing.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
-import suite.adt.pair.Pair;
 import suite.lp.doer.GeneralizerFactory;
 import suite.lp.doer.ProverConstant;
 import suite.lp.sewing.VariableMapper;
@@ -15,6 +15,7 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
+import suite.util.To;
 
 public class SewingGeneralizerImpl implements GeneralizerFactory {
 
@@ -55,11 +56,10 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 						.toArray(Generalize_[].class);
 				var length = array.length;
 				fun = env -> {
-					@SuppressWarnings("unchecked")
-					Pair<Node, Reference>[] pairs = new Pair[length];
+					var map = new HashMap<Node, Reference>();
 					for (var i = 0; i < length; i++)
-						pairs[i] = Pair.of(array[i][0].apply(env), Reference.of(array[i][1].apply(env)));
-					return Dict.of(pairs);
+						map.put(array[i][0].apply(env), Reference.of(array[i][1].apply(env)));
+					return new Dict(map);
 				};
 			} else if ((tree = Tree.decompose(node0)) != null) {
 				var operator = tree.getOperator();
@@ -76,12 +76,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 			} else if (node0 instanceof Tuple) {
 				var fs = Read.from(((Tuple) node0).nodes).map(this::generalizer).toArray(Generalize_.class);
 				var length = fs.length;
-				fun = env -> {
-					var array = new Node[length];
-					for (var i = 0; i < length; i++)
-						array[i] = fs[i].apply(env);
-					return Tuple.of(array);
-				};
+				fun = env -> Tuple.of(To.array(length, Node.class, i -> fs[i].apply(env)));
 			} else
 				fun = env -> node0;
 
