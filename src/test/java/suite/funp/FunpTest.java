@@ -96,7 +96,7 @@ public class FunpTest {
 
 	@Test
 	public void testReturnArray() {
-		test(2, "define f := i => array (0, 1, i,) >> (2 | f) {2}");
+		test(2, "define f := i => array (0, 1, i,) >> define g := (2 | f) >> g {2}");
 	}
 
 	@Test
