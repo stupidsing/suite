@@ -142,21 +142,21 @@ public class RecursiveFactorizerTest {
 
 	private Node treeNode(Source<Node> g, Node name, List<Node> nodes) {
 		var pairs = Read.from(nodes).map(node -> pairNode(node, g.source())).toList();
-		var dict = new Dict();
+		var dict = Dict.of();
 		dict.map.put(Atom.of("name"), Reference.of(name));
 		dict.map.put(Atom.of("pairs"), Reference.of(Tree.of(TermOp.OR____, pairs)));
 		return Tree.of(TermOp.COLON_, Atom.of(FTree.class.getName()), dict);
 	}
 
 	private Node pairNode(Node n0, Node n1) {
-		var dict = new Dict();
+		var dict = Dict.of();
 		dict.map.put(Atom.of("node"), Reference.of(n0));
 		dict.map.put(Atom.of("chars"), Reference.of(n1));
 		return dict;
 	}
 
 	private Node terminalNode(String s) {
-		var dict = new Dict();
+		var dict = Dict.of();
 		dict.map.put(Atom.of("chars"), Reference.of(new Str(s)));
 		return Tree.of(TermOp.COLON_, Atom.of(FTerminal.class.getName()), dict);
 	}

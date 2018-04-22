@@ -64,7 +64,7 @@ public class EvalPredicates {
 
 	public BuiltinPredicate dictKeyValue = PredicateUtil.p3((prover, node, key, value) -> {
 		var reference = new Reference();
-		var dict = new Dict();
+		var dict = Dict.of();
 		dict.map.put(key, reference);
 		return prover.bind(reference, value) && prover.bind(node, dict);
 	});

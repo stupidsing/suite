@@ -59,7 +59,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 					var map = new HashMap<Node, Reference>();
 					for (var i = 0; i < length; i++)
 						map.put(array[i][0].apply(env), Reference.of(array[i][1].apply(env)));
-					return new Dict(map);
+					return Dict.of(map);
 				};
 			} else if ((tree = Tree.decompose(node0)) != null) {
 				var operator = tree.getOperator();

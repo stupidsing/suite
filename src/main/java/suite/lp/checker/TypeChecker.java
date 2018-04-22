@@ -94,7 +94,7 @@ public class TypeChecker {
 	}
 
 	private Node getEnumType(Node name, Node type1) {
-		var dict = new Dict();
+		var dict = Dict.of();
 		dict.map.put(name, Reference.of(type1));
 		return dict;
 	}

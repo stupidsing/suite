@@ -10,18 +10,26 @@ public class Dict extends Node {
 
 	public final Map<Node, Reference> map;
 
-	public static Dict of(Pair<Node, Reference>[] pairs) {
+	public static Dict of() {
+		return new Dict(new HashMap<>());
+	}
+
+	public static Dict ofPairs(Pair<Node, Reference>[] pairs) {
 		var map = new HashMap<Node, Reference>();
 		for (var pair : pairs)
 			map.put(pair.t0, pair.t1);
+		return of(map);
+	}
+
+	public static Dict of(Map<Node, Reference> map) {
 		return new Dict(map);
 	}
 
-	public Dict() {
+	private Dict() {
 		this(new HashMap<>());
 	}
 
-	public Dict(Map<Node, Reference> map) {
+	private Dict(Map<Node, Reference> map) {
 		this.map = map;
 	}
 

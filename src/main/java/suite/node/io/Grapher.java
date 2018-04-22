@@ -92,7 +92,7 @@ public class Grapher {
 				.map(gn -> {
 					switch (gn.type) {
 					case DICT:
-						return new Dict();
+						return Dict.of();
 					case TERM:
 						return gn.terminal;
 					case TREE:

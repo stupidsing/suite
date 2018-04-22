@@ -153,7 +153,7 @@ public class Nodify {
 
 				var pairs = Read.from(fieldInfos).map(f -> Pair.of(Atom.of(f.name), f)).toList();
 				nodifier = new Nodifier(object -> Rethrow.ex(() -> {
-					var dict = new Dict();
+					var dict = Dict.of();
 					for (var pair : pairs) {
 						var fieldInfo = pair.t1;
 						var value = apply_(fieldInfo.nodifier, fieldInfo.field.get(object));
@@ -197,7 +197,7 @@ public class Nodify {
 				var kn = getNodifier(typeArgs[0]);
 				var vn = getNodifier(typeArgs[1]);
 				nodifier = new Nodifier(object -> {
-					var dict = new Dict();
+					var dict = Dict.of();
 					for (var e : ((Map<?, ?>) object).entrySet())
 						dict.map.put(apply_(kn, e.getKey()), Reference.of(apply_(vn, e.getValue())));
 					return dict;
