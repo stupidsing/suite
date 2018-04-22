@@ -270,7 +270,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 		}).start();
 
 		return new Outlet<>(() -> {
-			Mutable<T> mutable = Mutable.nil();
+			var mutable = Mutable.<T> nil();
 			return queue.poll(mutable) ? mutable.get() : t0;
 		});
 	}

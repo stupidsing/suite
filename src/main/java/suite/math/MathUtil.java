@@ -1,6 +1,7 @@
 package suite.math;
 
-import static suite.util.Friends.*;
+import static suite.util.Friends.abs;
+
 import suite.util.Fail;
 import suite.util.To;
 

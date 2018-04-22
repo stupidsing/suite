@@ -340,7 +340,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 		}).start();
 
 		return new FltOutlet(() -> {
-			Mutable<Float> mutable = Mutable.nil();
+			var mutable = Mutable.<Float> nil();
 			var c = queue.poll(mutable) ? mutable.get() : c0;
 			return c;
 		});

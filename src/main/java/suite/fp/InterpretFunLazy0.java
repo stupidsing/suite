@@ -76,7 +76,7 @@ public class InterpretFunLazy0 {
 			var value = lazy_(m[1]);
 			var expr = lazy_(m[2]);
 			result = env -> {
-				Mutable<Thunk_> val = Mutable.nil();
+				var val = Mutable.<Thunk_> nil();
 				var env1 = env.put(vk, () -> val.get().get());
 				val.set(value.apply(env1)::get);
 				return expr.apply(env1);

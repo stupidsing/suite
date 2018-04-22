@@ -21,7 +21,7 @@ public class LazyIbTreeMutator<K, V> implements KeyValueMutator<K, V> {
 
 	@Override
 	public V get(K key) {
-		Mutable<V> mutable = Mutable.nil();
+		var mutable = Mutable.<V> nil();
 		update_(key, pair -> {
 			mutable.set(pair != null ? pair.t1 : null);
 			return pair;

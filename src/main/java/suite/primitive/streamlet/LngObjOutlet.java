@@ -324,7 +324,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 		}).start();
 
 		return new LngObjOutlet<>(pair -> {
-			Mutable<LngObjPair<V>> mutable = Mutable.nil();
+			var mutable = Mutable.<LngObjPair<V>> nil();
 			var b = queue.poll(mutable);
 			if (b) {
 				var p = mutable.get();

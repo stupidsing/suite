@@ -21,7 +21,7 @@ public class RequestResponseMatcher {
 
 	public Bytes requestForResponse(RequestResponseNioChannel channel, Bytes request, int timeOut) {
 		var token = Util.temp();
-		Mutable<Bytes> holder = Mutable.nil();
+		var holder = Mutable.<Bytes> nil();
 		var condition = new Condition(() -> holder.get() != null);
 
 		return condition.waitThen(() -> {
@@ -35,7 +35,7 @@ public class RequestResponseMatcher {
 
 	public void onResponseReceived(int token, Bytes response) {
 		var pair = requests.get(token);
-		Mutable<Bytes> holder = pair.t0;
+		var holder = pair.t0;
 		var condition = pair.t1;
 		condition.thenNotify(() -> holder.set(response));
 	}

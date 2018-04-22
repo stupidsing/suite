@@ -324,7 +324,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 		}).start();
 
 		return new FltObjOutlet<>(pair -> {
-			Mutable<FltObjPair<V>> mutable = Mutable.nil();
+			var mutable = Mutable.<FltObjPair<V>> nil();
 			var b = queue.poll(mutable);
 			if (b) {
 				var p = mutable.get();

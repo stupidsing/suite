@@ -312,7 +312,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		}).start();
 
 		return new Outlet2<>(pair -> {
-			Mutable<Pair<K, V>> mutable = Mutable.nil();
+			var mutable = Mutable.<Pair<K, V>> nil();
 			var b = queue.poll(mutable);
 			if (b) {
 				var p = mutable.get();

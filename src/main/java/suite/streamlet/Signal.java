@@ -162,7 +162,7 @@ public class Signal<T> {
 	}
 
 	public Signal<T> resample(Signal<?> event) {
-		Mutable<T> mut = Mutable.nil();
+		var mut = Mutable.<T> nil();
 		wire_(mut::update);
 		return event.redirect_((e, fire) -> fire.sink(mut.get()));
 	}

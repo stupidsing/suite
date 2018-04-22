@@ -195,7 +195,7 @@ public class SewingProverImpl implements ProverFactory {
 		var tr = cutBegin(compileTr(passThru, node));
 
 		return pc -> {
-			Mutable<Boolean> result = Mutable.of(false);
+			var result = Mutable.of(false);
 
 			new Runtime(pc, rt -> {
 				rt.pushRem(rt_ -> {
@@ -501,7 +501,7 @@ public class SewingProverImpl implements ProverFactory {
 			tr = rt -> {
 				var ht = Suite.pattern(".0 .1").match(ht_.apply(rt.env));
 				var tr1 = saveEnvTr(compileTrRule(ht[0], ht[1]));
-				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
+				var current = Mutable.of(value0_.apply(rt.env));
 				rt.pushRem(rt_ -> valuex_.test(rt_, current.get()) ? okay : fail);
 				for (var elem : Tree.iter(list0_.apply(rt.env))) {
 					var result = new Reference();
@@ -525,7 +525,7 @@ public class SewingProverImpl implements ProverFactory {
 			var vx_ = bf.cloner(m[5]);
 			var tr1 = compileTr(bf, m[6]);
 			tr = rt -> {
-				Mutable<Node> current = Mutable.of(value0_.apply(rt.env));
+				var current = Mutable.of(value0_.apply(rt.env));
 				var env0 = rt.env;
 				rt.pushRem(rt_ -> {
 					rt_.env = env0;

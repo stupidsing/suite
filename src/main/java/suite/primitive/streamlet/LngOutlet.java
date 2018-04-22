@@ -340,7 +340,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 		}).start();
 
 		return new LngOutlet(() -> {
-			Mutable<Long> mutable = Mutable.nil();
+			var mutable = Mutable.<Long> nil();
 			var c = queue.poll(mutable) ? mutable.get() : c0;
 			return c;
 		});

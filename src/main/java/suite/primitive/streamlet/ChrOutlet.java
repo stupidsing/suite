@@ -340,7 +340,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		}).start();
 
 		return new ChrOutlet(() -> {
-			Mutable<Character> mutable = Mutable.nil();
+			var mutable = Mutable.<Character> nil();
 			var c = queue.poll(mutable) ? mutable.get() : c0;
 			return c;
 		});

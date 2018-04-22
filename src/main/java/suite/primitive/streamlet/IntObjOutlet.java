@@ -324,7 +324,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		}).start();
 
 		return new IntObjOutlet<>(pair -> {
-			Mutable<IntObjPair<V>> mutable = Mutable.nil();
+			var mutable = Mutable.<IntObjPair<V>> nil();
 			var b = queue.poll(mutable);
 			if (b) {
 				var p = mutable.get();

@@ -394,13 +394,13 @@ public class P2InferType {
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
-				Mutable<Integer> offset = Mutable.nil();
+				var offset = Mutable.<Integer> nil();
 				var size = getTypeSize(typeOf(value));
 				var e1 = new Erase(scope, env.replace(var, new Var(scope, offset, 0, size)));
 				return allocStack(size, value, e1.erase(expr), offset);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				var assigns = new ArrayList<Pair<Var, Funp>>();
-				Mutable<Integer> offsetStack = Mutable.nil();
+				var offsetStack = Mutable.<Integer> nil();
 				var env1 = env;
 				var offset = 0;
 
@@ -437,7 +437,7 @@ public class P2InferType {
 				return Fail.t();
 			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
 				var size = getTypeSize(typeOf(value));
-				Mutable<Operand> address = Mutable.nil();
+				var address = Mutable.<Operand> nil();
 				var e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
 				var expr1 = FunpAssign.of(FunpMemory.of(FunpOperand.of(address), 0, size), erase(value), e1.erase(expr));
 				return FunpAllocGlobal.of(var, size, expr1, address);
@@ -454,7 +454,7 @@ public class P2InferType {
 				var address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-				Mutable<Integer> offset = Mutable.nil();
+				var offset = Mutable.<Integer> nil();
 				var size = getTypeSize(typeOf(init));
 				var var_ = new Var(scope, offset, 0, size);
 				var e1 = new Erase(scope, env.replace(var, var_));

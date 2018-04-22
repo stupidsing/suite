@@ -180,7 +180,7 @@ public class InterpretFunLazy {
 				var expr = lazy1.lazy_(m[2]);
 
 				result = frame -> {
-					Mutable<Thunk_> value = Mutable.nil();
+					var value = Mutable.<Thunk_> nil();
 					frame.add(() -> value.get().get());
 					value.set(() -> value_.apply(frame).get());
 					return expr.apply(frame);

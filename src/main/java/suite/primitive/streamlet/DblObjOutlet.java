@@ -324,7 +324,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		}).start();
 
 		return new DblObjOutlet<>(pair -> {
-			Mutable<DblObjPair<V>> mutable = Mutable.nil();
+			var mutable = Mutable.<DblObjPair<V>> nil();
 			var b = queue.poll(mutable);
 			if (b) {
 				var p = mutable.get();
