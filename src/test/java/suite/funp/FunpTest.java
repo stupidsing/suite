@@ -24,6 +24,7 @@ public class FunpTest {
 	@Test
 	public void testBind() {
 		test(1, "define a := array (0, 1,) >> if (`array (0, v,)` = a) then v else 0");
+		test(2, "define s := struct (a 1, b 2, c 3,) >> if (`struct (a a, b v, c c,)` = s) then v else 0");
 	}
 
 	@Test
