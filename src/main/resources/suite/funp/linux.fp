@@ -1,7 +1,7 @@
 expand size := 256 >>
 {
 	map = (`length` =>
-		let ps := array (0, length, 3, 34, -1, 0,) >>
+		let ps := [0, length, 3, 34, -1, 0,] >>
 		let p := asm (EAX = 90; EBX = address ps;) {
 			INT (-128);
 		} >>

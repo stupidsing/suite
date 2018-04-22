@@ -117,7 +117,7 @@ public class P0Parse {
 			return new SwitchNode<Funp>(node //
 			).match2(".0 | .1", (a, b) -> {
 				return FunpApply.of(p(a), p(b));
-			}).match1("array .0", a -> {
+			}).match1("[.0]", a -> {
 				return FunpArray.of(Tree.iter(a, TermOp.AND___).map(this::p).toList());
 			}).match2("asm .0 {.1}", (a, b) -> {
 				return FunpAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
