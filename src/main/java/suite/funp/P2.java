@@ -131,15 +131,18 @@ public class P2 {
 
 	public static class FunpInvokeIo implements Funp, P4.End {
 		public Funp routine;
+		public int is, os;
 
-		public static FunpInvokeIo of(Funp routine) {
+		public static FunpInvokeIo of(Funp routine, int is, int os) {
 			var f = new FunpInvokeIo();
 			f.routine = routine;
+			f.is = is;
+			f.os = os;
 			return f;
 		}
 
-		public <R> R apply(FixieFun1<Funp, R> fun) {
-			return fun.apply(routine);
+		public <R> R apply(FixieFun3<Funp, Integer, Integer, R> fun) {
+			return fun.apply(routine, is, os);
 		}
 	}
 

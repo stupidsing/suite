@@ -271,7 +271,7 @@ public class P4GenerateCode {
 
 					offset.update(fd1);
 
-					if ((op = deOp.decomposeOperand(fd, value)) != null && op.size == is)
+					if (size == is && (op = deOp.decomposeOperand(fd, value)) != null && op.size == is)
 						em.emit(amd64.instruction(Insn.PUSH, op));
 					else {
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
@@ -391,12 +391,13 @@ public class P4GenerateCode {
 						return postTwoOp.apply(p2_eax, p2_edx);
 					} else
 						return Fail.t();
-				})).applyIf(FunpInvokeIo.class, f -> f.apply(routine -> {
+				})).applyIf(FunpInvokeIo.class, f -> f.apply((routine, is, os) -> {
 					return postAssign.apply((c1, target) -> {
-						var r0 = c1.compileOpReg(target.pointer);
-						var c2 = c1.mask(r0);
-						c2.compileInvoke(routine);
-						c2.compileMove(r0, target.start, c2.compileFramePointer(), c2.fd, target.size());
+						OpReg r0, r1;
+						c1.compileInvoke(routine);
+						var c2 = c1.mask(r0 = c1.compileOpReg(target.pointer));
+						var c3 = c2.mask(r1 = c2.compileFramePointer());
+						c3.compileMove(r0, target.start, r1, c3.fd + is, target.size());
 					});
 				})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 					var size = end - start;
@@ -439,7 +440,8 @@ public class P4GenerateCode {
 				})).applyIf(FunpRoutine2.class, f -> f.apply((frame, expr) -> {
 					return postTwoOp.apply(compileOp(frame), compileRoutine(c1 -> c1.compileTwoOpSpec(expr, p2_eax, p2_edx)));
 				})).applyIf(FunpRoutineIo.class, f -> f.apply((frame, expr, is, os) -> {
-					FunpMemory out = frame(ps + is, os);
+					var o = ps * 2 + is; // input argument, return address and EBP
+					var out = frame(o, o + os);
 					return postTwoOp.apply(compileOp(frame), compileRoutine(c1 -> c1.compileAssign(expr, out)));
 				})).applyIf(FunpSaveRegisters.class, f -> f.apply(expr -> {
 					var opRegs = rs.list(r -> r != ebp.reg && r != esp.reg);

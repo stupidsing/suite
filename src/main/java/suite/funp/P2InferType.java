@@ -363,7 +363,7 @@ public class P2InferType {
 
 			return n.<Funp> switch_( //
 			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-				var lt = lambdaType(lambda);
+				var lt = new LambdaType(lambda);
 				var lambda1 = erase(lambda);
 				var size = getTypeSize(typeOf(value));
 				Funp invoke;
@@ -371,8 +371,10 @@ public class P2InferType {
 					invoke = allocStack(size, value, FunpInvoke.of(lambda1));
 				else if (lt.os == ps * 2)
 					invoke = allocStack(size, value, FunpInvoke2.of(lambda1));
-				else
-					invoke = allocStack(lt.os, FunpDontCare.of(), allocStack(size, value, FunpInvokeIo.of(lambda1)));
+				else {
+					var as = allocStack(size, value, FunpInvokeIo.of(lambda1, lt.is, lt.os));
+					invoke = FunpAllocStack.of(lt.os, FunpDontCare.of(), as, IntMutable.nil());
+				}
 				return FunpSaveRegisters.of(invoke);
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
 				var te = unify.newRef();
@@ -465,13 +467,13 @@ public class P2InferType {
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				var b = ps * 2; // return address and EBP
 				var scope1 = scope + 1;
-				var lt = lambdaType(n);
+				var lt = new LambdaType(n);
 				var frame = Funp_.framePointer;
 				var expr1 = new Erase(scope1, env.replace(var, new Var(scope1, IntMutable.of(0), b, b + lt.is))).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
 				var b = ps * 2; // return address and EBP
-				var lt = lambdaType(n);
+				var lt = new LambdaType(n);
 				var size = getTypeSize(typeOf(cap));
 				IMap<String, Var> env0 = IMap.empty();
 				var env1 = env0 //
@@ -578,12 +580,6 @@ public class P2InferType {
 			this.start = start;
 			this.end = end;
 		}
-	}
-
-	private LambdaType lambdaType(Funp lambda) {
-		var lt = new LambdaType(lambda);
-		return lt.os <= is || lt.os == ps * 2 ? lt : Fail.t();
-
 	}
 
 	private class LambdaType {
