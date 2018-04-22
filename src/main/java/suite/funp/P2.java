@@ -11,6 +11,7 @@ import suite.adt.pair.Fixie_.FixieFun4;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_.Funp;
+import suite.primitive.IntMutable;
 import suite.primitive.adt.pair.IntIntPair;
 
 public class P2 {
@@ -42,9 +43,9 @@ public class P2 {
 		public int size;
 		public Funp value;
 		public Funp expr;
-		public Mutable<Integer> stack;
+		public IntMutable stack;
 
-		public static FunpAllocStack of(int size, Funp value, Funp expr, Mutable<Integer> stack) {
+		public static FunpAllocStack of(int size, Funp value, Funp expr, IntMutable stack) {
 			var f = new FunpAllocStack();
 			f.size = size;
 			f.value = value;
@@ -53,7 +54,7 @@ public class P2 {
 			return f;
 		}
 
-		public <R> R apply(FixieFun4<Integer, Funp, Funp, Mutable<Integer>, R> fun) {
+		public <R> R apply(FixieFun4<Integer, Funp, Funp, IntMutable, R> fun) {
 			return fun.apply(size, value, expr, stack);
 		}
 	}

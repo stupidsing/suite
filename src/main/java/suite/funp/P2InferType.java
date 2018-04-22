@@ -64,6 +64,7 @@ import suite.immutable.ISet;
 import suite.inspect.Inspect;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
+import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
@@ -394,13 +395,13 @@ public class P2InferType {
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
-				var offset = Mutable.<Integer> nil();
+				var offset = IntMutable.nil();
 				var size = getTypeSize(typeOf(value));
 				var e1 = new Erase(scope, env.replace(var, new Var(scope, offset, 0, size)));
 				return allocStack(size, value, e1.erase(expr), offset);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				var assigns = new ArrayList<Pair<Var, Funp>>();
-				var offsetStack = Mutable.<Integer> nil();
+				var offsetStack = IntMutable.nil();
 				var env1 = env;
 				var offset = 0;
 
@@ -454,7 +455,7 @@ public class P2InferType {
 				var address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-				var offset = Mutable.<Integer> nil();
+				var offset = IntMutable.nil();
 				var size = getTypeSize(typeOf(init));
 				var var_ = new Var(scope, offset, 0, size);
 				var e1 = new Erase(scope, env.replace(var, var_));
@@ -466,7 +467,7 @@ public class P2InferType {
 				var scope1 = scope + 1;
 				var lt = lambdaType(n);
 				var frame = Funp_.framePointer;
-				var expr1 = new Erase(scope1, env.replace(var, new Var(scope1, Mutable.of(0), b, b + lt.is))).erase(expr);
+				var expr1 = new Erase(scope1, env.replace(var, new Var(scope1, IntMutable.of(0), b, b + lt.is))).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
 				var b = ps * 2; // return address and EBP
@@ -474,8 +475,8 @@ public class P2InferType {
 				var size = getTypeSize(typeOf(cap));
 				IMap<String, Var> env0 = IMap.empty();
 				var env1 = env0 //
-						.replace(capn, new Var(0, Mutable.of(0), 0, size)) //
-						.replace(var, new Var(1, Mutable.of(0), b, b + lt.is));
+						.replace(capn, new Var(0, IntMutable.of(0), 0, size)) //
+						.replace(var, new Var(1, IntMutable.of(0), b, b + lt.is));
 				var frame = FunpReference.of(erase(cap));
 				var expr1 = new Erase(1, env1).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
@@ -534,10 +535,10 @@ public class P2InferType {
 		}
 
 		private FunpAllocStack allocStack(int size, Funp value, Funp expr) {
-			return allocStack(size, value, expr, Mutable.nil());
+			return allocStack(size, value, expr, IntMutable.nil());
 		}
 
-		private FunpAllocStack allocStack(int size, Funp value, Funp expr, Mutable<Integer> stack) {
+		private FunpAllocStack allocStack(int size, Funp value, Funp expr, IntMutable stack) {
 			return FunpAllocStack.of(size, erase(value), expr, stack);
 		}
 
@@ -550,7 +551,7 @@ public class P2InferType {
 				for (var i = scope0; i < scope; i++)
 					nfp = FunpMemory.of(nfp, 0, ps);
 			} else
-				nfp = FunpNumber.of(Mutable.of(0)); // globals
+				nfp = FunpNumber.of(IntMutable.of(0)); // globals
 			if (operand != null)
 				nfp = FunpTree.of(TermOp.PLUS__, nfp, FunpOperand.of(operand));
 			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp, FunpNumber.of(vd.offset)), vd.start, vd.end);
@@ -559,19 +560,19 @@ public class P2InferType {
 
 	private class Var {
 		private Integer scope;
-		private Mutable<Integer> offset;
+		private IntMutable offset;
 		private Mutable<Operand> operand;
 		private int start;
 		private int end;
 
 		public Var(Mutable<Operand> operand, int start, int end) {
-			this.offset = Mutable.of(0);
+			this.offset = IntMutable.of(0);
 			this.operand = operand;
 			this.start = start;
 			this.end = end;
 		}
 
-		public Var(int scope, Mutable<Integer> offset, int start, int end) {
+		public Var(int scope, IntMutable offset, int start, int end) {
 			this.scope = scope;
 			this.offset = offset;
 			this.start = start;

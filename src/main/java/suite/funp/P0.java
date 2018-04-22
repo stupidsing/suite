@@ -3,7 +3,6 @@ package suite.funp;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.adt.Mutable;
 import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
@@ -15,6 +14,7 @@ import suite.funp.Funp_.Funp;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.io.Operator;
+import suite.primitive.IntMutable;
 
 public class P0 {
 
@@ -360,19 +360,19 @@ public class P0 {
 	}
 
 	public static class FunpNumber implements Funp, P4.End {
-		public Mutable<Integer> i;
+		public IntMutable i;
 
 		public static FunpNumber ofNumber(int i) {
-			return of(Mutable.of(i));
+			return of(IntMutable.of(i));
 		}
 
-		public static FunpNumber of(Mutable<Integer> i) {
+		public static FunpNumber of(IntMutable i) {
 			var f = new FunpNumber();
 			f.i = i;
 			return f;
 		}
 
-		public <R> R apply(FixieFun1<Mutable<Integer>, R> fun) {
+		public <R> R apply(FixieFun1<IntMutable, R> fun) {
 			return fun.apply(i);
 		}
 	}
