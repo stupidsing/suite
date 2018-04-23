@@ -34,7 +34,7 @@ public class ElfTest {
 				+ "	write: linux-write, \n" //
 				+ "}` := consult \"linux.fp\" >> \n" //
 				+ "iterate n 1 (n != 0) ( \n" //
-				+ "	let buffer := (size * array coerce-byte _) >> \n" //
+				+ "	let buffer := size * array coerce-byte _ >> \n" //
 				+ "	let pointer := address buffer >> \n" //
 				+ "	pointer, size | linux-read | io-cat (nBytesRead => \n" //
 				+ "		pointer, nBytesRead | linux-write | io-cat (nBytesWrote => \n" //
