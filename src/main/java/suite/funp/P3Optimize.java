@@ -98,9 +98,9 @@ public class P3Optimize {
 	}
 
 	private Integer[] evaluate(Funp lhs0, Funp rhs0) {
-		var lhs2 = optimize(lhs0).cast(FunpNumber.class, n -> n.i.get());
-		var rhs2 = optimize(rhs0).cast(FunpNumber.class, n -> n.i.get());
-		return new Integer[] { lhs2, rhs2, };
+		var lhs1 = optimize(lhs0).cast(FunpNumber.class, n -> n.i.get());
+		var rhs1 = optimize(rhs0).cast(FunpNumber.class, n -> n.i.get());
+		return new Integer[] { lhs1, rhs1, };
 	}
 
 }
