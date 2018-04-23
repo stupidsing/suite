@@ -52,24 +52,19 @@ public class P3Optimize {
 		})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 			return optimize(pointer).<Funp> switch_().applyIf(FunpReference.class, g -> g.expr).result();
 		})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
-			return optimize(if_) //
-					.<Funp> switch_() //
-					.applyIf(FunpBoolean.class, g -> g.apply(b -> {
-						return b ? then : else_;
-					})).result();
+			return optimize(if_).<Funp> switch_().applyIf(FunpBoolean.class, g -> g.apply(b -> b ? then : else_)).result();
 		})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
-			return optimize(pointer) //
-					.<Funp> switch_() //
-					.applyIf(FunpData.class, g -> g.apply(pairs -> {
-						for (var pair : pairs) {
-							var range = pair.t1;
-							if (start == range.t0 && end == range.t1)
-								return pair.t0;
-						}
-						return null;
-					})).applyIf(FunpReference.class, g -> {
-						return FunpTree.of(TermOp.PLUS__, g.expr, FunpNumber.ofNumber(start));
-					}).result();
+			return optimize(pointer).<Funp> switch_( //
+			).applyIf(FunpData.class, g -> g.apply(pairs -> {
+				for (var pair : pairs) {
+					var range = pair.t1;
+					if (start == range.t0 && end == range.t1)
+						return pair.t0;
+				}
+				return null;
+			})).applyIf(FunpReference.class, g -> {
+				return FunpTree.of(TermOp.PLUS__, g.expr, FunpNumber.ofNumber(start));
+			}).result();
 		})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 			return optimize(expr).<Funp> switch_().applyIf(FunpMemory.class, g -> g.pointer).result();
 		})).applyIf(FunpTree.class, f -> f.apply((operator, lhs, rhs) -> {
@@ -84,11 +79,7 @@ public class P3Optimize {
 		})).applyIf(FunpTree2.class, f -> f.apply((operator, lhs, rhs) -> {
 			return evaluate(TreeUtil.tupleOperations.get(operator), lhs, rhs);
 		})).applyIf(FunpWhile.class, f -> f.apply((while_, do_, expr) -> {
-			return optimize(while_) //
-					.<Funp> switch_() //
-					.applyIf(FunpBoolean.class, g -> g.apply(b -> {
-						return b ? null : expr;
-					})).result();
+			return optimize(while_).<Funp> switch_().applyIf(FunpBoolean.class, g -> g.apply(b -> b ? null : expr)).result();
 		})).result();
 	}
 
