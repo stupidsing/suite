@@ -59,10 +59,10 @@ public class CompileClonerImpl implements ClonerFactory {
 					return env.field("refs").index(f.int_(vm.computeIndex(n)));
 				}).applyIf(Str.class, n -> {
 					return f.object(node_);
-				}).applyIf(Tree.class, tree -> {
-					var fe0 = compile_(tree.getLeft()).cast_(Node.class);
-					var fe1 = compile_(tree.getRight()).cast_(Node.class);
-					return f.invokeStatic(Tree.class, "of", f.object(tree.getOperator()), fe0, fe1);
+				}).applyTree((op, l, r) -> {
+					var fe0 = compile_(l).cast_(Node.class);
+					var fe1 = compile_(r).cast_(Node.class);
+					return f.invokeStatic(Tree.class, "of", f.object(op), fe0, fe1);
 				}).applyIf(Tuple.class, n -> {
 					var exprs = Read.from(n.nodes).map(this::compile_).toArray(FunExpr.class);
 					return f.invokeStatic(Tuple.class, "of", f.array(Node.class, exprs));
