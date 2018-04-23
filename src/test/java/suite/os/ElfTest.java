@@ -7,7 +7,6 @@ import org.junit.Test;
 import suite.Constants;
 import suite.assembler.Amd64Interpret;
 import suite.funp.Funp_;
-import suite.funp.Funp_.Main;
 import suite.primitive.Bytes;
 import suite.util.RunUtil;
 
@@ -49,7 +48,7 @@ public class ElfTest {
 
 	private void test(String program, String input, int code) {
 		var bytes = Bytes.of(input.getBytes(Constants.charset));
-		Main main = Funp_.main(true);
+		var main = Funp_.main(true);
 
 		if (RunUtil.isUnix()) { // not Windows => run ELF
 			var exec = elf.exec(bytes.toArray(), offset -> main.compile(offset, program).t1);
