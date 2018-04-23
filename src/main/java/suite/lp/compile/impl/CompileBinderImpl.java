@@ -63,12 +63,9 @@ public class CompileBinderImpl extends CompileClonerImpl implements BinderFactor
 				}).applyIf(Str.class, n -> {
 					return f.ifInstance(Str.class, target,
 							s -> f.object(n.value).invoke("equals", s.field("value").cast_(Object.class)), br);
-				}).applyIf(Tree.class, tree -> {
-					return f.declare(f.invokeStatic(Tree.class, "decompose", target, f.object(tree.getOperator())), t -> {
-						var lt = tree.getLeft();
-						var rt = tree.getRight();
-						return f.ifNonNull(t, compile_(lt, t.invoke("getLeft"), compile_(rt, t.invoke("getRight"), ok)), brc);
-					});
+				}).applyTree((op, l, r) -> {
+					return f.declare(f.invokeStatic(Tree.class, "decompose", target, f.object(op)),
+							t -> f.ifNonNull(t, compile_(l, t.invoke("getLeft"), compile_(r, t.invoke("getRight"), ok)), brc));
 				}).applyIf(Tuple.class, n -> {
 					return f.ifInstance(Tuple.class, target, tuple -> f.declare(tuple.field("nodes"), targets -> {
 						var nodes = n.nodes;
