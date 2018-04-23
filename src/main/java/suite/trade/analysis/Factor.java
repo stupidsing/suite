@@ -16,8 +16,8 @@ import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSourceView;
 import suite.trade.data.HkexUtil;
+import suite.ts.Quant;
 import suite.util.Object_;
-import ts.Quant;
 
 public class Factor {
 

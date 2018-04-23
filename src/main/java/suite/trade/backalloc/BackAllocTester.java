@@ -18,9 +18,9 @@ import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource.Eod;
+import suite.ts.TimeSeries;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
-import ts.TimeSeries;
 
 public class BackAllocTester {
 

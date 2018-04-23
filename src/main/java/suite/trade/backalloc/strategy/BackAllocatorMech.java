@@ -8,8 +8,8 @@ import suite.streamlet.Streamlet2;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.analysis.Oscillator;
 import suite.trade.backalloc.BackAllocator;
-import ts.BollingerBands;
-import ts.Quant;
+import suite.ts.BollingerBands;
+import suite.ts.Quant;
 
 /**
  * "Mechanical Trading Systems."

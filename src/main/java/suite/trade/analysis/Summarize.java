@@ -18,6 +18,7 @@ import suite.trade.data.Broker.Hsbc;
 import suite.trade.data.Configuration;
 import suite.trade.data.HkexUtil;
 import suite.trade.data.Yahoo;
+import suite.ts.Quant;
 import suite.util.FormatUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
@@ -25,7 +26,6 @@ import suite.util.FunUtil.Sink;
 import suite.util.Object_;
 import suite.util.String_;
 import suite.util.To;
-import ts.Quant;
 
 public class Summarize {
 

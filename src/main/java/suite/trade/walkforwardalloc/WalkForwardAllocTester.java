@@ -19,9 +19,9 @@ import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSource.Eod;
+import suite.ts.TimeSeries;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
-import ts.TimeSeries;
 
 public class WalkForwardAllocTester {
 

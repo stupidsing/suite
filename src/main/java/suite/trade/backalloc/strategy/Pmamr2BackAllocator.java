@@ -9,9 +9,9 @@ import suite.trade.analysis.MovingAverage;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSourceView;
+import suite.ts.Quant;
+import suite.ts.TimeSeries;
 import suite.util.To;
-import ts.Quant;
-import ts.TimeSeries;
 
 /**
  * Find some mean-reverting stock, make sure they are below their past moving

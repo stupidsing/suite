@@ -9,9 +9,9 @@ import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.DblObjPair;
+import suite.ts.Arima;
+import suite.ts.Arima.Arima_;
 import suite.util.To;
-import ts.Arima;
-import ts.Arima.Arima_;
 
 public class ArimaTest {
 

@@ -18,11 +18,11 @@ import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
+import suite.ts.TimeSeries;
 import suite.util.Fail;
 import suite.util.Object_;
 import suite.util.Set_;
 import suite.util.To;
-import ts.TimeSeries;
 
 public class DataSource {
 

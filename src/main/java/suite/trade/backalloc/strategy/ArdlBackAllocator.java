@@ -7,7 +7,7 @@ import suite.primitive.Floats_;
 import suite.streamlet.Read;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource.AlignKeyDataSource;
-import ts.Ardl;
+import suite.ts.Ardl;
 
 public class ArdlBackAllocator implements BackAllocator {
 

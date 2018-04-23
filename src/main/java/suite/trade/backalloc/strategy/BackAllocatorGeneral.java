@@ -22,11 +22,11 @@ import suite.trade.analysis.Oscillator;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSourceView;
 import suite.trade.singlealloc.Strategos;
+import suite.ts.BollingerBands;
+import suite.ts.Quant;
+import suite.ts.TimeSeries;
 import suite.util.FunUtil.Fun;
 import suite.util.String_;
-import ts.BollingerBands;
-import ts.Quant;
-import ts.TimeSeries;
 
 public class BackAllocatorGeneral {
 

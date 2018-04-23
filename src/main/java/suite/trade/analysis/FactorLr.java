@@ -19,7 +19,7 @@ import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSourceView;
 import suite.trade.data.HkexUtil;
-import ts.Quant;
+import suite.ts.Quant;
 
 public class FactorLr {
 

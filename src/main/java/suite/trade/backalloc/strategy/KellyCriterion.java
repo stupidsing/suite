@@ -9,8 +9,8 @@ import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Trade_;
+import suite.ts.TimeSeries;
 import suite.util.To;
-import ts.TimeSeries;
 
 public class KellyCriterion {
 

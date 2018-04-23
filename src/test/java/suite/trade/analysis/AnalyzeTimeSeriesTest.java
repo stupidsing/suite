@@ -27,10 +27,10 @@ import suite.trade.Trade_;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
+import suite.ts.BollingerBands;
+import suite.ts.Quant;
+import suite.ts.TimeSeries;
 import suite.util.To;
-import ts.BollingerBands;
-import ts.Quant;
-import ts.TimeSeries;
 
 // mvn test -Dtest=AnalyzeTimeSeriesTest#test
 public class AnalyzeTimeSeriesTest {

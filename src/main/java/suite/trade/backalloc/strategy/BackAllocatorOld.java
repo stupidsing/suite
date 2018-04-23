@@ -11,10 +11,10 @@ import suite.math.numeric.Statistic;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.Configuration;
+import suite.ts.BollingerBands;
+import suite.ts.Quant;
+import suite.ts.TimeSeries;
 import suite.util.String_;
-import ts.BollingerBands;
-import ts.Quant;
-import ts.TimeSeries;
 
 public class BackAllocatorOld {
 

@@ -8,7 +8,7 @@ import suite.streamlet.As;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSourceView;
-import ts.TimeSeries;
+import suite.ts.TimeSeries;
 
 public class ReverseCorrelateBackAllocator implements BackAllocator {
 

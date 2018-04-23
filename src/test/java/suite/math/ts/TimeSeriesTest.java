@@ -8,7 +8,7 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
-import ts.TimeSeries;
+import suite.ts.TimeSeries;
 
 public class TimeSeriesTest {
 

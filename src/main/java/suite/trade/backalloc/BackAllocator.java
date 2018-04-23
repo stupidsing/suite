@@ -33,12 +33,12 @@ import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSource.Datum;
 import suite.trade.walkforwardalloc.WalkForwardAllocator;
+import suite.ts.Quant;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.Set_;
 import suite.util.String_;
-import ts.Quant;
 
 /**
  * Strategy that advise you how to divide your money into different investments,

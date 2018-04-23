@@ -8,7 +8,7 @@ import suite.primitive.Floats_;
 import suite.primitive.Ints_;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
-import ts.Quant;
+import suite.ts.Quant;
 
 public class Strategos {
 

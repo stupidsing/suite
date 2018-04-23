@@ -31,12 +31,12 @@ import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.Sina;
+import suite.ts.BollingerBands;
+import suite.ts.Quant;
+import suite.ts.TimeSeries;
 import suite.util.FunUtil.Fun;
 import suite.util.String_;
 import suite.util.To;
-import ts.BollingerBands;
-import ts.Quant;
-import ts.TimeSeries;
 
 public class StatisticalArbitrageTest {
 
