@@ -49,8 +49,8 @@ public class CompileBinderImpl extends CompileClonerImpl implements BinderFactor
 			}
 
 			private FunExpr compile_(Node node, FunExpr target) {
-				FunExpr br = bind(f.object_(node, Node.class), target);
-				FunExpr brc = bindClone(node, target);
+				var br = bind(f.object_(node, Node.class), target);
+				var brc = bindClone(node, target);
 
 				return new SwitchNode<FunExpr>(node //
 				).applyIf(Atom.class, n -> {
