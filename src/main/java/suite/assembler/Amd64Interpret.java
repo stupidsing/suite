@@ -51,6 +51,8 @@ public class Amd64Interpret {
 	private int ecx = amd64.ecx.reg;
 	private int edx = amd64.edx.reg;
 	private int esp = amd64.esp.reg;
+	private int esi = amd64.esi.reg;
+	private int edi = amd64.edi.reg;
 	private int eip;
 
 	private int[] scales = new int[] { 1, 2, 4, 8, };
@@ -122,6 +124,8 @@ public class Amd64Interpret {
 					push(eip);
 					eip = labels.get(source0);
 					break;
+				case CLD:
+					break;
 				case CMP:
 					c = Integer.compare(source0, source1);
 					break;
@@ -189,11 +193,23 @@ public class Amd64Interpret {
 				case MOV:
 					assign.sink(source1);
 					break;
+				case MOVSB:
+					movsb();
+					break;
+				case MOVSD:
+					movsd();
+					break;
 				case POP:
 					assign.sink(pop());
 					break;
 				case PUSH:
 					push(source0);
+					break;
+				case REP:
+					var movs = instructions.get(eip++).insn;
+					Runnable r = movs == Insn.MOVSB ? this::movsb : movs == Insn.MOVSD ? this::movsd : Fail.t();
+					while (0 < regs[ecx]--)
+						r.run();
 					break;
 				case RET:
 					eip = pop();
@@ -212,6 +228,18 @@ public class Amd64Interpret {
 				throw ex;
 			}
 		}
+	}
+
+	private void movsb() {
+		mem.put(index(regs[edi]), mem.get(index(regs[esi])));
+		regs[esi]++;
+		regs[edi]++;
+	}
+
+	private void movsd() {
+		mem.putInt(index(regs[edi]), mem.getInt(index(regs[esi])));
+		regs[esi] += 4;
+		regs[edi] += 4;
 	}
 
 	private void push(int value) {
