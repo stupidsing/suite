@@ -9,8 +9,6 @@ import suite.assembler.Amd64.Instruction;
 import suite.funp.P2.FunpFramePointer;
 import suite.funp.P2GenerateLambda.Int;
 import suite.funp.P2GenerateLambda.Rt;
-import suite.funp.P2GenerateLambda.Thunk;
-import suite.funp.P2GenerateLambda.Value;
 import suite.immutable.IMap;
 import suite.node.Node;
 import suite.os.LogUtil;
@@ -53,7 +51,7 @@ public class Funp_ {
 		public Pair<List<Instruction>, Bytes> compile(int offset, String fp) {
 			var node = Suite.parse(fp);
 			var f0 = p0.parse(node);
-			Funp f1 = p1.inline(f0, isOptimize ? 3 : 0, 1, 1, 1, 1);
+			var f1 = p1.inline(f0, isOptimize ? 3 : 0, 1, 1, 1, 1);
 			var f2 = p2.infer(f1);
 			var f3 = p3.optimize(f2);
 			var instructions = p4.compile0(f3);
@@ -63,8 +61,8 @@ public class Funp_ {
 		public int interpret(Node node) {
 			var f0 = p0.parse(node);
 			p2.infer(f0);
-			Thunk thunk = p2g.compile(0, IMap.empty(), f0);
-			Value value = thunk.apply(new Rt(null, null));
+			var thunk = p2g.compile(0, IMap.empty(), f0);
+			var value = thunk.apply(new Rt(null, null));
 			return ((Int) value).i;
 		}
 	}
