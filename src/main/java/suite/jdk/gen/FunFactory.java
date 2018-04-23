@@ -31,6 +31,7 @@ import suite.jdk.gen.FunExprM.IfNonNullFunExpr;
 import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExprM.LocalFunExpr;
 import suite.jdk.gen.FunExprM.NewFunExpr;
+import suite.jdk.gen.FunExprM.NullFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
 import suite.jdk.gen.FunExprM.VoidFunExpr;
@@ -56,10 +57,7 @@ public class FunFactory {
 	}
 
 	public FunExpr _null() {
-		var expr = new ConstantFunExpr();
-		expr.type = Type.NULL;
-		expr.constant = null;
-		return expr;
+		return new NullFunExpr();
 	}
 
 	public FunExpr add(FunExpr e0, FunExpr e1) {

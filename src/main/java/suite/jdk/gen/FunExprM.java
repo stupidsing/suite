@@ -129,6 +129,9 @@ public class FunExprM {
 		public Class<?> implementationClass, interfaceClass;
 	}
 
+	public static class NullFunExpr extends FunExpr {
+	}
+
 	public static class PrintlnFunExpr extends FunExpr {
 		public FunExpr expression;
 	}

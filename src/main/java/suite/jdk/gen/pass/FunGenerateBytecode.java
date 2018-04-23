@@ -40,6 +40,7 @@ import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
 import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
 import suite.jdk.gen.FunExprM.LocalFunExpr;
 import suite.jdk.gen.FunExprM.NewFunExpr;
+import suite.jdk.gen.FunExprM.NullFunExpr;
 import suite.jdk.gen.FunExprM.PrintlnFunExpr;
 import suite.jdk.gen.FunExprM.ProfileFunExpr;
 import suite.jdk.gen.FunExprM.SeqFunExpr;
@@ -153,9 +154,8 @@ public class FunGenerateBytecode {
 				if (set != null) {
 					visit_(set);
 					instruction = factory.createPutField(className, e1.fieldName, e1.fieldType);
-				} else {
+				} else
 					instruction = factory.createGetField(className, e1.fieldName, e1.fieldType);
-				}
 				list.add(instruction);
 			}).doIf(If1FunExpr.class, e1 -> {
 				visit_(e1.if_);
@@ -218,6 +218,8 @@ public class FunGenerateBytecode {
 				}
 
 				constants.put(classIndex, implClass);
+			}).doIf(NullFunExpr.class, e1 -> {
+				list.add(InstructionFactory.createNull(Type.OBJECT));
 			}).doIf(PrintlnFunExpr.class, e1 -> {
 				var name = PrintStream.class.getName();
 				var sys = System.class.getName();
