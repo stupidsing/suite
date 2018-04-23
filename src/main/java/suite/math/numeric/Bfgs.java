@@ -24,7 +24,7 @@ public class Bfgs {
 
 	// using finite differences to find gradient
 	public float[] bfgs(Obj_Dbl<float[]> fun, float[] initials) {
-		Fun<float[], float[]> gradientFun = fd.forward(fun);
+		var gradientFun = fd.forward(fun);
 		return bfgs(fun, gradientFun, initials);
 	}
 

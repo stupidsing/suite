@@ -19,7 +19,7 @@ public class SymmetricRank1 {
 
 	// using finite differences to find gradient
 	public float[] sr1(Obj_Dbl<float[]> fun, float[] initials) {
-		Fun<float[], float[]> gradientFun = fd.forward(fun);
+		var gradientFun = fd.forward(fun);
 		return sr1(fun, gradientFun, initials);
 	}
 

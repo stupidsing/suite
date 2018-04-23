@@ -20,7 +20,7 @@ public class LevenbergMarquandt {
 
 	// using finite differences to find gradient
 	public float[] lm(float[] xs, float[] ys, Fun<float[], float[]> fun, float[] betas) {
-		Fun<float[], float[][]> gradientFun = fd.forward(fun);
+		var gradientFun = fd.forward(fun);
 		return lm(xs, ys, fun, gradientFun, betas);
 	}
 
