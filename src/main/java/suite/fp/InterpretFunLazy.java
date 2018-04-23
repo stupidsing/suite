@@ -106,9 +106,10 @@ public class InterpretFunLazy {
 		var prover = new Prover(Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl")));
 		var parsed = new Reference();
 
-		if (!prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)))
-			Fail.t("cannot parse " + node);
-		return parsed;
+		if (prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)))
+			return parsed;
+		else
+			return Fail.t("cannot parse " + node);
 	}
 
 	private class Lazy_ {

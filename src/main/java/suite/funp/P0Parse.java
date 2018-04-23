@@ -247,10 +247,8 @@ public class P0Parse {
 							return Pair.of(name(m1[0]), p(m1[1]));
 						}) //
 						.toList());
-			}).applyIf(Tree.class, tree -> {
-				var left = p(tree.getLeft());
-				var right = p(tree.getRight());
-				return FunpTree.of(tree.getOperator(), left, right);
+			}).applyTree((op, l, r) -> {
+				return FunpTree.of(op, p(l), p(r));
 			}).applyIf(Atom.class, atom -> {
 				var var = atom.name;
 				return variables.contains(var) ? FunpVariable.of(var) : FunpVariableNew.of(var);
