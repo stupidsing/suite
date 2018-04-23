@@ -35,8 +35,8 @@ public class Funp_ {
 		this.isOptimize = isOptimize;
 	}
 
-	public static Main main() {
-		return new Funp_(true).new Main();
+	public static Main main(boolean isOptimize) {
+		return new Funp_(isOptimize).new Main();
 	}
 
 	public class Main {

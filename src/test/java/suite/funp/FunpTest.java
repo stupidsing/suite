@@ -112,12 +112,14 @@ public class FunpTest {
 	}
 
 	private void test(int r, String p) {
-		LogUtil.info(p);
-		var pair = Funp_.main().compile(0, p);
-		var bytes = pair.t1;
-		LogUtil.info("Hex" + bytes + "\n\n");
-		assertEquals(r, new Amd64Interpret().interpret(pair.t0, Bytes.of(), Bytes.of()));
-		assertTrue(bytes != null);
+		for (var isOptimize : new boolean[] { false, true, }) {
+			LogUtil.info(p);
+			var pair = Funp_.main(isOptimize).compile(0, p);
+			var bytes = pair.t1;
+			LogUtil.info("Hex" + bytes + "\n\n");
+			assertEquals(r, new Amd64Interpret().interpret(pair.t0, Bytes.of(), Bytes.of()));
+			assertTrue(bytes != null);
+		}
 	}
 
 }
