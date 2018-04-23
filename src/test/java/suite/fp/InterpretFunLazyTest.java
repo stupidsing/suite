@@ -32,14 +32,20 @@ public class InterpretFunLazyTest {
 	}
 
 	private void expect(String expr, Node expected) {
-		expect(true, expr, expected);
-		expect(false, expr, expected);
+		expect0(true, expr, expected);
+		expect0(false, expr, expected);
+		expect1(expr, expected);
 	}
 
-	private void expect(boolean isLazyify, String expr, Node expected) {
+	private void expect0(boolean isLazyify, String expr, Node expected) {
 		var interpreter = new InterpretFunEager();
 		interpreter.setLazyify(isLazyify);
 		assertEquals(expected, interpreter.eager(Suite.parse(expr)));
+	}
+
+	private void expect1(String expr, Node expected) {
+		var interpreter = new InterpretFunLazy();
+		assertEquals(expected, interpreter.lazy(Suite.parse(expr)).get());
 	}
 
 }

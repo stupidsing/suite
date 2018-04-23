@@ -44,7 +44,7 @@ public class CompileBinderImpl extends CompileClonerImpl implements BinderFactor
 				this.trail = bindEnv.field("trail");
 				return f.declare(ok, b -> {
 					this.b = b;
-					return compile_(node, target);
+					return compile_(node, target.invoke("finalNode"));
 				});
 			}
 
