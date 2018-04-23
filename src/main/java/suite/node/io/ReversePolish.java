@@ -87,10 +87,10 @@ public class ReversePolish {
 				return "i" + n_.number;
 			}).applyIf(Reference.class, n_ -> {
 				return "r" + n_.getId();
-			}).applyIf(Tree.class, tree -> {
-				deque.push(tree.getRight());
-				deque.push(tree.getLeft());
-				return "t" + tree.getOperator();
+			}).applyTree((op, l, r) -> {
+				deque.push(r);
+				deque.push(l);
+				return "t" + op;
 			}).applyIf(Node.class, n_ -> {
 				var nr = NodeRead.of(n_);
 				for (var pair : nr.children) {
