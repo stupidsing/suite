@@ -1,5 +1,4 @@
-expand size := 256 >>
-{
+expand size := 256 >> {
 	map: (`length` =>
 		let ps := [0, length, 3, 34, -1, 0,] >>
 		let p := asm (EAX = 90; EBX = address ps;) {
