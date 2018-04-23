@@ -26,17 +26,12 @@ public class ElfTest {
 
 		var program = "" //
 				+ "expand size := 256 >> \n" //
-				+ "let `{ \n" //
-				+ "	map: linux-map, \n" //
-				+ "	unmap: linux-unmap, \n" //
-				+ "	read: linux-read, \n" //
-				+ "	write: linux-write, \n" //
-				+ "}` := consult \"linux.fp\" >> \n" //
+				+ "let linux := consult \"linux.fp\" >> \n" //
 				+ "iterate n 1 (n != 0) ( \n" //
 				+ "	let buffer := size * array coerce-byte _ >> \n" //
 				+ "	let pointer := address buffer >> \n" //
-				+ "	pointer, size | linux-read | io-cat (nBytesRead => \n" //
-				+ "		pointer, nBytesRead | linux-write | io-cat (nBytesWrote => \n" //
+				+ "	pointer, size | linux/read | io-cat (nBytesRead => \n" //
+				+ "		pointer, nBytesRead | linux/write | io-cat (nBytesWrote => \n" //
 				+ "			io nBytesRead \n" //
 				+ "		) \n" //
 				+ "	) \n" //
