@@ -61,7 +61,6 @@ import suite.streamlet.As;
 import suite.util.Fail;
 import suite.util.Switch;
 import suite.util.To;
-import suite.util.Util;
 
 public class P0Parse {
 
@@ -196,8 +195,7 @@ public class P0Parse {
 				var p1 = new Parse(variables.add(var));
 				return FunpIterate.of(var, p(b), p1.p(c), p1.p(d));
 			}).match2("`.0` => .1", (a, b) -> {
-				var var = "vb" + Util.temp();
-				return FunpLambda.of(var, new Parse(variables.add(var)).bind(a, Atom.of(var), b, Suite.parse("error")));
+				return p(Suite.pattern(".2 => if (`.0` = .2) then .1 else error").subst(a, b, Atom.temp()));
 			}).match2(".0 => .1", (a, b) -> {
 				var var = name(a);
 				return FunpLambda.of(var, parseNewVariable(b, var));
