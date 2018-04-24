@@ -158,14 +158,14 @@ public class Chr {
 
 			states = states.map(new Fun<>() {
 				public State apply(State state) {
-					IMap<Prototype, ISet<Node>> factsByPrototype1 = IMap.empty();
+					var factsByPrototype1 = IMap.<Prototype, ISet<Node>> empty();
 					for (var e : state.factsByPrototype)
 						factsByPrototype1 = factsByPrototype1.put(e.t0, replace(e.t1));
 					return new State(factsByPrototype1);
 				}
 
 				private ISet<Node> replace(ISet<Node> facts) {
-					ISet<Node> facts1 = ISet.empty();
+					var facts1 = ISet.<Node> empty();
 					for (var node : facts)
 						facts1 = facts1.replace(rw.replace(from, to, node));
 					return facts1;

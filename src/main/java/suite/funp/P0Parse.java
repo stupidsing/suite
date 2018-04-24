@@ -197,7 +197,7 @@ public class P0Parse {
 				}.extract(p(a));
 
 				var value = p(b);
-				ISet<String> variables1 = ISet.empty();
+				var variables1 = ISet.<String> empty();
 
 				for (var var : variables)
 					variables1 = variables1.add(var);

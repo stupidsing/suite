@@ -173,7 +173,7 @@ public class P2InferType {
 					var c1 = new Capture(accesses, locals.add(var), globals);
 					return FunpIterate.of(var, capture(init), c1.capture(cond), c1.capture(iterate));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-					ISet<String> locals1 = ISet.empty();
+					var locals1 = ISet.<String> empty();
 					var capn = "cap" + Util.temp();
 					var cap = FunpVariable.of(capn);
 					var ref = FunpReference.of(cap);
