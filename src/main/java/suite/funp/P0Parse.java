@@ -197,7 +197,7 @@ public class P0Parse {
 				return FunpIterate.of(var, p(b), p1.p(c), p1.p(d));
 			}).match2("`.0` => .1", (a, b) -> {
 				var var = "vb" + Util.temp();
-				return FunpLambda.of(var, bind(a, Atom.of(var), b, Suite.parse("error")));
+				return FunpLambda.of(var, new Parse(variables.add(var)).bind(a, Atom.of(var), b, Suite.parse("error")));
 			}).match2(".0 => .1", (a, b) -> {
 				var var = name(a);
 				return FunpLambda.of(var, parseNewVariable(b, var));
