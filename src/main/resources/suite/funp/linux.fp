@@ -11,7 +11,14 @@ define unmap := `pointer, length` =>
 	asm (EAX = 91; EBX = pointer; ECX = length;) {
 		INT (-128);
 	}
->> {
+>>
+define pool-new := `length` =>
+	{ pool: (length | map), length: length, start: 0, }
+>>
+define pool-delete := `{ pool: pool, length: length, start: start, }` =>
+	pool, length | unmap
+>>
+{
 	map: map,
 	unmap: unmap,
 	read: (`pointer, length` =>
