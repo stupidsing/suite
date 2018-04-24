@@ -61,6 +61,7 @@ import suite.streamlet.As;
 import suite.util.Fail;
 import suite.util.Switch;
 import suite.util.To;
+import suite.util.Util;
 
 public class P0Parse {
 
@@ -148,7 +149,7 @@ public class P0Parse {
 				return FunpDefine.of(true, var, p(b), parseNewVariable(c, var));
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match3("let `.0` := .1 >> .2", (a, b, c) -> {
-				return p(Suite.pattern("if (`.0` = .1) then .2 else error").subst(a, b, c));
+				return bind(a, b, c, Suite.parse("error"));
 			}).match3("let .0 := .1 >> .2", (a, b, c) -> {
 				var var = name(a);
 				return FunpDefine.of(false, var, p(b), parseNewVariable(c, var));
@@ -181,41 +182,11 @@ public class P0Parse {
 				return FunpGlobal.of(var, p(b), parseNewVariable(c, var));
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match4("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
-				var variables = new HashSet<String>();
-
-				var be = new Object() {
-					private Funp extract(Funp be) {
-						return inspect.rewrite(Funp.class, n_ -> {
-							if (n_ instanceof FunpVariableNew) {
-								var var = ((FunpVariableNew) n_).var;
-								variables.add(var);
-								return FunpVariable.of(var);
-							} else
-								return null;
-						}, be);
-					}
-				}.extract(p(a));
-
-				var value = p(b);
-				var variables1 = ISet.<String> empty();
-
-				for (var var : variables)
-					variables1 = variables1.add(var);
-
-				var bind = new Bind(variables);
-				var then = new Parse(variables1).p(c);
-				var else_ = p(d);
-				var f0 = bind.bind(be, value, then, else_);
-				Funp f1 = FunpCheckType.of(be, value, f0);
-
-				for (var var : variables)
-					f1 = FunpDefine.of(false, var, FunpDontCare.of(), f1);
-
-				return f1;
+				return bind(a, b, c, d);
 			}).match3("if .0 then .1 else .2", (a, b, c) -> {
 				return FunpIf.of(p(a), p(b), p(c));
-			}).match2(".0 {.1}", (a, b) -> {
-				return a != Atom.NIL ? FunpIndex.of(FunpReference.of(p(a)), p(b)) : null;
+			}).match2(".0:.1", (a, b) -> {
+				return FunpIndex.of(FunpReference.of(p(a)), p(b));
 			}).match1("io .0", a -> {
 				return FunpIo.of(p(a));
 			}).match1("io-cat .0", a -> {
@@ -225,7 +196,8 @@ public class P0Parse {
 				var p1 = new Parse(variables.add(var));
 				return FunpIterate.of(var, p(b), p1.p(c), p1.p(d));
 			}).match2("`.0` => .1", (a, b) -> {
-				return p(Suite.pattern(".2 => if (`.0` = .2) then .1 else error").subst(a, b, Atom.temp()));
+				var var = "vb" + Util.temp();
+				return FunpLambda.of(var, bind(a, Atom.of(var), b, Suite.parse("error")));
 			}).match2(".0 => .1", (a, b) -> {
 				var var = name(a);
 				return FunpLambda.of(var, parseNewVariable(b, var));
@@ -253,6 +225,40 @@ public class P0Parse {
 				var var = atom.name;
 				return variables.contains(var) ? FunpVariable.of(var) : FunpVariableNew.of(var);
 			}).nonNullResult();
+		}
+
+		private Funp bind(Node a, Node b, Node c, Node d) {
+			var variables = new HashSet<String>();
+
+			var be = new Object() {
+				private Funp extract(Funp be) {
+					return inspect.rewrite(Funp.class, n_ -> {
+						if (n_ instanceof FunpVariableNew) {
+							var var = ((FunpVariableNew) n_).var;
+							variables.add(var);
+							return FunpVariable.of(var);
+						} else
+							return null;
+					}, be);
+				}
+			}.extract(p(a));
+
+			var value = p(b);
+			var variables1 = ISet.<String> empty();
+
+			for (var var : variables)
+				variables1 = variables1.add(var);
+
+			var bind = new Bind(variables);
+			var then = new Parse(variables1).p(c);
+			var else_ = p(d);
+			var f0 = bind.bind(be, value, then, else_);
+			Funp f1 = FunpCheckType.of(be, value, f0);
+
+			for (var var : variables)
+				f1 = FunpDefine.of(false, var, FunpDontCare.of(), f1);
+
+			return f1;
 		}
 
 		private Funp parseNewVariable(Node node, String var) {
