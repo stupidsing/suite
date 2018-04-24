@@ -13,12 +13,12 @@ public class FunpTest {
 
 	@Test
 	public void testArray1() {
-		test(0, "define a := [0,] >> a {0}");
+		test(0, "define a := [0,] >> a:0");
 	}
 
 	@Test
 	public void testArray3() {
-		test(1, "define a := [0, 1, 2,] >> a {1}");
+		test(1, "define a := [0, 1, 2,] >> a:1");
 	}
 
 	@Test
@@ -78,7 +78,7 @@ public class FunpTest {
 
 	@Test
 	public void testGlobal() {
-		test(1, "global a := [0, 1, 2,] >> a {1}");
+		test(1, "global a := [0, 1, 2,] >> a:1");
 	}
 
 	@Test
@@ -98,7 +98,7 @@ public class FunpTest {
 
 	@Test
 	public void testReturnArray() {
-		test(2, "define f := i => [0, 1, i,] >> (predef (2 | f)) {2}");
+		test(2, "define f := i => [0, 1, i,] >> (predef (2 | f)):2");
 	}
 
 	@Test
