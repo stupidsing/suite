@@ -23,6 +23,7 @@ import suite.primitive.IntInt_Int;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.FunUtil2.Fun2;
 import suite.util.Switch;
 
 public class P3Optimize {
@@ -84,23 +85,17 @@ public class P3Optimize {
 	}
 
 	private FunpNumber evaluate(IntInt_Int fun, Funp lhs0, Funp rhs0) {
-		var pair = evaluate(lhs0, rhs0);
-		var lhs1 = pair[0];
-		var rhs1 = pair[1];
-		return fun != null && lhs1 != null && rhs1 != null ? FunpNumber.ofNumber(fun.apply(lhs1, rhs1)) : null;
+		return fun != null ? evaluate(lhs0, rhs0, (lhs1, rhs1) -> FunpNumber.ofNumber(fun.apply(lhs1, rhs1))) : null;
 	}
 
 	private FunpBoolean evaluate(IntInt_Bool fun, Funp lhs0, Funp rhs0) {
-		var pair = evaluate(lhs0, rhs0);
-		var lhs1 = pair[0];
-		var rhs1 = pair[1];
-		return fun != null && lhs1 != null && rhs1 != null ? FunpBoolean.of(fun.apply(lhs1, rhs1)) : null;
+		return fun != null ? evaluate(lhs0, rhs0, (lhs1, rhs1) -> FunpBoolean.of(fun.apply(lhs1, rhs1))) : null;
 	}
 
-	private Integer[] evaluate(Funp lhs0, Funp rhs0) {
+	private <T> T evaluate(Funp lhs0, Funp rhs0, Fun2<Integer, Integer, T> fun) {
 		var lhs1 = optimize(lhs0).cast(FunpNumber.class, n -> n.i.get());
 		var rhs1 = optimize(rhs0).cast(FunpNumber.class, n -> n.i.get());
-		return new Integer[] { lhs1, rhs1, };
+		return lhs1 != null && rhs1 != null ? fun.apply(lhs1, rhs1) : null;
 	}
 
 }
