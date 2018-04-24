@@ -37,7 +37,7 @@ public class P3Optimize {
 	private Funp optimize_(Funp n) {
 		return n.<Funp> switch_( //
 		).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
-			return !(expr instanceof FunpDontCare) ? n : optimize(expr);
+			return expr instanceof FunpDontCare ? optimize(expr) : n;
 		})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 			return FunpData.of(Read.from2(pairs).concatMap((expr, range) -> {
 				var expr1 = optimize(expr);
