@@ -302,7 +302,9 @@ public class P0Parse {
 					return bindArray.apply(elements0.size(), elements0::get);
 				})).applyIf(FunpDontCare.class, f -> {
 					return then;
-				}).applyIf(FunpRepeat.class, f -> f.apply((size0, expr0) -> {
+				}).applyIf(FunpReference.class, f -> f.apply(expr -> {
+					return bind(expr, FunpDeref.of(value), then, else_);
+				})).applyIf(FunpRepeat.class, f -> f.apply((size0, expr0) -> {
 					return bindArray.apply(size0, i -> expr0);
 				})).applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
 					var pairs1 = new Switch<List<Pair<String, Funp>>>(value).applyIf(FunpStruct.class, g -> g.pairs).result();
