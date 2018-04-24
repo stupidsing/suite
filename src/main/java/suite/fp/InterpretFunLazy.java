@@ -212,7 +212,7 @@ public class InterpretFunLazy {
 			} else if ((ERROR = Matcher.error.match(node)) != null)
 				result = frame -> () -> Fail.t("error termination " + Formatter.display(ERROR.m));
 			else if ((FUN = Matcher.fun.match(node)) != null) {
-				IMap<Node, Fun<Frame, Thunk_>> vm1 = IMap.empty();
+				var vm1 = IMap.<Node, Fun<Frame, Thunk_>> empty();
 				for (var e : vm) {
 					var getter0 = e.t1;
 					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));

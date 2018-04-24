@@ -312,7 +312,7 @@ public class P2InferType {
 				return TypeLambda.of(tv, new Infer(env.replace(var, Pair.of(false, tv))).infer(expr));
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
 				var tv = unify.newRef();
-				IMap<String, Pair<Boolean, UnNode<Type>>> env0 = IMap.empty();
+				var env0 = IMap.<String, Pair<Boolean, UnNode<Type>>> empty();
 				var env1 = env0 //
 						.replace(capn, Pair.of(false, infer(cap))) //
 						.replace(var, Pair.of(false, tv));
@@ -475,7 +475,7 @@ public class P2InferType {
 				var b = ps * 2; // return address and EBP
 				var lt = new LambdaType(n);
 				var size = getTypeSize(typeOf(cap));
-				IMap<String, Var> env0 = IMap.empty();
+				var env0 = IMap.<String, Var> empty();
 				var env1 = env0 //
 						.replace(capn, new Var(0, IntMutable.of(0), 0, size)) //
 						.replace(var, new Var(1, IntMutable.of(0), b, b + lt.is));

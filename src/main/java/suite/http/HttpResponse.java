@@ -23,7 +23,7 @@ public class HttpResponse {
 	}
 
 	public static HttpResponse of(String status, Outlet<Bytes> out, long length) {
-		IMap<String, String> empty = IMap.empty();
+		var empty = IMap.<String, String> empty();
 		return of(status, empty.put("Content-Length", Long.toString(length)), out);
 	}
 

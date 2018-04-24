@@ -44,7 +44,7 @@ public class InterpretFunLazy0 {
 	public Thunk_ lazy(Node node) {
 		Thunk_ error = () -> Fail.t("error termination");
 
-		IMap<String, Thunk_> env = IMap.empty();
+		var env = IMap.<String, Thunk_> empty();
 		env = env.put(Atom.TRUE.name, () -> Atom.TRUE);
 		env = env.put(Atom.FALSE.name, () -> Atom.FALSE);
 
