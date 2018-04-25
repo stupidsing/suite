@@ -45,6 +45,7 @@ import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
+import suite.funp.P0.FunpVariableNew;
 import suite.funp.P2.FunpAllocGlobal;
 import suite.funp.P2.FunpAllocStack;
 import suite.funp.P2.FunpAssign;
@@ -341,6 +342,8 @@ public class P2InferType {
 				var pair = env.get(var);
 				var tv = pair.t1;
 				return pair.t0 ? unify.clone(tv) : tv;
+			})).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
+				return Fail.t("Undefined variable " + var);
 			})).nonNullResult();
 		}
 	}
