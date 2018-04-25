@@ -221,14 +221,14 @@ public class P0Parse {
 		}
 
 		private Funp bind(Node a, Node b, Node c, Node d) {
-			var variables = new HashSet<String>();
+			var vars = new HashSet<String>();
 
 			var be = new Object() {
 				private Funp extract(Funp be) {
 					return inspect.rewrite(Funp.class, n_ -> {
 						return new Switch<Funp>(n_ //
 						).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
-							variables.add(var);
+							vars.add(var);
 							return FunpVariable.of(var);
 						})).result();
 					}, be);
@@ -236,13 +236,12 @@ public class P0Parse {
 			}.extract(p(a));
 
 			var value = p(b);
-			var variables1 = Read.from(variables).fold(ISet.<String> empty(), ISet::add);
-			var then = new Parse(variables1).p(c);
+			var then = new Parse(Read.from(vars).fold(variables, ISet::add)).p(c);
 			var else_ = p(d);
-			var f0 = new Bind(variables).bind(be, value, then, else_);
+			var f0 = new Bind(vars).bind(be, value, then, else_);
 			var f1 = FunpCheckType.of(be, value, f0);
 			return Read //
-					.from(variables) //
+					.from(vars) //
 					.<Funp> fold(f1, (f, var) -> FunpDefine.of(false, var, FunpDontCare.of(), f));
 		}
 

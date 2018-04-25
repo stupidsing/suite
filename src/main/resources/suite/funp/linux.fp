@@ -12,10 +12,12 @@ define unmap := `pointer, length` =>
 		INT (-128);
 	}
 >>
-define pool-new := `length` =>
-	{ pool: (length | map), length: length, start: 0, }
+define pool-new := `length` => {
+	pool: (length | map), length: length, start: 0,
+}
 >>
 define pool-delete := `{ pool: pool, length: length, start: start, }` =>
+	type start = 0 >>
 	pool, length | unmap
 >>
 {
