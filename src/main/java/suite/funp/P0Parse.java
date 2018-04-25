@@ -149,12 +149,13 @@ public class P0Parse {
 				var var = name(a);
 				return FunpDefine.of(true, var, p(b), parseNewVariable(c, var));
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
-			}).match3("let `.0` := .1 >> .2", (a, b, c) -> {
-				return bind(a, b, c);
 			}).match3("let .0 := .1 >> .2", (a, b, c) -> {
 				var var = name(a);
-				return FunpDefine.of(false, var, p(b), parseNewVariable(c, var));
+				if (var != null)
+					return FunpDefine.of(false, var, p(b), parseNewVariable(c, var));
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
+				else
+					return bind(a, b, c);
 			}).match2("recurse .0 >> .1", (a, b) -> {
 				var pattern1 = Suite.pattern(".0 := .1");
 				var list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect(As::streamlet);
@@ -189,13 +190,16 @@ public class P0Parse {
 				var var = name(a);
 				var p1 = nv(var);
 				return FunpIterate.of(var, p(b), p1.p(c), p1.p(d));
-			}).match2("`.0` => .1", (a, b) -> {
-				var v = Atom.temp();
-				var var = name(v);
-				return FunpLambda.of(var, nv(var).bind(a, v, b));
 			}).match2(".0 => .1", (a, b) -> {
 				var var = name(a);
-				return FunpLambda.of(var, parseNewVariable(b, var));
+				Funp f;
+				if (var != null)
+					f = parseNewVariable(b, var);
+				else {
+					var v = Atom.temp();
+					f = nv(var = name(v)).bind(a, v, b);
+				}
+				return FunpLambda.of(var, f);
 			}).applyIf(Int.class, n -> {
 				return FunpNumber.ofNumber(n.number);
 			}).match1("predef .0", a -> {
@@ -323,7 +327,7 @@ public class P0Parse {
 	}
 
 	private String name(Node node) {
-		return ((Atom) node).name;
+		return node instanceof Atom ? ((Atom) node).name : null;
 	}
 
 }
