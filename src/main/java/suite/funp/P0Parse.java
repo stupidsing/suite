@@ -150,7 +150,7 @@ public class P0Parse {
 				return FunpDefine.of(true, var, p(b), parseNewVariable(c, var));
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match3("let `.0` := .1 >> .2", (a, b, c) -> {
-				return bind(a, b, c, Suite.parse("error"));
+				return bind(a, b, c);
 			}).match3("let .0 := .1 >> .2", (a, b, c) -> {
 				var var = name(a);
 				return FunpDefine.of(false, var, p(b), parseNewVariable(c, var));
@@ -187,10 +187,12 @@ public class P0Parse {
 				return FunpIoCat.of(p(a));
 			}).match4("iterate .0 .1 .2 .3", (a, b, c, d) -> {
 				var var = name(a);
-				var p1 = new Parse(variables.add(var));
+				var p1 = nv(var);
 				return FunpIterate.of(var, p(b), p1.p(c), p1.p(d));
 			}).match2("`.0` => .1", (a, b) -> {
-				return p(Suite.pattern(".2 => if (`.0` = .2) then .1 else error").subst(a, b, Atom.temp()));
+				var v = Atom.temp();
+				var var = name(v);
+				return FunpLambda.of(var, nv(var).bind(a, v, b));
 			}).match2(".0 => .1", (a, b) -> {
 				var var = name(a);
 				return FunpLambda.of(var, parseNewVariable(b, var));
@@ -220,6 +222,10 @@ public class P0Parse {
 			}).nonNullResult();
 		}
 
+		private Funp bind(Node a, Node b, Node c) {
+			return bind(a, b, c, Suite.parse("error"));
+		}
+
 		private Funp bind(Node a, Node b, Node c, Node d) {
 			var vars = new HashSet<String>();
 
@@ -246,7 +252,11 @@ public class P0Parse {
 		}
 
 		private Funp parseNewVariable(Node node, String var) {
-			return new Parse(variables.add(var)).p(node);
+			return nv(var).p(node);
+		}
+
+		private Parse nv(String var) {
+			return new Parse(variables.add(var));
 		}
 	}
 
