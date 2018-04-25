@@ -57,7 +57,9 @@ import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
+import suite.primitive.Ints_;
 import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.Switch;
 import suite.util.To;
@@ -156,17 +158,10 @@ public class P0Parse {
 			}).match2("recurse .0 >> .1", (a, b) -> {
 				var pattern1 = Suite.pattern(".0 := .1");
 				var list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect(As::streamlet);
-				var variables_ = variables;
-
-				for (var array : list)
-					variables_ = variables_.add(name(array[0]));
-
-				var p1 = new Parse(variables_);
-
+				var variables1 = list.fold(variables, (vs, array) -> vs.add(name(array[0])));
+				var p1 = new Parse(variables1);
 				return FunpDefineRec.of(list //
-						.map(m1 -> {
-							return Pair.of(name(m1[0]), p1.p(m1[1]));
-						}) //
+						.map(m1 -> Pair.of(name(m1[0]), p1.p(m1[1]))) //
 						.toList(), p1.p(b));
 			}).match1("^.0", a -> {
 				return FunpDeref.of(p(a));
@@ -242,21 +237,14 @@ public class P0Parse {
 			}.extract(p(a));
 
 			var value = p(b);
-			var variables1 = ISet.<String> empty();
-
-			for (var var : variables)
-				variables1 = variables1.add(var);
-
-			var bind = new Bind(variables);
+			var variables1 = Read.from(variables).fold(ISet.<String> empty(), ISet::add);
 			var then = new Parse(variables1).p(c);
 			var else_ = p(d);
-			var f0 = bind.bind(be, value, then, else_);
-			Funp f1 = FunpCheckType.of(be, value, f0);
-
-			for (var var : variables)
-				f1 = FunpDefine.of(false, var, FunpDontCare.of(), f1);
-
-			return f1;
+			var f0 = new Bind(variables).bind(be, value, then, else_);
+			var f1 = FunpCheckType.of(be, value, f0);
+			return Read //
+					.from(variables) //
+					.<Funp> fold(f1, (f, var) -> FunpDefine.of(false, var, FunpDontCare.of(), f));
 		}
 
 		private Funp parseNewVariable(Node node, String var) {
@@ -284,10 +272,9 @@ public class P0Parse {
 					return i -> FunpIndex.of(FunpReference.of(value), FunpNumber.ofNumber(i));
 				}).result();
 
-				var then_ = then;
-				for (var i = 0; i < size0; i++)
-					then_ = bind(fun0.apply(i), fun1.apply(i), then_, else_);
-				return then_;
+				return Ints_ //
+						.range(size0) //
+						.fold(then, (i, then_) -> bind(fun0.apply(i), fun1.apply(i), then_, else_));
 			};
 
 			if (be instanceof FunpBoolean && value instanceof FunpBoolean)
@@ -307,16 +294,14 @@ public class P0Parse {
 				})).applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
 					var pairs1 = new Switch<List<Pair<String, Funp>>>(value).applyIf(FunpStruct.class, g -> g.pairs).result();
 					var size0 = pairs0.size();
-					var then_ = then;
 
 					Int_Obj<Funp> fun = pairs1 != null && size0 == pairs1.size() //
 							? i -> pairs1.get(i).t1 //
 							: i -> FunpField.of(FunpReference.of(value), pairs0.get(i).t0);
 
-					for (var i = 0; i < size0; i++)
-						then_ = bind(pairs0.get(i).t1, fun.apply(i), then_, else_);
-
-					return then_;
+					return Ints_ //
+							.range(size0) //
+							.fold(then, (i, then_) -> bind(pairs0.get(i).t1, fun.apply(i), then_, else_));
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 					return variables.contains(var) //
 							? FunpAssignReference.of(FunpReference.of(FunpVariable.of(var)), value, then) //
