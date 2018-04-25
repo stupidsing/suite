@@ -315,7 +315,7 @@ public class P4GenerateCode {
 					return postAssign.apply((c1, target) -> {
 						for (var pair : pairs) {
 							var offset = pair.t1;
-							FunpMemory target_ = FunpMemory.of(target.pointer, target.start + offset.t0, target.start + offset.t1);
+							var target_ = FunpMemory.of(target.pointer, target.start + offset.t0, target.start + offset.t1);
 							c1.compileAssign(pair.t0, target_);
 						}
 					});
