@@ -85,6 +85,7 @@ public class FunpTest {
 	@Test
 	public void testLambda() {
 		test(1, "0 | (a => a + 1)");
+		test(3, "1, 2 | (`a, b` => a + b)");
 	}
 
 	@Test
