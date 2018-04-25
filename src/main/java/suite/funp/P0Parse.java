@@ -226,12 +226,11 @@ public class P0Parse {
 			var be = new Object() {
 				private Funp extract(Funp be) {
 					return inspect.rewrite(Funp.class, n_ -> {
-						if (n_ instanceof FunpVariableNew) {
-							var var = ((FunpVariableNew) n_).var;
+						return new Switch<Funp>(n_ //
+						).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
 							variables.add(var);
 							return FunpVariable.of(var);
-						} else
-							return null;
+						})).result();
 					}, be);
 				}
 			}.extract(p(a));
