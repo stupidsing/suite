@@ -67,6 +67,7 @@ import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.Read;
 import suite.util.AutoObject;
@@ -131,10 +132,9 @@ public class P2InferType {
 			}
 		}.extract_(node0);
 
-		for (var pair : evs)
-			node1 = FunpDefine.of(false, pair.t0, FunpDontCare.of(), node1);
-
-		return node1;
+		return Read //
+				.from(evs) //
+				.fold(node1, (n, pair) -> FunpDefine.of(false, pair.t0, FunpDontCare.of(), n));
 	}
 
 	private Funp captureLambdas(Funp node0) {
@@ -263,9 +263,11 @@ public class P2InferType {
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				return new Infer(env.replace(var, Pair.of(isPolyType, infer(value)))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-				for (var pair : pairs)
-					env = env.replace(pair.t0, Pair.of(true, infer(pair.t1)));
-				return new Infer(env).infer(expr);
+				var env1 = Read //
+						.from(pairs) //
+						.fold(env, (e, pair) -> e.replace(pair.t0, Pair.of(true, infer(pair.t1))));
+
+				return new Infer(env1).infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				var t = unify.newRef();
 				unify(n, TypeReference.of(t), infer(pointer));
@@ -419,12 +421,13 @@ public class P2InferType {
 				}
 
 				var e1 = new Erase(scope, env1);
-				var expr_ = e1.erase(expr);
+				var expr1 = e1.erase(expr);
 
-				for (var pair : assigns)
-					expr = FunpAssign.of(e1.getVariable(pair.t0), e1.erase(pair.t1), expr);
+				var expr2 = Read //
+						.from(assigns) //
+						.fold(expr1, (e, pair) -> FunpAssign.of(e1.getVariable(pair.t0), e1.erase(pair.t1), e));
 
-				return FunpAllocStack.of(offset, FunpDontCare.of(), expr_, offsetStack);
+				return FunpAllocStack.of(offset, FunpDontCare.of(), expr2, offsetStack);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
@@ -551,11 +554,9 @@ public class P2InferType {
 			var operand = vd.operand;
 			var scope0 = vd.scope;
 			Funp nfp;
-			if (scope0 != null) {
-				nfp = Funp_.framePointer;
-				for (var i = scope0; i < scope; i++)
-					nfp = FunpMemory.of(nfp, 0, ps);
-			} else
+			if (scope0 != null)
+				nfp = Ints_.range(scope0, scope).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps));
+			else
 				nfp = FunpNumber.of(IntMutable.of(0)); // globals
 			if (operand != null)
 				nfp = FunpTree.of(TermOp.PLUS__, nfp, FunpOperand.of(operand));
