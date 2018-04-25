@@ -35,7 +35,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 			return (be, n_) -> Binder.bind(n_, be.env.get(index), be.trail);
 		}).applyIf(Str.class, n -> {
 			return compileBindStr(n);
-		}).applyTree((operator, l, r) -> {
+		}).applyTree((op, l, r) -> {
 			var f = cloner(node);
 			var c0 = binder(l);
 			var c1 = binder(r);
@@ -49,7 +49,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 					} else
 						return false;
 				else
-					return (t = Tree.decompose(n_, operator)) != null //
+					return (t = Tree.decompose(n_, op)) != null //
 							&& c0.test(be, t.getLeft()) //
 							&& c1.test(be, t.getRight());
 			};
