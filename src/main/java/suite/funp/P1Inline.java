@@ -72,14 +72,11 @@ public class P1Inline {
 					var r1 = new Rename(vars.replace(var0, var1));
 					return FunpDefine.of(isPolyType, var1, rename(value), r1.rename(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
-					var vars1 = vars;
-					for (var pair : pairs0)
-						vars1 = vars1.replace(pair.t0, newVar.apply(pair.t0));
-					var vars2 = vars1;
-					var r1 = new Rename(vars2);
+					var vars1 = Read.from(pairs0).fold(vars, (vs, pair) -> vs.replace(pair.t0, newVar.apply(pair.t0)));
+					var r1 = new Rename(vars1);
 					return FunpDefineRec.of(Read //
 							.from2(pairs0) //
-							.map2((var, value) -> vars2.get(var), (var, value) -> r1.rename(value)) //
+							.map2((var, value) -> vars1.get(var), (var, value) -> r1.rename(value)) //
 							.toList(), //
 							r1.rename(expr));
 				})).applyIf(FunpGlobal.class, f -> f.apply((var0, value, expr) -> {
@@ -244,9 +241,7 @@ public class P1Inline {
 					associate(vars.replace(var, f), expr);
 					return n_;
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-					var vars1 = vars;
-					for (var pair : pairs)
-						vars1 = vars1.replace(pair.t0, f);
+					var vars1 = Read.from(pairs).fold(vars, (vs, pair) -> vs.replace(pair.t0, f));
 					for (var pair : pairs)
 						associate(vars1, pair.t1);
 					associate(vars1, expr);
