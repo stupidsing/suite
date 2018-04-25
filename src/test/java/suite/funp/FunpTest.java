@@ -12,12 +12,8 @@ import suite.primitive.Bytes;
 public class FunpTest {
 
 	@Test
-	public void testArray1() {
+	public void testArray() {
 		test(0, "define a := [0,] >> a:0");
-	}
-
-	@Test
-	public void testArray3() {
 		test(1, "define a := [0, 1, 2,] >> a:1");
 	}
 
