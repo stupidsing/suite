@@ -1,10 +1,9 @@
 expand size := 256 >> 
 define map := length =>
 	let ps := [0, length, 3, 34, -1, 0,] >>
-	let p := asm (EAX = 90; EBX = address ps;) {
+	asm (EAX = 90; EBX = address ps;) {
 		INT (-128);
-	} >> 
-	p
+	}
 >>
 define unmap := (pointer, length) =>
 	type pointer = address (size * array coerce-byte _) >>
