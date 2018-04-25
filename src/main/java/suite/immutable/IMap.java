@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import suite.adt.pair.Pair;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Object_;
 
@@ -62,14 +64,7 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
 	@Override
 	public String toString() {
-		var sb = new StringBuilder();
-		sb.append("{");
-
-		for (var e : this)
-			sb.append(e.t0 + " = " + e.t1 + ", ");
-
-		sb.append("}");
-		return sb.toString();
+		return Read.from(this).map(e -> e + ", ").collect(As.joinedBy("{ ", "", "}"));
 	}
 
 }
