@@ -161,7 +161,7 @@ public class P0Parse {
 				var variables1 = list.fold(variables, (vs, array) -> vs.add(name(array[0])));
 				var p1 = new Parse(variables1);
 				return FunpDefineRec.of(list //
-						.map(m1 -> Pair.of(name(m1[0]), p1.p(m1[1]))) //
+						.map(m -> Pair.of(name(m[0]), p1.p(m[1]))) //
 						.toList(), p1.p(b));
 			}).match1("^.0", a -> {
 				return FunpDeref.of(p(a));
@@ -213,8 +213,8 @@ public class P0Parse {
 				return FunpStruct.of(Tree //
 						.iter(a, TermOp.AND___) //
 						.map(n -> {
-							var m1 = Suite.pattern(".0: .1").match(n);
-							return Pair.of(name(m1[0]), p(m1[1]));
+							var m = Suite.pattern(".0: .1").match(n);
+							return Pair.of(name(m[0]), p(m[1]));
 						}) //
 						.toList());
 			}).applyTree((op, l, r) -> {
