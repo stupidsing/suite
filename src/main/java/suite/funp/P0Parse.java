@@ -2,12 +2,11 @@ package suite.funp;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import suite.Constants;
 import suite.Suite;
+import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
 import suite.funp.Funp_.Funp;
@@ -231,28 +230,27 @@ public class P0Parse {
 		}
 
 		private Funp bind(Node a, Node b, Node c, Node d) {
-			var vars = new HashSet<String>();
+			var varsMutable = Mutable.of(ISet.<String> empty());
 
 			var be = new Object() {
 				private Funp extract(Funp be) {
 					return inspect.rewrite(Funp.class, n_ -> {
 						return new Switch<Funp>(n_ //
 						).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
-							vars.add(var);
+							varsMutable.update(varsMutable.get().add(var));
 							return FunpVariable.of(var);
 						})).result();
 					}, be);
 				}
 			}.extract(p(a));
 
+			var vars = varsMutable.get();
 			var value = p(b);
 			var then = new Parse(Read.from(vars).fold(variables, ISet::add)).p(c);
 			var else_ = p(d);
 			var f0 = new Bind(vars).bind(be, value, then, else_);
 			var f1 = FunpCheckType.of(be, value, f0);
-			return Read //
-					.from(vars) //
-					.<Funp> fold(f1, (f, var) -> FunpDefine.of(false, var, FunpDontCare.of(), f));
+			return Read.from(vars).<Funp> fold(f1, (f, var) -> FunpDefine.of(false, var, FunpDontCare.of(), f));
 		}
 
 		private Funp parseNewVariable(Node node, String var) {
@@ -265,9 +263,9 @@ public class P0Parse {
 	}
 
 	private class Bind {
-		private Set<String> variables;
+		private ISet<String> variables;
 
-		private Bind(Set<String> variables) {
+		private Bind(ISet<String> variables) {
 			this.variables = variables;
 		}
 
