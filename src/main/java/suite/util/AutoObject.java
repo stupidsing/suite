@@ -53,8 +53,8 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 		int c;
 		if (class0 == class1) {
 			var t0 = self();
-			var iter0 = t0.values().iterator();
-			var iter1 = t1.values().iterator();
+			var iter0 = t0.comparableValues().iterator();
+			var iter1 = t1.comparableValues().iterator();
 			boolean b0, b1;
 			c = 0;
 			while (c == 0 && (c = Boolean.compare(b0 = iter0.hasNext(), b1 = iter1.hasNext())) == 0)
@@ -77,8 +77,8 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 			var t0 = self();
 			@SuppressWarnings("unchecked")
 			var t1 = (T) object;
-			var values0 = t0.values();
-			var values1 = t1.values();
+			var values0 = t0.comparableValues();
+			var values1 = t1.comparableValues();
 			var size0 = values0.size();
 			var size1 = values1.size();
 			b = true;
@@ -97,7 +97,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 	@Override
 	public int hashCode() {
 		var h = 7;
-		for (var value : values())
+		for (var value : comparableValues())
 			h = h * 31 + Objects.hashCode(value);
 		return h;
 	}
@@ -122,13 +122,19 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 			return "<recurse>";
 	}
 
-	public List<Comparable<?>> values() {
+	public List<Comparable<?>> comparableValues() {
 		List<?> list0 = fields_() //
 				.map(field -> Rethrow.ex(() -> field.get(this))) //
 				.toList();
 		@SuppressWarnings("unchecked")
 		var list1 = (List<Comparable<?>>) list0;
 		return list1;
+	}
+
+	private List<?> values() {
+		return fields_() //
+				.map(field -> Rethrow.ex(() -> field.get(this))) //
+				.toList();
 	}
 
 	private Streamlet<Field> fields_() {

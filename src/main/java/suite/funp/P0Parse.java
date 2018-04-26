@@ -237,7 +237,7 @@ public class P0Parse {
 					return inspect.rewrite(Funp.class, n_ -> {
 						return new Switch<Funp>(n_ //
 						).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
-							varsMutable.update(varsMutable.get().add(var));
+							varsMutable.update(varsMutable.get().replace(var));
 							return FunpVariable.of(var);
 						})).result();
 					}, be);
