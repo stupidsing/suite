@@ -340,9 +340,9 @@ public class P2InferType {
 				unify(n, infer(left), typeNumber);
 				unify(n, infer(right), typeNumber);
 				return typeNumber;
-			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-				return env.get(var).map((isPolyType, tv) -> isPolyType ? unify.clone(tv) : tv);
-			})).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
+			})).applyIf(FunpVariable.class, f -> f.apply(var -> env.get(var).map((isPolyType, tv) -> {
+				return isPolyType ? unify.clone(tv) : tv;
+			}))).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
 				return Fail.t("Undefined variable " + var);
 			})).nonNullResult();
 		}
