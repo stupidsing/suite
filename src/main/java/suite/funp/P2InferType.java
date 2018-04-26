@@ -328,17 +328,17 @@ public class P2InferType {
 				return TypeArray.of(infer(expr), count);
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
 				return TypeStruct.of(Read.from2(pairs).mapValue(this::infer).toList());
-			})).applyIf(FunpTree.class, f -> f.apply((op, left, right) -> {
+			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
 				var ti = op == TermOp.BIGAND || op == TermOp.BIGOR_ ? typeBoolean : typeNumber;
-				unify(n, infer(left), ti);
-				unify(n, infer(right), ti);
+				unify(n, infer(lhs), ti);
+				unify(n, infer(rhs), ti);
 				if (op == TermOp.EQUAL_ || op == TermOp.NOTEQ_ || op == TermOp.LE____ || op == TermOp.LT____)
 					return typeBoolean;
 				else
 					return ti;
-			})).applyIf(FunpTree2.class, f -> f.apply((operator, left, right) -> {
-				unify(n, infer(left), typeNumber);
-				unify(n, infer(right), typeNumber);
+			})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
+				unify(n, infer(lhs), typeNumber);
+				unify(n, infer(rhs), typeNumber);
 				return typeNumber;
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> env.get(var).map((isPolyType, tv) -> {
 				return isPolyType ? unify.clone(tv) : tv;

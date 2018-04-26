@@ -465,10 +465,10 @@ public class P4GenerateCode {
 						em.emit(amd64.instruction(Insn.POP, opRegs[i]));
 
 					return out1;
-				})).applyIf(FunpTree.class, f -> f.apply((operator, lhs, rhs) -> {
-					return postOp.apply(compileTree(n, operator, operator.getAssoc(), lhs, rhs));
-				})).applyIf(FunpTree2.class, f -> f.apply((operator, lhs, rhs) -> {
-					return postOp.apply(compileTree(n, operator, Assoc.RIGHT, lhs, rhs));
+				})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
+					return postOp.apply(compileTree(n, op, op.getAssoc(), lhs, rhs));
+				})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
+					return postOp.apply(compileTree(n, op, Assoc.RIGHT, lhs, rhs));
 				})).applyIf(FunpWhile.class, f -> f.apply((while_, do_, expr) -> {
 					var loopLabel = em.label();
 					var contLabel = em.label();

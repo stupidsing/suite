@@ -131,15 +131,15 @@ public class P2GenerateLambda {
 				return rt -> i1;
 			})).applyIf(FunpReference.class, f -> {
 				return Fail.t();
-			}).applyIf(FunpTree.class, f -> f.apply((operator, left, right) -> {
-				var v0 = compile_(left);
-				var v1 = compile_(right);
-				if (operator == TermOp.BIGAND)
+			}).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
+				var v0 = compile_(lhs);
+				var v1 = compile_(rhs);
+				if (op == TermOp.BIGAND)
 					return rt -> new Bool(b(rt, v0) && b(rt, v1));
-				else if (operator == TermOp.BIGOR_)
+				else if (op == TermOp.BIGOR_)
 					return rt -> new Bool(b(rt, v0) || b(rt, v1));
 				else {
-					var fun = TreeUtil.evaluateOp(operator);
+					var fun = TreeUtil.evaluateOp(op);
 					return rt -> new Int(fun.apply(i(rt, v0), i(rt, v1)));
 				}
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {

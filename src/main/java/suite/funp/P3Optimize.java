@@ -68,17 +68,17 @@ public class P3Optimize {
 			}).result();
 		})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 			return optimize(expr).<Funp> switch_().applyIf(FunpMemory.class, g -> g.pointer).result();
-		})).applyIf(FunpTree.class, f -> f.apply((operator, lhs, rhs) -> {
-			var iib = TreeUtil.boolOperations.get(operator);
-			var iii = TreeUtil.intOperations.get(operator);
+		})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
+			var iib = TreeUtil.boolOperations.get(op);
+			var iii = TreeUtil.intOperations.get(op);
 			if (iib != null)
 				return evaluate(iib, lhs, rhs);
 			else if (iii != null)
 				return evaluate(iii, lhs, rhs);
 			else
 				return null;
-		})).applyIf(FunpTree2.class, f -> f.apply((operator, lhs, rhs) -> {
-			return evaluate(TreeUtil.tupleOperations.get(operator), lhs, rhs);
+		})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
+			return evaluate(TreeUtil.tupleOperations.get(op), lhs, rhs);
 		})).applyIf(FunpWhile.class, f -> f.apply((while_, do_, expr) -> {
 			return optimize(while_).<Funp> switch_().applyIf(FunpBoolean.class, g -> g.apply(b -> b ? null : expr)).result();
 		})).result();
