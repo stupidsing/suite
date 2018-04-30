@@ -205,8 +205,10 @@ public class InterpretFunLazy {
 						var i1 = i;
 						frame.add(() -> values.get(i1).get());
 					}
-					for (var value_ : values_)
-						values.add(value_.apply(frame)::get);
+					for (var value_ : values_) {
+						var v_ = value_;
+						values.add(() -> v_.apply(frame).get());
+					}
 					return expr.apply(frame);
 				};
 			} else if ((ERROR = Matcher.error.match(node)) != null)

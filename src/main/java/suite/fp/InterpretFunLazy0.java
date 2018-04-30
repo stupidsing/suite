@@ -78,7 +78,7 @@ public class InterpretFunLazy0 {
 			result = env -> {
 				var val = Mutable.<Thunk_> nil();
 				var env1 = env.put(vk, () -> val.get().get());
-				val.set(value.apply(env1)::get);
+				val.set(() -> value.apply(env1).get());
 				return expr.apply(env1);
 			};
 		} else if ((m = Suite.pattern("if .0 then .1 else .2").match(node)) != null) {
