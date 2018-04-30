@@ -18,8 +18,8 @@ public class SymbolicTest {
 	private Atom d = Atom.of("d");
 	private Atom x = Atom.of("x");
 	private Atom y = Atom.of("y");
-	private Symbolic sym = new Symbolic();
 	private Rewrite rw = new Rewrite();
+	private Symbolic sym = new Symbolic();
 
 	@Test
 	public void test0() {
