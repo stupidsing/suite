@@ -154,22 +154,18 @@ public class Symbolic {
 	}
 
 	public Opt<Node> polyize(Node node, Atom... vars) {
-		Ringo<?> ringo = Ringo.ofFractional(Fractional.ofIntegral());
-
-		for (var var : vars)
-			ringo = ringo.poly(new Rewrite(var));
-
-		return ringo.pf(node);
+		return Read //
+				.from(vars) //
+				.<Ringo<?>> fold(Ringo.ofFractional(Fractional.ofIntegral()), (r, var) -> r.poly(new Rewrite(var))) //
+				.pf(node);
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked", })
 	public Opt<Node> polyize0(Node node, Atom... vars) {
-		Fractional<?> fractional = Fractional.ofIntegral();
+		var fractional_ = Read //
+				.from(vars) //
+				.<Fractional<?>> fold(Fractional.ofIntegral(), (fr, var) -> divPoly(new Rewrite(var), fr).fractional());
 
-		for (var var : vars)
-			fractional = divPoly(new Rewrite(var), fractional).fractional();
-
-		Fractional<?> fractional_ = fractional;
 		return fractional_.parse(node).map(o -> fractional_.format((Fract) o));
 	}
 
