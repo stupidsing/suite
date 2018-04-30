@@ -56,11 +56,9 @@ public class ZipFibTest {
 
 		var zipAdd_ = new Object() {
 			Fun<Thunk> zipAdd(Thunk l0) {
-				return l1 -> () -> {
-					return new Cons( //
-							() -> add.apply(fst.apply(l0)).apply(fst.apply(l1)).get(), //
-							() -> zipAdd(snd.apply(l0)).apply(snd.apply(l1)).get());
-				};
+				return l1 -> () -> new Cons( //
+						() -> add.apply(fst.apply(l0)).apply(fst.apply(l1)).get(), //
+						() -> zipAdd(snd.apply(l0)).apply(snd.apply(l1)).get());
 			}
 		};
 
