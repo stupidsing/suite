@@ -321,7 +321,6 @@ public class P0Parse {
 				return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);
 			}
 		}
-
 	}
 
 	private String name(Node node) {
