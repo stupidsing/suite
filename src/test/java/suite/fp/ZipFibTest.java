@@ -38,6 +38,9 @@ public class ZipFibTest {
 
 	@Test
 	public void testMoliu() {
+		Thunk zero = () -> new N_(0);
+		Thunk one = () -> new N_(1);
+		Fun<Fun<Thunk>> cons = a -> b -> () -> new Cons(a, b);
 		Fun<Thunk> fst = list_ -> () -> ((Cons) list_.get()).t0.get();
 		Fun<Thunk> snd = list_ -> () -> ((Cons) list_.get()).t1.get();
 		Fun<Fun<Thunk>> add = a -> b -> () -> new N_(((N_) a.get()).i + ((N_) b.get()).i);
@@ -61,9 +64,6 @@ public class ZipFibTest {
 			}
 		};
 
-		Thunk zero = () -> new N_(0);
-		Thunk one = () -> new N_(1);
-		Fun<Fun<Thunk>> cons = a -> b -> () -> new Cons(a, b);
 		Fun<Fun<Thunk>> take = take_::take;
 		Fun<Fun<Thunk>> zipAdd = zipAdd_::zipAdd;
 
