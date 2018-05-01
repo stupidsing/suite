@@ -167,7 +167,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public int count() {
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<V> of((double) 0, null);
 		var i = 0;
 		while (next(pair))
 			i++;
@@ -185,7 +185,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjOutlet<V> drop(int n) {
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<V> of((double) 0, null);
 		var isAvailable = true;
 		while (0 < n && (isAvailable &= next(pair)))
 			n--;
@@ -199,8 +199,8 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 			var outlet = (DblObjOutlet<V>) (DblObjOutlet<?>) object;
 			var source2 = outlet.source;
 			boolean b, b0, b1;
-			DblObjPair<V> pair0 = DblObjPair.of((double) 0, null);
-			DblObjPair<V> pair1 = DblObjPair.of((double) 0, null);
+			var pair0 = DblObjPair.<V> of((double) 0, null);
+			var pair1 = DblObjPair.<V> of((double) 0, null);
 			while ((b = (b0 = source2.source2(pair0)) == (b1 = source2.source2(pair1))) //
 					&& b0 //
 					&& b1 //
@@ -224,7 +224,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjPair<V> first() {
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<V> of((double) 0, null);
 		return next(pair) ? pair : null;
 	}
 
@@ -242,7 +242,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	@Override
 	public int hashCode() {
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<V> of((double) 0, null);
 		var h = 7;
 		while (next(pair))
 			h = h * 31 + pair.hashCode();
@@ -259,13 +259,13 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	public DblOutlet keys() {
 		return DblOutlet.of(() -> {
-			DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+			var pair = DblObjPair.<V> of((double) 0, null);
 			return next(pair) ? pair.t0 : DblFunUtil.EMPTYVALUE;
 		});
 	}
 
 	public DblObjPair<V> last() {
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<V> of((double) 0, null);
 		if (next(pair))
 			while (next(pair))
 				;
@@ -299,8 +299,8 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjPair<V> minOrNull(Comparator<DblObjPair<V>> comparator) {
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
-		DblObjPair<V> pair1 = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<V> of((double) 0, null);
+		var pair1 = DblObjPair.<V> of((double) 0, null);
 		var b = next(pair);
 		if (b) {
 			while (next(pair1))
@@ -317,7 +317,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		new Thread(() -> {
 			boolean b;
 			do {
-				DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+				var pair = DblObjPair.<V> of((double) 0, null);
 				b = source.source2(pair);
 				queue.offerQuietly(pair);
 			} while (b);
@@ -336,7 +336,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjPair<V> opt() {
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<V> of((double) 0, null);
 		if (next(pair))
 			if (!next(pair))
 				return pair;
@@ -348,7 +348,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	public Outlet<DblObjPair<V>> pairs() {
 		return Outlet.of(() -> {
-			DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+			var pair = DblObjPair.<V> of((double) 0, null);
 			return next(pair) ? pair : null;
 		});
 	}
@@ -363,13 +363,13 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	public void sink(BiConsumer<Double, V> sink0) {
 		var sink1 = Rethrow.biConsumer(sink0);
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<V> of((double) 0, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
 	}
 
 	public DblObjOutlet<V> skip(int n) {
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<V> of((double) 0, null);
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
@@ -431,7 +431,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	public DblObjMap<List<V>> toListMap() {
 		var map = new DblObjMap<List<V>>();
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<V> of((double) 0, null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
 		return map;
@@ -439,7 +439,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	public DblObjMap<V> toMap() {
 		var map = new DblObjMap<V>();
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<V> of((double) 0, null);
 		while (source.source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
@@ -452,7 +452,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public ObjDblMap<V> toObjDblMap() {
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<V> of((double) 0, null);
 		var map = new ObjDblMap<V>();
 		while (source.source2(pair))
 			map.put(pair.t1, pair.t0);

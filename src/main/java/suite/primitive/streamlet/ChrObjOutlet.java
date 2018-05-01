@@ -167,7 +167,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public int count() {
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		var pair = ChrObjPair.<V> of((char) 0, null);
 		var i = 0;
 		while (next(pair))
 			i++;
@@ -185,7 +185,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjOutlet<V> drop(int n) {
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		var pair = ChrObjPair.<V> of((char) 0, null);
 		var isAvailable = true;
 		while (0 < n && (isAvailable &= next(pair)))
 			n--;
@@ -199,8 +199,8 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 			var outlet = (ChrObjOutlet<V>) (ChrObjOutlet<?>) object;
 			var source2 = outlet.source;
 			boolean b, b0, b1;
-			ChrObjPair<V> pair0 = ChrObjPair.of((char) 0, null);
-			ChrObjPair<V> pair1 = ChrObjPair.of((char) 0, null);
+			var pair0 = ChrObjPair.<V> of((char) 0, null);
+			var pair1 = ChrObjPair.<V> of((char) 0, null);
 			while ((b = (b0 = source2.source2(pair0)) == (b1 = source2.source2(pair1))) //
 					&& b0 //
 					&& b1 //
@@ -224,7 +224,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjPair<V> first() {
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		var pair = ChrObjPair.<V> of((char) 0, null);
 		return next(pair) ? pair : null;
 	}
 
@@ -242,7 +242,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	@Override
 	public int hashCode() {
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		var pair = ChrObjPair.<V> of((char) 0, null);
 		var h = 7;
 		while (next(pair))
 			h = h * 31 + pair.hashCode();
@@ -259,13 +259,13 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public ChrOutlet keys() {
 		return ChrOutlet.of(() -> {
-			ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+			var pair = ChrObjPair.<V> of((char) 0, null);
 			return next(pair) ? pair.t0 : ChrFunUtil.EMPTYVALUE;
 		});
 	}
 
 	public ChrObjPair<V> last() {
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		var pair = ChrObjPair.<V> of((char) 0, null);
 		if (next(pair))
 			while (next(pair))
 				;
@@ -299,8 +299,8 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjPair<V> minOrNull(Comparator<ChrObjPair<V>> comparator) {
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
-		ChrObjPair<V> pair1 = ChrObjPair.of((char) 0, null);
+		var pair = ChrObjPair.<V> of((char) 0, null);
+		var pair1 = ChrObjPair.<V> of((char) 0, null);
 		var b = next(pair);
 		if (b) {
 			while (next(pair1))
@@ -317,7 +317,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 		new Thread(() -> {
 			boolean b;
 			do {
-				ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+				var pair = ChrObjPair.<V> of((char) 0, null);
 				b = source.source2(pair);
 				queue.offerQuietly(pair);
 			} while (b);
@@ -336,7 +336,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjPair<V> opt() {
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		var pair = ChrObjPair.<V> of((char) 0, null);
 		if (next(pair))
 			if (!next(pair))
 				return pair;
@@ -348,7 +348,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public Outlet<ChrObjPair<V>> pairs() {
 		return Outlet.of(() -> {
-			ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+			var pair = ChrObjPair.<V> of((char) 0, null);
 			return next(pair) ? pair : null;
 		});
 	}
@@ -363,13 +363,13 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public void sink(BiConsumer<Character, V> sink0) {
 		var sink1 = Rethrow.biConsumer(sink0);
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		var pair = ChrObjPair.<V> of((char) 0, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
 	}
 
 	public ChrObjOutlet<V> skip(int n) {
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		var pair = ChrObjPair.<V> of((char) 0, null);
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
@@ -431,7 +431,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public ChrObjMap<List<V>> toListMap() {
 		var map = new ChrObjMap<List<V>>();
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		var pair = ChrObjPair.<V> of((char) 0, null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
 		return map;
@@ -439,7 +439,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public ChrObjMap<V> toMap() {
 		var map = new ChrObjMap<V>();
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		var pair = ChrObjPair.<V> of((char) 0, null);
 		while (source.source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
@@ -452,7 +452,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ObjChrMap<V> toObjChrMap() {
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		var pair = ChrObjPair.<V> of((char) 0, null);
 		var map = new ObjChrMap<V>();
 		while (source.source2(pair))
 			map.put(pair.t1, pair.t0);

@@ -12,6 +12,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import suite.adt.map.ListMultimap;
+import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Pair;
 import suite.util.Fail;
 import suite.util.FunUtil;
@@ -119,6 +120,10 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 
 	public <O> Streamlet<O> flatMap(Fun2<K, V, Iterable<O>> fun) {
 		return new Streamlet<>(() -> spawn().flatMap(fun));
+	}
+
+	public <R> R fold(R init, FixieFun3<R, K, V, R> fun) {
+		return spawn().fold(init, fun);
 	}
 
 	public Streamlet2<K, List<V>> groupBy() {

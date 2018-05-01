@@ -17,6 +17,7 @@ import java.util.function.Predicate;
 
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
+import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Pair;
 import suite.util.Array_;
 import suite.util.Fail;
@@ -161,7 +162,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public int count() {
-		Pair<K, V> pair = Pair.of(null, null);
+		var pair = Pair.<K, V> of(null, null);
 		var i = 0;
 		while (next(pair))
 			i++;
@@ -179,7 +180,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public Outlet2<K, V> drop(int n) {
-		Pair<K, V> pair = Pair.of(null, null);
+		var pair = Pair.<K, V> of(null, null);
 		var isAvailable = true;
 		while (0 < n && (isAvailable &= next(pair)))
 			n--;
@@ -193,8 +194,8 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			var outlet = (Outlet2<K, V>) (Outlet2<?, ?>) object;
 			var source2 = outlet.source2;
 			boolean b, b0, b1;
-			Pair<K, V> pair0 = Pair.of(null, null);
-			Pair<K, V> pair1 = Pair.of(null, null);
+			var pair0 = Pair.<K, V> of(null, null);
+			var pair1 = Pair.<K, V> of(null, null);
 			while ((b = (b0 = source2.source2(pair0)) == (b1 = source2.source2(pair1))) //
 					&& b0 //
 					&& b1 //
@@ -218,12 +219,19 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public Pair<K, V> first() {
-		Pair<K, V> pair = Pair.of(null, null);
+		var pair = Pair.<K, V> of(null, null);
 		return next(pair) ? pair : null;
 	}
 
 	public <O> Outlet<O> flatMap(Fun2<K, V, Iterable<O>> fun) {
 		return Outlet.of(FunUtil.flatten(FunUtil2.map(fun, source2)));
+	}
+
+	public <R> R fold(R init, FixieFun3<R, K, V, R> fun) {
+		var pair = Pair.<K, V> of(null, null);
+		while (next(pair))
+			init = fun.apply(init, pair.t0, pair.t1);
+		return init;
 	}
 
 	public Outlet2<K, List<V>> groupBy() {
@@ -237,7 +245,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	@Override
 	public int hashCode() {
-		Pair<K, V> pair = Pair.of(null, null);
+		var pair = Pair.<K, V> of(null, null);
 		var h = 7;
 		while (next(pair))
 			h = h * 31 + pair.hashCode();
@@ -257,7 +265,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public Pair<K, V> last() {
-		Pair<K, V> pair = Pair.of(null, null);
+		var pair = Pair.<K, V> of(null, null);
 		if (next(pair))
 			while (next(pair))
 				;
@@ -287,8 +295,8 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public Pair<K, V> minOrNull(Comparator<Pair<K, V>> comparator) {
-		Pair<K, V> pair = Pair.of(null, null);
-		Pair<K, V> pair1 = Pair.of(null, null);
+		var pair = Pair.<K, V> of(null, null);
+		var pair1 = Pair.<K, V> of(null, null);
 		var b = next(pair);
 		if (b) {
 			while (next(pair1))
@@ -305,7 +313,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		new Thread(() -> {
 			boolean b;
 			do {
-				Pair<K, V> pair = Pair.of(null, null);
+				var pair = Pair.<K, V> of(null, null);
 				b = source2.source2(pair);
 				queue.offerQuietly(pair);
 			} while (b);
@@ -324,7 +332,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public Pair<K, V> opt() {
-		Pair<K, V> pair = Pair.of(null, null);
+		var pair = Pair.<K, V> of(null, null);
 		if (next(pair))
 			if (!next(pair))
 				return pair;
@@ -336,7 +344,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	public Outlet<Pair<K, V>> pairs() {
 		return Outlet.of(() -> {
-			Pair<K, V> pair = Pair.of(null, null);
+			var pair = Pair.<K, V> of(null, null);
 			return next(pair) ? pair : null;
 		});
 	}
@@ -351,13 +359,13 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	public void sink(BiConsumer<K, V> sink0) {
 		var sink1 = Rethrow.biConsumer(sink0);
-		Pair<K, V> pair = Pair.of(null, null);
+		var pair = Pair.<K, V> of(null, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
 	}
 
 	public Outlet2<K, V> skip(int n) {
-		Pair<K, V> pair = Pair.of(null, null);
+		var pair = Pair.<K, V> of(null, null);
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
@@ -419,7 +427,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	public Map<K, List<V>> toListMap() {
 		var map = new HashMap<K, List<V>>();
-		Pair<K, V> pair = Pair.of(null, null);
+		var pair = Pair.<K, V> of(null, null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
 		return map;
@@ -427,7 +435,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 
 	public Map<K, V> toMap() {
 		var map = new HashMap<K, V>();
-		Pair<K, V> pair = Pair.of(null, null);
+		var pair = Pair.<K, V> of(null, null);
 		while (next(pair))
 			if (map.put(pair.t0, pair.t1) != null)
 				Fail.t("duplicate key " + pair.t0);

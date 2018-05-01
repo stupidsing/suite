@@ -167,7 +167,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	}
 
 	public int count() {
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<V> of((int) 0, null);
 		var i = 0;
 		while (next(pair))
 			i++;
@@ -185,7 +185,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	}
 
 	public IntObjOutlet<V> drop(int n) {
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<V> of((int) 0, null);
 		var isAvailable = true;
 		while (0 < n && (isAvailable &= next(pair)))
 			n--;
@@ -199,8 +199,8 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 			var outlet = (IntObjOutlet<V>) (IntObjOutlet<?>) object;
 			var source2 = outlet.source;
 			boolean b, b0, b1;
-			IntObjPair<V> pair0 = IntObjPair.of((int) 0, null);
-			IntObjPair<V> pair1 = IntObjPair.of((int) 0, null);
+			var pair0 = IntObjPair.<V> of((int) 0, null);
+			var pair1 = IntObjPair.<V> of((int) 0, null);
 			while ((b = (b0 = source2.source2(pair0)) == (b1 = source2.source2(pair1))) //
 					&& b0 //
 					&& b1 //
@@ -224,7 +224,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	}
 
 	public IntObjPair<V> first() {
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<V> of((int) 0, null);
 		return next(pair) ? pair : null;
 	}
 
@@ -242,7 +242,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
 	@Override
 	public int hashCode() {
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<V> of((int) 0, null);
 		var h = 7;
 		while (next(pair))
 			h = h * 31 + pair.hashCode();
@@ -259,13 +259,13 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
 	public IntOutlet keys() {
 		return IntOutlet.of(() -> {
-			IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+			var pair = IntObjPair.<V> of((int) 0, null);
 			return next(pair) ? pair.t0 : IntFunUtil.EMPTYVALUE;
 		});
 	}
 
 	public IntObjPair<V> last() {
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<V> of((int) 0, null);
 		if (next(pair))
 			while (next(pair))
 				;
@@ -299,8 +299,8 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	}
 
 	public IntObjPair<V> minOrNull(Comparator<IntObjPair<V>> comparator) {
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
-		IntObjPair<V> pair1 = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<V> of((int) 0, null);
+		var pair1 = IntObjPair.<V> of((int) 0, null);
 		var b = next(pair);
 		if (b) {
 			while (next(pair1))
@@ -317,7 +317,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		new Thread(() -> {
 			boolean b;
 			do {
-				IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+				var pair = IntObjPair.<V> of((int) 0, null);
 				b = source.source2(pair);
 				queue.offerQuietly(pair);
 			} while (b);
@@ -336,7 +336,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	}
 
 	public IntObjPair<V> opt() {
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<V> of((int) 0, null);
 		if (next(pair))
 			if (!next(pair))
 				return pair;
@@ -348,7 +348,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
 	public Outlet<IntObjPair<V>> pairs() {
 		return Outlet.of(() -> {
-			IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+			var pair = IntObjPair.<V> of((int) 0, null);
 			return next(pair) ? pair : null;
 		});
 	}
@@ -363,13 +363,13 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
 	public void sink(BiConsumer<Integer, V> sink0) {
 		var sink1 = Rethrow.biConsumer(sink0);
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<V> of((int) 0, null);
 		while (next(pair))
 			sink1.accept(pair.t0, pair.t1);
 	}
 
 	public IntObjOutlet<V> skip(int n) {
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<V> of((int) 0, null);
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
@@ -431,7 +431,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
 	public IntObjMap<List<V>> toListMap() {
 		var map = new IntObjMap<List<V>>();
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<V> of((int) 0, null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
 		return map;
@@ -439,7 +439,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
 	public IntObjMap<V> toMap() {
 		var map = new IntObjMap<V>();
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<V> of((int) 0, null);
 		while (source.source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
@@ -452,7 +452,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	}
 
 	public ObjIntMap<V> toObjIntMap() {
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<V> of((int) 0, null);
 		var map = new ObjIntMap<V>();
 		while (source.source2(pair))
 			map.put(pair.t1, pair.t0);
