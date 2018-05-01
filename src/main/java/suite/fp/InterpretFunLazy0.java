@@ -85,23 +85,23 @@ public class InterpretFunLazy0 {
 			var if_ = lazy_(m[0]);
 			var then_ = lazy_(m[1]);
 			var else_ = lazy_(m[2]);
-			result = env -> (if_.apply(env).get() == Atom.TRUE ? then_ : else_).apply(env);
+			result = env -> () -> (if_.apply(env).get() == Atom.TRUE ? then_ : else_).apply(env).get();
 		} else if ((m = Suite.pattern(".0 => .1").match(node)) != null) {
 			var vk = v(m[0]);
 			var value = lazy_(m[1]);
-			result = env -> () -> new Fun_(in -> value.apply(env.put(vk, in)));
+			result = env -> () -> new Fun_(in -> () -> value.apply(env.put(vk, in)).get());
 		} else if ((m = Suite.pattern(".0 {.1}").match(node)) != null) {
 			var fun = lazy_(m[0]);
 			var param = lazy_(m[1]);
-			result = env -> fun(fun.apply(env).get()).apply(param.apply(env));
+			result = env -> () -> fun(fun.apply(env)).apply(param.apply(env)).get();
 		} else if ((tree = Tree.decompose(node)) != null) {
 			var operator = tree.getOperator();
 			var p0 = lazy_(tree.getLeft());
 			var p1 = lazy_(tree.getRight());
 			result = env -> {
 				var r0 = env.get(operator.getName());
-				var r1 = fun(r0.get()).apply(p0.apply(env));
-				var r2 = fun(r1.get()).apply(p1.apply(env));
+				var r1 = fun(r0).apply(p0.apply(env));
+				var r2 = fun(r1).apply(p1.apply(env));
 				return r2;
 			};
 		} else if (node instanceof Atom) {
@@ -113,12 +113,12 @@ public class InterpretFunLazy0 {
 		return result;
 	}
 
-	private Iterate<Thunk_> fun(Node n) {
-		return ((Fun_) n).fun;
-	}
-
 	private Atom b(boolean b) {
 		return b ? Atom.TRUE : Atom.FALSE;
+	}
+
+	private Iterate<Thunk_> fun(Thunk_ n) {
+		return ((Fun_) n.get()).fun;
 	}
 
 	private int i(Thunk_ thunk) {
