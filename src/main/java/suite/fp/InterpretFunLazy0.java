@@ -9,6 +9,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
@@ -44,24 +45,21 @@ public class InterpretFunLazy0 {
 	public Thunk_ lazy(Node node) {
 		Thunk_ error = () -> Fail.t("error termination");
 
-		var env = IMap.<String, Thunk_> empty();
-		env = env.put(Atom.TRUE.name, () -> Atom.TRUE);
-		env = env.put(Atom.FALSE.name, () -> Atom.FALSE);
+		var env = IMap.<String, Thunk_> empty() //
+				.put(Atom.TRUE.name, () -> Atom.TRUE) //
+				.put(Atom.FALSE.name, () -> Atom.FALSE) //
+				.put(TermOp.AND___.name, () -> new Fun_(a -> () -> new Fun_(b -> () -> new Pair_(a, b)))) //
+				.put(ERROR.name, error) //
+				.put(FST__.name, () -> new Fun_(in -> ((Pair_) in.get()).first)) //
+				.put(SND__.name, () -> new Fun_(in -> ((Pair_) in.get()).second));
 
-		env = env.put(TermOp.AND___.name, () -> new Fun_(a -> () -> new Fun_(b -> () -> new Pair_(a, b))));
-		env = env.put(ERROR.name, error);
-		env = env.put(FST__.name, () -> new Fun_(in -> ((Pair_) in.get()).first));
-		env = env.put(SND__.name, () -> new Fun_(in -> ((Pair_) in.get()).second));
+		env = Read.from2(TreeUtil.boolOperations).fold(env, (e, k, fun) -> {
+			return e.put(k.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(fun.apply(i(a), i(b))))));
+		});
 
-		for (var e : TreeUtil.boolOperations.entrySet()) {
-			var fun = e.getValue();
-			env = env.put(e.getKey().getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> b(fun.apply(i(a), i(b))))));
-		}
-
-		for (var e : TreeUtil.intOperations.entrySet()) {
-			var fun = e.getValue();
-			env = env.put(e.getKey().getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(fun.apply(i(a), i(b))))));
-		}
+		env = Read.from2(TreeUtil.intOperations).fold(env, (e, k, fun) -> {
+			return e.put(k.getName(), () -> new Fun_(a -> () -> new Fun_(b -> () -> Int.of(fun.apply(i(a), i(b))))));
+		});
 
 		return lazy_(node).apply(env);
 	}
