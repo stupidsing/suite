@@ -2,6 +2,7 @@ package suite.primitive.adt.set;
 
 import java.util.Arrays;
 
+import suite.primitive.Floats_;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.FltSink;
 import suite.primitive.FltPrimitives.FltSource;
@@ -67,6 +68,14 @@ public class FltSet {
 		return vs[index(c)] == c;
 	}
 
+	public FltSet clone() {
+		var capacity = vs.length;
+		var set = new FltSet(capacity);
+		set.size = size;
+		Floats_.copy(vs, 0, set.vs, 0, capacity);
+		return set;
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof FltSet) {
@@ -92,6 +101,28 @@ public class FltSet {
 		for (var c : streamlet())
 			h = h * 31 + Float.hashCode(c);
 		return h;
+	}
+
+	public boolean remove(float c) {
+		var mask = vs.length - 1;
+		var index = index(c);
+		var b = vs[index] == c;
+		if (b) {
+			vs[index] = EMPTYVALUE;
+			size--;
+			new Object() {
+				public void rehash(int index) {
+					var index1 = (index + 1) & mask;
+					var v = vs[index1];
+					if (v != EMPTYVALUE) {
+						vs[index1] = EMPTYVALUE;
+						rehash(index1);
+						vs[index(v)] = v;
+					}
+				}
+			}.rehash(index);
+		}
+		return b;
 	}
 
 	public FltSource source() {

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.DblSink;
 import suite.primitive.DblPrimitives.DblSource;
+import suite.primitive.Doubles_;
 import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.DblStreamlet;
 
@@ -67,6 +68,14 @@ public class DblSet {
 		return vs[index(c)] == c;
 	}
 
+	public DblSet clone() {
+		var capacity = vs.length;
+		var set = new DblSet(capacity);
+		set.size = size;
+		Doubles_.copy(vs, 0, set.vs, 0, capacity);
+		return set;
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof DblSet) {
@@ -92,6 +101,28 @@ public class DblSet {
 		for (var c : streamlet())
 			h = h * 31 + Double.hashCode(c);
 		return h;
+	}
+
+	public boolean remove(double c) {
+		var mask = vs.length - 1;
+		var index = index(c);
+		var b = vs[index] == c;
+		if (b) {
+			vs[index] = EMPTYVALUE;
+			size--;
+			new Object() {
+				public void rehash(int index) {
+					var index1 = (index + 1) & mask;
+					var v = vs[index1];
+					if (v != EMPTYVALUE) {
+						vs[index1] = EMPTYVALUE;
+						rehash(index1);
+						vs[index(v)] = v;
+					}
+				}
+			}.rehash(index);
+		}
+		return b;
 	}
 
 	public DblSource source() {

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.IntSource;
+import suite.primitive.Ints_;
 import suite.primitive.streamlet.IntOutlet;
 import suite.primitive.streamlet.IntStreamlet;
 
@@ -67,6 +68,14 @@ public class IntSet {
 		return vs[index(c)] == c;
 	}
 
+	public IntSet clone() {
+		var capacity = vs.length;
+		var set = new IntSet(capacity);
+		set.size = size;
+		Ints_.copy(vs, 0, set.vs, 0, capacity);
+		return set;
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof IntSet) {
@@ -92,6 +101,28 @@ public class IntSet {
 		for (var c : streamlet())
 			h = h * 31 + Integer.hashCode(c);
 		return h;
+	}
+
+	public boolean remove(int c) {
+		var mask = vs.length - 1;
+		var index = index(c);
+		var b = vs[index] == c;
+		if (b) {
+			vs[index] = EMPTYVALUE;
+			size--;
+			new Object() {
+				public void rehash(int index) {
+					var index1 = (index + 1) & mask;
+					var v = vs[index1];
+					if (v != EMPTYVALUE) {
+						vs[index1] = EMPTYVALUE;
+						rehash(index1);
+						vs[index(v)] = v;
+					}
+				}
+			}.rehash(index);
+		}
+		return b;
 	}
 
 	public IntSource source() {

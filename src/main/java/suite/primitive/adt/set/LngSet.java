@@ -5,6 +5,7 @@ import java.util.Arrays;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.LngPrimitives.LngSource;
+import suite.primitive.Longs_;
 import suite.primitive.streamlet.LngOutlet;
 import suite.primitive.streamlet.LngStreamlet;
 
@@ -67,6 +68,14 @@ public class LngSet {
 		return vs[index(c)] == c;
 	}
 
+	public LngSet clone() {
+		var capacity = vs.length;
+		var set = new LngSet(capacity);
+		set.size = size;
+		Longs_.copy(vs, 0, set.vs, 0, capacity);
+		return set;
+	}
+
 	@Override
 	public boolean equals(Object object) {
 		if (object instanceof LngSet) {
@@ -92,6 +101,28 @@ public class LngSet {
 		for (var c : streamlet())
 			h = h * 31 + Long.hashCode(c);
 		return h;
+	}
+
+	public boolean remove(long c) {
+		var mask = vs.length - 1;
+		var index = index(c);
+		var b = vs[index] == c;
+		if (b) {
+			vs[index] = EMPTYVALUE;
+			size--;
+			new Object() {
+				public void rehash(int index) {
+					var index1 = (index + 1) & mask;
+					var v = vs[index1];
+					if (v != EMPTYVALUE) {
+						vs[index1] = EMPTYVALUE;
+						rehash(index1);
+						vs[index(v)] = v;
+					}
+				}
+			}.rehash(index);
+		}
+		return b;
 	}
 
 	public LngSource source() {
