@@ -1,7 +1,6 @@
 package suite.weiqi;
 
-import java.util.HashSet;
-
+import suite.primitive.adt.set.IntSet;
 import suite.util.Fail;
 import suite.util.Object_;
 import suite.weiqi.Board.MoveType;
@@ -12,27 +11,26 @@ public class GameSet {
 	public final Board board;
 
 	private Occupation nextPlayer;
-	private HashSet<Integer> previousStates = new HashSet<>();
+	private IntSet previousStates = new IntSet();
 
 	public GameSet() {
 		this(new Board(), Occupation.BLACK);
 	}
 
-	@SuppressWarnings("unchecked")
 	public GameSet(GameSet gameSet) {
-		this(gameSet.board, gameSet.nextPlayer, (HashSet<Integer>) gameSet.previousStates.clone());
+		this(gameSet.board, gameSet.nextPlayer, gameSet.previousStates.clone());
 	}
 
 	/**
-	 * Constructs a "left-over" game. Note that the previous state information will
-	 * be empty, not suitable for real-play scenario.
+	 * Constructs a "left-over" game. Note that the previous state information
+	 * will be empty, not suitable for real-play scenario.
 	 */
 	public GameSet(Board board, Occupation nextPlayer) {
-		this(board, nextPlayer, new HashSet<>());
+		this(board, nextPlayer, new IntSet());
 		previousStates.add(board.hashCode());
 	}
 
-	private GameSet(Board board, Occupation nextPlayer, HashSet<Integer> previousStates) {
+	private GameSet(Board board, Occupation nextPlayer, IntSet previousStates) {
 		this.board = new Board(board);
 		this.nextPlayer = nextPlayer;
 		this.previousStates = previousStates;

@@ -2,8 +2,8 @@ package suite.weiqi;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
-import java.util.HashSet;
 
+import suite.primitive.adt.set.IntSet;
 import suite.util.Object_;
 import suite.weiqi.Weiqi.Occupation;
 
@@ -12,28 +12,27 @@ public class GameSet1 {
 	public final Board1 board;
 
 	private Occupation nextPlayer;
-	private HashSet<Integer> previousStates = new HashSet<>();
+	private IntSet previousStates = new IntSet();
 	private Deque<Runnable> undos = new ArrayDeque<>();
 
 	public GameSet1() {
 		this(new Board1(), Occupation.BLACK);
 	}
 
-	@SuppressWarnings("unchecked")
 	public GameSet1(GameSet1 gameSet) {
-		this(gameSet.board, gameSet.nextPlayer, (HashSet<Integer>) gameSet.previousStates.clone());
+		this(gameSet.board, gameSet.nextPlayer, gameSet.previousStates.clone());
 	}
 
 	/**
-	 * Constructs a "left-over" game. Note that the previous state information will
-	 * be empty, not suitable for real-play scenario.
+	 * Constructs a "left-over" game. Note that the previous state information
+	 * will be empty, not suitable for real-play scenario.
 	 */
 	public GameSet1(Board1 board, Occupation nextPlayer) {
-		this(board, nextPlayer, new HashSet<>());
+		this(board, nextPlayer, new IntSet());
 		previousStates.add(board.hashCode());
 	}
 
-	private GameSet1(Board1 board, Occupation nextPlayer, HashSet<Integer> previousStates) {
+	private GameSet1(Board1 board, Occupation nextPlayer, IntSet previousStates) {
 		this.board = new Board1(board);
 		this.nextPlayer = nextPlayer;
 		this.previousStates = previousStates;
