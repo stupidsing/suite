@@ -10,23 +10,6 @@ import suite.fp.intrinsic.Intrinsics;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.fp.match.Matcher;
-import suite.fp.match.Matchers.APPLY;
-import suite.fp.match.Matchers.ATOM;
-import suite.fp.match.Matchers.BOOLEAN;
-import suite.fp.match.Matchers.CHARS;
-import suite.fp.match.Matchers.CONS;
-import suite.fp.match.Matchers.DECONS;
-import suite.fp.match.Matchers.DEFVARS;
-import suite.fp.match.Matchers.ERROR;
-import suite.fp.match.Matchers.FUN;
-import suite.fp.match.Matchers.IF;
-import suite.fp.match.Matchers.NUMBER;
-import suite.fp.match.Matchers.PRAGMA;
-import suite.fp.match.Matchers.TCO;
-import suite.fp.match.Matchers.TREE;
-import suite.fp.match.Matchers.UNWRAP;
-import suite.fp.match.Matchers.VAR;
-import suite.fp.match.Matchers.WRAP;
 import suite.immutable.IMap;
 import suite.lp.search.SewingProverBuilder2;
 import suite.node.Atom;
@@ -37,6 +20,7 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Operator;
+import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
@@ -87,50 +71,32 @@ public class InterpretFunEager {
 		}
 
 		private Fun<Frame, Node> eager_(Node node) {
-			Fun<Frame, Node> result;
-			APPLY APPLY;
-			ATOM ATOM;
-			BOOLEAN BOOLEAN;
-			CHARS CHARS;
-			CONS CONS;
-			DECONS DECONS;
-			DEFVARS DEFVARS;
-			ERROR ERROR;
-			FUN FUN;
-			IF IF;
-			NUMBER NUMBER;
-			PRAGMA PRAGMA;
-			TCO TCO;
-			TREE TREE;
-			UNWRAP UNWRAP;
-			VAR VAR;
-			WRAP WRAP;
-
-			if ((APPLY = Matcher.apply.match(node)) != null) {
+			return new SwitchNode<Fun<Frame, Node>>(node //
+			).match(Matcher.apply, APPLY -> {
 				var param_ = eager_(APPLY.param);
 				var fun_ = eager_(APPLY.fun);
-				result = frame -> {
+				return frame -> {
 					var fun = fun_.apply(frame);
 					var param = param_.apply(frame);
 					return fun(fun).apply(param);
 				};
-			} else if ((ATOM = Matcher.atom.match(node)) != null)
-				result = immediate(ATOM.value);
-			else if ((BOOLEAN = Matcher.boolean_.match(node)) != null)
-				result = immediate(BOOLEAN.value);
-			else if ((CHARS = Matcher.chars.match(node)) != null)
-				result = immediate(new Data<>(To.chars(((Str) CHARS.value).value)));
-			else if ((CONS = Matcher.cons.match(node)) != null) {
+			}).match(Matcher.atom, ATOM -> {
+				return immediate(ATOM.value);
+			}).match(Matcher.boolean_, BOOLEAN -> {
+				return immediate(BOOLEAN.value);
+			}).match(Matcher.chars, CHARS -> {
+				return immediate(new Data<>(To.chars(((Str) CHARS.value).value)));
+			}).match(Matcher.cons, CONS -> {
 				var p0_ = eager_(CONS.head);
 				var p1_ = eager_(CONS.tail);
 				var operator = oper(CONS.type);
-				result = frame -> Tree.of(operator, p0_.apply(frame), p1_.apply(frame));
-			} else if ((DECONS = Matcher.decons.match(node)) != null) {
+				return frame -> Tree.of(operator, p0_.apply(frame), p1_.apply(frame));
+			}).match(Matcher.decons, DECONS -> {
 				var value_ = eager_(DECONS.value);
 				var then_ = put(DECONS.left).put(DECONS.right).eager_(DECONS.then);
 				var else_ = eager_(DECONS.else_);
 				var operator = oper(DECONS.type);
-				result = frame -> {
+				return frame -> {
 					var tree = Tree.decompose(value_.apply(frame), operator);
 					if (tree != null) {
 						frame.add(tree.getLeft());
@@ -139,7 +105,7 @@ public class InterpretFunEager {
 					} else
 						return else_.apply(frame);
 				};
-			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
+			}).match(Matcher.defvars, DEFVARS -> {
 				var tuple = Suite.pattern(".0 .1");
 				var arrays = Tree.iter(DEFVARS.list).map(tuple::match).toList();
 				if (arrays.size() == 1) {
@@ -148,7 +114,7 @@ public class InterpretFunEager {
 					var eager1 = new Eager_(fs + 1, vm1);
 					var value_ = wrap(eager1.eager_(array[1]));
 					var expr = eager1.eager_(DEFVARS.do_);
-					result = frame -> {
+					return frame -> {
 						frame.add(value_.apply(frame));
 						return expr.apply(frame);
 					};
@@ -166,41 +132,41 @@ public class InterpretFunEager {
 					var values_ = Read.from(arrays).map(array -> wrap(eager1.eager_(array[1]))).toList();
 					var expr = eager1.eager_(DEFVARS.do_);
 
-					result = frame -> {
+					return frame -> {
 						for (var value_ : values_)
 							frame.add(value_.apply(frame));
 						return expr.apply(frame);
 					};
 				}
-			} else if ((ERROR = Matcher.error.match(node)) != null)
-				result = frame -> Fail.t("error termination " + Formatter.display(ERROR.m));
-			else if ((FUN = Matcher.fun.match(node)) != null) {
+			}).match(Matcher.error, ERROR -> {
+				return frame -> Fail.t("error termination " + Formatter.display(ERROR.m));
+			}).match(Matcher.fun, FUN -> {
 				var vm1 = IMap.<Node, Fun<Frame, Node>> empty();
 				for (var e : vm) {
 					var getter0 = e.t1;
 					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));
 				}
 				var value_ = new Eager_(0, vm1).put(FUN.param).eager_(FUN.do_);
-				result = frame -> new Fun_(in -> {
+				return frame -> new Fun_(in -> {
 					var frame1 = new Frame(frame);
 					frame1.add(in);
 					return value_.apply(frame1);
 				});
-			} else if ((IF = Matcher.if_.match(node)) != null) {
+			}).match(Matcher.if_, IF -> {
 				var if_ = eager_(IF.if_);
 				var then_ = eager_(IF.then_);
 				var else_ = eager_(IF.else_);
-				result = frame -> (if_.apply(frame) == Atom.TRUE ? then_ : else_).apply(frame);
-			} else if (Matcher.nil.match(node) != null)
-				result = immediate(Atom.NIL);
-			else if ((NUMBER = Matcher.number.match(node)) != null)
-				result = immediate(NUMBER.value);
-			else if ((PRAGMA = Matcher.pragma.match(node)) != null)
-				result = eager_(PRAGMA.do_);
-			else if ((TCO = Matcher.tco.match(node)) != null) {
+				return frame -> (if_.apply(frame) == Atom.TRUE ? then_ : else_).apply(frame);
+			}).match(Matcher.nil, NIL -> {
+				return immediate(Atom.NIL);
+			}).match(Matcher.number, NUMBER -> {
+				return immediate(NUMBER.value);
+			}).match(Matcher.pragma, PRAGMA -> {
+				return eager_(PRAGMA.do_);
+			}).match(Matcher.tco, TCO -> {
 				var iter_ = eager_(TCO.iter);
 				var in_ = eager_(TCO.in_);
-				result = frame -> {
+				return frame -> {
 					var iter = fun(iter_.apply(frame));
 					var in = in_.apply(frame);
 					Tree p0, p1;
@@ -212,18 +178,15 @@ public class InterpretFunEager {
 					} while (p0.getLeft() != Atom.TRUE);
 					return p1.getRight();
 				};
-			} else if ((TREE = Matcher.tree.match(node)) != null)
-				result = eager_(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", TREE.op, TREE.left, TREE.right));
-			else if ((UNWRAP = Matcher.unwrap.match(node)) != null)
-				result = unwrap(eager_(UNWRAP.do_));
-			else if ((VAR = Matcher.var.match(node)) != null)
-				result = vm.get(VAR.name);
-			else if ((WRAP = Matcher.wrap.match(node)) != null)
-				result = wrap(eager_(WRAP.do_));
-			else
-				result = Fail.t("unrecognized construct " + node);
-
-			return result;
+			}).match(Matcher.tree, TREE -> {
+				return eager_(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", TREE.op, TREE.left, TREE.right));
+			}).match(Matcher.unwrap, UNWRAP -> {
+				return unwrap(eager_(UNWRAP.do_));
+			}).match(Matcher.var, VAR -> {
+				return vm.get(VAR.name);
+			}).match(Matcher.wrap, WRAP -> {
+				return wrap(eager_(WRAP.do_));
+			}).nonNullResult();
 		}
 
 		private Eager_ put(Node node) {

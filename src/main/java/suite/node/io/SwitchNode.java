@@ -8,6 +8,7 @@ import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Fixie_.FixieFun4;
+import suite.fp.match.Matcher;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
@@ -48,6 +49,13 @@ public class SwitchNode<R> {
 			var r = (R) t;
 			return r;
 		});
+	}
+
+	public <T> SwitchNode<R> match(Matcher<T> matcher, Fun<T, R> fun) {
+		T t;
+		if (result == null && (t = matcher.match(in)) != null)
+			result = fun.apply(t);
+		return this;
 	}
 
 	public SwitchNode<R> match(Atom node, Fun<Atom, R> fun) {

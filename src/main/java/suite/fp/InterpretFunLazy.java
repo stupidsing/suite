@@ -8,23 +8,6 @@ import java.util.stream.Collectors;
 import suite.Suite;
 import suite.adt.Mutable;
 import suite.fp.match.Matcher;
-import suite.fp.match.Matchers.APPLY;
-import suite.fp.match.Matchers.ATOM;
-import suite.fp.match.Matchers.BOOLEAN;
-import suite.fp.match.Matchers.CHARS;
-import suite.fp.match.Matchers.CONS;
-import suite.fp.match.Matchers.DECONS;
-import suite.fp.match.Matchers.DEFVARS;
-import suite.fp.match.Matchers.ERROR;
-import suite.fp.match.Matchers.FUN;
-import suite.fp.match.Matchers.IF;
-import suite.fp.match.Matchers.NUMBER;
-import suite.fp.match.Matchers.PRAGMA;
-import suite.fp.match.Matchers.TCO;
-import suite.fp.match.Matchers.TREE;
-import suite.fp.match.Matchers.UNWRAP;
-import suite.fp.match.Matchers.VAR;
-import suite.fp.match.Matchers.WRAP;
 import suite.immutable.IMap;
 import suite.lp.doer.Prover;
 import suite.node.Atom;
@@ -35,6 +18,7 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.Formatter;
+import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
@@ -122,50 +106,31 @@ public class InterpretFunLazy {
 		}
 
 		private Fun<Frame, Thunk_> lazy_(Node node) {
-			Fun<Frame, Thunk_> result;
-			Node[] m;
-			APPLY APPLY;
-			ATOM ATOM;
-			BOOLEAN BOOLEAN;
-			CHARS CHARS;
-			CONS CONS;
-			DECONS DECONS;
-			DEFVARS DEFVARS;
-			ERROR ERROR;
-			FUN FUN;
-			IF IF;
-			NUMBER NUMBER;
-			PRAGMA PRAGMA;
-			TCO TCO;
-			TREE TREE;
-			UNWRAP UNWRAP;
-			VAR VAR;
-			WRAP WRAP;
-
-			if ((APPLY = Matcher.apply.match(node)) != null) {
+			return new SwitchNode<Fun<Frame, Thunk_>>(node //
+			).match(Matcher.apply, APPLY -> {
 				var param_ = lazy_(APPLY.param);
 				var fun_ = lazy_(APPLY.fun);
-				result = frame -> {
+				return frame -> {
 					var fun = fun_.apply(frame);
 					var param = param_.apply(frame);
 					return () -> fun(fun.get()).apply(param).get();
 				};
-			} else if ((ATOM = Matcher.atom.match(node)) != null)
-				result = immediate(ATOM.value);
-			else if ((BOOLEAN = Matcher.boolean_.match(node)) != null)
-				result = immediate(BOOLEAN.value);
-			else if ((CHARS = Matcher.chars.match(node)) != null)
-				result = immediate(new Data<>(To.chars(((Str) CHARS.value).value)));
-			else if ((CONS = Matcher.cons.match(node)) != null) {
+			}).match(Matcher.atom, ATOM -> {
+				return immediate(ATOM.value);
+			}).match(Matcher.boolean_, BOOLEAN -> {
+				return immediate(BOOLEAN.value);
+			}).match(Matcher.chars, CHARS -> {
+				return immediate(new Data<>(To.chars(((Str) CHARS.value).value)));
+			}).match(Matcher.cons, CONS -> {
 				var p0_ = lazy_(CONS.head);
 				var p1_ = lazy_(CONS.tail);
-				result = frame -> () -> new Pair_(p0_.apply(frame), p1_.apply(frame));
-			} else if ((DECONS = Matcher.decons.match(node)) != null) {
+				return frame -> () -> new Pair_(p0_.apply(frame), p1_.apply(frame));
+			}).match(Matcher.decons, DECONS -> {
 				var value_ = lazy_(DECONS.value);
 				var then_ = put(DECONS.left).put(DECONS.right).lazy_(DECONS.then);
 				var else_ = lazy_(DECONS.else_);
 
-				result = frame -> {
+				return frame -> {
 					var value = value_.apply(frame).get();
 					if (value instanceof Pair_) {
 						var pair = (Pair_) value;
@@ -175,18 +140,18 @@ public class InterpretFunLazy {
 					} else
 						return else_.apply(frame);
 				};
-			} else if ((m = Suite.pattern("DEF-VARS (.0 .1,) .2").match(node)) != null) {
+			}).match(Suite.pattern("DEF-VARS (.0 .1,) .2"), m -> {
 				var lazy1 = put(m[0]);
 				var value_ = lazy1.lazy_(m[1]);
 				var expr = lazy1.lazy_(m[2]);
 
-				result = frame -> {
+				return frame -> {
 					var value = Mutable.<Thunk_> nil();
 					frame.add(() -> value.get().get());
 					value.set(() -> value_.apply(frame).get());
 					return expr.apply(frame);
 				};
-			} else if ((DEFVARS = Matcher.defvars.match(node)) != null) {
+			}).match(Matcher.defvars, DEFVARS -> {
 				var tuple = Suite.pattern(".0 .1");
 				var arrays = Tree.iter(DEFVARS.list).map(tuple::match);
 				var size = arrays.size();
@@ -199,7 +164,7 @@ public class InterpretFunLazy {
 				var values_ = Read.from(arrays).map(array -> lazy1.lazy_(array[1])).toList();
 				var expr = lazy1.lazy_(DEFVARS.do_);
 
-				result = frame -> {
+				return frame -> {
 					var values = new ArrayList<Thunk_>(size);
 					for (var i = 0; i < size; i++) {
 						var i1 = i;
@@ -211,32 +176,32 @@ public class InterpretFunLazy {
 					}
 					return expr.apply(frame);
 				};
-			} else if ((ERROR = Matcher.error.match(node)) != null)
-				result = frame -> () -> Fail.t("error termination " + Formatter.display(ERROR.m));
-			else if ((FUN = Matcher.fun.match(node)) != null) {
+			}).match(Matcher.error, ERROR -> {
+				return frame -> () -> Fail.t("error termination " + Formatter.display(ERROR.m));
+			}).match(Matcher.fun, FUN -> {
 				var vm1 = IMap.<Node, Fun<Frame, Thunk_>> empty();
 				for (var e : vm) {
 					var getter0 = e.t1;
 					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));
 				}
 				var value_ = new Lazy_(0, vm1).put(FUN.param).lazy_(FUN.do_);
-				result = frame -> () -> new Fun_(in -> {
+				return frame -> () -> new Fun_(in -> {
 					var frame1 = new Frame(frame);
 					frame1.add(in);
 					return value_.apply(frame1);
 				});
-			} else if ((IF = Matcher.if_.match(node)) != null)
-				result = lazy_(Suite.substitute("APPLY .2 APPLY .1 APPLY .0 VAR if", IF.if_, IF.then_, IF.else_));
-			else if (Matcher.nil.match(node) != null)
-				result = immediate(Atom.NIL);
-			else if ((NUMBER = Matcher.number.match(node)) != null)
-				result = immediate(NUMBER.value);
-			else if ((PRAGMA = Matcher.pragma.match(node)) != null)
-				result = lazy_(PRAGMA.do_);
-			else if ((TCO = Matcher.tco.match(node)) != null) {
+			}).match(Matcher.if_, IF -> {
+				return lazy_(Suite.substitute("APPLY .2 APPLY .1 APPLY .0 VAR if", IF.if_, IF.then_, IF.else_));
+			}).match(Matcher.nil, NIL -> {
+				return immediate(Atom.NIL);
+			}).match(Matcher.number, NUMBER -> {
+				return immediate(NUMBER.value);
+			}).match(Matcher.pragma, PRAGMA -> {
+				return lazy_(PRAGMA.do_);
+			}).match(Matcher.tco, TCO -> {
 				var iter_ = lazy_(TCO.iter);
 				var in_ = lazy_(TCO.in_);
-				result = frame -> {
+				return frame -> {
 					var iter = fun(iter_.apply(frame).get());
 					var in = in_.apply(frame);
 					Pair_ p0, p1;
@@ -248,18 +213,15 @@ public class InterpretFunLazy {
 					} while (p0.first_.get() != Atom.TRUE);
 					return p1.second;
 				};
-			} else if ((TREE = Matcher.tree.match(node)) != null)
-				result = lazy_(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", TREE.op, TREE.left, TREE.right));
-			else if ((UNWRAP = Matcher.unwrap.match(node)) != null)
-				result = lazy_(UNWRAP.do_);
-			else if ((VAR = Matcher.var.match(node)) != null)
-				result = vm.get(VAR.name);
-			else if ((WRAP = Matcher.wrap.match(node)) != null)
-				result = lazy_(WRAP.do_);
-			else
-				result = Fail.t("unrecognized construct " + node);
-
-			return result;
+			}).match(Matcher.tree, TREE -> {
+				return lazy_(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", TREE.op, TREE.left, TREE.right));
+			}).match(Matcher.unwrap, UNWRAP -> {
+				return lazy_(UNWRAP.do_);
+			}).match(Matcher.var, VAR -> {
+				return vm.get(VAR.name);
+			}).match(Matcher.wrap, WRAP -> {
+				return lazy_(WRAP.do_);
+			}).nonNullResult();
 		}
 
 		private Lazy_ put(Node node) {
