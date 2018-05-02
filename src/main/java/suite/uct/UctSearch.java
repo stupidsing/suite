@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.primitive.Ints_;
-import suite.util.Thread_;
+import suite.streamlet.As;
 import suite.weiqi.Weiqi;
 
 /**
@@ -63,24 +63,19 @@ public class UctSearch<Move> {
 		var count = new AtomicInteger();
 		var end = System.currentTimeMillis() + boundedTime;
 
-		var threads = Ints_ //
-				.range(numberOfThreads) //
-				.map(i -> Thread_.newThread(() -> {
-					var j = 0;
+		Ints_.range(numberOfThreads).collect(As.executeThreadsByInt(i -> {
+			var j = 0;
 
-					while (count.getAndIncrement() < numberOfSimulations) {
-						playSimulation(visitor.cloneVisitor(), root, 0);
+			while (count.getAndIncrement() < numberOfSimulations) {
+				playSimulation(visitor.cloneVisitor(), root, 0);
 
-						if (100 < ++j) {
-							j = 0;
-							if (end < System.currentTimeMillis())
-								break;
-						}
-					}
-				})) //
-				.toList();
-
-		Thread_.startJoin(threads);
+				if (100 < ++j) {
+					j = 0;
+					if (end < System.currentTimeMillis())
+						break;
+				}
+			}
+		}));
 
 		// finds best node
 		best = root.bestChild;

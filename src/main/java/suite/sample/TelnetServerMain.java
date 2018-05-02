@@ -9,10 +9,11 @@ import java.util.Set;
 
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
+import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.util.Copy;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
-import suite.util.Thread_;
 
 public class TelnetServerMain extends ExecutableProgram {
 
@@ -77,16 +78,17 @@ public class TelnetServerMain extends ExecutableProgram {
 			var pos = process.getOutputStream();
 
 			try {
-				threads.add(new CopyThread(pis, sos));
-				threads.add(new CopyThread(pes, sos));
-				threads.add(new CopyThread(sis, pos));
-				threads.add(new InterruptibleThread() {
-					protected void run_() throws InterruptedException {
-						process.waitFor();
-					}
-				});
-
-				Thread_.startJoin(threads);
+				Read //
+						.<Thread> empty() //
+						.cons(new CopyThread(pis, sos)) //
+						.cons(new CopyThread(pes, sos)) //
+						.cons(new CopyThread(sis, pos)) //
+						.cons(new InterruptibleThread() {
+							protected void run_() throws InterruptedException {
+								process.waitFor();
+							}
+						}) //
+						.collect(As::execute);
 			} finally {
 				process.destroy();
 			}

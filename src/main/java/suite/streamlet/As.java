@@ -16,12 +16,15 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
+import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.streamlet.IntOutlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
+import suite.util.Thread_;
 import suite.util.To;
 
 public class As {
@@ -51,6 +54,20 @@ public class As {
 
 	public static Streamlet<String[]> csv(Outlet<Bytes> outlet) {
 		return outlet.collect(As::lines_).map(As::csvLine).collect(As::streamlet);
+	}
+
+	public static <T> Fun<Outlet<T>, Void> executeThreads(Sink<T> sink) {
+		return outlet -> execute(outlet.map(t -> Thread_.newThread(() -> sink.sink(t))));
+	}
+
+	public static <T> Fun<IntOutlet, Void> executeThreadsByInt(IntSink sink) {
+		return outlet -> execute(outlet.map(t -> Thread_.newThread(() -> sink.sink(t))));
+	}
+
+	public static Void execute(Outlet<Thread> outlet) {
+		var threads = outlet.toList();
+		Thread_.startJoin(threads);
+		return null;
 	}
 
 	public static InputStream inputStream(Bytes bytes) {

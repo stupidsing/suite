@@ -17,8 +17,8 @@ import suite.os.LogUtil;
 import suite.primitive.Floats_;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Ints_;
+import suite.streamlet.As;
 import suite.util.FunUtil2.BiFun;
-import suite.util.Thread_;
 
 public class Render {
 
@@ -62,16 +62,11 @@ public class Render {
 		var txs = Ints_.toArray(nThreads + 1, i -> width * i / nThreads);
 		var pixels = new R3[width][height];
 
-		var threads = Ints_ //
-				.range(nThreads) //
-				.map(t -> Thread_.newThread(() -> {
-					for (var x = txs[t]; x < txs[t + 1]; x++)
-						for (var y = 0; y < height; y++)
-							pixels[x][y] = f.apply(x, y);
-				})) //
-				.toList();
-
-		Thread_.startJoin(threads);
+		Ints_.range(nThreads).collect(As.executeThreadsByInt(t -> {
+			for (var x = txs[t]; x < txs[t + 1]; x++)
+				for (var y = 0; y < height; y++)
+					pixels[x][y] = f.apply(x, y);
+		}));
 
 		var image = new Image(width, height, BufferedImage.TYPE_INT_RGB);
 
