@@ -229,7 +229,7 @@ public class P4GenerateCode {
 					} else if (result == Result.TWOOP || result == Result.TWOOPREG || result == Result.TWOOPSPEC) {
 						var op0 = isOutSpec ? pop0 : rs.get(is);
 						var op1 = isOutSpec ? pop1 : rs.mask(op0).get(is);
-						var size = ps * 2;
+						var size = ps + ps;
 						var fd1 = fd - size;
 						var imm = amd64.imm(size);
 						em.emit(amd64.instruction(Insn.SUB, esp, imm));
@@ -440,7 +440,8 @@ public class P4GenerateCode {
 				})).applyIf(FunpRoutine2.class, f -> f.apply((frame, expr) -> {
 					return postTwoOp.apply(compileOp(frame), compileRoutine(c1 -> c1.compileTwoOpSpec(expr, p2_eax, p2_edx)));
 				})).applyIf(FunpRoutineIo.class, f -> f.apply((frame, expr, is, os) -> {
-					var o = ps * 2 + is; // input argument, return address and EBP
+					// input argument, return address and EBP
+					var o = ps + ps + is;
 					var out = frame(o, o + os);
 					return postTwoOp.apply(compileOp(frame), compileRoutine(c1 -> c1.compileAssign(expr, out)));
 				})).applyIf(FunpSaveRegisters.class, f -> f.apply(expr -> {

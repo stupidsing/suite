@@ -372,7 +372,7 @@ public class P2InferType {
 				Funp invoke;
 				if (lt.os == is)
 					invoke = allocStack(size, value, FunpInvoke.of(lambda1));
-				else if (lt.os == ps * 2)
+				else if (lt.os == ps + ps)
 					invoke = allocStack(size, value, FunpInvoke2.of(lambda1));
 				else {
 					var as = allocStack(size, value, FunpInvokeIo.of(lambda1, lt.is, lt.os));
@@ -469,14 +469,14 @@ public class P2InferType {
 				var while_ = FunpWhile.of(e1.erase(cond), FunpAssign.of(m, e1.erase(iterate), FunpDontCare.of()), m);
 				return allocStack(size, init, while_, offset);
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-				var b = ps * 2; // return address and EBP
+				var b = ps + ps; // return address and EBP
 				var scope1 = scope + 1;
 				var lt = new LambdaType(n);
 				var frame = Funp_.framePointer;
 				var expr1 = new Erase(scope1, env.replace(var, new Var(scope1, IntMutable.of(0), b, b + lt.is))).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
-				var b = ps * 2; // return address and EBP
+				var b = ps + ps; // return address and EBP
 				var lt = new LambdaType(n);
 				var size = getTypeSize(typeOf(cap));
 				var env0 = IMap.<String, Var> empty();
