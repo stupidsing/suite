@@ -41,8 +41,8 @@ public class Inspect {
 	}
 
 	/**
-	 * @return true if both input value objects are of the same class and having all
-	 *         fields equal.
+	 * @return true if both input value objects are of the same class and having
+	 *         all fields equal.
 	 */
 	public <T> boolean equals(T o0, T o1) {
 		return o0 == o1 || o0 != null && o1 != null //
@@ -83,7 +83,7 @@ public class Inspect {
 					try {
 						var extract_ = new Extract(object_);
 						var prefix = extract_.prefix;
-						Class<?> keyClass = extract_.keyClass;
+						var keyClass = extract_.keyClass;
 						var iter = extract_.children;
 
 						if (String_.equals(prefix, "[")) {
@@ -133,7 +133,7 @@ public class Inspect {
 	}
 
 	private Fun<Class<?>, List<Field>> fieldsFun = Memoize.funRec(clazz -> {
-		Class<?> superClass = clazz.getSuperclass();
+		var superClass = clazz.getSuperclass();
 
 		// do not display same field of different base classes
 		var names = new HashSet<>();
@@ -166,7 +166,7 @@ public class Inspect {
 	});
 
 	private Fun<Class<?>, List<Method>> methodsFun = Memoize.funRec(clazz -> {
-		Class<?> superClass = clazz.getSuperclass();
+		var superClass = clazz.getSuperclass();
 
 		// do not display same method of different base classes
 		var names = new HashSet<>();
@@ -236,7 +236,7 @@ public class Inspect {
 		}
 
 		private Extract(Object object, boolean isDumpGetters) {
-			Class<?> clazz = object.getClass();
+			var clazz = object.getClass();
 
 			if (clazz.isArray()) {
 				var length = Array.getLength(object);
@@ -304,8 +304,8 @@ public class Inspect {
 					}
 
 				@SuppressWarnings("unchecked")
-				Iterator<Entry<Object, Object>> iter = ((Map<Object, Object>) object).entrySet().iterator();
-				Class<?> valueClass = valueClass_;
+				var iter = ((Map<Object, Object>) object).entrySet().iterator();
+				var valueClass = valueClass_;
 
 				prefix = "{";
 				keyClass = Object.class;
@@ -443,7 +443,7 @@ public class Inspect {
 	}
 
 	private <T> T mapFields(T t0, Fun<Object, Object> mapper) throws ReflectiveOperationException {
-		Class<?> clazz = t0.getClass();
+		var clazz = t0.getClass();
 		@SuppressWarnings("unchecked")
 		var t1 = (T) Read.from(clazz.getConstructors()).uniqueResult().newInstance();
 		for (var field : fields(clazz)) {
