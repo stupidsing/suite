@@ -9,16 +9,16 @@ import org.junit.Test;
 //fibs = 0 : 1 : zipWith (+) fibs (tail fibs)
 public class ZipFibTest {
 
-	public interface O {
+	public interface T {
 	}
 
-	public interface Thunk extends Supplier<O> {
+	public interface Thunk extends Supplier<T> {
 	}
 
 	public interface Fun<R> extends Function<Thunk, R> {
 	}
 
-	public class N_ implements O {
+	public class N_ implements T {
 		private int i;
 
 		private N_(int i) {
@@ -26,23 +26,23 @@ public class ZipFibTest {
 		}
 	}
 
-	public class Cons implements O {
-		private Thunk t0;
-		private Thunk t1;
+	public class Cons implements T {
+		private Thunk head;
+		private Thunk tail;
 
 		private Cons(Thunk t0, Thunk t1) {
-			this.t0 = t0;
-			this.t1 = t1;
+			this.head = t0;
+			this.tail = t1;
 		}
 	}
 
 	@Test
-	public void testMoliu() {
+	public void test() {
 		Thunk zero = () -> new N_(0);
 		Thunk one = () -> new N_(1);
 		Fun<Fun<Thunk>> cons = a -> b -> () -> new Cons(a, b);
-		Fun<Thunk> fst = list_ -> () -> ((Cons) list_.get()).t0.get();
-		Fun<Thunk> snd = list_ -> () -> ((Cons) list_.get()).t1.get();
+		Fun<Thunk> fst = list_ -> () -> ((Cons) list_.get()).head.get();
+		Fun<Thunk> snd = list_ -> () -> ((Cons) list_.get()).tail.get();
 		Fun<Fun<Thunk>> add = a -> b -> () -> new N_(((N_) a.get()).i + ((N_) b.get()).i);
 
 		var take_ = new Object() {
@@ -65,12 +65,11 @@ public class ZipFibTest {
 		Fun<Fun<Thunk>> take = take_::take;
 		Fun<Fun<Thunk>> zipAdd = zipAdd_::zipAdd;
 
-		var fibsList = new ArrayList<Thunk>();
-		Thunk me = () -> fibsList.get(0).get();
+		var fibs = new ArrayList<Thunk>();
+		Thunk fib = () -> fibs.get(0).get();
+		fibs.add(cons.apply(zero).apply(cons.apply(one).apply(zipAdd.apply(fib).apply(snd.apply(fib)))));
 
-		fibsList.add(cons.apply(zero).apply(cons.apply(one).apply(zipAdd.apply(me).apply(snd.apply(me)))));
-
-		var fib12 = take.apply(() -> new N_(12)).apply(me);
+		var fib12 = take.apply(() -> new N_(12)).apply(fib);
 
 		System.out.println(((N_) fib12.get()).i);
 	}
