@@ -1,6 +1,5 @@
 package suite.fp;
 
-import java.util.ArrayList;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -65,9 +64,9 @@ public class ZipFibTest {
 		Fun<Fun<Thunk>> take = take_::take;
 		Fun<Fun<Thunk>> zipAdd = zipAdd_::zipAdd;
 
-		var fibs = new ArrayList<Thunk>();
-		Thunk fib = () -> fibs.get(0).get();
-		fibs.add(cons.apply(zero).apply(cons.apply(one).apply(zipAdd.apply(fib).apply(snd.apply(fib)))));
+		var fibs = new Thunk[1];
+		Thunk fib = () -> fibs[0].get();
+		fibs[0] = cons.apply(zero).apply(cons.apply(one).apply(zipAdd.apply(fib).apply(snd.apply(fib))));
 
 		var fib12 = take.apply(() -> new N_(12)).apply(fib);
 
