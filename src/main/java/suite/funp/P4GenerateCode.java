@@ -231,12 +231,11 @@ public class P4GenerateCode {
 						var op1 = isOutSpec ? pop1 : rs.mask(op0).get(is);
 						var size = ps + ps;
 						var fd1 = fd - size;
-						var imm = amd64.imm(size);
-						em.emit(amd64.instruction(Insn.SUB, esp, imm));
+						em.addImm(esp, -size);
 						assign.sink2(new Compile1(rs, fd1), frame(fd1, fd));
 						em.mov(op0, compileFrame(fd1, ps));
 						em.mov(op1, compileFrame(fd1 + ps, ps));
-						em.emit(amd64.instruction(Insn.ADD, esp, imm));
+						em.addImm(esp, size);
 						return postTwoOp.apply(op0, op1);
 					} else
 						return Fail.t();
@@ -264,7 +263,6 @@ public class P4GenerateCode {
 				})).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, offset) -> {
 					var ism1 = is - 1;
 					var alignedSize = (size + ism1) & ~ism1;
-					var imm = amd64.imm(alignedSize);
 					var fd1 = fd - alignedSize;
 					var c1 = new Compile1(rs, fd1);
 					Operand op;
@@ -274,14 +272,14 @@ public class P4GenerateCode {
 					if (size == is && (op = deOp.decomposeOperand(fd, value)) != null && op.size == is)
 						em.emit(amd64.instruction(Insn.PUSH, op));
 					else {
-						em.emit(amd64.instruction(Insn.SUB, esp, imm));
+						em.addImm(esp, -alignedSize);
 						c1.compileAssign(value, FunpMemory.of(Funp_.framePointer, fd1, fd1 + size));
 					}
 					var out = c1.compile(expr);
 					if (size == is)
 						em.emit(amd64.instruction(Insn.POP, rs.mask(pop0, pop1, out.op0, out.op1).get(size)));
 					else
-						em.emit(amd64.instruction(Insn.ADD, esp, imm));
+						em.addImm(esp, alignedSize);
 					return out;
 				})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
 					var p = new Amd64Parse();
@@ -524,7 +522,7 @@ public class P4GenerateCode {
 							var opRhs0 = c1.mask(eax).compileOp(rhs);
 							var opRhs1 = !(opRhs0 instanceof OpImm) ? opRhs0 : c1.rs.mask(eax, edx).get(is);
 							em.mov(opRhs1, opRhs0);
-							em.emit(amd64.instruction(Insn.XOR, edx, edx));
+							em.mov(edx, amd64.imm(0l));
 							em.emit(amd64.instruction(Insn.IDIV, opRhs1));
 							em.mov(opResult_, eax);
 						};

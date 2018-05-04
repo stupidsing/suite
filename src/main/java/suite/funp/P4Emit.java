@@ -46,7 +46,7 @@ public class P4Emit {
 		return op0;
 	}
 
-	private void addImm(Operand op0, long i) {
+	public void addImm(Operand op0, long i) {
 		if (i == -1l)
 			emit(amd64.instruction(Insn.DEC, op0));
 		else if (i == 1l)
