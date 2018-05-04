@@ -74,15 +74,15 @@ public class As {
 		return new ByteArrayInputStream(bytes.bs, bytes.start, bytes.end - bytes.start);
 	}
 
-	public static String joined(Outlet<String> outlet) {
-		return joinedBy("").apply(outlet);
+	public static <T> String joined(Outlet<T> outlet) {
+		return As.<T> joinedBy("").apply(outlet);
 	}
 
-	public static Fun<Outlet<String>, String> joinedBy(String delimiter) {
+	public static <T> Fun<Outlet<T>, String> joinedBy(String delimiter) {
 		return joinedBy("", delimiter, "");
 	}
 
-	public static Fun<Outlet<String>, String> joinedBy(String before, String delimiter, String after) {
+	public static <T> Fun<Outlet<T>, String> joinedBy(String before, String delimiter, String after) {
 		return outlet -> {
 			var sb = new StringBuilder();
 			outlet.sink(s -> {

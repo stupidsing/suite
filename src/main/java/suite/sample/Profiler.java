@@ -10,7 +10,6 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.net.Service;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.String_;
 
@@ -64,10 +63,11 @@ public class Profiler implements Service {
 		sb.append("\n\n");
 
 		sb.append("METHODS\n\n");
-		sb.append(Read.from2(records) //
+		sb.append(Read //
+				.from2(records) //
 				.sort((p0, p1) -> p1.t1.count - p0.t1.count) //
-				.map((name, record) -> String.format("%d\t%s\n", record.count, name)) //
-				.collect(As::joined));
+				.map((name, record) -> String.format("%d\t%s", record.count, name)) //
+				.toLines());
 		sb.append("\n\n");
 
 		sb.append("CALLS\n\n");

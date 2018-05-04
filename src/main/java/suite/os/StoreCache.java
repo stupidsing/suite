@@ -10,7 +10,6 @@ import suite.Constants;
 import suite.adt.pair.Pair;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
-import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.util.DataOutput_;
@@ -54,8 +53,8 @@ public class StoreCache {
 
 		LogUtil.info(FileUtil.findPaths(dir) //
 				.filter(path -> !isUpToDate(path, current)) //
-				.map(path -> "\nrm '" + path + "'") //
-				.collect(As::joined));
+				.map(path -> "rm '" + path + "'") //
+				.toString());
 	}
 
 	public <T> T reget(Source<T> source) {

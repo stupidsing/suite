@@ -35,8 +35,8 @@ public class KmeansCluster {
 		return kMeansCluster(points, k, nIterations) //
 				.streamlet() //
 				.groupBy() //
-				.map((symbol, groups) -> Read.from(groups).map(Object::toString).collect(As.joinedBy(",")) + "\n") //
-				.collect(As::joined);
+				.map((symbol, groups) -> Read.from(groups).map(Object::toString).collect(As.joinedBy(","))) //
+				.toLines();
 	}
 
 	public <K> ObjIntMap<K> kMeansCluster(Map<K, float[]> points, int k, int nIterations) {

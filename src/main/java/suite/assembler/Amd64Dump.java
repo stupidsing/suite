@@ -8,7 +8,6 @@ import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpNone;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Fail;
 
@@ -17,7 +16,7 @@ public class Amd64Dump {
 	private Amd64 amd64 = Amd64.me;
 
 	public String dump(List<Instruction> instructions) {
-		return Read.from(instructions).map(instruction -> "\n" + dump(instruction)).collect(As::joined);
+		return Read.from(instructions).map(this::dump).toString();
 	}
 
 	public String dump(Instruction instruction) {

@@ -183,8 +183,7 @@ public class Summarize {
 							+ ", pnl:" + pnl //
 							+ ", div:" + dividend //
 							+ ", " + transactionSummary.out0()) //
-					.map(m -> "\n" + m) //
-					.collect(As::joined);
+					.toString();
 		}
 
 		public String out1() {
@@ -193,8 +192,7 @@ public class Summarize {
 					.append("PNL = " + pnl) //
 					.append("DIV = " + dividend) //
 					.append(transactionSummary.out1()) //
-					.map(m -> "\n" + m) //
-					.collect(As::joined);
+					.toString();
 		}
 	}
 

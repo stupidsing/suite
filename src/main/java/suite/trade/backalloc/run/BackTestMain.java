@@ -5,7 +5,6 @@ import java.nio.file.Paths;
 import suite.adt.pair.Pair;
 import suite.node.io.Operator.Assoc;
 import suite.parser.Wildcard;
-import suite.primitive.Chars;
 import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -75,7 +74,6 @@ public class BackTestMain extends ExecutableProgram {
 		var content0 = Read //
 				.bytes(Paths.get("src/main/java/" + getClass().getName().replace('.', '/') + ".java")) //
 				.collect(As::utf8decode) //
-				.map(Chars::toString) //
 				.collect(As::joined);
 
 		var content1 = ParseUtil.fit(content0, "// BEGIN", "// END")[1];

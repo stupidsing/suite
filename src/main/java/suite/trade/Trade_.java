@@ -173,7 +173,6 @@ public class Trade_ {
 		return Read //
 				.from(trades) //
 				.filter(trade -> trade.buySell != 0) //
-				.map(Trade::toString) //
 				.collect(As::joined);
 	}
 

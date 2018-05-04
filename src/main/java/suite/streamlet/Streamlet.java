@@ -216,6 +216,10 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 		return spawn().toArray(clazz);
 	}
 
+	public String toLines() {
+		return map_(t -> t + "\n").collect(As::joined);
+	}
+
 	public List<T> toList() {
 		return spawn().toList();
 	}
@@ -250,6 +254,11 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 
 	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
 		return spawn().toSetMap(keyFun, valueFun);
+	}
+
+	@Override
+	public String toString() {
+		return map_(t -> "\n" + t).collect(As::joined);
 	}
 
 	public T uniqueResult() {

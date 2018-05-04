@@ -4,7 +4,6 @@ import suite.math.numeric.Statistic;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats_;
 import suite.primitive.FltPrimitives.Obj_Flt;
-import suite.streamlet.As;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
@@ -37,7 +36,7 @@ public class BackTester {
 
 	public <T> String conclude(Streamlet2<T, Simulate> simulationsByKey) {
 		var results0 = simulationsByKey //
-				.map((key, simulate) -> "\nTEST = " + key + ", " + simulate.conclusion());
+				.map((key, simulate) -> "TEST = " + key + ", " + simulate.conclusion());
 
 		var results1 = simulationsByKey //
 				.filterValue(sim -> sim.exception == null) //
@@ -55,9 +54,9 @@ public class BackTester {
 							+ ", sharpe = " + To.string(mv.mean / mv.standardDeviation()) //
 							+ ", txFee = " + To.string(txFee / sims.size());
 				}) //
-				.map((key, summary) -> "\nTEST = " + key + " " + summary);
+				.map((key, summary) -> "TEST = " + key + " " + summary);
 
-		return Streamlet.concat(results0, results1).sort(Object_::compare).collect(As::joined);
+		return Streamlet.concat(results0, results1).sort(Object_::compare).toString();
 	}
 
 }

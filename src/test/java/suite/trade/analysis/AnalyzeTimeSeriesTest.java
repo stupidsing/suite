@@ -20,7 +20,6 @@ import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntFltPair;
-import suite.streamlet.As;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
@@ -125,40 +124,33 @@ public class AnalyzeTimeSeriesTest {
 				+ "\ndct period = " + max.t0 //
 				+ Ints_ //
 						.range(10) //
-						.map(d -> "\ndct component [" + d + "d] = " + fds[d]) //
-						.collect(As::joined) //
+						.map(d -> "dct component [" + d + "d] = " + fds[d]) //
 				+ "\nreturn yearly sharpe = " + rmv.mean / sqrt(variance / nYears) //
 				+ "\nreturn kelly = " + kelly //
 				+ "\nreturn skew = " + stat.skewness(returns) //
 				+ "\nreturn kurt = " + stat.kurtosis(returns) //
 				+ Ints_ //
 						.of(1, 2, 4, 8, 16, 32) //
-						.map(d -> "\nmean reversion ols [" + d + "d] = " + ts.meanReversion(prices, d).coefficients[0]) //
-						.collect(As::joined) //
+						.map(d -> "mean reversion ols [" + d + "d] = " + ts.meanReversion(prices, d).coefficients[0]) //
 				+ Ints_ //
 						.of(4, 16) //
-						.map(d -> "\nvariance ratio [" + d + "d over 1d] = " + ts.varianceRatio(prices, d)) //
-						.collect(As::joined) //
+						.map(d -> "variance ratio [" + d + "d over 1d] = " + ts.varianceRatio(prices, d)) //
 				+ "\nreturn hurst = " + ts.hurst(prices, prices.length / 2) //
 				+ "\nhold " + buySell(d -> 1d).invest(prices) //
 				+ "\nkelly " + buySell(d -> kelly).invest(prices) //
 				+ "\nma200 trend " + mat.invest(prices) //
 				+ Ints_ //
 						.range(1, 8) //
-						.map(d -> "\nrevert [" + d + "d] " + reverts[d].invest(prices)) //
-						.collect(As::joined) //
+						.map(d -> "revert [" + d + "d] " + reverts[d].invest(prices)) //
 				+ Ints_ //
 						.range(1, 8) //
-						.map(d -> "\ntrend_ [" + d + "d] " + trends_[d].invest(prices)) //
-						.collect(As::joined) //
+						.map(d -> "trend_ [" + d + "d] " + trends_[d].invest(prices)) //
 				+ Ints_ //
 						.range(1, 8) //
-						.map(d -> "\nrevert [" + d + "d] long-only " + reverts[d].longOnly().invest(prices)) //
-						.collect(As::joined) //
+						.map(d -> "revert [" + d + "d] long-only " + reverts[d].longOnly().invest(prices)) //
 				+ Ints_ //
 						.range(1, 8) //
-						.map(d -> "\ntrend_ [" + d + "d] long-only " + trends_[d].longOnly().invest(prices)) //
-						.collect(As::joined) //
+						.map(d -> "trend_ [" + d + "d] long-only " + trends_[d].longOnly().invest(prices)) //
 				+ "\nms2 " + ms2.invest(prices) //
 				+ "\nms2 long-only " + ms2.longOnly().invest(prices) //
 				+ "\ntanh " + tanh.invest(prices) //

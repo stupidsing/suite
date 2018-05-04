@@ -17,7 +17,6 @@ import suite.concurrent.Backoff;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes_;
-import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
@@ -60,7 +59,7 @@ public class HttpUtil {
 	}
 
 	public static Map<String, URI> resolveLinks(URI uri) {
-		var out = get(Rethrow.ex(() -> uri.toURL())).out.collect(As::utf8decode).map(Chars::toString).collect(As::joined);
+		var out = get(Rethrow.ex(() -> uri.toURL())).out.collect(As::utf8decode).collect(As::joined);
 		var links = new HashMap<String, URI>();
 		String[] m;
 		while ((m = ParseUtil.fitCaseInsensitive(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {

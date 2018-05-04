@@ -112,27 +112,24 @@ public class DailyMain extends ExecutableProgram {
 				+ "\n" + sbs.pnlByKey //
 				+ "\n" + strategyTrades //
 						.sortBy((strategy, trade) -> trade.amount()) //
-						.map((strategy, trade) -> "\n" //
+						.map((strategy, trade) -> "" //
 								+ (0 <= trade.buySell ? "BUY^" : "SELL") //
 								+ " SIGNAL(" + strategy + ")" + trade //
 								+ " = " + To.string(trade.amount())) //
-						.collect(As::joined) //
 				+ "\n" //
 				+ "\nBUY REQUESTS" //
 				+ requestTrades //
 						.filterValue(trade -> 0 < trade.buySell) //
 						.map((strategy, t) -> "" //
-								+ "\n" + Trade.of(td, -t.buySell, t.symbol, t.price, sellPool).record() //
-								+ "\n" + Trade.of(td, +t.buySell, t.symbol, t.price, strategy).record()) //
-						.collect(As::joined) //
+								+ Trade.of(td, -t.buySell, t.symbol, t.price, sellPool).record() + "\n" //
+								+ Trade.of(td, +t.buySell, t.symbol, t.price, strategy).record()) //
 				+ "\n" //
 				+ "\nSELL REQUESTS" //
 				+ requestTrades //
 						.filterValue(trade -> trade.buySell < 0) //
 						.map((strategy, t) -> "" //
-								+ "\n" + Trade.of(td, +t.buySell, t.symbol, t.price, strategy).record() //
-								+ "\n" + Trade.of(td, -t.buySell, t.symbol, t.price, sellPool).record()) //
-						.collect(As::joined) //
+								+ Trade.of(td, +t.buySell, t.symbol, t.price, strategy).record() + "\n" //
+								+ Trade.of(td, -t.buySell, t.symbol, t.price, sellPool).record()) //
 				+ "\n" //
 				+ "\nTOTAL BUYS_ = " + To.string(buys_) //
 				+ "\nTOTAL SELLS = " + To.string(sells) //

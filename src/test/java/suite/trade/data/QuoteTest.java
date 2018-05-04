@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.Trade;
 import suite.trade.analysis.Summarize;
@@ -49,8 +48,8 @@ public class QuoteTest {
 		System.out.println(Read //
 				.from2(summarizeOut(r -> r.symbol)) //
 				.sortBy((symbol, gain) -> -gain) //
-				.map((symbol, gain) -> symbol + " " + To.string(gain) + "\n") //
-				.collect(As::joined));
+				.map((symbol, gain) -> symbol + " " + To.string(gain)) //
+				.toLines());
 	}
 
 	@Test

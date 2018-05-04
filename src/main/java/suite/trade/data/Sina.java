@@ -76,7 +76,7 @@ public class Sina {
 						var sb = new StringBuilder();
 						for (var i = 0; i < bytes.size(); i++)
 							sb.append((char) bytes.get(i));
-						return sb.toString();
+						return sb;
 					}) //
 					.collect(As::joined);
 		});
