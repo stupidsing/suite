@@ -266,7 +266,7 @@ public class InterpretFunLazy {
 		return () -> new Fn(a -> () -> new Fn(b -> () -> fun.apply(a, b)));
 	}
 
-	private Atom b(boolean b) {
+	private Node b(boolean b) {
 		return b ? Atom.TRUE : Atom.FALSE;
 	}
 

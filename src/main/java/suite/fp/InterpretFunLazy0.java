@@ -53,13 +53,13 @@ public class InterpretFunLazy0 {
 				.put(FST__.name, () -> new Fn(in -> ((Pair) in.get()).fst)) //
 				.put(SND__.name, () -> new Fn(in -> ((Pair) in.get()).snd));
 
-		env = Read.from2(TreeUtil.boolOperations).fold(env, (e, k, fun) -> {
-			return e.put(k.getName(), () -> new Fn(a -> () -> new Fn(b -> () -> b(fun.apply(i(a), i(b))))));
-		});
+		env = Read //
+				.from2(TreeUtil.boolOperations) //
+				.fold(env, (e, k, fun) -> e.put(k.getName(), () -> new Fn(a -> () -> new Fn(b -> () -> b(fun.apply(i(a), i(b)))))));
 
-		env = Read.from2(TreeUtil.intOperations).fold(env, (e, k, fun) -> {
-			return e.put(k.getName(), () -> new Fn(a -> () -> new Fn(b -> () -> Int.of(fun.apply(i(a), i(b))))));
-		});
+		env = Read //
+				.from2(TreeUtil.intOperations) //
+				.fold(env, (e, k, fun) -> e.put(k.getName(), () -> new Fn(a -> () -> new Fn(b -> () -> i(fun.apply(i(a), i(b)))))));
 
 		return lazy0(node).apply(env);
 	}
@@ -111,8 +111,12 @@ public class InterpretFunLazy0 {
 		return result;
 	}
 
-	private Atom b(boolean b) {
+	private Node b(boolean b) {
 		return b ? Atom.TRUE : Atom.FALSE;
+	}
+
+	private Node i(int i) {
+		return Int.of(i);
 	}
 
 	private Iterate<Thunk> fun(Thunk n) {
