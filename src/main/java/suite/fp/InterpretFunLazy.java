@@ -31,29 +31,29 @@ import suite.util.To;
 
 public class InterpretFunLazy {
 
-	public interface Thunk_ {
+	public interface Thunk {
 		public Node get();
 	}
 
-	private static class Fun_ extends Node {
-		private Iterate<Thunk_> fun;
+	private static class Fn extends Node {
+		private Iterate<Thunk> fun;
 
-		private Fun_(Iterate<Thunk_> fun) {
+		private Fn(Iterate<Thunk> fun) {
 			this.fun = fun;
 		}
 	}
 
-	private static class Pair_ extends Node {
-		private Thunk_ first_;
-		private Thunk_ second;
+	private static class Pair extends Node {
+		private Thunk fst;
+		private Thunk snd;
 
-		private Pair_(Thunk_ first_, Thunk_ second) {
-			this.first_ = first_;
-			this.second = second;
+		private Pair(Thunk fst, Thunk snd) {
+			this.fst = fst;
+			this.snd = snd;
 		}
 	}
 
-	private static class Frame extends ArrayList<Thunk_> {
+	private static class Frame extends ArrayList<Thunk> {
 		private static final long serialVersionUID = 1l;
 		private Frame parent;
 
@@ -62,20 +62,20 @@ public class InterpretFunLazy {
 		}
 	}
 
-	public Thunk_ lazy(Node node) {
+	public Thunk lazy(Node node) {
 		var parsed = parse(node);
-		var df = new HashMap<String, Thunk_>();
+		var df = new HashMap<String, Thunk>();
 
-		df.put(TermOp.AND___.name, bi((a, b) -> new Pair_(a, b)));
-		df.put("fst", () -> new Fun_(in -> ((Pair_) in.get()).first_));
-		df.put("if", () -> new Fun_(a -> () -> new Fun_(b -> () -> new Fun_(c -> a.get() == Atom.TRUE ? b : c))));
-		df.put("snd", () -> new Fun_(in -> ((Pair_) in.get()).second));
+		df.put(TermOp.AND___.name, bi((a, b) -> new Pair(a, b)));
+		df.put("fst", () -> new Fn(in -> ((Pair) in.get()).fst));
+		df.put("if", () -> new Fn(a -> () -> new Fn(b -> () -> new Fn(c -> a.get() == Atom.TRUE ? b : c))));
+		df.put("snd", () -> new Fn(in -> ((Pair) in.get()).snd));
 
 		TreeUtil.boolOperations.forEach((k, fun) -> df.put(k.getName(), bi((a, b) -> b(fun.apply(compare(a.get(), b.get()), 0)))));
 		TreeUtil.intOperations.forEach((k, fun) -> df.put(k.getName(), bi((a, b) -> Int.of(fun.apply(i(a), i(b))))));
 
 		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
-		var lazy0 = new Lazy_(0, IMap.empty());
+		var lazy0 = new Lazy(0, IMap.empty());
 		var frame = new Frame(null);
 
 		for (var key : keys) {
@@ -83,7 +83,7 @@ public class InterpretFunLazy {
 			frame.add(df.get(key));
 		}
 
-		return lazy0.lazy_(parsed).apply(frame);
+		return lazy0.lazy(parsed).apply(frame);
 	}
 
 	private Reference parse(Node node) {
@@ -96,20 +96,20 @@ public class InterpretFunLazy {
 			return Fail.t("cannot parse " + node);
 	}
 
-	private class Lazy_ {
+	private class Lazy {
 		private int fs;
-		private IMap<Node, Fun<Frame, Thunk_>> vm;
+		private IMap<Node, Fun<Frame, Thunk>> vm;
 
-		private Lazy_(int fs, IMap<Node, Fun<Frame, Thunk_>> vm) {
+		private Lazy(int fs, IMap<Node, Fun<Frame, Thunk>> vm) {
 			this.fs = fs;
 			this.vm = vm;
 		}
 
-		private Fun<Frame, Thunk_> lazy_(Node node) {
-			return new SwitchNode<Fun<Frame, Thunk_>>(node //
+		private Fun<Frame, Thunk> lazy(Node node) {
+			return new SwitchNode<Fun<Frame, Thunk>>(node //
 			).match(Matcher.apply, APPLY -> {
-				var param_ = lazy_(APPLY.param);
-				var fun_ = lazy_(APPLY.fun);
+				var param_ = lazy(APPLY.param);
+				var fun_ = lazy(APPLY.fun);
 				return frame -> {
 					var fun = fun_.apply(frame);
 					var param = param_.apply(frame);
@@ -122,31 +122,31 @@ public class InterpretFunLazy {
 			}).match(Matcher.chars, CHARS -> {
 				return immediate(new Data<>(To.chars(((Str) CHARS.value).value)));
 			}).match(Matcher.cons, CONS -> {
-				var p0_ = lazy_(CONS.head);
-				var p1_ = lazy_(CONS.tail);
-				return frame -> () -> new Pair_(p0_.apply(frame), p1_.apply(frame));
+				var p0_ = lazy(CONS.head);
+				var p1_ = lazy(CONS.tail);
+				return frame -> () -> new Pair(p0_.apply(frame), p1_.apply(frame));
 			}).match(Matcher.decons, DECONS -> {
-				var value_ = lazy_(DECONS.value);
-				var then_ = put(DECONS.left).put(DECONS.right).lazy_(DECONS.then);
-				var else_ = lazy_(DECONS.else_);
+				var value_ = lazy(DECONS.value);
+				var then_ = put(DECONS.left).put(DECONS.right).lazy(DECONS.then);
+				var else_ = lazy(DECONS.else_);
 
 				return frame -> {
 					var value = value_.apply(frame).get();
-					if (value instanceof Pair_) {
-						var pair = (Pair_) value;
-						frame.add(pair.first_);
-						frame.add(pair.second);
+					if (value instanceof Pair) {
+						var pair = (Pair) value;
+						frame.add(pair.fst);
+						frame.add(pair.snd);
 						return then_.apply(frame);
 					} else
 						return else_.apply(frame);
 				};
 			}).match(Suite.pattern("DEF-VARS (.0 .1,) .2"), m -> {
 				var lazy1 = put(m[0]);
-				var value_ = lazy1.lazy_(m[1]);
-				var expr = lazy1.lazy_(m[2]);
+				var value_ = lazy1.lazy(m[1]);
+				var expr = lazy1.lazy(m[2]);
 
 				return frame -> {
-					var value = Mutable.<Thunk_> nil();
+					var value = Mutable.<Thunk> nil();
 					frame.add(() -> value.get().get());
 					value.set(() -> value_.apply(frame).get());
 					return expr.apply(frame);
@@ -161,11 +161,11 @@ public class InterpretFunLazy {
 					lazy0 = lazy0.put(array[0]);
 
 				var lazy1 = lazy0;
-				var values_ = Read.from(arrays).map(array -> lazy1.lazy_(array[1])).toList();
-				var expr = lazy1.lazy_(DEFVARS.do_);
+				var values_ = Read.from(arrays).map(array -> lazy1.lazy(array[1])).toList();
+				var expr = lazy1.lazy(DEFVARS.do_);
 
 				return frame -> {
-					var values = new ArrayList<Thunk_>(size);
+					var values = new ArrayList<Thunk>(size);
 					for (var i = 0; i < size; i++) {
 						var i1 = i;
 						frame.add(() -> values.get(i1).get());
@@ -179,71 +179,71 @@ public class InterpretFunLazy {
 			}).match(Matcher.error, ERROR -> {
 				return frame -> () -> Fail.t("error termination " + Formatter.display(ERROR.m));
 			}).match(Matcher.fun, FUN -> {
-				var vm1 = IMap.<Node, Fun<Frame, Thunk_>> empty();
+				var vm1 = IMap.<Node, Fun<Frame, Thunk>> empty();
 				for (var e : vm) {
 					var getter0 = e.t1;
 					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));
 				}
-				var value_ = new Lazy_(0, vm1).put(FUN.param).lazy_(FUN.do_);
-				return frame -> () -> new Fun_(in -> {
+				var value_ = new Lazy(0, vm1).put(FUN.param).lazy(FUN.do_);
+				return frame -> () -> new Fn(in -> {
 					var frame1 = new Frame(frame);
 					frame1.add(in);
 					return value_.apply(frame1);
 				});
 			}).match(Matcher.if_, IF -> {
-				return lazy_(Suite.substitute("APPLY .2 APPLY .1 APPLY .0 VAR if", IF.if_, IF.then_, IF.else_));
+				return lazy(Suite.substitute("APPLY .2 APPLY .1 APPLY .0 VAR if", IF.if_, IF.then_, IF.else_));
 			}).match(Matcher.nil, NIL -> {
 				return immediate(Atom.NIL);
 			}).match(Matcher.number, NUMBER -> {
 				return immediate(NUMBER.value);
 			}).match(Matcher.pragma, PRAGMA -> {
-				return lazy_(PRAGMA.do_);
+				return lazy(PRAGMA.do_);
 			}).match(Matcher.tco, TCO -> {
-				var iter_ = lazy_(TCO.iter);
-				var in_ = lazy_(TCO.in_);
+				var iter_ = lazy(TCO.iter);
+				var in_ = lazy(TCO.in_);
 				return frame -> {
 					var iter = fun(iter_.apply(frame).get());
 					var in = in_.apply(frame);
-					Pair_ p0, p1;
+					Pair p0, p1;
 					do {
 						var out = iter.apply(in);
-						p0 = (Pair_) out.get();
-						p1 = (Pair_) p0.second.get();
-						in = p1.first_;
-					} while (p0.first_.get() != Atom.TRUE);
-					return p1.second;
+						p0 = (Pair) out.get();
+						p1 = (Pair) p0.snd.get();
+						in = p1.fst;
+					} while (p0.fst.get() != Atom.TRUE);
+					return p1.snd;
 				};
 			}).match(Matcher.tree, TREE -> {
-				return lazy_(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", TREE.op, TREE.left, TREE.right));
+				return lazy(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", TREE.op, TREE.left, TREE.right));
 			}).match(Matcher.unwrap, UNWRAP -> {
-				return lazy_(UNWRAP.do_);
+				return lazy(UNWRAP.do_);
 			}).match(Matcher.var, VAR -> {
 				return vm.get(VAR.name);
 			}).match(Matcher.wrap, WRAP -> {
-				return lazy_(WRAP.do_);
+				return lazy(WRAP.do_);
 			}).nonNullResult();
 		}
 
-		private Lazy_ put(Node node) {
-			return new Lazy_(fs + 1, vm.put(node, getter(fs)));
+		private Lazy put(Node node) {
+			return new Lazy(fs + 1, vm.put(node, getter(fs)));
 		}
 	}
 
-	private Fun<Frame, Thunk_> getter(int p) {
+	private Fun<Frame, Thunk> getter(int p) {
 		return frame -> frame.get(p);
 	}
 
-	private Iterate<Thunk_> fun(Node n) {
-		return ((Fun_) n).fun;
+	private Iterate<Thunk> fun(Node n) {
+		return ((Fn) n).fun;
 	}
 
-	private Fun<Frame, Thunk_> immediate(Node n) {
+	private Fun<Frame, Thunk> immediate(Node n) {
 		return frame -> () -> n;
 	}
 
 	private int compare(Node n0, Node n1) {
-		var t0 = n0 instanceof Fun_ ? 2 : (n0 instanceof Pair_ ? 1 : 0);
-		var t1 = n1 instanceof Fun_ ? 2 : (n0 instanceof Pair_ ? 1 : 0);
+		var t0 = n0 instanceof Fn ? 2 : (n0 instanceof Pair ? 1 : 0);
+		var t1 = n1 instanceof Fn ? 2 : (n0 instanceof Pair ? 1 : 0);
 		var c = t0 - t1;
 		if (c == 0)
 			switch (t0) {
@@ -251,10 +251,10 @@ public class InterpretFunLazy {
 				c = Comparer.comparer.compare(n0, n1);
 				break;
 			case 1:
-				var p0 = (Pair_) n0;
-				var p1 = (Pair_) n1;
-				c = c == 0 ? compare(p0.first_.get(), p1.first_.get()) : c;
-				c = c == 0 ? compare(p0.second.get(), p1.second.get()) : c;
+				var p0 = (Pair) n0;
+				var p1 = (Pair) n1;
+				c = c == 0 ? compare(p0.fst.get(), p1.fst.get()) : c;
+				c = c == 0 ? compare(p0.snd.get(), p1.snd.get()) : c;
 				break;
 			case 2:
 				c = System.identityHashCode(t0) - System.identityHashCode(t1);
@@ -262,15 +262,15 @@ public class InterpretFunLazy {
 		return c;
 	}
 
-	private Thunk_ bi(BiFun<Thunk_, Node> fun) {
-		return () -> new Fun_(a -> () -> new Fun_(b -> () -> fun.apply(a, b)));
+	private Thunk bi(BiFun<Thunk, Node> fun) {
+		return () -> new Fn(a -> () -> new Fn(b -> () -> fun.apply(a, b)));
 	}
 
 	private Atom b(boolean b) {
 		return b ? Atom.TRUE : Atom.FALSE;
 	}
 
-	private int i(Thunk_ thunk) {
+	private int i(Thunk thunk) {
 		return ((Int) thunk.get()).number;
 	}
 

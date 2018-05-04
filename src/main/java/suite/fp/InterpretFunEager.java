@@ -36,18 +36,18 @@ public class InterpretFunEager {
 
 	private boolean isLazyify = false;
 
-	private static class Fun_ extends Node {
+	private static class Fn extends Node {
 		private Iterate<Node> fun;
 
-		private Fun_(Iterate<Node> fun) {
+		private Fn(Iterate<Node> fun) {
 			this.fun = fun;
 		}
 	}
 
-	private static class Wrap_ extends Node {
+	private static class Wrap extends Node {
 		private Source<Node> source;
 
-		private Wrap_(Source<Node> source) {
+		private Wrap(Source<Node> source) {
 			this.source = source;
 		}
 	}
@@ -61,11 +61,11 @@ public class InterpretFunEager {
 		}
 	}
 
-	private class Eager_ {
+	private class Eager {
 		private int fs;
 		private IMap<Node, Fun<Frame, Node>> vm;
 
-		private Eager_(int fs, IMap<Node, Fun<Frame, Node>> vm) {
+		private Eager(int fs, IMap<Node, Fun<Frame, Node>> vm) {
 			this.fs = fs;
 			this.vm = vm;
 		}
@@ -111,7 +111,7 @@ public class InterpretFunEager {
 				if (arrays.size() == 1) {
 					var array = arrays.get(0);
 					var vm1 = vm.put(array[0], unwrap(getter(fs)));
-					var eager1 = new Eager_(fs + 1, vm1);
+					var eager1 = new Eager(fs + 1, vm1);
 					var value_ = wrap(eager1.eager_(array[1]));
 					var expr = eager1.eager_(DEFVARS.do_);
 					return frame -> {
@@ -128,7 +128,7 @@ public class InterpretFunEager {
 						fs1++;
 					}
 
-					var eager1 = new Eager_(fs1, vm1);
+					var eager1 = new Eager(fs1, vm1);
 					var values_ = Read.from(arrays).map(array -> wrap(eager1.eager_(array[1]))).toList();
 					var expr = eager1.eager_(DEFVARS.do_);
 
@@ -146,8 +146,8 @@ public class InterpretFunEager {
 					var getter0 = e.t1;
 					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));
 				}
-				var value_ = new Eager_(0, vm1).put(FUN.param).eager_(FUN.do_);
-				return frame -> new Fun_(in -> {
+				var value_ = new Eager(0, vm1).put(FUN.param).eager_(FUN.do_);
+				return frame -> new Fn(in -> {
 					var frame1 = new Frame(frame);
 					frame1.add(in);
 					return value_.apply(frame1);
@@ -189,8 +189,8 @@ public class InterpretFunEager {
 			}).nonNullResult();
 		}
 
-		private Eager_ put(Node node) {
-			return new Eager_(fs + 1, vm.put(node, getter(fs)));
+		private Eager put(Node node) {
+			return new Eager(fs + 1, vm.put(node, getter(fs)));
 		}
 	}
 
@@ -226,7 +226,7 @@ public class InterpretFunEager {
 		TreeUtil.intOperations.forEach((k, fun) -> df.put(k.getName(), f2((a, b) -> Int.of(fun.apply(i(a), i(b))))));
 
 		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
-		var eager0 = new Eager_(0, IMap.empty());
+		var eager0 = new Eager(0, IMap.empty());
 		var frame = new Frame(null);
 
 		for (var key : keys) {
@@ -244,11 +244,11 @@ public class InterpretFunEager {
 	private IntrinsicCallback lazyIntrinsicCallback() {
 		return new IntrinsicCallback() {
 			public Node enclose(Intrinsic intrinsic, Node node) {
-				return new Wrap_(() -> intrinsic.invoke(this, List.of(node)));
+				return new Wrap(() -> intrinsic.invoke(this, List.of(node)));
 			}
 
 			public Node yawn(Node node) {
-				return ((Wrap_) node).source.source();
+				return ((Wrap) node).source.source();
 			}
 		};
 	}
@@ -258,15 +258,15 @@ public class InterpretFunEager {
 	}
 
 	private Iterate<Node> fun(Node n) {
-		return ((Fun_) n).fun;
+		return ((Fn) n).fun;
 	}
 
 	private Fun<Frame, Node> wrap(Fun<Frame, Node> value_) {
-		return frame -> new Wrap_(() -> value_.apply(frame));
+		return frame -> new Wrap(() -> value_.apply(frame));
 	}
 
 	private Fun<Frame, Node> unwrap(Fun<Frame, Node> getter) {
-		return frame -> ((Wrap_) getter.apply(frame)).source.source();
+		return frame -> ((Wrap) getter.apply(frame)).source.source();
 	}
 
 	private Fun<Frame, Node> immediate(Node n) {
@@ -274,8 +274,8 @@ public class InterpretFunEager {
 	}
 
 	private int compare(Node n0, Node n1) {
-		var t0 = n0 instanceof Fun_ ? 1 : 0;
-		var t1 = n1 instanceof Fun_ ? 1 : 0;
+		var t0 = n0 instanceof Fn ? 1 : 0;
+		var t1 = n1 instanceof Fn ? 1 : 0;
 		var c = t0 - t1;
 		if (c == 0)
 			switch (t0) {
@@ -289,11 +289,11 @@ public class InterpretFunEager {
 	}
 
 	private Node f1(Iterate<Node> fun) {
-		return new Fun_(fun);
+		return new Fn(fun);
 	}
 
 	private Node f2(BinOp<Node> fun) {
-		return new Fun_(a -> new Fun_(b -> fun.apply(a, b)));
+		return new Fn(a -> new Fn(b -> fun.apply(a, b)));
 	}
 
 	private Node fn(int n, Fun<List<Node>, Node> fun) {
@@ -302,7 +302,7 @@ public class InterpretFunEager {
 
 	private Node fn(List<Node> ps, int n, Fun<List<Node>, Node> fun) {
 		if (n != 0)
-			return new Fun_(p -> {
+			return new Fn(p -> {
 				var ps1 = new ArrayList<>(ps);
 				ps1.add(p);
 				return fn(ps1, n - 1, fun);
