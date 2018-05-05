@@ -20,7 +20,7 @@ public class KMeansClusterTest {
 	public void test() {
 		var n = 3;
 
-		Map<String, Source<float[]>> seeds = Map.ofEntries( //
+		var seeds = Map.<String, Source<float[]>> ofEntries( //
 				entry("A", () -> point(-16f, 16f, 16f)), //
 				entry("B", () -> point(16f, -16f, 16f)), //
 				entry("C", () -> point(16f, 16f, -16f)));
