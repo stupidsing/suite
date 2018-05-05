@@ -1,12 +1,11 @@
 package suite.fp;
 
-import suite.Suite;
 import suite.adt.Mutable;
 import suite.immutable.IMap;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
-import suite.node.Tree;
+import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.streamlet.Read;
@@ -65,50 +64,45 @@ public class InterpretFunLazy0 {
 	}
 
 	private Fun<IMap<String, Thunk>, Thunk> lazy0(Node node) {
-		Fun<IMap<String, Thunk>, Thunk> result;
-		Tree tree;
-		Node[] m;
-
-		if ((m = Suite.pattern("define .0 := .1 >> .2").match(node)) != null) {
-			var vk = v(m[0]);
-			var value = lazy0(m[1]);
-			var expr = lazy0(m[2]);
-			result = env -> {
+		return new SwitchNode<Fun<IMap<String, Thunk>, Thunk>>(node //
+		).match3("define .0 := .1 >> .2", (a, b, c) -> {
+			var vk = v(a);
+			var value = lazy0(b);
+			var expr = lazy0(c);
+			return env -> {
 				var val = Mutable.<Thunk> nil();
 				var env1 = env.put(vk, () -> val.get().get());
 				val.set(() -> value.apply(env1).get());
 				return expr.apply(env1);
 			};
-		} else if ((m = Suite.pattern("if .0 then .1 else .2").match(node)) != null) {
-			var if_ = lazy0(m[0]);
-			var then_ = lazy0(m[1]);
-			var else_ = lazy0(m[2]);
-			result = env -> () -> (if_.apply(env).get() == Atom.TRUE ? then_ : else_).apply(env).get();
-		} else if ((m = Suite.pattern(".0 => .1").match(node)) != null) {
-			var vk = v(m[0]);
-			var value = lazy0(m[1]);
-			result = env -> () -> new Fn(in -> () -> value.apply(env.put(vk, in)).get());
-		} else if ((m = Suite.pattern(".0 {.1}").match(node)) != null) {
-			var fun = lazy0(m[0]);
-			var param = lazy0(m[1]);
-			result = env -> () -> fun(fun.apply(env)).apply(param.apply(env)).get();
-		} else if ((tree = Tree.decompose(node)) != null) {
-			var operator = tree.getOperator();
-			var p0 = lazy0(tree.getLeft());
-			var p1 = lazy0(tree.getRight());
-			result = env -> {
-				var r0 = env.get(operator.getName());
+		}).match3("if .0 then .1 else .2", (a, b, c) -> {
+			var if_ = lazy0(a);
+			var then_ = lazy0(b);
+			var else_ = lazy0(c);
+			return env -> () -> (if_.apply(env).get() == Atom.TRUE ? then_ : else_).apply(env).get();
+		}).match2(".0 => .1", (a, b) -> {
+			var vk = v(a);
+			var value = lazy0(b);
+			return env -> () -> new Fn(in -> () -> value.apply(env.put(vk, in)).get());
+		}).match2(".0 {.1}", (a, b) -> {
+			var fun = lazy0(a);
+			var param = lazy0(b);
+			return env -> () -> fun(fun.apply(env)).apply(param.apply(env)).get();
+		}).applyTree((op, l, r) -> {
+			var p0 = lazy0(l);
+			var p1 = lazy0(r);
+			return env -> {
+				var r0 = env.get(op.getName());
 				var r1 = fun(r0).apply(p0.apply(env));
 				var r2 = fun(r1).apply(p1.apply(env));
 				return r2;
 			};
-		} else if (node instanceof Atom) {
+		}).applyIf(Atom.class, a -> {
 			var vk = v(node);
-			result = env -> env.get(vk);
-		} else
-			result = env -> () -> node;
-
-		return result;
+			return env -> env.get(vk);
+		}).applyIf(Node.class, a -> {
+			return env -> () -> node;
+		}).result();
 	}
 
 	private Node b(boolean b) {
