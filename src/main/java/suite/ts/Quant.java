@@ -70,8 +70,8 @@ public class Quant {
 
 		for (var i = 0; i < length; i++) {
 			var price = prices[i];
-			min = Float.min(min, price);
-			max = Float.max(max, price);
+			min = min(min, price);
+			max = max(max, price);
 			if (hold < 0f) // exit short
 				hold = Quant.return_(min, price) < exitThreshold ? hold : 0f;
 			else if (0f < hold) // exit long

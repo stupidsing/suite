@@ -183,7 +183,7 @@ public class Oscillator {
 				ep = Float.MIN_VALUE;
 
 				while (i < length && sar < ds.lows[i]) {
-					ep = Float.max(ep, ds.highs[i]);
+					ep = max(ep, ds.highs[i]);
 					sars[i++] = sar += alpha * (ep - sar);
 				}
 
@@ -191,7 +191,7 @@ public class Oscillator {
 				ep = Float.MAX_VALUE;
 
 				while (i < length && ds.highs[i] < sar) {
-					ep = Float.min(ep, ds.lows[i]);
+					ep = min(ep, ds.lows[i]);
 					sars[i++] = sar += alpha * (ep - sar);
 				}
 			}
