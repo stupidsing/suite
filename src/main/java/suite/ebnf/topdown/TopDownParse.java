@@ -163,9 +163,7 @@ public class TopDownParse {
 	}
 
 	public TopDownParse(Map<String, Grammar> grammarByEntity) {
-		parserByEntity = Read.from2(grammarByEntity) //
-				.mapValue(this::build) //
-				.toMap();
+		parserByEntity = Read.from2(grammarByEntity).mapValue(this::build).toMap();
 	}
 
 	public Ast parse(String entity, String s) {

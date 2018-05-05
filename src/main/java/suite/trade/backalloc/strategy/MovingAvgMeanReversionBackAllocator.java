@@ -44,7 +44,8 @@ public class MovingAvgMeanReversionBackAllocator {
 				// ensure ADF < 0d: price is not random walk
 				// ensure Hurst exponent < .5d: price is weakly mean reverting
 				// ensure 0 < half-life: determine investment period
-				return Read.from2(mrsBySymbol) //
+				return Read //
+						.from2(mrsBySymbol) //
 						.filterValue(mrs -> mrs.adf < 0d //
 								&& mrs.hurst < .5d //
 								&& mrs.movingAvgMeanReversionRatio() < 0d) //

@@ -46,7 +46,8 @@ public class Pmamr2BackAllocator {
 				// make sure all time-series are mean-reversions:
 				// ensure ADF < 0d: price is not random walk
 				// ensure Hurst exponent < .5d: price is weakly mean reverting
-				return Read.from2(mrsBySymbol) //
+				return Read //
+						.from2(mrsBySymbol) //
 						.filterValue(mrs -> mrs.adf < 0d && mrs.hurst < .5d) //
 						.map2((symbol, mrs) -> {
 							var ds = dsBySymbol.get(symbol);

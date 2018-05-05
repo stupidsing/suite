@@ -89,7 +89,8 @@ public class LrParse {
 	private <K, V> String list(Map<K, V> map) {
 		var sb = new StringBuilder();
 		sb.append("{\n");
-		Read.from2(map) //
+		Read //
+				.from2(map) //
 				.map2((k, v) -> k.toString(), (k, v) -> v) //
 				.sortByKey(Object_::compare) //
 				.sink((k, v) -> sb.append(k + " = " + v + "\n"));
