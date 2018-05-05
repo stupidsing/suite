@@ -4,6 +4,7 @@ import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -53,6 +54,10 @@ public class DataSource {
 		public AlignKeyDataSource(long[] ts, Streamlet2<K, DataSource> dsByKey) {
 			this.ts = ts;
 			this.dsByKey = dsByKey;
+		}
+
+		public AlignKeyDataSource<K> trim(int end) {
+			return new AlignKeyDataSource<>(Arrays.copyOf(ts, end), dsByKey.mapValue(ds -> ds.trim(end)).collect(As::streamlet2));
 		}
 	}
 
@@ -211,6 +216,16 @@ public class DataSource {
 
 	public float[] returns() {
 		return timeSeries.returns(prices);
+	}
+
+	public DataSource trim(int end) {
+		return ofOhlcv( //
+				Arrays.copyOf(ts, end), //
+				Arrays.copyOf(opens, end), //
+				Arrays.copyOf(closes, end), //
+				Arrays.copyOf(lows, end), //
+				Arrays.copyOf(highs, end), //
+				Arrays.copyOf(volumes, end));
 	}
 
 	public DataSource validate() {
