@@ -45,7 +45,7 @@ public class InterpretFunLazy0 {
 	public Thunk lazy(Node node) {
 		Thunk error = () -> Fail.t("error termination");
 
-		var env = IMap.<String, Thunk> empty() //
+		var env0 = IMap.<String, Thunk> empty() //
 				.put(Atom.TRUE.name, () -> Atom.TRUE) //
 				.put(Atom.FALSE.name, () -> Atom.FALSE) //
 				.put(TermOp.AND___.name, () -> new Fn(a -> () -> new Fn(b -> () -> new Pair(a, b)))) //
@@ -53,15 +53,15 @@ public class InterpretFunLazy0 {
 				.put(FST__.name, () -> new Fn(in -> ((Pair) in.get()).fst)) //
 				.put(SND__.name, () -> new Fn(in -> ((Pair) in.get()).snd));
 
-		env = Read //
+		var env1 = Read //
 				.from2(TreeUtil.boolOperations) //
-				.fold(env, (e, k, fun) -> e.put(k.getName(), () -> new Fn(a -> () -> new Fn(b -> () -> b(fun.apply(i(a), i(b)))))));
+				.fold(env0, (e, k, f) -> e.put(k.getName(), () -> new Fn(a -> () -> new Fn(b -> () -> b(f.apply(i(a), i(b)))))));
 
-		env = Read //
+		var env2 = Read //
 				.from2(TreeUtil.intOperations) //
-				.fold(env, (e, k, fun) -> e.put(k.getName(), () -> new Fn(a -> () -> new Fn(b -> () -> i(fun.apply(i(a), i(b)))))));
+				.fold(env1, (e, k, f) -> e.put(k.getName(), () -> new Fn(a -> () -> new Fn(b -> () -> i(f.apply(i(a), i(b)))))));
 
-		return lazy0(node).apply(env);
+		return lazy0(node).apply(env2);
 	}
 
 	private Fun<IMap<String, Thunk>, Thunk> lazy0(Node node) {
