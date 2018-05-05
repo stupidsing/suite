@@ -44,7 +44,8 @@ public class InterpretFunLazy0 {
 	public Thunk lazy(Node node) {
 		Thunk error = () -> Fail.t("error termination");
 
-		var env0 = IMap.<String, Thunk> empty() //
+		var env0 = IMap //
+				.<String, Thunk> empty() //
 				.put(Atom.TRUE.name, () -> Atom.TRUE) //
 				.put(Atom.FALSE.name, () -> Atom.FALSE) //
 				.put(TermOp.AND___.name, () -> new Fn(a -> () -> new Fn(b -> () -> new Pair(a, b)))) //

@@ -123,9 +123,8 @@ public class InterpretFunEager {
 					var fs1 = fs;
 
 					for (var array : arrays) {
-						var getter = getter(fs1);
+						var getter = getter(fs1++);
 						vm1 = vm1.put(array[0], unwrap(getter));
-						fs1++;
 					}
 
 					var eager1 = new Eager(fs1, vm1);
