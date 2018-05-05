@@ -38,12 +38,12 @@ public class DataSource {
 	public final float[] volumes;
 
 	public static <K> AlignKeyDataSource<K> alignAll(Streamlet2<K, DataSource> dsByKey0) {
-		var alignDataSource = alignAll(dsByKey0.values());
+		var ts = alignAll(dsByKey0.values());
 
 		return dsByKey0 //
-				.mapValue(alignDataSource::align) //
+				.mapValue(ds -> ds.alignBeforePrices(ts)) //
 				.collect(As::streamlet2) //
-				.apply(st -> new AlignKeyDataSource<>(alignDataSource.ts, st));
+				.apply(st -> new AlignKeyDataSource<>(ts, st));
 	}
 
 	public static class AlignKeyDataSource<K> {
@@ -56,7 +56,7 @@ public class DataSource {
 		}
 	}
 
-	public static AlignDataSource alignAll(Streamlet<DataSource> dataSources) {
+	public static long[] alignAll(Streamlet<DataSource> dataSources) {
 		Streamlet<Long> tradeTimes;
 		if (Boolean.TRUE)
 			tradeTimes = dataSources // union
@@ -66,22 +66,7 @@ public class DataSource {
 			tradeTimes = Read.from(Set_.intersect(dataSources // intersect
 					.<Collection<Long>> map(ds -> Longs_.of(ds.ts).map(t -> t).toList()) //
 					.toList()));
-		return new AlignDataSource(tradeTimes //
-				.sort(Object_::compare) //
-				.collect(Obj_Lng.lift(t -> t)) //
-				.toArray());
-	}
-
-	public static class AlignDataSource {
-		public final long[] ts;
-
-		private AlignDataSource(long[] ts) {
-			this.ts = ts;
-		}
-
-		public DataSource align(DataSource ds) {
-			return ds.alignBeforePrices(ts);
-		}
+		return tradeTimes.sort(Object_::compare).collect(Obj_Lng.lift(t -> t)).toArray();
 	}
 
 	public static DataSource of(Streamlet<Datum> data) {
