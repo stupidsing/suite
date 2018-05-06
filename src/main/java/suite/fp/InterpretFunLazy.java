@@ -140,10 +140,10 @@ public class InterpretFunLazy {
 					} else
 						return else_.apply(frame);
 				};
-			}).match(Suite.pattern("DEF-VARS (.0 .1,) .2"), m -> {
-				var lazy1 = put(m[0]);
-				var value_ = lazy1.lazy(m[1]);
-				var expr = lazy1.lazy(m[2]);
+			}).match3("DEF-VARS (.0 .1,) .2", (a, b, c) -> {
+				var lazy1 = put(a);
+				var value_ = lazy1.lazy(b);
+				var expr = lazy1.lazy(c);
 
 				return frame -> {
 					var value = Mutable.<Thunk> nil();
