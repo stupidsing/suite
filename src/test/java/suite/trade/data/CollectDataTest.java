@@ -26,8 +26,7 @@ public class CollectDataTest {
 				forex.invertedCurrencies.keys());
 
 		for (var code : equities) {
-			var urlString = yahoo.tableUrl(code, TimeRange.ages());
-			var url = To.url(urlString);
+			var url = yahoo.tableUrl(code, TimeRange.ages());
 
 			try (var fos = new FileOutputStream("/data/storey/markets/" + code + ".csv")) {
 				Copy.stream(HttpUtil.get(url).out.collect(To::inputStream), fos);

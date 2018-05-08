@@ -38,12 +38,20 @@ public class HttpUtil {
 		}
 	}
 
+	public static HttpResult get(String url) {
+		return get(To.url(url));
+	}
+
 	public static HttpResult get(URL url) {
 		return http("GET", url);
 	}
 
 	public static HttpResult http(String method, URL url) {
 		return http(method, url, Outlet.empty());
+	}
+
+	public static HttpResult http(String method, String url, Outlet<Bytes> in) {
+		return http(method, To.url(url), in);
 	}
 
 	public static HttpResult http(String method, URL url, Outlet<Bytes> in) {

@@ -90,8 +90,8 @@ public class Google {
 
 	private synchronized Map<String, Float> quote_(Streamlet<String> symbols) {
 		if (0 < symbols.size()) {
-			var url = To.url("http://finance.google.com/finance/info?client=ig&q=HKEX%3A" //
-					+ symbols.sort(Object_::compare).map(this::fromSymbol).collect(As.joinedBy(",")));
+			var url = "http://finance.google.com/finance/info?client=ig&q=HKEX%3A" //
+					+ symbols.sort(Object_::compare).map(this::fromSymbol).collect(As.joinedBy(","));
 
 			var json = Rethrow.ex(() -> {
 				try (var is = HttpUtil.get(url).out.collect(To::inputStream)) {

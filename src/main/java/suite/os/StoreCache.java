@@ -71,9 +71,8 @@ public class StoreCache {
 		return new Piper("echo '" + in + "'");
 	}
 
-	public Outlet<Bytes> http(String urlString) {
-		var url = To.url(urlString);
-		return getOutlet(urlString, () -> HttpUtil.get(url).out);
+	public Outlet<Bytes> http(String url) {
+		return getOutlet(url, () -> HttpUtil.get(url).out);
 	}
 
 	public Bytes get(Bytes key, Source<Bytes> source) {

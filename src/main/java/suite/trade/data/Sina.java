@@ -13,7 +13,6 @@ import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.ParseUtil;
 import suite.util.Rethrow;
-import suite.util.To;
 
 public class Sina {
 
@@ -59,7 +58,7 @@ public class Sina {
 	}
 
 	private Streamlet<Factor> queryFactor_(Streamlet<String> symbols, boolean isCache) {
-		var urlString = "http://hq.sinajs.cn/?list=" + symbols //
+		var url = "http://hq.sinajs.cn/?list=" + symbols //
 				.map(this::toSina) //
 				.collect(As.joinedBy(","));
 
@@ -67,9 +66,9 @@ public class Sina {
 			Outlet<Bytes> in;
 
 			if (isCache)
-				in = Singleton.me.storeCache.http(urlString);
+				in = Singleton.me.storeCache.http(url);
 			else
-				in = HttpUtil.get(To.url(urlString)).out;
+				in = HttpUtil.get(url).out;
 
 			return in //
 					.map(bytes -> {

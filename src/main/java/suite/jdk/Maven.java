@@ -12,7 +12,7 @@ public class Maven {
 	}
 
 	public String getLatestUrl(String m2repo, String groupId, String artifactId) {
-		var url = To.url(m2repo + groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml");
+		var url = m2repo + groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml";
 
 		var version = Rethrow.ex(() -> new XmlUtil() //
 				.read(HttpUtil.get(url).out.collect(To::inputStream)) //

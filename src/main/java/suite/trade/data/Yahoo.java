@@ -199,7 +199,7 @@ public class Yahoo {
 	}
 
 	private JsonNode queryL1(String symbol, TimeRange period) {
-		var url = To.url("" //
+		var url = "" //
 				+ "https://l1-query.finance.yahoo.com/v7/finance/chart/" //
 				+ encode(symbol) //
 				+ "?period1=" + period.from.epochSec() //
@@ -209,7 +209,7 @@ public class Yahoo {
 				+ "&includeTimestamps=true" //
 				+ "&includePrePost=true" //
 				+ "&events=div%7Csplit%7Cearn" //
-				+ "&corsDomain=finance.yahoo.com");
+				+ "&corsDomain=finance.yahoo.com";
 
 		return Rethrow.ex(() -> {
 			try (var is = HttpUtil.get(url).out.collect(To::inputStream)) {
@@ -278,11 +278,10 @@ public class Yahoo {
 
 	private Map<String, Float> quote_(Streamlet<String> symbols, String field) {
 		if (0 < symbols.size()) {
-			var urlString = "https://download.finance.yahoo.com/d/quotes.csv" //
+			var url = "https://download.finance.yahoo.com/d/quotes.csv" //
 					+ "?s=" + symbols.sort(Object_::compare).map(this::encode).collect(As.joinedBy("+")) //
 					+ "&f=s" + field;
 
-			var url = To.url(urlString);
 			return HttpUtil.get(url).out.collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
 		} else
 			return new HashMap<>();

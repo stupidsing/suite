@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.net.URL;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -116,11 +115,7 @@ public class Read {
 	}
 
 	public static Streamlet<Bytes> url(String urlString) {
-		return url(To.url(urlString));
-	}
-
-	public static Streamlet<Bytes> url(URL url) {
-		return new Streamlet<>(() -> HttpUtil.get(url).out);
+		return new Streamlet<>(() -> HttpUtil.get(To.url(urlString)).out);
 	}
 
 	public static <K, V, C extends Collection<V>> Streamlet2<K, V> multimap(Map<K, C> map) {
