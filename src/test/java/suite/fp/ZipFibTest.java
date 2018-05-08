@@ -14,7 +14,7 @@ public class ZipFibTest {
 	public interface Thunk extends Supplier<T> {
 	}
 
-	public interface Fun<R> extends Function<Thunk, R> {
+	public interface Fn<R> extends Function<Thunk, R> {
 	}
 
 	public class N_ implements T {
@@ -39,13 +39,13 @@ public class ZipFibTest {
 	public void test() {
 		Thunk zero = () -> new N_(0);
 		Thunk one = () -> new N_(1);
-		Fun<Fun<Thunk>> cons = a -> b -> () -> new Cons(a, b);
-		Fun<Thunk> fst = list_ -> () -> ((Cons) list_.get()).head.get();
-		Fun<Thunk> snd = list_ -> () -> ((Cons) list_.get()).tail.get();
-		Fun<Fun<Thunk>> add = a -> b -> () -> new N_(((N_) a.get()).i + ((N_) b.get()).i);
+		Fn<Fn<Thunk>> cons = a -> b -> () -> new Cons(a, b);
+		Fn<Thunk> fst = list_ -> () -> ((Cons) list_.get()).head.get();
+		Fn<Thunk> snd = list_ -> () -> ((Cons) list_.get()).tail.get();
+		Fn<Fn<Thunk>> add = a -> b -> () -> new N_(((N_) a.get()).i + ((N_) b.get()).i);
 
 		var take_ = new Object() {
-			Fun<Thunk> take(Thunk i_) {
+			Fn<Thunk> take(Thunk i_) {
 				var i = ((N_) i_.get()).i;
 				return i != 0 //
 						? list_ -> take(() -> new N_(i - 1)).apply(snd.apply(list_)) //
@@ -54,15 +54,15 @@ public class ZipFibTest {
 		};
 
 		var zipAdd_ = new Object() {
-			Fun<Thunk> zipAdd(Thunk l0) {
+			Fn<Thunk> zipAdd(Thunk l0) {
 				return l1 -> () -> new Cons( //
 						() -> add.apply(fst.apply(l0)).apply(fst.apply(l1)).get(), //
 						() -> zipAdd(snd.apply(l0)).apply(snd.apply(l1)).get());
 			}
 		};
 
-		Fun<Fun<Thunk>> take = take_::take;
-		Fun<Fun<Thunk>> zipAdd = zipAdd_::zipAdd;
+		Fn<Fn<Thunk>> take = take_::take;
+		Fn<Fn<Thunk>> zipAdd = zipAdd_::zipAdd;
 
 		var fibs = new Thunk[1];
 		Thunk fib = () -> fibs[0].get();

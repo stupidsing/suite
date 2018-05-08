@@ -30,7 +30,7 @@ public class CollectDataTest {
 			var url = To.url(urlString);
 
 			try (var fos = new FileOutputStream("/data/storey/markets/" + code + ".csv")) {
-				Copy.stream(To.inputStream(HttpUtil.get(url).out), fos);
+				Copy.stream(HttpUtil.get(url).out.collect(To::inputStream), fos);
 			}
 
 			Thread_.sleepQuietly(2000);

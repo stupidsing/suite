@@ -2,6 +2,7 @@ package suite.funp;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.List;
 
 import suite.Constants;
@@ -60,6 +61,7 @@ import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Fail;
+import suite.util.FunUtil.Fun;
 import suite.util.Switch;
 import suite.util.To;
 
@@ -138,12 +140,7 @@ public class P0Parse {
 			}).match1("coerce-pointer .0", a -> {
 				return FunpCoerce.of(Coerce.POINTER, p(a));
 			}).match1("consult .0", a -> {
-				try (var is = getClass().getResourceAsStream(((Str) a).value);
-						var isr = new InputStreamReader(is, Constants.charset);) {
-					return FunpPredefine.of(parse(Suite.parse(To.string(isr))));
-				} catch (IOException ex) {
-					return Fail.t(ex);
-				}
+				return consult(((Str) a).value);
 			}).match3("define .0 := .1 >> .2", (a, b, c) -> {
 				var var = name(a);
 				return FunpDefine.of(true, var, p(b), parseNewVariable(c, var));
@@ -223,6 +220,15 @@ public class P0Parse {
 				var var = atom.name;
 				return variables.contains(var) ? FunpVariable.of(var) : FunpVariableNew.of(var);
 			}).nonNullResult();
+		}
+
+		private Funp consult(String url) {
+			try (var is = getClass().getResourceAsStream(url); var isr = new InputStreamReader(is, Constants.charset);) {
+				var f = (Fun<Reader, Funp>) r -> FunpPredefine.of(parse(Suite.parse(To.string(r))));
+				return f.apply(isr);
+			} catch (IOException ex) {
+				return Fail.t(ex);
+			}
 		}
 
 		private Funp bind(Node a, Node b, Node c) {

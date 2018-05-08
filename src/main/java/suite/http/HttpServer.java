@@ -74,7 +74,7 @@ public class HttpServer {
 
 			var cls = requestHeaders.get("Content-Length");
 			var contentLength = cls != null ? Integer.parseInt(cls) : 0;
-			InputStream cis = sizeLimitedInputStream(is, contentLength);
+			var cis = sizeLimitedInputStream(is, contentLength);
 
 			var request = new HttpRequest(method, server, path2, query, requestHeaders, cis);
 			HttpResponse response = null;
@@ -96,7 +96,7 @@ public class HttpServer {
 			sb.append("\r\n");
 
 			os.write(sb.toString().getBytes(Constants.charset));
-			Copy.stream(To.inputStream(response.out), os);
+			Copy.stream(response.out.collect(To::inputStream), os);
 		});
 	}
 
