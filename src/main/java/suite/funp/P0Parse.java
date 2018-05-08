@@ -226,7 +226,7 @@ public class P0Parse {
 		}
 
 		private Funp consult(String url) {
-			Fun<InputStream, Funp> read0 = is -> {
+			Fun<InputStream, Funp> r0 = is -> {
 				try (var isr = new InputStreamReader(is, Constants.charset)) {
 					return FunpPredefine.of(parse(Suite.parse(To.string(isr))));
 				} catch (IOException ex) {
@@ -234,20 +234,20 @@ public class P0Parse {
 				}
 			};
 
-			Fun<SourceEx<InputStream, IOException>, Funp> read1 = source -> {
+			Fun<SourceEx<InputStream, IOException>, Funp> r1 = source -> {
 				try (var is = source.source()) {
-					return read0.apply(is);
+					return r0.apply(is);
 				} catch (IOException ex) {
 					return Fail.t(ex);
 				}
 			};
 
 			if (url.startsWith("file://"))
-				return read1.apply(() -> new FileInputStream(url.substring(7)));
+				return r1.apply(() -> new FileInputStream(url.substring(7)));
 			else if (url.startsWith("http://") || url.startsWith("https://"))
-				return read0.apply(HttpUtil.get(url).out.collect(To::inputStream));
+				return r0.apply(HttpUtil.get(url).out.collect(To::inputStream));
 			else
-				return read1.apply(() -> getClass().getResourceAsStream(url));
+				return r1.apply(() -> getClass().getResourceAsStream(url));
 		}
 
 		private Funp bind(Node a, Node b, Node c) {
