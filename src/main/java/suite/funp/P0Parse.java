@@ -245,7 +245,7 @@ public class P0Parse {
 			if (url.startsWith("file://"))
 				return r1.apply(() -> new FileInputStream(url.substring(7)));
 			else if (url.startsWith("http://") || url.startsWith("https://"))
-				return r0.apply(HttpUtil.get(url).out.collect(To::inputStream));
+				return r0.apply(HttpUtil.get(url).inputStream());
 			else
 				return r1.apply(() -> getClass().getResourceAsStream(url));
 		}

@@ -283,7 +283,7 @@ public class Hkex {
 	public float queryHangSengIndex() {
 		var url = "https://www.hkex.com.hk/eng/csm/ws/IndexMove.asmx/GetData?LangCode=en";
 
-		try (var is = HttpUtil.get(url).out.collect(To::inputStream)) {
+		try (var is = HttpUtil.get(url).inputStream()) {
 			return Read //
 					.each(mapper.readTree(is)) //
 					.flatMap(json_ -> json_.path("data")) //
@@ -317,7 +317,7 @@ public class Hkex {
 				+ "&TMM=" //
 				+ "&TYYYY=";
 
-		try (var is = HttpUtil.get(url).out.collect(To::inputStream)) {
+		try (var is = HttpUtil.get(url).inputStream()) {
 			return Read //
 					.each(mapper.readTree(is)) //
 					.flatMap(json_ -> json_.path("data")) //

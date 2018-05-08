@@ -72,7 +72,7 @@ public class StoreCache {
 	}
 
 	public Outlet<Bytes> http(String url) {
-		return getOutlet(url, () -> HttpUtil.get(url).out);
+		return getOutlet(url, HttpUtil.get(url)::out);
 	}
 
 	public Bytes get(Bytes key, Source<Bytes> source) {

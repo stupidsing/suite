@@ -11,7 +11,6 @@ import suite.trade.Forex;
 import suite.trade.TimeRange;
 import suite.util.Copy;
 import suite.util.Thread_;
-import suite.util.To;
 
 public class CollectDataTest {
 
@@ -29,7 +28,7 @@ public class CollectDataTest {
 			var url = yahoo.tableUrl(code, TimeRange.ages());
 
 			try (var fos = new FileOutputStream("/data/storey/markets/" + code + ".csv")) {
-				Copy.stream(HttpUtil.get(url).out.collect(To::inputStream), fos);
+				Copy.stream(HttpUtil.get(url).inputStream(), fos);
 			}
 
 			Thread_.sleepQuietly(2000);

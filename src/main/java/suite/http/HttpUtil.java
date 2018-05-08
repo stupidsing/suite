@@ -3,6 +3,7 @@ package suite.http;
 import static suite.util.Friends.max;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -17,6 +18,7 @@ import suite.concurrent.Backoff;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes_;
+import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
@@ -28,9 +30,63 @@ import suite.util.To;
 
 public class HttpUtil {
 
+	public static class HttpRequest {
+		private String method;
+		private URL url;
+		private Outlet<Bytes> in;
+		private Map<String, String> headers;
+
+		private HttpRequest() {
+			this("GET", null, Outlet.empty(), Map.ofEntries());
+		}
+
+		private HttpRequest(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) {
+			this.method = method;
+			this.url = url;
+			this.in = in;
+			this.headers = headers;
+		}
+
+		public HttpRequest method(String method) {
+			return new HttpRequest(method, url, in, headers);
+		}
+
+		public HttpRequest url(URL url) {
+			return new HttpRequest(method, url, in, headers);
+		}
+
+		public HttpRequest in(Outlet<Bytes> in) {
+			return new HttpRequest(method, url, in, headers);
+		}
+
+		public HttpRequest headers(Map<String, String> headers) {
+			return new HttpRequest(method, url, in, headers);
+		}
+
+		public InputStream inputStream() {
+			return out().collect(To::inputStream);
+		}
+
+		public Outlet<String> lines() {
+			return out().collect(As::lines);
+		}
+
+		public Outlet<Chars> utf8() {
+			return out().collect(As::utf8decode);
+		}
+
+		public Outlet<Bytes> out() {
+			return send().out;
+		}
+
+		public HttpResult send() {
+			return http_(method, url, in, headers);
+		}
+	}
+
 	public static class HttpResult {
-		public int responseCode;
-		public Outlet<Bytes> out;
+		public final int responseCode;
+		public final Outlet<Bytes> out;
 
 		private HttpResult(int responseCode, Outlet<Bytes> out) {
 			this.responseCode = responseCode;
@@ -38,12 +94,16 @@ public class HttpUtil {
 		}
 	}
 
-	public static HttpResult get(String url) {
+	public static HttpRequest get(String url) {
 		return get(To.url(url));
 	}
 
-	public static HttpResult get(URL url) {
-		return http("GET", url);
+	public static HttpRequest get(URL url) {
+		return request().url(url);
+	}
+
+	public static HttpRequest request() {
+		return new HttpRequest();
 	}
 
 	public static HttpResult http(String method, URL url) {
@@ -67,7 +127,7 @@ public class HttpUtil {
 	}
 
 	public static Map<String, URI> resolveLinks(URI uri) {
-		var out = get(Rethrow.ex(() -> uri.toURL())).out.collect(As::utf8decode).collect(As::joined);
+		var out = get(Rethrow.ex(() -> uri.toURL())).utf8().collect(As::joined);
 		var links = new HashMap<String, URI>();
 		String[] m;
 		while ((m = ParseUtil.fitCaseInsensitive(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {

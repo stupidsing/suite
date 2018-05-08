@@ -114,8 +114,8 @@ public class Read {
 		return Outlet.of(() -> Rethrow.ex(() -> Util.readLine(br))).closeAtEnd(br).closeAtEnd(reader);
 	}
 
-	public static Streamlet<Bytes> url(String urlString) {
-		return new Streamlet<>(() -> HttpUtil.get(To.url(urlString)).out);
+	public static Streamlet<Bytes> url(String url) {
+		return new Streamlet<>(HttpUtil.get(url)::out);
 	}
 
 	public static <K, V, C extends Collection<V>> Streamlet2<K, V> multimap(Map<K, C> map) {

@@ -21,7 +21,6 @@ import suite.trade.Trade_;
 import suite.util.Fail;
 import suite.util.Object_;
 import suite.util.Rethrow;
-import suite.util.To;
 
 public class Google {
 
@@ -94,7 +93,7 @@ public class Google {
 					+ symbols.sort(Object_::compare).map(this::fromSymbol).collect(As.joinedBy(","));
 
 			var json = Rethrow.ex(() -> {
-				try (var is = HttpUtil.get(url).out.collect(To::inputStream)) {
+				try (var is = HttpUtil.get(url).inputStream()) {
 					for (var i = 0; i < 4; i++)
 						is.read();
 					return mapper.readTree(is);

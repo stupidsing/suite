@@ -68,7 +68,7 @@ public class Sina {
 			if (isCache)
 				in = Singleton.me.storeCache.http(url);
 			else
-				in = HttpUtil.get(url).out;
+				in = HttpUtil.get(url).out();
 
 			return in //
 					.map(bytes -> {

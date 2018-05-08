@@ -2,7 +2,6 @@ package suite.jdk;
 
 import suite.http.HttpUtil;
 import suite.util.Rethrow;
-import suite.util.To;
 import suite.util.XmlUtil;
 
 public class Maven {
@@ -15,7 +14,7 @@ public class Maven {
 		var url = m2repo + groupId.replace('.', '/') + "/" + artifactId + "/maven-metadata.xml";
 
 		var version = Rethrow.ex(() -> new XmlUtil() //
-				.read(HttpUtil.get(url).out.collect(To::inputStream)) //
+				.read(HttpUtil.get(url).inputStream()) //
 				.children("metadata") //
 				.uniqueResult() //
 				.children("versioning") //

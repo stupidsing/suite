@@ -9,7 +9,11 @@ public class HttpUtilTest {
 
 	@Test
 	public void test() {
-		var result = HttpUtil.http("GET", "http://feu.no-ip.info/", To.outlet("{\"key\": \"value\"}"));
+		var result = HttpUtil //
+				.get("http://feu.no-ip.info/") //
+				.in(To.outlet("{\"key\": \"value\"}")) //
+				.send();
+
 		System.out.println(result.responseCode);
 		Bytes_.copy(result.out, System.out::write);
 	}

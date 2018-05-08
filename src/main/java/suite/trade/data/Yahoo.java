@@ -212,7 +212,7 @@ public class Yahoo {
 				+ "&corsDomain=finance.yahoo.com";
 
 		return Rethrow.ex(() -> {
-			try (var is = HttpUtil.get(url).out.collect(To::inputStream)) {
+			try (var is = HttpUtil.get(url).inputStream()) {
 				return mapper.readTree(is);
 			}
 		});
@@ -282,7 +282,7 @@ public class Yahoo {
 					+ "?s=" + symbols.sort(Object_::compare).map(this::encode).collect(As.joinedBy("+")) //
 					+ "&f=s" + field;
 
-			return HttpUtil.get(url).out.collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
+			return HttpUtil.get(url).out().collect(As::csv).toMap(array -> array[0], array -> Float.parseFloat(array[1]));
 		} else
 			return new HashMap<>();
 	}
