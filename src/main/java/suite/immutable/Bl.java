@@ -42,9 +42,9 @@ public class Bl<T> {
 				var ts = new Object[Long.bitCount(bitmap)];
 
 				for (var bit = 1; bit != 0; bit <<= 1) {
-					T t0 = (bitmap0 & bit) != 0 ? bl0.get(bitCount0++) : null;
-					T t1 = (bitmap1 & bit) != 0 ? bl1.get(bitCount1++) : null;
-					T t = t0 != null ? t1 != null ? f.apply(t0, t1) : t0 : t1;
+					var t0 = (bitmap0 & bit) != 0 ? bl0.get(bitCount0++) : null;
+					var t1 = (bitmap1 & bit) != 0 ? bl1.get(bitCount1++) : null;
+					var t = t0 != null ? t1 != null ? f.apply(t0, t1) : t0 : t1;
 
 					if (t != null)
 						ts[bitCount++] = t;
@@ -98,11 +98,11 @@ public class Bl<T> {
 			var bitmap = 0;
 			var ts = new Object[size];
 			for (var i = 0; i < size; i++) {
-				IntObjPair<T> pair = list.get(i);
+				var pair = list.get(i);
 				bitmap |= 1l << (pair.t0 & 0xFFFFFC00);
 				ts[i] = pair.t1;
 			}
-			return new Bl<T>(bitmap, ts);
+			return new Bl<>(bitmap, ts);
 		} else
 			return null;
 	}
