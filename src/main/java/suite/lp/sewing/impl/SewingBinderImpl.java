@@ -42,13 +42,11 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 			return (be, n) -> {
 				var n_ = n.finalNode();
 				Tree t;
-				if (n_ instanceof Reference)
-					if (isBindTrees) {
+				if (n_ instanceof Reference) {
+					if (isBindTrees)
 						be.trail.addBind((Reference) n_, f.apply(be.env));
-						return true;
-					} else
-						return false;
-				else
+					return isBindTrees;
+				} else
 					return (t = Tree.decompose(n_, op)) != null //
 							&& c0.test(be, t.getLeft()) //
 							&& c1.test(be, t.getRight());
@@ -61,20 +59,17 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 				var n_ = n.finalNode();
 				if (n_ instanceof Tuple) {
 					var nodes = ((Tuple) n_).nodes;
-					if (nodes.length == length) {
+					var b = nodes.length == length;
+					if (b)
 						for (var i = 0; i < length; i++)
 							if (!cs[i].test(be, nodes[i]))
 								return false;
-						return true;
-					} else
-						return false;
-				} else if (n_ instanceof Reference)
-					if (isBindTrees) {
+					return b;
+				} else if (n_ instanceof Reference) {
+					if (isBindTrees)
 						be.trail.addBind((Reference) n_, f.apply(be.env));
-						return true;
-					} else
-						return false;
-				else
+					return isBindTrees;
+				} else
 					return false;
 			};
 		}).applyIf(Node.class, n -> {
