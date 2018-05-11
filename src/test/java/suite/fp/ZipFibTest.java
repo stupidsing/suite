@@ -44,25 +44,22 @@ public class ZipFibTest {
 		Fn<Thunk> snd = list_ -> () -> ((Cons) list_.get()).tail.get();
 		Fn<Fn<Thunk>> add = a -> b -> () -> new N_(((N_) a.get()).i + ((N_) b.get()).i);
 
-		var take_ = new Object() {
-			Fn<Thunk> take(Thunk i_) {
+		var take = new Fn<Fn<Thunk>>() {
+			public Fn<Thunk> apply(Thunk i_) {
 				var i = ((N_) i_.get()).i;
 				return i != 0 //
-						? list_ -> take(() -> new N_(i - 1)).apply(snd.apply(list_)) //
+						? list_ -> apply(() -> new N_(i - 1)).apply(snd.apply(list_)) //
 						: fst::apply;
 			}
 		};
 
-		var zipAdd_ = new Object() {
-			Fn<Thunk> zipAdd(Thunk l0) {
+		var zipAdd = new Fn<Fn<Thunk>>() {
+			public Fn<Thunk> apply(Thunk l0) {
 				return l1 -> () -> new Cons( //
 						() -> add.apply(fst.apply(l0)).apply(fst.apply(l1)).get(), //
-						() -> zipAdd(snd.apply(l0)).apply(snd.apply(l1)).get());
+						() -> apply(snd.apply(l0)).apply(snd.apply(l1)).get());
 			}
 		};
-
-		Fn<Fn<Thunk>> take = take_::take;
-		Fn<Fn<Thunk>> zipAdd = zipAdd_::zipAdd;
 
 		var fibs = new Thunk[1];
 		Thunk fib = () -> fibs[0].get();
