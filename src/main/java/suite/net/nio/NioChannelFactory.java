@@ -2,7 +2,7 @@ package suite.net.nio;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ExecutorService;
 
 import suite.concurrent.Condition;
 import suite.net.NetUtil;
@@ -116,7 +116,7 @@ public interface NioChannelFactory {
 	public static <C extends PersistentNioChannel> C persistent( //
 			C channel0, //
 			RequestResponseMatcher matcher, //
-			ThreadPoolExecutor executor, //
+			ExecutorService executor, //
 			Iterate<Bytes> handler) {
 		return requestResponse(channel0, matcher, executor, handler);
 	}
@@ -124,7 +124,7 @@ public interface NioChannelFactory {
 	public static <C extends RequestResponseNioChannel> C requestResponse( //
 			C channel0, //
 			RequestResponseMatcher matcher, //
-			ThreadPoolExecutor executor, //
+			ExecutorService executor, //
 			Iterate<Bytes> handler) {
 		var channel = packeted(channel0);
 		channel.onConnected.wire(sender -> channel.setConnected(sender != null));

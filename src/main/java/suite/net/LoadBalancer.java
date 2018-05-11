@@ -50,7 +50,6 @@ public class LoadBalancer {
 		Io io = (is, os) -> {
 			var count = counter.getAndIncrement();
 			var alives0 = alives;
-
 			var server = alives0.get(count % alives0.size());
 
 			try (var socket = new Socket(server, port)) {

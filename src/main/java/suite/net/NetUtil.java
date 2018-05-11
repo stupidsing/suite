@@ -41,8 +41,7 @@ public class NetUtil {
 	}
 
 	public static <T> T deserialize(Bytes s) {
-		var bytes = s.toArray();
-		var bais = new ByteArrayInputStream(bytes);
+		var bais = new ByteArrayInputStream(s.toArray());
 
 		try {
 			var in = new ObjectInputStream(bais);
