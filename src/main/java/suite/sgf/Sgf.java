@@ -14,13 +14,6 @@ public class Sgf {
 	public static class PosPair<T> {
 		public int pos;
 		public T t;
-
-		public static <T> PosPair<T> of(int pos, T t) {
-			PosPair<T> intPair = new PosPair<>();
-			intPair.pos = pos;
-			intPair.t = t;
-			return intPair;
-		}
 	}
 
 	public class Node {
@@ -45,17 +38,17 @@ public class Sgf {
 			case '\r':
 				break;
 			case ';':
-				PosPair<List<Pair<String, List<String>>>> ipCommands = readCommands(in, pos);
+				var ipCommands = readCommands(in, pos);
 				pos = ipCommands.pos;
 				node.commandsList.add(ipCommands.t);
 				break;
 			case '(':
-				PosPair<Node> ipNode = readNode(in, pos);
+				var ipNode = readNode(in, pos);
 				pos = ipNode.pos;
 				node.variations.add(ipNode.t);
 				break;
 			case ')':
-				return PosPair.of(pos, node);
+				return posPair(pos, node);
 			default:
 				Fail.t();
 			}
@@ -75,9 +68,9 @@ public class Sgf {
 			case ';':
 			case '(':
 			case ')':
-				return PosPair.of(pos, commands);
+				return posPair(pos, commands);
 			default:
-				PosPair<Pair<String, List<String>>> ipCommand = readCommand(in, pos);
+				var ipCommand = readCommand(in, pos);
 				pos = ipCommand.pos;
 				commands.add(ipCommand.t);
 			}
@@ -97,12 +90,12 @@ public class Sgf {
 				pos++;
 				break;
 			case '[':
-				PosPair<String> ip = readIf(in, pos + 1, ch -> ch != ']');
+				var ip = readIf(in, pos + 1, ch -> ch != ']');
 				pos = ip.pos + 1;
 				ids.add(ip.t);
 				break;
 			default:
-				return PosPair.of(pos, Pair.of(ipId.t, ids));
+				return posPair(pos, Pair.of(ipId.t, ids));
 			}
 
 		return Fail.t("unexpected end of input");
@@ -116,15 +109,20 @@ public class Sgf {
 
 		var pos1 = pos0;
 
-		while (pos1 < in.length()) {
-			var ch = in.charAt(pos1);
-			if (predicate.test(ch))
+		while (pos1 < in.length())
+			if (predicate.test(in.charAt(pos1)))
 				pos1++;
 			else
-				return PosPair.of(pos1, in.substring(pos0, pos1));
-		}
+				return posPair(pos1, in.substring(pos0, pos1));
 
 		return Fail.t("unexpected end of input");
+	}
+
+	public static <T> PosPair<T> posPair(int pos, T t) {
+		var intPair = new PosPair<T>();
+		intPair.pos = pos;
+		intPair.t = t;
+		return intPair;
 	}
 
 }

@@ -36,17 +36,13 @@ public class DpkgUtil {
 		if (arch != null)
 			files.add(new File(dir + packageName + ":" + arch + ".list"));
 
-		for (var file : files)
-			if (file.exists())
-				return Read.lines(file);
-
-		return null;
+		var file = Read.from(files).filter(File::exists).first();
+		return file != null ? Read.lines(file) : null;
 	}
 
 	public Set<String> getDependeeSet(List<Map<String, String>> packages, Set<String> set0) {
 		var dependees = getDependeesOf(packages);
-
-		List<String> nl = new ArrayList<>(set0);
+		var nl = new ArrayList<String>(set0);
 		var set1 = new HashSet<>(set0);
 
 		while (!nl.isEmpty()) {
