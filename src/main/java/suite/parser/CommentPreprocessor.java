@@ -24,11 +24,11 @@ public class CommentPreprocessor {
 	private String openComment;
 	private String closeComment;
 
-	public static CommentPreprocessor groupCommentPreprocessor(Set<Character> whitespaces) {
+	public static CommentPreprocessor ofGroupComment(Set<Character> whitespaces) {
 		return new CommentPreprocessor(whitespaces, openGroupComment, closeGroupComment);
 	}
 
-	public static CommentPreprocessor lineCommentPreprocessor(Set<Character> whitespaces) {
+	public static CommentPreprocessor ofLineComment(Set<Character> whitespaces) {
 		return new CommentPreprocessor(whitespaces, openLineComment, closeLineComment);
 	}
 

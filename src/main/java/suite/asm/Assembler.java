@@ -65,8 +65,8 @@ public class Assembler {
 
 	public Bytes assemble(String in0) {
 		var whitespaces = Collections.singleton('\n');
-		Fun<String, List<Run>> gct = CommentPreprocessor.groupCommentPreprocessor(whitespaces)::preprocess;
-		Fun<String, List<Run>> lct = CommentPreprocessor.lineCommentPreprocessor(whitespaces)::preprocess;
+		Fun<String, List<Run>> gct = CommentPreprocessor.ofGroupComment(whitespaces)::preprocess;
+		Fun<String, List<Run>> lct = CommentPreprocessor.ofLineComment(whitespaces)::preprocess;
 		var in1 = Preprocess.transform(List.of(gct, lct), in0).t0;
 
 		var generalizer = new Generalizer();
