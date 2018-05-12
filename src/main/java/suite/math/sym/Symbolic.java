@@ -396,7 +396,7 @@ public class Symbolic {
 				}
 			}
 
-			DivisiblePolynomial<Node> dpn = new DPN();
+			var dpn = new DPN();
 			var pr = dpn.ring;
 
 			return new Object() {
