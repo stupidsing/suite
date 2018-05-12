@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import suite.adt.Mutable;
@@ -34,10 +33,10 @@ import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil2;
+import suite.util.FunUtil2.Sink2;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
 import suite.util.Object_;
-import suite.util.Rethrow;
 import suite.util.To;
 
 public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
@@ -361,11 +360,11 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 		return of(List_.reverse(toList()));
 	}
 
-	public void sink(BiConsumer<Character, V> sink0) {
-		var sink1 = Rethrow.biConsumer(sink0);
+	public void sink(Sink2<Character, V> sink0) {
+		var sink1 = sink0.rethrow();
 		var pair = ChrObjPair.<V> of((char) 0, null);
 		while (next(pair))
-			sink1.accept(pair.t0, pair.t1);
+			sink1.sink2(pair.t0, pair.t1);
 	}
 
 	public ChrObjOutlet<V> skip(int n) {

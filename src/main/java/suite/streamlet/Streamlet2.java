@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -20,6 +19,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil2.Sink2;
 import suite.util.FunUtil2.Source2;
 import suite.util.Object_;
 
@@ -199,7 +199,7 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 		return streamlet2(() -> spawn().reverse());
 	}
 
-	public void sink(BiConsumer<K, V> sink) {
+	public void sink(Sink2<K, V> sink) {
 		spawn().sink(sink);
 	}
 

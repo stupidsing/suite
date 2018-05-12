@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.Predicate;
 
 import suite.adt.map.ListMultimap;
@@ -32,6 +31,7 @@ import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.FunUtil2.Sink2;
 import suite.util.Object_;
 
 public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltObjOutlet<V>> {
@@ -226,7 +226,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 		return streamlet(() -> spawn().reverse());
 	}
 
-	public void sink(BiConsumer<Float, V> sink) {
+	public void sink(Sink2<Float, V> sink) {
 		spawn().sink(sink);
 	}
 

@@ -11,7 +11,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
@@ -25,11 +24,11 @@ import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil2;
 import suite.util.FunUtil2.Fun2;
+import suite.util.FunUtil2.Sink2;
 import suite.util.FunUtil2.Source2;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
 import suite.util.Object_;
-import suite.util.Rethrow;
 import suite.util.To;
 
 public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
@@ -357,11 +356,11 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		return of(List_.reverse(toList()));
 	}
 
-	public void sink(BiConsumer<K, V> sink0) {
-		var sink1 = Rethrow.biConsumer(sink0);
+	public void sink(Sink2<K, V> sink0) {
+		var sink1 = sink0.rethrow();
 		var pair = Pair.<K, V> of(null, null);
 		while (next(pair))
-			sink1.accept(pair.t0, pair.t1);
+			sink1.sink2(pair.t0, pair.t1);
 	}
 
 	public Outlet2<K, V> skip(int n) {
