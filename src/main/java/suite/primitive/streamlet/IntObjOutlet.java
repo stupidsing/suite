@@ -300,8 +300,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	public IntObjPair<V> minOrNull(Comparator<IntObjPair<V>> comparator) {
 		var pair = IntObjPair.<V> of((int) 0, null);
 		var pair1 = IntObjPair.<V> of((int) 0, null);
-		var b = next(pair);
-		if (b) {
+		if (next(pair)) {
 			while (next(pair1))
 				if (0 < comparator.compare(pair, pair1))
 					pair.update(pair1.t0, pair1.t1);

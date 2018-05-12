@@ -296,8 +296,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	public Pair<K, V> minOrNull(Comparator<Pair<K, V>> comparator) {
 		var pair = Pair.<K, V> of(null, null);
 		var pair1 = Pair.<K, V> of(null, null);
-		var b = next(pair);
-		if (b) {
+		if (next(pair)) {
 			while (next(pair1))
 				if (0 < comparator.compare(pair, pair1))
 					pair.update(pair1.t0, pair1.t1);
@@ -307,7 +306,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public Outlet2<K, V> nonBlocking(K k0, V v0) {
-		NullableSyncQueue<Pair<K, V>> queue = new NullableSyncQueue<>();
+		var queue = new NullableSyncQueue<Pair<K, V>>();
 
 		new Thread(() -> {
 			boolean b;

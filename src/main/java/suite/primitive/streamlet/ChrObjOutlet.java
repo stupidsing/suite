@@ -300,8 +300,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	public ChrObjPair<V> minOrNull(Comparator<ChrObjPair<V>> comparator) {
 		var pair = ChrObjPair.<V> of((char) 0, null);
 		var pair1 = ChrObjPair.<V> of((char) 0, null);
-		var b = next(pair);
-		if (b) {
+		if (next(pair)) {
 			while (next(pair1))
 				if (0 < comparator.compare(pair, pair1))
 					pair.update(pair1.t0, pair1.t1);

@@ -300,8 +300,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	public FltObjPair<V> minOrNull(Comparator<FltObjPair<V>> comparator) {
 		var pair = FltObjPair.<V> of((float) 0, null);
 		var pair1 = FltObjPair.<V> of((float) 0, null);
-		var b = next(pair);
-		if (b) {
+		if (next(pair)) {
 			while (next(pair1))
 				if (0 < comparator.compare(pair, pair1))
 					pair.update(pair1.t0, pair1.t1);

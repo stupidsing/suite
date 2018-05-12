@@ -300,8 +300,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	public DblObjPair<V> minOrNull(Comparator<DblObjPair<V>> comparator) {
 		var pair = DblObjPair.<V> of((double) 0, null);
 		var pair1 = DblObjPair.<V> of((double) 0, null);
-		var b = next(pair);
-		if (b) {
+		if (next(pair)) {
 			while (next(pair1))
 				if (0 < comparator.compare(pair, pair1))
 					pair.update(pair1.t0, pair1.t1);
