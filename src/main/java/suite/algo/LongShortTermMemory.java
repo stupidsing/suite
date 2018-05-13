@@ -14,6 +14,7 @@ import suite.primitive.Floats_;
 public class LongShortTermMemory {
 
 	private Matrix mtx = new Matrix();
+	private Random random = new Random();
 	private Vector vec = new Vector();
 
 	private float learningRate;
@@ -47,7 +48,6 @@ public class LongShortTermMemory {
 		private float[][] wo = new float[memoryLength][ll1];
 
 		public Unit() {
-			var random = new Random();
 			var isll = 1f / sqrt(ll);
 
 			for (var i = 0; i < memoryLength; i++) {

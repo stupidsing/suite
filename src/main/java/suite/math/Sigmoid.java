@@ -1,5 +1,7 @@
 package suite.math;
 
+import static suite.util.Friends.exp;
+
 public class Sigmoid {
 
 	public static float[] sigmoidOn(float[] fs) {
