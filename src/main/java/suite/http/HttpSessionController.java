@@ -72,11 +72,7 @@ public class HttpSessionController {
 				var path = HttpHeaderUtil.getPath(attrs.get("path"));
 
 				if (authenticator.authenticate(username, password)) {
-					sessionId = generateRandomSessionId();
-
-					session = new Session(username, current);
-
-					sessionManager.put(sessionId, session);
+					sessionManager.put(sessionId = generateRandomSessionId(), session = new Session(username, current));
 
 					var request1 = new HttpRequest( //
 							request.method, //
