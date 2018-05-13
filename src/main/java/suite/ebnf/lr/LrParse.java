@@ -67,9 +67,10 @@ public class LrParse {
 					state = ns.t1;
 				}
 
-				var token1 = new Ast(reduce.name(), 0, 0, Read.from(nodes).toList());
+				var name = reduce.name();
+				var token1 = new Ast(name, 0, 0, Read.from(nodes).toList());
 
-				if (rootEntity.equals(reduce.name()) && stack.size() == 0 && token == null)
+				if (rootEntity.equals(name) && stack.size() == 0 && token == null)
 					return token1;
 
 				// force shift after reduce

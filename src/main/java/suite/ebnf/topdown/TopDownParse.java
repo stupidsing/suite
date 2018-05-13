@@ -93,8 +93,7 @@ public class TopDownParse {
 		}
 
 		private Ast parse(int pos, Parser parser) {
-			var initialState = new State(null, pos, null, 0);
-			var o = initialState.pr(this, parser);
+			var o = new State(null, pos, null, 0).pr(this, parser);
 			State state;
 
 			while ((state = o.next()) != null)
