@@ -39,10 +39,10 @@ public class Breakdown {
 		else if (s.endsWith("+"))
 			eg = new Grammar(GrammarType.REPT1_, breakdown(String_.range(s, 0, -1)));
 		else if (s.startsWith("@\"") && s.endsWith("\"")) {
-			var s1 = Escaper.unescape(String_.range(s, 2, -1), "\"");
+			var s1 = str(s.substring(1));
 			eg = new Grammar(GrammarType.NAMED_, s1, new Grammar(GrammarType.STRING, s1));
 		} else if (s.startsWith("\"") && s.endsWith("\""))
-			eg = new Grammar(GrammarType.STRING, Escaper.unescape(String_.range(s, 1, -1), "\""));
+			eg = new Grammar(GrammarType.STRING, str(s));
 		else if (s.startsWith("(") && s.endsWith(")"))
 			eg = breakdown(String_.range(s, 1, -1));
 		else
@@ -53,6 +53,10 @@ public class Breakdown {
 
 	private List<Grammar> breakdown(List<String> list) {
 		return Read.from(list).map(this::breakdown).toList();
+	}
+
+	private String str(String s) {
+		return Escaper.unescape(String_.range(s, 1, -1), "\"");
 	}
 
 }
