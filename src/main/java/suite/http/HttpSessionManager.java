@@ -24,16 +24,17 @@ public class HttpSessionManager implements SessionManager {
 		var size1 = sessions.size();
 
 		if (lg2(size0) < lg2(size1)) // exceeded a power of two?
-			if (isCleaning.getAndSet(true)) { // one thread cleaning is enough
-				var current = System.currentTimeMillis();
-				var iter = sessions.values().iterator();
+			if (isCleaning.getAndSet(true)) // one thread cleaning is enough
+				try {
+					var current = System.currentTimeMillis();
+					var iter = sessions.values().iterator();
 
-				while (iter.hasNext())
-					if (iter.next().getLastRequestDt() + HttpSessionController.TIMEOUTDURATION < current)
-						iter.remove();
-
-				isCleaning.set(false);
-			}
+					while (iter.hasNext())
+						if (iter.next().getLastRequestDt() + HttpSessionController.TIMEOUTDURATION < current)
+							iter.remove();
+				} finally {
+					isCleaning.set(false);
+				}
 	}
 
 	@Override
