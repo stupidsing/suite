@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.IntFunction;
 
+import jersey.repackaged.com.google.common.collect.Lists;
 import suite.Constants;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
@@ -35,7 +36,6 @@ import suite.primitive.Int_Dbl;
 import suite.primitive.IoSink;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
-import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 
@@ -128,7 +128,7 @@ public class To {
 	}
 
 	public static <T> List<T> list(Iterable<T> iter) {
-		return Read.from(iter).toList();
+		return Lists.newArrayList(iter);
 	}
 
 	public static <T> List<T> list(Source<T> source) {
