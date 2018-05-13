@@ -82,7 +82,7 @@ public class P0CrudeScript {
 							return FunpIndex.of(FunpReference.of(funp_), expr(m1));
 						}).match("'('", m_ -> {
 							return FunpApply.of(expr(m1), funp_);
-						}).match("()", m_ -> {
+						}).match(Atom.NIL, m_ -> {
 							return funp_;
 						}).nonNullResult();
 					}
