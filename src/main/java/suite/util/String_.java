@@ -79,12 +79,19 @@ public class String_ {
 		return s.substring(pos);
 	}
 
+	public static Pair<String, String> split2l(String s, String delimiter) {
+		var pair = split2(s, delimiter);
+		return pair != null ? pair : Pair.of(s.trim(), "");
+	}
+
+	public static Pair<String, String> split2r(String s, String delimiter) {
+		var pair = split2(s, delimiter);
+		return pair != null ? pair : Pair.of("", s.trim());
+	}
+
 	public static Pair<String, String> split2(String s, String delimiter) {
 		var pos = s.indexOf(delimiter);
-		if (0 <= pos)
-			return Pair.of(s.substring(0, pos).trim(), s.substring(pos + delimiter.length()).trim());
-		else
-			return Pair.of(s.trim(), "");
+		return 0 <= pos ? Pair.of(s.substring(0, pos).trim(), s.substring(pos + delimiter.length()).trim()) : null;
 	}
 
 }

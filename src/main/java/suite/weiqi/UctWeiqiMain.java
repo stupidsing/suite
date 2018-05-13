@@ -91,12 +91,10 @@ public class UctWeiqiMain<Move> {
 							status = "AFTER UNDO:";
 							break;
 						default:
-							if (!String_.isBlank(line)) {
-								var pos = String_.split2(line, ",");
-								var x = Integer.parseInt(pos.t0);
-								var y = Integer.parseInt(pos.t1);
-								gameSet.play(Coordinate.c(x, y));
-							}
+							if (!String_.isBlank(line))
+								gameSet.play(String_ //
+										.split2l(line, ",") //
+										.map((xs, ys) -> Coordinate.c(Integer.parseInt(xs), Integer.parseInt(ys))));
 						}
 					else
 						quit = true;

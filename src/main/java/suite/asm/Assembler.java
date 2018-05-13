@@ -74,22 +74,18 @@ public class Assembler {
 		Pair<String, String> pe;
 		var start = 0;
 
-		while (!(pe = String_.split2(lines.get(start), "=")).t1.isEmpty()) {
+		while ((pe = String_.split2(lines.get(start), "=")) != null) {
 			generalizer.getVariable(Atom.of(pe.t0)).bound(Suite.parse(pe.t1));
 			start++;
 		}
 
 		var lnis = Read //
 				.from(List_.right(lines, start)) //
-				.map(line -> {
-					var pt = String_.split2(line, "\t");
-					var label = pt.t0;
-					var command = pt.t1;
-
+				.map(line -> String_.split2r(line, "\t").map((label, command) -> {
 					var reference = String_.isNotBlank(label) ? generalizer.getVariable(Atom.of(label)) : null;
 					var instruction = generalizer.generalize(Suite.parse(command));
 					return Pair.of(reference, instruction);
-				}).toList();
+				})).toList();
 
 		return assemble(generalizer, lnis);
 	}

@@ -24,15 +24,7 @@ public class HttpHeaderUtil {
 	}
 
 	public static Map<String, String> getCookieAttrs(String query) {
-		var qs = query != null ? query.split(";") : new String[0];
-		var attrs = new HashMap<String, String>();
-
-		for (var q : qs) {
-			var pair = String_.split2(q, "=");
-			attrs.put(pair.t0, decode(pair.t1));
-		}
-
-		return attrs;
+		return decodeMap(query, ";");
 	}
 
 	public static Map<String, String> getPostedAttrs(InputStream is) {
@@ -48,14 +40,14 @@ public class HttpHeaderUtil {
 	}
 
 	public static Map<String, String> getAttrs(String query) {
-		var qs = query != null ? query.split("&") : new String[0];
+		return decodeMap(query, "&");
+	}
+
+	private static Map<String, String> decodeMap(String query, String sep) {
+		var qs = query != null ? query.split(sep) : new String[0];
 		var attrs = new HashMap<String, String>();
-
-		for (var q : qs) {
-			var pair = String_.split2(q, "=");
-			attrs.put(pair.t0, decode(pair.t1));
-		}
-
+		for (var q : qs)
+			String_.split2l(q, "=").map((k, v) -> attrs.put(k, decode(v)));
 		return attrs;
 	}
 

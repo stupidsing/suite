@@ -12,6 +12,7 @@ import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.util.Copy;
 import suite.util.Fail;
+import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
@@ -39,44 +40,43 @@ public class HttpServer {
 
 	private void run_(HttpHandler handler) throws IOException {
 		new SocketUtil().listenIo(8051, (is, os) -> {
-			String line;
 			var ls = Util.readLine(is).split(" ");
-			String method = ls[0], url = ls[1], protocol = ls[2];
-			String server, pqs;
+			var method = ls[0];
+			var url = ls[1];
+			var protocol = ls[2];
+			String host, pqs;
 
 			var pp = String_.split2(url, "://");
 
-			if (String_.isNotBlank(pp.t1)) {
-				var sp = String_.split2(pp.t1, "/");
-				server = sp.t0;
+			if (pp != null) {
+				var sp = String_.split2l(pp.t1, "/");
+				host = sp.t0;
 				pqs = sp.t1;
 			} else {
-				server = "";
+				host = "";
 				pqs = url;
 			}
 
-			var pq = String_.split2(pqs, "?");
-			var path = pq.t0;
-			var query = pq.t1;
+			var request = String_.split2l(pqs, "?").map((path, query) -> {
+				var path1 = path.startsWith("/") ? path : "/" + path;
+				var path2 = Rethrow.ex(() -> URLDecoder.decode(path1, "UTF-8"));
 
-			var path1 = path.startsWith("/") ? path : "/" + path;
-			String path2 = URLDecoder.decode(path1, "UTF-8");
+				if (String_.equals(protocol, "HTTP/1.1")) {
+					var requestHeaders = new HashMap<String, String>();
+					String line;
 
-			if (!String_.equals(protocol, "HTTP/1.1"))
-				Fail.t("only HTTP/1.1 is supported");
+					while (!(line = Util.readLine(is)).isEmpty())
+						String_.split2l(line, ":").map(requestHeaders::put);
 
-			var requestHeaders = new HashMap<String, String>();
+					var cls = requestHeaders.get("Content-Length");
+					var contentLength = cls != null ? Integer.parseInt(cls) : 0;
+					var cis = sizeLimitedInputStream(is, contentLength);
 
-			while (!(line = Util.readLine(is)).isEmpty()) {
-				var pair = String_.split2(line, ":");
-				requestHeaders.put(pair.t0, pair.t1);
-			}
+					return new HttpRequest(method, host, path2, query, requestHeaders, cis);
+				} else
+					return Fail.t("only HTTP/1.1 is supported");
+			});
 
-			var cls = requestHeaders.get("Content-Length");
-			var contentLength = cls != null ? Integer.parseInt(cls) : 0;
-			var cis = sizeLimitedInputStream(is, contentLength);
-
-			var request = new HttpRequest(method, server, path2, query, requestHeaders, cis);
 			HttpResponse response = null;
 
 			try {

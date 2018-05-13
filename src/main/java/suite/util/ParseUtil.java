@@ -86,7 +86,7 @@ public class ParseUtil {
 		var chars = in.toCharArray();
 		var length = chars.length;
 
-		return new Streamlet<>(() -> Outlet.of(new Source<String>() {
+		return new Streamlet<>(() -> Outlet.of(new Source<>() {
 			private int pos = 0;
 
 			public String source() {

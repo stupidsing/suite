@@ -117,10 +117,8 @@ public class NntpServerMain extends ExecutableProgram {
 						}
 						article = new HashMap<>();
 						var pos = 0;
-						while (!(line = lines.get(pos++)).isEmpty()) {
-							var lr = String_.split2(line, ":");
-							article.put(lr.t0, lr.t1);
-						}
+						while (!(line = lines.get(pos++)).isEmpty())
+							String_.split2l(line, ":").map(article::put);
 						var sb = new StringBuilder();
 						while (pos < lines.size())
 							sb.append(lines.get(pos++));
