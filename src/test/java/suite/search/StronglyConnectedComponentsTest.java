@@ -3,17 +3,18 @@ package suite.search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Set;
+
 import org.junit.Test;
 
 import suite.adt.pair.Pair;
 import suite.streamlet.Read;
-import suite.util.To;
 
 public class StronglyConnectedComponentsTest {
 
 	@Test
 	public void test() {
-		var scc = new StronglyConnectedComponents<>(DirectedGraph.of(To.set( //
+		var scc = new StronglyConnectedComponents<>(DirectedGraph.of(Set.of( //
 				Pair.of("a", "b") //
 				, Pair.of("b", "c") //
 				, Pair.of("b", "e") //
@@ -30,12 +31,12 @@ public class StronglyConnectedComponentsTest {
 				, Pair.of("h", "g") //
 		)));
 
-		var components = scc.components;
+		var components = Read.from(scc.components);
 
 		assertEquals(3, components.size());
-		assertTrue(Read.from(components).isAny(c -> c.equals(To.set("a", "b", "e"))));
-		assertTrue(Read.from(components).isAny(c -> c.equals(To.set("c", "d", "h"))));
-		assertTrue(Read.from(components).isAny(c -> c.equals(To.set("f", "g"))));
+		assertTrue(components.isAny(c -> c.equals(Set.of("a", "b", "e"))));
+		assertTrue(components.isAny(c -> c.equals(Set.of("c", "d", "h"))));
+		assertTrue(components.isAny(c -> c.equals(Set.of("f", "g"))));
 	}
 
 }

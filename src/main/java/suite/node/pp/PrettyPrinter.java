@@ -13,7 +13,6 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.util.FormatUtil;
 import suite.util.String_;
-import suite.util.To;
 
 public class PrettyPrinter {
 
@@ -28,7 +27,7 @@ public class PrettyPrinter {
 
 	private static Node lineBreakBeforeKeyword = Atom.of("else-if");
 	private static Node preferLineBreakBeforeKeyword = Atom.of("else");
-	private static Set<Operator> lineBreakAfterOperators = To.set(TermOp.BRACES, TermOp.CONTD_, TermOp.FUN___);
+	private static Set<Operator> lineBreakAfterOperators = Set.of(TermOp.BRACES, TermOp.CONTD_, TermOp.FUN___);
 
 	private EstimateLength estimateLength;
 

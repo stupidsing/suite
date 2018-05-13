@@ -2,9 +2,9 @@ package suite.trade.data;
 
 import static org.junit.Assert.assertTrue;
 
-import org.junit.Test;
+import java.util.Set;
 
-import suite.util.To;
+import org.junit.Test;
 
 public class GoogleTest {
 
@@ -12,7 +12,7 @@ public class GoogleTest {
 
 	@Test
 	public void test() {
-		var priceBySymbol = google.quote(To.set("0002.HK", "0005.HK"));
+		var priceBySymbol = google.quote(Set.of("0002.HK", "0005.HK"));
 		assertTrue(0f < priceBySymbol.get("0002.HK"));
 		assertTrue(0f < priceBySymbol.get("0005.HK"));
 	}

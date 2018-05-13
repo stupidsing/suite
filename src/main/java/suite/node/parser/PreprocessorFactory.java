@@ -9,11 +9,10 @@ import suite.parser.IndentationPreprocessor;
 import suite.parser.WhitespacePreprocessor;
 import suite.text.Preprocess.Run;
 import suite.util.FunUtil.Fun;
-import suite.util.To;
 
 public class PreprocessorFactory {
 
-	private static Set<Character> whitespaces = To.set('\t', '\r', '\n');
+	private static Set<Character> whitespaces = Set.of('\t', '\r', '\n');
 
 	public static List<Fun<String, List<Run>>> create(Operator[] operators) {
 		Fun<String, List<Run>> gct = CommentPreprocessor.ofGroupComment(whitespaces)::preprocess;
