@@ -74,14 +74,13 @@ public class LongShortTermMemory {
 
 		@Override
 		public String toString() {
-			var sb = new StringBuilder();
-			sb.append("wf = " + mtx.toString(wf));
-			sb.append("wi = " + mtx.toString(wi));
-			sb.append("wm = " + mtx.toString(wm));
-			sb.append("wo = " + mtx.toString(wo));
-			sb.append("memory = " + mtx.toString(memory) + "\n");
-			sb.append("output = " + mtx.toString(output) + "\n");
-			return sb.toString();
+			return "" //
+					+ "wf = " + mtx.toString(wf) //
+					+ "wi = " + mtx.toString(wi) //
+					+ "wm = " + mtx.toString(wm) //
+					+ "wo = " + mtx.toString(wo) //
+					+ "memory = " + mtx.toString(memory) + "\n" //
+					+ "output = " + mtx.toString(output) + "\n";
 		}
 
 		private float[] activate_(float[] input, float[] expected) {
