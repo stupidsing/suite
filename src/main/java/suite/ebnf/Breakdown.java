@@ -40,9 +40,10 @@ public class Breakdown {
 			eg = new Grammar(GrammarType.REPT1_, breakdown(String_.range(s, 0, -1)));
 		else if (s.startsWith("\"") && s.endsWith("\""))
 			eg = new Grammar(GrammarType.STRING, Escaper.unescape(String_.range(s, 1, -1), "\""));
-		else if (s.startsWith("(") && s.endsWith(")"))
-			eg = breakdown(String_.range(s, 1, -1));
-		else
+		else if (s.startsWith("(") && s.endsWith(")")) {
+			var s1 = String_.range(s, 1, -1);
+			eg = 0 < (pair = String_.split2(s1, "@")).t1.length() ? pair.map(this::breakdown) : breakdown(s1);
+		} else
 			eg = new Grammar(GrammarType.ENTITY, s);
 
 		return eg;
