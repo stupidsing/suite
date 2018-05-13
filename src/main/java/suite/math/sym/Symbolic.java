@@ -389,14 +389,7 @@ public class Symbolic {
 		private Opt<Poly<Node>> polyize_(Node node, Fun<Node, Node> coefficientFun) {
 			var nf = ex.field;
 			Obj_Int<Node> sign = a -> a.compareTo(ex.n0);
-
-			class DPN extends DivisiblePolynomial<Node> {
-				DPN() {
-					super(x, Rewrite.this::is_x, nf, sign, Opt::of, n -> n);
-				}
-			}
-
-			var dpn = new DPN();
+			var dpn = new DivisiblePolynomial<Node>(x, Rewrite.this::is_x, nf, sign, Opt::of, n -> n);
 			var pr = dpn.ring;
 
 			return new Object() {
@@ -429,7 +422,7 @@ public class Symbolic {
 						return inv1(pow(a, -power));
 					else // TODO assumed m0 != 0 or power != 0
 						return poly(a).map(p -> {
-							Poly<Node> r = dpn.p1;
+							var r = dpn.p1;
 							for (var ch : Integer.toBinaryString(power).toCharArray()) {
 								r = pr.mul.apply(r, r);
 								r = ch != '0' ? pr.mul.apply(p, r) : r;
