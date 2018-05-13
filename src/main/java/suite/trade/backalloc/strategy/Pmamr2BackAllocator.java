@@ -1,5 +1,7 @@
 package suite.trade.backalloc.strategy;
 
+import static suite.util.Friends.log1p;
+
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.streamlet.Read;
 import suite.trade.Asset;
@@ -24,7 +26,7 @@ public class Pmamr2BackAllocator {
 
 	private int top = 5;
 	private int tor = 64;
-	private double neglog2 = -Math.log(2d);
+	private double neglog2 = -log(2d);
 
 	private MovingAverage ma = new MovingAverage();
 	private TimeSeries ts = new TimeSeries();
@@ -118,7 +120,7 @@ public class Pmamr2BackAllocator {
 		}
 
 		private double movingAvgHalfLife() {
-			return neglog2 / Math.log1p(movingAvgMeanReversionRatio());
+			return neglog2 / log1p(movingAvgMeanReversionRatio());
 		}
 
 		public String toString() {

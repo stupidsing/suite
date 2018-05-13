@@ -156,7 +156,7 @@ public class BackAllocatorGeneral {
 	}
 
 	private BackAllocator ema(int halfLife) {
-		var scale = 1d / Math.log(.8d);
+		var scale = 1d / log(.8d);
 
 		return BackAllocator_.byPrices(prices -> {
 			var ema = ma.exponentialMovingAvg(prices, halfLife);

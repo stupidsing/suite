@@ -56,7 +56,7 @@ public class Arch {
 					var estx = c + Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[tm1 - i]));
 					eps = xs[t] - estx;
 					var = p0 + p1 * eps0 * eps0 + p2 * var0;
-					logLikelihood += -.5d * (Math.log(var) + eps * eps / var);
+					logLikelihood += -.5d * (log(var) + eps * eps / var);
 				}
 
 				return logLikelihood;

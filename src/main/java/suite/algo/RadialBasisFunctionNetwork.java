@@ -59,7 +59,7 @@ public class RadialBasisFunctionNetwork {
 	private float[] evaluateRbfs(float[] in) {
 		return Ints_ //
 				.range(nHiddens) //
-				.collect(Int_Flt.lift(cl -> (float) Math.exp(-.5d * vec.dotDiff(in, centers[cl]) * invVariances[cl]))) //
+				.collect(Int_Flt.lift(cl -> (float) exp(-.5d * vec.dotDiff(in, centers[cl]) * invVariances[cl]))) //
 				.toArray();
 	}
 

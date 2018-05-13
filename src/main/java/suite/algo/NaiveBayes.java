@@ -34,7 +34,7 @@ public class NaiveBayes {
 		}
 
 		length = length_;
-		b = Math.log(threshold) + Math.log(ms[i(true)]) - Math.log(ms[i(false)]);
+		b = log(threshold) + log(ms[i(true)]) - log(ms[i(false)]);
 
 		ps = To.array(nCategories, float[].class, i -> {
 			var range = Ints_.range(length_);
@@ -46,7 +46,7 @@ public class NaiveBayes {
 	public boolean classify(int[] record) {
 		var t = Ints_ //
 				.range(length) //
-				.toDouble(Int_Dbl.sum(j -> record[j] * (Math.log(ps[i(false)][j]) - Math.log(ps[i(true)][j]))));
+				.toDouble(Int_Dbl.sum(j -> record[j] * (log(ps[i(false)][j]) - log(ps[i(true)][j]))));
 		return t <= b;
 	}
 

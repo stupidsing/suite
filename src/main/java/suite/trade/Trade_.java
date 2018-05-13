@@ -1,6 +1,8 @@
 package suite.trade;
 
 import static suite.util.Friends.abs;
+import static suite.util.Friends.expm1;
+import static suite.util.Friends.log1p;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -49,10 +51,10 @@ public class Trade_ {
 	public static double invTradeDaysPerYear = 1d / nTradeDaysPerYear;
 
 	public static double riskFreeInterestRate = .013d; // .04d;
-	public static double logRiskFreeInterestRate = Math.log1p(riskFreeInterestRate);
+	public static double logRiskFreeInterestRate = log1p(riskFreeInterestRate);
 
 	public static double riskFreeInterestRate(int nDays) {
-		return Math.expm1(logRiskFreeInterestRate * invTradeDaysPerYear * nDays);
+		return expm1(logRiskFreeInterestRate * invTradeDaysPerYear * nDays);
 	}
 
 	public static Map<String, Float> collectAcquiredPrices(Outlet<Trade> outlet) {

@@ -1,5 +1,7 @@
 package suite.trade.backalloc.run;
 
+import static suite.util.Friends.log1p;
+
 import suite.math.numeric.Statistic;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats_;
@@ -48,9 +50,9 @@ public class BackTester {
 							.toArray();
 
 					var mv = stat.meanVariance(returns);
-					var logCagr = Floats_.of(returns).mapFlt(return_ -> (float) Math.log1p(return_)).average();
+					var logCagr = Floats_.of(returns).mapFlt(return_ -> (float) log1p(return_)).average();
 
-					return ">> cagr = " + To.string(Math.expm1(logCagr)) //
+					return ">> cagr = " + To.string(expm1(logCagr)) //
 							+ ", sharpe = " + To.string(mv.mean / mv.standardDeviation()) //
 							+ ", txFee = " + To.string(txFee / sims.size());
 				}) //

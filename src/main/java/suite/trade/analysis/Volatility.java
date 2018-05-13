@@ -8,7 +8,7 @@ import suite.util.To;
 // "High Frequency Trading: A Practical Guide to Algorithmic Strategies and Trading Systems", Irene Alridge, page 107
 public class Volatility {
 
-	private static double ln2 = Math.log(2d);
+	private static double ln2 = log(2d);
 	private static double inv4ln2 = .25d / ln2;
 
 	private int length;
@@ -54,7 +54,7 @@ public class Volatility {
 
 	public float[] vol3() {
 		var a = .5d;
-		var b = 1d - 2d * Math.log(2d);
+		var b = 1d - 2d * log(2d);
 		return To.vector(length, t -> {
 			var hl = highs[t] - lows[t];
 			var co = closes[t] - opens[t];

@@ -1,6 +1,8 @@
 package suite.ts;
 
 import static suite.util.Friends.abs;
+import static suite.util.Friends.expm1;
+import static suite.util.Friends.log;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 import static suite.util.Friends.sqrt;
@@ -84,11 +86,11 @@ public class TimeSeries {
 		var logVrs = To.vector(tor, t -> {
 			var diffs = dropDiff_(tors[t], logys);
 			var diffs2 = To.vector(diffs, diff -> diff * diff);
-			return Math.log(stat.variance(diffs2));
+			return log(stat.variance(diffs2));
 		});
 		var lr = stat.linearRegression(Ints_ //
 				.range(logVrs.length) //
-				.map(i -> FltObjPair.of((float) Math.log(tors[i]), new float[] { logVrs[i], 1f, })));
+				.map(i -> FltObjPair.of((float) log(tors[i]), new float[] { logVrs[i], 1f, })));
 		var beta0 = lr.coefficients[0];
 		return beta0 / 2d;
 	}
@@ -112,7 +114,7 @@ public class TimeSeries {
 				min = min(sum, min);
 				max = max(sum, max);
 			}
-			var x = Math.log(returns.length);
+			var x = log(returns.length);
 			var y = (max - min) / mv.standardDeviation();
 			pairs.add(FltObjPair.of((float) y, new float[] { (float) x, 1f, }));
 		}
@@ -184,7 +186,7 @@ public class TimeSeries {
 	}
 
 	public ReturnsStat returnsStatDaily(float[] prices) {
-		var dailyInterestRate = Math.expm1(Trade_.logRiskFreeInterestRate * Trade_.invTradeDaysPerYear);
+		var dailyInterestRate = expm1(Trade_.logRiskFreeInterestRate * Trade_.invTradeDaysPerYear);
 		return new ReturnsStat(prices, 1d, dailyInterestRate);
 	}
 
@@ -199,7 +201,7 @@ public class TimeSeries {
 		private double variance;
 
 		private ReturnsStat(float[] prices, double scale) {
-			this(prices, scale, Math.expm1(Trade_.logRiskFreeInterestRate * scale));
+			this(prices, scale, expm1(Trade_.logRiskFreeInterestRate * scale));
 		}
 
 		private ReturnsStat(float[] prices, double scale, double interestRate) {
@@ -214,7 +216,7 @@ public class TimeSeries {
 			var returns_ = returns_(prices);
 			var mv = stat.meanVariance(returns_);
 
-			return_ = Math.expm1(Quant.logReturn(v0, vx) * returns_.length * scale);
+			return_ = expm1(Quant.logReturn(v0, vx) * returns_.length * scale);
 			returns = returns_;
 			mean = mv.mean - interestRate;
 			variance = scale * mv.variance;

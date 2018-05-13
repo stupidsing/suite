@@ -1,5 +1,6 @@
 package suite.ts;
 
+import static suite.util.Friends.log1p;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -137,7 +138,7 @@ public class Quant {
 	}
 
 	public static double logReturn(double price0, double price1) {
-		return Math.log1p(return_(price0, price1));
+		return log1p(return_(price0, price1));
 	}
 
 	public static double return_(double price0, double price1) {

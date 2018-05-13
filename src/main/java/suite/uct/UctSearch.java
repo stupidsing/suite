@@ -1,5 +1,6 @@
 package suite.uct;
 
+import static suite.util.Friends.log1p;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 import static suite.util.Friends.sqrt;
@@ -19,8 +20,7 @@ import suite.weiqi.Weiqi;
 public class UctSearch<Move> {
 
 	/**
-	 * Larger values give uniform search; smaller values give very selective
-	 * search.
+	 * Larger values give uniform search; smaller values give very selective search.
 	 */
 	private static float explorationFactor = .4f;
 	private static float raveFactor = 5f;
@@ -85,8 +85,8 @@ public class UctSearch<Move> {
 	/**
 	 * Plays a simulation UCT.
 	 *
-	 * @return true if the next player will win after UCT selections and
-	 *         evaluation after random moves.
+	 * @return true if the next player will win after UCT selections and evaluation
+	 *         after random moves.
 	 */
 	private boolean playSimulation(UctVisitor<Move> visitor, UctNode<Move> node, int depth) {
 		boolean outcome;
@@ -112,8 +112,8 @@ public class UctSearch<Move> {
 			var child = node.child;
 			UctNode<Move> bestSelected = null;
 			var pnRaveVisits = getMoveRave(nRaveVisits, node.move);
-			var lnPnVisits = logp1(node.nVisits);
-			var lnPnRaveVisits = logp1(pnRaveVisits);
+			var lnPnVisits = log1p(node.nVisits);
+			var lnPnRaveVisits = log1p(pnRaveVisits);
 			var bestUct = -Double.MAX_VALUE;
 
 			while (child != null) {
@@ -197,9 +197,9 @@ public class UctSearch<Move> {
 				var winRate = (float) child.nWins / child.nVisits;
 				String uct;
 				if (parent != null)
-					uct = df3.format(uct(child //
-							, logp1(parent.nVisits) //
-							, logp1(getMoveRave(nRaveVisits, parent.move))));
+					uct = df3.format(uct(child, //
+							log1p(parent.nVisits), //
+							log1p(getMoveRave(nRaveVisits, parent.move))));
 				else
 					uct = "-";
 
@@ -241,10 +241,6 @@ public class UctSearch<Move> {
 
 	private int getMoveRave(Map<Move, AtomicInteger> raveMap, Move move) {
 		return move != null ? raveMap.get(move).get() : 0;
-	}
-
-	private double logp1(int pnRaveVisits) {
-		return Math.log(1 + pnRaveVisits);
 	}
 
 	public float getWinningChance() {

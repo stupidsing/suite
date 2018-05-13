@@ -14,6 +14,22 @@ public class Friends {
 		return Math.abs(a);
 	}
 
+	public static double exp(double a) {
+		return Math.exp(a);
+	}
+
+	public static double expm1(double a) {
+		return Math.expm1(a);
+	}
+
+	public static double log(double a) {
+		return Math.log(a);
+	}
+
+	public static double log1p(double a) {
+		return Math.log1p(a);
+	}
+
 	public static double max(double a, double b) {
 		return Math.max(a, b);
 	}

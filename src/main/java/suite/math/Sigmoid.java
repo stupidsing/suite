@@ -17,7 +17,7 @@ public class Sigmoid {
 	}
 
 	public static double sigmoid(double value) {
-		return (1d / (1d + Math.exp(-value)));
+		return (1d / (1d + exp(-value)));
 	}
 
 	public static double sigmoidGradient(double value) {

@@ -1,5 +1,7 @@
 package suite.trade.analysis;
 
+import static suite.util.Friends.exp;
+import static suite.util.Friends.log;
 import static suite.util.Friends.max;
 
 import java.util.Arrays;
@@ -40,7 +42,7 @@ public class MovingAverage {
 	}
 
 	public float[] exponentialGeometricMovingAvg(float[] prices, int halfLife) {
-		return exponentialGeometricMovingAvg(prices, Math.exp(Math.log(.5d) * halfLife));
+		return exponentialGeometricMovingAvg(prices, exp(log(.5d) * halfLife));
 	}
 
 	public float[] exponentialGeometricMovingAvg(float[] prices, double alpha) {
@@ -50,7 +52,7 @@ public class MovingAverage {
 	}
 
 	public float[] exponentialMovingAvg(float[] prices, int halfLife) {
-		return exponentialMovingAvg(prices, Math.exp(Math.log(.5d) * halfLife));
+		return exponentialMovingAvg(prices, exp(log(.5d) * halfLife));
 	}
 
 	public float[] exponentialMovingAvg(float[] prices, double alpha) {

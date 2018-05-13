@@ -1,5 +1,7 @@
 package suite.math.numeric;
 
+import static suite.util.Friends.exp;
+import static suite.util.Friends.log;
 import static suite.util.Friends.sqrt;
 
 import java.util.List;
@@ -139,7 +141,7 @@ public class Statistic {
 		}
 
 		public double bic() {
-			return Math.log(nDataPoints) * nDepVariables - 2d * logLikelihood();
+			return log(nDataPoints) * nDepVariables - 2d * logLikelihood();
 		}
 
 		public float[] coefficients() {
@@ -148,7 +150,7 @@ public class Statistic {
 
 		public double logLikelihood() {
 			var variance = sst / (nDataPoints - nDepVariables - 1);
-			return -.5d * (nDataPoints * (Math.log(2 * Math.PI) + Math.log(variance)) + sse / variance);
+			return -.5d * (nDataPoints * (log(2 * Math.PI) + log(variance)) + sse / variance);
 		}
 
 		// if f-statistic < .05d, we conclude R%2 != 0, the test is significant
@@ -209,7 +211,7 @@ public class Statistic {
 		}
 
 		public float predict(float[] x) {
-			return (float) (1d / (1d + Math.exp(-vec.dot(w, x))));
+			return (float) (1d / (1d + exp(-vec.dot(w, x))));
 		}
 	}
 

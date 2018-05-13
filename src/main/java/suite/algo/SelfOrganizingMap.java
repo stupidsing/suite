@@ -13,7 +13,7 @@ public class SelfOrganizingMap {
 
 	private int[] bounds = { 128, 128, };
 	private int updateDistance = 32;
-	private double var = -(updateDistance * updateDistance) / (2d * Math.log(.05d));
+	private double var = -(updateDistance * updateDistance) / (2d * log(.05d));
 
 	private int nDim = bounds.length;
 
@@ -50,7 +50,7 @@ public class SelfOrganizingMap {
 				new Loop(is -> {
 					var index = index(is);
 					var som0 = som[index];
-					double theta = Math.exp(-vec.dotDiff(nearestSom, som0) / (2d * var));
+					double theta = exp(-vec.dotDiff(nearestSom, som0) / (2d * var));
 					som[index] = vec.add(som0, vec.scale(vec.sub(in, som0), theta * alpha_));
 				}).updateNeighbours(nearestIndices, nDim);
 

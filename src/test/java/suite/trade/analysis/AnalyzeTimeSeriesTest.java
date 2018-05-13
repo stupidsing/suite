@@ -1,6 +1,8 @@
 package suite.trade.analysis;
 
 import static suite.util.Friends.abs;
+import static suite.util.Friends.expm1;
+import static suite.util.Friends.log1p;
 import static suite.util.Friends.max;
 import static suite.util.Friends.sqrt;
 
@@ -220,7 +222,7 @@ public class AnalyzeTimeSeriesTest {
 			var yearPeriod = Trade_.nTradeDaysPerYear / (double) vals.length;
 			return "o/c =" //
 					+ " rtn:" + To.string(return_) //
-					+ " yearRtn:" + To.string(Math.expm1(Math.log1p(return_) * yearPeriod)) //
+					+ " yearRtn:" + To.string(expm1(log1p(return_) * yearPeriod)) //
 					+ " sharpe:" + To.string(sharpe()) //
 					+ " dist:" + rmv;
 		}
