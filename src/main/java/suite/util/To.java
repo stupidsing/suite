@@ -127,12 +127,12 @@ public class To {
 		};
 	}
 
-	public static <T> List<T> list(Iterable<T> iter) {
-		return Lists.newArrayList(iter);
+	public static <T> List<T> list(Source<T> source) {
+		return list(Outlet.of(source));
 	}
 
-	public static <T> List<T> list(Source<T> source) {
-		return Outlet.of(source).toList();
+	public static <T> List<T> list(Iterable<T> iter) {
+		return Lists.newArrayList(iter);
 	}
 
 	public static float[][] matrix(int height, int width_, IntInt_Dbl fun) {
