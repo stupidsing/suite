@@ -19,10 +19,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAccessor;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.function.IntFunction;
@@ -37,6 +35,7 @@ import suite.primitive.Int_Dbl;
 import suite.primitive.IoSink;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 
@@ -129,22 +128,11 @@ public class To {
 	}
 
 	public static <T> List<T> list(Iterable<T> iter) {
-		return list(iter.iterator());
-	}
-
-	public static <T> List<T> list(Iterator<T> iter) {
-		var list = new ArrayList<T>();
-		while (iter.hasNext())
-			list.add(iter.next());
-		return list;
+		return Read.from(iter).toList();
 	}
 
 	public static <T> List<T> list(Source<T> source) {
-		var list = new ArrayList<T>();
-		T t;
-		while ((t = source.source()) != null)
-			list.add(t);
-		return list;
+		return Outlet.of(source).toList();
 	}
 
 	public static float[][] matrix(int height, int width_, IntInt_Dbl fun) {
