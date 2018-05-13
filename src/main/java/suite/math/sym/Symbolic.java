@@ -400,7 +400,7 @@ public class Symbolic {
 			var pr = dpn.ring;
 
 			return new Object() {
-				Opt<Poly<Node>> poly(Node node) {
+				public Opt<Poly<Node>> poly(Node node) {
 					return new SwitchNode<Opt<Poly<Node>>>(node //
 					).match2(patAdd, (a, b) -> {
 						return poly(a).join(poly(b), pr.add);
