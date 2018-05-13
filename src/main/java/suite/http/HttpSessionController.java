@@ -32,11 +32,11 @@ public class HttpSessionController {
 	}
 
 	public class Session {
-		private String username;
+		public final String username;
 		private long lastRequestDt;
 
-		public String getUsername() {
-			return username;
+		private Session(String username) {
+			this.username = username;
 		}
 
 		public long getLastRequestDt() {
@@ -76,8 +76,7 @@ public class HttpSessionController {
 				if (authenticator.authenticate(username, password)) {
 					sessionId = generateRandomSessionId();
 
-					session = new Session();
-					session.username = username;
+					session = new Session(username);
 					session.lastRequestDt = current;
 
 					sessionManager.put(sessionId, session);
