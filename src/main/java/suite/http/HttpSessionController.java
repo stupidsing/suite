@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.Random;
 
 import suite.immutable.IList;
+import suite.primitive.LngMutable;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.HtmlUtil;
@@ -33,14 +34,11 @@ public class HttpSessionController {
 
 	public class Session {
 		public final String username;
-		private long lastRequestDt;
+		public final LngMutable lastRequestDt;
 
-		private Session(String username) {
+		private Session(String username, long current) {
 			this.username = username;
-		}
-
-		public long getLastRequestDt() {
-			return lastRequestDt;
+			lastRequestDt = LngMutable.of(current);
 		}
 	}
 
@@ -76,8 +74,7 @@ public class HttpSessionController {
 				if (authenticator.authenticate(username, password)) {
 					sessionId = generateRandomSessionId();
 
-					session = new Session(username);
-					session.lastRequestDt = current;
+					session = new Session(username, current);
 
 					sessionManager.put(sessionId, session);
 
@@ -97,8 +94,8 @@ public class HttpSessionController {
 					sessionManager.remove(sessionId);
 
 				response = showLoginPage(IList.end(), false);
-			} else if (session != null && current < session.lastRequestDt + TIMEOUTDURATION) {
-				session.lastRequestDt = current;
+			} else if (session != null && current < session.lastRequestDt.get() + TIMEOUTDURATION) {
+				session.lastRequestDt.update(current);
 				response = showProtectedPage(request, sessionId);
 			} else
 				response = showLoginPage(request.path, false);
