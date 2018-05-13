@@ -1,6 +1,5 @@
 package suite.http;
 
-import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
@@ -28,12 +27,12 @@ public class HttpHeaderUtil {
 	}
 
 	public static Map<String, String> getPostedAttrs(InputStream is) {
-		var br = new BufferedReader(new InputStreamReader(is, Constants.charset));
+		var reader = new InputStreamReader(is, Constants.charset);
 		var sb = new StringBuilder();
 		var buffer = new char[Constants.bufferSize];
 		int nCharsRead;
 
-		while (0 <= (nCharsRead = Rethrow.ex(() -> br.read(buffer))))
+		while (0 <= (nCharsRead = Rethrow.ex(() -> reader.read(buffer))))
 			sb.append(buffer, 0, nCharsRead);
 
 		return getAttrs(sb.toString());
