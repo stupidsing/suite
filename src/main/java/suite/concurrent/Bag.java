@@ -20,7 +20,7 @@ public class Bag<S> implements Iterable<S> {
 			for (var s_ : list0)
 				if (!Objects.equal(s, s_))
 					queue.addLast(s_);
-			IList<S> list1 = IList.end();
+			var list1 = IList.<S> end();
 			S s_;
 			while ((s_ = queue.pop()) != null)
 				list1 = IList.cons(s_, list1);

@@ -31,7 +31,7 @@ public class IList<T> implements Iterable<T> {
 
 	@SafeVarargs
 	public static <T> IList<T> of(T... ts) {
-		IList<T> list = IList.end();
+		var list = IList.<T> end();
 		for (var t : ts)
 			list = cons(t, list);
 		return list;

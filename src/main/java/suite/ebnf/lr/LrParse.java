@@ -59,7 +59,7 @@ public class LrParse {
 				token = tokens.source();
 			} else { // reduce
 				var reduce = sr.t1;
-				IList<Ast> nodes = IList.end();
+				var nodes = IList.<Ast> end();
 
 				for (var i = 0; i < reduce.n(); i++) {
 					var ns = stack.pop();
