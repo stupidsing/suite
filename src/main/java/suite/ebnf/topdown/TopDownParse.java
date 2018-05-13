@@ -109,9 +109,8 @@ public class TopDownParse {
 						state = state.previous;
 					}
 
-					var root = new Ast(null, 0);
-
 					var stack = new ArrayDeque<Ast>();
+					var root = new Ast(null);
 					stack.push(root);
 
 					for (var state_ : states) {

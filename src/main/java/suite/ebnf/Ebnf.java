@@ -33,6 +33,10 @@ public class Ebnf {
 		public final String entity;
 		public final List<Ast> children;
 
+		public Ast(String entity) {
+			this(entity, 0);
+		}
+
 		public Ast(String entity, int start) {
 			this(entity, start, 0, new ArrayList<>());
 		}

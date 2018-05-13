@@ -37,7 +37,7 @@ public class LrParse {
 	}
 
 	public Ast parse(String in) {
-		var source = Read.from(() -> new Lexer(in).tokens()).map(token -> new Ast(token, 0)).source();
+		var source = Read.from(() -> new Lexer(in).tokens()).map(Ast::new).source();
 
 		System.out.println("shifts/reduces = " + list(buildLr.fsm));
 		System.out.println("Initial state = " + buildLr.state0);
