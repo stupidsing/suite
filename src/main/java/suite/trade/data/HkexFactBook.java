@@ -1,5 +1,6 @@
 package suite.trade.data;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.Object_;
-import suite.util.To;
+import suite.util.Rethrow;
 
 // https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2012/fb2012.htm
 public class HkexFactBook {
@@ -106,7 +107,7 @@ public class HkexFactBook {
 
 	@SuppressWarnings("unused")
 	private String getUrl0(int year, String section) {
-		var uri0 = To.uri("https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook.htm");
+		var uri0 = Rethrow.ex(() -> new URI("https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook.htm"));
 		var links0 = HttpUtil.resolveLinks(uri0);
 		var uri1 = links0.get(Integer.toString(year));
 		var links1 = HttpUtil.resolveLinks(uri1);

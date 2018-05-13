@@ -10,7 +10,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -20,9 +19,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAccessor;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.IntFunction;
 
 import jersey.repackaged.com.google.common.collect.Lists;
@@ -77,13 +74,11 @@ public class To {
 	}
 
 	public static String hex(int i) {
-		return "" + hexDigits.charAt(i & 0x0F);
+		return Character.toString(hexDigits.charAt(i & 0x0F));
 	}
 
 	public static String hex2(int i) {
-		return "" //
-				+ hexDigits.charAt(i >>> 4 & 0x0F) //
-				+ hexDigits.charAt(i & 0x0F);
+		return hex(i >>> 4) + hex(i);
 	}
 
 	public static String hex4(int i) {
@@ -154,14 +149,6 @@ public class To {
 			var nBytesRead = Rethrow.ex(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
 		}).closeAtEnd(bis).closeAtEnd(is);
-	}
-
-	@SafeVarargs
-	public static <T> Set<T> set(T... ts) {
-		var set = new HashSet<T>();
-		for (var t : ts)
-			set.add(t);
-		return set;
 	}
 
 	public static Sink<String> sink(StringBuilder sb) {
@@ -274,10 +261,6 @@ public class To {
 
 	public static LocalDateTime time(String s) {
 		return LocalDateTime.parse(s, Constants.dateTimeFormat);
-	}
-
-	public static URI uri(String s) {
-		return Rethrow.ex(() -> new URI(s));
 	}
 
 	public static URL url(String s) {
