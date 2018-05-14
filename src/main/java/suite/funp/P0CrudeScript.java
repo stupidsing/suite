@@ -3,6 +3,7 @@ package suite.funp;
 import java.io.FileReader;
 import java.util.ArrayList;
 
+import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.ebnf.Ebnf;
 import suite.ebnf.Ebnf.Ast;
@@ -25,6 +26,7 @@ import suite.node.io.TermOp;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.Rethrow;
+import suite.util.To;
 
 public class P0CrudeScript {
 
@@ -52,12 +54,18 @@ public class P0CrudeScript {
 				return new SwitchNode<Funp>(node //
 				).match1("constant (.0,)", a -> {
 					return expr(a);
-				}).match1("expression-add (.0,)", a -> {
+				}).match1("expression (.0,)", a -> {
 					return expr(a);
-				}).match2("expression-add (.0, .1,)", (a, b) -> {
-					return FunpTree.of(TermOp.PLUS__, expr(a), expr(b));
+				}).match2("expression-add (.0, .1)", (a, b) -> {
+					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpTree.of(TermOp.PLUS__, f, expr(c)));
+				}).match1("expression-as (.0,)", a -> {
+					return expr(a);
 				}).match("expression-array .0", m -> {
 					return FunpArray.of(Read.from(m).map(this::expr).toList());
+				}).match2("expression-bool-and (.0, .1)", (a, b) -> {
+					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpTree.of(TermOp.BIGAND, f, expr(c)));
+				}).match2("expression-bool-or (.0, .1)", (a, b) -> {
+					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpTree.of(TermOp.BIGOR_, f, expr(c)));
 				}).match1("expression-dict .0", a -> {
 					var list = Read //
 							.from(Tree.iter(a)) //
@@ -65,10 +73,51 @@ public class P0CrudeScript {
 							.map(o -> o.toFixie().map((k, v) -> Pair.of(str(k), expr(v)))) //
 							.toList();
 					return FunpStruct.of(list);
+				}).match2("expression-div (.0, .1)", (a, b) -> {
+					return Read //
+							.from(Tree.iter(b)) //
+							.chunk(2) //
+							.fold(expr(a), (f, o) -> o.toFixie().map((op, d) -> {
+								return new SwitchNode<Funp>(op //
+								).match("'/'", m_ -> {
+									return FunpTree.of(TermOp.DIVIDE, f, expr(d));
+								}).match("'%'", m_ -> {
+									return FunpTree.of(TermOp.MODULO, f, expr(d));
+								}).nonNullResult();
+							}));
 				}).match2("expression-invoke (.0, .1)", (a, b) -> {
 					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpApply.of(f, expr(c)));
+				}).match2("expression-mul (.0, .1)", (a, b) -> {
+					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpTree.of(TermOp.MULT__, f, expr(c)));
 				}).match1("expression-obj (.0,)", a -> {
 					return expr(a);
+				}).match1("expression-pp .0", a -> {
+					var pat0 = Suite.pattern("op-inc-dec ('++' (),)");
+					var pat1 = Suite.pattern("op-inc-dec ('--' (),)");
+					var list = To.list(Tree.iter(a));
+					var pre_ = 0;
+					var post = 0;
+					var i = 0;
+					for (; i < list.size(); i++) {
+						var op = list.get(i);
+						if (pat0.match(op) != null)
+							pre_++;
+						else if (pat1.match(op) != null)
+							pre_--;
+						else
+							break;
+					}
+					var n = list.get(i++);
+					for (; i < list.size(); i++) {
+						var op = list.get(i);
+						if (pat0.match(op) != null)
+							post++;
+						else if (pat1.match(op) != null)
+							post--;
+						else
+							Fail.t();
+					}
+					return pre_ == 0 && post == 0 ? expr(n) : Fail.t();
 				}).match2("expression-prop (.0, .1)", (a, b) -> {
 					return Read //
 							.from(Tree.iter(b)) //
@@ -81,8 +130,6 @@ public class P0CrudeScript {
 									return FunpIndex.of(FunpReference.of(f), expr(v));
 								}).match("'('", m_ -> {
 									return FunpApply.of(expr(v), f);
-								}).match(Atom.NIL, m_ -> {
-									return f;
 								}).nonNullResult();
 							}));
 				}).match1("expression-tuple .0", a -> {

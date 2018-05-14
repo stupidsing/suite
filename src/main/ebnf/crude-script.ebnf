@@ -22,9 +22,9 @@ expression-xor ::= expression-shift ("xor" expression-xor)?
 expression-shift ::= expression-not (op-shift expression-not)*
 expression-not ::= "~"* expression-add
 expression-add ::= expression-sub ("+" expression-add)?
-expression-sub ::= op-unary? expression-mul ("-" expression-mul)*
+expression-sub ::= (@"+" | @"-") expression-mul ("-" expression-mul)*
 expression-mul ::= expression-div ("*" expression-mul)?
-expression-div ::= expression-as (op-div-mod expression-as)*
+expression-div ::= expression-as ((@"/" | @"%") expression-as)*
 expression-as ::= expression-pp ("as" expression-pp)*
 expression-pp ::= op-inc-dec* expression-prop op-inc-dec*
 expression-prop ::= expression-obj (@"." <IDENTIFIER> | @"[" expression "]" | @"(" expression ")")*
@@ -42,8 +42,6 @@ bind-tuple ::= "(" bind ("," bind)* ")"
 op-assign ::= "=" | "|=" | "&=" | "<<=" | ">>=" | "+=" | "-=" | "*=" | "/="
 op-compare ::= "<" | "<=" | "==" | "!="
 op-shift ::= "<<" | ">>"
-op-unary ::= "+" | "-"
-op-div-mod ::= "/" | "%"
 op-inc-dec ::= "++" | "--"
 
 constant ::= <INTEGER_LITERAL> | <STRING_LITERAL>
