@@ -109,7 +109,7 @@ public class IntIntMap1 {
 		size += (v1 != IntFunUtil.EMPTYVALUE ? 1 : 0) - (v0 != IntFunUtil.EMPTYVALUE ? 1 : 0);
 		if (v1 == IntFunUtil.EMPTYVALUE)
 			new Object() {
-				public void rehash(int index) {
+				private void rehash(int index) {
 					var index1 = (index + 1) & mask;
 					var kv_ = kvs[index1];
 					var v = v(kv_);

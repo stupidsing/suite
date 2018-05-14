@@ -111,7 +111,7 @@ public class DblSet {
 			vs[index] = EMPTYVALUE;
 			size--;
 			new Object() {
-				public void rehash(int index) {
+				private void rehash(int index) {
 					var index1 = (index + 1) & mask;
 					var v = vs[index1];
 					if (v != EMPTYVALUE) {

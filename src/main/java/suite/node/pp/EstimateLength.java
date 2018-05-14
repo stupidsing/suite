@@ -17,7 +17,7 @@ public class EstimateLength {
 		lengthByIds = new HashMap<>();
 
 		new Object() {
-			public int estimate(Node node) {
+			private int estimate(Node node) {
 				var key = getKey(node);
 				var length = lengthByIds.get(key);
 

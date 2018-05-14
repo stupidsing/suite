@@ -42,7 +42,7 @@ public class Symbolic {
 
 	public Dbl_Dbl fun(Node fn, Node node0) {
 		return LambdaInstance.of(Dbl_Dbl.class, x -> new Object() {
-			public FunExpr fun(Node n) {
+			private FunExpr fun(Node n) {
 				return n == node0 ? x : m(n, this::fun);
 			}
 		}.fun(fn)).newFun();
@@ -51,7 +51,7 @@ public class Symbolic {
 	public Obj_Dbl<float[]> fun(Node fn, Node[] vars) {
 		@SuppressWarnings("unchecked")
 		Obj_Dbl<float[]> fun = LambdaInstance.of(Obj_Dbl.class, x -> new Object() {
-			public FunExpr fun(Node n) {
+			private FunExpr fun(Node n) {
 				for (var i = 0; i < vars.length; i++)
 					if (n == vars[i])
 						return x.index(f.int_(i));
@@ -393,7 +393,7 @@ public class Symbolic {
 			var pr = dpn.ring;
 
 			return new Object() {
-				public Opt<Poly<Node>> poly(Node node) {
+				private Opt<Poly<Node>> poly(Node node) {
 					return new SwitchNode<Opt<Poly<Node>>>(node //
 					).match2(patAdd, (a, b) -> {
 						return poly(a).join(poly(b), pr.add);

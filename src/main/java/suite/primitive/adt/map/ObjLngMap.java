@@ -101,7 +101,7 @@ public class ObjLngMap<K> {
 		size += (v1 != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
 		if (v1 == EMPTYVALUE)
 			new Object() {
-				public void rehash(int index) {
+				private void rehash(int index) {
 					var index1 = (index + 1) & mask;
 					var v = vs[index1];
 					if (v != EMPTYVALUE) {
