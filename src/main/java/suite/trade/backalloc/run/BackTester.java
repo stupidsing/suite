@@ -1,5 +1,6 @@
 package suite.trade.backalloc.run;
 
+import static suite.util.Friends.expm1;
 import static suite.util.Friends.log1p;
 
 import suite.math.numeric.Statistic;

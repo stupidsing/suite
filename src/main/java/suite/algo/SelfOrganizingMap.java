@@ -1,5 +1,8 @@
 package suite.algo;
 
+import static suite.util.Friends.exp;
+import static suite.util.Friends.log;
+
 import java.util.List;
 import java.util.Random;
 

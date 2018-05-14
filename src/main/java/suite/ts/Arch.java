@@ -1,5 +1,6 @@
 package suite.ts;
 
+import static suite.util.Friends.log;
 import static suite.util.Friends.max;
 
 import java.util.Arrays;

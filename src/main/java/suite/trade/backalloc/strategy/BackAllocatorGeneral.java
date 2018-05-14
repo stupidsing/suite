@@ -1,6 +1,7 @@
 package suite.trade.backalloc.strategy;
 
 import static suite.util.Friends.abs;
+import static suite.util.Friends.log;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 

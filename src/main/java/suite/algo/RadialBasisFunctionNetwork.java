@@ -1,5 +1,7 @@
 package suite.algo;
 
+import static suite.util.Friends.exp;
+
 import java.util.List;
 
 import suite.math.linalg.CholeskyDecomposition;

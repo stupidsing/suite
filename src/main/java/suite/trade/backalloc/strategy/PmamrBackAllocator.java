@@ -1,5 +1,6 @@
 package suite.trade.backalloc.strategy;
 
+import static suite.util.Friends.log;
 import static suite.util.Friends.log1p;
 
 import suite.math.numeric.Statistic.LinearRegression;

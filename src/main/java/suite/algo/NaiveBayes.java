@@ -1,5 +1,7 @@
 package suite.algo;
 
+import static suite.util.Friends.log;
+
 import java.util.List;
 
 import suite.adt.pair.Pair;

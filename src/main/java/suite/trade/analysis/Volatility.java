@@ -1,5 +1,6 @@
 package suite.trade.analysis;
 
+import static suite.util.Friends.log;
 import static suite.util.Friends.max;
 
 import suite.trade.data.DataSource;
