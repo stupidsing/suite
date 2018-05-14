@@ -52,8 +52,8 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 		return streamlet2(() -> spawn().append(key, value));
 	}
 
-	public <T> T apply(Fun<Streamlet2<K, V>, T> fun) {
-		return fun.apply(this);
+	public <T> Streamlet<T> apply(Fun<Streamlet2<K, V>, T> fun) {
+		return Read.each(fun.apply(this));
 	}
 
 	public Streamlet<Outlet2<K, V>> chunk(int n) {

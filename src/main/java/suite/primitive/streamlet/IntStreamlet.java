@@ -21,6 +21,7 @@ import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.set.IntSet;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
@@ -50,8 +51,8 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		return streamlet(() -> spawn().append(c));
 	}
 
-	public <R> R apply(Fun<IntStreamlet, R> fun) {
-		return fun.apply(this);
+	public <R> Streamlet<R> apply(Fun<IntStreamlet, R> fun) {
+		return Read.each(fun.apply(this));
 	}
 
 	public int average() {

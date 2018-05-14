@@ -78,8 +78,8 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 		return streamlet(() -> spawn().append(key, value));
 	}
 
-	public <R> R apply(Fun<FltObjStreamlet<V>, R> fun) {
-		return fun.apply(this);
+	public <R> Streamlet<R> apply(Fun<FltObjStreamlet<V>, R> fun) {
+		return Read.each(fun.apply(this));
 	}
 
 	public Streamlet<FltObjOutlet<V>> chunk(int n) {

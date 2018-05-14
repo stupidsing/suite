@@ -21,6 +21,7 @@ import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.set.LngSet;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
@@ -50,8 +51,8 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		return streamlet(() -> spawn().append(c));
 	}
 
-	public <R> R apply(Fun<LngStreamlet, R> fun) {
-		return fun.apply(this);
+	public <R> Streamlet<R> apply(Fun<LngStreamlet, R> fun) {
+		return Read.each(fun.apply(this));
 	}
 
 	public long average() {

@@ -78,8 +78,8 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		return streamlet(() -> spawn().append(key, value));
 	}
 
-	public <R> R apply(Fun<LngObjStreamlet<V>, R> fun) {
-		return fun.apply(this);
+	public <R> Streamlet<R> apply(Fun<LngObjStreamlet<V>, R> fun) {
+		return Read.each(fun.apply(this));
 	}
 
 	public Streamlet<LngObjOutlet<V>> chunk(int n) {

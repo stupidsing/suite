@@ -21,6 +21,7 @@ import suite.primitive.Flt_Flt;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.map.ObjFltMap;
 import suite.primitive.adt.set.FltSet;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
@@ -50,8 +51,8 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return streamlet(() -> spawn().append(c));
 	}
 
-	public <R> R apply(Fun<FltStreamlet, R> fun) {
-		return fun.apply(this);
+	public <R> Streamlet<R> apply(Fun<FltStreamlet, R> fun) {
+		return Read.each(fun.apply(this));
 	}
 
 	public float average() {

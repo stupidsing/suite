@@ -43,10 +43,7 @@ public class Preprocess {
 	private static String forward(String in, List<Run> runs) {
 		var sb = new StringBuilder();
 		for (var run : runs)
-			if (run.segment != null)
-				sb.append(in.substring(run.segment.start, run.segment.end));
-			else
-				sb.append(run.text);
+			sb.append(run.segment != null ? in.substring(run.segment.start, run.segment.end) : run.text);
 		return sb.toString();
 	}
 
@@ -55,7 +52,7 @@ public class Preprocess {
 		for (var run : runs) {
 			var segment = run.segment;
 			if (segment != null) {
-				var runLength = segment.end - segment.start;
+				var runLength = segment.length();
 				if (runLength <= targetPosition) {
 					sourcePosition = segment.start + runLength;
 					targetPosition -= runLength;

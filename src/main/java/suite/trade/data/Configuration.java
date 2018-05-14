@@ -42,7 +42,8 @@ public interface Configuration {
 				}) //
 				.filterValue(ds -> ds != null) //
 				.collect(As::streamlet2) //
-				.apply(DataSource::alignAll);
+				.apply(DataSource::alignAll) //
+				.uniqueResult();
 	}
 
 }

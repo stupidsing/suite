@@ -58,39 +58,37 @@ public class P0CrudeScript {
 					return FunpTree.of(TermOp.PLUS__, expr(a), expr(b));
 				}).match("expression-array .0", m -> {
 					return FunpArray.of(Read.from(m).map(this::expr).toList());
-				}).match("expression-dict .0", m -> {
-					var list = new ArrayList<Pair<String, Funp>>();
-					for (var i = 0; i < m.length; i += 2)
-						list.add(Pair.of(str(m[i]), expr(m[i + 1])));
+				}).match1("expression-dict .0", a -> {
+					var list = Read //
+							.from(Tree.iter(a)) //
+							.chunk(2) //
+							.map(o -> o.toFixie().map((k, v) -> Pair.of(str(k), expr(v)))) //
+							.toList();
 					return FunpStruct.of(list);
-				}).match("expression-invoke .0", m -> {
-					var funp = expr(m[0]);
-					for (var i = 1; i < m.length; i++)
-						funp = FunpApply.of(funp, expr(m[i]));
-					return funp;
+				}).match2("expression-invoke (.0, .1)", (a, b) -> {
+					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpApply.of(f, expr(c)));
 				}).match1("expression-obj (.0,)", a -> {
 					return expr(a);
-				}).match("expression-prop (.0,)", m -> {
-					var funp = expr(m[0]);
-					for (var i = 1; i < m.length; i += 2) {
-						var funp_ = funp;
-						var m1 = m[i + 1];
-						funp = new SwitchNode<Funp>(m[i] //
-						).match("'.'", m_ -> {
-							return FunpField.of(FunpReference.of(funp_), str(m1));
-						}).match("'['", m_ -> {
-							return FunpIndex.of(FunpReference.of(funp_), expr(m1));
-						}).match("'('", m_ -> {
-							return FunpApply.of(expr(m1), funp_);
-						}).match(Atom.NIL, m_ -> {
-							return funp_;
-						}).nonNullResult();
-					}
-					return funp;
-				}).match("expression-tuple .0", m -> {
+				}).match2("expression-prop (.0, .1)", (a, b) -> {
+					return Read //
+							.from(Tree.iter(b)) //
+							.chunk(2) //
+							.fold(expr(a), (f, o) -> o.toFixie().map((k, v) -> {
+								return new SwitchNode<Funp>(k //
+								).match("'.'", m_ -> {
+									return FunpField.of(FunpReference.of(f), str(v));
+								}).match("'['", m_ -> {
+									return FunpIndex.of(FunpReference.of(f), expr(v));
+								}).match("'('", m_ -> {
+									return FunpApply.of(expr(v), f);
+								}).match(Atom.NIL, m_ -> {
+									return f;
+								}).nonNullResult();
+							}));
+				}).match1("expression-tuple .0", a -> {
 					var list = new ArrayList<Pair<String, Funp>>();
 					var i = 0;
-					for (var child : m)
+					for (var child : Tree.iter(a))
 						list.add(Pair.of("t" + i++, expr(child)));
 					return FunpStruct.of(list);
 				}).match1("<IDENTIFIER> .0", s -> {

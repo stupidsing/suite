@@ -49,8 +49,8 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 		return streamlet(() -> spawn().append(t));
 	}
 
-	public <R> R apply(Fun<Streamlet<T>, R> fun) {
-		return fun.apply(this);
+	public <R> Streamlet<R> apply(Fun<Streamlet<T>, R> fun) {
+		return Read.each(fun.apply(this));
 	}
 
 	public Streamlet<Outlet<T>> chunk(int n) {

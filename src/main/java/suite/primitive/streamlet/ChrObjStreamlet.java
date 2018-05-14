@@ -78,8 +78,8 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 		return streamlet(() -> spawn().append(key, value));
 	}
 
-	public <R> R apply(Fun<ChrObjStreamlet<V>, R> fun) {
-		return fun.apply(this);
+	public <R> Streamlet<R> apply(Fun<ChrObjStreamlet<V>, R> fun) {
+		return Read.each(fun.apply(this));
 	}
 
 	public Streamlet<ChrObjOutlet<V>> chunk(int n) {

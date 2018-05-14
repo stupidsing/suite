@@ -16,6 +16,8 @@ import java.util.function.Predicate;
 import suite.adt.Mutable;
 import suite.adt.Opt;
 import suite.adt.map.ListMultimap;
+import suite.adt.pair.Fixie;
+import suite.adt.pair.Fixie_.FixieA;
 import suite.adt.pair.Pair;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.adt.pair.IntObjPair;
@@ -335,6 +337,20 @@ public class Outlet<T> implements OutletDefaults<T> {
 		var list = toList();
 		var array = Array_.newArray(clazz, list.size());
 		return list.toArray(array);
+	}
+
+	public FixieA<T, T, T, T, T, T, T, T, T, T> toFixie() {
+		var t0 = next();
+		var t1 = t0 != null ? next() : null;
+		var t2 = t1 != null ? next() : null;
+		var t3 = t2 != null ? next() : null;
+		var t4 = t3 != null ? next() : null;
+		var t5 = t4 != null ? next() : null;
+		var t6 = t5 != null ? next() : null;
+		var t7 = t6 != null ? next() : null;
+		var t8 = t7 != null ? next() : null;
+		var t9 = t8 != null ? next() : null;
+		return Fixie.of(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9);
 	}
 
 	public List<T> toList() {

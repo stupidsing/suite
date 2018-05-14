@@ -11,9 +11,6 @@ public class LinearRuleSet implements RuleSet {
 
 	private List<Rule> rules = new ArrayList<>();
 
-	protected LinearRuleSet() {
-	}
-
 	@Override
 	public void addRule(Rule rule) {
 		rule = new Cloner().clone(rule);

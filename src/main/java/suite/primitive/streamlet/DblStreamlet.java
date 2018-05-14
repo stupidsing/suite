@@ -21,6 +21,7 @@ import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.set.DblSet;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
@@ -50,8 +51,8 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return streamlet(() -> spawn().append(c));
 	}
 
-	public <R> R apply(Fun<DblStreamlet, R> fun) {
-		return fun.apply(this);
+	public <R> Streamlet<R> apply(Fun<DblStreamlet, R> fun) {
+		return Read.each(fun.apply(this));
 	}
 
 	public double average() {

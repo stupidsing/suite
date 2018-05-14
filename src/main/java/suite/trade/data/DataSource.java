@@ -44,7 +44,8 @@ public class DataSource {
 		return dsByKey0 //
 				.mapValue(ds -> ds.alignBeforePrices(ts)) //
 				.collect(As::streamlet2) //
-				.apply(st -> new AlignKeyDataSource<>(ts, st));
+				.apply(st -> new AlignKeyDataSource<>(ts, st)) //
+				.uniqueResult();
 	}
 
 	public static class AlignKeyDataSource<K> {

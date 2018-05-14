@@ -21,6 +21,7 @@ import suite.primitive.Chr_Chr;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.map.ObjChrMap;
 import suite.primitive.adt.set.ChrSet;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
@@ -50,8 +51,8 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 		return streamlet(() -> spawn().append(c));
 	}
 
-	public <R> R apply(Fun<ChrStreamlet, R> fun) {
-		return fun.apply(this);
+	public <R> Streamlet<R> apply(Fun<ChrStreamlet, R> fun) {
+		return Read.each(fun.apply(this));
 	}
 
 	public char average() {
