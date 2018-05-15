@@ -10,6 +10,7 @@ import suite.ebnf.Ebnf.Ast;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
+import suite.funp.P0.FunpAssignReference;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpNumber;
@@ -23,6 +24,7 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.Rethrow;
@@ -66,6 +68,8 @@ public class P0CrudeScript {
 					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpTree.of(TermOp.BIGAND, f, expr(c)));
 				}).match2("expression-bool-or (.0, .1)", (a, b) -> {
 					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpTree.of(TermOp.BIGOR_, f, expr(c)));
+				}).match1("expression-bool-not (.0,)", a -> {
+					return expr(a);
 				}).match1("expression-dict .0", a -> {
 					var list = Read //
 							.from(Tree.iter(a)) //
@@ -89,35 +93,40 @@ public class P0CrudeScript {
 					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpApply.of(f, expr(c)));
 				}).match2("expression-mul (.0, .1)", (a, b) -> {
 					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpTree.of(TermOp.MULT__, f, expr(c)));
+				}).match1("expression-not (.0,)", a -> {
+					return expr(a);
 				}).match1("expression-obj (.0,)", a -> {
 					return expr(a);
 				}).match1("expression-pp .0", a -> {
 					var pat0 = Suite.pattern("op-inc-dec ('++' (),)");
 					var pat1 = Suite.pattern("op-inc-dec ('--' (),)");
 					var list = To.list(Tree.iter(a));
-					var pre_ = 0;
-					var post = 0;
-					var i = 0;
-					for (; i < list.size(); i++) {
-						var op = list.get(i);
-						if (pat0.match(op) != null)
-							pre_++;
-						else if (pat1.match(op) != null)
-							pre_--;
-						else
-							break;
+					Obj_Int<Node> f = op -> pat0.match(op) != null ? 1 : pat1.match(op) != null ? -1 : 0;
+
+					int s = 0, e = list.size() - 1, c;
+					int pre_ = 0, post = 0;
+
+					while ((c = f.apply(list.get(s))) != 0) {
+						pre_ += c;
+						s++;
 					}
-					var n = list.get(i++);
-					for (; i < list.size(); i++) {
-						var op = list.get(i);
-						if (pat0.match(op) != null)
-							post++;
-						else if (pat1.match(op) != null)
-							post--;
-						else
-							Fail.t();
+
+					while ((c = f.apply(list.get(e))) != 0) {
+						post += c;
+						e--;
 					}
-					return pre_ == 0 && post == 0 ? expr(n) : Fail.t();
+
+					var e0 = expr(list.get(s));
+					var ref0 = FunpReference.of(e0);
+
+					var e1 = pre_ != 0 //
+							? FunpAssignReference.of(ref0, FunpTree.of(TermOp.PLUS__, e0, FunpNumber.ofNumber(pre_)), e0) //
+							: e0;
+					var e2 = post != 0 //
+							? FunpAssignReference.of(ref0, FunpTree.of(TermOp.PLUS__, e1, FunpNumber.ofNumber(post)), e1) //
+							: e1;
+
+					return s == e ? e2 : Fail.t();
 				}).match2("expression-prop (.0, .1)", (a, b) -> {
 					return Read //
 							.from(Tree.iter(b)) //

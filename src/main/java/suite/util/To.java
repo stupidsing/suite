@@ -20,7 +20,6 @@ import java.time.ZoneId;
 import java.time.temporal.TemporalAccessor;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.function.IntFunction;
 
 import jersey.repackaged.com.google.common.collect.Lists;
 import suite.Constants;
@@ -29,6 +28,7 @@ import suite.primitive.Chars;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Flt_Dbl;
 import suite.primitive.IntInt_Dbl;
+import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Dbl;
 import suite.primitive.IoSink;
 import suite.streamlet.As;
@@ -40,7 +40,7 @@ public class To {
 
 	private static String hexDigits = "0123456789ABCDEF";
 
-	public static <T> T[] array(int length, Class<T> clazz, IntFunction<T> f) {
+	public static <T> T[] array(int length, Class<T> clazz, Int_Obj<T> f) {
 		var ts = Array_.newArray(clazz, length);
 		for (var i = 0; i < length; i++)
 			ts[i] = f.apply(i);

@@ -261,8 +261,8 @@ public class TimeSeries {
 	private float[] differencesOn_(int tor, float[] fs) {
 		var i = fs.length - 1;
 		while (tor <= i) {
-			var f0 = fs[i - tor];
-			fs[i--] -= f0;
+			fs[i] -= fs[i - tor];
+			i--;
 		}
 		while (0 <= i)
 			fs[i--] = 0f;

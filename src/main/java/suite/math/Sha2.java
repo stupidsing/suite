@@ -13,7 +13,7 @@ import suite.primitive.Ints_;
  */
 public class Sha2 {
 
-	int[] k = { //
+	private int[] k = { //
 			0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, //
 			0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, //
 			0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da, //
@@ -51,8 +51,8 @@ public class Sha2 {
 			for (var i = 16; i < 64; i++) {
 				var wi2 = w[i - 2];
 				var wi15 = w[i - 15];
-				int s0 = Integer.rotateRight(wi15, 7) ^ Integer.rotateRight(wi15, 18) ^ wi15 >> 3;
-				int s1 = Integer.rotateRight(wi2, 17) ^ Integer.rotateRight(wi2, 19) ^ wi2 >> 10;
+				var s0 = Integer.rotateRight(wi15, 7) ^ Integer.rotateRight(wi15, 18) ^ wi15 >> 3;
+				var s1 = Integer.rotateRight(wi2, 17) ^ Integer.rotateRight(wi2, 19) ^ wi2 >> 10;
 				w[i] = w[i - 16] + s0 + w[i - 7] + s1;
 			}
 
@@ -60,10 +60,10 @@ public class Sha2 {
 			int e = h4, f = h5, g = h6, h = h7;
 
 			for (var i = 0; i < 64; i++) {
-				int s1 = Integer.rotateRight(e, 6) ^ Integer.rotateRight(e, 11) ^ Integer.rotateRight(e, 25);
+				var s1 = Integer.rotateRight(e, 6) ^ Integer.rotateRight(e, 11) ^ Integer.rotateRight(e, 25);
 				var ch = e & f ^ ~e & g;
 				var temp1 = h + s1 + ch + k[i] + w[i];
-				int s0 = Integer.rotateRight(a, 2) ^ Integer.rotateRight(a, 13) ^ Integer.rotateRight(a, 22);
+				var s0 = Integer.rotateRight(a, 2) ^ Integer.rotateRight(a, 13) ^ Integer.rotateRight(a, 22);
 				var maj = a & b ^ a & c ^ b & c;
 				var temp2 = s0 + maj;
 
