@@ -66,10 +66,10 @@ public class P0CrudeScript {
 					return FunpArray.of(Read.from(m).map(this::expr).toList());
 				}).match2("expression-bool-and (.0, .1)", (a, b) -> {
 					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpTree.of(TermOp.BIGAND, f, expr(c)));
-				}).match2("expression-bool-or (.0, .1)", (a, b) -> {
-					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpTree.of(TermOp.BIGOR_, f, expr(c)));
 				}).match1("expression-bool-not (.0,)", a -> {
 					return expr(a);
+				}).match2("expression-bool-or (.0, .1)", (a, b) -> {
+					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpTree.of(TermOp.BIGOR_, f, expr(c)));
 				}).match1("expression-dict .0", a -> {
 					var list = Read //
 							.from(Tree.iter(a)) //
@@ -119,13 +119,9 @@ public class P0CrudeScript {
 					var e0 = expr(list.get(s));
 					var ref0 = FunpReference.of(e0);
 
-					var e1 = pre_ != 0 //
-							? FunpAssignReference.of(ref0, FunpTree.of(TermOp.PLUS__, e0, FunpNumber.ofNumber(pre_)), e0) //
-							: e0;
-					var e2 = post != 0 //
-							? FunpAssignReference.of(ref0, FunpTree.of(TermOp.PLUS__, e1, FunpNumber.ofNumber(post)), e1) //
-							: e1;
-
+					var e1 = pre_ == 0 ? e0
+							: FunpAssignReference.of(ref0, FunpTree.of(TermOp.PLUS__, e0, FunpNumber.ofNumber(pre_)), e0);
+					var e2 = post == 0 ? e1 : Fail.<Funp> t();
 					return s == e ? e2 : Fail.t();
 				}).match2("expression-prop (.0, .1)", (a, b) -> {
 					return Read //
