@@ -18,10 +18,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.TemporalAccessor;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import jersey.repackaged.com.google.common.collect.Lists;
 import suite.Constants;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
@@ -126,8 +126,12 @@ public class To {
 		return list(Outlet.of(source));
 	}
 
-	public static <T> List<T> list(Iterable<T> iter) {
-		return Lists.newArrayList(iter);
+	public static <T> List<T> list(Iterable<T> i) {
+		var list = new ArrayList<T>();
+		var iter = i.iterator();
+		while (iter.hasNext())
+			list.add(iter.next());
+		return list;
 	}
 
 	public static float[][] matrix(int height, int width_, IntInt_Dbl fun) {
