@@ -14,13 +14,13 @@ expression-assign ::= expression-invoke (op-assign expression-assign)?
 expression-invoke ::= expression-bool-or ("|" expression-bool-or)*
 expression-bool-or ::= expression-bool-and ("||" expression-bool-or)?
 expression-bool-and ::= expression-compare ("&&" expression-bool-and)?
-expression-compare ::= expression-bool-not (op-compare expression-compare)?
+expression-compare ::= expression-bool-not ((@"<" | @"<=" | @"==" | @"!=") expression-compare)?
 expression-bool-not ::= "!"* expression-or
 expression-or ::= expression-and ("or" expression-or)?
 expression-and ::= expression-xor ("and" expression-and)?
 expression-xor ::= expression-shift ("xor" expression-xor)?
-expression-shift ::= expression-not (op-shift expression-not)*
-expression-not ::= "~"* expression-add
+expression-shift ::= expression-not ((@"<<" | @">>") expression-not)*
+expression-not ::= (@"~")* expression-add
 expression-add ::= expression-sub ("+" expression-add)?
 expression-sub ::= (@"+" | @"-") expression-mul ("-" expression-mul)*
 expression-mul ::= expression-div ("*" expression-mul)?
@@ -39,9 +39,7 @@ bind-array ::= "[" (bind ",")* "]"
 bind-dict ::= "{" (<IDENTIFIER> ":" bind ",")* "}"
 bind-tuple ::= "(" bind ("," bind)* ")"
 
-op-assign ::= "=" | "|=" | "&=" | "<<=" | ">>=" | "+=" | "-=" | "*=" | "/="
-op-compare ::= "<" | "<=" | "==" | "!="
-op-shift ::= "<<" | ">>"
-op-inc-dec ::= "++" | "--"
+op-assign ::= @"=" | @"|=" | @"&=" | @"<<=" | @">>=" | @"+=" | @"-=" | @"*=" | @"/="
+op-inc-dec ::= @"++" | @"--"
 
 constant ::= <INTEGER_LITERAL> | <STRING_LITERAL>

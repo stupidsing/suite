@@ -60,6 +60,8 @@ public class P0CrudeScript {
 					return expr(a);
 				}).match2("expression-add (.0, .1)", (a, b) -> {
 					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpTree.of(TermOp.PLUS__, f, expr(c)));
+				}).match2("expression-assign (.0, .1)", (a, b) -> {
+					return expr(a);
 				}).match1("expression-as (.0,)", a -> {
 					return expr(a);
 				}).match("expression-array .0", m -> {
