@@ -49,7 +49,7 @@ public class BasicIntrinsics {
 			return NUMBER;
 		}).applyIf(Str.class, n -> {
 			return STRING;
-		}).applyIf(Tree.class, tree -> {
+		}).applyIf(Tree.class, n -> {
 			return TREE;
 		}).applyIf(Tuple.class, n -> {
 			return TUPLE;
