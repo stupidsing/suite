@@ -67,8 +67,8 @@ public class Intrinsics {
 				Node head;
 
 				if ((head = pointer1.head()) != null) {
-					Node left = callback1.enclose(Intrinsics.id_, head);
-					Node right = callback1.enclose(this::invoke, new Data<>(pointer1.tail()));
+					var left = callback1.enclose(Intrinsics.id_, head);
+					var right = callback1.enclose(this::invoke, new Data<>(pointer1.tail()));
 					return Tree.of(TermOp.OR____, left, right);
 				} else
 					return Atom.NIL;
