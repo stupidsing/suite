@@ -7,7 +7,6 @@ import static suite.util.Friends.max;
 import static suite.util.Friends.sqrt;
 
 import java.util.Arrays;
-import java.util.function.IntFunction;
 
 import org.junit.Test;
 
@@ -18,6 +17,7 @@ import suite.math.numeric.Statistic.MeanVariance;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.os.LogUtil;
 import suite.primitive.Floats_;
+import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
@@ -88,14 +88,14 @@ public class AnalyzeTimeSeriesTest {
 				max.update(i, f);
 		}
 
-		IntFunction<BuySell> momFun = n -> {
+		Int_Obj<BuySell> momFun = n -> {
 			var d0 = 1 + n;
 			var d1 = 1;
 			return buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		};
 
-		IntFunction<BuySell> revert = d -> momFun.apply(d).scale(0f, -1f);
-		IntFunction<BuySell> trend_ = d -> momFun.apply(d).scale(0f, +1f);
+		Int_Obj<BuySell> revert = d -> momFun.apply(d).scale(0f, -1f);
+		Int_Obj<BuySell> trend_ = d -> momFun.apply(d).scale(0f, +1f);
 		var reverts = To.array(8, BuySell.class, revert);
 		var trends_ = To.array(8, BuySell.class, trend_);
 		var tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
@@ -189,8 +189,8 @@ public class AnalyzeTimeSeriesTest {
 	private Returns engage_(float[] prices, float[] holds) {
 		var length = prices.length;
 		var returns = new float[length];
-		double val;
-		returns[0] = (float) (val = 1d);
+		var val = 1d;
+		returns[0] = (float) val;
 		for (var d = 1; d < length; d++)
 			returns[d] = (float) (val += holds[d] * (prices[d] - prices[d - 1]));
 		return new Returns(returns);
@@ -199,8 +199,8 @@ public class AnalyzeTimeSeriesTest {
 	private Returns invest_(float[] prices, float[] holds) {
 		var length = prices.length;
 		var returns = new float[length];
-		double val;
-		returns[0] = (float) (val = 1d);
+		var val = 1d;
+		returns[0] = (float) val;
 		for (var d = 1; d < length; d++)
 			returns[d] = (float) (val *= 1d + holds[d] * Quant.return_(prices[d - 1], prices[d]));
 		return new Returns(returns);
