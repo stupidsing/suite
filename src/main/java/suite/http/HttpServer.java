@@ -10,8 +10,10 @@ import java.util.HashMap;
 import suite.Constants;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
+import suite.streamlet.Read;
 import suite.util.Copy;
 import suite.util.Fail;
+import suite.util.FunUtil2.Fun2;
 import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.To;
@@ -44,20 +46,8 @@ public class HttpServer {
 			var method = ls[0];
 			var url = ls[1];
 			var protocol = ls[2];
-			String host, pqs;
 
-			var pp = String_.split2(url, "://");
-
-			if (pp != null) {
-				var sp = String_.split2l(pp.t1, "/");
-				host = sp.t0;
-				pqs = sp.t1;
-			} else {
-				host = "";
-				pqs = url;
-			}
-
-			var request = String_.split2l(pqs, "?").map((path, query) -> {
+			Fun2<String, String, HttpRequest> requestFun = (host, pqs) -> String_.split2l(pqs, "?").map((path, query) -> {
 				var path1 = path.startsWith("/") ? path : "/" + path;
 				var path2 = Rethrow.ex(() -> URLDecoder.decode(path1, "UTF-8"));
 
@@ -77,6 +67,8 @@ public class HttpServer {
 					return Fail.t("only HTTP/1.1 is supported");
 			});
 
+			var pp = String_.split2(url, "://");
+			var request = pp != null ? String_.split2l(pp.t1, "/").map(requestFun) : requestFun.apply("", url);
 			HttpResponse response = null;
 
 			try {
@@ -91,8 +83,7 @@ public class HttpServer {
 			var sb = new StringBuilder();
 
 			sb.append("HTTP/1.1 " + response.status + "\r\n");
-			for (var e : response.headers)
-				sb.append(e.t0 + ": " + e.t1 + "\r\n");
+			Read.from2(response.headers).sink((k, v) -> sb.append(k + ": " + v + "\r\n"));
 			sb.append("\r\n");
 
 			os.write(sb.toString().getBytes(Constants.charset));
