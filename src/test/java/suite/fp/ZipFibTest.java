@@ -1,5 +1,6 @@
 package suite.fp;
 
+import java.util.HashMap;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -15,6 +16,10 @@ public class ZipFibTest {
 	}
 
 	public interface Fn<R> extends Function<Thunk, R> {
+		public default Fn<R> mem() {
+			var m = new HashMap<Thunk, R>();
+			return in -> m.computeIfAbsent(in, this::apply);
+		}
 	}
 
 	public class N_ implements T {

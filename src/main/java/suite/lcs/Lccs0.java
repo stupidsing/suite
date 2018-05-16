@@ -9,7 +9,7 @@ import suite.primitive.Bytes;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.adt.set.IntSet;
-import suite.text.RollingHashUtil;
+import suite.text.RollingHash;
 import suite.text.Segment;
 
 /**
@@ -19,7 +19,7 @@ import suite.text.Segment;
  */
 public class Lccs0 {
 
-	private RollingHashUtil rh = new RollingHashUtil();
+	private RollingHash rh = new RollingHash();
 
 	public Pair<Segment, Segment> lccs(Bytes bytes0, Bytes bytes1) {
 		var size0 = bytes0.size();

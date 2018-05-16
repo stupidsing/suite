@@ -12,7 +12,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
 
-public class TwoPassIndexer {
+public class TwoPassIndex {
 
 	private static int minimumWordLength = 3;
 

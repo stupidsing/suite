@@ -2,7 +2,7 @@ package suite.text;
 
 import suite.primitive.Bytes;
 
-public class RollingHashUtil {
+public class RollingHash {
 
 	/**
 	 * Calculates hash value for some bytes.
