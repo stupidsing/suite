@@ -12,6 +12,7 @@ import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpAssignReference;
 import suite.funp.P0.FunpField;
+import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
@@ -52,6 +53,17 @@ public class P0CrudeScript {
 		}.node(ast);
 
 		return new Object() {
+			private Funp stmt(Node node) {
+				return new SwitchNode<Funp>(node //
+				).match1("statement (expression (.0,),)", a -> {
+					return expr(a);
+				}).match3("statement-if (.0, .1, .2,)", (a, b, c) -> {
+					return FunpIf.of(expr(a), stmt(b), stmt(c));
+				}).match1("statement-return (.0,)", a -> {
+					return expr(a);
+				}).nonNullResult();
+			}
+
 			private Funp expr(Node node) {
 				return new SwitchNode<Funp>(node //
 				).match1("constant (.0,)", a -> {
@@ -157,7 +169,7 @@ public class P0CrudeScript {
 			private String str(Node node) {
 				return ((Str) node).value;
 			}
-		}.expr(node);
+		}.stmt(node);
 	}
 
 }
