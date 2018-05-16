@@ -28,7 +28,6 @@ import suite.trade.backalloc.BackAllocator;
 import suite.trade.backalloc.strategy.BackAllocatorOld;
 import suite.trade.data.Configuration;
 import suite.trade.data.ConfigurationImpl;
-import suite.trade.data.DataSource;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
 import suite.util.FunUtil.Sink;
@@ -110,13 +109,6 @@ public class DailyMain extends ExecutableProgram {
 
 		sb.append(sbs.log //
 				+ "\n" + sbs.pnlByKey //
-				+ "\n" + strategyTrades //
-						.sortBy((strategy, trade) -> trade.amount()) //
-						.map((strategy, trade) -> "" //
-								+ (0 <= trade.buySell ? "BUY^" : "SELL") //
-								+ " SIGNAL(" + strategy + ")" + trade //
-								+ " = " + To.string(trade.amount())) //
-				+ "\n" //
 				+ "\nBUY REQUESTS" //
 				+ requestTrades //
 						.filterValue(trade -> 0 < trade.buySell) //
@@ -167,8 +159,8 @@ public class DailyMain extends ExecutableProgram {
 						.map2(stock -> stock.symbol, stock -> {
 							try {
 								var period = TimeRange.threeYears();
-								DataSource ds = cfg.dataSource(stock.symbol, period).range(period).validate();
-								SingleAllocBackTest backTest = SingleAllocBackTest.test(ds, strategy);
+								var ds = cfg.dataSource(stock.symbol, period).range(period).validate();
+								var backTest = SingleAllocBackTest.test(ds, strategy);
 								return MathUtil.isPositive(backTest.account.cash());
 							} catch (Exception ex) {
 								LogUtil.warn(ex + " for " + stock);
