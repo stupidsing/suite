@@ -39,9 +39,10 @@ public class P0CrudeScript {
 
 		var node = new Object() {
 			private Node node(Ast ast) {
-				var atom = Atom.of(ast.entity);
+				String entity = ast.entity;
+				var atom = Atom.of(entity);
 				var children = ast.children;
-				if (ast.entity.startsWith("<"))
+				if (entity.startsWith("<"))
 					return Tree.of(TermOp.TUPLE_, atom, new Str(in.substring(ast.start, ast.end)));
 				else {
 					Node node = Atom.NIL;
