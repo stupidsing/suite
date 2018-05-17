@@ -160,7 +160,7 @@ public interface BackAllocator {
 
 				var indexPrice0 = ids.get(-1).t1;
 				var indexPricex = ids.get(-2).t1;
-				double indexReturn = Quant.return_(indexPrice0, indexPricex);
+				var indexReturn = Quant.return_(indexPrice0, indexPricex);
 
 				return -.03f < indexReturn //
 						? onDateTime.onDateTime(index) //
