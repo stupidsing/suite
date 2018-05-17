@@ -41,7 +41,7 @@ public class Summarize {
 	}
 
 	public static Summarize of(Configuration cfg, Streamlet<Trade> trades) {
-		Map<String, Float> priceBySymbol = cfg.quote(trades.map(trade -> trade.symbol).toSet());
+		var priceBySymbol = cfg.quote(trades.map(trade -> trade.symbol).toSet());
 		return new Summarize(cfg, trades, priceBySymbol);
 	}
 

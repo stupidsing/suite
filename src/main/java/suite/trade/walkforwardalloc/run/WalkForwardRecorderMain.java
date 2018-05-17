@@ -51,7 +51,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 			var schedule = Schedule //
 					.ofRepeat(5, () -> {
 						var ymdHms = Time.now().ymdHms();
-						Map<String, Float> priceBySymbol = cfg.quote(assets.map(asset -> asset.symbol).toSet());
+						var priceBySymbol = cfg.quote(assets.map(asset -> asset.symbol).toSet());
 
 						try (var os = Files.newOutputStream(HomeDir.resolve(filename), //
 								StandardOpenOption.APPEND, StandardOpenOption.CREATE, StandardOpenOption.WRITE); //
@@ -67,7 +67,6 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 		} else { // replay
 			var ts = "20170612-092616";
 			var filename = "wfa." + ts + ".csv";
-
 			var data = new TreeMap<Time, Map<String, Float>>();
 
 			try (var is = Files.newInputStream(HomeDir.resolve(filename)); //
