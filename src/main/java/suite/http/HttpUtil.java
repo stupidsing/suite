@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClients;
 
+import suite.adt.pair.FixieArray;
 import suite.concurrent.Backoff;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
@@ -129,12 +130,12 @@ public class HttpUtil {
 	public static Map<String, URI> resolveLinks(URI uri) {
 		var out = get(Rethrow.ex(() -> uri.toURL())).utf8().collect(As::joined);
 		var links = new HashMap<String, URI>();
-		String[] m;
+		FixieArray<String> m;
 		while ((m = ParseUtil.fitCaseInsensitive(out, "<a", "href=\"", "\"", ">", "</a>")) != null) {
-			var href = m[2];
+			var href = m.t2;
 			if (!href.startsWith("javascript:"))
-				links.putIfAbsent(m[4], uri.resolve(href));
-			out = m[5];
+				links.putIfAbsent(m.t4, uri.resolve(href));
+			out = m.t5;
 		}
 		return links;
 	}

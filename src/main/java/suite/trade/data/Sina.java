@@ -82,7 +82,8 @@ public class Sina {
 
 		return Read //
 				.from(data.split("\n")) //
-				.map(line -> {
+				.map(line -> ParseUtil.fit(line, "var hq_str_", "=\"", "\"").map((t0, t1, t2) -> {
+
 					// var hq_str_rt_hk00005="xxx";
 					// where xxx is a single comma-separated line like this
 
@@ -97,40 +98,36 @@ public class Sina {
 					// 100|0,N|Y|Y,73.200|69.600|75.450,0|||0.000|0.000|0.000,
 					// |0,Y
 
-					var a0 = ParseUtil.fit(line, "var hq_str_", "=\"", "\"");
-					var a1 = a0[2].split(",");
+					var vs = t2.split(",");
 
 					var factor = new Factor();
-					factor.symbol = toYahoo(a0[1]);
-					factor.name = a1[0];
-					factor.open = Float.parseFloat(a1[2]);
-					factor.close = Float.parseFloat(a1[3]);
-					factor.high = Float.parseFloat(a1[4]);
-					factor.low = Float.parseFloat(a1[5]);
-					factor.quote = Float.parseFloat(a1[6]);
-					factor.change = Float.parseFloat(a1[7]);
-					factor.changePercent = Float.parseFloat(a1[8]);
-					factor.bid = Float.parseFloat(a1[9]);
-					factor.ask = Float.parseFloat(a1[10]);
-					factor.volumeHkd = Float.parseFloat(a1[11]);
-					factor.volume = Float.parseFloat(a1[12]); // in stock
-					factor.pe = Float.parseFloat(a1[13]);
-					factor.weeklyInterest = Float.parseFloat(a1[14]);
-					factor.high52week = Float.parseFloat(a1[15]);
-					factor.low52week = Float.parseFloat(a1[16]);
-					factor.lastCloseDate = a1[17]; // 2017/07/07
-					factor.lastCloseTime = a1[18]; // 16:08:44
+					factor.symbol = toYahoo(t1);
+					factor.name = vs[0];
+					factor.open = Float.parseFloat(vs[2]);
+					factor.close = Float.parseFloat(vs[3]);
+					factor.high = Float.parseFloat(vs[4]);
+					factor.low = Float.parseFloat(vs[5]);
+					factor.quote = Float.parseFloat(vs[6]);
+					factor.change = Float.parseFloat(vs[7]);
+					factor.changePercent = Float.parseFloat(vs[8]);
+					factor.bid = Float.parseFloat(vs[9]);
+					factor.ask = Float.parseFloat(vs[10]);
+					factor.volumeHkd = Float.parseFloat(vs[11]);
+					factor.volume = Float.parseFloat(vs[12]); // in stock
+					factor.pe = Float.parseFloat(vs[13]);
+					factor.weeklyInterest = Float.parseFloat(vs[14]);
+					factor.high52week = Float.parseFloat(vs[15]);
+					factor.low52week = Float.parseFloat(vs[16]);
+					factor.lastCloseDate = vs[17]; // 2017/07/07
+					factor.lastCloseTime = vs[18]; // 16:08:44
 					return factor;
-				}) //
+				})) //
 				.collect(As::streamlet);
 	}
 
 	private String toYahoo(String sina) {
 		var prefix = "rt_hk0";
-		if (sina.startsWith(prefix))
-			return sina.substring(prefix.length()) + ".HK";
-		else
-			return Fail.t(sina);
+		return sina.startsWith(prefix) ? sina.substring(prefix.length()) + ".HK" : Fail.t(sina);
 	}
 
 	private String toSina(String symbol_) {

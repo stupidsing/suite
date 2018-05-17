@@ -58,7 +58,7 @@ public class HongKongGovernment {
 							+ "&language=english&B1=Confirm#") //
 					.collect(As::string);
 
-			var data = ParseUtil.fit(html, "<pre>", "</pre>")[1];
+			var data = ParseUtil.fit(html, "<pre>", "</pre>").t1;
 
 			ts.append(t);
 			fs0.append(getFloatValue(data, "Maximum Air Temperature", "C"));
@@ -73,7 +73,7 @@ public class HongKongGovernment {
 	}
 
 	private float getFloatValue(String data, String s0, String s1) {
-		return Float.parseFloat(ParseUtil.fit(data, s0, s1)[1].replace(" ", ""));
+		return Float.parseFloat(ParseUtil.fit(data, s0, s1).t1.replace(" ", ""));
 	}
 
 }

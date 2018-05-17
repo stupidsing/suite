@@ -76,7 +76,7 @@ public class BackTestMain extends ExecutableProgram {
 				.collect(As::utf8decode) //
 				.collect(As::joined);
 
-		var content1 = ParseUtil.fit(content0, "// BEGIN", "// END")[1];
+		var content1 = ParseUtil.fit(content0, "// BEGIN", "// END").t1;
 
 		System.out.println(content1);
 		System.out.println(runner.conclude(simulationByKey));

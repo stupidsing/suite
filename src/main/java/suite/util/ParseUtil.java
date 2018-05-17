@@ -3,6 +3,7 @@ package suite.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.adt.pair.FixieArray;
 import suite.adt.pair.Pair;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
@@ -14,15 +15,15 @@ import suite.util.FunUtil.Source;
 
 public class ParseUtil {
 
-	public static String[] fit(String in, String... parts) {
+	public static FixieArray<String> fit(String in, String... parts) {
 		return fit(in, s -> s, parts);
 	}
 
-	public static String[] fitCaseInsensitive(String in, String... parts) {
+	public static FixieArray<String> fitCaseInsensitive(String in, String... parts) {
 		return fit(in, String::toLowerCase, parts);
 	}
 
-	public static String[] fit(String in, Iterate<String> lower, String... parts) {
+	public static FixieArray<String> fit(String in, Iterate<String> lower, String... parts) {
 		var outs = new ArrayList<String>();
 		var inl = lower.apply(in);
 		var p = 0;
@@ -35,7 +36,7 @@ public class ParseUtil {
 				return null;
 		}
 		outs.add(in.substring(p));
-		return outs.toArray(new String[0]);
+		return FixieArray.of(outs);
 	}
 
 	public static List<String> searchn(String s, String name, Assoc assoc) {
@@ -158,8 +159,8 @@ public class ParseUtil {
 	 * characters.
 	 *
 	 * @param isThrow
-	 *            if this is set to true, and the string is deemed unparseable even
-	 *            if more characters are added, throw exception.
+	 *            if this is set to true, and the string is deemed unparseable
+	 *            even if more characters are added, throw exception.
 	 */
 	public static boolean isParseable(String s, boolean isThrow) {
 		int quote = 0, depth = 0;
