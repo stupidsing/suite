@@ -136,7 +136,7 @@ public class RecursiveFactorizerTest {
 
 	private Node operatorNode(Source<Node> g, TermOp op, Node n0, Node n1) {
 		var name = new Str(op.toString());
-		var nodes = List.of(n0, terminalNode(op.getName().trim()), n1);
+		var nodes = List.of(n0, terminalNode(op.name_().trim()), n1);
 		return treeNode(g, name, nodes);
 	}
 

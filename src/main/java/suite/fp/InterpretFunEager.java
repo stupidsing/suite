@@ -221,8 +221,8 @@ public class InterpretFunEager {
 		df.put("+pleft", f1(a -> Tree.decompose(a).getLeft()));
 		df.put("+pright", f1(a -> Tree.decompose(a).getRight()));
 
-		TreeUtil.boolOperations.forEach((k, fun) -> df.put(k.getName(), f2((a, b) -> b(fun.apply(compare(a, b), 0)))));
-		TreeUtil.intOperations.forEach((k, fun) -> df.put(k.getName(), f2((a, b) -> Int.of(fun.apply(i(a), i(b))))));
+		TreeUtil.boolOperations.forEach((k, fun) -> df.put(k.name_(), f2((a, b) -> b(fun.apply(compare(a, b), 0)))));
+		TreeUtil.intOperations.forEach((k, fun) -> df.put(k.name_(), f2((a, b) -> Int.of(fun.apply(i(a), i(b))))));
 
 		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		var eager0 = new Eager(0, IMap.empty());

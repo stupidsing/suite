@@ -140,7 +140,7 @@ public class SystemPredicates {
 			pass = Atom.NIL;
 		} else if ((tree = Tree.decompose(query)) != null)
 			if ((op = tree.getOperator()) != TermOp.TUPLE_) {
-				name = op.getName();
+				name = op.name_();
 				pass = query;
 			} else if ((left = tree.getLeft()) instanceof Atom) {
 				name = ((Atom) left).name;
@@ -156,7 +156,7 @@ public class SystemPredicates {
 	}
 
 	private void addPredicate(Operator operator, BuiltinPredicate pred) {
-		predicates.put(operator.getName(), pred);
+		predicates.put(operator.name_(), pred);
 	}
 
 	private void addPredicate(String name, BuiltinPredicate pred) {

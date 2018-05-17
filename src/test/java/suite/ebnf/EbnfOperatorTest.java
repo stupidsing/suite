@@ -28,10 +28,10 @@ public class EbnfOperatorTest {
 		var i = 0;
 
 		for (var operator : TermOp.values()) {
-			var op = "\"" + operator.getName().trim() + "\"";
+			var op = "\"" + operator.name_().trim() + "\"";
 			var v = v(i++);
 			var v1 = v(i);
-			if (operator.getAssoc() == Assoc.LEFT)
+			if (operator.assoc() == Assoc.LEFT)
 				sb.append(v + " ::= " + v1 + " | " + v + " " + op + " " + v1 + "\n");
 			else
 				sb.append(v + " ::= " + v1 + " | " + v1 + " " + op + " " + v + "\n");

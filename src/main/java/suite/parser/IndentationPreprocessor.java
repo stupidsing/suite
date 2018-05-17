@@ -58,7 +58,7 @@ public class IndentationPreprocessor {
 
 				// find operators at beginning and end of line
 				for (var operator : operators) {
-					var name = operator.getName().trim();
+					var name = operator.name_().trim();
 
 					if (!name.isEmpty()) {
 						if (line.startsWith(name + " "))

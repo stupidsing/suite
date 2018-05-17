@@ -55,11 +55,11 @@ public class InterpretFunLazy0 {
 
 		var env1 = Read //
 				.from2(TreeUtil.boolOperations) //
-				.fold(env0, (e, k, f) -> e.put(k.getName(), () -> new Fn(a -> () -> new Fn(b -> () -> b(f.apply(i(a), i(b)))))));
+				.fold(env0, (e, k, f) -> e.put(k.name_(), () -> new Fn(a -> () -> new Fn(b -> () -> b(f.apply(i(a), i(b)))))));
 
 		var env2 = Read //
 				.from2(TreeUtil.intOperations) //
-				.fold(env1, (e, k, f) -> e.put(k.getName(), () -> new Fn(a -> () -> new Fn(b -> () -> i(f.apply(i(a), i(b)))))));
+				.fold(env1, (e, k, f) -> e.put(k.name_(), () -> new Fn(a -> () -> new Fn(b -> () -> i(f.apply(i(a), i(b)))))));
 
 		return lazy0(node).apply(env2);
 	}
@@ -93,7 +93,7 @@ public class InterpretFunLazy0 {
 			var p0 = lazy0(l);
 			var p1 = lazy0(r);
 			return env -> {
-				var r0 = env.get(op.getName());
+				var r0 = env.get(op.name_());
 				var r1 = fun(r0).apply(p0.apply(env));
 				var r2 = fun(r1).apply(p1.apply(env));
 				return r2;

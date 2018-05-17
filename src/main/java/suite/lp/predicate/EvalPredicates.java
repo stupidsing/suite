@@ -156,7 +156,7 @@ public class EvalPredicates {
 	public BuiltinPredicate tree = PredicateUtil.p4((prover, t, l, op, r) -> {
 		Tree tree;
 		if ((tree = Tree.decompose(t)) != null) {
-			var oper = Atom.of(tree.getOperator().getName());
+			var oper = Atom.of(tree.getOperator().name_());
 			return prover.bind(tree.getLeft(), l) //
 					&& prover.bind(oper, op) //
 					&& prover.bind(tree.getRight(), r);

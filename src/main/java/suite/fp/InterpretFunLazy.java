@@ -71,8 +71,8 @@ public class InterpretFunLazy {
 		df.put("if", () -> new Fn(a -> () -> new Fn(b -> () -> new Fn(c -> a.get() == Atom.TRUE ? b : c))));
 		df.put("snd", () -> new Fn(in -> ((Pair) in.get()).snd));
 
-		TreeUtil.boolOperations.forEach((k, fun) -> df.put(k.getName(), bi((a, b) -> b(fun.apply(compare(a.get(), b.get()), 0)))));
-		TreeUtil.intOperations.forEach((k, fun) -> df.put(k.getName(), bi((a, b) -> Int.of(fun.apply(i(a), i(b))))));
+		TreeUtil.boolOperations.forEach((k, fun) -> df.put(k.name_(), bi((a, b) -> b(fun.apply(compare(a.get(), b.get()), 0)))));
+		TreeUtil.intOperations.forEach((k, fun) -> df.put(k.name_(), bi((a, b) -> Int.of(fun.apply(i(a), i(b))))));
 
 		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		var lazy0 = new Lazy(0, IMap.empty());

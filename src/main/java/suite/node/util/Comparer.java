@@ -69,7 +69,7 @@ public class Comparer implements Comparator<Node> {
 			else if (Tree.class.isAssignableFrom(clazz0)) {
 				var t0 = (Tree) n0;
 				var t1 = (Tree) n1;
-				c = t0.getOperator().getPrecedence() - t1.getOperator().getPrecedence();
+				c = t0.getOperator().precedence() - t1.getOperator().precedence();
 				c = c != 0 ? c : compare(t0.getLeft(), t1.getLeft());
 				c = c != 0 ? c : compare(t0.getRight(), t1.getRight());
 				return c;

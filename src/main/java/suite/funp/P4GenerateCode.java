@@ -465,7 +465,7 @@ public class P4GenerateCode {
 
 					return out1;
 				})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
-					return postOp.apply(compileTree(n, op, op.getAssoc(), lhs, rhs));
+					return postOp.apply(compileTree(n, op, op.assoc(), lhs, rhs));
 				})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
 					return postOp.apply(compileTree(n, op, Assoc.RIGHT, lhs, rhs));
 				})).applyIf(FunpWhile.class, f -> f.apply((while_, do_, expr) -> {

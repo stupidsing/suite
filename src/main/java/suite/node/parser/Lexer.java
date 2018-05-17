@@ -47,7 +47,7 @@ public class Lexer {
 		var operatorByName = Read //
 				.from(operators) //
 				.filter(operator -> operator != TermOp.TUPLE_) //
-				.toMap(Operator::getName);
+				.toMap(Operator::name_);
 
 		commandUtil = new CommandUtil<>(operatorByName);
 	}
@@ -72,7 +72,7 @@ public class Lexer {
 				while (pos < in.length() && 0 <= "0123456789ABCDEF".indexOf(in.charAt(pos)))
 					pos++;
 			} else if (type == LexType.OPER_)
-				pos += token.operator.getName().length();
+				pos += token.operator.name_().length();
 			else if (type == LexType.STR__) {
 				var quote = in.charAt(pos);
 				while (pos < in.length() && in.charAt(pos) == quote) {
@@ -91,9 +91,9 @@ public class Lexer {
 
 				for (var t : List.of(token0, detect()))
 					if (t != null && t.operator != null)
-						precs.add(t.operator.getPrecedence());
+						precs.add(t.operator.precedence());
 
-				if (!precs.isEmpty() && TermOp.TUPLE_.getPrecedence() < Collections.min(precs)) {
+				if (!precs.isEmpty() && TermOp.TUPLE_.precedence() < Collections.min(precs)) {
 					token = new Token(LexType.OPER_, TermOp.TUPLE_);
 					token.data = data;
 				} else

@@ -78,7 +78,7 @@ public class TypeChecker {
 				} else
 					return new Reference(); // free type
 			} else {
-				var name = Atom.of(tree.getOperator().getName());
+				var name = Atom.of(tree.getOperator().name_());
 				var lt = getType(tree.getLeft());
 				var rt = getType(tree.getRight());
 				type = getEnumType(name, Tree.of(TermOp.TUPLE_, lt, rt));

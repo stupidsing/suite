@@ -49,7 +49,7 @@ public class NewPrettyPrinter {
 
 		if ((tree = Tree.decompose(node)) != null) {
 			var operator = tree.getOperator();
-			var prec = operator.getPrecedence();
+			var prec = operator.precedence();
 			var isParenthesesRequired = operator != null ? prec <= parentPrec : false;
 			var indent1 = indent + ind;
 			Node[] m;
@@ -63,18 +63,18 @@ public class NewPrettyPrinter {
 				format_(tree.getRight(), TermOp.getRightPrec(operator), indent, "");
 			} else if (operator == TermOp.IS____) {
 				format_(tree.getLeft(), TermOp.getLeftPrec(operator), indent, prefix);
-				format_(tree.getRight(), TermOp.getRightPrec(operator), indent1, operator.getName());
+				format_(tree.getRight(), TermOp.getRightPrec(operator), indent1, operator.name_());
 			} else if (operator == TermOp.BIGAND || operator == TermOp.BIGOR_) {
 				format_(tree.getLeft(), TermOp.getLeftPrec(operator), indent, prefix);
-				format_(tree.getRight(), TermOp.getRightPrec(operator), indent, operator.getName());
+				format_(tree.getRight(), TermOp.getRightPrec(operator), indent, operator.name_());
 			} else if (operator == TermOp.AND___ || operator == TermOp.OR____) {
 				format_(tree.getLeft(), prec, indent, prefix);
 				node = tree.getRight();
 				while ((tree = Tree.decompose(node)) != null && tree.getOperator() == operator) {
-					format_(tree.getLeft(), prec, indent1, operator.getName());
+					format_(tree.getLeft(), prec, indent1, operator.name_());
 					node = tree.getRight();
 				}
-				format_(node, prec, indent1, operator.getName());
+				format_(node, prec, indent1, operator.name_());
 			} else if ((m = Suite.pattern("if .0 then .1 else .2").match(node)) != null //
 					&& lineLength < estimateLength.getEstimatedLength(node)) {
 				format_(m[0], prec, indent, concatWithSpace(prefix, "if"));

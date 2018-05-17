@@ -6,10 +6,10 @@ public interface Operator {
 		LEFT, RIGHT
 	}
 
-	public String getName();
+	public String name_();
 
-	public Assoc getAssoc();
+	public Assoc assoc();
 
-	public int getPrecedence();
+	public int precedence();
 
 }

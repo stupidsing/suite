@@ -77,7 +77,7 @@ public class RecursiveFactorizer {
 						if (left.isWhitespaces() || right.isWhitespaces())
 							continue;
 
-					var isLeftAssoc = operator.getAssoc() == Assoc.LEFT;
+					var isLeftAssoc = operator.assoc() == Assoc.LEFT;
 					li = fromOp + (isLeftAssoc ? 0 : 1);
 					ri = fromOp + (isLeftAssoc ? 1 : 0);
 				}

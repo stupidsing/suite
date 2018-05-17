@@ -56,7 +56,7 @@ public class PrettyPrinter {
 		if (node instanceof Tree) {
 			var tree = (Tree) node;
 			var op = tree.getOperator();
-			var prec = op.getPrecedence();
+			var prec = op.precedence();
 			var isNeedPars = prec <= prec0;
 			int parsIndent = 0, parsIndent0 = 0;
 
@@ -72,7 +72,7 @@ public class PrettyPrinter {
 				else {
 					var left = tree.getLeft();
 					var right = tree.getRight();
-					var assoc = op.getAssoc();
+					var assoc = op.assoc();
 
 					var leftPrec = prec - (assoc == Assoc.LEFT ? 1 : 0);
 					var rightPrec = prec - (assoc == Assoc.RIGHT ? 1 : 0);
@@ -83,7 +83,7 @@ public class PrettyPrinter {
 					var r0 = tree1 != null ? tree1.getLeft() : null;
 					var es0 = estimateLength.getEstimatedLength(left);
 					var es1 = r0 != null ? estimateLength.getEstimatedLength(r0) : lineLength;
-					var opLength = op.getName().length();
+					var opLength = op.name_().length();
 
 					// breaks "a + b + xxx" in the second operator
 					if (assoc == Assoc.RIGHT //
@@ -133,13 +133,13 @@ public class PrettyPrinter {
 	}
 
 	private void prettyPrintList(Operator op, Node node) {
-		int prec = op.getPrecedence(), prec1 = prec - 1;
+		int prec = op.precedence(), prec1 = prec - 1;
 
 		if (node instanceof Tree) {
 			var tree = (Tree) node;
 
 			if (tree.getOperator() == op) {
-				var isLeftAssoc = op.getAssoc() == Assoc.LEFT;
+				var isLeftAssoc = op.assoc() == Assoc.LEFT;
 				OperatorPosition opPos;
 
 				if (isLeftAssoc) {
@@ -179,7 +179,7 @@ public class PrettyPrinter {
 		var tree = Tree.decompose(node);
 
 		if (tree != null && tree.getOperator() == op) {
-			var isLeftAssoc = op.getAssoc() == Assoc.LEFT;
+			var isLeftAssoc = op.assoc() == Assoc.LEFT;
 			var child = isLeftAssoc ? tree.getLeft() : tree.getRight();
 			return isLookingLikeList(op, child);
 		}
@@ -198,7 +198,7 @@ public class PrettyPrinter {
 	}
 
 	private OperatorPosition appendOperator(Operator op) {
-		var name = op.getName();
+		var name = op.name_();
 		name = (op == TermOp.BRACES ? " " : "") + name;
 		name += op == TermOp.AND___ || op == TermOp.OR____ ? " " : "";
 		if (isLineBegin())

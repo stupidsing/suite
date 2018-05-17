@@ -308,7 +308,7 @@ public class Grapher {
 					dos.writeUTF(n.value);
 				}).nonNullResult();
 			else if (type == ReadType.TREE) {
-				dos.writeUTF(gn.op.getName());
+				dos.writeUTF(gn.op.name_());
 				dos.writeInt(children.get(0).t1 - index);
 				dos.writeInt(children.get(1).t1 - index);
 			} else if (type == ReadType.DICT || type == ReadType.TUPLE) {
@@ -339,7 +339,7 @@ public class Grapher {
 				s = Formatter.dump(gn.terminal);
 				break;
 			case TREE:
-				s = "tree(" + gn.children.get(0).t1 + gn.op.getName() + gn.children.get(1).t1 + ")";
+				s = "tree(" + gn.children.get(0).t1 + gn.op.name_() + gn.children.get(1).t1 + ")";
 				break;
 			case TUPLE:
 				s = Read //

@@ -65,25 +65,25 @@ public enum TermOp implements Operator {
 	}
 
 	public static int getLeftPrec(Operator operator) {
-		return operator.getPrecedence() - (operator.getAssoc() == Assoc.LEFT ? 1 : 0);
+		return operator.precedence() - (operator.assoc() == Assoc.LEFT ? 1 : 0);
 	}
 
 	public static int getRightPrec(Operator operator) {
-		return operator.getPrecedence() - (operator.getAssoc() == Assoc.RIGHT ? 1 : 0);
+		return operator.precedence() - (operator.assoc() == Assoc.RIGHT ? 1 : 0);
 	}
 
 	@Override
-	public String getName() {
+	public String name_() {
 		return name;
 	}
 
 	@Override
-	public Assoc getAssoc() {
+	public Assoc assoc() {
 		return assoc;
 	}
 
 	@Override
-	public int getPrecedence() {
+	public int precedence() {
 		return precedence;
 	}
 

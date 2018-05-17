@@ -49,7 +49,7 @@ public class Formatter {
 					treeize(e.getValue().finalNode(), indent1);
 				}
 			}).doIf(Tree.class, tree -> {
-				var op = tree.getOperator().getName();
+				var op = tree.getOperator().name_();
 				op = String_.equals(op, " ") ? "<>" : op.trim();
 
 				treeize(tree.getLeft(), indent1);
@@ -164,7 +164,7 @@ public class Formatter {
 	}
 
 	private void formatTree_(Tree tree, int parentPrec) {
-		if (tree != null && tree.getOperator().getPrecedence() <= parentPrec) {
+		if (tree != null && tree.getOperator().precedence() <= parentPrec) {
 			sb.append("(");
 			formatTree(tree);
 			sb.append(")");
@@ -193,7 +193,7 @@ public class Formatter {
 		format(left, TermOp.getLeftPrec(operator));
 		if (isSpaceBefore)
 			sb.append(' ');
-		sb.append(operator.getName());
+		sb.append(operator.name_());
 		if (isSpaceAfter && right != Atom.NIL)
 			sb.append(' ');
 		if (!isSpaceAfter || right != Atom.NIL)

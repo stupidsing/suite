@@ -329,7 +329,7 @@ public class SewingProverImpl implements ProverFactory {
 			var f = bf.cloner(node);
 			cps = rt -> compileCps(passThru, f.apply(rt.env), cpsx);
 		} else if ((tree = Tree.decompose(node)) != null)
-			cps = compileCpsCallPredicate(bf, tree.getOperator().getName(), node, node, cpsx);
+			cps = compileCpsCallPredicate(bf, tree.getOperator().name_(), node, node, cpsx);
 		else if (node instanceof Tuple)
 			cps = compileCpsCallPredicate(bf, node, cpsx);
 		else
@@ -682,7 +682,7 @@ public class SewingProverImpl implements ProverFactory {
 			var f = bf.cloner(node);
 			tr = rt -> compileTr(passThru, f.apply(rt.env));
 		} else if ((tree = Tree.decompose(node)) != null)
-			tr = compileTrCallPredicate(bf, tree.getOperator().getName(), node, node);
+			tr = compileTrCallPredicate(bf, tree.getOperator().name_(), node, node);
 		else if (node instanceof Tuple)
 			tr = compileTrCallPredicate(bf, node);
 		else

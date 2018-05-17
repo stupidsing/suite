@@ -30,7 +30,7 @@ public class EstimateLength {
 						var op = tree.getOperator();
 						var len0 = estimate(tree.getLeft());
 						var len1 = estimate(tree.getRight());
-						var opLength = op.getName().length();
+						var opLength = op.name_().length();
 
 						len = len0 + len1 + opLength + 2; // rough estimation
 					} else

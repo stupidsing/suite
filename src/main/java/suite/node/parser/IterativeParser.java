@@ -121,13 +121,13 @@ public class IterativeParser {
 		}
 
 		private Tree unwind(Operator operator) {
-			var prec0 = operator != null ? operator.getPrecedence() : -1;
+			var prec0 = operator != null ? operator.precedence() : -1;
 			Operator op;
 			Tree tree;
 
 			while ((op = (tree = list.getLast()).getOperator()) != null) {
-				var prec1 = op.getPrecedence();
-				if (prec0 < prec1 || operator.getAssoc() == Assoc.LEFT && prec0 == prec1)
+				var prec1 = op.precedence();
+				if (prec0 < prec1 || operator.assoc() == Assoc.LEFT && prec0 == prec1)
 					pop();
 				else
 					break;
