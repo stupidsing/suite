@@ -14,7 +14,6 @@ import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.Trade;
 import suite.trade.Trade_;
-import suite.trade.Trade_.UpdatePortfolio;
 import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
@@ -81,10 +80,10 @@ public class WalkForwardAllocTester {
 			prices[last] = priceBySymbol.get(symbol);
 		}
 
-		AlignKeyDataSource<String> akds = new AlignKeyDataSource<>(times, Read.from2(dsBySymbol));
+		var akds = new AlignKeyDataSource<String>(times, Read.from2(dsBySymbol));
 		var ratioBySymbol = wfa.allocate(akds, windowSize);
 
-		UpdatePortfolio up = Trade_.updatePortfolio(time.ymdHms(), account, ratioBySymbol, assetBySymbol,
+		var up = Trade_.updatePortfolio(time.ymdHms(), account, ratioBySymbol, assetBySymbol,
 				Read.from2(priceBySymbol).mapValue(Eod::of).toMap());
 
 		float valuation_;
