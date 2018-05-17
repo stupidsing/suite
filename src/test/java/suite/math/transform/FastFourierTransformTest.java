@@ -3,7 +3,7 @@ package suite.math.transform;
 import org.junit.Test;
 
 import suite.math.Complex;
-import suite.math.MathUtil;
+import suite.math.Math_;
 
 public class FastFourierTransformTest {
 
@@ -36,25 +36,25 @@ public class FastFourierTransformTest {
 		var fs1 = fft.fft(fs0);
 		var fs2 = fft.ifft(fs1);
 
-		MathUtil.verifyEquals(fs1[0], 4f);
-		MathUtil.verifyEquals(fs1[1], 0f);
-		MathUtil.verifyEquals(fs1[2], 1f);
-		MathUtil.verifyEquals(fs1[3], -2.414214f);
-		MathUtil.verifyEquals(fs1[4], 0f);
-		MathUtil.verifyEquals(fs1[5], 0f);
-		MathUtil.verifyEquals(fs1[6], 1f);
-		MathUtil.verifyEquals(fs1[7], -.414214f);
-		MathUtil.verifyEquals(fs1[8], 0f);
-		MathUtil.verifyEquals(fs1[9], 0f);
-		MathUtil.verifyEquals(fs1[10], 1f);
-		MathUtil.verifyEquals(fs1[11], .414214f);
-		MathUtil.verifyEquals(fs1[12], 0f);
-		MathUtil.verifyEquals(fs1[13], 0f);
-		MathUtil.verifyEquals(fs1[14], 1f);
-		MathUtil.verifyEquals(fs1[15], 2.414214f);
+		Math_.verifyEquals(fs1[0], 4f);
+		Math_.verifyEquals(fs1[1], 0f);
+		Math_.verifyEquals(fs1[2], 1f);
+		Math_.verifyEquals(fs1[3], -2.414214f);
+		Math_.verifyEquals(fs1[4], 0f);
+		Math_.verifyEquals(fs1[5], 0f);
+		Math_.verifyEquals(fs1[6], 1f);
+		Math_.verifyEquals(fs1[7], -.414214f);
+		Math_.verifyEquals(fs1[8], 0f);
+		Math_.verifyEquals(fs1[9], 0f);
+		Math_.verifyEquals(fs1[10], 1f);
+		Math_.verifyEquals(fs1[11], .414214f);
+		Math_.verifyEquals(fs1[12], 0f);
+		Math_.verifyEquals(fs1[13], 0f);
+		Math_.verifyEquals(fs1[14], 1f);
+		Math_.verifyEquals(fs1[15], 2.414214f);
 
 		for (var i = 0; i < fs0.length; i++)
-			MathUtil.verifyEquals(fs0[i], fs2[i]);
+			Math_.verifyEquals(fs0[i], fs2[i]);
 	}
 
 }

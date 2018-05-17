@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 import org.junit.Test;
 
-import suite.math.MathUtil;
+import suite.math.Math_;
 import suite.math.linalg.Vector;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 
@@ -18,7 +18,7 @@ public class BfgsTest {
 		Obj_Dbl<float[]> id = x -> x[0] * x[0];
 		var xs = bfgs.bfgs(id, new float[] { 22f, });
 		System.out.println(Arrays.toString(xs));
-		MathUtil.verifyEquals(xs[0], 0f, .05f);
+		Math_.verifyEquals(xs[0], 0f, .05f);
 	}
 
 	// https://en.wikipedia.org/wiki/Rosenbrock_function

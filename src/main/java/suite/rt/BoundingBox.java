@@ -7,7 +7,7 @@ import static suite.util.Friends.min;
 import java.util.Collection;
 import java.util.List;
 
-import suite.math.MathUtil;
+import suite.math.Math_;
 import suite.math.R3;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
@@ -65,7 +65,7 @@ public class BoundingBox implements RtObject {
 			float startY, float dirY, float minY, float maxY) {
 		boolean isIntersect;
 
-		if (MathUtil.epsilon < abs(dirX)) {
+		if (Math_.epsilon < abs(dirX)) {
 			var gradient = dirY / dirX;
 			float y0, y1;
 

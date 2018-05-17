@@ -4,7 +4,7 @@ import static suite.util.Friends.sqrt;
 
 import java.util.Arrays;
 
-import suite.math.MathUtil;
+import suite.math.Math_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.util.Fail;
@@ -104,13 +104,13 @@ public class Vector {
 	}
 
 	public void verifyEquals(float[] m0, float[] m1) {
-		verifyEquals(m0, m1, MathUtil.epsilon);
+		verifyEquals(m0, m1, Math_.epsilon);
 	}
 
 	public void verifyEquals(float[] m0, float[] m1, float epsilon) {
 		int length = sameLength_(m0, m1);
 		for (var i = 0; i < length; i++)
-			MathUtil.verifyEquals(m0[i], m1[i], epsilon);
+			Math_.verifyEquals(m0[i], m1[i], epsilon);
 	}
 
 	private double abs_(float[] m) {

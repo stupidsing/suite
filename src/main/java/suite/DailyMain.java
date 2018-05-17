@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import suite.adt.pair.Pair;
-import suite.math.MathUtil;
+import suite.math.Math_;
 import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -161,7 +161,7 @@ public class DailyMain extends ExecutableProgram {
 								var period = TimeRange.threeYears();
 								var ds = cfg.dataSource(stock.symbol, period).range(period).validate();
 								var backTest = SingleAllocBackTest.test(ds, strategy);
-								return MathUtil.isPositive(backTest.account.cash());
+								return Math_.isPositive(backTest.account.cash());
 							} catch (Exception ex) {
 								LogUtil.warn(ex + " for " + stock);
 								return false;

@@ -233,7 +233,7 @@ public class DblObjFunUtil {
 	}
 
 	/**
-	 * Sucks data from a sink and produce into a source.
+	 * Sucks data from a sink and make it into a source.
 	 */
 	public static <V> DblObjSource<V> suck(Sink<Sink<DblObjPair<V>>> fun) {
 		var queue = new NullableSyncQueue<DblObjPair<V>>();

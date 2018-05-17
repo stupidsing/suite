@@ -4,7 +4,7 @@ import static suite.util.Friends.min;
 
 import java.util.Arrays;
 
-import suite.math.MathUtil;
+import suite.math.Math_;
 import suite.math.R3;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Int_Dbl;
@@ -384,7 +384,7 @@ public class Matrix {
 	}
 
 	public void verifyEquals(float[][] m0, float[][] m1) {
-		verifyEquals(m0, m1, MathUtil.epsilon);
+		verifyEquals(m0, m1, Math_.epsilon);
 	}
 
 	public void verifyEquals(float[][] m0, float[][] m1, float epsilon) {
@@ -393,7 +393,7 @@ public class Matrix {
 		if (height == h(m1) && width == w(m1))
 			for (var i = 0; i < height; i++)
 				for (var j = 0; j < width; j++)
-					MathUtil.verifyEquals(m0[i][j], m1[i][j], epsilon);
+					Math_.verifyEquals(m0[i][j], m1[i][j], epsilon);
 		else
 			Fail.t("wrong input sizes");
 	}

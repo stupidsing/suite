@@ -233,7 +233,7 @@ public class IntFunUtil {
 	}
 
 	/**
-	 * Sucks data from a sink and produce into a source.
+	 * Sucks data from a sink and make it into a source.
 	 */
 	public static IntSource suck(Sink<IntSink> fun) {
 		var queue = new NullableSyncQueue<Integer>();

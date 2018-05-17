@@ -5,7 +5,7 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.inspect.Dump;
-import suite.math.MathUtil;
+import suite.math.Math_;
 import suite.math.linalg.Vector;
 import suite.primitive.Floats_;
 import suite.primitive.adt.pair.FltObjPair;
@@ -21,7 +21,7 @@ public class StatisticTest {
 	@Test
 	public void testCovariance() {
 		float[] fs = { -.5f, 1f, };
-		MathUtil.verifyEquals(.5625f, (float) stat.covariance(fs, fs), 0f);
+		Math_.verifyEquals(.5625f, (float) stat.covariance(fs, fs), 0f);
 	}
 
 	@Test
@@ -40,8 +40,8 @@ public class StatisticTest {
 		vec.verifyEquals(expect, actual, .1f);
 
 		var xtest = Floats_.toArray(m, j -> random.nextFloat());
-		MathUtil.verifyEquals(vec.dot(expect, xtest), lr.predict(xtest), .1f);
-		MathUtil.verifyEquals(1f, (float) lr.r2, .1f);
+		Math_.verifyEquals(vec.dot(expect, xtest), lr.predict(xtest), .1f);
+		Math_.verifyEquals(1f, (float) lr.r2, .1f);
 	}
 
 }

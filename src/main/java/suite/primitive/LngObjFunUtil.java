@@ -233,7 +233,7 @@ public class LngObjFunUtil {
 	}
 
 	/**
-	 * Sucks data from a sink and produce into a source.
+	 * Sucks data from a sink and make it into a source.
 	 */
 	public static <V> LngObjSource<V> suck(Sink<Sink<LngObjPair<V>>> fun) {
 		var queue = new NullableSyncQueue<LngObjPair<V>>();

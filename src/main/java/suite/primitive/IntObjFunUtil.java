@@ -233,7 +233,7 @@ public class IntObjFunUtil {
 	}
 
 	/**
-	 * Sucks data from a sink and produce into a source.
+	 * Sucks data from a sink and make it into a source.
 	 */
 	public static <V> IntObjSource<V> suck(Sink<Sink<IntObjPair<V>>> fun) {
 		var queue = new NullableSyncQueue<IntObjPair<V>>();

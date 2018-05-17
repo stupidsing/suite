@@ -29,8 +29,8 @@ public class Complex {
 	}
 
 	public static void verifyEquals(Complex u, Complex v) {
-		MathUtil.verifyEquals(u.r, v.r);
-		MathUtil.verifyEquals(u.i, v.i);
+		Math_.verifyEquals(u.r, v.r);
+		Math_.verifyEquals(u.i, v.i);
 	}
 
 	private Complex(double r, double i) {

@@ -24,12 +24,11 @@ public class ProverBuilder {
 
 		public default Node collectSingle(Node in) {
 			var list = collectList(in);
-			if (list.size() == 1)
+			var size = list.size();
+			if (size == 1)
 				return list.get(0);
-			else if (!list.isEmpty())
-				return Fail.t("too many results");
 			else
-				return Fail.t("failure");
+				return Fail.t(0 < size ? "too many results" : "no result");
 		}
 
 		public default List<Node> collectList(Node in) {

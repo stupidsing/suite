@@ -2,7 +2,7 @@ package suite.math.transform;
 
 import org.junit.Test;
 
-import suite.math.MathUtil;
+import suite.math.Math_;
 
 public class DiscreteCosineTransformTest {
 
@@ -22,7 +22,7 @@ public class DiscreteCosineTransformTest {
 		var fs1 = dct.dct(fs0);
 		var fs2 = dct.idct(fs1);
 		for (var i = 0; i < fs0.length; i++)
-			MathUtil.verifyEquals(fs0[i], fs2[i]);
+			Math_.verifyEquals(fs0[i], fs2[i]);
 	}
 
 }

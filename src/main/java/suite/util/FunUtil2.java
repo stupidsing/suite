@@ -260,7 +260,7 @@ public class FunUtil2 {
 	}
 
 	/**
-	 * Sucks data from a sink and produce into a source.
+	 * Sucks data from a sink and make it into a source.
 	 */
 	public static <K, V> Source2<K, V> suck(Sink<Sink<Pair<K, V>>> fun) {
 		var queue = new NullableSyncQueue<Pair<K, V>>();

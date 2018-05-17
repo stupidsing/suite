@@ -233,7 +233,7 @@ public class ChrObjFunUtil {
 	}
 
 	/**
-	 * Sucks data from a sink and produce into a source.
+	 * Sucks data from a sink and make it into a source.
 	 */
 	public static <V> ChrObjSource<V> suck(Sink<Sink<ChrObjPair<V>>> fun) {
 		var queue = new NullableSyncQueue<ChrObjPair<V>>();

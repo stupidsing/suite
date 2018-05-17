@@ -233,7 +233,7 @@ public class FltObjFunUtil {
 	}
 
 	/**
-	 * Sucks data from a sink and produce into a source.
+	 * Sucks data from a sink and make it into a source.
 	 */
 	public static <V> FltObjSource<V> suck(Sink<Sink<FltObjPair<V>>> fun) {
 		var queue = new NullableSyncQueue<FltObjPair<V>>();

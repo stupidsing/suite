@@ -13,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.adt.pair.Pair;
-import suite.math.MathUtil;
+import suite.math.Math_;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.IntIntSink;
@@ -167,7 +167,7 @@ public class Trade_ {
 		return Read //
 				.from2(portfolio) //
 				.sortBy((code, i) -> !String_.equals(code, Asset.cashSymbol) ? code : "") //
-				.map((code, i) -> MathUtil.posNeg(i) + code + "*" + abs(i)) //
+				.map((code, i) -> Math_.posNeg(i) + code + "*" + abs(i)) //
 				.collect(As::joined);
 	}
 

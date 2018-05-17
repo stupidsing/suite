@@ -6,7 +6,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import suite.math.MathUtil;
+import suite.math.Math_;
 import suite.util.To;
 
 public class MatrixTest {
@@ -19,7 +19,7 @@ public class MatrixTest {
 				{ 2f, 0f, 0f, }, //
 				{ 0f, 3f, 0f, }, //
 				{ 0f, 0f, 4f, }, };
-		MathUtil.verifyEquals(24f, mtx.det(m));
+		Math_.verifyEquals(24f, mtx.det(m));
 	}
 
 	@Test
@@ -28,7 +28,7 @@ public class MatrixTest {
 				{ -2f, 2f, -3f, }, //
 				{ -1f, 1f, 3f, }, //
 				{ 2f, 0f, -1f, }, };
-		MathUtil.verifyEquals(18f, mtx.det(m));
+		Math_.verifyEquals(18f, mtx.det(m));
 	}
 
 	@Test

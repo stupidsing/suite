@@ -4,7 +4,7 @@ import static suite.util.Friends.abs;
 
 import java.util.List;
 
-import suite.math.MathUtil;
+import suite.math.Math_;
 import suite.math.R3;
 import suite.rt.RayTracer;
 import suite.rt.RayTracer.Material;
@@ -30,7 +30,7 @@ public class Plane implements RtObject {
 		var denum = R3.dot(normal, ray.dir);
 		double adv;
 
-		if (MathUtil.epsilon < abs(denum))
+		if (Math_.epsilon < abs(denum))
 			adv = (originIndex - R3.dot(normal, ray.startPoint)) / denum;
 		else
 			adv = -1d; // treats as not-hit

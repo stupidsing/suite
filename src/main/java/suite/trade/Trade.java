@@ -2,7 +2,7 @@ package suite.trade;
 
 import static suite.util.Friends.abs;
 
-import suite.math.MathUtil;
+import suite.math.Math_;
 import suite.util.String_;
 import suite.util.To;
 
@@ -64,7 +64,7 @@ public class Trade {
 	@Override
 	public String toString() {
 		return (!String_.equals(date, NA) ? date + " " : "") //
-				+ MathUtil.posNeg(buySell) //
+				+ Math_.posNeg(buySell) //
 				+ symbol //
 				+ ":" + To.string(price) + "*" + abs(buySell);
 	}

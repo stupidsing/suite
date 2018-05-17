@@ -233,7 +233,7 @@ public class LngFunUtil {
 	}
 
 	/**
-	 * Sucks data from a sink and produce into a source.
+	 * Sucks data from a sink and make it into a source.
 	 */
 	public static LngSource suck(Sink<LngSink> fun) {
 		var queue = new NullableSyncQueue<Long>();

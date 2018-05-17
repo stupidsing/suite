@@ -3,7 +3,7 @@ package suite.math.linalg;
 import org.junit.Test;
 
 import suite.adt.pair.Pair;
-import suite.math.MathUtil;
+import suite.math.Math_;
 import suite.util.FunUtil.Fun;
 
 public class QrTest {
@@ -55,7 +55,7 @@ public class QrTest {
 			// verify R is upper-triangular
 			for (var i = 0; i < length; i++)
 				for (var j = 0; j < i; j++)
-					MathUtil.verifyEquals(r[i][j], 0f);
+					Math_.verifyEquals(r[i][j], 0f);
 
 			return true;
 		});

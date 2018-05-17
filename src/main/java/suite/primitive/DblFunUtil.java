@@ -233,7 +233,7 @@ public class DblFunUtil {
 	}
 
 	/**
-	 * Sucks data from a sink and produce into a source.
+	 * Sucks data from a sink and make it into a source.
 	 */
 	public static DblSource suck(Sink<DblSink> fun) {
 		var queue = new NullableSyncQueue<Double>();
