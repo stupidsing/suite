@@ -70,7 +70,7 @@ public class DpkgUtil {
 							.toList();
 					return Pair.of(pm.get("Package"), list);
 				}) //
-				.map2(Pair::first_, Pair::second) //
+				.map2(Pair::fst, Pair::snd) //
 				.collect(As::map);
 	}
 

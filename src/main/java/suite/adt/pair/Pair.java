@@ -47,14 +47,14 @@ public class Pair<T0, T1> {
 	}
 
 	public static <T0 extends Comparable<? super T0>, T1> Comparator<Pair<T0, T1>> comparatorByFirst() {
-		return (pair0, pair1) -> Object_.compare(first_(pair0), first_(pair1));
+		return (pair0, pair1) -> Object_.compare(fst(pair0), fst(pair1));
 	}
 
-	public static <T0> T0 first_(Pair<T0, ?> pair) {
+	public static <T0> T0 fst(Pair<T0, ?> pair) {
 		return pair != null ? pair.t0 : null;
 	}
 
-	public static <T1> T1 second(Pair<?, T1> pair) {
+	public static <T1> T1 snd(Pair<?, T1> pair) {
 		return pair != null ? pair.t1 : null;
 	}
 

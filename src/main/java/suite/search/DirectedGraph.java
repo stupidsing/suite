@@ -25,8 +25,8 @@ public class DirectedGraph<V> {
 	}
 
 	public static <V> DirectedGraph<V> of(Set<V> vertices, Set<Pair<V, V>> edges) {
-		var forwards = Read.from(edges).toMultimap(Pair::first_, Pair::second);
-		var backwards = Read.from(edges).toMultimap(Pair::second, Pair::first_);
+		var forwards = Read.from(edges).toMultimap(Pair::fst, Pair::snd);
+		var backwards = Read.from(edges).toMultimap(Pair::snd, Pair::fst);
 		return new DirectedGraph<>(vertices, forwards, backwards);
 	}
 

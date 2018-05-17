@@ -16,7 +16,7 @@ public class LazyIbTreeMutator<K, V> implements KeyValueMutator<K, V> {
 
 	@Override
 	public Streamlet<K> keys(K start, K end) {
-		return tree.stream(node(start), node(end)).map(Pair::first_);
+		return tree.stream(node(start), node(end)).map(Pair::fst);
 	}
 
 	@Override

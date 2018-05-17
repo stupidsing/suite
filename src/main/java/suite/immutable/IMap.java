@@ -37,7 +37,7 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 	}
 
 	public V get(K k) {
-		return Pair.second(tree.find(Pair.of(k, (V) null)));
+		return Pair.snd(tree.find(Pair.of(k, (V) null)));
 	}
 
 	public IMap<K, V> put(K k, V v) {

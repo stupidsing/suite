@@ -107,7 +107,7 @@ public class Lexer {
 	}
 
 	private Token detect() {
-		var operator = Pair.first_(commandUtil.recognize(in, pos));
+		var operator = Pair.fst(commandUtil.recognize(in, pos));
 		LexType type;
 
 		if (pos < in.length()) {
