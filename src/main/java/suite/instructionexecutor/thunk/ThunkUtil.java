@@ -40,7 +40,8 @@ public class ThunkUtil {
 	}
 
 	/**
-	 * Evaluates the whole (lazy) term to a list and feed the elements into a sink.
+	 * Evaluates the whole (lazy) term to a list and feed the elements into a
+	 * sink.
 	 */
 	public static void yawnSink(Iterate<Node> yawn, Node node, IoSink<Node> sink) throws IOException {
 		var st = yawnList(yawn, node, true);
@@ -55,7 +56,6 @@ public class ThunkUtil {
 			private boolean first = true;
 
 			public Node source() {
-				Tree tree;
 
 				// first node is not a thunk, remainings are
 				if (!first)
@@ -63,7 +63,9 @@ public class ThunkUtil {
 				else
 					first = false;
 
-				if ((tree = Tree.decompose(node_)) != null) {
+				var tree = Tree.decompose(node_);
+
+				if (tree != null) {
 					var result = yawn.apply(tree.getLeft());
 					node_ = tree.getRight();
 
@@ -86,8 +88,8 @@ public class ThunkUtil {
 
 		if (node instanceof Tree) {
 			var tree = (Tree) node;
-			Node left = deepYawn(yawn, tree.getLeft());
-			Node right = deepYawn(yawn, tree.getRight());
+			var left = deepYawn(yawn, tree.getLeft());
+			var right = deepYawn(yawn, tree.getRight());
 			node = Tree.of(tree.getOperator(), left, right);
 		}
 
