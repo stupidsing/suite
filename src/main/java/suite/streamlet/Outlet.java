@@ -138,11 +138,6 @@ public class Outlet<T> implements OutletDefaults<T> {
 		});
 	}
 
-	public <R> R decons(Fun2<T, Outlet<T>, R> fun) {
-		var t = next();
-		return t != null ? fun.apply(t, this) : Fail.t();
-	}
-
 	public Outlet<T> distinct() {
 		var set = new HashSet<>();
 		return of(() -> {

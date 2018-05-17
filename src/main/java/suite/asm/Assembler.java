@@ -56,8 +56,7 @@ public class Assembler {
 				.apply(Suite.parse("" //
 						+ "source (.bits, .address, .instruction,)" //
 						+ ", asi:.bits:.address .instruction .code" //
-						+ ", sink .code" //
-		));
+						+ ", sink .code"));
 
 		this.bits = bits;
 		this.preassemble = preassemble;
