@@ -215,10 +215,6 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 		return streamlet2(() -> spawn().sortBy(fun));
 	}
 
-	public <O> Streamlet2<K, V> sortBy(Fun2<K, V, O> fun, Comparator<O> comparator) {
-		return streamlet2(() -> spawn().sortBy(fun, comparator));
-	}
-
 	public Streamlet2<K, V> sortByKey(Comparator<K> comparator) {
 		return streamlet2(() -> spawn().sortByKey(comparator));
 	}
