@@ -39,7 +39,7 @@ public class P0CrudeScript {
 
 		var node = new Object() {
 			private Node node(Ast ast) {
-				String entity = ast.entity;
+				var entity = ast.entity;
 				var atom = Atom.of(entity);
 				var children = ast.children;
 				if (entity.startsWith("<"))
