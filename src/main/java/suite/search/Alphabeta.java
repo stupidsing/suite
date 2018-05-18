@@ -34,7 +34,7 @@ public class Alphabeta<State> {
 				for (var state1 : states) {
 					moves.push(state1);
 
-					IntObjPair<List<State>> result = search_(state1, depth - 1, -beta, -alpha);
+					var result = search_(state1, depth - 1, -beta, -alpha);
 					var score = -result.t0;
 
 					if (alpha < score) {
