@@ -139,12 +139,12 @@ public class Mapify {
 						.map(field -> new FieldInfo(field, field.getName(), getMapifier(field.getGenericType()))) //
 						.toList();
 
-				mapifier = new Mapifier(object -> Rethrow.ex(() -> {
-					var map = newMap();
-					for (var fi : fis)
-						map.put(fi.name, apply_(fi.mapifier.mapify, fi.field.get(object)));
-					return map;
-				}), object -> Rethrow.ex(() -> {
+				mapifier = new Mapifier(object -> {
+					return Read //
+							.from(fis) //
+							.map2(fi -> fi.name, fi -> apply_(fi.mapifier.mapify, Rethrow.ex(() -> fi.field.get(object)))) //
+							.toMap();
+				}, object -> Rethrow.ex(() -> {
 					var map = (Map<?, ?>) object;
 					var object1 = Object_.new_(clazz);
 					for (var fi : fis)
@@ -178,15 +178,13 @@ public class Mapify {
 				var km = getMapifier(typeArgs[0]);
 				var vm = getMapifier(typeArgs[1]);
 				mapifier = new Mapifier(object -> {
-					var map = newMap();
-					for (var e : ((Map<?, ?>) object).entrySet())
-						map.put(apply_(km.mapify, e.getKey()), apply_(vm.mapify, e.getValue()));
-					return map;
+					return Read //
+							.from2((Map<?, ?>) object) //
+							.map2((k, v) -> apply_(km.unmapify, k), (k, v) -> apply_(vm.mapify, v)) //
+							.toMap();
 				}, object -> {
-					var map = (Map<?, ?>) object;
 					var object1 = (Map<Object, Object>) instantiate(clazz);
-					for (var e : map.entrySet())
-						object1.put(apply_(km.unmapify, e.getKey()), apply_(vm.unmapify, e.getValue()));
+					((Map<?, ?>) object).forEach((k, v) -> object1.put(apply_(km.unmapify, k), apply_(vm.unmapify, v)));
 					return object1;
 				});
 			} else
