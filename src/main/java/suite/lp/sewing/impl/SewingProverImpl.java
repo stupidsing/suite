@@ -463,7 +463,7 @@ public class SewingProverImpl implements ProverFactory {
 			var className = ((Atom) m[0]).name;
 			var fieldName = ((Atom) m[1]).name;
 			BuiltinPredicate predicate = Rethrow.ex(() -> {
-				Class<?> clazz = Class.forName(className);
+				var clazz = Class.forName(className);
 				return (BuiltinPredicate) clazz.getField(fieldName).get(Object_.new_(clazz));
 			});
 			tr = compileTrCallPredicate(bf, predicate, m[2]);
