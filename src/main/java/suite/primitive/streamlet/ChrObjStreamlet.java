@@ -242,6 +242,10 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 		return streamlet(() -> spawn().sortBy(fun));
 	}
 
+	public <O> ChrObjStreamlet<V> sortBy(ChrObj_Obj<V, O> fun, Comparator<O> comparator) {
+		return streamlet(() -> spawn().sortBy(fun, comparator));
+	}
+
 	public ChrObjStreamlet<V> sortByKey(Comparator<Character> comparator) {
 		return streamlet(() -> spawn().sortByKey(comparator));
 	}

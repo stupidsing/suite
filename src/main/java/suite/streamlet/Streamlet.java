@@ -204,6 +204,10 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 		return streamlet(() -> spawn().sortBy(fun));
 	}
 
+	public <O> Streamlet<T> sortBy(Fun<T, O> fun, Comparator<O> comparator) {
+		return streamlet(() -> spawn().sortBy(fun, comparator));
+	}
+
 	public Source<T> source() {
 		return spawn().source();
 	}

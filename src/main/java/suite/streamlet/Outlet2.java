@@ -379,7 +379,11 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 	}
 
 	public <O extends Comparable<? super O>> Outlet2<K, V> sortBy(Fun2<K, V, O> fun) {
-		return sort((e0, e1) -> Object_.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
+		return sortBy(fun, Object_::compare);
+	}
+
+	public <O> Outlet2<K, V> sortBy(Fun2<K, V, O> fun, Comparator<O> comparator) {
+		return sort((e0, e1) -> comparator.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
 	}
 
 	public Outlet2<K, V> sortByKey(Comparator<K> comparator) {
