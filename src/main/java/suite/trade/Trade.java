@@ -3,6 +3,7 @@ package suite.trade;
 import static suite.util.Friends.abs;
 
 import suite.math.Math_;
+import suite.util.Object_;
 import suite.util.String_;
 import suite.util.To;
 
@@ -16,6 +17,14 @@ public class Trade {
 	public final float price;
 	public final String strategy;
 	public final String remark;
+
+	public static int compare(Trade trade0, Trade trade1) {
+		var c = 0;
+		c = c == 0 ? Object_.compare(trade0.symbol, trade1.symbol) : c;
+		c = c == 0 ? Integer.compare(trade0.buySell, trade1.buySell) : c;
+		c = c == 0 ? Object_.compare(trade0.strategy, trade1.strategy) : c;
+		return c;
+	};
 
 	public static Trade of(String[] array) {
 		return new Trade(array[0], Integer.parseInt(array[1]), array[2], Float.parseFloat(array[3]), array[4]);

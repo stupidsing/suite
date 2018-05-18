@@ -316,11 +316,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public <O extends Comparable<? super O>> Outlet<T> sortBy(Fun<T, O> fun) {
-		return sortBy(fun, Object_::compare);
-	}
-
-	public <O> Outlet<T> sortBy(Fun<T, O> fun, Comparator<O> comparator) {
-		return sort((e0, e1) -> comparator.compare(fun.apply(e0), fun.apply(e1)));
+		return sort((e0, e1) -> Object_.compare(fun.apply(e0), fun.apply(e1)));
 	}
 
 	public Outlet<Outlet<T>> split(Predicate<T> fun) {

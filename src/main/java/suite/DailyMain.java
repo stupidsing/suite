@@ -112,6 +112,7 @@ public class DailyMain extends ExecutableProgram {
 				+ "\nBUY REQUESTS" //
 				+ requestTrades //
 						.filterValue(trade -> 0 < trade.buySell) //
+						.sortByValue(Trade::compare) //
 						.map((strategy, t) -> "" //
 								+ Trade.of(td, -t.buySell, t.symbol, t.price, sellPool).record() + "\n" //
 								+ Trade.of(td, +t.buySell, t.symbol, t.price, strategy).record()) //
@@ -119,6 +120,7 @@ public class DailyMain extends ExecutableProgram {
 				+ "\nSELL REQUESTS" //
 				+ requestTrades //
 						.filterValue(trade -> trade.buySell < 0) //
+						.sortByValue(Trade::compare) //
 						.map((strategy, t) -> "" //
 								+ Trade.of(td, +t.buySell, t.symbol, t.price, strategy).record() + "\n" //
 								+ Trade.of(td, -t.buySell, t.symbol, t.price, sellPool).record()) //

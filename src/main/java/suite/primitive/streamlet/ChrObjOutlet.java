@@ -383,11 +383,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public <O extends Comparable<? super O>> ChrObjOutlet<V> sortBy(ChrObj_Obj<V, O> fun) {
-		return sort(fun, Object_::compare);
-	}
-
-	public <O> ChrObjOutlet<V> sortBy(ChrObj_Obj<V, O> fun, Comparator<O> comparator) {
-		return sort((e0, e1) -> comparator.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
+		return sort((e0, e1) -> Object_.compare(fun.apply(e0.t0, e0.t1), fun.apply(e1.t0, e1.t1)));
 	}
 
 	public ChrObjOutlet<V> sortByKey(Comparator<Character> comparator) {
