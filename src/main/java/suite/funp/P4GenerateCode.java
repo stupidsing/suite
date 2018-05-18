@@ -284,13 +284,11 @@ public class P4GenerateCode {
 				})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
 					var p = new Amd64Parse();
 					new Object() {
-						private void assign(Compile1 c1, int i) {
-							if (i < assigns.size()) {
-								var assign = assigns.get(i);
-								var op = assign.t0;
-								c1.compileOpSpec(assign.t1, op);
-								assign(c1.mask(op), i + 1);
-							}
+						private Object assign(Compile1 c1, int i) {
+							return i < assigns.size() ? assigns.get(i).map((op, f) -> {
+								c1.compileOpSpec(f, op);
+								return assign(c1.mask(op), i + 1);
+							}) : this;
 						}
 					}.assign(this, 0);
 
