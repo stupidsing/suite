@@ -18,7 +18,6 @@ import suite.util.FunUtil.Source;
 public class LcsDp<T> {
 
 	private Node emptyNode = new Node(0, FunUtil.<T> nullSource());
-
 	private Comparator<Node> comparator = (node0, node1) -> node0.length - node1.length;
 
 	private class Node {
@@ -39,7 +38,7 @@ public class LcsDp<T> {
 		int size0 = l0.size(), size1 = l1.size();
 
 		@SuppressWarnings("unchecked")
-		Node[][] dp = (Node[][]) Array.newInstance(Node.class, size0, size1);
+		var dp = (Node[][]) Array.newInstance(Node.class, size0, size1);
 
 		for (var i0 = 0; i0 < size0; i0++)
 			for (var i1 = 0; i1 < size1; i1++) {
@@ -49,14 +48,14 @@ public class LcsDp<T> {
 
 				var t0 = l0.get(i0);
 				var t1 = l1.get(i1);
-				Node lu1 = Objects.equals(t0, t1) ? new Node(t0, lu) : lu;
+				var lu1 = Objects.equals(t0, t1) ? new Node(t0, lu) : lu;
 
 				dp[i0][i1] = Collections.max(List.of(u, l, lu1), comparator);
 			}
 
 		var node = dp[size0 - 1][size1 - 1];
-		Source<T> source = node.source;
-		List<T> result = new ArrayList<>(Collections.<T> nCopies(node.length, null));
+		var source = node.source;
+		var result = new ArrayList<T>(Collections.<T> nCopies(node.length, null));
 
 		for (var i = node.length - 1; 0 <= i; i--)
 			result.set(i, source.source());

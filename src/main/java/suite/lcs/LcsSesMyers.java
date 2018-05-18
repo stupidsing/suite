@@ -25,7 +25,7 @@ public class LcsSesMyers<T> {
 		var k1 = 0;
 		int x2 = 0, y2 = 0;
 
-		List<int[]> vs = new ArrayList<>();
+		var vs = new ArrayList<int[]>();
 
 		found: for (d = 0; d <= nm; d++) {
 			v1 = new int[d + 1];

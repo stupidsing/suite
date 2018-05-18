@@ -420,7 +420,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public List<ChrObjPair<V>> toList() {
-		List<ChrObjPair<V>> list = new ArrayList<ChrObjPair<V>>();
+		var list = new ArrayList<ChrObjPair<V>>();
 		ChrObjPair<V> pair;
 		while (next(pair = ChrObjPair.of((char) 0, null)))
 			list.add(pair);
