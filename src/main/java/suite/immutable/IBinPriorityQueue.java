@@ -138,7 +138,7 @@ public class IBinPriorityQueue<T> {
 			greater = node0;
 		}
 
-		List<Node> nodes = new ArrayList<>(rank);
+		var nodes = new ArrayList<Node>(rank);
 		nodes.addAll(smaller.nodes);
 		nodes.add(greater);
 

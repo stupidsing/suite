@@ -131,12 +131,7 @@ public class Nodify {
 				}, node -> {
 					var tree = Tree.decompose(node, TermOp.COLON_);
 					if (tree != null) {
-						Class<?> clazz1;
-						try {
-							clazz1 = Class.forName(((Atom) tree.getLeft()).name);
-						} catch (ClassNotFoundException ex) {
-							clazz1 = Fail.t(ex);
-						}
+						var clazz1 = Rethrow.ex(() -> Class.forName(((Atom) tree.getLeft()).name));
 						return apply_(getNodifier(clazz1), tree.getRight());
 					} else
 						// happens when an enum implements an interface
@@ -145,10 +140,7 @@ public class Nodify {
 			else {
 				var fieldInfos = Read //
 						.from(inspect.fields(clazz)) //
-						.map(field -> {
-							var type1 = field.getGenericType();
-							return new FieldInfo(field, field.getName(), getNodifier(type1));
-						}) //
+						.map(field -> new FieldInfo(field, field.getName(), getNodifier(field.getGenericType()))) //
 						.toList();
 
 				var pairs = Read.from(fieldInfos).map(f -> Pair.of(Atom.of(f.name), f)).toList();

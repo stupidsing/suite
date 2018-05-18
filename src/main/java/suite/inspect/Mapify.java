@@ -94,7 +94,7 @@ public class Mapify {
 			if (Type_.isSimple(clazz))
 				mapifier = new Mapifier(id, id);
 			else if (clazz.isArray()) {
-				Class<?> componentType = clazz.getComponentType();
+				var componentType = clazz.getComponentType();
 				var mapifier1 = getMapifier(componentType);
 				mapifier = new Mapifier(object -> {
 					var map = newMap();
@@ -136,10 +136,7 @@ public class Mapify {
 			else {
 				var fis = Read //
 						.from(inspect.fields(clazz)) //
-						.map(field -> {
-							var type1 = field.getGenericType();
-							return new FieldInfo(field, field.getName(), getMapifier(type1));
-						}) //
+						.map(field -> new FieldInfo(field, field.getName(), getMapifier(field.getGenericType()))) //
 						.toList();
 
 				mapifier = new Mapifier(object -> Rethrow.ex(() -> {

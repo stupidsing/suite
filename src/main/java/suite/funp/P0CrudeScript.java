@@ -11,6 +11,7 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpAssignReference;
+import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
@@ -58,6 +59,10 @@ public class P0CrudeScript {
 				return new SwitchNode<Funp>(node //
 				).match1("statement (expression (.0,),)", a -> {
 					return expr(a);
+				}).match3("statement-block (statement-let (bind (<IDENTIFIER> .0,), .1,), .2)", (a, b, c) -> {
+					return FunpDefine.of(false, str(a), expr(b), stmt(c));
+				}).match1("statement-block (.0,)", a -> {
+					return stmt(a);
 				}).match3("statement-if (.0, .1, .2,)", (a, b, c) -> {
 					return FunpIf.of(expr(a), stmt(b), stmt(c));
 				}).match1("statement-return (.0,)", a -> {

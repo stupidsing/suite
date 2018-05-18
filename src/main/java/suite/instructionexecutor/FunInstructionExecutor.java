@@ -3,7 +3,6 @@ package suite.instructionexecutor;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.List;
 
 import suite.fp.intrinsic.Intrinsics;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
@@ -55,7 +54,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		switch (insn.insn) {
 		case CALLINTRINSIC_:
 			data = (Data<?>) ds[--dsp];
-			List<Node> ps = new ArrayList<>(3);
+			var ps = new ArrayList<Node>(3);
 			for (var i = 1; i < insn.op1; i++)
 				ps.add((Node) ds[--dsp]);
 			result = Data.<Intrinsic> get(data).invoke(intrinsicCallback, ps);

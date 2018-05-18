@@ -230,7 +230,7 @@ public class NeuralNetwork {
 	}
 
 	private <T> Layer<T[], T> flattenLayer(Class<T> arrayClazz, int stride) {
-		Class<?> clazz = arrayClazz.getComponentType();
+		var clazz = arrayClazz.getComponentType();
 
 		return inputs -> {
 			@SuppressWarnings("unchecked")
