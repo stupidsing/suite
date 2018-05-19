@@ -87,9 +87,9 @@ public class P0CrudeScript {
 					return Read.from(Tree.iter(b)).fold(expr(a), (f, c) -> FunpTree.of(TermOp.PLUS__, f, expr(c)));
 				}).match1("expression-and (.0,)", a -> {
 					return expr(a);
-				}).match2("expression-assign (.0, .1)", (a, b) -> {
-					return expr(a);
 				}).match1("expression-as (.0,)", a -> {
+					return expr(a);
+				}).match2("expression-assign (.0, .1)", (a, b) -> {
 					return expr(a);
 				}).match("expression-array .0", m -> {
 					return FunpArray.of(Read.from(m).map(this::expr).toList());
