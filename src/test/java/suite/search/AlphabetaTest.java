@@ -25,7 +25,7 @@ public class AlphabetaTest {
 		}
 	}
 
-	private int[][] lines = new int[][] { //
+	private int[][] lines = { //
 			{ 0, 1, 2, }, //
 			{ 3, 4, 5, }, //
 			{ 6, 7, 8, }, //
@@ -36,7 +36,7 @@ public class AlphabetaTest {
 			{ 2, 4, 6, }, //
 	};
 
-	private int[] scores = new int[] { 0, 1, 10, 10000, };
+	private int[] scores = { 0, 1, 10, 10000, };
 
 	private List<TicTacToe> generate(TicTacToe state) {
 		var states = new ArrayList<TicTacToe>();

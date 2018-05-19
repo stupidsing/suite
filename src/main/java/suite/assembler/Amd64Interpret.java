@@ -55,7 +55,7 @@ public class Amd64Interpret {
 	private int edi = amd64.edi.reg;
 	private int eip;
 
-	private int[] scales = new int[] { 1, 2, 4, 8, };
+	private int[] scales = { 1, 2, 4, 8, };
 
 	private Sink<Bytes> output = out::append;
 

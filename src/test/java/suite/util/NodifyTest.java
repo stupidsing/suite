@@ -20,12 +20,12 @@ public class NodifyTest {
 
 	public static class Container {
 		private List<I> is;
-		private I[] array = new I[] { new A(), new B(), };
+		private I[] array = { new A(), new B(), };
 	}
 
 	public static class A implements I {
 		private int i = 123;
-		private int[] ints = new int[] { 0, 1, 2, };
+		private int[] ints = { 0, 1, 2, };
 	}
 
 	public static class B implements I {
