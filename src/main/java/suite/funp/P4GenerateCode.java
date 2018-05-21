@@ -533,7 +533,7 @@ public class P4GenerateCode {
 							em.emit(amd64.instruction(Insn.NEG, pair.t1));
 					} else if (setInsn != null) {
 						var pair = compileCommutativeTree(Insn.CMP, assoc, lhs, rhs);
-						em.emit(amd64.instruction(pair.t1 == lhs ? setInsn : setRevInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
+						em.emit(amd64.instruction(pair.t0 == lhs ? setInsn : setRevInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
 					} else if (shInsn != null) {
 						var op0 = compileLoad(lhs);
 						if (numRhs != null)
