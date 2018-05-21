@@ -100,7 +100,7 @@ public class P2GenerateLambda {
 			}).applyIf(FunpDeref.class, f -> {
 				return Fail.t();
 			}).applyIf(FunpError.class, f -> {
-				return Fail.t();
+				return rt -> Fail.t();
 			}).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				var if1 = compile_(if_);
 				var then1 = compile_(then);
