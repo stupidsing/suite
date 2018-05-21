@@ -91,7 +91,7 @@ public class Amd64Interpret {
 			try {
 				IntObj_Int<Operand> trim = (i, op) -> {
 					if (op.size == 1)
-						return i & 0xFF;
+						return (int) (byte) i;
 					else
 						return i;
 				};
