@@ -3,6 +3,7 @@ package suite.assembler;
 import static suite.util.Friends.min;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.List;
 
 import suite.assembler.Amd64.Insn;
@@ -66,6 +67,7 @@ public class Amd64Interpret {
 	}
 
 	public int interpret(List<Instruction> instructions, Bytes code, Bytes input) {
+		mem.order(ByteOrder.LITTLE_ENDIAN);
 		mem.position(positionCode0);
 		mem.put(code.bs);
 		eip = positionCode0;
