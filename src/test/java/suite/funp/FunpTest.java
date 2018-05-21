@@ -64,6 +64,11 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testFold() {
+		test(100, "fold 0 (v => v < 100) (v => v + 1)");
+	}
+
+	@Test
 	public void testIo() {
 		test(1, "io 0 | io-cat (i => io (i + 1))");
 	}

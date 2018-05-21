@@ -29,6 +29,7 @@ import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
+import suite.funp.P0.FunpFold;
 import suite.funp.P0.FunpGlobal;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
@@ -276,7 +277,13 @@ public class P2InferType {
 				return unify.newRef();
 			}).applyIf(FunpError.class, f -> {
 				return unify.newRef();
-			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
+			}).applyIf(FunpFold.class, f -> f.apply((init, cont, next) -> {
+				var tv = unify.newRef();
+				unify(n, tv, infer(init));
+				unify(n, TypeLambda.of(tv, typeBoolean), infer(cont));
+				unify(n, TypeLambda.of(tv, tv), infer(next));
+				return tv;
+			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
 				var tf = unify.newRef();
 				var ts = TypeStruct.of();
 				ts.pairs.add(Pair.of(field, tf));
@@ -366,19 +373,8 @@ public class P2InferType {
 
 			return n.<Funp> switch_( //
 			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-				var lt = new LambdaType(lambda);
-				var lambda1 = erase(lambda);
 				var size = getTypeSize(typeOf(value));
-				Funp invoke;
-				if (lt.os == is)
-					invoke = allocStack(size, value, FunpInvoke.of(lambda1));
-				else if (lt.os == ps + ps)
-					invoke = allocStack(size, value, FunpInvoke2.of(lambda1));
-				else {
-					var as = allocStack(size, value, FunpInvokeIo.of(lambda1, lt.is, lt.os));
-					invoke = FunpAllocStack.of(lt.os, FunpDontCare.of(), as, IntMutable.nil());
-				}
-				return FunpSaveRegisters.of(invoke);
+				return apply(erase(value), lambda, size);
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
 				var te = unify.newRef();
 				unify(n, type0, TypeArray.of(te));
@@ -403,7 +399,7 @@ public class P2InferType {
 				var offset = IntMutable.nil();
 				var size = getTypeSize(typeOf(value));
 				var e1 = new Erase(scope, env.replace(var, new Var(scope, offset, 0, size)));
-				return allocStack(size, value, e1.erase(expr), offset);
+				return FunpAllocStack.of(size, erase(value), e1.erase(expr), offset);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				var assigns = new ArrayList<Pair<Var, Funp>>();
 				var offsetStack = IntMutable.nil();
@@ -442,6 +438,16 @@ public class P2InferType {
 							return FunpMemory.of(erase(reference), offset, offset1);
 					}
 				return Fail.t();
+			})).applyIf(FunpFold.class, f -> f.apply((init, cont, next) -> {
+				var offset = IntMutable.nil();
+				var size = getTypeSize(typeOf(init));
+				var var_ = new Var(scope, offset, 0, size);
+				var e1 = new Erase(scope, env.replace("fold" + Util.temp(), var_));
+				var m = getVariable(var_);
+				var cont_ = e1.apply(m, cont, size);
+				var next_ = e1.apply(m, next, size);
+				var while_ = FunpWhile.of(cont_, FunpAssign.of(m, next_, FunpDontCare.of()), m);
+				return FunpAllocStack.of(size, e1.erase(init), while_, offset);
 			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
 				var size = getTypeSize(typeOf(value));
 				var address = Mutable.<Operand> nil();
@@ -467,7 +473,7 @@ public class P2InferType {
 				var e1 = new Erase(scope, env.replace(var, var_));
 				var m = getVariable(var_);
 				var while_ = FunpWhile.of(e1.erase(cond), FunpAssign.of(m, e1.erase(iterate), FunpDontCare.of()), m);
-				return allocStack(size, init, while_, offset);
+				return FunpAllocStack.of(size, erase(init), while_, offset);
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				var b = ps + ps; // return address and EBP
 				var scope1 = scope + 1;
@@ -531,6 +537,25 @@ public class P2InferType {
 			})).result();
 		}
 
+		private FunpSaveRegisters apply(Funp value, Funp lambda, int size) {
+			var lt = new LambdaType(lambda);
+			var lambda1 = erase(lambda);
+			Funp invoke;
+			if (lt.os == is)
+				invoke = allocStack(size, value, FunpInvoke.of(lambda1));
+			else if (lt.os == ps + ps)
+				invoke = allocStack(size, value, FunpInvoke2.of(lambda1));
+			else {
+				var as = allocStack(size, value, FunpInvokeIo.of(lambda1, lt.is, lt.os));
+				invoke = FunpAllocStack.of(lt.os, FunpDontCare.of(), as, IntMutable.nil());
+			}
+			return FunpSaveRegisters.of(invoke);
+		}
+
+		private FunpAllocStack allocStack(int size, Funp value, Funp expr) {
+			return FunpAllocStack.of(size, value, expr, IntMutable.nil());
+		}
+
 		private Funp eraseRoutine(LambdaType lt, Funp frame, Funp expr) {
 			if (lt.os == is)
 				return FunpRoutine.of(frame, expr);
@@ -538,14 +563,6 @@ public class P2InferType {
 				return FunpRoutine2.of(frame, expr);
 			else
 				return FunpRoutineIo.of(frame, expr, lt.is, lt.os);
-		}
-
-		private FunpAllocStack allocStack(int size, Funp value, Funp expr) {
-			return allocStack(size, value, expr, IntMutable.nil());
-		}
-
-		private FunpAllocStack allocStack(int size, Funp value, Funp expr, IntMutable stack) {
-			return FunpAllocStack.of(size, erase(value), expr, stack);
 		}
 
 		private FunpMemory getVariable(Var vd) {

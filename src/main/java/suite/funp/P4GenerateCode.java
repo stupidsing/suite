@@ -388,9 +388,9 @@ public class P4GenerateCode {
 					} else
 						return Fail.t();
 				})).applyIf(FunpInvokeIo.class, f -> f.apply((routine, is, os) -> {
+					compileInvoke(routine);
 					return postAssign.apply((c1, target) -> {
 						OpReg r0, r1;
-						c1.compileInvoke(routine);
 						var c2 = c1.mask(r0 = c1.compileOpReg(target.pointer));
 						var c3 = c2.mask(r1 = c2.compileFramePointer());
 						c3.compileMove(r0, target.start, r1, c3.fd + is, target.size());

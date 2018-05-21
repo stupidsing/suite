@@ -26,6 +26,7 @@ import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
+import suite.funp.P0.FunpFold;
 import suite.funp.P0.FunpGlobal;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
@@ -171,6 +172,8 @@ public class P0Parse {
 				return FunpError.of();
 			}).match2(".0/.1", (a, b) -> {
 				return FunpField.of(FunpReference.of(p(a)), name(b));
+			}).match3("fold .0 .1 .2", (a, b, c) -> {
+				return FunpFold.of(p(a), p(b), p(c));
 			}).match3("global .0 := .1 >> .2", (a, b, c) -> {
 				var var = name(a);
 				return FunpGlobal.of(var, p(b), parseNewVariable(c, var));

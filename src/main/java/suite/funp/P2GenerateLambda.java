@@ -8,6 +8,7 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpError;
+import suite.funp.P0.FunpFold;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIterate;
@@ -22,6 +23,7 @@ import suite.node.util.TreeUtil;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
+import suite.util.Util;
 
 public class P2GenerateLambda {
 
@@ -101,7 +103,21 @@ public class P2GenerateLambda {
 				return Fail.t();
 			}).applyIf(FunpError.class, f -> {
 				return rt -> Fail.t();
-			}).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
+			}).applyIf(FunpFold.class, f -> f.apply((init, cont, next) -> {
+				var var = "fold" + Util.temp();
+				var fs1 = fs + 1;
+				var env1 = env.replace(var, fs1);
+				var init_ = compile_(init);
+				var var_ = FunpVariable.of(var);
+				var cont_ = compile(fs1, env1, FunpApply.of(var_, cont));
+				var next_ = compile(fs1, env1, FunpApply.of(var_, next));
+				return rt -> {
+					var rt1 = new Rt(rt, init_.apply(rt));
+					while (b(rt1, cont_))
+						rt1.var = next_.apply(rt1);
+					return rt1.var;
+				};
+			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				var if1 = compile_(if_);
 				var then1 = compile_(then);
 				var else1 = compile_(else_);
