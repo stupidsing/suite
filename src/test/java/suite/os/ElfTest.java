@@ -20,6 +20,8 @@ public class ElfTest {
 		test("iterate n 0 (n < 100) (io (n + 1)) \n", "", 100);
 	}
 
+	// io :: a -> io a
+	// io-cat :: io a -> (a -> io b) -> io b
 	@Test
 	public void testIo() {
 		var text = "garbage\n";
