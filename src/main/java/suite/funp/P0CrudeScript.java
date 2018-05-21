@@ -44,14 +44,12 @@ public class P0CrudeScript {
 				var entity = ast.entity;
 				var atom = Atom.of(entity);
 				var children = ast.children;
+				Node node;
 				if (entity.startsWith("<"))
-					return Tree.of(TermOp.TUPLE_, atom, new Str(in.substring(ast.start, ast.end)));
-				else {
-					Node node = Atom.NIL;
-					for (var i = children.size() - 1; 0 <= i; i--)
-						node = Tree.of(TermOp.AND___, node(children.get(i)), node);
-					return Tree.of(TermOp.TUPLE_, atom, node);
-				}
+					node = new Str(in.substring(ast.start, ast.end));
+				else
+					node = Read.from(children).reverse().<Node> fold(Atom.NIL, (n, c) -> Tree.of(TermOp.AND___, node(c), n));
+				return Tree.of(TermOp.TUPLE_, atom, node);
 			}
 		}.node(ast);
 
