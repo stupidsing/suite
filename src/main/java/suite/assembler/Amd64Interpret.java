@@ -10,11 +10,14 @@ import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
+import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.primitive.IntObj_Int;
 import suite.primitive.IntPrimitives.IntSink;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.map.IntIntMap;
 import suite.util.Fail;
 import suite.util.FunUtil.Sink;
@@ -84,41 +87,58 @@ public class Amd64Interpret {
 				LogUtil.info(state(instruction));
 
 			try {
+				IntObj_Int<Operand> trim = (i, op) -> {
+					if (op.size == 1)
+						return i & 0xFF;
+					else
+						return i;
+				};
+
+				Obj_Int<Operand> fetch32 = op -> {
+					int v0;
+					if (op instanceof OpImm)
+						v0 = (int) ((OpImm) op).imm;
+					else if (op instanceof OpMem)
+						v0 = mem.getInt(index(address((OpMem) op)));
+					else if (op instanceof OpReg) {
+						var reg = ((OpReg) op).reg;
+						v0 = regs[reg];
+					} else
+						v0 = 0;
+					return trim.apply(v0, op);
+				};
+
 				var op0 = instruction.op0;
 				var op1 = instruction.op1;
-				int source0, source1;
+				int source0 = fetch32.apply(op0);
+				int source1 = fetch32.apply(op1);
 				IntSink assign;
 
-				if (op0 instanceof OpImm) {
-					source0 = (int) ((OpImm) op0).imm;
-					assign = null;
-				} else if (op0 instanceof OpMem) {
+				if (op0 instanceof OpMem) {
 					var index = index(address((OpMem) op0));
-					source0 = mem.getInt(index);
-					assign = i -> mem.putInt(index, i);
+					if (op0.size == 1)
+						assign = i -> mem.put(index, (byte) i);
+					else if (op0.size == 4)
+						assign = i -> mem.putInt(index, i);
+					else
+						assign = null;
 				} else if (op0 instanceof OpReg) {
 					var reg = ((OpReg) op0).reg;
-					source0 = regs[reg];
-					assign = i -> {
-						regs[reg] = i;
-					};
-				} else {
-					source0 = 0;
+					if (op0.size == 1)
+						assign = i -> regs[reg] = regs[reg] & 0xFFFFFF00 | i;
+					else if (op0.size == 4)
+						assign = i -> regs[reg] = i;
+					else
+						assign = null;
+				} else
 					assign = null;
-				}
-
-				if (op1 instanceof OpImm)
-					source1 = (int) ((OpImm) op1).imm;
-				else if (op1 instanceof OpMem)
-					source1 = mem.getInt(index(address((OpMem) op1)));
-				else if (op1 instanceof OpReg)
-					source1 = regs[((OpReg) op1).reg];
-				else
-					source1 = 0;
 
 				switch (instruction.insn) {
 				case ADD:
 					assign.sink(source0 + source1);
+					break;
+				case AND:
+					assign.sink(source0 & source1);
 					break;
 				case CALL:
 					push(eip);
@@ -136,7 +156,7 @@ public class Amd64Interpret {
 					assign.sink(source0 + 1);
 					break;
 				case INT:
-					if (source0 == -128)
+					if ((byte) source0 == -128)
 						if (regs[eax] == 1)
 							return regs[ebx];
 						else if (regs[eax] == 3) {
@@ -185,6 +205,14 @@ public class Amd64Interpret {
 					if (c != 0)
 						eip = labels.get(source0);
 					break;
+				case JNZ:
+					if (c != 0)
+						eip = labels.get(source0);
+					break;
+				case JZ:
+					if (c == 0)
+						eip = labels.get(source0);
+					break;
 				case LABEL:
 					break;
 				case LEA:
@@ -198,6 +226,9 @@ public class Amd64Interpret {
 					break;
 				case MOVSD:
 					movsd();
+					break;
+				case OR:
+					assign.sink(source0 | source1);
 					break;
 				case POP:
 					assign.sink(pop());
@@ -213,6 +244,24 @@ public class Amd64Interpret {
 					break;
 				case RET:
 					eip = pop();
+					break;
+				case SETE:
+					assign.sink(c == 0 ? 1 : 0);
+					break;
+				case SETG:
+					assign.sink(0 < c ? 1 : 0);
+					break;
+				case SETGE:
+					assign.sink(0 <= c ? 1 : 0);
+					break;
+				case SETL:
+					assign.sink(c < 0 ? 1 : 0);
+					break;
+				case SETLE:
+					assign.sink(c <= 0 ? 1 : 0);
+					break;
+				case SETNE:
+					assign.sink(c != 0 ? 1 : 0);
 					break;
 				case SUB:
 					assign.sink(source0 - source1);
