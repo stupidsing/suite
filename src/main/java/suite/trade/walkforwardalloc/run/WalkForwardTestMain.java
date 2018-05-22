@@ -5,9 +5,9 @@ import suite.os.Scheduler;
 import suite.trade.Time;
 import suite.trade.Trade_;
 import suite.trade.backalloc.strategy.BackAllocatorGeneral;
-import suite.trade.data.Configuration;
-import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.HkexUtil;
+import suite.trade.data.TradeCfg;
+import suite.trade.data.TradeCfgImpl;
 import suite.trade.walkforwardalloc.WalkForwardAllocConfiguration;
 import suite.trade.walkforwardalloc.WalkForwardAllocTester;
 import suite.util.RunUtil;
@@ -17,7 +17,7 @@ import suite.util.RunUtil.ExecutableProgram;
 public class WalkForwardTestMain extends ExecutableProgram {
 
 	private BackAllocatorGeneral bag = BackAllocatorGeneral.me;
-	private Configuration cfg = new ConfigurationImpl();
+	private TradeCfg cfg = new TradeCfgImpl();
 
 	public static void main(String[] args) {
 		RunUtil.run(WalkForwardTestMain.class, args);

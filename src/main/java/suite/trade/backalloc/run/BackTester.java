@@ -14,8 +14,8 @@ import suite.trade.TimeRange;
 import suite.trade.backalloc.BackAllocTester;
 import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.BackAllocator;
-import suite.trade.data.Configuration;
-import suite.trade.data.ConfigurationImpl;
+import suite.trade.data.TradeCfg;
+import suite.trade.data.TradeCfgImpl;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Sink;
 import suite.util.Object_;
@@ -25,7 +25,7 @@ public class BackTester {
 
 	private float initial = 1000000f;
 	private Sink<String> log = FunUtil.nullSink();
-	private Configuration cfg = new ConfigurationImpl();
+	private TradeCfg cfg = new TradeCfgImpl();
 	private Statistic stat = new Statistic();
 
 	public Simulate backTest(BackAllocator backAllocator, TimeRange period) {

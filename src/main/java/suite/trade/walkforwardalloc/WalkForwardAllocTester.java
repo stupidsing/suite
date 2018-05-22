@@ -14,10 +14,10 @@ import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.Trade;
 import suite.trade.Trade_;
-import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSource.Eod;
+import suite.trade.data.TradeCfg;
 import suite.ts.TimeSeries;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
@@ -25,7 +25,7 @@ import suite.util.To;
 public class WalkForwardAllocTester {
 
 	private int windowSize = 360;
-	private Configuration cfg;
+	private TradeCfg cfg;
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 	private WalkForwardAllocator wfa;
@@ -41,7 +41,7 @@ public class WalkForwardAllocTester {
 	private List<Trade> trades;
 	private Map<String, Double> holdBySymbol;
 
-	public WalkForwardAllocTester(Configuration cfg, Streamlet<Asset> assets, float fund0, WalkForwardAllocator wfa) {
+	public WalkForwardAllocTester(TradeCfg cfg, Streamlet<Asset> assets, float fund0, WalkForwardAllocator wfa) {
 		this.cfg = cfg;
 		this.wfa = wfa;
 		this.log = System.out::println;

@@ -12,10 +12,10 @@ import suite.util.Fail;
 
 public class PriceFilter {
 
-	private Configuration cfg;
+	private TradeCfg cfg;
 	private Flt_Flt priceFun;
 
-	public PriceFilter(Configuration cfg, Flt_Flt priceFun) {
+	public PriceFilter(TradeCfg cfg, Flt_Flt priceFun) {
 		this.cfg = cfg;
 		this.priceFun = priceFun;
 	}

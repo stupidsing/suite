@@ -7,12 +7,12 @@ import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.Usex;
-import suite.trade.data.Configuration;
-import suite.trade.data.ConfigurationImpl;
+import suite.trade.data.TradeCfg;
+import suite.trade.data.TradeCfgImpl;
 
 public class FactorTest {
 
-	private Configuration cfg = new ConfigurationImpl();
+	private TradeCfg cfg = new TradeCfgImpl();
 
 	@Test
 	public void test() {

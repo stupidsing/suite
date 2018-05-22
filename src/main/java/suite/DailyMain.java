@@ -26,8 +26,8 @@ import suite.trade.backalloc.BackAllocConfigurations.Bacs;
 import suite.trade.backalloc.BackAllocTester;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.backalloc.strategy.BackAllocatorOld;
-import suite.trade.data.Configuration;
-import suite.trade.data.ConfigurationImpl;
+import suite.trade.data.TradeCfg;
+import suite.trade.data.TradeCfgImpl;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
 import suite.util.FunUtil.Sink;
@@ -43,7 +43,7 @@ public class DailyMain extends ExecutableProgram {
 
 	private Set<String> blackList = Set.of("0607.HK");
 
-	private Configuration cfg = new ConfigurationImpl();
+	private TradeCfg cfg = new TradeCfgImpl();
 	private Serialize serialize = Serialize.me;
 	private StringBuilder sb = new StringBuilder();
 	private Sink<String> log = To.sink(sb);

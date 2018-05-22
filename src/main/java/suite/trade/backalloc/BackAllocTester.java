@@ -16,15 +16,15 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade;
 import suite.trade.Trade_;
-import suite.trade.data.Configuration;
 import suite.trade.data.DataSource.Eod;
+import suite.trade.data.TradeCfg;
 import suite.ts.TimeSeries;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
 
 public class BackAllocTester {
 
-	private Configuration cfg;
+	private TradeCfg cfg;
 	private TimeRange period;
 	private Streamlet<Asset> assets;
 	private BackAllocator backAllocator;
@@ -34,7 +34,7 @@ public class BackAllocTester {
 	private TimeSeries ts = new TimeSeries();
 
 	public static BackAllocTester of( //
-			Configuration cfg, //
+			TradeCfg cfg, //
 			TimeRange period, //
 			Streamlet<Asset> assets, //
 			BackAllocator backAllocator, //
@@ -43,7 +43,7 @@ public class BackAllocTester {
 	}
 
 	private BackAllocTester( //
-			Configuration cfg, //
+			TradeCfg cfg, //
 			TimeRange period, //
 			Streamlet<Asset> assets, //
 			BackAllocator backAllocator, //

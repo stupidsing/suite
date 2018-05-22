@@ -15,8 +15,8 @@ import suite.trade.Time;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.data.Broker.Hsbc;
-import suite.trade.data.Configuration;
 import suite.trade.data.HkexUtil;
+import suite.trade.data.TradeCfg;
 import suite.trade.data.Yahoo;
 import suite.ts.Quant;
 import suite.util.FormatUtil;
@@ -29,23 +29,23 @@ import suite.util.To;
 
 public class Summarize {
 
-	private Configuration cfg;
+	private TradeCfg cfg;
 	private Fun<String, LngFltPair[]> dividendFun = new Yahoo()::dividend;
 	private Dbl_Dbl dividendFeeFun = new Hsbc()::dividendFee;
 
 	public final Streamlet<Trade> trades;
 	public final Map<String, Float> priceBySymbol;
 
-	public static Summarize of(Configuration cfg) {
+	public static Summarize of(TradeCfg cfg) {
 		return of(cfg, cfg.queryHistory());
 	}
 
-	public static Summarize of(Configuration cfg, Streamlet<Trade> trades) {
+	public static Summarize of(TradeCfg cfg, Streamlet<Trade> trades) {
 		var priceBySymbol = cfg.quote(trades.map(trade -> trade.symbol).toSet());
 		return new Summarize(cfg, trades, priceBySymbol);
 	}
 
-	private Summarize(Configuration cfg, Streamlet<Trade> trades, Map<String, Float> priceBySymbol) {
+	private Summarize(TradeCfg cfg, Streamlet<Trade> trades, Map<String, Float> priceBySymbol) {
 		this.cfg = cfg;
 		this.trades = trades;
 		this.priceBySymbol = priceBySymbol;

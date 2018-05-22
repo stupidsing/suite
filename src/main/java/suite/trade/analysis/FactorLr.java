@@ -15,10 +15,10 @@ import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.backalloc.BackAllocator;
-import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSourceView;
 import suite.trade.data.HkexUtil;
+import suite.trade.data.TradeCfg;
 import suite.ts.Quant;
 
 public class FactorLr {
@@ -27,16 +27,16 @@ public class FactorLr {
 	private Streamlet<String> indexSymbols;
 	private List<float[]> indexPrices;
 
-	private Configuration cfg;
+	private TradeCfg cfg;
 	private Matrix mtx = new Matrix();
 	private Statistic stat = new Statistic();
 	private Time now = Time.now();
 
-	public static FactorLr of(Configuration cfg, Streamlet<String> indexSymbols) {
+	public static FactorLr of(TradeCfg cfg, Streamlet<String> indexSymbols) {
 		return new FactorLr(cfg, indexSymbols);
 	}
 
-	private FactorLr(Configuration cfg, Streamlet<String> indexSymbols_) {
+	private FactorLr(TradeCfg cfg, Streamlet<String> indexSymbols_) {
 		this.cfg = cfg;
 
 		indexSymbols = indexSymbols_.collect(As::streamlet);

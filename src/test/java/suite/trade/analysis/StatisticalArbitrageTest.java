@@ -26,11 +26,11 @@ import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.TimeRange;
-import suite.trade.data.Configuration;
-import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.Sina;
+import suite.trade.data.TradeCfg;
+import suite.trade.data.TradeCfgImpl;
 import suite.ts.BollingerBands;
 import suite.ts.Quant;
 import suite.ts.TimeSeries;
@@ -43,7 +43,7 @@ public class StatisticalArbitrageTest {
 	private TimeRange period = TimeRange.threeYears();
 
 	private BollingerBands bb = new BollingerBands();
-	private Configuration cfg = new ConfigurationImpl();
+	private TradeCfg cfg = new TradeCfgImpl();
 	private DiscreteCosineTransform dct = new DiscreteCosineTransform();
 	private MarketTiming mt = new MarketTiming();
 	private MovingAverage ma = new MovingAverage();

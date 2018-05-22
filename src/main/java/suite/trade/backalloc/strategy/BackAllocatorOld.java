@@ -10,7 +10,7 @@ import suite.adt.pair.Pair;
 import suite.math.numeric.Statistic;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.backalloc.BackAllocator;
-import suite.trade.data.Configuration;
+import suite.trade.data.TradeCfg;
 import suite.ts.BollingerBands;
 import suite.ts.Quant;
 import suite.ts.TimeSeries;
@@ -107,7 +107,7 @@ public class BackAllocatorOld {
 		});
 	}
 
-	public BackAllocator pairs(Configuration cfg, String symbol0, String symbol1) {
+	public BackAllocator pairs(TradeCfg cfg, String symbol0, String symbol1) {
 		return BackAllocatorGeneral.me.rsi //
 				.relativeToIndex(cfg, symbol0) //
 				.filterByAsset(symbol -> String_.equals(symbol, symbol1));

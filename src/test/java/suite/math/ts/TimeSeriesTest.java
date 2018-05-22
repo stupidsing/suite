@@ -6,13 +6,13 @@ import org.junit.Test;
 
 import suite.trade.Time;
 import suite.trade.TimeRange;
-import suite.trade.data.Configuration;
-import suite.trade.data.ConfigurationImpl;
+import suite.trade.data.TradeCfg;
+import suite.trade.data.TradeCfgImpl;
 import suite.ts.TimeSeries;
 
 public class TimeSeriesTest {
 
-	private Configuration cfg = new ConfigurationImpl();
+	private TradeCfg cfg = new TradeCfgImpl();
 	private TimeSeries ts = new TimeSeries();
 
 	@Test

@@ -12,15 +12,15 @@ import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.run.BackTester;
 import suite.trade.backalloc.strategy.MovingAvgMeanReversionBackAllocator;
 import suite.trade.backalloc.strategy.PmamrBackAllocator;
-import suite.trade.data.Configuration;
-import suite.trade.data.ConfigurationImpl;
+import suite.trade.data.TradeCfg;
+import suite.trade.data.TradeCfgImpl;
 
 public class BackAllocBackTestTest {
 
 	private float initial = 1000000f;
 	private TimeRange period = TimeRange.ofYear(2017);
 
-	private Configuration cfg = new ConfigurationImpl();
+	private TradeCfg cfg = new TradeCfgImpl();
 	private BackTester runner = new BackTester();
 
 	@Test

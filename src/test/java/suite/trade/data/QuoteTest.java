@@ -12,7 +12,7 @@ import suite.util.To;
 
 public class QuoteTest {
 
-	private Configuration cfg = new ConfigurationImpl();
+	private TradeCfg cfg = new TradeCfgImpl();
 	private Summarize summarize = Summarize.of(cfg);
 
 	@Test

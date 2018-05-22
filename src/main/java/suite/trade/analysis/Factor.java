@@ -12,10 +12,10 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Usex;
 import suite.trade.backalloc.BackAllocator;
-import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSourceView;
 import suite.trade.data.HkexUtil;
+import suite.trade.data.TradeCfg;
 import suite.ts.Quant;
 import suite.util.Object_;
 
@@ -23,24 +23,24 @@ public class Factor {
 
 	private DataSource ids;
 
-	private Configuration cfg;
+	private TradeCfg cfg;
 	private Statistic stat = new Statistic();
 	private Time now = Time.now();
 	private Vector vec = new Vector();
 
-	public static Factor ofCrudeOil(Configuration cfg) {
+	public static Factor ofCrudeOil(TradeCfg cfg) {
 		return of(cfg, Read.each(Usex.crudeOil));
 	}
 
-	public static Factor ofUsMarket(Configuration cfg) {
+	public static Factor ofUsMarket(TradeCfg cfg) {
 		return of(cfg, Read.each(Usex.dowJones, Usex.nasdaq, Usex.sp500));
 	}
 
-	public static Factor of(Configuration cfg, Streamlet<String> indices) {
+	public static Factor of(TradeCfg cfg, Streamlet<String> indices) {
 		return new Factor(cfg, indices);
 	}
 
-	private Factor(Configuration cfg, Streamlet<String> indices) {
+	private Factor(TradeCfg cfg, Streamlet<String> indices) {
 		this.cfg = cfg;
 
 		var akds = cfg.dataSources(TimeRange.of(Time.MIN, now), indices);

@@ -12,7 +12,7 @@ import suite.trade.TimeRange;
 import suite.trade.Trade;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 
-public interface Configuration {
+public interface TradeCfg {
 
 	public DataSource dataSource(String symbol);
 

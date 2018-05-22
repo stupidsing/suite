@@ -28,10 +28,10 @@ import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.Trade_;
 import suite.trade.Usex;
-import suite.trade.data.Configuration;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSource.Datum;
+import suite.trade.data.TradeCfg;
 import suite.trade.walkforwardalloc.WalkForwardAllocator;
 import suite.ts.Quant;
 import suite.util.Fail;
@@ -53,10 +53,9 @@ public interface BackAllocator {
 	public interface OnDateTime {
 
 		/**
-		 * @return a portfolio consisting of list of symbols and potential
-		 *         values, or null if the strategy do not want to trade on that
-		 *         date. The assets will be allocated according to potential
-		 *         values pro-rata.
+		 * @return a portfolio consisting of list of symbols and potential values, or
+		 *         null if the strategy do not want to trade on that date. The assets
+		 *         will be allocated according to potential values pro-rata.
 		 */
 		public List<Pair<String, Double>> onDateTime(int index);
 	}
@@ -143,11 +142,11 @@ public interface BackAllocator {
 		};
 	}
 
-	public default BackAllocator filterByIndex(Configuration cfg) {
+	public default BackAllocator filterByIndex(TradeCfg cfg) {
 		return filterByIndexReturn(cfg, Usex.sp500);
 	}
 
-	public default BackAllocator filterByIndexReturn(Configuration cfg, String indexSymbol) {
+	public default BackAllocator filterByIndexReturn(TradeCfg cfg, String indexSymbol) {
 		var indexDataSource = cfg.dataSource(indexSymbol);
 
 		return (akds, indices) -> {
@@ -295,11 +294,11 @@ public interface BackAllocator {
 		};
 	}
 
-	public default BackAllocator relativeToHsi(Configuration cfg) {
+	public default BackAllocator relativeToHsi(TradeCfg cfg) {
 		return relativeToIndex(cfg, "^HSI");
 	}
 
-	public default BackAllocator relativeToIndex(Configuration cfg, String indexSymbol) {
+	public default BackAllocator relativeToIndex(TradeCfg cfg, String indexSymbol) {
 		return relative(cfg.dataSource(indexSymbol));
 	}
 

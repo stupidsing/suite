@@ -22,7 +22,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil2.Fun2;
 import suite.util.String_;
 
-public class ConfigurationImpl implements Configuration {
+public class TradeCfgImpl implements TradeCfg {
 
 	private Broker broker = new Hsbc();
 	private Google google = new Google();

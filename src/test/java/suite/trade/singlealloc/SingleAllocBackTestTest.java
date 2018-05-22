@@ -10,14 +10,14 @@ import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.Forex;
 import suite.trade.TimeRange;
-import suite.trade.data.Configuration;
-import suite.trade.data.ConfigurationImpl;
 import suite.trade.data.DataSource;
+import suite.trade.data.TradeCfg;
+import suite.trade.data.TradeCfgImpl;
 
 public class SingleAllocBackTestTest {
 
 	private TimeRange period = TimeRange.fiveYears();
-	private Configuration cfg = new ConfigurationImpl();
+	private TradeCfg cfg = new TradeCfgImpl();
 
 	@Test
 	public void testBackTestForex() {

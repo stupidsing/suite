@@ -14,8 +14,8 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.backalloc.BackAllocConfigurations;
-import suite.trade.data.Configuration;
-import suite.trade.data.ConfigurationImpl;
+import suite.trade.data.TradeCfg;
+import suite.trade.data.TradeCfgImpl;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
@@ -26,7 +26,7 @@ import suite.util.RunUtil.ExecutableProgram;
 public class BackTestMain extends ExecutableProgram {
 
 	private BackTester runner = new BackTester();
-	private Configuration cfg = new ConfigurationImpl();
+	private TradeCfg cfg = new TradeCfgImpl();
 
 	public static void main(String[] args) {
 		RunUtil.run(BackTestMain.class, args);

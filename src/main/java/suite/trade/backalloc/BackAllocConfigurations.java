@@ -14,12 +14,12 @@ import suite.trade.backalloc.strategy.BackAllocator_;
 import suite.trade.backalloc.strategy.Pmamr2BackAllocator;
 import suite.trade.backalloc.strategy.PmamrBackAllocator;
 import suite.trade.backalloc.strategy.ReverseCorrelateBackAllocator;
-import suite.trade.data.Configuration;
+import suite.trade.data.TradeCfg;
 import suite.util.FunUtil.Fun;
 
 public class BackAllocConfigurations {
 
-	private Configuration cfg;
+	private TradeCfg cfg;
 	private Fun<Time, Streamlet<Asset>> fun;
 
 	public class Bacs {
@@ -79,11 +79,11 @@ public class BackAllocConfigurations {
 		}
 	}
 
-	public BackAllocConfigurations(Configuration cfg) {
+	public BackAllocConfigurations(TradeCfg cfg) {
 		this(cfg, cfg::queryCompaniesByMarketCap);
 	}
 
-	public BackAllocConfigurations(Configuration cfg, Fun<Time, Streamlet<Asset>> fun) {
+	public BackAllocConfigurations(TradeCfg cfg, Fun<Time, Streamlet<Asset>> fun) {
 		this.cfg = cfg;
 		this.fun = fun;
 	}

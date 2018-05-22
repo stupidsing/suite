@@ -8,8 +8,8 @@ import suite.math.numeric.Statistic;
 import suite.primitive.Ints_;
 import suite.primitive.Longs_;
 import suite.primitive.adt.pair.FltObjPair;
-import suite.trade.data.Configuration;
-import suite.trade.data.ConfigurationImpl;
+import suite.trade.data.TradeCfg;
+import suite.trade.data.TradeCfgImpl;
 
 /**
  * Finds the period of various stocks using FFT.
@@ -18,7 +18,7 @@ import suite.trade.data.ConfigurationImpl;
  */
 public class PairTest {
 
-	private Configuration cfg = new ConfigurationImpl();
+	private TradeCfg cfg = new TradeCfgImpl();
 	private Statistic statistic = new Statistic();
 
 	@Test
