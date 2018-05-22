@@ -357,26 +357,6 @@ public class P0 {
 		}
 	}
 
-	public static class FunpLambdaCapture implements Funp, P2.End {
-		public String var;
-		public String capn;
-		public Funp cap;
-		public Funp expr;
-
-		public static FunpLambdaCapture of(String var, String capn, Funp cap, Funp expr) {
-			var f = new FunpLambdaCapture();
-			f.var = var;
-			f.capn = capn;
-			f.cap = cap;
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun4<String, String, Funp, Funp, R> fun) {
-			return fun.apply(var, capn, cap, expr);
-		}
-	}
-
 	public static class FunpNumber implements Funp, P4.End {
 		public IntMutable i;
 

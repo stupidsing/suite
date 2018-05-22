@@ -6,20 +6,28 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
+import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
+import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpFold;
+import suite.funp.P0.FunpGlobal;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
+import suite.funp.P0.FunpIo;
+import suite.funp.P0.FunpIoCat;
 import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
+import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpReference;
+import suite.funp.P0.FunpRepeat;
 import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
+import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
 import suite.node.io.TermOp;
@@ -28,6 +36,7 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
+import suite.util.To;
 import suite.util.Util;
 
 public class P2GenerateLambda {
@@ -116,6 +125,8 @@ public class P2GenerateLambda {
 			})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 				var b1 = new Bool(b);
 				return rt -> b1;
+			})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
+				return compile_(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				return compile_(FunpApply.of(value, FunpLambda.of(var, expr)));
 			})).applyIf(FunpDefineRec.class, f -> {
@@ -123,6 +134,8 @@ public class P2GenerateLambda {
 			}).applyIf(FunpDeref.class, f -> {
 				var p = compile_(f);
 				return rt -> ((Ref) p.apply(rt)).v;
+			}).applyIf(FunpDontCare.class, f -> {
+				return rt -> new Int(0);
 			}).applyIf(FunpError.class, f -> {
 				return rt -> Fail.t();
 			}).applyIf(FunpField.class, f -> f.apply((ref, field) -> {
@@ -142,6 +155,8 @@ public class P2GenerateLambda {
 						rt1.var = next_.apply(rt1);
 					return rt1.var;
 				};
+			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
+				return Fail.t();
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				var if1 = compile_(if_);
 				var then1 = compile_(then);
@@ -151,6 +166,10 @@ public class P2GenerateLambda {
 				var array = compile_(FunpDeref.of(reference));
 				var index1 = compile_(index);
 				return rt -> ((Vec) array.apply(rt)).values[i(rt, index1)];
+			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
+				return compile_(expr);
+			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
+				return Fail.t();
 			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
 				var fs1 = fs + 1;
 				var env1 = env.replace(var, fs1);
@@ -170,10 +189,15 @@ public class P2GenerateLambda {
 			})).applyIf(FunpNumber.class, f -> f.apply(i -> {
 				var i1 = new Int(i.get());
 				return rt -> i1;
+			})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
+				return compile_(expr);
 			})).applyIf(FunpReference.class, f -> {
 				var v = compile_(f);
 				return rt -> new Ref(v.apply(rt));
-			}).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
+			}).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
+				var expr_ = compile_(expr);
+				return rt -> new Vec(To.array(count, Value.class, i -> expr_.apply(rt)));
+			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
 				var funs = Read //
 						.from2(pairs) //
 						.mapValue(this::compile_) //
@@ -190,6 +214,11 @@ public class P2GenerateLambda {
 					var fun = TreeUtil.evaluateOp(op);
 					return rt -> new Int(fun.apply(i(rt, v0), i(rt, v1)));
 				}
+			})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
+				var v0 = compile_(lhs);
+				var v1 = compile_(rhs);
+				var fun = TreeUtil.evaluateOp(op);
+				return rt -> new Int(fun.apply(i(rt, v0), i(rt, v1)));
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				var fd = fs - env.get(var);
 				return rt -> {
