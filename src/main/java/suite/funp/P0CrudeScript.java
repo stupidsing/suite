@@ -54,18 +54,27 @@ public class P0CrudeScript {
 		}.node(ast);
 
 		return new Object() {
+			private Funp crudeScript(Node node) {
+				return new SwitchNode<Funp>(node //
+				).match1("crude-script (.0,)", a -> {
+					return stmt(a);
+				}).nonNullResult();
+			}
+
 			private Funp stmt(Node node) {
 				return new SwitchNode<Funp>(node //
 				).match1("statement (expression (.0,),)", a -> {
 					return expr(a);
+				}).match1("statement (statement-return (.0,),)", a -> {
+					return expr(a);
+				}).match1("statement1 (.0,)", a -> {
+					return stmt(a);
 				}).match3("statement-block (statement-let (bind (<IDENTIFIER> .0,), .1,), .2)", (a, b, c) -> {
 					return FunpDefine.of(false, str(a), expr(b), stmt(c));
 				}).match1("statement-block (.0,)", a -> {
 					return stmt(a);
 				}).match3("statement-if (.0, .1, .2,)", (a, b, c) -> {
 					return FunpIf.of(expr(a), stmt(b), stmt(c));
-				}).match1("statement-return (.0,)", a -> {
-					return expr(a);
 				}).nonNullResult();
 			}
 
@@ -190,7 +199,7 @@ public class P0CrudeScript {
 			private String str(Node node) {
 				return ((Str) node).value;
 			}
-		}.stmt(node);
+		}.crudeScript(node);
 	}
 
 }

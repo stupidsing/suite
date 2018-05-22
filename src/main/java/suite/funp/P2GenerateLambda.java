@@ -1,5 +1,7 @@
 package suite.funp;
 
+import java.util.Map;
+
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
@@ -8,6 +10,7 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpError;
+import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpFold;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
@@ -15,11 +18,13 @@ import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
+import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
@@ -53,6 +58,22 @@ public class P2GenerateLambda {
 
 		private Int(int i) {
 			this.i = i;
+		}
+	}
+
+	public static class Ref implements Value {
+		public final Value v;
+
+		private Ref(Value v) {
+			this.v = v;
+		}
+	}
+
+	public static class Struct implements Value {
+		public final Map<String, Value> map;
+
+		public Struct(Map<String, Value> map) {
+			this.map = map;
 		}
 	}
 
@@ -90,7 +111,7 @@ public class P2GenerateLambda {
 				var value1 = compile_(value);
 				return rt -> ((Fun_) lambda1.apply(rt)).apply(value1.apply(rt));
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
-				var thunks = Read.from(elements).map(element -> compile_(element));
+				var thunks = Read.from(elements).map(this::compile_);
 				return rt -> new Vec(thunks.map(thunk -> thunk.apply(rt)).toArray(Value.class));
 			})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 				var b1 = new Bool(b);
@@ -100,17 +121,21 @@ public class P2GenerateLambda {
 			})).applyIf(FunpDefineRec.class, f -> {
 				return Fail.t();
 			}).applyIf(FunpDeref.class, f -> {
-				return Fail.t();
+				var p = compile_(f);
+				return rt -> ((Ref) p.apply(rt)).v;
 			}).applyIf(FunpError.class, f -> {
 				return rt -> Fail.t();
-			}).applyIf(FunpFold.class, f -> f.apply((init, cont, next) -> {
+			}).applyIf(FunpField.class, f -> f.apply((ref, field) -> {
+				var p = compile_(ref);
+				return rt -> ((Struct) ((Ref) p.apply(rt)).v).map.get(field);
+			})).applyIf(FunpFold.class, f -> f.apply((init, cont, next) -> {
 				var var = "fold" + Util.temp();
 				var fs1 = fs + 1;
-				var env1 = env.replace(var, fs1);
 				var init_ = compile_(init);
 				var var_ = FunpVariable.of(var);
-				var cont_ = compile(fs1, env1, FunpApply.of(var_, cont));
-				var next_ = compile(fs1, env1, FunpApply.of(var_, next));
+				var compile1 = new Compile(fs1, env.replace(var, fs1));
+				var cont_ = compile1.compile_(FunpApply.of(var_, cont));
+				var next_ = compile1.compile_(FunpApply.of(var_, next));
 				return rt -> {
 					var rt1 = new Rt(rt, init_.apply(rt));
 					while (b(rt1, cont_))
@@ -146,8 +171,15 @@ public class P2GenerateLambda {
 				var i1 = new Int(i.get());
 				return rt -> i1;
 			})).applyIf(FunpReference.class, f -> {
-				return Fail.t();
-			}).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
+				var v = compile_(f);
+				return rt -> new Ref(v.apply(rt));
+			}).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
+				var funs = Read //
+						.from2(pairs) //
+						.mapValue(this::compile_) //
+						.collect(As::streamlet2);
+				return rt -> new Struct(funs.mapValue(v -> v.apply(rt)).toMap());
+			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
 				var v0 = compile_(lhs);
 				var v1 = compile_(rhs);
 				if (op == TermOp.BIGAND)
