@@ -48,7 +48,7 @@ public class LongShortTermMemory {
 		private float[][] wo = new float[memoryLength][ll1];
 
 		public Unit() {
-			var isll = 1f / sqrt(ll);
+			var isll = 1d / sqrt(ll);
 
 			for (var i = 0; i < memoryLength; i++) {
 				for (var j = 0; j < ll; j++) { // random weights, bias 0
