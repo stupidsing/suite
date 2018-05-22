@@ -17,7 +17,7 @@ public class ElfTest {
 
 	@Test
 	public void testCode() {
-		test("iterate n 0 (n < 100) (io (n + 1)) \n", "", 100);
+		test("iterate n 0 (n < 100) (io (n + 1))", "", 100);
 	}
 
 	// io :: a -> io a
