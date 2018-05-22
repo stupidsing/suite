@@ -51,7 +51,7 @@ public class HttpHeaderUtil {
 	}
 
 	private static String decode(String s) {
-		return Rethrow.ex(() -> URLDecoder.decode(s, "UTF-8"));
+		return Rethrow.ex(() -> URLDecoder.decode(s, Constants.charset));
 	}
 
 }
