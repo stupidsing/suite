@@ -420,7 +420,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public List<DblObjPair<V>> toList() {
-		List<DblObjPair<V>> list = new ArrayList<DblObjPair<V>>();
+		var list = new ArrayList<DblObjPair<V>>();
 		DblObjPair<V> pair;
 		while (next(pair = DblObjPair.of((double) 0, null)))
 			list.add(pair);

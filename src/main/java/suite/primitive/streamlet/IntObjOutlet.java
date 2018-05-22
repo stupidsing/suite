@@ -420,7 +420,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	}
 
 	public List<IntObjPair<V>> toList() {
-		List<IntObjPair<V>> list = new ArrayList<IntObjPair<V>>();
+		var list = new ArrayList<IntObjPair<V>>();
 		IntObjPair<V> pair;
 		while (next(pair = IntObjPair.of((int) 0, null)))
 			list.add(pair);

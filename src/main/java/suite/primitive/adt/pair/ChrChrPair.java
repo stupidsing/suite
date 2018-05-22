@@ -15,11 +15,11 @@ public class ChrChrPair {
 	public char t0;
 	public char t1;
 
-	public static Iterate<ChrChrPair> map0(Chr_Chr fun) {
+	public static Iterate<ChrChrPair> mapFst(Chr_Chr fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Iterate<ChrChrPair> map1(Chr_Chr fun) {
+	public static Iterate<ChrChrPair> mapSnd(Chr_Chr fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
@@ -53,11 +53,11 @@ public class ChrChrPair {
 		};
 	}
 
-	public static char first_(ChrChrPair pair) {
+	public static char fst(ChrChrPair pair) {
 		return pair.t0;
 	}
 
-	public static char second(ChrChrPair pair) {
+	public static char snd(ChrChrPair pair) {
 		return pair.t1;
 	}
 

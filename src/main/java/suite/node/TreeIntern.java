@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import suite.node.io.Operator;
+import suite.node.io.SwitchNode;
 import suite.util.Object_;
 
 /**
@@ -69,13 +70,11 @@ public class TreeIntern {
 		return interns.computeIfAbsent(treeKey(operator, left, right), any -> Tree.of(operator, left, right));
 	}
 
-	public Node internalize(Node node) {
-		var tree = Tree.decompose(node);
-		Key key;
-		if (tree != null)
-			key = treeKey(tree.getOperator(), internalize(tree.getLeft()), internalize(tree.getRight()));
-		else
-			key = new NodeKey(node);
+	public Node intern(Node node) {
+		var key = new SwitchNode<Key>(node) //
+				.applyTree((op, l, r) -> treeKey(op, intern(l), intern(r))) //
+				.applyIf(Node.class, NodeKey::new) //
+				.result();
 		return interns.computeIfAbsent(key, k -> node);
 	}
 

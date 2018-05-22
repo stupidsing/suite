@@ -109,7 +109,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 				if (isInUse[p0]) {
 					var ps0 = pageFile.load(p0);
 					var pairs0 = ps0.pairs;
-					var pairsx = Read.from(pairs0).map(Pair.map1(p -> map.getOrDefault(p, p))).toList();
+					var pairsx = Read.from(pairs0).map(Pair.mapSnd(p -> map.getOrDefault(p, p))).toList();
 					var psx = new PersistSlot<>(pairsx);
 					pageFile.save(p1, psx);
 					map.put(p0, p1++);

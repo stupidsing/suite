@@ -18,11 +18,11 @@ public class LngObjPair<T> {
 	public long t0;
 	public T t1;
 
-	public static <V> Iterate<LngObjPair<V>> map0(Lng_Lng fun) {
+	public static <V> Iterate<LngObjPair<V>> mapFst(Lng_Lng fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static <V0, V1> Fun<LngObjPair<V0>, LngObjPair<V1>> map1(Fun<V0, V1> fun) {
+	public static <V0, V1> Fun<LngObjPair<V0>, LngObjPair<V1>> mapSnd(Fun<V0, V1> fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
@@ -57,11 +57,11 @@ public class LngObjPair<T> {
 		};
 	}
 
-	public static long first_(LngObjPair<?> pair) {
+	public static long fst(LngObjPair<?> pair) {
 		return pair.t0;
 	}
 
-	public static <T> T second(LngObjPair<T> pair) {
+	public static <T> T snd(LngObjPair<T> pair) {
 		return pair != null ? pair.t1 : null;
 	}
 

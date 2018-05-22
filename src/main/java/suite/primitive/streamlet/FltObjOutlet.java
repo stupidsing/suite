@@ -420,7 +420,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public List<FltObjPair<V>> toList() {
-		List<FltObjPair<V>> list = new ArrayList<FltObjPair<V>>();
+		var list = new ArrayList<FltObjPair<V>>();
 		FltObjPair<V> pair;
 		while (next(pair = FltObjPair.of((float) 0, null)))
 			list.add(pair);

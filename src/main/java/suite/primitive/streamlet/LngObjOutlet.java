@@ -420,7 +420,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public List<LngObjPair<V>> toList() {
-		List<LngObjPair<V>> list = new ArrayList<LngObjPair<V>>();
+		var list = new ArrayList<LngObjPair<V>>();
 		LngObjPair<V> pair;
 		while (next(pair = LngObjPair.of((long) 0, null)))
 			list.add(pair);

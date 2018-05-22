@@ -15,11 +15,11 @@ public class Pair<T0, T1> {
 	public T0 t0;
 	public T1 t1;
 
-	public static <K0, K1, V> Fun<Pair<K0, V>, Pair<K1, V>> map0(Fun<K0, K1> fun) {
+	public static <K0, K1, V> Fun<Pair<K0, V>, Pair<K1, V>> mapFst(Fun<K0, K1> fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static <K, V0, V1> Fun<Pair<K, V0>, Pair<K, V1>> map1(Fun<V0, V1> fun) {
+	public static <K, V0, V1> Fun<Pair<K, V0>, Pair<K, V1>> mapSnd(Fun<V0, V1> fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 

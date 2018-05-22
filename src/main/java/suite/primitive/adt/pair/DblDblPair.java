@@ -15,11 +15,11 @@ public class DblDblPair {
 	public double t0;
 	public double t1;
 
-	public static Iterate<DblDblPair> map0(Dbl_Dbl fun) {
+	public static Iterate<DblDblPair> mapFst(Dbl_Dbl fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Iterate<DblDblPair> map1(Dbl_Dbl fun) {
+	public static Iterate<DblDblPair> mapSnd(Dbl_Dbl fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
@@ -53,11 +53,11 @@ public class DblDblPair {
 		};
 	}
 
-	public static double first_(DblDblPair pair) {
+	public static double fst(DblDblPair pair) {
 		return pair.t0;
 	}
 
-	public static double second(DblDblPair pair) {
+	public static double snd(DblDblPair pair) {
 		return pair.t1;
 	}
 

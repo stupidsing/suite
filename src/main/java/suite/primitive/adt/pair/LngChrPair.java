@@ -17,11 +17,11 @@ public class LngChrPair {
 	public long t0;
 	public char t1;
 
-	public static Iterate<LngChrPair> map0(Lng_Lng fun) {
+	public static Iterate<LngChrPair> mapFst(Lng_Lng fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Iterate<LngChrPair> map1(Chr_Chr fun) {
+	public static Iterate<LngChrPair> mapSnd(Chr_Chr fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
@@ -55,11 +55,11 @@ public class LngChrPair {
 		};
 	}
 
-	public static long first_(LngChrPair pair) {
+	public static long fst(LngChrPair pair) {
 		return pair.t0;
 	}
 
-	public static char second(LngChrPair pair) {
+	public static char snd(LngChrPair pair) {
 		return pair.t1;
 	}
 

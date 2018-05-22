@@ -15,11 +15,11 @@ public class FltFltPair {
 	public float t0;
 	public float t1;
 
-	public static Iterate<FltFltPair> map0(Flt_Flt fun) {
+	public static Iterate<FltFltPair> mapFst(Flt_Flt fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Iterate<FltFltPair> map1(Flt_Flt fun) {
+	public static Iterate<FltFltPair> mapSnd(Flt_Flt fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
@@ -53,11 +53,11 @@ public class FltFltPair {
 		};
 	}
 
-	public static float first_(FltFltPair pair) {
+	public static float fst(FltFltPair pair) {
 		return pair.t0;
 	}
 
-	public static float second(FltFltPair pair) {
+	public static float snd(FltFltPair pair) {
 		return pair.t1;
 	}
 

@@ -18,11 +18,11 @@ public class DblObjPair<T> {
 	public double t0;
 	public T t1;
 
-	public static <V> Iterate<DblObjPair<V>> map0(Dbl_Dbl fun) {
+	public static <V> Iterate<DblObjPair<V>> mapFst(Dbl_Dbl fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static <V0, V1> Fun<DblObjPair<V0>, DblObjPair<V1>> map1(Fun<V0, V1> fun) {
+	public static <V0, V1> Fun<DblObjPair<V0>, DblObjPair<V1>> mapSnd(Fun<V0, V1> fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
@@ -57,11 +57,11 @@ public class DblObjPair<T> {
 		};
 	}
 
-	public static double first_(DblObjPair<?> pair) {
+	public static double fst(DblObjPair<?> pair) {
 		return pair.t0;
 	}
 
-	public static <T> T second(DblObjPair<T> pair) {
+	public static <T> T snd(DblObjPair<T> pair) {
 		return pair != null ? pair.t1 : null;
 	}
 

@@ -15,11 +15,11 @@ public class IntIntPair {
 	public int t0;
 	public int t1;
 
-	public static Iterate<IntIntPair> map0(Int_Int fun) {
+	public static Iterate<IntIntPair> mapFst(Int_Int fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Iterate<IntIntPair> map1(Int_Int fun) {
+	public static Iterate<IntIntPair> mapSnd(Int_Int fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
@@ -53,11 +53,11 @@ public class IntIntPair {
 		};
 	}
 
-	public static int first_(IntIntPair pair) {
+	public static int fst(IntIntPair pair) {
 		return pair.t0;
 	}
 
-	public static int second(IntIntPair pair) {
+	public static int snd(IntIntPair pair) {
 		return pair.t1;
 	}
 

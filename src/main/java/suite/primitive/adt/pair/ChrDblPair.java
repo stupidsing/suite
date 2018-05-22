@@ -17,11 +17,11 @@ public class ChrDblPair {
 	public char t0;
 	public double t1;
 
-	public static Iterate<ChrDblPair> map0(Chr_Chr fun) {
+	public static Iterate<ChrDblPair> mapFst(Chr_Chr fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Iterate<ChrDblPair> map1(Dbl_Dbl fun) {
+	public static Iterate<ChrDblPair> mapSnd(Dbl_Dbl fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
@@ -55,11 +55,11 @@ public class ChrDblPair {
 		};
 	}
 
-	public static char first_(ChrDblPair pair) {
+	public static char fst(ChrDblPair pair) {
 		return pair.t0;
 	}
 
-	public static double second(ChrDblPair pair) {
+	public static double snd(ChrDblPair pair) {
 		return pair.t1;
 	}
 

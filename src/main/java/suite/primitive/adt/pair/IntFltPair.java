@@ -17,11 +17,11 @@ public class IntFltPair {
 	public int t0;
 	public float t1;
 
-	public static Iterate<IntFltPair> map0(Int_Int fun) {
+	public static Iterate<IntFltPair> mapFst(Int_Int fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Iterate<IntFltPair> map1(Flt_Flt fun) {
+	public static Iterate<IntFltPair> mapSnd(Flt_Flt fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
@@ -55,11 +55,11 @@ public class IntFltPair {
 		};
 	}
 
-	public static int first_(IntFltPair pair) {
+	public static int fst(IntFltPair pair) {
 		return pair.t0;
 	}
 
-	public static float second(IntFltPair pair) {
+	public static float snd(IntFltPair pair) {
 		return pair.t1;
 	}
 

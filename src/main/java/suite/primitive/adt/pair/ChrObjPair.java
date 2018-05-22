@@ -18,11 +18,11 @@ public class ChrObjPair<T> {
 	public char t0;
 	public T t1;
 
-	public static <V> Iterate<ChrObjPair<V>> map0(Chr_Chr fun) {
+	public static <V> Iterate<ChrObjPair<V>> mapFst(Chr_Chr fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static <V0, V1> Fun<ChrObjPair<V0>, ChrObjPair<V1>> map1(Fun<V0, V1> fun) {
+	public static <V0, V1> Fun<ChrObjPair<V0>, ChrObjPair<V1>> mapSnd(Fun<V0, V1> fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
@@ -57,11 +57,11 @@ public class ChrObjPair<T> {
 		};
 	}
 
-	public static char first_(ChrObjPair<?> pair) {
+	public static char fst(ChrObjPair<?> pair) {
 		return pair.t0;
 	}
 
-	public static <T> T second(ChrObjPair<T> pair) {
+	public static <T> T snd(ChrObjPair<T> pair) {
 		return pair != null ? pair.t1 : null;
 	}
 

@@ -17,11 +17,11 @@ public class FltDblPair {
 	public float t0;
 	public double t1;
 
-	public static Iterate<FltDblPair> map0(Flt_Flt fun) {
+	public static Iterate<FltDblPair> mapFst(Flt_Flt fun) {
 		return pair -> of(fun.apply(pair.t0), pair.t1);
 	}
 
-	public static Iterate<FltDblPair> map1(Dbl_Dbl fun) {
+	public static Iterate<FltDblPair> mapSnd(Dbl_Dbl fun) {
 		return pair -> of(pair.t0, fun.apply(pair.t1));
 	}
 
@@ -55,11 +55,11 @@ public class FltDblPair {
 		};
 	}
 
-	public static float first_(FltDblPair pair) {
+	public static float fst(FltDblPair pair) {
 		return pair.t0;
 	}
 
-	public static double second(FltDblPair pair) {
+	public static double snd(FltDblPair pair) {
 		return pair.t1;
 	}
 
