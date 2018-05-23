@@ -1,15 +1,12 @@
 package suite.jdk;
 
-import suite.util.FunUtil.Source;
-import suite.util.Memoize;
-import suite.util.Rethrow;
+import suite.util.Fail;
 import sun.misc.Unsafe;
 
 public class UnsafeUtil {
 
 	public Class<?> defineClass(byte[] bytes) {
-		var unsafe = source.source();
-		return unsafe.defineAnonymousClass(getClass(), bytes, null);
+		return unsafe().defineAnonymousClass(getClass(), bytes, null);
 	}
 
 	public <T> Class<? extends T> defineClass(Class<T> interfaceClazz, String className, byte[] bytes) {
@@ -17,16 +14,23 @@ public class UnsafeUtil {
 	}
 
 	public <T> Class<? extends T> defineClass(Class<T> interfaceClazz, String className, byte[] bytes, Object[] array) {
-		var unsafe = source.source();
 		@SuppressWarnings("unchecked")
-		Class<? extends T> clazz = (Class<? extends T>) unsafe.defineAnonymousClass(interfaceClazz, bytes, array);
+		var clazz = (Class<? extends T>) unsafe().defineAnonymousClass(interfaceClazz, bytes, array);
 		return clazz;
 	}
 
-	private static Source<Unsafe> source = Memoize.source(() -> Rethrow.ex(() -> {
-		var f = Unsafe.class.getDeclaredField("theUnsafe");
-		f.setAccessible(true);
-		return (Unsafe) f.get(null);
-	}));
+	private Unsafe unsafe() {
+		if (unsafe == null)
+			try {
+				var f = Unsafe.class.getDeclaredField("theUnsafe");
+				f.setAccessible(true);
+				unsafe = (Unsafe) f.get(null);
+			} catch (Exception ex) {
+				Fail.t(ex);
+			}
+		return unsafe;
+	}
+
+	private Unsafe unsafe;
 
 }
