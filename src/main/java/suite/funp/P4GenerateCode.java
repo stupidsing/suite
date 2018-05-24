@@ -368,9 +368,7 @@ public class P4GenerateCode {
 					else if ((r = jumpIf.jxxIf()) != null && r.source())
 						thenElse.sink2(else_, then);
 					else {
-						var r0 = compileOpReg(if_);
-						em.emit(amd64.instruction(Insn.OR, r0, r0));
-						em.emit(amd64.instruction(Insn.JZ, condLabel));
+						compileJumpZero(if_, condLabel);
 						thenElse.sink2(then, else_);
 					}
 
@@ -479,11 +477,8 @@ public class P4GenerateCode {
 					else if ((r = new P4JumpIf(cmpJmp.apply(contLabel)).new JumpIf(while_).jxxIf()) != null && r.source()) {
 						em.emit(amd64.instruction(Insn.JMP, exitLabel));
 						em.emit(amd64.instruction(Insn.LABEL, contLabel));
-					} else {
-						var r0 = compileOpReg(while_);
-						em.emit(amd64.instruction(Insn.OR, r0, r0));
-						em.emit(amd64.instruction(Insn.JZ, exitLabel));
-					}
+					} else
+						compileJumpZero(while_, exitLabel);
 
 					compileOp(do_);
 					em.emit(amd64.instruction(Insn.JMP, loopLabel));
@@ -642,6 +637,12 @@ public class P4GenerateCode {
 				em.emit(amd64.instruction(Insn.CALL, op));
 				if (isUseEbp && out.op0 != ebp)
 					em.lea(ebp, amd64.mem(esp, -fd, is));
+			}
+
+			private void compileJumpZero(Funp if_, Operand label) {
+				var r0 = compileOpReg(if_);
+				em.emit(amd64.instruction(Insn.OR, r0, r0));
+				em.emit(amd64.instruction(Insn.JZ, label));
 			}
 
 			private OpReg compileFramePointer() {
