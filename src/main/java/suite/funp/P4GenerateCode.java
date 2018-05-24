@@ -421,7 +421,7 @@ public class P4GenerateCode {
 							return postTwoOp.apply(op0, op1);
 						else {
 							var r = compileOpReg(pointer);
-							return postTwoOp.apply(amd64.mem(r, start, ps), amd64.mem(r, start + is, ps));
+							return postTwoOp.apply(amd64.mem(r, start, ps), amd64.mem(r, start + ps, ps));
 						}
 					else
 						return Fail.t();
@@ -647,7 +647,7 @@ public class P4GenerateCode {
 
 			private OpReg compileFramePointer() {
 				var op = rs.get(isOutSpec ? pop0 : ebp);
-				em.lea(op, compileFrame(0, is));
+				em.lea(op, compileFrame(0, ps));
 				return op;
 			}
 
