@@ -36,7 +36,7 @@ public class P4DecomposeOperand {
 		}).applyIf(FunpNumber.class, f -> {
 			return amd64.imm(f.i.get(), is);
 		}).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
-			return decomposeOpMem(fd, pointer, start, end - start);
+			return end - start == is ? decomposeOpMem(fd, pointer, start, is) : null;
 		})).result();
 	}
 

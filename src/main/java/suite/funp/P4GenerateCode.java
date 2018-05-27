@@ -166,7 +166,7 @@ public class P4GenerateCode {
 					var old = op;
 					if (result == Result.ASSIGN) {
 						var opt = deOp.decomposeOperand(fd, target);
-						opt = opt != null ? opt : amd64.mem(mask(op).compileOpReg(target.pointer), target.start, is);
+						opt = opt != null ? opt : amd64.mem(mask(op).compileOpReg(target.pointer), target.start, target.size());
 						if (op instanceof OpMem)
 							em.mov(op = rs.mask(opt).get(old.size), old);
 						em.mov(opt, op);
@@ -269,7 +269,7 @@ public class P4GenerateCode {
 
 					offset.update(fd1);
 
-					if (size == is && (op = deOp.decomposeOperand(fd, value)) != null && op.size == is)
+					if (size == is && (op = deOp.decomposeOperand(fd, value)) != null)
 						em.emit(amd64.instruction(Insn.PUSH, op));
 					else {
 						em.addImm(esp, -alignedSize);
