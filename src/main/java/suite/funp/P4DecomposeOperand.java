@@ -29,18 +29,22 @@ public class P4DecomposeOperand {
 		this.isUseEbp = isUseEbp;
 	}
 
-	public Operand decomposeOperand(int fd, Funp node) {
+	public Operand decomposeNumber(int fd, Funp node) {
 		return node.<Operand> switch_( //
 		).applyIf(FunpDontCare.class, f -> {
 			return amd64.eax;
 		}).applyIf(FunpNumber.class, f -> {
 			return amd64.imm(f.i.get(), is);
-		}).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
-			return end - start == is ? decomposeOpMem(fd, pointer, start, is) : null;
-		})).result();
+		}).applyIf(FunpMemory.class, f -> {
+			return f.size() == is ? decomposeFunpMemory(fd, f) : null;
+		}).result();
 	}
 
-	public OpMem decomposeOpMem(int fd, Funp n0, int disp0, int size) {
+	public Operand decomposeFunpMemory(int fd, FunpMemory node) {
+		return node.apply((pointer, start, end) -> decompose(fd, pointer, start, end - start));
+	}
+
+	public OpMem decompose(int fd, Funp n0, int disp0, int size) {
 		class Decompose {
 			private Operator operator;
 			private List<Funp> nodes = new ArrayList<>();

@@ -165,7 +165,7 @@ public class P4GenerateCode {
 				Fun<Operand, CompileOut> postOp = op -> {
 					var old = op;
 					if (result == Result.ASSIGN) {
-						var opt = deOp.decomposeOperand(fd, target);
+						var opt = deOp.decomposeFunpMemory(fd, target);
 						opt = opt != null ? opt : amd64.mem(mask(op).compileOpReg(target.pointer), target.start, target.size());
 						if (op instanceof OpMem)
 							em.mov(op = rs.mask(opt).get(old.size), old);
@@ -185,8 +185,8 @@ public class P4GenerateCode {
 					var old0 = op0;
 					var old1 = op1;
 					if (result == Result.ASSIGN) {
-						var opt0 = deOp.decomposeOpMem(fd, target.pointer, target.start, ps);
-						var opt1 = deOp.decomposeOpMem(fd, target.pointer, target.start + ps, ps);
+						var opt0 = deOp.decompose(fd, target.pointer, target.start, ps);
+						var opt1 = deOp.decompose(fd, target.pointer, target.start + ps, ps);
 						if (opt0 == null || opt1 == null) {
 							var r = mask(op0, op1).compileOpReg(target.pointer);
 							opt0 = amd64.mem(r, target.start, ps);
@@ -269,7 +269,7 @@ public class P4GenerateCode {
 
 					offset.update(fd1);
 
-					if (size == is && (op = deOp.decomposeOperand(fd, value)) != null)
+					if (size == is && (op = deOp.decomposeNumber(fd, value)) != null)
 						em.emit(amd64.instruction(Insn.PUSH, op));
 					else {
 						em.addImm(esp, -alignedSize);
@@ -399,7 +399,7 @@ public class P4GenerateCode {
 					if (result == Result.ASSIGN)
 						if (size == target.size())
 							return postAssign.apply((c1, target) -> {
-								var op_ = deOp.decomposeOperand(fd, target);
+								var op_ = deOp.decomposeFunpMemory(fd, target);
 								if (op_ != null)
 									c1.compileInstruction(Insn.MOV, op_, n);
 								else {
@@ -411,13 +411,13 @@ public class P4GenerateCode {
 						else
 							return Fail.t();
 					else if (result == Result.OP || result == Result.OPREG || result == Result.OPSPEC)
-						if ((op0 = deOp.decomposeOpMem(fd, pointer, start, size)) != null)
+						if ((op0 = deOp.decompose(fd, pointer, start, size)) != null)
 							return postOp.apply(op0);
 						else
 							return postOp.apply(amd64.mem(compileOpReg(pointer), start, size));
 					else if (result == Result.TWOOP || result == Result.TWOOPREG || result == Result.TWOOPSPEC)
-						if ((op0 = deOp.decomposeOpMem(fd, pointer, start, ps)) != null
-								&& (op1 = deOp.decomposeOpMem(fd, pointer, start + ps, ps)) != null)
+						if ((op0 = deOp.decompose(fd, pointer, start, ps)) != null
+								&& (op1 = deOp.decompose(fd, pointer, start + ps, ps)) != null)
 							return postTwoOp.apply(op0, op1);
 						else {
 							var r = compileOpReg(pointer);
@@ -493,7 +493,7 @@ public class P4GenerateCode {
 				var setInsn = setInsnByOp.get(operator);
 				var setRevInsn = setRevInsnByOp.get(operator);
 				var shInsn = shInsnByOp.get(operator);
-				var op = deOp.decomposeOpMem(fd, n, 0, is);
+				var op = deOp.decompose(fd, n, 0, is);
 				Operand opResult = null;
 
 				if (opResult == null && op != null)
@@ -546,8 +546,8 @@ public class P4GenerateCode {
 			}
 
 			private Pair<Funp, OpReg> compileCommutativeTree(Insn insn, Assoc assoc, Funp lhs, Funp rhs) {
-				var opLhs = deOp.decomposeOperand(fd, lhs);
-				var opRhs = deOp.decomposeOperand(fd, rhs);
+				var opLhs = deOp.decomposeNumber(fd, lhs);
+				var opRhs = deOp.decomposeNumber(fd, rhs);
 				var opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
 				var opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
 
@@ -610,7 +610,7 @@ public class P4GenerateCode {
 			}
 
 			private void compileInstruction(Insn insn, Operand op0, Funp f1) {
-				var op1 = deOp.decomposeOperand(fd, f1);
+				var op1 = deOp.decomposeNumber(fd, f1);
 				compileInstruction(insn, op0, op1 != null ? op1 : mask(op0).compileOp(f1));
 			}
 
@@ -652,7 +652,7 @@ public class P4GenerateCode {
 			}
 
 			private OpMem compileFrame(int start, int size) {
-				return deOp.decomposeOpMem(fd, Funp_.framePointer, start, size);
+				return deOp.decompose(fd, Funp_.framePointer, start, size);
 			}
 
 			private OpReg compileLoad(Funp node) {
