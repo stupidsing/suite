@@ -220,21 +220,18 @@ public class P4GenerateCode {
 						return new CompileOut();
 					} else if (result == Result.OP || result == Result.OPREG || result == Result.OPSPEC) {
 						var op0 = isOutSpec ? pop0 : rs.get(is);
-						em.emit(amd64.instruction(Insn.PUSH, i_eax));
-						var fd1 = fd - is;
-						assign.sink2(new Compile1(rs, fd1), frame(fd1, fd));
-						em.mov(op0, compileFrame(fd1, is));
-						em.emit(amd64.instruction(Insn.POP, rs.mask(op0).get(is)));
+						compileAllocStack(is, FunpDontCare.of(), List.of(op0), c1 -> {
+							assign.sink2(c1, frame(c1.fd, fd));
+							return new CompileOut();
+						});
 						return postOp.apply(op0);
 					} else if (result == Result.TWOOP || result == Result.TWOOPREG || result == Result.TWOOPSPEC) {
 						var op0 = isOutSpec ? pop0 : rs.get(is);
 						var op1 = isOutSpec ? pop1 : rs.mask(op0).get(is);
-						var size = ps + ps;
-						var fd1 = fd - size;
-						em.addImm(esp, -size);
-						assign.sink2(new Compile1(rs, fd1), frame(fd1, fd));
-						em.emit(amd64.instruction(Insn.POP, op1));
-						em.emit(amd64.instruction(Insn.POP, op0));
+						compileAllocStack(ps + ps, FunpDontCare.of(), List.of(op1, op0), c1 -> {
+							assign.sink2(c1, frame(c1.fd, fd));
+							return new CompileOut();
+						});
 						return postTwoOp.apply(op0, op1);
 					} else
 						return Fail.t();
@@ -260,26 +257,10 @@ public class P4GenerateCode {
 					compileGlobal(size, address);
 					return compile(expr);
 				})).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, offset) -> {
-					var ism1 = is - 1;
-					var alignedSize = (size + ism1) & ~ism1;
-					var fd1 = fd - alignedSize;
-					var c1 = new Compile1(rs, fd1);
-					Operand op;
-
-					offset.update(fd1);
-
-					if (size == is && (op = deOp.decomposeNumber(fd, value)) != null)
-						em.emit(amd64.instruction(Insn.PUSH, op));
-					else {
-						em.addImm(esp, -alignedSize);
-						c1.compileAssign(value, FunpMemory.of(Funp_.framePointer, fd1, fd1 + size));
-					}
-					var out = c1.compile(expr);
-					if (size == is)
-						em.emit(amd64.instruction(Insn.POP, rs.mask(pop0, pop1, out.op0, out.op1).get(size)));
-					else
-						em.addImm(esp, alignedSize);
-					return out;
+					return compileAllocStack(size, value, null, c -> {
+						offset.update(c.fd);
+						return c.compile(expr);
+					});
 				})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
 					var p = new Amd64Parse();
 					new Object() {
@@ -484,6 +465,29 @@ public class P4GenerateCode {
 					em.emit(amd64.instruction(Insn.LABEL, exitLabel));
 					return compile(expr);
 				})).nonNullResult();
+			}
+
+			private CompileOut compileAllocStack(int size, Funp value, List<Operand> opPops, Fun<Compile1, CompileOut> f) {
+				var ism1 = is - 1;
+				var alignedSize = (size + ism1) & ~ism1;
+				var fd1 = fd - alignedSize;
+				var c1 = new Compile1(rs, fd1);
+				Operand op;
+
+				if (size == is && (op = deOp.decomposeNumber(fd, value)) != null)
+					em.emit(amd64.instruction(Insn.PUSH, op));
+				else {
+					em.addImm(esp, -alignedSize);
+					c1.compileAssign(value, FunpMemory.of(Funp_.framePointer, fd1, fd1 + size));
+				}
+				var out = f.apply(c1);
+				if (opPops != null)
+					opPops.forEach(opPop -> em.emit(amd64.instruction(Insn.POP, opPop)));
+				else if (size == is)
+					em.emit(amd64.instruction(Insn.POP, rs.mask(pop0, pop1, out.op0, out.op1).get(size)));
+				else
+					em.addImm(esp, alignedSize);
+				return out;
 			}
 
 			private Operand compileTree(Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
