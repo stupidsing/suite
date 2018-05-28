@@ -233,9 +233,8 @@ public class P4GenerateCode {
 						var fd1 = fd - size;
 						em.addImm(esp, -size);
 						assign.sink2(new Compile1(rs, fd1), frame(fd1, fd));
-						em.mov(op0, compileFrame(fd1, ps));
-						em.mov(op1, compileFrame(fd1 + ps, ps));
-						em.addImm(esp, size);
+						em.emit(amd64.instruction(Insn.POP, op1));
+						em.emit(amd64.instruction(Insn.POP, op0));
 						return postTwoOp.apply(op0, op1);
 					} else
 						return Fail.t();
