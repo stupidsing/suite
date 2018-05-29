@@ -92,12 +92,12 @@ public class P4DecomposeOperand {
 			}
 		}
 
-		class DecomposePlus {
+		class DecomposeAdd {
 			private OpReg baseReg = null, indexReg = null;
 			private int scale = 1, disp = disp0;
 			private boolean ok = is124(size);
 
-			private DecomposePlus(Funp n0) {
+			private DecomposeAdd(Funp n0) {
 				for (var n1 : decompose.apply(TermOp.PLUS__, n0))
 					if (n1 instanceof FunpFramePointer && !isUseEbp) {
 						addReg(amd64.esp, 1);
@@ -132,7 +132,7 @@ public class P4DecomposeOperand {
 			}
 		}
 
-		return new DecomposePlus(n0).op();
+		return new DecomposeAdd(n0).op();
 	}
 
 	private boolean is1248(long scale) {

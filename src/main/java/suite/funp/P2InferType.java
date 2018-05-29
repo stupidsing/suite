@@ -234,7 +234,7 @@ public class P2InferType {
 							;
 						else
 							return Fail.t();
-					else if (assign.t0.size == 1)
+					else if (assign.t0.size == Funp_.booleanSize)
 						unify(n, typeByte, tp);
 					else if (assign.t0.size == is)
 						unify(n, typeNumber, tp);

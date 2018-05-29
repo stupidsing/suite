@@ -643,9 +643,18 @@ public class P4GenerateCode {
 			}
 
 			private void compileJumpZero(Funp if_, Operand label) {
-				var r0 = compileOpReg(if_);
-				em.emit(amd64.instruction(Insn.OR, r0, r0));
+				var op0 = isOutSpec ? pop0 : rs.get(is);
+				compileAllocStack(is, FunpNumber.ofNumber(0), List.of(op0), c1 -> {
+					var fd1 = c1.fd;
+					c1.compileAssign(if_, frame(fd1, fd1 + Funp_.booleanSize));
+					return new CompileOut();
+				});
+				em.emit(amd64.instruction(Insn.OR, op0, op0));
 				em.emit(amd64.instruction(Insn.JZ, label));
+
+				// var r0 = compileOpReg(if_);
+				// em.emit(amd64.instruction(Insn.OR, r0, r0));
+				// em.emit(amd64.instruction(Insn.JZ, label));
 			}
 
 			private OpReg compileFramePointer() {
