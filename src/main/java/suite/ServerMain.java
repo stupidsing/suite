@@ -49,11 +49,11 @@ public class ServerMain extends ExecutableProgram {
 				+ "</html>"));
 
 		var handler1 = HttpHandler.ofDispatch(IMap //
-				.<String, HttpHandler>empty() //
+				.<String, HttpHandler> empty() //
 				.put("path", HttpHandler.ofPath(Constants.tmp)) //
 				.put("site", HttpHandler.ofSession(authenticator, handler0)));
 
-		new HttpServe().run(handler1);
+		new HttpServe().serve(handler1);
 	}
 
 	private void runScheduler() {
