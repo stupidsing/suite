@@ -145,7 +145,7 @@ public class Symbolic {
 		}
 
 		public Ringo<Poly<N>> poly(Rewrite rewrite) {
-			return Ringo.ofPolynomial(new Polynomial<>(rewrite.x, rewrite::is_x, ring, sgn, parse, format));
+			return ofPolynomial(new Polynomial<>(rewrite.x, rewrite::is_x, ring, sgn, parse, format));
 		}
 
 		private Opt<Node> pf(Node node) {
