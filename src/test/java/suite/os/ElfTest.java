@@ -16,7 +16,12 @@ public class ElfTest {
 	private ElfWriter elf = new ElfWriter();
 
 	@Test
-	public void testCode() {
+	public void testFold() {
+		test("io (fold 0 (n => n < 100) (n => n + 1))", "", 100);
+	}
+
+	@Test
+	public void testIterate() {
 		test("iterate n 0 (n < 100) (io (n + 1))", "", 100);
 	}
 
