@@ -160,8 +160,8 @@ public class Symbolic {
 				.pf(node);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked", })
-	public Opt<Node> polyize0(Node node, Atom... vars) {
+	@SuppressWarnings({ "rawtypes", "unchecked", "unused", })
+	private Opt<Node> polyize0(Node node, Atom... vars) {
 		var fractional_ = Read //
 				.from(vars) //
 				.<Fractional<?>> fold(Fractional.ofIntegral(), (fr, var) -> divPoly(new Rewrite(var), fr).fractional());
