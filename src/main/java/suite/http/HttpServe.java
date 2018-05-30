@@ -30,9 +30,9 @@ import suite.util.Util;
  *
  * @author yw.sing
  */
-public class HttpServer {
+public class HttpServe {
 
-	public void run(HttpHandler handler) {
+	public void serve(HttpHandler handler) {
 		try {
 			run_(handler);
 		} catch (IOException ex) {

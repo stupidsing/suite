@@ -8,7 +8,7 @@ import java.util.List;
 import suite.http.HttpHandler;
 import suite.http.HttpHeaderUtil;
 import suite.http.HttpResponse;
-import suite.http.HttpServer;
+import suite.http.HttpServe;
 import suite.http.HttpSessionController.Authenticator;
 import suite.immutable.IMap;
 import suite.node.Str;
@@ -53,7 +53,7 @@ public class ServerMain extends ExecutableProgram {
 				.put("path", HttpHandler.ofPath(Constants.tmp)) //
 				.put("site", HttpHandler.ofSession(authenticator, handler0)));
 
-		new HttpServer().run(handler1);
+		new HttpServe().run(handler1);
 	}
 
 	private void runScheduler() {
