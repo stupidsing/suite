@@ -35,7 +35,7 @@ public class ElfTest {
 		var program = "" //
 				+ "expand size := 256 >> \n" //
 				+ "let linux := consult \"linux.fp\" >> \n" //
-				+ "iterate n 1 (n != 0) ( \n" //
+				+ "io-fold 1 (n => n != 0) (n => \n" //
 				+ "	let buffer := size * array coerce-byte _ >> \n" //
 				+ "	let pointer := address buffer >> \n" //
 				+ "	pointer, size | linux/read | io-cat (nBytesRead => \n" //
