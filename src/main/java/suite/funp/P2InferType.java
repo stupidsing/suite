@@ -34,6 +34,7 @@ import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpIoCat;
+import suite.funp.P0.FunpIoFold;
 import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
@@ -110,16 +111,16 @@ public class P2InferType {
 		var evs = new ArrayList<Pair<String, Funp>>();
 
 		var node1 = new Object() {
-			private Funp extract_(Funp n) {
+			private Funp extract(Funp n) {
 				return inspect.rewrite(Funp.class, n_ -> {
 					return n_.<Funp> switch_( //
 					).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
-						return FunpDefine.of(isPolyType, var, extractPredefine(value), extract_(expr));
+						return FunpDefine.of(isPolyType, var, extractPredefine(value), extract(expr));
 					})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
 						var pairs1 = Read.from2(pairs0).mapValue(P2InferType.this::extractPredefine).toList();
-						return FunpDefineRec.of(pairs1, extract_(expr));
+						return FunpDefineRec.of(pairs1, extract(expr));
 					})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
-						return FunpGlobal.of(var, extractPredefine(value), extract_(expr));
+						return FunpGlobal.of(var, extractPredefine(value), extract(expr));
 					})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 						return FunpLambda.of(var, extractPredefine(expr));
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
@@ -130,7 +131,7 @@ public class P2InferType {
 					})).result();
 				}, n);
 			}
-		}.extract_(node0);
+		}.extract(node0);
 
 		return Read //
 				.from(evs) //
@@ -303,6 +304,13 @@ public class P2InferType {
 				var tbio = TypeIo.of(tb);
 				unify(n, TypeLambda.of(ta, tbio), infer(expr));
 				return TypeLambda.of(TypeIo.of(ta), tbio);
+			})).applyIf(FunpIoFold.class, f -> f.apply((init, cont, next) -> {
+				var tv = unify.newRef();
+				var tvio = TypeIo.of(tv);
+				unify(n, tv, infer(init));
+				unify(n, TypeLambda.of(tv, typeBoolean), infer(cont));
+				unify(n, TypeLambda.of(tv, tvio), infer(next));
+				return tvio;
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				var te = unify.newRef();
 				unify(n, TypeReference.of(TypeArray.of(te)), infer(reference));
@@ -438,15 +446,7 @@ public class P2InferType {
 					}
 				return Fail.t();
 			})).applyIf(FunpFold.class, f -> f.apply((init, cont, next) -> {
-				var offset = IntMutable.nil();
-				var size = getTypeSize(typeOf(init));
-				var var_ = new Var(scope, offset, 0, size);
-				var e1 = new Erase(scope, env.replace("fold" + Util.temp(), var_));
-				var m = getVariable(var_);
-				var cont_ = e1.apply(m, cont, size);
-				var next_ = e1.apply(m, next, size);
-				var while_ = FunpWhile.of(cont_, FunpAssign.of(m, next_, FunpDontCare.of()), m);
-				return FunpAllocStack.of(size, e1.erase(init), while_, offset);
+				return fold(init, cont, next);
 			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
 				var size = getTypeSize(typeOf(value));
 				var address = Mutable.<Operand> nil();
@@ -457,6 +457,8 @@ public class P2InferType {
 				return erase(expr);
 			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
 				return erase(expr);
+			})).applyIf(FunpIoFold.class, f -> f.apply((init, cont, next) -> {
+				return fold(init, cont, next);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				var te = unify.newRef();
 				unify(n, typeOf(reference), TypeReference.of(TypeArray.of(te)));
@@ -534,6 +536,18 @@ public class P2InferType {
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return getVariable(env.get(var));
 			})).result();
+		}
+
+		private FunpAllocStack fold(Funp init, Funp cont, Funp next) {
+			var offset = IntMutable.nil();
+			var size = getTypeSize(typeOf(init));
+			var var_ = new Var(scope, offset, 0, size);
+			var e1 = new Erase(scope, env.replace("fold" + Util.temp(), var_));
+			var m = getVariable(var_);
+			var cont_ = e1.apply(m, cont, size);
+			var next_ = e1.apply(m, next, size);
+			var while_ = FunpWhile.of(cont_, FunpAssign.of(m, next_, FunpDontCare.of()), m);
+			return FunpAllocStack.of(size, e1.erase(init), while_, offset);
 		}
 
 		private FunpSaveRegisters apply(Funp value, Funp lambda, int size) {

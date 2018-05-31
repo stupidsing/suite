@@ -32,6 +32,7 @@ import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpIoCat;
+import suite.funp.P0.FunpIoFold;
 import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
@@ -188,6 +189,8 @@ public class P0Parse {
 				return FunpIo.of(p(a));
 			}).match1("io-cat .0", a -> {
 				return FunpIoCat.of(p(a));
+			}).match3("io-fold .0 .1 .2", (a, b, c) -> {
+				return FunpIoFold.of(p(a), p(b), p(c));
 			}).match4("iterate .0 .1 .2 .3", (a, b, c, d) -> {
 				var var = name(a);
 				var p1 = nv(var);

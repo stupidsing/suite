@@ -17,12 +17,13 @@ public class ElfTest {
 
 	@Test
 	public void testFold() {
-		test("io (fold 0 (n => n < 100) (n => n + 1))", "", 100);
+		test(100, "io (fold 0 (n => n < 100) (n => n + 1))", "");
+		test(100, "io-fold 0 (n => n < 100) (n => io (n + 1))", "");
 	}
 
 	@Test
 	public void testIterate() {
-		test("iterate n 0 (n < 100) (io (n + 1))", "", 100);
+		test(100, "iterate n 0 (n < 100) (io (n + 1))", "");
 	}
 
 	// io :: a -> io a
@@ -45,10 +46,10 @@ public class ElfTest {
 				+ ") \n" //
 		;
 
-		test(program, text, 0);
+		test(0, program, text);
 	}
 
-	private void test(String program, String input, int code) {
+	private void test(int code, String program, String input) {
 		var bytes = Bytes.of(input.getBytes(Constants.charset));
 		var main = Funp_.main(true);
 
