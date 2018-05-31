@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.apache.http.Header;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClients;
 
@@ -22,6 +23,7 @@ import suite.primitive.Bytes_;
 import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
+import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
 import suite.util.ParseUtil;
@@ -87,10 +89,12 @@ public class HttpUtil {
 
 	public static class HttpResult {
 		public final int responseCode;
+		public final Map<String, String> headers;
 		public final Outlet<Bytes> out;
 
-		private HttpResult(int responseCode, Outlet<Bytes> out) {
+		private HttpResult(int responseCode, Map<String, String> headers, Outlet<Bytes> out) {
 			this.responseCode = responseCode;
+			this.headers = headers;
 			this.out = out;
 		}
 	}
@@ -158,14 +162,15 @@ public class HttpUtil {
 	// keep timestamps to avoid overloading servers
 	private static Fun<String, AtomicLong> timestampFun = Memoize.fun(server -> new AtomicLong());
 
-	private static HttpResult httpApache(String method, URL url, Outlet<Bytes> in, Map<String, String> headers) throws IOException {
+	private static HttpResult httpApache(String method, URL url, Outlet<Bytes> in, Map<String, String> headers0)
+			throws IOException {
 		LogUtil.info("START " + method + " " + url);
 		var client = HttpClients.createDefault();
 
 		var request = new HttpRequestBase() {
 			{
 				setURI(URI.create(url.toString()));
-				headers.entrySet().forEach(e -> addHeader(e.getKey(), e.getValue()));
+				headers0.entrySet().forEach(e -> addHeader(e.getKey(), e.getValue()));
 			}
 
 			public String getMethod() {
@@ -178,6 +183,7 @@ public class HttpUtil {
 		var statusLine = response.getStatusLine();
 		var statusCode = statusLine.getStatusCode();
 		var inputStream = response.getEntity().getContent();
+		var headers1 = Read.from(response.getAllHeaders()).map2(Header::getName, Header::getValue).toMap();
 		var out = To.outlet(inputStream) //
 				.closeAtEnd(inputStream) //
 				.closeAtEnd(response) //
@@ -185,7 +191,7 @@ public class HttpUtil {
 				.closeAtEnd(() -> LogUtil.info("END__ " + method + " " + url));
 
 		if (statusCode == HttpURLConnection.HTTP_OK)
-			return new HttpResult(statusCode, out);
+			return new HttpResult(statusCode, headers1, out);
 		else
 			throw new IOException("HTTP returned " + statusCode //
 					+ ": " + url //
@@ -220,7 +226,7 @@ public class HttpUtil {
 
 			return http(method, url1, in, headers1);
 		} else if (responseCode == HttpURLConnection.HTTP_OK)
-			return new HttpResult(responseCode, out);
+			return new HttpResult(responseCode, Map.ofEntries(), out);
 		else
 			throw new IOException("HTTP returned " + responseCode //
 					+ ": " + url //

@@ -34,13 +34,13 @@ public class HttpServe {
 
 	public void serve(HttpHandler handler) {
 		try {
-			run_(handler);
+			serve_(handler);
 		} catch (IOException ex) {
 			Fail.t(ex);
 		}
 	}
 
-	private void run_(HttpHandler handler) throws IOException {
+	private void serve_(HttpHandler handler) throws IOException {
 		new SocketUtil().listenIo(8051, (is, os) -> {
 			var ls = Util.readLine(is).split(" ");
 			var method = ls[0];
