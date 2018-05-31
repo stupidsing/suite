@@ -20,7 +20,6 @@ import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpIoCat;
 import suite.funp.P0.FunpIoFold;
-import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
@@ -161,18 +160,6 @@ public class P2GenerateLambda {
 				return Fail.t();
 			})).applyIf(FunpIoFold.class, f -> f.apply((init, cont, next) -> {
 				return fold(init, cont, next);
-			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-				var fs1 = fs + 1;
-				var env1 = env.replace(var, fs1);
-				var init_ = compile_(init);
-				var cond_ = compile(fs1, env1, cond);
-				var iterate_ = compile(fs1, env1, iterate);
-				return rt -> {
-					var rt1 = new Rt(rt, init_.apply(rt));
-					while (b(rt1, cond_))
-						rt1.var = iterate_.apply(rt1);
-					return rt1.var;
-				};
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				var fs1 = fs + 1;
 				var thunk = compile(fs1, env.replace(var, fs1), expr);

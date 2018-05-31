@@ -75,11 +75,6 @@ public class FunpTest {
 	}
 
 	@Test
-	public void testIterate() {
-		test(100, "iterate v 0 (v < 100) (io (v + 1))");
-	}
-
-	@Test
 	public void testGlobal() {
 		test(1, "global a := [0, 1, 2,] >> a:1");
 	}

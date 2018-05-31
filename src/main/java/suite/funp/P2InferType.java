@@ -35,7 +35,6 @@ import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpIoCat;
 import suite.funp.P0.FunpIoFold;
-import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
@@ -171,9 +170,6 @@ public class P2InferType {
 				})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
 					var c1 = new Capture(accesses, locals, globals.add(var));
 					return FunpGlobal.of(var, capture(value), c1.capture(expr));
-				})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-					var c1 = new Capture(accesses, locals.add(var), globals);
-					return FunpIterate.of(var, capture(init), c1.capture(cond), c1.capture(iterate));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					var locals1 = ISet.<String> empty();
 					var capn = "cap" + Util.temp();
@@ -316,14 +312,6 @@ public class P2InferType {
 				unify(n, TypeReference.of(TypeArray.of(te)), infer(reference));
 				unify(n, infer(index), typeNumber);
 				return te;
-			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-				var tv = unify.newRef();
-				var tv1 = TypeIo.of(tv);
-				var i1 = new Infer(env.replace(var, Pair.of(false, tv)));
-				unify(n, tv, infer(init));
-				unify(n, typeBoolean, i1.infer(cond));
-				unify(n, tv1, i1.infer(iterate));
-				return tv1;
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				var tv = unify.newRef();
 				return TypeLambda.of(tv, new Infer(env.replace(var, Pair.of(false, tv))).infer(expr));
@@ -467,14 +455,6 @@ public class P2InferType {
 				var inc = FunpTree.of(TermOp.MULT__, erase(index), FunpNumber.ofNumber(size));
 				var address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
-			})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-				var offset = IntMutable.nil();
-				var size = getTypeSize(typeOf(init));
-				var var_ = new Var(scope, offset, 0, size);
-				var e1 = new Erase(scope, env.replace(var, var_));
-				var m = getVariable(var_);
-				var while_ = FunpWhile.of(e1.erase(cond), FunpAssign.of(m, e1.erase(iterate), FunpDontCare.of()), m);
-				return FunpAllocStack.of(size, erase(init), while_, offset);
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				var b = ps + ps; // return address and EBP
 				var scope1 = scope + 1;

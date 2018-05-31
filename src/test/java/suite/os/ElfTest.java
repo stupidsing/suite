@@ -21,11 +21,6 @@ public class ElfTest {
 		test(100, "io-fold 0 (n => n < 100) (n => io (n + 1))", "");
 	}
 
-	@Test
-	public void testIterate() {
-		test(100, "iterate n 0 (n < 100) (io (n + 1))", "");
-	}
-
 	// io :: a -> io a
 	// io-cat :: io a -> (a -> io b) -> io b
 	@Test

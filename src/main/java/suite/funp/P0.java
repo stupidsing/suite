@@ -339,26 +339,6 @@ public class P0 {
 		}
 	}
 
-	public static class FunpIterate implements Funp, P2.End {
-		public String var;
-		public Funp init;
-		public Funp cond;
-		public Funp iterate;
-
-		public static FunpIterate of(String var, Funp init, Funp cond, Funp iterate) {
-			var f = new FunpIterate();
-			f.var = var;
-			f.init = init;
-			f.cond = cond;
-			f.iterate = iterate;
-			return f;
-		}
-
-		public <R> R apply(FixieFun4<String, Funp, Funp, Funp, R> fun) {
-			return fun.apply(var, init, cond, iterate);
-		}
-	}
-
 	public static class FunpLambda implements Funp, P2.End {
 		public String var;
 		public Funp expr;

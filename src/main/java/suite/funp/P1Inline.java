@@ -14,7 +14,6 @@ import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpGlobal;
-import suite.funp.P0.FunpIterate;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
@@ -83,10 +82,6 @@ public class P1Inline {
 					var var1 = newVar.apply(var0);
 					var r1 = new Rename(vars.replace(var0, var1));
 					return FunpGlobal.of(var1, rename(value), r1.rename(expr));
-				})).applyIf(FunpIterate.class, f -> f.apply((var0, init, cond, iterate) -> {
-					var var1 = newVar.apply(var0);
-					var r1 = new Rename(vars.replace(var0, var1));
-					return FunpIterate.of(var1, rename(init), r1.rename(cond), r1.rename(iterate));
 				})).applyIf(FunpLambda.class, f -> f.apply((var0, expr) -> {
 					var var1 = newVar.apply(var0);
 					var r1 = new Rename(vars.replace(var0, var1));
@@ -245,12 +240,6 @@ public class P1Inline {
 					for (var pair : pairs)
 						associate(vars1, pair.t1);
 					associate(vars1, expr);
-					return n_;
-				})).applyIf(FunpIterate.class, f -> f.apply((var, init, cond, iterate) -> {
-					var vars1 = vars.replace(var, f);
-					associate(vars, init);
-					associate(vars1, cond);
-					associate(vars1, iterate);
 					return n_;
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					associate(vars.replace(var, f), expr);
