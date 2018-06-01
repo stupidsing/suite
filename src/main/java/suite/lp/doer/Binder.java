@@ -10,7 +10,7 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
-import suite.util.List_;
+import suite.util.Set_;
 
 public class Binder {
 
@@ -36,7 +36,7 @@ public class Binder {
 			var map0 = ((Dict) n0).map;
 			var map1 = ((Dict) n1).map;
 			var b = true;
-			for (var key : List_.concat(map0.keySet(), map1.keySet())) {
+			for (var key : Set_.union(map0.keySet(), map1.keySet())) {
 				var v0 = map0.computeIfAbsent(key, k -> new Reference());
 				var v1 = map1.computeIfAbsent(key, k -> new Reference());
 				b &= bind(v0, v1, trail);
