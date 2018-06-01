@@ -159,16 +159,16 @@ public class Amd64Interpret {
 					break;
 				case INT:
 					if ((byte) source0 == -128)
-						if (regs[eax] == 1)
+						if (regs[eax] == 1) // exit
 							return regs[ebx];
-						else if (regs[eax] == 3) {
+						else if (regs[eax] == 3) { // read
 							int length = min(regs[edx], input.size());
 							var di = index(regs[ecx]);
 							for (var i = 0; i < length; i++)
 								mem.put(di++, input.get(i));
 							input = input.range(length);
 							regs[eax] = length;
-						} else if (regs[eax] == 4) {
+						} else if (regs[eax] == 4) { // write
 							var length = regs[edx];
 							var si = index(regs[ecx]);
 							var bs = new byte[length];
