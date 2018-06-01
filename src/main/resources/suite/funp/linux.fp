@@ -18,8 +18,7 @@ define pool-new := length => {
 define pool-delete := address ({ pool: pool, length: length, start: start, }) =>
 	type start = 0 >>
 	pool, length | unmap
->>
-{
+>> {
 	map: map,
 	unmap: unmap,
 	read: ((pointer, length) =>
