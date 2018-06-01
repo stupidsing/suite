@@ -10,7 +10,7 @@ import suite.ip.ImperativeCompiler;
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfTest0 {
 
-	private ElfWriter elf = new ElfWriter();
+	private WriteElf elf = new WriteElf();
 	private ImperativeCompiler ic = new ImperativeCompiler();
 
 	@Test

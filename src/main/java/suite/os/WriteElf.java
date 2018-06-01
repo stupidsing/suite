@@ -16,7 +16,7 @@ import suite.util.Fail;
 import suite.util.Util;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
-public class ElfWriter {
+public class WriteElf {
 
 	public Execute exec(byte[] input, Int_Obj<Bytes> source) {
 		var path = Constants.tmp("a.out." + Util.temp());
@@ -49,7 +49,7 @@ public class ElfWriter {
 	}
 
 	private void write(int org, Bytes code, DataOutput_ do_) throws IOException {
-		var header = new Writer_() //
+		var header = new Write_() //
 				.db(0x7F) // e_ident
 				.append("ELF".getBytes(Constants.charset)) //
 				.append(new byte[] { 1, 1, 1, 0, }) //
@@ -81,27 +81,27 @@ public class ElfWriter {
 		do_.writeBytes(code);
 	}
 
-	private class Writer_ {
+	private class Write_ {
 		private BytesBuilder bb = new BytesBuilder();
 
-		private Writer_ db(int i) {
+		private Write_ db(int i) {
 			return d(1, i);
 		}
 
-		private Writer_ dw(int i) {
+		private Write_ dw(int i) {
 			return d(2, i);
 		}
 
-		private Writer_ dd(int i) {
+		private Write_ dd(int i) {
 			return d(4, i);
 		}
 
-		private Writer_ append(byte[] bs) {
+		private Write_ append(byte[] bs) {
 			bb.append(bs);
 			return this;
 		}
 
-		private Writer_ d(int n, int i) {
+		private Write_ d(int n, int i) {
 			for (var j = 0; j < n; j++) {
 				bb.append((byte) (i & 0xFF));
 				i = i >> 8;

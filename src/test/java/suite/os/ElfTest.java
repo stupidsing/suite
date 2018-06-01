@@ -13,7 +13,7 @@ import suite.util.RunUtil;
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfTest {
 
-	private ElfWriter elf = new ElfWriter();
+	private WriteElf elf = new WriteElf();
 
 	@Test
 	public void testFold() {
