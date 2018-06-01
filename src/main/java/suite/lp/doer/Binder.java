@@ -21,8 +21,8 @@ public class Binder {
 		if (n0 == n1)
 			return true;
 
-		Class<? extends Node> clazz0 = n0.getClass();
-		Class<? extends Node> clazz1 = n1.getClass();
+		var clazz0 = n0.getClass();
+		var clazz1 = n1.getClass();
 
 		if (clazz0 == Reference.class) {
 			trail.addBind((Reference) n0, n1);
@@ -37,8 +37,8 @@ public class Binder {
 			var map1 = ((Dict) n1).map;
 			var b = true;
 			for (var key : List_.concat(map0.keySet(), map1.keySet())) {
-				Node v0 = map0.computeIfAbsent(key, k -> new Reference());
-				Node v1 = map1.computeIfAbsent(key, k -> new Reference());
+				var v0 = map0.computeIfAbsent(key, k -> new Reference());
+				var v1 = map1.computeIfAbsent(key, k -> new Reference());
 				b &= bind(v0, v1, trail);
 			}
 			return b;
