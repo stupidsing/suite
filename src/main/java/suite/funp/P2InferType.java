@@ -391,8 +391,8 @@ public class P2InferType {
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
-				var offset = IntMutable.nil();
 				var size = getTypeSize(typeOf(value));
+				var offset = IntMutable.nil();
 				var e1 = new Erase(scope, env.replace(var, new Var(scope, offset, 0, size)));
 				return FunpAllocStack.of(size, erase(value), e1.erase(expr), offset);
 			})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
