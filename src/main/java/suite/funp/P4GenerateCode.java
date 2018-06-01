@@ -30,6 +30,7 @@ import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P2.FunpAllocGlobal;
+import suite.funp.P2.FunpAllocReg;
 import suite.funp.P2.FunpAllocStack;
 import suite.funp.P2.FunpAssign;
 import suite.funp.P2.FunpData;
@@ -261,12 +262,17 @@ public class P4GenerateCode {
 						offset.update(c.fd);
 						return c.compile(expr);
 					});
+				})).applyIf(FunpAllocReg.class, f -> f.apply((size, value, expr, reg) -> {
+					var reg_ = rs.get(size);
+					reg.update(reg_);
+					compileLoad(value, reg_);
+					return mask(reg_).compile(expr);
 				})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
 					var p = new Amd64Parse();
 					new Object() {
 						private Object assign(Compile1 c1, int i) {
 							return i < assigns.size() ? assigns.get(i).map((op, f) -> {
-								c1.compileOpSpec(f, op);
+								c1.compileLoad(f, op);
 								return assign(c1.mask(op), i + 1);
 							}) : this;
 						}
@@ -538,7 +544,7 @@ public class P4GenerateCode {
 							em.emit(amd64.instruction(shInsn, op0, amd64.imm(numRhs, 1)));
 						else
 							saveRegs(c1 -> {
-								var opRhs = c1.mask(op0).compileOpSpec(rhs, cl);
+								var opRhs = c1.mask(op0).compileOpSpec(rhs, ecx);
 								em.emit(amd64.instruction(shInsn, op0, opRhs));
 							}, ecx);
 						opResult = op0;
@@ -663,12 +669,26 @@ public class P4GenerateCode {
 				return op;
 			}
 
-			private OpMem compileFrame(int start, int size) {
-				return deOp.decompose(fd, Funp_.framePointer, start, size);
+			private OpReg compileLoad(Funp node, OpReg op) {
+				var size = op.size;
+				if (size == is)
+					compileOpSpec(node, op);
+				else
+					compileAllocStack(size, FunpDontCare.of(), null, c1 -> {
+						var fd1 = c1.fd;
+						c1.compileAssign(node, frame(fd1, fd1 + size));
+						em.mov(op, compileFrame(fd1, size));
+						return new CompileOut(op);
+					});
+				return op;
 			}
 
 			private OpReg compileLoad(Funp node) {
 				return isOutSpec ? compileOpSpec(node, pop0) : compileOpReg(node);
+			}
+
+			private OpMem compileFrame(int start, int size) {
+				return deOp.decompose(fd, Funp_.framePointer, start, size);
 			}
 
 			private void compileAssign(Funp n, FunpMemory target) {

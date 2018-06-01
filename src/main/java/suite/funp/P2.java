@@ -59,6 +59,26 @@ public class P2 {
 		}
 	}
 
+	public static class FunpAllocReg implements Funp, P4.End {
+		public int size;
+		public Funp value;
+		public Funp expr;
+		public Mutable<Operand> reg;
+
+		public static FunpAllocReg of(int size, Funp value, Funp expr, Mutable<Operand> reg) {
+			var f = new FunpAllocReg();
+			f.size = size;
+			f.value = value;
+			f.expr = expr;
+			f.reg = reg;
+			return f;
+		}
+
+		public <R> R apply(FixieFun4<Integer, Funp, Funp, Mutable<Operand>, R> fun) {
+			return fun.apply(size, value, expr, reg);
+		}
+	}
+
 	public static class FunpAssign implements Funp, P4.End {
 		public FunpMemory memory;
 		public Funp value;
