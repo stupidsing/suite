@@ -1,24 +1,6 @@
 package suite.fp.match;
 
 import suite.BindMapUtil;
-import suite.fp.match.Matchers.APPLY;
-import suite.fp.match.Matchers.ATOM;
-import suite.fp.match.Matchers.BOOLEAN;
-import suite.fp.match.Matchers.CHARS;
-import suite.fp.match.Matchers.CONS;
-import suite.fp.match.Matchers.DECONS;
-import suite.fp.match.Matchers.DEFVARS;
-import suite.fp.match.Matchers.ERROR;
-import suite.fp.match.Matchers.FUN;
-import suite.fp.match.Matchers.IF;
-import suite.fp.match.Matchers.NIL;
-import suite.fp.match.Matchers.NUMBER;
-import suite.fp.match.Matchers.PRAGMA;
-import suite.fp.match.Matchers.TCO;
-import suite.fp.match.Matchers.TREE;
-import suite.fp.match.Matchers.UNWRAP;
-import suite.fp.match.Matchers.VAR;
-import suite.fp.match.Matchers.WRAP;
 import suite.node.Node;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
@@ -46,8 +28,97 @@ public class Matcher<T> {
 	public static Matcher<VAR> var = new Matcher<VAR>(VAR.matcher, VAR::new);
 	public static Matcher<WRAP> wrap = new Matcher<WRAP>(WRAP.matcher, WRAP::new);
 
-	public String matcher;
-	public Source<T> ctor;
+	public static class APPLY {
+		public static String matcher = "APPLY .param .fun";
+		public Node param, fun;
+	}
+
+	public static class ATOM {
+		public static String matcher = "ATOM .value";
+		public Node value;
+	}
+
+	public static class BOOLEAN {
+		public static String matcher = "BOOLEAN .value";
+		public Node value;
+	}
+
+	public static class CHARS {
+		public static String matcher = "CHARS .value";
+		public Node value;
+	}
+
+	public static class CONS {
+		public static String matcher = "CONS .type .head .tail";
+		public Node type, head, tail;
+	}
+
+	public static class DECONS {
+		public static String matcher = "DECONS .type .value .left .right .then .else_";
+		public Node type, value, left, right, then, else_;
+	}
+
+	public static class DEFVARS {
+		public static String matcher = "DEF-VARS .list .do_";
+		public Node list, do_;
+	}
+
+	public static class ERROR {
+		public static String matcher = "ERROR .m";
+		public Node m;
+	}
+
+	public static class FUN {
+		public static String matcher = "FUN .param .do_";
+		public Node param, do_;
+	}
+
+	public static class IF {
+		public static String matcher = "IF .if_ .then_ .else_";
+		public Node if_, then_, else_;
+	}
+
+	public static class NIL {
+		public static String matcher = "NIL";
+	}
+
+	public static class NUMBER {
+		public static String matcher = "NUMBER .value";
+		public Node value;
+	}
+
+	public static class PRAGMA {
+		public static String matcher = "PRAGMA _ .do_";
+		public Node do_;
+	}
+
+	public static class TCO {
+		public static String matcher = "TCO .iter .in_";
+		public Node iter, in_;
+	}
+
+	public static class TREE {
+		public static String matcher = "TREE .op .left .right";
+		public Node op, left, right;
+	}
+
+	public static class UNWRAP {
+		public static String matcher = "UNWRAP .do_";
+		public Node do_;
+	}
+
+	public static class VAR {
+		public static String matcher = "VAR .name";
+		public Node name;
+	}
+
+	public static class WRAP {
+		public static String matcher = "WRAP .do_";
+		public Node do_;
+	}
+
+	private String matcher;
+	private Source<T> ctor;
 
 	public Matcher(String matcher, Source<T> ctor) {
 		this.matcher = matcher;
