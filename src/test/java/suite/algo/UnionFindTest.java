@@ -3,10 +3,9 @@ package suite.algo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import org.junit.Test;
+
+import suite.primitive.adt.set.IntSet;
 
 public class UnionFindTest {
 
@@ -36,8 +35,8 @@ public class UnionFindTest {
 		assertTrue(unionFind.find(2) == unionFind.find(6));
 	}
 
-	private Set<Integer> find(UnionFind<Integer> unionFind, int start, int end) {
-		var set = new HashSet<Integer>();
+	private IntSet find(UnionFind<Integer> unionFind, int start, int end) {
+		var set = new IntSet();
 		for (var i = start; i <= end; i++)
 			set.add(unionFind.find(i));
 		return set;

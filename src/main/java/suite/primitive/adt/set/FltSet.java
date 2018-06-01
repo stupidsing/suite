@@ -48,7 +48,6 @@ public class FltSet {
 
 	public boolean add(float c) {
 		var capacity = vs.length;
-		size++;
 
 		if (capacity * 3 / 4 < size) {
 			var vs0 = vs;
@@ -61,7 +60,9 @@ public class FltSet {
 					add_(v_);
 		}
 
-		return add_(c);
+		var b = add_(c);
+		size += b ? 1 : 0;
+		return b;
 	}
 
 	public boolean contains(float c) {
@@ -123,6 +124,10 @@ public class FltSet {
 			}.rehash(index);
 		}
 		return b;
+	}
+
+	public int size() {
+		return size;
 	}
 
 	public FltSource source() {
