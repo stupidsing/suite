@@ -51,6 +51,7 @@ public class FunpTest {
 	public void testDefine() {
 		test(4, "define i := 3 >> i + 1");
 		test(4, "define f := i => i + 1 >> 3 | f");
+		test(1, "define global a := [0, 1, 2,] >> a:1");
 	}
 
 	@Test
@@ -72,11 +73,6 @@ public class FunpTest {
 	public void testIo() {
 		test(1, "io 0 | io-cat (i => io (i + 1))");
 		test(100, "io-fold 0 (n => n < 100) (n => io (n + 1))");
-	}
-
-	@Test
-	public void testGlobal() {
-		test(1, "global a := [0, 1, 2,] >> a:1");
 	}
 
 	@Test

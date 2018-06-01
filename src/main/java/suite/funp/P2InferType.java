@@ -23,13 +23,13 @@ import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpCoerce.Coerce;
 import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDefineGlobal;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpFold;
-import suite.funp.P0.FunpGlobal;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
@@ -115,11 +115,11 @@ public class P2InferType {
 					return n_.<Funp> switch_( //
 					).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 						return FunpDefine.of(isPolyType, var, extractPredefine(value), extract(expr));
+					})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
+						return FunpDefineGlobal.of(var, extractPredefine(value), extract(expr));
 					})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
 						var pairs1 = Read.from2(pairs0).mapValue(P2InferType.this::extractPredefine).toList();
 						return FunpDefineRec.of(pairs1, extract(expr));
-					})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
-						return FunpGlobal.of(var, extractPredefine(value), extract(expr));
 					})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 						return FunpLambda.of(var, extractPredefine(expr));
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
@@ -158,6 +158,9 @@ public class P2InferType {
 				).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 					var c1 = new Capture(accesses, locals.add(var), globals);
 					return FunpDefine.of(isPolyType, var, capture(value), c1.capture(expr));
+				})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
+					var c1 = new Capture(accesses, locals, globals.add(var));
+					return FunpDefineGlobal.of(var, capture(value), c1.capture(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 					var vars1 = new ArrayList<Pair<String, Funp>>();
 					var locals1 = locals;
@@ -167,9 +170,6 @@ public class P2InferType {
 					}
 					var c1 = new Capture(accesses, locals1, globals);
 					return FunpDefineRec.of(vars1, c1.capture(expr));
-				})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
-					var c1 = new Capture(accesses, locals, globals.add(var));
-					return FunpGlobal.of(var, capture(value), c1.capture(expr));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					var locals1 = ISet.<String> empty();
 					var capn = "cap" + Util.temp();
@@ -185,7 +185,7 @@ public class P2InferType {
 						return FunpField.of(ref, v);
 					}, locals1.add(capn).add(var), globals);
 
-					return FunpGlobal.of(capn, struct, FunpLambdaCapture.of(var, capn, cap, c1.capture(expr)));
+					return FunpDefineGlobal.of(capn, struct, FunpLambdaCapture.of(var, capn, cap, c1.capture(expr)));
 
 					// TODO allocate cap on heap
 					// TODO free cap after use
@@ -259,6 +259,8 @@ public class P2InferType {
 					return Fail.t();
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				return new Infer(env.replace(var, Pair.of(isPolyType, infer(value)))).infer(expr);
+			})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
+				return new Infer(env.replace(var, Pair.of(false, infer(value)))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var env1 = Read //
 						.from(pairs) //
@@ -285,8 +287,6 @@ public class P2InferType {
 				ts.pairs.add(Pair.of(field, tf));
 				unify(n, infer(reference), TypeReference.of(ts));
 				return tf;
-			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
-				return new Infer(env.replace(var, Pair.of(false, infer(value)))).infer(expr);
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				UnNode<Type> t;
 				unify(n, typeBoolean, infer(if_));
@@ -395,6 +395,12 @@ public class P2InferType {
 				var size = getTypeSize(typeOf(value));
 				var e1 = new Erase(scope, env.replace(var, new Var(scope, offset, 0, size)));
 				return FunpAllocStack.of(size, erase(value), e1.erase(expr), offset);
+			})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
+				var size = getTypeSize(typeOf(value));
+				var address = Mutable.<Operand> nil();
+				var e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
+				var expr1 = FunpAssign.of(FunpMemory.of(FunpOperand.of(address), 0, size), erase(value), e1.erase(expr));
+				return FunpAllocGlobal.of(var, size, expr1, address);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				var assigns = new ArrayList<Pair<Var, Funp>>();
 				var offsetStack = IntMutable.nil();
@@ -435,12 +441,6 @@ public class P2InferType {
 				return Fail.t();
 			})).applyIf(FunpFold.class, f -> f.apply((init, cont, next) -> {
 				return fold(init, cont, next);
-			})).applyIf(FunpGlobal.class, f -> f.apply((var, value, expr) -> {
-				var size = getTypeSize(typeOf(value));
-				var address = Mutable.<Operand> nil();
-				var e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
-				var expr1 = FunpAssign.of(FunpMemory.of(FunpOperand.of(address), 0, size), erase(value), e1.erase(expr));
-				return FunpAllocGlobal.of(var, size, expr1, address);
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {

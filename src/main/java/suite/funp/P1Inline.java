@@ -10,10 +10,10 @@ import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpAssignReference;
 import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDefineGlobal;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpGlobal;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
@@ -70,6 +70,10 @@ public class P1Inline {
 					var var1 = newVar.apply(var0);
 					var r1 = new Rename(vars.replace(var0, var1));
 					return FunpDefine.of(isPolyType, var1, rename(value), r1.rename(expr));
+				})).applyIf(FunpDefineGlobal.class, f -> f.apply((var0, value, expr) -> {
+					var var1 = newVar.apply(var0);
+					var r1 = new Rename(vars.replace(var0, var1));
+					return FunpDefineGlobal.of(var1, rename(value), r1.rename(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
 					var vars1 = Read.from(pairs0).fold(vars, (vs, pair) -> vs.replace(pair.t0, newVar.apply(pair.t0)));
 					var r1 = new Rename(vars1);
@@ -78,10 +82,6 @@ public class P1Inline {
 							.map2((var, value) -> vars1.get(var), (var, value) -> r1.rename(value)) //
 							.toList(), //
 							r1.rename(expr));
-				})).applyIf(FunpGlobal.class, f -> f.apply((var0, value, expr) -> {
-					var var1 = newVar.apply(var0);
-					var r1 = new Rename(vars.replace(var0, var1));
-					return FunpGlobal.of(var1, rename(value), r1.rename(expr));
 				})).applyIf(FunpLambda.class, f -> f.apply((var0, expr) -> {
 					var var1 = newVar.apply(var0);
 					var r1 = new Rename(vars.replace(var0, var1));

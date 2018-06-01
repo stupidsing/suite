@@ -21,13 +21,13 @@ import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpCoerce.Coerce;
 import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDefineGlobal;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpFold;
-import suite.funp.P0.FunpGlobal;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
@@ -147,7 +147,7 @@ public class P0Parse {
 				return consult(((Str) a).value);
 			}).match3("define .0 := .1 >> .2", (a, b, c) -> {
 				var var = name(a);
-				return FunpDefine.of(true, var, p(b), parseNewVariable(c, var));
+				return var != null ? FunpDefine.of(true, var, p(b), parseNewVariable(c, var)) : null;
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match3("let .0 := .1 >> .2", (a, b, c) -> {
 				var var = name(a);
@@ -156,6 +156,9 @@ public class P0Parse {
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 				else
 					return bind(a, b, c);
+			}).match3("define global .0 := .1 >> .2", (a, b, c) -> {
+				var var = name(a);
+				return FunpDefineGlobal.of(var, p(b), parseNewVariable(c, var));
 			}).match2("recurse .0 >> .1", (a, b) -> {
 				var pattern1 = Suite.pattern(".0 := .1");
 				var list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect(As::streamlet);
@@ -174,10 +177,6 @@ public class P0Parse {
 				return FunpField.of(FunpReference.of(p(a)), name(b));
 			}).match3("fold .0 .1 .2", (a, b, c) -> {
 				return FunpFold.of(p(a), p(b), p(c));
-			}).match3("global .0 := .1 >> .2", (a, b, c) -> {
-				var var = name(a);
-				return FunpGlobal.of(var, p(b), parseNewVariable(c, var));
-				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match4("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match3("if .0 then .1 else .2", (a, b, c) -> {

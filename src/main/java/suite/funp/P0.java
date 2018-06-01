@@ -157,6 +157,24 @@ public class P0 {
 		}
 	}
 
+	public static class FunpDefineGlobal implements Funp, P2.End {
+		public String var;
+		public Funp value;
+		public Funp expr;
+
+		public static FunpDefineGlobal of(String var, Funp value, Funp expr) {
+			var f = new FunpDefineGlobal();
+			f.var = var;
+			f.value = value;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun3<String, Funp, Funp, R> fun) {
+			return fun.apply(var, value, expr);
+		}
+	}
+
 	public static class FunpDefineRec implements Funp, P2.End {
 		public List<Pair<String, Funp>> pairs;
 		public Funp expr;
@@ -238,24 +256,6 @@ public class P0 {
 
 		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
 			return fun.apply(init, cont, next);
-		}
-	}
-
-	public static class FunpGlobal implements Funp, P2.End {
-		public String var;
-		public Funp value;
-		public Funp expr;
-
-		public static FunpGlobal of(String var, Funp value, Funp expr) {
-			var f = new FunpGlobal();
-			f.var = var;
-			f.value = value;
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun3<String, Funp, Funp, R> fun) {
-			return fun.apply(var, value, expr);
 		}
 	}
 
