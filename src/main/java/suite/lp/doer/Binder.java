@@ -56,10 +56,9 @@ public class Binder {
 			var nodes0 = ((Tuple) n0).nodes;
 			var nodes1 = ((Tuple) n1).nodes;
 			var b = nodes0.length == nodes1.length;
-			if (b) {
+			if (b)
 				for (var i = 0; i < nodes0.length; i++)
 					b &= bind(nodes0[i], nodes1[i], trail);
-			}
 			return b;
 		} else
 			return false;
