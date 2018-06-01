@@ -265,8 +265,7 @@ public class P4GenerateCode {
 				})).applyIf(FunpAllocReg.class, f -> f.apply((size, value, expr, reg) -> {
 					var reg_ = rs.get(size);
 					reg.update(reg_);
-					compileLoad(value, reg_);
-					return mask(reg_).compile(expr);
+					return mask(compileLoad(value, reg_)).compile(expr);
 				})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
 					var p = new Amd64Parse();
 					new Object() {
