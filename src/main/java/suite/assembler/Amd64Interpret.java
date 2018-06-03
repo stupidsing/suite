@@ -28,13 +28,6 @@ public class Amd64Interpret {
 
 	public final BytesBuilder out = new BytesBuilder();
 
-	private int position0 = 0;
-	private int positionCode0 = position0 + 0;
-	private int positionCodex = position0 + 65536;
-	private int positionStack0 = positionCodex + 0;
-	private int positionStackx = positionStack0 + 262144;
-	private int positionx = positionStackx + 0;
-
 	private int base0 = 0;
 	private int baseCode0 = base0 + 0;
 	private int baseCodex = baseCode0 + 0x10000000;
@@ -42,8 +35,15 @@ public class Amd64Interpret {
 	private int baseStackx = baseStack0 + 0x40000;
 	// private int basex = baseStackx + 0;
 
-	private int offsetCode = baseCode0 - positionCode0;
-	private int offsetStack = baseStackx - positionStackx;
+	private int position0 = 0;
+	private int positionCode0 = position0 + 0;
+	private int positionCodex = position0 + 65536;
+	private int positionStack0 = positionCodex + 0;
+	private int positionStackx = positionStack0 + 262144;
+	private int positionx = positionStackx + 0;
+
+	private int diffCode = baseCode0 - positionCode0;
+	private int diffStack = baseStackx - positionStackx;
 	private ByteBuffer mem = ByteBuffer.allocate(positionx);
 	private int[] regs = new int[16];
 	private int c;
@@ -312,9 +312,9 @@ public class Amd64Interpret {
 
 	private int index(int address) {
 		if (address < baseCodex)
-			return address - offsetCode;
+			return address - diffCode;
 		else if (address < baseStackx)
-			return address - offsetStack;
+			return address - diffStack;
 		else
 			return Fail.t("Wild address " + Integer.toHexString(address));
 	}
