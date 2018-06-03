@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import suite.Suite;
 import suite.adt.Mutable;
-import suite.fp.match.Matcher;
 import suite.immutable.IMap;
 import suite.lp.doer.Prover;
 import suite.node.Atom;

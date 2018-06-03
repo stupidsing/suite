@@ -9,7 +9,6 @@ import suite.Suite;
 import suite.fp.intrinsic.Intrinsics;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
-import suite.fp.match.Matcher;
 import suite.immutable.IMap;
 import suite.lp.search.SewingProverBuilder2;
 import suite.node.Atom;

@@ -8,7 +8,7 @@ import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Fixie_.FixieFun4;
-import suite.fp.match.Matcher;
+import suite.fp.Matcher;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
