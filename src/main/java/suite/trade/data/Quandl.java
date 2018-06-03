@@ -28,7 +28,7 @@ public class Quandl {
 				.collect(As::csv) //
 				.skip(1) //
 				.sort((a0, a1) -> String_.compare(a0[0], a1[0])) //
-				.collect(As::streamlet);
+				.collect();
 
 		var ts = arrays.collect(Obj_Lng.lift(array -> Time.of(array[0] + " 18:00:00").epochSec(-4))).toArray();
 		var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();

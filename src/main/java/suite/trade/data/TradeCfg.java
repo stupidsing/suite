@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.os.LogUtil;
-import suite.streamlet.As;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.Time;
@@ -41,7 +40,7 @@ public interface TradeCfg {
 					}
 				}) //
 				.filterValue(ds -> ds != null) //
-				.collect(As::streamlet2) //
+				.collect() //
 				.apply(DataSource::alignAll) //
 				.uniqueResult();
 	}

@@ -18,6 +18,7 @@ import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.primitive.Lng_Lng;
 import suite.primitive.Longs;
 import suite.primitive.Longs.LongsBuilder;
+import suite.primitive.Longs_;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.set.LngSet;
@@ -81,6 +82,11 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 
 	public LngStreamlet cons(long c) {
 		return streamlet(() -> spawn().cons(c));
+	}
+
+	public LngStreamlet collect() {
+		Longs longs = toList_().toLongs();
+		return Longs_.of(longs.cs, longs.start, longs.end, 1);
 	}
 
 	public <U, O> Streamlet<O> cross(Streamlet<U> st1, LngObj_Obj<U, O> fun) {
@@ -169,11 +175,6 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		return new LngObjStreamlet<>(() -> spawn().mapLngObj(fun0));
 	}
 
-	public LngStreamlet memoize() {
-		var list = toList().toLongs();
-		return streamlet(() -> LngOutlet.of(list));
-	}
-
 	public long max() {
 		return spawn().max();
 	}
@@ -235,7 +236,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 	}
 
 	public LongsBuilder toList() {
-		return spawn().toList();
+		return toList_();
 	}
 
 	public <K> LngObjMap<LongsBuilder> toListMap() {
@@ -288,6 +289,10 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 
 	private <K, V> Streamlet2<K, V> map2_(Lng_Obj<K> kf, Lng_Obj<V> vf) {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
+	}
+
+	private LongsBuilder toList_() {
+		return spawn().toList();
 	}
 
 	private LngOutlet spawn() {

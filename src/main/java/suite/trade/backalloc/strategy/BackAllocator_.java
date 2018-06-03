@@ -5,7 +5,6 @@ import java.util.List;
 import suite.adt.pair.Pair;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Int_Dbl;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
@@ -44,7 +43,7 @@ public class BackAllocator_ {
 			var odts = Read //
 					.from(bas) //
 					.map(ba -> ba.allocate(akds, indices)) //
-					.collect(As::streamlet);
+					.collect();
 
 			return index -> odts //
 					.flatMap(odt -> odt.onDateTime(index)) //
@@ -55,7 +54,7 @@ public class BackAllocator_ {
 
 	private static BackAllocator byDataSource_(Fun<DataSource, Int_Dbl> fun) {
 		return (akds, indices) -> {
-			var allocBySymbol = akds.dsByKey.mapValue(fun).collect(As::streamlet2);
+			var allocBySymbol = akds.dsByKey.mapValue(fun).collect();
 
 			return index -> allocBySymbol.mapValue(alloc -> alloc.apply(index)).toList();
 		};

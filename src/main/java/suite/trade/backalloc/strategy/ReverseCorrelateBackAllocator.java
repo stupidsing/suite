@@ -4,7 +4,6 @@ import static suite.util.Friends.abs;
 
 import suite.math.numeric.Statistic;
 import suite.primitive.Floats_;
-import suite.streamlet.As;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSourceView;
@@ -66,7 +65,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 						var last = index - 1;
 						return Floats_.toArray(tor, i -> prices[last - i]);
 					}) //
-					.collect(As::streamlet2);
+					.collect();
 
 			return new KellyCriterion().allocate(reversePricesBySymbol, reduction);
 		};

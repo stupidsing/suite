@@ -6,7 +6,6 @@ import java.util.List;
 
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
@@ -28,7 +27,7 @@ public class HkexFactBook {
 				.pipe("sort -rn") //
 				.read() //
 				.map(HkexUtil::toSymbol) //
-				.collect(As::streamlet);
+				.collect();
 	}
 
 	public Streamlet<String> queryLeadingCompaniesByMarketCap(int year) {
@@ -76,7 +75,7 @@ public class HkexFactBook {
 					// "")), list.get(2));
 					return HkexUtil.toSymbol(list.get(1).replace("*", ""));
 				}) //
-				.collect(As::streamlet);
+				.collect();
 	}
 
 	public Streamlet<String> queryMainBoardCompanies(int year) {
@@ -90,7 +89,7 @@ public class HkexFactBook {
 				.read() //
 				.map(line -> HkexUtil.toSymbol(line.substring(0, 5))) //
 				.sort(Object_::compare) //
-				.collect(As::streamlet);
+				.collect();
 	}
 
 	private String getUrl(int year) {

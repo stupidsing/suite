@@ -61,7 +61,6 @@ import suite.node.util.Singleton;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
@@ -161,7 +160,7 @@ public class P0Parse {
 				return FunpDefineGlobal.of(var, p(b), parseNewVariable(c, var));
 			}).match2("recurse .0 >> .1", (a, b) -> {
 				var pattern1 = Suite.pattern(".0 := .1");
-				var list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect(As::streamlet);
+				var list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect();
 				var variables1 = list.fold(variables, (vs, array) -> vs.add(name(array[0])));
 				var p1 = new Parse(variables1);
 				return FunpDefineRec.of(list //

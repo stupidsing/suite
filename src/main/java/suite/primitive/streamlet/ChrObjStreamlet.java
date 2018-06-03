@@ -17,7 +17,6 @@ import suite.primitive.ChrPrimitives.ChrObjPredicate;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.ChrPrimitives.ChrTest;
-import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.map.ObjChrMap;
 import suite.primitive.adt.pair.ChrObjPair;
@@ -37,21 +36,6 @@ import suite.util.Object_;
 public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrObjOutlet<V>> {
 
 	private Source<ChrObjOutlet<V>> in;
-
-	public static <T, V> Fun<Outlet<T>, ChrObjStreamlet<V>> collect(Obj_Chr<T> kf0, Fun<T, V> vf0) {
-		var kf1 = kf0.rethrow();
-		var vf1 = vf0.rethrow();
-		return outlet -> streamlet(() -> {
-			var source = outlet.source();
-			return ChrObjOutlet.of(pair -> {
-				var t = source.source();
-				boolean b = t != null;
-				if (b)
-					pair.update(kf1.apply(t), vf1.apply(t));
-				return b;
-			});
-		});
-	}
 
 	@SafeVarargs
 	public static <V> ChrObjStreamlet<V> concat(ChrObjStreamlet<V>... streamlets) {
@@ -263,7 +247,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	}
 
 	public List<ChrObjPair<V>> toList() {
-		return spawn().toList();
+		return toList_();
 	}
 
 	public ChrObjMap<List<V>> toListMap() {
@@ -327,6 +311,10 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 
 	private <V1> ChrObjStreamlet<V1> mapChrObj_(ChrObj_Chr<V> kf, ChrObj_Obj<V, V1> vf) {
 		return streamlet(() -> spawn().mapChrObj(kf, vf));
+	}
+
+	private List<ChrObjPair<V>> toList_() {
+		return spawn().toList();
 	}
 
 	private ChrObjOutlet<V> spawn() {

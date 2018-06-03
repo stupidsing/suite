@@ -8,7 +8,6 @@ import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
@@ -39,7 +38,7 @@ public class FactorLr {
 	private FactorLr(TradeCfg cfg, Streamlet<String> indexSymbols_) {
 		this.cfg = cfg;
 
-		indexSymbols = indexSymbols_.collect(As::streamlet);
+		indexSymbols = indexSymbols_.collect();
 		var akds = cfg.dataSources(TimeRange.ages(), indexSymbols_);
 		var dsBySymbol = akds.dsByKey.toMap();
 

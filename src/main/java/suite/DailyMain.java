@@ -10,7 +10,6 @@ import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.smtp.SmtpSslGmail;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
@@ -100,7 +99,7 @@ public class DailyMain extends ExecutableProgram {
 				.from(results) //
 				.concatMap2(result -> Read.from(result.trades).map2(trade -> result.strategy, trade -> trade)) //
 				.filterValue(trade -> trade.buySell != 0) //
-				.collect(As::streamlet2);
+				.collect();
 
 		var requestTrades = strategyTrades.filterKey(strategy -> !String_.equals(strategy, sellPool));
 		var amounts = strategyTrades.values().collect(Obj_Dbl.lift(Trade::amount));
@@ -204,7 +203,7 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	public BackAllocConfiguration pairs(String symbol0, String symbol1) {
-		var assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect(As::streamlet);
+		var assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect();
 		var backAllocator = BackAllocatorOld.me.pairs(cfg, symbol0, symbol1).unleverage();
 		return new BackAllocConfiguration(time -> assets, backAllocator);
 	}

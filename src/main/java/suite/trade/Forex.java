@@ -1,6 +1,5 @@
 package suite.trade;
 
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 
@@ -11,7 +10,7 @@ public class Forex {
 			.cons("EURUSD=X", "EUR/USD") //
 			.cons("GBPUSD=X", "GBP/USD") //
 			.cons("NZDUSD=X", "NZD/USD") //
-			.collect(As::streamlet2);
+			.collect();
 
 	public Streamlet2<String, String> crossCurrencies = Read.<String, String> empty2() //
 			.cons("EURCAD=X", "EUR/CAD") //
@@ -21,7 +20,7 @@ public class Forex {
 			.cons("EURJPY=X", "EUR/JPY") //
 			.cons("GBPJPY=X", "GBP/JPY") //
 			.cons("EURSEK=X", "EUR/SEK") //
-			.collect(As::streamlet2);
+			.collect();
 
 	// require ^ -1
 	public Streamlet2<String, String> invertedCurrencies = Read.<String, String> empty2() //
@@ -37,6 +36,6 @@ public class Forex {
 			.cons("SGD=X", "USD/SGD") //
 			.cons("THB=X", "USD/THB") //
 			.cons("ZAR=X", "USD/ZAR") //
-			.collect(As::streamlet2);
+			.collect();
 
 }

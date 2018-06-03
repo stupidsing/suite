@@ -54,7 +54,7 @@ public class BackTestMain extends ExecutableProgram {
 				: Ints_.range(2007, Trade_.thisYear).map(i -> i);
 
 		Fun<Time, Streamlet<Asset>> fun = !arg2.isEmpty() //
-				? time -> Read.from(arg2.split(",")).map(cfg::queryCompany).collect(As::streamlet) //
+				? time -> Read.from(arg2.split(",")).map(cfg::queryCompany).collect() //
 				: cfg::queryCompaniesByMarketCap;
 
 		var bac_ = new BackAllocConfigurations(cfg, fun);
@@ -69,7 +69,7 @@ public class BackTestMain extends ExecutableProgram {
 					var assets = bac.assetsFun.apply(period.from);
 					return runner.backTest(bac.backAllocator, period, assets);
 				}) //
-				.collect(As::streamlet2);
+				.collect();
 
 		var content0 = Read //
 				.bytes(Paths.get("src/main/java/" + getClass().getName().replace('.', '/') + ".java")) //

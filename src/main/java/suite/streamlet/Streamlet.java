@@ -65,6 +65,10 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 		});
 	}
 
+	public Streamlet<T> collect() {
+		return Read.from(toList_());
+	}
+
 	public <O> Streamlet<O> concatMap(Fun<T, Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}
@@ -78,7 +82,7 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 	}
 
 	public <U, R> Streamlet<R> cross(Streamlet<U> st1, Fun2<T, U, R> fun) {
-		return streamlet(() -> spawn().cross(st1.toList(), fun));
+		return streamlet(() -> spawn().cross(st1.toList_(), fun));
 	}
 
 	public Streamlet<T> distinct() {
@@ -159,11 +163,6 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 		return map2_(kf, vf);
 	}
 
-	public Streamlet<T> memoize() {
-		var list = toList();
-		return streamlet(() -> Outlet.of(list));
-	}
-
 	public T min(Comparator<T> comparator) {
 		return spawn().min(comparator);
 	}
@@ -221,7 +220,7 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 	}
 
 	public List<T> toList() {
-		return spawn().toList();
+		return toList_();
 	}
 
 	public <K> Map<K, List<T>> toListMap(Fun<T, K> keyFun) {
@@ -279,6 +278,10 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 
 	private <K, V> Streamlet2<K, V> map2_(Fun<T, K> kf, Fun<T, V> vf) {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
+	}
+
+	private List<T> toList_() {
+		return spawn().toList();
 	}
 
 	private Outlet<T> spawn() {

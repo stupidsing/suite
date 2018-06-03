@@ -32,7 +32,7 @@ public interface Broker {
 			var url = Constants.secrets("stockUrl .0")[0];
 			var path = HomeDir.resolve("workspace").resolve("home-data").resolve("stock.txt");
 			var bytes = Files.exists(path) ? Read.bytes(path) : Read.url(url);
-			return bytes.collect(As::table).map(Trade::of).collect(As::streamlet);
+			return bytes.collect(As::table).map(Trade::of).collect();
 		}
 
 		public double dividendFee(double dividendAmount) {

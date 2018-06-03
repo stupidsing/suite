@@ -68,6 +68,10 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 		});
 	}
 
+	public Streamlet2<K, V> collect() {
+		return Read.from2(toList_());
+	}
+
 	public <O> Streamlet<O> concatMap(Fun2<K, V, Streamlet<O>> fun) {
 		return concatMap_(fun);
 	}
@@ -236,7 +240,7 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 	}
 
 	public List<Pair<K, V>> toList() {
-		return spawn().toList();
+		return toList_();
 	}
 
 	public Map<K, List<V>> toListMap() {
@@ -288,6 +292,10 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 
 	private <K1, V1> Streamlet2<K1, V1> map2_(Fun2<K, V, K1> kf, Fun2<K, V, V1> vf) {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
+	}
+
+	private List<Pair<K, V>> toList_() {
+		return spawn().toList();
 	}
 
 	private Outlet2<K, V> spawn() {

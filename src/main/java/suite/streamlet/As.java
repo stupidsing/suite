@@ -53,7 +53,7 @@ public class As {
 	}
 
 	public static Streamlet<String[]> csv(Outlet<Bytes> outlet) {
-		return outlet.collect(As::lines_).map(As::csvLine).collect(As::streamlet);
+		return Read.from(outlet.collect(As::lines_).map(As::csvLine).toList());
 	}
 
 	public static <T> Fun<Outlet<T>, Void> executeThreads(Sink<T> sink) {
@@ -158,18 +158,14 @@ public class As {
 		return Read.from(outlet.toList());
 	}
 
-	public static <K, V> Streamlet2<K, V> streamlet2(Outlet2<K, V> outlet) {
-		return Read.from2(outlet.toList());
-	}
-
 	public static String string(Outlet<Bytes> outlet) {
 		return To.string(Bytes.of(outlet));
 	}
 
 	public static Streamlet<String[]> table(Outlet<Bytes> outlet) {
-		return outlet.collect(As::lines_) //
+		return Read.from(outlet.collect(As::lines_) //
 				.map(bytes -> To.string(bytes).split("\t")) //
-				.collect(As::streamlet);
+				.toList());
 	}
 
 	public static Outlet<Chars> utf8decode(Outlet<Bytes> bytesOutlet) {

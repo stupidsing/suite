@@ -21,7 +21,6 @@ import suite.primitive.DblDbl_Dbl;
 import suite.primitive.DblPrimitives.ObjObj_Dbl;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.adt.pair.DblFltPair;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
@@ -117,7 +116,7 @@ public interface BackAllocator {
 			return index -> {
 				var potentialBySymbol = Read //
 						.from2(onDateTime.onDateTime(index)) //
-						.collect(As::streamlet2);
+						.collect();
 
 				var size = potentialBySymbol.size();
 
@@ -288,7 +287,7 @@ public interface BackAllocator {
 
 						return DataSource.of(Read.from(data1));
 					}) //
-					.collect(As::streamlet2);
+					.collect();
 
 			return allocate(new AlignKeyDataSource<>(akds0.ts, dsBySymbol1), times_)::onDateTime;
 		};

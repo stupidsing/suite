@@ -10,6 +10,7 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.Floats;
 import suite.primitive.Floats.FloatsBuilder;
+import suite.primitive.Floats_;
 import suite.primitive.FltOpt;
 import suite.primitive.FltPrimitives.FltComparator;
 import suite.primitive.FltPrimitives.FltObj_Obj;
@@ -81,6 +82,11 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 
 	public FltStreamlet cons(float c) {
 		return streamlet(() -> spawn().cons(c));
+	}
+
+	public FltStreamlet collect() {
+		Floats floats = toList_().toFloats();
+		return Floats_.of(floats.cs, floats.start, floats.end, 1);
 	}
 
 	public <U, O> Streamlet<O> cross(Streamlet<U> st1, FltObj_Obj<U, O> fun) {
@@ -169,11 +175,6 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return new FltObjStreamlet<>(() -> spawn().mapFltObj(fun0));
 	}
 
-	public FltStreamlet memoize() {
-		var list = toList().toFloats();
-		return streamlet(() -> FltOutlet.of(list));
-	}
-
 	public float max() {
 		return spawn().max();
 	}
@@ -235,7 +236,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 	}
 
 	public FloatsBuilder toList() {
-		return spawn().toList();
+		return toList_();
 	}
 
 	public <K> FltObjMap<FloatsBuilder> toListMap() {
@@ -288,6 +289,10 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 
 	private <K, V> Streamlet2<K, V> map2_(Flt_Obj<K> kf, Flt_Obj<V> vf) {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
+	}
+
+	private FloatsBuilder toList_() {
+		return spawn().toList();
 	}
 
 	private FltOutlet spawn() {

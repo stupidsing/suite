@@ -122,7 +122,7 @@ public class Sina {
 					factor.lastCloseTime = vs[18]; // 16:08:44
 					return factor;
 				})) //
-				.collect(As::streamlet);
+				.collect();
 	}
 
 	private String toYahoo(String sina) {

@@ -10,6 +10,7 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
+import suite.primitive.Chars_;
 import suite.primitive.ChrOpt;
 import suite.primitive.ChrPrimitives.ChrComparator;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
@@ -81,6 +82,11 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 
 	public ChrStreamlet cons(char c) {
 		return streamlet(() -> spawn().cons(c));
+	}
+
+	public ChrStreamlet collect() {
+		Chars chars = toList_().toChars();
+		return Chars_.of(chars.cs, chars.start, chars.end, 1);
 	}
 
 	public <U, O> Streamlet<O> cross(Streamlet<U> st1, ChrObj_Obj<U, O> fun) {
@@ -169,11 +175,6 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 		return new ChrObjStreamlet<>(() -> spawn().mapChrObj(fun0));
 	}
 
-	public ChrStreamlet memoize() {
-		var list = toList().toChars();
-		return streamlet(() -> ChrOutlet.of(list));
-	}
-
 	public char max() {
 		return spawn().max();
 	}
@@ -235,7 +236,7 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 	}
 
 	public CharsBuilder toList() {
-		return spawn().toList();
+		return toList_();
 	}
 
 	public <K> ChrObjMap<CharsBuilder> toListMap() {
@@ -288,6 +289,10 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 
 	private <K, V> Streamlet2<K, V> map2_(Chr_Obj<K> kf, Chr_Obj<V> vf) {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
+	}
+
+	private CharsBuilder toList_() {
+		return spawn().toList();
 	}
 
 	private ChrOutlet spawn() {

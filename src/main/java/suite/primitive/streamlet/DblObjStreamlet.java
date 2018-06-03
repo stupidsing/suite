@@ -17,7 +17,6 @@ import suite.primitive.DblPrimitives.DblObjPredicate;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
 import suite.primitive.DblPrimitives.DblTest;
-import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.pair.DblObjPair;
@@ -37,21 +36,6 @@ import suite.util.Object_;
 public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblObjOutlet<V>> {
 
 	private Source<DblObjOutlet<V>> in;
-
-	public static <T, V> Fun<Outlet<T>, DblObjStreamlet<V>> collect(Obj_Dbl<T> kf0, Fun<T, V> vf0) {
-		var kf1 = kf0.rethrow();
-		var vf1 = vf0.rethrow();
-		return outlet -> streamlet(() -> {
-			var source = outlet.source();
-			return DblObjOutlet.of(pair -> {
-				var t = source.source();
-				boolean b = t != null;
-				if (b)
-					pair.update(kf1.apply(t), vf1.apply(t));
-				return b;
-			});
-		});
-	}
 
 	@SafeVarargs
 	public static <V> DblObjStreamlet<V> concat(DblObjStreamlet<V>... streamlets) {
@@ -263,7 +247,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	}
 
 	public List<DblObjPair<V>> toList() {
-		return spawn().toList();
+		return toList_();
 	}
 
 	public DblObjMap<List<V>> toListMap() {
@@ -327,6 +311,10 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 
 	private <V1> DblObjStreamlet<V1> mapDblObj_(DblObj_Dbl<V> kf, DblObj_Obj<V, V1> vf) {
 		return streamlet(() -> spawn().mapDblObj(kf, vf));
+	}
+
+	private List<DblObjPair<V>> toList_() {
+		return spawn().toList();
 	}
 
 	private DblObjOutlet<V> spawn() {

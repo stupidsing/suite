@@ -17,7 +17,6 @@ import suite.primitive.FltPrimitives.FltObjPredicate;
 import suite.primitive.FltPrimitives.FltObjSource;
 import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.FltPrimitives.FltTest;
-import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.map.ObjFltMap;
 import suite.primitive.adt.pair.FltObjPair;
@@ -37,21 +36,6 @@ import suite.util.Object_;
 public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltObjOutlet<V>> {
 
 	private Source<FltObjOutlet<V>> in;
-
-	public static <T, V> Fun<Outlet<T>, FltObjStreamlet<V>> collect(Obj_Flt<T> kf0, Fun<T, V> vf0) {
-		var kf1 = kf0.rethrow();
-		var vf1 = vf0.rethrow();
-		return outlet -> streamlet(() -> {
-			var source = outlet.source();
-			return FltObjOutlet.of(pair -> {
-				var t = source.source();
-				boolean b = t != null;
-				if (b)
-					pair.update(kf1.apply(t), vf1.apply(t));
-				return b;
-			});
-		});
-	}
 
 	@SafeVarargs
 	public static <V> FltObjStreamlet<V> concat(FltObjStreamlet<V>... streamlets) {
@@ -263,7 +247,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	}
 
 	public List<FltObjPair<V>> toList() {
-		return spawn().toList();
+		return toList_();
 	}
 
 	public FltObjMap<List<V>> toListMap() {
@@ -327,6 +311,10 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 
 	private <V1> FltObjStreamlet<V1> mapFltObj_(FltObj_Flt<V> kf, FltObj_Obj<V, V1> vf) {
 		return streamlet(() -> spawn().mapFltObj(kf, vf));
+	}
+
+	private List<FltObjPair<V>> toList_() {
+		return spawn().toList();
 	}
 
 	private FltObjOutlet<V> spawn() {

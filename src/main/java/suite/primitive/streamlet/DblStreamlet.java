@@ -18,6 +18,7 @@ import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
+import suite.primitive.Doubles_;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.set.DblSet;
@@ -81,6 +82,11 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 
 	public DblStreamlet cons(double c) {
 		return streamlet(() -> spawn().cons(c));
+	}
+
+	public DblStreamlet collect() {
+		Doubles doubles = toList_().toDoubles();
+		return Doubles_.of(doubles.cs, doubles.start, doubles.end, 1);
 	}
 
 	public <U, O> Streamlet<O> cross(Streamlet<U> st1, DblObj_Obj<U, O> fun) {
@@ -169,11 +175,6 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return new DblObjStreamlet<>(() -> spawn().mapDblObj(fun0));
 	}
 
-	public DblStreamlet memoize() {
-		var list = toList().toDoubles();
-		return streamlet(() -> DblOutlet.of(list));
-	}
-
 	public double max() {
 		return spawn().max();
 	}
@@ -235,7 +236,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 	}
 
 	public DoublesBuilder toList() {
-		return spawn().toList();
+		return toList_();
 	}
 
 	public <K> DblObjMap<DoublesBuilder> toListMap() {
@@ -288,6 +289,10 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 
 	private <K, V> Streamlet2<K, V> map2_(Dbl_Obj<K> kf, Dbl_Obj<V> vf) {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
+	}
+
+	private DoublesBuilder toList_() {
+		return spawn().toList();
 	}
 
 	private DblOutlet spawn() {

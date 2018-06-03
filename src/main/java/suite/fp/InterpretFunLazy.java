@@ -21,7 +21,6 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
-import suite.streamlet.As;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
@@ -151,7 +150,7 @@ public class InterpretFunLazy {
 				};
 			}).match(Matcher.defvars, DEFVARS -> {
 				var tuple = Suite.pattern(".0 .1");
-				var arrays = Tree.iter(DEFVARS.list).map(tuple::match).collect(As::streamlet);
+				var arrays = Tree.iter(DEFVARS.list).map(tuple::match).collect();
 				var size = arrays.size();
 				var lazy = arrays.fold(this, (l, array) -> l.put(array[0]));
 				var values_ = arrays.map(array -> lazy.lazy(array[1])).toList();

@@ -17,7 +17,6 @@ import suite.primitive.LngPrimitives.LngObjPredicate;
 import suite.primitive.LngPrimitives.LngObjSource;
 import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.LngPrimitives.LngTest;
-import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.pair.LngObjPair;
@@ -37,21 +36,6 @@ import suite.util.Object_;
 public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngObjOutlet<V>> {
 
 	private Source<LngObjOutlet<V>> in;
-
-	public static <T, V> Fun<Outlet<T>, LngObjStreamlet<V>> collect(Obj_Lng<T> kf0, Fun<T, V> vf0) {
-		var kf1 = kf0.rethrow();
-		var vf1 = vf0.rethrow();
-		return outlet -> streamlet(() -> {
-			var source = outlet.source();
-			return LngObjOutlet.of(pair -> {
-				var t = source.source();
-				boolean b = t != null;
-				if (b)
-					pair.update(kf1.apply(t), vf1.apply(t));
-				return b;
-			});
-		});
-	}
 
 	@SafeVarargs
 	public static <V> LngObjStreamlet<V> concat(LngObjStreamlet<V>... streamlets) {
@@ -263,7 +247,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	public List<LngObjPair<V>> toList() {
-		return spawn().toList();
+		return toList_();
 	}
 
 	public LngObjMap<List<V>> toListMap() {
@@ -327,6 +311,10 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	private <V1> LngObjStreamlet<V1> mapLngObj_(LngObj_Lng<V> kf, LngObj_Obj<V, V1> vf) {
 		return streamlet(() -> spawn().mapLngObj(kf, vf));
+	}
+
+	private List<LngObjPair<V>> toList_() {
+		return spawn().toList();
 	}
 
 	private LngObjOutlet<V> spawn() {

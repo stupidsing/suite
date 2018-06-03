@@ -17,7 +17,6 @@ import suite.primitive.IntPrimitives.IntObjPredicate;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.IntTest;
-import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntObjPair;
@@ -37,21 +36,6 @@ import suite.util.Object_;
 public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntObjOutlet<V>> {
 
 	private Source<IntObjOutlet<V>> in;
-
-	public static <T, V> Fun<Outlet<T>, IntObjStreamlet<V>> collect(Obj_Int<T> kf0, Fun<T, V> vf0) {
-		var kf1 = kf0.rethrow();
-		var vf1 = vf0.rethrow();
-		return outlet -> streamlet(() -> {
-			var source = outlet.source();
-			return IntObjOutlet.of(pair -> {
-				var t = source.source();
-				boolean b = t != null;
-				if (b)
-					pair.update(kf1.apply(t), vf1.apply(t));
-				return b;
-			});
-		});
-	}
 
 	@SafeVarargs
 	public static <V> IntObjStreamlet<V> concat(IntObjStreamlet<V>... streamlets) {
@@ -263,7 +247,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	public List<IntObjPair<V>> toList() {
-		return spawn().toList();
+		return toList_();
 	}
 
 	public IntObjMap<List<V>> toListMap() {
@@ -327,6 +311,10 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 
 	private <V1> IntObjStreamlet<V1> mapIntObj_(IntObj_Int<V> kf, IntObj_Obj<V, V1> vf) {
 		return streamlet(() -> spawn().mapIntObj(kf, vf));
+	}
+
+	private List<IntObjPair<V>> toList_() {
+		return spawn().toList();
 	}
 
 	private IntObjOutlet<V> spawn() {

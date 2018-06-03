@@ -163,7 +163,7 @@ public class Hkex {
 			.filter(line -> !line.isEmpty()) //
 			.map(line -> line.split("\\|")) //
 			.map(array -> Asset.of(array[0], array[1], Integer.parseInt(array[2]), Integer.parseInt(array[3]))) //
-			.collect(As::streamlet);
+			.collect();
 
 	private Map<String, Asset> companyBySymbol = Read.from(companies).toMap(company -> company.symbol);
 
@@ -371,7 +371,7 @@ public class Hkex {
 					.flatMap(json_ -> json_.path("td")) //
 					.map(json_ -> Read.from(json_).map(JsonNode::asText).toList());
 
-		var data1 = data0.collect(As::streamlet);
+		var data1 = data0.collect();
 		var lotSizeBySymbol = queryLotSizeBySymbol_(data1.map(this::toSymbol));
 		return data1.map(datum -> toAsset(datum, lotSizeBySymbol)).toList();
 	}

@@ -12,7 +12,6 @@ import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs_;
 import suite.primitive.adt.pair.LngFltPair;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -43,7 +42,7 @@ public class DataSource {
 
 		return dsByKey0 //
 				.mapValue(ds -> ds.alignBeforePrices(ts)) //
-				.collect(As::streamlet2) //
+				.collect() //
 				.apply(st -> new AlignKeyDataSource<>(ts, st)) //
 				.uniqueResult();
 	}
@@ -58,7 +57,7 @@ public class DataSource {
 		}
 
 		public AlignKeyDataSource<K> trim(int end) {
-			return new AlignKeyDataSource<>(Arrays.copyOf(ts, end), dsByKey.mapValue(ds -> ds.trim(end)).collect(As::streamlet2));
+			return new AlignKeyDataSource<>(Arrays.copyOf(ts, end), dsByKey.mapValue(ds -> ds.trim(end)).collect());
 		}
 	}
 

@@ -59,7 +59,7 @@ public class Summarize {
 		var summaryByKey = trades //
 				.groupBy(fun, trades_ -> summarize_(trades_, priceBySymbol, s -> null)) //
 				.filterKey(key -> key != null) //
-				.collect(As::streamlet2);
+				.collect();
 
 		var nSharesByKeyBySymbol = summaryByKey //
 				.concatMap((key, summary) -> summary.account //
@@ -148,7 +148,7 @@ public class Summarize {
 							+ (info != null ? " \t(" + info + ")" : "");
 				}) //
 				.sort(Object_::compare) //
-				.collect(As::streamlet);
+				.collect();
 
 		return new Summarize_(details, trades0, trades1);
 	}

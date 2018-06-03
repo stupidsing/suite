@@ -49,7 +49,7 @@ public class Yahoo {
 				.collect(As::csv) //
 				.skip(1) //
 				.sort((a0, a1) -> Object_.compare(a0[0], a1[0])) //
-				.collect(As::streamlet);
+				.collect();
 
 		var ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
 		var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
@@ -240,7 +240,7 @@ public class Yahoo {
 						.flatMap(json_ -> json_.path("query")) //
 						.flatMap(json_ -> json_.path("results")) //
 						.flatMap(json_ -> json_.path("quote")) //
-						.collect(As::streamlet);
+						.collect();
 
 				var arrays = quotes //
 						.map(json_ -> new String[] { //
@@ -249,7 +249,7 @@ public class Yahoo {
 								json_.path("Close").textValue(), //
 								json_.path("Low").textValue(), //
 								json_.path("High").textValue(), }) //
-						.collect(As::streamlet);
+						.collect();
 
 				var ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
 				var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();

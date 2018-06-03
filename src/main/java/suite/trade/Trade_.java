@@ -288,7 +288,7 @@ public class Trade_ {
 						&& !String_.equals(symbol, Asset.cashSymbol) //
 						&& buySell != 0) //
 				.map((symbol, buySell) -> Trade.of(time, buySell, symbol, priceFun.apply(symbol), "-")) //
-				.collect(As::streamlet);
+				.collect();
 	}
 
 }

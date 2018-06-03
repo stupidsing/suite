@@ -3,13 +3,12 @@ package suite.util;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
 import suite.primitive.Ints_;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 
 public class FormatUtil {
 
 	public static String tablize(String s) {
-		var arrays = Read.from(s.split("\n")).map(line -> line.split("\t")).collect(As::streamlet);
+		var arrays = Read.from(s.split("\n")).map(line -> line.split("\t")).collect();
 		var nColumns = arrays.collect(Obj_Int.lift(array -> array.length)).max();
 
 		var rows = arrays.map(array -> To.array(nColumns, String.class, column -> column < array.length ? array[column] : ""));

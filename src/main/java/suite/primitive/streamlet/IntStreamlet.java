@@ -18,6 +18,7 @@ import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Int;
 import suite.primitive.Ints;
 import suite.primitive.Ints.IntsBuilder;
+import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.set.IntSet;
@@ -81,6 +82,11 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 
 	public IntStreamlet cons(int c) {
 		return streamlet(() -> spawn().cons(c));
+	}
+
+	public IntStreamlet collect() {
+		Ints ints = toList_().toInts();
+		return Ints_.of(ints.cs, ints.start, ints.end, 1);
 	}
 
 	public <U, O> Streamlet<O> cross(Streamlet<U> st1, IntObj_Obj<U, O> fun) {
@@ -169,11 +175,6 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		return new IntObjStreamlet<>(() -> spawn().mapIntObj(fun0));
 	}
 
-	public IntStreamlet memoize() {
-		var list = toList().toInts();
-		return streamlet(() -> IntOutlet.of(list));
-	}
-
 	public int max() {
 		return spawn().max();
 	}
@@ -235,7 +236,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 	}
 
 	public IntsBuilder toList() {
-		return spawn().toList();
+		return toList_();
 	}
 
 	public <K> IntObjMap<IntsBuilder> toListMap() {
@@ -288,6 +289,10 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 
 	private <K, V> Streamlet2<K, V> map2_(Int_Obj<K> kf, Int_Obj<V> vf) {
 		return new Streamlet2<>(() -> spawn().map2(kf, vf));
+	}
+
+	private IntsBuilder toList_() {
+		return spawn().toList();
 	}
 
 	private IntOutlet spawn() {
