@@ -13,6 +13,12 @@ public interface AutoInterface<T> {
 		return clazz.isInstance(this) ? clazz.cast(this) : null;
 	}
 
+	public default T self() {
+		@SuppressWarnings("unchecked")
+		var t = (T) this;
+		return t;
+	}
+
 	public default <U> Switch<U> switch_() {
 		return new Switch<>(this);
 	}

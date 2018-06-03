@@ -9,7 +9,8 @@ import suite.node.util.Singleton;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
-public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, Comparable<T>, AutoInterface<T> {
+public abstract class AutoObject<T extends AutoObject<T>> extends BaseObject<T>
+		implements Cloneable, Comparable<T>, AutoInterface<T> {
 
 	private static Inspect inspect = Singleton.me.inspect;
 
@@ -40,42 +41,17 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 		});
 	}
 
-	@Override
-	public int compareTo(T t1) {
-		return autoObject().compare(self(), t1);
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return autoObject().isEquals(self(), object);
-	}
-
 	public Streamlet<Field> fields() {
 		return fields_();
 	}
 
 	@Override
-	public int hashCode() {
-		return autoObject().hashCode(self());
-	}
-
-	@Override
-	public String toString() {
-		return autoObject().toString(self());
-	}
-
-	private AutoObject_<T> autoObject() {
+	protected AutoObject_<T> autoObject() {
 		return new AutoObject_<>(inspect::values);
 	}
 
 	private Streamlet<Field> fields_() {
 		return Read.from(inspect.fields(getClass()));
-	}
-
-	private T self() {
-		@SuppressWarnings("unchecked")
-		var t = (T) this;
-		return t;
 	}
 
 }

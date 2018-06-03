@@ -5,7 +5,7 @@ import java.util.HashMap;
 import suite.adt.IdentityKey;
 import suite.streamlet.Read;
 
-public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Comparable<T>, MapInterface<T> {
+public abstract class MapObject<T extends MapObject<T>> extends BaseObject<T> implements Cloneable, Comparable<T>, MapInterface<T> {
 
 	@Override
 	public MapObject<T> clone() {
@@ -31,33 +31,8 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 	}
 
 	@Override
-	public int compareTo(T other) {
-		return autoObject().compare(self(), other);
-	}
-
-	@Override
-	public boolean equals(Object object) {
-		return autoObject().isEquals(self(), object);
-	}
-
-	@Override
-	public int hashCode() {
-		return autoObject().hashCode(self());
-	}
-
-	@Override
-	public String toString() {
-		return autoObject().toString(self());
-	}
-
-	private AutoObject_<Object> autoObject() {
+	protected AutoObject_<T> autoObject() {
 		return new AutoObject_<>(MapObject_::list);
-	}
-
-	private T self() {
-		@SuppressWarnings("unchecked")
-		var t = (T) this;
-		return t;
 	}
 
 }
