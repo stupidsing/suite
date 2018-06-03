@@ -395,7 +395,7 @@ public class P2InferType {
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				var size = getTypeSize(typeOf(value));
 				var offset = IntMutable.nil();
-				var e1 = new Erase(scope, env.replace(var, new Var(scope, offset, 0, size)));
+				var e1 = new Erase(scope, env.replace(var, new Var(f, scope, offset, null, 0, size)));
 				return FunpAllocStack.of(size, erase(value), e1.erase(expr), offset);
 			})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
 				var size = getTypeSize(typeOf(value));
@@ -583,21 +583,23 @@ public class P2InferType {
 	}
 
 	private class Var {
+		private Funp funp;
 		private Integer scope;
 		private IntMutable offset;
 		private Mutable<Operand> operand;
 		private int start;
 		private int end;
 
-		private Var(Mutable<Operand> operand, int start, int end) {
-			this(null, IntMutable.of(0), operand, start, end);
+		private Var(Mutable<Operand> operand, int start, int end) { // global
+			this(null, null, IntMutable.of(0), operand, start, end);
 		}
 
-		private Var(int scope, IntMutable offset, int start, int end) {
-			this(scope, offset, null, start, end);
+		private Var(int scope, IntMutable offset, int start, int end) { // local
+			this(null, scope, offset, null, start, end);
 		}
 
-		private Var(Integer scope, IntMutable offset, Mutable<Operand> operand, int start, int end) {
+		private Var(Funp funp, Integer scope, IntMutable offset, Mutable<Operand> operand, int start, int end) {
+			this.funp = funp;
 			this.scope = scope;
 			this.offset = offset;
 			this.operand = operand;
