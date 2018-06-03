@@ -2,7 +2,6 @@ package suite.funp;
 
 import static java.util.Map.entry;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -117,14 +116,13 @@ public class P4GenerateCode {
 	}
 
 	public List<Instruction> compile0(Funp funp) {
-		var instructions = new ArrayList<Instruction>();
-		var emit = new P4Emit(instructions::add);
-		if (isUseEbp)
-			emit.mov(ebp, esp);
-		new Compile0(Result.ISSPEC, emit, null, ebx, null).new Compile1(registerSet, 0).compile(funp);
-		emit.mov(eax, amd64.imm(1, is));
-		emit.emit(amd64.instruction(Insn.INT, amd64.imm(-128)));
-		return instructions;
+		return P4Emit.generate(emit -> {
+			if (isUseEbp)
+				emit.mov(ebp, esp);
+			new Compile0(Result.ISSPEC, emit, null, ebx, null).new Compile1(registerSet, 0).compile(funp);
+			emit.mov(eax, amd64.imm(1, is));
+			emit.emit(amd64.instruction(Insn.INT, amd64.imm(-128)));
+		});
 	}
 
 	public Bytes compile1(int offset, List<Instruction> instructions, boolean dump) {
@@ -591,30 +589,30 @@ public class P4GenerateCode {
 			}
 
 			private Operand compileRoutine(Sink<Compile1> sink) {
-				return compileBlock(() -> {
+				return compileBlock(c -> {
+					var em = c.em;
 					em.emit(amd64.instruction(Insn.PUSH, ebp));
 					if (isUseEbp)
 						em.mov(ebp, esp);
-					sink.sink(new Compile1(registerSet, 0));
+					sink.sink(c.new Compile1(registerSet, 0));
 					em.emit(amd64.instruction(Insn.POP, ebp));
 					em.emit(amd64.instruction(Insn.RET));
 				});
 			}
 
 			private void compileGlobal(Integer size, Mutable<Operand> address) {
-				address.update(compileBlock(() -> {
+				address.update(compileBlock(c -> {
 					for (var i = 0; i < size; i++)
-						em.emit(amd64.instruction(Insn.NOP));
+						c.em.emit(amd64.instruction(Insn.NOP));
 				}));
 			}
 
-			private Operand compileBlock(Runnable runnable) {
-				var endLabel = em.label();
+			private Operand compileBlock(Sink<Compile0> sink) {
 				var refLabel = em.label();
-				em.emit(amd64.instruction(Insn.JMP, endLabel));
-				em.emit(amd64.instruction(Insn.LABEL, refLabel));
-				runnable.run();
-				em.emit(amd64.instruction(Insn.LABEL, endLabel));
+				em.spawn(em1 -> {
+					em1.emit(amd64.instruction(Insn.LABEL, refLabel));
+					sink.sink(new Compile0(result, em1, target, pop0, pop1));
+				});
 				return refLabel;
 			}
 

@@ -1,5 +1,8 @@
 package suite.funp;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
@@ -15,8 +18,18 @@ public class P4Emit {
 	private Amd64 amd64 = Amd64.me;
 
 	private Sink<Instruction> emit;
+	private List<List<Instruction>> blocks = new ArrayList<>();
 
-	public P4Emit(Sink<Instruction> emit) {
+	public static List<Instruction> generate(Sink<P4Emit> sink) {
+		var list = new ArrayList<Instruction>();
+		var emit = new P4Emit(list::add);
+		sink.sink(emit);
+		for (var block : emit.blocks)
+			list.addAll(block);
+		return list;
+	}
+
+	private P4Emit(Sink<Instruction> emit) {
 		this.emit = emit;
 	}
 
@@ -104,6 +117,10 @@ public class P4Emit {
 
 	public void emit(Instruction instruction) {
 		emit.sink(instruction);
+	}
+
+	public void spawn(Sink<P4Emit> sink) {
+		blocks.add(generate(sink));
 	}
 
 	public Operand label() {

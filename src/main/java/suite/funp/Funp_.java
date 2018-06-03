@@ -74,10 +74,9 @@ public class Funp_ {
 			private void dump(Object object) {
 				new Switch<Object>(object //
 				).doIf(Funp.class, node -> {
-					var list = MapObject_.list(node);
 					sb.append(node.getClass().getSimpleName());
 					sb.append("{");
-					for (var object1 : list) {
+					for (var object1 : MapObject_.list(node)) {
 						dump(object1);
 						sb.append(",");
 					}
