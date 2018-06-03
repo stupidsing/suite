@@ -50,6 +50,10 @@ public class IList<T> implements Iterable<T> {
 		return !isEmpty() ? head.equals(t) || tail.contains(t) : false;
 	}
 
+	public boolean containsId(T t) {
+		return !isEmpty() ? head == t || tail.containsId(t) : false;
+	}
+
 	public boolean isEmpty() {
 		return this == end;
 	}

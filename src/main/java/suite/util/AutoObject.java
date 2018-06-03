@@ -4,10 +4,8 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import suite.adt.IdentityKey;
-import suite.immutable.IList;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
@@ -16,7 +14,6 @@ import suite.streamlet.Streamlet;
 public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, Comparable<T> {
 
 	private static Inspect inspect = Singleton.me.inspect;
-	private static ThreadLocal<IList<AutoObject<?>>> recurse = ThreadLocal.withInitial(IList::end);
 
 	@Override
 	public AutoObject<T> clone() {
@@ -47,26 +44,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 	@Override
 	public int compareTo(T t1) {
-		var class0 = getClass();
-		var class1 = t1.getClass();
-		int c;
-		if (class0 == class1) {
-			var t0 = self();
-			var iter0 = t0.comparableValues().iterator();
-			var iter1 = t1.comparableValues().iterator();
-			boolean b0, b1;
-			c = 0;
-			while (c == 0 && (c = Boolean.compare(b0 = iter0.hasNext(), b1 = iter1.hasNext())) == 0)
-				if (b0 && b1) {
-					@SuppressWarnings("unchecked")
-					var value0 = (Comparable<Object>) iter0.next();
-					@SuppressWarnings("unchecked")
-					var value1 = (Comparable<Object>) iter1.next();
-					c = value0.compareTo(value1);
-				}
-		} else
-			c = Object_.compare(class0.getName(), class1.getName());
-		return c;
+		return new AutoObject_<>(T::values).compare(self(), t1);
 	}
 
 	@Override
@@ -76,14 +54,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 			var t0 = self();
 			@SuppressWarnings("unchecked")
 			var t1 = (T) object;
-			var values0 = t0.comparableValues();
-			var values1 = t1.comparableValues();
-			var size0 = values0.size();
-			var size1 = values1.size();
-			b = true;
-			if (size0 == size1)
-				for (var i = 0; i < size0; i++)
-					b &= Objects.equals(values0.get(i), values1.get(i));
+			return new AutoObject_<>(T::values).equals(t0, t1);
 		} else
 			b = false;
 		return b;
@@ -95,42 +66,15 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 	@Override
 	public int hashCode() {
-		var h = 7;
-		for (var value : comparableValues())
-			h = h * 31 + Objects.hashCode(value);
-		return h;
+		return new AutoObject_<>(T::values).hashCode(self());
 	}
 
 	@Override
 	public String toString() {
-		var recurse0 = recurse.get();
-		var sb = new StringBuilder();
-
-		if (!recurse0.contains(this))
-			try {
-				recurse.set(IList.cons(this, recurse0));
-				sb.append(getClass().getSimpleName() + "(");
-				for (var value : values())
-					sb.append(value + ",");
-				sb.append(")");
-				return sb.toString();
-			} finally {
-				recurse.set(recurse0);
-			}
-		else
-			return "<recurse>";
+		return new AutoObject_<>(T::values).toString(self());
 	}
 
-	public List<Comparable<?>> comparableValues() {
-		List<?> list0 = fields_() //
-				.map(field -> Rethrow.ex(() -> field.get(this))) //
-				.toList();
-		@SuppressWarnings("unchecked")
-		var list1 = (List<Comparable<?>>) list0;
-		return list1;
-	}
-
-	private List<?> values() {
+	public List<?> values() {
 		return fields_() //
 				.map(field -> Rethrow.ex(() -> field.get(this))) //
 				.toList();

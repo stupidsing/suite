@@ -1,9 +1,9 @@
 package suite.util;
 
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
+import suite.adt.IdentityKey;
 import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
@@ -19,33 +19,27 @@ import suite.streamlet.Read;
 
 public class MapObject_ {
 
-	public static <T extends MapObject<T>> int compare(T t0, T t1) {
-		var class0 = t0.getClass();
-		var class1 = t1.getClass();
-		int c;
-		if (class0 == class1) {
-			var iter0 = (Iterator<?>) list(t0).iterator();
-			var iter1 = (Iterator<?>) list(t1).iterator();
-			boolean b0, b1;
-			c = 0;
-			while (c == 0 && (c = Boolean.compare(b0 = iter0.hasNext(), b1 = iter1.hasNext())) == 0)
-				if (b0 && b1)
-					c = Object_.compareAnyway(iter0.next(), iter1.next());
-		} else
-			c = String_.compare(class0.getName(), class1.getName());
-		return c;
-	}
+	public static <T extends MapObject<T>> T clone(T t) {
+		var map = new HashMap<IdentityKey<?>, MapObject<?>>();
 
-	public static <T extends MapObject<T>> boolean equals(T t0, T t1) {
-		var list0 = list(t0);
-		var list1 = list(t1);
-		var size0 = list0.size();
-		var size1 = list1.size();
-		var b = true;
-		if (size0 == size1)
-			for (var i = 0; i < size0; i++)
-				b &= Objects.equals(list0.get(i), list1.get(i));
-		return b;
+		class Clone {
+			private MapObject<?> clone(MapObject<?> t0) throws IllegalAccessException {
+				var key = IdentityKey.of(t0);
+				var tx = map.get(key);
+				if (tx == null) {
+					var list0 = Read.from(list(t0));
+					var list1 = list0.map(v -> v instanceof MapObject ? ((MapObject<?>) v).clone() : v).toList();
+					map.put(key, tx = construct(getClass(), list1));
+				}
+				return tx;
+			}
+		}
+
+		return Rethrow.ex(() -> {
+			@SuppressWarnings("unchecked")
+			var object = (T) new Clone().clone(t);
+			return object;
+		});
 	}
 
 	public static <T extends MapObject<T>> MapObject<T> construct(Class<?> clazz, List<?> list) {
