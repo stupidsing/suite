@@ -9,7 +9,7 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 
 	@Override
 	public int compareTo(T other) {
-		return new AutoObject_<>(MapObject_::list).compare(self(), other);
+		return autoObject().compare(self(), other);
 	}
 
 	@Override
@@ -19,7 +19,7 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 		if (t0.getClass() == object.getClass()) {
 			@SuppressWarnings("unchecked")
 			var t1 = (T) object;
-			b = new AutoObject_<>(MapObject_::list).equals(t0, t1);
+			b = autoObject().equals(t0, t1);
 		} else
 			b = false;
 		return b;
@@ -27,12 +27,16 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 
 	@Override
 	public int hashCode() {
-		return new AutoObject_<>(MapObject_::list).hashCode(self());
+		return autoObject().hashCode(self());
 	}
 
 	@Override
 	public String toString() {
-		return new AutoObject_<>(MapObject_::list).toString(self());
+		return autoObject().toString(self());
+	}
+
+	private AutoObject_<Object> autoObject() {
+		return new AutoObject_<>(MapObject_::list);
 	}
 
 	private T self() {

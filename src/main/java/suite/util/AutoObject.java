@@ -44,7 +44,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 	@Override
 	public int compareTo(T t1) {
-		return new AutoObject_<>(T::values).compare(self(), t1);
+		return getAutoObject().compare(self(), t1);
 	}
 
 	@Override
@@ -54,7 +54,7 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 			var t0 = self();
 			@SuppressWarnings("unchecked")
 			var t1 = (T) object;
-			return new AutoObject_<>(T::values).equals(t0, t1);
+			return getAutoObject().equals(t0, t1);
 		} else
 			b = false;
 		return b;
@@ -66,12 +66,16 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 	@Override
 	public int hashCode() {
-		return new AutoObject_<>(T::values).hashCode(self());
+		return getAutoObject().hashCode(self());
 	}
 
 	@Override
 	public String toString() {
-		return new AutoObject_<>(T::values).toString(self());
+		return getAutoObject().toString(self());
+	}
+
+	private AutoObject_<T> getAutoObject() {
+		return new AutoObject_<>(T::values);
 	}
 
 	public List<?> values() {
