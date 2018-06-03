@@ -28,13 +28,13 @@ public class LogUtil {
 
 			if (ps != null)
 				for (var i = 0; i < ps.length; i++)
-					Dump.object("p" + i, ps[i], sb);
+					Dump.toDetails("p" + i, ps[i], sb);
 
 			log.info(sb.toString());
 
 			try {
 				Object value = method.invoke(object, ps);
-				String rd = Dump.object("return", value);
+				String rd = Dump.toDetails("return", value);
 				log.info(prefix + rd);
 				return value;
 			} catch (InvocationTargetException ite) {

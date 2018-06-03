@@ -34,7 +34,7 @@ public class StatisticTest {
 				.from(xs) //
 				.map(x -> FltObjPair.of((float) (vec.dot(expect, x) + random.nextGaussian() * .01f), x)));
 
-		Dump.out(lr);
+		Dump.details(lr);
 
 		var actual = lr.coefficients();
 		vec.verifyEquals(expect, actual, .1f);

@@ -15,7 +15,7 @@ public class SinaTest {
 	public void testQueryFactor() {
 		var factor = sina.queryFactor("0005.HK");
 		assertNotNull(factor);
-		Dump.out(factor);
+		Dump.details(factor);
 	}
 
 	@Test
@@ -23,7 +23,7 @@ public class SinaTest {
 		var quotes = sina.quote(Read.each("0003.HK", "0005.HK").toSet());
 		assertNotNull(0f < quotes.get("0003.HK"));
 		assertNotNull(0f < quotes.get("0005.HK"));
-		Dump.out(quotes);
+		Dump.details(quotes);
 	}
 
 }

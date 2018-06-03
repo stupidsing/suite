@@ -23,7 +23,7 @@ public class FormatterTest {
 		testDisplay("a - b - c");
 		testDisplay("a - (b - c)");
 		testDisplay("(a, b) = (c, d)");
-		Dump.out(Thread_.currentMethod(), Formatter.display(new Reference()));
+		Dump.details(Thread_.currentMethod(), Formatter.display(new Reference()));
 	}
 
 	@Test

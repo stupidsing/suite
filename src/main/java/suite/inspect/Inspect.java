@@ -1,31 +1,20 @@
 package suite.inspect;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 
 import suite.adt.pair.Pair;
-import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil2.Source2;
 import suite.util.List_;
 import suite.util.Memoize;
-import suite.util.Object_;
 import suite.util.Rethrow;
-import suite.util.String_;
 
 /**
  * General manipulation on value objects with public fields.
@@ -41,8 +30,8 @@ public class Inspect {
 	}
 
 	/**
-	 * @return true if both input value objects are of the same class and having
-	 *         all fields equal.
+	 * @return true if both input value objects are of the same class and having all
+	 *         fields equal.
 	 */
 	public <T> boolean equals(T o0, T o1) {
 		return o0 == o1 || o0 != null && o1 != null //
@@ -65,55 +54,6 @@ public class Inspect {
 				h = h * 31 + Objects.hashCode(field.get(object));
 			return h;
 		});
-	}
-
-	public String toString(Object object) {
-		var sb = new StringBuilder();
-		var ids = new HashSet<>();
-
-		new Object() {
-			private void append(Class<?> clazz, Object object_) {
-				int id;
-
-				if (object_ == null)
-					sb.append("null");
-				else if (Type_.isSimple(clazz))
-					sb.append(object_);
-				else if (ids.add(id = System.identityHashCode(object_)))
-					try {
-						var extract_ = new Extract(object_);
-						var prefix = extract_.prefix;
-						var keyClass = extract_.keyClass;
-						var iter = extract_.children;
-
-						if (String_.equals(prefix, "[")) {
-							sb.append("[");
-							while (iter.next()) {
-								append(keyClass, iter.getKey());
-								sb.append(",");
-							}
-							sb.append("]");
-						} else {
-							sb.append(prefix);
-							if (!String_.equals(prefix, "{"))
-								sb.append("{");
-							while (iter.next()) {
-								append(keyClass, iter.getKey());
-								sb.append("=");
-								append(iter.getValueClass(), iter.getValue());
-								sb.append(",");
-							}
-							sb.append("}");
-						}
-					} finally {
-						ids.remove(id);
-					}
-				else
-					sb.append("<recurse>");
-			}
-		}.append(Object_.clazz(object), object);
-
-		return sb.toString();
 	}
 
 	public List<Field> fields(Class<?> clazz) {
@@ -225,193 +165,6 @@ public class Inspect {
 				}) //
 				.toList();
 	});
-
-	private class Extract {
-		private String prefix;
-		private Class<?> keyClass;
-		private ExtractField children;
-
-		private Extract(Object object) {
-			this(object, false);
-		}
-
-		private Extract(Object object, boolean isDumpGetters) {
-			var clazz = object.getClass();
-
-			if (clazz.isArray()) {
-				var length = Array.getLength(object);
-
-				prefix = "[";
-				keyClass = clazz.getComponentType();
-				children = new ExtractCollection() {
-					private int i = -1;
-
-					public boolean next() {
-						return ++i < length;
-					}
-
-					public Object getKey() {
-						return Array.get(object, i);
-					}
-				};
-			} else if (Collection.class.isAssignableFrom(clazz)) {
-				Class<?> elementClass_ = Object.class;
-				ParameterizedType pt;
-				Type[] typeArgs;
-				Type typeArg;
-
-				for (var genericInterface : clazz.getGenericInterfaces())
-					if (genericInterface instanceof ParameterizedType //
-							&& (pt = (ParameterizedType) genericInterface).getRawType() == Collection.class //
-							&& 1 < (typeArgs = pt.getActualTypeArguments()).length //
-							&& (typeArg = typeArgs[0]) instanceof Class)
-						elementClass_ = (Class<?>) typeArg;
-
-				@SuppressWarnings("unchecked")
-				Iterator<Object> iter = ((Collection<Object>) object).iterator();
-
-				prefix = "[";
-				keyClass = elementClass_;
-				children = new ExtractCollection() {
-					private Object element;
-
-					public boolean next() {
-						var b = iter.hasNext();
-						if (b)
-							element = iter.next();
-						return b;
-					}
-
-					public Object getKey() {
-						return element;
-					}
-				};
-			} else if (Map.class.isAssignableFrom(clazz)) {
-				Class<?> valueClass_ = Object.class;
-				ParameterizedType pt;
-				Type[] typeArgs;
-				Type typeArg0, typeArg1;
-
-				for (var genericInterface : clazz.getGenericInterfaces())
-					if (genericInterface instanceof ParameterizedType //
-							&& (pt = (ParameterizedType) genericInterface).getRawType() == Map.class //
-							&& 1 < (typeArgs = pt.getActualTypeArguments()).length //
-							&& (typeArg0 = typeArgs[0]) instanceof Class //
-							&& (typeArg1 = typeArgs[1]) instanceof Class) {
-						typeArgs = pt.getActualTypeArguments();
-						keyClass = (Class<?>) typeArg0;
-						valueClass_ = (Class<?>) typeArg1;
-					}
-
-				@SuppressWarnings("unchecked")
-				var iter = ((Map<Object, Object>) object).entrySet().iterator();
-				var valueClass = valueClass_;
-
-				prefix = "{";
-				keyClass = Object.class;
-				children = new ExtractField() {
-					private Entry<Object, Object> entry;
-
-					public boolean next() {
-						var b = iter.hasNext();
-						if (b)
-							entry = iter.next();
-						return b;
-					}
-
-					public Object getKey() {
-						return entry.getKey();
-					}
-
-					public Class<?> getValueClass() {
-						return valueClass;
-					}
-
-					public Object getValue() {
-						return entry.getValue();
-					}
-				};
-			} else {
-				prefix = clazz.getSimpleName();
-				keyClass = String.class;
-
-				if (isDumpGetters) {
-					Source2<String, Method> source = Read //
-							.from(clazz.getMethods()) //
-							.filter(method -> method.getParameterTypes().length == 0) //
-							.groupBy(Method::getName, Streamlet::first) //
-							.filterKey(name -> name.startsWith("get")) //
-							.source();
-
-					children = new ExtractField() {
-						private Pair<String, Method> pair = Pair.of(null, null);
-
-						public boolean next() {
-							return source.source2(pair);
-						}
-
-						public Object getKey() {
-							return pair.t0;
-						}
-
-						public Class<?> getValueClass() {
-							return pair.t1.getReturnType();
-						}
-
-						public Object getValue() {
-							return Rethrow.ex(() -> pair.t1.invoke(object));
-						}
-					};
-				} else {
-					var iter = fields(clazz).iterator();
-
-					children = new ExtractField() {
-						private Field field;
-
-						public boolean next() {
-							if (iter.hasNext()) {
-								field = iter.next();
-								return true;
-							} else
-								return false;
-						}
-
-						public Object getKey() {
-							return field.getName();
-						}
-
-						public Class<?> getValueClass() {
-							return field.getType();
-						}
-
-						public Object getValue() {
-							return Rethrow.ex(() -> field.get(object));
-						}
-					};
-				}
-			}
-		}
-	}
-
-	private abstract class ExtractCollection implements ExtractField {
-		public Class<?> getValueClass() {
-			return null;
-		}
-
-		public Object getValue() {
-			return null;
-		}
-	}
-
-	private interface ExtractField {
-		public boolean next();
-
-		public Object getKey();
-
-		public Class<?> getValueClass();
-
-		public Object getValue();
-	}
 
 	/**
 	 * @return the input value object recursively rewritten using the input

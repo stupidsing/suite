@@ -18,7 +18,7 @@ import suite.assembler.Amd64.OpRegSegment;
 import suite.assembler.Amd64.OpRegXmm;
 import suite.assembler.Amd64.OpRegYmm;
 import suite.assembler.Amd64.Operand;
-import suite.node.util.Singleton;
+import suite.inspect.Dump;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
@@ -174,7 +174,7 @@ public class Amd64Assemble {
 				bb.append(bytes);
 				offset += bytes.size();
 			} catch (Exception ex) {
-				return Fail.t("for " + Singleton.me.inspect.toString(instruction), ex);
+				return Fail.t("for " + Dump.toLine(instruction), ex);
 			}
 		return bb.toBytes();
 	}

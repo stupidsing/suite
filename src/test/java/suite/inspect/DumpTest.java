@@ -9,7 +9,7 @@ public class DumpTest {
 
 	@Test
 	public void test() {
-		Dump.out(this);
+		Dump.details(this);
 	}
 
 	public int getInt() {

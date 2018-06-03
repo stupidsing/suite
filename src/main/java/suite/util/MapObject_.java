@@ -24,20 +24,15 @@ public class MapObject_ {
 		var class1 = t1.getClass();
 		int c;
 		if (class0 == class1) {
-			@SuppressWarnings("unchecked")
-			var iter0 = (Iterator<Comparable<Object>>) list(t0).iterator();
-			@SuppressWarnings("unchecked")
-			var iter1 = (Iterator<Comparable<Object>>) list(t1).iterator();
+			var iter0 = (Iterator<?>) list(t0).iterator();
+			var iter1 = (Iterator<?>) list(t1).iterator();
 			boolean b0, b1;
 			c = 0;
 			while (c == 0 && (c = Boolean.compare(b0 = iter0.hasNext(), b1 = iter1.hasNext())) == 0)
-				if (b0 && b1) {
-					var value0 = iter0.next();
-					var value1 = iter1.next();
-					c = value0.compareTo(value1);
-				}
+				if (b0 && b1)
+					c = Object_.compareAnyway(iter0.next(), iter1.next());
 		} else
-			c = Object_.compare(class0.getName(), class1.getName());
+			c = String_.compare(class0.getName(), class1.getName());
 		return c;
 	}
 

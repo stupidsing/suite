@@ -7,7 +7,7 @@ import suite.adt.IdentityKey;
 import suite.immutable.IList;
 import suite.streamlet.Read;
 
-public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Comparable<T> {
+public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Comparable<T>, MapInterface<T> {
 
 	private static ThreadLocal<IList<MapObject<?>>> recurse = ThreadLocal.withInitial(IList::end);
 

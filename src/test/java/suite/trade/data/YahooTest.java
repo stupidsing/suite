@@ -23,7 +23,7 @@ public class YahooTest {
 	public void testL1Adjust() {
 		var time0 = Time.ofEpochSec(1490578200l);
 		var timex = Time.ofEpochSec(1497490200l);
-		Dump.out(yahoo.dataSourceL1("0012.HK", TimeRange.of(time0, timex)));
+		Dump.details(yahoo.dataSourceL1("0012.HK", TimeRange.of(time0, timex)));
 	}
 
 	@Test

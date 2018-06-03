@@ -2,13 +2,17 @@ package suite.inspect;
 
 import java.lang.reflect.Array;
 import java.util.Collection;
-import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
+import suite.adt.pair.Pair;
 import suite.jdk.gen.Type_;
 import suite.node.util.Singleton;
 import suite.os.LogUtil;
 import suite.util.FunUtil.Sink;
+import suite.util.MapInterface;
+import suite.util.MapObject_;
+import suite.util.Switch;
 import suite.util.Thread_;
 
 public class Dump {
@@ -16,32 +20,102 @@ public class Dump {
 	private static Inspect inspect = Singleton.me.inspect;
 
 	public static <T> T t(T t) {
-		out(t);
+		details(t);
 		return t;
+	}
+
+	public static void line(Object node) {
+		LogUtil.info(toLine(node));
+	}
+
+	public static String toLine(Object node) {
+		var dumpedObjects = new IdentityHashMap<Object, Object>();
+		var sb = new StringBuilder();
+		Sink<String> sink = sb::append;
+
+		new Object() {
+			private void d(Object object) {
+				if (dumpedObjects.put(object, true) != null)
+					try {
+						d_(object);
+					} finally {
+						dumpedObjects.remove(object);
+					}
+				else
+					sink.sink("(recursed)");
+			}
+
+			private void d_(Object object) {
+				if (object.getClass().isArray()) {
+					sink.sink("[");
+					for (var i = 0; i < Array.getLength(object); i++) {
+						d(Array.get(object, i));
+						sink.sink(",");
+					}
+					sink.sink("]");
+				} else
+					new Switch<Object>(object //
+					).doIf(Collection.class, collection -> {
+						sink.sink("[");
+						for (var object1 : collection) {
+							d(object1);
+							sink.sink(",");
+						}
+						sink.sink("]");
+					}).doIf(Map.class, map -> {
+						sink.sink("{");
+						for (var e : ((Map<?, ?>) object).entrySet()) {
+							d(e.getKey());
+							sink.sink(":");
+							d(e.getValue());
+							sink.sink(",");
+						}
+						sink.sink("}");
+					}).doIf(MapInterface.class, mi -> {
+						sink.sink(mi.getClass().getSimpleName());
+						sink.sink("{");
+						for (var object1 : MapObject_.list(object)) {
+							d(object1);
+							sink.sink(",");
+						}
+						sink.sink("}");
+					}).doIf(Pair.class, pair -> {
+						sink.sink("<");
+						d(pair.t0);
+						sink.sink("|");
+						d(pair.t1);
+						sink.sink(">");
+					}).doIf(Object.class, o -> {
+						sink.sink(object != null ? object.toString() : "null");
+					}).nonNullResult();
+			}
+		}.d(node);
+
+		return sb.toString();
 	}
 
 	/**
 	 * Dumps object content (public data and getters) through Reflection to a log4j.
 	 */
-	public static void out(Object object) {
+	public static void details(Object object) {
 		var trace = Thread_.getStackTrace(3);
-		out(trace.getClassName() + "." + trace.getMethodName(), object);
+		details(trace.getClassName() + "." + trace.getMethodName(), object);
 	}
 
 	/**
 	 * Dumps object content (public data and getters) through Reflection to a log4j,
 	 * with a descriptive name which you gave.
 	 */
-	public static void out(String name, Object object) {
+	public static void details(String name, Object object) {
 		var sb = new StringBuilder();
 		sb.append("Dumping ");
 		sb.append(name);
-		Dump.object("", object, sb);
+		Dump.toDetails("", object, sb);
 		LogUtil.info(sb.toString());
 	}
 
 	public static String object(Object object) {
-		return object("", object);
+		return toDetails("", object);
 	}
 
 	/**
@@ -55,91 +129,102 @@ public class Dump {
 	 * @param object
 	 *            The monster.
 	 */
-	public static String object(String prefix, Object object) {
+	public static String toDetails(String prefix, Object object) {
 		var sb = new StringBuilder();
-		object(prefix, object, sb);
+		toDetails(prefix, object, sb);
 		return sb.toString();
 	}
 
-	public static void object(String prefix, Object object, StringBuilder sb) {
-		object(prefix, object, sb::append);
+	public static void toDetails(String prefix, Object object, StringBuilder sb) {
+		toDetails(prefix, object, sb::append);
 	}
 
-	private static void object(String prefix, Object object, Sink<String> sink) {
-		var dumpedIds = new HashSet<>();
+	private static void toDetails(String prefix, Object object, Sink<String> sink) {
+		var dumpedObjects = new IdentityHashMap<Object, Object>();
 
 		new Object() {
 			private void d(String prefix, Object object) {
-				d(prefix, object != null ? object.getClass() : void.class, object);
+				d(prefix, object, object != null ? object.getClass() : void.class);
 			}
 
-			private void d(String prefix, Class<?> clazz, Object object) {
-				var id = System.identityHashCode(object);
+			private void d(String prefix, Object object, Class<?> clazz) {
 				sink.sink(prefix);
 				sink.sink(" =");
 
 				if (object == null)
 					sink.sink(" null\n");
-				else if (dumpedIds.add(id))
+				else if (dumpedObjects.put(object, true) != null)
 					try {
-						if (clazz == String.class)
-							sink.sink(" \"" + object + "\"");
-
-						if (!Collection.class.isAssignableFrom(clazz))
-							sink.sink(" " + object);
-
-						sink.sink(" [" + clazz.getSimpleName() + "]\n");
-
-						var count = 0;
-
-						// simple listings for simple classes
-						if (Type_.isSimple(clazz))
-							;
-						else if (clazz.isArray())
-							for (var i = 0; i < Array.getLength(object); i++)
-								d(prefix + "[" + count++ + "]", Array.get(object, i));
-						else if (Collection.class.isAssignableFrom(clazz))
-							for (var o1 : (Collection<?>) object)
-								d(prefix + "[" + count++ + "]", o1);
-						else if (Map.class.isAssignableFrom(clazz))
-							for (var e : ((Map<?, ?>) object).entrySet()) {
-								Object key = e.getKey(), value = e.getValue();
-								d(prefix + "[" + count + "].getKey()", key);
-								d(prefix + "[" + count + "].getValue()", value);
-								count++;
-							}
-						else {
-							for (var field : inspect.fields(clazz))
-								try {
-									var name = field.getName();
-									var o = field.get(object);
-									var type = field.getType();
-									if (Type_.isSimple(type))
-										d(prefix + "." + name, type, o);
-									else
-										d(prefix + "." + name, o);
-								} catch (Throwable ex) {
-									sink.sink(prefix + "." + field.getName());
-									sink.sink(" caught " + ex + "\n");
-								}
-
-							for (var method : inspect.getters(clazz)) {
-								var name = method.getName();
-								try {
-									var o = method.invoke(object);
-									if (!(o instanceof Class<?>))
-										d(prefix + "." + name + "()", o);
-								} catch (Throwable ex) {
-									sink.sink(prefix + "." + name + "()");
-									sink.sink(" caught " + ex + "\n");
-								}
-							}
-						}
+						d_(prefix, object, clazz);
 					} finally {
-						dumpedIds.remove(id);
+						dumpedObjects.remove(object);
 					}
 				else
 					sink.sink(" <<recursed>>");
+			}
+
+			private void d_(String prefix, Object object, Class<?> clazz) {
+				if (clazz == String.class)
+					sink.sink(" \"" + object + "\"");
+
+				if (!Collection.class.isAssignableFrom(clazz))
+					sink.sink(" " + object);
+
+				sink.sink(" [" + clazz.getSimpleName() + "]\n");
+
+				var count = 0;
+
+				// simple listings for simple classes
+				if (Type_.isSimple(clazz))
+					;
+				else if (clazz.isArray())
+					for (var i = 0; i < Array.getLength(object); i++)
+						d(prefix + "[" + count++ + "]", Array.get(object, i));
+				else if (Collection.class.isAssignableFrom(clazz))
+					for (var o1 : (Collection<?>) object)
+						d(prefix + "[" + count++ + "]", o1);
+				else if (Map.class.isAssignableFrom(clazz))
+					for (var e : ((Map<?, ?>) object).entrySet()) {
+						Object key = e.getKey(), value = e.getValue();
+						d(prefix + "[" + count + "].getKey()", key);
+						d(prefix + "[" + count + "].getValue()", value);
+						count++;
+					}
+				else if (MapInterface.class.isAssignableFrom(clazz)) {
+					var i = 0;
+					for (var object1 : MapObject_.list(object))
+						d(prefix + "." + i++, object1);
+				} else if (Pair.class.isAssignableFrom(clazz)) {
+					Pair<?, ?> pair = (Pair<?, ?>) object;
+					d(prefix + ".fst", pair.t0);
+					d(prefix + ".snd", pair.t1);
+				} else {
+					for (var field : inspect.fields(clazz))
+						try {
+							var name = field.getName();
+							var o = field.get(object);
+							var type = field.getType();
+							if (Type_.isSimple(type))
+								d(prefix + "." + name, o, type);
+							else
+								d(prefix + "." + name, o);
+						} catch (Throwable ex) {
+							sink.sink(prefix + "." + field.getName());
+							sink.sink(" caught " + ex + "\n");
+						}
+
+					for (var method : inspect.getters(clazz)) {
+						var name = method.getName();
+						try {
+							var o = method.invoke(object);
+							if (!(o instanceof Class<?>))
+								d(prefix + "." + name + "()", o);
+						} catch (Throwable ex) {
+							sink.sink(prefix + "." + name + "()");
+							sink.sink(" caught " + ex + "\n");
+						}
+					}
+				}
 			}
 		}.d(prefix, object);
 	}

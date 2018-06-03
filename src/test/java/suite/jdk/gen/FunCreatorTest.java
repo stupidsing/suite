@@ -166,7 +166,7 @@ public class FunCreatorTest {
 		Iterate<FunExpr> fun = i -> (ProfileFunExpr) f.profile(f.int_(1));
 		var instance = LambdaInstance.of(IntSource.class, fun).newFun();
 		assertEquals(1, instance.source());
-		Dump.out(instance);
+		Dump.details(instance);
 	}
 
 	@Test

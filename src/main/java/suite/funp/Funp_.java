@@ -1,6 +1,5 @@
 package suite.funp;
 
-import java.util.Collection;
 import java.util.List;
 
 import suite.Suite;
@@ -11,11 +10,8 @@ import suite.funp.P2GenerateLambda.Int;
 import suite.funp.P2GenerateLambda.Rt;
 import suite.immutable.IMap;
 import suite.node.Node;
-import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.util.AutoInterface;
-import suite.util.MapObject_;
-import suite.util.Switch;
 
 public class Funp_ {
 
@@ -65,42 +61,6 @@ public class Funp_ {
 			var value = thunk.apply(new Rt(null, null));
 			return ((Int) value).i;
 		}
-	}
-
-	public static void dump(Funp node) {
-		var sb = new StringBuilder();
-
-		new Object() {
-			private void dump(Object object) {
-				new Switch<Object>(object //
-				).doIf(Funp.class, node -> {
-					sb.append(node.getClass().getSimpleName());
-					sb.append("{");
-					for (var object1 : MapObject_.list(node)) {
-						dump(object1);
-						sb.append(",");
-					}
-					sb.append("}");
-				}).doIf(Collection.class, collection -> {
-					sb.append("[");
-					for (var object1 : collection) {
-						dump(object1);
-						sb.append(",");
-					}
-					sb.append("]");
-				}).doIf(Pair.class, pair -> {
-					sb.append("<");
-					dump(pair.t0);
-					sb.append(", ");
-					dump(pair.t1);
-					sb.append(">");
-				}).doIf(Object.class, o -> {
-					sb.append(object != null ? object.toString() : "null");
-				}).nonNullResult();
-			}
-		}.dump(node);
-
-		LogUtil.info(sb.toString());
 	}
 
 }

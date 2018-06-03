@@ -6,6 +6,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import suite.inspect.Dump;
 import suite.inspect.Inspect;
 import suite.jdk.gen.FunExprL.ApplyFunExpr;
 import suite.jdk.gen.FunExprL.FieldFunExpr;
@@ -133,7 +134,7 @@ public class FunExpression {
 
 		@Override
 		public String toString() {
-			return inspect.toString(this);
+			return Dump.toLine(this);
 		}
 	}
 

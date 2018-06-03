@@ -133,13 +133,13 @@ public class LogUtil {
 
 			if (ps != null)
 				for (var i = 0; i < ps.length; i++)
-					Dump.object("p" + i, ps[i], sb);
+					Dump.toDetails("p" + i, ps[i], sb);
 
 			log.info(sb.toString());
 
 			try {
 				var value = invocation.invoke(m, ps);
-				var rd = Dump.object("return", value);
+				var rd = Dump.toDetails("return", value);
 				log.info(prefix + rd);
 				return value;
 			} catch (InvocationTargetException ite) {
