@@ -104,7 +104,7 @@ public class Mapify {
 					return map;
 				}, object -> {
 					var map = (Map<?, ?>) object;
-					Object objects = Array.newInstance(componentType, map.size());
+					var objects = Array.newInstance(componentType, map.size());
 					var i = 0;
 					while (map.containsKey(i)) {
 						Array.set(objects, i, apply_(mapifier1.unmapify, map.get(i)));
@@ -168,7 +168,7 @@ public class Mapify {
 					return map;
 				}, object -> {
 					var map = (Map<?, ?>) object;
-					var object1 = (Collection<Object>) instantiate(clazz);
+					var object1 = (Collection<Object>) Object_.instantiate(clazz);
 					var i = 0;
 					while (map.containsKey(i))
 						object1.add(apply_(mapifier1.unmapify, map.get(i++)));
@@ -183,7 +183,7 @@ public class Mapify {
 							.map2((k, v) -> apply_(km.unmapify, k), (k, v) -> apply_(vm.mapify, v)) //
 							.toMap();
 				}, object -> {
-					var object1 = (Map<Object, Object>) instantiate(clazz);
+					var object1 = (Map<Object, Object>) Object_.instantiate(clazz);
 					((Map<?, ?>) object).forEach((k, v) -> object1.put(apply_(km.unmapify, k), apply_(vm.unmapify, v)));
 					return object1;
 				});
@@ -193,22 +193,6 @@ public class Mapify {
 			mapifier = Fail.t("unrecognized type " + type);
 
 		return mapifier;
-	}
-
-	private <T> T instantiate(Class<T> clazz) {
-		Object object;
-		if (clazz == ArrayList.class || clazz == Collection.class || clazz == List.class)
-			object = new ArrayList<>();
-		else if (clazz == HashSet.class || clazz == Set.class)
-			object = new HashSet<>();
-		else if (clazz == HashMap.class || clazz == Map.class)
-			object = new HashMap<>();
-		else
-			return Object_.new_(clazz);
-
-		@SuppressWarnings("unchecked")
-		var t = (T) object;
-		return t;
 	}
 
 	private Object apply_(Iterate<Object> fun, Object object) {

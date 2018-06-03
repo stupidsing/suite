@@ -10,9 +10,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.jdk.gen.Type_;
@@ -63,6 +65,22 @@ public class Object_ {
 			return compare(c0, c1);
 		} else
 			return Integer.compare(Objects.hashCode(t0), Objects.hashCode(t1));
+	}
+
+	public static <T> T instantiate(Class<T> clazz) {
+		Object object;
+		if (clazz == ArrayList.class || clazz == Collection.class || clazz == List.class)
+			object = new ArrayList<>();
+		else if (clazz == HashSet.class || clazz == Set.class)
+			object = new HashSet<>();
+		else if (clazz == HashMap.class || clazz == Map.class)
+			object = new HashMap<>();
+		else
+			return new_(clazz);
+
+		@SuppressWarnings("unchecked")
+		var t = (T) object;
+		return t;
 	}
 
 	public static Mapper mapper(Type type) {

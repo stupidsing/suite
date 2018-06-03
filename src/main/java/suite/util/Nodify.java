@@ -181,7 +181,7 @@ public class Nodify {
 					return start.getRight();
 				}, node -> {
 					var list = Read.from(Tree.iter(node, TermOp.OR____)).map(n -> apply_(nodifier1, n)).toList();
-					var object1 = (Collection<Object>) instantiate(clazz);
+					var object1 = (Collection<Object>) Object_.instantiate(clazz);
 					object1.addAll(list);
 					return object1;
 				});
@@ -195,7 +195,7 @@ public class Nodify {
 					return dict;
 				}, node -> {
 					var map = ((Dict) node).map;
-					var object1 = (Map<Object, Object>) instantiate(clazz);
+					var object1 = (Map<Object, Object>) Object_.instantiate(clazz);
 					for (var e : map.entrySet())
 						object1.put(apply_(kn, e.getKey()), apply_(vn, e.getValue().finalNode()));
 					return object1;
@@ -206,22 +206,6 @@ public class Nodify {
 			nodifier = Fail.t("unrecognized type " + type);
 
 		return nodifier;
-	}
-
-	private <T> T instantiate(Class<T> clazz) {
-		Object object;
-		if (clazz == ArrayList.class || clazz == Collection.class || clazz == List.class)
-			object = new ArrayList<>();
-		else if (clazz == HashSet.class || clazz == Set.class)
-			object = new HashSet<>();
-		else if (clazz == HashMap.class || clazz == Map.class)
-			object = new HashMap<>();
-		else
-			return Object_.new_(clazz);
-
-		@SuppressWarnings("unchecked")
-		var t = (T) object;
-		return t;
 	}
 
 	private Node apply_(Nodifier nodifier, Object object) {
