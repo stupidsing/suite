@@ -49,6 +49,7 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.Bytes;
+import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
@@ -601,10 +602,7 @@ public class P4GenerateCode {
 			}
 
 			private void compileGlobal(Integer size, Mutable<Operand> address) {
-				address.update(compileBlock(c -> {
-					for (var i = 0; i < size; i++)
-						c.em.emit(amd64.instruction(Insn.NOP));
-				}));
+				address.update(compileBlock(c -> Ints_.range(size).sink(i -> c.em.emit(amd64.instruction(Insn.NOP)))));
 			}
 
 			private Operand compileBlock(Sink<Compile0> sink) {
