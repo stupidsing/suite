@@ -19,7 +19,7 @@ public abstract class AutoObject<T extends AutoObject<T>> extends BaseObject<T> 
 
 		return Rethrow.ex(() -> {
 			@SuppressWarnings("unchecked")
-			var object = (AutoObject<T>) new Object() {
+			var object = (T) new Object() {
 				private AutoObject<?> clone(AutoObject<?> t0) throws IllegalAccessException {
 					var key = IdentityKey.of(t0);
 					var tx = map.get(key);

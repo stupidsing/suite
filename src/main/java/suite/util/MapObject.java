@@ -13,13 +13,13 @@ public abstract class MapObject<T extends MapObject<T>> extends BaseObject<T> im
 
 		return Rethrow.ex(() -> {
 			@SuppressWarnings("unchecked")
-			T object = (T) new Object() {
-				private MapObject<?> clone(MapObject<?> t0) throws IllegalAccessException {
+			var object = (T) new Object() {
+				private MapObject<?> clone(MapObject<?> t0) {
 					var key = IdentityKey.of(t0);
 					var tx = map.get(key);
 					if (tx == null) {
 						var list0 = Read.from(MapObject_.list(t0));
-						var list1 = list0.map(v -> v instanceof MapObject ? ((MapObject<?>) v).clone() : v).toList();
+						var list1 = list0.map(v -> v instanceof MapObject ? clone((MapObject<?>) v) : v).toList();
 						map.put(key, tx = MapObject_.construct(getClass(), list1));
 					}
 					return tx;
