@@ -5,7 +5,7 @@ import java.util.HashMap;
 import suite.adt.IdentityKey;
 import suite.streamlet.Read;
 
-public abstract class MapObject<T extends MapObject<T>> extends BaseObject<T> implements Cloneable, Comparable<T>, MapInterface<T> {
+public abstract class MapObject<T extends MapObject<T>> extends BaseObject<T> implements MapInterface<T> {
 
 	@Override
 	public MapObject<T> clone() {
