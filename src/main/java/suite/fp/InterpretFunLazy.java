@@ -21,7 +21,7 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
-import suite.streamlet.Read;
+import suite.streamlet.As;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
@@ -89,10 +89,9 @@ public class InterpretFunLazy {
 		var prover = new Prover(Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl")));
 		var parsed = new Reference();
 
-		if (prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)))
-			return parsed;
-		else
-			return Fail.t("cannot parse " + node);
+		return prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)) //
+				? parsed //
+				: Fail.t("cannot parse " + node);
 	}
 
 	private class Lazy {
@@ -152,16 +151,11 @@ public class InterpretFunLazy {
 				};
 			}).match(Matcher.defvars, DEFVARS -> {
 				var tuple = Suite.pattern(".0 .1");
-				var arrays = Tree.iter(DEFVARS.list).map(tuple::match);
+				var arrays = Tree.iter(DEFVARS.list).map(tuple::match).collect(As::streamlet);
 				var size = arrays.size();
-				var lazy0 = this;
-
-				for (var array : arrays)
-					lazy0 = lazy0.put(array[0]);
-
-				var lazy1 = lazy0;
-				var values_ = Read.from(arrays).map(array -> lazy1.lazy(array[1])).toList();
-				var expr = lazy1.lazy(DEFVARS.do_);
+				var lazy = arrays.fold(this, (l, array) -> l.put(array[0]));
+				var values_ = arrays.map(array -> lazy.lazy(array[1])).toList();
+				var expr = lazy.lazy(DEFVARS.do_);
 
 				return frame -> {
 					var values = new ArrayList<Thunk>(size);
