@@ -16,10 +16,12 @@ import suite.funp.Funp_;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.primitive.IntInt_Obj;
 import suite.primitive.IntObj_Int;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.map.IntIntMap;
+import suite.primitive.adt.pair.IntIntPair;
 import suite.util.Fail;
 import suite.util.FunUtil.Sink;
 import suite.util.To;
@@ -28,23 +30,24 @@ public class Amd64Interpret {
 
 	public final BytesBuilder out = new BytesBuilder();
 
-	private int base0 = 0;
-	private int baseCode0 = base0 + 0;
-	private int baseCodex = baseCode0 + 0x10000000;
-	private int baseStack0 = baseCodex + 0;
-	private int baseStackx = baseStack0 + 0x40000;
-	// private int basex = baseStackx + 0;
+	private IntInt_Obj<IntIntPair> f = (s, p) -> IntIntPair.of(s, s + p);
 
-	private int position0 = 0;
-	private int positionCode0 = position0 + 0;
-	private int positionCodex = position0 + 65536;
-	private int positionStack0 = positionCodex + 0;
-	private int positionStackx = positionStack0 + 262144;
-	private int positionx = positionStackx + 0;
+	private IntIntPair baseNull = IntIntPair.of(0, 0);
+	private IntIntPair baseCode = f.apply(baseNull.t1, 0x08000000);
+	private IntIntPair baseData = f.apply(baseCode.t1, 0x08000000);
+	private IntIntPair baseStack = f.apply(baseData.t1, 0x00040000);
+	// private IntIntPair baseEnd = f.apply(baseStack.t1, 0);
 
-	private int diffCode = baseCode0 - positionCode0;
-	private int diffStack = baseStackx - positionStackx;
-	private ByteBuffer mem = ByteBuffer.allocate(positionx);
+	private IntIntPair posNull = IntIntPair.of(0, 0);
+	private IntIntPair posCode = f.apply(posNull.t1, 65536);
+	private IntIntPair posData = f.apply(posCode.t1, 262144);
+	private IntIntPair posStack = f.apply(posData.t1, 262144);
+	private IntIntPair posEnd = f.apply(posStack.t1, 0);
+
+	private int diffCode = baseCode.t0 - posCode.t0;
+	private int diffData = baseData.t0 - posData.t0;
+	private int diffStack = baseStack.t0 - posStack.t0;
+	private ByteBuffer mem = ByteBuffer.allocate(posEnd.t0);
 	private int[] regs = new int[16];
 	private int c;
 
@@ -68,10 +71,10 @@ public class Amd64Interpret {
 
 	public int interpret(List<Instruction> instructions, Bytes code, Bytes input) {
 		mem.order(ByteOrder.LITTLE_ENDIAN);
-		mem.position(positionCode0);
+		mem.position(posCode.t0);
 		mem.put(code.bs);
-		eip = positionCode0;
-		regs[esp] = baseStackx - 16;
+		eip = baseCode.t0;
+		regs[esp] = baseStack.t1 - 16;
 
 		var labels = new IntIntMap();
 
@@ -311,12 +314,14 @@ public class Amd64Interpret {
 	}
 
 	private int index(int address) {
-		if (address < baseCodex)
+		if (address < baseCode.t1)
 			return address - diffCode;
-		else if (address < baseStackx)
+		else if (address < baseData.t1)
+			return address - diffData;
+		else if (address < baseStack.t1)
 			return address - diffStack;
 		else
-			return Fail.t("Wild address " + Integer.toHexString(address));
+			return Fail.t("address gone wild: " + Integer.toHexString(address));
 	}
 
 	private String state(Instruction instruction) {
