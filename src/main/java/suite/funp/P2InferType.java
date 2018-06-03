@@ -589,16 +589,18 @@ public class P2InferType {
 		private int start;
 		private int end;
 
-		public Var(Mutable<Operand> operand, int start, int end) {
-			this.offset = IntMutable.of(0);
-			this.operand = operand;
-			this.start = start;
-			this.end = end;
+		private Var(Mutable<Operand> operand, int start, int end) {
+			this(null, IntMutable.of(0), operand, start, end);
 		}
 
-		public Var(int scope, IntMutable offset, int start, int end) {
+		private Var(int scope, IntMutable offset, int start, int end) {
+			this(scope, offset, null, start, end);
+		}
+
+		private Var(Integer scope, IntMutable offset, Mutable<Operand> operand, int start, int end) {
 			this.scope = scope;
 			this.offset = offset;
+			this.operand = operand;
 			this.start = start;
 			this.end = end;
 		}
