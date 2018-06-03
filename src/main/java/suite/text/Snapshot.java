@@ -23,7 +23,7 @@ public class Snapshot {
 			var bytes1 = map1.get(key);
 
 			if (bytes0 == null || bytes1 == null)
-				diffMap.put(key, List.of(Pair.<Bytes, Bytes> of(bytes0, bytes1)));
+				diffMap.put(key, List.of(Pair.of(bytes0, bytes1)));
 			else {
 				var diff = textUtil.diff(bytes0, bytes1);
 				if (textUtil.isDiff(diff))
