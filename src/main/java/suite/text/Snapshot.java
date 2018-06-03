@@ -12,9 +12,7 @@ public class Snapshot {
 
 	private TextUtil textUtil = new TextUtil();
 
-	public Map<String, List<Pair<Bytes, Bytes>>> diffFiles( //
-			Map<String, Bytes> map0, //
-			Map<String, Bytes> map1) {
+	public Map<String, List<Pair<Bytes, Bytes>>> diffFiles(Map<String, Bytes> map0, Map<String, Bytes> map1) {
 		var keys = Set_.union(map0.keySet(), map1.keySet());
 		var diffMap = new HashMap<String, List<Pair<Bytes, Bytes>>>();
 
