@@ -5,10 +5,10 @@ import java.util.HashMap;
 import suite.adt.IdentityKey;
 import suite.streamlet.Read;
 
-public abstract class MapObject<T extends MapObject<T>> extends BaseObject<T> implements MapInterface<T> {
+public abstract class MapObject<T extends MapObject<T>> extends BaseObject<T> implements Cloneable, MapInterface<T> {
 
 	@Override
-	public MapObject<T> clone() {
+	public T clone() {
 		var map = new HashMap<IdentityKey<?>, MapObject<?>>();
 
 		return Rethrow.ex(() -> {

@@ -1,6 +1,6 @@
 package suite.util;
 
-public abstract class BaseObject<T extends BaseObject<T>> implements Cloneable, Comparable<T>, AutoInterface<T> {
+public abstract class BaseObject<T extends BaseObject<T>> implements Comparable<T>, AutoInterface<T> {
 
 	@Override
 	public int compareTo(T t1) {
@@ -23,5 +23,11 @@ public abstract class BaseObject<T extends BaseObject<T>> implements Cloneable, 
 	}
 
 	protected abstract AutoObject_<T> autoObject();
+
+	private T self() {
+		@SuppressWarnings("unchecked")
+		var t = (T) this;
+		return t;
+	}
 
 }

@@ -9,12 +9,12 @@ import suite.node.util.Singleton;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
-public abstract class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implements AutoInterface<T> {
+public abstract class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implements Cloneable, AutoInterface<T> {
 
 	private static Inspect inspect = Singleton.me.inspect;
 
 	@Override
-	public AutoObject<T> clone() {
+	public T clone() {
 		var map = new HashMap<IdentityKey<?>, AutoObject<?>>();
 
 		return Rethrow.ex(() -> {
@@ -26,7 +26,7 @@ public abstract class AutoObject<T extends AutoObject<T>> extends BaseObject<T> 
 					if (tx == null) {
 						map.put(key, tx = Object_.new_(t0.getClass()));
 						var t1 = (AutoObject<T>) tx;
-						for (var field : t0.fields_()) {
+						for (var field : t0.fields()) {
 							var v0 = field.get(t0);
 							var v1 = v0 instanceof AutoObject ? clone((AutoObject<?>) v0) : v0;
 							field.set(t1, v1);
@@ -41,16 +41,12 @@ public abstract class AutoObject<T extends AutoObject<T>> extends BaseObject<T> 
 	}
 
 	public Streamlet<Field> fields() {
-		return fields_();
+		return Read.from(inspect.fields(getClass()));
 	}
 
 	@Override
 	protected AutoObject_<T> autoObject() {
 		return new AutoObject_<>(inspect::values);
-	}
-
-	private Streamlet<Field> fields_() {
-		return Read.from(inspect.fields(getClass()));
 	}
 
 }
