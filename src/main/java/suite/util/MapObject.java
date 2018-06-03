@@ -1,10 +1,33 @@
 package suite.util;
 
+import java.util.HashMap;
+
+import suite.adt.IdentityKey;
+import suite.streamlet.Read;
+
 public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Comparable<T>, MapInterface<T> {
 
 	@Override
 	public MapObject<T> clone() {
-		return MapObject_.clone(self());
+		var map = new HashMap<IdentityKey<?>, MapObject<?>>();
+
+		return Rethrow.ex(() -> {
+			@SuppressWarnings("unchecked")
+			T object = (T) new Object() {
+				private MapObject<?> clone(MapObject<?> t0) throws IllegalAccessException {
+					var key = IdentityKey.of(t0);
+					var tx = map.get(key);
+					if (tx == null) {
+						var list0 = Read.from(MapObject_.list(t0));
+						var list1 = list0.map(v -> v instanceof MapObject ? ((MapObject<?>) v).clone() : v).toList();
+						map.put(key, tx = MapObject_.construct(getClass(), list1));
+					}
+					return tx;
+				}
+			}.clone(this);
+
+			return object;
+		});
 	}
 
 	@Override
@@ -14,15 +37,7 @@ public abstract class MapObject<T extends MapObject<T>> implements Cloneable, Co
 
 	@Override
 	public boolean equals(Object object) {
-		var t0 = self();
-		boolean b;
-		if (t0.getClass() == object.getClass()) {
-			@SuppressWarnings("unchecked")
-			var t1 = (T) object;
-			b = autoObject().equals(t0, t1);
-		} else
-			b = false;
-		return b;
+		return autoObject().isEquals(self(), object);
 	}
 
 	@Override

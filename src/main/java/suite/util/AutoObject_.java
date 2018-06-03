@@ -33,6 +33,17 @@ public class AutoObject_<T> {
 		return c;
 	}
 
+	public boolean isEquals(T t0, Object object) {
+		boolean b;
+		if (t0.getClass() == object.getClass()) {
+			@SuppressWarnings("unchecked")
+			var t1 = (T) object;
+			b = equals(t0, t1);
+		} else
+			b = false;
+		return b;
+	}
+
 	public boolean equals(T t0, T t1) {
 		var list0 = listFun.apply(t0);
 		var list1 = listFun.apply(t1);

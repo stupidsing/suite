@@ -6,10 +6,10 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 import suite.adt.pair.Pair;
 import suite.streamlet.Read;
+import suite.util.AutoObject_;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.List_;
@@ -34,26 +34,20 @@ public class Inspect {
 	 *         fields equal.
 	 */
 	public <T> boolean equals(T o0, T o1) {
-		return o0 == o1 || o0 != null && o1 != null //
-				&& o0.getClass() == o1.getClass() //
-				&& Rethrow.ex(() -> {
-					var b = true;
-					for (var field : fields(o0.getClass()))
-						b &= Objects.equals(field.get(o0), field.get(o1));
-					return b;
-				});
+		return new AutoObject_<>(this::values).equals(o0, o1);
 	}
 
 	/**
 	 * @return a combined hash code of all fields of the input value object.
 	 */
 	public int hashCode(Object object) {
-		return Rethrow.ex(() -> {
-			var h = 7;
-			for (var field : fields(object.getClass()))
-				h = h * 31 + Objects.hashCode(field.get(object));
-			return h;
-		});
+		return new AutoObject_<>(this::values).hashCode(object);
+	}
+
+	public List<?> values(Object object) {
+		return Read.from(fields(object.getClass())) //
+				.map(field -> Rethrow.ex(() -> field.get(object))) //
+				.toList();
 	}
 
 	public List<Field> fields(Class<?> clazz) {

@@ -2,8 +2,6 @@ package suite.util;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import suite.adt.IdentityKey;
 import suite.inspect.Inspect;
@@ -17,11 +15,11 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 	@Override
 	public AutoObject<T> clone() {
+		var map = new HashMap<IdentityKey<?>, AutoObject<?>>();
+
 		return Rethrow.ex(() -> {
 			@SuppressWarnings("unchecked")
 			var object = (AutoObject<T>) new Object() {
-				private Map<IdentityKey<?>, AutoObject<?>> map = new HashMap<>();
-
 				private AutoObject<?> clone(AutoObject<?> t0) throws IllegalAccessException {
 					var key = IdentityKey.of(t0);
 					var tx = map.get(key);
@@ -44,20 +42,12 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 	@Override
 	public int compareTo(T t1) {
-		return getAutoObject().compare(self(), t1);
+		return autoObject().compare(self(), t1);
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		boolean b;
-		if (getClass() == object.getClass()) {
-			var t0 = self();
-			@SuppressWarnings("unchecked")
-			var t1 = (T) object;
-			return getAutoObject().equals(t0, t1);
-		} else
-			b = false;
-		return b;
+		return autoObject().isEquals(self(), object);
 	}
 
 	public Streamlet<Field> fields() {
@@ -66,22 +56,16 @@ public abstract class AutoObject<T extends AutoObject<T>> implements Cloneable, 
 
 	@Override
 	public int hashCode() {
-		return getAutoObject().hashCode(self());
+		return autoObject().hashCode(self());
 	}
 
 	@Override
 	public String toString() {
-		return getAutoObject().toString(self());
+		return autoObject().toString(self());
 	}
 
-	private AutoObject_<T> getAutoObject() {
-		return new AutoObject_<>(T::values);
-	}
-
-	public List<?> values() {
-		return fields_() //
-				.map(field -> Rethrow.ex(() -> field.get(this))) //
-				.toList();
+	private AutoObject_<T> autoObject() {
+		return new AutoObject_<>(inspect::values);
 	}
 
 	private Streamlet<Field> fields_() {

@@ -1,9 +1,7 @@
 package suite.util;
 
-import java.util.HashMap;
 import java.util.List;
 
-import suite.adt.IdentityKey;
 import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
@@ -18,29 +16,6 @@ import suite.adt.pair.Fixie_.FixieFunA;
 import suite.streamlet.Read;
 
 public class MapObject_ {
-
-	public static <T extends MapObject<T>> T clone(T t) {
-		var map = new HashMap<IdentityKey<?>, MapObject<?>>();
-
-		class Clone {
-			private MapObject<?> clone(MapObject<?> t0) throws IllegalAccessException {
-				var key = IdentityKey.of(t0);
-				var tx = map.get(key);
-				if (tx == null) {
-					var list0 = Read.from(list(t0));
-					var list1 = list0.map(v -> v instanceof MapObject ? ((MapObject<?>) v).clone() : v).toList();
-					map.put(key, tx = construct(getClass(), list1));
-				}
-				return tx;
-			}
-		}
-
-		return Rethrow.ex(() -> {
-			@SuppressWarnings("unchecked")
-			var object = (T) new Clone().clone(t);
-			return object;
-		});
-	}
 
 	public static <T extends MapObject<T>> MapObject<T> construct(Class<?> clazz, List<?> list) {
 		return Rethrow.ex(() -> {
