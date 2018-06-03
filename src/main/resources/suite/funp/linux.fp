@@ -8,11 +8,11 @@ define unmap := (pointer, length) =>
 	type pointer = address (size * array coerce-byte _) >>
 	asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
 >>
---define global alloc-pointer := (32768 | map)
--->>
---define alloc := size =>
---	asm (EBX = address alloc-pointer; ECX = size;) { MOV (EAX, `EBX`); ADD (`EBX`, ECX); }
--->>
+define global alloc-pointer := (32768 | map)
+>>
+define alloc := size =>
+	asm (EBX = address alloc-pointer; ECX = size;) { MOV (EAX, `EBX`); ADD (`EBX`, ECX); }
+>>
 define pool-new := length => {
 	pool: (length | map), length: length, start: 0,
 } >>
