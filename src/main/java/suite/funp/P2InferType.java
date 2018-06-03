@@ -48,6 +48,7 @@ import suite.funp.P0.FunpVariableNew;
 import suite.funp.P2.FunpAllocGlobal;
 import suite.funp.P2.FunpAllocStack;
 import suite.funp.P2.FunpAssign;
+import suite.funp.P2.FunpAssignable;
 import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpInvoke;
 import suite.funp.P2.FunpInvoke2;
@@ -93,6 +94,7 @@ public class P2InferType {
 	private UnNode<Type> typeBoolean = new TypeBoolean();
 	private UnNode<Type> typeByte = new TypeByte();
 	private UnNode<Type> typeNumber = new TypeNumber();
+
 	private Map<Funp, UnNode<Type>> typeByNode = new HashMap<>();
 
 	public Funp infer(Funp n0) {
@@ -477,12 +479,12 @@ public class P2InferType {
 				return new Object() {
 					private Funp getAddress(Funp n) {
 						return n.<Funp> switch_( //
-						).applyIf(FunpAssign.class, f -> f.apply((memory, value, expr) -> {
-							return FunpAssign.of(memory, value, getAddress(expr));
+						).applyIf(FunpAssign.class, f -> f.apply((target, value, expr) -> {
+							return FunpAssign.of(target, value, getAddress(expr));
 						})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 							return FunpTree.of(TermOp.PLUS__, pointer, FunpNumber.ofNumber(start));
 						})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-							return getAddress(getVariable(env.get(var)));
+							return getAddress(getVariableMemory(env.get(var)));
 						})).nonNullResult();
 					}
 				}.getAddress(erase(expr));
@@ -558,7 +560,15 @@ public class P2InferType {
 				return FunpRoutineIo.of(frame, expr, lt.is, lt.os);
 		}
 
-		private FunpMemory getVariable(Var vd) {
+		private FunpAssignable getVariable(Var vd) {
+			return getVariable_(vd);
+		}
+
+		private FunpMemory getVariableMemory(Var vd) {
+			return getVariable_(vd);
+		}
+
+		private FunpMemory getVariable_(Var vd) {
 			var operand = vd.operand;
 			var scope0 = vd.scope;
 			Funp nfp;

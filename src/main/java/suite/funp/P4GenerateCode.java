@@ -187,8 +187,13 @@ public class P4GenerateCode {
 
 					Read.from(asm).map(p::parse).sink(em::emit);
 					return returnIsOp(eax);
-				})).applyIf(FunpAssign.class, f -> f.apply((memory, value, expr) -> {
-					compileAssign(value, memory);
+				})).applyIf(FunpAssign.class, f -> f.apply((target, value, expr) -> {
+					if (target instanceof FunpMemory)
+						compileAssign(value, (FunpMemory) target);
+					else if (target instanceof FunpOperand)
+						compileIsSpec(value, (OpReg) ((FunpOperand) target).operand.get());
+					else
+						Fail.t();
 					return compile(expr);
 				})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 					return returnIsOp(amd64.imm(b ? 1 : 0, Funp_.booleanSize));
