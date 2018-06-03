@@ -161,23 +161,30 @@ public class Amd64Interpret {
 					assign.sink(source0 + 1);
 					break;
 				case INT:
+					var p0 = regs[eax];
+					var p1 = regs[ebx];
+					var p2 = regs[ecx];
+					var p3 = regs[edx];
 					if ((byte) source0 == -128)
-						if (regs[eax] == 1) // exit
-							return regs[ebx];
-						else if (regs[eax] == 3) { // read
-							int length = min(regs[edx], input.size());
-							var di = index(regs[ecx]);
+						if (p0 == 0x01) // exit
+							return p1;
+						else if (p0 == 0x03) { // read
+							var length = min(p3, input.size());
+							var di = index(p2);
 							for (var i = 0; i < length; i++)
 								mem.put(di++, input.get(i));
 							input = input.range(length);
 							regs[eax] = length;
-						} else if (regs[eax] == 4) { // write
-							var length = regs[edx];
-							var si = index(regs[ecx]);
+						} else if (p0 == 0x04) { // write
+							var length = p3;
+							var si = index(p2);
 							var bs = new byte[length];
 							for (var i = 0; i < length; i++)
 								bs[i] = mem.get(si++);
 							output.sink(Bytes.of(bs));
+						} else if (regs[eax] == 0x90) { // map
+							var size = mem.getInt(index(p1));
+							regs[eax] = size < posData.t1 - posData.t0 ? baseData.t0 : Fail.t();
 						} else
 							Fail.t();
 					else
