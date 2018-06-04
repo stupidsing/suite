@@ -400,7 +400,7 @@ public class P2InferType {
 				var size = getTypeSize(typeOf(value));
 				var op = Mutable.<Operand> nil();
 				var offset = IntMutable.nil();
-				var e1 = new Erase(scope, env.replace(var, new Var(f, FunpOperand.of(op), scope, offset, null, 0, size)));
+				var e1 = new Erase(scope, env.replace(var, new Var(f, op, scope, offset, null, 0, size)));
 				var isReg = isRegByNode.getOrDefault(f, false);
 				var value1 = erase(value);
 				var expr1 = e1.erase(expr);
@@ -486,6 +486,7 @@ public class P2InferType {
 				var expr1 = new Erase(1, env1).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
+				var expr1 = expr instanceof FunpVariable ? getVariableMemory(env.get(((FunpVariable) expr).var)) : expr;
 				return new Object() {
 					private Funp getAddress(Funp n) {
 						return n.<Funp> switch_( //
@@ -493,11 +494,9 @@ public class P2InferType {
 							return FunpAssign.of(target, value, getAddress(expr));
 						})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 							return FunpTree.of(TermOp.PLUS__, pointer, FunpNumber.ofNumber(start));
-						})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-							return getAddress(getVariableMemory(env.get(var)));
 						})).nonNullResult();
 					}
-				}.getAddress(erase(expr));
+				}.getAddress(erase(expr1));
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
 				var elementSize = getTypeSize(typeOf(expr));
 				var offset = 0;
@@ -572,7 +571,7 @@ public class P2InferType {
 
 		private FunpAssignable getVariable(Var vd) {
 			var isReg = isRegByNode.getOrDefault(vd.funp, false);
-			return isReg ? vd.operand : getVariable_(vd);
+			return isReg ? FunpOperand.of(vd.operand) : getVariable_(vd);
 		}
 
 		private FunpMemory getVariableMemory(Var vd) {
@@ -593,7 +592,7 @@ public class P2InferType {
 
 	private class Var {
 		private Funp funp;
-		private FunpOperand operand;
+		private Mutable<Operand> operand;
 		private Integer scope;
 		private IntMutable offset;
 		private Mutable<Operand> offsetOperand;
@@ -609,7 +608,7 @@ public class P2InferType {
 
 		private Var( //
 				Funp funp, //
-				FunpOperand operand, //
+				Mutable<Operand> operand, //
 				Integer scope, //
 				IntMutable offset, //
 				Mutable<Operand> offsetOperand, //
