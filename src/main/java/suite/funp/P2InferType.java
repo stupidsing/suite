@@ -405,7 +405,7 @@ public class P2InferType {
 				var value1 = erase(value);
 				var expr1 = e1.erase(expr);
 				var n1 = isReg ? FunpAllocReg.of(size, value1, expr1, op) : FunpAllocStack.of(size, value1, expr1, offset);
-				isRegByNode.putIfAbsent(f, false);
+				isRegByNode.putIfAbsent(f, size == is);
 				return n1;
 			})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
 				var size = getTypeSize(typeOf(value));
@@ -486,7 +486,6 @@ public class P2InferType {
 				var expr1 = new Erase(1, env1).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
-				var expr1 = expr instanceof FunpVariable ? getVariableMemory(env.get(((FunpVariable) expr).var)) : expr;
 				return new Object() {
 					private Funp getAddress(Funp n) {
 						return n.<Funp> switch_( //
@@ -494,9 +493,11 @@ public class P2InferType {
 							return FunpAssign.of(target, value, getAddress(expr));
 						})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 							return FunpTree.of(TermOp.PLUS__, pointer, FunpNumber.ofNumber(start));
+						})).applyIf(FunpVariable.class, f -> f.apply(var -> {
+							return getAddress(getVariableMemory(env.get(var)));
 						})).nonNullResult();
 					}
-				}.getAddress(erase(expr1));
+				}.getAddress(erase(expr));
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
 				var elementSize = getTypeSize(typeOf(expr));
 				var offset = 0;
