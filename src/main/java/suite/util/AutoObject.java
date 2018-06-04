@@ -9,7 +9,7 @@ import suite.node.util.Singleton;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
-public abstract class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implements Cloneable, AutoInterface<T> {
+public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implements Cloneable, AutoInterface<T> {
 
 	private static Inspect inspect = Singleton.me.inspect;
 
