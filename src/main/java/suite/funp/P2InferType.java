@@ -405,7 +405,7 @@ public class P2InferType {
 				var value1 = erase(value);
 				var expr1 = e1.erase(expr);
 				var n1 = isReg ? FunpAllocReg.of(size, value1, expr1, op) : FunpAllocStack.of(size, value1, expr1, offset);
-				isRegByNode.putIfAbsent(f, size == is);
+				isRegByNode.putIfAbsent(f, false);
 				return n1;
 			})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
 				var size = getTypeSize(typeOf(value));
