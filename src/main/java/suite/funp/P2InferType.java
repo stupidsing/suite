@@ -46,6 +46,7 @@ import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P0.FunpVariableNew;
 import suite.funp.P2.FunpAllocGlobal;
+import suite.funp.P2.FunpAllocReg;
 import suite.funp.P2.FunpAllocStack;
 import suite.funp.P2.FunpAssign;
 import suite.funp.P2.FunpAssignable;
@@ -96,15 +97,18 @@ public class P2InferType {
 	private UnNode<Type> typeNumber = new TypeNumber();
 
 	private Map<Funp, UnNode<Type>> typeByNode = new HashMap<>();
+	private Map<Funp, Boolean> isRegByNode = new HashMap<>();
 
 	public Funp infer(Funp n0) {
 		var t = unify.newRef();
 		var n1 = extractPredefine(n0);
 		var n2 = Boolean.FALSE ? captureLambdas(n1) : n1;
 
-		if (unify.unify(t, new Infer(IMap.empty()).infer(n2)))
-			return new Erase(0, IMap.empty()).erase(n2);
-		else
+		if (unify.unify(t, new Infer(IMap.empty()).infer(n2))) {
+			Erase erase = new Erase(0, IMap.empty());
+			erase.erase(n2); // first pass
+			return erase.erase(n2); // second pass
+		} else
 			return Fail.t("cannot infer type for " + n0);
 	}
 
@@ -394,9 +398,15 @@ public class P2InferType {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				var size = getTypeSize(typeOf(value));
+				var op = Mutable.<Operand> nil();
 				var offset = IntMutable.nil();
-				var e1 = new Erase(scope, env.replace(var, new Var(f, scope, offset, null, 0, size)));
-				return FunpAllocStack.of(size, erase(value), e1.erase(expr), offset);
+				var e1 = new Erase(scope, env.replace(var, new Var(f, FunpOperand.of(op), scope, offset, null, 0, size)));
+				var isReg = isRegByNode.getOrDefault(f, false);
+				var value1 = erase(value);
+				var expr1 = e1.erase(expr);
+				var n1 = isReg ? FunpAllocReg.of(size, value1, expr1, op) : FunpAllocStack.of(size, value1, expr1, offset);
+				isRegByNode.putIfAbsent(f, false);
+				return n1;
 			})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
 				var size = getTypeSize(typeOf(value));
 				var address = Mutable.<Operand> nil();
@@ -561,48 +571,54 @@ public class P2InferType {
 		}
 
 		private FunpAssignable getVariable(Var vd) {
-			return getVariable_(vd);
+			var isReg = isRegByNode.getOrDefault(vd.funp, false);
+			return isReg ? vd.operand : getVariable_(vd);
 		}
 
 		private FunpMemory getVariableMemory(Var vd) {
+			isRegByNode.put(vd.funp, false);
 			return getVariable_(vd);
 		}
 
 		private FunpMemory getVariable_(Var vd) {
-			var operand = vd.operand;
+			var offsetOperand = vd.offsetOperand;
 			var scope0 = vd.scope;
-			Funp nfp;
-			if (scope0 != null)
-				nfp = Ints_.range(scope0, scope).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps));
-			else
-				nfp = FunpNumber.of(IntMutable.of(0)); // globals
-			if (operand != null)
-				nfp = FunpTree.of(TermOp.PLUS__, nfp, FunpOperand.of(operand));
-			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp, FunpNumber.of(vd.offset)), vd.start, vd.end);
+			var nfp0 = scope0 != null //
+					? Ints_.range(scope0, scope).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps)) // locals
+					: FunpNumber.of(IntMutable.of(0)); // globals
+			var nfp1 = offsetOperand != null ? FunpTree.of(TermOp.PLUS__, nfp0, FunpOperand.of(offsetOperand)) : nfp0;
+			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp1, FunpNumber.of(vd.offset)), vd.start, vd.end);
 		}
 	}
 
 	private class Var {
 		private Funp funp;
+		private FunpOperand operand;
 		private Integer scope;
 		private IntMutable offset;
-		private Mutable<Operand> operand;
-		private int start;
-		private int end;
+		private Mutable<Operand> offsetOperand;
+		private int start, end;
 
-		private Var(Mutable<Operand> operand, int start, int end) { // global
-			this(null, null, IntMutable.of(0), operand, start, end);
+		private Var(Mutable<Operand> offsetOperand, int start, int end) { // global
+			this(FunpDontCare.of(), null, null, IntMutable.of(0), offsetOperand, start, end);
 		}
 
 		private Var(int scope, IntMutable offset, int start, int end) { // local
-			this(null, scope, offset, null, start, end);
+			this(FunpDontCare.of(), null, scope, offset, null, start, end);
 		}
 
-		private Var(Funp funp, Integer scope, IntMutable offset, Mutable<Operand> operand, int start, int end) {
+		private Var( //
+				Funp funp, //
+				FunpOperand operand, //
+				Integer scope, //
+				IntMutable offset, //
+				Mutable<Operand> offsetOperand, //
+				int start, int end) {
 			this.funp = funp;
+			this.operand = operand;
 			this.scope = scope;
 			this.offset = offset;
-			this.operand = operand;
+			this.offsetOperand = offsetOperand;
 			this.start = start;
 			this.end = end;
 		}
