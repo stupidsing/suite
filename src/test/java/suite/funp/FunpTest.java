@@ -44,7 +44,7 @@ public class FunpTest {
 
 	@Test
 	public void testCompare() {
-		test(1, "define v := 2 >> if (1 < v) then 1 else 0");
+		test(1, "let v := 2 >> if (1 < v) then 1 else 0");
 	}
 
 	@Test
