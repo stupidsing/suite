@@ -9,11 +9,11 @@ import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.streamlet.Read;
-import suite.util.AutoObject_;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.List_;
 import suite.util.Memoize;
+import suite.util.ObjectSupport;
 import suite.util.Rethrow;
 
 /**
@@ -34,14 +34,14 @@ public class Inspect {
 	 *         fields equal.
 	 */
 	public <T> boolean equals(T o0, T o1) {
-		return new AutoObject_<>(this::values).equals(o0, o1);
+		return new ObjectSupport<>(this::values).equals(o0, o1);
 	}
 
 	/**
 	 * @return a combined hash code of all fields of the input value object.
 	 */
 	public int hashCode(Object object) {
-		return new AutoObject_<>(this::values).hashCode(object);
+		return new ObjectSupport<>(this::values).hashCode(object);
 	}
 
 	public List<?> values(Object object) {

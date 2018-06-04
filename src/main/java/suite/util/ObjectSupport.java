@@ -6,13 +6,13 @@ import java.util.Objects;
 import suite.immutable.IList;
 import suite.util.FunUtil.Fun;
 
-public class AutoObject_<T> {
+public class ObjectSupport<T> {
 
 	private static ThreadLocal<IList<Object>> recurse = ThreadLocal.withInitial(IList::end);
 
 	private Fun<T, List<?>> listFun;
 
-	public AutoObject_(Fun<T, List<?>> listFun) {
+	public ObjectSupport(Fun<T, List<?>> listFun) {
 		this.listFun = listFun;
 	}
 

@@ -31,8 +31,8 @@ public class MapObject<T extends MapObject<T>> extends BaseObject<T> implements 
 	}
 
 	@Override
-	protected AutoObject_<T> autoObject() {
-		return new AutoObject_<>(MapObject_::list);
+	protected ObjectSupport<T> objectSupport() {
+		return new ObjectSupport<>(MapObject_::list);
 	}
 
 }

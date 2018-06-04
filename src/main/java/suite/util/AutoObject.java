@@ -45,8 +45,8 @@ public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implement
 	}
 
 	@Override
-	protected AutoObject_<T> autoObject() {
-		return new AutoObject_<>(inspect::values);
+	protected ObjectSupport<T> objectSupport() {
+		return new ObjectSupport<>(inspect::values);
 	}
 
 }
