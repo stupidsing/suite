@@ -83,7 +83,7 @@ public class MarketTiming {
 					&& past1_i.isAll(j -> ma50[j] <= ma50[j - 1]) //
 					&& past_i.isAll(j -> prices[j] <= ma50[j]);
 
-			var isRangeBound__ = true // non-trending
+			var isRangeBound___ = true // non-trending
 					&& 2d / 3d <= r && r <= 3d / 2d //
 					&& stat.meanVariance(past_i.collect(Int_Flt.lift(j -> ma50[j])).toArray()).volatility() < .02d //
 					&& .02d < stat.meanVariance(past_i.collect(Int_Flt.lift(j -> ma20[j])).toArray()).volatility() //
@@ -92,7 +92,7 @@ public class MarketTiming {
 			var flag = 0 //
 					+ (isStrglyBearish ? strgBear : 0) //
 					+ (isWeaklyBearish ? weakBear : 0) //
-					+ (isRangeBound__ ? rngBound : 0) //
+					+ (isRangeBound___ ? rngBound : 0) //
 					+ (isWeaklyBullish ? weakBull : 0) //
 					+ (isStrglyBullish ? strgBull : 0);
 
