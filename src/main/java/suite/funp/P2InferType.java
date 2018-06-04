@@ -1,8 +1,8 @@
 package suite.funp;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -96,8 +96,8 @@ public class P2InferType {
 	private UnNode<Type> typeByte = new TypeByte();
 	private UnNode<Type> typeNumber = new TypeNumber();
 
-	private Map<Funp, UnNode<Type>> typeByNode = new HashMap<>();
-	private Map<Funp, Boolean> isRegByNode = new HashMap<>();
+	private Map<Funp, UnNode<Type>> typeByNode = new IdentityHashMap<>();
+	private Map<Funp, Boolean> isRegByNode = new IdentityHashMap<>();
 
 	public Funp infer(Funp n0) {
 		var t = unify.newRef();
