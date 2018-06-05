@@ -68,8 +68,9 @@ public class ObjectSupport<T> {
 		var recurse0 = recurse.get();
 		var sb = new StringBuilder();
 
-		if (!recurse0.containsId(this))
+		if (!recurse0.containsId(t))
 			try {
+				recurse.set(IList.cons(t, recurse0));
 				sb.append(t.getClass().getSimpleName() + "(");
 				for (var value : listFun.apply(t))
 					sb.append(value + ",");
