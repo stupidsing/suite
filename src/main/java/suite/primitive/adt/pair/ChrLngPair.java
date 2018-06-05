@@ -34,8 +34,7 @@ public class ChrLngPair {
 	}
 
 	private ChrLngPair(char t0, long t1) {
-		this.t0 = t0;
-		this.t1 = t1;
+		update(t0, t1);
 	}
 
 	public static Comparator<ChrLngPair> comparator() {
@@ -63,7 +62,7 @@ public class ChrLngPair {
 		return pair.t1;
 	}
 
-	public <O> O apply(ChrLng_Obj<O> fun) {
+	public <O> O map(ChrLng_Obj<O> fun) {
 		return fun.apply(t0, t1);
 	}
 

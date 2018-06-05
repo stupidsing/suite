@@ -34,8 +34,7 @@ public class IntChrPair {
 	}
 
 	private IntChrPair(int t0, char t1) {
-		this.t0 = t0;
-		this.t1 = t1;
+		update(t0, t1);
 	}
 
 	public static Comparator<IntChrPair> comparator() {
@@ -63,7 +62,7 @@ public class IntChrPair {
 		return pair.t1;
 	}
 
-	public <O> O apply(IntChr_Obj<O> fun) {
+	public <O> O map(IntChr_Obj<O> fun) {
 		return fun.apply(t0, t1);
 	}
 

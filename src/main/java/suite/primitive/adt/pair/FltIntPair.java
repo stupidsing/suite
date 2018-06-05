@@ -34,8 +34,7 @@ public class FltIntPair {
 	}
 
 	private FltIntPair(float t0, int t1) {
-		this.t0 = t0;
-		this.t1 = t1;
+		update(t0, t1);
 	}
 
 	public static Comparator<FltIntPair> comparator() {
@@ -63,7 +62,7 @@ public class FltIntPair {
 		return pair.t1;
 	}
 
-	public <O> O apply(FltInt_Obj<O> fun) {
+	public <O> O map(FltInt_Obj<O> fun) {
 		return fun.apply(t0, t1);
 	}
 

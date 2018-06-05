@@ -32,8 +32,7 @@ public class IntIntPair {
 	}
 
 	private IntIntPair(int t0, int t1) {
-		this.t0 = t0;
-		this.t1 = t1;
+		update(t0, t1);
 	}
 
 	public static Comparator<IntIntPair> comparator() {
@@ -61,7 +60,7 @@ public class IntIntPair {
 		return pair.t1;
 	}
 
-	public <O> O apply(IntInt_Obj<O> fun) {
+	public <O> O map(IntInt_Obj<O> fun) {
 		return fun.apply(t0, t1);
 	}
 

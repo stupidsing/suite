@@ -34,8 +34,7 @@ public class IntDblPair {
 	}
 
 	private IntDblPair(int t0, double t1) {
-		this.t0 = t0;
-		this.t1 = t1;
+		update(t0, t1);
 	}
 
 	public static Comparator<IntDblPair> comparator() {
@@ -63,7 +62,7 @@ public class IntDblPair {
 		return pair.t1;
 	}
 
-	public <O> O apply(IntDbl_Obj<O> fun) {
+	public <O> O map(IntDbl_Obj<O> fun) {
 		return fun.apply(t0, t1);
 	}
 

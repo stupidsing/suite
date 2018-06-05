@@ -34,8 +34,7 @@ public class LngIntPair {
 	}
 
 	private LngIntPair(long t0, int t1) {
-		this.t0 = t0;
-		this.t1 = t1;
+		update(t0, t1);
 	}
 
 	public static Comparator<LngIntPair> comparator() {
@@ -63,7 +62,7 @@ public class LngIntPair {
 		return pair.t1;
 	}
 
-	public <O> O apply(LngInt_Obj<O> fun) {
+	public <O> O map(LngInt_Obj<O> fun) {
 		return fun.apply(t0, t1);
 	}
 

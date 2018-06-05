@@ -34,8 +34,7 @@ public class DblIntPair {
 	}
 
 	private DblIntPair(double t0, int t1) {
-		this.t0 = t0;
-		this.t1 = t1;
+		update(t0, t1);
 	}
 
 	public static Comparator<DblIntPair> comparator() {
@@ -63,7 +62,7 @@ public class DblIntPair {
 		return pair.t1;
 	}
 
-	public <O> O apply(DblInt_Obj<O> fun) {
+	public <O> O map(DblInt_Obj<O> fun) {
 		return fun.apply(t0, t1);
 	}
 

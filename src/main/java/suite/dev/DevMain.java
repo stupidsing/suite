@@ -64,7 +64,7 @@ public class DevMain {
 		var state0 = new State(new EditSt(null, null, inputText, c(0, 0), c(0, 0)), "");
 
 		FixieFun3<VK, Character, EditSt, EditSt> mutateEs = (vk, ch, es) -> es //
-				.apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+				.apply((st, undo, redo, text, oc, cc) -> oc.map((ox, oy) -> cc.map((cx, cy) -> {
 					var ci = text.index(cx, cy);
 
 					if (vk == VK.LEFT_)
@@ -149,10 +149,10 @@ public class DevMain {
 							return st.splice(0, IRopeList.of(Character.toString(ch)));
 					else
 						return st;
-				}))).apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+				}))).apply((st, undo, redo, text, oc, cc) -> oc.map((ox, oy) -> cc.map((cx, cy) -> {
 					var cc_ = text.coord(sat(text.index(cx, cy), 0, text.length()));
 					return st.cursor(cc_.t0, cc_.t1);
-				}))).apply((st, undo, redo, text, oc, cc) -> oc.apply((ox, oy) -> cc.apply((cx, cy) -> {
+				}))).apply((st, undo, redo, text, oc, cc) -> oc.map((ox, oy) -> cc.map((cx, cy) -> {
 					var x0 = max(0, cx - viewSizeX + 1);
 					var y0 = max(0, cy - viewSizeY + 1);
 					var ox_ = sat(ox, x0, cx);
@@ -167,7 +167,7 @@ public class DevMain {
 		};
 
 		Sink<State> redraw = state -> state.editState
-				.apply((st, undo, redo, text, oc, cc) -> cc.apply((cx, cy) -> oc.apply((ox, oy) -> {
+				.apply((st, undo, redo, text, oc, cc) -> cc.map((cx, cy) -> oc.map((ox, oy) -> {
 					var lines = Ints_ //
 							.range(viewSizeY) //
 							.map(screenY -> text.get(ox, oy + screenY, viewSizeX).replace('\t', ' ')) //

@@ -34,8 +34,7 @@ public class LngFltPair {
 	}
 
 	private LngFltPair(long t0, float t1) {
-		this.t0 = t0;
-		this.t1 = t1;
+		update(t0, t1);
 	}
 
 	public static Comparator<LngFltPair> comparator() {
@@ -63,7 +62,7 @@ public class LngFltPair {
 		return pair.t1;
 	}
 
-	public <O> O apply(LngFlt_Obj<O> fun) {
+	public <O> O map(LngFlt_Obj<O> fun) {
 		return fun.apply(t0, t1);
 	}
 

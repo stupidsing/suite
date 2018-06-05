@@ -34,8 +34,7 @@ public class IntFltPair {
 	}
 
 	private IntFltPair(int t0, float t1) {
-		this.t0 = t0;
-		this.t1 = t1;
+		update(t0, t1);
 	}
 
 	public static Comparator<IntFltPair> comparator() {
@@ -63,7 +62,7 @@ public class IntFltPair {
 		return pair.t1;
 	}
 
-	public <O> O apply(IntFlt_Obj<O> fun) {
+	public <O> O map(IntFlt_Obj<O> fun) {
 		return fun.apply(t0, t1);
 	}
 

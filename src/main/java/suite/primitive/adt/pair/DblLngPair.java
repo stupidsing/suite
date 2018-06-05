@@ -34,8 +34,7 @@ public class DblLngPair {
 	}
 
 	private DblLngPair(double t0, long t1) {
-		this.t0 = t0;
-		this.t1 = t1;
+		update(t0, t1);
 	}
 
 	public static Comparator<DblLngPair> comparator() {
@@ -63,7 +62,7 @@ public class DblLngPair {
 		return pair.t1;
 	}
 
-	public <O> O apply(DblLng_Obj<O> fun) {
+	public <O> O map(DblLng_Obj<O> fun) {
 		return fun.apply(t0, t1);
 	}
 

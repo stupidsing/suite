@@ -34,8 +34,7 @@ public class ChrFltPair {
 	}
 
 	private ChrFltPair(char t0, float t1) {
-		this.t0 = t0;
-		this.t1 = t1;
+		update(t0, t1);
 	}
 
 	public static Comparator<ChrFltPair> comparator() {
@@ -63,7 +62,7 @@ public class ChrFltPair {
 		return pair.t1;
 	}
 
-	public <O> O apply(ChrFlt_Obj<O> fun) {
+	public <O> O map(ChrFlt_Obj<O> fun) {
 		return fun.apply(t0, t1);
 	}
 

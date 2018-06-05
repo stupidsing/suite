@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil2.Fun2;
-import suite.util.FunUtil2.Sink2;
 import suite.util.Object_;
 
 public class Pair<T0, T1> {
@@ -33,8 +32,7 @@ public class Pair<T0, T1> {
 	}
 
 	private Pair(T0 t0, T1 t1) {
-		this.t0 = t0;
-		this.t1 = t1;
+		update(t0, t1);
 	}
 
 	public static <T0 extends Comparable<? super T0>, T1 extends Comparable<? super T1>> Comparator<Pair<T0, T1>> comparator() {
@@ -60,10 +58,6 @@ public class Pair<T0, T1> {
 
 	public <O> O map(Fun2<T0, T1, O> fun) {
 		return fun.apply(t0, t1);
-	}
-
-	public void sink(Sink2<T0, T1> sink) {
-		sink.sink2(t0, t1);
 	}
 
 	public void update(T0 t0_, T1 t1_) {
