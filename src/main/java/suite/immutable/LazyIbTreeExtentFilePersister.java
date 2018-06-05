@@ -143,10 +143,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 		var key = slotsByExtent.get(extent);
 		if (key == null) {
 			var ps = loadSlot(extent);
-			var slots = Read //
-					.from(ps.pairs) //
-					.map(pair -> new Slot<>(() -> load_(pair.t1), pair.t0)) //
-					.toList();
+			var slots = Read.from2(ps.pairs).map((k, v) -> new Slot<>(() -> load_(v), k)).toList();
 			slotsByExtent.put(extent, key = IdentityKey.of(slots));
 		}
 		return key.key;
@@ -156,10 +153,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 		var key = IdentityKey.of(slots);
 		var extent = slotsByExtent.inverse().get(key);
 		if (extent == null) {
-			var pairs = Read //
-					.from(slots) //
-					.map(slot -> Pair.of(slot.pivot, save_(slot.readSlots()))) //
-					.toList();
+			var pairs = Read.from(slots).map(slot -> Pair.of(slot.pivot, save_(slot.readSlots()))).toList();
 			slotsByExtent.put(extent = saveSlot(nPages, new PersistSlot<>(pairs)), key);
 			nPages = extent.end;
 		}
