@@ -397,11 +397,11 @@ public class P2InferType {
 				var size = getTypeSize(typeOf(value));
 				var op = Mutable.<Operand> nil();
 				var offset = IntMutable.nil();
-				var e1 = new Erase(scope, env.replace(var, new Var(f, op, scope, offset, null, 0, size)));
-				var isReg = isRegByNode.getOrDefault(f, false);
+				Var vd = new Var(f, op, scope, offset, null, 0, size);
+				var e1 = new Erase(scope, env.replace(var, vd));
 				var value1 = erase(value);
 				var expr1 = e1.erase(expr);
-				var n1 = isReg ? FunpAllocReg.of(size, value1, expr1, op) : FunpAllocStack.of(size, value1, expr1, offset);
+				var n1 = vd.isReg() ? FunpAllocReg.of(size, value1, expr1, op) : FunpAllocStack.of(size, value1, expr1, offset);
 				isRegByNode.putIfAbsent(f, false);
 				return n1;
 			})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
@@ -583,12 +583,13 @@ public class P2InferType {
 		}
 
 		private Funp getVariable(Var vd) {
-			var isReg = isRegByNode.getOrDefault(vd.funp, false);
-			return isReg ? FunpOperand.of(vd.operand) : getVariable_(vd);
+			var scope0 = vd.scope;
+			vd.setReg(scope0 != null && scope0 == scope);
+			return vd.isReg() ? FunpOperand.of(vd.operand) : getVariable_(vd);
 		}
 
 		private FunpMemory getVariableMemory(Var vd) {
-			isRegByNode.put(vd.funp, false);
+			vd.setReg(false);
 			return getVariable_(vd);
 		}
 
@@ -633,6 +634,15 @@ public class P2InferType {
 			this.offsetOperand = offsetOperand;
 			this.start = start;
 			this.end = end;
+		}
+
+		private boolean isReg() {
+			return isRegByNode.getOrDefault(funp, false);
+		}
+
+		private void setReg(boolean b) {
+			if (!b)
+				isRegByNode.put(funp, b);
 		}
 	}
 
