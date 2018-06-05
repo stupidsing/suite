@@ -16,9 +16,6 @@ import suite.primitive.adt.pair.IntIntPair;
 
 public class P2 {
 
-	public interface FunpAssignable extends Funp {
-	}
-
 	public interface End {
 	}
 
@@ -82,20 +79,38 @@ public class P2 {
 		}
 	}
 
-	public static class FunpAssign implements Funp, P4.End {
-		public FunpAssignable target;
+	public static class FunpAssignMem implements Funp, P4.End {
+		public FunpMemory target;
 		public Funp value;
 		public Funp expr;
 
-		public static FunpAssign of(FunpAssignable target, Funp value, Funp expr) {
-			var f = new FunpAssign();
+		public static FunpAssignMem of(FunpMemory target, Funp value, Funp expr) {
+			var f = new FunpAssignMem();
 			f.target = target;
 			f.value = value;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<FunpAssignable, Funp, Funp, R> fun) {
+		public <R> R apply(FixieFun3<FunpMemory, Funp, Funp, R> fun) {
+			return fun.apply(target, value, expr);
+		}
+	}
+
+	public static class FunpAssignOp implements Funp, P4.End {
+		public FunpOperand target;
+		public Funp value;
+		public Funp expr;
+
+		public static FunpAssignOp of(FunpOperand target, Funp value, Funp expr) {
+			var f = new FunpAssignOp();
+			f.target = target;
+			f.value = value;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun3<FunpOperand, Funp, Funp, R> fun) {
 			return fun.apply(target, value, expr);
 		}
 	}
@@ -189,7 +204,7 @@ public class P2 {
 		}
 	}
 
-	public static class FunpMemory implements FunpAssignable, P4.End {
+	public static class FunpMemory implements Funp, P4.End {
 		public Funp pointer;
 		public int start;
 		public int end;
@@ -211,7 +226,7 @@ public class P2 {
 		}
 	}
 
-	public static class FunpOperand implements FunpAssignable, P4.End {
+	public static class FunpOperand implements Funp, P4.End {
 		public Mutable<Operand> operand;
 
 		public static FunpOperand of(Mutable<Operand> operand) {

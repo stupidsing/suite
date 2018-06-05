@@ -31,7 +31,8 @@ import suite.funp.P0.FunpTree2;
 import suite.funp.P2.FunpAllocGlobal;
 import suite.funp.P2.FunpAllocReg;
 import suite.funp.P2.FunpAllocStack;
-import suite.funp.P2.FunpAssign;
+import suite.funp.P2.FunpAssignMem;
+import suite.funp.P2.FunpAssignOp;
 import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpFramePointer;
 import suite.funp.P2.FunpInvoke;
@@ -187,13 +188,11 @@ public class P4GenerateCode {
 
 					Read.from(asm).map(p::parse).sink(em::emit);
 					return returnIsOp(eax);
-				})).applyIf(FunpAssign.class, f -> f.apply((target, value, expr) -> {
-					if (target instanceof FunpMemory)
-						compileAssign(value, (FunpMemory) target);
-					else if (target instanceof FunpOperand)
-						compileIsSpec(value, (OpReg) ((FunpOperand) target).operand.get());
-					else
-						Fail.t();
+				})).applyIf(FunpAssignMem.class, f -> f.apply((target, value, expr) -> {
+					compileAssign(value, target);
+					return compile(expr);
+				})).applyIf(FunpAssignOp.class, f -> f.apply((target, value, expr) -> {
+					compileIsSpec(value, (OpReg) target.operand.get());
 					return compile(expr);
 				})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 					return returnIsOp(amd64.imm(b ? 1 : 0, Funp_.booleanSize));

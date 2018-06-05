@@ -48,8 +48,8 @@ import suite.funp.P0.FunpVariableNew;
 import suite.funp.P2.FunpAllocGlobal;
 import suite.funp.P2.FunpAllocReg;
 import suite.funp.P2.FunpAllocStack;
-import suite.funp.P2.FunpAssign;
-import suite.funp.P2.FunpAssignable;
+import suite.funp.P2.FunpAssignMem;
+import suite.funp.P2.FunpAssignOp;
 import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpInvoke;
 import suite.funp.P2.FunpInvoke2;
@@ -393,7 +393,7 @@ public class P2InferType {
 				var t = unify.newRef();
 				unify(n, typeOf(reference), TypeReference.of(t));
 				var size = getTypeSize(t);
-				return FunpAssign.of(FunpMemory.of(erase(reference), 0, size), erase(value), erase(expr));
+				return FunpAssignMem.of(FunpMemory.of(erase(reference), 0, size), erase(value), erase(expr));
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
@@ -411,7 +411,7 @@ public class P2InferType {
 				var size = getTypeSize(typeOf(value));
 				var address = Mutable.<Operand> nil();
 				var e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
-				var expr1 = FunpAssign.of(FunpMemory.of(FunpOperand.of(address), 0, size), erase(value), e1.erase(expr));
+				var expr1 = FunpAssignMem.of(FunpMemory.of(FunpOperand.of(address), 0, size), erase(value), e1.erase(expr));
 				return FunpAllocGlobal.of(var, size, expr1, address);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 				var assigns = new ArrayList<Pair<Var, Funp>>();
@@ -432,7 +432,7 @@ public class P2InferType {
 
 				var expr2 = Read //
 						.from(assigns) //
-						.fold(expr1, (e, pair) -> FunpAssign.of(e1.getVariable(pair.t0), e1.erase(pair.t1), e));
+						.fold(expr1, (e, pair) -> assign(e1.getVariable(pair.t0), e1.erase(pair.t1), e));
 
 				return FunpAllocStack.of(offset, FunpDontCare.of(), expr2, offsetStack);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
@@ -489,8 +489,8 @@ public class P2InferType {
 				return new Object() {
 					private Funp getAddress(Funp n) {
 						return n.<Funp> switch_( //
-						).applyIf(FunpAssign.class, f -> f.apply((target, value, expr) -> {
-							return FunpAssign.of(target, value, getAddress(expr));
+						).applyIf(FunpAssignMem.class, f -> f.apply((target, value, expr) -> {
+							return FunpAssignMem.of(target, value, getAddress(expr));
 						})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 							return FunpTree.of(TermOp.PLUS__, pointer, FunpNumber.ofNumber(start));
 						})).applyIf(FunpVariable.class, f -> f.apply(var -> {
@@ -538,8 +538,16 @@ public class P2InferType {
 			var m = getVariable(var_);
 			var cont_ = e1.apply(m, cont, size);
 			var next_ = e1.apply(m, next, size);
-			var while_ = FunpWhile.of(cont_, FunpAssign.of(m, next_, FunpDontCare.of()), m);
+			var while_ = FunpWhile.of(cont_, assign(m, next_, FunpDontCare.of()), m);
 			return FunpAllocStack.of(size, e1.erase(init), while_, offset);
+		}
+
+		private Funp assign(Funp var, Funp value, Funp expr) {
+			return var //
+					.<Funp> switch_() //
+					.applyIf(FunpMemory.class, f -> FunpAssignMem.of(f, value, expr)) //
+					.applyIf(FunpOperand.class, f -> FunpAssignOp.of(f, value, expr)) //
+					.nonNullResult();
 		}
 
 		private FunpSaveRegisters apply(Funp value, Funp lambda, int size) {
@@ -570,7 +578,7 @@ public class P2InferType {
 				return FunpRoutineIo.of(frame, expr, lt.is, lt.os);
 		}
 
-		private FunpAssignable getVariable(Var vd) {
+		private Funp getVariable(Var vd) {
 			var isReg = isRegByNode.getOrDefault(vd.funp, false);
 			return isReg ? FunpOperand.of(vd.operand) : getVariable_(vd);
 		}
