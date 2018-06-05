@@ -30,8 +30,8 @@ public class Inspect {
 	}
 
 	/**
-	 * @return true if both input value objects are of the same class and having all
-	 *         fields equal.
+	 * @return true if both input value objects are of the same class and having
+	 *         all fields equal.
 	 */
 	public <T> boolean equals(T o0, T o1) {
 		return new ObjectSupport<>(this::values).equals(o0, o1);
@@ -93,8 +93,7 @@ public class Inspect {
 		return Read //
 				.from(methods(clazz)) //
 				.filter(getter -> {
-					var name = getter.getName();
-					return name.startsWith("get") && getter.getParameterTypes().length == 0;
+					return getter.getName().startsWith("get") && getter.getParameterTypes().length == 0;
 				}) //
 				.toList();
 	});
@@ -124,8 +123,7 @@ public class Inspect {
 		var getMethods = Read //
 				.from(methods) //
 				.filter(getter -> {
-					var name = getter.getName();
-					return name.startsWith("get") && getter.getParameterTypes().length == 0;
+					return getter.getName().startsWith("get") && getter.getParameterTypes().length == 0;
 				}) //
 				.map2(getter -> getter.getName().substring(3), getter -> getter) //
 				.toMap();
@@ -133,8 +131,7 @@ public class Inspect {
 		var setMethods = Read //
 				.from(methods) //
 				.filter(setter -> {
-					var name = setter.getName();
-					return name.startsWith("set") && setter.getParameterTypes().length == 1;
+					return setter.getName().startsWith("set") && setter.getParameterTypes().length == 1;
 				}) //
 				.map2(setter -> setter.getName().substring(3), setter -> setter) //
 				.toMap();
