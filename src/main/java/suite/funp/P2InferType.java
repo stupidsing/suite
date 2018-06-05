@@ -390,10 +390,7 @@ public class P2InferType {
 			})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
 				return FunpSaveRegisters.of(FunpAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
-				var t = unify.newRef();
-				unify(n, typeOf(reference), TypeReference.of(t));
-				var size = getTypeSize(t);
-				return FunpAssignMem.of(FunpMemory.of(erase(reference), 0, size), erase(value), erase(expr));
+				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
@@ -489,15 +486,16 @@ public class P2InferType {
 				return new Object() {
 					private Funp getAddress(Funp n) {
 						return n.<Funp> switch_( //
-						).applyIf(FunpAssignMem.class, f -> f.apply((target, value, expr) -> {
-							return FunpAssignMem.of(target, value, getAddress(expr));
-						})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
-							return FunpTree.of(TermOp.PLUS__, pointer, FunpNumber.ofNumber(start));
+						).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
+							return FunpAssignMem.of(memory(reference, f), erase(value), getAddress(expr));
+						})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
+							return erase(pointer);
 						})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-							return getAddress(getVariableMemory(env.get(var)));
+							var m = getVariableMemory(env.get(var));
+							return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
 						})).nonNullResult();
 					}
-				}.getAddress(erase(expr));
+				}.getAddress(expr);
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
 				var elementSize = getTypeSize(typeOf(expr));
 				var offset = 0;
@@ -530,6 +528,14 @@ public class P2InferType {
 			})).result();
 		}
 
+		private Funp assign(Funp var, Funp value, Funp expr) {
+			return var //
+					.<Funp> switch_() //
+					.applyIf(FunpMemory.class, f -> FunpAssignMem.of(f, value, expr)) //
+					.applyIf(FunpOperand.class, f -> FunpAssignOp.of(f, value, expr)) //
+					.nonNullResult();
+		}
+
 		private FunpAllocStack fold(Funp init, Funp cont, Funp next) {
 			var offset = IntMutable.nil();
 			var size = getTypeSize(typeOf(init));
@@ -542,12 +548,10 @@ public class P2InferType {
 			return FunpAllocStack.of(size, e1.erase(init), while_, offset);
 		}
 
-		private Funp assign(Funp var, Funp value, Funp expr) {
-			return var //
-					.<Funp> switch_() //
-					.applyIf(FunpMemory.class, f -> FunpAssignMem.of(f, value, expr)) //
-					.applyIf(FunpOperand.class, f -> FunpAssignOp.of(f, value, expr)) //
-					.nonNullResult();
+		private FunpMemory memory(FunpReference reference, Funp n) {
+			var t = unify.newRef();
+			unify(n, typeOf(reference), TypeReference.of(t));
+			return FunpMemory.of(erase(reference), 0, getTypeSize(t));
 		}
 
 		private FunpSaveRegisters apply(Funp value, Funp lambda, int size) {
