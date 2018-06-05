@@ -354,6 +354,11 @@ public class P4GenerateCode {
 					for (var i = opRegs.length - 1; 0 <= i; i--)
 						em.emit(amd64.instruction(Insn.POP, opRegs[i]));
 
+					if (op0 != null)
+						em.mov(oldOp0, op0);
+					if (op1 != null)
+						em.mov(oldOp1, op1);
+
 					return new CompileOut(op0, op1);
 				})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
 					return returnIsOp(compileTree(n, op, op.assoc(), lhs, rhs));
