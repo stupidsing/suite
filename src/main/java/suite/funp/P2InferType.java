@@ -413,13 +413,13 @@ public class P2InferType {
 				var e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
 				var expr1 = FunpAssignMem.of(FunpMemory.of(FunpOperand.of(address), 0, size), erase(value), e1.erase(expr));
 				return FunpAllocGlobal.of(var, size, expr1, address);
-			})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
+			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var assigns = new ArrayList<Pair<Var, Funp>>();
 				var offsetStack = IntMutable.nil();
 				var env1 = env;
 				var offset = 0;
 
-				for (var pair : vars) {
+				for (var pair : pairs) {
 					var offset0 = offset;
 					var value = pair.t1;
 					var var = new Var(scope, offsetStack, offset0, offset += getTypeSize(typeOf(value)));
