@@ -336,27 +336,25 @@ public class P4GenerateCode {
 					var out = frame(o, o + os);
 					return returnPs2Op(compileIsOp(frame), compileRoutine(c1 -> c1.compileAssign(expr, out)));
 				})).applyIf(FunpSaveRegisters.class, f -> f.apply(expr -> {
-					var opRegs = rs.list(r -> r != ebp.reg && r != esp.reg);
+					var opRegs = rs.list(r -> !registerSet.isSet(r));
 
 					for (var i = 0; i <= opRegs.length - 1; i++)
 						em.emit(amd64.instruction(Insn.PUSH, opRegs[i]));
 
-					var out0 = new Compile1(registerSet, fd - opRegs.length * is).compile(expr);
+					var out = new Compile1(registerSet, fd - opRegs.length * is).compile(expr);
 					Operand oldOp0, oldOp1;
-					var op0 = oldOp0 = isOutSpec ? pop0 : out0.op0;
-					var op1 = oldOp1 = isOutSpec ? pop1 : out0.op1;
+					var op0 = oldOp0 = isOutSpec ? pop0 : out.op0;
+					var op1 = oldOp1 = isOutSpec ? pop1 : out.op1;
 
 					if (op0 != null)
 						em.mov(op0 = rs.contains(op0) ? rs.mask(op1).get(op0.size) : op0, oldOp0);
 					if (op1 != null)
 						em.mov(op1 = rs.contains(op1) ? rs.mask(op0).get(op1.size) : op1, oldOp1);
 
-					var out1 = new CompileOut(op0, op1);
-
 					for (var i = opRegs.length - 1; 0 <= i; i--)
 						em.emit(amd64.instruction(Insn.POP, opRegs[i]));
 
-					return out1;
+					return new CompileOut(op0, op1);
 				})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
 					return returnIsOp(compileTree(n, op, op.assoc(), lhs, rhs));
 				})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {

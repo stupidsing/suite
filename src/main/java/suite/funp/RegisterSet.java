@@ -96,14 +96,18 @@ public class RegisterSet {
 			return Fail.t("cannot allocate register with size " + size);
 	}
 
+	public boolean isSet(int reg) {
+		return isSet_(reg);
+	}
+
 	private OpReg get_() {
 		for (var i = 0; i < nRegisters; i++)
-			if (!isSet(i))
+			if (!isSet_(i))
 				return registers[i];
 		return Fail.t();
 	}
 
-	private boolean isSet(int reg) {
+	private boolean isSet_(int reg) {
 		return (flag & flag(reg)) != 0;
 	}
 
