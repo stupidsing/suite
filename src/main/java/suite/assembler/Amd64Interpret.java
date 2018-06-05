@@ -165,6 +165,7 @@ public class Amd64Interpret {
 					var p1 = regs[ebx];
 					var p2 = regs[ecx];
 					var p3 = regs[edx];
+					int rc;
 					if ((byte) source0 == -128)
 						if (p0 == 0x01) // exit
 							return p1;
@@ -174,7 +175,7 @@ public class Amd64Interpret {
 							for (var i = 0; i < length; i++)
 								mem.put(di++, input.get(i));
 							input = input.range(length);
-							regs[eax] = length;
+							rc = length;
 						} else if (p0 == 0x04) { // write
 							var length = p3;
 							var si = index(p2);
@@ -182,13 +183,15 @@ public class Amd64Interpret {
 							for (var i = 0; i < length; i++)
 								bs[i] = mem.get(si++);
 							output.sink(Bytes.of(bs));
+							rc = length;
 						} else if (regs[eax] == 0x5A) { // map
 							var size = mem.getInt(index(p1) + 4);
-							regs[eax] = size < posData.t1 - posData.t0 ? baseData.t0 : Fail.t();
+							rc = size < posData.t1 - posData.t0 ? baseData.t0 : Fail.t();
 						} else
-							Fail.t("invalid syscall " + regs[eax]);
+							rc = Fail.t("invalid syscall " + regs[eax]);
 					else
-						Fail.t();
+						rc = Fail.t();
+					regs[eax] = rc;
 					break;
 				case JE:
 					if (c == 0)
