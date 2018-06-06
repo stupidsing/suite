@@ -167,8 +167,8 @@ public class P1Inline {
 		var defines = Read //
 				.from2(defByVariables) //
 				.values() //
-				.filter(def -> def instanceof FunpDefine && countByDefs.get(def).get() <= 1) //
 				.distinct() //
+				.filter(def -> def instanceof FunpDefine && countByDefs.get(def).get() <= 1) //
 				.map2(def -> (FunpDefine) def) //
 				.toMap();
 
