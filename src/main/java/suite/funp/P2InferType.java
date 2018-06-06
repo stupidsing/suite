@@ -388,7 +388,11 @@ public class P2InferType {
 				}
 				return FunpData.of(list);
 			})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
-				env.streamlet2().values().filter(var -> var.scope != null && var.scope == scope).sink(var -> var.setReg(false));
+				env // disable register locals
+						.streamlet2() //
+						.values() //
+						.filter(var -> var.scope != null && var.scope == scope).sink(var -> var.setReg(false));
+
 				return FunpSaveRegisters.of(FunpAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
@@ -402,7 +406,13 @@ public class P2InferType {
 				var e1 = new Erase(scope, env.replace(var, vd));
 				var value1 = erase(value);
 				var expr1 = e1.erase(expr);
+
+				// if erase is called twice,
+				// pass 1: check for any reference accesses to locals, set
+				// isRegByNode;
+				// pass 2: put locals to registers according to isRegByNode.
 				var n1 = vd.isReg() ? FunpAllocReg.of(size, value1, expr1, op) : FunpAllocStack.of(size, value1, expr1, offset);
+
 				isRegByNode.putIfAbsent(f, size == is);
 				return n1;
 			})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
