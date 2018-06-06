@@ -19,6 +19,7 @@ public class Array_ {
 			Array_.copy(list, 0, result, i, length);
 			i += length;
 		}
+
 		return result;
 	}
 
