@@ -3,12 +3,16 @@ package suite.inspect;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import suite.adt.pair.Pair;
 import suite.jdk.gen.Type_;
 import suite.node.util.Singleton;
 import suite.os.LogUtil;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Sink;
 import suite.util.MapInterface;
 import suite.util.MapObject_;
@@ -35,7 +39,9 @@ public class Dump {
 
 		new Object() {
 			private void d(Object object) {
-				if (dumpedObjects.put(object, true) != null)
+				if (object == null)
+					sink.sink("null");
+				else if (dumpedObjects.put(object, true) == null)
 					try {
 						d_(object);
 					} finally {
@@ -46,14 +52,18 @@ public class Dump {
 			}
 
 			private void d_(Object object) {
-				if (object.getClass().isArray()) {
+				var clazz = object.getClass();
+
+				if (clazz.isArray()) {
 					sink.sink("[");
 					for (var i = 0; i < Array.getLength(object); i++) {
 						d(Array.get(object, i));
 						sink.sink(",");
 					}
 					sink.sink("]");
-				} else
+				} else if (Type_.isSimple(clazz))
+					sink.sink(object.toString());
+				else
 					new Switch<Object>(object //
 					).doIf(Collection.class, collection -> {
 						sink.sink("[");
@@ -86,7 +96,22 @@ public class Dump {
 						d(pair.t1);
 						sink.sink(">");
 					}).doIf(Object.class, o -> {
-						sink.sink(object != null ? object.toString() : "null");
+						sink.sink("{");
+						for (var pair : readers(object)) {
+							Object value;
+							try {
+								value = pair.t1.call();
+							} catch (Throwable ex) {
+								value = "<" + ex.getClass() + ">";
+							}
+
+							if (value != null) {
+								sink.sink(pair.t0 + ":");
+								d(value);
+								sink.sink(",");
+							}
+						}
+						sink.sink("}");
 					}).nonNullResult();
 			}
 		}.d(node);
@@ -95,7 +120,8 @@ public class Dump {
 	}
 
 	/**
-	 * Dumps object content (public data and getters) through Reflection to a log4j.
+	 * Dumps object content (public data and getters) through Reflection to a
+	 * log4j.
 	 */
 	public static void details(Object object) {
 		var trace = Thread_.getStackTrace(3);
@@ -103,8 +129,8 @@ public class Dump {
 	}
 
 	/**
-	 * Dumps object content (public data and getters) through Reflection to a log4j,
-	 * with a descriptive name which you gave.
+	 * Dumps object content (public data and getters) through Reflection to a
+	 * log4j, with a descriptive name which you gave.
 	 */
 	public static void details(String name, Object object) {
 		var sb = new StringBuilder();
@@ -153,7 +179,7 @@ public class Dump {
 
 				if (object == null)
 					sink.sink(" null\n");
-				else if (dumpedObjects.put(object, true) != null)
+				else if (dumpedObjects.put(object, true) == null)
 					try {
 						d_(prefix, object, clazz);
 					} finally {
@@ -198,35 +224,33 @@ public class Dump {
 					Pair<?, ?> pair = (Pair<?, ?>) object;
 					d(prefix + ".fst", pair.t0);
 					d(prefix + ".snd", pair.t1);
-				} else {
-					for (var field : inspect.fields(clazz))
-						try {
-							var name = field.getName();
-							var o = field.get(object);
-							var type = field.getType();
-							if (Type_.isSimple(type))
-								d(prefix + "." + name, o, type);
-							else
-								d(prefix + "." + name, o);
-						} catch (Throwable ex) {
-							sink.sink(prefix + "." + field.getName());
-							sink.sink(" caught " + ex + "\n");
-						}
+				} else
+					for (var pair : readers(object)) {
+						var k = prefix + "." + pair.t0;
 
-					for (var method : inspect.getters(clazz)) {
-						var name = method.getName();
 						try {
-							var o = method.invoke(object);
-							if (!(o instanceof Class<?>))
-								d(prefix + "." + name + "()", o);
+							d(k, pair.t1.call());
 						} catch (Throwable ex) {
-							sink.sink(prefix + "." + name + "()");
+							sink.sink(k + "()");
 							sink.sink(" caught " + ex + "\n");
 						}
 					}
-				}
 			}
 		}.d(prefix, object);
+	}
+
+	private static List<Pair<String, Callable<Object>>> readers(Object object) {
+		var clazz = object.getClass();
+
+		return Streamlet.concat( //
+				Read.from(inspect.fields(clazz)) //
+						.map(field -> Pair.<String, Callable<Object>> of(field.getName(), () -> field.get(object))),
+				Read.from(inspect.getters(clazz)) //
+						.map(method -> Pair.<String, Callable<Object>> of(method.getName() + "()", () -> {
+							var o_ = method.invoke(object);
+							return !(o_ instanceof Class<?>) ? o_ : null;
+						}))) //
+				.toList();
 	}
 
 }

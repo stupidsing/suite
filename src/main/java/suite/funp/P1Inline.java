@@ -148,19 +148,27 @@ public class P1Inline {
 		var defByVariables = associateDefinitions(node);
 		var countByDefs = new HashMap<Funp, IntMutable>();
 
-		inspect.rewrite(Funp.class, n_ -> n_.<Funp> switch_( //
-		).applyIf(FunpReference.class, f -> f.apply(expr -> {
-			countByDefs.computeIfAbsent(defByVariables.get(expr), v -> IntMutable.of(0)).update(9999);
-			return null;
-		})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-			countByDefs.computeIfAbsent(defByVariables.get(f), v -> IntMutable.of(0)).increment();
-			return null;
-		})).result(), node);
+		new Object() {
+			public void count(Funp node_) {
+				inspect.rewrite(Funp.class, n_ -> n_.<Funp> switch_( //
+				).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
+					count(expr);
+					return n_;
+				})).applyIf(FunpReference.class, f -> f.apply(expr -> {
+					countByDefs.computeIfAbsent(defByVariables.get(expr), v -> IntMutable.of(0)).update(9999);
+					return null;
+				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
+					countByDefs.computeIfAbsent(defByVariables.get(f), v -> IntMutable.of(0)).increment();
+					return null;
+				})).result(), node_);
+			}
+		}.count(node);
 
 		var defines = Read //
 				.from2(defByVariables) //
 				.values() //
 				.filter(def -> def instanceof FunpDefine && countByDefs.get(def).get() <= 1) //
+				.distinct() //
 				.map2(def -> (FunpDefine) def) //
 				.toMap();
 
@@ -189,6 +197,7 @@ public class P1Inline {
 	// After - 3
 	private Funp inlineFields(Funp node) {
 		var defs = associateDefinitions(node);
+
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(Funp.class, n_ -> {

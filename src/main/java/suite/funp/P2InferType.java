@@ -388,7 +388,7 @@ public class P2InferType {
 				}
 				return FunpData.of(list);
 			})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
-				env.streamlet2().values().sink(var -> var.setReg(false));
+				env.streamlet2().values().filter(var -> var.scope == scope).sink(var -> var.setReg(false));
 				return FunpSaveRegisters.of(FunpAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
