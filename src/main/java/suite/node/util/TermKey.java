@@ -13,7 +13,6 @@ import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.util.FunUtil.Sink;
-import suite.util.HashCodeComparable;
 import suite.util.Object_;
 
 /**
@@ -25,7 +24,7 @@ import suite.util.Object_;
  *
  * @author ywsing
  */
-public class TermKey extends HashCodeComparable<TermKey> {
+public class TermKey implements Comparable<TermKey> {
 
 	public class TermVisitor {
 		private int nAliases = 0;
@@ -119,6 +118,11 @@ public class TermKey extends HashCodeComparable<TermKey> {
 
 	public TermKey(Node node) {
 		this.node = node;
+	}
+
+	@Override
+	public int compareTo(TermKey other) {
+		return Integer.compare(hashCode(), other.hashCode());
 	}
 
 	@Override
