@@ -16,7 +16,7 @@ import suite.Constants;
 public class Copy {
 
 	public static void readerToWriter(Reader in, Writer out) throws IOException {
-		try (Reader in_ = in) {
+		try (var in_ = in) {
 			int len;
 			var buffer = new char[Constants.bufferSize];
 			while (0 <= (len = in_.read(buffer)))
@@ -28,22 +28,24 @@ public class Copy {
 	 * Clones slowly by serializing and de-serializing.
 	 */
 	public static <T> T serializable(T clonee) throws IOException, ClassNotFoundException {
-		var baos = new ByteArrayOutputStream();
-		var out = new ObjectOutputStream(baos);
-		out.writeObject(clonee);
-		out.flush();
-		out.close();
+		byte[] bs;
 
-		var bais = new ByteArrayInputStream(baos.toByteArray());
-		var in = new ObjectInputStream(bais);
-		@SuppressWarnings("unchecked")
-		var cloned = (T) in.readObject();
-		return cloned;
+		try (var baos = new ByteArrayOutputStream(); var out = new ObjectOutputStream(baos);) {
+			out.writeObject(clonee);
+			out.flush();
+			bs = baos.toByteArray();
+		}
+
+		try (var bais = new ByteArrayInputStream(bs); var in = new ObjectInputStream(bais);) {
+			@SuppressWarnings("unchecked")
+			var cloned = (T) in.readObject();
+			return cloned;
+		}
 	}
 
 	public static Thread streamByThread(InputStream is, OutputStream os) {
 		return Thread_.newThread(() -> {
-			try (InputStream is_ = is; OutputStream os_ = os) {
+			try (var is_ = is; var os_ = os) {
 				stream(is_, os_);
 			} catch (InterruptedIOException ex) {
 			}
@@ -51,9 +53,9 @@ public class Copy {
 	}
 
 	public static void stream(InputStream in, OutputStream out) throws IOException {
-		try (InputStream in_ = in) {
-			int len;
+		try (var in_ = in) {
 			var buffer = new byte[Constants.bufferSize];
+			int len;
 			while (0 <= (len = in_.read(buffer))) {
 				out.write(buffer, 0, len);
 				out.flush();

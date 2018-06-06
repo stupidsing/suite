@@ -1,9 +1,8 @@
 package suite.adt;
 
-import suite.util.HashCodeComparable;
 import suite.util.Object_;
 
-public class IdentityKey<K> extends HashCodeComparable<IdentityKey<K>> {
+public class IdentityKey<K> implements Comparable<IdentityKey<K>> {
 
 	public final K key;
 
@@ -13,6 +12,11 @@ public class IdentityKey<K> extends HashCodeComparable<IdentityKey<K>> {
 
 	private IdentityKey(K key) {
 		this.key = key;
+	}
+
+	@Override
+	public int compareTo(IdentityKey<K> other) {
+		return Integer.compare(hashCode(), other.hashCode());
 	}
 
 	@Override
