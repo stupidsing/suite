@@ -2,6 +2,7 @@ package suite.jdk.gen;
 
 import java.lang.reflect.Method;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.function.BiPredicate;
 import java.util.function.Function;
@@ -70,26 +71,19 @@ public class Type_ {
 
 	private static Class<?> getClassByName(String className) {
 		return Rethrow.ex(() -> {
-			if (String_.equals(className, "byte"))
-				return byte.class;
-			else if (String_.equals(className, "char"))
-				return char.class;
-			else if (String_.equals(className, "boolean"))
-				return boolean.class;
-			else if (String_.equals(className, "double"))
-				return double.class;
-			else if (String_.equals(className, "float"))
-				return float.class;
-			else if (String_.equals(className, "int"))
-				return int.class;
-			else if (String_.equals(className, "long"))
-				return long.class;
-			else if (String_.equals(className, "short"))
-				return short.class;
-			else if (String_.equals(className, "void"))
-				return void.class;
-			else
-				return Class.forName(className);
+			for (var clazz : Arrays.asList( //
+					byte.class, //
+					boolean.class, //
+					char.class, //
+					double.class, //
+					float.class, //
+					int.class, //
+					long.class, //
+					short.class, //
+					void.class))
+				if (String_.equals(className, clazz.getSimpleName()))
+					return clazz;
+			return Class.forName(className);
 		});
 	}
 
