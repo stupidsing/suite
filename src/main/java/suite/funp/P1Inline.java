@@ -151,16 +151,19 @@ public class P1Inline {
 		new Object() {
 			public void count(Funp node_) {
 				inspect.rewrite(Funp.class, n_ -> n_.<Funp> switch_( //
-				).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
-					count(expr);
-					return n_;
-				})).applyIf(FunpReference.class, f -> f.apply(expr -> {
-					countByDefs.computeIfAbsent(defByVariables.get(expr), v -> IntMutable.of(0)).update(9999);
-					return null;
-				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-					countByDefs.computeIfAbsent(defByVariables.get(f), v -> IntMutable.of(0)).increment();
-					return null;
-				})).result(), node_);
+				)
+						// .applyIf(FunpCheckType.class, f -> f.apply((left,
+						// right, expr) -> {
+						// count(expr);
+						// return n_;
+						// }))
+						.applyIf(FunpReference.class, f -> f.apply(expr -> {
+							countByDefs.computeIfAbsent(defByVariables.get(expr), v -> IntMutable.of(0)).update(9999);
+							return null;
+						})).applyIf(FunpVariable.class, f -> f.apply(var -> {
+							countByDefs.computeIfAbsent(defByVariables.get(f), v -> IntMutable.of(0)).increment();
+							return null;
+						})).result(), node_);
 			}
 		}.count(node);
 
