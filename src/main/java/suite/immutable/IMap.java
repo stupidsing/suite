@@ -7,6 +7,7 @@ import suite.adt.pair.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
 import suite.util.Object_;
 
 public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
@@ -34,6 +35,10 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
 	public Streamlet<Pair<K, V>> streamlet() {
 		return tree.streamlet();
+	}
+
+	public Streamlet2<K, V> streamlet2() {
+		return tree.streamlet().map2(Pair::fst, Pair::snd);
 	}
 
 	public V get(K k) {

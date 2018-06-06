@@ -388,6 +388,7 @@ public class P2InferType {
 				}
 				return FunpData.of(list);
 			})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
+				env.streamlet2().values().sink(var -> var.setReg(false));
 				return FunpSaveRegisters.of(FunpAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
@@ -402,7 +403,7 @@ public class P2InferType {
 				var value1 = erase(value);
 				var expr1 = e1.erase(expr);
 				var n1 = vd.isReg() ? FunpAllocReg.of(size, value1, expr1, op) : FunpAllocStack.of(size, value1, expr1, offset);
-				isRegByNode.putIfAbsent(f, false);
+				isRegByNode.putIfAbsent(f, size == is);
 				return n1;
 			})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
 				var size = getTypeSize(typeOf(value));
