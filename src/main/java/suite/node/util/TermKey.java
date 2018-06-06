@@ -81,14 +81,14 @@ public class TermKey implements Comparable<TermKey> {
 
 				if (b)
 					for (var i = 0; b && i < size0; i++) {
-						IntObjPair<NodeHead> p0 = list.get(i);
-						IntObjPair<NodeHead> p1 = list1.get(i);
+						var p0 = list.get(i);
+						var p1 = list1.get(i);
 						b &= Objects.equals(p0.t0, p1.t0);
 
 						var nh0 = p0.t1;
 						var nh1 = p1.t1;
-						boolean b0 = nh0 != null;
-						boolean b1 = nh1 != null;
+						var b0 = nh0 != null;
+						var b1 = nh1 != null;
 						b &= b0 == b1;
 						if (b0 && b1)
 							b &= Objects.equals(nh0.type, nh1.type) //
