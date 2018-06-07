@@ -215,7 +215,7 @@ public class Trade_ {
 				List<Pair<String, Double>> ratioBySymbol, //
 				Map<String, Asset> assetBySymbol, //
 				Map<String, Eod> eodBySymbol) {
-			Valuation val = account.valuation(symbol -> eodBySymbol.get(symbol).price);
+			var val = account.valuation(symbol -> eodBySymbol.get(symbol).price);
 			var valuation = val.sum();
 
 			var portfolio = Read //
