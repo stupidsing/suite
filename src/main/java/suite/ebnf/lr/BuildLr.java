@@ -31,7 +31,7 @@ public class BuildLr {
 
 	private class Blr {
 		private int nTokens;
-		private final Transition next;
+		private Transition next;
 
 		private Blr(int nTokens, Transition next) {
 			this.nTokens = nTokens;

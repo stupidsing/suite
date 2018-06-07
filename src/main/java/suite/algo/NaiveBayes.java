@@ -13,9 +13,9 @@ import suite.util.To;
 // Introduction to Machine Learning, page 24
 public class NaiveBayes {
 
-	private final int length;
-	private final double b;
-	private final float[][] ps;
+	private int length;
+	private double b;
+	private float[][] ps;
 
 	public NaiveBayes(List<Pair<int[], Boolean>> records, double threshold) {
 		var nCategories = 2;

@@ -76,9 +76,9 @@ public class MovingAvgMeanReversionBackAllocator {
 	}
 
 	private class PotentialStat {
-		private final double dailyReturn;
-		private final double sharpe;
-		private final double kelly;
+		private double dailyReturn;
+		private double sharpe;
+		private double kelly;
 
 		private PotentialStat(double dailyReturn, double sharpe, double kelly) {
 			this.dailyReturn = dailyReturn;
@@ -94,11 +94,11 @@ public class MovingAvgMeanReversionBackAllocator {
 	}
 
 	private class MeanReversionStat {
-		private final float[] movingAverage;
-		private final double adf;
-		private final double hurst;
-		private final LinearRegression meanReversion;
-		private final LinearRegression movingAvgMeanReversion;
+		private float[] movingAverage;
+		private double adf;
+		private double hurst;
+		private LinearRegression meanReversion;
+		private LinearRegression movingAvgMeanReversion;
 
 		private MeanReversionStat(DataSource ds, TimeRange mrsPeriod) {
 			var prices = ds.range(mrsPeriod).prices;
