@@ -391,7 +391,8 @@ public class P2InferType {
 				env // disable register locals
 						.streamlet2() //
 						.values() //
-						.filter(var -> var.scope != null && var.scope == scope).sink(var -> var.setReg(false));
+						.filter(var -> var.scope != null && var.scope == scope) //
+						.sink(var -> var.setReg(false));
 
 				return FunpSaveRegisters.of(FunpAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
 			})).applyIf(FunpAssignReference.class, f -> f.apply((reference, value, expr) -> {
