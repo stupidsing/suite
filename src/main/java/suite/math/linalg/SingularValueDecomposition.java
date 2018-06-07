@@ -50,7 +50,7 @@ public class SingularValueDecomposition {
 		var vs = new float[k][];
 
 		for (var i = 0; i < k; i++) {
-			Fixie3<Double, float[], float[]> fixie = f.apply(a);
+			var fixie = f.apply(a);
 			var a0 = a;
 			var i_ = i;
 
@@ -102,7 +102,7 @@ public class SingularValueDecomposition {
 			var beta = vec.abs(z);
 			var invBeta = 1d / beta;
 			v = vec.scale(z, invBeta);
-			double error = vec.abs(vec.sub(mtx.mul(a, v), vec.scale(u, invBeta)));
+			var error = vec.abs(vec.sub(mtx.mul(a, v), vec.scale(u, invBeta)));
 			if (error < .01d)
 				return Fixie.of(beta, u, v);
 		}
