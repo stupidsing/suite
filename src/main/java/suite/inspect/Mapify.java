@@ -14,12 +14,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 import suite.util.Rethrow;
+import suite.util.Util;
 
 /**
  * Convert (supposedly) any Java structures to recursive maps.
@@ -91,7 +91,7 @@ public class Mapify {
 		if (type instanceof Class) {
 			var clazz = (Class<?>) type;
 
-			if (Type_.isSimple(clazz))
+			if (Util.isSimple(clazz))
 				mapifier = new Mapifier(id, id);
 			else if (clazz.isArray()) {
 				var componentType = clazz.getComponentType();

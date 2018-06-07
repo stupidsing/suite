@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import suite.adt.pair.Pair;
-import suite.jdk.gen.Type_;
 import suite.node.util.Singleton;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
@@ -18,6 +17,7 @@ import suite.util.MapInterface;
 import suite.util.MapObject_;
 import suite.util.Switch;
 import suite.util.Thread_;
+import suite.util.Util;
 
 public class Dump {
 
@@ -61,7 +61,7 @@ public class Dump {
 						sink.sink(",");
 					}
 					sink.sink("]");
-				} else if (Type_.isSimple(clazz))
+				} else if (Util.isSimple(clazz))
 					sink.sink(object.toString());
 				else
 					new Switch<Object>(object //
@@ -201,7 +201,7 @@ public class Dump {
 				var count = 0;
 
 				// simple listings for simple classes
-				if (Type_.isSimple(clazz))
+				if (Util.isSimple(clazz))
 					;
 				else if (clazz.isArray())
 					for (var i = 0; i < Array.getLength(object); i++)

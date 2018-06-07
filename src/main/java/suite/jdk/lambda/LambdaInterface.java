@@ -2,10 +2,10 @@ package suite.jdk.lambda;
 
 import java.lang.reflect.Method;
 
-import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.String_;
+import suite.util.Util;
 
 public class LambdaInterface<I> {
 
@@ -15,7 +15,7 @@ public class LambdaInterface<I> {
 	private Method method;
 
 	public static <I> LambdaInterface<I> of(Class<I> interfaceClass) {
-		return of(interfaceClass, Type_.methodOf(interfaceClass).getName());
+		return of(interfaceClass, Util.methodOf(interfaceClass).getName());
 	}
 
 	public static <I> LambdaInterface<I> of(Class<I> interfaceClass, String methodName) {

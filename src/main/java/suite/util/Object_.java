@@ -17,7 +17,6 @@ import java.util.Objects;
 import java.util.Set;
 
 import suite.adt.pair.Pair;
-import suite.jdk.gen.Type_;
 import suite.node.util.Singleton;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Iterate;
@@ -89,7 +88,7 @@ public class Object_ {
 		if (type instanceof Class) {
 			var clazz = (Class<?>) type;
 
-			if (Type_.isSimple(clazz))
+			if (Util.isSimple(clazz))
 				mapper = new Mapper(object -> object, object -> object);
 			else if (clazz.isArray()) {
 				var componentType = clazz.getComponentType();

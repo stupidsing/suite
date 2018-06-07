@@ -35,6 +35,7 @@ import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
+import suite.util.Util;
 
 public class FunTypeInformation {
 
@@ -124,7 +125,7 @@ public class FunTypeInformation {
 	}
 
 	public Method methodOf(FunExpr e) {
-		return Type_.methodOf(classOf(e));
+		return Util.methodOf(classOf(e));
 	}
 
 	public Class<?> classOf(FunExpr e) {
