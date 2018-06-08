@@ -11,6 +11,7 @@ import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.os.SocketUtil.Io;
 import suite.primitive.BooMutable;
+import suite.streamlet.Read;
 import suite.util.Copy;
 import suite.util.Thread_;
 
@@ -55,7 +56,7 @@ public class LoadBalancer {
 			try (var socket = new Socket(server, port)) {
 				var sis = socket.getInputStream();
 				var sos = socket.getOutputStream();
-				var threads = List.of(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os));
+				var threads = Read.each(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os));
 				Thread_.startJoin(threads);
 			}
 		};

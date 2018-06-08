@@ -43,7 +43,7 @@ public class Copy {
 		}
 	}
 
-	public static Thread streamByThread(InputStream is, OutputStream os) {
+	public static Th streamByThread(InputStream is, OutputStream os) {
 		return Thread_.newThread(() -> {
 			try (var is_ = is; var os_ = os) {
 				stream(is_, os_);

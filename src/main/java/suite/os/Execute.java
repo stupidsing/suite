@@ -7,9 +7,11 @@ import java.nio.file.Paths;
 import java.util.List;
 
 import suite.Constants;
+import suite.streamlet.Read;
 import suite.util.Copy;
 import suite.util.Fail;
 import suite.util.Rethrow;
+import suite.util.Th;
 import suite.util.To;
 
 public class Execute {
@@ -17,7 +19,6 @@ public class Execute {
 	public final int code;
 	public final String out;
 	public final String err;
-	private Thread[] threads;
 
 	public static String shell(String sh) {
 		String[] command = null;
@@ -58,18 +59,14 @@ public class Execute {
 			var pes = process.getErrorStream();
 			var pos = process.getOutputStream();
 
-			threads = new Thread[] { //
+			var threads = Read.each( //
 					Copy.streamByThread(pis, bos0), //
 					Copy.streamByThread(pes, bos1), //
-					Copy.streamByThread(bis, pos), };
+					Copy.streamByThread(bis, pos));
 
-			for (var thread : threads)
-				thread.start();
-
+			threads.sink(Th::start);
 			code = process.waitFor();
-
-			for (var thread : threads)
-				thread.join();
+			threads.sink(Th::join_);
 		} catch (InterruptedException ex) {
 			throw new RuntimeException(ex);
 		} finally {

@@ -24,6 +24,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
+import suite.util.Th;
 import suite.util.Thread_;
 import suite.util.To;
 
@@ -64,8 +65,8 @@ public class As {
 		return outlet -> execute(outlet.map(t -> Thread_.newThread(() -> sink.sink(t))));
 	}
 
-	public static Void execute(Outlet<Thread> outlet) {
-		var threads = outlet.toList();
+	public static Void execute(Outlet<Th> outlet) {
+		var threads = Read.from(outlet.toList());
 		Thread_.startJoin(threads);
 		return null;
 	}

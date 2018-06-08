@@ -1,11 +1,11 @@
 package suite.util;
 
-import java.util.Collection;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import suite.os.LogUtil;
+import suite.streamlet.Streamlet;
 
 public class Thread_ {
 
@@ -45,7 +45,7 @@ public class Thread_ {
 		return newExecutor(nProcessors, nProcessors);
 	}
 
-	public static Thread newThread(RunnableEx runnable) {
+	public static Th newThread(RunnableEx runnable) {
 		return newThread_(runnable);
 	}
 
@@ -58,19 +58,12 @@ public class Thread_ {
 			}
 	}
 
-	public static void startJoin(Collection<Thread> threads) {
-		for (var thread : threads)
-			thread.start();
-
-		for (var thread : threads)
-			try {
-				thread.join();
-			} catch (InterruptedException ex) {
-				LogUtil.error(ex);
-			}
+	public static void startJoin(Streamlet<Th> threads) {
+		threads.sink(Th::start);
+		threads.sink(Th::join_);
 	}
 
-	public static Thread startThread(RunnableEx runnable) {
+	public static Th startThread(RunnableEx runnable) {
 		var thread = newThread_(runnable);
 		thread.start();
 		return thread;
@@ -80,16 +73,8 @@ public class Thread_ {
 		return new ThreadPoolExecutor(corePoolSize, maxPoolSize, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256));
 	}
 
-	private static Thread newThread_(RunnableEx runnable) {
-		return new Thread() {
-			public void run() {
-				try {
-					runnable.run();
-				} catch (Exception ex) {
-					LogUtil.error(ex);
-				}
-			}
-		};
+	private static Th newThread_(RunnableEx runnable) {
+		return new Th(runnable);
 	}
 
 }

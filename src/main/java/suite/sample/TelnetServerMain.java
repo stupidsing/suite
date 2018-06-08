@@ -9,7 +9,6 @@ import java.util.Set;
 
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Copy;
 import suite.util.RunUtil;
@@ -28,11 +27,41 @@ public class TelnetServerMain extends ExecutableProgram {
 	}
 
 	private class Server {
-		private Set<Thread> threads = new HashSet<>();
+		private void serve(InputStream sis, OutputStream sos) throws IOException {
+
+			// kills the process if client closes the stream;
+			// closes the stream if process is terminated/ended output.
+			// therefore we need the interruption mechanism.
+			var process = Runtime.getRuntime().exec("bash");
+			var pis = process.getInputStream();
+			var pes = process.getErrorStream();
+			var pos = process.getOutputStream();
+
+			try {
+				var threads = Read //
+						.<Thread> each( //
+								Copy.streamByThread(pis, sos), //
+								Copy.streamByThread(pes, sos), //
+								Copy.streamByThread(sis, pos)) //
+						.cons(new InterruptibleThread() {
+							protected void run_() throws InterruptedException {
+								process.waitFor();
+							}
+						}) //
+						.collect();
+
+				for (var thread : threads)
+					thread.start();
+				for (var thread : threads)
+					thread.join();
+			} catch (InterruptedException ex) {
+				throw new RuntimeException(ex);
+			} finally {
+				process.destroy();
+			}
+		}
 
 		private abstract class InterruptibleThread extends Thread {
-			protected abstract void run_() throws Exception;
-
 			public void run() {
 				try {
 					run_();
@@ -49,50 +78,11 @@ public class TelnetServerMain extends ExecutableProgram {
 								thread.interrupt();
 				}
 			}
+
+			protected abstract void run_() throws Exception;
 		}
 
-		private class CopyThread extends InterruptibleThread {
-			private InputStream is;
-			private OutputStream os;
-
-			private CopyThread(InputStream is, OutputStream os) {
-				this.is = is;
-				this.os = os;
-			}
-
-			protected void run_() throws IOException {
-				try (InputStream is_ = is; OutputStream os_ = os) {
-					Copy.stream(is_, os_);
-				}
-			}
-		}
-
-		private void serve(InputStream sis, OutputStream sos) throws IOException {
-
-			// kills the process if client closes the stream;
-			// closes the stream if process is terminated/ended output.
-			// therefore we need the interruption mechanism.
-			var process = Runtime.getRuntime().exec("bash");
-			var pis = process.getInputStream();
-			var pes = process.getErrorStream();
-			var pos = process.getOutputStream();
-
-			try {
-				Read //
-						.<Thread> empty() //
-						.cons(new CopyThread(pis, sos)) //
-						.cons(new CopyThread(pes, sos)) //
-						.cons(new CopyThread(sis, pos)) //
-						.cons(new InterruptibleThread() {
-							protected void run_() throws InterruptedException {
-								process.waitFor();
-							}
-						}) //
-						.collect(As::execute);
-			} finally {
-				process.destroy();
-			}
-		}
+		private Set<Thread> threads = new HashSet<>();
 	}
 
 }
