@@ -34,6 +34,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.Fail;
 import suite.util.Rethrow;
+import suite.util.Switch;
 import suite.util.Util;
 
 public class FunRewrite extends FunFactory {
@@ -88,22 +89,23 @@ public class FunRewrite extends FunFactory {
 				var fieldValues = new HashMap<String, FunExpr>();
 
 				var e3 = rewrite(e -> {
-					FunExpr fieldValue;
-					if (e instanceof FieldStaticFunExpr) {
-						var e_ = (FieldStaticFunExpr) e;
-						var fieldName = e_.fieldName;
+					return new Switch<FunExpr>(e //
+					).applyIf(FieldStaticFunExpr.class, e4 -> e4.apply((fieldName, ft) -> {
 						var fieldType = fieldTypes.get(fieldName);
 						fieldTypes.put(fieldName, fieldType);
-						fieldValues.put(fieldName, e_);
-						return e;
-					} else if (e instanceof PlaceholderFunExpr && (fieldValue = placeholders.get(e)) != null) {
-						var fieldName = "e" + Util.temp();
-						var fieldType = fti.typeOf(fieldValue);
-						fieldTypes.put(fieldName, fieldType);
-						fieldValues.put(fieldName, fieldValue);
-						return this_().field(fieldName, fieldType);
-					} else
-						return null;
+						fieldValues.put(fieldName, e4);
+						return e4;
+					})).applyIf(PlaceholderFunExpr.class, e4 -> {
+						FunExpr fieldValue = placeholders.get(e);
+						if (fieldValue != null) {
+							var fieldName = "e" + Util.temp();
+							var fieldType = fti.typeOf(fieldValue);
+							fieldTypes.put(fieldName, fieldType);
+							fieldValues.put(fieldName, fieldValue);
+							return this_().field(fieldName, fieldType);
+						} else
+							return null;
+					}).result();
 				}, e2);
 
 				var cc = FunCreator.of(LambdaInterface.of(interfaceClass), fieldTypes).create_(e3);
@@ -153,10 +155,7 @@ public class FunRewrite extends FunFactory {
 			return objectField(object, type);
 		})).applyIf(PlaceholderFunExpr.class, e1 -> {
 			var e2 = placeholders.get(e1);
-			if (e2 != null)
-				return e2;
-			else
-				return Fail.t("cannot resolve placeholder");
+			return e2 != null ? e2 : Fail.t("cannot resolve placeholder");
 		}).applyIf(ProfileFunExpr.class, e1 -> e1.apply((counterFieldName, do_) -> {
 			fieldTypeValues.put(counterFieldName, Pair.of(Type.INT, 0));
 			return null;
