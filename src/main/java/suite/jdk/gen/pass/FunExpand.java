@@ -87,13 +87,9 @@ public class FunExpand extends FunFactory {
 						var e1 = Rethrow.ex(() -> field.get(e0));
 						if (e1 instanceof FunExpr)
 							return weight_(e1);
-						else if (e1 instanceof Iterable<?>) {
-							Iterable<?> iter = (Iterable<?>) e1;
-							var sum = 0;
-							for (var e2 : iter)
-								sum += weight_(e2);
-							return sum;
-						} else
+						else if (e1 instanceof Iterable<?>)
+							return Read.from((Iterable<?>) e1).toInt(Obj_Int.sum(e2 -> weight_(e2)));
+						else
 							return 0;
 					})) + 1;
 	}
