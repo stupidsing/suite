@@ -96,26 +96,17 @@ public class FunTypeInformation {
 		}).applyIf(ProfileFunExpr.class, e1 -> {
 			return typeOf(e1.do_);
 		}).applyIf(SeqFunExpr.class, e1 -> {
-			if (typeOf(e1.left) == Type.VOID)
-				return typeOf(e1.right);
-			else
-				return Fail.t();
+			return typeOf(e1.left) == Type.VOID ? typeOf(e1.right) : Fail.t();
 		}).applyIf(VoidFunExpr.class, e1 -> {
 			return Type.VOID;
 		}).nonNullResult();
 	}
 
 	public Method invokeMethodOf(InvokeMethodFunExpr expr) {
-		var array = Read //
-				.from(expr.parameters) //
-				.map(this::typeOf) //
-				.toArray(Type.class);
+		var array = Read.from(expr.parameters).map(this::typeOf).toArray(Type.class);
 
 		@SuppressWarnings("rawtypes")
-		var parameterTypes = Read //
-				.from(array) //
-				.<Class> map(Type_::classOf) //
-				.toArray(Class.class);
+		var parameterTypes = Read.from(array).<Class> map(Type_::classOf).toArray(Class.class);
 
 		return Rethrow.ex(() -> {
 			var clazz0 = expr.clazz;
