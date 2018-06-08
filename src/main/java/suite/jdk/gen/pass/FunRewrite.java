@@ -57,16 +57,16 @@ public class FunRewrite extends FunFactory {
 		return e0.<FunExpr> switch_( //
 		).applyIf(CastFunExpr.class, //
 				e1 -> e1.expr.<FunExpr> switch_( //
-				).applyIf(Declare0ParameterFunExpr.class, e2 -> {
+				).applyIf(Declare0ParameterFunExpr.class, e2 -> e2.apply(do_ -> {
 					return rewrite(e2.do_);
-				}).applyIf(Declare1ParameterFunExpr.class, e2 -> {
-					placeholders.put(e2.parameter, local(1));
-					return rewrite(e2.do_);
-				}).applyIf(Declare2ParameterFunExpr.class, e2 -> {
-					placeholders.put(e2.p0, local(1));
-					placeholders.put(e2.p1, local(2));
-					return rewrite(e2.do_);
-				}).nonNullResult() //
+				})).applyIf(Declare1ParameterFunExpr.class, e2 -> e2.apply((parameter, do_) -> {
+					placeholders.put(parameter, local(1));
+					return rewrite(do_);
+				})).applyIf(Declare2ParameterFunExpr.class, e2 -> e2.apply((p0, p1, do_) -> {
+					placeholders.put(p0, local(1));
+					placeholders.put(p1, local(2));
+					return rewrite(do_);
+				})).nonNullResult() //
 		).nonNullResult();
 	}
 
@@ -76,16 +76,14 @@ public class FunRewrite extends FunFactory {
 
 	private FunExpr rewrite_(FunExpr e0) {
 		return e0.<FunExpr> switch_( //
-		).applyIf(ApplyFunExpr.class, e1 -> {
-			var object = rewrite(e1.object);
-			var parameters = Read.from(e1.parameters).map(this::rewrite).toArray(FunExpr.class);
-			var method = fti.methodOf(object);
-			return object.invoke(method.getName(), parameters);
-		}).applyIf(CastFunExpr.class, e1 -> {
-			var e2 = e1.expr;
-
+		).applyIf(ApplyFunExpr.class, e1 -> e1.apply((object, parameters) -> {
+			var object1 = rewrite(object);
+			var parameters1 = Read.from(parameters).map(this::rewrite).toArray(FunExpr.class);
+			var method = fti.methodOf(object1);
+			return object1.invoke(method.getName(), parameters1);
+		})).applyIf(CastFunExpr.class, e1 -> e1.apply((type, e2) -> {
 			if (e2 instanceof DeclareParameterFunExpr) {
-				var interfaceClass = Type_.classOf(e1.type);
+				var interfaceClass = Type_.classOf(type);
 				var fieldTypes = new HashMap<String, Type>();
 				var fieldValues = new HashMap<String, FunExpr>();
 
@@ -120,51 +118,49 @@ public class FunRewrite extends FunFactory {
 				return e4;
 			} else
 				return null;
-		}).applyIf(DeclareLocalFunExpr.class, e1 -> {
-			var value = rewrite(e1.value);
+		})).applyIf(DeclareLocalFunExpr.class, e1 -> e1.apply((var, value, do_) -> {
+			var value1 = rewrite(value);
 			var lfe = local(localTypes.size());
-			localTypes.add(fti.typeOf(value));
+			localTypes.add(fti.typeOf(value1));
 
 			var alfe = new AssignLocalFunExpr();
 			alfe.var = lfe;
-			alfe.value = value;
+			alfe.value = value1;
 
-			placeholders.put(e1.var, lfe);
-			return seq(alfe, rewrite(e1.do_));
-		}).applyIf(FieldFunExpr_.class, e1 -> {
+			placeholders.put(var, lfe);
+			return seq(alfe, rewrite(do_));
+		})).applyIf(FieldFunExpr_.class, e1 -> e1.apply((fieldName, object) -> {
 			var set = e1 instanceof FieldSetFunExpr ? ((FieldSetFunExpr) e1).value : null;
-			var object0 = rewrite(e1.object);
-			var fieldName = e1.fieldName;
+			var object0 = rewrite(object);
 			var clazz = fti.classOf(object0);
 			var field = Rethrow.ex(() -> clazz.getField(fieldName));
 			var object1 = object0.cast_(field.getDeclaringClass());
 			var fieldType = Type.getType(field.getType());
 			return set == null ? object1.field(fieldName, fieldType) : object1.fieldSet(fieldName, fieldType, set);
-		}).applyIf(FieldInjectFunExpr.class, e1 -> {
-			var type = fieldTypes.get(e1.fieldName);
+		})).applyIf(FieldInjectFunExpr.class, e1 -> e1.apply(fieldName -> {
+			var type = fieldTypes.get(fieldName);
 			if (type != null)
-				return rewrite(this_().field(e1.fieldName, type));
+				return rewrite(this_().field(fieldName, type));
 			else
 				return Fail.t(e1.fieldName);
-		}).applyIf(InvokeLambdaFunExpr.class, e1 -> {
-			var l_inst = e1.lambda;
+		})).applyIf(InvokeLambdaFunExpr.class, e1 -> e1.apply((isExpand, l_inst, ps) -> {
 			var l_impl = l_inst.lambdaImplementation;
 			var l_iface = l_impl.lambdaInterface;
 			var object = object_(l_impl.newFun(l_inst.fieldValues), l_iface.interfaceClass);
 
-			return rewrite(object.invoke(l_iface.interfaceClass, l_iface.methodName, e1.parameters));
-		}).applyIf(ObjectFunExpr.class, e1 -> {
-			return objectField(e1.object, e1.type);
-		}).applyIf(PlaceholderFunExpr.class, e1 -> {
+			return rewrite(object.invoke(l_iface.interfaceClass, l_iface.methodName, ps));
+		})).applyIf(ObjectFunExpr.class, e1 -> e1.apply((type, object) -> {
+			return objectField(object, type);
+		})).applyIf(PlaceholderFunExpr.class, e1 -> {
 			var e2 = placeholders.get(e1);
 			if (e2 != null)
 				return e2;
 			else
 				return Fail.t("cannot resolve placeholder");
-		}).applyIf(ProfileFunExpr.class, e1 -> {
-			fieldTypeValues.put(e1.counterFieldName, Pair.of(Type.INT, 0));
+		}).applyIf(ProfileFunExpr.class, e1 -> e1.apply((counterFieldName, do_) -> {
+			fieldTypeValues.put(counterFieldName, Pair.of(Type.INT, 0));
 			return null;
-		}).result();
+		})).result();
 	}
 
 	private FunExpr objectField(Object object, Type type) {

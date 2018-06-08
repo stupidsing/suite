@@ -2,6 +2,7 @@ package suite.jdk.lambda;
 
 import java.util.Map;
 
+import suite.adt.pair.Fixie_.FixieFun2;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.util.FunUtil.Iterate;
@@ -50,6 +51,10 @@ public class LambdaInstance<I> {
 		if (fun == null)
 			fun = lambdaImplementation.newFun(fieldValues);
 		return fun;
+	}
+
+	public <R> R apply(FixieFun2<LambdaImplementation<I>, Map<String, Object>, R> fun) {
+		return fun.apply(lambdaImplementation, fieldValues);
 	}
 
 }

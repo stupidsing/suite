@@ -20,6 +20,7 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.String_;
+import suite.util.Switch;
 
 public class FunExpand extends FunFactory {
 
@@ -34,42 +35,35 @@ public class FunExpand extends FunFactory {
 
 	private FunExpr expand_(FunExpr e0, int depth) {
 		return e0.<FunExpr> switch_( //
-		).applyIf(ApplyFunExpr.class, e1 -> {
-			var object0 = e1.object;
+		).applyIf(ApplyFunExpr.class, e1 -> e1.apply((object0, parameters) -> {
 			var object1 = object0 instanceof CastFunExpr ? ((CastFunExpr) object0).expr : object0;
-			if (object1 instanceof Declare0ParameterFunExpr) {
-				var object_ = (Declare0ParameterFunExpr) object1;
-				return expand(object_.do_, depth);
-			} else if (object1 instanceof Declare1ParameterFunExpr) {
-				var object_ = (Declare1ParameterFunExpr) object1;
-				return expand(replace(object_.do_, object_.parameter, e1.parameters.get(0)), depth);
-			} else if (object1 instanceof Declare2ParameterFunExpr) {
-				var object_ = (Declare2ParameterFunExpr) object1;
-				var do0 = object_.do_;
-				FunExpr do1 = replace(do0, object_.p0, e1.parameters.get(0));
-				FunExpr do2 = replace(do1, object_.p1, e1.parameters.get(1));
+			return new Switch<FunExpr>(object1 //
+			).applyIf(Declare0ParameterFunExpr.class, e2 -> e2.apply(do_ -> {
+				return expand(do_, depth);
+			})).applyIf(Declare1ParameterFunExpr.class, e2 -> e2.apply((p0, do_) -> {
+				return expand(replace(do_, p0, parameters.get(0)), depth);
+			})).applyIf(Declare2ParameterFunExpr.class, e2 -> e2.apply((p0, p1, do0) -> {
+				FunExpr do1 = replace(do0, p0, parameters.get(0));
+				FunExpr do2 = replace(do1, p1, parameters.get(1));
 				return expand(do2, depth);
-			} else
-				return null;
-		}).applyIf(DeclareLocalFunExpr.class, e1 -> {
-			return expand(replace(e1.do_, e1.var, e1.value), depth);
-		}).applyIf(InvokeLambdaFunExpr.class, e1 -> {
+			})).result();
+		})).applyIf(DeclareLocalFunExpr.class, e1 -> e1.apply((var, value, do_) -> {
+			return expand(replace(do_, var, value), depth);
+		})).applyIf(InvokeLambdaFunExpr.class, e1 -> e1.apply((isExpand, l_inst, ps) -> {
 			if (Boolean.FALSE) {
-				var l_inst = e1.lambda;
 				var l_impl = l_inst.lambdaImplementation;
-				if (e1.isExpand || weight(l_impl.expr) <= 5) {
+				if (isExpand || weight(l_impl.expr) <= 5) {
 					var l_iface = l_impl.lambdaInterface;
 					var fe = l_impl.expr;
 					for (var fieldName : l_impl.fieldTypes.keySet())
 						fe = replaceFieldInject(fe, fieldName,
 								object(l_inst.fieldValues.get(fieldName), l_impl.fieldTypes.get(fieldName)));
-					return expand(fe.cast_(l_iface.interfaceClass).apply(e1.parameters), depth - 1);
+					return expand(fe.cast_(l_iface.interfaceClass).apply(ps), depth - 1);
 				} else
 					return null;
 			} else
 				return null;
-		}).applyIf(If1FunExpr.class, e1 -> {
-			var if_ = e1.if_;
+		})).applyIf(If1FunExpr.class, e1 -> e1.apply(if_ -> {
 			if (if_ instanceof ConstantFunExpr) {
 				var e2 = (ConstantFunExpr) if_;
 				if (e2.type == Type.INT)
@@ -78,7 +72,7 @@ public class FunExpand extends FunFactory {
 					return null;
 			} else
 				return null;
-		}).result();
+		})).result();
 	}
 
 	private FunExpr replaceFieldInject(FunExpr expr0, String fieldName, FunExpr to) {

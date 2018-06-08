@@ -2,6 +2,7 @@ package suite.jdk.lambda;
 
 import java.lang.reflect.Method;
 
+import suite.adt.pair.Fixie_.FixieFun2;
 import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.String_;
@@ -33,6 +34,10 @@ public class LambdaInterface<I> {
 			method = Read.from(methods).filter(m -> String_.equals(m.getName(), methodName)).uniqueResult();
 		}
 		return method;
+	}
+
+	public <R> R apply(FixieFun2<Class<I>, String, R> fun) {
+		return fun.apply(interfaceClass, methodName);
 	}
 
 }

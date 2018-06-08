@@ -49,17 +49,17 @@ public class FunTypeInformation {
 
 	public Type typeOf(FunExpr e0) {
 		return e0.<Type> switch_( //
-		).applyIf(ArrayFunExpr.class, e1 -> {
+		).applyIf(ArrayFunExpr.class, e1 -> e1.apply((clazz, elements) -> {
 			var type = Type.getType(e1.clazz);
-			for (var element : e1.elements)
+			for (var element : elements)
 				if (element != null && type != typeOf(element))
 					Fail.t();
-			return e1.clazz.isPrimitive() ? new ArrayType(type.getType(), 1) : new ArrayType(type, 1);
-		}).applyIf(ArrayLengthFunExpr.class, e1 -> {
+			return clazz.isPrimitive() ? new ArrayType(type.getType(), 1) : new ArrayType(type, 1);
+		})).applyIf(ArrayLengthFunExpr.class, e1 -> {
 			return Type.INT;
-		}).applyIf(ApplyFunExpr.class, e1 -> {
-			return Type.getType(methodOf(e1.object).getReturnType());
-		}).applyIf(AssignLocalFunExpr.class, e1 -> {
+		}).applyIf(ApplyFunExpr.class, e1 -> e1.apply((object, parameters) -> {
+			return Type.getType(methodOf(object).getReturnType());
+		})).applyIf(AssignLocalFunExpr.class, e1 -> {
 			return Type.VOID;
 		}).applyIf(BinaryFunExpr.class, e1 -> {
 			return typeOf(e1.left);
