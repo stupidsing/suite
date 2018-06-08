@@ -27,10 +27,7 @@ public class FunExpand extends FunFactory {
 	private static Inspect inspect = Singleton.me.inspect;
 
 	public FunExpr expand(FunExpr expr0, int depth) {
-		if (0 < depth)
-			return rewrite(expr -> expand_(expr, depth), expr0);
-		else
-			return expr0;
+		return 0 < depth ? rewrite(expr -> expand_(expr, depth), expr0) : expr0;
 	}
 
 	private FunExpr expand_(FunExpr e0, int depth) {
@@ -81,10 +78,9 @@ public class FunExpand extends FunFactory {
 	}
 
 	private int weight(FunExpr e0) {
-		if (e0 instanceof CastFunExpr) {
-			var e1 = (CastFunExpr) e0;
-			return weight(e1.expr);
-		} else
+		if (e0 instanceof CastFunExpr)
+			return weight(((CastFunExpr) e0).expr);
+		else
 			return Read //
 					.from(inspect.fields(e0.getClass())) //
 					.toInt(Obj_Int.sum(field -> {
