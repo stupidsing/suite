@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 import suite.Constants;
+import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Read;
@@ -45,6 +46,8 @@ public class HttpProxy {
 	private void serve_() throws IOException {
 		new SocketUtil().listenIo(port, (is0, os0) -> {
 			var line = Util.readLine(is0);
+			LogUtil.info("PROXY " + line);
+
 			var url = line.split(" ")[1];
 			var pp = String_.split2(url, "://");
 			var path = pp != null ? String_.split2l(pp.t1, "/").t1 : url;

@@ -48,7 +48,10 @@ public class Copy {
 		return Thread_.newThread(() -> {
 			try (var is_ = is; var os_ = os) {
 				stream(is_, os_);
-			} catch (InterruptedIOException | SocketException ex) {
+			} catch (InterruptedIOException ex) {
+			} catch (SocketException ex) {
+				if (!String_.equals(ex.getMessage(), "Socket closed"))
+					throw ex;
 			}
 		});
 	}
