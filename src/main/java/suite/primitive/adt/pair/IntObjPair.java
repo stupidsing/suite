@@ -3,7 +3,6 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
-import suite.adt.Opt;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.Int_Int;
@@ -65,8 +64,8 @@ public class IntObjPair<T> {
 		return pair != null ? pair.t1 : null;
 	}
 
-	public <O> Opt<O> map(IntObj_Obj<T, O> fun) {
-		return t0 != IntFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	public <O> O map(IntObj_Obj<T, O> fun) {
+		return fun.apply(t0, t1);
 	}
 
 	public void update(int t0_, T t1_) {

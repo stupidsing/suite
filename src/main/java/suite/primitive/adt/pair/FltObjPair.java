@@ -3,7 +3,6 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
-import suite.adt.Opt;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.Flt_Flt;
@@ -65,8 +64,8 @@ public class FltObjPair<T> {
 		return pair != null ? pair.t1 : null;
 	}
 
-	public <O> Opt<O> map(FltObj_Obj<T, O> fun) {
-		return t0 != FltFunUtil.EMPTYVALUE ? Opt.of(fun.apply(t0, t1)) : Opt.none();
+	public <O> O map(FltObj_Obj<T, O> fun) {
+		return fun.apply(t0, t1);
 	}
 
 	public void update(float t0_, T t1_) {

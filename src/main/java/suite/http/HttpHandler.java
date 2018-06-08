@@ -8,6 +8,7 @@ import suite.http.HttpSessionController.Authenticator;
 import suite.immutable.IMap;
 import suite.util.Fail;
 import suite.util.Rethrow;
+import suite.util.String_;
 import suite.util.To;
 
 public interface HttpHandler {
@@ -26,7 +27,8 @@ public interface HttpHandler {
 			long size;
 
 			for (var p : request.path)
-				path = path.resolve(p);
+				if (!String_.equals(p, ".."))
+					path = path.resolve(p);
 
 			try (var file = new RandomAccessFile(path.toFile(), "r")) {
 				size = file.getChannel().size();

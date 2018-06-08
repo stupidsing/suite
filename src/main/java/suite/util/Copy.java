@@ -10,6 +10,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Reader;
 import java.io.Writer;
+import java.net.SocketException;
 
 import suite.Constants;
 
@@ -47,7 +48,7 @@ public class Copy {
 		return Thread_.newThread(() -> {
 			try (var is_ = is; var os_ = os) {
 				stream(is_, os_);
-			} catch (InterruptedIOException ex) {
+			} catch (InterruptedIOException | SocketException ex) {
 			}
 		});
 	}
