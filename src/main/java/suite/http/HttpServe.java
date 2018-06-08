@@ -32,6 +32,16 @@ import suite.util.Util;
  */
 public class HttpServe {
 
+	private int port;
+
+	public HttpServe() {
+		this(8051);
+	}
+
+	public HttpServe(int port) {
+		this.port = port;
+	}
+
 	public void serve(HttpHandler handler) {
 		try {
 			serve_(handler);
@@ -41,7 +51,7 @@ public class HttpServe {
 	}
 
 	private void serve_(HttpHandler handler) throws IOException {
-		new SocketUtil().listenIo(8051, (is, os) -> {
+		new SocketUtil().listenIo(port, (is, os) -> {
 			var ls = Util.readLine(is).split(" ");
 			var method = ls[0];
 			var url = ls[1];
