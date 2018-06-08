@@ -141,15 +141,11 @@ public class FunRewrite extends FunFactory {
 			return set == null ? object1.field(fieldName, fieldType) : object1.fieldSet(fieldName, fieldType, set);
 		})).applyIf(FieldInjectFunExpr.class, e1 -> e1.apply(fieldName -> {
 			var type = fieldTypes.get(fieldName);
-			if (type != null)
-				return rewrite(this_().field(fieldName, type));
-			else
-				return Fail.t(e1.fieldName);
+			return type != null ? rewrite(this_().field(fieldName, type)) : Fail.t(e1.fieldName);
 		})).applyIf(InvokeLambdaFunExpr.class, e1 -> e1.apply((isExpand, l_inst, ps) -> {
 			var l_impl = l_inst.lambdaImplementation;
 			var l_iface = l_impl.lambdaInterface;
 			var object = object_(l_impl.newFun(l_inst.fieldValues), l_iface.interfaceClass);
-
 			return rewrite(object.invoke(l_iface.interfaceClass, l_iface.methodName, ps));
 		})).applyIf(ObjectFunExpr.class, e1 -> e1.apply((type, object) -> {
 			return objectField(object, type);

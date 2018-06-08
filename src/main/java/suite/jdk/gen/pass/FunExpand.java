@@ -43,8 +43,8 @@ public class FunExpand extends FunFactory {
 			})).applyIf(Declare1ParameterFunExpr.class, e2 -> e2.apply((p0, do_) -> {
 				return expand(replace(do_, p0, parameters.get(0)), depth);
 			})).applyIf(Declare2ParameterFunExpr.class, e2 -> e2.apply((p0, p1, do0) -> {
-				FunExpr do1 = replace(do0, p0, parameters.get(0));
-				FunExpr do2 = replace(do1, p1, parameters.get(1));
+				var do1 = replace(do0, p0, parameters.get(0));
+				var do2 = replace(do1, p1, parameters.get(1));
 				return expand(do2, depth);
 			})).result();
 		})).applyIf(DeclareLocalFunExpr.class, e1 -> e1.apply((var, value, do_) -> {
@@ -64,23 +64,19 @@ public class FunExpand extends FunFactory {
 			} else
 				return null;
 		})).applyIf(If1FunExpr.class, e1 -> e1.apply(if_ -> {
-			if (if_ instanceof ConstantFunExpr) {
-				var e2 = (ConstantFunExpr) if_;
-				if (e2.type == Type.INT)
-					return ((Integer) e2.constant).intValue() != 0 ? e1.then : e1.else_;
+			return new Switch<FunExpr>(if_).applyIf(ConstantFunExpr.class, e2 -> e2.apply((type, constant) -> {
+				if (type == Type.INT)
+					return ((Integer) constant).intValue() != 0 ? e1.then : e1.else_;
 				else
 					return null;
-			} else
-				return null;
+			})).result();
 		})).result();
 	}
 
 	private FunExpr replaceFieldInject(FunExpr expr0, String fieldName, FunExpr to) {
 		return rewrite(e -> {
-			if (e instanceof FieldInjectFunExpr && String_.equals(((FieldInjectFunExpr) e).fieldName, fieldName))
-				return to;
-			else
-				return null;
+			var b = e instanceof FieldInjectFunExpr && String_.equals(((FieldInjectFunExpr) e).fieldName, fieldName);
+			return b ? to : null;
 		}, expr0);
 	}
 
