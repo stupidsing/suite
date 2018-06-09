@@ -23,7 +23,7 @@ public class Th extends Thread {
 		try {
 			join();
 		} catch (InterruptedException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		}
 	}
 

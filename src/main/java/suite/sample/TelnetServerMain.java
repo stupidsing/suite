@@ -11,6 +11,7 @@ import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.streamlet.Read;
 import suite.util.Copy;
+import suite.util.Fail;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 
@@ -55,7 +56,7 @@ public class TelnetServerMain extends ExecutableProgram {
 				for (var thread : threads)
 					thread.join();
 			} catch (InterruptedException ex) {
-				throw new RuntimeException(ex);
+				Fail.t(ex);
 			} finally {
 				process.destroy();
 			}

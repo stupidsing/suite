@@ -10,6 +10,7 @@ import java.io.Reader;
 import java.net.ServerSocket;
 
 import suite.Constants;
+import suite.util.Fail;
 import suite.util.Object_;
 import suite.util.Thread_;
 
@@ -49,7 +50,7 @@ public class SocketUtil {
 				});
 			}
 		} catch (IOException ex) {
-			throw new RuntimeException(ex);
+			Fail.t(ex);
 		} finally {
 			executor.shutdown();
 		}
