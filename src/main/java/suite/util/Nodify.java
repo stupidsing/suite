@@ -79,7 +79,7 @@ public class Nodify {
 	private Nodifier getNodifier(Type type) {
 		var nodifier = nodifiers.get(type);
 		if (nodifier == null) {
-			nodifiers.put(type, new Nodifier(object -> apply_(getNodifier(type), object), node -> apply_(getNodifier(type), node)));
+			nodifiers.put(type, new Nodifier(o -> apply_(getNodifier(type), o), n -> apply_(getNodifier(type), n)));
 			nodifiers.put(type, nodifier = newNodifier(type));
 		}
 		return nodifier;
@@ -93,29 +93,29 @@ public class Nodify {
 			var clazz = (Class<?>) type;
 
 			if (clazz == boolean.class)
-				nodifier = new Nodifier(object -> Atom.of(object.toString()), node -> node == Atom.TRUE);
+				nodifier = new Nodifier(o -> Atom.of(o.toString()), n -> n == Atom.TRUE);
 			else if (clazz == int.class)
-				nodifier = new Nodifier(object -> Int.of((Integer) object), node -> ((Int) node).number);
+				nodifier = new Nodifier(o -> Int.of((Integer) o), n -> ((Int) n).number);
 			else if (clazz == Chars.class)
-				nodifier = new Nodifier(object -> new Str(object.toString()), node -> To.chars(((Str) node).value));
+				nodifier = new Nodifier(o -> new Str(o.toString()), n -> To.chars(((Str) n).value));
 			else if (clazz == String.class)
-				nodifier = new Nodifier(object -> new Str(object.toString()), node -> ((Str) node).value);
+				nodifier = new Nodifier(o -> new Str(o.toString()), n -> ((Str) n).value);
 			else if (clazz.isEnum())
-				nodifier = new Nodifier(object -> Atom.of(object.toString()),
+				nodifier = new Nodifier(o -> Atom.of(o.toString()),
 						Read.from(clazz.getEnumConstants()).toMap(e -> Atom.of(e.toString()))::get);
 			else if (clazz.isArray()) {
 				var componentType = clazz.getComponentType();
 				var nodifier1 = getNodifier(componentType);
-				Fun<Object, Node> forward = object -> {
+				Fun<Object, Node> forward = o -> {
 					Node node = Atom.NIL;
-					for (var i = Array.getLength(object) - 1; 0 <= i; i--)
-						node = Tree.of(TermOp.OR____, apply_(nodifier1, Array.get(object, i)), node);
+					for (var i = Array.getLength(o) - 1; 0 <= i; i--)
+						node = Tree.of(TermOp.OR____, apply_(nodifier1, Array.get(o, i)), node);
 					return node;
 				};
-				nodifier = new Nodifier(forward, node -> {
+				nodifier = new Nodifier(forward, n -> {
 					var list = Read //
-							.from(Tree.iter(node, TermOp.OR____)) //
-							.map(n -> apply_(nodifier1, n)) //
+							.from(Tree.iter(n, TermOp.OR____)) //
+							.map(n_ -> apply_(nodifier1, n_)) //
 							.toList();
 					var size = list.size();
 					var objects = Array.newInstance(componentType, size);
@@ -124,12 +124,12 @@ public class Nodify {
 					return objects;
 				});
 			} else if (clazz.isInterface()) // polymorphism
-				nodifier = new Nodifier(object -> {
-					var clazz1 = object.getClass();
-					var n = apply_(getNodifier(clazz1), object);
+				nodifier = new Nodifier(o -> {
+					var clazz1 = o.getClass();
+					var n = apply_(getNodifier(clazz1), o);
 					return Tree.of(TermOp.COLON_, Atom.of(clazz1.getName()), n);
-				}, node -> {
-					var tree = Tree.decompose(node, TermOp.COLON_);
+				}, n -> {
+					var tree = Tree.decompose(n, TermOp.COLON_);
 					if (tree != null) {
 						var clazz1 = Rethrow.ex(() -> Class.forName(((Atom) tree.getLeft()).name));
 						return apply_(getNodifier(clazz1), tree.getRight());
@@ -144,23 +144,23 @@ public class Nodify {
 						.toList();
 
 				var pairs = Read.from(fieldInfos).map(f -> Pair.of(Atom.of(f.name), f)).toList();
-				nodifier = new Nodifier(object -> Rethrow.ex(() -> {
+				nodifier = new Nodifier(o -> Rethrow.ex(() -> {
 					var dict = Dict.of();
 					for (var pair : pairs) {
 						var fieldInfo = pair.t1;
-						var value = apply_(fieldInfo.nodifier, fieldInfo.field.get(object));
+						var value = apply_(fieldInfo.nodifier, fieldInfo.field.get(o));
 						dict.map.put(pair.t0, Reference.of(value));
 					}
 					return dict;
-				}), node -> Rethrow.ex(() -> {
-					var map = ((Dict) node).map;
-					var object1 = Object_.new_(clazz);
+				}), n -> Rethrow.ex(() -> {
+					var map = ((Dict) n).map;
+					var o1 = Object_.new_(clazz);
 					for (var pair : pairs) {
 						var fieldInfo = pair.t1;
 						var value = map.get(pair.t0).finalNode();
-						fieldInfo.field.set(object1, apply_(fieldInfo.nodifier, value));
+						fieldInfo.field.set(o1, apply_(fieldInfo.nodifier, value));
 					}
-					return object1;
+					return o1;
 				}));
 			}
 		} else if (type instanceof ParameterizedType) {
@@ -171,30 +171,30 @@ public class Nodify {
 
 			if (collectionClasses.contains(clazz)) {
 				var nodifier1 = getNodifier(typeArgs[0]);
-				nodifier = new Nodifier(object -> {
+				nodifier = new Nodifier(o -> {
 					Tree start = Tree.of(null, null, null), tree = start;
-					for (var o : (Collection<?>) object) {
+					for (var o_ : (Collection<?>) o) {
 						var tree0 = tree;
-						Tree.forceSetRight(tree0, tree = Tree.of(TermOp.OR____, apply_(nodifier1, o), null));
+						Tree.forceSetRight(tree0, tree = Tree.of(TermOp.OR____, apply_(nodifier1, o_), null));
 					}
 					Tree.forceSetRight(tree, Atom.NIL);
 					return start.getRight();
-				}, node -> {
-					var list = Read.from(Tree.iter(node, TermOp.OR____)).map(n -> apply_(nodifier1, n)).toList();
-					var object1 = (Collection<Object>) Object_.instantiate(clazz);
-					object1.addAll(list);
-					return object1;
+				}, n -> {
+					var list = Read.from(Tree.iter(n, TermOp.OR____)).map(n_ -> apply_(nodifier1, n_)).toList();
+					var o1 = (Collection<Object>) Object_.instantiate(clazz);
+					o1.addAll(list);
+					return o1;
 				});
 			} else if (mapClasses.contains(clazz)) {
 				var kn = getNodifier(typeArgs[0]);
 				var vn = getNodifier(typeArgs[1]);
-				nodifier = new Nodifier(object -> {
+				nodifier = new Nodifier(o -> {
 					var dict = Dict.of();
-					for (var e : ((Map<?, ?>) object).entrySet())
+					for (var e : ((Map<?, ?>) o).entrySet())
 						dict.map.put(apply_(kn, e.getKey()), Reference.of(apply_(vn, e.getValue())));
 					return dict;
-				}, node -> {
-					var map = ((Dict) node).map;
+				}, n -> {
+					var map = ((Dict) n).map;
 					var object1 = (Map<Object, Object>) Object_.instantiate(clazz);
 					for (var e : map.entrySet())
 						object1.put(apply_(kn, e.getKey()), apply_(vn, e.getValue().finalNode()));

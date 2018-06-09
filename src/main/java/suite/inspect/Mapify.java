@@ -31,7 +31,7 @@ public class Mapify {
 	private Set<Type> collectionClasses = Set.of(ArrayList.class, Collection.class, HashSet.class, List.class, Set.class);
 	private Set<Type> mapClasses = Set.of(HashMap.class, Map.class);
 
-	private Iterate<Object> id = object -> object;
+	private Iterate<Object> id = o -> o;
 
 	private Map<Type, Mapifier> mapifiers = new ConcurrentHashMap<>();
 
@@ -77,8 +77,8 @@ public class Mapify {
 		var mapifier = mapifiers.get(type);
 		if (mapifier == null) {
 			mapifiers.put(type, new Mapifier( //
-					object -> apply_(getMapifier(type).mapify, object), //
-					object -> apply_(getMapifier(type).unmapify, object)));
+					o -> apply_(getMapifier(type).mapify, o), //
+					o -> apply_(getMapifier(type).unmapify, o)));
 			mapifiers.put(type, mapifier = newMapifier(type));
 		}
 		return mapifier;
@@ -96,14 +96,14 @@ public class Mapify {
 			else if (clazz.isArray()) {
 				var componentType = clazz.getComponentType();
 				var mapifier1 = getMapifier(componentType);
-				mapifier = new Mapifier(object -> {
+				mapifier = new Mapifier(o -> {
 					var map = newMap();
-					var length = Array.getLength(object);
+					var length = Array.getLength(o);
 					for (var i = 0; i < length; i++)
-						map.put(i, apply_(mapifier1.mapify, Array.get(object, i)));
+						map.put(i, apply_(mapifier1.mapify, Array.get(o, i)));
 					return map;
-				}, object -> {
-					var map = (Map<?, ?>) object;
+				}, o -> {
+					var map = (Map<?, ?>) o;
 					var objects = Array.newInstance(componentType, map.size());
 					var i = 0;
 					while (map.containsKey(i)) {
@@ -113,9 +113,9 @@ public class Mapify {
 					return objects;
 				});
 			} else if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) // polymorphism
-				mapifier = new Mapifier(object -> {
-					var clazz1 = object.getClass();
-					var m = apply_(getMapifier(clazz1).mapify, object);
+				mapifier = new Mapifier(o -> {
+					var clazz1 = o.getClass();
+					var m = apply_(getMapifier(clazz1).mapify, o);
 					if (m instanceof Map) {
 						var map = (Map<String, String>) m;
 						map.put("@class", clazz1.getName());
@@ -123,15 +123,15 @@ public class Mapify {
 					} else
 						// happens when an enum implements an interface
 						return m;
-				}, object -> {
-					if (object instanceof Map) {
-						var map = (Map<?, ?>) object;
+				}, o -> {
+					if (o instanceof Map) {
+						var map = (Map<?, ?>) o;
 						var className = map.get("@class").toString();
 						var clazz1 = Rethrow.ex(() -> Class.forName(className));
-						return apply_(getMapifier(clazz1).unmapify, object);
+						return apply_(getMapifier(clazz1).unmapify, o);
 					} else
 						// happens when an enum implements an interface
-						return object;
+						return o;
 				});
 			else {
 				var fis = Read //
@@ -139,13 +139,13 @@ public class Mapify {
 						.map(field -> new FieldInfo(field, field.getName(), getMapifier(field.getGenericType()))) //
 						.toList();
 
-				mapifier = new Mapifier(object -> {
+				mapifier = new Mapifier(o -> {
 					return Read //
 							.from(fis) //
-							.map2(fi -> fi.name, fi -> apply_(fi.mapifier.mapify, Rethrow.ex(() -> fi.field.get(object)))) //
+							.map2(fi -> fi.name, fi -> apply_(fi.mapifier.mapify, Rethrow.ex(() -> fi.field.get(o)))) //
 							.toMap();
-				}, object -> Rethrow.ex(() -> {
-					var map = (Map<?, ?>) object;
+				}, o -> Rethrow.ex(() -> {
+					var map = (Map<?, ?>) o;
 					var object1 = Object_.new_(clazz);
 					for (var fi : fis)
 						fi.field.set(object1, apply_(fi.mapifier.unmapify, map.get(fi.name)));
@@ -160,14 +160,14 @@ public class Mapify {
 
 			if (collectionClasses.contains(clazz)) {
 				var mapifier1 = getMapifier(typeArgs[0]);
-				mapifier = new Mapifier(object -> {
+				mapifier = new Mapifier(o -> {
 					var map = newMap();
 					var i = 0;
-					for (var o : (Collection<?>) object)
-						map.put(i++, apply_(mapifier1.mapify, o));
+					for (var o_ : (Collection<?>) o)
+						map.put(i++, apply_(mapifier1.mapify, o_));
 					return map;
-				}, object -> {
-					var map = (Map<?, ?>) object;
+				}, o -> {
+					var map = (Map<?, ?>) o;
 					var object1 = (Collection<Object>) Object_.instantiate(clazz);
 					var i = 0;
 					while (map.containsKey(i))
@@ -177,14 +177,14 @@ public class Mapify {
 			} else if (mapClasses.contains(clazz)) {
 				var km = getMapifier(typeArgs[0]);
 				var vm = getMapifier(typeArgs[1]);
-				mapifier = new Mapifier(object -> {
+				mapifier = new Mapifier(o -> {
 					return Read //
-							.from2((Map<?, ?>) object) //
+							.from2((Map<?, ?>) o) //
 							.map2((k, v) -> apply_(km.unmapify, k), (k, v) -> apply_(vm.mapify, v)) //
 							.toMap();
-				}, object -> {
+				}, o -> {
 					var object1 = (Map<Object, Object>) Object_.instantiate(clazz);
-					((Map<?, ?>) object).forEach((k, v) -> object1.put(apply_(km.unmapify, k), apply_(vm.unmapify, v)));
+					((Map<?, ?>) o).forEach((k, v) -> object1.put(apply_(km.unmapify, k), apply_(vm.unmapify, v)));
 					return object1;
 				});
 			} else
