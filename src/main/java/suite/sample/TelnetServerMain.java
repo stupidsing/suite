@@ -21,7 +21,7 @@ public class TelnetServerMain extends ExecutableProgram {
 	}
 
 	@Override
-	protected boolean run(String[] args) throws IOException {
+	protected boolean run(String[] args) {
 		new SocketUtil().listenIo(2323, (sis, sos) -> new Server().serve(sis, sos));
 		return true;
 	}

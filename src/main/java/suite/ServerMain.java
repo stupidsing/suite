@@ -43,7 +43,7 @@ public class ServerMain extends ExecutableProgram {
 				+ "<html>" //
 				+ "<br/>method = " + request.method //
 				+ "<br/>server = " + request.server //
-				+ "<br/>path = " + request.path //
+				+ "<br/>paths = " + request.paths //
 				+ "<br/>attrs = " + HttpHeaderUtil.getAttrs(request.query) //
 				+ "<br/>headers = " + request.headers //
 				+ "</html>"));

@@ -65,11 +65,11 @@ public class HttpSessionController {
 			Session session = sessionId != null ? sessionManager.get(sessionId) : null;
 			HttpResponse response;
 
-			if (Objects.equals(request.path, IList.of("login"))) {
+			if (Objects.equals(request.paths, IList.of("login"))) {
 				var attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
 				var username = attrs.get("username");
 				var password = attrs.get("password");
-				var path = HttpHeaderUtil.getPath(attrs.get("path"));
+				var paths = HttpHeaderUtil.getPaths(attrs.get("path"));
 
 				if (authenticator.authenticate(username, password)) {
 					sessionManager.put(sessionId = generateRandomSessionId(), session = new Session(username, current));
@@ -77,15 +77,15 @@ public class HttpSessionController {
 					var request1 = new HttpRequest( //
 							request.method, //
 							request.server, //
-							path, //
+							paths, //
 							request.query, //
 							request.headers, //
 							request.inputStream);
 
 					response = showProtectedPage(request1, sessionId);
 				} else
-					response = showLoginPage(path, true);
-			} else if (Objects.equals(request.path, IList.of("logout"))) {
+					response = showLoginPage(paths, true);
+			} else if (Objects.equals(request.paths, IList.of("logout"))) {
 				if (sessionId != null)
 					sessionManager.remove(sessionId);
 
@@ -94,7 +94,7 @@ public class HttpSessionController {
 				session.lastRequestDt.update(current);
 				response = showProtectedPage(request, sessionId);
 			} else
-				response = showLoginPage(request.path, false);
+				response = showLoginPage(request.paths, false);
 
 			return response;
 		}

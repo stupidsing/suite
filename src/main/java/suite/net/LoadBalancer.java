@@ -1,6 +1,5 @@
 package suite.net;
 
-import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
@@ -27,7 +26,7 @@ public class LoadBalancer {
 		this.servers = servers;
 	}
 
-	public void run() throws IOException {
+	public void run() {
 		var running = BooMutable.true_();
 
 		var probe = new Thread(() -> {

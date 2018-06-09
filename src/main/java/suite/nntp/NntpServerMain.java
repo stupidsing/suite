@@ -30,12 +30,12 @@ public class NntpServerMain extends ExecutableProgram {
 	}
 
 	@Override
-	protected boolean run(String[] args) throws IOException {
+	protected boolean run(String[] args) {
 		run();
 		return true;
 	}
 
-	private void run() throws IOException {
+	private void run() {
 		new SocketUtil().listenIo(119, (sis, sos) -> new Server().serve(sis, sos));
 	}
 

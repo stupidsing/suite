@@ -1,6 +1,5 @@
 package suite.http;
 
-import java.io.IOException;
 import java.net.Socket;
 
 import suite.Constants;
@@ -9,7 +8,6 @@ import suite.os.SocketUtil;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.Read;
 import suite.util.Copy;
-import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow;
 import suite.util.String_;
@@ -36,14 +34,6 @@ public class HttpProxy {
 	}
 
 	public void serve() {
-		try {
-			serve_();
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
-	}
-
-	private void serve_() throws IOException {
 		new SocketUtil().listenIo(port, (is, os) -> {
 			var line = Util.readLine(is);
 			LogUtil.info("PROXY " + line);

@@ -26,7 +26,7 @@ public interface HttpHandler {
 			var path = root;
 			long size;
 
-			for (var p : request.path)
+			for (var p : request.paths)
 				if (!String_.equals(p, ".."))
 					path = path.resolve(p);
 

@@ -23,7 +23,7 @@ public class SocketUtil {
 		public void serve(Reader reader, PrintWriter writer) throws IOException;
 	}
 
-	public void listenRw(int port, Rw rw) throws IOException {
+	public void listenRw(int port, Rw rw) {
 		listenIo(port, (is, os) -> {
 			try (var reader = new BufferedReader(new InputStreamReader(is, Constants.charset)); var writer = new PrintWriter(os)) {
 				rw.serve(reader, writer);
@@ -31,7 +31,7 @@ public class SocketUtil {
 		});
 	}
 
-	public void listenIo(int port, Io io) throws IOException {
+	public void listenIo(int port, Io io) {
 		var executor = Thread_.newExecutor();
 
 		try (var server = new ServerSocket(port)) {
@@ -48,6 +48,8 @@ public class SocketUtil {
 					}
 				});
 			}
+		} catch (IOException ex) {
+			throw new RuntimeException(ex);
 		} finally {
 			executor.shutdown();
 		}

@@ -26,7 +26,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 	}
 
 	@Override
-	protected boolean run(String[] args) throws IOException {
+	protected boolean run(String[] args) {
 		run((headers, os) -> {
 			var writer = new OutputStreamWriter(os, Constants.charset);
 			writer.write("<html>" + headers + "</html>");
@@ -34,7 +34,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 		return true;
 	}
 
-	private void run(Handler handler) throws IOException {
+	private void run(Handler handler) {
 		new SocketUtil().listenIo(4000, (is, os) -> {
 			var headers = readHeaders(is);
 

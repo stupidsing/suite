@@ -25,7 +25,7 @@ public class Connector {
 		}
 	}
 
-	public void listen() throws IOException {
+	public void listen() {
 		new SocketUtil().listenRw(5151, (reader, writer) -> writer.println("Hello World"));
 	}
 

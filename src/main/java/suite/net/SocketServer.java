@@ -14,12 +14,12 @@ import suite.util.FunUtil.Fun;
 
 public class SocketServer {
 
-	public boolean run() throws IOException {
+	public boolean run() {
 		listen(bytes -> bytes);
 		return true;
 	}
 
-	private void listen(Fun<Bytes, Bytes> handle) throws IOException {
+	private void listen(Fun<Bytes, Bytes> handle) {
 		new SocketUtil().listenIo(5151, (is, os) -> {
 			var in = read(is, 65536);
 			var out = handle.apply(in);

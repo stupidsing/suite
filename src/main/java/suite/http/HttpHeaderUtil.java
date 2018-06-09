@@ -13,13 +13,15 @@ import suite.util.String_;
 
 public class HttpHeaderUtil {
 
-	public static IList<String> getPath(String pathString) {
+	public static IList<String> getPaths(String pathString) {
 		var arr = pathString.split("/");
-		var path = IList.<String> end();
-		for (var i = arr.length - 1; i >= 0; i--)
-			if (!arr[i].isEmpty())
-				path = IList.cons(arr[i], path);
-		return path;
+		var paths = IList.<String> end();
+		for (var i = arr.length - 1; i >= 0; i--) {
+			String p = arr[i];
+			if (!p.isEmpty() && !String_.equals(p, ".."))
+				paths = IList.cons(p, paths);
+		}
+		return paths;
 	}
 
 	public static Map<String, String> getCookieAttrs(String query) {
