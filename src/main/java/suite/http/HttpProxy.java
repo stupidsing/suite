@@ -55,7 +55,7 @@ public class HttpProxy {
 
 		new SocketUtil().listenIo(port, (is, os) -> {
 			var request = httpIo.readRequest(is);
-			String path = request.path();
+			var path = request.path();
 			LogUtil.info("PROXY " + path);
 
 			try (var socket1 = connect(path); //
