@@ -53,7 +53,7 @@ public class ServerMain extends ExecutableProgram {
 				.put("path", HttpHandler.ofPath(Constants.tmp)) //
 				.put("site", HttpHandler.ofSession(authenticator, handler0)));
 
-		new HttpServe().serve(handler1);
+		new HttpServe(8051).serve(handler1);
 	}
 
 	private void runScheduler() {

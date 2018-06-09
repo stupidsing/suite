@@ -24,10 +24,6 @@ public class HttpProxy {
 	private int port;
 	private Fun<String, IntObjPair<String>> target;
 
-	public HttpProxy() {
-		this(8051, path -> IntObjPair.of(9051, "127.0.0.1"));
-	}
-
 	public HttpProxy(int port, Fun<String, IntObjPair<String>> target) {
 		this.port = port;
 		this.target = target;

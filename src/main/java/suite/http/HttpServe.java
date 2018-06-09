@@ -19,10 +19,6 @@ public class HttpServe {
 	private HttpIo httpIo = new HttpIo();
 	private int port;
 
-	public HttpServe() {
-		this(8051);
-	}
-
 	public HttpServe(int port) {
 		this.port = port;
 	}
