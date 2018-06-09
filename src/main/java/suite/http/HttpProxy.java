@@ -41,9 +41,8 @@ public class HttpProxy {
 			var url = line.split(" ")[1];
 			var pp = String_.split2(url, "://");
 			var path = pp != null ? String_.split2l(pp.t1, "/").t1 : url;
-			var client = target.apply(path).map((port1, host1) -> Rethrow.ex(() -> new Socket(host1, port1)));
 
-			try (var socket1 = client; //
+			try (var socket1 = connect(path); //
 					var is0 = is; //
 					var os0 = os; //
 					var is1 = socket1.getInputStream(); //
@@ -53,6 +52,29 @@ public class HttpProxy {
 				Thread_.startJoin(threads);
 			}
 		});
+	}
+
+	public void serve1() {
+		var httpIo = new HttpIo();
+
+		new SocketUtil().listenIo(port, (is, os) -> {
+			var request = httpIo.readRequest(is);
+			String path = request.path();
+			LogUtil.info("PROXY " + path);
+
+			try (var socket1 = connect(path); //
+					var is0 = is; //
+					var os0 = os; //
+					var is1 = socket1.getInputStream(); //
+					var os1 = socket1.getOutputStream();) {
+				httpIo.writeRequest(os1, request);
+				httpIo.writeResponse(os0, httpIo.readResponse(is1));
+			}
+		});
+	}
+
+	private Socket connect(String path) {
+		return target.apply(path).map((port1, host1) -> Rethrow.ex(() -> new Socket(host1, port1)));
 	}
 
 }

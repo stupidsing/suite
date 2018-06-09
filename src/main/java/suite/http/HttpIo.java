@@ -58,7 +58,7 @@ public class HttpIo {
 
 	public void writeRequest(OutputStream os, HttpRequest request) throws IOException {
 		var server = request.server;
-		var path = request.paths.streamlet().fold("", (s0, s1) -> s0 + "/" + s1);
+		var path = request.path();
 		var url = server != null ? "http://" + server + "/" + path : path;
 
 		var sb = new StringBuilder();

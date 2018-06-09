@@ -42,6 +42,10 @@ public class HttpRequest {
 		this.inputStream = inputStream;
 	}
 
+	public String path() {
+		return paths.streamlet().fold("", (s0, s1) -> s0 + "/" + s1);
+	}
+
 	public Pair<String, HttpRequest> split() {
 		if (!paths.isEmpty())
 			return Pair.of(paths.head, new HttpRequest(method, server, paths.tail, query, headers, inputStream));
