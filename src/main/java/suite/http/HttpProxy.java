@@ -17,7 +17,7 @@ import suite.util.Util;
 /**
  * A very crude HTTP proxy.
  *
- * @author yw.sing
+ * @author ywsing
  */
 public class HttpProxy {
 

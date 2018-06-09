@@ -12,7 +12,7 @@ import suite.os.SocketUtil;
  *
  * TODO direct output without buffering
  *
- * @author yw.sing
+ * @author ywsing
  */
 public class HttpServe {
 
