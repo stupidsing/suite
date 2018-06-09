@@ -50,6 +50,7 @@ public class ServerMain extends ExecutableProgram {
 
 		var handler1 = HttpHandler.ofDispatch(IMap //
 				.<String, HttpHandler> empty() //
+				.put("hello", HttpHandler.ofData("Hello world")) //
 				.put("path", HttpHandler.ofPath(Constants.tmp)) //
 				.put("site", HttpHandler.ofSession(authenticator, handler0)));
 

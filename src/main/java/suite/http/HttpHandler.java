@@ -13,6 +13,10 @@ import suite.util.To;
 
 public interface HttpHandler {
 
+	public static HttpHandler ofData(String data) {
+		return request -> HttpResponse.of(To.outlet(data));
+	}
+
 	public static HttpHandler ofDispatch(IMap<String, HttpHandler> map) {
 		return request -> {
 			var p = request.split();
