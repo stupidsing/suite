@@ -29,7 +29,7 @@ public class HttpProxy {
 		this.target = target;
 	}
 
-	public void serve() {
+	public void serve0() {
 		new SocketUtil().listenIo(port, (is, os) -> {
 			var line = Util.readLine(is);
 			LogUtil.info("PROXY " + line);
@@ -50,21 +50,32 @@ public class HttpProxy {
 		});
 	}
 
-	public void serve1() {
+	public void serve() {
 		var httpIo = new HttpIo();
 
 		new SocketUtil().listenIo(port, (is, os) -> {
-			var request = httpIo.readRequest(is);
-			var path = request.path();
+			var request0 = httpIo.readRequest(is);
+			var path = request0.path();
 			LogUtil.info("PROXY " + path);
+
+			var headers1 = request0.headers.remove("Connection").put("Connection", "close");
+
+			var request1 = new HttpRequest( //
+					request0.method, //
+					request0.server, //
+					request0.paths, //
+					request0.query, //
+					headers1, //
+					request0.inputStream);
 
 			try (var socket1 = connect(path); //
 					var is0 = is; //
 					var os0 = os; //
 					var is1 = socket1.getInputStream(); //
 					var os1 = socket1.getOutputStream();) {
-				httpIo.writeRequest(os1, request);
-				httpIo.writeResponse(os0, httpIo.readResponse(is1));
+				var th0 = Thread_.newThread(() -> httpIo.writeRequest(os1, request1));
+				var th1 = Thread_.newThread(() -> httpIo.writeResponse(os0, httpIo.readResponse(is1)));
+				Thread_.startJoin(Read.each(th0, th1));
 			}
 		});
 	}

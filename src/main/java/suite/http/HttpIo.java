@@ -59,7 +59,7 @@ public class HttpIo {
 	public void writeRequest(OutputStream os, HttpRequest request) throws IOException {
 		var server = request.server;
 		var path = request.path();
-		var url = server != null ? "http://" + server + "/" + path : path;
+		var url = !server.isEmpty() ? "http://" + server + "/" + path : path;
 
 		var sb = new StringBuilder();
 		sb.append(request.method + " " + url + " HTTP/1.1\r\n");
