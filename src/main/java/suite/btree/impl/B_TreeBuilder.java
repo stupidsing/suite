@@ -108,12 +108,12 @@ public class B_TreeBuilder<Key, Value> {
 	}
 
 	public static <Key> Pair<B_Tree<Key, Integer>, KeyDataStore<Key>> build( //
-			Path path, //
 			boolean isNew, //
-			Serializer<Key> ks, //
-			Comparator<Key> cmp, //
+			Path path, //
 			int pageSize, //
-			int nPages) {
+			int nPages, //
+			Serializer<Key> ks, //
+			Comparator<Key> cmp) {
 		if (isNew)
 			Rethrow.ex(() -> Files.deleteIfExists(path));
 

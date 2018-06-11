@@ -16,13 +16,10 @@ public class B_TreeFileSystemImpl implements FileSystem {
 	private FileSystemMutator mutator;
 
 	public B_TreeFileSystemImpl(Path path, boolean isNew, int pageSize) {
-		var pair = B_TreeBuilder.build( //
-				path, //
-				isNew, //
-				keyUtil.serializer(), //
-				Bytes.comparator, //
-				pageSize, //
-				pageSize);
+		var serializer = keyUtil.serializer();
+		var cmp = Bytes.comparator;
+		var pair = B_TreeBuilder.build(isNew, path, pageSize, pageSize, serializer, cmp);
+
 		b_tree = pair.t0;
 		var b_treeMutator = pair.t1;
 		mutator = new FileSystemMutatorImpl(keyUtil, () -> b_treeMutator);
