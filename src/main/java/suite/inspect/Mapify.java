@@ -14,11 +14,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import suite.primitive.Ints_;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 import suite.util.Rethrow;
+import suite.util.Switch;
+import suite.util.To;
 import suite.util.Util;
 
 /**
@@ -86,34 +88,21 @@ public class Mapify {
 
 	@SuppressWarnings("unchecked")
 	private Mapifier newMapifier(Type type) {
-		Mapifier mapifier;
-
-		if (type instanceof Class) {
-			var clazz = (Class<?>) type;
-
+		return new Switch<Mapifier>(type //
+		).applyIf(Class.class, clazz -> {
 			if (Util.isSimple(clazz))
-				mapifier = new Mapifier(id, id);
+				return new Mapifier(id, id);
 			else if (clazz.isArray()) {
 				var componentType = clazz.getComponentType();
 				var mapifier1 = getMapifier(componentType);
-				mapifier = new Mapifier(o -> {
-					var map = newMap();
-					var length = Array.getLength(o);
-					for (var i = 0; i < length; i++)
-						map.put(i, apply_(mapifier1.mapify, Array.get(o, i)));
-					return map;
+				return new Mapifier(o -> {
+					return Ints_.range(Array.getLength(o)).map2(i -> i, i -> apply_(mapifier1.mapify, Array.get(o, i))).toMap();
 				}, o -> {
 					var map = (Map<?, ?>) o;
-					var objects = Array.newInstance(componentType, map.size());
-					var i = 0;
-					while (map.containsKey(i)) {
-						Array.set(objects, i, apply_(mapifier1.unmapify, map.get(i)));
-						i++;
-					}
-					return objects;
+					return To.array_(map.size(), componentType, i -> apply_(mapifier1.unmapify, map.get(i)));
 				});
 			} else if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) // polymorphism
-				mapifier = new Mapifier(o -> {
+				return new Mapifier(o -> {
 					var clazz1 = o.getClass();
 					var m = apply_(getMapifier(clazz1).mapify, o);
 					if (m instanceof Map) {
@@ -139,7 +128,7 @@ public class Mapify {
 						.map(field -> new FieldInfo(field, field.getName(), getMapifier(field.getGenericType()))) //
 						.toList();
 
-				mapifier = new Mapifier(o -> {
+				return new Mapifier(o -> {
 					return Read //
 							.from(fis) //
 							.map2(fi -> fi.name, fi -> apply_(fi.mapifier.mapify, Rethrow.ex(() -> fi.field.get(o)))) //
@@ -152,15 +141,14 @@ public class Mapify {
 					return object1;
 				}));
 			}
-		} else if (type instanceof ParameterizedType) {
-			var pt = (ParameterizedType) type;
+		}).applyIf(ParameterizedType.class, pt -> {
 			var rawType = pt.getRawType();
 			var typeArgs = pt.getActualTypeArguments();
 			var clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (collectionClasses.contains(clazz)) {
 				var mapifier1 = getMapifier(typeArgs[0]);
-				mapifier = new Mapifier(o -> {
+				return new Mapifier(o -> {
 					var map = newMap();
 					var i = 0;
 					for (var o_ : (Collection<?>) o)
@@ -177,7 +165,7 @@ public class Mapify {
 			} else if (mapClasses.contains(clazz)) {
 				var km = getMapifier(typeArgs[0]);
 				var vm = getMapifier(typeArgs[1]);
-				mapifier = new Mapifier(o -> {
+				return new Mapifier(o -> {
 					return Read //
 							.from2((Map<?, ?>) o) //
 							.map2((k, v) -> apply_(km.unmapify, k), (k, v) -> apply_(vm.mapify, v)) //
@@ -188,11 +176,8 @@ public class Mapify {
 					return object1;
 				});
 			} else
-				mapifier = getMapifier(rawType);
-		} else
-			mapifier = Fail.t("unrecognized type " + type);
-
-		return mapifier;
+				return getMapifier(rawType);
+		}).nonNullResult();
 	}
 
 	private Object apply_(Iterate<Object> fun, Object object) {

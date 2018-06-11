@@ -87,21 +87,18 @@ public class Nodify {
 
 	@SuppressWarnings("unchecked")
 	private Nodifier newNodifier(Type type) {
-		Nodifier nodifier;
-
-		if (type instanceof Class) {
-			var clazz = (Class<?>) type;
-
+		return new Switch<Nodifier>(type //
+		).applyIf(Class.class, clazz -> {
 			if (clazz == boolean.class)
-				nodifier = new Nodifier(o -> Atom.of(o.toString()), n -> n == Atom.TRUE);
+				return new Nodifier(o -> Atom.of(o.toString()), n -> n == Atom.TRUE);
 			else if (clazz == int.class)
-				nodifier = new Nodifier(o -> Int.of((Integer) o), n -> ((Int) n).number);
+				return new Nodifier(o -> Int.of((Integer) o), n -> ((Int) n).number);
 			else if (clazz == Chars.class)
-				nodifier = new Nodifier(o -> new Str(o.toString()), n -> To.chars(((Str) n).value));
+				return new Nodifier(o -> new Str(o.toString()), n -> To.chars(((Str) n).value));
 			else if (clazz == String.class)
-				nodifier = new Nodifier(o -> new Str(o.toString()), n -> ((Str) n).value);
+				return new Nodifier(o -> new Str(o.toString()), n -> ((Str) n).value);
 			else if (clazz.isEnum())
-				nodifier = new Nodifier(o -> Atom.of(o.toString()),
+				return new Nodifier(o -> Atom.of(o.toString()),
 						Read.from(clazz.getEnumConstants()).toMap(e -> Atom.of(e.toString()))::get);
 			else if (clazz.isArray()) {
 				var componentType = clazz.getComponentType();
@@ -112,19 +109,15 @@ public class Nodify {
 						node = Tree.of(TermOp.OR____, apply_(nodifier1, Array.get(o, i)), node);
 					return node;
 				};
-				nodifier = new Nodifier(forward, n -> {
+				return new Nodifier(forward, n -> {
 					var list = Read //
 							.from(Tree.iter(n, TermOp.OR____)) //
 							.map(n_ -> apply_(nodifier1, n_)) //
 							.toList();
-					var size = list.size();
-					var objects = Array.newInstance(componentType, size);
-					for (var i = 0; i < size; i++)
-						Array.set(objects, i, list.get(i));
-					return objects;
+					return To.array_(list.size(), componentType, list::get);
 				});
 			} else if (clazz.isInterface()) // polymorphism
-				nodifier = new Nodifier(o -> {
+				return new Nodifier(o -> {
 					var clazz1 = o.getClass();
 					var n = apply_(getNodifier(clazz1), o);
 					return Tree.of(TermOp.COLON_, Atom.of(clazz1.getName()), n);
@@ -144,7 +137,8 @@ public class Nodify {
 						.toList();
 
 				var pairs = Read.from(fieldInfos).map(f -> Pair.of(Atom.of(f.name), f)).toList();
-				nodifier = new Nodifier(o -> Rethrow.ex(() -> {
+
+				return new Nodifier(o -> Rethrow.ex(() -> {
 					var dict = Dict.of();
 					for (var pair : pairs) {
 						var fieldInfo = pair.t1;
@@ -163,15 +157,14 @@ public class Nodify {
 					return o1;
 				}));
 			}
-		} else if (type instanceof ParameterizedType) {
-			var pt = (ParameterizedType) type;
+		}).applyIf(ParameterizedType.class, pt -> {
 			var rawType = pt.getRawType();
 			var typeArgs = pt.getActualTypeArguments();
 			var clazz = rawType instanceof Class ? (Class<?>) rawType : null;
 
 			if (collectionClasses.contains(clazz)) {
 				var nodifier1 = getNodifier(typeArgs[0]);
-				nodifier = new Nodifier(o -> {
+				return new Nodifier(o -> {
 					Tree start = Tree.of(null, null, null), tree = start;
 					for (var o_ : (Collection<?>) o) {
 						var tree0 = tree;
@@ -188,7 +181,7 @@ public class Nodify {
 			} else if (mapClasses.contains(clazz)) {
 				var kn = getNodifier(typeArgs[0]);
 				var vn = getNodifier(typeArgs[1]);
-				nodifier = new Nodifier(o -> {
+				return new Nodifier(o -> {
 					var dict = Dict.of();
 					for (var e : ((Map<?, ?>) o).entrySet())
 						dict.map.put(apply_(kn, e.getKey()), Reference.of(apply_(vn, e.getValue())));
@@ -201,11 +194,8 @@ public class Nodify {
 					return object1;
 				});
 			} else
-				nodifier = getNodifier(rawType);
-		} else
-			nodifier = Fail.t("unrecognized type " + type);
-
-		return nodifier;
+				return getNodifier(rawType);
+		}).nonNullResult();
 	}
 
 	private Node apply_(Nodifier nodifier, Object object) {

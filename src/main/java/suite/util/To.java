@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringWriter;
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -44,6 +45,13 @@ public class To {
 		var ts = Array_.newArray(clazz, length);
 		for (var i = 0; i < length; i++)
 			ts[i] = f.apply(i);
+		return ts;
+	}
+
+	public static Object array_(int length, Class<?> clazz, Int_Obj<Object> f) {
+		var ts = Array.newInstance(clazz, length);
+		for (var i = 0; i < length; i++)
+			Array.set(ts, i, f.apply(i));
 		return ts;
 	}
 
