@@ -66,12 +66,12 @@ public class Mapify {
 	}
 
 	public <T> Object mapify(Class<T> clazz, T t) {
-		return apply_(getMapifier(clazz).mapify, t);
+		return apply_(t, getMapifier(clazz).mapify);
 	}
 
 	public <T> T unmapify(Class<T> clazz, Object object) {
 		@SuppressWarnings("unchecked")
-		T t = (T) apply_(getMapifier(clazz).unmapify, object);
+		T t = (T) apply_(object, getMapifier(clazz).unmapify);
 		return t;
 	}
 
@@ -79,8 +79,8 @@ public class Mapify {
 		var mapifier = mapifiers.get(type);
 		if (mapifier == null) {
 			mapifiers.put(type, new Mapifier( //
-					o -> apply_(getMapifier(type).mapify, o), //
-					o -> apply_(getMapifier(type).unmapify, o)));
+					o -> apply_(o, getMapifier(type).mapify), //
+					o -> apply_(o, getMapifier(type).unmapify)));
 			mapifiers.put(type, mapifier = newMapifier(type));
 		}
 		return mapifier;
@@ -96,15 +96,15 @@ public class Mapify {
 				var componentType = clazz.getComponentType();
 				var mapifier1 = getMapifier(componentType);
 				return new Mapifier(o -> {
-					return Ints_.range(Array.getLength(o)).map2(i -> i, i -> apply_(mapifier1.mapify, Array.get(o, i))).toMap();
+					return Ints_.range(Array.getLength(o)).map2(i -> i, i -> apply_(Array.get(o, i), mapifier1.mapify)).toMap();
 				}, o -> {
 					var map = (Map<?, ?>) o;
-					return To.array_(map.size(), componentType, i -> apply_(mapifier1.unmapify, map.get(i)));
+					return To.array_(map.size(), componentType, i -> apply_(map.get(i), mapifier1.unmapify));
 				});
 			} else if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) // polymorphism
 				return new Mapifier(o -> {
 					var clazz1 = o.getClass();
-					var m = apply_(getMapifier(clazz1).mapify, o);
+					var m = apply_(o, getMapifier(clazz1).mapify);
 					if (m instanceof Map) {
 						var map = (Map<String, String>) m;
 						map.put("@class", clazz1.getName());
@@ -117,7 +117,7 @@ public class Mapify {
 						var map = (Map<?, ?>) o;
 						var className = map.get("@class").toString();
 						var clazz1 = Rethrow.ex(() -> Class.forName(className));
-						return apply_(getMapifier(clazz1).unmapify, o);
+						return apply_(o, getMapifier(clazz1).unmapify);
 					} else
 						// happens when an enum implements an interface
 						return o;
@@ -131,13 +131,13 @@ public class Mapify {
 				return new Mapifier(o -> {
 					return Read //
 							.from(fis) //
-							.map2(fi -> fi.name, fi -> apply_(fi.mapifier.mapify, Rethrow.ex(() -> fi.field.get(o)))) //
+							.map2(fi -> fi.name, fi -> apply_(Rethrow.ex(() -> fi.field.get(o)), fi.mapifier.mapify)) //
 							.toMap();
 				}, o -> Rethrow.ex(() -> {
 					var map = (Map<?, ?>) o;
 					var object1 = Object_.new_(clazz);
 					for (var fi : fis)
-						fi.field.set(object1, apply_(fi.mapifier.unmapify, map.get(fi.name)));
+						fi.field.set(object1, apply_(map.get(fi.name), fi.mapifier.unmapify));
 					return object1;
 				}));
 			}
@@ -152,14 +152,14 @@ public class Mapify {
 					var map = newMap();
 					var i = 0;
 					for (var o_ : (Collection<?>) o)
-						map.put(i++, apply_(mapifier1.mapify, o_));
+						map.put(i++, apply_(o_, mapifier1.mapify));
 					return map;
 				}, o -> {
 					var map = (Map<?, ?>) o;
 					var object1 = (Collection<Object>) Object_.instantiate(clazz);
 					var i = 0;
 					while (map.containsKey(i))
-						object1.add(apply_(mapifier1.unmapify, map.get(i++)));
+						object1.add(apply_(map.get(i++), mapifier1.unmapify));
 					return object1;
 				});
 			} else if (mapClasses.contains(clazz)) {
@@ -168,11 +168,11 @@ public class Mapify {
 				return new Mapifier(o -> {
 					return Read //
 							.from2((Map<?, ?>) o) //
-							.map2((k, v) -> apply_(km.unmapify, k), (k, v) -> apply_(vm.mapify, v)) //
+							.map2((k, v) -> apply_(k, km.unmapify), (k, v) -> apply_(v, vm.mapify)) //
 							.toMap();
 				}, o -> {
 					var object1 = (Map<Object, Object>) Object_.instantiate(clazz);
-					((Map<?, ?>) o).forEach((k, v) -> object1.put(apply_(km.unmapify, k), apply_(vm.unmapify, v)));
+					((Map<?, ?>) o).forEach((k, v) -> object1.put(apply_(k, km.unmapify), apply_(v, vm.unmapify)));
 					return object1;
 				});
 			} else
@@ -180,7 +180,7 @@ public class Mapify {
 		}).nonNullResult();
 	}
 
-	private Object apply_(Iterate<Object> fun, Object object) {
+	private Object apply_(Object object, Iterate<Object> fun) {
 		return object != null ? fun.apply(object) : null;
 	}
 

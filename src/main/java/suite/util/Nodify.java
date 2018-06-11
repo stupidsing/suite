@@ -67,19 +67,19 @@ public class Nodify {
 	}
 
 	public <T> Node nodify(Class<T> clazz, T t) {
-		return apply_(getNodifier(clazz), t);
+		return apply_(t, getNodifier(clazz));
 	}
 
 	public <T> T unnodify(Class<T> clazz, Node node) {
 		@SuppressWarnings("unchecked")
-		var t = (T) apply_(getNodifier(clazz), node);
+		var t = (T) apply_(node, getNodifier(clazz));
 		return t;
 	}
 
 	private Nodifier getNodifier(Type type) {
 		var nodifier = nodifiers.get(type);
 		if (nodifier == null) {
-			nodifiers.put(type, new Nodifier(o -> apply_(getNodifier(type), o), n -> apply_(getNodifier(type), n)));
+			nodifiers.put(type, new Nodifier(o -> apply_(o, getNodifier(type)), n -> apply_(n, getNodifier(type))));
 			nodifiers.put(type, nodifier = newNodifier(type));
 		}
 		return nodifier;
@@ -106,26 +106,26 @@ public class Nodify {
 				Fun<Object, Node> forward = o -> {
 					Node node = Atom.NIL;
 					for (var i = Array.getLength(o) - 1; 0 <= i; i--)
-						node = Tree.of(TermOp.OR____, apply_(nodifier1, Array.get(o, i)), node);
+						node = Tree.of(TermOp.OR____, apply_(Array.get(o, i), nodifier1), node);
 					return node;
 				};
 				return new Nodifier(forward, n -> {
 					var list = Read //
 							.from(Tree.iter(n, TermOp.OR____)) //
-							.map(n_ -> apply_(nodifier1, n_)) //
+							.map(n_ -> apply_(n_, nodifier1)) //
 							.toList();
 					return To.array_(list.size(), componentType, list::get);
 				});
 			} else if (clazz.isInterface()) // polymorphism
 				return new Nodifier(o -> {
 					var clazz1 = o.getClass();
-					var n = apply_(getNodifier(clazz1), o);
+					var n = apply_(o, getNodifier(clazz1));
 					return Tree.of(TermOp.COLON_, Atom.of(clazz1.getName()), n);
 				}, n -> {
 					var tree = Tree.decompose(n, TermOp.COLON_);
 					if (tree != null) {
 						var clazz1 = Rethrow.ex(() -> Class.forName(((Atom) tree.getLeft()).name));
-						return apply_(getNodifier(clazz1), tree.getRight());
+						return apply_(tree.getRight(), getNodifier(clazz1));
 					} else
 						// happens when an enum implements an interface
 						return Fail.t("cannot instantiate enum from interfaces");
@@ -142,7 +142,7 @@ public class Nodify {
 					var dict = Dict.of();
 					for (var pair : pairs) {
 						var fieldInfo = pair.t1;
-						var value = apply_(fieldInfo.nodifier, fieldInfo.field.get(o));
+						var value = apply_(fieldInfo.field.get(o), fieldInfo.nodifier);
 						dict.map.put(pair.t0, Reference.of(value));
 					}
 					return dict;
@@ -152,7 +152,7 @@ public class Nodify {
 					for (var pair : pairs) {
 						var fieldInfo = pair.t1;
 						var value = map.get(pair.t0).finalNode();
-						fieldInfo.field.set(o1, apply_(fieldInfo.nodifier, value));
+						fieldInfo.field.set(o1, apply_(value, fieldInfo.nodifier));
 					}
 					return o1;
 				}));
@@ -168,12 +168,12 @@ public class Nodify {
 					Tree start = Tree.of(null, null, null), tree = start;
 					for (var o_ : (Collection<?>) o) {
 						var tree0 = tree;
-						Tree.forceSetRight(tree0, tree = Tree.of(TermOp.OR____, apply_(nodifier1, o_), null));
+						Tree.forceSetRight(tree0, tree = Tree.of(TermOp.OR____, apply_(o_, nodifier1), null));
 					}
 					Tree.forceSetRight(tree, Atom.NIL);
 					return start.getRight();
 				}, n -> {
-					var list = Read.from(Tree.iter(n, TermOp.OR____)).map(n_ -> apply_(nodifier1, n_)).toList();
+					var list = Read.from(Tree.iter(n, TermOp.OR____)).map(n_ -> apply_(n_, nodifier1)).toList();
 					var o1 = (Collection<Object>) Object_.instantiate(clazz);
 					o1.addAll(list);
 					return o1;
@@ -184,13 +184,13 @@ public class Nodify {
 				return new Nodifier(o -> {
 					var dict = Dict.of();
 					for (var e : ((Map<?, ?>) o).entrySet())
-						dict.map.put(apply_(kn, e.getKey()), Reference.of(apply_(vn, e.getValue())));
+						dict.map.put(apply_(e.getKey(), kn), Reference.of(apply_(e.getValue(), vn)));
 					return dict;
 				}, n -> {
 					var map = ((Dict) n).map;
 					var object1 = (Map<Object, Object>) Object_.instantiate(clazz);
 					for (var e : map.entrySet())
-						object1.put(apply_(kn, e.getKey()), apply_(vn, e.getValue().finalNode()));
+						object1.put(apply_(e.getKey(), kn), apply_(e.getValue().finalNode(), vn));
 					return object1;
 				});
 			} else
@@ -198,11 +198,11 @@ public class Nodify {
 		}).nonNullResult();
 	}
 
-	private Node apply_(Nodifier nodifier, Object object) {
+	private Node apply_(Object object, Nodifier nodifier) {
 		return object != null ? nodifier.nodify.apply(object) : Atom.NULL;
 	}
 
-	private Object apply_(Nodifier nodifier, Node node) {
+	private Object apply_(Node node, Nodifier nodifier) {
 		return node != Atom.NULL ? nodifier.unnodify.apply(node) : null;
 	}
 
