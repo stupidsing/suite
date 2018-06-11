@@ -532,7 +532,7 @@ public class P4GenerateCode {
 					} else if (operator == TermOp.MINUS_) {
 						var pair = compileCommutativeTree(Insn.SUB, assoc, lhs, rhs);
 						if ((opResult = pair.t1) == rhs)
-							em.emit(amd64.instruction(Insn.NEG, pair.t1));
+							em.emit(amd64.instruction(Insn.NEG, opResult));
 					} else if (setInsn != null) {
 						var pair = compileCommutativeTree(Insn.CMP, assoc, lhs, rhs);
 						em.emit(amd64.instruction(pair.t0 == lhs ? setInsn : setRevInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
