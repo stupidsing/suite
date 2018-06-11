@@ -30,8 +30,8 @@ public class Inspect {
 	}
 
 	/**
-	 * @return true if both input value objects are of the same class and having
-	 *         all fields equal.
+	 * @return true if both input value objects are of the same class and having all
+	 *         fields equal.
 	 */
 	public <T> boolean equals(T o0, T o1) {
 		return new ObjectSupport<>(this::values).equals(o0, o1);
@@ -71,7 +71,7 @@ public class Inspect {
 
 		// do not display same field of different base classes
 		var names = new HashSet<>();
-		List<Field> parentFields = superClass != null ? fields(superClass) : List.of();
+		var parentFields = superClass != null ? fields(superClass) : List.<Field> of();
 		var childFields = Read //
 				.from(clazz.getDeclaredFields()) //
 				.filter(field -> {
@@ -103,7 +103,7 @@ public class Inspect {
 
 		// do not display same method of different base classes
 		var names = new HashSet<>();
-		List<Method> parentMethods = superClass != null ? methods(superClass) : List.of();
+		var parentMethods = superClass != null ? methods(superClass) : List.<Method> of();
 		var childMethods = Read //
 				.from(clazz.getDeclaredMethods()) //
 				.filter(method -> {
