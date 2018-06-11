@@ -38,7 +38,7 @@ public class B_TreeBuilder<Key, Value> {
 	private class B_TreeSuperblockSerializer implements Serializer<B_TreeImpl<Key, Value>.Superblock> {
 		private B_TreeImpl<Key, Value> b_tree;
 
-		public B_TreeSuperblockSerializer(B_TreeImpl<Key, Value> b_tree) {
+		private B_TreeSuperblockSerializer(B_TreeImpl<Key, Value> b_tree) {
 			this.b_tree = b_tree;
 		}
 
@@ -56,7 +56,7 @@ public class B_TreeBuilder<Key, Value> {
 	private class B_TreePageSerializer implements Serializer<B_TreeImpl<Key, Value>.Page> {
 		private B_TreeImpl<Key, Value> b_tree;
 
-		public B_TreePageSerializer(B_TreeImpl<Key, Value> b_tree) {
+		private B_TreePageSerializer(B_TreeImpl<Key, Value> b_tree) {
 			this.b_tree = b_tree;
 		}
 
