@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
+import suite.adt.pair.FixieArray;
 import suite.adt.pair.Pair;
 import suite.btree.B_Tree;
 import suite.file.PageFile;
@@ -117,7 +118,7 @@ public class B_TreeBuilder<Key, Value> {
 			Rethrow.ex(() -> Files.deleteIfExists(path));
 
 		var jpf = JournalledFileFactory.journalled(path, pageSize);
-		var b_tree = new B_TreeBuilder<>(ks, serialize.int_).build(jpf, cmp, nPages);
+		var b_tree = new B_TreeBuilder<>(ks, serialize.int_).build(jpf, nPages, cmp);
 
 		if (isNew) {
 			b_tree.create();
@@ -132,54 +133,36 @@ public class B_TreeBuilder<Key, Value> {
 		this.valueSerializer = valueSerializer;
 	}
 
-	public B_Tree<Key, Value> build(PageFile f, Comparator<Key> cmp, int nPages) {
+	public B_Tree<Key, Value> build(PageFile f, int nPages, Comparator<Key> cmp) {
 		var nSuperblockPages = 1;
 		var nAllocatorPages = nPages / pageSize;
-		int p0 = 0, p1 = p0 + nAllocatorPages, p2 = p1 + nSuperblockPages, p3 = p2 + nPages;
+
+		var p0 = 0;
+		var p1 = p0 + nAllocatorPages;
+		var p2 = p1 + nSuperblockPages;
+		var p3 = p2 + nPages;
 		var pfs = FileFactory.subPageFiles(f, p0, p1, p2, p3);
-		return build(cmp, pfs[0], pfs[1], pfs[2]);
-	}
 
-	public B_Tree<Key, Value> build(boolean isNew, Path path, Comparator<Key> cmp) {
-		var filename = path.getFileName();
-		var sbp = path.resolveSibling(filename + ".superblock");
-		var alp = path.resolveSibling(filename + ".alloc");
-		var p = path.resolveSibling(filename + ".pages");
+		return FixieArray.of(pfs).map((alf0, sbf0, pf0) -> {
+			var b_tree = new B_TreeImpl<Key, Value>(Object_.nullsFirst(cmp));
 
-		if (isNew)
-			for (var p_ : new Path[] { sbp, alp, p, })
-				Rethrow.ex(() -> Files.deleteIfExists(p_));
+			var als = serialize.bytes(pageSize);
+			var sbs = new B_TreeSuperblockSerializer(b_tree);
+			var pys = serialize.bytes(pageSize);
+			var ps = new B_TreePageSerializer(b_tree);
 
-		var b_tree = build(cmp, //
-				FileFactory.pageFile(alp, pageSize), //
-				FileFactory.pageFile(sbp, pageSize), //
-				FileFactory.pageFile(p, pageSize));
+			var alf = SerializedFileFactory.serialized(alf0, als);
+			var sbf = SerializedFileFactory.serialized(sbf0, sbs);
+			var pyf = SerializedFileFactory.serialized(pf0, pys);
+			var pf = SerializedFileFactory.serialized(pf0, ps);
 
-		if (isNew)
-			b_tree.create();
-
-		return b_tree;
-	}
-
-	private B_Tree<Key, Value> build(Comparator<Key> comparator, PageFile alf0, PageFile sbf0, PageFile pf0) {
-		var b_tree = new B_TreeImpl<Key, Value>(Object_.nullsFirst(comparator));
-
-		var als = serialize.bytes(pageSize);
-		var sbs = new B_TreeSuperblockSerializer(b_tree);
-		var pys = serialize.bytes(pageSize);
-		var ps = new B_TreePageSerializer(b_tree);
-
-		var alf = SerializedFileFactory.serialized(alf0, als);
-		var sbf = SerializedFileFactory.serialized(sbf0, sbs);
-		var pyf = SerializedFileFactory.serialized(pf0, pys);
-		var pf = SerializedFileFactory.serialized(pf0, ps);
-
-		b_tree.setAllocator(new AllocatorImpl(alf));
-		b_tree.setSuperblockPageFile(sbf);
-		b_tree.setPayloadFile(pyf);
-		b_tree.setPageFile(pf);
-		b_tree.setBranchFactor(16);
-		return b_tree;
+			b_tree.setAllocator(new AllocatorImpl(alf));
+			b_tree.setSuperblockPageFile(sbf);
+			b_tree.setPayloadFile(pyf);
+			b_tree.setPageFile(pf);
+			b_tree.setBranchFactor(16);
+			return b_tree;
+		});
 	}
 
 }
