@@ -178,7 +178,7 @@ public class Inspect {
 				} else if (t0 instanceof Collection)
 					return Read.from((Collection<?>) t0).map(this::rewriteField).toList();
 				else if (t0 instanceof Pair) {
-					Pair<?, ?> t1 = (Pair<?, ?>) t0;
+					var t1 = (Pair<?, ?>) t0;
 					return Pair.of(rewriteField(t1.t0), rewriteField(t1.t1));
 				} else
 					return t0;
