@@ -99,19 +99,24 @@ public class InterpretFunLazy {
 	}
 
 	private Node inferType(Node node) {
-		var e0 = IMap //
+		var env0 = IMap //
 				.<String, Node> empty() //
 				.put(TermOp.AND___.name, Suite.substitute("FUN .0 FUN .1 CONS .0 .1")) //
 				.put("fst", Suite.substitute("FUN (CONS .0 .1) .0")) //
 				.put("if", Suite.substitute("FUN BOOLEAN FUN .1 FUN .1 .1")) //
 				.put("snd", Suite.substitute("FUN (CONS .0 .1) .1"));
 
-		var e1 = Read.from2(TreeUtil.boolOperations).keys().fold(e0,
-				(e, o) -> e.put(o.name_(), Suite.substitute("FUN .0 FUN .0 BOOLEAN")));
-		var e2 = Read.from2(TreeUtil.intOperations).keys().fold(e1,
-				(e, o) -> e.put(o.name_(), Suite.substitute("FUN NUMBER FUN NUMBER NUMBER")));
+		var env1 = Read //
+				.from2(TreeUtil.boolOperations) //
+				.keys() //
+				.fold(env0, (e, o) -> e.put(o.name_(), Suite.substitute("FUN .0 FUN .0 BOOLEAN")));
 
-		return new InferType(e2).infer(node);
+		var env2 = Read //
+				.from2(TreeUtil.intOperations) //
+				.keys() //
+				.fold(env1, (e, o) -> e.put(o.name_(), Suite.substitute("FUN NUMBER FUN NUMBER NUMBER")));
+
+		return new InferType(env2).infer(node);
 	}
 
 	private class InferType {
@@ -145,13 +150,10 @@ public class InterpretFunLazy {
 				return tr;
 			}).match(Matcher.defvars, DEFVARS -> {
 				var tuple = Suite.pattern(".0 .1");
-				var arrays = Tree.iter(DEFVARS.list).map(tuple::match).collect();
-				var defs = arrays.map2(e -> v(e[0]), e -> e[1]).toMap();
-				var tvs = arrays.map2(e -> v(e[0]), e -> new Reference()).collect();
-				var env1 = tvs.fold(env, (e, v, tv) -> e.replace(v, tv));
+				var defs = Tree.iter(DEFVARS.list).map(tuple::match).map2(a -> v(a[0]), a -> a[1]).collect();
+				var env1 = defs.keys().fold(env, (e, v) -> e.replace(v, new Reference()));
 				var i1 = new InferType(env1);
-				for (var p : tvs)
-					bind(i1.infer(defs.get(p.t0)), p.t1);
+				defs.sink((v, def) -> bind(i1.infer(def), env1.get(v)));
 				return i1.infer(DEFVARS.do_);
 			}).match(Matcher.error, ERROR -> {
 				return new Reference();
