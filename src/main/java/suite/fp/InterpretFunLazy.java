@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 import suite.Suite;
 import suite.adt.Mutable;
 import suite.immutable.IMap;
+import suite.lp.Trail;
+import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.node.Atom;
 import suite.node.Data;
@@ -21,6 +23,7 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
+import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
@@ -41,11 +44,11 @@ public class InterpretFunLazy {
 		}
 	}
 
-	private static class Pair extends Node {
+	private static class Cons extends Node {
 		private Thunk fst;
 		private Thunk snd;
 
-		private Pair(Thunk fst, Thunk snd) {
+		private Cons(Thunk fst, Thunk snd) {
 			this.fst = fst;
 			this.snd = snd;
 		}
@@ -62,12 +65,14 @@ public class InterpretFunLazy {
 
 	public Thunk lazy(Node node) {
 		var parsed = parse(node);
+		inferType(parsed);
+
 		var df = new HashMap<String, Thunk>();
 
-		df.put(TermOp.AND___.name, bi((a, b) -> new Pair(a, b)));
-		df.put("fst", () -> new Fn(in -> ((Pair) in.get()).fst));
+		df.put(TermOp.AND___.name, bi((a, b) -> new Cons(a, b)));
+		df.put("fst", () -> new Fn(in -> ((Cons) in.get()).fst));
 		df.put("if", () -> new Fn(a -> () -> new Fn(b -> () -> new Fn(c -> a.get() == Atom.TRUE ? b : c))));
-		df.put("snd", () -> new Fn(in -> ((Pair) in.get()).snd));
+		df.put("snd", () -> new Fn(in -> ((Cons) in.get()).snd));
 
 		TreeUtil.boolOperations.forEach((k, fun) -> df.put(k.name_(), bi((a, b) -> b(fun.apply(compare(a.get(), b.get()), 0)))));
 		TreeUtil.intOperations.forEach((k, fun) -> df.put(k.name_(), bi((a, b) -> Int.of(fun.apply(i(a), i(b))))));
@@ -91,6 +96,112 @@ public class InterpretFunLazy {
 		return prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)) //
 				? parsed //
 				: Fail.t("cannot parse " + node);
+	}
+
+	private Node inferType(Node node) {
+		var e0 = IMap //
+				.<String, Node> empty() //
+				.put(TermOp.AND___.name, Suite.substitute("FUN .0 FUN .1 CONS .0 .1")) //
+				.put("fst", Suite.substitute("FUN (CONS .0 .1) .0")) //
+				.put("if", Suite.substitute("FUN BOOLEAN FUN .1 FUN .1 .1")) //
+				.put("snd", Suite.substitute("FUN (CONS .0 .1) .1"));
+
+		var e1 = Read.from2(TreeUtil.boolOperations).keys().fold(e0,
+				(e, o) -> e.put(o.name_(), Suite.substitute("FUN .0 FUN .0 BOOLEAN")));
+		var e2 = Read.from2(TreeUtil.intOperations).keys().fold(e1,
+				(e, o) -> e.put(o.name_(), Suite.substitute("FUN NUMBER FUN NUMBER NUMBER")));
+
+		return new InferType(e2).infer(node);
+	}
+
+	private class InferType {
+		private IMap<String, Node> env;
+
+		private InferType(IMap<String, Node> env) {
+			this.env = env;
+		}
+
+		private Node infer(Node node) {
+			return new SwitchNode<Node>(node //
+			).match(Matcher.apply, APPLY -> {
+				var tr = new Reference();
+				bind(Suite.substitute("FUN .0 .1", infer(APPLY.param), tr), infer(APPLY.fun));
+				return tr;
+			}).match(Matcher.atom, ATOM -> {
+				return Suite.parse("ATOM");
+			}).match(Matcher.boolean_, BOOLEAN -> {
+				return Suite.parse("BOOLEAN");
+			}).match(Matcher.chars, CHARS -> {
+				return Suite.parse("CHARS");
+			}).match(Matcher.cons, CONS -> {
+				return Suite.substitute("CONS .0 .1", infer(CONS.head), infer(CONS.tail));
+			}).match(Matcher.decons, DECONS -> {
+				var t0 = new Reference();
+				var t1 = new Reference();
+				var tr = infer(DECONS.else_);
+				var i1 = new InferType(env.put(s(DECONS.left), t0).put(s(DECONS.right), t1));
+				bind(Suite.substitute("CONS .0 .1", t0, t1), infer(DECONS.value));
+				bind(tr, i1.infer(DECONS.then));
+				return tr;
+			}).match(Matcher.defvars, DEFVARS -> {
+				var tuple = Suite.pattern(".0 .1");
+				var arrays = Tree.iter(DEFVARS.list).map(tuple::match).collect();
+				var defs = arrays.map2(e -> s(e[0]), e -> e[1]).toMap();
+				var tvs = arrays.map2(e -> s(e[0]), e -> new Reference()).collect();
+				var env1 = tvs.fold(env, (e, v, tv) -> e.replace(v, tv));
+				var i1 = new InferType(env1);
+				for (var p : tvs)
+					bind(i1.infer(defs.get(p.t0)), p.t1);
+				return i1.infer(DEFVARS.do_);
+			}).match(Matcher.error, ERROR -> {
+				return new Reference();
+			}).match(Matcher.fun, FUN -> {
+				var tp = new Reference();
+				var env1 = env.replace(s(FUN.param), tp);
+				return Suite.substitute("FUN .0 .1", tp, new InferType(env1).infer(FUN.do_));
+			}).match(Matcher.if_, IF -> {
+				var tr = new Reference();
+				bind(Suite.parse("BOOLEAN"), infer(IF.if_));
+				bind(tr, infer(IF.then_));
+				bind(tr, infer(IF.else_));
+				return tr;
+			}).match(Matcher.nil, NIL -> {
+				return Suite.substitute("NIL .0", new Reference());
+			}).match(Matcher.number, NIL -> {
+				return Suite.substitute("NUMBER");
+			}).match(Matcher.pragma, PRAGMA -> {
+				return infer(PRAGMA.do_);
+			}).match(Matcher.tco, TCO -> {
+				var tv = infer(TCO.in_);
+				var tr = new Reference();
+				var tl = Suite.substitute("FUN .0 CONS BOOLEAN CONS .1 .2", tv, tv, tr);
+				bind(tl, infer(TCO.iter));
+				return tr;
+			}).match(Matcher.tree, TREE -> {
+				var tr = new Reference();
+				var tl = Suite.substitute("FUN .0 FUN .1 .2", infer(TREE.left), infer(TREE.right), tr);
+				bind(tl, get(TREE.op));
+				return tr;
+			}).match(Matcher.unwrap, UNWRAP -> {
+				return infer(UNWRAP.do_);
+			}).match(Matcher.var, VAR -> {
+				return get(VAR.name);
+				// return new Cloner().clone(get(VAR.name));
+			}).match(Matcher.wrap, WRAP -> {
+				return infer(WRAP.do_);
+			}).nonNullResult();
+		}
+
+		private Node get(Node var) {
+			return env.get(s(var));
+		}
+
+		private void bind(Node t0, Node t1) {
+			if (Binder.bind(t0, t1, new Trail()))
+				;
+			else
+				Fail.t();
+		}
 	}
 
 	private class Lazy {
@@ -121,7 +232,7 @@ public class InterpretFunLazy {
 			}).match(Matcher.cons, CONS -> {
 				var p0_ = lazy(CONS.head);
 				var p1_ = lazy(CONS.tail);
-				return frame -> () -> new Pair(p0_.apply(frame), p1_.apply(frame));
+				return frame -> () -> new Cons(p0_.apply(frame), p1_.apply(frame));
 			}).match(Matcher.decons, DECONS -> {
 				var value_ = lazy(DECONS.value);
 				var then_ = put(DECONS.left).put(DECONS.right).lazy(DECONS.then);
@@ -129,10 +240,10 @@ public class InterpretFunLazy {
 
 				return frame -> {
 					var value = value_.apply(frame).get();
-					if (value instanceof Pair) {
-						var pair = (Pair) value;
-						frame.add(pair.fst);
-						frame.add(pair.snd);
+					if (value instanceof Cons) {
+						var cons = (Cons) value;
+						frame.add(cons.fst);
+						frame.add(cons.snd);
 						return then_.apply(frame);
 					} else
 						return else_.apply(frame);
@@ -196,11 +307,11 @@ public class InterpretFunLazy {
 				return frame -> {
 					var iter = fun(iter_.apply(frame).get());
 					var in = in_.apply(frame);
-					Pair p0, p1;
+					Cons p0, p1;
 					do {
 						var out = iter.apply(in);
-						p0 = (Pair) out.get();
-						p1 = (Pair) p0.snd.get();
+						p0 = (Cons) out.get();
+						p1 = (Cons) p0.snd.get();
 						in = p1.fst;
 					} while (p0.fst.get() != Atom.TRUE);
 					return p1.snd;
@@ -234,8 +345,8 @@ public class InterpretFunLazy {
 	}
 
 	private int compare(Node n0, Node n1) {
-		var t0 = n0 instanceof Fn ? 2 : (n0 instanceof Pair ? 1 : 0);
-		var t1 = n1 instanceof Fn ? 2 : (n0 instanceof Pair ? 1 : 0);
+		var t0 = n0 instanceof Fn ? 2 : (n0 instanceof Cons ? 1 : 0);
+		var t1 = n1 instanceof Fn ? 2 : (n0 instanceof Cons ? 1 : 0);
 		var c = t0 - t1;
 		if (c == 0)
 			switch (t0) {
@@ -243,8 +354,8 @@ public class InterpretFunLazy {
 				c = Comparer.comparer.compare(n0, n1);
 				break;
 			case 1:
-				var p0 = (Pair) n0;
-				var p1 = (Pair) n1;
+				var p0 = (Cons) n0;
+				var p1 = (Cons) n1;
 				c = c == 0 ? compare(p0.fst.get(), p1.fst.get()) : c;
 				c = c == 0 ? compare(p0.snd.get(), p1.snd.get()) : c;
 				break;
@@ -260,6 +371,10 @@ public class InterpretFunLazy {
 
 	private Node b(boolean b) {
 		return b ? Atom.TRUE : Atom.FALSE;
+	}
+
+	private String s(Node node) {
+		return ((Atom) node).name;
 	}
 
 	private int i(Thunk thunk) {

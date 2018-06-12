@@ -31,11 +31,11 @@ public class InterpretFunLazy0 {
 		}
 	}
 
-	private static class Pair extends Node {
+	private static class Cons extends Node {
 		private Thunk fst;
 		private Thunk snd;
 
-		private Pair(Thunk fst, Thunk snd) {
+		private Cons(Thunk fst, Thunk snd) {
 			this.fst = fst;
 			this.snd = snd;
 		}
@@ -48,10 +48,10 @@ public class InterpretFunLazy0 {
 				.<String, Thunk> empty() //
 				.put(Atom.TRUE.name, () -> Atom.TRUE) //
 				.put(Atom.FALSE.name, () -> Atom.FALSE) //
-				.put(TermOp.AND___.name, () -> new Fn(a -> () -> new Fn(b -> () -> new Pair(a, b)))) //
+				.put(TermOp.AND___.name, () -> new Fn(a -> () -> new Fn(b -> () -> new Cons(a, b)))) //
 				.put(ERROR.name, error) //
-				.put(FST__.name, () -> new Fn(in -> ((Pair) in.get()).fst)) //
-				.put(SND__.name, () -> new Fn(in -> ((Pair) in.get()).snd));
+				.put(FST__.name, () -> new Fn(in -> ((Cons) in.get()).fst)) //
+				.put(SND__.name, () -> new Fn(in -> ((Cons) in.get()).snd));
 
 		var env1 = Read //
 				.from2(TreeUtil.boolOperations) //
