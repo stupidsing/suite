@@ -1,10 +1,14 @@
 package suite.fp;
 
+import suite.Suite;
 import suite.adt.Mutable;
 import suite.immutable.IMap;
+import suite.lp.Trail;
+import suite.lp.doer.Binder;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
+import suite.node.Reference;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
@@ -39,6 +43,80 @@ public class InterpretFunLazy0 {
 			this.fst = fst;
 			this.snd = snd;
 		}
+	}
+
+	public Node inferType(Node node) {
+		class InferType {
+			private IMap<String, Node> env;
+
+			private InferType(IMap<String, Node> env) {
+				this.env = env;
+			}
+
+			private Node infer(Node node) {
+				return new SwitchNode<Node>(node //
+				).match3("define .0 := .1 >> .2", (a, b, c) -> {
+					var tv = new Reference();
+					var i1 = new InferType(env.put(v(a), tv));
+					bind(infer(b), tv);
+					return i1.infer(c);
+
+				}).match3("if .0 then .1 else .2", (a, b, c) -> {
+					var tr = new Reference();
+					bind(Suite.parse("BOOLEAN"), infer(a));
+					bind(tr, infer(b));
+					bind(tr, infer(c));
+					return tr;
+				}).match2(".0 => .1", (a, b) -> {
+					var tp = new Reference();
+					var env1 = env.replace(v(a), tp);
+					return Suite.substitute("FUN .0 .1", tp, new InferType(env1).infer(b));
+				}).match2(".0 {.1}", (a, b) -> {
+					var tr = new Reference();
+					bind(Suite.substitute("FUN .0 .1", infer(b), tr), infer(a));
+					return tr;
+				}).applyTree((op, l, r) -> {
+					var tr = new Reference();
+					var tl = Suite.substitute("FUN .0 FUN .1 .2", infer(l), infer(r), tr);
+					bind(tl, env.get(op.name_()));
+					return tr;
+				}).applyIf(Atom.class, a -> {
+					return env.get(v(a));
+				}).applyIf(Int.class, a -> {
+					return Suite.parse("NUMBER");
+				}).applyIf(Node.class, a -> {
+					return Atom.NIL;
+				}).nonNullResult();
+			}
+
+			private void bind(Node t0, Node t1) {
+				if (Binder.bind(t0, t1, new Trail()))
+					;
+				else
+					Fail.t();
+			}
+		}
+
+		var env0 = IMap //
+				.<String, Node> empty() //
+				.put(Atom.TRUE.name, Suite.parse("BOOLEAN")) //
+				.put(Atom.FALSE.name, Suite.parse("BOOLEAN")) //
+				.put(TermOp.AND___.name, Suite.substitute("FUN .0 FUN .1 CONS .0 .1")) //
+				.put(ERROR.name, new Reference()) //
+				.put(FST__.name, Suite.substitute("FUN (CONS .0 .1) .0")) //
+				.put(SND__.name, Suite.substitute("FUN (CONS .0 .1) .1"));
+
+		var env1 = Read //
+				.from2(TreeUtil.boolOperations) //
+				.keys() //
+				.fold(env0, (e, o) -> e.put(o.name_(), Suite.substitute("FUN NUMBER FUN NUMBER BOOLEAN")));
+
+		var env2 = Read //
+				.from2(TreeUtil.intOperations) //
+				.keys() //
+				.fold(env1, (e, o) -> e.put(o.name_(), Suite.substitute("FUN NUMBER FUN NUMBER NUMBER")));
+
+		return new InferType(env2).infer(node);
 	}
 
 	public Thunk lazy(Node node) {

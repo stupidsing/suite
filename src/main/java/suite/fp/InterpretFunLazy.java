@@ -169,7 +169,7 @@ public class InterpretFunLazy {
 				return tr;
 			}).match(Matcher.nil, NIL -> {
 				return Suite.substitute("NIL .0", new Reference());
-			}).match(Matcher.number, NIL -> {
+			}).match(Matcher.number, NUMBER -> {
 				return Suite.substitute("NUMBER");
 			}).match(Matcher.pragma, PRAGMA -> {
 				return infer(PRAGMA.do_);
