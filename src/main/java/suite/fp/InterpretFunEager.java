@@ -193,7 +193,7 @@ public class InterpretFunEager {
 	}
 
 	public Node eager(Node node) {
-		var mode = isLazyify ? Atom.of("LAZY") : Atom.of("EAGER");
+		var mode = Atom.of(isLazyify ? "LAZY" : "EAGER");
 		var query = Suite.substitute("source .in, fc-process-function .0 .in .out, sink .out", mode);
 
 		var rs = Suite.newRuleSet(List.of("auto.sl", "fc/fc.sl"));
