@@ -67,15 +67,23 @@ public class InterpretFunLazy {
 		var parsed = parse(node);
 		inferType(parsed);
 
-		var df = new HashMap<String, Thunk>();
+		var boolOpMap = Read //
+				.from2(TreeUtil.boolOperations) //
+				.<String, Thunk> map2((k, fun) -> k.name_(), (k, fun) -> bi((a, b) -> b(fun.apply(compare(a.get(), b.get()), 0)))) //
+				.toMap();
 
+		var intOpMap = Read //
+				.from2(TreeUtil.intOperations) //
+				.<String, Thunk> map2((k, fun) -> k.name_(), (k, fun) -> bi((a, b) -> Int.of(fun.apply(i(a), i(b))))) //
+				.toMap();
+
+		var df = new HashMap<String, Thunk>();
 		df.put(TermOp.AND___.name, bi((a, b) -> new Cons(a, b)));
 		df.put("fst", () -> new Fn(in -> ((Cons) in.get()).fst));
 		df.put("if", () -> new Fn(a -> () -> new Fn(b -> () -> new Fn(c -> a.get() == Atom.TRUE ? b : c))));
 		df.put("snd", () -> new Fn(in -> ((Cons) in.get()).snd));
-
-		TreeUtil.boolOperations.forEach((k, fun) -> df.put(k.name_(), bi((a, b) -> b(fun.apply(compare(a.get(), b.get()), 0)))));
-		TreeUtil.intOperations.forEach((k, fun) -> df.put(k.name_(), bi((a, b) -> Int.of(fun.apply(i(a), i(b))))));
+		df.putAll(boolOpMap);
+		df.putAll(intOpMap);
 
 		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		var lazy0 = new Lazy(0, IMap.empty());

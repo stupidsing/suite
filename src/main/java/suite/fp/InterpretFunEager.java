@@ -201,6 +201,16 @@ public class InterpretFunEager {
 		var parsed = finder.collectSingle(node);
 		var ic = isLazyify ? lazyIntrinsicCallback() : Intrinsics.eagerIntrinsicCallback;
 
+		var boolOpMap = Read //
+				.from2(TreeUtil.boolOperations) //
+				.<String, Node> map2((k, fun) -> k.name_(), (k, fun) -> f2((a, b) -> b(fun.apply(compare(a, b), 0)))) //
+				.toMap();
+
+		var intOpMap = Read //
+				.from2(TreeUtil.intOperations) //
+				.<String, Node> map2((k, fun) -> k.name_(), (k, fun) -> f2((a, b) -> Int.of(fun.apply(i(a), i(b))))) //
+				.toMap();
+
 		var df = new HashMap<String, Node>();
 		df.put(TermOp.AND___.name, f2((a, b) -> Tree.of(TermOp.AND___, a, b)));
 		df.put("+call%i-t1", f1(i -> fn(1, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
@@ -219,9 +229,8 @@ public class InterpretFunEager {
 		df.put("+pcons", f2((a, b) -> Tree.of(TermOp.AND___, a, b)));
 		df.put("+pleft", f1(a -> Tree.decompose(a).getLeft()));
 		df.put("+pright", f1(a -> Tree.decompose(a).getRight()));
-
-		TreeUtil.boolOperations.forEach((k, fun) -> df.put(k.name_(), f2((a, b) -> b(fun.apply(compare(a, b), 0)))));
-		TreeUtil.intOperations.forEach((k, fun) -> df.put(k.name_(), f2((a, b) -> Int.of(fun.apply(i(a), i(b))))));
+		df.putAll(boolOpMap);
+		df.putAll(intOpMap);
 
 		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		var eager0 = new Eager(0, IMap.empty());
