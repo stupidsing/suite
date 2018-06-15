@@ -37,10 +37,6 @@ public class InterpretFunEager {
 
 	private static class Fn extends Node {
 		private Iterate<Node> fun;
-
-		private Fn(Iterate<Node> fun) {
-			this.fun = fun;
-		}
 	}
 
 	private static class Wrap extends Node {
@@ -141,7 +137,7 @@ public class InterpretFunEager {
 					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));
 				}
 				var value_ = new Eager(0, vm1).put(FUN.param).eager_(FUN.do_);
-				return frame -> new Fn(in -> {
+				return frame -> f1(in -> {
 					var frame1 = new Frame();
 					frame1.parent = frame;
 					frame1.add(in);
@@ -293,26 +289,32 @@ public class InterpretFunEager {
 	}
 
 	private Node f1(Iterate<Node> fun) {
-		return new Fn(fun);
+		return f(fun);
 	}
 
 	private Node f2(BinOp<Node> fun) {
-		return new Fn(a -> new Fn(b -> fun.apply(a, b)));
+		return f(a -> f(b -> fun.apply(a, b)));
 	}
 
 	private Node fn(int n, Fun<List<Node>, Node> fun) {
-		return fn(new ArrayList<>(), n, fun);
+		return new Object() {
+			private Node fn(List<Node> ps, int n, Fun<List<Node>, Node> fun) {
+				if (n != 0)
+					return f(p -> {
+						var ps1 = new ArrayList<>(ps);
+						ps1.add(p);
+						return fn(ps1, n - 1, fun);
+					});
+				else
+					return fun.apply(ps);
+			}
+		}.fn(new ArrayList<>(), n, fun);
 	}
 
-	private Node fn(List<Node> ps, int n, Fun<List<Node>, Node> fun) {
-		if (n != 0)
-			return new Fn(p -> {
-				var ps1 = new ArrayList<>(ps);
-				ps1.add(p);
-				return fn(ps1, n - 1, fun);
-			});
-		else
-			return fun.apply(ps);
+	private Node f(Iterate<Node> fun) {
+		var fn = new Fn();
+		fn.fun = fun;
+		return fn;
 	}
 
 	private Operator oper(Node type) {

@@ -29,20 +29,11 @@ public class InterpretFunLazy0 {
 
 	private static class Fn extends Node {
 		private Iterate<Thunk> fun;
-
-		private Fn(Iterate<Thunk> fun) {
-			this.fun = fun;
-		}
 	}
 
 	private static class Cons extends Node {
 		private Thunk fst;
 		private Thunk snd;
-
-		private Cons(Thunk fst, Thunk snd) {
-			this.fst = fst;
-			this.snd = snd;
-		}
 	}
 
 	public Node inferType(Node node) {
@@ -122,18 +113,18 @@ public class InterpretFunLazy0 {
 				.<String, Thunk> empty() //
 				.put(Atom.TRUE.name, () -> Atom.TRUE) //
 				.put(Atom.FALSE.name, () -> Atom.FALSE) //
-				.put(TermOp.AND___.name, () -> new Fn(a -> () -> new Fn(b -> () -> new Cons(a, b)))) //
+				.put(TermOp.AND___.name, () -> f(a -> () -> f(b -> () -> cons(a, b)))) //
 				.put(ERROR.name, error) //
-				.put(FST__.name, () -> new Fn(in -> ((Cons) in.get()).fst)) //
-				.put(SND__.name, () -> new Fn(in -> ((Cons) in.get()).snd));
+				.put(FST__.name, () -> f(in -> ((Cons) in.get()).fst)) //
+				.put(SND__.name, () -> f(in -> ((Cons) in.get()).snd));
 
 		var env1 = Read //
 				.from2(TreeUtil.boolOperations) //
-				.fold(env0, (e, k, f) -> e.put(k.name_(), () -> new Fn(a -> () -> new Fn(b -> () -> b(f.apply(i(a), i(b)))))));
+				.fold(env0, (e, k, f) -> e.put(k.name_(), () -> f(a -> () -> f(b -> () -> b(f.apply(i(a), i(b)))))));
 
 		var env2 = Read //
 				.from2(TreeUtil.intOperations) //
-				.fold(env1, (e, k, f) -> e.put(k.name_(), () -> new Fn(a -> () -> new Fn(b -> () -> i(f.apply(i(a), i(b)))))));
+				.fold(env1, (e, k, f) -> e.put(k.name_(), () -> f(a -> () -> f(b -> () -> i(f.apply(i(a), i(b)))))));
 
 		return lazy0(node).apply(env2);
 	}
@@ -158,7 +149,7 @@ public class InterpretFunLazy0 {
 		}).match(".0 => .1", (a, b) -> {
 			var vk = v(a);
 			var value = lazy0(b);
-			return env -> () -> new Fn(in -> () -> value.apply(env.put(vk, in)).get());
+			return env -> () -> f(in -> () -> value.apply(env.put(vk, in)).get());
 		}).match(".0 {.1}", (a, b) -> {
 			var fun = lazy0(a);
 			var param = lazy0(b);
@@ -182,6 +173,19 @@ public class InterpretFunLazy0 {
 
 	private Node b(boolean b) {
 		return b ? Atom.TRUE : Atom.FALSE;
+	}
+
+	private Cons cons(Thunk fst, Thunk snd) {
+		var cons = new Cons();
+		cons.fst = fst;
+		cons.snd = snd;
+		return cons;
+	}
+
+	private Node f(Iterate<Thunk> fun) {
+		var fn = new Fn();
+		fn.fun = fun;
+		return fn;
 	}
 
 	private Node i(int i) {

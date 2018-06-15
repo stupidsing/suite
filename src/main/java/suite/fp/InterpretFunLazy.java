@@ -38,20 +38,11 @@ public class InterpretFunLazy {
 
 	private static class Fn extends Node {
 		private Iterate<Thunk> fun;
-
-		private Fn(Iterate<Thunk> fun) {
-			this.fun = fun;
-		}
 	}
 
 	private static class Cons extends Node {
 		private Thunk fst;
 		private Thunk snd;
-
-		private Cons(Thunk fst, Thunk snd) {
-			this.fst = fst;
-			this.snd = snd;
-		}
 	}
 
 	private static class Frame extends ArrayList<Thunk> {
@@ -74,10 +65,10 @@ public class InterpretFunLazy {
 				.toMap();
 
 		var df = new HashMap<String, Thunk>();
-		df.put(TermOp.AND___.name, bi((a, b) -> new Cons(a, b)));
-		df.put("fst", () -> new Fn(in -> ((Cons) in.get()).fst));
-		df.put("if", () -> new Fn(a -> () -> new Fn(b -> () -> new Fn(c -> a.get() == Atom.TRUE ? b : c))));
-		df.put("snd", () -> new Fn(in -> ((Cons) in.get()).snd));
+		df.put(TermOp.AND___.name, bi(this::cons));
+		df.put("fst", () -> f(in -> ((Cons) in.get()).fst));
+		df.put("if", () -> f(a -> () -> f(b -> () -> f(c -> a.get() == Atom.TRUE ? b : c))));
+		df.put("snd", () -> f(in -> ((Cons) in.get()).snd));
 		df.putAll(boolOpMap);
 		df.putAll(intOpMap);
 
@@ -235,7 +226,7 @@ public class InterpretFunLazy {
 			}).match(Matcher.cons, n -> {
 				var p0_ = lazy(n.head);
 				var p1_ = lazy(n.tail);
-				return frame -> () -> new Cons(p0_.apply(frame), p1_.apply(frame));
+				return frame -> () -> cons(p0_.apply(frame), p1_.apply(frame));
 			}).match(Matcher.decons, n -> {
 				var value_ = lazy(n.value);
 				var then_ = put(n.left).put(n.right).lazy(n.then);
@@ -291,7 +282,7 @@ public class InterpretFunLazy {
 					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));
 				}
 				var value_ = new Lazy(0, vm1).put(FUN.param).lazy(FUN.do_);
-				return frame -> () -> new Fn(in -> {
+				return frame -> () -> f(in -> {
 					var frame1 = new Frame();
 					frame1.parent = frame;
 					frame1.add(in);
@@ -370,11 +361,24 @@ public class InterpretFunLazy {
 	}
 
 	private Thunk bi(BiFun<Thunk, Node> fun) {
-		return () -> new Fn(a -> () -> new Fn(b -> () -> fun.apply(a, b)));
+		return () -> f(a -> () -> f(b -> () -> fun.apply(a, b)));
 	}
 
 	private Node b(boolean b) {
 		return b ? Atom.TRUE : Atom.FALSE;
+	}
+
+	private Cons cons(Thunk fst, Thunk snd) {
+		var cons = new Cons();
+		cons.fst = fst;
+		cons.snd = snd;
+		return cons;
+	}
+
+	private Node f(Iterate<Thunk> fun) {
+		var fn = new Fn();
+		fn.fun = fun;
+		return fn;
 	}
 
 	private int i(Thunk thunk) {
