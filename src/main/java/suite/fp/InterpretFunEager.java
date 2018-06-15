@@ -113,10 +113,8 @@ public class InterpretFunEager {
 					var vm1 = vm;
 					var fs1 = fs;
 
-					for (var array : arrays) {
-						var getter = getter(fs1++);
-						vm1 = vm1.put(array[0], unwrap(getter));
-					}
+					for (var array : arrays)
+						vm1 = vm1.put(array[0], unwrap(getter(fs1++)));
 
 					var eager1 = new Eager(fs1, vm1);
 					var values_ = Read.from(arrays).map(array -> wrap(eager1.eager_(array[1]))).toList();
