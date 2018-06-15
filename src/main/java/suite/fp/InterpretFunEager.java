@@ -71,30 +71,30 @@ public class InterpretFunEager {
 
 		private Fun<Frame, Node> eager_(Node node) {
 			return new SwitchNode<Fun<Frame, Node>>(node //
-			).match(Matcher.apply, APPLY -> {
-				var param_ = eager_(APPLY.param);
-				var fun_ = eager_(APPLY.fun);
+			).match(Matcher.apply, n -> {
+				var param_ = eager_(n.param);
+				var fun_ = eager_(n.fun);
 				return frame -> {
 					var fun = fun_.apply(frame);
 					var param = param_.apply(frame);
 					return fun(fun).apply(param);
 				};
-			}).match(Matcher.atom, ATOM -> {
-				return immediate(ATOM.value);
-			}).match(Matcher.boolean_, BOOLEAN -> {
-				return immediate(BOOLEAN.value);
-			}).match(Matcher.chars, CHARS -> {
-				return immediate(new Data<>(To.chars(((Str) CHARS.value).value)));
-			}).match(Matcher.cons, CONS -> {
-				var p0_ = eager_(CONS.head);
-				var p1_ = eager_(CONS.tail);
-				var operator = oper(CONS.type);
+			}).match(Matcher.atom, n -> {
+				return immediate(n.value);
+			}).match(Matcher.boolean_, n -> {
+				return immediate(n.value);
+			}).match(Matcher.chars, n -> {
+				return immediate(new Data<>(To.chars(((Str) n.value).value)));
+			}).match(Matcher.cons, n -> {
+				var p0_ = eager_(n.head);
+				var p1_ = eager_(n.tail);
+				var operator = oper(n.type);
 				return frame -> Tree.of(operator, p0_.apply(frame), p1_.apply(frame));
-			}).match(Matcher.decons, DECONS -> {
-				var value_ = eager_(DECONS.value);
-				var then_ = put(DECONS.left).put(DECONS.right).eager_(DECONS.then);
-				var else_ = eager_(DECONS.else_);
-				var operator = oper(DECONS.type);
+			}).match(Matcher.decons, n -> {
+				var value_ = eager_(n.value);
+				var then_ = put(n.left).put(n.right).eager_(n.then);
+				var else_ = eager_(n.else_);
+				var operator = oper(n.type);
 				return frame -> {
 					var tree = Tree.decompose(value_.apply(frame), operator);
 					if (tree != null) {
@@ -104,15 +104,15 @@ public class InterpretFunEager {
 					} else
 						return else_.apply(frame);
 				};
-			}).match(Matcher.defvars, DEFVARS -> {
+			}).match(Matcher.defvars, n -> {
 				var tuple = Suite.pattern(".0 .1");
-				var arrays = Tree.iter(DEFVARS.list).map(tuple::match).toList();
+				var arrays = Tree.iter(n.list).map(tuple::match).toList();
 				if (arrays.size() == 1) {
 					var array = arrays.get(0);
 					var vm1 = vm.put(array[0], unwrap(getter(fs)));
 					var eager1 = new Eager(fs + 1, vm1);
 					var value_ = wrap(eager1.eager_(array[1]));
-					var expr = eager1.eager_(DEFVARS.do_);
+					var expr = eager1.eager_(n.do_);
 					return frame -> {
 						frame.add(value_.apply(frame));
 						return expr.apply(frame);
@@ -128,7 +128,7 @@ public class InterpretFunEager {
 
 					var eager1 = new Eager(fs1, vm1);
 					var values_ = Read.from(arrays).map(array -> wrap(eager1.eager_(array[1]))).toList();
-					var expr = eager1.eager_(DEFVARS.do_);
+					var expr = eager1.eager_(n.do_);
 
 					return frame -> {
 						for (var value_ : values_)
@@ -136,8 +136,8 @@ public class InterpretFunEager {
 						return expr.apply(frame);
 					};
 				}
-			}).match(Matcher.error, ERROR -> {
-				return frame -> Fail.t("error termination " + Formatter.display(ERROR.m));
+			}).match(Matcher.error, n -> {
+				return frame -> Fail.t("error termination " + Formatter.display(n.m));
 			}).match(Matcher.fun, FUN -> {
 				var vm1 = IMap.<Node, Fun<Frame, Node>> empty();
 				for (var e : vm) {
@@ -150,20 +150,20 @@ public class InterpretFunEager {
 					frame1.add(in);
 					return value_.apply(frame1);
 				});
-			}).match(Matcher.if_, IF -> {
-				var if_ = eager_(IF.if_);
-				var then_ = eager_(IF.then_);
-				var else_ = eager_(IF.else_);
+			}).match(Matcher.if_, n -> {
+				var if_ = eager_(n.if_);
+				var then_ = eager_(n.then_);
+				var else_ = eager_(n.else_);
 				return frame -> (if_.apply(frame) == Atom.TRUE ? then_ : else_).apply(frame);
-			}).match(Matcher.nil, NIL -> {
+			}).match(Matcher.nil, n -> {
 				return immediate(Atom.NIL);
-			}).match(Matcher.number, NUMBER -> {
-				return immediate(NUMBER.value);
-			}).match(Matcher.pragma, PRAGMA -> {
-				return eager_(PRAGMA.do_);
-			}).match(Matcher.tco, TCO -> {
-				var iter_ = eager_(TCO.iter);
-				var in_ = eager_(TCO.in_);
+			}).match(Matcher.number, n -> {
+				return immediate(n.value);
+			}).match(Matcher.pragma, n -> {
+				return eager_(n.do_);
+			}).match(Matcher.tco, n -> {
+				var iter_ = eager_(n.iter);
+				var in_ = eager_(n.in_);
 				return frame -> {
 					var iter = fun(iter_.apply(frame));
 					var in = in_.apply(frame);
@@ -176,14 +176,14 @@ public class InterpretFunEager {
 					} while (p0.getLeft() != Atom.TRUE);
 					return p1.getRight();
 				};
-			}).match(Matcher.tree, TREE -> {
-				return eager_(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", TREE.op, TREE.left, TREE.right));
-			}).match(Matcher.unwrap, UNWRAP -> {
-				return unwrap(eager_(UNWRAP.do_));
-			}).match(Matcher.var, VAR -> {
-				return vm.get(VAR.name);
-			}).match(Matcher.wrap, WRAP -> {
-				return wrap(eager_(WRAP.do_));
+			}).match(Matcher.tree, n -> {
+				return eager_(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", n.op, n.left, n.right));
+			}).match(Matcher.unwrap, n -> {
+				return unwrap(eager_(n.do_));
+			}).match(Matcher.var, n -> {
+				return vm.get(n.name);
+			}).match(Matcher.wrap, n -> {
+				return wrap(eager_(n.do_));
 			}).nonNullResult();
 		}
 

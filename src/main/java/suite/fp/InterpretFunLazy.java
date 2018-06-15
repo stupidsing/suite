@@ -136,69 +136,69 @@ public class InterpretFunLazy {
 
 		private Node infer(Node node) {
 			return new SwitchNode<Node>(node //
-			).match(Matcher.apply, APPLY -> {
+			).match(Matcher.apply, n -> {
 				var tr = new Reference();
-				bind(Suite.substitute("FUN .0 .1", infer(APPLY.param), tr), infer(APPLY.fun));
+				bind(Suite.substitute("FUN .0 .1", infer(n.param), tr), infer(n.fun));
 				return tr;
-			}).match(Matcher.atom, ATOM -> {
+			}).match(Matcher.atom, n -> {
 				return Suite.parse("ATOM");
-			}).match(Matcher.boolean_, BOOLEAN -> {
+			}).match(Matcher.boolean_, n -> {
 				return Suite.parse("BOOLEAN");
-			}).match(Matcher.chars, CHARS -> {
+			}).match(Matcher.chars, n -> {
 				return Suite.parse("CHARS");
-			}).match(Matcher.cons, CONS -> {
-				return Suite.substitute("CONS .0 .1", infer(CONS.head), infer(CONS.tail));
-			}).match(Matcher.decons, DECONS -> {
+			}).match(Matcher.cons, n -> {
+				return Suite.substitute("CONS .0 .1", infer(n.head), infer(n.tail));
+			}).match(Matcher.decons, n -> {
 				var t0 = new Reference();
 				var t1 = new Reference();
-				var tr = infer(DECONS.else_);
-				var i1 = new InferType(env.put(v(DECONS.left), t0).put(v(DECONS.right), t1));
-				bind(Suite.substitute("CONS .0 .1", t0, t1), infer(DECONS.value));
-				bind(tr, i1.infer(DECONS.then));
+				var tr = infer(n.else_);
+				var i1 = new InferType(env.put(v(n.left), t0).put(v(n.right), t1));
+				bind(Suite.substitute("CONS .0 .1", t0, t1), infer(n.value));
+				bind(tr, i1.infer(n.then));
 				return tr;
-			}).match(Matcher.defvars, DEFVARS -> {
+			}).match(Matcher.defvars, n -> {
 				var tuple = Suite.pattern(".0 .1");
-				var defs = Tree.iter(DEFVARS.list).map(tuple::match).map2(a -> v(a[0]), a -> a[1]).collect();
+				var defs = Tree.iter(n.list).map(tuple::match).map2(a -> v(a[0]), a -> a[1]).collect();
 				var env1 = defs.keys().fold(env, (e, v) -> e.replace(v, new Reference()));
 				var i1 = new InferType(env1);
 				defs.sink((v, def) -> bind(i1.infer(def), env1.get(v)));
-				return i1.infer(DEFVARS.do_);
-			}).match(Matcher.error, ERROR -> {
+				return i1.infer(n.do_);
+			}).match(Matcher.error, n -> {
 				return new Reference();
-			}).match(Matcher.fun, FUN -> {
+			}).match(Matcher.fun, n -> {
 				var tp = new Reference();
-				var env1 = env.replace(v(FUN.param), tp);
-				return Suite.substitute("FUN .0 .1", tp, new InferType(env1).infer(FUN.do_));
-			}).match(Matcher.if_, IF -> {
+				var env1 = env.replace(v(n.param), tp);
+				return Suite.substitute("FUN .0 .1", tp, new InferType(env1).infer(n.do_));
+			}).match(Matcher.if_, n -> {
 				var tr = new Reference();
-				bind(Suite.parse("BOOLEAN"), infer(IF.if_));
-				bind(tr, infer(IF.then_));
-				bind(tr, infer(IF.else_));
+				bind(Suite.parse("BOOLEAN"), infer(n.if_));
+				bind(tr, infer(n.then_));
+				bind(tr, infer(n.else_));
 				return tr;
-			}).match(Matcher.nil, NIL -> {
+			}).match(Matcher.nil, n -> {
 				return Suite.substitute("NIL .0", new Reference());
-			}).match(Matcher.number, NUMBER -> {
+			}).match(Matcher.number, n -> {
 				return Suite.substitute("NUMBER");
-			}).match(Matcher.pragma, PRAGMA -> {
-				return infer(PRAGMA.do_);
-			}).match(Matcher.tco, TCO -> {
-				var tv = infer(TCO.in_);
+			}).match(Matcher.pragma, n -> {
+				return infer(n.do_);
+			}).match(Matcher.tco, n -> {
+				var tv = infer(n.in_);
 				var tr = new Reference();
 				var tl = Suite.substitute("FUN .0 CONS BOOLEAN CONS .1 .2", tv, tv, tr);
-				bind(tl, infer(TCO.iter));
+				bind(tl, infer(n.iter));
 				return tr;
-			}).match(Matcher.tree, TREE -> {
+			}).match(Matcher.tree, n -> {
 				var tr = new Reference();
-				var tl = Suite.substitute("FUN .0 FUN .1 .2", infer(TREE.left), infer(TREE.right), tr);
-				bind(tl, get(TREE.op));
+				var tl = Suite.substitute("FUN .0 FUN .1 .2", infer(n.left), infer(n.right), tr);
+				bind(tl, get(n.op));
 				return tr;
-			}).match(Matcher.unwrap, UNWRAP -> {
-				return infer(UNWRAP.do_);
-			}).match(Matcher.var, VAR -> {
-				return get(VAR.name);
+			}).match(Matcher.unwrap, n -> {
+				return infer(n.do_);
+			}).match(Matcher.var, n -> {
+				return get(n.name);
 				// return new Cloner().clone(get(VAR.name));
-			}).match(Matcher.wrap, WRAP -> {
-				return infer(WRAP.do_);
+			}).match(Matcher.wrap, n -> {
+				return infer(n.do_);
 			}).nonNullResult();
 		}
 
@@ -225,28 +225,28 @@ public class InterpretFunLazy {
 
 		private Fun<Frame, Thunk> lazy(Node node) {
 			return new SwitchNode<Fun<Frame, Thunk>>(node //
-			).match(Matcher.apply, APPLY -> {
-				var param_ = lazy(APPLY.param);
-				var fun_ = lazy(APPLY.fun);
+			).match(Matcher.apply, n -> {
+				var param_ = lazy(n.param);
+				var fun_ = lazy(n.fun);
 				return frame -> {
 					var fun = fun_.apply(frame);
 					var param = param_.apply(frame);
 					return () -> fun(fun.get()).apply(param).get();
 				};
-			}).match(Matcher.atom, ATOM -> {
-				return immediate(ATOM.value);
-			}).match(Matcher.boolean_, BOOLEAN -> {
-				return immediate(BOOLEAN.value);
-			}).match(Matcher.chars, CHARS -> {
-				return immediate(new Data<>(To.chars(((Str) CHARS.value).value)));
-			}).match(Matcher.cons, CONS -> {
-				var p0_ = lazy(CONS.head);
-				var p1_ = lazy(CONS.tail);
+			}).match(Matcher.atom, n -> {
+				return immediate(n.value);
+			}).match(Matcher.boolean_, n -> {
+				return immediate(n.value);
+			}).match(Matcher.chars, n -> {
+				return immediate(new Data<>(To.chars(((Str) n.value).value)));
+			}).match(Matcher.cons, n -> {
+				var p0_ = lazy(n.head);
+				var p1_ = lazy(n.tail);
 				return frame -> () -> new Cons(p0_.apply(frame), p1_.apply(frame));
-			}).match(Matcher.decons, DECONS -> {
-				var value_ = lazy(DECONS.value);
-				var then_ = put(DECONS.left).put(DECONS.right).lazy(DECONS.then);
-				var else_ = lazy(DECONS.else_);
+			}).match(Matcher.decons, n -> {
+				var value_ = lazy(n.value);
+				var then_ = put(n.left).put(n.right).lazy(n.then);
+				var else_ = lazy(n.else_);
 
 				return frame -> {
 					var value = value_.apply(frame).get();
@@ -269,13 +269,13 @@ public class InterpretFunLazy {
 					value.set(() -> value_.apply(frame).get());
 					return expr.apply(frame);
 				};
-			}).match(Matcher.defvars, DEFVARS -> {
+			}).match(Matcher.defvars, n -> {
 				var tuple = Suite.pattern(".0 .1");
-				var arrays = Tree.iter(DEFVARS.list).map(tuple::match).collect();
+				var arrays = Tree.iter(n.list).map(tuple::match).collect();
 				var size = arrays.size();
 				var lazy = arrays.fold(this, (l, array) -> l.put(array[0]));
 				var values_ = arrays.map(array -> lazy.lazy(array[1])).toList();
-				var expr = lazy.lazy(DEFVARS.do_);
+				var expr = lazy.lazy(n.do_);
 
 				return frame -> {
 					var values = new ArrayList<Thunk>(size);
@@ -289,8 +289,8 @@ public class InterpretFunLazy {
 					}
 					return expr.apply(frame);
 				};
-			}).match(Matcher.error, ERROR -> {
-				return frame -> () -> Fail.t("error termination " + Formatter.display(ERROR.m));
+			}).match(Matcher.error, n -> {
+				return frame -> () -> Fail.t("error termination " + Formatter.display(n.m));
 			}).match(Matcher.fun, FUN -> {
 				var vm1 = IMap.<Node, Fun<Frame, Thunk>> empty();
 				for (var e : vm) {
@@ -303,17 +303,17 @@ public class InterpretFunLazy {
 					frame1.add(in);
 					return value_.apply(frame1);
 				});
-			}).match(Matcher.if_, IF -> {
-				return lazy(Suite.substitute("APPLY .2 APPLY .1 APPLY .0 VAR if", IF.if_, IF.then_, IF.else_));
-			}).match(Matcher.nil, NIL -> {
+			}).match(Matcher.if_, n -> {
+				return lazy(Suite.substitute("APPLY .2 APPLY .1 APPLY .0 VAR if", n.if_, n.then_, n.else_));
+			}).match(Matcher.nil, n -> {
 				return immediate(Atom.NIL);
-			}).match(Matcher.number, NUMBER -> {
-				return immediate(NUMBER.value);
-			}).match(Matcher.pragma, PRAGMA -> {
-				return lazy(PRAGMA.do_);
-			}).match(Matcher.tco, TCO -> {
-				var iter_ = lazy(TCO.iter);
-				var in_ = lazy(TCO.in_);
+			}).match(Matcher.number, n -> {
+				return immediate(n.value);
+			}).match(Matcher.pragma, n -> {
+				return lazy(n.do_);
+			}).match(Matcher.tco, n -> {
+				var iter_ = lazy(n.iter);
+				var in_ = lazy(n.in_);
 				return frame -> {
 					var iter = fun(iter_.apply(frame).get());
 					var in = in_.apply(frame);
@@ -326,14 +326,14 @@ public class InterpretFunLazy {
 					} while (p0.fst.get() != Atom.TRUE);
 					return p1.snd;
 				};
-			}).match(Matcher.tree, TREE -> {
-				return lazy(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", TREE.op, TREE.left, TREE.right));
-			}).match(Matcher.unwrap, UNWRAP -> {
-				return lazy(UNWRAP.do_);
-			}).match(Matcher.var, VAR -> {
-				return vm.get(VAR.name);
-			}).match(Matcher.wrap, WRAP -> {
-				return lazy(WRAP.do_);
+			}).match(Matcher.tree, n -> {
+				return lazy(Suite.substitute("APPLY .2 (APPLY .1 (VAR .0))", n.op, n.left, n.right));
+			}).match(Matcher.unwrap, n -> {
+				return lazy(n.do_);
+			}).match(Matcher.var, n -> {
+				return vm.get(n.name);
+			}).match(Matcher.wrap, n -> {
+				return lazy(n.do_);
 			}).nonNullResult();
 		}
 
