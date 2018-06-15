@@ -34,9 +34,14 @@ public interface HttpHandler {
 				if (!String_.equals(p, ".."))
 					path = path.resolve(p);
 
-			try (var file = new RandomAccessFile(path.toFile(), "r")) {
-				size = file.getChannel().size();
-			}
+			var file = path.toFile();
+
+			if (file.exists())
+				try (var raf = new RandomAccessFile(file, "r")) {
+					size = raf.getChannel().size();
+				}
+			else
+				return HttpResponse.of(HttpResponse.HTTP404);
 
 			return HttpResponse.of(HttpResponse.HTTP200, To.outlet(Files.newInputStream(path)), size);
 		});
