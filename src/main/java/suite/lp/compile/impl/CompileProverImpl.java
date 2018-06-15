@@ -25,9 +25,9 @@ public class CompileProverImpl implements ProverFactory {
 		var compiled = new Object() {
 			private FunExpr compile_(Node node, FunExpr cps) {
 				return new SwitchNode<FunExpr>(node //
-				).match(".0, .1", m -> {
+				).matchArray(".0, .1", m -> {
 					return compile_(m[0], compile_(m[1], cps));
-				}).match(".0; .1", m -> {
+				}).matchArray(".0; .1", m -> {
 					FunExpr cps1;
 					if (Boolean.TRUE) {
 						var proveRt_ = cf.apply(cps);
@@ -37,9 +37,9 @@ public class CompileProverImpl implements ProverFactory {
 					FunExpr f0 = compile_(m[0], cps1);
 					FunExpr f1 = compile_(m[1], cps1);
 					return f.seq(f0, f1);
-				}).match("fail", m -> {
+				}).matchArray("fail", m -> {
 					return f._void();
-				}).match("yes", m -> {
+				}).matchArray("yes", m -> {
 					return cps;
 				}).nonNullResult();
 			}

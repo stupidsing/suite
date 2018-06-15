@@ -68,15 +68,15 @@ public class Fractional<I> {
 		return new Object() {
 			private Opt<Fract<I>> fract(Node node) {
 				return new SwitchNode<Opt<Fract<I>>>(node //
-				).match2(patAdd, (a, b) -> {
+				).match(patAdd, (a, b) -> {
 					return fract(a).join(fract(b), fr::add);
-				}).match1(patNeg, a -> {
+				}).match(patNeg, a -> {
 					return fract(a).map(fr::neg);
-				}).match2(patMul, (a, b) -> {
+				}).match(patMul, (a, b) -> {
 					return fract(a).join(fract(b), fr::mul);
-				}).match1(patInv, a -> {
+				}).match(patInv, a -> {
 					return inv1(fract(a));
-				}).match2(patPow, (a, b) -> {
+				}).match(patPow, (a, b) -> {
 					return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 				}).applyIf(Node.class, a -> {
 					return parse_.apply(a).map(i -> new Fract<>(i, n1));

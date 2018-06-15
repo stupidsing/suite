@@ -251,7 +251,7 @@ public class InterpretFunLazy {
 					} else
 						return else_.apply(frame);
 				};
-			}).match3("DEF-VARS (.0 .1,) .2", (a, b, c) -> {
+			}).match("DEF-VARS (.0 .1,) .2", (a, b, c) -> {
 				var lazy1 = put(a);
 				var value_ = lazy1.lazy(b);
 				var expr = lazy1.lazy(c);

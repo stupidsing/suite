@@ -55,22 +55,22 @@ public class InterpretFunLazy0 {
 
 			private Node infer(Node node) {
 				return new SwitchNode<Node>(node //
-				).match3("define .0 := .1 >> .2", (a, b, c) -> {
+				).match("define .0 := .1 >> .2", (a, b, c) -> {
 					var tv = new Reference();
 					var i1 = new InferType(env.put(v(a), tv));
 					bind(infer(b), tv);
 					return i1.infer(c);
-				}).match3("if .0 then .1 else .2", (a, b, c) -> {
+				}).match("if .0 then .1 else .2", (a, b, c) -> {
 					var tr = new Reference();
 					bind(Suite.parse("BOOLEAN"), infer(a));
 					bind(tr, infer(b));
 					bind(tr, infer(c));
 					return tr;
-				}).match2(".0 => .1", (a, b) -> {
+				}).match(".0 => .1", (a, b) -> {
 					var tp = new Reference();
 					var env1 = env.replace(v(a), tp);
 					return Suite.substitute("FUN .0 .1", tp, new InferType(env1).infer(b));
-				}).match2(".0 {.1}", (a, b) -> {
+				}).match(".0 {.1}", (a, b) -> {
 					var tr = new Reference();
 					bind(Suite.substitute("FUN .0 .1", infer(b), tr), infer(a));
 					return tr;
@@ -140,7 +140,7 @@ public class InterpretFunLazy0 {
 
 	private Fun<IMap<String, Thunk>, Thunk> lazy0(Node node) {
 		return new SwitchNode<Fun<IMap<String, Thunk>, Thunk>>(node //
-		).match3("define .0 := .1 >> .2", (a, b, c) -> {
+		).match("define .0 := .1 >> .2", (a, b, c) -> {
 			var vk = v(a);
 			var value = lazy0(b);
 			var expr = lazy0(c);
@@ -150,16 +150,16 @@ public class InterpretFunLazy0 {
 				val.set(() -> value.apply(env1).get());
 				return expr.apply(env1);
 			};
-		}).match3("if .0 then .1 else .2", (a, b, c) -> {
+		}).match("if .0 then .1 else .2", (a, b, c) -> {
 			var if_ = lazy0(a);
 			var then_ = lazy0(b);
 			var else_ = lazy0(c);
 			return env -> () -> (if_.apply(env).get() == Atom.TRUE ? then_ : else_).apply(env).get();
-		}).match2(".0 => .1", (a, b) -> {
+		}).match(".0 => .1", (a, b) -> {
 			var vk = v(a);
 			var value = lazy0(b);
 			return env -> () -> new Fn(in -> () -> value.apply(env.put(vk, in)).get());
-		}).match2(".0 {.1}", (a, b) -> {
+		}).match(".0 {.1}", (a, b) -> {
 			var fun = lazy0(a);
 			var param = lazy0(b);
 			return env -> () -> fun(fun.apply(env)).apply(param.apply(env)).get();

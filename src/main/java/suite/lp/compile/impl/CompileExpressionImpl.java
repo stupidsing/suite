@@ -36,21 +36,21 @@ public class CompileExpressionImpl implements EvaluatorFactory {
 
 			private FunExpr compile_(Node node) {
 				return new SwitchNode<FunExpr>(node //
-				).match2(".0 + .1", (a, b) -> {
+				).match(".0 + .1", (a, b) -> {
 					return compileOperator(a, b, "+");
-				}).match2(".0 - .1", (a, b) -> {
+				}).match(".0 - .1", (a, b) -> {
 					return compileOperator(a, b, "-");
-				}).match2(".0 * .1", (a, b) -> {
+				}).match(".0 * .1", (a, b) -> {
 					return compileOperator(a, b, "*");
-				}).match2(".0 / .1", (a, b) -> {
+				}).match(".0 / .1", (a, b) -> {
 					return compileOperator(a, b, "/");
-				}).match2(".0 and .1", (a, b) -> {
+				}).match(".0 and .1", (a, b) -> {
 					return compileOperator(a, b, "&&");
-				}).match2(".0 or .1", (a, b) -> {
+				}).match(".0 or .1", (a, b) -> {
 					return compileOperator(a, b, "||");
-				}).match2(".0 shl .1", (a, b) -> {
+				}).match(".0 shl .1", (a, b) -> {
 					return compileOperator(a, b, "<<");
-				}).match2(".0 shr .1", (a, b) -> {
+				}).match(".0 shr .1", (a, b) -> {
 					return compileOperator(a, b, ">>");
 				}).applyIf(Int.class, i -> {
 					return f.int_(i.number);

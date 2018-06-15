@@ -64,23 +64,23 @@ public class Symbolic {
 
 	private FunExpr m(Node n, Fun<Node, FunExpr> fun) {
 		return new SwitchNode<FunExpr>(n //
-		).match2(patAdd, (a, b) -> {
+		).match(patAdd, (a, b) -> {
 			return f.bi("+", fun.apply(a), fun.apply(b));
-		}).match1(patNeg, a -> {
+		}).match(patNeg, a -> {
 			return f.bi("-", f.double_(0d), fun.apply(a));
-		}).match2(patMul, (a, b) -> {
+		}).match(patMul, (a, b) -> {
 			return f.bi("*", fun.apply(a), fun.apply(b));
-		}).match1(patInv, a -> {
+		}).match(patInv, a -> {
 			return f.bi("/", f.double_(1d), fun.apply(a));
-		}).match2(patPow, (a, b) -> {
+		}).match(patPow, (a, b) -> {
 			return f.invokeStatic(Math.class, "pow", fun.apply(a), fun.apply(b));
-		}).match1(patExp, a -> {
+		}).match(patExp, a -> {
 			return f.invokeStatic(Math.class, "exp", fun.apply(a));
-		}).match1(patLn_, a -> {
+		}).match(patLn_, a -> {
 			return f.invokeStatic(Math.class, "log", fun.apply(a));
-		}).match1(patSin, a -> {
+		}).match(patSin, a -> {
 			return f.invokeStatic(Math.class, "sin", fun.apply(a));
-		}).match1(patCos, a -> {
+		}).match(patCos, a -> {
 			return f.invokeStatic(Math.class, "cos", fun.apply(a));
 		}).applyIf(Int.class, i -> {
 			return f.double_(i.number);
@@ -218,15 +218,15 @@ public class Symbolic {
 		// i
 		private Node rewrite(Node node) {
 			return new SwitchNode<Node>(node //
-			).match2(".0 - .1", (a, b) -> {
+			).match(".0 - .1", (a, b) -> {
 				return a != n0 ? add(rewrite(a), neg(rewrite(b))) : null;
-			}).match2(".0 / .1", (a, b) -> {
+			}).match(".0 / .1", (a, b) -> {
 				return a != n1 ? mul(rewrite(a), inv(rewrite(b))) : null;
-			}).match2(patPow, (a, b) -> {
+			}).match(patPow, (a, b) -> {
 				return patExp.subst(patLn_.subst(rewrite(a)), rewrite(b));
 			}).applyIf(Int.class, i -> {
 				return intOf(i);
-			}).match(".0 .1", m -> {
+			}).matchArray(".0 .1", m -> {
 				return Suite.pattern(".0 .1").subst(m[0], rewrite(m[1]));
 			}).applyTree((op, l, r) -> {
 				return Tree.of(op, rewrite(l), rewrite(r));
@@ -237,21 +237,21 @@ public class Symbolic {
 
 		private Node d(Node node) { // differentiation
 			return new SwitchNode<Node>(node //
-			).match2(patAdd, (u, v) -> {
+			).match(patAdd, (u, v) -> {
 				return add(d(u), d(v));
-			}).match1(patNeg, u -> {
+			}).match(patNeg, u -> {
 				return neg(d(u));
-			}).match2(patMul, (u, v) -> {
+			}).match(patMul, (u, v) -> {
 				return add(mul(u, d(v)), mul(v, d(u)));
-			}).match1(patInv, u -> {
+			}).match(patInv, u -> {
 				return mul(inv(mul(u, u)), neg(d(u)));
-			}).match1(patExp, u -> {
+			}).match(patExp, u -> {
 				return mul(patExp.subst(u), d(u));
-			}).match1(patLn_, u -> {
+			}).match(patLn_, u -> {
 				return mul(inv(u), d(u));
-			}).match1(patSin, u -> {
+			}).match(patSin, u -> {
 				return mul(patCos.subst(u), d(u));
-			}).match1(patCos, u -> {
+			}).match(patCos, u -> {
 				return mul(neg(patSin.subst(u)), d(u));
 			}).applyIf(Int.class, n -> {
 				return n0;
@@ -262,24 +262,24 @@ public class Symbolic {
 
 		private Opt<Node> i(Node node) { // integration
 			return new SwitchNode<Opt<Node>>(node //
-			).match2(patAdd, (u, v) -> {
+			).match(patAdd, (u, v) -> {
 				var iudxs = i(u);
 				var ivdxs = i(v);
 				return iudxs.join(ivdxs, add::apply);
-			}).match1(patNeg, u -> {
+			}).match(patNeg, u -> {
 				return i(u).map(add::inverse);
-			}).match2(patMul, (m0, m1) -> {
+			}).match(patMul, (m0, m1) -> {
 				var u = m0;
 				var vs = i(m1);
 				var dudx = d(u);
 				return vs.concatMap(v -> i(mul(v, dudx)).map(ivdu -> add(mul(u, v), neg(ivdu))));
-			}).match1(patInv, u -> {
+			}).match(patInv, u -> {
 				return is_x(u) ? Opt.of(patLn_.subst(x)) : null;
-			}).match1(patExp, u -> {
+			}).match(patExp, u -> {
 				return is_x(u) ? Opt.of(node) : null;
-			}).match1(patSin, u -> {
+			}).match(patSin, u -> {
 				return is_x(u) ? Opt.of(neg(patCos.subst(x))) : null;
-			}).match1(patCos, u -> {
+			}).match(patCos, u -> {
 				return is_x(u) ? Opt.of(patSin.subst(x)) : null;
 			}).applyIf(Node.class, n -> {
 				if (is_x(node))
@@ -295,11 +295,11 @@ public class Symbolic {
 			class Recurse {
 				private Streamlet<Node> pos(Node node_) {
 					return new SwitchNode<Streamlet<Node>>(node_ //
-					).match2(patMul, (a, b) -> {
+					).match(patMul, (a, b) -> {
 						return Streamlet.concat(pos(a), pos(b));
-					}).match1(patInv, a -> {
+					}).match(patInv, a -> {
 						return pos(a).map(mul::inverse);
-					}).match2(patPow, (a, b) -> {
+					}).match(patPow, (a, b) -> {
 						if (b instanceof Int) {
 							var pos = pos(a).toList();
 							var power = ((Int) b).number;
@@ -319,7 +319,7 @@ public class Symbolic {
 								return f.apply(power);
 						} else
 							return pos(a).join2(sop(b)).map(patPow::subst);
-					}).match1(patExp, a -> {
+					}).match(patExp, a -> {
 						return sop(a).map(patExp::subst);
 					}).applyIf(Node.class, n -> {
 						return node_ == n1 ? Read.empty() : Read.each(node_);
@@ -328,21 +328,21 @@ public class Symbolic {
 
 				private Streamlet<Node> sop(Node node_) {
 					return new SwitchNode<Streamlet<Node>>(node_ //
-					).match2(patAdd, (a, b) -> {
+					).match(patAdd, (a, b) -> {
 						return Streamlet.concat(sop(a), sop(b));
-					}).match1(patNeg, a -> {
+					}).match(patNeg, a -> {
 						return sop(a).map(add::inverse);
-					}).match2(patMul, (a, b) -> {
+					}).match(patMul, (a, b) -> {
 						return sop(a).join2(sop(b)).map(mul::apply).map(this::productOfSums);
-					}).match2(patPow, (a, b) -> {
+					}).match(patPow, (a, b) -> {
 						return sop(productOfSums(node_));
-					}).match1(patLn_, a -> {
+					}).match(patLn_, a -> {
 						return pos(a).map(patLn_::subst);
-					}).match2("sin (.0 + .1)", (a, b) -> {
+					}).match("sin (.0 + .1)", (a, b) -> {
 						return Read.each( //
 								mul.recompose(x, Read.each(patSin.subst(a), patCos.subst(b))), //
 								mul.recompose(x, Read.each(patCos.subst(a), patSin.subst(b))));
-					}).match2("cos (.0 + .1)", (a, b) -> {
+					}).match("cos (.0 + .1)", (a, b) -> {
 						return Read.each( //
 								mul.recompose(x, Read.each(patCos.subst(a), patCos.subst(b))), //
 								mul.recompose(x, Read.each(neg(patSin.subst(a)), patSin.subst(b))));
@@ -395,15 +395,15 @@ public class Symbolic {
 			return new Object() {
 				private Opt<Poly<Node>> poly(Node node) {
 					return new SwitchNode<Opt<Poly<Node>>>(node //
-					).match2(patAdd, (a, b) -> {
+					).match(patAdd, (a, b) -> {
 						return poly(a).join(poly(b), pr.add);
-					}).match1(patNeg, a -> {
+					}).match(patNeg, a -> {
 						return poly(a).map(pr.neg);
-					}).match2(patMul, (a, b) -> {
+					}).match(patMul, (a, b) -> {
 						return poly(a).join(poly(b), pr.mul);
-					}).match1(patInv, a -> {
+					}).match(patInv, a -> {
 						return inv1(poly(a));
-					}).match2(patPow, (a, b) -> {
+					}).match(patPow, (a, b) -> {
 						return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 					}).applyIf(Node.class, n -> {
 						if (n == nf.n0)

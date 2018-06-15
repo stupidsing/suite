@@ -15,6 +15,7 @@ import suite.node.Tree;
 import suite.primitive.IoSink;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Source;
 
 public class SwitchNode<R> {
 
@@ -58,42 +59,42 @@ public class SwitchNode<R> {
 		return this;
 	}
 
-	public SwitchNode<R> match(Atom node, Fun<Atom, R> fun) {
+	public SwitchNode<R> match(Atom node, Source<R> fun) {
 		if (result == null && in == node)
-			result = fun.apply(node);
+			result = fun.source();
 		return this;
 	}
 
-	public SwitchNode<R> match(Pattern pattern, Fun<Node[], R> fun) {
-		return match_(pattern, fun);
-	}
-
-	public SwitchNode<R> match(String pattern, Fun<Node[], R> fun) {
-		return match_(Suite.pattern(pattern), fun);
-	}
-
-	public SwitchNode<R> match1(Pattern pattern, FixieFun1<Node, R> fun) {
+	public SwitchNode<R> match(Pattern pattern, FixieFun1<Node, R> fun) {
 		return match1_(pattern, fun);
 	}
 
-	public SwitchNode<R> match1(String pattern, FixieFun1<Node, R> fun) {
-		return match1_(Suite.pattern(pattern), fun);
-	}
-
-	public SwitchNode<R> match2(Pattern pattern, FixieFun2<Node, Node, R> fun) {
+	public SwitchNode<R> match(Pattern pattern, FixieFun2<Node, Node, R> fun) {
 		return match2_(pattern, fun);
 	}
 
-	public SwitchNode<R> match2(String pattern, FixieFun2<Node, Node, R> fun) {
+	public SwitchNode<R> match(String pattern, FixieFun1<Node, R> fun) {
+		return match1_(Suite.pattern(pattern), fun);
+	}
+
+	public SwitchNode<R> match(String pattern, FixieFun2<Node, Node, R> fun) {
 		return match2_(Suite.pattern(pattern), fun);
 	}
 
-	public SwitchNode<R> match3(String pattern, FixieFun3<Node, Node, Node, R> fun) {
+	public SwitchNode<R> match(String pattern, FixieFun3<Node, Node, Node, R> fun) {
 		return match3_(Suite.pattern(pattern), fun);
 	}
 
-	public SwitchNode<R> match4(String pattern, FixieFun4<Node, Node, Node, Node, R> fun) {
+	public SwitchNode<R> match(String pattern, FixieFun4<Node, Node, Node, Node, R> fun) {
 		return match4_(Suite.pattern(pattern), fun);
+	}
+
+	public SwitchNode<R> matchArray(Pattern pattern, Fun<Node[], R> fun) {
+		return match_(pattern, fun);
+	}
+
+	public SwitchNode<R> matchArray(String pattern, Fun<Node[], R> fun) {
+		return match_(Suite.pattern(pattern), fun);
 	}
 
 	public R nonNullResult() {

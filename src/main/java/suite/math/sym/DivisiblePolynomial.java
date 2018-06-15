@@ -72,15 +72,15 @@ public class DivisiblePolynomial<N> {
 		return new Object() {
 			private Opt<Poly<N>> poly(Node node) {
 				return new SwitchNode<Opt<Poly<N>>>(node //
-				).match2(patAdd, (a, b) -> {
+				).match(patAdd, (a, b) -> {
 					return poly(a).join(poly(b), dpy::add);
-				}).match1(patNeg, a -> {
+				}).match(patNeg, a -> {
 					return poly(a).map(dpy::neg);
-				}).match2(patMul, (a, b) -> {
+				}).match(patMul, (a, b) -> {
 					return poly(a).join(poly(b), dpy::mul);
-				}).match1(patInv, a -> {
+				}).match(patInv, a -> {
 					return inv1(poly(a));
-				}).match2(patPow, (a, b) -> {
+				}).match(patPow, (a, b) -> {
 					return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
 				}).applyIf(Node.class, a -> {
 					if (is_x.test(a))

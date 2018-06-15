@@ -100,15 +100,15 @@ public class Matcher<T> {
 	}
 
 	private Source<T> ctor;
-	private String matcher;
+	private String p;
 
-	public Matcher(Source<T> ctor, String matcher) {
+	public Matcher(Source<T> ctor, String p) {
 		this.ctor = ctor;
-		this.matcher = matcher;
+		this.p = p;
 	}
 
 	public T match(Node node) {
-		var map = bindMapUtil.pattern(matcher).match(node);
+		var map = bindMapUtil.pattern(p).match(node);
 		return Rethrow.ex(() -> {
 			if (map != null) {
 				var t = ctor.source();
