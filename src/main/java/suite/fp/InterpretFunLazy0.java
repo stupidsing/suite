@@ -88,11 +88,8 @@ public class InterpretFunLazy0 {
 				}).nonNullResult();
 			}
 
-			private void bind(Node t0, Node t1) {
-				if (Binder.bind(t0, t1, new Trail()))
-					;
-				else
-					Fail.t();
+			private boolean bind(Node t0, Node t1) {
+				return Binder.bind(t0, t1, new Trail()) ? true : Fail.t();
 			}
 		}
 

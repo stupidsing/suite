@@ -57,10 +57,6 @@ public class InterpretFunLazy {
 	private static class Frame extends ArrayList<Thunk> {
 		private static final long serialVersionUID = 1l;
 		private Frame parent;
-
-		private Frame(Frame parent) {
-			this.parent = parent;
-		}
 	}
 
 	public Thunk lazy(Node node) {
@@ -87,7 +83,7 @@ public class InterpretFunLazy {
 
 		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		var lazy0 = new Lazy(0, IMap.empty());
-		var frame = new Frame(null);
+		var frame = new Frame();
 
 		for (var key : keys) {
 			lazy0 = lazy0.put(Atom.of(key));
@@ -124,94 +120,91 @@ public class InterpretFunLazy {
 				.keys() //
 				.fold(env1, (e, o) -> e.put(o.name_(), Suite.substitute("FUN NUMBER FUN NUMBER NUMBER")));
 
+		class InferType {
+			private IMap<String, Node> env;
+
+			private InferType(IMap<String, Node> env) {
+				this.env = env;
+			}
+
+			private Node infer(Node node) {
+				return new SwitchNode<Node>(node //
+				).match(Matcher.apply, n -> {
+					var tr = new Reference();
+					bind(Suite.substitute("FUN .0 .1", infer(n.param), tr), infer(n.fun));
+					return tr;
+				}).match(Matcher.atom, n -> {
+					return Suite.parse("ATOM");
+				}).match(Matcher.boolean_, n -> {
+					return Suite.parse("BOOLEAN");
+				}).match(Matcher.chars, n -> {
+					return Suite.parse("CHARS");
+				}).match(Matcher.cons, n -> {
+					return Suite.substitute("CONS .0 .1", infer(n.head), infer(n.tail));
+				}).match(Matcher.decons, n -> {
+					var t0 = new Reference();
+					var t1 = new Reference();
+					var tr = infer(n.else_);
+					var i1 = new InferType(env.put(v(n.left), t0).put(v(n.right), t1));
+					bind(Suite.substitute("CONS .0 .1", t0, t1), infer(n.value));
+					bind(tr, i1.infer(n.then));
+					return tr;
+				}).match(Matcher.defvars, n -> {
+					var tuple = Suite.pattern(".0 .1");
+					var defs = Tree.iter(n.list).map(tuple::match).map2(a -> v(a[0]), a -> a[1]).collect();
+					var env1 = defs.keys().fold(env, (e, v) -> e.replace(v, new Reference()));
+					var i1 = new InferType(env1);
+					defs.sink((v, def) -> bind(i1.infer(def), env1.get(v)));
+					return i1.infer(n.do_);
+				}).match(Matcher.error, n -> {
+					return new Reference();
+				}).match(Matcher.fun, n -> {
+					var tp = new Reference();
+					var env1 = env.replace(v(n.param), tp);
+					return Suite.substitute("FUN .0 .1", tp, new InferType(env1).infer(n.do_));
+				}).match(Matcher.if_, n -> {
+					var tr = new Reference();
+					bind(Suite.parse("BOOLEAN"), infer(n.if_));
+					bind(tr, infer(n.then_));
+					bind(tr, infer(n.else_));
+					return tr;
+				}).match(Matcher.nil, n -> {
+					return Suite.substitute("NIL .0", new Reference());
+				}).match(Matcher.number, n -> {
+					return Suite.substitute("NUMBER");
+				}).match(Matcher.pragma, n -> {
+					return infer(n.do_);
+				}).match(Matcher.tco, n -> {
+					var tv = infer(n.in_);
+					var tr = new Reference();
+					var tl = Suite.substitute("FUN .0 CONS BOOLEAN CONS .1 .2", tv, tv, tr);
+					bind(tl, infer(n.iter));
+					return tr;
+				}).match(Matcher.tree, n -> {
+					var tr = new Reference();
+					var tl = Suite.substitute("FUN .0 FUN .1 .2", infer(n.left), infer(n.right), tr);
+					bind(tl, get(n.op));
+					return tr;
+				}).match(Matcher.unwrap, n -> {
+					return infer(n.do_);
+				}).match(Matcher.var, n -> {
+					return get(n.name);
+					// return new Cloner().clone(get(VAR.name));
+				}).match(Matcher.wrap, n -> {
+					return infer(n.do_);
+				}).nonNullResult();
+			}
+
+			private boolean bind(Node t0, Node t1) {
+				return Binder.bind(t0, t1, new Trail()) ? true : Fail.t();
+			}
+
+			private Node get(Node var) {
+				return env.get(v(var));
+			}
+		}
+
 		return new InferType(env2).infer(node);
-	}
-
-	private class InferType {
-		private IMap<String, Node> env;
-
-		private InferType(IMap<String, Node> env) {
-			this.env = env;
-		}
-
-		private Node infer(Node node) {
-			return new SwitchNode<Node>(node //
-			).match(Matcher.apply, n -> {
-				var tr = new Reference();
-				bind(Suite.substitute("FUN .0 .1", infer(n.param), tr), infer(n.fun));
-				return tr;
-			}).match(Matcher.atom, n -> {
-				return Suite.parse("ATOM");
-			}).match(Matcher.boolean_, n -> {
-				return Suite.parse("BOOLEAN");
-			}).match(Matcher.chars, n -> {
-				return Suite.parse("CHARS");
-			}).match(Matcher.cons, n -> {
-				return Suite.substitute("CONS .0 .1", infer(n.head), infer(n.tail));
-			}).match(Matcher.decons, n -> {
-				var t0 = new Reference();
-				var t1 = new Reference();
-				var tr = infer(n.else_);
-				var i1 = new InferType(env.put(v(n.left), t0).put(v(n.right), t1));
-				bind(Suite.substitute("CONS .0 .1", t0, t1), infer(n.value));
-				bind(tr, i1.infer(n.then));
-				return tr;
-			}).match(Matcher.defvars, n -> {
-				var tuple = Suite.pattern(".0 .1");
-				var defs = Tree.iter(n.list).map(tuple::match).map2(a -> v(a[0]), a -> a[1]).collect();
-				var env1 = defs.keys().fold(env, (e, v) -> e.replace(v, new Reference()));
-				var i1 = new InferType(env1);
-				defs.sink((v, def) -> bind(i1.infer(def), env1.get(v)));
-				return i1.infer(n.do_);
-			}).match(Matcher.error, n -> {
-				return new Reference();
-			}).match(Matcher.fun, n -> {
-				var tp = new Reference();
-				var env1 = env.replace(v(n.param), tp);
-				return Suite.substitute("FUN .0 .1", tp, new InferType(env1).infer(n.do_));
-			}).match(Matcher.if_, n -> {
-				var tr = new Reference();
-				bind(Suite.parse("BOOLEAN"), infer(n.if_));
-				bind(tr, infer(n.then_));
-				bind(tr, infer(n.else_));
-				return tr;
-			}).match(Matcher.nil, n -> {
-				return Suite.substitute("NIL .0", new Reference());
-			}).match(Matcher.number, n -> {
-				return Suite.substitute("NUMBER");
-			}).match(Matcher.pragma, n -> {
-				return infer(n.do_);
-			}).match(Matcher.tco, n -> {
-				var tv = infer(n.in_);
-				var tr = new Reference();
-				var tl = Suite.substitute("FUN .0 CONS BOOLEAN CONS .1 .2", tv, tv, tr);
-				bind(tl, infer(n.iter));
-				return tr;
-			}).match(Matcher.tree, n -> {
-				var tr = new Reference();
-				var tl = Suite.substitute("FUN .0 FUN .1 .2", infer(n.left), infer(n.right), tr);
-				bind(tl, get(n.op));
-				return tr;
-			}).match(Matcher.unwrap, n -> {
-				return infer(n.do_);
-			}).match(Matcher.var, n -> {
-				return get(n.name);
-				// return new Cloner().clone(get(VAR.name));
-			}).match(Matcher.wrap, n -> {
-				return infer(n.do_);
-			}).nonNullResult();
-		}
-
-		private Node get(Node var) {
-			return env.get(v(var));
-		}
-
-		private void bind(Node t0, Node t1) {
-			if (Binder.bind(t0, t1, new Trail()))
-				;
-			else
-				Fail.t();
-		}
 	}
 
 	private class Lazy {
@@ -299,7 +292,8 @@ public class InterpretFunLazy {
 				}
 				var value_ = new Lazy(0, vm1).put(FUN.param).lazy(FUN.do_);
 				return frame -> () -> new Fn(in -> {
-					var frame1 = new Frame(frame);
+					var frame1 = new Frame();
+					frame1.parent = frame;
 					frame1.add(in);
 					return value_.apply(frame1);
 				});

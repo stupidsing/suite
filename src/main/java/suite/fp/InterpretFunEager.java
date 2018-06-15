@@ -54,10 +54,6 @@ public class InterpretFunEager {
 	private static class Frame extends ArrayList<Node> {
 		private static final long serialVersionUID = 1l;
 		private Frame parent;
-
-		private Frame(Frame parent) {
-			this.parent = parent;
-		}
 	}
 
 	private class Eager {
@@ -146,7 +142,8 @@ public class InterpretFunEager {
 				}
 				var value_ = new Eager(0, vm1).put(FUN.param).eager_(FUN.do_);
 				return frame -> new Fn(in -> {
-					var frame1 = new Frame(frame);
+					var frame1 = new Frame();
+					frame1.parent = frame;
 					frame1.add(in);
 					return value_.apply(frame1);
 				});
@@ -234,7 +231,7 @@ public class InterpretFunEager {
 
 		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
 		var eager0 = new Eager(0, IMap.empty());
-		var frame = new Frame(null);
+		var frame = new Frame();
 
 		for (var key : keys) {
 			eager0 = eager0.put(Atom.of(key));
