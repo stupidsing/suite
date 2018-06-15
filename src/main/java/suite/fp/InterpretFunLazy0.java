@@ -60,7 +60,6 @@ public class InterpretFunLazy0 {
 					var i1 = new InferType(env.put(v(a), tv));
 					bind(infer(b), tv);
 					return i1.infer(c);
-
 				}).match3("if .0 then .1 else .2", (a, b, c) -> {
 					var tr = new Reference();
 					bind(Suite.parse("BOOLEAN"), infer(a));
