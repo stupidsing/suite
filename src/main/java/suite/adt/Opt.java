@@ -29,10 +29,6 @@ public class Opt<T> {
 		return concatMap_(fun);
 	}
 
-	public Opt<T> cons(Source<Opt<T>> source) {
-		return !isEmpty() ? this : source.source();
-	}
-
 	@Override
 	public boolean equals(Object object) {
 		return Object_.clazz(object) == Opt.class && Objects.equals(value, ((Opt<?>) object).value);
