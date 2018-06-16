@@ -11,16 +11,13 @@ import suite.util.FunUtil2.Source2;
 
 public class FunUtil {
 
-	@FunctionalInterface
 	public interface Iterate<T> extends Fun<T, T> {
 	}
 
-	@FunctionalInterface
 	public interface Source<O> {
 		public O source();
 	}
 
-	@FunctionalInterface
 	public interface Sink<I> {
 		public void sink(I i);
 
@@ -35,7 +32,6 @@ public class FunUtil {
 		}
 	}
 
-	@FunctionalInterface
 	public interface Fun<I, O> extends Function<I, O> {
 		public default Fun<I, O> rethrow() {
 			return i -> {

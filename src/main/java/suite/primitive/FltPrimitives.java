@@ -18,12 +18,10 @@ import suite.util.FunUtil2.Source2;
 
 public class FltPrimitives {
 
-	@FunctionalInterface
 	public interface FltComparator {
 		int compare(float c0, float c1);
 	}
 
-	@FunctionalInterface
 	public interface Flt_Obj<T> {
 		public T apply(float c);
 
@@ -49,7 +47,6 @@ public class FltPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface FltObj_Obj<X, Y> {
 		public Y apply(float c, X x);
 
@@ -64,7 +61,6 @@ public class FltPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface FltObjPredicate<T> {
 		public boolean test(float c, T t);
 
@@ -79,7 +75,6 @@ public class FltPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface FltObjSink<T> { // extends ObjCharConsumer<T>
 		public void sink2(float c, T t);
 
@@ -94,12 +89,10 @@ public class FltPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface FltObjSource<T> {
 		public boolean source2(FltObjPair<T> pair);
 	}
 
-	@FunctionalInterface
 	public interface FltTest {
 		public boolean test(float c);
 
@@ -114,7 +107,6 @@ public class FltPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface FltSink {
 		public void sink(float c);
 
@@ -129,12 +121,10 @@ public class FltPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface FltSource {
 		public float source();
 	}
 
-	@FunctionalInterface
 	public interface Obj_Flt<T> {
 		public float apply(T t);
 
@@ -172,7 +162,6 @@ public class FltPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface ObjObj_Flt<X, Y> {
 		public float apply(X x, Y y);
 

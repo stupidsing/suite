@@ -7,7 +7,6 @@ import suite.primitive.streamlet.DblStreamlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
-@FunctionalInterface
 public interface Dbl_Dbl {
 
 	public double apply(double c);

@@ -7,7 +7,6 @@ import suite.primitive.streamlet.DblOutlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
-@FunctionalInterface
 public interface Dbl_Chr {
 
 	public char apply(double c);

@@ -30,7 +30,6 @@ public class Floats implements Iterable<Float> {
 	public final float[] cs; // immutable
 	public final int start, end;
 
-	@FunctionalInterface
 	public interface WriteChar {
 		public void write(float[] cs, int offset, int length) throws IOException;
 	};

@@ -7,7 +7,6 @@ import suite.primitive.streamlet.FltStreamlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
-@FunctionalInterface
 public interface Flt_Flt {
 
 	public float apply(float c);

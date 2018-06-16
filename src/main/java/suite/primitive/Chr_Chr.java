@@ -7,7 +7,6 @@ import suite.primitive.streamlet.ChrStreamlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
-@FunctionalInterface
 public interface Chr_Chr {
 
 	public char apply(char c);

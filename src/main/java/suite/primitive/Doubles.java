@@ -30,7 +30,6 @@ public class Doubles implements Iterable<Double> {
 	public final double[] cs; // immutable
 	public final int start, end;
 
-	@FunctionalInterface
 	public interface WriteChar {
 		public void write(double[] cs, int offset, int length) throws IOException;
 	};

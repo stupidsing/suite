@@ -7,7 +7,6 @@ import suite.primitive.streamlet.LngOutlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
-@FunctionalInterface
 public interface Lng_Chr {
 
 	public char apply(long c);

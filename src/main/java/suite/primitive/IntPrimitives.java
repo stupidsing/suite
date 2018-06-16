@@ -18,12 +18,10 @@ import suite.util.FunUtil2.Source2;
 
 public class IntPrimitives {
 
-	@FunctionalInterface
 	public interface IntComparator {
 		int compare(int c0, int c1);
 	}
 
-	@FunctionalInterface
 	public interface Int_Obj<T> {
 		public T apply(int c);
 
@@ -49,7 +47,6 @@ public class IntPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface IntObj_Obj<X, Y> {
 		public Y apply(int c, X x);
 
@@ -64,7 +61,6 @@ public class IntPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface IntObjPredicate<T> {
 		public boolean test(int c, T t);
 
@@ -79,7 +75,6 @@ public class IntPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface IntObjSink<T> { // extends ObjCharConsumer<T>
 		public void sink2(int c, T t);
 
@@ -94,12 +89,10 @@ public class IntPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface IntObjSource<T> {
 		public boolean source2(IntObjPair<T> pair);
 	}
 
-	@FunctionalInterface
 	public interface IntTest {
 		public boolean test(int c);
 
@@ -114,7 +107,6 @@ public class IntPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface IntSink {
 		public void sink(int c);
 
@@ -129,12 +121,10 @@ public class IntPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface IntSource {
 		public int source();
 	}
 
-	@FunctionalInterface
 	public interface Obj_Int<T> {
 		public int apply(T t);
 
@@ -172,7 +162,6 @@ public class IntPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface ObjObj_Int<X, Y> {
 		public int apply(X x, Y y);
 

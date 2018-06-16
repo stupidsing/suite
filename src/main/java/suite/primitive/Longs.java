@@ -30,7 +30,6 @@ public class Longs implements Iterable<Long> {
 	public final long[] cs; // immutable
 	public final int start, end;
 
-	@FunctionalInterface
 	public interface WriteChar {
 		public void write(long[] cs, int offset, int length) throws IOException;
 	};

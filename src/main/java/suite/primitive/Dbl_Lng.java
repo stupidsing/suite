@@ -7,7 +7,6 @@ import suite.primitive.streamlet.LngStreamlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
-@FunctionalInterface
 public interface Dbl_Lng {
 
 	public long apply(double c);

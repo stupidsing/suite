@@ -20,7 +20,6 @@ import suite.util.Thread_;
 
 public class Ssh {
 
-	@FunctionalInterface
 	public interface SshFun<I, O> {
 		public O apply(I i) throws IOException, SftpException, JSchException;
 	}

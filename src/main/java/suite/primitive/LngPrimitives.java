@@ -18,12 +18,10 @@ import suite.util.FunUtil2.Source2;
 
 public class LngPrimitives {
 
-	@FunctionalInterface
 	public interface LngComparator {
 		int compare(long c0, long c1);
 	}
 
-	@FunctionalInterface
 	public interface Lng_Obj<T> {
 		public T apply(long c);
 
@@ -49,7 +47,6 @@ public class LngPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface LngObj_Obj<X, Y> {
 		public Y apply(long c, X x);
 
@@ -64,7 +61,6 @@ public class LngPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface LngObjPredicate<T> {
 		public boolean test(long c, T t);
 
@@ -79,7 +75,6 @@ public class LngPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface LngObjSink<T> { // extends ObjCharConsumer<T>
 		public void sink2(long c, T t);
 
@@ -94,12 +89,10 @@ public class LngPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface LngObjSource<T> {
 		public boolean source2(LngObjPair<T> pair);
 	}
 
-	@FunctionalInterface
 	public interface LngTest {
 		public boolean test(long c);
 
@@ -114,7 +107,6 @@ public class LngPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface LngSink {
 		public void sink(long c);
 
@@ -129,12 +121,10 @@ public class LngPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface LngSource {
 		public long source();
 	}
 
-	@FunctionalInterface
 	public interface Obj_Lng<T> {
 		public long apply(T t);
 
@@ -172,7 +162,6 @@ public class LngPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface ObjObj_Lng<X, Y> {
 		public long apply(X x, Y y);
 

@@ -18,12 +18,10 @@ import suite.util.FunUtil2.Source2;
 
 public class ChrPrimitives {
 
-	@FunctionalInterface
 	public interface ChrComparator {
 		int compare(char c0, char c1);
 	}
 
-	@FunctionalInterface
 	public interface Chr_Obj<T> {
 		public T apply(char c);
 
@@ -49,7 +47,6 @@ public class ChrPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface ChrObj_Obj<X, Y> {
 		public Y apply(char c, X x);
 
@@ -64,7 +61,6 @@ public class ChrPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface ChrObjPredicate<T> {
 		public boolean test(char c, T t);
 
@@ -79,7 +75,6 @@ public class ChrPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface ChrObjSink<T> { // extends ObjCharConsumer<T>
 		public void sink2(char c, T t);
 
@@ -94,12 +89,10 @@ public class ChrPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface ChrObjSource<T> {
 		public boolean source2(ChrObjPair<T> pair);
 	}
 
-	@FunctionalInterface
 	public interface ChrTest {
 		public boolean test(char c);
 
@@ -114,7 +107,6 @@ public class ChrPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface ChrSink {
 		public void sink(char c);
 
@@ -129,12 +121,10 @@ public class ChrPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface ChrSource {
 		public char source();
 	}
 
-	@FunctionalInterface
 	public interface Obj_Chr<T> {
 		public char apply(T t);
 
@@ -172,7 +162,6 @@ public class ChrPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface ObjObj_Chr<X, Y> {
 		public char apply(X x, Y y);
 

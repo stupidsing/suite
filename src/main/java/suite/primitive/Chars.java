@@ -30,7 +30,6 @@ public class Chars implements Iterable<Character> {
 	public final char[] cs; // immutable
 	public final int start, end;
 
-	@FunctionalInterface
 	public interface WriteChar {
 		public void write(char[] cs, int offset, int length) throws IOException;
 	};

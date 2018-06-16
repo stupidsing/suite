@@ -13,24 +13,19 @@ import suite.util.FunUtil.Source;
 
 public class FunUtil2 {
 
-	@FunctionalInterface
 	public interface BinOp<T> extends BiFun<T, T> {
 	}
 
-	@FunctionalInterface
 	public interface FoldOp<I, O> extends Fun2<I, O, O> {
 	}
 
-	@FunctionalInterface
 	public interface BiFun<I, O> extends Fun2<I, I, O> {
 	}
 
-	@FunctionalInterface
 	public interface Source2<K, V> {
 		public boolean source2(Pair<K, V> pair);
 	}
 
-	@FunctionalInterface
 	public interface Sink2<K, V> {
 		public void sink2(K key, V value);
 
@@ -45,7 +40,6 @@ public class FunUtil2 {
 		}
 	}
 
-	@FunctionalInterface
 	public interface Fun2<X, Y, Z> extends BiFunction<X, Y, Z> {
 		public default Fun2<X, Y, Z> rethrow() {
 			return (x, y) -> {

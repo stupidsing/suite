@@ -7,7 +7,6 @@ import suite.primitive.streamlet.IntStreamlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
-@FunctionalInterface
 public interface Dbl_Int {
 
 	public int apply(double c);

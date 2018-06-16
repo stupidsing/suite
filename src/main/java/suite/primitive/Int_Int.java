@@ -7,7 +7,6 @@ import suite.primitive.streamlet.IntStreamlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
-@FunctionalInterface
 public interface Int_Int {
 
 	public int apply(int c);

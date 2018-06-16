@@ -7,7 +7,6 @@ import suite.primitive.streamlet.IntOutlet;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
-@FunctionalInterface
 public interface Int_Chr {
 
 	public char apply(int c);

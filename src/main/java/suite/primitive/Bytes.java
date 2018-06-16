@@ -27,7 +27,6 @@ public class Bytes implements Iterable<Byte> {
 	public final byte[] bs; // immutable
 	public final int start, end;
 
-	@FunctionalInterface
 	public interface WriteByte {
 		public void write(byte[] bs, int offset, int length) throws IOException;
 	};

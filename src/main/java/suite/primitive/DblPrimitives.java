@@ -18,12 +18,10 @@ import suite.util.FunUtil2.Source2;
 
 public class DblPrimitives {
 
-	@FunctionalInterface
 	public interface DblComparator {
 		int compare(double c0, double c1);
 	}
 
-	@FunctionalInterface
 	public interface Dbl_Obj<T> {
 		public T apply(double c);
 
@@ -49,7 +47,6 @@ public class DblPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface DblObj_Obj<X, Y> {
 		public Y apply(double c, X x);
 
@@ -64,7 +61,6 @@ public class DblPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface DblObjPredicate<T> {
 		public boolean test(double c, T t);
 
@@ -79,7 +75,6 @@ public class DblPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface DblObjSink<T> { // extends ObjCharConsumer<T>
 		public void sink2(double c, T t);
 
@@ -94,12 +89,10 @@ public class DblPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface DblObjSource<T> {
 		public boolean source2(DblObjPair<T> pair);
 	}
 
-	@FunctionalInterface
 	public interface DblTest {
 		public boolean test(double c);
 
@@ -114,7 +107,6 @@ public class DblPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface DblSink {
 		public void sink(double c);
 
@@ -129,12 +121,10 @@ public class DblPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface DblSource {
 		public double source();
 	}
 
-	@FunctionalInterface
 	public interface Obj_Dbl<T> {
 		public double apply(T t);
 
@@ -172,7 +162,6 @@ public class DblPrimitives {
 		}
 	}
 
-	@FunctionalInterface
 	public interface ObjObj_Dbl<X, Y> {
 		public double apply(X x, Y y);
 

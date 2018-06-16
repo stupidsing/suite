@@ -30,7 +30,6 @@ public class Ints implements Iterable<Integer> {
 	public final int[] cs; // immutable
 	public final int start, end;
 
-	@FunctionalInterface
 	public interface WriteChar {
 		public void write(int[] cs, int offset, int length) throws IOException;
 	};
