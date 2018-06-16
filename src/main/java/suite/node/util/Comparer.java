@@ -50,7 +50,7 @@ public class Comparer implements Comparator<Node> {
 
 		if (c == 0)
 			if (clazz0 == Atom.class)
-				return ((Atom) n0).name.compareTo(((Atom) n1).name);
+				return Atom.name(n0).compareTo(Atom.name(n1));
 			else if (clazz0 == Dict.class) {
 				var m0 = ((Dict) n0).map;
 				var m1 = ((Dict) n1).map;
@@ -61,7 +61,7 @@ public class Comparer implements Comparator<Node> {
 					c = c != 0 ? c : Object_.compare(m0.get(key), m1.get(key));
 				return c;
 			} else if (clazz0 == Int.class)
-				return Integer.compare(((Int) n0).number, ((Int) n1).number);
+				return Integer.compare(Int.num(n0), Int.num(n1));
 			else if (clazz0 == Reference.class)
 				return Integer.compare(((Reference) n0).getId(), ((Reference) n1).getId());
 			else if (clazz0 == Str.class)

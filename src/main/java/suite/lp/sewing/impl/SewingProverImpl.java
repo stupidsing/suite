@@ -316,9 +316,9 @@ public class SewingProverImpl implements ProverFactory {
 			var f = bf.cloner(n0);
 			cps = rt -> p.test(rt, f.apply(rt.env)) ? cpsx : null;
 		} else if ((m = Suite.pattern(".0 .1").match(node)) != null && m[0] instanceof Atom)
-			cps = compileCpsCallPredicate(bf, ((Atom) m[0]).name, m[1], node, cpsx);
+			cps = compileCpsCallPredicate(bf, Atom.name(m[0]), m[1], node, cpsx);
 		else if (node instanceof Atom) {
-			var name = ((Atom) node).name;
+			var name = Atom.name(node);
 			if (String_.equals(name, ""))
 				cps = cpsx;
 			else if (String_.equals(name, "fail"))
@@ -460,8 +460,8 @@ public class SewingProverImpl implements ProverFactory {
 			var f = bf.cloner(n0);
 			tr = rt -> p.test(rt, f.apply(rt.env)) ? okay : fail;
 		} else if ((m = Suite.pattern("builtin:.0:.1 .2").match(node)) != null) {
-			var className = ((Atom) m[0]).name;
-			var fieldName = ((Atom) m[1]).name;
+			var className = Atom.name(m[0]);
+			var fieldName = Atom.name(m[1]);
 			BuiltinPredicate predicate = Rethrow.ex(() -> {
 				var clazz = Class.forName(className);
 				return (BuiltinPredicate) clazz.getField(fieldName).get(Object_.new_(clazz));
@@ -661,9 +661,9 @@ public class SewingProverImpl implements ProverFactory {
 				return tr0;
 			};
 		} else if ((m = Suite.pattern(".0 .1").match(node)) != null && m[0] instanceof Atom)
-			tr = compileTrCallPredicate(bf, ((Atom) m[0]).name, m[1], node);
+			tr = compileTrCallPredicate(bf, Atom.name(m[0]), m[1], node);
 		else if (node instanceof Atom) {
-			var name = ((Atom) node).name;
+			var name = Atom.name(node);
 			if (node == ProverConstant.cut)
 				tr = cutEnd();
 			else if (String_.equals(name, ""))
@@ -917,7 +917,7 @@ public class SewingProverImpl implements ProverFactory {
 		if (tree != null)
 			return 1 + max(complexity(tree.getLeft()), complexity(tree.getRight()));
 		else
-			return node instanceof Atom && ProverConstant.isVariable(((Atom) node).name) ? 0 : 1;
+			return node instanceof Atom && ProverConstant.isVariable(Atom.name(node)) ? 0 : 1;
 	}
 
 	private Mutable<Cps> getCpsByPrototype(Prototype prototype) {
@@ -932,7 +932,7 @@ public class SewingProverImpl implements ProverFactory {
 		TraceLevel traceLevel;
 		if (Suite.isProverTrace) {
 			var head = prototype.head;
-			var name = head instanceof Atom ? ((Atom) head).name : null;
+			var name = head instanceof Atom ? Atom.name(head) : null;
 
 			traceLevel = name != null //
 					&& !name.startsWith("member") //

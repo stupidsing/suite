@@ -86,12 +86,11 @@ public class InstructionExtractor implements AutoCloseable {
 	}
 
 	private Instruction extract(List<Node> rs) {
-		var insnName = ((Atom) rs.get(0)).name;
+		var insnName = Atom.name(rs.get(0));
 		Insn insn;
 
 		if (Objects.equals(insnName, "EVALUATE")) {
-			var atom = (Atom) rs.remove(3);
-			var operator = TermOp.find(atom.name);
+			var operator = TermOp.find(Atom.name(rs.remove(3)));
 			insn = InstructionUtil.getEvalInsn(operator);
 		} else
 			insn = InstructionUtil.getInsn(insnName);
@@ -118,7 +117,7 @@ public class InstructionExtractor implements AutoCloseable {
 			Tree tree;
 
 			if (node instanceof Int)
-				return ((Int) node).number;
+				return Int.num(node);
 			else if (node instanceof Reference) { // transient register
 
 				// allocates new register in current local frame

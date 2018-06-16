@@ -48,7 +48,7 @@ public class IoPredicates {
 		return false;
 	});
 
-	public BuiltinPredicate exit = PredicateUtil.sink(n -> System.exit(n instanceof Int ? ((Int) n).number : 0));
+	public BuiltinPredicate exit = PredicateUtil.sink(n -> System.exit(n instanceof Int ? Int.num(n) : 0));
 
 	public BuiltinPredicate fileExists = PredicateUtil.bool(n -> Files.exists(Paths.get(Formatter.display(n))));
 

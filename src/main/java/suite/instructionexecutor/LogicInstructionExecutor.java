@@ -7,6 +7,7 @@ import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.lp.predicate.SystemPredicates;
 import suite.node.Atom;
+import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
@@ -47,13 +48,13 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			regs[insn.op0] = number(trail.getPointInTime());
 			break;
 		case BINDUNDO______:
-			trail.unwind(i(regs[insn.op0]));
+			trail.unwind(Int.num(regs[insn.op0]));
 			break;
 		case DECOMPOSETREE0:
 			var node = regs[insn.op0].finalNode();
 
 			insn1 = getInstructions()[current.ip++];
-			var op = TermOp.find(((Atom) constantPool.get(insn1.op0)).name);
+			var op = TermOp.find(Atom.name(constantPool.get(insn1.op0)));
 			var rl = insn1.op1;
 			var rr = insn1.op2;
 
@@ -83,7 +84,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			exec.current.previous = (Activation) regs[insn.op0];
 			break;
 		case RESTOREDSP____:
-			exec.sp = i(regs[insn.op0]);
+			exec.sp = Int.num(regs[insn.op0]);
 			break;
 		default:
 			Fail.t("unknown instruction " + insn);

@@ -48,7 +48,7 @@ public class InterpretFunLazy0 {
 				return new SwitchNode<Node>(node //
 				).match("define .0 := .1 >> .2", (a, b, c) -> {
 					var tv = new Reference();
-					var i1 = new InferType(env.put(v(a), tv));
+					var i1 = new InferType(env.put(Atom.name(a), tv));
 					bind(infer(b), tv);
 					return i1.infer(c);
 				}).match("if .0 then .1 else .2", (a, b, c) -> {
@@ -59,7 +59,7 @@ public class InterpretFunLazy0 {
 					return tr;
 				}).match(".0 => .1", (a, b) -> {
 					var tp = new Reference();
-					var env1 = env.replace(v(a), tp);
+					var env1 = env.replace(Atom.name(a), tp);
 					return Suite.substitute("FUN .0 .1", tp, new InferType(env1).infer(b));
 				}).match(".0 {.1}", (a, b) -> {
 					var tr = new Reference();
@@ -71,7 +71,7 @@ public class InterpretFunLazy0 {
 					bind(tl, env.get(op.name_()));
 					return tr;
 				}).applyIf(Atom.class, a -> {
-					return env.get(v(a));
+					return env.get(Atom.name(a));
 				}).applyIf(Int.class, a -> {
 					return Suite.parse("NUMBER");
 				}).applyIf(Node.class, a -> {
@@ -132,7 +132,7 @@ public class InterpretFunLazy0 {
 	private Fun<IMap<String, Thunk>, Thunk> lazy0(Node node) {
 		return new SwitchNode<Fun<IMap<String, Thunk>, Thunk>>(node //
 		).match("define .0 := .1 >> .2", (a, b, c) -> {
-			var vk = v(a);
+			var vk = Atom.name(a);
 			var value = lazy0(b);
 			var expr = lazy0(c);
 			return env -> {
@@ -147,7 +147,7 @@ public class InterpretFunLazy0 {
 			var else_ = lazy0(c);
 			return env -> () -> (if_.apply(env).get() == Atom.TRUE ? then_ : else_).apply(env).get();
 		}).match(".0 => .1", (a, b) -> {
-			var vk = v(a);
+			var vk = Atom.name(a);
 			var value = lazy0(b);
 			return env -> () -> f(in -> () -> value.apply(env.put(vk, in)).get());
 		}).match(".0 {.1}", (a, b) -> {
@@ -164,7 +164,7 @@ public class InterpretFunLazy0 {
 				return r2;
 			};
 		}).applyIf(Atom.class, a -> {
-			var vk = v(node);
+			var vk = Atom.name(node);
 			return env -> env.get(vk);
 		}).applyIf(Node.class, a -> {
 			return env -> () -> node;
@@ -197,11 +197,7 @@ public class InterpretFunLazy0 {
 	}
 
 	private int i(Thunk thunk) {
-		return ((Int) thunk.get()).number;
-	}
-
-	private String v(Node node) {
-		return ((Atom) node).name;
+		return Int.num(thunk.get());
 	}
 
 }

@@ -136,14 +136,14 @@ public class SystemPredicates {
 		Node pass = null;
 
 		if (query instanceof Atom) {
-			name = ((Atom) query).name;
+			name = Atom.name(query);
 			pass = Atom.NIL;
 		} else if ((tree = Tree.decompose(query)) != null)
 			if ((op = tree.getOperator()) != TermOp.TUPLE_) {
 				name = op.name_();
 				pass = query;
 			} else if ((left = tree.getLeft()) instanceof Atom) {
-				name = ((Atom) left).name;
+				name = Atom.name(left);
 				pass = tree.getRight();
 			}
 

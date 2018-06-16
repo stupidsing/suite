@@ -25,14 +25,14 @@ public class ThunkUtil {
 		Node n;
 
 		while ((n = st.next()) != null)
-			sb.append((char) ((Int) n).number);
+			sb.append((char) Int.num(n));
 
 		return sb.toString();
 	}
 
 	public static void yawnWriter(Iterate<Node> yawn, Node node, Writer writer) throws IOException {
 		ThunkUtil.yawnSink(yawn, node, n -> {
-			var c = ((Int) n).number;
+			var c = Int.num(n);
 			writer.write(c);
 			if (c == 10)
 				writer.flush();
@@ -40,8 +40,7 @@ public class ThunkUtil {
 	}
 
 	/**
-	 * Evaluates the whole (lazy) term to a list and feed the elements into a
-	 * sink.
+	 * Evaluates the whole (lazy) term to a list and feed the elements into a sink.
 	 */
 	public static void yawnSink(Iterate<Node> yawn, Node node, IoSink<Node> sink) throws IOException {
 		var st = yawnList(yawn, node, true);

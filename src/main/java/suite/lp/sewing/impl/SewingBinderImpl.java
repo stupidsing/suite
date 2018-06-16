@@ -97,7 +97,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 				be.trail.addBind((Reference) n_, i_);
 				return true;
 			} else
-				return n_ instanceof Int && ((Int) n_).number == i;
+				return n_ instanceof Int && Int.num(n_) == i;
 		};
 	}
 

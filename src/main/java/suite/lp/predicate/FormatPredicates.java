@@ -29,7 +29,7 @@ public class FormatPredicates {
 
 	public BuiltinPredicate charAscii = PredicateUtil.p2((prover, p0, p1) -> {
 		return p0 instanceof Str && prover.bind(Int.of(((Str) p0).value.charAt(0)), p1) //
-				|| p1 instanceof Int && prover.bind(new Str("" + (char) ((Int) p1).number), p0);
+				|| p1 instanceof Int && prover.bind(new Str("" + (char) Int.num(p1)), p0);
 	});
 
 	public BuiltinPredicate concat = PredicateUtil.ps((prover, nodes) -> {
@@ -91,7 +91,7 @@ public class FormatPredicates {
 	public BuiltinPredicate startsWith = PredicateUtil.p2((prover, s, start) -> true //
 			&& s instanceof Atom //
 			&& start instanceof Atom //
-			&& ((Atom) s).name.startsWith(((Atom) start).name));
+			&& Atom.name(s).startsWith(Atom.name(start)));
 
 	public BuiltinPredicate stringLength = PredicateUtil.fun(n -> Int.of(((Str) n).value.length()));
 
@@ -100,7 +100,7 @@ public class FormatPredicates {
 		var length = name.length();
 
 		if (p0 instanceof Int && px instanceof Int) {
-			int m = ((Int) p0).number, n = ((Int) px).number;
+			int m = Int.num(p0), n = Int.num(px);
 
 			while (m < 0)
 				m += length;

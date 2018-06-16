@@ -43,7 +43,7 @@ public class PeepholeOptimizer {
 				var m1 = m[1];
 				if (m0 == m1)
 					node1 = Atom.NIL;
-				else if (m0 instanceof Atom && m1 instanceof Int && ((Int) m1).number == 0)
+				else if (m0 instanceof Atom && m1 instanceof Int && Int.num(m1) == 0)
 					node1 = Suite.substitute("XOR (.0, .0)", m0);
 				else
 					node1 = Suite.substitute("MOV (.0, .1)", m0, m1);

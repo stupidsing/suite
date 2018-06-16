@@ -136,13 +136,13 @@ public class InterpretFunLazy {
 					var t0 = new Reference();
 					var t1 = new Reference();
 					var tr = infer(else_);
-					var i1 = new InferType(env.put(v(left), t0).put(v(right), t1));
+					var i1 = new InferType(env.put(Atom.name(left), t0).put(Atom.name(right), t1));
 					bind(Suite.substitute("CONS .0 .1", t0, t1), infer(value));
 					bind(tr, i1.infer(then));
 					return tr;
 				}).match(Matcher.defvars, (list, do_) -> {
 					var tuple = Suite.pattern(".0 .1");
-					var defs = Tree.iter(list).map(tuple::match).map2(a -> v(a[0]), a -> a[1]).collect();
+					var defs = Tree.iter(list).map(tuple::match).map2(a -> Atom.name(a[0]), a -> a[1]).collect();
 					var env1 = defs.keys().fold(env, (e, v) -> e.replace(v, new Reference()));
 					var i1 = new InferType(env1);
 					defs.sink((v, def) -> bind(i1.infer(def), env1.get(v)));
@@ -151,7 +151,7 @@ public class InterpretFunLazy {
 					return new Reference();
 				}).match(Matcher.fun, (param, do_) -> {
 					var tp = new Reference();
-					var env1 = env.replace(v(param), tp);
+					var env1 = env.replace(Atom.name(param), tp);
 					return Suite.substitute("FUN .0 .1", tp, new InferType(env1).infer(do_));
 				}).match(Matcher.if_, (if_, then_, else_) -> {
 					var tr = new Reference();
@@ -191,7 +191,7 @@ public class InterpretFunLazy {
 			}
 
 			private Node get(Node var) {
-				return env.get(v(var));
+				return env.get(Atom.name(var));
 			}
 		}
 
@@ -380,11 +380,7 @@ public class InterpretFunLazy {
 	}
 
 	private int i(Thunk thunk) {
-		return ((Int) thunk.get()).number;
-	}
-
-	private String v(Node node) {
-		return ((Atom) node).name;
+		return Int.num(thunk.get());
 	}
 
 }

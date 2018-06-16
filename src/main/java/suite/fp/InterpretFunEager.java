@@ -195,7 +195,7 @@ public class InterpretFunEager {
 
 		var intOpMap = Read //
 				.from2(TreeUtil.intOperations) //
-				.<String, Node> map2((k, fun) -> k.name_(), (k, fun) -> f2((a, b) -> Int.of(fun.apply(i(a), i(b))))) //
+				.<String, Node> map2((k, fun) -> k.name_(), (k, fun) -> f2((a, b) -> Int.of(fun.apply(Int.num(a), Int.num(b))))) //
 				.toMap();
 
 		var df = new HashMap<String, Node>();
@@ -207,7 +207,7 @@ public class InterpretFunEager {
 		df.put("+call%i-v2", f1(i -> fn(2, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
 		df.put("+call%i-v3", f1(i -> fn(3, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
 		df.put("+compare", f2((a, b) -> Int.of(Comparer.comparer.compare(a, b))));
-		df.put("+get%i", f1(a -> new Data<>(Intrinsics.intrinsics.get(((Atom) a).name.split("!")[1]))));
+		df.put("+get%i", f1(a -> new Data<>(Intrinsics.intrinsics.get(Atom.name(a).split("!")[1]))));
 		df.put("+is-list", f1(a -> b(Tree.decompose(a) != null)));
 		df.put("+is-pair", f1(a -> b(Tree.decompose(a) != null)));
 		df.put("+lcons", f2((a, b) -> Tree.of(TermOp.OR____, a, b)));
@@ -324,10 +324,6 @@ public class InterpretFunEager {
 
 	private Atom b(boolean b) {
 		return b ? Atom.TRUE : Atom.FALSE;
-	}
-
-	private int i(Node thunk) {
-		return ((Int) thunk).number;
 	}
 
 }

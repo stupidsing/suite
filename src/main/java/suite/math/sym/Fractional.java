@@ -77,7 +77,7 @@ public class Fractional<I> {
 				}).match(patInv, a -> {
 					return inv1(fract(a));
 				}).match(patPow, (a, b) -> {
-					return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
+					return b instanceof Int ? pow(a, Int.num(b)) : Opt.none();
 				}).applyIf(Node.class, a -> {
 					return parse_.apply(a).map(i -> new Fract<>(i, n1));
 				}).nonNullResult();

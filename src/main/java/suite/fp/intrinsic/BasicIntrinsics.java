@@ -22,7 +22,7 @@ public class BasicIntrinsics {
 	private Atom UNKNOWN = Atom.of("UNKNOWN");
 
 	public Intrinsic atomString = (callback, inputs) -> {
-		var name = ((Atom) inputs.get(0)).name;
+		var name = Atom.name(inputs.get(0));
 		return Intrinsics.drain(callback, p -> Int.of(name.charAt(p)), name.length());
 	};
 

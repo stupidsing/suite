@@ -128,10 +128,10 @@ public class InstructionExecutor implements AutoCloseable {
 				case ERROR_________:
 					Fail.t("error termination");
 				case EVALADD_______:
-					regs[insn.op0] = number(i(regs[insn.op1]) + i(regs[insn.op2]));
+					regs[insn.op0] = number(Int.num(regs[insn.op1]) + Int.num(regs[insn.op2]));
 					break;
 				case EVALDIV_______:
-					regs[insn.op0] = number(i(regs[insn.op1]) / i(regs[insn.op2]));
+					regs[insn.op0] = number(Int.num(regs[insn.op1]) / Int.num(regs[insn.op2]));
 					break;
 				case EVALEQ________:
 					i = comparer.compare(regs[insn.op1], regs[insn.op2]);
@@ -150,13 +150,13 @@ public class InstructionExecutor implements AutoCloseable {
 					regs[insn.op0] = atom(i != 0);
 					break;
 				case EVALMOD_______:
-					regs[insn.op0] = number(i(regs[insn.op1]) % i(regs[insn.op2]));
+					regs[insn.op0] = number(Int.num(regs[insn.op1]) % Int.num(regs[insn.op2]));
 					break;
 				case EVALMUL_______:
-					regs[insn.op0] = number(i(regs[insn.op1]) * i(regs[insn.op2]));
+					regs[insn.op0] = number(Int.num(regs[insn.op1]) * Int.num(regs[insn.op2]));
 					break;
 				case EVALSUB_______:
-					regs[insn.op0] = number(i(regs[insn.op1]) - i(regs[insn.op2]));
+					regs[insn.op0] = number(Int.num(regs[insn.op1]) - Int.num(regs[insn.op2]));
 					break;
 				case EXIT__________:
 					return returnValue;
@@ -164,7 +164,7 @@ public class InstructionExecutor implements AutoCloseable {
 					var left = regs[insn.op0];
 					var right = regs[insn.op1];
 					insn = instructions[current.ip++];
-					op = TermOp.find(((Atom) constantPool.get(insn.op0)).name);
+					op = TermOp.find(Atom.name(constantPool.get(insn.op0)));
 					regs[insn.op1] = Tree.of(op, left, right);
 					break;
 				case FRAMEBEGIN____:
@@ -273,10 +273,6 @@ public class InstructionExecutor implements AutoCloseable {
 
 	protected static Atom atom(boolean b) {
 		return b ? Atom.TRUE : Atom.FALSE;
-	}
-
-	protected static int i(Object node) {
-		return ((Int) node).number;
 	}
 
 	@Override

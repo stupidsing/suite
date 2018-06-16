@@ -92,7 +92,7 @@ public class Nodify {
 			if (clazz == boolean.class)
 				return new Nodifier(o -> Atom.of(o.toString()), n -> n == Atom.TRUE);
 			else if (clazz == int.class)
-				return new Nodifier(o -> Int.of((Integer) o), n -> ((Int) n).number);
+				return new Nodifier(o -> Int.of((Integer) o), Int::num);
 			else if (clazz == Chars.class)
 				return new Nodifier(o -> new Str(o.toString()), n -> To.chars(((Str) n).value));
 			else if (clazz == String.class)
@@ -124,7 +124,7 @@ public class Nodify {
 				}, n -> {
 					var tree = Tree.decompose(n, TermOp.COLON_);
 					if (tree != null) {
-						var clazz1 = Rethrow.ex(() -> Class.forName(((Atom) tree.getLeft()).name));
+						var clazz1 = Rethrow.ex(() -> Class.forName(Atom.name(tree.getLeft())));
 						return apply_(tree.getRight(), getNodifier(clazz1));
 					} else
 						// happens when an enum implements an interface

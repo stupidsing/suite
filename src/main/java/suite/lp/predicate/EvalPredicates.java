@@ -126,7 +126,7 @@ public class EvalPredicates {
 		if (list == Atom.NIL)
 			return prover.bind(length, Int.of(size));
 		else {
-			var size1 = ((Int) length).number;
+			var size1 = Int.num(length);
 			Node list1 = Atom.NIL;
 			while (0 < size1--)
 				list1 = Tree.of(TermOp.AND___, new Reference(), list1);
@@ -141,7 +141,7 @@ public class EvalPredicates {
 		return PredicateUtil.tryProve(prover, prover1 -> !prover1.bind(tree.getLeft(), tree.getRight()));
 	};
 
-	public BuiltinPredicate randomPredicate = PredicateUtil.fun(n -> Int.of(random.nextInt(((Int) n).number)));
+	public BuiltinPredicate randomPredicate = PredicateUtil.fun(n -> Int.of(random.nextInt(Int.num(n))));
 
 	public BuiltinPredicate replace = PredicateUtil.p4((prover, from, to, n0, nx) -> prover.bind(rw.replace(from, to, n0), nx));
 
@@ -161,7 +161,7 @@ public class EvalPredicates {
 					&& prover.bind(oper, op) //
 					&& prover.bind(tree.getRight(), r);
 		} else if (op instanceof Atom) {
-			var operator = TermOp.find(((Atom) op).name);
+			var operator = TermOp.find(Atom.name(op));
 			return prover.bind(t, Tree.of(operator, l, r));
 		} else
 			return false;

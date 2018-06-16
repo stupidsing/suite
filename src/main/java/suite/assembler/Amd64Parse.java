@@ -21,7 +21,7 @@ public class Amd64Parse {
 
 	public Instruction parse(Node node) {
 		var tree = Tree.decompose(node, TermOp.TUPLE_);
-		var insn = Enum.valueOf(Insn.class, ((Atom) tree.getLeft()).name);
+		var insn = Enum.valueOf(Insn.class, Atom.name(tree.getLeft()));
 		var ops = tree.getRight();
 		var operands = scan(ops, ".0, .1").map(this::parseOperand).toList();
 
@@ -47,7 +47,7 @@ public class Amd64Parse {
 			return parseOpMem(m, 4);
 		else if (node instanceof Int) {
 			var opImm = amd64.new OpImm();
-			opImm.imm = ((Int) node).number;
+			opImm.imm = Int.num(node);
 			opImm.size = 4;
 			return opImm;
 		} else
@@ -65,12 +65,12 @@ public class Amd64Parse {
 			if ((m = Suite.pattern(".0 * .1").match(component)) != null)
 				if (opMem.indexReg < 0) {
 					opMem.indexReg = amd64.regByName.get(m[0]).reg;
-					opMem.scale = ((Int) m[1]).number;
+					opMem.scale = Int.num(m[1]);
 				} else
 					Fail.t("bad operand");
 			else if (component instanceof Int)
 				if (opMem.dispSize == 0) {
-					opMem.disp = ((Int) component).number;
+					opMem.disp = Int.num(component);
 					opMem.dispSize = 4;
 				} else
 					Fail.t("bad operand");

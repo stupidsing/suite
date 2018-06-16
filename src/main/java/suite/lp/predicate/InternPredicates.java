@@ -31,7 +31,7 @@ public class InternPredicates {
 			.computeIfAbsent(IdentityKey.of(n), any -> new Reference()));
 
 	public BuiltinPredicate internTree = PredicateUtil.p4((prover, t, l, op, r) -> {
-		var operator = TermOp.find(((Atom) op).name);
+		var operator = TermOp.find(Atom.name(op));
 		return prover.bind(t, treeIntern_.get().of(operator, l, r));
 	});
 

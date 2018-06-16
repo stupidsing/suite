@@ -67,6 +67,7 @@ import suite.util.FunUtil.Fun;
 import suite.util.Rethrow.SourceEx;
 import suite.util.Switch;
 import suite.util.To;
+import suite.util.Util;
 
 public class P0Parse {
 
@@ -145,26 +146,29 @@ public class P0Parse {
 			}).match("consult .0", a -> {
 				return consult(((Str) a).value);
 			}).match("define .0 := .1 >> .2", (a, b, c) -> {
-				var var = name(a);
-				return var != null ? FunpDefine.of(true, var, p(b), parseNewVariable(c, var)) : null;
+				if (a instanceof Atom) {
+					var var = Atom.name(a);
+					return FunpDefine.of(true, var, p(b), parseNewVariable(c, var));
+				} else
+					return null;
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("let .0 := .1 >> .2", (a, b, c) -> {
-				var var = name(a);
+				var var = Atom.name(a);
 				if (var != null)
 					return FunpDefine.of(false, var, p(b), parseNewVariable(c, var));
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 				else
 					return bind(a, b, c);
 			}).match("define global .0 := .1 >> .2", (a, b, c) -> {
-				var var = name(a);
+				var var = Atom.name(a);
 				return FunpDefineGlobal.of(var, p(b), parseNewVariable(c, var));
 			}).match("recurse .0 >> .1", (a, b) -> {
 				var pattern1 = Suite.pattern(".0 := .1");
 				var list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect();
-				var variables1 = list.fold(variables, (vs, array) -> vs.add(name(array[0])));
+				var variables1 = list.fold(variables, (vs, array) -> vs.add(Atom.name(array[0])));
 				var p1 = new Parse(variables1);
 				return FunpDefineRec.of(list //
-						.map(m -> Pair.of(name(m[0]), p1.p(m[1]))) //
+						.map(m -> Pair.of(Atom.name(m[0]), p1.p(m[1]))) //
 						.toList(), p1.p(b));
 			}).match("^.0", a -> {
 				return FunpDeref.of(p(a));
@@ -173,7 +177,7 @@ public class P0Parse {
 			}).matchArray("error", m -> {
 				return FunpError.of();
 			}).match(".0/.1", (a, b) -> {
-				return FunpField.of(FunpReference.of(p(a)), name(b));
+				return FunpField.of(FunpReference.of(p(a)), Atom.name(b));
 			}).match("fold .0 .1 .2", (a, b, c) -> {
 				return FunpFold.of(p(a), p(b), p(c));
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
@@ -189,13 +193,13 @@ public class P0Parse {
 			}).match("io-fold .0 .1 .2", (a, b, c) -> {
 				return FunpIoFold.of(p(a), p(b), p(c));
 			}).match(".0 => .1", (a, b) -> {
-				var var = name(a);
+				String var;
 				Funp f;
-				if (var != null)
-					f = parseNewVariable(b, var);
+				if (a instanceof Atom)
+					f = parseNewVariable(b, var = Atom.name(a));
 				else {
-					var v = Atom.temp();
-					f = nv(var = name(v)).bind(a, v, b);
+					var = "l$" + Util.temp();
+					f = nv(var).bind(a, Atom.of(var), b);
 				}
 				return FunpLambda.of(var, f);
 			}).applyIf(Int.class, n -> {
@@ -205,7 +209,7 @@ public class P0Parse {
 			}).match("address .0", a -> {
 				return FunpReference.of(p(a));
 			}).match(".0 * array .1", (a, b) -> {
-				return FunpRepeat.of(((Int) a).number, p(b));
+				return FunpRepeat.of(Int.num(a), p(b));
 			}).match(".0, .1", (a, b) -> {
 				return FunpStruct.of(List.of(Pair.of("t0", p(a)), Pair.of("t1", p(b))));
 			}).match("{ .0 }", a -> {
@@ -213,7 +217,7 @@ public class P0Parse {
 						.iter(a, TermOp.AND___) //
 						.map(n -> {
 							var m = Suite.pattern(".0: .1").match(n);
-							return Pair.of(name(m[0]), p(m[1]));
+							return Pair.of(Atom.name(m[0]), p(m[1]));
 						}) //
 						.toList());
 			}).applyTree((op, l, r) -> {
@@ -345,10 +349,6 @@ public class P0Parse {
 				return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);
 			}
 		}
-	}
-
-	private String name(Node node) {
-		return node instanceof Atom ? ((Atom) node).name : null;
 	}
 
 }

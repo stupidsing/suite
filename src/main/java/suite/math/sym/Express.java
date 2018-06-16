@@ -65,7 +65,7 @@ public class Express {
 				if (child instanceof Int)
 					constant = apply(child, constant);
 				else if ((m = patNeg.match(child)) != null && (n = m[0]) instanceof Int)
-					constant = apply(Int.of(-((Int) n).number), constant);
+					constant = apply(Int.of(-Int.num(n)), constant);
 				else if (child.compareTo(x) == 0)
 					xn++;
 				else
@@ -117,7 +117,7 @@ public class Express {
 	}
 
 	public Node intOf(Node n) {
-		var i = ((Int) n).number;
+		var i = Int.num(n);
 		return i < 0 ? add.inverse(Int.of(-i)) : n;
 	}
 

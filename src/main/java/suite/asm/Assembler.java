@@ -113,7 +113,7 @@ public class Assembler {
 	}
 
 	private Bytes assemble(Generalizer generalizer, List<Pair<Reference, Node>> lnis) {
-		var org = ((Int) generalizer.getVariable(Atom.of(".org")).finalNode()).number;
+		var org = Int.num(generalizer.getVariable(Atom.of(".org")).finalNode());
 		var out = new BytesBuilder();
 
 		for (var isPass2 : new boolean[] { false, true, }) {
@@ -126,7 +126,7 @@ public class Assembler {
 				if (lni.t0 != null)
 					if (!isPass2)
 						lni.t0.bound(Int.of(address));
-					else if (((Int) lni.t0.finalNode()).number != address)
+					else if (Int.num(lni.t0.finalNode()) != address)
 						Fail.t("address varied between passes at " + Integer.toHexString(address));
 
 				out.append(assemble(isPass2, address, lni.t1));
@@ -155,7 +155,7 @@ public class Assembler {
 		var bb = new BytesBuilder();
 		Tree tree;
 		while ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
-			bb.append((byte) ((Int) tree.getLeft()).number);
+			bb.append((byte) Int.num(tree.getLeft()));
 			node = tree.getRight();
 		}
 		return bb.toBytes();

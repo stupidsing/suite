@@ -73,7 +73,7 @@ public class Polynomial<N> {
 				}).match(patInv, a -> {
 					return Opt.none();
 				}).match(patPow, (a, b) -> {
-					return b instanceof Int ? pow(a, ((Int) b).number) : Opt.none();
+					return b instanceof Int ? pow(a, Int.num(b)) : Opt.none();
 				}).applyIf(Node.class, a -> {
 					if (is_x.test(a))
 						return Opt.of(px);

@@ -43,7 +43,7 @@ public class Binder {
 			}
 			return b;
 		} else if (clazz0 == Int.class && clazz1 == Int.class)
-			return ((Int) n0).number == ((Int) n1).number;
+			return Int.num(n0) == Int.num(n1);
 		else if (clazz0 == Str.class && clazz1 == Str.class)
 			return Objects.equals(((Str) n0).value, ((Str) n1).value);
 		else if (Tree.class.isAssignableFrom(clazz0) && Tree.class.isAssignableFrom(clazz1)) {

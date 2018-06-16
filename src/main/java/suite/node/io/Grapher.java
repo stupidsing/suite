@@ -193,7 +193,7 @@ public class Grapher {
 					GN gn1;
 					if (gn.type == ReadType.TERM //
 							&& (node = gn.terminal) instanceof Atom //
-							&& ((Atom) node).name.startsWith(ProverConstant.variablePrefix))
+							&& Atom.name(node).startsWith(ProverConstant.variablePrefix))
 						gn1 = new GN(new Reference());
 					else
 						gn1 = gn;

@@ -10,6 +10,10 @@ public class Int extends Node {
 	private static int poolHi = 256;
 	private static Int[] pool = new Int[poolHi - poolLo];
 
+	public static int num(Node node) {
+		return ((Int) node).number;
+	}
+
 	public static Int of(int i) {
 		Int ret;
 		if (poolLo <= i && i < poolHi) {

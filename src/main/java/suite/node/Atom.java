@@ -13,6 +13,10 @@ public class Atom extends Node {
 	public static Atom TRUE = of("true");
 	public static Atom FALSE = of("false");
 
+	public static String name(Node node) {
+		return ((Atom) node).name;
+	}
+
 	public static Atom of(String name) {
 		return of(Singleton.me.grandContext, name);
 	}
