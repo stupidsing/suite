@@ -4,6 +4,7 @@ import static suite.util.Friends.min;
 
 import java.util.Objects;
 
+import suite.util.Array_;
 import suite.util.Object_;
 
 /**
@@ -48,12 +49,12 @@ public class IVector<T> {
 		private void insertBefore(T[] n, int s, int e) {
 			var l1 = e - s;
 			startUsed -= l1;
-			System.arraycopy(n, s, nodes, startUsed, l1);
+			Array_.copy(n, s, nodes, startUsed, l1);
 		}
 
 		private void insertAfter(T[] n, int s, int e) {
 			var l1 = e - s;
-			System.arraycopy(n, s, nodes, endUsed, l1);
+			Array_.copy(n, s, nodes, endUsed, l1);
 			endUsed += l1;
 		}
 	}

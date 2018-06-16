@@ -2,6 +2,7 @@ package suite.weiqi;
 
 import java.util.Arrays;
 
+import suite.util.Array_;
 import suite.util.Object_;
 
 public class Weiqi {
@@ -69,7 +70,7 @@ public class Weiqi {
 		}
 
 		public Array(Array<T> array) {
-			System.arraycopy(array.positions, 0, positions, 0, size << shift);
+			Array_.copy(array.positions, 0, positions, 0, size << shift);
 		}
 
 		public static <T1> Array<T1> create() {

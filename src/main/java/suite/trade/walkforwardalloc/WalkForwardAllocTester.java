@@ -7,6 +7,8 @@ import java.util.Map;
 
 import suite.math.numeric.Statistic;
 import suite.primitive.Floats.FloatsBuilder;
+import suite.primitive.Floats_;
+import suite.primitive.Longs_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
@@ -70,13 +72,13 @@ public class WalkForwardAllocTester {
 	public String tick(Time time, Map<String, Float> priceBySymbol) {
 		var last = windowSize - 1;
 
-		System.arraycopy(times, 0, times, 1, last);
+		Longs_.copy(times, 0, times, 1, last);
 		times[last] = time.epochSec();
 
 		for (var e : dsBySymbol.entrySet()) {
 			var symbol = e.getKey();
 			var prices = e.getValue().prices;
-			System.arraycopy(prices, 0, prices, 1, last);
+			Floats_.copy(prices, 0, prices, 1, last);
 			prices[last] = priceBySymbol.get(symbol);
 		}
 

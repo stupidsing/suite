@@ -1,5 +1,7 @@
 package suite.math.transform;
 
+import suite.primitive.Ints_;
+
 // https://en.wikipedia.org/wiki/Discrete_wavelet_transform
 public class DiscreteHaarWaveletTransform {
 
@@ -12,13 +14,13 @@ public class DiscreteHaarWaveletTransform {
 			var length = length2 / 2;
 			for (var i = 0; i < length; i++) {
 				var i2 = i * 2;
-				var a = input[i2];
+				var a = input[i2 + 0];
 				var b = input[i2 + 1];
-				output[i] = a + b;
+				output[i + 0] = a + b;
 				output[i + length] = a - b;
 			}
 
-			System.arraycopy(output, 0, input, 0, length2);
+			Ints_.copy(output, 0, input, 0, length2);
 			length2 = length;
 		}
 
@@ -31,14 +33,14 @@ public class DiscreteHaarWaveletTransform {
 
 		while ((length2 = length * 2) <= input.length) {
 			for (var i = 0; i < length; i++) {
-				var sum = input[i];
+				var sum_ = input[i + 0];
 				var diff = input[i + length];
 				var i2 = i * 2;
-				output[i2] = (sum + diff) / 2;
-				output[i2 + 1] = (sum - diff) / 2;
+				output[i2 + 0] = (sum_ + diff) / 2;
+				output[i2 + 1] = (sum_ - diff) / 2;
 			}
 
-			System.arraycopy(output, 0, input, 0, length2);
+			Ints_.copy(output, 0, input, 0, length2);
 			length = length2;
 		}
 

@@ -1,5 +1,7 @@
 package suite.ansi;
 
+import suite.primitive.Chars_;
+
 public class Blit {
 
 	public class Buffer {
@@ -22,7 +24,7 @@ public class Blit {
 
 		if (xs < xe && ys < ye)
 			for (var xx = xs; xx < xe; xx++)
-				System.arraycopy(source.buffer[x0 + xx], y0 + ys, dest.buffer[x1 + xx], y1 + ys, ye - ys);
+				Chars_.copy(source.buffer[x0 + xx], y0 + ys, dest.buffer[x1 + xx], y1 + ys, ye - ys);
 	}
 
 	private int min(int... l) {
