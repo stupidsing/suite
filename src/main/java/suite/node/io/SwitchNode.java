@@ -1,21 +1,28 @@
 package suite.node.io;
 
 import java.io.IOException;
+import java.util.List;
 
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
+import suite.adt.pair.FixieArray;
+import suite.adt.pair.Fixie_.FixieFun0;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Fixie_.FixieFun4;
+import suite.adt.pair.Fixie_.FixieFun5;
+import suite.adt.pair.Fixie_.FixieFun6;
 import suite.fp.Matcher;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.primitive.IoSink;
+import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Rethrow;
 
 public class SwitchNode<R> {
 
@@ -52,17 +59,38 @@ public class SwitchNode<R> {
 		});
 	}
 
-	public <T> SwitchNode<R> match(Matcher<T> matcher, Fun<T, R> fun) {
-		T t;
-		if (result == null && (t = matcher.match(in)) != null)
-			result = fun.apply(t);
-		return this;
-	}
-
 	public SwitchNode<R> match(Atom node, Source<R> fun) {
 		if (result == null && in == node)
 			result = fun.source();
 		return this;
+	}
+
+	public <T> SwitchNode<R> match(Matcher<T> matcher, FixieFun0<R> fun) {
+		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
+	}
+
+	public <T> SwitchNode<R> match(Matcher<T> matcher, FixieFun1<Node, R> fun) {
+		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
+	}
+
+	public <T> SwitchNode<R> match(Matcher<T> matcher, FixieFun2<Node, Node, R> fun) {
+		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
+	}
+
+	public <T> SwitchNode<R> match(Matcher<T> matcher, FixieFun3<Node, Node, Node, R> fun) {
+		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
+	}
+
+	public <T> SwitchNode<R> match(Matcher<T> matcher, FixieFun4<Node, Node, Node, Node, R> fun) {
+		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
+	}
+
+	public <T> SwitchNode<R> match(Matcher<T> matcher, FixieFun5<Node, Node, Node, Node, Node, R> fun) {
+		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
+	}
+
+	public <T> SwitchNode<R> match(Matcher<T> matcher, FixieFun6<Node, Node, Node, Node, Node, Node, R> fun) {
+		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
 	}
 
 	public SwitchNode<R> match(Pattern pattern, FixieFun1<Node, R> fun) {
@@ -97,6 +125,13 @@ public class SwitchNode<R> {
 		return match_(Suite.pattern(pattern), fun);
 	}
 
+	public <T> SwitchNode<R> matcher(Matcher<T> matcher, Fun<T, R> fun) {
+		T t;
+		if (result == null && (t = matcher.match(in)) != null)
+			result = fun.apply(t);
+		return this;
+	}
+
 	public R nonNullResult() {
 		return result != null ? result : Fail.t("cannot handle " + in);
 	}
@@ -126,6 +161,10 @@ public class SwitchNode<R> {
 		if (result == null && (m = pattern.match(in)) != null)
 			result = fun.apply(m);
 		return this;
+	}
+
+	private List<Node> nodes(Object m) {
+		return Read.from(m.getClass().getFields()).map(field -> (Node) Rethrow.ex(() -> field.get(m))).toList();
 	}
 
 }
