@@ -92,8 +92,8 @@ public class Doubles implements Iterable<Double> {
 	public Doubles append(Doubles a) {
 		int size0 = size_(), size1 = a.size_(), newSize = size0 + size1;
 		var nb = new double[newSize];
-		System.arraycopy(cs, start, nb, 0, size0);
-		System.arraycopy(a.cs, a.start, nb, size0, size1);
+		Doubles_.copy(cs, start, nb, 0, size0);
+		Doubles_.copy(a.cs, a.start, nb, size0, size1);
 		return of(nb);
 	}
 
