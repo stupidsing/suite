@@ -94,9 +94,9 @@ public class Nodify {
 			else if (clazz == int.class)
 				return new Nodifier(o -> Int.of((Integer) o), Int::num);
 			else if (clazz == Chars.class)
-				return new Nodifier(o -> new Str(o.toString()), n -> To.chars(((Str) n).value));
+				return new Nodifier(o -> new Str(o.toString()), n -> To.chars(Str.str(n)));
 			else if (clazz == String.class)
-				return new Nodifier(o -> new Str(o.toString()), n -> ((Str) n).value);
+				return new Nodifier(o -> new Str(o.toString()), Str::str);
 			else if (clazz.isEnum())
 				return new Nodifier(o -> Atom.of(o.toString()),
 						Read.from(clazz.getEnumConstants()).toMap(e -> Atom.of(e.toString()))::get);

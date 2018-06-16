@@ -7,17 +7,17 @@ public class Str extends Node {
 
 	public final String value;
 
+	public static String str(Node node) {
+		return ((Str) node).value;
+	}
+
 	public Str(String value) {
 		this.value = value;
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Str.class) {
-			var str = (Str) object;
-			return String_.equals(value, str.value);
-		} else
-			return false;
+		return Object_.clazz(object) == Str.class ? String_.equals(value, Str.str(object)) : false;
 	}
 
 	@Override

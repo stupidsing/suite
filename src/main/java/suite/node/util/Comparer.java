@@ -65,7 +65,7 @@ public class Comparer implements Comparator<Node> {
 			else if (clazz0 == Reference.class)
 				return Integer.compare(((Reference) n0).getId(), ((Reference) n1).getId());
 			else if (clazz0 == Str.class)
-				return ((Str) n0).value.compareTo(((Str) n1).value);
+				return Str.str(n0).compareTo(Str.str(n1));
 			else if (Tree.class.isAssignableFrom(clazz0)) {
 				var t0 = (Tree) n0;
 				var t1 = (Tree) n1;

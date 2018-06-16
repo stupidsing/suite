@@ -116,7 +116,7 @@ public class FactorizeResult {
 			var n1 = m != null ? m[0] : null;
 			var n2 = n1 instanceof Dict ? ((Dict) n1).map.get(Atom.of("chars")) : null;
 			var n3 = n2 != null ? n2.finalNode() : null;
-			var s = n3 instanceof Str ? ((Str) n3).value : null;
+			var s = n3 instanceof Str ? Str.str(n3) : null;
 			var b = s != null && s.startsWith(ProverConstant.variablePrefix) && s.substring(1).matches("[0-9]*");
 			return b ? generalizer.generalize(Atom.of(s)) : n0;
 		};

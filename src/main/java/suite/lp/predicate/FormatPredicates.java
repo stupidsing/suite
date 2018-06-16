@@ -28,7 +28,7 @@ public class FormatPredicates {
 	private ReversePolish rpn = new ReversePolish();
 
 	public BuiltinPredicate charAscii = PredicateUtil.p2((prover, p0, p1) -> {
-		return p0 instanceof Str && prover.bind(Int.of(((Str) p0).value.charAt(0)), p1) //
+		return p0 instanceof Str && prover.bind(Int.of(Str.str(p0).charAt(0)), p1) //
 				|| p1 instanceof Int && prover.bind(new Str("" + (char) Int.num(p1)), p0);
 	});
 
@@ -53,7 +53,7 @@ public class FormatPredicates {
 	public BuiltinPredicate parse = PredicateUtil.fun(n -> Suite.parse(Formatter.display(n)));
 
 	public BuiltinPredicate persistLoad = PredicateUtil.p2((prover, node, filename) -> {
-		try (var is = new FileInputStream(((Str) filename).value);
+		try (var is = new FileInputStream(Str.str(filename));
 				var gis = new GZIPInputStream(is);
 				var dis = new DataInputStream(gis)) {
 			var grapher = new Grapher();
@@ -65,9 +65,7 @@ public class FormatPredicates {
 	});
 
 	public BuiltinPredicate persistSave = PredicateUtil.p2((prover, node, filename) -> {
-		try (var os = FileUtil.out(((Str) filename).value);
-				var gos = new GZIPOutputStream(os);
-				var dos = new DataOutputStream(gos)) {
+		try (var os = FileUtil.out(Str.str(filename)); var gos = new GZIPOutputStream(os); var dos = new DataOutputStream(gos)) {
 			var grapher = new Grapher();
 			grapher.graph(node);
 			grapher.save(dos);
@@ -83,7 +81,7 @@ public class FormatPredicates {
 
 	public BuiltinPredicate rpnPredicate = PredicateUtil.p2((prover, node, r) -> {
 		if (r instanceof Str)
-			return prover.bind(node, rpn.fromRpn(((Str) r).value));
+			return prover.bind(node, rpn.fromRpn(Str.str(r)));
 		else
 			return prover.bind(new Str(rpn.toRpn(node)), r);
 	});
@@ -93,10 +91,10 @@ public class FormatPredicates {
 			&& start instanceof Atom //
 			&& Atom.name(s).startsWith(Atom.name(start)));
 
-	public BuiltinPredicate stringLength = PredicateUtil.fun(n -> Int.of(((Str) n).value.length()));
+	public BuiltinPredicate stringLength = PredicateUtil.fun(n -> Int.of(Str.str(n).length()));
 
 	public BuiltinPredicate substring = PredicateUtil.p4((prover, s0, p0, px, sx) -> {
-		var name = ((Str) s0).value;
+		var name = Str.str(s0);
 		var length = name.length();
 
 		if (p0 instanceof Int && px instanceof Int) {

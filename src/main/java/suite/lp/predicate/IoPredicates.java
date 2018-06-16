@@ -40,7 +40,7 @@ public class IoPredicates {
 	public BuiltinPredicate exec = PredicateUtil.p1((prover, p0) -> {
 		if (p0 instanceof Str)
 			try {
-				var cmd = ((Str) p0).value;
+				var cmd = Str.str(p0);
 				return Runtime.getRuntime().exec(cmd).waitFor() == 0;
 			} catch (Exception ex) { // iOException or InterruptedException
 				LogUtil.error(ex);

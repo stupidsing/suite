@@ -70,7 +70,7 @@ public class P0CrudeScript {
 				}).match("statement1 (.0,)", a -> {
 					return stmt(a);
 				}).match("statement-block (statement-let (bind (<IDENTIFIER> .0,), .1,), .2)", (a, b, c) -> {
-					return FunpDefine.of(false, str(a), expr(b), stmt(c));
+					return FunpDefine.of(false, Str.str(a), expr(b), stmt(c));
 				}).match("statement-block (.0,)", a -> {
 					return stmt(a);
 				}).match("statement-if (.0, .1, .2,)", (a, b, c) -> {
@@ -81,9 +81,9 @@ public class P0CrudeScript {
 			private Funp expr(Node node) {
 				return new SwitchNode<Funp>(node //
 				).match("<IDENTIFIER> .0", s -> {
-					return FunpVariable.of(str(s));
+					return FunpVariable.of(Str.str(s));
 				}).match("<INTEGER_LITERAL> .0", s -> {
-					return FunpNumber.ofNumber(Integer.valueOf(str(s)));
+					return FunpNumber.ofNumber(Integer.valueOf(Str.str(s)));
 				}).match("<STRING_LITERAL> .0", s -> {
 					return Fail.t();
 				}).match("constant (.0,)", a -> {
@@ -112,7 +112,7 @@ public class P0CrudeScript {
 					var list = Read //
 							.from(Tree.iter(a)) //
 							.chunk(2) //
-							.map(o -> o.toFixie().map((k, v) -> Pair.of(str(k), expr(v)))) //
+							.map(o -> o.toFixie().map((k, v) -> Pair.of(Str.str(k), expr(v)))) //
 							.toList();
 					return FunpStruct.of(list);
 				}).match("expression-div (.0, .1)", (a, b) -> {
@@ -134,9 +134,9 @@ public class P0CrudeScript {
 				}).match("expression-not (.0,)", a -> {
 					return expr(a);
 				}).match("expression-lambda (bind (<IDENTIFIER> (.0,),), expression (.1,),)", (a, b) -> {
-					return FunpLambda.of(str(a), expr(b));
+					return FunpLambda.of(Str.str(a), expr(b));
 				}).match("expression-lambda (bind (<IDENTIFIER> (.0,),), statement-block (.1),)", (a, b) -> {
-					return FunpLambda.of(str(a), stmt(b));
+					return FunpLambda.of(Str.str(a), stmt(b));
 				}).match("expression-obj (.0,)", a -> {
 					return expr(a);
 				}).match("expression-or (.0,)", a -> {
@@ -174,7 +174,7 @@ public class P0CrudeScript {
 							.fold(expr(a), (f, o) -> o.toFixie().map((k, v) -> {
 								return new SwitchNode<Funp>(k //
 								).matchArray("'.'", m_ -> {
-									return FunpField.of(FunpReference.of(f), str(v));
+									return FunpField.of(FunpReference.of(f), Str.str(v));
 								}).matchArray("'['", m_ -> {
 									return FunpIndex.of(FunpReference.of(f), expr(v));
 								}).matchArray("'('", m_ -> {
@@ -194,10 +194,6 @@ public class P0CrudeScript {
 				}).match("expression-xor (.0,)", a -> {
 					return expr(a);
 				}).nonNullResult();
-			}
-
-			private String str(Node node) {
-				return ((Str) node).value;
 			}
 		}.crudeScript(node);
 	}

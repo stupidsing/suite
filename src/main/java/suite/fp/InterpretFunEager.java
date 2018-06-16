@@ -72,7 +72,7 @@ public class InterpretFunEager {
 			}).match(Matcher.boolean_, value -> {
 				return immediate(value);
 			}).match(Matcher.chars, value -> {
-				return immediate(new Data<>(To.chars(((Str) value).value)));
+				return immediate(new Data<>(To.chars(Str.str(value))));
 			}).match(Matcher.cons, (type, head, tail) -> {
 				var p0_ = eager_(head);
 				var p1_ = eager_(tail);

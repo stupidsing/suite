@@ -144,7 +144,7 @@ public class P0Parse {
 			}).match("coerce-pointer .0", a -> {
 				return FunpCoerce.of(Coerce.POINTER, p(a));
 			}).match("consult .0", a -> {
-				return consult(((Str) a).value);
+				return consult(Str.str(a));
 			}).match("define .0 := .1 >> .2", (a, b, c) -> {
 				if (a instanceof Atom) {
 					var var = Atom.name(a);

@@ -75,7 +75,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = Tree.of(TermOp.AND___, n0, n1);
 			break;
 		case DATACHARS_____:
-			result = new Data<>(To.chars(((Str) regs[insn.op1]).value));
+			result = new Data<>(To.chars(Str.str(regs[insn.op1])));
 			break;
 		case GETINTRINSIC__:
 			var atom = (Atom) ds[--dsp];
