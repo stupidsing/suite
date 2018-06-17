@@ -11,7 +11,7 @@ public class TreeTuple extends Tree {
 	private static Operator operator = TermOp.TUPLE_;
 
 	public static TreeTuple of(Node left, Node right) {
-		return TreeTuple.of(left, right);
+		return new TreeTuple(left, right);
 	}
 
 	private TreeTuple(Node left, Node right) {
