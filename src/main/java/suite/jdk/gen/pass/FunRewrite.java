@@ -145,7 +145,7 @@ public class FunRewrite extends FunFactory {
 		})).applyIf(InvokeLambdaFunExpr.class, e1 -> e1.apply((isExpand, l_inst, ps) -> {
 			var l_impl = l_inst.lambdaImplementation;
 			var l_iface = l_impl.lambdaInterface;
-			var object = object_(l_impl.newFun(l_inst.fieldValues), l_iface.interfaceClass);
+			var object = object_(l_impl.newFun(l_inst.fieldValueByNames), l_iface.interfaceClass);
 			return rewrite(object.invoke(l_iface.interfaceClass, l_iface.methodName, ps));
 		})).applyIf(ObjectFunExpr.class, e1 -> e1.apply((type, object) -> {
 			return objectField(object, type);

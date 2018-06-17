@@ -2,7 +2,6 @@ package suite.jdk.lambda;
 
 import java.util.Map;
 
-import suite.adt.pair.Fixie_.FixieFun2;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
 import suite.util.FunUtil.Iterate;
@@ -14,7 +13,7 @@ public class LambdaInstance<I> {
 	private static FunFactory f = new FunFactory();
 
 	public final LambdaImplementation<I> lambdaImplementation;
-	public final Map<String, Object> fieldValues;
+	public final Map<String, Object> fieldValueByNames;
 
 	private I fun;
 
@@ -34,13 +33,13 @@ public class LambdaInstance<I> {
 		return of(LambdaImplementation.of(lambdaInterface, Map.ofEntries(), expr), Map.ofEntries());
 	}
 
-	public static <I> LambdaInstance<I> of(LambdaImplementation<I> lambdaImplementation, Map<String, Object> fieldValues) {
-		return new LambdaInstance<>(lambdaImplementation, fieldValues);
+	public static <I> LambdaInstance<I> of(LambdaImplementation<I> lambdaImplementation, Map<String, Object> fieldValueByNames) {
+		return new LambdaInstance<>(lambdaImplementation, fieldValueByNames);
 	}
 
-	private LambdaInstance(LambdaImplementation<I> lambdaImplementation, Map<String, Object> fieldValues) {
+	private LambdaInstance(LambdaImplementation<I> lambdaImplementation, Map<String, Object> fieldValueByNames) {
 		this.lambdaImplementation = lambdaImplementation;
-		this.fieldValues = fieldValues;
+		this.fieldValueByNames = fieldValueByNames;
 	}
 
 	public FunExpr invoke(FunExpr... parameters) {
@@ -49,12 +48,8 @@ public class LambdaInstance<I> {
 
 	public I newFun() {
 		if (fun == null)
-			fun = lambdaImplementation.newFun(fieldValues);
+			fun = lambdaImplementation.newFun(fieldValueByNames);
 		return fun;
-	}
-
-	public <R> R apply(FixieFun2<LambdaImplementation<I>, Map<String, Object>, R> fun) {
-		return fun.apply(lambdaImplementation, fieldValues);
 	}
 
 }

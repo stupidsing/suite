@@ -52,9 +52,8 @@ public class FunExpand extends FunFactory {
 				if (isExpand || weight(l_impl.expr) <= 5) {
 					var l_iface = l_impl.lambdaInterface;
 					var fe = l_impl.expr;
-					for (var fieldName : l_impl.fieldTypes.keySet())
-						fe = replaceFieldInject(fe, fieldName,
-								object(l_inst.fieldValues.get(fieldName), l_impl.fieldTypes.get(fieldName)));
+					for (var n : l_impl.fieldTypeByNames.keySet())
+						fe = replaceFieldInject(fe, n, object(l_inst.fieldValueByNames.get(n), l_impl.fieldTypeByNames.get(n)));
 					return expand(fe.cast_(l_iface.interfaceClass).apply(ps), depth - 1);
 				} else
 					return null;
