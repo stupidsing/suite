@@ -68,11 +68,11 @@ public abstract class Tree extends Node {
 
 	public static Tree of(Operator operator, Node left, Node right) {
 		if (operator == TermOp.AND___)
-			return new TreeAnd(left, right);
+			return TreeAnd.of(left, right);
 		else if (operator == TermOp.OR____)
-			return new TreeOr(left, right);
+			return TreeOr.of(left, right);
 		else if (operator == TermOp.TUPLE_)
-			return new TreeTuple(left, right);
+			return TreeTuple.of(left, right);
 		else
 			return new TreeOp(operator, left, right);
 	}

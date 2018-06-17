@@ -13,8 +13,7 @@ import suite.instructionexecutor.thunk.IndexedSourceReader;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
-import suite.node.Tree;
-import suite.node.io.TermOp;
+import suite.node.tree.TreeOr;
 import suite.primitive.Chars;
 import suite.util.Object_;
 import suite.util.Rethrow;
@@ -28,15 +27,14 @@ public class Intrinsics {
 	public interface IntrinsicCallback {
 
 		/**
-		 * Encloses an intrinsic function call with given parameter into a lazy
-		 * result node. Becomes immediate evaluation in the eager
-		 * implementation.
+		 * Encloses an intrinsic function call with given parameter into a lazy result
+		 * node. Becomes immediate evaluation in the eager implementation.
 		 */
 		public Node enclose(Intrinsic intrinsic, Node node);
 
 		/**
-		 * Realizes a possibly-lazy node into its bottom value. Returns the
-		 * input for the eager implementation.
+		 * Realizes a possibly-lazy node into its bottom value. Returns the input for
+		 * the eager implementation.
 		 */
 		public Node yawn(Node node);
 	}
@@ -69,7 +67,7 @@ public class Intrinsics {
 				if ((head = pointer1.head()) != null) {
 					var left = callback1.enclose(Intrinsics.id_, head);
 					var right = callback1.enclose(this::invoke, new Data<>(pointer1.tail()));
-					return Tree.of(TermOp.OR____, left, right);
+					return TreeOr.of(left, right);
 				} else
 					return Atom.NIL;
 			}

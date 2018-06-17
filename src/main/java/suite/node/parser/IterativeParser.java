@@ -11,6 +11,7 @@ import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.parser.Lexer.Token;
+import suite.node.tree.TreeTuple;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
 import suite.text.Preprocess;
@@ -73,14 +74,14 @@ public class IterativeParser {
 							|| section.kind == '{' && ch == '}') {
 						var node = section.unwind(null).getRight();
 						if (ch == ']')
-							node = Tree.of(TermOp.TUPLE_, Atom.of("["), node);
+							node = TreeTuple.of(Atom.of("["), node);
 						add(node);
 					} else
 						Fail.t("cannot parse " + in);
 				} else if (ch == '`')
 					if (stack.peek().kind == ch) {
 						var node = stack.pop().unwind(null).getRight();
-						node = Tree.of(TermOp.TUPLE_, Atom.of("`"), node);
+						node = TreeTuple.of(Atom.of("`"), node);
 						add(node);
 					} else
 						stack.push(new Section(ch));

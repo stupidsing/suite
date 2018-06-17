@@ -18,8 +18,7 @@ import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Suspend;
-import suite.node.Tree;
-import suite.node.io.TermOp;
+import suite.node.tree.TreeAnd;
 import suite.util.FunUtil.Iterate;
 import suite.util.Rethrow;
 import suite.util.Thread_;
@@ -58,9 +57,9 @@ public class MonadIntrinsics {
 				process.waitFor();
 			});
 
-			return Tree.of(TermOp.AND___, //
+			return TreeAnd.of(//
 					n0, //
-					Intrinsics.enclose(callback, Tree.of(TermOp.AND___, n1, n2)));
+					Intrinsics.enclose(callback, TreeAnd.of(n1, n2)));
 		});
 	};
 

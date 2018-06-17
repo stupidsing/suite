@@ -10,7 +10,11 @@ public class TreeAnd extends Tree {
 
 	private static Operator operator = TermOp.AND___;
 
-	public TreeAnd(Node left, Node right) {
+	public static TreeAnd of(Node left, Node right) {
+		return TreeAnd.of(left, right);
+	}
+
+	private TreeAnd(Node left, Node right) {
 		super(left, right);
 	}
 

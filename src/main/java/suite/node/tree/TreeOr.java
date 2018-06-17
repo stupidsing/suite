@@ -10,7 +10,11 @@ public class TreeOr extends Tree {
 
 	private static Operator operator = TermOp.OR____;
 
-	public TreeOr(Node left, Node right) {
+	public static TreeOr of(Node left, Node right) {
+		return TreeOr.of(left, right);
+	}
+
+	private TreeOr(Node left, Node right) {
 		super(left, right);
 	}
 

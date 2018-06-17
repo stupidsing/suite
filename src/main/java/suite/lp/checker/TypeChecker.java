@@ -18,6 +18,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.tree.TreeTuple;
 import suite.node.util.TreeUtil;
 import suite.streamlet.Read;
 import suite.util.Fail;
@@ -81,7 +82,7 @@ public class TypeChecker {
 				var name = Atom.of(tree.getOperator().name_());
 				var lt = getType(tree.getLeft());
 				var rt = getType(tree.getRight());
-				type = getEnumType(name, Tree.of(TermOp.TUPLE_, lt, rt));
+				type = getEnumType(name, TreeTuple.of(lt, rt));
 			}
 		else if (data == Atom.NIL)
 			type = Suite.substitute("_;");

@@ -11,7 +11,7 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
-import suite.node.io.TermOp;
+import suite.node.tree.TreeTuple;
 import suite.streamlet.Read;
 import suite.util.Object_;
 
@@ -68,7 +68,7 @@ public class Prototype implements Comparable<Prototype> {
 		else if (node instanceof Tuple) {
 			var nodes = ((Tuple) node).nodes;
 			if (nodes.length > 0)
-				return Tree.of(TermOp.TUPLE_, nodes[0], Tuple.of(Arrays.copyOfRange(nodes, 1, nodes.length, Node[].class)));
+				return TreeTuple.of(nodes[0], Tuple.of(Arrays.copyOfRange(nodes, 1, nodes.length, Node[].class)));
 			else
 				return null;
 		} else

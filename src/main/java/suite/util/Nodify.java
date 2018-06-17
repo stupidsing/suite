@@ -23,6 +23,7 @@ import suite.node.Reference;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.tree.TreeOr;
 import suite.primitive.Chars;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
@@ -106,7 +107,7 @@ public class Nodify {
 				Fun<Object, Node> forward = o -> {
 					Node node = Atom.NIL;
 					for (var i = Array.getLength(o) - 1; 0 <= i; i--)
-						node = Tree.of(TermOp.OR____, apply_(Array.get(o, i), nodifier1), node);
+						node = TreeOr.of(apply_(Array.get(o, i), nodifier1), node);
 					return node;
 				};
 				return new Nodifier(forward, n -> {
@@ -168,7 +169,7 @@ public class Nodify {
 					Tree start = Tree.of(null, null, null), tree = start;
 					for (var o_ : (Collection<?>) o) {
 						var tree0 = tree;
-						Tree.forceSetRight(tree0, tree = Tree.of(TermOp.OR____, apply_(o_, nodifier1), null));
+						Tree.forceSetRight(tree0, tree = TreeOr.of(apply_(o_, nodifier1), null));
 					}
 					Tree.forceSetRight(tree, Atom.NIL);
 					return start.getRight();

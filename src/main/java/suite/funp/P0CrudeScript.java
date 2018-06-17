@@ -27,6 +27,8 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
+import suite.node.tree.TreeAnd;
+import suite.node.tree.TreeTuple;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.Read;
 import suite.util.Fail;
@@ -48,8 +50,8 @@ public class P0CrudeScript {
 				if (entity.startsWith("<"))
 					node = new Str(in.substring(ast.start, ast.end));
 				else
-					node = Read.from(children).reverse().<Node> fold(Atom.NIL, (n, c) -> Tree.of(TermOp.AND___, node(c), n));
-				return Tree.of(TermOp.TUPLE_, atom, node);
+					node = Read.from(children).reverse().<Node> fold(Atom.NIL, (n, c) -> TreeAnd.of(node(c), n));
+				return TreeTuple.of(atom, node);
 			}
 		}.node(ast);
 

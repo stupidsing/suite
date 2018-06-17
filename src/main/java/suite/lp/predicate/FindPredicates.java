@@ -14,6 +14,7 @@ import suite.node.Reference;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.tree.TreeAnd;
 import suite.node.util.TermKey;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
@@ -49,14 +50,14 @@ public class FindPredicates {
 		Stack<Node> stack = elaborate(prover, var, goal);
 		Node result = Atom.NIL;
 		while (!stack.isEmpty())
-			result = Tree.of(TermOp.AND___, stack.pop(), result);
+			result = TreeAnd.of(stack.pop(), result);
 		return result;
 	}
 
 	private Stack<Node> elaborate(Prover prover, Node var, Node goal) {
 		Stack<Node> stack = new Stack<>();
 
-		Tree subGoal = Tree.of(TermOp.AND___, goal, new Data<Source<Boolean>>(() -> {
+		Tree subGoal = TreeAnd.of(goal, new Data<Source<Boolean>>(() -> {
 			stack.push(new Cloner().clone(var));
 			return Boolean.FALSE;
 		}));

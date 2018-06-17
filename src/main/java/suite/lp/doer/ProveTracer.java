@@ -9,9 +9,9 @@ import suite.Suite;
 import suite.lp.Configuration.TraceLevel;
 import suite.node.Data;
 import suite.node.Node;
-import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.io.TermOp;
+import suite.node.tree.TreeAnd;
+import suite.node.tree.TreeOr;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 
@@ -86,11 +86,11 @@ public class ProveTracer {
 			var alt = prover.getAlternative();
 			var rem = prover.getRemaining();
 
-			prover.setAlternative(Tree.of(TermOp.OR____, leaveFail, alt));
-			prover.setRemaining(Tree.of(TermOp.AND___, leaveOk, rem));
+			prover.setAlternative(TreeOr.of(leaveFail, alt));
+			prover.setRemaining(TreeAnd.of(leaveOk, rem));
 
 			query = expand.apply(query);
-			query = Tree.of(TermOp.AND___, enter, query);
+			query = TreeAnd.of(enter, query);
 		} else
 			query = expand.apply(query);
 

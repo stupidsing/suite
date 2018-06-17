@@ -16,6 +16,7 @@ import suite.node.Node;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.tree.TreeOr;
 import suite.os.LogUtil;
 import suite.util.FunUtil.Source;
 import suite.util.List_;
@@ -188,7 +189,7 @@ public class Prover {
 		return new Suspend(() -> {
 			if (!rules.isEmpty()) {
 				var clause = rules.get(0).newClause(query, cut);
-				return Tree.of(TermOp.OR____, clause, expandClauses(query, cut, List_.right(rules, 1)));
+				return TreeOr.of(clause, expandClauses(query, cut, List_.right(rules, 1)));
 			} else
 				return FAIL;
 		});

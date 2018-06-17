@@ -8,6 +8,7 @@ import suite.node.io.TermOp;
 import suite.node.parser.FactorizeResult.FNode;
 import suite.node.parser.FactorizeResult.FTerminal;
 import suite.node.parser.FactorizeResult.FTree;
+import suite.node.tree.TreeTuple;
 import suite.node.util.Singleton;
 
 /**
@@ -40,9 +41,9 @@ public class RecursiveParser {
 			if (name.equals("("))
 				return node(fn1);
 			else if (name.equals("["))
-				return Tree.of(TermOp.TUPLE_, Atom.of("[]"), node(fn1));
+				return TreeTuple.of(Atom.of("[]"), node(fn1));
 			else if (name.equals("`"))
-				return Tree.of(TermOp.TUPLE_, Atom.of("`"), node(fn1));
+				return TreeTuple.of(Atom.of("`"), node(fn1));
 			else
 				return Tree.of(TermOp.valueOf(name), node(fn0), node(fn2));
 		} else

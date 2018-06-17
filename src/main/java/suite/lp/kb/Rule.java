@@ -7,6 +7,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.tree.TreeAnd;
 import suite.util.Object_;
 
 public class Rule {
@@ -40,7 +41,7 @@ public class Rule {
 		var env = sewingGeneralizer.mapper().env();
 		env.refs[cutIndex].bound(cut);
 
-		return Tree.of(TermOp.AND___, //
+		return TreeAnd.of(//
 				Tree.of(TermOp.EQUAL_, //
 						query, //
 						headFun.apply(env)), //

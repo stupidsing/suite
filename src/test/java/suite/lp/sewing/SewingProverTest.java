@@ -14,6 +14,7 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.tree.TreeTuple;
 import suite.os.Stopwatch;
 import suite.util.FunUtil.Source;
 
@@ -96,7 +97,7 @@ public class SewingProverTest {
 		var tail = Atom.NIL;
 
 		for (var i = 0; i < 65536; i++)
-			rs.addRule(Rule.of(Tree.of(TermOp.IS____, Tree.of(TermOp.TUPLE_, pred, Int.of(i)), tail)));
+			rs.addRule(Rule.of(Tree.of(TermOp.IS____, TreeTuple.of(pred, Int.of(i)), tail)));
 
 		var sp = new SewingProverImpl(rs);
 		var pc = new ProverConfig(rs);
