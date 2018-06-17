@@ -1,6 +1,7 @@
 package suite.node;
 
 import java.util.List;
+import java.util.Objects;
 
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
@@ -26,6 +27,16 @@ public abstract class Tree extends Node {
 			return tree.getOperator() == operator ? tree : null;
 		} else
 			return null;
+	}
+
+	// these methods violate the immutable property of the tree. Used by cloner for
+	// performance purpose.
+	public static void forceSetLeft(Tree tree, Node left) {
+		tree.left = left;
+	}
+
+	public static void forceSetRight(Tree tree, Node right) {
+		tree.right = right;
 	}
 
 	public static Streamlet<Node> iter(Node node) {
@@ -71,17 +82,18 @@ public abstract class Tree extends Node {
 		this.right = right;
 	}
 
-	// these methods violate the immutable property of the tree. Used by cloner for
-	// performance purpose.
-	public static void forceSetLeft(Tree tree, Node left) {
-		tree.left = left;
+	public boolean childrenEquals(Tree t) {
+		return Objects.equals(getLeft(), t.getLeft()) && Objects.equals(getRight(), t.getRight());
 	}
 
-	public static void forceSetRight(Tree tree, Node right) {
-		tree.right = right;
+	@Override
+	public int hashCode() {
+		var h = 7;
+		h = h * 31 + Objects.hashCode(getLeft());
+		h = h * 31 + Objects.hashCode(getOperator());
+		h = h * 31 + Objects.hashCode(getRight());
+		return h;
 	}
-
-	public abstract Operator getOperator();
 
 	public Node getLeft() {
 		return left.finalNode();
@@ -90,5 +102,7 @@ public abstract class Tree extends Node {
 	public Node getRight() {
 		return right.finalNode();
 	}
+
+	public abstract Operator getOperator();
 
 }
