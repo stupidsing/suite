@@ -20,19 +20,20 @@ import suite.file.SerializedPageFile;
 import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.immutable.LazyIbTree.Slot;
+import suite.node.util.Singleton;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.util.SerInput;
-import suite.util.SerOutput;
 import suite.util.FunUtil.Sink;
 import suite.util.Rethrow;
+import suite.util.SerInput;
+import suite.util.SerOutput;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 import suite.util.To;
 
 public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Extent, T> {
 
-	private Serialize serialize = Serialize.me;
+	private Serialize serialize = Singleton.me.serialize;
 
 	private SerializedPageFile<Integer> nPagesFile;
 	private ExtentFile extentFile;

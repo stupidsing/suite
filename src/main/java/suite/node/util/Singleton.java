@@ -4,6 +4,7 @@ import suite.inspect.Inspect;
 import suite.inspect.Mapify;
 import suite.os.StoreCache;
 import suite.util.Nodify;
+import suite.util.Serialize;
 
 public class Singleton {
 
@@ -13,6 +14,7 @@ public class Singleton {
 	public final Inspect inspect = new Inspect();
 	public final Mapify mapify = new Mapify(inspect);
 	public final Nodify nodify = new Nodify(inspect);
+	public final Serialize serialize = new Serialize(inspect);
 	public final StoreCache storeCache = new StoreCache();
 
 	private Singleton() {

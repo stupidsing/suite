@@ -9,13 +9,14 @@ import suite.file.PageFile;
 import suite.fs.KeyValueMutator;
 import suite.fs.impl.TransactionManager;
 import suite.immutable.LazyIbTreeStore;
+import suite.node.util.Singleton;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.Serialize;
 
 public class Database implements Closeable {
 
-	private Serialize serialize = Serialize.me;
+	private Serialize serialize = Singleton.me.serialize;
 
 	private JournalledPageFile journalledPageFile;
 	private TransactionManager<Integer, String> transactionManager;

@@ -9,13 +9,13 @@ import java.util.Objects;
 import suite.file.ExtentAllocator.Extent;
 import suite.file.ExtentFile;
 import suite.file.PageFile;
+import suite.node.util.Singleton;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.util.Fail;
 import suite.util.SerInput;
 import suite.util.SerOutput;
-import suite.util.Fail;
-import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 import suite.util.Util;
 
@@ -32,7 +32,7 @@ public class FileFactory {
 	}
 
 	public static ExtentFile extentFile(PageFile pf) {
-		var serialize = Serialize.me;
+		var serialize = Singleton.me.serialize;
 		var extentSerializer = serialize.extent();
 		var bytesSerializer = serialize.variableLengthBytes;
 

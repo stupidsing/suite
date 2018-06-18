@@ -6,12 +6,11 @@ import java.io.IOException;
 
 import suite.node.util.Singleton;
 import suite.primitive.Bytes;
-import suite.util.SerInput;
-import suite.util.SerOutput;
 import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
-import suite.util.Serialize;
+import suite.util.SerInput;
+import suite.util.SerOutput;
 import suite.util.Serialize.Serializer;
 
 public class SerializedStoreCache<K, V> {
@@ -21,7 +20,7 @@ public class SerializedStoreCache<K, V> {
 	private StoreCache storeCache = Singleton.me.storeCache;
 
 	public static <V> SerializedStoreCache<String, V> of(Serializer<V> valueSerializer) {
-		return of(Serialize.me.variableLengthString, valueSerializer);
+		return of(Singleton.me.serialize.variableLengthString, valueSerializer);
 	}
 
 	public static <K, V> SerializedStoreCache<K, V> of(Serializer<K> keySerializer, Serializer<V> valueSerializer) {

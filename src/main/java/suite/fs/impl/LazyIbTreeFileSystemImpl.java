@@ -20,7 +20,7 @@ import suite.util.Serialize;
 public class LazyIbTreeFileSystemImpl implements FileSystem {
 
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
-	private Serialize serialize = Serialize.me;
+	private Serialize serialize = Singleton.me.serialize;
 
 	private JournalledPageFile jpf;
 	private FileSystemMutator mutator;

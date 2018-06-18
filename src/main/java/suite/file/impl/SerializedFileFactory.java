@@ -5,8 +5,8 @@ import java.io.IOException;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.streamlet.As;
-import suite.util.SerInput;
 import suite.util.Rethrow;
+import suite.util.SerInput;
 import suite.util.Serialize.Serializer;
 import suite.util.To;
 

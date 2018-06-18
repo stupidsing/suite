@@ -14,16 +14,17 @@ import suite.file.impl.FileFactory;
 import suite.file.impl.JournalledFileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.fs.KeyDataStore;
-import suite.util.SerInput;
-import suite.util.SerOutput;
+import suite.node.util.Singleton;
 import suite.util.Object_;
 import suite.util.Rethrow;
+import suite.util.SerInput;
+import suite.util.SerOutput;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
 public class B_TreeBuilder<Key, Value> {
 
-	private static Serialize serialize = Serialize.me;
+	private static Serialize serialize = Singleton.me.serialize;
 
 	private static char BRANCH = 'I';
 	private static char LEAF = 'L';

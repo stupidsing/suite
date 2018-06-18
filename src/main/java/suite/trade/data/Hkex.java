@@ -29,7 +29,7 @@ public class Hkex {
 
 	// .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	private static ObjectMapper mapper = new ObjectMapper();
-	private Serialize serialize = Serialize.me;
+	private Serialize serialize = Singleton.me.serialize;
 
 	private Set<String> delisted = new HashSet<>(List.of("0013.HK"));
 

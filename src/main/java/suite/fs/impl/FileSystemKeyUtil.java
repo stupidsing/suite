@@ -8,6 +8,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.node.util.Singleton;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.Fail;
@@ -16,7 +17,7 @@ import suite.util.Serialize.Serializer;
 
 public class FileSystemKeyUtil {
 
-	private Serialize serialize = Serialize.me;
+	private Serialize serialize = Singleton.me.serialize;
 
 	private int hashOffset = 0;
 	private int idOffset = hashOffset + 256 / 8;

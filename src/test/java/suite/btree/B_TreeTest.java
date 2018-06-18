@@ -14,6 +14,7 @@ import org.junit.Test;
 import suite.Constants;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.impl.JournalledFileFactory;
+import suite.node.util.Singleton;
 import suite.primitive.Ints_;
 import suite.sample.Profiler;
 import suite.util.Object_;
@@ -26,7 +27,7 @@ public class B_TreeTest {
 
 	private Comparator<Integer> cmp = Object_::compare;
 	private Random random = new Random();
-	private Serialize serialize = Serialize.me;
+	private Serialize serialize = Singleton.me.serialize;
 	private int[] keys;
 
 	@Before

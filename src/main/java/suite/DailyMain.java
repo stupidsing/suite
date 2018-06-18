@@ -6,6 +6,7 @@ import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.math.Math_;
+import suite.node.util.Singleton;
 import suite.os.LogUtil;
 import suite.os.SerializedStoreCache;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -43,7 +44,7 @@ public class DailyMain extends ExecutableProgram {
 	private Set<String> blackList = Set.of("0607.HK");
 
 	private TradeCfg cfg = new TradeCfgImpl();
-	private Serialize serialize = Serialize.me;
+	private Serialize serialize = Singleton.me.serialize;
 	private StringBuilder sb = new StringBuilder();
 	private Sink<String> log = To.sink(sb);
 	private Time today = Time.now();

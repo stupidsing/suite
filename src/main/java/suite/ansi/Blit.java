@@ -17,10 +17,10 @@ public class Blit {
 	}
 
 	public void blit(Buffer source, Buffer dest, int x0, int y0, int x1, int y1, int w, int h) {
-		int xs = max(0, -x0, -x1);
-		int xe = min(w, source.width - x0, dest.width - x1);
-		int ys = max(0, -y0, -y1);
-		int ye = min(w, source.height - y0, dest.height - y1);
+		var xs = max(0, -x0, -x1);
+		var xe = min(w, source.width - x0, dest.width - x1);
+		var ys = max(0, -y0, -y1);
+		var ye = min(w, source.height - y0, dest.height - y1);
 
 		if (xs < xe && ys < ye)
 			for (var xx = xs; xx < xe; xx++)

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 import suite.file.JournalledPageFile;
 import suite.file.PageFile;
+import suite.node.util.Singleton;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.adt.pair.IntObjPair;
@@ -16,7 +17,7 @@ import suite.util.Serialize.Serializer;
 
 public class JournalledFileFactory {
 
-	private static Serialize serialize = Serialize.me;
+	private static Serialize serialize = Singleton.me.serialize;
 
 	public static JournalledPageFile journalled(Path path, int pageSize) {
 		return journalled( //

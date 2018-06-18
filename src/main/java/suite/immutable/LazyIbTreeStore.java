@@ -18,7 +18,7 @@ import suite.util.Serialize.Serializer;
 
 public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, Value> {
 
-	private static Serialize serialize = Serialize.me;
+	private static Serialize serialize = Singleton.me.serialize;
 
 	private SerializedPageFile<Pointer> superblockFile;
 	private LazyIbTreePersister<Pointer, Pair<Key, Value>> persister;

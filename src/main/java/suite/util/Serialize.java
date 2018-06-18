@@ -19,7 +19,6 @@ import suite.Constants;
 import suite.adt.pair.Pair;
 import suite.file.ExtentAllocator.Extent;
 import suite.inspect.Inspect;
-import suite.node.util.Singleton;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
@@ -30,17 +29,16 @@ import suite.util.FunUtil.Fun;
  */
 public class Serialize {
 
-	public static Serialize me = new Serialize();
-
-	private Inspect inspect = Singleton.me.inspect;
-	private byte[] zeroes = new byte[Constants.bufferSize];
-
 	public Serializer<Boolean> boolean_ = boolean_();
 	public Serializer<Double> double_ = ser(SerInput::readDouble, SerOutput::writeDouble); // size = 8
 	public Serializer<Float> float_ = ser(SerInput::readFloat, SerOutput::writeFloat); // size = 4
 	public Serializer<Integer> int_ = ser(SerInput::readInt, SerOutput::writeInt); // size = 4
 
-	private Serialize() {
+	private Inspect inspect;
+	private byte[] zeroes = new byte[Constants.bufferSize];
+
+	public Serialize(Inspect inspect) {
+		this.inspect = inspect;
 	}
 
 	public <T> Serializer<T> auto(Class<T> clazz) {

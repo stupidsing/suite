@@ -12,10 +12,10 @@ import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
-import suite.util.SerOutput;
 import suite.util.FunUtil.Source;
 import suite.util.HomeDir;
 import suite.util.Rethrow;
+import suite.util.SerOutput;
 import suite.util.To;
 
 public class StoreCache {
