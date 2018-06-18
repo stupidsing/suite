@@ -355,9 +355,9 @@ public class P4GenerateCode {
 						em.emit(amd64.instruction(Insn.POP, opRegs[i]));
 
 					if (op0 != null && isOutSpec)
-						em.mov(oldOp0, op0);
+						em.mov(pop0, op0);
 					if (op1 != null && isOutSpec)
-						em.mov(oldOp1, op1);
+						em.mov(pop1, op1);
 
 					return new CompileOut(op0, op1);
 				})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
