@@ -71,12 +71,10 @@ public class P3Optimize {
 		})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
 			var iib = TreeUtil.boolOperations.get(op);
 			var iii = TreeUtil.intOperations.get(op);
-			if (iib != null)
-				return evaluate(iib, lhs, rhs);
-			else if (iii != null)
-				return evaluate(iii, lhs, rhs);
-			else
-				return null;
+			Funp f1 = null;
+			f1 = iib != null ? evaluate(iib, lhs, rhs) : null;
+			f1 = iii != null ? evaluate(iii, lhs, rhs) : null;
+			return f1;
 		})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
 			return evaluate(TreeUtil.tupleOperations.get(op), lhs, rhs);
 		})).applyIf(FunpWhile.class, f -> f.apply((while_, do_, expr) -> {
