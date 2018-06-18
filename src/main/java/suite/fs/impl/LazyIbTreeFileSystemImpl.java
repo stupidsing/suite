@@ -13,6 +13,7 @@ import suite.fs.KeyDataStore;
 import suite.fs.KeyValueMutator;
 import suite.fs.KeyValueStore;
 import suite.immutable.LazyIbTreeStore;
+import suite.node.util.Singleton;
 import suite.primitive.Bytes;
 import suite.streamlet.Streamlet;
 import suite.util.Serialize;

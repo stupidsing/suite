@@ -17,6 +17,7 @@ import suite.file.SerializedPageFile;
 import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.immutable.LazyIbTree.Slot;
+import suite.node.util.Singleton;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;
 import suite.util.SerInput;

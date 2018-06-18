@@ -12,6 +12,7 @@ import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.fs.KeyValueMutator;
 import suite.fs.KeyValueStore;
+import suite.node.util.Singleton;
 import suite.util.Fail;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
