@@ -87,6 +87,11 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testRecurse() {
+		test(89, "recurse (fib := n => if (1 < n) then ((n - 1 | fib) + (n - 2 | fib)) else 1 #) >> 10 | fib");
+	}
+
+	@Test
 	public void testReference() {
 		test(5, "define i := 3 >> define p := address i >> 2 + ^p");
 	}

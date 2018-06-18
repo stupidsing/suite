@@ -354,9 +354,9 @@ public class P4GenerateCode {
 					for (var i = opRegs.length - 1; 0 <= i; i--)
 						em.emit(amd64.instruction(Insn.POP, opRegs[i]));
 
-					if (op0 != null)
+					if (op0 != null && isOutSpec)
 						em.mov(oldOp0, op0);
-					if (op1 != null)
+					if (op1 != null && isOutSpec)
 						em.mov(oldOp1, op1);
 
 					return new CompileOut(op0, op1);

@@ -266,6 +266,12 @@ public class P2InferType {
 					return Fail.t();
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				return new Infer(env.replace(var, Pair.of(isPolyType, infer(value)))).infer(expr);
+			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+				var pairs_ = Read.from(pairs);
+				var env1 = pairs_.fold(env, (e, pair) -> e.put(pair.t0, Pair.of(false, unify.newRef())));
+				var infer1 = new Infer(env1);
+				pairs_.forEach(pair -> unify(n, env1.get(pair.t0).t1, infer1.infer(pair.t1)));
+				return infer1.infer(expr);
 			})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
 				return new Infer(env.replace(var, Pair.of(false, infer(value)))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
