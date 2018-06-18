@@ -217,11 +217,11 @@ public class Grapher {
 				.toList();
 	}
 
-	public static Node replace(Node from, Node to, Node node) {
+	public static Node replace(Node fr, Node to, Node node) {
 		var ids = new ObjIntMap<IdentityKey<Node>>();
 
 		var grapher = new Grapher();
-		var n0 = grapher.graph_(ids, from);
+		var n0 = grapher.graph_(ids, fr);
 		var nx = grapher.graph_(ids, to);
 		var id = grapher.graph_(ids, node);
 
