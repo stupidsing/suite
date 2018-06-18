@@ -22,8 +22,8 @@ import suite.file.impl.SerializedFileFactory;
 import suite.immutable.LazyIbTree.Slot;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.util.DataInput_;
-import suite.util.DataOutput_;
+import suite.util.SerInput;
+import suite.util.SerOutput;
 import suite.util.FunUtil.Sink;
 import suite.util.Rethrow;
 import suite.util.Serialize;
@@ -57,12 +57,12 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 		var ps = serialize.pair(ts1, es);
 		var lps = serialize.list(ps);
 		serializer = new Serializer<>() {
-			public PersistSlot<T> read(DataInput_ dataInput) throws IOException {
-				return new PersistSlot<>(lps.read(dataInput));
+			public PersistSlot<T> read(SerInput si) throws IOException {
+				return new PersistSlot<>(lps.read(si));
 			}
 
-			public void write(DataOutput_ dataOutput, PersistSlot<T> value) throws IOException {
-				lps.write(dataOutput, value.pairs);
+			public void write(SerOutput so, PersistSlot<T> value) throws IOException {
+				lps.write(so, value.pairs);
 			}
 		};
 
@@ -161,12 +161,12 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	}
 
 	private PersistSlot<T> loadSlot(Extent extent) {
-		return Rethrow.ex(() -> serializer.read(DataInput_.of(extentFile.load(extent).collect(As::inputStream))));
+		return Rethrow.ex(() -> serializer.read(SerInput.of(extentFile.load(extent).collect(As::inputStream))));
 	}
 
 	private Extent saveSlot(int start, PersistSlot<T> value) {
 		var bs = ExtentFile.blockSize;
-		var bytes = To.bytes(dataOutput -> serializer.write(dataOutput, value));
+		var bytes = To.bytes(so -> serializer.write(so, value));
 		var extent = new Extent(start, start + (bytes.size() + bs - 1) / bs);
 		extentFile.save(extent, bytes);
 		return extent;

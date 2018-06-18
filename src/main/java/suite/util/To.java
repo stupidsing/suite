@@ -63,10 +63,10 @@ public class To {
 		return outlet(is).collect(Bytes::of);
 	}
 
-	public static Bytes bytes(IoSink<DataOutput_> ioSink) {
+	public static Bytes bytes(IoSink<SerOutput> ioSink) {
 		var baos = new ByteArrayOutputStream();
 		try {
-			ioSink.sink(DataOutput_.of(baos));
+			ioSink.sink(SerOutput.of(baos));
 		} catch (IOException ex) {
 			Fail.t(ex);
 		}

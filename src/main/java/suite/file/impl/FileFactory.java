@@ -12,8 +12,8 @@ import suite.file.PageFile;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.util.DataInput_;
-import suite.util.DataOutput_;
+import suite.util.SerInput;
+import suite.util.SerOutput;
 import suite.util.Fail;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
@@ -37,15 +37,15 @@ public class FileFactory {
 		var bytesSerializer = serialize.variableLengthBytes;
 
 		var pageFile = SerializedFileFactory.serialized(pf, new Serializer<Block>() {
-			public Block read(DataInput_ dataInput) throws IOException {
-				var extent = extentSerializer.read(dataInput);
-				var bytes = bytesSerializer.read(dataInput);
+			public Block read(SerInput si) throws IOException {
+				var extent = extentSerializer.read(si);
+				var bytes = bytesSerializer.read(si);
 				return new Block(extent, bytes);
 			}
 
-			public void write(DataOutput_ dataOutput, Block block) throws IOException {
-				extentSerializer.write(dataOutput, block.extent);
-				bytesSerializer.write(dataOutput, block.bytes);
+			public void write(SerOutput so, Block block) throws IOException {
+				extentSerializer.write(so, block.extent);
+				bytesSerializer.write(so, block.bytes);
 			}
 		});
 

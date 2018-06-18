@@ -11,7 +11,7 @@ import suite.Constants;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntPrimitives.Int_Obj;
-import suite.util.DataOutput_;
+import suite.util.SerOutput;
 import suite.util.Fail;
 import suite.util.Util;
 
@@ -27,7 +27,7 @@ public class WriteElf {
 	}
 
 	private void write(int org, Bytes code, Path path) {
-		try (var os = FileUtil.out(path); var do_ = DataOutput_.of(os)) {
+		try (var os = FileUtil.out(path); var do_ = SerOutput.of(os)) {
 			write(org, code, do_);
 		} catch (IOException ex) {
 			Fail.t(ex);
@@ -48,7 +48,7 @@ public class WriteElf {
 		}
 	}
 
-	private void write(int org, Bytes code, DataOutput_ do_) throws IOException {
+	private void write(int org, Bytes code, SerOutput do_) throws IOException {
 		var header = new Write_() //
 				.db(0x7F) // e_ident
 				.append("ELF".getBytes(Constants.charset)) //

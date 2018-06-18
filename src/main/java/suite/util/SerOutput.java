@@ -8,15 +8,15 @@ import java.io.OutputStream;
 
 import suite.primitive.Bytes;
 
-public class DataOutput_ implements Closeable, DataOutput {
+public class SerOutput implements Closeable, DataOutput {
 
 	private DataOutputStream out;
 
-	public static DataOutput_ of(OutputStream os) {
-		return new DataOutput_(new DataOutputStream(os));
+	public static SerOutput of(OutputStream os) {
+		return new SerOutput(new DataOutputStream(os));
 	}
 
-	private DataOutput_(DataOutputStream out) {
+	private SerOutput(DataOutputStream out) {
 		this.out = out;
 	}
 

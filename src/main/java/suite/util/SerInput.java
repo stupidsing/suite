@@ -6,15 +6,15 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class DataInput_ implements Closeable, DataInput {
+public class SerInput implements Closeable, DataInput {
 
 	private DataInputStream in;
 
-	public static DataInput_ of(InputStream is) {
-		return new DataInput_(new DataInputStream(is));
+	public static SerInput of(InputStream is) {
+		return new SerInput(new DataInputStream(is));
 	}
 
-	private DataInput_(DataInputStream in) {
+	private SerInput(DataInputStream in) {
 		this.in = in;
 	}
 

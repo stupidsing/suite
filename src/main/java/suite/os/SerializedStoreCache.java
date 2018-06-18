@@ -6,8 +6,8 @@ import java.io.IOException;
 
 import suite.node.util.Singleton;
 import suite.primitive.Bytes;
-import suite.util.DataInput_;
-import suite.util.DataOutput_;
+import suite.util.SerInput;
+import suite.util.SerOutput;
 import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
@@ -38,7 +38,7 @@ public class SerializedStoreCache<K, V> {
 		var valueBytes = storeCache.get(keyBytes, () -> serialize(valueSerializer, source.source()));
 
 		return Rethrow.ex(() -> {
-			try (var bais = new ByteArrayInputStream(valueBytes.toArray()); var dis = DataInput_.of(bais)) {
+			try (var bais = new ByteArrayInputStream(valueBytes.toArray()); var dis = SerInput.of(bais)) {
 				return valueSerializer.read(dis);
 			}
 		});
@@ -47,7 +47,7 @@ public class SerializedStoreCache<K, V> {
 	private static <T> Bytes serialize(Serializer<T> serializer, T t) {
 		var baosKey = new ByteArrayOutputStream();
 
-		try (var dos = DataOutput_.of(baosKey)) {
+		try (var dos = SerOutput.of(baosKey)) {
 			serializer.write(dos, t);
 		} catch (IOException ex) {
 			Fail.t(ex);

@@ -12,7 +12,7 @@ import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
-import suite.util.DataOutput_;
+import suite.util.SerOutput;
 import suite.util.FunUtil.Source;
 import suite.util.HomeDir;
 import suite.util.Rethrow;
@@ -113,7 +113,7 @@ public class StoreCache {
 			} else {
 				var outlet = source.source();
 				var vos = FileUtil.out(pair.t1);
-				var vdo = DataOutput_.of(vos);
+				var vdo = SerOutput.of(vos);
 
 				return Outlet //
 						.of(() -> Rethrow.ex(() -> {
@@ -164,7 +164,7 @@ public class StoreCache {
 	}
 
 	private void writeKey(Path path, Bytes key) throws IOException {
-		try (var kos = FileUtil.out(path); DataOutput_ kdo = DataOutput_.of(kos)) {
+		try (var kos = FileUtil.out(path); SerOutput kdo = SerOutput.of(kos)) {
 			kdo.writeInt(key.size());
 			kdo.writeBytes(key);
 		}

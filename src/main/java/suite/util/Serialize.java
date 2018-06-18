@@ -114,18 +114,18 @@ public class Serialize {
 		immutableCtor.setAccessible(true);
 
 		return new Serializer<>() {
-			public T read(DataInput_ dataInput) throws IOException {
+			public T read(SerInput si) throws IOException {
 				return Rethrow.ex(() -> {
 					Object object;
 					if (defaultCtor != null) {
 						object = defaultCtor.newInstance();
 						for (var pair : pairs)
-							pair.t0.set(object, ((Serializer<?>) pair.t1).read(dataInput));
+							pair.t0.set(object, ((Serializer<?>) pair.t1).read(si));
 					} else {
 						var ps = new Object[immutableCtor.getParameterCount()];
 						for (var i = 0; i < ps.length; i++) {
 							Pair<Field, ?> pair = pairs[i];
-							ps[i] = ((Serializer<?>) pair.t1).read(dataInput);
+							ps[i] = ((Serializer<?>) pair.t1).read(si);
 						}
 						object = immutableCtor.newInstance(ps);
 					}
@@ -135,11 +135,11 @@ public class Serialize {
 				});
 			}
 
-			public void write(DataOutput_ dataOutput, T t) throws IOException {
+			public void write(SerOutput so, T t) throws IOException {
 				for (var pair : pairs) {
 					@SuppressWarnings("unchecked")
 					Serializer<Object> serializer1 = (Serializer<Object>) pair.t1;
-					serializer1.write(dataOutput, Rethrow.ex(() -> pair.t0.get(t)));
+					serializer1.write(so, Rethrow.ex(() -> pair.t0.get(t)));
 				}
 
 			}
@@ -147,82 +147,82 @@ public class Serialize {
 	}
 
 	public Serializer<Bytes> variableLengthBytes = new Serializer<>() {
-		public Bytes read(DataInput_ dataInput) throws IOException {
-			var length = dataInput.readInt();
+		public Bytes read(SerInput si) throws IOException {
+			var length = si.readInt();
 			var bs = new byte[length];
-			dataInput.readFully(bs);
+			si.readFully(bs);
 			return Bytes.of(bs);
 		}
 
-		public void write(DataOutput_ dataOutput, Bytes bytes) throws IOException {
-			dataOutput.writeInt(bytes.size());
-			dataOutput.writeBytes(bytes);
+		public void write(SerOutput so, Bytes bytes) throws IOException {
+			so.writeInt(bytes.size());
+			so.writeBytes(bytes);
 		}
 	};
 
 	public Serializer<String> variableLengthString = new Serializer<>() {
-		public String read(DataInput_ dataInput) throws IOException {
-			return dataInput.readUTF();
+		public String read(SerInput si) throws IOException {
+			return si.readUTF();
 		}
 
-		public void write(DataOutput_ dataOutput, String value) throws IOException {
-			dataOutput.writeUTF(value);
+		public void write(SerOutput so, String value) throws IOException {
+			so.writeUTF(value);
 		}
 	};
 
 	public interface Serializer<V> {
-		public V read(DataInput_ dataInput) throws IOException;
+		public V read(SerInput si) throws IOException;
 
-		public void write(DataOutput_ dataOutput, V value) throws IOException;
+		public void write(SerOutput so, V value) throws IOException;
 	}
 
 	public <T> Serializer<T[]> array(Class<T> clazz, Serializer<T> serializer) {
 		return new Serializer<>() {
-			public T[] read(DataInput_ dataInput) throws IOException {
-				var size = int_.read(dataInput);
+			public T[] read(SerInput si) throws IOException {
+				var size = int_.read(si);
 				var array = Array_.newArray(clazz, size);
 				for (var i = 0; i < size; i++)
-					array[i] = serializer.read(dataInput);
+					array[i] = serializer.read(si);
 				return array;
 			}
 
-			public void write(DataOutput_ dataOutput, T[] array) throws IOException {
-				int_.write(dataOutput, array.length);
+			public void write(SerOutput so, T[] array) throws IOException {
+				int_.write(so, array.length);
 				for (var t : array)
-					serializer.write(dataOutput, t);
+					serializer.write(so, t);
 			}
 		};
 	}
 
 	public Serializer<float[]> vector = new Serializer<>() {
-		public float[] read(DataInput_ dataInput) throws IOException {
-			var size = int_.read(dataInput);
+		public float[] read(SerInput si) throws IOException {
+			var size = int_.read(si);
 			var array = new float[size];
 			for (var i = 0; i < size; i++)
-				array[i] = dataInput.readFloat();
+				array[i] = si.readFloat();
 			return array;
 		}
 
-		public void write(DataOutput_ dataOutput, float[] array) throws IOException {
-			int_.write(dataOutput, array.length);
+		public void write(SerOutput so, float[] array) throws IOException {
+			int_.write(so, array.length);
 			for (var f : array)
-				dataOutput.writeFloat(f);
+				so.writeFloat(f);
 		}
 	};
 
 	public Serializer<int[]> arrayOfInts = new Serializer<>() {
-		public int[] read(DataInput_ dataInput) throws IOException {
-			var size = int_.read(dataInput);
+		public int[] read(SerInput si) throws IOException {
+			var size = int_.read(si);
 			var array = new int[size];
 			for (var i = 0; i < size; i++)
-				array[i] = dataInput.readInt();
+				array[i] = si.readInt();
 			return array;
 		}
 
-		public void write(DataOutput_ dataOutput, int[] array) throws IOException {
-			int_.write(dataOutput, array.length);
+		public void write(SerOutput so, int[] array) throws IOException {
+			int_.write(so, array.length);
 			for (var i : array)
-				dataOutput.writeInt(i);
+				so.writeInt(i);
 		}
 	};
 
@@ -233,18 +233,18 @@ public class Serialize {
 	 */
 	public Serializer<Bytes> bytes(int length) {
 		return new Serializer<>() {
-			public Bytes read(DataInput_ dataInput) throws IOException {
+			public Bytes read(SerInput si) throws IOException {
 				var bs = new byte[length];
-				dataInput.readFully(bs);
+				si.readFully(bs);
 				return Bytes.of(bs);
 			}
 
-			public void write(DataOutput_ dataOutput, Bytes bytes) throws IOException {
-				dataOutput.writeBytes(bytes);
+			public void write(SerOutput so, Bytes bytes) throws IOException {
+				so.writeBytes(bytes);
 				var i = bytes.size();
 				while (i < length) {
 					int i1 = min(i + zeroes.length, length);
-					dataOutput.write(zeroes, 0, i1 - i);
+					so.write(zeroes, 0, i1 - i);
 					i = i1;
 				}
 			}
@@ -253,33 +253,33 @@ public class Serialize {
 
 	public <T> Serializer<Collection<T>> collection(Serializer<T> serializer) {
 		return new Serializer<>() {
-			public Collection<T> read(DataInput_ dataInput) throws IOException {
-				var size = int_.read(dataInput);
+			public Collection<T> read(SerInput si) throws IOException {
+				var size = int_.read(si);
 				var list = new ArrayList<T>();
 				for (var i = 0; i < size; i++)
-					list.add(serializer.read(dataInput));
+					list.add(serializer.read(si));
 				return list;
 			}
 
-			public void write(DataOutput_ dataOutput, Collection<T> list) throws IOException {
-				int_.write(dataOutput, list.size());
+			public void write(SerOutput so, Collection<T> list) throws IOException {
+				int_.write(so, list.size());
 				for (var t : list)
-					serializer.write(dataOutput, t);
+					serializer.write(so, t);
 			}
 		};
 	}
 
 	public Serializer<Extent> extent() {
 		return new Serializer<>() {
-			public Extent read(DataInput_ dataInput) throws IOException {
-				var start = dataInput.readInt();
-				var end = dataInput.readInt();
+			public Extent read(SerInput si) throws IOException {
+				var start = si.readInt();
+				var end = si.readInt();
 				return new Extent(start, end);
 			}
 
-			public void write(DataOutput_ dataOutput, Extent value) throws IOException {
-				dataOutput.writeInt(value.start);
-				dataOutput.writeInt(value.end);
+			public void write(SerOutput so, Extent value) throws IOException {
+				so.writeInt(value.start);
+				so.writeInt(value.end);
 			}
 		};
 	}
@@ -291,18 +291,18 @@ public class Serialize {
 	 */
 	public <T> Serializer<List<T>> list(Serializer<T> serializer) {
 		return new Serializer<>() {
-			public List<T> read(DataInput_ dataInput) throws IOException {
-				var size = int_.read(dataInput);
+			public List<T> read(SerInput si) throws IOException {
+				var size = int_.read(si);
 				var list = new ArrayList<T>();
 				for (var i = 0; i < size; i++)
-					list.add(serializer.read(dataInput));
+					list.add(serializer.read(si));
 				return list;
 			}
 
-			public void write(DataOutput_ dataOutput, List<T> list) throws IOException {
-				int_.write(dataOutput, list.size());
+			public void write(SerOutput so, List<T> list) throws IOException {
+				int_.write(so, list.size());
 				for (var t : list)
-					serializer.write(dataOutput, t);
+					serializer.write(so, t);
 			}
 		};
 	}
@@ -322,31 +322,31 @@ public class Serialize {
 	 */
 	public <T> Serializer<T> nullable(Serializer<T> serializer) {
 		return new Serializer<>() {
-			public T read(DataInput_ dataInput) throws IOException {
-				return boolean_.read(dataInput) ? serializer.read(dataInput) : null;
+			public T read(SerInput si) throws IOException {
+				return boolean_.read(si) ? serializer.read(si) : null;
 			}
 
 			@Override
-			public void write(DataOutput_ dataOutput, T value) throws IOException {
+			public void write(SerOutput so, T value) throws IOException {
 				boolean isNotNull = value != null;
-				boolean_.write(dataOutput, isNotNull);
+				boolean_.write(so, isNotNull);
 				if (isNotNull)
-					serializer.write(dataOutput, value);
+					serializer.write(so, value);
 			}
 		};
 	}
 
 	public <T0, T1> Serializer<Pair<T0, T1>> pair(Serializer<T0> serializer0, Serializer<T1> serializer1) {
 		return new Serializer<>() {
-			public Pair<T0, T1> read(DataInput_ dataInput) throws IOException {
-				var t0 = serializer0.read(dataInput);
-				var t1 = serializer1.read(dataInput);
+			public Pair<T0, T1> read(SerInput si) throws IOException {
+				var t0 = serializer0.read(si);
+				var t1 = serializer1.read(si);
 				return Pair.of(t0, t1);
 			}
 
-			public void write(DataOutput_ dataOutput, Pair<T0, T1> pair) throws IOException {
-				serializer0.write(dataOutput, pair.t0);
-				serializer1.write(dataOutput, pair.t1);
+			public void write(SerOutput so, Pair<T0, T1> pair) throws IOException {
+				serializer0.write(so, pair.t0);
+				serializer1.write(so, pair.t1);
 			}
 		};
 	}
@@ -358,17 +358,17 @@ public class Serialize {
 	 */
 	public Serializer<String> string(int length) {
 		return new Serializer<>() {
-			public String read(DataInput_ dataInput) throws IOException {
+			public String read(SerInput si) throws IOException {
 				var bs = new byte[length];
-				var l = dataInput.readInt();
-				dataInput.readFully(bs);
+				var l = si.readInt();
+				si.readFully(bs);
 				return To.string(bs).substring(0, l);
 			}
 
-			public void write(DataOutput_ dataOutput, String value) throws IOException {
+			public void write(SerOutput so, String value) throws IOException {
 				var bs = Arrays.copyOf(value.getBytes(Constants.charset), length);
-				dataOutput.writeInt(value.length());
-				dataOutput.write(bs);
+				so.writeInt(value.length());
+				so.write(bs);
 			}
 		};
 	}
@@ -377,13 +377,13 @@ public class Serialize {
 		var c = o.hashCode();
 
 		return new Serializer<>() {
-			public T read(DataInput_ dataInput) throws IOException {
-				return dataInput.readInt() == c ? serializer.read(dataInput) : Fail.t();
+			public T read(SerInput si) throws IOException {
+				return si.readInt() == c ? serializer.read(si) : Fail.t();
 			}
 
-			public void write(DataOutput_ dataOutput, T value) throws IOException {
-				dataOutput.writeInt(c);
-				serializer.write(dataOutput, value);
+			public void write(SerOutput so, T value) throws IOException {
+				so.writeInt(c);
+				serializer.write(so, value);
 			}
 		};
 	}
@@ -395,12 +395,12 @@ public class Serialize {
 	 */
 	private Serializer<Boolean> boolean_() {
 		return new Serializer<>() {
-			public Boolean read(DataInput_ dataInput) throws IOException {
-				return dataInput.readByte() == -1;
+			public Boolean read(SerInput si) throws IOException {
+				return si.readByte() == -1;
 			}
 
-			public void write(DataOutput_ dataOutput, Boolean value) throws IOException {
-				dataOutput.writeByte(value ? -1 : 0);
+			public void write(SerOutput so, Boolean value) throws IOException {
+				so.writeByte(value ? -1 : 0);
 			}
 		};
 	}
@@ -412,12 +412,12 @@ public class Serialize {
 	 */
 	private Serializer<Double> double_() {
 		return new Serializer<>() {
-			public Double read(DataInput_ dataInput) throws IOException {
-				return dataInput.readDouble();
+			public Double read(SerInput si) throws IOException {
+				return si.readDouble();
 			}
 
-			public void write(DataOutput_ dataOutput, Double value) throws IOException {
-				dataOutput.writeDouble(value);
+			public void write(SerOutput so, Double value) throws IOException {
+				so.writeDouble(value);
 			}
 		};
 	}
@@ -429,12 +429,12 @@ public class Serialize {
 	 */
 	private Serializer<Float> float_() {
 		return new Serializer<>() {
-			public Float read(DataInput_ dataInput) throws IOException {
-				return dataInput.readFloat();
+			public Float read(SerInput si) throws IOException {
+				return si.readFloat();
 			}
 
-			public void write(DataOutput_ dataOutput, Float value) throws IOException {
-				dataOutput.writeFloat(value);
+			public void write(SerOutput so, Float value) throws IOException {
+				so.writeFloat(value);
 			}
 		};
 	}
@@ -446,34 +446,34 @@ public class Serialize {
 	 */
 	private Serializer<Integer> int_() {
 		return new Serializer<>() {
-			public Integer read(DataInput_ dataInput) throws IOException {
-				return dataInput.readInt();
+			public Integer read(SerInput si) throws IOException {
+				return si.readInt();
 			}
 
-			public void write(DataOutput_ dataOutput, Integer value) throws IOException {
-				dataOutput.writeInt(value);
+			public void write(SerOutput so, Integer value) throws IOException {
+				so.writeInt(value);
 			}
 		};
 	}
 
 	private <K, V> Serializer<Map<K, V>> map_(Serializer<K> ks, Serializer<V> vs) {
 		return new Serializer<>() {
-			public Map<K, V> read(DataInput_ dataInput) throws IOException {
-				var size = int_.read(dataInput);
+			public Map<K, V> read(SerInput si) throws IOException {
+				var size = int_.read(si);
 				var map = new HashMap<K, V>();
 				for (var i = 0; i < size; i++) {
-					var k = ks.read(dataInput);
-					var v = vs.read(dataInput);
+					var k = ks.read(si);
+					var v = vs.read(si);
 					map.put(k, v);
 				}
 				return map;
 			}
 
-			public void write(DataOutput_ dataOutput, Map<K, V> map) throws IOException {
-				int_.write(dataOutput, map.size());
+			public void write(SerOutput so, Map<K, V> map) throws IOException {
+				int_.write(so, map.size());
 				for (var e : map.entrySet()) {
-					ks.write(dataOutput, e.getKey());
-					vs.write(dataOutput, e.getValue());
+					ks.write(so, e.getKey());
+					vs.write(so, e.getValue());
 				}
 			}
 		};
@@ -481,22 +481,22 @@ public class Serialize {
 
 	private <T> Serializer<T> poly(Class<T> interface_) {
 		return new Serializer<>() {
-			public T read(DataInput_ dataInput) throws IOException {
-				var c = Rethrow.ex(() -> Class.forName(dataInput.readUTF()));
+			public T read(SerInput si) throws IOException {
+				var c = Rethrow.ex(() -> Class.forName(si.readUTF()));
 				if (interface_.isAssignableFrom(c)) {
 					@SuppressWarnings("unchecked")
-					var t = (T) auto(c).read(dataInput);
+					var t = (T) auto(c).read(si);
 					return t;
 				} else
 					return Fail.t(c.getSimpleName() + " does not implement " + interface_.getSimpleName());
 			}
 
-			public void write(DataOutput_ dataOutput, T t) throws IOException {
+			public void write(SerOutput so, T t) throws IOException {
 				@SuppressWarnings("unchecked")
 				var c = (Class<Object>) t.getClass();
 				if (interface_.isAssignableFrom(c)) {
-					dataOutput.writeUTF(c.getName());
-					auto(c).write(dataOutput, t);
+					so.writeUTF(c.getName());
+					auto(c).write(so, t);
 				} else
 					Fail.t(c.getSimpleName() + " does not implement " + interface_.getSimpleName());
 			}

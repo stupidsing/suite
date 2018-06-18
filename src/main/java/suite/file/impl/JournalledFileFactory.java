@@ -9,8 +9,8 @@ import suite.file.PageFile;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.util.DataInput_;
-import suite.util.DataOutput_;
+import suite.util.SerInput;
+import suite.util.SerOutput;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
 
@@ -34,15 +34,15 @@ public class JournalledFileFactory {
 		var bytesSerializer = serialize.bytes(pageSize);
 
 		var journalEntrySerializer = new Serializer<JournalEntry>() {
-			public JournalEntry read(DataInput_ dataInput) throws IOException {
-				var pointer = dataInput.readInt();
-				var bytes = bytesSerializer.read(dataInput);
+			public JournalEntry read(SerInput si) throws IOException {
+				var pointer = si.readInt();
+				var bytes = bytesSerializer.read(si);
 				return new JournalEntry(pointer, bytes);
 			}
 
-			public void write(DataOutput_ dataOutput, JournalEntry journalEntry) throws IOException {
-				dataOutput.writeInt(journalEntry.pointer);
-				bytesSerializer.write(dataOutput, journalEntry.bytes);
+			public void write(SerOutput so, JournalEntry journalEntry) throws IOException {
+				so.writeInt(journalEntry.pointer);
+				bytesSerializer.write(so, journalEntry.bytes);
 			}
 		};
 

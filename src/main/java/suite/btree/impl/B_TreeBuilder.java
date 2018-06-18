@@ -14,8 +14,8 @@ import suite.file.impl.FileFactory;
 import suite.file.impl.JournalledFileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.fs.KeyDataStore;
-import suite.util.DataInput_;
-import suite.util.DataOutput_;
+import suite.util.SerInput;
+import suite.util.SerOutput;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.Serialize;
@@ -95,37 +95,37 @@ public class B_TreeBuilder<Key, Value> {
 
 	private Serializer<B_TreeImpl<Key, Value>.Superblock> superblockSerializer(B_TreeImpl<Key, Value> b_tree) {
 		return new Serializer<>() {
-			public B_TreeImpl<Key, Value>.Superblock read(DataInput_ dataInput) throws IOException {
+			public B_TreeImpl<Key, Value>.Superblock read(SerInput si) throws IOException {
 				var superblock = b_tree.new Superblock();
-				superblock.root = serialize.int_.read(dataInput);
+				superblock.root = serialize.int_.read(si);
 				return superblock;
 			}
 
-			public void write(DataOutput_ dataOutput, B_TreeImpl<Key, Value>.Superblock value) throws IOException {
-				serialize.int_.write(dataOutput, value.root);
+			public void write(SerOutput so, B_TreeImpl<Key, Value>.Superblock value) throws IOException {
+				serialize.int_.write(so, value.root);
 			}
 		};
 	}
 
 	private Serializer<B_TreeImpl<Key, Value>.Page> pageSerializer(B_TreeImpl<Key, Value> b_tree) {
 		return new Serializer<>() {
-			public B_TreeImpl<Key, Value>.Page read(DataInput_ dataInput) throws IOException {
-				var pointer = dataInput.readInt();
-				var size = dataInput.readInt();
+			public B_TreeImpl<Key, Value>.Page read(SerInput si) throws IOException {
+				var pointer = si.readInt();
+				var size = si.readInt();
 				var page = b_tree.new Page(pointer);
 
 				for (var i = 0; i < size; i++) {
-					var key = keySerializer.read(dataInput);
-					var nodeType = dataInput.readChar();
+					var key = keySerializer.read(si);
+					var nodeType = si.readChar();
 
 					if (nodeType == BRANCH) {
-						var branch = dataInput.readInt();
+						var branch = si.readInt();
 						page.add(b_tree.new KeyPointer(key, b_tree.new Branch(branch)));
 					} else if (nodeType == LEAF) {
-						var value = valueSerializer.read(dataInput);
+						var value = valueSerializer.read(si);
 						page.add(b_tree.new KeyPointer(key, b_tree.new Leaf(value)));
 					} else if (nodeType == PAYLOAD) {
-						var pointer1 = dataInput.readInt();
+						var pointer1 = si.readInt();
 						page.add(b_tree.new KeyPointer(key, b_tree.new Payload(pointer1)));
 					} else if (nodeType == TERMINAL)
 						page.add(b_tree.new KeyPointer(key, b_tree.new Terminal()));
@@ -134,24 +134,24 @@ public class B_TreeBuilder<Key, Value> {
 				return page;
 			}
 
-			public void write(DataOutput_ dataOutput, B_TreeImpl<Key, Value>.Page page) throws IOException {
-				dataOutput.writeInt(page.pointer);
-				dataOutput.writeInt(page.size());
+			public void write(SerOutput so, B_TreeImpl<Key, Value>.Page page) throws IOException {
+				so.writeInt(page.pointer);
+				so.writeInt(page.size());
 
 				for (var kp : page) {
-					keySerializer.write(dataOutput, kp.key);
+					keySerializer.write(so, kp.key);
 
 					if (kp.pointer instanceof B_TreeImpl.Branch) {
-						dataOutput.writeChar(BRANCH);
-						dataOutput.writeInt(kp.getBranchPointer());
+						so.writeChar(BRANCH);
+						so.writeInt(kp.getBranchPointer());
 					} else if (kp.pointer instanceof B_TreeImpl.Leaf) {
-						dataOutput.writeChar(LEAF);
-						valueSerializer.write(dataOutput, kp.getLeafValue());
+						so.writeChar(LEAF);
+						valueSerializer.write(so, kp.getLeafValue());
 					} else if (kp.pointer instanceof B_TreeImpl.Payload) {
-						dataOutput.writeChar(PAYLOAD);
-						dataOutput.writeInt(kp.getPayloadPointer());
+						so.writeChar(PAYLOAD);
+						so.writeInt(kp.getPayloadPointer());
 					} else if (kp.pointer instanceof B_TreeImpl.Terminal)
-						dataOutput.writeChar(TERMINAL);
+						so.writeChar(TERMINAL);
 				}
 			}
 		};

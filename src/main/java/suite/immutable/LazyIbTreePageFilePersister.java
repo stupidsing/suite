@@ -18,8 +18,8 @@ import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.immutable.LazyIbTree.Slot;
 import suite.streamlet.Read;
-import suite.util.DataInput_;
-import suite.util.DataOutput_;
+import suite.util.SerInput;
+import suite.util.SerOutput;
 import suite.util.FunUtil.Sink;
 import suite.util.Serialize;
 import suite.util.Serialize.Serializer;
@@ -47,12 +47,12 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 		var ps = serialize.pair(ts1, serialize.int_);
 		var lps = serialize.list(ps);
 		var pss = new Serializer<PersistSlot<T>>() {
-			public PersistSlot<T> read(DataInput_ dataInput) throws IOException {
-				return new PersistSlot<>(lps.read(dataInput));
+			public PersistSlot<T> read(SerInput si) throws IOException {
+				return new PersistSlot<>(lps.read(si));
 			}
 
-			public void write(DataOutput_ dataOutput, PersistSlot<T> value) throws IOException {
-				lps.write(dataOutput, value.pairs);
+			public void write(SerOutput so, PersistSlot<T> value) throws IOException {
+				lps.write(so, value.pairs);
 			}
 		};
 
