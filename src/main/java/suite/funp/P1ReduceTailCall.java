@@ -4,15 +4,19 @@ import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDontCare;
+import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpStruct;
+import suite.funp.P0.FunpVariable;
 import suite.funp.P1.FunpTco;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.primitive.IntMutable;
+import suite.util.String_;
 import suite.util.Switch;
 
 public class P1ReduceTailCall {
@@ -45,10 +49,21 @@ public class P1ReduceTailCall {
 		private String var;
 
 		private Funp rewrite(Funp do_) {
-			return FunpTco.of(var, FunpStruct.of(List.of( //
-					Pair.of("c", FunpBoolean.of(false)), //
-					Pair.of("n", FunpDontCare.of()), //
-					Pair.of("r", do_))));
+			return new Switch<Funp>(do_ //
+			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
+				return new Switch<Funp>(lambda //
+				).applyIf(FunpIf.class, g -> g.apply((if_, then, else_) -> {
+					return FunpIf.of(if_, rewrite(then), rewrite(else_));
+				})).applyIf(FunpVariable.class, g -> g.apply(var_ -> {
+					if (String_.equals(var, var_))
+						return FunpTco.of(var, FunpStruct.of(List.of( //
+								Pair.of("c", FunpBoolean.of(true)), //
+								Pair.of("n", value), //
+								Pair.of("r", FunpDontCare.of()))));
+					else
+						return null;
+				})).result();
+			})).result();
 		}
 	}
 
