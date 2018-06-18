@@ -149,7 +149,7 @@ public class Serialize {
 	public Serializer<Bytes> variableLengthBytes = new Serializer<>() {
 		public Bytes read(SerInput si) throws IOException {
 			var length = si.readInt();
-			var bs = new byte[length];
+			var bs = length < Constants.bufferSize ? new byte[length] : null;
 			si.readFully(bs);
 			return Bytes.of(bs);
 		}
@@ -213,7 +213,7 @@ public class Serialize {
 	public Serializer<int[]> arrayOfInts = new Serializer<>() {
 		public int[] read(SerInput si) throws IOException {
 			var size = int_.read(si);
-			var array = new int[size];
+			var array = size < Constants.bufferLimit ? new int[size] : null;
 			for (var i = 0; i < size; i++)
 				array[i] = si.readInt();
 			return array;

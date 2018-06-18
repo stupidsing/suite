@@ -77,7 +77,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 		var length = 0;
 		int c;
 
-		while (0 <= (c = sis.read()) && c != ':' && length < 65536)
+		while (0 <= (c = sis.read()) && c != ':' && length < Constants.bufferLimit)
 			if ('0' <= c && c <= '9')
 				length = length * 10 + c - '0';
 			else

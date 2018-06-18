@@ -23,6 +23,7 @@ import suite.util.To;
 
 public class Constants {
 
+	public static int bufferLimit = 65536;
 	public static int bufferSize = 4096;
 	public static Charset charset = StandardCharsets.UTF_8;
 	public static DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.ENGLISH);

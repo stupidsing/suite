@@ -21,7 +21,7 @@ public class SocketServer {
 
 	private void listen(Fun<Bytes, Bytes> handle) {
 		new SocketUtil().listenIo(5151, (is, os) -> {
-			var in = read(is, 65536);
+			var in = read(is, Constants.bufferLimit);
 			var out = handle.apply(in);
 			os.write(out.bs);
 		});

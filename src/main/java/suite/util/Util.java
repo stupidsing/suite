@@ -11,6 +11,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javassist.Modifier;
+import suite.Constants;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -62,9 +63,9 @@ public class Util {
 	}
 
 	/**
-	 * Reads a line from a stream with a maximum line length limit. Removes
-	 * carriage return if it is DOS-mode line feed (CR-LF). Unknown behaviour
-	 * when dealing with non-ASCII encoding characters.
+	 * Reads a line from a stream with a maximum line length limit. Removes carriage
+	 * return if it is DOS-mode line feed (CR-LF). Unknown behaviour when dealing
+	 * with non-ASCII encoding characters.
 	 */
 	public static String readLine(InputStream is) {
 		return Rethrow.ex(() -> {
@@ -72,7 +73,7 @@ public class Util {
 			int c;
 			while (0 <= (c = is.read()) && c != 10) {
 				sb.append((char) c);
-				if (65536 <= sb.length())
+				if (Constants.bufferLimit <= sb.length())
 					Fail.t("line too long");
 			}
 			return 0 <= c ? strip(sb) : null;
@@ -85,7 +86,7 @@ public class Util {
 			int c;
 			while (0 <= (c = reader.read()) && c != 10) {
 				sb.append((char) c);
-				if (65536 <= sb.length())
+				if (Constants.bufferLimit <= sb.length())
 					Fail.t("line too long");
 			}
 			return 0 <= c ? strip(sb) : null;
