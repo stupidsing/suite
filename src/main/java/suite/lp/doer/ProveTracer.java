@@ -40,11 +40,11 @@ public class ProveTracer {
 			if (traceLevel == TraceLevel.SIMPLE)
 				sb.append(String.format("[%4s:%-2d]  ", 0 < nOkays ? "OK__" : "FAIL", depth));
 			else if (traceLevel == TraceLevel.DETAIL)
-				sb.append(String.format("%-4d[up=%-4d|oks=%-2d|end=%-4s]  " //
-						, start //
-						, parent != null ? parent.start : 0 //
-						, nOkays //
-						, 0 <= end ? String.valueOf(end) : ""));
+				sb.append(String.format("%-4d[up=%-4d|oks=%-2d|end=%-4s]  ", //
+						start, //
+						parent != null ? parent.start : 0, //
+						nOkays, //
+						0 <= end ? String.valueOf(end) : ""));
 
 			for (var i = 1; i < depth; i++)
 				sb.append("| ");
@@ -61,7 +61,7 @@ public class ProveTracer {
 			var depth0 = currentDepth;
 			var record = new Record(record0, query1, currentDepth + 1);
 
-			Data<Source<Boolean>> enter = new Data<>(() -> {
+			var enter = new Data<Source<Boolean>>(() -> {
 				currentRecord = record;
 				currentDepth = record.depth;
 				record.start = records.size();
@@ -69,14 +69,14 @@ public class ProveTracer {
 				return Boolean.TRUE;
 			});
 
-			Data<Source<Boolean>> leaveOk = new Data<>(() -> {
+			var leaveOk = new Data<Source<Boolean>>(() -> {
 				currentRecord = record0;
 				currentDepth = depth0;
 				record.nOkays++;
 				return Boolean.TRUE;
 			});
 
-			Data<Source<Boolean>> leaveFail = new Data<>(() -> {
+			var leaveFail = new Data<Source<Boolean>>(() -> {
 				currentRecord = record0;
 				currentDepth = depth0;
 				record.end = records.size();
@@ -89,8 +89,7 @@ public class ProveTracer {
 			prover.setAlternative(TreeOr.of(leaveFail, alt));
 			prover.setRemaining(TreeAnd.of(leaveOk, rem));
 
-			query = expand.apply(query);
-			query = TreeAnd.of(enter, query);
+			query = TreeAnd.of(enter, expand.apply(query));
 		} else
 			query = expand.apply(query);
 
