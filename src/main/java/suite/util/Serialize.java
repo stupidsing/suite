@@ -73,9 +73,9 @@ public class Serialize {
 				serializer = variableLengthString;
 			else if (clazz.isArray()) {
 				@SuppressWarnings("unchecked")
-				Class<Object> c1 = (Class<Object>) clazz.getComponentType();
+				var c1 = (Class<Object>) clazz.getComponentType();
 				@SuppressWarnings("unchecked")
-				Serializer<Object> serializer1 = (Serializer<Object>) auto_(c1);
+				var serializer1 = (Serializer<Object>) auto_(c1);
 				serializer = array(c1, serializer1);
 			} else if (clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers()))
 				serializer = poly(clazz);
