@@ -29,6 +29,7 @@ import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
+import suite.funp.P1.FunpTco;
 import suite.immutable.IMap;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
@@ -183,6 +184,19 @@ public class P2GenerateLambda {
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
 				var funs = Read.from2(pairs).mapValue(this::compile_).collect();
 				return rt -> new Struct(funs.mapValue(v -> v.apply(rt)).toMap());
+			})).applyIf(FunpTco.class, f -> f.apply((var, tco) -> {
+				var fs1 = fs + 1;
+				var thunk = compile(fs1, env.replace(var, fs1), tco);
+				return rt -> (Fun_) p -> {
+					Map<String, Value> map;
+					var n = rt.var;
+					do {
+						var struct = (Struct) ((Fun_) thunk.apply(rt)).apply(n);
+						map = struct.map;
+						n = map.get("n");
+					} while (((Bool) map.get("c")).b);
+					return map.get("r");
+				};
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
 				var v0 = compile_(lhs);
 				var v1 = compile_(rhs);
@@ -210,7 +224,7 @@ public class P2GenerateLambda {
 		}
 
 		private Thunk fold(Funp init, Funp cont, Funp next) {
-			var var = "fold" + Util.temp();
+			var var = "fold$" + Util.temp();
 			var fs1 = fs + 1;
 			var init_ = compile_(init);
 			var var_ = FunpVariable.of(var);

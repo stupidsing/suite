@@ -33,6 +33,7 @@ public class Funp_ {
 	public class Main {
 		private P0Parse p0 = new P0Parse();
 		private P1Inline p1 = new P1Inline();
+		private P1ReduceTailCall p1r = new P1ReduceTailCall();
 		private P2InferType p2 = new P2InferType();
 		private P2GenerateLambda p2g = new P2GenerateLambda();
 		private P3Optimize p3 = new P3Optimize();
@@ -44,10 +45,11 @@ public class Funp_ {
 		public Pair<List<Instruction>, Bytes> compile(int offset, String fp) {
 			var node = Suite.parse(fp);
 			var f0 = p0.parse(node);
-			var f1 = p1.inline(f0, isOptimize ? 3 : 0, 1, 1, 1, 1);
-			var f2 = p2.infer(f1);
-			var f3 = p3.optimize(f2);
-			var instructions = p4.compile0(f3);
+			var f1 = p1r.reduce(f0);
+			var f2 = p1.inline(f1, isOptimize ? 3 : 0, 1, 1, 1, 1);
+			var f3 = p2.infer(f2);
+			var f4 = p3.optimize(f3);
+			var instructions = p4.compile0(f4);
 			return Pair.of(instructions, p4.compile1(offset, instructions, true));
 		}
 

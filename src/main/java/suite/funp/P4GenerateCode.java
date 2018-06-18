@@ -570,13 +570,13 @@ public class P4GenerateCode {
 					return Pair.of(lhs, compileRegInstruction(insn, opLhsReg, opRhs, lhs));
 				else if (opRhsReg != null && !rs.contains(opRhsReg))
 					return Pair.of(rhs, compileRegInstruction(insn, opRhsReg, opLhs, rhs));
-				else if (opRhs instanceof OpImm)
+				else if (!(opLhs instanceof OpImm) && opRhs instanceof OpImm)
 					if (insn == Insn.CMP && opLhs != null) {
 						em.emit(amd64.instruction(insn, opLhs, opRhs));
 						return Pair.of(lhs, null);
 					} else
 						return Pair.of(lhs, em.emitRegInsn(insn, compileIsLoad(lhs), opRhs));
-				else if (opLhs instanceof OpImm)
+				else if (opLhs instanceof OpImm && !(opRhs instanceof OpImm))
 					if (insn == Insn.CMP && opRhs != null) {
 						em.emit(amd64.instruction(insn, opRhs, opLhs));
 						return Pair.of(rhs, null);

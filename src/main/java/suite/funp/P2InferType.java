@@ -45,6 +45,7 @@ import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P0.FunpVariableNew;
+import suite.funp.P1.FunpTco;
 import suite.funp.P2.FunpAllocGlobal;
 import suite.funp.P2.FunpAllocReg;
 import suite.funp.P2.FunpAllocStack;
@@ -336,6 +337,15 @@ public class P2InferType {
 				return TypeArray.of(infer(expr), count);
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
 				return TypeStruct.of(Read.from2(pairs).mapValue(this::infer).toList());
+			})).applyIf(FunpTco.class, f -> f.apply((var, tco) -> {
+				var ti = unify.newRef();
+				var tr = unify.newRef();
+				var ts = TypeStruct.of(List.of( //
+						Pair.of("c", typeBoolean), //
+						Pair.of("n", ti), //
+						Pair.of("r", tr)));
+				unify(n, ts, new Infer(env.replace(var, Pair.of(false, ti))).infer(tco));
+				return tr;
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
 				var ti = op == TermOp.BIGAND || op == TermOp.BIGOR_ ? typeBoolean : typeNumber;
 				unify(n, infer(lhs), ti);
