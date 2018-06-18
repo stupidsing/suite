@@ -40,66 +40,72 @@ import suite.util.Util;
 
 public class P2GenerateLambda {
 
-	public static class Rt {
+	private static class Rt {
 		private Rt parent;
 		private Value var;
 
-		public Rt(Rt parent, Value var) {
+		private Rt(Rt parent, Value var) {
 			this.parent = parent;
 			this.var = var;
 		}
 	}
 
-	public interface Value {
+	private interface Value {
 	}
 
-	public static class Bool implements Value {
-		public final boolean b;
+	private static class Bool implements Value {
+		private boolean b;
 
 		private Bool(boolean b) {
 			this.b = b;
 		}
 	}
 
-	public static class Int implements Value {
-		public final int i;
+	private static class Int implements Value {
+		private final int i;
 
 		private Int(int i) {
 			this.i = i;
 		}
 	}
 
-	public static class Ref implements Value {
-		public final Value v;
+	private static class Ref implements Value {
+		private Value v;
 
 		private Ref(Value v) {
 			this.v = v;
 		}
 	}
 
-	public static class Struct implements Value {
-		public final Map<String, Value> map;
+	private static class Struct implements Value {
+		private Map<String, Value> map;
 
-		public Struct(Map<String, Value> map) {
+		private Struct(Map<String, Value> map) {
 			this.map = map;
 		}
 	}
 
-	public static class Vec implements Value {
-		public final Value[] values;
+	private static class Vec implements Value {
+		private Value[] values;
 
 		private Vec(Value[] values) {
 			this.values = values;
 		}
 	}
 
-	public interface Thunk extends Fun<Rt, Value>, Value {
+	private interface Thunk extends Fun<Rt, Value>, Value {
 	}
 
 	private interface Fun_ extends Fun<Value, Value>, Value {
 	}
 
-	public Thunk compile(int fs, IMap<String, Integer> env, Funp n) {
+	public int eval(Funp f) {
+		var thunk = compile(0, IMap.empty(), f);
+		var value = thunk.apply(new Rt(null, null));
+		return ((Int) value).i;
+	}
+
+	private Thunk compile(int fs, IMap<String, Integer> env, Funp n) {
 		return new Compile(fs, env).compile_(n);
 	}
 

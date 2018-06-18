@@ -6,9 +6,6 @@ import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Instruction;
 import suite.funp.P2.FunpFramePointer;
-import suite.funp.P2GenerateLambda.Int;
-import suite.funp.P2GenerateLambda.Rt;
-import suite.immutable.IMap;
 import suite.node.Node;
 import suite.primitive.Bytes;
 import suite.util.AutoInterface;
@@ -57,9 +54,7 @@ public class Funp_ {
 		public int interpret(Node node) {
 			var f0 = p0.parse(node);
 			p2.infer(f0);
-			var thunk = p2g.compile(0, IMap.empty(), f0);
-			var value = thunk.apply(new Rt(null, null));
-			return ((Int) value).i;
+			return p2g.eval(f0);
 		}
 	}
 
