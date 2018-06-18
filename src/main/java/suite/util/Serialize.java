@@ -3,7 +3,6 @@ package suite.util;
 import static suite.util.Friends.min;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -23,7 +22,6 @@ import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 
 /**
@@ -35,12 +33,12 @@ public class Serialize {
 	public static Serialize me = new Serialize();
 
 	private Inspect inspect = Singleton.me.inspect;
-	private byte[] zeroes = new byte[4096];
+	private byte[] zeroes = new byte[Constants.bufferSize];
 
 	public Serializer<Boolean> boolean_ = boolean_();
-	public Serializer<Double> double_ = double_();
-	public Serializer<Float> float_ = float_();
-	public Serializer<Integer> int_ = int_();
+	public Serializer<Double> double_ = ser(SerInput::readDouble, SerOutput::writeDouble); // size = 8
+	public Serializer<Float> float_ = ser(SerInput::readFloat, SerOutput::writeFloat); // size = 4
+	public Serializer<Integer> int_ = ser(SerInput::readInt, SerOutput::writeInt); // size = 4
 
 	private Serialize() {
 	}
@@ -108,9 +106,9 @@ public class Serialize {
 				.map2(field -> auto_(field.getGenericType())) //
 				.toArray();
 
-		Streamlet<Constructor<?>> ctors = Read.from(clazz.getDeclaredConstructors());
-		Constructor<?> defaultCtor = ctors.filter(ctor -> ctor.getParameterCount() == 0).first();
-		Constructor<?> immutableCtor = ctors.min((c0, c1) -> -Integer.compare(c0.getParameterCount(), c1.getParameterCount()));
+		var ctors = Read.from(clazz.getDeclaredConstructors());
+		var defaultCtor = ctors.filter(ctor -> ctor.getParameterCount() == 0).first();
+		var immutableCtor = ctors.min((c0, c1) -> -Integer.compare(c0.getParameterCount(), c1.getParameterCount()));
 		immutableCtor.setAccessible(true);
 
 		return new Serializer<>() {
@@ -138,7 +136,7 @@ public class Serialize {
 			public void write(SerOutput so, T t) throws IOException {
 				for (var pair : pairs) {
 					@SuppressWarnings("unchecked")
-					Serializer<Object> serializer1 = (Serializer<Object>) pair.t1;
+					var serializer1 = (Serializer<Object>) pair.t1;
 					serializer1.write(so, Rethrow.ex(() -> pair.t0.get(t)));
 				}
 
@@ -160,15 +158,27 @@ public class Serialize {
 		}
 	};
 
-	public Serializer<String> variableLengthString = new Serializer<>() {
-		public String read(SerInput si) throws IOException {
-			return si.readUTF();
-		}
+	public Serializer<String> variableLengthString = ser(SerInput::readUTF, SerOutput::writeUTF);
 
-		public void write(SerOutput so, String value) throws IOException {
-			so.writeUTF(value);
-		}
-	};
+	private static <T> Serializer<T> ser(Deser<T> deser, Ser<T> ser) {
+		return new Serializer<>() {
+			public T read(SerInput si) throws IOException {
+				return deser.read(si);
+			}
+
+			public void write(SerOutput so, T value) throws IOException {
+				ser.write(so, value);
+			}
+		};
+	}
+
+	public interface Deser<V> {
+		public V read(SerInput si) throws IOException;
+	}
+
+	public interface Ser<V> {
+		public void write(SerOutput so, V v) throws IOException;
+	}
 
 	public interface Serializer<V> {
 		public V read(SerInput si) throws IOException;
@@ -255,7 +265,7 @@ public class Serialize {
 		return new Serializer<>() {
 			public Collection<T> read(SerInput si) throws IOException {
 				var size = int_.read(si);
-				var list = new ArrayList<T>();
+				var list = size < Constants.bufferLimit ? new ArrayList<T>() : null;
 				for (var i = 0; i < size; i++)
 					list.add(serializer.read(si));
 				return list;
@@ -405,62 +415,11 @@ public class Serialize {
 		};
 	}
 
-	/**
-	 * Serializes an double.
-	 *
-	 * Size = 8
-	 */
-	private Serializer<Double> double_() {
-		return new Serializer<>() {
-			public Double read(SerInput si) throws IOException {
-				return si.readDouble();
-			}
-
-			public void write(SerOutput so, Double value) throws IOException {
-				so.writeDouble(value);
-			}
-		};
-	}
-
-	/**
-	 * Serializes an float.
-	 *
-	 * Size = 4
-	 */
-	private Serializer<Float> float_() {
-		return new Serializer<>() {
-			public Float read(SerInput si) throws IOException {
-				return si.readFloat();
-			}
-
-			public void write(SerOutput so, Float value) throws IOException {
-				so.writeFloat(value);
-			}
-		};
-	}
-
-	/**
-	 * Serializes an integer.
-	 *
-	 * Size = 4
-	 */
-	private Serializer<Integer> int_() {
-		return new Serializer<>() {
-			public Integer read(SerInput si) throws IOException {
-				return si.readInt();
-			}
-
-			public void write(SerOutput so, Integer value) throws IOException {
-				so.writeInt(value);
-			}
-		};
-	}
-
 	private <K, V> Serializer<Map<K, V>> map_(Serializer<K> ks, Serializer<V> vs) {
 		return new Serializer<>() {
 			public Map<K, V> read(SerInput si) throws IOException {
 				var size = int_.read(si);
-				var map = new HashMap<K, V>();
+				var map = Constants.bufferLimit < size ? new HashMap<K, V>() : null;
 				for (var i = 0; i < size; i++) {
 					var k = ks.read(si);
 					var v = vs.read(si);
