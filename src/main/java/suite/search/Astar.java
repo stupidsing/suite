@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.PriorityQueue;
 import java.util.Set;
 
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
 
@@ -16,7 +17,7 @@ public class Astar<Node> {
 	private Comparator<NodeInfo> comparator = (ni0, ni1) -> ni0.estimatedCost - ni1.estimatedCost;
 
 	private Fun<Node, Source<Node>> generate;
-	private Fun<Node, Integer> estimate;
+	private Obj_Int<Node> estimate;
 
 	private PriorityQueue<NodeInfo> open = new PriorityQueue<>(256, comparator);
 	private Set<Node> closed = new HashSet<>();
@@ -35,7 +36,7 @@ public class Astar<Node> {
 		}
 	}
 
-	public Astar(Fun<Node, Source<Node>> generate, Fun<Node, Integer> estimate) {
+	public Astar(Fun<Node, Source<Node>> generate, Obj_Int<Node> estimate) {
 		this.generate = generate;
 		this.estimate = estimate;
 	}

@@ -104,10 +104,9 @@ public class IterativeParser {
 				stack.push(new Section(ch));
 			else if (ch == ')' || ch == ']' || ch == '}') {
 				var section = stack.pop();
+				var kind = section.kind;
 
-				if (section.kind == '(' && ch == ')' //
-						|| section.kind == '[' && ch == ']' //
-						|| section.kind == '{' && ch == '}') {
+				if (kind == '(' && ch == ')' || kind == '[' && ch == ']' || kind == '{' && ch == '}') {
 					var node = section.unwind(null).getRight();
 					if (ch == ']')
 						node = TreeTuple.of(Atom.of("["), node);
