@@ -93,12 +93,20 @@ public class SwitchNode<R> {
 		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
 	}
 
+	public SwitchNode<R> match(Pattern pattern, FixieFun0<R> fun) {
+		return match0_(pattern, fun);
+	}
+
 	public SwitchNode<R> match(Pattern pattern, FixieFun1<Node, R> fun) {
 		return match1_(pattern, fun);
 	}
 
 	public SwitchNode<R> match(Pattern pattern, FixieFun2<Node, Node, R> fun) {
 		return match2_(pattern, fun);
+	}
+
+	public SwitchNode<R> match(String pattern, FixieFun0<R> fun) {
+		return match0_(Suite.pattern(pattern), fun);
 	}
 
 	public SwitchNode<R> match(String pattern, FixieFun1<Node, R> fun) {
@@ -138,6 +146,10 @@ public class SwitchNode<R> {
 
 	public R result() {
 		return result;
+	}
+
+	private SwitchNode<R> match0_(Pattern pattern, FixieFun0<R> fun) {
+		return match_(pattern, m -> fun.apply());
 	}
 
 	private SwitchNode<R> match1_(Pattern pattern, FixieFun1<Node, R> fun) {

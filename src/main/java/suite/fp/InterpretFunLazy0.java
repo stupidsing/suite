@@ -71,7 +71,7 @@ public class InterpretFunLazy0 {
 					bind(tl, env.get(op.name_()));
 					return tr;
 				}).applyIf(Atom.class, a -> {
-					return env.get(Atom.name(a));
+					return env.get(a.name);
 				}).applyIf(Int.class, a -> {
 					return Suite.parse("NUMBER");
 				}).applyIf(Node.class, a -> {
@@ -164,7 +164,7 @@ public class InterpretFunLazy0 {
 				return r2;
 			};
 		}).applyIf(Atom.class, a -> {
-			var vk = Atom.name(node);
+			var vk = a.name;
 			return env -> env.get(vk);
 		}).applyIf(Node.class, a -> {
 			return env -> () -> node;
