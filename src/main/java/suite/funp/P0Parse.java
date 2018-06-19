@@ -338,9 +338,7 @@ public class P0Parse {
 							.range(size0) //
 							.fold(then, (i, then_) -> bind(pairs0.get(i).t1, fun.apply(i), then_, else_));
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-					return variables.contains(var) //
-							? FunpIoAssignReference.of(FunpReference.of(f), value, then) //
-							: be;
+					return variables.contains(var) ? FunpIoAssignReference.of(FunpReference.of(f), value, then) : be;
 				})).result();
 
 				return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);

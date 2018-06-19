@@ -240,7 +240,7 @@ public class FunExprM {
 	}
 
 	public static class ProfileFunExpr extends FunExpr {
-		public String counterFieldName = "p" + Util.temp();
+		public String counterFieldName = "p_" + Util.temp();
 		public FunExpr do_;
 
 		public <R> R apply(FixieFun2<String, FunExpr, R> fun) {

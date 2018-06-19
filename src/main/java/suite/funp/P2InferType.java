@@ -128,7 +128,7 @@ public class P2InferType {
 					})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 						return FunpLambda.of(var, extractPredefine(expr));
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
-						var ev = "ev" + Util.temp();
+						var ev = "ev$" + Util.temp();
 						evs.add(Pair.of(ev, expr));
 						var var = FunpVariable.of(ev);
 						return FunpIoAssignReference.of(FunpReference.of(var), expr, var);
@@ -177,7 +177,7 @@ public class P2InferType {
 					return FunpDefineRec.of(vars1, c1.capture(expr));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					var locals1 = ISet.<String> empty();
-					var capn = "cap" + Util.temp();
+					var capn = "cap$" + Util.temp();
 					var cap = FunpVariable.of(capn);
 					var ref = FunpReference.of(cap);
 					var set = new HashSet<>();
@@ -457,7 +457,7 @@ public class P2InferType {
 				var offset = IntMutable.nil();
 				var size = getTypeSize(typeOf(init));
 				var var_ = new Var(scope, offset, 0, size);
-				var e1 = new Erase(scope, env.replace("fold" + Util.temp(), var_));
+				var e1 = new Erase(scope, env.replace("fold$" + Util.temp(), var_));
 				var m = getVariable(var_);
 				var cont_ = e1.apply(m, cont, size);
 				var next_ = e1.apply(m, next, size);

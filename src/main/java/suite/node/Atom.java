@@ -30,7 +30,7 @@ public class Atom extends Node {
 	}
 
 	public static Atom temp() {
-		return Atom.of("temp$$" + Util.temp());
+		return Atom.of("a$" + Util.temp());
 	}
 
 }

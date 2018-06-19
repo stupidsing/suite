@@ -107,7 +107,7 @@ public class FunCreator<I> extends FunFactory {
 
 		private CreateClass(FunExpr expr0) {
 			var interfaceClass = lambdaClass.interfaceClass;
-			var clsName = interfaceClass.getName() + Util.temp();
+			var clsName = interfaceClass.getName() + "_" + Util.temp();
 			var methodName = lambdaClass.methodName;
 
 			var localTypes = new ArrayList<Type>();
@@ -231,7 +231,7 @@ public class FunCreator<I> extends FunFactory {
 	}
 
 	public FunExpr constant(Object object) {
-		var fieldName = "s" + Util.temp();
+		var fieldName = "s_" + Util.temp();
 		var fieldType = object != null ? Type.getType(object.getClass()) : Type.OBJECT;
 		fieldStaticTypeValues.put(fieldName, Pair.of(fieldType, object));
 
