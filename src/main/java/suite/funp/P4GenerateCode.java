@@ -18,13 +18,13 @@ import suite.assembler.Amd64.Operand;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Parse;
 import suite.funp.Funp_.Funp;
-import suite.funp.P0.FunpAsm;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpCoerce.Coerce;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpIf;
+import suite.funp.P0.FunpIoAsm;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
@@ -175,19 +175,6 @@ public class P4GenerateCode {
 					var reg_ = rs.get(size);
 					reg.update(reg_);
 					return mask(compileLoad(value, reg_)).compile(expr);
-				})).applyIf(FunpAsm.class, f -> f.apply((assigns, asm) -> {
-					var p = new Amd64Parse();
-					new Object() {
-						private Object assign(Compile1 c1, int i) {
-							return i < assigns.size() ? assigns.get(i).map((op, f) -> {
-								c1.compileLoad(f, op);
-								return assign(c1.mask(op), i + 1);
-							}) : this;
-						}
-					}.assign(this, 0);
-
-					Read.from(asm).map(p::parse).sink(em::emit);
-					return returnIsOp(eax);
 				})).applyIf(FunpAssignMem.class, f -> f.apply((target, value, expr) -> {
 					compileAssign(value, target);
 					return compile(expr);
@@ -290,6 +277,19 @@ public class P4GenerateCode {
 						var c3 = c2.mask(r1 = c2.compileFramePointer());
 						c3.compileMove(r0, target.start, r1, c3.fd + is, target.size());
 					});
+				})).applyIf(FunpIoAsm.class, f -> f.apply((assigns, asm) -> {
+					var p = new Amd64Parse();
+					new Object() {
+						private Object assign(Compile1 c1, int i) {
+							return i < assigns.size() ? assigns.get(i).map((op, f) -> {
+								c1.compileLoad(f, op);
+								return assign(c1.mask(op), i + 1);
+							}) : this;
+						}
+					}.assign(this, 0);
+
+					Read.from(asm).map(p::parse).sink(em::emit);
+					return returnIsOp(eax);
 				})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 					var size = end - start;
 					Operand op0, op1;

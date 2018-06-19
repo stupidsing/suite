@@ -7,7 +7,7 @@ import java.util.Map;
 
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
-import suite.funp.P0.FunpAssignReference;
+import suite.funp.P0.FunpIoAssignReference;
 import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineGlobal;
@@ -102,7 +102,7 @@ public class P1Inline {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(Funp.class, n0 -> {
 					var vars = new ArrayList<String>();
-					FunpAssignReference assign;
+					FunpIoAssignReference assign;
 					FunpCheckType check;
 					FunpDefine define;
 					FunpVariable variable;
@@ -117,7 +117,7 @@ public class P1Inline {
 					if ((check = n0.cast(FunpCheckType.class)) != null)
 						n0 = check.expr;
 
-					if ((assign = n0.cast(FunpAssignReference.class)) != null //
+					if ((assign = n0.cast(FunpIoAssignReference.class)) != null //
 							&& (variable = assign.reference.expr.cast(FunpVariable.class)) != null) {
 						var vn = variable.var;
 						var n1 = assign.expr;

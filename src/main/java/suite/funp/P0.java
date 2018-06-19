@@ -51,40 +51,6 @@ public class P0 {
 		}
 	}
 
-	public static class FunpAsm implements Funp, P4.End {
-		public List<Pair<OpReg, Funp>> assigns;
-		public List<Node> asm;
-
-		public static FunpAsm of(List<Pair<OpReg, Funp>> assigns, List<Node> asm) {
-			var f = new FunpAsm();
-			f.assigns = assigns;
-			f.asm = asm;
-			return f;
-		}
-
-		public <R> R apply(FixieFun2<List<Pair<OpReg, Funp>>, List<Node>, R> fun) {
-			return fun.apply(assigns, asm);
-		}
-	}
-
-	public static class FunpAssignReference implements Funp, P2.End {
-		public FunpReference reference;
-		public Funp value;
-		public Funp expr;
-
-		public static FunpAssignReference of(FunpReference reference, Funp value, Funp expr) {
-			var f = new FunpAssignReference();
-			f.reference = reference;
-			f.value = value;
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun3<FunpReference, Funp, Funp, R> fun) {
-			return fun.apply(reference, value, expr);
-		}
-	}
-
 	public static class FunpBoolean implements Funp, P4.End {
 		public boolean b;
 
@@ -307,6 +273,40 @@ public class P0 {
 		}
 	}
 
+	public static class FunpIoAsm implements Funp, P4.End {
+		public List<Pair<OpReg, Funp>> assigns;
+		public List<Node> asm;
+
+		public static FunpIoAsm of(List<Pair<OpReg, Funp>> assigns, List<Node> asm) {
+			var f = new FunpIoAsm();
+			f.assigns = assigns;
+			f.asm = asm;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<List<Pair<OpReg, Funp>>, List<Node>, R> fun) {
+			return fun.apply(assigns, asm);
+		}
+	}
+
+	public static class FunpIoAssignReference implements Funp, P2.End {
+		public FunpReference reference;
+		public Funp value;
+		public Funp expr;
+
+		public static FunpIoAssignReference of(FunpReference reference, Funp value, Funp expr) {
+			var f = new FunpIoAssignReference();
+			f.reference = reference;
+			f.value = value;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun3<FunpReference, Funp, Funp, R> fun) {
+			return fun.apply(reference, value, expr);
+		}
+	}
+
 	public static class FunpIoCat implements Funp, P2.End {
 		public Funp expr;
 
@@ -322,9 +322,9 @@ public class P0 {
 	}
 
 	public static class FunpIoFold implements Funp, P2.End {
-		public Funp init;
-		public Funp cont;
-		public Funp next;
+		public Funp init; // expression
+		public Funp cont; // lambda
+		public Funp next; // lambda
 
 		public static FunpIoFold of(Funp init, Funp cond, Funp next) {
 			var f = new FunpIoFold();
@@ -336,6 +336,22 @@ public class P0 {
 
 		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
 			return fun.apply(init, cont, next);
+		}
+	}
+
+	public static class FunpIoWhile implements Funp, P2.End {
+		public Funp while_; // expression
+		public Funp expr; // expression
+
+		public static FunpIoWhile of(Funp while_, Funp expr) {
+			var f = new FunpIoWhile();
+			f.while_ = while_;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
+			return fun.apply(while_, expr);
 		}
 	}
 

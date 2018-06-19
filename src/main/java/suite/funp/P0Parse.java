@@ -14,8 +14,6 @@ import suite.assembler.Amd64;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
-import suite.funp.P0.FunpAsm;
-import suite.funp.P0.FunpAssignReference;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
@@ -31,6 +29,8 @@ import suite.funp.P0.FunpFold;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
+import suite.funp.P0.FunpIoAsm;
+import suite.funp.P0.FunpIoAssignReference;
 import suite.funp.P0.FunpIoCat;
 import suite.funp.P0.FunpIoFold;
 import suite.funp.P0.FunpLambda;
@@ -126,11 +126,6 @@ public class P0Parse {
 				return FunpApply.of(p(a), p(b));
 			}).match("[.0]", a -> {
 				return FunpArray.of(Tree.iter(a, TermOp.AND___).map(this::p).toList());
-			}).match("asm .0 {.1}", (a, b) -> {
-				return FunpAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
-					var ma = Suite.pattern(".0 = .1").match(n);
-					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
-				}).toList(), Tree.iter(b, TermOp.OR____).toList());
 			}).match(Atom.FALSE, () -> {
 				return FunpBoolean.of(false);
 			}).match(Atom.TRUE, () -> {
@@ -188,6 +183,11 @@ public class P0Parse {
 				return FunpIndex.of(FunpReference.of(p(a)), p(b));
 			}).match("io .0", a -> {
 				return FunpIo.of(p(a));
+			}).match("io-asm .0 {.1}", (a, b) -> {
+				return FunpIoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
+					var ma = Suite.pattern(".0 = .1").match(n);
+					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
+				}).toList(), Tree.iter(b, TermOp.OR____).toList());
 			}).match("io-cat .0", a -> {
 				return FunpIoCat.of(p(a));
 			}).match("io-fold .0 .1 .2", (a, b, c) -> {
@@ -342,7 +342,7 @@ public class P0Parse {
 							.fold(then, (i, then_) -> bind(pairs0.get(i).t1, fun.apply(i), then_, else_));
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 					return variables.contains(var) //
-							? FunpAssignReference.of(FunpReference.of(f), value, then) //
+							? FunpIoAssignReference.of(FunpReference.of(f), value, then) //
 							: be;
 				})).result();
 
