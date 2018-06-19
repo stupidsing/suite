@@ -362,22 +362,21 @@ public class P4GenerateCode {
 						em.emit(amd64.instruction(Insn.PUSH, opRegs[i]));
 
 					var out = new Compile1(registerSet, fd - opRegs.length * is).compile(expr);
-					Operand oldOp0, oldOp1;
-					var op0 = oldOp0 = isOutSpec ? pop0 : out.op0;
-					var op1 = oldOp1 = isOutSpec ? pop1 : out.op1;
+					var op0 = isOutSpec ? pop0 : out.op0;
+					var op1 = isOutSpec ? pop1 : out.op1;
 
 					if (op0 != null)
-						em.mov(op0 = rs.contains(op0) ? rs.mask(op1).get(op0.size) : op0, oldOp0);
+						op0 = em.mov(rs.contains(op0) ? rs.mask(op1).get(op0.size) : op0, op0);
 					if (op1 != null)
-						em.mov(op1 = rs.contains(op1) ? rs.mask(op0).get(op1.size) : op1, oldOp1);
+						op1 = em.mov(rs.contains(op1) ? rs.mask(op0).get(op1.size) : op1, op1);
 
 					for (var i = opRegs.length - 1; 0 <= i; i--)
 						em.emit(amd64.instruction(Insn.POP, opRegs[i]));
 
 					if (op0 != null && isOutSpec)
-						em.mov(pop0, op0);
+						op0 = em.mov(pop0, op0);
 					if (op1 != null && isOutSpec)
-						em.mov(pop1, op1);
+						op1 = em.mov(pop1, op1);
 
 					return new CompileOut(op0, op1);
 				})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
@@ -411,27 +410,24 @@ public class P4GenerateCode {
 			}
 
 			private CompileOut returnIsOp(Operand op) {
-				var old = op;
 				if (result == Result.ASSIGN) {
 					var opt = deOp.decomposeFunpMemory(fd, target);
 					opt = opt != null ? opt : amd64.mem(mask(op).compileIsReg(target.pointer), target.start, target.size());
 					if (op instanceof OpMem)
-						em.mov(op = rs.mask(opt).get(old.size), old);
+						op = em.mov(rs.mask(opt).get(op.size), op);
 					em.mov(opt, op);
 				} else if (result == Result.ISOP || result == Result.ISREG) {
 					if (result == Result.ISREG && !(op instanceof OpReg))
-						em.mov(op = rs.get(old.size), old);
+						op = em.mov(rs.get(op.size), op);
 					return new CompileOut(op);
 				} else if (result == Result.ISSPEC)
-					em.mov(pop0, old);
+					em.mov(pop0, op);
 				else
 					Fail.t();
 				return new CompileOut();
 			}
 
 			private CompileOut returnPs2Op(Operand op0, Operand op1) {
-				var old0 = op0;
-				var old1 = op1;
 				if (result == Result.ASSIGN) {
 					var opt0 = deOp.decompose(fd, target.pointer, target.start, ps);
 					var opt1 = deOp.decompose(fd, target.pointer, target.start + ps, ps);
@@ -441,21 +437,21 @@ public class P4GenerateCode {
 						opt1 = amd64.mem(r, target.start + ps, ps);
 					}
 					if (op0 instanceof OpMem)
-						em.mov(op0 = rs.mask(opt0, opt1, op1).get(op0.size), old0);
+						op0 = em.mov(rs.mask(opt0, opt1, op1).get(op0.size), op0);
 					em.mov(opt0, op0);
 					if (op1 instanceof OpMem)
-						em.mov(op1 = rs.mask(opt1).get(op1.size), old1);
+						op1 = em.mov(rs.mask(opt1).get(op1.size), op1);
 					em.mov(opt1, op1);
 				} else if (result == Result.PS2OP || result == Result.PS2REG) {
 					if (result == Result.PS2REG && !(op0 instanceof OpReg))
-						em.mov(op0 = rs.mask(op1).get(old0.size), old0);
+						op0 = em.mov(rs.mask(op1).get(op0.size), op0);
 					if (result == Result.PS2REG && !(op1 instanceof OpReg))
-						em.mov(op1 = rs.mask(op0).get(old1.size), old1);
+						op1 = em.mov(rs.mask(op0).get(op1.size), op1);
 					return new CompileOut(op0, op1);
 				} else if (result == Result.PS2SPEC) {
-					var r = rs.mask(old1, pop1).get(pop0);
-					em.mov(r, old0);
-					em.mov(pop1, old1);
+					var r = rs.mask(op1, pop1).get(pop0);
+					em.mov(r, op0);
+					em.mov(pop1, op1);
 					em.mov(pop0, r);
 				} else
 					Fail.t();
@@ -644,7 +640,7 @@ public class P4GenerateCode {
 				if (!new RegisterSet().mask(out.op1).contains(ebp))
 					op = out.op1;
 				else
-					em.mov(op = rs.mask(out.op0).get(ps), out.op1);
+					op = em.mov(rs.mask(out.op0).get(ps), out.op1);
 				em.mov(ebp, out.op0);
 				em.emit(amd64.instruction(Insn.CALL, op));
 				if (isUseEbp && out.op0 != ebp)
