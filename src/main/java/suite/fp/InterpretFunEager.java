@@ -201,7 +201,7 @@ public class InterpretFunEager {
 				.toMap();
 
 		var df = new HashMap<String, Node>();
-		df.put(TermOp.AND___.name, f2((a, b) -> TreeAnd.of(a, b)));
+		df.put(TermOp.AND___.name, f2(TreeAnd::of));
 		df.put("+call%i-t1", f1(i -> fn(1, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
 		df.put("+call%i-t2", f1(i -> fn(2, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
 		df.put("+call%i-t3", f1(i -> fn(3, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
@@ -212,7 +212,7 @@ public class InterpretFunEager {
 		df.put("+get%i", f1(a -> new Data<>(Intrinsics.intrinsics.get(Atom.name(a).split("!")[1]))));
 		df.put("+is-list", f1(a -> b(Tree.decompose(a) != null)));
 		df.put("+is-pair", f1(a -> b(Tree.decompose(a) != null)));
-		df.put("+lcons", f2((a, b) -> TreeOr.of(a, b)));
+		df.put("+lcons", f2(TreeOr::of));
 		df.put("+lhead", f1(a -> Tree.decompose(a).getLeft()));
 		df.put("+ltail", f1(a -> Tree.decompose(a).getRight()));
 		df.put("+pcons", f2((a, b) -> TreeAnd.of(a, b)));

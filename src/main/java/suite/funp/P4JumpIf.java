@@ -46,13 +46,12 @@ public class P4JumpIf {
 	}
 
 	public class JumpIf {
-		private FunpTree tree;
 		private Operator operator;
 		private Funp left, right;
 		private Insn jnx, jxx, jxxRev, jnxRev;
 
 		public JumpIf(Funp node) {
-			tree = node instanceof FunpTree ? (FunpTree) node : null;
+			var tree = node.cast(FunpTree.class);
 			operator = tree != null ? tree.operator : null;
 			left = tree != null ? tree.left : null;
 			right = tree != null ? tree.right : null;

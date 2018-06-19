@@ -153,17 +153,15 @@ public class VerifyTest {
 						return tree.getRight();
 				return Fail.t("cannot verify " + proof);
 			}).match("contradict .0 := .1 >> .2", (a, b, c) -> {
-				if (Binder.bind(new Verify(defs, rules.put(Atom.name(a), b)).verify(c), Atom.FALSE, new Trail()))
-					return Suite.substitute("not .0", b);
-				else
-					return Fail.t("cannot verify " + proof);
+				var x = Binder.bind(new Verify(defs, rules.put(Atom.name(a), b)).verify(c), Atom.FALSE, new Trail());
+				return x ? Suite.substitute("not .0", b) : Fail.t("cannot verify " + proof);
 			}).match(".0 | expand .1", (a, b) -> {
 				var def = defs.get(Atom.name(b)).clone_();
 				return replace(verify(a), def.t0, def.t1);
 			}).match(".0 | fulfill .1", (a, b) -> {
 				var m1 = Suite.pattern(".0 => .1").match(new Generalizer().generalize(verify(b)));
-				var b_ = m1 != null && Binder.bind(verify(a), m1[0], new Trail());
-				return b_ ? m1[1] : Fail.t("cannot verify " + proof);
+				var x = m1 != null && Binder.bind(verify(a), m1[0], new Trail());
+				return x ? m1[1] : Fail.t("cannot verify " + proof);
 			}).match(".0 | fulfill-by .1", (a, b) -> {
 				return verify(Suite.substitute(".0 | fulfill .1", b, a));
 			}).match("lemma .0 := .1 >> .2", (a, b, c) -> {
@@ -193,10 +191,8 @@ public class VerifyTest {
 
 		public Verify extend(String lemma, String proof) {
 			var node = extend_(proof);
-			if (Binder.bind(Suite.parse(lemma), node, new Trail()))
-				return new Verify(defs, rules.put(lemma, node));
-			else
-				return Fail.t();
+			var x = Binder.bind(Suite.parse(lemma), node, new Trail());
+			return x ? new Verify(defs, rules.put(lemma, node)) : Fail.t();
 		}
 
 		public Verify extend(String proof) {
