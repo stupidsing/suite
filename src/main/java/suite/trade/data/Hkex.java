@@ -240,6 +240,10 @@ public class Hkex {
 	}
 
 	public Asset queryCompany(String symbol) {
+		return !String_.equals(symbol, "6098.HK") ? queryCompany_(symbol) : Asset.of("6098.HK", "CG SERVICES", 1000);
+	}
+
+	private Asset queryCompany_(String symbol) {
 		var asset = companyBySymbol.get(symbol);
 
 		if (asset == null && !delisted.contains(symbol)) {
