@@ -417,7 +417,7 @@ public class Serialize {
 		return new Serializer<>() {
 			public Map<K, V> read(SerInput si) throws IOException {
 				var size = int_.read(si);
-				var map = Constants.bufferLimit < size ? new HashMap<K, V>() : null;
+				var map = size < Constants.bufferLimit  ? new HashMap<K, V>() : null;
 				for (var i = 0; i < size; i++) {
 					var k = ks.read(si);
 					var v = vs.read(si);
