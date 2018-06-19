@@ -342,7 +342,7 @@ public class P0Parse {
 							.fold(then, (i, then_) -> bind(pairs0.get(i).t1, fun.apply(i), then_, else_));
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 					return variables.contains(var) //
-							? FunpAssignReference.of(FunpReference.of(FunpVariable.of(var)), value, then) //
+							? FunpAssignReference.of(FunpReference.of(f), value, then) //
 							: be;
 				})).result();
 
