@@ -152,7 +152,7 @@ public class Account {
 	private boolean play_(Trade trade, boolean isValidate) {
 		var price = trade.price;
 
-		if (Trade_.negligible < price && price < Trade_.max) {
+		if (0f <= price && price < Trade_.max) {
 			var symbol = trade.symbol;
 			var buySell = trade.buySell;
 			var cost = trade.amount();
