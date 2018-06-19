@@ -217,7 +217,7 @@ public class P4GenerateCode {
 						var ops = new OpReg[1];
 						compile0 = node_ -> {
 							var op0 = compileIsOp(node_);
-							em.mov(ops[0] = rs.get(op0), op0);
+							ops[0] = em.mov(rs.get(op0), op0);
 						};
 						compile1 = node_ -> compileIsSpec(node_, ops[0]);
 						out = () -> returnIsOp(ops[0]);
@@ -225,8 +225,8 @@ public class P4GenerateCode {
 						var ops = new OpReg[2];
 						compile0 = node_ -> {
 							var co1 = compilePs2Op(node_);
-							em.mov(ops[0] = rs.mask(co1.op1).get(co1.op0), co1.op0);
-							em.mov(ops[1] = rs.mask(ops[0]).get(co1.op1), co1.op1);
+							ops[0] = em.mov(rs.mask(co1.op1).get(co1.op0), co1.op0);
+							ops[1] = em.mov(rs.mask(ops[0]).get(co1.op1), co1.op1);
 						};
 						compile1 = node_ -> compilePs2Spec(node_, ops[0], ops[1]);
 						out = () -> returnPs2Op(ops[0], ops[1]);
