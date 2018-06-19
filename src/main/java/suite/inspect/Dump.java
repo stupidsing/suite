@@ -96,6 +96,7 @@ public class Dump {
 						d(pair.t1);
 						sink.sink(">");
 					}).doIf(Object.class, o -> {
+						sink.sink(o.getClass().getSimpleName());
 						sink.sink("{");
 						for (var pair : readers(object)) {
 							Object value;
