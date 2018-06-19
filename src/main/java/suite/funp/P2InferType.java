@@ -62,7 +62,6 @@ import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters;
-import suite.funp.P2.FunpWhile;
 import suite.immutable.IMap;
 import suite.immutable.ISet;
 import suite.inspect.Inspect;
@@ -315,8 +314,11 @@ public class P2InferType {
 				unify(n, TypeLambda.of(tv, typeBoolean), infer(cont));
 				unify(n, TypeLambda.of(tv, tvio), infer(next));
 				return tvio;
-			})).applyIf(FunpIoWhile.class, f -> f.apply((while_, expr) -> {
+			})).applyIf(FunpIoWhile.class, f -> f.apply((while_, do_, expr) -> {
 				unify(n, typeBoolean, infer(while_));
+				var td = infer(do_);
+				if (td.final_() == td)
+					unify(n, td, typeBoolean); // enforces a type to prevent exception
 				return infer(expr);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				var te = unify.newRef();
@@ -461,8 +463,6 @@ public class P2InferType {
 				return erase(expr);
 			})).applyIf(FunpIoFold.class, f -> f.apply((init, cont, next) -> {
 				return fold(init, cont, next);
-			})).applyIf(FunpIoWhile.class, f -> f.apply((while_, expr) -> {
-				return FunpWhile.of(erase(while_), FunpDontCare.of(), erase(expr));
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				var te = unify.newRef();
 				unify(n, typeOf(reference), TypeReference.of(TypeArray.of(te)));
@@ -553,7 +553,7 @@ public class P2InferType {
 			var m = getVariable(var_);
 			var cont_ = e1.apply(m, cont, size);
 			var next_ = e1.apply(m, next, size);
-			var while_ = FunpWhile.of(cont_, assign(m, next_, FunpDontCare.of()), m);
+			var while_ = FunpIoWhile.of(cont_, assign(m, next_, FunpDontCare.of()), m);
 			return FunpAllocStack.of(size, e1.erase(init), while_, offset);
 		}
 

@@ -83,7 +83,7 @@ public class P1ReduceTailCall {
 			var fr = FunpField.of(tcoVarRef, "r");
 			var dontCare = FunpDontCare.of();
 			var assign = FunpIoAssignReference.of(tcoVarRef, do1, FunpIoAssignReference.of(varRef, fn, fc));
-			return FunpLambda.of(var, FunpDefine.of(false, tcoVarName, dontCare, FunpIoWhile.of(assign, fr)));
+			return FunpLambda.of(var, FunpDefine.of(false, tcoVarName, dontCare, FunpIoWhile.of(assign, FunpDontCare.of(), fr)));
 		} else
 			return null;
 	}

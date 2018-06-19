@@ -7,13 +7,13 @@ import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpIf;
+import suite.funp.P0.FunpIoWhile;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpMemory;
-import suite.funp.P2.FunpWhile;
 import suite.inspect.Inspect;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
@@ -54,6 +54,8 @@ public class P3Optimize {
 			return optimize(pointer).<Funp> switch_().applyIf(FunpReference.class, g -> g.expr).result();
 		})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 			return optimize(if_).<Funp> switch_().applyIf(FunpBoolean.class, g -> g.apply(b -> b ? then : else_)).result();
+		})).applyIf(FunpIoWhile.class, f -> f.apply((while_, do_, expr) -> {
+			return optimize(while_).<Funp> switch_().applyIf(FunpBoolean.class, g -> g.apply(b -> b ? null : expr)).result();
 		})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 			return optimize(pointer).<Funp> switch_( //
 			).applyIf(FunpData.class, g -> g.apply(pairs -> {
@@ -77,8 +79,6 @@ public class P3Optimize {
 			return f1;
 		})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
 			return evaluate(TreeUtil.tupleOperations.get(op), lhs, rhs);
-		})).applyIf(FunpWhile.class, f -> f.apply((while_, do_, expr) -> {
-			return optimize(while_).<Funp> switch_().applyIf(FunpBoolean.class, g -> g.apply(b -> b ? null : expr)).result();
 		})).result();
 	}
 

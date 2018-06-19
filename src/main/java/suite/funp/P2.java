@@ -306,22 +306,4 @@ public class P2 {
 		}
 	}
 
-	public static class FunpWhile implements Funp, P4.End {
-		public Funp while_;
-		public Funp do_;
-		public Funp expr;
-
-		public static FunpWhile of(Funp while_, Funp do_, Funp expr) {
-			var f = new FunpWhile();
-			f.while_ = while_;
-			f.do_ = do_;
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
-			return fun.apply(while_, do_, expr);
-		}
-	}
-
 }

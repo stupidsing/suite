@@ -25,6 +25,7 @@ import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIoAsm;
+import suite.funp.P0.FunpIoWhile;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
@@ -44,7 +45,6 @@ import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters;
-import suite.funp.P2.FunpWhile;
 import suite.node.Atom;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
@@ -290,6 +290,26 @@ public class P4GenerateCode {
 
 					Read.from(asm).map(p::parse).sink(em::emit);
 					return returnIsOp(eax);
+				})).applyIf(FunpIoWhile.class, f -> f.apply((while_, do_, expr) -> {
+					var loopLabel = em.label();
+					var contLabel = em.label();
+					var exitLabel = em.label();
+
+					em.emit(amd64.instruction(Insn.LABEL, loopLabel));
+					Source<Boolean> r;
+
+					if ((r = new P4JumpIf(compileCmpJmp(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
+						;
+					else if ((r = new P4JumpIf(compileCmpJmp(contLabel)).new JumpIf(while_).jxxIf()) != null && r.source()) {
+						em.emit(amd64.instruction(Insn.JMP, exitLabel));
+						em.emit(amd64.instruction(Insn.LABEL, contLabel));
+					} else
+						compileJumpZero(while_, exitLabel);
+
+					compileIsOp(do_);
+					em.emit(amd64.instruction(Insn.JMP, loopLabel));
+					em.emit(amd64.instruction(Insn.LABEL, exitLabel));
+					return compile(expr);
 				})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 					var size = end - start;
 					Operand op0, op1;
@@ -364,26 +384,6 @@ public class P4GenerateCode {
 					return returnIsOp(compileTree(n, op, op.assoc(), lhs, rhs));
 				})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
 					return returnIsOp(compileTree(n, op, Assoc.RIGHT, lhs, rhs));
-				})).applyIf(FunpWhile.class, f -> f.apply((while_, do_, expr) -> {
-					var loopLabel = em.label();
-					var contLabel = em.label();
-					var exitLabel = em.label();
-
-					em.emit(amd64.instruction(Insn.LABEL, loopLabel));
-					Source<Boolean> r;
-
-					if ((r = new P4JumpIf(compileCmpJmp(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
-						;
-					else if ((r = new P4JumpIf(compileCmpJmp(contLabel)).new JumpIf(while_).jxxIf()) != null && r.source()) {
-						em.emit(amd64.instruction(Insn.JMP, exitLabel));
-						em.emit(amd64.instruction(Insn.LABEL, contLabel));
-					} else
-						compileJumpZero(while_, exitLabel);
-
-					compileIsOp(do_);
-					em.emit(amd64.instruction(Insn.JMP, loopLabel));
-					em.emit(amd64.instruction(Insn.LABEL, exitLabel));
-					return compile(expr);
 				})).nonNullResult();
 			}
 

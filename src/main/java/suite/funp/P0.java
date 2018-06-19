@@ -339,19 +339,21 @@ public class P0 {
 		}
 	}
 
-	public static class FunpIoWhile implements Funp, P2.End {
-		public Funp while_; // expression
-		public Funp expr; // expression
+	public static class FunpIoWhile implements Funp, P4.End {
+		public Funp while_;
+		public Funp do_;
+		public Funp expr;
 
-		public static FunpIoWhile of(Funp while_, Funp expr) {
+		public static FunpIoWhile of(Funp while_, Funp do_, Funp expr) {
 			var f = new FunpIoWhile();
 			f.while_ = while_;
+			f.do_ = do_;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
-			return fun.apply(while_, expr);
+		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
+			return fun.apply(while_, do_, expr);
 		}
 	}
 
