@@ -83,8 +83,8 @@ public class FunpTest {
 
 	@Test
 	public void testRecurse() {
-		test(1, "recurse (dec := n => if (0 < n) then (n - 1 | dec) else 1 #) >> 9999 | dec");
-		test(89, "recurse (fib := n => if (1 < n) then ((n - 1 | fib) + (n - 2 | fib)) else 1 #) >> 10 | fib");
+		test(1, "define { dec: (n => if (0 < n) then (n - 1 | dec) else 1), } >> 9999 | dec");
+		test(89, "define { fib: (n => if (1 < n) then ((n - 1 | fib) + (n - 2 | fib)) else 1), } >> 10 | fib");
 	}
 
 	@Test

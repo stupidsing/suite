@@ -156,9 +156,9 @@ public class P0Parse {
 			}).match("define global .0 := .1 >> .2", (a, b, c) -> {
 				var var = Atom.name(a);
 				return FunpDefineGlobal.of(var, p(b), parseNewVariable(c, var));
-			}).match("recurse .0 >> .1", (a, b) -> {
-				var pattern1 = Suite.pattern(".0 := .1");
-				var list = Tree.iter(a, TermOp.NEXT__).map(pattern1::match).collect();
+			}).match("define { .0 } >> .1", (a, b) -> {
+				var pattern1 = Suite.pattern(".0: .1");
+				var list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect();
 				var variables1 = list.fold(variables, (vs, array) -> vs.add(Atom.name(array[0])));
 				var p1 = new Parse(variables1);
 				return FunpDefineRec.of(list //
