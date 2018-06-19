@@ -17,7 +17,6 @@ public class ElfTest {
 
 	@Test
 	public void testFold() {
-		test(100, "io (fold 0 (n => n < 100) (n => n + 1))", "");
 		test(100, "io-fold 0 (n => n < 100) (n => io (n + 1))", "");
 	}
 

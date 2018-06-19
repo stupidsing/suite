@@ -25,7 +25,6 @@ import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpFold;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
@@ -173,8 +172,6 @@ public class P0Parse {
 				return FunpError.of();
 			}).match(".0/.1", (a, b) -> {
 				return FunpField.of(FunpReference.of(p(a)), Atom.name(b));
-			}).match("fold .0 .1 .2", (a, b, c) -> {
-				return FunpFold.of(p(a), p(b), p(c));
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {

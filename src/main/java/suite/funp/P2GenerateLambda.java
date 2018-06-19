@@ -14,7 +14,6 @@ import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpFold;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
@@ -148,8 +147,6 @@ public class P2GenerateLambda {
 			}).applyIf(FunpField.class, f -> f.apply((ref, field) -> {
 				var p = compile_(ref);
 				return rt -> ((Struct) ((Ref) p.apply(rt)).v).map.get(field);
-			})).applyIf(FunpFold.class, f -> f.apply((init, cont, next) -> {
-				return fold(init, cont, next);
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				var if1 = compile_(if_);
 				var then1 = compile_(then);
@@ -164,7 +161,19 @@ public class P2GenerateLambda {
 			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
 				return Fail.t();
 			})).applyIf(FunpIoFold.class, f -> f.apply((init, cont, next) -> {
-				return fold(init, cont, next);
+				var var1 = "fold$" + Util.temp();
+				var fs1 = fs + 1;
+				var init_ = compile_(init);
+				var var_ = FunpVariable.of(var1);
+				var compile1 = new Compile(fs1, env.replace(var1, fs1));
+				var cont_ = compile1.compile_(FunpApply.of(var_, cont));
+				var next_ = compile1.compile_(FunpApply.of(var_, next));
+				return rt -> {
+					var rt1 = new Rt(rt, init_.apply(rt));
+					while (b(rt1, cont_))
+						rt1.var = next_.apply(rt1);
+					return rt1.var;
+				};
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				var fs1 = fs + 1;
 				var thunk = compile(fs1, env.replace(var, fs1), expr);
@@ -207,22 +216,6 @@ public class P2GenerateLambda {
 					return rt.var;
 				};
 			})).nonNullResult();
-		}
-
-		private Thunk fold(Funp init, Funp cont, Funp next) {
-			var var = "fold$" + Util.temp();
-			var fs1 = fs + 1;
-			var init_ = compile_(init);
-			var var_ = FunpVariable.of(var);
-			var compile1 = new Compile(fs1, env.replace(var, fs1));
-			var cont_ = compile1.compile_(FunpApply.of(var_, cont));
-			var next_ = compile1.compile_(FunpApply.of(var_, next));
-			return rt -> {
-				var rt1 = new Rt(rt, init_.apply(rt));
-				while (b(rt1, cont_))
-					rt1.var = next_.apply(rt1);
-				return rt1.var;
-			};
 		}
 	}
 

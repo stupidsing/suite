@@ -207,24 +207,6 @@ public class P0 {
 		}
 	}
 
-	public static class FunpFold implements Funp, P2.End {
-		public Funp init;
-		public Funp cont;
-		public Funp next;
-
-		public static FunpFold of(Funp init, Funp cond, Funp next) {
-			var f = new FunpFold();
-			f.init = init;
-			f.cont = cond;
-			f.next = next;
-			return f;
-		}
-
-		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
-			return fun.apply(init, cont, next);
-		}
-	}
-
 	public static class FunpIf implements Funp, P4.End {
 		public Funp if_;
 		public Funp then;

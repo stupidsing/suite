@@ -27,7 +27,6 @@ import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpFold;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
@@ -263,13 +262,7 @@ public class P2InferType {
 				return unify.newRef();
 			}).applyIf(FunpError.class, f -> {
 				return unify.newRef();
-			}).applyIf(FunpFold.class, f -> f.apply((init, cont, next) -> {
-				var tv = unify.newRef();
-				unify(n, tv, infer(init));
-				unify(n, TypeLambda.of(tv, typeBoolean), infer(cont));
-				unify(n, TypeLambda.of(tv, tv), infer(next));
-				return tv;
-			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
+			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
 				var tf = unify.newRef();
 				var ts = TypeStruct.of();
 				ts.pairs.add(Pair.of(field, tf));
@@ -318,7 +311,8 @@ public class P2InferType {
 				unify(n, typeBoolean, infer(while_));
 				var td = infer(do_);
 				if (td.final_() == td)
-					unify(n, td, typeBoolean); // enforces a type to prevent exception
+					unify(n, td, typeBoolean); // enforces a type to prevent
+												// exception
 				return infer(expr);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				var te = unify.newRef();
@@ -455,14 +449,20 @@ public class P2InferType {
 							return FunpMemory.of(erase(reference), offset, offset1);
 					}
 				return Fail.t();
-			})).applyIf(FunpFold.class, f -> f.apply((init, cont, next) -> {
-				return fold(init, cont, next);
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpIoFold.class, f -> f.apply((init, cont, next) -> {
-				return fold(init, cont, next);
+				var offset = IntMutable.nil();
+				var size = getTypeSize(typeOf(init));
+				var var_ = new Var(scope, offset, 0, size);
+				var e1 = new Erase(scope, env.replace("fold" + Util.temp(), var_));
+				var m = getVariable(var_);
+				var cont_ = e1.apply(m, cont, size);
+				var next_ = e1.apply(m, next, size);
+				var while_ = FunpIoWhile.of(cont_, assign(m, next_, FunpDontCare.of()), m);
+				return FunpAllocStack.of(size, e1.erase(init), while_, offset);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				var te = unify.newRef();
 				unify(n, typeOf(reference), TypeReference.of(TypeArray.of(te)));
@@ -543,18 +543,6 @@ public class P2InferType {
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return getVariable(env.get(var));
 			})).result();
-		}
-
-		private FunpAllocStack fold(Funp init, Funp cont, Funp next) {
-			var offset = IntMutable.nil();
-			var size = getTypeSize(typeOf(init));
-			var var_ = new Var(scope, offset, 0, size);
-			var e1 = new Erase(scope, env.replace("fold" + Util.temp(), var_));
-			var m = getVariable(var_);
-			var cont_ = e1.apply(m, cont, size);
-			var next_ = e1.apply(m, next, size);
-			var while_ = FunpIoWhile.of(cont_, assign(m, next_, FunpDontCare.of()), m);
-			return FunpAllocStack.of(size, e1.erase(init), while_, offset);
 		}
 
 		private Funp assign(Funp var, Funp value, Funp expr) {
