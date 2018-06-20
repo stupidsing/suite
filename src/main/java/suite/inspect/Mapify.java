@@ -149,7 +149,7 @@ public class Mapify {
 			if (collectionClasses.contains(clazz)) {
 				var mapifier1 = getMapifier(typeArgs[0]);
 				return new Mapifier(o -> {
-					var map = newMap();
+					var map = new HashMap<>();
 					var i = 0;
 					for (var o_ : (Collection<?>) o)
 						map.put(i++, apply_(o_, mapifier1.mapify));
@@ -182,10 +182,6 @@ public class Mapify {
 
 	private Object apply_(Object object, Iterate<Object> fun) {
 		return object != null ? fun.apply(object) : null;
-	}
-
-	private Map<Object, Object> newMap() {
-		return new HashMap<>();
 	}
 
 }
