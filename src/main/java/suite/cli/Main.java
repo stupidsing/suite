@@ -13,7 +13,7 @@ import java.util.List;
 
 import suite.Constants;
 import suite.Suite;
-import suite.net.SocketServer;
+import suite.net.ServeSocket;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.util.Fail;
@@ -77,7 +77,7 @@ public class Main extends ExecutableProgram {
 			else if (String_.equals(verb, "query"))
 				b &= runInteractive(inputs);
 			else if (String_.equals(verb, "serve"))
-				new SocketServer().run();
+				new ServeSocket().run();
 			else if (verb != null && verb.startsWith("suite.")) {
 				var verb_ = verb;
 				@SuppressWarnings("unchecked")

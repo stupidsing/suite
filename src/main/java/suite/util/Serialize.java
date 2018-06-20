@@ -30,9 +30,15 @@ import suite.util.FunUtil.Fun;
 public class Serialize {
 
 	public Serializer<Boolean> boolean_ = boolean_();
-	public Serializer<Double> double_ = ser(SerInput::readDouble, SerOutput::writeDouble); // size = 8
-	public Serializer<Float> float_ = ser(SerInput::readFloat, SerOutput::writeFloat); // size = 4
-	public Serializer<Integer> int_ = ser(SerInput::readInt, SerOutput::writeInt); // size = 4
+	public Serializer<Double> double_ = ser(SerInput::readDouble, SerOutput::writeDouble); // size
+																							// =
+																							// 8
+	public Serializer<Float> float_ = ser(SerInput::readFloat, SerOutput::writeFloat); // size
+																						// =
+																						// 4
+	public Serializer<Integer> int_ = ser(SerInput::readInt, SerOutput::writeInt); // size
+																					// =
+																					// 4
 
 	private Inspect inspect;
 	private byte[] zeroes = new byte[Constants.bufferSize];
@@ -218,11 +224,39 @@ public class Serialize {
 		}
 	};
 
+	public Serializer<boolean[]> arrayOfBooleans = new Serializer<>() {
+		public boolean[] read(SerInput si) throws IOException {
+			var length = int_.read(si);
+			var array = length < Constants.bufferLimit ? new boolean[length] : null;
+			int i1;
+			for (var i0 = 0; i0 < length; i0 = i1) {
+				i1 = Math.min(i0 + 32, length);
+				int m = 1, c = si.readInt();
+				for (var i = i0; i < i1; i++, m <<= 1)
+					array[i] = (c & m) != 0;
+			}
+			return array;
+		}
+
+		public void write(SerOutput so, boolean[] array) throws IOException {
+			int length = array.length;
+			int_.write(so, length);
+			int i1;
+			for (var i0 = 0; i0 < length; i0 = i1) {
+				i1 = Math.min(i0 + 32, length);
+				int m = 1, c = 0;
+				for (var i = i0; i < i1; i++, m <<= 1)
+					c |= array[i] ? m : 0;
+				so.writeInt(c);
+			}
+		}
+	};
+
 	public Serializer<int[]> arrayOfInts = new Serializer<>() {
 		public int[] read(SerInput si) throws IOException {
-			var size = int_.read(si);
-			var array = size < Constants.bufferLimit ? new int[size] : null;
-			for (var i = 0; i < size; i++)
+			var length = int_.read(si);
+			var array = length < Constants.bufferLimit ? new int[length] : null;
+			for (var i = 0; i < length; i++)
 				array[i] = si.readInt();
 			return array;
 		}
@@ -417,7 +451,7 @@ public class Serialize {
 		return new Serializer<>() {
 			public Map<K, V> read(SerInput si) throws IOException {
 				var size = int_.read(si);
-				var map = size < Constants.bufferLimit  ? new HashMap<K, V>() : null;
+				var map = size < Constants.bufferLimit ? new HashMap<K, V>() : null;
 				for (var i = 0; i < size; i++) {
 					var k = ks.read(si);
 					var v = vs.read(si);

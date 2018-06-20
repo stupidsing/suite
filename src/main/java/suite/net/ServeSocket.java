@@ -12,7 +12,7 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 
-public class SocketServer {
+public class ServeSocket {
 
 	public boolean run() {
 		listen(bytes -> bytes);
