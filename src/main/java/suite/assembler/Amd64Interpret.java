@@ -333,9 +333,7 @@ public class Amd64Interpret {
 	}
 
 	private void cmpsd() {
-		int aa = mem.getInt(index(regs[esi]));
-		int bb = mem.getInt(index(regs[edi]));
-		c = Integer.compare(aa, bb);
+		c = Integer.compare(mem.getInt(index(regs[esi])), mem.getInt(index(regs[edi])));
 		regs[esi] += 4;
 		regs[edi] += 4;
 	}
