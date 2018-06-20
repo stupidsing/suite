@@ -122,7 +122,7 @@ public class Grapher {
 				Tree.forceSetRight(tree, children.get(1).t1);
 				break;
 			case TUPLE:
-				var list = ((Tuple) node).nodes;
+				var list = Tuple.t(node);
 				for (var j = 0; j < children.size(); j++)
 					list[j] = children.get(j).t1;
 			}

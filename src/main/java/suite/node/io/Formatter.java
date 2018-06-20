@@ -56,7 +56,7 @@ public class Formatter {
 				sb.append(indent + op + "\n");
 				treeize(tree.getRight(), indent1);
 			}).doIf(Tuple.class, n -> {
-				for (var child : ((Tuple) node).nodes)
+				for (var child : Tuple.t(node))
 					sb.append(indent + "t:" + dump(child) + "\n");
 			}).doIf(Node.class, n -> {
 				sb.append(indent + dump(node) + "\n");

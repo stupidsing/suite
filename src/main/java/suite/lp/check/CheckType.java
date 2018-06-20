@@ -17,6 +17,7 @@ import suite.node.Dict;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeTuple;
 import suite.node.util.TreeUtil;
@@ -61,37 +62,33 @@ public class CheckType {
 	}
 
 	private Node getType(Node data) {
-		Node type;
-		Tree tree;
-
-		if (data instanceof Reference)
-			type = variableTypes.computeIfAbsent(IdentityKey.of(data), k -> new Reference()).finalNode();
-		else if ((tree = Tree.decompose(data)) != null)
-			if (tree.getOperator() == TermOp.AND___) {
-				type = Suite.substitute(".0;", getType(tree.getLeft()));
-				bind(type, getType(tree.getRight()));
-			} else if (tree.getOperator() == TermOp.TUPLE_) {
-				var name = tree.getLeft();
-				if (name instanceof Atom) {
-					var node = tree.getRight();
-					var ps = TreeUtil.elements(node, TreeUtil.nElements(node));
-					type = getEnumType(name, Tree.of(TermOp.TUPLE_, Read.from(ps).map(this::getType).toList()));
+		return new SwitchNode<Node>(data //
+		).applyIf(Reference.class, n -> {
+			return variableTypes.computeIfAbsent(IdentityKey.of(n), k -> new Reference()).finalNode();
+		}).applyTree((op, l, r) -> {
+			if (op == TermOp.AND___) {
+				var type = Suite.substitute(".0;", getType(l));
+				bind(type, getType(r));
+				return type;
+			} else if (op == TermOp.TUPLE_) {
+				if (l instanceof Atom) {
+					var ps = TreeUtil.elements(r, TreeUtil.nElements(r));
+					return getEnumType(l, Tree.of(TermOp.TUPLE_, Read.from(ps).map(this::getType).toList()));
 				} else
 					return new Reference(); // free type
 			} else {
-				var name = Atom.of(tree.getOperator().name_());
-				var lt = getType(tree.getLeft());
-				var rt = getType(tree.getRight());
-				type = getEnumType(name, TreeTuple.of(lt, rt));
+				var name = Atom.of(op.name_());
+				var lt = getType(l);
+				var rt = getType(r);
+				return getEnumType(name, TreeTuple.of(lt, rt));
 			}
-		else if (data == Atom.NIL)
-			type = Suite.substitute("_;");
-		else if (data instanceof Atom)
-			type = getEnumType(data, Atom.NIL);
-		else
-			type = Atom.of(data.getClass().getSimpleName());
-
-		return type;
+		}).match(Atom.NIL, () -> {
+			return Suite.substitute("_;");
+		}).applyIf(Atom.class, n -> {
+			return getEnumType(n, Atom.NIL);
+		}).applyIf(Node.class, n -> {
+			return Atom.of(data.getClass().getSimpleName());
+		}).result();
 	}
 
 	private Node getEnumType(Node name, Node type1) {

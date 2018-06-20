@@ -8,6 +8,10 @@ public class Tuple extends Node {
 
 	public final Node[] nodes;
 
+	public static Node[] t(Node node) {
+		return ((Tuple) node).nodes;
+	}
+
 	public static Tuple of(Node[] nodes) {
 		return new Tuple(nodes);
 	}

@@ -44,8 +44,8 @@ public class Comparer implements Comparator<Node> {
 	public int compare(Node n0, Node n1) {
 		n0 = n0.finalNode();
 		n1 = n1.finalNode();
-		Class<? extends Node> clazz0 = n0.getClass();
-		Class<? extends Node> clazz1 = n1.getClass();
+		var clazz0 = n0.getClass();
+		var clazz1 = n1.getClass();
 		int c = Integer.compare(order.get(clazz0), order.get(clazz1));
 
 		if (c == 0)
@@ -74,8 +74,8 @@ public class Comparer implements Comparator<Node> {
 				c = c != 0 ? c : compare(t0.getRight(), t1.getRight());
 				return c;
 			} else if (clazz0 == Tuple.class) {
-				var nodes0 = ((Tuple) n0).nodes;
-				var nodes1 = ((Tuple) n1).nodes;
+				var nodes0 = Tuple.t(n0);
+				var nodes1 = Tuple.t(n1);
 				int i = 0, l = min(nodes0.length, nodes1.length);
 				while (c == 0 && i < l)
 					c = compare(nodes0[i], nodes1[i]);

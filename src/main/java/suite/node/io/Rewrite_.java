@@ -65,7 +65,7 @@ public class Rewrite_ {
 				var p1 = Pair.of(RIGHT, tree.getRight());
 				return new NodeRead(ReadType.TREE, null, tree.getOperator(), List.of(p0, p1));
 			} else if (node instanceof Tuple) {
-				var nodes = ((Tuple) node).nodes;
+				var nodes = Tuple.t(node);
 				return new NodeRead(ReadType.TUPLE, null, null, Read //
 						.from(nodes) //
 						.map(n -> Pair.<Node, Node> of(Atom.NIL, n.finalNode())) //

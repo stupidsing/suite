@@ -53,8 +53,8 @@ public class Binder {
 					&& bind(t0.getLeft(), t1.getLeft(), trail) //
 					&& bind(t0.getRight(), t1.getRight(), trail);
 		} else if (clazz0 == Tuple.class && clazz1 == Tuple.class) {
-			var nodes0 = ((Tuple) n0).nodes;
-			var nodes1 = ((Tuple) n1).nodes;
+			var nodes0 = Tuple.t(n0);
+			var nodes1 = Tuple.t(n1);
 			var b = nodes0.length == nodes1.length;
 			if (b)
 				for (var i = 0; i < nodes0.length; i++)

@@ -58,7 +58,7 @@ public class SewingBinderImpl extends SewingClonerImpl implements BinderFactory 
 			return (be, n) -> {
 				var n_ = n.finalNode();
 				if (n_ instanceof Tuple) {
-					var nodes = ((Tuple) n_).nodes;
+					var nodes = Tuple.t(n_);
 					var b = nodes.length == length;
 					if (b)
 						for (var i = 0; i < length; i++)

@@ -66,11 +66,10 @@ public class Prototype implements Comparable<Prototype> {
 		if ((tree = Tree.decompose(node)) != null)
 			return tree;
 		else if (node instanceof Tuple) {
-			var nodes = ((Tuple) node).nodes;
-			if (nodes.length > 0)
-				return TreeTuple.of(nodes[0], Tuple.of(Arrays.copyOfRange(nodes, 1, nodes.length, Node[].class)));
-			else
-				return null;
+			var nodes = Tuple.t(node);
+			return 0 < nodes.length //
+					? TreeTuple.of(nodes[0], Tuple.of(Arrays.copyOfRange(nodes, 1, nodes.length, Node[].class))) //
+					: null;
 		} else
 			return null;
 	}
@@ -81,11 +80,7 @@ public class Prototype implements Comparable<Prototype> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == Prototype.class) {
-			var p = (Prototype) object;
-			return Objects.equals(head, p.head);
-		} else
-			return false;
+		return Object_.clazz(object) == Prototype.class ? Objects.equals(head, ((Prototype) object).head) : false;
 	}
 
 	@Override
