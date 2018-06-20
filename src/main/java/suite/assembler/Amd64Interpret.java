@@ -119,7 +119,6 @@ public class Amd64Interpret {
 				int source1 = fetch32.apply(op1);
 				IntSink assign;
 				Runnable r;
-				int v;
 
 				if (op0 instanceof OpMem) {
 					var index = index(address((OpMem) op0));
@@ -142,10 +141,10 @@ public class Amd64Interpret {
 
 				switch (instruction.insn) {
 				case ADD:
-					assign.sink(source0 + source1);
+					assign.sink(setFlags(source0 + source1));
 					break;
 				case AND:
-					assign.sink(source0 & source1);
+					assign.sink(setFlags(source0 & source1));
 					break;
 				case CALL:
 					push(eip);
@@ -251,8 +250,7 @@ public class Amd64Interpret {
 					movsd();
 					break;
 				case OR:
-					assign.sink(v = (source0 | source1));
-					c = Integer.compare(v, 0);
+					assign.sink(setFlags(source0 | source1));
 					break;
 				case POP:
 					assign.sink(pop());
@@ -303,10 +301,10 @@ public class Amd64Interpret {
 					assign.sink(c != 0 ? 1 : 0);
 					break;
 				case SUB:
-					assign.sink(source0 - source1);
+					assign.sink(setFlags(source0 - source1));
 					break;
 				case XOR:
-					assign.sink(source0 ^ source1);
+					assign.sink(setFlags(source0 ^ source1));
 					break;
 				default:
 					Fail.t();
@@ -363,6 +361,11 @@ public class Amd64Interpret {
 		var i = mem.getInt(index(regs[esp]));
 		regs[esp] += Funp_.integerSize;
 		return i;
+	}
+
+	private int setFlags(int value) {
+		c = Integer.compare(value, 0);
+		return value;
 	}
 
 	private int address(OpMem opMem) {
