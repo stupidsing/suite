@@ -104,17 +104,12 @@ public class HttpIo {
 			}
 
 			public int read(byte[] bytes, int offset, int length) throws IOException {
-				int result;
-
 				if (0 < remaining) {
-					result = is.read(bytes, offset, min(length, remaining));
-
-					if (0 <= result)
-						remaining -= result;
+					var result = is.read(bytes, offset, min(length, remaining));
+					remaining -= Math.max(0, result);
+					return result;
 				} else
-					result = -1;
-
-				return result;
+					return -1;
 			}
 		};
 	}

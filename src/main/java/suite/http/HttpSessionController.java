@@ -16,9 +16,9 @@ public class HttpSessionController {
 	public static long TIMEOUTDURATION = 3600 * 1000l;
 
 	private Authenticator authenticator;
+	private HtmlUtil htmlUtil = new HtmlUtil();
 	private SessionManager sessionManager = new HttpSessionManager();
 	private Random random = new SecureRandom();
-	private HtmlUtil htmlUtil = new HtmlUtil();
 
 	public interface Authenticator {
 		public boolean authenticate(String username, String password);
