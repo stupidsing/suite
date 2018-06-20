@@ -99,8 +99,8 @@ public class Serialize {
 	}
 
 	public <T> Serializer<T> autoFields(Class<T> clazz) {
-		Pair<Field, ?>[] pairs = Read //
-				.from(inspect.fields(clazz)) //
+		Pair<Field, ?>[] pairs = inspect //
+				.fields(clazz) //
 				.map2(field -> auto_(field.getGenericType())) //
 				.toArray();
 

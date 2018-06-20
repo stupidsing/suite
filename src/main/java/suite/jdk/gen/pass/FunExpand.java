@@ -80,8 +80,8 @@ public class FunExpand extends FunFactory {
 		if (e0 instanceof CastFunExpr)
 			return weight(((CastFunExpr) e0).expr);
 		else
-			return Read //
-					.from(inspect.fields(e0.getClass())) //
+			return inspect //
+					.fields(e0.getClass()) //
 					.toInt(Obj_Int.sum(field -> {
 						var e1 = Rethrow.ex(() -> field.get(e0));
 						if (e1 instanceof FunExpr)

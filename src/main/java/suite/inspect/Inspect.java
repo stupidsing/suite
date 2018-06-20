@@ -9,9 +9,9 @@ import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
-import suite.util.List_;
 import suite.util.Memoize;
 import suite.util.ObjectSupport;
 import suite.util.Rethrow;
@@ -30,8 +30,8 @@ public class Inspect {
 	}
 
 	/**
-	 * @return true if both input value objects are of the same class and having all
-	 *         fields equal.
+	 * @return true if both input value objects are of the same class and having
+	 *         all fields equal.
 	 */
 	public <T> boolean equals(T o0, T o1) {
 		return new ObjectSupport<>(this::values).equals(o0, o1);
@@ -45,33 +45,33 @@ public class Inspect {
 	}
 
 	public List<?> values(Object object) {
-		return Read.from(fields(object.getClass())) //
+		return fields(object.getClass()) //
 				.map(field -> Rethrow.ex(() -> field.get(object))) //
 				.toList();
 	}
 
-	public List<Field> fields(Class<?> clazz) {
+	public Streamlet<Field> fields(Class<?> clazz) {
 		return fieldsFun.apply(clazz);
 	}
 
-	public List<Method> getters(Class<?> clazz) {
+	public Streamlet<Method> getters(Class<?> clazz) {
 		return gettersFun.apply(clazz);
 	}
 
-	public List<Method> methods(Class<?> clazz) {
+	public Streamlet<Method> methods(Class<?> clazz) {
 		return methodsFun.apply(clazz);
 	}
 
-	public List<Property> properties(Class<?> clazz) {
+	public Streamlet<Property> properties(Class<?> clazz) {
 		return propertiesFun.apply(clazz);
 	}
 
-	private Fun<Class<?>, List<Field>> fieldsFun = Memoize.funRec(clazz -> {
+	private Fun<Class<?>, Streamlet<Field>> fieldsFun = Memoize.funRec(clazz -> {
 		var superClass = clazz.getSuperclass();
 
 		// do not display same field of different base classes
 		var names = new HashSet<>();
-		var parentFields = superClass != null ? fields(superClass) : List.<Field> of();
+		var parentFields = superClass != null ? fields(superClass) : Read.<Field> empty();
 		var childFields = Read //
 				.from(clazz.getDeclaredFields()) //
 				.filter(field -> {
@@ -82,54 +82,51 @@ public class Inspect {
 							&& !name.startsWith("this") //
 							&& names.add(name);
 				}) //
-				.toList();
+				.collect();
 
-		var fields = List_.concat(parentFields, childFields);
+		var fields = Streamlet.concat(parentFields, childFields);
 		fields.forEach(field -> field.setAccessible(true));
 		return fields;
 	});
 
-	private Fun<Class<?>, List<Method>> gettersFun = Memoize.funRec(clazz -> {
-		return Read //
-				.from(methods(clazz)) //
+	private Fun<Class<?>, Streamlet<Method>> gettersFun = Memoize.funRec(clazz -> {
+		return methods(clazz) //
 				.filter(getter -> {
 					return getter.getName().startsWith("get") && getter.getParameterTypes().length == 0;
 				}) //
-				.toList();
+				.collect();
 	});
 
-	private Fun<Class<?>, List<Method>> methodsFun = Memoize.funRec(clazz -> {
+	private Fun<Class<?>, Streamlet<Method>> methodsFun = Memoize.funRec(clazz -> {
 		var superClass = clazz.getSuperclass();
 
 		// do not display same method of different base classes
 		var names = new HashSet<>();
-		var parentMethods = superClass != null ? methods(superClass) : List.<Method> of();
+		var parentMethods = superClass != null ? methods(superClass) : Read.<Method> empty();
 		var childMethods = Read //
 				.from(clazz.getDeclaredMethods()) //
 				.filter(method -> {
 					var modifiers = method.getModifiers();
 					return !Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers) && names.add(method.getName());
 				}) //
-				.toList();
+				.collect();
 
-		var methods = List_.concat(parentMethods, childMethods);
-		Read.from(methods).filter(method -> method.getDeclaringClass() != Object.class).sink(method -> method.setAccessible(true));
+		var methods = Streamlet.concat(parentMethods, childMethods);
+		methods.filter(method -> method.getDeclaringClass() != Object.class).sink(method -> method.setAccessible(true));
 		return methods;
 	});
 
-	private Fun<Class<?>, List<Property>> propertiesFun = Memoize.funRec(clazz -> {
+	private Fun<Class<?>, Streamlet<Property>> propertiesFun = Memoize.funRec(clazz -> {
 		var methods = methods(clazz);
 
-		var getMethods = Read //
-				.from(methods) //
+		var getMethods = methods //
 				.filter(getter -> {
 					return getter.getName().startsWith("get") && getter.getParameterTypes().length == 0;
 				}) //
 				.map2(getter -> getter.getName().substring(3), getter -> getter) //
 				.toMap();
 
-		var setMethods = Read //
-				.from(methods) //
+		var setMethods = methods //
 				.filter(setter -> {
 					return setter.getName().startsWith("set") && setter.getParameterTypes().length == 1;
 				}) //
@@ -154,7 +151,7 @@ public class Inspect {
 						}
 					};
 				}) //
-				.toList();
+				.collect();
 	});
 
 	/**

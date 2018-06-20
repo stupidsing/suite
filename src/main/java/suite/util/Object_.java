@@ -18,7 +18,6 @@ import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.node.util.Singleton;
-import suite.streamlet.Read;
 import suite.util.FunUtil.Iterate;
 
 public class Object_ {
@@ -134,8 +133,8 @@ public class Object_ {
 			else {
 				var inspect = Singleton.me.inspect;
 
-				var sfs = Read //
-						.from(inspect.fields(clazz)) //
+				var sfs = inspect //
+						.fields(clazz) //
 						.map(field -> Pair.of(field.getName(), field)) //
 						.toList();
 

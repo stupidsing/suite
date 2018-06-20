@@ -6,7 +6,6 @@ import java.util.HashMap;
 import suite.adt.IdentityKey;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
 public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implements Cloneable, AutoInterface<T> {
@@ -41,7 +40,7 @@ public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implement
 	}
 
 	public Streamlet<Field> fields() {
-		return Read.from(inspect.fields(getClass()));
+		return inspect.fields(getClass());
 	}
 
 	@Override

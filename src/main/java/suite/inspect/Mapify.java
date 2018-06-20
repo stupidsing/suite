@@ -123,8 +123,8 @@ public class Mapify {
 						return o;
 				});
 			else {
-				var fis = Read //
-						.from(inspect.fields(clazz)) //
+				var fis = inspect //
+						.fields(clazz) //
 						.map(field -> new FieldInfo(field, field.getName(), getMapifier(field.getGenericType()))) //
 						.toList();
 

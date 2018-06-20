@@ -10,7 +10,6 @@ import java.util.concurrent.Callable;
 import suite.adt.pair.Pair;
 import suite.node.util.Singleton;
 import suite.os.LogUtil;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Sink;
 import suite.util.MapInterface;
@@ -244,13 +243,11 @@ public class Dump {
 		var clazz = object.getClass();
 
 		return Streamlet.concat( //
-				Read.from(inspect.fields(clazz)) //
-						.map(field -> Pair.<String, Callable<Object>> of(field.getName(), () -> field.get(object))),
-				Read.from(inspect.getters(clazz)) //
-						.map(method -> Pair.<String, Callable<Object>> of(method.getName() + "()", () -> {
-							var o_ = method.invoke(object);
-							return !(o_ instanceof Class<?>) ? o_ : null;
-						}))) //
+				inspect.fields(clazz).map(f -> Pair.<String, Callable<Object>> of(f.getName(), () -> f.get(object))), //
+				inspect.getters(clazz).map(m -> Pair.<String, Callable<Object>> of(m.getName() + "()", () -> {
+					var o_ = m.invoke(object);
+					return !(o_ instanceof Class<?>) ? o_ : null;
+				}))) //
 				.toList();
 	}
 

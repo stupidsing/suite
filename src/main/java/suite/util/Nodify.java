@@ -132,8 +132,8 @@ public class Nodify {
 						return Fail.t("cannot instantiate enum from interfaces");
 				});
 			else {
-				var fieldInfos = Read //
-						.from(inspect.fields(clazz)) //
+				var fieldInfos = inspect //
+						.fields(clazz) //
 						.map(field -> new FieldInfo(field, field.getName(), getNodifier(field.getGenericType()))) //
 						.toList();
 
