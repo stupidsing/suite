@@ -8,7 +8,7 @@ import java.util.List;
 import suite.Suite;
 import suite.classpath.Handler;
 import suite.immutable.IList;
-import suite.lp.checker.Checker;
+import suite.lp.check.CheckLogic;
 import suite.lp.doer.Prover;
 import suite.lp.kb.DoubleIndexedRuleSet;
 import suite.lp.kb.Rule;
@@ -80,7 +80,7 @@ public class ImportUtil {
 		}
 
 		if (importing0.isEmpty()) // check after all files are imported
-			new Checker().check(ruleSet.getRules());
+			new CheckLogic().check(ruleSet.getRules());
 
 		return b;
 	}

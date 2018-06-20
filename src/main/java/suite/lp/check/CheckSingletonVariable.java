@@ -1,4 +1,4 @@
-package suite.lp.checker;
+package suite.lp.check;
 
 import java.util.HashMap;
 import java.util.List;
@@ -13,7 +13,7 @@ import suite.node.Tree;
 import suite.node.io.Rewrite_.NodeRead;
 import suite.os.LogUtil;
 
-public class SingletonVariableChecker {
+public class CheckSingletonVariable {
 
 	public void check(List<Rule> rules) {
 		var rulesByPrototype = Prototype.multimap(rules);

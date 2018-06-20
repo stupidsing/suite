@@ -1,4 +1,4 @@
-package suite.lp.checker;
+package suite.lp.check;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,21 +23,21 @@ import suite.node.util.TreeUtil;
 import suite.streamlet.Read;
 import suite.util.Fail;
 
-public class TypeChecker {
+public class CheckType {
 
-	private CheckerUtil checkerUtil = new CheckerUtil();
+	private CheckLogicUtil clu = new CheckLogicUtil();
 	private Trail trail = new Trail();
 	private Map<IdentityKey<Node>, Reference> variableTypes = new HashMap<>();
 
 	public void check(List<Rule> rules) {
-		var nElementsByPrototype = checkerUtil.getNumberOfElements(rules);
+		var nElementsByPrototype = clu.getNumberOfElements(rules);
 		var types = new HashMap<Pair<Prototype, Integer>, Reference>();
 
 		Read.from(rules).concatMap(rule -> {
 			var generalizer = new Generalizer();
 			var head = generalizer.generalize(rule.head);
 			var tail = generalizer.generalize(rule.tail);
-			return checkerUtil.scan(tail).cons(head);
+			return clu.scan(tail).cons(head);
 		}).forEach(pred -> {
 			var prototype = Prototype.of(pred);
 			var nElements = prototype != null ? nElementsByPrototype.get(prototype) : null;

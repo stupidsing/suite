@@ -1,4 +1,4 @@
-package suite.lp.checker;
+package suite.lp.check;
 
 import java.util.List;
 import java.util.Map;
@@ -10,14 +10,14 @@ import suite.node.util.TreeUtil;
 import suite.os.LogUtil;
 import suite.streamlet.Read;
 
-public class PredicateCallChecker {
+public class CheckPredicateCall {
 
-	private CheckerUtil checkerUtil = new CheckerUtil();
+	private CheckLogicUtil clu = new CheckLogicUtil();
 	private Map<Prototype, Integer> nElementsByPrototype;
 
 	public void check(List<Rule> rules) {
-		nElementsByPrototype = checkerUtil.getNumberOfElements(rules);
-		Read.from(rules).concatMap(rule -> checkerUtil.scan(rule.tail)).forEach(this::check);
+		nElementsByPrototype = clu.getNumberOfElements(rules);
+		Read.from(rules).concatMap(rule -> clu.scan(rule.tail)).forEach(this::check);
 	}
 
 	private void check(Node node) {

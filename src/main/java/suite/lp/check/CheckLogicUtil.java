@@ -1,4 +1,4 @@
-package suite.lp.checker;
+package suite.lp.check;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,7 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
-public class CheckerUtil {
+public class CheckLogicUtil {
 
 	private List<Pattern> patterns = List.of( //
 			Suite.pattern(".0, .1"), //
