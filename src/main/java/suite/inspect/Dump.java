@@ -221,7 +221,7 @@ public class Dump {
 					for (var object1 : MapObject_.list(object))
 						d(prefix + "." + i++, object1);
 				} else if (Pair.class.isAssignableFrom(clazz)) {
-					Pair<?, ?> pair = (Pair<?, ?>) object;
+					var pair = (Pair<?, ?>) object;
 					d(prefix + ".fst", pair.t0);
 					d(prefix + ".snd", pair.t1);
 				} else
