@@ -11,6 +11,7 @@ import suite.adt.pair.Fixie_.FixieFun4;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_.Funp;
+import suite.node.io.Operator;
 import suite.primitive.IntMutable;
 import suite.primitive.adt.pair.IntIntPair;
 
@@ -116,20 +117,20 @@ public class P2 {
 	}
 
 	public static class FunpCmp implements Funp, P4.End {
-		public boolean isEq;
+		public Operator operator;
 		public FunpMemory left;
 		public FunpMemory right;
 
-		public static FunpCmp of(boolean isEq, FunpMemory left, FunpMemory right) {
+		public static FunpCmp of(Operator operator, FunpMemory left, FunpMemory right) {
 			var f = new FunpCmp();
-			f.isEq = isEq;
+			f.operator = operator;
 			f.left = left;
 			f.right = right;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<Boolean, FunpMemory, FunpMemory, R> fun) {
-			return fun.apply(isEq, left, right);
+		public <R> R apply(FixieFun3<Operator, FunpMemory, FunpMemory, R> fun) {
+			return fun.apply(operator, left, right);
 		}
 	}
 

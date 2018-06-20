@@ -554,7 +554,7 @@ public class P2InferType {
 					var offsetStack = IntMutable.nil();
 					var m0 = getVariableMemory(new Var(scope, offsetStack, 0, size0));
 					var m1 = getVariableMemory(new Var(scope, offsetStack, size0, size0 + size1));
-					var f0 = FunpCmp.of(op == TermOp.EQUAL_, m0, m1);
+					var f0 = FunpCmp.of(op, m0, m1);
 					var f1 = FunpAssignMem.of(m0, erase(l), f0);
 					var f2 = FunpAssignMem.of(m1, erase(r), f1);
 					return FunpAllocStack.of(size0 + size1, FunpDontCare.of(), f2, offsetStack);

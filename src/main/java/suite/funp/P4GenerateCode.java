@@ -185,7 +185,8 @@ public class P4GenerateCode {
 					return compile(expr);
 				})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 					return returnIsOp(amd64.imm(b ? 1 : 0, Funp_.booleanSize));
-				})).applyIf(FunpCmp.class, f -> f.apply((isEq, l, r) -> {
+				})).applyIf(FunpCmp.class, f -> f.apply((op, l, r) -> {
+					var isEq = op == TermOp.EQUAL_;
 					var r0 = compileIsReg(l.pointer);
 					var r1 = mask(r0).compileIsReg(r.pointer);
 					var size0 = l.size();
