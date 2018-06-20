@@ -192,13 +192,9 @@ public class P4GenerateCode {
 					} else
 						return compile(expr);
 				})).applyIf(FunpData.class, f -> f.apply(pairs -> {
-					return returnAssign((c1, target) -> {
-						for (var pair : pairs) {
-							var offset = pair.t1;
-							var target_ = FunpMemory.of(target.pointer, target.start + offset.t0, target.start + offset.t1);
-							c1.compileAssign(pair.t0, target_);
-						}
-					});
+					return returnAssign((c1, t) -> Read //
+							.from2(pairs) //
+							.sink((n_, ofs) -> c1.compileAssign(n_, FunpMemory.of(t.pointer, t.start + ofs.t0, t.start + ofs.t1))));
 				})).applyIf(FunpDontCare.class, f -> {
 					return returnDontCare();
 				}).applyIf(FunpError.class, f -> {
