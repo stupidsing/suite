@@ -51,7 +51,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 					fun = env -> node0;
 			} else if (node0 instanceof Dict) {
 				var array = Read //
-						.from2(((Dict) node0).map) //
+						.from2(Dict.m(node0)) //
 						.map((key, value) -> new Generalize_[] { generalizer(key), generalizer(value), }) //
 						.toArray(Generalize_[].class);
 				var length = array.length;

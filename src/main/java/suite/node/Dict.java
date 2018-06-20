@@ -10,6 +10,10 @@ public class Dict extends Node {
 
 	public final Map<Node, Reference> map;
 
+	public static Map<Node, Reference> m(Node node) {
+		return ((Dict) node).map;
+	}
+
 	public static Dict of() {
 		return new Dict(new HashMap<>());
 	}

@@ -114,7 +114,7 @@ public class FactorizeResult {
 		Iterate<Node> rewrite = n0 -> {
 			var m = Suite.pattern(FTerminal.class.getName() + ":.0").match(n0);
 			var n1 = m != null ? m[0] : null;
-			var n2 = n1 instanceof Dict ? ((Dict) n1).map.get(Atom.of("chars")) : null;
+			var n2 = n1 instanceof Dict ? Dict.m(n1).get(Atom.of("chars")) : null;
 			var n3 = n2 != null ? n2.finalNode() : null;
 			var s = n3 instanceof Str ? Str.str(n3) : null;
 			var b = s != null && s.startsWith(ProverConstant.variablePrefix) && s.substring(1).matches("[0-9]*");

@@ -35,7 +35,7 @@ public class SewingClonerImpl implements ClonerFactory {
 
 			if (node0 instanceof Dict) {
 				var array = Read //
-						.from2(((Dict) node0).map) //
+						.from2(Dict.m(node0)) //
 						.map((key, value) -> new Clone_[] { cloner(key), cloner(value), }) //
 						.toArray(Clone_[].class);
 				var length = array.length;

@@ -148,7 +148,7 @@ public class Nodify {
 					}
 					return dict;
 				}), n -> Rethrow.ex(() -> {
-					var map = ((Dict) n).map;
+					var map = Dict.m(n);
 					var o1 = Object_.new_(clazz);
 					for (var pair : pairs) {
 						var fieldInfo = pair.t1;
@@ -188,7 +188,7 @@ public class Nodify {
 						dict.map.put(apply_(e.getKey(), kn), Reference.of(apply_(e.getValue(), vn)));
 					return dict;
 				}, n -> {
-					var map = ((Dict) n).map;
+					var map = Dict.m(n);
 					var object1 = (Map<Object, Object>) Object_.instantiate(clazz);
 					for (var e : map.entrySet())
 						object1.put(apply_(e.getKey(), kn), apply_(e.getValue().finalNode(), vn));

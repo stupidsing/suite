@@ -44,7 +44,7 @@ public class Formatter {
 
 			new SwitchNode<Node>(node //
 			).doIf(Dict.class, n -> {
-				for (var e : ((Dict) node).map.entrySet()) {
+				for (var e : Dict.m(node).entrySet()) {
 					sb.append(indent + "d:" + dump(e.getKey()) + "\n");
 					treeize(e.getValue().finalNode(), indent1);
 				}

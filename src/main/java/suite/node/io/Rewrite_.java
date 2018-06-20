@@ -54,7 +54,7 @@ public class Rewrite_ {
 			Tree tree;
 
 			if (node instanceof Dict) {
-				var map = ((Dict) node).map;
+				var map = Dict.m(node);
 				return new NodeRead(ReadType.DICT, null, null, Read //
 						.from2(map) //
 						.sort((p0, p1) -> Comparer.comparer.compare(p0.t0, p1.t0)) //

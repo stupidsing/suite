@@ -33,8 +33,8 @@ public class Binder {
 		}
 
 		if (clazz0 == Dict.class && clazz1 == Dict.class) {
-			var map0 = ((Dict) n0).map;
-			var map1 = ((Dict) n1).map;
+			var map0 = Dict.m(n0);
+			var map1 = Dict.m(n1);
 			var b = true;
 			for (var key : Set_.union(map0.keySet(), map1.keySet())) {
 				var v0 = map0.computeIfAbsent(key, k -> new Reference());
