@@ -70,17 +70,17 @@ public class CheckType {
 				var type = Suite.substitute(".0;", getType(l));
 				bind(type, getType(r));
 				return type;
-			} else if (op == TermOp.TUPLE_) {
+			} else if (op == TermOp.TUPLE_)
 				if (l instanceof Atom) {
 					var ps = TreeUtil.elements(r, TreeUtil.nElements(r));
 					return getEnumType(l, Tree.of(TermOp.TUPLE_, Read.from(ps).map(this::getType).toList()));
 				} else
 					return new Reference(); // free type
-			} else {
+			else {
 				var name = Atom.of(op.name_());
-				var lt = getType(l);
-				var rt = getType(r);
-				return getEnumType(name, TreeTuple.of(lt, rt));
+				var tl = getType(l);
+				var tr = getType(r);
+				return getEnumType(name, TreeTuple.of(tl, tr));
 			}
 		}).match(Atom.NIL, () -> {
 			return Suite.substitute("_;");
@@ -92,9 +92,9 @@ public class CheckType {
 	}
 
 	private Node getEnumType(Node name, Node type1) {
-		var dict = Dict.of();
-		dict.map.put(name, Reference.of(type1));
-		return dict;
+		var map = new HashMap<Node, Reference>();
+		map.put(name, Reference.of(type1));
+		return Dict.of(map);
 	}
 
 	private void bind(Node type0, Node type1) {

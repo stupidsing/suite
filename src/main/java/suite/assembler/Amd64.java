@@ -20,6 +20,9 @@ public class Amd64 {
 		CLD, //
 		CLI, //
 		CMP, //
+		CMPSB, //
+		CMPSD, //
+		CMPSW, //
 		CMPXCHG, //
 		CPUID, //
 		DEC, //

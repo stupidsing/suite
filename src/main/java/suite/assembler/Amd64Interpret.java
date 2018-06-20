@@ -118,6 +118,8 @@ public class Amd64Interpret {
 				int source0 = fetch32.apply(op0);
 				int source1 = fetch32.apply(op1);
 				IntSink assign;
+				Runnable r;
+				int v;
 
 				if (op0 instanceof OpMem) {
 					var index = index(address((OpMem) op0));
@@ -153,6 +155,12 @@ public class Amd64Interpret {
 					break;
 				case CMP:
 					c = Integer.compare(source0, source1);
+					break;
+				case CMPSB:
+					cmpsb();
+					break;
+				case CMPSD:
+					cmpsd();
 					break;
 				case DEC:
 					assign.sink(source0 - 1);
@@ -243,7 +251,8 @@ public class Amd64Interpret {
 					movsd();
 					break;
 				case OR:
-					assign.sink(source0 | source1);
+					assign.sink(v = (source0 | source1));
+					c = Integer.compare(v, 0);
 					break;
 				case POP:
 					assign.sink(pop());
@@ -252,10 +261,25 @@ public class Amd64Interpret {
 					push(source0);
 					break;
 				case REP:
-					var movs = instructions.get(eip++).insn;
-					Runnable r = movs == Insn.MOVSB ? this::movsb : movs == Insn.MOVSD ? this::movsd : Fail.t();
+					r = getNextRepeatInsn(instructions);
 					while (0 < regs[ecx]--)
 						r.run();
+					break;
+				case REPE:
+					r = getNextRepeatInsn(instructions);
+					while (0 < regs[ecx]--) {
+						r.run();
+						if (c != 0)
+							break;
+					}
+					break;
+				case REPNE:
+					r = getNextRepeatInsn(instructions);
+					while (0 < regs[ecx]--) {
+						r.run();
+						if (c == 0)
+							break;
+					}
 					break;
 				case RET:
 					eip = pop();
@@ -292,6 +316,30 @@ public class Amd64Interpret {
 				throw ex;
 			}
 		}
+	}
+
+	private Runnable getNextRepeatInsn(List<Instruction> instructions) {
+		Insn insn = instructions.get(eip++).insn;
+		Runnable r = null;
+		r = insn == Insn.CMPSB ? this::cmpsb : r;
+		r = insn == Insn.CMPSD ? this::cmpsd : r;
+		r = insn == Insn.MOVSB ? this::movsb : r;
+		r = insn == Insn.MOVSD ? this::movsd : r;
+		return r != null ? r : Fail.t();
+	}
+
+	private void cmpsb() {
+		c = Byte.compare(mem.get(index(regs[esi])), mem.get(index(regs[edi])));
+		regs[esi]++;
+		regs[edi]++;
+	}
+
+	private void cmpsd() {
+		int aa = mem.getInt(index(regs[esi]));
+		int bb = mem.getInt(index(regs[edi]));
+		c = Integer.compare(aa, bb);
+		regs[esi] += 4;
+		regs[edi] += 4;
 	}
 
 	private void movsb() {

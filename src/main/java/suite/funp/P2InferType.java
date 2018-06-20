@@ -50,6 +50,7 @@ import suite.funp.P2.FunpAllocReg;
 import suite.funp.P2.FunpAllocStack;
 import suite.funp.P2.FunpAssignMem;
 import suite.funp.P2.FunpAssignOp;
+import suite.funp.P2.FunpCmp;
 import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpInvoke;
 import suite.funp.P2.FunpInvoke2;
@@ -338,7 +339,13 @@ public class P2InferType {
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
 				return TypeStruct.of(Read.from2(pairs).mapValue(this::infer).toList());
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
-				var ti = op == TermOp.BIGAND || op == TermOp.BIGOR_ ? typeBoolean : typeNumber;
+				UnNode<Type> ti;
+				if (op == TermOp.BIGAND || op == TermOp.BIGOR_)
+					ti = typeBoolean;
+				else if (op == TermOp.EQUAL_ || op == TermOp.NOTEQ_)
+					ti = unify.newRef();
+				else
+					ti = typeNumber;
 				unify(n, infer(lhs), ti);
 				unify(n, infer(rhs), ti);
 				var cmp = op == TermOp.EQUAL_ || op == TermOp.NOTEQ_ || op == TermOp.LE____ || op == TermOp.LT____;
@@ -540,6 +547,19 @@ public class P2InferType {
 					Fail.t();
 
 				return FunpData.of(list);
+			})).applyIf(FunpTree.class, f -> f.apply((op, l, r) -> {
+				var size0 = getTypeSize(typeOf(l));
+				var size1 = getTypeSize(typeOf(r));
+				if ((op == TermOp.EQUAL_ || op == TermOp.NOTEQ_) && (is < size0 || is < size1)) {
+					var offsetStack = IntMutable.nil();
+					var m0 = getVariableMemory(new Var(scope, offsetStack, 0, size0));
+					var m1 = getVariableMemory(new Var(scope, offsetStack, size0, size0 + size1));
+					var f0 = FunpCmp.of(op == TermOp.EQUAL_, m0, m1);
+					var f1 = FunpAssignMem.of(m0, erase(l), f0);
+					var f2 = FunpAssignMem.of(m1, erase(r), f1);
+					return FunpAllocStack.of(size0 + size1, FunpDontCare.of(), f2, offsetStack);
+				} else
+					return null;
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 				return getVariable(env.get(var));
 			})).result();

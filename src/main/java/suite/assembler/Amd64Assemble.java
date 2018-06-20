@@ -217,6 +217,15 @@ public class Amd64Assemble {
 		case CMP:
 			encode = assembleRmRegImm(instruction, 0x38, 0x80, 7);
 			break;
+		case CMPSB:
+			encode = new InsnCode(1, bs(0xA6));
+			break;
+		case CMPSD:
+			encode = new InsnCode(4, bs(0xA7));
+			break;
+		case CMPSW:
+			encode = new InsnCode(2, bs(0xA7));
+			break;
 		case CMPXCHG:
 			encode = assembleRegRm(instruction.op1, instruction.op0, 0xB0);
 			break;

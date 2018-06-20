@@ -34,6 +34,7 @@ import suite.funp.P2.FunpAllocReg;
 import suite.funp.P2.FunpAllocStack;
 import suite.funp.P2.FunpAssignMem;
 import suite.funp.P2.FunpAssignOp;
+import suite.funp.P2.FunpCmp;
 import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpFramePointer;
 import suite.funp.P2.FunpInvoke;
@@ -121,6 +122,7 @@ public class P4GenerateCode {
 		return P4Emit.generate(emit -> {
 			if (isUseEbp)
 				emit.mov(ebp, esp);
+			emit.emit(amd64.instruction(Insn.CLD));
 			new Compile0(Result.ISSPEC, emit, null, ebx, null).new Compile1(registerSet, 0).compile(funp);
 			emit.mov(eax, amd64.imm(1, is));
 			emit.emit(amd64.instruction(Insn.INT, amd64.imm(-128)));
@@ -183,6 +185,12 @@ public class P4GenerateCode {
 					return compile(expr);
 				})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 					return returnIsOp(amd64.imm(b ? 1 : 0, Funp_.booleanSize));
+				})).applyIf(FunpCmp.class, f -> f.apply((isEq, l, r) -> {
+					var r0 = compileIsReg(l.pointer);
+					var r1 = mask(r0).compileIsReg(r.pointer);
+					var size0 = l.size();
+					var size1 = r.size();
+					return size0 == size1 ? returnIsOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : Fail.t();
 				})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
 					if (coerce == Coerce.BYTE) {
 						var r1 = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
@@ -713,6 +721,30 @@ public class P4GenerateCode {
 				return new CompileOut(pop0, pop1);
 			}
 
+			private OpReg compileCompare(OpReg r0, int start0, OpReg r1, int start1, int size, boolean isEq) {
+				var opResult = isOutSpec ? pop0 : rs.mask(ecx, esi, edi).get(Funp_.booleanSize);
+				saveRegs(c1 -> {
+					var endLabel = em.label();
+					var neqLabel = em.label();
+					var r = rs.mask(r0, edi).get(esi);
+					em.lea(r, amd64.mem(r1, start1, is));
+					em.lea(edi, amd64.mem(r0, start0, is));
+					em.mov(esi, r);
+					em.mov(ecx, amd64.imm(size / 4, is));
+					em.emit(amd64.instruction(Insn.REPE));
+					em.emit(amd64.instruction(Insn.CMPSD));
+					em.emit(amd64.instruction(Insn.JNE, neqLabel));
+					for (var i = 0; i < size % 4; i++) {
+						em.emit(amd64.instruction(Insn.CMPSB));
+						em.emit(amd64.instruction(Insn.JNE, neqLabel));
+					}
+					em.emit(amd64.instruction(Insn.LABEL, neqLabel));
+					em.emit(amd64.instruction(Insn.SETE, opResult));
+					em.emit(amd64.instruction(Insn.LABEL, endLabel));
+				}, ecx, esi, edi);
+				return opResult;
+			}
+
 			private void compileMove(OpReg r0, int start0, OpReg r1, int start1, int size) {
 				Sink2<Compile1, OpReg> sink = (c1, r) -> {
 					var s = r.size;
@@ -729,7 +761,6 @@ public class P4GenerateCode {
 							em.lea(edi, amd64.mem(r0, start0, is));
 							em.mov(esi, r);
 							em.mov(ecx, amd64.imm(size / 4, is));
-							em.emit(amd64.instruction(Insn.CLD));
 							em.emit(amd64.instruction(Insn.REP));
 							em.emit(amd64.instruction(Insn.MOVSD));
 							for (var i = 0; i < size % 4; i++)

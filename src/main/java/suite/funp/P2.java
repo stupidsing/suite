@@ -115,6 +115,24 @@ public class P2 {
 		}
 	}
 
+	public static class FunpCmp implements Funp, P4.End {
+		public boolean isEq;
+		public FunpMemory left;
+		public FunpMemory right;
+
+		public static FunpCmp of(boolean isEq, FunpMemory left, FunpMemory right) {
+			var f = new FunpCmp();
+			f.isEq = isEq;
+			f.left = left;
+			f.right = right;
+			return f;
+		}
+
+		public <R> R apply(FixieFun3<Boolean, FunpMemory, FunpMemory, R> fun) {
+			return fun.apply(isEq, left, right);
+		}
+	}
+
 	public static class FunpData implements Funp, P4.End {
 		public List<Pair<Funp, IntIntPair>> pairs;
 

@@ -45,6 +45,8 @@ public class FunpTest {
 	@Test
 	public void testCompare() {
 		test(1, "let v := 2 >> if (1 < v) then 1 else 0");
+		test(1, "if ([0, 1, 2,] = [0, 1, 2,]) then 1 else 0");
+		test(0, "if ([0, 1, 2,] = [0, 3, 2,]) then 1 else 0");
 	}
 
 	@Test
