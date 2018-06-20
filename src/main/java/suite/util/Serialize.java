@@ -29,7 +29,7 @@ import suite.util.FunUtil.Fun;
  */
 public class Serialize {
 
-	public Serializer<Boolean> boolean_ = boolean_();
+	public Serializer<Boolean> boolean_ = ser(si -> si.readByte() == 1, (so, b) -> so.writeByte(b ? -1 : 0)); // 1
 	public Serializer<Double> double_ = ser(SerInput::readDouble, SerOutput::writeDouble); // 8
 	public Serializer<Float> float_ = ser(SerInput::readFloat, SerOutput::writeFloat); // 4
 	public Serializer<Integer> int_ = ser(SerInput::readInt, SerOutput::writeInt); // 4
@@ -418,23 +418,6 @@ public class Serialize {
 			public void write(SerOutput so, T value) throws IOException {
 				so.writeInt(c);
 				serializer.write(so, value);
-			}
-		};
-	}
-
-	/**
-	 * Serializes a boolean.
-	 *
-	 * Size = 1
-	 */
-	private Serializer<Boolean> boolean_() {
-		return new Serializer<>() {
-			public Boolean read(SerInput si) throws IOException {
-				return si.readByte() == -1;
-			}
-
-			public void write(SerOutput so, Boolean value) throws IOException {
-				so.writeByte(value ? -1 : 0);
 			}
 		};
 	}
