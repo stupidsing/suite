@@ -30,15 +30,9 @@ import suite.util.FunUtil.Fun;
 public class Serialize {
 
 	public Serializer<Boolean> boolean_ = boolean_();
-	public Serializer<Double> double_ = ser(SerInput::readDouble, SerOutput::writeDouble); // size
-																							// =
-																							// 8
-	public Serializer<Float> float_ = ser(SerInput::readFloat, SerOutput::writeFloat); // size
-																						// =
-																						// 4
-	public Serializer<Integer> int_ = ser(SerInput::readInt, SerOutput::writeInt); // size
-																					// =
-																					// 4
+	public Serializer<Double> double_ = ser(SerInput::readDouble, SerOutput::writeDouble); // 8
+	public Serializer<Float> float_ = ser(SerInput::readFloat, SerOutput::writeFloat); // 4
+	public Serializer<Integer> int_ = ser(SerInput::readInt, SerOutput::writeInt); // 4
 
 	private Inspect inspect;
 	private byte[] zeroes = new byte[Constants.bufferSize];
@@ -226,26 +220,24 @@ public class Serialize {
 
 	public Serializer<boolean[]> arrayOfBooleans = new Serializer<>() {
 		public boolean[] read(SerInput si) throws IOException {
-			var length = int_.read(si);
+			int i = 0, i1, length = int_.read(si);
 			var array = length < Constants.bufferLimit ? new boolean[length] : null;
-			int i1;
-			for (var i0 = 0; i0 < length; i0 = i1) {
-				i1 = Math.min(i0 + 32, length);
+			while (i < length) {
+				i1 = Math.min(i + 32, length);
 				int m = 1, c = si.readInt();
-				for (var i = i0; i < i1; i++, m <<= 1)
+				for (; i < i1; i++, m <<= 1)
 					array[i] = (c & m) != 0;
 			}
 			return array;
 		}
 
 		public void write(SerOutput so, boolean[] array) throws IOException {
-			int length = array.length;
+			int i = 0, i1, length = array.length;
 			int_.write(so, length);
-			int i1;
-			for (var i0 = 0; i0 < length; i0 = i1) {
-				i1 = Math.min(i0 + 32, length);
+			while (i < length) {
+				i1 = Math.min(i + 32, length);
 				int m = 1, c = 0;
-				for (var i = i0; i < i1; i++, m <<= 1)
+				for (; i < i1; i++, m <<= 1)
 					c |= array[i] ? m : 0;
 				so.writeInt(c);
 			}
