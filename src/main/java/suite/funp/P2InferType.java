@@ -117,7 +117,7 @@ public class P2InferType {
 
 		var node1 = new Object() {
 			private Funp extract(Funp n) {
-				return inspect.rewrite(Funp.class, n_ -> {
+				return inspect.rewrite(n, Funp.class, n_ -> {
 					return n_.<Funp> switch_( //
 					).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 						return FunpDefine.of(isPolyType, var, extractPredefine(value), extract(expr));
@@ -134,7 +134,7 @@ public class P2InferType {
 						var var = FunpVariable.of(ev);
 						return FunpIoAssignReference.of(FunpReference.of(var), expr, var);
 					})).result();
-				}, n);
+				});
 			}
 		}.extract(node0);
 
@@ -156,7 +156,7 @@ public class P2InferType {
 			}
 
 			private Funp capture(Funp n) {
-				return inspect.rewrite(Funp.class, this::capture_, n);
+				return inspect.rewrite(n, Funp.class, this::capture_);
 			}
 
 			private Funp capture_(Funp n) {
@@ -372,7 +372,7 @@ public class P2InferType {
 		}
 
 		private Funp erase(Funp n) {
-			return inspect.rewrite(Funp.class, this::erase_, n);
+			return inspect.rewrite(n, Funp.class, this::erase_);
 		}
 
 		private Funp erase_(Funp n) {

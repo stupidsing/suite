@@ -7,13 +7,13 @@ import java.util.Map;
 
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
-import suite.funp.P0.FunpIoAssignReference;
 import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineGlobal;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
+import suite.funp.P0.FunpIoAssignReference;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
@@ -65,7 +65,7 @@ public class P1Inline {
 			}
 
 			private Funp rename(Funp node_) {
-				return inspect.rewrite(Funp.class, n_ -> n_.<Funp> switch_( //
+				return inspect.rewrite(node_, Funp.class, n_ -> n_.<Funp> switch_( //
 				).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var0, value, expr) -> {
 					var var1 = newVar.apply(var0);
 					var r1 = new Rename(vars.replace(var0, var1));
@@ -88,7 +88,7 @@ public class P1Inline {
 					return FunpLambda.of(var1, r1.rename(expr));
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 					return FunpVariable.of(vars.get(var));
-				})).result(), node_);
+				})).result());
 			}
 		}
 
@@ -100,7 +100,7 @@ public class P1Inline {
 	private Funp inlineDefineAssigns(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
-				return inspect.rewrite(Funp.class, n0 -> {
+				return inspect.rewrite(node_, Funp.class, n0 -> {
 					var vars = new ArrayList<String>();
 					FunpIoAssignReference assign;
 					FunpCheckType check;
@@ -135,7 +135,7 @@ public class P1Inline {
 					}
 
 					return null;
-				}, node_);
+				});
 			}
 		}.inline(node);
 	}
@@ -150,7 +150,7 @@ public class P1Inline {
 
 		new Object() {
 			public void count(Funp node_) {
-				inspect.rewrite(Funp.class, n_ -> n_.<Funp> switch_( //
+				inspect.rewrite(node_, Funp.class, n_ -> n_.<Funp> switch_( //
 				).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 					count(expr);
 					return n_;
@@ -160,7 +160,7 @@ public class P1Inline {
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 					countByDefs.computeIfAbsent(defByVariables.get(f), v -> IntMutable.of(0)).increment();
 					return null;
-				})).result(), node_);
+				})).result());
 			}
 		}.count(node);
 
@@ -182,7 +182,7 @@ public class P1Inline {
 
 		return new Object() {
 			private Funp inline(Funp node_) {
-				return inspect.rewrite(Funp.class, n_ -> {
+				return inspect.rewrite(node_, Funp.class, n_ -> {
 					FunpDefine define;
 					if ((define = defines.get(n_)) != null)
 						return inline(define.expr);
@@ -190,7 +190,7 @@ public class P1Inline {
 						return inline(define.value);
 					else
 						return null;
-				}, node_);
+				});
 			}
 		}.inline(node);
 	}
@@ -202,7 +202,7 @@ public class P1Inline {
 
 		return new Object() {
 			private Funp inline(Funp node_) {
-				return inspect.rewrite(Funp.class, n_ -> {
+				return inspect.rewrite(node_, Funp.class, n_ -> {
 					FunpField field;
 					FunpStruct struct;
 					FunpVariable variable;
@@ -216,7 +216,7 @@ public class P1Inline {
 						return pair != null ? inline(pair.t1) : null;
 					} else
 						return null;
-				}, node_);
+				});
 			}
 		}.inline(node);
 	}
@@ -226,12 +226,11 @@ public class P1Inline {
 	private Funp inlineLambdas(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
-				return inspect.rewrite(Funp.class, n_ -> n_ //
-						.<Funp> switch_() //
+				return inspect.rewrite(node_, Funp.class, n_ -> n_.<Funp> switch_() //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 							return lambda.cast(FunpLambda.class, l -> FunpDefine.of(false, l.var, inline(value), inline(l.expr)));
 						})) //
-						.result(), node_);
+						.result());
 			}
 		}.inline(node);
 	}
@@ -241,7 +240,7 @@ public class P1Inline {
 
 		new Object() {
 			private Funp associate(IMap<String, Funp> vars, Funp node_) {
-				return inspect.rewrite(Funp.class, n_ -> n_.<Funp> switch_( //
+				return inspect.rewrite(node_, Funp.class, n_ -> n_.<Funp> switch_( //
 				).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 					associate(vars, value);
 					associate(vars.replace(var, f), expr);
@@ -258,7 +257,7 @@ public class P1Inline {
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 					defByVariables.put(f, vars.get(var));
 					return n_;
-				})).result(), node_);
+				})).result());
 			}
 		}.associate(IMap.empty(), node);
 

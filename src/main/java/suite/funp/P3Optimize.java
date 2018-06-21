@@ -31,7 +31,7 @@ public class P3Optimize {
 	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp optimize(Funp n) {
-		return inspect.rewrite(Funp.class, this::optimize_, n);
+		return inspect.rewrite(n, Funp.class, this::optimize_);
 	}
 
 	private Funp optimize_(Funp n) {

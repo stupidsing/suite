@@ -278,7 +278,7 @@ public class FunFactory {
 	}
 
 	public FunExpr rewrite(Iterate<FunExpr> fun, FunExpr t0) {
-		return inspect.rewrite(FunExpr.class, fun, t0);
+		return inspect.rewrite(t0, FunExpr.class, fun);
 	}
 
 	public FunExpr seq(FunExpr... fes) {

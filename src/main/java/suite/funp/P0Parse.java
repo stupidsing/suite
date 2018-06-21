@@ -257,11 +257,11 @@ public class P0Parse {
 		private Funp bind(Node a, Node b, Node c, Node d) {
 			var varsMutable = Mutable.of(ISet.<String> empty());
 
-			Iterate<Funp> iter = be -> inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
+			Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class, n_ -> new Switch<Funp>(n_) //
 					.applyIf(FunpVariableNew.class, f -> f.apply(var -> {
 						varsMutable.update(varsMutable.get().replace(var));
 						return FunpVariable.of(var);
-					})).result(), be);
+					})).result());
 
 			var be = iter.apply(p(a));
 			var vars = varsMutable.get();

@@ -28,7 +28,7 @@ public class P1ReduceTailCall {
 	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp reduce(Funp node) {
-		return inspect.rewrite(Funp.class, node_ -> {
+		return inspect.rewrite(node, Funp.class, node_ -> {
 			return new Switch<Funp>(node_ //
 			).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				if (pairs.size() == 1) {
@@ -42,7 +42,7 @@ public class P1ReduceTailCall {
 				} else
 					return null;
 			})).result();
-		}, node);
+		});
 	}
 
 	private Funp rewriteTco(String lambdaVar, String var, Funp do_) {
@@ -98,7 +98,7 @@ public class P1ReduceTailCall {
 			}
 		};
 
-		inspect.rewrite(Funp.class, b::r, node);
+		inspect.rewrite(node, Funp.class, b::r);
 		return b.b;
 	}
 

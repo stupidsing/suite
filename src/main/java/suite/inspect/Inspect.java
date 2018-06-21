@@ -158,7 +158,7 @@ public class Inspect {
 	 * @return the input value object recursively rewritten using the input
 	 *         function.
 	 */
-	public <T> T rewrite(Class<T> baseClass, Iterate<T> fun, T t0) {
+	public <T> T rewrite(T t0, Class<T> baseClass, Iterate<T> fun) {
 		return new Object() {
 			private T rewrite(T t0) {
 				return Rethrow.ex(() -> {
