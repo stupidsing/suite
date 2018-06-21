@@ -15,7 +15,6 @@ import java.util.Map;
 import suite.Constants;
 import suite.adt.pair.Pair;
 import suite.http.HttpUtil;
-import suite.immutable.ISet;
 import suite.primitive.Bytes;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Source;
@@ -68,10 +67,6 @@ public class Read {
 
 	public static <K, V> Streamlet2<K, V> each2(K k, V v) {
 		return from2(List.of(Pair.of(k, v)));
-	}
-
-	public static <T extends Comparable<T>> Streamlet<T> from(ISet<T> ts) {
-		return ts.streamlet();
 	}
 
 	public static <T> Streamlet<T> from(T[] ts) {
