@@ -65,7 +65,7 @@ public class P1Inline {
 			}
 
 			private Funp rename(Funp node_) {
-				return inspect.rewrite(node_, Funp.class, n_ -> n_.<Funp> switch_( //
+				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var0, value, expr) -> {
 					var var1 = newVar.apply(var0);
 					var r1 = new Rename(vars.replace(var0, var1));
@@ -150,7 +150,7 @@ public class P1Inline {
 
 		new Object() {
 			public void count(Funp node_) {
-				inspect.rewrite(node_, Funp.class, n_ -> n_.<Funp> switch_( //
+				inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
 				).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 					count(expr);
 					return n_;
@@ -226,7 +226,7 @@ public class P1Inline {
 	private Funp inlineLambdas(Funp node) {
 		return new Object() {
 			private Funp inline(Funp node_) {
-				return inspect.rewrite(node_, Funp.class, n_ -> n_.<Funp> switch_() //
+				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw() //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 							return lambda.cast(FunpLambda.class, l -> FunpDefine.of(false, l.var, inline(value), inline(l.expr)));
 						})) //
@@ -240,7 +240,7 @@ public class P1Inline {
 
 		new Object() {
 			private Funp associate(IMap<String, Funp> vars, Funp node_) {
-				return inspect.rewrite(node_, Funp.class, n_ -> n_.<Funp> switch_( //
+				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 					associate(vars, value);
 					associate(vars.replace(var, f), expr);

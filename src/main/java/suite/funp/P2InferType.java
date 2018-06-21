@@ -118,7 +118,7 @@ public class P2InferType {
 		var node1 = new Object() {
 			private Funp extract(Funp n) {
 				return inspect.rewrite(n, Funp.class, n_ -> {
-					return n_.<Funp> switch_( //
+					return n_.sw( //
 					).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 						return FunpDefine.of(isPolyType, var, extractPredefine(value), extract(expr));
 					})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
@@ -160,7 +160,7 @@ public class P2InferType {
 			}
 
 			private Funp capture_(Funp n) {
-				return n.<Funp> switch_( //
+				return n.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 					var c1 = new Capture(accesses, locals.add(var), globals);
 					return FunpDefine.of(isPolyType, var, capture(value), c1.capture(expr));
@@ -378,7 +378,7 @@ public class P2InferType {
 		private Funp erase_(Funp n) {
 			var type0 = typeOf(n);
 
-			return n.<Funp> switch_( //
+			return n.sw( //
 			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 				var size = getTypeSize(typeOf(value));
 				return apply(erase(value), lambda, size);
@@ -509,7 +509,7 @@ public class P2InferType {
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return new Object() {
 					private Funp getAddress(Funp n) {
-						return n.<Funp> switch_( //
+						return n.sw( //
 						).applyIf(FunpIoAssignReference.class, f -> f.apply((reference, value, expr) -> {
 							return FunpAssignMem.of(memory(reference, f), erase(value), getAddress(expr));
 						})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
@@ -567,7 +567,7 @@ public class P2InferType {
 
 		private Funp assign(Funp var, Funp value, Funp expr) {
 			return var //
-					.<Funp> switch_() //
+					.sw() //
 					.applyIf(FunpMemory.class, f -> FunpAssignMem.of(f, value, expr)) //
 					.applyIf(FunpOperand.class, f -> FunpAssignOp.of(f, value, expr)) //
 					.nonNullResult();

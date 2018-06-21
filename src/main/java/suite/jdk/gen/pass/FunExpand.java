@@ -31,7 +31,7 @@ public class FunExpand extends FunFactory {
 	}
 
 	private FunExpr expand_(FunExpr e0, int depth) {
-		return e0.<FunExpr> switch_( //
+		return e0.sw( //
 		).applyIf(ApplyFunExpr.class, e1 -> e1.apply((object0, parameters) -> {
 			var object1 = object0 instanceof CastFunExpr ? ((CastFunExpr) object0).expr : object0;
 			return new Switch<FunExpr>(object1 //

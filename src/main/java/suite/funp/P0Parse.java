@@ -312,7 +312,7 @@ public class P0Parse {
 			else if (be instanceof FunpNumber && value instanceof FunpNumber)
 				return ((FunpNumber) be).i == ((FunpNumber) value).i ? then : else_;
 			else {
-				var result = be.<Funp> switch_( //
+				var result = be.sw( //
 				).applyIf(FunpArray.class, f -> f.apply(elements0 -> {
 					return bindArray.apply(elements0.size(), elements0::get);
 				})).applyIf(FunpDontCare.class, f -> {

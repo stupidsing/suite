@@ -99,7 +99,7 @@ public class FunGenerateBytecode {
 		}
 
 		public void visit_(FunExpr e0) {
-			e0.<FunExpr> switch_( //
+			e0.sw( //
 			).doIf(ArrayFunExpr.class, e1 -> {
 				var elements = e1.elements;
 				list.add(factory.createConstant(elements.length));

@@ -35,7 +35,7 @@ public class P3Optimize {
 	}
 
 	private Funp optimize_(Funp n) {
-		return n.<Funp> switch_( //
+		return n.sw( //
 		).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
 			return expr instanceof FunpDontCare ? optimize(expr) : n;
 		})).applyIf(FunpData.class, f -> f.apply(pairs -> {
@@ -51,13 +51,13 @@ public class P3Optimize {
 				return pairsx != null ? pairsx : Read.each(Pair.of(expr1, range));
 			}).toList());
 		})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
-			return optimize(pointer).<Funp> switch_().applyIf(FunpReference.class, g -> g.expr).result();
+			return optimize(pointer).sw().applyIf(FunpReference.class, g -> g.expr).result();
 		})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
-			return optimize(if_).<Funp> switch_().applyIf(FunpBoolean.class, g -> g.apply(b -> b ? then : else_)).result();
+			return optimize(if_).sw().applyIf(FunpBoolean.class, g -> g.apply(b -> b ? then : else_)).result();
 		})).applyIf(FunpIoWhile.class, f -> f.apply((while_, do_, expr) -> {
-			return optimize(while_).<Funp> switch_().applyIf(FunpBoolean.class, g -> g.apply(b -> b ? null : expr)).result();
+			return optimize(while_).sw().applyIf(FunpBoolean.class, g -> g.apply(b -> b ? null : expr)).result();
 		})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
-			return optimize(pointer).<Funp> switch_( //
+			return optimize(pointer).sw( //
 			).applyIf(FunpData.class, g -> g.apply(pairs -> {
 				for (var pair : pairs) {
 					var range = pair.t1;
@@ -69,7 +69,7 @@ public class P3Optimize {
 				return FunpTree.of(TermOp.PLUS__, g.expr, FunpNumber.ofNumber(start));
 			}).result();
 		})).applyIf(FunpReference.class, f -> f.apply(expr -> {
-			return optimize(expr).<Funp> switch_().applyIf(FunpMemory.class, g -> g.pointer).result();
+			return optimize(expr).sw().applyIf(FunpMemory.class, g -> g.pointer).result();
 		})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
 			var iib = TreeUtil.boolOperations.get(op);
 			var iii = TreeUtil.intOperations.get(op);
