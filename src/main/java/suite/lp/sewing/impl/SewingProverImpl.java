@@ -145,7 +145,7 @@ public class SewingProverImpl implements ProverFactory {
 		}
 
 		private Sink<Node> handler = node -> {
-			throw new SuiteException(node, Read.from(debug.stack).map(Object::toString).collect(As.conc("\n")));
+			throw new SuiteException(node, debug.stack.streamlet().map(Object::toString).collect(As.conc("\n")));
 		};
 
 		private Runtime(Runtime rt, Trampoline tr) {

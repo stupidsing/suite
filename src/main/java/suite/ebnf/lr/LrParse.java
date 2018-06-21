@@ -68,7 +68,7 @@ public class LrParse {
 				}
 
 				var name = reduce.name();
-				var token1 = new Ast(name, 0, 0, Read.from(nodes).toList());
+				var token1 = new Ast(name, 0, 0, nodes.streamlet().toList());
 
 				if (rootEntity.equals(name) && stack.size() == 0 && token == null)
 					return token1;

@@ -60,7 +60,6 @@ import suite.node.util.Singleton;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
-import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.Rethrow.SourceEx;
@@ -271,11 +270,11 @@ public class P0Parse {
 
 			var vars = varsMutable.get();
 			var value = p(b);
-			var then = new Parse(Read.from(vars).fold(variables, ISet::add)).p(c);
+			var then = new Parse(vars.streamlet().fold(variables, ISet::add)).p(c);
 			var else_ = p(d);
 			var f0 = new Bind(vars).bind(be, value, then, else_);
 			var f1 = FunpCheckType.of(be, value, f0);
-			return Read.from(vars).<Funp> fold(f1, (f, var) -> FunpDefine.of(false, var, FunpDontCare.of(), f));
+			return vars.streamlet().<Funp> fold(f1, (f, var) -> FunpDefine.of(false, var, FunpDontCare.of(), f));
 		}
 
 		private Funp parseNewVariable(Node node, String var) {

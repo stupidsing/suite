@@ -7,7 +7,6 @@ import java.util.Random;
 import suite.immutable.IList;
 import suite.primitive.LngMutable;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 import suite.util.HtmlUtil;
 import suite.util.To;
 
@@ -106,7 +105,7 @@ public class HttpSessionController {
 		}
 
 		private HttpResponse showLoginPage(IList<String> redirectPath, boolean isLoginFailed) {
-			var redirectPath1 = Read.from(redirectPath).map(p -> "/" + p).collect(As::joined);
+			var redirectPath1 = redirectPath.streamlet().map(p -> "/" + p).collect(As::joined);
 
 			return HttpResponse.of(To.outlet("<html>" //
 					+ "<head><title>Login</title></head>" //

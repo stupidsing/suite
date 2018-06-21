@@ -60,7 +60,7 @@ public class SewingClonerImpl implements ClonerFactory {
 			} else if (node0 instanceof Reference) {
 				var index = vm.computeIndex((Reference) node0);
 				fun = env -> env.get(index);
-				// } else if (node0 instanceof Tuple) {
+			} else if (node0 instanceof Tuple) {
 				var ps = Read.from(Tuple.t(node0)).map(this::cloner).toArray(Clone_.class);
 				var size = ps.length;
 				fun = env -> Tuple.of(To.array(size, Node.class, i -> ps[i].apply(env)));

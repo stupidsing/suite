@@ -24,7 +24,7 @@ public class Lister {
 	}
 
 	private String path(IList<Node> path) {
-		return Read.from(path).map(Node::toString).reverse().collect(As.conc("."));
+		return path.streamlet().map(Node::toString).reverse().collect(As.conc("."));
 	}
 
 	public Streamlet<IList<Node>> leaves(Node node) {

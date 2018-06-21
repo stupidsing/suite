@@ -6,7 +6,6 @@ import suite.adt.pair.Pair;
 import suite.immutable.IList;
 import suite.immutable.IMap;
 import suite.streamlet.As;
-import suite.streamlet.Read;
 
 public class HttpRequest {
 
@@ -54,7 +53,7 @@ public class HttpRequest {
 	}
 
 	public String getLogString() {
-		return method + " " + Read.from(paths).collect(As.joinedBy("/"));
+		return method + " " + paths.streamlet().collect(As.joinedBy("/"));
 	}
 
 }
