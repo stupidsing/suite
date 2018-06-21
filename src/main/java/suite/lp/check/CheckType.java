@@ -48,9 +48,8 @@ public class CheckType {
 				if (nElements != null)
 					for (var i = 1; i < nElements; i++) {
 						var key = Pair.of(prototype, i);
-						var p = ps[i];
 						var type0 = types.computeIfAbsent(key, k -> new Reference());
-						var type1 = getType(p);
+						var type1 = getType(ps[i]);
 						bind(type0, type1);
 					}
 			} catch (Exception ex) {
@@ -63,7 +62,11 @@ public class CheckType {
 
 	private Node getType(Node data) {
 		return new SwitchNode<Node>(data //
-		).applyIf(Reference.class, n -> {
+		).match(Atom.NIL, () -> {
+			return Suite.substitute("_;");
+		}).applyIf(Atom.class, n -> {
+			return getEnumType(n, Atom.NIL);
+		}).applyIf(Reference.class, n -> {
 			return variableTypes.computeIfAbsent(IdentityKey.of(n), k -> new Reference()).finalNode();
 		}).applyTree((op, l, r) -> {
 			if (op == TermOp.AND___) {
@@ -82,10 +85,6 @@ public class CheckType {
 				var tr = getType(r);
 				return getEnumType(name, TreeTuple.of(tl, tr));
 			}
-		}).match(Atom.NIL, () -> {
-			return Suite.substitute("_;");
-		}).applyIf(Atom.class, n -> {
-			return getEnumType(n, Atom.NIL);
 		}).applyIf(Node.class, n -> {
 			return Atom.of(data.getClass().getSimpleName());
 		}).result();
