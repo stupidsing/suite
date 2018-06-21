@@ -62,6 +62,7 @@ import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.Rethrow.SourceEx;
 import suite.util.Switch;
 import suite.util.To;
@@ -256,18 +257,13 @@ public class P0Parse {
 		private Funp bind(Node a, Node b, Node c, Node d) {
 			var varsMutable = Mutable.of(ISet.<String> empty());
 
-			var be = new Object() {
-				private Funp extract(Funp be) {
-					return inspect.rewrite(Funp.class, n_ -> {
-						return new Switch<Funp>(n_ //
-						).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
-							varsMutable.update(varsMutable.get().replace(var));
-							return FunpVariable.of(var);
-						})).result();
-					}, be);
-				}
-			}.extract(p(a));
+			Iterate<Funp> iter = be -> inspect.rewrite(Funp.class, n_ -> new Switch<Funp>(n_) //
+					.applyIf(FunpVariableNew.class, f -> f.apply(var -> {
+						varsMutable.update(varsMutable.get().replace(var));
+						return FunpVariable.of(var);
+					})).result(), be);
 
+			var be = iter.apply(p(a));
 			var vars = varsMutable.get();
 			var value = p(b);
 			var then = new Parse(vars.streamlet().fold(variables, ISet::add)).p(c);
