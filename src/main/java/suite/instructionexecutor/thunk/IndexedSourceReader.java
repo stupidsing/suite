@@ -29,7 +29,7 @@ public class IndexedSourceReader<T> {
 			public T head() {
 				synchronized (IndexedSourceReader.this) {
 					while (queue.size() <= position - offset) {
-						T t = source != null ? source.source() : null;
+						var t = source != null ? source.source() : null;
 
 						if (t != null) {
 							var size1 = queue.size() + 1;

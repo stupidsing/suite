@@ -29,8 +29,7 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 
 	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java) throws IOException {
 		compile(canonicalName, java);
-		Class<? extends T> load = load(canonicalName);
-		return Object_.new_(load);
+		return Object_.new_(load(canonicalName));
 	}
 
 	private <T> Class<? extends T> load(String canonicalName) {
@@ -38,7 +37,7 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 
 		return Rethrow.ex(() -> {
 			@SuppressWarnings("unchecked")
-			Class<? extends T> clazz = (Class<? extends T>) classLoader.loadClass(canonicalName);
+			var clazz = (Class<? extends T>) classLoader.loadClass(canonicalName);
 			return clazz;
 		});
 	}

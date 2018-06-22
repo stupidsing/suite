@@ -34,20 +34,8 @@ public class Constants {
 	public static Path tmp = Paths.get("/tmp");
 
 	public static FixieArray<String> bindSecrets(String pattern) {
-		var generalizer = new Generalizer();
-		String[] m;
-
-		if (secrets().prove(generalizer.generalize(Suite.parse(pattern)))) {
-			var list = new ArrayList<>();
-			var i = 0;
-			Node n;
-			while (!((n = generalizer.getVariable(Atom.of("." + i++))).finalNode() instanceof Reference))
-				list.add(Formatter.display(n));
-			m = list.toArray(new String[0]);
-		} else
-			m = Fail.t("Cannot match " + pattern);
-
-		return FixieArray.of(m);
+		var m = secrets(pattern);
+		return m != null ? FixieArray.of(m) : Fail.t("Cannot match " + pattern);
 	}
 
 	public static String[] secrets(String pattern) {
