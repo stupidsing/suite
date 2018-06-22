@@ -181,11 +181,10 @@ public class IntIntMap1 {
 				long kv;
 				int v;
 				while (index < capacity)
-					if ((v = v(kv = kvs[index])) == IntFunUtil.EMPTYVALUE)
-						index++;
+					if ((v = v(kv = kvs[index++])) == IntFunUtil.EMPTYVALUE)
+						;
 					else {
 						pair.update(k(kv), v);
-						index++;
 						return true;
 					}
 				return false;
