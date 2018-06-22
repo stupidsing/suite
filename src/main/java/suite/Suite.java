@@ -107,7 +107,8 @@ public class Suite {
 	 * May specify a prototype to limit the rules listed.
 	 */
 	public static Node listRules(RuleSet rs, Prototype proto) {
-		var nodes = Read.from(rs.getRules()) //
+		var nodes = Read //
+				.from(rs.getRules()) //
 				.filter(rule -> proto == null || proto.equals(Prototype.of(rule))) //
 				.map(Rule::clause) //
 				.toList();

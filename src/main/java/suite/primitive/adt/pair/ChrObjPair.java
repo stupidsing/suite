@@ -41,7 +41,7 @@ public class ChrObjPair<T> {
 
 	public static <T extends Comparable<? super T>> Comparator<ChrObjPair<T>> comparator() {
 		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
+			var c = Boolean.compare(pair0 != null, pair1 != null);
 			c = c == 0 ? Character.compare(pair0.t0, pair1.t0) : c;
 			c = c == 0 ? Object_.compare(pair0.t1, pair1.t1) : c;
 			return c;
@@ -50,7 +50,7 @@ public class ChrObjPair<T> {
 
 	public static <T> Comparator<ChrObjPair<T>> comparatorByFirst() {
 		return (pair0, pair1) -> {
-			int c = Boolean.compare(pair0 != null, pair1 != null);
+			var c = Boolean.compare(pair0 != null, pair1 != null);
 			c = c == 0 ? Character.compare(pair0.t0, pair1.t0) : c;
 			return c;
 		};
@@ -76,7 +76,7 @@ public class ChrObjPair<T> {
 	@Override
 	public boolean equals(Object object) {
 		if (Object_.clazz(object) == ChrObjPair.class) {
-			ChrObjPair<?> other = (ChrObjPair<?>) object;
+			var other = (ChrObjPair<?>) object;
 			return t0 == other.t0 && Objects.equals(t1, other.t1);
 		} else
 			return false;
