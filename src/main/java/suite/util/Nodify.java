@@ -111,8 +111,8 @@ public class Nodify {
 					return node;
 				};
 				return new Nodifier(forward, n -> {
-					var list = Read //
-							.from(Tree.iter(n, TermOp.OR____)) //
+					var list = Tree //
+							.iter(n, TermOp.OR____) //
 							.map(n_ -> apply_(n_, nodifier1)) //
 							.toList();
 					return To.array_(list.size(), componentType, list::get);
@@ -132,12 +132,11 @@ public class Nodify {
 						return Fail.t("cannot instantiate enum from interfaces");
 				});
 			else {
-				var fieldInfos = inspect //
+				var pairs = inspect //
 						.fields(clazz) //
 						.map(field -> new FieldInfo(field, field.getName(), getNodifier(field.getGenericType()))) //
+						.map(f -> Pair.of(Atom.of(f.name), f)) //
 						.toList();
-
-				var pairs = Read.from(fieldInfos).map(f -> Pair.of(Atom.of(f.name), f)).toList();
 
 				return new Nodifier(o -> Rethrow.ex(() -> {
 					var dict = Dict.of();
@@ -174,7 +173,7 @@ public class Nodify {
 					Tree.forceSetRight(tree, Atom.NIL);
 					return start.getRight();
 				}, n -> {
-					var list = Read.from(Tree.iter(n, TermOp.OR____)).map(n_ -> apply_(n_, nodifier1)).toList();
+					var list = Tree.iter(n, TermOp.OR____).map(n_ -> apply_(n_, nodifier1)).toList();
 					var o1 = (Collection<Object>) Object_.instantiate(clazz);
 					o1.addAll(list);
 					return o1;

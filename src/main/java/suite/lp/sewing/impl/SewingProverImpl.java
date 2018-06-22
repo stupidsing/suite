@@ -574,7 +574,7 @@ public class SewingProverImpl implements ProverFactory {
 				return okay;
 			};
 		} else if ((m = Suite.pattern("member .0 .1").match(node)) != null && TreeUtil.isList(m[0], TermOp.AND___)) {
-			var elems_ = Read.from(Tree.iter(m[0])).map(bf::binder).toList();
+			var elems_ = Tree.iter(m[0]).map(bf::binder).toList();
 			var f = bf.cloner(m[1]);
 			tr = rt -> {
 				var iter = elems_.iterator();
