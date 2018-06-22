@@ -67,7 +67,7 @@ public class FailedTests {
 	@Test
 	public void testRepeat() throws IOException {
 		var rs = Suite.newRuleSet();
-		Suite.importPath(rs, "auto.sl");
+		rs.importPath("auto.sl");
 		assertTrue(Suite.proveLogic(rs, "repeat, fail"));
 	}
 

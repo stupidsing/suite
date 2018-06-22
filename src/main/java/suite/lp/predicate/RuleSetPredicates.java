@@ -39,12 +39,12 @@ public class RuleSetPredicates {
 		return prover.bind(Tree.of(TermOp.NEXT__, nodes), p0);
 	});
 
-	public BuiltinPredicate importPredicate = PredicateUtil.p1((prover, p0) -> Suite.importFrom(prover.ruleSet(), p0));
+	public BuiltinPredicate importPredicate = PredicateUtil.p1((prover, p0) -> prover.ruleSet().importFrom(p0));
 
 	public BuiltinPredicate importUrl = PredicateUtil.p1((prover, p0) -> {
 		var url = Formatter.display(p0);
 		try {
-			return Suite.importUrl(prover.ruleSet(), url);
+			return prover.ruleSet().importUrl(url);
 		} catch (Exception ex) {
 			return Fail.t("exception when importing " + url, ex);
 		}

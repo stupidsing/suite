@@ -85,9 +85,9 @@ public class CommandDispatcher {
 
 	public boolean importFiles(List<String> importFilenames) throws IOException {
 		var code = true;
-		code &= Suite.importPath(ruleSet, "auto.sl");
+		code &= ruleSet.importPath("auto.sl");
 		for (var importFilename : importFilenames)
-			code &= Suite.importFile(ruleSet, importFilename);
+			code &= ruleSet.importFile(importFilename);
 		return code;
 	}
 
@@ -230,7 +230,7 @@ public class CommandDispatcher {
 	public boolean dispatchProve(List<String> inputs) throws IOException {
 		var in = parseInput(inputs);
 		var ruleSet = Suite.newRuleSet();
-		return Suite.importPath(ruleSet, "auto.sl") && Suite.proveLogic(ruleSet, in);
+		return ruleSet.importPath("auto.sl") && Suite.proveLogic(ruleSet, in);
 	}
 
 	public boolean dispatchType(List<String> inputs) throws IOException {

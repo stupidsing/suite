@@ -90,7 +90,7 @@ public class Constants {
 	private static Source<Prover> memoizeSecrets = Memoize.source(() -> {
 		var rs = Suite.newRuleSet();
 		var text = To.string(HomeDir.resolve("private/secrets.sl"));
-		Suite.importFrom(rs, Suite.parse(text));
+		rs.importFrom(Suite.parse(text));
 		return new Prover(rs);
 	});
 

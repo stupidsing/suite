@@ -5,7 +5,6 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.URL;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,7 +12,6 @@ import java.util.Set;
 import suite.BindArrayUtil.Pattern;
 import suite.fp.FunCompilerConfig;
 import suite.fp.intrinsic.Intrinsics;
-import suite.immutable.IPointer;
 import suite.instructionexecutor.FunInstructionExecutor;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Configuration.TraceLevel;
@@ -29,12 +27,10 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.parser.IterativeParser;
-import suite.primitive.Chars;
 import suite.primitive.IoSink;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Source;
-import suite.util.To;
 
 public class Suite {
 
@@ -68,7 +64,7 @@ public class Suite {
 	}
 
 	public static Node applyCharsReader(Node func, Reader reader) {
-		Data<IPointer<Chars>> data = new Data<>(Intrinsics.read(reader));
+		var data = new Data<>(Intrinsics.read(reader));
 		return substitute("atom:.0 | erase-type | cs-drain | .1", data, func);
 	}
 
@@ -97,7 +93,7 @@ public class Suite {
 
 	public static RuleSet getRuleSet(Node node) {
 		var rs = newRuleSet();
-		importUtil.importFrom(rs, node);
+		rs.importFrom(node);
 		return rs;
 	}
 
@@ -229,26 +225,6 @@ public class Suite {
 
 	// --------------------------------
 	// import utilities
-
-	public static boolean importFile(RuleSet rs, String filename) throws IOException {
-		return importUtil.importUrl(rs, new URL("file", null, filename));
-	}
-
-	public static boolean importFrom(RuleSet ruleSet, Node node) {
-		return importUtil.importFrom(ruleSet, node);
-	}
-
-	public static boolean importPath(RuleSet ruleSet, String path) throws IOException {
-		return importUtil.importPath(ruleSet, path);
-	}
-
-	public static boolean importUrl(RuleSet ruleSet, String url) throws IOException {
-		return importUtil.importUrl(ruleSet, To.url(url));
-	}
-
-	public static boolean importResource(RuleSet rs, String classpath) throws IOException {
-		return importUtil.importUrl(rs, new URL("classpath", null, classpath));
-	}
 
 	public static Prover newProver(List<String> toImports) {
 		return importUtil.newProver(toImports);
