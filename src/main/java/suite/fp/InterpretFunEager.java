@@ -270,13 +270,10 @@ public class InterpretFunEager {
 		var t1 = n1 instanceof Fn ? 1 : 0;
 		var c = t0 - t1;
 		if (c == 0)
-			switch (t0) {
-			case 0:
+			if (t0 == 0)
 				c = Comparer.comparer.compare(n0, n1);
-				break;
-			case 1:
+			else
 				c = System.identityHashCode(t0) - System.identityHashCode(t1);
-			}
 		return c;
 	}
 
@@ -291,14 +288,11 @@ public class InterpretFunEager {
 	private Node fn(int n, Fun<List<Node>, Node> fun) {
 		return new Object() {
 			private Node fn(List<Node> ps, int n, Fun<List<Node>, Node> fun) {
-				if (n != 0)
-					return f(p -> {
-						var ps1 = new ArrayList<>(ps);
-						ps1.add(p);
-						return fn(ps1, n - 1, fun);
-					});
-				else
-					return fun.apply(ps);
+				return n != 0 ? f(p -> {
+					var ps1 = new ArrayList<>(ps);
+					ps1.add(p);
+					return fn(ps1, n - 1, fun);
+				}) : fun.apply(ps);
 			}
 		}.fn(new ArrayList<>(), n, fun);
 	}
@@ -310,14 +304,12 @@ public class InterpretFunEager {
 	}
 
 	private Operator oper(Node type) {
-		Operator operator;
 		if (type == Atom.of("L"))
-			operator = TermOp.OR____;
+			return TermOp.OR____;
 		else if (type == Atom.of("P"))
-			operator = TermOp.AND___;
+			return TermOp.AND___;
 		else
-			operator = Fail.t("unknown CONS type");
-		return operator;
+			return Fail.t("unknown CONS type");
 	}
 
 	private Atom b(boolean b) {
