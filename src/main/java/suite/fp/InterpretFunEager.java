@@ -97,30 +97,26 @@ public class InterpretFunEager {
 			}).match(Matcher.defvars, (list, do_) -> {
 				var tuple = Suite.pattern(".0 .1");
 				var arrays = Tree.iter(list).map(tuple::match).toList();
-				if (arrays.size() == 1) {
-					var array = arrays.get(0);
-					var vm1 = vm.put(array[0], unwrap(getter(fs)));
-					var eager1 = new Eager(fs + 1, vm1);
-					var value_ = wrap(eager1.eager_(array[1]));
-					var expr = eager1.eager_(do_);
-					return frame -> {
-						frame.add(value_.apply(frame));
-						return expr.apply(frame);
-					};
-				} else {
-					var vm1 = vm;
-					var fs1 = fs;
+				var vm1 = vm;
+				var fs1 = fs;
 
-					for (var array : arrays)
-						vm1 = vm1.put(array[0], unwrap(getter(fs1++)));
+				for (var array : arrays)
+					vm1 = vm1.put(array[0], unwrap(getter(fs1++)));
 
-					var eager1 = new Eager(fs1, vm1);
-					var values_ = Read.from(arrays).map(array -> wrap(eager1.eager_(array[1]))).toList();
-					var expr = eager1.eager_(do_);
+				var eager1 = new Eager(fs1, vm1);
+				var expr = eager1.eager_(do_);
+				var values_ = Read.from(arrays).map(array -> wrap(eager1.eager_(array[1]))).toList();
 
+				if (1 < arrays.size())
 					return frame -> {
 						for (var value_ : values_)
 							frame.add(value_.apply(frame));
+						return expr.apply(frame);
+					};
+				else {
+					var value_ = values_.get(0);
+					return frame -> {
+						frame.add(value_.apply(frame));
 						return expr.apply(frame);
 					};
 				}
