@@ -8,7 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import suite.adt.pair.Fixie;
+import suite.adt.pair.FixieArray;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
 import suite.node.Atom;
@@ -33,8 +33,7 @@ public class Constants {
 	public static boolean testFlag = false; // for controlled experiments
 	public static Path tmp = Paths.get("/tmp");
 
-	public static Fixie<String, String, String, String, String, String, String, String, String, String> bindSecrets(
-			String pattern) {
+	public static FixieArray<String> bindSecrets(String pattern) {
 		var generalizer = new Generalizer();
 		String[] m;
 
@@ -46,23 +45,9 @@ public class Constants {
 				list.add(Formatter.display(n));
 			m = list.toArray(new String[0]);
 		} else
-			m = null;
+			m = Fail.t("Cannot match " + pattern);
 
-		if (m != null) {
-			var length = m.length;
-			return Fixie.of( //
-					0 < length ? m[0] : null, //
-					1 < length ? m[1] : null, //
-					2 < length ? m[2] : null, //
-					3 < length ? m[3] : null, //
-					4 < length ? m[4] : null, //
-					5 < length ? m[5] : null, //
-					6 < length ? m[6] : null, //
-					7 < length ? m[7] : null, //
-					8 < length ? m[8] : null, //
-					9 < length ? m[9] : null);
-		} else
-			return Fail.t("Cannot match " + pattern);
+		return FixieArray.of(m);
 	}
 
 	public static String[] secrets(String pattern) {

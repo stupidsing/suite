@@ -46,10 +46,6 @@ public class Reference extends Node {
 		return node != this ? node.hashCode() : Fail.t("no hash code for free references");
 	}
 
-	public Node getNode() {
-		return node;
-	}
-
 	public int getId() {
 		return id;
 	}
