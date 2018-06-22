@@ -31,7 +31,7 @@ public class SingularValueDecomposition {
 
 		for (var j = 0; j < width_; j++) {
 			var j_ = j;
-			var mean = Ints_.range(0, height).toDouble(Int_Dbl.sum(i -> m1[i][j_])) / height;
+			var mean = Ints_.range(height).toDouble(Int_Dbl.sum(i -> m1[i][j_])) / height;
 			for (var i = 0; i < height; i++)
 				m1[i][j_] -= mean;
 		}
