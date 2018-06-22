@@ -11,7 +11,7 @@ public class TailRecursionTest {
 
 	@Test
 	public void testTailRecursion() {
-		Suite.useLibraries(() -> {
+		Suite.noLibraries(() -> {
 			var fp0 = "" //
 					+ "define dec := n => if (1 < n) then (dec {n - 1}) else 0 \n" //
 					+ ">> \n" //

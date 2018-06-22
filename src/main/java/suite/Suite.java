@@ -15,8 +15,8 @@ import suite.fp.intrinsic.Intrinsics;
 import suite.instructionexecutor.FunInstructionExecutor;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.Configuration.TraceLevel;
-import suite.lp.ImportUtil;
 import suite.lp.doer.Prover;
+import suite.lp.kb.DoubleIndexedRuleSet;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.lp.kb.RuleSet;
@@ -31,6 +31,7 @@ import suite.primitive.IoSink;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Source;
+import suite.util.Rethrow;
 
 public class Suite {
 
@@ -52,7 +53,6 @@ public class Suite {
 	private static BindArrayUtil bindArrayUtil = new BindArrayUtil();
 	private static CompileUtil compileUtil = new CompileUtil();
 	private static EvaluateUtil evaluateUtil = new EvaluateUtil();
-	private static ImportUtil importUtil = new ImportUtil();
 	private static IterativeParser parser = new IterativeParser(TermOp.values());
 
 	public static void addRule(RuleSet rs, String rule) {
@@ -73,7 +73,7 @@ public class Suite {
 	}
 
 	public static Node applyWriter(Node func) {
-		return Suite.substitute(".0 | lines | map {cs-from-string}", func);
+		return substitute(".0 | lines | map {cs-from-string}", func);
 	}
 
 	public static FunCompilerConfig fcc(Node fp) {
@@ -111,17 +111,34 @@ public class Suite {
 		return Tree.of(TermOp.NEXT__, nodes);
 	}
 
-	public static <T> T useLibraries(Source<T> source) {
+	public static Prover newProver(List<String> toImports) {
+		return new Prover(newRuleSet(toImports));
+	}
+
+	public static RuleSet newRuleSet(List<String> toImports) {
+		return Rethrow.ex(() -> {
+			var rs = newRuleSet();
+			for (var toImport : toImports)
+				rs.importPath(toImport);
+			return rs;
+		});
+	}
+
+	public static RuleSet newRuleSet() {
+		return new DoubleIndexedRuleSet();
+	}
+
+	public static <T> T noLibraries(Source<T> source) {
 		return useLibraries(List.of(), source);
 	}
 
-	public static <T> T useLibraries(List<String> libraries, Source<T> source) {
-		var libraries0 = Suite.libraries;
-		Suite.libraries = libraries;
+	public static <T> T useLibraries(List<String> libraries_, Source<T> source) {
+		var libraries0 = libraries;
+		libraries = libraries_;
 		try {
 			return source.source();
 		} finally {
-			Suite.libraries = libraries0;
+			libraries = libraries0;
 		}
 	}
 
@@ -175,7 +192,7 @@ public class Suite {
 		try {
 			var node0 = parse(program);
 			var node1 = applyStringReader(node0, reader);
-			var node2 = isDo ? Suite.applyPerform(node1, Atom.of("string")) : node1;
+			var node2 = isDo ? applyPerform(node1, Atom.of("string")) : node1;
 			var node3 = applyWriter(node2);
 			evaluateFunToWriter(fcc(node3, isLazy), writer);
 		} catch (IOException ex) {
@@ -221,21 +238,6 @@ public class Suite {
 
 	public static boolean proveLogic(Builder builder, RuleSet rs, Node lp) {
 		return evaluateUtil.proveLogic(builder, rs, lp);
-	}
-
-	// --------------------------------
-	// import utilities
-
-	public static Prover newProver(List<String> toImports) {
-		return importUtil.newProver(toImports);
-	}
-
-	public static RuleSet newRuleSet(List<String> toImports) {
-		return importUtil.newRuleSet(toImports);
-	}
-
-	public static RuleSet newRuleSet() {
-		return importUtil.newRuleSet();
 	}
 
 	// --------------------------------

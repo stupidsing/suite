@@ -16,7 +16,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
-import suite.util.Rethrow;
 import suite.util.To;
 
 public interface RuleSet {
@@ -64,24 +63,7 @@ class RuleSetImport {
 	String root = "file:" + FileUtil.homeDir() + "/src/main/ll/";
 	ThreadLocal<IList<Node>> importing = ThreadLocal.withInitial(() -> IList.end());
 
-	public Prover newProver(List<String> toImports) {
-		return new Prover(newRuleSet(toImports));
-	}
-
-	public RuleSet newRuleSet(List<String> toImports) {
-		return Rethrow.ex(() -> {
-			var rs = newRuleSet();
-			for (var toImport : toImports)
-				rs.importPath(toImport);
-			return rs;
-		});
-	}
-
-	public RuleSet newRuleSet() {
-		return new DoubleIndexedRuleSet();
-	}
-
-	public synchronized boolean importFrom(RuleSet ruleSet, Node node) {
+	synchronized boolean importFrom(RuleSet ruleSet, Node node) {
 		var rules = new ArrayList<Rule>();
 
 		for (var elem : Tree.iter(node, TermOp.NEXT__))
