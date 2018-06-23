@@ -80,7 +80,7 @@ public class Assembler {
 
 		var lnis = Read //
 				.from(List_.right(lines, start)) //
-				.map(line -> String_.split2r(line, "\t").map((label, command) -> {
+				.map(line -> String_.split2l(line, "\t").map((label, command) -> {
 					var reference = String_.isNotBlank(label) ? generalizer.getVariable(Atom.of(label)) : null;
 					var instruction = generalizer.generalize(Suite.parse(command));
 					return Pair.of(reference, instruction);
