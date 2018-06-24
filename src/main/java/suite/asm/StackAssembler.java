@@ -80,15 +80,13 @@ public class StackAssembler {
 				fs -= 4;
 				node1 = Suite.substitute("POP .0", rewrite(rs, m[0]));
 			} else if ((m = FRPOPN.match(node0)) != null) {
-				var int_ = (Int) m[0].finalNode();
-				fs -= int_.number;
+				fs -= Int.num(m[0].finalNode());
 				node1 = Atom.NIL;
 			} else if ((m = FRPSH_.match(node0)) != null) {
 				fs += 4;
 				node1 = Suite.substitute("PUSH .0", rewrite(rs, m[0]));
 			} else if ((m = FRPSHN.match(node0)) != null) {
-				var int_ = (Int) m[0].finalNode();
-				fs += int_.number;
+				fs += Int.num(m[0].finalNode());
 				node1 = Atom.NIL;
 			} else if ((m = LET___.match(node0)) != null)
 				if (Binder.bind(m[0], Int.of(TreeUtil.evaluate(m[1])), trail))

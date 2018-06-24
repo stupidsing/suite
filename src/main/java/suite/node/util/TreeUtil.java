@@ -54,8 +54,8 @@ public class TreeUtil {
 		var list = new ArrayList<Node>();
 		new Object() {
 			private void breakdown(Node node_) {
-				Tree tree;
-				if ((tree = Tree.decompose(node_, operator)) != null) {
+				var tree = Tree.decompose(node_, operator);
+				if (tree != null) {
 					breakdown(tree.getLeft());
 					breakdown(tree.getRight());
 				} else
