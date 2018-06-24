@@ -114,17 +114,18 @@ public class Assembler {
 			AssemblePredicates.isPass2 = isPass2;
 			out.clear();
 
-			for (var lni : lnis) {
-				var address = org + out.size();
+			for (var lni : lnis)
+				out.append(lni.map((reference, instruction) -> {
+					var address = org + out.size();
 
-				if (lni.t0 != null)
-					if (!isPass2)
-						lni.t0.bound(Int.of(address));
-					else if (Int.num(lni.t0.finalNode()) != address)
-						Fail.t("address varied between passes at " + Integer.toHexString(address));
+					if (reference != null)
+						if (!isPass2)
+							lni.t0.bound(Int.of(address));
+						else if (Int.num(reference.finalNode()) != address)
+							Fail.t("address varied between passes at " + Integer.toHexString(address));
 
-				out.append(assemble(isPass2, address, lni.t1));
-			}
+					return assemble(isPass2, address, instruction);
+				}));
 
 			for (var lni : lnis)
 				if (lni.t0 != null && isPass2)
