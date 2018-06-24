@@ -31,12 +31,12 @@ public class DpkgUtil {
 		var arch = pm.get("Architecture");
 		var dir = dpkgDir + "/info/";
 
-		var files = new ArrayList<File>();
-		files.add(new File(dir + packageName + ".list"));
-		if (arch != null)
-			files.add(new File(dir + packageName + ":" + arch + ".list"));
+		var files = Read.each(new File(dir + packageName + ".list"));
 
-		var file = Read.from(files).filter(File::exists).first();
+		if (arch != null)
+			files = files.snoc(new File(dir + packageName + ":" + arch + ".list"));
+
+		var file = files.filter(File::exists).first();
 		return file != null ? Read.lines(file) : null;
 	}
 
