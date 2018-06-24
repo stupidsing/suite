@@ -45,16 +45,9 @@ import suite.util.NullableSyncQueue;
 import suite.util.Object_;
 import suite.util.To;
 
-/***
- * Implement functional structures using
- * 
- * class methods( instead of static* methods in
- * 
- * class FunUtil),just for easier code completion in source editor.**
- * 
- * @author ywsing
- */
 public class IntOutlet implements OutletDefaults<Integer> {
+
+	private static int EMPTYVALUE = IntFunUtil.EMPTYVALUE;
 
 	private IntSource source;
 
@@ -82,7 +75,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 			private int i = start;
 
 			public int source() {
-				var c = pred.test(i) ? ts[i] : IntFunUtil.EMPTYVALUE;
+				var c = pred.test(i) ? ts[i] : EMPTYVALUE;
 				i += inc;
 				return c;
 			}
@@ -100,7 +93,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	public static IntOutlet of(Source<Integer> source) {
 		return IntOutlet.of(() -> {
 			var c = source.source();
-			return c != null ? c : IntFunUtil.EMPTYVALUE;
+			return c != null ? c : EMPTYVALUE;
 		});
 	}
 
@@ -115,7 +108,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	public int average() {
 		var count = 0;
 		int result = 0, c1;
-		while ((c1 = next()) != IntFunUtil.EMPTYVALUE) {
+		while ((c1 = next()) != EMPTYVALUE) {
 			result += c1;
 			count++;
 		}
@@ -129,7 +122,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	public IntOutlet closeAtEnd(Closeable c) {
 		return of(() -> {
 			var next = next();
-			if (next == IntFunUtil.EMPTYVALUE)
+			if (next == EMPTYVALUE)
 				Object_.closeQuietly(c);
 			return next;
 		});
@@ -157,7 +150,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	public int count() {
 		var i = 0;
-		while (next() != IntFunUtil.EMPTYVALUE)
+		while (next() != EMPTYVALUE)
 			i++;
 		return i;
 	}
@@ -181,7 +174,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		var set = new HashSet<>();
 		return of(() -> {
 			int c;
-			while ((c = next()) != IntFunUtil.EMPTYVALUE && !set.add(c))
+			while ((c = next()) != EMPTYVALUE && !set.add(c))
 				;
 			return c;
 		});
@@ -189,7 +182,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	public IntOutlet drop(int n) {
 		var isAvailable = true;
-		while (0 < n && (isAvailable &= next() != IntFunUtil.EMPTYVALUE))
+		while (0 < n && (isAvailable &= next() != EMPTYVALUE))
 			n--;
 		return isAvailable ? this : empty();
 	}
@@ -200,7 +193,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 			var source1 = ((IntOutlet) object).source;
 			int o0, o1;
 			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
-				if (o0 == IntFunUtil.EMPTYVALUE && o1 == IntFunUtil.EMPTYVALUE)
+				if (o0 == EMPTYVALUE && o1 == EMPTYVALUE)
 					return true;
 			return false;
 		} else
@@ -221,7 +214,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	public <R> R fold(R init, IntObj_Obj<R, R> fun) {
 		int c;
-		while ((c = next()) != IntFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			init = fun.apply(c, init);
 		return init;
 	}
@@ -238,7 +231,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	public int hashCode() {
 		var h = 7;
 		int c;
-		while ((c = source.source()) != IntFunUtil.EMPTYVALUE)
+		while ((c = source.source()) != EMPTYVALUE)
 			h = h * 31 + Objects.hashCode(c);
 		return h;
 	}
@@ -249,7 +242,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 			public boolean source2(IntObjPair<Integer> pair) {
 				var c = next();
-				if (c != IntFunUtil.EMPTYVALUE) {
+				if (c != EMPTYVALUE) {
 					pair.update(c, i++);
 					return true;
 				} else
@@ -272,8 +265,8 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public int last() {
-		int c, c1 = IntFunUtil.EMPTYVALUE;
-		while ((c = next()) != IntFunUtil.EMPTYVALUE)
+		int c, c1 = EMPTYVALUE;
+		while ((c = next()) != EMPTYVALUE)
 			c1 = c;
 		return c1;
 	}
@@ -304,7 +297,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	public int min(IntComparator comparator) {
 		var c = minOrEmpty(comparator);
-		if (c != IntFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE)
 			return c;
 		else
 			return Fail.t("no result");
@@ -312,13 +305,13 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	public int minOrEmpty(IntComparator comparator) {
 		int c = next(), c1;
-		if (c != IntFunUtil.EMPTYVALUE) {
-			while ((c1 = next()) != IntFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE) {
+			while ((c1 = next()) != EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
 					c = c1;
 			return c;
 		} else
-			return IntFunUtil.EMPTYVALUE;
+			return EMPTYVALUE;
 	}
 
 	public int next() {
@@ -332,7 +325,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 			int c;
 			do
 				queue.offerQuietly(c = source.source());
-			while (c != IntFunUtil.EMPTYVALUE);
+			while (c != EMPTYVALUE);
 		}).start();
 
 		return new IntOutlet(() -> {
@@ -344,8 +337,8 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	public IntOpt opt() {
 		var c = next();
-		if (c != IntFunUtil.EMPTYVALUE)
-			if (next() == IntFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE)
+			if (next() == EMPTYVALUE)
 				return IntOpt.of(c);
 			else
 				return Fail.t("more than one result");
@@ -364,14 +357,14 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	public void sink(IntSink sink0) {
 		var sink1 = sink0.rethrow();
 		int c;
-		while ((c = next()) != IntFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			sink1.sink(c);
 	}
 
 	public IntOutlet skip(int n) {
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
-			end = next() == IntFunUtil.EMPTYVALUE;
+			end = next() == EMPTYVALUE;
 		return !end ? of(source) : empty();
 	}
 
@@ -393,7 +386,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	public int sum() {
 		int result = 0, c1;
-		while ((c1 = next()) != IntFunUtil.EMPTYVALUE)
+		while ((c1 = next()) != EMPTYVALUE)
 			result += c1;
 		return result;
 	}
@@ -416,7 +409,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	public IntsBuilder toList() {
 		var list = new IntsBuilder();
 		int c;
-		while ((c = next()) != IntFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			list.append(c);
 		return list;
 	}
@@ -428,7 +421,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	public <K> IntObjMap<IntsBuilder> toListMap(Int_Int valueFun) {
 		var map = new IntObjMap<IntsBuilder>();
 		int c;
-		while ((c = next()) != IntFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			map.computeIfAbsent(c, k_ -> new IntsBuilder()).append(valueFun.apply(c));
 		return map;
 	}
@@ -437,7 +430,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		var kf1 = keyFun.rethrow();
 		var map = new ObjIntMap<K>();
 		int c;
-		while ((c = next()) != IntFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			map.put(kf1.apply(c), c);
 		return map;
 	}
@@ -447,7 +440,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		var vf1 = vf0.rethrow();
 		var map = new HashMap<K, V>();
 		int c;
-		while ((c = next()) != IntFunUtil.EMPTYVALUE) {
+		while ((c = next()) != EMPTYVALUE) {
 			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
 				Fail.t("duplicate key " + key);
@@ -466,13 +459,13 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	public IntSet toSet() {
 		var set = new IntSet();
 		int c;
-		while ((c = next()) != IntFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			set.add(c);
 		return set;
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Int_Obj<K> keyFun, Int_Obj<V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
+		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	private <K, V> Outlet2<K, V> map2_(Int_Obj<K> kf0, Int_Obj<V> vf0) {

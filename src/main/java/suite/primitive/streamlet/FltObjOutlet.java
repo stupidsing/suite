@@ -41,6 +41,8 @@ import suite.util.To;
 
 public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 
+	private static float EMPTYVALUE = FltFunUtil.EMPTYVALUE;
+
 	private FltObjSource<V> source;
 
 	@SafeVarargs
@@ -255,7 +257,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	public FltOutlet keys() {
 		return FltOutlet.of(() -> {
 			var pair = FltObjPair.<V> of((float) 0, null);
-			return next(pair) ? pair.t0 : FltFunUtil.EMPTYVALUE;
+			return next(pair) ? pair.t0 : EMPTYVALUE;
 		});
 	}
 

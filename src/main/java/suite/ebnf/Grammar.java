@@ -41,7 +41,7 @@ public class Grammar {
 				.filter(lr -> lr != null) //
 				.collect(As::streamlet) //
 				.map2(lr -> lr.t0, lr -> lr.map(breakdown::breakdown)) //
-				.collect(As::map);
+				.toMap();
 	}
 
 	public Grammar(GrammarType type) {

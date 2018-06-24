@@ -378,7 +378,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public <K, V> Map<K, V> toMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).uniqueResult()).collect(As::map);
+		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).uniqueResult()).toMap();
 	}
 
 	public <K, V> ListMultimap<K, T> toMultimap(Fun<T, K> keyFun) {
@@ -398,7 +398,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Fun<T, K> keyFun, Fun<T, V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
+		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	private <K, V> Outlet2<K, V> map2_(Fun<T, K> kf0, Fun<T, V> vf0) {

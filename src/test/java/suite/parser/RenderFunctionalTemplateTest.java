@@ -10,7 +10,6 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 
 public class RenderFunctionalTemplateTest {
@@ -24,7 +23,7 @@ public class RenderFunctionalTemplateTest {
 						Pair.of("list", Tree.of(TermOp.OR____, fruits)), //
 						Pair.of("title", new Str("My favourite things"))) //
 				) //
-				.collect(As::map);
+				.toMap();
 
 		System.out.println(new RenderFunctionalTemplate() //
 				.render("" //

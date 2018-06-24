@@ -41,6 +41,8 @@ import suite.util.To;
 
 public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
+	private static double EMPTYVALUE = DblFunUtil.EMPTYVALUE;
+
 	private DblObjSource<V> source;
 
 	@SafeVarargs
@@ -255,7 +257,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	public DblOutlet keys() {
 		return DblOutlet.of(() -> {
 			var pair = DblObjPair.<V> of((double) 0, null);
-			return next(pair) ? pair.t0 : DblFunUtil.EMPTYVALUE;
+			return next(pair) ? pair.t0 : EMPTYVALUE;
 		});
 	}
 

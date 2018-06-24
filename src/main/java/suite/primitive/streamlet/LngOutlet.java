@@ -45,16 +45,9 @@ import suite.util.NullableSyncQueue;
 import suite.util.Object_;
 import suite.util.To;
 
-/***
- * Implement functional structures using
- * 
- * class methods( instead of static* methods in
- * 
- * class FunUtil),just for easier code completion in source editor.**
- * 
- * @author ywsing
- */
 public class LngOutlet implements OutletDefaults<Long> {
+
+	private static long EMPTYVALUE = LngFunUtil.EMPTYVALUE;
 
 	private LngSource source;
 
@@ -82,7 +75,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 			private int i = start;
 
 			public long source() {
-				var c = pred.test(i) ? ts[i] : LngFunUtil.EMPTYVALUE;
+				var c = pred.test(i) ? ts[i] : EMPTYVALUE;
 				i += inc;
 				return c;
 			}
@@ -100,7 +93,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	public static LngOutlet of(Source<Long> source) {
 		return LngOutlet.of(() -> {
 			var c = source.source();
-			return c != null ? c : LngFunUtil.EMPTYVALUE;
+			return c != null ? c : EMPTYVALUE;
 		});
 	}
 
@@ -115,7 +108,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	public long average() {
 		var count = 0;
 		long result = 0, c1;
-		while ((c1 = next()) != LngFunUtil.EMPTYVALUE) {
+		while ((c1 = next()) != EMPTYVALUE) {
 			result += c1;
 			count++;
 		}
@@ -129,7 +122,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	public LngOutlet closeAtEnd(Closeable c) {
 		return of(() -> {
 			var next = next();
-			if (next == LngFunUtil.EMPTYVALUE)
+			if (next == EMPTYVALUE)
 				Object_.closeQuietly(c);
 			return next;
 		});
@@ -157,7 +150,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	public int count() {
 		var i = 0;
-		while (next() != LngFunUtil.EMPTYVALUE)
+		while (next() != EMPTYVALUE)
 			i++;
 		return i;
 	}
@@ -181,7 +174,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 		var set = new HashSet<>();
 		return of(() -> {
 			long c;
-			while ((c = next()) != LngFunUtil.EMPTYVALUE && !set.add(c))
+			while ((c = next()) != EMPTYVALUE && !set.add(c))
 				;
 			return c;
 		});
@@ -189,7 +182,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	public LngOutlet drop(int n) {
 		var isAvailable = true;
-		while (0 < n && (isAvailable &= next() != LngFunUtil.EMPTYVALUE))
+		while (0 < n && (isAvailable &= next() != EMPTYVALUE))
 			n--;
 		return isAvailable ? this : empty();
 	}
@@ -200,7 +193,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 			var source1 = ((LngOutlet) object).source;
 			long o0, o1;
 			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
-				if (o0 == LngFunUtil.EMPTYVALUE && o1 == LngFunUtil.EMPTYVALUE)
+				if (o0 == EMPTYVALUE && o1 == EMPTYVALUE)
 					return true;
 			return false;
 		} else
@@ -221,7 +214,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	public <R> R fold(R init, LngObj_Obj<R, R> fun) {
 		long c;
-		while ((c = next()) != LngFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			init = fun.apply(c, init);
 		return init;
 	}
@@ -238,7 +231,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	public int hashCode() {
 		var h = 7;
 		long c;
-		while ((c = source.source()) != LngFunUtil.EMPTYVALUE)
+		while ((c = source.source()) != EMPTYVALUE)
 			h = h * 31 + Objects.hashCode(c);
 		return h;
 	}
@@ -249,7 +242,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 			public boolean source2(LngObjPair<Integer> pair) {
 				var c = next();
-				if (c != LngFunUtil.EMPTYVALUE) {
+				if (c != EMPTYVALUE) {
 					pair.update(c, i++);
 					return true;
 				} else
@@ -272,8 +265,8 @@ public class LngOutlet implements OutletDefaults<Long> {
 	}
 
 	public long last() {
-		long c, c1 = LngFunUtil.EMPTYVALUE;
-		while ((c = next()) != LngFunUtil.EMPTYVALUE)
+		long c, c1 = EMPTYVALUE;
+		while ((c = next()) != EMPTYVALUE)
 			c1 = c;
 		return c1;
 	}
@@ -304,7 +297,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	public long min(LngComparator comparator) {
 		var c = minOrEmpty(comparator);
-		if (c != LngFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE)
 			return c;
 		else
 			return Fail.t("no result");
@@ -312,13 +305,13 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	public long minOrEmpty(LngComparator comparator) {
 		long c = next(), c1;
-		if (c != LngFunUtil.EMPTYVALUE) {
-			while ((c1 = next()) != LngFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE) {
+			while ((c1 = next()) != EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
 					c = c1;
 			return c;
 		} else
-			return LngFunUtil.EMPTYVALUE;
+			return EMPTYVALUE;
 	}
 
 	public long next() {
@@ -332,7 +325,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 			long c;
 			do
 				queue.offerQuietly(c = source.source());
-			while (c != LngFunUtil.EMPTYVALUE);
+			while (c != EMPTYVALUE);
 		}).start();
 
 		return new LngOutlet(() -> {
@@ -344,8 +337,8 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	public LngOpt opt() {
 		var c = next();
-		if (c != LngFunUtil.EMPTYVALUE)
-			if (next() == LngFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE)
+			if (next() == EMPTYVALUE)
 				return LngOpt.of(c);
 			else
 				return Fail.t("more than one result");
@@ -364,14 +357,14 @@ public class LngOutlet implements OutletDefaults<Long> {
 	public void sink(LngSink sink0) {
 		var sink1 = sink0.rethrow();
 		long c;
-		while ((c = next()) != LngFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			sink1.sink(c);
 	}
 
 	public LngOutlet skip(int n) {
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
-			end = next() == LngFunUtil.EMPTYVALUE;
+			end = next() == EMPTYVALUE;
 		return !end ? of(source) : empty();
 	}
 
@@ -393,7 +386,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 
 	public long sum() {
 		long result = 0, c1;
-		while ((c1 = next()) != LngFunUtil.EMPTYVALUE)
+		while ((c1 = next()) != EMPTYVALUE)
 			result += c1;
 		return result;
 	}
@@ -416,7 +409,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	public LongsBuilder toList() {
 		var list = new LongsBuilder();
 		long c;
-		while ((c = next()) != LngFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			list.append(c);
 		return list;
 	}
@@ -428,7 +421,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 	public <K> LngObjMap<LongsBuilder> toListMap(Lng_Lng valueFun) {
 		var map = new LngObjMap<LongsBuilder>();
 		long c;
-		while ((c = next()) != LngFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			map.computeIfAbsent(c, k_ -> new LongsBuilder()).append(valueFun.apply(c));
 		return map;
 	}
@@ -437,7 +430,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 		var kf1 = keyFun.rethrow();
 		var map = new ObjLngMap<K>();
 		long c;
-		while ((c = next()) != LngFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			map.put(kf1.apply(c), c);
 		return map;
 	}
@@ -447,7 +440,7 @@ public class LngOutlet implements OutletDefaults<Long> {
 		var vf1 = vf0.rethrow();
 		var map = new HashMap<K, V>();
 		long c;
-		while ((c = next()) != LngFunUtil.EMPTYVALUE) {
+		while ((c = next()) != EMPTYVALUE) {
 			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
 				Fail.t("duplicate key " + key);
@@ -466,13 +459,13 @@ public class LngOutlet implements OutletDefaults<Long> {
 	public LngSet toSet() {
 		var set = new LngSet();
 		long c;
-		while ((c = next()) != LngFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			set.add(c);
 		return set;
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Lng_Obj<K> keyFun, Lng_Obj<V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
+		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	private <K, V> Outlet2<K, V> map2_(Lng_Obj<K> kf0, Lng_Obj<V> vf0) {

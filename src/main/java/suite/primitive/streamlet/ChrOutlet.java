@@ -45,16 +45,9 @@ import suite.util.NullableSyncQueue;
 import suite.util.Object_;
 import suite.util.To;
 
-/***
- * Implement functional structures using
- * 
- * class methods( instead of static* methods in
- * 
- * class FunUtil),just for easier code completion in source editor.**
- * 
- * @author ywsing
- */
 public class ChrOutlet implements OutletDefaults<Character> {
+
+	private static char EMPTYVALUE = ChrFunUtil.EMPTYVALUE;
 
 	private ChrSource source;
 
@@ -82,7 +75,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 			private int i = start;
 
 			public char source() {
-				var c = pred.test(i) ? ts[i] : ChrFunUtil.EMPTYVALUE;
+				var c = pred.test(i) ? ts[i] : EMPTYVALUE;
 				i += inc;
 				return c;
 			}
@@ -100,7 +93,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	public static ChrOutlet of(Source<Character> source) {
 		return ChrOutlet.of(() -> {
 			var c = source.source();
-			return c != null ? c : ChrFunUtil.EMPTYVALUE;
+			return c != null ? c : EMPTYVALUE;
 		});
 	}
 
@@ -115,7 +108,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	public char average() {
 		var count = 0;
 		char result = 0, c1;
-		while ((c1 = next()) != ChrFunUtil.EMPTYVALUE) {
+		while ((c1 = next()) != EMPTYVALUE) {
 			result += c1;
 			count++;
 		}
@@ -129,7 +122,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	public ChrOutlet closeAtEnd(Closeable c) {
 		return of(() -> {
 			var next = next();
-			if (next == ChrFunUtil.EMPTYVALUE)
+			if (next == EMPTYVALUE)
 				Object_.closeQuietly(c);
 			return next;
 		});
@@ -157,7 +150,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	public int count() {
 		var i = 0;
-		while (next() != ChrFunUtil.EMPTYVALUE)
+		while (next() != EMPTYVALUE)
 			i++;
 		return i;
 	}
@@ -181,7 +174,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		var set = new HashSet<>();
 		return of(() -> {
 			char c;
-			while ((c = next()) != ChrFunUtil.EMPTYVALUE && !set.add(c))
+			while ((c = next()) != EMPTYVALUE && !set.add(c))
 				;
 			return c;
 		});
@@ -189,7 +182,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	public ChrOutlet drop(int n) {
 		var isAvailable = true;
-		while (0 < n && (isAvailable &= next() != ChrFunUtil.EMPTYVALUE))
+		while (0 < n && (isAvailable &= next() != EMPTYVALUE))
 			n--;
 		return isAvailable ? this : empty();
 	}
@@ -200,7 +193,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 			var source1 = ((ChrOutlet) object).source;
 			char o0, o1;
 			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
-				if (o0 == ChrFunUtil.EMPTYVALUE && o1 == ChrFunUtil.EMPTYVALUE)
+				if (o0 == EMPTYVALUE && o1 == EMPTYVALUE)
 					return true;
 			return false;
 		} else
@@ -221,7 +214,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	public <R> R fold(R init, ChrObj_Obj<R, R> fun) {
 		char c;
-		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			init = fun.apply(c, init);
 		return init;
 	}
@@ -238,7 +231,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	public int hashCode() {
 		var h = 7;
 		char c;
-		while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
+		while ((c = source.source()) != EMPTYVALUE)
 			h = h * 31 + Objects.hashCode(c);
 		return h;
 	}
@@ -249,7 +242,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 			public boolean source2(ChrObjPair<Integer> pair) {
 				var c = next();
-				if (c != ChrFunUtil.EMPTYVALUE) {
+				if (c != EMPTYVALUE) {
 					pair.update(c, i++);
 					return true;
 				} else
@@ -272,8 +265,8 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public char last() {
-		char c, c1 = ChrFunUtil.EMPTYVALUE;
-		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
+		char c, c1 = EMPTYVALUE;
+		while ((c = next()) != EMPTYVALUE)
 			c1 = c;
 		return c1;
 	}
@@ -304,7 +297,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	public char min(ChrComparator comparator) {
 		var c = minOrEmpty(comparator);
-		if (c != ChrFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE)
 			return c;
 		else
 			return Fail.t("no result");
@@ -312,13 +305,13 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	public char minOrEmpty(ChrComparator comparator) {
 		char c = next(), c1;
-		if (c != ChrFunUtil.EMPTYVALUE) {
-			while ((c1 = next()) != ChrFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE) {
+			while ((c1 = next()) != EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
 					c = c1;
 			return c;
 		} else
-			return ChrFunUtil.EMPTYVALUE;
+			return EMPTYVALUE;
 	}
 
 	public char next() {
@@ -332,7 +325,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 			char c;
 			do
 				queue.offerQuietly(c = source.source());
-			while (c != ChrFunUtil.EMPTYVALUE);
+			while (c != EMPTYVALUE);
 		}).start();
 
 		return new ChrOutlet(() -> {
@@ -344,8 +337,8 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	public ChrOpt opt() {
 		var c = next();
-		if (c != ChrFunUtil.EMPTYVALUE)
-			if (next() == ChrFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE)
+			if (next() == EMPTYVALUE)
 				return ChrOpt.of(c);
 			else
 				return Fail.t("more than one result");
@@ -364,14 +357,14 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	public void sink(ChrSink sink0) {
 		var sink1 = sink0.rethrow();
 		char c;
-		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			sink1.sink(c);
 	}
 
 	public ChrOutlet skip(int n) {
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
-			end = next() == ChrFunUtil.EMPTYVALUE;
+			end = next() == EMPTYVALUE;
 		return !end ? of(source) : empty();
 	}
 
@@ -393,7 +386,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	public char sum() {
 		char result = 0, c1;
-		while ((c1 = next()) != ChrFunUtil.EMPTYVALUE)
+		while ((c1 = next()) != EMPTYVALUE)
 			result += c1;
 		return result;
 	}
@@ -416,7 +409,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	public CharsBuilder toList() {
 		var list = new CharsBuilder();
 		char c;
-		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			list.append(c);
 		return list;
 	}
@@ -428,7 +421,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	public <K> ChrObjMap<CharsBuilder> toListMap(Chr_Chr valueFun) {
 		var map = new ChrObjMap<CharsBuilder>();
 		char c;
-		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			map.computeIfAbsent(c, k_ -> new CharsBuilder()).append(valueFun.apply(c));
 		return map;
 	}
@@ -437,7 +430,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		var kf1 = keyFun.rethrow();
 		var map = new ObjChrMap<K>();
 		char c;
-		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			map.put(kf1.apply(c), c);
 		return map;
 	}
@@ -447,7 +440,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		var vf1 = vf0.rethrow();
 		var map = new HashMap<K, V>();
 		char c;
-		while ((c = next()) != ChrFunUtil.EMPTYVALUE) {
+		while ((c = next()) != EMPTYVALUE) {
 			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
 				Fail.t("duplicate key " + key);
@@ -466,13 +459,13 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	public ChrSet toSet() {
 		var set = new ChrSet();
 		char c;
-		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			set.add(c);
 		return set;
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Chr_Obj<K> keyFun, Chr_Obj<V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
+		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	private <K, V> Outlet2<K, V> map2_(Chr_Obj<K> kf0, Chr_Obj<V> vf0) {

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -42,23 +43,21 @@ public class DpkgUtil {
 
 	public Set<String> getDependeeSet(List<Map<String, String>> packages, Set<String> set0) {
 		var dependees = getDependeesOf(packages);
-		var nl = new ArrayList<String>(set0);
+		var nl = new ArrayList<>(set0);
 		var set1 = new HashSet<>(set0);
 
 		while (!nl.isEmpty()) {
 			var p = nl.remove(nl.size() - 1);
-			var list = dependees.get(p);
 
-			if (list != null)
-				for (var np : list)
-					if (set1.add(np))
-						nl.add(np);
+			for (var np : dependees.get(p))
+				if (set1.add(np))
+					nl.add(np);
 		}
 
 		return set1;
 	}
 
-	public Map<String, List<String>> getDependeesOf(List<Map<String, String>> packages) {
+	public ListMultimap<String, String> getDependeesOf(List<Map<String, String>> packages) {
 		return Read //
 				.from(packages) //
 				.map(pm -> {
@@ -71,14 +70,11 @@ public class DpkgUtil {
 					return Pair.of(pm.get("Package"), list);
 				}) //
 				.map2(Pair::fst, Pair::snd) //
-				.collect(As::map);
+				.collect(As::multimap);
 	}
 
 	public Map<String, List<String>> getDependersOf(List<Map<String, String>> packages) {
-		return Read //
-				.multimap(getDependeesOf(packages)) //
-				.map2((k, v) -> v, (k, v) -> k) //
-				.toListMap();
+		return getDependeesOf(packages).entries().map2((k, v) -> v, (k, v) -> k).toListMap();
 	}
 
 }

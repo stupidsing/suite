@@ -45,16 +45,9 @@ import suite.util.NullableSyncQueue;
 import suite.util.Object_;
 import suite.util.To;
 
-/***
- * Implement functional structures using
- * 
- * class methods( instead of static* methods in
- * 
- * class FunUtil),just for easier code completion in source editor.**
- * 
- * @author ywsing
- */
 public class FltOutlet implements OutletDefaults<Float> {
+
+	private static float EMPTYVALUE = FltFunUtil.EMPTYVALUE;
 
 	private FltSource source;
 
@@ -82,7 +75,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 			private int i = start;
 
 			public float source() {
-				var c = pred.test(i) ? ts[i] : FltFunUtil.EMPTYVALUE;
+				var c = pred.test(i) ? ts[i] : EMPTYVALUE;
 				i += inc;
 				return c;
 			}
@@ -100,7 +93,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	public static FltOutlet of(Source<Float> source) {
 		return FltOutlet.of(() -> {
 			var c = source.source();
-			return c != null ? c : FltFunUtil.EMPTYVALUE;
+			return c != null ? c : EMPTYVALUE;
 		});
 	}
 
@@ -115,7 +108,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	public float average() {
 		var count = 0;
 		float result = 0, c1;
-		while ((c1 = next()) != FltFunUtil.EMPTYVALUE) {
+		while ((c1 = next()) != EMPTYVALUE) {
 			result += c1;
 			count++;
 		}
@@ -129,7 +122,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	public FltOutlet closeAtEnd(Closeable c) {
 		return of(() -> {
 			var next = next();
-			if (next == FltFunUtil.EMPTYVALUE)
+			if (next == EMPTYVALUE)
 				Object_.closeQuietly(c);
 			return next;
 		});
@@ -157,7 +150,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	public int count() {
 		var i = 0;
-		while (next() != FltFunUtil.EMPTYVALUE)
+		while (next() != EMPTYVALUE)
 			i++;
 		return i;
 	}
@@ -181,7 +174,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 		var set = new HashSet<>();
 		return of(() -> {
 			float c;
-			while ((c = next()) != FltFunUtil.EMPTYVALUE && !set.add(c))
+			while ((c = next()) != EMPTYVALUE && !set.add(c))
 				;
 			return c;
 		});
@@ -189,7 +182,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	public FltOutlet drop(int n) {
 		var isAvailable = true;
-		while (0 < n && (isAvailable &= next() != FltFunUtil.EMPTYVALUE))
+		while (0 < n && (isAvailable &= next() != EMPTYVALUE))
 			n--;
 		return isAvailable ? this : empty();
 	}
@@ -200,7 +193,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 			var source1 = ((FltOutlet) object).source;
 			float o0, o1;
 			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
-				if (o0 == FltFunUtil.EMPTYVALUE && o1 == FltFunUtil.EMPTYVALUE)
+				if (o0 == EMPTYVALUE && o1 == EMPTYVALUE)
 					return true;
 			return false;
 		} else
@@ -221,7 +214,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	public <R> R fold(R init, FltObj_Obj<R, R> fun) {
 		float c;
-		while ((c = next()) != FltFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			init = fun.apply(c, init);
 		return init;
 	}
@@ -238,7 +231,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	public int hashCode() {
 		var h = 7;
 		float c;
-		while ((c = source.source()) != FltFunUtil.EMPTYVALUE)
+		while ((c = source.source()) != EMPTYVALUE)
 			h = h * 31 + Objects.hashCode(c);
 		return h;
 	}
@@ -249,7 +242,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 			public boolean source2(FltObjPair<Integer> pair) {
 				var c = next();
-				if (c != FltFunUtil.EMPTYVALUE) {
+				if (c != EMPTYVALUE) {
 					pair.update(c, i++);
 					return true;
 				} else
@@ -272,8 +265,8 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public float last() {
-		float c, c1 = FltFunUtil.EMPTYVALUE;
-		while ((c = next()) != FltFunUtil.EMPTYVALUE)
+		float c, c1 = EMPTYVALUE;
+		while ((c = next()) != EMPTYVALUE)
 			c1 = c;
 		return c1;
 	}
@@ -304,7 +297,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	public float min(FltComparator comparator) {
 		var c = minOrEmpty(comparator);
-		if (c != FltFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE)
 			return c;
 		else
 			return Fail.t("no result");
@@ -312,13 +305,13 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	public float minOrEmpty(FltComparator comparator) {
 		float c = next(), c1;
-		if (c != FltFunUtil.EMPTYVALUE) {
-			while ((c1 = next()) != FltFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE) {
+			while ((c1 = next()) != EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
 					c = c1;
 			return c;
 		} else
-			return FltFunUtil.EMPTYVALUE;
+			return EMPTYVALUE;
 	}
 
 	public float next() {
@@ -332,7 +325,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 			float c;
 			do
 				queue.offerQuietly(c = source.source());
-			while (c != FltFunUtil.EMPTYVALUE);
+			while (c != EMPTYVALUE);
 		}).start();
 
 		return new FltOutlet(() -> {
@@ -344,8 +337,8 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	public FltOpt opt() {
 		var c = next();
-		if (c != FltFunUtil.EMPTYVALUE)
-			if (next() == FltFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE)
+			if (next() == EMPTYVALUE)
 				return FltOpt.of(c);
 			else
 				return Fail.t("more than one result");
@@ -364,14 +357,14 @@ public class FltOutlet implements OutletDefaults<Float> {
 	public void sink(FltSink sink0) {
 		var sink1 = sink0.rethrow();
 		float c;
-		while ((c = next()) != FltFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			sink1.sink(c);
 	}
 
 	public FltOutlet skip(int n) {
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
-			end = next() == FltFunUtil.EMPTYVALUE;
+			end = next() == EMPTYVALUE;
 		return !end ? of(source) : empty();
 	}
 
@@ -393,7 +386,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	public float sum() {
 		float result = 0, c1;
-		while ((c1 = next()) != FltFunUtil.EMPTYVALUE)
+		while ((c1 = next()) != EMPTYVALUE)
 			result += c1;
 		return result;
 	}
@@ -416,7 +409,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	public FloatsBuilder toList() {
 		var list = new FloatsBuilder();
 		float c;
-		while ((c = next()) != FltFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			list.append(c);
 		return list;
 	}
@@ -428,7 +421,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	public <K> FltObjMap<FloatsBuilder> toListMap(Flt_Flt valueFun) {
 		var map = new FltObjMap<FloatsBuilder>();
 		float c;
-		while ((c = next()) != FltFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			map.computeIfAbsent(c, k_ -> new FloatsBuilder()).append(valueFun.apply(c));
 		return map;
 	}
@@ -437,7 +430,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 		var kf1 = keyFun.rethrow();
 		var map = new ObjFltMap<K>();
 		float c;
-		while ((c = next()) != FltFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			map.put(kf1.apply(c), c);
 		return map;
 	}
@@ -447,7 +440,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 		var vf1 = vf0.rethrow();
 		var map = new HashMap<K, V>();
 		float c;
-		while ((c = next()) != FltFunUtil.EMPTYVALUE) {
+		while ((c = next()) != EMPTYVALUE) {
 			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
 				Fail.t("duplicate key " + key);
@@ -466,13 +459,13 @@ public class FltOutlet implements OutletDefaults<Float> {
 	public FltSet toSet() {
 		var set = new FltSet();
 		float c;
-		while ((c = next()) != FltFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			set.add(c);
 		return set;
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Flt_Obj<K> keyFun, Flt_Obj<V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
+		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	private <K, V> Outlet2<K, V> map2_(Flt_Obj<K> kf0, Flt_Obj<V> vf0) {

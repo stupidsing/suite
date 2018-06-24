@@ -41,6 +41,8 @@ import suite.util.To;
 
 public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
+	private static long EMPTYVALUE = LngFunUtil.EMPTYVALUE;
+
 	private LngObjSource<V> source;
 
 	@SafeVarargs
@@ -255,7 +257,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	public LngOutlet keys() {
 		return LngOutlet.of(() -> {
 			var pair = LngObjPair.<V> of((long) 0, null);
-			return next(pair) ? pair.t0 : LngFunUtil.EMPTYVALUE;
+			return next(pair) ? pair.t0 : EMPTYVALUE;
 		});
 	}
 

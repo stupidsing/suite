@@ -41,6 +41,8 @@ import suite.util.To;
 
 public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 
+	private static int EMPTYVALUE = IntFunUtil.EMPTYVALUE;
+
 	private IntObjSource<V> source;
 
 	@SafeVarargs
@@ -255,7 +257,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 	public IntOutlet keys() {
 		return IntOutlet.of(() -> {
 			var pair = IntObjPair.<V> of((int) 0, null);
-			return next(pair) ? pair.t0 : IntFunUtil.EMPTYVALUE;
+			return next(pair) ? pair.t0 : EMPTYVALUE;
 		});
 	}
 

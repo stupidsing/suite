@@ -45,16 +45,9 @@ import suite.util.NullableSyncQueue;
 import suite.util.Object_;
 import suite.util.To;
 
-/***
- * Implement functional structures using
- * 
- * class methods( instead of static* methods in
- * 
- * class FunUtil),just for easier code completion in source editor.**
- * 
- * @author ywsing
- */
 public class DblOutlet implements OutletDefaults<Double> {
+
+	private static double EMPTYVALUE = DblFunUtil.EMPTYVALUE;
 
 	private DblSource source;
 
@@ -82,7 +75,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 			private int i = start;
 
 			public double source() {
-				var c = pred.test(i) ? ts[i] : DblFunUtil.EMPTYVALUE;
+				var c = pred.test(i) ? ts[i] : EMPTYVALUE;
 				i += inc;
 				return c;
 			}
@@ -100,7 +93,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	public static DblOutlet of(Source<Double> source) {
 		return DblOutlet.of(() -> {
 			var c = source.source();
-			return c != null ? c : DblFunUtil.EMPTYVALUE;
+			return c != null ? c : EMPTYVALUE;
 		});
 	}
 
@@ -115,7 +108,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	public double average() {
 		var count = 0;
 		double result = 0, c1;
-		while ((c1 = next()) != DblFunUtil.EMPTYVALUE) {
+		while ((c1 = next()) != EMPTYVALUE) {
 			result += c1;
 			count++;
 		}
@@ -129,7 +122,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	public DblOutlet closeAtEnd(Closeable c) {
 		return of(() -> {
 			var next = next();
-			if (next == DblFunUtil.EMPTYVALUE)
+			if (next == EMPTYVALUE)
 				Object_.closeQuietly(c);
 			return next;
 		});
@@ -157,7 +150,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 	public int count() {
 		var i = 0;
-		while (next() != DblFunUtil.EMPTYVALUE)
+		while (next() != EMPTYVALUE)
 			i++;
 		return i;
 	}
@@ -181,7 +174,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 		var set = new HashSet<>();
 		return of(() -> {
 			double c;
-			while ((c = next()) != DblFunUtil.EMPTYVALUE && !set.add(c))
+			while ((c = next()) != EMPTYVALUE && !set.add(c))
 				;
 			return c;
 		});
@@ -189,7 +182,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 	public DblOutlet drop(int n) {
 		var isAvailable = true;
-		while (0 < n && (isAvailable &= next() != DblFunUtil.EMPTYVALUE))
+		while (0 < n && (isAvailable &= next() != EMPTYVALUE))
 			n--;
 		return isAvailable ? this : empty();
 	}
@@ -200,7 +193,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 			var source1 = ((DblOutlet) object).source;
 			double o0, o1;
 			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
-				if (o0 == DblFunUtil.EMPTYVALUE && o1 == DblFunUtil.EMPTYVALUE)
+				if (o0 == EMPTYVALUE && o1 == EMPTYVALUE)
 					return true;
 			return false;
 		} else
@@ -221,7 +214,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 	public <R> R fold(R init, DblObj_Obj<R, R> fun) {
 		double c;
-		while ((c = next()) != DblFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			init = fun.apply(c, init);
 		return init;
 	}
@@ -238,7 +231,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	public int hashCode() {
 		var h = 7;
 		double c;
-		while ((c = source.source()) != DblFunUtil.EMPTYVALUE)
+		while ((c = source.source()) != EMPTYVALUE)
 			h = h * 31 + Objects.hashCode(c);
 		return h;
 	}
@@ -249,7 +242,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 			public boolean source2(DblObjPair<Integer> pair) {
 				var c = next();
-				if (c != DblFunUtil.EMPTYVALUE) {
+				if (c != EMPTYVALUE) {
 					pair.update(c, i++);
 					return true;
 				} else
@@ -272,8 +265,8 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public double last() {
-		double c, c1 = DblFunUtil.EMPTYVALUE;
-		while ((c = next()) != DblFunUtil.EMPTYVALUE)
+		double c, c1 = EMPTYVALUE;
+		while ((c = next()) != EMPTYVALUE)
 			c1 = c;
 		return c1;
 	}
@@ -304,7 +297,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 	public double min(DblComparator comparator) {
 		var c = minOrEmpty(comparator);
-		if (c != DblFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE)
 			return c;
 		else
 			return Fail.t("no result");
@@ -312,13 +305,13 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 	public double minOrEmpty(DblComparator comparator) {
 		double c = next(), c1;
-		if (c != DblFunUtil.EMPTYVALUE) {
-			while ((c1 = next()) != DblFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE) {
+			while ((c1 = next()) != EMPTYVALUE)
 				if (0 < comparator.compare(c, c1))
 					c = c1;
 			return c;
 		} else
-			return DblFunUtil.EMPTYVALUE;
+			return EMPTYVALUE;
 	}
 
 	public double next() {
@@ -332,7 +325,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 			double c;
 			do
 				queue.offerQuietly(c = source.source());
-			while (c != DblFunUtil.EMPTYVALUE);
+			while (c != EMPTYVALUE);
 		}).start();
 
 		return new DblOutlet(() -> {
@@ -344,8 +337,8 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 	public DblOpt opt() {
 		var c = next();
-		if (c != DblFunUtil.EMPTYVALUE)
-			if (next() == DblFunUtil.EMPTYVALUE)
+		if (c != EMPTYVALUE)
+			if (next() == EMPTYVALUE)
 				return DblOpt.of(c);
 			else
 				return Fail.t("more than one result");
@@ -364,14 +357,14 @@ public class DblOutlet implements OutletDefaults<Double> {
 	public void sink(DblSink sink0) {
 		var sink1 = sink0.rethrow();
 		double c;
-		while ((c = next()) != DblFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			sink1.sink(c);
 	}
 
 	public DblOutlet skip(int n) {
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
-			end = next() == DblFunUtil.EMPTYVALUE;
+			end = next() == EMPTYVALUE;
 		return !end ? of(source) : empty();
 	}
 
@@ -393,7 +386,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 	public double sum() {
 		double result = 0, c1;
-		while ((c1 = next()) != DblFunUtil.EMPTYVALUE)
+		while ((c1 = next()) != EMPTYVALUE)
 			result += c1;
 		return result;
 	}
@@ -416,7 +409,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	public DoublesBuilder toList() {
 		var list = new DoublesBuilder();
 		double c;
-		while ((c = next()) != DblFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			list.append(c);
 		return list;
 	}
@@ -428,7 +421,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	public <K> DblObjMap<DoublesBuilder> toListMap(Dbl_Dbl valueFun) {
 		var map = new DblObjMap<DoublesBuilder>();
 		double c;
-		while ((c = next()) != DblFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			map.computeIfAbsent(c, k_ -> new DoublesBuilder()).append(valueFun.apply(c));
 		return map;
 	}
@@ -437,7 +430,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 		var kf1 = keyFun.rethrow();
 		var map = new ObjDblMap<K>();
 		double c;
-		while ((c = next()) != DblFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			map.put(kf1.apply(c), c);
 		return map;
 	}
@@ -447,7 +440,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 		var vf1 = vf0.rethrow();
 		var map = new HashMap<K, V>();
 		double c;
-		while ((c = next()) != DblFunUtil.EMPTYVALUE) {
+		while ((c = next()) != EMPTYVALUE) {
 			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
 				Fail.t("duplicate key " + key);
@@ -466,13 +459,13 @@ public class DblOutlet implements OutletDefaults<Double> {
 	public DblSet toSet() {
 		var set = new DblSet();
 		double c;
-		while ((c = next()) != DblFunUtil.EMPTYVALUE)
+		while ((c = next()) != EMPTYVALUE)
 			set.add(c);
 		return set;
 	}
 
 	public <K, V> Map<K, Set<V>> toSetMap(Dbl_Obj<K> keyFun, Dbl_Obj<V> valueFun) {
-		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).collect(As::map);
+		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
 	private <K, V> Outlet2<K, V> map2_(Dbl_Obj<K> kf0, Dbl_Obj<V> vf0) {

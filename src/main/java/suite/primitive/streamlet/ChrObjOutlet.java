@@ -41,6 +41,8 @@ import suite.util.To;
 
 public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
+	private static char EMPTYVALUE = ChrFunUtil.EMPTYVALUE;
+
 	private ChrObjSource<V> source;
 
 	@SafeVarargs
@@ -255,7 +257,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	public ChrOutlet keys() {
 		return ChrOutlet.of(() -> {
 			var pair = ChrObjPair.<V> of((char) 0, null);
-			return next(pair) ? pair.t0 : ChrFunUtil.EMPTYVALUE;
+			return next(pair) ? pair.t0 : EMPTYVALUE;
 		});
 	}
 

@@ -11,7 +11,6 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.util.Comparer;
-import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
@@ -86,7 +85,7 @@ public class Rewrite_ {
 		public NodeWrite(ReadType type, Node terminal, Operator op, List<Pair<Node, Node>> children) {
 			switch (type) {
 			case DICT:
-				node = Dict.of(Read.from2(children).mapValue(Reference::of).collect(As::map));
+				node = Dict.of(Read.from2(children).mapValue(Reference::of).toMap());
 				break;
 			case TERM:
 				node = terminal;
