@@ -17,6 +17,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
+import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.parser.CommentPreprocessor;
 import suite.primitive.Bytes;
@@ -90,24 +91,17 @@ public class Assembler {
 	}
 
 	public Bytes assemble(Node input) {
+		var lnis = new ArrayList<Pair<Reference, Node>>();
 		var generalizer = new Generalizer();
 		var trail = new Trail();
-		var lnis = new ArrayList<Pair<Reference, Node>>();
 
-		for (var node0 : Tree.iter(input)) {
-			var node = generalizer.generalize(node0);
-			Tree tree;
-
-			if ((tree = Tree.decompose(node, TermOp.EQUAL_)) != null)
-				if (!Binder.bind(tree.getLeft(), tree.getRight(), trail))
-					Fail.t("bind failed");
-				else
-					;
-			else if ((tree = Tree.decompose(node, TermOp.TUPLE_)) != null)
-				lnis.add(Pair.of((Reference) tree.getLeft(), tree.getRight()));
-			else
-				Fail.t("cannot assemble " + node);
-		}
+		for (var node : Tree.iter(input))
+			new SwitchNode<Boolean>(generalizer.generalize(node) //
+			).match(".0 = .1", (l, r) -> {
+				return Binder.bind(l, r, trail) || Fail.b("bind failed");
+			}).match(".0 .1", (l, r) -> {
+				return lnis.add(Pair.of((Reference) l, r));
+			}).nonNullResult();
 
 		return assemble(generalizer, preassemble.apply(lnis));
 	}
