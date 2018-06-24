@@ -107,16 +107,12 @@ public class As {
 
 	public static <K, V> Map<K, V> map(Outlet2<K, V> outlet) {
 		var map = new HashMap<K, V>();
-		outlet.sink((k, v) -> {
-			if (map.put(k, v) != null)
-				Fail.t("duplicate key " + k);
-		});
-		return map;
+		return outlet.isAll((k, v) -> map.put(k, v) == null || Fail.b("duplicate key " + k)) ? map : null;
 	}
 
 	public static <T> Fun<Outlet<T>, Integer> min(Obj_Int<T> fun) {
 		return outlet -> {
-			Source<T> source = outlet.source();
+			var source = outlet.source();
 			var t = source.source();
 			int result1;
 			if (t != null) {
