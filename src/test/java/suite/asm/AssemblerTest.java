@@ -27,7 +27,7 @@ public class AssemblerTest {
 	public void testAssembleLongMode() throws IOException {
 		var assembler = new Assembler(32, true);
 		Bytes bytes = assembler.assemble(Suite.parse(".org = 0, .l MOV (R9D, DWORD 16),"));
-		assertEquals(bytes.size(), 7);
+		assertEquals(7, bytes.size());
 	}
 
 	@Test

@@ -82,7 +82,7 @@ public class Assembler {
 		var lnis = Read //
 				.from(List_.right(lines, start)) //
 				.map(line -> String_.split2l(line, "\t").map((label, command) -> {
-					var reference = String_.isNotBlank(label) ? generalizer.getVariable(Atom.of(label)) : null;
+					var reference = String_.isNotBlank(label) ? generalizer.getVariable(Atom.of(label)) : new Reference();
 					var instruction = generalizer.generalize(Suite.parse(command));
 					return Pair.of(reference, instruction);
 				})).toList();
@@ -118,17 +118,16 @@ public class Assembler {
 				out.append(lni.map((reference, instruction) -> {
 					var address = org + out.size();
 
-					if (reference != null)
-						if (!isPass2)
-							lni.t0.bound(Int.of(address));
-						else if (Int.num(reference.finalNode()) != address)
-							Fail.t("address varied between passes at " + Integer.toHexString(address));
+					if (!isPass2)
+						reference.bound(Int.of(address));
+					else if (Int.num(reference.finalNode()) != address)
+						Fail.t("address varied between passes at " + Integer.toHexString(address));
 
 					return assemble(isPass2, address, instruction);
 				}));
 
-			for (var lni : lnis)
-				if (lni.t0 != null && isPass2)
+			if (isPass2)
+				for (var lni : lnis)
 					lni.t0.unbound();
 		}
 
@@ -137,9 +136,9 @@ public class Assembler {
 
 	private Bytes assemble(boolean isPass2, int address, Node instruction) {
 		try {
-			var ins = List.of(Int.of(bits), Int.of(address), instruction);
+			var ins = Suite.substitute(".0, .1, .2,", Int.of(bits), Int.of(address), instruction);
 			var bytesList = new ArrayList<Bytes>();
-			finder.find(To.source(Tree.of(TermOp.AND___, ins)), node -> bytesList.add(convertByteStream(node)));
+			finder.find(To.source(ins), node -> bytesList.add(convertByteStream(node)));
 			return Read.from(bytesList).min((bytes0, bytes1) -> bytes0.size() - bytes1.size());
 		} catch (Exception ex) {
 			return Fail.t("in " + instruction + " during pass " + (!isPass2 ? "1" : "2"), ex);
@@ -148,11 +147,8 @@ public class Assembler {
 
 	private Bytes convertByteStream(Node node) {
 		var bb = new BytesBuilder();
-		Tree tree;
-		while ((tree = Tree.decompose(node, TermOp.AND___)) != null) {
-			bb.append((byte) Int.num(tree.getLeft()));
-			node = tree.getRight();
-		}
+		for (var n : Tree.iter(node, TermOp.AND___))
+			bb.append((byte) Int.num(n));
 		return bb.toBytes();
 	}
 
