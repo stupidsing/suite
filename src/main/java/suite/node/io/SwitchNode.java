@@ -66,31 +66,31 @@ public class SwitchNode<R> {
 	}
 
 	public <T> SwitchNode<R> match(Matcher<T> matcher, FixieFun0<R> fun) {
-		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
+		return result == null ? match_(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
 	}
 
 	public <T> SwitchNode<R> match(Matcher<T> matcher, FixieFun1<Node, R> fun) {
-		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
+		return result == null ? match_(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
 	}
 
 	public <T> SwitchNode<R> match(Matcher<T> matcher, FixieFun2<Node, Node, R> fun) {
-		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
+		return result == null ? match_(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
 	}
 
 	public <T> SwitchNode<R> match(Matcher<T> matcher, FixieFun3<Node, Node, Node, R> fun) {
-		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
+		return result == null ? match_(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
 	}
 
 	public <T> SwitchNode<R> match(Matcher<T> matcher, FixieFun4<Node, Node, Node, Node, R> fun) {
-		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
+		return result == null ? match_(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
 	}
 
 	public <T> SwitchNode<R> match(Matcher<T> matcher, FixieFun5<Node, Node, Node, Node, Node, R> fun) {
-		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
+		return result == null ? match_(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
 	}
 
 	public <T> SwitchNode<R> match(Matcher<T> matcher, FixieFun6<Node, Node, Node, Node, Node, Node, R> fun) {
-		return result == null ? matcher(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
+		return result == null ? match_(matcher, m -> FixieArray.of(nodes(m)).map(fun)) : this;
 	}
 
 	public SwitchNode<R> match(Pattern pattern, FixieFun0<R> fun) {
@@ -133,13 +133,6 @@ public class SwitchNode<R> {
 		return match_(Suite.pattern(pattern), fun);
 	}
 
-	public <T> SwitchNode<R> matcher(Matcher<T> matcher, Fun<T, R> fun) {
-		T t;
-		if (result == null && (t = matcher.match(in)) != null)
-			result = fun.apply(t);
-		return this;
-	}
-
 	public R nonNullResult() {
 		return result != null ? result : Fail.t("cannot handle " + in);
 	}
@@ -166,6 +159,13 @@ public class SwitchNode<R> {
 
 	private SwitchNode<R> match4_(Pattern pattern, FixieFun4<Node, Node, Node, Node, R> fun) {
 		return match_(pattern, m -> fun.apply(m[0], m[1], m[2], m[3]));
+	}
+
+	private <T> SwitchNode<R> match_(Matcher<T> matcher, Fun<T, R> fun) {
+		T t;
+		if (result == null && (t = matcher.match(in)) != null)
+			result = fun.apply(t);
+		return this;
 	}
 
 	private SwitchNode<R> match_(Pattern pattern, Fun<Node[], R> fun) {
