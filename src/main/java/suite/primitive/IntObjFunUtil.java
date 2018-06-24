@@ -21,23 +21,6 @@ import suite.util.Thread_;
 
 public class IntObjFunUtil {
 
-	public static <V> IntObjSource<V> append(int key, V value, IntObjSource<V> source) {
-		return new IntObjSource<>() {
-			private boolean isAppended = false;
-
-			public boolean source2(IntObjPair<V> pair) {
-				if (!isAppended) {
-					if (!source.source2(pair)) {
-						pair.update(key, value);
-						isAppended = true;
-					}
-					return true;
-				} else
-					return false;
-			}
-		};
-	}
-
 	public static <V> Source<IntObjSource<V>> chunk(int n, IntObjSource<V> source) {
 		return new Source<>() {
 			private IntObjPair<V> pair;
@@ -228,6 +211,23 @@ public class IntObjFunUtil {
 
 			public IntObjSource<V> source() {
 				return isAvailable ? cons(pair.t0, pair.t1, source2_) : null;
+			}
+		};
+	}
+
+	public static <V> IntObjSource<V> snoc(int key, V value, IntObjSource<V> source) {
+		return new IntObjSource<>() {
+			private boolean isAppended = false;
+
+			public boolean source2(IntObjPair<V> pair) {
+				if (!isAppended) {
+					if (!source.source2(pair)) {
+						pair.update(key, value);
+						isAppended = true;
+					}
+					return true;
+				} else
+					return false;
 			}
 		};
 	}

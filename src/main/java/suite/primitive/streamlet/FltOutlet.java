@@ -112,15 +112,6 @@ public class FltOutlet implements OutletDefaults<Float> {
 		this.source = source;
 	}
 
-	@Override
-	public Iterator<Float> iterator() {
-		return FltFunUtil.iterator(source);
-	}
-
-	public FltOutlet append(float c) {
-		return of(FltFunUtil.append(c, source));
-	}
-
 	public float average() {
 		var count = 0;
 		float result = 0, c1;
@@ -275,6 +266,11 @@ public class FltOutlet implements OutletDefaults<Float> {
 		return FltFunUtil.isAny(pred, source);
 	}
 
+	@Override
+	public Iterator<Float> iterator() {
+		return FltFunUtil.iterator(source);
+	}
+
 	public float last() {
 		float c, c1 = FltFunUtil.EMPTYVALUE;
 		while ((c = next()) != FltFunUtil.EMPTYVALUE)
@@ -377,6 +373,10 @@ public class FltOutlet implements OutletDefaults<Float> {
 		for (var i = 0; !end && i < n; i++)
 			end = next() == FltFunUtil.EMPTYVALUE;
 		return !end ? of(source) : empty();
+	}
+
+	public FltOutlet snoc(float c) {
+		return of(FltFunUtil.snoc(c, source));
 	}
 
 	public FltSource source() {

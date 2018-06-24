@@ -22,25 +22,6 @@ public class IntFunUtil {
 
 	public static int EMPTYVALUE = Integer.MIN_VALUE;
 
-	public static IntSource append(int c, IntSource source) {
-		return new IntSource() {
-			private boolean isAppended = false;
-
-			public int source() {
-				if (!isAppended) {
-					var c_ = source.source();
-					if (c_ != EMPTYVALUE)
-						return c_;
-					else {
-						isAppended = true;
-						return c;
-					}
-				} else
-					return EMPTYVALUE;
-			}
-		};
-	}
-
 	public static Source<IntSource> chunk(int n, IntSource source) {
 		return new Source<>() {
 			private int c = source.source();
@@ -212,6 +193,25 @@ public class IntFunUtil {
 
 	public static IntSource nullSource() {
 		return () -> EMPTYVALUE;
+	}
+
+	public static IntSource snoc(int c, IntSource source) {
+		return new IntSource() {
+			private boolean isAppended = false;
+
+			public int source() {
+				if (!isAppended) {
+					var c_ = source.source();
+					if (c_ != EMPTYVALUE)
+						return c_;
+					else {
+						isAppended = true;
+						return c;
+					}
+				} else
+					return EMPTYVALUE;
+			}
+		};
 	}
 
 	/**

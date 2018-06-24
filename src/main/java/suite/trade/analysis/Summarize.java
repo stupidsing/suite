@@ -178,7 +178,7 @@ public class Summarize {
 
 		public String out0() {
 			return details //
-					.append("" //
+					.snoc("" //
 							+ "size:" + size //
 							+ ", pnl:" + pnl //
 							+ ", div:" + dividend //
@@ -188,10 +188,10 @@ public class Summarize {
 
 		public String out1() {
 			return details //
-					.append("SIZ = " + size) //
-					.append("PNL = " + pnl) //
-					.append("DIV = " + dividend) //
-					.append(transactionSummary.out1()) //
+					.snoc("SIZ = " + size) //
+					.snoc("PNL = " + pnl) //
+					.snoc("DIV = " + dividend) //
+					.snoc(transactionSummary.out1()) //
 					.toString();
 		}
 	}

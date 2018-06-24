@@ -110,15 +110,6 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 		this.source = source;
 	}
 
-	@Override
-	public Iterator<LngObjPair<V>> iterator() {
-		return LngObjFunUtil.iterator(source);
-	}
-
-	public LngObjOutlet<V> append(Long key, V value) {
-		return of(LngObjFunUtil.append(key, value, source));
-	}
-
 	public Outlet<LngObjOutlet<V>> chunk(int n) {
 		return Outlet.of(FunUtil.map(LngObjOutlet<V>::new, LngObjFunUtil.chunk(n, source)));
 	}
@@ -256,6 +247,11 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 		return LngObjFunUtil.isAny(pred, source);
 	}
 
+	@Override
+	public Iterator<LngObjPair<V>> iterator() {
+		return LngObjFunUtil.iterator(source);
+	}
+
 	public LngOutlet keys() {
 		return LngOutlet.of(() -> {
 			var pair = LngObjPair.<V> of((long) 0, null);
@@ -372,6 +368,10 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
 		return !end ? of(source) : empty();
+	}
+
+	public LngObjOutlet<V> snoc(Long key, V value) {
+		return of(LngObjFunUtil.snoc(key, value, source));
 	}
 
 	public LngObjOutlet<V> sort(Comparator<LngObjPair<V>> comparator) {

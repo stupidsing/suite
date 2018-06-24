@@ -43,15 +43,6 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		this.in = in;
 	}
 
-	@Override
-	public Iterator<Float> iterator() {
-		return spawn().iterator();
-	}
-
-	public FltStreamlet append(float c) {
-		return streamlet(() -> spawn().append(c));
-	}
-
 	public <R> Streamlet<R> apply(Fun<FltStreamlet, R> fun) {
 		return Read.each(fun.apply(this));
 	}
@@ -151,6 +142,11 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		return spawn().isAny(pred);
 	}
 
+	@Override
+	public Iterator<Float> iterator() {
+		return spawn().iterator();
+	}
+
 	public <O> Streamlet2<Float, O> join2(Streamlet<O> streamlet) {
 		return concatMap2_(t -> streamlet.map2(v -> t, v -> v));
 	}
@@ -213,6 +209,10 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 
 	public FltStreamlet skip(int n) {
 		return streamlet(() -> spawn().skip(n));
+	}
+
+	public FltStreamlet snoc(float c) {
+		return streamlet(() -> spawn().snoc(c));
 	}
 
 	public FltStreamlet sort() {

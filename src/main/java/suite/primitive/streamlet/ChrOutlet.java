@@ -112,15 +112,6 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		this.source = source;
 	}
 
-	@Override
-	public Iterator<Character> iterator() {
-		return ChrFunUtil.iterator(source);
-	}
-
-	public ChrOutlet append(char c) {
-		return of(ChrFunUtil.append(c, source));
-	}
-
 	public char average() {
 		var count = 0;
 		char result = 0, c1;
@@ -275,6 +266,11 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		return ChrFunUtil.isAny(pred, source);
 	}
 
+	@Override
+	public Iterator<Character> iterator() {
+		return ChrFunUtil.iterator(source);
+	}
+
 	public char last() {
 		char c, c1 = ChrFunUtil.EMPTYVALUE;
 		while ((c = next()) != ChrFunUtil.EMPTYVALUE)
@@ -377,6 +373,10 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		for (var i = 0; !end && i < n; i++)
 			end = next() == ChrFunUtil.EMPTYVALUE;
 		return !end ? of(source) : empty();
+	}
+
+	public ChrOutlet snoc(char c) {
+		return of(ChrFunUtil.snoc(c, source));
 	}
 
 	public ChrSource source() {

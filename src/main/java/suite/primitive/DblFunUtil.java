@@ -22,25 +22,6 @@ public class DblFunUtil {
 
 	public static double EMPTYVALUE = Double.MIN_VALUE;
 
-	public static DblSource append(double c, DblSource source) {
-		return new DblSource() {
-			private boolean isAppended = false;
-
-			public double source() {
-				if (!isAppended) {
-					var c_ = source.source();
-					if (c_ != EMPTYVALUE)
-						return c_;
-					else {
-						isAppended = true;
-						return c;
-					}
-				} else
-					return EMPTYVALUE;
-			}
-		};
-	}
-
 	public static Source<DblSource> chunk(int n, DblSource source) {
 		return new Source<>() {
 			private double c = source.source();
@@ -212,6 +193,25 @@ public class DblFunUtil {
 
 	public static DblSource nullSource() {
 		return () -> EMPTYVALUE;
+	}
+
+	public static DblSource snoc(double c, DblSource source) {
+		return new DblSource() {
+			private boolean isAppended = false;
+
+			public double source() {
+				if (!isAppended) {
+					var c_ = source.source();
+					if (c_ != EMPTYVALUE)
+						return c_;
+					else {
+						isAppended = true;
+						return c;
+					}
+				} else
+					return EMPTYVALUE;
+			}
+		};
 	}
 
 	/**

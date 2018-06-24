@@ -43,15 +43,6 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		this.in = in;
 	}
 
-	@Override
-	public Iterator<Long> iterator() {
-		return spawn().iterator();
-	}
-
-	public LngStreamlet append(long c) {
-		return streamlet(() -> spawn().append(c));
-	}
-
 	public <R> Streamlet<R> apply(Fun<LngStreamlet, R> fun) {
 		return Read.each(fun.apply(this));
 	}
@@ -151,6 +142,11 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		return spawn().isAny(pred);
 	}
 
+	@Override
+	public Iterator<Long> iterator() {
+		return spawn().iterator();
+	}
+
 	public <O> Streamlet2<Long, O> join2(Streamlet<O> streamlet) {
 		return concatMap2_(t -> streamlet.map2(v -> t, v -> v));
 	}
@@ -213,6 +209,10 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 
 	public LngStreamlet skip(int n) {
 		return streamlet(() -> spawn().skip(n));
+	}
+
+	public LngStreamlet snoc(long c) {
+		return streamlet(() -> spawn().snoc(c));
 	}
 
 	public LngStreamlet sort() {

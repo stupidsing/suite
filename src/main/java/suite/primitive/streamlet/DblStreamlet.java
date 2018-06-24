@@ -43,15 +43,6 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		this.in = in;
 	}
 
-	@Override
-	public Iterator<Double> iterator() {
-		return spawn().iterator();
-	}
-
-	public DblStreamlet append(double c) {
-		return streamlet(() -> spawn().append(c));
-	}
-
 	public <R> Streamlet<R> apply(Fun<DblStreamlet, R> fun) {
 		return Read.each(fun.apply(this));
 	}
@@ -151,6 +142,11 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		return spawn().isAny(pred);
 	}
 
+	@Override
+	public Iterator<Double> iterator() {
+		return spawn().iterator();
+	}
+
 	public <O> Streamlet2<Double, O> join2(Streamlet<O> streamlet) {
 		return concatMap2_(t -> streamlet.map2(v -> t, v -> v));
 	}
@@ -213,6 +209,10 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 
 	public DblStreamlet skip(int n) {
 		return streamlet(() -> spawn().skip(n));
+	}
+
+	public DblStreamlet snoc(double c) {
+		return streamlet(() -> spawn().snoc(c));
 	}
 
 	public DblStreamlet sort() {

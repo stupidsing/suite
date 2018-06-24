@@ -110,15 +110,6 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		this.source = source;
 	}
 
-	@Override
-	public Iterator<DblObjPair<V>> iterator() {
-		return DblObjFunUtil.iterator(source);
-	}
-
-	public DblObjOutlet<V> append(Double key, V value) {
-		return of(DblObjFunUtil.append(key, value, source));
-	}
-
 	public Outlet<DblObjOutlet<V>> chunk(int n) {
 		return Outlet.of(FunUtil.map(DblObjOutlet<V>::new, DblObjFunUtil.chunk(n, source)));
 	}
@@ -256,6 +247,11 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		return DblObjFunUtil.isAny(pred, source);
 	}
 
+	@Override
+	public Iterator<DblObjPair<V>> iterator() {
+		return DblObjFunUtil.iterator(source);
+	}
+
 	public DblOutlet keys() {
 		return DblOutlet.of(() -> {
 			var pair = DblObjPair.<V> of((double) 0, null);
@@ -372,6 +368,10 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
 		return !end ? of(source) : empty();
+	}
+
+	public DblObjOutlet<V> snoc(Double key, V value) {
+		return of(DblObjFunUtil.snoc(key, value, source));
 	}
 
 	public DblObjOutlet<V> sort(Comparator<DblObjPair<V>> comparator) {

@@ -22,25 +22,6 @@ public class ChrFunUtil {
 
 	public static char EMPTYVALUE = Character.MIN_VALUE;
 
-	public static ChrSource append(char c, ChrSource source) {
-		return new ChrSource() {
-			private boolean isAppended = false;
-
-			public char source() {
-				if (!isAppended) {
-					var c_ = source.source();
-					if (c_ != EMPTYVALUE)
-						return c_;
-					else {
-						isAppended = true;
-						return c;
-					}
-				} else
-					return EMPTYVALUE;
-			}
-		};
-	}
-
 	public static Source<ChrSource> chunk(int n, ChrSource source) {
 		return new Source<>() {
 			private char c = source.source();
@@ -212,6 +193,25 @@ public class ChrFunUtil {
 
 	public static ChrSource nullSource() {
 		return () -> EMPTYVALUE;
+	}
+
+	public static ChrSource snoc(char c, ChrSource source) {
+		return new ChrSource() {
+			private boolean isAppended = false;
+
+			public char source() {
+				if (!isAppended) {
+					var c_ = source.source();
+					if (c_ != EMPTYVALUE)
+						return c_;
+					else {
+						isAppended = true;
+						return c;
+					}
+				} else
+					return EMPTYVALUE;
+			}
+		};
 	}
 
 	/**

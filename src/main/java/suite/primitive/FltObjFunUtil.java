@@ -21,23 +21,6 @@ import suite.util.Thread_;
 
 public class FltObjFunUtil {
 
-	public static <V> FltObjSource<V> append(float key, V value, FltObjSource<V> source) {
-		return new FltObjSource<>() {
-			private boolean isAppended = false;
-
-			public boolean source2(FltObjPair<V> pair) {
-				if (!isAppended) {
-					if (!source.source2(pair)) {
-						pair.update(key, value);
-						isAppended = true;
-					}
-					return true;
-				} else
-					return false;
-			}
-		};
-	}
-
 	public static <V> Source<FltObjSource<V>> chunk(int n, FltObjSource<V> source) {
 		return new Source<>() {
 			private FltObjPair<V> pair;
@@ -228,6 +211,23 @@ public class FltObjFunUtil {
 
 			public FltObjSource<V> source() {
 				return isAvailable ? cons(pair.t0, pair.t1, source2_) : null;
+			}
+		};
+	}
+
+	public static <V> FltObjSource<V> snoc(float key, V value, FltObjSource<V> source) {
+		return new FltObjSource<>() {
+			private boolean isAppended = false;
+
+			public boolean source2(FltObjPair<V> pair) {
+				if (!isAppended) {
+					if (!source.source2(pair)) {
+						pair.update(key, value);
+						isAppended = true;
+					}
+					return true;
+				} else
+					return false;
 			}
 		};
 	}

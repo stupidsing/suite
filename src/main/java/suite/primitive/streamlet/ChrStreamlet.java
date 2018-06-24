@@ -43,15 +43,6 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 		this.in = in;
 	}
 
-	@Override
-	public Iterator<Character> iterator() {
-		return spawn().iterator();
-	}
-
-	public ChrStreamlet append(char c) {
-		return streamlet(() -> spawn().append(c));
-	}
-
 	public <R> Streamlet<R> apply(Fun<ChrStreamlet, R> fun) {
 		return Read.each(fun.apply(this));
 	}
@@ -151,6 +142,11 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 		return spawn().isAny(pred);
 	}
 
+	@Override
+	public Iterator<Character> iterator() {
+		return spawn().iterator();
+	}
+
 	public <O> Streamlet2<Character, O> join2(Streamlet<O> streamlet) {
 		return concatMap2_(t -> streamlet.map2(v -> t, v -> v));
 	}
@@ -213,6 +209,10 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 
 	public ChrStreamlet skip(int n) {
 		return streamlet(() -> spawn().skip(n));
+	}
+
+	public ChrStreamlet snoc(char c) {
+		return streamlet(() -> spawn().snoc(c));
 	}
 
 	public ChrStreamlet sort() {

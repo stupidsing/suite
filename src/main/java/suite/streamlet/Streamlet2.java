@@ -43,15 +43,6 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 		this.in = in;
 	}
 
-	@Override
-	public Iterator<Pair<K, V>> iterator() {
-		return spawn().iterator();
-	}
-
-	public Streamlet2<K, V> append(K key, V value) {
-		return streamlet2(() -> spawn().append(key, value));
-	}
-
 	public <T> Streamlet<T> apply(Fun<Streamlet2<K, V>, T> fun) {
 		return Read.each(fun.apply(this));
 	}
@@ -151,6 +142,11 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 		return spawn().isAny(pred);
 	}
 
+	@Override
+	public Iterator<Pair<K, V>> iterator() {
+		return spawn().iterator();
+	}
+
 	public Streamlet<K> keys() {
 		return new Streamlet<>(() -> spawn().keys());
 	}
@@ -209,6 +205,10 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 
 	public Streamlet2<K, V> skip(int n) {
 		return streamlet2(() -> spawn().skip(n));
+	}
+
+	public Streamlet2<K, V> snoc(K key, V value) {
+		return streamlet2(() -> spawn().snoc(key, value));
 	}
 
 	public Streamlet2<K, V> sort(Comparator<Pair<K, V>> comparator) {

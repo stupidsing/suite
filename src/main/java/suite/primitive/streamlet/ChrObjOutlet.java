@@ -110,15 +110,6 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 		this.source = source;
 	}
 
-	@Override
-	public Iterator<ChrObjPair<V>> iterator() {
-		return ChrObjFunUtil.iterator(source);
-	}
-
-	public ChrObjOutlet<V> append(Character key, V value) {
-		return of(ChrObjFunUtil.append(key, value, source));
-	}
-
 	public Outlet<ChrObjOutlet<V>> chunk(int n) {
 		return Outlet.of(FunUtil.map(ChrObjOutlet<V>::new, ChrObjFunUtil.chunk(n, source)));
 	}
@@ -256,6 +247,11 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 		return ChrObjFunUtil.isAny(pred, source);
 	}
 
+	@Override
+	public Iterator<ChrObjPair<V>> iterator() {
+		return ChrObjFunUtil.iterator(source);
+	}
+
 	public ChrOutlet keys() {
 		return ChrOutlet.of(() -> {
 			var pair = ChrObjPair.<V> of((char) 0, null);
@@ -372,6 +368,10 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
 		return !end ? of(source) : empty();
+	}
+
+	public ChrObjOutlet<V> snoc(Character key, V value) {
+		return of(ChrObjFunUtil.snoc(key, value, source));
 	}
 
 	public ChrObjOutlet<V> sort(Comparator<ChrObjPair<V>> comparator) {

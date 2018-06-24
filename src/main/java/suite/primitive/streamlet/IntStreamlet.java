@@ -43,15 +43,6 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		this.in = in;
 	}
 
-	@Override
-	public Iterator<Integer> iterator() {
-		return spawn().iterator();
-	}
-
-	public IntStreamlet append(int c) {
-		return streamlet(() -> spawn().append(c));
-	}
-
 	public <R> Streamlet<R> apply(Fun<IntStreamlet, R> fun) {
 		return Read.each(fun.apply(this));
 	}
@@ -151,6 +142,11 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		return spawn().isAny(pred);
 	}
 
+	@Override
+	public Iterator<Integer> iterator() {
+		return spawn().iterator();
+	}
+
 	public <O> Streamlet2<Integer, O> join2(Streamlet<O> streamlet) {
 		return concatMap2_(t -> streamlet.map2(v -> t, v -> v));
 	}
@@ -213,6 +209,10 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 
 	public IntStreamlet skip(int n) {
 		return streamlet(() -> spawn().skip(n));
+	}
+
+	public IntStreamlet snoc(int c) {
+		return streamlet(() -> spawn().snoc(c));
 	}
 
 	public IntStreamlet sort() {

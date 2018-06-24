@@ -110,15 +110,6 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 		this.source = source;
 	}
 
-	@Override
-	public Iterator<FltObjPair<V>> iterator() {
-		return FltObjFunUtil.iterator(source);
-	}
-
-	public FltObjOutlet<V> append(Float key, V value) {
-		return of(FltObjFunUtil.append(key, value, source));
-	}
-
 	public Outlet<FltObjOutlet<V>> chunk(int n) {
 		return Outlet.of(FunUtil.map(FltObjOutlet<V>::new, FltObjFunUtil.chunk(n, source)));
 	}
@@ -256,6 +247,11 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 		return FltObjFunUtil.isAny(pred, source);
 	}
 
+	@Override
+	public Iterator<FltObjPair<V>> iterator() {
+		return FltObjFunUtil.iterator(source);
+	}
+
 	public FltOutlet keys() {
 		return FltOutlet.of(() -> {
 			var pair = FltObjPair.<V> of((float) 0, null);
@@ -372,6 +368,10 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
 		return !end ? of(source) : empty();
+	}
+
+	public FltObjOutlet<V> snoc(Float key, V value) {
+		return of(FltObjFunUtil.snoc(key, value, source));
 	}
 
 	public FltObjOutlet<V> sort(Comparator<FltObjPair<V>> comparator) {

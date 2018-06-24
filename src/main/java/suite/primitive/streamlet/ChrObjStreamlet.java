@@ -53,15 +53,6 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 		this.in = in;
 	}
 
-	@Override
-	public Iterator<ChrObjPair<V>> iterator() {
-		return spawn().iterator();
-	}
-
-	public ChrObjStreamlet<V> append(char key, V value) {
-		return streamlet(() -> spawn().append(key, value));
-	}
-
 	public <R> Streamlet<R> apply(Fun<ChrObjStreamlet<V>, R> fun) {
 		return Read.each(fun.apply(this));
 	}
@@ -154,6 +145,11 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 		return spawn().isAny(pred);
 	}
 
+	@Override
+	public Iterator<ChrObjPair<V>> iterator() {
+		return spawn().iterator();
+	}
+
 	public ChrStreamlet keys() {
 		return new ChrStreamlet(() -> spawn().keys());
 	}
@@ -216,6 +212,10 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 
 	public ChrObjStreamlet<V> skip(int n) {
 		return streamlet(() -> spawn().skip(n));
+	}
+
+	public ChrObjStreamlet<V> snoc(char key, V value) {
+		return streamlet(() -> spawn().snoc(key, value));
 	}
 
 	public ChrObjStreamlet<V> sort(Comparator<ChrObjPair<V>> comparator) {

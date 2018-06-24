@@ -112,15 +112,6 @@ public class DblOutlet implements OutletDefaults<Double> {
 		this.source = source;
 	}
 
-	@Override
-	public Iterator<Double> iterator() {
-		return DblFunUtil.iterator(source);
-	}
-
-	public DblOutlet append(double c) {
-		return of(DblFunUtil.append(c, source));
-	}
-
 	public double average() {
 		var count = 0;
 		double result = 0, c1;
@@ -275,6 +266,11 @@ public class DblOutlet implements OutletDefaults<Double> {
 		return DblFunUtil.isAny(pred, source);
 	}
 
+	@Override
+	public Iterator<Double> iterator() {
+		return DblFunUtil.iterator(source);
+	}
+
 	public double last() {
 		double c, c1 = DblFunUtil.EMPTYVALUE;
 		while ((c = next()) != DblFunUtil.EMPTYVALUE)
@@ -377,6 +373,10 @@ public class DblOutlet implements OutletDefaults<Double> {
 		for (var i = 0; !end && i < n; i++)
 			end = next() == DblFunUtil.EMPTYVALUE;
 		return !end ? of(source) : empty();
+	}
+
+	public DblOutlet snoc(double c) {
+		return of(DblFunUtil.snoc(c, source));
 	}
 
 	public DblSource source() {

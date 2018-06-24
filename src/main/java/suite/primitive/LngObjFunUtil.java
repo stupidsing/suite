@@ -21,23 +21,6 @@ import suite.util.Thread_;
 
 public class LngObjFunUtil {
 
-	public static <V> LngObjSource<V> append(long key, V value, LngObjSource<V> source) {
-		return new LngObjSource<>() {
-			private boolean isAppended = false;
-
-			public boolean source2(LngObjPair<V> pair) {
-				if (!isAppended) {
-					if (!source.source2(pair)) {
-						pair.update(key, value);
-						isAppended = true;
-					}
-					return true;
-				} else
-					return false;
-			}
-		};
-	}
-
 	public static <V> Source<LngObjSource<V>> chunk(int n, LngObjSource<V> source) {
 		return new Source<>() {
 			private LngObjPair<V> pair;
@@ -228,6 +211,23 @@ public class LngObjFunUtil {
 
 			public LngObjSource<V> source() {
 				return isAvailable ? cons(pair.t0, pair.t1, source2_) : null;
+			}
+		};
+	}
+
+	public static <V> LngObjSource<V> snoc(long key, V value, LngObjSource<V> source) {
+		return new LngObjSource<>() {
+			private boolean isAppended = false;
+
+			public boolean source2(LngObjPair<V> pair) {
+				if (!isAppended) {
+					if (!source.source2(pair)) {
+						pair.update(key, value);
+						isAppended = true;
+					}
+					return true;
+				} else
+					return false;
 			}
 		};
 	}

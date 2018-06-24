@@ -21,23 +21,6 @@ import suite.util.Thread_;
 
 public class ChrObjFunUtil {
 
-	public static <V> ChrObjSource<V> append(char key, V value, ChrObjSource<V> source) {
-		return new ChrObjSource<>() {
-			private boolean isAppended = false;
-
-			public boolean source2(ChrObjPair<V> pair) {
-				if (!isAppended) {
-					if (!source.source2(pair)) {
-						pair.update(key, value);
-						isAppended = true;
-					}
-					return true;
-				} else
-					return false;
-			}
-		};
-	}
-
 	public static <V> Source<ChrObjSource<V>> chunk(int n, ChrObjSource<V> source) {
 		return new Source<>() {
 			private ChrObjPair<V> pair;
@@ -228,6 +211,23 @@ public class ChrObjFunUtil {
 
 			public ChrObjSource<V> source() {
 				return isAvailable ? cons(pair.t0, pair.t1, source2_) : null;
+			}
+		};
+	}
+
+	public static <V> ChrObjSource<V> snoc(char key, V value, ChrObjSource<V> source) {
+		return new ChrObjSource<>() {
+			private boolean isAppended = false;
+
+			public boolean source2(ChrObjPair<V> pair) {
+				if (!isAppended) {
+					if (!source.source2(pair)) {
+						pair.update(key, value);
+						isAppended = true;
+					}
+					return true;
+				} else
+					return false;
 			}
 		};
 	}

@@ -53,15 +53,6 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		this.in = in;
 	}
 
-	@Override
-	public Iterator<LngObjPair<V>> iterator() {
-		return spawn().iterator();
-	}
-
-	public LngObjStreamlet<V> append(long key, V value) {
-		return streamlet(() -> spawn().append(key, value));
-	}
-
 	public <R> Streamlet<R> apply(Fun<LngObjStreamlet<V>, R> fun) {
 		return Read.each(fun.apply(this));
 	}
@@ -154,6 +145,11 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		return spawn().isAny(pred);
 	}
 
+	@Override
+	public Iterator<LngObjPair<V>> iterator() {
+		return spawn().iterator();
+	}
+
 	public LngStreamlet keys() {
 		return new LngStreamlet(() -> spawn().keys());
 	}
@@ -216,6 +212,10 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 
 	public LngObjStreamlet<V> skip(int n) {
 		return streamlet(() -> spawn().skip(n));
+	}
+
+	public LngObjStreamlet<V> snoc(long key, V value) {
+		return streamlet(() -> spawn().snoc(key, value));
 	}
 
 	public LngObjStreamlet<V> sort(Comparator<LngObjPair<V>> comparator) {

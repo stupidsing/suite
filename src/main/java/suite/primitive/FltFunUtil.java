@@ -22,25 +22,6 @@ public class FltFunUtil {
 
 	public static float EMPTYVALUE = Float.MIN_VALUE;
 
-	public static FltSource append(float c, FltSource source) {
-		return new FltSource() {
-			private boolean isAppended = false;
-
-			public float source() {
-				if (!isAppended) {
-					var c_ = source.source();
-					if (c_ != EMPTYVALUE)
-						return c_;
-					else {
-						isAppended = true;
-						return c;
-					}
-				} else
-					return EMPTYVALUE;
-			}
-		};
-	}
-
 	public static Source<FltSource> chunk(int n, FltSource source) {
 		return new Source<>() {
 			private float c = source.source();
@@ -212,6 +193,25 @@ public class FltFunUtil {
 
 	public static FltSource nullSource() {
 		return () -> EMPTYVALUE;
+	}
+
+	public static FltSource snoc(float c, FltSource source) {
+		return new FltSource() {
+			private boolean isAppended = false;
+
+			public float source() {
+				if (!isAppended) {
+					var c_ = source.source();
+					if (c_ != EMPTYVALUE)
+						return c_;
+					else {
+						isAppended = true;
+						return c;
+					}
+				} else
+					return EMPTYVALUE;
+			}
+		};
 	}
 
 	/**

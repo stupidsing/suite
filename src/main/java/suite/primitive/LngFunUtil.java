@@ -22,25 +22,6 @@ public class LngFunUtil {
 
 	public static long EMPTYVALUE = Long.MIN_VALUE;
 
-	public static LngSource append(long c, LngSource source) {
-		return new LngSource() {
-			private boolean isAppended = false;
-
-			public long source() {
-				if (!isAppended) {
-					var c_ = source.source();
-					if (c_ != EMPTYVALUE)
-						return c_;
-					else {
-						isAppended = true;
-						return c;
-					}
-				} else
-					return EMPTYVALUE;
-			}
-		};
-	}
-
 	public static Source<LngSource> chunk(int n, LngSource source) {
 		return new Source<>() {
 			private long c = source.source();
@@ -212,6 +193,25 @@ public class LngFunUtil {
 
 	public static LngSource nullSource() {
 		return () -> EMPTYVALUE;
+	}
+
+	public static LngSource snoc(long c, LngSource source) {
+		return new LngSource() {
+			private boolean isAppended = false;
+
+			public long source() {
+				if (!isAppended) {
+					var c_ = source.source();
+					if (c_ != EMPTYVALUE)
+						return c_;
+					else {
+						isAppended = true;
+						return c;
+					}
+				} else
+					return EMPTYVALUE;
+			}
+		};
 	}
 
 	/**

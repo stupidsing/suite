@@ -53,15 +53,6 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 		this.in = in;
 	}
 
-	@Override
-	public Iterator<IntObjPair<V>> iterator() {
-		return spawn().iterator();
-	}
-
-	public IntObjStreamlet<V> append(int key, V value) {
-		return streamlet(() -> spawn().append(key, value));
-	}
-
 	public <R> Streamlet<R> apply(Fun<IntObjStreamlet<V>, R> fun) {
 		return Read.each(fun.apply(this));
 	}
@@ -154,6 +145,11 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 		return spawn().isAny(pred);
 	}
 
+	@Override
+	public Iterator<IntObjPair<V>> iterator() {
+		return spawn().iterator();
+	}
+
 	public IntStreamlet keys() {
 		return new IntStreamlet(() -> spawn().keys());
 	}
@@ -216,6 +212,10 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 
 	public IntObjStreamlet<V> skip(int n) {
 		return streamlet(() -> spawn().skip(n));
+	}
+
+	public IntObjStreamlet<V> snoc(int key, V value) {
+		return streamlet(() -> spawn().snoc(key, value));
 	}
 
 	public IntObjStreamlet<V> sort(Comparator<IntObjPair<V>> comparator) {

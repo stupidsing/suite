@@ -78,15 +78,6 @@ public class Outlet<T> implements OutletDefaults<T> {
 		this.source = source;
 	}
 
-	@Override
-	public Iterator<T> iterator() {
-		return FunUtil.iterator(source);
-	}
-
-	public Outlet<T> append(T t) {
-		return of(FunUtil.append(t, source));
-	}
-
 	public Outlet<Outlet<T>> chunk(int n) {
 		return of(FunUtil.map(Outlet<T>::new, FunUtil.chunk(n, source)));
 	}
@@ -226,6 +217,11 @@ public class Outlet<T> implements OutletDefaults<T> {
 		return FunUtil.isAny(pred, source);
 	}
 
+	@Override
+	public Iterator<T> iterator() {
+		return FunUtil.iterator(source);
+	}
+
 	public T last() {
 		T t, t1 = null;
 		while ((t = next()) != null)
@@ -305,6 +301,10 @@ public class Outlet<T> implements OutletDefaults<T> {
 		for (var i = 0; !end && i < n; i++)
 			end = next() == null;
 		return !end ? of(source) : empty();
+	}
+
+	public Outlet<T> snoc(T t) {
+		return of(FunUtil.snoc(t, source));
 	}
 
 	public Source<T> source() {

@@ -53,15 +53,6 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 		this.in = in;
 	}
 
-	@Override
-	public Iterator<FltObjPair<V>> iterator() {
-		return spawn().iterator();
-	}
-
-	public FltObjStreamlet<V> append(float key, V value) {
-		return streamlet(() -> spawn().append(key, value));
-	}
-
 	public <R> Streamlet<R> apply(Fun<FltObjStreamlet<V>, R> fun) {
 		return Read.each(fun.apply(this));
 	}
@@ -154,6 +145,11 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 		return spawn().isAny(pred);
 	}
 
+	@Override
+	public Iterator<FltObjPair<V>> iterator() {
+		return spawn().iterator();
+	}
+
 	public FltStreamlet keys() {
 		return new FltStreamlet(() -> spawn().keys());
 	}
@@ -216,6 +212,10 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 
 	public FltObjStreamlet<V> skip(int n) {
 		return streamlet(() -> spawn().skip(n));
+	}
+
+	public FltObjStreamlet<V> snoc(float key, V value) {
+		return streamlet(() -> spawn().snoc(key, value));
 	}
 
 	public FltObjStreamlet<V> sort(Comparator<FltObjPair<V>> comparator) {

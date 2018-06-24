@@ -110,15 +110,6 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		this.source = source;
 	}
 
-	@Override
-	public Iterator<IntObjPair<V>> iterator() {
-		return IntObjFunUtil.iterator(source);
-	}
-
-	public IntObjOutlet<V> append(Integer key, V value) {
-		return of(IntObjFunUtil.append(key, value, source));
-	}
-
 	public Outlet<IntObjOutlet<V>> chunk(int n) {
 		return Outlet.of(FunUtil.map(IntObjOutlet<V>::new, IntObjFunUtil.chunk(n, source)));
 	}
@@ -256,6 +247,11 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		return IntObjFunUtil.isAny(pred, source);
 	}
 
+	@Override
+	public Iterator<IntObjPair<V>> iterator() {
+		return IntObjFunUtil.iterator(source);
+	}
+
 	public IntOutlet keys() {
 		return IntOutlet.of(() -> {
 			var pair = IntObjPair.<V> of((int) 0, null);
@@ -372,6 +368,10 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
 		return !end ? of(source) : empty();
+	}
+
+	public IntObjOutlet<V> snoc(Integer key, V value) {
+		return of(IntObjFunUtil.snoc(key, value, source));
 	}
 
 	public IntObjOutlet<V> sort(Comparator<IntObjPair<V>> comparator) {

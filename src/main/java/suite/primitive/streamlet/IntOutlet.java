@@ -112,15 +112,6 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		this.source = source;
 	}
 
-	@Override
-	public Iterator<Integer> iterator() {
-		return IntFunUtil.iterator(source);
-	}
-
-	public IntOutlet append(int c) {
-		return of(IntFunUtil.append(c, source));
-	}
-
 	public int average() {
 		var count = 0;
 		int result = 0, c1;
@@ -275,6 +266,11 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		return IntFunUtil.isAny(pred, source);
 	}
 
+	@Override
+	public Iterator<Integer> iterator() {
+		return IntFunUtil.iterator(source);
+	}
+
 	public int last() {
 		int c, c1 = IntFunUtil.EMPTYVALUE;
 		while ((c = next()) != IntFunUtil.EMPTYVALUE)
@@ -377,6 +373,10 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		for (var i = 0; !end && i < n; i++)
 			end = next() == IntFunUtil.EMPTYVALUE;
 		return !end ? of(source) : empty();
+	}
+
+	public IntOutlet snoc(int c) {
+		return of(IntFunUtil.snoc(c, source));
 	}
 
 	public IntSource source() {

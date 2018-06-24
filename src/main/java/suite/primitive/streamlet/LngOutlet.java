@@ -112,15 +112,6 @@ public class LngOutlet implements OutletDefaults<Long> {
 		this.source = source;
 	}
 
-	@Override
-	public Iterator<Long> iterator() {
-		return LngFunUtil.iterator(source);
-	}
-
-	public LngOutlet append(long c) {
-		return of(LngFunUtil.append(c, source));
-	}
-
 	public long average() {
 		var count = 0;
 		long result = 0, c1;
@@ -275,6 +266,11 @@ public class LngOutlet implements OutletDefaults<Long> {
 		return LngFunUtil.isAny(pred, source);
 	}
 
+	@Override
+	public Iterator<Long> iterator() {
+		return LngFunUtil.iterator(source);
+	}
+
 	public long last() {
 		long c, c1 = LngFunUtil.EMPTYVALUE;
 		while ((c = next()) != LngFunUtil.EMPTYVALUE)
@@ -377,6 +373,10 @@ public class LngOutlet implements OutletDefaults<Long> {
 		for (var i = 0; !end && i < n; i++)
 			end = next() == LngFunUtil.EMPTYVALUE;
 		return !end ? of(source) : empty();
+	}
+
+	public LngOutlet snoc(long c) {
+		return of(LngFunUtil.snoc(c, source));
 	}
 
 	public LngSource source() {

@@ -109,15 +109,6 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		this.source2 = source;
 	}
 
-	@Override
-	public Iterator<Pair<K, V>> iterator() {
-		return FunUtil2.iterator(source2);
-	}
-
-	public Outlet2<K, V> append(K key, V value) {
-		return of(FunUtil2.append(key, value, source2));
-	}
-
 	public Outlet<Outlet2<K, V>> chunk(int n) {
 		return Outlet.of(FunUtil.map(Outlet2<K, V>::new, FunUtil2.chunk(n, source2)));
 	}
@@ -259,6 +250,11 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		return FunUtil2.isAny(pred, source2);
 	}
 
+	@Override
+	public Iterator<Pair<K, V>> iterator() {
+		return FunUtil2.iterator(source2);
+	}
+
 	public Outlet<K> keys() {
 		return map_((k, v) -> k);
 	}
@@ -368,6 +364,10 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
 		return !end ? of(source2) : empty();
+	}
+
+	public Outlet2<K, V> snoc(K key, V value) {
+		return of(FunUtil2.snoc(key, value, source2));
 	}
 
 	public Outlet2<K, V> sort(Comparator<Pair<K, V>> comparator) {

@@ -44,25 +44,6 @@ public class FunUtil {
 		}
 	}
 
-	public static <T> Source<T> append(T t, Source<T> source) {
-		return new Source<>() {
-			private boolean isAppended = false;
-
-			public T source() {
-				if (!isAppended) {
-					var t_ = source.source();
-					if (t_ != null)
-						return t_;
-					else {
-						isAppended = true;
-						return t;
-					}
-				} else
-					return null;
-			}
-		};
-	}
-
 	public static <T> Source<Source<T>> chunk(int n, Source<T> source) {
 		return new Source<>() {
 			private T t = source.source();
@@ -212,6 +193,25 @@ public class FunUtil {
 
 	public static <O> Source<O> nullSource() {
 		return () -> null;
+	}
+
+	public static <T> Source<T> snoc(T t, Source<T> source) {
+		return new Source<>() {
+			private boolean isAppended = false;
+
+			public T source() {
+				if (!isAppended) {
+					var t_ = source.source();
+					if (t_ != null)
+						return t_;
+					else {
+						isAppended = true;
+						return t;
+					}
+				} else
+					return null;
+			}
+		};
 	}
 
 	/**

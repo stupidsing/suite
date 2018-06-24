@@ -21,23 +21,6 @@ import suite.util.Thread_;
 
 public class DblObjFunUtil {
 
-	public static <V> DblObjSource<V> append(double key, V value, DblObjSource<V> source) {
-		return new DblObjSource<>() {
-			private boolean isAppended = false;
-
-			public boolean source2(DblObjPair<V> pair) {
-				if (!isAppended) {
-					if (!source.source2(pair)) {
-						pair.update(key, value);
-						isAppended = true;
-					}
-					return true;
-				} else
-					return false;
-			}
-		};
-	}
-
 	public static <V> Source<DblObjSource<V>> chunk(int n, DblObjSource<V> source) {
 		return new Source<>() {
 			private DblObjPair<V> pair;
@@ -228,6 +211,23 @@ public class DblObjFunUtil {
 
 			public DblObjSource<V> source() {
 				return isAvailable ? cons(pair.t0, pair.t1, source2_) : null;
+			}
+		};
+	}
+
+	public static <V> DblObjSource<V> snoc(double key, V value, DblObjSource<V> source) {
+		return new DblObjSource<>() {
+			private boolean isAppended = false;
+
+			public boolean source2(DblObjPair<V> pair) {
+				if (!isAppended) {
+					if (!source.source2(pair)) {
+						pair.update(key, value);
+						isAppended = true;
+					}
+					return true;
+				} else
+					return false;
 			}
 		};
 	}
