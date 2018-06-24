@@ -172,7 +172,7 @@ public class SystemPredicates {
 	};
 
 	private BuiltinPredicate ifPredicate = PredicateUtil.p3((prover, p0, p1, p2) -> {
-		boolean b = PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(p0));
+		var b = PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(p0));
 		prover.setRemaining(TreeAnd.of(b ? p1 : p2, prover.getRemaining()));
 		return true;
 	});
@@ -182,7 +182,7 @@ public class SystemPredicates {
 	private BuiltinPredicate once = PredicateUtil.p1((prover, p0) -> new Prover(prover).prove0(p0));
 
 	private BuiltinPredicate systemPredicate = PredicateUtil.p1((prover, p0) -> {
-		Atom atom = p0 instanceof Atom ? (Atom) p0 : null;
+		var atom = p0 instanceof Atom ? (Atom) p0 : null;
 		var name = atom != null ? atom.name : null;
 		return name != null && predicates.containsKey(name);
 	});
