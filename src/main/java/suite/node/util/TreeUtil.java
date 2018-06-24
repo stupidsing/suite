@@ -81,7 +81,6 @@ public class TreeUtil {
 
 	public static int evaluate(Node node) {
 		var tree = Tree.decompose(node);
-		int result;
 
 		if (tree != null) {
 			var op = tree.getOperator();
@@ -99,13 +98,11 @@ public class TreeUtil {
 				fun = evaluateOp(op);
 			}
 
-			result = fun.apply(lhs, rhs);
+			return fun.apply(lhs, rhs);
 		} else if (node instanceof Int)
-			result = Int.num(node);
+			return Int.num(node);
 		else
-			result = Fail.t("cannot evaluate expression: " + node);
-
-		return result;
+			return Fail.t("cannot evaluate expression: " + node);
 	}
 
 	public static IntInt_Int evaluateOp(Node op) {
