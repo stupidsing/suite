@@ -42,7 +42,7 @@ public class Lister {
 					.map((i, p) -> leaves(p.t1, IList.cons(Int.of(i), prefix))) //
 					.collect(As::concat);
 		else if (nr.type != ReadType.TERM)
-			st = Read.from(nr.children).concatMap(p -> leaves(p.t1, IList.cons(p.t0, prefix)));
+			st = (nr.children).concatMap((k, v) -> leaves(v, IList.cons(k, prefix)));
 		else
 			st = Read.from(List.of(IList.cons(nr.terminal, prefix)));
 

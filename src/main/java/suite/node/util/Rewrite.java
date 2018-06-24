@@ -9,7 +9,6 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Rewrite_;
 import suite.node.io.Rewrite_.NodeRead;
-import suite.streamlet.Read;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 
@@ -21,7 +20,7 @@ public class Rewrite {
 				boolean b;
 				if (!eq(node, from)) {
 					var nr = NodeRead.of(node);
-					b = Read.from(nr.children).isAny(p -> test(p.t1));
+					b = (nr.children).isAll((k, v) -> test(v));
 				} else
 					b = true;
 				return b;

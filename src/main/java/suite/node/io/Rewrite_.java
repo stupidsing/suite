@@ -12,6 +12,7 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.util.Comparer;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet2;
 import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 
@@ -47,7 +48,7 @@ public class Rewrite_ {
 	}
 
 	public static class NodeRead extends NodeHead {
-		public final List<Pair<Node, Node>> children;
+		public final Streamlet2<Node, Node> children;
 
 		public static NodeRead of(Node node) {
 			Tree tree;
@@ -58,22 +59,22 @@ public class Rewrite_ {
 						.from2(map) //
 						.sort((p0, p1) -> Comparer.comparer.compare(p0.t0, p1.t0)) //
 						.mapValue(Node::finalNode) //
-						.toList());
+						.collect());
 			} else if ((tree = Tree.decompose(node)) != null) {
 				var p0 = Pair.of(LEFT_, tree.getLeft());
 				var p1 = Pair.of(RIGHT, tree.getRight());
-				return new NodeRead(ReadType.TREE, null, tree.getOperator(), List.of(p0, p1));
+				return new NodeRead(ReadType.TREE, null, tree.getOperator(), Read.each2(p0, p1));
 			} else if (node instanceof Tuple) {
 				var nodes = Tuple.t(node);
 				return new NodeRead(ReadType.TUPLE, null, null, Read //
 						.from(nodes) //
-						.map(n -> Pair.<Node, Node> of(Atom.NIL, n.finalNode())) //
-						.toList());
+						.<Node, Node> map2(n -> Atom.NIL, Node::finalNode) //
+						.collect());
 			} else
-				return new NodeRead(ReadType.TERM, node, null, List.of());
+				return new NodeRead(ReadType.TERM, node, null, Read.empty2());
 		}
 
-		private NodeRead(ReadType type, Node terminal, Operator op, List<Pair<Node, Node>> children) {
+		private NodeRead(ReadType type, Node terminal, Operator op, Streamlet2<Node, Node> children) {
 			super(type, terminal, op);
 			this.children = children;
 		}

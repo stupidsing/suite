@@ -7,9 +7,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.Map;
 
 import suite.Constants;
@@ -65,8 +65,9 @@ public class Read {
 		return from(ts);
 	}
 
-	public static <K, V> Streamlet2<K, V> each2(K k, V v) {
-		return from2(List.of(Pair.of(k, v)));
+	@SafeVarargs
+	public static <K, V> Streamlet2<K, V> each2(Pair<K, V>... pairs) {
+		return from2(Arrays.asList(pairs));
 	}
 
 	public static <T> Streamlet<T> from(T[] ts) {

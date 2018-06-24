@@ -73,9 +73,8 @@ public class Grapher {
 
 			var nr = NodeRead.of(node);
 
-			var children = Read //
-					.from(nr.children) //
-					.map(p -> IntIntPair.of(graph_(ids, p.t0), graph_(ids, p.t1))) //
+			var children = nr.children //
+					.map((k, v) -> IntIntPair.of(graph_(ids, k), graph_(ids, v))) //
 					.toList();
 
 			gns.set(id, new GN(nr.type, nr.terminal, nr.op, children));
