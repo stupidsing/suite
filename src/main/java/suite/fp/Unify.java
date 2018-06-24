@@ -19,21 +19,13 @@ public class Unify<T extends UnNode<T>> {
 		}
 
 		public default UnNode<T> final_() {
-			var object = this;
-			while (true)
-				if (object instanceof UnRef) {
-					var ref1 = ((UnRef<T>) object).target;
-					if (object != ref1)
-						object = ref1;
-					else
-						return object;
-				} else
-					return object;
+			UnNode<T> refTarget;
+			return this instanceof UnRef && (refTarget = ((UnRef<T>) this).target) != this ? refTarget.final_() : this;
 		}
 	}
 
 	private static class UnRef<T extends UnNode<T>> implements UnNode<T> {
-		private UnNode<T> target;
+		private UnNode<T> target = this;
 		private int id = Util.temp();
 
 		public boolean unify(UnNode<T> un) {
@@ -46,9 +38,7 @@ public class Unify<T extends UnNode<T>> {
 	}
 
 	public UnNode<T> newRef() {
-		var ref = new UnRef<T>();
-		ref.target = ref;
-		return ref;
+		return new UnRef<>();
 	}
 
 	public boolean unify(UnNode<T> u0, UnNode<T> u1) {
