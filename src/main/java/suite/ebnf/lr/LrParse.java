@@ -12,6 +12,7 @@ import suite.ebnf.lr.BuildLr.Reduce;
 import suite.ebnf.lr.BuildLr.State;
 import suite.immutable.IList;
 import suite.parser.Lexer;
+import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
@@ -37,7 +38,7 @@ public class LrParse {
 	}
 
 	public Ast parse(String in) {
-		var source = Read.from(() -> new Lexer(in).tokens()).map(Ast::new).source();
+		var source = Outlet.of(new Lexer(in).tokens()).map(Ast::new).source();
 
 		System.out.println("shifts/reduces = " + list(buildLr.fsm));
 		System.out.println("Initial state = " + buildLr.state0);
