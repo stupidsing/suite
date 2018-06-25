@@ -130,10 +130,7 @@ public class DailyMain extends ExecutableProgram {
 				+ "\n" //
 				+ "\nSUGGESTIONS" //
 				+ "\n- check your balance" //
-				+ "\n- sort the orders and get away the small ones" //
-				+ "\n- get away the stocks after ex-date" //
 				+ "\n- sell mamr and " + sellPool //
-				+ "\n- for mamr, check actual execution using SingleAllocBackTestTest.testBackTestHkexDetails()" //
 				+ "\n");
 
 		var result = sb.toString();
