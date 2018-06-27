@@ -30,10 +30,8 @@ public class IskCombinatorTest {
 				+ "define or_ := k >> " //
 				+ "define and_ := f >> ";
 
-		assertEquals(Suite.parse("1"), eval(isk + tf //
-				+ "t {1} {2}"));
-		assertEquals(Suite.parse("2"), eval(isk + tf //
-				+ "f {1} {2}"));
+		assertEquals(Suite.parse("1"), eval(isk + tf + "t {1} {2}"));
+		assertEquals(Suite.parse("2"), eval(isk + tf + "f {1} {2}"));
 
 		// eval(isk + tf + "t {or_} {f}") becomes t
 		// eval(isk + tf + "t {or_} {f}") becomes f
