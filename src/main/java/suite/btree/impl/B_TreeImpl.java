@@ -140,10 +140,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				kp = getKeyPointer(page, index);
 				traverse.push(new Slot(page, index));
 
-				if (kp != null && kp.pointer instanceof B_TreeImpl.Branch)
-					pointer = kp.getBranchPointer();
-				else
-					pointer = null;
+				pointer = kp != null && kp.pointer instanceof B_TreeImpl.Branch ? kp.getBranchPointer() : null;
 			}
 		}
 	}
