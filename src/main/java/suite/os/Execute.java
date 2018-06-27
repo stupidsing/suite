@@ -31,10 +31,7 @@ public class Execute {
 			LogUtil.info("START " + sh);
 			var execute = new Execute(command, sh);
 			LogUtil.info("END__ " + sh);
-			if (execute.code == 0)
-				return execute.out;
-			else
-				return Fail.t(execute.toString());
+			return execute.code == 0 ? execute.out : Fail.t(execute.toString());
 		} else
 			return Fail.t("cannot find shell executable");
 	}
