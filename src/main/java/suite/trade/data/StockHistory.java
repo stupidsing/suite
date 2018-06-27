@@ -193,10 +193,7 @@ public class StockHistory {
 			return pairs1.toArray(new LngFltPair[0]);
 		};
 
-		var data1 = Read //
-				.from2(data) //
-				.mapValue(align_) //
-				.toMap();
+		var data1 = Read.from2(data).mapValue(align_).toMap();
 
 		return create(data1, align_.apply(dividends), align_.apply(splits));
 	}
