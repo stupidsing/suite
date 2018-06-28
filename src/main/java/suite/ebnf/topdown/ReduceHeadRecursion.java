@@ -7,7 +7,7 @@ import java.util.Map;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
+import suite.util.FunUtil.Iterate;
 import suite.util.List_;
 import suite.util.String_;
 
@@ -70,7 +70,7 @@ public class ReduceHeadRecursion {
 			var hrf0 = getHeadRecursionForm(en.children.get(0), entity);
 			var tail = List_.right(en.children, 1);
 
-			Fun<List<Grammar>, List<Grammar>> fun = list -> Read.from(list).map(en_ -> {
+			Iterate<List<Grammar>> fun = list -> Read.from(list).map(en_ -> {
 				var ens1 = new ArrayList<Grammar>();
 				ens1.add(en_);
 				ens1.addAll(tail);
