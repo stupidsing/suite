@@ -42,9 +42,8 @@ public class Serialize {
 	}
 
 	public <T> Serializer<T> auto(Class<T> clazz) {
-		var serializer0 = memoizeAutoSerializers.apply(clazz);
 		@SuppressWarnings("unchecked")
-		var serializer = (Serializer<T>) serializer0;
+		var serializer = (Serializer<T>) memoizeAutoSerializers.apply(clazz);
 		return serializer;
 	}
 
