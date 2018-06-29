@@ -89,9 +89,9 @@ public class RuleSetPredicates {
 	});
 
 	public BuiltinPredicate with = PredicateUtil.p2((prover, p0, p1) -> {
-		var ruleSet = prover.ruleSet();
+		var ruleSet0 = prover.ruleSet();
 		var ruleSet1 = Suite.getRuleSet(p0);
-		var ruleSet2 = new CompositeRuleSet(ruleSet1, ruleSet);
+		var ruleSet2 = new CompositeRuleSet(ruleSet1, ruleSet0);
 		return new Prover(ruleSet2).prove(p1);
 	});
 
