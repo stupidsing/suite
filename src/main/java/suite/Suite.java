@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import suite.BindArrayUtil.Pattern;
-import suite.fp.FunCompilerConfig;
+import suite.fp.FunCompilerCfg;
 import suite.fp.intrinsic.Intrinsics;
 import suite.instructionexecutor.FunInstructionExecutor;
 import suite.lp.Configuration.ProverConfig;
@@ -76,14 +76,14 @@ public class Suite {
 		return substitute(".0 | lines | map {cs-from-string}", func);
 	}
 
-	public static FunCompilerConfig fcc(Node fp) {
+	public static FunCompilerCfg fcc(Node fp) {
 		return fcc(fp, false);
 	}
 
-	public static FunCompilerConfig fcc(Node fp, boolean isLazy) {
-		var fcc = new FunCompilerConfig();
-		fcc.setNode(fp);
+	public static FunCompilerCfg fcc(Node fp, boolean isLazy) {
+		var fcc = new FunCompilerCfg();
 		fcc.setLazy(isLazy);
+		fcc.setNode(fp);
 		return fcc;
 	}
 
@@ -204,15 +204,15 @@ public class Suite {
 		return evaluateUtil.evaluateFun(fcc(parse(fp), isLazy));
 	}
 
-	public static Node evaluateFun(FunCompilerConfig fcc) {
+	public static Node evaluateFun(FunCompilerCfg fcc) {
 		return evaluateUtil.evaluateFun(fcc);
 	}
 
-	public static void evaluateFunToWriter(FunCompilerConfig fcc, Writer writer) throws IOException {
+	public static void evaluateFunToWriter(FunCompilerCfg fcc, Writer writer) throws IOException {
 		evaluateUtil.evaluateCallback(fcc, executor -> executor.executeToWriter(writer));
 	}
 
-	public static void evaluateCallback(FunCompilerConfig fcc, IoSink<FunInstructionExecutor> sink) throws IOException {
+	public static void evaluateCallback(FunCompilerCfg fcc, IoSink<FunInstructionExecutor> sink) throws IOException {
 		evaluateUtil.evaluateCallback(fcc, sink);
 	}
 
@@ -220,7 +220,7 @@ public class Suite {
 		return evaluateUtil.evaluateFunType(fcc(parse(fps)));
 	}
 
-	public static Node evaluateFunType(FunCompilerConfig fcc) {
+	public static Node evaluateFunType(FunCompilerCfg fcc) {
 		return evaluateUtil.evaluateFunType(fcc);
 	}
 

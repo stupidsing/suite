@@ -8,7 +8,7 @@ import java.util.List;
 
 import suite.Suite;
 import suite.editor.EditorMain;
-import suite.fp.FunCompilerConfig;
+import suite.fp.FunCompilerCfg;
 import suite.lp.Configuration.ProverConfig;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
@@ -71,10 +71,10 @@ public class CommandOptions {
 		return b;
 	}
 
-	public FunCompilerConfig fcc(Node node) {
+	public FunCompilerCfg fcc(Node node) {
 		var pc = pc(Suite.newRuleSet());
 
-		var fcc = new FunCompilerConfig(pc, libraries);
+		var fcc = new FunCompilerCfg(pc, libraries);
 		fcc.setLazy(isLazy);
 		fcc.setNode(node);
 

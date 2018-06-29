@@ -3,7 +3,7 @@ package suite;
 import java.io.IOException;
 
 import suite.adt.pair.Pair;
-import suite.fp.FunCompilerConfig;
+import suite.fp.FunCompilerCfg;
 import suite.instructionexecutor.EagerFunInstructionExecutor;
 import suite.instructionexecutor.FunInstructionExecutor;
 import suite.instructionexecutor.LazyFunInstructionExecutor;
@@ -62,20 +62,20 @@ public class EvaluateUtil {
 		return builder.build(rs).apply(lp).collect(Atom.NIL);
 	}
 
-	public Node evaluateFun(FunCompilerConfig fcc) {
+	public Node evaluateFun(FunCompilerCfg fcc) {
 		try (var executor = configureFunExecutor(fcc)) {
 			var result = executor.execute();
 			return fcc.isLazy() ? ThunkUtil.deepYawn(executor.getYawnFun(), result) : result;
 		}
 	}
 
-	public void evaluateCallback(FunCompilerConfig fcc, IoSink<FunInstructionExecutor> sink) throws IOException {
+	public void evaluateCallback(FunCompilerCfg fcc, IoSink<FunInstructionExecutor> sink) throws IOException {
 		try (var executor = configureFunExecutor(fcc)) {
 			sink.sink(executor);
 		}
 	}
 
-	public Node evaluateFunType(FunCompilerConfig fcc) {
+	public Node evaluateFunType(FunCompilerCfg fcc) {
 		var node = Suite.parse("" //
 				+ "source .in" //
 				+ ", fc-parse .in .p" //
@@ -93,7 +93,7 @@ public class EvaluateUtil {
 			return Fail.t("type inference failure");
 	}
 
-	private FunInstructionExecutor configureFunExecutor(FunCompilerConfig fcc) {
+	private FunInstructionExecutor configureFunExecutor(FunCompilerCfg fcc) {
 		var node = fccNodeFun.apply(fcc.isLazy());
 		var code = doFcc(node, fcc);
 
@@ -106,7 +106,7 @@ public class EvaluateUtil {
 			return Fail.t("function compilation failure");
 	}
 
-	private Node doFcc(Node compileNode, FunCompilerConfig fcc) {
+	private Node doFcc(Node compileNode, FunCompilerCfg fcc) {
 		return LogUtil.duration("Code compiled", () -> {
 			var pc = fcc.getProverConfig();
 			var finder = fccFinderFun.apply(Pair.of(pc, compileNode));
@@ -114,15 +114,13 @@ public class EvaluateUtil {
 		});
 	}
 
-	private Node appendLibraries(FunCompilerConfig fcc) {
+	private Node appendLibraries(FunCompilerCfg fcc) {
 		var node = fcc.getNode();
 		var libraries = fcc.getLibraries();
 
-		for (var i = libraries.size() - 1; 0 <= i; i--) {
-			var library = libraries.get(i);
+		for (var library : libraries.reverse())
 			if (!String_.isBlank(library))
 				node = Suite.substitute("use .0 >> .1", Atom.of(library), node);
-		}
 
 		return node;
 	}

@@ -6,29 +6,27 @@ import java.util.List;
 import suite.Suite;
 import suite.lp.Configuration.ProverConfig;
 import suite.node.Node;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 
-public class FunCompilerConfig {
+public class FunCompilerCfg {
 
 	private Node node;
 	private boolean isLazy = true;
 	private List<String> libraries;
 	private ProverConfig proverConfig;
 
-	public FunCompilerConfig() {
+	public FunCompilerCfg() {
 		this(new ProverConfig(), new ArrayList<>(Suite.libraries));
 	}
 
-	public FunCompilerConfig(ProverConfig proverConfig, List<String> libraries) {
+	public FunCompilerCfg(ProverConfig proverConfig, List<String> libraries) {
 		this.proverConfig = proverConfig;
 		this.libraries = libraries;
 	}
 
 	public void addLibrary(String library) {
 		libraries.add(library);
-	}
-
-	public void addLibraries(List<String> libs) {
-		libraries.addAll(libs);
 	}
 
 	public Node getNode() {
@@ -47,16 +45,12 @@ public class FunCompilerConfig {
 		this.isLazy = isLazy;
 	}
 
-	public List<String> getLibraries() {
-		return libraries;
+	public Streamlet<String> getLibraries() {
+		return Read.from(libraries);
 	}
 
 	public ProverConfig getProverConfig() {
 		return proverConfig;
-	}
-
-	public void setProverConfig(ProverConfig proverConfig) {
-		this.proverConfig = proverConfig;
 	}
 
 }
