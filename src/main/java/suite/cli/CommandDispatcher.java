@@ -10,7 +10,7 @@ import suite.Suite;
 import suite.fp.InterpretFunEager;
 import suite.fp.InterpretFunLazy;
 import suite.fp.InterpretFunLazy0;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.compile.impl.CompileGeneralizerImpl;
 import suite.lp.doer.Prover;
 import suite.lp.kb.Rule;
@@ -172,7 +172,7 @@ public class CommandDispatcher {
 			code = query(new SewingProverBuilder(opt.pc(ruleSet)), ruleSet, node);
 			break;
 		case QUERYSEWINGELAB:
-			elaborate(node, n -> new SewingProverImpl(ruleSet).prover(n).test(new ProverConfig(ruleSet)));
+			elaborate(node, n -> new SewingProverImpl(ruleSet).prover(n).test(new ProverCfg(ruleSet)));
 			break;
 		case RESET:
 			ruleSet = Suite.newRuleSet();

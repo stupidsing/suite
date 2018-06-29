@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import suite.Suite;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.Trail;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
@@ -23,7 +23,7 @@ import suite.util.List_;
 
 public class Prover {
 
-	private ProverConfig config;
+	private ProverCfg config;
 	private ProveTracer tracer;
 	private SystemPredicates systemPredicates = new SystemPredicates(this);
 
@@ -40,15 +40,15 @@ public class Prover {
 	}
 
 	public Prover(RuleSet ruleSet) {
-		this(new ProverConfig(ruleSet));
+		this(new ProverCfg(ruleSet));
 	}
 
-	public Prover(ProverConfig proverConfig) {
-		this(proverConfig, null, new Trail());
+	public Prover(ProverCfg proverCfg) {
+		this(proverCfg, null, new Trail());
 	}
 
-	public Prover(ProverConfig proverConfig, ProveTracer tracer, Trail trail) {
-		this.config = proverConfig;
+	public Prover(ProverCfg proverCfg, ProveTracer tracer, Trail trail) {
+		this.config = proverCfg;
 		this.tracer = tracer;
 		this.trail = trail;
 		initialPointInTime = trail.getPointInTime();
@@ -234,7 +234,7 @@ public class Prover {
 		return b ? OK : FAIL;
 	}
 
-	public ProverConfig config() {
+	public ProverCfg config() {
 		return config;
 	}
 

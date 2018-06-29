@@ -2,7 +2,7 @@ package suite.lp.search;
 
 import suite.Suite;
 import suite.instructionexecutor.LogicInstructionExecutor;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
@@ -12,28 +12,28 @@ import suite.util.FunUtil.Fun;
 
 public class CompiledProverBuilder implements Builder {
 
-	private ProverConfig proverConfig;
+	private ProverCfg proverCfg;
 	private Finder compiler;
 
 	/**
 	 * Creates a builder that interpretes the logic compiler to compile the
 	 * given code, then execute.
 	 */
-	public static CompiledProverBuilder level1(ProverConfig proverConfig) {
-		return new CompiledProverBuilder(new SewingProverBuilder2(proverConfig), proverConfig);
+	public static CompiledProverBuilder level1(ProverCfg proverCfg) {
+		return new CompiledProverBuilder(new SewingProverBuilder2(proverCfg), proverCfg);
 	}
 
 	/**
 	 * Creates a builder that compiles the logic compiler, execute it to compile
 	 * the given code, then execute.
 	 */
-	public static CompiledProverBuilder level2(ProverConfig proverConfig) {
-		return new CompiledProverBuilder(level1(proverConfig), proverConfig);
+	public static CompiledProverBuilder level2(ProverCfg proverCfg) {
+		return new CompiledProverBuilder(level1(proverCfg), proverCfg);
 	}
 
-	private CompiledProverBuilder(Builder builder, ProverConfig proverConfig) {
+	private CompiledProverBuilder(Builder builder, ProverCfg proverCfg) {
 		this.compiler = newCompiler(builder);
-		this.proverConfig = proverConfig;
+		this.proverCfg = proverCfg;
 	}
 
 	@Override
@@ -44,11 +44,11 @@ public class CompiledProverBuilder implements Builder {
 			var code = compile(Suite.substitute(".0 >> .1", rules, goal));
 
 			return (source, sink) -> {
-				var proverConfig1 = new ProverConfig(ruleSet, proverConfig);
-				proverConfig1.setSource(source);
-				proverConfig1.setSink(sink);
+				var proverCfg1 = new ProverCfg(ruleSet, proverCfg);
+				proverCfg1.setSource(source);
+				proverCfg1.setSink(sink);
 
-				try (var executor = new LogicInstructionExecutor(code, proverConfig1)) {
+				try (var executor = new LogicInstructionExecutor(code, proverCfg1)) {
 					executor.execute();
 				}
 			};

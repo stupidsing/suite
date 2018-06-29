@@ -2,7 +2,7 @@ package suite.instructionexecutor;
 
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Instruction;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
 import suite.lp.predicate.SystemPredicates;
@@ -19,9 +19,9 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 	private Prover prover;
 	private SystemPredicates systemPredicates;
 
-	public LogicInstructionExecutor(Node node, ProverConfig proverConfig) {
+	public LogicInstructionExecutor(Node node, ProverCfg proverCfg) {
 		super(node);
-		prover = new Prover(proverConfig);
+		prover = new Prover(proverCfg);
 		systemPredicates = new SystemPredicates(prover);
 	}
 

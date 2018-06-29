@@ -9,7 +9,7 @@ import org.junit.Test;
 import suite.Suite;
 import suite.fp.FunRbTreeTest;
 import suite.ip.ImperativeCompiler;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 
 public class FailedTests {
 
@@ -58,7 +58,7 @@ public class FailedTests {
 	// unmatched types
 	@Test
 	public void testPrecompile() {
-		assertTrue(Suite.precompile("CHARS", new ProverConfig()));
+		assertTrue(Suite.precompile("CHARS", new ProverCfg()));
 	}
 
 	// (Expected) infinite loop.

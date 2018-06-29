@@ -9,7 +9,7 @@ import suite.util.Object_;
 public class ISet<V extends Comparable<V>> implements Iterable<V> {
 
 	private static ISet<?> empty = new ISet<Integer>();
-	private ITree<V> tree = new IbTree<V>(Object_::compare);
+	private ITree<V> tree = new IbTree<>(Object_::compare);
 
 	public static <V extends Comparable<V>> ISet<V> empty() {
 		@SuppressWarnings("unchecked")

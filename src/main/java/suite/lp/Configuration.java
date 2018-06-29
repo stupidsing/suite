@@ -13,25 +13,25 @@ public class Configuration {
 		NONE, SIMPLE, DETAIL
 	}
 
-	public static class ProverConfig {
+	public static class ProverCfg {
 		private RuleSet ruleSet;
 		private boolean isTrace;
 		private Source<Node> source;
 		private Sink<Node> sink;
 
-		public ProverConfig() {
+		public ProverCfg() {
 			this(Suite.newRuleSet());
 		}
 
-		public ProverConfig(RuleSet ruleSet) {
+		public ProverCfg(RuleSet ruleSet) {
 			this(ruleSet, Suite.isProverTrace);
 		}
 
-		public ProverConfig(RuleSet ruleSet, ProverConfig proverConfig) {
-			this(ruleSet, proverConfig.isTrace);
+		public ProverCfg(RuleSet ruleSet, ProverCfg proverCfg) {
+			this(ruleSet, proverCfg.isTrace);
 		}
 
-		private ProverConfig(RuleSet ruleSet, boolean isTrace) {
+		private ProverCfg(RuleSet ruleSet, boolean isTrace) {
 			this.ruleSet = ruleSet;
 			this.isTrace = isTrace;
 		}

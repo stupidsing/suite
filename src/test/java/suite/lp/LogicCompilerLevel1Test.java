@@ -8,7 +8,7 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.doer.Specializer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
@@ -67,7 +67,7 @@ public class LogicCompilerLevel1Test {
 	}
 
 	private Finder finder(RuleSet rs, Node goal) {
-		return CompiledProverBuilder.level1(new ProverConfig()).build(rs).apply(goal);
+		return CompiledProverBuilder.level1(new ProverCfg()).build(rs).apply(goal);
 	}
 
 }

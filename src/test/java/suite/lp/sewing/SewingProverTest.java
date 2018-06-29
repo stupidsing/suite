@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.doer.Generalizer;
 import suite.lp.kb.Rule;
 import suite.lp.sewing.impl.SewingProverImpl;
@@ -26,7 +26,7 @@ public class SewingProverTest {
 		Suite.addRule(rs, "yes");
 
 		var sp = new SewingProverImpl(rs);
-		var pc = new ProverConfig(rs);
+		var pc = new ProverCfg(rs);
 		assertTrue(sp.prover(Suite.parse("yes")).test(pc));
 		assertTrue(sp.prover(Suite.parse("fail; yes")).test(pc));
 		assertTrue(sp.prover(Suite.parse("yes; yes")).test(pc));
@@ -52,7 +52,7 @@ public class SewingProverTest {
 		Suite.addRule(rs, "r .c :- q .c .v, .v = 1");
 
 		var sp = new SewingProverImpl(rs);
-		var pc = new ProverConfig(rs);
+		var pc = new ProverCfg(rs);
 		assertTrue(sp.prover(new Generalizer().generalize(Suite.parse("r .c"))).test(pc));
 	}
 
@@ -64,7 +64,7 @@ public class SewingProverTest {
 		Suite.addRule(rs, "b :- !, fail");
 
 		var sp = new SewingProverImpl(rs);
-		var pc = new ProverConfig(rs);
+		var pc = new ProverCfg(rs);
 		assertTrue(sp.prover(Suite.parse("a")).test(pc));
 	}
 
@@ -75,7 +75,7 @@ public class SewingProverTest {
 		Suite.addRule(rs, "b 1");
 
 		var sp = new SewingProverImpl(rs);
-		var pc = new ProverConfig(rs);
+		var pc = new ProverCfg(rs);
 		assertTrue(sp.prover(Suite.parse("a")).test(pc));
 	}
 
@@ -83,7 +83,7 @@ public class SewingProverTest {
 	public void testIf() {
 		var rs = Suite.newRuleSet();
 		var sp = new SewingProverImpl(rs);
-		var pc = new ProverConfig(rs);
+		var pc = new ProverCfg(rs);
 		assertTrue(sp.prover(Suite.parse("if () () fail")).test(pc));
 		assertFalse(sp.prover(Suite.parse("if () fail ()")).test(pc));
 		assertTrue(sp.prover(Suite.parse("if fail fail ()")).test(pc));
@@ -100,7 +100,7 @@ public class SewingProverTest {
 			rs.addRule(Rule.of(Tree.of(TermOp.IS____, TreeTuple.of(pred, Int.of(i)), tail)));
 
 		var sp = new SewingProverImpl(rs);
-		var pc = new ProverConfig(rs);
+		var pc = new ProverCfg(rs);
 		var test = sp.prover(Suite.parse("q 32768"));
 
 		Source<Stopwatch<Boolean>> trial = () -> Stopwatch.of(() -> {

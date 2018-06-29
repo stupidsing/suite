@@ -1,6 +1,6 @@
 package suite.lp.search;
 
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.doer.Prover;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
@@ -11,14 +11,14 @@ import suite.util.FunUtil.Fun;
 
 public class InterpretedProverBuilder implements Builder {
 
-	private ProverConfig proverConfig;
+	private ProverCfg proverCfg;
 
 	public InterpretedProverBuilder() {
-		this(new ProverConfig());
+		this(new ProverCfg());
 	}
 
-	public InterpretedProverBuilder(ProverConfig proverConfig) {
-		this.proverConfig = proverConfig;
+	public InterpretedProverBuilder(ProverCfg proverCfg) {
+		this.proverCfg = proverCfg;
 	}
 
 	@Override
@@ -27,10 +27,10 @@ public class InterpretedProverBuilder implements Builder {
 			var goal1 = SewingGeneralizerImpl.generalize(goal);
 
 			return (source, sink) -> {
-				var proverConfig1 = new ProverConfig(ruleSet, proverConfig);
-				proverConfig1.setSource(source);
-				proverConfig1.setSink(sink);
-				new Prover(proverConfig1).elaborate(goal1);
+				var proverCfg1 = new ProverCfg(ruleSet, proverCfg);
+				proverCfg1.setSource(source);
+				proverCfg1.setSink(sink);
+				new Prover(proverCfg1).elaborate(goal1);
 			};
 		};
 	}

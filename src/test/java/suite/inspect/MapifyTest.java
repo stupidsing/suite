@@ -9,7 +9,7 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.node.Node;
 import suite.node.util.Singleton;
 
@@ -36,14 +36,14 @@ public class MapifyTest {
 
 	@Test
 	public void testMapify() {
-		var pc0 = new ProverConfig();
+		var pc0 = new ProverCfg();
 		pc0.setRuleSet(null);
 
-		var map = mapify.mapify(ProverConfig.class, pc0);
+		var map = mapify.mapify(ProverCfg.class, pc0);
 		assertNotNull(map);
 		System.out.println(map);
 
-		var pc1 = mapify.unmapify(ProverConfig.class, map);
+		var pc1 = mapify.unmapify(ProverCfg.class, map);
 		System.out.println(pc1);
 
 		assertEquals(pc0, pc1);

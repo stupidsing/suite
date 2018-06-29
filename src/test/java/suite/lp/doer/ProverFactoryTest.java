@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.compile.impl.CompileProverImpl;
 import suite.lp.sewing.impl.SewingProverImpl;
 
@@ -27,7 +27,7 @@ public class ProverFactoryTest {
 				new SewingProverImpl(Suite.newRuleSet(List.of("auto.sl"))), }) {
 			var p = pf.prover(Suite.parse(query));
 
-			assertEquals(result, p.test(new ProverConfig()));
+			assertEquals(result, p.test(new ProverCfg()));
 		}
 	}
 

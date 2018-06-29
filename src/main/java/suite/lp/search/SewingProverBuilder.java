@@ -1,6 +1,6 @@
 package suite.lp.search;
 
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
@@ -11,14 +11,14 @@ import suite.util.FunUtil.Fun;
 
 public class SewingProverBuilder implements Builder {
 
-	private ProverConfig proverConfig;
+	private ProverCfg proverCfg;
 
 	public SewingProverBuilder() {
-		this(new ProverConfig());
+		this(new ProverCfg());
 	}
 
-	public SewingProverBuilder(ProverConfig proverConfig) {
-		this.proverConfig = proverConfig;
+	public SewingProverBuilder(ProverCfg proverCfg) {
+		this.proverCfg = proverCfg;
 	}
 
 	@Override
@@ -30,10 +30,10 @@ public class SewingProverBuilder implements Builder {
 			var pred = sewingProver.prover(goal1);
 
 			return (source, sink) -> {
-				var proverConfig1 = new ProverConfig(ruleSet, proverConfig);
-				proverConfig1.setSource(source);
-				proverConfig1.setSink(sink);
-				pred.test(proverConfig1);
+				var proverCfg1 = new ProverCfg(ruleSet, proverCfg);
+				proverCfg1.setSource(source);
+				proverCfg1.setSink(sink);
+				pred.test(proverCfg1);
 			};
 		};
 	}

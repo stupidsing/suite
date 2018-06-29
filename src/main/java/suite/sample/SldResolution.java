@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import suite.Suite;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.search.CompiledProverBuilder;
 import suite.node.Atom;
 import suite.node.Node;
@@ -26,7 +26,7 @@ public class SldResolution {
 
 	public List<Node> resolve(Node node) {
 		var ruleSet = Suite.newRuleSet(List.of("auto.sl", "pt.sl"));
-		var builder = CompiledProverBuilder.level1(new ProverConfig());
+		var builder = CompiledProverBuilder.level1(new ProverCfg());
 		var finder = builder.build(ruleSet).apply(Suite.parse("" //
 				+ "source .n0" //
 				+ ", pt-prove0 .n0 .n1" //

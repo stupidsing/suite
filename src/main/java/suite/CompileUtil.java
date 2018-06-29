@@ -2,7 +2,7 @@ package suite;
 
 import java.util.List;
 
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.SewingProverBuilder;
 import suite.util.FunUtil.Fun;
@@ -24,7 +24,7 @@ public class CompileUtil {
 		return newRuleSetFun.apply(List.of("auto.sl", "lc/lc.sl"));
 	}
 
-	public boolean precompile(String libraryName, ProverConfig pc) {
+	public boolean precompile(String libraryName, ProverCfg pc) {
 		System.out.println("Pre-compiling [" + libraryName + "]...");
 
 		var builder = new SewingProverBuilder(pc);

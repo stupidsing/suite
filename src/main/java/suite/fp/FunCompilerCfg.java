@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.Suite;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.node.Node;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -14,14 +14,14 @@ public class FunCompilerCfg {
 	private Node node;
 	private boolean isLazy = true;
 	private List<String> libraries;
-	private ProverConfig proverConfig;
+	private ProverCfg proverCfg;
 
 	public FunCompilerCfg() {
-		this(new ProverConfig(), new ArrayList<>(Suite.libraries));
+		this(new ProverCfg(), new ArrayList<>(Suite.libraries));
 	}
 
-	public FunCompilerCfg(ProverConfig proverConfig, List<String> libraries) {
-		this.proverConfig = proverConfig;
+	public FunCompilerCfg(ProverCfg proverCfg, List<String> libraries) {
+		this.proverCfg = proverCfg;
 		this.libraries = libraries;
 	}
 
@@ -49,8 +49,8 @@ public class FunCompilerCfg {
 		return Read.from(libraries);
 	}
 
-	public ProverConfig getProverConfig() {
-		return proverConfig;
+	public ProverCfg getProverConfig() {
+		return proverCfg;
 	}
 
 }

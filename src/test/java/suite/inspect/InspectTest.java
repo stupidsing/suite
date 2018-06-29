@@ -5,14 +5,14 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.node.util.Singleton;
 
 public class InspectTest {
 
 	private Inspect inspect = Singleton.me.inspect;
-	private ProverConfig pc0 = new ProverConfig();
-	private ProverConfig pc1 = new ProverConfig();
+	private ProverCfg pc0 = new ProverCfg();
+	private ProverCfg pc1 = new ProverCfg();
 
 	{
 		pc1.setTrace(true);

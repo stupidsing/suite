@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.search.CompiledProverBuilder;
 
 public class LogicCompilerLevel2Test {
@@ -22,14 +22,14 @@ public class LogicCompilerLevel2Test {
 				+ "sum .a .b .c :- bound .b, bound .c, let .a (.b + .c) #" //
 		));
 
-		var builder = CompiledProverBuilder.level2(new ProverConfig());
+		var builder = CompiledProverBuilder.level2(new ProverCfg());
 		Suite.evaluateLogic(builder, rs, "(), sink ()");
 	}
 
 	@Test
 	public void test1() throws IOException {
 		var rs = Suite.newRuleSet(List.of("auto.sl"));
-		var builder = CompiledProverBuilder.level2(new ProverConfig());
+		var builder = CompiledProverBuilder.level2(new ProverCfg());
 		Suite.evaluateLogic(builder, rs, "(), sink ()");
 	}
 

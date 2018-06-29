@@ -5,7 +5,7 @@ import java.util.Map;
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.doer.ProverFactory;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
@@ -47,9 +47,9 @@ public class CompileProverImpl implements ProverFactory {
 
 		var proveRt = cf.apply(compiled);
 
-		return proverConfig -> {
+		return proverCfg -> {
 			var rt_ = new Runtime_();
-			rt_.proverConfig = proverConfig;
+			rt_.proverCfg = proverCfg;
 			proveRt.test(rt_);
 			return rt_.ok;
 		};
@@ -60,7 +60,7 @@ public class CompileProverImpl implements ProverFactory {
 	}
 
 	public static class Runtime_ {
-		public ProverConfig proverConfig;
+		public ProverCfg proverCfg;
 		public boolean ok;
 	}
 

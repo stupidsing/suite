@@ -1,7 +1,7 @@
 package suite.lp.search;
 
 import suite.Suite;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.Prototype;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
@@ -12,19 +12,19 @@ import suite.util.FunUtil.Fun;
 
 public class SewingProverBuilder2 implements Builder {
 
-	private ProverConfig proverConfig;
+	private ProverCfg proverCfg;
 
 	public SewingProverBuilder2() {
-		this(new ProverConfig());
+		this(new ProverCfg());
 	}
 
-	public SewingProverBuilder2(ProverConfig proverConfig) {
-		this.proverConfig = proverConfig;
+	public SewingProverBuilder2(ProverCfg proverCfg) {
+		this.proverCfg = proverCfg;
 	}
 
 	@Override
 	public Fun<Node, Finder> build(RuleSet ruleSet) {
-		var isRewrite = !proverConfig.isTrace();
+		var isRewrite = !proverCfg.isTrace();
 		var qr = isRewrite ? new QueryRewriter(Prototype.multimap(ruleSet)) : null;
 		RuleSet ruleSet1;
 
@@ -34,7 +34,7 @@ public class SewingProverBuilder2 implements Builder {
 		} else
 			ruleSet1 = ruleSet;
 
-		var fun = new SewingProverBuilder(proverConfig).build(ruleSet1);
+		var fun = new SewingProverBuilder(proverCfg).build(ruleSet1);
 
 		if (qr != null)
 			return goal -> fun.apply(qr.rewriteClause(goal));

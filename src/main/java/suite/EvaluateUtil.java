@@ -8,7 +8,7 @@ import suite.instructionexecutor.EagerFunInstructionExecutor;
 import suite.instructionexecutor.FunInstructionExecutor;
 import suite.instructionexecutor.LazyFunInstructionExecutor;
 import suite.instructionexecutor.thunk.ThunkUtil;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.doer.Specializer;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.CompiledProverBuilder;
@@ -37,7 +37,7 @@ public class EvaluateUtil {
 
 	// using level 1 CompiledProverBuilder would break the test case
 	// FunRbTreeTest. it would blow up the stack in InstructionExecutor
-	private Fun<Pair<ProverConfig, Node>, Finder> fccFinderFun = Memoize.fun(pair -> {
+	private Fun<Pair<ProverCfg, Node>, Finder> fccFinderFun = Memoize.fun(pair -> {
 		var builder = new SewingProverBuilder(pair.t0);
 		// builder builder = new InterpretedProverBuilder(pair.t0);
 		// builder builder = new CompiledProverBuilder.level1(pair.t0);
@@ -45,7 +45,7 @@ public class EvaluateUtil {
 	});
 
 	public boolean proveLogic(Node lp) {
-		var builder = CompiledProverBuilder.level1(new ProverConfig());
+		var builder = CompiledProverBuilder.level1(new ProverCfg());
 		return proveLogic(builder, Suite.newRuleSet(), lp);
 	}
 

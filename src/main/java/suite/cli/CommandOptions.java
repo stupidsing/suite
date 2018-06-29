@@ -9,7 +9,7 @@ import java.util.List;
 import suite.Suite;
 import suite.editor.EditorMain;
 import suite.fp.FunCompilerCfg;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
 import suite.util.Fail;
@@ -81,8 +81,8 @@ public class CommandOptions {
 		return fcc;
 	}
 
-	public ProverConfig pc(RuleSet ruleSet) {
-		var pc = new ProverConfig(ruleSet);
+	public ProverCfg pc(RuleSet ruleSet) {
+		var pc = new ProverCfg(ruleSet);
 		pc.setTrace(isTrace);
 		return pc;
 	}

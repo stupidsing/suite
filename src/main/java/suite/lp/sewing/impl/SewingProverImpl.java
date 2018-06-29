@@ -11,7 +11,7 @@ import suite.Suite;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.immutable.IList;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.compile.impl.CompileExpressionImpl;
 import suite.lp.doer.Binder;
 import suite.lp.doer.BinderFactory;
@@ -152,11 +152,11 @@ public class SewingProverImpl implements ProverFactory {
 			this(rt.env, rt.prover.config(), tr);
 		}
 
-		private Runtime(ProverConfig pc, Trampoline tr) {
+		private Runtime(ProverCfg pc, Trampoline tr) {
 			this(emptyEnvironment, pc, tr);
 		}
 
-		private Runtime(Env env, ProverConfig pc, Trampoline tr) {
+		private Runtime(Env env, ProverCfg pc, Trampoline tr) {
 			super(env);
 			pushAlt(tr);
 			prover = new Prover(pc, null, trail);

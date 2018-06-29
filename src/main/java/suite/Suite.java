@@ -13,7 +13,7 @@ import suite.BindArrayUtil.Pattern;
 import suite.fp.FunCompilerCfg;
 import suite.fp.intrinsic.Intrinsics;
 import suite.instructionexecutor.FunInstructionExecutor;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.Configuration.TraceLevel;
 import suite.lp.doer.Prover;
 import suite.lp.kb.DoubleIndexedRuleSet;
@@ -168,7 +168,7 @@ public class Suite {
 		return compileUtil.logicCompilerRuleSet();
 	}
 
-	public static boolean precompile(String libraryName, ProverConfig pc) {
+	public static boolean precompile(String libraryName, ProverCfg pc) {
 		return compileUtil.precompile(libraryName, pc);
 	}
 

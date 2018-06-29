@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.node.util.Singleton;
 
 public class NodifyTest {
@@ -34,14 +34,14 @@ public class NodifyTest {
 
 	@Test
 	public void testMapify() {
-		var pc0 = new ProverConfig();
+		var pc0 = new ProverCfg();
 		pc0.setRuleSet(null);
 
-		var node = nodify.nodify(ProverConfig.class, pc0);
+		var node = nodify.nodify(ProverCfg.class, pc0);
 		assertNotNull(node);
 		System.out.println(node);
 
-		var pc1 = nodify.unnodify(ProverConfig.class, node);
+		var pc1 = nodify.unnodify(ProverCfg.class, node);
 		System.out.println(pc1);
 
 		assertEquals(pc0, pc1);

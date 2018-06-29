@@ -8,7 +8,7 @@ import java.io.IOException;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.SewingProverBuilder2;
@@ -130,7 +130,7 @@ public class ProverTest {
 	}
 
 	private boolean test(RuleSet rs, String lp) {
-		var pc = new ProverConfig();
+		var pc = new ProverCfg();
 		var b0 = Suite.proveLogic(new InterpretedProverBuilder(pc), rs, lp);
 		var b1 = Suite.proveLogic(new SewingProverBuilder2(pc), rs, lp);
 		if (b0 == b1)

@@ -7,7 +7,7 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.lp.Configuration.ProverConfig;
+import suite.lp.Configuration.ProverCfg;
 import suite.os.LogUtil;
 import suite.sample.Profiler;
 import suite.streamlet.Read;
@@ -33,7 +33,7 @@ public class PrecompileTest {
 
 	@Test
 	public void testPrecompileAll() {
-		Read.from(allLibraries).sink(lib -> assertTrue(Suite.precompile(lib, new ProverConfig())));
+		Read.from(allLibraries).sink(lib -> assertTrue(Suite.precompile(lib, new ProverCfg())));
 	}
 
 	@Test
@@ -41,7 +41,7 @@ public class PrecompileTest {
 		new Profiler().profile(() -> {
 			for (var i = 0; i < 3; i++)
 				LogUtil.duration("", () -> {
-					var b = Suite.precompile("STANDARD", new ProverConfig());
+					var b = Suite.precompile("STANDARD", new ProverCfg());
 					assertTrue(b);
 					return b;
 				});
