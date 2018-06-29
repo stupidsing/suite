@@ -153,7 +153,7 @@ public class Prover {
 
 					var prototype = Prototype.of(query);
 					var head = prototype != null ? prototype.head : null;
-					Atom atom = head instanceof Atom ? (Atom) head : null;
+					var atom = head instanceof Atom ? (Atom) head : null;
 					var name = atom != null ? atom.name : null;
 					isTrace &= whites == null || whites.contains(name);
 					isTrace &= blacks == null || !blacks.contains(name);
