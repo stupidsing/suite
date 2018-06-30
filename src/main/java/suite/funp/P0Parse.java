@@ -142,20 +142,20 @@ public class P0Parse {
 			}).match("define .0 := .1 >> .2", (a, b, c) -> {
 				if (a instanceof Atom) {
 					var var = Atom.name(a);
-					return FunpDefine.of(true, var, p(b), parseNewVariable(c, var));
+					return FunpDefine.of(true, var, p(b), nv(var).p(c));
 				} else
 					return null;
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("let .0 := .1 >> .2", (a, b, c) -> {
 				var var = Atom.name(a);
 				if (var != null)
-					return FunpDefine.of(false, var, p(b), parseNewVariable(c, var));
+					return FunpDefine.of(false, var, p(b), nv(var).p(c));
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 				else
 					return bind(a, b, c);
 			}).match("define global .0 := .1 >> .2", (a, b, c) -> {
 				var var = Atom.name(a);
-				return FunpDefineGlobal.of(var, p(b), parseNewVariable(c, var));
+				return FunpDefineGlobal.of(var, p(b), nv(var).p(c));
 			}).match("define { .0 } >> .1", (a, b) -> {
 				var pattern1 = Suite.pattern(".0: .1");
 				var list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect();
@@ -193,7 +193,7 @@ public class P0Parse {
 				String var;
 				Funp f;
 				if (a instanceof Atom)
-					f = parseNewVariable(b, var = Atom.name(a));
+					f = nv(var = Atom.name(a)).p(b);
 				else {
 					var = "l$" + Util.temp();
 					f = nv(var).bind(a, Atom.of(var), b);
@@ -271,10 +271,6 @@ public class P0Parse {
 			var f0 = new Bind(vars).bind(be, value, then, else_);
 			var f1 = FunpCheckType.of(be, value, f0);
 			return vars.streamlet().<Funp> fold(f1, (f, var) -> FunpDefine.of(false, var, FunpDontCare.of(), f));
-		}
-
-		private Funp parseNewVariable(Node node, String var) {
-			return nv(var).p(node);
 		}
 
 		private Parse nv(String var) {
