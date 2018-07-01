@@ -10,6 +10,7 @@ import java.util.Map;
 import suite.adt.pair.Pair;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
+import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.Set_;
 import suite.util.To;
@@ -20,13 +21,6 @@ public class Snapshot {
 
 	public Map<String, List<Pair<Bytes, Bytes>>> diffDirs(String dir0, String dir1) {
 		return diffMaps(readMap(dir0), readMap(dir1));
-	}
-
-	private Map<String, Bytes> getFiles(Map<String, List<Pair<Bytes, Bytes>>> diff, boolean isFrom) {
-		var map = new HashMap<String, Bytes>();
-		for (var e : diff.entrySet())
-			map.put(e.getKey(), textUtil.fromTo(e.getValue(), isFrom));
-		return map;
 	}
 
 	public Map<String, List<Pair<Bytes, Bytes>>> diffMaps(Map<String, Bytes> map0, Map<String, Bytes> map1) {
@@ -59,21 +53,17 @@ public class Snapshot {
 	private void writeMap(String dir, Map<String, Bytes> map) {
 		var p0 = Paths.get(dir);
 		for (var e : map.entrySet()) {
-			var key = e.getKey();
+			var p = p0.resolve(e.getKey());
 			var value = e.getValue();
 			if (value != null)
-				FileUtil.out(p0.resolve(key)).write(os -> os.write(value.toArray()));
+				FileUtil.out(p).write(os -> os.write(value.toArray()));
 			else
-				Rethrow.ex(() -> Files.deleteIfExists(p0.resolve(key)));
+				Rethrow.ex(() -> Files.deleteIfExists(p));
 		}
 	}
 
-	private boolean isCreate(List<Pair<Bytes, Bytes>> e) {
-		return e.size() == 1 && e.iterator().next().t0 == null;
-	}
-
-	private boolean isDelete(List<Pair<Bytes, Bytes>> e) {
-		return e.size() == 1 && e.iterator().next().t0 == null;
+	private Map<String, Bytes> getFiles(Map<String, List<Pair<Bytes, Bytes>>> diff, boolean isFrom) {
+		return Read.from2(diff).mapValue(v -> textUtil.fromTo(v, isFrom)).toMap();
 	}
 
 }

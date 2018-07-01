@@ -69,7 +69,9 @@ public class TextUtil {
 		return merge(pairsx, pairsy, false);
 	}
 
-	public List<Pair<Bytes, Bytes>> merge(List<Pair<Bytes, Bytes>> pairsx, List<Pair<Bytes, Bytes>> pairsy,
+	public List<Pair<Bytes, Bytes>> merge( //
+			List<Pair<Bytes, Bytes>> pairsx, //
+			List<Pair<Bytes, Bytes>> pairsy, //
 			boolean isDetectSameChanges) throws ConflictException {
 		var isEmptyx = pairsx.isEmpty();
 		var isEmptyy = pairsy.isEmpty();

@@ -127,8 +127,8 @@ public class FileUtil {
 		}
 
 		public void write(SinkEx<OutputStream, IOException> sink) {
-			try {
-				sink.sink(this);
+			try (var os = this) {
+				sink.sink(os);
 			} catch (IOException ex) {
 				Fail.t(ex);
 			}
