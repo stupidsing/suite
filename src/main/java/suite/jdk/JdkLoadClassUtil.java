@@ -27,7 +27,7 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 		classLoader.close();
 	}
 
-	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java) throws IOException {
+	public <T> T newInstance(Class<T> interfaceClazz, String canonicalName, String java) {
 		compile(canonicalName, java);
 		Class<? extends T> clazz = load(canonicalName);
 		return Object_.new_(clazz);

@@ -77,12 +77,12 @@ public class LibraryMain extends ExecutableProgram {
 				});
 
 		// construct file listing
-		try (var os = FileUtil.out(inputDir + ".listing"); var pw = new PrintWriter(os)) {
-			for (var path_fileInfo : path_fileInfos)
-				pw.println(path_fileInfo.t0 + path_fileInfo.t1.md5);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+		FileUtil.out(inputDir + ".listing").write(os -> {
+			try (var pw = new PrintWriter(os)) {
+				for (var path_fileInfo : path_fileInfos)
+					pw.println(path_fileInfo.t0 + path_fileInfo.t1.md5);
+			}
+		});
 
 		path_fileInfos //
 				.map2((path, fileInfo) -> {

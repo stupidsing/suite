@@ -199,10 +199,7 @@ public class RayTracerTest {
 	private void rasterize(RayTracer rayTracer) throws IOException {
 		var path = Defaults.tmp(Thread_.getStackTrace(3).getMethodName() + ".png");
 		var bufferedImage = rayTracer.trace(640, 480, 640);
-
-		try (var os = FileUtil.out(path)) {
-			ImageIO.write(bufferedImage, "png", os);
-		}
+		FileUtil.out(path).write(os -> ImageIO.write(bufferedImage, "png", os));
 	}
 
 	private List<LightSource> lights(LightSource... lights) {

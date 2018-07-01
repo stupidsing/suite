@@ -16,6 +16,7 @@ import suite.pkgmanager.action.ExecCommandAction;
 import suite.pkgmanager.action.ExtractFileAction;
 import suite.pkgmanager.action.InstallAction;
 import suite.streamlet.Read;
+import suite.util.Fail;
 
 public class PackageManager {
 
@@ -23,7 +24,7 @@ public class PackageManager {
 	private Keeper keeper = new Keeper(objectMapper);
 	private Log log = LogFactory.getLog(getClass());
 
-	public boolean install(String packageFilename) throws IOException {
+	public boolean install(String packageFilename) {
 		var packageManifest = getPackageManifest(packageFilename);
 
 		var filenameMappings = Read //
@@ -48,6 +49,8 @@ public class PackageManager {
 						return new ExtractFileAction(packageFilename, filename0, filename1);
 					}) //
 					.toList());
+		} catch (IOException ex) {
+			return Fail.t(ex);
 		}
 
 		installActions.addAll(Read //
@@ -75,7 +78,7 @@ public class PackageManager {
 		return isSuccess;
 	}
 
-	public boolean uninstall(String packageName) throws IOException {
+	public boolean uninstall(String packageName) {
 		var packageMemento = keeper.loadPackageMemento(packageName);
 		var installActions = packageMemento.getInstallActions();
 		unact(installActions, installActions.size());
@@ -93,10 +96,11 @@ public class PackageManager {
 		return progress;
 	}
 
-	private PackageManifest getPackageManifest(String packageFilename) throws IOException {
-		try (var zipFile = new ZipFile(packageFilename);
-				var fis = zipFile.getInputStream(zipFile.getEntry("pm.json"))) {
+	private PackageManifest getPackageManifest(String packageFilename) {
+		try (var zipFile = new ZipFile(packageFilename); var fis = zipFile.getInputStream(zipFile.getEntry("pm.json"))) {
 			return objectMapper.readValue(fis, PackageManifest.class);
+		} catch (IOException ex) {
+			return Fail.t(ex);
 		}
 	}
 

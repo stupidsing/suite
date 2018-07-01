@@ -21,14 +21,12 @@ public class JdkUtil {
 		this.binDir = binDir;
 	}
 
-	protected Path compile(String canonicalName, String java) throws IOException {
+	protected Path compile(String canonicalName, String java) {
 		Path srcFilePath = srcDir.resolve(canonicalName.replace('.', '/') + ".java");
 		Path binFilePath = binDir.resolve(canonicalName.replace('.', '/') + ".class");
 
 		LogUtil.info("Writing " + srcFilePath);
-		try (var os = FileUtil.out(srcFilePath)) {
-			os.write(java.getBytes(Defaults.charset));
-		}
+		FileUtil.out(srcFilePath).write(os -> os.write(java.getBytes(Defaults.charset)));
 
 		// compile the Java, load the class, return an instantiated object
 		LogUtil.info("Compiling " + srcFilePath);
@@ -45,6 +43,8 @@ public class JdkUtil {
 					null, //
 					sjfm.getJavaFileObjects(srcFilePath.toFile())).call())
 				Fail.t("Java compilation error");
+		} catch (IOException ex) {
+			Fail.t(ex);
 		}
 
 		return binFilePath;

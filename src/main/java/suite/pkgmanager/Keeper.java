@@ -11,6 +11,7 @@ import suite.Defaults;
 import suite.inspect.Mapify;
 import suite.node.util.Singleton;
 import suite.os.FileUtil;
+import suite.util.Fail;
 
 /**
  * Keeps track of the package installed in local machine.
@@ -28,22 +29,28 @@ public class Keeper {
 		this.objectMapper = objectMapper;
 	}
 
-	public PackageMemento loadPackageMemento(String packageName) throws IOException {
+	public PackageMemento loadPackageMemento(String packageName) {
 		try (var is = Files.newInputStream(keeperDir.resolve(packageName))) {
 			return mapify.unmapify(PackageMemento.class, objectMapper.readValue(is, Map.class));
+		} catch (IOException ex) {
+			return Fail.t(ex);
 		}
 	}
 
-	public void savePackageMemento(PackageMemento packageMemento) throws IOException {
+	public void savePackageMemento(PackageMemento packageMemento) {
 		var packageName = packageMemento.getPackageManifest().getName();
 
-		try (var os = FileUtil.out(keeperDir.resolve(packageName))) {
-			objectMapper.writeValue(os, mapify.mapify(PackageMemento.class, packageMemento));
-		}
+		FileUtil //
+				.out(keeperDir.resolve(packageName)) //
+				.write(os -> objectMapper.writeValue(os, mapify.mapify(PackageMemento.class, packageMemento)));
 	}
 
-	public void removePackageMemento(String packageName) throws IOException {
-		Files.delete(keeperDir.resolve(packageName));
+	public void removePackageMemento(String packageName) {
+		try {
+			Files.delete(keeperDir.resolve(packageName));
+		} catch (IOException ex) {
+			Fail.t(ex);
+		}
 	}
 
 }

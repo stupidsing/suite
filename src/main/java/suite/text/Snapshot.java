@@ -22,17 +22,11 @@ public class Snapshot {
 		return diffMaps(readMap(dir0), readMap(dir1));
 	}
 
-	private Map<String, Bytes> readMap(String dir) {
-		return FileUtil //
-				.findPaths(Paths.get(dir)) //
-				.map2(Path::toString, path -> To.bytes(Rethrow.ex(() -> Files.newInputStream(path)))) //
-				.toMap();
-	}
-
-	private void writeMap(String dir, Map<String, Bytes> map) {
-		var p0 = Paths.get(dir);
-		for (var e : map.entrySet())
-			FileUtil.write(p0.resolve(e.getKey()), os -> os.write(e.getValue().toArray()));
+	private Map<String, Bytes> getFiles(Map<String, List<Pair<Bytes, Bytes>>> diff, boolean isFrom) {
+		var map = new HashMap<String, Bytes>();
+		for (var e : diff.entrySet())
+			map.put(e.getKey(), textUtil.fromTo(e.getValue(), isFrom));
+		return map;
 	}
 
 	public Map<String, List<Pair<Bytes, Bytes>>> diffMaps(Map<String, Bytes> map0, Map<String, Bytes> map1) {
@@ -53,6 +47,33 @@ public class Snapshot {
 		}
 
 		return diffMap;
+	}
+
+	private Map<String, Bytes> readMap(String dir) {
+		return FileUtil //
+				.findPaths(Paths.get(dir)) //
+				.map2(Path::toString, path -> To.bytes(Rethrow.ex(() -> Files.newInputStream(path)))) //
+				.toMap();
+	}
+
+	private void writeMap(String dir, Map<String, Bytes> map) {
+		var p0 = Paths.get(dir);
+		for (var e : map.entrySet()) {
+			var key = e.getKey();
+			var value = e.getValue();
+			if (value != null)
+				FileUtil.out(p0.resolve(key)).write(os -> os.write(value.toArray()));
+			else
+				Rethrow.ex(() -> Files.deleteIfExists(p0.resolve(key)));
+		}
+	}
+
+	private boolean isCreate(List<Pair<Bytes, Bytes>> e) {
+		return e.size() == 1 && e.iterator().next().t0 == null;
+	}
+
+	private boolean isDelete(List<Pair<Bytes, Bytes>> e) {
+		return e.size() == 1 && e.iterator().next().t0 == null;
 	}
 
 }

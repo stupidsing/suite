@@ -125,6 +125,16 @@ public class TextUtil {
 		return i;
 	}
 
+	public Bytes fromTo(List<Pair<Bytes, Bytes>> pairs, boolean isFrom) {
+		var bb = new BytesBuilder();
+		for (var pair : pairs)
+			if (pair != null)
+				bb.append(isFrom ? pair.t0 : pair.t1);
+			else
+				return null;
+		return bb.toBytes();
+	}
+
 	public String toString(List<Pair<Bytes, Bytes>> pairs) {
 		var sb = new StringBuilder();
 		for (var pair : pairs)

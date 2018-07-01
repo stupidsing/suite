@@ -27,11 +27,11 @@ public class WriteElf {
 	}
 
 	private void write(int org, Bytes code, Path path) {
-		try (var os = FileUtil.out(path); var do_ = SerOutput.of(os)) {
-			write(org, code, do_);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+		FileUtil.out(path).write(os -> {
+			try (var do_ = SerOutput.of(os)) {
+				write(org, code, do_);
+			}
+		});
 
 		try {
 			Files.setPosixFilePermissions(path, new HashSet<>(List.of( //

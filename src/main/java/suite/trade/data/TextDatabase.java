@@ -2,7 +2,6 @@ package suite.trade.data;
 
 import static suite.util.Friends.max;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -83,11 +82,7 @@ public class TextDatabase {
 				.map(this::toBytes) //
 				.collect(Bytes_::buffer);
 
-		try (var os = FileUtil.out(path)) {
-			Bytes_.copy(outlet, os::write);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+		FileUtil.out(path).write(os -> Bytes_.copy(outlet, os::write));
 	}
 
 	private void merge(Path path) {

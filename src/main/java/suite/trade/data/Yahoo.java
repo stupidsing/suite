@@ -175,7 +175,7 @@ public class Yahoo {
 			else
 				stockHistory1 = Fail.t();
 
-			FileUtil.write(path, stockHistory1.write());
+			FileUtil.out(path).writeData(stockHistory1.write());
 		} else
 			stockHistory1 = stockHistory0;
 

@@ -1,6 +1,5 @@
 package suite.lp.predicate;
 
-import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -18,7 +17,6 @@ import suite.node.util.SuiteException;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.util.Fail;
 import suite.util.Rethrow;
 import suite.util.To;
 
@@ -67,12 +65,7 @@ public class IoPredicates {
 		var filename = Formatter.display(fn);
 		var content = Formatter.display(contents);
 
-		try (var fos = FileUtil.out(filename)) {
-			fos.write(content.getBytes(Defaults.charset));
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
-
+		FileUtil.out(filename).writeData(content.getBytes(Defaults.charset));
 		return true;
 	});
 

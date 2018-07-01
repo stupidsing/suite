@@ -144,11 +144,7 @@ public class EditorController {
 	}
 
 	public void save() {
-		try (var os = FileUtil.out(model.filename())) {
-			os.write(view.getEditor().getText().getBytes(Defaults.charset));
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+		FileUtil.out(model.filename()).write(os -> os.write(view.getEditor().getText().getBytes(Defaults.charset)));
 		model.changeIsModified(false);
 	}
 

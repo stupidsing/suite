@@ -69,11 +69,11 @@ public class FileUtil {
 		}
 	}
 
-	public static OutputStream out(String filename) throws IOException {
+	public static OutputStreamW out(String filename) {
 		return out_(Paths.get(filename));
 	}
 
-	public static OutputStream out(Path path) throws IOException {
+	public static OutputStreamW out(Path path) {
 		return out_(path);
 	}
 
@@ -81,30 +81,14 @@ public class FileUtil {
 		return To.string(Paths.get(filename));
 	}
 
-	public static void write(Path path, String contents) {
-		try (var os = out_(path); var w = new OutputStreamWriter(os, Defaults.charset)) {
-			w.write(contents);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
-	}
-
-	public static void write(Path path, SinkEx<OutputStream, IOException> sink) {
-		try (var os = out_(path)) {
-			sink.sink(os);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
-	}
-
-	private static OutputStream out_(Path path) throws IOException {
+	private static OutputStreamW out_(Path path) {
 		var parent = path.getParent();
 		var path1 = parent.resolve(path.getFileName() + ".new");
 
 		mkdir(parent);
-		var os = Files.newOutputStream(path1);
+		var os = Rethrow.ex(() -> Files.newOutputStream(path1));
 
-		return new OutputStream() {
+		return new OutputStreamW() {
 			private boolean isClosed = false;
 
 			public void close() throws IOException {
@@ -125,4 +109,29 @@ public class FileUtil {
 		};
 	}
 
+	public static abstract class OutputStreamW extends OutputStream {
+		public void writeData(byte[] content) {
+			write(os -> os.write(content));
+		}
+
+		public void writeData(String content) {
+			writeContents(w -> w.write(content));
+		}
+
+		public void writeContents(SinkEx<OutputStreamWriter, IOException> sink) {
+			write(os -> {
+				try (var w = new OutputStreamWriter(os, Defaults.charset)) {
+					sink.sink(w);
+				}
+			});
+		}
+
+		public void write(SinkEx<OutputStream, IOException> sink) {
+			try {
+				sink.sink(this);
+			} catch (IOException ex) {
+				Fail.t(ex);
+			}
+		}
+	}
 }
