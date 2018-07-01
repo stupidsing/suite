@@ -8,7 +8,7 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.os.SocketUtil;
 import suite.util.Fail;
 import suite.util.RunUtil;
@@ -28,7 +28,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 	@Override
 	protected boolean run(String[] args) {
 		run((headers, os) -> {
-			var writer = new OutputStreamWriter(os, Constants.charset);
+			var writer = new OutputStreamWriter(os, Defaults.charset);
 			writer.write("<html>" + headers + "</html>");
 		});
 		return true;
@@ -40,7 +40,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 
 			os.write(("Status: 200 OK\r\n" //
 					+ "Content-Type: text/html\r\n" //
-					+ "\r\n").getBytes(Constants.charset));
+					+ "\r\n").getBytes(Defaults.charset));
 
 			handler.handle(headers, os);
 		});
@@ -77,7 +77,7 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 		var length = 0;
 		int c;
 
-		while (0 <= (c = sis.read()) && c != ':' && length < Constants.bufferLimit)
+		while (0 <= (c = sis.read()) && c != ':' && length < Defaults.bufferLimit)
 			if ('0' <= c && c <= '9')
 				length = length * 10 + c - '0';
 			else

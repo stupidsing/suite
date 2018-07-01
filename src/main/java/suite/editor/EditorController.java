@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.Suite;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
@@ -145,7 +145,7 @@ public class EditorController {
 
 	public void save() {
 		try (var os = FileUtil.out(model.filename())) {
-			os.write(view.getEditor().getText().getBytes(Constants.charset));
+			os.write(view.getEditor().getText().getBytes(Defaults.charset));
 		} catch (IOException ex) {
 			Fail.t(ex);
 		}
@@ -189,7 +189,7 @@ public class EditorController {
 		try {
 			var process = Runtime.getRuntime().exec(command);
 
-			try (var pos = process.getOutputStream(); var writer = new OutputStreamWriter(pos, Constants.charset)) {
+			try (var pos = process.getOutputStream(); var writer = new OutputStreamWriter(pos, Defaults.charset)) {
 				writer.write(editor.getText());
 			}
 

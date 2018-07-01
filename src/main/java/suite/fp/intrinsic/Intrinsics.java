@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.IntFunction;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.immutable.IPointer;
 import suite.instructionexecutor.thunk.IndexedReader;
 import suite.instructionexecutor.thunk.IndexedSourceReader;
@@ -82,7 +82,7 @@ public class Intrinsics {
 
 	public static IPointer<Chars> read(Reader reader) {
 		return IndexedSourceReader.of(() -> Rethrow.ex(() -> {
-			var buffer = new char[Constants.bufferSize];
+			var buffer = new char[Defaults.bufferSize];
 			var nCharsRead = reader.read(buffer);
 			if (0 <= nCharsRead)
 				return Chars.of(buffer, 0, nCharsRead);

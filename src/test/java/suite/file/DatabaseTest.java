@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.file.impl.Database;
 import suite.util.Fail;
 
@@ -16,7 +16,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testRollback() throws IOException {
-		try (var database = new Database(Constants.tmp("database"))) {
+		try (var database = new Database(Defaults.tmp("database"))) {
 			database.transact(tx -> {
 				for (var i = 0; i < nRecords; i++)
 					tx.put(i, "sample");
@@ -28,7 +28,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testUpdate() throws IOException {
-		try (var database = new Database(Constants.tmp("database"))) {
+		try (var database = new Database(Defaults.tmp("database"))) {
 			database.transact(tx -> {
 				for (var i = 0; i < nRecords; i++)
 					tx.put(i, "sample");

@@ -3,7 +3,7 @@ package suite.util;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.os.FileUtil;
 
 public class HomeDir {
@@ -23,7 +23,7 @@ public class HomeDir {
 		s = s != null ? s : System.getenv("HOME");
 		s = s != null ? s : System.getenv("USERPROFILE");
 		var path = s != null ? Paths.get(s) : null;
-		return path != null ? path : Constants.tmp;
+		return path != null ? path : Defaults.tmp;
 	}
 
 }

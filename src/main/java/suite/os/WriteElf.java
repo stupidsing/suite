@@ -7,7 +7,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
 import java.util.List;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntPrimitives.Int_Obj;
@@ -19,7 +19,7 @@ import suite.util.Util;
 public class WriteElf {
 
 	public Execute exec(byte[] input, Int_Obj<Bytes> source) {
-		var path = Constants.tmp("a.out." + Util.temp());
+		var path = Defaults.tmp("a.out." + Util.temp());
 		var org = 0x08048000;
 
 		write(org, source.apply(org + 84), path);
@@ -51,7 +51,7 @@ public class WriteElf {
 	private void write(int org, Bytes code, SerOutput do_) throws IOException {
 		var header = new Write_() //
 				.db(0x7F) // e_ident
-				.append("ELF".getBytes(Constants.charset)) //
+				.append("ELF".getBytes(Defaults.charset)) //
 				.append(new byte[] { 1, 1, 1, 0, }) //
 				.append(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, }) //
 				.dw(2) // e_type

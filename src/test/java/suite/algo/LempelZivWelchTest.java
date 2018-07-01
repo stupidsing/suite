@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.os.FileUtil;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FunUtil.Source;
@@ -40,7 +40,7 @@ public class LempelZivWelchTest {
 	}
 
 	private String doTest(String s0) {
-		var bs = s0.getBytes(Constants.charset);
+		var bs = s0.getBytes(Defaults.charset);
 
 		Source<Byte> source0 = new Source<>() {
 			private int index;

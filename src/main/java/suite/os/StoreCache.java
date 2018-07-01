@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.adt.pair.Pair;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
@@ -33,7 +33,7 @@ public class StoreCache {
 
 		public Piper pipe(String command0) {
 			var command1 = sh + " | (" + command0 + ")";
-			var key = Bytes.of(command1.getBytes(Constants.charset));
+			var key = Bytes.of(command1.getBytes(Defaults.charset));
 
 			return match(key).map((isCached, file) -> {
 				if (!isCached)
@@ -81,7 +81,7 @@ public class StoreCache {
 	}
 
 	public Outlet<Bytes> getOutlet(String key, Source<Outlet<Bytes>> source) {
-		var keyBytes = Bytes.of(key.getBytes(Constants.charset));
+		var keyBytes = Bytes.of(key.getBytes(Defaults.charset));
 		return getOutlet(keyBytes, source);
 	}
 
@@ -177,7 +177,7 @@ public class StoreCache {
 			public Bytes source() {
 				return Rethrow.ex(() -> {
 					if (cont) {
-						var vb = new byte[Constants.bufferSize];
+						var vb = new byte[Defaults.bufferSize];
 						int n, nBytesRead = 0;
 						while (nBytesRead < vb.length && (cont &= 0 <= (n = dis.read(vb, nBytesRead, vb.length - nBytesRead))))
 							nBytesRead += n;

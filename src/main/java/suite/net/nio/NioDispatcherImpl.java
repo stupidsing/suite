@@ -9,7 +9,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.net.ThreadService;
 import suite.net.nio.NioChannelFactory.NioChannel;
 import suite.os.LogUtil;
@@ -123,7 +123,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 	private void processSelectedKey(SelectionKey key) throws IOException {
 		// logUtil.info("KEY", dumpKey(key));
 
-		var buffer = new byte[Constants.bufferSize];
+		var buffer = new byte[Defaults.bufferSize];
 		var attachment = key.attachment();
 		var sc0 = key.channel();
 		var ops = key.readyOps();

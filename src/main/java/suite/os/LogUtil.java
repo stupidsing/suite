@@ -11,7 +11,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.inspect.Dump;
 import suite.proxy.Intercept;
 import suite.util.Array_;
@@ -59,7 +59,7 @@ public class LogUtil {
 	}
 
 	public static void initLog4j(Level level) {
-		var logDir = Constants.tmp("logs");
+		var logDir = Defaults.tmp("logs");
 
 		var layout = new PatternLayout("%d %-5p [%c{1}] %m%n");
 

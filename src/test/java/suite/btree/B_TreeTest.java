@@ -11,7 +11,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.btree.impl.B_TreeBuilder;
 import suite.file.impl.JournalledFileFactory;
 import suite.node.util.Singleton;
@@ -38,7 +38,7 @@ public class B_TreeTest {
 	@Test
 	public void testDump() throws IOException {
 		var pageSize = 4096;
-		var path = Constants.tmp("b_tree-dump");
+		var path = Defaults.tmp("b_tree-dump");
 
 		Files.deleteIfExists(path);
 		var builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
@@ -59,7 +59,7 @@ public class B_TreeTest {
 	@Test
 	public void testAccess() throws IOException {
 		var pageSize = 4096;
-		var path = Constants.tmp("b_tree-file");
+		var path = Defaults.tmp("b_tree-file");
 
 		Files.deleteIfExists(path);
 		var builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
@@ -94,7 +94,7 @@ public class B_TreeTest {
 		var nKeys = 16384;
 		keys = Ints_.toArray(nKeys, i -> i);
 		var pageSize = 4096;
-		var path = Constants.tmp("b_tree-file");
+		var path = Defaults.tmp("b_tree-file");
 
 		for (var i = 0; i < nKeys; i++) {
 			var j = random.nextInt(nKeys);

@@ -12,7 +12,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.adt.pair.Pair;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
@@ -107,7 +107,7 @@ public class Read {
 	}
 
 	public static Outlet<String> lines(InputStream is) {
-		return lines(new InputStreamReader(is, Constants.charset)).closeAtEnd(is);
+		return lines(new InputStreamReader(is, Defaults.charset)).closeAtEnd(is);
 	}
 
 	public static Outlet<String> lines(Reader reader) {

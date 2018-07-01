@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.net.nio.NioChannelFactory.BufferedNioChannel;
 import suite.net.nio.NioChannelFactory.NioChannel;
 import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;
@@ -28,7 +28,7 @@ public class NioDispatcherTest {
 	@Test
 	public void testTextExchange() throws IOException {
 		var hello = "HELLO";
-		var charset = Constants.charset;
+		var charset = Defaults.charset;
 
 		Source<NioChannel> source = () -> {
 			var channel = new BufferedNioChannel();
@@ -77,7 +77,7 @@ public class NioDispatcherTest {
 			var client = dispatcher.connect(address);
 
 			for (var s : new String[] { "ABC", "WXYZ", "", }) {
-				var bs = s.getBytes(Constants.charset);
+				var bs = s.getBytes(Defaults.charset);
 				var request = Bytes.of(bs);
 				var response = matcher.requestForResponse(client, request);
 				assertEquals(request, response);

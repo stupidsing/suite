@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.net.ThreadService;
 import suite.net.cluster.ClusterProbe;
 import suite.os.LogUtil;
@@ -276,7 +276,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 		for (var e : lastActiveTimes.entrySet())
 			sb.append("," + e.getKey() + "," + e.getValue());
 
-		return sb.toString().getBytes(Constants.charset);
+		return sb.toString().getBytes(Defaults.charset);
 	}
 
 	@Override

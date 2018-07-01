@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.DblStreamlet;
@@ -360,7 +360,7 @@ public class Doubles implements Iterable<Double> {
 			if (capacity0 < capacity1) {
 				int capacity = max(capacity0, 4);
 				while (capacity < capacity1)
-					capacity = capacity < Constants.bufferSize ? capacity << 1 : capacity * 3 / 2;
+					capacity = capacity < Defaults.bufferSize ? capacity << 1 : capacity * 3 / 2;
 
 				cs = Arrays.copyOf(cs, capacity);
 			}

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
 import suite.instructionexecutor.thunk.ThunkUtil;
@@ -74,7 +74,7 @@ public class MonadIntrinsics {
 	}
 
 	private Node newReader(IntrinsicCallback callback, InputStream is) {
-		var br = new BufferedReader(new InputStreamReader(is, Constants.charset));
+		var br = new BufferedReader(new InputStreamReader(is, Defaults.charset));
 		var icrp = Intrinsics.read(br);
 		return callback.enclose(new CharsIntrinsics().drain, new Data<>(icrp));
 	}

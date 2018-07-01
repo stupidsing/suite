@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.streamlet.Read;
 import suite.util.Copy;
 import suite.util.Fail;
@@ -41,7 +41,7 @@ public class Execute {
 	}
 
 	public Execute(String[] command, String in) {
-		this(command, in.getBytes(Constants.charset));
+		this(command, in.getBytes(Defaults.charset));
 	}
 
 	public Execute(String[] command, byte[] bytes) {

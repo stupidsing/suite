@@ -9,7 +9,7 @@ import javax.imageio.ImageIO;
 
 import org.junit.Test;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.math.R3;
 import suite.os.FileUtil;
 import suite.rt.RayTracer.LightSource;
@@ -197,7 +197,7 @@ public class RayTracerTest {
 	}
 
 	private void rasterize(RayTracer rayTracer) throws IOException {
-		var path = Constants.tmp(Thread_.getStackTrace(3).getMethodName() + ".png");
+		var path = Defaults.tmp(Thread_.getStackTrace(3).getMethodName() + ".png");
 		var bufferedImage = rayTracer.trace(640, 480, 640);
 
 		try (var os = FileUtil.out(path)) {

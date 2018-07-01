@@ -5,7 +5,7 @@ import static suite.util.Friends.min;
 
 import java.nio.file.Files;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -29,7 +29,7 @@ public interface Broker {
 		private static Source<Streamlet<Trade>> memoizeHistoryRecords = Memoize.source(Hsbc::queryHistory_);
 
 		private static Streamlet<Trade> queryHistory_() {
-			var url = Constants.secrets("stockUrl .0")[0];
+			var url = Defaults.secrets("stockUrl .0")[0];
 			var path = HomeDir.resolve("workspace").resolve("home-data").resolve("stock.txt");
 			var bytes = Files.exists(path) ? Read.bytes(path) : Read.url(url);
 			return bytes.collect(As::table).map(Trade::of).collect();

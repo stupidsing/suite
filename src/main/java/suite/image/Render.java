@@ -11,7 +11,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.math.R3;
 import suite.os.LogUtil;
 import suite.primitive.Floats_;
@@ -58,7 +58,7 @@ public class Render {
 	}
 
 	public Image renderPixels(int width, int height, IntInt_Obj<R3> f) {
-		var nThreads = Constants.nThreads;
+		var nThreads = Defaults.nThreads;
 		var txs = Ints_.toArray(nThreads + 1, i -> width * i / nThreads);
 		var pixels = new R3[width][height];
 

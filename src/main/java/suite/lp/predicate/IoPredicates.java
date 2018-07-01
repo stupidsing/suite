@@ -7,7 +7,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.lp.doer.Cloner;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Int;
@@ -68,7 +68,7 @@ public class IoPredicates {
 		var content = Formatter.display(contents);
 
 		try (var fos = FileUtil.out(filename)) {
-			fos.write(content.getBytes(Constants.charset));
+			fos.write(content.getBytes(Defaults.charset));
 		} catch (IOException ex) {
 			Fail.t(ex);
 		}

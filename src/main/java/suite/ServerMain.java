@@ -36,7 +36,7 @@ public class ServerMain extends ExecutableProgram {
 	}
 
 	private void runHttpServer() {
-		Authenticator authenticator = (username, password) -> Constants.secrets()
+		Authenticator authenticator = (username, password) -> Defaults.secrets()
 				.prove(Suite.substitute("auth .0 .1", new Str(username), new Str(password)));
 
 		HttpHandler handler0 = request -> HttpResponse.of(To.outlet("" //
@@ -51,7 +51,7 @@ public class ServerMain extends ExecutableProgram {
 		var handler1 = HttpHandler.ofDispatch(IMap //
 				.<String, HttpHandler> empty() //
 				.put("hello", HttpHandler.ofData("Hello world")) //
-				.put("path", HttpHandler.ofPath(Constants.tmp)) //
+				.put("path", HttpHandler.ofPath(Defaults.tmp)) //
 				.put("site", HttpHandler.ofSession(authenticator, handler0)));
 
 		new HttpServe(8051).serve(handler1);

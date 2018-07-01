@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.adt.pair.Pair;
 import suite.file.ExtentAllocator.Extent;
 import suite.inspect.Inspect;
@@ -35,7 +35,7 @@ public class Serialize {
 	public Serializer<Integer> int_ = ser(SerInput::readInt, SerOutput::writeInt); // 4
 
 	private Inspect inspect;
-	private byte[] zeroes = new byte[Constants.bufferSize];
+	private byte[] zeroes = new byte[Defaults.bufferSize];
 
 	public Serialize(Inspect inspect) {
 		this.inspect = inspect;
@@ -144,7 +144,7 @@ public class Serialize {
 	public Serializer<Bytes> variableLengthBytes = new Serializer<>() {
 		public Bytes read(SerInput si) throws IOException {
 			var length = si.readInt();
-			var bs = length < Constants.bufferSize ? new byte[length] : null;
+			var bs = length < Defaults.bufferSize ? new byte[length] : null;
 			si.readFully(bs);
 			return Bytes.of(bs);
 		}
@@ -220,7 +220,7 @@ public class Serialize {
 	public Serializer<boolean[]> arrayOfBooleans = new Serializer<>() {
 		public boolean[] read(SerInput si) throws IOException {
 			int i = 0, i1, length = int_.read(si);
-			var array = length < Constants.bufferLimit ? new boolean[length] : null;
+			var array = length < Defaults.bufferLimit ? new boolean[length] : null;
 			while (i < length) {
 				i1 = Math.min(i + 32, length);
 				int m = 1, c = si.readInt();
@@ -246,7 +246,7 @@ public class Serialize {
 	public Serializer<int[]> arrayOfInts = new Serializer<>() {
 		public int[] read(SerInput si) throws IOException {
 			var length = int_.read(si);
-			var array = length < Constants.bufferLimit ? new int[length] : null;
+			var array = length < Defaults.bufferLimit ? new int[length] : null;
 			for (var i = 0; i < length; i++)
 				array[i] = si.readInt();
 			return array;
@@ -288,7 +288,7 @@ public class Serialize {
 		return new Serializer<>() {
 			public Collection<T> read(SerInput si) throws IOException {
 				var size = int_.read(si);
-				var list = size < Constants.bufferLimit ? new ArrayList<T>() : null;
+				var list = size < Defaults.bufferLimit ? new ArrayList<T>() : null;
 				for (var i = 0; i < size; i++)
 					list.add(serializer.read(si));
 				return list;
@@ -399,7 +399,7 @@ public class Serialize {
 			}
 
 			public void write(SerOutput so, String value) throws IOException {
-				var bs = Arrays.copyOf(value.getBytes(Constants.charset), length);
+				var bs = Arrays.copyOf(value.getBytes(Defaults.charset), length);
 				so.writeInt(value.length());
 				so.write(bs);
 			}
@@ -425,7 +425,7 @@ public class Serialize {
 		return new Serializer<>() {
 			public Map<K, V> read(SerInput si) throws IOException {
 				var size = int_.read(si);
-				var map = size < Constants.bufferLimit ? new HashMap<K, V>() : null;
+				var map = size < Defaults.bufferLimit ? new HashMap<K, V>() : null;
 				for (var i = 0; i < size; i++) {
 					var k = ks.read(si);
 					var v = vs.read(si);

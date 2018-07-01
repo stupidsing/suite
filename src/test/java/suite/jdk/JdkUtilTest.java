@@ -4,15 +4,15 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.os.FileUtil;
 
 public class JdkUtilTest {
 
 	@Test
 	public void test() throws IOException {
-		var srcDir = Constants.tmp("src");
-		var binDir = Constants.tmp("bin");
+		var srcDir = Defaults.tmp("src");
+		var binDir = Defaults.tmp("bin");
 		var className = "HelloWorld";
 
 		FileUtil.mkdir(srcDir);

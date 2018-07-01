@@ -8,7 +8,7 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.exceptions.TelegramApiException;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.util.Fail;
 import suite.util.FunUtil2.FoldOp;
 import suite.util.Rethrow;
@@ -24,7 +24,7 @@ public class TelegramBot {
 				}
 
 				public String getBotToken() {
-					var path = Constants.tmp("kowloonbot.token");
+					var path = Defaults.tmp("kowloonbot.token");
 					return Rethrow.ex(() -> Files.readAllLines(path)).iterator().next();
 				}
 

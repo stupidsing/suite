@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.assembler.Amd64Interpret;
 import suite.funp.Funp_;
 import suite.primitive.Bytes;
@@ -44,7 +44,7 @@ public class ElfTest {
 	}
 
 	private void test(int code, String program, String input) {
-		var bytes = Bytes.of(input.getBytes(Constants.charset));
+		var bytes = Bytes.of(input.getBytes(Defaults.charset));
 		var main = Funp_.main(true);
 
 		if (RunUtil.isUnix()) { // not Windows => run ELF

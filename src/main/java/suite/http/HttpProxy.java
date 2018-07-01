@@ -2,7 +2,7 @@ package suite.http;
 
 import java.net.Socket;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.primitive.adt.pair.IntObjPair;
@@ -43,7 +43,7 @@ public class HttpProxy {
 					var os0 = os; //
 					var is1 = socket1.getInputStream(); //
 					var os1 = socket1.getOutputStream();) {
-				os1.write((line + "\r\nConnection: close\r\n").getBytes(Constants.charset));
+				os1.write((line + "\r\nConnection: close\r\n").getBytes(Defaults.charset));
 				var threads = Read.each(Copy.streamByThread(is0, os1), Copy.streamByThread(is1, os0));
 				Thread_.startJoin(threads);
 			}

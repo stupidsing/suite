@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.ServerSocket;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.util.Fail;
 import suite.util.Object_;
 import suite.util.Thread_;
@@ -26,7 +26,7 @@ public class SocketUtil {
 
 	public void listenRw(int port, Rw rw) {
 		listenIo(port, (is, os) -> {
-			try (var reader = new BufferedReader(new InputStreamReader(is, Constants.charset)); var writer = new PrintWriter(os)) {
+			try (var reader = new BufferedReader(new InputStreamReader(is, Defaults.charset)); var writer = new PrintWriter(os)) {
 				rw.serve(reader, writer);
 			}
 		});

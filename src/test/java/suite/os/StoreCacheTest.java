@@ -2,7 +2,7 @@ package suite.os;
 
 import org.junit.Test;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.node.util.Singleton;
 import suite.streamlet.As;
 
@@ -10,7 +10,7 @@ public class StoreCacheTest {
 
 	@Test
 	public void test() {
-		var url = Constants.secrets("stockUrl .0")[0];
+		var url = Defaults.secrets("stockUrl .0")[0];
 
 		var size = Singleton.me.storeCache //
 				.http(url) //

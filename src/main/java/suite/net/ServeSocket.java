@@ -5,7 +5,7 @@ import static suite.util.Friends.min;
 import java.io.IOException;
 import java.io.InputStream;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.os.SocketUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
@@ -21,7 +21,7 @@ public class ServeSocket {
 
 	private void listen(Fun<Bytes, Bytes> handle) {
 		new SocketUtil().listenIo(5151, (is, os) -> {
-			var in = read(is, Constants.bufferLimit);
+			var in = read(is, Defaults.bufferLimit);
 			var out = handle.apply(in);
 			os.write(out.bs);
 		});
@@ -29,7 +29,7 @@ public class ServeSocket {
 
 	private Bytes read(InputStream is, int max) throws IOException {
 		var bb = new BytesBuilder();
-		var buffer = new byte[Constants.bufferSize];
+		var buffer = new byte[Defaults.bufferSize];
 		int nBytesRead;
 
 		while ((nBytesRead = is.read(buffer, 0, min(max - bb.size(), buffer.length))) != -1) {

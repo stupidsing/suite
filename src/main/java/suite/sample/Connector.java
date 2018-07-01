@@ -6,13 +6,13 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.os.SocketUtil;
 
 public class Connector {
 
 	public void connect() throws IOException {
-		var charset = Constants.charset;
+		var charset = Defaults.charset;
 
 		try (var socket = new Socket("wwww.google.com", 80);
 				var is = socket.getInputStream();

@@ -7,7 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.adt.Opt;
 import suite.adt.pair.FixieArray;
 import suite.immutable.IMap;
@@ -30,7 +30,7 @@ public class HttpIo {
 			Fun2<String, String, HttpRequest> requestFun = (host, pqs) -> String_.split2l(pqs, "?").map((path0, query) -> {
 				var is1 = getContentStream(is0, headers);
 				var path1 = path0.startsWith("/") ? path0 : "/" + path0;
-				var path2 = Rethrow.ex(() -> URLDecoder.decode(path1, Constants.charset));
+				var path2 = Rethrow.ex(() -> URLDecoder.decode(path1, Defaults.charset));
 
 				return String_.equals(protocol, "HTTP/1.1") //
 						? new HttpRequest(method, host, path2, query, headers, is1) //
@@ -66,7 +66,7 @@ public class HttpIo {
 		Read.from2(request.headers).sink((k, v) -> sb.append(k + ": " + v + "\r\n"));
 		sb.append("\r\n");
 
-		os.write(sb.toString().getBytes(Constants.charset));
+		os.write(sb.toString().getBytes(Defaults.charset));
 		Copy.stream(request.inputStream, os);
 	}
 
@@ -76,7 +76,7 @@ public class HttpIo {
 		Read.from2(response.headers).sink((k, v) -> sb.append(k + ": " + v + "\r\n"));
 		sb.append("\r\n");
 
-		os.write(sb.toString().getBytes(Constants.charset));
+		os.write(sb.toString().getBytes(Defaults.charset));
 		Copy.stream(response.out.collect(To::inputStream), os);
 	}
 

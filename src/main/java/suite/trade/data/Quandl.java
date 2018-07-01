@@ -1,6 +1,6 @@
 package suite.trade.data;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.node.util.Singleton;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
@@ -12,7 +12,7 @@ import suite.util.String_;
 public class Quandl {
 
 	public DataSource dataSourceCsv(String symbol, TimeRange period) {
-		var m = Constants.secrets("quandl .0");
+		var m = Defaults.secrets("quandl .0");
 		var usMarketClose = 16l;
 		var ph0 = period.to.epochSec() - (usMarketClose + 4) * 24 * 3600;
 		var ph1 = ph0 - (ph0 % 86400l);

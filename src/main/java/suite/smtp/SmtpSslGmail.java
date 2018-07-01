@@ -12,7 +12,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.net.ssl.SSLSocketFactory;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrChr_Int;
 import suite.util.Fail;
@@ -20,7 +20,7 @@ import suite.util.Fail;
 public class SmtpSslGmail {
 
 	public void send(String to, String subject, String body) {
-		Constants.bindSecrets("gmail .0 .1").map((username, enc) -> {
+		Defaults.bindSecrets("gmail .0 .1").map((username, enc) -> {
 			var password = decode(System.getenv("USER").toCharArray(), enc);
 
 			var props = new Properties();

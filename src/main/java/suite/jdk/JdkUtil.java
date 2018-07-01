@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.tools.ToolProvider;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.util.Fail;
@@ -27,7 +27,7 @@ public class JdkUtil {
 
 		LogUtil.info("Writing " + srcFilePath);
 		try (var os = FileUtil.out(srcFilePath)) {
-			os.write(java.getBytes(Constants.charset));
+			os.write(java.getBytes(Defaults.charset));
 		}
 
 		// compile the Java, load the class, return an instantiated object

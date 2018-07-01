@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
@@ -105,7 +105,7 @@ public class FileUtil {
 	}
 
 	public static void write(Path path, String contents) {
-		try (var os = FileUtil.out(path); var w = new OutputStreamWriter(os, Constants.charset)) {
+		try (var os = FileUtil.out(path); var w = new OutputStreamWriter(os, Defaults.charset)) {
 			w.write(contents);
 		} catch (IOException ex) {
 			Fail.t(ex);

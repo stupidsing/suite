@@ -21,7 +21,7 @@ import suite.util.HomeDir;
 import suite.util.Memoize;
 import suite.util.To;
 
-public class Constants {
+public class Defaults {
 
 	public static int bufferLimit = 65536;
 	public static int bufferSize = 4096;

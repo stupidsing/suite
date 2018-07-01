@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.fs.impl.B_TreeFileSystemImpl;
 import suite.fs.impl.LazyIbTreeFileSystemImpl;
 import suite.os.FileUtil;
@@ -27,24 +27,24 @@ public class FileSystemTest {
 
 	@Test
 	public void testB_TreeFileSystem0() throws IOException {
-		testB_Tree(Constants.tmp("b_tree-fs0"), true, this::testWriteOneFile);
+		testB_Tree(Defaults.tmp("b_tree-fs0"), true, this::testWriteOneFile);
 	}
 
 	@Test
 	public void testB_TreeFileSystem1() throws IOException {
-		testB_Tree(Constants.tmp("b_tree-fs1"), true, this::testWriteFiles);
-		testB_Tree(Constants.tmp("b_tree-fs1"), false, this::testReadFile);
+		testB_Tree(Defaults.tmp("b_tree-fs1"), true, this::testWriteFiles);
+		testB_Tree(Defaults.tmp("b_tree-fs1"), false, this::testReadFile);
 	}
 
 	@Test
 	public void testLazyIbTreeFileSystem0() throws IOException {
-		testLazyIbTree(Constants.tmp("lazyIbTree-fs0"), true, this::testWriteOneFile);
+		testLazyIbTree(Defaults.tmp("lazyIbTree-fs0"), true, this::testWriteOneFile);
 	}
 
 	@Test
 	public void testLazyIbTreeFileSystem1() throws IOException {
-		testLazyIbTree(Constants.tmp("lazyIbTree-fs1"), true, this::testWriteFiles);
-		testLazyIbTree(Constants.tmp("lazyIbTree-fs1"), false, this::testReadFile);
+		testLazyIbTree(Defaults.tmp("lazyIbTree-fs1"), true, this::testWriteFiles);
+		testLazyIbTree(Defaults.tmp("lazyIbTree-fs1"), false, this::testReadFile);
 	}
 
 	private void testB_Tree(Path path, boolean isNew, TestCase testCase) throws IOException {
@@ -78,7 +78,7 @@ public class FileSystemTest {
 
 		for (var path : paths) {
 			var filename = path.toString().replace(File.separatorChar, '/');
-			var name = Bytes.of(filename.getBytes(Constants.charset));
+			var name = Bytes.of(filename.getBytes(Defaults.charset));
 			fsm.replace(name, Bytes.of(Files.readAllBytes(path)));
 		}
 	}
@@ -86,7 +86,7 @@ public class FileSystemTest {
 	private void testReadFile(FileSystem fs) throws IOException {
 		var filename = "src/test/java/suite/fs/FileSystemTest.java";
 		var fsm = fs.mutate();
-		var name = Bytes.of(filename.getBytes(Constants.charset));
+		var name = Bytes.of(filename.getBytes(Defaults.charset));
 		Copy.stream(fsm.read(name).collect(As::inputStream), System.out);
 	}
 

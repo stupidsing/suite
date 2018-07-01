@@ -11,7 +11,7 @@ import java.util.function.Predicate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.os.FileUtil;
@@ -326,7 +326,7 @@ public class Yahoo {
 	}
 
 	private String encode(String s) {
-		return Rethrow.ex(() -> URLEncoder.encode(s, Constants.charset.name()));
+		return Rethrow.ex(() -> URLEncoder.encode(s, Defaults.charset.name()));
 	}
 
 }

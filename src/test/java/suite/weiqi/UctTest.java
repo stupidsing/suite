@@ -8,7 +8,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.os.Stopwatch;
 import suite.sample.Profiler;
 import suite.uct.ShuffleUtil;
@@ -150,7 +150,7 @@ public class UctTest {
 				var gameSet1 = new GameSet(gameSet);
 				var visitor = UctWeiqi.newVisitor(gameSet1);
 				var search = new UctSearch<>(visitor);
-				search.setNumberOfThreads(Constants.nThreads);
+				search.setNumberOfThreads(Defaults.nThreads);
 				search.setNumberOfSimulations(nSimulations);
 				search.setBoundedTime(boundedTime);
 

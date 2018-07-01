@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
 import suite.util.Fail;
@@ -332,7 +332,7 @@ public class Bytes implements Iterable<Byte> {
 			if (capacity0 < capacity1) {
 				int capacity = max(capacity0, 4);
 				while (capacity < capacity1)
-					capacity = capacity < Constants.bufferSize ? capacity << 1 : capacity * 3 / 2;
+					capacity = capacity < Defaults.bufferSize ? capacity << 1 : capacity * 3 / 2;
 
 				bs = Arrays.copyOf(bs, capacity);
 			}

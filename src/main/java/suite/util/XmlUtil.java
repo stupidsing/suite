@@ -16,7 +16,7 @@ import org.w3c.dom.ls.DOMImplementationLS;
 import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
@@ -53,9 +53,9 @@ public class XmlUtil {
 	}
 
 	public String format(String xml) throws SAXException {
-		try (var is = new ByteArrayInputStream(xml.getBytes(Constants.charset)); var writer = new StringWriter()) {
+		try (var is = new ByteArrayInputStream(xml.getBytes(Defaults.charset)); var writer = new StringWriter()) {
 			var lso = di.createLSOutput();
-			lso.setEncoding(Constants.charset.name());
+			lso.setEncoding(Defaults.charset.name());
 			lso.setCharacterStream(writer);
 
 			lss.write(documentBuilder.parse(is), lso);

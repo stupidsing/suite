@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.inspect.Mapify;
 import suite.node.util.Singleton;
 import suite.os.FileUtil;
@@ -19,7 +19,7 @@ import suite.os.FileUtil;
  */
 public class Keeper {
 
-	private Path keeperDir = Constants.tmp("keeper");
+	private Path keeperDir = Defaults.tmp("keeper");
 
 	private ObjectMapper objectMapper;
 	private Mapify mapify = Singleton.me.mapify;

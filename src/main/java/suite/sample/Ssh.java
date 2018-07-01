@@ -13,7 +13,7 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.UserInfo;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.util.Copy;
 import suite.util.Rethrow;
 import suite.util.Thread_;
@@ -69,7 +69,7 @@ public class Ssh {
 	}
 
 	private <T> T session(SshFun<Session, T> fun) {
-		return Constants //
+		return Defaults //
 				.bindSecrets("ssh") //
 				.map((host, portString, username, password) -> Rethrow.ex(() -> {
 					return session(host, Integer.valueOf(portString), username, password, fun);

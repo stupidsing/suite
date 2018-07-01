@@ -6,7 +6,7 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.immutable.IList;
 import suite.util.Rethrow;
 import suite.util.String_;
@@ -29,9 +29,9 @@ public class HttpHeaderUtil {
 	}
 
 	public static Map<String, String> getPostedAttrs(InputStream is) {
-		var reader = new InputStreamReader(is, Constants.charset);
+		var reader = new InputStreamReader(is, Defaults.charset);
 		var sb = new StringBuilder();
-		var buffer = new char[Constants.bufferSize];
+		var buffer = new char[Defaults.bufferSize];
 		int nCharsRead;
 
 		while (0 <= (nCharsRead = Rethrow.ex(() -> reader.read(buffer))))
@@ -53,7 +53,7 @@ public class HttpHeaderUtil {
 	}
 
 	private static String decode(String s) {
-		return Rethrow.ex(() -> URLDecoder.decode(s, Constants.charset));
+		return Rethrow.ex(() -> URLDecoder.decode(s, Defaults.charset));
 	}
 
 }

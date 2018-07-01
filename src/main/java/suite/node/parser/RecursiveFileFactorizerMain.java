@@ -5,7 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.adt.pair.Pair;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
@@ -35,7 +35,7 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 					for (var ft : fts)
 						s = recursiveFactorizer.rewrite(ft.t0, ft.t1, s);
 					try {
-						Files.write(path, s.getBytes(Constants.charset));
+						Files.write(path, s.getBytes(Defaults.charset));
 					} catch (IOException ex) {
 						Fail.t(ex);
 					}

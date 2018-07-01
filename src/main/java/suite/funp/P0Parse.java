@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.Suite;
 import suite.adt.Mutable;
 import suite.adt.pair.Pair;
@@ -74,42 +74,42 @@ public class P0Parse {
 	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp parse(Node node0) {
-		var node1 = expandMacros(node0);
+		var node1 = new Expand(IMap.empty()).expand(node0);
 		return new Parse(ISet.empty()).p(node1);
 	}
 
-	private Node expandMacros(Node node0) {
-		class Expand {
-			private IMap<Prototype, Node[]> macros;
+	private class Expand {
+		private IMap<Prototype, Node[]> macros;
 
-			private Expand(IMap<Prototype, Node[]> macros) {
-				this.macros = macros;
-			}
-
-			private Node expand(Node node) {
-				Tree tree;
-				Node[] m;
-				Node[] ht;
-
-				if ((m = Suite.pattern("expand .0 := .1 >> .2").match(node)) != null) {
-					var head = m[0];
-					return new Expand(macros.put(Prototype.of(head), new Node[] { head, m[1], })).expand(m[2]);
-				} else if ((ht = macros.get(Prototype.of(node))) != null) {
-					var g = new Generalizer();
-					var t0_ = g.generalize(ht[0]);
-					var t1_ = g.generalize(ht[1]);
-					if (Binder.bind(node, t0_, new Trail()))
-						return expand(t1_);
-				}
-
-				if ((tree = Tree.decompose(node)) != null)
-					return Tree.of(tree.getOperator(), expand(tree.getLeft()), expand(tree.getRight()));
-				else
-					return node;
-			}
+		private Expand(IMap<Prototype, Node[]> macros) {
+			this.macros = macros;
 		}
 
-		return new Expand(IMap.empty()).expand(node0);
+		private Node expand(Node node) {
+			Node[] m;
+
+			if ((m = Suite.pattern("expand .0 := .1 >> .2").match(node)) != null) {
+				var head = m[0];
+				return new Expand(macros.put(Prototype.of(head), new Node[] { head, m[1], })).expand(m[2]);
+			} else if ((m = macros.get(Prototype.of(node))) != null) {
+				var g = new Generalizer();
+				var t0_ = g.generalize(m[0]);
+				var t1_ = g.generalize(m[1]);
+				var trail = new Trail();
+
+				if (Binder.bind(node, t0_, trail))
+					return expand(t1_);
+				else
+					trail.unwindAll();
+			}
+
+			var tree = Tree.decompose(node);
+
+			if (tree != null)
+				return Tree.of(tree.getOperator(), expand(tree.getLeft()), expand(tree.getRight()));
+			else
+				return node;
+		}
 	}
 
 	private class Parse {
@@ -227,7 +227,7 @@ public class P0Parse {
 
 		private Funp consult(String url) {
 			Fun<InputStream, Funp> r0 = is -> {
-				try (var isr = new InputStreamReader(is, Constants.charset)) {
+				try (var isr = new InputStreamReader(is, Defaults.charset)) {
 					return FunpPredefine.of(parse(Suite.parse(To.string(isr))));
 				} catch (IOException ex) {
 					return Fail.t(ex);

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.os.LogUtil;
 import suite.os.Stopwatch;
 import suite.uct.ShuffleUtil;
@@ -27,10 +27,10 @@ public class UctWeiqiMain<Move> {
 	private static Occupation startingPlayer = Occupation.BLACK;
 
 	public static void main(String[] args) {
-		var isr = new InputStreamReader(System.in, Constants.charset);
+		var isr = new InputStreamReader(System.in, Defaults.charset);
 		var br = new BufferedReader(isr);
 		var df = new DecimalFormat("0.000");
-		var nThreads = Constants.nThreads;
+		var nThreads = Defaults.nThreads;
 		var nSimulations = 10000 * nThreads;
 		var boundedTime = 30000;
 		Weiqi.adjustSize(7);

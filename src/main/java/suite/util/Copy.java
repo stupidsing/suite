@@ -12,14 +12,14 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.SocketException;
 
-import suite.Constants;
+import suite.Defaults;
 
 public class Copy {
 
 	public static void readerToWriter(Reader in, Writer out) throws IOException {
 		try (var in_ = in) {
 			int len;
-			var buffer = new char[Constants.bufferSize];
+			var buffer = new char[Defaults.bufferSize];
 			while (0 <= (len = in_.read(buffer)))
 				out.write(buffer, 0, len);
 		}
@@ -58,7 +58,7 @@ public class Copy {
 
 	public static void stream(InputStream in, OutputStream out) throws IOException {
 		try (var in_ = in) {
-			var buffer = new byte[Constants.bufferSize];
+			var buffer = new byte[Defaults.bufferSize];
 			int len;
 			while (0 <= (len = in_.read(buffer))) {
 				out.write(buffer, 0, len);

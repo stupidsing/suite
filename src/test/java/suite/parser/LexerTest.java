@@ -7,14 +7,14 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.util.FunUtil;
 
 public class LexerTest {
 
 	@Test
 	public void test() throws IOException {
-		var buffer = new char[Constants.bufferSize];
+		var buffer = new char[Defaults.bufferSize];
 		var sb = new StringBuilder();
 		int nCharsRead;
 

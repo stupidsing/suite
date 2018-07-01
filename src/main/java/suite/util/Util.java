@@ -11,7 +11,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import javassist.Modifier;
-import suite.Constants;
+import suite.Defaults;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
@@ -73,7 +73,7 @@ public class Util {
 			int c;
 			while (0 <= (c = is.read()) && c != 10) {
 				sb.append((char) c);
-				if (Constants.bufferLimit <= sb.length())
+				if (Defaults.bufferLimit <= sb.length())
 					Fail.t("line too long");
 			}
 			return 0 <= c ? strip(sb) : null;
@@ -86,7 +86,7 @@ public class Util {
 			int c;
 			while (0 <= (c = reader.read()) && c != 10) {
 				sb.append((char) c);
-				if (Constants.bufferLimit <= sb.length())
+				if (Defaults.bufferLimit <= sb.length())
 					Fail.t("line too long");
 			}
 			return 0 <= c ? strip(sb) : null;

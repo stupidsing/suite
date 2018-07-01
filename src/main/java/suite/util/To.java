@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -56,7 +56,7 @@ public class To {
 	}
 
 	public static Bytes bytes(String s) {
-		return Bytes.of(s.getBytes(Constants.charset));
+		return Bytes.of(s.getBytes(Defaults.charset));
 	}
 
 	public static Bytes bytes(InputStream is) {
@@ -78,7 +78,7 @@ public class To {
 	}
 
 	public static LocalDate date(String s) {
-		return LocalDate.parse(s, Constants.dateFormat);
+		return LocalDate.parse(s, Defaults.dateFormat);
 	}
 
 	public static String hex(int i) {
@@ -122,7 +122,7 @@ public class To {
 
 			public void close() throws IOException {
 				if (isOpen) {
-					var bs = new byte[Constants.bufferSize];
+					var bs = new byte[Defaults.bufferSize];
 					while (0 <= read(bs, 0, bs.length))
 						;
 				}
@@ -151,13 +151,13 @@ public class To {
 	}
 
 	public static Outlet<Bytes> outlet(String data) {
-		return outlet(new ByteArrayInputStream(data.getBytes(Constants.charset)));
+		return outlet(new ByteArrayInputStream(data.getBytes(Defaults.charset)));
 	}
 
 	public static Outlet<Bytes> outlet(InputStream is) {
 		var bis = new BufferedInputStream(is);
 		return Outlet.of(() -> {
-			var bs = new byte[Constants.bufferSize];
+			var bs = new byte[Defaults.bufferSize];
 			var nBytesRead = Rethrow.ex(() -> bis.read(bs));
 			return 0 <= nBytesRead ? Bytes.of(bs, 0, nBytesRead) : null;
 		}).closeAtEnd(bis).closeAtEnd(is);
@@ -189,7 +189,7 @@ public class To {
 
 	public static Source<Bytes> source(InputStream is) {
 		return () -> {
-			var bs = new byte[Constants.bufferSize];
+			var bs = new byte[Defaults.bufferSize];
 			var nBytesRead = Rethrow.ex(() -> is.read(bs));
 
 			if (0 <= nBytesRead)
@@ -206,7 +206,7 @@ public class To {
 	}
 
 	public static String string(byte[] bs) {
-		return new String(bs, Constants.charset);
+		return new String(bs, Defaults.charset);
 	}
 
 	public static String string(double d) {
@@ -221,7 +221,7 @@ public class To {
 	}
 
 	public static String string(InputStream in) {
-		try (var is = in; var isr = new InputStreamReader(is, Constants.charset); var br = new BufferedReader(isr)) {
+		try (var is = in; var isr = new InputStreamReader(is, Defaults.charset); var br = new BufferedReader(isr)) {
 			return string(br);
 		} catch (IOException ex) {
 			return Fail.t(ex);
@@ -233,7 +233,7 @@ public class To {
 	}
 
 	public static String string(LocalDate date) {
-		return Constants.dateFormat.format(date);
+		return Defaults.dateFormat.format(date);
 	}
 
 	public static String string(LocalDateTime time) {
@@ -246,7 +246,7 @@ public class To {
 
 	public static String string(Reader reader) {
 		try (var reader_ = reader) {
-			var buffer = new char[Constants.bufferSize];
+			var buffer = new char[Defaults.bufferSize];
 			var sb = new StringBuilder();
 
 			while (reader_.ready()) {
@@ -272,7 +272,7 @@ public class To {
 	}
 
 	public static LocalDateTime time(String s) {
-		return LocalDateTime.parse(s, Constants.dateTimeFormat);
+		return LocalDateTime.parse(s, Defaults.dateTimeFormat);
 	}
 
 	public static URL url(String s) {
@@ -304,7 +304,7 @@ public class To {
 		if (!isBomExist)
 			return To.string(bytes);
 		else
-			return new String(bytes, 3, bytes.length - 3, Constants.charset);
+			return new String(bytes, 3, bytes.length - 3, Defaults.charset);
 	}
 
 	public static String ymdHms(long time) {
@@ -312,7 +312,7 @@ public class To {
 	}
 
 	private static String ymdHms(TemporalAccessor ta) {
-		return Constants.dateTimeFormat.format(ta);
+		return Defaults.dateTimeFormat.format(ta);
 	}
 
 }

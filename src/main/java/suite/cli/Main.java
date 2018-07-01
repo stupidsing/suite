@@ -11,7 +11,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.Constants;
+import suite.Defaults;
 import suite.Suite;
 import suite.net.ServeSocket;
 import suite.os.FileUtil;
@@ -36,8 +36,8 @@ public class Main extends ExecutableProgram {
 	private CommandOptions opt;
 	private CommandDispatcher dispatcher;
 
-	private Reader reader = new BufferedReader(new InputStreamReader(System.in, Constants.charset));
-	private Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, Constants.charset));
+	private Reader reader = new BufferedReader(new InputStreamReader(System.in, Defaults.charset));
+	private Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, Defaults.charset));
 
 	public static void main(String[] args) {
 		RunUtil.run(Main.class, args);
