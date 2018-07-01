@@ -31,10 +31,7 @@ public class CompileUtil {
 		var rs = funCompilerRuleSet();
 		var b = Suite.proveLogic(builder, rs, "fc-precompile-lib " + libraryName);
 
-		if (b)
-			System.out.println("Pre-compilation success [" + libraryName + "]");
-		else
-			System.out.println("Pre-compilation failed [" + libraryName + "]");
+		System.out.println("Pre-compilation " + (b ? "success" : "failed") + " [" + libraryName + "]");
 
 		return b;
 	}
