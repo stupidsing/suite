@@ -1,5 +1,6 @@
 package suite.lcs;
 
+import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
 import java.util.ArrayList;
@@ -26,12 +27,12 @@ public class Lccs {
 	public Pair<Segment, Segment> lccs(Bytes bytes0, Bytes bytes1) {
 		var size0 = bytes0.size();
 		var size1 = bytes1.size();
-		int rollingSize = min(size0, size1);
-		IntObjPair<Pair<Segment, Segment>> longest = IntObjPair.of(Integer.MIN_VALUE, null);
+		int rollingSize = max(1, min(size0, size1));
+		var longest = IntObjPair.<Pair<Segment, Segment>> of(Integer.MIN_VALUE, null);
 
 		while (longest.t1 == null) {
-			IntObjMap<List<Segment>> segmentLists0 = hashSegments(bytes0, rollingSize);
-			IntObjMap<List<Segment>> segmentLists1 = hashSegments(bytes1, rollingSize);
+			var segmentLists0 = hashSegments(bytes0, rollingSize);
+			var segmentLists1 = hashSegments(bytes1, rollingSize);
 			var keys0 = segmentLists0.streamlet().keys().toSet();
 			var keys1 = segmentLists1.streamlet().keys().toSet();
 			var keys = IntSet.intersect(keys0, keys1).streamlet().toArray();
@@ -54,7 +55,8 @@ public class Lccs {
 						}
 					}
 
-			rollingSize /= 2;
+			if ((rollingSize /= 2) == 0)
+				return Pair.of(Segment.of(0, 0), Segment.of(0, 0));
 		}
 
 		return longest.t1;
