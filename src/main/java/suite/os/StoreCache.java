@@ -22,7 +22,7 @@ public class StoreCache {
 
 	private ThreadLocal<Boolean> reget = ThreadLocal.withInitial(() -> false);
 	private int documentAge = 30;
-	private Path dir = HomeDir.dir("store-cache");
+	private Path dir;
 
 	public class Piper {
 		private String sh;
@@ -49,9 +49,16 @@ public class StoreCache {
 	}
 
 	public StoreCache() {
+		this(HomeDir.dir("store-cache"));
+	}
+
+	public StoreCache(Path dir) {
+		this.dir = dir;
+
 		var current = System.currentTimeMillis();
 
-		LogUtil.info(FileUtil.findPaths(dir) //
+		LogUtil.info(FileUtil //
+				.findPaths(dir) //
 				.filter(path -> !isUpToDate(path, current)) //
 				.map(path -> "rm '" + path + "'") //
 				.toString());

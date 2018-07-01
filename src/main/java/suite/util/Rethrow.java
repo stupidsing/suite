@@ -5,7 +5,11 @@ import java.util.function.Predicate;
 
 public class Rethrow {
 
-	public interface SourceEx<T, Ex extends Throwable> {
+	public interface SinkEx<T, Ex extends Exception> {
+		public void sink(T t) throws Ex;
+	}
+
+	public interface SourceEx<T, Ex extends Exception> {
 		public T source() throws Ex;
 	}
 

@@ -19,6 +19,7 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.Rethrow;
+import suite.util.Rethrow.SinkEx;
 import suite.util.To;
 
 public class FileUtil {
@@ -69,10 +70,34 @@ public class FileUtil {
 	}
 
 	public static OutputStream out(String filename) throws IOException {
-		return out(Paths.get(filename));
+		return out_(Paths.get(filename));
 	}
 
 	public static OutputStream out(Path path) throws IOException {
+		return out_(path);
+	}
+
+	public static String read(String filename) {
+		return To.string(Paths.get(filename));
+	}
+
+	public static void write(Path path, String contents) {
+		try (var os = out_(path); var w = new OutputStreamWriter(os, Defaults.charset)) {
+			w.write(contents);
+		} catch (IOException ex) {
+			Fail.t(ex);
+		}
+	}
+
+	public static void write(Path path, SinkEx<OutputStream, IOException> sink) {
+		try (var os = out_(path)) {
+			sink.sink(os);
+		} catch (IOException ex) {
+			Fail.t(ex);
+		}
+	}
+
+	private static OutputStream out_(Path path) throws IOException {
 		var parent = path.getParent();
 		var path1 = parent.resolve(path.getFileName() + ".new");
 
@@ -98,18 +123,6 @@ public class FileUtil {
 				os.write(bs, off, len);
 			}
 		};
-	}
-
-	public static String read(String filename) {
-		return To.string(Paths.get(filename));
-	}
-
-	public static void write(Path path, String contents) {
-		try (var os = FileUtil.out(path); var w = new OutputStreamWriter(os, Defaults.charset)) {
-			w.write(contents);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
 	}
 
 }

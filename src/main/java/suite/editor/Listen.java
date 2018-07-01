@@ -25,12 +25,9 @@ import javax.swing.text.JTextComponent;
 import suite.streamlet.Signal;
 import suite.util.Fail;
 import suite.util.FunUtil.Sink;
+import suite.util.Rethrow.SinkEx;
 
 public class Listen {
-
-	public interface SinkEx<T, Ex extends Exception> {
-		public void sink(T t) throws Ex;
-	}
 
 	public static Signal<ActionEvent> action(AbstractButton component) {
 		return signal(fire -> component.addActionListener(fire::sink));
