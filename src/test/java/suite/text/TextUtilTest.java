@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import suite.text.TextUtil.ConflictException;
 import suite.util.To;
 
 public class TextUtilTest {
@@ -12,7 +11,7 @@ public class TextUtilTest {
 	private TextUtil textUtil = new TextUtil();
 
 	@Test
-	public void test() throws ConflictException {
+	public void test() {
 		var orig = "abc12def34ghi";
 		var version_a = "abc567def890ghi";
 		var version_b = "abc12zxcvbn34ghi";

@@ -16,11 +16,11 @@ import suite.util.To;
 
 public class TextUtil {
 
-	public class ConflictException extends Exception {
+	public class ConflictException extends RuntimeException {
 		private static final long serialVersionUID = 1l;
 	}
 
-	public Bytes merge(Bytes bytes, Bytes bytesx, Bytes bytesy) throws ConflictException {
+	public Bytes merge(Bytes bytes, Bytes bytesx, Bytes bytesy) {
 		var pairsx = diff(bytes, bytesx);
 		var pairsy = diff(bytes, bytesy);
 		return patch(bytes, merge(pairsx, pairsy));
@@ -50,7 +50,7 @@ public class TextUtil {
 			return List.of();
 	}
 
-	public Bytes patch(Bytes bytes, List<Pair<Bytes, Bytes>> pairs) throws ConflictException {
+	public Bytes patch(Bytes bytes, List<Pair<Bytes, Bytes>> pairs) {
 		var bb = new BytesBuilder();
 		var p = 0;
 		for (var pair : pairs) {
@@ -64,15 +64,14 @@ public class TextUtil {
 		return bb.toBytes();
 	}
 
-	public List<Pair<Bytes, Bytes>> merge(List<Pair<Bytes, Bytes>> pairsx, List<Pair<Bytes, Bytes>> pairsy)
-			throws ConflictException {
+	public List<Pair<Bytes, Bytes>> merge(List<Pair<Bytes, Bytes>> pairsx, List<Pair<Bytes, Bytes>> pairsy) {
 		return merge(pairsx, pairsy, false);
 	}
 
 	public List<Pair<Bytes, Bytes>> merge( //
 			List<Pair<Bytes, Bytes>> pairsx, //
 			List<Pair<Bytes, Bytes>> pairsy, //
-			boolean isDetectSameChanges) throws ConflictException {
+			boolean isDetectSameChanges) {
 		var isEmptyx = pairsx.isEmpty();
 		var isEmptyy = pairsy.isEmpty();
 
@@ -154,7 +153,7 @@ public class TextUtil {
 			return pt;
 	}
 
-	private Pair<Bytes, Bytes> skip(Pair<Bytes, Bytes> pair, int c) throws ConflictException {
+	private Pair<Bytes, Bytes> skip(Pair<Bytes, Bytes> pair, int c) {
 		if (pair.t0 == pair.t1 && c <= pair.t0.size()) {
 			var bytes = pair.t0.range(c);
 			return Pair.of(bytes, bytes);

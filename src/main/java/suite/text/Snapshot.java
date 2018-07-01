@@ -2,7 +2,7 @@ package suite.text;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import suite.Defaults;
 import suite.adt.pair.FixieArray;
 import suite.adt.pair.Pair;
 import suite.os.FileUtil;
@@ -29,6 +30,15 @@ public class Snapshot {
 
 	public Map<String, List<Pair<Bytes, Bytes>>> diffDirs(String dir0, String dir1) {
 		return diffMaps(readMap(dir0), readMap(dir1));
+	}
+
+	public Map<String, List<Pair<Bytes, Bytes>>> merge( //
+			Map<String, List<Pair<Bytes, Bytes>>> map0, //
+			Map<String, List<Pair<Bytes, Bytes>>> map1) {
+		return Read //
+				.from(Set_.union(map0.keySet(), map1.keySet())) //
+				.map2(key -> textUtil.merge(map0.get(key), map1.get(key))) //
+				.toMap();
 	}
 
 	public void patchDir(String dir, Map<String, List<Pair<Bytes, Bytes>>> map) {
@@ -77,45 +87,48 @@ public class Snapshot {
 				var size1 = !String_.equals(s1, "N") ? Integer.valueOf(s1) : null;
 				var bs0 = size0 != null && is.read() == '<' ? readBlock(is, size0) : null;
 				var bs1 = size1 != null && is.read() == '>' ? readBlock(is, size1) : null;
-				return Pair.of(Bytes.of(bs0), Bytes.of(bs1));
+				return Pair.of(bs0, bs1);
 			})));
 		return list;
 	}
 
-	private byte[] readBlock(InputStream is, int size) throws IOException {
-		var bs0 = new byte[size];
+	private void writePatch(OutputStream os, List<Pair<Bytes, Bytes>> list) throws IOException {
+		for (var pair : list) {
+			var t0 = pair.t0;
+			var t1 = pair.t1;
+			var size0 = t0 != null ? Integer.toString(t0.size()) : "N";
+			var size1 = t1 != null ? Integer.toString(t1.size()) : "N";
+			var line = size0 + " " + size1 + "\n";
+			os.write(line.getBytes(Defaults.charset));
+			if (t0 != null) {
+				os.write('<');
+				writeBlock(os, t0);
+			}
+			if (t1 != null) {
+				os.write('>');
+				writeBlock(os, t1);
+			}
+		}
+		os.write("EOF\n".getBytes(Defaults.charset));
+	}
+
+	private Bytes readBlock(InputStream is, int size) throws IOException {
+		var bs = new byte[size];
 		var p = 0;
 		while (p < size) {
-			var c = is.read(bs0, p, size - p);
+			var c = is.read(bs, p, size - p);
 			if (0 <= c)
 				p += c;
 			else
 				return Fail.t();
 		}
 		is.read();
-		return bs0;
+		return Bytes.of(bs);
 	}
 
-	private void writePatch(PrintWriter pw, List<Pair<Bytes, Bytes>> list) {
-		for (var pair : list)
-			pair.map((t0, t1) -> {
-				var size0 = t0 != null ? Integer.toString(t0.size()) : "N";
-				var size1 = t1 != null ? Integer.toString(t1.size()) : "N";
-				var line = size0 + " " + size1;
-				pw.println(line);
-				if (t0 != null) {
-					pw.print('<');
-					pw.print(t0);
-					pw.println();
-				}
-				if (t1 != null) {
-					pw.print('>');
-					pw.print(t1);
-					pw.println();
-				}
-				return pw;
-			});
-		pw.println("EOF");
+	private void writeBlock(OutputStream os, Bytes t0) throws IOException {
+		os.write(t0.toArray());
+		os.write("\n".getBytes(Defaults.charset));
 	}
 
 	private Map<String, Bytes> readMap(String dir) {
