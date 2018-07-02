@@ -1,6 +1,5 @@
 package suite.util;
 
-import java.io.Closeable;
 import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -8,7 +7,7 @@ import java.io.OutputStream;
 
 import suite.primitive.Bytes;
 
-public class SerOutput implements Closeable, DataOutput {
+public class SerOutput extends BasicOutputStream implements DataOutput {
 
 	private DataOutputStream out;
 
@@ -17,27 +16,7 @@ public class SerOutput implements Closeable, DataOutput {
 	}
 
 	private SerOutput(DataOutputStream out) {
-		this.out = out;
-	}
-
-	@Override
-	public void close() throws IOException {
-		out.close();
-	}
-
-	@Override
-	public void write(int b) throws IOException {
-		out.write(b);
-	}
-
-	@Override
-	public void write(byte[] b) throws IOException {
-		out.write(b);
-	}
-
-	@Override
-	public void write(byte[] b, int off, int len) throws IOException {
-		out.write(b, off, len);
+		super(out);
 	}
 
 	@Override
@@ -51,8 +30,7 @@ public class SerOutput implements Closeable, DataOutput {
 	}
 
 	public void writeBytes(Bytes bytes) throws IOException {
-		int start = bytes.start, end = bytes.end;
-		out.write(bytes.bs, start, end - start);
+		out.write(bytes.bs, bytes.start, bytes.size());
 	}
 
 	@Override

@@ -12,6 +12,7 @@ import suite.adt.Opt;
 import suite.adt.pair.FixieArray;
 import suite.immutable.IMap;
 import suite.streamlet.Read;
+import suite.util.BasicInputStream;
 import suite.util.Copy;
 import suite.util.Fail;
 import suite.util.FunUtil2.Fun2;

@@ -1,4 +1,4 @@
-package suite.http;
+package suite.util;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,38 +17,47 @@ public abstract class BasicInputStream extends InputStream {
 		this.is = is;
 	}
 
+	@Override
 	public int available() throws IOException {
 		return is.available();
 	}
 
+	@Override
 	public void close() throws IOException {
 		is.close();
 	}
 
+	@Override
 	public void mark(int readLimit) {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public boolean markSupported() {
 		return false;
 	}
 
+	@Override
 	public int read() throws IOException {
 		return is.read();
 	}
 
+	@Override
 	public int read(byte[] bytes) throws IOException {
 		return is.read(bytes);
 	}
 
-	public int read(byte[] bytes, int offset, int length) throws IOException {
-		return is.read(bytes, offset, length);
+	@Override
+	public int read(byte[] bs, int offset, int length) throws IOException {
+		return is.read(bs, offset, length);
 	}
 
+	@Override
 	public void reset() {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
 	public long skip(long n) {
 		throw new UnsupportedOperationException();
 	}

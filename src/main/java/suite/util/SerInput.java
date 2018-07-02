@@ -1,12 +1,11 @@
 package suite.util;
 
-import java.io.Closeable;
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class SerInput implements Closeable, DataInput {
+public class SerInput extends BasicInputStream implements DataInput {
 
 	private DataInputStream in;
 
@@ -15,12 +14,7 @@ public class SerInput implements Closeable, DataInput {
 	}
 
 	private SerInput(DataInputStream in) {
-		this.in = in;
-	}
-
-	@Override
-	public void close() throws IOException {
-		in.close();
+		super(in);
 	}
 
 	@Override
