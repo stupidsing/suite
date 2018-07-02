@@ -9,7 +9,7 @@ import java.io.OutputStream;
  *
  * @author ywsing
  */
-public abstract class BasicOutputStream extends OutputStream {
+public class BasicOutputStream extends OutputStream {
 
 	private OutputStream os;
 

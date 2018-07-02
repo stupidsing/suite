@@ -3,8 +3,8 @@ package suite.node.util;
 import suite.inspect.Inspect;
 import suite.inspect.Mapify;
 import suite.os.StoreCache;
+import suite.serialize.Serialize;
 import suite.util.Nodify;
-import suite.util.Serialize;
 
 public class Singleton {
 

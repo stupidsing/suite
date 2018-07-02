@@ -1,4 +1,4 @@
-package suite.util;
+package suite.serialize;
 
 import static suite.util.Friends.min;
 
@@ -21,7 +21,12 @@ import suite.file.ExtentAllocator.Extent;
 import suite.inspect.Inspect;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
+import suite.util.Array_;
+import suite.util.Fail;
 import suite.util.FunUtil.Fun;
+import suite.util.Memoize;
+import suite.util.Rethrow;
+import suite.util.To;
 
 /**
  * Defines interface for reading/writing byte buffer. The operation within the

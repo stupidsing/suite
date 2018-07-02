@@ -4,10 +4,10 @@ import java.io.IOException;
 
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
+import suite.serialize.SerInput;
+import suite.serialize.Serialize.Serializer;
 import suite.streamlet.As;
 import suite.util.Rethrow;
-import suite.util.SerInput;
-import suite.util.Serialize.Serializer;
 import suite.util.To;
 
 public class SerializedFileFactory {

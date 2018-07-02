@@ -14,6 +14,7 @@ import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.os.Execute;
 import suite.os.SerializedStoreCache;
+import suite.serialize.Serialize;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -21,7 +22,6 @@ import suite.trade.Asset;
 import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
-import suite.util.Serialize;
 import suite.util.String_;
 import suite.util.To;
 

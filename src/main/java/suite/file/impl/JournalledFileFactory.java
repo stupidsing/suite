@@ -10,10 +10,10 @@ import suite.node.util.Singleton;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.util.SerInput;
-import suite.util.SerOutput;
-import suite.util.Serialize;
-import suite.util.Serialize.Serializer;
+import suite.serialize.SerInput;
+import suite.serialize.SerOutput;
+import suite.serialize.Serialize;
+import suite.serialize.Serialize.Serializer;
 
 public class JournalledFileFactory {
 

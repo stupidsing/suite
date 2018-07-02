@@ -11,9 +11,9 @@ import java.util.List;
 import suite.node.util.Singleton;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.serialize.Serialize;
+import suite.serialize.Serialize.Serializer;
 import suite.util.Fail;
-import suite.util.Serialize;
-import suite.util.Serialize.Serializer;
 
 public class FileSystemKeyUtil {
 

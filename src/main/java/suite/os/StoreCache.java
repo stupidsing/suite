@@ -10,12 +10,12 @@ import suite.Defaults;
 import suite.adt.pair.Pair;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
+import suite.serialize.SerOutput;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
 import suite.util.HomeDir;
 import suite.util.Rethrow;
-import suite.util.SerOutput;
 import suite.util.To;
 
 public class StoreCache {

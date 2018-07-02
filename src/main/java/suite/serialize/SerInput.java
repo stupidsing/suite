@@ -1,9 +1,11 @@
-package suite.util;
+package suite.serialize;
 
 import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+
+import suite.util.BasicInputStream;
 
 public class SerInput extends BasicInputStream implements DataInput {
 

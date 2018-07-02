@@ -10,9 +10,9 @@ import suite.fs.KeyValueMutator;
 import suite.fs.impl.TransactionManager;
 import suite.immutable.LazyIbTreeStore;
 import suite.node.util.Singleton;
+import suite.serialize.Serialize;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
-import suite.util.Serialize;
 
 public class Database implements Closeable {
 

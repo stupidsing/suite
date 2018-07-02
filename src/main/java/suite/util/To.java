@@ -32,6 +32,7 @@ import suite.primitive.IntInt_Dbl;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Dbl;
 import suite.primitive.IoSink;
+import suite.serialize.SerOutput;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Sink;

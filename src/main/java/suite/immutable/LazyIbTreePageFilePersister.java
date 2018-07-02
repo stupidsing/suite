@@ -18,12 +18,12 @@ import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.immutable.LazyIbTree.Slot;
 import suite.node.util.Singleton;
+import suite.serialize.SerInput;
+import suite.serialize.SerOutput;
+import suite.serialize.Serialize;
+import suite.serialize.Serialize.Serializer;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;
-import suite.util.SerInput;
-import suite.util.SerOutput;
-import suite.util.Serialize;
-import suite.util.Serialize.Serializer;
 
 public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integer, T> {
 

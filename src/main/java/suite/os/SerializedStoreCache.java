@@ -6,12 +6,12 @@ import java.io.IOException;
 
 import suite.node.util.Singleton;
 import suite.primitive.Bytes;
+import suite.serialize.SerInput;
+import suite.serialize.SerOutput;
+import suite.serialize.Serialize.Serializer;
 import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
-import suite.util.SerInput;
-import suite.util.SerOutput;
-import suite.util.Serialize.Serializer;
 
 public class SerializedStoreCache<K, V> {
 

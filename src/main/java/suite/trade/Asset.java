@@ -1,8 +1,8 @@
 package suite.trade;
 
 import suite.node.util.Singleton;
+import suite.serialize.Serialize.Serializer;
 import suite.trade.data.Hkex;
-import suite.util.Serialize.Serializer;
 import suite.util.String_;
 
 public class Asset {

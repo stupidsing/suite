@@ -15,12 +15,12 @@ import suite.file.impl.JournalledFileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.fs.KeyDataStore;
 import suite.node.util.Singleton;
+import suite.serialize.SerInput;
+import suite.serialize.SerOutput;
+import suite.serialize.Serialize;
+import suite.serialize.Serialize.Serializer;
 import suite.util.Object_;
 import suite.util.Rethrow;
-import suite.util.SerInput;
-import suite.util.SerOutput;
-import suite.util.Serialize;
-import suite.util.Serialize.Serializer;
 
 public class B_TreeBuilder<Key, Value> {
 

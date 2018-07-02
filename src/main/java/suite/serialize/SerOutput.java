@@ -1,4 +1,4 @@
-package suite.util;
+package suite.serialize;
 
 import java.io.DataOutput;
 import java.io.DataOutputStream;
@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import suite.primitive.Bytes;
+import suite.util.BasicOutputStream;
 
 public class SerOutput extends BasicOutputStream implements DataOutput {
 

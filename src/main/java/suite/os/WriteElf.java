@@ -11,8 +11,8 @@ import suite.Defaults;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntPrimitives.Int_Obj;
+import suite.serialize.SerOutput;
 import suite.util.Fail;
-import suite.util.SerOutput;
 import suite.util.Util;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html

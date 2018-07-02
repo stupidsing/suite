@@ -13,10 +13,10 @@ import suite.node.util.Singleton;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.serialize.SerInput;
+import suite.serialize.SerOutput;
+import suite.serialize.Serialize.Serializer;
 import suite.util.Fail;
-import suite.util.SerInput;
-import suite.util.SerOutput;
-import suite.util.Serialize.Serializer;
 import suite.util.Util;
 
 public class FileFactory {

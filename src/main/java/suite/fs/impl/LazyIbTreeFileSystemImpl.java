@@ -15,8 +15,8 @@ import suite.fs.KeyValueStore;
 import suite.immutable.LazyIbTreeStore;
 import suite.node.util.Singleton;
 import suite.primitive.Bytes;
+import suite.serialize.Serialize;
 import suite.streamlet.Streamlet;
-import suite.util.Serialize;
 
 public class LazyIbTreeFileSystemImpl implements FileSystem {
 

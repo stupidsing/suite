@@ -17,8 +17,8 @@ import suite.file.impl.JournalledFileFactory;
 import suite.node.util.Singleton;
 import suite.primitive.Ints_;
 import suite.sample.Profiler;
+import suite.serialize.Serialize;
 import suite.util.Object_;
-import suite.util.Serialize;
 import suite.util.To;
 
 public class B_TreeTest {

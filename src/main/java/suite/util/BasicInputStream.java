@@ -9,7 +9,7 @@ import java.io.InputStream;
  *
  * @author ywsing
  */
-public abstract class BasicInputStream extends InputStream {
+public class BasicInputStream extends InputStream {
 
 	private InputStream is;
 
