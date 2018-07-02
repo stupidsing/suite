@@ -2,7 +2,6 @@ package suite.debian;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -10,18 +9,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 
 public class DebianUtil {
 
 	public Streamlet<Map<String, String>> readDpkgConfiguration(File file) {
-		try (var is = new FileInputStream(file)) {
-			return readDpkgConfiguration(is);
-		} catch (IOException ex) {
-			return Fail.t(ex);
-		}
+		return FileUtil.in(file.toString()).doRead(this::readDpkgConfiguration);
 	}
 
 	public Streamlet<Map<String, String>> readDpkgConfiguration(InputStream is) throws IOException {

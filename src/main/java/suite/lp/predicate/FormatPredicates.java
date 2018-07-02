@@ -4,8 +4,6 @@ import static suite.util.Friends.min;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -53,26 +51,24 @@ public class FormatPredicates {
 	public BuiltinPredicate parse = PredicateUtil.fun(n -> Suite.parse(Formatter.display(n)));
 
 	public BuiltinPredicate persistLoad = PredicateUtil.p2((prover, node, filename) -> {
-		try (var is = new FileInputStream(Str.str(filename));
-				var gis = new GZIPInputStream(is);
-				var dis = new DataInputStream(gis)) {
-			var grapher = new Grapher();
-			grapher.load(dis);
-			return prover.bind(node, grapher.ungraph());
-		} catch (IOException ex) {
-			return Fail.t(ex);
-		}
+		return FileUtil.in(Str.str(filename)).doRead(is -> {
+			try (var gis = new GZIPInputStream(is); var dis = new DataInputStream(gis)) {
+				var grapher = new Grapher();
+				grapher.load(dis);
+				return prover.bind(node, grapher.ungraph());
+			}
+		});
 	});
 
 	public BuiltinPredicate persistSave = PredicateUtil.p2((prover, node, filename) -> {
-		try (var os = FileUtil.out(Str.str(filename)); var gos = new GZIPOutputStream(os); var dos = new DataOutputStream(gos)) {
-			var grapher = new Grapher();
-			grapher.graph(node);
-			grapher.save(dos);
-			return true;
-		} catch (IOException ex) {
-			return Fail.t(ex);
-		}
+		FileUtil.out(Str.str(filename)).doWrite(os -> {
+			try (var gos = new GZIPOutputStream(os); var dos = new DataOutputStream(gos)) {
+				var grapher = new Grapher();
+				grapher.graph(node);
+				grapher.save(dos);
+			}
+		});
+		return true;
 	});
 
 	public BuiltinPredicate prettyPrint = PredicateUtil.sink(n -> System.out.println(new PrettyPrinter().prettyPrint(n)));

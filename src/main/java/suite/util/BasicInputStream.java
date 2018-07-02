@@ -1,5 +1,6 @@
 package suite.util;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -30,6 +31,14 @@ public class BasicInputStream extends InputStream {
 
 	public byte[] readBytes() {
 		return doRead(InputStream::readAllBytes);
+	}
+
+	public <T> T doBufferedReader(FunIo<BufferedReader, T> fun) {
+		return doReader(r -> {
+			try (var br = new BufferedReader(r)) {
+				return fun.apply(br);
+			}
+		});
 	}
 
 	public <T> T doReader(FunIo<InputStreamReader, T> fun) {

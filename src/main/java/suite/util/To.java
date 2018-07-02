@@ -98,8 +98,8 @@ public class To {
 		return hex4(i >>> 16 & 0xFFFF) + hex4(i & 0xFFFF);
 	}
 
-	public static InputStream inputStream(Outlet<Bytes> outlet) {
-		return new InputStream() {
+	public static BasicInputStream inputStream(Outlet<Bytes> outlet) {
+		return new BasicInputStream(new InputStream() {
 			private InputStream is;
 			private boolean isOpen = true;
 
@@ -128,7 +128,7 @@ public class To {
 						;
 				}
 			}
-		};
+		});
 	}
 
 	public static <T> List<T> list(Source<T> source) {

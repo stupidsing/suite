@@ -21,7 +21,6 @@ import suite.util.Fail;
 import suite.util.Rethrow;
 import suite.util.Set_;
 import suite.util.String_;
-import suite.util.To;
 import suite.util.Util;
 
 public interface Snapshot {
@@ -146,7 +145,7 @@ class Impl implements Snapshot {
 	private Map<String, Bytes> readMap(Path path) {
 		return FileUtil //
 				.findPaths(path) //
-				.map2(Path::toString, p -> To.bytes(Rethrow.ex(() -> Files.newInputStream(p)))) //
+				.map2(Path::toString, p -> Bytes.of(FileUtil.in(p).readBytes())) //
 				.toMap();
 	}
 

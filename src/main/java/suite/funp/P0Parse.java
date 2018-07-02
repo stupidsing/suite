@@ -1,12 +1,8 @@
 package suite.funp;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
 
-import suite.Defaults;
 import suite.Suite;
 import suite.adt.Mutable;
 import suite.adt.pair.Pair;
@@ -57,9 +53,11 @@ import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
+import suite.os.FileUtil;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
+import suite.util.BasicInputStream;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
@@ -226,15 +224,9 @@ public class P0Parse {
 		}
 
 		private Funp consult(String url) {
-			Fun<InputStream, Funp> r0 = is -> {
-				try (var isr = new InputStreamReader(is, Defaults.charset)) {
-					return FunpPredefine.of(parse(Suite.parse(To.string(isr))));
-				} catch (IOException ex) {
-					return Fail.t(ex);
-				}
-			};
+			Fun<BasicInputStream, Funp> r0 = is -> is.doReader(isr -> FunpPredefine.of(parse(Suite.parse(To.string(isr)))));
 
-			Fun<SourceEx<InputStream, IOException>, Funp> r1 = source -> {
+			Fun<SourceEx<BasicInputStream, IOException>, Funp> r1 = source -> {
 				try (var is = source.source()) {
 					return r0.apply(is);
 				} catch (IOException ex) {
@@ -243,11 +235,11 @@ public class P0Parse {
 			};
 
 			if (url.startsWith("file://"))
-				return r1.apply(() -> new FileInputStream(url.substring(7)));
+				return r1.apply(() -> FileUtil.in(url.substring(7)));
 			else if (url.startsWith("http://") || url.startsWith("https://"))
 				return r0.apply(HttpUtil.get(url).inputStream());
 			else
-				return r1.apply(() -> getClass().getResourceAsStream(url));
+				return r1.apply(() -> new BasicInputStream(getClass().getResourceAsStream(url)));
 		}
 
 		private Funp bind(Node a, Node b, Node c) {

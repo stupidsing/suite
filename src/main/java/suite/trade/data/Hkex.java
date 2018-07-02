@@ -426,11 +426,7 @@ public class Hkex {
 		JsonNode json;
 
 		if (Boolean.TRUE)
-			try (var is = Singleton.me.storeCache.http(url).collect(To::inputStream)) {
-				json = mapper.readTree(is);
-			} catch (IOException ex) {
-				json = Fail.t(ex);
-			}
+			json = Singleton.me.storeCache.http(url).collect(To::inputStream).doRead(mapper::readTree);
 		else {
 			var execute = new Execute(new String[] { "curl", url, });
 			json = Rethrow.ex(() -> mapper.readTree(execute.out));

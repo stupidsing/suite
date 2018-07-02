@@ -22,6 +22,14 @@ import suite.util.To;
 
 public class FileUtil {
 
+	public static void delete(Path path) {
+		try {
+			Files.delete(path);
+		} catch (IOException ex) {
+			Fail.t(ex);
+		}
+	}
+
 	public static Path ext(Path path, String ext) {
 		return path.resolveSibling(path.getFileName() + ext);
 	}

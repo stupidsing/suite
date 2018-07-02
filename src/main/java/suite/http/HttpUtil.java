@@ -3,7 +3,6 @@ package suite.http;
 import static suite.util.Friends.max;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -24,6 +23,7 @@ import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
+import suite.util.BasicInputStream;
 import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
 import suite.util.ParseUtil;
@@ -66,7 +66,7 @@ public class HttpUtil {
 			return new HttpRequest(method, url, in, headers);
 		}
 
-		public InputStream inputStream() {
+		public BasicInputStream inputStream() {
 			return out().collect(To::inputStream);
 		}
 

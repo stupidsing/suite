@@ -1,7 +1,5 @@
 package suite.pkgmanager;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
@@ -11,7 +9,6 @@ import suite.Defaults;
 import suite.inspect.Mapify;
 import suite.node.util.Singleton;
 import suite.os.FileUtil;
-import suite.util.Fail;
 
 /**
  * Keeps track of the package installed in local machine.
@@ -30,11 +27,9 @@ public class Keeper {
 	}
 
 	public PackageMemento loadPackageMemento(String packageName) {
-		try (var is = Files.newInputStream(keeperDir.resolve(packageName))) {
-			return mapify.unmapify(PackageMemento.class, objectMapper.readValue(is, Map.class));
-		} catch (IOException ex) {
-			return Fail.t(ex);
-		}
+		return FileUtil //
+				.in(keeperDir.resolve(packageName)) //
+				.doRead(is -> mapify.unmapify(PackageMemento.class, objectMapper.readValue(is, Map.class)));
 	}
 
 	public void savePackageMemento(PackageMemento packageMemento) {
@@ -46,11 +41,7 @@ public class Keeper {
 	}
 
 	public void removePackageMemento(String packageName) {
-		try {
-			Files.delete(keeperDir.resolve(packageName));
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+		FileUtil.delete(keeperDir.resolve(packageName));
 	}
 
 }

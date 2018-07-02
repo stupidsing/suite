@@ -232,33 +232,31 @@ public class Yahoo {
 				+ "&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys" //
 				+ "&callback=";
 
-		return Rethrow.ex(() -> {
-			try (var is = Singleton.me.storeCache.http(urlString).collect(To::inputStream)) {
-				var json = mapper.readTree(is);
+		return Singleton.me.storeCache.http(urlString).collect(To::inputStream).doRead(is -> {
+			var json = mapper.readTree(is);
 
-				var quotes = Read.each(json) //
-						.flatMap(json_ -> json_.path("query")) //
-						.flatMap(json_ -> json_.path("results")) //
-						.flatMap(json_ -> json_.path("quote")) //
-						.collect();
+			var quotes = Read.each(json) //
+					.flatMap(json_ -> json_.path("query")) //
+					.flatMap(json_ -> json_.path("results")) //
+					.flatMap(json_ -> json_.path("quote")) //
+					.collect();
 
-				var arrays = quotes //
-						.map(json_ -> new String[] { //
-								json_.path("Date").textValue(), //
-								json_.path("Open").textValue(), //
-								json_.path("Close").textValue(), //
-								json_.path("Low").textValue(), //
-								json_.path("High").textValue(), }) //
-						.collect();
+			var arrays = quotes //
+					.map(json_ -> new String[] { //
+							json_.path("Date").textValue(), //
+							json_.path("Open").textValue(), //
+							json_.path("Close").textValue(), //
+							json_.path("Low").textValue(), //
+							json_.path("High").textValue(), }) //
+					.collect();
 
-				var ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
-				var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
-				var closes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
-				var lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
-				var highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
-				var volumes = new float[ts.length];
-				return DataSource.ofOhlcv(ts, opens, closes, lows, highs, volumes);
-			}
+			var ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
+			var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
+			var closes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
+			var lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
+			var highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
+			var volumes = new float[ts.length];
+			return DataSource.ofOhlcv(ts, opens, closes, lows, highs, volumes);
 		});
 	}
 

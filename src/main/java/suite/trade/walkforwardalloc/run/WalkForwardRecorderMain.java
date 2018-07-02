@@ -1,8 +1,6 @@
 package suite.trade.walkforwardalloc.run;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -10,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import suite.os.FileUtil;
 import suite.os.Schedule;
 import suite.os.Scheduler;
 import suite.trade.Time;
@@ -67,21 +66,18 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 		} else { // replay
 			var ts = "20170612-092616";
 			var filename = "wfa." + ts + ".csv";
-			var data = new TreeMap<Time, Map<String, Float>>();
 
-			try (var is = Files.newInputStream(HomeDir.resolve(filename)); //
-					var isr = new InputStreamReader(is); //
-					var br = new BufferedReader(isr)) {
+			var data = FileUtil.in(HomeDir.resolve(filename)).doBufferedReader(br -> {
+				var data_ = new TreeMap<Time, Map<String, Float>>();
 				while (br.ready()) {
 					var array = br.readLine().split(",");
 					var time = Time.of(array[0].trim());
 					var symbol = array[1].trim();
 					var price = Float.parseFloat(array[2].trim());
-					data.computeIfAbsent(time, s -> new HashMap<>()).put(symbol, price);
+					data_.computeIfAbsent(time, s -> new HashMap<>()).put(symbol, price);
 				}
-			} catch (IOException ex) {
-				Fail.t(ex);
-			}
+				return data_;
+			});
 
 			var wfac = new WalkForwardAllocConfiguration( //
 					cfg.queryCompaniesByMarketCap(Time.now()), //
