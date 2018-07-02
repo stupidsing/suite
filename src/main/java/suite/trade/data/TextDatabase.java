@@ -82,7 +82,7 @@ public class TextDatabase {
 				.map(this::toBytes) //
 				.collect(Bytes_::buffer);
 
-		FileUtil.out(path).write(os -> Bytes_.copy(outlet, os::write));
+		FileUtil.out(path).doWrite(os -> Bytes_.copy(outlet, os::write));
 	}
 
 	private void merge(Path path) {

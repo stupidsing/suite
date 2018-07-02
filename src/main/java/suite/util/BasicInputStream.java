@@ -2,6 +2,9 @@ package suite.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import suite.Defaults;
 
 /**
  * Implements an input stream using a given input stream. Extends this class to
@@ -15,6 +18,34 @@ public class BasicInputStream extends InputStream {
 
 	public BasicInputStream(InputStream is) {
 		this.is = is;
+	}
+
+	public interface FunIo<I, O> {
+		public O apply(I i) throws IOException;
+	}
+
+	public String readString() {
+		return new String(readBytes(), Defaults.charset);
+	}
+
+	public byte[] readBytes() {
+		return doRead(InputStream::readAllBytes);
+	}
+
+	public <T> T doReader(FunIo<InputStreamReader, T> fun) {
+		return doRead(is -> {
+			try (var w = new InputStreamReader(is, Defaults.charset)) {
+				return fun.apply(w);
+			}
+		});
+	}
+
+	public <T> T doRead(FunIo<InputStream, T> fun) {
+		try (var is = this) {
+			return fun.apply(is);
+		} catch (IOException ex) {
+			return Fail.t(ex);
+		}
 	}
 
 	@Override

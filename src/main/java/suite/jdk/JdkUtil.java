@@ -26,7 +26,7 @@ public class JdkUtil {
 		Path binFilePath = binDir.resolve(canonicalName.replace('.', '/') + ".class");
 
 		LogUtil.info("Writing " + srcFilePath);
-		FileUtil.out(srcFilePath).write(os -> os.write(java.getBytes(Defaults.charset)));
+		FileUtil.out(srcFilePath).doWrite(os -> os.write(java.getBytes(Defaults.charset)));
 
 		// compile the Java, load the class, return an instantiated object
 		LogUtil.info("Compiling " + srcFilePath);

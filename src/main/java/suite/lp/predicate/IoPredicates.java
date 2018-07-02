@@ -65,7 +65,7 @@ public class IoPredicates {
 		var filename = Formatter.display(fn);
 		var content = Formatter.display(contents);
 
-		FileUtil.out(filename).writeData(content.getBytes(Defaults.charset));
+		FileUtil.out(filename).writeAndClose(content.getBytes(Defaults.charset));
 		return true;
 	});
 

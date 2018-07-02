@@ -42,6 +42,32 @@ public class Serialize {
 	private Inspect inspect;
 	private byte[] zeroes = new byte[Defaults.bufferSize];
 
+	private static <T> Serializer<T> ser(Deser<T> deser, Ser<T> ser) {
+		return new Serializer<>() {
+			public T read(SerInput si) throws IOException {
+				return deser.read(si);
+			}
+
+			public void write(SerOutput so, T value) throws IOException {
+				ser.write(so, value);
+			}
+		};
+	}
+
+	public interface Deser<V> {
+		public V read(SerInput si) throws IOException;
+	}
+
+	public interface Ser<V> {
+		public void write(SerOutput so, V v) throws IOException;
+	}
+
+	public interface Serializer<V> {
+		public V read(SerInput si) throws IOException;
+
+		public void write(SerOutput so, V value) throws IOException;
+	}
+
 	public Serialize(Inspect inspect) {
 		this.inspect = inspect;
 	}
@@ -124,7 +150,7 @@ public class Serialize {
 					} else {
 						var ps = new Object[immutableCtor.getParameterCount()];
 						for (var i = 0; i < ps.length; i++) {
-							Pair<Field, ?> pair = pairs[i];
+							var pair = pairs[i];
 							ps[i] = ((Serializer<?>) pair.t1).read(si);
 						}
 						object = immutableCtor.newInstance(ps);
@@ -161,32 +187,6 @@ public class Serialize {
 	};
 
 	public Serializer<String> variableLengthString = ser(SerInput::readUTF, SerOutput::writeUTF);
-
-	private static <T> Serializer<T> ser(Deser<T> deser, Ser<T> ser) {
-		return new Serializer<>() {
-			public T read(SerInput si) throws IOException {
-				return deser.read(si);
-			}
-
-			public void write(SerOutput so, T value) throws IOException {
-				ser.write(so, value);
-			}
-		};
-	}
-
-	public interface Deser<V> {
-		public V read(SerInput si) throws IOException;
-	}
-
-	public interface Ser<V> {
-		public void write(SerOutput so, V v) throws IOException;
-	}
-
-	public interface Serializer<V> {
-		public V read(SerInput si) throws IOException;
-
-		public void write(SerOutput so, V value) throws IOException;
-	}
 
 	public <T> Serializer<T[]> array(Class<T> clazz, Serializer<T> serializer) {
 		return new Serializer<>() {

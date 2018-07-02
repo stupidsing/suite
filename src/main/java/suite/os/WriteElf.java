@@ -27,7 +27,7 @@ public class WriteElf {
 	}
 
 	private void write(int org, Bytes code, Path path) {
-		FileUtil.out(path).write(os -> {
+		FileUtil.out(path).doWrite(os -> {
 			try (var do_ = SerOutput.of(os)) {
 				write(org, code, do_);
 			}

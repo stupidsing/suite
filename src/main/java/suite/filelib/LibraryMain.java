@@ -77,7 +77,7 @@ public class LibraryMain extends ExecutableProgram {
 				});
 
 		// construct file listing
-		FileUtil.out(inputDir + ".listing").write(os -> {
+		FileUtil.out(inputDir + ".listing").doWrite(os -> {
 			try (var pw = new PrintWriter(os)) {
 				for (var path_fileInfo : path_fileInfos)
 					pw.println(path_fileInfo.t0 + path_fileInfo.t1.md5);

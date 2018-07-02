@@ -144,7 +144,7 @@ public class EditorController {
 	}
 
 	public void save() {
-		FileUtil.out(model.filename()).write(os -> os.write(view.getEditor().getText().getBytes(Defaults.charset)));
+		FileUtil.out(model.filename()).doWrite(os -> os.write(view.getEditor().getText().getBytes(Defaults.charset)));
 		model.changeIsModified(false);
 	}
 

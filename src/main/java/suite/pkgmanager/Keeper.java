@@ -42,7 +42,7 @@ public class Keeper {
 
 		FileUtil //
 				.out(keeperDir.resolve(packageName)) //
-				.write(os -> objectMapper.writeValue(os, mapify.mapify(PackageMemento.class, packageMemento)));
+				.doWrite(os -> objectMapper.writeValue(os, mapify.mapify(PackageMemento.class, packageMemento)));
 	}
 
 	public void removePackageMemento(String packageName) {
