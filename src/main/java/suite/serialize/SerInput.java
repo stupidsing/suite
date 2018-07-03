@@ -12,13 +12,12 @@ public class SerInput extends BasicInputStream implements DataInput {
 	private DataInputStream in;
 
 	public static SerInput of(InputStream is) {
-		var si = new SerInput(is);
-		si.in = new DataInputStream(is);
-		return si;
+		return new SerInput(is);
 	}
 
 	private SerInput(InputStream in) {
 		super(in);
+		this.in = new DataInputStream(in);
 	}
 
 	@Override
