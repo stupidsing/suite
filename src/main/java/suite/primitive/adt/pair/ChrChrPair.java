@@ -2,11 +2,11 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
+import suite.object.Object_;
 import suite.primitive.ChrChr_Obj;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
 import suite.streamlet.FunUtil.Iterate;
-import suite.util.Object_;
 
 public class ChrChrPair {
 

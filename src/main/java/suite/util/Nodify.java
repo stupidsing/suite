@@ -26,6 +26,7 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeOr;
+import suite.object.Object_;
 import suite.primitive.Chars;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;

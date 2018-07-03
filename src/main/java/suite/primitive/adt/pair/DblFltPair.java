@@ -2,13 +2,13 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
+import suite.object.Object_;
 import suite.primitive.DblFlt_Obj;
 import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
 import suite.streamlet.FunUtil.Iterate;
-import suite.util.Object_;
 
 public class DblFltPair {
 

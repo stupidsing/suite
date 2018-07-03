@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.object.Object_;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngObjFunUtil;
 import suite.primitive.LngObj_Lng;
@@ -31,7 +32,6 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
 import suite.util.Fail;
-import suite.util.Object_;
 
 public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngObjOutlet<V>> {
 

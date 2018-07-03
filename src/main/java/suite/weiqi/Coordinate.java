@@ -3,8 +3,8 @@ package suite.weiqi;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.object.Object_;
 import suite.primitive.adt.pair.IntIntPair;
-import suite.util.Object_;
 
 public class Coordinate implements Comparable<Coordinate> {
 

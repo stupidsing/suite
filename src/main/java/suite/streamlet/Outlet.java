@@ -19,6 +19,7 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.FixieA;
 import suite.adt.pair.Pair;
+import suite.object.Object_;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjOutlet;
@@ -30,7 +31,6 @@ import suite.util.Array_;
 import suite.util.Fail;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
-import suite.util.Object_;
 import suite.util.To;
 
 /**

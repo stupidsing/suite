@@ -8,10 +8,10 @@ import java.util.List;
 
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
+import suite.object.Object_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
-import suite.util.Object_;
 
 // https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2012/fb2012.htm
 public class HkexFactBook {

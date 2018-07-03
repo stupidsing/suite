@@ -1,6 +1,6 @@
 package suite.math;
 
-import suite.util.Object_;
+import suite.object.Object_;
 
 public class Complex {
 

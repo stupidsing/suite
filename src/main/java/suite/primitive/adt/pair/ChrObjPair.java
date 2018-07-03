@@ -3,12 +3,12 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
+import suite.object.Object_;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.Chr_Chr;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
-import suite.util.Object_;
 
 public class ChrObjPair<T> {
 

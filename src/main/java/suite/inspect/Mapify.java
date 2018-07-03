@@ -16,10 +16,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import suite.object.Object_;
 import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
-import suite.util.Object_;
 import suite.util.Switch;
 import suite.util.To;
 import suite.util.Util;

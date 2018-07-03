@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import suite.object.Object_;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs_;
@@ -20,7 +21,6 @@ import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.ts.TimeSeries;
 import suite.util.Fail;
-import suite.util.Object_;
 import suite.util.Set_;
 import suite.util.To;
 

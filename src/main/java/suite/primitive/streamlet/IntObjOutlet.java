@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.object.Object_;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntObjFunUtil;
 import suite.primitive.IntObj_Int;
@@ -36,7 +37,6 @@ import suite.util.Array_;
 import suite.util.Fail;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
-import suite.util.Object_;
 import suite.util.To;
 
 public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {

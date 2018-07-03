@@ -10,8 +10,8 @@ import java.io.Reader;
 import java.net.ServerSocket;
 
 import suite.cfg.Defaults;
+import suite.object.Object_;
 import suite.util.Fail;
-import suite.util.Object_;
 import suite.util.Thread_;
 
 public class SocketUtil {

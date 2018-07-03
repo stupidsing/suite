@@ -31,13 +31,12 @@ public class YahooTest {
 		var hkexFactBook = new HkexFactBook();
 		var symbols = hkexFactBook.queryMainBoardCompanies(2016);
 		// hkexFactBook.queryLeadingCompaniesByMarketCap(2016);
-		for (var symbol : symbols) {
+		for (var symbol : symbols)
 			try {
 				yahoo.dataSourceL1(symbol, TimeRange.daysBefore(31));
 			} catch (Exception ex) {
 				LogUtil.error(ex);
 			}
-		}
 	}
 
 	// @Test

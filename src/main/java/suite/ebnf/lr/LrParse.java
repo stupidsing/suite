@@ -11,11 +11,11 @@ import suite.ebnf.Grammar;
 import suite.ebnf.lr.BuildLr.Reduce;
 import suite.ebnf.lr.BuildLr.State;
 import suite.immutable.IList;
+import suite.object.Object_;
 import suite.parser.Lexer;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.util.Object_;
 
 public class LrParse {
 

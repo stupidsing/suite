@@ -26,6 +26,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 import suite.cfg.Defaults;
+import suite.object.Object_;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
 import suite.primitive.DblPrimitives.Obj_Dbl;

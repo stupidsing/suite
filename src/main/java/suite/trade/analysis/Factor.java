@@ -5,6 +5,7 @@ import java.util.List;
 import suite.adt.pair.Pair;
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
+import suite.object.Object_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
@@ -17,7 +18,6 @@ import suite.trade.data.DataSourceView;
 import suite.trade.data.HkexUtil;
 import suite.trade.data.TradeCfg;
 import suite.ts.Quant;
-import suite.util.Object_;
 
 public class Factor {
 

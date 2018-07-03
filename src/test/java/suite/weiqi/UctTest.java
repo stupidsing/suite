@@ -9,12 +9,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import suite.cfg.Defaults;
+import suite.object.Object_;
 import suite.os.Stopwatch;
 import suite.sample.Profiler;
 import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
 import suite.uct.UctWeiqi;
-import suite.util.Object_;
 import suite.weiqi.Weiqi.Occupation;
 
 public class UctTest {

@@ -6,8 +6,8 @@ import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicReference;
 
 import suite.concurrent.Concurrent.DeadlockException;
+import suite.object.Object_;
 import suite.util.Fail;
-import suite.util.Object_;
 
 /**
  * Mutual exclusion lock with deadlock detection.

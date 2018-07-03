@@ -30,6 +30,7 @@ import suite.jdk.gen.pass.FunExpand;
 import suite.jdk.gen.pass.FunGenerateBytecode;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
+import suite.object.Object_;
 import suite.os.LogUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
@@ -37,7 +38,6 @@ import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Read;
 import suite.util.Fail;
-import suite.util.Object_;
 import suite.util.Util;
 
 public class FunCreator<I> extends FunFactory {

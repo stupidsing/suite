@@ -2,7 +2,7 @@ package suite.net;
 
 import java.io.Closeable;
 
-import suite.util.Object_;
+import suite.object.Object_;
 import suite.util.Thread_;
 import suite.util.Thread_.RunnableEx;
 

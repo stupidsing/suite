@@ -9,11 +9,11 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Rewrite_.NodeHead;
 import suite.node.io.Rewrite_.NodeRead;
+import suite.object.Object_;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.FunUtil.Sink;
-import suite.util.Object_;
 
 /**
  * The Node.hashCode() method would not permit taking hash code of terms with

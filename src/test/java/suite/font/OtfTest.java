@@ -6,10 +6,10 @@ import java.util.List;
 
 import org.junit.Test;
 
+import suite.object.Object_;
 import suite.os.Execute;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
-import suite.util.Object_;
 
 public class OtfTest {
 

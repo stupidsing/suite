@@ -2,7 +2,7 @@ package suite.file;
 
 import java.io.Closeable;
 
-import suite.util.Object_;
+import suite.object.Object_;
 
 public interface ExtentAllocator extends Closeable {
 

@@ -11,13 +11,13 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.cfg.Defaults;
+import suite.object.Object_;
 import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.streamlet.ChrOutlet;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.Object_;
 import suite.util.ParseUtil;
 
 public class Chars implements Iterable<Character> {

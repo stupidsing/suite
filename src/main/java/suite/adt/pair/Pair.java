@@ -3,9 +3,9 @@ package suite.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
+import suite.object.Object_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.util.Object_;
 
 public class Pair<T0, T1> {
 

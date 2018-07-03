@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import suite.object.Object_;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.LngFltPair;
@@ -17,7 +18,6 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.DataSource.Datum;
 import suite.util.Fail;
-import suite.util.Object_;
 import suite.util.Set_;
 import suite.util.String_;
 

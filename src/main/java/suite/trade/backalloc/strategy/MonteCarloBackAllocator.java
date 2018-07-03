@@ -3,6 +3,7 @@ package suite.trade.backalloc.strategy;
 import java.util.Map;
 import java.util.Random;
 
+import suite.object.Object_;
 import suite.primitive.Floats_;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
@@ -10,7 +11,6 @@ import suite.trade.Time;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.data.DataSource.AlignKeyDataSource;
-import suite.util.Object_;
 
 /**
  * Genetic programming on asset allocation, and use Monte-carlo simulation to

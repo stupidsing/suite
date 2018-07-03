@@ -8,6 +8,7 @@ import java.util.Set;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.object.Object_;
 import suite.primitive.IntOpt;
 import suite.primitive.IntPrimitives.IntComparator;
 import suite.primitive.IntPrimitives.IntObj_Obj;
@@ -29,7 +30,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
-import suite.util.Object_;
 
 public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 

@@ -12,12 +12,12 @@ import java.util.function.Predicate;
 import suite.adt.Opt;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.object.Object_;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.util.Object_;
 
 public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 

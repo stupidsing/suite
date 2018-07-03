@@ -7,7 +7,7 @@ import java.util.Collections;
 
 import org.junit.Test;
 
-import suite.util.Object_;
+import suite.object.Object_;
 
 public class IBinPriorityQueueTest {
 

@@ -17,6 +17,7 @@ import suite.cfg.Defaults;
 import suite.cfg.HomeDir;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
+import suite.object.Object_;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.primitive.FltPrimitives.Obj_Flt;
@@ -30,7 +31,6 @@ import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.util.Fail;
-import suite.util.Object_;
 import suite.util.String_;
 import suite.util.To;
 

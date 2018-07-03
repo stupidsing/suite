@@ -2,13 +2,13 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
+import suite.object.Object_;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrLng_Obj;
 import suite.primitive.Chr_Chr;
 import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Lng;
 import suite.streamlet.FunUtil.Iterate;
-import suite.util.Object_;
 
 public class ChrLngPair {
 

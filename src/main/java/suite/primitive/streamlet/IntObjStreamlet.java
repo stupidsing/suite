@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.object.Object_;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntObjFunUtil;
 import suite.primitive.IntObj_Int;
@@ -31,7 +32,6 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
 import suite.util.Fail;
-import suite.util.Object_;
 
 public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntObjOutlet<V>> {
 

@@ -1,6 +1,6 @@
 package suite.node;
 
-import suite.util.Object_;
+import suite.object.Object_;
 import suite.util.String_;
 
 public class Str extends Node {

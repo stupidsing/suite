@@ -12,9 +12,9 @@ import suite.file.impl.SerializedFileFactory;
 import suite.fs.KeyValueMutator;
 import suite.fs.KeyValueStore;
 import suite.node.util.Singleton;
+import suite.object.Object_;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
-import suite.util.Object_;
 
 public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, Value> {
 

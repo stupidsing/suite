@@ -3,7 +3,7 @@ package suite.node.tree;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
-import suite.util.Object_;
+import suite.object.Object_;
 
 public class TreeOp extends Tree {
 

@@ -2,7 +2,7 @@ package suite.math;
 
 import static suite.util.Friends.sqrt;
 
-import suite.util.Object_;
+import suite.object.Object_;
 
 public class R3 {
 

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import suite.util.Object_;
+import suite.object.Object_;
 
 public class HashBiMap<K, V> implements BiMap<K, V> {
 

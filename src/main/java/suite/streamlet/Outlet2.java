@@ -18,6 +18,7 @@ import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Pair;
+import suite.object.Object_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.FunUtil2.Sink2;
@@ -26,7 +27,6 @@ import suite.util.Array_;
 import suite.util.Fail;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
-import suite.util.Object_;
 import suite.util.To;
 
 public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {

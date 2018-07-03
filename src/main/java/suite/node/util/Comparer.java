@@ -19,8 +19,8 @@ import suite.node.tree.TreeAnd;
 import suite.node.tree.TreeOp;
 import suite.node.tree.TreeOr;
 import suite.node.tree.TreeTuple;
+import suite.object.Object_;
 import suite.streamlet.Read;
-import suite.util.Object_;
 
 public class Comparer implements Comparator<Node> {
 

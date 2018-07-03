@@ -2,11 +2,11 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
+import suite.object.Object_;
 import suite.primitive.DblDbl_Obj;
 import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
 import suite.streamlet.FunUtil.Iterate;
-import suite.util.Object_;
 
 public class DblDblPair {
 

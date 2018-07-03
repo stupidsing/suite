@@ -2,7 +2,7 @@ package suite.adt;
 
 import java.util.Objects;
 
-import suite.util.Object_;
+import suite.object.Object_;
 
 public class Range<T extends Comparable<? super T>> implements Comparable<Range<T>> {
 

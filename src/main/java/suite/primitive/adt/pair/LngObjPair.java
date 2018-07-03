@@ -3,12 +3,12 @@ package suite.primitive.adt.pair;
 import java.util.Comparator;
 import java.util.Objects;
 
+import suite.object.Object_;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.Lng_Lng;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
-import suite.util.Object_;
 
 public class LngObjPair<T> {
 

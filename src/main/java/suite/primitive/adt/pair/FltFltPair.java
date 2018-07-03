@@ -2,11 +2,11 @@ package suite.primitive.adt.pair;
 
 import java.util.Comparator;
 
+import suite.object.Object_;
 import suite.primitive.FltFlt_Obj;
 import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
 import suite.streamlet.FunUtil.Iterate;
-import suite.util.Object_;
 
 public class FltFltPair {
 

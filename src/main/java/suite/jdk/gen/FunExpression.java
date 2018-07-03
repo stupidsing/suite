@@ -21,7 +21,7 @@ import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
 import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
 import suite.node.util.Singleton;
 import suite.object.AutoInterface;
-import suite.util.Object_;
+import suite.object.Object_;
 
 public class FunExpression {
 

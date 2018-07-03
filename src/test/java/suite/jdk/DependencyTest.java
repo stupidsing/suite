@@ -11,11 +11,11 @@ import java.util.List;
 import org.junit.Test;
 
 import suite.immutable.ISet;
+import suite.object.Object_;
 import suite.os.FileUtil;
 import suite.search.DirectedGraph;
 import suite.search.StronglyConnectedComponents;
 import suite.streamlet.Read;
-import suite.util.Object_;
 
 public class DependencyTest {
 

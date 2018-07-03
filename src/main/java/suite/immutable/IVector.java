@@ -4,8 +4,8 @@ import static suite.util.Friends.min;
 
 import java.util.Objects;
 
+import suite.object.Object_;
 import suite.util.Array_;
-import suite.util.Object_;
 
 /**
  * A list of nodes that can be easily expanded in left or right direction.

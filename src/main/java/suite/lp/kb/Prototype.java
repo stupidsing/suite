@@ -12,8 +12,8 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.tree.TreeTuple;
+import suite.object.Object_;
 import suite.streamlet.Read;
-import suite.util.Object_;
 
 /**
  * Index rules by the first atom in their heads.

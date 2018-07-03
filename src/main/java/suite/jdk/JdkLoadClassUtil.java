@@ -9,8 +9,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
 
+import suite.object.Object_;
 import suite.os.LogUtil;
-import suite.util.Object_;
 import suite.util.To;
 
 public class JdkLoadClassUtil extends JdkUtil implements Closeable {

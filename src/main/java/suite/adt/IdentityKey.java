@@ -1,6 +1,6 @@
 package suite.adt;
 
-import suite.util.Object_;
+import suite.object.Object_;
 
 public class IdentityKey<K> implements Comparable<IdentityKey<K>> {
 

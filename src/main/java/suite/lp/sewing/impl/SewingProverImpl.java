@@ -42,6 +42,7 @@ import suite.node.io.TermOp;
 import suite.node.util.Rewrite;
 import suite.node.util.SuiteException;
 import suite.node.util.TreeUtil;
+import suite.object.Object_;
 import suite.os.LogUtil;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Sink;
@@ -50,7 +51,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.List_;
-import suite.util.Object_;
 import suite.util.String_;
 
 /**

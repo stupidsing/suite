@@ -12,9 +12,9 @@ import java.util.Objects;
 import java.util.Set;
 
 import suite.debian.AptUtil.Repo;
+import suite.object.Object_;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
-import suite.util.Object_;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 import suite.util.Set_;

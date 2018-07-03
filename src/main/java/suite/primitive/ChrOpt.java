@@ -3,10 +3,10 @@ package suite.primitive;
 import java.util.Objects;
 
 import suite.adt.Opt;
+import suite.object.Object_;
 import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.util.Fail;
-import suite.util.Object_;
 
 public class ChrOpt {
 

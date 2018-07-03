@@ -8,6 +8,7 @@ import java.util.Set;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.object.Object_;
 import suite.primitive.Chars;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.Chars_;
@@ -29,7 +30,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
-import suite.util.Object_;
 
 public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 

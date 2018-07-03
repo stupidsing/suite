@@ -2,7 +2,7 @@ package suite.node;
 
 import java.util.Objects;
 
-import suite.util.Object_;
+import suite.object.Object_;
 
 public class Tuple extends Node {
 

@@ -4,6 +4,7 @@ import java.nio.file.Paths;
 
 import suite.adt.pair.Pair;
 import suite.node.io.Operator.Assoc;
+import suite.object.Object_;
 import suite.parser.Wildcard;
 import suite.primitive.Ints_;
 import suite.streamlet.As;
@@ -17,7 +18,6 @@ import suite.trade.Trade_;
 import suite.trade.backalloc.BackAllocConfigurations;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
-import suite.util.Object_;
 import suite.util.ParseUtil;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;

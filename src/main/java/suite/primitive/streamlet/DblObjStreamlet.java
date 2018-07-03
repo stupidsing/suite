@@ -10,6 +10,7 @@ import java.util.function.Predicate;
 
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.object.Object_;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblObjFunUtil;
 import suite.primitive.DblObj_Dbl;
@@ -31,7 +32,6 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
 import suite.util.Fail;
-import suite.util.Object_;
 
 public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblObjOutlet<V>> {
 

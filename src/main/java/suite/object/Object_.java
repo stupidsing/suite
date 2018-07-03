@@ -1,9 +1,8 @@
-package suite.util;
+package suite.object;
 
 import static suite.util.Friends.rethrow;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -21,6 +20,8 @@ import java.util.Set;
 import suite.adt.pair.Pair;
 import suite.node.util.Singleton;
 import suite.streamlet.FunUtil.Iterate;
+import suite.util.Fail;
+import suite.util.Util;
 
 public class Object_ {
 
@@ -41,11 +42,10 @@ public class Object_ {
 	public static void closeQuietly(Closeable... os) {
 		for (var o : os)
 			if (o != null)
-				try {
+				rethrow(() -> {
 					o.close();
-				} catch (IOException ex) {
-					Fail.t(ex);
-				}
+					return o;
+				});
 	}
 
 	public static <T extends Comparable<? super T>> int compare(T t0, T t1) {

@@ -3,8 +3,8 @@ package suite.immutable;
 import java.util.Iterator;
 import java.util.Objects;
 
+import suite.object.Object_;
 import suite.streamlet.Streamlet;
-import suite.util.Object_;
 
 public class ISet<V extends Comparable<V>> implements Iterable<V> {
 

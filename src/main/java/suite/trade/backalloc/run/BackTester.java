@@ -4,6 +4,7 @@ import static suite.util.Friends.expm1;
 import static suite.util.Friends.log1p;
 
 import suite.math.numeric.Statistic;
+import suite.object.Object_;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats_;
 import suite.primitive.FltPrimitives.Obj_Flt;
@@ -18,7 +19,6 @@ import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
-import suite.util.Object_;
 import suite.util.To;
 
 public class BackTester {

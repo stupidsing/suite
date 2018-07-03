@@ -1,8 +1,8 @@
 package suite.weiqi;
 
+import suite.object.Object_;
 import suite.primitive.adt.set.IntSet;
 import suite.util.Fail;
-import suite.util.Object_;
 import suite.weiqi.Board.MoveType;
 import suite.weiqi.Weiqi.Occupation;
 

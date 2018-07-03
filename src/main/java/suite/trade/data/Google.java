@@ -13,13 +13,13 @@ import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
 import suite.http.HttpUtil;
 import suite.node.util.Singleton;
+import suite.object.Object_;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Trade_;
 import suite.util.Fail;
-import suite.util.Object_;
 
 public class Google {
 

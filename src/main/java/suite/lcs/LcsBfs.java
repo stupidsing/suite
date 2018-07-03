@@ -5,9 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import suite.object.Object_;
 import suite.search.Search;
 import suite.search.Search.Traverser;
-import suite.util.Object_;
 
 /**
  * Longest common subsequence using breadth-first search.

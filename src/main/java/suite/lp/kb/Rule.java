@@ -8,7 +8,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeAnd;
-import suite.util.Object_;
+import suite.object.Object_;
 
 public class Rule {
 

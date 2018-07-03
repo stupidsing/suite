@@ -3,8 +3,8 @@ package suite.weiqi;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
+import suite.object.Object_;
 import suite.primitive.adt.set.IntSet;
-import suite.util.Object_;
 import suite.weiqi.Weiqi.Occupation;
 
 public class GameSet1 {

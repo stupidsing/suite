@@ -15,6 +15,7 @@ import java.util.function.IntPredicate;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.object.Object_;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblOpt;
 import suite.primitive.DblPrimitives.DblComparator;
@@ -42,7 +43,6 @@ import suite.streamlet.OutletDefaults;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.NullableSyncQueue;
-import suite.util.Object_;
 import suite.util.To;
 
 public class DblOutlet implements OutletDefaults<Double> {

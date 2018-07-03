@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import suite.adt.pair.Pair;
+import suite.object.Object_;
 
 public class String_ {
 

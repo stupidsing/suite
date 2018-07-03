@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 import suite.adt.Range;
+import suite.object.Object_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Object_;
 
 public class TimeRange extends Range<Time> {
 

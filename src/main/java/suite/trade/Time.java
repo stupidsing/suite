@@ -9,8 +9,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Objects;
 
+import suite.object.Object_;
 import suite.util.Fail;
-import suite.util.Object_;
 import suite.util.To;
 
 /**

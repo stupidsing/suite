@@ -2,8 +2,8 @@ package suite.weiqi;
 
 import java.util.Arrays;
 
+import suite.object.Object_;
 import suite.util.Array_;
-import suite.util.Object_;
 
 public class Weiqi {
 

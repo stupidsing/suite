@@ -3,7 +3,7 @@ package suite.trade;
 import static suite.util.Friends.abs;
 
 import suite.math.Math_;
-import suite.util.Object_;
+import suite.object.Object_;
 import suite.util.String_;
 import suite.util.To;
 

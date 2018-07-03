@@ -1,7 +1,7 @@
 package suite.primitive;
 
+import suite.object.Object_;
 import suite.util.Fail;
-import suite.util.Object_;
 
 /**
  * An indirect reference to a primitive long. Long.MIN_VALUE is not allowed

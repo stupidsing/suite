@@ -11,13 +11,13 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.cfg.Defaults;
+import suite.object.Object_;
 import suite.primitive.FltPrimitives.FltSource;
 import suite.primitive.streamlet.FltOutlet;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.Object_;
 import suite.util.ParseUtil;
 
 public class Floats implements Iterable<Float> {

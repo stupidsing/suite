@@ -3,11 +3,11 @@ package suite.adt;
 import java.util.Objects;
 import java.util.function.Predicate;
 
+import suite.object.Object_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
 import suite.util.Fail;
-import suite.util.Object_;
 
 public class Opt<T> {
 

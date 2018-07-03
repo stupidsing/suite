@@ -5,11 +5,11 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.Objects;
 
+import suite.object.Object_;
 import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
-import suite.util.Object_;
 
 /**
  * Immutable linked list.

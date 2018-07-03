@@ -5,8 +5,8 @@ import static suite.util.Friends.rethrow;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import suite.object.Object_;
 import suite.os.LogUtil;
-import suite.util.Object_;
 
 public class JdkUnsafeLoadClassUtil extends JdkUtil {
 

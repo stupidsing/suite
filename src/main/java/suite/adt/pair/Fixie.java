@@ -25,7 +25,7 @@ import suite.adt.pair.Fixie_.FixieFun7;
 import suite.adt.pair.Fixie_.FixieFun8;
 import suite.adt.pair.Fixie_.FixieFun9;
 import suite.adt.pair.Fixie_.FixieFunA;
-import suite.util.Object_;
+import suite.object.Object_;
 
 public class Fixie<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> implements FixieA<T0, T1, T2, T3, T4, T5, T6, T7, T8, T9> {
 

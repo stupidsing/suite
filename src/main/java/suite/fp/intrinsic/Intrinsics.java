@@ -16,8 +16,8 @@ import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
 import suite.node.tree.TreeOr;
+import suite.object.Object_;
 import suite.primitive.Chars;
-import suite.util.Object_;
 
 public class Intrinsics {
 

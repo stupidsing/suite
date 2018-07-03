@@ -8,9 +8,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Path;
 
+import suite.object.Object_;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
-import suite.util.Object_;
 
 public class RandomAccessibleFile implements Closeable {
 

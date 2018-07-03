@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
-import suite.util.Object_;
+import suite.object.Object_;
 import suite.util.To;
 
 public class Ranges<T extends Comparable<? super T>> {

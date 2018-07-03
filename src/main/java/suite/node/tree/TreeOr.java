@@ -4,7 +4,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.util.Object_;
+import suite.object.Object_;
 
 public class TreeOr extends Tree {
 

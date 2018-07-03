@@ -11,13 +11,13 @@ import java.util.Comparator;
 import java.util.Iterator;
 
 import suite.cfg.Defaults;
+import suite.object.Object_;
 import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.DblStreamlet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.Object_;
 import suite.util.ParseUtil;
 
 public class Doubles implements Iterable<Double> {

@@ -3,10 +3,10 @@ package suite.primitive;
 import java.util.Objects;
 
 import suite.adt.Opt;
+import suite.object.Object_;
 import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.util.Fail;
-import suite.util.Object_;
 
 public class IntOpt {
 

@@ -13,6 +13,7 @@ import java.util.function.Predicate;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
+import suite.object.Object_;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrObjFunUtil;
 import suite.primitive.ChrObj_Chr;
@@ -36,7 +37,6 @@ import suite.util.Array_;
 import suite.util.Fail;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
-import suite.util.Object_;
 import suite.util.To;
 
 public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {

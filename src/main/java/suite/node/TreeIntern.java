@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import suite.node.io.Operator;
 import suite.node.io.SwitchNode;
-import suite.util.Object_;
+import suite.object.Object_;
 
 /**
  * Tree that only have a single copy. Saves memory footprint.

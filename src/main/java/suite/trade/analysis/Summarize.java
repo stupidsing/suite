@@ -4,6 +4,7 @@ import java.util.Map;
 
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
+import suite.object.Object_;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.As;
@@ -23,7 +24,6 @@ import suite.trade.data.TradeCfg;
 import suite.trade.data.Yahoo;
 import suite.ts.Quant;
 import suite.util.FormatUtil;
-import suite.util.Object_;
 import suite.util.String_;
 import suite.util.To;
 

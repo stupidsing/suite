@@ -4,11 +4,11 @@ import java.util.Iterator;
 import java.util.Objects;
 
 import suite.adt.pair.Pair;
+import suite.object.Object_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.util.Object_;
 
 public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
