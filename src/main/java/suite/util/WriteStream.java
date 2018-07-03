@@ -3,6 +3,7 @@ package suite.util;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 
 import suite.cfg.Defaults;
 import suite.util.Rethrow.SinkEx;
@@ -31,6 +32,14 @@ public class WriteStream extends OutputStream {
 
 	public void writeAndClose(String content) {
 		doWriter(w -> w.write(content));
+	}
+
+	public void doPrintWriter(SinkEx<PrintWriter, IOException> sink) {
+		doWriter(w -> {
+			try (var pw = new PrintWriter(w)) {
+				sink.sink(pw);
+			}
+		});
 	}
 
 	public void doWriter(SinkEx<OutputStreamWriter, IOException> sink) {

@@ -3,7 +3,6 @@ package suite.nntp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +15,7 @@ import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 import suite.util.String_;
 import suite.util.Util;
+import suite.util.WriteStream;
 
 public class NntpServerMain extends ExecutableProgram {
 
@@ -41,7 +41,7 @@ public class NntpServerMain extends ExecutableProgram {
 
 	private class Server {
 		private void serve(InputStream sis, OutputStream sos) throws IOException {
-			try (var osw = new OutputStreamWriter(sos); var pw = new PrintWriter(osw)) {
+			WriteStream.of(sos).doPrintWriter(pw -> {
 				String currentGroupId = null;
 				Map<String, String> article;
 				String line;
@@ -130,7 +130,7 @@ public class NntpServerMain extends ExecutableProgram {
 						Fail.t("unrecognized command " + line);
 					}
 				}
-			}
+			});
 		}
 
 		private void printHead(PrintWriter pw, Map<String, String> article) {
