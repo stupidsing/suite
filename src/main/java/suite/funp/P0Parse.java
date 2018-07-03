@@ -152,7 +152,7 @@ public class P0Parse {
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 				else
 					return bind(a, b, c);
-			}).match("define global .0 := .1 >> .2", (a, b, c) -> {
+			}).match("let.global .0 := .1 >> .2", (a, b, c) -> {
 				var var = Atom.name(a);
 				return FunpDefineGlobal.of(var, p(b), nv(var).p(c));
 			}).match("define { .0 } >> .1", (a, b) -> {

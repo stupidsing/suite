@@ -8,7 +8,7 @@ define unmap := (pointer, length) =>
 	type pointer = address (size * array coerce.byte _) >>
 	io.asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
 >>
-define global alloc.pointer := (32768 | map)
+let.global alloc.pointer := (32768 | map)
 >>
 define alloc := size =>
 	io.asm (EBX = address alloc.pointer; ECX = size;) { MOV (EAX, `EBX`); ADD (`EBX`, ECX); }
