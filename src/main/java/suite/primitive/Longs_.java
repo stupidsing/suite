@@ -1,17 +1,15 @@
 package suite.primitive;
 
-import java.io.IOException;
-
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.Longs.WriteChar;
 import suite.primitive.streamlet.LngOutlet;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Rethrow;
 
 public class Longs_ {
 
@@ -69,13 +67,12 @@ public class Longs_ {
 	}
 
 	public static void copy(Outlet<Longs> outlet, WriteChar writer) {
-		Longs longs;
-		while ((longs = outlet.next()) != null)
-			try {
+		Rethrow.ex(() -> {
+			Longs longs;
+			while ((longs = outlet.next()) != null)
 				writer.write(longs.cs, longs.start, longs.end - longs.start);
-			} catch (IOException ex) {
-				Fail.t(ex);
-			}
+			return longs;
+		});
 	}
 
 	public static LngStreamlet of(long... ts) {

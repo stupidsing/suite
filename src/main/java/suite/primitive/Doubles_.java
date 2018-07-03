@@ -1,17 +1,15 @@
 package suite.primitive;
 
-import java.io.IOException;
-
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.Doubles.WriteChar;
 import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.DblStreamlet;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Rethrow;
 
 public class Doubles_ {
 
@@ -69,13 +67,12 @@ public class Doubles_ {
 	}
 
 	public static void copy(Outlet<Doubles> outlet, WriteChar writer) {
-		Doubles doubles;
-		while ((doubles = outlet.next()) != null)
-			try {
+		Rethrow.ex(() -> {
+			Doubles doubles;
+			while ((doubles = outlet.next()) != null)
 				writer.write(doubles.cs, doubles.start, doubles.end - doubles.start);
-			} catch (IOException ex) {
-				Fail.t(ex);
-			}
+			return doubles;
+		});
 	}
 
 	public static DblStreamlet of(double... ts) {

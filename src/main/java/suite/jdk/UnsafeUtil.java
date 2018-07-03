@@ -1,6 +1,6 @@
 package suite.jdk;
 
-import suite.util.Fail;
+import suite.util.Rethrow;
 import sun.misc.Unsafe;
 
 public class UnsafeUtil {
@@ -21,13 +21,11 @@ public class UnsafeUtil {
 
 	private Unsafe unsafe() {
 		if (unsafe == null)
-			try {
+			Rethrow.ex(() -> {
 				var f = Unsafe.class.getDeclaredField("theUnsafe");
 				f.setAccessible(true);
-				unsafe = (Unsafe) f.get(null);
-			} catch (Exception ex) {
-				Fail.t(ex);
-			}
+				return unsafe = (Unsafe) f.get(null);
+			});
 		return unsafe;
 	}
 

@@ -44,21 +44,17 @@ public class Pipe {
 			for (var thread : threads)
 				thread.start();
 
-			return Read.lines(pis).closeAtEnd(() -> {
-				try {
-					var code = process.waitFor();
-
-					if (code == 0)
-						for (var thread : threads)
-							thread.join();
-					else
-						Fail.t("code = " + code);
-				} catch (InterruptedException ex) {
-					Fail.t(ex);
-				}
+			return Read.lines(pis).closeAtEnd(() -> Rethrow.ex(() -> {
+				var code = process.waitFor();
+				if (code == 0)
+					for (var thread : threads)
+						thread.join();
+				else
+					Fail.t("code = " + code);
 				process.destroy();
 				LogUtil.info("END__ " + sh);
-			});
+				return process;
+			}));
 		}));
 	}
 

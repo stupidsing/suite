@@ -3,7 +3,6 @@ package suite.text;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -64,7 +63,7 @@ class Impl implements Snapshot {
 				if (data != null)
 					FileUtil.out(p).doWrite(os -> os.write(data.toArray()));
 				else
-					Rethrow.ex(() -> Files.deleteIfExists(p));
+					FileUtil.deleteIfExists(p);
 			}
 		}
 	}
@@ -157,7 +156,7 @@ class Impl implements Snapshot {
 			if (value != null)
 				FileUtil.out(p).doWrite(os -> os.write(value.toArray()));
 			else
-				Rethrow.ex(() -> Files.deleteIfExists(p));
+				FileUtil.deleteIfExists(p);
 		}
 	}
 

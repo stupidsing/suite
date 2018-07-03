@@ -11,6 +11,7 @@ import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.util.Fail;
+import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -195,8 +196,8 @@ public class LngObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static <V> Source<LngObjSource<V>> split(LngObjPredicate<V> fun0, LngObjSource<V> source2) {
 		LngObjPredicate<V> fun1 = fun0.rethrow();
@@ -220,14 +221,12 @@ public class LngObjFunUtil {
 			private boolean isAppended = false;
 
 			public boolean source2(LngObjPair<V> pair) {
-				if (!isAppended) {
-					if (!source.source2(pair)) {
-						pair.update(key, value);
-						isAppended = true;
-					}
-					return true;
-				} else
-					return false;
+				var b = !isAppended;
+				if (b && !source.source2(pair)) {
+					pair.update(key, value);
+					isAppended = true;
+				}
+				return b;
 			}
 		};
 	}
@@ -254,7 +253,7 @@ public class LngObjFunUtil {
 				if (b)
 					pair.update(p.t0, p.t1);
 				return b;
-			} catch (InterruptedException ex) {
+			} catch (InterruptedException | InterruptedRuntimeException ex) {
 				thread.interrupt();
 				return Fail.t();
 			}

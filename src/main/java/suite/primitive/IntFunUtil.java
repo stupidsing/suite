@@ -11,6 +11,7 @@ import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.util.Fail;
+import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -215,8 +216,8 @@ public class IntFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static Source<IntSource> split(IntTest fun0, IntSource source) {
 		var fun1 = fun0.rethrow();
@@ -250,7 +251,7 @@ public class IntFunUtil {
 		return () -> {
 			try {
 				return queue.take();
-			} catch (InterruptedException ex) {
+			} catch (InterruptedException | InterruptedRuntimeException ex) {
 				thread.interrupt();
 				return Fail.t(ex);
 			}

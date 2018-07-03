@@ -59,7 +59,7 @@ public class ObstructionFreeStmTest {
 			adjustments.add(-sum);
 		}
 
-		private void work(List<Memory<Integer>> memories) throws InterruptedException {
+		private void work(List<Memory<Integer>> memories) {
 			var order = orders.get(step++);
 
 			if (nMemories * 2 <= order) { // commit or rollback
@@ -93,7 +93,7 @@ public class ObstructionFreeStmTest {
 	}
 
 	@Test
-	public void test() throws InterruptedException {
+	public void test() {
 		var stm = new ObstructionFreeStm();
 		var memories = IntStream.range(0, nMemories) //
 				.mapToObj(i -> stm.newMemory(0)).collect(Collectors.toList());

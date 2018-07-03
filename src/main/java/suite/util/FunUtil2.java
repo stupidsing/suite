@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
+import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -233,8 +234,8 @@ public class FunUtil2 {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static <K, V> Source<Source2<K, V>> split(BiPredicate<K, V> fun0, Source2<K, V> source2) {
 		var fun1 = Rethrow.biPredicate(fun0);
@@ -275,7 +276,7 @@ public class FunUtil2 {
 				if (b)
 					pair.update(p.t0, p.t1);
 				return b;
-			} catch (InterruptedException ex) {
+			} catch (InterruptedException | InterruptedRuntimeException ex) {
 				thread.interrupt();
 				return Fail.t(ex);
 			}

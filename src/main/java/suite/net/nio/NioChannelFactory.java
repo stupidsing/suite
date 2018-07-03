@@ -1,6 +1,5 @@
 package suite.net.nio;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 
@@ -9,9 +8,9 @@ import suite.net.NetUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Signal;
-import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
+import suite.util.Rethrow;
 
 public interface NioChannelFactory {
 
@@ -39,11 +38,10 @@ public interface NioChannelFactory {
 
 		private void reconnect() {
 			if (isStarted && !isConnected())
-				try {
+				Rethrow.ex(() -> {
 					nio.reconnect(this, address);
-				} catch (IOException ex) {
-					Fail.t(ex);
-				}
+					return nio;
+				});
 		}
 	}
 

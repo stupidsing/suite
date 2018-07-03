@@ -1,5 +1,6 @@
 package suite.lp.predicate;
 
+import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -39,7 +40,7 @@ public class IoPredicates {
 			try {
 				var cmd = Str.str(p0);
 				return Runtime.getRuntime().exec(cmd).waitFor() == 0;
-			} catch (Exception ex) { // iOException or InterruptedException
+			} catch (IOException | InterruptedException ex) {
 				LogUtil.error(ex);
 			}
 		return false;

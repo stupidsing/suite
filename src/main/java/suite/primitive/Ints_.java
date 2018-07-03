@@ -1,17 +1,15 @@
 package suite.primitive;
 
-import java.io.IOException;
-
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.Ints.WriteChar;
 import suite.primitive.streamlet.IntOutlet;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Rethrow;
 
 public class Ints_ {
 
@@ -69,13 +67,12 @@ public class Ints_ {
 	}
 
 	public static void copy(Outlet<Ints> outlet, WriteChar writer) {
-		Ints ints;
-		while ((ints = outlet.next()) != null)
-			try {
+		Rethrow.ex(() -> {
+			Ints ints;
+			while ((ints = outlet.next()) != null)
 				writer.write(ints.cs, ints.start, ints.end - ints.start);
-			} catch (IOException ex) {
-				Fail.t(ex);
-			}
+			return ints;
+		});
 	}
 
 	public static IntStreamlet of(int... ts) {

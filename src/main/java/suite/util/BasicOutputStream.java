@@ -37,7 +37,7 @@ public class BasicOutputStream extends OutputStream {
 		});
 	}
 
-	public void doWrite(SinkEx<OutputStream, IOException> sink) {
+	public void doWrite(SinkEx<BasicOutputStream, IOException> sink) {
 		try (var os = this) {
 			sink.sink(os);
 		} catch (IOException ex) {

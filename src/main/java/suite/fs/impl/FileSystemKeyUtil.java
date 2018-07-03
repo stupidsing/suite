@@ -4,7 +4,6 @@ import static suite.util.Friends.min;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +12,7 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
-import suite.util.Fail;
+import suite.util.Rethrow;
 
 public class FileSystemKeyUtil {
 
@@ -117,13 +116,7 @@ public class FileSystemKeyUtil {
 	}
 
 	public Bytes hash(Bytes bytes) {
-		MessageDigest md;
-		try {
-			md = MessageDigest.getInstance("SHA-256");
-		} catch (NoSuchAlgorithmException ex) {
-			md = Fail.t(ex);
-		}
-
+		var md = Rethrow.ex(() -> MessageDigest.getInstance("SHA-256"));
 		md.update(bytes.toArray());
 		return Bytes.of(md.digest());
 	}

@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
+import suite.util.Rethrow;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 
@@ -24,7 +25,7 @@ public class AnimationMain extends ExecutableProgram {
 		RunUtil.run(AnimationMain.class, args);
 	}
 
-	protected boolean run(String[] args) throws InterruptedException {
+	protected boolean run(String[] args) {
 		var frame = new JFrame("Animation");
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setSize(new Dimension(1024, 768));
@@ -51,9 +52,7 @@ public class AnimationMain extends ExecutableProgram {
 			frame.repaint();
 		}, 10, 10, TimeUnit.MILLISECONDS);
 
-		executor.awaitTermination(100, TimeUnit.SECONDS);
-
-		return true;
+		return Rethrow.ex(() -> executor.awaitTermination(100, TimeUnit.SECONDS));
 	}
 
 }

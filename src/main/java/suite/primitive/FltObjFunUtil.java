@@ -11,6 +11,7 @@ import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.util.Fail;
+import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -195,8 +196,8 @@ public class FltObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static <V> Source<FltObjSource<V>> split(FltObjPredicate<V> fun0, FltObjSource<V> source2) {
 		FltObjPredicate<V> fun1 = fun0.rethrow();
@@ -220,14 +221,12 @@ public class FltObjFunUtil {
 			private boolean isAppended = false;
 
 			public boolean source2(FltObjPair<V> pair) {
-				if (!isAppended) {
-					if (!source.source2(pair)) {
-						pair.update(key, value);
-						isAppended = true;
-					}
-					return true;
-				} else
-					return false;
+				var b = !isAppended;
+				if (b && !source.source2(pair)) {
+					pair.update(key, value);
+					isAppended = true;
+				}
+				return b;
 			}
 		};
 	}
@@ -254,7 +253,7 @@ public class FltObjFunUtil {
 				if (b)
 					pair.update(p.t0, p.t1);
 				return b;
-			} catch (InterruptedException ex) {
+			} catch (InterruptedException | InterruptedRuntimeException ex) {
 				thread.interrupt();
 				return Fail.t();
 			}

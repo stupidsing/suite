@@ -1,6 +1,5 @@
 package suite.node.io;
 
-import java.io.IOException;
 import java.util.List;
 
 import suite.BindArrayUtil.Pattern;
@@ -48,13 +47,11 @@ public class SwitchNode<R> {
 
 	public <T extends Node> SwitchNode<R> doIf(Class<T> c, IoSink<T> fun) {
 		return applyIf(c, t -> {
-			try {
-				fun.sink(t);
-			} catch (IOException ex) {
-				Fail.t(ex);
-			}
 			@SuppressWarnings("unchecked")
-			var r = (R) t;
+			var r = (R) Rethrow.ex(() -> {
+				fun.sink(t);
+				return t;
+			});
 			return r;
 		});
 	}

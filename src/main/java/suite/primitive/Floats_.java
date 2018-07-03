@@ -1,17 +1,15 @@
 package suite.primitive;
 
-import java.io.IOException;
-
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Floats.WriteChar;
 import suite.primitive.streamlet.FltOutlet;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Rethrow;
 
 public class Floats_ {
 
@@ -69,13 +67,12 @@ public class Floats_ {
 	}
 
 	public static void copy(Outlet<Floats> outlet, WriteChar writer) {
-		Floats floats;
-		while ((floats = outlet.next()) != null)
-			try {
+		Rethrow.ex(() -> {
+			Floats floats;
+			while ((floats = outlet.next()) != null)
 				writer.write(floats.cs, floats.start, floats.end - floats.start);
-			} catch (IOException ex) {
-				Fail.t(ex);
-			}
+			return floats;
+		});
 	}
 
 	public static FltStreamlet of(float... ts) {

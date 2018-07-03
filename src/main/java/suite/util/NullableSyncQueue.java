@@ -17,11 +17,10 @@ public class NullableSyncQueue<T> {
 	private Object nullObject = new Object();
 
 	public void offerQuietly(T t) {
-		try {
+		Rethrow.ex(() -> {
 			offer(t);
-		} catch (InterruptedException ex) {
-			Fail.t(ex);
-		}
+			return t;
+		});
 	}
 
 	public boolean poll(Mutable<T> mutable) {
@@ -36,11 +35,7 @@ public class NullableSyncQueue<T> {
 	}
 
 	public T takeQuietly() {
-		try {
-			return take();
-		} catch (InterruptedException ex) {
-			return Fail.t(ex);
-		}
+		return Rethrow.ex(this::take);
 	}
 
 	public void offer(T t) throws InterruptedException {

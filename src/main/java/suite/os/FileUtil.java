@@ -16,18 +16,23 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.BasicInputStream;
 import suite.util.BasicOutputStream;
-import suite.util.Fail;
 import suite.util.Rethrow;
 import suite.util.To;
 
 public class FileUtil {
 
 	public static void delete(Path path) {
-		try {
+		Rethrow.ex(() -> {
 			Files.delete(path);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+			return path;
+		});
+	}
+
+	public static void deleteIfExists(Path path) {
+		Rethrow.ex(() -> {
+			Files.deleteIfExists(path);
+			return path;
+		});
 	}
 
 	public static Path ext(Path path, String ext) {
@@ -60,18 +65,14 @@ public class FileUtil {
 	}
 
 	/**
-	 * Files.createDirectory() might fail with FileAlreadyExistsException in MacOSX,
-	 * contrary to its documentation. This re-implementation would not.
+	 * Files.createDirectory() might fail with FileAlreadyExistsException in
+	 * MacOSX, contrary to its documentation. This re-implementation would not.
 	 */
 	public static void mkdir(Path path) {
 		if (path != null) {
 			mkdir(path.getParent());
 			if (!Files.isDirectory(path))
-				try {
-					Files.createDirectories(path);
-				} catch (IOException ex) {
-					Fail.t(ex);
-				}
+				Rethrow.ex(() -> Files.createDirectories(path));
 		}
 	}
 

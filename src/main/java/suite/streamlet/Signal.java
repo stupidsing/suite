@@ -12,12 +12,12 @@ import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.concurrent.Bag;
 import suite.concurrent.CasReference;
-import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.Fun2;
 import suite.util.NullableSyncQueue;
+import suite.util.Rethrow;
 
 /**
  * A pull-based functional reactive programming class.
@@ -148,13 +148,7 @@ public class Signal<T> {
 	public Outlet<T> outlet() {
 		var queue = new NullableSyncQueue<T>();
 		wire_(queue::offerQuietly);
-		return Outlet.of(() -> {
-			try {
-				return queue.take();
-			} catch (InterruptedException ex) {
-				return Fail.t(ex);
-			}
-		});
+		return Outlet.of(() -> Rethrow.ex(queue::take));
 	}
 
 	public <U> Signal<U> redirect(Redirector<T, U> redirector) {

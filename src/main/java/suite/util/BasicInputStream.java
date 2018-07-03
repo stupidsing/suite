@@ -49,7 +49,7 @@ public class BasicInputStream extends InputStream {
 		});
 	}
 
-	public <T> T doRead(FunIo<InputStream, T> fun) {
+	public <T> T doRead(FunIo<BasicInputStream, T> fun) {
 		try (var is = this) {
 			return fun.apply(is);
 		} catch (IOException ex) {

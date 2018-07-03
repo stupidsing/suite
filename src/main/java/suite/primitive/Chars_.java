@@ -1,17 +1,15 @@
 package suite.primitive;
 
-import java.io.IOException;
-
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.Chars.WriteChar;
 import suite.primitive.streamlet.ChrOutlet;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Rethrow;
 
 public class Chars_ {
 
@@ -69,13 +67,12 @@ public class Chars_ {
 	}
 
 	public static void copy(Outlet<Chars> outlet, WriteChar writer) {
-		Chars chars;
-		while ((chars = outlet.next()) != null)
-			try {
+		Rethrow.ex(() -> {
+			Chars chars;
+			while ((chars = outlet.next()) != null)
 				writer.write(chars.cs, chars.start, chars.end - chars.start);
-			} catch (IOException ex) {
-				Fail.t(ex);
-			}
+			return chars;
+		});
 	}
 
 	public static ChrStreamlet of(char... ts) {

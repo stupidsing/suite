@@ -20,11 +20,10 @@ public class Th extends Thread {
 	}
 
 	public void join_() {
-		try {
+		Rethrow.ex(() -> {
 			join();
-		} catch (InterruptedException ex) {
-			Fail.t(ex);
-		}
+			return this;
+		});
 	}
 
 }

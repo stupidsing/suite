@@ -3,14 +3,14 @@ package suite.node.parser;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.List;
 
 import suite.Defaults;
 import suite.adt.pair.Pair;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
 import suite.parser.Wildcard;
-import suite.util.Fail;
+import suite.streamlet.Read;
+import suite.util.Rethrow;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 import suite.util.To;
@@ -23,7 +23,7 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 	}
 
 	protected boolean run(String[] args) throws IOException {
-		var fts = List.of( //
+		var fts = Read.each( //
 				Pair.of("fc-define-var-types .0 .1 .2 .3", "fc-define-var-types .1 .2 .3 .0") //
 		);
 
@@ -31,14 +31,12 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 				.filter(path -> Wildcard.isMatch("*.sl", path.getFileName().toString())) //
 				.forEach(path -> {
 					var recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
-					var s = To.string(path);
-					for (var ft : fts)
-						s = recursiveFactorizer.rewrite(ft.t0, ft.t1, s);
-					try {
-						Files.write(path, s.getBytes(Defaults.charset));
-					} catch (IOException ex) {
-						Fail.t(ex);
-					}
+
+					var bs = fts //
+							.fold(To.string(path), (s_, ft) -> recursiveFactorizer.rewrite(ft.t0, ft.t1, s_)) //
+							.getBytes(Defaults.charset);
+
+					Rethrow.ex(() -> Files.write(path, bs));
 				});
 
 		return true;

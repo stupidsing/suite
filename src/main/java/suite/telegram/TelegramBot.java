@@ -6,10 +6,8 @@ import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
-import org.telegram.telegrambots.exceptions.TelegramApiException;
 
 import suite.Defaults;
-import suite.util.Fail;
 import suite.util.FunUtil2.FoldOp;
 import suite.util.Rethrow;
 import suite.util.Thread_;
@@ -17,8 +15,8 @@ import suite.util.Thread_;
 public class TelegramBot {
 
 	public void bot(FoldOp<Integer, String> fun) {
-		try {
-			new TelegramBotsApi().registerBot(new TelegramLongPollingBot() {
+		Rethrow.ex(() -> {
+			return new TelegramBotsApi().registerBot(new TelegramLongPollingBot() {
 				public String getBotUsername() {
 					return "Kowloonbot";
 				}
@@ -36,19 +34,14 @@ public class TelegramBot {
 						sendMessage.setChatId(message.getChat().getId().toString());
 						sendMessage.setText(fun.apply(message.getFrom().getId(), message.getText()));
 
-						try {
-							sendApiMethod(sendMessage);
-						} catch (TelegramApiException ex) {
-							Fail.t(ex);
-						}
+						Rethrow.ex(() -> sendApiMethod(sendMessage));
 					}
 				}
 			});
-		} catch (TelegramApiException ex) {
-			Fail.t(ex);
-		}
+		});
 
 		while (true)
 			Thread_.sleepQuietly(10000);
 	}
+
 }

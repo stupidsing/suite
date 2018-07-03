@@ -1,13 +1,11 @@
 package suite.primitive;
 
-import java.io.IOException;
-
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes.WriteByte;
 import suite.streamlet.Outlet;
-import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
+import suite.util.Rethrow;
 
 public class Bytes_ {
 
@@ -29,13 +27,12 @@ public class Bytes_ {
 	}
 
 	public static void copy(Outlet<Bytes> outlet, WriteByte writer) {
-		Bytes bytes;
-		while ((bytes = outlet.next()) != null)
-			try {
+		Rethrow.ex(() -> {
+			Bytes bytes;
+			while ((bytes = outlet.next()) != null)
 				writer.write(bytes.bs, bytes.start, bytes.end - bytes.start);
-			} catch (IOException ex) {
-				Fail.t(ex);
-			}
+			return bytes;
+		});
 	}
 
 	public static Fun<Outlet<Bytes>, Outlet<Bytes>> split(Bytes delim) {

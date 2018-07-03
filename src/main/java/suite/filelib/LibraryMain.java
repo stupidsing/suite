@@ -1,6 +1,5 @@
 package suite.filelib;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,7 +14,6 @@ import suite.adt.pair.Pair;
 import suite.os.FileUtil;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.Rethrow;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
@@ -51,13 +49,7 @@ public class LibraryMain extends ExecutableProgram {
 				.partition((path, size) -> 0 < size);
 
 		// remove empty files
-		partition.t1.sink((path, size) -> {
-			try {
-				Files.delete(path);
-			} catch (IOException ex) {
-				Fail.t(ex);
-			}
-		});
+		partition.t1.sink((path, size) -> FileUtil.delete(path));
 
 		var path_fileInfos = partition.t0 //
 				.map2((path, size) -> {

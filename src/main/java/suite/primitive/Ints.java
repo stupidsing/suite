@@ -15,10 +15,10 @@ import suite.primitive.streamlet.IntOutlet;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
+import suite.util.Rethrow;
 
 public class Ints implements Iterable<Integer> {
 
@@ -214,11 +214,10 @@ public class Ints implements Iterable<Integer> {
 	}
 
 	public void write(WriteChar out) {
-		try {
+		Rethrow.ex(() -> {
 			out.write(cs, start, end - start);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+			return out;
+		});
 	}
 
 	@Override

@@ -15,10 +15,10 @@ import suite.primitive.streamlet.FltOutlet;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
+import suite.util.Rethrow;
 
 public class Floats implements Iterable<Float> {
 
@@ -214,11 +214,10 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public void write(WriteChar out) {
-		try {
+		Rethrow.ex(() -> {
 			out.write(cs, start, end - start);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+			return out;
+		});
 	}
 
 	@Override

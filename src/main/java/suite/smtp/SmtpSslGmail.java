@@ -4,7 +4,6 @@ import java.util.Properties;
 
 import javax.mail.Authenticator;
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -15,7 +14,7 @@ import javax.net.ssl.SSLSocketFactory;
 import suite.Defaults;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrChr_Int;
-import suite.util.Fail;
+import suite.util.Rethrow;
 
 public class SmtpSslGmail {
 
@@ -36,9 +35,9 @@ public class SmtpSslGmail {
 				}
 			});
 
-			try {
-				var sender = username + "@gmail.com";
+			var sender = username + "@gmail.com";
 
+			return Rethrow.ex(() -> {
 				var message = new MimeMessage(session);
 				message.setFrom(new InternetAddress(sender));
 				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to != null ? to : sender));
@@ -46,11 +45,8 @@ public class SmtpSslGmail {
 				message.setText(body);
 
 				Transport.send(message);
-			} catch (MessagingException e) {
-				Fail.t(e);
-			}
-
-			return true;
+				return message;
+			});
 		});
 	}
 

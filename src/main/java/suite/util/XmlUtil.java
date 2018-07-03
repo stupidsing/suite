@@ -42,14 +42,13 @@ public class XmlUtil {
 	}
 
 	public XmlUtil() {
-		try {
+		Rethrow.ex(() -> {
 			documentBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
 			di = (DOMImplementationLS) DOMImplementationRegistry.newInstance().getDOMImplementation("LS");
 			lss = di.createLSSerializer();
 			lss.getDomConfig().setParameter("format-pretty-print", true);
-		} catch (Exception ex) {
-			Fail.t(ex);
-		}
+			return lss;
+		});
 	}
 
 	public String format(String xml) throws SAXException {

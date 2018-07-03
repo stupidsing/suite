@@ -20,7 +20,6 @@ import suite.streamlet.Streamlet;
 import suite.trade.Trade_;
 import suite.util.Fail;
 import suite.util.Object_;
-import suite.util.Rethrow;
 
 public class Google {
 
@@ -92,12 +91,10 @@ public class Google {
 			var url = "http://finance.google.com/finance/info?client=ig&q=HKEX%3A" //
 					+ symbols.sort(Object_::compare).map(this::fromSymbol).collect(As.joinedBy(","));
 
-			var json = Rethrow.ex(() -> {
-				try (var is = HttpUtil.get(url).inputStream()) {
-					for (var i = 0; i < 4; i++)
-						is.read();
-					return mapper.readTree(is);
-				}
+			var json = HttpUtil.get(url).inputStream().doRead(is -> {
+				for (var i = 0; i < 4; i++)
+					is.read();
+				return mapper.readTree(is);
 			});
 
 			return Read //

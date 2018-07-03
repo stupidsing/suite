@@ -15,10 +15,10 @@ import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.DblStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
+import suite.util.Rethrow;
 
 public class Doubles implements Iterable<Double> {
 
@@ -214,11 +214,10 @@ public class Doubles implements Iterable<Double> {
 	}
 
 	public void write(WriteChar out) {
-		try {
+		Rethrow.ex(() -> {
 			out.write(cs, start, end - start);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+			return out;
+		});
 	}
 
 	@Override

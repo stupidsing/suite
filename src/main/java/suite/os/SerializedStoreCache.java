@@ -44,15 +44,15 @@ public class SerializedStoreCache<K, V> {
 	}
 
 	private static <T> Bytes serialize(Serializer<T> serializer, T t) {
-		var baosKey = new ByteArrayOutputStream();
+		var baos = new ByteArrayOutputStream();
 
-		try (var dos = SerOutput.of(baosKey)) {
-			serializer.write(dos, t);
+		try (var so = SerOutput.of(baos)) {
+			serializer.write(so, t);
 		} catch (IOException ex) {
 			Fail.t(ex);
 		}
 
-		return Bytes.of(baosKey.toByteArray());
+		return Bytes.of(baos.toByteArray());
 	}
 
 }

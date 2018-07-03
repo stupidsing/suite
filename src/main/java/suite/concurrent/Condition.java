@@ -1,6 +1,7 @@
 package suite.concurrent;
 
 import suite.util.FunUtil.Source;
+import suite.util.Rethrow;
 
 public class Condition {
 
@@ -29,10 +30,10 @@ public class Condition {
 	public synchronized <T> T waitThen(Runnable before, Source<T> after) {
 		while (!verify()) {
 			before.run();
-			try {
+			Rethrow.ex(() -> {
 				wait(0);
-			} catch (InterruptedException e) {
-			}
+				return this;
+			});
 		}
 		return after.source();
 	}

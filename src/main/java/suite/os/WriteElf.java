@@ -12,7 +12,7 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.serialize.SerOutput;
-import suite.util.Fail;
+import suite.util.Rethrow;
 import suite.util.Util;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
@@ -33,19 +33,14 @@ public class WriteElf {
 			}
 		});
 
-		try {
-			Files.setPosixFilePermissions(path, new HashSet<>(List.of( //
-					PosixFilePermission.GROUP_EXECUTE, //
-					PosixFilePermission.GROUP_READ, //
-					PosixFilePermission.OTHERS_EXECUTE, //
-					PosixFilePermission.OTHERS_READ, //
-					PosixFilePermission.OWNER_EXECUTE, //
-					PosixFilePermission.OWNER_READ, //
-					PosixFilePermission.OWNER_WRITE)));
-		} catch (UnsupportedOperationException ex) {
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+		Rethrow.ex(() -> Files.setPosixFilePermissions(path, new HashSet<>(List.of( //
+				PosixFilePermission.GROUP_EXECUTE, //
+				PosixFilePermission.GROUP_READ, //
+				PosixFilePermission.OTHERS_EXECUTE, //
+				PosixFilePermission.OTHERS_READ, //
+				PosixFilePermission.OWNER_EXECUTE, //
+				PosixFilePermission.OWNER_READ, //
+				PosixFilePermission.OWNER_WRITE))));
 	}
 
 	private void write(int org, Bytes code, SerOutput do_) throws IOException {

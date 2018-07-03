@@ -189,15 +189,14 @@ public class Suite {
 	}
 
 	public static void evaluateFilterFun(String program, Reader reader, Writer writer, boolean isLazy, boolean isDo) {
-		try {
+		Rethrow.ex(() -> {
 			var node0 = parse(program);
 			var node1 = applyStringReader(node0, reader);
 			var node2 = isDo ? applyPerform(node1, Atom.of("string")) : node1;
 			var node3 = applyWriter(node2);
 			evaluateFunToWriter(fcc(node3, isLazy), writer);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+			return writer;
+		});
 	}
 
 	public static Node evaluateFun(String fp, boolean isLazy) {

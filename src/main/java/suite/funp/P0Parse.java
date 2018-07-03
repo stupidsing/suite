@@ -58,9 +58,9 @@ import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
 import suite.util.BasicInputStream;
-import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
+import suite.util.Rethrow;
 import suite.util.Rethrow.SourceEx;
 import suite.util.Switch;
 import suite.util.To;
@@ -226,13 +226,7 @@ public class P0Parse {
 		private Funp consult(String url) {
 			Fun<BasicInputStream, Funp> r0 = is -> is.doReader(isr -> FunpPredefine.of(parse(Suite.parse(To.string(isr)))));
 
-			Fun<SourceEx<BasicInputStream, IOException>, Funp> r1 = source -> {
-				try (var is = source.source()) {
-					return r0.apply(is);
-				} catch (IOException ex) {
-					return Fail.t(ex);
-				}
-			};
+			Fun<SourceEx<BasicInputStream, IOException>, Funp> r1 = source -> Rethrow.ex(() -> source.source()).doRead(r0::apply);
 
 			if (url.startsWith("file://"))
 				return r1.apply(() -> FileUtil.in(url.substring(7)));

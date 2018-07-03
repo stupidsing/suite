@@ -66,8 +66,8 @@ public class To {
 
 	public static Bytes bytes(IoSink<SerOutput> ioSink) {
 		var baos = new ByteArrayOutputStream();
-		try {
-			ioSink.sink(SerOutput.of(baos));
+		try (var baos_ = baos) {
+			ioSink.sink(SerOutput.of(baos_));
 		} catch (IOException ex) {
 			Fail.t(ex);
 		}

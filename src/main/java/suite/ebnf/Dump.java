@@ -6,7 +6,7 @@ import java.io.Writer;
 import java.util.List;
 
 import suite.ebnf.Ebnf.Ast;
-import suite.util.Fail;
+import suite.util.Rethrow;
 import suite.util.String_;
 
 public class Dump {
@@ -16,11 +16,10 @@ public class Dump {
 
 	public Dump(Ast ast, String in) {
 		this.in = in;
-		try {
+		Rethrow.ex(() -> {
 			prettyPrint(ast, "");
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+			return ast;
+		});
 	}
 
 	public String toString() {

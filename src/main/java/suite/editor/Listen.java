@@ -23,8 +23,8 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
 import suite.streamlet.Signal;
-import suite.util.Fail;
 import suite.util.FunUtil.Sink;
+import suite.util.Rethrow;
 import suite.util.Rethrow.SinkEx;
 
 public class Listen {
@@ -50,13 +50,10 @@ public class Listen {
 	}
 
 	public static <T, Ex extends Exception> Sink<T> catchAll(SinkEx<T, Ex> sink) {
-		return t -> {
-			try {
-				sink.sink(t);
-			} catch (Exception ex) {
-				Fail.t(ex);
-			}
-		};
+		return t -> Rethrow.ex(() -> {
+			sink.sink(t);
+			return t;
+		});
 	}
 
 	public static Signal<ComponentEvent> componentResized(Component component) {

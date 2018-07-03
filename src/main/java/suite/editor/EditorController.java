@@ -1,7 +1,6 @@
 package suite.editor;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -14,8 +13,8 @@ import suite.Suite;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
-import suite.util.Fail;
 import suite.util.FunUtil.Iterate;
+import suite.util.Rethrow;
 import suite.util.Thread_;
 import suite.util.To;
 
@@ -179,22 +178,23 @@ public class EditorController {
 		var frame = view.getFrame();
 		var editor = view.getEditor();
 
-		var command = JOptionPane.showInputDialog(frame //
-				, "Enter command:", "Unix Filter", JOptionPane.PLAIN_MESSAGE);
+		var command = JOptionPane.showInputDialog(frame, "Enter command:", "Unix Filter", JOptionPane.PLAIN_MESSAGE);
 
-		try {
+		var text0 = editor.getText();
+
+		var text1 = Rethrow.ex(() -> {
 			var process = Runtime.getRuntime().exec(command);
 
 			try (var pos = process.getOutputStream(); var writer = new OutputStreamWriter(pos, Defaults.charset)) {
-				writer.write(editor.getText());
+				writer.write(text0);
 			}
 
 			process.waitFor();
 
-			editor.setText(To.string(process.getInputStream()));
-		} catch (IOException | InterruptedException ex) {
-			Fail.t(ex);
-		}
+			return To.string(process.getInputStream());
+		});
+
+		editor.setText(text1);
 	}
 
 	private void load(String filename) {

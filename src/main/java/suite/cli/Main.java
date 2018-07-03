@@ -142,8 +142,7 @@ public class Main extends ExecutableProgram {
 
 	@Override
 	public void close() {
-		Object_.closeQuietly(reader);
-		Object_.closeQuietly(writer);
+		Object_.closeQuietly(reader, writer);
 	}
 
 }

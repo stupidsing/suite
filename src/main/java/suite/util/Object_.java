@@ -36,13 +36,14 @@ public class Object_ {
 		return object != null ? object.getClass() : null;
 	}
 
-	public static void closeQuietly(Closeable o) {
-		if (o != null)
-			try {
-				o.close();
-			} catch (IOException ex) {
-				Fail.t(ex);
-			}
+	public static void closeQuietly(Closeable... os) {
+		for (var o : os)
+			if (o != null)
+				try {
+					o.close();
+				} catch (IOException ex) {
+					Fail.t(ex);
+				}
 	}
 
 	public static <T extends Comparable<? super T>> int compare(T t0, T t1) {
@@ -210,10 +211,10 @@ public class Object_ {
 	}
 
 	public static void wait(Object object, int timeOut) {
-		try {
+		Rethrow.ex(() -> {
 			object.wait(timeOut);
-		} catch (InterruptedException e) {
-		}
+			return object;
+		});
 	}
 
 	private static Object apply_(Iterate<Object> fun, Object object) {

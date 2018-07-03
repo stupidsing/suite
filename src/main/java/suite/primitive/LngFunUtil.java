@@ -11,6 +11,7 @@ import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.util.Fail;
+import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -215,8 +216,8 @@ public class LngFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static Source<LngSource> split(LngTest fun0, LngSource source) {
 		var fun1 = fun0.rethrow();
@@ -250,7 +251,7 @@ public class LngFunUtil {
 		return () -> {
 			try {
 				return queue.take();
-			} catch (InterruptedException ex) {
+			} catch (InterruptedException | InterruptedRuntimeException ex) {
 				thread.interrupt();
 				return Fail.t(ex);
 			}

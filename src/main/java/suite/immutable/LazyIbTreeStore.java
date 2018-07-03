@@ -1,6 +1,5 @@
 package suite.immutable;
 
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
 
@@ -15,7 +14,7 @@ import suite.fs.KeyValueStore;
 import suite.node.util.Singleton;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
-import suite.util.Fail;
+import suite.util.Object_;
 
 public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, Value> {
 
@@ -80,12 +79,7 @@ public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 			superblockFile.save(0, pointerx);
 		}
 
-		try {
-			persister.close();
-			superblockFile.close();
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+		Object_.closeQuietly(persister, superblockFile);
 	}
 
 	@Override

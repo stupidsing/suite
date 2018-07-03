@@ -1,11 +1,9 @@
 package suite.trade.data;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import org.junit.Test;
 
 import suite.http.HttpUtil;
+import suite.os.FileUtil;
 import suite.streamlet.Streamlet;
 import suite.trade.Forex;
 import suite.trade.TimeRange;
@@ -19,7 +17,7 @@ public class CollectDataTest {
 	private Yahoo yahoo = new Yahoo();
 
 	@Test
-	public void test() throws IOException {
+	public void test() {
 		var equities = Streamlet.concat( //
 				hkex.queryCompanies().map(company -> company.symbol), //
 				forex.invertedCurrencies.keys());
@@ -27,9 +25,10 @@ public class CollectDataTest {
 		for (var code : equities) {
 			var url = yahoo.tableUrl(code, TimeRange.ages());
 
-			try (var fos = new FileOutputStream("/data/storey/markets/" + code + ".csv")) {
-				Copy.stream(HttpUtil.get(url).inputStream(), fos);
-			}
+			HttpUtil.get(url).inputStream().doRead(is -> {
+				FileUtil.out("/data/storey/markets/" + code + ".csv").doWrite(os -> Copy.stream(is, os));
+				return is;
+			});
 
 			Thread_.sleepQuietly(2000);
 		}

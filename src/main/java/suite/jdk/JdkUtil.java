@@ -35,19 +35,19 @@ public class JdkUtil {
 		var jc = ToolProvider.getSystemJavaCompiler();
 
 		try (var sjfm = jc.getStandardFileManager(null, null, null)) {
-			if (!jc.getTask( //
+			if (jc.getTask( //
 					null, //
 					null, //
 					null, //
 					List.of("-d", binDir.toString()), //
 					null, //
 					sjfm.getJavaFileObjects(srcFilePath.toFile())).call())
-				Fail.t("Java compilation error");
+				return binFilePath;
+			else
+				return Fail.t("Java compilation error");
 		} catch (IOException ex) {
-			Fail.t(ex);
+			return Fail.t(ex);
 		}
-
-		return binFilePath;
 	}
 
 }

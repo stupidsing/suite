@@ -19,7 +19,7 @@ public class MutexTest {
 	}
 
 	@Test
-	public void testDeadlock() throws InterruptedException {
+	public void testDeadlock() {
 		var a = new Mutex();
 		var b = new Mutex();
 
@@ -42,7 +42,7 @@ public class MutexTest {
 	}
 
 	@Test
-	public void testNoDeadlock() throws InterruptedException {
+	public void testNoDeadlock() {
 		var a = new Mutex();
 		var b = new Mutex();
 
@@ -64,7 +64,7 @@ public class MutexTest {
 		assertFalse(isDeadlock(ra, rb));
 	}
 
-	private boolean isDeadlock(MutexTestRunnable... mtrs) throws InterruptedException {
+	private boolean isDeadlock(MutexTestRunnable... mtrs) {
 		var result = BooMutable.false_();
 
 		Read.from(mtrs).collect(As.executeThreads(mtr -> {

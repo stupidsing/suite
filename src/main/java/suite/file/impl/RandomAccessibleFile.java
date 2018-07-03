@@ -1,8 +1,6 @@
 package suite.file.impl;
 
 import java.io.Closeable;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
@@ -10,7 +8,8 @@ import java.nio.file.Path;
 
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
-import suite.util.Fail;
+import suite.util.Object_;
+import suite.util.Rethrow;
 
 public class RandomAccessibleFile implements Closeable {
 
@@ -19,52 +18,37 @@ public class RandomAccessibleFile implements Closeable {
 
 	public RandomAccessibleFile(Path path) {
 		FileUtil.mkdir(path.getParent());
-		try {
-			file = new RandomAccessFile(path.toFile(), "rw");
-		} catch (FileNotFoundException ex) {
-			Fail.t(ex);
-		}
+		file = Rethrow.ex(() -> new RandomAccessFile(path.toFile(), "rw"));
 		channel = file.getChannel();
 	}
 
 	@Override
 	public void close() {
-		try {
-			channel.close();
-			file.close();
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+		Object_.closeQuietly(channel, file);
 	}
 
 	public void sync() {
-		try {
+		Rethrow.ex(() -> {
 			channel.force(true);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+			return channel;
+		});
 	}
 
 	public Bytes load(int start, int end) {
-		var size = end - start;
-		var bb = ByteBuffer.allocate(size);
-
-		try {
+		return Rethrow.ex(() -> {
+			var size = end - start;
+			var bb = ByteBuffer.allocate(size);
 			channel.read(bb, start);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
-
-		bb.limit(size);
-		return Bytes.of(bb);
+			bb.limit(size);
+			return Bytes.of(bb);
+		});
 	}
 
 	public void save(int start, Bytes bytes) {
-		try {
+		Rethrow.ex(() -> {
 			channel.write(bytes.toByteBuffer(), start);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+			return channel;
+		});
 	}
 
 }

@@ -41,10 +41,7 @@ public class NetUtil {
 	}
 
 	public static <T> T deserialize(Bytes s) {
-		var bais = new ByteArrayInputStream(s.toArray());
-
-		try {
-			var in = new ObjectInputStream(bais);
+		try (var bais = new ByteArrayInputStream(s.toArray()); var in = new ObjectInputStream(bais);) {
 			@SuppressWarnings("unchecked")
 			var t = (T) in.readObject();
 			return t;

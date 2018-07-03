@@ -11,6 +11,7 @@ import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.util.Fail;
+import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
@@ -195,8 +196,8 @@ public class IntObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static <V> Source<IntObjSource<V>> split(IntObjPredicate<V> fun0, IntObjSource<V> source2) {
 		IntObjPredicate<V> fun1 = fun0.rethrow();
@@ -220,14 +221,12 @@ public class IntObjFunUtil {
 			private boolean isAppended = false;
 
 			public boolean source2(IntObjPair<V> pair) {
-				if (!isAppended) {
-					if (!source.source2(pair)) {
-						pair.update(key, value);
-						isAppended = true;
-					}
-					return true;
-				} else
-					return false;
+				var b = !isAppended;
+				if (b && !source.source2(pair)) {
+					pair.update(key, value);
+					isAppended = true;
+				}
+				return b;
 			}
 		};
 	}
@@ -254,7 +253,7 @@ public class IntObjFunUtil {
 				if (b)
 					pair.update(p.t0, p.t1);
 				return b;
-			} catch (InterruptedException ex) {
+			} catch (InterruptedException | InterruptedRuntimeException ex) {
 				thread.interrupt();
 				return Fail.t();
 			}

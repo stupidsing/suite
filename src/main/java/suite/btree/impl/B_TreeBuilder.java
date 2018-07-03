@@ -1,7 +1,6 @@
 package suite.btree.impl;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Comparator;
 
@@ -15,12 +14,12 @@ import suite.file.impl.JournalledFileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.fs.KeyDataStore;
 import suite.node.util.Singleton;
+import suite.os.FileUtil;
 import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
 import suite.util.Object_;
-import suite.util.Rethrow;
 
 public class B_TreeBuilder<Key, Value> {
 
@@ -44,7 +43,7 @@ public class B_TreeBuilder<Key, Value> {
 			Serializer<Key> ks, //
 			Comparator<Key> cmp) {
 		if (isNew)
-			Rethrow.ex(() -> Files.deleteIfExists(path));
+			FileUtil.deleteIfExists(path);
 
 		var jpf = JournalledFileFactory.journalled(path, pageSize);
 		var b_tree = new B_TreeBuilder<>(ks, serialize.int_).build(jpf, nPages, cmp);

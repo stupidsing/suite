@@ -17,6 +17,7 @@ import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.HomeDir;
 import suite.util.Object_;
+import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.Thread_;
 import suite.util.To;
@@ -36,12 +37,11 @@ public class TextDatabase {
 
 	public void join() {
 		var thread = saveThread;
-		if (thread != null)
-			try {
+		Rethrow.ex(() -> {
+			if (thread != null)
 				thread.join();
-			} catch (InterruptedException ex) {
-				Fail.t(ex);
-			}
+			return thread;
+		});
 	}
 
 	public synchronized SortedSet<Datum> range(Datum start, Datum end) {

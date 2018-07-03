@@ -10,6 +10,7 @@ import suite.Defaults;
 import suite.streamlet.Read;
 import suite.util.Copy;
 import suite.util.Fail;
+import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.Rethrow;
 import suite.util.Th;
 import suite.util.To;
@@ -65,7 +66,7 @@ public class Execute {
 			code = process.waitFor();
 			threads.sink(Th::join_);
 		} catch (InterruptedException ex) {
-			throw new RuntimeException(ex);
+			throw new InterruptedRuntimeException(ex);
 		} finally {
 			process.destroy();
 		}

@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
+import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.FunUtil2.Source2;
 
 public class FunUtil {
@@ -215,8 +216,8 @@ public class FunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must not be
-	 * skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must
+	 * not be skipped.
 	 */
 	public static <T> Source<Source<T>> split(Predicate<T> fun0, Source<T> source) {
 		var fun1 = Rethrow.predicate(fun0);
@@ -249,7 +250,7 @@ public class FunUtil {
 		return () -> {
 			try {
 				return queue.take();
-			} catch (InterruptedException ex) {
+			} catch (InterruptedException | InterruptedRuntimeException ex) {
 				thread.interrupt();
 				return Fail.t(ex);
 			}

@@ -1,6 +1,5 @@
 package suite.trade.data;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +18,6 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
-import suite.util.Fail;
 import suite.util.FunUtil.Source;
 import suite.util.Rethrow;
 import suite.util.String_;
@@ -288,18 +286,14 @@ public class Hkex {
 	public float queryHangSengIndex() {
 		var url = "https://www.hkex.com.hk/eng/csm/ws/IndexMove.asmx/GetData?LangCode=en";
 
-		try (var is = HttpUtil.get(url).inputStream()) {
-			return Read //
-					.each(mapper.readTree(is)) //
-					.flatMap(json_ -> json_.path("data")) //
-					.filter(json_ -> String_.equals(json_.path("title").textValue(), "Hong Kong")) //
-					.flatMap(json_ -> json_.path("content")) //
-					.filter(json_ -> String_.equals(json_.path(0).textValue(), "Hang Seng Index")) //
-					.map(json_ -> Float.parseFloat(json_.path(1).textValue().split(" ")[0].replace(",", ""))) //
-					.uniqueResult();
-		} catch (IOException ex) {
-			return Fail.t(ex);
-		}
+		return HttpUtil.get(url).inputStream().doRead(is -> Read //
+				.each(mapper.readTree(is)) //
+				.flatMap(json_ -> json_.path("data")) //
+				.filter(json_ -> String_.equals(json_.path("title").textValue(), "Hong Kong")) //
+				.flatMap(json_ -> json_.path("content")) //
+				.filter(json_ -> String_.equals(json_.path(0).textValue(), "Hang Seng Index")) //
+				.map(json_ -> Float.parseFloat(json_.path(1).textValue().split(" ")[0].replace(",", ""))) //
+				.uniqueResult());
 	}
 
 	public float queryPreviousClose(String symbol) {
@@ -322,18 +316,14 @@ public class Hkex {
 				+ "&TMM=" //
 				+ "&TYYYY=";
 
-		try (var is = HttpUtil.get(url).inputStream()) {
-			return Read //
-					.each(mapper.readTree(is)) //
-					.flatMap(json_ -> json_.path("data")) //
-					.filter(json_ -> String_.equals(json_.path("title").textValue(), "Stock price HKD")) //
-					.flatMap(json_ -> json_.path("content")) //
-					.filter(json_ -> String_.equals(json_.path(0).textValue(), "Previous<br>day close")) //
-					.map(json_ -> Float.parseFloat(json_.path(1).textValue().split(" ")[0])) //
-					.uniqueResult();
-		} catch (IOException ex) {
-			return Fail.t(ex);
-		}
+		return HttpUtil.get(url).inputStream().doRead(is -> Read //
+				.each(mapper.readTree(is)) //
+				.flatMap(json_ -> json_.path("data")) //
+				.filter(json_ -> String_.equals(json_.path("title").textValue(), "Stock price HKD")) //
+				.flatMap(json_ -> json_.path("content")) //
+				.filter(json_ -> String_.equals(json_.path(0).textValue(), "Previous<br>day close")) //
+				.map(json_ -> Float.parseFloat(json_.path(1).textValue().split(" ")[0])) //
+				.uniqueResult());
 	}
 
 	private List<Asset> queryCompanies_(int pageNo) {
@@ -357,7 +347,7 @@ public class Hkex {
 				+ "&TMM=" //
 				+ "&TYYYY=");
 
-		CompanySearch companySearch = mapper.convertValue(json, CompanySearch.class);
+		var companySearch = mapper.convertValue(json, CompanySearch.class);
 		Streamlet<List<String>> data0;
 
 		if (Boolean.TRUE)

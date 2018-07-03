@@ -15,10 +15,10 @@ import suite.primitive.streamlet.LngOutlet;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
+import suite.util.Rethrow;
 
 public class Longs implements Iterable<Long> {
 
@@ -214,11 +214,10 @@ public class Longs implements Iterable<Long> {
 	}
 
 	public void write(WriteChar out) {
-		try {
+		Rethrow.ex(() -> {
 			out.write(cs, start, end - start);
-		} catch (IOException ex) {
-			Fail.t(ex);
-		}
+			return out;
+		});
 	}
 
 	@Override
