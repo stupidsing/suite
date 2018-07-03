@@ -23,10 +23,10 @@ import suite.primitive.Chars;
 import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.util.BasicInputStream;
 import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
 import suite.util.ParseUtil;
+import suite.util.ReadStream;
 import suite.util.Rethrow;
 import suite.util.Thread_;
 import suite.util.To;
@@ -66,7 +66,7 @@ public class HttpUtil {
 			return new HttpRequest(method, url, in, headers);
 		}
 
-		public BasicInputStream inputStream() {
+		public ReadStream inputStream() {
 			return out().collect(To::inputStream);
 		}
 

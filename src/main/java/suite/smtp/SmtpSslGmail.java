@@ -11,7 +11,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.net.ssl.SSLSocketFactory;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrChr_Int;
 import suite.util.Rethrow;

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.os.FileUtil;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.FunUtil.Source;

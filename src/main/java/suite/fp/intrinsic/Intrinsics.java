@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.IntFunction;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.immutable.IPointer;
 import suite.instructionexecutor.thunk.IndexedReader;
 import suite.instructionexecutor.thunk.IndexedSourceReader;
@@ -27,14 +27,15 @@ public class Intrinsics {
 	public interface IntrinsicCallback {
 
 		/**
-		 * Encloses an intrinsic function call with given parameter into a lazy result
-		 * node. Becomes immediate evaluation in the eager implementation.
+		 * Encloses an intrinsic function call with given parameter into a lazy
+		 * result node. Becomes immediate evaluation in the eager
+		 * implementation.
 		 */
 		public Node enclose(Intrinsic intrinsic, Node node);
 
 		/**
-		 * Realizes a possibly-lazy node into its bottom value. Returns the input for
-		 * the eager implementation.
+		 * Realizes a possibly-lazy node into its bottom value. Returns the
+		 * input for the eager implementation.
 		 */
 		public Node yawn(Node node);
 	}

@@ -6,7 +6,7 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.immutable.IList;
 import suite.util.Rethrow;
 import suite.util.String_;

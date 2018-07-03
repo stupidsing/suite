@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import suite.cfg.HomeDir;
 import suite.os.FileUtil;
 import suite.os.Schedule;
 import suite.os.Scheduler;
@@ -20,7 +21,6 @@ import suite.trade.data.TradeCfgImpl;
 import suite.trade.walkforwardalloc.WalkForwardAllocConfiguration;
 import suite.trade.walkforwardalloc.WalkForwardAllocTester;
 import suite.util.Fail;
-import suite.util.HomeDir;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 

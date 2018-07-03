@@ -8,8 +8,8 @@ import java.nio.file.Paths;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
-import suite.Defaults;
 import suite.Suite;
+import suite.cfg.Defaults;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;

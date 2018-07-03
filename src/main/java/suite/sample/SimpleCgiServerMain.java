@@ -8,7 +8,7 @@ import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.os.SocketUtil;
 import suite.util.Fail;
 import suite.util.RunUtil;

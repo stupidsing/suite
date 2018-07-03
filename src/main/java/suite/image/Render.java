@@ -11,7 +11,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.math.R3;
 import suite.os.LogUtil;
 import suite.primitive.Floats_;

@@ -2,7 +2,7 @@ package suite.ansi;
 
 import java.io.Closeable;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.util.String_;
 
 public class Termios implements Closeable {

@@ -8,8 +8,8 @@ import java.io.Writer;
 
 import org.junit.Test;
 
-import suite.Defaults;
 import suite.Suite;
+import suite.cfg.Defaults;
 import suite.os.FileUtil;
 import suite.util.Thread_;
 

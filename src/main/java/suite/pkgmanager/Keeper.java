@@ -5,7 +5,7 @@ import java.util.Map;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.inspect.Mapify;
 import suite.node.util.Singleton;
 import suite.os.FileUtil;

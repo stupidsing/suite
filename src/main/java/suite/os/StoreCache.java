@@ -6,15 +6,15 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 
-import suite.Defaults;
 import suite.adt.pair.Pair;
+import suite.cfg.Defaults;
+import suite.cfg.HomeDir;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.serialize.SerOutput;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
-import suite.util.HomeDir;
 import suite.util.Rethrow;
 import suite.util.To;
 

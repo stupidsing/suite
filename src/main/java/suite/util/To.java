@@ -23,7 +23,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -98,8 +98,8 @@ public class To {
 		return hex4(i >>> 16 & 0xFFFF) + hex4(i & 0xFFFF);
 	}
 
-	public static BasicInputStream inputStream(Outlet<Bytes> outlet) {
-		return new BasicInputStream(new InputStream() {
+	public static ReadStream inputStream(Outlet<Bytes> outlet) {
+		return new ReadStream(new InputStream() {
 			private InputStream is;
 			private boolean isOpen = true;
 

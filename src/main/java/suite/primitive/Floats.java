@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.primitive.FltPrimitives.FltSource;
 import suite.primitive.streamlet.FltOutlet;
 import suite.primitive.streamlet.FltStreamlet;

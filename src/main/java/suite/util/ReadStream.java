@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 
 /**
  * Implements an input stream using a given input stream. Extends this class to
@@ -13,11 +13,15 @@ import suite.Defaults;
  *
  * @author ywsing
  */
-public class BasicInputStream extends InputStream {
+public class ReadStream extends InputStream {
 
 	private InputStream is;
 
-	public BasicInputStream(InputStream is) {
+	public static ReadStream of(InputStream is) {
+		return new ReadStream(is);
+	}
+
+	protected ReadStream(InputStream is) {
 		this.is = is;
 	}
 
@@ -49,7 +53,7 @@ public class BasicInputStream extends InputStream {
 		});
 	}
 
-	public <T> T doRead(FunIo<BasicInputStream, T> fun) {
+	public <T> T doRead(FunIo<ReadStream, T> fun) {
 		try (var is = this) {
 			return fun.apply(is);
 		} catch (IOException ex) {

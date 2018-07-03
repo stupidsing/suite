@@ -8,7 +8,7 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.os.Stopwatch;
 import suite.sample.Profiler;
 import suite.uct.ShuffleUtil;

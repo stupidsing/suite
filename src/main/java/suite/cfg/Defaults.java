@@ -1,4 +1,4 @@
-package suite;
+package suite.cfg;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -8,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import suite.Suite;
 import suite.adt.pair.FixieArray;
 import suite.lp.doer.Generalizer;
 import suite.lp.doer.Prover;
@@ -17,7 +18,6 @@ import suite.node.Reference;
 import suite.node.io.Formatter;
 import suite.util.Fail;
 import suite.util.FunUtil.Source;
-import suite.util.HomeDir;
 import suite.util.Memoize;
 import suite.util.To;
 

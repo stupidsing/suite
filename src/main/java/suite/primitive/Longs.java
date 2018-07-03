@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.streamlet.LngOutlet;
 import suite.primitive.streamlet.LngStreamlet;

@@ -1,6 +1,6 @@
 package suite.trade.data;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.node.util.Singleton;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;

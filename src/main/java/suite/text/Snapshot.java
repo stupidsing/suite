@@ -9,9 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import suite.Defaults;
 import suite.adt.pair.FixieArray;
 import suite.adt.pair.Pair;
+import suite.cfg.Defaults;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;

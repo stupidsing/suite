@@ -57,9 +57,9 @@ import suite.os.FileUtil;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
-import suite.util.BasicInputStream;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
+import suite.util.ReadStream;
 import suite.util.Rethrow;
 import suite.util.Rethrow.SourceEx;
 import suite.util.Switch;
@@ -224,16 +224,16 @@ public class P0Parse {
 		}
 
 		private Funp consult(String url) {
-			Fun<BasicInputStream, Funp> r0 = is -> is.doReader(isr -> FunpPredefine.of(parse(Suite.parse(To.string(isr)))));
+			Fun<ReadStream, Funp> r0 = is -> is.doReader(isr -> FunpPredefine.of(parse(Suite.parse(To.string(isr)))));
 
-			Fun<SourceEx<BasicInputStream, IOException>, Funp> r1 = source -> Rethrow.ex(() -> source.source()).doRead(r0::apply);
+			Fun<SourceEx<ReadStream, IOException>, Funp> r1 = source -> Rethrow.ex(() -> source.source()).doRead(r0::apply);
 
 			if (url.startsWith("file://"))
 				return r1.apply(() -> FileUtil.in(url.substring(7)));
 			else if (url.startsWith("http://") || url.startsWith("https://"))
 				return r0.apply(HttpUtil.get(url).inputStream());
 			else
-				return r1.apply(() -> new BasicInputStream(getClass().getResourceAsStream(url)));
+				return r1.apply(() -> ReadStream.of(getClass().getResourceAsStream(url)));
 		}
 
 		private Funp bind(Node a, Node b, Node c) {

@@ -12,8 +12,8 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Map;
 
-import suite.Defaults;
 import suite.adt.pair.Pair;
+import suite.cfg.Defaults;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.util.FunUtil;

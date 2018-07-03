@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Iterator;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.streamlet.ChrOutlet;
 import suite.primitive.streamlet.ChrStreamlet;

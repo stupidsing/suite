@@ -7,7 +7,7 @@ import java.nio.file.attribute.PosixFilePermission;
 import java.util.HashSet;
 import java.util.List;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntPrimitives.Int_Obj;

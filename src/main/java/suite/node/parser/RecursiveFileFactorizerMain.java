@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-import suite.Defaults;
 import suite.adt.pair.Pair;
+import suite.cfg.Defaults;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
 import suite.parser.Wildcard;

@@ -6,9 +6,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 import suite.primitive.Bytes;
-import suite.util.BasicOutputStream;
+import suite.util.WriteStream;
 
-public class SerOutput extends BasicOutputStream implements DataOutput {
+public class SerOutput extends WriteStream implements DataOutput {
 
 	private DataOutputStream out;
 

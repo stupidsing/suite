@@ -10,7 +10,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.fs.impl.B_TreeFileSystemImpl;
 import suite.fs.impl.LazyIbTreeFileSystemImpl;
 import suite.os.FileUtil;

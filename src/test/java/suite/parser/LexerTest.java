@@ -7,7 +7,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.util.FunUtil;
 
 public class LexerTest {

@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.util.Rethrow.SinkEx;
 
 /**
@@ -13,11 +13,15 @@ import suite.util.Rethrow.SinkEx;
  *
  * @author ywsing
  */
-public class BasicOutputStream extends OutputStream {
+public class WriteStream extends OutputStream {
 
 	private OutputStream os;
 
-	public BasicOutputStream(OutputStream os) {
+	public static WriteStream of(OutputStream os) {
+		return new WriteStream(os);
+	}
+
+	protected WriteStream(OutputStream os) {
 		this.os = os;
 	}
 
@@ -37,7 +41,7 @@ public class BasicOutputStream extends OutputStream {
 		});
 	}
 
-	public void doWrite(SinkEx<BasicOutputStream, IOException> sink) {
+	public void doWrite(SinkEx<WriteStream, IOException> sink) {
 		try (var os = this) {
 			sink.sink(os);
 		} catch (IOException ex) {

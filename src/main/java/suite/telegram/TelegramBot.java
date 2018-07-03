@@ -7,7 +7,7 @@ import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.util.FunUtil2.FoldOp;
 import suite.util.Rethrow;
 import suite.util.Thread_;

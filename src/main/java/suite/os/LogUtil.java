@@ -11,7 +11,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.inspect.Dump;
 import suite.proxy.Intercept;
 import suite.util.Array_;

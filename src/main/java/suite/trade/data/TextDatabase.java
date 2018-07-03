@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import suite.cfg.HomeDir;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes_;
@@ -15,7 +16,6 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
-import suite.util.HomeDir;
 import suite.util.Object_;
 import suite.util.Rethrow;
 import suite.util.String_;

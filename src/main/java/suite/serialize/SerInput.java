@@ -5,9 +5,9 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import suite.util.BasicInputStream;
+import suite.util.ReadStream;
 
-public class SerInput extends BasicInputStream implements DataInput {
+public class SerInput extends ReadStream implements DataInput {
 
 	private DataInputStream in;
 

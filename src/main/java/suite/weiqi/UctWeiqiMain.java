@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.os.LogUtil;
 import suite.os.Stopwatch;
 import suite.uct.ShuffleUtil;

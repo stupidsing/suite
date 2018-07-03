@@ -9,7 +9,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.ServerSocket;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.util.Fail;
 import suite.util.Object_;
 import suite.util.Thread_;

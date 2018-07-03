@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.net.nio.NioChannelFactory.BufferedNioChannel;
 import suite.net.nio.NioChannelFactory.NioChannel;
 import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;

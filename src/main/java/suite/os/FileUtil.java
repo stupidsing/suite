@@ -14,10 +14,10 @@ import java.util.zip.ZipFile;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.BasicInputStream;
-import suite.util.BasicOutputStream;
+import suite.util.ReadStream;
 import suite.util.Rethrow;
 import suite.util.To;
+import suite.util.WriteStream;
 
 public class FileUtil {
 
@@ -76,19 +76,19 @@ public class FileUtil {
 		}
 	}
 
-	public static BasicInputStream in(String filename) {
+	public static ReadStream in(String filename) {
 		return in_(Paths.get(filename));
 	}
 
-	public static BasicInputStream in(Path path) {
+	public static ReadStream in(Path path) {
 		return in_(path);
 	}
 
-	public static BasicOutputStream out(String filename) {
+	public static WriteStream out(String filename) {
 		return out_(Paths.get(filename));
 	}
 
-	public static BasicOutputStream out(Path path) {
+	public static WriteStream out(Path path) {
 		return out_(path);
 	}
 
@@ -96,20 +96,20 @@ public class FileUtil {
 		return To.string(Paths.get(filename));
 	}
 
-	private static BasicInputStream in_(Path path) {
+	private static ReadStream in_(Path path) {
 		var is = Rethrow.ex(() -> Files.newInputStream(path));
 
-		return new BasicInputStream(is);
+		return ReadStream.of(is);
 	}
 
-	private static BasicOutputStream out_(Path path) {
+	private static WriteStream out_(Path path) {
 		var parent = path.getParent();
 		var path1 = parent.resolve(path.getFileName() + ".new");
 
 		mkdir(parent);
 		var os = Rethrow.ex(() -> Files.newOutputStream(path1));
 
-		return new BasicOutputStream(os) {
+		return new WriteStream(os) {
 			private boolean isClosed = false;
 
 			public void close() throws IOException {

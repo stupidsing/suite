@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.ip.ImperativeCompiler;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html

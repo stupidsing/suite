@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.os.SocketUtil;
 
 public class Connector {

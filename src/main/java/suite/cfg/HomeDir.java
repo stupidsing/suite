@@ -1,9 +1,8 @@
-package suite.util;
+package suite.cfg;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import suite.Defaults;
 import suite.os.FileUtil;
 
 public class HomeDir {

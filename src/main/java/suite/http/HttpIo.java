@@ -7,15 +7,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 
-import suite.Defaults;
 import suite.adt.Opt;
 import suite.adt.pair.FixieArray;
+import suite.cfg.Defaults;
 import suite.immutable.IMap;
 import suite.streamlet.Read;
-import suite.util.BasicInputStream;
 import suite.util.Copy;
 import suite.util.Fail;
 import suite.util.FunUtil2.Fun2;
+import suite.util.ReadStream;
 import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.To;
@@ -97,7 +97,7 @@ public class HttpIo {
 	}
 
 	private InputStream sizeLimitedInputStream(InputStream is, int size) {
-		return new BasicInputStream(is) {
+		return new ReadStream(is) {
 			private int remaining = size;
 
 			public int read() throws IOException {

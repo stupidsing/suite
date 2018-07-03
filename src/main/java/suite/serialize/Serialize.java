@@ -15,8 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import suite.Defaults;
 import suite.adt.pair.Pair;
+import suite.cfg.Defaults;
 import suite.file.ExtentAllocator.Extent;
 import suite.inspect.Inspect;
 import suite.primitive.Bytes;

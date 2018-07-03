@@ -2,7 +2,7 @@ package suite.os;
 
 import org.junit.Test;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.node.util.Singleton;
 import suite.streamlet.As;
 

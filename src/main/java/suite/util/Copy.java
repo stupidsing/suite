@@ -12,7 +12,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.net.SocketException;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 
 public class Copy {
 

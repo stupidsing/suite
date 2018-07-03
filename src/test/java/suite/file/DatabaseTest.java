@@ -6,7 +6,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.file.impl.Database;
 import suite.util.Fail;
 

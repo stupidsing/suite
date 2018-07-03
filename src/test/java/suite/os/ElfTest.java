@@ -4,8 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import suite.Defaults;
 import suite.assembler.Amd64Interpret;
+import suite.cfg.Defaults;
 import suite.funp.Funp_;
 import suite.primitive.Bytes;
 import suite.util.RunUtil;

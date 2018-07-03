@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.net.ThreadService;
 import suite.net.cluster.ClusterProbe;
 import suite.os.LogUtil;

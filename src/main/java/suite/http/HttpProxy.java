@@ -2,7 +2,7 @@ package suite.http;
 
 import java.net.Socket;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
 import suite.primitive.adt.pair.IntObjPair;

@@ -6,7 +6,7 @@ import java.util.List;
 
 import javax.tools.ToolProvider;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.util.Fail;

@@ -5,7 +5,7 @@ import static suite.util.Friends.min;
 import java.io.IOException;
 import java.io.InputStream;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.os.SocketUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;

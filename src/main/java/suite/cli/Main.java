@@ -11,8 +11,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.Defaults;
 import suite.Suite;
+import suite.cfg.Defaults;
 import suite.net.ServeSocket;
 import suite.os.FileUtil;
 import suite.os.LogUtil;

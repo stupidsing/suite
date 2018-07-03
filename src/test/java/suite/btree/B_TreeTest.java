@@ -11,8 +11,8 @@ import java.util.Random;
 import org.junit.Before;
 import org.junit.Test;
 
-import suite.Defaults;
 import suite.btree.impl.B_TreeBuilder;
+import suite.cfg.Defaults;
 import suite.file.impl.JournalledFileFactory;
 import suite.node.util.Singleton;
 import suite.primitive.Ints_;

@@ -13,7 +13,7 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.UserInfo;
 
-import suite.Defaults;
+import suite.cfg.Defaults;
 import suite.util.Copy;
 import suite.util.Rethrow;
 import suite.util.Thread_;
