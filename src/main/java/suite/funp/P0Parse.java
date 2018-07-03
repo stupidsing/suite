@@ -178,14 +178,14 @@ public class P0Parse {
 				return FunpIndex.of(FunpReference.of(p(a)), p(b));
 			}).match("io .0", a -> {
 				return FunpIo.of(p(a));
-			}).match("io-asm .0 {.1}", (a, b) -> {
+			}).match("io.asm .0 {.1}", (a, b) -> {
 				return FunpIoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
 					var ma = Suite.pattern(".0 = .1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
 				}).toList(), Tree.iter(b, TermOp.OR____).toList());
-			}).match("io-cat .0", a -> {
+			}).match("io.cat .0", a -> {
 				return FunpIoCat.of(p(a));
-			}).match("io-fold .0 .1 .2", (a, b, c) -> {
+			}).match("io.fold .0 .1 .2", (a, b, c) -> {
 				return FunpIoFold.of(p(a), p(b), p(c));
 			}).match(".0 => .1", (a, b) -> {
 				String var;

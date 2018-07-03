@@ -17,11 +17,11 @@ public class ElfTest {
 
 	@Test
 	public void testFold() {
-		test(100, "io-fold 0 (n => n < 100) (n => io (n + 1))", "");
+		test(100, "io.fold 0 (n => n < 100) (n => io (n + 1))", "");
 	}
 
 	// io :: a -> io a
-	// io-cat :: io a -> (a -> io b) -> io b
+	// io.cat :: io a -> (a -> io b) -> io b
 	@Test
 	public void testIo() {
 		var text = "garbage\n";
@@ -29,11 +29,11 @@ public class ElfTest {
 		var program = "" //
 				+ "expand size := 256 >> \n" //
 				+ "let linux := consult \"linux.fp\" >> \n" //
-				+ "io-fold 1 (n => n != 0) (n => \n" //
+				+ "io.fold 1 (n => n != 0) (n => \n" //
 				+ "	let buffer := size * array coerce-byte _ >> \n" //
 				+ "	let pointer := address buffer >> \n" //
-				+ "	pointer, size | linux/read | io-cat (nBytesRead => \n" //
-				+ "		pointer, nBytesRead | linux/write | io-cat (nBytesWrote => \n" //
+				+ "	pointer, size | linux/read | io.cat (nBytesRead => \n" //
+				+ "		pointer, nBytesRead | linux/write | io.cat (nBytesWrote => \n" //
 				+ "			io nBytesRead \n" //
 				+ "		) \n" //
 				+ "	) \n" //
