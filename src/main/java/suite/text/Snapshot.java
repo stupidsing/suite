@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +32,11 @@ public interface Snapshot {
 	public Map<String, List<Pair<Bytes, Bytes>>> merge( //
 			Map<String, List<Pair<Bytes, Bytes>>> map0, //
 			Map<String, List<Pair<Bytes, Bytes>>> map1);
+
+	public List<Pair<Bytes, Bytes>> readPatch(InputStream is);
+
+	public void writePatch(OutputStream os, List<Pair<Bytes, Bytes>> list) throws IOException;
+
 }
 
 class Impl implements Snapshot {
@@ -55,16 +59,22 @@ class Impl implements Snapshot {
 	public void patchDir(Path path0, Map<String, List<Pair<Bytes, Bytes>>> map) {
 		var isFrom = false;
 
-		for (var e : map.entrySet()) {
-			var p = path0.resolve(e.getKey());
-			var value = e.getValue();
-			if (textUtil.isDiff(value)) {
-				var data = textUtil.fromTo(value, isFrom);
-				if (data != null)
-					FileUtil.out(p).doWrite(os -> os.write(data.toArray()));
-				else
-					FileUtil.deleteIfExists(p);
+		if (Boolean.TRUE)
+			for (var e : map.entrySet()) {
+				var p = path0.resolve(e.getKey());
+				var value = e.getValue();
+				if (textUtil.isDiff(value)) {
+					var data = textUtil.fromTo(value, isFrom);
+					if (data != null)
+						FileUtil.out(p).doWrite(os -> os.write(data.toArray()));
+					else
+						FileUtil.deleteIfExists(p);
+				}
 			}
+		else {
+			var p0 = diffMaps(fromTo(map, true), readMap(path0));
+			var p1 = map;
+			writeMap(path0, fromTo(merge(p0, p1), false));
 		}
 	}
 
@@ -88,7 +98,7 @@ class Impl implements Snapshot {
 		return diffMap;
 	}
 
-	private List<Pair<Bytes, Bytes>> readPatch(InputStream is) {
+	public List<Pair<Bytes, Bytes>> readPatch(InputStream is) {
 		var list = new ArrayList<Pair<Bytes, Bytes>>();
 		String line;
 		while (!String_.equals(line = Util.readLine(is), "EOF"))
@@ -102,7 +112,7 @@ class Impl implements Snapshot {
 		return list;
 	}
 
-	private void writePatch(OutputStream os, List<Pair<Bytes, Bytes>> list) throws IOException {
+	public void writePatch(OutputStream os, List<Pair<Bytes, Bytes>> list) throws IOException {
 		for (var pair : list) {
 			var t0 = pair.t0;
 			var t1 = pair.t1;
@@ -148,10 +158,9 @@ class Impl implements Snapshot {
 				.toMap();
 	}
 
-	private void writeMap(String dir, Map<String, Bytes> map) {
-		var p0 = Paths.get(dir);
+	private void writeMap(Path path0, Map<String, Bytes> map) {
 		for (var e : map.entrySet()) {
-			var p = p0.resolve(e.getKey());
+			var p = path0.resolve(e.getKey());
 			var value = e.getValue();
 			if (value != null)
 				FileUtil.out(p).doWrite(os -> os.write(value.toArray()));
@@ -160,7 +169,7 @@ class Impl implements Snapshot {
 		}
 	}
 
-	private Map<String, Bytes> getFiles(Map<String, List<Pair<Bytes, Bytes>>> diff, boolean isFrom) {
+	private Map<String, Bytes> fromTo(Map<String, List<Pair<Bytes, Bytes>>> diff, boolean isFrom) {
 		return Read.from2(diff).mapValue(v -> textUtil.fromTo(v, isFrom)).toMap();
 	}
 
