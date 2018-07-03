@@ -14,9 +14,9 @@ import suite.cfg.Defaults;
 import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.DblStreamlet;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
 

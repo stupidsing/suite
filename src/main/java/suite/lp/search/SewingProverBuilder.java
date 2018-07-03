@@ -7,7 +7,7 @@ import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.lp.sewing.impl.SewingProverImpl;
 import suite.node.Node;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public class SewingProverBuilder implements Builder {
 

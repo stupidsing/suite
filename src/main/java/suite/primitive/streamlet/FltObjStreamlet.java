@@ -20,6 +20,10 @@ import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.map.ObjFltMap;
 import suite.primitive.adt.pair.FltObjPair;
+import suite.streamlet.FunUtil;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.Sink2;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
@@ -27,10 +31,6 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
 import suite.util.Fail;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.Sink2;
 import suite.util.Object_;
 
 public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltObjOutlet<V>> {

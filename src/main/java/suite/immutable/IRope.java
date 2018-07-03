@@ -9,10 +9,10 @@ import java.util.List;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.IntPrimitives.Obj_Int;
+import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
-import suite.util.FunUtil.Iterate;
 import suite.util.List_;
 
 public class IRope<T> {

@@ -6,11 +6,11 @@ import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.Ints.WriteChar;
 import suite.primitive.streamlet.IntOutlet;
 import suite.primitive.streamlet.IntStreamlet;
+import suite.streamlet.FunUtil;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 
 public class Ints_ {
 

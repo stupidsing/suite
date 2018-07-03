@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Trade_;
-import suite.util.FunUtil2.Fun2;
 
 public class QuoteCache<K> {
 

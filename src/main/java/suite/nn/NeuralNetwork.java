@@ -12,12 +12,12 @@ import suite.primitive.DblMutable;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
 import suite.util.To;
 
 public class NeuralNetwork {

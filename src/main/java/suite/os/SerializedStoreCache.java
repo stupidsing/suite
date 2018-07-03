@@ -11,8 +11,8 @@ import suite.primitive.Bytes;
 import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize.Serializer;
+import suite.streamlet.FunUtil.Source;
 import suite.util.Fail;
-import suite.util.FunUtil.Source;
 
 public class SerializedStoreCache<K, V> {
 

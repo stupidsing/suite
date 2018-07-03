@@ -16,8 +16,8 @@ import suite.net.ThreadService;
 import suite.net.nio.NioChannelFactory.NioChannel;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Source;
 import suite.util.Object_;
 
 public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C> {

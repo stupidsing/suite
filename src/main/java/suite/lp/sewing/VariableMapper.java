@@ -7,9 +7,9 @@ import java.util.Set;
 import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.streamlet.As;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 import suite.util.String_;
 
 public class VariableMapper<K> {

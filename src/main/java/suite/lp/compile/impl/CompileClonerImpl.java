@@ -17,8 +17,8 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.SwitchNode;
+import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Iterate;
 
 public class CompileClonerImpl implements ClonerFactory {
 

@@ -5,7 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public class Intercept {
 

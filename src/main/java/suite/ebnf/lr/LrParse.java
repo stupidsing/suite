@@ -12,9 +12,9 @@ import suite.ebnf.lr.BuildLr.Reduce;
 import suite.ebnf.lr.BuildLr.State;
 import suite.immutable.IList;
 import suite.parser.Lexer;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Source;
 import suite.util.Object_;
 
 public class LrParse {

@@ -14,9 +14,9 @@ import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltObjOutlet;
 import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.As;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Outlet;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive float key and primitive float value. Float.MIN_VALUE is

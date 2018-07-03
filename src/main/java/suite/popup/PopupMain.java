@@ -16,7 +16,7 @@ import suite.editor.FontUtil;
 import suite.editor.LayoutCalculator;
 import suite.editor.Listen;
 import suite.os.Execute;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 import suite.util.String_;

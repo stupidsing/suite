@@ -4,9 +4,9 @@ import java.util.Map;
 
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.FunFactory;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.BinOp;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.BinOp;
 
 public class LambdaInstance<I> {
 

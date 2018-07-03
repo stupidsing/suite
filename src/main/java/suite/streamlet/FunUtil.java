@@ -1,4 +1,4 @@
-package suite.util;
+package suite.streamlet;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -7,8 +7,12 @@ import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
+import suite.streamlet.FunUtil2.Source2;
+import suite.util.Fail;
 import suite.util.Fail.InterruptedRuntimeException;
-import suite.util.FunUtil2.Source2;
+import suite.util.NullableSyncQueue;
+import suite.util.Rethrow;
+import suite.util.Thread_;
 
 public class FunUtil {
 

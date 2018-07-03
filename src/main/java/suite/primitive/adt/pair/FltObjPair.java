@@ -6,8 +6,8 @@ import java.util.Objects;
 import suite.primitive.FltFunUtil;
 import suite.primitive.FltPrimitives.FltObj_Obj;
 import suite.primitive.Flt_Flt;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class FltObjPair<T> {

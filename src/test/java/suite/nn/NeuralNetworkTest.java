@@ -11,7 +11,7 @@ import suite.adt.pair.Pair;
 import suite.math.linalg.Vector;
 import suite.nn.NeuralNetwork.Layer;
 import suite.nn.NeuralNetwork.Out;
-import suite.util.FunUtil2.BinOp;
+import suite.streamlet.FunUtil2.BinOp;
 
 public class NeuralNetworkTest {
 

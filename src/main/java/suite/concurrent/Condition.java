@@ -2,7 +2,7 @@ package suite.concurrent;
 
 import static suite.util.Friends.rethrow;
 
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Source;
 
 public class Condition {
 

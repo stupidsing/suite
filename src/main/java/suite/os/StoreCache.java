@@ -14,9 +14,9 @@ import suite.cfg.HomeDir;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
 import suite.serialize.SerOutput;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Source;
 import suite.util.To;
 
 public class StoreCache {

@@ -36,9 +36,9 @@ import suite.primitive.Int_Dbl;
 import suite.primitive.IoSink;
 import suite.serialize.SerOutput;
 import suite.streamlet.As;
+import suite.streamlet.FunUtil.Sink;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
 
 public class To {
 

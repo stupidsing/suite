@@ -5,7 +5,7 @@ import java.util.Comparator;
 import suite.primitive.DblDbl_Obj;
 import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class DblDblPair {

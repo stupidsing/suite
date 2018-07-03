@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.os.LogUtil;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
@@ -18,8 +20,6 @@ import suite.trade.Trade_;
 import suite.trade.Usex;
 import suite.trade.data.Broker.Hsbc;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil2.Fun2;
 import suite.util.String_;
 
 public class TradeCfgImpl implements TradeCfg {

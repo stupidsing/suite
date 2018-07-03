@@ -27,10 +27,10 @@ import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.node.tree.TreeAnd;
 import suite.streamlet.As;
+import suite.streamlet.FunUtil.Sink;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.util.CommandUtil;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
 import suite.util.String_;
 import suite.util.To;
 

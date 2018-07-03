@@ -6,11 +6,11 @@ import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Floats.WriteChar;
 import suite.primitive.streamlet.FltOutlet;
 import suite.primitive.streamlet.FltStreamlet;
+import suite.streamlet.FunUtil;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 
 public class Floats_ {
 

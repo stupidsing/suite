@@ -13,14 +13,12 @@ import java.util.function.Predicate;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Pair;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.Fun2;
+import suite.streamlet.FunUtil2.Sink2;
+import suite.streamlet.FunUtil2.Source2;
 import suite.util.Fail;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
-import suite.util.FunUtil2;
-import suite.util.FunUtil2.Fun2;
-import suite.util.FunUtil2.Sink2;
-import suite.util.FunUtil2.Source2;
 import suite.util.Object_;
 
 public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K, V>> {

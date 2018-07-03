@@ -14,9 +14,9 @@ import suite.node.parser.Lexer.Token;
 import suite.node.tree.TreeTuple;
 import suite.node.util.Context;
 import suite.node.util.Singleton;
+import suite.streamlet.FunUtil.Sink;
 import suite.text.Preprocess;
 import suite.util.Fail;
-import suite.util.FunUtil.Sink;
 import suite.util.String_;
 
 /**

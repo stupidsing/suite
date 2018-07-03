@@ -30,8 +30,8 @@ import suite.node.util.Cyclic;
 import suite.node.util.Rewrite;
 import suite.node.util.TreeUtil;
 import suite.os.LogUtil;
+import suite.streamlet.FunUtil.Fun;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
 
 public class EvalPredicates {

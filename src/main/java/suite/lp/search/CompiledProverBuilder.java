@@ -8,7 +8,7 @@ import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Node;
 import suite.os.LogUtil;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public class CompiledProverBuilder implements Builder {
 

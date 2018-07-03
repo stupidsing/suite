@@ -17,10 +17,10 @@ import suite.net.nio.NioDispatcher;
 import suite.net.nio.NioDispatcherImpl;
 import suite.net.nio.RequestResponseMatcher;
 import suite.primitive.Bytes;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Signal;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
 import suite.util.Thread_;
 

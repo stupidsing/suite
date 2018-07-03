@@ -20,7 +20,7 @@ import java.util.Set;
 
 import suite.adt.pair.Pair;
 import suite.node.util.Singleton;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Iterate;
 
 public class Object_ {
 

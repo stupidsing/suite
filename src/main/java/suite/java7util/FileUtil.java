@@ -6,9 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayDeque;
 
+import suite.streamlet.FunUtil.Source;
 import suite.util.Copy;
 import suite.util.Fail;
-import suite.util.FunUtil.Source;
 
 public class FileUtil {
 

@@ -2,7 +2,7 @@ package suite.math;
 
 import suite.math.linalg.Vector;
 import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 import suite.util.To;
 
 public class FiniteDifference {

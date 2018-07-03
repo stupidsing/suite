@@ -3,12 +3,12 @@ package suite.trade.singlealloc;
 import static suite.util.Friends.sqrt;
 
 import suite.math.numeric.Statistic;
+import suite.streamlet.FunUtil.Sink;
 import suite.trade.Account;
 import suite.trade.Time;
 import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.data.DataSource;
-import suite.util.FunUtil.Sink;
 import suite.util.To;
 
 public class SingleAllocBackTest {

@@ -8,10 +8,10 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.primitive.IoSink;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.util.Fail;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil.Source;
 
 public class ThunkUtil {
 

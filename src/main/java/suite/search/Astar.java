@@ -9,8 +9,8 @@ import java.util.PriorityQueue;
 import java.util.Set;
 
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
 
 public class Astar<Node> {
 

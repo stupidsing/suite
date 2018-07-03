@@ -11,7 +11,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
 import suite.node.util.TreeUtil;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Iterate;
 
 public class CompileExpressionImpl implements EvaluatorFactory {
 

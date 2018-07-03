@@ -12,8 +12,8 @@ import suite.net.cluster.Cluster;
 import suite.net.cluster.ClusterMap;
 import suite.net.cluster.impl.ClusterMapUtil.GetQuery;
 import suite.net.cluster.impl.ClusterMapUtil.PutQuery;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Sink;
 
 public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 

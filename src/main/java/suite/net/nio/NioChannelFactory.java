@@ -9,9 +9,9 @@ import suite.concurrent.Condition;
 import suite.net.NetUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Signal;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil.Sink;
 
 public interface NioChannelFactory {
 

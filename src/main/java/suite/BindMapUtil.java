@@ -7,8 +7,8 @@ import suite.lp.doer.BinderFactory.BindEnv;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Node;
 import suite.node.io.Formatter;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
 
 public class BindMapUtil {

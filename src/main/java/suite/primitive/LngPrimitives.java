@@ -7,14 +7,14 @@ import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngOutlet;
 import suite.primitive.streamlet.LngStreamlet;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.Source2;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.Source2;
 
 public class LngPrimitives {
 

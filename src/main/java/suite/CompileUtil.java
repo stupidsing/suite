@@ -5,7 +5,7 @@ import java.util.List;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.SewingProverBuilder;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 import suite.util.Memoize;
 
 public class CompileUtil {

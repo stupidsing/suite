@@ -8,7 +8,7 @@ import suite.adt.map.BiMap;
 import suite.adt.map.HashBiMap;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public class HtmlUtil {
 

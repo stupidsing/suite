@@ -3,7 +3,7 @@ package suite.text;
 import java.util.List;
 
 import suite.adt.pair.Pair;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public class Preprocess {
 

@@ -11,7 +11,7 @@ import suite.instructionexecutor.InstructionUtil.Instruction;
 import suite.instructionexecutor.InstructionUtil.Thunk;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Source;
 
 public class InstructionAnalyzer {
 

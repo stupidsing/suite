@@ -1,7 +1,7 @@
 package suite.immutable;
 
+import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil2.BinOp;
 
 public class IHashSet<V> {
 

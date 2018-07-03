@@ -9,8 +9,8 @@ import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.As;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Fail;
-import suite.util.FunUtil.Iterate;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are

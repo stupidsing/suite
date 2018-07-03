@@ -17,9 +17,9 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeAnd;
 import suite.os.LogUtil;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil2.Fun2;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil2.Fun2;
 
 /**
  * TODO ZFC

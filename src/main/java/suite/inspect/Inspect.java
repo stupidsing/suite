@@ -10,10 +10,10 @@ import java.util.HashSet;
 import java.util.List;
 
 import suite.adt.pair.Pair;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
 import suite.util.Memoize;
 import suite.util.ObjectSupport;
 

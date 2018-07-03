@@ -11,9 +11,9 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil2.Fun2;
 
 public class Express {
 

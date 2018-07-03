@@ -12,8 +12,8 @@ import suite.node.Node;
 import suite.node.io.Formatter;
 import suite.node.tree.TreeAnd;
 import suite.node.tree.TreeOr;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Source;
 
 public class ProveTracer {
 

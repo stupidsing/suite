@@ -19,9 +19,9 @@ import org.w3c.dom.ls.LSSerializer;
 import org.xml.sax.SAXException;
 
 import suite.cfg.Defaults;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Source;
 
 public class XmlUtil {
 

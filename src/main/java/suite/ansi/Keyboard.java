@@ -5,10 +5,10 @@ import java.util.List;
 
 import suite.adt.Trie;
 import suite.adt.pair.Pair;
+import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.streamlet.Signal;
 import suite.streamlet.Signal.Redirector;
-import suite.util.FunUtil.Sink;
 
 public class Keyboard {
 

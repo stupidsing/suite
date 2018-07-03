@@ -10,7 +10,7 @@ import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
-import suite.util.FunUtil.Sink;
+import suite.streamlet.FunUtil.Sink;
 
 public class P4Emit {
 

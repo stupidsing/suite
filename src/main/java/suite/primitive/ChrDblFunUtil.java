@@ -7,12 +7,12 @@ import suite.os.LogUtil;
 import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.adt.pair.ChrDblPair;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Sink;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.Source2;
 import suite.util.Fail;
 import suite.util.Fail.InterruptedRuntimeException;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.Source2;
 import suite.util.NullableSyncQueue;
 import suite.util.Thread_;
 

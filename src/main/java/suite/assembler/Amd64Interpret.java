@@ -22,8 +22,8 @@ import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.map.IntIntMap;
 import suite.primitive.adt.pair.IntIntPair;
+import suite.streamlet.FunUtil.Sink;
 import suite.util.Fail;
-import suite.util.FunUtil.Sink;
 import suite.util.To;
 
 public class Amd64Interpret {

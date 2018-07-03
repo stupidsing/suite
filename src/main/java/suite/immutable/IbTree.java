@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
-import suite.util.FunUtil.Iterate;
 import suite.util.List_;
 
 public class IbTree<T> implements ITree<T> {

@@ -27,8 +27,8 @@ import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
 import suite.streamlet.As;
+import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Sink;
 import suite.util.To;
 
 public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Extent, T> {

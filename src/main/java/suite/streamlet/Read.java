@@ -18,10 +18,8 @@ import suite.adt.pair.Pair;
 import suite.cfg.Defaults;
 import suite.http.HttpUtil;
 import suite.primitive.Bytes;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Source;
-import suite.util.FunUtil2;
-import suite.util.FunUtil2.Source2;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.Source2;
 import suite.util.To;
 import suite.util.Util;
 

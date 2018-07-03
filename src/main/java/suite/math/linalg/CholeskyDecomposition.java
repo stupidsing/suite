@@ -4,7 +4,7 @@ import static suite.util.Friends.sqrt;
 
 import suite.adt.pair.Pair;
 import suite.primitive.Floats_;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.To;
 
 public class CholeskyDecomposition {

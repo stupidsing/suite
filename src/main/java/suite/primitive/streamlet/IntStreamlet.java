@@ -22,13 +22,13 @@ import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.set.IntSet;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.Fun2;
 import suite.util.Object_;
 
 public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {

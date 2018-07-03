@@ -4,8 +4,8 @@ import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.primitive.streamlet.IntOutlet;
+import suite.streamlet.FunUtil.Fun;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 
 public interface Int_Chr {
 

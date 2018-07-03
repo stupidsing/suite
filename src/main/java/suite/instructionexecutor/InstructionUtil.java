@@ -10,8 +10,8 @@ import suite.node.Node;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Fail;
-import suite.util.FunUtil.Iterate;
 
 public class InstructionUtil {
 

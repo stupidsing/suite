@@ -7,14 +7,14 @@ import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntOutlet;
 import suite.primitive.streamlet.IntStreamlet;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.Source2;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.Source2;
 
 public class IntPrimitives {
 

@@ -8,9 +8,9 @@ import suite.Suite;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.node.io.Escaper;
+import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.util.Fail;
-import suite.util.FunUtil.Iterate;
 
 public class RenderFunctionalTemplate {
 

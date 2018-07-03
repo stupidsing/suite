@@ -15,9 +15,9 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil2.Fun2;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil2.Fun2;
 
 public class Polynomial<N> {
 

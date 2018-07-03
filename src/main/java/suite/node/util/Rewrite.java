@@ -9,8 +9,8 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Rewrite_;
 import suite.node.io.Rewrite_.NodeRead;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Source;
 
 public class Rewrite {
 

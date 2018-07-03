@@ -19,10 +19,10 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.primitive.IoSink;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 
 public class SwitchNode<R> {
 

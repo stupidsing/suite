@@ -31,12 +31,12 @@ import suite.jdk.gen.pass.FunGenerateBytecode;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
 import suite.os.LogUtil;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Read;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.BinOp;
 import suite.util.Object_;
 import suite.util.Util;
 

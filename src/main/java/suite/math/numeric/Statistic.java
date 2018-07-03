@@ -17,9 +17,9 @@ import suite.primitive.Int_Flt;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.adt.pair.IntObjPair;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 import suite.util.To;
 
 public class Statistic {

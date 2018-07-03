@@ -9,8 +9,8 @@ import java.util.Map;
 
 import suite.adt.PriorityQueue;
 import suite.adt.pair.Pair;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Source;
 import suite.util.To;
 
 /**

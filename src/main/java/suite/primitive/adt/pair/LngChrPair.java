@@ -7,7 +7,7 @@ import suite.primitive.Chr_Chr;
 import suite.primitive.LngChr_Obj;
 import suite.primitive.LngFunUtil;
 import suite.primitive.Lng_Lng;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class LngChrPair {

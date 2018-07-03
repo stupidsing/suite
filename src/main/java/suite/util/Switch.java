@@ -3,7 +3,7 @@ package suite.util;
 import static suite.util.Friends.rethrow;
 
 import suite.primitive.IoSink;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public class Switch<R> {
 

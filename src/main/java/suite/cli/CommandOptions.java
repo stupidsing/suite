@@ -12,8 +12,8 @@ import suite.fp.FunCompilerCfg;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
+import suite.streamlet.FunUtil.Source;
 import suite.util.Fail;
-import suite.util.FunUtil.Source;
 import suite.util.List_;
 import suite.util.String_;
 

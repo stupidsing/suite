@@ -7,8 +7,8 @@ import suite.node.io.Operator;
 import suite.parser.CommentPreprocessor;
 import suite.parser.IndentationPreprocessor;
 import suite.parser.WhitespacePreprocessor;
+import suite.streamlet.FunUtil.Fun;
 import suite.text.Preprocess.Run;
-import suite.util.FunUtil.Fun;
 
 public class PreprocessorFactory {
 

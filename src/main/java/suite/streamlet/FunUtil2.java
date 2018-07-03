@@ -1,4 +1,4 @@
-package suite.util;
+package suite.streamlet;
 
 import java.util.Iterator;
 import java.util.function.BiFunction;
@@ -7,10 +7,14 @@ import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Sink;
+import suite.streamlet.FunUtil.Source;
+import suite.util.Fail;
 import suite.util.Fail.InterruptedRuntimeException;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
+import suite.util.NullableSyncQueue;
+import suite.util.Rethrow;
+import suite.util.Thread_;
 
 public class FunUtil2 {
 

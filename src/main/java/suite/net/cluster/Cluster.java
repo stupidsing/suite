@@ -3,8 +3,8 @@ package suite.net.cluster;
 import java.util.Set;
 
 import suite.net.Service;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Signal;
-import suite.util.FunUtil.Fun;
 
 public interface Cluster extends Service {
 

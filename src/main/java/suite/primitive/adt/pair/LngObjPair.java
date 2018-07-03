@@ -6,8 +6,8 @@ import java.util.Objects;
 import suite.primitive.LngFunUtil;
 import suite.primitive.LngPrimitives.LngObj_Obj;
 import suite.primitive.Lng_Lng;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class LngObjPair<T> {

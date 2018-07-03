@@ -3,8 +3,8 @@ package suite.immutable;
 import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.fs.KeyValueMutator;
+import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Iterate;
 
 public class LazyIbTreeMutator<K, V> implements KeyValueMutator<K, V> {
 

@@ -6,8 +6,8 @@ import java.util.Objects;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.Int_Int;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class IntObjPair<T> {

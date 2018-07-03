@@ -7,7 +7,7 @@ import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class DblFltPair {

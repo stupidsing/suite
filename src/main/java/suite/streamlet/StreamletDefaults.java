@@ -2,7 +2,7 @@ package suite.streamlet;
 
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public interface StreamletDefaults<T, Outlet_ extends OutletDefaults<T>> extends Iterable<T> {
 

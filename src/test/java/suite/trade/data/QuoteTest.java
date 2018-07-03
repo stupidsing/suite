@@ -4,10 +4,10 @@ import java.util.Map;
 
 import org.junit.Test;
 
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.trade.Trade;
 import suite.trade.analysis.Summarize;
-import suite.util.FunUtil.Fun;
 import suite.util.To;
 
 public class QuoteTest {

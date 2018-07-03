@@ -6,7 +6,7 @@ import suite.concurrent.Concurrent.AbortException;
 import suite.concurrent.Concurrent.LostSnapshotException;
 import suite.concurrent.Stm.Transaction;
 import suite.concurrent.Stm.TransactionStatus;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 /**
  * Implements software transactional memory by compare-and-swap operations.

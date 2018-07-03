@@ -21,6 +21,7 @@ import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.adt.pair.IntFltPair;
 import suite.streamlet.As;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
@@ -34,7 +35,6 @@ import suite.trade.data.TradeCfgImpl;
 import suite.ts.BollingerBands;
 import suite.ts.Quant;
 import suite.ts.TimeSeries;
-import suite.util.FunUtil.Fun;
 import suite.util.String_;
 import suite.util.To;
 

@@ -15,7 +15,7 @@ import suite.cfg.Defaults;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Thread_;
 import suite.util.To;
 

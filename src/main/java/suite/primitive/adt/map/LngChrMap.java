@@ -16,9 +16,9 @@ import suite.primitive.adt.pair.LngObjPair;
 import suite.primitive.streamlet.LngObjOutlet;
 import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.As;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Outlet;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive long key and primitive char value. Character.MIN_VALUE is

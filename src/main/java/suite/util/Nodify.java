@@ -27,8 +27,8 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeOr;
 import suite.primitive.Chars;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
 
 /**
  * Convert (supposedly) any Java structures to nodes.

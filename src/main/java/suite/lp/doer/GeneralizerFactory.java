@@ -5,7 +5,7 @@ import suite.lp.sewing.VariableMapper;
 import suite.lp.sewing.VariableMapper.NodeEnv;
 import suite.node.Atom;
 import suite.node.Node;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Source;
 
 public interface GeneralizerFactory {
 

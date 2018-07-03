@@ -7,11 +7,11 @@ import suite.adt.pair.FixieArray;
 import suite.adt.pair.Pair;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.text.Segment;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil.Source;
 
 public class ParseUtil {
 

@@ -11,9 +11,9 @@ import suite.concurrent.Stm;
 import suite.concurrent.Stm.TransactionStatus;
 import suite.fs.KeyValueMutator;
 import suite.fs.KeyValueStore;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 
 /**
  * Implements software transaction memory in a key-value storage.

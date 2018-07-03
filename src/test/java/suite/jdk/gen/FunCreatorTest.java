@@ -24,9 +24,9 @@ import suite.node.io.TermOp;
 import suite.primitive.Flt_Flt;
 import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.Int_Int;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Source;
 
 public class FunCreatorTest {
 

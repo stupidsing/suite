@@ -12,7 +12,7 @@ import suite.node.io.Rewrite_.NodeRead;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.pair.IntObjPair;
-import suite.util.FunUtil.Sink;
+import suite.streamlet.FunUtil.Sink;
 import suite.util.Object_;
 
 /**

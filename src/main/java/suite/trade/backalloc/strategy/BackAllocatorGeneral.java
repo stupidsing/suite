@@ -14,6 +14,7 @@ import suite.adt.pair.Pair;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltFltPair;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -26,7 +27,6 @@ import suite.trade.singlealloc.Strategos;
 import suite.ts.BollingerBands;
 import suite.ts.Quant;
 import suite.ts.TimeSeries;
-import suite.util.FunUtil.Fun;
 import suite.util.String_;
 
 public class BackAllocatorGeneral {

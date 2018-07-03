@@ -18,10 +18,10 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Rewrite;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 import suite.util.To;
 
 /**

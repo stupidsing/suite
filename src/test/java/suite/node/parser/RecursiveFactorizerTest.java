@@ -23,10 +23,10 @@ import suite.node.parser.FactorizeResult.FTree;
 import suite.node.util.Rewrite;
 import suite.node.util.Singleton;
 import suite.os.FileUtil;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil.Source;
 import suite.util.Nodify;
 import suite.util.To;
 

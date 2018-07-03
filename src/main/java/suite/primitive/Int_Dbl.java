@@ -4,8 +4,8 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.streamlet.DblStreamlet;
 import suite.primitive.streamlet.IntOutlet;
+import suite.streamlet.FunUtil.Fun;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 
 public interface Int_Dbl {
 

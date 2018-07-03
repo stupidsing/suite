@@ -10,7 +10,7 @@ import suite.math.linalg.Vector;
 import suite.primitive.DblMutable;
 import suite.primitive.Floats_;
 import suite.primitive.Ints_;
-import suite.util.FunUtil.Sink;
+import suite.streamlet.FunUtil.Sink;
 
 public class SelfOrganizingMap {
 

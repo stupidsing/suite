@@ -21,9 +21,9 @@ import suite.node.util.TreeUtil;
 import suite.node.util.TreeUtil.IntInt_Bool;
 import suite.primitive.IntInt_Int;
 import suite.primitive.adt.pair.IntIntPair;
+import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil2.Fun2;
 import suite.util.Switch;
 
 public class P3Optimize {

@@ -7,7 +7,7 @@ import suite.primitive.ChrInt_Obj;
 import suite.primitive.Chr_Chr;
 import suite.primitive.IntFunUtil;
 import suite.primitive.Int_Int;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class ChrIntPair {

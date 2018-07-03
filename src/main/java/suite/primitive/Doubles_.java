@@ -6,11 +6,11 @@ import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.Doubles.WriteChar;
 import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.DblStreamlet;
+import suite.streamlet.FunUtil;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 
 public class Doubles_ {
 

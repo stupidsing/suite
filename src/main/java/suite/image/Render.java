@@ -18,7 +18,7 @@ import suite.primitive.Floats_;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Ints_;
 import suite.streamlet.As;
-import suite.util.FunUtil2.BiFun;
+import suite.streamlet.FunUtil2.BiFun;
 
 public class Render {
 

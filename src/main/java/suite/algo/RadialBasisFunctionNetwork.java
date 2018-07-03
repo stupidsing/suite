@@ -10,8 +10,8 @@ import suite.math.linalg.Vector;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
 import suite.util.To;
 
 /**

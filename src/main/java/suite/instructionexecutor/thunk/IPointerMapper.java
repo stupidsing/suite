@@ -1,7 +1,7 @@
 package suite.instructionexecutor.thunk;
 
 import suite.immutable.IPointer;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public class IPointerMapper<T0, T1> {
 

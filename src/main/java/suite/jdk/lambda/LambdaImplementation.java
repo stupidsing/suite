@@ -6,7 +6,7 @@ import org.apache.bcel.generic.Type;
 
 import suite.jdk.gen.FunCreator;
 import suite.jdk.gen.FunExpression.FunExpr;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public class LambdaImplementation<I> {
 

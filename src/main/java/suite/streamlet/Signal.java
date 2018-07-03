@@ -14,10 +14,10 @@ import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.concurrent.Bag;
 import suite.concurrent.CasReference;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.Fun2;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Sink;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.Fun2;
 import suite.util.NullableSyncQueue;
 
 /**

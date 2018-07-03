@@ -5,7 +5,7 @@ import java.util.Comparator;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Int_Int;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class IntIntPair {

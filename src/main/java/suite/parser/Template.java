@@ -1,6 +1,6 @@
 package suite.parser;
 
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Iterate;
 
 public class Template {
 

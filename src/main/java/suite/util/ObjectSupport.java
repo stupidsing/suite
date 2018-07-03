@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 import suite.immutable.IList;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public class ObjectSupport<T> {
 

@@ -3,7 +3,7 @@ package suite.os;
 import java.lang.management.GarbageCollectorMXBean;
 import java.lang.management.ManagementFactory;
 
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Source;
 
 public class Stopwatch<T> {
 

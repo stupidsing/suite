@@ -4,8 +4,8 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.streamlet.FltOutlet;
 import suite.primitive.streamlet.IntStreamlet;
+import suite.streamlet.FunUtil.Fun;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 
 public interface Flt_Int {
 

@@ -5,7 +5,7 @@ import java.util.Comparator;
 import suite.primitive.FltFlt_Obj;
 import suite.primitive.FltFunUtil;
 import suite.primitive.Flt_Flt;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class FltFltPair {

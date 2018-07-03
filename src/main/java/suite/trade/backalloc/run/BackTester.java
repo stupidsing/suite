@@ -7,6 +7,8 @@ import suite.math.numeric.Statistic;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats_;
 import suite.primitive.FltPrimitives.Obj_Flt;
+import suite.streamlet.FunUtil;
+import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Asset;
@@ -16,8 +18,6 @@ import suite.trade.backalloc.BackAllocTester.Simulate;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Sink;
 import suite.util.Object_;
 import suite.util.To;
 

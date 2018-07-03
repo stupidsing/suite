@@ -14,8 +14,8 @@ import org.apache.log4j.PatternLayout;
 import suite.cfg.Defaults;
 import suite.inspect.Dump;
 import suite.proxy.Intercept;
+import suite.streamlet.FunUtil.Source;
 import suite.util.Array_;
-import suite.util.FunUtil.Source;
 
 public class LogUtil {
 

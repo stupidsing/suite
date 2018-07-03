@@ -16,9 +16,9 @@ import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.streamlet.DblObjOutlet;
 import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.As;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Outlet;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive double key and primitive int value. Integer.MIN_VALUE is

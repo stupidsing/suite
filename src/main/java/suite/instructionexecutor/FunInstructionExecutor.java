@@ -20,8 +20,8 @@ import suite.node.tree.TreeAnd;
 import suite.node.tree.TreeOr;
 import suite.node.util.Comparer;
 import suite.primitive.Chars;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Fail;
-import suite.util.FunUtil.Iterate;
 import suite.util.To;
 
 public class FunInstructionExecutor extends InstructionExecutor {

@@ -6,11 +6,11 @@ import java.util.List;
 import suite.lp.doer.Cloner;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
+import suite.streamlet.FunUtil;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Sink;
+import suite.streamlet.FunUtil.Source;
 import suite.util.Fail;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
 import suite.util.To;
 
 public class ProverBuilder {

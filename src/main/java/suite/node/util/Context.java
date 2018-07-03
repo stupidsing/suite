@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import suite.node.Atom;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public class Context {
 

@@ -9,8 +9,8 @@ import suite.cfg.Defaults;
 import suite.os.SocketUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.streamlet.FunUtil.Fun;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 
 public class ServeSocket {
 

@@ -18,8 +18,8 @@ import suite.net.nio.NioChannelFactory.BufferedNioChannel;
 import suite.net.nio.NioChannelFactory.NioChannel;
 import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;
 import suite.primitive.Bytes;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Source;
 import suite.util.Thread_;
 import suite.util.To;
 

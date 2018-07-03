@@ -14,11 +14,11 @@ import java.util.function.Predicate;
 
 import javassist.Modifier;
 import suite.cfg.Defaults;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Sink;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.Fun2;
 
 public class Util {
 

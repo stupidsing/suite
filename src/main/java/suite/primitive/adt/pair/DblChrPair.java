@@ -7,7 +7,7 @@ import suite.primitive.Chr_Chr;
 import suite.primitive.DblChr_Obj;
 import suite.primitive.DblFunUtil;
 import suite.primitive.Dbl_Dbl;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class DblChrPair {

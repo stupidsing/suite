@@ -6,7 +6,7 @@ import java.util.Deque;
 import java.util.List;
 
 import suite.primitive.adt.pair.IntObjPair;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public class Alphabeta<State> {
 

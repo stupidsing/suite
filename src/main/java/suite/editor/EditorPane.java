@@ -14,8 +14,8 @@ import javax.swing.text.Segment;
 import javax.swing.undo.UndoManager;
 
 import suite.adt.pair.Pair;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Signal;
-import suite.util.FunUtil.Fun;
 import suite.util.Rethrow.SinkEx;
 import suite.util.String_;
 

@@ -33,9 +33,9 @@ import suite.jdk.gen.FunExprM.SeqFunExpr;
 import suite.jdk.gen.FunExprM.VoidFunExpr;
 import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.Type_;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 import suite.util.Util;
 
 public class FunTypeInformation {

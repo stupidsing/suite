@@ -4,9 +4,9 @@ import static suite.util.Friends.rethrow;
 
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes.WriteByte;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 
 public class Bytes_ {
 

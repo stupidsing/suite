@@ -11,10 +11,10 @@ import suite.ebnf.Grammar.GrammarType;
 import suite.ebnf.topdown.Expect.ExpectFun;
 import suite.os.LogUtil;
 import suite.primitive.adt.pair.IntIntPair;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.util.Fail;
-import suite.util.FunUtil.Source;
 import suite.util.String_;
 
 /**

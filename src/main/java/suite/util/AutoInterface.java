@@ -1,6 +1,6 @@
 package suite.util;
 
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public interface AutoInterface<T> {
 

@@ -22,8 +22,8 @@ import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
+import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Sink;
 
 public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integer, T> {
 

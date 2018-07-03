@@ -9,7 +9,7 @@ import suite.lp.Configuration.ProverCfg;
 import suite.lp.doer.ProverFactory;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public class CompileProverImpl implements ProverFactory {
 

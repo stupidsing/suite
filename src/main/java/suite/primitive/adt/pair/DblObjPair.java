@@ -6,8 +6,8 @@ import java.util.Objects;
 import suite.primitive.DblFunUtil;
 import suite.primitive.DblPrimitives.DblObj_Obj;
 import suite.primitive.Dbl_Dbl;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class DblObjPair<T> {

@@ -11,7 +11,7 @@ import suite.node.io.TermOp;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Source;
 
 public class IterativeParserTest {
 

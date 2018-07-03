@@ -21,10 +21,10 @@ import suite.cfg.Defaults;
 import suite.file.ExtentAllocator.Extent;
 import suite.inspect.Inspect;
 import suite.primitive.Bytes;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.util.Array_;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
 import suite.util.To;
 

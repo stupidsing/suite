@@ -21,8 +21,8 @@ import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
+import suite.streamlet.FunUtil.Sink;
 import suite.util.Fail;
-import suite.util.FunUtil.Sink;
 
 // mvn compile exec:java -Dexec.mainClass=suite.dev.DevMain -Dexec.args="${COLUMNS} ${LINES}"
 public class DevMain {

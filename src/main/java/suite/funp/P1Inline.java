@@ -22,8 +22,8 @@ import suite.immutable.IMap;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.primitive.IntMutable;
+import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Iterate;
 import suite.util.List_;
 import suite.util.String_;
 

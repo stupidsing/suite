@@ -17,7 +17,7 @@ import suite.funp.P2.FunpMemory;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
-import suite.util.FunUtil2.Fun2;
+import suite.streamlet.FunUtil2.Fun2;
 
 public class P4DecomposeOperand {
 

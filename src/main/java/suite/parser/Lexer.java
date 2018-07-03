@@ -7,8 +7,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import suite.streamlet.FunUtil.Source;
 import suite.util.Fail;
-import suite.util.FunUtil.Source;
 
 /**
  * Lexical analyzer.

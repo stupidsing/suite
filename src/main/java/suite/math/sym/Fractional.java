@@ -9,9 +9,9 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.io.SwitchNode;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil2.Fun2;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil2.Fun2;
 
 public class Fractional<I> {
 

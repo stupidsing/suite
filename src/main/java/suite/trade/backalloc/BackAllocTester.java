@@ -8,6 +8,7 @@ import java.util.Map;
 import suite.math.numeric.Statistic;
 import suite.os.LogUtil;
 import suite.primitive.Ints_;
+import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
@@ -19,7 +20,6 @@ import suite.trade.Trade_;
 import suite.trade.data.DataSource.Eod;
 import suite.trade.data.TradeCfg;
 import suite.ts.TimeSeries;
-import suite.util.FunUtil.Sink;
 import suite.util.To;
 
 public class BackAllocTester {

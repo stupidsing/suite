@@ -11,10 +11,10 @@ import suite.adt.pair.Pair;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.immutable.IList;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 import suite.util.List_;
 
 public class BuildLr {

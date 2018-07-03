@@ -4,7 +4,7 @@ import static suite.util.Friends.rethrow;
 
 import suite.BindMapUtil;
 import suite.node.Node;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Source;
 
 public class Matcher<T> {
 

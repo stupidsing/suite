@@ -10,7 +10,7 @@ import suite.fs.FileSystemMutator;
 import suite.fs.KeyDataStore;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Source;
 
 public class FileSystemMutatorImpl implements FileSystemMutator {
 

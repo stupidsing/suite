@@ -8,9 +8,9 @@ import suite.adt.pair.Pair;
 import suite.rt.RayTracer.Ray;
 import suite.rt.RayTracer.RayHit;
 import suite.rt.RayTracer.RtObject;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Fun;
 
 public class RayHit_ {
 

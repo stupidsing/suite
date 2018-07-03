@@ -3,10 +3,10 @@ package suite.immutable;
 import java.util.List;
 
 import suite.primitive.adt.pair.IntObjPair;
+import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;
-import suite.util.FunUtil2.BinOp;
 
 /**
  * Bitmap list.

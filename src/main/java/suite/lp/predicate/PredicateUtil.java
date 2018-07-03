@@ -7,8 +7,8 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil.Sink;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Sink;
 
 public class PredicateUtil {
 

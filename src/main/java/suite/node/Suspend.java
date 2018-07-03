@@ -1,6 +1,6 @@
 package suite.node;
 
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Source;
 
 public class Suspend extends Node {
 

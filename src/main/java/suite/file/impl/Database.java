@@ -11,7 +11,7 @@ import suite.fs.impl.TransactionManager;
 import suite.immutable.LazyIbTreeStore;
 import suite.node.util.Singleton;
 import suite.serialize.Serialize;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 import suite.util.Object_;
 
 public class Database implements Closeable {

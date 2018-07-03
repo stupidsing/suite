@@ -23,11 +23,11 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil2.BiFun;
 import suite.streamlet.Read;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil2.BiFun;
 import suite.util.To;
 
 public class InterpretFunLazy {

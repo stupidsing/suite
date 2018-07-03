@@ -9,8 +9,8 @@ import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjOutlet;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Fail;
-import suite.util.FunUtil.Iterate;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are

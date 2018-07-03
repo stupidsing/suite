@@ -7,8 +7,8 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
-import suite.util.FunUtil;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil;
+import suite.streamlet.FunUtil.Source;
 
 /**
  * Longest common subsequence using dynamic programming.

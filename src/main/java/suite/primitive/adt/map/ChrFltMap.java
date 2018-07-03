@@ -16,9 +16,9 @@ import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.streamlet.ChrObjOutlet;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Outlet;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 
 /**
  * Map with primitive char key and primitive float value. Float.MIN_VALUE is

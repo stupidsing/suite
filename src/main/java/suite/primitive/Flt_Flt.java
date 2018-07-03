@@ -4,8 +4,8 @@ import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.streamlet.FltOutlet;
 import suite.primitive.streamlet.FltStreamlet;
+import suite.streamlet.FunUtil.Fun;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 
 public interface Flt_Flt {
 

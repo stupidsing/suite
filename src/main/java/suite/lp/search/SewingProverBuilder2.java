@@ -8,7 +8,7 @@ import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.sewing.impl.QueryRewriter;
 import suite.node.Node;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public class SewingProverBuilder2 implements Builder {
 

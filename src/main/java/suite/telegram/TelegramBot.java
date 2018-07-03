@@ -10,7 +10,7 @@ import org.telegram.telegrambots.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
 import suite.cfg.Defaults;
-import suite.util.FunUtil2.FoldOp;
+import suite.streamlet.FunUtil2.FoldOp;
 import suite.util.Thread_;
 
 public class TelegramBot {

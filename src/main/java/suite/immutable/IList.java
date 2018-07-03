@@ -5,10 +5,10 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.Objects;
 
+import suite.streamlet.FunUtil;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil;
-import suite.util.FunUtil.Source;
 import suite.util.Object_;
 
 /**

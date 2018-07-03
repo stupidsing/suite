@@ -4,8 +4,8 @@ import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.LngStreamlet;
+import suite.streamlet.FunUtil.Fun;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 
 public interface Dbl_Lng {
 

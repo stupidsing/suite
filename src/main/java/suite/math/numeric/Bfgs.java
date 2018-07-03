@@ -9,7 +9,7 @@ import suite.primitive.DblDbl_Dbl;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 /**
  * https://en.wikipedia.org/wiki/Broyden%E2%80%93Fletcher%E2%80%93Goldfarb%E2%80%93Shanno_algorithm

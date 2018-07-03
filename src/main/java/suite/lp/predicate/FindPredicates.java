@@ -16,8 +16,8 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeAnd;
 import suite.node.util.TermKey;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Source;
 import suite.util.Memoize;
 
 public class FindPredicates {

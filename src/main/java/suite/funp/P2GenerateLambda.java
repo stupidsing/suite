@@ -31,9 +31,9 @@ import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
 import suite.util.To;
 import suite.util.Util;
 

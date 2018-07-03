@@ -11,7 +11,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Source;
 import suite.util.List_;
 import suite.util.To;
 

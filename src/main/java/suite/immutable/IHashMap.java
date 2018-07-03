@@ -3,10 +3,10 @@ package suite.immutable;
 import java.util.Objects;
 
 import suite.adt.pair.Pair;
+import suite.streamlet.FunUtil2.BinOp;
+import suite.streamlet.FunUtil2.Source2;
 import suite.streamlet.Outlet2;
 import suite.streamlet.Streamlet2;
-import suite.util.FunUtil2.BinOp;
-import suite.util.FunUtil2.Source2;
 
 public class IHashMap<K, V> {
 

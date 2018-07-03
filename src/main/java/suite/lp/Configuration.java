@@ -4,8 +4,8 @@ import suite.Suite;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
 import suite.node.util.Singleton;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Sink;
+import suite.streamlet.FunUtil.Source;
 
 public class Configuration {
 

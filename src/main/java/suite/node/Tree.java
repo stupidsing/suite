@@ -9,9 +9,9 @@ import suite.node.tree.TreeAnd;
 import suite.node.tree.TreeOp;
 import suite.node.tree.TreeOr;
 import suite.node.tree.TreeTuple;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Source;
 
 public abstract class Tree extends Node {
 

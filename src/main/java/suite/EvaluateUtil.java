@@ -20,9 +20,9 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.os.LogUtil;
 import suite.primitive.IoSink;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 import suite.util.Memoize;
 import suite.util.String_;
 

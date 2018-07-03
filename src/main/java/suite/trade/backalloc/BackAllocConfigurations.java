@@ -1,6 +1,7 @@
 package suite.trade.backalloc;
 
 import suite.adt.pair.Pair;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
@@ -15,7 +16,6 @@ import suite.trade.backalloc.strategy.Pmamr2BackAllocator;
 import suite.trade.backalloc.strategy.PmamrBackAllocator;
 import suite.trade.backalloc.strategy.ReverseCorrelateBackAllocator;
 import suite.trade.data.TradeCfg;
-import suite.util.FunUtil.Fun;
 
 public class BackAllocConfigurations {
 

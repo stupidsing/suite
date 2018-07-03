@@ -4,9 +4,9 @@ import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.immutable.IList;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Source;
 import suite.util.String_;
 
 public class Wildcard {

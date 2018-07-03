@@ -6,9 +6,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import suite.adt.PriorityQueue;
 import suite.adt.pair.Pair;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.Fun2;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.Fun2;
 
 public class Memoize {
 

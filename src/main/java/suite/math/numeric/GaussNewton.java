@@ -7,8 +7,8 @@ import suite.math.sym.Symbolic;
 import suite.node.Node;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
+import suite.streamlet.FunUtil.Fun;
 import suite.util.Array_;
-import suite.util.FunUtil.Fun;
 
 /**
  * https://en.wikipedia.org/wiki/Gauss%E2%80%93Newton_algorithm

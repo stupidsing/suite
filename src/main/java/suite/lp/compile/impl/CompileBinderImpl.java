@@ -15,7 +15,7 @@ import suite.node.Str;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.SwitchNode;
-import suite.util.FunUtil2.BinOp;
+import suite.streamlet.FunUtil2.BinOp;
 
 public class CompileBinderImpl extends CompileClonerImpl implements BinderFactory {
 

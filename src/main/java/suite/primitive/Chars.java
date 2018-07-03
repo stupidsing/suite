@@ -14,9 +14,9 @@ import suite.cfg.Defaults;
 import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.streamlet.ChrOutlet;
 import suite.primitive.streamlet.ChrStreamlet;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
 

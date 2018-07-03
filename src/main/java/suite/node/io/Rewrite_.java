@@ -11,10 +11,10 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.util.Comparer;
+import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.Fail;
-import suite.util.FunUtil.Iterate;
 
 public class Rewrite_ {
 

@@ -1,11 +1,11 @@
 package suite.trade.backalloc;
 
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.trade.Time;
 import suite.trade.backalloc.strategy.BackAllocator_;
-import suite.util.FunUtil.Fun;
 
 public class BackAllocConfiguration {
 

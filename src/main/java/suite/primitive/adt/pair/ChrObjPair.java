@@ -6,8 +6,8 @@ import java.util.Objects;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.ChrPrimitives.ChrObj_Obj;
 import suite.primitive.Chr_Chr;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class ChrObjPair<T> {

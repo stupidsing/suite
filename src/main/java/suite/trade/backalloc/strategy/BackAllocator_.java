@@ -5,11 +5,11 @@ import java.util.List;
 import suite.adt.pair.Pair;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Int_Dbl;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource;
 import suite.trade.singlealloc.BuySellStrategy;
-import suite.util.FunUtil.Fun;
 
 public class BackAllocator_ {
 

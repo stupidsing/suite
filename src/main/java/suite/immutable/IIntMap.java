@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.primitive.adt.pair.IntObjPair;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Iterate;
-import suite.util.FunUtil2.BinOp;
 
 public class IIntMap<V> {
 

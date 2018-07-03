@@ -6,9 +6,9 @@ import org.junit.Test;
 
 import suite.inspect.Dump;
 import suite.os.LogUtil;
+import suite.streamlet.FunUtil2.Fun2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
-import suite.util.FunUtil2.Fun2;
 
 public class YahooTest {
 

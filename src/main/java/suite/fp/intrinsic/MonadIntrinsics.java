@@ -21,7 +21,7 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Suspend;
 import suite.node.tree.TreeAnd;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Thread_;
 
 public class MonadIntrinsics {

@@ -23,13 +23,13 @@ import suite.primitive.adt.pair.IntFltPair;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.primitive.adt.pair.LngIntPair;
 import suite.streamlet.As;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account.Valuation;
 import suite.trade.data.DataSource.Eod;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Source;
 import suite.util.Set_;
 import suite.util.String_;
 

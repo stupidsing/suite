@@ -23,10 +23,10 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.IntPrimitives.Obj_Int;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil2.Fun2;
 import suite.util.List_;
 
 public class Symbolic {

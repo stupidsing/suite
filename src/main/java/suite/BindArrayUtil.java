@@ -8,7 +8,7 @@ import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Atom;
 import suite.node.Node;
 import suite.primitive.Ints_;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 import suite.util.Memoize;
 import suite.util.To;
 

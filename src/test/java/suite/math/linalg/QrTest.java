@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import suite.adt.pair.Pair;
 import suite.math.Math_;
-import suite.util.FunUtil.Fun;
+import suite.streamlet.FunUtil.Fun;
 
 public class QrTest {
 

@@ -9,8 +9,8 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.primitive.Ints_;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Source;
 
 public class KMeansClusterTest {
 

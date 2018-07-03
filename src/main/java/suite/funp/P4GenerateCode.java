@@ -52,12 +52,12 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Ints_;
+import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Sink;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.Sink2;
 import suite.streamlet.Read;
 import suite.util.Fail;
-import suite.util.FunUtil.Fun;
-import suite.util.FunUtil.Sink;
-import suite.util.FunUtil.Source;
-import suite.util.FunUtil2.Sink2;
 
 public class P4GenerateCode {
 

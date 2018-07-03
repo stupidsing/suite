@@ -11,7 +11,7 @@ import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpTree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.util.FunUtil.Source;
+import suite.streamlet.FunUtil.Source;
 
 public class P4JumpIf {
 

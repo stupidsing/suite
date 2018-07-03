@@ -30,9 +30,9 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.parser.IterativeParser;
 import suite.primitive.IoSink;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.util.Fail;
-import suite.util.FunUtil.Source;
 
 public class Suite {
 

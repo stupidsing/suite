@@ -5,7 +5,7 @@ import java.util.Comparator;
 import suite.primitive.ChrChr_Obj;
 import suite.primitive.ChrFunUtil;
 import suite.primitive.Chr_Chr;
-import suite.util.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Object_;
 
 public class ChrChrPair {

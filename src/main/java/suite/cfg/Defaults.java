@@ -16,8 +16,8 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
+import suite.streamlet.FunUtil.Source;
 import suite.util.Fail;
-import suite.util.FunUtil.Source;
 import suite.util.Memoize;
 import suite.util.To;
 

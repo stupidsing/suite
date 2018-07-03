@@ -2,8 +2,8 @@ package suite.concurrent;
 
 import java.util.concurrent.atomic.AtomicStampedReference;
 
+import suite.streamlet.FunUtil.Iterate;
 import suite.util.Fail;
-import suite.util.FunUtil.Iterate;
 
 /**
  * A compare-and-set atomic reference that also uses stamp to resolve ABA

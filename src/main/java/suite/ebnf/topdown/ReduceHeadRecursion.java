@@ -6,8 +6,8 @@ import java.util.Map;
 
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
+import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
-import suite.util.FunUtil.Iterate;
 import suite.util.List_;
 import suite.util.String_;
 

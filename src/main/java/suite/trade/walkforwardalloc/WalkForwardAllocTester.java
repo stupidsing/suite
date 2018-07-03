@@ -9,6 +9,7 @@ import suite.math.numeric.Statistic;
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Floats_;
 import suite.primitive.Longs_;
+import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
@@ -21,7 +22,6 @@ import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSource.Eod;
 import suite.trade.data.TradeCfg;
 import suite.ts.TimeSeries;
-import suite.util.FunUtil.Sink;
 import suite.util.To;
 
 public class WalkForwardAllocTester {
