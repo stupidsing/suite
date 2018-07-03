@@ -129,11 +129,11 @@ public class P0Parse {
 				return FunpBoolean.of(true);
 			}).match("type .0 = .1 >> .2", (a, b, c) -> {
 				return FunpCheckType.of(p(a), p(b), p(c));
-			}).match("coerce-byte .0", a -> {
+			}).match("coerce.byte .0", a -> {
 				return FunpCoerce.of(Coerce.BYTE, p(a));
-			}).match("coerce-number .0", a -> {
+			}).match("coerce.number .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBER, p(a));
-			}).match("coerce-pointer .0", a -> {
+			}).match("coerce.pointer .0", a -> {
 				return FunpCoerce.of(Coerce.POINTER, p(a));
 			}).match("consult .0", a -> {
 				return consult(Str.str(a));

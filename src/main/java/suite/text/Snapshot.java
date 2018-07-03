@@ -15,7 +15,6 @@ import suite.adt.pair.Pair;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.Rethrow;
 import suite.util.Set_;
 import suite.util.String_;
@@ -114,19 +113,19 @@ class Impl implements Snapshot {
 
 	public void writePatch(OutputStream os, List<Pair<Bytes, Bytes>> list) throws IOException {
 		for (var pair : list) {
-			var t0 = pair.t0;
-			var t1 = pair.t1;
-			var size0 = t0 != null ? Integer.toString(t0.size()) : "N";
-			var size1 = t1 != null ? Integer.toString(t1.size()) : "N";
+			var bs0 = pair.t0;
+			var bs1 = pair.t1;
+			var size0 = bs0 != null ? Integer.toString(bs0.size()) : "N";
+			var size1 = bs1 != null ? Integer.toString(bs1.size()) : "N";
 			var line = size0 + " " + size1 + "\n";
 			os.write(line.getBytes(Defaults.charset));
-			if (t0 != null) {
+			if (bs0 != null) {
 				os.write('<');
-				writeBlock(os, t0);
+				writeBlock(os, bs0);
 			}
-			if (t1 != null) {
+			if (bs1 != null) {
 				os.write('>');
-				writeBlock(os, t1);
+				writeBlock(os, bs1);
 			}
 		}
 		os.write("EOF\n".getBytes(Defaults.charset));
@@ -134,14 +133,7 @@ class Impl implements Snapshot {
 
 	private Bytes readBlock(InputStream is, int size) throws IOException {
 		var bs = new byte[size];
-		var p = 0;
-		while (p < size) {
-			var c = is.read(bs, p, size - p);
-			if (0 <= c)
-				p += c;
-			else
-				return Fail.t();
-		}
+		is.readNBytes(bs, size, size);
 		is.read();
 		return Bytes.of(bs);
 	}
