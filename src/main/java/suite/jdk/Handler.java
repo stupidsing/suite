@@ -1,4 +1,4 @@
-package suite.classpath;
+package suite.jdk;
 
 import java.io.IOException;
 import java.net.URL;

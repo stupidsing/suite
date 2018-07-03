@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.Suite;
-import suite.classpath.Handler;
 import suite.immutable.IList;
+import suite.jdk.Handler;
 import suite.lp.check.CheckLogic;
 import suite.lp.doer.Prover;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
