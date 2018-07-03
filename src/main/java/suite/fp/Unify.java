@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.fp.Unify.UnNode;
-import suite.util.AutoObject;
+import suite.object.AutoObject;
 import suite.util.Fail;
 import suite.util.Util;
 

@@ -7,8 +7,8 @@ import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Instruction;
 import suite.funp.P2.FunpFramePointer;
 import suite.node.Node;
+import suite.object.AutoInterface;
 import suite.primitive.Bytes;
-import suite.util.AutoInterface;
 
 public class Funp_ {
 

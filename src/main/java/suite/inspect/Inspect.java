@@ -10,12 +10,12 @@ import java.util.HashSet;
 import java.util.List;
 
 import suite.adt.pair.Pair;
+import suite.object.ObjectSupport;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Memoize;
-import suite.util.ObjectSupport;
 
 /**
  * General manipulation on value objects with public fields.

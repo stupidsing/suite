@@ -20,7 +20,7 @@ import suite.jdk.gen.FunExprM.IndexFunExpr;
 import suite.jdk.gen.FunExprM.InstanceOfFunExpr;
 import suite.jdk.gen.FunExprM.InvokeMethodFunExpr;
 import suite.node.util.Singleton;
-import suite.util.AutoInterface;
+import suite.object.AutoInterface;
 import suite.util.Object_;
 
 public class FunExpression {

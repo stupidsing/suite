@@ -1,4 +1,4 @@
-package suite.util;
+package suite.object;
 
 public abstract class BaseObject<T extends BaseObject<T>> implements Comparable<T>, AutoInterface<T> {
 

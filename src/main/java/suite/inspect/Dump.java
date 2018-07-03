@@ -9,11 +9,11 @@ import java.util.concurrent.Callable;
 
 import suite.adt.pair.Pair;
 import suite.node.util.Singleton;
+import suite.object.MapInterface;
+import suite.object.MapObject_;
 import suite.os.LogUtil;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Streamlet;
-import suite.util.MapInterface;
-import suite.util.MapObject_;
 import suite.util.Switch;
 import suite.util.Thread_;
 import suite.util.Util;

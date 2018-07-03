@@ -1,4 +1,4 @@
-package suite.util;
+package suite.object;
 
 import static suite.util.Friends.rethrow;
 
@@ -9,6 +9,7 @@ import suite.adt.IdentityKey;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.streamlet.Streamlet;
+import suite.util.Object_;
 
 public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implements Cloneable, AutoInterface<T> {
 

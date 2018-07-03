@@ -1,10 +1,12 @@
-package suite.util;
+package suite.object;
 
 import java.util.List;
 import java.util.Objects;
 
 import suite.immutable.IList;
 import suite.streamlet.FunUtil.Fun;
+import suite.util.Object_;
+import suite.util.String_;
 
 public class ObjectSupport<T> {
 

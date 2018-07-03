@@ -1,4 +1,4 @@
-package suite.util;
+package suite.object;
 
 import static suite.util.Friends.rethrow;
 

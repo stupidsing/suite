@@ -1,4 +1,4 @@
-package suite.util;
+package suite.object;
 
 import static suite.util.Friends.rethrow;
 
@@ -16,6 +16,8 @@ import suite.adt.pair.Fixie_.FixieFun8;
 import suite.adt.pair.Fixie_.FixieFun9;
 import suite.adt.pair.Fixie_.FixieFunA;
 import suite.streamlet.Read;
+import suite.util.Fail;
+import suite.util.String_;
 
 public class MapObject_ {
 
