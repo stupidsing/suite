@@ -33,8 +33,8 @@ public class Symbolic {
 
 	private Express ex = new Express();
 	private FunFactory f = new FunFactory();
-	private Int n0 = ex.n0;
-	private Int n1 = ex.n1;
+	private Node n0 = ex.n0;
+	private Node n1 = ex.n1;
 
 	public class PolynomializeException extends RuntimeException {
 		private static final long serialVersionUID = 1l;
@@ -369,14 +369,14 @@ public class Symbolic {
 
 		private Opt<Node> polyize(Node node, Fun<Node, Node> coefficientFun) { // polynomialize
 			Int_Obj<Node> powerFun = p -> {
-				Node power = n1;
+				var power = n1;
 				for (var i = 0; i < p; i++)
 					power = mul(x, power);
 				return power;
 			};
 
 			return polyize_(node, coefficientFun).map(map -> {
-				Node sum = n0;
+				var sum = n0;
 				for (var pair : map.streamlet().sortByKey(Integer::compare)) {
 					var p = pair.t0;
 					var power = p < 0 ? inv(powerFun.apply(-p)) : powerFun.apply(p);
