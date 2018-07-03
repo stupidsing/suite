@@ -30,7 +30,7 @@ public class SmtpSslGmail {
 			props.put("mail.smtp.socketFactory.port", "465");
 			props.put("mail.smtp.socketFactory.class", SSLSocketFactory.class.getName());
 
-			Session session = Session.getDefaultInstance(props, new Authenticator() {
+			var session = Session.getDefaultInstance(props, new Authenticator() {
 				protected PasswordAuthentication getPasswordAuthentication() {
 					return new PasswordAuthentication(username, password);
 				}

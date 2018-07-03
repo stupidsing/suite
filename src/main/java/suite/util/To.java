@@ -14,7 +14,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -27,6 +26,7 @@ import java.util.List;
 
 import suite.cfg.Defaults;
 import suite.object.Object_;
+import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Chars;
 import suite.primitive.DblPrimitives.Obj_Dbl;
@@ -245,7 +245,17 @@ public class To {
 	}
 
 	public static String string(Path path) {
-		return rethrow(() -> read_(path));
+		var bytes = FileUtil.in(path).readBytes();
+
+		var isBomExist = 3 <= bytes.length //
+				&& bytes[0] == (byte) 0xEF //
+				&& bytes[1] == (byte) 0xBB //
+				&& bytes[2] == (byte) 0xBF;
+
+		if (!isBomExist)
+			return string(bytes);
+		else
+			return new String(bytes, 3, bytes.length - 3, Defaults.charset);
 	}
 
 	public static String string(Reader reader) {
@@ -296,19 +306,6 @@ public class To {
 		for (var i = 0; i < length; i++)
 			fs[i] = (float) f.apply(i);
 		return fs;
-	}
-
-	private static String read_(Path path) throws IOException {
-		var bytes = Files.readAllBytes(path);
-		var isBomExist = 3 <= bytes.length //
-				&& bytes[0] == (byte) 0xEF //
-				&& bytes[1] == (byte) 0xBB //
-				&& bytes[2] == (byte) 0xBF;
-
-		if (!isBomExist)
-			return To.string(bytes);
-		else
-			return new String(bytes, 3, bytes.length - 3, Defaults.charset);
 	}
 
 	public static String ymdHms(long time) {

@@ -47,15 +47,6 @@ class Impl implements Snapshot {
 		return diffMaps(readMap(path0), readMap(path1));
 	}
 
-	public Map<String, List<Pair<Bytes, Bytes>>> merge( //
-			Map<String, List<Pair<Bytes, Bytes>>> map0, //
-			Map<String, List<Pair<Bytes, Bytes>>> map1) {
-		return Read //
-				.from(Set_.union(map0.keySet(), map1.keySet())) //
-				.map2(key -> textUtil.merge(map0.get(key), map1.get(key))) //
-				.toMap();
-	}
-
 	public void patchDir(Path path0, Map<String, List<Pair<Bytes, Bytes>>> map) {
 		var isFrom = false;
 
@@ -72,10 +63,20 @@ class Impl implements Snapshot {
 				}
 			}
 		else {
-			var p0 = diffMaps(fromTo(map, true), readMap(path0));
-			var p1 = map;
-			writeMap(path0, fromTo(merge(p0, p1), false));
+			var diff0 = diffMaps(fromTo(map, true), readMap(path0));
+			var diff1 = map;
+			var merged = merge(diff0, diff1);
+			writeMap(path0, fromTo(merged, false));
 		}
+	}
+
+	public Map<String, List<Pair<Bytes, Bytes>>> merge( //
+			Map<String, List<Pair<Bytes, Bytes>>> map0, //
+			Map<String, List<Pair<Bytes, Bytes>>> map1) {
+		return Read //
+				.from(Set_.union(map0.keySet(), map1.keySet())) //
+				.map2(key -> textUtil.merge(map0.get(key), map1.get(key))) //
+				.toMap();
 	}
 
 	private Map<String, List<Pair<Bytes, Bytes>>> diffMaps(Map<String, Bytes> map0, Map<String, Bytes> map1) {
@@ -112,29 +113,32 @@ class Impl implements Snapshot {
 		return list;
 	}
 
-	public void writePatch(OutputStream os, List<Pair<Bytes, Bytes>> list) throws IOException {
-		for (var pair : list) {
-			var bs0 = pair.t0;
-			var bs1 = pair.t1;
-			var size0 = bs0 != null ? Integer.toString(bs0.size()) : "N";
-			var size1 = bs1 != null ? Integer.toString(bs1.size()) : "N";
-			var line = size0 + " " + size1 + "\n";
-			os.write(line.getBytes(Defaults.charset));
-			if (bs0 != null) {
-				os.write('<');
-				writeBlock(os, bs0);
+	public void writePatch(OutputStream os, List<Pair<Bytes, Bytes>> list) {
+		rethrow(() -> {
+			for (var pair : list) {
+				var bs0 = pair.t0;
+				var bs1 = pair.t1;
+				var size0 = bs0 != null ? Integer.toString(bs0.size()) : "N";
+				var size1 = bs1 != null ? Integer.toString(bs1.size()) : "N";
+				var line = size0 + " " + size1 + "\n";
+				os.write(line.getBytes(Defaults.charset));
+				if (bs0 != null) {
+					os.write('<');
+					writeBlock(os, bs0);
+				}
+				if (bs1 != null) {
+					os.write('>');
+					writeBlock(os, bs1);
+				}
+				os.write("EOF\n".getBytes(Defaults.charset));
 			}
-			if (bs1 != null) {
-				os.write('>');
-				writeBlock(os, bs1);
-			}
-		}
-		os.write("EOF\n".getBytes(Defaults.charset));
+			return list;
+		});
 	}
 
 	private Bytes readBlock(InputStream is, int size) throws IOException {
 		var bs = new byte[size];
-		is.readNBytes(bs, size, size);
+		is.readNBytes(bs, 0, size);
 		is.read();
 		return Bytes.of(bs);
 	}

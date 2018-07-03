@@ -46,11 +46,11 @@ public class SwitchNode<R> {
 		return this;
 	}
 
-	public <T extends Node> SwitchNode<R> doIf(Class<T> c, IoSink<T> fun) {
+	public <T extends Node> SwitchNode<R> doIf(Class<T> c, IoSink<T> sink) {
 		return applyIf(c, t -> {
 			@SuppressWarnings("unchecked")
 			var r = (R) rethrow(() -> {
-				fun.sink(t);
+				sink.sink(t);
 				return t;
 			});
 			return r;
