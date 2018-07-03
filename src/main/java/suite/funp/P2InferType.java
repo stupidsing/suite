@@ -42,6 +42,7 @@ import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpRepeat;
+import suite.funp.P0.FunpSizeOf;
 import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
@@ -337,6 +338,9 @@ public class P2InferType {
 				return TypeReference.of(infer(expr));
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
 				return TypeArray.of(infer(expr), count);
+			})).applyIf(FunpSizeOf.class, f -> f.apply(expr -> {
+				infer(expr);
+				return typeNumber;
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
 				return TypeStruct.of(Read.from2(pairs).mapValue(this::infer).toList());
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
@@ -530,6 +534,8 @@ public class P2InferType {
 					list.add(Pair.of(expr, IntIntPair.of(offset0, offset += elementSize)));
 				}
 				return FunpData.of(list);
+			})).applyIf(FunpSizeOf.class, f -> f.apply(expr -> {
+				return FunpNumber.ofNumber(getTypeSize(typeOf(expr)));
 			})).applyIf(FunpStruct.class, f -> f.apply(fvs -> {
 				var ts0 = TypeStruct.of();
 				unify(n, ts0, type0);

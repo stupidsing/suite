@@ -417,6 +417,20 @@ public class P0 {
 		}
 	}
 
+	public static class FunpSizeOf implements Funp, P2.End {
+		public Funp expr;
+
+		public static FunpSizeOf of(Funp expr) {
+			var f = new FunpSizeOf();
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
+		}
+	}
+
 	public static class FunpStruct implements Funp, P2.End {
 		public List<Pair<String, Funp>> pairs;
 

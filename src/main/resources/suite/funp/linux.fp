@@ -19,6 +19,21 @@ define pool.new := length => {
 define pool.delete := address ({ pool: pool, length: length, start: start, }) =>
 	type start = 0 >>
 	pool, length | unmap
+-->>
+--define mut.create := init =>
+--	let p := size.of init | alloc >>
+--	*p := init >> {
+--		get: () => *p,
+--		set: v1 => (*p := v1),
+--	}
+-->>
+--define getc := () =>
+--	let.global buffer := (size * array coerce.byte _) >>
+--	let.global se := (0, 0) >>
+--	se := io.fold se ((s, e) => s = e) ((s, e) => (0, (buffer, size | read))) >>
+--	let (s0, e0) := se >>
+--	se := (s0 + 1, e0) >>
+--	buffer:s0
 >> {
 	map: map,
 	unmap: unmap,

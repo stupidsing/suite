@@ -35,6 +35,7 @@ import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpRepeat;
+import suite.funp.P0.FunpSizeOf;
 import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
@@ -206,6 +207,8 @@ public class P0Parse {
 				return FunpReference.of(p(a));
 			}).match(".0 * array .1", (a, b) -> {
 				return FunpRepeat.of(Int.num(a), p(b));
+			}).match("size.of .0", a -> {
+				return FunpSizeOf.of(p(a));
 			}).match(".0, .1", (a, b) -> {
 				return FunpStruct.of(List.of(Pair.of("t0", p(a)), Pair.of("t1", p(b))));
 			}).match("{ .0 }", a -> {
