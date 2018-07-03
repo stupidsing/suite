@@ -114,8 +114,8 @@ public class Assembler {
 			AssemblePredicates.isPass2 = isPass2;
 			out.clear();
 
-			for (var lni : lnis) {
-				var bytes = lni.map((reference, instruction) -> {
+			for (var lni : lnis)
+				out.append(lni.map((reference, instruction) -> {
 					var address = org + out.size();
 
 					if (!isPass2)
@@ -124,10 +124,7 @@ public class Assembler {
 						Fail.t("address varied between passes at " + Integer.toHexString(address));
 
 					return assemble(isPass2, address, instruction);
-				});
-
-				out.append(bytes);
-			}
+				}));
 
 			if (isPass2)
 				for (var lni : lnis)

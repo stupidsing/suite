@@ -13,11 +13,12 @@ public class SerOutput extends BasicOutputStream implements DataOutput {
 	private DataOutputStream out;
 
 	public static SerOutput of(OutputStream os) {
-		return new SerOutput(new DataOutputStream(os));
+		return new SerOutput(os);
 	}
 
-	private SerOutput(DataOutputStream out) {
+	private SerOutput(OutputStream out) {
 		super(out);
+		this.out = new DataOutputStream(out);
 	}
 
 	@Override
