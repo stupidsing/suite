@@ -1,6 +1,6 @@
 package suite.math;
 
-import suite.image.Render;
+import suite.game.Render;
 import suite.primitive.DblDbl_Dbl;
 import suite.primitive.IntInt_Int;
 import suite.util.RunUtil;

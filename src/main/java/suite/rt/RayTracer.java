@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
-import suite.image.Render;
+import suite.game.Render;
 import suite.math.R3;
 
 /**

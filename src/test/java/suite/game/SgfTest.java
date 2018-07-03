@@ -1,4 +1,4 @@
-package suite.sgf;
+package suite.game;
 
 import org.junit.Test;
 

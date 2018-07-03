@@ -1,6 +1,6 @@
 package suite.fractal;
 
-import suite.image.Render;
+import suite.game.Render;
 import suite.math.Complex;
 import suite.math.R3;
 import suite.util.RunUtil;
