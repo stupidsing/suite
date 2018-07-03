@@ -1,4 +1,4 @@
-package suite.dev;
+package suite.sample;
 
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
@@ -24,7 +24,7 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Sink;
 import suite.util.Fail;
 
-// mvn compile exec:java -Dexec.mainClass=suite.dev.DevMain -Dexec.args="${COLUMNS} ${LINES}"
+// mvn compile exec:java -Dexec.mainClass=suite.sample.DevMain -Dexec.args="${COLUMNS} ${LINES}"
 public class DevMain {
 
 	private LibcJna libc = (LibcJna) Native.loadLibrary("c", LibcJna.class);

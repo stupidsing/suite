@@ -1,4 +1,4 @@
-package suite.fractal;
+package suite.sample;
 
 import suite.game.Render;
 import suite.math.Complex;

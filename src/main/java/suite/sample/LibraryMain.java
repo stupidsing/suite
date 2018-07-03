@@ -1,4 +1,4 @@
-package suite.filelib;
+package suite.sample;
 
 import static suite.util.Friends.rethrow;
 

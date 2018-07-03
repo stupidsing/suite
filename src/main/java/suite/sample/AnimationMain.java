@@ -1,4 +1,4 @@
-package suite.animation;
+package suite.sample;
 
 import static suite.util.Friends.rethrow;
 
