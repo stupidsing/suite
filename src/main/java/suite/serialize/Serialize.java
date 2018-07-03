@@ -4,7 +4,6 @@ import static suite.util.Friends.min;
 import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -129,7 +128,7 @@ public class Serialize {
 	}
 
 	public <T> Serializer<T> autoFields(Class<T> clazz) {
-		Pair<Field, ?>[] pairs = inspect //
+		var pairs = inspect //
 				.fields(clazz) //
 				.map2(field -> auto_(field.getGenericType())) //
 				.toArray();
