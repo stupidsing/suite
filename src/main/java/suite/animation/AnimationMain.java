@@ -1,5 +1,7 @@
 package suite.animation;
 
+import static suite.util.Friends.rethrow;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -11,7 +13,6 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
-import suite.util.Rethrow;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 
@@ -52,7 +53,7 @@ public class AnimationMain extends ExecutableProgram {
 			frame.repaint();
 		}, 10, 10, TimeUnit.MILLISECONDS);
 
-		return Rethrow.ex(() -> executor.awaitTermination(100, TimeUnit.SECONDS));
+		return rethrow(() -> executor.awaitTermination(100, TimeUnit.SECONDS));
 	}
 
 }

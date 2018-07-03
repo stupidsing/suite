@@ -1,5 +1,7 @@
 package suite.jdk;
 
+import static suite.util.Friends.rethrow;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayDeque;
@@ -14,7 +16,6 @@ import suite.search.DirectedGraph;
 import suite.search.StronglyConnectedComponents;
 import suite.streamlet.Read;
 import suite.util.Object_;
-import suite.util.Rethrow;
 
 public class DependencyTest {
 
@@ -71,7 +72,7 @@ public class DependencyTest {
 				.from(sourceDirs) //
 				.map(sourceDir -> Paths.get(sourceDir + "/" + p)) //
 				.filter(path -> Files.exists(path)) //
-				.concatMap(path -> Rethrow.ex(() -> Read.from(Files.readAllLines(path)))) //
+				.concatMap(path -> rethrow(() -> Read.from(Files.readAllLines(path)))) //
 				.filter(line -> line.startsWith("import ")) //
 				.map(line -> line.split(" ")[1].replace(";", "")) //
 				.toList();

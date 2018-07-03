@@ -1,5 +1,7 @@
 package suite.file.impl;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.IOException;
 
 import suite.file.PageFile;
@@ -7,7 +9,6 @@ import suite.file.SerializedPageFile;
 import suite.serialize.SerInput;
 import suite.serialize.Serialize.Serializer;
 import suite.streamlet.As;
-import suite.util.Rethrow;
 import suite.util.To;
 
 public class SerializedFileFactory {
@@ -23,7 +24,7 @@ public class SerializedFileFactory {
 			}
 
 			public V load(int pointer) {
-				return Rethrow.ex(() -> serializer.read(SerInput.of(pageFile.load(pointer).collect(As::inputStream))));
+				return rethrow(() -> serializer.read(SerInput.of(pageFile.load(pointer).collect(As::inputStream))));
 			}
 
 			public void save(int pointer, V value) {

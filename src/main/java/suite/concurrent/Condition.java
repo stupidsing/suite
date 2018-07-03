@@ -1,7 +1,8 @@
 package suite.concurrent;
 
+import static suite.util.Friends.rethrow;
+
 import suite.util.FunUtil.Source;
-import suite.util.Rethrow;
 
 public class Condition {
 
@@ -30,7 +31,7 @@ public class Condition {
 	public synchronized <T> T waitThen(Runnable before, Source<T> after) {
 		while (!verify()) {
 			before.run();
-			Rethrow.ex(() -> {
+			rethrow(() -> {
 				wait(0);
 				return this;
 			});

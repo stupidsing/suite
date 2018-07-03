@@ -1,5 +1,7 @@
 package suite.jdk;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -9,7 +11,6 @@ import java.nio.file.Path;
 
 import suite.os.LogUtil;
 import suite.util.Object_;
-import suite.util.Rethrow;
 import suite.util.To;
 
 public class JdkLoadClassUtil extends JdkUtil implements Closeable {
@@ -36,7 +37,7 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 	private <T> Class<? extends T> load(String canonicalName) {
 		LogUtil.info("Loading class " + canonicalName);
 
-		return Rethrow.ex(() -> {
+		return rethrow(() -> {
 			@SuppressWarnings("unchecked")
 			var clazz = (Class<? extends T>) classLoader.loadClass(canonicalName);
 			return clazz;

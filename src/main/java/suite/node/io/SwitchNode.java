@@ -1,5 +1,7 @@
 package suite.node.io;
 
+import static suite.util.Friends.rethrow;
+
 import java.util.List;
 
 import suite.BindArrayUtil.Pattern;
@@ -21,7 +23,6 @@ import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.Rethrow;
 
 public class SwitchNode<R> {
 
@@ -48,7 +49,7 @@ public class SwitchNode<R> {
 	public <T extends Node> SwitchNode<R> doIf(Class<T> c, IoSink<T> fun) {
 		return applyIf(c, t -> {
 			@SuppressWarnings("unchecked")
-			var r = (R) Rethrow.ex(() -> {
+			var r = (R) rethrow(() -> {
 				fun.sink(t);
 				return t;
 			});
@@ -173,7 +174,7 @@ public class SwitchNode<R> {
 	}
 
 	private List<Node> nodes(Object m) {
-		return Read.from(m.getClass().getFields()).map(field -> (Node) Rethrow.ex(() -> field.get(m))).toList();
+		return Read.from(m.getClass().getFields()).map(field -> (Node) rethrow(() -> field.get(m))).toList();
 	}
 
 }

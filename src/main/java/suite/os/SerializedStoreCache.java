@@ -1,5 +1,7 @@
 package suite.os;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -11,7 +13,6 @@ import suite.serialize.SerOutput;
 import suite.serialize.Serialize.Serializer;
 import suite.util.Fail;
 import suite.util.FunUtil.Source;
-import suite.util.Rethrow;
 
 public class SerializedStoreCache<K, V> {
 
@@ -36,7 +37,7 @@ public class SerializedStoreCache<K, V> {
 		var keyBytes = serialize(keySerializer, key);
 		var valueBytes = storeCache.get(keyBytes, () -> serialize(valueSerializer, source.source()));
 
-		return Rethrow.ex(() -> {
+		return rethrow(() -> {
 			try (var bais = new ByteArrayInputStream(valueBytes.toArray()); var dis = SerInput.of(bais)) {
 				return valueSerializer.read(dis);
 			}

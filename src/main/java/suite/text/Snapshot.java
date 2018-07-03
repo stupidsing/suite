@@ -1,5 +1,7 @@
 package suite.text;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -15,7 +17,6 @@ import suite.cfg.Defaults;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
-import suite.util.Rethrow;
 import suite.util.Set_;
 import suite.util.String_;
 import suite.util.Util;
@@ -101,7 +102,7 @@ class Impl implements Snapshot {
 		var list = new ArrayList<Pair<Bytes, Bytes>>();
 		String line;
 		while (!String_.equals(line = Util.readLine(is), "EOF"))
-			list.add(FixieArray.of(line.split(" ")).map((s0, s1) -> Rethrow.ex(() -> {
+			list.add(FixieArray.of(line.split(" ")).map((s0, s1) -> rethrow(() -> {
 				var size0 = !String_.equals(s0, "N") ? Integer.valueOf(s0) : null;
 				var size1 = !String_.equals(s1, "N") ? Integer.valueOf(s1) : null;
 				var bs0 = size0 != null && is.read() == '<' ? readBlock(is, size0) : null;

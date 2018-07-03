@@ -1,5 +1,7 @@
 package suite.debian;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -13,7 +15,6 @@ import suite.debian.AptUtil.Repo;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.util.Object_;
-import suite.util.Rethrow;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 import suite.util.Set_;
@@ -149,7 +150,7 @@ public class DependencyMain extends ExecutableProgram {
 				.filter(m -> m.getName().startsWith("list") && m.getParameters().length == 0) //
 				.sink(m -> {
 					System.out.println(m.getName() + "()");
-					for (var object : Rethrow.ex(() -> (List<?>) m.invoke(this, new Object[] {})))
+					for (var object : rethrow(() -> (List<?>) m.invoke(this, new Object[] {})))
 						System.out.println(object);
 					System.out.println();
 					System.out.println();
@@ -175,7 +176,7 @@ public class DependencyMain extends ExecutableProgram {
 		var packageName = "dkms";
 
 		List<Map<String, String>> packages;
-		packages = Rethrow.ex(() -> aptUtil.readRepoPackages(repo));
+		packages = rethrow(() -> aptUtil.readRepoPackages(repo));
 		var required = new HashSet<>(List.of(packageName));
 		Set<String> required1 = dpkgUtil.getDependeeSet(packages, required);
 		return Read //

@@ -2,6 +2,7 @@ package suite.primitive;
 
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
+import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -18,7 +19,6 @@ import suite.util.Compare;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
-import suite.util.Rethrow;
 
 public class Ints implements Iterable<Integer> {
 
@@ -214,7 +214,7 @@ public class Ints implements Iterable<Integer> {
 	}
 
 	public void write(WriteChar out) {
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			out.write(cs, start, end - start);
 			return out;
 		});

@@ -1,5 +1,7 @@
 package suite.sample;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,7 +17,6 @@ import com.jcraft.jsch.UserInfo;
 
 import suite.cfg.Defaults;
 import suite.util.Copy;
-import suite.util.Rethrow;
 import suite.util.Thread_;
 
 public class Ssh {
@@ -71,7 +72,7 @@ public class Ssh {
 	private <T> T session(SshFun<Session, T> fun) {
 		return Defaults //
 				.bindSecrets("ssh") //
-				.map((host, portString, username, password) -> Rethrow.ex(() -> {
+				.map((host, portString, username, password) -> rethrow(() -> {
 					return session(host, Integer.valueOf(portString), username, password, fun);
 				}));
 	}

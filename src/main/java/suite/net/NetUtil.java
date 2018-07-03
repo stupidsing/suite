@@ -1,5 +1,7 @@
 package suite.net;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -8,7 +10,6 @@ import java.io.ObjectOutputStream;
 
 import suite.primitive.Bytes;
 import suite.util.Fail;
-import suite.util.Rethrow;
 
 public class NetUtil {
 
@@ -31,7 +32,7 @@ public class NetUtil {
 
 	public static Bytes serialize(Object o) {
 		var baos = new ByteArrayOutputStream();
-		return Rethrow.ex(() -> {
+		return rethrow(() -> {
 			var out = new ObjectOutputStream(baos);
 			out.writeObject(o);
 			out.flush();

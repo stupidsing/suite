@@ -1,5 +1,7 @@
 package suite;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -31,7 +33,6 @@ import suite.primitive.IoSink;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Source;
-import suite.util.Rethrow;
 
 public class Suite {
 
@@ -116,7 +117,7 @@ public class Suite {
 	}
 
 	public static RuleSet newRuleSet(List<String> toImports) {
-		return Rethrow.ex(() -> {
+		return rethrow(() -> {
 			var rs = newRuleSet();
 			for (var toImport : toImports)
 				rs.importPath(toImport);
@@ -189,7 +190,7 @@ public class Suite {
 	}
 
 	public static void evaluateFilterFun(String program, Reader reader, Writer writer, boolean isLazy, boolean isDo) {
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			var node0 = parse(program);
 			var node1 = applyStringReader(node0, reader);
 			var node2 = isDo ? applyPerform(node1, Atom.of("string")) : node1;

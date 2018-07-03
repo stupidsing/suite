@@ -1,5 +1,7 @@
 package suite.http;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -7,7 +9,6 @@ import java.nio.file.Path;
 import suite.http.HttpSessionController.Authenticator;
 import suite.immutable.IMap;
 import suite.util.Fail;
-import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.To;
 
@@ -26,7 +27,7 @@ public interface HttpHandler {
 	}
 
 	public static HttpHandler ofPath(Path root) {
-		return request -> Rethrow.ex(() -> {
+		return request -> rethrow(() -> {
 			var path = root;
 			long size;
 

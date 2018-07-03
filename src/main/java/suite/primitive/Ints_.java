@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import static suite.util.Friends.rethrow;
+
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.Ints.WriteChar;
 import suite.primitive.streamlet.IntOutlet;
@@ -9,7 +11,6 @@ import suite.streamlet.Read;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.Rethrow;
 
 public class Ints_ {
 
@@ -67,7 +68,7 @@ public class Ints_ {
 	}
 
 	public static void copy(Outlet<Ints> outlet, WriteChar writer) {
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			Ints ints;
 			while ((ints = outlet.next()) != null)
 				writer.write(ints.cs, ints.start, ints.end - ints.start);

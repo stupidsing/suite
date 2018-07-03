@@ -1,5 +1,7 @@
 package suite.http;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
@@ -8,7 +10,6 @@ import java.util.Map;
 
 import suite.cfg.Defaults;
 import suite.immutable.IList;
-import suite.util.Rethrow;
 import suite.util.String_;
 
 public class HttpHeaderUtil {
@@ -34,7 +35,7 @@ public class HttpHeaderUtil {
 		var buffer = new char[Defaults.bufferSize];
 		int nCharsRead;
 
-		while (0 <= (nCharsRead = Rethrow.ex(() -> reader.read(buffer))))
+		while (0 <= (nCharsRead = rethrow(() -> reader.read(buffer))))
 			sb.append(buffer, 0, nCharsRead);
 
 		return getAttrs(sb.toString());
@@ -53,7 +54,7 @@ public class HttpHeaderUtil {
 	}
 
 	private static String decode(String s) {
-		return Rethrow.ex(() -> URLDecoder.decode(s, Defaults.charset));
+		return rethrow(() -> URLDecoder.decode(s, Defaults.charset));
 	}
 
 }

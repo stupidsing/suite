@@ -1,6 +1,7 @@
 package suite.trade.data;
 
 import static suite.util.Friends.max;
+import static suite.util.Friends.rethrow;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -17,7 +18,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.Object_;
-import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.Thread_;
 import suite.util.To;
@@ -37,7 +37,7 @@ public class TextDatabase {
 
 	public void join() {
 		var thread = saveThread;
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			if (thread != null)
 				thread.join();
 			return thread;

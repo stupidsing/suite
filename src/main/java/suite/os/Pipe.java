@@ -1,5 +1,7 @@
 package suite.os;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.ByteArrayInputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,7 +12,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Copy;
 import suite.util.Fail;
-import suite.util.Rethrow;
 
 public class Pipe {
 
@@ -28,10 +29,10 @@ public class Pipe {
 
 		var command1 = command0;
 
-		return new Streamlet<>(() -> Rethrow.ex(() -> {
+		return new Streamlet<>(() -> rethrow(() -> {
 			var bis = new ByteArrayInputStream(sh.getBytes(Defaults.charset));
 
-			var process = Rethrow.ex(() -> Runtime.getRuntime().exec(command1));
+			var process = rethrow(() -> Runtime.getRuntime().exec(command1));
 
 			var pis = process.getInputStream();
 			var pes = process.getErrorStream();
@@ -44,7 +45,7 @@ public class Pipe {
 			for (var thread : threads)
 				thread.start();
 
-			return Read.lines(pis).closeAtEnd(() -> Rethrow.ex(() -> {
+			return Read.lines(pis).closeAtEnd(() -> rethrow(() -> {
 				var code = process.waitFor();
 				if (code == 0)
 					for (var thread : threads)

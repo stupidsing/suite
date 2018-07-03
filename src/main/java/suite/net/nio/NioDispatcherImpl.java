@@ -1,5 +1,7 @@
 package suite.net.nio;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -17,7 +19,6 @@ import suite.primitive.Bytes;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 import suite.util.Object_;
-import suite.util.Rethrow;
 
 public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C> {
 
@@ -169,7 +170,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 			// try to send immediately. If cannot sent all, wait for the
 			// writable event (and send again at that moment).
 			var bytes = in.toArray();
-			var sent = Rethrow.ex(() -> sc.write(ByteBuffer.wrap(bytes)));
+			var sent = rethrow(() -> sc.write(ByteBuffer.wrap(bytes)));
 			var out = in.range(sent);
 			var ops = SelectionKey.OP_READ | (!out.isEmpty() ? SelectionKey.OP_WRITE : 0);
 			var key = sc.keyFor(selector);

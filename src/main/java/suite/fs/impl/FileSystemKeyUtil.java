@@ -1,6 +1,7 @@
 package suite.fs.impl;
 
 import static suite.util.Friends.min;
+import static suite.util.Friends.rethrow;
 
 import java.nio.ByteBuffer;
 import java.security.MessageDigest;
@@ -12,7 +13,6 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
-import suite.util.Rethrow;
 
 public class FileSystemKeyUtil {
 
@@ -116,7 +116,7 @@ public class FileSystemKeyUtil {
 	}
 
 	public Bytes hash(Bytes bytes) {
-		var md = Rethrow.ex(() -> MessageDigest.getInstance("SHA-256"));
+		var md = rethrow(() -> MessageDigest.getInstance("SHA-256"));
 		md.update(bytes.toArray());
 		return Bytes.of(md.digest());
 	}

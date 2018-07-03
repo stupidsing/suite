@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import static suite.util.Friends.rethrow;
+
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.Longs.WriteChar;
 import suite.primitive.streamlet.LngOutlet;
@@ -9,7 +11,6 @@ import suite.streamlet.Read;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.Rethrow;
 
 public class Longs_ {
 
@@ -67,7 +68,7 @@ public class Longs_ {
 	}
 
 	public static void copy(Outlet<Longs> outlet, WriteChar writer) {
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			Longs longs;
 			while ((longs = outlet.next()) != null)
 				writer.write(longs.cs, longs.start, longs.end - longs.start);

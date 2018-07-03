@@ -1,5 +1,7 @@
 package suite.fp.intrinsic;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +18,6 @@ import suite.node.Node;
 import suite.node.tree.TreeOr;
 import suite.primitive.Chars;
 import suite.util.Object_;
-import suite.util.Rethrow;
 
 public class Intrinsics {
 
@@ -82,7 +83,7 @@ public class Intrinsics {
 	}
 
 	public static IPointer<Chars> read(Reader reader) {
-		return IndexedSourceReader.of(() -> Rethrow.ex(() -> {
+		return IndexedSourceReader.of(() -> rethrow(() -> {
 			var buffer = new char[Defaults.bufferSize];
 			var nCharsRead = reader.read(buffer);
 			if (0 <= nCharsRead)
@@ -107,7 +108,7 @@ public class Intrinsics {
 			for (var field : clazz.getFields())
 				if (Intrinsic.class.isAssignableFrom(field.getType())) {
 					var name = clazz.getSimpleName() + "." + field.getName();
-					Rethrow.ex(() -> intrinsics.put(name, (Intrinsic) field.get(instance)));
+					rethrow(() -> intrinsics.put(name, (Intrinsic) field.get(instance)));
 				}
 		}
 	}

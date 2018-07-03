@@ -1,5 +1,7 @@
 package suite.smtp;
 
+import static suite.util.Friends.rethrow;
+
 import java.util.Properties;
 
 import javax.mail.Authenticator;
@@ -14,7 +16,6 @@ import javax.net.ssl.SSLSocketFactory;
 import suite.cfg.Defaults;
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrChr_Int;
-import suite.util.Rethrow;
 
 public class SmtpSslGmail {
 
@@ -37,7 +38,7 @@ public class SmtpSslGmail {
 
 			var sender = username + "@gmail.com";
 
-			return Rethrow.ex(() -> {
+			return rethrow(() -> {
 				var message = new MimeMessage(session);
 				message.setFrom(new InternetAddress(sender));
 				message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to != null ? to : sender));

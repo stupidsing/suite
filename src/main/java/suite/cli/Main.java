@@ -1,5 +1,7 @@
 package suite.cli;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -19,7 +21,6 @@ import suite.os.LogUtil;
 import suite.util.Fail;
 import suite.util.Object_;
 import suite.util.ParseUtil;
-import suite.util.Rethrow;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 import suite.util.String_;
@@ -82,7 +83,7 @@ public class Main extends ExecutableProgram {
 				var verb_ = verb;
 				@SuppressWarnings("unchecked")
 				var clazz = (Class<? extends ExecutableProgram>) //
-				Rethrow.ex(() -> Class.forName(verb_));
+				rethrow(() -> Class.forName(verb_));
 				RunUtil.run(clazz, inputs.toArray(new String[0]));
 			} else if (String_.equals(verb, "type"))
 				b &= dispatcher.dispatchType(inputs);

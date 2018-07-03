@@ -1,6 +1,7 @@
 package suite.lp.sewing.impl;
 
 import static suite.util.Friends.max;
+import static suite.util.Friends.rethrow;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -50,7 +51,6 @@ import suite.util.FunUtil.Sink;
 import suite.util.FunUtil.Source;
 import suite.util.List_;
 import suite.util.Object_;
-import suite.util.Rethrow;
 import suite.util.String_;
 
 /**
@@ -462,7 +462,7 @@ public class SewingProverImpl implements ProverFactory {
 		} else if ((m = Suite.pattern("builtin:.0:.1 .2").match(node)) != null) {
 			var className = Atom.name(m[0]);
 			var fieldName = Atom.name(m[1]);
-			BuiltinPredicate predicate = Rethrow.ex(() -> {
+			BuiltinPredicate predicate = rethrow(() -> {
 				var clazz = Class.forName(className);
 				return (BuiltinPredicate) clazz.getField(fieldName).get(Object_.new_(clazz));
 			});

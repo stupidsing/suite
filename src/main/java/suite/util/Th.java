@@ -1,5 +1,7 @@
 package suite.util;
 
+import static suite.util.Friends.rethrow;
+
 import suite.os.LogUtil;
 import suite.util.Thread_.RunnableEx;
 
@@ -20,7 +22,7 @@ public class Th extends Thread {
 	}
 
 	public void join_() {
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			join();
 			return this;
 		});

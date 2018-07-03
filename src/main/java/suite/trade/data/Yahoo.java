@@ -1,5 +1,7 @@
 package suite.trade.data;
 
+import static suite.util.Friends.rethrow;
+
 import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.util.HashMap;
@@ -29,7 +31,6 @@ import suite.trade.TimeRange;
 import suite.util.Fail;
 import suite.util.FunUtil2.FoldOp;
 import suite.util.Object_;
-import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.To;
 
@@ -98,7 +99,7 @@ public class Yahoo {
 
 		if (Files.exists(path))
 			try {
-				var lines = Rethrow.ex(() -> Files.readAllLines(path));
+				var lines = rethrow(() -> Files.readAllLines(path));
 				stockHistory0 = StockHistory.of(Read.from(lines).outlet());
 			} catch (Exception ex) {
 				stockHistory0 = StockHistory.new_();
@@ -320,7 +321,7 @@ public class Yahoo {
 	}
 
 	private String encode(String s) {
-		return Rethrow.ex(() -> URLEncoder.encode(s, Defaults.charset.name()));
+		return rethrow(() -> URLEncoder.encode(s, Defaults.charset.name()));
 	}
 
 }

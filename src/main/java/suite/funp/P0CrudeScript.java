@@ -1,5 +1,7 @@
 package suite.funp;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.FileReader;
 import java.util.ArrayList;
 
@@ -32,13 +34,12 @@ import suite.node.tree.TreeTuple;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.Read;
 import suite.util.Fail;
-import suite.util.Rethrow;
 import suite.util.To;
 
 public class P0CrudeScript {
 
 	public Funp parse(String in) { // "{ return 1 + 2 * 3; }"
-		var ebnf = Rethrow.ex(() -> new Ebnf(new FileReader("src/main/ebnf/crude-script.ebnf")));
+		var ebnf = rethrow(() -> new Ebnf(new FileReader("src/main/ebnf/crude-script.ebnf")));
 		var ast = ebnf.parse("crude-script", in);
 
 		var node = new Object() {

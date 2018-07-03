@@ -1,5 +1,7 @@
 package suite.node.parser;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -10,7 +12,6 @@ import suite.node.io.TermOp;
 import suite.os.FileUtil;
 import suite.parser.Wildcard;
 import suite.streamlet.Read;
-import suite.util.Rethrow;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 import suite.util.To;
@@ -36,7 +37,7 @@ public class RecursiveFileFactorizerMain extends ExecutableProgram {
 							.fold(To.string(path), (s_, ft) -> recursiveFactorizer.rewrite(ft.t0, ft.t1, s_)) //
 							.getBytes(Defaults.charset);
 
-					Rethrow.ex(() -> Files.write(path, bs));
+					rethrow(() -> Files.write(path, bs));
 				});
 
 		return true;

@@ -1,6 +1,7 @@
 package suite.jdk;
 
-import suite.util.Rethrow;
+import static suite.util.Friends.rethrow;
+
 import sun.misc.Unsafe;
 
 public class UnsafeUtil {
@@ -21,7 +22,7 @@ public class UnsafeUtil {
 
 	private Unsafe unsafe() {
 		if (unsafe == null)
-			Rethrow.ex(() -> {
+			rethrow(() -> {
 				var f = Unsafe.class.getDeclaredField("theUnsafe");
 				f.setAccessible(true);
 				return unsafe = (Unsafe) f.get(null);

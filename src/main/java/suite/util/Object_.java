@@ -1,5 +1,7 @@
 package suite.util;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -125,7 +127,7 @@ public class Object_ {
 					if (object instanceof Map) {
 						var map = (Map<?, ?>) object;
 						var className = map.get("@class").toString();
-						var clazz1 = Rethrow.ex(() -> Class.forName(className));
+						var clazz1 = rethrow(() -> Class.forName(className));
 						return apply_(mapper(clazz1).unmap, object);
 					} else
 						// happens when an enum implements an interface
@@ -139,12 +141,12 @@ public class Object_ {
 						.map(field -> Pair.of(field.getName(), field)) //
 						.toList();
 
-				mapper = new Mapper(object -> Rethrow.ex(() -> {
+				mapper = new Mapper(object -> rethrow(() -> {
 					var map = new HashMap<>();
 					for (var sf : sfs)
 						map.put(sf.t0, sf.t1.get(object));
 					return map;
-				}), object -> Rethrow.ex(() -> {
+				}), object -> rethrow(() -> {
 					var map = (Map<?, ?>) object;
 					var object1 = new_(clazz);
 					for (var sf : sfs)
@@ -187,7 +189,7 @@ public class Object_ {
 	}
 
 	public static <T> T new_(Class<T> clazz) {
-		return Rethrow.ex(() -> {
+		return rethrow(() -> {
 			var ctor = clazz.getDeclaredConstructor();
 			ctor.setAccessible(true);
 			return ctor.newInstance();
@@ -211,7 +213,7 @@ public class Object_ {
 	}
 
 	public static void wait(Object object, int timeOut) {
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			object.wait(timeOut);
 			return object;
 		});

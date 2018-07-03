@@ -1,5 +1,7 @@
 package suite.funp;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -60,7 +62,6 @@ import suite.primitive.Ints_;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.ReadStream;
-import suite.util.Rethrow;
 import suite.util.Rethrow.SourceEx;
 import suite.util.Switch;
 import suite.util.To;
@@ -226,7 +227,7 @@ public class P0Parse {
 		private Funp consult(String url) {
 			Fun<ReadStream, Funp> r0 = is -> is.doReader(isr -> FunpPredefine.of(parse(Suite.parse(To.string(isr)))));
 
-			Fun<SourceEx<ReadStream, IOException>, Funp> r1 = source -> Rethrow.ex(() -> source.source()).doRead(r0::apply);
+			Fun<SourceEx<ReadStream, IOException>, Funp> r1 = source -> rethrow(() -> source.source()).doRead(r0::apply);
 
 			if (url.startsWith("file://"))
 				return r1.apply(() -> FileUtil.in(url.substring(7)));

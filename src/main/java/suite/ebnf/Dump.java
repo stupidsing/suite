@@ -1,12 +1,13 @@
 package suite.ebnf;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
 import suite.ebnf.Ebnf.Ast;
-import suite.util.Rethrow;
 import suite.util.String_;
 
 public class Dump {
@@ -16,7 +17,7 @@ public class Dump {
 
 	public Dump(Ast ast, String in) {
 		this.in = in;
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			prettyPrint(ast, "");
 			return ast;
 		});

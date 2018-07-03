@@ -1,5 +1,7 @@
 package suite.os;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,7 +14,6 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.serialize.SerOutput;
-import suite.util.Rethrow;
 import suite.util.Util;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
@@ -33,7 +34,7 @@ public class WriteElf {
 			}
 		});
 
-		Rethrow.ex(() -> Files.setPosixFilePermissions(path, new HashSet<>(List.of( //
+		rethrow(() -> Files.setPosixFilePermissions(path, new HashSet<>(List.of( //
 				PosixFilePermission.GROUP_EXECUTE, //
 				PosixFilePermission.GROUP_READ, //
 				PosixFilePermission.OTHERS_EXECUTE, //

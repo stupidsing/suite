@@ -1,5 +1,7 @@
 package suite.os;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
@@ -11,7 +13,6 @@ import suite.streamlet.Read;
 import suite.util.Copy;
 import suite.util.Fail;
 import suite.util.Fail.InterruptedRuntimeException;
-import suite.util.Rethrow;
 import suite.util.Th;
 import suite.util.To;
 
@@ -50,7 +51,7 @@ public class Execute {
 		var bos0 = new ByteArrayOutputStream();
 		var bos1 = new ByteArrayOutputStream();
 
-		var process = Rethrow.ex(() -> Runtime.getRuntime().exec(command));
+		var process = rethrow(() -> Runtime.getRuntime().exec(command));
 
 		try {
 			var pis = process.getInputStream();

@@ -1,5 +1,7 @@
 package suite.jdk.gen;
 
+import static suite.util.Friends.rethrow;
+
 import java.util.Arrays;
 
 import org.apache.bcel.Const;
@@ -8,7 +10,6 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
 import suite.util.Fail;
-import suite.util.Rethrow;
 import suite.util.String_;
 
 public class Type_ {
@@ -23,7 +24,7 @@ public class Type_ {
 		else
 			return Fail.t();
 
-		return Rethrow.ex(() -> {
+		return rethrow(() -> {
 			for (var clazz : Arrays.asList( //
 					byte.class, //
 					boolean.class, //

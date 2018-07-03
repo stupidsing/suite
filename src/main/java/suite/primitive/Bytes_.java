@@ -1,11 +1,12 @@
 package suite.primitive;
 
+import static suite.util.Friends.rethrow;
+
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes.WriteByte;
 import suite.streamlet.Outlet;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.Rethrow;
 
 public class Bytes_ {
 
@@ -27,7 +28,7 @@ public class Bytes_ {
 	}
 
 	public static void copy(Outlet<Bytes> outlet, WriteByte writer) {
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			Bytes bytes;
 			while ((bytes = outlet.next()) != null)
 				writer.write(bytes.bs, bytes.start, bytes.end - bytes.start);

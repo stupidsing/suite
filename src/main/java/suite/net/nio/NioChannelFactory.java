@@ -1,5 +1,7 @@
 package suite.net.nio;
 
+import static suite.util.Friends.rethrow;
+
 import java.net.InetSocketAddress;
 import java.util.concurrent.ExecutorService;
 
@@ -10,7 +12,6 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.Signal;
 import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Sink;
-import suite.util.Rethrow;
 
 public interface NioChannelFactory {
 
@@ -38,7 +39,7 @@ public interface NioChannelFactory {
 
 		private void reconnect() {
 			if (isStarted && !isConnected())
-				Rethrow.ex(() -> {
+				rethrow(() -> {
 					nio.reconnect(this, address);
 					return nio;
 				});

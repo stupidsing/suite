@@ -1,5 +1,7 @@
 package suite.lp.predicate;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
@@ -18,7 +20,6 @@ import suite.node.util.SuiteException;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.util.Rethrow;
 import suite.util.To;
 
 public class IoPredicates {
@@ -56,7 +57,7 @@ public class IoPredicates {
 	});
 
 	public BuiltinPredicate fileTime = PredicateUtil.fun(n -> {
-		return Rethrow.ex(() -> {
+		return rethrow(() -> {
 			var lastModifiedTime = Files.getLastModifiedTime(Paths.get(Formatter.display(n)));
 			return Int.of((int) lastModifiedTime.to(TimeUnit.SECONDS));
 		});
@@ -76,7 +77,7 @@ public class IoPredicates {
 
 	public BuiltinPredicate nl = PredicateUtil.run(System.out::println);
 
-	public BuiltinPredicate readLine = PredicateUtil.p1((prover, p0) -> Rethrow.ex(() -> {
+	public BuiltinPredicate readLine = PredicateUtil.p1((prover, p0) -> rethrow(() -> {
 		var bb = new BytesBuilder();
 		byte b;
 		while (0 <= (b = (byte) System.in.read()) && b != 10)

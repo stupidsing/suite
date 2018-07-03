@@ -1,5 +1,7 @@
 package suite.parser;
 
+import static suite.util.Friends.rethrow;
+
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -8,7 +10,6 @@ import java.util.Set;
 
 import suite.text.Preprocess.Run;
 import suite.util.ParseUtil;
-import suite.util.Rethrow;
 import suite.util.To;
 
 /**
@@ -29,7 +30,7 @@ public class IncludePreprocessor {
 	}
 
 	public List<Run> preprocess(String in) {
-		return Rethrow.ex(() -> {
+		return rethrow(() -> {
 			var runs = new ArrayList<Run>();
 			doIncludes(dir, in, true, runs);
 			return runs;

@@ -1,6 +1,7 @@
 package suite.immutable;
 
 import static suite.util.Friends.max;
+import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
 import java.util.Comparator;
@@ -28,7 +29,6 @@ import suite.serialize.Serialize.Serializer;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Sink;
-import suite.util.Rethrow;
 import suite.util.To;
 
 public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Extent, T> {
@@ -162,7 +162,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	}
 
 	private PersistSlot<T> loadSlot(Extent extent) {
-		return Rethrow.ex(() -> serializer.read(SerInput.of(extentFile.load(extent).collect(As::inputStream))));
+		return rethrow(() -> serializer.read(SerInput.of(extentFile.load(extent).collect(As::inputStream))));
 	}
 
 	private Extent saveSlot(int start, PersistSlot<T> value) {

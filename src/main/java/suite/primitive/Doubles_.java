@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import static suite.util.Friends.rethrow;
+
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.Doubles.WriteChar;
 import suite.primitive.streamlet.DblOutlet;
@@ -9,7 +11,6 @@ import suite.streamlet.Read;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.Rethrow;
 
 public class Doubles_ {
 
@@ -67,7 +68,7 @@ public class Doubles_ {
 	}
 
 	public static void copy(Outlet<Doubles> outlet, WriteChar writer) {
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			Doubles doubles;
 			while ((doubles = outlet.next()) != null)
 				writer.write(doubles.cs, doubles.start, doubles.end - doubles.start);

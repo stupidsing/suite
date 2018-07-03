@@ -1,5 +1,7 @@
 package suite.jdk.gen.pass;
 
+import static suite.util.Friends.rethrow;
+
 import java.lang.reflect.Method;
 import java.util.List;
 
@@ -34,7 +36,6 @@ import suite.jdk.gen.Type_;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
-import suite.util.Rethrow;
 import suite.util.Util;
 
 public class FunTypeInformation {
@@ -108,7 +109,7 @@ public class FunTypeInformation {
 		@SuppressWarnings("rawtypes")
 		var parameterTypes = Read.from(array).<Class> map(Type_::classOf).toArray(Class.class);
 
-		return Rethrow.ex(() -> {
+		return rethrow(() -> {
 			var clazz0 = expr.clazz;
 			var clazz1 = clazz0 != null ? clazz0 : classOf(expr.object);
 			return clazz1.getMethod(expr.methodName, parameterTypes);

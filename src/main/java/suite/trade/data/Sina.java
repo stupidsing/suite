@@ -1,5 +1,7 @@
 package suite.trade.data;
 
+import static suite.util.Friends.rethrow;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -12,7 +14,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.ParseUtil;
-import suite.util.Rethrow;
 
 public class Sina {
 
@@ -62,7 +63,7 @@ public class Sina {
 				.map(this::toSina) //
 				.collect(As.joinedBy(","));
 
-		var data = Rethrow.ex(() -> {
+		var data = rethrow(() -> {
 			Outlet<Bytes> in;
 
 			if (isCache)

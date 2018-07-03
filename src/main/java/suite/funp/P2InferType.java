@@ -1,5 +1,7 @@
 package suite.funp;
 
+import static suite.util.Friends.rethrow;
+
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
@@ -75,7 +77,6 @@ import suite.streamlet.Read;
 import suite.util.AutoObject;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
-import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.Switch;
 import suite.util.Util;
@@ -889,7 +890,7 @@ public class P2InferType {
 	private static class Type extends AutoObject<Type> implements UnNode<Type> {
 		public boolean unify(UnNode<Type> type) {
 			return getClass() == type.getClass() //
-					&& fields().isAll(field -> Rethrow.ex(() -> unify.unify(cast(field.get(this)), cast(field.get(type)))));
+					&& fields().isAll(field -> rethrow(() -> unify.unify(cast(field.get(this)), cast(field.get(type)))));
 		}
 
 		private static UnNode<Type> cast(Object object) {

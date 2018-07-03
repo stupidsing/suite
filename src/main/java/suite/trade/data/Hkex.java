@@ -1,5 +1,7 @@
 package suite.trade.data;
 
+import static suite.util.Friends.rethrow;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +21,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
 import suite.util.FunUtil.Source;
-import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.To;
 
@@ -419,7 +420,7 @@ public class Hkex {
 			json = Singleton.me.storeCache.http(url).collect(To::inputStream).doRead(mapper::readTree);
 		else {
 			var execute = new Execute(new String[] { "curl", url, });
-			json = Rethrow.ex(() -> mapper.readTree(execute.out));
+			json = rethrow(() -> mapper.readTree(execute.out));
 		}
 
 		return json;

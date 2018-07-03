@@ -3,6 +3,7 @@ package suite.jdk.gen;
 import static org.apache.bcel.Const.ACC_PUBLIC;
 import static org.apache.bcel.Const.ACC_STATIC;
 import static org.apache.bcel.Const.ACC_SUPER;
+import static suite.util.Friends.rethrow;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,7 +38,6 @@ import suite.util.FunUtil.Iterate;
 import suite.util.FunUtil.Source;
 import suite.util.FunUtil2.BinOp;
 import suite.util.Object_;
-import suite.util.Rethrow;
 import suite.util.Util;
 
 public class FunCreator<I> extends FunFactory {
@@ -214,7 +214,7 @@ public class FunCreator<I> extends FunFactory {
 		private I create(Map<String, Object> fieldValues) {
 			var t = Object_.new_(clazz);
 
-			return Rethrow.ex(() -> {
+			return rethrow(() -> {
 				for (var field : clazz.getDeclaredFields()) {
 					var fieldName = field.getName();
 					Pair<Type, Object> typeValue;

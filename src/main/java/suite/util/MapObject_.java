@@ -1,5 +1,7 @@
 package suite.util;
 
+import static suite.util.Friends.rethrow;
+
 import java.util.List;
 
 import suite.adt.pair.Fixie_.FixieFun0;
@@ -18,7 +20,7 @@ import suite.streamlet.Read;
 public class MapObject_ {
 
 	public static <T extends MapObject<T>> MapObject<T> construct(Class<?> clazz, List<?> list) {
-		return Rethrow.ex(() -> {
+		return rethrow(() -> {
 			var size = list.size();
 			var m = Read //
 					.from(clazz.getMethods()) //
@@ -66,7 +68,7 @@ public class MapObject_ {
 		else
 			p = Fail.t();
 
-		return (List<?>) Rethrow.ex(() -> m.invoke(object, p));
+		return (List<?>) rethrow(() -> m.invoke(object, p));
 	}
 
 }

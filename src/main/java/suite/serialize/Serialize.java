@@ -1,6 +1,7 @@
 package suite.serialize;
 
 import static suite.util.Friends.min;
+import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -25,7 +26,6 @@ import suite.util.Array_;
 import suite.util.Fail;
 import suite.util.FunUtil.Fun;
 import suite.util.Memoize;
-import suite.util.Rethrow;
 import suite.util.To;
 
 /**
@@ -141,7 +141,7 @@ public class Serialize {
 
 		return new Serializer<>() {
 			public T read(SerInput si) throws IOException {
-				return Rethrow.ex(() -> {
+				return rethrow(() -> {
 					Object object;
 					if (defaultCtor != null) {
 						object = defaultCtor.newInstance();
@@ -165,7 +165,7 @@ public class Serialize {
 				for (var pair : pairs) {
 					@SuppressWarnings("unchecked")
 					var serializer1 = (Serializer<Object>) pair.t1;
-					serializer1.write(so, Rethrow.ex(() -> pair.t0.get(t)));
+					serializer1.write(so, rethrow(() -> pair.t0.get(t)));
 				}
 
 			}
@@ -452,7 +452,7 @@ public class Serialize {
 	private <T> Serializer<T> poly(Class<T> interface_) {
 		return new Serializer<>() {
 			public T read(SerInput si) throws IOException {
-				var c = Rethrow.ex(() -> Class.forName(si.readUTF()));
+				var c = rethrow(() -> Class.forName(si.readUTF()));
 				if (interface_.isAssignableFrom(c)) {
 					@SuppressWarnings("unchecked")
 					var t = (T) auto(c).read(si);

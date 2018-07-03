@@ -1,10 +1,11 @@
 package suite.jdk.lambda;
 
+import static suite.util.Friends.rethrow;
+
 import java.lang.reflect.Method;
 
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.streamlet.Read;
-import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.Util;
 
@@ -30,7 +31,7 @@ public class LambdaInterface<I> {
 
 	public Method method() {
 		if (method == null) {
-			var methods = Rethrow.ex(interfaceClass::getMethods);
+			var methods = rethrow(interfaceClass::getMethods);
 			method = Read.from(methods).filter(m -> String_.equals(m.getName(), methodName)).uniqueResult();
 		}
 		return method;

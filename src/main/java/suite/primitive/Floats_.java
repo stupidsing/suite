@@ -1,5 +1,7 @@
 package suite.primitive;
 
+import static suite.util.Friends.rethrow;
+
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.Floats.WriteChar;
 import suite.primitive.streamlet.FltOutlet;
@@ -9,7 +11,6 @@ import suite.streamlet.Read;
 import suite.util.FunUtil;
 import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Source;
-import suite.util.Rethrow;
 
 public class Floats_ {
 
@@ -67,7 +68,7 @@ public class Floats_ {
 	}
 
 	public static void copy(Outlet<Floats> outlet, WriteChar writer) {
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			Floats floats;
 			while ((floats = outlet.next()) != null)
 				writer.write(floats.cs, floats.start, floats.end - floats.start);

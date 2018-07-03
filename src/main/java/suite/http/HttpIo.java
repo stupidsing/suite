@@ -1,6 +1,7 @@
 package suite.http;
 
 import static suite.util.Friends.min;
+import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +17,6 @@ import suite.util.Copy;
 import suite.util.Fail;
 import suite.util.FunUtil2.Fun2;
 import suite.util.ReadStream;
-import suite.util.Rethrow;
 import suite.util.String_;
 import suite.util.To;
 import suite.util.Util;
@@ -31,7 +31,7 @@ public class HttpIo {
 			Fun2<String, String, HttpRequest> requestFun = (host, pqs) -> String_.split2l(pqs, "?").map((path0, query) -> {
 				var is1 = getContentStream(is0, headers);
 				var path1 = path0.startsWith("/") ? path0 : "/" + path0;
-				var path2 = Rethrow.ex(() -> URLDecoder.decode(path1, Defaults.charset));
+				var path2 = rethrow(() -> URLDecoder.decode(path1, Defaults.charset));
 
 				return String_.equals(protocol, "HTTP/1.1") //
 						? new HttpRequest(method, host, path2, query, headers, is1) //

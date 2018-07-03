@@ -2,6 +2,7 @@ package suite.primitive;
 
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
+import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
 import java.nio.FloatBuffer;
@@ -18,7 +19,6 @@ import suite.util.Compare;
 import suite.util.FunUtil.Fun;
 import suite.util.Object_;
 import suite.util.ParseUtil;
-import suite.util.Rethrow;
 
 public class Floats implements Iterable<Float> {
 
@@ -214,7 +214,7 @@ public class Floats implements Iterable<Float> {
 	}
 
 	public void write(WriteChar out) {
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			out.write(cs, start, end - start);
 			return out;
 		});

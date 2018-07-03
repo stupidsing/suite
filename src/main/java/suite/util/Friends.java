@@ -1,5 +1,7 @@
 package suite.util;
 
+import suite.util.Rethrow.SourceEx;
+
 public class Friends {
 
 	public static double abs(double a) {
@@ -60,6 +62,10 @@ public class Friends {
 
 	public static long min(long a, long b) {
 		return Math.min(a, b);
+	}
+
+	public static <T> T rethrow(SourceEx<T, Exception> source) {
+		return rethrow(source);
 	}
 
 	public static double sqrt(double a) {

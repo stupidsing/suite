@@ -1,5 +1,7 @@
 package suite.editor;
 
+import static suite.util.Friends.rethrow;
+
 import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -24,7 +26,6 @@ import javax.swing.text.JTextComponent;
 
 import suite.streamlet.Signal;
 import suite.util.FunUtil.Sink;
-import suite.util.Rethrow;
 import suite.util.Rethrow.SinkEx;
 
 public class Listen {
@@ -50,7 +51,7 @@ public class Listen {
 	}
 
 	public static <T, Ex extends Exception> Sink<T> catchAll(SinkEx<T, Ex> sink) {
-		return t -> Rethrow.ex(() -> {
+		return t -> rethrow(() -> {
 			sink.sink(t);
 			return t;
 		});

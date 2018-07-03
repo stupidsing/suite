@@ -1,5 +1,7 @@
 package suite.inspect;
 
+import static suite.util.Friends.rethrow;
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -14,7 +16,6 @@ import suite.util.FunUtil.Fun;
 import suite.util.FunUtil.Iterate;
 import suite.util.Memoize;
 import suite.util.ObjectSupport;
-import suite.util.Rethrow;
 
 /**
  * General manipulation on value objects with public fields.
@@ -46,7 +47,7 @@ public class Inspect {
 
 	public List<?> values(Object object) {
 		return fields(object.getClass()) //
-				.map(field -> Rethrow.ex(() -> field.get(object))) //
+				.map(field -> rethrow(() -> field.get(object))) //
 				.toList();
 	}
 
@@ -143,11 +144,11 @@ public class Inspect {
 					var setMethod = setMethods.get(propertyName);
 					return new Property() {
 						public Object get(Object object) {
-							return Rethrow.ex(() -> getMethod.invoke(object));
+							return rethrow(() -> getMethod.invoke(object));
 						}
 
 						public void set(Object object, Object value) {
-							Rethrow.ex(() -> setMethod.invoke(object, value));
+							rethrow(() -> setMethod.invoke(object, value));
 						}
 					};
 				}) //
@@ -161,7 +162,7 @@ public class Inspect {
 	public <T> T rewrite(T t0, Class<T> baseClass, Iterate<T> fun) {
 		return new Object() {
 			private T rewrite(T t0) {
-				return Rethrow.ex(() -> {
+				return rethrow(() -> {
 					var t1 = fun.apply(t0);
 					return t1 != null ? t1 : mapFields(t0, this::rewriteField);
 				});

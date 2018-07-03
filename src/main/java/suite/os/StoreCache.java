@@ -1,5 +1,7 @@
 package suite.os;
 
+import static suite.util.Friends.rethrow;
+
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,7 +17,6 @@ import suite.serialize.SerOutput;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 import suite.util.FunUtil.Source;
-import suite.util.Rethrow;
 import suite.util.To;
 
 public class StoreCache {
@@ -93,7 +94,7 @@ public class StoreCache {
 	}
 
 	public Outlet<Bytes> getOutlet(Bytes key, Source<Outlet<Bytes>> source) {
-		return Rethrow.ex(() -> {
+		return rethrow(() -> {
 			var current = System.currentTimeMillis();
 			Path path;
 			var i = 0;
@@ -123,7 +124,7 @@ public class StoreCache {
 				var vdo = SerOutput.of(vos);
 
 				return Outlet //
-						.of(() -> Rethrow.ex(() -> {
+						.of(() -> rethrow(() -> {
 							var value = outlet.next();
 							if (value != null)
 								vdo.writeBytes(value);
@@ -136,7 +137,7 @@ public class StoreCache {
 	}
 
 	private Pair<Boolean, Path> match(Bytes key) {
-		return Rethrow.ex(() -> {
+		return rethrow(() -> {
 			var current = System.currentTimeMillis();
 			var i = 0;
 			Path path;
@@ -182,7 +183,7 @@ public class StoreCache {
 			private boolean cont = true;
 
 			public Bytes source() {
-				return Rethrow.ex(() -> {
+				return rethrow(() -> {
 					if (cont) {
 						var vb = new byte[Defaults.bufferSize];
 						int n, nBytesRead = 0;
@@ -199,7 +200,7 @@ public class StoreCache {
 	}
 
 	private boolean isUpToDate(Path path, long current) {
-		return current - Rethrow.ex(() -> Files.getLastModifiedTime(path)).toMillis() < 1000l * 86400 * documentAge;
+		return current - rethrow(() -> Files.getLastModifiedTime(path)).toMillis() < 1000l * 86400 * documentAge;
 	}
 
 	private Path path(Bytes key, int i, String suffix) {

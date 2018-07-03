@@ -1,5 +1,7 @@
 package suite.telegram;
 
+import static suite.util.Friends.rethrow;
+
 import java.nio.file.Files;
 
 import org.telegram.telegrambots.TelegramBotsApi;
@@ -9,13 +11,12 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 
 import suite.cfg.Defaults;
 import suite.util.FunUtil2.FoldOp;
-import suite.util.Rethrow;
 import suite.util.Thread_;
 
 public class TelegramBot {
 
 	public void bot(FoldOp<Integer, String> fun) {
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			return new TelegramBotsApi().registerBot(new TelegramLongPollingBot() {
 				public String getBotUsername() {
 					return "Kowloonbot";
@@ -23,7 +24,7 @@ public class TelegramBot {
 
 				public String getBotToken() {
 					var path = Defaults.tmp("kowloonbot.token");
-					return Rethrow.ex(() -> Files.readAllLines(path)).iterator().next();
+					return rethrow(() -> Files.readAllLines(path)).iterator().next();
 				}
 
 				public void onUpdateReceived(Update update) {
@@ -34,7 +35,7 @@ public class TelegramBot {
 						sendMessage.setChatId(message.getChat().getId().toString());
 						sendMessage.setText(fun.apply(message.getFrom().getId(), message.getText()));
 
-						Rethrow.ex(() -> sendApiMethod(sendMessage));
+						rethrow(() -> sendApiMethod(sendMessage));
 					}
 				}
 			});

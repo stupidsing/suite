@@ -1,5 +1,7 @@
 package suite.inspect;
 
+import static suite.util.Friends.rethrow;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -18,7 +20,6 @@ import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.util.FunUtil.Iterate;
 import suite.util.Object_;
-import suite.util.Rethrow;
 import suite.util.Switch;
 import suite.util.To;
 import suite.util.Util;
@@ -116,7 +117,7 @@ public class Mapify {
 					if (o instanceof Map) {
 						var map = (Map<?, ?>) o;
 						var className = map.get("@class").toString();
-						var clazz1 = Rethrow.ex(() -> Class.forName(className));
+						var clazz1 = rethrow(() -> Class.forName(className));
 						return apply_(o, getMapifier(clazz1).unmapify);
 					} else
 						// happens when an enum implements an interface
@@ -131,9 +132,9 @@ public class Mapify {
 				return new Mapifier(o -> {
 					return Read //
 							.from(fis) //
-							.map2(fi -> fi.name, fi -> apply_(Rethrow.ex(() -> fi.field.get(o)), fi.mapifier.mapify)) //
+							.map2(fi -> fi.name, fi -> apply_(rethrow(() -> fi.field.get(o)), fi.mapifier.mapify)) //
 							.toMap();
-				}, o -> Rethrow.ex(() -> {
+				}, o -> rethrow(() -> {
 					var map = (Map<?, ?>) o;
 					var object1 = Object_.new_(clazz);
 					for (var fi : fis)

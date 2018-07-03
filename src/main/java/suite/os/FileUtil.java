@@ -2,6 +2,7 @@ package suite.os;
 
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
@@ -15,21 +16,20 @@ import java.util.zip.ZipFile;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.ReadStream;
-import suite.util.Rethrow;
 import suite.util.To;
 import suite.util.WriteStream;
 
 public class FileUtil {
 
 	public static void delete(Path path) {
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			Files.delete(path);
 			return path;
 		});
 	}
 
 	public static void deleteIfExists(Path path) {
-		Rethrow.ex(() -> {
+		rethrow(() -> {
 			Files.deleteIfExists(path);
 			return path;
 		});
@@ -40,7 +40,7 @@ public class FileUtil {
 	}
 
 	public static Streamlet<Path> findPaths(Path path) {
-		return Read.from(() -> Rethrow.ex(() -> Files.walk(path).filter(Files::isRegularFile).iterator()));
+		return Read.from(() -> rethrow(() -> Files.walk(path).filter(Files::isRegularFile).iterator()));
 	}
 
 	public static String getFileExtension(Path path) {
@@ -53,7 +53,7 @@ public class FileUtil {
 	}
 
 	public static String jarFilename() {
-		return Rethrow.ex(() -> FileUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI().getFragment());
+		return rethrow(() -> FileUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI().getFragment());
 	}
 
 	public static String homeDir() {
@@ -72,7 +72,7 @@ public class FileUtil {
 		if (path != null) {
 			mkdir(path.getParent());
 			if (!Files.isDirectory(path))
-				Rethrow.ex(() -> Files.createDirectories(path));
+				rethrow(() -> Files.createDirectories(path));
 		}
 	}
 
@@ -97,7 +97,7 @@ public class FileUtil {
 	}
 
 	private static ReadStream in_(Path path) {
-		var is = Rethrow.ex(() -> Files.newInputStream(path));
+		var is = rethrow(() -> Files.newInputStream(path));
 
 		return ReadStream.of(is);
 	}
@@ -107,7 +107,7 @@ public class FileUtil {
 		var path1 = parent.resolve(path.getFileName() + ".new");
 
 		mkdir(parent);
-		var os = Rethrow.ex(() -> Files.newOutputStream(path1));
+		var os = rethrow(() -> Files.newOutputStream(path1));
 
 		return new WriteStream(os) {
 			private boolean isClosed = false;
