@@ -699,31 +699,44 @@ public class P2InferType {
 			Fail.t("cannot unify types in " + n + " between " + toString(type0) + " and " + toString(type1));
 	}
 
-	private String toString(UnNode<Type> type0) {
+	private String toString(UnNode<Type> type) {
+		var ins = new IdentityHashMap<Object, Boolean>();
 		var aliases = new IdentityHashMap<Object, Character>();
 		var alias = ChrMutable.of('a');
 
-		return new Switch<String>(type0.final_() //
-		).applyIf(TypeArray.class, t -> {
-			return toString(t.elementType) + " * " + t.size;
-		}).applyIf(TypeIo.class, t -> {
-			return "io " + toString(t.type);
-		}).applyIf(TypeLambda.class, t -> {
-			return toString(t.parameterType) + " -> " + toString(t.returnType);
-		}).applyIf(TypeReference.class, t -> {
-			return "&" + toString(t.type);
-		}).applyIf(TypeStruct.class, t -> {
-			var s = t.isCompleted ? "" : "...";
-			return Read.from(t.pairs).map(pair -> pair.t0 + ":" + toString(pair.t1) + ", ").collect(As.joinedBy("(", "", s + ")"));
-		}).applyIf(Type.class, t -> {
-			return type0.final_().getClass().getSimpleName().substring(4).toLowerCase();
-		}).applyIf(Object.class, t -> {
-			return aliases.computeIfAbsent(t, t_ -> {
-				var c = alias.get();
-				alias.update((char) (c + 1));
-				return c;
-			}).toString();
-		}).nonNullResult();
+		return new Object() {
+			private String toString(UnNode<Type> type) {
+				if (ins.put(type, true) == null)
+					try {
+						return new Switch<String>(type.final_() //
+						).applyIf(TypeArray.class, t -> {
+							return toString(t.elementType) + " * " + t.size;
+						}).applyIf(TypeIo.class, t -> {
+							return "io " + toString(t.type);
+						}).applyIf(TypeLambda.class, t -> {
+							return toString(t.parameterType) + " -> " + toString(t.returnType);
+						}).applyIf(TypeReference.class, t -> {
+							return "&" + toString(t.type);
+						}).applyIf(TypeStruct.class, t -> {
+							var s = t.isCompleted ? "" : "...";
+							return Read.from(t.pairs).map(pair -> pair.t0 + ":" + toString(pair.t1) + ", ")
+									.collect(As.joinedBy("(", "", s + ")"));
+						}).applyIf(Type.class, t -> {
+							return type.final_().getClass().getSimpleName().substring(4).toLowerCase();
+						}).applyIf(Object.class, t -> {
+							return aliases.computeIfAbsent(t, t_ -> {
+								var c = alias.get();
+								alias.update((char) (c + 1));
+								return c;
+							}).toString();
+						}).nonNullResult();
+					} finally {
+						ins.remove(type);
+					}
+				else
+					return "<recurse>";
+			}
+		}.toString(type);
 	}
 
 	private Type typeOf(Funp n) {
