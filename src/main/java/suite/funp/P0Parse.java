@@ -124,6 +124,8 @@ public class P0Parse {
 			return new SwitchNode<Funp>(node //
 			).match(".0 | .1", (a, b) -> {
 				return FunpApply.of(p(a), p(b));
+			}).match(".0 /.1", (a, b) -> {
+				return FunpApply.of(p(b), p(a));
 			}).match("[.0]", a -> {
 				return FunpArray.of(Tree.iter(a, TermOp.AND___).map(this::p).toList());
 			}).match(Atom.FALSE, () -> {
@@ -189,6 +191,9 @@ public class P0Parse {
 					var ma = Suite.pattern(".0 = .1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
 				}).toList(), Tree.iter(b, TermOp.OR____).toList());
+			}).match(".0 => io .1 => .2", (a, b, c) -> {
+				var var = Atom.name(b);
+				return FunpApply.of(p(a), FunpIoCat.of(FunpLambda.of(var, nv(var).p(c))));
 			}).match("io.cat .0", a -> {
 				return FunpIoCat.of(p(a));
 			}).match("io.fold .0 .1 .2", (a, b, c) -> {

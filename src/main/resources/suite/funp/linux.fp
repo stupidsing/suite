@@ -67,11 +67,9 @@ define write := (pointer, length) =>
 define cat := io.fold 1 (n => n != 0) (n =>
 	let buffer := array size * byte ~
 	let pointer := address buffer ~
-	pointer, size | read | io.cat (nBytesRead =>
-		pointer, nBytesRead | write | io.cat (nBytesWrote =>
-			io nBytesRead
-		)
-	)
+	pointer, size | read =>
+	io nBytesRead => pointer, nBytesRead | write =>
+	io nBytesWrote => io nBytesRead
 ) ~
 
 { cat, map, read, unmap, write, }
