@@ -124,8 +124,9 @@ public class P0Parse {
 			return new SwitchNode<Funp>(node //
 			).match(".0 | .1", (a, b) -> {
 				return FunpApply.of(p(a), p(b));
-			}).match(".0 /.1", (a, b) -> {
-				return FunpApply.of(p(b), p(a));
+			}).match(".0 .1", (a, b) -> {
+				var name = Atom.name(a);
+				return name != null && variables.contains(name) ? FunpApply.of(p(b), p(a)) : null;
 			}).match("[.0]", a -> {
 				return FunpArray.of(Tree.iter(a, TermOp.AND___).map(this::p).toList());
 			}).match(Atom.FALSE, () -> {
