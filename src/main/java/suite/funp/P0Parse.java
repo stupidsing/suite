@@ -155,7 +155,7 @@ public class P0Parse {
 					return null;
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
-				var var = Atom.name(a);
+				var var = a instanceof Atom ? Atom.name(a) : null;
 				if (var != null)
 					return FunpDefine.of(false, var, p(b), nv(var).p(c));
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
@@ -194,6 +194,8 @@ public class P0Parse {
 				}).toList(), Tree.iter(b, TermOp.OR____).toList());
 			}).match("io.assign .0 .1 ~ .2", (a, b, c) -> {
 				return FunpIo.of(FunpIoAssignReference.of(FunpReference.of(p(a)), p(b), p(c)));
+			}).match("io.update .0 := .1 ~ .2", (a, b, c) -> {
+				return FunpIo.of(FunpIoAssignReference.of(FunpReference.of(FunpVariable.of(Atom.name(a))), p(b), p(c)));
 			}).match(".0 => io .1 => .2", (a, b, c) -> {
 				var var = Atom.name(b);
 				return FunpApply.of(p(a), FunpIoCat.of(FunpLambda.of(var, nv(var).p(c))));

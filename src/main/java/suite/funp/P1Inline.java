@@ -245,6 +245,10 @@ public class P1Inline {
 					associate(vars, value);
 					associate(vars.replace(var, f), expr);
 					return n_;
+				})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
+					associate(vars, value);
+					associate(vars.replace(var, f), expr);
+					return n_;
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 					var vars1 = Read.from(pairs).fold(vars, (vs, pair) -> vs.replace(pair.t0, f));
 					for (var pair : pairs)
