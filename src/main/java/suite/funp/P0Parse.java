@@ -131,6 +131,13 @@ public class P0Parse {
 				return FunpBoolean.of(true);
 			}).match("type .0 = .1 >> .2", (a, b, c) -> {
 				return FunpCheckType.of(p(a), p(b), p(c));
+			}).match("byte .0", a -> {
+				if (a == Atom.of("_"))
+					return FunpCoerce.of(Coerce.BYTE, FunpDontCare.of());
+				else if (a instanceof Int)
+					return FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(Int.num(a)));
+				else
+					return null;
 			}).match("coerce.byte .0", a -> {
 				return FunpCoerce.of(Coerce.BYTE, p(a));
 			}).match("coerce.number .0", a -> {
@@ -157,8 +164,7 @@ public class P0Parse {
 				var var = Atom.name(a);
 				return FunpDefineGlobal.of(var, p(b), nv(var).p(c));
 			}).match("define { .0 } >> .1", (a, b) -> {
-				var pattern1 = Suite.pattern(".0: .1");
-				var list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect();
+				var list = Tree.iter(a, TermOp.AND___).map(this::kv).collect();
 				var variables1 = list.fold(variables, (vs, array) -> vs.add(Atom.name(array[0])));
 				var p1 = new Parse(variables1);
 				return FunpDefineRec.of(list //
@@ -215,7 +221,7 @@ public class P0Parse {
 				return FunpStruct.of(Tree //
 						.iter(a, TermOp.AND___) //
 						.map(n -> {
-							var m = Suite.pattern(".0: .1").match(n);
+							var m = kv(n);
 							return Pair.of(Atom.name(m[0]), p(m[1]));
 						}) //
 						.toList());
@@ -238,6 +244,10 @@ public class P0Parse {
 				return r0.apply(HttpUtil.get(url).inputStream());
 			else
 				return r1.apply(() -> ReadStream.of(getClass().getResourceAsStream(url)));
+		}
+
+		private Node[] kv(Node n) {
+			return n instanceof Atom ? new Node[] { n, n, } : Suite.pattern(".0: .1").match(n);
 		}
 
 		private Funp bind(Node a, Node b, Node c) {
