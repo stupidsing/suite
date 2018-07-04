@@ -1,12 +1,8 @@
 use external STANDARD ~
 use external CHARS ~
 -------------------------------------------------------------------------------
-define lower := ch =>
-	if (65 <= ch && ch <= 90) then (ch + 32) else ch
-~
-define upper := ch =>
-	if (97 <= ch && ch <= 122) then (ch - 32) else ch
-~
+define lower := ch => if (65 <= ch && ch <= 90) then (ch + 32) else ch ~
+define upper := ch => if (97 <= ch && ch <= 122) then (ch - 32) else ch ~
 -------------------------------------------------------------------------------
 define camel-case := s =>
 	if (s != "") then (let `$h; $t` := s ~ upper {h}; map {lower} {t}) else s

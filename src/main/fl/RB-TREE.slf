@@ -1,11 +1,14 @@
 use external STANDARD ~
+
 data Color as Red ~
 data Color as Black ~
+
 data (Rb-tree :t) over :t as Tree (Color, Rb-tree :t, :t, Rb-tree :t) ~
 data (Rb-tree :t) over :t as Empty ~
 
 define cr := Red ~
 define cb := Black ~
+
 define rbt-insert := (:t => :t -> Rb-tree :t -> Rb-tree :t) of (
 v =>
 	define add0 :=
