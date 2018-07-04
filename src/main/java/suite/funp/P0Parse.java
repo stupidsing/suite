@@ -131,6 +131,13 @@ public class P0Parse {
 				return FunpBoolean.of(true);
 			}).match("type .0 = .1 >> .2", (a, b, c) -> {
 				return FunpCheckType.of(p(a), p(b), p(c));
+			}).match("byte .0", a -> {
+				if (a == Atom.of("_"))
+					return FunpCoerce.of(Coerce.BYTE, FunpDontCare.of());
+				else if (a instanceof Int)
+					return FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(Int.num(a)));
+				else
+					return null;
 			}).match("coerce.byte .0", a -> {
 				return FunpCoerce.of(Coerce.BYTE, p(a));
 			}).match("coerce.number .0", a -> {

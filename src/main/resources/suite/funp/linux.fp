@@ -5,7 +5,7 @@ define map := length =>
 	io.asm (EAX = 90; EBX = address ps;) { INT (-128); }
 >>
 define unmap := (length, pointer) =>
-	--type pointer = address (size * array coerce.byte _) >>
+	--type pointer = address (size * array byte _) >>
 	type pointer = io 0 >>
 	io.asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
 >>
@@ -17,7 +17,7 @@ define alloc := size =>
 define dealloc := (size, pointer) =>
 	io.asm (EBX = size; ECX = pointer;) { }
 >>
-define pool.new := length =>
+define new.pool := length =>
 	let pool := (length | map) >>
 	{
 		destroy: ({} => length, pool | unmap),
@@ -36,7 +36,7 @@ define pool.new := length =>
 --	}
 -->>
 --define get.char := {} =>
---	let.global buffer := (size * array coerce.byte _) >>
+--	let.global buffer := (size * array byte _) >>
 --	let.global start-end := (0, 0) >>
 --	start-end := io.fold start-end ((s, e) => s = e) ((s, e) => (0, (buffer, size | read))) >>
 --	let (s0, e0) := start-end >>
@@ -47,11 +47,11 @@ define pool.new := length =>
 	map,
 	unmap,
 	read: ((pointer, length) =>
-		type pointer = address (size * array coerce.byte _) >>
+		type pointer = address (size * array byte _) >>
 		io.asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 	),
 	write: ((pointer, length) =>
-		type pointer = address (size * array coerce.byte _) >>
+		type pointer = address (size * array byte _) >>
 		io.asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 	),
 }
