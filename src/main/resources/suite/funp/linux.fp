@@ -5,7 +5,8 @@ define map := length =>
 	io.asm (EAX = 90; EBX = address ps;) { INT (-128); }
 >>
 define unmap := (length, pointer) =>
-	type pointer = address (size * array coerce.byte _) >>
+	--type pointer = address (size * array coerce.byte _) >>
+	type pointer = io 0 >>
 	io.asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
 >>
 let.global alloc.pointer := (32768 | map)
@@ -16,12 +17,14 @@ define alloc := size =>
 define dealloc := (size, pointer) =>
 	io.asm (EBX = size; ECX = pointer;) { }
 >>
-define pool.new := length => {
-	pool: (length | map), length, start: 0,
-} >>
-define pool.delete := address ({ pool, length, start, }) =>
-	type start = 0 >>
-	length, pool | unmap
+define pool.new := length =>
+	let pool := (length | map) >>
+	{
+		destroy: ({} => length, pool | unmap),
+		pool,
+		length,
+		start: 0,
+	}
 -->>
 --define create.mut := init =>
 --	let size := size.of init >>
@@ -39,7 +42,8 @@ define pool.delete := address ({ pool, length, start, }) =>
 --	let (s0, e0) := start-end >>
 --	start-end := (s0 + 1, e0) >>
 --	buffer:s0
->> {
+>>
+{
 	map,
 	unmap,
 	read: ((pointer, length) =>
