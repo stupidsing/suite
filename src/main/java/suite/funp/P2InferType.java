@@ -104,7 +104,7 @@ public class P2InferType {
 	public Funp infer(Funp n0) {
 		var t = unify.newRef();
 		var n1 = extractPredefine(n0);
-		var n2 = Boolean.FALSE ? captureLambdas(n1) : n1;
+		var n2 = captureLambdas(n1);
 
 		if (unify.unify(t, new Infer(IMap.empty()).infer(n2))) {
 			var erase = new Erase(0, IMap.empty());
@@ -170,30 +170,32 @@ public class P2InferType {
 					var c1 = new Capture(accesses, locals, globals.add(var));
 					return FunpDefineGlobal.of(var, capture(value), c1.capture(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
-					var vars1 = new ArrayList<Pair<String, Funp>>();
-					var locals1 = locals;
-					for (var pair : vars) {
-						locals1 = locals1.add(pair.t0);
-						vars1.add(Pair.of(pair.t0, capture(pair.t1)));
-					}
+					var locals1 = Read.from(vars).fold(locals, (l, pair) -> l.add(pair.t0));
 					var c1 = new Capture(accesses, locals1, globals);
+					var vars1 = new ArrayList<Pair<String, Funp>>();
+					for (var pair : vars)
+						vars1.add(Pair.of(pair.t0, c1.capture(pair.t1)));
 					return FunpDefineRec.of(vars1, c1.capture(expr));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-					var locals1 = ISet.<String> empty();
-					var capn = "cap$" + Util.temp();
-					var cap = FunpVariable.of(capn);
-					var ref = FunpReference.of(cap);
-					var set = new HashSet<>();
-					var list = new ArrayList<Pair<String, Funp>>();
-					var struct = FunpStruct.of(list);
+					if (Boolean.TRUE) // perform capture?
+						return FunpLambda.of(var, new Capture(accesses, locals.replace(var), globals).capture(expr));
+					else {
+						var locals1 = ISet.<String> empty();
+						var capn = "cap$" + Util.temp();
+						var cap = FunpVariable.of(capn);
+						var ref = FunpReference.of(cap);
+						var set = new HashSet<>();
+						var list = new ArrayList<Pair<String, Funp>>();
+						var struct = FunpStruct.of(list);
 
-					var c1 = new Capture(v -> {
-						if (set.add(v))
-							list.add(Pair.of(v, FunpVariable.of(v)));
-						return FunpField.of(ref, v);
-					}, locals1.add(capn).add(var), globals);
+						var c1 = new Capture(v -> {
+							if (set.add(v))
+								list.add(Pair.of(v, FunpVariable.of(v)));
+							return FunpField.of(ref, v);
+						}, locals1.add(capn).add(var), globals);
 
-					return FunpDefineGlobal.of(capn, struct, FunpLambdaCapture.of(var, capn, cap, c1.capture(expr)));
+						return FunpDefineGlobal.of(capn, struct, FunpLambdaCapture.of(var, capn, cap, c1.capture(expr)));
+					}
 
 					// TODO allocate cap on heap
 					// TODO free cap after use
@@ -203,7 +205,7 @@ public class P2InferType {
 			}
 		}
 
-		return new Capture(v -> Fail.t(), ISet.empty(), ISet.empty()).capture(node0);
+		return new Capture(Fail::t, ISet.empty(), ISet.empty()).capture(node0);
 	}
 
 	private class Infer {
