@@ -24,9 +24,9 @@ public class FailedTests {
 	@Test
 	public void testClassOfClass() {
 		assertEquals(Suite.parse("C2 boolean"), Suite.evaluateFunType("" //
-				+ "data (C0 :t) over :t as A :t >> \n" //
-				+ "data (C1 :t) over :t as (C0 :t) >> \n" //
-				+ "data (C2 :t) over :t as (C1 :t) >> \n" //
+				+ "data (C0 :t) over :t as A :t ~ \n" //
+				+ "data (C1 :t) over :t as (C0 :t) ~ \n" //
+				+ "data (C2 :t) over :t as (C1 :t) ~ \n" //
 				+ "(C2 boolean) of (A true)"));
 	}
 
@@ -45,14 +45,14 @@ public class FailedTests {
 	// duplicate symbols. Cannot bind again when using is used in a closure
 	@Test
 	public void testClosureUsing() {
-		Suite.noLibraries(() -> Suite.evaluateFun("use MATH >> (a => (use MATH >> 1)) {0}", true));
+		Suite.noLibraries(() -> Suite.evaluateFun("use MATH ~ (a => (use MATH ~ 1)) {0}", true));
 	}
 
 	// nPE. Method not found in concatm due to not importing standard library.
 	// module dependency checks are necessary
 	@Test
 	public void testEager() {
-		Suite.noLibraries(() -> Suite.evaluateFun("use MONAD >> 0", false));
+		Suite.noLibraries(() -> Suite.evaluateFun("use MONAD ~ 0", false));
 	}
 
 	// unmatched types
@@ -76,7 +76,7 @@ public class FailedTests {
 	public void testRecursiveCall() {
 		Suite.isInstructionDump = true;
 		Suite.noLibraries(() -> {
-			assertNotNull(Suite.evaluateFun("define f := f >> f", true));
+			assertNotNull(Suite.evaluateFun("define f := f ~ f", true));
 			return true;
 		});
 	}
@@ -84,7 +84,7 @@ public class FailedTests {
 	// takes forever to type check
 	// @Test
 	public void testRecursiveType() {
-		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) >> (:t => rb-tree {:t}) of 1");
+		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) ~ (:t => rb-tree {:t}) of 1");
 	}
 
 	// takes 11 seconds to type check

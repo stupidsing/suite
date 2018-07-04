@@ -21,7 +21,7 @@ public class LogicCompilerTest {
 	@Test
 	public void testAuto() {
 		var preds = FileUtil.read("src/main/ll/auto.sl");
-		String goal = "(" + preds + ") >> member (a, b, c,) c";
+		String goal = "(" + preds + ") ~ member (a, b, c,) c";
 		assertTrue(Suite.proveLogic(goal));
 	}
 
@@ -30,11 +30,11 @@ public class LogicCompilerTest {
 		assertTrue(prove("(.a = 1; .a = 2), !, .a = 1"));
 		assertFalse(prove("(.a = 1; .a = 2), !, .a = 2"));
 		assertFalse(prove(".a = 1, !, .b = 2, fail; .b = 3"));
-		assertTrue(prove("(a .b :- !, .b = 1 #) >> (.b = 1; .b = 2), a .b"));
-		assertTrue(prove("(a :- fail # a :- ! #) >> a"));
-		assertTrue(prove("(a :- fail, ! # a #) >> a"));
-		assertFalse(prove("(a :- !, fail # a #) >> a"));
-		assertTrue(prove("(a#) >> a, !"));
+		assertTrue(prove("(a .b :- !, .b = 1 #) ~ (.b = 1; .b = 2), a .b"));
+		assertTrue(prove("(a :- fail # a :- ! #) ~ a"));
+		assertTrue(prove("(a :- fail, ! # a #) ~ a"));
+		assertFalse(prove("(a :- !, fail # a #) ~ a"));
+		assertTrue(prove("(a#) ~ a, !"));
 	}
 
 	@Test
@@ -58,7 +58,7 @@ public class LogicCompilerTest {
 				+ "        , fib .n2 .f2 \n" //
 				+ "        , let .f (.f1 + .f2) \n" //
 				+ "    # \n" //
-				+ ") >> fib 10 89"));
+				+ ") ~ fib 10 89"));
 	}
 
 	@Test
@@ -89,8 +89,8 @@ public class LogicCompilerTest {
 
 	@Test
 	public void testTailRecursion() {
-		assertTrue(prove("(dec 0 :- ! # dec .n :- let .n1 (.n - 1), dec .n1 #) >> dec 65536"));
-		assertTrue(prove("(dec 0 :- ! # dec .n :- let .n1 (.n - 1), dec .n1, ! #) >> dec 65536"));
+		assertTrue(prove("(dec 0 :- ! # dec .n :- let .n1 (.n - 1), dec .n1 #) ~ dec 65536"));
+		assertTrue(prove("(dec 0 :- ! # dec .n :- let .n1 (.n - 1), dec .n1, ! #) ~ dec 65536"));
 	}
 
 	@Test
@@ -101,9 +101,9 @@ public class LogicCompilerTest {
 
 	@Test
 	public void testWith() {
-		assertTrue(prove("(p 2 # p 3 #) >> p .v, .v = 3"));
-		assertFalse(prove("(p 2 :- ! # p 3 #) >> p .v, .v = 3"));
-		assertTrue(prove("(p .v :- q .v # q 3 #) >> p 3"));
+		assertTrue(prove("(p 2 # p 3 #) ~ p .v, .v = 3"));
+		assertFalse(prove("(p 2 :- ! # p 3 #) ~ p .v, .v = 3"));
+		assertTrue(prove("(p .v :- q .v # q 3 #) ~ p 3"));
 	}
 
 	private boolean prove(String program) {

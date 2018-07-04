@@ -3,241 +3,241 @@
 -- still considered pure.
 
 ---------------------------------------------------------------------------
-data (Optional :t) over :t as None >>
-data (Optional :t) over :t as (Value :t) >>
+data (Optional :t) over :t as None ~
+data (Optional :t) over :t as (Value :t) ~
 ---------------------------------------------------------------------------
-define call%i-t1 := (n^Ints -> any -> any) of skip-type-check (i => p0 => +call%i-t1 {i} {p0}) >>
-define call%i-t2 := (n^Ints -> any -> any -> any) of skip-type-check (i => p0 => p1 => +call%i-t2 {i} {p0} {p1}) >>
-define call%i-t3 := (n^Ints -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +call%i-t3 {i} {p0} {p1} {p2}) >>
-define call%i-v1 := (n^Ints -> any -> any) of skip-type-check (i => p0 => +call%i-v1 {i} {p0}) >>
-define call%i-v2 := (n^Ints -> any -> any -> any) of skip-type-check (i => p0 => p1 => +call%i-v2 {i} {p0} {p1}) >>
-define call%i-v3 := (n^Ints -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +call%i-v3 {i} {p0} {p1} {p2}) >>
-define compare := (:t => (:t, :t) -> number) of skip-type-check (a => b => +compare {a} {b}) >>
-define cons := (:t => :t -> [:t] -> [:t]) of skip-type-check (head => tail => head; tail) >>
-define first := (:a => :b => (:a, :b) -> :a) of skip-type-check (tuple => +pleft {tuple}) >>
-define get%i := (any -> n^Ints) of skip-type-check (name => +get%i {name}) >>
-define head := (:t => [:t] -> :t) of skip-type-check (list => +lhead {list}) >>
-define is-list := (:t => [:t] -> boolean) of skip-type-check (n => +is-list {n}) >>
-define is-pair := (:a => :b => (:a, :b) -> boolean) of skip-type-check (n => +is-pair {n}) >>
-define second := (:a => :b => (:a, :b) -> :b) of skip-type-check (tuple => +pright {tuple}) >>
-define tail := (:t => [:t] -> [:t]) of skip-type-check (list => +ltail {list}) >>
+define call%i-t1 := (n^Ints -> any -> any) of skip-type-check (i => p0 => +call%i-t1 {i} {p0}) ~
+define call%i-t2 := (n^Ints -> any -> any -> any) of skip-type-check (i => p0 => p1 => +call%i-t2 {i} {p0} {p1}) ~
+define call%i-t3 := (n^Ints -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +call%i-t3 {i} {p0} {p1} {p2}) ~
+define call%i-v1 := (n^Ints -> any -> any) of skip-type-check (i => p0 => +call%i-v1 {i} {p0}) ~
+define call%i-v2 := (n^Ints -> any -> any -> any) of skip-type-check (i => p0 => p1 => +call%i-v2 {i} {p0} {p1}) ~
+define call%i-v3 := (n^Ints -> any -> any -> any -> any) of skip-type-check (i => p0 => p1 => p2 => +call%i-v3 {i} {p0} {p1} {p2}) ~
+define compare := (:t => (:t, :t) -> number) of skip-type-check (a => b => +compare {a} {b}) ~
+define cons := (:t => :t -> [:t] -> [:t]) of skip-type-check (head => tail => head; tail) ~
+define first := (:a => :b => (:a, :b) -> :a) of skip-type-check (tuple => +pleft {tuple}) ~
+define get%i := (any -> n^Ints) of skip-type-check (name => +get%i {name}) ~
+define head := (:t => [:t] -> :t) of skip-type-check (list => +lhead {list}) ~
+define is-list := (:t => [:t] -> boolean) of skip-type-check (n => +is-list {n}) ~
+define is-pair := (:a => :b => (:a, :b) -> boolean) of skip-type-check (n => +is-pair {n}) ~
+define second := (:a => :b => (:a, :b) -> :b) of skip-type-check (tuple => +pright {tuple}) ~
+define tail := (:t => [:t] -> [:t]) of skip-type-check (list => +ltail {list}) ~
 ---------------------------------------------------------------------------
 define popen* := ([string] -> string -> (number, [n^Chars], [n^Chars])) of
 	atom:INTRN!MonadIntrinsics.popen | get%i | call%i-v2
->>
+~
 define deep-seq := (:t => :t -> :t) of
 	atom:INTRN!SeqIntrinsics.deepSeq | get%i | call%i-v1
->>
+~
 define log := (:t => :t -> :t) of
 	atom:INTRN!BasicIntrinsics.log1 | get%i | call%i-v1
->>
+~
 define log2 := (:t => string -> :t -> :t) of
 	atom:INTRN!BasicIntrinsics.log2 | get%i | call%i-v2
->>
+~
 ---------------------------------------------------------------------------
 define and := x => y =>
 	if x then y else false
->>
+~
 define drop := n => list =>
 	if (0 < n && is-list {list})
 	then (list | tail | drop {n - 1})
 	else list
->>
+~
 define fix := f =>
-	let x := f {x} >> x
->>
+	let x := f {x} ~ x
+~
 define flip := f => x => y =>
 	f {y} {x}
->>
+~
 define fold-left := fun => init => -- possible for tail call optimization in eager mode
 	case
 	|| `$h; $t` => fold-left {fun} {fun {init} {h}} {t}
 	|| anything => init
->>
+~
 define fold-right := fun => init => -- possible for short-circuit evaluation in lazy mode
 	case
 	|| `$h; $t` => fun {h} {fold-right {fun} {init} {t}}
 	|| anything => init
->>
+~
 define greater := a => b =>
 	if (b < a) then a else b
->>
+~
 define id := v =>
 	v
->>
+~
 define invoke := f => x =>
 	f {x}
->>
+~
 define iterate := f => init =>
 	init | f | iterate {f} | `init;`
->>
+~
 define lesser := a => b =>
 	if (b < a) then b else a
->>
+~
 define lines :=
 	case
 	|| `$h; $t` =>
-		let l1 := lines {t} >>
+		let l1 := lines {t} ~
 		if (h != 10 && is-list {l1})
-		then (let `$p; $q` := l1 >> (h; p); q)
+		then (let `$p; $q` := l1 ~ (h; p); q)
 		else ((h;); l1)
 	|| anything => ()
->>
+~
 define not := x =>
 	if x then false else true
->>
+~
 define optional := cond => value =>
 	if cond then (Value value) else None
->>
+~
 define or := x => y =>
 	if x then true else y
->>
+~
 define scan-left := fun => init =>
 	case
 	|| `$h; $t` => init; scan-left {fun} {fun {init} {h}} {t}
 	|| anything => init;
->>
+~
 define scan-right := fun => init =>
 	case
 	|| `$h; $t` =>
-		let r := scan-right {fun} {init} {t} >>
+		let r := scan-right {fun} {init} {t} ~
 		fun {h} {head {r}}; r
 	|| anything => init;
->>
+~
 define take := n => list =>
 	if (0 < n && is-list {list})
-	then (let `$h; $t` := list >> t | take {n - 1} | cons {h})
+	then (let `$h; $t` := list ~ t | take {n - 1} | cons {h})
 	else ()
->>
+~
 define take-drop := n => list =>
 	if (0 < n && is-list {list}) then
-		let `$h; $t` := list >>
-		let `$t1, $d1` := t | take-drop {n - 1} >>
+		let `$h; $t` := list ~
+		let `$t1, $d1` := t | take-drop {n - 1} ~
 		(h; t1), d1
 	else (, list)
->>
+~
 define unfold-left :=
 	define unfold-left0 :=
 		list => fun => init =>
 			if (fun {init} = `Value ($init1, $elem)`)
 			then (unfold-left0 {elem; list} {fun} {init1})
 			else list
-	>>
+	~
 	unfold-left0 {}
->>
+~
 define unfold-right :=
 	fun => init =>
 		if (fun {init} = `Value ($e, $init1)`)
 		then (init1 | unfold-right {fun} | cons {e})
 		else ()
->>
+~
 define zip := fun => list0 => list1 =>
 	unfold-right {
 		case
 		|| `($h0; $t0), ($h1; $t1)` => Value (fun {h0} {h1}, (t0, t1))
 		|| anything => None
 	} {list0, list1}
->>
+~
 ---------------------------------------------------------------------------
 define append :=
 	fold-right {cons} | flip
->>
+~
 define apply :=
 	fold-right {`.`} {id}
->>
+~
 define bisect := fun =>
 	fold-right {
 		h => `$t0, $f0` =>
 		if (fun {h}) then ((h; t0), f0) else (t0, (h; f0))
 	} {(), ()}
->>
+~
 define chunk := n =>
 	unfold-right {l => optional {l != ()} {take-drop {n} {l}}}
->>
+~
 define erase-type := (any -> any) of
 	skip-type-check id
->>
+~
 define fold := fun => `$h; $t` =>
 	fold-left {fun} {h} {t}
->>
+~
 define filter := fun =>
 	fold-right {
 		item => list => if (fun {item}) then (item; list) else list
 	} {}
->>
+~
 define heads :=
 	scan-left {cons/} {}
->>
+~
 define length :=
 	fold-left {v => e => v + 1} {0}
->>
+~
 define map := fun =>
 	fold-right {cons . fun} {}
->>
+~
 define partition := fun =>
 	fold-right {
 		e => `$l0, $l1` => if (fun {e}) then ((e; l0), l1) else (l0, (e; l1))
 	} {(), ()}
->>
+~
 define popen := command => in =>
 	do (in | popen* {command})
->>
+~
 define replicate := flip {e =>
 	unfold-left {i => optional {i != 0} {i - 1, e}}
-} >>
+} ~
 define reverse :=
 	fold-left {cons/} {}
->>
+~
 define substring := start => end => list =>
-	let len := length {list} >>
-	let s := if (0 <= start) then start else (len + start) >>
-	let e := if (0 < end) then end else (len + end) >>
+	let len := length {list} ~
+	let s := if (0 <= start) then start else (len + start) ~
+	let e := if (0 < end) then end else (len + end) ~
 	list | take {e} | drop {s}
->>
+~
 define tails :=
 	scan-right {cons} {}
->>
+~
 define take-while := fun =>
 	fold-right {h => if (fun {h}) then (cons {h}) else (t => ())} {}
->>
+~
 define transpose :=
 	case
 	|| `$c; $cs` => zip {`;`} {c} {transpose {cs}}
-	|| anything => (define list := ((); list) >> list)
->>
+	|| anything => (define list := ((); list) ~ list)
+~
 define uniq :=
 	fold-right {item => list =>
 		case
 		|| (list = `item; $t`) list
 		|| item; list
 	} {}
->>
+~
 ---------------------------------------------------------------------------
 define concat :=
 	fold-right {append} {}
->>
+~
 define cross := fun => l1 => l2 =>
 	l1 | map {e1 => l2 | map {e1 | fun}}
->>
+~
 define get := n =>
 	head . (tail | replicate {n} | apply)
->>
+~
 define maximum :=
 	fold {greater}
->>
+~
 define merge := merger => list =>
-	let len := length {list} >>
+	let len := length {list} ~
 	if (1 < len) then
-		let `$list0, $list1` := take-drop {len / 2} {list} >>
+		let `$list0, $list1` := take-drop {len / 2} {list} ~
 		merger {list0 | merge {merger}} {list1 | merge {merger}}
 	else list
->>
+~
 define minimum :=
 	fold {lesser}
->>
+~
 define range := start => end => inc =>
 	unfold-right {i => optional {i < end} {i, i + inc}} {start}
->>
+~
 define starts-with :=
 	case
 	|| `$sh; $st` =>
@@ -245,20 +245,20 @@ define starts-with :=
 		|| `sh; $t` => starts-with {st} {t}
 		|| anything => false
 	|| anything => anything => true
->>
+~
 define split := separator =>
 	map {take-while {`!= separator`} . tail}
 	. filter {`= separator` . head}
 	. filter {not . `=` {}}
 	. tails . cons {separator}
->>
+~
 ---------------------------------------------------------------------------
 define contains := m =>
 	fold-left {or} {false} . map {m | starts-with} . tails
->>
+~
 define ends-with := end =>
 	starts-with {end | reverse} . reverse
->>
+~
 define group :=
 	define group0 := list0 => list1 =>
 		if (list0 = `$k0, $v0; $t0`) then
@@ -269,30 +269,30 @@ define group :=
 				|| k0, append {v0} {v1}; group0 {t0} {t1}
 			else list0
 		else list1
-	>>
+	~
 	merge {group0} . map {`$k, $v` => k, (v;)}
->>
+~
 define join := separator =>
 	concat . map {separator; | append/}
->>
+~
 define quick-sort := cmp =>
 	case
 	|| `$pivot; $t` =>
-		let `$l0, $l1` := partition {cmp/ {pivot}} {quick-sort {cmp} {t}} >>
+		let `$l0, $l1` := partition {cmp/ {pivot}} {quick-sort {cmp} {t}} ~
 		concat {l0; (pivot;); l1;}
 	|| anything => ()
->>
+~
 define replace := s0 => s1 =>
-	define l := length {s0} >>
+	define l := length {s0} ~
 	define replace0 := s =>
 		case
 		|| (starts-with {s0} {s}) (s1 ++ (s | drop {l} | replace0))
 		|| (`$h; $t` = s) (h; replace0 {t})
 		|| ()
-	>>
+	~
 	replace0
->>
+~
 ---------------------------------------------------------------------------
 define merge-sort :=
 	concat . map {second} . group . map {v => v, v}
->>
+~

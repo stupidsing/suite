@@ -1,13 +1,13 @@
 -- pairing heap
 -- http://en.wikipedia.org/wiki/Pairing_heap
 
-use external STANDARD >>
-data (Heap :t) over :t as Empty >>
-data (Heap :t) over :t as Tree (:t, [Heap :t]) >>
+use external STANDARD ~
+data (Heap :t) over :t as Empty ~
+data (Heap :t) over :t as Tree (:t, [Heap :t]) ~
 
 define find-min :=
 	`Tree ($elem, $list)` => elem
->>
+~
 define meld := (:t => Heap :t -> Heap :t -> Heap :t) of (
 heap0 => heap1 =>
 	case
@@ -20,16 +20,16 @@ heap0 => heap1 =>
 				Tree (elem1, (heap0; heaps1))
 		|| heap0
 	|| heap1
-) >>
+) ~
 define add := heap => elem =>
 	meld {Tree (elem,)} {heap}
->>
+~
 define delete-min :=
 	define merge-pairs :=
 		case
 		|| `$h0; $h1; $hs` => meld {meld {h0} {h1}} {merge-pairs {hs}}
 		|| `$h;` => h
 		|| anything => error ()
-	>>
+	~
 	`Tree ($elem, $heap)` => merge-pairs {heap}
->>
+~

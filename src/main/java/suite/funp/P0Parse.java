@@ -88,7 +88,7 @@ public class P0Parse {
 		private Node expand(Node node) {
 			Node[] m;
 
-			if ((m = Suite.pattern("expand .0 := .1 >> .2").match(node)) != null) {
+			if ((m = Suite.pattern("expand .0 := .1 ~ .2").match(node)) != null) {
 				var head = m[0];
 				return new Expand(macros.put(Prototype.of(head), new Node[] { head, m[1], })).expand(m[2]);
 			} else if ((m = macros.get(Prototype.of(node))) != null) {
@@ -129,7 +129,7 @@ public class P0Parse {
 				return FunpBoolean.of(false);
 			}).match(Atom.TRUE, () -> {
 				return FunpBoolean.of(true);
-			}).match("type .0 = .1 >> .2", (a, b, c) -> {
+			}).match("type .0 = .1 ~ .2", (a, b, c) -> {
 				return FunpCheckType.of(p(a), p(b), p(c));
 			}).match("byte .0", a -> {
 				if (a == Atom.of("_"))
@@ -146,24 +146,24 @@ public class P0Parse {
 				return FunpCoerce.of(Coerce.POINTER, p(a));
 			}).match("consult .0", a -> {
 				return consult(Str.str(a));
-			}).match("define .0 := .1 >> .2", (a, b, c) -> {
+			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
 				if (a instanceof Atom) {
 					var var = Atom.name(a);
 					return FunpDefine.of(true, var, p(b), nv(var).p(c));
 				} else
 					return null;
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
-			}).match("let .0 := .1 >> .2", (a, b, c) -> {
+			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
 				var var = Atom.name(a);
 				if (var != null)
 					return FunpDefine.of(false, var, p(b), nv(var).p(c));
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 				else
 					return bind(a, b, c);
-			}).match("let.global .0 := .1 >> .2", (a, b, c) -> {
+			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
 				var var = Atom.name(a);
 				return FunpDefineGlobal.of(var, p(b), nv(var).p(c));
-			}).match("define { .0 } >> .1", (a, b) -> {
+			}).match("define { .0 } ~ .1", (a, b) -> {
 				var list = Tree.iter(a, TermOp.AND___).map(this::kv).collect();
 				var variables1 = list.fold(variables, (vs, array) -> vs.add(Atom.name(array[0])));
 				var p1 = new Parse(variables1);

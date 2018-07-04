@@ -1,13 +1,13 @@
-use external STANDARD >>
+use external STANDARD ~
 define ar-append := (:t => n^Array :t -> n^Array :t -> n^Array :t) of
 	atom:INTRN!ArrayIntrinsics.append | get%i | call%i-v2
->>
+~
 define ar-from-list := (:t => [:t] -> n^Array :t) of
 	atom:INTRN!ArrayIntrinsics.listArray | get%i | call%i-v1
->>
+~
 define ar-slice := (:t => number -> number -> n^Array :t -> n^Array :t) of
 	atom:INTRN!ArrayIntrinsics.slice | get%i | call%i-v3
->>
+~
 define ar-to-list := (:t => n^Array :t -> [:t]) of
 	atom:INTRN!ArrayIntrinsics.arrayList | get%i | call%i-v1
->>
+~

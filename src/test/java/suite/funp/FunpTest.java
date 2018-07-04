@@ -13,47 +13,47 @@ public class FunpTest {
 
 	@Test
 	public void testArray() {
-		test(0, "define a := [0,] >> a:0");
-		test(1, "define a := [0, 1, 2,] >> a:1");
+		test(0, "define a := [0,] ~ a:0");
+		test(1, "define a := [0, 1, 2,] ~ a:1");
 	}
 
 	@Test
 	public void testBind() {
-		test(1, "define a := [0, 1,] >> if (`[0, v,]` = a) then v else 0");
-		test(0, "define a := [0, 1,] >> if (`[1, v,]` = a) then v else 0");
-		test(2, "define s := { a: 1, b: 2, c: 3, } >> if (`{ a, b: v, c, }` = s) then v else 0");
-		test(2, "define s := { a: 1, b: 2, c: 3, } >> if (`address ({ a, b: v, c, })` = address s) then v else 0");
+		test(1, "define a := [0, 1,] ~ if (`[0, v,]` = a) then v else 0");
+		test(0, "define a := [0, 1,] ~ if (`[1, v,]` = a) then v else 0");
+		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`{ a, b: v, c, }` = s) then v else 0");
+		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`address ({ a, b: v, c, })` = address s) then v else 0");
 	}
 
 	@Test
 	public void testCapture() {
-		test(31, "define m := 31 >> 15 | (n => m)");
-		test(0, "define m := pointer => 0 >> 1 | (n => 2 | m)");
+		test(31, "define m := 31 ~ 15 | (n => m)");
+		test(0, "define m := pointer => 0 ~ 1 | (n => 2 | m)");
 
 		test(0, "" //
-				+ "define f := j => 0 >> " //
-				+ "define g := j => 0 >> " //
-				+ "define h := j => 0 >> " //
+				+ "define f := j => 0 ~ " //
+				+ "define g := j => 0 ~ " //
+				+ "define h := j => 0 ~ " //
 				+ "0 | (i => 0 | f | g | h)");
 	}
 
 	@Test
 	public void testCoerce() {
-		test(1, "define i := 1 >> define b := coerce.byte i >> i");
+		test(1, "define i := 1 ~ define b := coerce.byte i ~ i");
 	}
 
 	@Test
 	public void testCompare() {
-		test(1, "let v := 2 >> if (1 < v) then 1 else 0");
+		test(1, "let v := 2 ~ if (1 < v) then 1 else 0");
 		test(1, "if ([0, 1, 2,] = [0, 1, 2,]) then 1 else 0");
 		test(0, "if ([0, 1, 2,] = [0, 3, 2,]) then 1 else 0");
 	}
 
 	@Test
 	public void testDefine() {
-		test(4, "define i := 3 >> i + 1");
-		test(4, "define f := i => i + 1 >> 3 | f");
-		test(1, "let.global a := [0, 1, 2,] >> a:1");
+		test(4, "define i := 3 ~ i + 1");
+		test(4, "define f := i => i + 1 ~ 3 | f");
+		test(1, "let.global a := [0, 1, 2,] ~ a:1");
 	}
 
 	@Test
@@ -85,18 +85,18 @@ public class FunpTest {
 
 	@Test
 	public void testRecurse() {
-		test(1, "define { dec: (n => if (0 < n) then (n - 1 | dec) else 1), } >> 9999 | dec");
-		test(89, "define { fib: (n => if (1 < n) then ((n - 1 | fib) + (n - 2 | fib)) else 1), } >> 10 | fib");
+		test(1, "define { dec: (n => if (0 < n) then (n - 1 | dec) else 1), } ~ 9999 | dec");
+		test(89, "define { fib: (n => if (1 < n) then ((n - 1 | fib) + (n - 2 | fib)) else 1), } ~ 10 | fib");
 	}
 
 	@Test
 	public void testReference() {
-		test(5, "define i := 3 >> define p := address i >> 2 + ^p");
+		test(5, "define i := 3 ~ define p := address i ~ 2 + ^p");
 	}
 
 	@Test
 	public void testReturnArray() {
-		test(2, "define f := i => [0, 1, i,] >> (predef (2 | f)):2");
+		test(2, "define f := i => [0, 1, i,] ~ (predef (2 | f)):2");
 	}
 
 	@Test
@@ -106,7 +106,7 @@ public class FunpTest {
 
 	@Test
 	public void testStruct() {
-		test(3, "define s := { a: 1, b: 2, c: 3, } >> s/c");
+		test(3, "define s := { a: 1, b: 2, c: 3, } ~ s/c");
 	}
 
 	private void test(int r, String p) {

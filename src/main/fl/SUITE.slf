@@ -1,13 +1,13 @@
-use external STANDARD >>
+use external STANDARD ~
 define suite-match := (n^Chars -> n^Node -> [n^Node]) of
 	atom:INTRN!SuiteIntrinsics.match | get%i | call%i-v2
->>
+~
 define suite-parse := (n^Chars -> n^Node) of
 	atom:INTRN!SuiteIntrinsics.parse | get%i | call%i-v1
->>
+~
 define suite-substitute := (n^Chars -> [n^Node] -> n^Node) of
 	atom:INTRN!SuiteIntrinsics.substitute | get%i | call%i-v2
->>
+~
 define suite-to-chars := (n^Node -> n^Chars) of
 	atom:INTRN!SuiteIntrinsics.toChars | get%i | call%i-v1
->>
+~

@@ -18,20 +18,20 @@ fc-parse (.type of .value) (PRAGMA (TYPE-CAST .type1) .value1)
 	:- fc-parse-type .type .type1
 	, !, fc-parse .value .value1
 #
-fc-parse (data .class over some .typeVars as .type >> .do) (
+fc-parse (data .class over some .typeVars as .type ~ .do) (
 	PRAGMA (TYPE-DEF .type2 .class2) .do1
 ) :- fc-instantiate .typeVars .type/.class .type1/.class1
 	, fc-parse-type .type1 .type2
 	, fc-parse-type .class1 .class2
 	, !, fc-parse .do .do1
 #
-fc-parse (data .class over .typeVar as .type >> .do) .do1
-	:- !, fc-parse (data .class over some (.typeVar,) as .type >> .do) .do1
+fc-parse (data .class over .typeVar as .type ~ .do) .do1
+	:- !, fc-parse (data .class over some (.typeVar,) as .type ~ .do) .do1
 #
-fc-parse (data .class as .type >> .do) .do1
-	:- !, fc-parse (data .class over some () as .type >> .do) .do1
+fc-parse (data .class as .type ~ .do) .do1
+	:- !, fc-parse (data .class over some () as .type ~ .do) .do1
 #
-fc-parse (define .var := .value >> .do) (
+fc-parse (define .var := .value ~ .do) (
 	PRAGMA DEF-OUTSIDE (DEF-VARS (.var .value1,) .do1)
 ) :- !
 	, once (fc-parse .value .value1
@@ -58,15 +58,15 @@ fc-parse (if-bind (.v0 := .v1) then .then else .else) .parsed
 	, fc-parse .else .elsep
 	, fc-bind .vp0 .vp1 .thenp .elsep .parsed
 #
-fc-parse (lets (.var := .value # .list) >> .do) (
+fc-parse (lets (.var := .value # .list) ~ .do) (
 	DEF-VARS (.var .value1, .list1) .do1
 ) :- !
 	, once (fc-parse .value .value1
 		; fc-error "at variable" .var
 	)
-	, fc-parse (lets .list >> .do) (DEF-VARS .list1 .do1)
+	, fc-parse (lets .list ~ .do) (DEF-VARS .list1 .do1)
 #
-fc-parse (lets () >> .do) (DEF-VARS () .do1)
+fc-parse (lets () ~ .do) (DEF-VARS () .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (skip-type-check .do) (PRAGMA TYPE-SKIP-CHECK .do1)
@@ -77,14 +77,14 @@ fc-parse (tco .iter .in) (TCO .iter1 .in1)
 	, fc-parse .iter .iter1
 	, fc-parse .in .in1
 #
-fc-parse (use source .lib >> .do) .dox
+fc-parse (use source .lib ~ .do) .dox
 	:- !, fc-load-library .lib .do .do1
 	, fc-parse .do1 .dox
 #
-fc-parse (use external .lib >> .do) (USE EAGER EXTERNAL .lib .do1)
+fc-parse (use external .lib ~ .do) (USE EAGER EXTERNAL .lib .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (use .lib >> .do) (USE EAGER BUILTIN .lib .do1)
+fc-parse (use .lib ~ .do) (USE EAGER BUILTIN .lib .do1)
 	:- !, fc-parse .do .do1
 #
 fc-parse (.p0; .p1) (CONS L .parsed0 .parsed1)
@@ -155,22 +155,22 @@ fc-parse-sugar (case || .if .then || .otherwise) .p1
 fc-parse-sugar (case || .p) .p :- !
 #
 fc-parse-sugar (definem .type .mv # .monad) (
-	define .mv := (n^Mutable .type) of (erase-type {atom:.atom}) >> .monad
+	define .mv := (n^Mutable .type) of (erase-type {atom:.atom}) ~ .monad
 )
 	:- !, temp .atom
 #
 fc-parse-sugar (do .do) (
-	define fun-to-monad := (:t => (number -> :t) -> Do^:t) of erase-type >>
-	define monad-to-fun := (:t => Do^:t -> (number -> :t)) of erase-type >>
+	define fun-to-monad := (:t => (number -> :t) -> Do^:t) of erase-type ~
+	define monad-to-fun := (:t => Do^:t -> (number -> :t)) of erase-type ~
 	fun-to-monad {scope =>
-		define perform := {scope} . monad-to-fun >>
-		expand getm := getm* {scope} >>
-		expand setm := setm* {scope} >>
+		define perform := {scope} . monad-to-fun ~
+		expand getm := getm* {scope} ~
+		expand setm := setm* {scope} ~
 		.do
 	}
 ) :- !
 #
-fc-parse-sugar (expand .var := .value >> .do) .do1
+fc-parse-sugar (expand .var := .value ~ .do) .do1
 	:- !
 	, generalize .var/.value .var1/.value1
 	, rewrite .var1 .value1 .do .do1
@@ -179,9 +179,9 @@ fc-parse-sugar (if (.p = `.q`) .thenElse) (if-bind (.p := .q) .thenElse) :- !
 #
 fc-parse-sugar (if (`.p` = .q) .thenElse) (if-bind (.q := .p) .thenElse) :- !
 #
-fc-parse-sugar (let `.binds` := .value >> .do) (if-bind (.value := .binds) then .do else error (`.binds` := .value)) :- !
+fc-parse-sugar (let `.binds` := .value ~ .do) (if-bind (.value := .binds) then .do else error (`.binds` := .value)) :- !
 #
-fc-parse-sugar (let .var := .value >> .do) (lets (.var := .value #) >> .do) :- !
+fc-parse-sugar (let .var := .value ~ .do) (lets (.var := .value #) ~ .do) :- !
 #
 fc-parse-sugar (not .b) (not {.b}) :- !
 #
@@ -202,7 +202,7 @@ fc-parse-sugar (.monad #) (perform {.monad}) :- !
 fc-parse-sugar (.monad # .monads0) (perform {seqm {.monad} {.monads1}})
 	:- fc-parse-sugar .monads0 (perform {.monads1}), !
 #
-fc-parse-sugar (.var as .type => .do) (.var1 => (define .var :=  .type of .var1 >> .do))
+fc-parse-sugar (.var as .type => .do) (.var1 => (define .var :=  .type of .var1 ~ .do))
 	:- !, temp .var1
 #
 fc-parse-sugar (`.bind` => .do) (.var => (if-bind (.var := .bind) then .do else error (`.bind`)))

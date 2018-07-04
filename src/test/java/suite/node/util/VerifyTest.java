@@ -95,13 +95,13 @@ public class VerifyTest {
 				.put("@int-group", Suite.parse("true => group is-int int-eq int-add int-neg I0"));
 
 		new Verify(defs, axioms) //
-				.extend("suppose @EqClass-Eq := eq-class Eq >> " //
-						+ "suppose @P-Eq-Q := .P Eq .Q >> " //
-						+ "suppose @Q-Ne-R := not (.Q Eq .R) >> " //
-						+ "contradict @P-Eq-R := .P Eq .R >> " //
-						+ "lemma @eq := @EqClass-Eq | expand def$eq >> " //
-						+ "lemma @Q-Eq-P := @eq | choose symmetric | fulfill-by @P-Eq-Q >> " //
-						+ "lemma @Q-Eq-R := @eq | choose transitive | fulfill-by (@Q-Eq-P, @P-Eq-R) >> " //
+				.extend("suppose @EqClass-Eq := eq-class Eq ~ " //
+						+ "suppose @P-Eq-Q := .P Eq .Q ~ " //
+						+ "suppose @Q-Ne-R := not (.Q Eq .R) ~ " //
+						+ "contradict @P-Eq-R := .P Eq .R ~ " //
+						+ "lemma @eq := @EqClass-Eq | expand def$eq ~ " //
+						+ "lemma @Q-Eq-P := @eq | choose symmetric | fulfill-by @P-Eq-Q ~ " //
+						+ "lemma @Q-Eq-R := @eq | choose transitive | fulfill-by (@Q-Eq-P, @P-Eq-R) ~ " //
 						+ "@Q-Eq-R, @Q-Ne-R | fulfill @complement") //
 				.extend("is-nat 0", "axiom @nat-peano1") //
 				.extend("is-nat (succ 0)", "'is-nat 0' | fulfill @nat-peano6");
@@ -152,7 +152,7 @@ public class VerifyTest {
 					if ((tree = Tree.decompose(node, TermOp.NEXT__)) != null && tree.getLeft() == b)
 						return tree.getRight();
 				return Fail.t("cannot verify " + proof);
-			}).match("contradict .0 := .1 >> .2", (a, b, c) -> {
+			}).match("contradict .0 := .1 ~ .2", (a, b, c) -> {
 				var x = Binder.bind(new Verify(defs, rules.put(Atom.name(a), b)).verify(c), Atom.FALSE, new Trail());
 				return x ? Suite.substitute("not .0", b) : Fail.t("cannot verify " + proof);
 			}).match(".0 | expand .1", (a, b) -> {
@@ -164,7 +164,7 @@ public class VerifyTest {
 				return x ? m1[1] : Fail.t("cannot verify " + proof);
 			}).match(".0 | fulfill-by .1", (a, b) -> {
 				return verify(Suite.substitute(".0 | fulfill .1", b, a));
-			}).match("lemma .0 := .1 >> .2", (a, b, c) -> {
+			}).match("lemma .0 := .1 ~ .2", (a, b, c) -> {
 				return new Verify(defs, rules.put(Atom.name(a), verify(b))).verify(c);
 			}).match(".0 | nat.mi .1 .2", (a, b, c) -> {
 				Fun<Node, Node> fun = value -> {
@@ -180,7 +180,7 @@ public class VerifyTest {
 			}).match(".0 | rexpand .1", (a, b) -> {
 				var def = defs.get(Atom.name(b)).clone_();
 				return replace(verify(a), def.t1, def.t0);
-			}).match("suppose .0 := .1 >> .2", (a, b, c) -> {
+			}).match("suppose .0 := .1 ~ .2", (a, b, c) -> {
 				return Suite.substitute(".0 => .1", b, new Verify(defs, rules.put(Atom.name(a), b)).verify(c));
 			}).match("true", () -> {
 				return Atom.TRUE;

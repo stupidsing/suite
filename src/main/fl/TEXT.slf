@@ -1,42 +1,42 @@
-use external STANDARD >>
-use external CHARS >>
+use external STANDARD ~
+use external CHARS ~
 -------------------------------------------------------------------------------
 define lower := ch =>
 	if (65 <= ch && ch <= 90) then (ch + 32) else ch
->>
+~
 define upper := ch =>
 	if (97 <= ch && ch <= 122) then (ch - 32) else ch
->>
+~
 -------------------------------------------------------------------------------
 define camel-case := s =>
-	if (s != "") then (let `$h; $t` := s >> upper {h}; map {lower} {t}) else s
->>
+	if (s != "") then (let `$h; $t` := s ~ upper {h}; map {lower} {t}) else s
+~
 define int-to-str := i =>
 	let unsigned-int-to-str :=
 		reverse
 		. map {`+ +'0'`}
 		. unfold-right {i => optional {i != 0} {i % 10, i / 10}}
-	>> i |
+	~ i |
 		if (0 < i) then
 			unsigned-int-to-str
 		else-if (i < 0) then
 			append {"-"} . unsigned-int-to-str . `0 -`
 		else
 			anything => "0"
->>
+~
 define str-to-int := s =>
-	let unsigned-str-to-int := fold-left {v => d => v * 10 + d - 48} {0} >>
+	let unsigned-str-to-int := fold-left {v => d => v * 10 + d - 48} {0} ~
 		if (is-list {s} && head {s} = +'-')
 		then (`0 -` . unsigned-str-to-int . tail)
 		else unsigned-str-to-int
 	{s}
->>
+~
 -------------------------------------------------------------------------------
 define dump := (:t => :t -> string) of skip-type-check (
-	define type-of := get%i {atom:INTRN!BasicIntrinsics.typeOf} >>
-	define atom-string := get%i {atom:INTRN!BasicIntrinsics.atomString} >>
+	define type-of := get%i {atom:INTRN!BasicIntrinsics.typeOf} ~
+	define atom-string := get%i {atom:INTRN!BasicIntrinsics.atomString} ~
 	let dump0 := prec => n =>
-		let type := call%i-v1 {type-of} {n} >>
+		let type := call%i-v1 {type-of} {n} ~
 		if (n = ()) then
 			"()"
 		else-if (type = TREE) then
@@ -46,12 +46,12 @@ define dump := (:t => :t -> string) of skip-type-check (
 			call%i-v1 {atom-string} {n}
 		else
 			int-to-str {n}
-	>>
+	~
 	dump0 {false}
-) >>
+) ~
 define sh := command => in =>
 	do (
-		let `0, $out, $err` := in | popen {"sh"; "-c"; command;} | perform >>
+		let `0, $out, $err` := in | popen {"sh"; "-c"; command;} | perform ~
 		out | map {cs-to-string} | concat
 	)
->>
+~

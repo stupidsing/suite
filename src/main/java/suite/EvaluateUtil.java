@@ -120,7 +120,7 @@ public class EvaluateUtil {
 
 		for (var library : libraries.reverse())
 			if (!String_.isBlank(library))
-				node = Suite.substitute("use .0 >> .1", Atom.of(library), node);
+				node = Suite.substitute("use .0 ~ .1", Atom.of(library), node);
 
 		return node;
 	}

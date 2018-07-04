@@ -1,7 +1,7 @@
 -------------------------------------------------------------------------------
 -- lazy functional program interpreter
 
-fl (define .var := .value >> .do) .result
+fl (define .var := .value ~ .do) .result
 	:- !
 	, replace .var .value1 .value .value1
 	, replace .var .value1 .do .do1

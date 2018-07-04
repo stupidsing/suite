@@ -27,11 +27,11 @@ public class ElfTest {
 		var text = "garbage\n";
 
 		var program = "" //
-				+ "expand size := 256 >> \n" //
-				+ "let linux := consult \"linux.fp\" >> \n" //
+				+ "expand size := 256 ~ \n" //
+				+ "let linux := consult \"linux.fp\" ~ \n" //
 				+ "io.fold 1 (n => n != 0) (n => \n" //
-				+ "	let buffer := size * array byte _ >> \n" //
-				+ "	let pointer := address buffer >> \n" //
+				+ "	let buffer := size * array byte _ ~ \n" //
+				+ "	let pointer := address buffer ~ \n" //
 				+ "	pointer, size | linux/read | io.cat (nBytesRead => \n" //
 				+ "		pointer, nBytesRead | linux/write | io.cat (nBytesWrote => \n" //
 				+ "			io nBytesRead \n" //

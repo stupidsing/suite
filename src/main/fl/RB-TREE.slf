@@ -1,11 +1,11 @@
-use external STANDARD >>
-data Color as Red >>
-data Color as Black >>
-data (Rb-tree :t) over :t as Tree (Color, Rb-tree :t, :t, Rb-tree :t) >>
-data (Rb-tree :t) over :t as Empty >>
+use external STANDARD ~
+data Color as Red ~
+data Color as Black ~
+data (Rb-tree :t) over :t as Tree (Color, Rb-tree :t, :t, Rb-tree :t) ~
+data (Rb-tree :t) over :t as Empty ~
 
-define cr := Red >>
-define cb := Black >>
+define cr := Red ~
+define cb := Black ~
 define rbt-insert := (:t => :t -> Rb-tree :t -> Rb-tree :t) of (
 v =>
 	define add0 :=
@@ -20,7 +20,7 @@ v =>
 			|| `Tree (cb, $n0, $p0, Tree (cr, $n1, $p1, Tree (cr, $n2, $p2, $n3)))` =>
 				Tree (cr, Tree (cb, n0, p0, n1), p1, Tree (cb, n2, p2, n3))
 			|| id
-		>>
+		~
 		case
 		|| `Tree ($color, $n0, $pivot, $n1)` =>
 			if (v < pivot) then
@@ -31,21 +31,21 @@ v =>
 		|| `Empty` =>
 			Tree (cr, Empty, v, Empty)
 		|| anything => error ()
-	>>
+	~
 	case
 	|| `Tree ($color, $n0, $pivot, $n1)` => Tree (cb, n0, pivot, n1) | add0
 	|| add0
-) >>
+) ~
 define rbt-to-list := (:t => Rb-tree :t -> [:t]) of
 	case
 	|| `Tree ($color, $n0, $pivot, $n1)` => concat {rbt-to-list {n0}; (pivot;); rbt-to-list {n1};}
 	|| `Empty` => ()
 	|| anything => error ()
->>
+~
 define dict-insert := (:k => :v => :k -> :v -> Rb-tree (:k, :v) -> Rb-tree (:k, :v)) of (
 key => value =>
 	rbt-insert {key, value}
-) >>
+) ~
 define dict-get := (:k => :v => :k -> Rb-tree (:k, :v) -> :v) of (
 key =>
 	case
@@ -55,4 +55,4 @@ key =>
 		else
 			value1
 	|| anything => error ()
-) >>
+) ~

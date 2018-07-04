@@ -1,92 +1,92 @@
-use external STANDARD >>
-data (B-tree :t) over :t as Empty >>
-data (B-tree :t) over :t as (Tree [:t, B-tree :t]) >>
+use external STANDARD ~
+data (B-tree :t) over :t as Empty ~
+data (B-tree :t) over :t as (Tree [:t, B-tree :t]) ~
 
-define max-branches := 4 >>
-define min-branches := max-branches / 2 >>
+define max-branches := 4 ~
+define min-branches := max-branches / 2 ~
 
 define snoc := es => e =>
 	es ++ (e;)
->>
+~
 define create-slot := slots =>
-	let `$pivot, $child` := slots | reverse | head >> pivot, Tree slots
->>
+	let `$pivot, $child` := slots | reverse | head ~ pivot, Tree slots
+~
 define create-root := slots =>
 	if (length {slots} = 1) then
-		let `$pivot, $child` := slots | head >> child
+		let `$pivot, $child` := slots | head ~ child
 	else
 		Tree slots
->>
+~
 define find-slot :=
 	define find-slot0 := left => key => `$slot; $slots` =>
-		let `$pivot, $child` := slot >>
+		let `$pivot, $child` := slot ~
 		if (pivot < key) then
 			find-slot0 {snoc {left} {slot}} {key} {slots}
 		else
 			left, slot, slots
-	>>
+	~
 	find-slot0 {}
->>
+~
 define find := key => `Tree $slots` =>
-	let `$left, $slot, $right` := find-slot {key} {slots} >>
-	let `$pivot, $child` := slot >>
-	let found := if (child != Empty) then (find {key} {child}) else pivot >>
+	let `$left, $slot, $right` := find-slot {key} {slots} ~
+	let `$pivot, $child` := slot ~
+	let found := if (child != Empty) then (find {key} {child}) else pivot ~
 	if (key = found) then found else error ()
->>
+~
 define insert := key =>
 	define add0 := slots0 =>
-		let `$left, $slot, $right` := find-slot {key} {slots0} >>
-		let `$pivot, $child` := slot >>
+		let `$left, $slot, $right` := find-slot {key} {slots0} ~
+		let `$pivot, $child` := slot ~
 		let replaceSlots :=
 			if (child != Empty) then
-				let `Tree $childSlots` := child >> add0 {childSlots}
+				let `Tree $childSlots` := child ~ add0 {childSlots}
 			else-if (key != pivot) then
 				key, Empty; slot;
 			else
 				error ()
-		>>
-		let slots1 := concat {left; replaceSlots; right;} >>
+		~
+		let slots1 := concat {left; replaceSlots; right;} ~
 		if (max-branches <= length {slots1}) then
-			let `$ls, $rs` := take-drop {min-branches} {slots1} >>
+			let `$ls, $rs` := take-drop {min-branches} {slots1} ~
 			create-slot {ls}; create-slot {rs};
 		else
 			create-slot {slots1};
-	>>
+	~
 	`Tree $slots` =>
 	slots | add0 | create-root
->>
+~
 define remove := key =>
 	define lht := list =>
 		head {list}, tail {list}
-	>>
+	~
 	define rth := list =>
-		let rev := reverse {list} >>
+		let rev := reverse {list} ~
 		reverse {tail {rev}}, head {rev}
-	>>
+	~
 	define merge := left => right =>
 		if (max-branches <= length {left} + length {right}) then
 			if (min-branches < length {left}) then
-				let `$left1, $slot` := rth {left} >>
+				let `$left1, $slot` := rth {left} ~
 				create-slot {left1}; create-slot {cons {slot} {right}};
 			else-if (min-branches < length {right}) then
-				let `$slot, $right1` := lht {right} >>
+				let `$slot, $right1` := lht {right} ~
 				create-slot {snoc {left} {slot}}; create-slot {right1};
 			else
 				create-slot {left}; create-slot {right};
 		else
 			create-slot {left ++ right};
-	>>
+	~
 	define remove0 := slots0 =>
-		let `$left, ($pivot, $child), $right` := find-slot {key} {slots0} >>
+		let `$left, ($pivot, $child), $right` := find-slot {key} {slots0} ~
 		if (child != Empty) then
-			let `Tree $childSlots` := child >>
-			let slots1 := remove0 {childSlots} >>
+			let `Tree $childSlots` := child ~
+			let slots1 := remove0 {childSlots} ~
 			if (length {slots1} < min-branches) then
 				if (left != ()) then
-					let `$left1, $borrowSlot` := rth {left} >>
+					let `$left1, $borrowSlot` := rth {left} ~
 					concat {left1; merge {borrowSlot;} {slots1}; right;}
 				else-if (right != ()) then
-					let `$borrowSlot, $right1` := lht {right} >>
+					let `$borrowSlot, $right1` := lht {right} ~
 					concat {left; merge {slots1} {borrowSlot;}; right1;}
 				else
 					create-slot {slots1};
@@ -96,7 +96,7 @@ define remove := key =>
 			left ++ right
 		else
 			error ()
-	>>
+	~
 	`Tree $slots` =>
 	slots | remove0 | create-root
->>
+~

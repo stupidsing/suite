@@ -3,4 +3,4 @@ define gcd := a => b =>
 		gcd {if (a <= b) then (b % a) else b} {a}
 	else
 		b
->>
+~

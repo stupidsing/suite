@@ -24,11 +24,11 @@ public class FunTypeTest {
 	@Test
 	public void testBind() {
 		var data = "" //
-				+ "data Clazz as Link Clazz >> \n" //
-				+ "data Clazz as Leaf number >> \n";
+				+ "data Clazz as Link Clazz ~ \n" //
+				+ "data Clazz as Leaf number ~ \n";
 
 		assertType("number", data //
-				+ "let f := v => if-bind (v := Leaf 1) then 1 else if-bind (v := Link Leaf 2) then 2 else 3 >> \n" //
+				+ "let f := v => if-bind (v := Leaf 1) then 1 else if-bind (v := Link Leaf 2) then 2 else 3 ~ \n" //
 				+ "f {Leaf 1} \n");
 
 		assertType("number", data //
@@ -36,35 +36,35 @@ public class FunTypeTest {
 				+ "    if (v = `Leaf $i`) then i \n" //
 				+ "    else if (v = `Link Leaf $i`) then i \n" //
 				+ "    else 0 \n" //
-				+ ">> \n" //
+				+ "~ \n" //
 				+ "f {Link Leaf 3} \n");
 	}
 
 	@Test
 	public void testBindList() {
-		assertType("number", "let `$h; $t` := 0; 1; >> h");
-		getTypeMustFail("let `$h; $t` := 0; true; >> h");
+		assertType("number", "let `$h; $t` := 0; 1; ~ h");
+		getTypeMustFail("let `$h; $t` := 0; true; ~ h");
 	}
 
 	@Test
 	public void testClass() {
 		assertType("Clazz atom:()", "" //
-				+ "data Clazz as Empty >> \n" //
-				+ "define add := (Clazz -> Clazz) of (a => a) >> \n" //
+				+ "data Clazz as Empty ~ \n" //
+				+ "define add := (Clazz -> Clazz) of (a => a) ~ \n" //
 				+ "add | {Empty}");
 
 		assertType("boolean", "" //
-				+ "data T as Nil >> \n" //
-				+ "data T as BTree (T, T) >> \n" //
-				+ "let u := T of Nil >> \n" //
-				+ "let v := T of Nil >> \n" //
+				+ "data T as Nil ~ \n" //
+				+ "data T as BTree (T, T) ~ \n" //
+				+ "let u := T of Nil ~ \n" //
+				+ "let v := T of Nil ~ \n" //
 				+ "v = BTree (BTree (Nil, Nil), Nil)");
 	}
 
 	@Test
 	public void testDefineType() {
-		getType("data Weight as Kg number >> \n" //
-				+ "let v := Weight of (Kg 1) >> \n" //
+		getType("data Weight as Kg number ~ \n" //
+				+ "let v := Weight of (Kg 1) ~ \n" //
 				+ "v = Kg 99");
 		getType("replicate {23}");
 	}
@@ -74,9 +74,9 @@ public class FunTypeTest {
 		String[] cases = { "1 + \"abc\"" //
 				, "2 = true" //
 				, "(f => f {0}) | 1" //
-				, "define fib := i2 => dummy => 1; fib {i2} >> ()" //
-				, "define f := v => (v;) = v >> f" // cyclic type
-				, "use STANDARD >> define f := erase-type xyz >> f" //
+				, "define fib := i2 => dummy => 1; fib {i2} ~ ()" //
+				, "define f := v => (v;) = v ~ f" // cyclic type
+				, "use STANDARD ~ define f := erase-type xyz ~ f" //
 		};
 
 		// there is a problem in deriving type of 1:(fib {i2})...
@@ -93,17 +93,17 @@ public class FunTypeTest {
 		// => Fix Optional Fix Optional .t
 		// => Fix Optional .t (where .t is this type itself)
 		System.out.println(getType("" //
-				+ "data (Fix (:f, :g)) over some (:f, :g,) as (Fix (:f, Fix (:f, :g))) >> \n" //
+				+ "data (Fix (:f, :g)) over some (:f, :g,) as (Fix (:f, Fix (:f, :g))) ~ \n" //
 				+ "(:t => Fix Optional :t) of (Fix Value Fix None)"));
 
-		// getType("data (Fix :f) over :f as (Fix (:f, Fix :f)) >> \n" //
+		// getType("data (Fix :f) over :f as (Fix (:f, Fix :f)) ~ \n" //
 		// + "(:t => Fix Optional :t) of (Fix Value Fix None)");
 	}
 
 	@Test
 	public void testFun() {
 		assertType("number -> number", "a => a + 1");
-		assertType("number", "define f := a => a + 1 >> f {3}");
+		assertType("number", "define f := a => a + 1 ~ f {3}");
 		assertType("boolean -> boolean -> boolean", "and");
 		assertType("number -> [number]", "v => v; reverse {1;}");
 	}
@@ -111,23 +111,23 @@ public class FunTypeTest {
 	@Test
 	public void testGeneric() {
 		var fp0 = "" //
-				+ "data (Rb-tree :t) over :t as Empty >> \n" //
-				+ "define map := (:a => :b => (:a -> :b) -> [:a] -> [:b]) of error () >> \n" //
-				+ "define add := (:t => :t -> Rb-tree :t) of (v => Empty) >> \n" //
+				+ "data (Rb-tree :t) over :t as Empty ~ \n" //
+				+ "define map := (:a => :b => (:a -> :b) -> [:a] -> [:b]) of error () ~ \n" //
+				+ "define add := (:t => :t -> Rb-tree :t) of (v => Empty) ~ \n" //
 				+ "1; | map {add} \n";
 		assertType("[Rb-tree number]", fp0);
 
 		var fp1 = "" //
-				+ "define id := (:t => :t -> :t) of (a => a) >> (id {3} + (id {4;} | head))";
+				+ "define id := (:t => :t -> :t) of (a => a) ~ (id {3} + (id {4;} | head))";
 		assertType("number", fp1);
 	}
 
 	@Test
 	public void testInstance() {
 		var define = "" //
-				+ "data (List :t) over :t as Nil >> \n" //
-				+ "data (List :t) over :t as Node (:t, List :t) >> \n" //
-				+ "data (List :t) over :t as Node2 (:t, :t, List :t) >> \n" //
+				+ "data (List :t) over :t as Nil ~ \n" //
+				+ "data (List :t) over :t as Node (:t, List :t) ~ \n" //
+				+ "data (List :t) over :t as Node2 (:t, :t, List :t) ~ \n" //
 		;
 
 		getType(define + "Nil");
@@ -135,7 +135,7 @@ public class FunTypeTest {
 		getType(define + "Node2 (1, 2, Node (3, Nil))");
 
 		assertType("boolean", define //
-				+ "let n := Node (true, Nil) >> Node (false, n) = Nil");
+				+ "let n := Node (true, Nil) ~ Node (false, n) = Nil");
 
 		getTypeMustFail(define + "Node");
 		getTypeMustFail(define + "Node 1");
@@ -143,7 +143,7 @@ public class FunTypeTest {
 		getTypeMustFail(define + "Node2 (1, true, Nil)");
 		getTypeMustFail(define + "Node2 (1, 2, Node (true, Nil))");
 		getTypeMustFail(define + "Node (1, Nil) = Node (false, Nil)");
-		getTypeMustFail(define + "let n := Node (true, Nil) >> Node (1, n)");
+		getTypeMustFail(define + "let n := Node (true, Nil) ~ Node (1, n)");
 	}
 
 	@Test
@@ -154,19 +154,19 @@ public class FunTypeTest {
 
 	@Test
 	public void testRbTree() {
-		var fps = "use RB-TREE >> 0 until 10 | map {dict-insert/ {1}} | apply | {Empty}";
+		var fps = "use RB-TREE ~ 0 until 10 | map {dict-insert/ {1}} | apply | {Empty}";
 		assertType("Rb-tree (number, number)", fps);
 	}
 
 	@Test
 	public void testStandard() {
-		checkType("use STANDARD >> ends-with" //
+		checkType("use STANDARD ~ ends-with" //
 				, "[T] -> _" //
 				, "[T] -> [T] -> boolean");
-		checkType("use STANDARD >> join" //
+		checkType("use STANDARD ~ join" //
 				, "T -> _" //
 				, "T -> [[T]] -> [T]");
-		checkType("use STANDARD >> merge" //
+		checkType("use STANDARD ~ merge" //
 				, "([T] -> _) -> _" //
 				, "([T] -> [T] -> [T]) -> [T] -> [T]");
 	}
@@ -174,10 +174,10 @@ public class FunTypeTest {
 	@Test
 	public void testTuple() {
 		var variant = "" //
-				+ "data C as A >> \n" //
-				+ "data C as B number >> \n" //
-				+ "data C as C boolean >> \n" //
-				+ "data CBT as BTree (number, number) >> \n";
+				+ "data C as A ~ \n" //
+				+ "data C as B number ~ \n" //
+				+ "data C as C boolean ~ \n" //
+				+ "data CBT as BTree (number, number) ~ \n";
 
 		getType(variant + "A");
 		getType(variant + "B 4");
@@ -188,8 +188,9 @@ public class FunTypeTest {
 		getTypeMustFail(variant + "A 4");
 		getTypeMustFail(variant + "B");
 		getTypeMustFail(variant + "C 0");
-		getTypeMustFail("data C1 as T1 (number, number) >> \n" //
-				+ "data C2 as T2 (number, number) >> \n" //
+		getTypeMustFail("" //
+				+ "data C1 as T1 (number, number) ~ \n" //
+				+ "data C2 as T2 (number, number) ~ \n" //
 				+ "T1 (2, 3) = T2 (2, 3)");
 		getTypeMustFail(variant + "BTree (2, 3) = BTree (\"a\", 6)");
 	}

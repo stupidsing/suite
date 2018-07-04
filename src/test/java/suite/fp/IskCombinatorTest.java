@@ -10,9 +10,9 @@ import suite.node.Node;
 public class IskCombinatorTest {
 
 	private String isk = "" //
-			+ "define i := x => x >> " //
-			+ "define k := x => y => x >> " //
-			+ "define s := x => y => z => x {z} {y {z}} >> ";
+			+ "define i := x => x ~ " //
+			+ "define k := x => y => x ~ " //
+			+ "define s := x => y => z => x {z} {y {z}} ~ ";
 
 	@Test
 	public void testSksk() {
@@ -24,11 +24,11 @@ public class IskCombinatorTest {
 	@Test
 	public void testTf() {
 		var tf = "" //
-				+ "define t := k >> " //
-				+ "define f := k {i} >> " //
-				+ "define not_ := f {t} >> " //
-				+ "define or_ := k >> " //
-				+ "define and_ := f >> ";
+				+ "define t := k ~ " //
+				+ "define f := k {i} ~ " //
+				+ "define not_ := f {t} ~ " //
+				+ "define or_ := k ~ " //
+				+ "define and_ := f ~ ";
 
 		assertEquals(Suite.parse("1"), eval(isk + tf + "t {1} {2}"));
 		assertEquals(Suite.parse("2"), eval(isk + tf + "f {1} {2}"));

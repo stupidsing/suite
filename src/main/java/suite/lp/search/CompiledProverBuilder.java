@@ -41,7 +41,7 @@ public class CompiledProverBuilder implements Builder {
 		var rules = Suite.getRules(ruleSet);
 
 		return goal -> {
-			var code = compile(Suite.substitute(".0 >> .1", rules, goal));
+			var code = compile(Suite.substitute(".0 ~ .1", rules, goal));
 
 			return (source, sink) -> {
 				var proverCfg1 = new ProverCfg(ruleSet, proverCfg);

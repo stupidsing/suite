@@ -1,22 +1,22 @@
-use external STANDARD >>
+use external STANDARD ~
 define cs-append := (n^Chars -> n^Chars -> n^Chars) of
 	atom:INTRN!CharsIntrinsics.append | get%i | call%i-v2
->>
+~
 define cs-drain := (n^CharsStream -> [n^Chars]) of
 	atom:INTRN!CharsIntrinsics.drain | get%i | call%i-v1
->>
+~
 define cs-from-string := (string -> n^Chars) of
 	atom:INTRN!CharsIntrinsics.stringChars | get%i | call%i-v1
->>
+~
 define cs-concat-split := (n^Chars -> [n^Chars] -> [n^Chars]) of
 	atom:INTRN!CharsIntrinsics.concatSplit | get%i | call%i-v2
->>
+~
 define cs-replace := (n^Chars -> n^Chars -> n^Chars -> n^Chars) of
 	atom:INTRN!CharsIntrinsics.replace | get%i | call%i-v3
->>
+~
 define cs-subchars := (number -> number -> n^Chars -> n^Chars) of
 	atom:INTRN!CharsIntrinsics.subchars | get%i | call%i-v3
->>
+~
 define cs-to-string := (n^Chars -> string) of
 	atom:INTRN!CharsIntrinsics.charsString | get%i | call%i-v1
->>
+~

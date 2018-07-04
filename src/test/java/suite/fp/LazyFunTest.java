@@ -20,17 +20,17 @@ public class LazyFunTest {
 
 	@Test
 	public void testClosure() {
-		assertEquals(Suite.parse("4"), eval("define v := number of 4 >> (i => j => v) {1} {2}"));
+		assertEquals(Suite.parse("4"), eval("define v := number of 4 ~ (i => j => v) {1} {2}"));
 	}
 
 	@Test
 	public void testCorecursion() {
 		assertEquals(Atom.TRUE, eval("" //
-				+ "define seq := n => n; seq {n} >> \n" //
+				+ "define seq := n => n; seq {n} ~ \n" //
 				+ "head {seq {0}} = 0"));
 
 		assertEquals(Int.of(89), eval("" // real co-recursion!
-				+ "define fib := i1 => i2 => i2; fib {i2} {i1 + i2} >> \n" //
+				+ "define fib := i1 => i2 => i2; fib {i2} {i1 + i2} ~ \n" //
 				+ "fib {0} {1} | get {10}"));
 	}
 
@@ -40,7 +40,7 @@ public class LazyFunTest {
 				+ "lets ( \n" //
 				+ "    a := n => if (0 < n) then (b {n - 1} * 2) else 0 # \n" //
 				+ "    b := n => if (0 < n) then (a {n - 1} + 1) else 0 # \n" //
-				+ ") >> a {10}"));
+				+ ") ~ a {10}"));
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class LazyFunTest {
 		assertEquals(Int.of(89), eval("" //
 				+ "define fib := \n" //
 				+ "    1; 1; zip {`+`} {fib} {tail {fib}} \n" //
-				+ ">> fib | get {10}"));
+				+ "~ fib | get {10}"));
 
 		assertEquals(Int.of(144), eval("" //
 				+ "define fib := x => \n" //
@@ -57,7 +57,7 @@ public class LazyFunTest {
 				+ "            (fib {y} + fib {z}) \n" //
 				+ "        else 1 \n" //
 				+ "    else 0 \n" //
-				+ ">> fib {0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; }"));
+				+ "~ fib {0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; 0; }"));
 	}
 
 	@Test
@@ -68,12 +68,12 @@ public class LazyFunTest {
 	@Test
 	public void testFold() {
 		assertEquals(Suite.parse("0; 1; 2; 3; 4;"), eval("" //
-				+ "define inf-series := n => n; inf-series {n + 1} >> " //
+				+ "define inf-series := n => n; inf-series {n + 1} ~ " //
 				+ "0 | inf-series | fold-right {`;`} {} | take {5}"));
 
 		// on the other hand, same call using fold-left would result in infinite
 		// loop, like this:
-		// define is = (n => n; is {n + 1}) >>
+		// define is = (n => n; is {n + 1}) ~
 		// 0 | is | fold-left {`;`/} {} | take {5}
 	}
 
@@ -97,7 +97,7 @@ public class LazyFunTest {
 
 	@Test
 	public void testSubstitution() {
-		assertEquals(Int.of(8), eval("define v := 4 >> v + v"));
+		assertEquals(Int.of(8), eval("define v := 4 ~ v + v"));
 	}
 
 	@Test

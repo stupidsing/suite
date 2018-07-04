@@ -46,7 +46,7 @@ public class InterpretFunLazy0 {
 
 			private Node infer(Node node) {
 				return new SwitchNode<Node>(node //
-				).match("define .0 := .1 >> .2", (a, b, c) -> {
+				).match("define .0 := .1 ~ .2", (a, b, c) -> {
 					var tv = new Reference();
 					var i1 = new InferType(env.put(Atom.name(a), tv));
 					bind(infer(b), tv);
@@ -131,7 +131,7 @@ public class InterpretFunLazy0 {
 
 	private Fun<IMap<String, Thunk>, Thunk> lazy0(Node node) {
 		return new SwitchNode<Fun<IMap<String, Thunk>, Thunk>>(node //
-		).match("define .0 := .1 >> .2", (a, b, c) -> {
+		).match("define .0 := .1 ~ .2", (a, b, c) -> {
 			var vk = Atom.name(a);
 			var value = lazy0(b);
 			var expr = lazy0(c);

@@ -1,39 +1,39 @@
-use external STANDARD >>
-define nothing := atom:Nothing >>
+use external STANDARD ~
+define nothing := atom:Nothing ~
 define getm* := (:t => any -> n^Mutable :t -> Do^:t) of (scope => var =>
 	do (
 		call%i-v2 {atom:INTRN!MonadIntrinsics.get | get%i} {scope} {var}
 	)
-) >>
+) ~
 define setm* := (:t => any -> n^Mutable :t -> :t -> Do^any) of (scope => var => value =>
 	do (
 		call%i-v3 {atom:INTRN!MonadIntrinsics.put | get%i} {scope} {var} {value}
 	)
-) >>
+) ~
 define liftm :=
 	fun => m0 => do (fun {m0 #})
->>
+~
 define liftm2 :=
 	fun => m0 => m1 => do (fun {m0 #} {m1 #})
->>
+~
 define appendm :=
 	liftm2 {append}
->>
+~
 define concatm :=
 	fold-right {appendm} {do ()}
->>
+~
 define seqm :=
 	liftm2 {(:t => any -> :t -> :t) of
 		atom:INTRN!SeqIntrinsics.seq | get%i | call%i-t2
 	}
->>
+~
 define seqsm :=
 	fold-right {seqm} {do nothing}
->>
+~
 define whilem :=
 	cond => loop => do (
 		if (cond #)
 		then (loop # whilem {cond} {loop} #)
 		else nothing
 	)
->>
+~

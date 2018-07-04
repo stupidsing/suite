@@ -53,7 +53,7 @@ lc-parse .clause .clause2 .nv
 	:- lc-parse-sugar .clause .clause1
 	, !, lc-parse .clause1 .clause2 .nv
 #
-lc-parse (.rules >> .clause) (DEFINE-RULES .rules1 .clause1) .nv
+lc-parse (.rules ~ .clause) (DEFINE-RULES .rules1 .clause1) .nv
 	:- !, lc-parse-rules .rules .rules1
 	, lc-parse .clause .clause1 .nv
 #
