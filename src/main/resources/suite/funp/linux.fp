@@ -23,7 +23,7 @@ define pool.delete := address ({ pool, length, start, }) =>
 	type start = 0 >>
 	length, pool | unmap
 -->>
---define mut.create := init =>
+--define create.mut := init =>
 --	let size := size.of init >>
 --	let p := size | alloc >>
 --	*p := init >> {
@@ -32,12 +32,12 @@ define pool.delete := address ({ pool, length, start, }) =>
 --		destroy: ({} => size, p | dealloc),
 --	}
 -->>
---define getc := {} =>
+--define get.char := {} =>
 --	let.global buffer := (size * array coerce.byte _) >>
---	let.global se := (0, 0) >>
---	se := io.fold se ((s, e) => s = e) ((s, e) => (0, (buffer, size | read))) >>
---	let (s0, e0) := se >>
---	se := (s0 + 1, e0) >>
+--	let.global start-end := (0, 0) >>
+--	start-end := io.fold start-end ((s, e) => s = e) ((s, e) => (0, (buffer, size | read))) >>
+--	let (s0, e0) := start-end >>
+--	start-end := (s0 + 1, e0) >>
 --	buffer:s0
 >> {
 	map,
