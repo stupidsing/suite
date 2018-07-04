@@ -37,7 +37,7 @@ define new.pool := length =>
 --	let destroy := {} => size, p | dealloc ~
 --	let get := {} => ^p ~
 --	let set := v1 => (io.assign ^p := v1) ~
---	io-assign ^p := init ~
+--	io.assign ^p := init ~
 --	{
 --		destroy,
 --		get,
