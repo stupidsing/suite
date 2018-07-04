@@ -57,6 +57,7 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.os.FileUtil;
+import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
@@ -131,13 +132,10 @@ public class P0Parse {
 				return FunpBoolean.of(true);
 			}).match("type .0 = .1 ~ .2", (a, b, c) -> {
 				return FunpCheckType.of(p(a), p(b), p(c));
+			}).match("byte", () -> {
+				return FunpCoerce.of(Coerce.BYTE, FunpDontCare.of());
 			}).match("byte .0", a -> {
-				if (a == Atom.of("_"))
-					return FunpCoerce.of(Coerce.BYTE, FunpDontCare.of());
-				else if (a instanceof Int)
-					return FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(Int.num(a)));
-				else
-					return null;
+				return FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(Int.num(a)));
 			}).match("coerce.byte .0", a -> {
 				return FunpCoerce.of(Coerce.BYTE, p(a));
 			}).match("coerce.number .0", a -> {
@@ -177,12 +175,12 @@ public class P0Parse {
 			}).matchArray("error", m -> {
 				return FunpError.of();
 			}).match(".0/.1", (a, b) -> {
-				return FunpField.of(FunpReference.of(p(a)), Atom.name(b));
+				return b instanceof Atom ? FunpField.of(FunpReference.of(p(a)), Atom.name(b)) : null;
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
 				return FunpIf.of(p(a), p(b), p(c));
-			}).match(".0:.1", (a, b) -> {
+			}).match(".0/:.1", (a, b) -> {
 				return FunpIndex.of(FunpReference.of(p(a)), p(b));
 			}).match("io .0", a -> {
 				return FunpIo.of(p(a));
@@ -205,13 +203,15 @@ public class P0Parse {
 					f = nv(var).bind(a, Atom.of(var), b);
 				}
 				return FunpLambda.of(var, f);
+			}).match("number", () -> {
+				return FunpNumber.of(IntMutable.nil());
 			}).applyIf(Int.class, n -> {
 				return FunpNumber.ofNumber(n.number);
 			}).match("predef .0", a -> {
 				return FunpPredefine.of(p(a));
 			}).match("address .0", a -> {
 				return FunpReference.of(p(a));
-			}).match(".0 * array .1", (a, b) -> {
+			}).match("array .0 * .1", (a, b) -> {
 				return FunpRepeat.of(Int.num(a), p(b));
 			}).match("size.of .0", a -> {
 				return FunpSizeOf.of(p(a));
