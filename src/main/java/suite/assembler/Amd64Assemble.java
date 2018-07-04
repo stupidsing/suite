@@ -357,9 +357,13 @@ public class Amd64Assemble {
 			encode = assembleJump(instruction, offset, 0x74, bs(0x0F, 0x84));
 			break;
 		case LABEL:
-			((OpImm) instruction.op0).imm = offset;
-			encode = new InsnCode(4, new byte[0]);
-			break;
+			var imm0 = ((OpImm) instruction.op0).imm;
+			if (imm0 == -1 || imm0 == offset) {
+				((OpImm) instruction.op0).imm = offset;
+				encode = new InsnCode(4, new byte[0]);
+				break;
+			} else
+				Fail.t();
 		case LEA:
 			encode = assembleRegRm(instruction.op0, instruction.op1, 0x8D);
 			break;
