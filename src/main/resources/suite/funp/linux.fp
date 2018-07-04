@@ -1,4 +1,4 @@
-expand size := 256 ~
+expand buffer.size := 256 ~
 
 define map := length =>
 	let ps := [0, length, 3, 34, -1, 0,] ~
@@ -6,7 +6,7 @@ define map := length =>
 ~
 
 define unmap := (length, pointer) =>
-	--type pointer = address (array size * byte) ~
+	--type pointer = address (array buffer.size * byte) ~
 	type pointer = io number ~
 	io.asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
 ~
@@ -18,7 +18,7 @@ define alloc := size =>
 ~
 
 define dealloc := (size, pointer) =>
-	io.asm (EBX = size; ECX = pointer;) { }
+	io.asm (EBX = size; ECX = pointer;) {}
 ~
 
 define new.pool := length =>
@@ -31,43 +31,44 @@ define new.pool := length =>
 	}
 ~
 
---define create.mut := init =>
---	let size := size.of init ~
---	let p := alloc size ~
---	let destroy := {} => dealloc (size, p) ~
---	let get := {} => ^p ~
---	let set := v1 => (io.assign ^p := v1) ~
---	io.assign ^p := init ~
---	{
---		destroy,
---		get,
+define create.mut := init =>
+	type init = 0 ~
+	let size := size.of init ~
+	let pointer := alloc size ~
+	let destroy := {} => dealloc (size, pointer) ~
+	let get := {} => io.asm (EBX = pointer;) { MOV (EAX, `EBX`); } ~
+--	let set := v1 => (io.assign ^pointer := v1) ~
+--	io.assign ^pointer := init ~
+	{
+		destroy,
+		get,
 --		set,
---	}
---~
+	}
+~
 
 --define get.char := {} =>
---	let.global buffer := (array size * byte) ~
+--	let.global buffer := (array buffer.size * byte) ~
 --	let.global start-end := (0, 0) ~
---	io.assign start-end := io.fold start-end ((s, e) => s = e) ((s, e) => (0, read (buffer, size))) ~
+--	io.assign start-end := io.fold start-end ((s, e) => s = e) ((s, e) => (0, read (buffer, buffer.size))) ~
 --	let (s0, e0) := start-end ~
 --	io.assign start-end := (s0 + 1, e0) ~
 --	buffer/:s0
 --~
 
 define read := (pointer, length) =>
-	type pointer = address (array size * byte) ~
+	type pointer = address (array buffer.size * byte) ~
 	io.asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
 define write := (pointer, length) =>
-	type pointer = address (array size * byte) ~
+	type pointer = address (array buffer.size * byte) ~
 	io.asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
 define cat := io.fold 1 (n => n != 0) (n =>
-	let buffer := array size * byte ~
+	let buffer := array buffer.size * byte ~
 	let pointer := address buffer ~
-	read (pointer, size) =>
+	read (pointer, buffer.size) =>
 	io nBytesRead => write (pointer, nBytesRead) =>
 	io nBytesWrote => io nBytesRead
 ) ~
