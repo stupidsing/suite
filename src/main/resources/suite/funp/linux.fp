@@ -17,9 +17,9 @@ define dealloc := (size, pointer) =>
 	io.asm (EBX = size; ECX = pointer;) { }
 >>
 define pool.new := length => {
-	pool: (length | map), length: length, start: 0,
+	pool: (length | map), length, start: 0,
 } >>
-define pool.delete := address ({ pool: pool, length: length, start: start, }) =>
+define pool.delete := address ({ pool, length, start, }) =>
 	type start = 0 >>
 	length, pool | unmap
 -->>
@@ -27,12 +27,12 @@ define pool.delete := address ({ pool: pool, length: length, start: start, }) =>
 --	let size := size.of init >>
 --	let p := size | alloc >>
 --	*p := init >> {
---		get: (() => *p),
+--		get: ({} => *p),
 --		set: (v1 => (*p := v1)),
---		destroy: (() => size, p | dealloc),
+--		destroy: ({} => size, p | dealloc),
 --	}
 -->>
---define getc := () =>
+--define getc := {} =>
 --	let.global buffer := (size * array coerce.byte _) >>
 --	let.global se := (0, 0) >>
 --	se := io.fold se ((s, e) => s = e) ((s, e) => (0, (buffer, size | read))) >>
@@ -40,8 +40,8 @@ define pool.delete := address ({ pool: pool, length: length, start: start, }) =>
 --	se := (s0 + 1, e0) >>
 --	buffer:s0
 >> {
-	map: map,
-	unmap: unmap,
+	map,
+	unmap,
 	read: ((pointer, length) =>
 		type pointer = address (size * array coerce.byte _) >>
 		io.asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX

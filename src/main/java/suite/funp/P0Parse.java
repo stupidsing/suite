@@ -157,8 +157,7 @@ public class P0Parse {
 				var var = Atom.name(a);
 				return FunpDefineGlobal.of(var, p(b), nv(var).p(c));
 			}).match("define { .0 } >> .1", (a, b) -> {
-				var pattern1 = Suite.pattern(".0: .1");
-				var list = Tree.iter(a, TermOp.AND___).map(pattern1::match).collect();
+				var list = Tree.iter(a, TermOp.AND___).map(this::kv).collect();
 				var variables1 = list.fold(variables, (vs, array) -> vs.add(Atom.name(array[0])));
 				var p1 = new Parse(variables1);
 				return FunpDefineRec.of(list //
@@ -215,7 +214,7 @@ public class P0Parse {
 				return FunpStruct.of(Tree //
 						.iter(a, TermOp.AND___) //
 						.map(n -> {
-							var m = Suite.pattern(".0: .1").match(n);
+							var m = kv(n);
 							return Pair.of(Atom.name(m[0]), p(m[1]));
 						}) //
 						.toList());
@@ -238,6 +237,10 @@ public class P0Parse {
 				return r0.apply(HttpUtil.get(url).inputStream());
 			else
 				return r1.apply(() -> ReadStream.of(getClass().getResourceAsStream(url)));
+		}
+
+		private Node[] kv(Node n) {
+			return n instanceof Atom ? new Node[] { n, n, } : Suite.pattern(".0: .1").match(n);
 		}
 
 		private Funp bind(Node a, Node b, Node c) {
