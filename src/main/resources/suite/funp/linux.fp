@@ -1,9 +1,10 @@
-expand size := 256
-~
+expand size := 256 ~
+
 define map := length =>
 	let ps := [0, length, 3, 34, -1, 0,] ~
 	io.asm (EAX = 90; EBX = address ps;) { INT (-128); }
 ~
+
 define unmap := (length, pointer) =>
 	--type pointer = address (array size * byte) ~
 	type pointer = io number ~
@@ -33,19 +34,23 @@ define new.pool := length =>
 --define create.mut := init =>
 --	let size := size.of init ~
 --	let p := size | alloc ~
---	*p := init ~ {
---		get: ({} => *p),
---		set: (v1 => (*p := v1)),
---		destroy: ({} => size, p | dealloc),
+--	let destroy := {} => size, p | dealloc ~
+--	let get := {} => ^p ~
+--	let set := v1 => (io.assign ^p := v1) ~
+--	io-assign ^p := init ~
+--	{
+--		destroy,
+--		get,
+--		set,
 --	}
 --~
 
 --define get.char := {} =>
 --	let.global buffer := (array size * byte) ~
 --	let.global start-end := (0, 0) ~
---	start-end := io.fold start-end ((s, e) => s = e) ((s, e) => (0, (buffer, size | read))) ~
+--	io.assign start-end := io.fold start-end ((s, e) => s = e) ((s, e) => (0, (buffer, size | read))) ~
 --	let (s0, e0) := start-end ~
---	start-end := (s0 + 1, e0) ~
+--	io.assign start-end := (s0 + 1, e0) ~
 --	buffer/:s0
 --~
 
@@ -69,10 +74,4 @@ define cat := io.fold 1 (n => n != 0) (n =>
 	) 
 ) ~
 
-{
-	cat,
-	map,
-	read,
-	unmap,
-	write,
-}
+{ cat, map, read, unmap, write, }
