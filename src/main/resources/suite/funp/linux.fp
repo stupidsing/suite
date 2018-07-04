@@ -59,7 +59,22 @@ define write := (pointer, length) =>
 define get.char := {} =>
 	let.global buffer := (array buffer.size * byte) ~
 	let.global start-end := (0, 0) ~
---	io.update start-end := io.fold start-end ((s, e) => s = e) ((s, e) => io (0, read (buffer, buffer.size))) ~
+	let (s0, e0) := start-end ~
+
+	--if (s0 = e0) then (
+	--	read (address buffer, buffer.size) => io pointer => io (0, pointer)
+	--) else (
+	--	io start-end
+	--) =>
+	--io (s1, e1) =>
+	--if (s1 < e1) then (
+	--	io.update start-end := (s1 + 1, e1) ~
+	--	buffer/:s1
+	--) else (
+	--	error
+	--)
+
+	--io.update start-end := io.fold start-end ((s, e) => s = e) ((s, e) => read (address buffer, buffer.size) => io pointer => io (0, pointer)) ~
 	let (s0, e0) := start-end ~
 	io.update start-end := (s0 + 1, e0) ~
 	buffer/:s0

@@ -197,8 +197,15 @@ public class P0Parse {
 			}).match("io.update .0 := .1 ~ .2", (a, b, c) -> {
 				return FunpIo.of(FunpIoAssignRef.of(FunpReference.of(FunpVariable.of(Atom.name(a))), p(b), p(c)));
 			}).match(".0 => io .1 => .2", (a, b, c) -> {
-				var var = Atom.name(b);
-				return FunpApply.of(p(a), FunpIoCat.of(FunpLambda.of(var, nv(var).p(c))));
+				String var;
+				Funp f;
+				if (b instanceof Atom)
+					f = nv(var = Atom.name(b)).p(c);
+				else {
+					var = "l$" + Util.temp();
+					f = nv(var).bind(b, Atom.of(var), c);
+				}
+				return FunpApply.of(p(a), FunpIoCat.of(FunpLambda.of(var, f)));
 			}).match("io.cat .0", a -> {
 				return FunpIoCat.of(p(a));
 			}).match("io.fold .0 .1 .2", (a, b, c) -> {
