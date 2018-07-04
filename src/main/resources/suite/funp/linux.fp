@@ -64,14 +64,14 @@ define write := (pointer, length) =>
 	io.asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
-define cat := io.fold 1 (n => n != 0) (n => 
-	let buffer := array size * byte ~ 
-	let pointer := address buffer ~ 
-	pointer, size | read | io.cat (nBytesRead => 
-		pointer, nBytesRead | write | io.cat (nBytesWrote => 
-			io nBytesRead 
-		) 
-	) 
+define cat := io.fold 1 (n => n != 0) (n =>
+	let buffer := array size * byte ~
+	let pointer := address buffer ~
+	pointer, size | read | io.cat (nBytesRead =>
+		pointer, nBytesRead | write | io.cat (nBytesWrote =>
+			io nBytesRead
+		)
+	)
 ) ~
 
 { cat, map, read, unmap, write, }
