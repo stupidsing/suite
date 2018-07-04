@@ -33,7 +33,7 @@ import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpIoAsm;
-import suite.funp.P0.FunpIoAssignReference;
+import suite.funp.P0.FunpIoAssignRef;
 import suite.funp.P0.FunpIoCat;
 import suite.funp.P0.FunpIoFold;
 import suite.funp.P0.FunpIoWhile;
@@ -136,7 +136,7 @@ public class P2InferType {
 						var ev = "ev$" + Util.temp();
 						evs.add(Pair.of(ev, expr));
 						var var = FunpVariable.of(ev);
-						return FunpIoAssignReference.of(FunpReference.of(var), expr, var);
+						return FunpIoAssignRef.of(FunpReference.of(var), expr, var);
 					})).result();
 				});
 			}
@@ -298,7 +298,7 @@ public class P2InferType {
 						return Fail.t();
 				}
 				return TypeIo.of(typeNumber);
-			})).applyIf(FunpIoAssignReference.class, f -> f.apply((reference, value, expr) -> {
+			})).applyIf(FunpIoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), TypeReference.of(infer(value)));
 				return infer(expr);
 			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
@@ -495,7 +495,7 @@ public class P2InferType {
 						.sink(var -> var.setReg(false));
 
 				return FunpSaveRegisters.of(FunpIoAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
-			})).applyIf(FunpIoAssignReference.class, f -> f.apply((reference, value, expr) -> {
+			})).applyIf(FunpIoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				var b = ps + ps; // return address and EBP
@@ -519,7 +519,7 @@ public class P2InferType {
 				return new Object() {
 					private Funp getAddress(Funp n) {
 						return n.sw( //
-						).applyIf(FunpIoAssignReference.class, f -> f.apply((reference, value, expr) -> {
+						).applyIf(FunpIoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 							return FunpAssignMem.of(memory(reference, f), erase(value), getAddress(expr));
 						})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 							return erase(pointer);

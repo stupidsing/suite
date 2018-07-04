@@ -271,13 +271,13 @@ public class P0 {
 		}
 	}
 
-	public static class FunpIoAssignReference implements Funp, P2.End {
+	public static class FunpIoAssignRef implements Funp, P2.End {
 		public FunpReference reference;
 		public Funp value;
 		public Funp expr;
 
-		public static FunpIoAssignReference of(FunpReference reference, Funp value, Funp expr) {
-			var f = new FunpIoAssignReference();
+		public static FunpIoAssignRef of(FunpReference reference, Funp value, Funp expr) {
+			var f = new FunpIoAssignRef();
 			f.reference = reference;
 			f.value = value;
 			f.expr = expr;

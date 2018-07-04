@@ -27,7 +27,7 @@ import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpIoAsm;
-import suite.funp.P0.FunpIoAssignReference;
+import suite.funp.P0.FunpIoAssignRef;
 import suite.funp.P0.FunpIoCat;
 import suite.funp.P0.FunpIoFold;
 import suite.funp.P0.FunpLambda;
@@ -193,9 +193,9 @@ public class P0Parse {
 					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
 				}).toList(), Tree.iter(b, TermOp.OR____).toList());
 			}).match("io.assign .0 .1 ~ .2", (a, b, c) -> {
-				return FunpIo.of(FunpIoAssignReference.of(FunpReference.of(p(a)), p(b), p(c)));
+				return FunpIo.of(FunpIoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
 			}).match("io.update .0 := .1 ~ .2", (a, b, c) -> {
-				return FunpIo.of(FunpIoAssignReference.of(FunpReference.of(FunpVariable.of(Atom.name(a))), p(b), p(c)));
+				return FunpIo.of(FunpIoAssignRef.of(FunpReference.of(FunpVariable.of(Atom.name(a))), p(b), p(c)));
 			}).match(".0 => io .1 => .2", (a, b, c) -> {
 				var var = Atom.name(b);
 				return FunpApply.of(p(a), FunpIoCat.of(FunpLambda.of(var, nv(var).p(c))));
@@ -339,7 +339,7 @@ public class P0Parse {
 							.range(size0) //
 							.fold(then, (i, then_) -> bind(pairs0.get(i).t1, fun.apply(i), then_, else_));
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-					return variables.contains(var) ? FunpIoAssignReference.of(FunpReference.of(f), value, then) : be;
+					return variables.contains(var) ? FunpIoAssignRef.of(FunpReference.of(f), value, then) : be;
 				})).result();
 
 				return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);

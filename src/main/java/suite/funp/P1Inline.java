@@ -13,7 +13,7 @@ import suite.funp.P0.FunpDefineGlobal;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
-import suite.funp.P0.FunpIoAssignReference;
+import suite.funp.P0.FunpIoAssignRef;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
@@ -102,7 +102,7 @@ public class P1Inline {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n0 -> {
 					var vars = new ArrayList<String>();
-					FunpIoAssignReference assign;
+					FunpIoAssignRef assign;
 					FunpCheckType check;
 					FunpDefine define;
 					FunpVariable variable;
@@ -117,7 +117,7 @@ public class P1Inline {
 					if ((check = n0.cast(FunpCheckType.class)) != null)
 						n0 = check.expr;
 
-					if ((assign = n0.cast(FunpIoAssignReference.class)) != null //
+					if ((assign = n0.cast(FunpIoAssignRef.class)) != null //
 							&& (variable = assign.reference.expr.cast(FunpVariable.class)) != null) {
 						var vn = variable.var;
 						var n1 = assign.expr;
