@@ -71,10 +71,12 @@ import suite.inspect.Inspect;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.object.AutoObject;
+import suite.primitive.ChrMutable;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
+import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.util.Fail;
@@ -694,7 +696,34 @@ public class P2InferType {
 
 	private void unify(Funp n, UnNode<Type> type0, UnNode<Type> type1) {
 		if (!unify.unify(type0, type1))
-			Fail.t("cannot unify types in " + n + " between " + type0.final_() + " and " + type1.final_());
+			Fail.t("cannot unify types in " + n + " between " + toString(type0) + " and " + toString(type1));
+	}
+
+	private String toString(UnNode<Type> type0) {
+		var aliases = new IdentityHashMap<Object, Character>();
+		var alias = ChrMutable.of('a');
+
+		return new Switch<String>(type0.final_() //
+		).applyIf(TypeArray.class, t -> {
+			return toString(t.elementType) + " * " + t.size;
+		}).applyIf(TypeIo.class, t -> {
+			return "io " + toString(t.type);
+		}).applyIf(TypeLambda.class, t -> {
+			return toString(t.parameterType) + " -> " + toString(t.returnType);
+		}).applyIf(TypeReference.class, t -> {
+			return "&" + toString(t.type);
+		}).applyIf(TypeStruct.class, t -> {
+			var s = t.isCompleted ? "" : "...";
+			return Read.from(t.pairs).map(pair -> pair.t0 + ":" + toString(pair.t1) + ", ").collect(As.joinedBy("(", "", s + ")"));
+		}).applyIf(Type.class, t -> {
+			return type0.final_().getClass().getSimpleName().substring(4).toLowerCase();
+		}).applyIf(Object.class, t -> {
+			return aliases.computeIfAbsent(t, t_ -> {
+				var c = alias.get();
+				alias.update((char) (c + 1));
+				return c;
+			}).toString();
+		}).nonNullResult();
 	}
 
 	private Type typeOf(Funp n) {

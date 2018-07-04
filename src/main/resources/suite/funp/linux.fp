@@ -46,15 +46,6 @@ define create.mut.number := init =>
 	}
 ~
 
-define get.char := {} =>
-	let.global buffer := (array buffer.size * byte) ~
-	let.global start-end := (0, 0) ~
---	io.update start-end := io.fold start-end ((s, e) => s = e) ((s, e) => (0, read (buffer, buffer.size))) ~
-	let (s0, e0) := start-end ~
---	io.update start-end := (s0 + 1, e0) ~
-	buffer/:s0
-~
-
 define read := (pointer, length) =>
 	type pointer = address (array buffer.size * byte) ~
 	io.asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
@@ -63,6 +54,15 @@ define read := (pointer, length) =>
 define write := (pointer, length) =>
 	type pointer = address (array buffer.size * byte) ~
 	io.asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
+~
+
+define get.char := {} =>
+	let.global buffer := (array buffer.size * byte) ~
+	let.global start-end := (0, 0) ~
+--	io.update start-end := io.fold start-end ((s, e) => s = e) ((s, e) => io (0, read (buffer, buffer.size))) ~
+	let (s0, e0) := start-end ~
+	io.update start-end := (s0 + 1, e0) ~
+	buffer/:s0
 ~
 
 define cat := io.fold 1 (n => n != 0) (n =>
