@@ -107,7 +107,7 @@ public class P2InferType {
 		var n2 = Boolean.FALSE ? captureLambdas(n1) : n1;
 
 		if (unify.unify(t, new Infer(IMap.empty()).infer(n2))) {
-			Erase erase = new Erase(0, IMap.empty());
+			var erase = new Erase(0, IMap.empty());
 			erase.erase(n2); // first pass
 			return erase.erase(n2); // second pass
 		} else
