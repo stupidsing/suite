@@ -15,7 +15,7 @@ let.global alloc.pointer := 0 ~
 let.global alloc.free.chain := 0 ~
 
 define alloc := size =>
-	io.let ({}) := if (alloc.pointer = 0) then (
+	io.let _ := if (alloc.pointer = 0) then (
 		io.let p := map 32768 ~
 		io.assign alloc.pointer := p ~
 		io ({})
@@ -25,13 +25,13 @@ define alloc := size =>
 	let pointer.head := alloc.pointer ~
 	let pointer.block := pointer.head + 4 ~
 	io.assign alloc.pointer := pointer.block + size ~
-	io.let dummy := io.asm (EAX = pointer.head; EBX = size;) { MOV (`EAX`, EBX); } ~
+	io.let _ := io.asm (EAX = pointer.head; EBX = size;) { MOV (`EAX`, EBX); } ~
 	io pointer.block
 ~
 
 define dealloc := (size, pointer.block) =>
 	let pointer.head := pointer.block - 4 ~
-	io.let dummy := io.asm (EAX = pointer.head; EBX = alloc.free.chain;) { MOV (`EAX`, EBX); } ~
+	io.let _ := io.asm (EAX = pointer.head; EBX = alloc.free.chain;) { MOV (`EAX`, EBX); } ~
 	io.assign alloc.free.chain := pointer.head ~
 	io ({})
 ~

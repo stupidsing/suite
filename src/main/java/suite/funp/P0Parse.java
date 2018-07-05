@@ -156,7 +156,7 @@ public class P0Parse {
 					return null;
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
-				var var = a instanceof Atom ? Atom.name(a) : null;
+				var var = isVar(a) ? Atom.name(a) : null;
 				if (var != null)
 					return FunpDefine.of(Fdt.MONO, var, p(b), nv(var).p(c));
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
@@ -200,7 +200,7 @@ public class P0Parse {
 			}).match("io.let .0 := .1 ~ .2", (a, b, c) -> {
 				String var;
 				Funp f;
-				if (a instanceof Atom)
+				if (isVar(a))
 					f = nv(var = Atom.name(a)).p(c);
 				else {
 					var = "l$" + Util.temp();
@@ -216,7 +216,7 @@ public class P0Parse {
 			}).match(".0 => .1", (a, b) -> {
 				String var;
 				Funp f;
-				if (a instanceof Atom)
+				if (isVar(a))
 					f = nv(var = Atom.name(a)).p(b);
 				else {
 					var = "l$" + Util.temp();
@@ -272,6 +272,10 @@ public class P0Parse {
 				return Pair.of(Atom.name(m[0]), m[1]);
 			else
 				return Pair.of(Atom.name(n), n);
+		}
+
+		private boolean isVar(Node v) {
+			return v != dontCare && v instanceof Atom;
 		}
 
 		private Funp bind(Node a, Node b, Node c) {
