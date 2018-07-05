@@ -22,10 +22,11 @@ define alloc := size =>
 	) else (
 		io ({})
 	) ~
-	let pointer := alloc.pointer ~
-	let pointer.block := pointer + 4 ~
+	let pointer.head := alloc.pointer ~
+	let pointer.block := pointer.head + 4 ~
 	io.assign alloc.pointer := pointer.block + size ~
-	io.asm (EBX = address alloc.pointer; ECX = size;) { MOV (EAX, `EBX`); ADD (`EBX`, ECX); }
+	io.let dummy := io.asm (EAX = pointer.head; EBX = size;) { MOV (`EAX`, EBX); } ~
+	io pointer.block
 ~
 
 define dealloc := (size, pointer) =>
