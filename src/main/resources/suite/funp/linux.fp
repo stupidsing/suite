@@ -35,7 +35,7 @@ define create.mut.number := init =>
 	type init = number ~
 	let size := size.of init ~
 	let pointer := alloc size ~
---	io.assign ^pointer := init ~
+	io.assign ^pointer := io init ~
 	{
 		destroy := {} => dealloc (size, pointer) ~
 		get := {} => io.asm (EBX = pointer;) { MOV (EAX, `EBX`); } ~
@@ -56,14 +56,12 @@ define write := (pointer, length) =>
 define get.char := {} =>
 	let.global buffer := (array byte * buffer.size) ~
 	let.global start-end := (0, 0) ~
-	io start-end =>
-	io.concat.map (s0, e0) =>
-	if (s0 < e0) then (
+	io.let (s0, e0) := io start-end ~
+	io.let (s1, e1) := if (s0 < e0) then (
 		io start-end
 	) else (
 		read (address buffer, buffer.size) | io.map (pointer => (0, pointer))
-	) =>
-	io.concat.map (s1, e1) =>
+	) ~
 	if (s1 < e1) then (
 		io.assign start-end := (s1 + 1, e1) ~
 		buffer/:s0
@@ -75,9 +73,9 @@ define get.char := {} =>
 define cat := io.fold 1 (n => n != 0) (n =>
 	let buffer := array byte * buffer.size ~
 	let pointer := address buffer ~
-	read (pointer, buffer.size) =>
-	io.concat.map nBytesRead => write (pointer, nBytesRead) =>
-	io.concat.map nBytesWrote => io nBytesRead
+	io.let nBytesRead := read (pointer, buffer.size) ~
+	io.let nBytesWrote := write (pointer, nBytesRead) ~
+	io nBytesRead
 ) ~
 
 { cat, map, read, unmap, write, }
