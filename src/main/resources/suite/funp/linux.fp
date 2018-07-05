@@ -68,7 +68,7 @@ define get.char := {} =>
 	) =>
 	io.concat.map (s1, e1) =>
 	if (s1 < e1) then (
-		io.update start-end := (s1 + 1, e1) ~
+		io.assign start-end := (s1 + 1, e1) ~
 		buffer/:s0
 	) else (
 		error

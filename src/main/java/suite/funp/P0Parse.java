@@ -193,9 +193,9 @@ public class P0Parse {
 					var ma = Suite.pattern(".0 = .1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
 				}).toList(), Tree.iter(b, TermOp.OR____).toList());
-			}).match("io.assign .0 .1 ~ .2", (a, b, c) -> {
+			}).match("io.assign ^.0 := .1 ~ .2", (a, b, c) -> {
 				return FunpIo.of(FunpIoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
-			}).match("io.update .0 := .1 ~ .2", (a, b, c) -> {
+			}).match("io.assign .0 := .1 ~ .2", (a, b, c) -> {
 				return FunpIo.of(FunpIoAssignRef.of(FunpReference.of(FunpVariable.of(Atom.name(a))), p(b), p(c)));
 			}).match(".0 => io.concat.map .1 => .2", (a, b, c) -> {
 				String var;
