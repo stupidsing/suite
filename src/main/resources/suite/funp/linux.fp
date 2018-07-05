@@ -24,10 +24,10 @@ define dealloc := (size, pointer) =>
 define new.pool := length =>
 	let pool := map length ~
 	{
-		destroy: ({} => unmap (length, pool)),
-		pool,
-		length,
-		start: 0,
+		destroy := {} => unmap (length, pool) ~
+		pool ~
+		length ~
+		start := 0 ~
 	}
 ~
 
@@ -35,14 +35,11 @@ define create.mut.number := init =>
 	type init = number ~
 	let size := size.of init ~
 	let pointer := alloc size ~
-	let destroy := {} => dealloc (size, pointer) ~
-	let get := {} => io.asm (EBX = pointer;) { MOV (EAX, `EBX`); } ~
-	let set := v1 => (io.assign ^pointer := v1 ~ {}) ~
 --	io.assign ^pointer := init ~
 	{
-		destroy,
-		get,
-		set,
+		destroy := {} => dealloc (size, pointer) ~
+		get := {} => io.asm (EBX = pointer;) { MOV (EAX, `EBX`); } ~
+		set := v1 => (io.assign ^pointer := v1 ~ {}) ~
 	}
 ~
 

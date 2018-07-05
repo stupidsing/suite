@@ -9,6 +9,7 @@ import suite.node.tree.TreeAnd;
 import suite.node.tree.TreeOp;
 import suite.node.tree.TreeOr;
 import suite.node.tree.TreeTuple;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
@@ -29,7 +30,8 @@ public abstract class Tree extends Node {
 			return null;
 	}
 
-	// these methods violate the immutable property of the tree. Used by cloner for
+	// these methods violate the immutable property of the tree. Used by cloner
+	// for
 	// performance purpose.
 	public static void forceSetLeft(Tree tree, Node left) {
 		tree.left = left;
@@ -44,11 +46,15 @@ public abstract class Tree extends Node {
 	}
 
 	public static Streamlet<Node> iter(Node node0, Operator operator) {
+		return iter(node0, n -> Tree.decompose(n, operator));
+	}
+
+	public static Streamlet<Node> iter(Node node0, Fun<Node, Tree> fun) {
 		return new Streamlet<>(() -> Outlet.of(new Source<Node>() {
 			private Node node = node0;
 
 			public Node source() {
-				var tree = Tree.decompose(node, operator);
+				var tree = fun.apply(node);
 				if (tree != null) {
 					node = tree.getRight();
 					return tree.getLeft();
