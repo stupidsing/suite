@@ -39,11 +39,11 @@ define create.mut.number := init =>
 	let size := size.of init ~
 	let pointer := alloc size ~
 	io.assign ^pointer := io init ~
-	{
+	io ({
 		destroy := {} => dealloc (size, pointer) ~
 		get := {} => io.asm (EBX = pointer;) { MOV (EAX, `EBX`); } ~
-		set := v1 => (io.assign ^pointer := v1 ~ {}) ~
-	}
+		set := v1 => (io.assign ^pointer := v1 ~ io ({})) ~
+	})
 ~
 
 define read := (pointer, length) =>
@@ -67,7 +67,7 @@ define get.char := {} =>
 	) ~
 	if (s1 < e1) then (
 		io.assign start-end := (s1 + 1, e1) ~
-		buffer/:s0
+		io buffer/:s0
 	) else (
 		error
 	)
