@@ -11,12 +11,20 @@ define unmap := (length, pointer) =>
 	io.asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
 ~
 
-let.global alloc.pointer := map 32768 ~
+let.global alloc.pointer := 0 ~
 let.global alloc.free.chain := 0 ~
 
 define alloc := size =>
-	io.let pointer := alloc.pointer ~
+	io.let ({}) := if (alloc.pointer = 0) then (
+		io.let p := map 32768 ~
+		io.assign alloc.pointer := p ~
+		io ({})
+	) else (
+		io ({})
+	) ~
+	let pointer := alloc.pointer ~
 	let pointer.block := pointer + 4 ~
+	io.assign alloc.pointer := pointer.block + size ~
 	io.asm (EBX = address alloc.pointer; ECX = size;) { MOV (EAX, `EBX`); ADD (`EBX`, ECX); }
 ~
 
@@ -37,8 +45,8 @@ define new.pool := length =>
 define create.mut.number := init =>
 	type init = number ~
 	let size := size.of init ~
-	let pointer := alloc size ~
-	io.assign ^pointer := io init ~
+	io.let pointer := alloc size ~
+	io.assign ^pointer := init ~
 	io ({
 		destroy := {} => dealloc (size, pointer) ~
 		get := {} => io.asm (EBX = pointer;) { MOV (EAX, `EBX`); } ~
