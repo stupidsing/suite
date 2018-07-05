@@ -29,8 +29,11 @@ define alloc := size =>
 	io pointer.block
 ~
 
-define dealloc := (size, pointer) =>
-	io.asm (EAX = pointer; EBX = address alloc.free.chain;) { MOV (`EAX`, EBX); }
+define dealloc := (size, pointer.block) =>
+	let pointer.head := pointer.block - 4 ~
+	io.let dummy := io.asm (EAX = pointer.head; EBX = alloc.free.chain;) { MOV (`EAX`, EBX); } ~
+	io.assign alloc.free.chain := pointer.head ~
+	io ({})
 ~
 
 define new.pool := length =>
