@@ -360,7 +360,12 @@ public class P2InferType {
 				infer(expr);
 				return typeNumber;
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
-				return TypeStruct.of(Read.from2(pairs).mapValue(this::infer).toList());
+				var types = new ArrayList<Pair<String, UnNode<Type>>>();
+				for (var kv : pairs) {
+					var name = kv.t0;
+					types.add(Pair.of(name, infer(kv.t1, name)));
+				}
+				return TypeStruct.of(types);
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
 				UnNode<Type> ti;
 				if (op == TermOp.BIGAND || op == TermOp.BIGOR_)
@@ -716,8 +721,8 @@ public class P2InferType {
 		if (!unify.unify(type0, type1))
 			Funp_.fail("" //
 					+ "cannot unify types between:" //
-					+ "\n" + toString(type0) //
-					+ "\n" + toString(type1) //
+					+ "\n<<< " + toString(type0) //
+					+ "\n>>> " + toString(type1) //
 					+ "\nin " + n.getClass().getSimpleName());
 	}
 
