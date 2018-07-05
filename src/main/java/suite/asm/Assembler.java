@@ -18,7 +18,6 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.SwitchNode;
-import suite.node.io.TermOp;
 import suite.parser.CommentPreprocessor;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
@@ -149,7 +148,7 @@ public class Assembler {
 
 	private Bytes convertByteStream(Node node) {
 		var bb = new BytesBuilder();
-		for (var n : Tree.iter(node, TermOp.AND___))
+		for (var n : Tree.iter(node))
 			bb.append((byte) Int.num(n));
 		return bb.toBytes();
 	}

@@ -40,8 +40,8 @@ public class SldResolution {
 		var n0 = finder.collectSingle(node);
 		var orsMap = new HashMap<Node, Source<List<Node>>>();
 
-		for (var n1 : Tree.iter(n0, TermOp.AND___)) {
-			var ors = To.list(Tree.iter(n1, TermOp.AND___));
+		for (var n1 : Tree.iter(n0)) {
+			var ors = To.list(Tree.iter(n1));
 
 			for (var i = 0; i < ors.size(); i++) {
 				var index = i;

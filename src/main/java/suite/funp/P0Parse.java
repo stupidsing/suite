@@ -129,7 +129,7 @@ public class P0Parse {
 				var name = Atom.name(a);
 				return name != null && variables.contains(name) ? FunpApply.of(p(b), p(a)) : null;
 			}).match("[.0]", a -> {
-				return FunpArray.of(Tree.iter(a, TermOp.AND___).map(this::p).toList());
+				return FunpArray.of(Tree.iter(a).map(this::p).toList());
 			}).match(Atom.FALSE, () -> {
 				return FunpBoolean.of(false);
 			}).match(Atom.TRUE, () -> {
@@ -166,11 +166,11 @@ public class P0Parse {
 				var var = Atom.name(a);
 				return FunpDefineGlobal.of(var, p(b), nv(var).p(c));
 			}).match("define { .0 } ~ .1", (a, b) -> {
-				var list = Tree.iter(a, TermOp.AND___).map(this::kv).collect();
-				var variables1 = list.fold(variables, (vs, array) -> vs.add(Atom.name(array[0])));
+				var list = Tree.iter(a).map(this::kv).collect();
+				var variables1 = list.fold(variables, (vs, pair) -> vs.add(pair.t0));
 				var p1 = new Parse(variables1);
 				return FunpDefineRec.of(list //
-						.map(m -> Pair.of(Atom.name(m[0]), p1.p(m[1]))) //
+						.map(pair -> Pair.of(pair.t0, p1.p(pair.t1))) //
 						.toList(), p1.p(b));
 			}).match("^.0", a -> {
 				return FunpDeref.of(p(a));
@@ -239,10 +239,10 @@ public class P0Parse {
 				return FunpStruct.of(List.of(Pair.of("t0", p(a)), Pair.of("t1", p(b))));
 			}).match("{ .0 }", a -> {
 				return FunpStruct.of(Tree //
-						.iter(a, TermOp.AND___) //
+						.iter(a) //
 						.map(n -> {
 							var m = kv(n);
-							return Pair.of(Atom.name(m[0]), p(m[1]));
+							return Pair.of(m.t0, p(m.t1));
 						}) //
 						.toList());
 			}).applyTree((op, l, r) -> {
@@ -266,8 +266,13 @@ public class P0Parse {
 				return r1.apply(() -> ReadStream.of(getClass().getResourceAsStream(url)));
 		}
 
-		private Node[] kv(Node n) {
-			return n instanceof Atom ? new Node[] { n, n, } : Suite.pattern(".0: .1").match(n);
+		private Pair<String, Node> kv(Node n) {
+			if (n instanceof Atom)
+				return Pair.of(Atom.name(n), n);
+			else {
+				var m = Suite.pattern(".0: .1").match(n);
+				return Pair.of(Atom.name(m[0]), m[1]);
+			}
 		}
 
 		private Funp bind(Node a, Node b, Node c) {
