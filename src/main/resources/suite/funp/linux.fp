@@ -37,12 +37,12 @@ define create.mut.number := init =>
 	let pointer := alloc size ~
 	let destroy := {} => dealloc (size, pointer) ~
 	let get := {} => io.asm (EBX = pointer;) { MOV (EAX, `EBX`); } ~
---	let set := v1 => (io.assign ^pointer := v1) ~
+	let set := v1 => (io.assign ^pointer := v1 ~ {}) ~
 --	io.assign ^pointer := init ~
 	{
 		destroy,
 		get,
---		set,
+		set,
 	}
 ~
 
