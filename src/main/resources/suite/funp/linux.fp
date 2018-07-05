@@ -59,33 +59,28 @@ define write := (pointer, length) =>
 define get.char := {} =>
 	let.global buffer := (array buffer.size * byte) ~
 	let.global start-end := (0, 0) ~
-	let (s0, e0) := start-end ~
-
-	--if (s0 = e0) then (
-	--	read (address buffer, buffer.size) => io pointer => io (0, pointer)
-	--) else (
-	--	io start-end
-	--) =>
-	--io (s1, e1) =>
-	--if (s1 < e1) then (
-	--	io.update start-end := (s1 + 1, e1) ~
-	--	buffer/:s1
-	--) else (
-	--	error
-	--)
-
-	--io.update start-end := io.fold start-end ((s, e) => s = e) ((s, e) => read (address buffer, buffer.size) => io pointer => io (0, pointer)) ~
-	let (s0, e0) := start-end ~
-	io.update start-end := (s0 + 1, e0) ~
-	buffer/:s0
+	io start-end =>
+	io.concat.map (s0, e0) =>
+	if (s0 < e0) then (
+		io start-end
+	) else (
+		read (address buffer, buffer.size) | io.map (pointer => (0, pointer))
+	) =>
+	io.concat.map (s1, e1) =>
+	if (s1 < e1) then (
+		io.update start-end := (s1 + 1, e1) ~
+		buffer/:s0
+	) else (
+		error
+	)
 ~
 
 define cat := io.fold 1 (n => n != 0) (n =>
 	let buffer := array buffer.size * byte ~
 	let pointer := address buffer ~
 	read (pointer, buffer.size) =>
-	io nBytesRead => write (pointer, nBytesRead) =>
-	io nBytesWrote => io nBytesRead
+	io.concat.map nBytesRead => write (pointer, nBytesRead) =>
+	io.concat.map nBytesWrote => io nBytesRead
 ) ~
 
 { cat, map, read, unmap, write, }

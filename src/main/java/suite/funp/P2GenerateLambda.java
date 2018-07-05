@@ -8,8 +8,6 @@ import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDefineGlobal;
-import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
@@ -17,7 +15,6 @@ import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
-import suite.funp.P0.FunpIoCat;
 import suite.funp.P0.FunpIoFold;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
@@ -133,11 +130,7 @@ public class P2GenerateLambda {
 				return compile_(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
 				return compile_(FunpApply.of(value, FunpLambda.of(var, expr)));
-			})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
-				return Fail.t();
-			})).applyIf(FunpDefineRec.class, f -> {
-				return Fail.t();
-			}).applyIf(FunpDeref.class, f -> {
+			})).applyIf(FunpDeref.class, f -> {
 				var p = compile_(f);
 				return rt -> ((Ref) p.apply(rt)).v;
 			}).applyIf(FunpDontCare.class, f -> {
@@ -158,8 +151,6 @@ public class P2GenerateLambda {
 				return rt -> ((Vec) array.apply(rt)).values[i(rt, index1)];
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return compile_(expr);
-			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
-				return Fail.t();
 			})).applyIf(FunpIoFold.class, f -> f.apply((init, cont, next) -> {
 				var var1 = "fold$" + Util.temp();
 				var fs1 = fs + 1;

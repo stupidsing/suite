@@ -30,6 +30,7 @@ import suite.funp.P0.FunpIoAsm;
 import suite.funp.P0.FunpIoAssignRef;
 import suite.funp.P0.FunpIoCat;
 import suite.funp.P0.FunpIoFold;
+import suite.funp.P0.FunpIoMap;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
@@ -196,7 +197,7 @@ public class P0Parse {
 				return FunpIo.of(FunpIoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
 			}).match("io.update .0 := .1 ~ .2", (a, b, c) -> {
 				return FunpIo.of(FunpIoAssignRef.of(FunpReference.of(FunpVariable.of(Atom.name(a))), p(b), p(c)));
-			}).match(".0 => io .1 => .2", (a, b, c) -> {
+			}).match(".0 => io.concat.map .1 => .2", (a, b, c) -> {
 				String var;
 				Funp f;
 				if (b instanceof Atom)
@@ -210,6 +211,8 @@ public class P0Parse {
 				return FunpIoCat.of(p(a));
 			}).match("io.fold .0 .1 .2", (a, b, c) -> {
 				return FunpIoFold.of(p(a), p(b), p(c));
+			}).match("io.map .0", a -> {
+				return FunpIoMap.of(p(a));
 			}).match(".0 => .1", (a, b) -> {
 				String var;
 				Funp f;
