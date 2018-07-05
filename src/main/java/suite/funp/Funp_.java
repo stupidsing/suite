@@ -22,6 +22,18 @@ public class Funp_ {
 	public interface Funp extends AutoInterface<Funp> {
 	}
 
+	public static class CompileException extends RuntimeException {
+		private static final long serialVersionUID = 1l;
+
+		public CompileException(String m) {
+			super(m);
+		}
+
+		public <T> T rethrow(Object key) {
+			return Funp_.fail(getMessage() + "\nin " + key);
+		}
+	}
+
 	private Funp_(boolean isOptimize) {
 		this.isOptimize = isOptimize;
 	}
@@ -58,6 +70,10 @@ public class Funp_ {
 			p2.infer(f0);
 			return p2g.eval(f0);
 		}
+	}
+
+	public static <T> T fail(String m) {
+		throw new CompileException(m);
 	}
 
 }

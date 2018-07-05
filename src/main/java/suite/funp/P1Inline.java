@@ -9,7 +9,7 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDefineGlobal;
+import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
@@ -66,14 +66,10 @@ public class P1Inline {
 
 			private Funp rename(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var0, value, expr) -> {
+				).applyIf(FunpDefine.class, f -> f.apply((type, var0, value, expr) -> {
 					var var1 = newVar.apply(var0);
 					var r1 = new Rename(vars.replace(var0, var1));
-					return FunpDefine.of(isPolyType, var1, rename(value), r1.rename(expr));
-				})).applyIf(FunpDefineGlobal.class, f -> f.apply((var0, value, expr) -> {
-					var var1 = newVar.apply(var0);
-					var r1 = new Rename(vars.replace(var0, var1));
-					return FunpDefineGlobal.of(var1, rename(value), r1.rename(expr));
+					return FunpDefine.of(type, var1, rename(value), r1.rename(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
 					var vars1 = Read.from(pairs0).fold(vars, (vs, pair) -> vs.replace(pair.t0, newVar.apply(pair.t0)));
 					var r1 = new Rename(vars1);
@@ -109,7 +105,7 @@ public class P1Inline {
 
 					while ((define = n0.cast(FunpDefine.class)) != null //
 							&& define.value instanceof FunpDontCare //
-							&& !define.isPolyType) {
+							&& define.type == Fdt.MONO) {
 						vars.add(define.var);
 						n0 = define.expr;
 					}
@@ -126,12 +122,12 @@ public class P1Inline {
 
 						for (var var_ : List_.reverse(vars))
 							if (!String_.equals(vn, var_))
-								n2 = FunpDefine.of(false, var_, FunpDontCare.of(), n2);
+								n2 = FunpDefine.of(Fdt.MONO, var_, FunpDontCare.of(), n2);
 							else
 								b = true;
 
 						if (b)
-							return FunpDefine.of(false, vn, assign.value, inline(n2));
+							return FunpDefine.of(Fdt.MONO, vn, assign.value, inline(n2));
 					}
 
 					return null;
@@ -228,7 +224,8 @@ public class P1Inline {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw() //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-							return lambda.cast(FunpLambda.class, l -> FunpDefine.of(false, l.var, inline(value), inline(l.expr)));
+							return lambda.cast(FunpLambda.class,
+									l -> FunpDefine.of(Fdt.MONO, l.var, inline(value), inline(l.expr)));
 						})) //
 						.result());
 			}
@@ -241,11 +238,7 @@ public class P1Inline {
 		new Object() {
 			private Funp associate(IMap<String, Funp> vars, Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
-					associate(vars, value);
-					associate(vars.replace(var, f), expr);
-					return n_;
-				})).applyIf(FunpDefineGlobal.class, f -> f.apply((var, value, expr) -> {
+				).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
 					associate(vars, value);
 					associate(vars.replace(var, f), expr);
 					return n_;

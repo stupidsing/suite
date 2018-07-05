@@ -7,6 +7,7 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
@@ -84,7 +85,7 @@ public class P1ReduceTailCall {
 			var fr = FunpField.of(tcoVarRef, "r");
 			var dontCare = FunpDontCare.of();
 			var assign = FunpIoAssignRef.of(tcoVarRef, do1, FunpIoAssignRef.of(varRef, fn, fc));
-			return FunpLambda.of(var, FunpDefine.of(false, tcoVarName, dontCare, FunpIoWhile.of(assign, FunpDontCare.of(), fr)));
+			return FunpLambda.of(var, FunpDefine.of(Fdt.MONO, tcoVarName, dontCare, FunpIoWhile.of(assign, FunpDontCare.of(), fr)));
 		} else
 			return null;
 	}

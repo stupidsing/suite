@@ -104,40 +104,26 @@ public class P0 {
 	}
 
 	public static class FunpDefine implements Funp, P2.End {
-		public boolean isPolyType;
+		public enum Fdt {
+			MONO, POLY, GLOB,
+		};
+
+		public Fdt type;
 		public String var;
 		public Funp value;
 		public Funp expr;
 
-		public static FunpDefine of(boolean isPolyType, String var, Funp value, Funp expr) {
+		public static FunpDefine of(Fdt type, String var, Funp value, Funp expr) {
 			var f = new FunpDefine();
-			f.isPolyType = isPolyType;
+			f.type = type;
 			f.var = var;
 			f.value = value;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun4<Boolean, String, Funp, Funp, R> fun) {
-			return fun.apply(isPolyType, var, value, expr);
-		}
-	}
-
-	public static class FunpDefineGlobal implements Funp, P2.End {
-		public String var;
-		public Funp value;
-		public Funp expr;
-
-		public static FunpDefineGlobal of(String var, Funp value, Funp expr) {
-			var f = new FunpDefineGlobal();
-			f.var = var;
-			f.value = value;
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun3<String, Funp, Funp, R> fun) {
-			return fun.apply(var, value, expr);
+		public <R> R apply(FixieFun4<Fdt, String, Funp, Funp, R> fun) {
+			return fun.apply(type, var, value, expr);
 		}
 	}
 

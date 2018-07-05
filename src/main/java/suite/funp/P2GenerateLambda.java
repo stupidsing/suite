@@ -8,6 +8,7 @@ import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
@@ -128,8 +129,8 @@ public class P2GenerateLambda {
 				return rt -> b1;
 			})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
 				return compile_(expr);
-			})).applyIf(FunpDefine.class, f -> f.apply((isPolyType, var, value, expr) -> {
-				return compile_(FunpApply.of(value, FunpLambda.of(var, expr)));
+			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
+				return type != Fdt.GLOB ? compile_(FunpApply.of(value, FunpLambda.of(var, expr))) : null;
 			})).applyIf(FunpDeref.class, f -> {
 				var p = compile_(f);
 				return rt -> ((Ref) p.apply(rt)).v;

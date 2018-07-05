@@ -17,7 +17,7 @@ import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpCoerce.Coerce;
 import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDefineGlobal;
+import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDontCare;
@@ -151,20 +151,20 @@ public class P0Parse {
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
 				if (a instanceof Atom) {
 					var var = Atom.name(a);
-					return FunpDefine.of(true, var, p(b), nv(var).p(c));
+					return FunpDefine.of(Fdt.POLY, var, p(b), nv(var).p(c));
 				} else
 					return null;
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
 				var var = a instanceof Atom ? Atom.name(a) : null;
 				if (var != null)
-					return FunpDefine.of(false, var, p(b), nv(var).p(c));
+					return FunpDefine.of(Fdt.MONO, var, p(b), nv(var).p(c));
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 				else
 					return bind(a, b, c);
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
 				var var = Atom.name(a);
-				return FunpDefineGlobal.of(var, p(b), nv(var).p(c));
+				return FunpDefine.of(Fdt.GLOB, var, p(b), nv(var).p(c));
 			}).match("define { .0 } ~ .1", (a, b) -> {
 				var list = Tree.iter(a, Tree::decompose).map(this::kv).collect();
 				var variables1 = list.fold(variables, (vs, pair) -> vs.add(pair.t0));
@@ -294,7 +294,7 @@ public class P0Parse {
 			var else_ = p(d);
 			var f0 = new Bind(vars).bind(be, value, then, else_);
 			var f1 = FunpCheckType.of(be, value, f0);
-			return vars.streamlet().<Funp> fold(f1, (f, var) -> FunpDefine.of(false, var, FunpDontCare.of(), f));
+			return vars.streamlet().<Funp> fold(f1, (f, var) -> FunpDefine.of(Fdt.MONO, var, FunpDontCare.of(), f));
 		}
 
 		private Parse nv(String var) {

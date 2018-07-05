@@ -12,6 +12,7 @@ define unmap := (length, pointer) =>
 ~
 
 let.global alloc.pointer := map 32768 ~
+let.global alloc.free.chain := 0 ~
 
 define alloc := size =>
 	io.asm (EBX = address alloc.pointer; ECX = size;) { MOV (EAX, `EBX`); ADD (`EBX`, ECX); }

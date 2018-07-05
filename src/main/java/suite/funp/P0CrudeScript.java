@@ -13,6 +13,7 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
@@ -73,7 +74,7 @@ public class P0CrudeScript {
 				}).match("statement1 (.0,)", a -> {
 					return stmt(a);
 				}).match("statement-block (statement-let (bind (<IDENTIFIER> .0,), .1,), .2)", (a, b, c) -> {
-					return FunpDefine.of(false, Str.str(a), expr(b), stmt(c));
+					return FunpDefine.of(Fdt.MONO, Str.str(a), expr(b), stmt(c));
 				}).match("statement-block (.0,)", a -> {
 					return stmt(a);
 				}).match("statement-if (.0, .1, .2,)", (a, b, c) -> {
