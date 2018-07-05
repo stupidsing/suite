@@ -19,7 +19,7 @@ define alloc := size =>
 ~
 
 define dealloc := (size, pointer) =>
-	io.asm (EBX = size; ECX = pointer;) {}
+	io.asm (EAX = pointer; EBX = address alloc.free.chain;) { MOV (`EAX`, EBX); }
 ~
 
 define new.pool := length =>
