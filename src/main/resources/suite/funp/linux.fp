@@ -32,7 +32,7 @@ define new.pool := length =>
 ~
 
 define create.mut.number := init =>
-	type init = 0 ~
+	type init = number ~
 	let size := size.of init ~
 	let pointer := alloc size ~
 	let destroy := {} => dealloc (size, pointer) ~
