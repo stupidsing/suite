@@ -15,6 +15,8 @@ let.global alloc.pointer := map 32768 ~
 let.global alloc.free.chain := 0 ~
 
 define alloc := size =>
+	io.let pointer := alloc.pointer ~
+	let pointer.block := pointer + 4 ~
 	io.asm (EBX = address alloc.pointer; ECX = size;) { MOV (EAX, `EBX`); ADD (`EBX`, ECX); }
 ~
 
