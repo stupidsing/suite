@@ -6,7 +6,7 @@ define map := length =>
 ~
 
 define unmap := (length, pointer) =>
-	--type pointer = address (array buffer.size * byte) ~
+	--type pointer = address (array byte * buffer.size) ~
 	type pointer = io number ~
 	io.asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
 ~
@@ -47,17 +47,17 @@ define create.mut.number := init =>
 ~
 
 define read := (pointer, length) =>
-	type pointer = address (array buffer.size * byte) ~
+	type pointer = address (array byte * buffer.size) ~
 	io.asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
 define write := (pointer, length) =>
-	type pointer = address (array buffer.size * byte) ~
+	type pointer = address (array byte * buffer.size) ~
 	io.asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
 define get.char := {} =>
-	let.global buffer := (array buffer.size * byte) ~
+	let.global buffer := (array byte * buffer.size) ~
 	let.global start-end := (0, 0) ~
 	io start-end =>
 	io.concat.map (s0, e0) =>
@@ -76,7 +76,7 @@ define get.char := {} =>
 ~
 
 define cat := io.fold 1 (n => n != 0) (n =>
-	let buffer := array buffer.size * byte ~
+	let buffer := array byte * buffer.size ~
 	let pointer := address buffer ~
 	read (pointer, buffer.size) =>
 	io.concat.map nBytesRead => write (pointer, nBytesRead) =>
