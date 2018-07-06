@@ -7,7 +7,7 @@ define map := length =>
 	io.asm (EAX = 90; EBX = address ps;) { INT (-128); }
 ~
 
-define unmap := (length, pointer) =>
+define unmap (length, pointer) :=
 	--type pointer = address (array byte * buffer.size) ~
 	type pointer = io number ~
 	io.asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
