@@ -148,21 +148,21 @@ public class P0Parse {
 				return consult(Str.str(a));
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
 				if (a instanceof Atom) {
-					var var = Atom.name(a);
-					return FunpDefine.of(Fdt.POLY, var, p(b), nv(var).p(c));
+					var vn = Atom.name(a);
+					return FunpDefine.of(Fdt.POLY, vn, p(b), nv(vn).p(c));
 				} else
 					return null;
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
-				var var = isVar(a) ? Atom.name(a) : null;
-				if (var != null)
-					return FunpDefine.of(Fdt.MONO, var, p(b), nv(var).p(c));
+				var vn = isVar(a) ? Atom.name(a) : null;
+				if (vn != null)
+					return FunpDefine.of(Fdt.MONO, vn, p(b), nv(vn).p(c));
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 				else
 					return bind(a, b, c);
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
-				var var = Atom.name(a);
-				return FunpDefine.of(Fdt.GLOB, var, p(b), nv(var).p(c));
+				var vn = Atom.name(a);
+				return FunpDefine.of(Fdt.GLOB, vn, p(b), nv(vn).p(c));
 			}).match("define ({ .0 }) ~ .1", (a, b) -> {
 				var list = Tree.iter(a, Tree::decompose).map(this::kv).collect();
 				var variables1 = list.fold(variables, (vs, pair) -> vs.add(pair.t0));
@@ -196,15 +196,15 @@ public class P0Parse {
 			}).match("io.assign .0 := .1 ~ .2", (a, b, c) -> {
 				return FunpIoAssignRef.of(FunpReference.of(FunpVariable.of(Atom.name(a))), p(b), p(c));
 			}).match("io.let .0 := .1 ~ .2", (a, b, c) -> {
-				String var;
+				String vn;
 				Funp f;
 				if (isVar(a))
-					f = nv(var = Atom.name(a)).p(c);
+					f = nv(vn = Atom.name(a)).p(c);
 				else {
-					var = "l$" + Util.temp();
-					f = nv(var).bind(a, Atom.of(var), c);
+					vn = "l$" + Util.temp();
+					f = nv(vn).bind(a, Atom.of(vn), c);
 				}
-				return FunpApply.of(p(b), FunpIoCat.of(FunpLambda.of(var, f)));
+				return FunpApply.of(p(b), FunpIoCat.of(FunpLambda.of(vn, f)));
 			}).match("io.cat .0", a -> {
 				return FunpIoCat.of(p(a));
 			}).match("io.fold .0 .1 .2", (a, b, c) -> {
@@ -212,15 +212,15 @@ public class P0Parse {
 			}).match("io.map .0", a -> {
 				return FunpIoMap.of(p(a));
 			}).match(".0 => .1", (a, b) -> {
-				String var;
+				String vn;
 				Funp f;
 				if (isVar(a))
-					f = nv(var = Atom.name(a)).p(b);
+					f = nv(vn = Atom.name(a)).p(b);
 				else {
-					var = "l$" + Util.temp();
-					f = nv(var).bind(a, Atom.of(var), b);
+					vn = "l$" + Util.temp();
+					f = nv(vn).bind(a, Atom.of(vn), b);
 				}
-				return FunpLambda.of(var, f);
+				return FunpLambda.of(vn, f);
 			}).match("number", () -> {
 				return FunpNumber.of(IntMutable.nil());
 			}).applyIf(Int.class, n -> {
@@ -244,8 +244,8 @@ public class P0Parse {
 			}).applyTree((op, l, r) -> {
 				return FunpTree.of(op, p(l), p(r));
 			}).applyIf(Atom.class, atom -> {
-				var var = atom.name;
-				return variables.contains(var) ? FunpVariable.of(var) : FunpVariableNew.of(var);
+				var vn = atom.name;
+				return variables.contains(vn) ? FunpVariable.of(vn) : FunpVariableNew.of(vn);
 			}).nonNullResult();
 		}
 
