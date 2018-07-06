@@ -76,7 +76,7 @@ public class P0Parse {
 	private Inspect inspect = Singleton.me.inspect;
 
 	public Funp parse(Node node0) {
-		var node1 = new Expand(IMap.empty()).expand(node0);
+		var node1 = new Expand(IMap.empty()).e(node0);
 		return new Parse(ISet.empty()).p(node1);
 	}
 
@@ -87,12 +87,12 @@ public class P0Parse {
 			this.macros = macros;
 		}
 
-		private Node expand(Node node) {
+		private Node e(Node node) {
 			Node[] m;
 
 			if ((m = Suite.pattern("expand .0 := .1 ~ .2").match(node)) != null) {
 				var head = m[0];
-				return new Expand(macros.put(Prototype.of(head), new Node[] { head, m[1], })).expand(m[2]);
+				return new Expand(macros.put(Prototype.of(head), new Node[] { head, m[1], })).e(m[2]);
 			} else if ((m = macros.get(Prototype.of(node))) != null) {
 				var g = new Generalizer();
 				var t0_ = g.generalize(m[0]);
@@ -100,18 +100,15 @@ public class P0Parse {
 				var trail = new Trail();
 
 				if (Binder.bind(node, t0_, trail))
-					return expand(t1_);
+					return e(t1_);
 				else
 					trail.unwindAll();
 			} else if ((m = Suite.pattern(".0 {.1}").match(node)) != null && m[0] != Atom.NIL)
-				return Suite.substitute(".0 ({.1})", expand(m[0]), expand(m[1]));
+				return Suite.substitute(".0 ({.1})", e(m[0]), e(m[1]));
 
 			var tree = Tree.decompose(node);
 
-			if (tree != null)
-				return Tree.of(tree.getOperator(), expand(tree.getLeft()), expand(tree.getRight()));
-			else
-				return node;
+			return tree != null ? Tree.of(tree.getOperator(), e(tree.getLeft()), e(tree.getRight())) : node;
 		}
 	}
 
