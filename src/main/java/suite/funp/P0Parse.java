@@ -124,8 +124,8 @@ public class P0Parse {
 			).match(".0 | .1", (a, b) -> {
 				return FunpApply.of(p(a), p(b));
 			}).match(".0 .1", (a, b) -> {
-				var name = a instanceof Atom ? Atom.name(a) : null;
-				return name != null && variables.contains(name) ? FunpApply.of(p(b), p(a)) : null;
+				var vn = a instanceof Atom ? Atom.name(a) : null;
+				return vn != null && variables.contains(vn) ? FunpApply.of(p(b), p(a)) : null;
 			}).match("[.0]", a -> {
 				return FunpArray.of(Tree.iter(a).map(this::p).toList());
 			}).match(Atom.FALSE, () -> {
@@ -147,19 +147,13 @@ public class P0Parse {
 			}).match("consult .0", a -> {
 				return consult(Str.str(a));
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
-				if (a instanceof Atom) {
-					var vn = Atom.name(a);
-					return FunpDefine.of(Fdt.POLY, vn, p(b), nv(vn).p(c));
-				} else
-					return null;
+				var vn = a instanceof Atom ? Atom.name(a) : null;
+				return vn != null ? FunpDefine.of(Fdt.POLY, vn, p(b), nv(vn).p(c)) : null;
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
 				var vn = isVar(a) ? Atom.name(a) : null;
-				if (vn != null)
-					return FunpDefine.of(Fdt.MONO, vn, p(b), nv(vn).p(c));
+				return vn != null ? FunpDefine.of(Fdt.MONO, vn, p(b), nv(vn).p(c)) : bind(a, b, c);
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
-				else
-					return bind(a, b, c);
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
 				var vn = Atom.name(a);
 				return FunpDefine.of(Fdt.GLOB, vn, p(b), nv(vn).p(c));
