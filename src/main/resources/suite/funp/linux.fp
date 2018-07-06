@@ -19,13 +19,16 @@ let.global alloc.free.chain := 0 ~
 -- minimum size is 4
 define alloc size :=
 	--define {
-	--	alloc.chain chain :=
+	--	alloc.chain pointer :=
+	--		io.let chain := io.peek pointer ~
 	--		if (chain != 0) then (
 	--			io.let bs := io.peek chain ~
+	--			let chain4 := chain + 4 ~
 	--			if (bs < size) then (
-	--				io.let chain1 := io.peek (chain + 4) ~
-	--				alloc.chain chain1
+	--				alloc.chain chain4
 	--			) else (
+	--				io.let chain1 := io.peek chain4 ~
+	--				io.let _ := io.poke (pointer, chain1) ~
 	--				io chain
 	--			)
 	--		) else (
@@ -33,7 +36,7 @@ define alloc size :=
 	--		)
 	--	~
 	--} ~
-	--io.let p0 := alloc.chain alloc.free.chain ~
+	--io.let p0 := alloc.chain (address alloc.free.chain) ~
 	--if (p0 = 0) then (
 		io.let _ := if (alloc.pointer = 0) then (
 			io.let p := map 32768 ~
