@@ -23,7 +23,7 @@ public class FunpTest {
 		test(0, "define a := [0, 1,] ~ if (`[1, v,]` = a) then v else 0");
 		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`{ a, b: v, c, }` = s) then v else 0");
 		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`{ c, a, b: v, }` = s) then v else 0");
-		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`address ({ a, b: v, c, })` = address s) then v else 0");
+		test(2, "define s := { a: 1, b: 2, c: 3, } ~ if (`address { a, b: v, c, }` = address s) then v else 0");
 	}
 
 	@Test

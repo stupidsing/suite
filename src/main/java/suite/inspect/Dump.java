@@ -3,7 +3,6 @@ package suite.inspect;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -239,16 +238,20 @@ public class Dump {
 		}.d(prefix, object);
 	}
 
-	private static List<Pair<String, Callable<Object>>> readers(Object object) {
+	private static Streamlet<Pair<String, Callable<Object>>> readers(Object object) {
 		var clazz = object.getClass();
 
-		return Streamlet.concat( //
-				inspect.fields(clazz).map(f -> Pair.<String, Callable<Object>> of(f.getName(), () -> f.get(object))), //
-				inspect.getters(clazz).map(m -> Pair.<String, Callable<Object>> of(m.getName() + "()", () -> {
-					var o_ = m.invoke(object);
-					return !(o_ instanceof Class<?>) ? o_ : null;
-				}))) //
-				.toList();
+		var fields = inspect.fields(clazz).map(f -> Pair.<String, Callable<Object>> of(f.getName(), () -> f.get(object)));
+
+		var getters = inspect.getters(clazz).map(m -> Pair.<String, Callable<Object>> of(m.getName() + "()", () -> {
+			var o_ = m.invoke(object);
+			return !(o_ instanceof Class<?>) ? o_ : null;
+		}));
+
+		if (Boolean.TRUE)
+			return Streamlet.concat(fields, getters);
+		else
+			return fields;
 	}
 
 }

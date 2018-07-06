@@ -103,7 +103,8 @@ public class P0Parse {
 					return expand(t1_);
 				else
 					trail.unwindAll();
-			}
+			} else if ((m = Suite.pattern(".0 {.1}").match(node)) != null && m[0] != Atom.NIL)
+				return Suite.substitute(".0 ({.1})", expand(m[0]), expand(m[1]));
 
 			var tree = Tree.decompose(node);
 
@@ -126,7 +127,7 @@ public class P0Parse {
 			).match(".0 | .1", (a, b) -> {
 				return FunpApply.of(p(a), p(b));
 			}).match(".0 .1", (a, b) -> {
-				var name = Atom.name(a);
+				var name = a instanceof Atom ? Atom.name(a) : null;
 				return name != null && variables.contains(name) ? FunpApply.of(p(b), p(a)) : null;
 			}).match("[.0]", a -> {
 				return FunpArray.of(Tree.iter(a).map(this::p).toList());
@@ -165,7 +166,7 @@ public class P0Parse {
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
 				var var = Atom.name(a);
 				return FunpDefine.of(Fdt.GLOB, var, p(b), nv(var).p(c));
-			}).match("define { .0 } ~ .1", (a, b) -> {
+			}).match("define ({ .0 }) ~ .1", (a, b) -> {
 				var list = Tree.iter(a, Tree::decompose).map(this::kv).collect();
 				var variables1 = list.fold(variables, (vs, pair) -> vs.add(pair.t0));
 				var p1 = new Parse(variables1);
@@ -188,7 +189,7 @@ public class P0Parse {
 				return FunpIndex.of(FunpReference.of(p(a)), p(b));
 			}).match("io .0", a -> {
 				return FunpIo.of(p(a));
-			}).match("io.asm .0 {.1}", (a, b) -> {
+			}).match("(io.asm .0) ({.1})", (a, b) -> {
 				return FunpIoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
 					var ma = Suite.pattern(".0 = .1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
@@ -240,10 +241,8 @@ public class P0Parse {
 			}).match("{ .0 }", a -> {
 				return FunpStruct.of(Tree //
 						.iter(a, Tree::decompose) //
-						.map(n -> {
-							var m = kv(n);
-							return Pair.of(m.t0, p(m.t1));
-						}) //
+						.map(this::kv) //
+						.map(kv -> Pair.of(kv.t0, p(kv.t1))) //
 						.toList());
 			}).applyTree((op, l, r) -> {
 				return FunpTree.of(op, p(l), p(r));

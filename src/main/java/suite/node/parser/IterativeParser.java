@@ -110,6 +110,8 @@ public class IterativeParser {
 					var node = section.unwind(null).getRight();
 					if (ch == ']')
 						node = TreeTuple.of(Atom.of("["), node);
+					else if (ch == '}')
+						node = TreeTuple.of(Atom.of("{"), node);
 					add.sink(node);
 				} else
 					Fail.t("cannot parse " + in);

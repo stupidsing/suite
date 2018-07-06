@@ -1,4 +1,6 @@
 expand buffer.size := 256 ~
+expand io.peek .pointer := io.asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
+expand io.poke .pointer .value := io.asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~
 
 define map := length =>
 	let ps := [0, length, 3, 34, -1, 0,] ~
@@ -15,25 +17,29 @@ let.global alloc.pointer := 0 ~
 let.global alloc.free.chain := 0 ~
 
 define alloc := size =>
+	--let alloc.chain := chain =>
+	--	io.let _ := io.peek chain ~
+	--	0
+	--~
 	io.let _ := if (alloc.pointer = 0) then (
 		io.let p := map 32768 ~
 		io.assign alloc.pointer := p ~
-		io ({})
+		io {}
 	) else (
-		io ({})
+		io {}
 	) ~
 	let pointer.head := alloc.pointer ~
 	let pointer.block := pointer.head + 4 ~
 	io.assign alloc.pointer := pointer.block + size ~
-	io.let _ := io.asm (EAX = pointer.head; EBX = size;) { MOV (`EAX`, EBX); } ~
+	io.let _ := io.poke pointer.head size ~
 	io pointer.block
 ~
 
 define dealloc := (size, pointer.block) =>
 	let pointer.head := pointer.block - 4 ~
-	io.let _ := io.asm (EAX = pointer.head; EBX = alloc.free.chain;) { MOV (`EAX`, EBX); } ~
+	io.let _ := io.poke pointer.head alloc.free.chain ~
 	io.assign alloc.free.chain := pointer.head ~
-	io ({})
+	io {}
 ~
 
 define new.pool := length =>
@@ -51,11 +57,11 @@ define create.mut.number := init =>
 	let size := size.of init ~
 	io.let pointer := alloc size ~
 	io.assign ^pointer := init ~
-	io ({
+	io {
 		destroy := {} => dealloc (size, pointer) ~
-		get := {} => io.asm (EBX = pointer;) { MOV (EAX, `EBX`); } ~
-		set := v1 => (io.assign ^pointer := v1 ~ io ({})) ~
-	})
+		get := {} => io.peek pointer ~
+		set := v1 => (io.assign ^pointer := v1 ~ io {}) ~
+	}
 ~
 
 define read := (pointer, length) =>
