@@ -28,7 +28,7 @@ public class IterativeParser {
 
 	private TerminalParser terminalParser;
 	private Operator[] operators;
-	private Operator braceOperator = TermOp.BRACES;
+	private boolean isSpecialBraces = true;
 
 	public IterativeParser(Operator[] operators) {
 		this(Singleton.me.grandContext, operators);
@@ -97,9 +97,9 @@ public class IterativeParser {
 			var data = token.getData();
 			var ch = data.charAt(0);
 
-			if (operator != null) {
+			if (operator != null && (operator != TermOp.BRACES || isSpecialBraces)) {
 				addOperator.sink(operator);
-				if (operator == braceOperator)
+				if (operator == TermOp.BRACES)
 					stack.push(new Section('{'));
 			} else if (ch == '(' || ch == '[' || ch == '{')
 				stack.push(new Section(ch));
