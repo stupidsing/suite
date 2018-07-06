@@ -176,7 +176,7 @@ public class Formatter {
 		Node[] m;
 		if ((m = CustomStyles.patBrace.match(tree)) != null) {
 			format(m[0], TermOp.getLeftPrec(TermOp.BRACES));
-			sb.append(" {");
+			sb.append("_{");
 			format(m[1], 0);
 			sb.append("}");
 		} else

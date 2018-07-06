@@ -45,7 +45,7 @@ public class FailedTests {
 	// duplicate symbols. Cannot bind again when using is used in a closure
 	@Test
 	public void testClosureUsing() {
-		Suite.noLibraries(() -> Suite.evaluateFun("use MATH ~ (a => (use MATH ~ 1)) {0}", true));
+		Suite.noLibraries(() -> Suite.evaluateFun("use MATH ~ (a => (use MATH ~ 1))_{0}", true));
 	}
 
 	// nPE. Method not found in concatm due to not importing standard library.
@@ -84,7 +84,7 @@ public class FailedTests {
 	// takes forever to type check
 	// @Test
 	public void testRecursiveType() {
-		Suite.evaluateFunType("data (rb-tree {:t}) over :t as (rb-tree {:t}) ~ (:t => rb-tree {:t}) of 1");
+		Suite.evaluateFunType("data (rb-tree_{:t}) over :t as (rb-tree_{:t}) ~ (:t => rb-tree_{:t}) of 1");
 	}
 
 	// takes 11 seconds to type check

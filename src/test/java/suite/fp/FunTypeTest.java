@@ -29,7 +29,7 @@ public class FunTypeTest {
 
 		assertType("number", data //
 				+ "let f := v => if-bind (v := Leaf 1) then 1 else if-bind (v := Link Leaf 2) then 2 else 3 ~ \n" //
-				+ "f {Leaf 1} \n");
+				+ "f_{Leaf 1} \n");
 
 		assertType("number", data //
 				+ "let f := v => \n" //
@@ -37,7 +37,7 @@ public class FunTypeTest {
 				+ "    else if (v = `Link Leaf $i`) then i \n" //
 				+ "    else 0 \n" //
 				+ "~ \n" //
-				+ "f {Link Leaf 3} \n");
+				+ "f_{Link Leaf 3} \n");
 	}
 
 	@Test
@@ -66,22 +66,22 @@ public class FunTypeTest {
 		getType("data Weight as Kg number ~ \n" //
 				+ "let v := Weight of (Kg 1) ~ \n" //
 				+ "v = Kg 99");
-		getType("replicate {23}");
+		getType("replicate_{23}");
 	}
 
 	@Test
 	public void testFail() {
 		String[] cases = { "1 + \"abc\"" //
 				, "2 = true" //
-				, "(f => f {0}) | 1" //
-				, "define fib := i2 => dummy => 1; fib {i2} ~ ()" //
+				, "(f => f_{0}) | 1" //
+				, "define fib := i2 => dummy => 1; fib_{i2} ~ ()" //
 				, "define f := v => (v;) = v ~ f" // cyclic type
 				, "use STANDARD ~ define f := erase-type xyz ~ f" //
 		};
 
-		// there is a problem in deriving type of 1:(fib {i2})...
+		// there is a problem in deriving type of 1:(fib_{i2})...
 		// rule specified that right hand side of CONS should be a list,
-		// however fib {i2} is a closure.
+		// however fib_{i2} is a closure.
 		for (var c : cases)
 			getTypeMustFail(c);
 	}
@@ -103,9 +103,9 @@ public class FunTypeTest {
 	@Test
 	public void testFun() {
 		assertType("number -> number", "a => a + 1");
-		assertType("number", "define f := a => a + 1 ~ f {3}");
+		assertType("number", "define f := a => a + 1 ~ f_{3}");
 		assertType("boolean -> boolean -> boolean", "and");
-		assertType("number -> [number]", "v => v; reverse {1;}");
+		assertType("number -> [number]", "v => v; reverse_{1;}");
 	}
 
 	@Test
@@ -114,11 +114,11 @@ public class FunTypeTest {
 				+ "data (Rb-tree :t) over :t as Empty ~ \n" //
 				+ "define map := (:a => :b => (:a -> :b) -> [:a] -> [:b]) of error () ~ \n" //
 				+ "define add := (:t => :t -> Rb-tree :t) of (v => Empty) ~ \n" //
-				+ "1; | map {add} \n";
+				+ "1; | map_{add} \n";
 		assertType("[Rb-tree number]", fp0);
 
 		var fp1 = "" //
-				+ "define id := (:t => :t -> :t) of (a => a) ~ (id {3} + (id {4;} | head))";
+				+ "define id := (:t => :t -> :t) of (a => a) ~ (id_{3} + (id_{4;} | head))";
 		assertType("number", fp1);
 	}
 
@@ -154,7 +154,7 @@ public class FunTypeTest {
 
 	@Test
 	public void testRbTree() {
-		var fps = "use RB-TREE ~ 0 until 10 | map {dict-insert/ {1}} | apply | {Empty}";
+		var fps = "use RB-TREE ~ 0 until 10 | map_{dict-insert/_{1}} | apply | {Empty}";
 		assertType("Rb-tree (number, number)", fps);
 	}
 

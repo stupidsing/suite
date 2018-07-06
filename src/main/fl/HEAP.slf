@@ -22,14 +22,14 @@ heap0 => heap1 =>
 	|| heap1
 ) ~
 define add := heap => elem =>
-	meld {Tree (elem,)} {heap}
+	meld_{Tree (elem,)}_{heap}
 ~
 define delete-min :=
 	define merge-pairs :=
 		case
-		|| `$h0; $h1; $hs` => meld {meld {h0} {h1}} {merge-pairs {hs}}
+		|| `$h0; $h1; $hs` => meld_{meld_{h0}_{h1}}_{merge-pairs_{hs}}
 		|| `$h;` => h
 		|| anything => error ()
 	~
-	`Tree ($elem, $heap)` => merge-pairs {heap}
+	`Tree ($elem, $heap)` => merge-pairs_{heap}
 ~

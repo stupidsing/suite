@@ -23,17 +23,17 @@ public class CircularProgrammingTest {
 				+ "            case \n " //
 				+ "            || `Leaf $n` => (n, Leaf n1) \n " //
 				+ "            || `Tree ($l, $r)` => \n " //
-				+ "                let `$minl, $l1` := mintree1 {l} ~ \n " //
-				+ "                let `$minr, $r1` := mintree1 {r} ~ \n " //
-				+ "                lesser {minl} {minr}, Tree (l1, r1) \n " //
+				+ "                let `$minl, $l1` := mintree1_{l} ~ \n " //
+				+ "                let `$minr, $r1` := mintree1_{r} ~ \n " //
+				+ "                lesser_{minl}_{minr}, Tree (l1, r1) \n " //
 				+ "            || anything => error () \n " //
 				+ "        # \n " //
-				+ "        n1 := first {mintree1 {t}} # \n " //
-				+ "        t1 := second {mintree1 {t}} # \n " //
+				+ "        n1 := first_{mintree1_{t}} # \n " //
+				+ "        t1 := second_{mintree1_{t}} # \n " //
 				+ "    ) ~ \n " //
 				+ "    t1 \n " //
 				+ "~ \n " //
-				+ "mintree {Tree (Tree (Leaf 1, Leaf 2), Tree (Leaf 3, Tree (Leaf 4, Leaf 5)))} \n ";
+				+ "mintree_{Tree (Tree (Leaf 1, Leaf 2), Tree (Leaf 3, Tree (Leaf 4, Leaf 5)))} \n ";
 		var result = Suite.evaluateFun(fp, true);
 		assertNotNull(result);
 		assertEquals("Tree, (Tree, (Leaf, 1), Leaf, 1), Tree, (Leaf, 1), Tree, (Leaf, 1), Leaf, 1", Formatter.dump(result));

@@ -103,8 +103,7 @@ public class P0Parse {
 					return e(t1_);
 				else
 					trail.unwindAll();
-			} else if ((m = Suite.pattern(".0 {.1}").match(node)) != null && m[0] != Atom.NIL)
-				return Suite.substitute(".0 ({.1})", e(m[0]), e(m[1]));
+			}
 
 			var tree = Tree.decompose(node);
 
@@ -157,7 +156,7 @@ public class P0Parse {
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
 				var vn = Atom.name(a);
 				return FunpDefine.of(Fdt.GLOB, vn, p(b), nv(vn).p(c));
-			}).match("define ({ .0 }) ~ .1", (a, b) -> {
+			}).match("define { .0 } ~ .1", (a, b) -> {
 				var list = Tree.iter(a, Tree::decompose).map(this::kv).collect();
 				var variables1 = list.fold(variables, (vs, pair) -> vs.add(pair.t0));
 				var p1 = new Parse(variables1);
@@ -180,7 +179,7 @@ public class P0Parse {
 				return FunpIndex.of(FunpReference.of(p(a)), p(b));
 			}).match("io .0", a -> {
 				return FunpIo.of(p(a));
-			}).match("(io.asm .0) ({.1})", (a, b) -> {
+			}).match("io.asm .0 {.1}", (a, b) -> {
 				return FunpIoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
 					var ma = Suite.pattern(".0 = .1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));

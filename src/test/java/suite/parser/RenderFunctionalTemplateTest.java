@@ -33,7 +33,7 @@ public class RenderFunctionalTemplateTest {
 						+ "    </head> \n" //
 						+ "    </body> \n" //
 						+ "        Fruits: \n" //
-						+ "<# . (list | apply . map {fruit => id#>        <li><#= fruit #></li> \n" //
+						+ "<# . (list | apply . map_{fruit => id#>        <li><#= fruit #></li> \n" //
 						+ "<#}) #>    <body> \n" //
 						+ "</html> \n", //
 						map));

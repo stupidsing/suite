@@ -17,7 +17,7 @@ public class InterpretFunLazyTest {
 
 	@Test
 	public void testFibonacci() {
-		expect("define fib := (n => if (1 < n) then (fib {n - 1} + fib {n - 2}) else n) ~ fib {12}", Int.of(144));
+		expect("define fib := (n => if (1 < n) then (fib_{n - 1} + fib_{n - 2}) else n) ~ fib_{12}", Int.of(144));
 	}
 
 	@Test
@@ -28,7 +28,7 @@ public class InterpretFunLazyTest {
 
 	@Test
 	public void testNestedFunction() {
-		expect("define inc := (define inc_ := (x => x + 1) ~ inc_) ~ inc {3}", Suite.parse("4"));
+		expect("define inc := (define inc0 := (x => x + 1) ~ inc0) ~ inc_{3}", Suite.parse("4"));
 	}
 
 	private void expect(String expr, Node expected) {

@@ -22,12 +22,12 @@ public class FilterTest {
 
 	@Test
 	public void testMap() {
-		assertEquals("bcdefg", eval("map {`+ 1`}", "abcdef"));
+		assertEquals("bcdefg", eval("map_{`+ 1`}", "abcdef"));
 	}
 
 	@Test
 	public void testSplit() {
-		assertEquals("abc\ndef\nghi", eval("tail . concat . map {cons {10}} . split {32}", "abc def ghi"));
+		assertEquals("abc\ndef\nghi", eval("tail . concat . map_{cons_{10}} . split_{32}", "abc def ghi"));
 	}
 
 	// detects memory usage. Memory leak if there are more than 10000 instances

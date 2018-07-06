@@ -7,23 +7,23 @@ fl (define .var := .value ~ .do) .result
 	, replace .var .value1 .do .do1
 	, fl .do1 .result
 #
-fl (head {.pair}) .result :- !, fl .pair (.result, _) #
-fl (tail {.pair}) .result :- !, fl .pair (_, .result) #
-fl (.fun {$}) .result :- !, fl .fun ($ => .result) #
-fl (.fun {.value}) .result
+fl (head_{.pair}) .result :- !, fl .pair (.result, _) #
+fl (tail_{.pair}) .result :- !, fl .pair (_, .result) #
+fl (.fun_{$}) .result :- !, fl .fun ($ => .result) #
+fl (.fun_{.value}) .result
 	:- !
 	, fl .fun (.var => .do)
 	, replace .var .value .do .do1
 	, fl .do1 .result
 #
 fl (if .if then .then else .else) .result
-	:- fl (.if {$}) true
+	:- fl (.if_{$}) true
 	, !, .result = .then
 	; !. .result = .else
 #
 fl (.a = .b) ($ => .c)
-	:- fl (.a {$}) .a1
-	, fl (.b {$}) .b1
+	:- fl (.a_{$}) .a1
+	, fl (.b_{$}) .b1
 	, bind .a1 .b1
 	, !, .c = true
 	; !, .c = false
@@ -32,8 +32,8 @@ fl .tree ($ => .c)
 	:- tree .tree .a .oper .b
 	, member (' + ', ' - ', ' * ', ' / ', ' %% ',) .oper
 	, !
-	, fl (.a {$}) .a1
-	, fl (.b {$}) .b1
+	, fl (.a_{$}) .a1
+	, fl (.b_{$}) .b1
 	, tree .tree1 .a1 .oper .b1
 	, let .c .tree1
 #

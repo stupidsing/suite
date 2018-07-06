@@ -27,9 +27,9 @@ v =>
 		case
 		|| `Tree ($color, $n0, $pivot, $n1)` =>
 			if (v < pivot) then
-				Tree (color, add0 {n0}, pivot, n1) | balance
+				Tree (color, add0_{n0}, pivot, n1) | balance
 			else-if (pivot < v) then
-				Tree (color, n0, pivot, add0 {n1}) | balance
+				Tree (color, n0, pivot, add0_{n1}) | balance
 			else error ()
 		|| `Empty` =>
 			Tree (cr, Empty, v, Empty)
@@ -41,20 +41,20 @@ v =>
 ) ~
 define rbt-to-list := (:t => Rb-tree :t -> [:t]) of
 	case
-	|| `Tree ($color, $n0, $pivot, $n1)` => concat {rbt-to-list {n0}; (pivot;); rbt-to-list {n1};}
+	|| `Tree ($color, $n0, $pivot, $n1)` => concat_{rbt-to-list_{n0}; (pivot;); rbt-to-list_{n1};}
 	|| `Empty` => ()
 	|| anything => error ()
 ~
 define dict-insert := (:k => :v => :k -> :v -> Rb-tree (:k, :v) -> Rb-tree (:k, :v)) of (
 key => value =>
-	rbt-insert {key, value}
+	rbt-insert_{key, value}
 ) ~
 define dict-get := (:k => :v => :k -> Rb-tree (:k, :v) -> :v) of (
 key =>
 	case
 	|| `Tree ($color, $n0, ($key1, $value1), $n1)` =>
 		if (key != key1) then
-			dict-get {key} {if (key < key1) then n0 else n1}
+			dict-get_{key}_{if (key < key1) then n0 else n1}
 		else
 			value1
 	|| anything => error ()

@@ -5,49 +5,48 @@ define lower := ch => if (65 <= ch && ch <= 90) then (ch + 32) else ch ~
 define upper := ch => if (97 <= ch && ch <= 122) then (ch - 32) else ch ~
 -------------------------------------------------------------------------------
 define camel-case := s =>
-	if (s != "") then (let `$h; $t` := s ~ upper {h}; map {lower} {t}) else s
+	if (s != "") then (let `$h; $t` := s ~ upper_{h}; map_{lower}_{t}) else s
 ~
 define int-to-str := i =>
 	let unsigned-int-to-str :=
 		reverse
-		. map {`+ +'0'`}
-		. unfold-right {i => optional {i != 0} {i % 10, i / 10}}
+		. map_{`+ +'0'`}
+		. unfold-right_{i => optional_{i != 0}_{i % 10, i / 10}}
 	~ i |
 		if (0 < i) then
 			unsigned-int-to-str
 		else-if (i < 0) then
-			append {"-"} . unsigned-int-to-str . `0 -`
+			append_{"-"} . unsigned-int-to-str . `0 -`
 		else
 			anything => "0"
 ~
 define str-to-int := s =>
-	let unsigned-str-to-int := fold-left {v => d => v * 10 + d - 48} {0} ~
-		if (is-list {s} && head {s} = +'-')
+	let unsigned-str-to-int := fold-left_{v => d => v * 10 + d - 48}_{0} ~
+		if (is-list_{s} && head_{s} = +'-')
 		then (`0 -` . unsigned-str-to-int . tail)
-		else unsigned-str-to-int
-	{s}
+		else unsigned-str-to-int_{s}
 ~
 -------------------------------------------------------------------------------
 define dump := (:t => :t -> string) of skip-type-check (
-	define type-of := get%i {atom:INTRN!BasicIntrinsics.typeOf} ~
-	define atom-string := get%i {atom:INTRN!BasicIntrinsics.atomString} ~
+	define type-of := get%i_{atom:INTRN!BasicIntrinsics.typeOf} ~
+	define atom-string := get%i_{atom:INTRN!BasicIntrinsics.atomString} ~
 	let dump0 := prec => n =>
-		let type := call%i-v1 {type-of} {n} ~
+		let type := call%i-v1_{type-of}_{n} ~
 		if (n = ()) then
 			"()"
 		else-if (type = TREE) then
-			concat {dump0 {true} {n | head}; "; "; dump0 {false} {n | tail};}
-			| if prec then (s => concat {"("; s; ")";}) else id
+			concat_{dump0_{true}_{n | head}; "; "; dump0_{false}_{n | tail};}
+			| if prec then (s => concat_{"("; s; ")";}) else id
 		else-if (type = ATOM) then
-			call%i-v1 {atom-string} {n}
+			call%i-v1_{atom-string}_{n}
 		else
-			int-to-str {n}
+			int-to-str_{n}
 	~
-	dump0 {false}
+	dump0_{false}
 ) ~
 define sh := command => in =>
 	do (
-		let `0, $out, $err` := in | popen {"sh"; "-c"; command;} | perform ~
-		out | map {cs-to-string} | concat
+		let `0, $out, $err` := in | popen_{"sh"; "-c"; command;} | perform ~
+		out | map_{cs-to-string} | concat
 	)
 ~

@@ -13,7 +13,7 @@ public class FunRbTreeTest {
 	@Test
 	public void test() {
 		var s = FileUtil.read("src/main/fl/RB-TREE.slf");
-		var fp = s + "0 until 10 | map {rbt-insert} | apply | {Empty}\n";
+		var fp = s + "0 until 10 | map_{rbt-insert} | apply | {Empty}\n";
 		var result = Suite.evaluateFun(fp, false);
 		assertNotNull(result);
 		System.out.println("OUT:\n" + Formatter.dump(result));

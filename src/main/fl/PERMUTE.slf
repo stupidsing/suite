@@ -1,19 +1,19 @@
 use external STANDARD ~
 define combinations :=
 	case
-	|| `$h; $t` => t | combinations | invoke/ | map/ {id; (h | cons | map);} | concat
+	|| `$h; $t` => t | combinations | invoke/ | map/_{id; (h | cons | map);} | concat
 	|| anything => ();
 ~
 define permutations :=
 	let shuffles :=
 		define interleaves := e =>
 			case
-			|| `$h; $t` => t | interleaves {e} | map {cons {h}} | cons {e; h; t}
+			|| `$h; $t` => t | interleaves_{e} | map_{cons_{h}} | cons_{e; h; t}
 			|| anything => (e;);
 		~
 		case
-		|| `$h; $t` => t | shuffles | map {interleaves {h}} | concat
+		|| `$h; $t` => t | shuffles | map_{interleaves_{h}} | concat
 		|| anything => ();
 	~
-	concat . map {shuffles} . combinations
+	concat . map_{shuffles} . combinations
 ~

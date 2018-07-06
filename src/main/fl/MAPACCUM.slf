@@ -2,34 +2,34 @@ use external STANDARD ~
 define mapaccuml := fun => v0 =>
 	case
 	|| `$i; $is` =>
-		let `$v1, $o` := fun {v0} {i} ~
-		let `$vx, $os` := mapaccuml {fun} {v1} {is} ~
+		let `$v1, $o` := fun_{v0}_{i} ~
+		let `$vx, $os` := mapaccuml_{fun}_{v1}_{is} ~
 		vx, (o; os)
 	|| anything => v0, ()
 ~
 define mapaccumr := fun => v0 =>
 	case
 	|| `$i; $is` =>
-		let `$v1, $os` := mapaccumr {fun} {v0} {is} ~
-		let `$vx, $o` := fun {v1} {i} ~
+		let `$v1, $os` := mapaccumr_{fun}_{v0}_{is} ~
+		let `$vx, $o` := fun_{v1}_{i} ~
 		vx, (o; os)
 	|| anything => v0, ()
 ~
 define foldl := fun => value => list =>
-	mapaccuml {v => e => fun {v} {e}, ()} {value} {list} | first
+	mapaccuml_{v => e => fun_{v}_{e}, ()}_{value}_{list} | first
 ~
 define foldr := fun => value => list =>
-	mapaccumr {v => e => fun {e} {v}, ()} {value} {list} | first
+	mapaccumr_{v => e => fun_{e}_{v}, ()}_{value}_{list} | first
 ~
 define mapl := fun => list =>
-	mapaccuml {v => e => v, fun {e}} {} {list} | second
+	mapaccuml_{v => e => v, fun_{e}}_{}_{list} | second
 ~
 define mapr := fun => list =>
-	mapaccumr {v => e => v, fun {e}} {} {list} | second
+	mapaccumr_{v => e => v, fun_{e}}_{}_{list} | second
 ~
 define unfoldl := fun => value => -- unfolds infinitely
-	mapaccuml {v => e => fun {v}} {value} {} | second
+	mapaccuml_{v => e => fun_{v}}_{value}_{} | second
 ~
 define unfoldr := fun => value =>
-	mapaccumr {v => e => fun {v}} {value} {} | second
+	mapaccumr_{v => e => fun_{v}}_{value}_{} | second
 ~

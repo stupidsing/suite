@@ -61,7 +61,7 @@ public class InterpretFunLazy0 {
 					var tp = new Reference();
 					var env1 = env.replace(Atom.name(a), tp);
 					return Suite.substitute("FUN .0 .1", tp, new InferType(env1).infer(b));
-				}).match(".0 {.1}", (a, b) -> {
+				}).match(".0_{.1}", (a, b) -> {
 					var tr = new Reference();
 					bind(Suite.substitute("FUN .0 .1", infer(b), tr), infer(a));
 					return tr;
@@ -150,7 +150,7 @@ public class InterpretFunLazy0 {
 			var vk = Atom.name(a);
 			var value = lazy0(b);
 			return env -> () -> f(in -> () -> value.apply(env.put(vk, in)).get());
-		}).match(".0 {.1}", (a, b) -> {
+		}).match(".0_{.1}", (a, b) -> {
 			var fun = lazy0(a);
 			var param = lazy0(b);
 			return env -> () -> fun(fun.apply(env)).apply(param.apply(env)).get();

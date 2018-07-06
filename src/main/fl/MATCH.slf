@@ -1,11 +1,11 @@
 use external STANDARD ~
 define match := pattern => s =>
-	define splitf := f => s => zip {f . reverse} {heads {s}} {tails {s}} ~
+	define splitf := f => s => zip_{f . reverse}_{heads_{s}}_{tails_{s}} ~
 	case
 	|| (pattern = `+'*'; $pt`)
-		s | splitf {s0 => s1 => match {pt} {s1} | map {cons {s0}}} | concat
+		s | splitf_{s0 => s1 => match_{pt}_{s1} | map_{cons_{s0}}} | concat
 	|| (pattern = `$p; $ps`)
-		if (s = `p; $st`) then (match {ps} {st}) else ()
+		if (s = `p; $st`) then (match_{ps}_{st}) else ()
 	|| (s = "")
 		();
 	|| ()

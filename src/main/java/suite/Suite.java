@@ -61,7 +61,7 @@ public class Suite {
 	}
 
 	public static Node applyStringReader(Node func, Reader reader) {
-		return applyCharsReader(substitute(".0 . concat . map {cs-to-string}", func), reader);
+		return applyCharsReader(substitute(".0 . concat . map_{cs-to-string}", func), reader);
 	}
 
 	public static Node applyCharsReader(Node func, Reader reader) {
@@ -70,11 +70,11 @@ public class Suite {
 	}
 
 	public static Node applyPerform(Node func, Node returnType) {
-		return substitute("(Do^.1 -> any -> .1) of erase-type {.0} {atom:.2}", func, returnType, Atom.temp());
+		return substitute("(Do^.1 -> any -> .1) of erase-type_{.0}_{atom:.2}", func, returnType, Atom.temp());
 	}
 
 	public static Node applyWriter(Node func) {
-		return substitute(".0 | lines | map {cs-from-string}", func);
+		return substitute(".0 | lines | map_{cs-from-string}", func);
 	}
 
 	public static FunCompilerCfg fcc(Node fp) {

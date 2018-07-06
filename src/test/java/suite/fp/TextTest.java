@@ -16,12 +16,12 @@ public class TextTest {
 
 	@Test
 	public void testCamelCase() {
-		assertEquals(eval("\"Text\""), eval("camel-case {\"text\"}"));
+		assertEquals(eval("\"Text\""), eval("camel-case_{\"text\"}"));
 	}
 
 	@Test
 	public void testSh() throws IOException {
-		var node = Suite.applyPerform(Suite.parse("sh {\"git status\"} {}"), Atom.of("any"));
+		var node = Suite.applyPerform(Suite.parse("sh_{\"git status\"}_{}"), Atom.of("any"));
 		var writer = new StringWriter();
 		Suite.evaluateFunToWriter(Suite.fcc(Suite.applyWriter(node)), writer);
 		var out = writer.toString();

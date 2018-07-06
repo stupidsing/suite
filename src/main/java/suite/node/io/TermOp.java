@@ -28,7 +28,7 @@ public enum TermOp implements Operator {
 	DIVIDE(" / ", Assoc.LEFT), //
 	MODULO(" % ", Assoc.LEFT), //
 	POWER_("^", Assoc.RIGHT), //
-	BRACES("{", Assoc.LEFT), //
+	BRACES("_{", Assoc.LEFT), //
 	TUPLE_(" ", Assoc.RIGHT), //
 	ITEM__("/", Assoc.LEFT), //
 	COLON_(":", Assoc.RIGHT), //

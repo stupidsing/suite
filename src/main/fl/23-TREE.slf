@@ -12,7 +12,7 @@ define create-slot := slots =>
 	let `$pivot, $child` := slots | reverse | head ~ pivot, Tree slots
 ~
 define create-root := slots =>
-	if (length {slots} = 1) then
+	if (length_{slots} = 1) then
 		let `$pivot, $child` := slots | head ~ child
 	else
 		Tree slots
@@ -21,77 +21,77 @@ define find-slot :=
 	define find-slot0 := left => key => `$slot; $slots` =>
 		let `$pivot, $child` := slot ~
 		if (pivot < key) then
-			find-slot0 {snoc {left} {slot}} {key} {slots}
+			find-slot0_{snoc_{left}_{slot}}_{key}_{slots}
 		else
 			left, slot, slots
 	~
-	find-slot0 {}
+	find-slot0_{}
 ~
 define find := key => `Tree $slots` =>
-	let `$left, $slot, $right` := find-slot {key} {slots} ~
+	let `$left, $slot, $right` := find-slot_{key}_{slots} ~
 	let `$pivot, $child` := slot ~
-	let found := if (child != Empty) then (find {key} {child}) else pivot ~
+	let found := if (child != Empty) then (find_{key}_{child}) else pivot ~
 	if (key = found) then found else error ()
 ~
 define insert := key =>
 	define add0 := slots0 =>
-		let `$left, $slot, $right` := find-slot {key} {slots0} ~
+		let `$left, $slot, $right` := find-slot_{key}_{slots0} ~
 		let `$pivot, $child` := slot ~
 		let replaceSlots :=
 			if (child != Empty) then
-				let `Tree $childSlots` := child ~ add0 {childSlots}
+				let `Tree $childSlots` := child ~ add0_{childSlots}
 			else-if (key != pivot) then
 				key, Empty; slot;
 			else
 				error ()
 		~
-		let slots1 := concat {left; replaceSlots; right;} ~
-		if (max-branches <= length {slots1}) then
-			let `$ls, $rs` := take-drop {min-branches} {slots1} ~
-			create-slot {ls}; create-slot {rs};
+		let slots1 := concat_{left; replaceSlots; right;} ~
+		if (max-branches <= length_{slots1}) then
+			let `$ls, $rs` := take-drop_{min-branches}_{slots1} ~
+			create-slot_{ls}; create-slot_{rs};
 		else
-			create-slot {slots1};
+			create-slot_{slots1};
 	~
 	`Tree $slots` =>
 	slots | add0 | create-root
 ~
 define remove := key =>
 	define lht := list =>
-		head {list}, tail {list}
+		head_{list}, tail_{list}
 	~
 	define rth := list =>
-		let rev := reverse {list} ~
-		reverse {tail {rev}}, head {rev}
+		let rev := reverse_{list} ~
+		reverse_{tail_{rev}}, head_{rev}
 	~
 	define merge := left => right =>
-		if (max-branches <= length {left} + length {right}) then
-			if (min-branches < length {left}) then
-				let `$left1, $slot` := rth {left} ~
-				create-slot {left1}; create-slot {cons {slot} {right}};
-			else-if (min-branches < length {right}) then
-				let `$slot, $right1` := lht {right} ~
-				create-slot {snoc {left} {slot}}; create-slot {right1};
+		if (max-branches <= length_{left} + length_{right}) then
+			if (min-branches < length_{left}) then
+				let `$left1, $slot` := rth_{left} ~
+				create-slot_{left1}; create-slot_{cons_{slot}_{right}};
+			else-if (min-branches < length_{right}) then
+				let `$slot, $right1` := lht_{right} ~
+				create-slot_{snoc_{left}_{slot}}; create-slot_{right1};
 			else
-				create-slot {left}; create-slot {right};
+				create-slot_{left}; create-slot_{right};
 		else
-			create-slot {left ++ right};
+			create-slot_{left ++ right};
 	~
 	define remove0 := slots0 =>
-		let `$left, ($pivot, $child), $right` := find-slot {key} {slots0} ~
+		let `$left, ($pivot, $child), $right` := find-slot_{key}_{slots0} ~
 		if (child != Empty) then
 			let `Tree $childSlots` := child ~
-			let slots1 := remove0 {childSlots} ~
-			if (length {slots1} < min-branches) then
+			let slots1 := remove0_{childSlots} ~
+			if (length_{slots1} < min-branches) then
 				if (left != ()) then
-					let `$left1, $borrowSlot` := rth {left} ~
-					concat {left1; merge {borrowSlot;} {slots1}; right;}
+					let `$left1, $borrowSlot` := rth_{left} ~
+					concat_{left1; merge_{borrowSlot;}_{slots1}; right;}
 				else-if (right != ()) then
-					let `$borrowSlot, $right1` := lht {right} ~
-					concat {left; merge {slots1} {borrowSlot;}; right1;}
+					let `$borrowSlot, $right1` := lht_{right} ~
+					concat_{left; merge_{slots1}_{borrowSlot;}; right1;}
 				else
-					create-slot {slots1};
+					create-slot_{slots1};
 			else
-				concat {left; slots1; right;}
+				concat_{left; slots1; right;}
 		else-if (key = pivot) then
 			left ++ right
 		else

@@ -16,7 +16,7 @@ ic-erase-type_ (ARRAY .type (.elem0, .array0)) (ARRAYS .size (.elemx, .arrayx))
 ic-erase-type_ (BOOLEAN .b) (NUMBER .b)
 #
 ic-erase-type_ (DECLARE .mp .var .type .do0) (DECLARES .var _ .size .dox)
-	:- dump (type-of {.var} = .mp .type), nl
+	:- dump (type-of_{.var} = .mp .type), nl
 	, ic-type-size .type .size
 	, ic-erase-type .do0 .dox
 #

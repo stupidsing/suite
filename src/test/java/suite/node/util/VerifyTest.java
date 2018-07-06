@@ -139,7 +139,7 @@ public class VerifyTest {
 				return Tree.of(TermOp.NEXT__, a, verify(b));
 			}).match("axiom .0", a -> {
 				return verify(Suite.substitute("true | fulfill .0", a));
-			}).match(".0 | choose {.1}", (a, b) -> {
+			}).match(".0 | choose_{.1}", (a, b) -> {
 				var list = verify(a);
 				for (var node : Tree.iter(list))
 					if (Binder.bind(node, new Generalizer().generalize(b), new Trail()))

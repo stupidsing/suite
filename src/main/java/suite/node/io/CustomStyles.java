@@ -5,7 +5,7 @@ import suite.Suite;
 
 public class CustomStyles {
 
-	public static Pattern patBrace = Suite.pattern(".0 {.1}");
+	public static Pattern patBrace = Suite.pattern(".0_{.1}");
 	public static Pattern patBracket = Suite.pattern("[.0]");
 
 }

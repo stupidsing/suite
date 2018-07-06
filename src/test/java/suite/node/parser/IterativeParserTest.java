@@ -35,8 +35,8 @@ public class IterativeParserTest {
 
 	@Test
 	public void testParseBraces() {
-		test("a {b}");
-		test("a b {c}");
+		test("a_{b}");
+		test("a b_{c}");
 	}
 
 	@Test
@@ -49,7 +49,7 @@ public class IterativeParserTest {
 	@Test
 	public void testParseColons() {
 		test("a:b c:d ():e f:() g", "a:b c:d :e f: g");
-		test("cmp/() {0}", "cmp/ {0}");
+		test("cmp/()_{0}", "cmp/_{0}");
 	}
 
 	@Test

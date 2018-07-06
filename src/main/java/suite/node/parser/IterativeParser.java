@@ -28,20 +28,14 @@ public class IterativeParser {
 
 	private TerminalParser terminalParser;
 	private Operator[] operators;
-	private boolean isSpecialBraces;
 
 	public IterativeParser(Operator[] operators) {
-		this(operators, true);
+		this(Singleton.me.grandContext, operators);
 	}
 
-	public IterativeParser(Operator[] operators, boolean isSpecialBraces) {
-		this(Singleton.me.grandContext, operators, isSpecialBraces);
-	}
-
-	private IterativeParser(Context context, Operator[] operators, boolean isSpecialBraces) {
+	private IterativeParser(Context context, Operator[] operators) {
 		this.operators = operators;
 		terminalParser = new TerminalParser(context);
-		this.isSpecialBraces = isSpecialBraces;
 	}
 
 	private class Section {
@@ -102,7 +96,7 @@ public class IterativeParser {
 			var data = token.getData();
 			var ch = data.charAt(0);
 
-			if (operator != null && (operator != TermOp.BRACES || isSpecialBraces)) {
+			if (operator != null) {
 				addOperator.sink(operator);
 				if (operator == TermOp.BRACES)
 					stack.push(new Section('{'));

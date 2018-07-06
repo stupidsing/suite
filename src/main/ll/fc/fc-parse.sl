@@ -10,7 +10,7 @@ fc-parse .t .parsed
 fc-parse (.var => .do) (FUN .var .do1)
 	:- !, fc-parse .do .do1
 #
-fc-parse (.callee {.parameter}) (APPLY .parameter1 .callee1)
+fc-parse (.callee_{.parameter}) (APPLY .parameter1 .callee1)
 	:- !, fc-parse .callee .callee1
 	, fc-parse .parameter .parameter1
 #
@@ -145,7 +145,7 @@ fc-parse-sugar (case || .bind => .then || .otherwise) .p1
 	, .p1 = (.var =>
 		case
 		|| (.var = .bind) .then
-		|| ((case || .otherwise) {.var})
+		|| ((case || .otherwise)_{.var})
 	)
 #
 fc-parse-sugar (case || .if .then || .otherwise) .p1
@@ -155,17 +155,17 @@ fc-parse-sugar (case || .if .then || .otherwise) .p1
 fc-parse-sugar (case || .p) .p :- !
 #
 fc-parse-sugar (definem .type .mv # .monad) (
-	define .mv := (n^Mutable .type) of (erase-type {atom:.atom}) ~ .monad
+	define .mv := (n^Mutable .type) of (erase-type_{atom:.atom}) ~ .monad
 )
 	:- !, temp .atom
 #
 fc-parse-sugar (do .do) (
 	define fun-to-monad := (:t => (number -> :t) -> Do^:t) of erase-type ~
 	define monad-to-fun := (:t => Do^:t -> (number -> :t)) of erase-type ~
-	fun-to-monad {scope =>
+	fun-to-monad_{scope =>
 		define perform := {scope} . monad-to-fun ~
-		expand getm := getm* {scope} ~
-		expand setm := setm* {scope} ~
+		expand getm := getm*_{scope} ~
+		expand setm := setm*_{scope} ~
 		.do
 	}
 ) :- !
@@ -183,24 +183,24 @@ fc-parse-sugar (let `.binds` := .value ~ .do) (if-bind (.value := .binds) then .
 #
 fc-parse-sugar (let .var := .value ~ .do) (lets (.var := .value #) ~ .do) :- !
 #
-fc-parse-sugar (not .b) (not {.b}) :- !
+fc-parse-sugar (not .b) (not_{.b}) :- !
 #
-fc-parse-sugar (.l && .r) ((and {.l} {.r})) :- !
+fc-parse-sugar (.l && .r) ((and_{.l}_{.r})) :- !
 #
-fc-parse-sugar (.l || .r) (or {.l} {.r}) :- !
+fc-parse-sugar (.l || .r) (or_{.l}_{.r}) :- !
 #
-fc-parse-sugar ({.t}) (.var => .var {.t}) :- !, temp .var
+fc-parse-sugar ({.t}) (.var => .var_{.t}) :- !, temp .var
 #
-fc-parse-sugar (.l . .r) (.var => .l {.r {.var}}) :- !, temp .var
+fc-parse-sugar (.l . .r) (.var => .l_{.r_{.var}}) :- !, temp .var
 #
-fc-parse-sugar (.l | .r) (.r {.l}) :- !
+fc-parse-sugar (.l | .r) (.r_{.l}) :- !
 #
-fc-parse-sugar (.mv := .value # .monad) (setm* {scope} {.mv} {.value} # .monad) :- !
+fc-parse-sugar (.mv := .value # .monad) (setm*_{scope}_{.mv}_{.value} # .monad) :- !
 #
-fc-parse-sugar (.monad #) (perform {.monad}) :- !
+fc-parse-sugar (.monad #) (perform_{.monad}) :- !
 #
-fc-parse-sugar (.monad # .monads0) (perform {seqm {.monad} {.monads1}})
-	:- fc-parse-sugar .monads0 (perform {.monads1}), !
+fc-parse-sugar (.monad # .monads0) (perform_{seqm_{.monad}_{.monads1}})
+	:- fc-parse-sugar .monads0 (perform_{.monads1}), !
 #
 fc-parse-sugar (.var as .type => .do) (.var1 => (define .var :=  .type of .var1 ~ .do))
 	:- !, temp .var1
@@ -210,11 +210,11 @@ fc-parse-sugar (`.bind` => .do) (.var => (if-bind (.var := .bind) then .do else 
 #
 fc-parse-sugar .a (.a atom:()) :- fc-is-atom .a, !
 #
-fc-parse-sugar (.a ++ .b) (append {.a} {.b}) :- !
+fc-parse-sugar (.a ++ .b) (append_{.a}_{.b}) :- !
 #
-fc-parse-sugar (.s until .e) (range {.s} {.e} {1}) :- !
+fc-parse-sugar (.s until .e) (range_{.s}_{.e}_{1}) :- !
 #
-fc-parse-sugar (.f/) (flip {.f}) :- !
+fc-parse-sugar (.f/) (flip_{.f}) :- !
 #
 fc-parse-sugar "" () :- !
 #
