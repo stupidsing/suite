@@ -88,8 +88,8 @@ public class FunpTest {
 
 	@Test
 	public void testRecurse() {
-		test(1, "define { dec n := if (0 < n) then (n - 1 | dec) else 1 ~ } ~ 9999 | dec");
-		test(89, "define { fib n := if (1 < n) then ((n - 1 | fib) + (n - 2 | fib)) else 1 ~ } ~ 10 | fib");
+		test(1, "define { dec n := if (0 < n) then (dec (n - 1)) else 1 ~ } ~ 9999 | dec");
+		test(89, "define { fib n := if (1 < n) then (fib (n - 1) + fib (n - 2)) else 1 ~ } ~ 10 | fib");
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class FunpTest {
 
 	@Test
 	public void testReturnArray() {
-		test(2, "define f i := [0, 1, i,] ~ (predef (2 | f))/:2");
+		test(2, "define f i := [0, 1, i,] ~ (predef (f 2))/:2");
 	}
 
 	@Test
