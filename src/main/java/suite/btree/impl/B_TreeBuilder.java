@@ -20,6 +20,7 @@ import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
+import suite.util.Fail;
 
 public class B_TreeBuilder<Key, Value> {
 
@@ -129,6 +130,8 @@ public class B_TreeBuilder<Key, Value> {
 						page.add(b_tree.new KeyPointer(key, b_tree.new Payload(pointer1)));
 					} else if (nodeType == TERMINAL)
 						page.add(b_tree.new KeyPointer(key, b_tree.new Terminal()));
+					else
+						Fail.t();
 				}
 
 				return page;
@@ -152,6 +155,8 @@ public class B_TreeBuilder<Key, Value> {
 						so.writeInt(kp.getPayloadPointer());
 					} else if (kp.pointer instanceof B_TreeImpl.Terminal)
 						so.writeChar(TERMINAL);
+					else
+						Fail.t();
 				}
 			}
 		};
