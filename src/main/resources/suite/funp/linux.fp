@@ -16,28 +16,45 @@ define unmap := (length, pointer) =>
 let.global alloc.pointer := 0 ~
 let.global alloc.free.chain := 0 ~
 
+-- minimum size is 4
 define alloc size :=
-	--let alloc.chain := chain =>
-	--	io.let _ := io.peek chain ~
-	--	0
-	--~
-	io.let _ := if (alloc.pointer = 0) then (
-		io.let p := map 32768 ~
-		io.assign alloc.pointer := p ~
-		io {}
-	) else (
-		io {}
-	) ~
-	let pointer.head := alloc.pointer ~
-	let pointer.block := pointer.head + 4 ~
-	io.assign alloc.pointer := pointer.block + size ~
-	io.let _ := io.poke pointer.head size ~
-	io pointer.block
+	--define {
+	--	alloc.chain chain :=
+	--		if (chain != 0) then (
+	--			io.let bs := io.peek chain ~
+	--			if (bs < size) then (
+	--				io.let chain1 := io.peek (chain + 4) ~
+	--				alloc.chain chain1
+	--			) else (
+	--				io chain
+	--			)
+	--		) else (
+	--			io 0
+	--		)
+	--	~
+	--} ~
+	--io.let p0 := alloc.chain alloc.free.chain ~
+	--if (p0 = 0) then (
+		io.let _ := if (alloc.pointer = 0) then (
+			io.let p := map 32768 ~
+			io.assign alloc.pointer := p ~
+			io {}
+		) else (
+			io {}
+		) ~
+		let pointer.head := alloc.pointer ~
+		let pointer.block := pointer.head + 4 ~
+		io.assign alloc.pointer := pointer.block + size ~
+		io.let _ := io.poke pointer.head size ~
+		io pointer.block
+	--) else (
+	--	io p0
+	--)
 ~
 
 define dealloc (size, pointer.block) :=
 	let pointer.head := pointer.block - 4 ~
-	io.let _ := io.poke pointer.head alloc.free.chain ~
+	io.let _ := io.poke pointer.block alloc.free.chain ~
 	io.assign alloc.free.chain := pointer.head ~
 	io {}
 ~
