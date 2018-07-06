@@ -28,15 +28,20 @@ public class IterativeParser {
 
 	private TerminalParser terminalParser;
 	private Operator[] operators;
-	private boolean isSpecialBraces = true;
+	private boolean isSpecialBraces;
 
 	public IterativeParser(Operator[] operators) {
-		this(Singleton.me.grandContext, operators);
+		this(operators, true);
 	}
 
-	private IterativeParser(Context context, Operator[] operators) {
+	public IterativeParser(Operator[] operators, boolean isSpecialBraces) {
+		this(Singleton.me.grandContext, operators, isSpecialBraces);
+	}
+
+	private IterativeParser(Context context, Operator[] operators, boolean isSpecialBraces) {
 		this.operators = operators;
 		terminalParser = new TerminalParser(context);
+		this.isSpecialBraces = isSpecialBraces;
 	}
 
 	private class Section {
