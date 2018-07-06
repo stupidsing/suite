@@ -33,7 +33,7 @@ import suite.util.To;
  */
 public class Serialize {
 
-	public Serializer<Boolean> boolean_ = ser(si -> si.readByte() == 1, (so, b) -> so.writeByte(b ? -1 : 0)); // 1
+	public Serializer<Boolean> boolean_ = ser(si -> si.readByte() == 1, (so, b) -> so.writeByte(b ? 1 : 0)); // 1
 	public Serializer<Double> double_ = ser(SerInput::readDouble, SerOutput::writeDouble); // 8
 	public Serializer<Float> float_ = ser(SerInput::readFloat, SerOutput::writeFloat); // 4
 	public Serializer<Integer> int_ = ser(SerInput::readInt, SerOutput::writeInt); // 4
