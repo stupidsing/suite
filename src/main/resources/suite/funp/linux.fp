@@ -16,7 +16,7 @@ define unmap := (length, pointer) =>
 let.global alloc.pointer := 0 ~
 let.global alloc.free.chain := 0 ~
 
-define alloc := size =>
+define alloc size :=
 	--let alloc.chain := chain =>
 	--	io.let _ := io.peek chain ~
 	--	0
@@ -35,46 +35,46 @@ define alloc := size =>
 	io pointer.block
 ~
 
-define dealloc := (size, pointer.block) =>
+define dealloc (size, pointer.block) :=
 	let pointer.head := pointer.block - 4 ~
 	io.let _ := io.poke pointer.head alloc.free.chain ~
 	io.assign alloc.free.chain := pointer.head ~
 	io {}
 ~
 
-define new.pool := length =>
+define new.pool length :=
 	let pool := map length ~
 	{
-		destroy := {} => unmap (length, pool) ~
+		destroy {} := unmap (length, pool) ~
 		pool ~
 		length ~
 		start := 0 ~
 	}
 ~
 
-define create.mut.number := init =>
+define create.mut.number init :=
 	type init = number ~
 	let size := size.of init ~
 	io.let pointer := alloc size ~
 	io.assign ^pointer := init ~
 	io {
-		destroy := {} => dealloc (size, pointer) ~
-		get := {} => io.peek pointer ~
-		set := v1 => (io.assign ^pointer := v1 ~ io {}) ~
+		destroy {} := dealloc (size, pointer) ~
+		get {} := io.peek pointer ~
+		set v1 := (io.assign ^pointer := v1 ~ io {}) ~
 	}
 ~
 
-define read := (pointer, length) =>
+define read (pointer, length) :=
 	type pointer = address (array byte * buffer.size) ~
 	io.asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
-define write := (pointer, length) =>
+define write (pointer, length) :=
 	type pointer = address (array byte * buffer.size) ~
 	io.asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
-define get.char := {} =>
+define get.char {} :=
 	let.global buffer := (array byte * buffer.size) ~
 	let.global start-end := (0, 0) ~
 	io.let (s0, e0) := io start-end ~

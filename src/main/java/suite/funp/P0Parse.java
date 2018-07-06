@@ -146,16 +146,15 @@ public class P0Parse {
 			}).match("consult .0", a -> {
 				return consult(Str.str(a));
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
-				var vn = a instanceof Atom ? Atom.name(a) : null;
-				return vn != null ? FunpDefine.of(Fdt.POLY, vn, p(b), nv(vn).p(c)) : null;
+				return define(Fdt.POLY, a, p(b), c);
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
+			}).match("define .0 .1 := .2 ~ .3", (a, b, c, d) -> {
+				return define(Fdt.POLY, a, lambda(b, c), d);
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
-				var vn = isVar(a) ? Atom.name(a) : null;
-				return vn != null ? FunpDefine.of(Fdt.MONO, vn, p(b), nv(vn).p(c)) : bind(a, b, c);
+				return define(Fdt.MONO, a, p(b), c);
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
-				var vn = Atom.name(a);
-				return FunpDefine.of(Fdt.GLOB, vn, p(b), nv(vn).p(c));
+				return define(Fdt.GLOB, a, p(b), c);
 			}).match("define { .0 } ~ .1", (a, b) -> {
 				var list = Tree.iter(a, Tree::decompose).map(this::kv).collect();
 				var variables1 = list.fold(variables, (vs, pair) -> vs.add(pair.t0));
@@ -189,15 +188,7 @@ public class P0Parse {
 			}).match("io.assign .0 := .1 ~ .2", (a, b, c) -> {
 				return FunpIoAssignRef.of(FunpReference.of(FunpVariable.of(Atom.name(a))), p(b), p(c));
 			}).match("io.let .0 := .1 ~ .2", (a, b, c) -> {
-				String vn;
-				Funp f;
-				if (isVar(a))
-					f = nv(vn = Atom.name(a)).p(c);
-				else {
-					vn = "l$" + Util.temp();
-					f = nv(vn).bind(a, Atom.of(vn), c);
-				}
-				return FunpApply.of(p(b), FunpIoCat.of(FunpLambda.of(vn, f)));
+				return FunpApply.of(p(b), FunpIoCat.of(lambda(a, c)));
 			}).match("io.cat .0", a -> {
 				return FunpIoCat.of(p(a));
 			}).match("io.fold .0 .1 .2", (a, b, c) -> {
@@ -205,15 +196,7 @@ public class P0Parse {
 			}).match("io.map .0", a -> {
 				return FunpIoMap.of(p(a));
 			}).match(".0 => .1", (a, b) -> {
-				String vn;
-				Funp f;
-				if (isVar(a))
-					f = nv(vn = Atom.name(a)).p(b);
-				else {
-					vn = "l$" + Util.temp();
-					f = nv(vn).bind(a, Atom.of(vn), b);
-				}
-				return FunpLambda.of(vn, f);
+				return lambda(a, b);
 			}).match("number", () -> {
 				return FunpNumber.of(IntMutable.nil());
 			}).applyIf(Int.class, n -> {
@@ -255,16 +238,31 @@ public class P0Parse {
 				return r1.apply(() -> ReadStream.of(getClass().getResourceAsStream(url)));
 		}
 
+		private Funp define(Fdt t, Node var, Funp value, Node expr) {
+			var vn = isVar(var) ? Atom.name(var) : null;
+			return vn != null ? FunpDefine.of(t, vn, value, nv(vn).p(expr)) : null;
+		}
+
+		private Funp lambda(Node a, Node b) {
+			String vn;
+			Funp f;
+			if (isVar(a))
+				f = nv(vn = Atom.name(a)).p(b);
+			else {
+				vn = "l$" + Util.temp();
+				f = nv(vn).bind(a, Atom.of(vn), b);
+			}
+			return FunpLambda.of(vn, f);
+		}
+
 		private Pair<String, Node> kv(Node n) {
 			Node[] m;
-			if ((m = Suite.pattern(".0 := .1").match(n)) != null || (m = Suite.pattern(".0: .1").match(n)) != null)
+			if ((m = Suite.pattern(".0 .1 := .2").match(n)) != null)
+				return Pair.of(Atom.name(m[0]), Suite.substitute(".0 => .1", m[1], m[2]));
+			else if ((m = Suite.pattern(".0 := .1").match(n)) != null || (m = Suite.pattern(".0: .1").match(n)) != null)
 				return Pair.of(Atom.name(m[0]), m[1]);
 			else
 				return Pair.of(Atom.name(n), n);
-		}
-
-		private boolean isVar(Node v) {
-			return v != dontCare && v instanceof Atom;
 		}
 
 		private Funp bind(Node a, Node b, Node c) {
@@ -288,6 +286,10 @@ public class P0Parse {
 			var f0 = new Bind(vars).bind(be, value, then, else_);
 			var f1 = FunpCheckType.of(be, value, f0);
 			return vars.streamlet().<Funp> fold(f1, (f, var) -> FunpDefine.of(Fdt.MONO, var, FunpDontCare.of(), f));
+		}
+
+		private boolean isVar(Node v) {
+			return v != dontCare && v instanceof Atom;
 		}
 
 		private Parse nv(String var) {

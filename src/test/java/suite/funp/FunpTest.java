@@ -29,12 +29,12 @@ public class FunpTest {
 	@Test
 	public void testCapture() {
 		test(31, "define m := 31 ~ 15 | (n => m)");
-		test(0, "define m := pointer => 0 ~ 1 | (n => 2 | m)");
+		test(0, "define m pointer := 0 ~ 1 | (n => 2 | m)");
 
 		test(0, "" //
-				+ "define f := j => 0 ~ " //
-				+ "define g := j => 0 ~ " //
-				+ "define h := j => 0 ~ " //
+				+ "define f j := 0 ~ " //
+				+ "define g j := 0 ~ " //
+				+ "define h j := 0 ~ " //
 				+ "0 | (i => 0 | f | g | h)");
 	}
 
@@ -53,7 +53,7 @@ public class FunpTest {
 	@Test
 	public void testDefine() {
 		test(4, "define i := 3 ~ i + 1");
-		test(4, "define f := i => i + 1 ~ 3 | f");
+		test(4, "define f i := i + 1 ~ 3 | f");
 		test(1, "let.global a := [0, 1, 2,] ~ a/:1");
 	}
 
@@ -88,8 +88,8 @@ public class FunpTest {
 
 	@Test
 	public void testRecurse() {
-		test(1, "define { dec: (n => if (0 < n) then (n - 1 | dec) else 1), } ~ 9999 | dec");
-		test(89, "define { fib: (n => if (1 < n) then ((n - 1 | fib) + (n - 2 | fib)) else 1), } ~ 10 | fib");
+		test(1, "define { dec n := if (0 < n) then (n - 1 | dec) else 1 ~ } ~ 9999 | dec");
+		test(89, "define { fib n := if (1 < n) then ((n - 1 | fib) + (n - 2 | fib)) else 1 ~ } ~ 10 | fib");
 	}
 
 	@Test
@@ -99,7 +99,7 @@ public class FunpTest {
 
 	@Test
 	public void testReturnArray() {
-		test(2, "define f := i => [0, 1, i,] ~ (predef (2 | f))/:2");
+		test(2, "define f i := [0, 1, i,] ~ (predef (2 | f))/:2");
 	}
 
 	@Test
