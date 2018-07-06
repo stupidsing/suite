@@ -141,7 +141,7 @@ public class Formatter {
 		}).doIf(Str.class, n -> {
 			sb.append(quoteStringIfRequired(n.value));
 		}).doIf(Tree.class, n -> {
-			formatTree(parentPrec, n);
+			formatTree(n, parentPrec);
 		}).doIf(Tuple.class, n -> {
 			sb.append("tuple<");
 			for (var n_ : n.nodes) {
@@ -154,7 +154,7 @@ public class Formatter {
 		}).nonNullResult();
 	}
 
-	private void formatTree(int parentPrec, Tree tree) {
+	private void formatTree(Tree tree, int parentPrec) {
 		if (tree.getOperator() == TermOp.TUPLE_ && tree.getLeft() == Atom.of("[")) {
 			sb.append("[");
 			format(tree.getRight(), 0);
