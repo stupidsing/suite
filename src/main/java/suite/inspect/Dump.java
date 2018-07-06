@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 import suite.adt.pair.Pair;
+import suite.node.Tree;
 import suite.node.util.Singleton;
 import suite.object.MapInterface;
 import suite.object.MapObject_;
@@ -248,7 +249,7 @@ public class Dump {
 			return !(o_ instanceof Class<?>) ? o_ : null;
 		}));
 
-		if (Boolean.TRUE)
+		if (!Tree.class.isAssignableFrom(clazz))
 			return Streamlet.concat(fields, getters);
 		else
 			return fields;
