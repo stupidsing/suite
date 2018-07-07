@@ -24,13 +24,11 @@ define alloc size0 :=
 	--		if (chain != 0) then (
 	--			io.let bs := io.peek chain ~
 	--			let pointer1 := chain + 4 ~
-	--			if (bs != size) then (
-	--				alloc.chain pointer1
-	--			) else (
-	--				io.let chain1 := io.peek pointer1 ~
+	--			case
+	--			|| bs != size => alloc.chain pointer1
+	--			|| io.let chain1 := io.peek pointer1 ~
 	--				io.let _ := io.poke (pointer, chain1) ~
 	--				io chain
-	--			)
 	--		) else (
 	--			io 0
 	--		)
@@ -38,11 +36,10 @@ define alloc size0 :=
 	--} ~
 	--io.let p0 := alloc.chain (address alloc.free.chain) ~
 	--if (p0 = 0) then (
-		io.let pointer.head := if (alloc.pointer != 0) then (
-			io alloc.pointer
-		) else (
-			map 32768
-		) ~
+		io.let pointer.head := case
+		|| alloc.pointer != 0 => io alloc.pointer
+		|| map 32768
+		~
 		let pointer.block := pointer.head + 4 ~
 		io.let _ := io.poke (pointer.head, size) ~
 		io.assign alloc.pointer := pointer.block + size ~
@@ -95,17 +92,14 @@ define get.char {} :=
 	let.global buffer := (array byte * buffer.size) ~
 	let.global start-end := (0, 0) ~
 	io.let (s0, e0) := io start-end ~
-	io.let (s1, e1) := if (s0 < e0) then (
-		io start-end
-	) else (
-		read (address buffer, buffer.size) | io.map (pointer => (0, pointer))
-	) ~
-	if (s1 < e1) then (
+	io.let (s1, e1) := case
+	|| s0 < e0 => io start-end
+	|| read (address buffer, buffer.size) | io.map (pointer => (0, pointer))
+	~
+	case
+	|| s1 < e1 =>
 		io.assign start-end := (s1 + 1, e1) ~
 		io buffer [s0]
-	) else (
-		error
-	)
 ~
 
 define cat := io.fold 1 (n => n != 0) (n =>

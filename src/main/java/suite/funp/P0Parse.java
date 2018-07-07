@@ -176,6 +176,18 @@ public class P0Parse {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
 				return FunpIf.of(p(a), p(b), p(c));
+			}).match("case || .0", a -> {
+				return new Object() {
+					private Funp d(Node n) {
+						Node[] m;
+						if ((m = Suite.pattern(".0 => .1").match(n)) != null)
+							return FunpIf.of(p(m[0]), p(m[1]), FunpError.of());
+						else if ((m = Suite.pattern(".0 => .1 || .2").match(n)) != null)
+							return FunpIf.of(p(m[0]), p(m[1]), d(m[2]));
+						else
+							return p(n);
+					}
+				}.d(a);
 			}).match(".0 [.1]", (a, b) -> {
 				return !isList(b) ? FunpIndex.of(FunpReference.of(p(a)), p(b)) : null;
 			}).match("io .0", a -> {
