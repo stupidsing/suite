@@ -103,8 +103,7 @@ define get.char {} :=
 ~
 
 define cat := io.fold 1 (n => n != 0) (n =>
-	let buffer := array byte * buffer.size ~
-	let pointer := address buffer ~
+	let pointer := address predef (array byte * buffer.size) ~
 	io.let nBytesRead := read (pointer, buffer.size) ~
 	io.let nBytesWrote := write (pointer, nBytesRead) ~
 	io nBytesRead

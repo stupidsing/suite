@@ -136,7 +136,7 @@ public class P2InferType {
 						var ev = "ev$" + Util.temp();
 						evs.add(Pair.of(ev, expr));
 						var var = FunpVariable.of(ev);
-						return FunpIoAssignRef.of(FunpReference.of(var), expr, var);
+						return FunpIoAssignRef.of(FunpReference.of(var), extract(expr), var);
 					})).result();
 				});
 			}
