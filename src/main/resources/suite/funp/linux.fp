@@ -16,18 +16,18 @@ define unmap (length, pointer) :=
 let.global alloc.pointer := 0 ~
 let.global alloc.free.chain := 0 ~
 
--- minimum size is 4
-define alloc size :=
+define alloc size0 :=
+	let size := if (4 < size0) then size0 else 4 ~
 	--define {
 	--	alloc.chain pointer :=
 	--		io.let chain := io.peek pointer ~
 	--		if (chain != 0) then (
 	--			io.let bs := io.peek chain ~
-	--			let chain4 := chain + 4 ~
-	--			if (bs < size) then (
-	--				alloc.chain chain4
+	--			let pointer1 := chain + 4 ~
+	--			if (bs != size) then (
+	--				alloc.chain pointer1
 	--			) else (
-	--				io.let chain1 := io.peek chain4 ~
+	--				io.let chain1 := io.peek pointer1 ~
 	--				io.let _ := io.poke (pointer, chain1) ~
 	--				io chain
 	--			)
@@ -38,17 +38,16 @@ define alloc size :=
 	--} ~
 	--io.let p0 := alloc.chain (address alloc.free.chain) ~
 	--if (p0 = 0) then (
-		io.let _ := if (alloc.pointer = 0) then (
+		io.let pointer.head := if (alloc.pointer = 0) then (
 			io.let p := map 32768 ~
 			io.assign alloc.pointer := p ~
-			io {}
+			io p
 		) else (
-			io {}
+			io alloc.pointer
 		) ~
-		let pointer.head := alloc.pointer ~
 		let pointer.block := pointer.head + 4 ~
-		io.assign alloc.pointer := pointer.block + size ~
 		io.let _ := io.poke (pointer.head, size) ~
+		io.assign alloc.pointer := pointer.block + size ~
 		io pointer.block
 	--) else (
 	--	io p0
