@@ -39,9 +39,7 @@ define alloc size0 :=
 	--io.let p0 := alloc.chain (address alloc.free.chain) ~
 	--if (p0 = 0) then (
 		io.let pointer.head := if (alloc.pointer = 0) then (
-			io.let p := map 32768 ~
-			io.assign alloc.pointer := p ~
-			io p
+			map 32768
 		) else (
 			io alloc.pointer
 		) ~
