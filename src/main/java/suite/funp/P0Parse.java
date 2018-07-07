@@ -124,9 +124,11 @@ public class P0Parse {
 				return FunpApply.of(p(a), p(b));
 			}).match(".0 .1", (a, b) -> {
 				var vn = a instanceof Atom ? Atom.name(a) : null;
-				return vn != null && variables.contains(vn) ? FunpApply.of(p(b), p(a)) : null;
+				var m = Suite.pattern("[.0]").match(b);
+				var isIndex = m != null && 0 < m.length && !isList(m[0]);
+				return vn != null && variables.contains(vn) && !isIndex ? FunpApply.of(p(b), p(a)) : null;
 			}).match("[.0]", a -> {
-				return FunpArray.of(Tree.iter(a).map(this::p).toList());
+				return isList(a) ? FunpArray.of(Tree.iter(a).map(this::p).toList()) : null;
 			}).match(Atom.FALSE, () -> {
 				return FunpBoolean.of(false);
 			}).match(Atom.TRUE, () -> {
@@ -174,8 +176,8 @@ public class P0Parse {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
 				return FunpIf.of(p(a), p(b), p(c));
-			}).match(".0/:.1", (a, b) -> {
-				return FunpIndex.of(FunpReference.of(p(a)), p(b));
+			}).match(".0 [.1]", (a, b) -> {
+				return !isList(b) ? FunpIndex.of(FunpReference.of(p(a)), p(b)) : null;
 			}).match("io .0", a -> {
 				return FunpIo.of(p(a));
 			}).match("io.asm .0 {.1}", (a, b) -> {
@@ -286,6 +288,11 @@ public class P0Parse {
 			var f0 = new Bind(vars).bind(be, value, then, else_);
 			var f1 = FunpCheckType.of(be, value, f0);
 			return vars.streamlet().<Funp> fold(f1, (f, var) -> FunpDefine.of(Fdt.MONO, var, FunpDontCare.of(), f));
+		}
+
+		private boolean isList(Node l) {
+			var tree = Tree.decompose(l, TermOp.AND___);
+			return l == Atom.NIL || tree != null && isList(tree.getRight());
 		}
 
 		private boolean isVar(Node v) {

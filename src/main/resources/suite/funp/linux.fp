@@ -52,7 +52,7 @@ define alloc size0 :=
 	--)
 ~
 
-define dealloc (size, pointer.block) :=
+define dealloc (size0, pointer.block) :=
 	let pointer.head := pointer.block - 4 ~
 	io.let _ := io.poke (pointer.block, alloc.free.chain) ~
 	io.assign alloc.free.chain := pointer.head ~
@@ -102,7 +102,7 @@ define get.char {} :=
 	) ~
 	if (s1 < e1) then (
 		io.assign start-end := (s1 + 1, e1) ~
-		io buffer/:s0
+		io buffer [s0]
 	) else (
 		error
 	)
