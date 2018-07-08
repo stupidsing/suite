@@ -24,20 +24,20 @@ define alloc size0 :=
 			if (chain != 0) then (
 				io.let bs := io.peek chain ~
 				let pointer1 := chain + 4 ~
-	--			case
+				case
 	--			|| bs != size => alloc.chain pointer1
-	--			|| (
+				|| (
 	--				io.let chain1 := io.peek pointer1 ~
 	--				io.let _ := io.poke (pointer, chain1) ~
 					io chain
-	--			)
+				)
 			) else (
 				io 0
 			)
 		~
 	} ~
 	io.let p0 := alloc.chain (address alloc.free.chain) ~
-	--if (p0 = 0) then (
+	if (p0 = 0) then (
 		io.let pointer.head := case
 		|| alloc.pointer != 0 => io alloc.pointer
 		|| map 32768
@@ -46,9 +46,9 @@ define alloc size0 :=
 		io.let _ := io.poke (pointer.head, size) ~
 		io.assign alloc.pointer := pointer.block + size ~
 		io pointer.block
-	--) else (
-	--	io p0
-	--)
+	) else (
+		io p0
+	)
 ~
 
 define dealloc (size0, pointer.block) :=
