@@ -22,16 +22,15 @@ define alloc size0 :=
 		alloc.chain pointer :=
 			io.let chain := io.peek pointer ~
 			if (chain != 0) then (
-	--			io.let bs := io.peek chain ~
-	--			let pointer1 := chain + 4 ~
+				io.let bs := io.peek chain ~
+				let pointer1 := chain + 4 ~
 	--			case
 	--			|| bs != size => alloc.chain pointer1
 	--			|| (
 	--				io.let chain1 := io.peek pointer1 ~
 	--				io.let _ := io.poke (pointer, chain1) ~
-	--				io chain
+					io chain
 	--			)
-				io 0
 			) else (
 				io 0
 			)
