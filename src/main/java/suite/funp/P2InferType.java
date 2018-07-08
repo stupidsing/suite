@@ -129,9 +129,9 @@ public class P2InferType {
 				return inspect.rewrite(n, Funp.class, n_ -> {
 					return n_.sw( //
 					).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
-						return FunpDefine.of(type, var, extractPredefine(value), extract(expr));
+						return FunpDefine.of(type, var, extract(value), extract(expr));
 					})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
-						var pairs1 = Read.from2(pairs0).mapValue(P2InferType.this::extractPredefine).toList();
+						var pairs1 = Read.from2(pairs0).mapValue(this::extract).toList();
 						return FunpDefineRec.of(pairs1, extract(expr));
 					})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 						return FunpLambda.of(var, extractPredefine(expr));
