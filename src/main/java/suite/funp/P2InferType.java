@@ -112,8 +112,7 @@ public class P2InferType {
 		var checks = new ArrayList<Runnable>();
 
 		if (unify.unify(t, new Infer(IMap.empty(), checks).infer(n2))) {
-			for (var check : checks)
-				check.run();
+			checks.forEach(Runnable::run);
 
 			var erase = new Erase(0, IMap.empty());
 			erase.erase(n2); // first pass
