@@ -721,8 +721,8 @@ public class P2InferType {
 		if (!unify.unify(type0, type1))
 			Funp_.fail("" //
 					+ "cannot unify types between:" //
-					+ "\n<<< " + toString(type0) //
-					+ "\n>>> " + toString(type1) //
+					+ "\n:: " + toString(type0) //
+					+ "\n:: " + toString(type1) //
 					+ "\nin " + n.getClass().getSimpleName());
 	}
 

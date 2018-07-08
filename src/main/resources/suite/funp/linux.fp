@@ -18,7 +18,7 @@ let.global alloc.free.chain := 0 ~
 
 define alloc size0 :=
 	let size := if (4 < size0) then size0 else 4 ~
-	--define {
+	define {
 	--	alloc.chain pointer :=
 	--		io.let chain := io.peek pointer ~
 	--		if (chain != 0) then (
@@ -33,7 +33,7 @@ define alloc size0 :=
 	--			io 0
 	--		)
 	--	~
-	--} ~
+	} ~
 	--io.let p0 := alloc.chain (address alloc.free.chain) ~
 	--if (p0 = 0) then (
 		io.let pointer.head := case
