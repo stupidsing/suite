@@ -109,8 +109,12 @@ public class P2InferType {
 		var t = unify.newRef();
 		var n1 = extractPredefine(n0);
 		var n2 = captureLambdas(n1);
+		var checks = new ArrayList<Runnable>();
 
-		if (unify.unify(t, new Infer(IMap.empty()).infer(n2))) {
+		if (unify.unify(t, new Infer(IMap.empty(), checks).infer(n2))) {
+			for (var check : checks)
+				check.run();
+
 			var erase = new Erase(0, IMap.empty());
 			erase.erase(n2); // first pass
 			return erase.erase(n2); // second pass
@@ -213,9 +217,11 @@ public class P2InferType {
 
 	private class Infer {
 		private IMap<String, Pair<Boolean, UnNode<Type>>> env;
+		private List<Runnable> checks;
 
-		private Infer(IMap<String, Pair<Boolean, UnNode<Type>>> env) {
+		private Infer(IMap<String, Pair<Boolean, UnNode<Type>>> env, List<Runnable> checks) {
 			this.env = env;
+			this.checks = checks;
 		}
 
 		private UnNode<Type> infer(Funp n, String var) {
@@ -260,11 +266,11 @@ public class P2InferType {
 				else
 					return Fail.t();
 			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
-				return new Infer(env.replace(var, Pair.of(type == Fdt.POLY, infer(value, var)))).infer(expr);
+				return newEnv(env.replace(var, Pair.of(type == Fdt.POLY, infer(value, var)))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var pairs_ = Read.from(pairs);
 				var env1 = pairs_.fold(env, (e, pair) -> e.put(pair.t0, Pair.of(false, unify.newRef())));
-				var infer1 = new Infer(env1);
+				var infer1 = newEnv(env1);
 				for (var pair : pairs_) {
 					var var = pair.t0;
 					unify(n, env1.get(var).t1, infer1.infer(pair.t1, var));
@@ -293,19 +299,21 @@ public class P2InferType {
 				return TypeIo.of(infer(expr));
 			})).applyIf(FunpIoAsm.class, f -> f.apply((assigns, asm) -> {
 				for (var assign : assigns) {
-					var reg = assign.t0;
+					var size = assign.t0.size;
 					var tp = infer(assign.t1);
-					if (tp.final_() instanceof Type)
-						if (reg.size == getTypeSize(tp))
-							;
+					checks.add(() -> {
+						if (tp.final_() instanceof Type)
+							if (size == getTypeSize(tp))
+								;
+							else
+								Fail.t();
+						else if (size == Funp_.booleanSize)
+							unify(n, typeByte, tp);
+						else if (size == is)
+							unify(n, typeNumber, tp);
 						else
-							return Fail.t();
-					else if (reg.size == Funp_.booleanSize)
-						unify(n, typeByte, tp);
-					else if (reg.size == is)
-						unify(n, typeNumber, tp);
-					else
-						return Fail.t();
+							Fail.t();
+					});
 				}
 				return TypeIo.of(typeNumber);
 			})).applyIf(FunpIoAssignRef.class, f -> f.apply((reference, value, expr) -> {
@@ -343,14 +351,14 @@ public class P2InferType {
 				return te;
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				var tv = unify.newRef();
-				return TypeLambda.of(tv, new Infer(env.replace(var, Pair.of(false, tv))).infer(expr));
+				return TypeLambda.of(tv, newEnv(env.replace(var, Pair.of(false, tv))).infer(expr));
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
 				var tv = unify.newRef();
 				var env0 = IMap.<String, Pair<Boolean, UnNode<Type>>> empty();
 				var env1 = env0 //
 						.replace(capn, Pair.of(false, infer(cap))) //
 						.replace(var, Pair.of(false, tv));
-				return TypeLambda.of(tv, new Infer(env1).infer(expr));
+				return TypeLambda.of(tv, newEnv(env1).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
 				return typeNumber;
 			}).applyIf(FunpReference.class, f -> f.apply(expr -> {
@@ -388,6 +396,10 @@ public class P2InferType {
 			}))).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
 				return Funp_.fail("Undefined variable " + var);
 			})).nonNullResult();
+		}
+
+		private Infer newEnv(IMap<String, Pair<Boolean, UnNode<Type>>> env) {
+			return new Infer(env, checks);
 		}
 	}
 

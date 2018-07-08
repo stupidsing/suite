@@ -20,7 +20,7 @@ define alloc size0 :=
 	let size := if (4 < size0) then size0 else 4 ~
 	define {
 		alloc.chain pointer :=
-	--		io.let chain := io.peek pointer ~
+			io.let chain := io.peek pointer ~
 	--		if (chain != 0) then (
 	--			io.let bs := io.peek chain ~
 	--			let pointer1 := chain + 4 ~
