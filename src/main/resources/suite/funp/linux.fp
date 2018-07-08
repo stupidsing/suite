@@ -27,8 +27,8 @@ define alloc size0 :=
 				case
 	--			|| bs != size => alloc.chain pointer1
 				|| (
-	--				io.let chain1 := io.peek pointer1 ~
-	--				io.let _ := io.poke (pointer, chain1) ~
+					io.let chain1 := io.peek pointer1 ~
+					io.let _ := io.poke (pointer, chain1) ~
 					io chain
 				)
 			) else (
