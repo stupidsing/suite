@@ -293,15 +293,16 @@ public class P2InferType {
 				return TypeIo.of(infer(expr));
 			})).applyIf(FunpIoAsm.class, f -> f.apply((assigns, asm) -> {
 				for (var assign : assigns) {
+					var reg = assign.t0;
 					var tp = infer(assign.t1);
 					if (tp.final_() instanceof Type)
-						if (assign.t0.size == getTypeSize(tp))
+						if (reg.size == getTypeSize(tp))
 							;
 						else
 							return Fail.t();
-					else if (assign.t0.size == Funp_.booleanSize)
+					else if (reg.size == Funp_.booleanSize)
 						unify(n, typeByte, tp);
-					else if (assign.t0.size == is)
+					else if (reg.size == is)
 						unify(n, typeNumber, tp);
 					else
 						return Fail.t();
