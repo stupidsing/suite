@@ -774,7 +774,8 @@ public class P2InferType {
 					try {
 						return new Switch<String>(type.final_() //
 						).applyIf(TypeArray.class, t -> {
-							return toString(t.elementType) + " * " + t.size;
+							var size = t.size;
+							return toString(t.elementType) + " * " + (0 <= size ? size : "_");
 						}).applyIf(TypeIo.class, t -> {
 							return "io " + toString(t.type);
 						}).applyIf(TypeLambda.class, t -> {
