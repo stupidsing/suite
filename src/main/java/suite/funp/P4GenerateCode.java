@@ -516,21 +516,11 @@ public class P4GenerateCode {
 					em.shiftImm(Insn.SHR, opResult = compileIsLoad(rhs), Integer.numberOfTrailingZeros(numRhs));
 
 				if (opResult == null)
-					if (operator == TermOp.DIVIDE) {
-						var opResult_ = isOutSpec ? pop0 : rs.get(eax);
-						Sink<Compile1> sink0 = c1 -> {
-							c1.compileIsSpec(lhs, eax);
-							var opRhs0 = c1.mask(eax).compileIsOp(rhs);
-							var opRhs1 = !(opRhs0 instanceof OpImm) ? opRhs0 : c1.rs.mask(eax, edx).get(is);
-							em.mov(opRhs1, opRhs0);
-							em.mov(edx, amd64.imm(0l));
-							em.emit(amd64.instruction(Insn.IDIV, opRhs1));
-							em.mov(opResult_, eax);
-						};
-						Sink<Compile1> sink1 = rs.contains(eax) ? c1 -> c1.saveRegs(sink0, eax) : sink0;
-						saveRegs(sink1, edx);
-						opResult = opResult_;
-					} else if (operator == TermOp.MINUS_) {
+					if (operator == TermOp.DIVIDE)
+						opResult = compileDivMod(lhs, rhs, eax, edx);
+					else if (operator == TermOp.MODULO)
+						opResult = compileDivMod(lhs, rhs, edx, eax);
+					else if (operator == TermOp.MINUS_) {
 						var pair = compileCommutativeTree(Insn.SUB, assoc, lhs, rhs);
 						if ((opResult = pair.t1) == rhs)
 							em.emit(amd64.instruction(Insn.NEG, opResult));
@@ -550,6 +540,22 @@ public class P4GenerateCode {
 					} else
 						opResult = compileCommutativeTree(insn, assoc, lhs, rhs).t1;
 
+				return opResult;
+			}
+
+			private Operand compileDivMod(Funp lhs, Funp rhs, OpReg r0, OpReg r1) {
+				var opResult = isOutSpec ? pop0 : rs.get(r0);
+				Sink<Compile1> sink0 = c1 -> {
+					c1.compileIsSpec(lhs, eax);
+					var opRhs0 = c1.mask(eax).compileIsOp(rhs);
+					var opRhs1 = !(opRhs0 instanceof OpImm) ? opRhs0 : c1.rs.mask(eax, edx).get(is);
+					em.mov(opRhs1, opRhs0);
+					em.mov(edx, amd64.imm(0l));
+					em.emit(amd64.instruction(Insn.IDIV, opRhs1));
+					em.mov(opResult, r0);
+				};
+				Sink<Compile1> sink1 = rs.contains(r0) ? c1 -> c1.saveRegs(sink0, r0) : sink0;
+				saveRegs(sink1, r1);
 				return opResult;
 			}
 
