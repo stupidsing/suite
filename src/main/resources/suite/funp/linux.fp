@@ -113,7 +113,7 @@ define put.number n :=
 				let div := n / 10 ~
 				let mod := n % 10 ~
 				io.let _ := put.number_ div ~
-				put.char coerce.byte (48 + mod)
+				put.char coerce.byte (mod + 48)
 			) else if (n < 0) then (
 				io.let _ := put.char byte 45 ~
 				put.number_ (0 - n)
