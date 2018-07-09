@@ -24,7 +24,7 @@ public class Unify<T extends UnNode<T>> {
 		}
 	}
 
-	private static class UnRef<T extends UnNode<T>> implements UnNode<T> {
+	private static class UnRef<T extends UnNode<T>> extends AutoObject<UnRef<T>> implements UnNode<T> {
 		private UnNode<T> target = this;
 		private int id = Util.temp();
 

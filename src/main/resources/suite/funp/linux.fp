@@ -81,12 +81,12 @@ define create.mut.number init :=
 ~
 
 define read (pointer, length) :=
-	type pointer = address (array byte * buffer.size) ~
+	type pointer = address (array byte * _) ~
 	io.asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
 define write (pointer, length) :=
-	type pointer = address (array byte * buffer.size) ~
+	type pointer = address (array byte * _) ~
 	io.asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
@@ -102,6 +102,11 @@ define get.char {} :=
 	|| s1 < e1 =>
 		io.assign start-end := (s1 + 1, e1) ~
 		io buffer [s0]
+~
+
+define put.char ch :=
+	let buffer := [ch,] ~
+	write (address buffer, 1)
 ~
 
 define cat := io.fold 1 (n => n != 0) (n =>

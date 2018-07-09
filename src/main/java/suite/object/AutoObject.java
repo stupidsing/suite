@@ -3,9 +3,12 @@ package suite.object;
 import static suite.util.Friends.rethrow;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 
 import suite.adt.IdentityKey;
+import suite.adt.pair.Pair;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
 import suite.streamlet.Streamlet;
@@ -21,21 +24,29 @@ public class AutoObject<T extends AutoObject<T>> extends BaseObject<T> implement
 		return rethrow(() -> {
 			@SuppressWarnings("unchecked")
 			var object = (T) new Object() {
-				private AutoObject<?> clone(AutoObject<?> t0) throws IllegalAccessException {
-					var key = IdentityKey.of(t0);
-					var tx = map.get(key);
-					if (tx == null) {
-						map.put(key, tx = Object_.new_(t0.getClass()));
-						var t1 = (AutoObject<T>) tx;
-						for (var field : t0.fields()) {
-							var v0 = field.get(t0);
-							var v1 = v0 instanceof AutoObject ? clone((AutoObject<?>) v0) : v0;
-							field.set(t1, v1);
+				private Object c_(Object v0) throws IllegalAccessException {
+					if (v0 instanceof AutoObject) {
+						var v1 = (AutoObject<?>) v0;
+						var key = IdentityKey.of(v1);
+						var vx = map.get(key);
+						if (vx == null) {
+							map.put(key, vx = Object_.new_(v1.getClass()));
+							for (var field : v1.fields())
+								field.set(vx, c_(field.get(v1)));
 						}
-					}
-					return tx;
+						return vx;
+					} else if (v0 instanceof Collection) {
+						var v1 = new ArrayList<Object>();
+						for (var c : (Collection<?>) v0)
+							v1.add(c_(c));
+						return v1;
+					} else if (v0 instanceof Pair) {
+						var pair = (Pair<?, ?>) v0;
+						return Pair.of(c_(pair.t0), c_(pair.t1));
+					} else
+						return v0;
 				}
-			}.clone(this);
+			}.c_(this);
 
 			return object;
 		});
