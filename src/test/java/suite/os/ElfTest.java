@@ -42,7 +42,7 @@ public class ElfTest {
 			assertEquals(code, exec.code);
 			assertEquals(input, exec.out);
 		} else { // Windows => interpret assembly
-			var pair = main.compile(code, program);
+			var pair = main.compile(Amd64Interpret.codeStart, program);
 			var interpret = new Amd64Interpret();
 			assertEquals(code, interpret.interpret(pair.t0, pair.t1, bytes));
 			assertEquals(bytes, interpret.out.toBytes());

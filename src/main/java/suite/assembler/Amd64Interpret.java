@@ -28,11 +28,12 @@ import suite.util.To;
 
 public class Amd64Interpret {
 
+	public static int codeStart = 0x00000100;
 	public final BytesBuilder out = new BytesBuilder();
 
 	private IntInt_Obj<IntIntPair> f = (s, p) -> IntIntPair.of(s, s + p);
 
-	private IntIntPair baseNull = IntIntPair.of(0, 0x00000100);
+	private IntIntPair baseNull = IntIntPair.of(0, codeStart);
 	private IntIntPair baseCode = f.apply(baseNull.t1, 0x08000000);
 	private IntIntPair baseData = f.apply(baseCode.t1, 0x08000000);
 	private IntIntPair baseStack = f.apply(baseData.t1, 0x00040000);
