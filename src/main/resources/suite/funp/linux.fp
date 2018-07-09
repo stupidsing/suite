@@ -22,7 +22,8 @@ define alloc size0 :=
 	define {
 		alloc.chain pointer :=
 			io.let chain := io.peek pointer ~
-			if (chain != 0) then (
+			case
+			|| chain != 0 =>
 				io.let bs := io.peek chain ~
 				let pointer1 := chain + 4 ~
 				case
@@ -32,13 +33,12 @@ define alloc size0 :=
 					io.let _ := io.poke (pointer, chain1) ~
 					io chain
 				)
-			) else (
-				io 0
-			)
+			|| io 0
 		~
 	} ~
 	io.let p0 := alloc.chain (address alloc.free.chain) ~
-	if (p0 = 0) then (
+	case
+	|| p0 = 0 =>
 		io.let pointer.head := case
 		|| alloc.pointer != 0 => io alloc.pointer
 		|| map 32768
@@ -47,22 +47,18 @@ define alloc size0 :=
 		io.let _ := io.poke (pointer.head, size) ~
 		io.assign alloc.pointer := pointer.block + size ~
 		io pointer.block
-	) else (
-		io p0
-	)
+	|| io p0
 ~
 
 define dealloc (size0, pointer.block) :=
 	let size := if (4 < size0) then size0 else 4 ~
 	let pointer.head := pointer.block - 4 ~
 	io.let size_ := io.peek pointer.head ~
-	if (size = size_) then (
+	case
+	|| size = size_ =>
 		io.let _ := io.poke (pointer.block, alloc.free.chain) ~
 		io.assign alloc.free.chain := pointer.head ~
 		io {}
-	) else (
-		error
-	)
 ~
 
 define new.pool length :=
@@ -102,7 +98,8 @@ define write.all (pointer, length) :=
 	for (n = length; 0 < n;
 		io.let p1 := io.asm (EAX = pointer; EBX = length; ECX = n;) { ADD (EAX, EBX); SUB (EAX, ECX); } ~
 		io.let n1 := write (coerce.pointer p1, n) ~
-		if (n1 != 0) then (io (n - n1)) else error
+		case
+		|| n1 != 0 => io (n - n1)
 	)
 ~
 
@@ -124,18 +121,16 @@ define put.char ch := write.all (address predef [ch,], 1) ~
 
 define put.number n :=
 	define {
-		put.number_ n :=
-			if (0 < n) then (
+		put.number_ n := case
+			|| 0 < n =>
 				let div := n / 10 ~
 				let mod := n % 10 ~
 				io.let _ := put.number_ div ~
 				put.char coerce.byte (mod + 48)
-			) else if (n < 0) then (
+			|| n < 0 =>
 				io.let _ := put.char byte 45 ~
 				put.number_ (0 - n)
-			) else (
-				io 0
-			)
+			|| io 0
 		~
 	} ~
 	if (n != 0) then (put.number_ n) else (put.char byte 48)
