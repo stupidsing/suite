@@ -32,7 +32,7 @@ public class Amd64Interpret {
 
 	private IntInt_Obj<IntIntPair> f = (s, p) -> IntIntPair.of(s, s + p);
 
-	private IntIntPair baseNull = IntIntPair.of(0, 0);
+	private IntIntPair baseNull = IntIntPair.of(0, 0x00000100);
 	private IntIntPair baseCode = f.apply(baseNull.t1, 0x08000000);
 	private IntIntPair baseData = f.apply(baseCode.t1, 0x08000000);
 	private IntIntPair baseStack = f.apply(baseData.t1, 0x00040000);
@@ -73,7 +73,7 @@ public class Amd64Interpret {
 		mem.order(ByteOrder.LITTLE_ENDIAN);
 		mem.position(posCode.t0);
 		mem.put(code.bs);
-		eip = baseCode.t0;
+		eip = 0;
 		regs[esp] = baseStack.t1 - 16;
 
 		var labels = new IntIntMap();
