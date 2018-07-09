@@ -104,16 +104,15 @@ define get.char {} :=
 		io buffer [s0]
 ~
 
-define put.char ch :=
-	let buffer := [ch,] ~
-	write (address buffer, 1)
-~
+define put.char ch := write (address predef [ch,], 1) ~
 
-define cat := io.fold 1 (n => n != 0) (n =>
-	let pointer := address predef (array byte * buffer.size) ~
-	io.let nBytesRead := read (pointer, buffer.size) ~
-	io.let nBytesWrote := write (pointer, nBytesRead) ~
-	io nBytesRead
-) ~
+define cat :=
+	io.fold 1 (n => n != 0) (n =>
+		let pointer := address predef (array byte * buffer.size) ~
+		io.let nBytesRead := read (pointer, buffer.size) ~
+		io.let nBytesWrote := write (pointer, nBytesRead) ~
+		io nBytesRead
+	)
+~
 
 { cat, map, read, unmap, write, }
