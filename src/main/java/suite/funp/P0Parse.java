@@ -312,7 +312,7 @@ public class P0Parse {
 		}
 
 		private Parse nv(String var) {
-			return new Parse(variables.add(var));
+			return new Parse(variables.replace(var));
 		}
 	}
 
