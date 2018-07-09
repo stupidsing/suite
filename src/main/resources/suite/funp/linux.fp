@@ -53,10 +53,16 @@ define alloc size0 :=
 ~
 
 define dealloc (size0, pointer.block) :=
+	let size := if (4 < size0) then size0 else 4 ~
 	let pointer.head := pointer.block - 4 ~
-	io.let _ := io.poke (pointer.block, alloc.free.chain) ~
-	io.assign alloc.free.chain := pointer.head ~
-	io {}
+	io.let size_ := io.peek pointer.head ~
+	if (size = size_) then (
+		io.let _ := io.poke (pointer.block, alloc.free.chain) ~
+		io.assign alloc.free.chain := pointer.head ~
+		io {}
+	) else (
+		error
+	)
 ~
 
 define new.pool length :=
