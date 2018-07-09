@@ -102,7 +102,7 @@ define write.all (pointer, length) :=
 	for (n = length; 0 < n;
 		io.let p1 := io.asm (EAX = pointer; EBX = length; ECX = n;) { ADD (EAX, EBX); SUB (EAX, ECX); } ~
 		io.let n1 := write (coerce.pointer p1, n) ~
-		if (n != 0) then (io (n - n1)) else error
+		if (n1 != 0) then (io (n - n1)) else error
 	)
 ~
 
