@@ -97,6 +97,15 @@ define write (pointer, length) :=
 	io.asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
+define write.all (pointer, length) :=
+	type pointer = address (array byte * _) ~
+	for (n = length; 0 < n;
+		io.let p1 := io.asm (EAX = pointer; EBX = length; ECX = n;) { ADD (EAX, EBX); SUB (EAX, ECX); } ~
+		io.let n1 := write (coerce.pointer p1, n) ~
+		if (n != 0) then (io (n - n1)) else error
+	)
+~
+
 define get.char {} :=
 	let.global buffer := (array byte * buffer.size) ~
 	let.global start.end := (0, 0) ~
@@ -111,7 +120,7 @@ define get.char {} :=
 		io buffer [s0]
 ~
 
-define put.char ch := write (address predef [ch,], 1) ~
+define put.char ch := write.all (address predef [ch,], 1) ~
 
 define put.number n :=
 	define {
@@ -142,7 +151,7 @@ define cat :=
 	for (n = 1; n != 0;
 		let pointer := address predef (array byte * buffer.size) ~
 		io.let nBytesRead := read (pointer, buffer.size) ~
-		io.let nBytesWrote := write (pointer, nBytesRead) ~
+		io.let _ := write.all (pointer, nBytesRead) ~
 		io nBytesRead
 	)
 ~
