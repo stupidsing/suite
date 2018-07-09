@@ -219,6 +219,15 @@ public class P0Parse {
 				return FunpPredefine.of(p(a));
 			}).match("address .0", a -> {
 				return FunpReference.of(p(a));
+			}).applyIf(Str.class, str -> {
+				var vn = "s$" + Util.temp();
+				var fa = FunpArray.of(To //
+						.chars(str.value) //
+						.streamlet() //
+						.<Funp> map(ch -> FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(ch))) //
+						.snoc(FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(0))) //
+						.toList());
+				return FunpDefine.of(Fdt.GLOB, vn, fa, FunpReference.of(FunpVariable.of(vn)));
 			}).match("array .0 * .1", (a, b) -> {
 				return FunpRepeat.of(b != Atom.of("_") ? Int.num(b) : -1, p(a));
 			}).match("size.of .0", a -> {

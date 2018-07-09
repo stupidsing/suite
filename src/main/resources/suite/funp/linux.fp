@@ -125,6 +125,10 @@ define put.number n :=
 	if (n != 0) then (put.number_ n) else (put.char byte 48)
 ~
 
+define put.string s :=
+	io.fold 0 (i => (^s) [i] != byte 0) (i => (io.let _ := put.char (^s) [i] ~ io (i + 1)))
+~
+
 define cat :=
 	io.fold 1 (n => n != 0) (n =>
 		let pointer := address predef (array byte * buffer.size) ~
