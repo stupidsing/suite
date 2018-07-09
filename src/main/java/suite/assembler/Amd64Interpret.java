@@ -174,6 +174,9 @@ public class Amd64Interpret {
 				case INC:
 					assign.sink(source0 + 1);
 					break;
+				case IMUL:
+					assign.sink(setFlags(source0 * source1));
+					break;
 				case INT:
 					var p0 = regs[eax] & 0xFF;
 					var p1 = regs[ebx];
