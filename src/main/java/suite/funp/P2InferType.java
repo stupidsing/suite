@@ -738,6 +738,33 @@ public class P2InferType {
 					+ "\nin " + n.getClass().getSimpleName());
 	}
 
+	private Type typeOf(Funp n) {
+		return (Type) typeByNode.get(n).final_();
+	}
+
+	private int getTypeSize(UnNode<Type> n) {
+		var result = new Switch<Integer>(n.final_() //
+		).applyIf(TypeArray.class, t -> t.apply((elementType, size) -> {
+			return getTypeSize(elementType) * size;
+		})).applyIf(TypeBoolean.class, t -> {
+			return Funp_.booleanSize;
+		}).applyIf(TypeByte.class, t -> {
+			return 1;
+		}).applyIf(TypeIo.class, t -> t.apply(type -> {
+			return getTypeSize(type);
+		})).applyIf(TypeLambda.class, t -> t.apply((parameterType, returnType) -> {
+			return ps + ps;
+		})).applyIf(TypeNumber.class, t -> {
+			return is;
+		}).applyIf(TypeReference.class, t -> t.apply(type -> {
+			return ps;
+		})).applyIf(TypeStruct.class, t -> t.apply(pairs -> {
+			return Read.from(pairs).toInt(Obj_Int.sum(field -> getTypeSize(field.t1)));
+		})).result();
+
+		return result != null ? result.intValue() : Funp_.fail("cannot get size of type " + toString(n));
+	}
+
 	private String toString(UnNode<Type> type) {
 		var ins = new IdentityHashMap<Object, Boolean>();
 		var aliases = new IdentityHashMap<Object, Character>();
@@ -776,33 +803,6 @@ public class P2InferType {
 					return "<recurse>";
 			}
 		}.toString(type);
-	}
-
-	private Type typeOf(Funp n) {
-		return (Type) typeByNode.get(n).final_();
-	}
-
-	private int getTypeSize(UnNode<Type> n) {
-		var result = new Switch<Integer>(n.final_() //
-		).applyIf(TypeArray.class, t -> t.apply((elementType, size) -> {
-			return getTypeSize(elementType) * size;
-		})).applyIf(TypeBoolean.class, t -> {
-			return Funp_.booleanSize;
-		}).applyIf(TypeByte.class, t -> {
-			return 1;
-		}).applyIf(TypeIo.class, t -> t.apply(type -> {
-			return getTypeSize(type);
-		})).applyIf(TypeLambda.class, t -> t.apply((parameterType, returnType) -> {
-			return ps + ps;
-		})).applyIf(TypeNumber.class, t -> {
-			return is;
-		}).applyIf(TypeReference.class, t -> t.apply(type -> {
-			return ps;
-		})).applyIf(TypeStruct.class, t -> t.apply(pairs -> {
-			return Read.from(pairs).toInt(Obj_Int.sum(field -> getTypeSize(field.t1)));
-		})).result();
-
-		return result != null ? result.intValue() : Funp_.fail("cannot get size of type " + n);
 	}
 
 	private static Unify<Type> unify = new Unify<>();
