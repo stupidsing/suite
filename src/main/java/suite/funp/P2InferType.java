@@ -80,6 +80,7 @@ import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.util.Fail;
 import suite.util.String_;
@@ -109,10 +110,11 @@ public class P2InferType {
 		var t = unify.newRef();
 		var n1 = extractPredefine(n0);
 		var n2 = captureLambdas(n1);
-		var checks = new ArrayList<Runnable>();
+		var checks = new ArrayList<Source<Boolean>>();
 
 		if (unify.unify(t, new Infer(IMap.empty(), checks).infer(n2))) {
-			checks.forEach(Runnable::run);
+			if (!Read.from(checks).isAll(Source<Boolean>::source))
+				Fail.t();
 
 			var erase = new Erase(0, IMap.empty());
 			erase.erase(n2); // first pass
@@ -216,9 +218,9 @@ public class P2InferType {
 
 	private class Infer {
 		private IMap<String, Pair<Boolean, UnNode<Type>>> env;
-		private List<Runnable> checks;
+		private List<Source<Boolean>> checks;
 
-		private Infer(IMap<String, Pair<Boolean, UnNode<Type>>> env, List<Runnable> checks) {
+		private Infer(IMap<String, Pair<Boolean, UnNode<Type>>> env, List<Source<Boolean>> checks) {
 			this.env = env;
 			this.checks = checks;
 		}
@@ -302,16 +304,13 @@ public class P2InferType {
 					var tp = infer(assign.t1);
 					checks.add(() -> {
 						if (tp.final_() instanceof Type)
-							if (size == getTypeSize(tp))
-								;
-							else
-								Fail.t();
+							return size == getTypeSize(tp);
 						else if (size == Funp_.booleanSize)
-							unify(n, typeByte, tp);
+							return unify(n, typeByte, tp);
 						else if (size == is)
-							unify(n, typeNumber, tp);
+							return unify(n, typeNumber, tp);
 						else
-							Fail.t();
+							return Fail.t();
 					});
 				}
 				return TypeIo.of(typeNumber);
@@ -729,13 +728,12 @@ public class P2InferType {
 		}
 	}
 
-	private void unify(Funp n, UnNode<Type> type0, UnNode<Type> type1) {
-		if (!unify.unify(type0, type1))
-			Funp_.fail("" //
-					+ "cannot unify types between:" //
-					+ "\n:: " + toString(type0) //
-					+ "\n:: " + toString(type1) //
-					+ "\nin " + n.getClass().getSimpleName());
+	private boolean unify(Funp n, UnNode<Type> type0, UnNode<Type> type1) {
+		return unify.unify(type0, type1) || Funp_.<Boolean> fail("" //
+				+ "cannot unify types between:" //
+				+ "\n:: " + toString(type0) //
+				+ "\n:: " + toString(type1) //
+				+ "\nin " + n.getClass().getSimpleName());
 	}
 
 	private Type typeOf(Funp n) {
