@@ -92,15 +92,15 @@ define write (pointer, length) :=
 
 define get.char {} :=
 	let.global buffer := (array byte * buffer.size) ~
-	let.global start-end := (0, 0) ~
-	io.let (s0, e0) := io start-end ~
+	let.global start.end := (0, 0) ~
+	io.let (s0, e0) := io start.end ~
 	io.let (s1, e1) := case
-	|| s0 < e0 => io start-end
+	|| s0 < e0 => io start.end
 	|| read (address buffer, buffer.size) | io.map (pointer => (0, pointer))
 	~
 	case
 	|| s1 < e1 =>
-		io.assign start-end := (s1 + 1, e1) ~
+		io.assign start.end := (s1 + 1, e1) ~
 		io buffer [s0]
 ~
 
