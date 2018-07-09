@@ -122,15 +122,15 @@ define put.char ch := write.all (address predef [ch,], 1) ~
 define put.number n :=
 	define {
 		put.number_ n := case
-			|| 0 < n =>
-				let div := n / 10 ~
-				let mod := n % 10 ~
-				io.let _ := put.number_ div ~
-				put.char coerce.byte (mod + 48)
-			|| n < 0 =>
-				io.let _ := put.char byte 45 ~
-				put.number_ (0 - n)
-			|| io 0
+		|| 0 < n =>
+			let div := n / 10 ~
+			let mod := n % 10 ~
+			io.let _ := put.number_ div ~
+			put.char coerce.byte (mod + 48)
+		|| n < 0 =>
+			io.let _ := put.char byte 45 ~
+			put.number_ (0 - n)
+		|| io 0
 		~
 	} ~
 	if (n != 0) then (put.number_ n) else (put.char byte 48)
