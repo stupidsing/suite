@@ -220,7 +220,7 @@ public class P0Parse {
 			}).match("address .0", a -> {
 				return FunpReference.of(p(a));
 			}).match("array .0 * .1", (a, b) -> {
-				return FunpRepeat.of(Int.num(b), p(a));
+				return FunpRepeat.of(b != Atom.of("_") ? Int.num(b) : -1, p(a));
 			}).match("size.of .0", a -> {
 				return FunpSizeOf.of(p(a));
 			}).match(".0, .1", (a, b) -> {
