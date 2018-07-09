@@ -115,8 +115,8 @@ public class Amd64Interpret {
 
 				var op0 = instruction.op0;
 				var op1 = instruction.op1;
-				int source0 = fetch32.apply(op0);
-				int source1 = fetch32.apply(op1);
+				var source0 = fetch32.apply(op0);
+				var source1 = fetch32.apply(op1);
 				IntSink assign;
 				Runnable r;
 
@@ -163,6 +163,13 @@ public class Amd64Interpret {
 					break;
 				case DEC:
 					assign.sink(source0 - 1);
+					break;
+				case IDIV:
+					var n = ((long) regs[edx] << 32) + regs[eax];
+					var div = n / source0;
+					var mod = n % source0;
+					regs[eax] = (int) div;
+					regs[edx] = (int) mod;
 					break;
 				case INC:
 					assign.sink(source0 + 1);

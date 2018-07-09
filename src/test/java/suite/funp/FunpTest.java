@@ -58,6 +58,12 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testDivMod() {
+		test(4, "define { n: 43, d: 10, } ~ n / d");
+		test(4, "define { n: 44, d: 10, } ~ n % d");
+	}
+
+	@Test
 	public void testExpr0() {
 		test(7, "1 + 2 * 3");
 	}
