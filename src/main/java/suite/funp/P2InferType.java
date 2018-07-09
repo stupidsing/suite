@@ -743,7 +743,7 @@ public class P2InferType {
 	private int getTypeSize(UnNode<Type> n) {
 		var result = new Switch<Integer>(n.final_() //
 		).applyIf(TypeArray.class, t -> t.apply((elementType, size) -> {
-			return getTypeSize(elementType) * size;
+			return 0 <= size ? getTypeSize(elementType) * size : Fail.t();
 		})).applyIf(TypeBoolean.class, t -> {
 			return Funp_.booleanSize;
 		}).applyIf(TypeByte.class, t -> {
