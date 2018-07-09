@@ -1,4 +1,5 @@
 expand buffer.size := 256 ~
+expand for (.v = .i; .w; .d) := io.fold .i (.v => .w) (.v => .d) ~
 expand io.peek .pointer := io.asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
 expand io.poke (.pointer, .value) := io.asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~
 
@@ -126,11 +127,13 @@ define put.number n :=
 ~
 
 define put.string s :=
-	io.fold 0 (i => (^s) [i] != byte 0) (i => (io.let _ := put.char (^s) [i] ~ io (i + 1)))
+	for (i = 0; (^s) [i] != byte 0;
+		io.let _ := put.char (^s) [i] ~ io (i + 1)
+	)
 ~
 
 define cat :=
-	io.fold 1 (n => n != 0) (n =>
+	for (n = 1; n != 0;
 		let pointer := address predef (array byte * buffer.size) ~
 		io.let nBytesRead := read (pointer, buffer.size) ~
 		io.let nBytesWrote := write (pointer, nBytesRead) ~
