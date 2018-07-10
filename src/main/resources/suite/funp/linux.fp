@@ -129,13 +129,13 @@ define put.number n :=
 			let mod := n % 10 ~
 			io.perform put.number_ div ~
 			put.char coerce.byte (mod + number '0')
-		|| n < 0 =>
-			io.perform put.char byte '-' ~
-			put.number_ (0 - n)
 		|| io 0
 		~
 	} ~
-	if (n != 0) then (put.number_ n) else (put.char byte '0')
+	case
+	|| 0 < n => put.number_ n
+	|| n < 0 => io.perform put.char byte '-' ~ put.number_ n
+	|| put.char byte '0'
 ~
 
 define put.string s :=
