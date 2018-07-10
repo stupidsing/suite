@@ -133,8 +133,10 @@ define put.number n :=
 		~
 	} ~
 	case
-	|| 0 < n => put.number_ n
-	|| n < 0 => io.perform put.char byte '-' ~ put.number_ n
+	|| 0 < n =>
+		put.number_ n
+	|| n < 0 =>
+		io.perform put.char byte '-' ~ put.number_ n
 	|| put.char byte '0'
 ~
 
