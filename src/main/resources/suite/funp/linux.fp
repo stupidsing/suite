@@ -1,4 +1,5 @@
 expand buffer.size := 256 ~
+expand (assert .check ~ .expr) := case || .check => .expr ~
 expand for (.v = .i; .w; .d) := io.fold .i (.v => .w) (.v => .d) ~
 expand io.peek .pointer := io.asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
 expand io.poke (.pointer, .value) := io.asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~
@@ -57,11 +58,10 @@ define dealloc (size0, pointer.block) :=
 	let size := max (4, size0) ~
 	let pointer.head := pointer.block - 4 ~
 	io.let size_ := io.peek pointer.head ~
-	case
-	|| size = size_ =>
-		io.let _ := io.poke (pointer.block, alloc.free.chain) ~
-		io.assign alloc.free.chain := pointer.head ~
-		io {}
+	assert (size = size_) ~
+	io.let _ := io.poke (pointer.block, alloc.free.chain) ~
+	io.assign alloc.free.chain := pointer.head ~
+	io {}
 ~
 
 define new.pool length :=
@@ -101,8 +101,8 @@ define write.all (pointer, length) :=
 	for (n = length; 0 < n;
 		io.let p1 := io.asm (EAX = pointer; EBX = length; ECX = n;) { ADD (EAX, EBX); SUB (EAX, ECX); } ~
 		io.let n1 := write (coerce.pointer p1, n) ~
-		case
-		|| n1 != 0 => io (n - n1)
+		assert (n1 != 0) ~
+		io (n - n1)
 	)
 ~
 
@@ -114,10 +114,9 @@ define get.char {} :=
 	|| s0 < e0 => io start.end
 	|| read (address buffer, buffer.size) | io.map (pointer => (0, pointer))
 	~
-	case
-	|| s1 < e1 =>
-		io.assign start.end := (s1 + 1, e1) ~
-		io buffer [s0]
+	assert (s1 < e1) ~
+	io.assign start.end := (s1 + 1, e1) ~
+	io buffer [s0]
 ~
 
 define put.char ch := write.all (address predef [ch,], 1) ~
