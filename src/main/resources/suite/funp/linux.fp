@@ -1,6 +1,6 @@
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := case || .check => .expr ~
-expand for (.v = .i; .w; .d) := io.fold .i (.v => .w) (.v => .d) ~
+expand io.for (.v = .i; .w; .d) := io.fold .i (.v => .w) (.v => .d) ~
 expand io.peek .pointer := io.asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
 expand io.poke (.pointer, .value) := io.asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~
 
@@ -98,7 +98,7 @@ define write (pointer, length) :=
 
 define write.all (pointer, length) :=
 	type pointer = address (array byte * _) ~
-	for (n = length; 0 < n;
+	io.for (n = length; 0 < n;
 		io.let p1 := io.asm (EAX = pointer; EBX = length; ECX = n;) { ADD (EAX, EBX); SUB (EAX, ECX); } ~
 		io.let n1 := write (coerce.pointer p1, n) ~
 		assert (n1 != 0) ~
@@ -139,14 +139,14 @@ define put.number n :=
 ~
 
 define put.string s :=
-	for (i = 0; (^s) [i] != byte 0;
+	io.for (i = 0; (^s) [i] != byte 0;
 		io.perform put.char (^s) [i] ~
 		io (i + 1)
 	)
 ~
 
 define cat :=
-	for (n = 1; n != 0;
+	io.for (n = 1; n != 0;
 		let pointer := address predef (array byte * buffer.size) ~
 		io.let nBytesRead := read (pointer, buffer.size) ~
 		io.perform write.all (pointer, nBytesRead) ~
