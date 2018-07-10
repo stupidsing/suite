@@ -64,6 +64,7 @@ import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
+import suite.util.Fail;
 import suite.util.ReadStream;
 import suite.util.Rethrow.SourceEx;
 import suite.util.Switch;
@@ -138,7 +139,9 @@ public class P0Parse {
 			}).match("byte", () -> {
 				return FunpCoerce.of(Coerce.BYTE, FunpDontCare.of());
 			}).match("byte .0", a -> {
-				return FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(Int.num(a)));
+				return FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(num(a)));
+			}).match("number .0", a -> {
+				return FunpNumber.ofNumber(num(a));
 			}).match("coerce.byte .0", a -> {
 				return FunpCoerce.of(Coerce.BYTE, p(a));
 			}).match("coerce.number .0", a -> {
@@ -266,6 +269,16 @@ public class P0Parse {
 			return vn != null ? FunpDefine.of(t, vn, value, nv(vn).p(expr)) : null;
 		}
 
+		private Pair<String, Node> kv(Node n) {
+			Node[] m;
+			if ((m = Suite.pattern(".0 .1 := .2").match(n)) != null)
+				return Pair.of(Atom.name(m[0]), Suite.substitute(".0 => .1", m[1], m[2]));
+			else if ((m = Suite.pattern(".0 := .1").match(n)) != null || (m = Suite.pattern(".0: .1").match(n)) != null)
+				return Pair.of(Atom.name(m[0]), m[1]);
+			else
+				return Pair.of(Atom.name(n), n);
+		}
+
 		private Funp lambda(Node a, Node b) {
 			String vn;
 			Funp f;
@@ -278,14 +291,14 @@ public class P0Parse {
 			return FunpLambda.of(vn, f);
 		}
 
-		private Pair<String, Node> kv(Node n) {
-			Node[] m;
-			if ((m = Suite.pattern(".0 .1 := .2").match(n)) != null)
-				return Pair.of(Atom.name(m[0]), Suite.substitute(".0 => .1", m[1], m[2]));
-			else if ((m = Suite.pattern(".0 := .1").match(n)) != null || (m = Suite.pattern(".0: .1").match(n)) != null)
-				return Pair.of(Atom.name(m[0]), m[1]);
+		private int num(Node a) {
+			var s = a instanceof Atom ? Atom.name(a) : null;
+			if (s != null)
+				return s.length() == 1 ? s.charAt(0) : Fail.t();
+			else if (a instanceof Int)
+				return Int.num(a);
 			else
-				return Pair.of(Atom.name(n), n);
+				return Fail.t();
 		}
 
 		private Funp bind(Node a, Node b, Node c) {
