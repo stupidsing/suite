@@ -172,10 +172,12 @@ public class P2InferType {
 				return n.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
 					Capture c1;
-					if (type != Fdt.GLOB)
+					if (type == Fdt.MONO || type == Fdt.POLY)
 						c1 = new Capture(accesses, locals.add(var), globals);
-					else
+					else if (type == Fdt.GLOB)
 						c1 = new Capture(accesses, locals, globals.add(var));
+					else
+						c1 = Fail.t();
 					return FunpDefine.of(type, var, capture(value), c1.capture(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 					var locals1 = Read.from(vars).fold(locals, (l, pair) -> l.add(pair.t0));
@@ -435,7 +437,7 @@ public class P2InferType {
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
-				if (type != Fdt.GLOB) {
+				if (type == Fdt.MONO || type == Fdt.POLY) {
 					var size = getTypeSize(typeOf(value));
 					var op = Mutable.<Operand> nil();
 					var offset = IntMutable.nil();
@@ -452,13 +454,14 @@ public class P2InferType {
 
 					isRegByNode.putIfAbsent(f, size == is);
 					return n1;
-				} else {
+				} else if (type == Fdt.GLOB) {
 					var size = getTypeSize(typeOf(value));
 					var address = Mutable.<Operand> nil();
 					var e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
 					var expr1 = FunpAssignMem.of(FunpMemory.of(FunpOperand.of(address), 0, size), erase(value), e1.erase(expr));
 					return FunpAllocGlobal.of(var, size, expr1, address);
-				}
+				} else
+					return Fail.t();
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var assigns = new ArrayList<Pair<Var, Funp>>();
 				var offsetStack = IntMutable.nil();
