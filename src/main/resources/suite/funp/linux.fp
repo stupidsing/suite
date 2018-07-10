@@ -13,7 +13,7 @@ define map := length =>
 
 define unmap (length, pointer) :=
 	--type pointer = address (array byte * buffer.size) ~
-	type pointer = io number ~
+	type pointer = number ~
 	io.asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
 ~
 
@@ -64,8 +64,8 @@ define dealloc (size0, pointer.block) :=
 ~
 
 define new.pool length :=
-	let pool := map length ~
-	{
+	io.let pool := map length ~
+	io {
 		destroy {} := unmap (length, pool) ~
 		pool ~
 		length ~
