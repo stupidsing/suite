@@ -31,14 +31,15 @@ public class P1Inline {
 
 	private Inspect inspect = Singleton.me.inspect;
 
-	public Funp inline(Funp node, int rounds, int f0, int f1, int f2, int f3) {
+	public Funp inline(Funp node, int rounds, int f0, int f1, int f2, int f3, int f4) {
 		node = renameVariables(node);
 
 		for (var i = 0; i < rounds; i++) {
-			node = 0 < f0 ? inlineDefineAssigns(node) : node;
-			node = 0 < f1 ? inlineDefines(node) : node;
-			node = 0 < f2 ? inlineFields(node) : node;
-			node = 0 < f3 ? inlineLambdas(node) : node;
+			node = 0 < f0 ? inlineApplies(node) : node;
+			node = 0 < f1 ? inlineDefineAssigns(node) : node;
+			node = 0 < f2 ? inlineDefines(node) : node;
+			node = 0 < f3 ? inlineFields(node) : node;
+			node = 0 < f4 ? inlineLambdas(node) : node;
 		}
 
 		return node;
@@ -89,6 +90,24 @@ public class P1Inline {
 		}
 
 		return new Rename(IMap.empty()).rename(node);
+	}
+
+	// Before - 0 | (i => i + 1)
+	// After - let i := 0 ~ 0 + 1
+	private Funp inlineApplies(Funp node) {
+		return new Object() {
+			private Funp inline(Funp node_) {
+				return inspect.rewrite(node_, Funp.class, n0 -> {
+					FunpApply apply;
+					FunpLambda lambda;
+					if ((apply = n0.cast(FunpApply.class)) != null //
+							&& (lambda = apply.value.cast(FunpLambda.class)) != null)
+						return FunpDefine.of(Fdt.MONO, lambda.var, inline(apply.value), inline(lambda.expr));
+					else
+						return null;
+				});
+			}
+		}.inline(node);
 	}
 
 	// Before - define i := memory ~ assign (i <= value)
