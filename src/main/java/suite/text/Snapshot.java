@@ -103,12 +103,17 @@ class Impl implements Snapshot {
 		var list = new ArrayList<Pair<Bytes, Bytes>>();
 		String line;
 		while (!String_.equals(line = Util.readLine(is), "EOF"))
-			list.add(FixieArray.of(line.split(" ")).map((s0, s1) -> rethrow(() -> {
+			list.add(FixieArray.of(line.split(" ")).map((f, s0, s1) -> rethrow(() -> {
 				var size0 = !String_.equals(s0, "N") ? Integer.valueOf(s0) : null;
 				var size1 = !String_.equals(s1, "N") ? Integer.valueOf(s1) : null;
-				var bs0 = size0 != null && is.read() == '<' ? readBlock(is, size0) : null;
-				var bs1 = size1 != null && is.read() == '>' ? readBlock(is, size1) : null;
-				return Pair.of(bs0, bs1);
+				if (String_.equals("!", f)) {
+					var bs0 = size0 != null && is.read() == '<' ? readBlock(is, size0) : null;
+					var bs1 = size1 != null && is.read() == '>' ? readBlock(is, size1) : null;
+					return Pair.of(bs0, bs1);
+				} else {
+					var bs = size0 != null && is.read() == '=' ? readBlock(is, size0) : null;
+					return Pair.of(bs, bs);
+				}
 			})));
 		return list;
 	}
@@ -120,18 +125,24 @@ class Impl implements Snapshot {
 				var bs1 = pair.t1;
 				var size0 = bs0 != null ? Integer.toString(bs0.size()) : "N";
 				var size1 = bs1 != null ? Integer.toString(bs1.size()) : "N";
-				var line = size0 + " " + size1 + "\n";
+				var isDiff = bs0 != bs1;
+				var line = (isDiff ? "!" : "=") + " " + size0 + " " + size1 + "\n";
 				os.write(line.getBytes(Defaults.charset));
-				if (bs0 != null) {
-					os.write('<');
+				if (isDiff) {
+					if (bs0 != null) {
+						os.write('<');
+						writeBlock(os, bs0);
+					}
+					if (bs1 != null) {
+						os.write('>');
+						writeBlock(os, bs1);
+					}
+				} else if (bs0 != null) {
+					os.write('=');
 					writeBlock(os, bs0);
 				}
-				if (bs1 != null) {
-					os.write('>');
-					writeBlock(os, bs1);
-				}
-				os.write("EOF\n".getBytes(Defaults.charset));
 			}
+			os.write("EOF\n".getBytes(Defaults.charset));
 			return list;
 		});
 	}
