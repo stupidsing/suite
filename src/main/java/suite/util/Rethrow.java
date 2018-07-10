@@ -27,10 +27,7 @@ public class Rethrow {
 		try {
 			return source.source();
 		} catch (Exception ex) {
-			if (ex instanceof RuntimeException)
-				throw (RuntimeException) ex;
-			else
-				return Fail.t(ex);
+			return Fail.t(ex);
 		}
 	}
 
