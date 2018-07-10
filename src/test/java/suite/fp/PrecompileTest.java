@@ -15,21 +15,20 @@ import suite.streamlet.Read;
 public class PrecompileTest {
 
 	private List<String> allLibraries = List.of( //
-			"23-TREE" //
-			, "ARRAY" //
-			, "CHARS" //
-			, "DEBUG" //
-			, "FREQ" //
-			, "HEAP" //
-			, "MAPACCUM" //
-			, "MATCH" //
-			, "MATH" //
-			, "MONAD" //
-			, "PERMUTE" //
-			, "RB-TREE" //
-			, "SUITE" //
-			, "TEXT" //
-	);
+			"23-TREE", //
+			"ARRAY", //
+			"CHARS", //
+			"DEBUG", //
+			"FREQ", //
+			"HEAP", //
+			"MAPACCUM", //
+			"MATCH", //
+			"MATH", //
+			"MONAD", //
+			"PERMUTE", //
+			"RB-TREE", //
+			"SUITE", //
+			"TEXT");
 
 	@Test
 	public void testPrecompileAll() {
