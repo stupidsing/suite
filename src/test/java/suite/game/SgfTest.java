@@ -5,11 +5,6 @@ import org.junit.Test;
 public class SgfTest {
 
 	@Test
-	public void testFile() {
-		new Sgf().fromFile("/tmp/sgf");
-	}
-
-	@Test
 	public void testString() {
 		new Sgf().from("" //
 				+ "(;FF[4]GM[1]SZ[19]\n" //

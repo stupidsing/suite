@@ -1,6 +1,7 @@
 package suite.immutable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -109,7 +110,7 @@ public class IBinPriorityQueue<T> {
 		for (var rank = 0; rank < maxRank; rank++) {
 			List<Node> list1 = new ArrayList<>();
 
-			for (var t : List.of(tree, trees[rank], pq.trees[rank]))
+			for (var t : Arrays.asList(tree, trees[rank], pq.trees[rank]))
 				if (t != null)
 					list1.add(t);
 

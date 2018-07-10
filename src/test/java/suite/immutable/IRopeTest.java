@@ -43,7 +43,7 @@ public class IRopeTest {
 
 	@Test
 	public void testFile() {
-		var inputText = IRopeList.of(FileUtil.read("src/main/java/suite/dev/DevMain.java"));
+		var inputText = IRopeList.of(FileUtil.read("src/main/java/suite/sample/DevMain.java"));
 		inputText.right(inputText.size);
 	}
 

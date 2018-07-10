@@ -10,7 +10,7 @@ public class HttpUtilTest {
 	@Test
 	public void test() {
 		var result = HttpUtil //
-				.get("http://feu.no-ip.info/") //
+				.get("https://ywsing.onedse.com/") //
 				.in(To.outlet("{\"key\": \"value\"}")) //
 				.send();
 
