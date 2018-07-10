@@ -203,6 +203,8 @@ public class P0Parse {
 				return FunpIoAssignRef.of(FunpReference.of(FunpVariable.of(Atom.name(a))), p(b), p(c));
 			}).match("io.let .0 := .1 ~ .2", (a, b, c) -> {
 				return FunpApply.of(p(b), FunpIoCat.of(lambda(a, c)));
+			}).match("io.perform .0 ~ .1", (a, b) -> {
+				return FunpApply.of(p(a), FunpIoCat.of(lambda(dontCare, b)));
 			}).match("io.cat .0", a -> {
 				return FunpIoCat.of(p(a));
 			}).match("io.fold .0 .1 .2", (a, b, c) -> {

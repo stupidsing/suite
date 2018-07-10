@@ -34,7 +34,7 @@ define alloc size0 :=
 				|| bs != size => alloc.chain coerce.pointer pointer1
 				|| (
 					io.let chain1 := io.peek pointer1 ~
-					io.let _ := io.poke (pointer, chain1) ~
+					io.perform io.poke (pointer, chain1) ~
 					io chain
 				)
 			|| io 0
@@ -48,7 +48,7 @@ define alloc size0 :=
 		|| map 32768
 		~
 		let pointer.block := pointer.head + 4 ~
-		io.let _ := io.poke (pointer.head, size) ~
+		io.perform io.poke (pointer.head, size) ~
 		io.assign alloc.pointer := pointer.block + size ~
 		io pointer.block
 	|| io p0
@@ -59,7 +59,7 @@ define dealloc (size0, pointer.block) :=
 	let pointer.head := pointer.block - 4 ~
 	io.let size_ := io.peek pointer.head ~
 	assert (size = size_) ~
-	io.let _ := io.poke (pointer.block, alloc.free.chain) ~
+	io.perform io.poke (pointer.block, alloc.free.chain) ~
 	io.assign alloc.free.chain := pointer.head ~
 	io {}
 ~
@@ -127,10 +127,10 @@ define put.number n :=
 		|| 0 < n =>
 			let div := n / 10 ~
 			let mod := n % 10 ~
-			io.let _ := put.number_ div ~
+			io.perform put.number_ div ~
 			put.char coerce.byte (mod + 48)
 		|| n < 0 =>
-			io.let _ := put.char byte 45 ~
+			io.perform put.char byte 45 ~
 			put.number_ (0 - n)
 		|| io 0
 		~
@@ -140,7 +140,8 @@ define put.number n :=
 
 define put.string s :=
 	for (i = 0; (^s) [i] != byte 0;
-		io.let _ := put.char (^s) [i] ~ io (i + 1)
+		io.perform put.char (^s) [i] ~
+		io (i + 1)
 	)
 ~
 
@@ -148,7 +149,7 @@ define cat :=
 	for (n = 1; n != 0;
 		let pointer := address predef (array byte * buffer.size) ~
 		io.let nBytesRead := read (pointer, buffer.size) ~
-		io.let _ := write.all (pointer, nBytesRead) ~
+		io.perform write.all (pointer, nBytesRead) ~
 		io nBytesRead
 	)
 ~
