@@ -3,6 +3,9 @@ expand for (.v = .i; .w; .d) := io.fold .i (.v => .w) (.v => .d) ~
 expand io.peek .pointer := io.asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
 expand io.poke (.pointer, .value) := io.asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~
 
+define max (a, b) := if (a < b) then b else a ~
+define min (a, b) := if (a < b) then a else b ~
+
 define map := length =>
 	let ps := [0, length, 3, 34, -1, 0,] ~
 	io.asm (EAX = 90; EBX = address ps;) { INT (-128); }
@@ -18,7 +21,7 @@ let.global alloc.pointer := 0 ~
 let.global alloc.free.chain := 0 ~
 
 define alloc size0 :=
-	let size := if (4 < size0) then size0 else 4 ~
+	let size := max (4, size0) ~
 	define {
 		alloc.chain pointer :=
 			io.let chain := io.peek pointer ~
@@ -51,7 +54,7 @@ define alloc size0 :=
 ~
 
 define dealloc (size0, pointer.block) :=
-	let size := if (4 < size0) then size0 else 4 ~
+	let size := max (4, size0) ~
 	let pointer.head := pointer.block - 4 ~
 	io.let size_ := io.peek pointer.head ~
 	case
