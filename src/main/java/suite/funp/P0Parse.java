@@ -140,8 +140,6 @@ public class P0Parse {
 				return FunpCoerce.of(Coerce.BYTE, FunpDontCare.of());
 			}).match("byte .0", a -> {
 				return FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(num(a)));
-			}).match("number .0", a -> {
-				return FunpNumber.ofNumber(num(a));
 			}).match("coerce.byte .0", a -> {
 				return FunpCoerce.of(Coerce.BYTE, p(a));
 			}).match("coerce.number .0", a -> {
@@ -219,6 +217,8 @@ public class P0Parse {
 				return lambda(a, b);
 			}).match("number", () -> {
 				return FunpNumber.of(IntMutable.nil());
+			}).match("number .0", a -> {
+				return FunpNumber.ofNumber(num(a));
 			}).applyIf(Int.class, n -> {
 				return FunpNumber.ofNumber(n.number);
 			}).match("predef .0", a -> {
