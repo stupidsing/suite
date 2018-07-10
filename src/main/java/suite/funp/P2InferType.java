@@ -560,7 +560,9 @@ public class P2InferType {
 						})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 							var m = getVariableMemory(env.get(var));
 							return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
-						})).nonNullResult();
+						})).applyIf(Funp.class, f -> {
+							return Funp_.fail("require pre-definition");
+						}).nonNullResult();
 					}
 				}.getAddress(expr);
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
