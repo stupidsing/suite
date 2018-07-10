@@ -6,7 +6,7 @@ expand io.poke (.pointer, .value) := io.asm (EAX = .value; EBX = .pointer;) { MO
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
 
-define map := length =>
+define map length :=
 	let ps := [0, length, 3, 34, -1, 0,] ~
 	io.asm (EAX = 90; EBX = address ps;) { INT (-128); }
 ~
