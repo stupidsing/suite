@@ -107,7 +107,7 @@ define write.all (pointer, length) :=
 ~
 
 define get.char {} :=
-	let.global buffer := (array byte * buffer.size) ~
+	let.global buffer := array byte * buffer.size ~
 	let.global start.end := (0, 0) ~
 	io.let (s0, e0) := io start.end ~
 	io.let (s1, e1) := case
