@@ -210,6 +210,9 @@ public class P0Parse {
 				return FunpIoCat.of(p(a));
 			}).match("io.fold .0 .1 .2", (a, b, c) -> {
 				return FunpIoFold.of(p(a), p(b), p(c));
+			}).match("io.for (.0 = .1; .2; .3)", (a, b, c, d) -> {
+				var fold = FunpIoFold.of(p(b), lambda(a, c), lambda(a, d));
+				return FunpApply.of(fold, FunpIoCat.of(p(Suite.parse("_ => io {}"))));
 			}).match("io.map .0", a -> {
 				return FunpIoMap.of(p(a));
 			}).match(".0 => .1", (a, b) -> {

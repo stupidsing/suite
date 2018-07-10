@@ -1,6 +1,5 @@
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := case || .check => .expr || error ~
-expand io.for (.v = .i; .w; .d) := io.fold .i (.v => .w) (.v => .d) ~
 expand io.peek .pointer := io.asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
 expand io.poke (.pointer, .value) := io.asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~
 
@@ -129,7 +128,7 @@ define put.number n :=
 			let mod := n % 10 ~
 			io.perform put.number_ div ~
 			put.char coerce.byte (mod + number '0')
-		|| io 0
+		|| io {}
 		~
 	} ~
 	case
