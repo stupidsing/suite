@@ -1,5 +1,5 @@
 expand buffer.size := 256 ~
-expand (assert .check ~ .expr) := case || .check => .expr ~
+expand (assert .check ~ .expr) := case || .check => .expr || error ~
 expand io.for (.v = .i; .w; .d) := io.fold .i (.v => .w) (.v => .d) ~
 expand io.peek .pointer := io.asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
 expand io.poke (.pointer, .value) := io.asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~
