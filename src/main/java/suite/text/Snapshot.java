@@ -106,14 +106,13 @@ class Impl implements Snapshot {
 			list.add(FixieArray.of(line.split(" ")).map((f, s0, s1) -> rethrow(() -> {
 				var size0 = !String_.equals(s0, "N") ? Integer.valueOf(s0) : null;
 				var size1 = !String_.equals(s1, "N") ? Integer.valueOf(s1) : null;
+				Bytes bs0, bs1;
 				if (String_.equals("!", f)) {
-					var bs0 = size0 != null && is.read() == '<' ? readBlock(is, size0) : null;
-					var bs1 = size1 != null && is.read() == '>' ? readBlock(is, size1) : null;
-					return Pair.of(bs0, bs1);
-				} else {
-					var bs = size0 != null && is.read() == '=' ? readBlock(is, size0) : null;
-					return Pair.of(bs, bs);
-				}
+					bs0 = readBlock(is, size0, '<');
+					bs1 = readBlock(is, size1, '>');
+				} else
+					bs0 = bs1 = readBlock(is, size0, '=');
+				return Pair.of(bs0, bs1);
 			})));
 		return list;
 	}
@@ -129,22 +128,18 @@ class Impl implements Snapshot {
 				var line = (isDiff ? "!" : "=") + " " + size0 + " " + size1 + "\n";
 				os.write(line.getBytes(Defaults.charset));
 				if (isDiff) {
-					if (bs0 != null) {
-						os.write('<');
-						writeBlock(os, bs0);
-					}
-					if (bs1 != null) {
-						os.write('>');
-						writeBlock(os, bs1);
-					}
-				} else if (bs0 != null) {
-					os.write('=');
-					writeBlock(os, bs0);
-				}
+					writeBlock(os, '<', bs0);
+					writeBlock(os, '>', bs1);
+				} else
+					writeBlock(os, '=', bs0);
 			}
 			os.write("EOF\n".getBytes(Defaults.charset));
 			return list;
 		});
+	}
+
+	private Bytes readBlock(InputStream is, Integer size, char ch) throws IOException {
+		return size != null && is.read() == ch ? readBlock(is, size) : null;
 	}
 
 	private Bytes readBlock(InputStream is, int size) throws IOException {
@@ -154,9 +149,12 @@ class Impl implements Snapshot {
 		return Bytes.of(bs);
 	}
 
-	private void writeBlock(OutputStream os, Bytes t0) throws IOException {
-		os.write(t0.toArray());
-		os.write("\n".getBytes(Defaults.charset));
+	private void writeBlock(OutputStream os, char ch, Bytes bs) throws IOException {
+		if (bs != null) {
+			os.write(ch);
+			os.write(bs.toArray());
+			os.write("\n".getBytes(Defaults.charset));
+		}
 	}
 
 	private Map<String, Bytes> readMap(Path path) {
