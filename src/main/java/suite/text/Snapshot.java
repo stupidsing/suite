@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.pair.FixieArray;
-import suite.adt.pair.Pair;
 import suite.cfg.Defaults;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
+import suite.text.TextUtil.BytesPair;
 import suite.util.Set_;
 import suite.util.String_;
 import suite.util.Util;
@@ -25,17 +25,17 @@ public interface Snapshot {
 
 	public static Snapshot me = new Impl();
 
-	public Map<String, List<Pair<Bytes, Bytes>>> diffDirs(Path path0, Path path1);
+	public Map<String, List<BytesPair>> diffDirs(Path path0, Path path1);
 
-	public void patchDir(Path path, Map<String, List<Pair<Bytes, Bytes>>> map);
+	public void patchDir(Path path, Map<String, List<BytesPair>> map);
 
-	public Map<String, List<Pair<Bytes, Bytes>>> merge( //
-			Map<String, List<Pair<Bytes, Bytes>>> map0, //
-			Map<String, List<Pair<Bytes, Bytes>>> map1);
+	public Map<String, List<BytesPair>> merge( //
+			Map<String, List<BytesPair>> map0, //
+			Map<String, List<BytesPair>> map1);
 
-	public List<Pair<Bytes, Bytes>> readPatch(InputStream is);
+	public List<BytesPair> readPatch(InputStream is);
 
-	public void writePatch(OutputStream os, List<Pair<Bytes, Bytes>> list) throws IOException;
+	public void writePatch(OutputStream os, List<BytesPair> list) throws IOException;
 
 }
 
@@ -43,11 +43,11 @@ class Impl implements Snapshot {
 
 	private TextUtil textUtil = new TextUtil();
 
-	public Map<String, List<Pair<Bytes, Bytes>>> diffDirs(Path path0, Path path1) {
+	public Map<String, List<BytesPair>> diffDirs(Path path0, Path path1) {
 		return diffMaps(readMap(path0), readMap(path1));
 	}
 
-	public void patchDir(Path path0, Map<String, List<Pair<Bytes, Bytes>>> map) {
+	public void patchDir(Path path0, Map<String, List<BytesPair>> map) {
 		var isFrom = false;
 
 		if (Boolean.TRUE)
@@ -70,25 +70,25 @@ class Impl implements Snapshot {
 		}
 	}
 
-	public Map<String, List<Pair<Bytes, Bytes>>> merge( //
-			Map<String, List<Pair<Bytes, Bytes>>> map0, //
-			Map<String, List<Pair<Bytes, Bytes>>> map1) {
+	public Map<String, List<BytesPair>> merge( //
+			Map<String, List<BytesPair>> map0, //
+			Map<String, List<BytesPair>> map1) {
 		return Read //
 				.from(Set_.union(map0.keySet(), map1.keySet())) //
 				.map2(key -> textUtil.merge(map0.get(key), map1.get(key))) //
 				.toMap();
 	}
 
-	private Map<String, List<Pair<Bytes, Bytes>>> diffMaps(Map<String, Bytes> map0, Map<String, Bytes> map1) {
+	private Map<String, List<BytesPair>> diffMaps(Map<String, Bytes> map0, Map<String, Bytes> map1) {
 		var keys = Set_.union(map0.keySet(), map1.keySet());
-		var diffMap = new HashMap<String, List<Pair<Bytes, Bytes>>>();
+		var diffMap = new HashMap<String, List<BytesPair>>();
 
 		for (var key : keys) {
 			var bytes0 = map0.get(key);
 			var bytes1 = map1.get(key);
 
 			if (bytes0 == null || bytes1 == null)
-				diffMap.put(key, List.of(Pair.of(bytes0, bytes1)));
+				diffMap.put(key, List.of(new BytesPair(bytes0, bytes1)));
 			else {
 				var diff = textUtil.diff(bytes0, bytes1);
 				if (textUtil.isDiff(diff))
@@ -99,8 +99,8 @@ class Impl implements Snapshot {
 		return diffMap;
 	}
 
-	public List<Pair<Bytes, Bytes>> readPatch(InputStream is) {
-		var list = new ArrayList<Pair<Bytes, Bytes>>();
+	public List<BytesPair> readPatch(InputStream is) {
+		var list = new ArrayList<BytesPair>();
 		String line;
 		while (!String_.equals(line = Util.readLine(is), "EOF"))
 			list.add(FixieArray.of(line.split(" ")).map((f, s0, s1) -> rethrow(() -> {
@@ -112,12 +112,12 @@ class Impl implements Snapshot {
 					bs1 = readBlock(is, size1, '>');
 				} else
 					bs0 = bs1 = readBlock(is, size0, '=');
-				return Pair.of(bs0, bs1);
+				return new BytesPair(bs0, bs1);
 			})));
 		return list;
 	}
 
-	public void writePatch(OutputStream os, List<Pair<Bytes, Bytes>> list) {
+	public void writePatch(OutputStream os, List<BytesPair> list) {
 		rethrow(() -> {
 			for (var pair : list) {
 				var bs0 = pair.t0;
@@ -175,7 +175,7 @@ class Impl implements Snapshot {
 		}
 	}
 
-	private Map<String, Bytes> fromTo(Map<String, List<Pair<Bytes, Bytes>>> diff, boolean isFrom) {
+	private Map<String, Bytes> fromTo(Map<String, List<BytesPair>> diff, boolean isFrom) {
 		return Read.from2(diff).mapValue(v -> textUtil.fromTo(v, isFrom)).toMap();
 	}
 
