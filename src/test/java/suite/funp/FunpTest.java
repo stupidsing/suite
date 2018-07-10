@@ -77,6 +77,7 @@ public class FunpTest {
 	public void testIo() {
 		test(1, "io 0 | io.cat (i => io (i + 1))");
 		test(1, "io.let i := io 0 ~ io (i + 1)");
+		test(1, "io 0 | io.map (i => i + 1)");
 		test(100, "io.fold 0 (n => n < 100) (n => io (n + 1))");
 	}
 
