@@ -1,20 +1,19 @@
 expand buffer.size := 256 ~
-expand (assert .check ~ .expr) := case || .check => .expr || error ~
-expand io.for (.v = .i; .w; .d) := io.fold .i (.v => .w) (.v => .d) ~
+expand (assert .check ~ .expr) := if .check then .expr else error ~
 expand io.peek .pointer := io.asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
 expand io.poke (.pointer, .value) := io.asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
 
-define map := length =>
+define map length :=
 	let ps := [0, length, 3, 34, -1, 0,] ~
 	io.asm (EAX = 90; EBX = address ps;) { INT (-128); }
 ~
 
 define unmap (length, pointer) :=
 	--type pointer = address (array byte * buffer.size) ~
-	type pointer = io number ~
+	type pointer = number ~
 	io.asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
 ~
 
@@ -26,32 +25,28 @@ define alloc size0 :=
 	define {
 		alloc.chain pointer :=
 			io.let chain := io.peek pointer ~
-			case
-			|| chain != 0 =>
+			if (chain != 0) then (
 				io.let bs := io.peek chain ~
 				let pointer1 := chain + 4 ~
-				case
-				|| bs != size => alloc.chain coerce.pointer pointer1
-				|| (
+				if (bs != size) then (
+					alloc.chain coerce.pointer pointer1
+				) else (
 					io.let chain1 := io.peek pointer1 ~
 					io.perform io.poke (pointer, chain1) ~
 					io chain
 				)
-			|| io 0
+			) else (io 0)
 		~
 	} ~
 	io.let p0 := alloc.chain (address alloc.free.chain) ~
-	case
-	|| p0 = 0 =>
-		io.let pointer.head := case
-		|| alloc.pointer != 0 => io alloc.pointer
-		|| map 32768
-		~
+	if (p0 = 0) then (
+		let ap := alloc.pointer ~
+		io.let pointer.head := if (ap != 0) then (io ap) else (map 32768) ~
 		let pointer.block := pointer.head + 4 ~
 		io.perform io.poke (pointer.head, size) ~
 		io.assign alloc.pointer := pointer.block + size ~
 		io pointer.block
-	|| io p0
+	) else (io p0)
 ~
 
 define dealloc (size0, pointer.block) :=
@@ -65,8 +60,8 @@ define dealloc (size0, pointer.block) :=
 ~
 
 define new.pool length :=
-	let pool := map length ~
-	{
+	io.let pool := map length ~
+	io {
 		destroy {} := unmap (length, pool) ~
 		pool ~
 		length ~
@@ -110,10 +105,9 @@ define get.char {} :=
 	let.global buffer := array byte * buffer.size ~
 	let.global start.end := (0, 0) ~
 	io.let (s0, e0) := io start.end ~
-	io.let (s1, e1) := case
-	|| s0 < e0 => io start.end
-	|| read (address buffer, buffer.size) | io.map (pointer => (0, pointer))
-	~
+	io.let (s1, e1) := if (s0 < e0) then (io start.end) else (
+		read (address buffer, buffer.size) | io.map (pointer => (0, pointer))
+	) ~
 	assert (s1 < e1) ~
 	io.assign start.end := (s1 + 1, e1) ~
 	io buffer [s0]
@@ -123,19 +117,20 @@ define put.char ch := write.all (address predef [ch,], 1) ~
 
 define put.number n :=
 	define {
-		put.number_ n := case
-		|| 0 < n =>
+		put.number_ n := if (0 < n) then (
 			let div := n / 10 ~
 			let mod := n % 10 ~
 			io.perform put.number_ div ~
-			put.char coerce.byte (mod + 48)
-		|| n < 0 =>
-			io.perform put.char byte 45 ~
-			put.number_ (0 - n)
-		|| io 0
+			put.char coerce.byte (mod + number '0')
+		) else (io {})
 		~
 	} ~
-	if (n != 0) then (put.number_ n) else (put.char byte 48)
+	case
+	|| 0 < n =>
+		put.number_ n
+	|| n < 0 =>
+		io.perform put.char byte '-' ~ put.number_ n
+	|| put.char byte '0'
 ~
 
 define put.string s :=

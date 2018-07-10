@@ -91,7 +91,7 @@ public class P1Inline {
 		return new Rename(IMap.empty()).rename(node);
 	}
 
-	// Before - define i := memory >> assign (i <= value)
+	// Before - define i := memory ~ assign (i <= value)
 	// After - define i := value
 	private Funp inlineDefineAssigns(Funp node) {
 		return new Object() {
@@ -136,9 +136,9 @@ public class P1Inline {
 		}.inline(node);
 	}
 
-	// Before - define i := 1 >> i + 1
+	// Before - define i := 1 ~ i + 1
 	// After - 1 + 1
-	// Before - expand i := 1 >> i + i
+	// Before - expand i := 1 ~ i + i
 	// After - 1 + 1
 	private Funp inlineDefines(Funp node) {
 		var defByVariables = associateDefinitions(node);
@@ -191,7 +191,7 @@ public class P1Inline {
 		}.inline(node);
 	}
 
-	// Before - define s := (struct (a 1, b 2, c 3,)) >> s/c
+	// Before - define s := (struct (a 1, b 2, c 3,)) ~ s/c
 	// After - 3
 	private Funp inlineFields(Funp node) {
 		var defs = associateDefinitions(node);
