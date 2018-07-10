@@ -27,6 +27,7 @@ public class Amd64 {
 		CPUID, //
 		DEC, //
 		DIV, //
+		DS, // define space
 		HLT, //
 		IDIV, //
 		IMM, //

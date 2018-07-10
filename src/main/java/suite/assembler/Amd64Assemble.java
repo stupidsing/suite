@@ -238,6 +238,19 @@ public class Amd64Assemble {
 		case DIV:
 			encode = assembleByteFlag(instruction.op0, 0xF6, 6);
 			break;
+		case DS:
+			var bs = new byte[(int) ((OpImm) instruction.op0).imm];
+			Arrays.fill(bs, (byte) 0x90);
+			encode = new Encode() {
+				public boolean isValid() {
+					return true;
+				}
+
+				public Bytes encode_() {
+					return Bytes.of(bs);
+				}
+			};
+			break;
 		case HLT:
 			encode = assemble(instruction, 0xF4);
 			break;
