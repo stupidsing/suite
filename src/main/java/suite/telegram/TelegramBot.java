@@ -4,6 +4,7 @@ import static suite.util.Friends.rethrow;
 
 import java.nio.file.Files;
 
+import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.TelegramBotsApi;
 import org.telegram.telegrambots.api.methods.send.SendMessage;
 import org.telegram.telegrambots.api.objects.Update;
@@ -14,6 +15,11 @@ import suite.streamlet.FunUtil2.FoldOp;
 import suite.util.Thread_;
 
 public class TelegramBot {
+
+	public static void main(String[] args) {
+		ApiContextInitializer.init();
+		new TelegramBot().bot((userId, message) -> message);
+	}
 
 	public void bot(FoldOp<Integer, String> fun) {
 		rethrow(() -> {
