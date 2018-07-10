@@ -15,12 +15,15 @@ public class OtfTest {
 
 	@Test
 	public void otfTest() {
+		var directory = "/tmp/fonts";
 		var familyKey = "Family";
 		var subfamilyKey = "Subfamily";
 		var keys = List.of(familyKey, subfamilyKey);
 
+		FileUtil.mkdir(Paths.get(directory));
+
 		var commands = Read //
-				.each("/tmp/fonts") //
+				.each(directory) //
 				.map(Paths::get) //
 				.concatMap(FileUtil::findPaths) //
 				.map(Path::toString) //
