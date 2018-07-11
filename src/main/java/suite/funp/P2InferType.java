@@ -30,7 +30,7 @@ import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDoAsm;
 import suite.funp.P0.FunpDoAssignRef;
-import suite.funp.P0.FunpDoEval;
+import suite.funp.P0.FunpDoEvalIo;
 import suite.funp.P0.FunpDoFold;
 import suite.funp.P0.FunpDoWhile;
 import suite.funp.P0.FunpDontCare;
@@ -308,7 +308,7 @@ public class P2InferType {
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), TypeReference.of(infer(value)));
 				return infer(expr);
-			})).applyIf(FunpDoEval.class, f -> f.apply(expr -> {
+			})).applyIf(FunpDoEvalIo.class, f -> f.apply(expr -> {
 				var t = unify.newRef();
 				unify(n, TypeIo.of(t), infer(expr));
 				return t;
@@ -495,7 +495,7 @@ public class P2InferType {
 				return FunpSaveRegisters.of(FunpDoAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
-			})).applyIf(FunpDoEval.class, f -> f.apply(expr -> {
+			})).applyIf(FunpDoEvalIo.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpDoFold.class, f -> f.apply((init, cont, next) -> {
 				var offset = IntMutable.nil();

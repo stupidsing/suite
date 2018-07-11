@@ -191,11 +191,11 @@ public class P0 {
 		}
 	}
 
-	public static class FunpDoEval implements Funp, P2.End {
+	public static class FunpDoEvalIo implements Funp, P2.End {
 		public Funp expr;
 
-		public static FunpDoEval of(Funp expr) {
-			var f = new FunpDoEval();
+		public static FunpDoEvalIo of(Funp expr) {
+			var f = new FunpDoEvalIo();
 			f.expr = expr;
 			return f;
 		}

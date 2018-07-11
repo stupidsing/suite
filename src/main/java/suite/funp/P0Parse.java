@@ -23,7 +23,7 @@ import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDoAsm;
 import suite.funp.P0.FunpDoAssignRef;
-import suite.funp.P0.FunpDoEval;
+import suite.funp.P0.FunpDoEvalIo;
 import suite.funp.P0.FunpDoFold;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
@@ -199,7 +199,7 @@ public class P0Parse {
 			}).match("error", () -> {
 				return FunpError.of();
 			}).match("eval.io .0", a -> {
-				return isDo() ? FunpDoEval.of(p(a)) : fail();
+				return isDo() ? FunpDoEvalIo.of(p(a)) : fail();
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
