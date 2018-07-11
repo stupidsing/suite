@@ -174,7 +174,8 @@ public class P0Parse {
 			}).match("define .0 .1 := .2 ~ .3", (a, b, c, d) -> {
 				return define(Fdt.POLY, a, lambda(b, c), d);
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
-				return define(Fdt.POLY, a, p(b), c);
+				var lambda = lambda(a, c);
+				return FunpDefine.of(Fdt.POLY, lambda.var, p(b), lambda.expr);
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("define { .0 } ~ .1", (a, b) -> {
 				var list = Tree.iter(a, Tree::decompose).map(this::kv).collect();
@@ -216,7 +217,8 @@ public class P0Parse {
 				var lambda = lambda(dontCare, b);
 				return FunpDefine.of(Fdt.IOAP, lambda.var, p(a), lambda.expr);
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
-				return define(Fdt.MONO, a, p(b), c);
+				var lambda = lambda(a, c);
+				return FunpDefine.of(Fdt.MONO, lambda.var, p(b), lambda.expr);
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
 				return define(Fdt.GLOB, a, p(b), c);
