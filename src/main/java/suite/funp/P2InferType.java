@@ -324,9 +324,9 @@ public class P2InferType {
 			}).applyIf(FunpDoWhile.class, f -> f.apply((while_, do_, expr) -> {
 				unify(n, typeBoolean, infer(while_));
 				var td = infer(do_);
-				if (td.final_() == td)
-					unify(n, td, typeBoolean); // enforces a type to prevent
-												// exception
+				if (td.isFree())
+					// enforces a type to prevent exception
+					unify(n, td, typeBoolean);
 				return infer(expr);
 			})).applyIf(FunpError.class, f -> {
 				return unify.newRef();
