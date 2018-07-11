@@ -600,11 +600,10 @@ public class P2InferType {
 		}
 
 		private Funp applyOnce(Funp value, Funp lambda, int size) {
-			// if (lambda instanceof FunpLambda) // expand if possible
-			// return ((FunpLambda) lambda).apply((var, expr) ->
-			// defineLocal(lambda, var, value, erase(expr)));
-			// else
-			return apply(value, lambda, size);
+			if (lambda instanceof FunpLambda) // expand if possible
+				return ((FunpLambda) lambda).apply((var, expr) -> defineLocal(lambda, var, value, expr, size));
+			else
+				return apply(value, lambda, size);
 		}
 
 		private FunpSaveRegisters apply(Funp value, Funp lambda, int size) {
@@ -631,19 +630,21 @@ public class P2InferType {
 		}
 
 		private Funp defineLocal(Funp f, String var, Funp value, Funp expr) {
-			var size = getTypeSize(typeOf(value));
+			return defineLocal(f, var, erase(value), expr, getTypeSize(typeOf(value)));
+		}
+
+		private Funp defineLocal(Funp f, String var, Funp value, Funp expr, int size) {
 			var op = Mutable.<Operand> nil();
 			var offset = IntMutable.nil();
 			var vd = new Var(f, op, scope, offset, null, 0, size);
 			var e1 = new Erase(scope, env.replace(var, vd));
-			var value1 = erase(value);
 			var expr1 = e1.erase(expr);
 
 			// if erase is called twice,
 			// pass 1: check for any reference accesses to locals, set
 			// isRegByNode;
 			// pass 2: put locals to registers according to isRegByNode.
-			var n1 = vd.isReg() ? FunpAllocReg.of(size, value1, expr1, op) : FunpAllocStack.of(size, value1, expr1, offset);
+			var n1 = vd.isReg() ? FunpAllocReg.of(size, value, expr1, op) : FunpAllocStack.of(size, value, expr1, offset);
 
 			isRegByNode.putIfAbsent(f, size == is);
 			return n1;
