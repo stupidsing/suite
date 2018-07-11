@@ -105,7 +105,7 @@ public class P0 {
 
 	public static class FunpDefine implements Funp, P2.End {
 		public enum Fdt {
-			GLOB, IOAP, MONO, POLY,
+			GLOB, IOAP, MONO, POLY, VIRT,
 		};
 
 		public Fdt type;

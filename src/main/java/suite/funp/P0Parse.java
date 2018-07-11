@@ -235,6 +235,9 @@ public class P0Parse {
 				return FunpBoolean.of(true);
 			}).match(dontCare, () -> {
 				return FunpDontCare.of();
+			}).match("virtual .0 := .1 ~ .2", (a, b, c) -> {
+				var value = p(b);
+				return FunpDefine.of(Fdt.VIRT, Atom.name(a), value, p(c));
 			}).applyIf(Atom.class, atom -> {
 				var vn = atom.name;
 				return variables.contains(vn) ? FunpVariable.of(vn) : FunpVariableNew.of(vn);

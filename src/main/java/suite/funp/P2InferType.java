@@ -172,7 +172,7 @@ public class P2InferType {
 				return n.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
 					Capture c1;
-					if (type == Fdt.IOAP || type == Fdt.MONO || type == Fdt.POLY)
+					if (type == Fdt.IOAP || type == Fdt.MONO || type == Fdt.POLY || type == Fdt.VIRT)
 						c1 = new Capture(accesses, locals.add(var), globals);
 					else if (type == Fdt.GLOB)
 						c1 = new Capture(accesses, locals, globals.add(var));
@@ -459,7 +459,9 @@ public class P2InferType {
 					var e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
 					var expr1 = FunpAssignMem.of(FunpMemory.of(FunpOperand.of(address), 0, size), erase(value), e1.erase(expr));
 					return FunpAllocGlobal.of(var, size, expr1, address);
-				} else
+				} else if (type == Fdt.VIRT)
+					return erase(expr);
+				else
 					return fail();
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var assigns = new ArrayList<Pair<Var, Funp>>();
