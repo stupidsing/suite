@@ -30,6 +30,7 @@ import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDoAsm;
 import suite.funp.P0.FunpDoAssignRef;
+import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDoEvalIo;
 import suite.funp.P0.FunpDoFold;
 import suite.funp.P0.FunpDoWhile;
@@ -308,6 +309,9 @@ public class P2InferType {
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), TypeReference.of(infer(value)));
 				return infer(expr);
+			})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
+				unify(n, getVariable(var), infer(value));
+				return infer(expr);
 			})).applyIf(FunpDoEvalIo.class, f -> f.apply(expr -> {
 				var t = unify.newRef();
 				unify(n, TypeIo.of(t), infer(expr));
@@ -390,11 +394,15 @@ public class P2InferType {
 				unify(n, infer(lhs), typeNumber);
 				unify(n, infer(rhs), typeNumber);
 				return typeNumber;
-			})).applyIf(FunpVariable.class, f -> f.apply(var -> env.get(var).map((isPolyType, tv) -> {
-				return isPolyType ? unify.clone(tv) : tv;
-			}))).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
+			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
+				return getVariable(var);
+			})).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
 				return Funp_.fail("Undefined variable " + var);
 			})).nonNullResult();
+		}
+
+		private UnNode<Type> getVariable(String var) {
+			return env.get(var).map((isPolyType, tv) -> isPolyType ? unify.clone(tv) : tv);
 		}
 
 		private Infer newEnv(IMap<String, Pair<Boolean, UnNode<Type>>> env) {
@@ -482,6 +490,8 @@ public class P2InferType {
 				return FunpSaveRegisters.of(FunpDoAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
+			})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
+				return assign(getVariable(env.get(var)), erase(value), erase(expr));
 			})).applyIf(FunpDoEvalIo.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpDoFold.class, f -> f.apply((init, cont, next) -> {
@@ -542,14 +552,20 @@ public class P2InferType {
 						return n.sw( //
 						).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 							return FunpAssignMem.of(memory(reference, f), erase(value), getAddress(expr));
+						})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
+							return getVariable(var);
 						})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 							return erase(pointer);
 						})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-							var m = getVariableMemory(env.get(var));
-							return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
+							return getVariable(var);
 						})).applyIf(Funp.class, f -> {
 							return Funp_.fail("require pre-definition");
 						}).nonNullResult();
+					}
+
+					private FunpTree getVariable(String var) {
+						var m = getVariableMemory(env.get(var));
+						return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
 					}
 				}.getAddress(expr);
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
