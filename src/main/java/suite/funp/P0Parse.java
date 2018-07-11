@@ -205,9 +205,9 @@ public class P0Parse {
 				}).toList(), Tree.iter(b, TermOp.OR____).toList());
 			}).match("io.assign .0 := .1 ~ .2", (a, b, c) -> {
 				var v = FunpVariable.of(Atom.name(a));
-				return FunpIoAssignRef.of(FunpReference.of(v), p(b), FunpIo.of(p(c)));
+				return FunpIo.of(FunpIoAssignRef.of(FunpReference.of(v), p(b), p(c)));
 			}).match("io.assign ^.0 := .1 ~ .2", (a, b, c) -> {
-				return FunpIoAssignRef.of(FunpReference.of(p(a)), p(b), FunpIo.of(p(c)));
+				return FunpIo.of(FunpIoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
 			}).match("io.fold .0 .1 .2", (a, b, c) -> {
 				return FunpIoFold.of(p(a), p(b), p(c));
 			}).match("io.for (.0 = .1; .2; .3)", (a, b, c, d) -> {
