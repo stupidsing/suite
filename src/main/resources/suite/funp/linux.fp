@@ -1,7 +1,7 @@
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
 expand peek .pointer := asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
-expand poke (.pointer, .value) := asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~
+expand (poke (.pointer, .value) ~ .expr) := (perform.io io asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~ .expr) ~
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
@@ -30,7 +30,7 @@ define io.alloc size0 := do
 				if (peek chain != size) then (
 					eval.io io.alloc.chain coerce.pointer pointer1
 				) else (
-					let _ := poke (pointer, peek pointer1) ~
+					poke (pointer, peek pointer1) ~
 					chain
 				)
 			) else 0
@@ -41,7 +41,7 @@ define io.alloc size0 := do
 		let ap := alloc.pointer ~
 		let pointer.head := if (ap != 0) then ap else ap ~
 		let pointer.block := pointer.head + 4 ~
-		let _ := poke (pointer.head, size) ~
+		poke (pointer.head, size) ~
 		assign alloc.pointer := pointer.block + size ~
 		pointer.block
 	) else p0
@@ -51,7 +51,7 @@ define io.dealloc (size0, pointer.block) := do
 	let size := max (4, size0) ~
 	let pointer.head := pointer.block - 4 ~
 	assert (size = peek pointer.head) ~
-	let _ := poke (pointer.block, alloc.free.chain) ~
+	poke (pointer.block, alloc.free.chain) ~
 	assign alloc.free.chain := pointer.head ~
 	{}
 ~
