@@ -1,4 +1,6 @@
-package suite.funp; import static suite.util.Friends.fail;
+package suite.funp;
+
+import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
@@ -202,8 +204,6 @@ public class P0Parse {
 				return FunpApply.of(p(b), FunpIoCat.of(lambda(a, c)));
 			}).match("io.perform .0 ~ .1", (a, b) -> {
 				return FunpApply.of(p(a), FunpIoCat.of(lambda(dontCare, b)));
-			}).match("io.cat .0", a -> {
-				return FunpIoCat.of(p(a));
 			}).match("io.fold .0 .1 .2", (a, b, c) -> {
 				return FunpIoFold.of(p(a), p(b), p(c));
 			}).match("io.for (.0 = .1; .2; .3)", (a, b, c, d) -> {
