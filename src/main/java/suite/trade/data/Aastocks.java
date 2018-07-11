@@ -32,6 +32,8 @@ public class Aastocks {
 	}
 
 	private float toFloat(String s) {
+
+		// remove all quoted strings
 		while (true) {
 			var p0 = s.indexOf('"');
 			var p1 = 0 <= p0 ? s.indexOf('"', p0 + 1) : -1;
@@ -41,6 +43,7 @@ public class Aastocks {
 				break;
 		}
 
+		// extract the number we want
 		return Float.parseFloat(new String(Chars_.of(s.toCharArray()) //
 				.filter(c -> c == '.' || '0' <= c && c <= '9') //
 				.toArray()));
