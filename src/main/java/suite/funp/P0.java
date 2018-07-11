@@ -105,7 +105,7 @@ public class P0 {
 
 	public static class FunpDefine implements Funp, P2.End {
 		public enum Fdt {
-			MONO, POLY, GLOB,
+			GLOB, IOAP, MONO, POLY,
 		};
 
 		public Fdt type;
@@ -272,20 +272,6 @@ public class P0 {
 
 		public <R> R apply(FixieFun3<FunpReference, Funp, Funp, R> fun) {
 			return fun.apply(reference, value, expr);
-		}
-	}
-
-	public static class FunpIoCat implements Funp, P2.End {
-		public Funp expr;
-
-		public static FunpIoCat of(Funp expr) {
-			var f = new FunpIoCat();
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun1<Funp, R> fun) {
-			return fun.apply(expr);
 		}
 	}
 

@@ -36,7 +36,6 @@ import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpIoAsm;
 import suite.funp.P0.FunpIoAssignRef;
-import suite.funp.P0.FunpIoCat;
 import suite.funp.P0.FunpIoFold;
 import suite.funp.P0.FunpIoMap;
 import suite.funp.P0.FunpIoWhile;
@@ -173,7 +172,7 @@ public class P2InferType {
 				return n.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
 					Capture c1;
-					if (type == Fdt.MONO || type == Fdt.POLY)
+					if (type == Fdt.IOAP || type == Fdt.MONO || type == Fdt.POLY)
 						c1 = new Capture(accesses, locals.add(var), globals);
 					else if (type == Fdt.GLOB)
 						c1 = new Capture(accesses, locals, globals.add(var));
@@ -270,7 +269,13 @@ public class P2InferType {
 				else
 					return fail();
 			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
-				return newEnv(env.replace(var, Pair.of(type == Fdt.POLY, infer(value, var)))).infer(expr);
+				var tvalue = infer(value, var);
+				UnNode<Type> t;
+				if (type == Fdt.IOAP)
+					unify(n, TypeIo.of(t = unify.newRef()), tvalue);
+				else
+					t = tvalue;
+				return newEnv(env.replace(var, Pair.of(type == Fdt.POLY, t))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var pairs_ = Read.from(pairs);
 				var env1 = pairs_.fold(env, (e, pair) -> e.put(pair.t0, Pair.of(false, unify.newRef())));
@@ -320,12 +325,6 @@ public class P2InferType {
 			})).applyIf(FunpIoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), TypeReference.of(infer(value)));
 				return infer(expr);
-			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
-				var ta = unify.newRef();
-				var tb = unify.newRef();
-				var tbio = TypeIo.of(tb);
-				unify(n, TypeLambda.of(ta, tbio), infer(expr));
-				return TypeLambda.of(TypeIo.of(ta), tbio);
 			})).applyIf(FunpIoFold.class, f -> f.apply((init, cont, next) -> {
 				var tv = unify.newRef();
 				var tvio = TypeIo.of(tv);
@@ -438,11 +437,11 @@ public class P2InferType {
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
-				if (type == Fdt.MONO || type == Fdt.POLY) {
+				if (type == Fdt.IOAP || type == Fdt.MONO || type == Fdt.POLY) {
 					var size = getTypeSize(typeOf(value));
 					var op = Mutable.<Operand> nil();
 					var offset = IntMutable.nil();
-					Var vd = new Var(f, op, scope, offset, null, 0, size);
+					var vd = new Var(f, op, scope, offset, null, 0, size);
 					var e1 = new Erase(scope, env.replace(var, vd));
 					var value1 = erase(value);
 					var expr1 = e1.erase(expr);
@@ -513,8 +512,6 @@ public class P2InferType {
 				return FunpSaveRegisters.of(FunpIoAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
 			})).applyIf(FunpIoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
-			})).applyIf(FunpIoCat.class, f -> f.apply(expr -> {
-				return erase(expr);
 			})).applyIf(FunpIoFold.class, f -> f.apply((init, cont, next) -> {
 				var offset = IntMutable.nil();
 				var size = getTypeSize(typeOf(init));
@@ -616,20 +613,6 @@ public class P2InferType {
 			})).result();
 		}
 
-		private Funp assign(Funp var, Funp value, Funp expr) {
-			return var //
-					.sw() //
-					.applyIf(FunpMemory.class, f -> FunpAssignMem.of(f, value, expr)) //
-					.applyIf(FunpOperand.class, f -> FunpAssignOp.of(f, value, expr)) //
-					.nonNullResult();
-		}
-
-		private FunpMemory memory(FunpReference reference, Funp n) {
-			var t = unify.newRef();
-			unify(n, typeOf(reference), TypeReference.of(t));
-			return FunpMemory.of(erase(reference), 0, getTypeSize(t));
-		}
-
 		private FunpSaveRegisters apply(Funp value, Funp lambda, int size) {
 			var lt = new LambdaType(lambda);
 			var lambda1 = erase(lambda);
@@ -645,8 +628,12 @@ public class P2InferType {
 			return FunpSaveRegisters.of(invoke);
 		}
 
-		private FunpAllocStack allocStack(int size, Funp value, Funp expr) {
-			return FunpAllocStack.of(size, value, expr, IntMutable.nil());
+		private Funp assign(Funp var, Funp value, Funp expr) {
+			return var //
+					.sw() //
+					.applyIf(FunpMemory.class, f -> FunpAssignMem.of(f, value, expr)) //
+					.applyIf(FunpOperand.class, f -> FunpAssignOp.of(f, value, expr)) //
+					.nonNullResult();
 		}
 
 		private Funp eraseRoutine(LambdaType lt, Funp frame, Funp expr) {
@@ -678,6 +665,17 @@ public class P2InferType {
 			var nfp1 = offsetOperand != null ? FunpTree.of(TermOp.PLUS__, nfp0, FunpOperand.of(offsetOperand)) : nfp0;
 			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp1, FunpNumber.of(vd.offset)), vd.start, vd.end);
 		}
+
+		private FunpMemory memory(FunpReference reference, Funp n) {
+			var t = unify.newRef();
+			unify(n, typeOf(reference), TypeReference.of(t));
+			return FunpMemory.of(erase(reference), 0, getTypeSize(t));
+		}
+
+		private FunpAllocStack allocStack(int size, Funp value, Funp expr) {
+			return FunpAllocStack.of(size, value, expr, IntMutable.nil());
+		}
+
 	}
 
 	private class Var {

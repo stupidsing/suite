@@ -168,6 +168,7 @@ public class P1Inline {
 				.distinct() //
 				.filter(def -> def instanceof FunpDefine && countByDefs.getOrDefault(def, zero).get() <= 1) //
 				.map2(def -> (FunpDefine) def) //
+				.filterValue(def -> def.type == Fdt.MONO || def.type == Fdt.POLY) //
 				.toMap();
 
 		var expands = Read //
