@@ -32,6 +32,15 @@ public class Aastocks {
 	}
 
 	private float toFloat(String s) {
+		while (true) {
+			var p0 = s.indexOf('"');
+			var p1 = 0 <= p0 ? s.indexOf('"', p0 + 1) : -1;
+			if (0 <= p1)
+				s = s.substring(0, p0 - 1) + s.substring(p1 + 1);
+			else
+				break;
+		}
+
 		return Float.parseFloat(new String(Chars_.of(s.toCharArray()) //
 				.filter(c -> c == '.' || '0' <= c && c <= '9') //
 				.toArray()));

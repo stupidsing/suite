@@ -15,6 +15,7 @@ import org.apache.http.Header;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.impl.client.HttpClients;
 
+import suite.adt.map.ListMultimap;
 import suite.adt.pair.FixieArray;
 import suite.concurrent.Backoff;
 import suite.os.LogUtil;
@@ -89,10 +90,10 @@ public class HttpUtil {
 
 	public static class HttpResult {
 		public final int responseCode;
-		public final Map<String, String> headers;
+		public final ListMultimap<String, String> headers;
 		public final Outlet<Bytes> out;
 
-		private HttpResult(int responseCode, Map<String, String> headers, Outlet<Bytes> out) {
+		private HttpResult(int responseCode, ListMultimap<String, String> headers, Outlet<Bytes> out) {
 			this.responseCode = responseCode;
 			this.headers = headers;
 			this.out = out;
@@ -183,7 +184,7 @@ public class HttpUtil {
 		var statusLine = response.getStatusLine();
 		var statusCode = statusLine.getStatusCode();
 		var inputStream = response.getEntity().getContent();
-		var headers1 = Read.from(response.getAllHeaders()).map2(Header::getName, Header::getValue).toMap();
+		var headers1 = Read.from(response.getAllHeaders()).map2(Header::getName, Header::getValue).toMultimap();
 		var out = To.outlet(inputStream) //
 				.closeAtEnd(inputStream) //
 				.closeAtEnd(response) //
@@ -226,7 +227,7 @@ public class HttpUtil {
 
 			return http(method, url1, in, headers1);
 		} else if (responseCode == HttpURLConnection.HTTP_OK)
-			return new HttpResult(responseCode, Map.ofEntries(), out);
+			return new HttpResult(responseCode, new ListMultimap<>(), out);
 		else
 			throw new IOException("HTTP returned " + responseCode //
 					+ ": " + url //
