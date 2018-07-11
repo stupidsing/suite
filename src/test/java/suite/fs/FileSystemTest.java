@@ -54,6 +54,12 @@ public class FileSystemTest {
 	}
 
 	private void testLazyIbTree(Path path, boolean isNew, TestCase testCase) throws IOException {
+		if (isNew) {
+			Files.deleteIfExists(path);
+			Files.deleteIfExists(FileUtil.ext(path, ".journal"));
+			Files.deleteIfExists(FileUtil.ext(path, ".pointer"));
+		}
+
 		try (var fs = new LazyIbTreeFileSystemImpl(path, 4096)) {
 			testCase.test(fs);
 		}
