@@ -17,7 +17,7 @@ public class ElfTest {
 
 	@Test
 	public void testFold() {
-		test(100, "io.fold 0 (n => n < 100) (n => io (n + 1))", "");
+		test(100, "io.for (n = 0; n < 100; do (n + 1))", "");
 	}
 
 	// io :: a -> io a
@@ -28,7 +28,7 @@ public class ElfTest {
 
 		var program = "" //
 				+ "let linux := consult \"linux.fp\" ~ \n" //
-				+ "io.perform linux/cat ~ \n" //
+				+ "perform.io linux/io.cat ~ \n" //
 				+ "io 0 \n";
 
 		test(0, program, text);

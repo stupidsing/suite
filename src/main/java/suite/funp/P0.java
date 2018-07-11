@@ -307,20 +307,6 @@ public class P0 {
 		}
 	}
 
-	public static class FunpIoMap implements Funp, P2.End {
-		public Funp expr;
-
-		public static FunpIoMap of(Funp expr) {
-			var f = new FunpIoMap();
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun1<Funp, R> fun) {
-			return fun.apply(expr);
-		}
-	}
-
 	public static class FunpIoWhile implements Funp, P4.End {
 		public Funp while_;
 		public Funp do_;

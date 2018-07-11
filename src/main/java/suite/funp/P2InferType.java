@@ -38,7 +38,6 @@ import suite.funp.P0.FunpIoAsm;
 import suite.funp.P0.FunpIoAssignRef;
 import suite.funp.P0.FunpIoEval;
 import suite.funp.P0.FunpIoFold;
-import suite.funp.P0.FunpIoMap;
 import suite.funp.P0.FunpIoWhile;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
@@ -337,11 +336,6 @@ public class P2InferType {
 				unify(n, TypeLambda.of(tv, typeBoolean), infer(cont));
 				unify(n, TypeLambda.of(tv, tvio), infer(next));
 				return tvio;
-			})).applyIf(FunpIoMap.class, f -> f.apply(expr -> {
-				var ta = unify.newRef();
-				var tb = unify.newRef();
-				unify(n, TypeLambda.of(ta, tb), infer(expr));
-				return TypeLambda.of(TypeIo.of(ta), TypeIo.of(tb));
 			})).applyIf(FunpIoWhile.class, f -> f.apply((while_, do_, expr) -> {
 				unify(n, typeBoolean, infer(while_));
 				var td = infer(do_);
@@ -529,8 +523,6 @@ public class P2InferType {
 				var next_ = e1.apply(m, next, size);
 				var while_ = FunpIoWhile.of(cont_, assign(m, next_, FunpDontCare.of()), m);
 				return FunpAllocStack.of(size, e1.erase(init), while_, offset);
-			})).applyIf(FunpIoMap.class, f -> f.apply(expr -> {
-				return erase(expr);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				var te = unify.newRef();
 				unify(n, typeOf(reference), TypeReference.of(TypeArray.of(te)));

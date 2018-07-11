@@ -31,7 +31,6 @@ import suite.funp.P0.FunpIoAsm;
 import suite.funp.P0.FunpIoAssignRef;
 import suite.funp.P0.FunpIoEval;
 import suite.funp.P0.FunpIoFold;
-import suite.funp.P0.FunpIoMap;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
@@ -150,6 +149,11 @@ public class P0Parse {
 				return FunpReference.of(p(a));
 			}).match("array .0 * .1", (a, b) -> {
 				return FunpRepeat.of(b != Atom.of("_") ? Int.num(b) : -1, p(a));
+			}).match("assign .0 := .1 ~ .2", (a, b, c) -> {
+				var v = FunpVariable.of(Atom.name(a));
+				return isDo() ? FunpIoAssignRef.of(FunpReference.of(v), p(b), p(c)) : fail();
+			}).match("assign ^.0 := .1 ~ .2", (a, b, c) -> {
+				return isDo() ? FunpIoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)) : fail();
 			}).match("byte .0", a -> {
 				return FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(num(a)));
 			}).match("byte", () -> {
@@ -190,7 +194,7 @@ public class P0Parse {
 			}).match("error", () -> {
 				return FunpError.of();
 			}).match("eval.io .0", a -> {
-				return variables.contains(doToken) ? FunpIoEval.of(p(a)) : fail();
+				return isDo() ? FunpIoEval.of(p(a)) : fail();
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
@@ -202,25 +206,10 @@ public class P0Parse {
 					var ma = Suite.pattern(".0 = .1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
 				}).toList(), Tree.iter(b, TermOp.OR____).toList());
-			}).match("io.assign .0 := .1 ~ .2", (a, b, c) -> {
-				var v = FunpVariable.of(Atom.name(a));
-				return FunpIo.of(FunpIoAssignRef.of(FunpReference.of(v), p(b), p(c)));
-			}).match("io.assign ^.0 := .1 ~ .2", (a, b, c) -> {
-				return FunpIo.of(FunpIoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
-			}).match("io.fold .0 .1 .2", (a, b, c) -> {
-				return FunpIoFold.of(p(a), p(b), p(c));
 			}).match("io.for (.0 = .1; .2; .3)", (a, b, c, d) -> {
 				var lambda = lambda(dontCare, Suite.parse("io {}"));
 				var fold = FunpIoFold.of(p(b), lambda(a, c), lambda(a, d));
 				return FunpDefine.of(Fdt.IOAP, lambda.var, fold, lambda.expr);
-			}).match("io.let .0 := .1 ~ .2", (a, b, c) -> {
-				var lambda = lambda(a, c);
-				return FunpDefine.of(Fdt.IOAP, lambda.var, p(b), lambda.expr);
-			}).match("io.map .0", a -> {
-				return FunpIoMap.of(p(a));
-			}).match("io.perform .0 ~ .1", (a, b) -> {
-				var lambda = lambda(dontCare, b);
-				return FunpDefine.of(Fdt.IOAP, lambda.var, p(a), lambda.expr);
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
 				var lambda = lambda(a, c);
 				return FunpDefine.of(Fdt.MONO, lambda.var, p(b), lambda.expr);
@@ -231,6 +220,9 @@ public class P0Parse {
 				return FunpNumber.ofNumber(num(a));
 			}).match("number", () -> {
 				return FunpNumber.of(IntMutable.nil());
+			}).match("perform.io .0 ~ .1", (a, b) -> {
+				var lambda = lambda(dontCare, b);
+				return FunpDefine.of(Fdt.IOAP, lambda.var, p(a), lambda.expr);
 			}).match("predef .0", a -> {
 				return FunpPredefine.of(p(a));
 			}).match("size.of .0", a -> {
@@ -278,6 +270,10 @@ public class P0Parse {
 		private Funp define(Fdt t, Node var, Funp value, Node expr) {
 			var vn = isVar(var) ? Atom.name(var) : null;
 			return vn != null ? FunpDefine.of(t, vn, value, nv(vn).p(expr)) : null;
+		}
+
+		private boolean isDo() {
+			return variables.contains(doToken);
 		}
 
 		private Streamlet<Pair<String, Node>> kvs(Node node) {
