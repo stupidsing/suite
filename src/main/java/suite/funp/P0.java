@@ -157,6 +157,72 @@ public class P0 {
 		}
 	}
 
+	public static class FunpDoAsm implements Funp, P4.End {
+		public List<Pair<OpReg, Funp>> assigns;
+		public List<Node> asm;
+
+		public static FunpDoAsm of(List<Pair<OpReg, Funp>> assigns, List<Node> asm) {
+			var f = new FunpDoAsm();
+			f.assigns = assigns;
+			f.asm = asm;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<List<Pair<OpReg, Funp>>, List<Node>, R> fun) {
+			return fun.apply(assigns, asm);
+		}
+	}
+
+	public static class FunpDoAssignRef implements Funp, P2.End {
+		public FunpReference reference;
+		public Funp value;
+		public Funp expr;
+
+		public static FunpDoAssignRef of(FunpReference reference, Funp value, Funp expr) {
+			var f = new FunpDoAssignRef();
+			f.reference = reference;
+			f.value = value;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun3<FunpReference, Funp, Funp, R> fun) {
+			return fun.apply(reference, value, expr);
+		}
+	}
+
+	public static class FunpDoEval implements Funp, P2.End {
+		public Funp expr;
+
+		public static FunpDoEval of(Funp expr) {
+			var f = new FunpDoEval();
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
+		}
+	}
+
+	public static class FunpDoFold implements Funp, P2.End {
+		public Funp init; // expression
+		public Funp cont; // lambda
+		public Funp next; // lambda
+
+		public static FunpDoFold of(Funp init, Funp cond, Funp next) {
+			var f = new FunpDoFold();
+			f.init = init;
+			f.cont = cond;
+			f.next = next;
+			return f;
+		}
+
+		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
+			return fun.apply(init, cont, next);
+		}
+	}
+
 	public static class FunpDontCare implements Funp, P4.End {
 		public static FunpDontCare of() {
 			return new FunpDontCare();
@@ -164,6 +230,24 @@ public class P0 {
 
 		public <R> R apply(FixieFun0<R> fun) {
 			return fun.apply();
+		}
+	}
+
+	public static class FunpDoWhile implements Funp, P4.End {
+		public Funp while_;
+		public Funp do_;
+		public Funp expr;
+
+		public static FunpDoWhile of(Funp while_, Funp do_, Funp expr) {
+			var f = new FunpDoWhile();
+			f.while_ = while_;
+			f.do_ = do_;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
+			return fun.apply(while_, do_, expr);
 		}
 	}
 
@@ -238,90 +322,6 @@ public class P0 {
 
 		public <R> R apply(FixieFun1<Funp, R> fun) {
 			return fun.apply(expr);
-		}
-	}
-
-	public static class FunpIoAsm implements Funp, P4.End {
-		public List<Pair<OpReg, Funp>> assigns;
-		public List<Node> asm;
-
-		public static FunpIoAsm of(List<Pair<OpReg, Funp>> assigns, List<Node> asm) {
-			var f = new FunpIoAsm();
-			f.assigns = assigns;
-			f.asm = asm;
-			return f;
-		}
-
-		public <R> R apply(FixieFun2<List<Pair<OpReg, Funp>>, List<Node>, R> fun) {
-			return fun.apply(assigns, asm);
-		}
-	}
-
-	public static class FunpIoAssignRef implements Funp, P2.End {
-		public FunpReference reference;
-		public Funp value;
-		public Funp expr;
-
-		public static FunpIoAssignRef of(FunpReference reference, Funp value, Funp expr) {
-			var f = new FunpIoAssignRef();
-			f.reference = reference;
-			f.value = value;
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun3<FunpReference, Funp, Funp, R> fun) {
-			return fun.apply(reference, value, expr);
-		}
-	}
-
-	public static class FunpIoEval implements Funp, P2.End {
-		public Funp expr;
-
-		public static FunpIoEval of(Funp expr) {
-			var f = new FunpIoEval();
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun1<Funp, R> fun) {
-			return fun.apply(expr);
-		}
-	}
-
-	public static class FunpIoFold implements Funp, P2.End {
-		public Funp init; // expression
-		public Funp cont; // lambda
-		public Funp next; // lambda
-
-		public static FunpIoFold of(Funp init, Funp cond, Funp next) {
-			var f = new FunpIoFold();
-			f.init = init;
-			f.cont = cond;
-			f.next = next;
-			return f;
-		}
-
-		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
-			return fun.apply(init, cont, next);
-		}
-	}
-
-	public static class FunpIoWhile implements Funp, P4.End {
-		public Funp while_;
-		public Funp do_;
-		public Funp expr;
-
-		public static FunpIoWhile of(Funp while_, Funp do_, Funp expr) {
-			var f = new FunpIoWhile();
-			f.while_ = while_;
-			f.do_ = do_;
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
-			return fun.apply(while_, do_, expr);
 		}
 	}
 

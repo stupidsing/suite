@@ -5,9 +5,9 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDeref;
+import suite.funp.P0.FunpDoWhile;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpIf;
-import suite.funp.P0.FunpIoWhile;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpTree;
@@ -52,10 +52,10 @@ public class P3Optimize {
 			}).toList());
 		})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 			return optimize(pointer).sw().applyIf(FunpReference.class, g -> g.expr).result();
+		})).applyIf(FunpDoWhile.class, f -> f.apply((while_, do_, expr) -> {
+			return optimize(while_).sw().applyIf(FunpBoolean.class, g -> g.apply(b -> b ? null : expr)).result();
 		})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 			return optimize(if_).sw().applyIf(FunpBoolean.class, g -> g.apply(b -> b ? then : else_)).result();
-		})).applyIf(FunpIoWhile.class, f -> f.apply((while_, do_, expr) -> {
-			return optimize(while_).sw().applyIf(FunpBoolean.class, g -> g.apply(b -> b ? null : expr)).result();
 		})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 			return optimize(pointer).sw( //
 			).applyIf(FunpData.class, g -> g.apply(pairs -> {

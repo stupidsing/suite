@@ -21,16 +21,16 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
+import suite.funp.P0.FunpDoAsm;
+import suite.funp.P0.FunpDoAssignRef;
+import suite.funp.P0.FunpDoEval;
+import suite.funp.P0.FunpDoFold;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
-import suite.funp.P0.FunpIoAsm;
-import suite.funp.P0.FunpIoAssignRef;
-import suite.funp.P0.FunpIoEval;
-import suite.funp.P0.FunpIoFold;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
@@ -149,11 +149,16 @@ public class P0Parse {
 				return FunpReference.of(p(a));
 			}).match("array .0 * .1", (a, b) -> {
 				return FunpRepeat.of(b != Atom.of("_") ? Int.num(b) : -1, p(a));
+			}).match("asm .0 {.1}", (a, b) -> {
+				return isDo() ? FunpDoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
+					var ma = Suite.pattern(".0 = .1").match(n);
+					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
+				}).toList(), Tree.iter(b, TermOp.OR____).toList()) : fail();
 			}).match("assign .0 := .1 ~ .2", (a, b, c) -> {
 				var v = FunpVariable.of(Atom.name(a));
-				return isDo() ? FunpIoAssignRef.of(FunpReference.of(v), p(b), p(c)) : fail();
+				return isDo() ? FunpDoAssignRef.of(FunpReference.of(v), p(b), p(c)) : fail();
 			}).match("assign ^.0 := .1 ~ .2", (a, b, c) -> {
-				return isDo() ? FunpIoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)) : fail();
+				return isDo() ? FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)) : fail();
 			}).match("byte .0", a -> {
 				return FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(num(a)));
 			}).match("byte", () -> {
@@ -194,22 +199,17 @@ public class P0Parse {
 			}).match("error", () -> {
 				return FunpError.of();
 			}).match("eval.io .0", a -> {
-				return isDo() ? FunpIoEval.of(p(a)) : fail();
+				return isDo() ? FunpDoEval.of(p(a)) : fail();
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
 				return FunpIf.of(p(a), p(b), p(c));
 			}).match("io .0", a -> {
 				return FunpIo.of(p(a));
-			}).match("io.asm .0 {.1}", (a, b) -> {
-				return FunpIoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
-					var ma = Suite.pattern(".0 = .1").match(n);
-					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
-				}).toList(), Tree.iter(b, TermOp.OR____).toList());
 			}).match("io.for (.0 = .1; .2; .3)", (a, b, c, d) -> {
-				var lambda = lambda(dontCare, Suite.parse("io {}"));
-				var fold = FunpIoFold.of(p(b), lambda(a, c), lambda(a, d));
-				return FunpDefine.of(Fdt.IOAP, lambda.var, fold, lambda.expr);
+				var lambda = lambda(dontCare, Suite.parse("{}"));
+				var fold = FunpDoFold.of(p(b), lambda(a, c), lambda(a, d));
+				return FunpIo.of(FunpDefine.of(Fdt.IOAP, lambda.var, fold, lambda.expr));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
 				var lambda = lambda(a, c);
 				return FunpDefine.of(Fdt.MONO, lambda.var, p(b), lambda.expr);
@@ -250,6 +250,8 @@ public class P0Parse {
 						.toList());
 				return FunpDefine.of(Fdt.GLOB, vn, fa, FunpReference.of(FunpVariable.of(vn)));
 			}).applyTree((op, l, r) -> {
+				if (op == TermOp.CONTD_)
+					System.out.println(node);
 				return FunpTree.of(op, p(l), p(r));
 			}).nonNullResult();
 		}
@@ -398,7 +400,7 @@ public class P0Parse {
 							.range(size0) //
 							.fold(then, (i, then_) -> bind(pairs0.get(i).t1, fun.apply(i), then_, else_));
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-					return variables.contains(var) ? FunpIoAssignRef.of(FunpReference.of(f), value, then) : be;
+					return variables.contains(var) ? FunpDoAssignRef.of(FunpReference.of(f), value, then) : be;
 				})).result();
 
 				return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);

@@ -18,7 +18,7 @@ import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
-import suite.funp.P0.FunpIoAssignRef;
+import suite.funp.P0.FunpDoAssignRef;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
@@ -169,7 +169,7 @@ public class P0CrudeScript {
 					var ref0 = FunpReference.of(e0);
 
 					var e1 = pre_ == 0 ? e0
-							: FunpIoAssignRef.of(ref0, FunpTree.of(TermOp.PLUS__, e0, FunpNumber.ofNumber(pre_)), e0);
+							: FunpDoAssignRef.of(ref0, FunpTree.of(TermOp.PLUS__, e0, FunpNumber.ofNumber(pre_)), e0);
 					var e2 = post == 0 ? e1 : Friends.<Funp> fail();
 					return s == e ? e2 : fail();
 				}).match("expression-prop (.0, .1)", (a, b) -> {

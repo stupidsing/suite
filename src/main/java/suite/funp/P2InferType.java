@@ -28,17 +28,17 @@ import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
+import suite.funp.P0.FunpDoAsm;
+import suite.funp.P0.FunpDoAssignRef;
+import suite.funp.P0.FunpDoEval;
+import suite.funp.P0.FunpDoFold;
+import suite.funp.P0.FunpDoWhile;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
-import suite.funp.P0.FunpIoAsm;
-import suite.funp.P0.FunpIoAssignRef;
-import suite.funp.P0.FunpIoEval;
-import suite.funp.P0.FunpIoFold;
-import suite.funp.P0.FunpIoWhile;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
@@ -141,7 +141,7 @@ public class P2InferType {
 						var ev = "ev$" + Util.temp();
 						evs.add(Pair.of(ev, expr));
 						var var = FunpVariable.of(ev);
-						return FunpIoAssignRef.of(FunpReference.of(var), extract(expr), var);
+						return FunpDoAssignRef.of(FunpReference.of(var), extract(expr), var);
 					})).result();
 				});
 			}
@@ -289,24 +289,7 @@ public class P2InferType {
 				var t = unify.newRef();
 				unify(n, TypeReference.of(t), infer(pointer));
 				return t;
-			})).applyIf(FunpDontCare.class, f -> {
-				return unify.newRef();
-			}).applyIf(FunpError.class, f -> {
-				return unify.newRef();
-			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
-				var tf = unify.newRef();
-				var ts = TypeStruct.of();
-				ts.pairs.add(Pair.of(field, tf));
-				unify(n, infer(reference), TypeReference.of(ts));
-				return tf;
-			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
-				UnNode<Type> t;
-				unify(n, typeBoolean, infer(if_));
-				unify(n, t = infer(then), infer(else_));
-				return t;
-			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
-				return TypeIo.of(infer(expr));
-			})).applyIf(FunpIoAsm.class, f -> f.apply((assigns, asm) -> {
+			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
 				for (var assign : assigns) {
 					var size = assign.t0.size;
 					var tp = infer(assign.t1);
@@ -321,28 +304,45 @@ public class P2InferType {
 							return fail();
 					});
 				}
-				return TypeIo.of(typeNumber);
-			})).applyIf(FunpIoAssignRef.class, f -> f.apply((reference, value, expr) -> {
+				return typeNumber;
+			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), TypeReference.of(infer(value)));
 				return infer(expr);
-			})).applyIf(FunpIoEval.class, f -> f.apply(expr -> {
+			})).applyIf(FunpDoEval.class, f -> f.apply(expr -> {
 				var t = unify.newRef();
 				unify(n, TypeIo.of(t), infer(expr));
 				return t;
-			})).applyIf(FunpIoFold.class, f -> f.apply((init, cont, next) -> {
+			})).applyIf(FunpDoFold.class, f -> f.apply((init, cont, next) -> {
 				var tv = unify.newRef();
 				var tvio = TypeIo.of(tv);
 				unify(n, tv, infer(init));
 				unify(n, TypeLambda.of(tv, typeBoolean), infer(cont));
 				unify(n, TypeLambda.of(tv, tvio), infer(next));
 				return tvio;
-			})).applyIf(FunpIoWhile.class, f -> f.apply((while_, do_, expr) -> {
+			})).applyIf(FunpDontCare.class, f -> {
+				return unify.newRef();
+			}).applyIf(FunpDoWhile.class, f -> f.apply((while_, do_, expr) -> {
 				unify(n, typeBoolean, infer(while_));
 				var td = infer(do_);
 				if (td.final_() == td)
 					unify(n, td, typeBoolean); // enforces a type to prevent
 												// exception
 				return infer(expr);
+			})).applyIf(FunpError.class, f -> {
+				return unify.newRef();
+			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
+				var tf = unify.newRef();
+				var ts = TypeStruct.of();
+				ts.pairs.add(Pair.of(field, tf));
+				unify(n, infer(reference), TypeReference.of(ts));
+				return tf;
+			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
+				UnNode<Type> t;
+				unify(n, typeBoolean, infer(if_));
+				unify(n, t = infer(then), infer(else_));
+				return t;
+			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
+				return TypeIo.of(infer(expr));
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				var te = unify.newRef();
 				unify(n, TypeReference.of(TypeArray.of(te)), infer(reference));
@@ -485,6 +485,28 @@ public class P2InferType {
 				return FunpAllocStack.of(offset, FunpDontCare.of(), expr2, offsetStack);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
+			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
+				env // disable register locals
+						.streamlet2() //
+						.values() //
+						.filter(var -> var.scope != null && var.scope == scope) //
+						.sink(var -> var.setReg(false));
+
+				return FunpSaveRegisters.of(FunpDoAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
+			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
+				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
+			})).applyIf(FunpDoEval.class, f -> f.apply(expr -> {
+				return erase(expr);
+			})).applyIf(FunpDoFold.class, f -> f.apply((init, cont, next) -> {
+				var offset = IntMutable.nil();
+				var size = getTypeSize(typeOf(init));
+				var var_ = new Var(scope, offset, 0, size);
+				var e1 = new Erase(scope, env.replace("fold$" + Util.temp(), var_));
+				var m = getVariable(var_);
+				var cont_ = e1.apply(m, cont, size);
+				var next_ = e1.apply(m, next, size);
+				var while_ = FunpDoWhile.of(cont_, assign(m, next_, FunpDontCare.of()), m);
+				return FunpAllocStack.of(size, e1.erase(init), while_, offset);
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
 				var ts = TypeStruct.of();
 				unify(n, typeOf(reference), TypeReference.of(ts));
@@ -501,28 +523,6 @@ public class P2InferType {
 				return fail();
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return erase(expr);
-			})).applyIf(FunpIoAsm.class, f -> f.apply((assigns, asm) -> {
-				env // disable register locals
-						.streamlet2() //
-						.values() //
-						.filter(var -> var.scope != null && var.scope == scope) //
-						.sink(var -> var.setReg(false));
-
-				return FunpSaveRegisters.of(FunpIoAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
-			})).applyIf(FunpIoAssignRef.class, f -> f.apply((reference, value, expr) -> {
-				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
-			})).applyIf(FunpIoEval.class, f -> f.apply(expr -> {
-				return erase(expr);
-			})).applyIf(FunpIoFold.class, f -> f.apply((init, cont, next) -> {
-				var offset = IntMutable.nil();
-				var size = getTypeSize(typeOf(init));
-				var var_ = new Var(scope, offset, 0, size);
-				var e1 = new Erase(scope, env.replace("fold$" + Util.temp(), var_));
-				var m = getVariable(var_);
-				var cont_ = e1.apply(m, cont, size);
-				var next_ = e1.apply(m, next, size);
-				var while_ = FunpIoWhile.of(cont_, assign(m, next_, FunpDontCare.of()), m);
-				return FunpAllocStack.of(size, e1.erase(init), while_, offset);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				var te = unify.newRef();
 				unify(n, typeOf(reference), TypeReference.of(TypeArray.of(te)));
@@ -553,7 +553,7 @@ public class P2InferType {
 				return new Object() {
 					private Funp getAddress(Funp n) {
 						return n.sw( //
-						).applyIf(FunpIoAssignRef.class, f -> f.apply((reference, value, expr) -> {
+						).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 							return FunpAssignMem.of(memory(reference, f), erase(value), getAddress(expr));
 						})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 							return erase(pointer);

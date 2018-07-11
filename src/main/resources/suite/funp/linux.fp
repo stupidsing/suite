@@ -1,20 +1,20 @@
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
-expand peek .pointer := eval.io io.asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
-expand (poke (.pointer, .value) ~ .expr) := (perform.io io.asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~ .expr) ~
+expand peek .pointer := asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
+expand poke (.pointer, .value) := asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
 
-define io.mmap length :=
+define io.mmap length := do
 	let ps := [0, length, 3, 34, -1, 0,] ~
-	io.asm (EAX = 90; EBX = address ps;) { INT (-128); }
+	asm (EAX = 90; EBX = address ps;) { INT (-128); }
 ~
 
-define io.munmap (length, pointer) :=
+define io.munmap (length, pointer) := do
 	--type pointer = address (array byte * buffer.size) ~
 	type pointer = number ~
-	io.asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
+	asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
 ~
 
 let.global alloc.pointer := 0 ~
@@ -30,7 +30,7 @@ define io.alloc size0 := do
 				if (peek chain != size) then (
 					eval.io io.alloc.chain coerce.pointer pointer1
 				) else (
-					poke (pointer, peek pointer1) ~
+					let _ := poke (pointer, peek pointer1) ~
 					chain
 				)
 			) else 0
@@ -41,7 +41,7 @@ define io.alloc size0 := do
 		let ap := alloc.pointer ~
 		let pointer.head := if (ap != 0) then ap else ap ~
 		let pointer.block := pointer.head + 4 ~
-		poke (pointer.head, size) ~
+		let _ := poke (pointer.head, size) ~
 		assign alloc.pointer := pointer.block + size ~
 		pointer.block
 	) else p0
@@ -51,7 +51,7 @@ define io.dealloc (size0, pointer.block) := do
 	let size := max (4, size0) ~
 	let pointer.head := pointer.block - 4 ~
 	assert (size = peek pointer.head) ~
-	poke (pointer.block, alloc.free.chain) ~
+	let _ := poke (pointer.block, alloc.free.chain) ~
 	assign alloc.free.chain := pointer.head ~
 	{}
 ~
@@ -78,20 +78,20 @@ define new.mut.number init := do
 	}
 ~
 
-define io.read (pointer, length) :=
+define io.read (pointer, length) := do
 	type pointer = address (array byte * _) ~
-	io.asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
+	asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
-define io.write (pointer, length) :=
+define io.write (pointer, length) := do
 	type pointer = address (array byte * _) ~
-	io.asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
+	asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
 define io.write.all (pointer, length) :=
 	type pointer = address (array byte * _) ~
 	io.for (n = length; 0 < n; do
-		let p1 := eval.io io.asm (EAX = pointer; EBX = length; ECX = n;) { ADD (EAX, EBX); SUB (EAX, ECX); } ~
+		let p1 := asm (EAX = pointer; EBX = length; ECX = n;) { ADD (EAX, EBX); SUB (EAX, ECX); } ~
 		let n1 := eval.io io.write (coerce.pointer p1, n) ~
 		assert (n1 != 0) ~
 		n - n1

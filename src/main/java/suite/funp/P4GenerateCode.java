@@ -1,4 +1,6 @@
-package suite.funp; import static java.util.Map.entry;
+package suite.funp;
+
+import static java.util.Map.entry;
 import static suite.util.Friends.fail;
 
 import java.util.List;
@@ -20,11 +22,11 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpCoerce.Coerce;
+import suite.funp.P0.FunpDoAsm;
+import suite.funp.P0.FunpDoWhile;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpIf;
-import suite.funp.P0.FunpIoAsm;
-import suite.funp.P0.FunpIoWhile;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
@@ -201,9 +203,42 @@ public class P4GenerateCode {
 					return returnAssign((c1, t) -> Read //
 							.from2(pairs) //
 							.sink((n_, ofs) -> c1.compileAssign(n_, FunpMemory.of(t.pointer, t.start + ofs.t0, t.start + ofs.t1))));
+				})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
+					var p = new Amd64Parse();
+					new Object() {
+						private Object assign(Compile1 c1, int i) {
+							return i < assigns.size() ? assigns.get(i).map((op, f) -> {
+								c1.compileLoad(f, op);
+								return assign(c1.mask(op), i + 1);
+							}) : this;
+						}
+					}.assign(this, 0);
+
+					Read.from(asm).map(p::parse).sink(em::emit);
+					return returnIsOp(eax);
 				})).applyIf(FunpDontCare.class, f -> {
 					return returnDontCare();
-				}).applyIf(FunpError.class, f -> {
+				}).applyIf(FunpDoWhile.class, f -> f.apply((while_, do_, expr) -> {
+					var loopLabel = em.label();
+					var contLabel = em.label();
+					var exitLabel = em.label();
+
+					em.emit(amd64.instruction(Insn.LABEL, loopLabel));
+					Source<Boolean> r;
+
+					if ((r = new P4JumpIf(compileCmpJmp(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
+						;
+					else if ((r = new P4JumpIf(compileCmpJmp(contLabel)).new JumpIf(while_).jxxIf()) != null && r.source()) {
+						em.emit(amd64.instruction(Insn.JMP, exitLabel));
+						em.emit(amd64.instruction(Insn.LABEL, contLabel));
+					} else
+						compileJumpZero(while_, exitLabel);
+
+					compileIsOp(do_);
+					em.emit(amd64.instruction(Insn.JMP, loopLabel));
+					em.emit(amd64.instruction(Insn.LABEL, exitLabel));
+					return compile(expr);
+				})).applyIf(FunpError.class, f -> {
 					em.emit(amd64.instruction(Insn.HLT));
 					return returnDontCare();
 				}).applyIf(FunpFramePointer.class, t -> {
@@ -279,39 +314,6 @@ public class P4GenerateCode {
 						var c3 = c2.mask(r1 = c2.compileFramePointer());
 						c3.compileMove(r0, target.start, r1, c3.fd + is, target.size());
 					});
-				})).applyIf(FunpIoAsm.class, f -> f.apply((assigns, asm) -> {
-					var p = new Amd64Parse();
-					new Object() {
-						private Object assign(Compile1 c1, int i) {
-							return i < assigns.size() ? assigns.get(i).map((op, f) -> {
-								c1.compileLoad(f, op);
-								return assign(c1.mask(op), i + 1);
-							}) : this;
-						}
-					}.assign(this, 0);
-
-					Read.from(asm).map(p::parse).sink(em::emit);
-					return returnIsOp(eax);
-				})).applyIf(FunpIoWhile.class, f -> f.apply((while_, do_, expr) -> {
-					var loopLabel = em.label();
-					var contLabel = em.label();
-					var exitLabel = em.label();
-
-					em.emit(amd64.instruction(Insn.LABEL, loopLabel));
-					Source<Boolean> r;
-
-					if ((r = new P4JumpIf(compileCmpJmp(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
-						;
-					else if ((r = new P4JumpIf(compileCmpJmp(contLabel)).new JumpIf(while_).jxxIf()) != null && r.source()) {
-						em.emit(amd64.instruction(Insn.JMP, exitLabel));
-						em.emit(amd64.instruction(Insn.LABEL, contLabel));
-					} else
-						compileJumpZero(while_, exitLabel);
-
-					compileIsOp(do_);
-					em.emit(amd64.instruction(Insn.JMP, loopLabel));
-					em.emit(amd64.instruction(Insn.LABEL, exitLabel));
-					return compile(expr);
 				})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 					var size = end - start;
 					Operand op0, op1;

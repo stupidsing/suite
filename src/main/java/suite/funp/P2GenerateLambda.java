@@ -1,4 +1,6 @@
-package suite.funp; import static suite.util.Friends.fail;
+package suite.funp;
+
+import static suite.util.Friends.fail;
 
 import java.util.Map;
 
@@ -10,13 +12,13 @@ import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDeref;
+import suite.funp.P0.FunpDoFold;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
-import suite.funp.P0.FunpIoFold;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
@@ -133,7 +135,21 @@ public class P2GenerateLambda {
 			})).applyIf(FunpDeref.class, f -> {
 				var p = compile_(f);
 				return rt -> ((Ref) p.apply(rt)).v;
-			}).applyIf(FunpDontCare.class, f -> {
+			}).applyIf(FunpDoFold.class, f -> f.apply((init, cont, next) -> {
+				var var1 = "fold$" + Util.temp();
+				var fs1 = fs + 1;
+				var init_ = compile_(init);
+				var var_ = FunpVariable.of(var1);
+				var compile1 = new Compile(fs1, env.replace(var1, fs1));
+				var cont_ = compile1.compile_(FunpApply.of(var_, cont));
+				var next_ = compile1.compile_(FunpApply.of(var_, next));
+				return rt -> {
+					var rt1 = new Rt(rt, init_.apply(rt));
+					while (b(rt1, cont_))
+						rt1.var = next_.apply(rt1);
+					return rt1.var;
+				};
+			})).applyIf(FunpDontCare.class, f -> {
 				return rt -> new Int(0);
 			}).applyIf(FunpError.class, f -> {
 				return rt -> fail();
@@ -151,20 +167,6 @@ public class P2GenerateLambda {
 				return rt -> ((Vec) array.apply(rt)).values[i(rt, index1)];
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return compile_(expr);
-			})).applyIf(FunpIoFold.class, f -> f.apply((init, cont, next) -> {
-				var var1 = "fold$" + Util.temp();
-				var fs1 = fs + 1;
-				var init_ = compile_(init);
-				var var_ = FunpVariable.of(var1);
-				var compile1 = new Compile(fs1, env.replace(var1, fs1));
-				var cont_ = compile1.compile_(FunpApply.of(var_, cont));
-				var next_ = compile1.compile_(FunpApply.of(var_, next));
-				return rt -> {
-					var rt1 = new Rt(rt, init_.apply(rt));
-					while (b(rt1, cont_))
-						rt1.var = next_.apply(rt1);
-					return rt1.var;
-				};
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				var fs1 = fs + 1;
 				var thunk = compile(fs1, env.replace(var, fs1), expr);
