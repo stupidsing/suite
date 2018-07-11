@@ -421,7 +421,7 @@ public class P2InferType {
 			return n.sw( //
 			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 				var size = getTypeSize(typeOf(value));
-				return apply(erase(value), lambda, size);
+				return applyOnce(erase(value), lambda, size);
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
 				var te = unify.newRef();
 				unify(n, type0, TypeArray.of(te));
@@ -436,24 +436,9 @@ public class P2InferType {
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
-				if (type == Fdt.IOAP || type == Fdt.MONO || type == Fdt.POLY) {
-					var size = getTypeSize(typeOf(value));
-					var op = Mutable.<Operand> nil();
-					var offset = IntMutable.nil();
-					var vd = new Var(f, op, scope, offset, null, 0, size);
-					var e1 = new Erase(scope, env.replace(var, vd));
-					var value1 = erase(value);
-					var expr1 = e1.erase(expr);
-
-					// if erase is called twice,
-					// pass 1: check for any reference accesses to locals, set
-					// isRegByNode;
-					// pass 2: put locals to registers according to isRegByNode.
-					var n1 = vd.isReg() ? FunpAllocReg.of(size, value1, expr1, op) : FunpAllocStack.of(size, value1, expr1, offset);
-
-					isRegByNode.putIfAbsent(f, size == is);
-					return n1;
-				} else if (type == Fdt.GLOB) {
+				if (type == Fdt.IOAP || type == Fdt.MONO || type == Fdt.POLY)
+					return defineLocal(f, var, value, expr);
+				else if (type == Fdt.GLOB) {
 					var size = getTypeSize(typeOf(value));
 					var address = Mutable.<Operand> nil();
 					var e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
@@ -505,8 +490,8 @@ public class P2InferType {
 				var var_ = new Var(scope, offset, 0, size);
 				var e1 = new Erase(scope, env.replace("fold$" + Util.temp(), var_));
 				var m = getVariable(var_);
-				var cont_ = e1.apply(m, cont, size);
-				var next_ = e1.apply(m, next, size);
+				var cont_ = e1.applyOnce(m, cont, size);
+				var next_ = e1.applyOnce(m, next, size);
 				var while_ = FunpDoWhile.of(cont_, assign(m, next_, FunpDontCare.of()), m);
 				return FunpAllocStack.of(size, e1.erase(init), while_, offset);
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
@@ -614,6 +599,14 @@ public class P2InferType {
 			})).result();
 		}
 
+		private Funp applyOnce(Funp value, Funp lambda, int size) {
+			// if (lambda instanceof FunpLambda) // expand if possible
+			// return ((FunpLambda) lambda).apply((var, expr) ->
+			// defineLocal(lambda, var, value, erase(expr)));
+			// else
+			return apply(value, lambda, size);
+		}
+
 		private FunpSaveRegisters apply(Funp value, Funp lambda, int size) {
 			var lt = new LambdaType(lambda);
 			var lambda1 = erase(lambda);
@@ -635,6 +628,25 @@ public class P2InferType {
 					.applyIf(FunpMemory.class, f -> FunpAssignMem.of(f, value, expr)) //
 					.applyIf(FunpOperand.class, f -> FunpAssignOp.of(f, value, expr)) //
 					.nonNullResult();
+		}
+
+		private Funp defineLocal(Funp f, String var, Funp value, Funp expr) {
+			var size = getTypeSize(typeOf(value));
+			var op = Mutable.<Operand> nil();
+			var offset = IntMutable.nil();
+			var vd = new Var(f, op, scope, offset, null, 0, size);
+			var e1 = new Erase(scope, env.replace(var, vd));
+			var value1 = erase(value);
+			var expr1 = e1.erase(expr);
+
+			// if erase is called twice,
+			// pass 1: check for any reference accesses to locals, set
+			// isRegByNode;
+			// pass 2: put locals to registers according to isRegByNode.
+			var n1 = vd.isReg() ? FunpAllocReg.of(size, value1, expr1, op) : FunpAllocStack.of(size, value1, expr1, offset);
+
+			isRegByNode.putIfAbsent(f, size == is);
+			return n1;
 		}
 
 		private Funp eraseRoutine(LambdaType lt, Funp frame, Funp expr) {
