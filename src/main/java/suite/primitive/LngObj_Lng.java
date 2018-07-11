@@ -1,6 +1,4 @@
-package suite.primitive;
-
-import suite.util.Fail;
+package suite.primitive; import static suite.util.Friends.fail;
 
 public interface LngObj_Lng<T> {
 
@@ -11,7 +9,7 @@ public interface LngObj_Lng<T> {
 			try {
 				return apply(c, t);
 			} catch (Exception ex) {
-				return Fail.t("for " + c + ":" + t + ", ", ex);
+				return fail("for " + c + ":" + t + ", ", ex);
 			}
 		};
 	}

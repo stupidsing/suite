@@ -1,5 +1,6 @@
 package suite.funp;
 
+import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
-import suite.util.Fail;
+import suite.util.Friends;
 import suite.util.String_;
 import suite.util.Switch;
 import suite.util.Util;
@@ -114,7 +115,7 @@ public class P2InferType {
 
 		if (unify.unify(t, new Infer(IMap.empty(), checks).infer(n2))) {
 			if (!Read.from(checks).isAll(Source<Boolean>::source))
-				Fail.t();
+				fail();
 
 			var erase = new Erase(0, IMap.empty());
 			erase.erase(n2); // first pass
@@ -177,7 +178,7 @@ public class P2InferType {
 					else if (type == Fdt.GLOB)
 						c1 = new Capture(accesses, locals, globals.add(var));
 					else
-						c1 = Fail.t();
+						c1 = fail();
 					return FunpDefine.of(type, var, capture(value), c1.capture(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 					var locals1 = Read.from(vars).fold(locals, (l, pair) -> l.add(pair.t0));
@@ -215,7 +216,7 @@ public class P2InferType {
 			}
 		}
 
-		return new Capture(Fail::t, ISet.empty(), ISet.empty()).capture(node0);
+		return new Capture(Friends::fail, ISet.empty(), ISet.empty()).capture(node0);
 	}
 
 	private class Infer {
@@ -267,7 +268,7 @@ public class P2InferType {
 				else if (coerce == Coerce.POINTER)
 					return TypeReference.of(unify.newRef());
 				else
-					return Fail.t();
+					return fail();
 			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
 				return newEnv(env.replace(var, Pair.of(type == Fdt.POLY, infer(value, var)))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
@@ -312,7 +313,7 @@ public class P2InferType {
 						else if (size == is)
 							return unify(n, typeNumber, tp);
 						else
-							return Fail.t();
+							return fail();
 					});
 				}
 				return TypeIo.of(typeNumber);
@@ -461,7 +462,7 @@ public class P2InferType {
 					var expr1 = FunpAssignMem.of(FunpMemory.of(FunpOperand.of(address), 0, size), erase(value), e1.erase(expr));
 					return FunpAllocGlobal.of(var, size, expr1, address);
 				} else
-					return Fail.t();
+					return fail();
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var assigns = new ArrayList<Pair<Var, Funp>>();
 				var offsetStack = IntMutable.nil();
@@ -499,7 +500,7 @@ public class P2InferType {
 						else
 							return FunpMemory.of(erase(reference), offset, offset1);
 					}
-				return Fail.t();
+				return fail();
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpIoAsm.class, f -> f.apply((assigns, asm) -> {
@@ -594,7 +595,7 @@ public class P2InferType {
 						list.add(Pair.of(erase(values.get(pair.t0)), IntIntPair.of(offset0, offset += getTypeSize(pair.t1))));
 					}
 				else
-					Fail.t();
+					fail();
 
 				return FunpData.of(list);
 			})).applyIf(FunpTree.class, f -> f.apply((op, l, r) -> {
@@ -748,7 +749,7 @@ public class P2InferType {
 	private int getTypeSize(UnNode<Type> n) {
 		var result = new Switch<Integer>(n.final_() //
 		).applyIf(TypeArray.class, t -> t.apply((elementType, size) -> {
-			return 0 <= size ? getTypeSize(elementType) * size : Fail.t();
+			return 0 <= size ? getTypeSize(elementType) * size : fail();
 		})).applyIf(TypeBoolean.class, t -> {
 			return Funp_.booleanSize;
 		}).applyIf(TypeByte.class, t -> {

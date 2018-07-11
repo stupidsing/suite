@@ -1,4 +1,4 @@
-package suite.parser;
+package suite.parser; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 
 import suite.streamlet.FunUtil.Source;
-import suite.util.Fail;
 
 /**
  * Lexical analyzer.
@@ -119,7 +118,7 @@ public class Lexer {
 			else
 				eof = true;
 		} catch (IOException ex) {
-			Fail.t(ex);
+			fail(ex);
 		}
 		return ch;
 	}

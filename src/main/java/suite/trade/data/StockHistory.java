@@ -1,4 +1,4 @@
-package suite.trade.data;
+package suite.trade.data; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +17,6 @@ import suite.streamlet.Streamlet;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.DataSource.Datum;
-import suite.util.Fail;
 import suite.util.Set_;
 import suite.util.String_;
 
@@ -75,7 +74,7 @@ public class StockHistory {
 				pairs.add(LngFltPair.of(time.epochSec(timeZone), price));
 			}
 		else
-			Fail.t();
+			fail();
 
 		return pairs.toArray(new LngFltPair[0]);
 	}

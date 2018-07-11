@@ -1,4 +1,4 @@
-package suite.sample;
+package suite.sample; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +21,6 @@ import suite.node.util.Rewrite;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 import suite.util.To;
 
 /**
@@ -72,9 +71,9 @@ public class Chr {
 				else if (key == Atom.of("when"))
 					rule.when = value;
 				else
-					Fail.t("invalid key " + key);
+					fail("invalid key " + key);
 			} else
-				Fail.t("invalid rule " + node);
+				fail("invalid rule " + node);
 		}
 
 		rules.add(rule);

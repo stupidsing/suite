@@ -1,11 +1,10 @@
-package suite.primitive;
+package suite.primitive; import static suite.util.Friends.fail;
 
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.Longs.LongsBuilder;
 import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.LngStreamlet;
 import suite.streamlet.FunUtil.Fun;
-import suite.util.Fail;
 
 public interface Dbl_Lng {
 
@@ -39,7 +38,7 @@ public interface Dbl_Lng {
 			try {
 				return apply(t);
 			} catch (Exception ex) {
-				return Fail.t("for key " + t, ex);
+				return fail("for key " + t, ex);
 			}
 		};
 	}

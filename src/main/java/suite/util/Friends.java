@@ -24,6 +24,22 @@ public class Friends {
 		return Math.expm1(a);
 	}
 
+	public static <T> T fail() {
+		return fail(null, null);
+	}
+
+	public static <T> T fail(String m) {
+		return fail(m, null);
+	}
+
+	public static <T> T fail(Throwable th) {
+		return fail(null, th);
+	}
+
+	public static <T> T fail(String m, Throwable th) {
+		return Fail.t(m, th);
+	}
+
 	public static double log(double a) {
 		return Math.log(a);
 	}

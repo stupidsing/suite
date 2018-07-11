@@ -1,4 +1,4 @@
-package suite.streamlet;
+package suite.streamlet; import static suite.util.Friends.fail;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -8,7 +8,6 @@ import java.util.function.Predicate;
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
 import suite.streamlet.FunUtil2.Source2;
-import suite.util.Fail;
 import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.NullableSyncQueue;
 import suite.util.Rethrow;
@@ -31,7 +30,7 @@ public class FunUtil {
 				try {
 					sink(t);
 				} catch (Exception ex) {
-					Fail.t("for " + t, ex);
+					fail("for " + t, ex);
 				}
 			};
 		}
@@ -43,7 +42,7 @@ public class FunUtil {
 				try {
 					return apply(i);
 				} catch (Exception ex) {
-					return Fail.t("for " + i, ex);
+					return fail("for " + i, ex);
 				}
 			};
 		}
@@ -256,7 +255,7 @@ public class FunUtil {
 				return queue.take();
 			} catch (InterruptedException | InterruptedRuntimeException ex) {
 				thread.interrupt();
-				return Fail.t(ex);
+				return fail(ex);
 			}
 		};
 	}

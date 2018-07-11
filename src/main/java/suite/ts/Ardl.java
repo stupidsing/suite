@@ -1,11 +1,10 @@
-package suite.ts;
+package suite.ts; import static suite.util.Friends.fail;
 
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Floats_;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltObjPair;
-import suite.util.Fail;
 import suite.util.To;
 
 /**
@@ -37,7 +36,7 @@ public class Ardl {
 						.range(length - maxLag) //
 						.map(t -> FltObjPair.of(fs[t], getExplanatoryVariables(fsList, it, t))));
 			else
-				return Fail.t("wrong input sizes");
+				return fail("wrong input sizes");
 		});
 	}
 

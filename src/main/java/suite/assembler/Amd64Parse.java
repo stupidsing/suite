@@ -1,4 +1,4 @@
-package suite.assembler;
+package suite.assembler; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 
@@ -13,7 +13,6 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 
 public class Amd64Parse {
 
@@ -51,7 +50,7 @@ public class Amd64Parse {
 			opImm.size = 4;
 			return opImm;
 		} else
-			return Fail.t("bad operand");
+			return fail("bad operand");
 	}
 
 	private Operand parseOpMem(Node[] m, int size) {
@@ -67,17 +66,17 @@ public class Amd64Parse {
 					opMem.indexReg = amd64.regByName.get(m[0]).reg;
 					opMem.scale = Int.num(m[1]);
 				} else
-					Fail.t("bad operand");
+					fail("bad operand");
 			else if (component instanceof Int)
 				if (opMem.dispSize == 0) {
 					opMem.disp = Int.num(component);
 					opMem.dispSize = 4;
 				} else
-					Fail.t("bad operand");
+					fail("bad operand");
 			else if (opMem.baseReg < 0)
 				opMem.baseReg = amd64.regByName.get(component).reg;
 			else
-				Fail.t("bad operand");
+				fail("bad operand");
 		return opMem;
 	}
 

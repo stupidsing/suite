@@ -1,4 +1,4 @@
-package suite.instructionexecutor;
+package suite.instructionexecutor; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,6 @@ import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.os.LogUtil;
-import suite.util.Fail;
 
 public class InstructionExecutor implements AutoCloseable {
 
@@ -126,7 +125,7 @@ public class InstructionExecutor implements AutoCloseable {
 					current.frame = new Frame(parent, frameBegin.op0);
 					break;
 				case ERROR_________:
-					Fail.t("error termination");
+					fail("error termination");
 				case EVALADD_______:
 					regs[insn.op0] = number(Int.num(regs[insn.op1]) + Int.num(regs[insn.op2]));
 					break;
@@ -240,7 +239,7 @@ public class InstructionExecutor implements AutoCloseable {
 					sp = exec.sp;
 				}
 			} catch (Exception ex) {
-				Fail.t("at IP = " + ip, ex);
+				fail("at IP = " + ip, ex);
 			}
 	}
 
@@ -251,7 +250,7 @@ public class InstructionExecutor implements AutoCloseable {
 	}
 
 	protected void handle(Exec exec, Instruction insn) {
-		Fail.t("unknown instruction " + insn);
+		fail("unknown instruction " + insn);
 	}
 
 	protected void postprocessInstructions(List<Instruction> list) {

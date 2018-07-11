@@ -1,4 +1,4 @@
-package suite.util;
+package suite.util; import static suite.util.Friends.fail;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -57,7 +57,7 @@ public class ReadStream extends InputStream {
 		try (var is = this) {
 			return fun.apply(is);
 		} catch (IOException ex) {
-			return Fail.t(ex);
+			return fail(ex);
 		}
 	}
 

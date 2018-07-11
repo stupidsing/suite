@@ -1,5 +1,4 @@
-package suite.util;
-
+package suite.util; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.ByteArrayInputStream;
@@ -62,7 +61,7 @@ public class XmlUtil {
 			lss.write(documentBuilder.parse(is), lso);
 			return writer.toString();
 		} catch (IOException ex) {
-			return Fail.t(ex);
+			return fail(ex);
 		}
 	}
 

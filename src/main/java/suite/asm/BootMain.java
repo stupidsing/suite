@@ -1,4 +1,4 @@
-package suite.asm;
+package suite.asm; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -7,7 +7,6 @@ import java.nio.file.Paths;
 import suite.ip.ImperativeCompiler;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
-import suite.util.Fail;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 import suite.util.RunUtil.RunOption;
@@ -38,7 +37,7 @@ public class BootMain extends ExecutableProgram {
 			System.out.println("qemu-system-x86_64 target/boot.bin");
 			return true;
 		} else
-			return Fail.t("size not match");
+			return fail("size not match");
 	}
 
 }

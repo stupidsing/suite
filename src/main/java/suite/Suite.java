@@ -1,5 +1,4 @@
-package suite;
-
+package suite; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
@@ -32,7 +31,6 @@ import suite.node.parser.IterativeParser;
 import suite.primitive.IoSink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
-import suite.util.Fail;
 
 public class Suite {
 
@@ -185,7 +183,7 @@ public class Suite {
 			evaluateFilterFun(program, reader, writer, isLazy, isDo);
 			return writer.toString();
 		} catch (IOException ex) {
-			return Fail.t(ex);
+			return fail(ex);
 		}
 	}
 

@@ -1,4 +1,4 @@
-package suite.primitive.streamlet;
+package suite.primitive.streamlet; import static suite.util.Friends.fail;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -34,7 +34,6 @@ import suite.streamlet.OutletDefaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Array_;
-import suite.util.Fail;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
 import suite.util.To;
@@ -292,7 +291,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		if (pair != null)
 			return pair;
 		else
-			return Fail.t("no result");
+			return fail("no result");
 	}
 
 	public IntObjPair<V> minOrNull(Comparator<IntObjPair<V>> comparator) {
@@ -337,7 +336,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 			if (!next(pair))
 				return pair;
 			else
-				return Fail.t("more than one result");
+				return fail("more than one result");
 		else
 			return IntObjPair.none();
 	}

@@ -1,5 +1,4 @@
-package suite.trade.data;
-
+package suite.trade.data; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.util.Map;
@@ -12,7 +11,6 @@ import suite.streamlet.As;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 import suite.util.ParseUtil;
 
 public class Sina {
@@ -128,7 +126,7 @@ public class Sina {
 
 	private String toYahoo(String sina) {
 		var prefix = "rt_hk0";
-		return sina.startsWith(prefix) ? sina.substring(prefix.length()) + ".HK" : Fail.t(sina);
+		return sina.startsWith(prefix) ? sina.substring(prefix.length()) + ".HK" : fail(sina);
 	}
 
 	private String toSina(String symbol_) {

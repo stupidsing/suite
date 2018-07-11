@@ -1,4 +1,4 @@
-package suite.streamlet;
+package suite.streamlet; import static suite.util.Friends.fail;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -180,7 +180,7 @@ public class As {
 					else if (bb.size() == 0)
 						return null;
 					else
-						return Fail.t();
+						return fail();
 				}
 				return chars;
 			}
@@ -219,7 +219,7 @@ public class As {
 							if ((b & 0xC0) == 0x80)
 								ch = (ch << 6) + (b & 0x3F);
 							else
-								Fail.t();
+								fail();
 						}
 						cb.append((char) ch);
 					} else

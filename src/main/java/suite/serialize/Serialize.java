@@ -1,5 +1,4 @@
-package suite.serialize;
-
+package suite.serialize; import static suite.util.Friends.fail;
 import static suite.util.Friends.min;
 import static suite.util.Friends.rethrow;
 
@@ -23,7 +22,6 @@ import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.util.Array_;
-import suite.util.Fail;
 import suite.util.Memoize;
 import suite.util.To;
 
@@ -121,9 +119,9 @@ public class Serialize {
 			else if (Pair.class.isAssignableFrom(clazz))
 				serializer = pair(auto_(typeArgs[0]), auto_(typeArgs[1]));
 			else
-				serializer = Fail.t();
+				serializer = fail();
 		} else
-			serializer = Fail.t();
+			serializer = fail();
 		return serializer;
 	}
 
@@ -415,7 +413,7 @@ public class Serialize {
 
 		return new Serializer<>() {
 			public T read(SerInput si) throws IOException {
-				return si.readInt() == c ? serializer.read(si) : Fail.t();
+				return si.readInt() == c ? serializer.read(si) : fail();
 			}
 
 			public void write(SerOutput so, T value) throws IOException {
@@ -457,7 +455,7 @@ public class Serialize {
 					var t = (T) auto(c).read(si);
 					return t;
 				} else
-					return Fail.t(c.getSimpleName() + " does not implement " + interface_.getSimpleName());
+					return fail(c.getSimpleName() + " does not implement " + interface_.getSimpleName());
 			}
 
 			public void write(SerOutput so, T t) throws IOException {
@@ -467,7 +465,7 @@ public class Serialize {
 					so.writeUTF(c.getName());
 					auto(c).write(so, t);
 				} else
-					Fail.t(c.getSimpleName() + " does not implement " + interface_.getSimpleName());
+					fail(c.getSimpleName() + " does not implement " + interface_.getSimpleName());
 			}
 		};
 	}

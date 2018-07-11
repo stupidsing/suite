@@ -1,4 +1,4 @@
-package suite.adt;
+package suite.adt; import static suite.util.Friends.fail;
 
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -7,7 +7,6 @@ import suite.object.Object_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.util.Fail;
 
 public class Opt<T> {
 
@@ -47,7 +46,7 @@ public class Opt<T> {
 	}
 
 	public T get() {
-		return !isEmpty() ? value : Fail.t("no result");
+		return !isEmpty() ? value : fail("no result");
 	}
 
 	@Override

@@ -1,7 +1,6 @@
-package suite.primitive;
+package suite.primitive; import static suite.util.Friends.fail;
 
 import suite.object.Object_;
-import suite.util.Fail;
 
 /**
  * An indirect reference to a primitive double. Double.MIN_VALUE is not allowed
@@ -31,7 +30,7 @@ public class DblMutable {
 		if (value == DblFunUtil.EMPTYVALUE)
 			update(c);
 		else
-			Fail.t("value already set");
+			fail("value already set");
 	}
 
 	public void update(double c) {

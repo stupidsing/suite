@@ -1,4 +1,4 @@
-package suite.trade;
+package suite.trade; import static suite.util.Friends.fail;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -10,7 +10,6 @@ import java.util.Locale;
 import java.util.Objects;
 
 import suite.object.Object_;
-import suite.util.Fail;
 import suite.util.To;
 
 /**
@@ -47,7 +46,7 @@ public class Time implements Comparable<Time> {
 			else
 				return ofYmdHms(s);
 		else
-			return Fail.t("invalid time " + s);
+			return fail("invalid time " + s);
 	}
 
 	public static Time ofYmd(String s) {

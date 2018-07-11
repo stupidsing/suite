@@ -1,4 +1,4 @@
-package suite.instructionexecutor;
+package suite.instructionexecutor; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -21,7 +21,6 @@ import suite.node.tree.TreeOr;
 import suite.node.util.Comparer;
 import suite.primitive.Chars;
 import suite.streamlet.FunUtil.Iterate;
-import suite.util.Fail;
 import suite.util.To;
 
 public class FunInstructionExecutor extends InstructionExecutor {
@@ -93,7 +92,7 @@ public class FunInstructionExecutor extends InstructionExecutor {
 			result = Tree.decompose((Node) ds[--dsp]).getRight();
 			break;
 		default:
-			result = Fail.t("unknown instruction " + insn);
+			result = fail("unknown instruction " + insn);
 		}
 
 		exec.sp = dsp;

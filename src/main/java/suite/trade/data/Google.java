@@ -1,4 +1,4 @@
-package suite.trade.data;
+package suite.trade.data; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,7 +19,6 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Trade_;
-import suite.util.Fail;
 
 public class Google {
 
@@ -113,7 +112,7 @@ public class Google {
 		else if (symbol.endsWith(".HK"))
 			return symbol.substring(0, 4);
 		else
-			return Fail.t();
+			return fail();
 	}
 
 	private String toSymbol(String code) {

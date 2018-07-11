@@ -1,11 +1,10 @@
-package suite.primitive;
+package suite.primitive; import static suite.util.Friends.fail;
 
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrPrimitives.Obj_Chr;
 import suite.primitive.streamlet.ChrStreamlet;
 import suite.primitive.streamlet.DblOutlet;
 import suite.streamlet.FunUtil.Fun;
-import suite.util.Fail;
 
 public interface Dbl_Chr {
 
@@ -39,7 +38,7 @@ public interface Dbl_Chr {
 			try {
 				return apply(t);
 			} catch (Exception ex) {
-				return Fail.t("for key " + t, ex);
+				return fail("for key " + t, ex);
 			}
 		};
 	}

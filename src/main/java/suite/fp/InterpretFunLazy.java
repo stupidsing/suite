@@ -1,4 +1,4 @@
-package suite.fp;
+package suite.fp; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +27,6 @@ import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil2.BiFun;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.To;
 
 public class InterpretFunLazy {
@@ -90,7 +89,7 @@ public class InterpretFunLazy {
 
 		return prover.prove(Suite.substitute("fc-parse .0 .1", node, parsed)) //
 				? parsed //
-				: Fail.t("cannot parse " + node);
+				: fail("cannot parse " + node);
 	}
 
 	private Node inferType(Node node) {
@@ -187,7 +186,7 @@ public class InterpretFunLazy {
 			}
 
 			private boolean bind(Node t0, Node t1) {
-				return Binder.bind(t0, t1, new Trail()) ? true : Fail.t();
+				return Binder.bind(t0, t1, new Trail()) ? true : fail();
 			}
 
 			private Node get(Node var) {
@@ -272,7 +271,7 @@ public class InterpretFunLazy {
 					return expr.apply(frame);
 				};
 			}).match(Matcher.error, m -> {
-				return frame -> () -> Fail.t("error termination " + Formatter.display(m));
+				return frame -> () -> fail("error termination " + Formatter.display(m));
 			}).match(Matcher.fun, (param, do_) -> {
 				var vm1 = IMap.<Node, Fun<Frame, Thunk>> empty();
 				for (var e : vm) {

@@ -1,7 +1,6 @@
-package suite.pkgmanager.action;
+package suite.pkgmanager.action; import static suite.util.Friends.fail;
 
 import suite.os.Execute;
-import suite.util.Fail;
 
 public class ExecCommandAction implements InstallAction {
 
@@ -24,7 +23,7 @@ public class ExecCommandAction implements InstallAction {
 	private void exec(String[] command) {
 		var exec = new Execute(command);
 		if (exec.code != 0)
-			Fail.t("command return code = " + exec.code + ": " + exec.err);
+			fail("command return code = " + exec.code + ": " + exec.err);
 	}
 
 }

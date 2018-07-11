@@ -1,5 +1,4 @@
-package suite.math.linalg;
-
+package suite.math.linalg; import static suite.util.Friends.fail;
 import static suite.util.Friends.sqrt;
 
 import java.util.Random;
@@ -10,7 +9,6 @@ import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Fun;
-import suite.util.Fail;
 import suite.util.To;
 
 public class SingularValueDecomposition {
@@ -107,7 +105,7 @@ public class SingularValueDecomposition {
 				return Fixie.of(beta, u, v);
 		}
 
-		return Fail.t();
+		return fail();
 	}
 
 	// http://www.dcs.gla.ac.uk/~vincia/textbook.pdf

@@ -1,4 +1,4 @@
-package suite;
+package suite; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 
@@ -22,7 +22,6 @@ import suite.os.LogUtil;
 import suite.primitive.IoSink;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
-import suite.util.Fail;
 import suite.util.Memoize;
 import suite.util.String_;
 
@@ -90,7 +89,7 @@ public class EvaluateUtil {
 		if (type != null)
 			return type;
 		else
-			return Fail.t("type inference failure");
+			return fail("type inference failure");
 	}
 
 	private FunInstructionExecutor configureFunExecutor(FunCompilerCfg fcc) {
@@ -103,7 +102,7 @@ public class EvaluateUtil {
 			else
 				return new EagerFunInstructionExecutor(code);
 		else
-			return Fail.t("function compilation failure");
+			return fail("function compilation failure");
 	}
 
 	private Node doFcc(Node compileNode, FunCompilerCfg fcc) {

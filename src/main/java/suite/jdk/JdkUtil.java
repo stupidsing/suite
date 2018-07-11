@@ -1,4 +1,4 @@
-package suite.jdk;
+package suite.jdk; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -9,7 +9,6 @@ import javax.tools.ToolProvider;
 import suite.cfg.Defaults;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
-import suite.util.Fail;
 
 public class JdkUtil {
 
@@ -44,9 +43,9 @@ public class JdkUtil {
 					sjfm.getJavaFileObjects(srcFilePath.toFile())).call())
 				return binFilePath;
 			else
-				return Fail.t("Java compilation error");
+				return fail("Java compilation error");
 		} catch (IOException ex) {
-			return Fail.t(ex);
+			return fail(ex);
 		}
 	}
 

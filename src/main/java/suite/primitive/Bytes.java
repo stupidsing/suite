@@ -1,5 +1,4 @@
-package suite.primitive;
-
+package suite.primitive; import static suite.util.Friends.fail;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -14,7 +13,6 @@ import suite.object.Object_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Outlet;
 import suite.util.Compare;
-import suite.util.Fail;
 import suite.util.To;
 
 public class Bytes implements Iterable<Byte> {
@@ -189,7 +187,7 @@ public class Bytes implements Iterable<Byte> {
 		try {
 			out.write(bs, start, end - start);
 		} catch (IOException ex) {
-			Fail.t(ex);
+			fail(ex);
 		}
 	}
 

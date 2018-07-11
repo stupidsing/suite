@@ -1,4 +1,4 @@
-package suite.search;
+package suite.search; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -9,7 +9,6 @@ import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 
 public class DirectedGraph<V> {
 
@@ -51,7 +50,7 @@ public class DirectedGraph<V> {
 			b = !set1.isEmpty();
 		} while (b);
 
-		return set.size() == vertices.size() ? results : Fail.t("cyclic graph");
+		return set.size() == vertices.size() ? results : fail("cyclic graph");
 	}
 
 	public DirectedGraph<V> reverse() {

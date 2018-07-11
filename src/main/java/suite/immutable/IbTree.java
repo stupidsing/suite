@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.immutable; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -83,7 +83,7 @@ public class IbTree<T> implements ITree<T> {
 	}
 
 	public boolean validate() {
-		return Read.from(root).isAll(this::validate) ? true : Fail.t();
+		return Read.from(root).isAll(this::validate) ? true : fail();
 	}
 
 	private boolean validate(Slot slot) {
@@ -144,7 +144,7 @@ public class IbTree<T> implements ITree<T> {
 			if (t0 == null)
 				return t;
 			else
-				return Fail.t("duplicate key " + t);
+				return fail("duplicate key " + t);
 		});
 	}
 

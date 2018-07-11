@@ -1,9 +1,8 @@
-package suite.adt;
+package suite.adt; import static suite.util.Friends.fail;
 
 import java.util.Objects;
 
 import suite.object.Object_;
-import suite.util.Fail;
 
 public class Mutable<T> {
 
@@ -23,7 +22,7 @@ public class Mutable<T> {
 		if (value == null)
 			update(t);
 		else
-			Fail.t("value already set");
+			fail("value already set");
 	}
 
 	public void update(T t) {

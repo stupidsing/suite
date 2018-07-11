@@ -1,4 +1,4 @@
-package suite.funp;
+package suite.funp; import static suite.util.Friends.fail;
 
 import java.util.Map;
 
@@ -31,7 +31,6 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.To;
 import suite.util.Util;
 
@@ -137,7 +136,7 @@ public class P2GenerateLambda {
 			}).applyIf(FunpDontCare.class, f -> {
 				return rt -> new Int(0);
 			}).applyIf(FunpError.class, f -> {
-				return rt -> Fail.t();
+				return rt -> fail();
 			}).applyIf(FunpField.class, f -> f.apply((ref, field) -> {
 				var p = compile_(ref);
 				return rt -> ((Struct) ((Ref) p.apply(rt)).v).map.get(field);

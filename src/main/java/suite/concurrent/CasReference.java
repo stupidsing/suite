@@ -1,9 +1,8 @@
-package suite.concurrent;
+package suite.concurrent; import static suite.util.Friends.fail;
 
 import java.util.concurrent.atomic.AtomicStampedReference;
 
 import suite.streamlet.FunUtil.Iterate;
-import suite.util.Fail;
 
 /**
  * A compare-and-set atomic reference that also uses stamp to resolve ABA
@@ -36,7 +35,7 @@ public class CasReference<T> {
 				else
 					new Backoff().yield(); // back-off
 			else
-				return Fail.t("stamp overflow");
+				return fail("stamp overflow");
 		}
 	}
 

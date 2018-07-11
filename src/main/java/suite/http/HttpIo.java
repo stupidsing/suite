@@ -1,5 +1,4 @@
-package suite.http;
-
+package suite.http; import static suite.util.Friends.fail;
 import static suite.util.Friends.min;
 import static suite.util.Friends.rethrow;
 
@@ -15,7 +14,6 @@ import suite.immutable.IMap;
 import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 import suite.util.Copy;
-import suite.util.Fail;
 import suite.util.ReadStream;
 import suite.util.String_;
 import suite.util.To;
@@ -35,7 +33,7 @@ public class HttpIo {
 
 				return String_.equals(protocol, "HTTP/1.1") //
 						? new HttpRequest(method, host, path2, query, headers, is1) //
-						: Fail.t("only HTTP/1.1 is supported");
+						: fail("only HTTP/1.1 is supported");
 			});
 
 			var pp = String_.split2(url, "://");
@@ -53,7 +51,7 @@ public class HttpIo {
 
 			return String_.equals(protocol, "HTTP/1.1") //
 					? new HttpResponse(status, headers, To.outlet(is1)) //
-					: Fail.t("only HTTP/1.1 is supported");
+					: fail("only HTTP/1.1 is supported");
 		});
 	}
 

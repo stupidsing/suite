@@ -1,5 +1,4 @@
-package suite.trade.data;
-
+package suite.trade.data; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.net.URLEncoder;
@@ -30,7 +29,6 @@ import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
-import suite.util.Fail;
 import suite.util.String_;
 import suite.util.To;
 
@@ -174,7 +172,7 @@ public class Yahoo {
 						.merge(stockHistory0) //
 						.alignToDate();
 			else
-				stockHistory1 = Fail.t();
+				stockHistory1 = fail();
 
 			FileUtil.out(path).writeAndClose(stockHistory1.write());
 		} else

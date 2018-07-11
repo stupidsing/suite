@@ -1,5 +1,4 @@
-package suite.os;
-
+package suite.os; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.ByteArrayInputStream;
@@ -11,7 +10,6 @@ import java.util.List;
 import suite.cfg.Defaults;
 import suite.streamlet.Read;
 import suite.util.Copy;
-import suite.util.Fail;
 import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.Th;
 import suite.util.To;
@@ -33,9 +31,9 @@ public class Execute {
 			LogUtil.info("START " + sh);
 			var execute = new Execute(command, sh);
 			LogUtil.info("END__ " + sh);
-			return execute.code == 0 ? execute.out : Fail.t(execute.toString());
+			return execute.code == 0 ? execute.out : fail(execute.toString());
 		} else
-			return Fail.t("cannot find shell executable");
+			return fail("cannot find shell executable");
 	}
 
 	public Execute(String[] command) {

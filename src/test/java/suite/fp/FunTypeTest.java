@@ -1,7 +1,6 @@
-package suite.fp;
-
-import static org.junit.Assert.assertEquals;
+package suite.fp; import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static suite.util.Friends.fail;
 
 import org.junit.Test;
 
@@ -11,7 +10,6 @@ import suite.lp.doer.Binder;
 import suite.lp.sewing.impl.SewingGeneralizerImpl;
 import suite.node.Node;
 import suite.node.util.Comparer;
-import suite.util.Fail;
 
 public class FunTypeTest {
 
@@ -213,7 +211,7 @@ public class FunTypeTest {
 		} catch (RuntimeException ex) {
 			return;
 		}
-		Fail.t("cannot catch type error of: " + fps);
+		fail("cannot catch type error of: " + fps);
 	}
 
 	private Node getType(String fps) {

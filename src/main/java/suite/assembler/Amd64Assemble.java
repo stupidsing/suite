@@ -1,6 +1,5 @@
-package suite.assembler;
-
-import static java.util.Map.entry;
+package suite.assembler; import static java.util.Map.entry;
+import static suite.util.Friends.fail;
 
 import java.util.Arrays;
 import java.util.List;
@@ -23,7 +22,6 @@ import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;
-import suite.util.Fail;
 
 // TODO validate number of operands
 // TODO validate size of operands
@@ -174,7 +172,7 @@ public class Amd64Assemble {
 				bb.append(bytes);
 				offset += bytes.size();
 			} catch (Exception ex) {
-				return Fail.t("for " + Dump.toLine(instruction), ex);
+				return fail("for " + Dump.toLine(instruction), ex);
 			}
 		return bb.toBytes();
 	}
@@ -376,7 +374,7 @@ public class Amd64Assemble {
 				encode = new InsnCode(4, new byte[0]);
 				break;
 			} else
-				Fail.t();
+				fail();
 		case LEA:
 			encode = assembleRegRm(instruction.op0, instruction.op1, 0x8D);
 			break;
@@ -898,7 +896,7 @@ public class Amd64Assemble {
 			appendImm(bb, insnCode.immSize, insnCode.imm);
 			return bb.toBytes();
 		} else
-			return Fail.t("bad instruction");
+			return fail("bad instruction");
 	}
 
 	private void appendIf(BytesBuilder bb, int b) {
@@ -939,7 +937,7 @@ public class Amd64Assemble {
 			if ((op.indexReg & 7) != 4)
 				indexReg = op.indexReg;
 			else
-				indexReg = Fail.t("bad operand");
+				indexReg = fail("bad operand");
 
 			if (baseReg < 0 && indexReg < 0) { // [0x1234]
 				mod = 0;
@@ -1011,7 +1009,7 @@ public class Amd64Assemble {
 		case 4:
 			return 2;
 		default:
-			return Fail.t("bad displacement");
+			return fail("bad displacement");
 		}
 	}
 
@@ -1030,7 +1028,7 @@ public class Amd64Assemble {
 		case 8:
 			return 3;
 		default:
-			return Fail.t("bad scale");
+			return fail("bad scale");
 		}
 	}
 

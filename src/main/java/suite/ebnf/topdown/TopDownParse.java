@@ -1,4 +1,4 @@
-package suite.ebnf.topdown;
+package suite.ebnf.topdown; import static suite.util.Friends.fail;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -14,7 +14,6 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.String_;
 
 /**
@@ -171,7 +170,7 @@ public class TopDownParse {
 			return node;
 		else {
 			var pos = parse.findPosition(parse.errorPosition);
-			return Fail.t("syntax error for entity " + parse.errorEntity + " at " + pos);
+			return fail("syntax error for entity " + parse.errorEntity + " at " + pos);
 		}
 	}
 
@@ -301,7 +300,7 @@ public class TopDownParse {
 				if (parser != null)
 					return st.p(parse, parser);
 				else
-					return Fail.t("entity " + entity + " not found");
+					return fail("entity " + entity + " not found");
 			};
 
 		return parser1;

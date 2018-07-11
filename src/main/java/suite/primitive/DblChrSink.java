@@ -1,6 +1,4 @@
-package suite.primitive;
-
-import suite.util.Fail;
+package suite.primitive; import static suite.util.Friends.fail;
 
 public interface DblChrSink {
 
@@ -11,7 +9,7 @@ public interface DblChrSink {
 			try {
 				sink2(k, v);
 			} catch (Exception ex) {
-				Fail.t("for key " + k, ex);
+				fail("for key " + k, ex);
 			}
 		};
 	}

@@ -1,11 +1,9 @@
-package suite.math.linalg;
-
+package suite.math.linalg; import static suite.util.Friends.fail;
 import static suite.util.Friends.min;
 
 import suite.primitive.IntInt_Flt;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
-import suite.util.Fail;
 import suite.util.To;
 
 public class VirtualMatrix {
@@ -112,7 +110,7 @@ public class VirtualMatrix {
 					}
 				}
 			else
-				Fail.t("wrong input sizes");
+				fail("wrong input sizes");
 
 			return VirtualVector.of(o);
 		}));
@@ -138,7 +136,7 @@ public class VirtualMatrix {
 					}
 				}
 			else
-				Fail.t("wrong input sizes");
+				fail("wrong input sizes");
 
 			return of(o);
 		}));
@@ -150,7 +148,7 @@ public class VirtualMatrix {
 				return VirtualVector.of(height,
 						i -> (float) Ints_.range(l).toDouble(Int_Dbl.sum(j -> f0.apply(i, j) * f1.apply(j))));
 			else
-				return Fail.t("wrong input sizes");
+				return fail("wrong input sizes");
 		}));
 	}
 
@@ -160,7 +158,7 @@ public class VirtualMatrix {
 				return of(height, width_,
 						(i, j) -> (float) Ints_.range(k0s).toDouble(Int_Dbl.sum(k -> f0.apply(i, k) * f1.apply(k, j))));
 			else
-				return Fail.t("wrong input sizes");
+				return fail("wrong input sizes");
 		}));
 	}
 
@@ -195,7 +193,7 @@ class VirtualMatrixUtil {
 			if (h0 == h1 && w0 == w1)
 				return VirtualMatrix.of(h0, w0, fun);
 			else
-				return Fail.t("wrong input sizes");
+				return fail("wrong input sizes");
 		}));
 	}
 

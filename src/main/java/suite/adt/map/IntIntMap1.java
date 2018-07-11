@@ -1,4 +1,4 @@
-package suite.adt.map;
+package suite.adt.map; import static suite.util.Friends.fail;
 
 import java.util.Arrays;
 
@@ -12,7 +12,6 @@ import suite.primitive.adt.pair.IntObjPair;
 import suite.primitive.streamlet.IntObjOutlet;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
-import suite.util.Fail;
 
 /**
  * Map with integer key and integer object value. EMPTYVALUE is not allowed in
@@ -169,7 +168,7 @@ public class IntIntMap1 {
 			if (k(kv) != key)
 				index = index + 1 & mask;
 			else
-				Fail.t("duplicate key " + key);
+				fail("duplicate key " + key);
 		kvs[index] = kv(key, v1);
 		return v0;
 	}

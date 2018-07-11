@@ -1,6 +1,5 @@
-package suite.funp;
-
-import static java.util.Map.entry;
+package suite.funp; import static java.util.Map.entry;
+import static suite.util.Friends.fail;
 
 import java.util.List;
 import java.util.Map;
@@ -56,7 +55,6 @@ import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Sink2;
 import suite.streamlet.Read;
-import suite.util.Fail;
 
 public class P4GenerateCode {
 
@@ -190,7 +188,7 @@ public class P4GenerateCode {
 					var r1 = mask(r0).compileIsReg(r.pointer);
 					var size0 = l.size();
 					var size1 = r.size();
-					return size0 == size1 ? returnIsOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : Fail.t();
+					return size0 == size1 ? returnIsOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : fail();
 				})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
 					if (coerce == Coerce.BYTE) {
 						var r1 = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
@@ -266,13 +264,13 @@ public class P4GenerateCode {
 						compileInvoke(routine);
 						return returnIsOp(i_eax);
 					} else
-						return Fail.t();
+						return fail();
 				})).applyIf(FunpInvoke2.class, f -> f.apply(routine -> {
 					if (!rs.contains(p2_eax, p2_edx)) {
 						compileInvoke(routine);
 						return returnPs2Op(p2_eax, p2_edx);
 					} else
-						return Fail.t();
+						return fail();
 				})).applyIf(FunpInvokeIo.class, f -> f.apply((routine, is, os) -> {
 					compileInvoke(routine);
 					return returnAssign((c1, target) -> {
@@ -330,7 +328,7 @@ public class P4GenerateCode {
 								}
 							});
 						else
-							return Fail.t();
+							return fail();
 					else if (result == Result.ISOP || result == Result.ISREG || result == Result.ISSPEC)
 						if ((op0 = deOp.decompose(fd, pointer, start, size)) != null)
 							return returnIsOp(op0);
@@ -345,7 +343,7 @@ public class P4GenerateCode {
 							return returnPs2Op(amd64.mem(r, start, ps), amd64.mem(r, start + ps, ps));
 						}
 					else
-						return Fail.t();
+						return fail();
 				})).applyIf(FunpNumber.class, f -> f.apply(i -> {
 					return returnIsOp(amd64.imm(i.get(), is));
 				})).applyIf(FunpOperand.class, f -> f.apply(op -> {
@@ -410,7 +408,7 @@ public class P4GenerateCode {
 					});
 					return returnPs2Op(op0, op1);
 				} else
-					return Fail.t();
+					return fail();
 			}
 
 			private CompileOut returnIsOp(Operand op) {
@@ -427,7 +425,7 @@ public class P4GenerateCode {
 				} else if (result == Result.ISSPEC)
 					em.mov(pop0, op);
 				else
-					Fail.t();
+					fail();
 				return new CompileOut();
 			}
 
@@ -458,7 +456,7 @@ public class P4GenerateCode {
 					em.mov(pop1, op1);
 					em.mov(pop0, r);
 				} else
-					Fail.t();
+					fail();
 				return new CompileOut();
 			}
 
@@ -698,7 +696,7 @@ public class P4GenerateCode {
 
 			private OpMem compileFrame(int start, int size) {
 				OpMem op = deOp.decompose(fd, Funp_.framePointer, start, size);
-				return op != null ? op : Fail.t();
+				return op != null ? op : fail();
 			}
 
 			private void compileAssign(Funp n, FunpMemory target) {

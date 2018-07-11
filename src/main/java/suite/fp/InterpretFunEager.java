@@ -1,4 +1,4 @@
-package suite.fp;
+package suite.fp; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,7 +30,6 @@ import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.To;
 
 public class InterpretFunEager {
@@ -121,7 +120,7 @@ public class InterpretFunEager {
 					};
 				}
 			}).match(Matcher.error, m -> {
-				return frame -> Fail.t("error termination " + Formatter.display(m));
+				return frame -> fail("error termination " + Formatter.display(m));
 			}).match(Matcher.fun, (param, do_) -> {
 				var vm1 = IMap.<Node, Fun<Frame, Node>> empty();
 				for (var e : vm) {
@@ -309,7 +308,7 @@ public class InterpretFunEager {
 		else if (type == Atom.of("P"))
 			return TermOp.AND___;
 		else
-			return Fail.t("unknown CONS type");
+			return fail("unknown CONS type");
 	}
 
 	private Atom b(boolean b) {

@@ -1,8 +1,6 @@
-package suite.math;
+package suite.math; import static suite.util.Friends.abs;
+import static suite.util.Friends.fail;
 
-import static suite.util.Friends.abs;
-
-import suite.util.Fail;
 import suite.util.To;
 
 public class Math_ {
@@ -80,7 +78,7 @@ public class Math_ {
 	public static void verifyEquals(double f0, double f1, double epsilon) {
 		var diff = abs(f0 - f1);
 		if (!Double.isFinite(diff) || epsilon < diff)
-			Fail.t("values differ" //
+			fail("values differ" //
 					+ ": f0 = " + To.string(f0) //
 					+ ", f1 = " + To.string(f1) //
 					+ ", diff = " + diff);

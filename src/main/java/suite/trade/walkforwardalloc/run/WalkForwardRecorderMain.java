@@ -1,4 +1,4 @@
-package suite.trade.walkforwardalloc.run;
+package suite.trade.walkforwardalloc.run; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -20,7 +20,6 @@ import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
 import suite.trade.walkforwardalloc.WalkForwardAllocConfiguration;
 import suite.trade.walkforwardalloc.WalkForwardAllocTester;
-import suite.util.Fail;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 
@@ -58,7 +57,7 @@ public class WalkForwardRecorderMain extends ExecutableProgram {
 							for (var e : priceBySymbol.entrySet())
 								bw.println(ymdHms + ", " + e.getKey() + ", " + e.getValue());
 						} catch (IOException ex) {
-							Fail.t(ex);
+							fail(ex);
 						}
 					});
 

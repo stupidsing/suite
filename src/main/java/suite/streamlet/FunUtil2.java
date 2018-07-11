@@ -1,4 +1,4 @@
-package suite.streamlet;
+package suite.streamlet; import static suite.util.Friends.fail;
 
 import java.util.Iterator;
 import java.util.function.BiFunction;
@@ -10,7 +10,6 @@ import suite.os.LogUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
-import suite.util.Fail;
 import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.NullableSyncQueue;
 import suite.util.Rethrow;
@@ -39,7 +38,7 @@ public class FunUtil2 {
 				try {
 					sink2(k, v);
 				} catch (Exception ex) {
-					Fail.t("for " + k + ", " + v, ex);
+					fail("for " + k + ", " + v, ex);
 				}
 			};
 		}
@@ -51,7 +50,7 @@ public class FunUtil2 {
 				try {
 					return apply(x, y);
 				} catch (Exception ex) {
-					return Fail.t("for " + x + ":" + y, ex);
+					return fail("for " + x + ":" + y, ex);
 				}
 			};
 		}
@@ -282,7 +281,7 @@ public class FunUtil2 {
 				return b;
 			} catch (InterruptedException | InterruptedRuntimeException ex) {
 				thread.interrupt();
-				return Fail.t(ex);
+				return fail(ex);
 			}
 		};
 	}

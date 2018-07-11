@@ -1,4 +1,4 @@
-package suite.primitive.adt.map;
+package suite.primitive.adt.map; import static suite.util.Friends.fail;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -18,7 +18,6 @@ import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Outlet;
-import suite.util.Fail;
 
 /**
  * Map with primitive long key and primitive char value. Character.MIN_VALUE is
@@ -172,7 +171,7 @@ public class LngChrMap {
 			ks[index] = key;
 			vs[index] = v1;
 		} else
-			Fail.t("duplicate key " + key);
+			fail("duplicate key " + key);
 	}
 
 	private int index(long key) {

@@ -1,8 +1,7 @@
-package suite.jdk.gen;
-
-import static org.apache.bcel.Const.ACC_PUBLIC;
+package suite.jdk.gen; import static org.apache.bcel.Const.ACC_PUBLIC;
 import static org.apache.bcel.Const.ACC_STATIC;
 import static org.apache.bcel.Const.ACC_SUPER;
+import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.util.ArrayList;
@@ -37,7 +36,6 @@ import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.Util;
 
 public class FunCreator<I> extends FunFactory {
@@ -207,7 +205,7 @@ public class FunCreator<I> extends FunFactory {
 				try {
 					clazz.getField(e.getKey()).set(null, e.getValue().t1);
 				} catch (ReflectiveOperationException ex) {
-					Fail.t(ex);
+					fail(ex);
 				}
 		}
 

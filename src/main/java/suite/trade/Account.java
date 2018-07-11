@@ -1,6 +1,5 @@
-package suite.trade;
-
-import static suite.util.Friends.abs;
+package suite.trade; import static suite.util.Friends.abs;
+import static suite.util.Friends.fail;
 
 import java.util.HashMap;
 import java.util.List;
@@ -173,7 +172,7 @@ public class Account {
 
 			return isPlayable;
 		} else
-			return Fail.t("impossible transaction price: " + trade);
+			return fail("impossible transaction price: " + trade);
 	}
 
 	private int get(String code) {

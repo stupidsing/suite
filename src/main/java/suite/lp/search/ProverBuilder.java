@@ -1,4 +1,4 @@
-package suite.lp.search;
+package suite.lp.search; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,6 @@ import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
-import suite.util.Fail;
 import suite.util.To;
 
 public class ProverBuilder {
@@ -28,7 +27,7 @@ public class ProverBuilder {
 			if (size == 1)
 				return list.get(0);
 			else
-				return Fail.t(0 < size ? "too many results" : "no result");
+				return fail(0 < size ? "too many results" : "no result");
 		}
 
 		public default List<Node> collectList(Node in) {

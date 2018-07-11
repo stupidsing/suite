@@ -1,5 +1,4 @@
-package suite.util;
-
+package suite.util; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.InputStream;
@@ -60,7 +59,7 @@ public class Util {
 						.filter(method -> !method.isDefault() && !method.isSynthetic() && !Modifier.isStatic(method.getModifiers())) //
 						.uniqueResult();
 			} catch (Exception ex) {
-				return Fail.t("for " + clazz, ex);
+				return fail("for " + clazz, ex);
 			}
 	}
 
@@ -76,7 +75,7 @@ public class Util {
 			while (0 <= (c = is.read()) && c != 10) {
 				sb.append((char) c);
 				if (Defaults.bufferLimit <= sb.length())
-					Fail.t("line too long");
+					fail("line too long");
 			}
 			return 0 <= c ? strip(sb) : null;
 		});
@@ -89,7 +88,7 @@ public class Util {
 			while (0 <= (c = reader.read()) && c != 10) {
 				sb.append((char) c);
 				if (Defaults.bufferLimit <= sb.length())
-					Fail.t("line too long");
+					fail("line too long");
 			}
 			return 0 <= c ? strip(sb) : null;
 		});

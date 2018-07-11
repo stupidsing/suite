@@ -1,7 +1,6 @@
-package suite.math.linalg;
+package suite.math.linalg; import static suite.util.Friends.fail;
 
 import suite.primitive.IntInt_Flt;
-import suite.util.Fail;
 
 public class Strassen {
 
@@ -12,7 +11,7 @@ public class Strassen {
 		var ks = mtx.width(a);
 		var height = mtx.height(a);
 		var width = mtx.width(b);
-		return ks == mtx.height(b) ? mul_(a, 0, height, 0, ks, b, 0, ks, 0, width) : Fail.t("wrong input sizes");
+		return ks == mtx.height(b) ? mul_(a, 0, height, 0, ks, b, 0, ks, 0, width) : fail("wrong input sizes");
 	}
 
 	private float[][] mul_( //

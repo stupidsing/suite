@@ -1,5 +1,4 @@
-package suite.node.io;
-
+package suite.node.io; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.util.List;
@@ -22,7 +21,6 @@ import suite.primitive.IoSink;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
-import suite.util.Fail;
 
 public class SwitchNode<R> {
 
@@ -132,7 +130,7 @@ public class SwitchNode<R> {
 	}
 
 	public R nonNullResult() {
-		return result != null ? result : Fail.t("cannot handle " + in);
+		return result != null ? result : fail("cannot handle " + in);
 	}
 
 	public R result() {

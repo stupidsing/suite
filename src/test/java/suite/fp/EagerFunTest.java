@@ -1,7 +1,6 @@
-package suite.fp;
-
-import static org.junit.Assert.assertEquals;
+package suite.fp; import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static suite.util.Friends.fail;
 
 import org.junit.Test;
 
@@ -10,7 +9,6 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Tree;
-import suite.util.Fail;
 
 public class EagerFunTest {
 
@@ -179,7 +177,7 @@ public class EagerFunTest {
 		try {
 			// this would fail stack over during type check, so skip that
 			Suite.evaluateFun("skip-type-check (e => e_{e}) {e => e_{e}}", false);
-			Fail.t();
+			fail();
 		} catch (Throwable th) {
 		}
 	}

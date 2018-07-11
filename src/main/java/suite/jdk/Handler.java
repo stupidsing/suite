@@ -1,11 +1,10 @@
-package suite.jdk;
+package suite.jdk; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLStreamHandler;
 
-import suite.util.Fail;
 import suite.util.String_;
 
 public class Handler extends URLStreamHandler {
@@ -28,7 +27,7 @@ public class Handler extends URLStreamHandler {
 		if (resource != null)
 			return resource.openConnection();
 		else
-			return Fail.t("resource not found: " + url);
+			return fail("resource not found: " + url);
 	}
 
 }

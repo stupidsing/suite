@@ -1,4 +1,4 @@
-package suite.concurrent;
+package suite.concurrent; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +14,6 @@ import org.junit.Test;
 import suite.concurrent.ObstructionFreeStm.Memory;
 import suite.concurrent.Stm.Transaction;
 import suite.concurrent.Stm.TransactionStatus;
-import suite.util.Fail;
 
 public class ObstructionFreeStmTest {
 
@@ -75,7 +74,7 @@ public class ObstructionFreeStmTest {
 				if (read == readValues.get(mi))
 					stm.put(transaction, memory, read + adjustments.get(mi));
 				else
-					Fail.t("value changed between reads");
+					fail("value changed between reads");
 			} else { // read a memory
 				var mi = order;
 				System.out.println(this + " READ " + mi);
@@ -119,7 +118,7 @@ public class ObstructionFreeStmTest {
 			if (sum == 0)
 				return true;
 			else
-				return Fail.t("final sum is not zero, but is " + sum);
+				return fail("final sum is not zero, but is " + sum);
 		});
 	}
 

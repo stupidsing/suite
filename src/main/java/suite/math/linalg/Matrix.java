@@ -1,5 +1,4 @@
-package suite.math.linalg;
-
+package suite.math.linalg; import static suite.util.Friends.fail;
 import static suite.util.Friends.min;
 
 import java.util.Arrays;
@@ -10,7 +9,6 @@ import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.To;
 
 public class Matrix {
@@ -27,7 +25,7 @@ public class Matrix {
 				for (var j = 0; j < width; j++)
 					m[i][j] += n[i][j];
 		else
-			Fail.t("wrong input sizes");
+			fail("wrong input sizes");
 		return m;
 	}
 
@@ -121,7 +119,7 @@ public class Matrix {
 		var size = h(m);
 
 		if (size != w(m))
-			Fail.t("wrong input sizes");
+			fail("wrong input sizes");
 
 		var n = identity(size);
 
@@ -133,7 +131,7 @@ public class Matrix {
 					break;
 
 			if (c == size)
-				Fail.t("no inverse exists");
+				fail("no inverse exists");
 
 			if (r != c) {
 				swapRows(m, r, c);
@@ -192,7 +190,7 @@ public class Matrix {
 				}
 			}
 		else
-			Fail.t("wrong input sizes");
+			fail("wrong input sizes");
 		return o;
 	}
 
@@ -213,7 +211,7 @@ public class Matrix {
 				}
 			}
 		else
-			Fail.t("wrong input sizes");
+			fail("wrong input sizes");
 		return o;
 	}
 
@@ -238,7 +236,7 @@ public class Matrix {
 				}
 			}
 		else
-			Fail.t("wrong input sizes");
+			fail("wrong input sizes");
 
 		return o;
 	}
@@ -250,7 +248,7 @@ public class Matrix {
 			var z1 = m[2][0] * v.x + m[2][1] * v.y + m[2][2] * v.z;
 			return new R3(x1, y1, z1);
 		} else
-			return Fail.t("wrong input sizes");
+			return fail("wrong input sizes");
 	}
 
 	// calculate m * nT
@@ -275,7 +273,7 @@ public class Matrix {
 				}
 			}
 		else
-			Fail.t("wrong input sizes");
+			fail("wrong input sizes");
 		return o;
 	}
 
@@ -301,7 +299,7 @@ public class Matrix {
 				}
 			}
 		else
-			Fail.t("wrong input sizes");
+			fail("wrong input sizes");
 		return o;
 	}
 
@@ -379,7 +377,7 @@ public class Matrix {
 				for (var j = 0; j < width; j++)
 					m[i][j] -= n[i][j];
 		else
-			Fail.t("wrong input sizes");
+			fail("wrong input sizes");
 		return m;
 	}
 
@@ -395,7 +393,7 @@ public class Matrix {
 				for (var j = 0; j < width; j++)
 					Math_.verifyEquals(m0[i][j], m1[i][j], epsilon);
 		else
-			Fail.t("wrong input sizes");
+			fail("wrong input sizes");
 	}
 
 	private void swapRows(float[][] m, int row0, int row1) {
@@ -476,7 +474,7 @@ public class Matrix {
 		if (height == w(m))
 			return height;
 		else
-			return Fail.t("wrong input sizes");
+			return fail("wrong input sizes");
 	}
 
 	private int h(float[][] m) {

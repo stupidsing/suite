@@ -1,4 +1,4 @@
-package suite.lp.check;
+package suite.lp.check; import static suite.util.Friends.fail;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,7 +22,6 @@ import suite.node.io.TermOp;
 import suite.node.tree.TreeTuple;
 import suite.node.util.TreeUtil;
 import suite.streamlet.Read;
-import suite.util.Fail;
 
 public class CheckType {
 
@@ -53,7 +52,7 @@ public class CheckType {
 						bind(type0, type1);
 					}
 			} catch (Exception ex) {
-				Fail.t("in predicate " + prototype, ex);
+				fail("in predicate " + prototype, ex);
 			}
 		});
 
@@ -98,7 +97,7 @@ public class CheckType {
 
 	private void bind(Node type0, Node type1) {
 		if (!Binder.bind(type0, type1, trail))
-			Fail.t("type mismatch between " + type0 + " and " + type1);
+			fail("type mismatch between " + type0 + " and " + type1);
 	}
 
 }

@@ -1,5 +1,4 @@
-package suite.lp.sewing.impl;
-
+package suite.lp.sewing.impl; import static suite.util.Friends.fail;
 import static suite.util.Friends.max;
 import static suite.util.Friends.rethrow;
 
@@ -49,7 +48,6 @@ import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 import suite.util.List_;
 import suite.util.String_;
 
@@ -81,8 +79,8 @@ public class SewingProverImpl implements ProverFactory {
 
 	private Env emptyEnvironment = Env.empty(0);
 
-	private Trampoline okay = rt -> Fail.t("impossibly okay");
-	private Trampoline fail = rt -> Fail.t("impossibly fail");
+	private Trampoline okay = rt -> fail("impossibly okay");
+	private Trampoline fail = rt -> fail("impossibly fail");
 
 	private BinderFactory passThru = new BinderFactory() {
 		public VariableMapper<Reference> mapper() {
@@ -188,7 +186,7 @@ public class SewingProverImpl implements ProverFactory {
 		if (!rules.containsKey(null))
 			compileAll();
 		else
-			Fail.t("must not contain wild rules");
+			fail("must not contain wild rules");
 	}
 
 	public Prove_ prover(Node node) {
@@ -333,7 +331,7 @@ public class SewingProverImpl implements ProverFactory {
 		else if (node instanceof Tuple)
 			cps = compileCpsCallPredicate(bf, node, cpsx);
 		else
-			cps = Fail.t("cannot understand " + node);
+			cps = fail("cannot understand " + node);
 
 		return cps;
 	}
@@ -398,7 +396,7 @@ public class SewingProverImpl implements ProverFactory {
 			}
 			return cps;
 		} else
-			return Fail.t("cannot find predicate " + prototype);
+			return fail("cannot find predicate " + prototype);
 	}
 
 	private Cps saveEnvCps(Cps cps) {
@@ -677,7 +675,7 @@ public class SewingProverImpl implements ProverFactory {
 			if (data instanceof Source<?>)
 				tr = rt -> ((Source<?>) data).source() != Boolean.TRUE ? okay : fail;
 			else
-				tr = Fail.t("cannot understand " + node);
+				tr = fail("cannot understand " + node);
 		} else if (node instanceof Reference) {
 			var f = bf.cloner(node);
 			tr = rt -> compileTr(passThru, f.apply(rt.env));
@@ -686,7 +684,7 @@ public class SewingProverImpl implements ProverFactory {
 		else if (node instanceof Tuple)
 			tr = compileTrCallPredicate(bf, node);
 		else
-			tr = Fail.t("cannot understand " + node);
+			tr = fail("cannot understand " + node);
 
 		return tr;
 	}
@@ -810,7 +808,7 @@ public class SewingProverImpl implements ProverFactory {
 			}
 			return tr;
 		} else
-			return Fail.t("cannot find predicate " + prototype);
+			return fail("cannot find predicate " + prototype);
 	}
 
 	private Trampoline saveEnvTr(Trampoline tr) {

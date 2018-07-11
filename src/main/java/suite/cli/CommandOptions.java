@@ -1,4 +1,4 @@
-package suite.cli;
+package suite.cli; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -13,7 +13,6 @@ import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.RuleSet;
 import suite.node.Node;
 import suite.streamlet.FunUtil.Source;
-import suite.util.Fail;
 import suite.util.List_;
 import suite.util.String_;
 
@@ -66,7 +65,7 @@ public class CommandOptions {
 		else if (String_.equals(arg, "--use") && (arg1 = source.source()) != null)
 			libraries = List_.concat(libraries, List.of(arg1.split(",")));
 		else
-			Fail.t("unknown option " + arg);
+			fail("unknown option " + arg);
 
 		return b;
 	}
@@ -94,7 +93,7 @@ public class CommandOptions {
 		}) {
 			return !isQuiet ? System.out : new PrintStream(os);
 		} catch (IOException ex) {
-			return Fail.t(ex);
+			return fail(ex);
 		}
 	}
 

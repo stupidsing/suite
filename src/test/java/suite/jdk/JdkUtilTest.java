@@ -1,4 +1,4 @@
-package suite.jdk;
+package suite.jdk; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 
@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import suite.cfg.Defaults;
 import suite.os.FileUtil;
-import suite.util.Fail;
 
 public class JdkUtilTest {
 
@@ -29,7 +28,7 @@ public class JdkUtilTest {
 		try (var jdkLoadClassUtil = new JdkLoadClassUtil(srcDir, binDir)) {
 			jdkLoadClassUtil.newInstance(Runnable.class, className, src).run();
 		} catch (IOException ex) {
-			Fail.t(ex);
+			fail(ex);
 		}
 
 		new JdkUnsafeLoadClassUtil(srcDir, binDir).newInstance(Runnable.class, className, src).run();

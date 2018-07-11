@@ -1,4 +1,4 @@
-package suite.instructionexecutor;
+package suite.instructionexecutor; import static suite.util.Friends.fail;
 
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Instruction;
@@ -12,7 +12,6 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.util.Fail;
 
 public class LogicInstructionExecutor extends InstructionExecutor {
 
@@ -87,7 +86,7 @@ public class LogicInstructionExecutor extends InstructionExecutor {
 			exec.sp = Int.num(regs[insn.op0]);
 			break;
 		default:
-			Fail.t("unknown instruction " + insn);
+			fail("unknown instruction " + insn);
 		}
 	}
 

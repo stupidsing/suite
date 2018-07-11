@@ -1,5 +1,4 @@
-package suite.node.io;
-
+package suite.node.io; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.BufferedReader;
@@ -20,7 +19,6 @@ import suite.node.Tree;
 import suite.node.io.Rewrite_.NodeRead;
 import suite.node.io.Rewrite_.NodeWrite;
 import suite.node.io.Rewrite_.ReadType;
-import suite.util.Fail;
 import suite.util.String_;
 
 public class ReversePolish {
@@ -66,7 +64,7 @@ public class ReversePolish {
 				var right = deque.pop();
 				n = Tree.of(op, left, right);
 			} else
-				n = Fail.t("RPN conversion error: " + elem);
+				n = fail("RPN conversion error: " + elem);
 
 			deque.push(n);
 		});

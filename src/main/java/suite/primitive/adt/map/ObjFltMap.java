@@ -1,4 +1,4 @@
-package suite.primitive.adt.map;
+package suite.primitive.adt.map; import static suite.util.Friends.fail;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -12,7 +12,6 @@ import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltObjOutlet;
 import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.As;
-import suite.util.Fail;
 
 /**
  * Map with generic object key and floatacter object value. Float.MIN_VALUE
@@ -155,7 +154,7 @@ public class ObjFltMap<K> {
 			ks[index] = key;
 			vs[index] = v1;
 		} else
-			Fail.t("duplicate key " + key);
+			fail("duplicate key " + key);
 	}
 
 	private int index(Object key) {

@@ -1,4 +1,4 @@
-package suite.pkgmanager;
+package suite.pkgmanager; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -16,7 +16,6 @@ import suite.pkgmanager.action.ExecCommandAction;
 import suite.pkgmanager.action.ExtractFileAction;
 import suite.pkgmanager.action.InstallAction;
 import suite.streamlet.Read;
-import suite.util.Fail;
 
 public class PackageManager {
 
@@ -50,7 +49,7 @@ public class PackageManager {
 					}) //
 					.toList());
 		} catch (IOException ex) {
-			return Fail.t(ex);
+			return fail(ex);
 		}
 
 		installActions.addAll(Read //
@@ -100,7 +99,7 @@ public class PackageManager {
 		try (var zipFile = new ZipFile(packageFilename); var fis = zipFile.getInputStream(zipFile.getEntry("pm.json"))) {
 			return objectMapper.readValue(fis, PackageManifest.class);
 		} catch (IOException ex) {
-			return Fail.t(ex);
+			return fail(ex);
 		}
 	}
 

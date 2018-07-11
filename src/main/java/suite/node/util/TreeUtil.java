@@ -1,6 +1,5 @@
-package suite.node.util;
-
-import static java.util.Map.entry;
+package suite.node.util; import static java.util.Map.entry;
+import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +12,6 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.primitive.IntInt_Int;
-import suite.util.Fail;
 
 public class TreeUtil {
 
@@ -74,7 +72,7 @@ public class TreeUtil {
 				params[i] = tree.getLeft();
 				node = tree.getRight();
 			} else
-				Fail.t("not enough parameters in " + node0);
+				fail("not enough parameters in " + node0);
 		params[n - 1] = node;
 		return params;
 	}
@@ -102,17 +100,17 @@ public class TreeUtil {
 		} else if (node instanceof Int)
 			return Int.num(node);
 		else
-			return Fail.t("cannot evaluate expression: " + node);
+			return fail("cannot evaluate expression: " + node);
 	}
 
 	public static IntInt_Int evaluateOp(Node op) {
 		var fun = tupleOperations.get(op);
-		return fun != null ? fun : Fail.t("cannot evaluate operator: " + op);
+		return fun != null ? fun : fail("cannot evaluate operator: " + op);
 	}
 
 	public static IntInt_Int evaluateOp(Operator op) {
 		var fun = intOperations.get(op);
-		return fun != null ? fun : Fail.t("cannot evaluate operator: " + op);
+		return fun != null ? fun : fail("cannot evaluate operator: " + op);
 	}
 
 	public static boolean isList(Node node, Operator operator) {
@@ -132,7 +130,7 @@ public class TreeUtil {
 
 	private static int intPow(int a, int b) {
 		if (b < 0)
-			return Fail.t();
+			return fail();
 		else if (b == 0)
 			return 1;
 		else {

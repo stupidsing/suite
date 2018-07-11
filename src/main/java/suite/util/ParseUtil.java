@@ -1,4 +1,4 @@
-package suite.util;
+package suite.util; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -172,7 +172,7 @@ public class ParseUtil {
 				depth = checkDepth(depth, c);
 		}
 
-		return !isThrow || 0 <= depth ? quote == 0 && depth == 0 : Fail.t("parse error");
+		return !isThrow || 0 <= depth ? quote == 0 && depth == 0 : fail("parse error");
 	}
 
 	private static int checkDepth(int depth, char c) {

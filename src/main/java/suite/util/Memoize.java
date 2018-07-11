@@ -1,4 +1,4 @@
-package suite.util;
+package suite.util; import static suite.util.Friends.fail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,7 +41,7 @@ public class Memoize {
 					isEnteredFun.set(isEnteredFun0);
 				}
 			} else
-				return Fail.t("use funRec() instead");
+				return fail("use funRec() instead");
 		};
 	}
 

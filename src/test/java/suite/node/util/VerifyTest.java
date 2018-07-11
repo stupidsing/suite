@@ -1,4 +1,4 @@
-package suite.node.util;
+package suite.node.util; import static suite.util.Friends.fail;
 
 import org.junit.Test;
 
@@ -19,7 +19,6 @@ import suite.node.tree.TreeAnd;
 import suite.os.LogUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.util.Fail;
 
 /**
  * TODO ZFC
@@ -144,24 +143,24 @@ public class VerifyTest {
 				for (var node : Tree.iter(list))
 					if (Binder.bind(node, new Generalizer().generalize(b), new Trail()))
 						return node;
-				return Fail.t("cannot verify " + proof);
+				return fail("cannot verify " + proof);
 			}).match(".0 | choose .1", (a, b) -> {
 				var list = verify(a);
 				Tree tree;
 				for (var node : Tree.iter(list))
 					if ((tree = Tree.decompose(node, TermOp.NEXT__)) != null && tree.getLeft() == b)
 						return tree.getRight();
-				return Fail.t("cannot verify " + proof);
+				return fail("cannot verify " + proof);
 			}).match("contradict .0 := .1 ~ .2", (a, b, c) -> {
 				var x = Binder.bind(new Verify(defs, rules.put(Atom.name(a), b)).verify(c), Atom.FALSE, new Trail());
-				return x ? Suite.substitute("not .0", b) : Fail.t("cannot verify " + proof);
+				return x ? Suite.substitute("not .0", b) : fail("cannot verify " + proof);
 			}).match(".0 | expand .1", (a, b) -> {
 				var def = defs.get(Atom.name(b)).clone_();
 				return replace(verify(a), def.t0, def.t1);
 			}).match(".0 | fulfill .1", (a, b) -> {
 				var m1 = Suite.pattern(".0 => .1").match(new Generalizer().generalize(verify(b)));
 				var x = m1 != null && Binder.bind(verify(a), m1[0], new Trail());
-				return x ? m1[1] : Fail.t("cannot verify " + proof);
+				return x ? m1[1] : fail("cannot verify " + proof);
 			}).match(".0 | fulfill-by .1", (a, b) -> {
 				return verify(Suite.substitute(".0 | fulfill .1", b, a));
 			}).match("lemma .0 := .1 ~ .2", (a, b, c) -> {
@@ -192,7 +191,7 @@ public class VerifyTest {
 		public Verify extend(String lemma, String proof) {
 			var node = extend_(proof);
 			var x = Binder.bind(Suite.parse(lemma), node, new Trail());
-			return x ? new Verify(defs, rules.put(lemma, node)) : Fail.t();
+			return x ? new Verify(defs, rules.put(lemma, node)) : fail();
 		}
 
 		public Verify extend(String proof) {

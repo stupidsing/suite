@@ -1,5 +1,4 @@
-package suite.trade.backalloc;
-
+package suite.trade.backalloc; import static suite.util.Friends.fail;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -35,7 +34,6 @@ import suite.trade.data.DataSource.Datum;
 import suite.trade.data.TradeCfg;
 import suite.trade.walkforwardalloc.WalkForwardAllocator;
 import suite.ts.Quant;
-import suite.util.Fail;
 import suite.util.Set_;
 import suite.util.String_;
 
@@ -234,7 +232,7 @@ public interface BackAllocator {
 			return index -> Read //
 					.from2(onDateTime.onDateTime(index)) //
 					.map2((symbol, potential) -> {
-						return Double.isFinite(potential) ? potential : Fail.t("potential is " + potential);
+						return Double.isFinite(potential) ? potential : fail("potential is " + potential);
 					}) //
 					.filterValue(potential -> 0d < potential) //
 					.toList();

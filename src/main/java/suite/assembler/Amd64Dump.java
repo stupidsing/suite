@@ -1,4 +1,4 @@
-package suite.assembler;
+package suite.assembler; import static suite.util.Friends.fail;
 
 import java.util.List;
 
@@ -9,7 +9,6 @@ import suite.assembler.Amd64.OpNone;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.streamlet.Read;
-import suite.util.Fail;
 
 public class Amd64Dump {
 
@@ -39,7 +38,7 @@ public class Amd64Dump {
 		else if (pointerSize == 8)
 			regs = amd64.reg64;
 		else
-			return Fail.t();
+			return fail();
 
 		if (op0 instanceof OpImm) {
 			var opImm = (OpImm) op0;

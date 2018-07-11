@@ -1,6 +1,4 @@
-package suite.primitive;
-
-import suite.util.Fail;
+package suite.primitive; import static suite.util.Friends.fail;
 
 public class BooMutable {
 
@@ -43,7 +41,7 @@ public class BooMutable {
 		if (value == IntFunUtil.EMPTYVALUE)
 			update(t);
 		else
-			Fail.t("value already set");
+			fail("value already set");
 	}
 
 	public void update(int t) {

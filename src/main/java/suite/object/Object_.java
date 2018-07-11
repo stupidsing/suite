@@ -1,5 +1,4 @@
-package suite.object;
-
+package suite.object; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.Closeable;
@@ -20,7 +19,6 @@ import java.util.Set;
 import suite.adt.pair.Pair;
 import suite.node.util.Singleton;
 import suite.streamlet.FunUtil.Iterate;
-import suite.util.Fail;
 import suite.util.Util;
 
 public class Object_ {
@@ -179,7 +177,7 @@ public class Object_ {
 			else
 				mapper = mapper(rawType);
 		} else
-			mapper = Fail.t("unrecognized type " + type);
+			mapper = fail("unrecognized type " + type);
 
 		return mapper;
 	}

@@ -1,5 +1,4 @@
-package suite.jdk.gen.pass;
-
+package suite.jdk.gen.pass; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.lang.reflect.Method;
@@ -35,7 +34,6 @@ import suite.jdk.gen.FunExpression.FunExpr;
 import suite.jdk.gen.Type_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.Util;
 
 public class FunTypeInformation {
@@ -54,7 +52,7 @@ public class FunTypeInformation {
 			var type = Type.getType(e1.clazz);
 			for (var element : elements)
 				if (element != null && type != typeOf(element))
-					Fail.t();
+					fail();
 			return clazz.isPrimitive() ? new ArrayType(type.getType(), 1) : new ArrayType(type, 1);
 		})).applyIf(ArrayLengthFunExpr.class, e1 -> {
 			return Type.INT;
@@ -97,7 +95,7 @@ public class FunTypeInformation {
 		}).applyIf(ProfileFunExpr.class, e1 -> {
 			return typeOf(e1.do_);
 		}).applyIf(SeqFunExpr.class, e1 -> {
-			return typeOf(e1.left) == Type.VOID ? typeOf(e1.right) : Fail.t();
+			return typeOf(e1.left) == Type.VOID ? typeOf(e1.right) : fail();
 		}).applyIf(VoidFunExpr.class, e1 -> {
 			return Type.VOID;
 		}).nonNullResult();

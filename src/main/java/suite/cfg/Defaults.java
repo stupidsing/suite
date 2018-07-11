@@ -1,4 +1,4 @@
-package suite.cfg;
+package suite.cfg; import static suite.util.Friends.fail;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -17,7 +17,6 @@ import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
 import suite.streamlet.FunUtil.Source;
-import suite.util.Fail;
 import suite.util.Memoize;
 import suite.util.To;
 
@@ -35,7 +34,7 @@ public class Defaults {
 
 	public static FixieArray<String> bindSecrets(String pattern) {
 		var m = secrets(pattern);
-		return m != null ? FixieArray.of(m) : Fail.t("Cannot match " + pattern);
+		return m != null ? FixieArray.of(m) : fail("Cannot match " + pattern);
 	}
 
 	public static String[] secrets(String pattern) {

@@ -1,5 +1,6 @@
 package suite.funp;
 
+import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.FileReader;
@@ -34,7 +35,7 @@ import suite.node.tree.TreeAnd;
 import suite.node.tree.TreeTuple;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.Read;
-import suite.util.Fail;
+import suite.util.Friends;
 import suite.util.To;
 
 public class P0CrudeScript {
@@ -89,7 +90,7 @@ public class P0CrudeScript {
 				}).match("<INTEGER_LITERAL> .0", s -> {
 					return FunpNumber.ofNumber(Integer.valueOf(Str.str(s)));
 				}).match("<STRING_LITERAL> .0", s -> {
-					return Fail.t();
+					return fail();
 				}).match("constant (.0,)", a -> {
 					return expr(a);
 				}).match("expression (.0,)", a -> {
@@ -169,8 +170,8 @@ public class P0CrudeScript {
 
 					var e1 = pre_ == 0 ? e0
 							: FunpIoAssignRef.of(ref0, FunpTree.of(TermOp.PLUS__, e0, FunpNumber.ofNumber(pre_)), e0);
-					var e2 = post == 0 ? e1 : Fail.<Funp> t();
-					return s == e ? e2 : Fail.t();
+					var e2 = post == 0 ? e1 : Friends.<Funp> fail();
+					return s == e ? e2 : fail();
 				}).match("expression-prop (.0, .1)", (a, b) -> {
 					return Tree //
 							.iter(b) //

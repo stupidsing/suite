@@ -1,6 +1,4 @@
-package suite.primitive;
-
-import suite.util.Fail;
+package suite.primitive; import static suite.util.Friends.fail;
 
 public interface IntFlt_Dbl {
 
@@ -11,7 +9,7 @@ public interface IntFlt_Dbl {
 			try {
 				return apply(c, f);
 			} catch (Exception ex) {
-				return Fail.t("for " + c + ":" + f, ex);
+				return fail("for " + c + ":" + f, ex);
 			}
 		};
 

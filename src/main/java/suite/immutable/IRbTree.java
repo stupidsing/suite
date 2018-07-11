@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.immutable; import static suite.util.Friends.fail;
 
 import java.util.ArrayDeque;
 import java.util.Comparator;
@@ -7,7 +7,6 @@ import java.util.Deque;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 
 /**
  * Immutable Red-Black tree implementation. However, node deletion is not
@@ -129,7 +128,7 @@ public class IRbTree<T> implements ITree<T> {
 			else if (isReplace)
 				node1 = new Node(node.isBlack, t, node.left, node.right);
 			else
-				node1 = Fail.t("duplicate node " + t);
+				node1 = fail("duplicate node " + t);
 		} else
 			node1 = new Node(false, t, null, null);
 

@@ -1,4 +1,4 @@
-package suite.java7util;
+package suite.java7util; import static suite.util.Friends.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,7 +8,6 @@ import java.util.ArrayDeque;
 
 import suite.streamlet.FunUtil.Source;
 import suite.util.Copy;
-import suite.util.Fail;
 
 public class FileUtil {
 
@@ -16,7 +15,7 @@ public class FileUtil {
 		try (var fos = new FileOutputStream(to)) {
 			Copy.stream(new FileInputStream(from), fos);
 		} catch (IOException ex) {
-			Fail.t(ex);
+			fail(ex);
 		}
 	}
 

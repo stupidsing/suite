@@ -1,4 +1,4 @@
-package suite.sample;
+package suite.sample; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +10,6 @@ import java.util.Map;
 
 import suite.cfg.Defaults;
 import suite.os.SocketUtil;
-import suite.util.Fail;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 import suite.util.To;
@@ -81,10 +80,10 @@ public class SimpleCgiServerMain extends ExecutableProgram {
 			if ('0' <= c && c <= '9')
 				length = length * 10 + c - '0';
 			else
-				Fail.t("invalid netstring length");
+				fail("invalid netstring length");
 
 		if (c != ':')
-			Fail.t("netstring length not ended with ':'");
+			fail("netstring length not ended with ':'");
 
 		var nBytesRead = 0;
 		var bytes = new byte[length];

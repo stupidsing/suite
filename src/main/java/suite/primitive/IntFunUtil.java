@@ -1,4 +1,4 @@
-package suite.primitive;
+package suite.primitive; import static suite.util.Friends.fail;
 
 import java.util.Collections;
 import java.util.Iterator;
@@ -14,7 +14,6 @@ import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Source2;
-import suite.util.Fail;
 import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.NullableSyncQueue;
 import suite.util.Thread_;
@@ -253,7 +252,7 @@ public class IntFunUtil {
 				return queue.take();
 			} catch (InterruptedException | InterruptedRuntimeException ex) {
 				thread.interrupt();
-				return Fail.t(ex);
+				return fail(ex);
 			}
 		};
 	}

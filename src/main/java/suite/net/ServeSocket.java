@@ -1,5 +1,4 @@
-package suite.net;
-
+package suite.net; import static suite.util.Friends.fail;
 import static suite.util.Friends.min;
 
 import java.io.IOException;
@@ -10,7 +9,6 @@ import suite.os.SocketUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.FunUtil.Fun;
-import suite.util.Fail;
 
 public class ServeSocket {
 
@@ -35,7 +33,7 @@ public class ServeSocket {
 		while ((nBytesRead = is.read(buffer, 0, min(max - bb.size(), buffer.length))) != -1) {
 			bb.append(buffer, 0, nBytesRead);
 			if (max < bb.size())
-				Fail.t("input too long");
+				fail("input too long");
 		}
 
 		return bb.toBytes();

@@ -1,5 +1,4 @@
-package suite.trade.data;
-
+package suite.trade.data; import static suite.util.Friends.fail;
 import static suite.util.Friends.min;
 
 import java.util.HashMap;
@@ -19,7 +18,6 @@ import suite.trade.Trade;
 import suite.trade.Trade_;
 import suite.trade.Usex;
 import suite.trade.data.Broker.Hsbc;
-import suite.util.Fail;
 import suite.util.String_;
 
 public class TradeCfgImpl implements TradeCfg {
@@ -131,7 +129,7 @@ public class TradeCfgImpl implements TradeCfg {
 		else if (symbol.startsWith("#"))
 			return srcPf___;
 		else
-			return Fail.t(symbol);
+			return fail(symbol);
 	}
 
 	private boolean filter(Asset asset) {

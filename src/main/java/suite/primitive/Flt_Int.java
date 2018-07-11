@@ -1,11 +1,10 @@
-package suite.primitive;
+package suite.primitive; import static suite.util.Friends.fail;
 
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.streamlet.FltOutlet;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.streamlet.FunUtil.Fun;
-import suite.util.Fail;
 
 public interface Flt_Int {
 
@@ -39,7 +38,7 @@ public interface Flt_Int {
 			try {
 				return apply(t);
 			} catch (Exception ex) {
-				return Fail.t("for key " + t, ex);
+				return fail("for key " + t, ex);
 			}
 		};
 	}

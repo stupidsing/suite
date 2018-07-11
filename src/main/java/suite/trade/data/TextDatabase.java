@@ -1,5 +1,4 @@
-package suite.trade.data;
-
+package suite.trade.data; import static suite.util.Friends.fail;
 import static suite.util.Friends.max;
 import static suite.util.Friends.rethrow;
 
@@ -17,7 +16,6 @@ import suite.primitive.Bytes_;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 import suite.util.String_;
 import suite.util.Thread_;
 import suite.util.To;
@@ -94,7 +92,7 @@ public class TextDatabase {
 		if (datum0 == null || !Objects.equals(datum, datum0))
 			data.add(datum);
 		else if (!Objects.equals(datum0.value, datum.value))
-			Fail.t("value mismatch for key " + datum.key + ": " + datum0.value + " != " + datum.value);
+			fail("value mismatch for key " + datum.key + ": " + datum0.value + " != " + datum.value);
 	}
 
 	private Datum toDatum(String line) {

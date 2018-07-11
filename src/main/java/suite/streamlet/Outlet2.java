@@ -1,4 +1,4 @@
-package suite.streamlet;
+package suite.streamlet; import static suite.util.Friends.fail;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -24,7 +24,6 @@ import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.FunUtil2.Sink2;
 import suite.streamlet.FunUtil2.Source2;
 import suite.util.Array_;
-import suite.util.Fail;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
 import suite.util.To;
@@ -284,7 +283,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		if (pair != null)
 			return pair;
 		else
-			return Fail.t("no result");
+			return fail("no result");
 	}
 
 	public Pair<K, V> minOrNull(Comparator<Pair<K, V>> comparator) {
@@ -329,7 +328,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 			if (!next(pair))
 				return pair;
 			else
-				return Fail.t("more than one result");
+				return fail("more than one result");
 		else
 			return Pair.none();
 	}
@@ -434,7 +433,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		var pair = Pair.<K, V> of(null, null);
 		while (next(pair))
 			if (map.put(pair.t0, pair.t1) != null)
-				Fail.t("duplicate key " + pair.t0);
+				fail("duplicate key " + pair.t0);
 		return map;
 	}
 

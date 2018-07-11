@@ -1,5 +1,4 @@
-package suite.jdk.gen.pass;
-
+package suite.jdk.gen.pass; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.util.ArrayList;
@@ -34,7 +33,6 @@ import suite.jdk.gen.Type_;
 import suite.jdk.lambda.LambdaInterface;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
-import suite.util.Fail;
 import suite.util.Switch;
 import suite.util.Util;
 
@@ -142,7 +140,7 @@ public class FunRewrite extends FunFactory {
 			return set == null ? object1.field(fieldName, fieldType) : object1.fieldSet(fieldName, fieldType, set);
 		})).applyIf(FieldInjectFunExpr.class, e1 -> e1.apply(fieldName -> {
 			var type = fieldTypes.get(fieldName);
-			return type != null ? rewrite(this_().field(fieldName, type)) : Fail.t(e1.fieldName);
+			return type != null ? rewrite(this_().field(fieldName, type)) : fail(e1.fieldName);
 		})).applyIf(InvokeLambdaFunExpr.class, e1 -> e1.apply((isExpand, l_inst, ps) -> {
 			var l_impl = l_inst.lambdaImplementation;
 			var l_iface = l_impl.lambdaInterface;
@@ -152,7 +150,7 @@ public class FunRewrite extends FunFactory {
 			return objectField(object, type);
 		})).applyIf(PlaceholderFunExpr.class, e1 -> {
 			var e2 = placeholders.get(e1);
-			return e2 != null ? e2 : Fail.t("cannot resolve placeholder");
+			return e2 != null ? e2 : fail("cannot resolve placeholder");
 		}).applyIf(ProfileFunExpr.class, e1 -> e1.apply((counterFieldName, do_) -> {
 			fieldTypeValues.put(counterFieldName, Pair.of(Type.INT, 0));
 			return null;

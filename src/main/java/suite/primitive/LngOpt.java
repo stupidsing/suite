@@ -1,4 +1,4 @@
-package suite.primitive;
+package suite.primitive; import static suite.util.Friends.fail;
 
 import java.util.Objects;
 
@@ -6,7 +6,6 @@ import suite.adt.Opt;
 import suite.object.Object_;
 import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
-import suite.util.Fail;
 
 public class LngOpt {
 
@@ -36,7 +35,7 @@ public class LngOpt {
 	}
 
 	public long get() {
-		return !isEmpty() ? value : Fail.t("no result");
+		return !isEmpty() ? value : fail("no result");
 	}
 
 	@Override

@@ -1,5 +1,4 @@
-package suite.parser;
-
+package suite.parser; import static suite.util.Friends.fail;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -10,7 +9,6 @@ import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.text.Preprocess.Run;
 import suite.text.Segment;
-import suite.util.Fail;
 import suite.util.ParseUtil;
 import suite.util.String_;
 
@@ -50,7 +48,7 @@ public class IndentationPreprocessor {
 			int lineLength = pos1 - pos0;
 
 			if (!lastIndent.startsWith(indent) && !indent.startsWith(lastIndent))
-				Fail.t("indent mismatch");
+				fail("indent mismatch");
 
 			if (lineLength != 0) { // ignore empty lines
 				int startPos = 0, endPos = lineLength;

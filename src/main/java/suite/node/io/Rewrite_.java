@@ -1,4 +1,4 @@
-package suite.node.io;
+package suite.node.io; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +14,6 @@ import suite.node.util.Comparer;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
-import suite.util.Fail;
 
 public class Rewrite_ {
 
@@ -98,7 +97,7 @@ public class Rewrite_ {
 				node = Tuple.of(Read.from(children).map(p -> p.t1).toArray(Node.class));
 				break;
 			default:
-				node = Fail.t();
+				node = fail();
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-package suite.asm;
+package suite.asm; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -120,7 +120,7 @@ public class Assembler {
 					if (!isPass2)
 						reference.bound(Int.of(address));
 					else if (Int.num(reference.finalNode()) != address)
-						Fail.t("address varied between passes at " + Integer.toHexString(address));
+						fail("address varied between passes at " + Integer.toHexString(address));
 
 					return assemble(isPass2, address, instruction);
 				});
@@ -142,7 +142,7 @@ public class Assembler {
 			finder.find(To.source(ins), node -> bytesList.add(convertByteStream(node)));
 			return Read.from(bytesList).min((bytes0, bytes1) -> bytes0.size() - bytes1.size());
 		} catch (Exception ex) {
-			return Fail.t("in " + instruction + " during pass " + (!isPass2 ? "1" : "2"), ex);
+			return fail("in " + instruction + " during pass " + (!isPass2 ? "1" : "2"), ex);
 		}
 	}
 

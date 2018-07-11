@@ -1,4 +1,4 @@
-package suite.primitive.streamlet;
+package suite.primitive.streamlet; import static suite.util.Friends.fail;
 
 import java.io.Closeable;
 import java.util.Comparator;
@@ -31,7 +31,6 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
-import suite.util.Fail;
 
 public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltObjOutlet<V>> {
 
@@ -279,7 +278,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 		if (pair.t0 != FltFunUtil.EMPTYVALUE)
 			return pair;
 		else
-			return Fail.t("no result");
+			return fail("no result");
 	}
 
 	public Streamlet<V> values() {

@@ -1,5 +1,4 @@
-package suite.os;
-
+package suite.os; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.ByteArrayInputStream;
@@ -11,7 +10,6 @@ import suite.cfg.Defaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Copy;
-import suite.util.Fail;
 
 public class Pipe {
 
@@ -25,7 +23,7 @@ public class Pipe {
 		if (command0 != null)
 			LogUtil.info("START " + sh);
 		else
-			Fail.t("cannot find shell executable");
+			fail("cannot find shell executable");
 
 		var command1 = command0;
 
@@ -51,7 +49,7 @@ public class Pipe {
 					for (var thread : threads)
 						thread.join();
 				else
-					Fail.t("code = " + code);
+					fail("code = " + code);
 				process.destroy();
 				LogUtil.info("END__ " + sh);
 				return process;

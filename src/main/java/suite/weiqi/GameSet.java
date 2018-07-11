@@ -1,8 +1,7 @@
-package suite.weiqi;
+package suite.weiqi; import static suite.util.Friends.fail;
 
 import suite.object.Object_;
 import suite.primitive.adt.set.IntSet;
-import suite.util.Fail;
 import suite.weiqi.Board.MoveType;
 import suite.weiqi.Weiqi.Occupation;
 
@@ -60,7 +59,7 @@ public class GameSet {
 
 	private void play(Move move) {
 		if (!playIfValid(move))
-			Fail.t("invalid move " + move.position + " for " + nextPlayer + "\n" + this);
+			fail("invalid move " + move.position + " for " + nextPlayer + "\n" + this);
 	}
 
 	public void undo(Move move) {

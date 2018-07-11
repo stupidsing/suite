@@ -1,5 +1,4 @@
-package suite.trade.data;
-
+package suite.trade.data; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.net.URI;
@@ -11,7 +10,6 @@ import suite.node.util.Singleton;
 import suite.object.Object_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 
 // https://www.hkex.com.hk/eng/stat/statrpt/factbook/factbook2012/fb2012.htm
 public class HkexFactBook {
@@ -102,7 +100,7 @@ public class HkexFactBook {
 		else if (year <= 2017)
 			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf";
 		else
-			return Fail.t();
+			return fail();
 	}
 
 	@SuppressWarnings("unused")
@@ -118,7 +116,7 @@ public class HkexFactBook {
 				return e.getValue().toString();
 		}
 
-		return Fail.t();
+		return fail();
 	}
 
 }

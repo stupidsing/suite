@@ -1,4 +1,4 @@
-package suite.instructionexecutor.thunk;
+package suite.instructionexecutor.thunk; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -11,7 +11,6 @@ import suite.primitive.IoSink;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
-import suite.util.Fail;
 
 public class ThunkUtil {
 
@@ -74,7 +73,7 @@ public class ThunkUtil {
 				} else if (node_ == Atom.NIL)
 					return null;
 				else
-					return Fail.t("not a list, unable to expand");
+					return fail("not a list, unable to expand");
 			}
 		});
 	}

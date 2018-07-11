@@ -1,5 +1,4 @@
-package suite.sample;
-
+package suite.sample; import static suite.util.Friends.fail;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -22,7 +21,6 @@ import suite.primitive.Ints.IntsBuilder;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Sink;
-import suite.util.Fail;
 
 // mvn compile exec:java -Dexec.mainClass=suite.sample.DevMain -Dexec.args="${COLUMNS} ${LINES}"
 public class DevMain {
@@ -136,7 +134,7 @@ public class DevMain {
 						var undo1 = undo != null ? undo : st;
 						return new EditSt(undo1.undo, st, undo1.text, oc, undo1.cursorCoord);
 					} else if (vk == VK.CTRL_C____)
-						return Fail.t();
+						return fail();
 					else if (ch != null)
 						if (ch == 13) {
 							var i0 = text.startOfLine(ci);

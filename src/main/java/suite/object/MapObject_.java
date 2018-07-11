@@ -1,5 +1,4 @@
-package suite.object;
-
+package suite.object; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.util.List;
@@ -16,7 +15,6 @@ import suite.adt.pair.Fixie_.FixieFun8;
 import suite.adt.pair.Fixie_.FixieFun9;
 import suite.adt.pair.Fixie_.FixieFunA;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.String_;
 
 public class MapObject_ {
@@ -68,7 +66,7 @@ public class MapObject_ {
 		else if (type == FixieFunA.class)
 			p = (FixieFunA<?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?>) List::of;
 		else
-			p = Fail.t();
+			p = fail();
 
 		return (List<?>) rethrow(() -> m.invoke(object, p));
 	}

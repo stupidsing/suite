@@ -1,4 +1,4 @@
-package suite.lp.predicate;
+package suite.lp.predicate; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 
@@ -14,7 +14,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.pp.PrettyPrinter;
-import suite.util.Fail;
 
 public class RuleSetPredicates {
 
@@ -46,7 +45,7 @@ public class RuleSetPredicates {
 		try {
 			return prover.ruleSet().importUrl(url);
 		} catch (Exception ex) {
-			return Fail.t("exception when importing " + url, ex);
+			return fail("exception when importing " + url, ex);
 		}
 	});
 

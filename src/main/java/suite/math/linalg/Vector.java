@@ -1,5 +1,4 @@
-package suite.math.linalg;
-
+package suite.math.linalg; import static suite.util.Friends.fail;
 import static suite.util.Friends.sqrt;
 
 import java.util.Arrays;
@@ -7,7 +6,6 @@ import java.util.Arrays;
 import suite.math.Math_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
-import suite.util.Fail;
 
 public class Vector {
 
@@ -148,7 +146,7 @@ public class Vector {
 		if (size == n.length)
 			return size;
 		else
-			return Fail.t("wrong input sizes");
+			return fail("wrong input sizes");
 	}
 
 }

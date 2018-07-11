@@ -1,4 +1,4 @@
-package suite.instructionexecutor;
+package suite.instructionexecutor; import static suite.util.Friends.fail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,6 @@ import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.streamlet.FunUtil.Iterate;
-import suite.util.Fail;
 
 public class InstructionUtil {
 
@@ -134,7 +133,7 @@ public class InstructionUtil {
 			this.previous = previous;
 			depth = previous != null ? 1 + previous.depth : 0;
 			if (Suite.stackSize < depth)
-				Fail.t("activation overflow");
+				fail("activation overflow");
 		}
 	}
 

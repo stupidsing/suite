@@ -1,6 +1,5 @@
-package suite.math.numeric;
-
-import static suite.util.Friends.exp;
+package suite.math.numeric; import static suite.util.Friends.exp;
+import static suite.util.Friends.fail;
 import static suite.util.Friends.log;
 import static suite.util.Friends.sqrt;
 
@@ -19,7 +18,6 @@ import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 import suite.util.To;
 
 public class Statistic {
@@ -145,7 +143,7 @@ public class Statistic {
 		}
 
 		public float[] coefficients() {
-			return !Double.isNaN(sse) ? coefficients : Fail.t();
+			return !Double.isNaN(sse) ? coefficients : fail();
 		}
 
 		public double logLikelihood() {
@@ -207,7 +205,7 @@ public class Statistic {
 					w = cd.apply(mtx.mul(xt, vec.sub(vec.add(mtx.mul(sx, w), y), bernoulli)));
 				}
 			} else
-				Fail.t("wrong input sizes");
+				fail("wrong input sizes");
 		}
 
 		public float predict(float[] x) {

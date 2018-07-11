@@ -1,4 +1,4 @@
-package suite.parser;
+package suite.parser; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -10,7 +10,6 @@ import suite.node.Node;
 import suite.node.io.Escaper;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
-import suite.util.Fail;
 
 public class RenderFunctionalTemplate {
 
@@ -28,7 +27,7 @@ public class RenderFunctionalTemplate {
 			Suite.evaluateFunToWriter(Suite.fcc(fp2), sw);
 			return sw.toString();
 		} catch (IOException ex) {
-			return Fail.t(ex);
+			return fail(ex);
 		}
 	}
 

@@ -1,5 +1,4 @@
-package suite.cli;
-
+package suite.cli; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.BufferedReader;
@@ -19,7 +18,6 @@ import suite.net.ServeSocket;
 import suite.object.Object_;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
-import suite.util.Fail;
 import suite.util.ParseUtil;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
@@ -90,7 +88,7 @@ public class Main extends ExecutableProgram {
 			else if (verb == null)
 				b &= runInteractive(inputs);
 			else
-				Fail.t("unknown action " + verb);
+				fail("unknown action " + verb);
 
 		return b;
 	}

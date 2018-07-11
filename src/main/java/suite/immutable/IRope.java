@@ -1,5 +1,4 @@
-package suite.immutable;
-
+package suite.immutable; import static suite.util.Friends.fail;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -12,7 +11,6 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 import suite.util.List_;
 
 public class IRope<T> {
@@ -212,7 +210,7 @@ public class IRope<T> {
 						&& ts == null //
 						&& (s = rs.size()) < maxBranchFactor //
 						&& rs.isAll(rope -> rope.validate(false))) //
-				&& (isRoot || minBranchFactor <= s) ? true : Fail.t();
+				&& (isRoot || minBranchFactor <= s) ? true : fail();
 	}
 
 	public static <T> IRope<T> meld(IRope<T> rope0, IRope<T> rope1) {

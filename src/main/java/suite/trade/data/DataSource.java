@@ -1,5 +1,4 @@
-package suite.trade.data;
-
+package suite.trade.data; import static suite.util.Friends.fail;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -20,7 +19,6 @@ import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.ts.TimeSeries;
-import suite.util.Fail;
 import suite.util.Set_;
 import suite.util.To;
 
@@ -111,7 +109,7 @@ public class DataSource {
 				|| ts.length != opens.length || ts.length != closes.length //
 				|| ts.length != lows.length || ts.length != highs.length //
 				|| ts.length != volumes.length)
-			Fail.t("mismatched dates and prices");
+			fail("mismatched dates and prices");
 	}
 
 	public DataSource after(Time time) {
@@ -254,19 +252,19 @@ public class DataSource {
 			var date1 = Time.ofEpochSec(t1).ymd();
 
 			if (t1 <= t0)
-				Fail.t("wrong date order: " + date0 + "/" + date1);
+				fail("wrong date order: " + date0 + "/" + date1);
 
 			if (price1 < 0f)
-				Fail.t("price is negative: " + price1 + "/" + date1);
+				fail("price is negative: " + price1 + "/" + date1);
 
 			if (Trade_.max < price1)
-				Fail.t("price too high: " + price1 + "/" + date1);
+				fail("price too high: " + price1 + "/" + date1);
 
 			if (!Float.isFinite(price1))
-				Fail.t("price is not finite: " + price1 + "/" + date1);
+				fail("price is not finite: " + price1 + "/" + date1);
 
 			if (!cleanse.isValid(price0, price1))
-				Fail.t("price varied too much: " + price0 + "/" + date0 + " => " + price1 + "/" + date1);
+				fail("price varied too much: " + price0 + "/" + date0 + " => " + price1 + "/" + date1);
 
 			t0 = t1;
 			price0 = price1;
@@ -311,7 +309,7 @@ public class DataSource {
 			else
 				return instant(start);
 		else
-			return Fail.t();
+			return fail();
 	}
 
 	private Datum datum_(int start, int end) {

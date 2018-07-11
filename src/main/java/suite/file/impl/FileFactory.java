@@ -1,4 +1,4 @@
-package suite.file.impl;
+package suite.file.impl; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -16,7 +16,6 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize.Serializer;
-import suite.util.Fail;
 import suite.util.Util;
 
 public class FileFactory {
@@ -168,7 +167,7 @@ public class FileFactory {
 				if (startPointer <= pointer1 && pointer1 < endPointer)
 					return pointer1;
 				else
-					return Fail.t("page index out of range");
+					return fail("page index out of range");
 			}
 		};
 	}

@@ -1,4 +1,4 @@
-package suite.game;
+package suite.game; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,7 +6,6 @@ import java.util.function.IntPredicate;
 
 import suite.adt.pair.Pair;
 import suite.os.FileUtil;
-import suite.util.Fail;
 
 // curl http://www.flygo.net/mjxj/WeiQiTianDi/dlxs_sdl.sgf | iconv -c -f CN-GB -t UTF-8
 public class Sgf {
@@ -26,7 +25,7 @@ public class Sgf {
 	}
 
 	public Node from(String in) {
-		return in.charAt(0) == '(' ? readNode(in, 1).t : Fail.t();
+		return in.charAt(0) == '(' ? readNode(in, 1).t : fail();
 	}
 
 	private PosPair<Node> readNode(String in, int pos) {
@@ -50,10 +49,10 @@ public class Sgf {
 			case ')':
 				return posPair(pos, node);
 			default:
-				Fail.t();
+				fail();
 			}
 
-		return Fail.t("unexpected end of input");
+		return fail("unexpected end of input");
 	}
 
 	private PosPair<List<Pair<String, List<String>>>> readCommands(String in, int pos) {
@@ -75,7 +74,7 @@ public class Sgf {
 				commands.add(ipCommand.t);
 			}
 
-		return Fail.t("unexpected end of input");
+		return fail("unexpected end of input");
 	}
 
 	private PosPair<Pair<String, List<String>>> readCommand(String in, int pos) {
@@ -98,7 +97,7 @@ public class Sgf {
 				return posPair(pos, Pair.of(ipId.t, ids));
 			}
 
-		return Fail.t("unexpected end of input");
+		return fail("unexpected end of input");
 	}
 
 	private PosPair<String> readIf(String in, int pos, IntPredicate predicate) {
@@ -115,7 +114,7 @@ public class Sgf {
 			else
 				return posPair(pos1, in.substring(pos0, pos1));
 
-		return Fail.t("unexpected end of input");
+		return fail("unexpected end of input");
 	}
 
 	public static <T> PosPair<T> posPair(int pos, T t) {

@@ -1,6 +1,5 @@
-package suite.math.numeric;
-
-import static suite.util.Friends.abs;
+package suite.math.numeric; import static suite.util.Friends.abs;
+import static suite.util.Friends.fail;
 import static suite.util.Friends.sqrt;
 
 import java.util.Arrays;
@@ -8,7 +7,6 @@ import java.util.Random;
 
 import suite.math.Complex;
 import suite.primitive.Floats_;
-import suite.util.Fail;
 import suite.util.To;
 
 public class JenkinsTraub {
@@ -46,7 +44,7 @@ public class JenkinsTraub {
 
 		re: while (true) {
 			if (21 < ++n)
-				Fail.t();
+				fail();
 			else if (3 < ++nSteps) {
 				nSteps = 0;
 				maxIterations *= 2;

@@ -1,4 +1,4 @@
-package suite.lp.predicate;
+package suite.lp.predicate; import static suite.util.Friends.fail;
 
 import java.util.Objects;
 import java.util.Random;
@@ -31,7 +31,6 @@ import suite.node.util.Rewrite;
 import suite.node.util.TreeUtil;
 import suite.os.LogUtil;
 import suite.streamlet.FunUtil.Fun;
-import suite.util.Fail;
 import suite.util.Memoize;
 
 public class EvalPredicates {
@@ -59,7 +58,7 @@ public class EvalPredicates {
 		case LT____:
 			return comparer.compare(tree.getLeft(), tree.getRight()) < 0;
 		default:
-			return Fail.t("unknown comparison");
+			return fail("unknown comparison");
 		}
 	};
 

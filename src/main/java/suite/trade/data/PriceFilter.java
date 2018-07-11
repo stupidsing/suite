@@ -1,4 +1,4 @@
-package suite.trade.data;
+package suite.trade.data; import static suite.util.Friends.fail;
 
 import java.util.Map;
 import java.util.Set;
@@ -8,7 +8,6 @@ import suite.primitive.Flt_Flt;
 import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.TimeRange;
-import suite.util.Fail;
 
 public class PriceFilter {
 
@@ -39,7 +38,7 @@ public class PriceFilter {
 	}
 
 	private String s(String symbol) {
-		return symbol.startsWith("#") ? symbol.substring(1) : Fail.t();
+		return symbol.startsWith("#") ? symbol.substring(1) : fail();
 	}
 
 }

@@ -1,5 +1,4 @@
-package suite.funp;
-
+package suite.funp; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
@@ -64,7 +63,6 @@ import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
-import suite.util.Fail;
 import suite.util.ReadStream;
 import suite.util.Rethrow.SourceEx;
 import suite.util.Switch;
@@ -297,11 +295,11 @@ public class P0Parse {
 		private int num(Node a) {
 			var s = a instanceof Atom ? Atom.name(a) : null;
 			if (s != null)
-				return s.length() == 1 ? s.charAt(0) : Fail.t();
+				return s.length() == 1 ? s.charAt(0) : fail();
 			else if (a instanceof Int)
 				return Int.num(a);
 			else
-				return Fail.t();
+				return fail();
 		}
 
 		private Funp bind(Node a, Node b, Node c) {

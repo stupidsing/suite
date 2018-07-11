@@ -1,4 +1,4 @@
-package suite.os;
+package suite.os; import static suite.util.Friends.fail;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,6 @@ import java.net.ServerSocket;
 
 import suite.cfg.Defaults;
 import suite.object.Object_;
-import suite.util.Fail;
 import suite.util.Thread_;
 
 public class SocketUtil {
@@ -50,7 +49,7 @@ public class SocketUtil {
 				});
 			}
 		} catch (IOException ex) {
-			Fail.t(ex);
+			fail(ex);
 		} finally {
 			executor.shutdown();
 		}

@@ -1,4 +1,4 @@
-package suite.primitive;
+package suite.primitive; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 
@@ -14,7 +14,6 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 
 public class IntPrimitives {
 
@@ -41,7 +40,7 @@ public class IntPrimitives {
 				try {
 					return apply(i);
 				} catch (Exception ex) {
-					return Fail.t("for " + i, ex);
+					return fail("for " + i, ex);
 				}
 			};
 		}
@@ -55,7 +54,7 @@ public class IntPrimitives {
 				try {
 					return apply(x, y);
 				} catch (Exception ex) {
-					return Fail.t("for " + x + ":" + y, ex);
+					return fail("for " + x + ":" + y, ex);
 				}
 			};
 		}
@@ -69,7 +68,7 @@ public class IntPrimitives {
 				try {
 					return test(c, t);
 				} catch (Exception ex) {
-					return Fail.t("for " + c + ":" + t, ex);
+					return fail("for " + c + ":" + t, ex);
 				}
 			};
 		}
@@ -83,7 +82,7 @@ public class IntPrimitives {
 				try {
 					sink2(c, t);
 				} catch (Exception ex) {
-					Fail.t("for " + t, ex);
+					fail("for " + t, ex);
 				}
 			};
 		}
@@ -101,7 +100,7 @@ public class IntPrimitives {
 				try {
 					return test(c);
 				} catch (Exception ex) {
-					return Fail.t("for " + c, ex);
+					return fail("for " + c, ex);
 				}
 			};
 		}
@@ -115,7 +114,7 @@ public class IntPrimitives {
 				try {
 					sink(t);
 				} catch (Exception ex) {
-					Fail.t("for " + t, ex);
+					fail("for " + t, ex);
 				}
 			};
 		}
@@ -156,7 +155,7 @@ public class IntPrimitives {
 				try {
 					return apply(t);
 				} catch (Exception ex) {
-					return Fail.t("for " + t, ex);
+					return fail("for " + t, ex);
 				}
 			};
 		}
@@ -182,7 +181,7 @@ public class IntPrimitives {
 				try {
 					return apply(x, y);
 				} catch (Exception ex) {
-					return Fail.t("for " + x + ":" + y, ex);
+					return fail("for " + x + ":" + y, ex);
 				}
 			};
 		}

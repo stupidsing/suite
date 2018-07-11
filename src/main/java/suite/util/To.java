@@ -1,5 +1,4 @@
-package suite.util;
-
+package suite.util; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.BufferedInputStream;
@@ -72,7 +71,7 @@ public class To {
 		try (var baos_ = baos) {
 			ioSink.sink(SerOutput.of(baos_));
 		} catch (IOException ex) {
-			Fail.t(ex);
+			fail(ex);
 		}
 		return Bytes.of(baos.toByteArray());
 	}
@@ -228,7 +227,7 @@ public class To {
 		try (var is = in; var isr = new InputStreamReader(is, Defaults.charset); var br = new BufferedReader(isr)) {
 			return string(br);
 		} catch (IOException ex) {
-			return Fail.t(ex);
+			return fail(ex);
 		}
 	}
 
@@ -270,7 +269,7 @@ public class To {
 
 			return sb.toString();
 		} catch (IOException ex) {
-			return Fail.t(ex);
+			return fail(ex);
 		}
 	}
 

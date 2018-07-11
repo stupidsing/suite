@@ -1,5 +1,7 @@
 package suite.util;
 
+import static suite.util.Friends.fail;
+
 public class Fail {
 
 	public static class InterruptedRuntimeException extends RuntimeException {
@@ -14,18 +16,6 @@ public class Fail {
 		return t(m, null) != null;
 	}
 
-	public static <T> T t() {
-		return t(null, null);
-	}
-
-	public static <T> T t(String m) {
-		return t(m, null);
-	}
-
-	public static <T> T t(Throwable th) {
-		return t(null, th);
-	}
-
 	public static <T> T t(String m, Throwable th) {
 		if (th instanceof InterruptedException)
 			throw new InterruptedRuntimeException((InterruptedException) th);
@@ -36,7 +26,7 @@ public class Fail {
 	}
 
 	public static boolean v(boolean b) {
-		return b ? b : Fail.t();
+		return b ? b : fail();
 	}
 
 }

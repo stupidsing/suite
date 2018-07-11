@@ -1,4 +1,4 @@
-package suite.ebnf.lr;
+package suite.ebnf.lr; import static suite.util.Friends.fail;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,7 +7,6 @@ import java.util.Set;
 
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
-import suite.util.Fail;
 import suite.util.List_;
 
 public class ReadLookahead {
@@ -72,7 +71,7 @@ public class ReadLookahead {
 			ls.lookaheads.add(eg.content);
 			break;
 		default:
-			Fail.t("LR parser cannot recognize " + eg.type);
+			fail("LR parser cannot recognize " + eg.type);
 		}
 	}
 

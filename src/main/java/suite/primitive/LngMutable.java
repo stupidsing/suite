@@ -1,7 +1,6 @@
-package suite.primitive;
+package suite.primitive; import static suite.util.Friends.fail;
 
 import suite.object.Object_;
-import suite.util.Fail;
 
 /**
  * An indirect reference to a primitive long. Long.MIN_VALUE is not allowed
@@ -31,7 +30,7 @@ public class LngMutable {
 		if (value == LngFunUtil.EMPTYVALUE)
 			update(c);
 		else
-			Fail.t("value already set");
+			fail("value already set");
 	}
 
 	public void update(long c) {

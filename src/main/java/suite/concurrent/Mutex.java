@@ -1,4 +1,4 @@
-package suite.concurrent;
+package suite.concurrent; import static suite.util.Friends.fail;
 
 import java.io.Closeable;
 import java.util.Map;
@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import suite.concurrent.Concurrent.DeadlockException;
 import suite.object.Object_;
-import suite.util.Fail;
 
 /**
  * Mutual exclusion lock with deadlock detection.
@@ -67,7 +66,7 @@ public class Mutex {
 				if (owner.compareAndSet(Thread.currentThread(), null))
 					bigLock.notifyAll();
 				else
-					Fail.t("lock unlocked by wrong thread");
+					fail("lock unlocked by wrong thread");
 		}
 	}
 

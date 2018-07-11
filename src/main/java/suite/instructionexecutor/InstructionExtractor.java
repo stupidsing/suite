@@ -1,4 +1,4 @@
-package suite.instructionexecutor;
+package suite.instructionexecutor; import static suite.util.Friends.fail;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -21,7 +21,6 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.List_;
 
 public class InstructionExtractor implements AutoCloseable {
@@ -72,7 +71,7 @@ public class InstructionExtractor implements AutoCloseable {
 							extractInstructions(value, rsList);
 							rsList.add(List.of(Atom.of("FRAME-END")));
 						} else
-							Fail.t("bad frame definition");
+							fail("bad frame definition");
 					else {
 						rsList.add(rs);
 						for (var op : List_.right(rs, 1))
@@ -108,7 +107,7 @@ public class InstructionExtractor implements AutoCloseable {
 
 			return instruction;
 		} else
-			return Fail.t("unknown opcode " + insnName);
+			return fail("unknown opcode " + insnName);
 	}
 
 	private int getRegisterNumber(List<Node> rs, int index) {
@@ -137,7 +136,7 @@ public class InstructionExtractor implements AutoCloseable {
 					return 0;
 			}
 
-			return Fail.t("cannot parse instruction " + rs.get(0) + " operand " + node);
+			return fail("cannot parse instruction " + rs.get(0) + " operand " + node);
 		} else
 			return 0;
 	}

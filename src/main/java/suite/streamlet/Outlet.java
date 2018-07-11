@@ -1,4 +1,4 @@
-package suite.streamlet;
+package suite.streamlet; import static suite.util.Friends.fail;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -28,7 +28,6 @@ import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
 import suite.util.Array_;
-import suite.util.Fail;
 import suite.util.List_;
 import suite.util.NullableSyncQueue;
 import suite.util.To;
@@ -237,7 +236,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 
 	public T min(Comparator<T> comparator) {
 		var t = minOrNull(comparator);
-		return t != null ? t : Fail.t("no result");
+		return t != null ? t : fail("no result");
 	}
 
 	public T minOrNull(Comparator<T> comparator) {
@@ -274,7 +273,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	public Opt<T> opt() {
 		var t = next();
 		if (t != null)
-			return next() == null ? Opt.of(t) : Fail.t("more than one result");
+			return next() == null ? Opt.of(t) : fail("more than one result");
 		else
 			return Opt.none();
 	}

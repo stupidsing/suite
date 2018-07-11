@@ -1,4 +1,4 @@
-package suite.nntp;
+package suite.nntp; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +10,6 @@ import java.util.Map;
 
 import suite.os.SocketUtil;
 import suite.util.CommandUtil;
-import suite.util.Fail;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 import suite.util.String_;
@@ -97,7 +96,7 @@ public class NntpServerMain extends ExecutableProgram {
 								pw.println(group + " " + group);
 							pw.println(".");
 						} else
-							Fail.t("unrecognized LIST command " + line);
+							fail("unrecognized LIST command " + line);
 						break;
 					case LISTGROUP:
 						pw.println("211 Okay");
@@ -127,7 +126,7 @@ public class NntpServerMain extends ExecutableProgram {
 						pw.println("240 Okay");
 						break;
 					default:
-						Fail.t("unrecognized command " + line);
+						fail("unrecognized command " + line);
 					}
 				}
 			});

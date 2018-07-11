@@ -1,4 +1,4 @@
-package suite.util;
+package suite.util; import static suite.util.Friends.fail;
 
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -18,7 +18,7 @@ public class Rethrow {
 			try {
 				return fun0.test(k, v);
 			} catch (Exception ex) {
-				return Fail.t("for key " + k, ex);
+				return fail("for key " + k, ex);
 			}
 		};
 	}
@@ -27,7 +27,7 @@ public class Rethrow {
 		try {
 			return source.source();
 		} catch (Exception ex) {
-			return Fail.t(ex);
+			return fail(ex);
 		}
 	}
 
@@ -36,7 +36,7 @@ public class Rethrow {
 			try {
 				return predicate.test(t);
 			} catch (Exception ex) {
-				return Fail.t("for " + t, ex);
+				return fail("for " + t, ex);
 			}
 		};
 	}

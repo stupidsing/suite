@@ -1,4 +1,4 @@
-package suite.primitive.adt.map;
+package suite.primitive.adt.map; import static suite.util.Friends.fail;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -12,7 +12,6 @@ import suite.primitive.adt.pair.ChrObjPair;
 import suite.primitive.streamlet.ChrObjOutlet;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;
-import suite.util.Fail;
 
 /**
  * Map with generic object key and character object value. Character.MIN_VALUE
@@ -155,7 +154,7 @@ public class ObjChrMap<K> {
 			ks[index] = key;
 			vs[index] = v1;
 		} else
-			Fail.t("duplicate key " + key);
+			fail("duplicate key " + key);
 	}
 
 	private int index(Object key) {

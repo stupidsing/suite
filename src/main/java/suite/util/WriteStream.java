@@ -1,4 +1,4 @@
-package suite.util;
+package suite.util; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -54,7 +54,7 @@ public class WriteStream extends OutputStream {
 		try (var os = this) {
 			sink.sink(os);
 		} catch (IOException ex) {
-			Fail.t(ex);
+			fail(ex);
 		}
 	}
 

@@ -1,6 +1,5 @@
-package suite.fp;
-
-import static org.junit.Assert.assertEquals;
+package suite.fp; import static org.junit.Assert.assertEquals;
+import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -9,7 +8,6 @@ import org.junit.Test;
 
 import suite.Suite;
 import suite.node.Node;
-import suite.util.Fail;
 
 public class MonadTest {
 
@@ -68,7 +66,7 @@ public class MonadTest {
 			var node1 = Suite.substitute("use MONAD ~ .0", Suite.applyWriter(node));
 			Suite.evaluateFunToWriter(Suite.fcc(node1, true), sw);
 		} catch (IOException ex) {
-			Fail.t(ex);
+			fail(ex);
 		}
 		return sw.toString();
 	}

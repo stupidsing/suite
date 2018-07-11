@@ -1,4 +1,4 @@
-package suite.funp;
+package suite.funp; import static suite.util.Friends.fail;
 
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;
@@ -7,7 +7,6 @@ import suite.assembler.Amd64.Operand;
 import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.Ints_;
 import suite.streamlet.Read;
-import suite.util.Fail;
 
 public class RegisterSet {
 
@@ -93,7 +92,7 @@ public class RegisterSet {
 		else if (size == 8)
 			return amd64.reg64[reg];
 		else
-			return Fail.t("cannot allocate register with size " + size);
+			return fail("cannot allocate register with size " + size);
 	}
 
 	public boolean isSet(int reg) {
@@ -104,7 +103,7 @@ public class RegisterSet {
 		for (var i = 0; i < nRegisters; i++)
 			if (!isSet_(i))
 				return registers[i];
-		return Fail.t();
+		return fail();
 	}
 
 	private boolean isSet_(int reg) {

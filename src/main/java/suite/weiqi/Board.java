@@ -1,10 +1,9 @@
-package suite.weiqi;
+package suite.weiqi; import static suite.util.Friends.fail;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Stack;
 
-import suite.util.Fail;
 import suite.weiqi.Weiqi.Array;
 import suite.weiqi.Weiqi.Occupation;
 
@@ -117,9 +116,9 @@ public class Board extends Array<Occupation> {
 					killIfDead1(ga, neighbor);
 
 			if (killIfDead1(ga, c))
-				Fail.t("cannot perform suicide move");
+				fail("cannot perform suicide move");
 		} else
-			Fail.t("cannot move on occupied position");
+			fail("cannot move on occupied position");
 	}
 
 	private boolean killIfDead1(GroupAnalysis ga, Coordinate c) {

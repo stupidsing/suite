@@ -1,4 +1,4 @@
-package suite.primitive.streamlet;
+package suite.primitive.streamlet; import static suite.util.Friends.fail;
 
 import java.io.Closeable;
 import java.util.ArrayList;
@@ -41,7 +41,6 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
 import suite.streamlet.OutletDefaults;
 import suite.streamlet.Read;
-import suite.util.Fail;
 import suite.util.NullableSyncQueue;
 import suite.util.To;
 
@@ -300,7 +299,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 		if (c != EMPTYVALUE)
 			return c;
 		else
-			return Fail.t("no result");
+			return fail("no result");
 	}
 
 	public double minOrEmpty(DblComparator comparator) {
@@ -341,7 +340,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 			if (next() == EMPTYVALUE)
 				return DblOpt.of(c);
 			else
-				return Fail.t("more than one result");
+				return fail("more than one result");
 		else
 			return DblOpt.none();
 	}
@@ -443,7 +442,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 		while ((c = next()) != EMPTYVALUE) {
 			var key = kf1.apply(c);
 			if (map.put(key, vf1.apply(c)) != null)
-				Fail.t("duplicate key " + key);
+				fail("duplicate key " + key);
 		}
 		return map;
 	}

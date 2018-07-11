@@ -1,11 +1,10 @@
-package suite.fp;
+package suite.fp; import static suite.util.Friends.fail;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import suite.fp.Unify.UnNode;
 import suite.object.AutoObject;
-import suite.util.Fail;
 import suite.util.Util;
 
 public class Unify<T extends UnNode<T>> {
@@ -15,7 +14,7 @@ public class Unify<T extends UnNode<T>> {
 
 		public default <U extends UnNode<T>> U cast(Class<U> clazz) {
 			var t = final_();
-			return clazz.isInstance(t) ? clazz.cast(t) : Fail.t("cannot cast " + t + " to " + clazz);
+			return clazz.isInstance(t) ? clazz.cast(t) : fail("cannot cast " + t + " to " + clazz);
 		}
 
 		public default UnNode<T> final_() {

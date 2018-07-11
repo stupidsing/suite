@@ -1,4 +1,4 @@
-package suite.btree.impl;
+package suite.btree.impl; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -15,7 +15,6 @@ import suite.file.SerializedPageFile;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.util.Fail;
 
 /**
  * B+ tree implementation.
@@ -352,7 +351,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				savePage(page);
 				allocator.deallocate(mp.pointer);
 			} else
-				Fail.t("unbalanced B-tree");
+				fail("unbalanced B-tree");
 		}
 
 		savePage(page);

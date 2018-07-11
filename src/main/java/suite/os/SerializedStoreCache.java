@@ -1,5 +1,4 @@
-package suite.os;
-
+package suite.os; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.ByteArrayInputStream;
@@ -12,7 +11,6 @@ import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize.Serializer;
 import suite.streamlet.FunUtil.Source;
-import suite.util.Fail;
 
 public class SerializedStoreCache<K, V> {
 
@@ -50,7 +48,7 @@ public class SerializedStoreCache<K, V> {
 		try (var so = SerOutput.of(baos)) {
 			serializer.write(so, t);
 		} catch (IOException ex) {
-			Fail.t(ex);
+			fail(ex);
 		}
 
 		return Bytes.of(baos.toByteArray());

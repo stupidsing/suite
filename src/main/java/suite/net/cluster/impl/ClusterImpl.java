@@ -1,4 +1,4 @@
-package suite.net.cluster.impl;
+package suite.net.cluster.impl; import static suite.util.Friends.fail;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -21,7 +21,6 @@ import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Signal;
-import suite.util.Fail;
 import suite.util.Thread_;
 
 public class ClusterImpl implements Cluster {
@@ -92,7 +91,7 @@ public class ClusterImpl implements Cluster {
 			var resp = matcher.requestForResponse(getChannel(peer), req);
 			return NetUtil.deserialize(resp);
 		} else
-			return Fail.t("peer " + peer + " is not active");
+			return fail("peer " + peer + " is not active");
 	}
 
 	private PersistentNioChannel getChannel(String peer) {

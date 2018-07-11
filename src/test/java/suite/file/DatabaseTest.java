@@ -1,6 +1,5 @@
-package suite.file;
-
-import static org.junit.Assert.assertEquals;
+package suite.file; import static org.junit.Assert.assertEquals;
+import static suite.util.Friends.fail;
 
 import java.io.IOException;
 
@@ -8,7 +7,6 @@ import org.junit.Test;
 
 import suite.cfg.Defaults;
 import suite.file.impl.Database;
-import suite.util.Fail;
 
 public class DatabaseTest {
 
@@ -20,7 +18,7 @@ public class DatabaseTest {
 			database.transact(tx -> {
 				for (var i = 0; i < nRecords; i++)
 					tx.put(i, "sample");
-				return Fail.t();
+				return fail();
 			});
 		} catch (RuntimeException ex) {
 		}

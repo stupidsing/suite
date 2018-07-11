@@ -1,7 +1,6 @@
-package suite.lp.doer;
-
-import static org.junit.Assert.assertFalse;
+package suite.lp.doer; import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static suite.util.Friends.fail;
 
 import java.io.IOException;
 
@@ -12,7 +11,6 @@ import suite.lp.Configuration.ProverCfg;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.InterpretedProverBuilder;
 import suite.lp.search.SewingProverBuilder2;
-import suite.util.Fail;
 
 public class ProverTest {
 
@@ -136,7 +134,7 @@ public class ProverTest {
 		if (b0 == b1)
 			return b0;
 		else
-			return Fail.t("different prove result");
+			return fail("different prove result");
 	}
 
 }

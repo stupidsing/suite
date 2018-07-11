@@ -1,4 +1,4 @@
-package suite.btree.impl;
+package suite.btree.impl; import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -20,7 +20,6 @@ import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
-import suite.util.Fail;
 
 public class B_TreeBuilder<Key, Value> {
 
@@ -131,7 +130,7 @@ public class B_TreeBuilder<Key, Value> {
 					} else if (nodeType == TERMINAL)
 						page.add(b_tree.new KeyPointer(key, b_tree.new Terminal()));
 					else
-						Fail.t();
+						fail();
 				}
 
 				return page;
@@ -156,7 +155,7 @@ public class B_TreeBuilder<Key, Value> {
 					} else if (kp.pointer instanceof B_TreeImpl.Terminal)
 						so.writeChar(TERMINAL);
 					else
-						Fail.t();
+						fail();
 				}
 			}
 		};

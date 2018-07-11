@@ -1,4 +1,4 @@
-package suite.streamlet;
+package suite.streamlet; import static suite.util.Friends.fail;
 
 import java.io.Closeable;
 import java.util.Comparator;
@@ -19,7 +19,6 @@ import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.FunUtil2.Sink2;
 import suite.streamlet.FunUtil2.Source2;
-import suite.util.Fail;
 
 public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K, V>> {
 
@@ -263,7 +262,7 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 
 	public Pair<K, V> uniqueResult() {
 		var pair = spawn().opt();
-		return pair.t0 != null ? pair : Fail.t("no result");
+		return pair.t0 != null ? pair : fail("no result");
 	}
 
 	public Streamlet<V> values() {

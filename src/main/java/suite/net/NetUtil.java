@@ -1,5 +1,4 @@
-package suite.net;
-
+package suite.net; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.ByteArrayInputStream;
@@ -9,7 +8,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
 import suite.primitive.Bytes;
-import suite.util.Fail;
 
 public class NetUtil {
 
@@ -47,7 +45,7 @@ public class NetUtil {
 			var t = (T) in.readObject();
 			return t;
 		} catch (ClassNotFoundException | IOException ex) {
-			return Fail.t(ex);
+			return fail(ex);
 		}
 	}
 

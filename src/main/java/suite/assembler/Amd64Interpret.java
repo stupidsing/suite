@@ -1,5 +1,4 @@
-package suite.assembler;
-
+package suite.assembler; import static suite.util.Friends.fail;
 import static suite.util.Friends.min;
 
 import java.nio.ByteBuffer;
@@ -23,7 +22,6 @@ import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.map.IntIntMap;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Sink;
-import suite.util.Fail;
 import suite.util.To;
 
 public class Amd64Interpret {
@@ -204,11 +202,11 @@ public class Amd64Interpret {
 							rc = length;
 						} else if (regs[eax] == 0x5A) { // map
 							var size = mem.getInt(index(p1) + 4);
-							rc = size < posData.t1 - posData.t0 ? baseData.t0 : Fail.t();
+							rc = size < posData.t1 - posData.t0 ? baseData.t0 : fail();
 						} else
-							rc = Fail.t("invalid syscall " + regs[eax]);
+							rc = fail("invalid syscall " + regs[eax]);
 					else
-						rc = Fail.t();
+						rc = fail();
 					regs[eax] = rc;
 					break;
 				case JE:
@@ -318,7 +316,7 @@ public class Amd64Interpret {
 					assign.sink(setFlags(source0 ^ source1));
 					break;
 				default:
-					Fail.t();
+					fail();
 				}
 			} catch (Exception ex) {
 				LogUtil.info(state(instruction));
@@ -334,7 +332,7 @@ public class Amd64Interpret {
 		r = insn == Insn.CMPSD ? this::cmpsd : r;
 		r = insn == Insn.MOVSB ? this::movsb : r;
 		r = insn == Insn.MOVSD ? this::movsd : r;
-		return r != null ? r : Fail.t();
+		return r != null ? r : fail();
 	}
 
 	private void cmpsb() {
@@ -391,7 +389,7 @@ public class Amd64Interpret {
 		else if (address < baseStack.t1)
 			return address - diffStack;
 		else
-			return Fail.t("address gone wild: " + Integer.toHexString(address));
+			return fail("address gone wild: " + Integer.toHexString(address));
 	}
 
 	private String state(Instruction instruction) {

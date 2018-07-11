@@ -1,4 +1,4 @@
-package suite.node.parser;
+package suite.node.parser; import static suite.util.Friends.fail;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -16,7 +16,6 @@ import suite.node.util.Context;
 import suite.node.util.Singleton;
 import suite.streamlet.FunUtil.Sink;
 import suite.text.Preprocess;
-import suite.util.Fail;
 import suite.util.String_;
 
 /**
@@ -114,7 +113,7 @@ public class IterativeParser {
 						node = TreeTuple.of(Atom.of("{"), node);
 					add.sink(node);
 				} else
-					Fail.t("cannot parse " + in);
+					fail("cannot parse " + in);
 			} else if (ch == '`')
 				if (stack.peek().kind == ch) {
 					var node = stack.pop().unwind(null).getRight();
@@ -126,7 +125,7 @@ public class IterativeParser {
 				add.sink(terminalParser.parseTerminal(data));
 		}
 
-		return stack.size() == 1 ? stack.pop().unwind(null).getRight() : Fail.t("cannot parse " + in);
+		return stack.size() == 1 ? stack.pop().unwind(null).getRight() : fail("cannot parse " + in);
 	}
 
 }

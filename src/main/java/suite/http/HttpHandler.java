@@ -1,5 +1,4 @@
-package suite.http;
-
+package suite.http; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.RandomAccessFile;
@@ -8,7 +7,6 @@ import java.nio.file.Path;
 
 import suite.http.HttpSessionController.Authenticator;
 import suite.immutable.IMap;
-import suite.util.Fail;
 import suite.util.String_;
 import suite.util.To;
 
@@ -22,7 +20,7 @@ public interface HttpHandler {
 		return request -> {
 			var p = request.split();
 			var handler = map.get(p.t0);
-			return handler != null ? handler.handle(p.t1) : Fail.t("no handler for " + p.t0);
+			return handler != null ? handler.handle(p.t1) : fail("no handler for " + p.t0);
 		};
 	}
 

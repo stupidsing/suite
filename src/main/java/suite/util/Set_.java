@@ -1,4 +1,4 @@
-package suite.util;
+package suite.util; import static suite.util.Friends.fail;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -14,7 +14,7 @@ public class Set_ {
 
 	public static <T> Set<T> intersect(Collection<Collection<T>> collections) {
 		var iter = collections.iterator();
-		Set<T> set = iter.hasNext() ? new HashSet<>(iter.next()) : Fail.t();
+		Set<T> set = iter.hasNext() ? new HashSet<>(iter.next()) : fail();
 		while (iter.hasNext())
 			set.retainAll(iter.next());
 		return set;

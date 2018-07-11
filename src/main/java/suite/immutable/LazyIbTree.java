@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.immutable; import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -82,7 +82,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public boolean validate() {
-		return Read.from(root).isAll(this::validate) ? true : Fail.t();
+		return Read.from(root).isAll(this::validate) ? true : fail();
 	}
 
 	private boolean validate(Slot<T> slot) {
@@ -141,7 +141,7 @@ public class LazyIbTree<T> implements ITree<T> {
 	}
 
 	public LazyIbTree<T> add(T t) {
-		return update(t, t0 -> t0 == null ? t : Fail.t("duplicate key"));
+		return update(t, t0 -> t0 == null ? t : fail("duplicate key"));
 	}
 
 	/**

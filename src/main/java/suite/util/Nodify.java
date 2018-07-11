@@ -1,5 +1,4 @@
-package suite.util;
-
+package suite.util; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.lang.reflect.Array;
@@ -132,7 +131,7 @@ public class Nodify {
 						return apply_(tree.getRight(), getNodifier(clazz1));
 					} else
 						// happens when an enum implements an interface
-						return Fail.t("cannot instantiate enum from interfaces");
+						return fail("cannot instantiate enum from interfaces");
 				});
 			else {
 				var pairs = inspect //

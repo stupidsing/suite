@@ -1,4 +1,4 @@
-package suite.primitive;
+package suite.primitive; import static suite.util.Friends.fail;
 
 import java.util.Objects;
 
@@ -6,7 +6,6 @@ import suite.adt.Opt;
 import suite.object.Object_;
 import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
-import suite.util.Fail;
 
 public class IntOpt {
 
@@ -36,7 +35,7 @@ public class IntOpt {
 	}
 
 	public int get() {
-		return !isEmpty() ? value : Fail.t("no result");
+		return !isEmpty() ? value : fail("no result");
 	}
 
 	@Override

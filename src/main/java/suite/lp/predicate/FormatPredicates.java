@@ -1,5 +1,4 @@
-package suite.lp.predicate;
-
+package suite.lp.predicate; import static suite.util.Friends.fail;
 import static suite.util.Friends.min;
 
 import java.io.DataInputStream;
@@ -19,7 +18,6 @@ import suite.node.io.ReversePolish;
 import suite.node.pp.NewPrettyPrinter;
 import suite.node.pp.PrettyPrinter;
 import suite.os.FileUtil;
-import suite.util.Fail;
 
 public class FormatPredicates {
 
@@ -105,7 +103,7 @@ public class FormatPredicates {
 
 			return prover.bind(sx, new Str(name.substring(m, n)));
 		} else
-			return Fail.t("invalid call pattern");
+			return fail("invalid call pattern");
 	});
 
 	public BuiltinPredicate toAtom = PredicateUtil.fun(n -> Atom.of(Formatter.display(n)));

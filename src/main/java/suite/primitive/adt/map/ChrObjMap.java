@@ -1,4 +1,4 @@
-package suite.primitive.adt.map;
+package suite.primitive.adt.map; import static suite.util.Friends.fail;
 
 import java.util.Objects;
 
@@ -10,7 +10,6 @@ import suite.primitive.streamlet.ChrObjOutlet;
 import suite.primitive.streamlet.ChrObjStreamlet;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Iterate;
-import suite.util.Fail;
 
 /**
  * Map with primitive integer key and a generic object value. Null values are
@@ -153,7 +152,7 @@ public class ChrObjMap<V> {
 			ks[index] = key;
 			vs[index] = v1;
 		} else
-			Fail.t("duplicate key " + key);
+			fail("duplicate key " + key);
 	}
 
 	private int index(char key) {

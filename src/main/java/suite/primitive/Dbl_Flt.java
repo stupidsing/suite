@@ -1,11 +1,10 @@
-package suite.primitive;
+package suite.primitive; import static suite.util.Friends.fail;
 
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.FunUtil.Fun;
-import suite.util.Fail;
 
 public interface Dbl_Flt {
 
@@ -39,7 +38,7 @@ public interface Dbl_Flt {
 			try {
 				return apply(t);
 			} catch (Exception ex) {
-				return Fail.t("for key " + t, ex);
+				return fail("for key " + t, ex);
 			}
 		};
 	}

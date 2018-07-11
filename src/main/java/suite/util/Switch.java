@@ -1,5 +1,4 @@
-package suite.util;
-
+package suite.util; import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import suite.primitive.IoSink;
@@ -32,7 +31,7 @@ public class Switch<R> {
 	}
 
 	public R nonNullResult() {
-		return result != null ? result : Fail.t("cannot handle " + in);
+		return result != null ? result : fail("cannot handle " + in);
 	}
 
 	public R result() {

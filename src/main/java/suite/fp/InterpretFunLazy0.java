@@ -1,4 +1,4 @@
-package suite.fp;
+package suite.fp; import static suite.util.Friends.fail;
 
 import suite.Suite;
 import suite.adt.Mutable;
@@ -15,7 +15,6 @@ import suite.node.util.TreeUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
-import suite.util.Fail;
 
 public class InterpretFunLazy0 {
 
@@ -80,7 +79,7 @@ public class InterpretFunLazy0 {
 			}
 
 			private boolean bind(Node t0, Node t1) {
-				return Binder.bind(t0, t1, new Trail()) ? true : Fail.t();
+				return Binder.bind(t0, t1, new Trail()) ? true : fail();
 			}
 		}
 
@@ -107,7 +106,7 @@ public class InterpretFunLazy0 {
 	}
 
 	public Thunk lazy(Node node) {
-		Thunk error = () -> Fail.t("error termination");
+		Thunk error = () -> fail("error termination");
 
 		var env0 = IMap //
 				.<String, Thunk> empty() //

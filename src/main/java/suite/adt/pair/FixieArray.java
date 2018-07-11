@@ -1,8 +1,6 @@
-package suite.adt.pair;
+package suite.adt.pair; import static suite.util.Friends.fail;
 
 import java.util.List;
-
-import suite.util.Fail;
 
 public class FixieArray<T> extends Fixie<T, T, T, T, T, T, T, T, T, T> {
 
@@ -19,7 +17,7 @@ public class FixieArray<T> extends Fixie<T, T, T, T, T, T, T, T, T, T> {
 				6 < length ? ts[6] : null, //
 				7 < length ? ts[7] : null, //
 				8 < length ? ts[8] : null, //
-				9 < length ? ts[9] : null) : Fail.t();
+				9 < length ? ts[9] : null) : fail();
 	}
 
 	public static <T> FixieArray<T> of(List<T> ts) {
@@ -35,7 +33,7 @@ public class FixieArray<T> extends Fixie<T, T, T, T, T, T, T, T, T, T> {
 				6 < length ? ts.get(6) : null, //
 				7 < length ? ts.get(7) : null, //
 				8 < length ? ts.get(8) : null, //
-				9 < length ? ts.get(9) : null) : Fail.t();
+				9 < length ? ts.get(9) : null) : fail();
 	}
 
 	private FixieArray(T t0, T t1, T t2, T t3, T t4, T t5, T t6, T t7, T t8, T t9) {
