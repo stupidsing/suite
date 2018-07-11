@@ -45,7 +45,7 @@ define alloc size0 :=
 		let pointer.block := pointer.head + 4 ~
 		io.perform io.poke (pointer.head, size) ~
 		io.assign alloc.pointer := pointer.block + size ~
-		io pointer.block
+		pointer.block
 	) else (io p0)
 ~
 
@@ -56,7 +56,7 @@ define dealloc (size0, pointer.block) :=
 	assert (size = size_) ~
 	io.perform io.poke (pointer.block, alloc.free.chain) ~
 	io.assign alloc.free.chain := pointer.head ~
-	io {}
+	{}
 ~
 
 define new.pool length :=
@@ -74,10 +74,10 @@ define create.mut.number init :=
 	let size := size.of init ~
 	io.let pointer := alloc size ~
 	io.assign ^pointer := init ~
-	io {
+	{
 		destroy {} := dealloc (size, pointer) ~
 		get {} := io.peek pointer ~
-		set v1 := (io.assign ^pointer := v1 ~ io {}) ~
+		set v1 := (io.assign ^pointer := v1 ~ {}) ~
 	}
 ~
 
@@ -110,7 +110,7 @@ define get.char {} :=
 	) ~
 	assert (s1 < e1) ~
 	io.assign start.end := (s1 + 1, e1) ~
-	io buffer [s0]
+	buffer [s0]
 ~
 
 define put.char ch := write.all (address predef [ch,], 1) ~
