@@ -637,8 +637,7 @@ public class P2InferType {
 			var op = Mutable.<Operand> nil();
 			var offset = IntMutable.nil();
 			var vd = new Var(f, op, scope, offset, null, 0, size);
-			var e1 = new Erase(scope, env.replace(var, vd));
-			var expr1 = e1.erase(expr);
+			var expr1 = new Erase(scope, env.replace(var, vd)).erase(expr);
 
 			// if erase is called twice,
 			// pass 1: check for any reference accesses to locals, set
