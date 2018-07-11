@@ -75,8 +75,8 @@ public class StatisticalArbitrageTest {
 		// 0004.HK, 0020.HK
 		// 0011.HK, 0005.HK
 		var tor = 8;
-		var symbol0 = "0004.HK";
-		var symbol1 = "0945.HK";
+		var symbol0 = "0011.HK";
+		var symbol1 = "0005.HK";
 
 		var akds = cfg.dataSources(period, Read.each(symbol0, symbol1));
 		var pricesBySymbol = akds.dsByKey.mapValue(DataSource::returns).toMap();
