@@ -65,6 +65,7 @@ import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.Streamlet;
 import suite.util.ReadStream;
 import suite.util.Rethrow.SourceEx;
 import suite.util.Switch;
@@ -142,9 +143,7 @@ public class P0Parse {
 			}).match("^.0", a -> {
 				return FunpDeref.of(p(a));
 			}).match("{ .0 }", a -> {
-				return FunpStruct.of(Tree //
-						.iter(a, Tree::decompose) //
-						.map(this::kv) //
+				return FunpStruct.of(kvs(a) //
 						.map(kv -> Pair.of(kv.t0, p(kv.t1))) //
 						.toList());
 			}).match("address .0", a -> {
@@ -180,7 +179,7 @@ public class P0Parse {
 				return FunpDefine.of(Fdt.POLY, lambda.var, p(b), lambda.expr);
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("define { .0 } ~ .1", (a, b) -> {
-				var list = Tree.iter(a, Tree::decompose).map(this::kv).collect();
+				var list = kvs(a).collect();
 				var variables1 = list.fold(variables, (vs, pair) -> vs.add(pair.t0));
 				var p1 = new Parse(variables1);
 				return FunpDefineRec.of(list //
@@ -281,14 +280,16 @@ public class P0Parse {
 			return vn != null ? FunpDefine.of(t, vn, value, nv(vn).p(expr)) : null;
 		}
 
-		private Pair<String, Node> kv(Node n) {
-			Node[] m;
-			if ((m = Suite.pattern(".0 .1 := .2").match(n)) != null)
-				return Pair.of(Atom.name(m[0]), Suite.substitute(".0 => .1", m[1], m[2]));
-			else if ((m = Suite.pattern(".0 := .1").match(n)) != null || (m = Suite.pattern(".0: .1").match(n)) != null)
-				return Pair.of(Atom.name(m[0]), m[1]);
-			else
-				return Pair.of(Atom.name(n), n);
+		private Streamlet<Pair<String, Node>> kvs(Node node) {
+			return Tree.iter(node, Tree::decompose).map(n -> {
+				Node[] m;
+				if ((m = Suite.pattern(".0 .1 := .2").match(n)) != null)
+					return Pair.of(Atom.name(m[0]), Suite.substitute(".0 => .1", m[1], m[2]));
+				else if ((m = Suite.pattern(".0 := .1").match(n)) != null || (m = Suite.pattern(".0: .1").match(n)) != null)
+					return Pair.of(Atom.name(m[0]), m[1]);
+				else
+					return Pair.of(Atom.name(n), n);
+			});
 		}
 
 		private FunpLambda lambda(Node a, Node b) {
