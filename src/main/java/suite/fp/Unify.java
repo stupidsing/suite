@@ -1,4 +1,6 @@
-package suite.fp; import static suite.util.Friends.fail;
+package suite.fp;
+
+import static suite.util.Friends.fail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,6 +22,10 @@ public class Unify<T extends UnNode<T>> {
 		public default UnNode<T> final_() {
 			UnNode<T> refTarget;
 			return this instanceof UnRef && (refTarget = ((UnRef<T>) this).target) != this ? refTarget.final_() : this;
+		}
+
+		public default boolean isFree() {
+			return final_() instanceof UnRef;
 		}
 	}
 
