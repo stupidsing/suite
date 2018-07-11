@@ -275,6 +275,20 @@ public class P0 {
 		}
 	}
 
+	public static class FunpIoEval implements Funp, P2.End {
+		public Funp expr;
+
+		public static FunpIoEval of(Funp expr) {
+			var f = new FunpIoEval();
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
+		}
+	}
+
 	public static class FunpIoFold implements Funp, P2.End {
 		public Funp init; // expression
 		public Funp cont; // lambda

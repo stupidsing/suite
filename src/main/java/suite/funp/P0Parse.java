@@ -29,6 +29,7 @@ import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpIoAsm;
 import suite.funp.P0.FunpIoAssignRef;
+import suite.funp.P0.FunpIoEval;
 import suite.funp.P0.FunpIoFold;
 import suite.funp.P0.FunpIoMap;
 import suite.funp.P0.FunpLambda;
@@ -74,6 +75,7 @@ public class P0Parse {
 
 	private Atom dontCare = Atom.of("_");
 	private Inspect inspect = Singleton.me.inspect;
+	private String doToken = "$do";
 
 	public Funp parse(Node node0) {
 		var node1 = new Expand(IMap.empty()).e(node0);
@@ -184,8 +186,12 @@ public class P0Parse {
 				return FunpDefineRec.of(list //
 						.map(pair -> Pair.of(pair.t0, p1.p(pair.t1))) //
 						.toList(), p1.p(b));
+			}).match("do .0", a -> {
+				return FunpIo.of(nv(doToken).p(a));
 			}).match("error", () -> {
 				return FunpError.of();
+			}).match("eval.io .0", a -> {
+				return variables.contains(doToken) ? FunpIoEval.of(p(a)) : fail();
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {

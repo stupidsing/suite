@@ -36,6 +36,7 @@ import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpIoAsm;
 import suite.funp.P0.FunpIoAssignRef;
+import suite.funp.P0.FunpIoEval;
 import suite.funp.P0.FunpIoFold;
 import suite.funp.P0.FunpIoMap;
 import suite.funp.P0.FunpIoWhile;
@@ -325,6 +326,10 @@ public class P2InferType {
 			})).applyIf(FunpIoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), TypeReference.of(infer(value)));
 				return infer(expr);
+			})).applyIf(FunpIoEval.class, f -> f.apply(expr -> {
+				var t = unify.newRef();
+				unify(n, TypeIo.of(t), infer(expr));
+				return t;
 			})).applyIf(FunpIoFold.class, f -> f.apply((init, cont, next) -> {
 				var tv = unify.newRef();
 				var tvio = TypeIo.of(tv);
@@ -512,6 +517,8 @@ public class P2InferType {
 				return FunpSaveRegisters.of(FunpIoAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
 			})).applyIf(FunpIoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
+			})).applyIf(FunpIoEval.class, f -> f.apply(expr -> {
+				return erase(expr);
 			})).applyIf(FunpIoFold.class, f -> f.apply((init, cont, next) -> {
 				var offset = IntMutable.nil();
 				var size = getTypeSize(typeOf(init));
