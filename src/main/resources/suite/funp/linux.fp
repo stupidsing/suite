@@ -69,7 +69,7 @@ define new.pool length :=
 	}
 ~
 
-define create.mut.number init :=
+define new.mut.number init :=
 	type init = number ~
 	let size := size.of init ~
 	io.let pointer := alloc size ~
