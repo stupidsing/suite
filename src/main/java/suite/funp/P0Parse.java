@@ -294,6 +294,7 @@ public class P0Parse {
 			});
 		}
 
+		// TODO remove doToken scope
 		private FunpLambda lambda(Node a, Node b) {
 			String vn;
 			Funp f;
