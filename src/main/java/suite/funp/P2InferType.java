@@ -1,23 +1,21 @@
 package suite.funp;
 
 import static suite.util.Friends.fail;
-import static suite.util.Friends.rethrow;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
+import suite.BindArrayUtil.Pattern;
+import suite.Suite;
 import suite.adt.Mutable;
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
-import suite.adt.pair.Fixie_.FixieFun1;
-import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Operand;
-import suite.fp.Unify;
-import suite.fp.Unify.UnNode;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
@@ -72,18 +70,27 @@ import suite.funp.P2.FunpSaveRegisters;
 import suite.immutable.IMap;
 import suite.immutable.ISet;
 import suite.inspect.Inspect;
+import suite.lp.Trail;
+import suite.lp.doer.Binder;
+import suite.lp.doer.Cloner;
+import suite.node.Atom;
+import suite.node.Dict;
+import suite.node.Int;
+import suite.node.Node;
+import suite.node.Reference;
+import suite.node.Tree;
+import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
-import suite.object.AutoObject;
-import suite.primitive.ChrMutable;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
-import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
 import suite.util.Friends;
 import suite.util.String_;
 import suite.util.Switch;
@@ -101,20 +108,25 @@ public class P2InferType {
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
 
-	private UnNode<Type> typeBoolean = new TypeBoolean();
-	private UnNode<Type> typeByte = new TypeByte();
-	private UnNode<Type> typeNumber = new TypeNumber();
+	private Node typeBoolean = Atom.of("BOOLEAN");
+	private Node typeByte = Atom.of("BYTE");
+	private Node typeNumber = Atom.of("NUMBER");
+	private Pattern typePatArray = Suite.pattern("ARRAY .0 .1");
+	private Pattern typePatIo = Suite.pattern("IO .0");
+	private Pattern typePatLambda = Suite.pattern("LAMBDA .0 .1");
+	private Pattern typePatRef = Suite.pattern("REF .0");
+	private Pattern typePatStruct = Suite.pattern("STRUCT .0 .1");
 
-	private Map<Funp, UnNode<Type>> typeByNode = new IdentityHashMap<>();
+	private Map<Funp, Node> typeByNode = new IdentityHashMap<>();
 	private Map<Funp, Boolean> isRegByNode = new IdentityHashMap<>();
 
 	public Funp infer(Funp n0) {
-		var t = unify.newRef();
+		var t = new Reference();
 		var n1 = extractPredefine(n0);
 		var n2 = captureLambdas(n1);
 		var checks = new ArrayList<Source<Boolean>>();
 
-		if (unify.unify(t, new Infer(IMap.empty(), checks).infer(n2))) {
+		if (unify(t, new Infer(IMap.empty(), checks).infer(n2))) {
 			if (!Read.from(checks).isAll(Source<Boolean>::source))
 				fail();
 
@@ -219,36 +231,36 @@ public class P2InferType {
 	}
 
 	private class Infer {
-		private IMap<String, Pair<Boolean, UnNode<Type>>> env;
+		private IMap<String, Pair<Boolean, Node>> env;
 		private List<Source<Boolean>> checks;
 
-		private Infer(IMap<String, Pair<Boolean, UnNode<Type>>> env, List<Source<Boolean>> checks) {
+		private Infer(IMap<String, Pair<Boolean, Node>> env, List<Source<Boolean>> checks) {
 			this.env = env;
 			this.checks = checks;
 		}
 
-		private UnNode<Type> infer(Funp n, String in) {
+		private Node infer(Funp n, String in) {
 			return Funp_.rethrow(in, () -> infer(n));
 		}
 
-		private UnNode<Type> infer(Funp n) {
+		private Node infer(Funp n) {
 			var t = typeByNode.get(n);
 			if (t == null)
 				typeByNode.put(n, t = infer_(n));
 			return t;
 		}
 
-		private UnNode<Type> infer_(Funp n) {
-			return new Switch<UnNode<Type>>(n //
+		private Node infer_(Funp n) {
+			return new Switch<Node>(n //
 			).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-				var tr = unify.newRef();
-				unify(n, TypeLambda.of(infer(value), tr), infer(lambda));
+				var tr = new Reference();
+				unify(n, typeLambdaOf(infer(value), tr), infer(lambda));
 				return tr;
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
-				var te = unify.newRef();
+				var te = new Reference();
 				for (var element : elements)
 					unify(n, te, infer(element));
-				return TypeArray.of(te, elements.size());
+				return typeArrayOf(elements.size(), te);
 			})).applyIf(FunpBoolean.class, f -> {
 				return typeBoolean;
 			}).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
@@ -261,20 +273,20 @@ public class P2InferType {
 				else if (coerce == Coerce.NUMBER)
 					return typeNumber;
 				else if (coerce == Coerce.POINTER)
-					return TypeReference.of(unify.newRef());
+					return typeRefOf(new Reference());
 				else
 					return fail();
 			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
 				var tvalue = infer(value, var);
-				UnNode<Type> t;
+				Node t;
 				if (type == Fdt.IOAP)
-					unify(n, TypeIo.of(t = unify.newRef()), tvalue);
+					unify(n, typeIoOf(t = new Reference()), tvalue);
 				else
 					t = tvalue;
 				return newEnv(env.replace(var, Pair.of(type == Fdt.POLY, t))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var pairs_ = Read.from(pairs);
-				var env1 = pairs_.fold(env, (e, pair) -> e.put(pair.t0, Pair.of(false, unify.newRef())));
+				var env1 = pairs_.fold(env, (e, pair) -> e.put(pair.t0, Pair.of(false, new Reference())));
 				var infer1 = newEnv(env1);
 				for (var pair : pairs_) {
 					var var = pair.t0;
@@ -282,15 +294,15 @@ public class P2InferType {
 				}
 				return infer1.infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
-				var t = unify.newRef();
-				unify(n, TypeReference.of(t), infer(pointer));
+				var t = new Reference();
+				unify(n, typeRefOf(t), infer(pointer));
 				return t;
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
 				for (var assign : assigns) {
 					var size = assign.t0.size;
 					var tp = infer(assign.t1);
 					checks.add(() -> {
-						if (tp.final_() instanceof Type)
+						if (!(tp.finalNode() instanceof Reference))
 							return size == getTypeSize(tp);
 						else if (size == Funp_.booleanSize)
 							return unify(n, typeByte, tp);
@@ -302,83 +314,98 @@ public class P2InferType {
 				}
 				return typeNumber;
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
-				unify(n, infer(reference), TypeReference.of(infer(value)));
+				unify(n, infer(reference), typeRefOf(infer(value)));
 				return infer(expr);
 			})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
 				unify(n, getVariable(var), infer(value));
 				return infer(expr);
 			})).applyIf(FunpDoEvalIo.class, f -> f.apply(expr -> {
-				var t = unify.newRef();
-				unify(n, TypeIo.of(t), infer(expr));
+				var t = new Reference();
+				unify(n, typeIoOf(t), infer(expr));
 				return t;
 			})).applyIf(FunpDoFold.class, f -> f.apply((init, cont, next) -> {
-				var tv = unify.newRef();
-				var tvio = TypeIo.of(tv);
+				var tv = new Reference();
+				var tvio = typeIoOf(tv);
 				unify(n, tv, infer(init));
-				unify(n, TypeLambda.of(tv, typeBoolean), infer(cont));
-				unify(n, TypeLambda.of(tv, tvio), infer(next));
+				unify(n, typeLambdaOf(tv, typeBoolean), infer(cont));
+				unify(n, typeLambdaOf(tv, tvio), infer(next));
 				return tvio;
 			})).applyIf(FunpDontCare.class, f -> {
-				return unify.newRef();
+				return new Reference();
 			}).applyIf(FunpDoWhile.class, f -> f.apply((while_, do_, expr) -> {
 				unify(n, typeBoolean, infer(while_));
 				var td = infer(do_);
-				if (td.isFree())
+				if (td.finalNode() instanceof Reference)
 					// enforces a type to prevent exception
 					unify(n, td, typeBoolean);
 				return infer(expr);
 			})).applyIf(FunpError.class, f -> {
-				return unify.newRef();
+				return new Reference();
 			}).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
-				var tf = unify.newRef();
-				var ts = TypeStruct.of();
-				ts.pairs.add(Pair.of(field, tf));
-				unify(n, infer(reference), TypeReference.of(ts));
+				var tf = new Reference();
+				var map = new HashMap<Node, Reference>();
+				map.put(Atom.of(field), tf);
+				unify(n, infer(reference), typeRefOf(typeStructOf(Dict.of(map))));
 				return tf;
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
-				UnNode<Type> t;
+				Node t;
 				unify(n, typeBoolean, infer(if_));
 				unify(n, t = infer(then), infer(else_));
 				return t;
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
-				return TypeIo.of(infer(expr));
+				return typeIoOf(infer(expr));
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
-				var te = unify.newRef();
-				unify(n, TypeReference.of(TypeArray.of(te)), infer(reference));
+				var te = new Reference();
+				unify(n, typeRefOf(typeArrayOf(null, te)), infer(reference));
 				unify(n, infer(index), typeNumber);
 				return te;
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-				var tv = unify.newRef();
-				return TypeLambda.of(tv, newEnv(env.replace(var, Pair.of(false, tv))).infer(expr));
+				var tv = new Reference();
+				return typeLambdaOf(tv, newEnv(env.replace(var, Pair.of(false, tv))).infer(expr));
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
-				var tv = unify.newRef();
-				var env0 = IMap.<String, Pair<Boolean, UnNode<Type>>> empty();
+				var tv = new Reference();
+				var env0 = IMap.<String, Pair<Boolean, Node>> empty();
 				var env1 = env0 //
 						.replace(capn, Pair.of(false, infer(cap))) //
 						.replace(var, Pair.of(false, tv));
-				return TypeLambda.of(tv, newEnv(env1).infer(expr));
+				return typeLambdaOf(tv, newEnv(env1).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
 				return typeNumber;
 			}).applyIf(FunpReference.class, f -> f.apply(expr -> {
-				return TypeReference.of(infer(expr));
+				return typeRefOf(infer(expr));
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
-				return TypeArray.of(infer(expr), count);
+				return typeArrayOf(count, infer(expr));
 			})).applyIf(FunpSizeOf.class, f -> f.apply(expr -> {
 				infer(expr);
 				return typeNumber;
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
-				var types = new ArrayList<Pair<String, UnNode<Type>>>();
+				var types = new HashMap<Node, Reference>();
 				for (var kv : pairs) {
 					var name = kv.t0;
-					types.add(Pair.of(name, infer(kv.t1, name)));
+					types.put(Atom.of(name), Reference.of(infer(kv.t1, name)));
 				}
-				return TypeStruct.of(types);
+				var ref = new Reference();
+				var ts = typeStructOf(Dict.of(types), ref);
+				checks.add(() -> {
+					if (ref.isFree()) {
+						var list = new ArrayList<Node>();
+						var set = new HashSet<Node>();
+						Streamlet<Node> fs0 = Read.from(pairs).map(pair -> Atom.of(pair.t0));
+						Streamlet<Node> fs1 = Read.from(types.keySet());
+						for (var field : Streamlet.concat(fs0, fs1))
+							if (set.add(field))
+								list.add(field);
+						unify(ref, Tree.of(TermOp.AND___, list));
+					}
+					return true;
+				});
+				return ts;
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
-				UnNode<Type> ti;
+				Node ti;
 				if (op == TermOp.BIGAND || op == TermOp.BIGOR_)
 					ti = typeBoolean;
 				else if (op == TermOp.EQUAL_ || op == TermOp.NOTEQ_)
-					ti = unify.newRef();
+					ti = new Reference();
 				else
 					ti = typeNumber;
 				unify(n, infer(lhs), ti);
@@ -396,11 +423,11 @@ public class P2InferType {
 			})).nonNullResult();
 		}
 
-		private UnNode<Type> getVariable(FunpVariable var) {
-			return env.get(var.var).map((isPolyType, tv) -> isPolyType ? unify.clone(tv) : tv);
+		private Node getVariable(FunpVariable var) {
+			return env.get(var.var).map((isPolyType, tv) -> isPolyType ? cloneType(tv) : tv);
 		}
 
-		private Infer newEnv(IMap<String, Pair<Boolean, UnNode<Type>>> env) {
+		private Infer newEnv(IMap<String, Pair<Boolean, Node>> env) {
 			return new Infer(env, checks);
 		}
 	}
@@ -430,8 +457,8 @@ public class P2InferType {
 				var size = getTypeSize(typeOf(value));
 				return applyOnce(erase(value), lambda, size);
 			})).applyIf(FunpArray.class, f -> f.apply(elements -> {
-				var te = unify.newRef();
-				unify(n, type0, TypeArray.of(te));
+				var te = new Reference();
+				unify(n, type0, typeArrayOf(null, te));
 				var elementSize = getTypeSize(te);
 				var offset = 0;
 				var list = new ArrayList<Pair<Funp, IntIntPair>>();
@@ -506,14 +533,15 @@ public class P2InferType {
 				var while_ = FunpDoWhile.of(cont_, assign(m, next_, FunpDontCare.of()), m);
 				return FunpAllocStack.of(size, e1.erase(init), while_, offset);
 			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
-				var ts = TypeStruct.of();
-				unify(n, typeOf(reference), TypeReference.of(ts));
-				var ts1 = ts.finalStruct();
+				var map = new HashMap<Node, Reference>();
+				var ts = typeStructOf(Dict.of(map));
+				unify(n, typeOf(reference), typeRefOf(ts));
 				var offset = 0;
-				if (ts1.isCompleted)
-					for (var pair : ts1.pairs) {
+				var struct = isCompletedStruct(ts);
+				if (struct != null)
+					for (var pair : struct) {
 						var offset1 = offset + getTypeSize(pair.t1);
-						if (!String_.equals(pair.t0, field))
+						if (!String_.equals(Atom.name(pair.t0), field))
 							offset = offset1;
 						else
 							return FunpMemory.of(erase(reference), offset, offset1);
@@ -522,8 +550,8 @@ public class P2InferType {
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
-				var te = unify.newRef();
-				unify(n, typeOf(reference), TypeReference.of(TypeArray.of(te)));
+				var te = new Reference();
+				unify(n, typeOf(reference), typeRefOf(typeArrayOf(null, te)));
 				var size = getTypeSize(te);
 				var address0 = erase(reference);
 				var inc = FunpTree.of(TermOp.MULT__, erase(index), FunpNumber.ofNumber(size));
@@ -577,19 +605,21 @@ public class P2InferType {
 			})).applyIf(FunpSizeOf.class, f -> f.apply(expr -> {
 				return FunpNumber.ofNumber(getTypeSize(typeOf(expr)));
 			})).applyIf(FunpStruct.class, f -> f.apply(fvs -> {
-				var ts0 = TypeStruct.of();
-				unify(n, ts0, type0);
+				var map = new HashMap<Node, Reference>();
+				var ts = typeStructOf(Dict.of(map));
+				unify(n, ts, type0);
 
-				var ts1 = ts0.finalStruct();
 				var values = Read.from2(fvs).toMap();
 				var list = new ArrayList<Pair<Funp, IntIntPair>>();
 				var offset = 0;
+				var struct = isCompletedStruct(ts);
 
-				if (ts1.isCompleted)
-					for (var pair : ts1.pairs) {
+				if (struct != null)
+					for (var pair : struct) {
+						var type = pair.t1;
 						var offset0 = offset;
-						var name = pair.t0;
-						list.add(Pair.of(erase(values.get(name), name), IntIntPair.of(offset0, offset += getTypeSize(pair.t1))));
+						var name = Atom.name(pair.t0);
+						list.add(Pair.of(erase(values.get(name), name), IntIntPair.of(offset0, offset += getTypeSize(type))));
 					}
 				else
 					fail();
@@ -702,8 +732,8 @@ public class P2InferType {
 		}
 
 		private FunpMemory memory(FunpReference reference, Funp n) {
-			var t = unify.newRef();
-			unify(n, typeOf(reference), TypeReference.of(t));
+			var t = new Reference();
+			unify(n, typeOf(reference), typeRefOf(t));
 			return FunpMemory.of(erase(reference), 0, getTypeSize(t));
 		}
 
@@ -759,272 +789,112 @@ public class P2InferType {
 		private int is, os;
 
 		private LambdaType(Funp lambda) {
-			var tp = unify.newRef();
-			var tr = unify.newRef();
-			unify(lambda, typeOf(lambda), TypeLambda.of(tp, tr));
+			var tp = new Reference();
+			var tr = new Reference();
+			unify(lambda, typeOf(lambda), typeLambdaOf(tp, tr));
 			is = getTypeSize(tp);
 			os = getTypeSize(tr);
 		}
 	}
 
-	private boolean unify(Funp n, UnNode<Type> type0, UnNode<Type> type1) {
-		return unify.unify(type0, type1) || Funp_.<Boolean> fail("" //
+	private boolean unify(Funp n, Node type0, Node type1) {
+		return unify(type0, type1) || Funp_.<Boolean> fail("" //
 				+ "cannot unify types between:" //
 				+ "\n:: " + toString(type0) //
 				+ "\n:: " + toString(type1) //
 				+ "\nin " + n.getClass().getSimpleName());
 	}
 
-	private Type typeOf(Funp n) {
-		return (Type) typeByNode.get(n).final_();
+	private boolean unify(Node type0, Node type1) {
+		return Binder.bind(type0, type1, new Trail());
 	}
 
-	private int getTypeSize(UnNode<Type> n) {
-		var result = new Switch<Integer>(n.final_() //
-		).applyIf(TypeArray.class, t -> t.apply((elementType, size) -> {
-			return 0 <= size ? getTypeSize(elementType) * size : fail();
-		})).applyIf(TypeBoolean.class, t -> {
+	public Node cloneType(Node type) {
+		return new SwitchNode<Node>(type.finalNode() //
+		).applyIf(Reference.class, t -> {
+			return new Reference();
+		}).match(typePatArray, (a, b) -> {
+			return typePatArray.subst(cloneNode(a), cloneType(b));
+		}).match(typePatIo, a -> {
+			return typePatIo.subst(cloneType(a));
+		}).match(typePatLambda, (a, b) -> {
+			return typePatLambda.subst(cloneType(a), cloneType(b));
+		}).match(typePatRef, a -> {
+			return typePatRef.subst(cloneType(a));
+		}).match(typePatStruct, (a, b) -> {
+			var dict0 = Dict.m(a);
+			var dict1 = Dict.of(Read.from2(dict0).mapValue(t -> Reference.of(cloneType(t))).toMap());
+			return typePatStruct.subst(dict1, b);
+		}).applyIf(Node.class, t -> {
+			return t;
+		}).nonNullResult();
+	}
+
+	public Node cloneNode(Node node) {
+		return new Cloner().clone(node);
+	}
+
+	private Node typeOf(Funp n) {
+		return typeByNode.get(n).finalNode();
+	}
+
+	private Node typeArrayOf(Integer size, Node b) {
+		return typePatArray.subst(size != null ? Int.of(size) : new Reference(), b);
+	}
+
+	private Node typeIoOf(Node a) {
+		return typePatIo.subst(a);
+	}
+
+	private Node typeLambdaOf(Node a, Node b) {
+		return typePatLambda.subst(a, b);
+	}
+
+	private Node typeRefOf(Node a) {
+		return typePatRef.subst(a);
+	}
+
+	private Node typeStructOf(Dict dict) {
+		return typeStructOf(dict, new Reference());
+	}
+
+	private Node typeStructOf(Dict dict, Node list) {
+		return typePatStruct.subst(dict, list);
+	}
+
+	private int getTypeSize(Node n0) {
+		var n = n0.finalNode();
+		Streamlet2<Node, Reference> struct;
+		Node[] m;
+		if ((m = typePatArray.match(n)) != null) {
+			var size = m[0];
+			return size instanceof Int ? getTypeSize(m[1]) * Int.num(size) : fail();
+		} else if (n == typeBoolean)
 			return Funp_.booleanSize;
-		}).applyIf(TypeByte.class, t -> {
+		else if (n == typeByte)
 			return 1;
-		}).applyIf(TypeIo.class, t -> t.apply(type -> {
-			return getTypeSize(type);
-		})).applyIf(TypeLambda.class, t -> t.apply((parameterType, returnType) -> {
+		else if ((m = typePatIo.match(n)) != null)
+			return getTypeSize(m[0]);
+		else if ((m = typePatLambda.match(n)) != null)
 			return ps + ps;
-		})).applyIf(TypeNumber.class, t -> {
+		else if (n == typeNumber)
 			return is;
-		}).applyIf(TypeReference.class, t -> t.apply(type -> {
+		else if ((m = typePatRef.match(n)) != null)
 			return ps;
-		})).applyIf(TypeStruct.class, t -> t.apply(pairs -> {
-			return Read.from(pairs).toInt(Obj_Int.sum(field -> getTypeSize(field.t1)));
-		})).result();
-
-		return result != null ? result.intValue() : Funp_.fail("cannot get size of type " + toString(n));
+		else if ((struct = isCompletedStruct(n)) != null)
+			return struct.values().toInt(Obj_Int.sum(this::getTypeSize));
+		else
+			return Funp_.fail("cannot get size of type " + toString(n));
 	}
 
-	private String toString(UnNode<Type> type) {
-		var ins = new IdentityHashMap<Object, Boolean>();
-		var aliases = new IdentityHashMap<Object, Character>();
-		var alias = ChrMutable.of('a');
-
-		return new Object() {
-			private String toString(UnNode<Type> type) {
-				if (ins.put(type, true) == null)
-					try {
-						return new Switch<String>(type.final_() //
-						).applyIf(TypeArray.class, t -> {
-							var size = t.size;
-							return toString(t.elementType) + " * " + (0 <= size ? size : "_");
-						}).applyIf(TypeIo.class, t -> {
-							return "io " + toString(t.type);
-						}).applyIf(TypeLambda.class, t -> {
-							return toString(t.parameterType) + " -> " + toString(t.returnType);
-						}).applyIf(TypeReference.class, t -> {
-							return "&" + toString(t.type);
-						}).applyIf(TypeStruct.class, t -> {
-							var s = t.isCompleted ? "" : "...";
-							return Read.from(t.pairs).map(pair -> pair.t0 + ":" + toString(pair.t1) + ", ")
-									.collect(As.joinedBy("(", "", s + ")"));
-						}).applyIf(Type.class, t -> {
-							return type.final_().getClass().getSimpleName().substring(4).toLowerCase();
-						}).applyIf(Object.class, t -> {
-							return aliases.computeIfAbsent(t, t_ -> {
-								var c = alias.get();
-								alias.update((char) (c + 1));
-								return c;
-							}).toString();
-						}).nonNullResult();
-					} finally {
-						ins.remove(type);
-					}
-				else
-					return "<recurse>";
-			}
-		}.toString(type);
+	private Streamlet2<Node, Reference> isCompletedStruct(Node n) {
+		Node[] m = typePatStruct.match(n);
+		var dict = Dict.m(m[0]);
+		return Tree.iter(m[1]).map2(dict::get);
 	}
 
-	private static Unify<Type> unify = new Unify<>();
-
-	private static class TypeArray extends Type {
-		private int id = Util.temp();
-		private TypeArray ref = this;
-		private UnNode<Type> elementType;
-		private int size;
-
-		private static TypeArray of(UnNode<Type> elementType) {
-			return TypeArray.of(elementType, -1);
-		}
-
-		private static TypeArray of(UnNode<Type> elementType, int size) {
-			var t = new TypeArray();
-			t.elementType = elementType;
-			t.size = size;
-			return t;
-		}
-
-		private <R> R apply(FixieFun2<UnNode<Type>, Integer, R> fun) {
-			var ta = finalArray();
-			return fun.apply(ta.elementType, ta.size);
-		}
-
-		public boolean unify(UnNode<Type> type) {
-			var b = getClass() == type.getClass();
-
-			if (b) {
-				var x = finalArray();
-				var y = ((TypeArray) type).finalArray();
-				var ord = x.id < y.id;
-				var ta0 = ord ? x : y;
-				var ta1 = ord ? y : x;
-
-				if (ta0.size == -1)
-					ta0.size = ta1.size;
-				else if (ta1.size == -1)
-					ta1.size = ta0.size;
-
-				b &= unify.unify(ta0.elementType, ta1.elementType) && ta0.size == ta1.size;
-
-				if (b)
-					ta1.ref = ta0;
-			}
-
-			return b;
-		}
-
-		private TypeArray finalArray() {
-			return ref != this ? ref.finalArray() : this;
-		}
-	}
-
-	private static class TypeBoolean extends Type {
-	}
-
-	private static class TypeByte extends Type {
-	}
-
-	private static class TypeIo extends Type {
-		private UnNode<Type> type;
-
-		private static TypeIo of(UnNode<Type> type) {
-			var t = new TypeIo();
-			t.type = type;
-			return t;
-		}
-
-		private <R> R apply(FixieFun1<UnNode<Type>, R> fun) {
-			return fun.apply(type);
-		}
-	}
-
-	private static class TypeLambda extends Type {
-		private UnNode<Type> parameterType, returnType;
-
-		private static TypeLambda of(UnNode<Type> parameterType, UnNode<Type> returnType) {
-			var t = new TypeLambda();
-			t.parameterType = parameterType;
-			t.returnType = returnType;
-			return t;
-		}
-
-		private <R> R apply(FixieFun2<UnNode<Type>, UnNode<Type>, R> fun) {
-			return fun.apply(parameterType, returnType);
-		}
-	}
-
-	private static class TypeNumber extends Type {
-	}
-
-	private static class TypeReference extends Type {
-		private UnNode<Type> type;
-
-		private static TypeReference of(UnNode<Type> type) {
-			var t = new TypeReference();
-			t.type = type;
-			return t;
-		}
-
-		private <R> R apply(FixieFun1<UnNode<Type>, R> fun) {
-			return fun.apply(type);
-		}
-	}
-
-	private static class TypeStruct extends Type {
-		private int id = Util.temp();
-		private TypeStruct ref = this;
-		private List<Pair<String, UnNode<Type>>> pairs;
-		private boolean isCompleted;
-
-		private static TypeStruct of() {
-			return new TypeStruct(new ArrayList<>(), false);
-		}
-
-		private static TypeStruct of(List<Pair<String, UnNode<Type>>> pairs) {
-			return new TypeStruct(pairs, true);
-		}
-
-		private TypeStruct() {
-		}
-
-		private TypeStruct(List<Pair<String, UnNode<Type>>> pairs, boolean isCompleted) {
-			this.pairs = pairs;
-			this.isCompleted = isCompleted;
-		}
-
-		private <R> R apply(FixieFun1<List<Pair<String, UnNode<Type>>>, R> fun) {
-			return fun.apply(finalStruct().pairs);
-		}
-
-		public boolean unify(UnNode<Type> type) {
-			var b = getClass() == type.getClass();
-
-			if (b) {
-				var x = finalStruct();
-				var y = ((TypeStruct) type).finalStruct();
-				var ord = x.id < y.id;
-				var ts0 = ord ? x : y;
-				var ts1 = ord ? y : x;
-				var typeByField0 = Read.from2(ts0.pairs).toMap();
-				var typeByField1 = Read.from2(ts1.pairs).toMap();
-
-				for (var e : ts1.pairs) {
-					var field = e.t0;
-					var type0 = typeByField0.get(field);
-					var type1 = e.t1;
-					if (type0 != null)
-						b &= unify.unify(type0, type1);
-					else {
-						b &= !ts0.isCompleted;
-						ts0.pairs.add(Pair.of(field, type1));
-					}
-				}
-
-				b &= !ts1.isCompleted || Read.from2(ts0.pairs).keys().isAll(typeByField1::containsKey);
-
-				if (b) {
-					ts0.isCompleted |= ts1.isCompleted;
-					ts1.ref = ts0;
-				}
-			}
-
-			return b;
-		}
-
-		private TypeStruct finalStruct() {
-			return ref != this ? ref.finalStruct() : this;
-		}
-	}
-
-	private static class Type extends AutoObject<Type> implements UnNode<Type> {
-		public boolean unify(UnNode<Type> type) {
-			return getClass() == type.getClass() //
-					&& fields().isAll(field -> rethrow(() -> unify.unify(cast(field.get(this)), cast(field.get(type)))));
-		}
-
-		private static UnNode<Type> cast(Object object) {
-			@SuppressWarnings("unchecked")
-			var node = (UnNode<Type>) object;
-			return node;
-		}
+	private String toString(Node type) {
+		return type.toString();
 	}
 
 }

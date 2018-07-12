@@ -406,10 +406,10 @@ public class P0 {
 	}
 
 	public static class FunpRepeat implements Funp, P2.End {
-		public int count;
+		public Integer count;
 		public Funp expr;
 
-		public static FunpRepeat of(int count, Funp expr) {
+		public static FunpRepeat of(Integer count, Funp expr) {
 			var f = new FunpRepeat();
 			f.count = count;
 			f.expr = expr;

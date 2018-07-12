@@ -149,7 +149,7 @@ public class P0Parse {
 			}).match("address .0", a -> {
 				return FunpReference.of(p(a));
 			}).match("array .0 * .1", (a, b) -> {
-				return FunpRepeat.of(b != Atom.of("_") ? Int.num(b) : -1, p(a));
+				return FunpRepeat.of(b != Atom.of("_") ? Int.num(b) : null, p(a));
 			}).match("asm .0 {.1}", (a, b) -> {
 				return isDo() ? FunpDoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
 					var ma = Suite.pattern(".0 = .1").match(n);
