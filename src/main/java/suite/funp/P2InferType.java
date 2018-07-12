@@ -141,8 +141,7 @@ public class P2InferType {
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
 						var vn = "predefine$" + Util.temp();
 						vns.add(vn);
-						var var = FunpVariable.of(vn);
-						return FunpDoAssignRef.of(FunpReference.of(var), extract(expr), var);
+						return FunpDoAssignVar.of(vn, extract(expr), FunpVariable.of(vn));
 					})).result();
 				});
 			}
@@ -551,19 +550,15 @@ public class P2InferType {
 						).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 							return FunpAssignMem.of(memory(reference, f), erase(value), getAddress(expr));
 						})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-							return getVariable(var);
+							return assign(getVariable(env.get(var)), erase(value), getAddress(expr));
 						})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 							return erase(pointer);
 						})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-							return getVariable(var);
+							var m = getVariableMemory(env.get(var));
+							return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
 						})).applyIf(Funp.class, f -> {
 							return Funp_.fail("require pre-definition");
 						}).nonNullResult();
-					}
-
-					private FunpTree getVariable(String var) {
-						return getVariableMemory(env.get(var))
-								.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
 					}
 				}.getAddress(expr);
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
