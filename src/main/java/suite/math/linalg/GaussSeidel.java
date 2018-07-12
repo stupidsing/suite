@@ -8,7 +8,9 @@ public class GaussSeidel {
 	public float[] solve(float[][] a, float[] b) {
 		var size = mtx.sqSize(a);
 		var phi = new float[size];
-		var phi0 = Boolean.TRUE ? phi : new float[size]; // Gauss-Seidel, or Jacobi
+
+		// Gauss-Seidel, or Jacobi
+		var phi0 = Boolean.TRUE ? phi : new float[size];
 
 		for (var iteration = 0; iteration < 16; iteration++) {
 			for (var i = 0; i < size; i++) {

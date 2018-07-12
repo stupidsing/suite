@@ -1,4 +1,6 @@
-package suite.math.numeric; import static suite.util.Friends.exp;
+package suite.math.numeric;
+
+import static suite.util.Friends.exp;
 import static suite.util.Friends.fail;
 import static suite.util.Friends.log;
 import static suite.util.Friends.sqrt;

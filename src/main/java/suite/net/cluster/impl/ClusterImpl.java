@@ -1,4 +1,6 @@
-package suite.net.cluster.impl; import static suite.util.Friends.fail;
+package suite.net.cluster.impl;
+
+import static suite.util.Friends.fail;
 
 import java.io.Closeable;
 import java.io.IOException;

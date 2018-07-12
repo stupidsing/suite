@@ -1,4 +1,6 @@
-package suite.node.util; import static java.util.Map.entry;
+package suite.node.util;
+
+import static java.util.Map.entry;
 import static suite.util.Friends.fail;
 
 import java.util.ArrayList;

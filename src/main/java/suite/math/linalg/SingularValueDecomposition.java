@@ -1,4 +1,6 @@
-package suite.math.linalg; import static suite.util.Friends.fail;
+package suite.math.linalg;
+
+import static suite.util.Friends.fail;
 import static suite.util.Friends.sqrt;
 
 import java.util.Random;

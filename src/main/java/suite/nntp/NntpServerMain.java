@@ -1,4 +1,6 @@
-package suite.nntp; import static suite.util.Friends.fail;
+package suite.nntp;
+
+import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.InputStream;

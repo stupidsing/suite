@@ -1,4 +1,6 @@
-package suite.node; import static suite.util.Friends.fail;
+package suite.node;
+
+import static suite.util.Friends.fail;
 
 import suite.lp.doer.ProverConstant;
 import suite.util.Util;

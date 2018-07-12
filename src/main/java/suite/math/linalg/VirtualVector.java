@@ -1,4 +1,6 @@
-package suite.math.linalg; import static suite.util.Friends.fail;
+package suite.math.linalg;
+
+import static suite.util.Friends.fail;
 
 import suite.primitive.Int_Flt;
 import suite.util.To;

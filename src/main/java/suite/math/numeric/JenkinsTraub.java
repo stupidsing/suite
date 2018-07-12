@@ -1,4 +1,6 @@
-package suite.math.numeric; import static suite.util.Friends.abs;
+package suite.math.numeric;
+
+import static suite.util.Friends.abs;
 import static suite.util.Friends.fail;
 import static suite.util.Friends.sqrt;
 
