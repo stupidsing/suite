@@ -1,4 +1,6 @@
-package suite.btree.impl; import static suite.util.Friends.fail;
+package suite.btree.impl;
+
+import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.nio.file.Path;

@@ -1,4 +1,6 @@
-package suite.btree.impl; import static suite.util.Friends.fail;
+package suite.btree.impl;
+
+import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -360,8 +362,8 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	/**
 	 * Merge two consecutive branches in a page.
 	 *
-	 * p0 and p1 are branches of parent. p0 is located in slot 'index' of parent,
-	 * while p1 is in next.
+	 * p0 and p1 are branches of parent. p0 is located in slot 'index' of
+	 * parent, while p1 is in next.
 	 */
 	private void merge(Page parent, Page p0, Page p1, int index) {
 		p0.addAll(p1);

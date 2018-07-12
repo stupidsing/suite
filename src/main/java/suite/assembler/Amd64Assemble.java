@@ -1,4 +1,6 @@
-package suite.assembler; import static java.util.Map.entry;
+package suite.assembler;
+
+import static java.util.Map.entry;
 import static suite.util.Friends.fail;
 
 import java.util.Arrays;

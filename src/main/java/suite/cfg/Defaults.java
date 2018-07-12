@@ -1,4 +1,6 @@
-package suite.cfg; import static suite.util.Friends.fail;
+package suite.cfg;
+
+import static suite.util.Friends.fail;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;

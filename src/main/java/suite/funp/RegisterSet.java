@@ -1,4 +1,6 @@
-package suite.funp; import static suite.util.Friends.fail;
+package suite.funp;
+
+import static suite.util.Friends.fail;
 
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;

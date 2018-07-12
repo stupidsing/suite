@@ -1,4 +1,6 @@
-package suite.asm; import static suite.util.Friends.fail;
+package suite.asm;
+
+import static suite.util.Friends.fail;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;

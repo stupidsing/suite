@@ -1,4 +1,6 @@
-package suite.assembler; import static suite.util.Friends.fail;
+package suite.assembler;
+
+import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 

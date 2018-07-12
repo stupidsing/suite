@@ -1,4 +1,6 @@
-package suite; import static suite.util.Friends.fail;
+package suite;
+
+import static suite.util.Friends.fail;
 
 import java.io.IOException;
 

@@ -1,4 +1,6 @@
-package suite.adt; import static suite.util.Friends.fail;
+package suite.adt;
+
+import static suite.util.Friends.fail;
 
 import java.util.Objects;
 
