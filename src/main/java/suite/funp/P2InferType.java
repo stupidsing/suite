@@ -139,9 +139,10 @@ public class P2InferType {
 					})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 						return FunpLambda.of(var, extractPredefine(expr));
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
-						var vn = "ev$" + Util.temp();
+						var vn = "predefine$" + Util.temp();
 						evs.add(Pair.of(vn, expr));
-						return FunpDoAssignVar.of(vn, extract(expr), FunpVariable.of(vn));
+						var var = FunpVariable.of(vn);
+						return FunpDoAssignRef.of(FunpReference.of(var), extract(expr), var);
 					})).result();
 				});
 			}
