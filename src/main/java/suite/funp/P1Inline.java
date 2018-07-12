@@ -8,6 +8,7 @@ import java.util.Map;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpCheckType;
+import suite.funp.P0.FunpDeTag;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
@@ -240,6 +241,11 @@ public class P1Inline {
 				).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
 					associate(vars, value);
 					associate(vars.replace(var, f), expr);
+					return n_;
+				})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, var, if_, then, else_) -> {
+					associate(vars, if_);
+					associate(vars.replace(var, f), then);
+					associate(vars, else_);
 					return n_;
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 					var vars1 = Read.from(pairs).fold(vars, (vs, pair) -> vs.replace(pair.t0, f));

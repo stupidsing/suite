@@ -148,12 +148,7 @@ public class P2InferType {
 			private Funp extract(Funp n) {
 				return inspect.rewrite(n, Funp.class, n_ -> {
 					return n_.sw( //
-					).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
-						return FunpDefine.of(type, var, extract(value), extract(expr));
-					})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
-						var pairs1 = Read.from2(pairs0).mapValue(this::extract).toList();
-						return FunpDefineRec.of(pairs1, extract(expr));
-					})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+					).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 						return FunpLambda.of(var, extractPredefine(expr));
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
 						var vn = "predefine$" + Util.temp();
@@ -202,6 +197,9 @@ public class P2InferType {
 					for (var pair : vars)
 						vars1.add(Pair.of(pair.t0, c1.capture(pair.t1)));
 					return FunpDefineRec.of(vars1, c1.capture(expr));
+				})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, var, if_, then, else_) -> {
+					var c1 = new Capture(accesses, locals.add(var), globals);
+					return FunpDeTag.of(id, tag, var, capture(if_), c1.capture(then), capture(else_));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					if (Boolean.TRUE) // perform capture?
 						return FunpLambda.of(var, new Capture(accesses, locals.replace(var), globals).capture(expr));
@@ -301,17 +299,17 @@ public class P2InferType {
 				var t = new Reference();
 				unify(n, typeRefOf(t), infer(pointer));
 				return t;
-			})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, value, if_, then, else_) -> {
+			})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, var, if_, then, else_) -> {
 				var tv = new Reference();
 				Node tr;
 
 				var types = new HashMap<Node, Reference>();
 				types.put(Atom.of(tag), Reference.of(tv));
 
-				var env1 = newEnv(env.put(value, Pair.of(false, tv)));
+				var env1 = newEnv(env.put(var, Pair.of(false, tv)));
 
 				unify(n, typeTagOf(Dict.of(types)), infer(if_));
-				unify(n, tr = env1.infer(then), infer(else_));
+				unify(n, tr = env1.infer(then, var), infer(else_));
 				return tr;
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
 				for (var assign : assigns) {

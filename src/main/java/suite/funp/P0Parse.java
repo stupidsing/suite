@@ -19,6 +19,7 @@ import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpCoerce.Coerce;
+import suite.funp.P0.FunpDeTag;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
@@ -417,6 +418,11 @@ public class P0Parse {
 					return Ints_ //
 							.range(size0) //
 							.fold(then, (i, then_) -> bind(pairs0.get(i).t1, fun.apply(i), then_, else_));
+				})).applyIf(FunpTag.class, f -> f.apply((id, tag, value_) -> {
+					var vn = "detag$" + Util.temp();
+
+					// FIXME double else
+					return FunpDeTag.of(id, tag, vn, value, bind(FunpVariable.of(vn), value_, then, else_), else_);
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 					return variables.contains(var) ? FunpDoAssignVar.of(f, value, then) : be;
 				})).result();
