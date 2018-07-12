@@ -24,6 +24,7 @@ import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpCoerce.Coerce;
+import suite.funp.P0.FunpDeTag;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
@@ -300,6 +301,18 @@ public class P2InferType {
 				var t = new Reference();
 				unify(n, typeRefOf(t), infer(pointer));
 				return t;
+			})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, value, if_, then, else_) -> {
+				var tv = new Reference();
+				Node tr;
+
+				var types = new HashMap<Node, Reference>();
+				types.put(Atom.of(tag), Reference.of(tv));
+
+				var env1 = newEnv(env.put(value, Pair.of(false, tv)));
+
+				unify(n, typeTagOf(Dict.of(types)), infer(if_));
+				unify(n, tr = env1.infer(then), infer(else_));
+				return tr;
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
 				for (var assign : assigns) {
 					var size = assign.t0.size;
@@ -515,6 +528,14 @@ public class P2InferType {
 				return FunpAllocStack.of(offset, FunpDontCare.of(), expr2, offsetStack);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
+			})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, var, if_, then, else_) -> {
+				var size = getTypeSize(Dict.m(typePatTag.match(typeOf(f))[0]).get(Atom.of(tag)));
+				var ref = erase(FunpReference.of(if_));
+				var mtag = FunpMemory.of(ref, 0, is);
+				var mval = FunpMemory.of(ref, is, is + size);
+				var eq = FunpTree.of(TermOp.EQUAL_, FunpNumber.of(id), mtag);
+				var then1 = defineLocal(f, var, mval, then, size);
+				return FunpIf.of(eq, then1, erase(else_));
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
 				env // disable register locals
 						.streamlet2() //
@@ -583,23 +604,7 @@ public class P2InferType {
 				var expr1 = new Erase(1, env1).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
-				return new Object() {
-					private Funp getAddress(Funp n) {
-						return n.sw( //
-						).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
-							return FunpAssignMem.of(memory(reference, f), erase(value), getAddress(expr));
-						})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-							return assign(getVariable(var), erase(value), getAddress(expr));
-						})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
-							return erase(pointer);
-						})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-							var m = getVariableMemory(env.get(var));
-							return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
-						})).applyIf(Funp.class, f -> {
-							return Funp_.fail("require pre-definition");
-						}).nonNullResult();
-					}
-				}.getAddress(expr);
+				return getAddress(expr);
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
 				var elementSize = getTypeSize(typeOf(expr));
 				var offset = 0;
@@ -712,6 +717,26 @@ public class P2InferType {
 				return FunpRoutine2.of(frame, expr);
 			else
 				return FunpRoutineIo.of(frame, expr, lt.is, lt.os);
+		}
+
+		private Funp getAddress(Funp expr) {
+			return new Object() {
+				private Funp getAddress(Funp n) {
+					return n.sw( //
+					).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
+						return FunpAssignMem.of(memory(reference, f), erase(value), getAddress(expr));
+					})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
+						return assign(getVariable(var), erase(value), getAddress(expr));
+					})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
+						return erase(pointer);
+					})).applyIf(FunpVariable.class, f -> f.apply(var -> {
+						var m = getVariableMemory(env.get(var));
+						return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
+					})).applyIf(Funp.class, f -> {
+						return Funp_.fail("require pre-definition");
+					}).nonNullResult();
+				}
+			}.getAddress(expr);
 		}
 
 		private Funp getVariable(FunpVariable var) {

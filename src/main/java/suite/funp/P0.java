@@ -8,6 +8,7 @@ import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Fixie_.FixieFun4;
+import suite.adt.pair.Fixie_.FixieFun6;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.OpReg;
 import suite.funp.Funp_.Funp;
@@ -154,6 +155,30 @@ public class P0 {
 
 		public <R> R apply(FixieFun1<Funp, R> fun) {
 			return fun.apply(pointer);
+		}
+	}
+
+	public static class FunpDeTag implements Funp, P2.End {
+		public IntMutable id;
+		public String tag;
+		public String var;
+		public Funp if_;
+		public Funp then;
+		public Funp else_;
+
+		public static FunpDeTag of(IntMutable id, String tag, String var, Funp if_, Funp then, Funp else_) {
+			var f = new FunpDeTag();
+			f.id = id;
+			f.tag = tag;
+			f.var = var;
+			f.if_ = if_;
+			f.then = then;
+			f.else_ = else_;
+			return f;
+		}
+
+		public <R> R apply(FixieFun6<IntMutable, String, String, Funp, Funp, Funp, R> fun) {
+			return fun.apply(id, tag, var, if_, then, else_);
 		}
 	}
 
