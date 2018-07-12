@@ -9,11 +9,12 @@ import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
+import suite.funp.P0.FunpDoAssignRef;
+import suite.funp.P0.FunpDoAssignVar;
+import suite.funp.P0.FunpDoWhile;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpIf;
-import suite.funp.P0.FunpDoAssignRef;
-import suite.funp.P0.FunpDoWhile;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
@@ -79,12 +80,13 @@ public class P1ReduceTailCall {
 		if (o.b) {
 			var tcoVarName = "tco$" + Util.temp();
 			var varRef = FunpReference.of(FunpVariable.of(var));
-			var tcoVarRef = FunpReference.of(FunpVariable.of(tcoVarName));
+			var tcoVar = FunpVariable.of(tcoVarName);
+			var tcoVarRef = FunpReference.of(tcoVar);
 			var fc = FunpField.of(tcoVarRef, "c");
 			var fn = FunpField.of(tcoVarRef, "n");
 			var fr = FunpField.of(tcoVarRef, "r");
 			var dontCare = FunpDontCare.of();
-			var assign = FunpDoAssignRef.of(tcoVarRef, do1, FunpDoAssignRef.of(varRef, fn, fc));
+			var assign = FunpDoAssignVar.of(tcoVar, do1, FunpDoAssignRef.of(varRef, fn, fc));
 			return FunpLambda.of(var, FunpDefine.of(Fdt.MONO, tcoVarName, dontCare, FunpDoWhile.of(assign, FunpDontCare.of(), fr)));
 		} else
 			return null;

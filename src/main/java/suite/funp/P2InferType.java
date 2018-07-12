@@ -140,8 +140,9 @@ public class P2InferType {
 						return FunpLambda.of(var, extractPredefine(expr));
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
 						var vn = "predefine$" + Util.temp();
+						var var = FunpVariable.of(vn);
 						vns.add(vn);
-						return FunpDoAssignVar.of(vn, extract(expr), FunpVariable.of(vn));
+						return FunpDoAssignVar.of(var, extract(expr), var);
 					})).result();
 				});
 			}
@@ -391,15 +392,15 @@ public class P2InferType {
 				unify(n, infer(lhs), typeNumber);
 				unify(n, infer(rhs), typeNumber);
 				return typeNumber;
-			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-				return getVariable(var);
-			})).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
+			})).applyIf(FunpVariable.class, f -> {
+				return getVariable(f);
+			}).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
 				return Funp_.fail("Undefined variable " + var);
 			})).nonNullResult();
 		}
 
-		private UnNode<Type> getVariable(String var) {
-			return env.get(var).map((isPolyType, tv) -> isPolyType ? unify.clone(tv) : tv);
+		private UnNode<Type> getVariable(FunpVariable var) {
+			return env.get(var.var).map((isPolyType, tv) -> isPolyType ? unify.clone(tv) : tv);
 		}
 
 		private Infer newEnv(IMap<String, Pair<Boolean, UnNode<Type>>> env) {
@@ -488,7 +489,7 @@ public class P2InferType {
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
 			})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-				return assign(getVariable(env.get(var)), erase(value), erase(expr));
+				return assign(getVariable(var), erase(value), erase(expr));
 			})).applyIf(FunpDoEvalIo.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpDoFold.class, f -> f.apply((init, cont, next) -> {
@@ -550,7 +551,7 @@ public class P2InferType {
 						).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 							return FunpAssignMem.of(memory(reference, f), erase(value), getAddress(expr));
 						})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-							return assign(getVariable(env.get(var)), erase(value), getAddress(expr));
+							return assign(getVariable(var), erase(value), getAddress(expr));
 						})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 							return erase(pointer);
 						})).applyIf(FunpVariable.class, f -> f.apply(var -> {
@@ -604,7 +605,7 @@ public class P2InferType {
 				} else
 					return null;
 			})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-				return getVariable(env.get(var));
+				return getVariable(var);
 			})).result();
 		}
 
@@ -665,6 +666,14 @@ public class P2InferType {
 				return FunpRoutine2.of(frame, expr);
 			else
 				return FunpRoutineIo.of(frame, expr, lt.is, lt.os);
+		}
+
+		private Funp getVariable(FunpVariable var) {
+			return getVariable(var.var);
+		}
+
+		private Funp getVariable(String vn) {
+			return getVariable(env.get(vn));
 		}
 
 		private Funp getVariable(Var vd) {

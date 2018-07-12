@@ -1,4 +1,6 @@
-package suite.funp; import java.util.List;
+package suite.funp;
+
+import java.util.List;
 
 import suite.Suite;
 import suite.adt.pair.Pair;
