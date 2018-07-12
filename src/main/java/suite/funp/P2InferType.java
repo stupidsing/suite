@@ -10,13 +10,14 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.Mutable;
+import suite.adt.pair.Fixie;
+import suite.adt.pair.Fixie_.Fixie3;
 import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Operand;
 import suite.fp.Unify;
 import suite.fp.Unify.UnNode;
-import suite.funp.Funp_.CompileException;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
@@ -226,12 +227,8 @@ public class P2InferType {
 			this.checks = checks;
 		}
 
-		private UnNode<Type> infer(Funp n, String var) {
-			try {
-				return infer(n);
-			} catch (CompileException ex) {
-				return ex.rethrow(var);
-			}
+		private UnNode<Type> infer(Funp n, String in) {
+			return Funp_.rethrow(in, () -> infer(n));
 		}
 
 		private UnNode<Type> infer(Funp n) {
@@ -417,6 +414,10 @@ public class P2InferType {
 			this.env = env;
 		}
 
+		private Funp erase(Funp n, String in) {
+			return Funp_.rethrow(in, () -> erase(n));
+		}
+
 		private Funp erase(Funp n) {
 			return inspect.rewrite(n, Funp.class, this::erase_);
 		}
@@ -448,24 +449,26 @@ public class P2InferType {
 					var size = getTypeSize(typeOf(value));
 					var address = Mutable.<Operand> nil();
 					var e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
-					var expr1 = FunpAssignMem.of(FunpMemory.of(FunpOperand.of(address), 0, size), erase(value), e1.erase(expr));
+					var m = FunpMemory.of(FunpOperand.of(address), 0, size);
+					var expr1 = FunpAssignMem.of(m, erase(value, var), e1.erase(expr));
 					return FunpAllocGlobal.of(var, size, expr1, address);
 				} else if (type == Fdt.VIRT)
 					return erase(expr);
 				else
 					return fail();
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-				var assigns = new ArrayList<Pair<Var, Funp>>();
+				var assigns = new ArrayList<Fixie3<String, Var, Funp>>();
 				var offsetStack = IntMutable.nil();
 				var env1 = env;
 				var offset = 0;
 
 				for (var pair : pairs) {
-					var offset0 = offset;
+					var vn = pair.t0;
 					var value = pair.t1;
+					var offset0 = offset;
 					var var = new Var(scope, offsetStack, offset0, offset += getTypeSize(typeOf(value)));
-					env1 = env1.replace(pair.t0, var);
-					assigns.add(Pair.of(var, value));
+					env1 = env1.replace(vn, var);
+					assigns.add(Fixie.of(vn, var, value));
 				}
 
 				var e1 = new Erase(scope, env1);
@@ -473,7 +476,7 @@ public class P2InferType {
 
 				var expr2 = Read //
 						.from(assigns) //
-						.fold(expr1, (e, pair) -> assign(e1.getVariable(pair.t0), e1.erase(pair.t1), e));
+						.fold(expr1, (e, x) -> x.map((vn, v, n_) -> assign(e1.getVariable(v), e1.erase(n_, vn), e)));
 
 				return FunpAllocStack.of(offset, FunpDontCare.of(), expr2, offsetStack);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
@@ -585,7 +588,8 @@ public class P2InferType {
 				if (ts1.isCompleted)
 					for (var pair : ts1.pairs) {
 						var offset0 = offset;
-						list.add(Pair.of(erase(values.get(pair.t0)), IntIntPair.of(offset0, offset += getTypeSize(pair.t1))));
+						var name = pair.t0;
+						list.add(Pair.of(erase(values.get(name), name), IntIntPair.of(offset0, offset += getTypeSize(pair.t1))));
 					}
 				else
 					fail();
@@ -640,7 +644,7 @@ public class P2InferType {
 		}
 
 		private Funp defineLocal(Funp f, String var, Funp value, Funp expr) {
-			return defineLocal(f, var, erase(value), expr, getTypeSize(typeOf(value)));
+			return defineLocal(f, var, erase(value, var), expr, getTypeSize(typeOf(value)));
 		}
 
 		private Funp defineLocal(Funp f, String var, Funp value, Funp expr, int size) {

@@ -9,6 +9,7 @@ import suite.funp.P2.FunpFramePointer;
 import suite.node.Node;
 import suite.object.AutoInterface;
 import suite.primitive.Bytes;
+import suite.streamlet.FunUtil.Source;
 
 public class Funp_ {
 
@@ -27,10 +28,6 @@ public class Funp_ {
 
 		public CompileException(String m) {
 			super(m);
-		}
-
-		public <T> T rethrow(Object key) {
-			return Funp_.fail(getMessage() + "\nin " + key);
 		}
 	}
 
@@ -69,6 +66,14 @@ public class Funp_ {
 			var f0 = p0.parse(node);
 			p2.infer(f0);
 			return p2g.eval(f0);
+		}
+	}
+
+	public static <T> T rethrow(String in, Source<T> source) {
+		try {
+			return source.source();
+		} catch (CompileException ex) {
+			return Funp_.fail(ex.getMessage() + "\nin " + in);
 		}
 	}
 
