@@ -450,18 +450,20 @@ public class P0 {
 	}
 
 	public static class FunpTag implements Funp, P2.End {
+		private IntMutable id;
 		public String tag;
 		public Funp value;
 
-		public static FunpTag of(String tag, Funp value) {
+		public static FunpTag of(IntMutable id, String tag, Funp value) {
 			var f = new FunpTag();
+			f.id = id;
 			f.tag = tag;
 			f.value = value;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<String, Funp, R> fun) {
-			return fun.apply(tag, value);
+		public <R> R apply(FixieFun3<IntMutable, String, Funp, R> fun) {
+			return fun.apply(id, tag, value);
 		}
 	}
 

@@ -403,7 +403,7 @@ public class P2InferType {
 					return true;
 				});
 				return ts;
-			})).applyIf(FunpTag.class, f -> f.apply((tag, value) -> {
+			})).applyIf(FunpTag.class, f -> f.apply((id, tag, value) -> {
 				var types = new HashMap<Node, Reference>();
 				types.put(Atom.of(tag), Reference.of(infer(value)));
 				return typeTagOf(Dict.of(types));
@@ -632,10 +632,10 @@ public class P2InferType {
 					fail();
 
 				return FunpData.of(list);
-			})).applyIf(FunpTag.class, f -> f.apply((tag, expr) -> {
+			})).applyIf(FunpTag.class, f -> f.apply((id, tag, expr) -> {
 				var size = getTypeSize(typeOf(expr));
-				var pt = Pair.<Funp, IntIntPair> of(FunpNumber.ofNumber(1), IntIntPair.of(0, is));
-				var pv = Pair.<Funp, IntIntPair> of(FunpNumber.ofNumber(1), IntIntPair.of(is, is + size));
+				var pt = Pair.<Funp, IntIntPair> of(FunpNumber.of(id), IntIntPair.of(0, is));
+				var pv = Pair.<Funp, IntIntPair> of(erase(expr), IntIntPair.of(is, is + size));
 				return FunpData.of(List.of(pt, pv));
 			})).applyIf(FunpTree.class, f -> f.apply((op, l, r) -> {
 				var size0 = getTypeSize(typeOf(l));
