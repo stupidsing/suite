@@ -468,7 +468,6 @@ public class P2InferType {
 		}
 
 		private Funp erase_(Funp n) {
-			System.out.println(n);
 			var type0 = typeOf(n);
 
 			return n.sw( //
