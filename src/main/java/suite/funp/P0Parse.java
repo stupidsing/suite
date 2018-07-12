@@ -195,8 +195,6 @@ public class P0Parse {
 				return FunpDefineRec.of(list //
 						.map(pair -> Pair.of(pair.t0, p1.p(pair.t1))) //
 						.toList(), p1.p(b));
-			}).match("do .0", a -> {
-				return FunpIo.of(nv(doToken).p(a));
 			}).match("error", () -> {
 				return FunpError.of();
 			}).match("eval.io .0", a -> {
@@ -205,8 +203,8 @@ public class P0Parse {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
 				return FunpIf.of(p(a), p(b), p(c));
-			}).match("io .0", a -> {
-				return FunpIo.of(p(a));
+			}).match("io.do .0", a -> {
+				return FunpIo.of(nv(doToken).p(a));
 			}).match("io.for (.0 = .1; .2; .3)", (a, b, c, d) -> {
 				var vn = Atom.name(a);
 				var var = FunpVariable.of(vn);
