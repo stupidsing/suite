@@ -822,9 +822,9 @@ public class P2InferType {
 		}).match(typePatRef, a -> {
 			return typePatRef.subst(cloneType(a));
 		}).match(typePatStruct, (a, b) -> {
-			var dict0 = Dict.m(a);
-			var dict1 = Dict.of(Read.from2(dict0).mapValue(t -> Reference.of(cloneType(t))).toMap());
-			return typePatStruct.subst(dict1, b);
+			var map0 = Dict.m(a);
+			var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
+			return typePatStruct.subst(Dict.of(map1), b);
 		}).applyIf(Node.class, t -> {
 			return t;
 		}).nonNullResult();
