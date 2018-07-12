@@ -125,7 +125,7 @@ public class P2InferType {
 	}
 
 	private Funp extractPredefine(Funp node0) {
-		var evs = new ArrayList<Pair<String, Funp>>();
+		var vns = new ArrayList<String>();
 
 		var node1 = new Object() {
 			private Funp extract(Funp n) {
@@ -140,7 +140,7 @@ public class P2InferType {
 						return FunpLambda.of(var, extractPredefine(expr));
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
 						var vn = "predefine$" + Util.temp();
-						evs.add(Pair.of(vn, expr));
+						vns.add(vn);
 						var var = FunpVariable.of(vn);
 						return FunpDoAssignRef.of(FunpReference.of(var), extract(expr), var);
 					})).result();
@@ -148,9 +148,7 @@ public class P2InferType {
 			}
 		}.extract(node0);
 
-		return Read //
-				.from(evs) //
-				.fold(node1, (n, pair) -> FunpDefine.of(Fdt.MONO, pair.t0, FunpDontCare.of(), n));
+		return Read.from(vns).fold(node1, (n, vn) -> FunpDefine.of(Fdt.MONO, vn, FunpDontCare.of(), n));
 	}
 
 	private Funp captureLambdas(Funp node0) {
