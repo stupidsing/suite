@@ -9,8 +9,8 @@ public interface KeyValueMutator<Key, Value> {
 	public Value get(Key key);
 
 	/**
-	 * Replaces a value by another without payload. For dictionary cases to replace
-	 * stored value of the same key.
+	 * Replaces a value by another without payload. For dictionary cases to
+	 * replace stored value of the same key.
 	 */
 	public void put(Key key, Value value);
 

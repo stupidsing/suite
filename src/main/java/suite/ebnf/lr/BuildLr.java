@@ -1,4 +1,6 @@
-package suite.ebnf.lr; import static suite.util.Friends.fail;
+package suite.ebnf.lr;
+
+import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.HashMap;

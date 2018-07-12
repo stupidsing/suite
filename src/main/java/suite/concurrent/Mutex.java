@@ -1,4 +1,6 @@
-package suite.concurrent; import static suite.util.Friends.fail;
+package suite.concurrent;
+
+import static suite.util.Friends.fail;
 
 import java.io.Closeable;
 import java.util.Map;

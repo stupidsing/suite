@@ -1,4 +1,6 @@
-package suite.fp; import static suite.util.Friends.fail;
+package suite.fp;
+
+import static suite.util.Friends.fail;
 
 import suite.Suite;
 import suite.adt.Mutable;

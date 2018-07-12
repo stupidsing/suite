@@ -1,4 +1,6 @@
-package suite.fp; import static suite.util.Friends.fail;
+package suite.fp;
+
+import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.HashMap;
