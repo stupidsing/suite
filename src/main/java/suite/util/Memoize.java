@@ -1,4 +1,6 @@
-package suite.util; import static suite.util.Friends.fail;
+package suite.util;
+
+import static suite.util.Friends.fail;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -122,8 +124,8 @@ public class Memoize {
 	}
 
 	/**
-	 * Cache results of a function call, removes the least recently used result as
-	 * cache exceeded the given size.
+	 * Cache results of a function call, removes the least recently used result
+	 * as cache exceeded the given size.
 	 */
 	public static <I, O> Fun<I, O> queued(Fun<I, O> fun, int size) {
 		return new Fun<>() {
@@ -161,8 +163,8 @@ public class Memoize {
 	}
 
 	/**
-	 * Thread-safe caching of function call results. Guarantee only one dispatch for
-	 * an input parameter. No clean-up.
+	 * Thread-safe caching of function call results. Guarantee only one dispatch
+	 * for an input parameter. No clean-up.
 	 */
 	public static <I, O> Fun<I, O> reentrant(Fun<I, O> fun) {
 		var results = new ConcurrentHashMap<I, Source<O>>();

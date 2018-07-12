@@ -1,4 +1,6 @@
-package suite.weiqi; import static suite.util.Friends.fail;
+package suite.weiqi;
+
+import static suite.util.Friends.fail;
 
 import suite.object.Object_;
 import suite.primitive.adt.set.IntSet;

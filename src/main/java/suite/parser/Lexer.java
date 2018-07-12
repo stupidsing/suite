@@ -1,4 +1,6 @@
-package suite.parser; import static suite.util.Friends.fail;
+package suite.parser;
+
+import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.Reader;

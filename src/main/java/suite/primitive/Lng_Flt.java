@@ -1,4 +1,6 @@
-package suite.primitive; import static suite.util.Friends.fail;
+package suite.primitive;
+
+import static suite.util.Friends.fail;
 
 import suite.primitive.Floats.FloatsBuilder;
 import suite.primitive.FltPrimitives.Obj_Flt;

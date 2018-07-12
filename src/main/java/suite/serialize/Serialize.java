@@ -1,4 +1,6 @@
-package suite.serialize; import static suite.util.Friends.fail;
+package suite.serialize;
+
+import static suite.util.Friends.fail;
 import static suite.util.Friends.min;
 import static suite.util.Friends.rethrow;
 

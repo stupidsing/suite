@@ -1,4 +1,6 @@
-package suite.ts; import static suite.util.Friends.fail;
+package suite.ts;
+
+import static suite.util.Friends.fail;
 
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;

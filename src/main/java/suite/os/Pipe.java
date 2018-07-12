@@ -1,4 +1,6 @@
-package suite.os; import static suite.util.Friends.fail;
+package suite.os;
+
+import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.ByteArrayInputStream;

@@ -1,4 +1,6 @@
-package suite.primitive; import static suite.util.Friends.fail;
+package suite.primitive;
+
+import static suite.util.Friends.fail;
 
 import java.util.Iterator;
 import java.util.function.Predicate;

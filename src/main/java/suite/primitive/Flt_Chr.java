@@ -1,4 +1,6 @@
-package suite.primitive; import static suite.util.Friends.fail;
+package suite.primitive;
+
+import static suite.util.Friends.fail;
 
 import suite.primitive.Chars.CharsBuilder;
 import suite.primitive.ChrPrimitives.Obj_Chr;

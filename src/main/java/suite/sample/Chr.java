@@ -1,4 +1,6 @@
-package suite.sample; import static suite.util.Friends.fail;
+package suite.sample;
+
+import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.Collection;

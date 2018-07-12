@@ -1,4 +1,6 @@
-package suite.primitive; import static suite.util.Friends.fail;
+package suite.primitive;
+
+import static suite.util.Friends.fail;
 
 public interface IntObj_Dbl<T> {
 

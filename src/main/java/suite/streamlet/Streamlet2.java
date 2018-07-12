@@ -1,4 +1,6 @@
-package suite.streamlet; import static suite.util.Friends.fail;
+package suite.streamlet;
+
+import static suite.util.Friends.fail;
 
 import java.io.Closeable;
 import java.util.Comparator;

@@ -1,4 +1,6 @@
-package suite.primitive.adt.map; import static suite.util.Friends.fail;
+package suite.primitive.adt.map;
+
+import static suite.util.Friends.fail;
 
 import java.util.Objects;
 

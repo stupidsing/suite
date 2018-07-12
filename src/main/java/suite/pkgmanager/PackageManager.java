@@ -1,4 +1,6 @@
-package suite.pkgmanager; import static suite.util.Friends.fail;
+package suite.pkgmanager;
+
+import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.util.ArrayList;

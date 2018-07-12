@@ -1,4 +1,6 @@
-package suite.primitive.adt.map; import static suite.util.Friends.fail;
+package suite.primitive.adt.map;
+
+import static suite.util.Friends.fail;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -20,8 +22,8 @@ import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Outlet;
 
 /**
- * Map with primitive float key and primitive long value. Long.MIN_VALUE is
- * not allowed in values. Not thread-safe.
+ * Map with primitive float key and primitive long value. Long.MIN_VALUE is not
+ * allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

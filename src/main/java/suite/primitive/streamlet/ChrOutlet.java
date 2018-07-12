@@ -1,4 +1,6 @@
-package suite.primitive.streamlet; import static suite.util.Friends.fail;
+package suite.primitive.streamlet;
+
+import static suite.util.Friends.fail;
 
 import java.io.Closeable;
 import java.util.ArrayList;

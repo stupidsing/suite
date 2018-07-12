@@ -1,4 +1,6 @@
-package suite.trade.backalloc; import static suite.util.Friends.fail;
+package suite.trade.backalloc;
+
+import static suite.util.Friends.fail;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -50,9 +52,10 @@ public interface BackAllocator {
 	public interface OnDateTime {
 
 		/**
-		 * @return a portfolio consisting of list of symbols and potential values, or
-		 *         null if the strategy do not want to trade on that date. The assets
-		 *         will be allocated according to potential values pro-rata.
+		 * @return a portfolio consisting of list of symbols and potential
+		 *         values, or null if the strategy do not want to trade on that
+		 *         date. The assets will be allocated according to potential
+		 *         values pro-rata.
 		 */
 		public List<Pair<String, Double>> onDateTime(int index);
 	}

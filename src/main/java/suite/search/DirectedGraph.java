@@ -1,4 +1,6 @@
-package suite.search; import static suite.util.Friends.fail;
+package suite.search;
+
+import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.HashSet;
