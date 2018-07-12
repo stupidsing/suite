@@ -79,6 +79,10 @@ public class P1Inline {
 							.map2((var, value) -> vars1.get(var), (var, value) -> r1.rename(value)) //
 							.toList(), //
 							r1.rename(expr));
+				})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, var0, if_, then, else_) -> {
+					var var1 = newVar.apply(var0);
+					var r1 = new Rename(vars.replace(var0, var1));
+					return FunpDeTag.of(id, tag, var1, rename(if_), r1.rename(then), rename(else_));
 				})).applyIf(FunpLambda.class, f -> f.apply((var0, expr) -> {
 					var var1 = newVar.apply(var0);
 					var r1 = new Rename(vars.replace(var0, var1));
