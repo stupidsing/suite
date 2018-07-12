@@ -23,6 +23,7 @@ import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDoAsm;
 import suite.funp.P0.FunpDoAssignRef;
+import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDoEvalIo;
 import suite.funp.P0.FunpDoFold;
 import suite.funp.P0.FunpDontCare;
@@ -156,7 +157,7 @@ public class P0Parse {
 				}).toList(), Tree.iter(b, TermOp.OR____).toList()) : fail();
 			}).match("assign .0 := .1 ~ .2", (a, b, c) -> {
 				var v = FunpVariable.of(Atom.name(a));
-				return isDo() ? FunpDoAssignRef.of(FunpReference.of(v), p(b), p(c)) : fail();
+				return isDo() ? FunpDoAssignVar.of(v, p(b), p(c)) : fail();
 			}).match("assign ^.0 := .1 ~ .2", (a, b, c) -> {
 				return isDo() ? FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)) : fail();
 			}).match("byte .0", a -> {
