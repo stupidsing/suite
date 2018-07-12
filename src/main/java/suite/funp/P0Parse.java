@@ -133,7 +133,7 @@ public class P0Parse {
 			}).match(".0 [.1]", (a, b) -> {
 				return !isList(b) ? FunpIndex.of(FunpReference.of(p(a)), p(b)) : null;
 			}).match(".0 => .1", (a, b) -> {
-				return lambda(a, b);
+				return lambda0(a, b);
 			}).match(".0, .1", (a, b) -> {
 				return FunpStruct.of(List.of(Pair.of("t0", p(a)), Pair.of("t1", p(b))));
 			}).match(".0/.1", (a, b) -> {
@@ -183,7 +183,7 @@ public class P0Parse {
 			}).match("consult .0", a -> {
 				return consult(Str.str(a));
 			}).match("define .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.POLY, a, lambda(b, c), d);
+				return define(Fdt.POLY, a, lambda0(b, c), d);
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
 				var lambda = lambda(a, c);
 				return FunpDefine.of(Fdt.POLY, lambda.var, p(b), lambda.expr);
@@ -209,7 +209,7 @@ public class P0Parse {
 				return FunpIo.of(p(a));
 			}).match("io.for (.0 = .1; .2; .3)", (a, b, c, d) -> {
 				var lambda = lambda(dontCare, Suite.parse("{}"));
-				var fold = FunpDoFold.of(p(b), lambda(a, c), lambda(a, d));
+				var fold = FunpDoFold.of(p(b), lambda0(a, c), lambda0(a, d));
 				return FunpIo.of(FunpDefine.of(Fdt.IOAP, lambda.var, fold, lambda.expr));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
 				var lambda = lambda(a, c);
@@ -294,16 +294,19 @@ public class P0Parse {
 			});
 		}
 
-		// TODO remove doToken scope
+		private FunpLambda lambda0(Node a, Node b) {
+			return lambda(a, b, false);
+		}
+
 		private FunpLambda lambda(Node a, Node b) {
-			String vn;
-			Funp f;
-			if (isVar(a))
-				f = nv(vn = Atom.name(a)).p(b);
-			else {
-				vn = "l$" + Util.temp();
-				f = nv(vn).bind(a, Atom.of(vn), b);
-			}
+			return lambda(a, b, true);
+		}
+
+		private FunpLambda lambda(Node a, Node b, boolean isAllowDo) {
+			var isVar = isVar(a);
+			var vn = isVar ? Atom.name(a) : "l$" + Util.temp();
+			var nv = isAllowDo ? nv(vn) : new Parse(variables.replace(vn).remove(doToken));
+			var f = isVar ? nv.p(b) : nv.bind(a, Atom.of(vn), b);
 			return FunpLambda.of(vn, f);
 		}
 

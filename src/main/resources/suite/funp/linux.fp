@@ -73,7 +73,7 @@ define new.mut.number init := do
 	assign ^pointer := init ~
 	{
 		destroy {} := io.dealloc (size, pointer) ~
-		get {} := peek pointer ~
+		get {} := do (peek pointer) ~
 		set v1 := do (assign ^pointer := v1 ~ {}) ~
 	}
 ~
