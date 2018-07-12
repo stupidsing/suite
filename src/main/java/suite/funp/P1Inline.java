@@ -11,7 +11,7 @@ import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
-import suite.funp.P0.FunpDoAssignRef;
+import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpLambda;
@@ -98,10 +98,9 @@ public class P1Inline {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n0 -> {
 					var vars = new ArrayList<String>();
-					FunpDoAssignRef assign;
+					FunpDoAssignVar assign;
 					FunpCheckType check;
 					FunpDefine define;
-					FunpVariable variable;
 
 					while ((define = n0.cast(FunpDefine.class)) != null //
 							&& define.value instanceof FunpDontCare //
@@ -113,9 +112,8 @@ public class P1Inline {
 					if ((check = n0.cast(FunpCheckType.class)) != null)
 						n0 = check.expr;
 
-					if ((assign = n0.cast(FunpDoAssignRef.class)) != null //
-							&& (variable = assign.reference.expr.cast(FunpVariable.class)) != null) {
-						var vn = variable.var;
+					if ((assign = n0.cast(FunpDoAssignVar.class)) != null) {
+						var vn = assign.var.var;
 						var n1 = assign.expr;
 						var n2 = check != null ? FunpCheckType.of(check.left, check.right, n1) : n1;
 						var b = false;
