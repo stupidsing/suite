@@ -1,6 +1,7 @@
 package suite.funp;
 
 import static suite.util.Friends.fail;
+import static suite.util.Friends.max;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpRepeat;
 import suite.funp.P0.FunpSizeOf;
 import suite.funp.P0.FunpStruct;
+import suite.funp.P0.FunpTag;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
@@ -116,6 +118,7 @@ public class P2InferType {
 	private Pattern typePatLambda = Suite.pattern("LAMBDA .0 .1");
 	private Pattern typePatRef = Suite.pattern("REF .0");
 	private Pattern typePatStruct = Suite.pattern("STRUCT .0 .1");
+	private Pattern typePatTag = Suite.pattern("TAG .0");
 
 	private Map<Funp, Node> typeByNode = new IdentityHashMap<>();
 	private Map<Funp, Boolean> isRegByNode = new IdentityHashMap<>();
@@ -400,6 +403,10 @@ public class P2InferType {
 					return true;
 				});
 				return ts;
+			})).applyIf(FunpTag.class, f -> f.apply((tag, value) -> {
+				var types = new HashMap<Node, Reference>();
+				types.put(Atom.of(tag), Reference.of(infer(value)));
+				return typeTagOf(Dict.of(types));
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
 				Node ti;
 				if (op == TermOp.BIGAND || op == TermOp.BIGOR_)
@@ -625,6 +632,11 @@ public class P2InferType {
 					fail();
 
 				return FunpData.of(list);
+			})).applyIf(FunpTag.class, f -> f.apply((tag, expr) -> {
+				var size = getTypeSize(typeOf(expr));
+				var pt = Pair.<Funp, IntIntPair> of(FunpNumber.ofNumber(1), IntIntPair.of(0, is));
+				var pv = Pair.<Funp, IntIntPair> of(FunpNumber.ofNumber(1), IntIntPair.of(is, is + size));
+				return FunpData.of(List.of(pt, pv));
 			})).applyIf(FunpTree.class, f -> f.apply((op, l, r) -> {
 				var size0 = getTypeSize(typeOf(l));
 				var size1 = getTypeSize(typeOf(r));
@@ -825,6 +837,10 @@ public class P2InferType {
 			var map0 = Dict.m(a);
 			var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
 			return typePatStruct.subst(Dict.of(map1), b);
+		}).match(typePatTag, a -> {
+			var map0 = Dict.m(a);
+			var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
+			return typePatTag.subst(Dict.of(map1));
 		}).applyIf(Node.class, t -> {
 			return t;
 		}).nonNullResult();
@@ -862,6 +878,10 @@ public class P2InferType {
 		return typePatStruct.subst(dict, list);
 	}
 
+	private Node typeTagOf(Dict dict) {
+		return typePatTag.subst(dict);
+	}
+
 	private int getTypeSize(Node n0) {
 		var n = n0.finalNode();
 		Streamlet2<Node, Reference> struct;
@@ -883,7 +903,13 @@ public class P2InferType {
 			return ps;
 		else if ((struct = isCompletedStruct(n)) != null)
 			return struct.values().toInt(Obj_Int.sum(this::getTypeSize));
-		else
+		else if ((m = typePatTag.match(n)) != null) {
+			var dict = Dict.m(m[0]);
+			var size = 0;
+			for (var t : Read.from2(dict).values())
+				size = max(size, getTypeSize(t));
+			return size;
+		} else
 			return Funp_.fail("cannot get size of type " + toString(n));
 	}
 
