@@ -468,6 +468,7 @@ public class P2InferType {
 		}
 
 		private Funp erase_(Funp n) {
+			System.out.println(n);
 			var type0 = typeOf(n);
 
 			return n.sw( //
@@ -527,8 +528,8 @@ public class P2InferType {
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, var, if_, then, else_) -> {
-				var size = getTypeSize(Dict.m(typePatTag.match(typeOf(f))[0]).get(Atom.of(tag)));
-				var ref = erase(FunpReference.of(if_));
+				var size = getTypeSize(Dict.m(typePatTag.match(typeOf(if_))[0]).get(Atom.of(tag)));
+				var ref = getAddress(if_);
 				var mtag = FunpMemory.of(ref, 0, is);
 				var mval = FunpMemory.of(ref, is, is + size);
 				var eq = FunpTree.of(TermOp.EQUAL_, FunpNumber.of(id), mtag);
