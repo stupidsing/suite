@@ -1,4 +1,6 @@
-package suite.fp; import static org.junit.Assert.assertEquals;
+package suite.fp;
+
+import static org.junit.Assert.assertEquals;
 import static suite.util.Friends.fail;
 
 import java.io.IOException;

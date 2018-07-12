@@ -1,4 +1,6 @@
-package suite.node.util; import static suite.util.Friends.fail;
+package suite.node.util;
+
+import static suite.util.Friends.fail;
 
 import org.junit.Test;
 

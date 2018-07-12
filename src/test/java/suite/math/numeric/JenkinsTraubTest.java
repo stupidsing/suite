@@ -1,4 +1,6 @@
-package suite.math.numeric; import static suite.util.Friends.fail;
+package suite.math.numeric;
+
+import static suite.util.Friends.fail;
 import static suite.util.Friends.max;
 
 import org.junit.Test;
