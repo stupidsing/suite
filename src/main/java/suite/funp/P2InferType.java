@@ -939,8 +939,11 @@ public class P2InferType {
 
 	private Streamlet2<Node, Reference> isCompletedStruct(Node n) {
 		Node[] m = typePatStruct.match(n);
-		var dict = Dict.m(m[0]);
-		return Tree.iter(m[1]).map2(dict::get);
+		if (m != null) {
+			var dict = Dict.m(m[0]);
+			return Tree.iter(m[1]).map2(dict::get);
+		} else
+			return null;
 	}
 
 	private String toString(Node type) {
