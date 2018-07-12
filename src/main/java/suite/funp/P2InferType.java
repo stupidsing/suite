@@ -564,8 +564,8 @@ public class P2InferType {
 					}
 
 					private FunpTree getVariable(String var) {
-						var m = getVariableMemory(env.get(var));
-						return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
+						return getVariableMemory(env.get(var))
+								.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
 					}
 				}.getAddress(expr);
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
