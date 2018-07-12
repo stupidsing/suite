@@ -33,14 +33,20 @@ public class Binder {
 		}
 
 		if (clazz0 == Dict.class && clazz1 == Dict.class) {
-			var map0 = Dict.m(n0);
-			var map1 = Dict.m(n1);
+			var dict0 = (Dict) n0;
+			var dict1 = (Dict) n1;
+			bind(dict0.reference, dict1.reference, trail);
+
+			var map0 = dict0.getMap();
+			var map1 = dict1.getMap();
 			var b = true;
+
 			for (var key : Set_.union(map0.keySet(), map1.keySet())) {
 				var v0 = map0.computeIfAbsent(key, k -> new Reference());
 				var v1 = map1.computeIfAbsent(key, k -> new Reference());
 				b &= bind(v0, v1, trail);
 			}
+
 			return b;
 		} else if (clazz0 == Int.class && clazz1 == Int.class)
 			return Int.num(n0) == Int.num(n1);

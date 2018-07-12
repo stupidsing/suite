@@ -49,7 +49,7 @@ public class CompileClonerImpl implements ClonerFactory {
 					return f.object(node_);
 				}).applyIf(Dict.class, n -> {
 					var exprs = Read //
-							.from2(n.map) //
+							.from2(n.getMap()) //
 							.map((key, value) -> f.invokeStatic(Pair.class, "of", compile_(key), compile_(value))) //
 							.toArray(FunExpr.class);
 					return f.invokeStatic(Dict.class, "of", f.array(Pair.class, exprs));

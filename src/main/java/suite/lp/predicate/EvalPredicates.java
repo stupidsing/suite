@@ -2,6 +2,7 @@ package suite.lp.predicate;
 
 import static suite.util.Friends.fail;
 
+import java.util.HashMap;
 import java.util.Objects;
 import java.util.Random;
 
@@ -66,8 +67,11 @@ public class EvalPredicates {
 
 	public BuiltinPredicate dictKeyValue = PredicateUtil.p3((prover, node, key, value) -> {
 		var reference = new Reference();
-		var dict = Dict.of();
-		dict.map.put(key, reference);
+
+		var map = new HashMap<Node, Reference>();
+		map.put(key, reference);
+
+		var dict = Dict.of(map);
 		return prover.bind(reference, value) && prover.bind(node, dict);
 	});
 

@@ -127,7 +127,7 @@ public class Formatter {
 				sb.append("Data<" + data.getClass().getSimpleName() + ">");
 		}).doIf(Dict.class, n -> {
 			sb.append("dict<");
-			for (var e : n.map.entrySet()) {
+			for (var e : n.getMap().entrySet()) {
 				format(e.getKey(), TermOp.getLeftPrec(TermOp.AND___));
 				sb.append(":");
 				format(e.getValue(), TermOp.getLeftPrec(TermOp.AND___));

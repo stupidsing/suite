@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Test;
@@ -142,23 +143,25 @@ public class RecursiveFactorizerTest {
 
 	private Node treeNode(Source<Node> g, Node name, List<Node> nodes) {
 		var pairs = Read.from(nodes).map(node -> pairNode(node, g.source())).toList();
-		var dict = Dict.of();
-		dict.map.put(Atom.of("name"), Reference.of(name));
-		dict.map.put(Atom.of("pairs"), Reference.of(Tree.of(TermOp.OR____, pairs)));
-		return Tree.of(TermOp.COLON_, Atom.of(FTree.class.getName()), dict);
+
+		var map = new HashMap<Node, Reference>();
+		map.put(Atom.of("name"), Reference.of(name));
+		map.put(Atom.of("pairs"), Reference.of(Tree.of(TermOp.OR____, pairs)));
+
+		return Tree.of(TermOp.COLON_, Atom.of(FTree.class.getName()), Dict.of(map));
 	}
 
 	private Node pairNode(Node n0, Node n1) {
-		var dict = Dict.of();
-		dict.map.put(Atom.of("node"), Reference.of(n0));
-		dict.map.put(Atom.of("chars"), Reference.of(n1));
-		return dict;
+		var map = new HashMap<Node, Reference>();
+		map.put(Atom.of("node"), Reference.of(n0));
+		map.put(Atom.of("chars"), Reference.of(n1));
+		return Dict.of(map);
 	}
 
 	private Node terminalNode(String s) {
-		var dict = Dict.of();
-		dict.map.put(Atom.of("chars"), Reference.of(new Str(s)));
-		return Tree.of(TermOp.COLON_, Atom.of(FTerminal.class.getName()), dict);
+		var map = new HashMap<Node, Reference>();
+		map.put(Atom.of("chars"), Reference.of(new Str(s)));
+		return Tree.of(TermOp.COLON_, Atom.of(FTerminal.class.getName()), Dict.of(map));
 	}
 
 	@Test

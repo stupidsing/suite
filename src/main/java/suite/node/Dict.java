@@ -8,10 +8,11 @@ import suite.object.Object_;
 
 public class Dict extends Node {
 
-	public final Map<Node, Reference> map;
+	public final Reference reference = new Reference();
+	private Map<Node, Reference> map;
 
 	public static Map<Node, Reference> m(Node node) {
-		return ((Dict) node).map;
+		return ((Dict) node).getMap();
 	}
 
 	public static Dict of() {
@@ -38,13 +39,25 @@ public class Dict extends Node {
 	}
 
 	@Override
+	public Node finalNode() {
+		return !reference.isFree() ? reference : this;
+	}
+
+	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == Dict.class ? map.equals(((Dict) object).map) : false;
+		var map0 = getMap();
+		var map1 = ((Dict) object).getMap();
+		return Object_.clazz(object) == Dict.class ? map0.equals(map1) : false;
 	}
 
 	@Override
 	public int hashCode() {
-		return map.hashCode();
+		return getMap().hashCode();
+	}
+
+	public Map<Node, Reference> getMap() {
+		var n = reference.finalNode();
+		return n instanceof Dict ? ((Dict) n).map : map;
 	}
 
 }

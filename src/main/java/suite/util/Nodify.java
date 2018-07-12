@@ -143,13 +143,13 @@ public class Nodify {
 						.toList();
 
 				return new Nodifier(o -> rethrow(() -> {
-					var dict = Dict.of();
+					var map = new HashMap<Node, Reference>();
 					for (var pair : pairs) {
 						var fieldInfo = pair.t1;
 						var value = apply_(fieldInfo.field.get(o), fieldInfo.nodifier);
-						dict.map.put(pair.t0, Reference.of(value));
+						map.put(pair.t0, Reference.of(value));
 					}
-					return dict;
+					return Dict.of(map);
 				}), n -> rethrow(() -> {
 					var map = Dict.m(n);
 					var o1 = Object_.new_(clazz);
@@ -186,10 +186,10 @@ public class Nodify {
 				var kn = getNodifier(typeArgs[0]);
 				var vn = getNodifier(typeArgs[1]);
 				return new Nodifier(o -> {
-					var dict = Dict.of();
+					var map = new HashMap<Node, Reference>();
 					for (var e : ((Map<?, ?>) o).entrySet())
-						dict.map.put(apply_(e.getKey(), kn), Reference.of(apply_(e.getValue(), vn)));
-					return dict;
+						map.put(apply_(e.getKey(), kn), Reference.of(apply_(e.getValue(), vn)));
+					return Dict.of(map);
 				}, n -> {
 					var map = Dict.m(n);
 					var object1 = (Map<Object, Object>) Object_.instantiate(clazz);

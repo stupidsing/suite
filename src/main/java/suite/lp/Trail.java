@@ -21,7 +21,7 @@ public class Trail {
 			addDirectedBind(reference, target);
 	}
 
-	private void addDirectedBind(Reference reference, Node target) {
+	public void addDirectedBind(Reference reference, Node target) {
 		boundReferences.add(reference);
 		reference.bound(target);
 	}
