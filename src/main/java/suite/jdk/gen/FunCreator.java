@@ -1,4 +1,6 @@
-package suite.jdk.gen; import static org.apache.bcel.Const.ACC_PUBLIC;
+package suite.jdk.gen;
+
+import static org.apache.bcel.Const.ACC_PUBLIC;
 import static org.apache.bcel.Const.ACC_STATIC;
 import static org.apache.bcel.Const.ACC_SUPER;
 import static suite.util.Friends.fail;

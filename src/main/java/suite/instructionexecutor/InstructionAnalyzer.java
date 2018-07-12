@@ -65,8 +65,8 @@ public class InstructionAnalyzer {
 		}
 
 		/**
-		 * Analyzes whether the variable can be stored in a local variable, instead of a
-		 * instance variable in a frame.
+		 * Analyzes whether the variable can be stored in a local variable,
+		 * instead of a instance variable in a frame.
 		 */
 		public boolean isTemporal() {
 			return false;

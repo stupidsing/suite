@@ -1,4 +1,6 @@
-package suite.instructionexecutor.thunk; import static suite.util.Friends.fail;
+package suite.instructionexecutor.thunk;
+
+import static suite.util.Friends.fail;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -39,7 +41,8 @@ public class ThunkUtil {
 	}
 
 	/**
-	 * Evaluates the whole (lazy) term to a list and feed the elements into a sink.
+	 * Evaluates the whole (lazy) term to a list and feed the elements into a
+	 * sink.
 	 */
 	public static void yawnSink(Iterate<Node> yawn, Node node, IoSink<Node> sink) throws IOException {
 		var st = yawnList(yawn, node, true);

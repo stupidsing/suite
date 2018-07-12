@@ -1,4 +1,6 @@
-package suite.lp.predicate; import static suite.util.Friends.fail;
+package suite.lp.predicate;
+
+import static suite.util.Friends.fail;
 
 import java.util.Objects;
 import java.util.Random;

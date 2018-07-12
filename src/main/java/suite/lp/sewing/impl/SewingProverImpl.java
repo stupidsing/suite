@@ -1,4 +1,6 @@
-package suite.lp.sewing.impl; import static suite.util.Friends.fail;
+package suite.lp.sewing.impl;
+
+import static suite.util.Friends.fail;
 import static suite.util.Friends.max;
 import static suite.util.Friends.rethrow;
 

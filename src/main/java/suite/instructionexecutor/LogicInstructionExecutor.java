@@ -1,4 +1,6 @@
-package suite.instructionexecutor; import static suite.util.Friends.fail;
+package suite.instructionexecutor;
+
+import static suite.util.Friends.fail;
 
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Instruction;

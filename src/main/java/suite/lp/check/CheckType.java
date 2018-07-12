@@ -1,4 +1,6 @@
-package suite.lp.check; import static suite.util.Friends.fail;
+package suite.lp.check;
+
+import static suite.util.Friends.fail;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,4 +1,6 @@
-package suite.jdk.gen.pass; import static suite.util.Friends.fail;
+package suite.jdk.gen.pass;
+
+import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.lang.reflect.Method;

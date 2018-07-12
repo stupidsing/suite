@@ -1,4 +1,6 @@
-package suite.lp.predicate; import static suite.util.Friends.fail;
+package suite.lp.predicate;
+
+import static suite.util.Friends.fail;
 import static suite.util.Friends.min;
 
 import java.io.DataInputStream;

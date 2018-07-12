@@ -1,4 +1,6 @@
-package suite.java7util; import static suite.util.Friends.fail;
+package suite.java7util;
+
+import static suite.util.Friends.fail;
 
 import java.io.File;
 import java.io.FileInputStream;

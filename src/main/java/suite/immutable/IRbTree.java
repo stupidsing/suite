@@ -1,4 +1,6 @@
-package suite.immutable; import static suite.util.Friends.fail;
+package suite.immutable;
+
+import static suite.util.Friends.fail;
 
 import java.util.ArrayDeque;
 import java.util.Comparator;
@@ -93,8 +95,8 @@ public class IRbTree<T> implements ITree<T> {
 	}
 
 	/**
-	 * Replaces a value with another. Mainly for dictionary cases to replace stored
-	 * value for the same key.
+	 * Replaces a value with another. Mainly for dictionary cases to replace
+	 * stored value for the same key.
 	 *
 	 * Asserts comparator.compare(<original-value>, t) == 0.
 	 */

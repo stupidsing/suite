@@ -1,4 +1,6 @@
-package suite.instructionexecutor.thunk; import static suite.util.Friends.fail;
+package suite.instructionexecutor.thunk;
+
+import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
 import java.util.List;
