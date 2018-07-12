@@ -25,7 +25,7 @@ import suite.funp.P0.FunpDoAsm;
 import suite.funp.P0.FunpDoAssignRef;
 import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDoEvalIo;
-import suite.funp.P0.FunpDoFold;
+import suite.funp.P0.FunpDoWhile;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpError;
 import suite.funp.P0.FunpField;
@@ -208,9 +208,12 @@ public class P0Parse {
 			}).match("io .0", a -> {
 				return FunpIo.of(p(a));
 			}).match("io.for (.0 = .1; .2; .3)", (a, b, c, d) -> {
-				var lambda = lambda(dontCare, Suite.parse("{}"));
-				var fold = FunpDoFold.of(p(b), lambda0(a, c), lambda0(a, d));
-				return FunpIo.of(FunpDefine.of(Fdt.IOAP, lambda.var, fold, lambda.expr));
+				var vn = Atom.name(a);
+				var var = FunpVariable.of(vn);
+				var p1 = nv(vn);
+				var while_ = p1.p(c);
+				var do_ = FunpDoAssignVar.of(var, FunpDoEvalIo.of(p1.p(d)), var);
+				return FunpIo.of(FunpDefine.of(Fdt.MONO, vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}")))));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
 				var lambda = lambda(a, c);
 				return FunpDefine.of(Fdt.MONO, lambda.var, p(b), lambda.expr);
