@@ -109,7 +109,7 @@ public class P1Inline {
 
 					while ((define = n0.cast(FunpDefine.class)) != null //
 							&& define.value instanceof FunpDontCare //
-							&& define.type == Fdt.MONO) {
+							&& define.type == Fdt.L_MONO) {
 						vars.add(define.var);
 						n0 = define.expr;
 					}
@@ -125,12 +125,12 @@ public class P1Inline {
 
 						for (var var_ : List_.reverse(vars))
 							if (!String_.equals(vn, var_))
-								n2 = FunpDefine.of(Fdt.MONO, var_, FunpDontCare.of(), n2);
+								n2 = FunpDefine.of(Fdt.L_MONO, var_, FunpDontCare.of(), n2);
 							else
 								b = true;
 
 						if (b)
-							return FunpDefine.of(Fdt.MONO, vn, assign.value, inline(n2));
+							return FunpDefine.of(Fdt.L_MONO, vn, assign.value, inline(n2));
 					}
 
 					return null;
@@ -171,7 +171,7 @@ public class P1Inline {
 				.distinct() //
 				.filter(def -> def instanceof FunpDefine && countByDefs.getOrDefault(def, zero).get() <= 1) //
 				.map2(def -> (FunpDefine) def) //
-				.filterValue(def -> def.type == Fdt.MONO || def.type == Fdt.POLY) //
+				.filterValue(def -> def.type == Fdt.L_MONO || def.type == Fdt.L_POLY) //
 				.toMap();
 
 		var expands = Read //
@@ -229,7 +229,7 @@ public class P1Inline {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw() //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 							return lambda.cast(FunpLambda.class,
-									l -> FunpDefine.of(Fdt.MONO, l.var, inline(value), inline(l.expr)));
+									l -> FunpDefine.of(Fdt.L_MONO, l.var, inline(value), inline(l.expr)));
 						})) //
 						.result());
 			}

@@ -160,7 +160,7 @@ public class P2InferType {
 			}
 		}.extract(node0);
 
-		return Read.from(vns).fold(node1, (n, vn) -> FunpDefine.of(Fdt.MONO, vn, FunpDontCare.of(), n));
+		return Read.from(vns).fold(node1, (n, vn) -> FunpDefine.of(Fdt.L_MONO, vn, FunpDontCare.of(), n));
 	}
 
 	private Funp captureLambdas(Funp node0) {
@@ -183,10 +183,12 @@ public class P2InferType {
 				return n.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
 					Capture c1;
-					if (type == Fdt.IOAP || type == Fdt.MONO || type == Fdt.POLY || type == Fdt.VIRT)
-						c1 = new Capture(accesses, locals.add(var), globals);
-					else if (type == Fdt.GLOB)
+					if (type == Fdt.GLOB)
 						c1 = new Capture(accesses, locals, globals.add(var));
+					else if (type == Fdt.L_IOAP || type == Fdt.L_MONO || type == Fdt.L_POLY)
+						c1 = new Capture(accesses, locals.add(var), globals);
+					else if (type == Fdt.VIRT)
+						c1 = this;
 					else
 						c1 = fail();
 					return FunpDefine.of(type, var, capture(value), c1.capture(expr));
@@ -281,11 +283,11 @@ public class P2InferType {
 			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
 				var tvalue = infer(value, var);
 				Node t;
-				if (type == Fdt.IOAP)
+				if (type == Fdt.L_IOAP)
 					unify(n, typeIoOf(t = new Reference()), tvalue);
 				else
 					t = tvalue;
-				return newEnv(env.replace(var, Pair.of(type == Fdt.POLY, t))).infer(expr);
+				return newEnv(env.replace(var, Pair.of(type == Fdt.L_POLY, t))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var pairs_ = Read.from(pairs);
 				var env1 = pairs_.fold(env, (e, pair) -> e.put(pair.t0, Pair.of(false, new Reference())));
@@ -488,16 +490,16 @@ public class P2InferType {
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
-				if (type == Fdt.IOAP || type == Fdt.MONO || type == Fdt.POLY)
-					return defineLocal(f, var, value, expr);
-				else if (type == Fdt.GLOB) {
+				if (type == Fdt.GLOB) {
 					var size = getTypeSize(typeOf(value));
 					var address = Mutable.<Operand> nil();
 					var e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
 					var m = FunpMemory.of(FunpOperand.of(address), 0, size);
 					var expr1 = FunpAssignMem.of(m, erase(value, var), e1.erase(expr));
 					return FunpAllocGlobal.of(var, size, expr1, address);
-				} else if (type == Fdt.VIRT)
+				} else if (type == Fdt.L_IOAP || type == Fdt.L_MONO || type == Fdt.L_POLY)
+					return defineLocal(f, var, value, expr);
+				else if (type == Fdt.VIRT)
 					return erase(expr);
 				else
 					return fail();

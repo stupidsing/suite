@@ -193,10 +193,10 @@ public class P0Parse {
 			}).match("consult .0", a -> {
 				return consult(Str.str(a));
 			}).match("define .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.POLY, a, lambda0(b, c), d);
+				return define(Fdt.L_POLY, a, lambda0(b, c), d);
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
 				var lambda = lambda(a, c);
-				return FunpDefine.of(Fdt.POLY, lambda.var, p(b), lambda.expr);
+				return FunpDefine.of(Fdt.L_POLY, lambda.var, p(b), lambda.expr);
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("define { .0 } ~ .1", (a, b) -> {
 				var list = kvs(a).collect();
@@ -221,10 +221,10 @@ public class P0Parse {
 				var p1 = nv(vn);
 				var while_ = p1.p(c);
 				var do_ = FunpDoAssignVar.of(var, FunpDoEvalIo.of(p1.p(d)), var);
-				return FunpIo.of(FunpDefine.of(Fdt.MONO, vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}")))));
+				return FunpIo.of(FunpDefine.of(Fdt.L_MONO, vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}")))));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
 				var lambda = lambda(a, c);
-				return FunpDefine.of(Fdt.MONO, lambda.var, p(b), lambda.expr);
+				return FunpDefine.of(Fdt.L_MONO, lambda.var, p(b), lambda.expr);
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
 				return define(Fdt.GLOB, a, p(b), c);
@@ -234,7 +234,7 @@ public class P0Parse {
 				return FunpNumber.of(IntMutable.nil());
 			}).match("perform.io .0 ~ .1", (a, b) -> {
 				var lambda = lambda(dontCare, b);
-				return FunpDefine.of(Fdt.IOAP, lambda.var, p(a), lambda.expr);
+				return FunpDefine.of(Fdt.L_IOAP, lambda.var, p(a), lambda.expr);
 			}).match("predef .0", a -> {
 				return FunpPredefine.of(p(a));
 			}).match("size.of .0", a -> {
@@ -351,7 +351,7 @@ public class P0Parse {
 			var else_ = p(d);
 			var f0 = new Bind(vars).bind(be, value, then, else_);
 			var f1 = FunpCheckType.of(be, value, f0);
-			return vars.streamlet().<Funp> fold(f1, (f, var) -> FunpDefine.of(Fdt.MONO, var, FunpDontCare.of(), f));
+			return vars.streamlet().<Funp> fold(f1, (f, var) -> FunpDefine.of(Fdt.L_MONO, var, FunpDontCare.of(), f));
 		}
 
 		private boolean isList(Node l) {
