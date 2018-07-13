@@ -3,6 +3,7 @@ package suite.funp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 import suite.funp.Funp_.Funp;
@@ -237,7 +238,7 @@ public class P1Inline {
 	}
 
 	private Map<FunpVariable, Funp> associateDefinitions(Funp node) {
-		var defByVariables = new HashMap<FunpVariable, Funp>();
+		var defByVariables = new IdentityHashMap<FunpVariable, Funp>();
 
 		new Object() {
 			private Funp associate(IMap<String, Funp> vars, Funp node_) {
