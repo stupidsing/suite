@@ -697,7 +697,7 @@ public class P2InferType {
 		private Funp defineLocal(Funp f, String var, Funp value, Funp expr, int size) {
 			var op = Mutable.<Operand> nil();
 			var offset = IntMutable.nil();
-			var vd = new Var(f, op, scope, offset, null, 0, size);
+			var vd = new Var(f, null, op, scope, offset, null, 0, size);
 			var expr1 = new Erase(scope, env.replace(var, vd)).erase(expr);
 
 			// if erase is called twice,
@@ -748,17 +748,24 @@ public class P2InferType {
 		}
 
 		private Funp getVariable(Var vd) {
-			var scope0 = vd.scope;
-			vd.setReg(scope0 != null && scope0 == scope);
-			return vd.isReg() ? FunpOperand.of(vd.operand) : getVariable_(vd);
+			var value = vd.value;
+			var scope_ = vd.scope;
+			vd.setReg(scope_ != null && scope_ == scope);
+
+			if (value != null)
+				return value;
+			else if (vd.isReg())
+				return FunpOperand.of(vd.operand);
+			else
+				return getVariableMemory_(vd);
 		}
 
 		private FunpMemory getVariableMemory(Var vd) {
 			vd.setReg(false);
-			return getVariable_(vd);
+			return getVariableMemory_(vd);
 		}
 
-		private FunpMemory getVariable_(Var vd) {
+		private FunpMemory getVariableMemory_(Var vd) {
 			var offsetOperand = vd.offsetOperand;
 			var scope0 = vd.scope;
 			var nfp0 = scope0 != null //
@@ -777,11 +784,11 @@ public class P2InferType {
 		private FunpAllocStack allocStack(int size, Funp value, Funp expr) {
 			return FunpAllocStack.of(size, value, expr, IntMutable.nil());
 		}
-
 	}
 
 	private class Var {
 		private Funp funp;
+		private Funp value;
 		private Mutable<Operand> operand;
 		private Integer scope;
 		private IntMutable offset;
@@ -789,21 +796,23 @@ public class P2InferType {
 		private int start, end;
 
 		private Var(Mutable<Operand> offsetOperand, int start, int end) { // global
-			this(FunpDontCare.of(), null, null, IntMutable.of(0), offsetOperand, start, end);
+			this(FunpDontCare.of(), null, null, null, IntMutable.of(0), offsetOperand, start, end);
 		}
 
 		private Var(int scope, IntMutable offset, int start, int end) { // local
-			this(FunpDontCare.of(), null, scope, offset, null, start, end);
+			this(FunpDontCare.of(), null, null, scope, offset, null, start, end);
 		}
 
 		private Var( //
 				Funp funp, //
+				Funp value, //
 				Mutable<Operand> operand, //
 				Integer scope, //
 				IntMutable offset, //
 				Mutable<Operand> offsetOperand, //
 				int start, int end) {
 			this.funp = funp;
+			this.value = value;
 			this.operand = operand;
 			this.scope = scope;
 			this.offset = offset;
