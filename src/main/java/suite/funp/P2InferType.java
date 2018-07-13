@@ -767,9 +767,9 @@ public class P2InferType {
 
 		private FunpMemory getVariableMemory_(Var vd) {
 			var offsetOperand = vd.offsetOperand;
-			var scope0 = vd.scope;
-			var nfp0 = scope0 != null //
-					? Ints_.range(scope0, scope).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps)) // locals
+			var scope_ = vd.scope;
+			var nfp0 = scope_ != null //
+					? Ints_.range(scope_, scope).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps)) // locals
 					: FunpNumber.of(IntMutable.of(0)); // globals
 			var nfp1 = offsetOperand != null ? FunpTree.of(TermOp.PLUS__, nfp0, FunpOperand.of(offsetOperand)) : nfp0;
 			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp1, FunpNumber.of(vd.offset)), vd.start, vd.end);
