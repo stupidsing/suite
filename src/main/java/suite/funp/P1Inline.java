@@ -246,16 +246,16 @@ public class P1Inline {
 					associate(vars, value);
 					associate(vars.replace(var, f), expr);
 					return n_;
-				})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, var, if_, then, else_) -> {
-					associate(vars, if_);
-					associate(vars.replace(var, f), then);
-					associate(vars, else_);
-					return n_;
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 					var vars1 = Read.from(pairs).fold(vars, (vs, pair) -> vs.replace(pair.t0, f));
 					for (var pair : pairs)
 						associate(vars1, pair.t1);
 					associate(vars1, expr);
+					return n_;
+				})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, var, if_, then, else_) -> {
+					associate(vars, if_);
+					associate(vars.replace(var, f), then);
+					associate(vars, else_);
 					return n_;
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					associate(vars.replace(var, f), expr);
