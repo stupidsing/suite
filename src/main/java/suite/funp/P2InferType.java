@@ -270,16 +270,19 @@ public class P2InferType {
 			}).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				unify(n, infer(left), infer(right));
 				return infer(expr);
-			})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
-				unify(n, typeNumber, infer(expr));
-				if (coerce == Coerce.BYTE)
-					return typeByte;
-				else if (coerce == Coerce.NUMBER)
-					return typeNumber;
-				else if (coerce == Coerce.POINTER)
-					return typeRefOf(new Reference());
-				else
-					return fail();
+			})).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
+				Fun<Coerce, Node> tf = coerce -> {
+					if (coerce == Coerce.BYTE)
+						return typeByte;
+					else if (coerce == Coerce.NUMBER)
+						return typeNumber;
+					else if (coerce == Coerce.POINTER)
+						return typeRefOf(new Reference());
+					else
+						return fail();
+				};
+				unify(n, tf.apply(from), infer(expr));
+				return tf.apply(to);
 			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
 				var tvalue = infer(value, var);
 				Node t;
@@ -372,8 +375,8 @@ public class P2InferType {
 				return typeIoOf(infer(expr));
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				var te = new Reference();
-				unify(n, typeRefOf(typeArrayOf(null, te)), infer(reference));
-				unify(n, infer(index), typeNumber);
+				unify(n, typeArrayOf(null, te), infer(reference.expr));
+				unify(n, typeNumber, infer(index));
 				return te;
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				var tv = new Reference();

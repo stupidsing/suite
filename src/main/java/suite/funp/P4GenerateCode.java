@@ -191,8 +191,8 @@ public class P4GenerateCode {
 					var size0 = l.size();
 					var size1 = r.size();
 					return size0 == size1 ? returnIsOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : fail();
-				})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
-					if (coerce == Coerce.BYTE) {
+				})).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
+					if (to == Coerce.BYTE) {
 						var r1 = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
 						var r0 = integerRegs[r1.reg];
 						compileIsSpec(expr, r0);

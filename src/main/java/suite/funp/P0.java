@@ -89,18 +89,20 @@ public class P0 {
 			BYTE, NUMBER, POINTER,
 		};
 
-		public Coerce coerce;
+		public Coerce from;
+		public Coerce to;
 		public Funp expr;
 
-		public static FunpCoerce of(Coerce coerce, Funp expr) {
+		public static FunpCoerce of(Coerce from, Coerce to, Funp expr) {
 			var f = new FunpCoerce();
-			f.coerce = coerce;
+			f.from = from;
+			f.to = to;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Coerce, Funp, R> fun) {
-			return fun.apply(coerce, expr);
+		public <R> R apply(FixieFun3<Coerce, Coerce, Funp, R> fun) {
+			return fun.apply(from, to, expr);
 		}
 	}
 

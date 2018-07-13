@@ -171,9 +171,9 @@ public class P0Parse {
 			}).match("assign ^.0 := .1 ~ .2", (a, b, c) -> {
 				return isDo() ? FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)) : fail();
 			}).match("byte .0", a -> {
-				return FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(num(a)));
+				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(num(a)));
 			}).match("byte", () -> {
-				return FunpCoerce.of(Coerce.BYTE, FunpDontCare.of());
+				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpDontCare.of());
 			}).match("case || .0", a -> {
 				return new Object() {
 					private Funp d(Node n) {
@@ -185,11 +185,11 @@ public class P0Parse {
 					}
 				}.d(a);
 			}).match("coerce.byte .0", a -> {
-				return FunpCoerce.of(Coerce.BYTE, p(a));
+				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, p(a));
 			}).match("coerce.number .0", a -> {
-				return FunpCoerce.of(Coerce.NUMBER, p(a));
+				return FunpCoerce.of(Coerce.BYTE, Coerce.NUMBER, p(a));
 			}).match("coerce.pointer .0", a -> {
-				return FunpCoerce.of(Coerce.POINTER, p(a));
+				return FunpCoerce.of(Coerce.NUMBER, Coerce.POINTER, p(a));
 			}).match("consult .0", a -> {
 				return consult(Str.str(a));
 			}).match("define .0 .1 := .2 ~ .3", (a, b, c, d) -> {
@@ -260,8 +260,8 @@ public class P0Parse {
 				var fa = FunpArray.of(To //
 						.chars(str.value) //
 						.streamlet() //
-						.<Funp> map(ch -> FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(ch))) //
-						.snoc(FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(0))) //
+						.<Funp> map(ch -> FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(ch))) //
+						.snoc(FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(0))) //
 						.toList());
 				return FunpDefine.of(Fdt.GLOB, vn, fa, FunpVariable.of(vn));
 			}).applyTree((op, l, r) -> {

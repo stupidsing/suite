@@ -128,7 +128,7 @@ public class P2GenerateLambda {
 			})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 				var b1 = new Bool(b);
 				return rt -> b1;
-			})).applyIf(FunpCoerce.class, f -> f.apply((coerce, expr) -> {
+			})).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
 				return compile_(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
 				return type == Fdt.L_MONO || type == Fdt.L_POLY ? compile_(FunpApply.of(value, FunpLambda.of(var, expr))) : null;
