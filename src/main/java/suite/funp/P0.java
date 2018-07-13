@@ -106,7 +106,11 @@ public class P0 {
 
 	public static class FunpDefine implements Funp, P2.End {
 		public enum Fdt {
-			GLOB, L_IOAP, L_MONO, L_POLY, VIRT,
+			GLOB, // global variable
+			L_IOAP, // local variable, I/O access
+			L_MONO, // local variable, mono type
+			L_POLY, // local variable, polymorphic type
+			VIRT, // virtual variable
 		};
 
 		public Fdt type;
