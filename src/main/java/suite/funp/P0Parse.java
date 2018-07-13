@@ -263,7 +263,7 @@ public class P0Parse {
 						.<Funp> map(ch -> FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(ch))) //
 						.snoc(FunpCoerce.of(Coerce.BYTE, FunpNumber.ofNumber(0))) //
 						.toList());
-				return FunpDefine.of(Fdt.GLOB, vn, fa, FunpReference.of(FunpVariable.of(vn)));
+				return FunpDefine.of(Fdt.GLOB, vn, fa, FunpVariable.of(vn));
 			}).applyTree((op, l, r) -> {
 				if (op == TermOp.CONTD_)
 					System.out.println(node);
