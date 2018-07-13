@@ -27,9 +27,9 @@ public class ElfTest {
 		var text = "garbage\n";
 
 		var program = "" //
-				+ "let linux := consult \"linux.fp\" ~ \n" //
-				+ "perform.io linux/io.cat ~ \n" //
-				+ "io.do 0 \n";
+				+ "let linux := consult \"linux.fp\" ~ io.do \n" //
+				+ "	perform.io linux/io.cat ~ \n" //
+				+ "	0 \n";
 
 		test(0, program, text);
 	}
