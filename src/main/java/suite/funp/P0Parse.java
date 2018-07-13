@@ -234,7 +234,7 @@ public class P0Parse {
 				return FunpNumber.of(IntMutable.nil());
 			}).match("perform.io .0 ~ .1", (a, b) -> {
 				var lambda = lambda(dontCare, b);
-				return FunpDefine.of(Fdt.L_IOAP, lambda.var, p(a), lambda.expr);
+				return isDo() ? FunpDefine.of(Fdt.L_IOAP, lambda.var, p(a), lambda.expr) : fail();
 			}).match("predef .0", a -> {
 				return FunpPredefine.of(p(a));
 			}).match("size.of .0", a -> {
