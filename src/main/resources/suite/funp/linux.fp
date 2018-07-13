@@ -124,8 +124,9 @@ define io.put.number n :=
 	case
 	|| 0 < n =>
 		io.put.number_ n
-	|| n < 0 =>
-		perform.io io.put.char byte '-' ~ io.put.number_ n
+	|| n < 0 => io.do
+		perform.io io.put.char byte '-' ~
+		eval.io io.put.number_ n
 	|| io.put.char byte '0'
 ~
 
