@@ -167,13 +167,11 @@ public class P2InferType {
 	private Funp captureLambdas(Funp node0) {
 		class Capture {
 			private Fun<String, Funp> accesses;
-			private ISet<String> locals;
-			private ISet<String> globals;
+			private ISet<String> vars;
 
-			private Capture(Fun<String, Funp> accesses, ISet<String> locals, ISet<String> globals) {
+			private Capture(Fun<String, Funp> accesses, ISet<String> vars) {
 				this.accesses = accesses;
-				this.locals = locals;
-				this.globals = globals;
+				this.vars = vars;
 			}
 
 			private Funp capture(Funp n) {
@@ -183,22 +181,18 @@ public class P2InferType {
 			private Funp capture_(Funp n) {
 				return n.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
-					Capture c1;
-					if (type == Fdt.GLOB)
-						c1 = new Capture(accesses, locals, globals.add(var));
-					else
-						c1 = new Capture(accesses, locals.add(var), globals);
+					var c1 = new Capture(accesses, vars.add(var));
 					return FunpDefine.of(type, var, capture(value), c1.capture(expr));
-				})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
-					var locals1 = Read.from(vars).fold(locals, (l, pair) -> l.add(pair.t0));
-					var c1 = new Capture(accesses, locals1, globals);
+				})).applyIf(FunpDefineRec.class, f -> f.apply((vars_, expr) -> {
+					var locals1 = Read.from(vars_).fold(vars, (l, pair) -> l.add(pair.t0));
+					var c1 = new Capture(accesses, locals1);
 					var vars1 = new ArrayList<Pair<String, Funp>>();
-					for (var pair : vars)
+					for (var pair : vars_)
 						vars1.add(Pair.of(pair.t0, c1.capture(pair.t1)));
 					return FunpDefineRec.of(vars1, c1.capture(expr));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					if (Boolean.TRUE) // perform capture?
-						return FunpLambda.of(var, new Capture(accesses, locals.replace(var), globals).capture(expr));
+						return FunpLambda.of(var, new Capture(accesses, vars.replace(var)).capture(expr));
 					else {
 						var locals1 = ISet.<String> empty();
 						var capn = "cap$" + Util.temp();
@@ -212,7 +206,7 @@ public class P2InferType {
 							if (set.add(v))
 								list.add(Pair.of(v, getVariable(v)));
 							return FunpField.of(ref, v);
-						}, locals1.add(capn).add(var), globals);
+						}, locals1.add(capn).add(var));
 
 						return FunpDefine.of(Fdt.GLOB, capn, struct, FunpLambdaCapture.of(var, capn, cap, c1.capture(expr)));
 					}
@@ -225,12 +219,12 @@ public class P2InferType {
 			}
 
 			private Funp getVariable(String var) {
-				return locals.contains(var) || globals.contains(var) ? FunpVariable.of(var) : accesses.apply(var);
+				return vars.contains(var) ? FunpVariable.of(var) : accesses.apply(var);
 			}
 
 		}
 
-		return new Capture(Friends::fail, ISet.empty(), ISet.empty()).capture(node0);
+		return new Capture(Friends::fail, ISet.empty()).capture(node0);
 	}
 
 	private class Infer {
