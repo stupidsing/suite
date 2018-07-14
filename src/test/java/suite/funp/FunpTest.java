@@ -124,6 +124,7 @@ public class FunpTest {
 
 	@Test
 	public void testTag() {
+		test(3, "if (`t:v` = t:3) then v else 0");
 		test(3, "define d := t:3 ~ if (`t:v` = d) then v else 0");
 		test(0, "let d := s:{} ~ type d = t:3 ~ if (`t:v` = d) then v else 0");
 	}

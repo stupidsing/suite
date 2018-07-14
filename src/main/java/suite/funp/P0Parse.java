@@ -419,10 +419,18 @@ public class P0Parse {
 							.range(size0) //
 							.fold(then, (i, then_) -> bind(pairs0.get(i).t1, fun.apply(i), then_, else_));
 				})).applyIf(FunpTag.class, f -> f.apply((id, tag, value_) -> {
-					var vn = "detag$" + Util.temp();
+					return new Switch<Funp>(value //
+					).applyIf(FunpTag.class, g -> g.apply((id1, tag1, value1) -> {
+						if (id.get() == id1.get())
+							return bind(value_, value1, then, else_);
+						else
+							return else_;
+					})).applyIf(Funp.class, g -> {
+						var vn = "detag$" + Util.temp();
 
-					// FIXME double else
-					return FunpDeTag.of(id, tag, vn, value, bind(FunpVariable.of(vn), value_, then, else_), else_);
+						// FIXME double else
+						return FunpDeTag.of(id, tag, vn, value, bind(FunpVariable.of(vn), value_, then, else_), else_);
+					}).result();
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 					return variables.contains(var) ? FunpDoAssignVar.of(f, value, then) : be;
 				})).result();
