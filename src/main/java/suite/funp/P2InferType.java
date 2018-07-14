@@ -210,7 +210,7 @@ public class P2InferType {
 
 						var c1 = new Capture(v -> {
 							if (set.add(v))
-								list.add(Pair.of(v, FunpVariable.of(v)));
+								list.add(Pair.of(v, getVariable(v)));
 							return FunpField.of(ref, v);
 						}, locals1.add(capn).add(var), globals);
 
@@ -220,9 +220,14 @@ public class P2InferType {
 					// TODO allocate cap on heap
 					// TODO free cap after use
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-					return locals.contains(var) || globals.contains(var) ? f : accesses.apply(var);
+					return getVariable(var);
 				})).result();
 			}
+
+			private Funp getVariable(String var) {
+				return locals.contains(var) || globals.contains(var) ? FunpVariable.of(var) : accesses.apply(var);
+			}
+
 		}
 
 		return new Capture(Friends::fail, ISet.empty(), ISet.empty()).capture(node0);
