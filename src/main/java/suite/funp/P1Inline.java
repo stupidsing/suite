@@ -109,8 +109,8 @@ public class P1Inline {
 					FunpDefine define;
 
 					while ((define = n0.cast(FunpDefine.class)) != null //
-							&& define.value instanceof FunpDontCare //
-							&& define.type == Fdt.L_MONO) {
+							&& define.type == Fdt.L_MONO //
+							&& define.value instanceof FunpDontCare) {
 						vars.add(define.var);
 						n0 = define.expr;
 					}
