@@ -6,7 +6,7 @@ import suite.adt.pair.Pair;
 import suite.ebnf.Grammar.GrammarType;
 import suite.node.io.Escaper;
 import suite.node.io.Operator.Assoc;
-import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 import suite.util.ParseUtil;
 import suite.util.String_;
 
@@ -18,7 +18,7 @@ public class Breakdown {
 
 	public Grammar breakdown(String s) {
 		Grammar eg;
-		List<String> list;
+		Streamlet<String> list;
 		Pair<String, String> pair;
 		s = s.trim();
 
@@ -51,8 +51,8 @@ public class Breakdown {
 		return eg;
 	}
 
-	private List<Grammar> breakdown(List<String> list) {
-		return Read.from(list).map(this::breakdown).toList();
+	private List<Grammar> breakdown(Streamlet<String> list) {
+		return list.map(this::breakdown).toList();
 	}
 
 	private String str(String s) {

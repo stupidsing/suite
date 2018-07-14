@@ -63,6 +63,13 @@ public class String_ {
 		return !isBlank(s);
 	}
 
+	public static String left(String s, int pos) {
+		var size = s.length();
+		if (pos < 0)
+			pos += size;
+		return s.substring(0, pos);
+	}
+
 	public static String range(String s, int start, int end) {
 		var length = s.length();
 		if (start < 0)

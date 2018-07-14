@@ -3,15 +3,13 @@ package suite.util;
 import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import suite.adt.pair.FixieArray;
 import suite.adt.pair.Pair;
 import suite.node.io.Operator;
 import suite.node.io.Operator.Assoc;
 import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.text.Segment;
 
@@ -41,7 +39,16 @@ public class ParseUtil {
 		return FixieArray.of(outs);
 	}
 
-	public static List<String> searchn(String s, String name, Assoc assoc) {
+	public static Streamlet<String> searchn(String s, String name, Assoc assoc) {
+		var pair = iter(s, name, assoc);
+		return pair.t0.snoc(pair.t1);
+	}
+
+	public static Streamlet<String> splitn(String s, String name, Assoc assoc) {
+		return iter(s, name, assoc).t0;
+	}
+
+	private static Pair<Streamlet<String>, String> iter(String s, String name, Assoc assoc) {
 		var list = new ArrayList<String>();
 		Pair<String, String> pair;
 
@@ -50,8 +57,7 @@ public class ParseUtil {
 			s = pair.t1;
 		}
 
-		list.add(s);
-		return list;
+		return Pair.of(Read.from(list), s);
 	}
 
 	public static int search(String s, int start, String toMatch) {
@@ -83,30 +89,6 @@ public class ParseUtil {
 			return Pair.of(left, right);
 		} else
 			return null;
-	}
-
-	public static Streamlet<String> split(String in, String name) {
-		var chars = in.toCharArray();
-		var length = chars.length;
-
-		return new Streamlet<>(() -> Outlet.of(new Source<>() {
-			private int pos = 0;
-
-			public String source() {
-				if (pos < length) {
-					var segment = searchPosition(chars, Segment.of(pos, length), name, Assoc.LEFT, true);
-					var pos0 = pos;
-					int end;
-					if (segment != null) {
-						end = segment.start;
-						pos = segment.end;
-					} else
-						end = pos = length;
-					return new String(chars, pos0, end);
-				} else
-					return null;
-			}
-		}));
 	}
 
 	public static Segment searchPosition(char[] cs, Segment segment, Operator operator) {
@@ -161,8 +143,9 @@ public class ParseUtil {
 	 * characters.
 	 *
 	 * @param isThrow
-	 *            if this is set to true, and the string is deemed unparseable
-	 *            even if more characters are added, throw exception.
+	 *                    if this is set to true, and the string is deemed
+	 *                    unparseable even if more characters are added, throw
+	 *                    exception.
 	 */
 	public static boolean isParseable(String s, boolean isThrow) {
 		int quote = 0, depth = 0;

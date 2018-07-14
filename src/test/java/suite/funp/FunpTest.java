@@ -122,6 +122,12 @@ public class FunpTest {
 		test(3, "define s := { a: 1, b: 2, c: 3, } ~ s/c");
 	}
 
+	@Test
+	public void testTag() {
+		test(3, "define d := t:3 ~ if (`t:v` = d) then v else 0");
+		test(0, "let d := s:{} ~ type d = t:3 ~ if (`t:v` = d) then v else 0");
+	}
+
 	private void test(int r, String p) {
 		for (var isOptimize : new boolean[] { false, true, }) {
 			LogUtil.info(p);

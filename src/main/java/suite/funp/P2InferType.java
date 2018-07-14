@@ -524,12 +524,20 @@ public class P2InferType {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, var, if_, then, else_) -> {
 				var size = getTypeSize(Dict.m(typePatTag.match(typeOf(if_))[0]).get(Atom.of(tag)));
-				var ref = getAddress(if_);
-				var mtag = FunpMemory.of(ref, 0, is);
-				var mval = FunpMemory.of(ref, is, is + size);
-				var eq = FunpTree.of(TermOp.EQUAL_, FunpNumber.of(id), mtag);
-				var then1 = defineLocal(f, var, mval, then, size);
-				return FunpIf.of(eq, then1, erase(else_));
+				var else1 = erase(else_);
+				var ft = if_.cast(FunpTag.class);
+				if (ft != null)
+					return ft.apply((id_, tag_, value) -> {
+						return id.get() == id_.get() ? defineLocal(f, var, value, then, size) : else1;
+					});
+				else {
+					var ref = getAddress(if_);
+					var mtag = FunpMemory.of(ref, 0, is);
+					var mval = FunpMemory.of(ref, is, is + size);
+					var eq = FunpTree.of(TermOp.EQUAL_, FunpNumber.of(id), mtag);
+					var then1 = defineLocal(f, var, mval, then, size);
+					return FunpIf.of(eq, then1, else1);
+				}
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
 				env // disable register locals
 						.streamlet2() //

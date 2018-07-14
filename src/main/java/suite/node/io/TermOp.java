@@ -44,9 +44,9 @@ public enum TermOp implements Operator {
 			operator.precedence = ++precedence;
 	}
 
-	private TermOp(String name, Assoc associativity) {
+	private TermOp(String name, Assoc assoc) {
 		this.name = name;
-		assoc = associativity;
+		this.assoc = assoc;
 	}
 
 	public static TermOp find(String name) {
