@@ -481,7 +481,7 @@ public class P0 {
 	}
 
 	public static class FunpTag implements Funp, P2.End {
-		private IntMutable id;
+		public IntMutable id;
 		public String tag;
 		public Funp value;
 

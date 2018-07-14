@@ -55,7 +55,7 @@ public class Funp_ {
 			var node = Suite.parse(fp);
 			var f0 = p0.parse(node);
 			var f1 = p1r.reduce(f0);
-			var f2 = p1.inline(f1, isOptimize ? 3 : 0, 1, 1, 1, 1);
+			var f2 = p1.inline(f1, isOptimize ? 3 : 0, 1, 1, 1, 1, 1);
 			var f3 = p2.infer(f2);
 			var f4 = p3.optimize(f3);
 			var instructions = p4.compile0(f4);
