@@ -185,7 +185,7 @@ public class P2InferType {
 					Capture c1;
 					if (type == Fdt.GLOB)
 						c1 = new Capture(accesses, locals, globals.add(var));
-					else if (type == Fdt.L_IOAP || type == Fdt.L_MONO || type == Fdt.L_POLY)
+					else if (type == Fdt.L_IOAP || type == Fdt.L_MONO || type == Fdt.L_POLY || type == Fdt.VIRT)
 						c1 = new Capture(accesses, locals.add(var), globals);
 					else if (type == Fdt.VIRT)
 						c1 = this;
