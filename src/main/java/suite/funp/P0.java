@@ -498,6 +498,36 @@ public class P0 {
 		}
 	}
 
+	public static class FunpTagId implements Funp, P2.End {
+		public Funp expr;
+
+		public static FunpTagId of(Funp value) {
+			var f = new FunpTagId();
+			f.expr = value;
+			return f;
+		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(expr);
+		}
+	}
+
+	public static class FunpTagValue implements Funp, P2.End {
+		public Funp expr;
+		public String tag;
+
+		public static FunpTagValue of(Funp value, String tag) {
+			var f = new FunpTagValue();
+			f.expr = value;
+			f.tag = tag;
+			return f;
+		}
+
+		public <R> R apply(FixieFun2<Funp, String, R> fun) {
+			return fun.apply(expr, tag);
+		}
+	}
+
 	public static class FunpTree implements Funp, P4.End {
 		public Operator operator;
 		public Funp left;

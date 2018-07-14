@@ -17,9 +17,12 @@ import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDontCare;
 import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTag;
+import suite.funp.P0.FunpTagId;
+import suite.funp.P0.FunpTagValue;
 import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;
@@ -249,6 +252,8 @@ public class P1Inline {
 				return inspect.rewrite(node_, Funp.class, n_ -> {
 					FunpDeTag deTag;
 					FunpTag tag;
+					FunpTagId tagId;
+					FunpTagValue tagValue;
 					FunpVariable variable;
 					if ((deTag = n_.cast(FunpDeTag.class)) != null //
 							&& (variable = deTag.if_.cast(FunpVariable.class)) != null //
@@ -256,6 +261,14 @@ public class P1Inline {
 						return deTag.id.get() == tag.id.get() //
 								? FunpDefine.of(Fdt.L_MONO, deTag.var, tag.value, deTag.then) //
 								: deTag.else_;
+					else if ((tagId = n_.cast(FunpTagId.class)) != null //
+							&& (variable = tagId.expr.cast(FunpVariable.class)) != null //
+							&& (tag = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
+						return FunpNumber.of(tag.id);
+					else if ((tagValue = n_.cast(FunpTagValue.class)) != null //
+							&& (variable = tagValue.expr.cast(FunpVariable.class)) != null //
+							&& (tag = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
+						return String_.equals(tag.tag, tagValue.tag) ? tag.value : FunpDontCare.of();
 					else
 						return null;
 				});

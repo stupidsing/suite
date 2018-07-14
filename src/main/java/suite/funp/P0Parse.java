@@ -19,7 +19,6 @@ import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpCoerce.Coerce;
-import suite.funp.P0.FunpDeTag;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
@@ -43,6 +42,8 @@ import suite.funp.P0.FunpRepeat;
 import suite.funp.P0.FunpSizeOf;
 import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTag;
+import suite.funp.P0.FunpTagId;
+import suite.funp.P0.FunpTagValue;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P0.FunpVariableNew;
@@ -423,10 +424,10 @@ public class P0Parse {
 					).applyIf(FunpTag.class, g -> g.apply((id1, tag1, value1) -> {
 						return id.get() == id1.get() ? bind(value_, value1, then, else_) : else_;
 					})).applyIf(Funp.class, g -> {
-						var vn = "detag$" + Util.temp();
 
 						// FIXME double else
-						return FunpDeTag.of(id, tag, vn, value, bind(FunpVariable.of(vn), value_, then, else_), else_);
+						var bind = bind(value_, FunpTagValue.of(value, tag), then, else_);
+						return FunpIf.of(FunpTree.of(TermOp.EQUAL_, FunpNumber.of(id), FunpTagId.of(value)), bind, else_);
 					}).result();
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 					return variables.contains(var) ? FunpDoAssignVar.of(f, value, then) : be;
