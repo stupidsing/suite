@@ -229,10 +229,10 @@ public class P2InferType {
 	}
 
 	private class Infer {
-		private IMap<String, Pair<Boolean, Node>> env;
+		private IMap<String, Pair<Fdt, Node>> env;
 		private List<Source<Boolean>> checks;
 
-		private Infer(IMap<String, Pair<Boolean, Node>> env, List<Source<Boolean>> checks) {
+		private Infer(IMap<String, Pair<Fdt, Node>> env, List<Source<Boolean>> checks) {
 			this.env = env;
 			this.checks = checks;
 		}
@@ -279,10 +279,10 @@ public class P2InferType {
 				return tf.apply(to);
 			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
 				var tvalue = infer(value, var);
-				return newEnv(env.replace(var, Pair.of(type == Fdt.L_POLY, tvalue))).infer(expr);
+				return newEnv(env.replace(var, Pair.of(type, tvalue))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var pairs_ = Read.from(pairs);
-				var env1 = pairs_.fold(env, (e, pair) -> e.put(pair.t0, Pair.of(false, new Reference())));
+				var env1 = pairs_.fold(env, (e, pair) -> e.put(pair.t0, Pair.of(Fdt.L_MONO, new Reference())));
 				var infer1 = newEnv(env1);
 				for (var pair : pairs_) {
 					var var = pair.t0;
@@ -357,13 +357,13 @@ public class P2InferType {
 				return te;
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 				var tv = new Reference();
-				return typeLambdaOf(tv, newEnv(env.replace(var, Pair.of(false, tv))).infer(expr));
+				return typeLambdaOf(tv, newEnv(env.replace(var, Pair.of(Fdt.L_MONO, tv))).infer(expr));
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
 				var tv = new Reference();
-				var env0 = IMap.<String, Pair<Boolean, Node>> empty();
+				var env0 = IMap.<String, Pair<Fdt, Node>> empty();
 				var env1 = env0 //
-						.replace(capn, Pair.of(false, infer(cap))) //
-						.replace(var, Pair.of(false, tv));
+						.replace(capn, Pair.of(Fdt.L_MONO, infer(cap))) //
+						.replace(var, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, newEnv(env1).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
 				return typeNumber;
@@ -433,10 +433,10 @@ public class P2InferType {
 		}
 
 		private Node getVariable(FunpVariable var) {
-			return env.get(var.var).map((isPolyType, tv) -> isPolyType ? cloneType(tv) : tv);
+			return env.get(var.var).map((type, tv) -> type == Fdt.L_POLY ? cloneType(tv) : tv);
 		}
 
-		private Infer newEnv(IMap<String, Pair<Boolean, Node>> env) {
+		private Infer newEnv(IMap<String, Pair<Fdt, Node>> env) {
 			return new Infer(env, checks);
 		}
 	}
