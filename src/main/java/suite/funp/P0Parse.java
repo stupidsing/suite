@@ -421,10 +421,7 @@ public class P0Parse {
 				})).applyIf(FunpTag.class, f -> f.apply((id, tag, value_) -> {
 					return new Switch<Funp>(value //
 					).applyIf(FunpTag.class, g -> g.apply((id1, tag1, value1) -> {
-						if (id.get() == id1.get())
-							return bind(value_, value1, then, else_);
-						else
-							return else_;
+						return id.get() == id1.get() ? bind(value_, value1, then, else_) : else_;
 					})).applyIf(Funp.class, g -> {
 						var vn = "detag$" + Util.temp();
 
