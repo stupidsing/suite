@@ -187,8 +187,6 @@ public class P2InferType {
 						c1 = new Capture(accesses, locals, globals.add(var));
 					else if (type == Fdt.L_IOAP || type == Fdt.L_MONO || type == Fdt.L_POLY || type == Fdt.VIRT)
 						c1 = new Capture(accesses, locals.add(var), globals);
-					else if (type == Fdt.VIRT)
-						c1 = this;
 					else
 						c1 = fail();
 					return FunpDefine.of(type, var, capture(value), c1.capture(expr));
@@ -736,7 +734,7 @@ public class P2InferType {
 						var m = env.get(var).getMemory(scope);
 						return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
 					})).applyIf(Funp.class, f -> {
-						return Funp_.fail("require pre-definition");
+						return Funp_.fail("requires pre-definition");
 					}).nonNullResult();
 				}
 			}.getAddress(expr);
