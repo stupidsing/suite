@@ -9,7 +9,6 @@ import java.util.Map;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpCheckType;
-import suite.funp.P0.FunpDeTag;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
@@ -85,10 +84,6 @@ public class P1Inline {
 							.map2((var, value) -> vars1.get(var), (var, value) -> r1.rename(value)) //
 							.toList(), //
 							r1.rename(expr));
-				})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, var0, if_, then, else_) -> {
-					var var1 = newVar.apply(var0);
-					var r1 = new Rename(vars.replace(var0, var1));
-					return FunpDeTag.of(id, tag, var1, rename(if_), r1.rename(then), rename(else_));
 				})).applyIf(FunpLambda.class, f -> f.apply((var0, expr) -> {
 					var var1 = newVar.apply(var0);
 					var r1 = new Rename(vars.replace(var0, var1));
@@ -250,18 +245,11 @@ public class P1Inline {
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> {
-					FunpDeTag deTag;
 					FunpTag tag;
 					FunpTagId tagId;
 					FunpTagValue tagValue;
 					FunpVariable variable;
-					if ((deTag = n_.cast(FunpDeTag.class)) != null //
-							&& (variable = deTag.if_.cast(FunpVariable.class)) != null //
-							&& (tag = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
-						return deTag.id.get() == tag.id.get() //
-								? FunpDefine.of(Fdt.L_MONO, deTag.var, tag.value, deTag.then) //
-								: deTag.else_;
-					else if ((tagId = n_.cast(FunpTagId.class)) != null //
+					if ((tagId = n_.cast(FunpTagId.class)) != null //
 							&& (variable = tagId.expr.cast(FunpVariable.class)) != null //
 							&& (tag = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
 						return FunpNumber.of(tag.id);
@@ -291,11 +279,6 @@ public class P1Inline {
 					for (var pair : pairs)
 						associate(vars1, pair.t1);
 					associate(vars1, expr);
-					return n_;
-				})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, var, if_, then, else_) -> {
-					associate(vars, if_);
-					associate(vars.replace(var, f), then);
-					associate(vars, else_);
 					return n_;
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					associate(vars.replace(var, f), expr);

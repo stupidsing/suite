@@ -24,7 +24,6 @@ import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpCoerce.Coerce;
-import suite.funp.P0.FunpDeTag;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
@@ -197,9 +196,6 @@ public class P2InferType {
 					for (var pair : vars)
 						vars1.add(Pair.of(pair.t0, c1.capture(pair.t1)));
 					return FunpDefineRec.of(vars1, c1.capture(expr));
-				})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, var, if_, then, else_) -> {
-					var c1 = new Capture(accesses, locals.add(var), globals);
-					return FunpDeTag.of(id, tag, var, capture(if_), c1.capture(then), capture(else_));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					if (Boolean.TRUE) // perform capture?
 						return FunpLambda.of(var, new Capture(accesses, locals.replace(var), globals).capture(expr));
@@ -297,18 +293,6 @@ public class P2InferType {
 				var t = new Reference();
 				unify(n, typeRefOf(t), infer(pointer));
 				return t;
-			})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, var, if_, then, else_) -> {
-				var tv = new Reference();
-				Node tr;
-
-				var types = new HashMap<Node, Reference>();
-				types.put(Atom.of(tag), Reference.of(tv));
-
-				var env1 = newEnv(env.put(var, Pair.of(false, tv)));
-
-				unify(n, typeTagOf(Dict.of(types)), infer(if_));
-				unify(n, tr = env1.infer(then, var), infer(else_));
-				return tr;
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
 				for (var assign : assigns) {
 					var size = assign.t0.size;
@@ -533,20 +517,6 @@ public class P2InferType {
 				return FunpAllocStack.of(offset, FunpDontCare.of(), expr2, offsetStack);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
-			})).applyIf(FunpDeTag.class, f -> f.apply((id, tag, var, if_, then, else_) -> {
-				var size = getTypeSize(Dict.m(typePatTag.match(typeOf(if_))[0]).get(Atom.of(tag)));
-				var else1 = erase(else_);
-				var ft = if_.cast(FunpTag.class);
-				if (ft != null)
-					return ft.apply((id_, tag_, value) -> id.get() == id_.get() ? defineLocal(f, var, value, then, size) : else1);
-				else {
-					var ref = getAddress(if_);
-					var mtag = FunpMemory.of(ref, 0, is);
-					var mval = FunpMemory.of(ref, is, is + size);
-					var eq = FunpTree.of(TermOp.EQUAL_, FunpNumber.of(id), mtag);
-					var then1 = defineLocal(f, var, mval, then, size);
-					return FunpIf.of(eq, then1, else1);
-				}
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
 				env // disable register locals
 						.streamlet2() //
