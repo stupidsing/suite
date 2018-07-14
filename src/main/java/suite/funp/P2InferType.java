@@ -527,9 +527,7 @@ public class P2InferType {
 				var else1 = erase(else_);
 				var ft = if_.cast(FunpTag.class);
 				if (ft != null)
-					return ft.apply((id_, tag_, value) -> {
-						return id.get() == id_.get() ? defineLocal(f, var, value, then, size) : else1;
-					});
+					return ft.apply((id_, tag_, value) -> id.get() == id_.get() ? defineLocal(f, var, value, then, size) : else1);
 				else {
 					var ref = getAddress(if_);
 					var mtag = FunpMemory.of(ref, 0, is);
