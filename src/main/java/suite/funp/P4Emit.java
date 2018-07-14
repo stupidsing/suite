@@ -1,5 +1,7 @@
 package suite.funp;
 
+import static suite.util.Friends.fail;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,7 +110,9 @@ public class P4Emit {
 	}
 
 	public <T extends Operand> T mov(T op0, Operand op1) {
-		if (op0 != op1)
+		if (op0.size != op1.size)
+			fail();
+		else if (op0 != op1)
 			if (op0 instanceof OpReg && op1 instanceof OpImm && ((OpImm) op1).imm == 0)
 				emit(amd64.instruction(Insn.XOR, op0, op0));
 			else

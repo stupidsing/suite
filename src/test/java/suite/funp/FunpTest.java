@@ -113,6 +113,11 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testString() {
+		test(65, "define s := \"A world for us\" ~ coerce.number s [0]");
+	}
+
+	@Test
 	public void testStruct() {
 		test(3, "define s := { a: 1, b: 2, c: 3, } ~ s/c");
 	}

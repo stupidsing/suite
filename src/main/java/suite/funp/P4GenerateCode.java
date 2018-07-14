@@ -124,7 +124,7 @@ public class P4GenerateCode {
 			emit.emit(amd64.instruction(Insn.CLD));
 			new Compile0(Result.ISSPEC, emit, null, ebx, null).new Compile1(registerSet, 0).compile(funp);
 			emit.mov(eax, amd64.imm(1, is));
-			emit.emit(amd64.instruction(Insn.INT, amd64.imm(-128)));
+			emit.emit(amd64.instruction(Insn.INT, amd64.imm8(-128)));
 		});
 	}
 
@@ -192,11 +192,14 @@ public class P4GenerateCode {
 					var size1 = r.size();
 					return size0 == size1 ? returnIsOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : fail();
 				})).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
-					if (to == Coerce.BYTE) {
-						var r1 = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
-						var r0 = integerRegs[r1.reg];
-						compileIsSpec(expr, r0);
-						return returnIsOp(r1);
+					var rbyte = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
+					var reg = integerRegs[rbyte.reg];
+					if (from == Coerce.BYTE) {
+						compileByte(expr, reg);
+						return returnIsOp(reg);
+					} else if (to == Coerce.BYTE) {
+						compileIsSpec(expr, reg);
+						return returnIsOp(rbyte);
 					} else
 						return compile(expr);
 				})).applyIf(FunpData.class, f -> f.apply(pairs -> {
@@ -549,7 +552,7 @@ public class P4GenerateCode {
 					var opRhs0 = c1.mask(eax).compileIsOp(rhs);
 					var opRhs1 = !(opRhs0 instanceof OpImm) ? opRhs0 : c1.rs.mask(eax, edx).get(is);
 					em.mov(opRhs1, opRhs0);
-					em.mov(edx, amd64.imm(0l));
+					em.mov(edx, amd64.imm32(0l));
 					em.emit(amd64.instruction(Insn.IDIV, opRhs1));
 					em.mov(opResult, r0);
 				};
@@ -615,7 +618,7 @@ public class P4GenerateCode {
 			}
 
 			private void compileGlobal(Integer size, Mutable<Operand> address) {
-				address.update(compileBlock(c -> c.em.emit(amd64.instruction(Insn.DS, amd64.imm(size)))));
+				address.update(compileBlock(c -> c.em.emit(amd64.instruction(Insn.DS, amd64.imm32(size)))));
 			}
 
 			private Operand compileBlock(Sink<Compile0> sink) {
@@ -659,17 +662,21 @@ public class P4GenerateCode {
 
 			private void compileJumpZero(Funp if_, Operand label) {
 				var op0 = isOutSpec ? pop0 : rs.get(is);
-				compileAllocStack(is, FunpNumber.ofNumber(0), List.of(op0), c1 -> {
-					var fd1 = c1.fd;
-					c1.compileAssign(if_, frame(fd1, fd1 + Funp_.booleanSize));
-					return new CompileOut();
-				});
+				compileByte(if_, op0);
 				em.emit(amd64.instruction(Insn.OR, op0, op0));
 				em.emit(amd64.instruction(Insn.JZ, label));
 
 				// var r0 = compileOpReg(if_);
 				// em.emit(amd64.instruction(Insn.OR, r0, r0));
 				// em.emit(amd64.instruction(Insn.JZ, label));
+			}
+
+			private void compileByte(Funp n, Operand op0) {
+				compileAllocStack(is, FunpNumber.ofNumber(0), List.of(op0), c1 -> {
+					var fd1 = c1.fd;
+					c1.compileAssign(n, frame(fd1, fd1 + Funp_.booleanSize));
+					return new CompileOut();
+				});
 			}
 
 			private OpReg compileFramePointer() {

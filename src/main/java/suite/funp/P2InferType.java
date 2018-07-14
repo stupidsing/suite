@@ -375,7 +375,7 @@ public class P2InferType {
 				return typeIoOf(infer(expr));
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
 				var te = new Reference();
-				unify(n, typeArrayOf(null, te), infer(reference.expr));
+				unify(n, typeRefOf(typeArrayOf(null, te)), infer(reference));
 				unify(n, typeNumber, infer(index));
 				return te;
 			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
