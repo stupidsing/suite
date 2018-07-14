@@ -526,7 +526,7 @@ public class P2InferType {
 
 				var expr2 = Read //
 						.from(assigns) //
-						.fold(expr1, (e, x) -> x.map((vn, v, n_) -> assign(e1.getVariable(v), e1.erase(n_, vn), e)));
+						.fold(expr1, (e, x) -> x.map((vn, v, n_) -> assign(v.get(scope), e1.erase(n_, vn), e)));
 
 				return FunpAllocStack.of(offset, FunpDontCare.of(), expr2, offsetStack);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
@@ -558,7 +558,7 @@ public class P2InferType {
 				var size = getTypeSize(typeOf(init));
 				var var_ = new Var(scope, offset, 0, size);
 				var e1 = new Erase(scope, env.replace("fold$" + Util.temp(), var_));
-				var m = getVariable(var_);
+				var m = var_.get(scope);
 				var cont_ = e1.applyOnce(m, cont, size);
 				var next_ = e1.applyOnce(m, next, size);
 				var while_ = FunpDoWhile.of(cont_, assign(m, next_, FunpDontCare.of()), m);
@@ -650,8 +650,8 @@ public class P2InferType {
 				var size1 = getTypeSize(typeOf(r));
 				if ((op == TermOp.EQUAL_ || op == TermOp.NOTEQ_) && (is < size0 || is < size1)) {
 					var offsetStack = IntMutable.nil();
-					var m0 = getVariableMemory(new Var(scope, offsetStack, 0, size0));
-					var m1 = getVariableMemory(new Var(scope, offsetStack, size0, size0 + size1));
+					var m0 = new Var(scope, offsetStack, 0, size0).getMemory(scope);
+					var m1 = new Var(scope, offsetStack, size0, size0 + size1).getMemory(scope);
 					var f0 = FunpCmp.of(op, m0, m1);
 					var f1 = FunpAssignMem.of(m0, erase(l), f0);
 					var f2 = FunpAssignMem.of(m1, erase(r), f1);
@@ -733,7 +733,7 @@ public class P2InferType {
 					})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 						return erase(pointer);
 					})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-						var m = getVariableMemory(env.get(var));
+						var m = env.get(var).getMemory(scope);
 						return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
 					})).applyIf(Funp.class, f -> {
 						return Funp_.fail("require pre-definition");
@@ -747,35 +747,7 @@ public class P2InferType {
 		}
 
 		private Funp getVariable(String vn) {
-			return getVariable(env.get(vn));
-		}
-
-		private Funp getVariable(Var vd) {
-			var value = vd.value;
-			var scope_ = vd.scope;
-			vd.setReg(scope_ != null && scope_ == scope);
-
-			if (value != null)
-				return value;
-			else if (vd.isReg())
-				return FunpOperand.of(vd.operand);
-			else
-				return getVariableMemory_(vd);
-		}
-
-		private FunpMemory getVariableMemory(Var vd) {
-			vd.setReg(false);
-			return getVariableMemory_(vd);
-		}
-
-		private FunpMemory getVariableMemory_(Var vd) {
-			var offsetOperand = vd.offsetOperand;
-			var scope_ = vd.scope;
-			var nfp0 = scope_ != null //
-					? Ints_.range(scope_, scope).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps)) // locals
-					: FunpNumber.of(IntMutable.of(0)); // globals
-			var nfp1 = offsetOperand != null ? FunpTree.of(TermOp.PLUS__, nfp0, FunpOperand.of(offsetOperand)) : nfp0;
-			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp1, FunpNumber.of(vd.offset)), vd.start, vd.end);
+			return env.get(vn).get(scope);
 		}
 
 		private FunpMemory memory(FunpReference reference, Funp n) {
@@ -822,6 +794,30 @@ public class P2InferType {
 			this.offsetOperand = offsetOperand;
 			this.start = start;
 			this.end = end;
+		}
+
+		private Funp get(int scope0) {
+			setReg(scope != null && scope == scope0);
+
+			if (value != null)
+				return value;
+			else if (isReg())
+				return FunpOperand.of(operand);
+			else
+				return getMemory_(scope0);
+		}
+
+		private FunpMemory getMemory(int scope0) {
+			setReg(false);
+			return getMemory_(scope0);
+		}
+
+		private FunpMemory getMemory_(int scope0) {
+			var nfp0 = scope != null //
+					? Ints_.range(scope, scope0).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps)) // locals
+					: FunpNumber.of(IntMutable.of(0)); // globals
+			var nfp1 = offsetOperand != null ? FunpTree.of(TermOp.PLUS__, nfp0, FunpOperand.of(offsetOperand)) : nfp0;
+			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp1, FunpNumber.of(offset)), start, end);
 		}
 
 		private boolean isReg() {
