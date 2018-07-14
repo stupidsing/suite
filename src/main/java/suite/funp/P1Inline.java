@@ -19,6 +19,7 @@ import suite.funp.P0.FunpField;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpReference;
 import suite.funp.P0.FunpStruct;
+import suite.funp.P0.FunpTag;
 import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;
@@ -33,7 +34,7 @@ public class P1Inline {
 
 	private Inspect inspect = Singleton.me.inspect;
 
-	public Funp inline(Funp node, int rounds, int f0, int f1, int f2, int f3) {
+	public Funp inline(Funp node, int rounds, int f0, int f1, int f2, int f3, int f4) {
 		node = renameVariables(node);
 
 		for (var i = 0; i < rounds; i++) {
@@ -41,6 +42,7 @@ public class P1Inline {
 			node = 0 < f1 ? inlineDefines(node) : node;
 			node = 0 < f2 ? inlineFields(node) : node;
 			node = 0 < f3 ? inlineLambdas(node) : node;
+			node = 0 < f4 ? inlineTags(node) : node;
 		}
 
 		return node;
@@ -233,6 +235,30 @@ public class P1Inline {
 									l -> FunpDefine.of(Fdt.L_MONO, l.var, inline(value), inline(l.expr)));
 						})) //
 						.result());
+			}
+		}.inline(node);
+	}
+
+	// Before - define s := t:3 ~ if (`t:v` = s) then v else 0
+	// After - 3
+	private Funp inlineTags(Funp node) {
+		var defs = associateDefinitions(node);
+
+		return new Object() {
+			private Funp inline(Funp node_) {
+				return inspect.rewrite(node_, Funp.class, n_ -> {
+					FunpDeTag deTag;
+					FunpTag tag;
+					FunpVariable variable;
+					if ((deTag = n_.cast(FunpDeTag.class)) != null //
+							&& (variable = deTag.if_.cast(FunpVariable.class)) != null //
+							&& (tag = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
+						return deTag.id.get() == tag.id.get() //
+								? FunpDefine.of(Fdt.L_MONO, deTag.var, tag.value, deTag.then) //
+								: deTag.else_;
+					else
+						return null;
+				});
 			}
 		}.inline(node);
 	}
