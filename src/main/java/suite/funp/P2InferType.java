@@ -186,8 +186,8 @@ public class P2InferType {
 				})).applyIf(FunpDefineRec.class, f -> f.apply((vars_, expr) -> {
 					var locals1 = Read.from(vars_).fold(vars, (l, pair) -> l.add(pair.t0));
 					var c1 = new Capture(accesses, locals1);
-					var vars1 = Read.from(vars_).map(pair -> Pair.of(pair.t0, c1.capture(pair.t1))).toList();
-					return FunpDefineRec.of(vars1, c1.capture(expr));
+					var pairs1 = Read.from(vars_).map(pair -> Pair.of(pair.t0, c1.capture(pair.t1))).toList();
+					return FunpDefineRec.of(pairs1, c1.capture(expr));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					if (Boolean.TRUE) // perform capture?
 						return FunpLambda.of(var, new Capture(accesses, vars.replace(var)).capture(expr));
