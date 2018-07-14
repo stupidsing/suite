@@ -61,25 +61,26 @@ public class FunExpand extends FunFactory {
 			} else
 				return null;
 		})).applyIf(If1FunExpr.class, e1 -> e1.apply(if_ -> {
-			return new Switch<FunExpr>(if_).applyIf(ConstantFunExpr.class, e2 -> e2.apply((type, constant) -> {
+			return if_.cast(ConstantFunExpr.class, e2 -> e2.apply((type, constant) -> {
 				if (type == Type.INT)
 					return ((Integer) constant).intValue() != 0 ? e1.then : e1.else_;
 				else
 					return null;
-			})).result();
+			}));
 		})).result();
 	}
 
 	private FunExpr replaceFieldInject(FunExpr expr0, String fieldName, FunExpr to) {
 		return rewrite(e -> {
-			var b = e instanceof FieldInjectFunExpr && String_.equals(((FieldInjectFunExpr) e).fieldName, fieldName);
-			return b ? to : null;
+			var inj = e.cast(FieldInjectFunExpr.class);
+			return inj != null && String_.equals(inj.fieldName, fieldName) ? to : null;
 		}, expr0);
 	}
 
 	private int weight(FunExpr e0) {
-		if (e0 instanceof CastFunExpr)
-			return weight(((CastFunExpr) e0).expr);
+		var cast = e0.cast(CastFunExpr.class);
+		if (cast != null)
+			return weight(cast.expr);
 		else
 			return inspect //
 					.fields(e0.getClass()) //

@@ -23,8 +23,6 @@ import suite.primitive.IntInt_Int;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
-import suite.util.Switch;
 
 public class P3Optimize {
 
@@ -42,12 +40,9 @@ public class P3Optimize {
 			return FunpData.of(Read.from2(pairs).concatMap((expr, range) -> {
 				var expr1 = optimize(expr);
 				var start = range.t0;
-				var pairsx = new Switch<Streamlet<Pair<Funp, IntIntPair>>>(expr1 //
-				).applyIf(FunpData.class, g -> g.apply(pairs1 -> {
-					return Read //
-							.from2(pairs1) //
-							.map((exprc, range1) -> Pair.of(optimize(exprc), IntIntPair.of(start + range1.t0, start + range1.t1)));
-				})).result();
+				var pairsx = expr1.cast(FunpData.class, g -> g.apply(pairs1 -> Read //
+						.from2(pairs1) //
+						.map((exprc, range1) -> Pair.of(optimize(exprc), IntIntPair.of(start + range1.t0, start + range1.t1)))));
 				return pairsx != null ? pairsx : Read.each(Pair.of(expr1, range));
 			}).toList());
 		})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {

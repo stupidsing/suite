@@ -339,11 +339,10 @@ public class P0Parse {
 		private Funp bind(Node a, Node b, Node c, Node d) {
 			var varsMutable = Mutable.of(ISet.<String> empty());
 
-			Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class, n_ -> new Switch<Funp>(n_) //
-					.applyIf(FunpVariableNew.class, f -> f.apply(var -> {
-						varsMutable.update(varsMutable.get().replace(var));
-						return FunpVariable.of(var);
-					})).result());
+			Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class, n_ -> n_.cast(FunpVariableNew.class, f -> f.apply(var -> {
+				varsMutable.update(varsMutable.get().replace(var));
+				return FunpVariable.of(var);
+			})));
 
 			var be = iter.apply(p(a));
 			var vars = varsMutable.get();
@@ -409,7 +408,7 @@ public class P0Parse {
 				})).applyIf(FunpRepeat.class, f -> f.apply((size0, expr0) -> {
 					return bindArray.apply(size0, i -> expr0);
 				})).applyIf(FunpStruct.class, f -> f.apply(pairs0 -> {
-					var pairs1 = new Switch<List<Pair<String, Funp>>>(value).applyIf(FunpStruct.class, g -> g.pairs).result();
+					var pairs1 = value.cast(FunpStruct.class, g -> g.pairs);
 					var size0 = pairs0.size();
 
 					Int_Obj<Funp> fun = pairs1 != null && size0 == pairs1.size() //

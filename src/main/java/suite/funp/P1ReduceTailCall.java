@@ -30,19 +30,17 @@ public class P1ReduceTailCall {
 
 	public Funp reduce(Funp node) {
 		return inspect.rewrite(node, Funp.class, node_ -> {
-			return new Switch<Funp>(node_ //
-			).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+			return node_.cast(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				if (pairs.size() == 1) {
 					var pair = pairs.get(0);
 					var lambdaVar = pair.t0;
-					var lambda1 = new Switch<Funp>(pair.t1 //
-					).applyIf(FunpLambda.class, g -> g.apply((vn, do_) -> {
+					var lambda1 = pair.t1.cast(FunpLambda.class, g -> g.apply((vn, do_) -> {
 						return !isHasLambda(do_) ? rewriteTco(lambdaVar, vn, do_) : null;
-					})).result();
+					}));
 					return lambda1 != null ? FunpDefineRec.of(List.of(Pair.of(lambdaVar, lambda1)), expr) : null;
 				} else
 					return null;
-			})).result();
+			}));
 		});
 	}
 
@@ -53,10 +51,9 @@ public class P1ReduceTailCall {
 			private Funp tco(Funp do_) {
 				return new Switch<Funp>(do_ //
 				).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-					return new Switch<Funp>(lambda //
-					).applyIf(FunpVariable.class, g -> g.apply(var_ -> {
+					return lambda.cast(FunpVariable.class, g -> g.apply(var_ -> {
 						return String_.equals(lambdaVar, var_) ? cont(true, value, FunpDontCare.of()) : null;
-					})).result();
+					}));
 				})).applyIf(FunpIf.class, g -> g.apply((if_, then, else_) -> {
 					return FunpIf.of(if_, tco(then), tco(else_));
 				})).applyIf(Funp.class, g -> {
