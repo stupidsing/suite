@@ -9,7 +9,6 @@ import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
-import suite.funp.P0.FunpDoAssignRef;
 import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDoWhile;
 import suite.funp.P0.FunpDontCare;
@@ -37,8 +36,8 @@ public class P1ReduceTailCall {
 					var pair = pairs.get(0);
 					var lambdaVar = pair.t0;
 					var lambda1 = new Switch<Funp>(pair.t1 //
-					).applyIf(FunpLambda.class, g -> g.apply((var, do_) -> {
-						return !isHasLambda(do_) ? rewriteTco(lambdaVar, var, do_) : null;
+					).applyIf(FunpLambda.class, g -> g.apply((vn, do_) -> {
+						return !isHasLambda(do_) ? rewriteTco(lambdaVar, vn, do_) : null;
 					})).result();
 					return lambda1 != null ? FunpDefineRec.of(List.of(Pair.of(lambdaVar, lambda1)), expr) : null;
 				} else
@@ -47,7 +46,7 @@ public class P1ReduceTailCall {
 		});
 	}
 
-	private Funp rewriteTco(String lambdaVar, String var, Funp do_) {
+	private Funp rewriteTco(String lambdaVar, String vn, Funp do_) {
 		var o = new Object() {
 			private boolean b = false;
 
@@ -79,16 +78,16 @@ public class P1ReduceTailCall {
 
 		if (o.b) {
 			var tcoVarName = "tco$" + Util.temp();
-			var varRef = FunpReference.of(FunpVariable.of(var));
+			var var = FunpVariable.of(vn);
 			var tcoVar = FunpVariable.of(tcoVarName);
 			var tcoVarRef = FunpReference.of(tcoVar);
 			var fc = FunpField.of(tcoVarRef, "c");
 			var fn = FunpField.of(tcoVarRef, "n");
 			var fr = FunpField.of(tcoVarRef, "r");
 			var dontCare = FunpDontCare.of();
-			var assign = FunpDoAssignVar.of(tcoVar, do1, FunpDoAssignRef.of(varRef, fn, fc));
+			var assign = FunpDoAssignVar.of(tcoVar, do1, FunpDoAssignVar.of(var, fn, fc));
 			var while_ = FunpDoWhile.of(assign, FunpDontCare.of(), fr);
-			return FunpLambda.of(var, FunpDefine.of(Fdt.L_MONO, tcoVarName, dontCare, while_));
+			return FunpLambda.of(vn, FunpDefine.of(Fdt.L_MONO, tcoVarName, dontCare, while_));
 		} else
 			return null;
 	}
