@@ -185,10 +185,8 @@ public class P2InferType {
 					Capture c1;
 					if (type == Fdt.GLOB)
 						c1 = new Capture(accesses, locals, globals.add(var));
-					else if (type == Fdt.L_IOAP || type == Fdt.L_MONO || type == Fdt.L_POLY || type == Fdt.VIRT)
-						c1 = new Capture(accesses, locals.add(var), globals);
 					else
-						c1 = fail();
+						c1 = new Capture(accesses, locals.add(var), globals);
 					return FunpDefine.of(type, var, capture(value), c1.capture(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((vars, expr) -> {
 					var locals1 = Read.from(vars).fold(locals, (l, pair) -> l.add(pair.t0));
@@ -283,12 +281,7 @@ public class P2InferType {
 				return tf.apply(to);
 			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
 				var tvalue = infer(value, var);
-				Node t;
-				if (type == Fdt.L_IOAP)
-					unify(n, typeIoOf(t = new Reference()), tvalue);
-				else
-					t = tvalue;
-				return newEnv(env.replace(var, Pair.of(type == Fdt.L_POLY, t))).infer(expr);
+				return newEnv(env.replace(var, Pair.of(type == Fdt.L_POLY, tvalue))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var pairs_ = Read.from(pairs);
 				var env1 = pairs_.fold(env, (e, pair) -> e.put(pair.t0, Pair.of(false, new Reference())));
@@ -320,7 +313,7 @@ public class P2InferType {
 					var tp = infer(assign.t1);
 					checks.add(() -> {
 						if (!(tp.finalNode() instanceof Reference))
-							return size == getTypeSize(tp);
+							return getTypeSize(tp) == size;
 						else if (size == Funp_.booleanSize)
 							return unify(n, typeByte, tp);
 						else if (size == is)
@@ -698,7 +691,7 @@ public class P2InferType {
 		private Funp defineLocal(Funp f, String var, Funp value, Funp expr, int size) {
 			var op = Mutable.<Operand> nil();
 			var offset = IntMutable.nil();
-			var vd = new Var(f, null, op, scope, offset, null, 0, size);
+			var vd = new Var(f, op, scope, offset, 0, size);
 			var expr1 = new Erase(scope, env.replace(var, vd)).erase(expr);
 
 			// if erase is called twice,
@@ -772,7 +765,11 @@ public class P2InferType {
 			this(FunpDontCare.of(), null, null, null, IntMutable.of(0), offsetOperand, start, end);
 		}
 
-		private Var(int scope, IntMutable offset, int start, int end) { // local
+		private Var(Funp funp, Mutable<Operand> operand, int scope, IntMutable offset, int start, int end) { // local
+			this(funp, null, operand, scope, offset, null, start, end);
+		}
+
+		private Var(int scope, IntMutable offset, int start, int end) { // local, stack
 			this(FunpDontCare.of(), null, null, scope, offset, null, start, end);
 		}
 
