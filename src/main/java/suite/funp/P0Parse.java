@@ -424,10 +424,11 @@ public class P0Parse {
 					).applyIf(FunpTag.class, g -> g.apply((id1, tag1, value1) -> {
 						return id.get() == id1.get() ? bind(value_, value1, then, else_) : else_;
 					})).applyIf(Funp.class, g -> {
+						var ref = FunpReference.of(value);
 
 						// FIXME double else
-						var bind = bind(value_, FunpTagValue.of(value, tag), then, else_);
-						return FunpIf.of(FunpTree.of(TermOp.EQUAL_, FunpNumber.of(id), FunpTagId.of(value)), bind, else_);
+						var bind = bind(value_, FunpTagValue.of(ref, tag), then, else_);
+						return FunpIf.of(FunpTree.of(TermOp.EQUAL_, FunpNumber.of(id), FunpTagId.of(ref)), bind, else_);
 					}).result();
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
 					return variables.contains(var) ? FunpDoAssignVar.of(f, value, then) : be;

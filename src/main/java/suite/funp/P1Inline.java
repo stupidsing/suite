@@ -250,11 +250,11 @@ public class P1Inline {
 					FunpTagValue tagValue;
 					FunpVariable variable;
 					if ((tagId = n_.cast(FunpTagId.class)) != null //
-							&& (variable = tagId.expr.cast(FunpVariable.class)) != null //
+							&& (variable = tagId.reference.expr.cast(FunpVariable.class)) != null //
 							&& (tag = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
 						return FunpNumber.of(tag.id);
 					else if ((tagValue = n_.cast(FunpTagValue.class)) != null //
-							&& (variable = tagValue.expr.cast(FunpVariable.class)) != null //
+							&& (variable = tagValue.reference.expr.cast(FunpVariable.class)) != null //
 							&& (tag = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpTag.class))) != null)
 						return String_.equals(tag.tag, tagValue.tag) ? tag.value : FunpDontCare.of();
 					else

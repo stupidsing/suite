@@ -474,32 +474,32 @@ public class P0 {
 	}
 
 	public static class FunpTagId implements Funp, P2.End {
-		public Funp expr;
+		public FunpReference reference;
 
-		public static FunpTagId of(Funp value) {
+		public static FunpTagId of(FunpReference reference) {
 			var f = new FunpTagId();
-			f.expr = value;
+			f.reference = reference;
 			return f;
 		}
 
 		public <R> R apply(FixieFun1<Funp, R> fun) {
-			return fun.apply(expr);
+			return fun.apply(reference);
 		}
 	}
 
 	public static class FunpTagValue implements Funp, P2.End {
-		public Funp expr;
+		public FunpReference reference;
 		public String tag;
 
-		public static FunpTagValue of(Funp value, String tag) {
+		public static FunpTagValue of(FunpReference reference, String tag) {
 			var f = new FunpTagValue();
-			f.expr = value;
+			f.reference = reference;
 			f.tag = tag;
 			return f;
 		}
 
 		public <R> R apply(FixieFun2<Funp, String, R> fun) {
-			return fun.apply(expr, tag);
+			return fun.apply(reference, tag);
 		}
 	}
 
