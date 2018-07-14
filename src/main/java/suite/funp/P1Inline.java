@@ -208,7 +208,7 @@ public class P1Inline {
 					FunpStruct struct;
 					FunpVariable variable;
 					if ((field = n_.cast(FunpField.class)) != null //
-							&& (variable = field.reference.cast(FunpReference.class, n -> n.expr).cast(FunpVariable.class)) != null //
+							&& (variable = field.reference.expr.cast(FunpVariable.class)) != null //
 							&& (struct = defs.get(variable).cast(FunpDefine.class, n -> n.value.cast(FunpStruct.class))) != null) {
 						var pair = Read //
 								.from2(struct.pairs) //

@@ -286,17 +286,17 @@ public class P0 {
 	}
 
 	public static class FunpField implements Funp, P2.End {
-		public Funp reference;
+		public FunpReference reference;
 		public String field;
 
-		public static FunpField of(Funp reference, String field) {
+		public static FunpField of(FunpReference reference, String field) {
 			var f = new FunpField();
 			f.reference = reference;
 			f.field = field;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Funp, String, R> fun) {
+		public <R> R apply(FixieFun2<FunpReference, String, R> fun) {
 			return fun.apply(reference, field);
 		}
 	}
