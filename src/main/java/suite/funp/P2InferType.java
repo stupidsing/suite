@@ -645,10 +645,10 @@ public class P2InferType {
 		}
 
 		private Funp applyOnce(Funp value, Funp lambda, int size) {
-			if (lambda instanceof FunpLambda) // expand if possible
-				return ((FunpLambda) lambda).apply((var, expr) -> defineLocal(lambda, var, value, expr, size));
-			else
-				return apply(value, lambda, size);
+			var lambda_ = lambda.cast(FunpLambda.class);
+			return lambda_ != null //
+					? lambda_.apply((var, expr) -> defineLocal(lambda, var, value, expr, size)) //
+					: apply(value, lambda, size);
 		}
 
 		private FunpSaveRegisters apply(Funp value, Funp lambda, int size) {
