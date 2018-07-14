@@ -55,7 +55,7 @@ public class P4DecomposeOperand {
 
 			private void decompose(Funp n_) {
 				FunpTree tree;
-				if (n_ instanceof FunpTree && (tree = (FunpTree) n_).operator == operator) {
+				if ((tree = n_.cast(FunpTree.class)) != null && tree.operator == operator) {
 					decompose(tree.left);
 					decompose(tree.right);
 				} else
@@ -75,18 +75,19 @@ public class P4DecomposeOperand {
 			private List<Funp> mults = new ArrayList<>();
 
 			private void decompose(Funp n0) {
+				FunpNumber number;
 				FunpTree2 tree;
-				Funp r;
+				Funp right;
 				for (var n1 : decompose.apply(TermOp.MULT__, n0))
 					if (n1 instanceof FunpFramePointer && isUseEbp && reg == null)
 						reg = amd64.ebp;
-					else if (n1 instanceof FunpNumber)
-						scale *= ((FunpNumber) n1).i.get();
-					else if (n1 instanceof FunpTree2 //
-							&& (tree = (FunpTree2) n1).operator == TreeUtil.SHL //
-							&& (r = tree.right) instanceof FunpNumber) {
+					else if ((number = n1.cast(FunpNumber.class)) != null)
+						scale *= number.i.get();
+					else if ((tree = n1.cast(FunpTree2.class)) != null //
+							&& tree.operator == TreeUtil.SHL //
+							&& (right = tree.right) instanceof FunpNumber) {
 						decompose(tree.left);
-						scale <<= ((FunpNumber) r).i.get();
+						scale <<= ((FunpNumber) right).i.get();
 					} else
 						mults.add(n1);
 			}
