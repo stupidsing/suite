@@ -74,6 +74,8 @@ public class Funp_ {
 			return source.source();
 		} catch (CompileException ex) {
 			return Funp_.fail(ex.getMessage() + "\nin " + in);
+		} catch (Exception ex) {
+			throw new RuntimeException("in " + in, ex);
 		}
 	}
 

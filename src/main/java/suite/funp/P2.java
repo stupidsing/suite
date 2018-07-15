@@ -21,14 +21,14 @@ public class P2 {
 	}
 
 	public static class FunpAllocGlobal implements Funp, P4.End {
-		public String var;
+		public String vn;
 		public int size;
 		public Funp expr;
 		public Mutable<Operand> address;
 
-		public static FunpAllocGlobal of(String var, int size, Funp expr, Mutable<Operand> address) {
+		public static FunpAllocGlobal of(String vn, int size, Funp expr, Mutable<Operand> address) {
 			var f = new FunpAllocGlobal();
-			f.var = var;
+			f.vn = vn;
 			f.size = size;
 			f.expr = expr;
 			f.address = address;
@@ -36,7 +36,7 @@ public class P2 {
 		}
 
 		public <R> R apply(FixieFun4<String, Integer, Funp, Mutable<Operand>, R> fun) {
-			return fun.apply(var, size, expr, address);
+			return fun.apply(vn, size, expr, address);
 		}
 	}
 
@@ -204,14 +204,14 @@ public class P2 {
 	}
 
 	public static class FunpLambdaCapture implements Funp, P2.End {
-		public String var;
+		public String vn;
 		public String capn;
 		public Funp cap;
 		public Funp expr;
 
-		public static FunpLambdaCapture of(String var, String capn, Funp cap, Funp expr) {
+		public static FunpLambdaCapture of(String vn, String capn, Funp cap, Funp expr) {
 			var f = new FunpLambdaCapture();
-			f.var = var;
+			f.vn = vn;
 			f.capn = capn;
 			f.cap = cap;
 			f.expr = expr;
@@ -219,7 +219,7 @@ public class P2 {
 		}
 
 		public <R> R apply(FixieFun4<String, String, Funp, Funp, R> fun) {
-			return fun.apply(var, capn, cap, expr);
+			return fun.apply(vn, capn, cap, expr);
 		}
 	}
 

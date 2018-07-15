@@ -72,7 +72,6 @@ import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters;
 import suite.immutable.IMap;
-import suite.immutable.ISet;
 import suite.inspect.Inspect;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -92,10 +91,10 @@ import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.util.Friends;
 import suite.util.String_;
 import suite.util.Switch;
 import suite.util.Util;
@@ -165,13 +164,81 @@ public class P2InferType {
 	}
 
 	private Funp captureLambdas(Funp node0) {
-		class Capture {
-			private Fun<String, Funp> accesses;
-			private ISet<String> vns;
+		var lambdaByFunp = new IdentityHashMap<Funp, FunpLambda>();
 
-			private Capture(Fun<String, Funp> accesses, ISet<String> vns) {
-				this.accesses = accesses;
-				this.vns = vns;
+		class AssociateLambda {
+			private FunpLambda lambda;
+
+			private AssociateLambda(FunpLambda lambda) {
+				this.lambda = lambda;
+			}
+
+			private Funp a(Funp node) {
+				return inspect.rewrite(node, Funp.class, n -> {
+					lambdaByFunp.put(n, lambda);
+					return n.cast(FunpLambda.class, f -> f.apply((var, expr) -> {
+						new AssociateLambda(f).a(expr);
+						return f;
+					}));
+				});
+			}
+		}
+
+		new AssociateLambda(null).a(node0);
+
+		var refsByLambda = new IdentityHashMap<FunpVariable, FunpLambda>();
+		var varsByLambda = new IdentityHashMap<FunpVariable, FunpLambda>();
+
+		new Object() {
+			private Funp associate(Funp node) {
+				return inspect.rewrite(node, Funp.class, n -> {
+					var lambda = lambdaByFunp.get(n);
+					var lambdaVn = lambda != null ? lambda.vn : null;
+
+					Fun2<Map<FunpVariable, FunpLambda>, FunpVariable, Funp> reg = (map, var) -> {
+						if (!String_.equals(var.vn, lambdaVn))
+							map.put(var, lambda);
+						return null;
+					};
+
+					return n.sw( //
+					).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
+						return reg.apply(refsByLambda, var);
+					})).applyIf(FunpReference.class, f -> f.apply(expr -> {
+						return expr.cast(FunpVariable.class, var -> {
+							return reg.apply(refsByLambda, var);
+						});
+					})).applyIf(FunpVariable.class, f -> {
+						return reg.apply(varsByLambda, f);
+					}).result();
+				});
+			}
+		}.associate(node0);
+
+		var capturesByLambda = new IdentityHashMap<FunpLambda, List<Pair<String, Funp>>>();
+		var set = new HashSet<>();
+
+		for (var e : refsByLambda.entrySet()) {
+			var list = capturesByLambda.computeIfAbsent(e.getValue(), l -> new ArrayList<>());
+			var var = e.getKey();
+			var vn = var.vn;
+			if (set.add(vn))
+				list.add(Pair.of(vn, FunpReference.of(var)));
+		}
+
+		for (var e : varsByLambda.entrySet()) {
+			var list = capturesByLambda.computeIfAbsent(e.getValue(), l -> new ArrayList<>());
+			var var = e.getKey();
+			var vn = var.vn;
+			if (set.add(vn))
+				list.add(Pair.of(vn, var));
+		}
+
+		class Capture {
+			private FunpReference refCap;
+
+			private Capture(FunpReference refCap) {
+				this.refCap = refCap;
 			}
 
 			private Funp capture(Funp n) {
@@ -179,51 +246,52 @@ public class P2InferType {
 			}
 
 			private Funp capture_(Funp n) {
+				var lambda = lambdaByFunp.get(n);
+				var lambdaVn = lambda != null ? lambda.vn : null;
+
 				return n.sw( //
-				).applyIf(FunpDefine.class, f -> f.apply((type, vn, value, expr) -> {
-					var c1 = new Capture(accesses, vns.add(vn));
-					return FunpDefine.of(type, vn, capture(value), c1.capture(expr));
-				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-					var pairs_ = Read.from(pairs);
-					var vns1 = pairs_.fold(vns, (l, pair) -> l.add(pair.t0));
-					var c1 = new Capture(accesses, vns1);
-					var pairs1 = pairs_.map(pair -> Pair.of(pair.t0, c1.capture(pair.t1))).toList();
-					return FunpDefineRec.of(pairs1, c1.capture(expr));
+				).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
+					var vn = var.vn;
+					if (refCap != null && !String_.equals(vn, lambdaVn))
+						return FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(getVariable(vn))), capture(value), capture(expr));
+					else
+						return null;
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
-					if (Boolean.TRUE) // perform capture?
-						return FunpLambda.of(vn, new Capture(accesses, vns.replace(vn)).capture(expr));
-					else {
-						var locals1 = ISet.<String> empty();
-						var capn = "cap$" + Util.temp();
-						var cap = FunpVariable.of(capn);
-						var ref = FunpReference.of(cap);
-						var set = new HashSet<>();
-						var list = new ArrayList<Pair<String, Funp>>();
+					if (Boolean.FALSE) { // perform capture?
+						var list = capturesByLambda.computeIfAbsent(f, l -> new ArrayList<>());
 						var struct = FunpStruct.of(list);
 
-						var c1 = new Capture(v -> {
-							if (set.add(v))
-								list.add(Pair.of(v, getVariable(v)));
-							return FunpField.of(ref, v);
-						}, locals1.add(capn).add(vn));
-
+						var capn = "cap$" + Util.temp();
+						var cap = FunpVariable.of(capn);
+						var c1 = new Capture(FunpReference.of(cap));
 						return FunpDefine.of(Fdt.GLOB, capn, struct, FunpLambdaCapture.of(vn, capn, cap, c1.capture(expr)));
-					}
+					} else
+						return null;
 
 					// TODO allocate cap on heap
 					// TODO free cap after use
-				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-					return getVariable(var);
+				})).applyIf(FunpReference.class, f -> f.apply(expr -> {
+					return f.cast(FunpVariable.class, var -> {
+						if (refCap != null && !String_.equals(var.vn, lambdaVn))
+							return getVariable(var.vn);
+						else
+							return null;
+					});
+				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
+					if (refCap != null && !String_.equals(vn, lambdaVn)) {
+						var field = getVariable(vn);
+						return refsByLambda.containsKey(f) ? FunpDeref.of(field) : field;
+					} else
+						return null;
 				})).result();
 			}
 
 			private Funp getVariable(String vn) {
-				return vns.contains(vn) ? FunpVariable.of(vn) : accesses.apply(vn);
+				return FunpField.of(refCap, vn);
 			}
-
 		}
 
-		return new Capture(Friends::fail, ISet.empty()).capture(node0);
+		return new Capture(null).capture(node0);
 	}
 
 	private class Infer {

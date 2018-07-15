@@ -54,8 +54,8 @@ public class Dump {
 							var right = String_.range(s, pos + 1, -1);
 							return Streamlet.concat( //
 									Read.each(indent + left + open), //
-									split(indent + "  ", right, last + tail), //
-									Read.each(indent + last));
+									split(indent + "  ", right, ""), //
+									Read.each(indent + Character.toString(last) + tail));
 						}
 					}
 				}
