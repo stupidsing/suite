@@ -430,7 +430,7 @@ public class P2InferType {
 		}
 
 		private Node getVariable(FunpVariable var) {
-			return env.get(var.var).map((type, tv) -> type == Fdt.L_POLY ? cloneType(tv) : tv);
+			return env.get(var.vn).map((type, tv) -> type == Fdt.L_POLY ? cloneType(tv) : tv);
 		}
 
 		private Infer newEnv(IMap<String, Pair<Fdt, Node>> env) {
@@ -722,7 +722,7 @@ public class P2InferType {
 		}
 
 		private Funp getVariable(FunpVariable var) {
-			return getVariable(var.var);
+			return getVariable(var.vn);
 		}
 
 		private Funp getVariable(String vn) {

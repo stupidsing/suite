@@ -64,32 +64,32 @@ public class P1Inline {
 		};
 
 		class Rename {
-			private IMap<String, String> vars;
+			private IMap<String, String> vns;
 
-			private Rename(IMap<String, String> vars) {
-				this.vars = vars;
+			private Rename(IMap<String, String> vns) {
+				this.vns = vns;
 			}
 
 			private Funp rename(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpDefine.class, f -> f.apply((type, var0, value, expr) -> {
-					var var1 = newVar.apply(var0);
-					var r1 = new Rename(vars.replace(var0, var1));
-					return FunpDefine.of(type, var1, rename(value), r1.rename(expr));
+				).applyIf(FunpDefine.class, f -> f.apply((type, vn0, value, expr) -> {
+					var vn1 = newVar.apply(vn0);
+					var r1 = new Rename(vns.replace(vn0, vn1));
+					return FunpDefine.of(type, vn1, rename(value), r1.rename(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
-					var vars1 = Read.from(pairs0).fold(vars, (vs, pair) -> vs.replace(pair.t0, newVar.apply(pair.t0)));
-					var r1 = new Rename(vars1);
+					var vns1 = Read.from(pairs0).fold(vns, (vs, pair) -> vs.replace(pair.t0, newVar.apply(pair.t0)));
+					var r1 = new Rename(vns1);
 					return FunpDefineRec.of(Read //
 							.from2(pairs0) //
-							.map2((var, value) -> vars1.get(var), (var, value) -> r1.rename(value)) //
+							.map2((vn, value) -> vns1.get(vn), (vn, value) -> r1.rename(value)) //
 							.toList(), //
 							r1.rename(expr));
-				})).applyIf(FunpLambda.class, f -> f.apply((var0, expr) -> {
-					var var1 = newVar.apply(var0);
-					var r1 = new Rename(vars.replace(var0, var1));
-					return FunpLambda.of(var1, r1.rename(expr));
+				})).applyIf(FunpLambda.class, f -> f.apply((vn0, expr) -> {
+					var vn1 = newVar.apply(vn0);
+					var r1 = new Rename(vns.replace(vn0, vn1));
+					return FunpLambda.of(vn1, r1.rename(expr));
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-					return FunpVariable.of(vars.get(var));
+					return FunpVariable.of(vns.get(var));
 				})).result());
 			}
 		}
@@ -103,7 +103,7 @@ public class P1Inline {
 		return new Object() {
 			private Funp inline(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n0 -> {
-					var vars = new ArrayList<String>();
+					var vns = new ArrayList<String>();
 					FunpDoAssignVar assign;
 					FunpCheckType check;
 					FunpDefine define;
@@ -111,7 +111,7 @@ public class P1Inline {
 					while ((define = n0.cast(FunpDefine.class)) != null //
 							&& define.type == Fdt.L_MONO //
 							&& define.value instanceof FunpDontCare) {
-						vars.add(define.var);
+						vns.add(define.vn);
 						n0 = define.expr;
 					}
 
@@ -119,12 +119,12 @@ public class P1Inline {
 						n0 = check.expr;
 
 					if ((assign = n0.cast(FunpDoAssignVar.class)) != null) {
-						var vn = assign.var.var;
+						var vn = assign.var.vn;
 						var n1 = assign.expr;
 						var n2 = check != null ? FunpCheckType.of(check.left, check.right, n1) : n1;
 						var b = false;
 
-						for (var var_ : List_.reverse(vars))
+						for (var var_ : List_.reverse(vns))
 							if (!String_.equals(vn, var_))
 								n2 = FunpDefine.of(Fdt.L_MONO, var_, FunpDontCare.of(), n2);
 							else
@@ -230,7 +230,7 @@ public class P1Inline {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw() //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 							return lambda.cast(FunpLambda.class,
-									l -> FunpDefine.of(Fdt.L_MONO, l.var, inline(value), inline(l.expr)));
+									l -> FunpDefine.of(Fdt.L_MONO, l.vn, inline(value), inline(l.expr)));
 						})) //
 						.result());
 			}

@@ -197,7 +197,7 @@ public class P0Parse {
 				return define(Fdt.L_POLY, a, lambda0(b, c), d);
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
 				var lambda = lambda(a, c);
-				return FunpDefine.of(Fdt.L_POLY, lambda.var, p(b), lambda.expr);
+				return FunpDefine.of(Fdt.L_POLY, lambda.vn, p(b), lambda.expr);
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("define { .0 } ~ .1", (a, b) -> {
 				var list = kvs(a).collect();
@@ -225,7 +225,7 @@ public class P0Parse {
 				return FunpIo.of(FunpDefine.of(Fdt.L_MONO, vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}")))));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
 				var lambda = lambda(a, c);
-				return FunpDefine.of(Fdt.L_MONO, lambda.var, p(b), lambda.expr);
+				return FunpDefine.of(Fdt.L_MONO, lambda.vn, p(b), lambda.expr);
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
 				return define(Fdt.GLOB, a, p(b), c);
@@ -235,7 +235,7 @@ public class P0Parse {
 				return FunpNumber.of(IntMutable.nil());
 			}).match("perform.io .0 ~ .1", (a, b) -> {
 				var lambda = lambda(dontCare, b);
-				return isDo() ? FunpDefine.of(Fdt.L_IOAP, lambda.var, FunpDoEvalIo.of(p(a)), lambda.expr) : fail();
+				return isDo() ? FunpDefine.of(Fdt.L_IOAP, lambda.vn, FunpDoEvalIo.of(p(a)), lambda.expr) : fail();
 			}).match("predef .0", a -> {
 				return FunpPredefine.of(p(a));
 			}).match("size.of .0", a -> {
