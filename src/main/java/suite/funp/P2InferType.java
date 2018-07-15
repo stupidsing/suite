@@ -164,6 +164,8 @@ public class P2InferType {
 	}
 
 	private Funp captureLambdas(Funp node0) {
+		var grandLambda = FunpLambda.of("grand$", node0);
+
 		var defByVars = Funp_.associateDefinitions(node0);
 
 		var lambdaByFunp = new IdentityHashMap<Funp, FunpLambda>();
@@ -177,8 +179,7 @@ public class P2InferType {
 
 			private Funp a(Funp node) {
 				return inspect.rewrite(node, Funp.class, n -> {
-					if (lambda != null)
-						lambdaByFunp.put(n, lambda);
+					lambdaByFunp.put(n, lambda);
 					return n.cast(FunpLambda.class, f -> f.apply((var, expr) -> {
 						new AssociateLambda(f).a(expr);
 						return f;
@@ -188,12 +189,11 @@ public class P2InferType {
 		}
 
 		if (Boolean.FALSE) // perform capture?
-			new AssociateLambda(null).a(node0);
+			new AssociateLambda(grandLambda).a(node0);
 
 		var lambdaByVar = Read //
 				.from2(defByVars) //
 				.mapValue(def -> def instanceof FunpLambda ? (FunpLambda) def : lambdaByFunp.get(def)) //
-				.filterValue(lambda -> lambda != null) //
 				.toMap();
 
 		var lambdas = Read.from2(lambdaByFunp).values().distinct();
@@ -212,14 +212,13 @@ public class P2InferType {
 						var lambdaVar = lambdaByVar.get(var);
 
 						new Object() {
-							private void r(FunpVariable var_, FunpLambda lambda_) {
-								if (lambda_ != lambdaVar) {
-									var parent = lambdaByFunp.get(lambda_);
-									r(capByLambda.get(parent), lambda_);
+							private void r(FunpLambda lambda_) {
+								if (lambda_ != grandLambda && lambda_ != lambdaVar) {
+									map.put(var, lambda_);
+									r(lambdaByFunp.get(lambda_));
 								}
-								map.put(var_, lambda_);
 							}
-						}.r(var, lambda);
+						}.r(lambda);
 
 						return null;
 					};
@@ -228,9 +227,7 @@ public class P2InferType {
 					).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
 						return reg.apply(refLambdaByVar, var);
 					})).applyIf(FunpReference.class, f -> f.apply(expr -> {
-						return expr.cast(FunpVariable.class, var -> {
-							return reg.apply(refLambdaByVar, var);
-						});
+						return expr.cast(FunpVariable.class, var -> reg.apply(refLambdaByVar, var));
 					})).applyIf(FunpVariable.class, f -> {
 						return reg.apply(varLambdaByVar, f);
 					}).result();
@@ -255,20 +252,16 @@ public class P2InferType {
 
 		var accessors = Read //
 				.from2(lambdaByVar) //
-				.map2((var, lambda) -> var, (var, lambda) -> {
+				.map2((var, lambdaVar) -> {
+					var lambda = lambdaByFunp.get(var);
 					var vn = var.vn;
-					var lambdaVar = lambdaByVar.get(var);
 
-					var accessor = new Object() {
-						private Funp r(FunpLambda lambda_, String vn_) {
-							if (lambda_ != lambdaVar)
-								return FunpField.of(FunpReference.of(r(lambdaByFunp.get(lambda_), capnByLambda.get(lambda_))), vn_);
-							else
-								return FunpVariable.of(vn_);
-						}
-					}.r(lambda, vn);
-
-					return isRefByVarName.get(var.vn) == Boolean.TRUE ? FunpDeref.of(accessor) : accessor;
+					if (lambda == lambdaVar)
+						return FunpVariable.of(vn);
+					else {
+						var access = FunpField.of(FunpReference.of(capByLambda.get(lambda)), vn);
+						return isRefByVarName.get(vn) ? FunpDeref.of(access) : access;
+					}
 				}) //
 				.toMap();
 
@@ -280,8 +273,7 @@ public class P2InferType {
 			private Funp capture_(Funp n) {
 				return n.sw( //
 				).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-					var accessor = accessors.get(var);
-					return accessor != null ? FunpDoAssignRef.of(FunpReference.of(accessor), capture(value), capture(expr)) : null;
+					return FunpDoAssignRef.of(FunpReference.of(accessors.get(var)), capture(value), capture(expr));
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
 					var cap = capByLambda.get(f);
 					if (cap != null) {
@@ -293,8 +285,7 @@ public class P2InferType {
 					// TODO allocate cap on heap
 					// TODO free cap after use
 				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
-					var accessor = accessors.get(f);
-					return accessor != null ? accessor : null;
+					return accessors.get(f);
 				})).result();
 			}
 		}
@@ -681,15 +672,12 @@ public class P2InferType {
 				var offset = 0;
 				var struct = isCompletedStruct(ts);
 
-				if (struct != null)
-					for (var pair : struct) {
-						var type = pair.t1;
-						var offset0 = offset;
-						var name = Atom.name(pair.t0);
-						list.add(Pair.of(erase(values.get(name), name), IntIntPair.of(offset0, offset += getTypeSize(type))));
-					}
-				else
-					fail();
+				for (var pair : struct) {
+					var type = pair.t1;
+					var offset0 = offset;
+					var name = Atom.name(pair.t0);
+					list.add(Pair.of(erase(values.get(name), name), IntIntPair.of(offset0, offset += getTypeSize(type))));
+				}
 
 				return FunpData.of(list);
 			})).applyIf(FunpTag.class, f -> f.apply((id, tag, expr) -> {
