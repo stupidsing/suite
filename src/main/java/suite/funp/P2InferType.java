@@ -164,7 +164,7 @@ public class P2InferType {
 	}
 
 	private Funp captureLambdas(Funp node0) {
-		var defByVariables = Funp_.associateDefinitions(node0);
+		var defByVars = Funp_.associateDefinitions(node0);
 
 		var lambdaByFunp = new IdentityHashMap<Funp, FunpLambda>();
 
@@ -190,9 +190,15 @@ public class P2InferType {
 		if (Boolean.FALSE) // perform capture?
 			new AssociateLambda(null).a(node0);
 
+		var lambdaByVar = Read //
+				.from2(defByVars) //
+				.mapValue(def -> def instanceof FunpLambda ? (FunpLambda) def : lambdaByFunp.get(def)) //
+				.filterValue(lambda -> lambda != null) //
+				.toMap();
+
 		var lambdas = Read.from2(lambdaByFunp).values().distinct();
-		var capByLambda = lambdas.map2(l -> "cap$" + Util.temp()).mapValue(FunpVariable::of).toMap();
-		var refCapByLambda = Read.from2(capByLambda).mapValue(FunpReference::of).toMap();
+		var capnByLambda = lambdas.map2(l -> "cap$" + Util.temp()).toMap();
+		var capByLambda = Read.from2(capnByLambda).mapValue(FunpVariable::of).toMap();
 
 		var refLambdaByVar = new IdentityHashMap<FunpVariable, FunpLambda>();
 		var varLambdaByVar = new IdentityHashMap<FunpVariable, FunpLambda>();
@@ -203,9 +209,18 @@ public class P2InferType {
 					var lambda = lambdaByFunp.get(n);
 
 					Fun2<Map<FunpVariable, FunpLambda>, FunpVariable, Funp> reg = (map, var) -> {
-						var lambda_ = defByVariables.get(var);
-						if (lambda != null && lambda_ != lambda && lambdaByFunp.get(lambda_) != lambda)
-							map.put(var, lambda);
+						var lambdaVar = lambdaByVar.get(var);
+
+						new Object() {
+							private void r(FunpVariable var_, FunpLambda lambda_) {
+								if (lambda_ != lambdaVar) {
+									var parent = lambdaByFunp.get(lambda_);
+									r(capByLambda.get(parent), lambda_);
+								}
+								map.put(var_, lambda_);
+							}
+						}.r(var, lambda);
+
 						return null;
 					};
 
@@ -224,28 +239,38 @@ public class P2InferType {
 		}.associate(node0);
 
 		var capturesByLambda = lambdas.map2(l -> new ArrayList<Pair<String, Funp>>()).toMap();
-		var accessors = new IdentityHashMap<FunpVariable, Funp>();
-		var set = new HashMap<String, Boolean>();
+		var isRefByVarName = new HashMap<String, Boolean>();
 
 		refLambdaByVar.forEach((var, lambda) -> {
 			var vn = var.vn;
-			if (set.putIfAbsent(vn, true) == null)
+			if (isRefByVarName.putIfAbsent(vn, true) == null)
 				capturesByLambda.get(lambda).add(Pair.of(vn, FunpReference.of(var)));
 		});
 
 		varLambdaByVar.forEach((var, lambda) -> {
 			var vn = var.vn;
-			if (set.putIfAbsent(vn, false) == null)
+			if (isRefByVarName.putIfAbsent(vn, false) == null)
 				capturesByLambda.get(lambda).add(Pair.of(vn, var));
 		});
 
-		Streamlet2 //
-				.concat(Read.from2(refLambdaByVar), Read.from2(varLambdaByVar)) //
-				.sink((var, lambda) -> {
+		var accessors = Read //
+				.from2(lambdaByVar) //
+				.map2((var, lambda) -> var, (var, lambda) -> {
 					var vn = var.vn;
-					var field = FunpField.of(refCapByLambda.get(lambda), vn);
-					accessors.put(var, set.get(vn) ? FunpDeref.of(field) : field);
-				});
+					var lambdaVar = lambdaByVar.get(var);
+
+					var accessor = new Object() {
+						private Funp r(FunpLambda lambda_, String vn_) {
+							if (lambda_ != lambdaVar)
+								return FunpField.of(FunpReference.of(r(lambdaByFunp.get(lambda_), capnByLambda.get(lambda_))), vn_);
+							else
+								return FunpVariable.of(vn_);
+						}
+					}.r(lambda, vn);
+
+					return isRefByVarName.get(var.vn) == Boolean.TRUE ? FunpDeref.of(accessor) : accessor;
+				}) //
+				.toMap();
 
 		class Capture {
 			private Funp capture(Funp n) {
@@ -482,7 +507,6 @@ public class P2InferType {
 		}
 
 		private Node getVariable(FunpVariable var) {
-			System.out.println("J " + var.vn);
 			return env.get(var.vn).map((type, tv) -> type == Fdt.L_POLY ? cloneType(tv) : tv);
 		}
 
@@ -765,6 +789,7 @@ public class P2InferType {
 					})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 						return erase(pointer);
 					})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
+						System.out.println(vn);
 						var m = env.get(vn).getMemory(scope);
 						return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
 					})).applyIf(Funp.class, f -> {

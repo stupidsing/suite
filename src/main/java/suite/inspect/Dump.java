@@ -44,7 +44,7 @@ public class Dump {
 					if (last == ',')
 						return ParseUtil.splitn(s, ",", Assoc.RIGHT).concatMap(s_ -> split(indent, s_, ","));
 
-					for (var pair : List.of("[]", "{}")) {
+					for (var pair : List.of("[]", "{}", "<>")) {
 						var open = pair.charAt(0);
 						var close = pair.charAt(1);
 						int pos = s.indexOf(open);
