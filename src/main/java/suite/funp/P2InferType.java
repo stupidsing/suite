@@ -149,8 +149,8 @@ public class P2InferType {
 			private Funp extract(Funp n) {
 				return inspect.rewrite(n, Funp.class, n_ -> {
 					return n_.sw( //
-					).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-						return FunpLambda.of(var, extractPredefine(expr));
+					).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
+						return FunpLambda.of(vn, extractPredefine(expr));
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
 						var vn = "predefine$" + Util.temp();
 						var var = FunpVariable.of(vn);
@@ -189,9 +189,9 @@ public class P2InferType {
 					var c1 = new Capture(accesses, vns1);
 					var pairs1 = pairs_.map(pair -> Pair.of(pair.t0, c1.capture(pair.t1))).toList();
 					return FunpDefineRec.of(pairs1, c1.capture(expr));
-				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
 					if (Boolean.TRUE) // perform capture?
-						return FunpLambda.of(var, new Capture(accesses, vns.replace(var)).capture(expr));
+						return FunpLambda.of(vn, new Capture(accesses, vns.replace(vn)).capture(expr));
 					else {
 						var locals1 = ISet.<String> empty();
 						var capn = "cap$" + Util.temp();
@@ -205,9 +205,9 @@ public class P2InferType {
 							if (set.add(v))
 								list.add(Pair.of(v, getVariable(v)));
 							return FunpField.of(ref, v);
-						}, locals1.add(capn).add(var));
+						}, locals1.add(capn).add(vn));
 
-						return FunpDefine.of(Fdt.GLOB, capn, struct, FunpLambdaCapture.of(var, capn, cap, c1.capture(expr)));
+						return FunpDefine.of(Fdt.GLOB, capn, struct, FunpLambdaCapture.of(vn, capn, cap, c1.capture(expr)));
 					}
 
 					// TODO allocate cap on heap
@@ -353,15 +353,15 @@ public class P2InferType {
 				unify(n, typeRefOf(typeArrayOf(null, te)), infer(reference));
 				unify(n, typeNumber, infer(index));
 				return te;
-			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
 				var tv = new Reference();
-				return typeLambdaOf(tv, newEnv(env.replace(var, Pair.of(Fdt.L_MONO, tv))).infer(expr));
-			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
+				return typeLambdaOf(tv, newEnv(env.replace(vn, Pair.of(Fdt.L_MONO, tv))).infer(expr));
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((vn, capn, cap, expr) -> {
 				var tv = new Reference();
 				var env0 = IMap.<String, Pair<Fdt, Node>> empty();
 				var env1 = env0 //
 						.replace(capn, Pair.of(Fdt.L_MONO, infer(cap))) //
-						.replace(var, Pair.of(Fdt.L_MONO, tv));
+						.replace(vn, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, newEnv(env1).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
 				return typeNumber;
