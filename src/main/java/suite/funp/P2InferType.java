@@ -191,8 +191,7 @@ public class P2InferType {
 			new AssociateLambda(null).a(node0);
 
 		var lambdas = Read.from2(lambdaByFunp).values().distinct();
-		var capnByLambda = lambdas.map2(l -> "cap$" + Util.temp()).toMap();
-		var capByLambda = Read.from2(capnByLambda).mapValue(FunpVariable::of).toMap();
+		var capByLambda = lambdas.map2(l -> "cap$" + Util.temp()).mapValue(FunpVariable::of).toMap();
 		var refCapByLambda = Read.from2(capByLambda).mapValue(FunpReference::of).toMap();
 
 		var refLambdaByVar = new IdentityHashMap<FunpVariable, FunpLambda>();
@@ -260,10 +259,9 @@ public class P2InferType {
 					return accessor != null ? FunpDoAssignRef.of(FunpReference.of(accessor), capture(value), capture(expr)) : null;
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
 					var cap = capByLambda.get(f);
-					var capn = capnByLambda.get(f);
 					if (cap != null) {
 						var struct = FunpStruct.of(capturesByLambda.get(f));
-						return FunpDefine.of(Fdt.GLOB, capn, struct, FunpLambdaCapture.of(vn, cap, capture(expr)));
+						return FunpDefine.of(Fdt.GLOB, cap.vn, struct, FunpLambdaCapture.of(vn, cap, capture(expr)));
 					} else
 						return null;
 
