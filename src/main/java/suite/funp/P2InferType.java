@@ -764,8 +764,8 @@ public class P2InferType {
 						return assign(getVariable(var), erase(value), getAddress(expr));
 					})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 						return erase(pointer);
-					})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-						var m = env.get(var).getMemory(scope);
+					})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
+						var m = env.get(vn).getMemory(scope);
 						return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
 					})).applyIf(Funp.class, f -> {
 						return Funp_.fail("requires pre-definition: " + f);
