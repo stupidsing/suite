@@ -123,10 +123,10 @@ public class P0Parse {
 	}
 
 	private class Parse {
-		private ISet<String> variables;
+		private ISet<String> vns;
 
-		private Parse(ISet<String> variables) {
-			this.variables = variables;
+		private Parse(ISet<String> vns) {
+			this.vns = vns;
 		}
 
 		private Funp p(Node node) {
@@ -137,7 +137,7 @@ public class P0Parse {
 				var vn = a instanceof Atom ? Atom.name(a) : null;
 				var m = Suite.pattern("[.0]").match(b);
 				var isIndex = m != null && 0 < m.length && !isList(m[0]);
-				return vn != null && variables.contains(vn) && !isIndex ? FunpApply.of(p(b), p(a)) : null;
+				return vn != null && vns.contains(vn) && !isIndex ? FunpApply.of(p(b), p(a)) : null;
 			}).match(".0 [.1]", (a, b) -> {
 				return !isList(b) ? FunpIndex.of(FunpReference.of(p(a)), p(b)) : null;
 			}).match(".0 => .1", (a, b) -> {
@@ -201,8 +201,8 @@ public class P0Parse {
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("define { .0 } ~ .1", (a, b) -> {
 				var list = kvs(a).collect();
-				var variables1 = list.fold(variables, (vs, pair) -> vs.add(pair.t0));
-				var p1 = new Parse(variables1);
+				var vns1 = list.fold(vns, (vs, pair) -> vs.add(pair.t0));
+				var p1 = new Parse(vns1);
 				return FunpDefineRec.of(list //
 						.map(pair -> Pair.of(pair.t0, p1.p(pair.t1))) //
 						.toList(), p1.p(b));
@@ -253,7 +253,7 @@ public class P0Parse {
 				return FunpDefine.of(Fdt.VIRT, Atom.name(a), value, p(c));
 			}).applyIf(Atom.class, atom -> {
 				var vn = atom.name;
-				return variables.contains(vn) ? FunpVariable.of(vn) : FunpVariableNew.of(vn);
+				return vns.contains(vn) ? FunpVariable.of(vn) : FunpVariableNew.of(vn);
 			}).applyIf(Int.class, n -> {
 				return FunpNumber.ofNumber(n.number);
 			}).applyIf(Str.class, str -> {
@@ -291,7 +291,7 @@ public class P0Parse {
 		}
 
 		private boolean isDo() {
-			return variables.contains(doToken);
+			return vns.contains(doToken);
 		}
 
 		private Streamlet<Pair<String, Node>> kvs(Node node) {
@@ -317,7 +317,7 @@ public class P0Parse {
 		private FunpLambda lambda(Node a, Node b, boolean isAllowDo) {
 			var isVar = isVar(a);
 			var vn = isVar ? Atom.name(a) : "l$" + Util.temp();
-			var nv = isAllowDo ? nv(vn) : new Parse(variables.replace(vn).remove(doToken));
+			var nv = isAllowDo ? nv(vn) : new Parse(vns.replace(vn).remove(doToken));
 			var f = isVar ? nv.p(b) : nv.bind(a, Atom.of(vn), b);
 			return FunpLambda.of(vn, f);
 		}
@@ -337,21 +337,21 @@ public class P0Parse {
 		}
 
 		private Funp bind(Node a, Node b, Node c, Node d) {
-			var varsMutable = Mutable.of(ISet.<String> empty());
+			var vnsMutable = Mutable.of(ISet.<String> empty());
 
-			Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class, n_ -> n_.cast(FunpVariableNew.class, f -> f.apply(var -> {
-				varsMutable.update(varsMutable.get().replace(var));
-				return FunpVariable.of(var);
+			Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class, n_ -> n_.cast(FunpVariableNew.class, f -> f.apply(vn -> {
+				vnsMutable.update(vnsMutable.get().replace(vn));
+				return FunpVariable.of(vn);
 			})));
 
 			var be = iter.apply(p(a));
-			var vars = varsMutable.get();
+			var vns = vnsMutable.get();
 			var value = p(b);
-			var then = new Parse(vars.streamlet().fold(variables, ISet::add)).p(c);
+			var then = new Parse(vns.streamlet().fold(vns, ISet::add)).p(c);
 			var else_ = p(d);
-			var f0 = new Bind(vars).bind(be, value, then, else_);
+			var f0 = new Bind(vns).bind(be, value, then, else_);
 			var f1 = FunpCheckType.of(be, value, f0);
-			return vars.streamlet().<Funp> fold(f1, (f, var) -> FunpDefine.of(Fdt.L_MONO, var, FunpDontCare.of(), f));
+			return vns.streamlet().<Funp> fold(f1, (f, vn) -> FunpDefine.of(Fdt.L_MONO, vn, FunpDontCare.of(), f));
 		}
 
 		private boolean isList(Node l) {
@@ -363,16 +363,16 @@ public class P0Parse {
 			return v != dontCare && v instanceof Atom;
 		}
 
-		private Parse nv(String var) {
-			return new Parse(variables.replace(var));
+		private Parse nv(String vn) {
+			return new Parse(vns.replace(vn));
 		}
 	}
 
 	private class Bind {
-		private ISet<String> variables;
+		private ISet<String> vns;
 
-		private Bind(ISet<String> variables) {
-			this.variables = variables;
+		private Bind(ISet<String> vns) {
+			this.vns = vns;
 		}
 
 		private Funp bind(Funp be, Funp value, Funp then, Funp else_) {
@@ -430,7 +430,7 @@ public class P0Parse {
 						return FunpIf.of(FunpTree.of(TermOp.EQUAL_, FunpNumber.of(id), FunpTagId.of(ref)), bind, else_);
 					}).result();
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-					return variables.contains(var) ? FunpDoAssignVar.of(f, value, then) : be;
+					return vns.contains(var) ? FunpDoAssignVar.of(f, value, then) : be;
 				})).result();
 
 				return result != null ? result : FunpIf.of(FunpTree.of(TermOp.EQUAL_, be, value), then, else_);
