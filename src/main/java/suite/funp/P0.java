@@ -115,21 +115,21 @@ public class P0 {
 		};
 
 		public Fdt type;
-		public String var;
+		public String vn;
 		public Funp value;
 		public Funp expr;
 
-		public static FunpDefine of(Fdt type, String var, Funp value, Funp expr) {
+		public static FunpDefine of(Fdt type, String vn, Funp value, Funp expr) {
 			var f = new FunpDefine();
 			f.type = type;
-			f.var = var;
+			f.vn = vn;
 			f.value = value;
 			f.expr = expr;
 			return f;
 		}
 
 		public <R> R apply(FixieFun4<Fdt, String, Funp, Funp, R> fun) {
-			return fun.apply(type, var, value, expr);
+			return fun.apply(type, vn, value, expr);
 		}
 	}
 
@@ -350,18 +350,18 @@ public class P0 {
 	}
 
 	public static class FunpLambda implements Funp, P2.End {
-		public String var;
+		public String vn;
 		public Funp expr;
 
-		public static FunpLambda of(String var, Funp expr) {
+		public static FunpLambda of(String vn, Funp expr) {
 			var f = new FunpLambda();
-			f.var = var;
+			f.vn = vn;
 			f.expr = expr;
 			return f;
 		}
 
 		public <R> R apply(FixieFun2<String, Funp, R> fun) {
-			return fun.apply(var, expr);
+			return fun.apply(vn, expr);
 		}
 	}
 
@@ -551,30 +551,30 @@ public class P0 {
 	}
 
 	public static class FunpVariable implements Funp, P2.End {
-		public String var;
+		public String vn;
 
-		public static FunpVariable of(String var) {
+		public static FunpVariable of(String vn) {
 			var f = new FunpVariable();
-			f.var = var;
+			f.vn = vn;
 			return f;
 		};
 
 		public <R> R apply(FixieFun1<String, R> fun) {
-			return fun.apply(var);
+			return fun.apply(vn);
 		}
 	}
 
 	public static class FunpVariableNew implements Funp, P2.End {
-		public String var;
+		public String vn;
 
-		public static FunpVariableNew of(String var) {
+		public static FunpVariableNew of(String vn) {
 			var f = new FunpVariableNew();
-			f.var = var;
+			f.vn = vn;
 			return f;
 		};
 
 		public <R> R apply(FixieFun1<String, R> fun) {
-			return fun.apply(var);
+			return fun.apply(vn);
 		}
 	}
 
