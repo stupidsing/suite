@@ -3,17 +3,23 @@ package suite.inspect;
 import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
 import suite.adt.pair.Pair;
 import suite.node.Tree;
+import suite.node.io.Operator.Assoc;
 import suite.node.util.Singleton;
 import suite.object.MapInterface;
 import suite.object.MapObject_;
 import suite.os.LogUtil;
+import suite.streamlet.As;
 import suite.streamlet.FunUtil.Sink;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.ParseUtil;
+import suite.util.String_;
 import suite.util.Switch;
 import suite.util.Thread_;
 import suite.util.Util;
@@ -25,6 +31,39 @@ public class Dump {
 	public static <T> T t(T t) {
 		details(t);
 		return t;
+	}
+
+	public static void lines(Object node) {
+		var string = toLine(node);
+
+		var lines = new Object() {
+			private Streamlet<String> split(String indent, String s, String tail) {
+				if (80 <= s.length()) {
+					var last = s.charAt(s.length() - 1);
+
+					if (last == ',')
+						return ParseUtil.splitn(s, ",", Assoc.RIGHT).concatMap(s_ -> split(indent, s_, ","));
+
+					for (var pair : List.of("[]", "{}")) {
+						var open = pair.charAt(0);
+						var close = pair.charAt(1);
+						int pos = s.indexOf(open);
+
+						if (last == close && 0 <= pos) {
+							var left = String_.left(s, pos);
+							var right = String_.range(s, pos + 1, -1);
+							return Streamlet.concat( //
+									Read.each(indent + left + open), //
+									split(indent + "  ", right, last + tail), //
+									Read.each(indent + last));
+						}
+					}
+				}
+				return Read.each(indent + s + tail);
+			}
+		}.split("\n", string, "");
+
+		LogUtil.info(lines.collect(As::joined));
 	}
 
 	public static void line(Object node) {

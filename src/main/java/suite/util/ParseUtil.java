@@ -16,14 +16,14 @@ import suite.text.Segment;
 public class ParseUtil {
 
 	public static FixieArray<String> fit(String in, String... parts) {
-		return fit(in, s -> s, parts);
+		return fit(in, parts, s -> s);
 	}
 
 	public static FixieArray<String> fitCaseInsensitive(String in, String... parts) {
-		return fit(in, String::toLowerCase, parts);
+		return fit(in, parts, String::toLowerCase);
 	}
 
-	public static FixieArray<String> fit(String in, Iterate<String> lower, String... parts) {
+	private static FixieArray<String> fit(String in, String[] parts, Iterate<String> lower) {
 		var outs = new ArrayList<String>();
 		var inl = lower.apply(in);
 		var p = 0;
