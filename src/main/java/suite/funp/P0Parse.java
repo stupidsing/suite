@@ -345,13 +345,13 @@ public class P0Parse {
 			})));
 
 			var be = iter.apply(p(a));
-			var vns = vnsMutable.get();
+			var vns_ = vnsMutable.get();
 			var value = p(b);
-			var then = new Parse(vns.streamlet().fold(vns, ISet::add)).p(c);
+			var then = new Parse(vns_.streamlet().fold(vns, ISet::add)).p(c);
 			var else_ = p(d);
-			var f0 = new Bind(vns).bind(be, value, then, else_);
+			var f0 = new Bind(vns_).bind(be, value, then, else_);
 			var f1 = FunpCheckType.of(be, value, f0);
-			return vns.streamlet().<Funp> fold(f1, (f, vn) -> FunpDefine.of(Fdt.L_MONO, vn, FunpDontCare.of(), f));
+			return vns_.streamlet().<Funp> fold(f1, (f, vn) -> FunpDefine.of(Fdt.L_MONO, vn, FunpDontCare.of(), f));
 		}
 
 		private boolean isList(Node l) {
