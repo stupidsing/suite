@@ -72,6 +72,7 @@ import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters;
 import suite.immutable.IMap;
+import suite.inspect.Dump;
 import suite.inspect.Inspect;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -127,6 +128,7 @@ public class P2InferType {
 	public Funp infer(Funp n0) {
 		var t = new Reference();
 		var n1 = extractPredefine(n0);
+		Dump.lines(n1);
 		var n2 = captureLambdas(n1);
 		var checks = new ArrayList<Source<Boolean>>();
 
@@ -164,6 +166,8 @@ public class P2InferType {
 	}
 
 	private Funp captureLambdas(Funp node0) {
+		var defByVariables = Funp_.associateDefinitions(node0);
+
 		var lambdaByFunp = new IdentityHashMap<Funp, FunpLambda>();
 
 		class AssociateLambda {
@@ -200,10 +204,10 @@ public class P2InferType {
 			private Funp associate(Funp node) {
 				return inspect.rewrite(node, Funp.class, n -> {
 					var lambda = lambdaByFunp.get(n);
-					var lambdaVn = lambda != null ? lambda.vn : null;
 
 					Fun2<Map<FunpVariable, FunpLambda>, FunpVariable, Funp> reg = (map, var) -> {
-						if (lambda != null && !String_.equals(var.vn, lambdaVn))
+						var lambda_ = defByVariables.get(var);
+						if (lambda != null && lambda_ != lambda && lambdaByFunp.get(lambda_) != lambda)
 							map.put(var, lambda);
 						return null;
 					};
@@ -482,6 +486,7 @@ public class P2InferType {
 		}
 
 		private Node getVariable(FunpVariable var) {
+			System.out.println("J " + var.vn);
 			return env.get(var.vn).map((type, tv) -> type == Fdt.L_POLY ? cloneType(tv) : tv);
 		}
 

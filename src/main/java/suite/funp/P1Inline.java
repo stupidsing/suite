@@ -3,8 +3,6 @@ package suite.funp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
 
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
@@ -145,7 +143,7 @@ public class P1Inline {
 	// Before - expand i := 1 ~ i + i
 	// After - 1 + 1
 	private Funp inlineDefines(Funp node) {
-		var defByVariables = associateDefinitions(node);
+		var defByVariables = Funp_.associateDefinitions(node);
 		var countByDefs = new HashMap<Funp, IntMutable>();
 
 		new Object() {
@@ -199,7 +197,7 @@ public class P1Inline {
 	// Before - define s := (struct (a 1, b 2, c 3,)) ~ s/c
 	// After - 3
 	private Funp inlineFields(Funp node) {
-		var defs = associateDefinitions(node);
+		var defs = Funp_.associateDefinitions(node);
 
 		return new Object() {
 			private Funp inline(Funp node_) {
@@ -240,7 +238,7 @@ public class P1Inline {
 	// Before - define s := t:3 ~ if (`t:v` = s) then v else 0
 	// After - 3
 	private Funp inlineTags(Funp node) {
-		var defs = associateDefinitions(node);
+		var defs = Funp_.associateDefinitions(node);
 
 		return new Object() {
 			private Funp inline(Funp node_) {
@@ -262,35 +260,6 @@ public class P1Inline {
 				});
 			}
 		}.inline(node);
-	}
-
-	private Map<FunpVariable, Funp> associateDefinitions(Funp node) {
-		var defByVariables = new IdentityHashMap<FunpVariable, Funp>();
-
-		new Object() {
-			private Funp associate(IMap<String, Funp> vars, Funp node_) {
-				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpDefine.class, f -> f.apply((type, vn, value, expr) -> {
-					associate(vars, value);
-					associate(vars.replace(vn, f), expr);
-					return n_;
-				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-					var vars1 = Read.from(pairs).fold(vars, (vs, pair) -> vs.replace(pair.t0, f));
-					for (var pair : pairs)
-						associate(vars1, pair.t1);
-					associate(vars1, expr);
-					return n_;
-				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
-					associate(vars.replace(vn, f), expr);
-					return n_;
-				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
-					defByVariables.put(f, vars.get(vn));
-					return n_;
-				})).result());
-			}
-		}.associate(IMap.empty(), node);
-
-		return defByVariables;
 	}
 
 }

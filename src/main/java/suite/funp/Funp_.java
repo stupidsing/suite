@@ -1,15 +1,25 @@
 package suite.funp;
 
+import java.util.IdentityHashMap;
 import java.util.List;
+import java.util.Map;
 
 import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Instruction;
+import suite.funp.P0.FunpDefine;
+import suite.funp.P0.FunpDefineRec;
+import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpVariable;
 import suite.funp.P2.FunpFramePointer;
+import suite.immutable.IMap;
+import suite.inspect.Inspect;
 import suite.node.Node;
+import suite.node.util.Singleton;
 import suite.object.AutoInterface;
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Source;
+import suite.streamlet.Read;
 
 public class Funp_ {
 
@@ -19,6 +29,8 @@ public class Funp_ {
 	public static Funp framePointer = new FunpFramePointer();
 
 	private boolean isOptimize;
+
+	private static Inspect inspect = Singleton.me.inspect;
 
 	public interface Funp extends AutoInterface<Funp> {
 	}
@@ -67,6 +79,35 @@ public class Funp_ {
 			p2.infer(f0);
 			return p2g.eval(f0);
 		}
+	}
+
+	public static Map<FunpVariable, Funp> associateDefinitions(Funp node) {
+		var defByVariables = new IdentityHashMap<FunpVariable, Funp>();
+
+		new Object() {
+			private Funp associate(IMap<String, Funp> vars, Funp node_) {
+				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
+				).applyIf(FunpDefine.class, f -> f.apply((type, vn, value, expr) -> {
+					associate(vars, value);
+					associate(vars.replace(vn, f), expr);
+					return n_;
+				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+					var vars1 = Read.from(pairs).fold(vars, (vs, pair) -> vs.replace(pair.t0, f));
+					for (var pair : pairs)
+						associate(vars1, pair.t1);
+					associate(vars1, expr);
+					return n_;
+				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
+					associate(vars.replace(vn, f), expr);
+					return n_;
+				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
+					defByVariables.put(f, vars.get(vn));
+					return n_;
+				})).result());
+			}
+		}.associate(IMap.empty(), node);
+
+		return defByVariables;
 	}
 
 	public static <T> T rethrow(String in, Source<T> source) {
