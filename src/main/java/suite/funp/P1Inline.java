@@ -53,14 +53,14 @@ public class P1Inline {
 	// Before - v => v => v
 	// After - v => v$1 => v$1
 	private Funp renameVariables(Funp node) {
-		var vars = new HashSet<>();
+		var vns = new HashSet<>();
 
-		Iterate<String> newVar = var -> {
-			var var1 = var.split("\\$")[0];
+		Iterate<String> newVarName = vn -> {
+			var vn1 = vn.split("\\$")[0];
 			var i = 0;
-			while (!vars.add(var1))
-				var1 = var + "$" + i++;
-			return var1;
+			while (!vns.add(vn1))
+				vn1 = vn + "$" + i++;
+			return vn1;
 		};
 
 		class Rename {
@@ -73,11 +73,11 @@ public class P1Inline {
 			private Funp rename(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((type, vn0, value, expr) -> {
-					var vn1 = newVar.apply(vn0);
+					var vn1 = newVarName.apply(vn0);
 					var r1 = new Rename(vns.replace(vn0, vn1));
 					return FunpDefine.of(type, vn1, rename(value), r1.rename(expr));
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
-					var vns1 = Read.from(pairs0).fold(vns, (vs, pair) -> vs.replace(pair.t0, newVar.apply(pair.t0)));
+					var vns1 = Read.from(pairs0).fold(vns, (vs, pair) -> vs.replace(pair.t0, newVarName.apply(pair.t0)));
 					var r1 = new Rename(vns1);
 					return FunpDefineRec.of(Read //
 							.from2(pairs0) //
@@ -85,7 +85,7 @@ public class P1Inline {
 							.toList(), //
 							r1.rename(expr));
 				})).applyIf(FunpLambda.class, f -> f.apply((vn0, expr) -> {
-					var vn1 = newVar.apply(vn0);
+					var vn1 = newVarName.apply(vn0);
 					var r1 = new Rename(vns.replace(vn0, vn1));
 					return FunpLambda.of(vn1, r1.rename(expr));
 				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
@@ -124,9 +124,9 @@ public class P1Inline {
 						var n2 = check != null ? FunpCheckType.of(check.left, check.right, n1) : n1;
 						var b = false;
 
-						for (var var_ : List_.reverse(vns))
-							if (!String_.equals(vn, var_))
-								n2 = FunpDefine.of(Fdt.L_MONO, var_, FunpDontCare.of(), n2);
+						for (var vn_ : List_.reverse(vns))
+							if (!String_.equals(vn, vn_))
+								n2 = FunpDefine.of(Fdt.L_MONO, vn_, FunpDontCare.of(), n2);
 							else
 								b = true;
 
@@ -270,9 +270,9 @@ public class P1Inline {
 		new Object() {
 			private Funp associate(IMap<String, Funp> vars, Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
+				).applyIf(FunpDefine.class, f -> f.apply((type, vn, value, expr) -> {
 					associate(vars, value);
-					associate(vars.replace(var, f), expr);
+					associate(vars.replace(vn, f), expr);
 					return n_;
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 					var vars1 = Read.from(pairs).fold(vars, (vs, pair) -> vs.replace(pair.t0, f));
@@ -280,11 +280,11 @@ public class P1Inline {
 						associate(vars1, pair.t1);
 					associate(vars1, expr);
 					return n_;
-				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
-					associate(vars.replace(var, f), expr);
+				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
+					associate(vars.replace(vn, f), expr);
 					return n_;
-				})).applyIf(FunpVariable.class, f -> f.apply(var -> {
-					defByVariables.put(f, vars.get(var));
+				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
+					defByVariables.put(f, vars.get(vn));
 					return n_;
 				})).result());
 			}

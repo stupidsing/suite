@@ -167,11 +167,11 @@ public class P2InferType {
 	private Funp captureLambdas(Funp node0) {
 		class Capture {
 			private Fun<String, Funp> accesses;
-			private ISet<String> vars;
+			private ISet<String> vns;
 
-			private Capture(Fun<String, Funp> accesses, ISet<String> vars) {
+			private Capture(Fun<String, Funp> accesses, ISet<String> vns) {
 				this.accesses = accesses;
-				this.vars = vars;
+				this.vns = vns;
 			}
 
 			private Funp capture(Funp n) {
@@ -180,17 +180,18 @@ public class P2InferType {
 
 			private Funp capture_(Funp n) {
 				return n.sw( //
-				).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
-					var c1 = new Capture(accesses, vars.add(var));
-					return FunpDefine.of(type, var, capture(value), c1.capture(expr));
-				})).applyIf(FunpDefineRec.class, f -> f.apply((vars_, expr) -> {
-					var vars1 = Read.from(vars_).fold(vars, (l, pair) -> l.add(pair.t0));
-					var c1 = new Capture(accesses, vars1);
-					var pairs1 = Read.from(vars_).map(pair -> Pair.of(pair.t0, c1.capture(pair.t1))).toList();
+				).applyIf(FunpDefine.class, f -> f.apply((type, vn, value, expr) -> {
+					var c1 = new Capture(accesses, vns.add(vn));
+					return FunpDefine.of(type, vn, capture(value), c1.capture(expr));
+				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+					var pairs_ = Read.from(pairs);
+					var vns1 = pairs_.fold(vns, (l, pair) -> l.add(pair.t0));
+					var c1 = new Capture(accesses, vns1);
+					var pairs1 = pairs_.map(pair -> Pair.of(pair.t0, c1.capture(pair.t1))).toList();
 					return FunpDefineRec.of(pairs1, c1.capture(expr));
 				})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
 					if (Boolean.TRUE) // perform capture?
-						return FunpLambda.of(var, new Capture(accesses, vars.replace(var)).capture(expr));
+						return FunpLambda.of(var, new Capture(accesses, vns.replace(var)).capture(expr));
 					else {
 						var locals1 = ISet.<String> empty();
 						var capn = "cap$" + Util.temp();
@@ -216,8 +217,8 @@ public class P2InferType {
 				})).result();
 			}
 
-			private Funp getVariable(String var) {
-				return vars.contains(var) ? FunpVariable.of(var) : accesses.apply(var);
+			private Funp getVariable(String vn) {
+				return vns.contains(vn) ? FunpVariable.of(vn) : accesses.apply(vn);
 			}
 
 		}
@@ -274,16 +275,16 @@ public class P2InferType {
 				};
 				unify(n, tf.apply(from), infer(expr));
 				return tf.apply(to);
-			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
-				var tvalue = infer(value, var);
-				return newEnv(env.replace(var, Pair.of(type, tvalue))).infer(expr);
+			})).applyIf(FunpDefine.class, f -> f.apply((type, vn, value, expr) -> {
+				var tvalue = infer(value, vn);
+				return newEnv(env.replace(vn, Pair.of(type, tvalue))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var pairs_ = Read.from(pairs);
 				var env1 = pairs_.fold(env, (e, pair) -> e.put(pair.t0, Pair.of(Fdt.L_MONO, new Reference())));
 				var infer1 = newEnv(env1);
 				for (var pair : pairs_) {
-					var var = pair.t0;
-					unify(n, env1.get(var).t1, infer1.infer(pair.t1, var));
+					var vn = pair.t0;
+					unify(n, env1.get(vn).t1, infer1.infer(pair.t1, vn));
 				}
 				return infer1.infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
@@ -424,8 +425,8 @@ public class P2InferType {
 				return typeNumber;
 			})).applyIf(FunpVariable.class, f -> {
 				return getVariable(f);
-			}).applyIf(FunpVariableNew.class, f -> f.apply(var -> {
-				return Funp_.fail("Undefined variable " + var);
+			}).applyIf(FunpVariableNew.class, f -> f.apply(vn -> {
+				return Funp_.fail("Undefined variable " + vn);
 			})).nonNullResult();
 		}
 
@@ -475,16 +476,16 @@ public class P2InferType {
 				return FunpData.of(list);
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
-			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
+			})).applyIf(FunpDefine.class, f -> f.apply((type, vn, value, expr) -> {
 				if (type == Fdt.GLOB) {
 					var size = getTypeSize(typeOf(value));
 					var address = Mutable.<Operand> nil();
-					var e1 = new Erase(scope, env.replace(var, new Var(address, 0, size)));
+					var e1 = new Erase(scope, env.replace(vn, new Var(address, 0, size)));
 					var m = FunpMemory.of(FunpOperand.of(address), 0, size);
-					var expr1 = FunpAssignMem.of(m, erase(value, var), e1.erase(expr));
-					return FunpAllocGlobal.of(var, size, expr1, address);
+					var expr1 = FunpAssignMem.of(m, erase(value, vn), e1.erase(expr));
+					return FunpAllocGlobal.of(vn, size, expr1, address);
 				} else if (type == Fdt.L_IOAP || type == Fdt.L_MONO || type == Fdt.L_POLY)
-					return defineLocal(f, var, value, expr);
+					return defineLocal(f, vn, value, expr);
 				else if (type == Fdt.VIRT)
 					return erase(expr);
 				else
@@ -563,21 +564,21 @@ public class P2InferType {
 				var inc = FunpTree.of(TermOp.MULT__, erase(index), FunpNumber.ofNumber(size));
 				var address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
-			})).applyIf(FunpLambda.class, f -> f.apply((var, expr) -> {
+			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
 				var b = ps + ps; // return address and EBP
 				var scope1 = scope + 1;
 				var lt = new LambdaType(n);
 				var frame = Funp_.framePointer;
-				var expr1 = new Erase(scope1, env.replace(var, new Var(scope1, IntMutable.of(0), b, b + lt.is))).erase(expr);
+				var expr1 = new Erase(scope1, env.replace(vn, new Var(scope1, IntMutable.of(0), b, b + lt.is))).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
-			})).applyIf(FunpLambdaCapture.class, f -> f.apply((var, capn, cap, expr) -> {
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((vn, capn, cap, expr) -> {
 				var b = ps + ps; // return address and EBP
 				var lt = new LambdaType(n);
 				var size = getTypeSize(typeOf(cap));
 				var env0 = IMap.<String, Var> empty();
 				var env1 = env0 //
 						.replace(capn, new Var(0, IntMutable.of(0), 0, size)) //
-						.replace(var, new Var(1, IntMutable.of(0), b, b + lt.is));
+						.replace(vn, new Var(1, IntMutable.of(0), b, b + lt.is));
 				var frame = FunpReference.of(erase(cap));
 				var expr1 = new Erase(1, env1).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
@@ -645,7 +646,7 @@ public class P2InferType {
 		private Funp applyOnce(Funp value, Funp lambda, int size) {
 			var lambda_ = lambda.cast(FunpLambda.class);
 			return lambda_ != null //
-					? lambda_.apply((var, expr) -> defineLocal(lambda, var, value, expr, size)) //
+					? lambda_.apply((vn, expr) -> defineLocal(lambda, vn, value, expr, size)) //
 					: apply(value, lambda, size);
 		}
 
@@ -672,21 +673,21 @@ public class P2InferType {
 					.nonNullResult();
 		}
 
-		private Funp defineLocal(Funp f, String var, Funp value, Funp expr) {
-			return defineLocal(f, var, erase(value, var), expr, getTypeSize(typeOf(value)));
+		private Funp defineLocal(Funp f, String vn, Funp value, Funp expr) {
+			return defineLocal(f, vn, erase(value, vn), expr, getTypeSize(typeOf(value)));
 		}
 
-		private Funp defineLocal(Funp f, String var, Funp value, Funp expr, int size) {
+		private Funp defineLocal(Funp f, String vn, Funp value, Funp expr, int size) {
 			var op = Mutable.<Operand> nil();
 			var offset = IntMutable.nil();
-			var vd = new Var(f, op, scope, offset, 0, size);
-			var expr1 = new Erase(scope, env.replace(var, vd)).erase(expr);
+			var var = new Var(f, op, scope, offset, 0, size);
+			var expr1 = new Erase(scope, env.replace(vn, var)).erase(expr);
 
 			// if erase is called twice,
 			// pass 1: check for any reference accesses to locals, set
 			// isRegByNode;
 			// pass 2: put locals to registers according to isRegByNode.
-			var n1 = vd.isReg() ? FunpAllocReg.of(size, value, expr1, op) : FunpAllocStack.of(size, value, expr1, offset);
+			var n1 = var.isReg() ? FunpAllocReg.of(size, value, expr1, op) : FunpAllocStack.of(size, value, expr1, offset);
 
 			isRegByNode.putIfAbsent(f, size == is);
 			return n1;

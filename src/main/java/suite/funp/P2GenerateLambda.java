@@ -130,17 +130,17 @@ public class P2GenerateLambda {
 				return rt -> b1;
 			})).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
 				return compile_(expr);
-			})).applyIf(FunpDefine.class, f -> f.apply((type, var, value, expr) -> {
-				return type == Fdt.L_MONO || type == Fdt.L_POLY ? compile_(FunpApply.of(value, FunpLambda.of(var, expr))) : null;
+			})).applyIf(FunpDefine.class, f -> f.apply((type, vn, value, expr) -> {
+				return type == Fdt.L_MONO || type == Fdt.L_POLY ? compile_(FunpApply.of(value, FunpLambda.of(vn, expr))) : null;
 			})).applyIf(FunpDeref.class, f -> {
 				var p = compile_(f);
 				return rt -> ((Ref) p.apply(rt)).v;
 			}).applyIf(FunpDoFold.class, f -> f.apply((init, cont, next) -> {
-				var var1 = "fold$" + Util.temp();
+				var vn1 = "fold$" + Util.temp();
 				var fs1 = fs + 1;
 				var init_ = compile_(init);
-				var var_ = FunpVariable.of(var1);
-				var compile1 = new Compile(fs1, env.replace(var1, fs1));
+				var var_ = FunpVariable.of(vn1);
+				var compile1 = new Compile(fs1, env.replace(vn1, fs1));
 				var cont_ = compile1.compile_(FunpApply.of(var_, cont));
 				var next_ = compile1.compile_(FunpApply.of(var_, next));
 				return rt -> {

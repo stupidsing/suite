@@ -44,15 +44,15 @@ public class P1ReduceTailCall {
 		});
 	}
 
-	private Funp rewriteTco(String lambdaVar, String vn, Funp do_) {
+	private Funp rewriteTco(String lambdaVn, String vn, Funp do_) {
 		var o = new Object() {
 			private boolean b = false;
 
 			private Funp tco(Funp do_) {
 				return new Switch<Funp>(do_ //
 				).applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
-					return lambda.cast(FunpVariable.class, g -> g.apply(var_ -> {
-						return String_.equals(lambdaVar, var_) ? cont(true, value, FunpDontCare.of()) : null;
+					return lambda.cast(FunpVariable.class, g -> g.apply(vn_ -> {
+						return String_.equals(lambdaVn, vn_) ? cont(true, value, FunpDontCare.of()) : null;
 					}));
 				})).applyIf(FunpIf.class, g -> g.apply((if_, then, else_) -> {
 					return FunpIf.of(if_, tco(then), tco(else_));
