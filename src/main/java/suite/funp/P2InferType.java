@@ -263,7 +263,7 @@ public class P2InferType {
 					var capn = capnByLambda.get(f);
 					if (cap != null) {
 						var struct = FunpStruct.of(capturesByLambda.get(f));
-						return FunpDefine.of(Fdt.GLOB, capn, struct, FunpLambdaCapture.of(vn, capn, cap, capture(expr)));
+						return FunpDefine.of(Fdt.GLOB, capn, struct, FunpLambdaCapture.of(vn, cap, capture(expr)));
 					} else
 						return null;
 
@@ -409,11 +409,11 @@ public class P2InferType {
 			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
 				var tv = new Reference();
 				return typeLambdaOf(tv, newEnv(env.replace(vn, Pair.of(Fdt.L_MONO, tv))).infer(expr));
-			})).applyIf(FunpLambdaCapture.class, f -> f.apply((vn, capn, cap, expr) -> {
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((vn, cap, expr) -> {
 				var tv = new Reference();
 				var env0 = IMap.<String, Pair<Fdt, Node>> empty();
 				var env1 = env0 //
-						.replace(capn, Pair.of(Fdt.L_MONO, infer(cap))) //
+						.replace(cap.vn, Pair.of(Fdt.L_MONO, infer(cap))) //
 						.replace(vn, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, newEnv(env1).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
@@ -625,13 +625,13 @@ public class P2InferType {
 				var frame = Funp_.framePointer;
 				var expr1 = new Erase(scope1, env.replace(vn, new Var(scope1, IntMutable.of(0), b, b + lt.is))).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
-			})).applyIf(FunpLambdaCapture.class, f -> f.apply((vn, capn, cap, expr) -> {
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((vn, cap, expr) -> {
 				var b = ps + ps; // return address and EBP
 				var lt = new LambdaType(n);
 				var size = getTypeSize(typeOf(cap));
 				var env0 = IMap.<String, Var> empty();
 				var env1 = env0 //
-						.replace(capn, new Var(0, IntMutable.of(0), 0, size)) //
+						.replace(cap.vn, new Var(0, IntMutable.of(0), 0, size)) //
 						.replace(vn, new Var(1, IntMutable.of(0), b, b + lt.is));
 				var frame = FunpReference.of(erase(cap));
 				var expr1 = new Erase(1, env1).erase(expr);

@@ -11,6 +11,7 @@ import suite.adt.pair.Fixie_.FixieFun4;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.FunpVariable;
 import suite.node.io.Operator;
 import suite.primitive.IntMutable;
 import suite.primitive.adt.pair.IntIntPair;
@@ -205,21 +206,19 @@ public class P2 {
 
 	public static class FunpLambdaCapture implements Funp, P2.End {
 		public String vn;
-		public String capn;
-		public Funp cap;
+		public FunpVariable cap;
 		public Funp expr;
 
-		public static FunpLambdaCapture of(String vn, String capn, Funp cap, Funp expr) {
+		public static FunpLambdaCapture of(String vn, FunpVariable cap, Funp expr) {
 			var f = new FunpLambdaCapture();
 			f.vn = vn;
-			f.capn = capn;
 			f.cap = cap;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun4<String, String, Funp, Funp, R> fun) {
-			return fun.apply(vn, capn, cap, expr);
+		public <R> R apply(FixieFun3<String, FunpVariable, Funp, R> fun) {
+			return fun.apply(vn, cap, expr);
 		}
 	}
 
