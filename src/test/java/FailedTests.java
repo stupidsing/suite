@@ -55,6 +55,11 @@ public class FailedTests {
 		Suite.noLibraries(() -> Suite.evaluateFun("use MONAD ~ 0", false));
 	}
 
+	@Test
+	public void testParse() {
+		Suite.parse(" test");
+	}
+
 	// unmatched types
 	@Test
 	public void testPrecompile() {

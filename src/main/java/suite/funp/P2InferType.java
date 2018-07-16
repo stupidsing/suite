@@ -206,18 +206,7 @@ public class P2InferType {
 			private Funp associate(Funp node) {
 				return inspect.rewrite(node, Funp.class, n -> {
 					Fun2<Map<FunpVariable, FunpLambda>, FunpVariable, Funp> reg = (map, var) -> {
-						var lambdaVar = lambdaByVar.get(var);
-						var lambda = lambdaByFunp.get(n);
-
-						new Object() {
-							private void r(FunpLambda lambda_) {
-								if (lambda_ != grandLambda && lambda_ != lambdaVar) {
-									map.put(var, lambda_);
-									r(lambdaByFunp.get(lambda_));
-								}
-							}
-						}.r(lambda);
-
+						map.put(var, lambdaByFunp.get(n));
 						return null;
 					};
 
@@ -233,33 +222,32 @@ public class P2InferType {
 			}
 		}.associate(node0);
 
+		var captureSetByLambda = lambdas.map2(l -> new HashSet<String>()).toMap();
 		var capturesByLambda = lambdas.map2(l -> new ArrayList<Pair<String, Funp>>()).toMap();
-		var isRefByVarName = new HashMap<String, Boolean>();
+		var isRefByVarName = Read.from2(refLambdaByVar).keys().map(var -> var.vn).toSet();
 
-		refLambdaByVar.forEach((var, lambda) -> {
+		Fun2<FunpVariable, FunpLambda, Funp> accessFun = (var, lambda) -> {
 			var vn = var.vn;
-			if (isRefByVarName.putIfAbsent(vn, true) == null)
-				capturesByLambda.get(lambda).add(Pair.of(vn, FunpReference.of(var)));
-		});
-
-		varLambdaByVar.forEach((var, lambda) -> {
-			var vn = var.vn;
-			if (isRefByVarName.putIfAbsent(vn, false) == null)
-				capturesByLambda.get(lambda).add(Pair.of(vn, var));
-		});
-
-		var accessors = Read //
-				.from2(lambdaByVar) //
-				.map2((var, lambdaVar) -> {
-					var lambda = lambdaByFunp.get(var);
-					var vn = var.vn;
-
-					if (lambda != lambdaVar) {
-						var access = FunpField.of(FunpReference.of(capByLambda.get(lambda)), vn);
-						return isRefByVarName.get(vn) ? FunpDeref.of(access) : access;
+			var isRef = isRefByVarName.contains(vn);
+			var lambdaVar = lambdaByVar.get(var);
+			var access = new Object() {
+				private Funp access(FunpLambda lambda_) {
+					if (lambda_ != lambdaVar) {
+						var parent = lambdaByFunp.get(lambda_);
+						if (captureSetByLambda.get(lambda_).add(vn))
+							capturesByLambda.get(lambda_).add(Pair.of(vn, access(parent)));
+						return FunpField.of(FunpReference.of(capByLambda.get(lambda_)), vn);
 					} else
-						return FunpVariable.of(vn);
-				}) //
+						return isRef ? FunpReference.of(var) : var;
+				}
+			}.access(lambda);
+			return isRef ? FunpDeref.of(access) : access;
+		};
+
+		var accessors = Streamlet2 //
+				.concat(Read.from2(refLambdaByVar), Read.from2(varLambdaByVar)) //
+				.distinct() //
+				.map2(accessFun) //
 				.toMap();
 
 		class Capture {
@@ -273,11 +261,8 @@ public class P2InferType {
 					return FunpDoAssignRef.of(FunpReference.of(accessors.get(var)), capture(value), capture(expr));
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
 					var cap = capByLambda.get(f);
-					if (cap != null) {
-						var struct = FunpStruct.of(capturesByLambda.get(f));
-						return FunpDefine.of(Fdt.GLOB, cap.vn, struct, FunpLambdaCapture.of(vn, cap, capture(expr)));
-					} else
-						return null;
+					var struct = FunpStruct.of(capturesByLambda.get(f));
+					return FunpDefine.of(Fdt.GLOB, cap.vn, struct, FunpLambdaCapture.of(vn, cap, capture(expr)));
 
 					// TODO allocate cap on heap
 					// TODO free cap after use
