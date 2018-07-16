@@ -146,4 +146,16 @@ define io.cat :=
 	)
 ~
 
-{ io.cat, io.mmap, io.munmap, io.read, io.write, }
+{
+	io.alloc,
+	io.cat,
+	io.dealloc,
+	io.get.char,
+	io.mmap,
+	io.munmap,
+	io.put.char,
+	io.put.number,
+	io.put.string,
+	io.read,
+	io.write,
+}
