@@ -72,7 +72,6 @@ import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters;
 import suite.immutable.IMap;
-import suite.inspect.Dump;
 import suite.inspect.Inspect;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -130,8 +129,6 @@ public class P2InferType {
 		var n1 = extractPredefine(n0);
 		var n2 = captureLambdas(n1);
 		var checks = new ArrayList<Source<Boolean>>();
-
-		Dump.lines(n2);
 
 		if (unify(t, new Infer(IMap.empty(), checks).infer(n2))) {
 			if (!Read.from(checks).isAll(Source<Boolean>::source))
