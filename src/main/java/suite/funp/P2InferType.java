@@ -823,7 +823,8 @@ public class P2InferType {
 			this(funp, null, operand, scope, offset, null, start, end);
 		}
 
-		private Var(int scope, IntMutable offset, int start, int end) { // local, stack
+		private Var(int scope, IntMutable offset, int start, int end) { // local,
+																		// stack
 			this(FunpDontCare.of(), null, null, scope, offset, null, start, end);
 		}
 
@@ -933,7 +934,8 @@ public class P2InferType {
 	}
 
 	private Node typeOf(Funp n) {
-		return typeByNode.get(n).finalNode();
+		var type = typeByNode.get(n);
+		return type != null ? type.finalNode() : fail("no type information of " + n);
 	}
 
 	private Node typeArrayOf(Integer size, Node b) {
