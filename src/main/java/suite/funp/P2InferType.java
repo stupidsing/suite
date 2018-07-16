@@ -736,19 +736,18 @@ public class P2InferType {
 		}
 
 		private Funp defineLocal(Funp f, String vn, Funp value, Funp expr, int size) {
-			var op = Mutable.<Operand> nil();
+			isRegByNode.putIfAbsent(f, size == is);
+
+			var operand = Mutable.<Operand> nil();
 			var offset = IntMutable.nil();
-			var var = new Var(f, op, scope, offset, 0, size);
+			var var = new Var(f, operand, scope, offset, 0, size);
 			var expr1 = new Erase(scope, env.replace(vn, var)).erase(expr);
 
 			// if erase is called twice,
 			// pass 1: check for any reference accesses to locals, set
 			// isRegByNode;
 			// pass 2: put locals to registers according to isRegByNode.
-			var n1 = var.isReg() ? FunpAllocReg.of(size, value, expr1, op) : FunpAllocStack.of(size, value, expr1, offset);
-
-			isRegByNode.putIfAbsent(f, size == is);
-			return n1;
+			return var.isReg() ? FunpAllocReg.of(size, value, expr1, operand) : FunpAllocStack.of(size, value, expr1, offset);
 		}
 
 		private Funp eraseRoutine(LambdaType lt, Funp frame, Funp expr) {
