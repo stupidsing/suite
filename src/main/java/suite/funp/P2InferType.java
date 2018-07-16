@@ -111,6 +111,7 @@ public class P2InferType {
 
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
+	private int maxRegAlloc = 2;
 
 	private Node typeBoolean = Atom.of("BOOLEAN");
 	private Node typeByte = Atom.of("BYTE");
@@ -747,6 +748,22 @@ public class P2InferType {
 			var offset = IntMutable.nil();
 			var var = new Var(f, operand, scope, offset, 0, size);
 			var expr1 = new Erase(scope, env.replace(vn, var)).erase(expr);
+
+			var depth = new Object() {
+				private int c(Funp node) {
+					var depth = IntMutable.of(0);
+					inspect.rewrite(node, Funp.class, n -> new Switch<Funp>(n //
+					).doIf(FunpAllocReg.class, f -> {
+						depth.update(1 + c(((FunpAllocReg) n).expr));
+					}).applyIf(FunpLambda.class, f -> {
+						return f;
+					}).result());
+					return depth.get();
+				}
+			}.c(expr1);
+
+			if (maxRegAlloc <= depth)
+				var.setReg(false);
 
 			// if erase is called twice,
 			// pass 1: check for any reference accesses to locals, set
