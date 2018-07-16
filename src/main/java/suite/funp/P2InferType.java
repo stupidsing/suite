@@ -679,11 +679,11 @@ public class P2InferType {
 				for (var pair : struct) {
 					var name = Atom.name(pair.t0);
 					var type = pair.t1;
-					var offset0 = offset;
-					var name = Atom.name(pair.t0);
 					var value = values.get(name);
+					var offset0 = offset;
+					offset += getTypeSize(type);
 					if (value != null)
-						list.add(Pair.of(erase(value, name), IntIntPair.of(offset0, offset += getTypeSize(type))));
+						list.add(Pair.of(erase(value, name), IntIntPair.of(offset0, offset)));
 				}
 
 				return FunpData.of(list);
