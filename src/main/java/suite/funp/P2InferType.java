@@ -426,9 +426,11 @@ public class P2InferType {
 				return typeLambdaOf(tv, newEnv(env.replace(vn, Pair.of(Fdt.L_MONO, tv))).infer(expr));
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((vn, cap, expr) -> {
 				var tv = new Reference();
+				Node tc;
+				unify(n, getVariable(cap), tc = infer(cap));
 				var env0 = IMap.<String, Pair<Fdt, Node>> empty();
 				var env1 = env0 //
-						.replace(cap.vn, Pair.of(Fdt.L_MONO, infer(cap))) //
+						.replace(cap.vn, Pair.of(Fdt.L_MONO, tc)) //
 						.replace(vn, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, newEnv(env1).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {

@@ -194,7 +194,7 @@ public class P0Parse {
 			}).match("consult .0", a -> {
 				return consult(Str.str(a));
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
-				if (a instanceof Atom) {
+				if (Tree.decompose(a, TermOp.TUPLE_) == null) {
 					var lambda = lambda(a, c);
 					return FunpDefine.of(Fdt.L_POLY, lambda.vn, p(b), lambda.expr);
 				} else
@@ -227,7 +227,7 @@ public class P0Parse {
 				var do_ = FunpDoAssignVar.of(var, FunpDoEvalIo.of(p1.p(d)), var);
 				return FunpIo.of(FunpDefine.of(Fdt.L_MONO, vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}")))));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
-				if (a instanceof Atom) {
+				if (Tree.decompose(a, TermOp.TUPLE_) == null) {
 					var lambda = lambda(a, c);
 					return FunpDefine.of(Fdt.L_MONO, lambda.vn, p(b), lambda.expr);
 				} else
