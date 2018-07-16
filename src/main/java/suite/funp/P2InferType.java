@@ -662,12 +662,12 @@ public class P2InferType {
 				return FunpData.of(list);
 			})).applyIf(FunpSizeOf.class, f -> f.apply(expr -> {
 				return FunpNumber.ofNumber(getTypeSize(typeOf(expr)));
-			})).applyIf(FunpStruct.class, f -> f.apply(fvs -> {
+			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
 				var map = new HashMap<Node, Reference>();
 				var ts = typeStructOf(Dict.of(map));
 				unify(n, ts, type0);
 
-				var values = Read.from2(fvs).toMap();
+				var values = Read.from2(pairs).toMap();
 				var list = new ArrayList<Pair<Funp, IntIntPair>>();
 				var offset = 0;
 				var struct = isCompletedStruct(ts);
