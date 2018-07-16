@@ -191,8 +191,7 @@ public class P2InferType {
 			}
 		}
 
-		if (Boolean.TRUE) // perform capture?
-			new AssociateLambda(grandLambda).a(node0);
+		new AssociateLambda(grandLambda).a(node0);
 
 		var lambdaByVar = Read //
 				.from2(defByVars) //
@@ -209,10 +208,9 @@ public class P2InferType {
 		new Object() {
 			private Funp associate(Funp node) {
 				return inspect.rewrite(node, Funp.class, n -> {
-					var lambda = lambdaByFunp.get(n);
-
 					Fun2<Map<FunpVariable, FunpLambda>, FunpVariable, Funp> reg = (map, var) -> {
 						var lambdaVar = lambdaByVar.get(var);
+						var lambda = lambdaByFunp.get(n);
 
 						new Object() {
 							private void r(FunpLambda lambda_) {
@@ -293,7 +291,10 @@ public class P2InferType {
 			}
 		}
 
-		return new Capture().capture(node0);
+		if (Boolean.FALSE) // perform capture?
+			return new Capture().capture(node0);
+		else
+			return node0;
 	}
 
 	private class Infer {
@@ -780,7 +781,6 @@ public class P2InferType {
 					})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 						return erase(pointer);
 					})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
-						System.out.println(vn);
 						var m = env.get(vn).getMemory(scope);
 						return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
 					})).applyIf(Funp.class, f -> {
@@ -818,16 +818,18 @@ public class P2InferType {
 		private Mutable<Operand> offsetOperand;
 		private int start, end;
 
-		private Var(Mutable<Operand> offsetOperand, int start, int end) { // global
+		// global
+		private Var(Mutable<Operand> offsetOperand, int start, int end) {
 			this(FunpDontCare.of(), null, null, null, IntMutable.of(0), offsetOperand, start, end);
 		}
 
-		private Var(Funp funp, Mutable<Operand> operand, int scope, IntMutable offset, int start, int end) { // local
+		// local
+		private Var(Funp funp, Mutable<Operand> operand, int scope, IntMutable offset, int start, int end) {
 			this(funp, null, operand, scope, offset, null, start, end);
 		}
 
-		private Var(int scope, IntMutable offset, int start, int end) { // local,
-																		// stack
+		// local stack
+		private Var(int scope, IntMutable offset, int start, int end) {
 			this(FunpDontCare.of(), null, null, scope, offset, null, start, end);
 		}
 
