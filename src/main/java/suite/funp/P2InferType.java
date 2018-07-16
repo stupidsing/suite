@@ -254,12 +254,11 @@ public class P2InferType {
 					var lambda = lambdaByFunp.get(var);
 					var vn = var.vn;
 
-					if (lambda == lambdaVar)
-						return FunpVariable.of(vn);
-					else {
+					if (lambda != lambdaVar) {
 						var access = FunpField.of(FunpReference.of(capByLambda.get(lambda)), vn);
 						return isRefByVarName.get(vn) ? FunpDeref.of(access) : access;
-					}
+					} else
+						return FunpVariable.of(vn);
 				}) //
 				.toMap();
 
