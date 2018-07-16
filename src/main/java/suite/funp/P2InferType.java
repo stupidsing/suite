@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
@@ -190,53 +191,55 @@ public class P2InferType {
 
 		new AssociateLambda(grandLambda).a(node0);
 
-		var lambdaByVar = Read //
-				.from2(defByVars) //
-				.mapValue(def -> def instanceof FunpLambda ? (FunpLambda) def : lambdaByFunp.get(def)) //
-				.toMap();
+		class Li {
+			private String capn = "cap$" + Util.temp();
+			private FunpVariable cap = FunpVariable.of(capn);
+			private Set<String> captureSet = new HashSet<>();
+			private List<Pair<String, Funp>> captures = new ArrayList<>();
+		}
 
-		var lambdas = Read.from2(lambdaByFunp).values().distinct();
-		var capnByLambda = lambdas.map2(l -> "cap$" + Util.temp()).toMap();
-		var capByLambda = Read.from2(capnByLambda).mapValue(FunpVariable::of).toMap();
+		class Vi {
+			private FunpLambda lambda; // variable defined here
+			private FunpLambda refLambda; // variable referenced from here
+			private FunpLambda varLambda; // variable read from here
 
-		var refLambdaByVar = new IdentityHashMap<FunpVariable, FunpLambda>();
-		var varLambdaByVar = new IdentityHashMap<FunpVariable, FunpLambda>();
+			private Vi(Funp def) {
+				lambda = def instanceof FunpLambda ? (FunpLambda) def : lambdaByFunp.get(def);
+			}
+		}
+
+		var infoByLambda = Read.from2(lambdaByFunp).values().distinct().map2(lambda -> new Li()).toMap();
+		var infoByVar = Read.from2(defByVars).mapValue(Vi::new).toMap();
 
 		new Object() {
 			private Funp associate(Funp node) {
 				return inspect.rewrite(node, Funp.class, n -> {
-					Fun2<Map<FunpVariable, FunpLambda>, FunpVariable, Funp> reg = (map, var) -> {
-						map.put(var, lambdaByFunp.get(n));
-						return null;
-					};
+					var lambda = lambdaByFunp.get(n);
 
 					return n.sw( //
-					).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-						return reg.apply(refLambdaByVar, var);
-					})).applyIf(FunpReference.class, f -> f.apply(expr -> {
-						return expr.cast(FunpVariable.class, var -> reg.apply(refLambdaByVar, var));
-					})).applyIf(FunpVariable.class, f -> {
-						return reg.apply(varLambdaByVar, f);
+					).doIf(FunpDoAssignVar.class, f -> {
+						infoByVar.get(f.var).refLambda = lambda;
+					}).doIf(FunpReference.class, f -> {
+						f.expr.cast(FunpVariable.class, var -> infoByVar.get(var).refLambda = lambda);
+					}).doIf(FunpVariable.class, f -> {
+						infoByVar.get(f).varLambda = lambda;
 					}).result();
 				});
 			}
 		}.associate(node0);
 
-		var captureSetByLambda = lambdas.map2(l -> new HashSet<String>()).toMap();
-		var capturesByLambda = lambdas.map2(l -> new ArrayList<Pair<String, Funp>>()).toMap();
-		var isRefByVarName = Read.from2(refLambdaByVar).keys().map(var -> var.vn).toSet();
-
 		Fun2<FunpVariable, FunpLambda, Funp> accessFun = (var, lambda) -> {
+			var vi = infoByVar.get(var);
+			var lambdaVar = vi.lambda;
+			var isRef = vi.refLambda != null;
 			var vn = var.vn;
-			var isRef = isRefByVarName.contains(vn);
-			var lambdaVar = lambdaByVar.get(var);
 			var access = new Object() {
 				private Funp access(FunpLambda lambda_) {
 					if (lambda_ != lambdaVar) {
-						var parent = lambdaByFunp.get(lambda_);
-						if (captureSetByLambda.get(lambda_).add(vn))
-							capturesByLambda.get(lambda_).add(Pair.of(vn, access(parent)));
-						return FunpField.of(FunpReference.of(capByLambda.get(lambda_)), vn);
+						var li = infoByLambda.get(lambda_);
+						if (li.captureSet.add(vn))
+							li.captures.add(Pair.of(vn, access(lambdaByFunp.get(lambda_))));
+						return FunpField.of(FunpReference.of(li.cap), vn);
 					} else
 						return isRef ? FunpReference.of(var) : var;
 				}
@@ -244,11 +247,14 @@ public class P2InferType {
 			return isRef ? FunpDeref.of(access) : access;
 		};
 
-		var accessors = Streamlet2 //
-				.concat(Read.from2(refLambdaByVar), Read.from2(varLambdaByVar)) //
-				.distinct() //
-				.map2(accessFun) //
-				.toMap();
+		var accessors = Read.from2(infoByVar).concatMap2((var, vi) -> {
+			var list = new ArrayList<Pair<FunpVariable, Funp>>();
+			if (vi.refLambda != null)
+				list.add(Pair.of(var, accessFun.apply(var, vi.refLambda)));
+			if (vi.varLambda != null)
+				list.add(Pair.of(var, accessFun.apply(var, vi.varLambda)));
+			return Read.from2(list);
+		}).toMap();
 
 		class Capture {
 			private Funp capture(Funp n) {
@@ -258,13 +264,14 @@ public class P2InferType {
 			private Funp capture_(Funp n) {
 				return n.sw( //
 				).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-					return FunpDoAssignRef.of(FunpReference.of(accessors.get(var)), capture(value), capture(expr));
+					var accessor = accessors.get(var);
+					return accessor != null ? FunpDoAssignRef.of(FunpReference.of(accessor), capture(value), capture(expr)) : null;
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
-					var cap = capByLambda.get(f);
-					var captures = capturesByLambda.get(f);
+					var li = infoByLambda.get(f);
+					var captures = li.captures;
 					if (!captures.isEmpty()) {
 						var struct = FunpStruct.of(captures);
-						return FunpDefine.of(Fdt.GLOB, cap.vn, struct, FunpLambdaCapture.of(vn, cap, capture(expr)));
+						return FunpDefine.of(Fdt.GLOB, li.capn, struct, FunpLambdaCapture.of(vn, li.cap, capture(expr)));
 
 						// TODO allocate cap on heap
 						// TODO free cap after use
