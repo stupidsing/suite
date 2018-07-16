@@ -830,7 +830,8 @@ public class P2InferType {
 				Integer scope, //
 				IntMutable offset, //
 				Mutable<Operand> offsetOperand, //
-				int start, int end) {
+				int start, //
+				int end) {
 			this.funp = funp;
 			this.value = value;
 			this.operand = operand;
