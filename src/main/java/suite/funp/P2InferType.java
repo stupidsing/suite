@@ -256,35 +256,33 @@ public class P2InferType {
 			return Read.from2(list);
 		}).toMap();
 
-		class Capture {
-			private Funp capture(Funp n) {
-				return inspect.rewrite(n, Funp.class, this::capture_);
-			}
-
-			private Funp capture_(Funp n) {
-				return n.sw( //
-				).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-					var accessor = accessors.get(var);
-					return accessor != null ? FunpDoAssignRef.of(FunpReference.of(accessor), capture(value), capture(expr)) : null;
-				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
-					var li = infoByLambda.get(f);
-					var captures = li.captures;
-					if (!captures.isEmpty()) {
-						var struct = FunpStruct.of(captures);
-						return FunpDefine.of(Fdt.GLOB, li.capn, struct, FunpLambdaCapture.of(vn, li.cap, capture(expr)));
-
-						// TODO allocate cap on heap
-						// TODO free cap after use
-					} else
-						return null;
-				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
-					return accessors.get(f);
-				})).result();
-			}
-		}
-
 		if (Boolean.FALSE) // perform capture?
-			return new Capture().capture(node0);
+			return new Object() {
+				private Funp c(Funp n) {
+					return inspect.rewrite(n, Funp.class, this::c_);
+				}
+
+				private Funp c_(Funp n) {
+					return n.sw( //
+					).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
+						var accessor = accessors.get(var);
+						return accessor != null ? FunpDoAssignRef.of(FunpReference.of(accessor), c(value), c(expr)) : null;
+					})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
+						var li = infoByLambda.get(f);
+						var captures = li.captures;
+						if (!captures.isEmpty()) {
+							var struct = FunpStruct.of(captures);
+							return FunpDefine.of(Fdt.GLOB, li.capn, struct, FunpLambdaCapture.of(vn, li.cap, c(expr)));
+
+							// TODO allocate cap on heap
+							// TODO free cap after use
+						} else
+							return null;
+					})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
+						return accessors.get(f);
+					})).result();
+				}
+			}.c(node0);
 		else
 			return node0;
 	}
