@@ -936,7 +936,8 @@ public class P2InferType {
 	}
 
 	private Node typeOf(Funp n) {
-		return typeByNode.get(n).finalNode();
+		var type = typeByNode.get(n);
+		return type != null ? type.finalNode() : fail("no type information of " + n);
 	}
 
 	private Node typeArrayOf(Integer size, Node b) {
