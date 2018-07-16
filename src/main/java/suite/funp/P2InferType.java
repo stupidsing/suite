@@ -72,6 +72,7 @@ import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters;
 import suite.immutable.IMap;
+import suite.inspect.Dump;
 import suite.inspect.Inspect;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -129,6 +130,8 @@ public class P2InferType {
 		var n1 = extractPredefine(n0);
 		var n2 = captureLambdas(n1);
 		var checks = new ArrayList<Source<Boolean>>();
+
+		Dump.lines(n2);
 
 		if (unify(t, new Infer(IMap.empty(), checks).infer(n2))) {
 			if (!Read.from(checks).isAll(Source<Boolean>::source))
@@ -188,7 +191,7 @@ public class P2InferType {
 			}
 		}
 
-		if (Boolean.FALSE) // perform capture?
+		if (Boolean.TRUE) // perform capture?
 			new AssociateLambda(grandLambda).a(node0);
 
 		var lambdaByVar = Read //
@@ -673,9 +676,9 @@ public class P2InferType {
 				var struct = isCompletedStruct(ts);
 
 				for (var pair : struct) {
+					var name = Atom.name(pair.t0);
 					var type = pair.t1;
 					var offset0 = offset;
-					var name = Atom.name(pair.t0);
 					list.add(Pair.of(erase(values.get(name), name), IntIntPair.of(offset0, offset += getTypeSize(type))));
 				}
 
