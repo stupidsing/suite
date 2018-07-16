@@ -764,7 +764,7 @@ public class P2InferType {
 		private Funp eraseRoutine(LambdaType lt, Funp frame, Funp expr) {
 			if (lt.os == is)
 				return FunpRoutine.of(frame, expr);
-			else if (lt.os == ps * 2)
+			else if (lt.os == ps + ps)
 				return FunpRoutine2.of(frame, expr);
 			else
 				return FunpRoutineIo.of(frame, expr, lt.is, lt.os);
