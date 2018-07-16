@@ -193,12 +193,15 @@ public class P0Parse {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.POINTER, p(a));
 			}).match("consult .0", a -> {
 				return consult(Str.str(a));
+			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
+				if (a instanceof Atom) {
+					var lambda = lambda(a, c);
+					return FunpDefine.of(Fdt.L_POLY, lambda.vn, p(b), lambda.expr);
+				} else
+					return null;
+				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("define .0 .1 := .2 ~ .3", (a, b, c, d) -> {
 				return define(Fdt.L_POLY, a, lambda0(b, c), d);
-			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
-				var lambda = lambda(a, c);
-				return FunpDefine.of(Fdt.L_POLY, lambda.vn, p(b), lambda.expr);
-				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("define { .0 } ~ .1", (a, b) -> {
 				var list = kvs(a).collect();
 				var vns1 = list.fold(vns, (vs, pair) -> vs.add(pair.t0));
@@ -224,9 +227,14 @@ public class P0Parse {
 				var do_ = FunpDoAssignVar.of(var, FunpDoEvalIo.of(p1.p(d)), var);
 				return FunpIo.of(FunpDefine.of(Fdt.L_MONO, vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}")))));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
-				var lambda = lambda(a, c);
-				return FunpDefine.of(Fdt.L_MONO, lambda.vn, p(b), lambda.expr);
+				if (a instanceof Atom) {
+					var lambda = lambda(a, c);
+					return FunpDefine.of(Fdt.L_MONO, lambda.vn, p(b), lambda.expr);
+				} else
+					return null;
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
+			}).match("let .0 .1 := .2 ~ .3", (a, b, c, d) -> {
+				return define(Fdt.L_MONO, a, lambda0(b, c), d);
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
 				return define(Fdt.GLOB, a, p(b), c);
 			}).match("number .0", a -> {
