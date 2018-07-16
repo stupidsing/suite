@@ -261,11 +261,15 @@ public class P2InferType {
 					return FunpDoAssignRef.of(FunpReference.of(accessors.get(var)), capture(value), capture(expr));
 				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
 					var cap = capByLambda.get(f);
-					var struct = FunpStruct.of(capturesByLambda.get(f));
-					return FunpDefine.of(Fdt.GLOB, cap.vn, struct, FunpLambdaCapture.of(vn, cap, capture(expr)));
+					var captures = capturesByLambda.get(f);
+					if (!captures.isEmpty()) {
+						var struct = FunpStruct.of(captures);
+						return FunpDefine.of(Fdt.GLOB, cap.vn, struct, FunpLambdaCapture.of(vn, cap, capture(expr)));
 
-					// TODO allocate cap on heap
-					// TODO free cap after use
+						// TODO allocate cap on heap
+						// TODO free cap after use
+					} else
+						return null;
 				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
 					return accessors.get(f);
 				})).result();
