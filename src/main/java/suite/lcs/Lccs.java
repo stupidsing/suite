@@ -63,8 +63,8 @@ public class Lccs {
 	}
 
 	private IntObjMap<List<Segment>> hashSegments(Bytes bytes, int rollingSize) {
-		IntObjMap<List<Segment>> segments = new IntObjMap<>();
-		int hash = rh.hash(bytes.range(0, rollingSize - 1));
+		var segments = new IntObjMap<List<Segment>>();
+		var hash = rh.hash(bytes.range(0, rollingSize - 1));
 		var size = bytes.size();
 
 		for (var pos = 0; pos <= size - rollingSize; pos++) {
