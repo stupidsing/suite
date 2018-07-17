@@ -327,9 +327,10 @@ public class P4GenerateCode {
 								if (op_ != null)
 									c1.compileInstruction(Insn.MOV, op_, n);
 								else {
-									var r0 = c1.compileIsReg(target.pointer);
-									var r1 = c1.mask(r0).compileIsReg(pointer);
-									c1.mask(r0, r1).compileMove(r0, target.start, r1, start, size);
+									OpReg r0, r1;
+									var c2 = c1.mask(r0 = c1.compileIsReg(target.pointer));
+									var c3 = c2.mask(r1 = c1.mask(r0).compileIsReg(pointer));
+									c3.compileMove(r0, target.start, r1, start, size);
 								}
 							});
 						else
