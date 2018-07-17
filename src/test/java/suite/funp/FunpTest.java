@@ -12,15 +12,6 @@ import suite.primitive.Bytes;
 public class FunpTest {
 
 	@Test
-	public void testAlloc() {
-		test(0, "" //
-				+ "let linux := consult \"linux.fp\" ~ io.do \n" //
-				+ "	let (io.alloc, io.put.number) := (linux/io.alloc, linux/io.put.number) ~ \n" //
-				+ "	0 \n" //
-		);
-	}
-
-	@Test
 	public void testArray() {
 		test(0, "define a := [0,] ~ a [0]");
 		test(1, "define a := [0, 1, 2,] ~ a [1]");
