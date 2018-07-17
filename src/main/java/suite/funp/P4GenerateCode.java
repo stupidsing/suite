@@ -539,8 +539,10 @@ public class P4GenerateCode {
 								em.emit(amd64.instruction(shInsn, op0, opRhs));
 							}, ecx);
 						opResult = op0;
-					} else
+					} else if (insn != null)
 						opResult = compileCommutativeTree(insn, assoc, lhs, rhs).t1;
+					else
+						Funp_.fail(n, "unknown operator " + operator);
 
 				return opResult;
 			}

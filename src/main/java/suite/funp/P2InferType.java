@@ -140,7 +140,7 @@ public class P2InferType {
 			erase.erase(n2); // first pass
 			return erase.erase(n2); // second pass
 		} else
-			return Funp_.fail("cannot infer type for " + n0);
+			return Funp_.fail(n0, "cannot infer type");
 	}
 
 	private Funp extractPredefine(Funp node0) {
@@ -490,7 +490,7 @@ public class P2InferType {
 			})).applyIf(FunpVariable.class, f -> {
 				return getVariable(f);
 			}).applyIf(FunpVariableNew.class, f -> f.apply(vn -> {
-				return Funp_.fail("Undefined variable " + vn);
+				return Funp_.fail(f, "Undefined variable " + vn);
 			})).nonNullResult();
 		}
 
@@ -795,7 +795,7 @@ public class P2InferType {
 						var m = env.get(vn).getMemory(scope);
 						return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
 					})).applyIf(Funp.class, f -> {
-						return Funp_.fail("requires pre-definition: " + f);
+						return Funp_.fail(f, "requires pre-definition");
 					}).nonNullResult();
 				}
 			}.getAddress(expr);
@@ -915,7 +915,7 @@ public class P2InferType {
 	}
 
 	private boolean unify(Funp n, Node type0, Node type1) {
-		return unify(type0, type1) || Funp_.<Boolean> fail("" //
+		return unify(type0, type1) || Funp_.<Boolean> fail(n, "" //
 				+ "cannot unify types between:" //
 				+ "\n:: " + toString(type0) //
 				+ "\n:: " + toString(type1) //
@@ -1016,7 +1016,7 @@ public class P2InferType {
 				size = max(size, getTypeSize(t));
 			return size;
 		} else
-			return Funp_.fail("cannot get size of type " + toString(n));
+			return Funp_.fail(null, "cannot get size of type " + toString(n));
 	}
 
 	private Streamlet2<Node, Reference> isCompletedStruct(Node n) {

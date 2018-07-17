@@ -37,9 +37,11 @@ public class Funp_ {
 
 	public static class CompileException extends RuntimeException {
 		private static final long serialVersionUID = 1l;
+		public final Funp funp;
 
-		public CompileException(String m, Exception ex) {
+		public CompileException(Funp funp, String m, Exception ex) {
 			super(m, ex);
+			this.funp = funp;
 		}
 	}
 
@@ -114,14 +116,15 @@ public class Funp_ {
 		try {
 			return source.source();
 		} catch (CompileException ex) {
-			throw new CompileException(ex.getMessage() + "\nin " + in, ex);
+			throw new CompileException(ex.funp, ex.getMessage() + "\nin " + in, ex);
 		} catch (Exception ex) {
 			throw new RuntimeException("in " + in, ex);
 		}
 	}
 
-	public static <T> T fail(String m) {
-		throw new CompileException(m, null);
+	public static <T> T fail(Funp n, String m0) {
+		var m1 = n != null ? m0 + "\nfor " + n.getClass().getSimpleName() : m0;
+		throw new CompileException(n, m1, null);
 	}
 
 }

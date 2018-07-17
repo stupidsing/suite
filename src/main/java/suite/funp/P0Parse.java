@@ -274,8 +274,6 @@ public class P0Parse {
 						.toList());
 				return FunpDefine.of(Fdt.GLOB, vn, fa, FunpVariable.of(vn));
 			}).applyTree((op, l, r) -> {
-				if (op == TermOp.CONTD_)
-					System.out.println(node);
 				return FunpTree.of(op, p(l), p(r));
 			}).nonNullResult();
 		}
