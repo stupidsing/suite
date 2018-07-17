@@ -63,6 +63,7 @@ import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
+import suite.node.util.TreeUtil;
 import suite.os.FileUtil;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntObj_Obj;
@@ -363,8 +364,7 @@ public class P0Parse {
 		}
 
 		private boolean isList(Node l) {
-			var tree = Tree.decompose(l, TermOp.AND___);
-			return l == Atom.NIL || tree != null && isList(tree.getRight());
+			return TreeUtil.isList(l, TermOp.AND___);
 		}
 
 		private boolean isVar(Node v) {
