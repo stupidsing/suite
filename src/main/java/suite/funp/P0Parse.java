@@ -237,6 +237,8 @@ public class P0Parse {
 				return define(Fdt.L_MONO, a, lambda0(b, c), d);
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
 				return define(Fdt.GLOB, a, p(b), c);
+			}).match("let.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
+				return define(Fdt.GLOB, a, lambda0(b, c), d);
 			}).match("number .0", a -> {
 				return FunpNumber.ofNumber(num(a));
 			}).match("number", () -> {
