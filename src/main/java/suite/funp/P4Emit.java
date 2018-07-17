@@ -101,12 +101,20 @@ public class P4Emit {
 	}
 
 	public void lea(Operand op0, OpMem op1) {
-		if (op1.baseReg < 0 && op1.indexReg < 0)
-			mov(op0, amd64.imm(op1.disp, is));
-		else if (op1.indexReg < 0 && op1.disp == 0)
-			mov(op0, amd64.reg32[op1.baseReg]);
+		var op = lea(op1);
+		if (op != null)
+			mov(op0, op);
 		else
 			emit(amd64.instruction(Insn.LEA, op0, op1));
+	}
+
+	public Operand lea(OpMem op) {
+		if (op.baseReg < 0 && op.indexReg < 0)
+			return amd64.imm(op.disp, is);
+		else if (op.indexReg < 0 && op.disp == 0)
+			return amd64.reg32[op.baseReg];
+		else
+			return null;
 	}
 
 	public <T extends Operand> T mov(T op0, Operand op1) {

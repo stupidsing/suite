@@ -508,7 +508,7 @@ public class P4GenerateCode {
 				Operand opResult = null;
 
 				if (opResult == null && op != null)
-					em.lea(opResult = isOutSpec ? pop0 : rs.get(ps), op);
+					opResult = lea(op);
 
 				if (opResult == null && operator == TermOp.OR____) {
 					compileIsLoad(lhs);
@@ -683,9 +683,7 @@ public class P4GenerateCode {
 			}
 
 			private OpReg compileFramePointer() {
-				var op = rs.get(isOutSpec ? pop0 : ebp);
-				em.lea(op, compileFrame(0, ps));
-				return op;
+				return lea(compileFrame(0, ps));
 			}
 
 			private OpReg compileLoad(Funp node, OpReg op) {
@@ -786,6 +784,17 @@ public class P4GenerateCode {
 						sink.sink2(this, rs.get(is));
 					else if (0 < size)
 						saveRegs(c1 -> sink.sink2(c1, cl), ecx);
+			}
+
+			private OpReg lea(OpMem opMem) {
+				var op = em.lea(opMem);
+				if (op instanceof OpReg)
+					return (OpReg) op;
+				else {
+					var op0 = isOutSpec ? pop0 : rs.get(ps);
+					em.lea(op0, opMem);
+					return op0;
+				}
 			}
 
 			private FunpMemory frame(int start, int end) {
