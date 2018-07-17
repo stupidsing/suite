@@ -172,10 +172,10 @@ public class P0Parse {
 				return isDo() ? FunpDoAssignVar.of(v, p(b), p(c)) : fail();
 			}).match("assign ^.0 := .1 ~ .2", (a, b, c) -> {
 				return isDo() ? FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)) : fail();
-			}).match("byte .0", a -> {
-				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(num(a)));
 			}).match("byte", () -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpDontCare.of());
+			}).match("byte .0", a -> {
+				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(num(a)));
 			}).match("case || .0", a -> {
 				return new Object() {
 					private Funp d(Node n) {
@@ -240,10 +240,10 @@ public class P0Parse {
 				return define(Fdt.GLOB, a, p(b), c);
 			}).match("let.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
 				return define(Fdt.GLOB, a, lambda0(b, c), d);
-			}).match("number .0", a -> {
-				return FunpNumber.ofNumber(num(a));
 			}).match("number", () -> {
 				return FunpNumber.of(IntMutable.nil());
+			}).match("number .0", a -> {
+				return FunpNumber.ofNumber(num(a));
 			}).match("perform.io .0 ~ .1", (a, b) -> {
 				var lambda = lambda(dontCare, b);
 				return isDo() ? FunpDefine.of(Fdt.L_IOAP, lambda.vn, FunpDoEvalIo.of(p(a)), lambda.expr) : fail();
