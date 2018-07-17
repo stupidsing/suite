@@ -707,7 +707,7 @@ public class P4GenerateCode {
 			}
 
 			private OpMem compileFrame(int start, int size) {
-				OpMem op = deOp.decompose(fd, Funp_.framePointer, start, size);
+				var op = deOp.decompose(fd, Funp_.framePointer, start, size);
 				return op != null ? op : fail();
 			}
 
