@@ -24,14 +24,14 @@ public class Lccs0 {
 	public Pair<Segment, Segment> lccs(Bytes bytes0, Bytes bytes1) {
 		var size0 = bytes0.size();
 		var size1 = bytes1.size();
-		int rollingSize = min(size0, size1);
+		var rollingSize = min(size0, size1);
 
 		if (0 < rollingSize) {
-			IntObjPair<Pair<Segment, Segment>> longest = IntObjPair.of(Integer.MIN_VALUE, null);
+			var longest = IntObjPair.<Pair<Segment, Segment>> of(Integer.MIN_VALUE, null);
 
 			while (longest.t1 == null) {
-				IntObjMap<Segment> segments0 = hashSegments(bytes0, rollingSize);
-				IntObjMap<Segment> segments1 = hashSegments(bytes1, rollingSize);
+				var segments0 = hashSegments(bytes0, rollingSize);
+				var segments1 = hashSegments(bytes1, rollingSize);
 				var keys0 = segments0.streamlet().keys().toSet();
 				var keys1 = segments1.streamlet().keys().toSet();
 				var keys = IntSet.intersect(keys0, keys1).streamlet().toArray();
@@ -63,8 +63,8 @@ public class Lccs0 {
 	}
 
 	private IntObjMap<Segment> hashSegments(Bytes bytes, int rollingSize) {
-		IntObjMap<Segment> segments = new IntObjMap<>();
-		int hash = rh.hash(bytes.range(0, rollingSize - 1));
+		var segments = new IntObjMap<Segment>();
+		var hash = rh.hash(bytes.range(0, rollingSize - 1));
 		var size = bytes.size();
 
 		for (var pos = 0; pos <= size - rollingSize; pos++) {

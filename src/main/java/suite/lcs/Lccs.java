@@ -27,7 +27,7 @@ public class Lccs {
 	public Pair<Segment, Segment> lccs(Bytes bytes0, Bytes bytes1) {
 		var size0 = bytes0.size();
 		var size1 = bytes1.size();
-		int rollingSize = max(1, min(size0, size1));
+		var rollingSize = max(1, min(size0, size1));
 		var longest = IntObjPair.<Pair<Segment, Segment>> of(Integer.MIN_VALUE, null);
 
 		while (longest.t1 == null) {
@@ -46,7 +46,7 @@ public class Lccs {
 						var b1 = bytes1.range(start1, end1);
 
 						if (Objects.equals(b0, b1)) {
-							int ix = min(size0 - start0, size1 - start1);
+							var ix = min(size0 - start0, size1 - start1);
 							var i = rollingSize;
 							while (i < ix && bytes0.get(start0 + i) == bytes1.get(start1 + i))
 								i++;
