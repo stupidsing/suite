@@ -67,24 +67,24 @@ public class P4Emit {
 		else if (i == 1l)
 			emit(amd64.instruction(Insn.INC, op0));
 		else if (i != 0l)
-			emit(amd64.instruction(Insn.ADD, op0, amd64.imm(i, is)));
+			emit(amd64.instruction(Insn.ADD, op0, imm(i)));
 	}
 
 	private void andImm(Operand op0, long i) {
 		if (i != -1l)
-			emit(amd64.instruction(Insn.AND, op0, amd64.imm(i, is)));
+			emit(amd64.instruction(Insn.AND, op0, imm(i)));
 	}
 
 	private void orImm(Operand op0, long i) {
 		if (i != 0l)
-			emit(amd64.instruction(Insn.OR, op0, amd64.imm(i, is)));
+			emit(amd64.instruction(Insn.OR, op0, imm(i)));
 	}
 
 	private void xorImm(Operand op0, long i) {
 		if (i == -1l)
 			emit(amd64.instruction(Insn.NOT, op0));
 		else if (i != 0l)
-			emit(amd64.instruction(Insn.XOR, op0, amd64.imm(i, is)));
+			emit(amd64.instruction(Insn.XOR, op0, imm(i)));
 	}
 
 	private void imulImm(OpReg r0, long i) {
@@ -92,12 +92,12 @@ public class P4Emit {
 			if (Long.bitCount(i) == 1)
 				shiftImm(Insn.SHL, r0, Long.numberOfTrailingZeros(i));
 			else
-				emit(amd64.instruction(Insn.IMUL, r0, r0, amd64.imm(i, is)));
+				emit(amd64.instruction(Insn.IMUL, r0, r0, imm(i)));
 	}
 
 	public void shiftImm(Insn insn, Operand op0, long z) {
 		if (z != 0l)
-			emit(amd64.instruction(insn, op0, amd64.imm(z, 1)));
+			emit(amd64.instruction(insn, op0, amd64.imm8(z)));
 	}
 
 	public void lea(Operand op0, OpMem op1) {
@@ -118,6 +118,10 @@ public class P4Emit {
 			else
 				emit(amd64.instruction(Insn.MOV, op0, op1));
 		return op0;
+	}
+
+	private Operand imm(long i) {
+		return Byte.MIN_VALUE <= i && i <= Byte.MAX_VALUE ? amd64.imm8(i & 0xFF) : amd64.imm(i, is);
 	}
 
 	public void emit(Instruction instruction) {
