@@ -4,7 +4,6 @@ import static java.util.Map.entry;
 import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import suite.node.Atom;
@@ -14,6 +13,8 @@ import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.primitive.IntInt_Int;
+import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 
 public class TreeUtil {
 
@@ -50,7 +51,7 @@ public class TreeUtil {
 			entry(SHR, (a, b) -> a >> b), //
 			entry(XOR, (a, b) -> a ^ b));
 
-	public static List<Node> breakdown(Operator operator, Node node) {
+	public static Streamlet<Node> breakdown(Operator operator, Node node) {
 		var list = new ArrayList<Node>();
 		new Object() {
 			private void breakdown(Node node_) {
@@ -62,7 +63,7 @@ public class TreeUtil {
 					list.add(node_);
 			}
 		}.breakdown(node);
-		return list;
+		return Read.from(list);
 	}
 
 	public static Node[] elements(Node node0, int n) {

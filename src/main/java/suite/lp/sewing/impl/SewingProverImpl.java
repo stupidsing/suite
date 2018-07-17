@@ -297,17 +297,17 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Cps compileCps(BinderFactory bf, Node node, Cps cpsx) {
-		List<Node> list;
+		Streamlet<Node> list;
 		Tree tree;
 		Node m[];
 		Cps cps;
 
 		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size()) {
 			cps = cpsx;
-			for (var n : List_.reverse(list))
+			for (var n : list.reverse())
 				cps = compileCps(bf, n, cps);
 		} else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
-			cps = orCps(Read.from(list).map(n -> compileCps(bf, n, cpsx)));
+			cps = orCps(list.map(n -> compileCps(bf, n, cpsx)));
 		else if ((m = Suite.pattern(".0 = .1").match(node)) != null) {
 			var b = complexity(m[0]) <= complexity(m[1]);
 			var n0 = b ? m[0] : m[1];
@@ -443,15 +443,15 @@ public class SewingProverImpl implements ProverFactory {
 	}
 
 	private Trampoline compileTr(BinderFactory bf, Node node) {
-		List<Node> list;
+		Streamlet<Node> list;
 		Trampoline tr;
 		Tree tree;
 		Node[] m;
 
 		if (1 < (list = TreeUtil.breakdown(TermOp.AND___, node)).size())
-			tr = andTr(Read.from(list).map(n -> compileTr(bf, n)));
+			tr = andTr(list.map(n -> compileTr(bf, n)));
 		else if (1 < (list = TreeUtil.breakdown(TermOp.OR____, node)).size())
-			tr = orTr(Read.from(list).map(n -> compileTr(bf, n)));
+			tr = orTr(list.map(n -> compileTr(bf, n)));
 		else if ((m = Suite.pattern(".0 = .1").match(node)) != null) {
 			var b = complexity(m[0]) <= complexity(m[1]);
 			var n0 = b ? m[0] : m[1];
