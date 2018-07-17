@@ -12,15 +12,6 @@ import suite.primitive.Bytes;
 public class FunpTest {
 
 	@Test
-	public void testAlloc() {
-		test(0, "" //
-				+ "let linux := consult \"linux.fp\" ~ io.do \n" //
-				+ "	let (io.alloc, io.put.number) := (linux/io.alloc, linux/io.put.number) ~ \n" //
-				+ "	0 \n" //
-		);
-	}
-
-	@Test
 	public void testArray() {
 		test(0, "define a := [0,] ~ a [0]");
 		test(1, "define a := [0, 1, 2,] ~ a [1]");
@@ -83,8 +74,19 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testGlobal() {
+		test(0, "" //
+				+ "let module := ( \n" //
+				+ "	let.global f {} := 0 ~ \n" // global required
+				+ "	let g {} := f {} ~ \n" //
+				+ "	{ g, } \n" //
+				+ ") ~ \n" //
+				+ "{} | module/g");
+	}
+
+	@Test
 	public void testIo() {
-		test(1, "io.do (eval.io io.do 1)");
+		test(1, "io.do eval.io io.do 1");
 		test(100, "io.for (n = 0; n < 100; io.do (n + 1))");
 	}
 

@@ -516,33 +516,6 @@ public class SewingProverImpl implements ProverFactory {
 				}
 				return okay;
 			};
-		} else if ((m = Suite.pattern("list.fold.clone .0/.1/.2 .3/.4/.5 .6").match(node)) != null) {
-			var list0_ = bf.cloner(m[0]);
-			var value0_ = bf.cloner(m[1]);
-			var valuex_ = bf.binder(m[2]);
-			var elem_ = bf.binder(m[3]);
-			var v0_ = bf.binder(m[4]);
-			var vx_ = bf.cloner(m[5]);
-			var tr1 = compileTr(bf, m[6]);
-			tr = rt -> {
-				var current = Mutable.of(value0_.apply(rt.env));
-				var env0 = rt.env;
-				rt.pushRem(rt_ -> {
-					rt_.env = env0;
-					return valuex_.test(rt_, current.get()) ? okay : fail;
-				});
-				for (var elem : Tree.iter(list0_.apply(rt.env))) {
-					rt.pushRem(rt_ -> {
-						current.update(vx_.apply(rt_.env));
-						return okay;
-					});
-					rt.pushRem(rt_ -> {
-						rt_.env = env0.clone();
-						return elem_.test(rt_, elem) && v0_.test(rt_, current.get()) ? tr1 : fail;
-					});
-				}
-				return okay;
-			};
 		} else if ((m = Suite.pattern("list.query .0 .1").match(node)) != null) {
 			var l_ = bf.cloner(m[0]);
 			var ht_ = bf.cloner(m[1]);
@@ -553,23 +526,6 @@ public class SewingProverImpl implements ProverFactory {
 					rt.pushRem(rt_ -> {
 						rt_.query = n;
 						return tr1;
-					});
-				return okay;
-			};
-		} else if ((m = Suite.pattern("list.query.clone .0 .1 .2").match(node)) != null) {
-			var f = bf.cloner(m[0]);
-			var p = bf.binder(m[1]);
-			var tr1 = compileTr(bf, m[2]);
-			tr = rt -> {
-				var env0 = rt.env;
-				rt.pushRem(rt_ -> {
-					rt_.env = env0;
-					return okay;
-				});
-				for (var n : Tree.iter(f.apply(rt.env)))
-					rt.pushRem(rt_ -> {
-						rt_.env = env0.clone();
-						return p.test(rt_, n) ? tr1 : fail;
 					});
 				return okay;
 			};
