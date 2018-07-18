@@ -17,7 +17,7 @@ public class ElfTest {
 
 	@Test
 	public void testFold() {
-		test(100, "io.for (n = 0; n < 100; io.do (n + 1))", "");
+		test(100, "io.for (n = 0; n < 100; n + 1)", "");
 	}
 
 	// io :: a -> io a
