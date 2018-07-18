@@ -3,6 +3,7 @@ package suite.funp;
 import static java.util.Map.entry;
 import static suite.util.Friends.fail;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -57,6 +58,7 @@ import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Sink2;
 import suite.streamlet.Read;
+import suite.util.Switch;
 
 public class P4GenerateCode {
 
@@ -165,7 +167,7 @@ public class P4GenerateCode {
 			private CompileOut compile(Funp n) {
 				return n.<CompileOut> switch_( //
 				).applyIf(FunpAllocGlobal.class, f -> f.apply((size, expr, address) -> {
-					compileGlobal(size, address);
+					compileGlobal(size, address, FunpDontCare.of());
 					return compile(expr);
 				})).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, offset) -> {
 					return compileAllocStack(size, value, null, c -> {
@@ -314,7 +316,7 @@ public class P4GenerateCode {
 					return returnAssign((c1, target) -> {
 						OpReg r0, r1;
 						var c2 = c1.mask(r0 = c1.compileIsReg(target.pointer));
-						var c3 = c2.mask(r1 = c2.compileFramePointer());
+						var c3 = c2.mask(r1 = c2.compileIsReg(FunpFramePointer.of()));
 						c3.compileMove(r0, target.start, r1, c3.fd + is, target.size());
 					});
 				})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
@@ -620,8 +622,48 @@ public class P4GenerateCode {
 				});
 			}
 
-			private void compileGlobal(Integer size, Mutable<Operand> address) {
-				address.update(compileBlock(c -> c.em.emit(amd64.instruction(Insn.DS, amd64.imm32(size)))));
+			private boolean compileGlobal(Integer size, Mutable<Operand> address, Funp node) {
+				var o = new Object() {
+					private List<Instruction> instructions = new ArrayList<>();
+
+					private boolean fill(int size, Funp node) {
+						return new Switch<Boolean>(node //
+						).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
+							if (to == Coerce.BYTE)
+								return fill(1, expr);
+							else if (to == Coerce.NUMBER)
+								return fill(is, expr);
+							else if (to == Coerce.POINTER)
+								return fill(ps, expr);
+							else
+								return fail();
+						})).doIf(FunpData.class, f -> f.apply(pairs -> {
+							var offset = 0;
+							var b = true;
+							for (var pair : Read.from(pairs).sort((p0, p1) -> Integer.compare(p0.t1.t0, p1.t1.t0))) {
+								var pos = pair.t1;
+								b &= fill(pos.t0 - offset, FunpDontCare.of());
+								b &= fill(pos.t1 - pos.t0, pair.t0);
+								offset = pos.t1;
+							}
+							return b && fill(size - offset, FunpDontCare.of());
+						})).applyIf(FunpDontCare.class, f -> {
+							return instructions.add(amd64.instruction(Insn.DS, amd64.imm32(size)));
+						}).applyIf(FunpNumber.class, f -> f.apply(i -> {
+							return instructions.add(amd64.instruction(Insn.D, amd64.imm(i.get(), size)));
+						})).result();
+					}
+				};
+
+				var ok = o.fill(size, node);
+
+				if (ok)
+					address.update(compileBlock(c -> {
+						for (var instruction : o.instructions)
+							c.em.emit(instruction);
+					}));
+
+				return ok;
 			}
 
 			private Operand compileBlock(Sink<Compile0> sink) {
