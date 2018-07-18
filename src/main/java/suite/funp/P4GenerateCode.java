@@ -164,7 +164,7 @@ public class P4GenerateCode {
 			// invariant: fd = ESP - EBP
 			private CompileOut compile(Funp n) {
 				return n.<CompileOut> switch_( //
-				).applyIf(FunpAllocGlobal.class, f -> f.apply((var, size, expr, address) -> {
+				).applyIf(FunpAllocGlobal.class, f -> f.apply((size, expr, address) -> {
 					compileGlobal(size, address);
 					return compile(expr);
 				})).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, offset) -> {

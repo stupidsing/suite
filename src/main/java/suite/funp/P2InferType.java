@@ -547,7 +547,7 @@ public class P2InferType {
 					var e1 = new Erase(scope, env.replace(vn, new Var(address, 0, size)));
 					var m = FunpMemory.of(FunpOperand.of(address), 0, size);
 					var expr1 = FunpAssignMem.of(m, erase(value, vn), e1.erase(expr));
-					return FunpAllocGlobal.of(vn, size, expr1, address);
+					return FunpAllocGlobal.of(size, expr1, address);
 				} else if (type == Fdt.L_IOAP || type == Fdt.L_MONO || type == Fdt.L_POLY)
 					return defineLocal(f, vn, value, expr);
 				else if (type == Fdt.VIRT)
