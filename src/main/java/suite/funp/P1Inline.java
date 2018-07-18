@@ -70,10 +70,10 @@ public class P1Inline {
 
 			private Funp rename(Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpDefine.class, f -> f.apply((type, vn0, value, expr) -> {
+				).applyIf(FunpDefine.class, f -> f.apply((vn0, value, expr, type) -> {
 					var vn1 = newVarName.apply(vn0);
 					var r1 = new Rename(vns.replace(vn0, vn1));
-					return FunpDefine.of(type, vn1, rename(value), r1.rename(expr));
+					return FunpDefine.of(vn1, rename(value), r1.rename(expr), type);
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
 					var vns1 = Read.from(pairs0).fold(vns, (vs, pair) -> vs.replace(pair.t0, newVarName.apply(pair.t0)));
 					var r1 = new Rename(vns1);
@@ -124,12 +124,12 @@ public class P1Inline {
 
 						for (var vn_ : List_.reverse(vns))
 							if (!String_.equals(vn, vn_))
-								n2 = FunpDefine.of(Fdt.L_MONO, vn_, FunpDontCare.of(), n2);
+								n2 = FunpDefine.of(vn_, FunpDontCare.of(), n2, Fdt.L_MONO);
 							else
 								b = true;
 
 						if (b)
-							return FunpDefine.of(Fdt.L_MONO, vn, assign.value, inline(n2));
+							return FunpDefine.of(vn, assign.value, inline(n2), Fdt.L_MONO);
 					}
 
 					return null;
@@ -228,7 +228,7 @@ public class P1Inline {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw() //
 						.applyIf(FunpApply.class, f -> f.apply((value, lambda) -> {
 							return lambda.cast(FunpLambda.class,
-									l -> FunpDefine.of(Fdt.L_MONO, l.vn, inline(value), inline(l.expr)));
+									l -> FunpDefine.of(l.vn, inline(value), inline(l.expr), Fdt.L_MONO));
 						})) //
 						.result());
 			}

@@ -114,22 +114,22 @@ public class P0 {
 			VIRT, // virtual variable
 		};
 
-		public Fdt type;
 		public String vn;
 		public Funp value;
 		public Funp expr;
+		public Fdt type;
 
-		public static FunpDefine of(Fdt type, String vn, Funp value, Funp expr) {
+		public static FunpDefine of(String vn, Funp value, Funp expr, Fdt type) {
 			var f = new FunpDefine();
-			f.type = type;
 			f.vn = vn;
 			f.value = value;
 			f.expr = expr;
+			f.type = type;
 			return f;
 		}
 
-		public <R> R apply(FixieFun4<Fdt, String, Funp, Funp, R> fun) {
-			return fun.apply(type, vn, value, expr);
+		public <R> R apply(FixieFun4<String, Funp, Funp, Fdt, R> fun) {
+			return fun.apply(vn, value, expr, type);
 		}
 	}
 

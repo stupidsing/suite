@@ -198,7 +198,7 @@ public class P0Parse {
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
 				if (Tree.decompose(a, TermOp.TUPLE_) == null) {
 					var lambda = lambda(a, c);
-					return FunpDefine.of(Fdt.L_POLY, lambda.vn, p(b), lambda.expr);
+					return FunpDefine.of(lambda.vn, p(b), lambda.expr, Fdt.L_POLY);
 				} else
 					return null;
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
@@ -227,11 +227,11 @@ public class P0Parse {
 				var p1 = nv(doToken).nv(vn);
 				var while_ = p1.p(c);
 				var do_ = FunpDoAssignVar.of(var, p1.p(d), var);
-				return FunpIo.of(FunpDefine.of(Fdt.L_MONO, vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}")))));
+				return FunpIo.of(FunpDefine.of(vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}"))), Fdt.L_MONO));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
 				if (Tree.decompose(a, TermOp.TUPLE_) == null) {
 					var lambda = lambda(a, c);
-					return FunpDefine.of(Fdt.L_MONO, lambda.vn, p(b), lambda.expr);
+					return FunpDefine.of(lambda.vn, p(b), lambda.expr, Fdt.L_MONO);
 				} else
 					return null;
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
@@ -247,7 +247,7 @@ public class P0Parse {
 				return FunpNumber.ofNumber(num(a));
 			}).match("perform.io .0 ~ .1", (a, b) -> {
 				var lambda = lambda(dontCare, b);
-				return checkDo(() -> FunpDefine.of(Fdt.L_IOAP, lambda.vn, FunpDoEvalIo.of(p(a)), lambda.expr));
+				return checkDo(() -> FunpDefine.of(lambda.vn, FunpDoEvalIo.of(p(a)), lambda.expr, Fdt.L_IOAP));
 			}).match("predef .0", a -> {
 				return FunpPredefine.of(p(a));
 			}).match("size.of .0", a -> {
@@ -262,7 +262,7 @@ public class P0Parse {
 				return FunpDontCare.of();
 			}).match("virtual .0 := .1 ~ .2", (a, b, c) -> {
 				var value = p(b);
-				return FunpDefine.of(Fdt.VIRT, Atom.name(a), value, p(c));
+				return FunpDefine.of(Atom.name(a), value, p(c), Fdt.VIRT);
 			}).applyIf(Atom.class, atom -> {
 				var vn = atom.name;
 				return vns.contains(vn) ? FunpVariable.of(vn) : FunpVariableNew.of(vn);
@@ -276,7 +276,7 @@ public class P0Parse {
 						.<Funp> map(ch -> FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(ch))) //
 						.snoc(FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(0))) //
 						.toList());
-				return FunpDefine.of(Fdt.GLOB, vn, fa, FunpVariable.of(vn));
+				return FunpDefine.of(vn, fa, FunpVariable.of(vn), Fdt.GLOB);
 			}).applyTree((op, l, r) -> {
 				return FunpTree.of(op, p(l), p(r));
 			}).nonNullResult();
@@ -301,7 +301,7 @@ public class P0Parse {
 
 		private Funp define(Fdt t, Node var, Funp value, Node expr) {
 			var vn = isVar(var) ? Atom.name(var) : null;
-			return vn != null ? FunpDefine.of(t, vn, value, nv(vn).p(expr)) : null;
+			return vn != null ? FunpDefine.of(vn, value, nv(vn).p(expr), t) : null;
 		}
 
 		private Streamlet<Pair<String, Node>> kvs(Node node) {
@@ -361,7 +361,7 @@ public class P0Parse {
 			var else_ = p(d);
 			var f0 = new Bind(vns_).bind(be, value, then, else_);
 			var f1 = FunpCheckType.of(be, value, f0);
-			return vns_.streamlet().<Funp> fold(f1, (f, vn) -> FunpDefine.of(Fdt.L_MONO, vn, FunpDontCare.of(), f));
+			return vns_.streamlet().<Funp> fold(f1, (f, vn) -> FunpDefine.of(vn, FunpDontCare.of(), f, Fdt.L_MONO));
 		}
 
 		private boolean isList(Node l) {

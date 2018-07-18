@@ -84,7 +84,7 @@ public class P1ReduceTailCall {
 			var dontCare = FunpDontCare.of();
 			var assign = FunpDoAssignVar.of(tcoVar, do1, FunpDoAssignVar.of(var, fn, fc));
 			var while_ = FunpDoWhile.of(assign, FunpDontCare.of(), fr);
-			return FunpLambda.of(vn, FunpDefine.of(Fdt.L_MONO, tcoVarName, dontCare, while_));
+			return FunpLambda.of(vn, FunpDefine.of(tcoVarName, dontCare, while_, Fdt.L_MONO));
 		} else
 			return null;
 	}

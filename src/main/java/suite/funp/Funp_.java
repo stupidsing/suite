@@ -89,7 +89,7 @@ public class Funp_ {
 		new Object() {
 			private Funp associate(IMap<String, Funp> vars, Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpDefine.class, f -> f.apply((type, vn, value, expr) -> {
+				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, type) -> {
 					associate(vars, value);
 					associate(vars.replace(vn, f), expr);
 					return n_;

@@ -162,7 +162,7 @@ public class P2InferType {
 			}
 		}.extract(node0);
 
-		return Read.from(vns).fold(node1, (n, vn) -> FunpDefine.of(Fdt.L_MONO, vn, FunpDontCare.of(), n));
+		return Read.from(vns).fold(node1, (n, vn) -> FunpDefine.of(vn, FunpDontCare.of(), n, Fdt.L_MONO));
 	}
 
 	private Funp captureLambdas(Funp node0) {
@@ -273,7 +273,7 @@ public class P2InferType {
 						var captures = li.captures;
 						if (!captures.isEmpty()) {
 							var struct = FunpStruct.of(captures);
-							return FunpDefine.of(Fdt.GLOB, li.capn, struct, FunpLambdaCapture.of(vn, li.cap, c(expr)));
+							return FunpDefine.of(li.capn, struct, FunpLambdaCapture.of(vn, li.cap, c(expr)), Fdt.GLOB);
 
 							// TODO allocate cap on heap
 							// TODO free cap after use
@@ -337,7 +337,7 @@ public class P2InferType {
 				};
 				unify(n, tf.apply(from), infer(expr));
 				return tf.apply(to);
-			})).applyIf(FunpDefine.class, f -> f.apply((type, vn, value, expr) -> {
+			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, type) -> {
 				var tvalue = infer(value, vn);
 				return newEnv(env.replace(vn, Pair.of(type, tvalue))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
@@ -540,7 +540,7 @@ public class P2InferType {
 				return FunpData.of(list);
 			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
-			})).applyIf(FunpDefine.class, f -> f.apply((type, vn, value, expr) -> {
+			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, type) -> {
 				if (type == Fdt.GLOB) {
 					var size = getTypeSize(typeOf(value));
 					var address = Mutable.<Operand> nil();

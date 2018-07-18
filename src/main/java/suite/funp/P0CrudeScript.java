@@ -75,7 +75,7 @@ public class P0CrudeScript {
 				}).match("statement1 (.0,)", a -> {
 					return stmt(a);
 				}).match("statement-block (statement-let (bind (<IDENTIFIER> .0,), .1,), .2)", (a, b, c) -> {
-					return FunpDefine.of(Fdt.L_MONO, Str.str(a), expr(b), stmt(c));
+					return FunpDefine.of(Str.str(a), expr(b), stmt(c), Fdt.L_MONO);
 				}).match("statement-block (.0,)", a -> {
 					return stmt(a);
 				}).match("statement-if (.0, .1, .2,)", (a, b, c) -> {
