@@ -232,6 +232,12 @@ public class Amd64Assemble {
 		case CPUID:
 			encode = new InsnCode(4, bs(0x0F, 0xA2));
 			break;
+		case D:
+			var opImm = ((OpImm) instruction.op0);
+			var bb = new BytesBuilder();
+			appendImm(bb, opImm.size, opImm.imm);
+			encode = encode(bb.toBytes());
+			break;
 		case DEC:
 			encode = assembleRm(instruction, 0x48, 0xFE, 1);
 			break;
@@ -241,15 +247,7 @@ public class Amd64Assemble {
 		case DS:
 			var bs = new byte[(int) ((OpImm) instruction.op0).imm];
 			Arrays.fill(bs, (byte) 0x90);
-			encode = new Encode() {
-				public boolean isValid() {
-					return true;
-				}
-
-				public Bytes encode_() {
-					return Bytes.of(bs);
-				}
-			};
+			encode = encode(Bytes.of(bs));
 			break;
 		case HLT:
 			encode = assemble(instruction, 0xF4);
@@ -876,6 +874,20 @@ public class Amd64Assemble {
 		var insnCode = new InsnCode(operand.size, bs(b));
 		insnCode.modrm = modrm(operand, num);
 		return insnCode;
+	}
+
+	private Encode encode(Bytes bs) {
+		Encode encode;
+		encode = new Encode() {
+			public boolean isValid() {
+				return true;
+			}
+
+			public Bytes encode_() {
+				return bs;
+			}
+		};
+		return encode;
 	}
 
 	private Bytes encode(InsnCode insnCode, byte[] vexs) {
