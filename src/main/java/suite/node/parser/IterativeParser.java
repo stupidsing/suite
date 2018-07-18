@@ -75,7 +75,8 @@ public class IterativeParser {
 		Sink<Operator> addOperator = operator -> {
 			var section = stack.peek();
 			var tree = section.unwind(operator);
-			var tree1 = Tree.of(operator, tree.getRight(), Atom.NIL);
+			var tree0 = tree.getRight();
+			var tree1 = Tree.of(operator, tree0, Atom.NIL);
 			Tree.forceSetRight(tree, tree1);
 			section.push(tree1);
 		};

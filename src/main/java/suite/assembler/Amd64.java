@@ -25,6 +25,7 @@ public class Amd64 {
 		CMPSW, //
 		CMPXCHG, //
 		CPUID, //
+		D, //
 		DEC, //
 		DIV, //
 		DS, // define space
