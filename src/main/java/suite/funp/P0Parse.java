@@ -223,9 +223,9 @@ public class P0Parse {
 			}).match("io.for (.0 = .1; .2; .3)", (a, b, c, d) -> {
 				var vn = Atom.name(a);
 				var var = FunpVariable.of(vn);
-				var p1 = nv(vn);
+				var p1 = nv(doToken).nv(vn);
 				var while_ = p1.p(c);
-				var do_ = FunpDoAssignVar.of(var, FunpDoEvalIo.of(p1.p(d)), var);
+				var do_ = FunpDoAssignVar.of(var, p1.p(d), var);
 				return FunpIo.of(FunpDefine.of(Fdt.L_MONO, vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}")))));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
 				if (Tree.decompose(a, TermOp.TUPLE_) == null) {

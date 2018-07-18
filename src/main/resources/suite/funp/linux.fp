@@ -61,7 +61,6 @@ define new.pool length := io.do
 	{
 		destroy {} := io.munmap (length, pool) ~
 		pool ~
-		length ~
 		start := 0 ~
 	}
 ~
@@ -90,7 +89,7 @@ define io.write (pointer, length) := io.do
 
 define io.write.all (pointer, length) :=
 	type pointer = address (array byte * _) ~
-	io.for (n = length; 0 < n; io.do
+	io.for (n = length; 0 < n;
 		let p1 := asm (EAX = pointer; EBX = length; ECX = n;) { ADD (EAX, EBX); SUB (EAX, ECX); } ~
 		let n1 := eval.io io.write (coerce.pointer p1, n) ~
 		assert (n1 != 0) ~
@@ -131,14 +130,14 @@ define io.put.number n :=
 ~
 
 define io.put.string s :=
-	io.for (i = 0; (^s) [i] != byte 0; io.do
+	io.for (i = 0; (^s) [i] != byte 0;
 		perform.io io.put.char (^s) [i] ~
 		i + 1
 	)
 ~
 
 define io.cat :=
-	io.for (n = 1; n != 0; io.do
+	io.for (n = 1; n != 0;
 		let pointer := address predef (array byte * buffer.size) ~
 		let nBytesRead := eval.io io.read (pointer, buffer.size) ~
 		perform.io io.write.all (pointer, nBytesRead) ~
