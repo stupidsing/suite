@@ -71,6 +71,7 @@ import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Streamlet;
 import suite.util.ReadStream;
 import suite.util.Rethrow.SourceEx;
@@ -163,15 +164,15 @@ public class P0Parse {
 			}).match("array .0 * .1", (a, b) -> {
 				return FunpRepeat.of(b != Atom.of("_") ? Int.num(b) : null, p(a));
 			}).match("asm .0 {.1}", (a, b) -> {
-				return isDo() ? FunpDoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
+				return FunpDoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
 					var ma = Suite.pattern(".0 = .1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
-				}).toList(), Tree.iter(b, TermOp.OR____).toList()) : fail();
+				}).toList(), Tree.iter(b, TermOp.OR____).toList());
 			}).match("assign .0 := .1 ~ .2", (a, b, c) -> {
 				var v = FunpVariable.of(Atom.name(a));
-				return isDo() ? FunpDoAssignVar.of(v, p(b), p(c)) : fail();
+				return checkDo(() -> FunpDoAssignVar.of(v, p(b), p(c)));
 			}).match("assign ^.0 := .1 ~ .2", (a, b, c) -> {
-				return isDo() ? FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)) : fail();
+				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
 			}).match("byte", () -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpDontCare.of());
 			}).match("byte .0", a -> {
@@ -213,7 +214,7 @@ public class P0Parse {
 			}).match("error", () -> {
 				return FunpError.of();
 			}).match("eval.io .0", a -> {
-				return isDo() ? FunpDoEvalIo.of(p(a)) : fail();
+				return checkDo(() -> FunpDoEvalIo.of(p(a)));
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
@@ -246,7 +247,7 @@ public class P0Parse {
 				return FunpNumber.ofNumber(num(a));
 			}).match("perform.io .0 ~ .1", (a, b) -> {
 				var lambda = lambda(dontCare, b);
-				return isDo() ? FunpDefine.of(Fdt.L_IOAP, lambda.vn, FunpDoEvalIo.of(p(a)), lambda.expr) : fail();
+				return checkDo(() -> FunpDefine.of(Fdt.L_IOAP, lambda.vn, FunpDoEvalIo.of(p(a)), lambda.expr));
 			}).match("predef .0", a -> {
 				return FunpPredefine.of(p(a));
 			}).match("size.of .0", a -> {
@@ -281,6 +282,10 @@ public class P0Parse {
 			}).nonNullResult();
 		}
 
+		private <T> T checkDo(Source<T> source) {
+			return vns.contains(doToken) ? source.source() : Funp_.fail(null, "do block required");
+		}
+
 		private Funp consult(String url) {
 			Fun<ReadStream, Funp> r0 = is -> is.doReader(isr -> FunpPredefine.of(parse(Suite.parse(To.string(isr)))));
 
@@ -297,10 +302,6 @@ public class P0Parse {
 		private Funp define(Fdt t, Node var, Funp value, Node expr) {
 			var vn = isVar(var) ? Atom.name(var) : null;
 			return vn != null ? FunpDefine.of(t, vn, value, nv(vn).p(expr)) : null;
-		}
-
-		private boolean isDo() {
-			return vns.contains(doToken);
 		}
 
 		private Streamlet<Pair<String, Node>> kvs(Node node) {
@@ -338,7 +339,7 @@ public class P0Parse {
 			else if (a instanceof Int)
 				return Int.num(a);
 			else
-				return fail();
+				return Funp_.fail(null, "not a number");
 		}
 
 		private Funp bind(Node a, Node b, Node c) {
