@@ -167,9 +167,7 @@ public class P2InferType {
 
 	private Funp captureLambdas(Funp node0) {
 		var grandLambda = FunpLambda.of("grand$", node0);
-
 		var defByVars = Funp_.associateDefinitions(node0);
-
 		var lambdaByFunp = new IdentityHashMap<Funp, FunpLambda>();
 
 		class AssociateLambda {
