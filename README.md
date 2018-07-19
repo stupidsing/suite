@@ -18,7 +18,7 @@ Library, mostly Java, with all sorts of useful code pieces and courageous attemp
 
 - some [logic interpreter](https://github.com/stupidsing/suite/tree/master/src/main/java/suite/lp/doer/) (a.k.a. Prolog) and [compiling them into Java lambdas](https://github.com/stupidsing/suite/blob/master/src/main/java/suite/lp/sewing/impl/SewingProverImpl.java)
 
-- B-tree implementations
+- [B-tree](https://github.com/stupidsing/suite/blob/master/src/main/java/suite/btree/) implementations, and a [lazy one](https://github.com/stupidsing/suite/blob/master/src/main/java/suite/immutable/LazyIbTree.java)
 
 - some [numerical algorithms](https://github.com/stupidsing/suite/tree/master/src/main/java/suite/math/linalg/), BFGS or what...
 
