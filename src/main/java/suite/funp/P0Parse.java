@@ -108,12 +108,12 @@ public class P0Parse {
 				return new Expand(macros.put(Prototype.of(head), new Node[] { head, m[1], })).e(m[2]);
 			} else if ((m = macros.get(Prototype.of(node))) != null) {
 				var g = new Generalizer();
-				var t0_ = g.generalize(m[0]);
-				var t1_ = g.generalize(m[1]);
+				var t0 = g.generalize(m[0]);
+				var t1 = g.generalize(m[1]);
 				var trail = new Trail();
 
-				if (Binder.bind(node, t0_, trail))
-					return e(t1_);
+				if (Binder.bind(node, t0, trail))
+					return e(t1);
 				else
 					trail.unwindAll();
 			}

@@ -12,6 +12,7 @@ import java.util.Map;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
+import suite.util.String_;
 
 public class DebianUtil {
 
@@ -28,9 +29,8 @@ public class DebianUtil {
 
 			while ((line = br.readLine()) != null) {
 				if (!line.startsWith(" ") && 0 < sb.length()) {
-					var kv = sb.toString();
-					var pos = kv.indexOf(':');
-					pm.put(kv.substring(0, pos).trim(), kv.substring(pos + 1).trim());
+					var pair = String_.split2(sb.toString(), ":");
+					pm.put(pair.t0, pair.t1);
 					sb.setLength(0);
 				}
 
