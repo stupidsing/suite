@@ -199,11 +199,16 @@ public class P2InferType {
 
 		class Vi {
 			private FunpLambda lambda; // variable defined here
-			private FunpLambda refLambda; // variable referenced from here
+			private boolean isRef;
 			private FunpLambda varLambda; // variable read from here
 
 			private Vi(Funp def) {
 				lambda = def instanceof FunpLambda ? (FunpLambda) def : lambdaByFunp.get(def);
+			}
+
+			private FunpLambda setLambda(boolean isRef_, FunpLambda varLambda_) {
+				isRef = isRef_ ? isRef_ : isRef;
+				return varLambda = varLambda_;
 			}
 		}
 
@@ -217,11 +222,11 @@ public class P2InferType {
 
 					return n.sw( //
 					).doIf(FunpDoAssignVar.class, f -> {
-						infoByVar.get(f.var).refLambda = lambda;
+						infoByVar.get(f.var).setLambda(true, lambda);
 					}).doIf(FunpReference.class, f -> {
-						f.expr.cast(FunpVariable.class, var -> infoByVar.get(var).refLambda = lambda);
+						f.expr.cast(FunpVariable.class, var -> infoByVar.get(var).setLambda(true, lambda));
 					}).doIf(FunpVariable.class, f -> {
-						infoByVar.get(f).varLambda = lambda;
+						infoByVar.get(f).setLambda(false, lambda);
 					}).result();
 				});
 			}
@@ -230,7 +235,7 @@ public class P2InferType {
 		Fun2<FunpVariable, FunpLambda, Funp> accessFun = (var, lambda) -> {
 			var vi = infoByVar.get(var);
 			var lambdaVar = vi.lambda;
-			var isRef = vi.refLambda != null;
+			var isRef = vi.isRef;
 			var vn = var.vn;
 			var access = new Object() {
 				private Funp access(FunpLambda lambda_) {
@@ -247,15 +252,10 @@ public class P2InferType {
 		};
 
 		var accessors = Read.from2(infoByVar).concatMap2((var, vi) -> {
-			var list = new ArrayList<Pair<FunpVariable, Funp>>();
-			if (vi.refLambda != null)
-				list.add(Pair.of(var, accessFun.apply(var, vi.refLambda)));
-			if (vi.varLambda != null)
-				list.add(Pair.of(var, accessFun.apply(var, vi.varLambda)));
-			return Read.from2(list);
+			return vi.varLambda != null ? Read.each2(Pair.of(var, accessFun.apply(var, vi.varLambda))) : Read.empty2();
 		}).toMap();
 
-		if (Boolean.FALSE) // perform capture?
+		if (Boolean.TRUE) // perform capture?
 			return new Object() {
 				private Funp c(Funp n) {
 					return inspect.rewrite(n, Funp.class, this::c_);
