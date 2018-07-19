@@ -8,8 +8,8 @@ import org.junit.Test;
 import suite.adt.pair.Pair;
 import suite.node.Node;
 import suite.node.Str;
-import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.util.TreeUtil;
 import suite.streamlet.Read;
 
 public class RenderFunctionalTemplateTest {
@@ -20,7 +20,7 @@ public class RenderFunctionalTemplateTest {
 
 		var map = Read //
 				.from2(List.of( //
-						Pair.of("list", Tree.of(TermOp.OR____, fruits)), //
+						Pair.of("list", TreeUtil.buildUp(TermOp.OR____, fruits)), //
 						Pair.of("title", new Str("My favourite things"))) //
 				) //
 				.toMap();

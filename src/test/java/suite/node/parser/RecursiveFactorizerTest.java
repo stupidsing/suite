@@ -23,6 +23,7 @@ import suite.node.parser.FactorizeResult.FTerminal;
 import suite.node.parser.FactorizeResult.FTree;
 import suite.node.util.Rewrite;
 import suite.node.util.Singleton;
+import suite.node.util.TreeUtil;
 import suite.os.FileUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
@@ -146,7 +147,7 @@ public class RecursiveFactorizerTest {
 
 		var map = new HashMap<Node, Reference>();
 		map.put(Atom.of("name"), Reference.of(name));
-		map.put(Atom.of("pairs"), Reference.of(Tree.of(TermOp.OR____, pairs)));
+		map.put(Atom.of("pairs"), Reference.of(TreeUtil.buildUp(TermOp.OR____, pairs)));
 
 		return Tree.of(TermOp.COLON_, Atom.of(FTree.class.getName()), Dict.of(map));
 	}

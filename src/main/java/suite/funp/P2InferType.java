@@ -86,6 +86,7 @@ import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
+import suite.node.util.TreeUtil;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Ints_;
@@ -451,7 +452,7 @@ public class P2InferType {
 						for (var field : Streamlet.concat(fs0, fs1))
 							if (set.add(field))
 								list.add(field);
-						unify(ref, Tree.of(TermOp.AND___, list));
+						unify(ref, TreeUtil.buildUp(TermOp.AND___, list));
 					}
 					return true;
 				});

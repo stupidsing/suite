@@ -16,6 +16,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.TermOp;
 import suite.node.pp.PrettyPrinter;
+import suite.node.util.TreeUtil;
 
 public class RuleSetPredicates {
 
@@ -37,7 +38,7 @@ public class RuleSetPredicates {
 		for (var rule : rules)
 			nodes.add(Tree.of(TermOp.IS____, rule.head, rule.tail));
 
-		return prover.bind(Tree.of(TermOp.NEXT__, nodes), p0);
+		return prover.bind(TreeUtil.buildUp(TermOp.NEXT__, nodes), p0);
 	});
 
 	public BuiltinPredicate importPredicate = PredicateUtil.p1((prover, p0) -> prover.ruleSet().importFrom(p0));

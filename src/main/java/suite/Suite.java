@@ -27,9 +27,9 @@ import suite.lp.search.ProverBuilder.Builder;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
-import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.parser.IterativeParser;
+import suite.node.util.TreeUtil;
 import suite.primitive.IoSink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
@@ -109,7 +109,7 @@ public class Suite {
 				.filter(rule -> proto == null || proto.equals(Prototype.of(rule))) //
 				.map(Rule::clause) //
 				.toList();
-		return Tree.of(TermOp.NEXT__, nodes);
+		return TreeUtil.buildUp(TermOp.NEXT__, nodes);
 	}
 
 	public static Prover newProver(List<String> toImports) {

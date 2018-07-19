@@ -11,6 +11,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
+import suite.node.util.TreeUtil;
 import suite.streamlet.FunUtil.Source;
 import suite.util.List_;
 import suite.util.To;
@@ -57,7 +58,7 @@ public class SldResolution {
 			var value1 = orsMap.get(negate(e.getKey()));
 
 			if (value1 != null)
-				results.add(Tree.of(TermOp.AND___, List_.concat(value0.source(), value1.source())));
+				results.add(TreeUtil.buildUp(TermOp.AND___, List_.concat(value0.source(), value1.source())));
 		}
 
 		return results;

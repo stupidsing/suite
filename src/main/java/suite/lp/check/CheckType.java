@@ -18,7 +18,6 @@ import suite.node.Atom;
 import suite.node.Dict;
 import suite.node.Node;
 import suite.node.Reference;
-import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.tree.TreeTuple;
@@ -77,7 +76,7 @@ public class CheckType {
 			} else if (op == TermOp.TUPLE_)
 				if (l instanceof Atom) {
 					var ps = TreeUtil.elements(r, TreeUtil.nElements(r));
-					return getEnumType(l, Tree.of(TermOp.TUPLE_, Read.from(ps).map(this::getType).toList()));
+					return getEnumType(l, TreeUtil.buildUp(TermOp.TUPLE_, Read.from(ps).map(this::getType).toList()));
 				} else
 					return new Reference(); // free type
 			else {
