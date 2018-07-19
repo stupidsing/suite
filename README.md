@@ -33,7 +33,7 @@ Recently I was thinking about a new name for this muddle of stuff... maybe call 
 
 ### Who am I?
 
-An enthusiastic programmer, with some computer science, maths background. I write Java for living (curriculum vitae https://rawgit.com/stupidsing/pieces/master/resume.html).
+An enthusiastic programmer, with some computer science, maths background. I write Java for living ([curriculum vitae](https://rawgit.com/stupidsing/pieces/master/resume.html)).
 
 
 ### Any pre-requisites to build this mess?
