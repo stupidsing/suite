@@ -446,8 +446,8 @@ public class P2InferType {
 					if (ref.isFree()) {
 						var list = new ArrayList<Node>();
 						var set = new HashSet<Node>();
-						Streamlet<Node> fs0 = Read.from(pairs).map(pair -> Atom.of(pair.t0));
-						Streamlet<Node> fs1 = Read.from(types.keySet());
+						var fs0 = Read.from(pairs).<Node> map(pair -> Atom.of(pair.t0));
+						var fs1 = Read.from(types.keySet());
 						for (var field : Streamlet.concat(fs0, fs1))
 							if (set.add(field))
 								list.add(field);
