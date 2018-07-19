@@ -4,6 +4,7 @@ import static java.util.Map.entry;
 import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import suite.node.Atom;
@@ -64,6 +65,14 @@ public class TreeUtil {
 			}
 		}.breakdown(node);
 		return Read.from(list);
+	}
+
+	public static Node buildUp(Operator operator, List<Node> nodes) {
+		Node result = Atom.NIL;
+		var i = nodes.size();
+		while (0 <= --i)
+			result = Tree.of(operator, nodes.get(i), result);
+		return result;
 	}
 
 	public static Node[] elements(Node node0, int n) {

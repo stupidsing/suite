@@ -1,6 +1,5 @@
 package suite.node;
 
-import java.util.List;
 import java.util.Objects;
 
 import suite.node.io.Operator;
@@ -62,14 +61,6 @@ public abstract class Tree extends Node {
 					return null;
 			}
 		}));
-	}
-
-	public static Node of(Operator operator, List<Node> nodes) {
-		Node result = Atom.NIL;
-		var i = nodes.size();
-		while (0 <= --i)
-			result = of(operator, nodes.get(i), result);
-		return result;
 	}
 
 	public static Tree of(Operator operator, Node left, Node right) {

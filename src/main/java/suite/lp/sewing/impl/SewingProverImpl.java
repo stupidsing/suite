@@ -480,7 +480,7 @@ public class SewingProverImpl implements ProverFactory {
 				});
 				rt.pushAlt(rt_ -> {
 					restore.restore(rt);
-					return p.test(rt, Tree.of(TermOp.AND___, vs)) ? okay : fail;
+					return p.test(rt, TreeUtil.buildUp(TermOp.AND___, vs)) ? okay : fail;
 				});
 				return tr1;
 			};
