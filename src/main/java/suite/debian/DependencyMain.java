@@ -175,10 +175,10 @@ public class DependencyMain extends ExecutableProgram {
 				, "amd64");
 		var packageName = "dkms";
 
-		List<Map<String, String>> packages;
-		packages = rethrow(() -> aptUtil.readRepoPackages(repo));
+		var packages = rethrow(() -> aptUtil.readRepoPackages(repo));
 		var required = new HashSet<>(List.of(packageName));
-		Set<String> required1 = dpkgUtil.getDependeeSet(packages, required);
+		var required1 = dpkgUtil.getDependeeSet(packages, required);
+
 		return Read //
 				.from(required1) //
 				.map(packageName_ -> aptUtil.getDownloadUrl(repo, packages, packageName_)) //
@@ -215,7 +215,7 @@ public class DependencyMain extends ExecutableProgram {
 				.map(this::packageName) //
 				.toList());
 
-		Set<String> required1 = dpkgUtil.getDependeeSet(packages, required);
+		var required1 = dpkgUtil.getDependeeSet(packages, required);
 
 		return Read //
 				.from(packages) //
