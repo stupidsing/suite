@@ -136,10 +136,16 @@ public class P0Parse {
 			).match(".0 | .1", (a, b) -> {
 				return FunpApply.of(p(a), p(b));
 			}).match(".0 .1", (a, b) -> {
-				var vn = a instanceof Atom ? Atom.name(a) : null;
-				var m = Suite.pattern("[.0]").match(b);
-				var isIndex = m != null && 0 < m.length && !isList(m[0]);
-				return vn != null && vns.contains(vn) && !isIndex ? FunpApply.of(p(b), p(a)) : null;
+				if (a instanceof Atom) {
+					var vn0 = Atom.name(a);
+					var m = Suite.pattern("[.0]").match(b);
+					var isIndex = m != null && 0 < m.length && !isList(m[0]);
+					var isIo = vn0.startsWith("!");
+					var vn1 = !isIo ? vn0 : "io." + vn0.substring(1);
+					var apply = vns.contains(vn1) && !isIndex ? FunpApply.of(p(b), FunpVariable.of(vn1)) : null;
+					return !isIo ? apply : checkDo(() -> FunpDoEvalIo.of(apply));
+				} else
+					return null;
 			}).match(".0 [.1]", (a, b) -> {
 				return !isList(b) ? FunpIndex.of(FunpReference.of(p(a)), p(b)) : null;
 			}).match(".0 => .1", (a, b) -> {
