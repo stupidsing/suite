@@ -325,14 +325,19 @@ public class P4GenerateCode {
 					if (result == Result.ASSIGN)
 						if (size == target.size())
 							return returnAssign((c1, target) -> {
-								var op_ = deOp.decomposeFunpMemory(fd, target);
-								if (op_ != null)
-									c1.compileInstruction(Insn.MOV, op_, n);
+								var ops = deOp.decomposeFunpMemory(c1.fd, f);
+								var opt = deOp.decomposeFunpMemory(c1.fd, target);
+								OpReg r0, r1;
+								if (opt != null)
+									c1.compileInstruction(Insn.MOV, opt, ops != null ? ops : c1.mask(opt).compileIsOp(f));
 								else {
-									OpReg r0, r1;
 									var c2 = c1.mask(r0 = c1.compileIsReg(target.pointer));
-									var c3 = c2.mask(r1 = c2.compileIsReg(pointer));
-									c3.compileMove(r0, target.start, r1, start, size);
+									if (ops != null)
+										c2.compileInstruction(Insn.MOV, amd64.mem(r0, target.start, size), ops);
+									else {
+										var c3 = c2.mask(r1 = c2.compileIsReg(pointer));
+										c3.compileMove(r0, target.start, r1, start, size);
+									}
 								}
 							});
 						else
@@ -673,11 +678,6 @@ public class P4GenerateCode {
 					sink.sink(new Compile0(result, em1, target, pop0, pop1));
 				});
 				return refLabel;
-			}
-
-			private void compileInstruction(Insn insn, Operand op0, Funp f1) {
-				var op1 = deOp.decomposeNumber(fd, f1);
-				compileInstruction(insn, op0, op1 != null ? op1 : mask(op0).compileIsOp(f1));
 			}
 
 			private void compileInstruction(Insn insn, Operand op0, Operand op1) {
