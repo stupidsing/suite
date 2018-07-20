@@ -314,10 +314,15 @@ public class P4GenerateCode {
 				})).applyIf(FunpInvokeIo.class, f -> f.apply((routine, is, os) -> {
 					compileInvoke(routine);
 					return returnAssign((c1, target) -> {
-						OpReg r0, r1;
-						var c2 = c1.mask(r0 = c1.compileIsReg(target.pointer));
-						var c3 = c2.mask(r1 = c2.compileFramePointer());
-						c3.compileMove(r0, target.start, r1, c3.fd + is, target.size());
+						var opt = deOp.decomposeFunpMemory(c1.fd, target);
+						if (opt != null)
+							c1.compileInstruction(Insn.MOV, opt, amd64.mem(c1.compileFramePointer(), c1.fd + is, os));
+						else {
+							OpReg r0, r1;
+							var c2 = c1.mask(r0 = c1.compileIsReg(target.pointer));
+							var c3 = c2.mask(r1 = c2.compileFramePointer());
+							c3.compileMove(r0, target.start, r1, c3.fd + is, os);
+						}
 					});
 				})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 					var size = end - start;
