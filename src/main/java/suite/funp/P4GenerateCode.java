@@ -409,7 +409,8 @@ public class P4GenerateCode {
 
 			private CompileOut returnAssign(Sink2<Compile1, FunpMemory> assign) {
 				if (result == Result.ASSIGN) {
-					assign.sink2(this, target);
+					if (0 < target.size())
+						assign.sink2(this, target);
 					return new CompileOut();
 				} else if (result == Result.ISOP || result == Result.ISREG || result == Result.ISSPEC) {
 					var op0 = isOutSpec ? pop0 : rs.get(is);
