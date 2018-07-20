@@ -256,7 +256,7 @@ public class P2InferType {
 			return vi.varLambda != null ? Read.each2(Pair.of(var, accessFun.apply(var, vi.varLambda))) : Read.empty2();
 		}).toMap();
 
-		if (Boolean.TRUE) // perform capture?
+		if (Boolean.FALSE) // perform capture?
 			return new Object() {
 				private Funp c(Funp n) {
 					return inspect.rewrite(n, Funp.class, this::c_);
