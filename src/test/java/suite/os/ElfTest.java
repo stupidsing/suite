@@ -28,7 +28,8 @@ public class ElfTest {
 
 		var program = "" //
 				+ "let linux := consult \"linux.fp\" ~ io.do \n" //
-				+ "	perform.io linux/io.cat ~ \n" //
+				+ "	let io.cat := linux/io.cat ~ \n" //
+				+ "	perform !cat {} ~ \n" //
 				+ "	0 \n";
 
 		test(0, program, text);

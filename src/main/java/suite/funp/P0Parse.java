@@ -251,9 +251,9 @@ public class P0Parse {
 				return FunpNumber.of(IntMutable.nil());
 			}).match("number .0", a -> {
 				return FunpNumber.ofNumber(num(a));
-			}).match("perform.io .0 ~ .1", (a, b) -> {
+			}).match("perform .0 ~ .1", (a, b) -> {
 				var lambda = lambda(dontCare, b);
-				return checkDo(() -> FunpDefine.of(lambda.vn, FunpDoEvalIo.of(p(a)), lambda.expr, Fdt.L_IOAP));
+				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
 			}).match("predef .0", a -> {
 				return FunpPredefine.of(p(a));
 			}).match("size.of .0", a -> {
