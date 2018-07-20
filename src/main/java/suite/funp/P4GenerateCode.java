@@ -316,7 +316,7 @@ public class P4GenerateCode {
 					return returnAssign((c1, target) -> {
 						OpReg r0, r1;
 						var c2 = c1.mask(r0 = c1.compileIsReg(target.pointer));
-						var c3 = c2.mask(r1 = c2.compileIsReg(FunpFramePointer.of()));
+						var c3 = c2.mask(r1 = c2.compileFramePointer());
 						c3.compileMove(r0, target.start, r1, c3.fd + is, target.size());
 					});
 				})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
@@ -329,15 +329,16 @@ public class P4GenerateCode {
 								var opt = deOp.decomposeFunpMemory(c1.fd, target);
 								OpReg r0, r1;
 								if (opt != null)
-									c1.compileInstruction(Insn.MOV, opt, ops != null ? ops : c1.mask(opt).compileIsOp(f));
+									if (ops != null)
+										c1.compileInstruction(Insn.MOV, opt, ops);
+									else
+										c1.compileInstruction(Insn.MOV, opt, c1.mask(opt).compileIsOp(f));
 								else {
 									var c2 = c1.mask(r0 = c1.compileIsReg(target.pointer));
 									if (ops != null)
 										c2.compileInstruction(Insn.MOV, amd64.mem(r0, target.start, size), ops);
-									else {
-										var c3 = c2.mask(r1 = c2.compileIsReg(pointer));
-										c3.compileMove(r0, target.start, r1, start, size);
-									}
+									else
+										c2.mask(r1 = c2.compileIsReg(pointer)).compileMove(r0, target.start, r1, start, size);
 								}
 							});
 						else
