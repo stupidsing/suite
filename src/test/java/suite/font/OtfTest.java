@@ -28,8 +28,8 @@ public class OtfTest {
 				.concatMap(FileUtil::findPaths) //
 				.map(Path::toString) //
 				.filter(path -> {
-					var pathl = path.toLowerCase();
-					return pathl.endsWith(".otf") || pathl.endsWith(".ttf");
+					var pathLower = path.toLowerCase();
+					return pathLower.endsWith(".otf") || pathLower.endsWith(".ttf");
 				}) //
 				.map2(path -> {
 					var exec = new Execute(new String[] { "otfinfo", "-i", path, });

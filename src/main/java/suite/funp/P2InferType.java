@@ -761,8 +761,7 @@ public class P2InferType {
 				}
 			}.c(expr1);
 
-			if (maxRegAlloc <= depth)
-				var.setReg(false);
+			var.setReg(depth < maxRegAlloc);
 
 			// if erase is called twice,
 			// pass 1: check for any reference accesses to locals, set
