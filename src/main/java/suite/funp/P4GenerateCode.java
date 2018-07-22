@@ -167,8 +167,8 @@ public class P4GenerateCode {
 			private CompileOut compile(Funp n) {
 				return n.<CompileOut> switch_( //
 				).applyIf(FunpAllocGlobal.class, f -> f.apply((size, value, expr, address) -> {
-					compileGlobal(size, address, FunpDontCare.of());
-					compileAssign(value, FunpMemory.of(FunpOperand.of(address), 0, size));
+					if (!compileGlobal(size, address, value))
+						compileAssign(value, FunpMemory.of(FunpOperand.of(address), 0, size));
 					return compile(expr);
 				})).applyIf(FunpAllocStack.class, f -> f.apply((size, value, expr, offset) -> {
 					return compileAllocStack(size, value, null, c -> {
@@ -664,17 +664,23 @@ public class P4GenerateCode {
 							return size == 0 || instructions.add(amd64.instruction(Insn.DS, amd64.imm32(size)));
 						}).applyIf(FunpNumber.class, f -> f.apply(i -> {
 							return instructions.add(amd64.instruction(Insn.D, amd64.imm(i.get(), size)));
-						})).result();
+						})).applyIf(Funp.class, f -> {
+							return false;
+						}).result();
 					}
 				};
 
 				var ok = o.fill(size, node);
 
-				if (ok)
-					address.update(compileBlock(c -> {
+				var block = compileBlock(c -> {
+					if (ok)
 						for (var instruction : o.instructions)
 							c.em.emit(instruction);
-					}));
+					else
+						c.em.emit(amd64.instruction(Insn.DS, amd64.imm32(size)));
+				});
+
+				address.update(block);
 
 				return ok;
 			}
