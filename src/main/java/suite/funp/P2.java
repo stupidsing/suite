@@ -23,19 +23,21 @@ public class P2 {
 
 	public static class FunpAllocGlobal implements Funp, P4.End {
 		public int size;
+		public Funp value;
 		public Funp expr;
 		public Mutable<Operand> address;
 
-		public static FunpAllocGlobal of(int size, Funp expr, Mutable<Operand> address) {
+		public static FunpAllocGlobal of(int size, Funp value, Funp expr, Mutable<Operand> address) {
 			var f = new FunpAllocGlobal();
+			f.value = value;
 			f.size = size;
 			f.expr = expr;
 			f.address = address;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<Integer, Funp, Mutable<Operand>, R> fun) {
-			return fun.apply(size, expr, address);
+		public <R> R apply(FixieFun4<Integer, Funp, Funp, Mutable<Operand>, R> fun) {
+			return fun.apply(size, value, expr, address);
 		}
 	}
 
