@@ -72,7 +72,7 @@ import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Streamlet;
+import suite.streamlet.Streamlet2;
 import suite.util.ReadStream;
 import suite.util.Rethrow.SourceEx;
 import suite.util.Switch;
@@ -170,7 +170,7 @@ public class P0Parse {
 			}).match("^.0", a -> {
 				return FunpDeref.of(p(a));
 			}).match("{ .0 }", a -> {
-				return FunpStruct.of(kvs(a).map(kv -> Pair.of(kv.t0, p(kv.t1))).toList());
+				return FunpStruct.of(kvs(a).map((k, v) -> Pair.of(k, p(v))).toList());
 			}).match("address .0", a -> {
 				return FunpReference.of(p(a));
 			}).match("array .0 * .1", (a, b) -> {
@@ -218,10 +218,10 @@ public class P0Parse {
 				return define(Fdt.L_POLY, a, lambda0(b, c), d);
 			}).match("define { .0 } ~ .1", (a, b) -> {
 				var list = kvs(a).collect();
-				var vns1 = list.fold(vns, (vs, pair) -> vs.add(pair.t0));
+				var vns1 = list.fold(vns, (vs, k, v) -> vs.add(k));
 				var p1 = new Parse(vns1);
 				return FunpDefineRec.of(list //
-						.map(pair -> Pair.of(pair.t0, p1.p(pair.t1))) //
+						.map((k, v) -> Pair.of(k, p1.p(v))) //
 						.toList(), p1.p(b));
 			}).match("error", () -> {
 				return FunpError.of();
@@ -311,16 +311,19 @@ public class P0Parse {
 			return vn != null ? FunpDefine.of(vn, value, nv(vn).p(expr), t) : null;
 		}
 
-		private Streamlet<Pair<String, Node>> kvs(Node node) {
-			return Tree.iter(node, Tree::decompose).map(n -> {
-				Node[] m;
-				if ((m = Suite.pattern(".0 .1 := .2").match(n)) != null)
-					return Pair.of(Atom.name(m[0]), Suite.substitute(".0 => .1", m[1], m[2]));
-				else if ((m = Suite.pattern(".0 := .1").match(n)) != null || (m = Suite.pattern(".0: .1").match(n)) != null)
-					return Pair.of(Atom.name(m[0]), m[1]);
-				else
-					return Pair.of(Atom.name(n), n);
-			});
+		private Streamlet2<String, Node> kvs(Node node) {
+			return Tree //
+					.iter(node, Tree::decompose) //
+					.map(n -> {
+						Node[] m;
+						if ((m = Suite.pattern(".0 .1 := .2").match(n)) != null)
+							return Pair.of(Atom.name(m[0]), Suite.substitute(".0 => .1", m[1], m[2]));
+						else if ((m = Suite.pattern(".0 := .1").match(n)) != null || (m = Suite.pattern(".0: .1").match(n)) != null)
+							return Pair.of(Atom.name(m[0]), m[1]);
+						else
+							return Pair.of(Atom.name(n), n);
+					}) //
+					.map2(Pair::fst, Pair::snd);
 		}
 
 		private FunpLambda lambda0(Node a, Node b) {
