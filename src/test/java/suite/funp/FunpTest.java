@@ -146,7 +146,7 @@ public class FunpTest {
 			var pair = Funp_.main(isOptimize).compile(Amd64Interpret.codeStart, p);
 			var bytes = pair.t1;
 			LogUtil.info("Hex" + bytes + "\n\n");
-			assertEquals(r, new Amd64Interpret().interpret(pair.t0, Bytes.of(), Bytes.of()));
+			assertEquals(r, new Amd64Interpret().interpret(pair.t0, bytes, Bytes.of()));
 			assertTrue(bytes != null);
 		}
 	}

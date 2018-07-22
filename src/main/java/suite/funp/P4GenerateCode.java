@@ -650,7 +650,7 @@ public class P4GenerateCode {
 								return fill(ps, expr);
 							else
 								return fail();
-						})).doIf(FunpData.class, f -> f.apply(pairs -> {
+						})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 							var offset = 0;
 							var b = true;
 							for (var pair : Read.from(pairs).sort((p0, p1) -> Integer.compare(p0.t1.t0, p1.t1.t0))) {
@@ -661,7 +661,7 @@ public class P4GenerateCode {
 							}
 							return b && fill(size - offset, FunpDontCare.of());
 						})).applyIf(FunpDontCare.class, f -> {
-							return instructions.add(amd64.instruction(Insn.DS, amd64.imm32(size)));
+							return size == 0 || instructions.add(amd64.instruction(Insn.DS, amd64.imm32(size)));
 						}).applyIf(FunpNumber.class, f -> f.apply(i -> {
 							return instructions.add(amd64.instruction(Insn.D, amd64.imm(i.get(), size)));
 						})).result();
