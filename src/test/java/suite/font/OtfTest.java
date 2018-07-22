@@ -26,6 +26,7 @@ import suite.streamlet.Read;
  */
 public class OtfTest {
 
+	// main program and unit test combined.
 	@Test
 	public void otfTest() {
 
