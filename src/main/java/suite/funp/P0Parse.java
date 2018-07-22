@@ -171,10 +171,10 @@ public class P0Parse {
 				return FunpDeref.of(p(a));
 			}).match("{ .0 }", a -> {
 				return FunpStruct.of(kvs(a).map((k, v) -> Pair.of(k, p(v))).toList());
-			}).match("address .0", a -> {
+			}).match("address.of .0", a -> {
 				return FunpReference.of(p(a));
 			}).match("array .0 * .1", (a, b) -> {
-				return FunpRepeat.of(b != Atom.of("_") ? Int.num(b) : null, p(a));
+				return FunpRepeat.of(a != Atom.of("_") ? Int.num(a) : null, p(b));
 			}).match("asm .0 {.1}", (a, b) -> {
 				return checkDo(() -> FunpDoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
 					var ma = Suite.pattern(".0 = .1").match(n);

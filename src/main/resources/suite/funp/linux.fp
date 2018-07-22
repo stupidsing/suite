@@ -8,11 +8,11 @@ define min (a, b) := if (a < b) then a else b ~
 
 define !mmap length := !do
 	let ps := [0, length, 3, 34, -1, 0,] ~
-	asm (EAX = 90; EBX = address ps;) { INT (-128); }
+	asm (EAX = 90; EBX = address.of ps;) { INT (-128); }
 ~
 
 define !munmap (length, pointer) := !do
-	--type pointer = address (array byte * buffer.size) ~
+	--type pointer = address.of (array buffer.size * byte) ~
 	type pointer = number ~
 	asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
 ~
@@ -36,7 +36,7 @@ define !alloc size0 := !do
 			) else 0
 		~
 	} ~
-	let p0 := !alloc.chain address alloc.free.chain ~
+	let p0 := !alloc.chain address.of alloc.free.chain ~
 	if (p0 = 0) then (
 		let ap := alloc.pointer ~
 		let pointer.head := if (ap != 0) then ap else !mmap 16384 ~
@@ -78,17 +78,17 @@ define !new.mut.number init := !do
 ~
 
 define !read (pointer, length) := !do
-	type pointer = address (array byte * _) ~
+	type pointer = address.of (array _ * byte) ~
 	asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
 define !write (pointer, length) := !do
-	type pointer = address (array byte * _) ~
+	type pointer = address.of (array _ * byte) ~
 	asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
 define !write.all (pointer, length) :=
-	type pointer = address (array byte * _) ~
+	type pointer = address.of (array _ * byte) ~
 	!for (n = length; 0 < n;
 		let p1 := asm (EAX = pointer; EBX = length; ECX = n;) { ADD (EAX, EBX); SUB (EAX, ECX); } ~
 		let n1 := !write (coerce.pointer p1, n) ~
@@ -98,16 +98,16 @@ define !write.all (pointer, length) :=
 ~
 
 define !get.char {} := !do
-	let.global buffer := array byte * buffer.size ~
+	let.global buffer := array buffer.size * byte ~
 	let.global start.end := (0, 0) ~
 	let (s0, e0) := start.end ~
-	let (s1, e1) := if (s0 < e0) then (start.end) else (0, !read (address buffer, buffer.size)) ~
+	let (s1, e1) := if (s0 < e0) then (start.end) else (0, !read (address.of buffer, buffer.size)) ~
 	assert (s1 < e1) ~
 	assign start.end := (s1 + 1, e1) ~
 	buffer [s0]
 ~
 
-define !put.char ch := !write.all (address predef [ch,], 1) ~
+define !put.char ch := !write.all (address.of predef [ch,], 1) ~
 
 define !put.number n :=
 	define {
@@ -138,7 +138,7 @@ define !put.string s :=
 
 define !cat {} :=
 	!for (n = 1; n != 0;
-		let pointer := address predef (array byte * buffer.size) ~
+		let pointer := address.of predef (array buffer.size * byte) ~
 		let nBytesRead := !read (pointer, buffer.size) ~
 		perform !write.all (pointer, nBytesRead) ~
 		nBytesRead
