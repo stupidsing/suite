@@ -690,7 +690,7 @@ public class P4GenerateCode {
 			private void compileInstruction(Insn insn, Operand op0, Operand op1) {
 				if (op0 instanceof OpMem && op1 instanceof OpMem || op0 instanceof OpImm) {
 					var oldOp1 = op1;
-					em.emit(amd64.instruction(Insn.MOV, op1 = rs.mask(op0).get(op1.size), oldOp1));
+					em.mov(op1 = rs.mask(op0).get(op1.size), oldOp1);
 				}
 				em.emit(amd64.instruction(insn, op0, op1));
 			}
