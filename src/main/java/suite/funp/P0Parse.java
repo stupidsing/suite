@@ -279,7 +279,7 @@ public class P0Parse {
 						.<Funp> map(ch -> FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(ch))) //
 						.snoc(FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(0))) //
 						.toList());
-				return FunpDefine.of(vn, fa, FunpVariable.of(vn), Fdt.GLOB);
+				return FunpDefine.of(vn, fa, FunpReference.of(FunpVariable.of(vn)), Fdt.GLOB);
 			}).applyTree((op, l, r) -> {
 				return FunpTree.of(op, p(l), p(r));
 			}).nonNullResult();

@@ -125,8 +125,8 @@ public class FunpTest {
 
 	@Test
 	public void testString() {
-		test(65, "define s := \"A world for us\" ~ coerce.number s [0]");
-		test(65, "let.global s := \"A world for us\" ~ coerce.number s [0]");
+		test(65, "define s := \"A world for us\" ~ coerce.number (^s) [0]");
+		test(65, "let.global s := \"A world for us\" ~ coerce.number (^s) [0]");
 	}
 
 	@Test
