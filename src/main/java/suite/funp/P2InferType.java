@@ -151,8 +151,8 @@ public class P2InferType {
 			private Funp extract(Funp n) {
 				return inspect.rewrite(n, Funp.class, n_ -> {
 					return n_.sw( //
-					).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
-						return FunpLambda.of(vn, extractPredefine(expr));
+					).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
+						return FunpLambda.of(vn, extractPredefine(expr), isCapture);
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
 						var vn = "predefine$" + Util.temp();
 						var var = FunpVariable.of(vn);
@@ -167,7 +167,7 @@ public class P2InferType {
 	}
 
 	private Funp captureLambdas(Funp node0) {
-		var grandLambda = FunpLambda.of("grand$", node0);
+		var grandLambda = FunpLambda.of("grand$", node0, false);
 		var defByVars = Funp_.associateDefinitions(node0);
 		var lambdaByFunp = new IdentityHashMap<Funp, FunpLambda>();
 
@@ -181,7 +181,7 @@ public class P2InferType {
 			private Funp a(Funp node) {
 				return inspect.rewrite(node, Funp.class, n -> {
 					lambdaByFunp.put(n, lambda);
-					return n.cast(FunpLambda.class, f -> f.apply((var, expr) -> {
+					return n.cast(FunpLambda.class, f -> f.apply((var, expr, isCapture) -> {
 						new AssociateLambda(f).a(expr);
 						return f;
 					}));
@@ -267,7 +267,7 @@ public class P2InferType {
 					).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
 						var accessor = accessors.get(var);
 						return accessor != null ? FunpDoAssignRef.of(FunpReference.of(accessor), c(value), c(expr)) : null;
-					})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
+					})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
 						var li = infoByLambda.get(f);
 						var captures = li.captures;
 						if (!captures.isEmpty()) {
@@ -414,7 +414,7 @@ public class P2InferType {
 				unify(n, typeRefOf(typeArrayOf(null, te)), infer(reference));
 				unify(n, typeNumber, infer(index));
 				return te;
-			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
+			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
 				var tv = new Reference();
 				return typeLambdaOf(tv, newEnv(env.replace(vn, Pair.of(Fdt.L_MONO, tv))).infer(expr));
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((vn, cap, expr) -> {
@@ -627,7 +627,7 @@ public class P2InferType {
 				var inc = FunpTree.of(TermOp.MULT__, erase(index), FunpNumber.ofNumber(size));
 				var address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
-			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
+			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
 				var b = ps + ps; // return address and EBP
 				var scope1 = scope + 1;
 				var lt = new LambdaType(n);
@@ -709,7 +709,7 @@ public class P2InferType {
 		private Funp applyOnce(Funp value, Funp lambda, int size) {
 			var lambda_ = lambda.cast(FunpLambda.class);
 			return lambda_ != null //
-					? lambda_.apply((vn, expr) -> defineLocal(lambda, vn, value, expr, size)) //
+					? lambda_.apply((vn, expr, isCapture) -> defineLocal(lambda, vn, value, expr, size)) //
 					: apply(value, lambda, size);
 		}
 

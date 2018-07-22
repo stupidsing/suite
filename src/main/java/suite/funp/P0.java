@@ -352,16 +352,18 @@ public class P0 {
 	public static class FunpLambda implements Funp, P2.End {
 		public String vn;
 		public Funp expr;
+		public boolean isCapture;
 
-		public static FunpLambda of(String vn, Funp expr) {
+		public static FunpLambda of(String vn, Funp expr, boolean isCapture) {
 			var f = new FunpLambda();
 			f.vn = vn;
 			f.expr = expr;
+			f.isCapture = isCapture;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<String, Funp, R> fun) {
-			return fun.apply(vn, expr);
+		public <R> R apply(FixieFun3<String, Funp, Boolean, R> fun) {
+			return fun.apply(vn, expr, isCapture);
 		}
 	}
 

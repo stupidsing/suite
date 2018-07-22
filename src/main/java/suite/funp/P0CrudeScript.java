@@ -139,9 +139,9 @@ public class P0CrudeScript {
 				}).match("expression-not (.0,)", a -> {
 					return expr(a);
 				}).match("expression-lambda (bind (<IDENTIFIER> (.0,),), expression (.1,),)", (a, b) -> {
-					return FunpLambda.of(Str.str(a), expr(b));
+					return FunpLambda.of(Str.str(a), expr(b), false);
 				}).match("expression-lambda (bind (<IDENTIFIER> (.0,),), statement-block (.1),)", (a, b) -> {
-					return FunpLambda.of(Str.str(a), stmt(b));
+					return FunpLambda.of(Str.str(a), stmt(b), false);
 				}).match("expression-obj (.0,)", a -> {
 					return expr(a);
 				}).match("expression-or (.0,)", a -> {

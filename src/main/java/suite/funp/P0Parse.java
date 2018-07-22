@@ -335,7 +335,7 @@ public class P0Parse {
 			var vn = isVar ? Atom.name(a) : "l$" + Util.temp();
 			var nv = isAllowDo ? nv(vn) : new Parse(vns.replace(vn).remove(doToken));
 			var f = isVar ? nv.p(b) : nv.bind(a, Atom.of(vn), b);
-			return FunpLambda.of(vn, f);
+			return FunpLambda.of(vn, f, false);
 		}
 
 		private int num(Node a) {

@@ -99,7 +99,7 @@ public class Funp_ {
 						associate(vars1, pair.t1);
 					associate(vars1, expr);
 					return n_;
-				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
+				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
 					associate(vars.replace(vn, f), expr);
 					return n_;
 				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {

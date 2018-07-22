@@ -34,7 +34,7 @@ public class P1ReduceTailCall {
 				if (pairs.size() == 1) {
 					var pair = pairs.get(0);
 					var lambdaVar = pair.t0;
-					var lambda1 = pair.t1.cast(FunpLambda.class, g -> g.apply((vn, do_) -> {
+					var lambda1 = pair.t1.cast(FunpLambda.class, g -> g.apply((vn, do_, isCapture) -> {
 						return !isHasLambda(do_) ? rewriteTco(lambdaVar, vn, do_) : null;
 					}));
 					return lambda1 != null ? FunpDefineRec.of(List.of(Pair.of(lambdaVar, lambda1)), expr) : null;
@@ -84,7 +84,7 @@ public class P1ReduceTailCall {
 			var dontCare = FunpDontCare.of();
 			var assign = FunpDoAssignVar.of(tcoVar, do1, FunpDoAssignVar.of(var, fn, fc));
 			var while_ = FunpDoWhile.of(assign, FunpDontCare.of(), fr);
-			return FunpLambda.of(vn, FunpDefine.of(tcoVarName, dontCare, while_, Fdt.L_MONO));
+			return FunpLambda.of(vn, FunpDefine.of(tcoVarName, dontCare, while_, Fdt.L_MONO), false);
 		} else
 			return null;
 	}

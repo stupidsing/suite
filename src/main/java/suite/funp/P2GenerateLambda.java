@@ -131,7 +131,8 @@ public class P2GenerateLambda {
 			})).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
 				return compile_(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, type) -> {
-				return type == Fdt.L_MONO || type == Fdt.L_POLY ? compile_(FunpApply.of(value, FunpLambda.of(vn, expr))) : null;
+				var b = type == Fdt.L_MONO || type == Fdt.L_POLY;
+				return b ? compile_(FunpApply.of(value, FunpLambda.of(vn, expr, false))) : null;
 			})).applyIf(FunpDeref.class, f -> {
 				var p = compile_(f);
 				return rt -> ((Ref) p.apply(rt)).v;
@@ -167,7 +168,7 @@ public class P2GenerateLambda {
 				return rt -> ((Vec) array.apply(rt)).values[i(rt, index1)];
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return compile_(expr);
-			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr) -> {
+			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
 				var fs1 = fs + 1;
 				var thunk = compile(fs1, env.replace(vn, fs1), expr);
 				return rt -> (Fun_) p -> thunk.apply(new Rt(rt, p));
