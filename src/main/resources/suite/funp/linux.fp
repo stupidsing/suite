@@ -1,17 +1,17 @@
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
 expand peek .pointer := asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
-expand (poke (.pointer, .value) ~ .expr) := (perform eval.io io.do asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~ .expr) ~
+expand (poke (.pointer, .value) ~ .expr) := (perform eval! !do asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~ .expr) ~
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
 
-define io.mmap length := io.do
+define !mmap length := !do
 	let ps := [0, length, 3, 34, -1, 0,] ~
 	asm (EAX = 90; EBX = address ps;) { INT (-128); }
 ~
 
-define io.munmap (length, pointer) := io.do
+define !munmap (length, pointer) := !do
 	--type pointer = address (array byte * buffer.size) ~
 	type pointer = number ~
 	asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
@@ -20,10 +20,10 @@ define io.munmap (length, pointer) := io.do
 let.global alloc.pointer := 0 ~
 let.global alloc.free.chain := 0 ~
 
-define io.alloc size0 := io.do
+define !alloc size0 := !do
 	let size := max (4, size0) ~
 	define {
-		io.alloc.chain pointer := io.do
+		!alloc.chain pointer := !do
 			let chain := peek pointer ~
 			if (chain != 0) then (
 				let pointer1 := chain + 4 ~
@@ -47,7 +47,7 @@ define io.alloc size0 := io.do
 	) else p0
 ~
 
-define io.dealloc (size0, pointer.block) := io.do
+define !dealloc (size0, pointer.block) := !do
 	let size := max (4, size0) ~
 	let pointer.head := pointer.block - 4 ~
 	assert (size = peek pointer.head) ~
@@ -56,40 +56,40 @@ define io.dealloc (size0, pointer.block) := io.do
 	{}
 ~
 
-define new.pool length := io.do
+define !new.pool length := !do
 	let pool := !mmap length ~
 	{
-		destroy {} := io.munmap (length, pool) ~
+		destroy {} := !munmap (length, pool) ~
 		pool ~
 		start := 0 ~
 	}
 ~
 
-define new.mut.number init := io.do
+define !new.mut.number init := !do
 	type init = number ~
 	let size := size.of init ~
 	let pointer := !alloc size ~
 	assign ^pointer := init ~
 	{
-		destroy {} := io.dealloc (size, pointer) ~
-		get {} := io.do (peek pointer) ~
-		set v1 := io.do (assign ^pointer := v1 ~ {}) ~
+		destroy {} := !dealloc (size, pointer) ~
+		get {} := !do (peek pointer) ~
+		set v1 := !do (assign ^pointer := v1 ~ {}) ~
 	}
 ~
 
-define io.read (pointer, length) := io.do
+define !read (pointer, length) := !do
 	type pointer = address (array byte * _) ~
 	asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
-define io.write (pointer, length) := io.do
+define !write (pointer, length) := !do
 	type pointer = address (array byte * _) ~
 	asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
 ~
 
-define io.write.all (pointer, length) :=
+define !write.all (pointer, length) :=
 	type pointer = address (array byte * _) ~
-	io.for (n = length; 0 < n;
+	!for (n = length; 0 < n;
 		let p1 := asm (EAX = pointer; EBX = length; ECX = n;) { ADD (EAX, EBX); SUB (EAX, ECX); } ~
 		let n1 := !write (coerce.pointer p1, n) ~
 		assert (n1 != 0) ~
@@ -97,7 +97,7 @@ define io.write.all (pointer, length) :=
 	)
 ~
 
-define io.get.char {} := io.do
+define !get.char {} := !do
 	let.global buffer := array byte * buffer.size ~
 	let.global start.end := (0, 0) ~
 	let (s0, e0) := start.end ~
@@ -107,11 +107,11 @@ define io.get.char {} := io.do
 	buffer [s0]
 ~
 
-define io.put.char ch := io.write.all (address predef [ch,], 1) ~
+define !put.char ch := !write.all (address predef [ch,], 1) ~
 
-define io.put.number n :=
+define !put.number n :=
 	define {
-		io.put.number_ n := io.do
+		!put.number_ n := !do
 			if (0 < n) then (
 				let div := n / 10 ~
 				let mod := n % 10 ~
@@ -122,22 +122,22 @@ define io.put.number n :=
 	} ~
 	case
 	|| 0 < n =>
-		io.put.number_ n
-	|| n < 0 => io.do
+		!put.number_ n
+	|| n < 0 => !do
 		perform !put.char byte '-' ~
 		!put.number_ n
-	|| io.put.char byte '0'
+	|| !put.char byte '0'
 ~
 
-define io.put.string s :=
-	io.for (i = 0; (^s) [i] != byte 0;
+define !put.string s :=
+	!for (i = 0; (^s) [i] != byte 0;
 		perform !put.char (^s) [i] ~
 		i + 1
 	)
 ~
 
-define io.cat {} :=
-	io.for (n = 1; n != 0;
+define !cat {} :=
+	!for (n = 1; n != 0;
 		let pointer := address predef (array byte * buffer.size) ~
 		let nBytesRead := !read (pointer, buffer.size) ~
 		perform !write.all (pointer, nBytesRead) ~
@@ -146,15 +146,15 @@ define io.cat {} :=
 ~
 
 {
-	io.alloc,
-	io.cat,
-	io.dealloc,
-	io.get.char,
-	io.mmap,
-	io.munmap,
-	io.put.char,
-	io.put.number,
-	io.put.string,
-	io.read,
-	io.write,
+	!alloc,
+	!cat,
+	!dealloc,
+	!get.char,
+	!mmap,
+	!munmap,
+	!put.char,
+	!put.number,
+	!put.string,
+	!read,
+	!write,
 }

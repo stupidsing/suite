@@ -133,17 +133,25 @@ public class P0Parse {
 
 		private Funp p(Node node) {
 			return new SwitchNode<Funp>(node //
-			).match(".0 | .1", (a, b) -> {
+			).match("!do .0", a -> {
+				return FunpIo.of(nv(doToken).p(a));
+			}).match("!for (.0 = .1; .2; .3)", (a, b, c, d) -> {
+				var vn = Atom.name(a);
+				var var = FunpVariable.of(vn);
+				var p1 = nv(doToken).nv(vn);
+				var while_ = p1.p(c);
+				var do_ = FunpDoAssignVar.of(var, p1.p(d), var);
+				return FunpIo.of(FunpDefine.of(vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}"))), Fdt.L_MONO));
+			}).match(".0 | .1", (a, b) -> {
 				return FunpApply.of(p(a), p(b));
 			}).match(".0 .1", (a, b) -> {
 				if (a instanceof Atom) {
-					var vn0 = Atom.name(a);
+					var vn = Atom.name(a);
 					var m = Suite.pattern("[.0]").match(b);
 					var isIndex = m != null && 0 < m.length && !isList(m[0]);
-					var isIo = vn0.startsWith("!");
-					var vn1 = !isIo ? vn0 : "io." + vn0.substring(1);
-					var apply = vns.contains(vn1) && !isIndex ? FunpApply.of(p(b), FunpVariable.of(vn1)) : null;
-					return !isIo ? apply : checkDo(() -> FunpDoEvalIo.of(apply));
+					var isIo = checkDo() && vn.startsWith("!");
+					var apply = vns.contains(vn) && !isIndex ? FunpApply.of(p(b), FunpVariable.of(vn)) : null;
+					return !isIo ? apply : FunpDoEvalIo.of(apply);
 				} else
 					return null;
 			}).match(".0 [.1]", (a, b) -> {
@@ -219,21 +227,12 @@ public class P0Parse {
 						.toList(), p1.p(b));
 			}).match("error", () -> {
 				return FunpError.of();
-			}).match("eval.io .0", a -> {
+			}).match("eval! .0", a -> {
 				return checkDo(() -> FunpDoEvalIo.of(p(a)));
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
 				return FunpIf.of(p(a), p(b), p(c));
-			}).match("io.do .0", a -> {
-				return FunpIo.of(nv(doToken).p(a));
-			}).match("io.for (.0 = .1; .2; .3)", (a, b, c, d) -> {
-				var vn = Atom.name(a);
-				var var = FunpVariable.of(vn);
-				var p1 = nv(doToken).nv(vn);
-				var while_ = p1.p(c);
-				var do_ = FunpDoAssignVar.of(var, p1.p(d), var);
-				return FunpIo.of(FunpDefine.of(vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}"))), Fdt.L_MONO));
 			}).match("let .0 := .1 ~ .2", (a, b, c) -> {
 				if (Tree.decompose(a, TermOp.TUPLE_) == null) {
 					var lambda = lambda(a, c);
@@ -289,7 +288,11 @@ public class P0Parse {
 		}
 
 		private <T> T checkDo(Source<T> source) {
-			return vns.contains(doToken) ? source.source() : Funp_.fail(null, "do block required");
+			return checkDo() ? source.source() : Funp_.fail(null, "do block required");
+		}
+
+		private boolean checkDo() {
+			return vns.contains(doToken);
 		}
 
 		private Funp consult(String url) {

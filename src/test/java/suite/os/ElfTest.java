@@ -17,7 +17,7 @@ public class ElfTest {
 
 	@Test
 	public void testFold() {
-		test(100, "io.for (n = 0; n < 100; n + 1)", "");
+		test(100, "!for (n = 0; n < 100; n + 1)", "");
 	}
 
 	// io :: a -> io a
@@ -27,8 +27,8 @@ public class ElfTest {
 		var text = "garbage\n";
 
 		var program = "" //
-				+ "let linux := consult \"linux.fp\" ~ io.do \n" //
-				+ "	let io.cat := linux/io.cat ~ \n" //
+				+ "let linux := consult \"linux.fp\" ~ !do \n" //
+				+ "	let !cat := linux/!cat ~ \n" //
 				+ "	perform !cat {} ~ \n" //
 				+ "	0 \n";
 

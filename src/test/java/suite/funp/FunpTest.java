@@ -86,8 +86,8 @@ public class FunpTest {
 
 	@Test
 	public void testIo() {
-		test(1, "io.do eval.io io.do 1");
-		test(100, "io.for (n = 0; n < 100; n + 1)");
+		test(1, "!do eval! !do 1");
+		test(100, "!for (n = 0; n < 100; n + 1)");
 	}
 
 	@Test
