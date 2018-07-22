@@ -170,9 +170,7 @@ public class P0Parse {
 			}).match("^.0", a -> {
 				return FunpDeref.of(p(a));
 			}).match("{ .0 }", a -> {
-				return FunpStruct.of(kvs(a) //
-						.map(kv -> Pair.of(kv.t0, p(kv.t1))) //
-						.toList());
+				return FunpStruct.of(kvs(a).map(kv -> Pair.of(kv.t0, p(kv.t1))).toList());
 			}).match("address .0", a -> {
 				return FunpReference.of(p(a));
 			}).match("array .0 * .1", (a, b) -> {
