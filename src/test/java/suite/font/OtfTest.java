@@ -9,6 +9,7 @@ import org.junit.Test;
 import suite.object.Object_;
 import suite.os.Execute;
 import suite.os.FileUtil;
+import suite.streamlet.As;
 import suite.streamlet.Read;
 
 /**
@@ -76,18 +77,17 @@ public class OtfTest {
 					var dir = "/home/ywsing/.fonts/" + f + "/";
 					var ext = k.substring(k.lastIndexOf(".") + 1).toLowerCase();
 
-					return "mkdir -p '" + dir + "'; mv '" + k + "' '" + dir + f + " " + sf + "." + ext + "'";
+					return "mkdir -p '" + dir + "'; mv '" + k + "' '" + dir + f + " " + sf + "." + ext + "'\n";
 				}) //
 
 				// sort the script... looks nicer.
 				.sort(Object_::compare) //
 
 				// formality - this is actually a toList() and makes the data "stable."
-				.collect();
+				.collect(As::joined);
 
 		// output!
-		for (var command : commands)
-			System.out.println(command);
+		System.out.println(commands);
 	}
 
 }
