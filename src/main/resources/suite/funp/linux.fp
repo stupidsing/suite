@@ -1,7 +1,7 @@
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
-expand peek .pointer := asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
-expand (poke (.pointer, .value) ~ .expr) := (perform eval! !do asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~ .expr) ~
+expand !peek .pointer := asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
+expand (!poke (.pointer, .value) ~ .expr) := (perform eval! !do asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~ .expr) ~
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
@@ -24,13 +24,13 @@ define !alloc size0 := !do
 	let size := max (4, size0) ~
 	define {
 		!alloc.chain pointer := !do
-			let chain := peek pointer ~
+			let chain := !peek pointer ~
 			if (chain != 0) then (
 				let pointer1 := chain + 4 ~
-				if (peek chain != size) then (
+				if (!peek chain != size) then (
 					!alloc.chain coerce.pointer pointer1
 				) else (
-					poke (pointer, peek pointer1) ~
+					!poke (pointer, !peek pointer1) ~
 					chain
 				)
 			) else 0
@@ -41,7 +41,7 @@ define !alloc size0 := !do
 		let ap := alloc.pointer ~
 		let pointer.head := if (ap != 0) then ap else !mmap 16384 ~
 		let pointer.block := pointer.head + 4 ~
-		poke (pointer.head, size) ~
+		!poke (pointer.head, size) ~
 		assign alloc.pointer := pointer.block + size ~
 		pointer.block
 	) else p0
@@ -50,8 +50,8 @@ define !alloc size0 := !do
 define !dealloc (size0, pointer.block) := !do
 	let size := max (4, size0) ~
 	let pointer.head := pointer.block - 4 ~
-	assert (size = peek pointer.head) ~
-	poke (pointer.block, alloc.free.chain) ~
+	assert (size = !peek pointer.head) ~
+	!poke (pointer.block, alloc.free.chain) ~
 	assign alloc.free.chain := pointer.head ~
 	{}
 ~
@@ -72,7 +72,7 @@ define !new.mut.number init := !do
 	assign ^pointer := init ~
 	{
 		destroy {} := !dealloc (size, pointer) ~
-		get {} := !do (peek pointer) ~
+		get {} := !do (!peek pointer) ~
 		set v1 := !do (assign ^pointer := v1 ~ {}) ~
 	}
 ~
