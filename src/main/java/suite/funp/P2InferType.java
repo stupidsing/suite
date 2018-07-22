@@ -240,13 +240,16 @@ public class P2InferType {
 			var vn = var.vn;
 			var access = new Object() {
 				private Funp access(FunpLambda lambda_) {
-					if (lambda_ != lambdaVar) {
+					if (lambda_ == lambdaVar)
+						return isRef ? FunpReference.of(var) : var;
+					else if (!lambda.isCapture)
+						return access(lambdaByFunp.get(lambda_));
+					else {
 						var li = infoByLambda.get(lambda_);
 						if (li.captureSet.add(vn))
 							li.captures.add(Pair.of(vn, access(lambdaByFunp.get(lambda_))));
 						return FunpField.of(FunpReference.of(li.cap), vn);
-					} else
-						return isRef ? FunpReference.of(var) : var;
+					}
 				}
 			}.access(lambda);
 			return isRef ? FunpDeref.of(access) : access;
@@ -256,35 +259,32 @@ public class P2InferType {
 			return vi.varLambda != null ? Read.each2(Pair.of(var, accessFun.apply(var, vi.varLambda))) : Read.empty2();
 		}).toMap();
 
-		if (Boolean.FALSE) // perform capture?
-			return new Object() {
-				private Funp c(Funp n) {
-					return inspect.rewrite(n, Funp.class, this::c_);
-				}
+		return new Object() {
+			private Funp c(Funp n) {
+				return inspect.rewrite(n, Funp.class, this::c_);
+			}
 
-				private Funp c_(Funp n) {
-					return n.sw( //
-					).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
-						var accessor = accessors.get(var);
-						return accessor != null ? FunpDoAssignRef.of(FunpReference.of(accessor), c(value), c(expr)) : null;
-					})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
-						var li = infoByLambda.get(f);
-						var captures = li.captures;
-						if (!captures.isEmpty()) {
-							var struct = FunpStruct.of(captures);
-							return FunpDefine.of(li.capn, struct, FunpLambdaCapture.of(vn, li.cap, c(expr)), Fdt.GLOB);
+			private Funp c_(Funp n) {
+				return n.sw( //
+				).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {
+					var accessor = accessors.get(var);
+					return accessor != null ? FunpDoAssignRef.of(FunpReference.of(accessor), c(value), c(expr)) : null;
+				})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
+					var li = infoByLambda.get(f);
+					var captures = li.captures;
+					if (!captures.isEmpty()) {
+						var struct = FunpStruct.of(captures);
+						return FunpDefine.of(li.capn, struct, FunpLambdaCapture.of(vn, li.cap, c(expr)), Fdt.GLOB);
 
-							// TODO allocate cap on heap
-							// TODO free cap after use
-						} else
-							return null;
-					})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
-						return accessors.get(f);
-					})).result();
-				}
-			}.c(node0);
-		else
-			return node0;
+						// TODO allocate cap on heap
+						// TODO free cap after use
+					} else
+						return null;
+				})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
+					return accessors.get(f);
+				})).result();
+			}
+		}.c(node0);
 	}
 
 	private class Infer {
