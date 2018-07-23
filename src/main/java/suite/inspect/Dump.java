@@ -159,7 +159,8 @@ public class Dump {
 	}
 
 	/**
-	 * Dumps object content (public data and getters) through Reflection to a log4j.
+	 * Dumps object content (public data and getters) through Reflection to a
+	 * log4j.
 	 */
 	public static void details(Object object) {
 		var trace = Thread_.getStackTrace(3);
@@ -167,8 +168,8 @@ public class Dump {
 	}
 
 	/**
-	 * Dumps object content (public data and getters) through Reflection to a log4j,
-	 * with a descriptive name which you gave.
+	 * Dumps object content (public data and getters) through Reflection to a
+	 * log4j, with a descriptive name which you gave.
 	 */
 	public static void details(String name, Object object) {
 		var sb = new StringBuilder();
@@ -189,9 +190,9 @@ public class Dump {
 	 * Private fields are not dumped.
 	 *
 	 * @param prefix
-	 *                   To be appended before each line.
+	 *            To be appended before each line.
 	 * @param object
-	 *                   The monster.
+	 *            The monster.
 	 */
 	public static String toDetails(String prefix, Object object) {
 		var sb = new StringBuilder();
