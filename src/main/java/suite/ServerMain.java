@@ -10,7 +10,7 @@ import suite.http.HttpHandler;
 import suite.http.HttpHeaderUtil;
 import suite.http.HttpResponse;
 import suite.http.HttpServe;
-import suite.http.HttpSessionController.Authenticator;
+import suite.http.HttpSessionControl.Authenticator;
 import suite.immutable.IMap;
 import suite.node.Str;
 import suite.os.Schedule;

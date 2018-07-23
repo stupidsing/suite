@@ -19,16 +19,16 @@ import suite.streamlet.FunUtil.Iterate;
 import suite.util.Thread_;
 import suite.util.To;
 
-public class EditorController {
+public class EditorControl {
 
 	private Thread runThread;
 	private EditorModel model;
 	private EditorView view;
 
-	public EditorController() {
+	public EditorControl() {
 	}
 
-	public void _init(EditorModel model, EditorView view, EditorController controller) {
+	public void _init(EditorModel model, EditorView view, EditorControl control) {
 		this.model = model;
 		this.view = view;
 	}
@@ -112,13 +112,13 @@ public class EditorController {
 
 	public void newWindow() {
 		var model = new EditorModel();
-		var controller = new EditorController();
+		var control = new EditorControl();
 		var view1 = new EditorView();
 
-		view1._init(model, view1, controller);
-		controller._init(model, view1, controller);
+		view1._init(model, view1, control);
+		control._init(model, view1, control);
 
-		view1.run(controller, EditorMain.class.getSimpleName());
+		view1.run(control, EditorMain.class.getSimpleName());
 	}
 
 	public void open() {

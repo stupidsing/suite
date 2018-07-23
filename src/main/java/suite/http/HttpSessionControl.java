@@ -10,7 +10,7 @@ import suite.streamlet.As;
 import suite.util.HtmlUtil;
 import suite.util.To;
 
-public class HttpSessionController {
+public class HttpSessionControl {
 
 	public static long TIMEOUTDURATION = 3600 * 1000l;
 
@@ -41,7 +41,7 @@ public class HttpSessionController {
 		}
 	}
 
-	public HttpSessionController(Authenticator authenticator) {
+	public HttpSessionControl(Authenticator authenticator) {
 		this.authenticator = authenticator;
 	}
 

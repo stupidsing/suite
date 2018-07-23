@@ -14,7 +14,7 @@ public class EditorMain extends ExecutableProgram {
 
 	@Override
 	public boolean run(String[] args) {
-		new EditorController().newWindow();
+		new EditorControl().newWindow();
 		return true;
 	}
 

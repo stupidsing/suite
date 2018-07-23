@@ -7,7 +7,7 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-import suite.http.HttpSessionController.Authenticator;
+import suite.http.HttpSessionControl.Authenticator;
 import suite.immutable.IMap;
 import suite.util.String_;
 import suite.util.To;
@@ -49,7 +49,7 @@ public interface HttpHandler {
 	}
 
 	public static HttpHandler ofSession(Authenticator authenticator, HttpHandler handler0) {
-		return new HttpSessionController(authenticator).getSessionHandler(handler0);
+		return new HttpSessionControl(authenticator).getSessionHandler(handler0);
 	}
 
 	public HttpResponse handle(HttpRequest request);

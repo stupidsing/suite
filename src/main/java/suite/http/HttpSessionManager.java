@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import suite.http.HttpSessionController.Session;
-import suite.http.HttpSessionController.SessionManager;
+import suite.http.HttpSessionControl.Session;
+import suite.http.HttpSessionControl.SessionManager;
 
 public class HttpSessionManager implements SessionManager {
 
@@ -30,7 +30,7 @@ public class HttpSessionManager implements SessionManager {
 					var iter = sessions.values().iterator();
 
 					while (iter.hasNext())
-						if (iter.next().lastRequestDt.get() + HttpSessionController.TIMEOUTDURATION < current)
+						if (iter.next().lastRequestDt.get() + HttpSessionControl.TIMEOUTDURATION < current)
 							iter.remove();
 				} finally {
 					isCleaning.set(false);
