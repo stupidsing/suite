@@ -126,6 +126,7 @@ public class P2InferType {
 
 	private Map<Funp, Node> typeByNode = new IdentityHashMap<>();
 	private Map<Funp, Boolean> isRegByNode = new IdentityHashMap<>();
+	private Map<String, Var> globals = new HashMap<>();
 
 	public Funp infer(Funp n0) {
 		var t = new Reference();
@@ -389,10 +390,7 @@ public class P2InferType {
 				return new Reference();
 			}).applyIf(FunpDoWhile.class, f -> f.apply((while_, do_, expr) -> {
 				unify(n, typeBoolean, infer(while_));
-				var td = infer(do_);
-				if (td.finalNode() instanceof Reference)
-					// enforces a type to prevent exception
-					unify(n, td, typeBoolean);
+				infer(do_);
 				return infer(expr);
 			})).applyIf(FunpError.class, f -> {
 				return new Reference();
@@ -472,15 +470,15 @@ public class P2InferType {
 				return tr;
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
 				Node ti;
-				if (op == TermOp.BIGAND || op == TermOp.BIGOR_)
+				if (Set.of(TermOp.BIGAND, TermOp.BIGOR_).contains(op))
 					ti = typeBoolean;
-				else if (op == TermOp.EQUAL_ || op == TermOp.NOTEQ_)
+				else if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op))
 					ti = new Reference();
 				else
 					ti = typeNumber;
 				unify(n, infer(lhs), ti);
 				unify(n, infer(rhs), ti);
-				var cmp = op == TermOp.EQUAL_ || op == TermOp.NOTEQ_ || op == TermOp.LE____ || op == TermOp.LT____;
+				var cmp = Set.of(TermOp.EQUAL_, TermOp.NOTEQ_, TermOp.LE____, TermOp.LT____).contains(op);
 				return cmp ? typeBoolean : ti;
 			})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
 				unify(n, infer(lhs), typeNumber);
@@ -543,9 +541,12 @@ public class P2InferType {
 				if (type == Fdt.GLOB) {
 					var size = getTypeSize(typeOf(value));
 					var address = Mutable.<Operand> nil();
-					var e1 = new Erase(scope, env.replace(vn, new Var(address, 0, size)));
+					Var var = new Var(address, 0, size);
+					var e1 = new Erase(scope, env.replace(vn, var));
+					if (Set.of("!alloc", "!dealloc").contains(vn))
+						globals.put(vn, var);
 					return FunpAllocGlobal.of(size, erase(value, vn), e1.erase(expr), address);
-				} else if (type == Fdt.L_IOAP || type == Fdt.L_MONO || type == Fdt.L_POLY)
+				} else if (Set.of(Fdt.L_IOAP, Fdt.L_MONO, Fdt.L_POLY).contains(type))
 					return defineLocal(f, vn, value, expr);
 				else if (type == Fdt.VIRT)
 					return erase(expr);
@@ -689,7 +690,7 @@ public class P2InferType {
 			})).applyIf(FunpTree.class, f -> f.apply((op, l, r) -> {
 				var size0 = getTypeSize(typeOf(l));
 				var size1 = getTypeSize(typeOf(r));
-				if ((op == TermOp.EQUAL_ || op == TermOp.NOTEQ_) && (is < size0 || is < size1)) {
+				if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op) && (is < size0 || is < size1)) {
 					var offsetStack = IntMutable.nil();
 					var m0 = new Var(scope, offsetStack, 0, size0).getMemory(scope);
 					var m1 = new Var(scope, offsetStack, size0, size0 + size1).getMemory(scope);
