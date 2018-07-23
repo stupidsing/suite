@@ -236,7 +236,7 @@ public class Amd64Assemble {
 			var opImm = ((OpImm) instruction.op0);
 			var bb = new BytesBuilder();
 			appendImm(bb, opImm.size, opImm.imm);
-			encode = encode(bb.toBytes());
+			encode = new InsnCode(4, bb.toBytes().toArray());
 			break;
 		case DEC:
 			encode = assembleRm(instruction, 0x48, 0xFE, 1);
@@ -247,7 +247,7 @@ public class Amd64Assemble {
 		case DS:
 			var bs = new byte[(int) ((OpImm) instruction.op0).imm];
 			Arrays.fill(bs, (byte) 0x90);
-			encode = encode(Bytes.of(bs));
+			encode = new InsnCode(4, Bytes.of(bs).toArray());
 			break;
 		case HLT:
 			encode = assemble(instruction, 0xF4);
@@ -377,6 +377,9 @@ public class Amd64Assemble {
 				fail();
 		case LEA:
 			encode = assembleRegRm(instruction.op0, instruction.op1, 0x8D);
+			break;
+		case LOG:
+			encode = new InsnCode(4, new byte[0]);
 			break;
 		case LOCK:
 			encode = assemble(instruction, 0xF0);
@@ -874,20 +877,6 @@ public class Amd64Assemble {
 		var insnCode = new InsnCode(operand.size, bs(b));
 		insnCode.modrm = modrm(operand, num);
 		return insnCode;
-	}
-
-	private Encode encode(Bytes bs) {
-		Encode encode;
-		encode = new Encode() {
-			public boolean isValid() {
-				return true;
-			}
-
-			public Bytes encode_() {
-				return bs;
-			}
-		};
-		return encode;
 	}
 
 	private Bytes encode(InsnCode insnCode, byte[] vexs) {

@@ -251,6 +251,9 @@ public class Amd64Interpret {
 				case LEA:
 					assign.sink(address((OpMem) op1));
 					break;
+				case LOG:
+					LogUtil.info("value = " + source0);
+					break;
 				case MOV:
 					assign.sink(source1);
 					break;

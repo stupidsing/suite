@@ -61,6 +61,7 @@ public class Amd64 {
 		LABEL, //
 		LEA, //
 		LOCK, //
+		LOG, //
 		LOOP, //
 		LOOPE, //
 		LOOPNE, //
