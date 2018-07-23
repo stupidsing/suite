@@ -4,7 +4,6 @@ import java.io.InputStream;
 
 import suite.adt.pair.Pair;
 import suite.immutable.IList;
-import suite.immutable.IMap;
 import suite.streamlet.As;
 
 public class HttpRequest {
@@ -13,7 +12,7 @@ public class HttpRequest {
 	public final String server;
 	public final IList<String> paths;
 	public final String query;
-	public final IMap<String, String> headers;
+	public final HttpHeader headers;
 	public final InputStream inputStream;
 
 	public HttpRequest( //
@@ -21,7 +20,7 @@ public class HttpRequest {
 			String server, //
 			String path, //
 			String query, //
-			IMap<String, String> headers, //
+			HttpHeader headers, //
 			InputStream inputStream) {
 		this(method, server, HttpHeaderUtil.getPaths(path), query, headers, inputStream);
 	}
@@ -31,7 +30,7 @@ public class HttpRequest {
 			String server, //
 			IList<String> paths, //
 			String query, //
-			IMap<String, String> headers, //
+			HttpHeader headers, //
 			InputStream inputStream) {
 		this.method = method;
 		this.server = server;

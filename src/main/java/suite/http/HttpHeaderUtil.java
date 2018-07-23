@@ -5,11 +5,11 @@ import static suite.util.Friends.rethrow;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLDecoder;
-import java.util.HashMap;
 import java.util.Map;
 
 import suite.cfg.Defaults;
 import suite.immutable.IList;
+import suite.streamlet.Read;
 import suite.util.String_;
 
 public class HttpHeaderUtil {
@@ -47,10 +47,11 @@ public class HttpHeaderUtil {
 
 	private static Map<String, String> decodeMap(String query, String sep) {
 		var qs = query != null ? query.split(sep) : new String[0];
-		var attrs = new HashMap<String, String>();
-		for (var q : qs)
-			String_.split2l(q, "=").map((k, v) -> attrs.put(k, decode(v)));
-		return attrs;
+		return Read //
+				.from(qs) //
+				.concatMap2(q -> Read.each2(String_.split2l(q, "="))) //
+				.mapValue(HttpHeaderUtil::decode) //
+				.toMap();
 	}
 
 	private static String decode(String s) {

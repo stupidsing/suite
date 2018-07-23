@@ -12,9 +12,8 @@ import java.net.URLDecoder;
 import suite.adt.Opt;
 import suite.adt.pair.FixieArray;
 import suite.cfg.Defaults;
-import suite.immutable.IMap;
+import suite.streamlet.As;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.streamlet.Read;
 import suite.util.Copy;
 import suite.util.ReadStream;
 import suite.util.String_;
@@ -62,27 +61,25 @@ public class HttpIo {
 		var path = request.path();
 		var url = !server.isEmpty() ? "http://" + server + "/" + path : path;
 
-		var sb = new StringBuilder();
-		sb.append(request.method + " " + url + " HTTP/1.1\r\n");
-		Read.from2(request.headers).sink((k, v) -> sb.append(k + ": " + v + "\r\n"));
-		sb.append("\r\n");
+		var s = request.method + " " + url + " HTTP/1.1\r\n" //
+				+ request.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").collect(As::joined) //
+				+ "\r\n";
 
-		os.write(sb.toString().getBytes(Defaults.charset));
+		os.write(s.getBytes(Defaults.charset));
 		Copy.stream(request.inputStream, os);
 	}
 
 	public void writeResponse(OutputStream os, HttpResponse response) throws IOException {
-		var sb = new StringBuilder();
-		sb.append("HTTP/1.1 " + response.status + "\r\n");
-		Read.from2(response.headers).sink((k, v) -> sb.append(k + ": " + v + "\r\n"));
-		sb.append("\r\n");
+		var s = "HTTP/1.1 " + response.status + "\r\n" //
+				+ response.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").collect(As::joined) //
+				+ "\r\n";
 
-		os.write(sb.toString().getBytes(Defaults.charset));
+		os.write(s.getBytes(Defaults.charset));
 		Copy.stream(response.out.collect(To::inputStream), os);
 	}
 
-	private IMap<String, String> readHeaders(InputStream is) {
-		var headers = IMap.<String, String> empty();
+	private HttpHeader readHeaders(InputStream is) {
+		var headers = new HttpHeader();
 		String line;
 		while (!(line = Util.readLine(is)).isEmpty()) {
 			var headers0 = headers;
@@ -91,7 +88,7 @@ public class HttpIo {
 		return headers;
 	}
 
-	private InputStream getContentStream(InputStream is, IMap<String, String> headers) {
+	private InputStream getContentStream(InputStream is, HttpHeader headers) {
 		var cl = Opt.of(headers.get("Content-Length")).map(Integer::parseInt);
 		return !cl.isEmpty() ? sizeLimitedInputStream(is, cl.get()) : is;
 	}
