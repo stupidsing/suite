@@ -4,13 +4,13 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiPredicate;
 
 import suite.cfg.Defaults;
 import suite.http.HttpHandler;
 import suite.http.HttpHeaderUtil;
 import suite.http.HttpResponse;
 import suite.http.HttpServe;
-import suite.http.HttpSessionControl.Authenticator;
 import suite.immutable.IMap;
 import suite.node.Str;
 import suite.os.Schedule;
@@ -37,7 +37,8 @@ public class ServerMain extends ExecutableProgram {
 	}
 
 	private void runHttpServer() {
-		Authenticator authenticator = (username, password) -> Defaults.secrets()
+		BiPredicate<String, String> authenticate = (username, password) -> Defaults //
+				.secrets() //
 				.prove(Suite.substitute("auth .0 .1", new Str(username), new Str(password)));
 
 		HttpHandler handler0 = request -> HttpResponse.of(To.outlet("" //
@@ -53,7 +54,7 @@ public class ServerMain extends ExecutableProgram {
 				.<String, HttpHandler> empty() //
 				.put("hello", HttpHandler.ofData("Hello world")) //
 				.put("path", HttpHandler.ofPath(Defaults.tmp)) //
-				.put("site", HttpHandler.ofSession(authenticator, handler0)));
+				.put("site", HttpHandler.ofSession(authenticate, handler0)));
 
 		new HttpServe(8051).serve(handler1);
 	}

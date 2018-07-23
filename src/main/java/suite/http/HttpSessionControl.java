@@ -3,6 +3,7 @@ package suite.http;
 import java.security.SecureRandom;
 import java.util.Objects;
 import java.util.Random;
+import java.util.function.BiPredicate;
 
 import suite.immutable.IList;
 import suite.primitive.LngMutable;
@@ -14,14 +15,10 @@ public class HttpSessionControl {
 
 	public static long TIMEOUTDURATION = 3600 * 1000l;
 
-	private Authenticator authenticator;
+	private BiPredicate<String, String> authenticate;
 	private HtmlUtil htmlUtil = new HtmlUtil();
 	private SessionManager sessionManager = new HttpSessionManager();
 	private Random random = new SecureRandom();
-
-	public interface Authenticator {
-		public boolean authenticate(String username, String password);
-	}
 
 	public interface SessionManager {
 		public Session get(String id);
@@ -41,8 +38,8 @@ public class HttpSessionControl {
 		}
 	}
 
-	public HttpSessionControl(Authenticator authenticator) {
-		this.authenticator = authenticator;
+	public HttpSessionControl(BiPredicate<String, String> authenticate) {
+		this.authenticate = authenticate;
 	}
 
 	public HttpSessionHandler getSessionHandler(HttpHandler handler) {
@@ -70,7 +67,7 @@ public class HttpSessionControl {
 				var password = attrs.get("password");
 				var paths = HttpHeaderUtil.getPaths(attrs.get("path"));
 
-				if (authenticator.authenticate(username, password)) {
+				if (authenticate.test(username, password)) {
 					sessionManager.put(sessionId = generateRandomSessionId(), session = new Session(username, current));
 
 					var request1 = new HttpRequest( //
