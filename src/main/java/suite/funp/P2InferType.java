@@ -461,14 +461,14 @@ public class P2InferType {
 				var types = new HashMap<Node, Reference>();
 				types.put(Atom.of(tag), Reference.of(infer(value)));
 				return typeTagOf(Dict.of(types));
-			})).applyIf(FunpTagId.class, f -> f.apply(expr -> {
-				unify(n, typeRefOf(typeTagOf(Dict.of())), infer(expr));
+			})).applyIf(FunpTagId.class, f -> f.apply(reference -> {
+				unify(n, typeRefOf(typeTagOf(Dict.of())), infer(reference));
 				return typeNumber;
-			})).applyIf(FunpTagValue.class, f -> f.apply((expr, tag) -> {
+			})).applyIf(FunpTagValue.class, f -> f.apply((reference, tag) -> {
 				var tr = new Reference();
 				var types = new HashMap<Node, Reference>();
 				types.put(Atom.of(tag), Reference.of(tr));
-				unify(n, typeRefOf(typeTagOf(Dict.of(types))), infer(expr));
+				unify(n, typeRefOf(typeTagOf(Dict.of(types))), infer(reference));
 				return tr;
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
 				Node ti;
@@ -682,10 +682,10 @@ public class P2InferType {
 				var pt = Pair.<Funp, IntIntPair> of(FunpNumber.of(id), IntIntPair.of(0, is));
 				var pv = Pair.<Funp, IntIntPair> of(erase(expr), IntIntPair.of(is, is + size));
 				return FunpData.of(List.of(pt, pv));
-			})).applyIf(FunpTagId.class, f -> f.apply(expr -> {
-				return FunpMemory.of(erase(expr), 0, is);
-			})).applyIf(FunpTagValue.class, f -> f.apply((expr, tag) -> {
-				return FunpMemory.of(erase(expr), is, is + getTypeSize(typeOf(f)));
+			})).applyIf(FunpTagId.class, f -> f.apply(reference -> {
+				return FunpMemory.of(erase(reference), 0, is);
+			})).applyIf(FunpTagValue.class, f -> f.apply((reference, tag) -> {
+				return FunpMemory.of(erase(reference), is, is + getTypeSize(typeOf(f)));
 			})).applyIf(FunpTree.class, f -> f.apply((op, l, r) -> {
 				var size0 = getTypeSize(typeOf(l));
 				var size1 = getTypeSize(typeOf(r));
