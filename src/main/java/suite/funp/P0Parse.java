@@ -154,6 +154,13 @@ public class P0Parse {
 					return !isIo ? apply : FunpDoEvalIo.of(apply);
 				} else
 					return null;
+			}).match(".0 .1 ~ .2", (a, b, c) -> {
+				if (a instanceof Atom && Atom.name(a).startsWith("!")) {
+					var apply = FunpApply.of(p(b), p(a));
+					var lambda = lambda(dontCare, c);
+					return checkDo(() -> FunpDefine.of(lambda.vn, apply, lambda.expr, Fdt.L_IOAP));
+				} else
+					return null;
 			}).match(".0 [.1]", (a, b) -> {
 				return !isList(b) ? FunpIndex.of(FunpReference.of(p(a)), p(b)) : null;
 			}).match(".0 => .1", (a, b) -> {
@@ -225,8 +232,6 @@ public class P0Parse {
 						.toList(), p1.p(b));
 			}).match("error", () -> {
 				return FunpError.of();
-			}).match("eval! .0", a -> {
-				return checkDo(() -> FunpDoEvalIo.of(p(a)));
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {

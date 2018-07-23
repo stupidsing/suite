@@ -1,7 +1,7 @@
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
 expand !peek .pointer := asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
-expand (!poke (.pointer, .value) ~ .expr) := (perform eval! !do asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~ .expr) ~
+expand (!poke (.pointer, .value) ~ .expr) := (perform !do asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~ .expr) ~
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
@@ -115,7 +115,7 @@ define !put.number n :=
 			if (0 < n) then (
 				let div := n / 10 ~
 				let mod := n % 10 ~
-				perform !put.number_ div ~
+				!put.number_ div ~
 				!put.char coerce.byte (mod + number '0')
 			) else {}
 		~
@@ -124,14 +124,14 @@ define !put.number n :=
 	|| 0 < n =>
 		!put.number_ n
 	|| n < 0 => !do
-		perform !put.char byte '-' ~
+		!put.char byte '-' ~
 		!put.number_ n
 	|| !put.char byte '0'
 ~
 
 define !put.string s :=
 	!for (i = 0; (^s) [i] != byte 0;
-		perform !put.char (^s) [i] ~
+		!put.char (^s) [i] ~
 		i + 1
 	)
 ~
@@ -140,7 +140,7 @@ define !cat {} :=
 	!for (n = 1; n != 0;
 		let pointer := address.of predef (array buffer.size * byte) ~
 		let nBytesRead := !read (pointer, buffer.size) ~
-		perform !write.all (pointer, nBytesRead) ~
+		!write.all (pointer, nBytesRead) ~
 		nBytesRead
 	)
 ~

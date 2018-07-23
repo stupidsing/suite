@@ -29,7 +29,7 @@ public class ElfTest {
 		var program = "" //
 				+ "let linux := consult \"linux.fp\" ~ !do \n" //
 				+ "	let !cat := linux/!cat ~ \n" //
-				+ "	perform !cat {} ~ \n" //
+				+ "	!cat {} ~ \n" //
 				+ "	0 \n";
 
 		test(0, program, text);
