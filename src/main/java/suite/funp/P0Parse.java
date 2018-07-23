@@ -177,7 +177,7 @@ public class P0Parse {
 			}).match("^.0", a -> {
 				return FunpDeref.of(p(a));
 			}).match("{ .0 }", a -> {
-				return FunpStruct.of(kvs(a).map((k, v) -> Pair.of(k, p(v))).toList());
+				return FunpStruct.of(kvs(a).mapValue(this::p).toList());
 			}).match("address.of .0", a -> {
 				return FunpReference.of(p(a));
 			}).match("array .0 * .1", (a, b) -> {
@@ -227,9 +227,7 @@ public class P0Parse {
 				var list = kvs(a).collect();
 				var vns1 = list.fold(vns, (vs, k, v) -> vs.add(k));
 				var p1 = new Parse(vns1);
-				return FunpDefineRec.of(list //
-						.map((k, v) -> Pair.of(k, p1.p(v))) //
-						.toList(), p1.p(b));
+				return FunpDefineRec.of(list.mapValue(p1::p).toList(), p1.p(b));
 			}).match("error", () -> {
 				return FunpError.of();
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
