@@ -8,9 +8,11 @@ import suite.adt.pair.Fixie_.FixieFun1;
 import suite.adt.pair.Fixie_.FixieFun2;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Fixie_.FixieFun4;
+import suite.adt.pair.Fixie_.FixieFun5;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpVariable;
 import suite.node.io.Operator;
 import suite.primitive.IntMutable;
@@ -237,22 +239,24 @@ public class P2 {
 	}
 
 	public static class FunpLambdaCapture implements Funp, P2.End {
+		public FunpVariable fpIn;
+		public FunpVariable frameVar;
+		public FunpStruct struct;
 		public String vn;
-		public FunpVariable cap;
-		public FunpVariable refCap;
 		public Funp expr;
 
-		public static FunpLambdaCapture of(String vn, FunpVariable cap, FunpVariable refCap, Funp expr) {
+		public static FunpLambdaCapture of(FunpVariable fpIn, FunpVariable frameVar, FunpStruct struct, String vn, Funp expr) {
 			var f = new FunpLambdaCapture();
+			f.fpIn = fpIn;
+			f.frameVar = frameVar;
+			f.struct = struct;
 			f.vn = vn;
-			f.cap = cap;
-			f.refCap = refCap;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun4<String, FunpVariable, FunpVariable, Funp, R> fun) {
-			return fun.apply(vn, cap, refCap, expr);
+		public <R> R apply(FixieFun5<FunpVariable, FunpVariable, FunpStruct, String, Funp, R> fun) {
+			return fun.apply(fpIn, frameVar, struct, vn, expr);
 		}
 	}
 

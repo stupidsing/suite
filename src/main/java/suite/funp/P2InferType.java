@@ -196,9 +196,7 @@ public class P2InferType {
 
 		class Li {
 			private String capn = "cap$" + Util.temp();
-			private String refCapn = "ref" + capn;
 			private FunpVariable cap = FunpVariable.of(capn);
-			private FunpVariable refCap = FunpVariable.of(refCapn);
 			private Set<String> captureSet = new HashSet<>();
 			private List<Pair<String, Funp>> captures = new ArrayList<>();
 		}
@@ -278,14 +276,17 @@ public class P2InferType {
 					var li = infoByLambda.get(f);
 					var captures = li.captures;
 					if (!captures.isEmpty()) {
+						var capn = "cap$" + Util.temp();
+						var pcapn = "pcap$" + Util.temp();
+						var cap = FunpVariable.of(capn);
+						var pcap = FunpVariable.of(pcapn);
 						var struct = FunpStruct.of(captures);
-						var lc = FunpLambdaCapture.of(vn, li.cap, li.refCap, c(expr));
-						var assign0 = FunpDoAssignVar.of(li.refCap, FunpReference.of(li.cap), lc);
-						var assign1 = FunpDoAssignVar.of(li.cap, struct, assign0);
-						var define0 = FunpDefine.of(li.refCapn, FunpDontCare.of(), assign1, Fdt.L_MONO);
-						return FunpDefine.of(li.capn, FunpDontCare.of(), define0, Fdt.GLOB);
+						var lc = FunpLambdaCapture.of(pcap, li.cap, struct, vn, c(expr));
+						var assign0 = FunpDoAssignVar.of(pcap, FunpReference.of(cap), lc);
+						var assign1 = FunpDoAssignVar.of(cap, struct, assign0);
+						var define0 = FunpDefine.of(pcapn, FunpDontCare.of(), assign1, Fdt.L_MONO);
+						return FunpDefine.of(capn, FunpDontCare.of(), define0, Fdt.GLOB);
 
-						// TODO allocate cap on heap
 						// TODO free cap after use
 					} else
 						return null;
@@ -429,11 +430,15 @@ public class P2InferType {
 				var tv = new Reference();
 				var env1 = env.replace(vn, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, newInfer(env1).infer(expr));
-			})).applyIf(FunpLambdaCapture.class, f -> f.apply((vn, cap, refCap, expr) -> {
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fpIn, frameVar, frame, vn, expr) -> {
 				var tv = new Reference();
-				unify(n, getVariable(cap), infer(cap));
-				unify(n, getVariable(refCap), infer(refCap));
-				var env1 = IMap.<String, Pair<Fdt, Node>> empty().replace(vn, Pair.of(Fdt.L_MONO, tv));
+				var tf = infer(frame);
+				var tr = typeRefOf(tf);
+				unify(n, tr, infer(fpIn));
+				var env1 = IMap //
+						.<String, Pair<Fdt, Node>> empty() //
+						.replace(frameVar.vn, Pair.of(Fdt.L_MONO, tf)) //
+						.replace(vn, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, newInfer(env1).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
 				return typeNumber;
@@ -629,7 +634,12 @@ public class P2InferType {
 				return fail();
 			})).applyIf(FunpHeapAlloc.class, f -> f.apply(value -> {
 				var size = getTypeSize(typeOf(value));
-				return applyOnce(FunpNumber.ofNumber(size), globals.get("!alloc").get(scope), ps);
+				if (Boolean.TRUE)
+					return applyOnce(FunpNumber.ofNumber(size), globals.get("!alloc").get(scope), ps);
+				else {
+					var m = Mutable.<Operand> nil();
+					return FunpAllocGlobal.of(size, erase(value), FunpOperand.of(m), m);
+				}
 			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, ref, expr) -> {
 				var in = FunpData.of(List.of( //
 						Pair.of(FunpNumber.ofNumber(size), IntIntPair.of(0, ps)), //
@@ -653,17 +663,17 @@ public class P2InferType {
 				var frame = Funp_.framePointer;
 				var expr1 = new Erase(scope1, env.replace(vn, new Var(scope1, IntMutable.of(0), b, b + lt.is))).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
-			})).applyIf(FunpLambdaCapture.class, f -> f.apply((vn, cap, refCap, expr) -> {
+			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr) -> {
 				var b = ps + ps; // return address and EBP
 				var lt = new LambdaType(n);
-				var size = getTypeSize(typeOf(cap));
+				var size = getTypeSize(typeOf(frame));
 				var env1 = IMap //
 						.<String, Var> empty() //
-						.replace(cap.vn, new Var(0, IntMutable.of(0), 0, size)) //
+						.replace(frameVar.vn, new Var(0, IntMutable.of(0), 0, size)) //
 						.replace(vn, new Var(1, IntMutable.of(0), b, b + lt.is));
-				var frame = erase(refCap);
+				var fp = erase(fp0);
 				var expr1 = new Erase(1, env1).erase(expr);
-				return eraseRoutine(lt, frame, expr1);
+				return eraseRoutine(lt, fp, expr1);
 			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return getAddress(expr);
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
