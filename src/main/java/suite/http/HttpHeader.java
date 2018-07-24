@@ -21,7 +21,10 @@ public class HttpHeader {
 
 	public String get(String key) {
 		var list = map.get(key);
-		return list.tail.isEmpty() ? list.head : fail();
+		if (list != null)
+			return list.tail.isEmpty() ? list.head : fail();
+		else
+			return null;
 	}
 
 	public HttpHeader put(String key, String value) {
