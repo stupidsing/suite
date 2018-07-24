@@ -239,18 +239,20 @@ public class P2 {
 	public static class FunpLambdaCapture implements Funp, P2.End {
 		public String vn;
 		public FunpVariable cap;
+		public FunpVariable refCap;
 		public Funp expr;
 
-		public static FunpLambdaCapture of(String vn, FunpVariable cap, Funp expr) {
+		public static FunpLambdaCapture of(String vn, FunpVariable cap, FunpVariable refCap, Funp expr) {
 			var f = new FunpLambdaCapture();
 			f.vn = vn;
 			f.cap = cap;
+			f.refCap = refCap;
 			f.expr = expr;
 			return f;
 		}
 
-		public <R> R apply(FixieFun3<String, FunpVariable, Funp, R> fun) {
-			return fun.apply(vn, cap, expr);
+		public <R> R apply(FixieFun4<String, FunpVariable, FunpVariable, Funp, R> fun) {
+			return fun.apply(vn, cap, refCap, expr);
 		}
 	}
 
