@@ -344,11 +344,11 @@ public class P2InferType {
 				return tf.apply(to);
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, type) -> {
 				var tvalue = infer(value, vn);
-				return newEnv(env.replace(vn, Pair.of(type, tvalue))).infer(expr);
+				return newInfer(env.replace(vn, Pair.of(type, tvalue))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var pairs_ = Read.from(pairs);
 				var env1 = pairs_.fold(env, (e, pair) -> e.put(pair.t0, Pair.of(Fdt.L_MONO, new Reference())));
-				var infer1 = newEnv(env1);
+				var infer1 = newInfer(env1);
 				for (var pair : pairs_) {
 					var vn = pair.t0;
 					unify(n, env1.get(vn).t1, infer1.infer(pair.t1, vn));
@@ -424,16 +424,13 @@ public class P2InferType {
 				return te;
 			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
 				var tv = new Reference();
-				return typeLambdaOf(tv, newEnv(env.replace(vn, Pair.of(Fdt.L_MONO, tv))).infer(expr));
+				var env1 = env.replace(vn, Pair.of(Fdt.L_MONO, tv));
+				return typeLambdaOf(tv, newInfer(env1).infer(expr));
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((vn, cap, expr) -> {
 				var tv = new Reference();
-				Node tc;
-				unify(n, getVariable(cap), tc = infer(cap));
-				var env0 = IMap.<String, Pair<Fdt, Node>> empty();
-				var env1 = env0 //
-						.replace(cap.vn, Pair.of(Fdt.L_MONO, tc)) //
-						.replace(vn, Pair.of(Fdt.L_MONO, tv));
-				return typeLambdaOf(tv, newEnv(env1).infer(expr));
+				unify(n, getVariable(cap), infer(cap));
+				var env1 = IMap.<String, Pair<Fdt, Node>> empty().replace(vn, Pair.of(Fdt.L_MONO, tv));
+				return typeLambdaOf(tv, newInfer(env1).infer(expr));
 			})).applyIf(FunpNumber.class, f -> {
 				return typeNumber;
 			}).applyIf(FunpReference.class, f -> f.apply(expr -> {
@@ -505,7 +502,7 @@ public class P2InferType {
 			return env.get(var.vn).map((type, tv) -> type == Fdt.L_POLY ? cloneType(tv) : tv);
 		}
 
-		private Infer newEnv(IMap<String, Pair<Fdt, Node>> env) {
+		private Infer newInfer(IMap<String, Pair<Fdt, Node>> env) {
 			return new Infer(env, checks);
 		}
 	}
