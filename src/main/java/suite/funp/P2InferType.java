@@ -275,7 +275,9 @@ public class P2InferType {
 					var captures = li.captures;
 					if (!captures.isEmpty()) {
 						var struct = FunpStruct.of(captures);
-						return FunpDefine.of(li.capn, struct, FunpLambdaCapture.of(vn, li.cap, c(expr)), Fdt.GLOB);
+						var lc = FunpLambdaCapture.of(vn, li.cap, c(expr));
+						var assign = FunpDoAssignVar.of(li.cap, struct, lc);
+						return FunpDefine.of(li.capn, FunpDontCare.of(), assign, Fdt.GLOB);
 
 						// TODO allocate cap on heap
 						// TODO free cap after use
@@ -634,8 +636,8 @@ public class P2InferType {
 				var b = ps + ps; // return address and EBP
 				var lt = new LambdaType(n);
 				var size = getTypeSize(typeOf(cap));
-				var env0 = IMap.<String, Var> empty();
-				var env1 = env0 //
+				var env1 = IMap //
+						.<String, Var> empty() //
 						.replace(cap.vn, new Var(0, IntMutable.of(0), 0, size)) //
 						.replace(vn, new Var(1, IntMutable.of(0), b, b + lt.is));
 				var frame = FunpReference.of(erase(cap));
