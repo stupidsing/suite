@@ -196,6 +196,10 @@ public class P0Parse {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpDontCare.of());
 			}).match("byte .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(num(a)));
+			}).match("capture (.0 => .1)", (a, b) -> {
+				var lambda = lambda0(a, b);
+				lambda.isCapture = true;
+				return lambda;
 			}).match("case || .0", a -> {
 				return new Object() {
 					private Funp d(Node n) {

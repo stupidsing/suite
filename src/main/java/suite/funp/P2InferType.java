@@ -62,6 +62,8 @@ import suite.funp.P2.FunpAssignMem;
 import suite.funp.P2.FunpAssignOp;
 import suite.funp.P2.FunpCmp;
 import suite.funp.P2.FunpData;
+import suite.funp.P2.FunpHeapAlloc;
+import suite.funp.P2.FunpHeapDealloc;
 import suite.funp.P2.FunpInvoke;
 import suite.funp.P2.FunpInvoke2;
 import suite.funp.P2.FunpInvokeIo;
@@ -156,8 +158,8 @@ public class P2InferType {
 						return FunpLambda.of(vn, extractPredefine(expr), isCapture);
 					})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
 						var vn = "predefine$" + Util.temp();
-						var var = FunpVariable.of(vn);
 						vns.add(vn);
+						var var = FunpVariable.of(vn);
 						return FunpDoAssignVar.of(var, extract(expr), var);
 					})).result();
 				});
@@ -194,7 +196,7 @@ public class P2InferType {
 
 		class Li {
 			private String capn = "cap$" + Util.temp();
-			private FunpVariable cap = FunpVariable.of(capn);
+			private FunpReference refCap = FunpReference.of(FunpVariable.of(capn));
 			private Set<String> captureSet = new HashSet<>();
 			private List<Pair<String, Funp>> captures = new ArrayList<>();
 		}
@@ -249,7 +251,7 @@ public class P2InferType {
 						var li = infoByLambda.get(lambda_);
 						if (li.captureSet.add(vn))
 							li.captures.add(Pair.of(vn, access(lambdaByFunp.get(lambda_))));
-						return FunpField.of(FunpReference.of(li.cap), vn);
+						return FunpField.of(li.refCap, vn);
 					}
 				}
 			}.access(lambda);
@@ -274,8 +276,11 @@ public class P2InferType {
 					var li = infoByLambda.get(f);
 					var captures = li.captures;
 					if (!captures.isEmpty()) {
+						var capn = li.capn;
 						var struct = FunpStruct.of(captures);
-						return FunpDefine.of(li.capn, struct, FunpLambdaCapture.of(vn, li.cap, c(expr)), Fdt.GLOB);
+						var cap = FunpVariable.of(capn);
+						var assign = FunpDoAssignVar.of(cap, struct, FunpLambdaCapture.of(vn, cap, c(expr)));
+						return FunpDefine.of(capn, FunpDontCare.of(), assign, Fdt.GLOB);
 
 						// TODO allocate cap on heap
 						// TODO free cap after use
@@ -398,8 +403,13 @@ public class P2InferType {
 				var tf = new Reference();
 				var map = new HashMap<Node, Reference>();
 				map.put(Atom.of(field), tf);
-				unify(n, infer(reference), typeRefOf(typeStructOf(Dict.of(map))));
+				unify(n, typeRefOf(typeStructOf(Dict.of(map))), infer(reference));
 				return tf;
+			})).applyIf(FunpHeapAlloc.class, f -> f.apply(value -> {
+				return typeRefOf(infer(value));
+			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, ref, expr) -> {
+				unify(n, typeRefOf(new Reference()), infer(ref));
+				return infer(expr);
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				Node t;
 				unify(n, typeBoolean, infer(if_));
@@ -616,6 +626,15 @@ public class P2InferType {
 							return FunpMemory.of(erase(reference), offset, offset1);
 					}
 				return fail();
+			})).applyIf(FunpHeapAlloc.class, f -> f.apply(value -> {
+				var size = getTypeSize(typeOf(value));
+				return applyOnce(FunpNumber.ofNumber(size), globals.get("!alloc").get(scope), ps);
+			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, ref, expr) -> {
+				var in = FunpData.of(List.of( //
+						Pair.of(FunpNumber.ofNumber(size), IntIntPair.of(0, ps)), //
+						Pair.of(ref, IntIntPair.of(ps, ps + ps))));
+				applyOnce(in, globals.get("!dealloc").get(scope), ps + ps);
+				return erase(expr);
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return erase(expr);
 			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {

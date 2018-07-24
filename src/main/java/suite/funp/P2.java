@@ -159,6 +159,38 @@ public class P2 {
 		}
 	}
 
+	public static class FunpHeapAlloc implements Funp, P4.End {
+		public Funp value;
+
+		public static FunpHeapAlloc of(Funp value, Funp expr) {
+			var f = new FunpHeapAlloc();
+			f.value = value;
+			return f;
+		}
+
+		public <R> R apply(FixieFun1<Funp, R> fun) {
+			return fun.apply(value);
+		}
+	}
+
+	public static class FunpHeapDealloc implements Funp, P4.End {
+		public int size;
+		public Funp ref;
+		public Funp expr;
+
+		public static FunpHeapDealloc of(int size, Funp ref, Funp expr) {
+			var f = new FunpHeapDealloc();
+			f.size = size;
+			f.ref = ref;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun3<Integer, Funp, Funp, R> fun) {
+			return fun.apply(size, ref, expr);
+		}
+	}
+
 	public static class FunpInvoke implements Funp, P4.End {
 		public Funp routine;
 
