@@ -164,7 +164,7 @@ public class P0Parse {
 			}).match(".0 [.1]", (a, b) -> {
 				return !isList(b) ? FunpIndex.of(FunpReference.of(p(a)), p(b)) : null;
 			}).match(".0 => .1", (a, b) -> {
-				return lambda0(a, b);
+				return lambdaSeparate(a, b);
 			}).match(".0, .1", (a, b) -> {
 				return FunpStruct.of(List.of(Pair.of("t0", p(a)), Pair.of("t1", p(b))));
 			}).match(".0/.1", (a, b) -> {
@@ -197,9 +197,7 @@ public class P0Parse {
 			}).match("byte .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(num(a)));
 			}).match("capture (.0 => .1)", (a, b) -> {
-				var lambda = lambda0(a, b);
-				lambda.isCapture = true;
-				return lambda;
+				return capture(lambdaSeparate(a, b));
 			}).match("case || .0", a -> {
 				return new Object() {
 					private Funp d(Node n) {
@@ -226,7 +224,7 @@ public class P0Parse {
 					return null;
 				// return parse(Suite.subst("poly .1 | (.0 => .2)", m));
 			}).match("define .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.L_POLY, a, lambda0(b, c), d);
+				return define(Fdt.L_POLY, a, capture(lambdaSeparate(b, c)), d);
 			}).match("define { .0 } ~ .1", (a, b) -> {
 				var list = kvs(a).collect();
 				var vns1 = list.fold(vns, (vs, k, v) -> vs.add(k));
@@ -246,11 +244,11 @@ public class P0Parse {
 					return null;
 				// return parse(Suite.subst(".1 | (.0 => .2)", m));
 			}).match("let .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.L_MONO, a, lambda0(b, c), d);
+				return define(Fdt.L_MONO, a, capture(lambdaSeparate(b, c)), d);
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
 				return define(Fdt.GLOB, a, p(b), c);
 			}).match("let.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.GLOB, a, lambda0(b, c), d);
+				return define(Fdt.GLOB, a, capture(lambdaSeparate(b, c)), d);
 			}).match("number", () -> {
 				return FunpNumber.of(IntMutable.nil());
 			}).match("number .0", a -> {
@@ -290,6 +288,11 @@ public class P0Parse {
 			}).applyTree((op, l, r) -> {
 				return FunpTree.of(op, p(l), p(r));
 			}).nonNullResult();
+		}
+
+		private FunpLambda capture(FunpLambda lambda) {
+			lambda.isCapture = true;
+			return lambda;
 		}
 
 		private <T> T checkDo(Source<T> source) {
@@ -333,7 +336,7 @@ public class P0Parse {
 					.map2(Pair::fst, Pair::snd);
 		}
 
-		private FunpLambda lambda0(Node a, Node b) {
+		private FunpLambda lambdaSeparate(Node a, Node b) {
 			return lambda(a, b, false);
 		}
 
