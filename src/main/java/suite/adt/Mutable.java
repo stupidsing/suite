@@ -31,7 +31,7 @@ public class Mutable<T> {
 		value = t;
 	}
 
-	public T get() {
+	public T value() {
 		return value;
 	}
 

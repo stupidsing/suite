@@ -41,7 +41,7 @@ public class SelfOrganizingMap {
 					var index = index(is);
 					var som0 = som[index];
 					double distance = vec.dotDiff(in, som0);
-					if (distance < nearestDistance.get()) {
+					if (distance < nearestDistance.value()) {
 						nearestDistance.update(distance);
 						Ints_.copy(is, 0, nearestIndices, 0, nDim);
 					}

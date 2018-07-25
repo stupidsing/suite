@@ -268,7 +268,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 
 		return new Outlet<>(() -> {
 			var mutable = Mutable.<T> nil();
-			return queue.poll(mutable) ? mutable.get() : t0;
+			return queue.poll(mutable) ? mutable.value() : t0;
 		});
 	}
 

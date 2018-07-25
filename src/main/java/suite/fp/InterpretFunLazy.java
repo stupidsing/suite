@@ -248,7 +248,7 @@ public class InterpretFunLazy {
 
 				return frame -> {
 					var value = Mutable.<Thunk> nil();
-					frame.add(() -> value.get().get());
+					frame.add(() -> value.value().get());
 					value.set(() -> value_.apply(frame).get());
 					return expr.apply(frame);
 				};

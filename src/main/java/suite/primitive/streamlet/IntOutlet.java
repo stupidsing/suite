@@ -331,7 +331,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 		return new IntOutlet(() -> {
 			var mutable = Mutable.<Integer> nil();
-			var c = queue.poll(mutable) ? mutable.get() : c0;
+			var c = queue.poll(mutable) ? mutable.value() : c0;
 			return c;
 		});
 	}

@@ -272,16 +272,16 @@ public class DevMain {
 		var p0 = IntMutable.of(-1);
 		var size = text.size;
 		IntSink lf = px -> {
-			starts.append(p0.get() + 1);
+			starts.append(p0.value() + 1);
 			ends.append(px);
 			p0.update(px);
 		};
 		for (var p = 0; p < size; p++) {
 			var ch = text.get.apply(p);
-			if (ch == '\n' || wrapSize < p - p0.get())
+			if (ch == '\n' || wrapSize < p - p0.value())
 				lf.sink(p);
 		}
-		if (1 < size - p0.get())
+		if (1 < size - p0.value())
 			lf.sink(size);
 		return new Text(text, starts.toInts().toArray(), ends.toInts().toArray());
 	}

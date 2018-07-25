@@ -5,8 +5,8 @@ import static suite.util.Friends.fail;
 import suite.object.Object_;
 
 /**
- * An indirect reference to a primitive float. Float.MIN_VALUE is not allowed in
- * the value.
+ * An indirect reference to a primitive float. Float.MIN_VALUE is not allowed
+ * in the value.
  * 
  * @author ywsing
  */
@@ -39,7 +39,7 @@ public class FltMutable {
 		value = c;
 	}
 
-	public float get() {
+	public float value() {
 		return value;
 	}
 

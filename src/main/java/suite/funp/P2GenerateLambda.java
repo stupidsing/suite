@@ -173,7 +173,7 @@ public class P2GenerateLambda {
 				var thunk = compile(fs1, env.replace(vn, fs1), expr);
 				return rt -> (Fun_) p -> thunk.apply(new Rt(rt, p));
 			})).applyIf(FunpNumber.class, f -> f.apply(i -> {
-				var i1 = new Int(i.get());
+				var i1 = new Int(i.value());
 				return rt -> i1;
 			})).applyIf(FunpPredefine.class, f -> f.apply(expr -> {
 				return compile_(expr);

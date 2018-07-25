@@ -138,7 +138,7 @@ public class InterpretFunLazy0 {
 			var expr = lazy0(c);
 			return env -> {
 				var val = Mutable.<Thunk> nil();
-				var env1 = env.put(vk, () -> val.get().get());
+				var env1 = env.put(vk, () -> val.value().get());
 				val.set(() -> value.apply(env1).get());
 				return expr.apply(env1);
 			};

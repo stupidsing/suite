@@ -39,7 +39,7 @@ public class DblMutable {
 		value = c;
 	}
 
-	public double get() {
+	public double value() {
 		return value;
 	}
 

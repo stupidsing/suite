@@ -367,12 +367,12 @@ public class P0Parse {
 			var vnsMutable = Mutable.of(ISet.<String> empty());
 
 			Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class, n_ -> n_.cast(FunpVariableNew.class, f -> f.apply(vn -> {
-				vnsMutable.update(vnsMutable.get().replace(vn));
+				vnsMutable.update(vnsMutable.value().replace(vn));
 				return FunpVariable.of(vn);
 			})));
 
 			var be = iter.apply(p(a));
-			var vns_ = vnsMutable.get();
+			var vns_ = vnsMutable.value();
 			var value = p(b);
 			var then = new Parse(vns_.streamlet().fold(vns, ISet::add)).p(c);
 			var else_ = p(d);
@@ -447,7 +447,7 @@ public class P0Parse {
 				})).applyIf(FunpTag.class, f -> f.apply((id, tag, value_) -> {
 					return new Switch<Funp>(value //
 					).applyIf(FunpTag.class, g -> g.apply((id1, tag1, value1) -> {
-						return id.get() == id1.get() ? bind(value_, value1, then, else_) : else_;
+						return id.value() == id1.value() ? bind(value_, value1, then, else_) : else_;
 					})).applyIf(Funp.class, g -> {
 						var ref = FunpReference.of(value);
 

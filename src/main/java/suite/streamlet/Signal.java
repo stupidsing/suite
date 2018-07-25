@@ -159,7 +159,7 @@ public class Signal<T> {
 	public Signal<T> resample(Signal<?> event) {
 		var mut = Mutable.<T> nil();
 		wire_(mut::update);
-		return event.redirect_((e, fire) -> fire.sink(mut.get()));
+		return event.redirect_((e, fire) -> fire.sink(mut.value()));
 	}
 
 	public Signal<T> unique() {

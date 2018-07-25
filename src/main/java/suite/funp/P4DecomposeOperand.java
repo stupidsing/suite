@@ -34,7 +34,7 @@ public class P4DecomposeOperand {
 		).applyIf(FunpDontCare.class, f -> {
 			return amd64.eax;
 		}).applyIf(FunpNumber.class, f -> {
-			return amd64.imm(f.i.get(), is);
+			return amd64.imm(f.i.value(), is);
 		}).applyIf(FunpMemory.class, f -> {
 			return f.size() == is ? decomposeFunpMemory(fd, f) : null;
 		}).result();
@@ -82,12 +82,12 @@ public class P4DecomposeOperand {
 					if (n1 instanceof FunpFramePointer && isUseEbp && reg == null)
 						reg = amd64.ebp;
 					else if ((number = n1.cast(FunpNumber.class)) != null)
-						scale *= number.i.get();
+						scale *= number.i.value();
 					else if ((tree = n1.cast(FunpTree2.class)) != null //
 							&& tree.operator == TreeUtil.SHL //
 							&& (right = tree.right) instanceof FunpNumber) {
 						decompose(tree.left);
-						scale <<= ((FunpNumber) right).i.get();
+						scale <<= ((FunpNumber) right).i.value();
 					} else
 						mults.add(n1);
 			}

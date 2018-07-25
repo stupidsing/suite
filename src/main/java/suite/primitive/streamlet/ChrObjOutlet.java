@@ -324,7 +324,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 			var mutable = Mutable.<ChrObjPair<V>> nil();
 			var b = queue.poll(mutable);
 			if (b) {
-				var p = mutable.get();
+				var p = mutable.value();
 				pair.update(p.t0, p.t1);
 			} else
 				pair.update(k0, v0);

@@ -786,7 +786,7 @@ public class P2InferType {
 					}).applyIf(FunpLambda.class, f -> {
 						return f;
 					}).result());
-					return depth.get();
+					return depth.value();
 				}
 			}.c(expr1);
 

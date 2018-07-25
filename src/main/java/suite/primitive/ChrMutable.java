@@ -39,7 +39,7 @@ public class ChrMutable {
 		value = c;
 	}
 
-	public char get() {
+	public char value() {
 		return value;
 	}
 

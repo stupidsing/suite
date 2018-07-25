@@ -134,9 +134,9 @@ public class FunGenerateBytecode {
 				for (var source : e1.breaks.toInts())
 					jumps.put(source, px);
 			}).doIf(BlockBreakFunExpr.class, e1 -> {
-				e1.block.get().breaks.append(list.size());
+				e1.block.value().breaks.append(list.size());
 			}).doIf(BlockContFunExpr.class, e1 -> {
-				e1.block.get().continues.append(list.size());
+				e1.block.value().continues.append(list.size());
 			}).doIf(CastFunExpr.class, e1 -> {
 				visit_(e1.expr);
 			}).doIf(CheckCastFunExpr.class, e1 -> {

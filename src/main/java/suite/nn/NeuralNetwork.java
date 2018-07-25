@@ -145,7 +145,7 @@ public class NeuralNetwork {
 			var hsy = mtx.width(inputs) - sy + 1;
 
 			var outputs = To.matrix(hsx, hsy, (ox, oy) -> {
-				var sum = bias.get();
+				var sum = bias.value();
 				for (var x = 0; x < sx; x++)
 					for (var y = 0; y < sy; y++)
 						sum += inputs[ox + x][oy + y] * (double) kernel[x][y];
@@ -158,7 +158,7 @@ public class NeuralNetwork {
 				for (var ox = 0; ox < hsx; ox++)
 					for (var oy = 0; oy < hsy; oy++) {
 						var e = errors[ox][oy] *= outputs[ox][oy];
-						bias.update(bias.get() + e);
+						bias.update(bias.value() + e);
 						for (var x = 0; x < sx; x++)
 							for (var y = 0; y < sy; y++) {
 								var ix = ox + x;

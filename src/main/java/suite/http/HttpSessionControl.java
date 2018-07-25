@@ -86,7 +86,7 @@ public class HttpSessionControl {
 					sessionManager.remove(sessionId);
 
 				response = showLoginPage(IList.end(), false);
-			} else if (session != null && current < session.lastRequestDt.get() + TIMEOUTDURATION) {
+			} else if (session != null && current < session.lastRequestDt.value() + TIMEOUTDURATION) {
 				session.lastRequestDt.update(current);
 				response = showProtectedPage(request, sessionId);
 			} else

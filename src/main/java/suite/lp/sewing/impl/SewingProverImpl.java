@@ -205,7 +205,7 @@ public class SewingProverImpl implements ProverFactory {
 				return tr;
 			}).trampoline();
 
-			return result.get();
+			return result.value();
 		};
 	}
 
@@ -380,7 +380,7 @@ public class SewingProverImpl implements ProverFactory {
 						rt_.query = f.apply(rt.env);
 						rt_.rems = rems;
 						rt_.pushRem(rem);
-						return mtr.get();
+						return mtr.value();
 					}).trampoline();
 					return null;
 				};
@@ -393,7 +393,7 @@ public class SewingProverImpl implements ProverFactory {
 						return cpsx;
 					};
 					rt.query = f.apply(rt.env);
-					return mcps.get();
+					return mcps.value();
 				};
 			}
 			return cps;
@@ -502,7 +502,7 @@ public class SewingProverImpl implements ProverFactory {
 				var ht = Suite.pattern(".0 .1").match(ht_.apply(rt.env));
 				var tr1 = saveEnvTr(compileTrRule(ht[0], ht[1]));
 				var current = Mutable.of(value0_.apply(rt.env));
-				rt.pushRem(rt_ -> valuex_.test(rt_, current.get()) ? okay : fail);
+				rt.pushRem(rt_ -> valuex_.test(rt_, current.value()) ? okay : fail);
 				for (var elem : Tree.iter(list0_.apply(rt.env))) {
 					var result = new Reference();
 					rt.pushRem(rt_ -> {
@@ -510,7 +510,7 @@ public class SewingProverImpl implements ProverFactory {
 						return okay;
 					});
 					rt.pushRem(rt_ -> {
-						rt_.query = Tree.of(TermOp.ITEM__, Tree.of(TermOp.ITEM__, elem, current.get()), result);
+						rt_.query = Tree.of(TermOp.ITEM__, Tree.of(TermOp.ITEM__, elem, current.value()), result);
 						return tr1;
 					});
 				}
@@ -738,7 +738,7 @@ public class SewingProverImpl implements ProverFactory {
 				var mtr = getTrampolineByPrototype(prototype);
 				tr = rt -> {
 					rt.query = f.apply(rt.env);
-					return mtr.get()::prove;
+					return mtr.value()::prove;
 				};
 			} else {
 				var mcps = getCpsByPrototype(prototype);
@@ -760,7 +760,7 @@ public class SewingProverImpl implements ProverFactory {
 						return cpsx;
 					};
 					rt.query = f.apply(rt.env);
-					rt.cont(mcps.get());
+					rt.cont(mcps.value());
 					return fail;
 				};
 			}

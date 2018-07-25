@@ -168,7 +168,7 @@ public class P1Inline {
 				.from2(defByVariables) //
 				.values() //
 				.distinct() //
-				.filter(def -> def instanceof FunpDefine && countByDefs.getOrDefault(def, zero).get() <= 1) //
+				.filter(def -> def instanceof FunpDefine && countByDefs.getOrDefault(def, zero).value() <= 1) //
 				.map2(def -> (FunpDefine) def) //
 				.filterValue(def -> def.type == Fdt.L_MONO || def.type == Fdt.L_POLY) //
 				.toMap();

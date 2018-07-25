@@ -86,8 +86,8 @@ public class P3Optimize {
 	}
 
 	private <T> T evaluate(Funp lhs0, Funp rhs0, Fun2<Integer, Integer, T> fun) {
-		var lhs1 = optimize(lhs0).cast(FunpNumber.class, n -> n.i.get());
-		var rhs1 = optimize(rhs0).cast(FunpNumber.class, n -> n.i.get());
+		var lhs1 = optimize(lhs0).cast(FunpNumber.class, n -> n.i.value());
+		var rhs1 = optimize(rhs0).cast(FunpNumber.class, n -> n.i.value());
 		return lhs1 != null && rhs1 != null ? fun.apply(lhs1, rhs1) : null;
 	}
 

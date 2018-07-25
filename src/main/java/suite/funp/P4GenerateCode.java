@@ -183,7 +183,7 @@ public class P4GenerateCode {
 					compileAssign(value, target);
 					return compile(expr);
 				})).applyIf(FunpAssignOp.class, f -> f.apply((target, value, expr) -> {
-					compileIsSpec(value, (OpReg) target.operand.get());
+					compileIsSpec(value, (OpReg) target.operand.value());
 					return compile(expr);
 				})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
 					return returnIsOp(amd64.imm(b ? 1 : 0, Funp_.booleanSize));
@@ -365,9 +365,9 @@ public class P4GenerateCode {
 					else
 						return fail();
 				})).applyIf(FunpNumber.class, f -> f.apply(i -> {
-					return returnIsOp(amd64.imm(i.get(), is));
+					return returnIsOp(amd64.imm(i.value(), is));
 				})).applyIf(FunpOperand.class, f -> f.apply(op -> {
-					return returnIsOp(op.get());
+					return returnIsOp(op.value());
 				})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr) -> {
 					return returnPs2Op(compileIsOp(frame), compileRoutine(c1 -> c1.compileIsSpec(expr, i_eax)));
 				})).applyIf(FunpRoutine2.class, f -> f.apply((frame, expr) -> {
@@ -514,7 +514,7 @@ public class P4GenerateCode {
 			}
 
 			private Operand compileTree(Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
-				var numRhs = rhs.cast(FunpNumber.class, n_ -> n_.i.get());
+				var numRhs = rhs.cast(FunpNumber.class, n_ -> n_.i.value());
 				var insn = insnByOp.get(operator);
 				var setInsn = setInsnByOp.get(operator);
 				var setRevInsn = setRevInsnByOp.get(operator);
@@ -663,7 +663,7 @@ public class P4GenerateCode {
 						})).applyIf(FunpDontCare.class, f -> {
 							return size == 0 || instructions.add(amd64.instruction(Insn.DS, amd64.imm32(size)));
 						}).applyIf(FunpNumber.class, f -> f.apply(i -> {
-							return instructions.add(amd64.instruction(Insn.D, amd64.imm(i.get(), size)));
+							return instructions.add(amd64.instruction(Insn.D, amd64.imm(i.value(), size)));
 						})).applyIf(Funp.class, f -> {
 							return false;
 						}).result();

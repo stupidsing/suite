@@ -30,7 +30,7 @@ public class HttpSessionManager implements SessionManager {
 					var iter = sessions.values().iterator();
 
 					while (iter.hasNext())
-						if (iter.next().lastRequestDt.get() + HttpSessionControl.TIMEOUTDURATION < current)
+						if (iter.next().lastRequestDt.value() + HttpSessionControl.TIMEOUTDURATION < current)
 							iter.remove();
 				} finally {
 					isCleaning.set(false);

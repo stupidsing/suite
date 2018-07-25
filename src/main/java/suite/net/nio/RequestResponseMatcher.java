@@ -22,14 +22,14 @@ public class RequestResponseMatcher {
 	public Bytes requestForResponse(RequestResponseNioChannel channel, Bytes request, int timeOut) {
 		var token = Util.temp();
 		var holder = Mutable.<Bytes> nil();
-		var condition = new Condition(() -> holder.get() != null);
+		var condition = new Condition(() -> holder.value() != null);
 
 		return condition.waitThen(() -> {
 			requests.put(token, Pair.of(holder, condition));
 			channel.send(RequestResponseNioChannel.REQUEST, token, request);
 		}, () -> {
 			requests.remove(token);
-			return holder.get();
+			return holder.value();
 		});
 	}
 

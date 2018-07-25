@@ -5,8 +5,8 @@ import static suite.util.Friends.fail;
 import suite.object.Object_;
 
 /**
- * An indirect reference to a primitive int. Integer.MIN_VALUE is not allowed in
- * the value.
+ * An indirect reference to a primitive int. Integer.MIN_VALUE is not allowed
+ * in the value.
  * 
  * @author ywsing
  */
@@ -39,7 +39,7 @@ public class IntMutable {
 		value = c;
 	}
 
-	public int get() {
+	public int value() {
 		return value;
 	}
 

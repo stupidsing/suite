@@ -320,7 +320,7 @@ public interface BackAllocator {
 			return index -> {
 				var last = index - 1;
 				var potentialBySymbol = onDateTime.onDateTime(index);
-				var potentialBySymbol0 = mutable.get();
+				var potentialBySymbol0 = mutable.value();
 				var potentialBySymbol1 = Read.from2(potentialBySymbol).toMap();
 
 				// find out the transactions

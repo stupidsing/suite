@@ -26,7 +26,7 @@ public class LazyIbTreeMutator<K, V> implements KeyValueMutator<K, V> {
 			mutable.set(pair != null ? pair.t1 : null);
 			return pair;
 		});
-		return mutable.get();
+		return mutable.value();
 	}
 
 	@Override

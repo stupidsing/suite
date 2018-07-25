@@ -331,7 +331,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 		return new DblOutlet(() -> {
 			var mutable = Mutable.<Double> nil();
-			var c = queue.poll(mutable) ? mutable.get() : c0;
+			var c = queue.poll(mutable) ? mutable.value() : c0;
 			return c;
 		});
 	}

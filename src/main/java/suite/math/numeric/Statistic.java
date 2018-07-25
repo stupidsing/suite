@@ -250,10 +250,10 @@ public class Statistic {
 			var maxp = Double.MIN_VALUE;
 
 			while (source2.source2(pair)) {
-				var p = ((double) pair.t1.get()) / ix;
+				var p = ((double) pair.t1.value()) / ix;
 
 				for (var j = 0; j < jx; j++)
-					p *= xcounts.computeIfAbsent(ins[j], x_ -> IntMutable.of(0)).get() / (double) jx;
+					p *= xcounts.computeIfAbsent(ins[j], x_ -> IntMutable.of(0)).value() / (double) jx;
 
 				if (maxp < p) {
 					result = pair.t0;
