@@ -47,7 +47,6 @@ import suite.funp.P2.FunpOperand;
 import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
-import suite.funp.P2.FunpSaveRegisters;
 import suite.funp.P2.FunpSaveRegisters0;
 import suite.funp.P2.FunpSaveRegisters1;
 import suite.node.Atom;
@@ -404,30 +403,6 @@ public class P4GenerateCode {
 							em.mov(pair.t0, compileFrame(pair.t1, is));
 						return new CompileOut(op0, op1);
 					}
-				})).applyIf(FunpSaveRegisters.class, f -> f.apply(expr -> {
-					var opRegs = rs.list(r -> !registerSet.isSet(r));
-
-					for (var i = 0; i <= opRegs.length - 1; i++)
-						em.emit(amd64.instruction(Insn.PUSH, opRegs[i]));
-
-					var out = new Compile1(registerSet, fd - opRegs.length * is).compile(expr);
-					var op0 = isOutSpec ? pop0 : out.op0;
-					var op1 = isOutSpec ? pop1 : out.op1;
-
-					if (op0 != null)
-						op0 = em.mov(rs.contains(op0) ? rs.mask(op1).get(op0.size) : op0, op0);
-					if (op1 != null)
-						op1 = em.mov(rs.contains(op1) ? rs.mask(op0).get(op1.size) : op1, op1);
-
-					for (var i = opRegs.length - 1; 0 <= i; i--)
-						em.emit(amd64.instruction(Insn.POP, opRegs[i]));
-
-					if (op0 != null && isOutSpec)
-						op0 = em.mov(pop0, op0);
-					if (op1 != null && isOutSpec)
-						op1 = em.mov(pop1, op1);
-
-					return new CompileOut(op0, op1);
 				})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
 					return returnIsOp(compileTree(n, op, op.assoc(), lhs, rhs));
 				})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {

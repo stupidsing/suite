@@ -74,7 +74,6 @@ import suite.funp.P2.FunpOperand;
 import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
-import suite.funp.P2.FunpSaveRegisters;
 import suite.funp.P2.FunpSaveRegisters0;
 import suite.funp.P2.FunpSaveRegisters1;
 import suite.immutable.IMap;
@@ -599,7 +598,9 @@ public class P2InferType {
 						.filter(var -> var.scope != null && var.scope == scope) //
 						.sink(var -> var.setReg(false));
 
-				return FunpSaveRegisters.of(FunpDoAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm));
+				var saves = Mutable.of(new ArrayList<Pair<OpReg, Integer>>());
+				var fa = FunpDoAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm);
+				return FunpSaveRegisters0.of(FunpSaveRegisters1.of(fa, saves), saves);
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));
 			})).applyIf(FunpDoAssignVar.class, f -> f.apply((var, value, expr) -> {

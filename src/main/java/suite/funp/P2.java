@@ -350,20 +350,6 @@ public class P2 {
 		}
 	}
 
-	public static class FunpSaveRegisters implements Funp, P4.End {
-		public Funp expr;
-
-		public static FunpSaveRegisters of(Funp expr) {
-			var f = new FunpSaveRegisters();
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun1<Funp, R> fun) {
-			return fun.apply(expr);
-		}
-	}
-
 	public static class FunpSaveRegisters0 implements Funp, P4.End {
 		public Funp expr;
 		public Mutable<ArrayList<Pair<OpReg, Integer>>> saves;
