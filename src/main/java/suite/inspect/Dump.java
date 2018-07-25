@@ -47,7 +47,7 @@ public class Dump {
 		Sink<String> sink = sb::append;
 
 		new Object() {
-			private void d(Object object) {
+			private void d(Object object, String suffix) {
 				if (object == null)
 					sink.sink("null");
 				else if (dumpedObjects.put(object, true) == null)
@@ -58,6 +58,7 @@ public class Dump {
 					}
 				else
 					sink.sink("(recursed)");
+				sink.sink(suffix);
 			}
 
 			private void d_(Object object) {
@@ -65,10 +66,8 @@ public class Dump {
 
 				if (clazz.isArray()) {
 					sink.sink("[");
-					for (var i = 0; i < Array.getLength(object); i++) {
-						d(Array.get(object, i));
-						sink.sink(",");
-					}
+					for (var i = 0; i < Array.getLength(object); i++)
+						d(Array.get(object, i), ",");
 					sink.sink("]");
 				} else if (Util.isSimple(clazz))
 					sink.sink(object.toString());
@@ -76,34 +75,26 @@ public class Dump {
 					new Switch<Object>(object //
 					).doIf(Collection.class, collection -> {
 						sink.sink("[");
-						for (var object1 : collection) {
-							d(object1);
-							sink.sink(",");
-						}
+						for (var object1 : collection)
+							d(object1, ",");
 						sink.sink("]");
 					}).doIf(Map.class, map -> {
 						sink.sink("{");
 						for (var e : ((Map<?, ?>) object).entrySet()) {
-							d(e.getKey());
-							sink.sink(":");
-							d(e.getValue());
-							sink.sink(",");
+							d(e.getKey(), ":");
+							d(e.getValue(), ",");
 						}
 						sink.sink("}");
 					}).doIf(MapInterface.class, mi -> {
 						sink.sink(mi.getClass().getSimpleName());
 						sink.sink("{");
-						for (var object1 : MapObject_.list(object)) {
-							d(object1);
-							sink.sink(",");
-						}
+						for (var object1 : MapObject_.list(object))
+							d(object1, ",");
 						sink.sink("}");
 					}).doIf(Pair.class, pair -> {
 						sink.sink("<");
-						d(pair.t0);
-						sink.sink("|");
-						d(pair.t1);
-						sink.sink(">");
+						d(pair.t0, "|");
+						d(pair.t1, ">");
 					}).doIf(Object.class, o -> {
 						sink.sink(o.getClass().getSimpleName());
 						sink.sink("{");
@@ -117,14 +108,13 @@ public class Dump {
 
 							if (value != null) {
 								sink.sink(pair.t0 + ":");
-								d(value);
-								sink.sink(",");
+								d(value, ",");
 							}
 						}
 						sink.sink("}");
 					}).nonNullResult();
 			}
-		}.d(node);
+		}.d(node, "");
 
 		return sb.toString();
 	}
