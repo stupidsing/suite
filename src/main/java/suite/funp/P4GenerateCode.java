@@ -384,9 +384,9 @@ public class P4GenerateCode {
 					var fd1 = fd;
 					for (var opReg : opRegs)
 						saves.value().add(Pair.of(opReg, fd1 -= is));
-					em.addImm(esp, fd - fd1);
-					var out = new Compile1(rs, fd1).compile(expr);
 					em.addImm(esp, fd1 - fd);
+					var out = new Compile1(registerSet, fd1).compile(expr);
+					em.addImm(esp, fd - fd1);
 					return out;
 				})).applyIf(FunpSaveRegisters1.class, f -> f.apply((expr, saves) -> {
 					for (var pair : saves.value())

@@ -17,6 +17,7 @@ import suite.adt.Mutable;
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
 import suite.adt.pair.Pair;
+import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
@@ -74,6 +75,8 @@ import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters;
+import suite.funp.P2.FunpSaveRegisters0;
+import suite.funp.P2.FunpSaveRegisters1;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;
 import suite.lp.Trail;
@@ -745,6 +748,7 @@ public class P2InferType {
 		private Funp apply(Funp value, Funp lambda, int size) {
 			var lt = new LambdaType(lambda);
 			var lambda1 = erase(lambda);
+			var saves = Mutable.of(new ArrayList<Pair<OpReg, Integer>>());
 			var os = 0;
 			Funp invoke;
 			if (lt.os == is)
@@ -753,9 +757,9 @@ public class P2InferType {
 				invoke = FunpInvoke2.of(lambda1);
 			else
 				invoke = FunpInvokeIo.of(lambda1, lt.is, os = lt.os);
-			var as0 = allocStack(size, value, invoke);
+			var as0 = allocStack(size, value, FunpSaveRegisters1.of(invoke, saves));
 			var as1 = FunpAllocStack.of(os, FunpDontCare.of(), as0, IntMutable.nil());
-			return FunpSaveRegisters.of(as1);
+			return FunpSaveRegisters0.of(as1, saves);
 		}
 
 		private Funp assign(Funp var, Funp value, Funp expr) {
