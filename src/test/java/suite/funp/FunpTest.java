@@ -28,8 +28,8 @@ public class FunpTest {
 
 	@Test
 	public void testCapture() {
-		test(31, "define m := 31 ~ 15 | (n => m)");
-		test(0, "define m j := (type j = number ~ 0) ~ 1 | (n => m 2)");
+		test(31, "define m := 31 ~ 15 | capture (n => m)");
+		test(0, "define m j := (type j = number ~ 0) ~ 1 | capture (n => m 2)");
 
 		test(0, "" //
 				+ "define f j := (type j = number ~ 0) ~ " //

@@ -638,7 +638,7 @@ public class P2InferType {
 					return applyOnce(FunpNumber.ofNumber(size), globals.get("!alloc").get(scope), ps);
 				else {
 					var m = Mutable.<Operand> nil();
-					return FunpAllocGlobal.of(size, erase(value), FunpOperand.of(m), m);
+					return FunpAllocGlobal.of(size, FunpDontCare.of(), FunpOperand.of(m), m);
 				}
 			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, ref, expr) -> {
 				var in = FunpData.of(List.of( //
