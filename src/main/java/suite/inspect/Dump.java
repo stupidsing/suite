@@ -34,36 +34,7 @@ public class Dump {
 	}
 
 	public static void lines(Object node) {
-		var string = toLine(node);
-
-		var lines = new Object() {
-			private Streamlet<String> split(String indent, String s, String tail) {
-				if (80 <= s.length()) {
-					var last = s.charAt(s.length() - 1);
-
-					if (last == ',')
-						return ParseUtil.splitn(s, ",", Assoc.RIGHT).concatMap(s_ -> split(indent, s_, ","));
-
-					for (var pair : List.of("[]", "{}", "<>")) {
-						var open = pair.charAt(0);
-						var close = pair.charAt(1);
-						int pos = s.indexOf(open);
-
-						if (last == close && 0 <= pos) {
-							var left = String_.left(s, pos);
-							var right = String_.range(s, pos + 1, -1);
-							return Streamlet.concat( //
-									Read.each(indent + left + open), //
-									split(indent + "  ", right, ""), //
-									Read.each(indent + Character.toString(last) + tail));
-						}
-					}
-				}
-				return Read.each(indent + s + tail);
-			}
-		}.split("\n", string, "");
-
-		LogUtil.info(lines.collect(As::joined));
+		LogUtil.info(format(toLine(node)));
 	}
 
 	public static void line(Object node) {
@@ -276,6 +247,35 @@ public class Dump {
 					}
 			}
 		}.d(prefix, object);
+	}
+
+	private static String format(String string) {
+		return new Object() {
+			private Streamlet<String> split(String indent, String s, String tail) {
+				if (80 <= s.length()) {
+					var last = s.charAt(s.length() - 1);
+
+					if (last == ',')
+						return ParseUtil.splitn(s, ",", Assoc.RIGHT).concatMap(s_ -> split(indent, s_, ","));
+
+					for (var pair : List.of("[]", "{}", "<>")) {
+						var open = pair.charAt(0);
+						var close = pair.charAt(1);
+						int pos = s.indexOf(open);
+
+						if (last == close && 0 <= pos) {
+							var left = String_.left(s, pos);
+							var right = String_.range(s, pos + 1, -1);
+							return Streamlet.concat( //
+									Read.each(indent + left + open), //
+									split(indent + "  ", right, ""), //
+									Read.each(indent + Character.toString(last) + tail));
+						}
+					}
+				}
+				return Read.each(indent + s + tail);
+			}
+		}.split("\n", string, "").collect(As::joined);
 	}
 
 	private static Streamlet<Pair<String, Callable<Object>>> readers(Object object) {
