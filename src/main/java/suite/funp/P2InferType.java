@@ -742,7 +742,7 @@ public class P2InferType {
 					: apply(value, lambda, size);
 		}
 
-		private FunpSaveRegisters apply(Funp value, Funp lambda, int size) {
+		private Funp apply(Funp value, Funp lambda, int size) {
 			var lt = new LambdaType(lambda);
 			var lambda1 = erase(lambda);
 			var os = 0;
