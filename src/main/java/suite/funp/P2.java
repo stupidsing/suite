@@ -1,5 +1,6 @@
 package suite.funp;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import suite.adt.Mutable;
@@ -365,32 +366,32 @@ public class P2 {
 
 	public static class FunpSaveRegisters0 implements Funp, P4.End {
 		public Funp expr;
-		public List<Pair<OpReg, Integer>> saves;
+		public Mutable<ArrayList<Pair<OpReg, Integer>>> saves;
 
-		public static FunpSaveRegisters0 of(Funp expr, List<Pair<OpReg, Integer>> saves) {
+		public static FunpSaveRegisters0 of(Funp expr, Mutable<ArrayList<Pair<OpReg, Integer>>> saves) {
 			var f = new FunpSaveRegisters0();
 			f.expr = expr;
 			f.saves = saves;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Funp, List<Pair<OpReg, Integer>>, R> fun) {
+		public <R> R apply(FixieFun2<Funp, Mutable<ArrayList<Pair<OpReg, Integer>>>, R> fun) {
 			return fun.apply(expr, saves);
 		}
 	}
 
 	public static class FunpSaveRegisters1 implements Funp, P4.End {
 		public Funp expr;
-		public List<Pair<OpReg, Integer>> saves;
+		public Mutable<ArrayList<Pair<OpReg, Integer>>> saves;
 
-		public static FunpSaveRegisters1 of(Funp expr, List<Pair<OpReg, Integer>> saves) {
+		public static FunpSaveRegisters1 of(Funp expr, Mutable<ArrayList<Pair<OpReg, Integer>>> saves) {
 			var f = new FunpSaveRegisters1();
 			f.expr = expr;
 			f.saves = saves;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Funp, List<Pair<OpReg, Integer>>, R> fun) {
+		public <R> R apply(FixieFun2<Funp, Mutable<ArrayList<Pair<OpReg, Integer>>>, R> fun) {
 			return fun.apply(expr, saves);
 		}
 	}
