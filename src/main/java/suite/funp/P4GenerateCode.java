@@ -303,17 +303,11 @@ public class P4GenerateCode {
 
 					return out.source();
 				})).applyIf(FunpInvoke.class, f -> f.apply(routine -> {
-					if (!rs.contains(i_eax)) {
-						compileInvoke(routine);
-						return returnIsOp(i_eax);
-					} else
-						return fail();
+					compileInvoke(routine);
+					return returnIsOp(i_eax);
 				})).applyIf(FunpInvoke2.class, f -> f.apply(routine -> {
-					if (!rs.contains(p2_eax, p2_edx)) {
-						compileInvoke(routine);
-						return returnPs2Op(p2_eax, p2_edx);
-					} else
-						return fail();
+					compileInvoke(routine);
+					return returnPs2Op(p2_eax, p2_edx);
 				})).applyIf(FunpInvokeIo.class, f -> f.apply((routine, is, os) -> {
 					compileInvoke(routine);
 					return returnAssign((c1, target) -> {
@@ -385,7 +379,7 @@ public class P4GenerateCode {
 					for (var opReg : opRegs)
 						saves.value().add(Pair.of(opReg, fd1 -= is));
 					em.addImm(esp, fd1 - fd);
-					var out = new Compile1(registerSet, fd1).compile(expr);
+					var out = new Compile1(rs, fd1).compile(expr);
 					em.addImm(esp, fd - fd1);
 					return out;
 				})).applyIf(FunpSaveRegisters1.class, f -> f.apply((expr, saves) -> {
@@ -393,14 +387,23 @@ public class P4GenerateCode {
 						em.mov(compileFrame(pair.t1, is), pair.t0);
 
 					var out = compile(expr);
-					var op0 = isOutSpec ? pop0 : out.op0;
-					var op1 = isOutSpec ? pop1 : out.op1;
 
-					for (var pair : saves.value())
-						if (pair.t0 != op0 && pair.t0 != op1)
+					if (isOutSpec) {
+						for (var pair : saves.value())
+							if (pair.t0 != pop0 && pair.t0 != pop1)
+								em.mov(pair.t0, compileFrame(pair.t1, is));
+						return out;
+					} else {
+						var op0 = out.op0;
+						var op1 = out.op1;
+						if (op0 != null)
+							op0 = em.mov(rs.contains(op0) ? rs.mask(op1).get(op0.size) : op0, op0);
+						if (op1 != null)
+							op1 = em.mov(rs.contains(op1) ? rs.mask(op0).get(op1.size) : op1, op1);
+						for (var pair : saves.value())
 							em.mov(pair.t0, compileFrame(pair.t1, is));
-
-					return out;
+						return new CompileOut(op0, op1);
+					}
 				})).applyIf(FunpSaveRegisters.class, f -> f.apply(expr -> {
 					var opRegs = rs.list(r -> !registerSet.isSet(r));
 

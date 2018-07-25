@@ -279,16 +279,12 @@ public class P2InferType {
 					var li = infoByLambda.get(f);
 					var captures = li.captures;
 					if (!captures.isEmpty()) {
-						var capn = "cap$" + Util.temp();
 						var pcapn = "pcap$" + Util.temp();
-						var cap = FunpVariable.of(capn);
 						var pcap = FunpVariable.of(pcapn);
 						var struct = FunpStruct.of(captures);
 						var lc = FunpLambdaCapture.of(pcap, li.cap, struct, vn, c(expr));
-						var assign0 = FunpDoAssignVar.of(pcap, FunpReference.of(cap), lc);
-						var assign1 = FunpDoAssignVar.of(cap, struct, assign0);
-						var define0 = FunpDefine.of(pcapn, FunpDontCare.of(), assign1, Fdt.L_MONO);
-						return FunpDefine.of(capn, FunpDontCare.of(), define0, Fdt.GLOB);
+						var assign = FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(pcap)), struct, lc);
+						return FunpDefine.of(pcapn, FunpHeapAlloc.of(struct), assign, Fdt.L_MONO);
 
 						// TODO free cap after use
 					} else
@@ -637,7 +633,7 @@ public class P2InferType {
 				return fail();
 			})).applyIf(FunpHeapAlloc.class, f -> f.apply(value -> {
 				var size = getTypeSize(typeOf(value));
-				if (Boolean.TRUE)
+				if (Boolean.FALSE)
 					return applyOnce(FunpNumber.ofNumber(size), globals.get("!alloc").get(scope), ps);
 				else {
 					var m = Mutable.<Operand> nil();
