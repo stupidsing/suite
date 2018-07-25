@@ -48,6 +48,8 @@ import suite.funp.P2.FunpRoutine;
 import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters;
+import suite.funp.P2.FunpSaveRegisters0;
+import suite.funp.P2.FunpSaveRegisters1;
 import suite.node.Atom;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
@@ -377,6 +379,28 @@ public class P4GenerateCode {
 					var o = ps + ps + is;
 					var out = frame(o, o + os);
 					return returnPs2Op(compileIsOp(frame), compileRoutine(c1 -> c1.compileAssign(expr, out)));
+				})).applyIf(FunpSaveRegisters0.class, f -> f.apply((expr, saves) -> {
+					var opRegs = rs.list(r -> !registerSet.isSet(r));
+					var fd1 = fd;
+					for (var opReg : opRegs)
+						saves.add(Pair.of(opReg, fd1 -= is));
+					em.addImm(esp, fd - fd1);
+					var out = new Compile1(rs, fd1).compile(expr);
+					em.addImm(esp, fd1 - fd);
+					return out;
+				})).applyIf(FunpSaveRegisters1.class, f -> f.apply((expr, saves) -> {
+					for (var pair : saves)
+						em.mov(compileFrame(pair.t1, is), pair.t0);
+
+					var out = compile(expr);
+					var op0 = isOutSpec ? pop0 : out.op0;
+					var op1 = isOutSpec ? pop1 : out.op1;
+
+					for (var pair : saves)
+						if (pair.t0 != op0 && pair.t0 != op1)
+							em.mov(pair.t0, compileFrame(pair.t1, is));
+
+					return out;
 				})).applyIf(FunpSaveRegisters.class, f -> f.apply(expr -> {
 					var opRegs = rs.list(r -> !registerSet.isSet(r));
 
