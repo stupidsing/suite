@@ -745,15 +745,15 @@ public class P2InferType {
 		private FunpSaveRegisters apply(Funp value, Funp lambda, int size) {
 			var lt = new LambdaType(lambda);
 			var lambda1 = erase(lambda);
-			Funp invoke;
+			var os = 0;
+			Funp as;
 			if (lt.os == is)
-				invoke = allocStack(size, value, FunpInvoke.of(lambda1));
+				as = allocStack(size, value, FunpInvoke.of(lambda1));
 			else if (lt.os == ps + ps)
-				invoke = allocStack(size, value, FunpInvoke2.of(lambda1));
-			else {
-				var as = allocStack(size, value, FunpInvokeIo.of(lambda1, lt.is, lt.os));
-				invoke = FunpAllocStack.of(lt.os, FunpDontCare.of(), as, IntMutable.nil());
-			}
+				as = allocStack(size, value, FunpInvoke2.of(lambda1));
+			else
+				as = allocStack(size, value, FunpInvokeIo.of(lambda1, lt.is, os = lt.os));
+			var invoke = FunpAllocStack.of(os, FunpDontCare.of(), as, IntMutable.nil());
 			return FunpSaveRegisters.of(invoke);
 		}
 
