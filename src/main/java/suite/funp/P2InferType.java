@@ -122,10 +122,10 @@ public class P2InferType {
 	private Node typeByte = Atom.of("BYTE");
 	private Node typeNumber = Atom.of("NUMBER");
 
-	private Node typeDecorIo = Atom.of("IO");
-	private Node typeDecorRef = Atom.of("REF");
+	private Pattern typeDecorArray = Suite.pattern("ARRAY .0");
+	private Pattern typeDecorIo = Suite.pattern("IO");
+	private Pattern typeDecorRef = Suite.pattern("REF");
 
-	private Pattern typePatArray = Suite.pattern("(ARRAY .0) .1");
 	private Pattern typePatDecor = Suite.pattern(".0: .1");
 	private Pattern typePatLambda = Suite.pattern("LAMBDA .0 .1");
 	private Pattern typePatStruct = Suite.pattern("STRUCT .0 .1");
@@ -962,8 +962,6 @@ public class P2InferType {
 		return new SwitchNode<Node>(type.finalNode() //
 		).applyIf(Reference.class, t -> {
 			return new Reference();
-		}).match(typePatArray, (a, b) -> {
-			return typePatArray.subst(cloneNode(a), cloneType(b));
 		}).match(typePatDecor, (a, b) -> {
 			return typePatDecor.subst(cloneNode(a), cloneType(b));
 		}).match(typePatLambda, (a, b) -> {
@@ -991,11 +989,11 @@ public class P2InferType {
 	}
 
 	private Node typeArrayOf(Integer size, Node b) {
-		return typePatArray.subst(size != null ? Int.of(size) : new Reference(), b);
+		return typePatDecor.subst(typeDecorArray.subst(size != null ? Int.of(size) : new Reference()), b);
 	}
 
 	private Node typeIoOf(Node a) {
-		return typePatDecor.subst(typeDecorIo, a);
+		return typePatDecor.subst(typeDecorIo.subst(), a);
 	}
 
 	private Node typeLambdaOf(Node a, Node b) {
@@ -1003,7 +1001,7 @@ public class P2InferType {
 	}
 
 	private Node typeRefOf(Node a) {
-		return typePatDecor.subst(typeDecorRef, a);
+		return typePatDecor.subst(typeDecorRef.subst(), a);
 	}
 
 	private Node typeStructOf(Dict dict) {
@@ -1021,18 +1019,18 @@ public class P2InferType {
 	private int getTypeSize(Node n0) {
 		var n = n0.finalNode();
 		Streamlet2<Node, Reference> struct;
-		Node[] m;
-		if ((m = typePatArray.match(n)) != null) {
-			var size = m[0];
-			return size instanceof Int ? getTypeSize(m[1]) * Int.num(size) : fail();
-		} else if (n == typeBoolean)
+		Node[] m, d;
+		if (n == typeBoolean)
 			return Funp_.booleanSize;
 		else if (n == typeByte)
 			return 1;
 		else if ((m = typePatDecor.match(n)) != null)
-			if (m[0] == typeDecorIo)
+			if ((d = typeDecorArray.match(m[0])) != null) {
+				var size = d[0];
+				return size instanceof Int ? getTypeSize(m[1]) * Int.num(size) : fail();
+			} else if ((d = typeDecorIo.match(m[0])) != null)
 				return getTypeSize(m[1]);
-			else if (m[0] == typeDecorRef)
+			else if ((d = typeDecorRef.match(m[0])) != null)
 				return ps;
 			else
 				return fail();
