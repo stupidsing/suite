@@ -39,6 +39,8 @@ import suite.funp.P2.FunpAssignOp;
 import suite.funp.P2.FunpCmp;
 import suite.funp.P2.FunpData;
 import suite.funp.P2.FunpFramePointer;
+import suite.funp.P2.FunpHeapAlloc;
+import suite.funp.P2.FunpHeapDealloc;
 import suite.funp.P2.FunpInvoke;
 import suite.funp.P2.FunpInvoke2;
 import suite.funp.P2.FunpInvokeIo;
@@ -87,6 +89,8 @@ public class P4GenerateCode {
 	private OpReg p2_eax = eax;
 	private OpReg p2_edx = edx;
 
+	private Operand labelPointer;
+
 	private Map<Object, Insn> insnByOp = Map.ofEntries( //
 			entry(TermOp.BIGOR_, Insn.OR), //
 			entry(TermOp.BIGAND, Insn.AND), //
@@ -123,6 +127,27 @@ public class P4GenerateCode {
 
 	public List<Instruction> compile0(Funp funp) {
 		return P4Emit.generate(emit -> {
+			labelPointer = emit.label();
+
+			emit.spawn(em1 -> {
+				em1.emit(Insn.LABEL, labelPointer);
+				em1.emit(Insn.D, amd64.imm32(0));
+			});
+
+			emit.addImm(esp, -0x18);
+			emit.mov(amd64.mem(esp, 0x00, 4), amd64.imm32(0));
+			emit.mov(amd64.mem(esp, 0x04, 4), amd64.imm32(0x00010000)); // size
+			emit.mov(amd64.mem(esp, 0x08, 4), amd64.imm32(0x00000003));
+			emit.mov(amd64.mem(esp, 0x0c, 4), amd64.imm32(0x00000022));
+			emit.mov(amd64.mem(esp, 0x10, 4), amd64.imm32(0xffffffff));
+			emit.mov(amd64.mem(esp, 0x14, 4), amd64.imm32(0x00000000));
+			emit.mov(eax, amd64.imm32(0x0000005a));
+			emit.mov(ebx, esp);
+			emit.emit(Insn.INT, amd64.imm8(-128));
+			emit.addImm(esp, 0x18);
+			emit.mov(ebx, labelPointer);
+			emit.mov(amd64.mem(ebx, 0x00, 4), eax);
+
 			if (isUseEbp)
 				emit.mov(ebp, esp);
 			emit.emit(Insn.CLD);
@@ -251,7 +276,15 @@ public class P4GenerateCode {
 					return returnDontCare();
 				}).applyIf(FunpFramePointer.class, t -> {
 					return returnIsOp(compileFramePointer());
-				}).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
+				}).applyIf(FunpHeapAlloc.class, f -> f.apply(size -> {
+					var r0 = isOutSpec ? pop0 : rs.get(is);
+					var rp = em.mov(rs.mask(r0).get(ps), labelPointer);
+					em.mov(r0, amd64.mem(rp, 0x00, 4));
+					em.addImm(amd64.mem(rp, 0x00, 4), size);
+					return returnIsOp(r0);
+				})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
+					return compile(expr);
+				})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 					Sink<Funp> compile0, compile1;
 					Source<CompileOut> out;
 

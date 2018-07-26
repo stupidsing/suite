@@ -286,7 +286,7 @@ public class P2InferType {
 						var struct = FunpStruct.of(captures);
 						var lc = FunpLambdaCapture.of(pcap, li.cap, struct, vn, c(expr));
 						var assign = FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(pcap)), struct, lc);
-						return FunpDefine.of(pcapn, FunpHeapAlloc.of(struct), assign, Fdt.L_MONO);
+						return FunpDefine.of(pcapn, FunpDontCare.of(), assign, Fdt.HEAP);
 
 						// TODO free cap after use
 					} else
@@ -410,10 +410,10 @@ public class P2InferType {
 				map.put(Atom.of(field), tf);
 				unify(n, typeRefOf(typeStructOf(Dict.of(map))), infer(reference));
 				return tf;
-			})).applyIf(FunpHeapAlloc.class, f -> f.apply(value -> {
-				return typeRefOf(infer(value));
-			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, ref, expr) -> {
-				unify(n, typeRefOf(new Reference()), infer(ref));
+			})).applyIf(FunpHeapAlloc.class, f -> f.apply(size -> {
+				return typeRefOf(new Reference());
+			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
+				unify(n, typeRefOf(new Reference()), infer(reference));
 				return infer(expr);
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				Node t;
@@ -563,6 +563,11 @@ public class P2InferType {
 					if (Set.of("!alloc", "!dealloc").contains(vn))
 						globals.put(vn, var);
 					return FunpAllocGlobal.of(size, erase(value, vn), e1.erase(expr), address);
+				} else if (type == Fdt.HEAP) {
+					var t = new Reference();
+					unify(n, typeOf(value), typeRefOf(t));
+					var size = getTypeSize(t);
+					return defineLocal(f, vn, FunpHeapAlloc.of(size), expr, ps);
 				} else if (Set.of(Fdt.L_IOAP, Fdt.L_MONO, Fdt.L_POLY).contains(type))
 					return defineLocal(f, vn, value, expr);
 				else if (type == Fdt.VIRT)
@@ -635,14 +640,8 @@ public class P2InferType {
 							return FunpMemory.of(erase(reference), offset, offset1);
 					}
 				return fail();
-			})).applyIf(FunpHeapAlloc.class, f -> f.apply(value -> {
-				var size = getTypeSize(typeOf(value));
-				if (Boolean.FALSE)
-					return applyOnce(FunpNumber.ofNumber(size), globals.get("!alloc").get(scope), ps);
-				else {
-					var m = Mutable.<Operand> nil();
-					return FunpAllocGlobal.of(size, FunpDontCare.of(), FunpOperand.of(m), m);
-				}
+			})).applyIf(FunpHeapAlloc.class, f -> f.apply(size -> {
+				return applyOnce(FunpNumber.ofNumber(size), globals.get("!alloc").get(scope), ps);
 			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, ref, expr) -> {
 				var in = FunpData.of(List.of( //
 						Pair.of(FunpNumber.ofNumber(size), IntIntPair.of(0, ps)), //

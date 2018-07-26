@@ -164,20 +164,20 @@ public class P2 {
 	}
 
 	public static class FunpHeapAlloc implements Funp, P4.End {
-		public Funp value;
+		public int size;
 
-		public static FunpHeapAlloc of(Funp value) {
+		public static FunpHeapAlloc of(int size) {
 			var f = new FunpHeapAlloc();
-			f.value = value;
+			f.size = size;
 			return f;
 		}
 
-		public <R> R apply(FixieFun1<Funp, R> fun) {
-			return fun.apply(value);
+		public <R> R apply(FixieFun1<Integer, R> fun) {
+			return fun.apply(size);
 		}
 	}
 
-	public static class FunpHeapDealloc implements Funp, P4.End {
+	public static class FunpHeapDealloc implements Funp, P2.End {
 		public int size;
 		public Funp reference;
 		public Funp expr;
