@@ -121,7 +121,7 @@ public class P2InferType {
 	private Node typeBoolean = Atom.of("BOOLEAN");
 	private Node typeByte = Atom.of("BYTE");
 	private Node typeNumber = Atom.of("NUMBER");
-	private Pattern typePatArray = Suite.pattern("ARRAY .0 .1");
+	private Pattern typePatArray = Suite.pattern("(ARRAY .0) .1");
 	private Pattern typePatIo = Suite.pattern("IO .0");
 	private Pattern typePatLambda = Suite.pattern("LAMBDA .0 .1");
 	private Pattern typePatRef = Suite.pattern("REF .0");
