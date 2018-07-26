@@ -124,10 +124,10 @@ public class P4GenerateCode {
 		return P4Emit.generate(emit -> {
 			if (isUseEbp)
 				emit.mov(ebp, esp);
-			emit.emit(amd64.instruction(Insn.CLD));
+			emit.emit(Insn.CLD);
 			new Compile0(Result.ISSPEC, emit, null, ebx, null).new Compile1(registerSet, 0).compile(funp);
 			emit.mov(eax, amd64.imm(1, is));
-			emit.emit(amd64.instruction(Insn.INT, amd64.imm8(-128)));
+			emit.emit(Insn.INT, amd64.imm8(-128));
 		});
 	}
 
@@ -230,23 +230,23 @@ public class P4GenerateCode {
 					var contLabel = em.label();
 					var exitLabel = em.label();
 
-					em.emit(amd64.instruction(Insn.LABEL, loopLabel));
+					em.emit(Insn.LABEL, loopLabel);
 					Source<Boolean> r;
 
 					if ((r = new P4JumpIf(compileCmpJmp(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
 						;
 					else if ((r = new P4JumpIf(compileCmpJmp(contLabel)).new JumpIf(while_).jxxIf()) != null && r.source()) {
-						em.emit(amd64.instruction(Insn.JMP, exitLabel));
-						em.emit(amd64.instruction(Insn.LABEL, contLabel));
+						em.emit(Insn.JMP, exitLabel);
+						em.emit(Insn.LABEL, contLabel);
 					} else
 						compileJumpZero(while_, exitLabel);
 
 					compileIsOp(do_);
-					em.emit(amd64.instruction(Insn.JMP, loopLabel));
-					em.emit(amd64.instruction(Insn.LABEL, exitLabel));
+					em.emit(Insn.JMP, loopLabel);
+					em.emit(Insn.LABEL, exitLabel);
 					return compile(expr);
 				})).applyIf(FunpError.class, f -> {
-					em.emit(amd64.instruction(Insn.HLT));
+					em.emit(Insn.HLT);
 					return returnDontCare();
 				}).applyIf(FunpFramePointer.class, t -> {
 					return returnIsOp(compileFramePointer());
@@ -282,10 +282,10 @@ public class P4GenerateCode {
 
 					Sink2<Funp, Funp> thenElse = (condt, condf) -> {
 						compile0.sink(condt);
-						em.emit(amd64.instruction(Insn.JMP, endLabel));
-						em.emit(amd64.instruction(Insn.LABEL, condLabel));
+						em.emit(Insn.JMP, endLabel);
+						em.emit(Insn.LABEL, condLabel);
 						compile1.sink(condf);
-						em.emit(amd64.instruction(Insn.LABEL, endLabel));
+						em.emit(Insn.LABEL, endLabel);
 					};
 
 					var jumpIf = new P4JumpIf(compileCmpJmp(condLabel)).new JumpIf(if_);
@@ -500,16 +500,16 @@ public class P4GenerateCode {
 				Operand op;
 
 				if (size == is && (op = deOp.decomposeNumber(fd, value)) != null)
-					em.emit(amd64.instruction(Insn.PUSH, op));
+					em.emit(Insn.PUSH, op);
 				else {
 					em.addImm(esp, -alignedSize);
 					c1.compileAssign(value, FunpMemory.of(Funp_.framePointer, fd1, fd1 + size));
 				}
 				var out = f.apply(c1);
 				if (opPops != null)
-					opPops.forEach(opPop -> em.emit(amd64.instruction(Insn.POP, opPop)));
+					opPops.forEach(opPop -> em.emit(Insn.POP, opPop));
 				else if (size == is)
-					em.emit(amd64.instruction(Insn.POP, rs.mask(pop0, pop1, out.op0, out.op1).get(size)));
+					em.emit(Insn.POP, rs.mask(pop0, pop1, out.op0, out.op1).get(size));
 				else
 					em.addImm(esp, alignedSize);
 				return out;
@@ -543,18 +543,18 @@ public class P4GenerateCode {
 					else if (operator == TermOp.MINUS_) {
 						var pair = compileCommutativeTree(Insn.SUB, assoc, lhs, rhs);
 						if ((opResult = pair.t1) == rhs)
-							em.emit(amd64.instruction(Insn.NEG, opResult));
+							em.emit(Insn.NEG, opResult);
 					} else if (setInsn != null) {
 						var pair = compileCommutativeTree(Insn.CMP, assoc, lhs, rhs);
-						em.emit(amd64.instruction(pair.t0 == lhs ? setInsn : setRevInsn, opResult = isOutSpec ? pop0 : rs.get(1)));
+						em.emit(pair.t0 == lhs ? setInsn : setRevInsn, opResult = isOutSpec ? pop0 : rs.get(1));
 					} else if (shInsn != null) {
 						var op0 = compileIsLoad(lhs);
 						if (numRhs != null)
-							em.emit(amd64.instruction(shInsn, op0, amd64.imm(numRhs, 1)));
+							em.emit(shInsn, op0, amd64.imm(numRhs, 1));
 						else
 							saveRegs(c1 -> {
 								var opRhs = c1.mask(op0).compileIsSpec(rhs, ecx);
-								em.emit(amd64.instruction(shInsn, op0, opRhs));
+								em.emit(shInsn, op0, opRhs);
 							}, ecx);
 						opResult = op0;
 					} else if (insn != null)
@@ -573,7 +573,7 @@ public class P4GenerateCode {
 					var opRhs1 = !(opRhs0 instanceof OpImm) ? opRhs0 : c1.rs.mask(eax, edx).get(is);
 					em.mov(opRhs1, opRhs0);
 					em.mov(edx, amd64.imm32(0l));
-					em.emit(amd64.instruction(Insn.IDIV, opRhs1));
+					em.emit(Insn.IDIV, opRhs1);
 					em.mov(opResult, r0);
 				};
 				Sink<Compile1> sink1 = rs.contains(r0) ? c1 -> c1.saveRegs(sink0, r0) : sink0;
@@ -584,7 +584,7 @@ public class P4GenerateCode {
 			private FixieFun4<Insn, Insn, Funp, Funp, Boolean> compileCmpJmp(Operand label) {
 				return (insn, revInsn, lhs, rhs) -> {
 					var pair = compileCommutativeTree(Insn.CMP, Assoc.RIGHT, lhs, rhs);
-					em.emit(amd64.instruction(pair.t0 == lhs ? insn : revInsn, label));
+					em.emit(pair.t0 == lhs ? insn : revInsn, label);
 					return true;
 				};
 			}
@@ -601,13 +601,13 @@ public class P4GenerateCode {
 					return Pair.of(rhs, compileRegInstruction(insn, opRhsReg, opLhs, rhs));
 				else if (!(opLhs instanceof OpImm) && opRhs instanceof OpImm)
 					if (insn == Insn.CMP && opLhs != null) {
-						em.emit(amd64.instruction(insn, opLhs, opRhs));
+						em.emit(insn, opLhs, opRhs);
 						return Pair.of(lhs, null);
 					} else
 						return Pair.of(lhs, em.emitRegInsn(insn, compileIsLoad(lhs), opRhs));
 				else if (opLhs instanceof OpImm && !(opRhs instanceof OpImm))
 					if (insn == Insn.CMP && opRhs != null) {
-						em.emit(amd64.instruction(insn, opRhs, opLhs));
+						em.emit(insn, opRhs, opLhs);
 						return Pair.of(rhs, null);
 					} else
 						return Pair.of(rhs, em.emitRegInsn(insn, compileIsLoad(rhs), opLhs));
@@ -628,12 +628,12 @@ public class P4GenerateCode {
 			private Operand compileRoutine(Sink<Compile1> sink) {
 				return compileBlock(c -> {
 					var em = c.em;
-					em.emit(amd64.instruction(Insn.PUSH, ebp));
+					em.emit(Insn.PUSH, ebp);
 					if (isUseEbp)
 						em.mov(ebp, esp);
 					sink.sink(c.new Compile1(registerSet, 0));
-					em.emit(amd64.instruction(Insn.POP, ebp));
-					em.emit(amd64.instruction(Insn.RET));
+					em.emit(Insn.POP, ebp);
+					em.emit(Insn.RET);
 				});
 			}
 
@@ -679,7 +679,7 @@ public class P4GenerateCode {
 						for (var instruction : o.instructions)
 							c.em.emit(instruction);
 					else
-						c.em.emit(amd64.instruction(Insn.DS, amd64.imm32(size)));
+						c.em.emit(Insn.DS, amd64.imm32(size));
 				});
 
 				address.update(block);
@@ -701,7 +701,7 @@ public class P4GenerateCode {
 					var oldOp1 = op1;
 					em.mov(op1 = rs.mask(op0).get(op1.size), oldOp1);
 				}
-				em.emit(amd64.instruction(insn, op0, op1));
+				em.emit(insn, op0, op1);
 			}
 
 			private OpReg compileRegInstruction(Insn insn, OpReg op0, Operand op1, Funp f1) {
@@ -716,7 +716,7 @@ public class P4GenerateCode {
 				else
 					op = em.mov(rs.mask(out.op0).get(ps), out.op1);
 				em.mov(ebp, out.op0);
-				em.emit(amd64.instruction(Insn.CALL, op));
+				em.emit(Insn.CALL, op);
 				if (isUseEbp && out.op0 != ebp)
 					em.lea(ebp, amd64.mem(esp, -fd, is));
 			}
@@ -724,12 +724,12 @@ public class P4GenerateCode {
 			private void compileJumpZero(Funp if_, Operand label) {
 				var op0 = isOutSpec ? pop0 : rs.get(is);
 				compileByte(if_, op0);
-				em.emit(amd64.instruction(Insn.OR, op0, op0));
-				em.emit(amd64.instruction(Insn.JZ, label));
+				em.emit(Insn.OR, op0, op0);
+				em.emit(Insn.JZ, label);
 
 				// var r0 = compileOpReg(if_);
-				// em.emit(amd64.instruction(Insn.OR, r0, r0));
-				// em.emit(amd64.instruction(Insn.JZ, label));
+				// em.emit(Insn.OR, r0, r0));
+				// em.emit(Insn.JZ, label));
 			}
 
 			private void compileByte(Funp n, Operand op0) {
@@ -803,16 +803,16 @@ public class P4GenerateCode {
 					em.lea(edi, amd64.mem(r0, start0, is));
 					em.mov(esi, r);
 					em.mov(ecx, amd64.imm(size / 4, is));
-					em.emit(amd64.instruction(Insn.REPE));
-					em.emit(amd64.instruction(Insn.CMPSD));
-					em.emit(amd64.instruction(Insn.JNE, neqLabel));
+					em.emit(Insn.REPE);
+					em.emit(Insn.CMPSD);
+					em.emit(Insn.JNE, neqLabel);
 					for (var i = 0; i < size % 4; i++) {
-						em.emit(amd64.instruction(Insn.CMPSB));
-						em.emit(amd64.instruction(Insn.JNE, neqLabel));
+						em.emit(Insn.CMPSB);
+						em.emit(Insn.JNE, neqLabel);
 					}
-					em.emit(amd64.instruction(Insn.LABEL, neqLabel));
-					em.emit(amd64.instruction(Insn.SETE, opResult));
-					em.emit(amd64.instruction(Insn.LABEL, endLabel));
+					em.emit(Insn.LABEL, neqLabel);
+					em.emit(Insn.SETE, opResult);
+					em.emit(Insn.LABEL, endLabel);
 				}, ecx, esi, edi);
 				return opResult;
 			}
@@ -833,10 +833,10 @@ public class P4GenerateCode {
 							em.lea(edi, amd64.mem(r0, start0, is));
 							em.mov(esi, r);
 							em.mov(ecx, amd64.imm(size / 4, is));
-							em.emit(amd64.instruction(Insn.REP));
-							em.emit(amd64.instruction(Insn.MOVSD));
+							em.emit(Insn.REP);
+							em.emit(Insn.MOVSD);
 							for (var i = 0; i < size % 4; i++)
-								em.emit(amd64.instruction(Insn.MOVSB));
+								em.emit(Insn.MOVSB);
 						}, ecx, esi, edi);
 					else if (is <= size)
 						sink.sink2(this, rs.get(is));
@@ -866,9 +866,9 @@ public class P4GenerateCode {
 			private void saveRegs(Sink<Compile1> sink, RegisterSet rs_, int fd_, int index, OpReg... opRegs) {
 				OpReg op;
 				if (index < opRegs.length && rs_.contains(op = opRegs[index])) {
-					em.emit(amd64.instruction(Insn.PUSH, op));
+					em.emit(Insn.PUSH, op);
 					saveRegs(sink, rs_.unmask(op.reg), fd_ - op.size, index + 1, opRegs);
-					em.emit(amd64.instruction(Insn.POP, op));
+					em.emit(Insn.POP, op);
 				} else
 					sink.sink(new Compile1(rs_, fd_));
 			}

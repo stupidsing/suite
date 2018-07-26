@@ -132,6 +132,10 @@ public class P4Emit {
 		return Byte.MIN_VALUE <= i && i <= Byte.MAX_VALUE ? amd64.imm8(i & 0xFF) : amd64.imm(i, is);
 	}
 
+	public void emit(Insn insn, Operand... ops) {
+		emit(amd64.instruction(insn, ops));
+	}
+
 	public void emit(Instruction instruction) {
 		emit.sink(instruction);
 	}
