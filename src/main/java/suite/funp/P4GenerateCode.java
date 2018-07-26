@@ -54,6 +54,7 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.Bytes;
+import suite.primitive.IntMutable;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
@@ -640,6 +641,7 @@ public class P4GenerateCode {
 			private boolean compileGlobal(Integer size, Mutable<Operand> address, Funp node) {
 				var o = new Object() {
 					private List<Instruction> instructions = new ArrayList<>();
+					private int blanks = 0;
 
 					private boolean fill(int size, Funp node) {
 						return new Switch<Boolean>(node //
@@ -663,16 +665,29 @@ public class P4GenerateCode {
 							}
 							return b && fill(size - offset, FunpDontCare.of());
 						})).applyIf(FunpDontCare.class, f -> {
-							return size == 0 || instructions.add(amd64.instruction(Insn.DS, amd64.imm32(size)));
+							blanks += size;
+							return true;
 						}).applyIf(FunpNumber.class, f -> f.apply(i -> {
-							return instructions.add(amd64.instruction(Insn.D, amd64.imm(i.value(), size)));
+							return d(i);
 						})).applyIf(Funp.class, f -> {
 							return false;
 						}).result();
 					}
+
+					private boolean d(IntMutable i) {
+						flush();
+						return instructions.add(amd64.instruction(Insn.D, amd64.imm(i.value(), size)));
+					}
+
+					private void flush() {
+						if (blanks != 0)
+							instructions.add(amd64.instruction(Insn.DS, amd64.imm32(blanks)));
+						blanks = 0;
+					}
 				};
 
 				var ok = o.fill(size, node);
+				o.flush();
 
 				var block = compileBlock(c -> {
 					if (ok)

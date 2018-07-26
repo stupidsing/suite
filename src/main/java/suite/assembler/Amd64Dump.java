@@ -70,6 +70,10 @@ public class Amd64Dump {
 	}
 
 	private String dump(long imm, int size) {
+		return 0 <= imm ? dump_(imm, size) : "-" + dump_(-imm, size);
+	}
+
+	private String dump_(long imm, int size) {
 		var s = "";
 		for (var i = 0; i < size * 2; i++) {
 			s = "0123456789ABCDEF".charAt((int) (imm & 15)) + s;

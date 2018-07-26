@@ -129,7 +129,7 @@ public class P4Emit {
 	}
 
 	private Operand imm(long i) {
-		return Byte.MIN_VALUE <= i && i <= Byte.MAX_VALUE ? amd64.imm8(i & 0xFF) : amd64.imm(i, is);
+		return Byte.MIN_VALUE <= i && i <= Byte.MAX_VALUE ? amd64.imm8(i) : amd64.imm(i, is);
 	}
 
 	public void emit(Insn insn, Operand... ops) {
