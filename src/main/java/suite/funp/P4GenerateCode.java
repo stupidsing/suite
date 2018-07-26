@@ -668,13 +668,13 @@ public class P4GenerateCode {
 							blanks += size;
 							return true;
 						}).applyIf(FunpNumber.class, f -> f.apply(i -> {
-							return d(i);
+							return d(i, size);
 						})).applyIf(Funp.class, f -> {
 							return false;
 						}).result();
 					}
 
-					private boolean d(IntMutable i) {
+					private boolean d(IntMutable i, int size) {
 						flush();
 						return instructions.add(amd64.instruction(Insn.D, amd64.imm(i.value(), size)));
 					}
