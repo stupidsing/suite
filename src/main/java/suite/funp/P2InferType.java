@@ -121,10 +121,13 @@ public class P2InferType {
 	private Node typeBoolean = Atom.of("BOOLEAN");
 	private Node typeByte = Atom.of("BYTE");
 	private Node typeNumber = Atom.of("NUMBER");
+
+	private Node typeDecorIo = Atom.of("IO");
+	private Node typeDecorRef = Atom.of("REF");
+
 	private Pattern typePatArray = Suite.pattern("(ARRAY .0) .1");
-	private Pattern typePatIo = Suite.pattern("IO .0");
+	private Pattern typePatDecor = Suite.pattern(".0: .1");
 	private Pattern typePatLambda = Suite.pattern("LAMBDA .0 .1");
-	private Pattern typePatRef = Suite.pattern("REF .0");
 	private Pattern typePatStruct = Suite.pattern("STRUCT .0 .1");
 	private Pattern typePatTag = Suite.pattern("TAG .0");
 
@@ -961,12 +964,10 @@ public class P2InferType {
 			return new Reference();
 		}).match(typePatArray, (a, b) -> {
 			return typePatArray.subst(cloneNode(a), cloneType(b));
-		}).match(typePatIo, a -> {
-			return typePatIo.subst(cloneType(a));
+		}).match(typePatDecor, (a, b) -> {
+			return typePatDecor.subst(cloneNode(a), cloneType(b));
 		}).match(typePatLambda, (a, b) -> {
 			return typePatLambda.subst(cloneType(a), cloneType(b));
-		}).match(typePatRef, a -> {
-			return typePatRef.subst(cloneType(a));
 		}).match(typePatStruct, (a, b) -> {
 			var map0 = Dict.m(a);
 			var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
@@ -994,7 +995,7 @@ public class P2InferType {
 	}
 
 	private Node typeIoOf(Node a) {
-		return typePatIo.subst(a);
+		return typePatDecor.subst(typeDecorIo, a);
 	}
 
 	private Node typeLambdaOf(Node a, Node b) {
@@ -1002,7 +1003,7 @@ public class P2InferType {
 	}
 
 	private Node typeRefOf(Node a) {
-		return typePatRef.subst(a);
+		return typePatDecor.subst(typeDecorRef, a);
 	}
 
 	private Node typeStructOf(Dict dict) {
@@ -1028,14 +1029,17 @@ public class P2InferType {
 			return Funp_.booleanSize;
 		else if (n == typeByte)
 			return 1;
-		else if ((m = typePatIo.match(n)) != null)
-			return getTypeSize(m[0]);
+		else if ((m = typePatDecor.match(n)) != null)
+			if (m[0] == typeDecorIo)
+				return getTypeSize(m[1]);
+			else if (m[0] == typeDecorRef)
+				return ps;
+			else
+				return fail();
 		else if ((m = typePatLambda.match(n)) != null)
 			return ps + ps;
 		else if (n == typeNumber)
 			return is;
-		else if ((m = typePatRef.match(n)) != null)
-			return ps;
 		else if ((struct = isCompletedStruct(n)) != null)
 			return struct.values().toInt(Obj_Int.sum(this::getTypeSize));
 		else if ((m = typePatTag.match(n)) != null) {

@@ -77,13 +77,13 @@ public class Amd64Interpret {
 		eip = 0;
 		regs[esp] = baseStack.t1 - 16;
 
-		var labels = new IntIntMap();
+		var labelAddressByInsnIndex = new IntIntMap();
 
 		for (var i = 0; i < instructions.size(); i++) {
 			var i_ = i;
 			var instruction = instructions.get(i_);
 			if (instruction.insn == Insn.LABEL)
-				labels.update((int) ((OpImm) instruction.op0).imm, i0 -> i_ + 1);
+				labelAddressByInsnIndex.update((int) ((OpImm) instruction.op0).imm, i0 -> i_ + 1);
 		}
 
 		while (true) {
@@ -149,7 +149,7 @@ public class Amd64Interpret {
 					break;
 				case CALL:
 					push(eip);
-					eip = labels.get(source0);
+					eip = labelAddressByInsnIndex.get(source0);
 					break;
 				case CLD:
 					break;
@@ -213,38 +213,38 @@ public class Amd64Interpret {
 					break;
 				case JE:
 					if (c == 0)
-						eip = labels.get(source0);
+						eip = labelAddressByInsnIndex.get(source0);
 					break;
 				case JMP:
-					eip = labels.get(source0);
+					eip = labelAddressByInsnIndex.get(source0);
 					break;
 				case JG:
 					if (0 < c)
-						eip = labels.get(source0);
+						eip = labelAddressByInsnIndex.get(source0);
 					break;
 				case JGE:
 					if (0 <= c)
-						eip = labels.get(source0);
+						eip = labelAddressByInsnIndex.get(source0);
 					break;
 				case JL:
 					if (c < 0)
-						eip = labels.get(source0);
+						eip = labelAddressByInsnIndex.get(source0);
 					break;
 				case JLE:
 					if (c <= 0)
-						eip = labels.get(source0);
+						eip = labelAddressByInsnIndex.get(source0);
 					break;
 				case JNE:
 					if (c != 0)
-						eip = labels.get(source0);
+						eip = labelAddressByInsnIndex.get(source0);
 					break;
 				case JNZ:
 					if (c != 0)
-						eip = labels.get(source0);
+						eip = labelAddressByInsnIndex.get(source0);
 					break;
 				case JZ:
 					if (c == 0)
-						eip = labels.get(source0);
+						eip = labelAddressByInsnIndex.get(source0);
 					break;
 				case LABEL:
 					break;
