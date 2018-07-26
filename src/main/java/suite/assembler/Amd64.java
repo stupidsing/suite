@@ -379,7 +379,9 @@ public class Amd64 {
 	}
 
 	private int size(long v) {
-		if (v == (byte) v)
+		if (v == 0)
+			return -1;
+		else if (v == (byte) v)
 			return 1;
 		else if (v == (int) v)
 			return 4;
