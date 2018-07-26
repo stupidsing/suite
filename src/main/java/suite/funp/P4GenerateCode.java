@@ -468,6 +468,15 @@ public class P4GenerateCode {
 					return fail();
 			}
 
+			private CompileOut returnDontCare() {
+				if (result == Result.ISOP || result == Result.ISREG)
+					return new CompileOut(i_eax);
+				else if (result == Result.PS2OP || result == Result.PS2REG)
+					return new CompileOut(p2_eax, p2_edx);
+				else
+					return new CompileOut();
+			}
+
 			private CompileOut returnIsOp(Operand op) {
 				if (result == Result.ASSIGN) {
 					var opt = deOp.decomposeFunpMemory(fd, target);
@@ -515,15 +524,6 @@ public class P4GenerateCode {
 				} else
 					fail();
 				return new CompileOut();
-			}
-
-			private CompileOut returnDontCare() {
-				if (result == Result.ISOP || result == Result.ISREG)
-					return new CompileOut(i_eax);
-				else if (result == Result.PS2OP || result == Result.PS2REG)
-					return new CompileOut(p2_eax, p2_edx);
-				else
-					return new CompileOut();
 			}
 
 			private CompileOut compileAllocStack(int size, Funp value, List<Operand> opPops, Fun<Compile1, CompileOut> f) {
