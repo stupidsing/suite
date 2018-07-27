@@ -352,7 +352,7 @@ public class P2InferType {
 				return tf.apply(to);
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, type) -> {
 				var tvalue = infer(value, vn);
-				return newInfer(env.replace(vn, Pair.of(type, tvalue))).infer(expr);
+				return new Infer(env.replace(vn, Pair.of(type, tvalue)), checks, me).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var pairs_ = Read.from(pairs);
 				var vns = pairs_.map(Pair::fst);
@@ -433,7 +433,7 @@ public class P2InferType {
 			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
 				var tv = new Reference();
 				var env1 = env.replace(vn, Pair.of(Fdt.L_MONO, tv));
-				return typeLambdaOf(tv, newInfer(env1).infer(expr));
+				return typeLambdaOf(tv, new Infer(env1, checks, me).infer(expr));
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fpIn, frameVar, frame, vn, expr) -> {
 				var tv = new Reference();
 				var tf = infer(frame);
@@ -443,7 +443,7 @@ public class P2InferType {
 						.<String, Pair<Fdt, Node>> empty() //
 						.replace(frameVar.vn, Pair.of(Fdt.L_MONO, tf)) //
 						.replace(vn, Pair.of(Fdt.L_MONO, tv));
-				return typeLambdaOf(tv, newInfer(env1).infer(expr));
+				return typeLambdaOf(tv, new Infer(env1, checks, null).infer(expr));
 			})).applyIf(FunpMe.class, f -> {
 				return me;
 			}).applyIf(FunpNumber.class, f -> {
@@ -516,10 +516,6 @@ public class P2InferType {
 		private Node getVariable(FunpVariable var) {
 			return env.get(var.vn).map((type, tv) -> type == Fdt.L_POLY ? cloneType(tv) : tv);
 		}
-
-		private Infer newInfer(IMap<String, Pair<Fdt, Node>> env) {
-			return new Infer(env, checks, me);
-		}
 	}
 
 	private class Erase {
@@ -566,7 +562,7 @@ public class P2InferType {
 					var size = getTypeSize(typeOf(value));
 					var address = Mutable.<Operand> nil();
 					Var var = new Var(address, 0, size);
-					var e1 = newErase(scope, env.replace(vn, var));
+					var e1 = new Erase(scope, env.replace(vn, var), me);
 					if (Set.of("!alloc", "!dealloc").contains(vn))
 						globals.put(vn, var);
 					return FunpAllocGlobal.of(size, erase(value, vn), e1.erase(expr), address);
@@ -629,7 +625,7 @@ public class P2InferType {
 				var offset = IntMutable.nil();
 				var size = getTypeSize(typeOf(init));
 				var var_ = new Var(scope, offset, 0, size);
-				var e1 = newErase(scope, env.replace("fold$" + Util.temp(), var_));
+				var e1 = new Erase(scope, env.replace("fold$" + Util.temp(), var_), me);
 				var m = var_.get(scope);
 				var cont_ = e1.applyOnce(m, cont, size);
 				var next_ = e1.applyOnce(m, next, size);
@@ -671,7 +667,7 @@ public class P2InferType {
 				var scope1 = scope + 1;
 				var lt = new LambdaType(n);
 				var frame = Funp_.framePointer;
-				var expr1 = newErase(scope1, env.replace(vn, new Var(scope1, IntMutable.of(0), b, b + lt.is))).erase(expr);
+				var expr1 = new Erase(scope1, env.replace(vn, new Var(scope1, IntMutable.of(0), b, b + lt.is)), me).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr) -> {
 				var b = ps + ps; // return address and EBP
@@ -682,7 +678,7 @@ public class P2InferType {
 						.replace(frameVar.vn, new Var(0, IntMutable.of(0), 0, size)) //
 						.replace(vn, new Var(1, IntMutable.of(0), b, b + lt.is));
 				var fp = erase(fp0);
-				var expr1 = newErase(1, env1).erase(expr);
+				var expr1 = new Erase(1, env1, null).erase(expr);
 				return eraseRoutine(lt, fp, expr1);
 			})).applyIf(FunpMe.class, f -> {
 				return me.get(scope);
@@ -789,7 +785,7 @@ public class P2InferType {
 			var operand = Mutable.<Operand> nil();
 			var offset = IntMutable.nil();
 			var var = new Var(f, operand, scope, offset, 0, size);
-			var expr1 = newErase(scope, env.replace(vn, var)).erase(expr);
+			var expr1 = new Erase(scope, env.replace(vn, var), me).erase(expr);
 
 			var depth = new Object() {
 				private int c(Funp node) {
@@ -859,10 +855,6 @@ public class P2InferType {
 
 		private FunpAllocStack allocStack(int size, Funp value, Funp expr) {
 			return FunpAllocStack.of(size, value, expr, IntMutable.nil());
-		}
-
-		private Erase newErase(int scope, IMap<String, Var> env) {
-			return new Erase(scope, env, me);
 		}
 	}
 
