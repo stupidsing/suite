@@ -562,13 +562,12 @@ public class P4GenerateCode {
 						c = opt != null ? c : c.mask(r0 = c.compileIsReg(target.pointer));
 						c = ops != null ? c : c.mask(r1 = c.compileIsReg(source.pointer));
 
-						if (ops == null && opt == null)
+						if (ops != null || opt != null)
+							c.compileInstruction(Insn.MOV, //
+									opt != null ? opt : amd64.mem(r0, target.start, size), //
+									ops != null ? ops : c.mask(opt).compileIsOp(source));
+						else
 							compileMove.sink2(c, new OpReg[] { r0, r1, });
-						else {
-							opt = opt != null ? opt : amd64.mem(r0, target.start, size);
-							ops = ops != null ? ops : c.mask(opt).compileIsOp(source);
-							c.compileInstruction(Insn.MOV, opt, ops);
-						}
 					}
 				} else
 					fail();
