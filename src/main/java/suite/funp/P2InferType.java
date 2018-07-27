@@ -235,7 +235,7 @@ public class P2InferType {
 					}).doIf(FunpReference.class, f -> {
 						f.expr.cast(FunpVariable.class, var -> infoByVar.get(var).setLambda(true, lambda));
 					}).doIf(FunpVariable.class, f -> {
-						infoByVar.get(f).setLambda(false, lambda);
+						infoByVar.get(f).setLambda(defByVars.get(f) instanceof FunpDefineRec, lambda);
 					}).result();
 				});
 			}

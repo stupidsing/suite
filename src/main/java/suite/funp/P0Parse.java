@@ -327,7 +327,7 @@ public class P0Parse {
 					.map(n -> {
 						Node[] m;
 						if ((m = Suite.pattern(".0 .1 := .2").match(n)) != null)
-							return Pair.of(Atom.name(m[0]), Suite.substitute(".0 => .1", m[1], m[2]));
+							return Pair.of(Atom.name(m[0]), Suite.substitute("capture (.0 => .1)", m[1], m[2]));
 						else if ((m = Suite.pattern(".0 := .1").match(n)) != null || (m = Suite.pattern(".0: .1").match(n)) != null)
 							return Pair.of(Atom.name(m[0]), m[1]);
 						else
