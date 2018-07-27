@@ -530,8 +530,8 @@ public class P4GenerateCode {
 				var size = source.size();
 
 				if (size == target.size()) {
-					Operand ops = deOp.decomposeFunpMemory(fd, source);
-					Operand opt = deOp.decomposeFunpMemory(fd, target);
+					var ops = deOp.decomposeFunpMemory(fd, source);
+					var opt = deOp.decomposeFunpMemory(fd, target);
 					OpReg r0 = null, r1 = null;
 					var c = this;
 
