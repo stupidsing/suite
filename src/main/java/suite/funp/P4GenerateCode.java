@@ -528,17 +528,25 @@ public class P4GenerateCode {
 
 			private void compileAssign(FunpMemory source, FunpMemory target, Sink2<Compile1, OpReg[]> compileMove) {
 				var size = source.size();
+
 				if (size == target.size()) {
-					var ops = deOp.decomposeFunpMemory(fd, source);
-					var opt = deOp.decomposeFunpMemory(fd, target);
+					Operand ops = deOp.decomposeFunpMemory(fd, source);
+					Operand opt = deOp.decomposeFunpMemory(fd, target);
 					OpReg r0 = null, r1 = null;
 					var c = this;
-					c = opt != null ? c : c.mask(r0 = c.compileIsReg(target.pointer));
-					c = ops != null ? c : c.mask(r1 = c.compileIsReg(source.pointer));
-					if (opt != null || ops != null)
-						c.compileInstruction(Insn.MOV, //
-								opt != null ? opt : amd64.mem(r0, target.start, size), //
-								ops != null ? ops : mask(opt).compileIsOp(source));
+
+					if (opt == null) {
+						c = c.mask(r0 = c.compileIsReg(target.pointer));
+						opt = amd64.mem(r0, target.start, size);
+					}
+
+					if (ops == null) {
+						c = c.mask(r1 = c.compileIsReg(source.pointer));
+						ops = mask(opt).compileIsOp(source);
+					}
+
+					if (r0 == null || r1 == null)
+						c.compileInstruction(Insn.MOV, opt, ops);
 					else
 						compileMove.sink2(c, new OpReg[] { r0, r1, });
 				} else
