@@ -4,10 +4,12 @@ import static java.util.Map.entry;
 import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import suite.Suite;
 import suite.adt.Mutable;
 import suite.adt.pair.Fixie_.FixieFun4;
 import suite.adt.pair.Pair;
@@ -128,6 +130,8 @@ public class P4GenerateCode {
 	}
 
 	public List<Instruction> compile0(Funp funp) {
+		var p = new Amd64Parse();
+
 		return P4Emit.generate(emit -> {
 			labelPointer = emit.label();
 
@@ -136,19 +140,22 @@ public class P4GenerateCode {
 				em1.emit(Insn.D, amd64.imm32(0));
 			});
 
-			emit.addImm(esp, -0x18);
-			emit.mov(amd64.mem(esp, 0x00, 4), amd64.imm32(0));
-			emit.mov(amd64.mem(esp, 0x04, 4), amd64.imm32(0x00010000)); // size
-			emit.mov(amd64.mem(esp, 0x08, 4), amd64.imm32(0x00000003));
-			emit.mov(amd64.mem(esp, 0x0c, 4), amd64.imm32(0x00000022));
-			emit.mov(amd64.mem(esp, 0x10, 4), amd64.imm32(0xffffffff));
-			emit.mov(amd64.mem(esp, 0x14, 4), amd64.imm32(0x00000000));
-			emit.mov(eax, amd64.imm32(0x0000005a));
-			emit.mov(ebx, esp);
-			emit.emit(Insn.INT, amd64.imm8(-128));
-			emit.addImm(esp, 0x18);
+			for (var i : Arrays.asList( //
+					"SUB (ESP, +x18)", //
+					"MOV (`ESP + +x00`, 0)", //
+					"MOV (`ESP + +x04`, +x00010000)", //
+					"MOV (`ESP + +x08`, +x00000003)", //
+					"MOV (`ESP + +x0C`, +x00000022)", //
+					"MOV (`ESP + +x10`, +xFFFFFFFF)", //
+					"MOV (`ESP + +x14`, +x00000000)", //
+					"MOV (EAX, +x0000005A)", //
+					"MOV (EBX, ESP)", //
+					"INT (+x80)", //
+					"ADD (ESP, +x18)"))
+				emit.emit(p.parse(Suite.parse(i)));
+
 			emit.mov(ebx, labelPointer);
-			emit.mov(amd64.mem(ebx, 0x00, 4), eax);
+			emit.emit(p.parse(Suite.parse("MOV (`EBX`, EAX)")));
 
 			if (isUseEbp)
 				emit.mov(ebp, esp);

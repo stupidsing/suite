@@ -72,7 +72,7 @@ define !new.mut.number init := !do
 	assign ^pointer := init ~
 	{
 		destroy {} := !dealloc (size, pointer) ~
-		get {} := !do (!peek pointer) ~
+		get {} := !do !peek pointer ~
 		set v1 := !do (assign ^pointer := v1 ~ {}) ~
 	}
 ~
