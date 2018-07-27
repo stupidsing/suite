@@ -545,10 +545,10 @@ public class P4GenerateCode {
 					var c = this;
 
 					if (size % is == 0 && Set.of(2, 3, 4).contains(size / is)) {
-						var ops = deOp.decomposeFunpMemory(fd, source, is);
 						var opt = deOp.decomposeFunpMemory(fd, target, is);
+						var ops = deOp.decomposeFunpMemory(fd, source, is);
 
-						if (ops != null && opt != null)
+						if (opt != null && ops != null)
 							for (var i = 0; i < size; i += is)
 								compileInstruction(Insn.MOV, shift.apply(i, opt), shift.apply(i, ops));
 						else {
@@ -557,12 +557,12 @@ public class P4GenerateCode {
 							compileMove.sink2(c, new OpReg[] { r0, r1, });
 						}
 					} else {
-						var ops = deOp.decomposeFunpMemory(fd, source);
 						var opt = deOp.decomposeFunpMemory(fd, target);
+						var ops = deOp.decomposeFunpMemory(fd, source);
 						c = opt != null ? c : c.mask(r0 = c.compileIsReg(target.pointer));
 						c = ops != null ? c : c.mask(r1 = c.compileIsReg(source.pointer));
 
-						if (ops != null || opt != null)
+						if (opt != null || ops != null)
 							c.compileInstruction(Insn.MOV, //
 									opt != null ? opt : amd64.mem(r0, target.start, size), //
 									ops != null ? ops : c.mask(opt).compileIsOp(source));
