@@ -66,7 +66,7 @@ public class Amd64Dump {
 		else if (disp == 0)
 			return "";
 		else
-			return " - " + dump(-disp, pointerSize);
+			return " + -" + dump(-disp, pointerSize);
 	}
 
 	private String dump(long imm, int size) {
