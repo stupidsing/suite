@@ -410,11 +410,6 @@ public class P2InferType {
 				map.put(Atom.of(field), tf);
 				unify(n, typeRefOf(typeStructOf(Dict.of(map))), infer(reference));
 				return tf;
-			})).applyIf(FunpHeapAlloc.class, f -> f.apply(size -> {
-				return typeRefOf(new Reference());
-			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
-				unify(n, typeRefOf(new Reference()), infer(reference));
-				return infer(expr);
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 				Node t;
 				unify(n, typeBoolean, infer(if_));
@@ -567,7 +562,11 @@ public class P2InferType {
 					var t = new Reference();
 					unify(n, typeOf(value), typeRefOf(t));
 					var size = getTypeSize(t);
-					return defineLocal(f, vn, FunpHeapAlloc.of(size), expr, ps);
+					Funp alloc;
+					alloc = Boolean.TRUE //
+							? FunpHeapAlloc.of(size) //
+							: applyOnce(FunpNumber.ofNumber(size), globals.get("!alloc").get(scope), ps);
+					return defineLocal(f, vn, alloc, expr, ps);
 				} else if (Set.of(Fdt.L_IOAP, Fdt.L_MONO, Fdt.L_POLY).contains(type))
 					return defineLocal(f, vn, value, expr);
 				else if (type == Fdt.VIRT)
@@ -640,8 +639,6 @@ public class P2InferType {
 							return FunpMemory.of(erase(reference), offset, offset1);
 					}
 				return fail();
-			})).applyIf(FunpHeapAlloc.class, f -> f.apply(size -> {
-				return applyOnce(FunpNumber.ofNumber(size), globals.get("!alloc").get(scope), ps);
 			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, ref, expr) -> {
 				var in = FunpData.of(List.of( //
 						Pair.of(FunpNumber.ofNumber(size), IntIntPair.of(0, ps)), //
