@@ -332,7 +332,7 @@ public class Amd64 {
 		op.scale = scale;
 		op.size = size;
 		op.disp = disp;
-		op.dispSize = disp != 0 ? size(disp) : 0;
+		op.dispSize = size(disp);
 		return op;
 	}
 
@@ -380,7 +380,7 @@ public class Amd64 {
 
 	private int size(long v) {
 		if (v == 0)
-			return -1;
+			return 0;
 		else if (v == (byte) v)
 			return 1;
 		else if (v == (int) v)
