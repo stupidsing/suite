@@ -40,7 +40,7 @@ public class P4DecomposeOperand {
 		}).result();
 	}
 
-	public Operand decomposeFunpMemory(int fd, FunpMemory node) {
+	public OpMem decomposeFunpMemory(int fd, FunpMemory node) {
 		return node.apply((pointer, start, end) -> decompose(fd, pointer, start, end - start));
 	}
 
