@@ -562,8 +562,7 @@ public class P2InferType {
 					var t = new Reference();
 					unify(n, typeOf(value), typeRefOf(t));
 					var size = getTypeSize(t);
-					Funp alloc;
-					alloc = Boolean.TRUE //
+					var alloc = Boolean.TRUE //
 							? FunpHeapAlloc.of(size) //
 							: applyOnce(FunpNumber.ofNumber(size), globals.get("!alloc").get(scope), ps);
 					return defineLocal(f, vn, alloc, expr, ps);
