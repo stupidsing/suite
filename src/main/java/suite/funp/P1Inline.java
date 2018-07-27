@@ -75,12 +75,11 @@ public class P1Inline {
 					var r1 = new Rename(vns.replace(vn0, vn1));
 					return FunpDefine.of(vn1, rename(value), r1.rename(expr), type);
 				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
-					var vns1 = Read.from(pairs0).fold(vns, (vs, pair) -> vs.replace(pair.t0, newVarName.apply(pair.t0)));
+					var pairs = Read.from2(pairs0);
+					var vns1 = pairs.keys().fold(vns, (vns_, vn) -> vns_.replace(vn, newVarName.apply(vn)));
 					var r1 = new Rename(vns1);
-					return FunpDefineRec.of(Read //
-							.from2(pairs0) //
-							.map2((vn, value) -> vns1.get(vn), (vn, value) -> r1.rename(value)) //
-							.toList(), //
+					return FunpDefineRec.of( //
+							pairs.map2((vn, value) -> vns1.get(vn), (vn, value) -> r1.rename(value)).toList(), //
 							r1.rename(expr));
 				})).applyIf(FunpLambda.class, f -> f.apply((vn0, expr, isCapture) -> {
 					var vn1 = newVarName.apply(vn0);

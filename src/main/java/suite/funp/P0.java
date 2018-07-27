@@ -368,6 +368,16 @@ public class P0 {
 		}
 	}
 
+	public static class FunpMe implements Funp, P4.End {
+		public static FunpMe of() {
+			return new FunpMe();
+		}
+
+		public <R> R apply(FixieFun0<R> fun) {
+			return fun.apply();
+		}
+	}
+
 	public static class FunpNumber implements Funp, P4.End {
 		public IntMutable i;
 

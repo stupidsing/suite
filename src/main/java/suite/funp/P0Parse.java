@@ -35,6 +35,7 @@ import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpMe;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpReference;
@@ -249,6 +250,8 @@ public class P0Parse {
 				return define(Fdt.GLOB, a, p(b), c);
 			}).match("let.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
 				return define(Fdt.GLOB, a, capture(lambdaSeparate(b, c)), d);
+			}).match("me", () -> {
+				return FunpMe.of();
 			}).match("number", () -> {
 				return FunpNumber.of(IntMutable.nil());
 			}).match("number .0", a -> {

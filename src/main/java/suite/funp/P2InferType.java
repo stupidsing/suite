@@ -43,6 +43,7 @@ import suite.funp.P0.FunpIf;
 import suite.funp.P0.FunpIndex;
 import suite.funp.P0.FunpIo;
 import suite.funp.P0.FunpLambda;
+import suite.funp.P0.FunpMe;
 import suite.funp.P0.FunpNumber;
 import suite.funp.P0.FunpPredefine;
 import suite.funp.P0.FunpReference;
@@ -141,11 +142,11 @@ public class P2InferType {
 		var n2 = captureLambdas(n1);
 		var checks = new ArrayList<Source<Boolean>>();
 
-		if (unify(t, new Infer(IMap.empty(), checks).infer(n2))) {
+		if (unify(t, new Infer(IMap.empty(), checks, null).infer(n2))) {
 			if (!Read.from(checks).isAll(Source<Boolean>::source))
 				fail();
 
-			var erase = new Erase(0, IMap.empty());
+			var erase = new Erase(0, IMap.empty(), null);
 			erase.erase(n2); // first pass
 			return erase.erase(n2); // second pass
 		} else
@@ -301,10 +302,12 @@ public class P2InferType {
 	private class Infer {
 		private IMap<String, Pair<Fdt, Node>> env;
 		private List<Source<Boolean>> checks;
+		private Node me;
 
-		private Infer(IMap<String, Pair<Fdt, Node>> env, List<Source<Boolean>> checks) {
+		private Infer(IMap<String, Pair<Fdt, Node>> env, List<Source<Boolean>> checks, Node me) {
 			this.env = env;
 			this.checks = checks;
+			this.me = me;
 		}
 
 		private Node infer(Funp n, String in) {
@@ -352,8 +355,13 @@ public class P2InferType {
 				return newInfer(env.replace(vn, Pair.of(type, tvalue))).infer(expr);
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
 				var pairs_ = Read.from(pairs);
-				var env1 = pairs_.fold(env, (e, pair) -> e.put(pair.t0, Pair.of(Fdt.L_MONO, new Reference())));
-				var infer1 = newInfer(env1);
+				var vns = pairs_.map(Pair::fst);
+				var env1 = vns.fold(env, (e, vn) -> e.put(vn, Pair.of(Fdt.L_MONO, new Reference())));
+				var ts = typeStructOf(Dict.of(vns //
+						.<Node, Reference> map2(Atom::of, vn -> Reference.of(env1.get(vn).t1)) //
+						.toMap()), TreeUtil.buildUp(TermOp.AND___, Read.from(vns).<Node> map(Atom::of).toList()));
+				var infer1 = new Infer(env1, checks, ts);
+
 				for (var pair : pairs_) {
 					var vn = pair.t0;
 					unify(n, env1.get(vn).t1, infer1.infer(pair.t1, vn));
@@ -436,7 +444,9 @@ public class P2InferType {
 						.replace(frameVar.vn, Pair.of(Fdt.L_MONO, tf)) //
 						.replace(vn, Pair.of(Fdt.L_MONO, tv));
 				return typeLambdaOf(tv, newInfer(env1).infer(expr));
-			})).applyIf(FunpNumber.class, f -> {
+			})).applyIf(FunpMe.class, f -> {
+				return me;
+			}).applyIf(FunpNumber.class, f -> {
 				return typeNumber;
 			}).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return typeRefOf(infer(expr));
@@ -508,17 +518,19 @@ public class P2InferType {
 		}
 
 		private Infer newInfer(IMap<String, Pair<Fdt, Node>> env) {
-			return new Infer(env, checks);
+			return new Infer(env, checks, me);
 		}
 	}
 
 	private class Erase {
 		private int scope;
 		private IMap<String, Var> env;
+		private Var me;
 
-		private Erase(int scope, IMap<String, Var> env) {
+		private Erase(int scope, IMap<String, Var> env, Var me) {
 			this.scope = scope;
 			this.env = env;
+			this.me = me;
 		}
 
 		private Funp erase(Funp n, String in) {
@@ -554,7 +566,7 @@ public class P2InferType {
 					var size = getTypeSize(typeOf(value));
 					var address = Mutable.<Operand> nil();
 					Var var = new Var(address, 0, size);
-					var e1 = new Erase(scope, env.replace(vn, var));
+					var e1 = newErase(scope, env.replace(vn, var));
 					if (Set.of("!alloc", "!dealloc").contains(vn))
 						globals.put(vn, var);
 					return FunpAllocGlobal.of(size, erase(value, vn), e1.erase(expr), address);
@@ -587,7 +599,7 @@ public class P2InferType {
 					assigns.add(Fixie.of(vn, var, value));
 				}
 
-				var e1 = new Erase(scope, env1);
+				var e1 = new Erase(scope, env1, new Var(scope, offsetStack, 0, getTypeSize(type0)));
 				var expr1 = e1.erase(expr);
 
 				var expr2 = Read //
@@ -617,7 +629,7 @@ public class P2InferType {
 				var offset = IntMutable.nil();
 				var size = getTypeSize(typeOf(init));
 				var var_ = new Var(scope, offset, 0, size);
-				var e1 = new Erase(scope, env.replace("fold$" + Util.temp(), var_));
+				var e1 = newErase(scope, env.replace("fold$" + Util.temp(), var_));
 				var m = var_.get(scope);
 				var cont_ = e1.applyOnce(m, cont, size);
 				var next_ = e1.applyOnce(m, next, size);
@@ -659,7 +671,7 @@ public class P2InferType {
 				var scope1 = scope + 1;
 				var lt = new LambdaType(n);
 				var frame = Funp_.framePointer;
-				var expr1 = new Erase(scope1, env.replace(vn, new Var(scope1, IntMutable.of(0), b, b + lt.is))).erase(expr);
+				var expr1 = newErase(scope1, env.replace(vn, new Var(scope1, IntMutable.of(0), b, b + lt.is))).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr) -> {
 				var b = ps + ps; // return address and EBP
@@ -670,9 +682,11 @@ public class P2InferType {
 						.replace(frameVar.vn, new Var(0, IntMutable.of(0), 0, size)) //
 						.replace(vn, new Var(1, IntMutable.of(0), b, b + lt.is));
 				var fp = erase(fp0);
-				var expr1 = new Erase(1, env1).erase(expr);
+				var expr1 = newErase(1, env1).erase(expr);
 				return eraseRoutine(lt, fp, expr1);
-			})).applyIf(FunpReference.class, f -> f.apply(expr -> {
+			})).applyIf(FunpMe.class, f -> {
+				return me.get(scope);
+			}).applyIf(FunpReference.class, f -> f.apply(expr -> {
 				return getAddress(expr);
 			})).applyIf(FunpRepeat.class, f -> f.apply((count, expr) -> {
 				var elementSize = getTypeSize(typeOf(expr));
@@ -714,7 +728,7 @@ public class P2InferType {
 			})).applyIf(FunpTagId.class, f -> f.apply(reference -> {
 				return FunpMemory.of(erase(reference), 0, is);
 			})).applyIf(FunpTagValue.class, f -> f.apply((reference, tag) -> {
-				return FunpMemory.of(erase(reference), is, is + getTypeSize(typeOf(f)));
+				return FunpMemory.of(erase(reference), is, is + getTypeSize(type0));
 			})).applyIf(FunpTree.class, f -> f.apply((op, l, r) -> {
 				var size0 = getTypeSize(typeOf(l));
 				var size1 = getTypeSize(typeOf(r));
@@ -775,7 +789,7 @@ public class P2InferType {
 			var operand = Mutable.<Operand> nil();
 			var offset = IntMutable.nil();
 			var var = new Var(f, operand, scope, offset, 0, size);
-			var expr1 = new Erase(scope, env.replace(vn, var)).erase(expr);
+			var expr1 = newErase(scope, env.replace(vn, var)).erase(expr);
 
 			var depth = new Object() {
 				private int c(Funp node) {
@@ -818,9 +832,10 @@ public class P2InferType {
 						return assign(getVariable(var), erase(value), getAddress(expr));
 					})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 						return erase(pointer);
-					})).applyIf(FunpVariable.class, f -> f.apply(vn -> {
-						var m = env.get(vn).getMemory(scope);
-						return m.apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
+					})).applyIf(FunpMe.class, f -> {
+						return me.getAddress(scope);
+					}).applyIf(FunpVariable.class, f -> f.apply(vn -> {
+						return env.get(vn).getAddress(scope);
 					})).applyIf(Funp.class, f -> {
 						return Funp_.fail(f, "requires pre-definition");
 					}).nonNullResult();
@@ -844,6 +859,10 @@ public class P2InferType {
 
 		private FunpAllocStack allocStack(int size, Funp value, Funp expr) {
 			return FunpAllocStack.of(size, value, expr, IntMutable.nil());
+		}
+
+		private Erase newErase(int scope, IMap<String, Var> env) {
+			return new Erase(scope, env, me);
 		}
 	}
 
@@ -899,6 +918,10 @@ public class P2InferType {
 				return FunpOperand.of(operand);
 			else
 				return getMemory_(scope0);
+		}
+
+		private Funp getAddress(int scope0) {
+			return getMemory(scope0).apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
 		}
 
 		private FunpMemory getMemory(int scope0) {
