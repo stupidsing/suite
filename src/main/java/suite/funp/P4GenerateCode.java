@@ -6,6 +6,7 @@ import static suite.util.Friends.fail;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import suite.adt.Mutable;
 import suite.adt.pair.Fixie_.FixieFun4;
@@ -57,6 +58,7 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.Bytes;
 import suite.primitive.IntMutable;
+import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
@@ -529,23 +531,44 @@ public class P4GenerateCode {
 			private void compileAssign(FunpMemory source, FunpMemory target, Sink2<Compile1, OpReg[]> compileMove) {
 				var size = source.size();
 
+				IntObj_Obj<OpMem, OpMem> shift = (d, op) -> {
+					var br = op.baseReg;
+					var ir = op.indexReg;
+					return amd64.mem( //
+							0 <= br ? amd64.reg32[br] : null, //
+							0 <= ir ? amd64.reg32[ir] : null, //
+							op.scale, op.disp + d, op.size);
+				};
+
 				if (size == target.size()) {
-					var ops = deOp.decomposeFunpMemory(fd, source);
-					var opt = deOp.decomposeFunpMemory(fd, target);
 					OpReg r0 = null, r1 = null;
 					var c = this;
 
-					if (opt == null)
-						c = c.mask(r0 = c.compileIsReg(target.pointer));
-					if (ops == null)
-						c = c.mask(r1 = c.compileIsReg(source.pointer));
+					if (size % is == 0 && Set.of(2, 3, 4).contains(size / is)) {
+						var ops = deOp.decomposeFunpMemory(fd, source, is);
+						var opt = deOp.decomposeFunpMemory(fd, target, is);
 
-					if (ops == null && opt == null)
-						compileMove.sink2(c, new OpReg[] { r0, r1, });
-					else {
-						opt = opt != null ? opt : amd64.mem(r0, target.start, size);
-						ops = ops != null ? ops : c.mask(opt).compileIsOp(source);
-						c.compileInstruction(Insn.MOV, opt, ops);
+						if (ops != null && opt != null)
+							for (var i = 0; i < size; i += is)
+								compileInstruction(Insn.MOV, shift.apply(i, opt), shift.apply(i, ops));
+						else {
+							c = c.mask(r0 = c.compileIsReg(target.pointer));
+							c = c.mask(r1 = c.compileIsReg(source.pointer));
+							compileMove.sink2(c, new OpReg[] { r0, r1, });
+						}
+					} else {
+						var ops = deOp.decomposeFunpMemory(fd, source);
+						var opt = deOp.decomposeFunpMemory(fd, target);
+						c = opt != null ? c : c.mask(r0 = c.compileIsReg(target.pointer));
+						c = ops != null ? c : c.mask(r1 = c.compileIsReg(source.pointer));
+
+						if (ops == null && opt == null)
+							compileMove.sink2(c, new OpReg[] { r0, r1, });
+						else {
+							opt = opt != null ? opt : amd64.mem(r0, target.start, size);
+							ops = ops != null ? ops : c.mask(opt).compileIsOp(source);
+							c.compileInstruction(Insn.MOV, opt, ops);
+						}
 					}
 				} else
 					fail();

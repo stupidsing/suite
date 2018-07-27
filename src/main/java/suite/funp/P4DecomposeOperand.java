@@ -41,7 +41,11 @@ public class P4DecomposeOperand {
 	}
 
 	public Operand decomposeFunpMemory(int fd, FunpMemory node) {
-		return node.apply((pointer, start, end) -> decompose(fd, pointer, start, end - start));
+		return decomposeFunpMemory(fd, node, node.size());
+	}
+
+	public OpMem decomposeFunpMemory(int fd, FunpMemory node, int size) {
+		return node.apply((pointer, start, end) -> decompose(fd, pointer, start, size));
 	}
 
 	public OpMem decompose(int fd, Funp n0, int disp0, int size) {
