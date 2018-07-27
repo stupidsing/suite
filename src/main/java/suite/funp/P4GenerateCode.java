@@ -535,20 +535,18 @@ public class P4GenerateCode {
 					OpReg r0 = null, r1 = null;
 					var c = this;
 
-					if (opt == null) {
+					if (opt == null)
 						c = c.mask(r0 = c.compileIsReg(target.pointer));
-						opt = amd64.mem(r0, target.start, size);
-					}
-
-					if (ops == null) {
+					if (ops == null)
 						c = c.mask(r1 = c.compileIsReg(source.pointer));
-						ops = mask(opt).compileIsOp(source);
-					}
 
-					if (r0 == null || r1 == null)
-						c.compileInstruction(Insn.MOV, opt, ops);
-					else
+					if (ops == null && opt == null)
 						compileMove.sink2(c, new OpReg[] { r0, r1, });
+					else {
+						opt = opt != null ? opt : amd64.mem(r0, target.start, size);
+						ops = ops != null ? ops : c.mask(opt).compileIsOp(source);
+						c.compileInstruction(Insn.MOV, opt, ops);
+					}
 				} else
 					fail();
 			}
