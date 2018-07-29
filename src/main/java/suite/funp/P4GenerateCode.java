@@ -558,20 +558,18 @@ public class P4GenerateCode {
 
 						if (opt != null && ops != null)
 							for (var disp = 0; disp < size; disp += is)
-								compileInstruction(Insn.MOV, shift.apply(disp, opt), shift.apply(disp, ops));
+								compileMov(shift.apply(disp, opt), shift.apply(disp, ops));
 						else
 							r.run();
 					} else {
 						var opt = deOp.decomposeFunpMemory(fd, target);
 						var ops = deOp.decomposeFunpMemory(fd, source);
 
-						if (opt != null || ops != null) {
-							if (opt == null)
-								opt = amd64.mem(compileIsReg(target.pointer), target.start, size);
-							if (ops == null)
-								ops = mask(opt).compileIsOp(source);
-							compileInstruction(Insn.MOV, opt, ops);
-						} else
+						if (ops != null)
+							compileMov(opt != null ? opt : amd64.mem(compileIsReg(target.pointer), target.start, size), ops);
+						else if (opt != null)
+							compileMov(opt, ops != null ? ops : mask(opt).compileIsOp(source));
+						else
 							r.run();
 					}
 				else
@@ -659,9 +657,9 @@ public class P4GenerateCode {
 				var opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
 
 				if (opLhsReg != null && !rs.contains(opLhsReg))
-					return Pair.of(lhs, compileRegInstruction(insn, opLhsReg, opRhs, lhs));
+					return Pair.of(lhs, compileRegInstruction(insn, opLhsReg, opRhs, rhs));
 				else if (opRhsReg != null && !rs.contains(opRhsReg))
-					return Pair.of(rhs, compileRegInstruction(insn, opRhsReg, opLhs, rhs));
+					return Pair.of(rhs, compileRegInstruction(insn, opRhsReg, opLhs, lhs));
 				else if (!(opLhs instanceof OpImm) && opRhs instanceof OpImm)
 					if (insn == Insn.CMP && opLhs != null) {
 						em.emit(insn, opLhs, opRhs);
@@ -773,12 +771,12 @@ public class P4GenerateCode {
 				return refLabel;
 			}
 
-			private void compileInstruction(Insn insn, Operand op0, Operand op1) {
+			private void compileMov(Operand op0, Operand op1) {
 				if (op0 instanceof OpMem && op1 instanceof OpMem || op0 instanceof OpImm) {
 					var oldOp1 = op1;
 					em.mov(op1 = rs.mask(op0).get(op1.size), oldOp1);
 				}
-				em.emit(insn, op0, op1);
+				em.emit(Insn.MOV, op0, op1);
 			}
 
 			private OpReg compileRegInstruction(Insn insn, OpReg op0, Operand op1, Funp f1) {
