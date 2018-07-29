@@ -575,34 +575,33 @@ public class P4GenerateCode {
 							int p = 0, p1;
 							for (; (p1 = p + is) <= size; p = p1)
 								mov.sink2(amd64.mem(r0, start0 + p, is), amd64.mem(r1, start1 + p, is));
-							for (var disp = p; disp < size; disp++)
-								mov.sink2(amd64.mem(r0, start0 + disp, 1), amd64.mem(r1, start1 + disp, 1));
+							for (; (p1 = p + 1) <= size; p = p1)
+								mov.sink2(amd64.mem(r0, start0 + p, 1), amd64.mem(r1, start1 + p, 1));
 						}
 				};
 
-				if (size == target.size())
-					if (size % is == 0 && Set.of(2, 3, 4).contains(size / is)) {
-						var opt = deOp.decomposeFunpMemory(fd, target, is);
-						var ops = deOp.decomposeFunpMemory(fd, source, is);
-
-						if (opt != null && ops != null)
-							for (var disp = 0; disp < size; disp += is)
-								mov.sink2(shift.apply(disp, opt), shift.apply(disp, ops));
-						else
-							moveBlock.run();
-					} else {
-						var opt = deOp.decomposeFunpMemory(fd, target);
-						var ops = deOp.decomposeFunpMemory(fd, source);
-
-						if (ops != null)
-							mov.sink2(opt != null ? opt : amd64.mem(compileIsReg(target.pointer), target.start, size), ops);
-						else if (opt != null)
-							mov.sink2(opt, ops != null ? ops : mask(opt).compileIsOp(source));
-						else
-							moveBlock.run();
-					}
-				else
+				if (size != target.size())
 					fail();
+				else if (size % is == 0 && Set.of(2, 3, 4).contains(size / is)) {
+					var opt = deOp.decomposeFunpMemory(fd, target, is);
+					var ops = deOp.decomposeFunpMemory(fd, source, is);
+
+					if (opt != null && ops != null)
+						for (var disp = 0; disp < size; disp += is)
+							mov.sink2(shift.apply(disp, opt), shift.apply(disp, ops));
+					else
+						moveBlock.run();
+				} else {
+					var opt = deOp.decomposeFunpMemory(fd, target);
+					var ops = deOp.decomposeFunpMemory(fd, source);
+
+					if (ops != null)
+						mov.sink2(opt != null ? opt : amd64.mem(compileIsReg(target.pointer), target.start, size), ops);
+					else if (opt != null)
+						mov.sink2(opt, ops != null ? ops : mask(opt).compileIsOp(source));
+					else
+						moveBlock.run();
+				}
 			}
 
 			private Operand compileTree(Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
