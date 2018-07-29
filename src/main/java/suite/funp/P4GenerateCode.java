@@ -76,7 +76,6 @@ public class P4GenerateCode {
 	private Amd64 amd64 = Amd64.me;
 	private Amd64Assemble asm = new Amd64Assemble();
 
-	private OpReg cl = amd64.cl;
 	private OpReg eax = amd64.eax;
 	private OpReg ebx = amd64.ebx;
 	private OpReg ecx = amd64.ecx;
@@ -539,7 +538,7 @@ public class P4GenerateCode {
 				Sink2<Operand, Operand> mov = (op0, op1) -> {
 					if (op0 instanceof OpMem && op1 instanceof OpMem) {
 						var oldOp1 = op1;
-						em.mov(op1 = rs.mask(op0).get(op1.size), oldOp1);
+						em.mov(op1 = rs.mask(op0, op1).get(op1.size), oldOp1);
 					}
 					em.mov(op0, op1);
 				};
@@ -556,7 +555,29 @@ public class P4GenerateCode {
 				Runnable moveBlock = () -> {
 					var r0 = compileIsReg(target.pointer);
 					var r1 = mask(r0).compileIsReg(source.pointer);
-					compileMove(r0, target.start, r1, source.start, target.size());
+					var start0 = target.start;
+					var start1 = source.start;
+
+					if (r0 != r1 || start0 != start1)
+						if (16 < size)
+							saveRegs(c1 -> {
+								var r = rs.mask(r0, edi).get(esi);
+								em.lea(r, amd64.mem(r1, start1, is));
+								em.lea(edi, amd64.mem(r0, start0, is));
+								em.mov(esi, r);
+								em.mov(ecx, amd64.imm(size / 4, is));
+								em.emit(Insn.REP);
+								em.emit(Insn.MOVSD);
+								for (var i = 0; i < size % 4; i++)
+									em.emit(Insn.MOVSB);
+							}, ecx, esi, edi);
+						else if (0 < size) {
+							int p = 0, p1;
+							for (; (p1 = p + is) <= size; p = p1)
+								mov.sink2(amd64.mem(r0, start0 + p, is), amd64.mem(r1, start1 + p, is));
+							for (var disp = p; disp < size; disp++)
+								mov.sink2(amd64.mem(r0, start0 + disp, 1), amd64.mem(r1, start1 + disp, 1));
+						}
 				};
 
 				if (size == target.size())
@@ -890,33 +911,6 @@ public class P4GenerateCode {
 					em.emit(Insn.LABEL, endLabel);
 				}, ecx, esi, edi);
 				return opResult;
-			}
-
-			private void compileMove(OpReg r0, int start0, OpReg r1, int start1, int size) {
-				Sink2<Compile1, OpReg> sink = (c1, r) -> {
-					var s = r.size;
-					em.mov(r, amd64.mem(r1, start1, s));
-					em.mov(amd64.mem(r0, start0, s), r);
-					c1.compileMove(r0, start0 + s, r1, start1 + s, size - s);
-				};
-
-				if (r0 != r1 || start0 != start1)
-					if (16 < size)
-						saveRegs(c1 -> {
-							var r = rs.mask(r0, edi).get(esi);
-							em.lea(r, amd64.mem(r1, start1, is));
-							em.lea(edi, amd64.mem(r0, start0, is));
-							em.mov(esi, r);
-							em.mov(ecx, amd64.imm(size / 4, is));
-							em.emit(Insn.REP);
-							em.emit(Insn.MOVSD);
-							for (var i = 0; i < size % 4; i++)
-								em.emit(Insn.MOVSB);
-						}, ecx, esi, edi);
-					else if (is <= size)
-						sink.sink2(this, rs.mask(r0, r1).get(is));
-					else if (0 < size)
-						saveRegs(c1 -> sink.sink2(c1, cl), ecx);
 			}
 
 			private OpReg lea(OpMem opMem) {
