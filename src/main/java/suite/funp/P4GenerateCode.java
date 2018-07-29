@@ -551,7 +551,7 @@ public class P4GenerateCode {
 					compileMove(r0, target.start, r1, source.start, target.size());
 				};
 
-				if (size == target.size()) {
+				if (size == target.size())
 					if (size % is == 0 && Set.of(2, 3, 4).contains(size / is)) {
 						var opt = deOp.decomposeFunpMemory(fd, target, is);
 						var ops = deOp.decomposeFunpMemory(fd, source, is);
@@ -574,7 +574,7 @@ public class P4GenerateCode {
 						} else
 							r.run();
 					}
-				} else
+				else
 					fail();
 			}
 
