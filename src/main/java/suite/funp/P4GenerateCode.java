@@ -536,6 +536,14 @@ public class P4GenerateCode {
 			private void compileAssign(FunpMemory source, FunpMemory target) {
 				var size = source.size();
 
+				Sink2<Operand, Operand> mov = (op0, op1) -> {
+					if (op0 instanceof OpMem && op1 instanceof OpMem) {
+						var oldOp1 = op1;
+						em.mov(op1 = rs.mask(op0).get(op1.size), oldOp1);
+					}
+					em.mov(op0, op1);
+				};
+
 				IntObj_Obj<OpMem, OpMem> shift = (disp, op) -> {
 					var br = op.baseReg;
 					var ir = op.indexReg;
@@ -545,7 +553,7 @@ public class P4GenerateCode {
 							op.scale, op.disp + disp, op.size);
 				};
 
-				Runnable r = () -> {
+				Runnable moveBlock = () -> {
 					var r0 = compileIsReg(target.pointer);
 					var r1 = mask(r0).compileIsReg(source.pointer);
 					compileMove(r0, target.start, r1, source.start, target.size());
@@ -558,19 +566,19 @@ public class P4GenerateCode {
 
 						if (opt != null && ops != null)
 							for (var disp = 0; disp < size; disp += is)
-								compileMov(shift.apply(disp, opt), shift.apply(disp, ops));
+								mov.sink2(shift.apply(disp, opt), shift.apply(disp, ops));
 						else
-							r.run();
+							moveBlock.run();
 					} else {
 						var opt = deOp.decomposeFunpMemory(fd, target);
 						var ops = deOp.decomposeFunpMemory(fd, source);
 
 						if (ops != null)
-							compileMov(opt != null ? opt : amd64.mem(compileIsReg(target.pointer), target.start, size), ops);
+							mov.sink2(opt != null ? opt : amd64.mem(compileIsReg(target.pointer), target.start, size), ops);
 						else if (opt != null)
-							compileMov(opt, ops != null ? ops : mask(opt).compileIsOp(source));
+							mov.sink2(opt, ops != null ? ops : mask(opt).compileIsOp(source));
 						else
-							r.run();
+							moveBlock.run();
 					}
 				else
 					fail();
@@ -769,14 +777,6 @@ public class P4GenerateCode {
 					sink.sink(new Compile0(result, em1, target, pop0, pop1));
 				});
 				return refLabel;
-			}
-
-			private void compileMov(Operand op0, Operand op1) {
-				if (op0 instanceof OpMem && op1 instanceof OpMem || op0 instanceof OpImm) {
-					var oldOp1 = op1;
-					em.mov(op1 = rs.mask(op0).get(op1.size), oldOp1);
-				}
-				em.emit(Insn.MOV, op0, op1);
 			}
 
 			private OpReg compileRegInstruction(Insn insn, OpReg op0, Operand op1, Funp f1) {
