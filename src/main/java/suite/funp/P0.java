@@ -65,24 +65,6 @@ public class P0 {
 		}
 	}
 
-	public static class FunpCheckType implements Funp, P4.End {
-		public Funp left;
-		public Funp right;
-		public Funp expr;
-
-		public static FunpCheckType of(Funp left, Funp right, Funp expr) {
-			var f = new FunpCheckType();
-			f.left = left;
-			f.right = right;
-			f.expr = expr;
-			return f;
-		}
-
-		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
-			return fun.apply(left, right, expr);
-		}
-	}
-
 	public static class FunpCoerce implements Funp, P2.End {
 		public enum Coerce {
 			BYTE, NUMBER, POINTER,
@@ -560,6 +542,24 @@ public class P0 {
 
 		public <R> R apply(FixieFun3<Atom, Funp, Funp, R> fun) {
 			return fun.apply(operator, left, right);
+		}
+	}
+
+	public static class FunpTypeCheck implements Funp, P4.End {
+		public Funp left;
+		public Funp right;
+		public Funp expr;
+
+		public static FunpTypeCheck of(Funp left, Funp right, Funp expr) {
+			var f = new FunpTypeCheck();
+			f.left = left;
+			f.right = right;
+			f.expr = expr;
+			return f;
+		}
+
+		public <R> R apply(FixieFun3<Funp, Funp, Funp, R> fun) {
+			return fun.apply(left, right, expr);
 		}
 	}
 

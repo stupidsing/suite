@@ -6,7 +6,7 @@ import java.util.HashSet;
 
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
-import suite.funp.P0.FunpCheckType;
+import suite.funp.P0.FunpTypeCheck;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
@@ -102,7 +102,7 @@ public class P1Inline {
 				return inspect.rewrite(node_, Funp.class, n0 -> {
 					var vns = new ArrayList<String>();
 					FunpDoAssignVar assign;
-					FunpCheckType check;
+					FunpTypeCheck check;
 					FunpDefine define;
 
 					while ((define = n0.cast(FunpDefine.class)) != null //
@@ -112,13 +112,13 @@ public class P1Inline {
 						n0 = define.expr;
 					}
 
-					if ((check = n0.cast(FunpCheckType.class)) != null)
+					if ((check = n0.cast(FunpTypeCheck.class)) != null)
 						n0 = check.expr;
 
 					if ((assign = n0.cast(FunpDoAssignVar.class)) != null) {
 						var vn = assign.var.vn;
 						var n1 = assign.expr;
-						var n2 = check != null ? FunpCheckType.of(check.left, check.right, n1) : n1;
+						var n2 = check != null ? FunpTypeCheck.of(check.left, check.right, n1) : n1;
 						var b = false;
 
 						for (var vn_ : List_.reverse(vns))
@@ -148,7 +148,7 @@ public class P1Inline {
 		new Object() {
 			public void count(Funp node_) {
 				inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
-				).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
+				).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
 					count(expr);
 					return n_;
 				})).applyIf(FunpReference.class, f -> f.apply(expr -> {

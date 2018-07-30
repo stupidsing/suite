@@ -23,7 +23,6 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
-import suite.funp.P0.FunpCheckType;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpCoerce.Coerce;
 import suite.funp.P0.FunpDefine;
@@ -55,6 +54,7 @@ import suite.funp.P0.FunpTagId;
 import suite.funp.P0.FunpTagValue;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
+import suite.funp.P0.FunpTypeCheck;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P0.FunpVariableNew;
 import suite.funp.P2.FunpAllocGlobal;
@@ -334,10 +334,7 @@ public class P2InferType {
 				return typeArrayOf(elements.size(), te);
 			})).applyIf(FunpBoolean.class, f -> {
 				return typeBoolean;
-			}).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
-				unify(n, infer(left), infer(right));
-				return infer(expr);
-			})).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
+			}).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
 				Fun<Coerce, Node> tf = coerce -> {
 					if (coerce == Coerce.BYTE)
 						return typeByte;
@@ -506,6 +503,9 @@ public class P2InferType {
 				unify(n, infer(lhs), typeNumber);
 				unify(n, infer(rhs), typeNumber);
 				return typeNumber;
+			})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
+				unify(n, infer(left), infer(right));
+				return infer(expr);
 			})).applyIf(FunpVariable.class, f -> {
 				return getVariable(f);
 			}).applyIf(FunpVariableNew.class, f -> f.apply(vn -> {
@@ -555,7 +555,7 @@ public class P2InferType {
 					list.add(Pair.of(erase(element), IntIntPair.of(offset0, offset += elementSize)));
 				}
 				return FunpData.of(list);
-			})).applyIf(FunpCheckType.class, f -> f.apply((left, right, expr) -> {
+			})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, type) -> {
 				if (type == Fdt.GLOB) {

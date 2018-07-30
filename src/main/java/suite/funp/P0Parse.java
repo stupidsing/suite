@@ -16,7 +16,7 @@ import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
-import suite.funp.P0.FunpCheckType;
+import suite.funp.P0.FunpTypeCheck;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpCoerce.Coerce;
 import suite.funp.P0.FunpDefine;
@@ -264,7 +264,7 @@ public class P0Parse {
 			}).match("size.of .0", a -> {
 				return FunpSizeOf.of(p(a));
 			}).match("type .0 = .1 ~ .2", (a, b, c) -> {
-				return FunpCheckType.of(p(a), p(b), p(c));
+				return FunpTypeCheck.of(p(a), p(b), p(c));
 			}).match(Atom.FALSE, () -> {
 				return FunpBoolean.of(false);
 			}).match(Atom.TRUE, () -> {
@@ -383,7 +383,7 @@ public class P0Parse {
 			var then = new Parse(vns_.streamlet().fold(vns, ISet::add)).p(c);
 			var else_ = p(d);
 			var f0 = new Bind(vns_).bind(be, value, then, else_);
-			var f1 = FunpCheckType.of(be, value, f0);
+			var f1 = FunpTypeCheck.of(be, value, f0);
 			return vns_.streamlet().<Funp> fold(f1, (f, vn) -> FunpDefine.of(vn, FunpDontCare.of(), f, Fdt.L_MONO));
 		}
 
