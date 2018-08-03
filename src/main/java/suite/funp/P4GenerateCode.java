@@ -59,6 +59,7 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.Bytes;
+import suite.primitive.IntFunUtil;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.streamlet.FunUtil.Fun;
@@ -359,21 +360,29 @@ public class P4GenerateCode {
 				})).applyIf(FunpMemory.class, f -> f.apply((pointer, start, end) -> {
 					var size = end - start;
 					Operand op0, op1;
+
+					Fun<IntObj_Obj<OpReg, CompileOut>, CompileOut> mf = fun -> {
+						var ft = pointer.cast(FunpTree.class);
+						var fn = ft != null && ft.operator == TermOp.PLUS__ ? ft.right.cast(FunpNumber.class) : null;
+						var i = fn != null ? fn.i.value() : IntFunUtil.EMPTYVALUE;
+						var pointer1 = i != IntFunUtil.EMPTYVALUE ? ft.left : pointer;
+						var start1 = start + (i != IntFunUtil.EMPTYVALUE ? i : 0);
+						return fun.apply(start1, compileIsReg(pointer1));
+					};
+
 					if (result == Result.ASSIGN)
 						return returnAssign((c1, target) -> c1.compileAssign(f, target));
 					else if (result == Result.ISOP || result == Result.ISREG || result == Result.ISSPEC)
 						if ((op0 = deOp.decompose(fd, pointer, start, size)) != null)
 							return returnIsOp(op0);
 						else
-							return returnIsOp(amd64.mem(compileIsReg(pointer), start, size));
+							return mf.apply((start_, r) -> returnIsOp(amd64.mem(r, start_, size)));
 					else if (result == Result.PS2OP || result == Result.PS2REG || result == Result.PS2SPEC)
 						if ((op0 = deOp.decompose(fd, pointer, start, ps)) != null
 								&& (op1 = deOp.decompose(fd, pointer, start + ps, ps)) != null)
 							return returnPs2Op(op0, op1);
-						else {
-							var r = compileIsReg(pointer);
-							return returnPs2Op(amd64.mem(r, start, ps), amd64.mem(r, start + ps, ps));
-						}
+						else
+							return mf.apply((start_, r) -> returnPs2Op(amd64.mem(r, start_, ps), amd64.mem(r, start_ + ps, ps)));
 					else
 						return fail();
 				})).applyIf(FunpNumber.class, f -> f.apply(i -> {
