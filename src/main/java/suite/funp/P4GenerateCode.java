@@ -288,7 +288,7 @@ public class P4GenerateCode {
 					var r0 = isOutSpec ? pop0 : rs.get(is);
 					var rp = em.mov(rs.mask(r0).get(ps), labelPointer);
 					em.mov(r0, amd64.mem(rp, 0x00, 4));
-					em.addImm(amd64.mem(rp, 0x00, 4), size);
+					em.addImm(amd64.mem(rp, 0x00, 4), getAlignedSize(size));
 					return returnIsOp(r0);
 				})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
 					return compile(expr);
@@ -510,8 +510,7 @@ public class P4GenerateCode {
 			}
 
 			private CompileOut compileAllocStack(int size, Funp value, List<Operand> opPops, Fun<Compile1, CompileOut> f) {
-				var ism1 = is - 1;
-				var alignedSize = (size + ism1) & ~ism1;
+				var alignedSize = getAlignedSize(size);
 				var fd1 = fd - alignedSize;
 				var c1 = new Compile1(rs, fd1);
 				Operand op;
@@ -943,6 +942,11 @@ public class P4GenerateCode {
 
 			private Compile1 mask(Operand... ops) {
 				return new Compile1(rs.mask(ops), fd);
+			}
+
+			private int getAlignedSize(int size) {
+				var ism1 = is - 1;
+				return (size + ism1) & ~ism1;
 			}
 		}
 	}
