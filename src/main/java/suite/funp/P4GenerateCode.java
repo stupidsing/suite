@@ -106,7 +106,8 @@ public class P4GenerateCode {
 			128, 160, 192, 224, //
 			256, 320, 384, 448, //
 			512, 640, 768, 896, //
-			1024, 1280, 1536, 1792, };
+			1024, 1280, 1536, 1792, //
+			16777216, };
 
 	private Map<Object, Insn> insnByOp = Map.ofEntries( //
 			entry(TermOp.BIGOR_, Insn.OR), //
@@ -303,6 +304,9 @@ public class P4GenerateCode {
 					return returnIsOp(compileFramePointer());
 				}).applyIf(FunpHeapAlloc.class, f -> f.apply(size -> {
 					var pair = getAllocSize(size);
+					// var rf = em.mov(rs.get(ps), freeChainPointer);
+					// var opFreeChainPointer = amd64.mem(rp, pair.t0 * 4, ps);
+
 					var r0 = isOutSpec ? pop0 : rs.get(is);
 					var rp = em.mov(rs.mask(r0).get(ps), labelPointer);
 					em.mov(r0, amd64.mem(rp, 0x00, 4));
@@ -311,10 +315,11 @@ public class P4GenerateCode {
 				})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
 					var pair = getAllocSize(size);
 					var opPointer = compileIsReg(reference);
-					var rp = em.mov(rs.mask(opPointer).get(ps), freeChainPointer);
-					var opFreeChainPointer = amd64.mem(rp, pair.t0 * 4, ps);
-					var r0 = em.mov(rs.mask(opPointer, rp).get(ps), opFreeChainPointer);
-					em.mov(amd64.mem(opPointer, 0, ps), r0);
+
+					var rf = em.mov(rs.mask(opPointer).get(ps), freeChainPointer);
+					var opFreeChainPointer = amd64.mem(rf, pair.t0 * 4, ps);
+
+					mask(opPointer, opFreeChainPointer).mov(amd64.mem(opPointer, 0, ps), opFreeChainPointer);
 					em.mov(opFreeChainPointer, opPointer);
 					return compile(expr);
 				})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
@@ -567,14 +572,6 @@ public class P4GenerateCode {
 			private void compileAssign(FunpMemory source, FunpMemory target) {
 				var size = source.size();
 
-				Sink2<Operand, Operand> mov = (op0, op1) -> {
-					if (op0 instanceof OpMem && op1 instanceof OpMem) {
-						var oldOp1 = op1;
-						em.mov(op1 = rs.mask(op0, op1).get(op1.size), oldOp1);
-					}
-					em.mov(op0, op1);
-				};
-
 				IntObj_Obj<OpMem, OpMem> shift = (disp, op) -> {
 					var br = op.baseReg;
 					var ir = op.indexReg;
@@ -606,9 +603,9 @@ public class P4GenerateCode {
 						else if (0 < size) {
 							int p = 0, p1;
 							for (; (p1 = p + is) <= size; p = p1)
-								mov.sink2(amd64.mem(r0, start0 + p, is), amd64.mem(r1, start1 + p, is));
+								mov(amd64.mem(r0, start0 + p, is), amd64.mem(r1, start1 + p, is));
 							for (; (p1 = p + 1) <= size; p = p1)
-								mov.sink2(amd64.mem(r0, start0 + p, 1), amd64.mem(r1, start1 + p, 1));
+								mov(amd64.mem(r0, start0 + p, 1), amd64.mem(r1, start1 + p, 1));
 						}
 				};
 
@@ -620,7 +617,7 @@ public class P4GenerateCode {
 
 					if (opt != null && ops != null)
 						for (var disp = 0; disp < size; disp += is)
-							mov.sink2(shift.apply(disp, opt), shift.apply(disp, ops));
+							mov(shift.apply(disp, opt), shift.apply(disp, ops));
 					else
 						moveBlock.run();
 				} else {
@@ -628,9 +625,9 @@ public class P4GenerateCode {
 					var ops = deOp.decomposeFunpMemory(fd, source);
 
 					if (ops != null)
-						mov.sink2(opt != null ? opt : amd64.mem(compileIsReg(target.pointer), target.start, size), ops);
+						mov(opt != null ? opt : amd64.mem(compileIsReg(target.pointer), target.start, size), ops);
 					else if (opt != null)
-						mov.sink2(opt, ops != null ? ops : mask(opt).compileIsOp(source));
+						mov(opt, ops != null ? ops : mask(opt).compileIsOp(source));
 					else
 						moveBlock.run();
 				}
@@ -955,6 +952,14 @@ public class P4GenerateCode {
 				}
 			}
 
+			private void mov(Operand op0, Operand op1) {
+				if (op0 instanceof OpMem && op1 instanceof OpMem) {
+					var oldOp1 = op1;
+					em.mov(op1 = rs.mask(op0, op1).get(op1.size), oldOp1);
+				}
+				em.mov(op0, op1);
+			}
+
 			private FunpMemory frame(int start, int end) {
 				return FunpMemory.of(Funp_.framePointer, start, end);
 			}
@@ -983,7 +988,7 @@ public class P4GenerateCode {
 					if (size <= allocSize)
 						return IntIntPair.of(i, allocSize);
 				}
-				return IntIntPair.of(-1, size);
+				return fail();
 			}
 
 			private int getAlignedSize(int size) {
