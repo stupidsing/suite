@@ -197,27 +197,23 @@ public class Amd64 {
 
 	public BiMap<Atom, OpReg> regByName = new HashBiMap<>() {
 		{
-			String[] rbs = { //
-					"AL", "CL", "DL", "BL", "SPL", "BPL", "SIL", "DIL", //
-					"R8B", "R9B", "R10B", "R11B", "R12B", "R13B", "R14B", "R15B", };
+			String[] rbs = { "AL", "CL", "DL", "BL", "SPL", "BPL", "SIL", "DIL", };
+			String[] rws = { "AX", "CX", "DX", "BX", "SP", "BP", "SI", "DI", };
+			String[] rds = { "EAX", "ECX", "EDX", "EBX", "ESP", "EBP", "ESI", "EDI", };
+			String[] rqs = { "RAX", "RCX", "RDX", "RBX", "RSP", "RBP", "RSI", "RDI", };
 
-			String[] rws = { //
-					"AX", "CX", "DX", "BX", "SP", "BP", "SI", "DI", //
-					"R8W", "R9W", "R10W", "R11W", "R12W", "R13W", "R14W", "R15W", };
-
-			String[] rds = { //
-					"EAX", "ECX", "EDX", "EBX", "ESP", "EBP", "ESI", "EDI", //
-					"R8D", "R9D", "R10D", "R11D", "R12D", "R13D", "R14D", "R15D", };
-
-			String[] rqs = { //
-					"RAX", "RCX", "RDX", "RBX", "RSP", "RBP", "RSI", "RDI", //
-					"R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15", };
-
-			for (var i = 0; i < 16; i++) {
+			for (var i = 0; i < 8; i++) {
 				put(Atom.of(rbs[i]), reg8[i]);
 				put(Atom.of(rws[i]), reg16[i]);
 				put(Atom.of(rds[i]), reg32[i]);
 				put(Atom.of(rqs[i]), reg64[i]);
+			}
+
+			for (var i = 8; i < 16; i++) {
+				put(Atom.of("R" + i + "B"), reg8[i]);
+				put(Atom.of("R" + i + "W"), reg16[i]);
+				put(Atom.of("R" + i + "D"), reg32[i]);
+				put(Atom.of("R" + i), reg64[i]);
 			}
 		}
 	};
