@@ -62,6 +62,7 @@ import suite.primitive.Bytes;
 import suite.primitive.IntFunUtil;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntObj_Obj;
+import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
@@ -94,6 +95,18 @@ public class P4GenerateCode {
 	private OpReg p2_edx = edx;
 
 	private Operand labelPointer;
+	private Operand freeChainPointer;
+
+	private int[] allocSizes = { //
+			4, //
+			8, 12, //
+			16, 20, 24, //
+			32, 40, 48, 56, //
+			64, 80, 96, 112, //
+			128, 160, 192, 224, //
+			256, 320, 384, 448, //
+			512, 640, 768, 896, //
+			1024, 1280, 1536, 1792, };
 
 	private Map<Object, Insn> insnByOp = Map.ofEntries( //
 			entry(TermOp.BIGOR_, Insn.OR), //
@@ -134,10 +147,13 @@ public class P4GenerateCode {
 
 		return P4Emit.generate(emit -> {
 			labelPointer = emit.label();
+			freeChainPointer = emit.label();
 
 			emit.spawn(em1 -> {
 				em1.emit(Insn.LABEL, labelPointer);
 				em1.emit(Insn.D, amd64.imm32(0));
+				em1.emit(Insn.LABEL, freeChainPointer);
+				em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps));
 			});
 
 			for (var i : Arrays.asList( //
@@ -286,12 +302,20 @@ public class P4GenerateCode {
 				}).applyIf(FunpFramePointer.class, t -> {
 					return returnIsOp(compileFramePointer());
 				}).applyIf(FunpHeapAlloc.class, f -> f.apply(size -> {
+					var pair = getAllocSize(size);
 					var r0 = isOutSpec ? pop0 : rs.get(is);
 					var rp = em.mov(rs.mask(r0).get(ps), labelPointer);
 					em.mov(r0, amd64.mem(rp, 0x00, 4));
-					em.addImm(amd64.mem(rp, 0x00, 4), getAlignedSize(size));
+					em.addImm(amd64.mem(rp, 0x00, 4), pair.t1);
 					return returnIsOp(r0);
 				})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
+					var pair = getAllocSize(size);
+					var opPointer = compileIsReg(reference);
+					var rp = em.mov(rs.mask(opPointer).get(ps), freeChainPointer);
+					var opFreeChainPointer = amd64.mem(rp, pair.t0 * 4, ps);
+					var r0 = em.mov(rs.mask(opPointer, rp).get(ps), opFreeChainPointer);
+					em.mov(amd64.mem(opPointer, 0, ps), r0);
+					em.mov(opFreeChainPointer, opPointer);
 					return compile(expr);
 				})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 					Sink<Funp> compile0, compile1;
@@ -951,6 +975,15 @@ public class P4GenerateCode {
 
 			private Compile1 mask(Operand... ops) {
 				return new Compile1(rs.mask(ops), fd);
+			}
+
+			private IntIntPair getAllocSize(int size) {
+				for (var i = 0; i < allocSizes.length; i++) {
+					var allocSize = allocSizes[i];
+					if (size <= allocSize)
+						return IntIntPair.of(i, allocSize);
+				}
+				return IntIntPair.of(-1, size);
 			}
 
 			private int getAlignedSize(int size) {
