@@ -145,7 +145,7 @@ public class P4Emit {
 	}
 
 	public OpImm label() {
-		return amd64.imm(-1, Funp_.pointerSize);
+		return amd64.imm(-1l, Funp_.pointerSize);
 	}
 
 }
