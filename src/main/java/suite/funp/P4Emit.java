@@ -110,8 +110,8 @@ public class P4Emit {
 
 	public Operand lea(OpMem op) {
 		if (op.baseReg < 0 && op.indexReg < 0)
-			return amd64.imm(op.disp, is);
-		else if (op.indexReg < 0 && op.disp == 0)
+			return amd64.imm(op.disp.imm, is);
+		else if (op.indexReg < 0 && op.disp.imm == 0)
 			return amd64.reg32[op.baseReg];
 		else
 			return null;
@@ -144,7 +144,7 @@ public class P4Emit {
 		blocks.add(generate(sink));
 	}
 
-	public Operand label() {
+	public OpImm label() {
 		return amd64.imm(-1, Funp_.pointerSize);
 	}
 

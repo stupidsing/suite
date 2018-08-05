@@ -56,11 +56,14 @@ public class Amd64Parse {
 	}
 
 	private Operand parseOpMem(Node[] m, int size) {
+		var opDisp = amd64.new OpImm();
+		opDisp.size = 0;
+
 		var opMem = amd64.new OpMem();
 		opMem.size = size;
 		opMem.indexReg = -1;
 		opMem.baseReg = -1;
-		opMem.dispSize = 0;
+		opMem.disp = opDisp;
 
 		for (var component : scan(m[0], ".0 + .1"))
 			if ((m = Suite.pattern(".0 * .1").match(component)) != null)
@@ -70,9 +73,9 @@ public class Amd64Parse {
 				} else
 					fail("bad operand");
 			else if (component instanceof Int)
-				if (opMem.dispSize == 0) {
-					opMem.disp = Int.num(component);
-					opMem.dispSize = 4;
+				if (opMem.disp.size == 0) {
+					opMem.disp.imm = Int.num(component);
+					opMem.disp.size = 4;
 				} else
 					fail("bad operand");
 			else if (opMem.baseReg < 0)

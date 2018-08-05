@@ -383,7 +383,7 @@ public class Amd64Interpret {
 	private int address(OpMem opMem) {
 		var br = opMem.baseReg;
 		var ir = opMem.indexReg;
-		return (int) opMem.disp + (0 <= br ? regs[br] : 0) + (0 <= ir ? regs[ir] * scales[opMem.scale] : 0);
+		return (int) opMem.disp.imm + (0 <= br ? regs[br] : 0) + (0 <= ir ? regs[ir] * scales[opMem.scale] : 0);
 	}
 
 	private int index(int address) {

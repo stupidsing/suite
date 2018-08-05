@@ -141,8 +141,8 @@ public class Amd64 {
 	}
 
 	public class OpMem extends Operand {
-		public int baseReg, indexReg, scale, dispSize;
-		public long disp;
+		public int baseReg, indexReg, scale;
+		public OpImm disp;
 	}
 
 	public class OpNone extends Operand {
@@ -305,7 +305,7 @@ public class Amd64 {
 		return imm(imm, 4);
 	}
 
-	public Operand imm(long imm, int size) {
+	public OpImm imm(long imm, int size) {
 		var op = new OpImm();
 		op.imm = imm;
 		op.size = size;
@@ -321,18 +321,28 @@ public class Amd64 {
 		return instruction;
 	}
 
+	public OpMem mem(OpImm opDisp, int size) {
+		return mem(null, null, 0, opDisp, size);
+	}
+
 	public OpMem mem(OpReg baseReg, long disp, int size) {
 		return mem(baseReg, null, 1, disp, size);
 	}
 
 	public OpMem mem(OpReg baseReg, OpReg indexReg, int scale, long disp, int size) {
+		var opDisp = new OpImm();
+		opDisp.imm = disp;
+		opDisp.size = size(disp);
+		return mem(baseReg, indexReg, scale, opDisp, size);
+	}
+
+	public OpMem mem(OpReg baseReg, OpReg indexReg, int scale, OpImm opDisp, int size) {
 		var op = new OpMem();
 		op.baseReg = baseReg != null ? baseReg.reg : -1;
 		op.indexReg = indexReg != null ? indexReg.reg : -1;
 		op.scale = scale;
 		op.size = size;
-		op.disp = disp;
-		op.dispSize = size(disp);
+		op.disp = opDisp;
 		return op;
 	}
 

@@ -935,7 +935,7 @@ public class Amd64Assemble {
 			var op = (OpMem) operand;
 			var baseReg = op.baseReg;
 			int indexReg;
-			var ds0 = op.dispSize;
+			var ds0 = op.disp.size;
 
 			if ((op.indexReg & 7) != 4)
 				indexReg = op.indexReg;
@@ -986,7 +986,7 @@ public class Amd64Assemble {
 			else
 				throw new RuntimeException("bad operand");
 
-			disp = op.disp;
+			disp = op.disp.imm;
 		} else
 			throw new RuntimeException("bad operand");
 
