@@ -313,7 +313,7 @@ public class P4GenerateCode {
 
 					mov(ra, fcp);
 					em.emit(Insn.OR, ra, ra);
-					// em.emit(Insn.JZ, label);
+					em.emit(Insn.JZ, label);
 					// mov(fcp, amd64.mem(ra, 0, ps));
 					// em.emit(Insn.JMP, labelEnd);
 					em.emit(Insn.LABEL, label);
