@@ -326,7 +326,7 @@ public class Amd64 {
 	}
 
 	public OpMem mem(OpReg baseReg, long disp, int size) {
-		return mem(baseReg, null, 1, disp, size);
+		return mem(baseReg, null, 0, disp, size);
 	}
 
 	public OpMem mem(OpReg baseReg, OpReg indexReg, int scale, long disp, int size) {
