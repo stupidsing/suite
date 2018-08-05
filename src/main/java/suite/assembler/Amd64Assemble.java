@@ -160,17 +160,18 @@ public class Amd64Assemble {
 	}
 
 	public Bytes assemble(long offset, List<Instruction> instructions, boolean dump) {
-		assemblePass(offset, instructions); // first pass
+		assemblePass(false, offset, instructions);
+		var bytes = assemblePass(true, offset, instructions);
 		if (dump)
 			LogUtil.info(new Amd64Dump().dump(instructions));
-		return assemblePass(offset, instructions); // second pass
+		return bytes;
 	}
 
-	private Bytes assemblePass(long offset, List<Instruction> instructions) {
+	private Bytes assemblePass(boolean isPass2, long offset, List<Instruction> instructions) {
 		var bb = new BytesBuilder();
 		for (var instruction : instructions)
 			try {
-				var bytes = assemble(offset, instruction);
+				var bytes = assemble(isPass2, offset, instruction);
 				bb.append(bytes);
 				offset += bytes.size();
 			} catch (Exception ex) {
@@ -179,7 +180,7 @@ public class Amd64Assemble {
 		return bb.toBytes();
 	}
 
-	public Bytes assemble(long offset, Instruction instruction) {
+	public Bytes assemble(boolean isPass2, long offset, Instruction instruction) {
 		Encode encode;
 		switch (instruction.insn) {
 		case AAA:
@@ -369,13 +370,10 @@ public class Amd64Assemble {
 			encode = assembleJump(instruction, offset, 0x74, bs(0x0F, 0x84));
 			break;
 		case LABEL:
-			var imm0 = ((OpImm) instruction.op0).imm;
-			if (imm0 == -1 || imm0 == offset) {
+			if (!isPass2)
 				((OpImm) instruction.op0).imm = offset;
-				encode = new InsnCode(4, new byte[0]);
-				break;
-			} else
-				fail();
+			encode = new InsnCode(4, new byte[0]);
+			break;
 		case LEA:
 			encode = assembleRegRm(instruction.op0, instruction.op1, 0x8D);
 			break;
