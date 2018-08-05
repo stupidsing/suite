@@ -197,91 +197,44 @@ public class Amd64 {
 
 	public BiMap<Atom, OpReg> regByName = new HashBiMap<>() {
 		{
-			put(Atom.of("AL"), al);
-			put(Atom.of("CL"), cl);
-			put(Atom.of("DL"), dl);
-			put(Atom.of("BL"), bl);
-			put(Atom.of("SPL"), reg8[4]);
-			put(Atom.of("BPL"), reg8[5]);
-			put(Atom.of("SIL"), reg8[6]);
-			put(Atom.of("DIL"), reg8[7]);
-			put(Atom.of("R8B"), reg8[8]);
-			put(Atom.of("R9B"), reg8[9]);
-			put(Atom.of("R10B"), reg8[10]);
-			put(Atom.of("R11B"), reg8[11]);
-			put(Atom.of("R12B"), reg8[12]);
-			put(Atom.of("R13B"), reg8[13]);
-			put(Atom.of("R14B"), reg8[14]);
-			put(Atom.of("R15B"), reg8[15]);
-			put(Atom.of("AX"), reg16[0]);
-			put(Atom.of("CX"), reg16[1]);
-			put(Atom.of("DX"), reg16[2]);
-			put(Atom.of("BX"), reg16[3]);
-			put(Atom.of("SP"), reg16[4]);
-			put(Atom.of("BP"), reg16[5]);
-			put(Atom.of("SI"), reg16[6]);
-			put(Atom.of("DI"), reg16[7]);
-			put(Atom.of("R8W"), reg16[8]);
-			put(Atom.of("R9W"), reg16[9]);
-			put(Atom.of("R10W"), reg16[10]);
-			put(Atom.of("R11W"), reg16[11]);
-			put(Atom.of("R12W"), reg16[12]);
-			put(Atom.of("R13W"), reg16[13]);
-			put(Atom.of("R14W"), reg16[14]);
-			put(Atom.of("R15W"), reg16[15]);
-			put(Atom.of("EAX"), eax);
-			put(Atom.of("ECX"), ecx);
-			put(Atom.of("EDX"), edx);
-			put(Atom.of("EBX"), ebx);
-			put(Atom.of("ESP"), esp);
-			put(Atom.of("EBP"), ebp);
-			put(Atom.of("ESI"), esi);
-			put(Atom.of("EDI"), edi);
-			put(Atom.of("R8D"), reg32[8]);
-			put(Atom.of("R9D"), reg32[9]);
-			put(Atom.of("R10D"), reg32[10]);
-			put(Atom.of("R11D"), reg32[11]);
-			put(Atom.of("R12D"), reg32[12]);
-			put(Atom.of("R13D"), reg32[13]);
-			put(Atom.of("R14D"), reg32[14]);
-			put(Atom.of("R15D"), reg32[15]);
-			put(Atom.of("RAX"), reg64[0]);
-			put(Atom.of("RCX"), reg64[1]);
-			put(Atom.of("RDX"), reg64[2]);
-			put(Atom.of("RBX"), reg64[3]);
-			put(Atom.of("RSP"), reg64[4]);
-			put(Atom.of("RBP"), reg64[5]);
-			put(Atom.of("RSI"), reg64[6]);
-			put(Atom.of("RDI"), reg64[7]);
-			put(Atom.of("R8"), reg64[8]);
-			put(Atom.of("R9"), reg64[9]);
-			put(Atom.of("R10"), reg64[10]);
-			put(Atom.of("R11"), reg64[11]);
-			put(Atom.of("R12"), reg64[12]);
-			put(Atom.of("R13"), reg64[13]);
-			put(Atom.of("R14"), reg64[14]);
-			put(Atom.of("R15"), reg64[15]);
+			String[] rbs = { //
+					"AL", "CL", "DL", "BL", "SPL", "BPL", "SIL", "DIL", //
+					"R8B", "R9B", "R10B", "R11B", "R12B", "R13B", "R14B", "R15B", };
 
+			String[] rws = { //
+					"AX", "CX", "DX", "BX", "SP", "BP", "SI", "DI", //
+					"R8W", "R9W", "R10W", "R11W", "R12W", "R13W", "R14W", "R15W", };
+
+			String[] rds = { //
+					"EAX", "ECX", "EDX", "EBX", "ESP", "EBP", "ESI", "EDI", //
+					"R8D", "R9D", "R10D", "R11D", "R12D", "R13D", "R14D", "R15D", };
+
+			String[] rqs = { //
+					"RAX", "RCX", "RDX", "RBX", "RSP", "RBP", "RSI", "RDI", //
+					"R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15", };
+
+			for (var i = 0; i < 16; i++) {
+				put(Atom.of(rbs[i]), reg8[i]);
+				put(Atom.of(rws[i]), reg16[i]);
+				put(Atom.of(rds[i]), reg32[i]);
+				put(Atom.of(rqs[i]), reg64[i]);
+			}
 		}
 	};
 
 	public BiMap<Atom, OpRegControl> cregByName = new HashBiMap<>() {
 		{
-			put(Atom.of("CR0"), newRegControl(0));
-			put(Atom.of("CR2"), newRegControl(2));
-			put(Atom.of("CR3"), newRegControl(3));
-			put(Atom.of("CR4"), newRegControl(4));
+			for (var i : new int[] { 0, 2, 3, 4, })
+				put(Atom.of("CR" + i), newRegControl(i));
 		}
 	};
 
 	public BiMap<Atom, OpRegSegment> sregByName = new HashBiMap<>() {
 		{
-			put(Atom.of("ES"), newRegSegment(0));
-			put(Atom.of("CS"), newRegSegment(1));
-			put(Atom.of("SS"), newRegSegment(2));
-			put(Atom.of("DS"), newRegSegment(3));
-			put(Atom.of("FS"), newRegSegment(4));
-			put(Atom.of("GS"), newRegSegment(5));
+			String[] srs = { "ES", "CS", "SS", "DS", "FS", "GS", };
+
+			for (var i = 0; i < srs.length; i++)
+				put(Atom.of(srs[i]), newRegSegment(i));
 		}
 	};
 
