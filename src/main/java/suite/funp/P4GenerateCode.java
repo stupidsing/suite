@@ -152,7 +152,7 @@ public class P4GenerateCode {
 
 			emit.spawn(em1 -> {
 				em1.emit(Insn.LABEL, labelPointer);
-				em1.emit(Insn.D, amd64.imm32(0));
+				em1.emit(Insn.D, amd64.imm32(0l));
 				em1.emit(Insn.LABEL, freeChainPointer);
 				em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l));
 			});
