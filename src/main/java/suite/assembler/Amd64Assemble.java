@@ -246,7 +246,8 @@ public class Amd64Assemble {
 			break;
 		case DS:
 			var bs = new byte[(int) ((OpImm) instruction.op0).imm];
-			Arrays.fill(bs, (byte) 0x90);
+			var b = instruction.op1 instanceof OpImm ? ((OpImm) instruction.op1).imm : 0x90;
+			Arrays.fill(bs, (byte) b);
 			encode = new InsnCode(4, Bytes.of(bs).toArray());
 			break;
 		case HLT:

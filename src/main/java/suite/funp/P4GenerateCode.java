@@ -154,7 +154,7 @@ public class P4GenerateCode {
 				em1.emit(Insn.LABEL, labelPointer);
 				em1.emit(Insn.D, amd64.imm32(0));
 				em1.emit(Insn.LABEL, freeChainPointer);
-				em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps));
+				em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l));
 			});
 
 			for (var i : Arrays.asList( //
@@ -314,8 +314,8 @@ public class P4GenerateCode {
 					mov(ra, fcp);
 					em.emit(Insn.OR, ra, ra);
 					em.emit(Insn.JZ, label);
-					// mov(fcp, amd64.mem(ra, 0, ps));
-					// em.emit(Insn.JMP, labelEnd);
+					mov(fcp, amd64.mem(ra, 0, ps));
+					em.emit(Insn.JMP, labelEnd);
 					em.emit(Insn.LABEL, label);
 					var pointer = amd64.mem(labelPointer, ps);
 					em.mov(ra, pointer);
