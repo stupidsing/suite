@@ -38,22 +38,22 @@ public class P4Emit {
 	public OpReg emitRegInsn(Insn insn, OpReg op0, Operand op1) {
 		if (op1 instanceof OpImm) {
 			var i = ((OpImm) op1).imm;
-			if (insn == Insn.AND)
-				andImm(op0, i);
-			else if (insn == Insn.OR)
-				orImm(op0, i);
-			else if (insn == Insn.XOR)
-				xorImm(op0, i);
-			else if (insn == Insn.ADD)
+			if (insn == Insn.ADD)
 				addImm(op0, i);
-			else if (insn == Insn.SUB)
-				addImm(op0, -i);
+			else if (insn == Insn.AND)
+				andImm(op0, i);
 			else if (insn == Insn.IMUL)
 				imulImm(op0, i);
+			else if (insn == Insn.OR)
+				orImm(op0, i);
 			else if (insn == Insn.SHL)
 				shiftImm(insn, op0, i);
 			else if (insn == Insn.SHR)
 				shiftImm(insn, op0, i);
+			else if (insn == Insn.SUB)
+				addImm(op0, -i);
+			else if (insn == Insn.XOR)
+				xorImm(op0, i);
 			else
 				emit(amd64.instruction(insn, op0, op1));
 		} else
