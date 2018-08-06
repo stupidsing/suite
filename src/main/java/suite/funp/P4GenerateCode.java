@@ -306,7 +306,7 @@ public class P4GenerateCode {
 					var rf = em.mov(rs.get(ps), freeChainPointer);
 					em.addImm(rf, pair.t0 * 4);
 					var fcp = amd64.mem(rf, 0, ps);
-					var c1 = mask(rf);
+					var c1 = mask(fcp);
 
 					var ra = isOutSpec ? pop0 : c1.rs.get(ps);
 					var labelAlloc = em.label();
@@ -328,10 +328,10 @@ public class P4GenerateCode {
 					var rf = em.mov(rs.get(ps), freeChainPointer);
 					em.addImm(rf, pair.t0 * 4);
 					var fcp = amd64.mem(rf, 0, ps);
-					var c1 = mask(rf);
+					var c1 = mask(fcp);
 
 					var ref = c1.compileIsReg(reference);
-					mask(ref, fcp).mov(amd64.mem(ref, 0, ps), fcp);
+					c1.mask(ref).mov(amd64.mem(ref, 0, ps), fcp);
 					em.mov(fcp, ref);
 					return compile(expr);
 				})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
