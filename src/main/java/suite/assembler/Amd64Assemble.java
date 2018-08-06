@@ -371,7 +371,7 @@ public class Amd64Assemble {
 			break;
 		case LABEL:
 			if (!isPass2)
-				((OpImm) instruction.op0).imm = offset;
+				((OpImm) instruction.op0).imm += offset;
 			encode = new InsnCode(4, new byte[0]);
 			break;
 		case LEA:

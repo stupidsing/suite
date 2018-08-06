@@ -118,10 +118,11 @@ public class P4Emit {
 	}
 
 	public <T extends Operand> T mov(T op0, Operand op1) {
+		OpImm opImm;
 		if (op0.size != op1.size)
 			fail();
 		else if (op0 != op1)
-			if (op0 instanceof OpReg && op1 instanceof OpImm && ((OpImm) op1).imm == 0)
+			if (op0 instanceof OpReg && op1 instanceof OpImm && !(opImm = (OpImm) op1).isLabel && opImm.imm == 0)
 				emit(amd64.instruction(Insn.XOR, op0, op0));
 			else
 				emit(amd64.instruction(Insn.MOV, op0, op1));
@@ -145,7 +146,9 @@ public class P4Emit {
 	}
 
 	public OpImm label() {
-		return amd64.imm(-1l, Funp_.pointerSize);
+		var op = amd64.imm(0l, Funp_.pointerSize);
+		op.isLabel = true;
+		return op;
 	}
 
 }
