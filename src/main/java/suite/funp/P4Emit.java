@@ -9,6 +9,7 @@ import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
+import suite.assembler.Amd64.OpImmLabel;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
@@ -118,11 +119,10 @@ public class P4Emit {
 	}
 
 	public <T extends Operand> T mov(T op0, Operand op1) {
-		OpImm opImm;
 		if (op0.size != op1.size)
 			fail();
 		else if (op0 != op1)
-			if (op0 instanceof OpReg && op1 instanceof OpImm && !(opImm = (OpImm) op1).isLabel && opImm.imm == 0)
+			if (op0 instanceof OpReg && op1 instanceof OpImm && ((OpImm) op1).imm == 0 && !(op1 instanceof OpImmLabel))
 				emit(amd64.instruction(Insn.XOR, op0, op0));
 			else
 				emit(amd64.instruction(Insn.MOV, op0, op1));
@@ -146,8 +146,8 @@ public class P4Emit {
 	}
 
 	public OpImm label() {
-		var op = amd64.imm(0l, Funp_.pointerSize);
-		op.isLabel = true;
+		var op = amd64.new OpImmLabel();
+		op.size = Funp_.pointerSize;
 		return op;
 	}
 

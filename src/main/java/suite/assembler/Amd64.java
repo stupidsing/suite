@@ -138,7 +138,9 @@ public class Amd64 {
 
 	public class OpImm extends Operand {
 		public long imm;
-		public boolean isLabel;
+	}
+
+	public class OpImmLabel extends OpImm {
 	}
 
 	public class OpMem extends Operand {
