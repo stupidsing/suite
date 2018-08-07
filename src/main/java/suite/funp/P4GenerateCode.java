@@ -11,6 +11,7 @@ import java.util.Set;
 
 import suite.Suite;
 import suite.adt.Mutable;
+import suite.adt.pair.Fixie_.FixieFun3;
 import suite.adt.pair.Fixie_.FixieFun4;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
@@ -302,38 +303,29 @@ public class P4GenerateCode {
 				}).applyIf(FunpFramePointer.class, t -> {
 					return returnIsOp(compileFramePointer());
 				}).applyIf(FunpHeapAlloc.class, f -> f.apply(size -> {
-					var pair = getAllocSize(size);
-					var rf = em.mov(rs.get(ps), freeChainPointer);
-					em.addImm(rf, pair.t0 * 4);
-					var fcp = amd64.mem(rf, 0, ps);
-					var c1 = mask(fcp);
+					return compileHeap(size, (c1, allocSize, fcp) -> {
+						var labelAlloc = em.label();
+						var labelEnd = em.label();
 
-					var ra = isOutSpec ? pop0 : c1.rs.get(ps);
-					var labelAlloc = em.label();
-					var labelEnd = em.label();
-
-					em.mov(ra, fcp);
-					em.emit(Insn.OR, ra, ra);
-					em.emit(Insn.JZ, labelAlloc);
-					mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
-					em.emit(Insn.JMP, labelEnd);
-					em.emit(Insn.LABEL, labelAlloc);
-					var pointer = amd64.mem(labelPointer, ps);
-					em.mov(ra, pointer);
-					em.addImm(pointer, pair.t1);
-					em.emit(Insn.LABEL, labelEnd);
-					return returnIsOp(ra);
+						var ra = em.mov(isOutSpec ? pop0 : c1.rs.get(ps), fcp);
+						em.emit(Insn.OR, ra, ra);
+						em.emit(Insn.JZ, labelAlloc);
+						mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
+						em.emit(Insn.JMP, labelEnd);
+						em.emit(Insn.LABEL, labelAlloc);
+						var pointer = amd64.mem(labelPointer, ps);
+						em.mov(ra, pointer);
+						em.addImm(pointer, allocSize);
+						em.emit(Insn.LABEL, labelEnd);
+						return returnIsOp(ra);
+					});
 				})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
-					var pair = getAllocSize(size);
-					var rf = em.mov(rs.get(ps), freeChainPointer);
-					em.addImm(rf, pair.t0 * 4);
-					var fcp = amd64.mem(rf, 0, ps);
-					var c1 = mask(fcp);
-
-					var ref = c1.compileIsReg(reference);
-					c1.mask(ref).mov(amd64.mem(ref, 0, ps), fcp);
-					em.mov(fcp, ref);
-					return compile(expr);
+					return compileHeap(size, (c1, allocSize, fcp) -> {
+						var ref = c1.compileIsReg(reference);
+						c1.mask(ref).mov(amd64.mem(ref, 0, ps), fcp);
+						em.mov(fcp, ref);
+						return compile(expr);
+					});
 				})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
 					Sink<Funp> compile0, compile1;
 					Source<CompileOut> out;
@@ -643,6 +635,14 @@ public class P4GenerateCode {
 					else
 						moveBlock.run();
 				}
+			}
+
+			private CompileOut compileHeap(Integer size, FixieFun3<Compile1, Integer, OpMem, CompileOut> fun) {
+				var pair = getAllocSize(size);
+				var rf = em.mov(rs.get(ps), freeChainPointer);
+				em.addImm(rf, pair.t0 * 4);
+				var fcp = amd64.mem(rf, 0, ps);
+				return fun.apply(mask(fcp), pair.t1, fcp);
 			}
 
 			private Operand compileTree(Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
