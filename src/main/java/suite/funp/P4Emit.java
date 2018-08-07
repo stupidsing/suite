@@ -22,7 +22,15 @@ public class P4Emit {
 	private Amd64 amd64 = Amd64.me;
 
 	private Sink<Instruction> emit;
-	private List<List<Instruction>> blocks = new ArrayList<>();
+	private List<Block> blocks = new ArrayList<>();
+
+	private class Block {
+		private List<Instruction> instructions;
+
+		private Block(List<Instruction> instructions) {
+			this.instructions = instructions;
+		}
+	}
 
 	public static Pair<OpImmLabel, List<Instruction>> generate(Sink<P4Emit> sink) {
 		var list = new ArrayList<Instruction>();
@@ -31,7 +39,7 @@ public class P4Emit {
 		emit.emit(Insn.LABEL, label);
 		sink.sink(emit);
 		for (var block : emit.blocks)
-			list.addAll(block);
+			list.addAll(block.instructions);
 		return Pair.of(label, list);
 	}
 
@@ -146,7 +154,7 @@ public class P4Emit {
 
 	public OpImmLabel spawn(Sink<P4Emit> sink) {
 		var pair = generate(sink);
-		blocks.add(pair.t1);
+		blocks.add(new Block(pair.t1));
 		return pair.t0;
 	}
 
