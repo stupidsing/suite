@@ -51,13 +51,13 @@ public class P4Emit {
 
 		for (var block : blocks_) {
 			var label_ = block.label;
+			Block b;
 
 			while (label_ != null)
-				if (set.add(label_)) {
-					var nextBlock = blockByLabel.get(label_);
-					for (var instruction : nextBlock.instructions)
+				if (set.add(label_) && (b = blockByLabel.get(label_)) != null) {
+					for (var instruction : b.instructions)
 						list.add(instruction);
-					label_ = nextBlock.out;
+					label_ = b.out;
 				} else {
 					list.add(amd64.instruction(Insn.JMP, label_));
 					label_ = null;
@@ -180,7 +180,7 @@ public class P4Emit {
 		return spawn(sink, null);
 	}
 
-	private OpImmLabel spawn(Sink<P4Emit> sink, OpImmLabel out) {
+	public OpImmLabel spawn(Sink<P4Emit> sink, OpImmLabel out) {
 		var block = generate(sink, out);
 		blocks.add(block);
 		return block.label;

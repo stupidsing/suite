@@ -297,18 +297,19 @@ public class P4GenerateCode {
 					return returnIsOp(compileFramePointer());
 				}).applyIf(FunpHeapAlloc.class, f -> f.apply(size -> {
 					return compileHeap(size, (c1, allocSize, fcp) -> {
-						var labelAlloc = em.label();
+						var ra = isOutSpec ? pop0 : c1.rs.get(ps);
 						var labelEnd = em.label();
 
-						var ra = em.mov(isOutSpec ? pop0 : c1.rs.get(ps), fcp);
+						var labelAlloc = em.spawn(em1 -> {
+							var pointer = amd64.mem(labelPointer, ps);
+							em1.mov(ra, pointer);
+							em1.addImm(pointer, allocSize);
+						}, labelEnd);
+
+						em.mov(ra, fcp);
 						em.emit(Insn.OR, ra, ra);
 						em.emit(Insn.JZ, labelAlloc);
 						mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
-						em.emit(Insn.JMP, labelEnd);
-						em.emit(Insn.LABEL, labelAlloc);
-						var pointer = amd64.mem(labelPointer, ps);
-						em.mov(ra, pointer);
-						em.addImm(pointer, allocSize);
 						em.emit(Insn.LABEL, labelEnd);
 						return returnIsOp(ra);
 					});
