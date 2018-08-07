@@ -148,15 +148,8 @@ public class P4GenerateCode {
 		var p = new Amd64Parse();
 
 		return P4Emit.generate(emit -> {
-			labelPointer = emit.label();
-			freeChainPointer = emit.label();
-
-			emit.spawn(em1 -> {
-				em1.emit(Insn.LABEL, labelPointer);
-				em1.emit(Insn.D, amd64.imm32(0l));
-				em1.emit(Insn.LABEL, freeChainPointer);
-				em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l));
-			});
+			labelPointer = emit.spawn(em1 -> em1.emit(Insn.D, amd64.imm32(0l)));
+			freeChainPointer = emit.spawn(em1 -> em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l)));
 
 			for (var i : Arrays.asList( //
 					"SUB (ESP, +x18)", //
@@ -180,7 +173,7 @@ public class P4GenerateCode {
 			new Compile0(Result.ISSPEC, emit, null, ebx, null).new Compile1(registerSet, 0).compile(funp);
 			emit.mov(eax, amd64.imm(1, is));
 			emit.emit(Insn.INT, amd64.imm8(-128));
-		});
+		}).t1;
 	}
 
 	public Bytes compile1(int offset, List<Instruction> instructions, boolean dump) {
@@ -832,12 +825,7 @@ public class P4GenerateCode {
 			}
 
 			private Operand compileBlock(Sink<Compile0> sink) {
-				var refLabel = em.label();
-				em.spawn(em1 -> {
-					em1.emit(amd64.instruction(Insn.LABEL, refLabel));
-					sink.sink(new Compile0(result, em1, target, pop0, pop1));
-				});
-				return refLabel;
+				return em.spawn(em1 -> sink.sink(new Compile0(result, em1, target, pop0, pop1)));
 			}
 
 			private OpReg compileRegInstruction(Insn insn, OpReg op0, Operand op1, Funp f1) {

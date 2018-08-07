@@ -5,6 +5,7 @@ import static suite.util.Friends.fail;
 import java.util.ArrayList;
 import java.util.List;
 
+import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
@@ -23,13 +24,15 @@ public class P4Emit {
 	private Sink<Instruction> emit;
 	private List<List<Instruction>> blocks = new ArrayList<>();
 
-	public static List<Instruction> generate(Sink<P4Emit> sink) {
+	public static Pair<OpImmLabel, List<Instruction>> generate(Sink<P4Emit> sink) {
 		var list = new ArrayList<Instruction>();
 		var emit = new P4Emit(list::add);
+		var label = emit.label();
+		emit.emit(Insn.LABEL, label);
 		sink.sink(emit);
 		for (var block : emit.blocks)
 			list.addAll(block);
-		return list;
+		return Pair.of(label, list);
 	}
 
 	private P4Emit(Sink<Instruction> emit) {
@@ -141,11 +144,13 @@ public class P4Emit {
 		emit.sink(instruction);
 	}
 
-	public void spawn(Sink<P4Emit> sink) {
-		blocks.add(generate(sink));
+	public OpImmLabel spawn(Sink<P4Emit> sink) {
+		var pair = generate(sink);
+		blocks.add(pair.t1);
+		return pair.t0;
 	}
 
-	public OpImm label() {
+	public OpImmLabel label() {
 		var op = amd64.new OpImmLabel();
 		op.size = Funp_.pointerSize;
 		return op;
