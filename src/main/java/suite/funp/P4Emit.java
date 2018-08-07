@@ -177,7 +177,11 @@ public class P4Emit {
 	}
 
 	public OpImmLabel spawn(Sink<P4Emit> sink) {
-		var block = generate(sink, null);
+		return spawn(sink, null);
+	}
+
+	private OpImmLabel spawn(Sink<P4Emit> sink, OpImmLabel out) {
+		var block = generate(sink, out);
 		blocks.add(block);
 		return block.label;
 	}
