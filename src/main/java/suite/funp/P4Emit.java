@@ -37,12 +37,12 @@ public class P4Emit {
 		}
 	}
 
-	public static Block generate(Sink<P4Emit> sink, OpImmLabel out) {
+	public static Block generate(OpImmLabel in, Sink<P4Emit> sink, OpImmLabel out) {
 		var list = new ArrayList<Instruction>();
 		var emit = new P4Emit(list::add);
+		var in_ = in != null ? in : emit.label();
 
-		var in = emit.label();
-		emit.emit(Insn.LABEL, in);
+		emit.emit(Insn.LABEL, in_);
 		sink.sink(emit);
 
 		List<Block> blocks_ = emit.blocks;
@@ -50,21 +50,21 @@ public class P4Emit {
 		var set = new HashSet<OpImmLabel>();
 
 		for (var block : blocks_) {
-			var in_ = block.in;
+			var label = block.in;
 			Block b;
 
-			while (in_ != null)
-				if (set.add(in_) && (b = blockByLabel.get(in_)) != null) {
+			while (label != null)
+				if (set.add(label) && (b = blockByLabel.get(label)) != null) {
 					for (var instruction : b.instructions)
 						list.add(instruction);
-					in_ = b.out;
+					label = b.out;
 				} else {
-					list.add(amd64.instruction(Insn.JMP, in_));
-					in_ = null;
+					list.add(amd64.instruction(Insn.JMP, label));
+					label = null;
 				}
 		}
 
-		return new Block(in, list, out);
+		return new Block(in_, list, out);
 	}
 
 	private P4Emit(Sink<Instruction> emit) {
@@ -181,7 +181,7 @@ public class P4Emit {
 	}
 
 	public OpImmLabel spawn(Sink<P4Emit> sink, OpImmLabel out) {
-		var block = generate(sink, out);
+		var block = generate(null, sink, out);
 		blocks.add(block);
 		return block.in;
 	}
