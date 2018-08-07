@@ -3,9 +3,9 @@ package suite.funp;
 import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
-import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
@@ -15,32 +15,56 @@ import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.streamlet.FunUtil.Sink;
+import suite.streamlet.Read;
 
 public class P4Emit {
 
-	private int is = Funp_.integerSize;
-	private Amd64 amd64 = Amd64.me;
+	private static Amd64 amd64 = Amd64.me;
+	private static int is = Funp_.integerSize;
 
 	private Sink<Instruction> emit;
 	private List<Block> blocks = new ArrayList<>();
 
-	private class Block {
-		private List<Instruction> instructions;
+	public static class Block {
+		public final OpImmLabel label;
+		public final List<Instruction> instructions;
+		public final OpImmLabel out;
 
-		private Block(List<Instruction> instructions) {
+		private Block(OpImmLabel label, List<Instruction> instructions, OpImmLabel out) {
+			this.label = label;
 			this.instructions = instructions;
+			this.out = out;
 		}
 	}
 
-	public static Pair<OpImmLabel, List<Instruction>> generate(Sink<P4Emit> sink) {
+	public static Block generate(Sink<P4Emit> sink, OpImmLabel out) {
 		var list = new ArrayList<Instruction>();
 		var emit = new P4Emit(list::add);
+
 		var label = emit.label();
 		emit.emit(Insn.LABEL, label);
 		sink.sink(emit);
-		for (var block : emit.blocks)
-			list.addAll(block.instructions);
-		return Pair.of(label, list);
+
+		List<Block> blocks_ = emit.blocks;
+		var blockByLabel = Read.from(blocks_).toMap(block -> block.label);
+		var set = new HashSet<OpImmLabel>();
+
+		for (var block : blocks_) {
+			var label_ = block.label;
+
+			while (label_ != null)
+				if (set.add(label_)) {
+					var nextBlock = blockByLabel.get(label_);
+					for (var instruction : nextBlock.instructions)
+						list.add(instruction);
+					label_ = nextBlock.out;
+				} else {
+					list.add(amd64.instruction(Insn.JMP, label_));
+					label_ = null;
+				}
+		}
+
+		return new Block(label, list, out);
 	}
 
 	private P4Emit(Sink<Instruction> emit) {
@@ -153,9 +177,9 @@ public class P4Emit {
 	}
 
 	public OpImmLabel spawn(Sink<P4Emit> sink) {
-		var pair = generate(sink);
-		blocks.add(new Block(pair.t1));
-		return pair.t0;
+		var block = generate(sink, null);
+		blocks.add(block);
+		return block.label;
 	}
 
 	public OpImmLabel label() {
