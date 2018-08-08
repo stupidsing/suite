@@ -188,9 +188,7 @@ public class P4Emit {
 
 			while (label != null)
 				if (set.add(label) && (b = blockByLabel.get(label)) != null) {
-					var in1 = b.in;
-					if (in1 != null)
-						list.add(amd64.instruction(Insn.LABEL, in1));
+					list.add(amd64.instruction(Insn.LABEL, b.in));
 					list.addAll(b.instructions);
 					label = b.out;
 				} else {
@@ -200,10 +198,7 @@ public class P4Emit {
 		};
 
 		gen.sink(start);
-
-		for (var block : blocks)
-			gen.sink(block.in);
-
+		blocks.forEach(block -> gen.sink(block.in));
 		return list;
 	}
 
