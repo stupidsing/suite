@@ -167,8 +167,7 @@ public class P4Emit {
 		var blockByLabel = Read.from(blocks).toMap(block -> block.in);
 		var set = new HashSet<OpImmLabel>();
 
-		Sink<Block> gen = block -> {
-			var label = block.in;
+		Sink<OpImmLabel> gen = label -> {
 			Block b;
 
 			while (label != null)
@@ -181,10 +180,10 @@ public class P4Emit {
 				}
 		};
 
-		gen.sink(blockByLabel.get(start));
+		gen.sink(start);
 
 		for (var block : blocks)
-			gen.sink(block);
+			gen.sink(block.in);
 
 		return list;
 	}
