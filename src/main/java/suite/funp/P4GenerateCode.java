@@ -55,6 +55,7 @@ import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters0;
 import suite.funp.P2.FunpSaveRegisters1;
+import suite.funp.P4Emit.Emit;
 import suite.node.Atom;
 import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
@@ -136,18 +137,19 @@ public class P4GenerateCode {
 			entry(TreeUtil.SHL, Insn.SHL), //
 			entry(TreeUtil.SHR, Insn.SHR));
 
-	private P4DecomposeOperand deOp;
+	private P4DecomposeOperand p4deOp;
+	private P4Emit p4emit = new P4Emit();
 
 	public P4GenerateCode(boolean isUseEbp) { // or use ESP directly
 		this.isUseEbp = isUseEbp;
 		registerSet = new RegisterSet().mask(isUseEbp ? ebp : null, esp);
-		deOp = new P4DecomposeOperand(isUseEbp);
+		p4deOp = new P4DecomposeOperand(isUseEbp);
 	}
 
 	public List<Instruction> compile0(Funp funp) {
 		var p = new Amd64Parse();
 
-		return P4Emit.generate(null, emit -> {
+		return p4emit.generate(null, emit -> {
 			labelPointer = emit.spawn(em1 -> em1.emit(Insn.D, amd64.imm32(0l)));
 			freeChainPointer = emit.spawn(em1 -> em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l)));
 
@@ -181,17 +183,17 @@ public class P4GenerateCode {
 	}
 
 	private class Compile0 {
-		private P4Emit em;
+		private Emit em;
 		private Result result;
 		private boolean isOutSpec;
 		private FunpMemory target; // only for Result.ASSIGN
 		private OpReg pop0, pop1; // only for Result.ISSPEC, PS2SPEC
 
-		private Compile0(Result type, P4Emit emit) {
+		private Compile0(Result type, Emit emit) {
 			this(type, emit, null, null, null);
 		}
 
-		private Compile0(Result result, P4Emit emit, FunpMemory target, OpReg pop0, OpReg pop1) {
+		private Compile0(Result result, Emit emit, FunpMemory target, OpReg pop0, OpReg pop1) {
 			this.em = emit;
 			this.result = result;
 			this.isOutSpec = result == Result.ISSPEC || result == Result.PS2SPEC;
@@ -400,13 +402,13 @@ public class P4GenerateCode {
 					if (result == Result.ASSIGN)
 						return returnAssign((c1, target) -> c1.compileAssign(f, target));
 					else if (result == Result.ISOP || result == Result.ISREG || result == Result.ISSPEC)
-						if ((op0 = deOp.decompose(fd, pointer, start, size)) != null)
+						if ((op0 = p4deOp.decompose(fd, pointer, start, size)) != null)
 							return returnIsOp(op0);
 						else
 							return mf.apply((start_, r) -> returnIsOp(amd64.mem(r, start_, size)));
 					else if (result == Result.PS2OP || result == Result.PS2REG || result == Result.PS2SPEC)
-						if ((op0 = deOp.decompose(fd, pointer, start, ps)) != null
-								&& (op1 = deOp.decompose(fd, pointer, start + ps, ps)) != null)
+						if ((op0 = p4deOp.decompose(fd, pointer, start, ps)) != null
+								&& (op1 = p4deOp.decompose(fd, pointer, start + ps, ps)) != null)
 							return returnPs2Op(op0, op1);
 						else
 							return mf.apply((start_, r) -> returnPs2Op(amd64.mem(r, start_, ps), amd64.mem(r, start_ + ps, ps)));
@@ -498,7 +500,7 @@ public class P4GenerateCode {
 
 			private CompileOut returnIsOp(Operand op) {
 				if (result == Result.ASSIGN) {
-					var opt = deOp.decomposeFunpMemory(fd, target);
+					var opt = p4deOp.decomposeFunpMemory(fd, target);
 					opt = opt != null ? opt : amd64.mem(mask(op).compileIsReg(target.pointer), target.start, target.size());
 					if (op instanceof OpMem)
 						op = em.mov(rs.mask(opt).get(op.size), op);
@@ -516,8 +518,8 @@ public class P4GenerateCode {
 
 			private CompileOut returnPs2Op(Operand op0, Operand op1) {
 				if (result == Result.ASSIGN) {
-					var opt0 = deOp.decompose(fd, target.pointer, target.start, ps);
-					var opt1 = deOp.decompose(fd, target.pointer, target.start + ps, ps);
+					var opt0 = p4deOp.decompose(fd, target.pointer, target.start, ps);
+					var opt1 = p4deOp.decompose(fd, target.pointer, target.start + ps, ps);
 					if (opt0 == null || opt1 == null) {
 						var r = mask(op0, op1).compileIsReg(target.pointer);
 						opt0 = amd64.mem(r, target.start, ps);
@@ -551,7 +553,7 @@ public class P4GenerateCode {
 				var c1 = new Compile1(rs, fd1);
 				Operand op;
 
-				if (size == is && (op = deOp.decomposeNumber(fd, value)) != null)
+				if (size == is && (op = p4deOp.decomposeNumber(fd, value)) != null)
 					em.emit(Insn.PUSH, op);
 				else {
 					em.addImm(esp, -alignedSize);
@@ -610,8 +612,8 @@ public class P4GenerateCode {
 				if (size != target.size())
 					fail();
 				else if (size % is == 0 && Set.of(2, 3, 4).contains(size / is)) {
-					var opt = deOp.decomposeFunpMemory(fd, target, is);
-					var ops = deOp.decomposeFunpMemory(fd, source, is);
+					var opt = p4deOp.decomposeFunpMemory(fd, target, is);
+					var ops = p4deOp.decomposeFunpMemory(fd, source, is);
 
 					if (opt != null && ops != null)
 						for (var disp = 0; disp < size; disp += is)
@@ -619,8 +621,8 @@ public class P4GenerateCode {
 					else
 						moveBlock.run();
 				} else {
-					var opt = deOp.decomposeFunpMemory(fd, target);
-					var ops = deOp.decomposeFunpMemory(fd, source);
+					var opt = p4deOp.decomposeFunpMemory(fd, target);
+					var ops = p4deOp.decomposeFunpMemory(fd, source);
 
 					if (ops != null)
 						mov(opt != null ? opt : amd64.mem(compileIsReg(target.pointer), target.start, size), ops);
@@ -645,7 +647,7 @@ public class P4GenerateCode {
 				var setInsn = setInsnByOp.get(operator);
 				var setRevInsn = setRevInsnByOp.get(operator);
 				var shInsn = shInsnByOp.get(operator);
-				var op = deOp.decompose(fd, n, 0, is);
+				var op = p4deOp.decompose(fd, n, 0, is);
 				Operand opResult = null;
 
 				if (opResult == null && op != null)
@@ -714,8 +716,8 @@ public class P4GenerateCode {
 			}
 
 			private Pair<Funp, OpReg> compileCommutativeTree(Insn insn, Assoc assoc, Funp lhs, Funp rhs) {
-				var opLhs = deOp.decomposeNumber(fd, lhs);
-				var opRhs = deOp.decomposeNumber(fd, rhs);
+				var opLhs = p4deOp.decomposeNumber(fd, lhs);
+				var opRhs = p4deOp.decomposeNumber(fd, rhs);
 				var opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
 				var opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
 
@@ -888,7 +890,7 @@ public class P4GenerateCode {
 			}
 
 			private OpMem compileFrame(int start, int size) {
-				var op = deOp.decompose(fd, Funp_.framePointer, start, size);
+				var op = p4deOp.decompose(fd, Funp_.framePointer, start, size);
 				return op != null ? op : fail();
 			}
 

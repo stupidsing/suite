@@ -19,13 +19,10 @@ import suite.streamlet.Read;
 
 public class P4Emit {
 
-	private static Amd64 amd64 = Amd64.me;
-	private static int is = Funp_.integerSize;
+	private Amd64 amd64 = Amd64.me;
+	private int is = Funp_.integerSize;
 
-	private Sink<Instruction> emit;
-	private List<Block> blocks = new ArrayList<>();
-
-	public static class Block {
+	public class Block {
 		public final OpImmLabel in;
 		public final List<Instruction> instructions;
 		public final OpImmLabel out;
@@ -37,10 +34,138 @@ public class P4Emit {
 		}
 	}
 
-	public static Block generate(OpImmLabel in, Sink<P4Emit> sink, OpImmLabel out) {
+	public class Emit {
+		private Sink<Instruction> emit;
+		private List<Block> blocks = new ArrayList<>();
+
+		private Emit(Sink<Instruction> emit) {
+			this.emit = emit;
+		}
+
+		public OpReg emitRegInsn(Insn insn, OpReg op0, Operand op1) {
+			if (op1 instanceof OpImm) {
+				var i = ((OpImm) op1).imm;
+				if (insn == Insn.ADD)
+					addImm(op0, i);
+				else if (insn == Insn.AND)
+					andImm(op0, i);
+				else if (insn == Insn.IMUL)
+					imulImm(op0, i);
+				else if (insn == Insn.OR)
+					orImm(op0, i);
+				else if (insn == Insn.SHL)
+					shiftImm(insn, op0, i);
+				else if (insn == Insn.SHR)
+					shiftImm(insn, op0, i);
+				else if (insn == Insn.SUB)
+					addImm(op0, -i);
+				else if (insn == Insn.XOR)
+					xorImm(op0, i);
+				else
+					emit(amd64.instruction(insn, op0, op1));
+			} else
+				emit(amd64.instruction(insn, op0, op1));
+			return op0;
+		}
+
+		public void addImm(Operand op0, long i) {
+			if (i == -1l)
+				emit(amd64.instruction(Insn.DEC, op0));
+			else if (i == 1l)
+				emit(amd64.instruction(Insn.INC, op0));
+			else if (i != 0l)
+				emit(amd64.instruction(Insn.ADD, op0, imm(i)));
+		}
+
+		private void andImm(Operand op0, long i) {
+			if (i != -1l)
+				emit(amd64.instruction(Insn.AND, op0, imm(i)));
+		}
+
+		private void orImm(Operand op0, long i) {
+			if (i != 0l)
+				emit(amd64.instruction(Insn.OR, op0, imm(i)));
+		}
+
+		private void xorImm(Operand op0, long i) {
+			if (i == -1l)
+				emit(amd64.instruction(Insn.NOT, op0));
+			else if (i != 0l)
+				emit(amd64.instruction(Insn.XOR, op0, imm(i)));
+		}
+
+		private void imulImm(OpReg r0, long i) {
+			if (i != 1l)
+				if (Long.bitCount(i) == 1)
+					shiftImm(Insn.SHL, r0, Long.numberOfTrailingZeros(i));
+				else
+					emit(amd64.instruction(Insn.IMUL, r0, r0, imm(i)));
+		}
+
+		public void shiftImm(Insn insn, Operand op0, long z) {
+			if (z != 0l)
+				emit(amd64.instruction(insn, op0, amd64.imm8(z)));
+		}
+
+		public void lea(Operand op0, OpMem op1) {
+			var op = lea(op1);
+			if (op != null)
+				mov(op0, op);
+			else
+				emit(amd64.instruction(Insn.LEA, op0, op1));
+		}
+
+		public Operand lea(OpMem op) {
+			if (op.baseReg < 0 && op.indexReg < 0)
+				return amd64.imm(op.disp.imm, is);
+			else if (op.indexReg < 0 && op.disp.imm == 0)
+				return amd64.reg32[op.baseReg];
+			else
+				return null;
+		}
+
+		public <T extends Operand> T mov(T op0, Operand op1) {
+			if (op0.size != op1.size)
+				fail();
+			else if (op0 != op1)
+				if (op0 instanceof OpReg && op1 instanceof OpImm && ((OpImm) op1).imm == 0 && !(op1 instanceof OpImmLabel))
+					emit(amd64.instruction(Insn.XOR, op0, op0));
+				else
+					emit(amd64.instruction(Insn.MOV, op0, op1));
+			return op0;
+		}
+
+		private Operand imm(long i) {
+			return Byte.MIN_VALUE <= i && i <= Byte.MAX_VALUE ? amd64.imm8(i) : amd64.imm(i, is);
+		}
+
+		public void emit(Insn insn, Operand... ops) {
+			emit(amd64.instruction(insn, ops));
+		}
+
+		public void emit(Instruction instruction) {
+			emit.sink(instruction);
+		}
+
+		public OpImmLabel spawn(Sink<Emit> sink) {
+			return spawn(sink, null);
+		}
+
+		public OpImmLabel spawn(Sink<Emit> sink, OpImmLabel out) {
+			var block = generate(null, sink, out);
+			blocks.add(block);
+			return block.in;
+		}
+
+		public OpImmLabel label() {
+			return P4Emit.this.label();
+		}
+	}
+
+	public Block generate(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
 		var list = new ArrayList<Instruction>();
-		var emit = new P4Emit(list::add);
-		var in_ = in != null ? in : emit.label();
+		var emit = new Emit(list::add);
+		var in_ = in != null ? in : label();
 
 		emit.emit(Insn.LABEL, in_);
 		sink.sink(emit);
@@ -65,125 +190,6 @@ public class P4Emit {
 		}
 
 		return new Block(in_, list, out);
-	}
-
-	private P4Emit(Sink<Instruction> emit) {
-		this.emit = emit;
-	}
-
-	public OpReg emitRegInsn(Insn insn, OpReg op0, Operand op1) {
-		if (op1 instanceof OpImm) {
-			var i = ((OpImm) op1).imm;
-			if (insn == Insn.ADD)
-				addImm(op0, i);
-			else if (insn == Insn.AND)
-				andImm(op0, i);
-			else if (insn == Insn.IMUL)
-				imulImm(op0, i);
-			else if (insn == Insn.OR)
-				orImm(op0, i);
-			else if (insn == Insn.SHL)
-				shiftImm(insn, op0, i);
-			else if (insn == Insn.SHR)
-				shiftImm(insn, op0, i);
-			else if (insn == Insn.SUB)
-				addImm(op0, -i);
-			else if (insn == Insn.XOR)
-				xorImm(op0, i);
-			else
-				emit(amd64.instruction(insn, op0, op1));
-		} else
-			emit(amd64.instruction(insn, op0, op1));
-		return op0;
-	}
-
-	public void addImm(Operand op0, long i) {
-		if (i == -1l)
-			emit(amd64.instruction(Insn.DEC, op0));
-		else if (i == 1l)
-			emit(amd64.instruction(Insn.INC, op0));
-		else if (i != 0l)
-			emit(amd64.instruction(Insn.ADD, op0, imm(i)));
-	}
-
-	private void andImm(Operand op0, long i) {
-		if (i != -1l)
-			emit(amd64.instruction(Insn.AND, op0, imm(i)));
-	}
-
-	private void orImm(Operand op0, long i) {
-		if (i != 0l)
-			emit(amd64.instruction(Insn.OR, op0, imm(i)));
-	}
-
-	private void xorImm(Operand op0, long i) {
-		if (i == -1l)
-			emit(amd64.instruction(Insn.NOT, op0));
-		else if (i != 0l)
-			emit(amd64.instruction(Insn.XOR, op0, imm(i)));
-	}
-
-	private void imulImm(OpReg r0, long i) {
-		if (i != 1l)
-			if (Long.bitCount(i) == 1)
-				shiftImm(Insn.SHL, r0, Long.numberOfTrailingZeros(i));
-			else
-				emit(amd64.instruction(Insn.IMUL, r0, r0, imm(i)));
-	}
-
-	public void shiftImm(Insn insn, Operand op0, long z) {
-		if (z != 0l)
-			emit(amd64.instruction(insn, op0, amd64.imm8(z)));
-	}
-
-	public void lea(Operand op0, OpMem op1) {
-		var op = lea(op1);
-		if (op != null)
-			mov(op0, op);
-		else
-			emit(amd64.instruction(Insn.LEA, op0, op1));
-	}
-
-	public Operand lea(OpMem op) {
-		if (op.baseReg < 0 && op.indexReg < 0)
-			return amd64.imm(op.disp.imm, is);
-		else if (op.indexReg < 0 && op.disp.imm == 0)
-			return amd64.reg32[op.baseReg];
-		else
-			return null;
-	}
-
-	public <T extends Operand> T mov(T op0, Operand op1) {
-		if (op0.size != op1.size)
-			fail();
-		else if (op0 != op1)
-			if (op0 instanceof OpReg && op1 instanceof OpImm && ((OpImm) op1).imm == 0 && !(op1 instanceof OpImmLabel))
-				emit(amd64.instruction(Insn.XOR, op0, op0));
-			else
-				emit(amd64.instruction(Insn.MOV, op0, op1));
-		return op0;
-	}
-
-	private Operand imm(long i) {
-		return Byte.MIN_VALUE <= i && i <= Byte.MAX_VALUE ? amd64.imm8(i) : amd64.imm(i, is);
-	}
-
-	public void emit(Insn insn, Operand... ops) {
-		emit(amd64.instruction(insn, ops));
-	}
-
-	public void emit(Instruction instruction) {
-		emit.sink(instruction);
-	}
-
-	public OpImmLabel spawn(Sink<P4Emit> sink) {
-		return spawn(sink, null);
-	}
-
-	public OpImmLabel spawn(Sink<P4Emit> sink, OpImmLabel out) {
-		var block = generate(null, sink, out);
-		blocks.add(block);
-		return block.in;
 	}
 
 	public OpImmLabel label() {
