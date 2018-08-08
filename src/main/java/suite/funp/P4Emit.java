@@ -37,10 +37,12 @@ public class P4Emit {
 	}
 
 	public class Emit {
-		private Sink<Instruction> emit;
+		private OpImmLabel in;
+		private List<Instruction> instructions;
 
-		private Emit(Sink<Instruction> emit) {
-			this.emit = emit;
+		private Emit(OpImmLabel in, List<Instruction> instructions) {
+			this.in = in;
+			this.instructions = instructions;
 		}
 
 		public OpReg emitRegInsn(Insn insn, OpReg op0, Operand op1) {
@@ -145,7 +147,7 @@ public class P4Emit {
 		}
 
 		public void emit(Instruction instruction) {
-			emit.sink(instruction);
+			instructions.add(instruction);
 		}
 
 		public OpImmLabel spawn(Sink<Emit> sink) {
@@ -153,7 +155,13 @@ public class P4Emit {
 		}
 
 		public OpImmLabel spawn(Sink<Emit> sink, OpImmLabel out) {
-			return P4Emit.this.spawn(null, sink, out);
+			return P4Emit.this.spawn(label(), sink, out);
+		}
+
+		public void jumpLabel(OpImmLabel target, OpImmLabel label) {
+			blocks.add(new Block(in, instructions, target));
+			in = label();
+			instructions = new ArrayList<>();
 		}
 
 		public OpImmLabel label() {
@@ -172,6 +180,9 @@ public class P4Emit {
 
 			while (label != null)
 				if (set.add(label) && (b = blockByLabel.get(label)) != null) {
+					var in1 = b.in;
+					if (in1 != null)
+						list.add(amd64.instruction(Insn.LABEL, in1));
 					list.addAll(b.instructions);
 					label = b.out;
 				} else {
@@ -189,11 +200,10 @@ public class P4Emit {
 	}
 
 	public OpImmLabel spawn(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
-		var in_ = in != null ? in : label();
-		var list = new ArrayList<>(List.of(amd64.instruction(Insn.LABEL, in_)));
-		blocks.add(new Block(in_, list, out));
-		sink.sink(new Emit(list::add));
-		return in_;
+		var list = new ArrayList<Instruction>();
+		blocks.add(new Block(in, list, out));
+		sink.sink(new Emit(in, list));
+		return in;
 	}
 
 	public OpImmLabel label() {

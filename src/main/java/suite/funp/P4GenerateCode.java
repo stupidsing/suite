@@ -149,7 +149,7 @@ public class P4GenerateCode {
 	public List<Instruction> compile0(Funp funp) {
 		var p = new Amd64Parse();
 
-		return p4emit.generate(null, emit -> {
+		return p4emit.generate(p4emit.label(), emit -> {
 			labelPointer = emit.spawn(em1 -> em1.emit(Insn.D, amd64.imm32(0l)));
 			freeChainPointer = emit.spawn(em1 -> em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l)));
 
