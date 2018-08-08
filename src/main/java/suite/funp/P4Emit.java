@@ -183,22 +183,22 @@ public class P4Emit {
 		var blockByLabel = Read.from(blocks).toMap(block -> block.in);
 		var set = new HashSet<OpImmLabel>();
 
-		Sink<OpImmLabel> gen = label -> {
-			Block b;
-
-			while (label != null)
-				if (set.add(label) && (b = blockByLabel.get(label)) != null) {
+		var gen = new Object() {
+			public void sink(OpImmLabel label, boolean jump) {
+				var b = blockByLabel.get(label);
+				if (set.add(label) && b != null) {
+					var out = b.out;
 					list.add(amd64.instruction(Insn.LABEL, b.in));
 					list.addAll(b.instructions);
-					label = b.out;
-				} else {
+					if (out != null)
+						sink(out, true);
+				} else if (jump)
 					list.add(amd64.instruction(Insn.JMP, label));
-					label = null;
-				}
+			}
 		};
 
-		gen.sink(start);
-		blocks.forEach(block -> gen.sink(block.in));
+		gen.sink(start, true);
+		blocks.forEach(block -> gen.sink(block.in, false));
 		return list;
 	}
 
