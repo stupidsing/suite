@@ -161,7 +161,7 @@ public class P4Emit {
 		}
 	}
 
-	public ArrayList<Instruction> generate(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
+	public List<Instruction> generate(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
 		var list = new ArrayList<Instruction>();
 		var start = spawn(in, sink, out);
 		var blockByLabel = Read.from(blocks).toMap(block -> block.in);
