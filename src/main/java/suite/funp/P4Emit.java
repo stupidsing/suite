@@ -22,6 +22,8 @@ public class P4Emit {
 	private Amd64 amd64 = Amd64.me;
 	private int is = Funp_.integerSize;
 
+	private List<Block> blocks = new ArrayList<>();
+
 	public class Block {
 		public final OpImmLabel in;
 		public final List<Instruction> instructions;
@@ -36,7 +38,6 @@ public class P4Emit {
 
 	public class Emit {
 		private Sink<Instruction> emit;
-		private List<Block> blocks = new ArrayList<>();
 
 		private Emit(Sink<Instruction> emit) {
 			this.emit = emit;
@@ -152,9 +153,7 @@ public class P4Emit {
 		}
 
 		public OpImmLabel spawn(Sink<Emit> sink, OpImmLabel out) {
-			var block = generate(null, sink, out);
-			blocks.add(block);
-			return block.in;
+			return P4Emit.this.spawn(null, sink, out);
 		}
 
 		public OpImmLabel label() {
@@ -162,19 +161,14 @@ public class P4Emit {
 		}
 	}
 
-	public Block generate(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
+	public ArrayList<Instruction> generate(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
 		var list = new ArrayList<Instruction>();
-		var emit = new Emit(list::add);
-		var in_ = in != null ? in : label();
+		list.add(amd64.instruction(Insn.JMP, spawn(in, sink, out)));
 
-		emit.emit(Insn.LABEL, in_);
-		sink.sink(emit);
-
-		var blocks_ = emit.blocks;
-		var blockByLabel = Read.from(blocks_).toMap(block -> block.in);
+		var blockByLabel = Read.from(blocks).toMap(block -> block.in);
 		var set = new HashSet<OpImmLabel>();
 
-		for (var block : blocks_) {
+		for (var block : blocks) {
 			var label = block.in;
 			Block b;
 
@@ -189,7 +183,17 @@ public class P4Emit {
 				}
 		}
 
-		return new Block(in_, list, out);
+		return list;
+	}
+
+	public OpImmLabel spawn(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
+		var in_ = in != null ? in : label();
+		var list = new ArrayList<>(List.of(amd64.instruction(Insn.LABEL, in_)));
+
+		sink.sink(new Emit(list::add));
+
+		blocks.add(new Block(in_, list, out));
+		return in_;
 	}
 
 	public OpImmLabel label() {

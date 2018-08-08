@@ -175,7 +175,7 @@ public class P4GenerateCode {
 			new Compile0(Result.ISSPEC, emit, null, ebx, null).new Compile1(registerSet, 0).compile(funp);
 			emit.mov(eax, amd64.imm(1, is));
 			emit.emit(Insn.INT, amd64.imm8(-128));
-		}, null).instructions;
+		}, null);
 	}
 
 	public Bytes compile1(int offset, List<Instruction> instructions, boolean dump) {
