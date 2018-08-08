@@ -282,15 +282,13 @@ public class P4GenerateCode {
 
 					if ((r = new P4JumpIf(compileCmpJmp(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
 						;
-					else if ((r = new P4JumpIf(compileCmpJmp(contLabel)).new JumpIf(while_).jxxIf()) != null && r.source()) {
-						em.emit(Insn.JMP, exitLabel);
-						em.emit(Insn.LABEL, contLabel);
-					} else
+					else if ((r = new P4JumpIf(compileCmpJmp(contLabel)).new JumpIf(while_).jxxIf()) != null && r.source())
+						em.jumpLabel(exitLabel, contLabel);
+					else
 						compileJumpZero(while_, exitLabel);
 
 					compileIsOp(do_);
-					em.emit(Insn.JMP, loopLabel);
-					em.emit(Insn.LABEL, exitLabel);
+					em.jumpLabel(loopLabel, exitLabel);
 					return compile(expr);
 				})).applyIf(FunpError.class, f -> {
 					em.emit(Insn.HLT);
@@ -354,8 +352,7 @@ public class P4GenerateCode {
 
 					Sink2<Funp, Funp> thenElse = (condt, condf) -> {
 						compile0.sink(condt);
-						em.emit(Insn.JMP, endLabel);
-						em.emit(Insn.LABEL, condLabel);
+						em.jumpLabel(endLabel, condLabel);
 						compile1.sink(condf);
 						em.emit(Insn.LABEL, endLabel);
 					};
@@ -939,8 +936,6 @@ public class P4GenerateCode {
 						em.emit(Insn.JNE, neqLabel);
 					}
 					em.jumpLabel(neqLabel, endLabel);
-					// em.emit(Insn.JMP, neqLabel);
-					// em.emit(Insn.LABEL, endLabel);
 				}, ecx, esi, edi);
 				return opResult;
 			}
