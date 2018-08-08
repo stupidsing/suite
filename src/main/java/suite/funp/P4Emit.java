@@ -45,7 +45,7 @@ public class P4Emit {
 		emit.emit(Insn.LABEL, in_);
 		sink.sink(emit);
 
-		List<Block> blocks_ = emit.blocks;
+		var blocks_ = emit.blocks;
 		var blockByLabel = Read.from(blocks_).toMap(block -> block.in);
 		var set = new HashSet<OpImmLabel>();
 
