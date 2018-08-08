@@ -158,6 +158,10 @@ public class P4Emit {
 			return P4Emit.this.spawn(label(), sink, out);
 		}
 
+		public void label(OpImmLabel label) {
+			jumpLabel(label, label);
+		}
+
 		public void jumpLabel(OpImmLabel target, OpImmLabel label) {
 			blocks.add(new Block(in, instructions, target));
 			in = label;

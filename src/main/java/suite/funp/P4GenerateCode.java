@@ -277,7 +277,7 @@ public class P4GenerateCode {
 					var contLabel = em.label();
 					var exitLabel = em.label();
 
-					em.emit(Insn.LABEL, loopLabel);
+					em.label(loopLabel);
 					Source<Boolean> r;
 
 					if ((r = new P4JumpIf(compileCmpJmp(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
@@ -310,7 +310,7 @@ public class P4GenerateCode {
 						em.emit(Insn.OR, ra, ra);
 						em.emit(Insn.JZ, labelAlloc);
 						mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
-						em.emit(Insn.LABEL, labelEnd);
+						em.label(labelEnd);
 						return returnIsOp(ra);
 					});
 				})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
@@ -354,7 +354,7 @@ public class P4GenerateCode {
 						compile0.sink(condt);
 						em.jumpLabel(endLabel, condLabel);
 						compile1.sink(condf);
-						em.emit(Insn.LABEL, endLabel);
+						em.label(endLabel);
 					};
 
 					var jumpIf = new P4JumpIf(compileCmpJmp(condLabel)).new JumpIf(if_);
