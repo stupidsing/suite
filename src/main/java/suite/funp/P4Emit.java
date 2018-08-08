@@ -171,10 +171,6 @@ public class P4Emit {
 		public OpImmLabel label() {
 			return P4Emit.this.label();
 		}
-
-		public Block block(OpImmLabel out) {
-			return new Block(in, instructions, out);
-		}
 	}
 
 	public List<Instruction> generate(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
@@ -206,7 +202,7 @@ public class P4Emit {
 		var list = new ArrayList<Instruction>();
 		var em = new Emit(in, list);
 		sink.sink(em);
-		blocks.add(em.block(out));
+		blocks.add(new Block(em.in, em.instructions, out));
 		return in;
 	}
 
