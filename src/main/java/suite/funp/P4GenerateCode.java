@@ -938,8 +938,9 @@ public class P4GenerateCode {
 						em.emit(Insn.CMPSB);
 						em.emit(Insn.JNE, neqLabel);
 					}
-					em.emit(Insn.JMP, neqLabel);
-					em.emit(Insn.LABEL, endLabel);
+					em.jumpLabel(neqLabel, endLabel);
+					// em.emit(Insn.JMP, neqLabel);
+					// em.emit(Insn.LABEL, endLabel);
 				}, ecx, esi, edi);
 				return opResult;
 			}

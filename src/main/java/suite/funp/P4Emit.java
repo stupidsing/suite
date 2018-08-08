@@ -160,12 +160,16 @@ public class P4Emit {
 
 		public void jumpLabel(OpImmLabel target, OpImmLabel label) {
 			blocks.add(new Block(in, instructions, target));
-			in = label();
+			in = label;
 			instructions = new ArrayList<>();
 		}
 
 		public OpImmLabel label() {
 			return P4Emit.this.label();
+		}
+
+		public Block block(OpImmLabel out) {
+			return new Block(in, instructions, out);
 		}
 	}
 
@@ -201,8 +205,9 @@ public class P4Emit {
 
 	public OpImmLabel spawn(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
 		var list = new ArrayList<Instruction>();
-		blocks.add(new Block(in, list, out));
-		sink.sink(new Emit(in, list));
+		var em = new Emit(in, list);
+		sink.sink(em);
+		blocks.add(em.block(out));
 		return in;
 	}
 
