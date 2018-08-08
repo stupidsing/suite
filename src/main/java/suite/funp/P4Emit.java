@@ -38,11 +38,10 @@ public class P4Emit {
 
 	public class Emit {
 		private OpImmLabel in;
-		private List<Instruction> instructions;
+		private List<Instruction> instructions = new ArrayList<>();
 
-		private Emit(OpImmLabel in, List<Instruction> instructions) {
+		private Emit(OpImmLabel in) {
 			this.in = in;
-			this.instructions = instructions;
 		}
 
 		public OpReg emitRegInsn(Insn insn, OpReg op0, Operand op1) {
@@ -199,8 +198,7 @@ public class P4Emit {
 	}
 
 	public OpImmLabel spawn(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
-		var list = new ArrayList<Instruction>();
-		var em = new Emit(in, list);
+		var em = new Emit(in);
 		sink.sink(em);
 		blocks.add(new Block(em.in, em.instructions, out));
 		return in;
