@@ -163,12 +163,11 @@ public class P4Emit {
 
 	public ArrayList<Instruction> generate(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
 		var list = new ArrayList<Instruction>();
-		list.add(amd64.instruction(Insn.JMP, spawn(in, sink, out)));
-
+		var start = spawn(in, sink, out);
 		var blockByLabel = Read.from(blocks).toMap(block -> block.in);
 		var set = new HashSet<OpImmLabel>();
 
-		for (var block : blocks) {
+		Sink<Block> gen = block -> {
 			var label = block.in;
 			Block b;
 
@@ -181,7 +180,12 @@ public class P4Emit {
 					list.add(amd64.instruction(Insn.JMP, label));
 					label = null;
 				}
-		}
+		};
+
+		gen.sink(blockByLabel.get(start));
+
+		for (var block : blocks)
+			gen.sink(block);
 
 		return list;
 	}
@@ -189,10 +193,8 @@ public class P4Emit {
 	public OpImmLabel spawn(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
 		var in_ = in != null ? in : label();
 		var list = new ArrayList<>(List.of(amd64.instruction(Insn.LABEL, in_)));
-
-		sink.sink(new Emit(list::add));
-
 		blocks.add(new Block(in_, list, out));
+		sink.sink(new Emit(list::add));
 		return in_;
 	}
 
