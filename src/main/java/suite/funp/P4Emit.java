@@ -173,8 +173,7 @@ public class P4Emit {
 
 			while (label != null)
 				if (set.add(label) && (b = blockByLabel.get(label)) != null) {
-					for (var instruction : b.instructions)
-						list.add(instruction);
+					list.addAll(b.instructions);
 					label = b.out;
 				} else {
 					list.add(amd64.instruction(Insn.JMP, label));
