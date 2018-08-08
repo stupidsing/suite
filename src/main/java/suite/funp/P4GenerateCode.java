@@ -921,7 +921,9 @@ public class P4GenerateCode {
 			private OpReg compileCompare(OpReg r0, int start0, OpReg r1, int start1, int size, boolean isEq) {
 				var opResult = isOutSpec ? pop0 : rs.mask(ecx, esi, edi).get(Funp_.booleanSize);
 				saveRegs(c1 -> {
-					var neqLabel = em.label();
+					var endLabel = em.label();
+					var neqLabel = em.spawn(em1 -> em1.emit(Insn.SETE, opResult), endLabel);
+
 					var r = rs.mask(r0, edi).get(esi);
 					em.lea(r, amd64.mem(r1, start1, is));
 					em.lea(edi, amd64.mem(r0, start0, is));
@@ -934,8 +936,8 @@ public class P4GenerateCode {
 						em.emit(Insn.CMPSB);
 						em.emit(Insn.JNE, neqLabel);
 					}
-					em.emit(Insn.LABEL, neqLabel);
-					em.emit(Insn.SETE, opResult);
+					em.emit(Insn.JMP, neqLabel);
+					em.emit(Insn.LABEL, endLabel);
 				}, ecx, esi, edi);
 				return opResult;
 			}
