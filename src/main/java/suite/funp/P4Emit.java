@@ -182,9 +182,9 @@ public class P4Emit {
 			public void sink(OpImmLabel label, boolean jump) {
 				var b = blockByLabel.get(label);
 				if (set.add(label) && b != null) {
-					var out = b.out;
 					list.add(amd64.instruction(Insn.LABEL, b.in));
 					list.addAll(b.instructions);
+					var out = b.out;
 					if (out != null)
 						sink(out, true);
 				} else if (jump)
