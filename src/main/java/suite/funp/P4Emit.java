@@ -5,6 +5,7 @@ import static suite.util.Friends.fail;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Predicate;
 
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
@@ -173,15 +174,27 @@ public class P4Emit {
 	}
 
 	public List<Instruction> generate(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
+		Predicate<Block> isForward = b -> b.instructions.isEmpty() && b.out != null;
+
 		var list = new ArrayList<Instruction>();
 		var start = spawn(in, sink, out);
-		var blockByLabel = Read.from(blocks).toMap(block -> block.in);
+		var blocks_ = Read.from(blocks);
+		var blockByLabel = blocks_.toMap(block -> block.in);
+		var ids = blocks_.filter(isForward).toMap(b -> b.in, b -> b.out);
 		var set = new HashSet<OpImmLabel>();
 
 		var gen = new Object() {
 			public void sink(OpImmLabel label, boolean jump) {
+				OpImmLabel label_;
+
+				while ((label_ = ids.get(label)) != null)
+					label = label_;
+
 				var b = blockByLabel.get(label);
-				if (set.add(label) && b != null) {
+
+				if (isForward.test(b))
+					;
+				else if (set.add(label) && b != null) {
 					list.add(amd64.instruction(Insn.LABEL, b.in));
 					list.addAll(b.instructions);
 					var out = b.out;
