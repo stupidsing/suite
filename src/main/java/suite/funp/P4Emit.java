@@ -194,7 +194,7 @@ public class P4Emit {
 
 				if (isForward.test(b))
 					;
-				else if (set.add(label) && b != null) {
+				else if (set.add(label)) {
 					list.add(amd64.instruction(Insn.LABEL, b.in));
 					list.addAll(b.instructions);
 					var out = b.out;
