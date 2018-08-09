@@ -180,11 +180,26 @@ public class P4Emit {
 		var start = spawn(in, sink, out);
 		var blocks_ = Read.from(blocks);
 		var blockByLabel = blocks_.toMap(block -> block.in);
+		var inByOut = blocks_.filter(b -> b.out != null).toMultimap(b -> b.out, b -> b.in);
 		var ids = blocks_.filter(isForward).toMap(b -> b.in, b -> b.out);
 		var set = new HashSet<OpImmLabel>();
 
 		var gen = new Object() {
 			private void g(OpImmLabel label, boolean jump) {
+				for (var label_ : inByOut.get(label))
+					if (!jump && label != label_ && !set.contains(label_))
+						g(label_, jump);
+				g_(label, jump);
+			}
+
+			private void g_(OpImmLabel label, boolean jump) {
+				if (set.add(label))
+					g_(label);
+				else if (jump)
+					list.add(amd64.instruction(Insn.JMP, label));
+			}
+
+			private void g_(OpImmLabel label) {
 				OpImmLabel label_;
 
 				while ((label_ = ids.get(label)) != null)
@@ -192,21 +207,19 @@ public class P4Emit {
 
 				var b = blockByLabel.get(label);
 
-				if (isForward.test(b))
-					;
-				else if (set.add(label)) {
+				if (!isForward.test(b)) {
 					list.add(amd64.instruction(Insn.LABEL, b.in));
 					list.addAll(b.instructions);
 					var out = b.out;
 					if (out != null)
-						g(out, true);
-				} else if (jump)
-					list.add(amd64.instruction(Insn.JMP, label));
+						g_(out, true);
+				}
 			}
 		};
 
 		gen.g(start, true);
 		blocks.forEach(block -> gen.g(block.in, false));
+
 		return list;
 	}
 
