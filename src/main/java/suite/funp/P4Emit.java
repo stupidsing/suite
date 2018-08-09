@@ -184,7 +184,7 @@ public class P4Emit {
 		var set = new HashSet<OpImmLabel>();
 
 		var gen = new Object() {
-			public void sink(OpImmLabel label, boolean jump) {
+			public void g(OpImmLabel label, boolean jump) {
 				OpImmLabel label_;
 
 				while ((label_ = ids.get(label)) != null)
@@ -199,14 +199,14 @@ public class P4Emit {
 					list.addAll(b.instructions);
 					var out = b.out;
 					if (out != null)
-						sink(out, true);
+						g(out, true);
 				} else if (jump)
 					list.add(amd64.instruction(Insn.JMP, label));
 			}
 		};
 
-		gen.sink(start, true);
-		blocks.forEach(block -> gen.sink(block.in, false));
+		gen.g(start, true);
+		blocks.forEach(block -> gen.g(block.in, false));
 		return list;
 	}
 
