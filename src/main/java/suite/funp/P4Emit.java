@@ -184,7 +184,7 @@ public class P4Emit {
 		var set = new HashSet<OpImmLabel>();
 
 		var gen = new Object() {
-			public void g(OpImmLabel label, boolean jump) {
+			private void g(OpImmLabel label, boolean jump) {
 				OpImmLabel label_;
 
 				while ((label_ = ids.get(label)) != null)
