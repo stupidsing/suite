@@ -117,7 +117,7 @@ public class P2InferType {
 
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
-	private int maxRegAlloc = 2;
+	private int maxRegAlloc = 3;
 
 	private Node typeBoolean = Atom.of("BOOLEAN");
 	private Node typeByte = Atom.of("BYTE");
