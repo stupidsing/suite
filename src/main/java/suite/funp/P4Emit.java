@@ -26,9 +26,9 @@ public class P4Emit {
 	private List<Block> blocks = new ArrayList<>();
 
 	public class Block {
-		public final OpImmLabel in;
-		public final List<Instruction> instructions;
-		public final OpImmLabel out;
+		public OpImmLabel in;
+		public List<Instruction> instructions;
+		public OpImmLabel out;
 
 		private Block(OpImmLabel in, List<Instruction> instructions, OpImmLabel out) {
 			this.in = in;
@@ -150,15 +150,11 @@ public class P4Emit {
 			instructions.add(instruction);
 		}
 
-		public OpImmLabel spawn(Sink<Emit> sink) {
-			return spawn(sink, null);
+		public Block spawn(Sink<Emit> sink) {
+			return spawn(label(), sink, null);
 		}
 
-		public OpImmLabel spawn(Sink<Emit> sink, OpImmLabel out) {
-			return spawn(label(), sink, out);
-		}
-
-		public OpImmLabel spawn(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
+		public Block spawn(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
 			return P4Emit.this.spawn(in, sink, out);
 		}
 
@@ -180,8 +176,9 @@ public class P4Emit {
 	public List<Instruction> generate(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
 		Predicate<Block> isForward = b -> b.instructions.isEmpty() && b.out != null;
 
+		spawn(in, sink, out);
+
 		var list = new ArrayList<Instruction>();
-		var start = spawn(in, sink, out);
 		var blocks_ = Read.from(blocks);
 		var blockByLabel = blocks_.toMap(block -> block.in);
 		var inByOut = blocks_.filter(b -> b.out != null).toMultimap(b -> b.out, b -> b.in);
@@ -221,17 +218,19 @@ public class P4Emit {
 			}
 		};
 
-		gen.g(start, true);
+		gen.g(in, true);
 		blocks.forEach(block -> gen.g(block.in, false));
 
 		return list;
 	}
 
-	public OpImmLabel spawn(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
+	public Block spawn(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
 		var em = new Emit(in);
 		sink.sink(em);
-		blocks.add(new Block(em.in, em.instructions, out));
-		return in;
+
+		var block = new Block(em.in, em.instructions, out);
+		blocks.add(block);
+		return block;
 	}
 
 	public OpImmLabel label() {

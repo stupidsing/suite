@@ -150,9 +150,9 @@ public class P4GenerateCode {
 	public List<Instruction> compile0(Funp funp) {
 		var p = new Amd64Parse();
 
-		return p4emit.generate(p4emit.label(), emit -> {
-			labelPointer = emit.spawn(em1 -> em1.emit(Insn.D, amd64.imm32(0l)));
-			freeChainPointer = emit.spawn(em1 -> em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l)));
+		return p4emit.generate(p4emit.label(), em -> {
+			labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm32(0l))).in;
+			freeChainPointer = em.spawn(em1 -> em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l))).in;
 
 			for (var i : Arrays.asList( //
 					"SUB (ESP, +x18)", //
@@ -166,16 +166,16 @@ public class P4GenerateCode {
 					"MOV (EBX, ESP)", //
 					"INT (+x80)", //
 					"ADD (ESP, +x18)"))
-				emit.emit(p.parse(Suite.parse(i)));
+				em.emit(p.parse(Suite.parse(i)));
 
-			emit.mov(amd64.mem(labelPointer, ps), eax);
+			em.mov(amd64.mem(labelPointer, ps), eax);
 
 			if (isUseEbp)
-				emit.mov(ebp, esp);
-			emit.emit(Insn.CLD);
-			new Compile0(Result.ISSPEC, emit, null, ebx, null, registerSet, 0).compile(funp);
-			emit.mov(eax, amd64.imm(1, is));
-			emit.emit(Insn.INT, amd64.imm8(-128));
+				em.mov(ebp, esp);
+			em.emit(Insn.CLD);
+			new Compile0(Result.ISSPEC, em, null, ebx, null, registerSet, 0).compile(funp);
+			em.mov(eax, amd64.imm(1, is));
+			em.emit(Insn.INT, amd64.imm8(-128));
 		}, null);
 	}
 
@@ -292,17 +292,17 @@ public class P4GenerateCode {
 					var ra = isOutSpec ? pop0 : c1.rs.get(ps);
 					var labelEnd = em.label();
 
-					var labelAlloc = em.spawn(em1 -> {
+					var labelAlloc = spawn(c2 -> {
 						var pointer = amd64.mem(labelPointer, ps);
-						em1.mov(ra, pointer);
-						em1.addImm(pointer, allocSize);
+						c2.em.mov(ra, pointer);
+						c2.em.addImm(pointer, allocSize);
 					}, labelEnd);
 
-					em.mov(ra, fcp);
-					em.emit(Insn.OR, ra, ra);
-					em.emit(Insn.JZ, labelAlloc);
-					mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
-					em.label(labelEnd);
+					c1.em.mov(ra, fcp);
+					c1.em.emit(Insn.OR, ra, ra);
+					c1.em.emit(Insn.JZ, labelAlloc);
+					c1.mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
+					c1.em.label(labelEnd);
 					return returnIsOp(ra);
 				});
 			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
@@ -907,9 +907,10 @@ public class P4GenerateCode {
 
 		private OpReg compileCompare(OpReg r0, int start0, OpReg r1, int start1, int size, boolean isEq) {
 			var opResult = isOutSpec ? pop0 : rs.mask(ecx, esi, edi).get(Funp_.booleanSize);
+			var endLabel = em.label();
+			var neqLabel = spawn(c1 -> c1.em.emit(Insn.SETE, opResult), endLabel);
+
 			saveRegs(c1 -> {
-				var endLabel = em.label();
-				var neqLabel = em.spawn(em1 -> em1.emit(Insn.SETE, opResult), endLabel);
 
 				var r = rs.mask(r0, edi).get(esi);
 				em.lea(r, amd64.mem(r1, start1, is));
@@ -984,11 +985,16 @@ public class P4GenerateCode {
 		}
 
 		private OpImmLabel spawn(Sink<Compile0> sink) {
-			return spawn(em.label(), sink, null);
+			return spawn(sink, null);
+		}
+
+		private OpImmLabel spawn(Sink<Compile0> sink, OpImmLabel out) {
+			return spawn(em.label(), sink, out);
 		}
 
 		private OpImmLabel spawn(OpImmLabel in, Sink<Compile0> sink, OpImmLabel out) {
-			return em.spawn(in, em1 -> sink.sink(nc(em1)), out);
+			em.spawn(in, em1 -> sink.sink(nc(em1)), out);
+			return in;
 		}
 
 		private Compile0 nc(Result result) {
