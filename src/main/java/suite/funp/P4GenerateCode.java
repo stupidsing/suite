@@ -816,7 +816,7 @@ public class P4GenerateCode {
 		}
 
 		private Operand compileBlock(Sink<Compile0> sink) {
-			return em.spawn(em1 -> sink.sink(nc(result, em1, target, pop0, pop1)));
+			return em.spawn(em1 -> sink.sink(nc(em1)));
 		}
 
 		private OpReg compileRegInstruction(Insn insn, OpReg op0, Operand op1, Funp f1) {
@@ -887,11 +887,11 @@ public class P4GenerateCode {
 		}
 
 		private Operand compileIsOp(Funp n) {
-			return nc(Result.ISOP, em, rs, fd).compile(n).op0;
+			return nc(Result.ISOP).compile(n).op0;
 		}
 
 		private OpReg compileIsReg(Funp n) {
-			return (OpReg) nc(Result.ISREG, em, rs, fd).compile(n).op0;
+			return (OpReg) nc(Result.ISREG).compile(n).op0;
 		}
 
 		private OpReg compileIsSpec(Funp n, OpReg op) {
@@ -900,7 +900,7 @@ public class P4GenerateCode {
 		}
 
 		private CompileOut compilePs2Op(Funp n) {
-			return nc(Result.PS2OP, em, rs, fd).compile(n);
+			return nc(Result.PS2OP).compile(n);
 		}
 
 		private CompileOut compilePs2Spec(Funp n, OpReg op0, OpReg op1) {
@@ -986,11 +986,11 @@ public class P4GenerateCode {
 			return nc(rs.mask(ops), fd);
 		}
 
-		private Compile0 nc(Result result, Emit emit, RegisterSet rs, int fd) {
-			return new Compile0(result, emit, target, pop0, pop1, rs, fd);
+		private Compile0 nc(Result result) {
+			return new Compile0(result, em, target, pop0, pop1, rs, fd);
 		}
 
-		private Compile0 nc(Result result, Emit emit, FunpMemory target, OpReg pop0, OpReg pop1) {
+		private Compile0 nc(Emit emit) {
 			return new Compile0(result, emit, target, pop0, pop1, rs, fd);
 		}
 
