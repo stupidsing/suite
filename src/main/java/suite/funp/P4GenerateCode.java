@@ -18,6 +18,7 @@ import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
+import suite.assembler.Amd64.OpImmLabel;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
@@ -344,8 +345,8 @@ public class P4GenerateCode {
 
 				Sink2<Funp, Funp> thenElse = (condt, condf) -> {
 					em.jumpLabel(stayLabel, endLabel);
-					em.spawn(stayLabel, em1 -> compile0.sink2(nc(em1), condt), endLabel);
-					em.spawn(jumpLabel, em1 -> compile1.sink2(nc(em1), condf), endLabel);
+					spawn(stayLabel, c1 -> compile0.sink2(c1, condt), endLabel);
+					spawn(jumpLabel, c1 -> compile1.sink2(c1, condf), endLabel);
 				};
 
 				var jumpIf = new P4JumpIf(compileCmpJmp(jumpLabel)).new JumpIf(if_);
@@ -740,12 +741,12 @@ public class P4GenerateCode {
 		}
 
 		private Operand compileRoutine(Sink<Compile0> sink) {
-			return compileBlock(c -> {
-				var em = c.em;
+			return spawn(c1 -> {
+				var em = c1.em;
 				em.emit(Insn.PUSH, ebp);
 				if (isUseEbp)
 					em.mov(ebp, esp);
-				sink.sink(c.nc(registerSet, 0));
+				sink.sink(c1.nc(registerSet, 0));
 				em.emit(Insn.POP, ebp);
 				em.emit(Insn.RET);
 			});
@@ -802,7 +803,7 @@ public class P4GenerateCode {
 			var ok = o.fill(size, node);
 			o.flush();
 
-			var block = compileBlock(c -> {
+			var block = spawn(c -> {
 				if (ok)
 					for (var instruction : o.instructions)
 						c.em.emit(instruction);
@@ -813,10 +814,6 @@ public class P4GenerateCode {
 			address.update(block);
 
 			return ok;
-		}
-
-		private Operand compileBlock(Sink<Compile0> sink) {
-			return em.spawn(em1 -> sink.sink(nc(em1)));
 		}
 
 		private OpReg compileRegInstruction(Insn insn, OpReg op0, Operand op1, Funp f1) {
@@ -984,6 +981,14 @@ public class P4GenerateCode {
 
 		private Compile0 mask(Operand... ops) {
 			return nc(rs.mask(ops), fd);
+		}
+
+		private OpImmLabel spawn(Sink<Compile0> sink) {
+			return spawn(em.label(), sink, null);
+		}
+
+		private OpImmLabel spawn(OpImmLabel in, Sink<Compile0> sink, OpImmLabel out) {
+			return em.spawn(in, em1 -> sink.sink(nc(em1)), out);
 		}
 
 		private Compile0 nc(Result result) {
