@@ -883,7 +883,7 @@ public class P4GenerateCode {
 		}
 
 		private void compileAssign(Funp n, FunpMemory target) {
-			new Compile0(Result.ASSIGN, em, target, null, null, rs, fd).compile(n);
+			nc(Result.ASSIGN, target, null, null).compile(n);
 		}
 
 		private Operand compileIsOp(Funp n) {
@@ -895,7 +895,7 @@ public class P4GenerateCode {
 		}
 
 		private OpReg compileIsSpec(Funp n, OpReg op) {
-			new Compile0(Result.ISSPEC, em, null, op, null, rs, fd).compile(n);
+			nc(Result.ISSPEC, null, op, null).compile(n);
 			return op;
 		}
 
@@ -904,7 +904,7 @@ public class P4GenerateCode {
 		}
 
 		private CompileOut compilePs2Spec(Funp n, OpReg op0, OpReg op1) {
-			new Compile0(Result.PS2SPEC, em, null, op0, op1, rs, fd).compile(n);
+			nc(Result.PS2SPEC, null, op0, op1).compile(n);
 			return new CompileOut(pop0, pop1);
 		}
 
@@ -987,6 +987,10 @@ public class P4GenerateCode {
 		}
 
 		private Compile0 nc(Result result) {
+			return new Compile0(result, em, target, pop0, pop1, rs, fd);
+		}
+
+		private Compile0 nc(Result result, FunpMemory target, OpReg pop0, OpReg pop1) {
 			return new Compile0(result, em, target, pop0, pop1, rs, fd);
 		}
 
