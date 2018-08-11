@@ -311,53 +311,53 @@ public class P4GenerateCode {
 					em.mov(fcp, ref);
 					return compile(expr);
 				});
-			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
-				Sink<Funp> compile0, compile1;
+			})).applyIf(FunpIf.class, f -> f.apply((if_, then_, else_) -> {
+				Sink2<Compile0, Funp> compile0, compile1;
 				Source<CompileOut> out;
 
 				if (result == Result.ASSIGN || isOutSpec) {
-					compile0 = compile1 = this::compile;
+					compile0 = compile1 = Compile0::compile;
 					out = CompileOut::new;
 				} else if (result == Result.ISOP || result == Result.ISREG) {
 					var ops = new OpReg[1];
-					compile0 = node_ -> {
-						var op0 = compileIsOp(node_);
-						ops[0] = em.mov(rs.get(op0), op0);
+					compile0 = (c1, node_) -> {
+						var op0 = c1.compileIsOp(node_);
+						ops[0] = c1.em.mov(rs.get(op0), op0);
 					};
-					compile1 = node_ -> compileIsSpec(node_, ops[0]);
+					compile1 = (c1, node_) -> c1.compileIsSpec(node_, ops[0]);
 					out = () -> returnIsOp(ops[0]);
 				} else if (result == Result.PS2OP || result == Result.PS2REG) {
 					var ops = new OpReg[2];
-					compile0 = node_ -> {
-						var co1 = compilePs2Op(node_);
-						ops[0] = em.mov(rs.mask(co1.op1).get(co1.op0), co1.op0);
-						ops[1] = em.mov(rs.mask(ops[0]).get(co1.op1), co1.op1);
+					compile0 = (c1, node_) -> {
+						var co1 = c1.compilePs2Op(node_);
+						ops[0] = c1.em.mov(rs.mask(co1.op1).get(co1.op0), co1.op0);
+						ops[1] = c1.em.mov(rs.mask(ops[0]).get(co1.op1), co1.op1);
 					};
-					compile1 = node_ -> compilePs2Spec(node_, ops[0], ops[1]);
+					compile1 = (c1, node_) -> c1.compilePs2Spec(node_, ops[0], ops[1]);
 					out = () -> returnPs2Op(ops[0], ops[1]);
 				} else
 					throw new RuntimeException();
 
-				var condLabel = em.label();
+				var stayLabel = em.label();
+				var jumpLabel = em.label();
 				var endLabel = em.label();
 
 				Sink2<Funp, Funp> thenElse = (condt, condf) -> {
-					compile0.sink(condt);
-					em.jumpLabel(endLabel, condLabel);
-					compile1.sink(condf);
-					em.label(endLabel);
+					em.jumpLabel(stayLabel, endLabel);
+					em.spawn(stayLabel, em1 -> compile0.sink2(nc(em1), condt), endLabel);
+					em.spawn(jumpLabel, em1 -> compile1.sink2(nc(em1), condf), endLabel);
 				};
 
-				var jumpIf = new P4JumpIf(compileCmpJmp(condLabel)).new JumpIf(if_);
+				var jumpIf = new P4JumpIf(compileCmpJmp(jumpLabel)).new JumpIf(if_);
 				Source<Boolean> r;
 
 				if ((r = jumpIf.jnxIf()) != null && r.source())
-					thenElse.sink2(then, else_);
+					thenElse.sink2(then_, else_);
 				else if ((r = jumpIf.jxxIf()) != null && r.source())
-					thenElse.sink2(else_, then);
+					thenElse.sink2(else_, then_);
 				else {
-					compileJumpZero(if_, condLabel);
-					thenElse.sink2(then, else_);
+					compileJumpZero(if_, jumpLabel);
+					thenElse.sink2(then_, else_);
 				}
 
 				return out.source();

@@ -155,7 +155,11 @@ public class P4Emit {
 		}
 
 		public OpImmLabel spawn(Sink<Emit> sink, OpImmLabel out) {
-			return P4Emit.this.spawn(label(), sink, out);
+			return spawn(label(), sink, out);
+		}
+
+		public OpImmLabel spawn(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
+			return P4Emit.this.spawn(in, sink, out);
 		}
 
 		public void label(OpImmLabel label) {
