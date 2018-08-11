@@ -312,11 +312,11 @@ public class P4GenerateCode {
 					return compile(expr);
 				});
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then, else_) -> {
-				Sink<Funp> compile0, Compile0;
+				Sink<Funp> compile0, compile1;
 				Source<CompileOut> out;
 
 				if (result == Result.ASSIGN || isOutSpec) {
-					compile0 = Compile0 = this::compile;
+					compile0 = compile1 = this::compile;
 					out = CompileOut::new;
 				} else if (result == Result.ISOP || result == Result.ISREG) {
 					var ops = new OpReg[1];
@@ -324,7 +324,7 @@ public class P4GenerateCode {
 						var op0 = compileIsOp(node_);
 						ops[0] = em.mov(rs.get(op0), op0);
 					};
-					Compile0 = node_ -> compileIsSpec(node_, ops[0]);
+					compile1 = node_ -> compileIsSpec(node_, ops[0]);
 					out = () -> returnIsOp(ops[0]);
 				} else if (result == Result.PS2OP || result == Result.PS2REG) {
 					var ops = new OpReg[2];
@@ -333,7 +333,7 @@ public class P4GenerateCode {
 						ops[0] = em.mov(rs.mask(co1.op1).get(co1.op0), co1.op0);
 						ops[1] = em.mov(rs.mask(ops[0]).get(co1.op1), co1.op1);
 					};
-					Compile0 = node_ -> compilePs2Spec(node_, ops[0], ops[1]);
+					compile1 = node_ -> compilePs2Spec(node_, ops[0], ops[1]);
 					out = () -> returnPs2Op(ops[0], ops[1]);
 				} else
 					throw new RuntimeException();
@@ -344,7 +344,7 @@ public class P4GenerateCode {
 				Sink2<Funp, Funp> thenElse = (condt, condf) -> {
 					compile0.sink(condt);
 					em.jumpLabel(endLabel, condLabel);
-					Compile0.sink(condf);
+					compile1.sink(condf);
 					em.label(endLabel);
 				};
 
