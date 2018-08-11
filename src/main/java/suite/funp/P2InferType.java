@@ -561,7 +561,7 @@ public class P2InferType {
 				if (type == Fdt.GLOB) {
 					var size = getTypeSize(typeOf(value));
 					var address = Mutable.<Operand> nil();
-					Var var = new Var(address, 0, size);
+					var var = new Var(address, 0, size);
 					var e1 = new Erase(scope, env.replace(vn, var), me);
 					if (Set.of("!alloc", "!dealloc").contains(vn))
 						globals.put(vn, var);
