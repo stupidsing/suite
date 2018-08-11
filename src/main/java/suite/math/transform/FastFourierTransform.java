@@ -10,7 +10,7 @@ public class FastFourierTransform {
 		var size = cs0.length;
 		var cs1 = To.array(size, Complex.class, i -> cs0[i].conjugate());
 		var cs2 = fft(cs1);
-		var inv = 1.0f / size;
+		var inv = 1f / size;
 
 		for (var i = 0; i < size; i++)
 			cs2[i] = cs2[i].conjugate().scale(inv);
@@ -71,7 +71,7 @@ public class FastFourierTransform {
 		}
 
 		var fs2 = fft(fs1);
-		var inv = 1.0f / size;
+		var inv = 1f / size;
 
 		for (var i2 = 0; i2 < size2; i2 += 2) {
 			fs2[i2 + 0] = fs2[i2 + 0] * inv;
