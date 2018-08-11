@@ -994,8 +994,8 @@ public class P4GenerateCode {
 			return new Compile0(result, em, target, pop0, pop1, rs, fd);
 		}
 
-		private Compile0 nc(Emit emit) {
-			return new Compile0(result, emit, target, pop0, pop1, rs, fd);
+		private Compile0 nc(Emit em) {
+			return new Compile0(result, em, target, pop0, pop1, rs, fd);
 		}
 
 		private Compile0 nc(RegisterSet rs, int fd) {
