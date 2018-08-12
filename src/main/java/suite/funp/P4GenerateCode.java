@@ -266,20 +266,25 @@ public class P4GenerateCode {
 				return returnDontCare();
 			}).applyIf(FunpDoWhile.class, f -> f.apply((while_, do_, expr) -> {
 				var loopLabel = em.label();
-				var contLabel = em.label();
+				var doLabel = em.label();
 				var exitLabel = em.label();
+				var label1 = Mutable.<OpImmLabel> nil();
 
-				em.label(loopLabel);
-				Source<Boolean> r;
+				var block = em.spawn(loopLabel, em1 -> {
+					var c1 = nc(em1);
+					Source<Boolean> r;
+					if ((r = new P4JumpIf(c1.compileCmpJmp(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
+						label1.set(doLabel);
+					else if ((r = new P4JumpIf(c1.compileCmpJmp(doLabel)).new JumpIf(while_).jxxIf()) != null && r.source())
+						label1.set(exitLabel);
+					else {
+						c1.compileJumpZero(while_, exitLabel);
+						label1.set(doLabel);
+					}
+				}, null);
 
-				if ((r = new P4JumpIf(compileCmpJmp(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
-					;
-				else if ((r = new P4JumpIf(compileCmpJmp(contLabel)).new JumpIf(while_).jxxIf()) != null && r.source())
-					em.jumpLabel(exitLabel, contLabel);
-				else
-					compileJumpZero(while_, exitLabel);
-
-				compileIsOp(do_);
+				block.out = label1.value();
+				spawn(doLabel, c1 -> c1.compileIsOp(do_), loopLabel);
 				em.jumpLabel(loopLabel, exitLabel);
 				return compile(expr);
 			})).applyIf(FunpError.class, f -> {
