@@ -187,44 +187,40 @@ public class P4Emit {
 		var set = new HashSet<OpImmLabel>();
 
 		var gen = new Object() {
-			private void g(OpImmLabel label, boolean jump) {
-				g(label, jump, IList.end());
+			private void g(OpImmLabel label) {
+				g(label, IList.end());
 			}
 
-			private void g(OpImmLabel label, boolean jump, IList<OpImmLabel> stack) {
+			private void g(OpImmLabel label, IList<OpImmLabel> stack) {
 				for (var label_ : inByOut.get(label))
-					if (!jump && !stack.contains(label_) && !set.contains(label_))
-						g(label_, jump, IList.cons(label_, stack));
-				g_(label, jump);
+					if (!stack.contains(label_) && !set.contains(label_))
+						g(label_, IList.cons(label_, stack));
+				gj(label, false);
 			}
 
-			private void g_(OpImmLabel label, boolean jump) {
-				if (set.add(label))
-					g_(label);
-				else if (jump)
+			private void gj(OpImmLabel label, boolean jump) {
+				if (set.add(label)) {
+					OpImmLabel label_;
+
+					while ((label_ = ids.get(label)) != null)
+						label = label_;
+
+					var b = blockByLabel.get(label);
+
+					if (!isForward.test(b)) {
+						list.add(amd64.instruction(Insn.LABEL, b.in));
+						list.addAll(b.instructions);
+						var out = b.out;
+						if (out != null)
+							gj(out, true);
+					}
+				} else if (jump)
 					list.add(amd64.instruction(Insn.JMP, label));
-			}
-
-			private void g_(OpImmLabel label) {
-				OpImmLabel label_;
-
-				while ((label_ = ids.get(label)) != null)
-					label = label_;
-
-				var b = blockByLabel.get(label);
-
-				if (!isForward.test(b)) {
-					list.add(amd64.instruction(Insn.LABEL, b.in));
-					list.addAll(b.instructions);
-					var out = b.out;
-					if (out != null)
-						g_(out, true);
-				}
 			}
 		};
 
-		gen.g(in, true);
-		blocks.forEach(block -> gen.g(block.in, false));
+		gen.gj(in, true);
+		blocks.forEach(block -> gen.g(block.in));
 
 		return list;
 	}
