@@ -2,6 +2,7 @@ package suite.http;
 
 import suite.os.LogUtil;
 import suite.os.SocketUtil;
+import suite.primitive.IoSink;
 
 /**
  * A very crude HTTP server.
@@ -38,6 +39,25 @@ public class HttpServe {
 			}
 
 			httpIo.writeResponse(os, response);
+		});
+	}
+
+	public void serveAsync(HttpHandlerAsync handler) {
+		new SocketUtil().listenIoAsync(port, (is, os, close) -> {
+			var request = httpIo.readRequest(is);
+
+			IoSink<HttpResponse> sink = response -> {
+				LogUtil.info(request.getLogString() + " " + response.getLogString());
+				httpIo.writeResponse(os, response);
+				close.close();
+			};
+
+			try {
+				handler.handle(request, sink);
+			} catch (Exception ex) {
+				LogUtil.error(ex);
+				sink.sink(HttpResponse.of(HttpResponse.HTTP500));
+			}
 		});
 	}
 

@@ -3,6 +3,7 @@ package suite.os;
 import static suite.util.Friends.fail;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,6 +20,10 @@ public class SocketUtil {
 
 	public interface Io {
 		public void serve(InputStream is, OutputStream os) throws IOException;
+	}
+
+	public interface IoAsync {
+		public void serve(InputStream is, OutputStream os, Closeable close) throws IOException;
 	}
 
 	public interface Rw {
@@ -47,6 +52,34 @@ public class SocketUtil {
 						LogUtil.error(ex);
 					} finally {
 						Object_.closeQuietly(socket);
+					}
+				});
+			}
+		} catch (IOException ex) {
+			fail(ex);
+		} finally {
+			executor.shutdown();
+		}
+	}
+
+	public void listenIoAsync(int port, IoAsync io) {
+		var executor = Thread_.newExecutor();
+
+		try (var server = new ServerSocket(port)) {
+			while (true) {
+				var socket = server.accept(); // TODO use java.nio
+
+				executor.execute(() -> {
+					try {
+						var is = socket.getInputStream();
+						var os = socket.getOutputStream();
+						io.serve(is, os, () -> {
+							is.close();
+							os.close();
+							socket.close();
+						});
+					} catch (Exception ex) {
+						LogUtil.error(ex);
 					}
 				});
 			}

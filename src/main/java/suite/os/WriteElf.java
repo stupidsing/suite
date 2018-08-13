@@ -19,6 +19,8 @@ import suite.util.Util;
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class WriteElf {
 
+	private boolean isAmd64 = false;
+
 	public Execute exec(byte[] input, Int_Obj<Bytes> source) {
 		var path = Defaults.tmp("a.out." + Util.temp());
 		var org = 0x08048000;
@@ -48,7 +50,7 @@ public class WriteElf {
 		var header = new Write_() //
 				.db(0x7F) // e_ident
 				.append("ELF".getBytes(Defaults.charset)) //
-				.append(new byte[] { 1, 1, 1, 0, }) //
+				.append(new byte[] { (byte) (isAmd64 ? 2 : 1), 1, 1, 0, }) //
 				.append(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, }) //
 				.dw(2) // e_type
 				.dw(3) // e_machine
