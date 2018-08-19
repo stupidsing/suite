@@ -2,45 +2,55 @@ package suite.net.nio;
 
 import static org.junit.Assert.assertArrayEquals;
 
-import java.io.BufferedReader;
+import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.charset.Charset;
 
 import org.junit.Test;
 
 import suite.cfg.Defaults;
+import suite.primitive.Bytes;
 
 public class NioDispatchTest {
 
+	private String hello = "HELLO";
+	private Charset charset = Defaults.charset;
+
+	@Test
+	public void testTextExchange0() throws IOException {
+		try (var dispatch = new NioDispatch();
+				var listen = listen(dispatch);
+				var socket = new Socket("localhost", 5151);
+				var os = socket.getOutputStream();
+				var writer = new PrintWriter(os)) {
+			var m = hello;
+			writer.println(m);
+			writer.flush();
+			dispatch.run();
+		}
+	}
+
 	@Test
 	public void testTextExchange() throws IOException {
-		var hello = "HELLO";
-		var charset = Defaults.charset;
-
-		try (var dispatch = new NioDispatch()) {
-			dispatch.asyncListen(5151, sc -> {
-				dispatch.asyncReadLine(sc, (byte) 10, bytes -> {
-					assertArrayEquals(hello.getBytes(Defaults.charset), bytes.toArray());
-					dispatch.stop();
+		try (var dispatch = new NioDispatch(); var listen = listen(dispatch);) {
+			dispatch.asyncConnect(new InetSocketAddress("localhost", 5151), sc -> {
+				dispatch.asyncWriteAll(sc, Bytes.of(hello.getBytes(charset)), () -> {
 				});
 			});
-
-			// dispatch.asyncConnect(new InetSocketAddress("localhost", 5151), null);
-
-			try (var socket = new Socket("localhost", 5151);
-					var is = socket.getInputStream();
-					var os = socket.getOutputStream();
-					var isr = new InputStreamReader(is, charset);
-					var reader = new BufferedReader(isr);
-					var writer = new PrintWriter(os)) {
-				var m = hello;
-				writer.println(m);
-				writer.flush();
-				dispatch.run();
-			}
 		}
+	}
+
+	private Closeable listen(NioDispatch dispatch) throws IOException {
+		return dispatch.asyncListen(5151, sc -> {
+			dispatch.asyncReadLine(sc, (byte) 10, bytes -> {
+				assertArrayEquals(hello.getBytes(charset), bytes.toArray());
+				dispatch.close(sc);
+				dispatch.stop();
+			});
+		});
 	}
 
 }
