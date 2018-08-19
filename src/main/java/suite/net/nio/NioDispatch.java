@@ -53,7 +53,7 @@ public class NioDispatch implements Closeable {
 	}
 
 	public void asyncReadLine(SocketChannel sc, byte delim, IoSink<Bytes> sink) throws IOException {
-		var bb = reads.computeIfAbsent(sc, sc_ -> new BytesBuilder());
+		var bb = getReadBuffer(sc);
 
 		new IoSink<Integer>() {
 			public void sink(Integer start) throws IOException {
@@ -77,7 +77,7 @@ public class NioDispatch implements Closeable {
 	}
 
 	public void asyncRead(SocketChannel sc, int n, IoSink<Bytes> sink) throws IOException {
-		var bb = reads.computeIfAbsent(sc, sc_ -> new BytesBuilder());
+		var bb = getReadBuffer(sc);
 
 		new IoSink<Integer>() {
 			public void sink(Integer start) throws IOException {
@@ -175,6 +175,10 @@ public class NioDispatch implements Closeable {
 
 		if ((ops & SelectionKey.OP_WRITE) != 0)
 			callback.sink(null);
+	}
+
+	private BytesBuilder getReadBuffer(SocketChannel sc) {
+		return reads.computeIfAbsent(sc, sc_ -> new BytesBuilder());
 	}
 
 	private void reg(SelectableChannel sc, int key, Object attachment) throws ClosedChannelException {
