@@ -12,14 +12,15 @@ import java.util.Map;
 import org.junit.Test;
 
 import suite.net.cluster.impl.ClusterImpl;
+import suite.util.Rethrow;
 import suite.util.Thread_;
 
 public class ClusterTest {
 
+	private InetAddress localHost = Rethrow.ex(() -> InetAddress.getLocalHost());
+
 	@Test
 	public void testCluster() throws IOException {
-		var localHost = InetAddress.getLocalHost();
-
 		var peers = Map.ofEntries( //
 				entry("NODE0", new InetSocketAddress(localHost, 3000)), //
 				entry("NODE1", new InetSocketAddress(localHost, 3001)));

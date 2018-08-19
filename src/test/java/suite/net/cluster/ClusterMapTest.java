@@ -14,18 +14,20 @@ import org.junit.Test;
 
 import suite.net.cluster.impl.ClusterImpl;
 import suite.net.cluster.impl.ClusterMapImpl;
+import suite.util.Rethrow;
 import suite.util.Thread_;
 
 public class ClusterMapTest {
 
 	private static Random random = new Random();
 
+	private InetAddress localHost = Rethrow.ex(() -> InetAddress.getLocalHost());
+
 	@Test
 	public void testClusterMap() throws IOException {
 		var nNodes = 3;
-		var localHost = InetAddress.getLocalHost();
-
 		var peers = new HashMap<String, InetSocketAddress>();
+
 		for (var i = 0; i < nNodes; i++)
 			peers.put("NODE" + i, new InetSocketAddress(localHost, 3000 + i));
 

@@ -20,10 +20,14 @@ import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
+import suite.util.Rethrow;
 import suite.util.Thread_;
 import suite.util.To;
 
 public class NioDispatcherTest {
+
+	private InetAddress localHost = Rethrow.ex(() -> InetAddress.getLocalHost());
+	private int port = 5151;
 
 	@Test
 	public void testTextExchange() throws IOException {
@@ -43,8 +47,8 @@ public class NioDispatcherTest {
 		var dispatcher = new NioDispatcherImpl<>(source);
 		dispatcher.start();
 
-		try (var closeServer = dispatcher.listen(5151);
-				var socket = new Socket("localhost", 5151);
+		try (var closeServer = dispatcher.listen(port);
+				var socket = new Socket(localHost, port);
 				var is = socket.getInputStream();
 				var os = socket.getOutputStream();
 				var isr = new InputStreamReader(is, charset);
@@ -71,9 +75,8 @@ public class NioDispatcherTest {
 				() -> NioChannelFactory.requestResponse(new RequestResponseNioChannel(), matcher, executor, handler));
 		dispatcher.start();
 
-		try (var closeServer = dispatcher.listen(5151)) {
-			var localHost = InetAddress.getLocalHost();
-			var address = new InetSocketAddress(localHost, 5151);
+		try (var closeServer = dispatcher.listen(port)) {
+			var address = new InetSocketAddress(localHost, port);
 			var client = dispatcher.connect(address);
 
 			for (var s : new String[] { "ABC", "WXYZ", "", }) {
