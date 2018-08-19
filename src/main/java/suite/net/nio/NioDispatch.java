@@ -99,11 +99,13 @@ public class NioDispatch implements Closeable {
 		reg(sc, SelectionKey.OP_READ, sink);
 	}
 
-	public void asyncWrite(SocketChannel sc, Bytes bytes, Runnable runnable) throws ClosedChannelException {
-		reg(sc, SelectionKey.OP_WRITE, (IoSink<Object>) dummy -> {
+	public void asyncWrite(SocketChannel sc, Bytes bytes, Runnable runnable0) throws ClosedChannelException {
+		IoSink<Object> runnable1 = dummy -> {
 			sc.write(bytes.toByteBuffer());
-			runnable.run();
-		});
+			runnable0.run();
+		};
+
+		reg(sc, SelectionKey.OP_WRITE, runnable1);
 	}
 
 	public void close(SocketChannel sc) throws IOException {
