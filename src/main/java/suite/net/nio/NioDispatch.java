@@ -1,0 +1,202 @@
+package suite.net.nio;
+
+import java.io.Closeable;
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.nio.ByteBuffer;
+import java.nio.channels.ClosedChannelException;
+import java.nio.channels.SelectableChannel;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.util.Map;
+import java.util.WeakHashMap;
+
+import suite.cfg.Defaults;
+import suite.object.Object_;
+import suite.os.LogUtil;
+import suite.primitive.Bytes;
+import suite.primitive.Bytes.BytesBuilder;
+import suite.primitive.IoSink;
+import suite.streamlet.Signal;
+
+public class NioDispatch implements Closeable {
+
+	public final Signal<SocketChannel> onDisconnected = Signal.of();
+
+	private Selector selector = Selector.open();
+	private Map<SelectableChannel, BytesBuilder> reads = new WeakHashMap<>();
+
+	public NioDispatch() throws IOException {
+	}
+
+	@Override
+	public void close() throws IOException {
+		selector.close();
+	}
+
+	public void asyncConnect(InetSocketAddress address, IoSink<SocketChannel> sink) throws IOException {
+		var sc = SocketChannel.open();
+		sc.configureBlocking(false);
+		sc.connect(address);
+		reg(sc, SelectionKey.OP_CONNECT, sink);
+
+	}
+
+	public Closeable asyncListen(int port, IoSink<SocketChannel> sink) throws IOException {
+		var ssc = ServerSocketChannel.open();
+		ssc.configureBlocking(false);
+		ssc.socket().bind(new InetSocketAddress(port));
+		reg(ssc, SelectionKey.OP_ACCEPT, sink);
+		return () -> Object_.closeQuietly(ssc);
+	}
+
+	public void asyncReadLine(SocketChannel sc, byte delim, IoSink<Bytes> sink) throws IOException {
+		var bb = reads.computeIfAbsent(sc, sc_ -> new BytesBuilder());
+
+		new IoSink<Integer>() {
+			private IoSink<Integer> this_ = this;
+
+			public void sink(Integer start) throws IOException {
+				var bytes_ = bb.toBytes();
+
+				for (int i = start; i < bytes_.size(); i++)
+					if (bytes_.get(i) == delim) {
+						sink.sink(bytes_.range(0, i));
+						bb.clear();
+						bb.append(bytes_.range(i + 1));
+						return;
+					}
+
+				asyncRead(sc, new IoSink<Bytes>() {
+					public void sink(Bytes bytes1) throws IOException {
+						var size0 = bb.size();
+						bb.append(bytes1);
+						this_.sink(size0);
+					}
+				});
+			}
+		}.sink(0);
+	}
+
+	public void asyncRead(SocketChannel sc, int n, IoSink<Bytes> sink) throws IOException {
+		var bb = reads.computeIfAbsent(sc, sc_ -> new BytesBuilder());
+
+		new IoSink<Integer>() {
+			private IoSink<Integer> this_ = this;
+
+			public void sink(Integer start) throws IOException {
+				if (n <= bb.size()) {
+					var bytes_ = bb.toBytes();
+					sink.sink(bytes_.range(0, n));
+					bb.clear();
+					bb.append(Bytes.of(bytes_.range(n)));
+				} else
+					asyncRead(sc, new IoSink<Bytes>() {
+						public void sink(Bytes bytes) throws IOException {
+							bb.append(bytes);
+							this_.sink(null);
+						}
+					});
+			}
+		}.sink(null);
+	}
+
+	public void asyncRead(SocketChannel sc, IoSink<Bytes> sink) throws ClosedChannelException {
+		reg(sc, SelectionKey.OP_READ, sink);
+	}
+
+	public void asyncWrite(SocketChannel sc, Bytes bytes, Runnable runnable0) throws ClosedChannelException {
+		IoSink<Object> runnable1 = dummy -> {
+			sc.write(bytes.toByteBuffer());
+			runnable0.run();
+		};
+
+		reg(sc, SelectionKey.OP_WRITE, runnable1);
+	}
+
+	public void close(SocketChannel sc) throws IOException {
+		sc.register(selector, 0, null);
+		sc.close();
+	}
+
+	public void run() throws IOException {
+
+		// unfortunately Selector.wakeup() does not work on my Linux
+		// machines. Thus we specify a time out to allow the selector
+		// freed out temporarily; otherwise the register() methods in
+		// other threads might block forever.
+		selector.select(500);
+
+		// this seems to allow other threads to gain access. Not exactly
+		// the behavior as documented in NIO, but anyway.
+		selector.wakeup();
+
+		var iter = selector.selectedKeys().iterator();
+
+		while (iter.hasNext()) {
+			var key = iter.next();
+			iter.remove();
+
+			try {
+				processKey(key);
+			} catch (Exception ex) {
+				LogUtil.error(ex);
+			}
+		}
+	}
+
+	private void processKey(SelectionKey key) throws IOException {
+		// logUtil.info("KEY", dumpKey(key));
+
+		var buffer = new byte[Defaults.bufferSize];
+		@SuppressWarnings("unchecked")
+		var callback = (IoSink<Object>) key.attachment();
+		var ops = key.readyOps();
+		var sc0 = key.channel();
+		var sc1 = sc0 instanceof SocketChannel ? (SocketChannel) sc0 : null;
+
+		reg(sc0, 0);
+
+		if ((ops & SelectionKey.OP_ACCEPT) != 0) {
+			var sc = ((ServerSocketChannel) sc0).accept().socket().getChannel();
+			sc.configureBlocking(false);
+			callback.sink(sc);
+			reg(sc0, SelectionKey.OP_ACCEPT);
+		}
+
+		if ((ops & SelectionKey.OP_CONNECT) != 0) {
+			sc1.finishConnect();
+			callback.sink(sc1);
+		}
+
+		if ((ops & SelectionKey.OP_READ) != 0) {
+			var n = sc1.read(ByteBuffer.wrap(buffer));
+			if (0 <= n)
+				callback.sink(Bytes.of(buffer, 0, n));
+			else {
+				onDisconnected.fire(sc1);
+				sc1.close();
+			}
+		}
+
+		if ((ops & SelectionKey.OP_WRITE) != 0)
+			callback.sink(null);
+	}
+
+	private void reg(SelectableChannel sc, int key, Object attachment) throws ClosedChannelException {
+		sc.register(selector, key, attachment);
+		reg(sc, key);
+	}
+
+	private void reg(SelectableChannel sc, int key) {
+		sc.keyFor(selector).interestOps(key);
+		wakeUpSelector();
+	}
+
+	private void wakeUpSelector() {
+		selector.wakeup(); // not working in my Linux machines
+	}
+
+}
