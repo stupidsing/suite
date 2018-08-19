@@ -6,6 +6,7 @@ import suite.streamlet.Outlet;
 public class HttpResponse {
 
 	public static final String HTTP200 = "200 OK";
+	public static final String HTTP206 = "206 Partial Content";
 	public static final String HTTP403 = "403 forbidden";
 	public static final String HTTP404 = "404 file not found";
 	public static final String HTTP500 = "500 internal server error";
