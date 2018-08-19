@@ -56,8 +56,6 @@ public class NioDispatch implements Closeable {
 		var bb = reads.computeIfAbsent(sc, sc_ -> new BytesBuilder());
 
 		new IoSink<Integer>() {
-			private IoSink<Integer> this_ = this;
-
 			public void sink(Integer start) throws IOException {
 				var bytes_ = bb.toBytes();
 
@@ -72,7 +70,7 @@ public class NioDispatch implements Closeable {
 				asyncRead(sc, bytes1 -> {
 					var size0 = bb.size();
 					bb.append(bytes1);
-					this_.sink(size0);
+					this.sink(size0);
 				});
 			}
 		}.sink(0);
@@ -82,8 +80,6 @@ public class NioDispatch implements Closeable {
 		var bb = reads.computeIfAbsent(sc, sc_ -> new BytesBuilder());
 
 		new IoSink<Integer>() {
-			private IoSink<Integer> this_ = this;
-
 			public void sink(Integer start) throws IOException {
 				if (n <= bb.size()) {
 					var bytes_ = bb.toBytes();
@@ -93,7 +89,7 @@ public class NioDispatch implements Closeable {
 				} else
 					asyncRead(sc, bytes1 -> {
 						bb.append(bytes1);
-						this_.sink(null);
+						this.sink(null);
 					});
 			}
 		}.sink(null);
