@@ -30,8 +30,7 @@ public class NioDispatchTest {
 				var socket = new Socket(localHost, port);
 				var os = socket.getOutputStream();
 				var writer = new PrintWriter(os)) {
-			var m = hello;
-			writer.println(m);
+			writer.println(hello);
 			writer.flush();
 			dispatch.run();
 		}
