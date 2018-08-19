@@ -25,6 +25,7 @@ public class NioDispatch implements Closeable {
 
 	public final Signal<SocketChannel> onDisconnected = Signal.of();
 
+	private boolean isRunning = true;
 	private Selector selector = Selector.open();
 	private Map<SelectableChannel, BytesBuilder> reads = new WeakHashMap<>();
 
@@ -33,7 +34,12 @@ public class NioDispatch implements Closeable {
 
 	@Override
 	public void close() throws IOException {
+		stop();
 		selector.close();
+	}
+
+	public void stop() {
+		isRunning = false;
 	}
 
 	public void asyncConnect(InetSocketAddress address, IoSink<SocketChannel> sink) throws IOException {
@@ -122,27 +128,29 @@ public class NioDispatch implements Closeable {
 	}
 
 	public void run() throws IOException {
+		while (isRunning) {
 
-		// unfortunately Selector.wakeup() does not work on my Linux
-		// machines. Thus we specify a time out to allow the selector
-		// freed out temporarily; otherwise the register() methods in
-		// other threads might block forever.
-		selector.select(500);
+			// unfortunately Selector.wakeup() does not work on my Linux
+			// machines. Thus we specify a time out to allow the selector
+			// freed out temporarily; otherwise the register() methods in
+			// other threads might block forever.
+			selector.select(500);
 
-		// this seems to allow other threads to gain access. Not exactly
-		// the behavior as documented in NIO, but anyway.
-		selector.wakeup();
+			// this seems to allow other threads to gain access. Not exactly
+			// the behavior as documented in NIO, but anyway.
+			selector.wakeup();
 
-		var iter = selector.selectedKeys().iterator();
+			var iter = selector.selectedKeys().iterator();
 
-		while (iter.hasNext()) {
-			var key = iter.next();
-			iter.remove();
+			while (iter.hasNext()) {
+				var key = iter.next();
+				iter.remove();
 
-			try {
-				processKey(key);
-			} catch (Exception ex) {
-				LogUtil.error(ex);
+				try {
+					processKey(key);
+				} catch (Exception ex) {
+					LogUtil.error(ex);
+				}
 			}
 		}
 	}
