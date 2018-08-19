@@ -130,7 +130,7 @@ public interface NioChannelFactory {
 		channel.onReceivePacket.wire(packet -> {
 			if (5 <= packet.size()) {
 				var type = (char) packet.get(0);
-				int token = NetUtil.bytesToInt(packet.range(1, 5));
+				var token = NetUtil.bytesToInt(packet.range(1, 5));
 				var contents = packet.range(5);
 
 				if (type == RESPONSE)
@@ -152,7 +152,7 @@ public interface NioChannelFactory {
 				var size = received.size();
 
 				if (4 <= size) {
-					int end = 4 + NetUtil.bytesToInt(received.range(0, 4));
+					var end = 4 + NetUtil.bytesToInt(received.range(0, 4));
 
 					if (end <= size) {
 						var in = received.range(4, end);
