@@ -137,7 +137,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 			channel.onConnected.fire(newSender(sc));
 		}
 
-		if ((ops & ~SelectionKey.OP_ACCEPT) != 0)
+		if (attachment != null)
 			synchronized (attachment) {
 				@SuppressWarnings("unchecked")
 				var channel = (C) attachment;
