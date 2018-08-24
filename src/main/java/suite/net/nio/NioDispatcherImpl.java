@@ -101,7 +101,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 
 				// this seems to allow other threads to gain access. Not exactly
 				// the behavior as documented in NIO, but anyway.
-				selector.wakeup();
+				wakeUpSelector();
 
 				var iter = selector.selectedKeys().iterator();
 
@@ -184,7 +184,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 	}
 
 	private void wakeUpSelector() {
-		// selector.wakeup(); // not working in my Linux machines
+		// selector.wakeup(); // not working in Windows machines
 	}
 
 }

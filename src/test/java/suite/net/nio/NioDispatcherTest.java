@@ -15,11 +15,9 @@ import org.junit.Test;
 
 import suite.cfg.Defaults;
 import suite.net.nio.NioChannelFactory.BufferedNioChannel;
-import suite.net.nio.NioChannelFactory.NioChannel;
 import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Iterate;
-import suite.streamlet.FunUtil.Source;
 import suite.util.Rethrow;
 import suite.util.Thread_;
 import suite.util.To;
@@ -32,9 +30,8 @@ public class NioDispatcherTest {
 	@Test
 	public void testTextExchange() throws IOException {
 		var hello = "HELLO";
-		var charset = Defaults.charset;
 
-		Source<NioChannel> source = () -> {
+		var dispatcher = new NioDispatcherImpl<>(() -> {
 			var channel = new BufferedNioChannel();
 			channel.onConnected.wire(sender -> {
 				var s = hello + "\n";
@@ -43,15 +40,15 @@ public class NioDispatcherTest {
 			});
 			channel.onReceive.wire(channel::send);
 			return NioChannelFactory.buffered(channel);
-		};
-		var dispatcher = new NioDispatcherImpl<>(source);
+		});
+
 		dispatcher.start();
 
 		try (var closeServer = dispatcher.listen(port);
 				var socket = new Socket(localHost, port);
 				var is = socket.getInputStream();
 				var os = socket.getOutputStream();
-				var isr = new InputStreamReader(is, charset);
+				var isr = new InputStreamReader(is, Defaults.charset);
 				var reader = new BufferedReader(isr);
 				var writer = new PrintWriter(os)) {
 			var m = "testing nio";
