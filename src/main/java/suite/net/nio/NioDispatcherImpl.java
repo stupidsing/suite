@@ -13,14 +13,14 @@ import java.nio.channels.SocketChannel;
 
 import suite.cfg.Defaults;
 import suite.net.ThreadService;
-import suite.net.nio.NioChannelFactory.NioChannel;
+import suite.net.nio.NioplexFactory.Nioplex;
 import suite.object.Object_;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
 
-public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C> {
+public class NioDispatcherImpl<C extends Nioplex> implements NioDispatcher<C> {
 
 	private Source<C> channelSource;
 	private Selector selector = Selector.open();
@@ -54,7 +54,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 	 * Re-establishes connection using specified listener, if closed or dropped.
 	 */
 	@Override
-	public void reconnect(NioChannel channel, InetSocketAddress address) throws IOException {
+	public void reconnect(Nioplex channel, InetSocketAddress address) throws IOException {
 		var sc = SocketChannel.open();
 		sc.configureBlocking(false);
 		sc.connect(address);
@@ -67,7 +67,7 @@ public class NioDispatcherImpl<C extends NioChannel> implements NioDispatcher<C>
 	 * Ends connection.
 	 */
 	@Override
-	public void disconnect(NioChannel channel) throws IOException {
+	public void disconnect(Nioplex channel) throws IOException {
 		for (var key : selector.keys())
 			if (key.attachment() == channel)
 				key.channel().close();

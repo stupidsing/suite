@@ -5,9 +5,9 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 import suite.net.Service;
-import suite.net.nio.NioChannelFactory.NioChannel;
+import suite.net.nio.NioplexFactory.Nioplex;
 
-public interface NioDispatcher<C extends NioChannel> extends Service {
+public interface NioDispatcher<C extends Nioplex> extends Service {
 
 	/**
 	 * Establishes connection to other host actively.

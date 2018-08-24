@@ -6,7 +6,7 @@ import java.util.Map;
 import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.concurrent.Condition;
-import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;
+import suite.net.nio.NioplexFactory.RequestResponseNioplex;
 import suite.primitive.Bytes;
 import suite.util.Util;
 
@@ -15,18 +15,18 @@ public class RequestResponseMatcher {
 	// tODO clean-up lost requests
 	private Map<Integer, Pair<Mutable<Bytes>, Condition>> requests = new HashMap<>();
 
-	public Bytes requestForResponse(RequestResponseNioChannel channel, Bytes request) {
+	public Bytes requestForResponse(RequestResponseNioplex channel, Bytes request) {
 		return requestForResponse(channel, request, 0);
 	}
 
-	public Bytes requestForResponse(RequestResponseNioChannel channel, Bytes request, int timeOut) {
+	public Bytes requestForResponse(RequestResponseNioplex channel, Bytes request, int timeOut) {
 		var token = Util.temp();
 		var holder = Mutable.<Bytes> nil();
 		var condition = new Condition(() -> holder.value() != null);
 
 		return condition.waitThen(() -> {
 			requests.put(token, Pair.of(holder, condition));
-			channel.send(RequestResponseNioChannel.REQUEST, token, request);
+			channel.send(RequestResponseNioplex.REQUEST, token, request);
 		}, () -> {
 			requests.remove(token);
 			return holder.value();

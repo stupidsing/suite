@@ -13,10 +13,10 @@ import java.util.concurrent.ThreadPoolExecutor;
 import suite.net.NetUtil;
 import suite.net.cluster.Cluster;
 import suite.net.cluster.ClusterProbe;
-import suite.net.nio.NioChannelFactory;
-import suite.net.nio.NioChannelFactory.PersistentNioChannel;
 import suite.net.nio.NioDispatcher;
 import suite.net.nio.NioDispatcherImpl;
+import suite.net.nio.NioplexFactory;
+import suite.net.nio.NioplexFactory.PersistentNioplex;
 import suite.net.nio.RequestResponseMatcher;
 import suite.object.Object_;
 import suite.primitive.Bytes;
@@ -28,7 +28,7 @@ public class ClusterImpl implements Cluster {
 
 	private String me;
 	private Map<String, InetSocketAddress> peers;
-	private NioDispatcher<PersistentNioChannel> nio;
+	private NioDispatcher<PersistentNioplex> nio;
 	private ClusterProbe probe;
 
 	private RequestResponseMatcher matcher = new RequestResponseMatcher();
@@ -39,7 +39,7 @@ public class ClusterImpl implements Cluster {
 	/**
 	 * Established channels connecting to peers.
 	 */
-	private Map<String, PersistentNioChannel> channels = new HashMap<>();
+	private Map<String, PersistentNioplex> nioplexs = new HashMap<>();
 
 	private Signal<String> onJoined;
 	private Signal<String> onLeft;
@@ -48,8 +48,8 @@ public class ClusterImpl implements Cluster {
 	public ClusterImpl(String me, Map<String, InetSocketAddress> peers) throws IOException {
 		this.me = me;
 		this.peers = peers;
-		this.nio = new NioDispatcherImpl<>(() -> NioChannelFactory.persistent( //
-				new PersistentNioChannel(nio, peers.get(me)), //
+		this.nio = new NioDispatcherImpl<>(() -> NioplexFactory.persistent( //
+				new PersistentNioplex(nio, peers.get(me)), //
 				matcher, //
 				executor, //
 				this::respondToRequest));
@@ -65,7 +65,7 @@ public class ClusterImpl implements Cluster {
 		onJoined = probe.getOnJoined();
 
 		onLeft = probe.getOnLeft().map(node -> {
-			var channel = channels.get(node);
+			var channel = nioplexs.get(node);
 			if (channel != null)
 				channel.stop();
 			return node;
@@ -76,7 +76,7 @@ public class ClusterImpl implements Cluster {
 
 	@Override
 	public void stop() {
-		for (var channel : channels.values())
+		for (var channel : nioplexs.values())
 			channel.stop();
 
 		probe.stop();
@@ -95,8 +95,8 @@ public class ClusterImpl implements Cluster {
 			return fail("peer " + peer + " is not active");
 	}
 
-	private PersistentNioChannel getChannel(String peer) {
-		var channel = channels.get(peer);
+	private PersistentNioplex getChannel(String peer) {
+		var channel = nioplexs.get(peer);
 
 		if (channel == null || !channel.isConnected())
 			try {
@@ -104,7 +104,7 @@ public class ClusterImpl implements Cluster {
 					nio.disconnect(channel);
 
 				channel = nio.connect(peers.get(peer));
-				channels.put(peer, channel);
+				nioplexs.put(peer, channel);
 			} catch (IOException ex) {
 				throw new ClusterException(ex);
 			}

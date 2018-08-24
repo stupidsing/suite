@@ -13,17 +13,17 @@ import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Signal;
 
-public interface NioChannelFactory {
+public interface NioplexFactory {
 
 	public static char RESPONSE = 'P';
 	public static char REQUEST = 'Q';
 
-	public class PersistentNioChannel extends RequestResponseNioChannel {
-		private NioDispatcher<PersistentNioChannel> nio;
+	public class PersistentNioplex extends RequestResponseNioplex {
+		private NioDispatcher<PersistentNioplex> nio;
 		private InetSocketAddress address;
 		private boolean isStarted;
 
-		public PersistentNioChannel(NioDispatcher<PersistentNioChannel> nio, InetSocketAddress address) {
+		public PersistentNioplex(NioDispatcher<PersistentNioplex> nio, InetSocketAddress address) {
 			this.nio = nio;
 			this.address = address;
 		}
@@ -46,7 +46,7 @@ public interface NioChannelFactory {
 		}
 	}
 
-	public class RequestResponseNioChannel extends PacketedNioChannel {
+	public class RequestResponseNioplex extends PacketedNioplex {
 		public static char RESPONSE = 'P';
 		public static char REQUEST = 'Q';
 		private boolean isConnected;
@@ -75,7 +75,7 @@ public interface NioChannelFactory {
 		}
 	}
 
-	public class PacketedNioChannel extends BufferedNioChannel {
+	public class PacketedNioplex extends BufferedNioplex {
 		public final Signal<Bytes> onReceivePacket = Signal.of();
 
 		public void sendPacket(Bytes packet) {
@@ -86,7 +86,7 @@ public interface NioChannelFactory {
 		}
 	}
 
-	public class BufferedNioChannel extends NioChannel {
+	public class BufferedNioplex extends Nioplex {
 		private Bytes toSend = Bytes.empty;
 		private Iterate<Bytes> sender;
 
@@ -106,13 +106,13 @@ public interface NioChannelFactory {
 		}
 	}
 
-	public class NioChannel {
+	public class Nioplex {
 		public final Signal<Iterate<Bytes>> onConnected = Signal.of();
 		public final Signal<Bytes> onReceive = Signal.of();
 		public final Signal<Boolean> onTrySend = Signal.of();
 	}
 
-	public static <C extends PersistentNioChannel> C persistent( //
+	public static <C extends PersistentNioplex> C persistent( //
 			C channel0, //
 			RequestResponseMatcher matcher, //
 			ExecutorService executor, //
@@ -120,7 +120,7 @@ public interface NioChannelFactory {
 		return requestResponse(channel0, matcher, executor, handler);
 	}
 
-	public static <C extends RequestResponseNioChannel> C requestResponse( //
+	public static <C extends RequestResponseNioplex> C requestResponse( //
 			C channel0, //
 			RequestResponseMatcher matcher, //
 			ExecutorService executor, //
@@ -142,7 +142,7 @@ public interface NioChannelFactory {
 		return channel;
 	}
 
-	public static <C extends PacketedNioChannel> C packeted(C channel0) {
+	public static <C extends PacketedNioplex> C packeted(C channel0) {
 		var channel = buffered(channel0);
 		channel.onReceive.wire(new Sink<>() {
 			private Bytes received = Bytes.empty;
@@ -165,7 +165,7 @@ public interface NioChannelFactory {
 		return channel;
 	}
 
-	public static <C extends BufferedNioChannel> C buffered(C channel) {
+	public static <C extends BufferedNioplex> C buffered(C channel) {
 		channel.onConnected.wire(channel::setSender);
 		channel.onTrySend.wire(channel::trySend);
 		return channel;

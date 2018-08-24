@@ -14,8 +14,8 @@ import java.util.concurrent.TimeUnit;
 import org.junit.Test;
 
 import suite.cfg.Defaults;
-import suite.net.nio.NioChannelFactory.BufferedNioChannel;
-import suite.net.nio.NioChannelFactory.RequestResponseNioChannel;
+import suite.net.nio.NioplexFactory.BufferedNioplex;
+import suite.net.nio.NioplexFactory.RequestResponseNioplex;
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Iterate;
 import suite.util.Rethrow;
@@ -32,14 +32,14 @@ public class NioDispatcherTest {
 		var hello = "HELLO";
 
 		var dispatcher = new NioDispatcherImpl<>(() -> {
-			var channel = new BufferedNioChannel();
-			channel.onConnected.wire(sender -> {
+			var np = new BufferedNioplex();
+			np.onConnected.wire(sender -> {
 				var s = hello + "\n";
-				channel.send(To.bytes(s));
+				np.send(To.bytes(s));
 
 			});
-			channel.onReceive.wire(channel::send);
-			return NioChannelFactory.buffered(channel);
+			np.onReceive.wire(np::send);
+			return NioplexFactory.buffered(np);
 		});
 
 		dispatcher.start();
@@ -69,7 +69,7 @@ public class NioDispatcherTest {
 		Iterate<Bytes> handler = request -> request;
 
 		var dispatcher = new NioDispatcherImpl<>(
-				() -> NioChannelFactory.requestResponse(new RequestResponseNioChannel(), matcher, executor, handler));
+				() -> NioplexFactory.requestResponse(new RequestResponseNioplex(), matcher, executor, handler));
 		dispatcher.start();
 
 		try (var closeServer = dispatcher.listen(port)) {
