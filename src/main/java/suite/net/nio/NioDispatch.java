@@ -138,7 +138,7 @@ public class NioDispatch implements Closeable {
 
 			// this seems to allow other threads to gain access. Not exactly
 			// the behavior as documented in NIO, but anyway.
-			selector.wakeup();
+			wakeUpSelector();
 
 			var iter = selector.selectedKeys().iterator();
 
@@ -208,7 +208,7 @@ public class NioDispatch implements Closeable {
 	}
 
 	private void wakeUpSelector() {
-		selector.wakeup(); // not working in my Linux machines
+		// selector.wakeup(); // not working in Windows machines
 	}
 
 }
