@@ -112,22 +112,22 @@ public interface NioplexFactory {
 		public final Signal<Boolean> onTrySend = Signal.of();
 	}
 
-	public static <C extends PersistentNioplex> C persistent( //
-			C channel0, //
+	public static <NP extends PersistentNioplex> NP persistent( //
+			NP np0, //
 			RequestResponseMatcher matcher, //
 			ExecutorService executor, //
 			Iterate<Bytes> handler) {
-		return requestResponse(channel0, matcher, executor, handler);
+		return requestResponse(np0, matcher, executor, handler);
 	}
 
-	public static <C extends RequestResponseNioplex> C requestResponse( //
-			C channel0, //
+	public static <NP extends RequestResponseNioplex> NP requestResponse( //
+			NP np0, //
 			RequestResponseMatcher matcher, //
 			ExecutorService executor, //
 			Iterate<Bytes> handler) {
-		var channel = packeted(channel0);
-		channel.onConnected.wire(sender -> channel.setConnected(sender != null));
-		channel.onReceivePacket.wire(packet -> {
+		var np = packeted(np0);
+		np.onConnected.wire(sender -> np.setConnected(sender != null));
+		np.onReceivePacket.wire(packet -> {
 			if (5 <= packet.size()) {
 				var type = (char) packet.get(0);
 				var token = NetUtil.bytesToInt(packet.range(1, 5));
@@ -136,15 +136,15 @@ public interface NioplexFactory {
 				if (type == RESPONSE)
 					matcher.onResponseReceived(token, contents);
 				else if (type == REQUEST)
-					executor.execute(() -> channel.send(RESPONSE, token, handler.apply(contents)));
+					executor.execute(() -> np.send(RESPONSE, token, handler.apply(contents)));
 			}
 		});
-		return channel;
+		return np;
 	}
 
-	public static <C extends PacketedNioplex> C packeted(C channel0) {
-		var channel = buffered(channel0);
-		channel.onReceive.wire(new Sink<>() {
+	public static <NP extends PacketedNioplex> NP packeted(NP np0) {
+		var np = buffered(np0);
+		np.onReceive.wire(new Sink<>() {
 			private Bytes received = Bytes.empty;
 
 			public void sink(Bytes message) {
@@ -157,18 +157,18 @@ public interface NioplexFactory {
 					if (end <= size) {
 						var in = received.range(4, end);
 						received = received.range(end);
-						channel.onReceivePacket.fire(in);
+						np.onReceivePacket.fire(in);
 					}
 				}
 			}
 		});
-		return channel;
+		return np;
 	}
 
-	public static <C extends BufferedNioplex> C buffered(C channel) {
-		channel.onConnected.wire(channel::setSender);
-		channel.onTrySend.wire(channel::trySend);
-		return channel;
+	public static <NP extends BufferedNioplex> NP buffered(NP np) {
+		np.onConnected.wire(np::setSender);
+		np.onTrySend.wire(np::trySend);
+		return np;
 	}
 
 }
