@@ -1,5 +1,7 @@
 package suite.net.nio;
 
+import static suite.util.Friends.fail;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -14,11 +16,15 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 import suite.cfg.Defaults;
+import suite.net.nio.NioplexFactory.Nioplex;
 import suite.object.Object_;
 import suite.os.LogUtil;
+import suite.primitive.BooMutable;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IoSink;
+import suite.streamlet.FunUtil.Iterate;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Signal;
 
 public class NioDispatch implements Closeable {
@@ -40,6 +46,14 @@ public class NioDispatch implements Closeable {
 
 	public void stop() {
 		isRunning = false;
+	}
+
+	public <NP extends Nioplex> void asyncNioplexConnect(InetSocketAddress address, NP np) throws IOException {
+		asyncConnect(address, sc -> linkNioplex(np, sc));
+	}
+
+	public <NP extends Nioplex> void asyncNioplexListen(int port, Source<NP> source) throws IOException {
+		asyncListen(port, sc -> linkNioplex(source.source(), sc));
 	}
 
 	public void asyncConnect(InetSocketAddress address, IoSink<SocketChannel> sink) throws IOException {
@@ -85,8 +99,8 @@ public class NioDispatch implements Closeable {
 	public void asyncRead(SocketChannel sc, int n, IoSink<Bytes> sink) throws IOException {
 		var bb = getReadBuffer(sc);
 
-		new IoSink<Integer>() {
-			public void sink(Integer start) throws IOException {
+		new IoSink<Void>() {
+			public void sink(Void v) throws IOException {
 				if (n <= bb.size()) {
 					var bytes_ = bb.toBytes();
 					sink.sink(bytes_.range(0, n));
@@ -153,6 +167,41 @@ public class NioDispatch implements Closeable {
 				}
 			}
 		}
+	}
+
+	private <NP extends Nioplex> void linkNioplex(NP np, SocketChannel sc) throws ClosedChannelException {
+		IoSink<Bytes> rr = np.onReceive::fire;
+		Runnable rw = () -> np.onTrySend.fire(true);
+		var writePending = BooMutable.false_();
+		var or = SelectionKey.OP_READ;
+		var ow = SelectionKey.OP_WRITE;
+
+		Runnable reg = () -> reg(sc, writePending.isTrue() ? or | ow : or);
+
+		Iterate<Bytes> sender = bs -> {
+			// return bs.range(rethrow(() -> sc.write(bs.toByteBuffer())));
+
+			if (!writePending.isTrue())
+				try {
+					asyncWriteAll(sc, bs, () -> {
+						writePending.setFalse();
+						reg.run();
+					});
+				} catch (IOException ex) {
+					throw new RuntimeException(ex);
+				}
+			else
+				fail();
+			writePending.setTrue();
+			reg.run();
+			return Bytes.empty;
+		};
+
+		np.onConnected.fire(sender);
+
+		sc.register(selector, SelectionKey.OP_READ, rr);
+		sc.register(selector, SelectionKey.OP_WRITE, rw);
+		reg.run();
 	}
 
 	private void processKey(SelectionKey key) throws IOException {
