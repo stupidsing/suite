@@ -41,7 +41,8 @@ public class NioDispatchTest {
 	public void testTextExchange() throws IOException {
 		try (var dispatch = new NioDispatch(); var listen = listen(dispatch);) {
 			dispatch.asyncConnect(new InetSocketAddress(localHost, port), sc -> {
-				dispatch.asyncWriteAll(sc, Bytes.of((hello + "\n").getBytes(charset)), v -> System.currentTimeMillis());
+				dispatch.asyncWriteAll(sc, Bytes.of((hello + "\n").getBytes(charset)), v -> System.currentTimeMillis(),
+						LogUtil::error);
 			}, LogUtil::error);
 			dispatch.run();
 		}

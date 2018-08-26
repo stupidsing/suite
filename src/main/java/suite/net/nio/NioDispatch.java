@@ -137,7 +137,7 @@ public class NioDispatch implements Closeable {
 					asyncWriteAll(sc, bs, v -> {
 						writePending.setFalse();
 						reg.run();
-					});
+					}, LogUtil::error);
 				else
 					fail();
 				writePending.setTrue();
@@ -241,10 +241,6 @@ public class NioDispatch implements Closeable {
 		};
 
 		reg(sc, SelectionKey.OP_READ, sink1, fail);
-	}
-
-	public void asyncWriteAll(SocketChannel sc, Bytes bytes, Sink<Void> sink) {
-		asyncWriteAll(sc, bytes, sink, LogUtil::error);
 	}
 
 	public void asyncWriteAll(SocketChannel sc, Bytes bytes, Sink<Void> sink, Sink<IOException> fail) {
