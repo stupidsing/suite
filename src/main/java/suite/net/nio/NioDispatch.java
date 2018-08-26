@@ -48,12 +48,49 @@ public class NioDispatch implements Closeable {
 		isRunning = false;
 	}
 
-	public <NP extends Nioplex> void asyncNioplexConnect(InetSocketAddress address, NP np) throws IOException {
-		asyncConnect(address, sc -> linkNioplex(np, sc));
-	}
+	public class LinkNioplex {
+		public <NP extends Nioplex> void asyncNioplexConnect(InetSocketAddress address, NP np) throws IOException {
+			asyncConnect(address, sc -> linkNioplex(np, sc));
+		}
 
-	public <NP extends Nioplex> void asyncNioplexListen(int port, Source<NP> source) throws IOException {
-		asyncListen(port, sc -> linkNioplex(source.source(), sc));
+		public <NP extends Nioplex> void asyncNioplexListen(int port, Source<NP> source) throws IOException {
+			asyncListen(port, sc -> linkNioplex(source.source(), sc));
+		}
+
+		private <NP extends Nioplex> void linkNioplex(NP np, SocketChannel sc) throws ClosedChannelException {
+			IoSink<Bytes> rr = np.onReceive::fire;
+			Runnable rw = () -> np.onTrySend.fire(true);
+			var writePending = BooMutable.false_();
+			var or = SelectionKey.OP_READ;
+			var ow = SelectionKey.OP_WRITE;
+
+			Runnable reg = () -> reg(sc, writePending.isTrue() ? or | ow : or);
+
+			Iterate<Bytes> sender = bs -> {
+				// return bs.range(rethrow(() -> sc.write(bs.toByteBuffer())));
+
+				if (!writePending.isTrue())
+					try {
+						asyncWriteAll(sc, bs, () -> {
+							writePending.setFalse();
+							reg.run();
+						});
+					} catch (IOException ex) {
+						throw new RuntimeException(ex);
+					}
+				else
+					fail();
+				writePending.setTrue();
+				reg.run();
+				return Bytes.empty;
+			};
+
+			np.onConnected.fire(sender);
+
+			sc.register(selector, SelectionKey.OP_READ, rr);
+			sc.register(selector, SelectionKey.OP_WRITE, rw);
+			reg.run();
+		}
 	}
 
 	public void asyncConnect(InetSocketAddress address, IoSink<SocketChannel> sink) throws IOException {
@@ -167,41 +204,6 @@ public class NioDispatch implements Closeable {
 				}
 			}
 		}
-	}
-
-	private <NP extends Nioplex> void linkNioplex(NP np, SocketChannel sc) throws ClosedChannelException {
-		IoSink<Bytes> rr = np.onReceive::fire;
-		Runnable rw = () -> np.onTrySend.fire(true);
-		var writePending = BooMutable.false_();
-		var or = SelectionKey.OP_READ;
-		var ow = SelectionKey.OP_WRITE;
-
-		Runnable reg = () -> reg(sc, writePending.isTrue() ? or | ow : or);
-
-		Iterate<Bytes> sender = bs -> {
-			// return bs.range(rethrow(() -> sc.write(bs.toByteBuffer())));
-
-			if (!writePending.isTrue())
-				try {
-					asyncWriteAll(sc, bs, () -> {
-						writePending.setFalse();
-						reg.run();
-					});
-				} catch (IOException ex) {
-					throw new RuntimeException(ex);
-				}
-			else
-				fail();
-			writePending.setTrue();
-			reg.run();
-			return Bytes.empty;
-		};
-
-		np.onConnected.fire(sender);
-
-		sc.register(selector, SelectionKey.OP_READ, rr);
-		sc.register(selector, SelectionKey.OP_WRITE, rw);
-		reg.run();
 	}
 
 	private void processKey(SelectionKey key) throws IOException {
