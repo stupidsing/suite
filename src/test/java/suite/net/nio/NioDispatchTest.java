@@ -42,7 +42,7 @@ public class NioDispatchTest {
 		try (var dispatch = new NioDispatch(); var listen = listen(dispatch);) {
 			dispatch.asyncConnect(new InetSocketAddress(localHost, port), sc -> {
 				dispatch.asyncWriteAll(sc, Bytes.of((hello + "\n").getBytes(charset)), v -> System.currentTimeMillis());
-			});
+			}, LogUtil::error);
 			dispatch.run();
 		}
 	}

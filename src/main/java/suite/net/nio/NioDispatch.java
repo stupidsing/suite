@@ -16,6 +16,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Map;
 import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 import suite.cfg.Defaults;
 import suite.net.NetUtil;
@@ -28,6 +29,8 @@ import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
+import suite.streamlet.FunUtil2.Sink2;
+import suite.util.Util;
 
 public class NioDispatch implements Closeable {
 
@@ -50,43 +53,68 @@ public class NioDispatch implements Closeable {
 	}
 
 	public class Requester {
-		private Packet packet = new Packet();
+		private Map<Integer, Sink<Bytes>> handlers = new ConcurrentHashMap<>();
+		private PacketId packetId = new PacketId();
 		private InetSocketAddress address;
 		private SocketChannel sc;
 
 		public void request(Bytes request, Sink<Bytes> sink) {
+			request(request, sink, ex -> {
+				sc = null;
+				LogUtil.error(ex);
+			});
+		}
+
+		public void request(Bytes request, Sink<Bytes> sink, Sink<IOException> fail) {
+			var id = Util.temp();
+			handlers.put(id, sink);
+
 			if (sc == null)
 				asyncConnect(address, sc_ -> {
-					packet.write(sc = sc_, request, v -> System.currentTimeMillis());
+					sc = sc_;
 
 					new Object() {
 						public void r() {
-							packet.read(sc_, bs -> {
-								// abc();
+							packetId.read(sc_, (id, bs) -> {
+								handlers.remove(id).sink(bs);
 								r();
-							});
+							}, fail);
 						}
 					}.r();
-				});
+				}, fail);
+
+			packetId.write(sc, id, request, v -> System.currentTimeMillis(), fail);
 		}
 	}
 
 	public class Responder {
 	}
 
-	public class Packet {
-		public void read(SocketChannel sc, Sink<Bytes> sink) {
-			asyncRead(sc, 4, bs0 -> asyncRead(sc, NetUtil.bytesToInt(bs0), sink));
+	public class PacketId {
+		private Packet packet = new Packet();
+
+		public void read(SocketChannel sc, Sink2<Integer, Bytes> sink, Sink<IOException> fail) {
+			asyncRead(sc, 4, bs0 -> packet.read(sc, bs1 -> sink.sink2(NetUtil.bytesToInt(bs0), bs1), fail), fail);
 		}
 
-		public void write(SocketChannel sc, Bytes bs, Sink<Void> sink) {
-			asyncWriteAll(sc, NetUtil.intToBytes(bs.size()), v -> asyncWriteAll(sc, bs, sink));
+		public void write(SocketChannel sc, int id, Bytes bs, Sink<Void> sink, Sink<IOException> fail) {
+			asyncWriteAll(sc, NetUtil.intToBytes(id), v -> packet.write(sc, bs, sink, fail), fail);
+		}
+	}
+
+	public class Packet {
+		public void read(SocketChannel sc, Sink<Bytes> sink, Sink<IOException> fail) {
+			asyncRead(sc, 4, bs0 -> asyncRead(sc, NetUtil.bytesToInt(bs0), sink, fail), fail);
+		}
+
+		public void write(SocketChannel sc, Bytes bs, Sink<Void> sink, Sink<IOException> fail) {
+			asyncWriteAll(sc, NetUtil.intToBytes(bs.size()), v -> asyncWriteAll(sc, bs, sink, fail), fail);
 		}
 	}
 
 	public class LinkNioplex {
 		public <NP extends Nioplex> void asyncNioplexConnect(InetSocketAddress address, NP np) {
-			asyncConnect(address, sc -> linkNioplex(np, sc));
+			asyncConnect(address, sc -> linkNioplex(np, sc), LogUtil::error);
 		}
 
 		public <NP extends Nioplex> void asyncNioplexListen(int port, Source<NP> source) {
@@ -128,10 +156,6 @@ public class NioDispatch implements Closeable {
 
 			reg.run();
 		}
-	}
-
-	public void asyncConnect(InetSocketAddress address, Sink<SocketChannel> sink) {
-		asyncConnect(address, sink, LogUtil::error);
 	}
 
 	public void asyncConnect(InetSocketAddress address, Sink<SocketChannel> sink, Sink<IOException> fail) {
@@ -187,10 +211,6 @@ public class NioDispatch implements Closeable {
 		}.sink(0);
 	}
 
-	public void asyncRead(SocketChannel sc, int n, Sink<Bytes> sink) {
-		asyncRead(sc, n, sink, LogUtil::error);
-	}
-
 	public void asyncRead(SocketChannel sc, int n, Sink<Bytes> sink, Sink<IOException> fail) {
 		var bb = getReadBuffer(sc);
 
@@ -224,18 +244,18 @@ public class NioDispatch implements Closeable {
 	}
 
 	public void asyncWriteAll(SocketChannel sc, Bytes bytes, Sink<Void> sink) {
+		asyncWriteAll(sc, bytes, sink, LogUtil::error);
+	}
+
+	public void asyncWriteAll(SocketChannel sc, Bytes bytes, Sink<Void> sink, Sink<IOException> fail) {
 		new Sink<Bytes>() {
 			public void sink(Bytes bytes) {
 				if (0 < bytes.size())
-					asyncWrite(sc, bytes, this);
+					asyncWrite(sc, bytes, this, fail);
 				else
 					sink.sink(null);
 			}
 		}.sink(bytes);
-	}
-
-	public void asyncWrite(SocketChannel sc, Bytes bytes, Sink<Bytes> sink) {
-		asyncWrite(sc, bytes, sink, LogUtil::error);
 	}
 
 	public void asyncWrite(SocketChannel sc, Bytes bytes, Sink<Bytes> sink, Sink<IOException> fail) {
