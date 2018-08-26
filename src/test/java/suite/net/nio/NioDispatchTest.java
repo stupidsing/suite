@@ -13,6 +13,7 @@ import java.nio.charset.Charset;
 import org.junit.Test;
 
 import suite.cfg.Defaults;
+import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.util.Rethrow;
 
@@ -40,8 +41,7 @@ public class NioDispatchTest {
 	public void testTextExchange() throws IOException {
 		try (var dispatch = new NioDispatch(); var listen = listen(dispatch);) {
 			dispatch.asyncConnect(new InetSocketAddress(localHost, port), sc -> {
-				dispatch.asyncWriteAll(sc, Bytes.of((hello + "\n").getBytes(charset)), () -> {
-				});
+				dispatch.asyncWriteAll(sc, Bytes.of((hello + "\n").getBytes(charset)), v -> System.currentTimeMillis());
 			});
 			dispatch.run();
 		}
@@ -53,7 +53,7 @@ public class NioDispatchTest {
 				assertArrayEquals(hello.getBytes(charset), bytes.toArray());
 				dispatch.close(sc);
 				dispatch.stop();
-			});
+			}, LogUtil::error);
 		});
 	}
 
