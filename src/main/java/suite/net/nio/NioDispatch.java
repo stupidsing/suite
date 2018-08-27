@@ -1,6 +1,5 @@
 package suite.net.nio;
 
-import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.Closeable;
@@ -20,15 +19,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import suite.cfg.Defaults;
 import suite.net.NetUtil;
-import suite.net.nio.NioplexFactory.Nioplex;
 import suite.object.Object_;
 import suite.os.LogUtil;
-import suite.primitive.BooMutable;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Sink;
-import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Sink2;
 import suite.util.Util;
 
@@ -36,7 +32,6 @@ public class NioDispatch implements Closeable {
 
 	private boolean isRunning = true;
 	private Selector selector = Selector.open();
-	private Map<SelectableChannel, BytesBuilder> reads = new WeakHashMap<>();
 	private ThreadLocal<byte[]> threadBuffer = ThreadLocal.withInitial(() -> new byte[Defaults.bufferSize]);
 
 	public NioDispatch() throws IOException {
@@ -119,70 +114,85 @@ public class NioDispatch implements Closeable {
 		private Packet packet = new Packet();
 
 		public void read(SocketChannel sc, Sink2<Integer, Bytes> okay, Sink<IOException> fail) {
-			asyncRead(sc, 4, bs0 -> packet.read(sc, bs1 -> okay.sink2(NetUtil.bytesToInt(bs0), bs1), fail), fail);
+			packet.buffer.read(sc, 4, bs0 -> packet.read(sc, bs1 -> okay.sink2(NetUtil.bytesToInt(bs0), bs1), fail), fail);
 		}
 
 		public void write(SocketChannel sc, int id, Bytes bs, Sink<Void> okay, Sink<IOException> fail) {
-			asyncWriteAll(sc, NetUtil.intToBytes(id), v -> packet.write(sc, bs, okay, fail), fail);
+			packet.buffer.writeAll(sc, NetUtil.intToBytes(id), v -> packet.write(sc, bs, okay, fail), fail);
 		}
 	}
 
 	public class Packet {
+		public Buffer buffer = new Buffer();
+
 		public void read(SocketChannel sc, Sink<Bytes> okay, Sink<IOException> fail) {
-			asyncRead(sc, 4, bs0 -> asyncRead(sc, NetUtil.bytesToInt(bs0), okay, fail), fail);
+			buffer.read(sc, 4, bs0 -> buffer.read(sc, NetUtil.bytesToInt(bs0), okay, fail), fail);
 		}
 
 		public void write(SocketChannel sc, Bytes bs, Sink<Void> okay, Sink<IOException> fail) {
-			asyncWriteAll(sc, NetUtil.intToBytes(bs.size()), v -> asyncWriteAll(sc, bs, okay, fail), fail);
+			buffer.writeAll(sc, NetUtil.intToBytes(bs.size()), v -> buffer.writeAll(sc, bs, okay, fail), fail);
 		}
 	}
 
 	public class Buffer {
-	}
+		private Map<SelectableChannel, BytesBuilder> reads = new WeakHashMap<>();
 
-	public class LinkNioplex {
-		public <NP extends Nioplex> void asyncNioplexConnect(InetSocketAddress address, NP np) {
-			asyncConnect(address, sc -> linkNioplex(np, sc), LogUtil::error);
+		public void writeAll(SocketChannel sc, Bytes bytes, Sink<Void> okay, Sink<IOException> fail) {
+			new Sink<Bytes>() {
+				public void sink(Bytes bytes) {
+					if (0 < bytes.size())
+						asyncWrite(sc, bytes, this, fail);
+					else
+						okay.sink(null);
+				}
+			}.sink(bytes);
 		}
 
-		public <NP extends Nioplex> void asyncNioplexListen(int port, Source<NP> source) {
-			asyncListen(port, sc -> linkNioplex(source.source(), sc));
+		public void readLine(SocketChannel sc, byte delim, Sink<Bytes> okay, Sink<IOException> fail) {
+			var bb = getReadBuffer(sc);
+
+			new Sink<Integer>() {
+				public void sink(Integer start) {
+					var bytes_ = bb.toBytes();
+
+					for (int i = start; i < bytes_.size(); i++)
+						if (bytes_.get(i) == delim) {
+							okay.sink(bytes_.range(0, i));
+							bb.clear();
+							bb.append(bytes_.range(i + 1));
+							return;
+						}
+
+					asyncRead(sc, bytes1 -> {
+						var size0 = bb.size();
+						bb.append(bytes1);
+						this.sink(size0);
+					}, fail);
+				}
+			}.sink(0);
 		}
 
-		private <NP extends Nioplex> void linkNioplex(NP np, SocketChannel sc) {
-			Sink<Bytes> rr = np.onReceive::fire;
-			Runnable rw = () -> np.onTrySend.fire(true);
-			var writePending = BooMutable.false_();
-			var or = SelectionKey.OP_READ;
-			var ow = SelectionKey.OP_WRITE;
+		public void read(SocketChannel sc, int n, Sink<Bytes> okay, Sink<IOException> fail) {
+			var bb = getReadBuffer(sc);
 
-			Runnable reg = () -> reg(sc, writePending.isTrue() ? or | ow : or);
+			new Sink<Void>() {
+				public void sink(Void v) {
+					if (n <= bb.size()) {
+						var bytes_ = bb.toBytes();
+						okay.sink(bytes_.range(0, n));
+						bb.clear();
+						bb.append(Bytes.of(bytes_.range(n)));
+					} else
+						asyncRead(sc, bytes1 -> {
+							bb.append(bytes1);
+							this.sink(null);
+						}, fail);
+				}
+			}.sink(null);
+		}
 
-			Iterate<Bytes> sender = bs -> {
-				// return bs.range(rethrow(() -> sc.write(bs.toByteBuffer())));
-
-				if (!writePending.isTrue())
-					asyncWriteAll(sc, bs, v -> {
-						writePending.setFalse();
-						reg.run();
-					}, LogUtil::error);
-				else
-					fail();
-				writePending.setTrue();
-				reg.run();
-				return Bytes.empty;
-			};
-
-			np.onConnected.fire(sender);
-
-			try {
-				sc.register(selector, SelectionKey.OP_READ, rr);
-				sc.register(selector, SelectionKey.OP_WRITE, rw);
-			} catch (ClosedChannelException ex) {
-				throw new RuntimeException(ex);
-			}
-
-			reg.run();
+		private BytesBuilder getReadBuffer(SocketChannel sc) {
+			return reads.computeIfAbsent(sc, sc_ -> new BytesBuilder());
 		}
 	}
 
@@ -215,49 +225,6 @@ public class NioDispatch implements Closeable {
 		}
 	}
 
-	public void asyncReadLine(SocketChannel sc, byte delim, Sink<Bytes> okay, Sink<IOException> fail) {
-		var bb = getReadBuffer(sc);
-
-		new Sink<Integer>() {
-			public void sink(Integer start) {
-				var bytes_ = bb.toBytes();
-
-				for (int i = start; i < bytes_.size(); i++)
-					if (bytes_.get(i) == delim) {
-						okay.sink(bytes_.range(0, i));
-						bb.clear();
-						bb.append(bytes_.range(i + 1));
-						return;
-					}
-
-				asyncRead(sc, bytes1 -> {
-					var size0 = bb.size();
-					bb.append(bytes1);
-					this.sink(size0);
-				}, fail);
-			}
-		}.sink(0);
-	}
-
-	public void asyncRead(SocketChannel sc, int n, Sink<Bytes> okay, Sink<IOException> fail) {
-		var bb = getReadBuffer(sc);
-
-		new Sink<Void>() {
-			public void sink(Void v) {
-				if (n <= bb.size()) {
-					var bytes_ = bb.toBytes();
-					okay.sink(bytes_.range(0, n));
-					bb.clear();
-					bb.append(Bytes.of(bytes_.range(n)));
-				} else
-					asyncRead(sc, bytes1 -> {
-						bb.append(bytes1);
-						this.sink(null);
-					}, fail);
-			}
-		}.sink(null);
-	}
-
 	public void asyncRead(SocketChannel sc, Sink<Bytes> sink0, Sink<IOException> fail) {
 		Sink<Object> okay1 = object -> {
 			if (object instanceof Bytes)
@@ -269,17 +236,6 @@ public class NioDispatch implements Closeable {
 		};
 
 		reg(sc, SelectionKey.OP_READ, okay1, fail);
-	}
-
-	public void asyncWriteAll(SocketChannel sc, Bytes bytes, Sink<Void> okay, Sink<IOException> fail) {
-		new Sink<Bytes>() {
-			public void sink(Bytes bytes) {
-				if (0 < bytes.size())
-					asyncWrite(sc, bytes, this, fail);
-				else
-					okay.sink(null);
-			}
-		}.sink(bytes);
 	}
 
 	public void asyncWrite(SocketChannel sc, Bytes bytes, Sink<Bytes> okay0, Sink<IOException> fail) {
@@ -372,10 +328,6 @@ public class NioDispatch implements Closeable {
 
 		if ((ops & SelectionKey.OP_WRITE) != 0)
 			callback.sink(null);
-	}
-
-	private BytesBuilder getReadBuffer(SocketChannel sc) {
-		return reads.computeIfAbsent(sc, sc_ -> new BytesBuilder());
 	}
 
 	private void reg(SelectableChannel sc, int key, Sink<?> attachment, Sink<IOException> fail) {

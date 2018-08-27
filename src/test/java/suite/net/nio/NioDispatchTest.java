@@ -15,6 +15,7 @@ import org.junit.Test;
 import suite.cfg.Defaults;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
+import suite.streamlet.FunUtil.Sink;
 import suite.util.Rethrow;
 
 public class NioDispatchTest {
@@ -40,17 +41,23 @@ public class NioDispatchTest {
 	@Test
 	public void testTextExchange() throws IOException {
 		try (var dispatch = new NioDispatch(); var listen = listen(dispatch);) {
-			dispatch.asyncConnect(new InetSocketAddress(localHost, port), sc -> {
-				dispatch.asyncWriteAll(sc, Bytes.of((hello + "\n").getBytes(charset)), v -> System.currentTimeMillis(),
-						LogUtil::error);
-			}, LogUtil::error);
+			var buffer = dispatch.new Buffer();
+			Sink<IOException> fail = LogUtil::error;
+
+			dispatch.asyncConnect( //
+					new InetSocketAddress(localHost, port), //
+					sc -> buffer.writeAll(sc, Bytes.of((hello + "\n").getBytes(charset)), v -> System.currentTimeMillis(), fail), //
+					fail);
+
 			dispatch.run();
 		}
 	}
 
 	private Closeable listen(NioDispatch dispatch) throws IOException {
+		var buffer = dispatch.new Buffer();
+
 		return dispatch.asyncListen(port, sc -> {
-			dispatch.asyncReadLine(sc, (byte) 10, bytes -> {
+			buffer.readLine(sc, (byte) 10, bytes -> {
 				assertArrayEquals(hello.getBytes(charset), bytes.toArray());
 				dispatch.close(sc);
 				dispatch.stop();
