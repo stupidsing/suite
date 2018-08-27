@@ -80,6 +80,19 @@ public class NioDispatch implements Closeable {
 	}
 
 	public class Responder {
+		private PacketId packetId = new PacketId();
+
+		public void listen(int port, Iterate<Bytes> fun, Sink<IOException> fail) {
+			Sink<IOException> failRequest = LogUtil::error;
+
+			asyncListen(port, sc -> {
+				new Object() {
+					public void run() {
+						packetId.read(sc, (id, bs) -> packetId.write(sc, id, fun.apply(bs), v -> run(), failRequest), failRequest);
+					}
+				}.run();
+			}, fail);
+		}
 	}
 
 	public class Reconnect {
@@ -122,6 +135,9 @@ public class NioDispatch implements Closeable {
 		public void write(SocketChannel sc, Bytes bs, Sink<Void> okay, Sink<IOException> fail) {
 			asyncWriteAll(sc, NetUtil.intToBytes(bs.size()), v -> asyncWriteAll(sc, bs, okay, fail), fail);
 		}
+	}
+
+	public class Buffer {
 	}
 
 	public class LinkNioplex {
