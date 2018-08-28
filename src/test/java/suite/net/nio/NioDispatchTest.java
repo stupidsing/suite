@@ -1,6 +1,5 @@
 package suite.net.nio;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.io.BufferedReader;
@@ -11,6 +10,7 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 
 import org.junit.Test;
@@ -26,9 +26,12 @@ public class NioDispatchTest {
 
 	private InetAddress localHost = Rethrow.ex(() -> InetAddress.getLocalHost());
 	private int port = 5151;
-	private String hello = "HELLO";
 	private Charset charset = Defaults.charset;
+	private String hello = "HELLO";
+	private Bytes helloBytes = Bytes.of(hello.getBytes(charset));
+
 	private byte lf = 10;
+	private Bytes lfs = Bytes.of(new byte[] { lf, });
 	private Sink<IOException> fail = LogUtil::error;
 
 	@Test
@@ -59,8 +62,8 @@ public class NioDispatchTest {
 
 			dispatch.asyncConnect( //
 					new InetSocketAddress(localHost, port), //
-					sc -> buffer.writeAll(sc, Bytes.of((hello + "\n").getBytes(charset)), v -> buffer.readLine(sc, lf, bytes -> {
-						assertArrayEquals(hello.getBytes(charset), bytes.toArray());
+					sc -> buffer.writeAll(sc, Bytes.concat(helloBytes, lfs), v -> buffer.readLine(sc, lf, bytes -> {
+						assertEquals(helloBytes, bytes);
 						System.out.println("OK");
 						dispatch.close(sc);
 						dispatch.stop();
@@ -74,16 +77,10 @@ public class NioDispatchTest {
 	private Closeable listen(NioDispatch dispatch) throws IOException {
 		var buffer = dispatch.new Buffer();
 
-		return dispatch.asyncListen(port, sc -> {
-			new Object() {
-				public void run() {
-					buffer.readLine(sc, lf, bytes -> {
-						buffer.writeAll(sc, bytes, v0 -> {
-							buffer.writeAll(sc, Bytes.of(new byte[] { lf, }), v1 -> run(), fail);
-						}, fail);
-					}, fail);
-				}
-			}.run();
+		return dispatch.asyncListen(port, new Sink<SocketChannel>() {
+			public void sink(SocketChannel sc) {
+				buffer.readLine(sc, lf, bytes -> buffer.writeAll(sc, Bytes.concat(bytes, lfs), v -> sink(sc), fail), fail);
+			}
 		});
 	}
 
