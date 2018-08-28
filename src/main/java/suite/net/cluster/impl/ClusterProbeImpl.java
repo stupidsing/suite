@@ -32,7 +32,7 @@ import suite.util.To;
  */
 public class ClusterProbeImpl implements ClusterProbe {
 
-	private static int bufferSize = 65536; // uDP packet size
+	private static int bufferSize = 65536; // UDP packet size
 	private static int checkAliveDuration = 1500;
 	private static int timeoutDuration = 5000;
 
@@ -106,13 +106,9 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	public ClusterProbeImpl(String me, Map<String, InetSocketAddress> peers) throws IOException {
-		this();
 		this.me = me;
-		setPeers(peers);
-	}
-
-	public ClusterProbeImpl() throws IOException {
 		channel.configureBlocking(false);
+		setPeers(peers);
 	}
 
 	@Override
