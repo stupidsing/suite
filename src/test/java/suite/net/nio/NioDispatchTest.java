@@ -24,6 +24,7 @@ public class NioDispatchTest {
 	private int port = 5151;
 	private String hello = "HELLO";
 	private Charset charset = Defaults.charset;
+	private Sink<IOException> fail = LogUtil::error;
 
 	@Test
 	public void testTextExchange0() throws IOException {
@@ -42,11 +43,10 @@ public class NioDispatchTest {
 	public void testTextExchange() throws IOException {
 		try (var dispatch = new NioDispatch(); var listen = listen(dispatch);) {
 			var buffer = dispatch.new Buffer();
-			Sink<IOException> fail = LogUtil::error;
 
 			dispatch.asyncConnect( //
 					new InetSocketAddress(localHost, port), //
-					sc -> buffer.writeAll(sc, Bytes.of((hello + "\n").getBytes(charset)), v -> System.currentTimeMillis(), fail), //
+					sc -> buffer.writeAll(sc, Bytes.of((hello + "\n").getBytes(charset)), v -> getClass(), fail), //
 					fail);
 
 			dispatch.run();
@@ -61,7 +61,7 @@ public class NioDispatchTest {
 				assertArrayEquals(hello.getBytes(charset), bytes.toArray());
 				dispatch.close(sc);
 				dispatch.stop();
-			}, LogUtil::error);
+			}, fail);
 		});
 	}
 
