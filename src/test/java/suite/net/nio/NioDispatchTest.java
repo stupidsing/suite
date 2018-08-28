@@ -1,9 +1,12 @@
 package suite.net.nio;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
+import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -17,6 +20,7 @@ import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Sink;
 import suite.util.Rethrow;
+import suite.util.Thread_;
 
 public class NioDispatchTest {
 
@@ -24,6 +28,7 @@ public class NioDispatchTest {
 	private int port = 5151;
 	private String hello = "HELLO";
 	private Charset charset = Defaults.charset;
+	private byte lf = 10;
 	private Sink<IOException> fail = LogUtil::error;
 
 	@Test
@@ -31,10 +36,18 @@ public class NioDispatchTest {
 		try (var dispatch = new NioDispatch();
 				var listen = listen(dispatch);
 				var socket = new Socket(localHost, port);
+				var is = socket.getInputStream();
 				var os = socket.getOutputStream();
-				var writer = new PrintWriter(os)) {
-			writer.print(hello + "\n");
-			writer.flush();
+				var isr = new InputStreamReader(is);
+				var br = new BufferedReader(isr);
+				var pw = new PrintWriter(os)) {
+			Thread_.startThread(() -> {
+				pw.print(hello + "\n");
+				pw.flush();
+				assertEquals(hello, br.readLine());
+				System.out.println("OK");
+				dispatch.stop();
+			});
 			dispatch.run();
 		}
 	}
@@ -46,7 +59,12 @@ public class NioDispatchTest {
 
 			dispatch.asyncConnect( //
 					new InetSocketAddress(localHost, port), //
-					sc -> buffer.writeAll(sc, Bytes.of((hello + "\n").getBytes(charset)), v -> getClass(), fail), //
+					sc -> buffer.writeAll(sc, Bytes.of((hello + "\n").getBytes(charset)), v -> buffer.readLine(sc, lf, bytes -> {
+						assertArrayEquals(hello.getBytes(charset), bytes.toArray());
+						System.out.println("OK");
+						dispatch.close(sc);
+						dispatch.stop();
+					}, fail), fail), //
 					fail);
 
 			dispatch.run();
@@ -57,11 +75,15 @@ public class NioDispatchTest {
 		var buffer = dispatch.new Buffer();
 
 		return dispatch.asyncListen(port, sc -> {
-			buffer.readLine(sc, (byte) 10, bytes -> {
-				assertArrayEquals(hello.getBytes(charset), bytes.toArray());
-				dispatch.close(sc);
-				dispatch.stop();
-			}, fail);
+			new Object() {
+				public void run() {
+					buffer.readLine(sc, lf, bytes -> {
+						buffer.writeAll(sc, bytes, v0 -> {
+							buffer.writeAll(sc, Bytes.of(new byte[] { lf, }), v1 -> run(), fail);
+						}, fail);
+					}, fail);
+				}
+			}.run();
 		});
 	}
 
