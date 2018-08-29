@@ -1,19 +1,21 @@
 package suite.net.cluster;
 
 import static org.junit.Assert.assertEquals;
+import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 import org.junit.Test;
 
 import suite.net.cluster.impl.ClusterImpl;
 import suite.net.cluster.impl.ClusterMapImpl;
+import suite.primitive.Ints_;
+import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.Thread_;
 
@@ -26,22 +28,20 @@ public class ClusterMapTest {
 	@Test
 	public void testClusterMap() throws IOException {
 		var nNodes = 3;
-		var peers = new HashMap<String, InetSocketAddress>();
 
-		for (var i = 0; i < nNodes; i++)
-			peers.put("NODE" + i, new InetSocketAddress(localHost, 3000 + i));
+		var peers = Ints_.range(nNodes).map2(i -> "NODE" + i, i -> new InetSocketAddress(localHost, 3000 + i)).toMap();
 
-		var peerNames = new ArrayList<String>(peers.keySet());
-		var clusters = new HashMap<String, Cluster>();
-		var clMap = new HashMap<String, ClusterMap<Integer, String>>();
+		var clusters = Read //
+				.from2(peers) //
+				.keys() //
+				.<String, Cluster> map2(name -> name, name -> rethrow(() -> new ClusterImpl(name, peers))) //
+				.toMap();
 
-		for (var name : peers.keySet()) {
-			var cluster = new ClusterImpl(name, peers);
-			clusters.put(name, cluster);
+		for (var cluster : clusters.values())
 			cluster.start();
 
-			clMap.put(name, new ClusterMapImpl<>(cluster));
-		}
+		var peerNames = new ArrayList<String>(peers.keySet());
+		var clMap = Read.from2(peers).keys().map2(name -> name, name -> new ClusterMapImpl<>(clusters.get(name))).toMap();
 
 		Thread_.sleepQuietly(5 * 1000);
 
