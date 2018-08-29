@@ -31,6 +31,7 @@ public class NioDispatchTest {
 	private Bytes helloBytes = Bytes.of(hello.getBytes(charset));
 
 	private byte lf = 10;
+	private char lineFeed = (char) lf;
 	private Bytes lfs = Bytes.of(new byte[] { lf, });
 	private Sink<IOException> fail = LogUtil::error;
 
@@ -45,12 +46,13 @@ public class NioDispatchTest {
 				var br = new BufferedReader(isr);
 				var pw = new PrintWriter(os)) {
 			Thread_.startThread(() -> {
-				pw.print(hello + "\n");
+				pw.print(hello + lineFeed);
 				pw.flush();
 				assertEquals(hello, br.readLine());
 				System.out.println("OK");
 				dispatch.stop();
 			});
+
 			dispatch.run();
 		}
 	}
