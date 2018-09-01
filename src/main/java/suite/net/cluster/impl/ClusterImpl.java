@@ -1,6 +1,7 @@
 package suite.net.cluster.impl;
 
 import static suite.util.Friends.fail;
+import static suite.util.Friends.rethrow;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -98,16 +99,16 @@ public class ClusterImpl implements Cluster {
 	private PersistentNioplex getChannel(String peer) {
 		var channel = nioplexs.get(peer);
 
-		if (channel == null || !channel.isConnected())
-			try {
+		if (channel == null || !channel.isConnected()) {
+			var channel1 = rethrow(() -> {
 				if (channel != null)
 					nio.disconnect(channel);
 
-				channel = nio.connect(peers.get(peer));
-				nioplexs.put(peer, channel);
-			} catch (IOException ex) {
-				throw new ClusterException(ex);
-			}
+				return nio.connect(peers.get(peer));
+			});
+			nioplexs.put(peer, channel1);
+			return channel1;
+		}
 
 		return channel;
 	}
@@ -115,7 +116,7 @@ public class ClusterImpl implements Cluster {
 	private Bytes respondToRequest(Bytes req) {
 		var request = NetUtil.deserialize(req);
 		@SuppressWarnings("unchecked")
-		Fun<Object, Object> handler = (Fun<Object, Object>) onReceive.get(request.getClass());
+		var handler = (Fun<Object, Object>) onReceive.get(request.getClass());
 		return NetUtil.serialize(handler.apply(request));
 	}
 
