@@ -33,7 +33,7 @@ public class IntFltPair {
 		return new IntFltPair(t0, t1);
 	}
 
-	private IntFltPair(int t0, float t1) {
+	protected IntFltPair(int t0, float t1) {
 		update(t0, t1);
 	}
 

@@ -31,7 +31,7 @@ public class FltFltPair {
 		return new FltFltPair(t0, t1);
 	}
 
-	private FltFltPair(float t0, float t1) {
+	protected FltFltPair(float t0, float t1) {
 		update(t0, t1);
 	}
 

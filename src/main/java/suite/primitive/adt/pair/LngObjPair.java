@@ -34,7 +34,7 @@ public class LngObjPair<T> {
 		return new LngObjPair<>(t0, t1);
 	}
 
-	private LngObjPair(long t0, T t1) {
+	protected LngObjPair(long t0, T t1) {
 		this.t0 = t0;
 		this.t1 = t1;
 	}

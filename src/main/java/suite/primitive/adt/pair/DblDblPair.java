@@ -31,7 +31,7 @@ public class DblDblPair {
 		return new DblDblPair(t0, t1);
 	}
 
-	private DblDblPair(double t0, double t1) {
+	protected DblDblPair(double t0, double t1) {
 		update(t0, t1);
 	}
 

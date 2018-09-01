@@ -33,7 +33,7 @@ public class FltChrPair {
 		return new FltChrPair(t0, t1);
 	}
 
-	private FltChrPair(float t0, char t1) {
+	protected FltChrPair(float t0, char t1) {
 		update(t0, t1);
 	}
 

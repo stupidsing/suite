@@ -34,7 +34,7 @@ public class ChrObjPair<T> {
 		return new ChrObjPair<>(t0, t1);
 	}
 
-	private ChrObjPair(char t0, T t1) {
+	protected ChrObjPair(char t0, T t1) {
 		this.t0 = t0;
 		this.t1 = t1;
 	}

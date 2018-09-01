@@ -33,7 +33,7 @@ public class LngChrPair {
 		return new LngChrPair(t0, t1);
 	}
 
-	private LngChrPair(long t0, char t1) {
+	protected LngChrPair(long t0, char t1) {
 		update(t0, t1);
 	}
 

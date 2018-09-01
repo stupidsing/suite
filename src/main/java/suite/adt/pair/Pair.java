@@ -31,7 +31,7 @@ public class Pair<T0, T1> {
 		return new Pair<>(t0, t1);
 	}
 
-	private Pair(T0 t0, T1 t1) {
+	protected Pair(T0 t0, T1 t1) {
 		update(t0, t1);
 	}
 

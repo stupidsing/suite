@@ -31,7 +31,7 @@ public class LngLngPair {
 		return new LngLngPair(t0, t1);
 	}
 
-	private LngLngPair(long t0, long t1) {
+	protected LngLngPair(long t0, long t1) {
 		update(t0, t1);
 	}
 

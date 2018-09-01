@@ -33,7 +33,7 @@ public class LngDblPair {
 		return new LngDblPair(t0, t1);
 	}
 
-	private LngDblPair(long t0, double t1) {
+	protected LngDblPair(long t0, double t1) {
 		update(t0, t1);
 	}
 

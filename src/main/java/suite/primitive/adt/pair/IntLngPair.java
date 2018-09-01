@@ -33,7 +33,7 @@ public class IntLngPair {
 		return new IntLngPair(t0, t1);
 	}
 
-	private IntLngPair(int t0, long t1) {
+	protected IntLngPair(int t0, long t1) {
 		update(t0, t1);
 	}
 

@@ -33,7 +33,7 @@ public class FltLngPair {
 		return new FltLngPair(t0, t1);
 	}
 
-	private FltLngPair(float t0, long t1) {
+	protected FltLngPair(float t0, long t1) {
 		update(t0, t1);
 	}
 

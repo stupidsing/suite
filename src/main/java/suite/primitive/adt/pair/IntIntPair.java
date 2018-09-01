@@ -31,7 +31,7 @@ public class IntIntPair {
 		return new IntIntPair(t0, t1);
 	}
 
-	private IntIntPair(int t0, int t1) {
+	protected IntIntPair(int t0, int t1) {
 		update(t0, t1);
 	}
 

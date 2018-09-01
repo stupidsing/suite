@@ -34,7 +34,7 @@ public class IntObjPair<T> {
 		return new IntObjPair<>(t0, t1);
 	}
 
-	private IntObjPair(int t0, T t1) {
+	protected IntObjPair(int t0, T t1) {
 		this.t0 = t0;
 		this.t1 = t1;
 	}

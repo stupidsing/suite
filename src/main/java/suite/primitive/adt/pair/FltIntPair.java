@@ -33,7 +33,7 @@ public class FltIntPair {
 		return new FltIntPair(t0, t1);
 	}
 
-	private FltIntPair(float t0, int t1) {
+	protected FltIntPair(float t0, int t1) {
 		update(t0, t1);
 	}
 

@@ -33,7 +33,7 @@ public class IntChrPair {
 		return new IntChrPair(t0, t1);
 	}
 
-	private IntChrPair(int t0, char t1) {
+	protected IntChrPair(int t0, char t1) {
 		update(t0, t1);
 	}
 

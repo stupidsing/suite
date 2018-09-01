@@ -15,10 +15,11 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.cfg.Defaults;
+import suite.net.NetUtil;
 import suite.net.ThreadService;
 import suite.net.cluster.ClusterProbe;
-import suite.object.Object_;
 import suite.os.LogUtil;
+import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Signal;
@@ -64,43 +65,26 @@ public class ClusterProbeImpl implements ClusterProbe {
 		HELO, FINE, BYEE
 	}
 
-	private static class IpPort {
-		private byte[] ip;
-		private int port;
-
+	private static class IpPort extends IntIntPair {
 		private IpPort(InetSocketAddress isa) {
-			ip = isa.getAddress().getAddress();
-			port = isa.getPort();
+			super(NetUtil.bsToInt(isa.getAddress().getAddress()), isa.getPort());
 		}
 
 		private InetSocketAddress get() throws UnknownHostException {
-			return new InetSocketAddress(InetAddress.getByAddress(ip), port);
-		}
-
-		@Override
-		public boolean equals(Object object) {
-			if (Object_.clazz(object) == IpPort.class) {
-				var other = (IpPort) object;
-				return ip[0] == other.ip[0] //
-						&& ip[1] == other.ip[1] //
-						&& ip[2] == other.ip[2] //
-						&& ip[3] == other.ip[3] //
-						&& port == other.port;
-			} else
-				return false;
-		}
-
-		@Override
-		public int hashCode() {
-			var h = 7;
-			h = h * 31 + Arrays.hashCode(ip);
-			h = h * 31 + port;
-			return h;
+			return new InetSocketAddress(InetAddress.getByAddress(ip()), port());
 		}
 
 		@Override
 		public String toString() {
-			return Arrays.toString(ip) + ":" + port;
+			return Arrays.toString(ip()) + ":" + port();
+		}
+
+		private byte[] ip() {
+			return NetUtil.intToBs(t0);
+		}
+
+		private int port() {
+			return t1;
 		}
 	}
 
@@ -293,7 +277,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	private void setPeers(Map<String, InetSocketAddress> peers1) {
-		this.peers.putAll(Read.from2(peers1).mapValue(v -> new IpPort(v)).toMap());
+		this.peers.putAll(Read.from2(peers1).mapValue(IpPort::new).toMap());
 	}
 
 	public Signal<String> getOnJoined() {

@@ -33,7 +33,7 @@ public class DblChrPair {
 		return new DblChrPair(t0, t1);
 	}
 
-	private DblChrPair(double t0, char t1) {
+	protected DblChrPair(double t0, char t1) {
 		update(t0, t1);
 	}
 

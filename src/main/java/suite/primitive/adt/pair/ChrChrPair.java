@@ -31,7 +31,7 @@ public class ChrChrPair {
 		return new ChrChrPair(t0, t1);
 	}
 
-	private ChrChrPair(char t0, char t1) {
+	protected ChrChrPair(char t0, char t1) {
 		update(t0, t1);
 	}
 

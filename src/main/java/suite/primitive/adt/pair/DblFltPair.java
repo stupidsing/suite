@@ -33,7 +33,7 @@ public class DblFltPair {
 		return new DblFltPair(t0, t1);
 	}
 
-	private DblFltPair(double t0, float t1) {
+	protected DblFltPair(double t0, float t1) {
 		update(t0, t1);
 	}
 

@@ -6,7 +6,6 @@ import java.util.HashSet;
 
 import suite.funp.Funp_.Funp;
 import suite.funp.P0.FunpApply;
-import suite.funp.P0.FunpTypeCheck;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
@@ -20,6 +19,7 @@ import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTag;
 import suite.funp.P0.FunpTagId;
 import suite.funp.P0.FunpTagValue;
+import suite.funp.P0.FunpTypeCheck;
 import suite.funp.P0.FunpVariable;
 import suite.immutable.IMap;
 import suite.inspect.Inspect;

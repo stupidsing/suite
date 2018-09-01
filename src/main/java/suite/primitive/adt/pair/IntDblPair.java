@@ -33,7 +33,7 @@ public class IntDblPair {
 		return new IntDblPair(t0, t1);
 	}
 
-	private IntDblPair(int t0, double t1) {
+	protected IntDblPair(int t0, double t1) {
 		update(t0, t1);
 	}
 
