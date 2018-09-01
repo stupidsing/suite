@@ -54,6 +54,7 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 		var key = (K) request.key;
 		@SuppressWarnings("unchecked")
 		var value = (V) request.value;
+
 		var response = new PutQuery.Response();
 		response.value = localMap.put(key, value);
 		return response;
@@ -85,6 +86,7 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 		var request = new PutQuery.Request();
 		request.key = key;
 		request.value = value;
+
 		var object = requestForResponse(peer, request);
 		var response = (PutQuery.Response) object;
 
