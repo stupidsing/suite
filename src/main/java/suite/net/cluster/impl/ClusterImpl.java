@@ -1,7 +1,6 @@
 package suite.net.cluster.impl;
 
 import static suite.util.Friends.fail;
-import static suite.util.Friends.rethrow;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -49,11 +48,13 @@ public class ClusterImpl implements Cluster {
 	public ClusterImpl(String me, Map<String, InetSocketAddress> peers) throws IOException {
 		this.me = me;
 		this.peers = peers;
+
 		this.nio = new NioDispatcherImpl<>(() -> NioplexFactory.persistent( //
 				new PersistentNioplex(nio, peers.get(me)), //
 				matcher, //
 				executor, //
 				this::respondToRequest));
+
 		probe = new ClusterProbeImpl(me, peers);
 	}
 
@@ -99,16 +100,15 @@ public class ClusterImpl implements Cluster {
 	private PersistentNioplex getChannel(String peer) {
 		var channel = nioplexs.get(peer);
 
-		if (channel == null || !channel.isConnected()) {
-			var channel1 = rethrow(() -> {
+		if (channel == null || !channel.isConnected())
+			try {
 				if (channel != null)
 					nio.disconnect(channel);
 
-				return nio.connect(peers.get(peer));
-			});
-			nioplexs.put(peer, channel1);
-			return channel1;
-		}
+				nioplexs.put(peer, channel = nio.connect(peers.get(peer)));
+			} catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
 
 		return channel;
 	}
