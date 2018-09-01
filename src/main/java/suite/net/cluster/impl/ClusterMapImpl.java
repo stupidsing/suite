@@ -22,9 +22,7 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 	private Map<K, V> localMap = new HashMap<>();
 
 	public ClusterMapImpl(Cluster cluster) {
-		this.cluster = cluster;
-
-		synchronized (cluster) { // avoid missed cluster events
+		synchronized (this.cluster = cluster) { // avoid missed cluster events
 			peers.addAll(cluster.getActivePeers());
 			Collections.sort(peers);
 
@@ -35,19 +33,15 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 		}
 	}
 
-	private Sink<String> onJoined = peer -> {
-		synchronized (ClusterMapImpl.this) {
-			peers.add(peer);
-			Collections.sort(peers);
-		}
-	};
+	private Sink<String> onJoined = peer -> onChangePeers(() -> peers.add(peer));
+	private Sink<String> onLeft = peer -> onChangePeers(() -> peers.remove(peer));
 
-	private Sink<String> onLeft = peer -> {
+	private void onChangePeers(Runnable runnable) {
 		synchronized (ClusterMapImpl.this) {
-			peers.remove(peer);
+			runnable.run();
 			Collections.sort(peers);
 		}
-	};
+	}
 
 	private Fun<GetQuery.Request, GetQuery.Response> onGet = request -> {
 		var response = new GetQuery.Response();
