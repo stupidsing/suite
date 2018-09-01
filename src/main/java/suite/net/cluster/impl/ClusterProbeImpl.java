@@ -50,12 +50,12 @@ public class ClusterProbeImpl implements ClusterProbe {
 	/**
 	 * Active nodes with their ages.
 	 */
-	private Map<String, Long> lastActiveTimes = new HashMap<>();
+	private Map<String, Long> lastActiveTimeByPeer = new HashMap<>();
 
 	/**
 	 * Time-stamp to avoid HELO bombing.
 	 */
-	private Map<String, Long> lastSentTimes = new HashMap<>();
+	private Map<String, Long> lastSentTimeByPeer = new HashMap<>();
 
 	private Signal<String> onJoined = Signal.of();
 	private Signal<String> onLeft = Signal.of();
@@ -113,7 +113,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	@Override
 	public synchronized void start() {
 		synchronized (lock) {
-			lastActiveTimes.put(me, System.currentTimeMillis());
+			lastActiveTimeByPeer.put(me, System.currentTimeMillis());
 			broadcast(Command.HELO);
 		}
 		threadService.start();
@@ -124,7 +124,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 		threadService.stop();
 		synchronized (lock) {
 			broadcast(Command.BYEE);
-			lastActiveTimes.clear();
+			lastActiveTimeByPeer.clear();
 		}
 	}
 
@@ -151,7 +151,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 				}
 			}
 
-			for (var peer : lastActiveTimes.keySet())
+			for (var peer : lastActiveTimeByPeer.keySet())
 				onLeft.fire(peer);
 		}
 
@@ -199,16 +199,16 @@ public class ClusterProbeImpl implements ClusterProbe {
 			if (peers.get(remote) != null)
 				if (data == Command.HELO) // reply HELO messages
 					sendMessage(remote, formMessage(Command.FINE));
-				else if (data == Command.BYEE && lastActiveTimes.remove(remote) != null)
+				else if (data == Command.BYEE && lastActiveTimeByPeer.remove(remote) != null)
 					onLeft.fire(remote);
 		}
 	}
 
 	private void nodeJoined(String node, long time) {
-		var oldTime = lastActiveTimes.get(node);
+		var oldTime = lastActiveTimeByPeer.get(node);
 
 		if (oldTime == null || oldTime < time)
-			if (lastActiveTimes.put(node, time) == null)
+			if (lastActiveTimeByPeer.put(node, time) == null)
 				onJoined.fire(node);
 	}
 
@@ -216,8 +216,8 @@ public class ClusterProbeImpl implements ClusterProbe {
 		var bytes = formMessage(Command.HELO);
 
 		for (var remote : peers.keySet()) {
-			var lastActive = lastActiveTimes.get(remote);
-			var lastSent = lastSentTimes.get(remote);
+			var lastActive = lastActiveTimeByPeer.get(remote);
+			var lastSent = lastSentTimeByPeer.get(remote);
 
 			// sends to those who are nearly forgotten, i.e.:
 			// - The node is not active, or node's active time is expired
@@ -229,7 +229,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	private void eliminateOutdatedPeers(long current) {
-		var entries = lastActiveTimes.entrySet();
+		var entries = lastActiveTimeByPeer.entrySet();
 		var peerIter = entries.iterator();
 
 		while (peerIter.hasNext()) {
@@ -259,42 +259,41 @@ public class ClusterProbeImpl implements ClusterProbe {
 	private void sendMessage(String remote, byte[] bytes) {
 		try {
 			channel.send(ByteBuffer.wrap(bytes), peers.get(remote).get());
-			lastSentTimes.put(remote, System.currentTimeMillis());
+			lastSentTimeByPeer.put(remote, System.currentTimeMillis());
 		} catch (IOException ex) {
 			LogUtil.error(ex);
 		}
 	}
 
 	private byte[] formMessage(Command data) {
-		var sb = new StringBuilder(data.name() + "," + me);
-
-		for (var e : lastActiveTimes.entrySet())
-			sb.append("," + e.getKey() + "," + e.getValue());
-
-		return sb.toString().getBytes(Defaults.charset);
+		return Read //
+				.from2(lastActiveTimeByPeer) //
+				.map((peer, lastActiveTime) -> "," + peer + "," + lastActiveTime) //
+				.cons(data.name() + "," + me) //
+				.collect(As::joined) //
+				.getBytes(Defaults.charset);
 	}
 
 	@Override
 	public boolean isActive(String node) {
-		return lastActiveTimes.containsKey(node);
+		return lastActiveTimeByPeer.containsKey(node);
 	}
 
 	@Override
 	public Set<String> getActivePeers() {
-		return Collections.unmodifiableSet(lastActiveTimes.keySet());
+		return Collections.unmodifiableSet(lastActiveTimeByPeer.keySet());
 	}
 
 	@Override
 	public String toString() {
 		return Read //
-				.from2(lastActiveTimes) //
+				.from2(lastActiveTimeByPeer) //
 				.map((peer, lastActiveTime) -> peer + " (last-active = " + To.ymdHms(lastActiveTime) + ")") //
 				.collect(As.conc("\n"));
 	}
 
-	private void setPeers(Map<String, InetSocketAddress> peers) {
-		for (var e : peers.entrySet())
-			this.peers.put(e.getKey(), new IpPort(e.getValue()));
+	private void setPeers(Map<String, InetSocketAddress> peers1) {
+		this.peers.putAll(Read.from2(peers1).mapValue(v -> new IpPort(v)).toMap());
 	}
 
 	public Signal<String> getOnJoined() {
