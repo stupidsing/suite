@@ -72,6 +72,7 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 	private V getFromPeer(String peer, K key) {
 		var request = new GetQuery.Request();
 		request.key = key;
+
 		var object = requestForResponse(peer, request);
 		var response = (GetQuery.Response) object;
 
