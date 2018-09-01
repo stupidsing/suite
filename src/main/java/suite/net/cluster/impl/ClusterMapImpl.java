@@ -50,7 +50,7 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 	};
 
 	private Fun<GetQuery.Request, GetQuery.Response> onGet = request -> {
-		GetQuery.Response response = new GetQuery.Response();
+		var response = new GetQuery.Response();
 		response.value = localMap.get(request.key);
 		return response;
 	};
@@ -60,7 +60,7 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 		var key = (K) request.key;
 		@SuppressWarnings("unchecked")
 		var value = (V) request.value;
-		PutQuery.Response response = new PutQuery.Response();
+		var response = new PutQuery.Response();
 		response.value = localMap.put(key, value);
 		return response;
 	};
@@ -76,10 +76,10 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 	}
 
 	private V getFromPeer(String peer, K key) {
-		GetQuery.Request request = new GetQuery.Request();
+		var request = new GetQuery.Request();
 		request.key = key;
-		Serializable object = requestForResponse(peer, request);
-		GetQuery.Response response = (GetQuery.Response) object;
+		var object = requestForResponse(peer, request);
+		var response = (GetQuery.Response) object;
 
 		@SuppressWarnings("unchecked")
 		var value = (V) response.value;
@@ -87,11 +87,11 @@ public class ClusterMapImpl<K, V> implements ClusterMap<K, V> {
 	}
 
 	private V putToPeer(String peer, K key, V value) {
-		PutQuery.Request request = new PutQuery.Request();
+		var request = new PutQuery.Request();
 		request.key = key;
 		request.value = value;
-		Object object = requestForResponse(peer, request);
-		PutQuery.Response response = (PutQuery.Response) object;
+		var object = requestForResponse(peer, request);
+		var response = (PutQuery.Response) object;
 
 		@SuppressWarnings("unchecked")
 		var value1 = (V) response.value;
