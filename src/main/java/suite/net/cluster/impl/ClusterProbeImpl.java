@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import suite.cfg.Defaults;
@@ -230,11 +229,11 @@ public class ClusterProbeImpl implements ClusterProbe {
 	}
 
 	private void eliminateOutdatedPeers(long current) {
-		Set<Entry<String, Long>> entries = lastActiveTimes.entrySet();
+		var entries = lastActiveTimes.entrySet();
 		var peerIter = entries.iterator();
 
 		while (peerIter.hasNext()) {
-			Entry<String, Long> e = peerIter.next();
+			var e = peerIter.next();
 			var node = e.getKey();
 
 			if (timeoutDuration < current - e.getValue()) {
