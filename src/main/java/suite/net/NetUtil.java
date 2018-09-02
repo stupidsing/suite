@@ -39,7 +39,7 @@ public class NetUtil {
 
 	public static Bytes serialize(Object object) {
 		var baos = new ByteArrayOutputStream();
-		try (var baos_ = new ByteArrayOutputStream(); var out = new ObjectOutputStream(baos_);) {
+		try (var baos_ = baos; var out = new ObjectOutputStream(baos_);) {
 			out.writeObject(object);
 		} catch (IOException ex) {
 			return fail(ex);
