@@ -8,6 +8,7 @@ import suite.adt.pair.Pair;
 import suite.concurrent.Condition;
 import suite.net.nio.NioplexFactory.RequestResponseNioplex;
 import suite.primitive.Bytes;
+import suite.primitive.IntPrimitives.IntSink;
 import suite.util.Util;
 
 public class RequestResponseMatcher {
@@ -16,28 +17,33 @@ public class RequestResponseMatcher {
 	private Map<Integer, Pair<Mutable<Bytes>, Condition>> requests = new HashMap<>();
 
 	public Bytes requestForResponse(RequestResponseNioplex channel, Bytes request) {
-		return requestForResponse(channel, request, 0);
+		IntSink sink = token -> channel.send(RequestResponseNioplex.REQUEST, token, request);
+		return requestForResponse(sink);
 	}
 
-	public Bytes requestForResponse(RequestResponseNioplex channel, Bytes request, int timeOut) {
+	public Bytes requestForResponse(IntSink sink) {
+		return requestForResponse(sink, Long.MAX_VALUE);
+	}
+
+	public Bytes requestForResponse(IntSink sink, long timeout) {
 		var token = Util.temp();
 		var holder = Mutable.<Bytes> nil();
 		var condition = new Condition(() -> holder.value() != null);
 
 		return condition.waitThen(() -> {
 			requests.put(token, Pair.of(holder, condition));
-			channel.send(RequestResponseNioplex.REQUEST, token, request);
+			sink.sink(token);
 		}, () -> {
 			requests.remove(token);
 			return holder.value();
-		});
+		}, timeout);
 	}
 
 	public void onResponseReceived(int token, Bytes response) {
-		var pair = requests.get(token);
-		var holder = pair.t0;
-		var condition = pair.t1;
-		condition.thenNotify(() -> holder.set(response));
+		requests.get(token).map((holder, condition) -> {
+			condition.satisfyOne(() -> holder.set(response));
+			return null;
+		});
 	}
 
 }

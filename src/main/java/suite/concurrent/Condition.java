@@ -1,6 +1,6 @@
 package suite.concurrent;
 
-import static suite.util.Friends.rethrow;
+import static suite.util.Friends.fail;
 
 import suite.streamlet.FunUtil.Source;
 
@@ -16,26 +16,41 @@ public class Condition {
 		this.cond = cond;
 	}
 
-	public synchronized void thenNotify(Runnable before) {
-		before.run();
+	public synchronized void satisfyOne(Runnable sat) {
+		sat.run();
 		if (verify())
 			notify();
 	}
 
-	public synchronized void thenNotifyAll(Runnable before) {
-		before.run();
+	public synchronized void satisfyAll(Runnable sat) {
+		sat.run();
 		if (verify())
 			notifyAll();
 	}
 
-	public synchronized <T> T waitThen(Runnable before, Source<T> after) {
+	public <T> T waitThen(Runnable before, Source<T> after) {
+		return waitThen(before, after, Long.MAX_VALUE);
+	}
+
+	public synchronized <T> T waitThen(Runnable before, Source<T> after, long timeout) {
+		var now = System.currentTimeMillis();
+		var start = now;
+
 		while (!verify()) {
 			before.run();
-			rethrow(() -> {
-				wait(0);
-				return this;
-			});
+
+			var duration = start + timeout - now;
+			if (0l < duration)
+				try {
+					wait(duration);
+					now = System.currentTimeMillis();
+				} catch (Exception ex) {
+					return fail(ex);
+				}
+			else
+				return null;
 		}
+
 		return after.source();
 	}
 

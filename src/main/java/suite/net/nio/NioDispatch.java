@@ -17,12 +17,16 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import suite.adt.PriorityQueue;
 import suite.cfg.Defaults;
+import suite.concurrent.Backoff;
+import suite.concurrent.Condition;
 import suite.net.NetUtil;
 import suite.object.Object_;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.primitive.adt.pair.LngObjPair;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil2.Sink2;
@@ -34,7 +38,19 @@ public class NioDispatch implements Closeable {
 	private Selector selector = Selector.open();
 	private ThreadLocal<byte[]> threadBuffer = ThreadLocal.withInitial(() -> new byte[Defaults.bufferSize]);
 
+	private PriorityQueue<TimeDispatch> timeDispatches = new PriorityQueue<>( //
+			TimeDispatch.class, //
+			256, //
+			(td0, td1) -> Long.compare(td0.t0, td1.t0));
+
+	private class TimeDispatch extends LngObjPair<Runnable> {
+		public TimeDispatch(long t0, Runnable t1) {
+			super(t0, t1);
+		}
+	}
+
 	public NioDispatch() throws IOException {
+		timeDispatches.insert(new TimeDispatch(Long.MAX_VALUE, null));
 	}
 
 	@Override
@@ -47,30 +63,28 @@ public class NioDispatch implements Closeable {
 		isRunning = false;
 	}
 
-	public class Requester extends Reconnect {
+	public class Requester {
 		private Map<Integer, Sink<Bytes>> handlers = new ConcurrentHashMap<>();
 		private PacketId packetId = new PacketId();
+		private Reconnect reconnect;
 
-		public void request(Bytes request, Sink<Bytes> okay) {
-			request(request, okay, ex -> {
-				sc = null;
-				LogUtil.error(ex);
+		public Requester(InetSocketAddress address) {
+			reconnect = new Reconnect(address, sc -> {
+				new Runnable() {
+					public void run() {
+						packetId.read(sc, (id_, bs) -> {
+							handlers.remove(id_).sink(bs);
+							run();
+						}, reconnect::reset);
+					}
+				}.run();
 			});
 		}
 
-		public void request(Bytes request, Sink<Bytes> okay, Sink<IOException> fail) {
+		public void request(Bytes request, Sink<Bytes> okay) {
 			var id = Util.temp();
 			handlers.put(id, okay);
-			connect(() -> packetId.write(sc, id, request, v -> getClass(), fail), fail);
-		}
-
-		private void connect(Runnable okay, Sink<IOException> fail) {
-			connect(f -> {
-				packetId.read(sc, (id, bs) -> {
-					handlers.remove(id).sink(bs);
-					f.run();
-				}, fail);
-			}, okay, fail);
+			reconnect.connect(sc -> packetId.write(sc, id, request, v -> getClass(), reconnect::reset));
 		}
 	}
 
@@ -90,23 +104,58 @@ public class NioDispatch implements Closeable {
 		}
 	}
 
-	public class Reconnect {
-		public InetSocketAddress address;
-		public SocketChannel sc;
+	public class ReconnectShare {
+		private SocketChannel sc;
+		private Condition condition = new Condition(() -> sc != null);
+		private Reconnect reconnect;
 
-		public void connect(Sink<Runnable> read, Runnable okay, Sink<IOException> fail) {
+		public ReconnectShare(InetSocketAddress address, Sink<SocketChannel> connected) {
+			reconnect = new Reconnect(address, connected);
+		}
+
+		public void connectShare(Sink<SocketChannel> connected, Sink<SocketChannel> okay) {
+			if (sc == null)
+				reconnect.connect(sc_ -> {
+					okay.sink(sc_);
+				});
+			else
+				okay.sink(sc);
+		}
+
+		public void reset(IOException ex) {
+			reconnect.reset(ex);
+			sc = null;
+		}
+	}
+
+	public class Reconnect {
+		private InetSocketAddress address;
+		private Sink<SocketChannel> connected;
+		private SocketChannel sc;
+		private Backoff backoff = new Backoff();
+
+		public Reconnect(InetSocketAddress address, Sink<SocketChannel> connected) {
+			this.address = address;
+			this.connected = connected;
+		}
+
+		public void connect(Sink<SocketChannel> okay) {
 			if (sc == null)
 				asyncConnect(address, sc_ -> {
-					sc = sc_;
-					new Runnable() {
-						public void run() {
-							read.sink(this);
-						}
-					}.run();
-					okay.run();
-				}, fail);
+					connected.sink(sc_);
+					okay.sink(sc = sc_);
+				}, ex -> {
+					reset(ex);
+					timeDispatches.insert(new TimeDispatch(System.currentTimeMillis() + backoff.duration(), () -> connect(okay)));
+				});
 			else
-				okay.run();
+				okay.sink(sc);
+		}
+
+		public void reset(IOException ex) {
+			LogUtil.error(ex);
+			close(sc);
+			sc = null;
 		}
 	}
 
@@ -260,13 +309,19 @@ public class NioDispatch implements Closeable {
 	}
 
 	public void run() {
+		var now = System.currentTimeMillis();
+
 		while (isRunning) {
+			var td0 = timeDispatches.min();
+			var tdw = td0.t0;
+			var wait = Math.max(0l, Math.min(500l, tdw - now));
 
 			// unfortunately Selector.wakeup() does not work on my Linux
 			// machines. Thus we specify a time out to allow the selector
 			// freed out temporarily; otherwise the register() methods in
 			// other threads might block forever.
-			rethrow(() -> selector.select(500));
+			rethrow(() -> selector.select(wait));
+			now = System.currentTimeMillis();
 
 			// this seems to allow other threads to gain access. Not exactly
 			// the behavior as documented in NIO, but anyway.
@@ -284,6 +339,9 @@ public class NioDispatch implements Closeable {
 					LogUtil.error(ex);
 				}
 			}
+
+			if (tdw <= now)
+				timeDispatches.extractMin().t1.run();
 		}
 	}
 

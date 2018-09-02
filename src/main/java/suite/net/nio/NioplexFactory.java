@@ -67,7 +67,7 @@ public interface NioplexFactory {
 		}
 
 		public void setConnected(boolean isConnected) {
-			condition.thenNotify(() -> this.isConnected = isConnected);
+			condition.satisfyOne(() -> this.isConnected = isConnected);
 		}
 
 		public boolean isConnected() {

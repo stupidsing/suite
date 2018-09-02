@@ -107,7 +107,7 @@ public class ClusterImpl implements Cluster {
 
 				nioplexs.put(peer, channel = nio.connect(peers.get(peer)));
 			} catch (IOException ex) {
-				throw new RuntimeException(ex);
+				fail(ex);
 			}
 
 		return channel;
