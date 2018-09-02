@@ -43,7 +43,7 @@ public class ClusterImpl implements Cluster {
 
 	private Signal<String> onJoined;
 	private Signal<String> onLeft;
-	private Map<Class<?>, Fun<?, ?>> onReceive = new HashMap<>();
+	private Map<Class<?>, Fun<Object, Object>> onReceive = new HashMap<>();
 
 	public ClusterImpl(String me, Map<String, InetSocketAddress> peers) throws IOException {
 		this.me = me;
@@ -115,14 +115,14 @@ public class ClusterImpl implements Cluster {
 
 	private Bytes respondToRequest(Bytes req) {
 		var request = NetUtil.deserialize(req);
-		@SuppressWarnings("unchecked")
-		var handler = (Fun<Object, Object>) onReceive.get(request.getClass());
+		var handler = onReceive.get(request.getClass());
 		return NetUtil.serialize(handler.apply(request));
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public <I, O> void setOnReceive(Class<I> clazz, Fun<I, O> onReceive) {
-		this.onReceive.put(clazz, onReceive);
+		this.onReceive.put(clazz, (Fun<Object, Object>) onReceive);
 	}
 
 	@Override

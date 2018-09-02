@@ -1,7 +1,5 @@
 package suite.net.cluster.impl;
 
-import static suite.util.Friends.fail;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,25 +9,21 @@ import java.util.Map;
 import java.util.Set;
 
 import suite.net.NetUtil;
-import suite.net.cluster.Cluster;
 import suite.net.cluster.ClusterProbe;
 import suite.net.nio.NioDispatch;
-import suite.net.nio.RequestResponseMatcher;
 import suite.object.Object_;
 import suite.os.LogUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Signal;
 
-public class NioClusterImpl implements Cluster {
+public class NioClusterImpl {
 
 	private String me;
 	private Map<String, InetSocketAddress> peers;
 	private ClusterProbe probe;
 
 	private NioDispatch nd = new NioDispatch();
-	private RequestResponseMatcher matcher = new RequestResponseMatcher();
-
 	private Sink<IOException> f = LogUtil::error;
 	private Closeable unlisten;
 
@@ -40,7 +34,7 @@ public class NioClusterImpl implements Cluster {
 
 	private Signal<String> onJoined;
 	private Signal<String> onLeft;
-	private Map<Class<?>, Fun<?, ?>> onReceive = new HashMap<>();
+	private Map<Class<?>, Fun<Object, Object>> onReceive = new HashMap<>();
 
 	public NioClusterImpl(String me, Map<String, InetSocketAddress> peers) throws IOException {
 		this.me = me;
@@ -48,12 +42,10 @@ public class NioClusterImpl implements Cluster {
 		probe = new ClusterProbeImpl(me, peers);
 	}
 
-	@Override
 	public void start() throws IOException {
 		unlisten = nd.new Responder().listen(peers.get(me).getPort(), req -> {
 			var request = NetUtil.deserialize(req);
-			@SuppressWarnings("unchecked")
-			var handler = (Fun<Object, Object>) onReceive.get(request.getClass());
+			var handler = onReceive.get(request.getClass());
 			return NetUtil.serialize(handler.apply(request));
 		}, f);
 
@@ -69,7 +61,6 @@ public class NioClusterImpl implements Cluster {
 		probe.start();
 	}
 
-	@Override
 	public void stop() throws IOException {
 		for (var sc : sockChans.values())
 			nd.close(sc);
@@ -79,55 +70,37 @@ public class NioClusterImpl implements Cluster {
 		Object_.closeQuietly(unlisten);
 	}
 
-	@Override
-	public Object requestForResponse(String peer, Object request) {
+	public void requestForResponse(String peer, Object request, Sink<Object> okay, Sink<IOException> fail) {
 		if (probe.isActive(peer)) {
 			var req = NetUtil.serialize(request);
-			var sc = getChannel(peer);
-			var rsp = matcher.requestForResponse(token -> nd.asyncWrite(sc, req, v -> getClass(), f));
-			return NetUtil.deserialize(rsp);
+			nd.new Requester(peers.get(peer)).request(req, rsp -> {
+				okay.sink(NetUtil.deserialize(rsp));
+			});
 		} else
-			return fail("peer " + peer + " is not active");
+			fail.sink(new IOException("peer " + peer + " is not active"));
 	}
 
 	public void run() {
 		nd.run();
 	}
 
-	private SocketChannel getChannel(String peer) {
-		var channel = sockChans.get(peer);
-
-		if (channel == null || !channel.isConnected()) {
-			if (channel != null)
-				nd.close(channel);
-
-			nd.asyncConnect(peers.get(peer), sc -> sockChans.put(peer, sc), f);
-		}
-
-		return channel;
-	}
-
-	@Override
+	@SuppressWarnings("unchecked")
 	public <I, O> void setOnReceive(Class<I> clazz, Fun<I, O> onReceive) {
-		this.onReceive.put(clazz, onReceive);
+		this.onReceive.put(clazz, (Fun<Object, Object>) onReceive);
 	}
 
-	@Override
 	public Set<String> getActivePeers() {
 		return probe.getActivePeers();
 	}
 
-	@Override
 	public Signal<String> getOnJoined() {
 		return onJoined;
 	}
 
-	@Override
 	public Signal<String> getOnLeft() {
 		return onLeft;
 	}
 
-	@Override
 	public String getMe() {
 		return me;
 	}

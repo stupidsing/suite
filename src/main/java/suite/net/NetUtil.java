@@ -37,18 +37,18 @@ public class NetUtil {
 		return bytes;
 	}
 
-	public static Bytes serialize(Object o) {
+	public static Bytes serialize(Object object) {
 		var baos = new ByteArrayOutputStream();
 		try (var baos_ = new ByteArrayOutputStream(); var out = new ObjectOutputStream(baos_);) {
-			out.writeObject(o);
+			out.writeObject(object);
 		} catch (IOException ex) {
 			return fail(ex);
 		}
 		return Bytes.of(baos.toByteArray());
 	}
 
-	public static <T> T deserialize(Bytes s) {
-		try (var bais = new ByteArrayInputStream(s.toArray()); var in = new ObjectInputStream(bais);) {
+	public static <T> T deserialize(Bytes bytes) {
+		try (var bais = new ByteArrayInputStream(bytes.toArray()); var in = new ObjectInputStream(bais);) {
 			@SuppressWarnings("unchecked")
 			var t = (T) in.readObject();
 			return t;
