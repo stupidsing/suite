@@ -1,7 +1,6 @@
 package suite.net;
 
 import static suite.util.Friends.fail;
-import static suite.util.Friends.rethrow;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -40,13 +39,12 @@ public class NetUtil {
 
 	public static Bytes serialize(Object o) {
 		var baos = new ByteArrayOutputStream();
-		return rethrow(() -> {
-			var out = new ObjectOutputStream(baos);
+		try (var baos_ = new ByteArrayOutputStream(); var out = new ObjectOutputStream(baos_);) {
 			out.writeObject(o);
-			out.flush();
-			out.close();
-			return Bytes.of(baos.toByteArray());
-		});
+		} catch (IOException ex) {
+			return fail(ex);
+		}
+		return Bytes.of(baos.toByteArray());
 	}
 
 	public static <T> T deserialize(Bytes s) {
