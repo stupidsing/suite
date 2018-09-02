@@ -27,10 +27,10 @@ public class NioClusterImpl implements Cluster {
 	private Map<String, InetSocketAddress> peers;
 	private ClusterProbe probe;
 
-	private Sink<IOException> f = LogUtil::error;
 	private NioDispatch nd = new NioDispatch();
 	private RequestResponseMatcher matcher = new RequestResponseMatcher();
 
+	private Sink<IOException> f = LogUtil::error;
 	private Closeable unlisten;
 
 	/**
