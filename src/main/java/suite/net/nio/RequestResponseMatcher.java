@@ -17,8 +17,7 @@ public class RequestResponseMatcher {
 	private Map<Integer, Pair<Mutable<Bytes>, Condition>> requests = new HashMap<>();
 
 	public Bytes requestForResponse(RequestResponseNioplex channel, Bytes request) {
-		IntSink sink = token -> channel.send(RequestResponseNioplex.REQUEST, token, request);
-		return requestForResponse(sink);
+		return requestForResponse(token -> channel.send(RequestResponseNioplex.REQUEST, token, request));
 	}
 
 	public Bytes requestForResponse(IntSink sink) {

@@ -70,12 +70,12 @@ public class NioClusterImpl implements Cluster {
 	}
 
 	@Override
-	public void stop() {
+	public void stop() throws IOException {
 		for (var sc : sockChans.values())
 			nd.close(sc);
 
 		probe.stop();
-		nd.stop();
+		nd.close();
 		Object_.closeQuietly(unlisten);
 	}
 

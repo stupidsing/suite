@@ -6,6 +6,6 @@ public interface Service {
 
 	public void start() throws IOException;
 
-	public void stop();
+	public void stop() throws IOException;
 
 }

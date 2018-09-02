@@ -77,7 +77,7 @@ public class ClusterImpl implements Cluster {
 	}
 
 	@Override
-	public void stop() {
+	public void stop() throws IOException {
 		for (var channel : nioplexs.values())
 			channel.stop();
 
