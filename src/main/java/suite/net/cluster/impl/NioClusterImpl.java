@@ -84,8 +84,8 @@ public class NioClusterImpl implements Cluster {
 		if (probe.isActive(peer)) {
 			var req = NetUtil.serialize(request);
 			var sc = getChannel(peer);
-			var resp = matcher.requestForResponse(token -> nd.asyncWrite(sc, req, v -> getClass(), f));
-			return NetUtil.deserialize(resp);
+			var rsp = matcher.requestForResponse(token -> nd.asyncWrite(sc, req, v -> getClass(), f));
+			return NetUtil.deserialize(rsp);
 		} else
 			return fail("peer " + peer + " is not active");
 	}
