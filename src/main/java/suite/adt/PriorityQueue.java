@@ -37,6 +37,15 @@ public class PriorityQueue<T> {
 		return i;
 	}
 
+	public T get(int i) {
+		return ts[i];
+
+	}
+
+	public T min() {
+		return get(1);
+	}
+
 	public T extractMin() {
 		return remove(1);
 	}
