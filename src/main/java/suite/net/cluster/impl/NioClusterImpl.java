@@ -17,7 +17,6 @@ import suite.net.nio.NioDispatch;
 import suite.net.nio.RequestResponseMatcher;
 import suite.object.Object_;
 import suite.os.LogUtil;
-import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Signal;
@@ -51,7 +50,12 @@ public class NioClusterImpl implements Cluster {
 
 	@Override
 	public void start() throws IOException {
-		unlisten = nd.new Responder().listen(peers.get(me).getPort(), this::respondToRequest, f);
+		unlisten = nd.new Responder().listen(peers.get(me).getPort(), req -> {
+			var request = NetUtil.deserialize(req);
+			@SuppressWarnings("unchecked")
+			var handler = (Fun<Object, Object>) onReceive.get(request.getClass());
+			return NetUtil.serialize(handler.apply(request));
+		}, f);
 
 		onJoined = probe.getOnJoined();
 
@@ -101,13 +105,6 @@ public class NioClusterImpl implements Cluster {
 		}
 
 		return channel;
-	}
-
-	private Bytes respondToRequest(Bytes req) {
-		var request = NetUtil.deserialize(req);
-		@SuppressWarnings("unchecked")
-		var handler = (Fun<Object, Object>) onReceive.get(request.getClass());
-		return NetUtil.serialize(handler.apply(request));
 	}
 
 	@Override
