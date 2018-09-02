@@ -200,8 +200,8 @@ public class NioDispatch implements Closeable {
 		public void readLine(SocketChannel sc, byte delim, Sink<Bytes> okay, Sink<IOException> fail) {
 			var bb = getReadBuffer(sc);
 
-			new Sink<Integer>() {
-				public void sink(Integer start) {
+			new Object() {
+				public void read_(int start) {
 					var bytes_ = bb.toBytes();
 
 					for (int i = start; i < bytes_.size(); i++)
@@ -215,17 +215,17 @@ public class NioDispatch implements Closeable {
 					asyncRead(sc, bytes1 -> {
 						var size0 = bb.size();
 						bb.append(bytes1);
-						this.sink(size0);
+						read_(size0);
 					}, fail);
 				}
-			}.sink(0);
+			}.read_(0);
 		}
 
 		public void read(SocketChannel sc, int n, Sink<Bytes> okay, Sink<IOException> fail) {
 			var bb = getReadBuffer(sc);
 
-			new Sink<Void>() {
-				public void sink(Void v) {
+			new Object() {
+				public void read_() {
 					if (n <= bb.size()) {
 						var bytes_ = bb.toBytes();
 						okay.sink(bytes_.range(0, n));
@@ -234,10 +234,10 @@ public class NioDispatch implements Closeable {
 					} else
 						asyncRead(sc, bytes1 -> {
 							bb.append(bytes1);
-							this.sink(null);
+							read_();
 						}, fail);
 				}
-			}.sink(null);
+			}.read_();
 		}
 
 		private BytesBuilder getReadBuffer(SocketChannel sc) {
