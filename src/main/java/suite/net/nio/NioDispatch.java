@@ -91,10 +91,10 @@ public class NioDispatch implements Closeable {
 	public class Responder {
 		private PacketId packetId = new PacketId();
 
-		public void listen(int port, Iterate<Bytes> fun, Sink<IOException> fail) {
+		public Closeable listen(int port, Iterate<Bytes> fun, Sink<IOException> fail) {
 			Sink<IOException> failRequest = LogUtil::error;
 
-			asyncListen(port, sc -> {
+			return asyncListen(port, sc -> {
 				new Object() {
 					public void run() {
 						packetId.read(sc, (id, bs) -> packetId.write(sc, id, fun.apply(bs), v -> run(), failRequest), failRequest);
