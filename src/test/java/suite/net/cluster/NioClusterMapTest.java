@@ -19,6 +19,7 @@ import suite.os.LogUtil;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Sink;
+import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Rethrow;
@@ -48,28 +49,29 @@ public class NioClusterMapTest {
 			cluster.start();
 
 		var peerNames = new ArrayList<>(peers.keySet());
-		var clMap = Read.from2(peers).keys().map2(name -> name, name -> new NioClusterMap<>(clusters.get(name))).toMap();
+
+		var clMap = Read //
+				.from2(peers) //
+				.keys() //
+				.map2(name -> name, name -> new NioClusterMap<Integer, String>(clusters.get(name))) //
+				.toMap();
 
 		Thread_.sleepQuietly(5 * 1000);
 
 		System.out.println("=== CLUSTER FORMED (" + LocalDateTime.now() + ") ===\n");
 
-		Int_Obj<Sink<Runnable>> setf = i -> cont -> {
-			var peer = peerNames.get(random.nextInt(nNodes));
-			clMap.get(peer).set(i, Integer.toString(i), v0 -> cont.run(), fail);
-		};
+		Source<NioClusterMap<Integer, String>> peerf = () -> clMap.get(peerNames.get(random.nextInt(nNodes)));
 
-		Int_Obj<Sink<Runnable>> getf = i -> cont -> {
-			var peer = peerNames.get(random.nextInt(nNodes));
-			clMap.get(peer).get(i, v -> {
-				assertEquals(Integer.toString(i), v);
-				cont.run();
-			}, fail);
-		};
+		Int_Obj<Sink<Runnable>> setf = i -> cont -> peerf.source().set(i, Integer.toString(i), v0 -> cont.run(), fail);
+
+		Int_Obj<Sink<Runnable>> getf = i -> cont -> peerf.source().get(i, v -> {
+			assertEquals(Integer.toString(i), v);
+			cont.run();
+		}, fail);
 
 		var sinks = Streamlet.concat( //
-				Ints_.range(100).map(setf), //
-				Ints_.range(100).map(getf), //
+				Ints_.range(9).map(setf), //
+				Ints_.range(9).map(getf), //
 				Read.each(cont -> {
 					for (var cluster : clusters.values())
 						try {
