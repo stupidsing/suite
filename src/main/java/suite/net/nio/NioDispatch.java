@@ -64,11 +64,12 @@ public class NioDispatch implements Closeable {
 
 	public class Requester {
 		private Map<Integer, Sink<Bytes>> handlers = new ConcurrentHashMap<>();
-		private PacketId packetId = new PacketId();
 		private Reconnect reconnect;
+		private PacketId packetId;
 
 		public Requester(InetSocketAddress address) {
 			reconnect = new Reconnect(address, sc -> {
+				packetId = new PacketId();
 				new Runnable() {
 					public void run() {
 						packetId.read(sc, (id_, bs) -> {
@@ -88,12 +89,11 @@ public class NioDispatch implements Closeable {
 	}
 
 	public class Responder {
-		private PacketId packetId = new PacketId();
-
 		public Closeable listen(int port, Iterate<Bytes> fun, Sink<IOException> fail) {
 			Sink<IOException> failRequest = LogUtil::error;
 
 			return asyncListen(port, sc -> {
+				PacketId packetId = new PacketId();
 				new Object() {
 					public void run() {
 						packetId.read(sc, (id, bs) -> packetId.write(sc, id, fun.apply(bs), v -> run(), failRequest), failRequest);
@@ -208,9 +208,9 @@ public class NioDispatch implements Closeable {
 
 					for (int i = start; i < bytes_.size(); i++)
 						if (bytes_.get(i) == delim) {
-							okay.sink(bytes_.range(0, i));
 							bb.clear();
 							bb.append(bytes_.range(i + 1));
+							okay.sink(bytes_.range(0, i));
 							return;
 						}
 
@@ -229,7 +229,7 @@ public class NioDispatch implements Closeable {
 					if (n <= bb.size()) {
 						var bytes_ = bb.toBytes();
 						bb.clear();
-						bb.append(Bytes.of(bytes_.range(n)));
+						bb.append(bytes_.range(n));
 						okay.sink(bytes_.range(0, n));
 					} else
 						asyncRead(sc, bytes1 -> {
