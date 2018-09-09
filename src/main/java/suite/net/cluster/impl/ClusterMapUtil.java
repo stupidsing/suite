@@ -4,27 +4,27 @@ import java.io.Serializable;
 
 public class ClusterMapUtil {
 
-	static class GetQuery {
-		static class Request implements Serializable {
+	public static class GetQuery {
+		public static class Request implements Serializable {
 			private static final long serialVersionUID = 1l;
-			protected Object key;
+			public Object key;
 		}
 
-		static class Response implements Serializable {
+		public static class Response implements Serializable {
 			private static final long serialVersionUID = 1l;
-			protected Object value;
+			public Object value;
 		}
 	}
 
-	static class PutQuery {
-		static class Request implements Serializable {
+	public static class PutQuery {
+		public static class Request implements Serializable {
 			private static final long serialVersionUID = 1l;
-			protected Object key, value;
+			public Object key, value;
 		}
 
-		static class Response implements Serializable {
+		public static class Response implements Serializable {
 			private static final long serialVersionUID = 1l;
-			protected Object value;
+			public Object value;
 		}
 	}
 
