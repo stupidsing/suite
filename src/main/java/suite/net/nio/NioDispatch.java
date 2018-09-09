@@ -13,8 +13,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import suite.adt.PriorityQueue;
 import suite.cfg.Defaults;
@@ -63,7 +63,7 @@ public class NioDispatch implements Closeable {
 	}
 
 	public class Requester {
-		private Map<Integer, Sink<Bytes>> handlers = new ConcurrentHashMap<>();
+		private Map<Integer, Sink<Bytes>> handlers = new HashMap<>();
 		private Reconnect reconnect;
 		private PacketId packetId;
 		private Runnable reader;
