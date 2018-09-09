@@ -310,6 +310,7 @@ public class Bytes implements Iterable<Byte> {
 		}
 
 		public void clear() {
+			bs = emptyArray;
 			size = 0;
 		}
 

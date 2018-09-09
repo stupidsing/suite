@@ -337,6 +337,7 @@ public class Ints implements Iterable<Integer> {
 		}
 
 		public void clear() {
+			cs = emptyArray;
 			size = 0;
 		}
 

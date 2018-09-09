@@ -337,6 +337,7 @@ public class Floats implements Iterable<Float> {
 		}
 
 		public void clear() {
+			cs = emptyArray;
 			size = 0;
 		}
 

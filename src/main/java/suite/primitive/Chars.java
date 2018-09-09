@@ -337,6 +337,7 @@ public class Chars implements Iterable<Character> {
 		}
 
 		public void clear() {
+			cs = emptyArray;
 			size = 0;
 		}
 

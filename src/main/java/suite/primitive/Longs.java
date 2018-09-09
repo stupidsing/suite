@@ -337,6 +337,7 @@ public class Longs implements Iterable<Long> {
 		}
 
 		public void clear() {
+			cs = emptyArray;
 			size = 0;
 		}
 

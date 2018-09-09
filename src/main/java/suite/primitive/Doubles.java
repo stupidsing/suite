@@ -337,6 +337,7 @@ public class Doubles implements Iterable<Double> {
 		}
 
 		public void clear() {
+			cs = emptyArray;
 			size = 0;
 		}
 

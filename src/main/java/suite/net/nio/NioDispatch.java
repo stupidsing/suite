@@ -14,7 +14,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.Map;
-import java.util.WeakHashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import suite.adt.PriorityQueue;
@@ -160,19 +159,24 @@ public class NioDispatch implements Closeable {
 	}
 
 	public class PacketId {
-		private Packet packet = new Packet();
+		private Buffer buffer = new Buffer();
+		private Packet packet = new Packet(buffer);
 
 		public void read(SocketChannel sc, Sink2<Integer, Bytes> okay, Sink<IOException> fail) {
-			packet.buffer.read(sc, 4, bs0 -> packet.read(sc, bs1 -> okay.sink2(NetUtil.bytesToInt(bs0), bs1), fail), fail);
+			buffer.read(sc, 4, bs0 -> packet.read(sc, bs1 -> okay.sink2(NetUtil.bytesToInt(bs0), bs1), fail), fail);
 		}
 
 		public void write(SocketChannel sc, int id, Bytes bs, Sink<Void> okay, Sink<IOException> fail) {
-			packet.buffer.writeAll(sc, NetUtil.intToBytes(id), v -> packet.write(sc, bs, okay, fail), fail);
+			buffer.writeAll(sc, NetUtil.intToBytes(id), v -> packet.write(sc, bs, okay, fail), fail);
 		}
 	}
 
 	public class Packet {
-		public Buffer buffer = new Buffer();
+		private Buffer buffer;
+
+		public Packet(Buffer buffer) {
+			this.buffer = buffer;
+		}
 
 		public void read(SocketChannel sc, Sink<Bytes> okay, Sink<IOException> fail) {
 			buffer.read(sc, 4, bs0 -> buffer.read(sc, NetUtil.bytesToInt(bs0), okay, fail), fail);
@@ -184,22 +188,20 @@ public class NioDispatch implements Closeable {
 	}
 
 	public class Buffer {
-		private Map<SelectableChannel, BytesBuilder> reads = new WeakHashMap<>();
+		private BytesBuilder bb = new BytesBuilder();
 
 		public void writeAll(SocketChannel sc, Bytes bytes, Sink<Void> okay, Sink<IOException> fail) {
-			new Sink<Bytes>() {
-				public void sink(Bytes bytes) {
-					if (0 < bytes.size())
-						asyncWrite(sc, bytes, this, fail);
+			new Object() {
+				public void sink(int start) {
+					if (start < bytes.size())
+						asyncWrite(sc, bytes.range(start), written -> sink(start + written), fail);
 					else
 						okay.sink(null);
 				}
-			}.sink(bytes);
+			}.sink(0);
 		}
 
 		public void readLine(SocketChannel sc, byte delim, Sink<Bytes> okay, Sink<IOException> fail) {
-			var bb = getReadBuffer(sc);
-
 			new Object() {
 				public void read_(int start) {
 					var bytes_ = bb.toBytes();
@@ -222,15 +224,13 @@ public class NioDispatch implements Closeable {
 		}
 
 		public void read(SocketChannel sc, int n, Sink<Bytes> okay, Sink<IOException> fail) {
-			var bb = getReadBuffer(sc);
-
 			new Object() {
 				public void read_() {
 					if (n <= bb.size()) {
 						var bytes_ = bb.toBytes();
-						okay.sink(bytes_.range(0, n));
 						bb.clear();
 						bb.append(Bytes.of(bytes_.range(n)));
+						okay.sink(bytes_.range(0, n));
 					} else
 						asyncRead(sc, bytes1 -> {
 							bb.append(bytes1);
@@ -238,10 +238,6 @@ public class NioDispatch implements Closeable {
 						}, fail);
 				}
 			}.read_();
-		}
-
-		private BytesBuilder getReadBuffer(SocketChannel sc) {
-			return reads.computeIfAbsent(sc, sc_ -> new BytesBuilder());
 		}
 	}
 
@@ -287,10 +283,10 @@ public class NioDispatch implements Closeable {
 		reg(sc, SelectionKey.OP_READ, okay1, fail);
 	}
 
-	public void asyncWrite(SocketChannel sc, Bytes bytes, Sink<Bytes> okay0, Sink<IOException> fail) {
+	public void asyncWrite(SocketChannel sc, Bytes bytes, Sink<Integer> okay0, Sink<IOException> fail) {
 		Sink<Object> okay1 = dummy -> {
 			try {
-				okay0.sink(bytes.range(sc.write(bytes.toByteBuffer())));
+				okay0.sink(sc.write(bytes.toByteBuffer()));
 			} catch (IOException ex) {
 				fail.sink(ex);
 			}
