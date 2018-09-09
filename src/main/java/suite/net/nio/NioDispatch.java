@@ -66,25 +66,27 @@ public class NioDispatch implements Closeable {
 		private Map<Integer, Sink<Bytes>> handlers = new ConcurrentHashMap<>();
 		private Reconnect reconnect;
 		private PacketId packetId;
+		private Runnable reader;
 
 		public Requester(InetSocketAddress address) {
 			reconnect = new Reconnect(address, sc -> {
-				packetId = new PacketId();
-				new Runnable() {
+				packetId = new PacketId(sc);
+
+				reader = new Runnable() {
 					public void run() {
-						packetId.read(sc, (id_, bs) -> {
+						packetId.read((id_, bs) -> {
 							handlers.remove(id_).sink(bs);
 							run();
 						}, reconnect::reset);
 					}
-				}.run();
+				};
 			});
 		}
 
 		public void request(Bytes request, Sink<Bytes> okay) {
 			var id = Util.temp();
 			handlers.put(id, okay);
-			reconnect.connect(sc -> packetId.write(sc, id, request, v -> getClass(), reconnect::reset));
+			reconnect.connect(sc -> packetId.write(id, request, v -> reader.run(), reconnect::reset));
 		}
 	}
 
@@ -93,10 +95,10 @@ public class NioDispatch implements Closeable {
 			Sink<IOException> failRequest = LogUtil::error;
 
 			return asyncListen(port, sc -> {
-				PacketId packetId = new PacketId();
+				PacketId packetId = new PacketId(sc);
 				new Object() {
 					public void run() {
-						packetId.read(sc, (id, bs) -> packetId.write(sc, id, fun.apply(bs), v -> run(), failRequest), failRequest);
+						packetId.read((id, bs) -> packetId.write(id, fun.apply(bs), v -> run(), failRequest), failRequest);
 					}
 				}.run();
 			}, fail);
@@ -121,7 +123,8 @@ public class NioDispatch implements Closeable {
 				okay.sink(sc);
 		}
 
-		public void reset(IOException ex) {
+		public void reset(Exception ex) {
+			LogUtil.error(ex);
 			reconnect.reset(ex);
 			sc = null;
 		}
@@ -151,7 +154,7 @@ public class NioDispatch implements Closeable {
 				okay.sink(sc);
 		}
 
-		public void reset(IOException ex) {
+		public void reset(Exception ex) {
 			LogUtil.error(ex);
 			close(sc);
 			sc = null;
@@ -159,15 +162,20 @@ public class NioDispatch implements Closeable {
 	}
 
 	public class PacketId {
-		private Buffer buffer = new Buffer();
-		private Packet packet = new Packet(buffer);
+		private Buffer buffer;
+		private Packet packet;
 
-		public void read(SocketChannel sc, Sink2<Integer, Bytes> okay, Sink<IOException> fail) {
-			buffer.read(sc, 4, bs0 -> packet.read(sc, bs1 -> okay.sink2(NetUtil.bytesToInt(bs0), bs1), fail), fail);
+		public PacketId(SocketChannel sc) {
+			buffer = new Buffer(sc);
+			packet = new Packet(buffer);
 		}
 
-		public void write(SocketChannel sc, int id, Bytes bs, Sink<Void> okay, Sink<IOException> fail) {
-			buffer.writeAll(sc, NetUtil.intToBytes(id), v -> packet.write(sc, bs, okay, fail), fail);
+		public void read(Sink2<Integer, Bytes> okay, Sink<IOException> fail) {
+			buffer.read(4, bs0 -> packet.read(bs1 -> okay.sink2(NetUtil.bytesToInt(bs0), bs1), fail), fail);
+		}
+
+		public void write(int id, Bytes bs, Sink<Void> okay, Sink<IOException> fail) {
+			buffer.writeAll(NetUtil.intToBytes(id), v -> packet.write(bs, okay, fail), fail);
 		}
 	}
 
@@ -178,19 +186,24 @@ public class NioDispatch implements Closeable {
 			this.buffer = buffer;
 		}
 
-		public void read(SocketChannel sc, Sink<Bytes> okay, Sink<IOException> fail) {
-			buffer.read(sc, 4, bs0 -> buffer.read(sc, NetUtil.bytesToInt(bs0), okay, fail), fail);
+		public void read(Sink<Bytes> okay, Sink<IOException> fail) {
+			buffer.read(4, bs0 -> buffer.read(NetUtil.bytesToInt(bs0), okay, fail), fail);
 		}
 
-		public void write(SocketChannel sc, Bytes bs, Sink<Void> okay, Sink<IOException> fail) {
-			buffer.writeAll(sc, NetUtil.intToBytes(bs.size()), v -> buffer.writeAll(sc, bs, okay, fail), fail);
+		public void write(Bytes bs, Sink<Void> okay, Sink<IOException> fail) {
+			buffer.writeAll(NetUtil.intToBytes(bs.size()), v -> buffer.writeAll(bs, okay, fail), fail);
 		}
 	}
 
 	public class Buffer {
+		private SocketChannel sc;
 		private BytesBuilder bb = new BytesBuilder();
 
-		public void writeAll(SocketChannel sc, Bytes bytes, Sink<Void> okay, Sink<IOException> fail) {
+		public Buffer(SocketChannel sc) {
+			this.sc = sc;
+		}
+
+		public void writeAll(Bytes bytes, Sink<Void> okay, Sink<IOException> fail) {
 			new Object() {
 				public void sink(int start) {
 					if (start < bytes.size())
@@ -201,7 +214,7 @@ public class NioDispatch implements Closeable {
 			}.sink(0);
 		}
 
-		public void readLine(SocketChannel sc, byte delim, Sink<Bytes> okay, Sink<IOException> fail) {
+		public void readLine(byte delim, Sink<Bytes> okay, Sink<IOException> fail) {
 			new Object() {
 				public void read_(int start) {
 					var bytes_ = bb.toBytes();
@@ -223,7 +236,7 @@ public class NioDispatch implements Closeable {
 			}.read_(0);
 		}
 
-		public void read(SocketChannel sc, int n, Sink<Bytes> okay, Sink<IOException> fail) {
+		public void read(int n, Sink<Bytes> okay, Sink<IOException> fail) {
 			new Object() {
 				public void read_() {
 					if (n <= bb.size()) {

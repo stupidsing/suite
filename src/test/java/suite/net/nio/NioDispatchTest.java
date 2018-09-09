@@ -60,16 +60,18 @@ public class NioDispatchTest {
 	@Test
 	public void testTextExchange() throws IOException {
 		try (var dispatch = new NioDispatch(); var listen = listen(dispatch);) {
-			var buffer = dispatch.new Buffer();
 
 			dispatch.asyncConnect( //
 					new InetSocketAddress(localHost, port), //
-					sc -> buffer.writeAll(sc, Bytes.concat(helloBytes, lfs), v -> buffer.readLine(sc, lf, bytes -> {
-						assertEquals(helloBytes, bytes);
-						System.out.println("OK");
-						dispatch.close(sc);
-						dispatch.stop();
-					}, fail), fail), //
+					sc -> {
+						var buffer = dispatch.new Buffer(sc);
+						buffer.writeAll(Bytes.concat(helloBytes, lfs), v -> buffer.readLine(lf, bytes -> {
+							assertEquals(helloBytes, bytes);
+							System.out.println("OK");
+							dispatch.close(sc);
+							dispatch.stop();
+						}, fail), fail);
+					}, //
 					fail);
 
 			dispatch.run();
@@ -79,8 +81,8 @@ public class NioDispatchTest {
 	private Closeable listen(NioDispatch dispatch) throws IOException {
 		return dispatch.asyncListen(port, new Sink<>() {
 			public void sink(SocketChannel sc) {
-				var buffer = dispatch.new Buffer();
-				buffer.readLine(sc, lf, bytes -> buffer.writeAll(sc, Bytes.concat(bytes, lfs), v -> sink(sc), fail), fail);
+				var buffer = dispatch.new Buffer(sc);
+				buffer.readLine(lf, bytes -> buffer.writeAll(Bytes.concat(bytes, lfs), v -> sink(sc), fail), fail);
 			}
 		});
 	}
