@@ -58,9 +58,10 @@ public class Thread_ {
 			}
 	}
 
-	public static void startJoin(Streamlet<Th> threads) {
-		threads.sink(Th::start);
-		threads.sink(Th::join_);
+	public static void startJoin(Streamlet<Th> threads0) {
+		var threads1 = threads0.collect();
+		threads1.sink(Th::start);
+		threads1.sink(Th::join_);
 	}
 
 	public static Th startThread(RunnableEx runnable) {

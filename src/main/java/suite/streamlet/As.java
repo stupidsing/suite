@@ -68,8 +68,7 @@ public class As {
 	}
 
 	public static Void execute(Outlet<Th> outlet) {
-		var threads = Read.from(outlet.toList());
-		Thread_.startJoin(threads);
+		Thread_.startJoin(Read.from(outlet.toList()));
 		return null;
 	}
 

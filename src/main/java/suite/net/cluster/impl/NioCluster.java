@@ -17,7 +17,7 @@ import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Signal;
 
-public class NioClusterImpl implements Closeable {
+public class NioCluster implements Closeable {
 
 	private String me;
 	private Map<String, InetSocketAddress> peers;
@@ -36,7 +36,7 @@ public class NioClusterImpl implements Closeable {
 	private Signal<String> onLeft;
 	private Map<Class<?>, Fun<Object, Object>> onReceive = new HashMap<>();
 
-	public NioClusterImpl(String me, Map<String, InetSocketAddress> peers) throws IOException {
+	public NioCluster(String me, Map<String, InetSocketAddress> peers) throws IOException {
 		this.me = me;
 		this.peers = peers;
 		probe = new ClusterProbeImpl(me, peers);
