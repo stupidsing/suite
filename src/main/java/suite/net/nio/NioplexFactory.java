@@ -50,7 +50,7 @@ public interface NioplexFactory {
 		public static char RESPONSE = 'P';
 		public static char REQUEST = 'Q';
 		private boolean isConnected;
-		private Condition condition = new Condition(() -> isConnected);
+		private Condition condition = new Condition();
 
 		public void send(char type, int token, Bytes data) {
 			var packet = new BytesBuilder() //
@@ -60,8 +60,7 @@ public interface NioplexFactory {
 					.toBytes();
 
 			if (!isConnected)
-				condition.waitThen(() -> {
-				}, () -> true);
+				condition.waitThen(() -> isConnected);
 
 			sendPacket(packet);
 		}

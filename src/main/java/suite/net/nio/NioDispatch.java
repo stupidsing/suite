@@ -107,7 +107,7 @@ public class NioDispatch implements Closeable {
 
 	public class ReconnectShare {
 		private SocketChannel sc;
-		private Condition condition = new Condition(() -> sc != null);
+		private Condition condition = new Condition();
 		private Reconnect reconnect;
 
 		public ReconnectShare(InetSocketAddress address, Sink<SocketChannel> connected) {

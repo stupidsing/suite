@@ -27,9 +27,11 @@ public class RequestResponseMatcher {
 	public Bytes requestForResponse(IntSink sink, long timeout) {
 		var token = Util.temp();
 		var holder = Mutable.<Bytes> nil();
-		var condition = new Condition(() -> holder.value() != null);
+		var condition = new Condition();
 
 		return condition.waitThen(() -> {
+			return holder.value() != null;
+		}, () -> {
 			requests.put(token, Pair.of(holder, condition));
 			sink.sink(token);
 		}, () -> {
