@@ -54,8 +54,8 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 		this.in = in;
 	}
 
-	public <R> Streamlet<R> apply(Fun<LngObjStreamlet<V>, R> fun) {
-		return Read.each(fun.apply(this));
+	public <R> R apply(Fun<LngObjStreamlet<V>, R> fun) {
+		return fun.apply(this);
 	}
 
 	public Streamlet<LngObjOutlet<V>> chunk(int n) {

@@ -9,6 +9,9 @@ import java.util.Set;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.object.Object_;
+import suite.primitive.Longs;
+import suite.primitive.Longs.LongsBuilder;
+import suite.primitive.Longs_;
 import suite.primitive.LngOpt;
 import suite.primitive.LngPrimitives.LngComparator;
 import suite.primitive.LngPrimitives.LngObj_Obj;
@@ -17,16 +20,12 @@ import suite.primitive.LngPrimitives.LngSource;
 import suite.primitive.LngPrimitives.LngTest;
 import suite.primitive.LngPrimitives.Lng_Obj;
 import suite.primitive.Lng_Lng;
-import suite.primitive.Longs;
-import suite.primitive.Longs.LongsBuilder;
-import suite.primitive.Longs_;
 import suite.primitive.adt.map.LngObjMap;
 import suite.primitive.adt.map.ObjLngMap;
 import suite.primitive.adt.set.LngSet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
@@ -43,8 +42,8 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 		this.in = in;
 	}
 
-	public <R> Streamlet<R> apply(Fun<LngStreamlet, R> fun) {
-		return Read.each(fun.apply(this));
+	public <R> R apply(Fun<LngStreamlet, R> fun) {
+		return fun.apply(this);
 	}
 
 	public long average() {

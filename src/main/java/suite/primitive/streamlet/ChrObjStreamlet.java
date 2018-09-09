@@ -54,8 +54,8 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 		this.in = in;
 	}
 
-	public <R> Streamlet<R> apply(Fun<ChrObjStreamlet<V>, R> fun) {
-		return Read.each(fun.apply(this));
+	public <R> R apply(Fun<ChrObjStreamlet<V>, R> fun) {
+		return fun.apply(this);
 	}
 
 	public Streamlet<ChrObjOutlet<V>> chunk(int n) {

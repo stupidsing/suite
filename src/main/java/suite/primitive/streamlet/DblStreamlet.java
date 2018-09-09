@@ -9,6 +9,9 @@ import java.util.Set;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.object.Object_;
+import suite.primitive.Doubles;
+import suite.primitive.Doubles.DoublesBuilder;
+import suite.primitive.Doubles_;
 import suite.primitive.DblOpt;
 import suite.primitive.DblPrimitives.DblComparator;
 import suite.primitive.DblPrimitives.DblObj_Obj;
@@ -17,16 +20,12 @@ import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.DblPrimitives.Dbl_Obj;
 import suite.primitive.Dbl_Dbl;
-import suite.primitive.Doubles;
-import suite.primitive.Doubles.DoublesBuilder;
-import suite.primitive.Doubles_;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.set.DblSet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
@@ -43,8 +42,8 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 		this.in = in;
 	}
 
-	public <R> Streamlet<R> apply(Fun<DblStreamlet, R> fun) {
-		return Read.each(fun.apply(this));
+	public <R> R apply(Fun<DblStreamlet, R> fun) {
+		return fun.apply(this);
 	}
 
 	public double average() {

@@ -54,8 +54,8 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 		this.in = in;
 	}
 
-	public <R> Streamlet<R> apply(Fun<IntObjStreamlet<V>, R> fun) {
-		return Read.each(fun.apply(this));
+	public <R> R apply(Fun<IntObjStreamlet<V>, R> fun) {
+		return fun.apply(this);
 	}
 
 	public Streamlet<IntObjOutlet<V>> chunk(int n) {

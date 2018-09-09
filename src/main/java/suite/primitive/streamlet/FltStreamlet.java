@@ -26,7 +26,6 @@ import suite.primitive.adt.set.FltSet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
@@ -43,8 +42,8 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 		this.in = in;
 	}
 
-	public <R> Streamlet<R> apply(Fun<FltStreamlet, R> fun) {
-		return Read.each(fun.apply(this));
+	public <R> R apply(Fun<FltStreamlet, R> fun) {
+		return fun.apply(this);
 	}
 
 	public float average() {

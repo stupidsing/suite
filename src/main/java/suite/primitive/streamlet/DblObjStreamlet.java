@@ -54,8 +54,8 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 		this.in = in;
 	}
 
-	public <R> Streamlet<R> apply(Fun<DblObjStreamlet<V>, R> fun) {
-		return Read.each(fun.apply(this));
+	public <R> R apply(Fun<DblObjStreamlet<V>, R> fun) {
+		return fun.apply(this);
 	}
 
 	public Streamlet<DblObjOutlet<V>> chunk(int n) {

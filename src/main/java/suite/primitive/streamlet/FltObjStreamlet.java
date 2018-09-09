@@ -54,8 +54,8 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 		this.in = in;
 	}
 
-	public <R> Streamlet<R> apply(Fun<FltObjStreamlet<V>, R> fun) {
-		return Read.each(fun.apply(this));
+	public <R> R apply(Fun<FltObjStreamlet<V>, R> fun) {
+		return fun.apply(this);
 	}
 
 	public Streamlet<FltObjOutlet<V>> chunk(int n) {

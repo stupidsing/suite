@@ -41,8 +41,7 @@ public interface TradeCfg {
 				}) //
 				.filterValue(ds -> ds != null) //
 				.collect() //
-				.apply(DataSource::alignAll) //
-				.uniqueResult();
+				.apply(DataSource::alignAll);
 	}
 
 }

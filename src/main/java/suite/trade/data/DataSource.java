@@ -43,8 +43,7 @@ public class DataSource {
 		return dsByKey0 //
 				.mapValue(ds -> ds.alignBeforePrices(ts)) //
 				.collect() //
-				.apply(st -> new AlignKeyDataSource<>(ts, st)) //
-				.uniqueResult();
+				.apply(st -> new AlignKeyDataSource<>(ts, st));
 	}
 
 	public static class AlignKeyDataSource<K> {

@@ -9,6 +9,9 @@ import java.util.Set;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.object.Object_;
+import suite.primitive.Ints;
+import suite.primitive.Ints.IntsBuilder;
+import suite.primitive.Ints_;
 import suite.primitive.IntOpt;
 import suite.primitive.IntPrimitives.IntComparator;
 import suite.primitive.IntPrimitives.IntObj_Obj;
@@ -17,16 +20,12 @@ import suite.primitive.IntPrimitives.IntSource;
 import suite.primitive.IntPrimitives.IntTest;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Int;
-import suite.primitive.Ints;
-import suite.primitive.Ints.IntsBuilder;
-import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.set.IntSet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
-import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 import suite.streamlet.StreamletDefaults;
@@ -43,8 +42,8 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 		this.in = in;
 	}
 
-	public <R> Streamlet<R> apply(Fun<IntStreamlet, R> fun) {
-		return Read.each(fun.apply(this));
+	public <R> R apply(Fun<IntStreamlet, R> fun) {
+		return fun.apply(this);
 	}
 
 	public int average() {
