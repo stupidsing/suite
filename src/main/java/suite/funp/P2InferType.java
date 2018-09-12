@@ -719,7 +719,7 @@ public class P2InferType {
 			})).applyIf(FunpTag.class, f -> f.apply((id, tag, expr) -> {
 				var size = getTypeSize(typeOf(expr));
 				var pt = Pair.<Funp, IntIntPair> of(FunpNumber.of(id), IntIntPair.of(0, is));
-				var pv = Pair.<Funp, IntIntPair> of(erase(expr), IntIntPair.of(is, is + size));
+				var pv = Pair.of(erase(expr), IntIntPair.of(is, is + size));
 				return FunpData.of(List.of(pt, pv));
 			})).applyIf(FunpTagId.class, f -> f.apply(reference -> {
 				return FunpMemory.of(erase(reference), 0, is);
