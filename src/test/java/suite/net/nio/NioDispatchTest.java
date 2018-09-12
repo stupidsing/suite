@@ -24,7 +24,7 @@ import suite.util.Thread_;
 
 public class NioDispatchTest {
 
-	private InetAddress localHost = Rethrow.ex(() -> InetAddress.getLocalHost());
+	private InetAddress localHost = Rethrow.ex(InetAddress::getLocalHost);
 	private int port = 5151;
 	private Charset charset = Defaults.charset;
 	private String hello = "HELLO";

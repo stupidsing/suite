@@ -19,7 +19,7 @@ import suite.util.Thread_;
 
 public class ClusterProbeTest {
 
-	private InetAddress localHost = Rethrow.ex(() -> InetAddress.getLocalHost());
+	private InetAddress localHost = Rethrow.ex(InetAddress::getLocalHost);
 
 	@Test
 	public void test() throws IOException {
