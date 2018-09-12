@@ -18,6 +18,7 @@ import suite.net.cluster.impl.NioClusterMap;
 import suite.os.LogUtil;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
@@ -30,7 +31,7 @@ public class NioClusterMapTest {
 
 	private static Random random = new Random();
 
-	private InetAddress localHost = Rethrow.ex(() -> InetAddress.getLocalHost());
+	private InetAddress localHost = Rethrow.ex(InetAddress::getLocalHost);
 	private Sink<IOException> fail = LogUtil::error;
 
 	@Test
@@ -42,7 +43,7 @@ public class NioClusterMapTest {
 		var clusters = Read //
 				.from2(peers) //
 				.keys() //
-				.<String, NioCluster> map2(name -> name, name -> rethrow(() -> new NioCluster(name, peers))) //
+				.map2(name -> name, name -> rethrow(() -> new NioCluster(name, peers))) //
 				.toMap();
 
 		for (var cluster : clusters.values())
@@ -69,18 +70,20 @@ public class NioClusterMapTest {
 			cont.run();
 		}, fail);
 
+		Fun<NioCluster, Sink<Runnable>> closef = cluster -> cont -> {
+			try {
+				cluster.stop();
+				System.out.println("=== CLUSTER STOPPED (" + LocalDateTime.now() + ") ===\n");
+			} catch (IOException ex) {
+				fail(ex);
+			}
+			cont.run();
+		};
+
 		var sinks = Streamlet.concat( //
 				Ints_.range(9).map(setf), //
 				Ints_.range(9).map(getf), //
-				Read.each(cont -> {
-					for (var cluster : clusters.values())
-						try {
-							cluster.stop();
-							System.out.println("=== CLUSTER STOPPED (" + LocalDateTime.now() + ") ===\n");
-						} catch (IOException ex) {
-							fail(ex);
-						}
-				})).toList();
+				Read.from2(clusters).values().map(closef)).toList();
 
 		new Object() {
 			public void run(int i) {
