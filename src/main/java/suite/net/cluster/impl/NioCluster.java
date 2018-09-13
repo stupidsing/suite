@@ -79,7 +79,8 @@ public class NioCluster implements Closeable {
 		if (probe.isActive(peer)) {
 			var req = NetUtil.serialize(request);
 			nd.new Requester(peers.get(peer)).request(req, rsp -> {
-				okay.sink(NetUtil.deserialize(rsp));
+				var response = NetUtil.deserialize(rsp);
+				okay.sink(response);
 			});
 		} else
 			fail.sink(new IOException("peer " + peer + " is not active"));

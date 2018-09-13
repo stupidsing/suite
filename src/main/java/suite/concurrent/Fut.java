@@ -17,7 +17,7 @@ public class Fut<T> {
 
 	public T get() {
 		if (isRunning.getAndSet(true))
-			condition.waitThen(() -> t != null);
+			condition.waitTill(() -> t != null);
 		else
 			condition.satisfyAll(() -> t = source.source());
 		return t;

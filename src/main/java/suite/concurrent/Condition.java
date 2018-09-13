@@ -20,11 +20,11 @@ public class Condition {
 		notifyAll();
 	}
 
-	public void waitThen(Cond cond) {
-		waitThen(cond, this::getClass, this::getClass, Long.MAX_VALUE);
+	public void waitTill(Cond cond) {
+		waitTill(cond, this::getClass, this::getClass, Long.MAX_VALUE);
 	}
 
-	public synchronized <T> T waitThen(Cond cond, Runnable before, Source<T> after, long timeout) {
+	public synchronized <T> T waitTill(Cond cond, Runnable before, Source<T> after, long timeout) {
 		var now = System.currentTimeMillis();
 		var start = now;
 
@@ -32,6 +32,7 @@ public class Condition {
 			before.run();
 
 			var duration = start + timeout - now;
+
 			if (0l < duration)
 				try {
 					wait(duration);
