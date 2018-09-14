@@ -11,8 +11,10 @@ public class Fut<T> {
 	private AtomicBoolean isRunning = new AtomicBoolean(false);
 	private Condition condition = new Condition();
 
-	public Fut(Source<T> source) {
-		this.source = source;
+	public static <T> Fut<T> of(Source<T> source) {
+		var fut = new Fut<T>();
+		fut.source = source;
+		return fut;
 	}
 
 	public T get() {
