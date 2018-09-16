@@ -28,7 +28,7 @@ import suite.util.To;
 
 /**
  * Probes existence of other nodes in a cluster, using the un-reliable UDP
- * protocol (due to its small messaging overhead).
+ * protocol (less messaging overhead).
  */
 public class ClusterProbeImpl implements ClusterProbe {
 
