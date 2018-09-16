@@ -71,7 +71,7 @@ public class NioDispatch implements Closeable {
 
 		public Requester(InetSocketAddress address) {
 			reconnect = new Reconnect(address, rec -> {
-				packetId = new PacketId(rec.socketChannel());
+				packetId = new PacketId(rec.rw());
 
 				reader = new Runnable() {
 					public void run() {
@@ -95,8 +95,8 @@ public class NioDispatch implements Closeable {
 		public Closeable listen(int port, Iterate<Bytes> fun, Sink<IOException> fail) {
 			Sink<IOException> failRequest = LogUtil::error;
 
-			return asyncListen(port, sc -> {
-				PacketId packetId = new PacketId(sc);
+			return asyncListen(port, rw -> {
+				PacketId packetId = new PacketId(rw);
 				new Object() {
 					public void run() {
 						packetId.read((id, bs) -> packetId.write(id, fun.apply(bs), v -> run(), failRequest), failRequest);
@@ -121,7 +121,7 @@ public class NioDispatch implements Closeable {
 	}
 
 	public interface Reconnectable {
-		public SocketChannel socketChannel();
+		public AsyncRw rw();
 
 		public void reconnect(Exception ex);
 	}
@@ -139,10 +139,10 @@ public class NioDispatch implements Closeable {
 
 		public void connect(Sink<Reconnectable> okay) {
 			if (rec == null)
-				asyncConnect(address, sc_ -> {
+				asyncConnect(address, rw_ -> {
 					var r = new Reconnectable() {
-						public SocketChannel socketChannel() {
-							return sc_;
+						public AsyncRw rw() {
+							return rw_;
 						}
 
 						public void reconnect(Exception ex) {
@@ -162,7 +162,7 @@ public class NioDispatch implements Closeable {
 
 		public void reset(Exception ex) {
 			LogUtil.error(ex);
-			close(rec.socketChannel());
+			rec.rw().close();
 			rec = null;
 		}
 	}
@@ -171,8 +171,8 @@ public class NioDispatch implements Closeable {
 		private Buffer buffer;
 		private Packet packet;
 
-		public PacketId(SocketChannel sc) {
-			buffer = new Buffer(sc);
+		public PacketId(AsyncRw rw) {
+			buffer = new Buffer(rw);
 			packet = new Packet(buffer);
 		}
 
@@ -202,18 +202,18 @@ public class NioDispatch implements Closeable {
 	}
 
 	public class Buffer {
-		private SocketChannel sc;
+		private AsyncRw rw;
 		private BytesBuilder bb = new BytesBuilder();
 
-		public Buffer(SocketChannel sc) {
-			this.sc = sc;
+		public Buffer(AsyncRw rw) {
+			this.rw = rw;
 		}
 
 		public void writeAll(Bytes bytes, Sink<Void> okay, Sink<IOException> fail) {
 			new Object() {
 				public void sink(int start) {
 					if (start < bytes.size())
-						asyncWrite(sc, bytes.range(start), written -> sink(start + written), fail);
+						rw.write(bytes.range(start), written -> sink(start + written), fail);
 					else
 						okay.sink(null);
 				}
@@ -233,7 +233,7 @@ public class NioDispatch implements Closeable {
 							return;
 						}
 
-					asyncRead(sc, bytes1 -> {
+					rw.read(bytes1 -> {
 						var size0 = bb.size();
 						bb.append(bytes1);
 						read_(size0);
@@ -251,7 +251,7 @@ public class NioDispatch implements Closeable {
 						bb.append(bytes_.range(n));
 						okay.sink(bytes_.range(0, n));
 					} else
-						asyncRead(sc, bytes1 -> {
+						rw.read(bytes1 -> {
 							bb.append(bytes1);
 							read_();
 						}, fail);
@@ -260,7 +260,49 @@ public class NioDispatch implements Closeable {
 		}
 	}
 
-	public void asyncConnect(InetSocketAddress address, Sink<SocketChannel> okay, Sink<IOException> fail) {
+	public class AsyncRw {
+		private SocketChannel sc;
+
+		public AsyncRw(SocketChannel sc) {
+			this.sc = sc;
+		}
+
+		public void close() {
+			try {
+				sc.register(selector, 0, null);
+				sc.close();
+			} catch (IOException ex) {
+				LogUtil.error(ex);
+			}
+		}
+
+		public void read(Sink<Bytes> sink0, Sink<IOException> fail) {
+			Sink<Object> okay1 = object -> {
+				if (object instanceof Bytes)
+					sink0.sink((Bytes) object);
+				else if (object instanceof IOException)
+					fail.sink((IOException) object);
+				else
+					fail.sink(null);
+			};
+
+			reg(sc, SelectionKey.OP_READ, okay1, fail);
+		}
+
+		public void write(Bytes bytes, Sink<Integer> okay0, Sink<IOException> fail) {
+			Sink<Object> okay1 = dummy -> {
+				try {
+					okay0.sink(sc.write(bytes.toByteBuffer()));
+				} catch (IOException ex) {
+					fail.sink(ex);
+				}
+			};
+
+			reg(sc, SelectionKey.OP_WRITE, okay1, fail);
+		}
+	}
+
+	public void asyncConnect(InetSocketAddress address, Sink<AsyncRw> okay, Sink<IOException> fail) {
 		try {
 			var sc = SocketChannel.open();
 			sc.configureBlocking(false);
@@ -269,14 +311,13 @@ public class NioDispatch implements Closeable {
 		} catch (IOException ex) {
 			fail.sink(ex);
 		}
-
 	}
 
-	public Closeable asyncListen(int port, Sink<SocketChannel> accept) {
+	public Closeable asyncListen(int port, Sink<AsyncRw> accept) {
 		return asyncListen(port, accept, LogUtil::error);
 	}
 
-	public Closeable asyncListen(int port, Sink<SocketChannel> accept, Sink<IOException> fail) {
+	public Closeable asyncListen(int port, Sink<AsyncRw> accept, Sink<IOException> fail) {
 		try {
 			var ssc = ServerSocketChannel.open();
 			ssc.configureBlocking(false);
@@ -286,40 +327,6 @@ public class NioDispatch implements Closeable {
 		} catch (IOException ex) {
 			fail.sink(ex);
 			return null;
-		}
-	}
-
-	public void asyncRead(SocketChannel sc, Sink<Bytes> sink0, Sink<IOException> fail) {
-		Sink<Object> okay1 = object -> {
-			if (object instanceof Bytes)
-				sink0.sink((Bytes) object);
-			else if (object instanceof IOException)
-				fail.sink((IOException) object);
-			else
-				fail.sink(null);
-		};
-
-		reg(sc, SelectionKey.OP_READ, okay1, fail);
-	}
-
-	public void asyncWrite(SocketChannel sc, Bytes bytes, Sink<Integer> okay0, Sink<IOException> fail) {
-		Sink<Object> okay1 = dummy -> {
-			try {
-				okay0.sink(sc.write(bytes.toByteBuffer()));
-			} catch (IOException ex) {
-				fail.sink(ex);
-			}
-		};
-
-		reg(sc, SelectionKey.OP_WRITE, okay1, fail);
-	}
-
-	public void close(SocketChannel sc) {
-		try {
-			sc.register(selector, 0, null);
-			sc.close();
-		} catch (IOException ex) {
-			LogUtil.error(ex);
 		}
 	}
 
@@ -375,13 +382,13 @@ public class NioDispatch implements Closeable {
 		if ((ops & SelectionKey.OP_ACCEPT) != 0) {
 			var sc = ((ServerSocketChannel) sc0).accept().socket().getChannel();
 			sc.configureBlocking(false);
-			callback.sink(sc);
+			callback.sink(new AsyncRw(sc));
 			reg(sc0, SelectionKey.OP_ACCEPT);
 		}
 
 		if ((ops & SelectionKey.OP_CONNECT) != 0) {
 			sc1.finishConnect();
-			callback.sink(sc1);
+			callback.sink(new AsyncRw(sc1));
 		}
 
 		if ((ops & SelectionKey.OP_READ) != 0) {

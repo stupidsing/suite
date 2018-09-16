@@ -10,12 +10,12 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.nio.channels.SocketChannel;
 import java.nio.charset.Charset;
 
 import org.junit.Test;
 
 import suite.cfg.Defaults;
+import suite.net.nio.NioDispatch.AsyncRw;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Sink;
@@ -63,12 +63,12 @@ public class NioDispatchTest {
 
 			dispatch.asyncConnect( //
 					new InetSocketAddress(localHost, port), //
-					sc -> {
-						var buffer = dispatch.new Buffer(sc);
+					rw -> {
+						var buffer = dispatch.new Buffer(rw);
 						buffer.writeAll(Bytes.concat(helloBytes, lfs), v -> buffer.readLine(lf, bytes -> {
 							assertEquals(helloBytes, bytes);
 							System.out.println("OK");
-							dispatch.close(sc);
+							rw.close();
 							dispatch.stop();
 						}, fail), fail);
 					}, //
@@ -80,9 +80,9 @@ public class NioDispatchTest {
 
 	private Closeable listen(NioDispatch dispatch) throws IOException {
 		return dispatch.asyncListen(port, new Sink<>() {
-			public void sink(SocketChannel sc) {
-				var buffer = dispatch.new Buffer(sc);
-				buffer.readLine(lf, bytes -> buffer.writeAll(Bytes.concat(bytes, lfs), v -> sink(sc), fail), fail);
+			public void sink(AsyncRw rw) {
+				var buffer = dispatch.new Buffer(rw);
+				buffer.readLine(lf, bytes -> buffer.writeAll(Bytes.concat(bytes, lfs), v -> sink(rw), fail), fail);
 			}
 		});
 	}

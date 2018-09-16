@@ -3,7 +3,6 @@ package suite.net.cluster.impl;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.channels.SocketChannel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +10,7 @@ import java.util.Set;
 import suite.net.NetUtil;
 import suite.net.cluster.ClusterProbe;
 import suite.net.nio.NioDispatch;
+import suite.net.nio.NioDispatch.AsyncRw;
 import suite.object.Object_;
 import suite.os.LogUtil;
 import suite.streamlet.FunUtil.Fun;
@@ -30,7 +30,7 @@ public class NioCluster implements Closeable {
 	/**
 	 * Established channels connecting to peers.
 	 */
-	private Map<String, SocketChannel> sockChans = new HashMap<>();
+	private Map<String, AsyncRw> rws = new HashMap<>();
 
 	private Signal<String> onJoined;
 	private Signal<String> onLeft;
@@ -57,9 +57,9 @@ public class NioCluster implements Closeable {
 		onJoined = probe.getOnJoined();
 
 		onLeft = probe.getOnLeft().map(node -> {
-			var sc = sockChans.get(node);
-			if (sc != null)
-				nd.close(sc);
+			var rw = rws.get(node);
+			if (rw != null)
+				rw.close();
 			return node;
 		});
 
@@ -67,8 +67,8 @@ public class NioCluster implements Closeable {
 	}
 
 	public void stop() throws IOException {
-		for (var sc : sockChans.values())
-			nd.close(sc);
+		for (var rw : rws.values())
+			rw.close();
 
 		probe.stop();
 		Object_.closeQuietly(unlisten);
