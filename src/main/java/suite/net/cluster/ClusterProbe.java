@@ -2,10 +2,13 @@ package suite.net.cluster;
 
 import java.util.Set;
 
-import suite.net.Service;
 import suite.streamlet.Signal;
 
-public interface ClusterProbe extends Service {
+public interface ClusterProbe {
+
+	public void start();
+
+	public void stop();
 
 	public boolean isActive(String node);
 

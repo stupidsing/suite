@@ -6,7 +6,7 @@ import suite.object.Object_;
 import suite.util.Thread_;
 import suite.util.Thread_.RunnableEx;
 
-public class ThreadService implements Service {
+public class ThreadService {
 
 	private boolean started;
 	private RunnableEx serve;

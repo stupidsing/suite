@@ -9,11 +9,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import suite.net.Service;
 import suite.streamlet.Read;
 import suite.util.String_;
 
-public class Profiler implements Service {
+public class Profiler {
 
 	private static int timerDuration = 50;
 	private static int stackTraceDepth = 256;
