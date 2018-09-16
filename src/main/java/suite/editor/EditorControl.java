@@ -214,8 +214,8 @@ public class EditorControl {
 		var frame = view.getFrame();
 		if (model.isModified())
 			switch (JOptionPane.showConfirmDialog(frame, //
-					"Would you like to save your changes?" //
-					, "Close", //
+					"Would you like to save your changes?", //
+					"Close", //
 					JOptionPane.YES_NO_CANCEL_OPTION)) {
 			case JOptionPane.YES_OPTION:
 				save();
