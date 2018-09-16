@@ -59,7 +59,14 @@ public class ParticleSwarmTest {
 
 		public Particle() {
 			xs = new float[] { -512f + 1024f * random.nextFloat(), -512f + 1024f * random.nextFloat(), };
-			velocity = new float[] { -64f + 128f * random.nextFloat(), -64f + 128f * random.nextFloat(), };
+
+			double vx, vy;
+			do {
+				vx = -.5d + random.nextDouble();
+				vy = -.5d + random.nextDouble();
+			} while (1d < vx * vx + vy * vy);
+
+			velocity = new float[] { (float) (64d * vx), (float) (64d * vy), };
 		}
 
 		private void influence(DblObjPair<float[]> globalBest) {
@@ -68,7 +75,7 @@ public class ParticleSwarmTest {
 			vec.scaleOn(velocity, 1d - memoryInfluence - socialInfluence);
 			vec.addOn(velocity, vec.scale(vec.sub(best.t1, xs), memoryInfluence));
 			vec.addOn(velocity, vec.scale(vec.sub(globalBest.t1, xs), socialInfluence));
-
+			velocity = vec.normalize(velocity);
 		}
 
 		private void move(double scale) {
