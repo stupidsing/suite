@@ -55,8 +55,7 @@ public class LoadBalancer {
 			try (var socket = new Socket(server, port)) {
 				var sis = socket.getInputStream();
 				var sos = socket.getOutputStream();
-				var threads = Read.each(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os));
-				Thread_.startJoin(threads);
+				Read.each(Copy.streamByThread(is, sos), Copy.streamByThread(sis, os)).collect(Thread_::startJoin);
 			}
 		};
 

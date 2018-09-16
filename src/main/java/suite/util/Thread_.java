@@ -5,8 +5,8 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import suite.os.LogUtil;
+import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 
 public class Thread_ {
 
@@ -64,10 +64,11 @@ public class Thread_ {
 		threads1.sink(Th::join_);
 	}
 
-	public static void startJoin(Streamlet<Th> threads0) {
-		var threads1 = threads0.collect();
-		threads1.sink(Th::start);
-		threads1.sink(Th::join_);
+	public static Void startJoin(Outlet<Th> threads0) {
+		var threads1 = threads0.toList();
+		threads1.forEach(Th::start);
+		threads1.forEach(Th::join_);
+		return null;
 	}
 
 	public static Th startThread(RunnableEx runnable) {

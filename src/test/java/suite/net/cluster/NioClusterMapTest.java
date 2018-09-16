@@ -91,7 +91,7 @@ public class NioClusterMapTest {
 			}
 		}.run(0);
 
-		Thread_.startJoin(Read.from2(clusters).values().map(cluster -> Thread_.newThread(cluster::run)));
+		Read.from2(clusters).values().map(cluster -> Thread_.newThread(cluster::run)).collect(Thread_::startJoin);
 
 		for (var cluster : clusters.values())
 			cluster.close();

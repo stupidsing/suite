@@ -25,12 +25,12 @@ public class FutTest {
 		var nc = new AtomicInteger();
 		var count = 128;
 
-		Thread_.startJoin(Ints_.range(count).map(i -> Thread_.newThread(() -> {
+		Ints_.range(count).map(i -> Thread_.newThread(() -> {
 			if (fut.get() == value)
 				nc.incrementAndGet();
 			else
 				fail();
-		})));
+		})).collect(Thread_::startJoin);
 
 		assertEquals(count, nc.get());
 	}

@@ -26,7 +26,6 @@ import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.FunUtil2.Fun2;
 import suite.util.Fail;
-import suite.util.Th;
 import suite.util.Thread_;
 import suite.util.To;
 
@@ -60,16 +59,11 @@ public class As {
 	}
 
 	public static <T> Fun<Outlet<T>, Void> executeThreads(Sink<T> sink) {
-		return outlet -> execute(outlet.map(t -> Thread_.newThread(() -> sink.sink(t))));
+		return outlet -> outlet.map(t -> Thread_.newThread(() -> sink.sink(t))).collect(Thread_::startJoin);
 	}
 
 	public static <T> Fun<IntOutlet, Void> executeThreadsByInt(IntSink sink) {
-		return outlet -> execute(outlet.map(t -> Thread_.newThread(() -> sink.sink(t))));
-	}
-
-	public static Void execute(Outlet<Th> outlet) {
-		Thread_.startJoin(Read.from(outlet.toList()));
-		return null;
+		return outlet -> outlet.map(t -> Thread_.newThread(() -> sink.sink(t))).collect(Thread_::startJoin);
 	}
 
 	public static InputStream inputStream(Bytes bytes) {

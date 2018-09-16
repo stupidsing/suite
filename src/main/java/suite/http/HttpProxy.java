@@ -45,8 +45,7 @@ public class HttpProxy {
 					var is1 = socket1.getInputStream(); //
 					var os1 = socket1.getOutputStream();) {
 				os1.write((line + "\r\nConnection: close\r\n").getBytes(Defaults.charset));
-				var threads = Read.each(Copy.streamByThread(is0, os1), Copy.streamByThread(is1, os0));
-				Thread_.startJoin(threads);
+				Read.each(Copy.streamByThread(is0, os1), Copy.streamByThread(is1, os0)).collect(Thread_::startJoin);
 			}
 		});
 	}
