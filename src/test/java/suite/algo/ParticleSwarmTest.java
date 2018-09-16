@@ -32,10 +32,11 @@ public class ParticleSwarmTest {
 
 		for (var i = 0; i < 1024; i++)
 			for (var particle : particles) {
-				var fitness = 1d / schwefel(particle.xs);
+				var xs = particle.xs;
+				var fitness = 1d / schwefel(xs);
 
 				if (globalBest.t0 < fitness)
-					globalBest.update(fitness, vec.of(particle.xs));
+					globalBest.update(fitness, vec.of(xs));
 
 				particle.updateLocal(fitness);
 				particle.influence(globalBest);
