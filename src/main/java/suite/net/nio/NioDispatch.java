@@ -70,15 +70,15 @@ public class NioDispatch implements Closeable {
 		private Runnable reader;
 
 		public Requester(InetSocketAddress address) {
-			reconnect = new Reconnect(address, sc -> {
-				packetId = new PacketId(sc);
+			reconnect = new Reconnect(address, rec -> {
+				packetId = new PacketId(rec.socketChannel());
 
 				reader = new Runnable() {
 					public void run() {
 						packetId.read((id_, bs) -> {
 							handlers.remove(id_).sink(bs);
 							run();
-						}, reconnect::reset);
+						}, rec::reconnect);
 					}
 				};
 			});
@@ -87,7 +87,7 @@ public class NioDispatch implements Closeable {
 		public void request(Bytes request, Sink<Bytes> okay) {
 			var id = Util.temp();
 			handlers.put(id, okay);
-			reconnect.connect(sc -> packetId.write(id, request, v -> reader.run(), reconnect::reset));
+			reconnect.connect(rec -> packetId.write(id, request, v -> reader.run(), rec::reconnect));
 		}
 	}
 
@@ -109,45 +109,61 @@ public class NioDispatch implements Closeable {
 	public class ReconnectPool {
 		private Pool<Reconnect> pool;
 
-		public ReconnectPool(InetSocketAddress address, Sink<SocketChannel> connected) {
+		public ReconnectPool(InetSocketAddress address, Sink<Reconnectable> connected) {
 			pool = Pool.of(Ints_.range(9).map(i -> new Reconnect(address, connected)).toArray(Reconnect.class));
 		}
 
-		public Closeable connect(Sink<SocketChannel> okay) {
+		public Closeable connect(Sink<Reconnectable> okay) {
 			var reconnect = pool.get();
 			reconnect.connect(okay);
 			return () -> pool.unget(reconnect);
 		}
 	}
 
+	public interface Reconnectable {
+		public SocketChannel socketChannel();
+
+		public void reconnect(Exception ex);
+	}
+
 	public class Reconnect {
 		private InetSocketAddress address;
-		private Sink<SocketChannel> connected;
-		private SocketChannel sc;
+		private Sink<Reconnectable> connected;
+		private Reconnectable rec;
 		private Backoff backoff = new Backoff();
 
-		public Reconnect(InetSocketAddress address, Sink<SocketChannel> connected) {
+		public Reconnect(InetSocketAddress address, Sink<Reconnectable> connected) {
 			this.address = address;
 			this.connected = connected;
 		}
 
-		public void connect(Sink<SocketChannel> okay) {
-			if (sc == null)
+		public void connect(Sink<Reconnectable> okay) {
+			if (rec == null)
 				asyncConnect(address, sc_ -> {
-					connected.sink(sc_);
-					okay.sink(sc = sc_);
+					var r = new Reconnectable() {
+						public SocketChannel socketChannel() {
+							return sc_;
+						}
+
+						public void reconnect(Exception ex) {
+							reset(ex);
+						}
+					};
+
+					connected.sink(rec = r);
+					okay.sink(r);
 				}, ex -> {
 					reset(ex);
 					timeDispatches.insert(new TimeDispatch(System.currentTimeMillis() + backoff.duration(), () -> connect(okay)));
 				});
 			else
-				okay.sink(sc);
+				okay.sink(rec);
 		}
 
 		public void reset(Exception ex) {
 			LogUtil.error(ex);
-			close(sc);
-			sc = null;
+			close(rec.socketChannel());
+			rec = null;
 		}
 	}
 
