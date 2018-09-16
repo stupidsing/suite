@@ -13,15 +13,15 @@ import suite.streamlet.Read;
 
 public class NeuralNetworkTest {
 
+	private boolean[] booleans = new boolean[] { false, true, };
+	private Random random = new Random();
 	private Vector vec = new Vector();
 
 	@Test
 	public void test() {
 		Pair<String, BinOp<Boolean>> op0 = Pair.of("and", (b0, b1) -> b0 && b1);
-		Pair<String, BinOp<Boolean>> op1 = Pair.of("or", (b0, b1) -> b0 || b1);
+		Pair<String, BinOp<Boolean>> op1 = Pair.of("or_", (b0, b1) -> b0 || b1);
 		Pair<String, BinOp<Boolean>> op2 = Pair.of("xor", (b0, b1) -> b0 ^ b1);
-		var booleans = new boolean[] { false, true, };
-		var random = new Random();
 
 		var result = Read.each2(op0, op1, op2).fold(true, (b, name, oper) -> {
 			var nn = new NeuralNetwork();
