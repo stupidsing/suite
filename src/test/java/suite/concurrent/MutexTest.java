@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import suite.concurrent.Concurrent.DeadlockException;
 import suite.concurrent.Mutex.MutexLock;
+import suite.immutable.IList;
 import suite.primitive.BooMutable;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -22,22 +23,8 @@ public class MutexTest {
 	public void testDeadlock() {
 		var a = new Mutex();
 		var b = new Mutex();
-
-		MutexTestRunnable ra = () -> {
-			try (var mla = new MutexLock(a)) {
-				Thread_.sleepQuietly(500);
-				try (var mlb = new MutexLock(b)) {
-				}
-			}
-		};
-		MutexTestRunnable rb = () -> {
-			try (var mlb = new MutexLock(b)) {
-				Thread_.sleepQuietly(500);
-				try (var mla = new MutexLock(a)) {
-				}
-			}
-		};
-
+		var ra = lockInOrder(IList.of(a, b));
+		var rb = lockInOrder(IList.of(b, a));
 		assertTrue(isDeadlock(ra, rb));
 	}
 
@@ -45,23 +32,25 @@ public class MutexTest {
 	public void testNoDeadlock() {
 		var a = new Mutex();
 		var b = new Mutex();
-
-		MutexTestRunnable ra = () -> {
-			try (var mla = new MutexLock(a)) {
-				Thread_.sleepQuietly(500);
-				try (var mlb = new MutexLock(b)) {
-				}
-			}
-		};
-		MutexTestRunnable rb = () -> {
-			try (var mla = new MutexLock(a)) {
-				Thread_.sleepQuietly(500);
-				try (var mlb = new MutexLock(b)) {
-				}
-			}
-		};
-
+		var ra = lockInOrder(IList.of(a, b));
+		var rb = lockInOrder(IList.of(a, b));
 		assertFalse(isDeadlock(ra, rb));
+	}
+
+	private MutexTestRunnable lockInOrder(IList<Mutex> ms) {
+		return new MutexTestRunnable() {
+			public void run() {
+				run(ms);
+			}
+
+			public void run(IList<Mutex> ms) {
+				if (!ms.isEmpty())
+					try (var mla = new MutexLock(ms.head)) {
+						Thread_.sleepQuietly(500);
+						run(ms.tail);
+					}
+			}
+		};
 	}
 
 	private boolean isDeadlock(MutexTestRunnable... mtrs) {

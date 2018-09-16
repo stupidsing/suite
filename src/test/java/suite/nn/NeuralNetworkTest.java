@@ -2,16 +2,14 @@ package suite.nn;
 
 import static org.junit.Assert.assertTrue;
 
-import java.util.List;
 import java.util.Random;
 
 import org.junit.Test;
 
 import suite.adt.pair.Pair;
 import suite.math.linalg.Vector;
-import suite.nn.NeuralNetwork.Layer;
-import suite.nn.NeuralNetwork.Out;
 import suite.streamlet.FunUtil2.BinOp;
+import suite.streamlet.Read;
 
 public class NeuralNetworkTest {
 
@@ -24,36 +22,32 @@ public class NeuralNetworkTest {
 		Pair<String, BinOp<Boolean>> op2 = Pair.of("xor", (b0, b1) -> b0 ^ b1);
 		var booleans = new boolean[] { false, true, };
 		var random = new Random();
-		var result = true;
 
-		for (var pair : List.of(op0, op1, op2))
-			result &= pair.map((name, oper) -> {
-				var nn = new NeuralNetwork();
-				Layer<float[], float[]> train = nn.ml(new int[] { 2, 4, 1, });
+		var result = Read.each2(op0, op1, op2).fold(true, (b, name, oper) -> {
+			var nn = new NeuralNetwork();
+			var train = nn.ml(new int[] { 2, 4, 1, });
 
-				for (var i = 0; i < 16384; i++) {
-					var b0 = random.nextBoolean();
-					var b1 = random.nextBoolean();
+			for (var i = 0; i < 16384; i++) {
+				var b0 = random.nextBoolean();
+				var b1 = random.nextBoolean();
+				var in = input(b0, b1);
+				var expect = new float[] { f(oper.apply(b0, b1)), };
+				var out = train.feed(in);
+				var actual = out.output;
+				out.backprop.apply(vec.sub(expect, actual));
+			}
+
+			for (var b0 : booleans)
+				for (var b1 : booleans) {
 					var in = input(b0, b1);
-					var expect = new float[] { f(oper.apply(b0, b1)), };
-					Out<float[], float[]> out = train.feed(in);
-					var actual = out.output;
-					out.backprop.apply(vec.sub(expect, actual));
+					var out = oper.apply(b0, b1);
+					var f = train.feed(in).output[0];
+					System.out.println(b0 + " " + name + " " + b1 + " = " + f);
+					b &= out == .5f < f;
 				}
 
-				var result_ = true;
-
-				for (var b0 : booleans)
-					for (var b1 : booleans) {
-						var in = input(b0, b1);
-						var out = oper.apply(b0, b1);
-						var f = train.feed(in).output[0];
-						System.out.println(b0 + " " + name + " " + b1 + " = " + f);
-						result_ &= out == .5f < f;
-					}
-
-				return result_;
-			});
+			return b;
+		});
 
 		assertTrue(result);
 	}
