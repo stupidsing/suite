@@ -15,14 +15,15 @@ import suite.util.Thread_;
 
 public class MutexTest {
 
+	private Mutex a = new Mutex();
+	private Mutex b = new Mutex();
+
 	public interface MutexTestRunnable {
 		public void run() throws DeadlockException;
 	}
 
 	@Test
 	public void testDeadlock() {
-		var a = new Mutex();
-		var b = new Mutex();
 		var ra = lockInOrder(IList.of(a, b));
 		var rb = lockInOrder(IList.of(b, a));
 		assertTrue(isDeadlock(ra, rb));
@@ -30,8 +31,6 @@ public class MutexTest {
 
 	@Test
 	public void testNoDeadlock() {
-		var a = new Mutex();
-		var b = new Mutex();
 		var ra = lockInOrder(IList.of(a, b));
 		var rb = lockInOrder(IList.of(a, b));
 		assertFalse(isDeadlock(ra, rb));
@@ -43,7 +42,7 @@ public class MutexTest {
 				run(ms);
 			}
 
-			public void run(IList<Mutex> ms) {
+			private void run(IList<Mutex> ms) {
 				if (!ms.isEmpty())
 					try (var mla = new MutexLock(ms.head)) {
 						Thread_.sleepQuietly(500);
