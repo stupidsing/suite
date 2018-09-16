@@ -70,7 +70,11 @@ public class Vector {
 	}
 
 	public float[] normalize(float[] m) {
-		return scale(m, 1d / abs_(m));
+		return normalizeOn(copy(m));
+	}
+
+	public float[] normalizeOn(float[] m) {
+		return scaleOn(m, 1d / abs_(m));
 	}
 
 	public float[] of(float[] m) {

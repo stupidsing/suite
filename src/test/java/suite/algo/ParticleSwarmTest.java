@@ -78,9 +78,9 @@ public class ParticleSwarmTest {
 			var memoryInfluence = .1d;
 			var socialInfluence = .1d;
 			vec.scaleOn(velocity, 1d - memoryInfluence - socialInfluence);
-			vec.addOn(velocity, vec.scale(vec.sub(best.t1, xs), memoryInfluence));
-			vec.addOn(velocity, vec.scale(vec.sub(globalBest.t1, xs), socialInfluence));
-			velocity = vec.normalize(velocity);
+			vec.addOn(velocity, vec.scaleOn(vec.sub(best.t1, xs), memoryInfluence));
+			vec.addOn(velocity, vec.scaleOn(vec.sub(globalBest.t1, xs), socialInfluence));
+			vec.normalizeOn(velocity);
 		}
 
 		private void move(double scale) {
