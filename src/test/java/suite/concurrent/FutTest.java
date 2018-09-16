@@ -8,7 +8,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Test;
 
 import suite.primitive.Ints_;
-import suite.util.Th;
 import suite.util.Thread_;
 
 public class FutTest {
@@ -26,7 +25,7 @@ public class FutTest {
 		var nc = new AtomicInteger();
 		var count = 128;
 
-		Thread_.startJoin(Ints_.range(count).map(i -> new Th(() -> {
+		Thread_.startJoin(Ints_.range(count).map(i -> Thread_.newThread(() -> {
 			if (fut.get() == value)
 				nc.incrementAndGet();
 			else

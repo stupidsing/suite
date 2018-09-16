@@ -13,7 +13,6 @@ import org.junit.Test;
 
 import suite.net.cluster.impl.NioCluster;
 import suite.os.LogUtil;
-import suite.streamlet.Read;
 import suite.util.Rethrow;
 import suite.util.Thread_;
 
@@ -53,7 +52,7 @@ public class NioClusterTest {
 				System.out.println("=== CLUSTER STOPPED (" + LocalDateTime.now() + ") ===\n");
 			}, LogUtil::error);
 
-			Thread_.startJoin(Read.each(Thread_.newThread(cluster0::run), Thread_.newThread(cluster1::run)));
+			Thread_.startJoin(cluster0::run, cluster1::run);
 		}
 	}
 

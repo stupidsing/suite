@@ -74,9 +74,9 @@ public class HttpProxy {
 					var os0 = os; //
 					var is1 = socket1.getInputStream(); //
 					var os1 = socket1.getOutputStream();) {
-				var th0 = Thread_.newThread(() -> httpIo.writeRequest(os1, request1));
-				var th1 = Thread_.newThread(() -> httpIo.writeResponse(os0, httpIo.readResponse(is1)));
-				Thread_.startJoin(Read.each(th0, th1));
+				Thread_.startJoin( //
+						() -> httpIo.writeRequest(os1, request1), //
+						() -> httpIo.writeResponse(os0, httpIo.readResponse(is1)));
 			}
 		});
 	}

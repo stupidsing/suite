@@ -24,7 +24,6 @@ import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.Rethrow;
-import suite.util.Th;
 import suite.util.Thread_;
 
 public class NioClusterMapTest {
@@ -92,7 +91,7 @@ public class NioClusterMapTest {
 			}
 		}.run(0);
 
-		Thread_.startJoin(Read.from2(clusters).values().map(cluster -> new Th(cluster::run)));
+		Thread_.startJoin(Read.from2(clusters).values().map(cluster -> Thread_.newThread(cluster::run)));
 
 		for (var cluster : clusters.values())
 			cluster.close();

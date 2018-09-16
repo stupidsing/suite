@@ -5,6 +5,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import suite.os.LogUtil;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
 public class Thread_ {
@@ -56,6 +57,11 @@ public class Thread_ {
 			} catch (InterruptedException ex) {
 				LogUtil.error(ex);
 			}
+	}
+
+	public static void startJoin(RunnableEx... rs) {
+		var threads1 = Read.from(rs).map(Thread_::startThread).collect();
+		threads1.sink(Th::join_);
 	}
 
 	public static void startJoin(Streamlet<Th> threads0) {
