@@ -27,7 +27,7 @@ public class ParticleSwarmTest {
 	@Test
 	public void test() {
 		var particles = Ints_.range(500).map(i -> new Particle()).toList();
-		DblObjPair<float[]> globalBest = DblObjPair.of(Double.MIN_VALUE, null);
+		var globalBest = DblObjPair.of(Double.MIN_VALUE, new float[0]);
 		var delta = 1d;
 
 		for (var i = 0; i < 1024; i++)
@@ -55,7 +55,7 @@ public class ParticleSwarmTest {
 	private class Particle {
 		private float[] xs;
 		private float[] velocity;
-		private DblObjPair<float[]> best = DblObjPair.of(Double.MIN_VALUE, null);
+		private DblObjPair<float[]> best = DblObjPair.of(Double.MIN_VALUE, new float[0]);
 
 		public Particle() {
 			xs = new float[] { -512f + 1024f * random.nextFloat(), -512f + 1024f * random.nextFloat(), };
