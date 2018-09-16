@@ -41,8 +41,6 @@ public class ParticleSwarmTest {
 				particle.updateLocal(fitness);
 				particle.influence(globalBest);
 				particle.move(delta *= .9999d);
-
-				// TODO clip particle xs against wall
 			}
 
 		System.out.println(globalBest.t0);
