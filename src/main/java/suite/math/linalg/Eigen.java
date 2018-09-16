@@ -33,7 +33,7 @@ public class Eigen {
 				xs = vec.scale(ys, 1d / eigenValue);
 			}
 
-			eigenVectors[v] = vec.normalize(xs);
+			eigenVectors[v] = vec.normalizeOn(xs);
 
 			for (var i = 0; i < size; i++)
 				m[i][i] -= eigenValue;
@@ -61,7 +61,7 @@ public class Eigen {
 			if (0 < j && (beta = vec.dot(prevw = ws[j - 1])) != 0d)
 				vj = vec.scale(prevw, 1d / (betas[j] = (float) beta));
 			else
-				vj = vec.normalize(Floats_.toArray(n, i -> random.nextFloat()));
+				vj = vec.normalizeOn(Floats_.toArray(n, i -> random.nextFloat()));
 
 			var wp = mtx.mul(m, vs[j] = vj);
 			var sub0 = vec.scale(vj, alphas[0] = (float) vec.dot(wp, vj));

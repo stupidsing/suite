@@ -83,7 +83,7 @@ public class SingularValueDecomposition {
 		for (var i = 0; i < 16; i++)
 			x = mtx.mul(at, mtx.mul(a, x));
 
-		var v = vec.normalize(x);
+		var v = vec.normalizeOn(x);
 		var av = mtx.mul(a, v);
 		var s = vec.abs(av);
 		var u = vec.scale(av, 1d / s);
@@ -97,7 +97,7 @@ public class SingularValueDecomposition {
 		var at = mtx.transpose(a);
 
 		for (var i = 0; i < 256; i++) {
-			var u = vec.normalize(mtx.mul(a, v));
+			var u = vec.normalizeOn(mtx.mul(a, v));
 			var z = mtx.mul(at, u);
 			var beta = vec.abs(z);
 			var invBeta = 1d / beta;
