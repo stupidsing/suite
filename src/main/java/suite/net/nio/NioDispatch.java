@@ -297,12 +297,19 @@ public class NioDispatch implements Closeable {
 		}
 	}
 
-	public void asyncConnect(InetSocketAddress address, Sink<AsyncRw> okay, Sink<IOException> fail) {
+	public void asyncConnect(InetSocketAddress address, Sink<AsyncRw> okay0, Sink<IOException> fail) {
+		Sink<Object> okay1 = rw -> {
+			if (rw instanceof AsyncRw)
+				okay0.sink((AsyncRw) rw);
+			else
+				fail.sink(null);
+		};
+
 		try {
 			var sc = SocketChannel.open();
 			sc.configureBlocking(false);
 			sc.connect(address);
-			reg(sc, SelectionKey.OP_CONNECT, okay, fail);
+			reg(sc, SelectionKey.OP_CONNECT, okay1, fail);
 		} catch (IOException ex) {
 			fail.sink(ex);
 		}
@@ -381,10 +388,8 @@ public class NioDispatch implements Closeable {
 			reg(sc0, SelectionKey.OP_ACCEPT);
 		}
 
-		if ((ops & SelectionKey.OP_CONNECT) != 0) {
-			sc1.finishConnect();
-			callback.sink(new AsyncRw(sc1));
-		}
+		if ((ops & SelectionKey.OP_CONNECT) != 0)
+			callback.sink(sc1.finishConnect() ? new AsyncRw(sc1) : null);
 
 		if ((ops & SelectionKey.OP_READ) != 0) {
 			try {
