@@ -20,11 +20,19 @@ public class Pool<T> {
 	}
 
 	public <R> R get(Fun<T, R> fun) {
-		var t = Mutable.<T> nil();
-		var t_ = condition.waitTill(() -> t.value() != null, () -> t.update(availables.pop()), t::value, Long.MAX_VALUE);
+		var t_ = get();
 		var r = fun.apply(t_);
-		condition.satisfyOne(() -> availables.push(t_));
+		unget(t_);
 		return r;
+	}
+
+	public T get() {
+		var mut = Mutable.<T> nil();
+		return condition.waitTill(() -> mut.value() != null, () -> mut.update(availables.pop()), mut::value, Long.MAX_VALUE);
+	}
+
+	public void unget(T t) {
+		condition.satisfyOne(() -> availables.push(t));
 	}
 
 }

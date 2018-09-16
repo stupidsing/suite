@@ -19,12 +19,13 @@ import java.util.Map;
 import suite.adt.PriorityQueue;
 import suite.cfg.Defaults;
 import suite.concurrent.Backoff;
-import suite.concurrent.Condition;
+import suite.concurrent.Pool;
 import suite.net.NetUtil;
 import suite.object.Object_;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.primitive.Ints_;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Sink;
@@ -105,28 +106,17 @@ public class NioDispatch implements Closeable {
 		}
 	}
 
-	public class ReconnectShare {
-		private SocketChannel sc;
-		private Condition condition = new Condition();
-		private Reconnect reconnect;
+	public class ReconnectPool {
+		private Pool<Reconnect> pool;
 
-		public ReconnectShare(InetSocketAddress address, Sink<SocketChannel> connected) {
-			reconnect = new Reconnect(address, connected);
+		public ReconnectPool(InetSocketAddress address, Sink<SocketChannel> connected) {
+			pool = Pool.of(Ints_.range(9).map(i -> new Reconnect(address, connected)).toArray(Reconnect.class));
 		}
 
-		public void connectShare(Sink<SocketChannel> connected, Sink<SocketChannel> okay) {
-			if (sc == null)
-				reconnect.connect(sc_ -> {
-					okay.sink(sc_);
-				});
-			else
-				okay.sink(sc);
-		}
-
-		public void reset(Exception ex) {
-			LogUtil.error(ex);
-			reconnect.reset(ex);
-			sc = null;
+		public Closeable connect(Sink<SocketChannel> okay) {
+			var reconnect = pool.get();
+			reconnect.connect(okay);
+			return () -> pool.unget(reconnect);
 		}
 	}
 
