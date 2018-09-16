@@ -34,12 +34,10 @@ public class ParticleSwarmTest {
 			for (var particle : particles) {
 				var fitness = 1d / schwefel(particle.xs);
 
-				if (particle.best.t0 < fitness)
-					particle.best.update(fitness, vec.of(particle.xs));
-
 				if (globalBest.t0 < fitness)
 					globalBest.update(fitness, vec.of(particle.xs));
 
+				particle.updateLocal(fitness);
 				particle.influence(globalBest);
 				particle.move(delta *= .9999d);
 
@@ -68,6 +66,11 @@ public class ParticleSwarmTest {
 			} while (d <= Math_.epsilon || 1d < d);
 
 			velocity = vec.scale(new float[] { (float) vx, (float) vy, }, 64d / d);
+		}
+
+		private void updateLocal(double fitness) {
+			if (best.t0 < fitness)
+				best.update(fitness, vec.of(xs));
 		}
 
 		private void influence(DblObjPair<float[]> globalBest) {
