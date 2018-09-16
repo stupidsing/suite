@@ -60,13 +60,14 @@ public class ParticleSwarmTest {
 		public Particle() {
 			xs = new float[] { -512f + 1024f * random.nextFloat(), -512f + 1024f * random.nextFloat(), };
 
-			double vx, vy;
+			double vx, vy, d;
 			do {
 				vx = -.5d + random.nextDouble();
 				vy = -.5d + random.nextDouble();
-			} while (1d < vx * vx + vy * vy);
+				d = vx * vx + vy * vy;
+			} while (d <= Math_.epsilon || 1d < d);
 
-			velocity = new float[] { (float) (64d * vx), (float) (64d * vy), };
+			velocity = vec.scale(new float[] { (float) vx, (float) vy, }, 64d / d);
 		}
 
 		private void influence(DblObjPair<float[]> globalBest) {
