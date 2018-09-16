@@ -71,14 +71,14 @@ public class NioDispatch implements Closeable {
 
 		public Requester(InetSocketAddress address) {
 			reconnect = new Reconnect(address, rec -> {
-				packetId = new PacketId(rec.rw());
+				packetId = new PacketId(rec.rw);
 
 				reader = new Runnable() {
 					public void run() {
 						packetId.read((id_, bs) -> {
 							handlers.remove(id_).sink(bs);
 							run();
-						}, rec::reconnect);
+						}, rec.reconnect);
 					}
 				};
 			});
@@ -87,7 +87,7 @@ public class NioDispatch implements Closeable {
 		public void request(Bytes request, Sink<Bytes> okay) {
 			var id = Util.temp();
 			handlers.put(id, okay);
-			reconnect.connect(rec -> packetId.write(id, request, v -> reader.run(), rec::reconnect));
+			reconnect.connect(rec -> packetId.write(id, request, v -> reader.run(), rec.reconnect));
 		}
 	}
 
@@ -120,10 +120,14 @@ public class NioDispatch implements Closeable {
 		}
 	}
 
-	public interface Reconnectable {
-		public AsyncRw rw();
+	public class Reconnectable {
+		public final AsyncRw rw;
+		public final Sink<IOException> reconnect;
 
-		public void reconnect(Exception ex);
+		public Reconnectable(AsyncRw rw, Sink<IOException> reconnect) {
+			this.rw = rw;
+			this.reconnect = reconnect;
+		}
 	}
 
 	public class Reconnect {
@@ -140,16 +144,7 @@ public class NioDispatch implements Closeable {
 		public void connect(Sink<Reconnectable> okay) {
 			if (rec == null)
 				asyncConnect(address, rw_ -> {
-					var r = new Reconnectable() {
-						public AsyncRw rw() {
-							return rw_;
-						}
-
-						public void reconnect(Exception ex) {
-							reset(ex);
-						}
-					};
-
+					var r = new Reconnectable(rw_, this::reset);
 					connected.sink(rec = r);
 					okay.sink(r);
 				}, ex -> {
@@ -162,7 +157,7 @@ public class NioDispatch implements Closeable {
 
 		public void reset(Exception ex) {
 			LogUtil.error(ex);
-			rec.rw().close();
+			rec.rw.close();
 			rec = null;
 		}
 	}
