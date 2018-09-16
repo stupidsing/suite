@@ -252,6 +252,7 @@ public class NeuralNetwork {
 					System.arraycopy(errors, si, errors1[i] = t, 0, stride);
 					si += stride;
 				}
+
 				return errors1;
 			});
 		};
