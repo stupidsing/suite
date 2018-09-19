@@ -561,7 +561,7 @@ public class P2InferType {
 				if (type == Fdt.GLOB) {
 					var size = getTypeSize(typeOf(value));
 					var address = Mutable.<Operand> nil();
-					var var = new Var(address, 0, size);
+					var var = global(address, 0, size);
 					var e1 = new Erase(scope, env.replace(vn, var), me);
 					if (Set.of("!alloc", "!dealloc").contains(vn))
 						globals.put(vn, var);
@@ -590,12 +590,12 @@ public class P2InferType {
 					var vn = pair.t0;
 					var value = pair.t1;
 					var offset0 = offset;
-					var var = new Var(scope, offsetStack, offset0, offset += getTypeSize(typeOf(value)));
+					var var = localStack(scope, offsetStack, offset0, offset += getTypeSize(typeOf(value)));
 					env1 = env1.replace(vn, var);
 					assigns.add(Fixie.of(vn, var, value));
 				}
 
-				var e1 = new Erase(scope, env1, new Var(scope, offsetStack, 0, getTypeSize(type0)));
+				var e1 = new Erase(scope, env1, localStack(scope, offsetStack, 0, getTypeSize(type0)));
 				var expr1 = e1.erase(expr);
 
 				var expr2 = Read //
@@ -624,7 +624,7 @@ public class P2InferType {
 			})).applyIf(FunpDoFold.class, f -> f.apply((init, cont, next) -> {
 				var offset = IntMutable.nil();
 				var size = getTypeSize(typeOf(init));
-				var var_ = new Var(scope, offset, 0, size);
+				var var_ = localStack(scope, offset, 0, size);
 				var e1 = new Erase(scope, env.replace("fold$" + Util.temp(), var_), me);
 				var m = var_.get(scope);
 				var cont_ = e1.applyOnce(m, cont, size);
@@ -667,7 +667,7 @@ public class P2InferType {
 				var scope1 = scope + 1;
 				var lt = new LambdaType(n);
 				var frame = Funp_.framePointer;
-				var expr1 = new Erase(scope1, env.replace(vn, new Var(scope1, IntMutable.of(0), b, b + lt.is)), me).erase(expr);
+				var expr1 = new Erase(scope1, env.replace(vn, localStack(scope1, IntMutable.of(0), b, b + lt.is)), me).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr) -> {
 				var b = ps + ps; // return address and EBP
@@ -675,8 +675,8 @@ public class P2InferType {
 				var size = getTypeSize(typeOf(frame));
 				var env1 = IMap //
 						.<String, Var> empty() //
-						.replace(frameVar.vn, new Var(0, IntMutable.of(0), 0, size)) //
-						.replace(vn, new Var(1, IntMutable.of(0), b, b + lt.is));
+						.replace(frameVar.vn, localStack(0, IntMutable.of(0), 0, size)) //
+						.replace(vn, localStack(1, IntMutable.of(0), b, b + lt.is));
 				var fp = erase(fp0);
 				var expr1 = new Erase(1, env1, null).erase(expr);
 				return eraseRoutine(lt, fp, expr1);
@@ -730,8 +730,8 @@ public class P2InferType {
 				var size1 = getTypeSize(typeOf(r));
 				if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op) && (is < size0 || is < size1)) {
 					var offsetStack = IntMutable.nil();
-					var m0 = new Var(scope, offsetStack, 0, size0).getMemory(scope);
-					var m1 = new Var(scope, offsetStack, size0, size0 + size1).getMemory(scope);
+					var m0 = localStack(scope, offsetStack, 0, size0).getMemory(scope);
+					var m1 = localStack(scope, offsetStack, size0, size0 + size1).getMemory(scope);
 					var f0 = FunpCmp.of(op, m0, m1);
 					var f1 = FunpAssignMem.of(m0, erase(l), f0);
 					var f2 = FunpAssignMem.of(m1, erase(r), f1);
@@ -784,7 +784,7 @@ public class P2InferType {
 
 			var operand = Mutable.<Operand> nil();
 			var offset = IntMutable.nil();
-			var var = new Var(f, operand, scope, offset, 0, size);
+			var var = local(f, operand, scope, offset, 0, size);
 			var expr1 = new Erase(scope, env.replace(vn, var), me).erase(expr);
 
 			var depth = new Object() {
@@ -858,6 +858,18 @@ public class P2InferType {
 		}
 	}
 
+	private Var global(Mutable<Operand> offsetOperand, int start, int end) {
+		return new Var(FunpDontCare.of(), null, null, null, IntMutable.of(0), offsetOperand, start, end);
+	}
+
+	private Var local(Funp funp, Mutable<Operand> operand, int scope, IntMutable offset, int start, int end) {
+		return new Var(funp, null, operand, scope, offset, null, start, end);
+	}
+
+	private Var localStack(int scope, IntMutable offset, int start, int end) {
+		return new Var(FunpDontCare.of(), null, null, scope, offset, null, start, end);
+	}
+
 	private class Var {
 		private Funp funp;
 		private Funp value;
@@ -866,21 +878,6 @@ public class P2InferType {
 		private IntMutable offset;
 		private Mutable<Operand> offsetOperand;
 		private int start, end;
-
-		// global
-		private Var(Mutable<Operand> offsetOperand, int start, int end) {
-			this(FunpDontCare.of(), null, null, null, IntMutable.of(0), offsetOperand, start, end);
-		}
-
-		// local
-		private Var(Funp funp, Mutable<Operand> operand, int scope, IntMutable offset, int start, int end) {
-			this(funp, null, operand, scope, offset, null, start, end);
-		}
-
-		// local stack
-		private Var(int scope, IntMutable offset, int start, int end) {
-			this(FunpDontCare.of(), null, null, scope, offset, null, start, end);
-		}
 
 		private Var( //
 				Funp funp, //
