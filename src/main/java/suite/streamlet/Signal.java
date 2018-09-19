@@ -134,7 +134,7 @@ public class Signal<T> {
 	}
 
 	public <U> Signal<U> fold(U init, Fun2<U, T, U> fun) {
-		CasReference<U> cr = new CasReference<>(init);
+		var cr = new CasReference<U>(init);
 		return redirect_((t1, fire) -> fire.sink(cr.apply(t0 -> fun.apply(t0, t1))));
 	}
 

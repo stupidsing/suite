@@ -93,6 +93,7 @@ public class EditorView {
 		int u = 64, u3 = u * 3;
 
 		lay = new LayoutCalculator(frame.getContentPane());
+
 		layout = lay.boxh( //
 				lay.ex(u, lay.boxv( //
 						lay.fx(24, lay.c(searchTextField)), //
