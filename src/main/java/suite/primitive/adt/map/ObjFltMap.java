@@ -16,8 +16,8 @@ import suite.primitive.streamlet.FltObjStreamlet;
 import suite.streamlet.As;
 
 /**
- * Map with generic object key and floatacter object value. Float.MIN_VALUE is
- * not allowed in values. Not thread-safe.
+ * Map with generic object key and floatacter object value. Float.MIN_VALUE
+ * is not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -31,7 +31,7 @@ public class ObjFltMap<K> {
 
 	public static <K> ObjFltMap<K> collect(FltObjOutlet<K> outlet) {
 		var map = new ObjFltMap<K>();
-		FltObjPair<K> pair = FltObjPair.of((float) 0, null);
+		var pair = FltObjPair.<K> of((float) 0, null);
 		while (outlet.source().source2(pair))
 			map.put(pair.t1, pair.t0);
 		return map;
@@ -66,7 +66,7 @@ public class ObjFltMap<K> {
 	}
 
 	public void forEach(FltObjSink<K> sink) {
-		FltObjPair<K> pair = FltObjPair.of((float) 0, null);
+		var pair = FltObjPair.<K> of((float) 0, null);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);

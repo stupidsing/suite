@@ -16,8 +16,8 @@ import suite.primitive.streamlet.DblObjStreamlet;
 import suite.streamlet.As;
 
 /**
- * Map with generic object key and doubleacter object value. Double.MIN_VALUE is
- * not allowed in values. Not thread-safe.
+ * Map with generic object key and doubleacter object value. Double.MIN_VALUE
+ * is not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -31,7 +31,7 @@ public class ObjDblMap<K> {
 
 	public static <K> ObjDblMap<K> collect(DblObjOutlet<K> outlet) {
 		var map = new ObjDblMap<K>();
-		DblObjPair<K> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<K> of((double) 0, null);
 		while (outlet.source().source2(pair))
 			map.put(pair.t1, pair.t0);
 		return map;
@@ -66,7 +66,7 @@ public class ObjDblMap<K> {
 	}
 
 	public void forEach(DblObjSink<K> sink) {
-		DblObjPair<K> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<K> of((double) 0, null);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);

@@ -29,7 +29,7 @@ public class IntObjMap<V> {
 
 	public static <V> IntObjMap<V> collect(IntObjOutlet<V> outlet) {
 		var map = new IntObjMap<V>();
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<V> of((int) 0, null);
 		while (outlet.source().source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
@@ -63,7 +63,7 @@ public class IntObjMap<V> {
 	}
 
 	public void forEach(IntObjSink<V> sink) {
-		IntObjPair<V> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<V> of((int) 0, null);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);

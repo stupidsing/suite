@@ -29,7 +29,7 @@ public class DblObjMap<V> {
 
 	public static <V> DblObjMap<V> collect(DblObjOutlet<V> outlet) {
 		var map = new DblObjMap<V>();
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<V> of((double) 0, null);
 		while (outlet.source().source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
@@ -63,7 +63,7 @@ public class DblObjMap<V> {
 	}
 
 	public void forEach(DblObjSink<V> sink) {
-		DblObjPair<V> pair = DblObjPair.of((double) 0, null);
+		var pair = DblObjPair.<V> of((double) 0, null);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);

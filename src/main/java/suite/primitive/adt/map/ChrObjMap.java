@@ -29,7 +29,7 @@ public class ChrObjMap<V> {
 
 	public static <V> ChrObjMap<V> collect(ChrObjOutlet<V> outlet) {
 		var map = new ChrObjMap<V>();
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		var pair = ChrObjPair.<V> of((char) 0, null);
 		while (outlet.source().source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
@@ -63,7 +63,7 @@ public class ChrObjMap<V> {
 	}
 
 	public void forEach(ChrObjSink<V> sink) {
-		ChrObjPair<V> pair = ChrObjPair.of((char) 0, null);
+		var pair = ChrObjPair.<V> of((char) 0, null);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);

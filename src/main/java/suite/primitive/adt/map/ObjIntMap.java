@@ -16,8 +16,8 @@ import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.As;
 
 /**
- * Map with generic object key and intacter object value. Integer.MIN_VALUE is
- * not allowed in values. Not thread-safe.
+ * Map with generic object key and intacter object value. Integer.MIN_VALUE
+ * is not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -31,7 +31,7 @@ public class ObjIntMap<K> {
 
 	public static <K> ObjIntMap<K> collect(IntObjOutlet<K> outlet) {
 		var map = new ObjIntMap<K>();
-		IntObjPair<K> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<K> of((int) 0, null);
 		while (outlet.source().source2(pair))
 			map.put(pair.t1, pair.t0);
 		return map;
@@ -66,7 +66,7 @@ public class ObjIntMap<K> {
 	}
 
 	public void forEach(IntObjSink<K> sink) {
-		IntObjPair<K> pair = IntObjPair.of((int) 0, null);
+		var pair = IntObjPair.<K> of((int) 0, null);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);

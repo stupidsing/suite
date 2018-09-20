@@ -16,8 +16,8 @@ import suite.primitive.streamlet.LngObjStreamlet;
 import suite.streamlet.As;
 
 /**
- * Map with generic object key and longacter object value. Long.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with generic object key and longacter object value. Long.MIN_VALUE
+ * is not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */
@@ -31,7 +31,7 @@ public class ObjLngMap<K> {
 
 	public static <K> ObjLngMap<K> collect(LngObjOutlet<K> outlet) {
 		var map = new ObjLngMap<K>();
-		LngObjPair<K> pair = LngObjPair.of((long) 0, null);
+		var pair = LngObjPair.<K> of((long) 0, null);
 		while (outlet.source().source2(pair))
 			map.put(pair.t1, pair.t0);
 		return map;
@@ -66,7 +66,7 @@ public class ObjLngMap<K> {
 	}
 
 	public void forEach(LngObjSink<K> sink) {
-		LngObjPair<K> pair = LngObjPair.of((long) 0, null);
+		var pair = LngObjPair.<K> of((long) 0, null);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);

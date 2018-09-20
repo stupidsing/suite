@@ -29,7 +29,7 @@ public class FltObjMap<V> {
 
 	public static <V> FltObjMap<V> collect(FltObjOutlet<V> outlet) {
 		var map = new FltObjMap<V>();
-		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
+		var pair = FltObjPair.<V> of((float) 0, null);
 		while (outlet.source().source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
@@ -63,7 +63,7 @@ public class FltObjMap<V> {
 	}
 
 	public void forEach(FltObjSink<V> sink) {
-		FltObjPair<V> pair = FltObjPair.of((float) 0, null);
+		var pair = FltObjPair.<V> of((float) 0, null);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);

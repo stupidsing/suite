@@ -20,8 +20,8 @@ import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Outlet;
 
 /**
- * Map with primitive long key and primitive long value. Long.MIN_VALUE is not
- * allowed in values. Not thread-safe.
+ * Map with primitive long key and primitive long value. Long.MIN_VALUE is
+ * not allowed in values. Not thread-safe.
  *
  * @author ywsing
  */

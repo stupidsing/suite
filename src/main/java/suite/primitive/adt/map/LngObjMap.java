@@ -29,7 +29,7 @@ public class LngObjMap<V> {
 
 	public static <V> LngObjMap<V> collect(LngObjOutlet<V> outlet) {
 		var map = new LngObjMap<V>();
-		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
+		var pair = LngObjPair.<V> of((long) 0, null);
 		while (outlet.source().source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
@@ -63,7 +63,7 @@ public class LngObjMap<V> {
 	}
 
 	public void forEach(LngObjSink<V> sink) {
-		LngObjPair<V> pair = LngObjPair.of((long) 0, null);
+		var pair = LngObjPair.<V> of((long) 0, null);
 		var source = source_();
 		while (source.source2(pair))
 			sink.sink2(pair.t0, pair.t1);
