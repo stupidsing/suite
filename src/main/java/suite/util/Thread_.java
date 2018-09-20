@@ -47,7 +47,7 @@ public class Thread_ {
 	}
 
 	public static Th newThread(RunnableEx runnable) {
-		return newThread_(runnable);
+		return new Th(runnable);
 	}
 
 	public static void sleepQuietly(long time) {
@@ -72,17 +72,13 @@ public class Thread_ {
 	}
 
 	public static Th startThread(RunnableEx runnable) {
-		var thread = newThread_(runnable);
+		var thread = new Th(runnable);
 		thread.start();
 		return thread;
 	}
 
 	private static ThreadPoolExecutor newExecutor(int corePoolSize, int maxPoolSize) {
 		return new ThreadPoolExecutor(corePoolSize, maxPoolSize, 10, TimeUnit.SECONDS, new ArrayBlockingQueue<>(256));
-	}
-
-	private static Th newThread_(RunnableEx runnable) {
-		return new Th(runnable);
 	}
 
 }
