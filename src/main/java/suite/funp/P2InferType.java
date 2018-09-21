@@ -64,6 +64,7 @@ import suite.funp.P2.FunpAssignMem;
 import suite.funp.P2.FunpAssignOp;
 import suite.funp.P2.FunpCmp;
 import suite.funp.P2.FunpData;
+import suite.funp.P2.FunpFramePointer;
 import suite.funp.P2.FunpHeapAlloc;
 import suite.funp.P2.FunpHeapDealloc;
 import suite.funp.P2.FunpInvoke;
@@ -679,7 +680,8 @@ public class P2InferType {
 						.replace(vn, localStack(1, IntMutable.of(0), b, b + lt.is));
 				var fp = erase(fp0);
 				var expr1 = new Erase(1, env1, null).erase(expr);
-				return eraseRoutine(lt, fp, expr1);
+				var expr2 = FunpHeapDealloc.of(size, FunpFramePointer.of(), expr1);
+				return eraseRoutine(lt, fp, expr2);
 			})).applyIf(FunpMe.class, f -> {
 				return me.get(scope);
 			}).applyIf(FunpReference.class, f -> f.apply(expr -> {

@@ -312,10 +312,12 @@ public class P4GenerateCode {
 				});
 			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
 				return compileHeap(size, (c1, allocSize, fcp) -> {
-					var ref = c1.compileIsReg(reference);
-					c1.mask(ref).mov(amd64.mem(ref, 0, ps), fcp);
-					em.mov(fcp, ref);
-					return compile(expr);
+					var out = c1.compile(expr);
+					var c2 = c1.mask(out.op0, out.op1);
+					var ref = c2.compileIsReg(reference);
+					c2.mask(ref).mov(amd64.mem(ref, 0, ps), fcp);
+					c2.em.mov(fcp, ref);
+					return out;
 				});
 			})).applyIf(FunpIf.class, f -> f.apply((if_, then_, else_) -> {
 				Sink2<Compile0, Funp> compile0, compile1;
