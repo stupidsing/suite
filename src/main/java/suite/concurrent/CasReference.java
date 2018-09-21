@@ -35,7 +35,7 @@ public class CasReference<T> {
 				if (asr.compareAndSet(t0, t1, stamp, stamp + 1))
 					return t1;
 				else
-					new Backoff().yield(); // back-off
+					new Backoff().yield();
 			else
 				return fail("stamp overflow");
 		}

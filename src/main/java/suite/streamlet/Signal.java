@@ -62,7 +62,7 @@ public class Signal<T> {
 
 	public static <T, U, V> Signal<V> merge(Signal<T> n0, Signal<U> n1, Fun2<T, U, V> fun) {
 		return of(fire -> {
-			CasReference<Pair<T, U>> cr = new CasReference<>(Pair.of(null, null));
+			var cr = new CasReference<Pair<T, U>>(Pair.of(null, null));
 			Sink<Pair<T, U>> recalc = pair -> fire.sink(fun.apply(pair.t0, pair.t1));
 			n0.wire_(t -> recalc.sink(cr.apply(pair -> Pair.of(t, pair.t1))));
 			n1.wire_(u -> recalc.sink(cr.apply(pair -> Pair.of(pair.t0, u))));
@@ -182,8 +182,9 @@ public class Signal<T> {
 		return of(fire -> wire_(t -> redirector.accept(t, fire)));
 	}
 
-	private void wire_(Sink<T> receiver) {
+	private Runnable wire_(Sink<T> receiver) {
 		receivers.add(receiver);
+		return () -> receivers.remove(receiver);
 	}
 
 }
