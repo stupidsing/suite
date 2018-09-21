@@ -177,7 +177,7 @@ public class P2 {
 		}
 	}
 
-	public static class FunpHeapDealloc implements Funp, P2.End {
+	public static class FunpHeapDealloc implements Funp, P4.End {
 		public int size;
 		public Funp reference;
 		public Funp expr;
