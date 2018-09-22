@@ -31,7 +31,7 @@ public class NeuralNetworkTest {
 				var b0 = random.nextBoolean();
 				var b1 = random.nextBoolean();
 				var in = input(b0, b1);
-				var expect = new float[] { f(oper.apply(b0, b1)), };
+				var expect = vec.of(f(oper.apply(b0, b1)));
 				var out = train.feed(in);
 				var actual = out.output;
 				out.backprop.apply(vec.sub(expect, actual));
@@ -53,7 +53,7 @@ public class NeuralNetworkTest {
 	}
 
 	private float[] input(boolean b0, boolean b1) {
-		return new float[] { f(b0), f(b1), };
+		return vec.of(f(b0), f(b1));
 	}
 
 	private float f(boolean b) {

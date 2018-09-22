@@ -88,6 +88,10 @@ public class Vector {
 		return vs1;
 	}
 
+	public float[] of(float... fs) {
+		return fs;
+	}
+
 	public int sameLength(float[] m, float[] n) {
 		return sameLength_(m, n);
 	}

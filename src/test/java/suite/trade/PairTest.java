@@ -4,6 +4,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
 import suite.primitive.Ints_;
 import suite.primitive.Longs_;
@@ -20,6 +21,7 @@ public class PairTest {
 
 	private TradeCfg cfg = new TradeCfgImpl();
 	private Statistic statistic = new Statistic();
+	private Vector vec = new Vector();
 
 	@Test
 	public void test() {
@@ -40,7 +42,7 @@ public class PairTest {
 
 		var lr = statistic.linearRegression(Ints_ //
 				.range(length) //
-				.map(i -> FltObjPair.of(prices1[i], new float[] { prices0[i], 1f, })));
+				.map(i -> FltObjPair.of(prices1[i], vec.of(prices0[i], 1f))));
 
 		System.out.println(symbol0 + " -> " + symbol1 + lr);
 		assertTrue(.4d < lr.r2);

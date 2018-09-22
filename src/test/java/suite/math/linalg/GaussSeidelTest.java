@@ -18,8 +18,8 @@ public class GaussSeidelTest {
 				{ 0f, 3f, -1f, 8f, }, //
 		};
 
-		var actual = gs.solve(a, new float[] { 6f, 25f, -11f, 15f, });
-		var expect = new float[] { 1f, 2f, -1f, 1f, };
+		var actual = gs.solve(a, vec.of(6f, 25f, -11f, 15f));
+		var expect = vec.of(1f, 2f, -1f, 1f);
 		System.out.println(Arrays.toString(actual));
 		vec.verifyEquals(actual, expect);
 	}

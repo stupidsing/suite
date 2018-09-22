@@ -5,6 +5,7 @@ import static suite.util.Friends.fail;
 import java.util.Map;
 import java.util.Set;
 
+import suite.math.linalg.Vector;
 import suite.streamlet.Read;
 import suite.trade.Asset;
 import suite.trade.TimeRange;
@@ -12,9 +13,11 @@ import suite.util.String_;
 
 public class Hkd {
 
+	private Vector vec = new Vector();
+
 	public DataSource dataSource(String symbol, TimeRange period) {
 		return String_.equals(symbol, Asset.cashSymbol) //
-				? DataSource.of(new long[] { period.to.epochSec(), }, new float[] { 1f, }) //
+				? DataSource.of(new long[] { period.to.epochSec(), }, vec.of(1f)) //
 				: fail();
 	}
 

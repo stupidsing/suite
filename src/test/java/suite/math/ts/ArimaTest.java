@@ -5,6 +5,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import suite.math.linalg.Vector;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
@@ -17,6 +18,7 @@ public class ArimaTest {
 
 	private Arima arima = new Arima();
 	private Random random = new Random();
+	private Vector vec = new Vector();
 
 	private interface Estimate {
 		public DblObjPair<Arima_> arima(float[] xs, int p, int d, int q);
@@ -24,17 +26,17 @@ public class ArimaTest {
 
 	@Test
 	public void testArma20() {
-		test(new float[] { .5f, .5f, }, new float[] {});
+		test(vec.of(.5f, .5f), vec.of());
 	}
 
 	@Test
 	public void testArma02() {
-		test(new float[] {}, new float[] { .5f, .5f, });
+		test(vec.of(), vec.of(.5f, .5f));
 	}
 
 	@Test
 	public void testMa2() {
-		test(new float[] {}, new float[] { .5f, -.5f, 0f, });
+		test(vec.of(), vec.of(.5f, -.5f, 0f));
 	}
 
 	private void test(float[] ars, float[] mas) {

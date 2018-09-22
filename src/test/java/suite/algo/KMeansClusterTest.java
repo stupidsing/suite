@@ -8,6 +8,7 @@ import java.util.Random;
 
 import org.junit.Test;
 
+import suite.math.linalg.Vector;
 import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
@@ -15,6 +16,7 @@ import suite.streamlet.Read;
 public class KMeansClusterTest {
 
 	private Random random = new Random();
+	private Vector vec = new Vector();
 
 	@Test
 	public void test() {
@@ -43,11 +45,10 @@ public class KMeansClusterTest {
 	}
 
 	private float[] point(float x, float y, float z) {
-		return new float[] { //
-				(float) (x + random.nextGaussian()), //
-				(float) (y + random.nextGaussian()), //
-				(float) (z + random.nextGaussian()), //
-		};
+		return vec.of( //
+				x + random.nextGaussian(), //
+				y + random.nextGaussian(), //
+				z + random.nextGaussian());
 	}
 
 }

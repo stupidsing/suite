@@ -90,7 +90,7 @@ public class TimeSeries {
 		});
 		var lr = stat.linearRegression(Ints_ //
 				.range(logVrs.length) //
-				.map(i -> FltObjPair.of((float) log(tors[i]), new float[] { logVrs[i], 1f, })));
+				.map(i -> FltObjPair.of((float) log(tors[i]), vec.of(logVrs[i], 1f))));
 		var beta0 = lr.coefficients[0];
 		return beta0 / 2d;
 	}
@@ -156,7 +156,7 @@ public class TimeSeries {
 
 		return stat.linearRegression(Ints_ //
 				.range(tor, ys.length) //
-				.map(i -> FltObjPair.of(diffs[i], new float[] { ys[i], 1f, })));
+				.map(i -> FltObjPair.of(diffs[i], vec.of(ys[i], 1f))));
 	}
 
 	public LinearRegression movingAvgMeanReversion(float[] ys, float[] movingAvg, int tor) {
@@ -164,7 +164,7 @@ public class TimeSeries {
 
 		return stat.linearRegression(Ints_ //
 				.range(tor, ys.length) //
-				.map(i -> FltObjPair.of(diffs[i], new float[] { movingAvg[i], 1f, })));
+				.map(i -> FltObjPair.of(diffs[i], vec.of(movingAvg[i], 1f))));
 	}
 
 	// partial autocorrelation function
