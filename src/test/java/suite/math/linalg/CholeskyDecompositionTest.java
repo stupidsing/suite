@@ -23,7 +23,7 @@ public class CholeskyDecompositionTest {
 	public void testInverseMul() {
 		var random = new Random();
 		var fs = Floats_.toArray(3, i -> random.nextFloat());
-		var invm0 = cholesky.inverseMul(mtx.of(m0));
+		var invm0 = cholesky.inverseMul(mtx.copyOf(m0));
 		var actual0 = mtx.mul(m0, invm0.apply(fs));
 		var actual1 = invm0.apply(mtx.mul(m0, fs));
 		vec.verifyEquals(fs, actual0, .01f);
@@ -40,7 +40,7 @@ public class CholeskyDecompositionTest {
 
 		float[] expectd = { 4f, 1f, 9f, };
 
-		var ldlt = cholesky.ldlt(mtx.of(m0));
+		var ldlt = cholesky.ldlt(mtx.copyOf(m0));
 		var actuall = ldlt.t0;
 		var actuald = ldlt.t1;
 		mtx.verifyEquals(actuall, expectl);
@@ -59,7 +59,7 @@ public class CholeskyDecompositionTest {
 				{ -8f, 5f, 3f, }, //
 		};
 
-		var actual = cholesky.decompose(mtx.of(m0));
+		var actual = cholesky.decompose(mtx.copyOf(m0));
 		mtx.verifyEquals(actual, expect);
 
 		var conjugate = mtx.transpose(actual);

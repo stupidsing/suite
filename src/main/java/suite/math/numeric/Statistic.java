@@ -198,7 +198,7 @@ public class Statistic {
 				for (var n = 0; n < 256; n++) {
 					var bernoulli = To.vector(x, this::predict);
 					var s = To.vector(bernoulli, b -> b * (1f - b));
-					var sx = mtx.of(x);
+					var sx = mtx.copyOf(x);
 					for (var i = 0; i < nSamples; i++)
 						for (var j = 0; j < sampleLength; j++)
 							sx[i][j] *= s[i];

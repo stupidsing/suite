@@ -16,7 +16,7 @@ public class Eigen {
 	// Paul Wilmott on Quantitative Finance, Second Edition
 	// 37.13.1 The Power Method, page 620
 	public float[][] power(float[][] m0) {
-		var m = mtx.of(m0);
+		var m = mtx.copyOf(m0);
 		var size = mtx.sqSize(m);
 		var eigenVectors = new float[size][];
 		var eigenValue = 0f;

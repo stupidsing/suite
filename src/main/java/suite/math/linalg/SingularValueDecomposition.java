@@ -25,7 +25,7 @@ public class SingularValueDecomposition {
 	// Machine Learning - An Algorithm Perspective
 	// 6.2 Principal Components Analysis
 	public float[] pca(float[][] m0) {
-		var m1 = mtx.of(m0);
+		var m1 = mtx.copyOf(m0);
 		var height = mtx.height(m1);
 		var width_ = mtx.width(m1);
 

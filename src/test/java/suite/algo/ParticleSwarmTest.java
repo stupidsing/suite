@@ -36,7 +36,7 @@ public class ParticleSwarmTest {
 				var fitness = 1d / schwefel(xs);
 
 				if (globalBest.t0 < fitness)
-					globalBest.update(fitness, vec.of(xs));
+					globalBest.update(fitness, vec.copyOf(xs));
 
 				particle.updateLocal(fitness);
 				particle.influence(globalBest);
@@ -69,7 +69,7 @@ public class ParticleSwarmTest {
 
 		private void updateLocal(double fitness) {
 			if (best.t0 < fitness)
-				best.update(fitness, vec.of(xs));
+				best.update(fitness, vec.copyOf(xs));
 		}
 
 		private void influence(DblObjPair<float[]> globalBest) {

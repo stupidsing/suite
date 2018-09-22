@@ -23,7 +23,7 @@ public class Qr {
 
 		for (var i = 0; i < size; i++) {
 			var a = m[i];
-			var u1 = vec.of(a);
+			var u1 = vec.copyOf(a);
 
 			for (var j = 0; j < i; j++) {
 				var u = q[j];
@@ -43,7 +43,7 @@ public class Qr {
 	}
 
 	public Pair<float[][], float[][]> decomposeByGivensRotation(float[][] m) {
-		var r = mtx.of(m);
+		var r = mtx.copyOf(m);
 		var size = mtx.sqSize(r);
 		var q = mtx.identity(size);
 

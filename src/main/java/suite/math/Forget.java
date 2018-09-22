@@ -7,7 +7,7 @@ public class Forget {
 	private static Vector vec = new Vector();
 
 	public static float[] forget(float[] fs, float[] n) {
-		return forgetOn(vec.of(fs), n);
+		return forgetOn(vec.copyOf(fs), n);
 	}
 
 	public static float[] forgetOn(float[] m, float[] n) {

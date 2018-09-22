@@ -55,6 +55,10 @@ public class Matrix {
 				.toDouble(Int_Dbl.sum(j -> vs[i0][j] * vs[i1][j])) / w - means[i0] * means[i1]);
 	}
 
+	public float[][] copyOf(float[][] m) {
+		return copy(m);
+	}
+
 	public double det(float[][] m) {
 		var size = sqSize_(m);
 		var cols = Ints_.range(size).toArray();
@@ -117,7 +121,7 @@ public class Matrix {
 	 * Calculates matric inverse by Gaussian-Jordan elimination.
 	 */
 	public float[][] inverse(float[][] m0) {
-		var m = of(m0); // do not alter input matrix
+		var m = copyOf(m0); // do not alter input matrix
 		var size = h(m);
 
 		if (size != w(m))
@@ -316,10 +320,6 @@ public class Matrix {
 			for (var j = 0; j < width; j++)
 				m[i][j] = -m[i][j];
 		return m;
-	}
-
-	public float[][] of(float[][] m) {
-		return copy(m);
 	}
 
 	public float[][] of(int height, int width) {

@@ -46,6 +46,10 @@ public class Vector {
 		return Ints_.range(pm, pm + l).toDouble(Int_Dbl.sum(i -> m[i] * n[d - i]));
 	}
 
+	public float[] copyOf(float[] m) {
+		return copy(m);
+	}
+
 	public double dot(float[] m) {
 		return dot_(m);
 	}
@@ -82,10 +86,6 @@ public class Vector {
 		for (var i = 0; i < vs0.length; i++)
 			vs1[i] = (float) vs0[i];
 		return vs1;
-	}
-
-	public float[] of(float[] m) {
-		return copy(m);
 	}
 
 	public int sameLength(float[] m, float[] n) {

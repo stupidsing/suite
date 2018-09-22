@@ -255,7 +255,7 @@ public class TimeSeries {
 	}
 
 	private float[] differences_(int tor, float[] fs) {
-		return differencesOn_(tor, vec.of(fs));
+		return differencesOn_(tor, vec.copyOf(fs));
 	}
 
 	private float[] differencesOn_(int tor, float[] fs) {
