@@ -19,6 +19,10 @@ public class List_ {
 		public Objs() {
 		}
 
+		public Objs(int capacity) {
+			super(capacity);
+		}
+
 		public Objs(Collection<? extends T> c) {
 			super(c);
 		}
@@ -62,8 +66,20 @@ public class List_ {
 		return list.subList(0, min(pos, size));
 	}
 
+	public static <T> Objs<T> of() {
+		return new Objs<>();
+	}
+
+	public static <T> Objs<T> of(int capacity) {
+		return new Objs<>(capacity);
+	}
+
+	public static <T> Objs<T> of(Class<T> clazz) {
+		return new Objs<>();
+	}
+
 	public static <T> Objs<T> of(Collection<? extends T> c) {
-		return list(c);
+		return new Objs<>(c);
 	}
 
 	public static <T> List<T> reverse(List<T> list0) {
@@ -81,19 +97,15 @@ public class List_ {
 	}
 
 	public static <T extends Comparable<? super T>> List<T> sort(Collection<T> list) {
-		var list1 = list(list);
+		var list1 = new Objs<>(list);
 		Collections.sort(list1);
 		return list1;
 	}
 
 	public static <T> List<T> sort(Collection<T> list, Comparator<? super T> comparator) {
-		var list1 = list(list);
+		var list1 = new Objs<>(list);
 		Collections.sort(list1, comparator);
 		return list1;
-	}
-
-	private static <T> Objs<T> list(Collection<? extends T> c) {
-		return new Objs<>(c);
 	}
 
 }
