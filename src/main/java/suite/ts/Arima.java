@@ -82,7 +82,7 @@ public class Arima {
 		var mas = To.vector(q, i -> 1f);
 		var xs1 = nDiffs(xs0, d);
 		var arima = armaBackcast(xs1, ars, mas);
-		var xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
+		var xs2 = Floats_.concat(xs1, vec.of(arima.x1));
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
@@ -136,14 +136,14 @@ public class Arima {
 		}
 
 		var x1 = arma.sum(xsp, epq);
-		return new Arima_(ars, mas, (float) x1);
+		return new Arima_(ars, mas, x1);
 	}
 
 	@SuppressWarnings("unused")
 	private DblObjPair<Arima_> arimaEm(float[] xs0, int p, int d, int q) {
 		var xs1 = nDiffs(xs0, d);
 		var arima = armaEm(xs1, p, q);
-		var xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
+		var xs2 = Floats_.concat(xs1, vec.of(arima.x1));
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
@@ -210,14 +210,14 @@ public class Arima {
 		// when t = xs.length
 		var x1 = new Arma(ars, mas).sum(xsp, epq);
 
-		return new Arima_(ars, mas, (float) x1);
+		return new Arima_(ars, mas, x1);
 	}
 
 	@SuppressWarnings("unused")
 	private DblObjPair<Arima_> arimaIa(float[] xs0, int p, int d, int q) {
 		var xs1 = nDiffs(xs0, d);
 		var arima = armaIa(xs1, p, q);
-		var xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
+		var xs2 = Floats_.concat(xs1, vec.of(arima.x1));
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
@@ -266,7 +266,7 @@ public class Arima {
 						+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[lengthpm1 - i])) //
 						+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * epqByIter[i][lengthqm1 - i]));
 
-				return new Arima_(ars, mas, (float) x1);
+				return new Arima_(ars, mas, x1);
 			}
 		}
 	}
@@ -274,7 +274,7 @@ public class Arima {
 	public DblObjPair<Arima_> arimaMle(float[] xs0, int p, int d, int q) {
 		var xs1 = nDiffs(xs0, d);
 		var arima = armaMle(xs1, p, q);
-		var xs2 = Floats_.concat(xs1, new float[] { arima.x1, });
+		var xs2 = Floats_.concat(xs1, vec.of(arima.x1));
 		return DblObjPair.of(nSums(xs2, d), arima);
 	}
 
@@ -299,7 +299,7 @@ public class Arima {
 		var mas = ll.mas;
 
 		var x1 = ll.arma.sum(xsp, epq);
-		return new Arima_(ars, mas, (float) x1);
+		return new Arima_(ars, mas, x1);
 	}
 
 	// Digital Processing of Random Signals, Boaz Porat, page 190
@@ -345,9 +345,9 @@ public class Arima {
 	public class Arima_ {
 		public final float[] ars;
 		public final float[] mas;
-		public final float x1;
+		public final double x1;
 
-		private Arima_(float[] ars, float[] mas, float x1) {
+		private Arima_(float[] ars, float[] mas, double x1) {
 			this.ars = ars;
 			this.mas = mas;
 			this.x1 = x1;

@@ -3,6 +3,7 @@ package suite.trade.backalloc.strategy;
 import static suite.util.Friends.log;
 import static suite.util.Friends.log1p;
 
+import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.streamlet.Read;
 import suite.trade.Asset;
@@ -30,6 +31,7 @@ public class MovingAvgMeanReversionBackAllocator {
 
 	private MovingAverage ma = new MovingAverage();
 	private TimeSeries ts = new TimeSeries();
+	private Vector vec = new Vector();
 
 	public BackAllocator backAllocator() {
 		return (akds, indices) -> {
@@ -57,7 +59,7 @@ public class MovingAvgMeanReversionBackAllocator {
 							var price = ds.prices[index - 1];
 
 							var lma = mrs.latestMovingAverage();
-							var diff = mrs.movingAvgMeanReversion.predict(new float[] { (float) lma, 1f, });
+							var diff = mrs.movingAvgMeanReversion.predict(vec.of(lma, 1d));
 							var dailyReturn = diff / price - dailyRiskFreeInterestRate;
 
 							var returnsStat = ts.returnsStatDaily(ds.prices);

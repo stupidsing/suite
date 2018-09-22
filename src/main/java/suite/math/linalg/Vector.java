@@ -77,6 +77,13 @@ public class Vector {
 		return scaleOn(m, 1d / abs_(m));
 	}
 
+	public float[] of(double... vs0) {
+		var vs1 = new float[vs0.length];
+		for (var i = 0; i < vs0.length; i++)
+			vs1[i] = (float) vs0[i];
+		return vs1;
+	}
+
 	public float[] of(float[] m) {
 		return copy(m);
 	}

@@ -64,7 +64,7 @@ public class ParticleSwarmTest {
 				d = vx * vx + vy * vy;
 			} while (d <= Math_.epsilon || 1d < d);
 
-			velocity = vec.scale(new float[] { (float) vx, (float) vy, }, 64d / d);
+			velocity = vec.scale(vec.of(vx, vy), 64d / d);
 		}
 
 		private void updateLocal(double fitness) {

@@ -39,7 +39,7 @@ public class BfgsTest {
 		var xs = bfgs.bfgs(rosenbrock, new float[] { 0f, 0f, });
 
 		System.out.println(Arrays.toString(xs));
-		vec.verifyEquals(xs, new float[] { (float) a, (float) a, }, .05f);
+		vec.verifyEquals(xs, vec.of(a, a), .05f);
 	}
 
 }

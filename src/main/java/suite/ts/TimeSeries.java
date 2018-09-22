@@ -116,7 +116,7 @@ public class TimeSeries {
 			}
 			var x = log(returns.length);
 			var y = (max - min) / mv.standardDeviation();
-			pairs.add(FltObjPair.of((float) y, new float[] { (float) x, 1f, }));
+			pairs.add(FltObjPair.of((float) y, vec.of(x, 1d)));
 		}
 		return stat.linearRegression(Read.from(pairs)).coefficients[0];
 	}
