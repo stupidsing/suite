@@ -78,7 +78,50 @@ public class NeuralNetwork {
 				.append(feedForwardLayer(nKernels * flattenSize, outputSize));
 	}
 
+	// https://blog.janestreet.com/deep-learning-experiments-in-ocaml/
+	public Layer<float[][][], float[]> convVgg16() {
+		var imageSize = 64;
+		var inputSize = 19;
+		var kernelSize = 5;
+		var maxPoolSize = 22;
+		var flattenSize = (inputSize - kernelSize + 1) / maxPoolSize;
+
+		// input 64x64x3
+		return nil3dLayer() //
+				.append(convChannelLayer(3, 64, kernelSize, kernelSize)) //
+				.append(convChannelLayer(64, 64, kernelSize, kernelSize)) //
+				// .append(maxPoolLayer(2, 2)) //
+				.append(convChannelLayer(64, 128, kernelSize, kernelSize)) //
+				.append(convChannelLayer(128, 128, kernelSize, kernelSize)) //
+				// .append(maxPoolLayer(2, 2)) //
+				.append(convChannelLayer(128, 256, kernelSize, kernelSize)) //
+				.append(convChannelLayer(256, 256, kernelSize, kernelSize)) //
+				.append(convChannelLayer(256, 256, kernelSize, kernelSize)) //
+				.append(convChannelLayer(256, 256, kernelSize, kernelSize)) //
+				// .append(maxPoolLayer(2, 2)) //
+				.append(convChannelLayer(256, 512, kernelSize, kernelSize)) //
+				.append(convChannelLayer(512, 512, kernelSize, kernelSize)) //
+				.append(convChannelLayer(512, 512, kernelSize, kernelSize)) //
+				.append(convChannelLayer(512, 512, kernelSize, kernelSize)) //
+				// .append(maxPoolLayer(2, 2)) //
+				.append(convChannelLayer(512, 512, kernelSize, kernelSize)) //
+				.append(convChannelLayer(512, 512, kernelSize, kernelSize)) //
+				.append(convChannelLayer(512, 512, kernelSize, kernelSize)) //
+				.append(convChannelLayer(512, 512, kernelSize, kernelSize)) //
+				// .append(maxPoolLayer(2, 2)) //
+				.append(flattenLayer(float[][].class, flattenSize)) //
+				.append(flattenLayer(float[].class, flattenSize)) //
+				.append(feedForwardLayer((imageSize - 16) * (imageSize - 16) * 512, 4096)) //
+				.append(feedForwardLayer(4096, 4096)) //
+				.append(feedForwardLayer(4096, 1000)) //
+				.append(softmaxLayer());
+	}
+
 	private Layer<float[][], float[][]> nil2dLayer() {
+		return nilLayer();
+	}
+
+	private Layer<float[][][], float[][][]> nil3dLayer() {
 		return nilLayer();
 	}
 
@@ -134,6 +177,44 @@ public class NeuralNetwork {
 					.range(size) //
 					.map(i -> outs.get(i).backprop.apply(errors[i])) //
 					.collect(combineErrors));
+		};
+	}
+
+	private Layer<float[][][], float[][][]> convChannelLayer(int nInputChannels, int nOutputChannels, int sx, int sy) {
+		var cls = Ints_.range(nOutputChannels) //
+				.map(oc -> Ints_.range(nInputChannels) //
+						.map(ic -> convLayer(sx, sy)) //
+						.toList()) //
+				.toList();
+
+		return inputs -> {
+			var input0 = inputs[0];
+			var ix = mtx.height(input0);
+			var iy = mtx.width(input0);
+			var hsx = ix - sx + 1;
+			var hsy = iy - sy + 1;
+
+			var outs = Ints_.range(nOutputChannels) //
+					.map(oc -> Ints_.range(nInputChannels) //
+							.map(ic -> cls.get(oc).get(ic).feed(inputs[ic])) //
+							.toList()) //
+					.toList();
+
+			var outputs = To.array(nOutputChannels, float[][].class, oc -> {
+				var output = new float[hsx][hsy];
+				for (var ic = 0; ic < nInputChannels; ic++)
+					mtx.addOn(output, outs.get(oc).get(ic).output);
+				return output;
+			});
+
+			return new Out<>(outputs, errors0 -> {
+				return To.array(nInputChannels, float[][].class, ic -> {
+					var error = new float[ix][iy];
+					for (var oc = 0; oc < nOutputChannels; oc++)
+						mtx.addOn(error, outs.get(oc).get(ic).backprop.apply(errors0[oc]));
+					return error;
+				});
+			});
 		};
 	}
 
