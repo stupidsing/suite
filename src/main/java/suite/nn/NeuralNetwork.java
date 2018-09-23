@@ -148,33 +148,6 @@ public class NeuralNetwork {
 		return spawnLayer(float[].class, n, fun, errors -> mtx.sum(errors.toArray(float[][].class)));
 	}
 
-	private <I, O> Layer<I, O[]> spawnLayer( //
-			Class<O> clazz, //
-			int n, //
-			Int_Obj<Layer<I, O>> fun, //
-			Fun<Outlet<I>, I> combineErrors) {
-		var layers = Ints_.range(n).map(fun::apply);
-		return spawnLayer(clazz, layers, inputs -> inputs, combineErrors);
-	}
-
-	private <I, O> Layer<I, O[]> spawnLayer( //
-			Class<O> clazz, //
-			Streamlet<Layer<I, O>> layers, //
-			Iterate<I> cloneInputs, //
-			Fun<Outlet<I>, I> combineErrors) {
-		var size = layers.size();
-
-		return inputs -> {
-			var outs = layers.map(layer -> layer.feed(cloneInputs.apply(inputs))).toList();
-			var outputs = Read.from(outs).map(out -> out.output).toArray(clazz);
-
-			return new Out<>(outputs, errors -> Ints_ //
-					.range(size) //
-					.map(i -> outs.get(i).backprop.apply(errors[i])) //
-					.collect(combineErrors));
-		};
-	}
-
 	private Layer<float[][][], float[][][]> convChannelLayer(int nInputChannels, int nOutputChannels, int sx, int sy) {
 		var cls = Ints_.range(nOutputChannels) //
 				.map(oc -> Ints_.range(nInputChannels) //
@@ -361,6 +334,33 @@ public class NeuralNetwork {
 					}
 				return gradients;
 			});
+		};
+	}
+
+	private <I, O> Layer<I, O[]> spawnLayer( //
+			Class<O> clazz, //
+			int n, //
+			Int_Obj<Layer<I, O>> fun, //
+			Fun<Outlet<I>, I> combineErrors) {
+		var layers = Ints_.range(n).map(fun::apply);
+		return spawnLayer(clazz, layers, inputs -> inputs, combineErrors);
+	}
+
+	private <I, O> Layer<I, O[]> spawnLayer( //
+			Class<O> clazz, //
+			Streamlet<Layer<I, O>> layers, //
+			Iterate<I> cloneInputs, //
+			Fun<Outlet<I>, I> combineErrors) {
+		var size = layers.size();
+
+		return inputs -> {
+			var outs = layers.map(layer -> layer.feed(cloneInputs.apply(inputs))).toList();
+			var outputs = Read.from(outs).map(out -> out.output).toArray(clazz);
+
+			return new Out<>(outputs, errors -> Ints_ //
+					.range(size) //
+					.map(i -> outs.get(i).backprop.apply(errors[i])) //
+					.collect(combineErrors));
 		};
 	}
 
