@@ -87,7 +87,7 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[], float[]> feedForwardLayer(int nInputs, int nOutputs) {
-		var weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextFloat());
+		var weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextGaussian() * .1d);
 
 		return inputs -> {
 			var outputs = mtx.mul(inputs, weights);
@@ -138,7 +138,7 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[][], float[][]> convLayer(int sx, int sy) {
-		var kernel = To.matrix(sx, sy, (x, y) -> random.nextFloat());
+		var kernel = To.matrix(sx, sy, (x, y) -> random.nextGaussian() * .1d);
 		var bias = DblMutable.of(0d);
 
 		return inputs -> {
