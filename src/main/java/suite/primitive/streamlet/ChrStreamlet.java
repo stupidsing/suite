@@ -2,6 +2,7 @@ package suite.primitive.streamlet;
 
 import java.io.Closeable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -20,6 +21,7 @@ import suite.primitive.ChrPrimitives.ChrSource;
 import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.ChrPrimitives.Chr_Obj;
 import suite.primitive.Chr_Chr;
+import suite.primitive.Ints_;
 import suite.primitive.adt.map.ChrObjMap;
 import suite.primitive.adt.map.ObjChrMap;
 import suite.primitive.adt.set.ChrSet;
@@ -272,6 +274,11 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 
 	public char uniqueResult() {
 		return spawn().opt().get();
+	}
+
+	public <U, V> Streamlet<V> zip(List<U> list1, ChrObj_Obj<U, V> fun) {
+		var list0 = toList().toChars();
+		return Ints_.range(list0.size()).map(i -> fun.apply(list0.get(i), list1.get(i)));
 	}
 
 	private <O> Streamlet<O> concatMap_(Chr_Obj<Streamlet<O>> fun) {

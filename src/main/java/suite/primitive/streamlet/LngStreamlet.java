@@ -2,6 +2,7 @@ package suite.primitive.streamlet;
 
 import java.io.Closeable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -9,6 +10,7 @@ import java.util.Set;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.object.Object_;
+import suite.primitive.Ints_;
 import suite.primitive.LngOpt;
 import suite.primitive.LngPrimitives.LngComparator;
 import suite.primitive.LngPrimitives.LngObj_Obj;
@@ -272,6 +274,11 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 
 	public long uniqueResult() {
 		return spawn().opt().get();
+	}
+
+	public <U, V> Streamlet<V> zip(List<U> list1, LngObj_Obj<U, V> fun) {
+		var list0 = toList().toLongs();
+		return Ints_.range(list0.size()).map(i -> fun.apply(list0.get(i), list1.get(i)));
 	}
 
 	private <O> Streamlet<O> concatMap_(Lng_Obj<Streamlet<O>> fun) {

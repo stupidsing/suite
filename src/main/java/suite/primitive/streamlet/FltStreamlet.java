@@ -2,6 +2,7 @@ package suite.primitive.streamlet;
 
 import java.io.Closeable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -20,6 +21,7 @@ import suite.primitive.FltPrimitives.FltSource;
 import suite.primitive.FltPrimitives.FltTest;
 import suite.primitive.FltPrimitives.Flt_Obj;
 import suite.primitive.Flt_Flt;
+import suite.primitive.Ints_;
 import suite.primitive.adt.map.FltObjMap;
 import suite.primitive.adt.map.ObjFltMap;
 import suite.primitive.adt.set.FltSet;
@@ -272,6 +274,11 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 
 	public float uniqueResult() {
 		return spawn().opt().get();
+	}
+
+	public <U, V> Streamlet<V> zip(List<U> list1, FltObj_Obj<U, V> fun) {
+		var list0 = toList().toFloats();
+		return Ints_.range(list0.size()).map(i -> fun.apply(list0.get(i), list1.get(i)));
 	}
 
 	private <O> Streamlet<O> concatMap_(Flt_Obj<Streamlet<O>> fun) {

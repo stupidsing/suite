@@ -2,6 +2,7 @@ package suite.primitive.streamlet;
 
 import java.io.Closeable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -272,6 +273,11 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 
 	public int uniqueResult() {
 		return spawn().opt().get();
+	}
+
+	public <U, V> Streamlet<V> zip(List<U> list1, IntObj_Obj<U, V> fun) {
+		var list0 = toList().toInts();
+		return Ints_.range(list0.size()).map(i -> fun.apply(list0.get(i), list1.get(i)));
 	}
 
 	private <O> Streamlet<O> concatMap_(Int_Obj<Streamlet<O>> fun) {

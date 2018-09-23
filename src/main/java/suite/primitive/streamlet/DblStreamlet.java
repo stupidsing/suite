@@ -2,6 +2,7 @@ package suite.primitive.streamlet;
 
 import java.io.Closeable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -20,6 +21,7 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.Doubles;
 import suite.primitive.Doubles.DoublesBuilder;
 import suite.primitive.Doubles_;
+import suite.primitive.Ints_;
 import suite.primitive.adt.map.DblObjMap;
 import suite.primitive.adt.map.ObjDblMap;
 import suite.primitive.adt.set.DblSet;
@@ -272,6 +274,11 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 
 	public double uniqueResult() {
 		return spawn().opt().get();
+	}
+
+	public <U, V> Streamlet<V> zip(List<U> list1, DblObj_Obj<U, V> fun) {
+		var list0 = toList().toDoubles();
+		return Ints_.range(list0.size()).map(i -> fun.apply(list0.get(i), list1.get(i)));
 	}
 
 	private <O> Streamlet<O> concatMap_(Dbl_Obj<Streamlet<O>> fun) {
