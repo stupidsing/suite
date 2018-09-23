@@ -88,7 +88,7 @@ public class NeuralNetwork {
 		var layer2 = convVgg16Block(layer1, 2, 64, 128);
 		var layer3 = convVgg16Block(layer2, 4, 128, 256);
 		var layer4 = convVgg16Block(layer3, 4, 256, 512);
-		var layer5 = convVgg16Block(layer4, 4, 256, 512);
+		var layer5 = convVgg16Block(layer4, 4, 512, 512);
 
 		return layer5 //
 				.append(flattenLayer(float[][].class, imageSize - 16)) //
