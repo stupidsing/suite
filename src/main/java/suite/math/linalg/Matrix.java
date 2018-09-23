@@ -383,6 +383,17 @@ public class Matrix {
 		return m;
 	}
 
+	public float[][] sum(float[][][] ms) {
+		if (0 < ms.length) {
+			var m0 = ms[0];
+			var sum = new float[h(m0)][w(m0)];
+			for (var error : ms)
+				addOn(sum, error);
+			return sum;
+		} else
+			return new float[][] {};
+	}
+
 	public void verifyEquals(float[][] m0, float[][] m1) {
 		verifyEquals(m0, m1, Math_.epsilon);
 	}

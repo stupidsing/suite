@@ -10,6 +10,7 @@ import suite.math.Sigmoid;
 import suite.math.linalg.Matrix;
 import suite.primitive.DblMutable;
 import suite.primitive.Dbl_Dbl;
+import suite.primitive.Floats_;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Fun;
@@ -68,11 +69,11 @@ public class NeuralNetwork {
 
 		// input 19x19
 		return nil2dLayer() //
-				.append(spawnLayer(nKernels, i -> nil2dLayer() //
+				.append(spawn2dLayer(nKernels, i -> nil2dLayer() //
 						.append(convLayer(kernelSize, kernelSize)) //
 						.append(Boolean.TRUE ? maxPoolLayer(maxPoolSize, maxPoolSize) : averagePoolLayer(maxPoolSize, maxPoolSize)) //
 						.append(flattenLayer(flattenSize)) //
-						.append(reluLayer()))) //
+						.append(Boolean.TRUE ? reluLayer() : softmaxLayer()))) //
 				.append(flattenLayer(flattenSize)) //
 				.append(feedForwardLayer(nKernels * flattenSize, outputSize));
 	}
@@ -105,17 +106,17 @@ public class NeuralNetwork {
 		};
 	}
 
-	private Layer<float[][], float[][]> spawnLayer(int n, Int_Obj<Layer<float[][], float[]>> fun) {
-		var layers = Ints_.range(n).map(fun::apply);
+	private Layer<float[][], float[][]> spawn2dLayer(int n, Int_Obj<Layer<float[][], float[]>> fun) {
+		return spawnLayer(float[].class, n, fun, errors -> mtx.sum(errors.toArray(float[][].class)));
+	}
 
-		return this.<float[][], float[]> spawnLayer(float[].class, layers, input -> input, errors0 -> {
-			var errors1 = errors0.toList();
-			var e = errors1.get(0);
-			var sums = new float[mtx.height(e)][mtx.width(e)];
-			for (var error : errors1)
-				sums = mtx.add(sums, error);
-			return sums;
-		});
+	private <I, O> Layer<I, O[]> spawnLayer( //
+			Class<O> clazz, //
+			int n, //
+			Int_Obj<Layer<I, O>> fun, //
+			Fun<Outlet<I>, I> combineErrors) {
+		var layers = Ints_.range(n).map(fun::apply);
+		return spawnLayer(clazz, layers, inputs -> inputs, combineErrors);
 	}
 
 	private <I, O> Layer<I, O[]> spawnLayer( //
@@ -267,5 +268,24 @@ public class NeuralNetwork {
 
 	private Dbl_Dbl relu = d -> min(0d, d);
 	private Dbl_Dbl reluGradient = value -> value < 0f ? 0f : 1f;
+
+	private Layer<float[], float[]> softmaxLayer() {
+		return inputs -> {
+			var exps = To.vector(inputs, Math::exp);
+			var invSum = 1d / Floats_.of(exps).sum();
+			var softmaxs = To.vector(exps, exp -> exp * invSum);
+			return new Out<>(softmaxs, errors -> {
+				var length = errors.length;
+				var gradients = new float[length];
+				var esms = To.vector(length, j -> errors[j] * softmaxs[j]);
+				for (var i = 0; i < length; i++)
+					for (var j = 0; j < length; j++) {
+						var kronecker = (i == j ? 1d : 0d);
+						gradients[i] += esms[j] * (kronecker - softmaxs[i]);
+					}
+				return gradients;
+			});
+		};
+	}
 
 }
