@@ -53,7 +53,7 @@ public class NeuralNetwork {
 	}
 
 	public Layer<float[], float[]> ml(int[] sizes) {
-		Layer<float[], float[]> layer = nilLayer();
+		Layer<float[], float[]> layer = nil1dLayer();
 		for (var i = 1; i < sizes.length; i++)
 			layer = layer.append(feedForwardLayer(sizes[i - 1], sizes[i]));
 		return layer;
@@ -110,6 +110,10 @@ public class NeuralNetwork {
 			layer = layer.append(convChannelLayer(nChannels0, nChannels = nOutputChannels, 3, 3));
 		}
 		return layer.append(channelLayer(nOutputChannels, float[][].class, c -> maxPoolLayer(2, 2)));
+	}
+
+	private Layer<float[], float[]> nil1dLayer() {
+		return nilLayer();
 	}
 
 	private Layer<float[][], float[][]> nil2dLayer() {
