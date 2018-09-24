@@ -7,7 +7,7 @@ import suite.primitive.Doubles.WriteChar;
 import suite.primitive.streamlet.DblOutlet;
 import suite.primitive.streamlet.DblStreamlet;
 import suite.streamlet.FunUtil;
-import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
@@ -102,7 +102,7 @@ public class Doubles_ {
 		return new DblStreamlet(() -> DblOutlet.of(ts, end - 1, start - 1, -1));
 	}
 
-	public static Fun<Outlet<Doubles>, Outlet<Doubles>> split(Doubles delim) {
+	public static Iterate<Outlet<Doubles>> split(Doubles delim) {
 		var ds = delim.size();
 
 		return outlet -> Outlet.of(new BufferedSource(outlet) {
@@ -113,11 +113,10 @@ public class Doubles_ {
 						p0++;
 					else
 						return true;
-				if (!cont) {
+				var b = !cont;
+				if (b)
 					p0 = p1 = buffer.size();
-					return true;
-				} else
-					return false;
+				return b;
 			}
 		});
 	}

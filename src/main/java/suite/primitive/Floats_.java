@@ -7,7 +7,7 @@ import suite.primitive.Floats.WriteChar;
 import suite.primitive.streamlet.FltOutlet;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.FunUtil;
-import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
@@ -102,7 +102,7 @@ public class Floats_ {
 		return new FltStreamlet(() -> FltOutlet.of(ts, end - 1, start - 1, -1));
 	}
 
-	public static Fun<Outlet<Floats>, Outlet<Floats>> split(Floats delim) {
+	public static Iterate<Outlet<Floats>> split(Floats delim) {
 		var ds = delim.size();
 
 		return outlet -> Outlet.of(new BufferedSource(outlet) {
@@ -113,11 +113,10 @@ public class Floats_ {
 						p0++;
 					else
 						return true;
-				if (!cont) {
+				var b = !cont;
+				if (b)
 					p0 = p1 = buffer.size();
-					return true;
-				} else
-					return false;
+				return b;
 			}
 		});
 	}

@@ -4,7 +4,7 @@ import static suite.util.Friends.rethrow;
 
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes.WriteByte;
-import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 
@@ -36,7 +36,7 @@ public class Bytes_ {
 		});
 	}
 
-	public static Fun<Outlet<Bytes>, Outlet<Bytes>> split(Bytes delim) {
+	public static Iterate<Outlet<Bytes>> split(Bytes delim) {
 		var ds = delim.size();
 
 		return outlet -> Outlet.of(new BufferedSource(outlet) {
@@ -47,11 +47,10 @@ public class Bytes_ {
 						p0++;
 					else
 						return true;
-				if (!cont) {
+				var b = !cont;
+				if (b)
 					p0 = p1 = buffer.size();
-					return true;
-				} else
-					return false;
+				return b;
 			}
 		});
 	}
