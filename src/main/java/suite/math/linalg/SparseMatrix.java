@@ -56,8 +56,8 @@ public class SparseMatrix {
 	}
 
 	public SparseMatrix transpose() {
-		PriorityQueue<IntIntPair> pq = new PriorityQueue<>(IntIntPair.class, height, (p0, p1) -> Integer.compare(p0.t1, p1.t1));
-		List<Spans> matrix1 = Ints_.range(width_).map(i -> new Spans()).toList();
+		var pq = new PriorityQueue<>(IntIntPair.class, height, (p0, p1) -> Integer.compare(p0.t1, p1.t1));
+		var matrix1 = Ints_.range(width_).map(i -> new Spans()).toList();
 		var js = new int[height];
 
 		IntSink enqRow = r -> {
