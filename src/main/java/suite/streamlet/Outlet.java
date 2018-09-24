@@ -400,6 +400,14 @@ public class Outlet<T> implements OutletDefaults<T> {
 		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
+	public <U, R> Outlet<R> zip(Outlet<U> outlet1, Fun2<T, U, R> fun) {
+		return of(() -> {
+			var t = next();
+			var u = outlet1.next();
+			return t != null && u != null ? fun.apply(t, u) : null;
+		});
+	}
+
 	private <K, V> Outlet2<K, V> map2_(Fun<T, K> kf0, Fun<T, V> vf0) {
 		return Outlet2.of(FunUtil.map2(kf0, vf0, source));
 	}

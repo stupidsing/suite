@@ -469,6 +469,14 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		return map2_(keyFun, valueFun).groupBy().mapValue(values -> Read.from(values).toSet()).toMap();
 	}
 
+	public <U, R> Outlet<R> zip(Outlet<U> outlet1, ChrObj_Obj<U, R> fun) {
+		return Outlet.of(() -> {
+			var t = next();
+			var u = outlet1.next();
+			return t != EMPTYVALUE && u != null ? fun.apply(t, u) : null;
+		});
+	}
+
 	private <K, V> Outlet2<K, V> map2_(Chr_Obj<K> kf0, Chr_Obj<V> vf0) {
 		return Outlet2.of(ChrFunUtil.map2(kf0, vf0, source));
 	}

@@ -13,7 +13,6 @@ import suite.adt.Opt;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.Pair;
 import suite.object.Object_;
-import suite.primitive.Ints_;
 import suite.primitive.streamlet.IntObjStreamlet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
@@ -264,9 +263,8 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 		return spawn().opt().get();
 	}
 
-	public <U, V> Streamlet<V> zip(List<U> list1, Fun2<T, U, V> fun) {
-		var list0 = toList();
-		return Ints_.range(list0.size()).map(i -> fun.apply(list0.get(i), list1.get(i)));
+	public <U, V> Streamlet<V> zip(Iterable<U> list1, Fun2<T, U, V> fun) {
+		return streamlet(() -> spawn().zip(Outlet.of(list1), fun));
 	}
 
 	private <O> Streamlet<O> concatMap_(Fun<T, Streamlet<O>> fun) {
