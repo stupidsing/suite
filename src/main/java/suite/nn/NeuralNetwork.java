@@ -355,27 +355,28 @@ public class NeuralNetwork {
 			Streamlet<Layer<I, O>> layers, //
 			Iterate<I> cloneInputs, //
 			Fun<Outlet<I>, I> combineErrors) {
-		var size = layers.size();
-
 		return inputs -> {
-			var outs = layers.map(layer -> layer.feed(cloneInputs.apply(inputs))).toList();
-			var outputs = Read.from(outs).map(out -> out.output).toArray(clazz);
+			var outs = layers.map(layer -> layer.feed(cloneInputs.apply(inputs))).collect();
+			var outputs = outs.map(out -> out.output).toArray(clazz);
 
-			return new Out<>(outputs, errors -> Ints_ //
-					.for_(size) //
-					.map(i -> outs.get(i).backprop.apply(errors[i])) //
+			return new Out<>(outputs, errors -> Read //
+					.from(errors) //
+					.zip(outs, (error, out) -> out.backprop.apply(error)) //
 					.collect(combineErrors));
 		};
 	}
 
 	private <T> Layer<T[], T[]> channelLayer(int nChannels, Class<T> clazz, Int_Obj<Layer<T, T>> layerFun) {
-		var nc = Ints_.for_(nChannels);
-		var layers = nc.map(layerFun).toList();
+		var layers = Ints_.for_(nChannels).map(layerFun).collect();
 
 		return inputs -> {
-			var outs = nc.map(c -> layers.get(c).feed(inputs[c])).toList();
-			var outputs = nc.map(c -> outs.get(c).output).toArray(clazz);
-			return new Out<>(outputs, errors -> nc.map(c -> outs.get(c).backprop.apply(errors[c])).toArray(clazz));
+			var outs = layers.zip(Read.from(inputs), Layer::feed).collect();
+			var outputs = outs.map(out -> out.output).toArray(clazz);
+
+			return new Out<>(outputs, errors -> Read //
+					.from(errors) //
+					.zip(outs, (error, out) -> out.backprop.apply(error)) //
+					.toArray(clazz));
 		};
 	}
 
