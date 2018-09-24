@@ -48,6 +48,10 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 			super(keyPointers);
 			this.pointer = pointer;
 		}
+
+		public KeyPointer keyPointer(int index) {
+			return 0 <= index && index < size() ? get(index) : null;
+		}
 	}
 
 	public class KeyPointer {
@@ -122,7 +126,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		}
 
 		private KeyPointer getKeyPointer() {
-			return B_TreeImpl.this.getKeyPointer(page, index);
+			return page.keyPointer(index);
 		}
 	}
 
@@ -133,12 +137,12 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		private KeyPointer kp;
 
 		private Traverse(Key key) {
-			Integer pointer = getRoot();
+			Integer pointer = root();
 
 			while (pointer != null) {
 				page = pageFile.load(pointer);
 				index = findPosition(page, key, true);
-				kp = getKeyPointer(page, index);
+				kp = page.keyPointer(index);
 				traverse.push(new Slot(page, index));
 
 				pointer = kp != null && kp.pointer instanceof B_TreeImpl.Branch ? kp.getBranchPointer() : null;
@@ -203,7 +207,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	private Streamlet<KeyPointer> stream(Key start, Key end) {
-		return stream_(getRoot(), start, end).drop(1);
+		return stream_(root(), start, end).drop(1);
 	}
 
 	private Streamlet<KeyPointer> stream_(Integer pointer, Key start, Key end) {
@@ -277,7 +281,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 					var kp = pointerTo(p0);
 
 					create();
-					page = new Page(getRoot(), List.of(kp, toInsert));
+					page = new Page(root(), List.of(kp, toInsert));
 					savePage(page);
 					done = true;
 				}
@@ -299,7 +303,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	@Override
 	public void remove(Key key) {
 		var half = branchFactor / 2;
-		var root = getRoot();
+		var root = root();
 		var t = new Traverse(key);
 		var slots = t.traverse;
 
@@ -399,7 +403,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	}
 
 	private Page loadBranch(Page page, int index) {
-		var kp = getKeyPointer(page, index);
+		var kp = page.keyPointer(index);
 		return kp != null && kp.pointer instanceof B_TreeImpl.Branch ? loadPage(kp.getBranchPointer()) : null;
 	}
 
@@ -425,20 +429,13 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		return i;
 	}
 
-	private KeyPointer getKeyPointer(Page page, Integer index) {
-		if (0 <= index && index < page.size())
-			return page.get(index);
-		else
-			return null;
-	}
-
 	@Override
 	public void dump(PrintStream w) {
 		w.println("==========");
-		dump(w, "", getRoot());
+		dump(w, "", root());
 	}
 
-	private int getRoot() {
+	private int root() {
 		return superblockFile.load(0).root;
 	}
 
