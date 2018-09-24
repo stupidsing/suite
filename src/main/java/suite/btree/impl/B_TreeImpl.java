@@ -63,19 +63,19 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 			this.pointer = pointer;
 		}
 
-		public int getBranchPointer() {
+		public int branchPointer() {
 			@SuppressWarnings("unchecked")
 			var branch = (Branch) pointer;
 			return branch.pointer;
 		}
 
-		public Value getLeafValue() {
+		public Value leafValue() {
 			@SuppressWarnings("unchecked")
 			var leaf = (Leaf) pointer;
 			return leaf.value;
 		}
 
-		public int getPayloadPointer() {
+		public int payloadPointer() {
 			@SuppressWarnings("unchecked")
 			var payload = (Payload) pointer;
 			return payload.pointer;
@@ -145,7 +145,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				kp = page.keyPointer(index);
 				traverse.push(new Slot(page, index));
 
-				pointer = kp != null && kp.pointer instanceof B_TreeImpl.Branch ? kp.getBranchPointer() : null;
+				pointer = kp != null && kp.pointer instanceof B_TreeImpl.Branch ? kp.branchPointer() : null;
 			}
 		}
 	}
@@ -177,13 +177,13 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	@Override
 	public Value get(Key key) {
 		var kp = loadKeyPointer(key);
-		return kp != null ? kp.getLeafValue() : null;
+		return kp != null ? kp.leafValue() : null;
 	}
 
 	@Override
 	public Bytes getPayload(Key key) {
 		var kp = loadKeyPointer(key);
-		return kp != null ? payloadFile.load(kp.getPayloadPointer()) : null;
+		return kp != null ? payloadFile.load(kp.payloadPointer()) : null;
 	}
 
 	@Override
@@ -203,7 +203,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	@Override
 	public Streamlet<Pair<Key, Value>> range(Key key0, Key key1) {
-		return stream(key0, key1).map(kp -> kp != null ? Pair.of(kp.key, kp.getLeafValue()) : null);
+		return stream(key0, key1).map(kp -> kp != null ? Pair.of(kp.key, kp.leafValue()) : null);
 	}
 
 	private Streamlet<KeyPointer> stream(Key start, Key end) {
@@ -218,7 +218,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		if (i0 < i1)
 			return Read.from(page.subList(i0, i1)).concatMap(kp -> {
 				if (kp.pointer instanceof B_TreeImpl.Branch)
-					return stream_(kp.getBranchPointer(), start, end);
+					return stream_(kp.branchPointer(), start, end);
 				else
 					return Read.each(kp);
 			});
@@ -389,7 +389,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				var branch = (Branch) ptr;
 				dump(w, pfx + "\t", branch.pointer);
 			} else if (ptr instanceof B_TreeImpl.Leaf)
-				w.println(" = " + kp.getLeafValue());
+				w.println(" = " + kp.leafValue());
 			else if (ptr instanceof B_TreeImpl.Payload)
 				w.println(" <Payload>");
 			else if (ptr instanceof B_TreeImpl.Terminal)
@@ -399,12 +399,12 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	private void discard(KeyPointer kp) {
 		if (kp.pointer instanceof B_TreeImpl<?, ?>.Payload)
-			allocator.deallocate(kp.getPayloadPointer());
+			allocator.deallocate(kp.payloadPointer());
 	}
 
 	private Page loadBranch(Page page, int index) {
 		var kp = page.keyPointer(index);
-		return kp != null && kp.pointer instanceof B_TreeImpl.Branch ? loadPage(kp.getBranchPointer()) : null;
+		return kp != null && kp.pointer instanceof B_TreeImpl.Branch ? loadPage(kp.branchPointer()) : null;
 	}
 
 	private Page loadPage(int pointer) {
