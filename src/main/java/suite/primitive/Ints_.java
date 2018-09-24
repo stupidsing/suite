@@ -27,7 +27,7 @@ public class Ints_ {
 	@SafeVarargs
 	public static IntStreamlet concat(IntStreamlet... streamlets) {
 		return new IntStreamlet(() -> {
-			Source<IntStreamlet> source = Read.from(streamlets).outlet().source();
+			var source = Read.from(streamlets).outlet().source();
 			return IntOutlet.of(IntFunUtil.concat(FunUtil.map(IntStreamlet::source, source)));
 		});
 	}

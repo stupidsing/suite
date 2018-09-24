@@ -27,7 +27,7 @@ public class Longs_ {
 	@SafeVarargs
 	public static LngStreamlet concat(LngStreamlet... streamlets) {
 		return new LngStreamlet(() -> {
-			Source<LngStreamlet> source = Read.from(streamlets).outlet().source();
+			var source = Read.from(streamlets).outlet().source();
 			return LngOutlet.of(LngFunUtil.concat(FunUtil.map(LngStreamlet::source, source)));
 		});
 	}

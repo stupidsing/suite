@@ -27,7 +27,7 @@ public class Doubles_ {
 	@SafeVarargs
 	public static DblStreamlet concat(DblStreamlet... streamlets) {
 		return new DblStreamlet(() -> {
-			Source<DblStreamlet> source = Read.from(streamlets).outlet().source();
+			var source = Read.from(streamlets).outlet().source();
 			return DblOutlet.of(DblFunUtil.concat(FunUtil.map(DblStreamlet::source, source)));
 		});
 	}

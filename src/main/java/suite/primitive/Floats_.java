@@ -27,7 +27,7 @@ public class Floats_ {
 	@SafeVarargs
 	public static FltStreamlet concat(FltStreamlet... streamlets) {
 		return new FltStreamlet(() -> {
-			Source<FltStreamlet> source = Read.from(streamlets).outlet().source();
+			var source = Read.from(streamlets).outlet().source();
 			return FltOutlet.of(FltFunUtil.concat(FunUtil.map(FltStreamlet::source, source)));
 		});
 	}

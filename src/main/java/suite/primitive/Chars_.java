@@ -27,7 +27,7 @@ public class Chars_ {
 	@SafeVarargs
 	public static ChrStreamlet concat(ChrStreamlet... streamlets) {
 		return new ChrStreamlet(() -> {
-			Source<ChrStreamlet> source = Read.from(streamlets).outlet().source();
+			var source = Read.from(streamlets).outlet().source();
 			return ChrOutlet.of(ChrFunUtil.concat(FunUtil.map(ChrStreamlet::source, source)));
 		});
 	}
