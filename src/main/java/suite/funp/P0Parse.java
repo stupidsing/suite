@@ -421,7 +421,7 @@ public class P0Parse {
 				}).result();
 
 				return Ints_ //
-						.range(size0) //
+						.for_(size0) //
 						.fold(then, (i, then_) -> bind(fun0.apply(i), fun1.apply(i), then_, else_));
 			};
 
@@ -448,7 +448,7 @@ public class P0Parse {
 							: i -> FunpField.of(FunpReference.of(value), pairs0.get(i).t0);
 
 					return Ints_ //
-							.range(size0) //
+							.for_(size0) //
 							.fold(then, (i, then_) -> bind(pairs0.get(i).t1, fun.apply(i), then_, else_));
 				})).applyIf(FunpTag.class, f -> f.apply((id, tag, value_) -> {
 					return new Switch<Funp>(value //

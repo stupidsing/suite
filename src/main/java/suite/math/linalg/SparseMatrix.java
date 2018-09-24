@@ -46,7 +46,7 @@ public class SparseMatrix {
 	}
 
 	public static SparseMatrix identity(int size) {
-		return new SparseMatrix(size, size, Ints_.range(size).map(i -> new Spans(new Span(i, 1f))).toList());
+		return new SparseMatrix(size, size, Ints_.for_(size).map(i -> new Spans(new Span(i, 1f))).toList());
 	}
 
 	private SparseMatrix(int height, int width_, List<Spans> matrix) {
@@ -57,7 +57,7 @@ public class SparseMatrix {
 
 	public SparseMatrix transpose() {
 		var pq = new PriorityQueue<>(IntIntPair.class, height, (p0, p1) -> Integer.compare(p0.t1, p1.t1));
-		var matrix1 = Ints_.range(width_).map(i -> new Spans()).toList();
+		var matrix1 = Ints_.for_(width_).map(i -> new Spans()).toList();
 		var js = new int[height];
 
 		IntSink enqRow = r -> {

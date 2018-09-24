@@ -43,7 +43,7 @@ public class Vector {
 
 	public double convolute(int l, float[] m, int pm, float[] n, int pn) {
 		var d = pm + pn - 1;
-		return Ints_.range(pm, pm + l).toDouble(Int_Dbl.sum(i -> m[i] * n[d - i]));
+		return Ints_.for_(pm, pm + l).toDouble(Int_Dbl.sum(i -> m[i] * n[d - i]));
 	}
 
 	public float[] copyOf(float[] m) {

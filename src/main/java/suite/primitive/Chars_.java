@@ -84,11 +84,11 @@ public class Chars_ {
 		return new ChrStreamlet(() -> ChrOutlet.of(ts, start, end, inc));
 	}
 
-	public static ChrStreamlet range(char e) {
-		return range((char) 0, e);
+	public static ChrStreamlet for_(char e) {
+		return for_((char) 0, e);
 	}
 
-	public static ChrStreamlet range(char s, char e) {
+	public static ChrStreamlet for_(char s, char e) {
 		return new ChrStreamlet(() -> {
 			var m = ChrMutable.of(s);
 			return ChrOutlet.of(() -> {

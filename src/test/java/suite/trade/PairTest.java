@@ -41,7 +41,7 @@ public class PairTest {
 		var length = prices0.length;
 
 		var lr = statistic.linearRegression(Ints_ //
-				.range(length) //
+				.for_(length) //
 				.map(i -> FltObjPair.of(prices1[i], vec.of(prices0[i], 1f))));
 
 		System.out.println(symbol0 + " -> " + symbol1 + lr);

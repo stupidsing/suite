@@ -35,7 +35,7 @@ public class BackAllocatorTest {
 		var odt = ba1.allocate(akds, indices);
 
 		var potentials = Ints_ //
-				.range(indices.length) //
+				.for_(indices.length) //
 				.map(index -> 0 < index ? Read.from(odt.onDateTime(index)) : Read.<Pair<String, Double>> empty()) //
 				.map(pairs -> pairs.toDouble(Obj_Dbl.sum(pair -> pair.t1))) //
 				.toList();

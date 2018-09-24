@@ -52,7 +52,7 @@ public class MarketTiming {
 
 		for (var i = 0; i < length; i++) {
 			var past = max(0, i - lookback);
-			var past_i = Ints_.range(past, i);
+			var past_i = Ints_.for_(past, i);
 			var past1_i = past_i.drop(1);
 
 			var ma20abovema50 = past_i.filter(j -> ma50[j] < ma20[j]).size();

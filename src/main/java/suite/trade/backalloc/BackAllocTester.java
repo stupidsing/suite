@@ -85,7 +85,7 @@ public class BackAllocTester {
 			var tx = period.to.epochSec();
 
 			var indices = Ints_ //
-					.range(tradeTs.length) //
+					.for_(tradeTs.length) //
 					.filter(i -> {
 						var t = tradeTs[i];
 						return t0 <= t && t < tx;

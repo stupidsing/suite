@@ -84,11 +84,11 @@ public class Doubles_ {
 		return new DblStreamlet(() -> DblOutlet.of(ts, start, end, inc));
 	}
 
-	public static DblStreamlet range(double e) {
-		return range((double) 0, e);
+	public static DblStreamlet for_(double e) {
+		return for_((double) 0, e);
 	}
 
-	public static DblStreamlet range(double s, double e) {
+	public static DblStreamlet for_(double s, double e) {
 		return new DblStreamlet(() -> {
 			var m = DblMutable.of(s);
 			return DblOutlet.of(() -> {

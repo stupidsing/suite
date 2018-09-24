@@ -97,7 +97,7 @@ public class Mapify {
 				var componentType = clazz.getComponentType();
 				var mapifier1 = getMapifier(componentType);
 				return new Mapifier(o -> {
-					return Ints_.range(Array.getLength(o)).map2(i -> i, i -> apply_(Array.get(o, i), mapifier1.mapify)).toMap();
+					return Ints_.for_(Array.getLength(o)).map2(i -> i, i -> apply_(Array.get(o, i), mapifier1.mapify)).toMap();
 				}, o -> {
 					var map = (Map<?, ?>) o;
 					return To.array_(map.size(), componentType, i -> apply_(map.get(i), mapifier1.unmapify));

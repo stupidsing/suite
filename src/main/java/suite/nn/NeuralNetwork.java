@@ -153,8 +153,8 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[][][], float[][][]> convChannelLayer(int nInputChannels, int nOutputChannels, int sx, int sy) {
-		var cls = Ints_.range(nOutputChannels) //
-				.map(oc -> Ints_.range(nInputChannels) //
+		var cls = Ints_.for_(nOutputChannels) //
+				.map(oc -> Ints_.for_(nInputChannels) //
 						.map(ic -> conv2dLayer(sx, sy)) //
 						.toList()) //
 				.toList();
@@ -166,8 +166,8 @@ public class NeuralNetwork {
 			var hsx = ix - sx + 1;
 			var hsy = iy - sy + 1;
 
-			var outs = Ints_.range(nOutputChannels) //
-					.map(oc -> Ints_.range(nInputChannels) //
+			var outs = Ints_.for_(nOutputChannels) //
+					.map(oc -> Ints_.for_(nInputChannels) //
 							.map(ic -> cls.get(oc).get(ic).feed(inputs[ic])) //
 							.toList()) //
 					.toList();
@@ -346,7 +346,7 @@ public class NeuralNetwork {
 			int n, //
 			Int_Obj<Layer<I, O>> fun, //
 			Fun<Outlet<I>, I> combineErrors) {
-		var layers = Ints_.range(n).map(fun::apply);
+		var layers = Ints_.for_(n).map(fun::apply);
 		return spawnLayer(clazz, layers, inputs -> inputs, combineErrors);
 	}
 
@@ -362,14 +362,14 @@ public class NeuralNetwork {
 			var outputs = Read.from(outs).map(out -> out.output).toArray(clazz);
 
 			return new Out<>(outputs, errors -> Ints_ //
-					.range(size) //
+					.for_(size) //
 					.map(i -> outs.get(i).backprop.apply(errors[i])) //
 					.collect(combineErrors));
 		};
 	}
 
 	private <T> Layer<T[], T[]> channelLayer(int nChannels, Class<T> clazz, Int_Obj<Layer<T, T>> layerFun) {
-		var nc = Ints_.range(nChannels);
+		var nc = Ints_.for_(nChannels);
 		var layers = nc.map(layerFun).toList();
 
 		return inputs -> {

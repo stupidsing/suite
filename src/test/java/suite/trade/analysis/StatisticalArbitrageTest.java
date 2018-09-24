@@ -62,7 +62,7 @@ public class StatisticalArbitrageTest {
 		var returns = ts.returns(prices);
 
 		var lr = stat.linearRegression(Ints_ //
-				.range(1 << power, prices.length) //
+				.for_(1 << power, prices.length) //
 				.map(i -> FltObjPair.of(returns[i], Floats_.toArray(power, p -> mas[p][i - (1 << p)]))));
 
 		System.out.println(lr);
@@ -86,7 +86,7 @@ public class StatisticalArbitrageTest {
 		var prices1 = pricesBySymbol.get(symbol1);
 
 		var lr = stat.linearRegression(Ints_ //
-				.range(tor, length) //
+				.for_(tor, length) //
 				.map(i -> FltObjPair.of(prices1[i], Floats_.toArray(tor, j -> prices0[i + j - tor]))));
 
 		System.out.println(lr);
@@ -198,7 +198,7 @@ public class StatisticalArbitrageTest {
 		var maxTor = 16;
 
 		var differencesByTor = Ints_ //
-				.range(1, maxTor) //
+				.for_(1, maxTor) //
 				.mapIntObj(tor -> {
 					var differences = ts.differences(tor, prices);
 					Arrays.sort(differences);
@@ -211,7 +211,7 @@ public class StatisticalArbitrageTest {
 
 		Int_Flt predictFun = t -> {
 			var cpsArray = Ints_ //
-					.range(1, maxTor) //
+					.for_(1, maxTor) //
 					.map(tor -> {
 						var differences = differencesByTor.get(tor);
 						var length = differences.length;
@@ -237,7 +237,7 @@ public class StatisticalArbitrageTest {
 				var cpsi_ = cpsi;
 
 				var sum = Ints_ //
-						.range(1, maxTor) //
+						.for_(1, maxTor) //
 						.map(i -> i) //
 						.toDouble(Obj_Dbl.sum(tor -> {
 							var probability = cpsArray[tor - 1][cpsi_ + 1] - cpsArray[tor - 1][cpsi_];

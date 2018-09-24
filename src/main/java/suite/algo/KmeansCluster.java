@@ -45,7 +45,7 @@ public class KmeansCluster {
 		var ks = kMeansCluster(values, k, nIterations);
 		var map = new ObjIntMap<K>();
 
-		for (var i : Ints_.range(ks.length))
+		for (var i : Ints_.for_(ks.length))
 			map.put(keys.get(i), ks[i]);
 
 		return map;
@@ -68,7 +68,7 @@ public class KmeansCluster {
 				centers = Read.from(bins).map(bin -> div(bin.sum, bin.count)).toList();
 			else {
 				var kMeans0 = centers;
-				return Ints_.range(points.size()).collect(Int_Int.lift(i -> findNearest(points.get(i), kMeans0))).toArray();
+				return Ints_.for_(points.size()).collect(Int_Int.lift(i -> findNearest(points.get(i), kMeans0))).toArray();
 			}
 		}
 	}

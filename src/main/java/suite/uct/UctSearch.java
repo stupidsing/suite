@@ -64,7 +64,7 @@ public class UctSearch<Move> {
 		var count = new AtomicInteger();
 		var end = System.currentTimeMillis() + boundedTime;
 
-		Ints_.range(numberOfThreads).collect(As.executeThreadsByInt(i -> {
+		Ints_.for_(numberOfThreads).collect(As.executeThreadsByInt(i -> {
 			var j = 0;
 
 			while (count.getAndIncrement() < numberOfSimulations) {

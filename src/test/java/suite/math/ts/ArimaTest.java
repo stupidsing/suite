@@ -62,8 +62,8 @@ public class ArimaTest {
 			int tp = t + p, tpm1 = tp - 1;
 			int tq = t + q, tqm1 = tq - 1;
 			xsp[tp++] = (float) (epq[tq] //
-					+ Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i])) //
-					+ Ints_.range(q).toDouble(Int_Dbl.sum(i -> mas[i] * epq[tqm1 - i])));
+					+ Ints_.for_(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i])) //
+					+ Ints_.for_(q).toDouble(Int_Dbl.sum(i -> mas[i] * epq[tqm1 - i])));
 		}
 
 		return Arrays.copyOfRange(xsp, p, xsp.length);

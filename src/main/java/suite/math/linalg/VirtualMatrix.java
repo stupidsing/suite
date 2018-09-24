@@ -148,7 +148,7 @@ public class VirtualMatrix {
 		return apply((height, l, f0) -> vv.apply((length, f1) -> {
 			if (l == length)
 				return VirtualVector.of(height,
-						i -> (float) Ints_.range(l).toDouble(Int_Dbl.sum(j -> f0.apply(i, j) * f1.apply(j))));
+						i -> (float) Ints_.for_(l).toDouble(Int_Dbl.sum(j -> f0.apply(i, j) * f1.apply(j))));
 			else
 				return fail("wrong input sizes");
 		}));
@@ -158,7 +158,7 @@ public class VirtualMatrix {
 		return apply((height, k0s, f0) -> apply((ks1, width_, f1) -> {
 			if (k0s == ks1)
 				return of(height, width_,
-						(i, j) -> (float) Ints_.range(k0s).toDouble(Int_Dbl.sum(k -> f0.apply(i, k) * f1.apply(k, j))));
+						(i, j) -> (float) Ints_.for_(k0s).toDouble(Int_Dbl.sum(k -> f0.apply(i, k) * f1.apply(k, j))));
 			else
 				return fail("wrong input sizes");
 		}));

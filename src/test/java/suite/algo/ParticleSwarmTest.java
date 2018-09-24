@@ -26,7 +26,7 @@ public class ParticleSwarmTest {
 
 	@Test
 	public void test() {
-		var particles = Ints_.range(500).map(i -> new Particle()).toList();
+		var particles = Ints_.for_(500).map(i -> new Particle()).toList();
 		var globalBest = DblObjPair.of(Double.MIN_VALUE, vec.of());
 		var delta = 1d;
 

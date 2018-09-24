@@ -62,7 +62,7 @@ public class Render {
 		var txs = Ints_.toArray(nThreads + 1, i -> width * i / nThreads);
 		var pixels = new R3[width][height];
 
-		Ints_.range(nThreads).collect(As.executeThreadsByInt(t -> {
+		Ints_.for_(nThreads).collect(As.executeThreadsByInt(t -> {
 			for (var x = txs[t]; x < txs[t + 1]; x++)
 				for (var y = 0; y < height; y++)
 					pixels[x][y] = f.apply(x, y);

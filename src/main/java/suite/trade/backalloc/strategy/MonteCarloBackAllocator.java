@@ -31,7 +31,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 			var symbols = returnsBySymbol.keySet().toArray(new String[0]);
 
 			var portfolios = Ints_ //
-					.range(99) //
+					.for_(99) //
 					.map(i -> randomPortfolio(symbols)) //
 					.toList();
 
@@ -63,7 +63,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 			var portfolio = portfolios.get(0);
 
 			return Ints_ //
-					.range(symbols.length) //
+					.for_(symbols.length) //
 					.map2(i -> symbols[i], i -> (double) portfolio[i]) //
 					.toList();
 		};

@@ -169,7 +169,7 @@ public class DevMain {
 		Sink<State> redraw = state -> state.editState
 				.apply((st, undo, redo, text, oc, cc) -> cc.map((cx, cy) -> oc.map((ox, oy) -> {
 					var lines = Ints_ //
-							.range(viewSizeY) //
+							.for_(viewSizeY) //
 							.map(screenY -> text.get(ox, oy + screenY, viewSizeX).replace('\t', ' ')) //
 							.toArray(String.class);
 

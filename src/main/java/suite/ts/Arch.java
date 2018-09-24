@@ -30,7 +30,7 @@ public class Arch {
 
 		// conditional heteroskedasticity
 		var lr1 = stat.linearRegression(Ints_ //
-				.range(length) //
+				.for_(length) //
 				.map(i -> FltObjPair.of(variances[i], copyPadZeroes(variances, i - p, i))));
 
 		return Floats_.concat(lr0.coefficients, lr1.coefficients);
@@ -54,7 +54,7 @@ public class Arch {
 					var tm1 = t - 1;
 					var eps0 = eps;
 					var var0 = var;
-					var estx = c + Ints_.range(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[tm1 - i]));
+					var estx = c + Ints_.for_(p).toDouble(Int_Dbl.sum(i -> ars[i] * xs[tm1 - i]));
 					eps = xs[t] - estx;
 					var = p0 + p1 * eps0 * eps0 + p2 * var0;
 					logLikelihood += -.5d * (log(var) + eps * eps / var);

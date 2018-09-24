@@ -56,7 +56,7 @@ public class LibraryMain extends ExecutableProgram {
 					var attrs = rethrow(() -> Files.readAttributes(path, BasicFileAttributes.class));
 
 					var tags = Ints_ //
-							.range(path.getNameCount()) //
+							.for_(path.getNameCount()) //
 							.map(i -> path.getName(i).toString()) //
 							.cons(To.string(attrs.lastModifiedTime().toInstant())) //
 							.collect();

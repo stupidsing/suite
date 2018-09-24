@@ -51,7 +51,7 @@ public class Matrix {
 		var means = To.vector(h, j -> Read.from(vs).toDouble(Obj_Dbl.sum(vector -> vector[j])) / w);
 
 		return To.matrix(h, h, (i0, i1) -> Ints_ //
-				.range(w) //
+				.for_(w) //
 				.toDouble(Int_Dbl.sum(j -> vs[i0][j] * vs[i1][j])) / w - means[i0] * means[i1]);
 	}
 
@@ -61,7 +61,7 @@ public class Matrix {
 
 	public double det(float[][] m) {
 		var size = sqSize_(m);
-		var cols = Ints_.range(size).toArray();
+		var cols = Ints_.for_(size).toArray();
 
 		class Det {
 			private double sum;

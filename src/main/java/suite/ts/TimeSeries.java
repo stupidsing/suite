@@ -36,7 +36,7 @@ public class TimeSeries {
 		var meany = stat.mean(ys);
 		var ydevs = To.vector(length, i -> ys[i] - meany);
 		var acovs = To.vector(length, k -> Ints_ //
-				.range(length - k) //
+				.for_(length - k) //
 				.toDouble(Int_Dbl.sum(i -> (ydevs[i] * ydevs[i + k]))));
 		var inv = 1d / acovs[0];
 		return To.vector(acovs.length, k -> acovs[k] * inv);
@@ -47,7 +47,7 @@ public class TimeSeries {
 		var ydiffs = differences_(1, ys);
 		var length = ys.length;
 		var lr = stat.linearRegression(Ints_ //
-				.range(tor, length) //
+				.for_(tor, length) //
 				.map(i -> FltObjPair.of(ydiffs[i],
 						// i - drift term, necessary?
 						Floats.concat(Floats.of(ys[i - 1], 1f, i), Floats.of(ydiffs, i - tor, i)).toArray())));
@@ -89,7 +89,7 @@ public class TimeSeries {
 			return log(stat.variance(diffs2));
 		});
 		var lr = stat.linearRegression(Ints_ //
-				.range(logVrs.length) //
+				.for_(logVrs.length) //
 				.map(i -> FltObjPair.of((float) log(tors[i]), vec.of(logVrs[i], 1f))));
 		var beta0 = lr.coefficients[0];
 		return beta0 / 2d;
@@ -155,7 +155,7 @@ public class TimeSeries {
 		var diffs = differences_(1, ys);
 
 		return stat.linearRegression(Ints_ //
-				.range(tor, ys.length) //
+				.for_(tor, ys.length) //
 				.map(i -> FltObjPair.of(diffs[i], vec.of(ys[i], 1f))));
 	}
 
@@ -163,7 +163,7 @@ public class TimeSeries {
 		var diffs = differences_(1, ys);
 
 		return stat.linearRegression(Ints_ //
-				.range(tor, ys.length) //
+				.for_(tor, ys.length) //
 				.map(i -> FltObjPair.of(diffs[i], vec.of(movingAvg[i], 1f))));
 	}
 

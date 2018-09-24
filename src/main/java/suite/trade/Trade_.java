@@ -100,7 +100,7 @@ public class Trade_ {
 		var i0 = 0;
 
 		IntIntSink tx = (i0_, i1_) -> {
-			if (Ints_.range(i0_, i1_).mapInt(i -> trades0[i].buySell).sum() != 0)
+			if (Ints_.for_(i0_, i1_).mapInt(i -> trades0[i].buySell).sum() != 0)
 				while (i0_ < i1_) {
 					var trade0 = trades0[i0_++];
 					if (!String_.equals(trade0.remark, "#"))

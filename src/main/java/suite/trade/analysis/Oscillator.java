@@ -21,7 +21,7 @@ public class Oscillator {
 		var length = ds.ts.length;
 		var trs = trueRange(ds);
 		var atrs = new float[length];
-		var atr = atrs[0] = Ints_.range(n).collect(Int_Flt.lift(i -> trs[i])).sum() / n;
+		var atr = atrs[0] = Ints_.for_(n).collect(Int_Flt.lift(i -> trs[i])).sum() / n;
 		var invn = 1d / n;
 
 		for (var i = 1; i < length; i++)

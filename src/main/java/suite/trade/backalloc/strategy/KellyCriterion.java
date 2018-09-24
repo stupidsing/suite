@@ -43,7 +43,7 @@ public class KellyCriterion {
 		var allocations = cholesky.inverseMul(cov).apply(returns);
 
 		return Ints_ //
-				.range(nSymbols) //
+				.for_(nSymbols) //
 				.map2(i -> symbols[i], i -> (double) allocations[i] * kellyReduction) //
 				.toList();
 	}

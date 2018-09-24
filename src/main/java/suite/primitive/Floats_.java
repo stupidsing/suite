@@ -84,11 +84,11 @@ public class Floats_ {
 		return new FltStreamlet(() -> FltOutlet.of(ts, start, end, inc));
 	}
 
-	public static FltStreamlet range(float e) {
-		return range((float) 0, e);
+	public static FltStreamlet for_(float e) {
+		return for_((float) 0, e);
 	}
 
-	public static FltStreamlet range(float s, float e) {
+	public static FltStreamlet for_(float s, float e) {
 		return new FltStreamlet(() -> {
 			var m = FltMutable.of(s);
 			return FltOutlet.of(() -> {

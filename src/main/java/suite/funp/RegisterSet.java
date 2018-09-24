@@ -26,7 +26,7 @@ public class RegisterSet {
 				.map2(opReg -> opReg.reg, opReg -> opReg) //
 				.toMap();
 
-		registers = Ints_.range(nRegisters).map(map::get).toArray(OpReg.class);
+		registers = Ints_.for_(nRegisters).map(map::get).toArray(OpReg.class);
 	}
 
 	public RegisterSet() {
@@ -52,7 +52,7 @@ public class RegisterSet {
 
 	public OpReg[] list(IntTest pred) {
 		return Ints_ //
-				.range(nRegisters) //
+				.for_(nRegisters) //
 				.filter(this::isSet) //
 				.filter(pred) //
 				.map(r -> registers[r]) //

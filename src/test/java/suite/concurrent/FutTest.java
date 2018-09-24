@@ -25,7 +25,7 @@ public class FutTest {
 		var nc = new AtomicInteger();
 		var count = 128;
 
-		Ints_.range(count).map(i -> Thread_.newThread(() -> {
+		Ints_.for_(count).map(i -> Thread_.newThread(() -> {
 			if (fut.get() == value)
 				nc.incrementAndGet();
 			else

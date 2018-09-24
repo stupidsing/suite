@@ -20,7 +20,7 @@ public class HkexFactBookTest {
 
 		System.out.println(delisted);
 		System.out.println(Ints_ //
-				.range(2008, Trade_.thisYear) //
+				.for_(2008, Trade_.thisYear) //
 				.mapIntObj(year -> hkexFactBook //
 						.queryLeadingCompaniesByMarketCap(year - 1) //
 						.filter(delisted::contains) //

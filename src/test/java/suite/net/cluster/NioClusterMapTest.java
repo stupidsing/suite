@@ -37,7 +37,7 @@ public class NioClusterMapTest {
 	public void testClusterMap() throws IOException {
 		var nNodes = 3;
 
-		var peers = Ints_.range(nNodes).map2(i -> "NODE" + i, i -> new InetSocketAddress(localHost, 3000 + i)).toMap();
+		var peers = Ints_.for_(nNodes).map2(i -> "NODE" + i, i -> new InetSocketAddress(localHost, 3000 + i)).toMap();
 
 		var clusters = Read //
 				.from2(peers) //
@@ -80,8 +80,8 @@ public class NioClusterMapTest {
 		};
 
 		var sinks = Streamlet.concat( //
-				Ints_.range(9).map(setf), //
-				Ints_.range(9).map(getf), //
+				Ints_.for_(9).map(setf), //
+				Ints_.for_(9).map(getf), //
 				Read.from2(clusters).values().map(closef)).toList();
 
 		new Object() {

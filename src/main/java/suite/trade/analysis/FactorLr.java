@@ -63,7 +63,7 @@ public class FactorLr {
 
 			return index -> {
 				var xs = Ints_ //
-						.range(indexSymbols.size()) //
+						.for_(indexSymbols.size()) //
 						.collect(Int_Flt.lift(i -> {
 							var indexPrices_ = indexPrices.get(i);
 							return (float) Quant.return_(indexPrices_[index - 2], indexPrices_[index - 1]);

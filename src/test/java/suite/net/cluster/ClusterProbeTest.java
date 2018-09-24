@@ -25,7 +25,7 @@ public class ClusterProbeTest {
 	public void test() throws IOException {
 		var nNodes = 3;
 
-		var peers = Ints_.range(nNodes).map2(i -> "NODE" + i, i -> new InetSocketAddress(localHost, 3000 + i)).toMap();
+		var peers = Ints_.for_(nNodes).map2(i -> "NODE" + i, i -> new InetSocketAddress(localHost, 3000 + i)).toMap();
 
 		var probes = Read //
 				.from2(peers) //

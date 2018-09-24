@@ -14,7 +14,7 @@ public class FormatUtil {
 		var rows = arrays.map(array -> To.array(nColumns, String.class, column -> column < array.length ? array[column] : ""));
 
 		var widths = Ints_ //
-				.range(nColumns) //
+				.for_(nColumns) //
 				.collect(Int_Int.lift(column -> rows //
 						.collect(Obj_Int.lift(row -> row[column].length())).max())) //
 				.toArray();

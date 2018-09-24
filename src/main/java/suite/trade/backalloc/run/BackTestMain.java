@@ -48,10 +48,10 @@ public class BackTestMain extends ExecutableProgram {
 				.concatMap(s -> {
 					var pair = ParseUtil.search(s, "-", Assoc.RIGHT);
 					return pair != null //
-							? Ints_.range(Integer.valueOf(pair.t0), Integer.valueOf(pair.t1)).map(i -> i) //
+							? Ints_.for_(Integer.valueOf(pair.t0), Integer.valueOf(pair.t1)).map(i -> i) //
 							: Read.each(Integer.valueOf(s));
 				}) //
-				: Ints_.range(2007, Trade_.thisYear).map(i -> i);
+				: Ints_.for_(2007, Trade_.thisYear).map(i -> i);
 
 		Fun<Time, Streamlet<Asset>> fun = !arg2.isEmpty() //
 				? time -> Read.from(arg2.split(",")).map(cfg::queryCompany).collect() //

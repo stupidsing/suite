@@ -110,7 +110,7 @@ public class NioDispatch implements Closeable {
 		private Pool<Reconnect> pool;
 
 		public ReconnectPool(InetSocketAddress address, Sink<Reconnectable> connected) {
-			pool = Pool.of(Ints_.range(9).map(i -> new Reconnect(address, connected)).toArray(Reconnect.class));
+			pool = Pool.of(Ints_.for_(9).map(i -> new Reconnect(address, connected)).toArray(Reconnect.class));
 		}
 
 		public Closeable connect(Sink<Reconnectable> okay) {
