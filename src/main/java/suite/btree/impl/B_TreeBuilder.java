@@ -147,13 +147,13 @@ public class B_TreeBuilder<Key, Value> {
 
 					if (kp.pointer instanceof B_TreeImpl.Branch) {
 						so.writeChar(BRANCH);
-						so.writeInt(kp.getBranchPointer());
+						so.writeInt(kp.branchPointer());
 					} else if (kp.pointer instanceof B_TreeImpl.Leaf) {
 						so.writeChar(LEAF);
-						valueSerializer.write(so, kp.getLeafValue());
+						valueSerializer.write(so, kp.leafValue());
 					} else if (kp.pointer instanceof B_TreeImpl.Payload) {
 						so.writeChar(PAYLOAD);
-						so.writeInt(kp.getPayloadPointer());
+						so.writeInt(kp.payloadPointer());
 					} else if (kp.pointer instanceof B_TreeImpl.Terminal)
 						so.writeChar(TERMINAL);
 					else
