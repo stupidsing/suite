@@ -53,7 +53,7 @@ public class NeuralNetwork {
 	}
 
 	public Layer<float[], float[]> ml(int[] sizes) {
-		Layer<float[], float[]> layer = nil1dLayer();
+		var layer = nil1dLayer();
 		for (var i = 1; i < sizes.length; i++)
 			layer = layer.append(feedForwardLayer(sizes[i - 1], sizes[i]));
 		return layer;
