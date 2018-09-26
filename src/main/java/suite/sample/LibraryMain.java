@@ -42,7 +42,8 @@ public class LibraryMain extends ExecutableProgram {
 	}
 
 	protected boolean run(String[] args) {
-		var partition = FileUtil.findPaths(Paths.get(inputDir)) //
+		var partition = FileUtil //
+				.findPaths(Paths.get(inputDir)) //
 				.filter(path -> fileExtensions.contains(FileUtil.getFileExtension(path))) //
 				.map2(path -> rethrow(() -> Files.size(path))) //
 				.partition((path, size) -> 0 < size);
