@@ -26,6 +26,7 @@ public class NeuralNetwork {
 	private Matrix mtx = new Matrix();
 	private Random random = new Random();
 
+	private double initRate = 1d;
 	private float learningRate = 1f;
 
 	public interface Layer<I, O> {
@@ -129,7 +130,7 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[], float[]> feedForwardLayer(int nInputs, int nOutputs) {
-		var weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextGaussian() * .1d);
+		var weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextGaussian() * initRate);
 
 		return inputs -> {
 			var outputs = mtx.mul(inputs, weights);
@@ -191,7 +192,7 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[][], float[][]> conv2dLayer(int sx, int sy) {
-		var kernel = To.matrix(sx, sy, (x, y) -> random.nextGaussian() * .1d);
+		var kernel = To.matrix(sx, sy, (x, y) -> random.nextGaussian() * initRate);
 		var bias = DblMutable.of(0d);
 
 		return inputs -> {
