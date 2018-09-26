@@ -17,6 +17,7 @@ import suite.serialize.SerOutput;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
+import suite.util.String_;
 import suite.util.To;
 
 public class StoreCache {
@@ -57,12 +58,14 @@ public class StoreCache {
 		this.dir = dir;
 
 		var current = System.currentTimeMillis();
+		var paths = FileUtil.findPaths(dir).filter(path -> !isUpToDate(path, current));
 
-		LogUtil.info(FileUtil //
-				.findPaths(dir) //
-				.filter(path -> !isUpToDate(path, current)) //
-				.map(path -> "rm '" + path + "'") //
-				.toString());
+		if (String_.equals(System.getenv("EVICTSTORECACHE"), "Y"))
+			paths.forEach(FileUtil::delete);
+		else
+			LogUtil.info(paths //
+					.map(path -> "rm '" + path + "'") //
+					.toString());
 	}
 
 	public <T> T reget(Source<T> source) {
