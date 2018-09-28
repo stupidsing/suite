@@ -32,9 +32,7 @@ public class Plot extends ExecutableProgram {
 				+ "<head><script src='https://cdn.plot.ly/plotly-latest.min.js'></script></head>" //
 				+ "<body><div id='plot'></div></body>" //
 				+ "<script>" //
-				+ "var xyt0 = " + xyt0 + ";" //
-				+ "var xyt1 = " + xyt1 + ";" //
-				+ "Plotly.newPlot('plot', [xyt0, xyt1], {" //
+				+ "Plotly.newPlot('plot', [" + xyt0 + ", " + xyt1 + "], {" //
 				+ "	yaxis: { rangemode: 'tozero', zeroline: true, }" //
 				+ "});" //
 				+ "</script>";
