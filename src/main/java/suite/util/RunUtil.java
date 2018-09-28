@@ -1,5 +1,7 @@
 package suite.util;
 
+import java.util.concurrent.Callable;
+
 import org.apache.log4j.Level;
 
 import suite.object.Object_;
@@ -31,14 +33,24 @@ public class RunUtil {
 	}
 
 	public static void run(Class<? extends ExecutableProgram> clazz, String[] args, RunOption runOption) {
+		run(clazz, runOption, () -> {
+			try (ExecutableProgram main_ = Object_.new_(clazz)) {
+				return main_.run(args);
+			}
+		});
+	}
+
+	public static void run(String[] args, Callable<Boolean> callable) {
+		run(RunUtil.class, RunOption.RUN____, callable);
+	}
+
+	private static void run(Class<?> clazz, RunOption runOption, Callable<Boolean> callable) {
 		LogUtil.initLog4j(Level.INFO);
 		var mutableCode = IntMutable.nil();
 
 		IntSource source = () -> {
 			try {
-				try (ExecutableProgram main_ = Object_.new_(clazz)) {
-					return main_.run(args) ? 0 : 1;
-				}
+				return callable.call() ? 0 : 1;
 			} catch (Throwable ex) {
 				ex.printStackTrace();
 				LogUtil.fatal(ex);
