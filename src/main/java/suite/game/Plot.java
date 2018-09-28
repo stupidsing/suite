@@ -5,6 +5,10 @@ import java.io.File;
 import suite.cfg.Defaults;
 import suite.os.Execute;
 import suite.os.FileUtil;
+import suite.primitive.Floats_;
+import suite.primitive.adt.pair.FltFltPair;
+import suite.streamlet.As;
+import suite.streamlet.Streamlet;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 
@@ -18,22 +22,20 @@ public class Plot extends ExecutableProgram {
 
 	@Override
 	protected boolean run(String[] args) {
+		var d0 = new float[] { 10f, 15f, 13f, 17f, };
+		var d1 = new float[] { 16f, 5f, 11f, 9f, };
+
+		var xyt0 = xyt(d0);
+		var xyt1 = xyt(d1);
+
 		var html = "" //
 				+ "<head><script src='https://cdn.plot.ly/plotly-latest.min.js'></script></head>" //
 				+ "<body><div id='plot'></div></body>" //
 				+ "<script>" //
-				+ "var xyt0 = {" //
-				+ "	x: [1, 2, 3, 4,]," //
-				+ "	y: [10, 15, 13, 17,]," //
-				+ "	type: 'scatter'," //
-				+ "};" //
-				+ "var xyt1 = {" //
-				+ "	x: [1, 2, 3, 4,]," //
-				+ "	y: [16, 5, 11, 9,]," //
-				+ "	type: 'scatter'," //
-				+ "};" //
+				+ "var xyt0 = " + xyt0 + ";" //
+				+ "var xyt1 = " + xyt1 + ";" //
 				+ "Plotly.newPlot('plot', [xyt0, xyt1], {" //
-				+ "	yaxis: { rangemode: 'tozero', showline: true, zeroline: true, }" //
+				+ "	yaxis: { rangemode: 'tozero', zeroline: true, }" //
 				+ "});" //
 				+ "</script>";
 
@@ -45,6 +47,17 @@ public class Plot extends ExecutableProgram {
 			Execute.shell("'" + chrome + "' --incognito '" + file + "'");
 
 		return true;
+	}
+
+	private String xyt(float[] ts) {
+		var xys = Floats_.of(ts).index().map((y, x) -> FltFltPair.of(x, y)).collect();
+		return xyt(xys);
+	}
+
+	private String xyt(Streamlet<FltFltPair> xys) {
+		var xs = xys.map(xy -> xy.t0 + ",").collect(As::joined);
+		var ys = xys.map(xy -> xy.t1 + ",").collect(As::joined);
+		return "{ x: [" + xs + "], y: [" + ys + "], type: 'scatter', }";
 	}
 
 }
