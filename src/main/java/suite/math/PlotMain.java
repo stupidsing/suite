@@ -33,10 +33,10 @@ public class PlotMain {
 
 		return new Render() //
 				.renderPixels(size, size, (fx, fy) -> {
-					int b0 = fp.apply(fx, fy);
-					int b1 = fp.apply(fx + 1, fy);
-					int b2 = fp.apply(fx, fy + 1);
-					int b3 = fp.apply(fx + 1, fy + 1);
+					var b0 = fp.apply(fx, fy);
+					var b1 = fp.apply(fx + 1, fy);
+					var b2 = fp.apply(fx, fy + 1);
+					var b3 = fp.apply(fx + 1, fy + 1);
 					var c = b0 != b1 || b1 != b2 || b2 != b3 ? 1d : 0d;
 					return new R3(c, c, c);
 				}) //
