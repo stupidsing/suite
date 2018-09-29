@@ -8,13 +8,14 @@ import suite.os.FileUtil;
 import suite.primitive.Floats_;
 import suite.primitive.adt.pair.FltFltPair;
 import suite.streamlet.As;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.RunUtil;
 import suite.util.RunUtil.ExecutableProgram;
 
 public class Plot extends ExecutableProgram {
 
-	private String chrome = "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe";
+	private String[] browsers = { "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe", "/usr/bin/chromium", };
 
 	public static void main(String[] args) {
 		RunUtil.run(Plot.class, args);
@@ -41,8 +42,8 @@ public class Plot extends ExecutableProgram {
 
 		FileUtil.out(file).writeAndClose(html);
 
-		if (new File(chrome).exists())
-			Execute.shell("'" + chrome + "' --incognito '" + file + "'");
+		Read.from(browsers).filter(b -> new File(b).exists())
+				.forEach(browser -> Execute.shell("'" + browser + "' --incognito '" + file + "'"));
 
 		return true;
 	}
