@@ -147,7 +147,12 @@ public class P4GenerateCode {
 		p4deOp = new P4DecomposeOperand(isUseEbp);
 	}
 
-	public List<Instruction> compile0(Funp funp) {
+	public Pair<List<Instruction>, Bytes> compile(int offset, Funp funp) {
+		var instructions = compile0(funp);
+		return Pair.of(instructions, compile1(offset, instructions, true));
+	}
+
+	private List<Instruction> compile0(Funp funp) {
 		var p = new Amd64Parse();
 
 		return p4emit.generate(p4emit.label(), em -> {
@@ -179,7 +184,7 @@ public class P4GenerateCode {
 		}, null);
 	}
 
-	public Bytes compile1(int offset, List<Instruction> instructions, boolean dump) {
+	private Bytes compile1(int offset, List<Instruction> instructions, boolean dump) {
 		return asm.assemble(offset, instructions, dump);
 	}
 

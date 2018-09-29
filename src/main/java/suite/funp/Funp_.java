@@ -72,8 +72,7 @@ public class Funp_ {
 			var n2 = p1.inline(n1, isOptimize ? 3 : 0, 1, 1, 1, 1, 1);
 			var n3 = p2.infer(n2);
 			var n4 = p3.optimize(n3);
-			var instructions = p4.compile0(n4);
-			return Pair.of(instructions, p4.compile1(offset, instructions, true));
+			return p4.compile(offset, n4);
 		}
 
 		public int interpret(Node node) {
