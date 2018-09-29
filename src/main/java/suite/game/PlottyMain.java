@@ -8,8 +8,8 @@ import suite.os.FileUtil;
 import suite.primitive.Floats_;
 import suite.primitive.adt.pair.FltFltPair;
 import suite.streamlet.As;
+import suite.streamlet.Outlet;
 import suite.streamlet.Read;
-import suite.streamlet.Streamlet;
 import suite.util.RunUtil;
 
 public class PlottyMain {
@@ -45,13 +45,13 @@ public class PlottyMain {
 	}
 
 	private String xyt(float[] ts) {
-		var xys = Floats_.of(ts).index().map((y, x) -> FltFltPair.of(x, y)).collect();
-		return xyt(xys);
+		return Floats_.of(ts).index().map((y, x) -> FltFltPair.of(x, y)).collect().collect(this::xyt);
 	}
 
-	private String xyt(Streamlet<FltFltPair> xys) {
-		var xs = xys.map(xy -> xy.t0 + ",").collect(As::joined);
-		var ys = xys.map(xy -> xy.t1 + ",").collect(As::joined);
+	private String xyt(Outlet<FltFltPair> xys0) {
+		var xys1 = Read.from(xys0.toList());
+		var xs = xys1.map(xy -> xy.t0 + ",").collect(As::joined);
+		var ys = xys1.map(xy -> xy.t1 + ",").collect(As::joined);
 		return "{ x: [" + xs + "], y: [" + ys + "], type: 'scatter', }";
 	}
 
