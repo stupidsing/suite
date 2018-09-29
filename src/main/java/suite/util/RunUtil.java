@@ -4,7 +4,6 @@ import java.util.concurrent.Callable;
 
 import org.apache.log4j.Level;
 
-import suite.object.Object_;
 import suite.os.LogUtil;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntSource;
@@ -16,24 +15,9 @@ public class RunUtil {
 		RUN____, PROFILE, TIME___,
 	};
 
-	public static abstract class ExecutableProgram implements AutoCloseable {
-		protected abstract boolean run(String[] args) throws Exception;
-
-		public void close() {
-		}
-	}
-
 	public static boolean isUnix() {
 		var os = System.getenv("OS");
 		return os == null || !os.startsWith("Windows");
-	}
-
-	public static void run(Class<? extends ExecutableProgram> clazz, String[] args) {
-		run(RunOption.RUN____, () -> {
-			try (var main_ = Object_.new_(clazz)) {
-				return main_.run(args);
-			}
-		});
 	}
 
 	public static void run(Callable<Boolean> callable) {
