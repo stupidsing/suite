@@ -22,18 +22,16 @@ public class Plotty {
 				.map(xyt -> Floats_.of(xyt).index().map((y, x) -> FltFltPair.of(x, y)).collect(this::xyt) + ",") //
 				.collect(As::joined);
 
-		var html = "" //
+		var file = Defaults.tmp("plot$" + Util.temp() + ".html");
+
+		FileUtil.out(file).writeAndClose("" //
 				+ "<head><script src='https://cdn.plot.ly/plotly-latest.min.js'></script></head>" //
 				+ "<body><div id='plot'></div></body>" //
 				+ "<script>" //
 				+ "Plotly.newPlot('plot', [" + data + "], {" //
 				+ "	yaxis: { rangemode: 'tozero', zeroline: true, }" //
 				+ "});" //
-				+ "</script>";
-
-		var file = Defaults.tmp("plot$" + Util.temp() + ".html");
-
-		FileUtil.out(file).writeAndClose(html);
+				+ "</script>");
 
 		Read.from(browsers).filter(b -> new File(b).exists())
 				.forEach(browser -> Execute.shell("'" + browser + "' --incognito '" + file + "'"));
