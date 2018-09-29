@@ -22,7 +22,7 @@ public class PlotMain {
 		IntInt_Int fp = (fx, fy) -> {
 			var x0 = fx * scale - .5d;
 			var y0 = fy * scale - .5d;
-			double value = variety.apply(x0, y0);
+			var value = variety.apply(x0, y0);
 			if (Double.isNaN(value))
 				return -2;
 			else if (value < 0)
