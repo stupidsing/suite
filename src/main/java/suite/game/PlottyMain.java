@@ -12,12 +12,12 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.RunUtil;
 
-public class Plot {
+public class PlottyMain {
 
 	private String[] browsers = { "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe", "/usr/bin/chromium", };
 
 	public static void main(String[] args) {
-		RunUtil.run(() -> new Plot().run());
+		RunUtil.run(() -> new PlottyMain().run());
 	}
 
 	private boolean run() {
