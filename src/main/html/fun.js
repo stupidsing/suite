@@ -1,43 +1,43 @@
 "use strict";
 
-var read = list => {
+let read = list => {
 	return {
 		append: r => {
-			var l = r.list();
-			var list1 = [];
-			for (var e of list) list1.push(e);
-			for (var e of l) list1.push(e);
+			let l = r.list();
+			let list1 = [];
+			for (let e of list) list1.push(e);
+			for (let e of l) list1.push(e);
 			return read(list1);
 		},
 		cons: e => {
-			var list1 = [e];
-			for (var e of list) list1.push(e);
+			let list1 = [e];
+			for (let e of list) list1.push(e);
 			return read(list1);
 		},
 		concat: () => {
-			var list1 = [];
-			for (var e of list)
-				for (var f of e)
+			let list1 = [];
+			for (let e of list)
+				for (let f of e)
 					list1.push(f);
 			return read(list1);
 		},
 		filter: f => {
-			var list1 = [];
-			for (var e of list)
+			let list1 = [];
+			for (let e of list)
 				if (f(e)) list1.append(e);
 			return read(list1);
 		},
 		fold: (f, value) => {
-			for (var e of list) value = f(value, e);
+			for (let e of list) value = f(value, e);
 			return value;
 		},
 		foreach: f => {
-			for (var e of list) f(e);
+			for (let e of list) f(e);
 		},
 		list: () => list,
 		map: f => {
-			var list1 = [];
-			for (var e of list) list1.push(f(e));
+			let list1 = [];
+			for (let e of list) list1.push(f(e));
 			return read(list1);
 		},
 	};

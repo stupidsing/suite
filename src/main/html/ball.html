@@ -14,18 +14,18 @@
 	<script type="text/javascript">
 		"use strict";
 
-		var width = window.innerWidth;
-		var height = window.innerHeight;
+		let width = window.innerWidth;
+		let height = window.innerHeight;
 
-		var canvas = document.getElementById("canvas");
+		let canvas = document.getElementById("canvas");
 		canvas.width = width;
 		canvas.height = height;
 
-		var frame = frp.animframe();
-		var fx = frp.kb.arrowx.resample(frame).last();
-		var fy = frp.kb.arrowy.resample(frame).last();
+		let frame = frp.animframe();
+		let fx = frp.kb.arrowx.resample(frame).last();
+		let fy = frp.kb.arrowy.resample(frame).last();
 
-		var background = {
+		let background = {
 			move: () => [background],
 			draw: context => {
 				context.fillStyle = "#777777";
@@ -37,13 +37,13 @@
 			},
 		};
 
-		var ball_ = function(ballx, bally) {
-			var dx = 2, dy = 2;
+		let ball_ = function(ballx, bally) {
+			let dx = 2, dy = 2;
 
-			var ball = {
+			let ball = {
 				move: () => {
-					var ix = fx();
-					var iy = fy();
+					let ix = fx();
+					let iy = fy();
 					if (ix) ballx += 2 * ix;
 					if (iy) bally += 2 * iy;
 					ballx += dx;
@@ -56,7 +56,7 @@
 					return [ball];
 				},
 				draw: context => {
-					var radius = 24;
+					let radius = 24;
 
 					/* context.beginPath(); context.arc(ballx, bally, radius, 0, 2 * Math.PI); context.stroke(); */
 
@@ -76,11 +76,11 @@
 			return ball;
 		};
 
-		var ballx0 = Math.floor(width * Math.random());
-		var bally0 = Math.floor(height * Math.random());
-		var objects = [background, ball_(ballx0, bally0)];
+		let ballx0 = Math.floor(width * Math.random());
+		let bally0 = Math.floor(height * Math.random());
+		let objects = [background, ball_(ballx0, bally0)];
 
-		var clicks = frp.mouse.move
+		let clicks = frp.mouse.move
 			.resample(frp.mouse.click.filter(mb => mb))
 			.map(xy => { return { x: xy.x - canvas.offsetLeft, y: xy.y - canvas.offsetTop, }; })
 			.read();
@@ -95,7 +95,7 @@
 				.list();
 
 			// repaint
-			var context = canvas.getContext("2d");
+			let context = canvas.getContext("2d");
 			read(objects).foreach(object => object.draw(context));
 		});
 

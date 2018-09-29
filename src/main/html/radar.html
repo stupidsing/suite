@@ -14,20 +14,20 @@
 	<script type="text/javascript">
 		"use strict";
 
-		var width = window.innerWidth;
-		var height = window.innerHeight;
+		let width = window.innerWidth;
+		let height = window.innerHeight;
 
-		var canvas = document.getElementById("canvas");
+		let canvas = document.getElementById("canvas");
 		canvas.width = width;
 		canvas.height = height;
 
-		var centerx = width / 2, centery = height / 2;
-		var radius = 250;
+		let centerx = width / 2, centery = height / 2;
+		let radius = 250;
 
-		var frame = frp.animframe();
-		var fire = frp.kb.keypressed(32).resample(frame).last();
+		let frame = frp.animframe();
+		let fire = frp.kb.keypressed(32).resample(frame).last();
 
-		var background = {
+		let background = {
 			move: function() {
 				return [this];
 			},
@@ -38,9 +38,9 @@
 			},
 		};
 
-		var gun = (() => {
-			var angle = 0;
-			var state = 0, fire0, fire1;
+		let gun = (() => {
+			let angle = 0;
+			let state = 0, fire0, fire1;
 
 			return {
 				move: function() {
@@ -81,10 +81,10 @@
 			};
 		})();
 
-		var enemy_ = () => {
-			var angle = 2 * Math.PI * Math.random();
-			var x = centerx + radius * Math.sin(angle);
-			var y = centery + radius * Math.cos(angle);
+		let enemy_ = () => {
+			let angle = 2 * Math.PI * Math.random();
+			let x = centerx + radius * Math.sin(angle);
+			let y = centery + radius * Math.cos(angle);
 
 			return {
 				move: function() {
@@ -108,8 +108,8 @@
 			};
 		};
 
-		var objects = [background, gun];
-		for (var i = 0; i < 10; i++) objects.push(enemy_());
+		let objects = [background, gun];
+		for (let i = 0; i < 10; i++) objects.push(enemy_());
 
 		frame.register(data => {
 
@@ -120,7 +120,7 @@
 				.list();
 
 			// repaint
-			var context = canvas.getContext("2d");
+			let context = canvas.getContext("2d");
 			context.fillStyle = "#777777";
 			context.fillRect(0, 0, width, height);
 

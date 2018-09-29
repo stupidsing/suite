@@ -1,18 +1,18 @@
 "use strict";
 
-var frp = function() {
-	var signal = () => { // FRP dispatcher
-		var receivers = [];
-		var fire_ = data => { for (var i = 0; i < receivers.length; i++) receivers[i](data); };
-		var redirect_ = tf => {
-			var signal1 = signal();
+let frp = function() {
+	let signal = () => { // FRP dispatcher
+		let receivers = [];
+		let fire_ = data => { for (let i = 0; i < receivers.length; i++) receivers[i](data); };
+		let redirect_ = tf => {
+			let signal1 = signal();
 			register_(data => tf(data, signal1));
 			return signal1;
 		};
-		var register_ = receiver => receivers.push(receiver);
+		let register_ = receiver => receivers.push(receiver);
 		return {
 			append: signal_ => {
-				var signal1 = signal();
+				let signal1 = signal();
 				register_(signal1.fire);
 				signal_.register(signal1.fire);
 				return signal1;
@@ -21,7 +21,7 @@ var frp = function() {
 			concatmap: f => redirect_((data, signal1) => f(data).register(signal1.fire)),
 			delay: time => redirect_((data, signal1) => setTimeout(() => signal1.fire(data), time)),
 			edge: () => {
-				var data_;
+				let data_;
 				return redirect_((data, signal1) => {
 					if(data != data_) signal1.fire(data);
 					data_ = data;
@@ -31,24 +31,24 @@ var frp = function() {
 			fire: fire_,
 			fold: (f, value) => redirect_((data, signal1) => signal1.fire(value = f(value, data))),
 			last: () => {
-				var data_;
+				let data_;
 				register_(data => data_ = data);
 				return () => data_;
 			},
 			map: f => redirect_((data, signal1) => signal1.fire(f(data))),
 			merge: (signal_, f) => {
-				var v0, v1;
-				var signal1 = signal();
-				var fire1 = () => signal1.fire(f(v0, v1));
+				let v0, v1;
+				let signal1 = signal();
+				let fire1 = () => signal1.fire(f(v0, v1));
 				register_(data => { v0 = data; fire1(); });
 				f.register(data => { v1 = data; fire1(); });
 				return signal1;
 			},
 			read: () => {
-				var list = [];
+				let list = [];
 				register_(data => list.push(data));
 				return () => {
-					var r = read(list);
+					let r = read(list);
 					list = [];
 					return r;
 				};
@@ -56,12 +56,12 @@ var frp = function() {
 			redirect: redirect_,
 			register: register_,
 			resample: signal_ => {
-				var data_;
+				let data_;
 				register_(data => data_ = data);
 				return signal_.redirect((data, signal1) => signal1.fire(data_));
 			},
 			unique: () => {
-				var list = [];
+				let list = [];
 				return redirect_((data, signal1) => {
 					if (!read(list).fold((b_, d) => b_ || e == data, false)) {
 						signal1.fire(data);
@@ -72,14 +72,14 @@ var frp = function() {
 		};
 	};
 
-	var kbkeysignals = {};
-	var mouseclicksignal = signal();
-	var mousemovesignal = signal();
-	var motionsignal = signal();
-	var orientationsignal = signal();
+	let kbkeysignals = {};
+	let mouseclicksignal = signal();
+	let mousemovesignal = signal();
+	let motionsignal = signal();
+	let orientationsignal = signal();
 
-	var kbpressed_ = (e, down) => {
-		var signal = kbkeysignals[(!(e.which)) ? e.keyCode : (e.which ? e.which : 0)];
+	let kbpressed_ = (e, down) => {
+		let signal = kbkeysignals[(!(e.which)) ? e.keyCode : (e.which ? e.which : 0)];
 		if (signal) signal.fire(down);
 	};
 
@@ -87,9 +87,9 @@ var frp = function() {
 	document.onkeyup = e => kbpressed_(e, false);
 	document.onmousedown = e => mouseclicksignal.fire(true);
 	document.onmousemove = e => {
-		var e1 = (!e) ? window.event : e;
-		var x;
-		var y;
+		let e1 = (!e) ? window.event : e;
+		let x;
+		let y;
 		if (e1.pageX || e1.pageY) {
 			x = e1.pageX;
 			y = e1.pageY;
@@ -122,20 +122,20 @@ var frp = function() {
 		}, false);
 	else log("device orientation not supported");
 
-	var keypressed = keycode => {
-		var signal_;
+	let keypressed = keycode => {
+		let signal_;
 		if (!(signal_ = kbkeysignals[keycode])) signal_ = kbkeysignals[keycode] = signal();
 		return signal_;
 	};
-	var keydownsignal = keypressed(40).map(d => d ? 1 : 0);
-	var keyleftsignal = keypressed(37).map(d => d ? -1 : 0);
-	var keyrightsignal = keypressed(39).map(d => d ? 1 : 0);
-	var keyupsignal = keypressed(38).map(d => d ? -1 : 0);
+	let keydownsignal = keypressed(40).map(d => d ? 1 : 0);
+	let keyleftsignal = keypressed(37).map(d => d ? -1 : 0);
+	let keyrightsignal = keypressed(39).map(d => d ? 1 : 0);
+	let keyupsignal = keypressed(38).map(d => d ? -1 : 0);
 
 	return {
 		animframe: () => {
-			var signal_ = signal();
-			var tick = () => {
+			let signal_ = signal();
+			let tick = () => {
 				signal_.fire(true);
 				requestAnimationFrame(tick);
 			}
@@ -143,8 +143,8 @@ var frp = function() {
 			return signal_;
 		},
 		http: url => {
-			var signal_ = signal();
-			var xhr = new XMLHttpRequest();
+			let signal_ = signal();
+			let xhr = new XMLHttpRequest();
 			xhr.addEventListener('load', () => { signal_.fire(this.responseText); });
 			xhr.open('GET', url);
 			xhr.send();
@@ -161,8 +161,8 @@ var frp = function() {
 		},
 		orientation: orientationsignal,
 		tick: timeout => {
-			var signal_ = signal();
-			var tick = () => {
+			let signal_ = signal();
+			let tick = () => {
 				signal_.fire(true);
 				setTimeout(tick, timeout);
 			}
