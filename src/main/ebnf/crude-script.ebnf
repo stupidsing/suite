@@ -29,7 +29,7 @@ expression-as ::= expression-pp ("as" expression-pp)*
 expression-pp ::= op-inc-dec* expression-prop op-inc-dec*
 expression-prop ::= expression-obj (@"." <IDENTIFIER> | @"[" expression "]" | @"(" expression ")")*
 expression-obj ::= <IDENTIFIER> | expression-array | expression-dict | expression-lambda | expression-tuple | constant
-expression-array ::= "[" (expression ",")* "]"
+expression-array ::= "[" (("..." | ()) expression ",")* "]"
 expression-dict ::= "{" (<IDENTIFIER> ":" expression ",")* "}"
 expression-lambda ::= bind "=>" (expression | statement-block)
 expression-tuple ::= "(" expression ("," expression)* ")"

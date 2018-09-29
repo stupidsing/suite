@@ -142,7 +142,7 @@ public class IRope<T> {
 	}
 
 	// 0 < p && p <= weight
-	public IRope<T> left_(int p) {
+	private IRope<T> left_(int p) {
 		var deque = new ArrayDeque<IRope<T>>();
 		var rope = this;
 		List<IRope<T>> ropes;
@@ -169,7 +169,7 @@ public class IRope<T> {
 	}
 
 	// 0 <= p && p < weight
-	public IRope<T> right_(int p) {
+	private IRope<T> right_(int p) {
 		var deque = new ArrayDeque<IRope<T>>();
 		var rope = this;
 		List<IRope<T>> ropes;
