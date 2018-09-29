@@ -61,10 +61,8 @@ public class Amd64Dump {
 	}
 
 	private String dumpDisp(long disp, int pointerSize) {
-		if (0 < disp)
+		if (0 <= disp)
 			return " + " + dump(disp, pointerSize);
-		else if (disp == 0)
-			return "";
 		else
 			return " + -" + dump(-disp, pointerSize);
 	}

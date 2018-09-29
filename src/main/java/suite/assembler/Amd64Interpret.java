@@ -7,6 +7,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
 
+import suite.adt.pair.Pair;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
@@ -68,6 +69,10 @@ public class Amd64Interpret {
 	private Sink<Bytes> output = out::append;
 
 	public Amd64Interpret() {
+	}
+
+	public int interpret(Pair<List<Instruction>, Bytes> pair, Bytes input) {
+		return interpret(pair.t0, pair.t1, input);
 	}
 
 	public int interpret(List<Instruction> instructions, Bytes code, Bytes input) {
