@@ -23,15 +23,13 @@ public class Plot {
 	private boolean run() {
 		var d0 = new float[] { 10f, 15f, 13f, 17f, };
 		var d1 = new float[] { 16f, 5f, 11f, 9f, };
-
-		var xyt0 = xyt(d0);
-		var xyt1 = xyt(d1);
+		var xyts = Read.each(d0, d1);
 
 		var html = "" //
 				+ "<head><script src='https://cdn.plot.ly/plotly-latest.min.js'></script></head>" //
 				+ "<body><div id='plot'></div></body>" //
 				+ "<script>" //
-				+ "Plotly.newPlot('plot', [" + xyt0 + ", " + xyt1 + "], {" //
+				+ "Plotly.newPlot('plot', [" + xyts.map(xyt -> xyt(xyt) + ",").collect(As::joined) + "], {" //
 				+ "	yaxis: { rangemode: 'tozero', zeroline: true, }" //
 				+ "});" //
 				+ "</script>";
