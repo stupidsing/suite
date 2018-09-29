@@ -17,19 +17,17 @@ import suite.os.Schedule;
 import suite.os.Scheduler;
 import suite.telegram.TelegramBot;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 import suite.util.Thread_;
 import suite.util.To;
 
 // mvn compile exec:java -Dexec.mainClass=suite.ServerMain
-public class ServerMain extends ExecutableProgram {
+public class ServerMain {
 
 	public static void main(String[] args) {
-		RunUtil.run(ServerMain.class, args);
+		RunUtil.run(() -> new ServerMain().run());
 	}
 
-	@Override
-	protected boolean run(String[] args) {
+	private boolean run() {
 		Thread_.startThread(this::runHttpServer);
 		Thread_.startThread(this::runScheduler);
 		Thread_.startThread(this::runTelegramBot);

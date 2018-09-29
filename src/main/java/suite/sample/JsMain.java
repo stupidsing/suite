@@ -10,7 +10,6 @@ import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 import suite.util.String_;
 
 /**
@@ -19,17 +18,17 @@ import suite.util.String_;
  *
  * @author ywsing
  */
-public class JsMain extends ExecutableProgram {
+public class JsMain {
 
 	private List<String> defaultJsFiles = List.of("conf/loader.js");
 
 	private ScriptEngine engine = new ScriptEngineManager().getEngineByExtension("js");
 
 	public static void main(String[] args) {
-		RunUtil.run(JsMain.class, args);
+		RunUtil.run(() -> new JsMain().run(args));
 	}
 
-	protected synchronized boolean run(String[] args) throws IOException, ScriptException {
+	private synchronized boolean run(String[] args) throws IOException, ScriptException {
 		List<String> filenames = new ArrayList<>();
 
 		for (var arg : args)

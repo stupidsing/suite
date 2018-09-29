@@ -14,16 +14,14 @@ import suite.os.SocketUtil;
 import suite.streamlet.Read;
 import suite.util.Copy;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 
-public class TelnetServerMain extends ExecutableProgram {
+public class TelnetServerMain {
 
 	public static void main(String[] args) {
-		RunUtil.run(TelnetServerMain.class, args);
+		RunUtil.run(() -> new TelnetServerMain().run());
 	}
 
-	@Override
-	protected boolean run(String[] args) {
+	private boolean run() {
 		new SocketUtil().listenIo(2323, (sis, sos) -> new Server().serve(sis, sos));
 		return true;
 	}

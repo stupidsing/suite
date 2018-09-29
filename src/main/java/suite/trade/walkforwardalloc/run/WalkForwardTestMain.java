@@ -11,20 +11,18 @@ import suite.trade.data.TradeCfgImpl;
 import suite.trade.walkforwardalloc.WalkForwardAllocConfiguration;
 import suite.trade.walkforwardalloc.WalkForwardAllocTester;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 
 // mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.WalkForwardTestMain
-public class WalkForwardTestMain extends ExecutableProgram {
+public class WalkForwardTestMain {
 
 	private BackAllocatorGeneral bag = BackAllocatorGeneral.me;
 	private TradeCfg cfg = new TradeCfgImpl();
 
 	public static void main(String[] args) {
-		RunUtil.run(WalkForwardTestMain.class, args);
+		RunUtil.run(() -> new WalkForwardTestMain().run());
 	}
 
-	@Override
-	protected boolean run(String[] args) {
+	private boolean run() {
 		var fund0 = 1000000f;
 
 		Trade_.isCacheQuotes = false;

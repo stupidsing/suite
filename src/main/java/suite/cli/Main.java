@@ -22,7 +22,6 @@ import suite.os.FileUtil;
 import suite.os.LogUtil;
 import suite.util.ParseUtil;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 import suite.util.String_;
 import suite.util.To;
 
@@ -32,7 +31,7 @@ import suite.util.To;
  * @author ywsing
  */
 // mvn compile exec:java -Dexec.mainClass=suite.cli.Main
-public class Main extends ExecutableProgram {
+public class Main implements AutoCloseable {
 
 	private CommandOptions opt;
 	private CommandDispatcher dispatcher;
@@ -41,10 +40,14 @@ public class Main extends ExecutableProgram {
 	private Writer writer = new BufferedWriter(new OutputStreamWriter(System.out, Defaults.charset));
 
 	public static void main(String[] args) {
-		RunUtil.run(Main.class, args);
+		RunUtil.run(() -> {
+			try (var main = new Main()) {
+				return main.run(args);
+			}
+		});
 	}
 
-	protected boolean run(String[] args) throws IOException {
+	private boolean run(String[] args) throws IOException {
 		opt = new CommandOptions();
 
 		var b = true;
@@ -81,10 +84,10 @@ public class Main extends ExecutableProgram {
 				new ServeSocket().run();
 			else if (verb != null && verb.startsWith("suite.")) {
 				var verb_ = verb;
-				@SuppressWarnings("unchecked")
-				var clazz = (Class<? extends ExecutableProgram>) //
-				rethrow(() -> Class.forName(verb_));
-				RunUtil.run(clazz, inputs.toArray(new String[0]));
+				rethrow(() -> {
+					var c = Class.forName(verb_);
+					return c.getMethod("main", String[].class).invoke(null);
+				});
 			} else if (String_.equals(verb, "type"))
 				b &= dispatcher.dispatchType(inputs);
 			else if (verb == null)

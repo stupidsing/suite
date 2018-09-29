@@ -23,20 +23,18 @@ import suite.trade.data.TradeCfgImpl;
 import suite.trade.walkforwardalloc.WalkForwardAllocConfiguration;
 import suite.trade.walkforwardalloc.WalkForwardAllocTester;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 
 // mvn compile exec:java -Dexec.mainClass=suite.trade.analysis.WalkForwardRecorderMain
-public class WalkForwardRecorderMain extends ExecutableProgram {
+public class WalkForwardRecorderMain {
 
 	private BackAllocatorGeneral bag = BackAllocatorGeneral.me;
 	private TradeCfg cfg = new TradeCfgImpl();
 
 	public static void main(String[] args) {
-		RunUtil.run(WalkForwardRecorderMain.class, args);
+		RunUtil.run(() -> new WalkForwardRecorderMain().run());
 	}
 
-	@Override
-	protected boolean run(String[] args) {
+	private boolean run() {
 		var assets = cfg.queryCompaniesByMarketCap(Time.now());
 		var fund0 = 1000000f;
 

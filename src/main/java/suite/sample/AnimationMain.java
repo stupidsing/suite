@@ -1,7 +1,5 @@
 package suite.sample;
 
-import static suite.util.Friends.rethrow;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -14,46 +12,43 @@ import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 
-public class AnimationMain extends ExecutableProgram {
-
-	private class PaintInput {
-		private int i;
-	}
+public class AnimationMain {
 
 	public static void main(String[] args) {
-		RunUtil.run(AnimationMain.class, args);
-	}
+		class PaintInput {
+			private int i;
+		}
 
-	protected boolean run(String[] args) {
-		var frame = new JFrame("Animation");
-		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-		frame.setSize(new Dimension(1024, 768));
-		frame.setVisible(true);
+		RunUtil.run(() -> {
+			var frame = new JFrame("Animation");
+			frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+			frame.setSize(new Dimension(1024, 768));
+			frame.setVisible(true);
 
-		var pi = new PaintInput();
+			var pi = new PaintInput();
 
-		frame.getContentPane().add(new JPanel() {
-			private static final long serialVersionUID = 1l;
+			frame.getContentPane().add(new JPanel() {
+				private static final long serialVersionUID = 1l;
 
-			protected void paintComponent(Graphics graphics) {
-				super.paintComponent(graphics);
+				protected void paintComponent(Graphics graphics) {
+					super.paintComponent(graphics);
 
-				var g2d = (Graphics2D) graphics;
-				g2d.setColor(Color.BLACK);
-				g2d.fillRect(pi.i, pi.i, 32, 32);
-			}
+					var g2d = (Graphics2D) graphics;
+					g2d.setColor(Color.BLACK);
+					g2d.fillRect(pi.i, pi.i, 32, 32);
+				}
+			});
+
+			var executor = Executors.newScheduledThreadPool(4);
+
+			executor.scheduleAtFixedRate(() -> {
+				pi.i++;
+				frame.repaint();
+			}, 10, 10, TimeUnit.MILLISECONDS);
+
+			return executor.awaitTermination(100, TimeUnit.SECONDS);
 		});
-
-		var executor = Executors.newScheduledThreadPool(4);
-
-		executor.scheduleAtFixedRate(() -> {
-			pi.i++;
-			frame.repaint();
-		}, 10, 10, TimeUnit.MILLISECONDS);
-
-		return rethrow(() -> executor.awaitTermination(100, TimeUnit.SECONDS));
 	}
 
 }

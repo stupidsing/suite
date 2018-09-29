@@ -18,7 +18,6 @@ import suite.editor.Listen;
 import suite.os.Execute;
 import suite.streamlet.FunUtil.Fun;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 import suite.util.String_;
 
 /**
@@ -29,14 +28,13 @@ import suite.util.String_;
  * @author ywsing
  */
 // mvn compile exec:java -Dexec.mainClass=suite.popup.PopupMain
-public class PopupMain extends ExecutableProgram {
+public class PopupMain {
 
 	public static void main(String[] args) {
-		RunUtil.run(PopupMain.class, args);
+		RunUtil.run(() -> new PopupMain().run());
 	}
 
-	@Override
-	protected boolean run(String[] args) throws Exception {
+	private boolean run() throws Exception {
 		var screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		int centerX = screenSize.width / 2, centerY = screenSize.height / 2;
 		int width = screenSize.width / 2, height = screenSize.height / 8;
@@ -93,7 +91,7 @@ public class PopupMain extends ExecutableProgram {
 		return true;
 	}
 
-	public void execute(String cmd) {
+	private void execute(String cmd) {
 		if (!String_.isBlank(cmd)) {
 			var clipboardUtil = new ClipboardUtil();
 			var text0 = clipboardUtil.getClipboardText();

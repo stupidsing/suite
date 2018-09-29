@@ -33,13 +33,12 @@ import suite.trade.data.TradeCfgImpl;
 import suite.trade.singlealloc.SingleAllocBackTest;
 import suite.trade.singlealloc.Strategos;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 import suite.util.Set_;
 import suite.util.String_;
 import suite.util.To;
 
 // mvn compile exec:java -Dexec.mainClass=suite.DailyMain
-public class DailyMain extends ExecutableProgram {
+public class DailyMain {
 
 	private Set<String> blackList = Set.of("0607.HK");
 
@@ -62,11 +61,10 @@ public class DailyMain extends ExecutableProgram {
 	}
 
 	public static void main(String[] args) {
-		RunUtil.run(DailyMain.class, args);
+		RunUtil.run(() -> new DailyMain().run());
 	}
 
-	@Override
-	protected boolean run(String[] args) {
+	private boolean run() {
 		Trade_.blackList = Set_.union(Trade_.blackList, blackList);
 
 		var sellPool = "sellpool";

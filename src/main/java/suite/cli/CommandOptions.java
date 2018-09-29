@@ -51,7 +51,7 @@ public class CommandOptions {
 		else if (String_.equals(arg, "--eager"))
 			isLazy = !on;
 		else if (String_.equals(arg, "--editor"))
-			new EditorMain().run(null);
+			EditorMain.main(null);
 		else if (String_.equals(arg, "--imports") && (arg1 = source.source()) != null)
 			imports = List.of(arg1.split(","));
 		else if (String_.equals(arg, "--lazy"))

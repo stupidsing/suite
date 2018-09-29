@@ -4,19 +4,17 @@ import suite.game.Render;
 import suite.math.Complex;
 import suite.math.R3;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 
-public class MandelbrotMain extends ExecutableProgram {
+public class MandelbrotMain {
 
 	private int width = 1024;
 	private int height = 768;
 
 	public static void main(String[] args) {
-		RunUtil.run(MandelbrotMain.class, args);
+		RunUtil.run(() -> new MandelbrotMain().run());
 	}
 
-	@Override
-	protected boolean run(String[] args) {
+	private boolean run() {
 		return new Render() //
 				.render(width, height, (fx, fy) -> {
 					var n = mandelbrot(Complex.of(fx * 4f, fy * 4f)) / 256f;

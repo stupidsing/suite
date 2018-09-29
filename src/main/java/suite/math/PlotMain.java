@@ -4,16 +4,14 @@ import suite.game.Render;
 import suite.primitive.DblDbl_Dbl;
 import suite.primitive.IntInt_Int;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 
-public class PlotMain extends ExecutableProgram {
+public class PlotMain {
 
 	public static void main(String[] args) {
-		RunUtil.run(PlotMain.class, args);
+		RunUtil.run(() -> new PlotMain().run());
 	}
 
-	@Override
-	protected boolean run(String[] args) {
+	private boolean run() {
 		var size = 1024;
 		var scale = 1d / (size + 1);
 

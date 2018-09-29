@@ -13,21 +13,19 @@ import java.util.Map;
 import suite.cfg.Defaults;
 import suite.os.SocketUtil;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 import suite.util.To;
 
-public class SimpleCgiServerMain extends ExecutableProgram {
+public class SimpleCgiServerMain {
 
 	public interface Handler {
 		public void handle(Map<String, String> headers, OutputStream os) throws IOException;
 	}
 
 	public static void main(String[] args) {
-		RunUtil.run(SimpleCgiServerMain.class, args);
+		RunUtil.run(() -> new SimpleCgiServerMain().run());
 	}
 
-	@Override
-	protected boolean run(String[] args) {
+	private boolean run() {
 		run((headers, os) -> {
 			var writer = new OutputStreamWriter(os, Defaults.charset);
 			writer.write("<html>" + headers + "</html>");

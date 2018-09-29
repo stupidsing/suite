@@ -13,31 +13,25 @@ import java.util.Map;
 import suite.os.SocketUtil;
 import suite.util.CommandUtil;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 import suite.util.String_;
 import suite.util.Util;
 import suite.util.WriteStream;
 
-public class NntpServerMain extends ExecutableProgram {
+public class NntpServerMain {
 
 	private enum NntpCommand {
-		ARTICLE, BODY, GROUP, HEAD, LIST, LISTGROUP, NEWNEWS, POST
+		ARTICLE, BODY, GROUP, HEAD, LIST, LISTGROUP, NEWNEWS, POST,
 	}
 
 	private Nntp nntp;
 
 	public static void main(String[] args) {
-		RunUtil.run(NntpServerMain.class, args);
+		RunUtil.run(() -> new NntpServerMain().run());
 	}
 
-	@Override
-	protected boolean run(String[] args) {
-		run();
-		return true;
-	}
-
-	private void run() {
+	private boolean run() {
 		new SocketUtil().listenIo(119, (sis, sos) -> new Server().serve(sis, sos));
+		return true;
 	}
 
 	private class Server {

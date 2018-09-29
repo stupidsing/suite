@@ -29,22 +29,18 @@ public class RunUtil {
 	}
 
 	public static void run(Class<? extends ExecutableProgram> clazz, String[] args) {
-		run(clazz, args, RunOption.RUN____);
-	}
-
-	public static void run(Class<? extends ExecutableProgram> clazz, String[] args, RunOption runOption) {
-		run(clazz, runOption, () -> {
-			try (ExecutableProgram main_ = Object_.new_(clazz)) {
+		run(RunOption.RUN____, () -> {
+			try (var main_ = Object_.new_(clazz)) {
 				return main_.run(args);
 			}
 		});
 	}
 
-	public static void run(String[] args, Callable<Boolean> callable) {
-		run(RunUtil.class, RunOption.RUN____, callable);
+	public static void run(Callable<Boolean> callable) {
+		run(RunOption.RUN____, callable);
 	}
 
-	private static void run(Class<?> clazz, RunOption runOption, Callable<Boolean> callable) {
+	public static void run(RunOption runOption, Callable<Boolean> callable) {
 		LogUtil.initLog4j(Level.INFO);
 		var mutableCode = IntMutable.nil();
 
@@ -68,7 +64,7 @@ public class RunUtil {
 			runnable.run();
 			break;
 		case TIME___:
-			LogUtil.duration(clazz.getSimpleName(), () -> {
+			LogUtil.duration("main", () -> {
 				runnable.run();
 				return Boolean.TRUE;
 			});

@@ -15,7 +15,6 @@ import suite.os.FileUtil;
 import suite.primitive.Ints_;
 import suite.streamlet.Streamlet;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 import suite.util.To;
 
 /**
@@ -25,7 +24,7 @@ import suite.util.To;
  * 
  * @author ywsing
  */
-public class LibraryMain extends ExecutableProgram {
+public class LibraryMain {
 
 	private String inputDir = "/data/storey/lg";
 	private List<String> fileExtensions = List.of("jpg");
@@ -38,10 +37,10 @@ public class LibraryMain extends ExecutableProgram {
 	}
 
 	public static void main(String[] args) {
-		RunUtil.run(LibraryMain.class, args);
+		RunUtil.run(() -> new LibraryMain().run());
 	}
 
-	protected boolean run(String[] args) {
+	private boolean run() {
 		var partition = FileUtil //
 				.findPaths(Paths.get(inputDir)) //
 				.filter(path -> fileExtensions.contains(FileUtil.getFileExtension(path))) //

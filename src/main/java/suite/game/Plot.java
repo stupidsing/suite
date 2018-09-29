@@ -11,18 +11,16 @@ import suite.streamlet.As;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 
-public class Plot extends ExecutableProgram {
+public class Plot {
 
 	private String[] browsers = { "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe", "/usr/bin/chromium", };
 
 	public static void main(String[] args) {
-		RunUtil.run(Plot.class, args);
+		RunUtil.run(() -> new Plot().run());
 	}
 
-	@Override
-	protected boolean run(String[] args) {
+	private boolean run() {
 		var d0 = new float[] { 10f, 15f, 13f, 17f, };
 		var d1 = new float[] { 16f, 5f, 11f, 9f, };
 

@@ -16,10 +16,9 @@ import suite.object.Object_;
 import suite.os.FileUtil;
 import suite.streamlet.Read;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 import suite.util.Set_;
 
-public class DependencyMain extends ExecutableProgram {
+public class DependencyMain {
 
 	private DebianUtil debianUtil = new DebianUtil();
 	private DpkgUtil dpkgUtil = new DpkgUtil(debianUtil);
@@ -141,10 +140,10 @@ public class DependencyMain extends ExecutableProgram {
 			supplementaryList);
 
 	public static void main(String[] args) {
-		RunUtil.run(DependencyMain.class, args);
+		RunUtil.run(() -> new DependencyMain().run());
 	}
 
-	protected boolean run(String[] args) throws IOException {
+	private boolean run() throws IOException {
 		Read //
 				.from(getClass().getMethods()) //
 				.filter(m -> m.getName().startsWith("list") && m.getParameters().length == 0) //

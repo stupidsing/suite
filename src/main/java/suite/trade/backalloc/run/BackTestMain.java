@@ -20,20 +20,18 @@ import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
 import suite.util.ParseUtil;
 import suite.util.RunUtil;
-import suite.util.RunUtil.ExecutableProgram;
 
 // mvn compile exec:java -Dexec.mainClass=suite.trade.bcakalloc.run.BackTestMain
-public class BackTestMain extends ExecutableProgram {
+public class BackTestMain {
 
 	private BackTester runner = new BackTester();
 	private TradeCfg cfg = new TradeCfgImpl();
 
 	public static void main(String[] args) {
-		RunUtil.run(BackTestMain.class, args);
+		RunUtil.run(() -> new BackTestMain().run(args));
 	}
 
-	@Override
-	protected boolean run(String[] args) {
+	private boolean run(String[] args) {
 		// BEGIN
 		// END
 
