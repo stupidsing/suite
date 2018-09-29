@@ -281,7 +281,7 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[][], float[]> flattenLayer(int stride) {
-		return this.<float[]> flattenLayer(float[].class, stride);
+		return flattenLayer(float[].class, stride);
 	}
 
 	private <T> Layer<T[], T> flattenLayer(Class<T> arrayClazz, int stride) {
