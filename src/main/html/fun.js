@@ -5,42 +5,39 @@ var read = list => {
 		append: r => {
 			var l = r.list();
 			var list1 = [];
-			for (var i = 0; i < list.length; i++) list1.push(list[i]);
-			for (var i = 0; i < l.length; i++) list1.push(l[i]);
+			for (var e of list) list1.push(e);
+			for (var e of l) list1.push(e);
 			return read(list1);
 		},
 		cons: e => {
 			var list1 = [e];
-			for (var i = 0; i < list.length; i++) list1.push(list[i]);
+			for (var e of list) list1.push(e);
 			return read(list1);
 		},
 		concat: () => {
 			var list1 = [];
-			for (var i = 0; i < list.length; i++) {
-				var e = list[i];
-				for (var j = 0; j < e.length; j++) list1.push(e[j]);
-			}
+			for (var e of list)
+				for (var f of e)
+					list1.push(f);
 			return read(list1);
 		},
 		filter: f => {
 			var list1 = [];
-			for (var i = 0; i < list.length; i++) {
-				var e = list[i];
+			for (var e of list)
 				if (f(e)) list1.append(e);
-			}
 			return read(list1);
 		},
 		fold: (f, value) => {
-			for (var i = 0; i < list.length; i++) value = f(value, list[i]);
+			for (var e of list) value = f(value, e);
 			return value;
 		},
 		foreach: f => {
-			for (var i = 0; i < list.length; i++) f(list[i]);
+			for (var e of list) f(e);
 		},
 		list: () => list,
 		map: f => {
 			var list1 = [];
-			for (var i = 0; i < list.length; i++) list1.push(f(list[i]));
+			for (var e of list) list1.push(f(e));
 			return read(list1);
 		},
 	};
