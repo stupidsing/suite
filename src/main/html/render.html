@@ -21,32 +21,32 @@ let element_li = children => element('li', {}, children);
 let element_p = children => element('p', {}, children);
 
 let rd_text = (vm0, vm1) => (dom, domc) => {
-	 if (domc == null)
-	 	dom.appendChild(domc = element_p([document.createTextNode(vm1)]));
-	 else if (vm0 != vm1)
-	 	dom.replaceChild(element_p([document.createTextNode(vm1)]), domc);
+	if (domc == null)
+		dom.appendChild(domc = element_p([document.createTextNode(vm1)]));
+	else if (vm0 != vm1)
+		dom.replaceChild(element_p([document.createTextNode(vm1)]), domc);
 };
 
 let rd_listItem = (vm0, vm1) => (dom, domc) => {
-	 if (vm0 == null)
-	 	dom.appendChild(domc = element_li([document.createTextNode(vm1)]));
-	 else if (vm0 != vm1)
-	 	dom.replaceChild(element_li([document.createTextNode(vm1)]), domc);
+	if (vm0 == null)
+		dom.appendChild(domc = element_li([document.createTextNode(vm1)]));
+	else if (vm0 != vm1)
+		dom.replaceChild(element_li([document.createTextNode(vm1)]), domc);
 };
 
 let rd_fruits = (vm0, vm1) => (dom, domc) => {
-	 if (vm0 == null) {
-	 	dom.appendChild(domc = document.createElement('ul'));
-	 	for (let i = 0; i < vm1.length; i++) domc.appendChild(rd_listItem(null, vm1[i])(domc, null));
-	 } else if (vm0 != vm1) {
-	 	let i = 0;
-	 	let children = domc.childNodes;
-	 	let imin = Math.min(vm0.length, vm1.length);
-	 	for (; i < imin; i++) rd_listItem(vm0[i], vm1[i])(domc, children[i]);
-	 	for (; i < vm1.length; i++) rd_listItem(null, vm1[i])(domc, null);
-	 	for (; i < children.length; i++) domc.removeChild(children[i]);
-	 }
-	 return dom;
+	if (vm0 == null) {
+		dom.appendChild(domc = document.createElement('ul'));
+		for (let i = 0; i < vm1.length; i++) domc.appendChild(rd_listItem(null, vm1[i])(domc, null));
+	} else if (vm0 != vm1) {
+		let i = 0;
+		let children = domc.childNodes;
+		let imin = Math.min(vm0.length, vm1.length);
+		for (; i < imin; i++) rd_listItem(vm0[i], vm1[i])(domc, children[i]);
+		for (; i < vm1.length; i++) rd_listItem(null, vm1[i])(domc, null);
+		for (; i < children.length; i++) domc.removeChild(children[i]);
+	}
+	return dom;
 };
 
 let rd_linearList = (vm0, vm1) => dom => {
