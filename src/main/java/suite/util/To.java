@@ -4,18 +4,14 @@ import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.io.StringWriter;
 import java.lang.reflect.Array;
 import java.net.URL;
-import java.nio.file.Path;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -38,6 +34,7 @@ import suite.primitive.Int_Dbl;
 import suite.primitive.IoSink;
 import suite.serialize.SerOutput;
 import suite.streamlet.As;
+import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
@@ -84,6 +81,13 @@ public class To {
 
 	public static LocalDate date(String s) {
 		return LocalDate.parse(s, Defaults.dateFormat);
+	}
+
+	public static Fun<Outlet<Bytes>, Boolean> file(String filename) {
+		return outlet -> {
+			FileUtil.out(filename).doWrite(os -> Copy.stream(inputStream(outlet), os));
+			return true;
+		};
 	}
 
 	public static String hex(int i) {
@@ -225,14 +229,6 @@ public class To {
 			return String.format("%.1f", d);
 	}
 
-	public static String string(InputStream in) {
-		try (var is = in; var isr = new InputStreamReader(is, Defaults.charset); var br = new BufferedReader(isr)) {
-			return string(br);
-		} catch (IOException ex) {
-			return fail(ex);
-		}
-	}
-
 	public static String string(Instant instant) {
 		return ymdHms(instant);
 	}
@@ -243,36 +239,6 @@ public class To {
 
 	public static String string(LocalDateTime time) {
 		return ymdHms(time);
-	}
-
-	public static String string(Path path) {
-		var bytes = FileUtil.in(path).readBytes();
-
-		var isBomExist = 3 <= bytes.length //
-				&& bytes[0] == (byte) 0xEF //
-				&& bytes[1] == (byte) 0xBB //
-				&& bytes[2] == (byte) 0xBF;
-
-		if (!isBomExist)
-			return string(bytes);
-		else
-			return new String(bytes, 3, bytes.length - 3, Defaults.charset);
-	}
-
-	public static String string(Reader reader) {
-		try (var reader_ = reader) {
-			var buffer = new char[Defaults.bufferSize];
-			var sb = new StringBuilder();
-
-			while (reader_.ready()) {
-				var n = reader_.read(buffer);
-				sb.append(new String(buffer, 0, n));
-			}
-
-			return sb.toString();
-		} catch (IOException ex) {
-			return fail(ex);
-		}
 	}
 
 	public static String string(Throwable th) {

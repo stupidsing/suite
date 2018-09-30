@@ -192,7 +192,7 @@ public class EditorControl {
 
 			process.waitFor();
 
-			return To.string(process.getInputStream());
+			return FileUtil.read(process.getInputStream());
 		});
 
 		editor.setText(text1);

@@ -2,9 +2,14 @@ package suite.os;
 
 import static java.nio.file.StandardCopyOption.ATOMIC_MOVE;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import static suite.util.Friends.fail;
 import static suite.util.Friends.rethrow;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -13,6 +18,7 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import suite.cfg.Defaults;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.util.ReadStream;
@@ -52,6 +58,14 @@ public class FileUtil {
 		return ManagementFactory.getRuntimeMXBean().getPid();
 	}
 
+	public static ReadStream in(String filename) {
+		return in_(Paths.get(filename));
+	}
+
+	public static ReadStream in(Path path) {
+		return in_(path);
+	}
+
 	public static String jarFilename() {
 		return rethrow(() -> FileUtil.class.getProtectionDomain().getCodeSource().getLocation().toURI().getFragment());
 	}
@@ -65,8 +79,8 @@ public class FileUtil {
 	}
 
 	/**
-	 * Files.createDirectory() might fail with FileAlreadyExistsException in
-	 * MacOSX, contrary to its documentation. This re-implementation would not.
+	 * Files.createDirectory() might fail with FileAlreadyExistsException in MacOSX,
+	 * contrary to its documentation. This re-implementation would not.
 	 */
 	public static void mkdir(Path path) {
 		if (path != null) {
@@ -74,14 +88,6 @@ public class FileUtil {
 			if (!Files.isDirectory(path))
 				rethrow(() -> Files.createDirectories(path));
 		}
-	}
-
-	public static ReadStream in(String filename) {
-		return in_(Paths.get(filename));
-	}
-
-	public static ReadStream in(Path path) {
-		return in_(path);
 	}
 
 	public static WriteStream out(String filename) {
@@ -93,7 +99,45 @@ public class FileUtil {
 	}
 
 	public static String read(String filename) {
-		return To.string(Paths.get(filename));
+		return read(Paths.get(filename));
+	}
+
+	public static String read(InputStream in) {
+		try (var is = in; var isr = new InputStreamReader(is, Defaults.charset); var br = new BufferedReader(isr)) {
+			return read(br);
+		} catch (IOException ex) {
+			return fail(ex);
+		}
+	}
+
+	public static String read(Path path) {
+		var bytes = FileUtil.in(path).readBytes();
+
+		var isBomExist = 3 <= bytes.length //
+				&& bytes[0] == (byte) 0xEF //
+				&& bytes[1] == (byte) 0xBB //
+				&& bytes[2] == (byte) 0xBF;
+
+		if (!isBomExist)
+			return To.string(bytes);
+		else
+			return new String(bytes, 3, bytes.length - 3, Defaults.charset);
+	}
+
+	public static String read(Reader reader) {
+		try (var reader_ = reader) {
+			var buffer = new char[Defaults.bufferSize];
+			var sb = new StringBuilder();
+
+			while (reader_.ready()) {
+				var n = reader_.read(buffer);
+				sb.append(new String(buffer, 0, n));
+			}
+
+			return sb.toString();
+		} catch (IOException ex) {
+			return fail(ex);
+		}
 	}
 
 	private static ReadStream in_(Path path) {

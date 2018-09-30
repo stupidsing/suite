@@ -8,10 +8,10 @@ import suite.asm.StackAssembler;
 import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.lp.search.SewingProverBuilder2;
+import suite.os.FileUtil;
 import suite.parser.IncludePreprocessor;
 import suite.primitive.Bytes;
 import suite.text.Preprocess;
-import suite.util.To;
 
 public class ImperativeCompiler {
 
@@ -25,7 +25,7 @@ public class ImperativeCompiler {
 					+ ", sink .code"));
 
 	public Bytes compile(int org, Path path) {
-		var s0 = To.string(path);
+		var s0 = FileUtil.read(path);
 		var s1 = Preprocess.transform(List.of(new IncludePreprocessor(path.getParent())::preprocess), s0).t0;
 		return compile(org, s1);
 	}

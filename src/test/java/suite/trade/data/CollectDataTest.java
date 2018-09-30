@@ -3,12 +3,11 @@ package suite.trade.data;
 import org.junit.Test;
 
 import suite.http.HttpUtil;
-import suite.os.FileUtil;
 import suite.streamlet.Streamlet;
 import suite.trade.Forex;
 import suite.trade.TimeRange;
-import suite.util.Copy;
 import suite.util.Thread_;
+import suite.util.To;
 
 public class CollectDataTest {
 
@@ -24,12 +23,7 @@ public class CollectDataTest {
 
 		for (var code : equities) {
 			var url = yahoo.tableUrl(code, TimeRange.ages());
-
-			HttpUtil.get(url).inputStream().doRead(is -> {
-				FileUtil.out("/data/storey/markets/" + code + ".csv").doWrite(os -> Copy.stream(is, os));
-				return is;
-			});
-
+			HttpUtil.get(url).out().collect(To.file("/data/storey/markets/" + code + ".csv"));
 			Thread_.sleepQuietly(2000);
 		}
 	}

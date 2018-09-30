@@ -2,14 +2,15 @@ package suite.asm;
 
 import static suite.util.Friends.fail;
 
-import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import suite.ip.ImperativeCompiler;
 import suite.os.FileUtil;
 import suite.primitive.Bytes;
+import suite.streamlet.Read;
 import suite.util.RunUtil;
 import suite.util.RunUtil.RunOption;
+import suite.util.To;
 
 // mvn compile exec:java -Dexec.mainClass=suite.asm.BootMain && qemu-system-x86_64 target/boot.bin
 public class BootMain {
@@ -26,7 +27,7 @@ public class BootMain {
 				var disk1 = disk0.pad(disk0.size() + 511 & 0xFFFFFE00);
 
 				var image = "target/boot.bin";
-				Files.write(Paths.get(image), disk1.toArray());
+				Read.each(disk1).collect(To.file(image));
 
 				System.out.println("cat " + image + " | dd bs=512 count=1 | /opt/udis86-1.7.2/udcli/udcli -16 | less");
 				System.out.println("cat " + image + " | dd bs=512 skip=1 | /opt/udis86-1.7.2/udcli/udcli -32 | less");

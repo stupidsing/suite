@@ -12,7 +12,6 @@ import suite.os.FileUtil;
 import suite.parser.Wildcard;
 import suite.streamlet.Read;
 import suite.util.RunUtil;
-import suite.util.To;
 
 // mAIN=suite.node.parser.RecursiveFileFactorizerMain ./run.sh
 public class RecursiveFileFactorizerMain {
@@ -29,7 +28,7 @@ public class RecursiveFileFactorizerMain {
 						var recursiveFactorizer = new RecursiveFactorizer(TermOp.values());
 
 						var bs = fts //
-								.fold(To.string(path), (s_, ft) -> recursiveFactorizer.rewrite(ft.t0, ft.t1, s_)) //
+								.fold(FileUtil.read(path), (s_, ft) -> recursiveFactorizer.rewrite(ft.t0, ft.t1, s_)) //
 								.getBytes(Defaults.charset);
 
 						rethrow(() -> Files.write(path, bs));

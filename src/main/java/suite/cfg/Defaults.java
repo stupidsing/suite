@@ -18,9 +18,9 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Reference;
 import suite.node.io.Formatter;
+import suite.os.FileUtil;
 import suite.streamlet.FunUtil.Source;
 import suite.util.Memoize;
-import suite.util.To;
 
 public class Defaults {
 
@@ -63,7 +63,7 @@ public class Defaults {
 
 	private static Source<Prover> memoizeSecrets = Memoize.source(() -> {
 		var rs = Suite.newRuleSet();
-		var text = To.string(HomeDir.resolve("private/secrets.sl"));
+		var text = FileUtil.read(HomeDir.resolve("private/secrets.sl"));
 		rs.importFrom(Suite.parse(text));
 		return new Prover(rs);
 	});

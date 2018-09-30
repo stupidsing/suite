@@ -43,7 +43,7 @@ public interface RuleSet {
 	}
 
 	public default boolean importUrl(URL url) throws IOException {
-		return importFrom(Suite.parse(To.string(url.openStream())));
+		return importFrom(Suite.parse(FileUtil.read(url.openStream())));
 	}
 
 	public default boolean importFrom(Node node) {
