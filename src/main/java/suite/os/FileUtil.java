@@ -9,7 +9,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.lang.management.ManagementFactory;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -104,7 +103,15 @@ public class FileUtil {
 
 	public static String read(InputStream in) {
 		try (var is = in; var isr = new InputStreamReader(is, Defaults.charset); var br = new BufferedReader(isr)) {
-			return read(br);
+			var buffer = new char[Defaults.bufferSize];
+			var sb = new StringBuilder();
+
+			while (br.ready()) {
+				var n = br.read(buffer);
+				sb.append(new String(buffer, 0, n));
+			}
+
+			return sb.toString();
 		} catch (IOException ex) {
 			return fail(ex);
 		}
@@ -122,22 +129,6 @@ public class FileUtil {
 			return To.string(bytes);
 		else
 			return new String(bytes, 3, bytes.length - 3, Defaults.charset);
-	}
-
-	public static String read(Reader reader) {
-		try (var reader_ = reader) {
-			var buffer = new char[Defaults.bufferSize];
-			var sb = new StringBuilder();
-
-			while (reader_.ready()) {
-				var n = reader_.read(buffer);
-				sb.append(new String(buffer, 0, n));
-			}
-
-			return sb.toString();
-		} catch (IOException ex) {
-			return fail(ex);
-		}
 	}
 
 	private static ReadStream in_(Path path) {

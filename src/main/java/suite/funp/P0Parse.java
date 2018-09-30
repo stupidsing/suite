@@ -307,7 +307,7 @@ public class P0Parse {
 		}
 
 		private Funp consult(String url) {
-			Fun<ReadStream, Funp> r0 = is -> is.doReader(isr -> FunpPredefine.of(parse(Suite.parse(FileUtil.read(isr)))));
+			Fun<ReadStream, Funp> r0 = is -> is.doRead(is_ -> FunpPredefine.of(parse(Suite.parse(FileUtil.read(is_)))));
 
 			Fun<SourceEx<ReadStream, IOException>, Funp> r1 = source -> rethrow(() -> source.source()).doRead(r0::apply);
 
