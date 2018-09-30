@@ -21,24 +21,30 @@ let element_li = children => element('li', {}, children);
 let element_p = children => element('p', {}, children);
 
 let rd_text = (vm0, vm1) => (dom, domc) => {
-	if (domc == null)
+	if (vm0 == null)
 		dom.appendChild(domc = element_p([document.createTextNode(vm1)]));
+	else if (vm1 == null)
+		dom.removeChild(domc);
 	else if (vm0 != vm1)
-		dom.replaceChild(element_p([document.createTextNode(vm1)]), domc);
+		domc.replaceChild(document.createTextNode(vm1), domc.childNodes[0]);
 };
 
 let rd_listItem = (vm0, vm1) => (dom, domc) => {
 	if (vm0 == null)
 		dom.appendChild(domc = element_li([document.createTextNode(vm1)]));
+	else if (vm1 == null)
+		dom.removeChild(domc);
 	else if (vm0 != vm1)
-		dom.replaceChild(element_li([document.createTextNode(vm1)]), domc);
+		domc.replaceChild(document.createTextNode(vm1), domc.childNodes[0]);
 };
 
 let rd_fruits = (vm0, vm1) => (dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = document.createElement('ul'));
 		for (let i = 0; i < vm1.length; i++) domc.appendChild(rd_listItem(null, vm1[i])(domc, null));
-	} else if (vm0 != vm1) {
+	} else if (vm1 == null)
+		dom.removeChild(domc);
+	else if (vm0 != vm1) {
 		let i = 0;
 		let children = domc.childNodes;
 		let imin = Math.min(vm0.length, vm1.length);
@@ -46,29 +52,31 @@ let rd_fruits = (vm0, vm1) => (dom, domc) => {
 		for (; i < vm1.length; i++) rd_listItem(null, vm1[i])(domc, null);
 		for (; i < children.length; i++) domc.removeChild(children[i]);
 	}
-	return dom;
 };
 
-let rd_linearList = (vm0, vm1) => dom => {
+let rd_linearList = (vm0, vm1) => (dom, domc) => {
 	if (vm0 == null) {
-		dom = document.createElement('ul');
-		for (let i = 0; i < vm1.length; i++) dom.appendChild(listItem(null, vm1[i])(null));
-	} else if (vm0 != vm1) {
+		dom.appendChild(domc = document.createElement('ul'));
+		for (let i = 0; i < vm1.length; i++) domc.appendChild(rd_listItem(null, vm1[i])(domc, null));
+	} else if (vm1 == null)
+		dom.removeChild(domc);
+	else if (vm0 != vm1) {
 		let i = 0;
-		let children = dom.childNodes;
+		let children = domc.childNodes;
 		let imin = Math.min(vm0.length, vm1.length);
-		for (; i < imin; i++) dom.replaceChild(rd_listItem(vm0[i], vm1[i])(children[i]), children[i]);
-		for (; i < vm1.length; i++) dom.appendChild(rd_listItem(null, vm1[i])(null));
-		for (; i < children.length; i++) dom.removeChild(children[i]);
+		for (; i < imin; i++) rd_listItem(vm0[i], vm1[i])(domc, children[i]);
+		for (; i < vm1.length; i++) rd_listItem(null, vm1[i])(domc, null);
+		for (; i < children.length; i++) domc.removeChild(children[i]);
 	}
-	return dom;
 };
 
 let rd_vm = (vm0, vm1) => dom => {
 	if (vm0 == null) {
 		rd_text(null, vm1.message)(dom, null);
 		rd_fruits(null, vm1.fruits)(dom, null);
-	} else if (vm0 != vm1) {
+	} else if (vm1 == null)
+		dom.removeChild(domc);
+	else if (vm0 != vm1) {
 		let [dom0, dom1] = dom.childNodes;
 		rd_text(vm0.message, vm1.message)(dom, dom0);
 		rd_fruits(vm0.fruits, vm1.fruits)(dom, dom1);
