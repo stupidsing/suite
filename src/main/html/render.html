@@ -42,10 +42,11 @@ let rd_fruits = (vm0, vm1) => dom => {
 	 	for (let i = 0; i < vm1.length; i++) dom.appendChild(listItem(null, vm1[i])(null));
 	 } else if (vm0 != vm1) {
 	 	let i = 0;
-	 	var imin = Math.min(vm0.length, vm1.length);
-	 	for (; i < imin; i++) dom.replaceChild(rd_listItem(vm0[i], vm1[i])(dom.childNodes[i]), dom.childNodes[i]);
+	 	let children = dom.childNodes;
+	 	let imin = Math.min(vm0.length, vm1.length);
+	 	for (; i < imin; i++) dom.replaceChild(rd_listItem(vm0[i], vm1[i])(children[i]), children[i]);
 	 	for (; i < vm1.length; i++) dom.appendChild(rd_listItem(null, vm1[i])(null));
-	 	for (; i < dom.childNodes.length; i++) dom.removeChild(dom.childNodes[dom.childNodes.length - 1]);
+	 	for (; i < children.length; i++) dom.removeChild(children[children.length - 1]);
 	 }
 	 return dom;
 };
