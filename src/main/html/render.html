@@ -1,0 +1,37 @@
+<meta charset='utf-8'>
+<html>
+	<body>
+		<div id='body'></div>
+	</body>
+
+	<script src='frp.js'></script>
+	<script src='fun.js'></script>
+
+	<script type='text/javascript'>
+'use strict';
+
+let element = (tag, attrs, children) => {
+	let el = document.createElement(tag);
+	for (let [key, value] of Object.entries(attrs)) el.setAttribute(key, value);
+	for (let child of children) el.appendChild(child);
+	return el;
+};
+
+let updateDom = (parent, el1) => {
+	let children = parent.children;
+	if (children.length == 0)
+		body.appendChild(el1);
+	else {
+		let el0 = children[0];
+		child0.replaceChild(el1, el0);
+	}
+};
+
+let render = vm => element('p', {}, [document.createTextNode(vm.message)]);
+
+let body = document.getElementById('body');
+
+updateDom(body, render({ message: 'hello world', }));
+	</script>
+
+</html>
