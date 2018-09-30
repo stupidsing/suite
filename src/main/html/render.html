@@ -46,7 +46,7 @@ let rd_fruits = (vm0, vm1) => dom => {
 	 	let imin = Math.min(vm0.length, vm1.length);
 	 	for (; i < imin; i++) dom.replaceChild(rd_listItem(vm0[i], vm1[i])(children[i]), children[i]);
 	 	for (; i < vm1.length; i++) dom.appendChild(rd_listItem(null, vm1[i])(null));
-	 	for (; i < children.length; i++) dom.removeChild(children[children.length - 1]);
+	 	for (; i < children.length; i++) dom.removeChild(children[i]);
 	 }
 	 return dom;
 };
