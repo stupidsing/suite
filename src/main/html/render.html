@@ -17,38 +17,62 @@ let element = (tag, attrs, children) => {
 	return el;
 };
 
+let element_li = children => element('li', {}, children);
 let element_p = children => element('p', {}, children);
 
-let updateOnlyChild = (parent, el1) => {
-	let children = parent.childNodes;
-	if (children.length == 0)
-		parent.appendChild(el1);
-	else
-		parent.replaceChild(el1, children[0]);
+let rd_text = (vm0, vm1) => dom => {
+	 if (vm0 == null)
+	 	dom = element_p([document.createTextNode(vm1)]);
+	 else if (vm0 != vm1)
+	 	dom.replaceChild(document.createTextNode(vm1), dom.childNodes[0]);
+	 return dom;
 };
 
-let rd_text = (vm0, vm1) => {
-	return element_p([document.createTextNode(vm1)]);
+let rd_listItem = (vm0, vm1) => dom => {
+	 if (vm0 == null)
+	 	dom = element_li([document.createTextNode(vm1)]);
+	 else if (vm0 != vm1)
+	 	dom.replaceChild(document.createTextNode(vm1), dom.childNodes[0]);
+	 return dom;
 };
 
-let rd = (vm0, vm1) => dom => {
-	if (vm0 == null)
-		dom.appendChild(rd_text(null, vm1.message));
-	else if (vm0 != vm1)
-		updateOnlyChild(dom, rd_text(vm0.message, vm1.message));
+let rd_fruits = (vm0, vm1) => dom => {
+	 if (vm0 == null) {
+	 	dom = document.createElement('ul');
+	 	for (let i = 0; i < vm1.length; i++) dom.appendChild(listItem(null, vm1[i])(null));
+	 } else if (vm0 != vm1) {
+	 	let i = 0;
+	 	var imin = Math.min(vm0.length, vm1.length);
+	 	for (; i < imin; i++) dom.replaceChild(rd_listItem(vm0[i], vm1[i])(dom.childNodes[i]), dom.childNodes[i]);
+	 	for (; i < vm1.length; i++) dom.appendChild(rd_listItem(null, vm1[i])(null));
+	 	for (; i < dom.childNodes.length; i++) dom.removeChild(dom.childNodes[dom.childNodes.length - 1]);
+	 }
+	 return dom;
+};
+
+let rd_vm = (vm0, vm1) => dom => {
+	if (vm0 == null) {
+		dom.appendChild(rd_text(null, vm1.message)(null));
+		dom.appendChild(rd_fruits(null, vm1.fruits)(null));
+	} else if (vm0 != vm1) {
+		let [dom0, dom1] = dom.childNodes;
+		dom.replaceChild(rd_text(vm0.message, vm1.message)(dom0), dom0);
+		dom.replaceChild(rd_fruits(vm0.fruits, vm1.fruits)(dom1), dom1);
+	}
+	return dom;
 };
 
 let pvm = null;
 
 let renderAgain = vm => {
-	rd(pvm, vm)(document.getElementById('target'));
+	rd_vm(pvm, vm)(document.getElementById('target'));
 	pvm = vm;
 };
 
-renderAgain({ message: 'hello world0', });
-renderAgain({ message: 'hello world1', });
-renderAgain({ message: 'hello world2', });
-renderAgain({ message: 'hello world', });
+renderAgain({ message: 'hello world0', fruits: [], });
+renderAgain({ message: 'hello world1', fruits: ['apple',], });
+renderAgain({ message: 'hello world2', fruits: ['apple', 'orange',], });
+renderAgain({ message: 'hello world~', fruits: ['orange',], });
 	</script>
 
 </html>
