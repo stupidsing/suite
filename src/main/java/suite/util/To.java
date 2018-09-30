@@ -61,10 +61,6 @@ public class To {
 		return Bytes.of(s.getBytes(Defaults.charset));
 	}
 
-	public static Bytes bytes(InputStream is) {
-		return outlet(is).collect(Bytes::of);
-	}
-
 	public static Bytes bytes(IoSink<SerOutput> ioSink) {
 		var baos = new ByteArrayOutputStream();
 		try (var baos_ = baos) {

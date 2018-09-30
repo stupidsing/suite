@@ -3,10 +3,11 @@ package suite.sample;
 import java.util.zip.ZipFile;
 
 import suite.os.FileUtil;
+import suite.primitive.Bytes;
+import suite.streamlet.Read;
 import suite.text.TextUtil;
 import suite.util.RunUtil;
 import suite.util.Set_;
-import suite.util.To;
 
 /**
  * Compare contents of two zip files.
@@ -32,8 +33,8 @@ public class CompareZipMain {
 				var b = e0 != null && e1 != null;
 
 				if (b) {
-					var bytes0 = To.bytes(zf0.getInputStream(e0));
-					var bytes1 = To.bytes(zf1.getInputStream(e1));
+					var bytes0 = Read.bytes(zf0.getInputStream(e0)).collect(Bytes::of);
+					var bytes1 = Read.bytes(zf1.getInputStream(e1)).collect(Bytes::of);
 					b = !textUtil.isDiff(textUtil.diff(bytes0, bytes1));
 					if (!b)
 						System.out.println(name + " differs");
