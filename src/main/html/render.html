@@ -1,7 +1,7 @@
 <meta charset='utf-8'>
 <html>
 	<body>
-		<div id='body'></div>
+		<div id='target'></div>
 	</body>
 
 	<script src='frp.js'></script>
@@ -17,21 +17,33 @@ let element = (tag, attrs, children) => {
 	return el;
 };
 
-let updateDom = (parent, el1) => {
+let element_p = children => element('p', {}, children);
+
+let updateOnlyChild = (parent, el1) => {
 	let children = parent.children;
 	if (children.length == 0)
-		body.appendChild(el1);
+		parent.appendChild(el1);
 	else {
 		let el0 = children[0];
-		child0.replaceChild(el1, el0);
+		parent.replaceChild(el1, el0);
 	}
 };
 
-let render = vm => element('p', {}, [document.createTextNode(vm.message)]);
+let pwm = new WeakMap();
 
-let body = document.getElementById('body');
+let rd = (vm0, vm1) => dom => {
+	if (vm0 != vm1) updateOnlyChild(dom, element_p([document.createTextNode(vm1.message)]));
+};
 
-updateDom(body, render({ message: 'hello world', }));
+let body = document.getElementById('target');
+
+let pvm = null;
+let renderAgain = vm => { rd(pvm, vm)(body); pvm = vm; };
+
+renderAgain({ message: 'hello world0', });
+renderAgain({ message: 'hello world1', });
+renderAgain({ message: 'hello world2', });
+renderAgain({ message: 'hello world', });
 	</script>
 
 </html>
