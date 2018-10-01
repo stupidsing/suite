@@ -54,26 +54,26 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 		for (let i0 = 0; i0 < vm0.length; i0++) m.set(keyf(vm0[i0]), i0);
 
 		let isSameOrder = true;
-		let children0 = [];
+		let domc0 = domc;
+		let dom_i1 = [];
 		let indices0 = [];
 
 		for (let i1 = 0; i1 < vm1.length; i1++) {
 			var i0 = m.get(keyf(vm1[i1]));
 			isSameOrder &= i0 == i1;
-			children0.push(domc.childNodes[i0]);
+			dom_i1.push(domc.childNodes[i0]);
 			indices0.push(i0);
 		}
 
 		if (isSameOrder)
 			for (let i = 0; i < vm1.length; i++)
-				rdf(vm0[i], vm1[i], domc, children0[i]);
+				rdf(vm0[i], vm1[i], domc, dom_i1[i]);
 		else {
-			let domc0 = domc;
 			domc = domc0.cloneNode(false);
 			for (let i1 = 0; i1 < vm1.length; i1++) {
 				let i0 = indices0[i1];
 				if (i0 != null) {
-					let child0 = children0[i1];
+					let child0 = dom_i1[i1];
 					domc.appendChild(child0);
 					rdf(vm0[i0], vm1[i1], domc, child0);
 				} else
