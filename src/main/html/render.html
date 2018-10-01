@@ -96,7 +96,7 @@ let rd = {
 			if (vm1 != null) dom.appendChild(elementf(vm1), domc);
 		}
 	},
-	prop: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
+	scope: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
 		vm0 != null ? vm0[key] : null,
 		vm1 != null ? vm1[key] : null,
 		dom, domc),
@@ -115,8 +115,8 @@ let renderAgain = (renderer, vm) => {
 let textf = rd.c(vm => document.createTextNode(vm));
 
 let rd_vm = rd.tag('span', [
-	rd.prop('message', rd.tag('p', [textf])),
-	rd.prop('fruits',
+	rd.scope('message', rd.tag('p', [textf])),
+	rd.scope('fruits',
 		rd.tag_for('ul', vm => vm, rd.tag('li', [textf]))),
 ]);
 
