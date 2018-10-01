@@ -87,7 +87,6 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 			for (let i0 = 0; i0 < vm0.length; i0++)
 				if (!map1.has(keyf(vm0[i0])))
 					rdf(vm0[i0], null, domc0, domc0.childNodes[i0]);
-
 		}
 	}
 	return domc;
