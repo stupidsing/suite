@@ -10,38 +10,29 @@
 	<script type='text/javascript'>
 'use strict';
 
-let element = (tag, attrs, children) => {
+let element = (tag, attrs) => children => {
 	let el = document.createElement(tag);
 	for (let [key, value] of Object.entries(attrs)) el.setAttribute(key, value);
 	for (let child of children) el.appendChild(child);
 	return el;
 };
 
-let element_li = children => element('li', {}, children);
-let element_p = children => element('p', {}, children);
+let element_li = element('li', {});
+let element_p =  element('p', {});
 
-let rd_text = (vm0, vm1, dom, domc) => {
+let rd_element = childf => elementf => (vm0, vm1, dom, domc) => {
 	if (vm0 == null)
-		dom.appendChild(domc = element_p([document.createTextNode(vm1)]));
+		dom.appendChild(domc = elementf([childf(vm1)]));
 	else if (vm1 == null)
 		dom.removeChild(domc);
 	else if (vm0 != vm1)
-		domc.replaceChild(document.createTextNode(vm1), domc.childNodes[0]);
+		domc.replaceChild(childf(vm1), domc.childNodes[0]);
 };
 
-let rd_listItem = (vm0, vm1, dom, domc) => {
-	if (vm0 == null)
-		dom.appendChild(domc = element_li([document.createTextNode(vm1)]));
-	else if (vm1 == null)
-		dom.removeChild(domc);
-	else if (vm0 != vm1)
-		domc.replaceChild(document.createTextNode(vm1), domc.childNodes[0]);
-};
-
-let rd_dict = keyf => (vm0, vm1, dom, domc) => {
+let rd_dict = (keyf, elementf, rdf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
-		dom.appendChild(domc = document.createElement('ul'));
-		for (let i = 0; i < vm1.length; i++) rd_listItem(null, vm1[i], domc, null);
+		dom.appendChild(domc = elementf());
+		for (let i = 0; i < vm1.length; i++) rdf(null, vm1[i], domc, null);
 	} else if (vm1 == null)
 		dom.removeChild(domc);
 	else if (vm0 != vm1) {
@@ -61,23 +52,21 @@ let rd_dict = keyf => (vm0, vm1, dom, domc) => {
 
 		if (isSameOrder)
 			for (let i = 0; i < vm1.length; i++)
-				rd_listItem(vm0[i], vm1[i], domc, children0[i]);
+				rdf(vm0[i], vm1[i], domc, children0[i]);
 		else {
 			domc.innerHTML = '';
 			for (let i = 0; i < vm1.length; i++) {
 				let i0 = indices0[i];
 				if (i0 != null) {
 					let child0 = children0[i];
-					rd_listItem(vm0[i0], vm1[i], domc, child0);
+					rdf(vm0[i0], vm1[i], domc, child0);
 					domc.appendChild(child0);
 				} else
-					rd_listItem(null, vm1[i], domc, null);
+					rdf(null, vm1[i], domc, null);
 			}
 		}
 	}
 };
-
-let rd_fruits = rd_dict(vm => vm);
 
 let rd_vector = (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
@@ -94,6 +83,11 @@ let rd_vector = (vm0, vm1, dom, domc) => {
 		for (; i < children.length; i++) domc.removeChild(children[i]);
 	}
 };
+
+let rd_elementText = rd_element(t => document.createTextNode(t));
+let rd_text = rd_elementText(element_p);
+let rd_listItem = rd_elementText(element_li);
+let rd_fruits = rd_dict(vm => vm, () => document.createElement('ul'), rd_listItem);
 
 let rd_vm = (vm0, vm1, dom) => {
 	if (vm0 == null) {
