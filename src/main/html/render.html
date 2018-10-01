@@ -73,22 +73,6 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 	}
 };
 
-let rd_vector = (vm0, vm1, dom, domc) => {
-	if (vm0 == null) {
-		dom.appendChild(domc = newElement('ul'));
-		for (let i = 0; i < vm1.length; i++) rd_listItem(null, vm1[i], domc, null);
-	} else if (vm1 == null)
-		dom.removeChild(domc);
-	else if (vm0 != vm1) {
-		let i = 0;
-		let children = domc.childNodes;
-		let imin = Math.min(vm0.length, vm1.length);
-		for (; i < imin; i++) rd_listItem(vm0[i], vm1[i], domc, children[i]);
-		for (; i < vm1.length; i++) rd_listItem(null, vm1[i], domc, null);
-		for (; i < children.length; i++) domc.removeChild(children[i]);
-	}
-};
-
 let rd = {
 	c: elementf => (vm0, vm1, dom, domc) => {
 		if (vm0 != vm1) {
