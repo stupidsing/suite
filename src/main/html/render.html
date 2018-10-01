@@ -32,12 +32,12 @@ let rd_element = (elementf, childrenf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
 		for (let childf of childrenf)
-			domc.appendChild(childf(vm1), null);
+			childf(null, vm1, domc, null);
 	} else if (vm1 == null)
 		dom.removeChild(domc);
 	else if (vm0 != vm1)
 		for (let i = 0; i < childrenf.length; i++)
-			domc.replaceChild(childrenf[i](vm1), domc.childNodes[i]);
+			childrenf[i](vm0, vm1, domc, domc.childNodes[i]);
 };
 
 let rd_dict = (keyf, elementf, rdf) => (vm0, vm1, dom, domc) => {
@@ -96,8 +96,9 @@ let rd_vector = (vm0, vm1, dom, domc) => {
 	}
 };
 
-let rd_listItem = rd_element(() => element('li'), [t => document.createTextNode(t)]);
-let rd_text = rd_element(() => element('p'), [t => document.createTextNode(t)]);
+let rd_textNode = rd_c(vm => document.createTextNode(vm));
+let rd_listItem = rd_element(() => element('li'), [rd_textNode]);
+let rd_text = rd_element(() => element('p'), [rd_textNode]);
 let rd_fruits = rd_dict(vm => vm, () => document.createElement('ul'), rd_listItem);
 
 let rd_vm = (vm0, vm1, dom) => {
