@@ -103,36 +103,29 @@ let rd_vector = (vm0, vm1, dom, domc) => {
 	}
 };
 
-let rd_textNode = rd_c(vm => document.createTextNode(vm));
-let rd_listItem = rd_element(() => newElement('li'), [rd_textNode]);
-let rd_text = rd_element(() => newElement('p'), [rd_textNode]);
-let rd_fruits = rd_for(vm => vm, () => newElement('ul'), rd_listItem);
-
-let rd_vm = (vm0, vm1, dom) => {
-	if (vm0 == null) {
-		rd_prop('message', rd_text)(null, vm1, dom, null);
-		rd_prop('fruits', rd_fruits)(null, vm1, dom, null);
-	} else if (vm1 == null)
-		dom.removeChild(domc);
-	else if (vm0 != vm1) {
-		let [dom0, dom1] = dom.childNodes;
-		rd_prop('message', rd_text)(vm0, vm1, dom, dom0);
-		rd_prop('fruits', rd_fruits)(vm0, vm1, dom, dom1);
-	}
-	return dom;
-};
-
 let pvm = null;
 
-let renderAgain = vm => {
-	rd_vm(pvm, vm, document.getElementById('target'));
+let renderAgain = (renderer, vm) => {
+	let target = document.getElementById('target');
+	renderer(pvm, vm, target, target.firstChild);
 	pvm = vm;
 };
 
-renderAgain({ message: 'hello world0', fruits: [], });
-renderAgain({ message: 'hello world1', fruits: ['apple',], });
-renderAgain({ message: 'hello world2', fruits: ['apple', 'orange',], });
-renderAgain({ message: 'hello world~', fruits: ['orange',], });
+let elementf = tag => () => newElement(tag);
+let rd_textNode = rd_c(vm => document.createTextNode(vm));
+let rd_listItem = rd_element(elementf('li'), [rd_textNode]);
+let rd_text = rd_element(elementf('p'), [rd_textNode]);
+let rd_fruits = rd_for(vm => vm, elementf('ul'), rd_listItem);
+
+let rd_vm = rd_element(() => newElement('span'), [
+	rd_prop('message', rd_text),
+	rd_prop('fruits', rd_fruits),
+]);
+
+renderAgain(rd_vm, { message: 'hello world0', fruits: [], });
+renderAgain(rd_vm, { message: 'hello world1', fruits: ['apple',], });
+renderAgain(rd_vm, { message: 'hello world2', fruits: ['apple', 'orange',], });
+renderAgain(rd_vm, { message: 'hello world~', fruits: ['orange',], });
 	</script>
 
 </html>
