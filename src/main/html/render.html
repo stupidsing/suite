@@ -50,8 +50,8 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 	} else if (vm1 == null)
 		dom.removeChild(domc);
 	else if (vm0 != vm1) {
-		let m = new Map();
-		for (let i0 = 0; i0 < vm0.length; i0++) m.set(keyf(vm0[i0]), i0);
+		let map0 = new Map();
+		for (let i0 = 0; i0 < vm0.length; i0++) map0.set(keyf(vm0[i0]), i0);
 
 		let isSameOrder = true;
 		let domc0 = domc;
@@ -59,7 +59,7 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 		let indices0 = [];
 
 		for (let i1 = 0; i1 < vm1.length; i1++) {
-			var i0 = m.get(keyf(vm1[i1]));
+			var i0 = map0.get(keyf(vm1[i1]));
 			isSameOrder &= i0 == i1;
 			dom_i1.push(domc.childNodes[i0]);
 			indices0.push(i0);
