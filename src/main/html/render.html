@@ -21,20 +21,6 @@ let newElement = (tag, attrs, children) => {
 	return el;
 };
 
-let rd_c = elementf => (vm0, vm1, dom, domc) => {
-	if (vm0 != vm1) {
-		if (vm0 != null) dom.removeChild(domc);
-		if (vm1 != null) dom.appendChild(elementf(vm1), domc);
-	}
-};
-
-let rd_prop = (key, rdf) => (vm0, vm1, dom, domc) => {
-	rdf(
-		vm0 != null ? vm0[key] : null,
-		vm1 != null ? vm1[key] : null,
-		dom, domc);
-};
-
 let rd_element = (elementf, childrenf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
@@ -47,7 +33,7 @@ let rd_element = (elementf, childrenf) => (vm0, vm1, dom, domc) => {
 			childrenf[i](vm0, vm1, domc, domc.childNodes[i]);
 };
 
-let rd_for = (keyf, elementf, rdf) => (vm0, vm1, dom, domc) => {
+let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
 		for (let i = 0; i < vm1.length; i++) rdf(null, vm1[i], domc, null);
@@ -103,8 +89,20 @@ let rd_vector = (vm0, vm1, dom, domc) => {
 	}
 };
 
-let rd_element_tag = (tag, childrenf) => rd_element(() => newElement(tag), childrenf);
-let rd_for_tag = (keyf, tag, rdf) => rd_for(keyf, () => newElement(tag), rdf);
+let rd = {
+	c: elementf => (vm0, vm1, dom, domc) => {
+		if (vm0 != vm1) {
+			if (vm0 != null) dom.removeChild(domc);
+			if (vm1 != null) dom.appendChild(elementf(vm1), domc);
+		}
+	},
+	prop: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
+		vm0 != null ? vm0[key] : null,
+		vm1 != null ? vm1[key] : null,
+		dom, domc),
+	tag_element: (tag, childrenf) => rd_element(() => newElement(tag), childrenf),
+	tag_for: (tag, keyf, rdf) => rd_for(() => newElement(tag), keyf, rdf),
+};
 
 let pvm = null;
 
@@ -114,12 +112,12 @@ let renderAgain = (renderer, vm) => {
 	pvm = vm;
 };
 
-let rd_textNode = rd_c(vm => document.createTextNode(vm));
-let rd_fruit = rd_element_tag('li', [rd_textNode]);
+let textf = rd.c(vm => document.createTextNode(vm));
 
-let rd_vm = rd_element_tag('span', [
-	rd_prop('message', rd_element_tag('p', [rd_textNode])),
-	rd_prop('fruits', rd_for_tag(vm => vm, 'ul', rd_fruit)),
+let rd_vm = rd.tag_element('span', [
+	rd.prop('message', rd.tag_element('p', [textf])),
+	rd.prop('fruits',
+		rd.tag_for('ul', vm => vm, rd.tag_element('li', [textf]))),
 ]);
 
 renderAgain(rd_vm, { message: 'hello world0', fruits: [], });
