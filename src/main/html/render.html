@@ -120,10 +120,10 @@ let rd_vm = rd.tag('span', [
 		rd.tag_for('ul', vm => vm, rd.tag('li', [textf]))),
 ]);
 
-renderAgain(rd_vm, { message: 'hello world0', fruits: [], });
-renderAgain(rd_vm, { message: 'hello world1', fruits: ['apple',], });
-renderAgain(rd_vm, { message: 'hello world2', fruits: ['apple', 'orange',], });
-renderAgain(rd_vm, { message: 'hello world~', fruits: ['orange',], });
+renderAgain(rd_vm, { message: 'hello world0', fruits: ['banana',], });
+renderAgain(rd_vm, { message: 'hello world1', fruits: ['apple', 'banana',], });
+renderAgain(rd_vm, { message: 'hello world2', fruits: ['apple', 'orange', 'banana',], });
+renderAgain(rd_vm, { message: 'hello world~', fruits: ['banana', 'orange',], });
 	</script>
 
 </html>
