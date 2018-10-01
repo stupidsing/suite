@@ -40,6 +40,7 @@ let rd_element = (elementf, childrenf) => (vm0, vm1, dom, domc) => {
 	else if (vm0 != vm1)
 		for (let i = 0; i < childrenf.length; i++)
 			childrenf[i](vm0, vm1, domc, domc.childNodes[i]);
+	return domc;
 };
 
 let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
@@ -67,27 +68,39 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 			for (let i = 0; i < vm1.length; i++)
 				rdf(vm0[i], vm1[i], domc, children0[i]);
 		else {
-			let domc1 = domc.cloneNode(false);
+			let domc0 = domc;
+			domc = domc.cloneNode(false);
 			for (let i = 0; i < vm1.length; i++) {
 				let i0 = indices0[i];
 				if (i0 != null) {
 					let child0 = children0[i];
-					domc1.appendChild(child0);
-					rdf(vm0[i0], vm1[i], domc1, child0);
+					domc.appendChild(child0);
+					rdf(vm0[i0], vm1[i], domc, child0);
 				} else
-					rdf(null, vm1[i], domc1, null);
+					rdf(null, vm1[i], domc, null);
 			}
-			dom.replaceChild(domc1, domc);
+			dom.replaceChild(domc, domc0);
 		}
 	}
+	return domc;
 };
 
 let rd = {
+	attr: (rdf, name, attrf) => (vm0, vm1, dom, domc) => {
+		if (vm0 != vm1) {
+			domc = rdf(vm0, vm1, dom, domc);
+			if (vm1 == null)
+				domc.removeAttribute(name);
+			domc.setAttribute(name, attrf(vm1));
+		}
+		return domc;
+	},
 	c: elementf => (vm0, vm1, dom, domc) => {
 		if (vm0 != vm1) {
 			if (vm0 != null) dom.removeChild(domc);
 			if (vm1 != null) dom.appendChild(elementf(vm1), domc);
 		}
+		return domc;
 	},
 	scope: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
 		vm0 != null ? vm0[key] : null,
