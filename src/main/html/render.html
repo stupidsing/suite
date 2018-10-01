@@ -100,7 +100,7 @@ let rd = {
 		vm0 != null ? vm0[key] : null,
 		vm1 != null ? vm1[key] : null,
 		dom, domc),
-	tag_element: (tag, childrenf) => rd_element(() => newElement(tag), childrenf),
+	tag: (tag, childrenf) => rd_element(() => newElement(tag), childrenf),
 	tag_for: (tag, keyf, rdf) => rd_for(() => newElement(tag), keyf, rdf),
 };
 
@@ -114,10 +114,10 @@ let renderAgain = (renderer, vm) => {
 
 let textf = rd.c(vm => document.createTextNode(vm));
 
-let rd_vm = rd.tag_element('span', [
-	rd.prop('message', rd.tag_element('p', [textf])),
+let rd_vm = rd.tag('span', [
+	rd.prop('message', rd.tag('p', [textf])),
 	rd.prop('fruits',
-		rd.tag_for('ul', vm => vm, rd.tag_element('li', [textf]))),
+		rd.tag_for('ul', vm => vm, rd.tag('li', [textf]))),
 ]);
 
 renderAgain(rd_vm, { message: 'hello world0', fruits: [], });
