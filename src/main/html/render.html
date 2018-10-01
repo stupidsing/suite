@@ -69,7 +69,7 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 				rdf(vm0[i], vm1[i], domc, children0[i]);
 		else {
 			let domc0 = domc;
-			domc = domc.cloneNode(false);
+			domc = domc0.cloneNode(false);
 			for (let i1 = 0; i1 < vm1.length; i1++) {
 				let i0 = indices0[i1];
 				if (i0 != null) {
