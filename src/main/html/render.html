@@ -33,10 +33,12 @@ let newElement = (tag, attrs, children) => {
 let rd_element = (elementf, childrenf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
-		for (let childf of childrenf) childf(null, vm1, domc, null);
+		for (let i = 0; i < childrenf.length; i++)
+			childrenf[i](null, vm1, domc, null);
 	} else if (vm1 == null) {
 		let i = 0;
-		for (let childf of childrenf) childf(vm0, null, domc, dom.childNodes[i++]);
+		for (let i = 0; i < childrenf.length; i++)
+			childrenf[i](vm0, null, domc, dom.childNodes[i]);
 		dom.removeChild(domc);
 	} else if (vm0 != vm1)
 		for (let i = 0; i < childrenf.length; i++)
