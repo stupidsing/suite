@@ -54,16 +54,17 @@ let rd_dict = (keyf, elementf, rdf) => (vm0, vm1, dom, domc) => {
 			for (let i = 0; i < vm1.length; i++)
 				rdf(vm0[i], vm1[i], domc, children0[i]);
 		else {
-			domc.innerHTML = '';
+			let domc1 = domc.cloneNode(false);
 			for (let i = 0; i < vm1.length; i++) {
 				let i0 = indices0[i];
 				if (i0 != null) {
 					let child0 = children0[i];
-					rdf(vm0[i0], vm1[i], domc, child0);
-					domc.appendChild(child0);
+					domc1.appendChild(child0);
+					rdf(vm0[i0], vm1[i], domc1, child0);
 				} else
-					rdf(null, vm1[i], domc, null);
+					rdf(null, vm1[i], domc1, null);
 			}
+			dom.replaceChild(domc1, domc);
 		}
 	}
 };
@@ -87,7 +88,7 @@ let rd_vector = (vm0, vm1, dom, domc) => {
 let rd_elementText = rd_element(t => document.createTextNode(t));
 let rd_text = rd_elementText(element_p);
 let rd_listItem = rd_elementText(element_li);
-let rd_fruits = rd_dict(vm => vm, () => document.createElement('ul'), rd_listItem);
+let rd_fruits = rd_dict(vm => vm, () => element('ul', {})([]), rd_listItem);
 
 let rd_vm = (vm0, vm1, dom) => {
 	if (vm0 == null) {
