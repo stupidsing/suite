@@ -46,10 +46,11 @@ let rd_element = (elementf, childrenf) => (vm0, vm1, dom, domc) => {
 let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
-		for (let i = 0; i < vm1.length; i++) rdf(null, vm1[i], domc, null);
-	} else if (vm1 == null)
+		for (let i1 = 0; i1 < vm1.length; i1++) rdf(null, vm1[i1], domc, null);
+	} else if (vm1 == null) {
+		for (let i0 = 0; i0 < vm0.length; i0++) rdf(vm0[i], null, domc, domc.childNodes[i0]);
 		dom.removeChild(domc);
-	else if (vm0 != vm1) {
+	} else if (vm0 != vm1) {
 		let map0 = new Map();
 		let map1 = new Map();
 		for (let i0 = 0; i0 < vm0.length; i0++) map0.set(keyf(vm0[i0]), i0);
