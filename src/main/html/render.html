@@ -55,7 +55,7 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 		for (let i0 = 0; i0 < vm0.length; i0++) map0.set(keyf(vm0[i0]), i0);
 		for (let i1 = 0; i1 < vm1.length; i1++) map1.set(keyf(vm1[i1]), i1);
 
-		let isSameOrder = true;
+		let isSameOrder = vm0.length == vm1.length;
 		let domc0 = domc;
 		let dom_i1 = [];
 
