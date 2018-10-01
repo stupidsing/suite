@@ -33,11 +33,12 @@ let newElement = (tag, attrs, children) => {
 let rd_element = (elementf, childrenf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
-		for (let childf of childrenf)
-			childf(null, vm1, domc, null);
-	} else if (vm1 == null)
+		for (let childf of childrenf) childf(null, vm1, domc, null);
+	} else if (vm1 == null) {
+		let i = 0;
+		for (let childf of childrenf) childf(vm0, null, domc, dom.childNodes[i++]);
 		dom.removeChild(domc);
-	else if (vm0 != vm1)
+	} else if (vm0 != vm1)
 		for (let i = 0; i < childrenf.length; i++)
 			childrenf[i](vm0, vm1, domc, domc.childNodes[i]);
 	return domc;
@@ -48,7 +49,7 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 		dom.appendChild(domc = elementf());
 		for (let i1 = 0; i1 < vm1.length; i1++) rdf(null, vm1[i1], domc, null);
 	} else if (vm1 == null) {
-		for (let i0 = 0; i0 < vm0.length; i0++) rdf(vm0[i], null, domc, domc.childNodes[i0]);
+		for (let i0 = 0; i0 < vm0.length; i0++) rdf(vm0[i0], null, domc, domc.childNodes[i0]);
 		dom.removeChild(domc);
 	} else if (vm0 != vm1) {
 		let map0 = new Map();
