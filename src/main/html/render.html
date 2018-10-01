@@ -115,8 +115,8 @@ let rd = {
 		vm0 != null ? vm0[key] : null,
 		vm1 != null ? vm1[key] : null,
 		dom, domc),
-	tag: (tag, childrenf) => rd_element(() => newElement(tag), () => {}, childrenf),
-	tag_for: (tag, keyf, rdf) => rd_for(() => newElement(tag), () => {}, keyf, rdf),
+	tag: (tag, decorf, childrenf) => rd_element(() => newElement(tag), decorf, childrenf),
+	tag_for: (tag, decorf, keyf, rdf) => rd_for(() => newElement(tag), decorf, keyf, rdf),
 };
 
 let pvm = null;
@@ -127,12 +127,13 @@ let renderAgain = (renderer, vm) => {
 	pvm = vm;
 };
 
+let nodecorf = (vm0, vm1, dom, domc) => {};
 let textf = rd.c(vm => document.createTextNode(vm));
 
-let rd_vm = rd.tag('span', [
-	rd.scope('message', rd.tag('p', [textf])),
+let rd_vm = rd.tag('span', nodecorf, [
+	rd.scope('message', rd.tag('p', nodecorf, [textf])),
 	rd.scope('fruits',
-		rd.tag_for('ul', vm => vm, rd.tag('li', [textf]))),
+		rd.tag_for('ul', nodecorf, vm => vm, rd.tag('li', nodecorf, [textf]))),
 ]);
 
 renderAgain(rd_vm, { message: 'hello world0', fruits: ['banana',], });
