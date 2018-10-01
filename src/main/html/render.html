@@ -47,7 +47,6 @@ let rd_element = (elementf, decorf, childrenf) => (vm0, vm1, dom, domc) => {
 		for (let i = 0; i < childrenf.length; i++)
 			childrenf[i](vm0, vm1, domc, domc.childNodes[i]);
 	}
-	return domc;
 };
 
 let rd_for = (elementf, decorf, keyf, rdf) => (vm0, vm1, dom, domc) => {
@@ -100,7 +99,6 @@ let rd_for = (elementf, decorf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 					rdf(vm0[i0], null, domc0, domc0.childNodes[i0]);
 		}
 	}
-	return domc;
 };
 
 let rd = {
@@ -109,7 +107,6 @@ let rd = {
 			if (vm0 != null) dom.removeChild(domc);
 			if (vm1 != null) dom.appendChild(elementf(vm1), domc);
 		}
-		return domc;
 	},
 	scope: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
 		vm0 != null ? vm0[key] : null,
