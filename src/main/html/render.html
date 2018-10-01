@@ -61,8 +61,7 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 			(iff(vm1) ? thenf : elsef)(vm0, vm1, dom, domc);
 };
 
-let rd_if = (iff, thenf) => {
-	return rd_ifElse(iff, thenf, (vm0, vm1, dom, domc) => {
+let rd_if = (iff, thenf) => rd_ifElse(iff, thenf, (vm0, vm1, dom, domc) => {
 	if (vm0 == null)
 		dom.appendChild(document.createComment('else'));
 	else if (vm1 == null)
@@ -70,8 +69,7 @@ let rd_if = (iff, thenf) => {
 	else if (vm0 != vm1)
 		if (!iff(vm1))
 			dom.replaceChild(document.createComment('else'), domc);
-	});
-};
+});
 
 let rd_for = (elementf, decorf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
