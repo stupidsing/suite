@@ -36,8 +36,9 @@ let rd_element = (elementf, childrenf) => (vm0, vm1, dom, domc) => {
 		for (let i = 0; i < childrenf.length; i++)
 			childrenf[i](null, vm1, domc, null);
 	} else if (vm1 == null) {
-		for (let i = childrenf.length - 1; 0 <= i; i--)
-			childrenf[i](vm0, null, domc, domc.childNodes[i]);
+		let children = Array.from(domc.childNodes);
+		for (let i = 0; i < childrenf.length; i++)
+			childrenf[i](vm0, null, domc, children[i]);
 		dom.removeChild(domc);
 	} else if (vm0 != vm1)
 		for (let i = 0; i < childrenf.length; i++)
@@ -50,7 +51,8 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 		dom.appendChild(domc = elementf());
 		for (let i1 = 0; i1 < vm1.length; i1++) rdf(null, vm1[i1], domc, null);
 	} else if (vm1 == null) {
-		for (let i0 = vm0.length - 1; 0 <= i0; i0--) rdf(vm0[i0], null, domc, domc.childNodes[i0]);
+		let children = Array.from(domc.childNodes);
+		for (let i0 = 0; i0 < vm0.length; i0++) rdf(vm0[i0], null, domc, children[i0]);
 		dom.removeChild(domc);
 	} else if (vm0 != vm1) {
 		let map0 = new Map();
