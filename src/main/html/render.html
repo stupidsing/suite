@@ -51,15 +51,15 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 		dom.removeChild(domc);
 	else if (vm0 != vm1) {
 		let m = new Map();
-		for (let i = 0; i < vm0.length; i++) m.set(keyf(vm0[i]), i);
+		for (let i0 = 0; i0 < vm0.length; i0++) m.set(keyf(vm0[i0]), i0);
 
 		let isSameOrder = true;
 		let children0 = [];
 		let indices0 = [];
 
-		for (let i = 0; i < vm1.length; i++) {
-			var i0 = m.get(keyf(vm1[i]));
-			isSameOrder &= i0 == i;
+		for (let i1 = 0; i1 < vm1.length; i1++) {
+			var i0 = m.get(keyf(vm1[i1]));
+			isSameOrder &= i0 == i1;
 			children0.push(domc.childNodes[i0]);
 			indices0.push(i0);
 		}
@@ -70,14 +70,14 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 		else {
 			let domc0 = domc;
 			domc = domc.cloneNode(false);
-			for (let i = 0; i < vm1.length; i++) {
-				let i0 = indices0[i];
+			for (let i1 = 0; i1 < vm1.length; i1++) {
+				let i0 = indices0[i1];
 				if (i0 != null) {
-					let child0 = children0[i];
+					let child0 = children0[i1];
 					domc.appendChild(child0);
-					rdf(vm0[i0], vm1[i], domc, child0);
+					rdf(vm0[i0], vm1[i1], domc, child0);
 				} else
-					rdf(null, vm1[i], domc, null);
+					rdf(null, vm1[i1], domc, null);
 			}
 			dom.replaceChild(domc, domc0);
 		}
