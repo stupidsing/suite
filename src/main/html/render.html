@@ -20,13 +20,14 @@ let element = (tag, attrs) => children => {
 let element_li = element('li', {});
 let element_p =  element('p', {});
 
-let rd_element = childf => elementf => (vm0, vm1, dom, domc) => {
+let rd_element = childrenf => elementf => (vm0, vm1, dom, domc) => {
 	if (vm0 == null)
-		dom.appendChild(domc = elementf([childf(vm1)]));
+		dom.appendChild(domc = elementf(childrenf.map(childf => childf(vm1))));
 	else if (vm1 == null)
 		dom.removeChild(domc);
 	else if (vm0 != vm1)
-		domc.replaceChild(childf(vm1), domc.childNodes[0]);
+		for (let i = 0; i < childrenf.length; i++)
+			domc.replaceChild(childrenf[i](vm1), domc.childNodes[i]);
 };
 
 let rd_dict = (keyf, elementf, rdf) => (vm0, vm1, dom, domc) => {
@@ -85,7 +86,7 @@ let rd_vector = (vm0, vm1, dom, domc) => {
 	}
 };
 
-let rd_elementText = rd_element(t => document.createTextNode(t));
+let rd_elementText = rd_element([t => document.createTextNode(t)]);
 let rd_text = rd_elementText(element_p);
 let rd_listItem = rd_elementText(element_li);
 let rd_fruits = rd_dict(vm => vm, () => document.createElement('ul'), rd_listItem);
