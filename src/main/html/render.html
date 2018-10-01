@@ -47,6 +47,8 @@ let rd_element = (elementf, childrenf) => (vm0, vm1, dom, domc) => {
 			childrenf[i](vm0, vm1, domc, domc.childNodes[i]);
 };
 
+let rd_tag = (tag, childrenf) => rd_element(() => newElement(tag), childrenf);
+
 let rd_for = (keyf, elementf, rdf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
@@ -111,15 +113,12 @@ let renderAgain = (renderer, vm) => {
 	pvm = vm;
 };
 
-let elementf = tag => () => newElement(tag);
 let rd_textNode = rd_c(vm => document.createTextNode(vm));
-let rd_listItem = rd_element(elementf('li'), [rd_textNode]);
-let rd_text = rd_element(elementf('p'), [rd_textNode]);
-let rd_fruits = rd_for(vm => vm, elementf('ul'), rd_listItem);
+let rd_fruit = rd_tag('li', [rd_textNode]);
 
-let rd_vm = rd_element(() => newElement('span'), [
-	rd_prop('message', rd_text),
-	rd_prop('fruits', rd_fruits),
+let rd_vm = rd_tag('span', [
+	rd_prop('message', rd_tag('p', [rd_textNode])),
+	rd_prop('fruits', rd_for(vm => vm, () => newElement('ul'), rd_fruit)),
 ]);
 
 renderAgain(rd_vm, { message: 'hello world0', fruits: [], });
