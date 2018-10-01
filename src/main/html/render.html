@@ -96,8 +96,8 @@ let rd = {
 	attr: (rdf, name, attrf) => (vm0, vm1, dom, domc) => {
 		if (vm0 != vm1) {
 			domc = rdf(vm0, vm1, dom, domc);
-			if (vm1 == null) domc.removeAttribute(name);
-			domc.setAttribute(name, attrf(vm1));
+			if (vm0 != null) domc.removeAttribute(name);
+			if (vm1 != null) domc.setAttribute(name, attrf(vm1));
 		}
 		return domc;
 	},
