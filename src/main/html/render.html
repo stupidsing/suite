@@ -21,6 +21,15 @@ let newElement = (tag, attrs, children) => {
 	return el;
 };
 
+/*
+	a typical renderer has 4 parameters:
+	vm0 - old view model, null to append DOM elements
+	vm1 - new view model, null to remove DOM elements
+	dom - current DOM parent node
+	domc - current DOM node
+	The renderer should detect the differences and apply changes under dom, or directly update domc.
+*/
+
 let rd_element = (elementf, childrenf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
