@@ -49,29 +49,28 @@ let rd_element = (elementf, decorf, childrenf) => (vm0, vm1, dom, domc) => {
 	}
 };
 
-let rd_if = (iff, thenf) => (vm0, vm1, dom, domc) => {
+let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null)
-		if (iff(vm1))
-			thenf(null, vm1, dom, null);
-		else
-			dom.appendChild(document.createComment('else'));
+		(iff(vm1) ? thenf : elsef)(null, vm1, dom, null);
 	else if (vm1 == null)
-		if (iff(vm0))
-			thenf(vm0, null, dom, domc);
-		else
-			dom.removeChild(domc);
+		(iff(vm0) ? thenf : elsef)(vm0, null, dom, domc);
 	else if (vm0 != vm1)
 		if (iff(vm0) == iff(vm1))
 			thenf(vm0, vm1, dom, domc);
-		else if (iff(vm1))
-			thenf(vm0, vm1, dom, domc);
 		else
-			dom.replaceChild(document.createComment('else'), domc);
+			(iff(vm1) ? thenf : elsef)(vm0, vm1, dom, domc);
 };
 
-let rd_ifelse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
-	let b = iff(vm1 != null ? vm1 : vm0);
-	(iff(vm1 != null ? vm1 : vm0) ? thenf : elsef)(vm0, vm1, dom, domc);
+let rd_if = (iff, thenf) => {
+	return rd_ifElse(iff, thenf, (vm0, vm1, dom, domc) => {
+	if (vm0 == null)
+		dom.appendChild(document.createComment('else'));
+	else if (vm1 == null)
+		dom.removeChild(domc);
+	else if (vm0 != vm1)
+		if (!iff(vm1))
+			dom.replaceChild(document.createComment('else'), domc);
+	});
 };
 
 let rd_for = (elementf, decorf, keyf, rdf) => (vm0, vm1, dom, domc) => {
