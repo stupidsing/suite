@@ -55,6 +55,7 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 		for (let i0 = 0; i0 < vm0.length; i0++) rdf(vm0[i0], null, domc, children[i0]);
 		dom.removeChild(domc);
 	} else if (vm0 != vm1) {
+		let children = Array.from(domc.childNodes);
 		let map0 = new Map();
 		let map1 = new Map();
 		for (let i0 = 0; i0 < vm0.length; i0++) map0.set(keyf(vm0[i0]), i0);
@@ -62,24 +63,22 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 
 		let isSameOrder = vm0.length == vm1.length;
 		let domc0 = domc;
-		let dom0_i1 = [];
 
 		for (let i1 = 0; i1 < vm1.length; i1++) {
 			var i0 = map0.get(keyf(vm1[i1]));
 			isSameOrder &= i0 == i1;
-			dom0_i1.push(domc0.childNodes[i0]);
 		}
 
 		if (isSameOrder)
 			for (let i = 0; i < vm1.length; i++)
-				rdf(vm0[i], vm1[i], domc, dom0_i1[i]);
+				rdf(vm0[i], vm1[i], domc, children[i]);
 		else {
 			domc = domc0.cloneNode(false);
 
 			for (let i1 = 0; i1 < vm1.length; i1++) {
 				var i0 = map0.get(keyf(vm1[i1]));
 				if (i0 != null) {
-					let child0 = dom0_i1[i1];
+					let child0 = children[i0];
 					domc.appendChild(child0);
 					rdf(vm0[i0], vm1[i1], domc, child0);
 				} else
@@ -138,7 +137,7 @@ let rd_vm = rd.tag('span', [
 
 renderAgain(rd_vm, { message: 'hello world0', fruits: ['banana',], });
 renderAgain(rd_vm, { message: 'hello world1', fruits: ['apple', 'banana',], });
-renderAgain(rd_vm, { message: 'hello world2', fruits: ['apple', 'orange', 'banana',], });
+renderAgain(rd_vm, { message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], });
 renderAgain(rd_vm, { message: 'hello world~', fruits: ['banana', 'orange',], });
 	</script>
 
