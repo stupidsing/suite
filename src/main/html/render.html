@@ -30,31 +30,38 @@ let newElement = (tag, attrs, children) => {
 	The renderer should detect the differences and apply changes under dom, or directly update domc.
 */
 
-let rd_element = (elementf, childrenf) => (vm0, vm1, dom, domc) => {
+let rd_element = (elementf, decorf, childrenf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
+		decorf(null, vm1, dom, domc);
 		for (let i = 0; i < childrenf.length; i++)
 			childrenf[i](null, vm1, domc, null);
 	} else if (vm1 == null) {
 		let children = Array.from(domc.childNodes);
 		for (let i = 0; i < childrenf.length; i++)
 			childrenf[i](vm0, null, domc, children[i]);
+		decorf(vm0, null, dom, domc);
 		dom.removeChild(domc);
-	} else if (vm0 != vm1)
+	} else if (vm0 != vm1) {
+		decorf(vm0, vm1, dom, domc);
 		for (let i = 0; i < childrenf.length; i++)
 			childrenf[i](vm0, vm1, domc, domc.childNodes[i]);
+	}
 	return domc;
 };
 
-let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
+let rd_for = (elementf, decorf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
+		decorf(null, vm1, dom, domc);
 		for (let i1 = 0; i1 < vm1.length; i1++) rdf(null, vm1[i1], domc, null);
 	} else if (vm1 == null) {
 		let children = Array.from(domc.childNodes);
 		for (let i0 = 0; i0 < vm0.length; i0++) rdf(vm0[i0], null, domc, children[i0]);
+		decorf(vm0, null, dom, domc);
 		dom.removeChild(domc);
 	} else if (vm0 != vm1) {
+		decorf(vm0, vm1, dom, domc);
 		let map0 = new Map();
 		let map1 = new Map();
 		for (let i0 = 0; i0 < vm0.length; i0++) map0.set(keyf(vm0[i0]), i0);
@@ -97,14 +104,6 @@ let rd_for = (elementf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 };
 
 let rd = {
-	attr: (rdf, name, attrf) => (vm0, vm1, dom, domc) => {
-		if (vm0 != vm1) {
-			domc = rdf(vm0, vm1, dom, domc);
-			if (vm0 != null) domc.removeAttribute(name);
-			if (vm1 != null) domc.setAttribute(name, attrf(vm1));
-		}
-		return domc;
-	},
 	c: elementf => (vm0, vm1, dom, domc) => {
 		if (vm0 != vm1) {
 			if (vm0 != null) dom.removeChild(domc);
@@ -116,8 +115,8 @@ let rd = {
 		vm0 != null ? vm0[key] : null,
 		vm1 != null ? vm1[key] : null,
 		dom, domc),
-	tag: (tag, childrenf) => rd_element(() => newElement(tag), childrenf),
-	tag_for: (tag, keyf, rdf) => rd_for(() => newElement(tag), keyf, rdf),
+	tag: (tag, childrenf) => rd_element(() => newElement(tag), () => {}, childrenf),
+	tag_for: (tag, keyf, rdf) => rd_for(() => newElement(tag), () => {}, keyf, rdf),
 };
 
 let pvm = null;
