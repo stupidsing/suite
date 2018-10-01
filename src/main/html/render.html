@@ -17,7 +17,7 @@ let element = (tag, attrs) => children => {
 	return el;
 };
 
-let rd_element = childrenf => elementf => (vm0, vm1, dom, domc) => {
+let rd_element = (elementf, childrenf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null)
 		dom.appendChild(domc = elementf(childrenf.map(childf => childf(vm1))));
 	else if (vm1 == null)
@@ -83,9 +83,8 @@ let rd_vector = (vm0, vm1, dom, domc) => {
 	}
 };
 
-let rd_elementText = rd_element([t => document.createTextNode(t)]);
-let rd_listItem = rd_elementText(element('li', {}));
-let rd_text = rd_elementText(element('p', {}));
+let rd_listItem = rd_element(element('li', {}), [t => document.createTextNode(t)]);
+let rd_text = rd_element(element('p', {}), [t => document.createTextNode(t)]);
 let rd_fruits = rd_dict(vm => vm, () => document.createElement('ul'), rd_listItem);
 
 let rd_vm = (vm0, vm1, dom) => {
