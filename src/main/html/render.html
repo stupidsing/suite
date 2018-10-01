@@ -65,7 +65,7 @@ let rd_dict = keyf => (vm0, vm1, dom, domc) => {
 		else {
 			domc.innerHTML = '';
 			for (let i = 0; i < vm1.length; i++) {
-				var i0 = indices0[i];
+				let i0 = indices0[i];
 				if (i0 != null) {
 					let child0 = children0[i];
 					rd_listItem(vm0[i0], vm1[i], domc, child0);
