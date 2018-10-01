@@ -38,26 +38,51 @@ let rd_listItem = (vm0, vm1, dom, domc) => {
 		domc.replaceChild(document.createTextNode(vm1), domc.childNodes[0]);
 };
 
-let rd_fruits = (vm0, vm1, dom, domc) => {
+let rd_dict = keyf => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = document.createElement('ul'));
-		for (let i = 0; i < vm1.length; i++) domc.appendChild(rd_listItem(null, vm1[i], domc, null));
+		for (let i = 0; i < vm1.length; i++) rd_listItem(null, vm1[i], domc, null);
 	} else if (vm1 == null)
 		dom.removeChild(domc);
 	else if (vm0 != vm1) {
-		let i = 0;
-		let children = domc.childNodes;
-		let imin = Math.min(vm0.length, vm1.length);
-		for (; i < imin; i++) rd_listItem(vm0[i], vm1[i], domc, children[i]);
-		for (; i < vm1.length; i++) rd_listItem(null, vm1[i], domc, null);
-		for (; i < children.length; i++) domc.removeChild(children[i]);
+		let m = new Map();
+		for (let i = 0; i < vm0.length; i++) m.set(keyf(vm0[i]), i);
+
+		let isSameOrder = true;
+		let children0 = [];
+		let indices0 = [];
+
+		for (let i = 0; i < vm1.length; i++) {
+			var i0 = m.get(keyf(vm1[i]));
+			isSameOrder &= i0 == i;
+			children0.push(domc.childNodes[i0]);
+			indices0.push(i0);
+		}
+
+		if (isSameOrder)
+			for (let i = 0; i < vm1.length; i++)
+				rd_listItem(vm0[i], vm1[i], domc, children0[i]);
+		else {
+			domc.innerHTML = '';
+			for (let i = 0; i < vm1.length; i++) {
+				var i0 = indices0[i];
+				if (i0 != null) {
+					let child0 = children0[i];
+					rd_listItem(vm0[i0], vm1[i], domc, child0);
+					domc.appendChild(child0);
+				} else
+					rd_listItem(null, vm1[i], domc, null);
+			}
+		}
 	}
 };
 
-let rd_linearList = (vm0, vm1, dom, domc) => {
+let rd_fruits = rd_dict(vm => vm);
+
+let rd_vector = (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = document.createElement('ul'));
-		for (let i = 0; i < vm1.length; i++) domc.appendChild(rd_listItem(null, vm1[i], domc, null));
+		for (let i = 0; i < vm1.length; i++) rd_listItem(null, vm1[i], domc, null);
 	} else if (vm1 == null)
 		dom.removeChild(domc);
 	else if (vm0 != vm1) {
