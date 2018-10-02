@@ -30,22 +30,22 @@ let newElement = (tag, attrs, children) => {
 	The renderer should detect the differences and apply changes under dom, or directly update domc.
 */
 
-let rd_element = (elementf, decorf, childrenf) => (vm0, vm1, dom, domc) => {
+let rd_element = (elementf, decorf, childrenfs) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
 		decorf(vm0, vm1, dom, domc);
-		for (let i = 0; i < childrenf.length; i++)
-			childrenf[i](vm0, vm1, domc, null);
+		for (let i = 0; i < childrenfs.length; i++)
+			childrenfs[i](vm0, vm1, domc, null);
 	} else if (vm1 == null) {
 		let children = Array.from(domc.childNodes);
-		for (let i = 0; i < childrenf.length; i++)
-			childrenf[i](vm0, vm1, domc, children[i]);
+		for (let i = 0; i < childrenfs.length; i++)
+			childrenfs[i](vm0, vm1, domc, children[i]);
 		decorf(vm0, vm1, dom, domc);
 		dom.removeChild(domc);
 	} else if (vm0 != vm1) {
 		decorf(vm0, vm1, dom, domc);
-		for (let i = 0; i < childrenf.length; i++)
-			childrenf[i](vm0, vm1, domc, domc.childNodes[i]);
+		for (let i = 0; i < childrenfs.length; i++)
+			childrenfs[i](vm0, vm1, domc, domc.childNodes[i]);
 	}
 };
 
@@ -143,7 +143,7 @@ let rd = {
 		vm0 != null ? vm0[key] : null,
 		vm1 != null ? vm1[key] : null,
 		dom, domc),
-	tag: (tag, decorf, childrenf) => rd_element(() => newElement(tag), decorf, childrenf),
+	tag: (tag, decorf, childrenfs) => rd_element(() => newElement(tag), decorf, childrenfs),
 	tag_for: (tag, decorf, keyf, rdf) => rd_for(() => newElement(tag), decorf, keyf, rdf),
 };
 
