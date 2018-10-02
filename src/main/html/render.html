@@ -150,9 +150,9 @@ let renderAgain = (renderer, vm) => {
 let text = rd.c(vm => document.createTextNode(vm));
 
 let rd_vm = rd.tag('span', [rd.children([
-	rd.scope('message', rd.tag('p', [rd.attr('style', 'font-weight: bold;'), rd.children([text])])),
+	rd.scope('message', rd.tag('p', [rd.attr('style', 'font-weight: bold;'), rd.children([text,]),])),
 	rd.scope('fruits',
-		rd.tag('ul', [rd.for(vm => vm, rd.tag('li', [rd.children([text,]),]))])),
+		rd.tag('ul', [rd.for(vm => vm, rd.tag('li', [rd.children([text,]),])),])),
 ]),]);
 
 renderAgain(rd_vm, { message: 'hello world0', fruits: ['banana',], });
