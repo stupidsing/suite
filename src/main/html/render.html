@@ -73,7 +73,7 @@ let rd_if = (iff, thenf) => rd_ifElse(iff, thenf, (vm0, vm1, dom, domc) => {
 			dom.replaceChild(document.createComment('else'), domc);
 });
 
-let rd_tag_for = (elementf, decorf, keyf, rdf) => (vm0, vm1, dom, domc) => {
+let rd_tagFor = (elementf, decorf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
 		decorf(vm0, vm1, dom, domc);
@@ -139,12 +139,13 @@ let rd = {
 			if (vm1 != null) dom.appendChild(elementf(vm1));
 		}
 	},
+	ifElse: rd_ifElse,
 	scope: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
 		vm0 != null ? vm0[key] : null,
 		vm1 != null ? vm1[key] : null,
 		dom, domc),
 	tag: (tag, decorf, childrenfs) => rd_element(() => newElement(tag), decorf, childrenfs),
-	tag_for: (tag, decorf, keyf, rdf) => rd_tag_for(() => newElement(tag), decorf, keyf, rdf),
+	tagFor: (tag, decorf, keyf, rdf) => rd_tagFor(() => newElement(tag), decorf, keyf, rdf),
 };
 
 let pvm = null;
@@ -161,7 +162,7 @@ let text = rd.c(vm => document.createTextNode(vm));
 let rd_vm = rd.tag('span', nodecor, [
 	rd.scope('message', rd.tag('p', rd.attrs({style: 'font-weight: bold;',}), [text])),
 	rd.scope('fruits',
-		rd.tag_for('ul', nodecor, vm => vm, rd.tag('li', nodecor, [text]))),
+		rd.tagFor('ul', nodecor, vm => vm, rd.tag('li', nodecor, [text]))),
 ]);
 
 renderAgain(rd_vm, { message: 'hello world0', fruits: ['banana',], });
