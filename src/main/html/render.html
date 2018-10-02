@@ -73,7 +73,7 @@ let rd_if = (iff, thenf) => rd_ifElse(iff, thenf, (vm0, vm1, dom, domc) => {
 			dom.replaceChild(document.createComment('else'), domc);
 });
 
-let rd_for = (elementf, decorf, keyf, rdf) => (vm0, vm1, dom, domc) => {
+let rd_tag_for = (elementf, decorf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
 		decorf(vm0, vm1, dom, domc);
@@ -144,7 +144,7 @@ let rd = {
 		vm1 != null ? vm1[key] : null,
 		dom, domc),
 	tag: (tag, decorf, childrenfs) => rd_element(() => newElement(tag), decorf, childrenfs),
-	tag_for: (tag, decorf, keyf, rdf) => rd_for(() => newElement(tag), decorf, keyf, rdf),
+	tag_for: (tag, decorf, keyf, rdf) => rd_tag_for(() => newElement(tag), decorf, keyf, rdf),
 };
 
 let pvm = null;
