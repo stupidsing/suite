@@ -30,22 +30,11 @@ let newElement = (tag, attrs, children) => {
 	The renderer should detect the differences and apply changes under dom, or directly update domc.
 */
 
-let rd_element = (elementf, decorfs, childrenfs) => (vm0, vm1, dom, domc) => {
-	if (vm0 == null) {
-		dom.appendChild(domc = elementf());
+let rd_element = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
+	if (vm0 != vm1) {
+		if (vm0 == null) dom.appendChild(domc = elementf());
 		for (let decorf of decorfs) decorf(vm0, vm1, dom, domc);
-		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, domc, null);
-	} else if (vm1 == null) {
-		let children = Array.from(domc.childNodes);
-		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, domc, children[i]);
-		for (let decorf of decorfs) decorf(vm0, vm1, dom, domc);
-		dom.removeChild(domc);
-	} else if (vm0 != vm1) {
-		for (let decorf of decorfs) decorf(vm0, vm1, dom, domc);
-		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, domc, domc.childNodes[i]);
+		if (vm1 == null) dom.removeChild(domc);
 	}
 };
 
@@ -123,12 +112,11 @@ let rd_if = (iff, thenf) => rd_ifElse(iff, thenf, (vm0, vm1, dom, domc) => {
 });
 
 let rd = {
-	attrs: attrs => (vm0, vm1, dom, domc) => {
-		if (vm0 != vm1)
-			for (let [key, value] of Object.entries(attrs)) {
-				if (vm0 != null) domc.removeAttribute(key);
-				if (vm1 != null) domc.setAttribute(key, value);
-			}
+	attr: (key, value) => (vm0, vm1, dom, domc) => {
+		if (vm0 != vm1) {
+			if (vm0 != null) domc.removeAttribute(key);
+			if (vm1 != null) domc.setAttribute(key, value);
+		}
 	},
 	c: elementf => (vm0, vm1, dom, domc) => {
 		if (vm0 != vm1) {
@@ -153,7 +141,7 @@ let rd = {
 		vm0 != null ? vm0[key] : null,
 		vm1 != null ? vm1[key] : null,
 		dom, domc),
-	tag: (tag, decorfs, childrenfs) => rd_element(() => newElement(tag), decorfs, childrenfs),
+	tag: (tag, decorfs) => rd_element(() => newElement(tag), decorfs),
 	tagFor: (tag, decorfs, keyf, rdf) => rd_elementFor(() => newElement(tag), decorfs, keyf, rdf),
 };
 
@@ -167,11 +155,11 @@ let renderAgain = (renderer, vm) => {
 
 let text = rd.c(vm => document.createTextNode(vm));
 
-let rd_vm = rd.tag('span', [], [
-	rd.scope('message', rd.tag('p', [rd.attrs({style: 'font-weight: bold;',}),], [text])),
+let rd_vm = rd.tag('span', [rd.children([
+	rd.scope('message', rd.tag('p', [rd.attr('style', 'font-weight: bold;'), rd.children([text])])),
 	rd.scope('fruits',
-		rd.tagFor('ul', [], vm => vm, rd.tag('li', [], [text]))),
-]);
+		rd.tagFor('ul', [], vm => vm, rd.tag('li', [rd.children([text,]),]))),
+]),]);
 
 renderAgain(rd_vm, { message: 'hello world0', fruits: ['banana',], });
 renderAgain(rd_vm, { message: 'hello world1', fruits: ['apple', 'banana',], });
