@@ -126,7 +126,7 @@ let rd_for = (elementf, decorf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 };
 
 let rd = {
-	attrf: attrs => (vm0, vm1, dom, domc) => {
+	attrs: attrs => (vm0, vm1, dom, domc) => {
 		if (vm0 != vm1)
 			for (let [key, value] of Object.entries(attrs)) {
 				if (vm0 != null) domc.removeAttribute(key);
@@ -155,13 +155,13 @@ let renderAgain = (renderer, vm) => {
 	pvm = vm;
 };
 
-let nodecorf = (vm0, vm1, dom, domc) => {};
-let textf = rd.c(vm => document.createTextNode(vm));
+let nodecor = (vm0, vm1, dom, domc) => {};
+let text = rd.c(vm => document.createTextNode(vm));
 
-let rd_vm = rd.tag('span', nodecorf, [
-	rd.scope('message', rd.tag('p', rd.attrf({style: 'font-weight: bold',}), [textf])),
+let rd_vm = rd.tag('span', nodecor, [
+	rd.scope('message', rd.tag('p', rd.attrs({style: 'font-weight: bold',}), [text])),
 	rd.scope('fruits',
-		rd.tag_for('ul', nodecorf, vm => vm, rd.tag('li', nodecorf, [textf]))),
+		rd.tag_for('ul', nodecor, vm => vm, rd.tag('li', nodecor, [text]))),
 ]);
 
 renderAgain(rd_vm, { message: 'hello world0', fruits: ['banana',], });
