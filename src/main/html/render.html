@@ -67,10 +67,7 @@ let rd_if = (iff, thenf) => rd_ifElse(iff, thenf, (vm0, vm1, dom, domc) => {
 	else if (vm1 == null)
 		dom.removeChild(domc);
 	else if (vm0 != vm1)
-		if (iff(vm0) == iff(vm1))
-			;
-		else if (!iff(vm1))
-			dom.replaceChild(document.createComment('else'), domc);
+		dom.replaceChild(document.createComment('else'), domc);
 });
 
 let rd_tagFor = (elementf, decorf, keyf, rdf) => (vm0, vm1, dom, domc) => {
