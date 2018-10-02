@@ -38,19 +38,13 @@ let rd_element = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
 	}
 };
 
-let rd_elementFor = (elementf, decorfs, keyf, rdf) => (vm0, vm1, dom, domc) => {
+let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
-		dom.appendChild(domc = elementf());
-		for (let decorf of decorfs) decorf(vm0, vm1, dom, domc);
 		for (let i1 = 0; i1 < vm1.length; i1++) rdf(null, vm1[i1], domc, null);
 	} else if (vm1 == null) {
 		let children = Array.from(domc.childNodes);
 		for (let i0 = 0; i0 < vm0.length; i0++) rdf(vm0[i0], null, domc, children[i0]);
-		for (let decorf of decorfs) decorf(vm0, vm1, dom, domc);
-		dom.removeChild(domc);
 	} else if (vm0 != vm1) {
-		for (let decorf of decorfs) decorf(vm0, vm1, dom, domc);
-
 		let children = Array.from(domc.childNodes);
 		let map0 = new Map();
 		let map1 = new Map();
@@ -136,13 +130,13 @@ let rd = {
 			for (let i = 0; i < childrenfs.length; i++)
 				childrenfs[i](vm0, vm1, domc, domc.childNodes[i]);
 	},
+	for: rd_for,
 	ifElse: rd_ifElse,
 	scope: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
 		vm0 != null ? vm0[key] : null,
 		vm1 != null ? vm1[key] : null,
 		dom, domc),
 	tag: (tag, decorfs) => rd_element(() => newElement(tag), decorfs),
-	tagFor: (tag, decorfs, keyf, rdf) => rd_elementFor(() => newElement(tag), decorfs, keyf, rdf),
 };
 
 let pvm = null;
@@ -158,7 +152,7 @@ let text = rd.c(vm => document.createTextNode(vm));
 let rd_vm = rd.tag('span', [rd.children([
 	rd.scope('message', rd.tag('p', [rd.attr('style', 'font-weight: bold;'), rd.children([text])])),
 	rd.scope('fruits',
-		rd.tagFor('ul', [], vm => vm, rd.tag('li', [rd.children([text,]),]))),
+		rd.tag('ul', [rd.for(vm => vm, rd.tag('li', [rd.children([text,]),]))])),
 ]),]);
 
 renderAgain(rd_vm, { message: 'hello world0', fruits: ['banana',], });
