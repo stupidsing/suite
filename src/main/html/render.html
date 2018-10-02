@@ -39,9 +39,9 @@ let rd_element = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
 };
 
 let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
-	if (vm0 == null) {
+	if (vm0 == null)
 		for (let i1 = 0; i1 < vm1.length; i1++) rdf(null, vm1[i1], domc, null);
-	} else if (vm1 == null) {
+	else if (vm1 == null) {
 		let children = Array.from(domc.childNodes);
 		for (let i0 = 0; i0 < vm0.length; i0++) rdf(vm0[i0], null, domc, children[i0]);
 	} else if (vm0 != vm1) {
