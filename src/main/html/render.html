@@ -63,7 +63,7 @@ let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
 			for (let i = 0; i < vm1.length; i++)
 				rdf(vm0[i], vm1[i], domc, children[i]);
 		else {
-			domc = domc0.cloneNode(false);
+			dom.replaceChild(domc = domc0.cloneNode(false), domc0);
 
 			for (let i1 = 0; i1 < vm1.length; i1++) {
 				let i0 = map0.get(keyf(vm1[i1]));
@@ -74,8 +74,6 @@ let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
 				} else
 					rdf(null, vm1[i1], domc, null);
 			}
-
-			dom.replaceChild(domc, domc0);
 
 			for (let i0 = 0; i0 < vm0.length; i0++)
 				if (!map1.has(keyf(vm0[i0])))
@@ -102,7 +100,7 @@ let rd_if = (iff, thenf) => rd_ifElse(iff, thenf, (vm0, vm1, dom, domc) => {
 	else if (vm1 == null)
 		dom.removeChild(domc);
 	else if (vm0 != vm1)
-		dom.replaceChild(document.createComment('else'), domc);
+		dom.replaceChild(domc = document.createComment('else'), domc);
 });
 
 let rd = {
