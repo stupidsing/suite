@@ -118,7 +118,7 @@ let rd = {
 			if (vm1 != null) dom.appendChild(elementf(vm1));
 		}
 	},
-	children: childrenfs => (vm0, vm1, dom, domc) => {
+	children: (...childrenfs) => (vm0, vm1, dom, domc) => {
 		if (vm0 == null)
 			for (let i = 0; i < childrenfs.length; i++)
 				childrenfs[i](vm0, vm1, domc, null);
@@ -135,8 +135,9 @@ let rd = {
 	scope: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
 		vm0 != null ? vm0[key] : null,
 		vm1 != null ? vm1[key] : null,
-		dom, domc),
-	tag: (tag, decorfs) => rd_element(() => newElement(tag), decorfs),
+		dom, domc
+	),
+	tag: (tag, ...decorfs) => rd_element(() => newElement(tag), decorfs),
 };
 
 let pvm = null;
@@ -149,11 +150,16 @@ let renderAgain = (renderer, vm) => {
 
 let text = rd.c(vm => document.createTextNode(vm));
 
-let rd_vm = rd.tag('span', [rd.children([
-	rd.scope('message', rd.tag('p', [rd.attr('style', 'font-weight: bold;'), rd.children([text,]),])),
-	rd.scope('fruits',
-		rd.tag('ul', [rd.for(vm => vm, rd.tag('li', [rd.children([text,]),])),])),
-]),]);
+let rd_vm = rd.tag('span',
+	rd.children(
+		rd.scope('message',
+			rd.tag('p', rd.attr('style', 'font-weight: bold;'), rd.children(text))
+		),
+		rd.scope('fruits',
+			rd.tag('ul', rd.for(vm => vm, rd.tag('li', rd.children(text))))
+		)
+	)
+);
 
 renderAgain(rd_vm, { message: 'hello world0', fruits: ['banana',], });
 renderAgain(rd_vm, { message: 'hello world1', fruits: ['apple', 'banana',], });
