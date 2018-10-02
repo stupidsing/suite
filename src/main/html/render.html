@@ -126,6 +126,13 @@ let rd_for = (elementf, decorf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 };
 
 let rd = {
+	attrf: attrs => (vm0, vm1, dom, domc) => {
+		if (vm0 != vm1)
+			for (let [key, value] of Object.entries(attrs)) {
+				if (vm0 != null) domc.removeAttribute(key);
+				if (vm1 != null) domc.setAttribute(key, value);
+			}
+	},
 	c: elementf => (vm0, vm1, dom, domc) => {
 		if (vm0 != vm1) {
 			if (vm0 != null) dom.removeChild(domc);
@@ -152,7 +159,7 @@ let nodecorf = (vm0, vm1, dom, domc) => {};
 let textf = rd.c(vm => document.createTextNode(vm));
 
 let rd_vm = rd.tag('span', nodecorf, [
-	rd.scope('message', rd.tag('p', nodecorf, [textf])),
+	rd.scope('message', rd.tag('p', rd.attrf({style: 'font-weight: bold',}), [textf])),
 	rd.scope('fruits',
 		rd.tag_for('ul', nodecorf, vm => vm, rd.tag('li', nodecorf, [textf]))),
 ]);
