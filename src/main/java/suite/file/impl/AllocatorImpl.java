@@ -61,7 +61,7 @@ public class AllocatorImpl implements PageAllocator, ExtentAllocator {
 	private int allocate_(int count) {
 		var pointer = findFreeExtentPages(count);
 
-		// tODO extends allocation map if all pages are used
+		// TODO extends allocation map if all pages are used
 
 		updateAllocMap(pointer, pointer + count, (byte) 1);
 		return lastAllocatedPointer = pointer + count;
