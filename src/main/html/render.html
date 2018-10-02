@@ -30,58 +30,37 @@ let newElement = (tag, attrs, children) => {
 	The renderer should detect the differences and apply changes under dom, or directly update domc.
 */
 
-let rd_element = (elementf, decorf, childrenfs) => (vm0, vm1, dom, domc) => {
+let rd_element = (elementf, decorfs, childrenfs) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
-		decorf(vm0, vm1, dom, domc);
+		for (let decorf of decorfs) decorf(vm0, vm1, dom, domc);
 		for (let i = 0; i < childrenfs.length; i++)
 			childrenfs[i](vm0, vm1, domc, null);
 	} else if (vm1 == null) {
 		let children = Array.from(domc.childNodes);
 		for (let i = 0; i < childrenfs.length; i++)
 			childrenfs[i](vm0, vm1, domc, children[i]);
-		decorf(vm0, vm1, dom, domc);
+		for (let decorf of decorfs) decorf(vm0, vm1, dom, domc);
 		dom.removeChild(domc);
 	} else if (vm0 != vm1) {
-		decorf(vm0, vm1, dom, domc);
+		for (let decorf of decorfs) decorf(vm0, vm1, dom, domc);
 		for (let i = 0; i < childrenfs.length; i++)
 			childrenfs[i](vm0, vm1, domc, domc.childNodes[i]);
 	}
 };
 
-let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
-	if (vm0 == null)
-		(iff(vm1) ? thenf : elsef)(vm0, vm1, dom, null);
-	else if (vm1 == null)
-		(iff(vm0) ? thenf : elsef)(vm0, vm1, dom, domc);
-	else if (vm0 != vm1)
-		if (iff(vm0) == iff(vm1))
-			thenf(vm0, vm1, dom, domc);
-		else
-			(iff(vm1) ? thenf : elsef)(vm0, vm1, dom, domc);
-};
-
-let rd_if = (iff, thenf) => rd_ifElse(iff, thenf, (vm0, vm1, dom, domc) => {
-	if (vm0 == null)
-		dom.appendChild(document.createComment('else'));
-	else if (vm1 == null)
-		dom.removeChild(domc);
-	else if (vm0 != vm1)
-		dom.replaceChild(document.createComment('else'), domc);
-});
-
-let rd_tagFor = (elementf, decorf, keyf, rdf) => (vm0, vm1, dom, domc) => {
+let rd_elementFor = (elementf, decorfs, keyf, rdf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null) {
 		dom.appendChild(domc = elementf());
-		decorf(vm0, vm1, dom, domc);
+		for (let decorf of decorfs) decorf(vm0, vm1, dom, domc);
 		for (let i1 = 0; i1 < vm1.length; i1++) rdf(null, vm1[i1], domc, null);
 	} else if (vm1 == null) {
 		let children = Array.from(domc.childNodes);
 		for (let i0 = 0; i0 < vm0.length; i0++) rdf(vm0[i0], null, domc, children[i0]);
-		decorf(vm0, vm1, dom, domc);
+		for (let decorf of decorfs) decorf(vm0, vm1, dom, domc);
 		dom.removeChild(domc);
 	} else if (vm0 != vm1) {
-		decorf(vm0, vm1, dom, domc);
+		for (let decorf of decorfs) decorf(vm0, vm1, dom, domc);
 
 		let children = Array.from(domc.childNodes);
 		let map0 = new Map();
@@ -122,6 +101,27 @@ let rd_tagFor = (elementf, decorf, keyf, rdf) => (vm0, vm1, dom, domc) => {
 	}
 };
 
+let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
+	if (vm0 == null)
+		(iff(vm1) ? thenf : elsef)(vm0, vm1, dom, null);
+	else if (vm1 == null)
+		(iff(vm0) ? thenf : elsef)(vm0, vm1, dom, domc);
+	else if (vm0 != vm1)
+		if (iff(vm0) == iff(vm1))
+			thenf(vm0, vm1, dom, domc);
+		else
+			(iff(vm1) ? thenf : elsef)(vm0, vm1, dom, domc);
+};
+
+let rd_if = (iff, thenf) => rd_ifElse(iff, thenf, (vm0, vm1, dom, domc) => {
+	if (vm0 == null)
+		dom.appendChild(document.createComment('else'));
+	else if (vm1 == null)
+		dom.removeChild(domc);
+	else if (vm0 != vm1)
+		dom.replaceChild(document.createComment('else'), domc);
+});
+
 let rd = {
 	attrs: attrs => (vm0, vm1, dom, domc) => {
 		if (vm0 != vm1)
@@ -136,13 +136,25 @@ let rd = {
 			if (vm1 != null) dom.appendChild(elementf(vm1));
 		}
 	},
+	children: childrenfs => (vm0, vm1, dom, domc) => {
+		if (vm0 == null)
+			for (let i = 0; i < childrenfs.length; i++)
+				childrenfs[i](vm0, vm1, domc, null);
+		else if (vm1 == null) {
+			let children = Array.from(domc.childNodes);
+			for (let i = 0; i < childrenfs.length; i++)
+				childrenfs[i](vm0, vm1, domc, children[i]);
+		} else if (vm0 != vm1)
+			for (let i = 0; i < childrenfs.length; i++)
+				childrenfs[i](vm0, vm1, domc, domc.childNodes[i]);
+	},
 	ifElse: rd_ifElse,
 	scope: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
 		vm0 != null ? vm0[key] : null,
 		vm1 != null ? vm1[key] : null,
 		dom, domc),
-	tag: (tag, decorf, childrenfs) => rd_element(() => newElement(tag), decorf, childrenfs),
-	tagFor: (tag, decorf, keyf, rdf) => rd_tagFor(() => newElement(tag), decorf, keyf, rdf),
+	tag: (tag, decorfs, childrenfs) => rd_element(() => newElement(tag), decorfs, childrenfs),
+	tagFor: (tag, decorfs, keyf, rdf) => rd_elementFor(() => newElement(tag), decorfs, keyf, rdf),
 };
 
 let pvm = null;
@@ -153,13 +165,12 @@ let renderAgain = (renderer, vm) => {
 	pvm = vm;
 };
 
-let nodecor = (vm0, vm1, dom, domc) => {};
 let text = rd.c(vm => document.createTextNode(vm));
 
-let rd_vm = rd.tag('span', nodecor, [
-	rd.scope('message', rd.tag('p', rd.attrs({style: 'font-weight: bold;',}), [text])),
+let rd_vm = rd.tag('span', [], [
+	rd.scope('message', rd.tag('p', [rd.attrs({style: 'font-weight: bold;',}),], [text])),
 	rd.scope('fruits',
-		rd.tagFor('ul', nodecor, vm => vm, rd.tag('li', nodecor, [text]))),
+		rd.tagFor('ul', [], vm => vm, rd.tag('li', [], [text]))),
 ]);
 
 renderAgain(rd_vm, { message: 'hello world0', fruits: ['banana',], });
