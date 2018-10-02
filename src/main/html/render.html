@@ -159,7 +159,7 @@ let nodecor = (vm0, vm1, dom, domc) => {};
 let text = rd.c(vm => document.createTextNode(vm));
 
 let rd_vm = rd.tag('span', nodecor, [
-	rd.scope('message', rd.tag('p', rd.attrs({style: 'font-weight: bold',}), [text])),
+	rd.scope('message', rd.tag('p', rd.attrs({style: 'font-weight: bold;',}), [text])),
 	rd.scope('fruits',
 		rd.tag_for('ul', nodecor, vm => vm, rd.tag('li', nodecor, [text]))),
 ]);
