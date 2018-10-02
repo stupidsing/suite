@@ -136,7 +136,7 @@ let rd = {
 	c: elementf => (vm0, vm1, dom, domc) => {
 		if (vm0 != vm1) {
 			if (vm0 != null) dom.removeChild(domc);
-			if (vm1 != null) dom.appendChild(elementf(vm1), domc);
+			if (vm1 != null) dom.appendChild(elementf(vm1));
 		}
 	},
 	scope: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
