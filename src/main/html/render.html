@@ -119,7 +119,7 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 	}
 };
 
-let rd_tag_attrs = attrs => rd_cd(
+let rd_tagAttrs = attrs => rd_cd(
 	(vm, dom, domc) => {
 		for (let [key, value] of Object.entries(attrs))
 			domc.setAttribute(key, value);
@@ -130,7 +130,7 @@ let rd_tag_attrs = attrs => rd_cd(
 	},
 );
 
-let rd_tag_compose = childrenfs => (vm0, vm1, dom, domc) => {
+let rd_tagChildren = childrenfs => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
 		;
 	else if (vm0 == null)
@@ -145,7 +145,7 @@ let rd_tag_compose = childrenfs => (vm0, vm1, dom, domc) => {
 			childrenfs[i](vm0, vm1, domc, domc.childNodes[i]);
 };
 
-let rd_tag_e = (event, cb) => rd_cd(
+let rd_tagEventListener = (event, cb) => rd_cd(
 	(vm, dom, domc) => domc.addEventListener(event, cb),
 	(vm, dom, domc) => domc.removeEventListener(event, cb)
 );
@@ -161,11 +161,11 @@ let rd = {
 		dom, domc
 	),
 	tag: (tag, ...decorfs) => rd_element(() => newElement(tag), decorfs),
-	tagAttr: (key, value) => rd_tag_attrs({ [key]: value, }),
-	tagAttrs: rd_tag_attrs,
-	tagChildren: (...childrenfs) => rd_tag_compose(childrenfs),
-	tagCompose: rd_tag_compose,
-	tagListen: rd_tag_e,
+	tagAttr: (key, value) => rd_tagAttrs({ [key]: value, }),
+	tagAttrs: rd_tagAttrs,
+	tagChildren: (...childrenfs) => rd_tagChildren(childrenfs),
+	tagChildrenList: rd_tagChildren,
+	tagListen: rd_tagEventListener,
 };
 
 let pvm = null;
@@ -188,9 +188,11 @@ let rd_vm = rd.tag('span',
 		),
 		rd.tag('div',
 			rd.tagAttr('style', 'height: 200px; overflow: auto; position: absolute;'),
-			rd.tagListen('scroll', d => { console.log('scroll', d); }),
-			rd.tagCompose(
-				read().range(0, 256).map(i => rd.tag('div', rd.tagChildren(rd.child(vm => document.createTextNode('scrolling')),))).list()
+			rd.tagListen('scroll', d => console.log('scrollTop', d.target.scrollTop)),
+			rd.tagChildrenList(read()
+				.range(0, 256)
+				.map(i => rd.tag('div', rd.tagChildren(rd.child(vm => document.createTextNode('scrolling')),)))
+				.list()
 			),
 		),
 	)
