@@ -119,6 +119,14 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 	}
 };
 
+let rd_tagAttrfs = attrs => (vm0, vm1, dom, domc) => {
+	if (vm0 == vm1)
+		;
+	else if (vm1 != null)
+		for (let [key, valuef] of Object.entries(attrs))
+			domc.setAttribute(key, valuef(vm1));
+};
+
 let rd_tagAttrs = attrs => rd_cd(
 	(vm, dom, domc) => {
 		for (let [key, value] of Object.entries(attrs))
@@ -162,6 +170,7 @@ let rd = {
 	),
 	tag: (tag, ...decorfs) => rd_element(() => newElement(tag), decorfs),
 	tagAttr: (key, value) => rd_tagAttrs({ [key]: value, }),
+	tagAttrfs: rd_tagAttrfs,
 	tagAttrs: rd_tagAttrs,
 	tagChildren: (...childrenfs) => rd_tagChildren(childrenfs),
 	tagChildrenList: rd_tagChildren,
@@ -190,6 +199,9 @@ let rd_vm = rd.tag('span',
 			rd.tagAttr('style', 'height: 200px; overflow: auto; position: absolute;'),
 			rd.tagListen('scroll', d => console.log('scrollTop', d.target.scrollTop)),
 			rd.tagChildren(rd.tag('div',
+				rd.tagAttrfs({
+					style: () => 'top: 20px; position: relative;',
+				}),
 				rd.tagChildrenList(read()
 					.range(0, 256)
 					.map(i => rd.tag('div', rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + i)),)))
