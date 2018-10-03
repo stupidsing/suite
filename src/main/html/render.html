@@ -30,23 +30,24 @@ let newElement = (tag, attrs, children) => {
 	The renderer should detect the differences and apply changes under dom, or directly update domc.
 */
 
-let rd_a = (key, value) => (vm0, vm1, dom, domc) => {
+let rd_cd = (cf, df) => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
 		;
 	else {
-		vm0 != null && domc.removeAttribute(key);
-		vm1 != null && domc.setAttribute(key, value);
+		vm0 != null && df(vm0, dom, domc);
+		vm1 != null && cf(vm1, dom, domc);
 	}
 };
 
-let rd_c = elementf => (vm0, vm1, dom, domc) => {
-	if (vm0 == vm1)
-		;
-	else {
-		vm0 != null && dom.removeChild(domc);
-		vm1 != null && dom.appendChild(domc = elementf(vm1));
-	}
-};
+let rd_a = (key, value) => rd_cd(
+	(vm, dom, domc) => domc.setAttribute(key, value), 
+	(vm, dom, domc) => domc.removeAttribute(key)
+);
+
+let rd_c = elementf => rd_cd(
+	(vm, dom, domc) => dom.appendChild(domc = elementf(vm)),
+	(vm, dom, domc) => dom.removeChild(domc)
+);
 
 let rd_element = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null)
@@ -113,14 +114,13 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
 		;
 	else {
-		let f0 = iff(vm0) ? thenf : elsef;
-		let f1 = iff(vm1) ? thenf : elsef;
-		if (f0 == f1)
-			f0(vm0, vm1, dom, domc);
-		else {
+		let f0 = vm0 != null && (iff(vm0) ? thenf : elsef);
+		let f1 = vm1 != null && (iff(vm1) ? thenf : elsef);
+		if (f0 != f1) {
 			f0 != null && f0(vm0, null, dom, domc);
 			f1 != null && f1(null, vm1, dom, domc);
-		}
+		} else if (f0 != null)
+			f0(vm0, vm1, dom, domc);
 	}
 };
 
