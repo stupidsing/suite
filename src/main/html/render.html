@@ -10,14 +10,12 @@
 	<script type='text/javascript'>
 'use strict';
 
-let newElement = (tag, attrs, children) => {
+let newElement = (tag, attrs = [], children = []) => {
 	let el = document.createElement(tag);
-	if (attrs != null)
-		for (let [key, value] of Object.entries(attrs))
-			el.setAttribute(key, value);
-	if (children != null)
-		for (let child of children)
-			el.appendChild(child);
+	for (let [key, value] of Object.entries(attrs))
+		el.setAttribute(key, value);
+	for (let child of children)
+		el.appendChild(child);
 	return el;
 };
 
@@ -55,6 +53,11 @@ let rd_c = elementf => rd_cd(
 	(vm, dom, domc) => dom.removeChild(domc)
 );
 
+let rd_e = (event, cb) => rd_cd(
+	(vm, dom, domc) => domc.addEventListener(event, cb),
+	(vm, dom, domc) => domc.removeEventListener(event, cb)
+);
+
 let rd_element = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null)
 		dom.appendChild(domc = elementf());
@@ -63,6 +66,21 @@ let rd_element = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
 			decorf(vm0, vm1, dom, domc);
 	if (vm1 == null)
 		dom.removeChild(domc);
+};
+
+let rd_compose = childrenfs => (vm0, vm1, dom, domc) => {
+	if (vm0 == vm1)
+		;
+	else if (vm0 == null)
+		for (let i = 0; i < childrenfs.length; i++)
+			childrenfs[i](vm0, vm1, domc, null);
+	else if (vm1 == null) {
+		let children = Array.from(domc.childNodes);
+		for (let i = 0; i < childrenfs.length; i++)
+			childrenfs[i](vm0, vm1, domc, children[i]);
+	} else
+		for (let i = 0; i < childrenfs.length; i++)
+			childrenfs[i](vm0, vm1, domc, domc.childNodes[i]);
 };
 
 let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
@@ -132,23 +150,11 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 };
 
 let rd = {
-	a: (key, value) => rd_attrs({ key: value, }),
+	a: (key, value) => rd_attrs({ [key]: value, }),
 	attrs: rd_attrs,
 	c: rd_c,
-	children: (...childrenfs) => (vm0, vm1, dom, domc) => {
-		if (vm0 == vm1)
-			;
-		else if (vm0 == null)
-			for (let i = 0; i < childrenfs.length; i++)
-				childrenfs[i](vm0, vm1, domc, null);
-		else if (vm1 == null) {
-			let children = Array.from(domc.childNodes);
-			for (let i = 0; i < childrenfs.length; i++)
-				childrenfs[i](vm0, vm1, domc, children[i]);
-		} else
-			for (let i = 0; i < childrenfs.length; i++)
-				childrenfs[i](vm0, vm1, domc, domc.childNodes[i]);
-	},
+	children: (...childrenfs) => rd_compose(childrenfs),
+	compose: rd_compose,
 	for: rd_for,
 	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_c(() => document.createComment('else'))),
 	ifElse: rd_ifElse,
@@ -157,6 +163,7 @@ let rd = {
 		vm1 != null ? vm1[key] : null,
 		dom, domc
 	),
+	listen: rd_e,
 	tag: (tag, ...decorfs) => rd_element(() => newElement(tag), decorfs),
 };
 
@@ -179,12 +186,10 @@ let rd_vm = rd.tag('span',
 			rd.tag('ul', rd.for(vm => vm, rd.tag('li', rd.children(text,))))
 		),
 		rd.tag('div',
-			rd.attrs({
-				'onscroll': () => {},
-				'style': 'height: 100px; overflow: visible; position: absolute; width: 300px;',
-			}),
-			rd.children(
-				rd.c(vm => document.createTextNode('scrolling')),
+			rd.a('style', 'height: 200px; overflow: auto; position: absolute;'),
+			//rd.listen('scroll', d => {}),
+			rd.compose(
+				read().range(0, 256).map(i => rd.tag('div', rd.children(rd.c(vm => document.createTextNode('scrolling')),))).list()
 			),
 		),
 	)
