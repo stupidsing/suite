@@ -31,11 +31,12 @@ let newElement = (tag, attrs, children) => {
 */
 
 let rd_element = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
-	if (vm0 != vm1) {
-		if (vm0 == null) dom.appendChild(domc = elementf());
+	if (vm0 == null)
+		dom.appendChild(domc = elementf());
+	if (vm0 != vm1)
 		for (let decorf of decorfs) decorf(vm0, vm1, dom, domc);
-		if (vm1 == null) dom.removeChild(domc);
-	}
+	if (vm1 == null)
+		dom.removeChild(domc);
 };
 
 let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
@@ -87,7 +88,7 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 		(iff(vm1) ? thenf : elsef)(vm0, vm1, dom, domc);
 	else if (vm1 == null)
 		(iff(vm0) ? thenf : elsef)(vm0, vm1, dom, domc);
-	else if (wm0 != wm1)
+	else if (vm0 != vm1)
 		(iff(vm1) ? thenf : elsef)(vm0, vm1, dom, domc);
 };
 
@@ -110,7 +111,7 @@ let rd = {
 	c: elementf => (vm0, vm1, dom, domc) => {
 		if (vm0 != vm1) {
 			if (vm0 != null) dom.removeChild(domc);
-			if (vm1 != null) dom.appendChild(elementf(vm1));
+			if (vm1 != null) dom.appendChild(domc = elementf(vm1));
 		}
 	},
 	children: (...childrenfs) => (vm0, vm1, dom, domc) => {
