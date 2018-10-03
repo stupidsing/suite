@@ -39,10 +39,18 @@ let rd_cd = (cf, df) => (vm0, vm1, dom, domc) => {
 	}
 };
 
-let rd_a = (key, value) => rd_cd(
-	(vm, dom, domc) => domc.setAttribute(key, value), 
-	(vm, dom, domc) => domc.removeAttribute(key)
+let rd_attrs = attrs => rd_cd(
+	(vm, dom, domc) => {
+		for (let [key, value] of Object.entries(attrs))
+			domc.setAttribute(key, value);
+	}, 
+	(vm, dom, domc) => {
+		for (let [key, value] of Object.entries(attrs))
+			domc.removeAttribute(key);
+	},
 );
+
+let rd_a = (key, value) => rd_attrs({ key: value, });
 
 let rd_c = elementf => rd_cd(
 	(vm, dom, domc) => dom.appendChild(domc = elementf(vm)),
@@ -166,11 +174,12 @@ let text = rd.c(vm => document.createTextNode(vm));
 let rd_vm = rd.tag('span',
 	rd.children(
 		rd.scope('message',
-			rd.tag('p', rd.a('style', 'font-weight: bold;'), rd.children(text))
+			rd.tag('p', rd.a('style', 'font-weight: bold;'), rd.children(text,))
 		),
 		rd.scope('fruits',
-			rd.tag('ul', rd.for(vm => vm, rd.tag('li', rd.children(text))))
-		)
+			rd.tag('ul', rd.for(vm => vm, rd.tag('li', rd.children(text,))))
+		),
+		rd.tag('div'),
 	)
 );
 
