@@ -40,12 +40,14 @@ let rd_element = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
 };
 
 let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
-	if (vm0 == null)
+	if (vm0 == vm1)
+		;
+	else if (vm0 == null)
 		for (let i1 = 0; i1 < vm1.length; i1++) rdf(null, vm1[i1], domc, null);
 	else if (vm1 == null) {
 		let children = Array.from(domc.childNodes);
 		for (let i0 = 0; i0 < vm0.length; i0++) rdf(vm0[i0], null, domc, children[i0]);
-	} else if (vm0 != vm1) {
+	} else {
 		let children = Array.from(domc.childNodes);
 		let map0 = new Map();
 		let map1 = new Map();
@@ -84,45 +86,55 @@ let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
 };
 
 let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
-	if (vm0 == null)
+	if (vm0 == vm1)
+		;
+	else if (vm0 == null)
 		(iff(vm1) ? thenf : elsef)(vm0, vm1, dom, domc);
 	else if (vm1 == null)
 		(iff(vm0) ? thenf : elsef)(vm0, vm1, dom, domc);
-	else if (vm0 != vm1)
+	else
 		(iff(vm1) ? thenf : elsef)(vm0, vm1, dom, domc);
 };
 
 let rd_if = (iff, thenf) => rd_ifElse(iff, thenf, (vm0, vm1, dom, domc) => {
-	if (vm0 == null)
+	if (vm0 == vm1)
+		;
+	else if (vm0 == null)
 		dom.appendChild(document.createComment('else'));
 	else if (vm1 == null)
 		dom.removeChild(domc);
-	else if (vm0 != vm1)
+	else
 		dom.replaceChild(domc = document.createComment('else'), domc);
 });
 
 let rd = {
 	attr: (key, value) => (vm0, vm1, dom, domc) => {
-		if (vm0 != vm1) {
+		if (vm0 == vm1)
+			;
+		else {
 			if (vm0 != null) domc.removeAttribute(key);
 			if (vm1 != null) domc.setAttribute(key, value);
 		}
 	},
 	c: elementf => (vm0, vm1, dom, domc) => {
-		if (vm0 != vm1) {
+		if (vm0 == vm1)
+			;
+		else {
 			if (vm0 != null) dom.removeChild(domc);
 			if (vm1 != null) dom.appendChild(domc = elementf(vm1));
 		}
 	},
 	children: (...childrenfs) => (vm0, vm1, dom, domc) => {
-		if (vm0 == null)
+		if (vm0 == vm1)
+			;
+		else if (vm0 == null)
 			for (let i = 0; i < childrenfs.length; i++)
 				childrenfs[i](vm0, vm1, domc, null);
 		else if (vm1 == null) {
 			let children = Array.from(domc.childNodes);
 			for (let i = 0; i < childrenfs.length; i++)
 				childrenfs[i](vm0, vm1, domc, children[i]);
-		} else if (vm0 != vm1)
+		} else
 			for (let i = 0; i < childrenfs.length; i++)
 				childrenfs[i](vm0, vm1, domc, domc.childNodes[i]);
 	},
