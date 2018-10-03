@@ -111,7 +111,7 @@
 		let objects = [background, gun];
 		for (let i = 0; i < 10; i++) objects.push(enemy_());
 
-		frame.register(data => {
+		frame.wire(data => {
 
 			// move
 			objects = read(objects)

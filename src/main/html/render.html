@@ -50,8 +50,6 @@ let rd_attrs = attrs => rd_cd(
 	},
 );
 
-let rd_a = (key, value) => rd_attrs({ key: value, });
-
 let rd_c = elementf => rd_cd(
 	(vm, dom, domc) => dom.appendChild(domc = elementf(vm)),
 	(vm, dom, domc) => dom.removeChild(domc)
@@ -134,7 +132,8 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 };
 
 let rd = {
-	a: rd_a,
+	a: (key, value) => rd_attrs({ key: value, }),
+	attrs: rd_attrs,
 	c: rd_c,
 	children: (...childrenfs) => (vm0, vm1, dom, domc) => {
 		if (vm0 == vm1)
@@ -179,7 +178,15 @@ let rd_vm = rd.tag('span',
 		rd.scope('fruits',
 			rd.tag('ul', rd.for(vm => vm, rd.tag('li', rd.children(text,))))
 		),
-		rd.tag('div'),
+		rd.tag('div',
+			rd.attrs({
+				'onscroll': () => {},
+				'style': 'height: 100px; overflow: visible; position: absolute; width: 300px;',
+			}),
+			rd.children(
+				rd.c(vm => document.createTextNode('scrolling')),
+			),
+		),
 	)
 );
 

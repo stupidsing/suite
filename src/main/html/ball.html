@@ -85,7 +85,7 @@
 			.map(xy => { return { x: xy.x - canvas.offsetLeft, y: xy.y - canvas.offsetTop, }; })
 			.read();
 
-		frame.register(data => {
+		frame.wire(data => {
 
 			// move
 			objects = read(objects)
@@ -99,7 +99,7 @@
 			read(objects).foreach(object => object.draw(context));
 		});
 
-		frp.mouse.move.register(d => console.log("mouse " + d.x + "," + d.y));
+		frp.mouse.move.wire(d => console.log("mouse " + d.x + "," + d.y));
 	</script>
 
 </html>

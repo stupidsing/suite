@@ -6,19 +6,19 @@ let frp = function() {
 		let fire_ = data => { for (let i = 0; i < receivers.length; i++) receivers[i](data); };
 		let redirect_ = tf => {
 			let signal1 = signal();
-			register_(data => tf(data, signal1));
+			wire_(data => tf(data, signal1));
 			return signal1;
 		};
-		let register_ = receiver => receivers.push(receiver);
+		let wire_ = receiver => receivers.push(receiver);
 		return {
 			append: signal_ => {
 				let signal1 = signal();
-				register_(signal1.fire);
-				signal_.register(signal1.fire);
+				wire_(signal1.fire);
+				signal_.wire(signal1.fire);
 				return signal1;
 			},
 			close: () => receivers = [], // for garbage collection
-			concatmap: f => redirect_((data, signal1) => f(data).register(signal1.fire)),
+			concatmap: f => redirect_((data, signal1) => f(data).wire(signal1.fire)),
 			delay: time => redirect_((data, signal1) => setTimeout(() => signal1.fire(data), time)),
 			edge: () => {
 				let data_;
@@ -32,7 +32,7 @@ let frp = function() {
 			fold: (f, value) => redirect_((data, signal1) => signal1.fire(value = f(value, data))),
 			last: () => {
 				let data_;
-				register_(data => data_ = data);
+				wire_(data => data_ = data);
 				return () => data_;
 			},
 			map: f => redirect_((data, signal1) => signal1.fire(f(data))),
@@ -40,13 +40,13 @@ let frp = function() {
 				let v0, v1;
 				let signal1 = signal();
 				let fire1 = () => signal1.fire(f(v0, v1));
-				register_(data => { v0 = data; fire1(); });
-				f.register(data => { v1 = data; fire1(); });
+				wire_(data => { v0 = data; fire1(); });
+				f.wire(data => { v1 = data; fire1(); });
 				return signal1;
 			},
 			read: () => {
 				let list = [];
-				register_(data => list.push(data));
+				wire_(data => list.push(data));
 				return () => {
 					let r = read(list);
 					list = [];
@@ -54,10 +54,9 @@ let frp = function() {
 				};
 			},
 			redirect: redirect_,
-			register: register_,
 			resample: signal_ => {
 				let data_;
-				register_(data => data_ = data);
+				wire_(data => data_ = data);
 				return signal_.redirect((data, signal1) => signal1.fire(data_));
 			},
 			unique: () => {
@@ -69,6 +68,7 @@ let frp = function() {
 					}
 				});
 			},
+			wire: wire_,
 		};
 	};
 
