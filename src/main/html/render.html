@@ -30,11 +30,21 @@ let newElement = (tag, attrs, children) => {
 	The renderer should detect the differences and apply changes under dom, or directly update domc.
 */
 
+let rd_c = elementf => (vm0, vm1, dom, domc) => {
+	if (vm0 == vm1)
+		;
+	else {
+		vm0 != null && dom.removeChild(domc);
+		vm1 != null && dom.appendChild(domc = elementf(vm1));
+	}
+};
+
 let rd_element = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null)
 		dom.appendChild(domc = elementf());
 	if (vm0 != vm1)
-		for (let decorf of decorfs) decorf(vm0, vm1, dom, domc);
+		for (let decorf of decorfs)
+			decorf(vm0, vm1, dom, domc);
 	if (vm1 == null)
 		dom.removeChild(domc);
 };
@@ -43,16 +53,21 @@ let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
 		;
 	else if (vm0 == null)
-		for (let i1 = 0; i1 < vm1.length; i1++) rdf(null, vm1[i1], domc, null);
+		for (let i1 = 0; i1 < vm1.length; i1++)
+			rdf(null, vm1[i1], domc, null);
 	else if (vm1 == null) {
 		let children = Array.from(domc.childNodes);
-		for (let i0 = 0; i0 < vm0.length; i0++) rdf(vm0[i0], null, domc, children[i0]);
+		for (let i0 = 0; i0 < vm0.length; i0++)
+			rdf(vm0[i0], null, domc, children[i0]);
 	} else {
 		let children = Array.from(domc.childNodes);
 		let map0 = new Map();
 		let map1 = new Map();
-		for (let i0 = 0; i0 < vm0.length; i0++) map0.set(keyf(vm0[i0]), i0);
-		for (let i1 = 0; i1 < vm1.length; i1++) map1.set(keyf(vm1[i1]), i1);
+
+		for (let i0 = 0; i0 < vm0.length; i0++)
+			map0.set(keyf(vm0[i0]), i0);
+		for (let i1 = 0; i1 < vm1.length; i1++)
+			map1.set(keyf(vm1[i1]), i1);
 
 		let isSameOrder = vm0.length == vm1.length;
 		let domc0 = domc;
@@ -88,42 +103,28 @@ let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
 let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
 		;
-	else if (vm0 == null)
-		(iff(vm1) ? thenf : elsef)(vm0, vm1, dom, domc);
-	else if (vm1 == null)
-		(iff(vm0) ? thenf : elsef)(vm0, vm1, dom, domc);
-	else
-		(iff(vm1) ? thenf : elsef)(vm0, vm1, dom, domc);
+	else {
+		let f0 = iff(vm0) ? thenf : elsef;
+		let f1 = iff(vm1) ? thenf : elsef;
+		if (f0 == f1)
+			f0(vm0, vm1, dom, domc);
+		else {
+			f0 != null && f0(vm0, null, dom, domc);
+			f1 != null && f1(null, vm1, dom, domc);
+		}
+	}
 };
-
-let rd_if = (iff, thenf) => rd_ifElse(iff, thenf, (vm0, vm1, dom, domc) => {
-	if (vm0 == vm1)
-		;
-	else if (vm0 == null)
-		dom.appendChild(document.createComment('else'));
-	else if (vm1 == null)
-		dom.removeChild(domc);
-	else
-		dom.replaceChild(domc = document.createComment('else'), domc);
-});
 
 let rd = {
 	attr: (key, value) => (vm0, vm1, dom, domc) => {
 		if (vm0 == vm1)
 			;
 		else {
-			if (vm0 != null) domc.removeAttribute(key);
-			if (vm1 != null) domc.setAttribute(key, value);
+			vm0 != null && domc.removeAttribute(key);
+			vm1 != null && domc.setAttribute(key, value);
 		}
 	},
-	c: elementf => (vm0, vm1, dom, domc) => {
-		if (vm0 == vm1)
-			;
-		else {
-			if (vm0 != null) dom.removeChild(domc);
-			if (vm1 != null) dom.appendChild(domc = elementf(vm1));
-		}
-	},
+	c: rd_c,
 	children: (...childrenfs) => (vm0, vm1, dom, domc) => {
 		if (vm0 == vm1)
 			;
@@ -139,6 +140,7 @@ let rd = {
 				childrenfs[i](vm0, vm1, domc, domc.childNodes[i]);
 	},
 	for: rd_for,
+	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_c(() => document.createComment('else'))),
 	ifElse: rd_ifElse,
 	scope: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
 		vm0 != null ? vm0[key] : null,
