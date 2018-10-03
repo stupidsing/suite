@@ -30,6 +30,15 @@ let newElement = (tag, attrs, children) => {
 	The renderer should detect the differences and apply changes under dom, or directly update domc.
 */
 
+let rd_a = (key, value) => (vm0, vm1, dom, domc) => {
+	if (vm0 == vm1)
+		;
+	else {
+		vm0 != null && domc.removeAttribute(key);
+		vm1 != null && domc.setAttribute(key, value);
+	}
+};
+
 let rd_c = elementf => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
 		;
@@ -116,14 +125,7 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 };
 
 let rd = {
-	attr: (key, value) => (vm0, vm1, dom, domc) => {
-		if (vm0 == vm1)
-			;
-		else {
-			vm0 != null && domc.removeAttribute(key);
-			vm1 != null && domc.setAttribute(key, value);
-		}
-	},
+	a: rd_a,
 	c: rd_c,
 	children: (...childrenfs) => (vm0, vm1, dom, domc) => {
 		if (vm0 == vm1)
@@ -163,7 +165,7 @@ let text = rd.c(vm => document.createTextNode(vm));
 let rd_vm = rd.tag('span',
 	rd.children(
 		rd.scope('message',
-			rd.tag('p', rd.attr('style', 'font-weight: bold;'), rd.children(text))
+			rd.tag('p', rd.a('style', 'font-weight: bold;'), rd.children(text))
 		),
 		rd.scope('fruits',
 			rd.tag('ul', rd.for(vm => vm, rd.tag('li', rd.children(text))))
