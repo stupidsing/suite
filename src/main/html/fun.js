@@ -40,5 +40,10 @@ let read = list => {
 			for (let e of list) list1.push(f(e));
 			return read(list1);
 		},
+		range: (s, e) => {
+			let list = [];
+			for (let i = s; i < e; i++) list.push(i);
+			return read(list);
+		},
 	};
 };
