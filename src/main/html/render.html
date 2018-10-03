@@ -197,7 +197,9 @@ let rd_vm = rd.tag('span',
 		),
 		rd.tag('div',
 			rd.tagAttr('style', 'height: 200px; overflow: auto; position: absolute;'),
-			rd.tagListen('scroll', d => console.log('scrollTop', d.target.scrollTop)),
+			rd.tagListen('scroll', d => {
+				console.log('scrollTop', d.target.scrollTop);
+			}),
 			rd.tagChildren(rd.tag('div',
 				rd.tagAttrfs({
 					style: () => 'top: 20px; position: relative;',
