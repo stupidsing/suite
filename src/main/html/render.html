@@ -189,11 +189,13 @@ let rd_vm = rd.tag('span',
 		rd.tag('div',
 			rd.tagAttr('style', 'height: 200px; overflow: auto; position: absolute;'),
 			rd.tagListen('scroll', d => console.log('scrollTop', d.target.scrollTop)),
-			rd.tagChildrenList(read()
-				.range(0, 256)
-				.map(i => rd.tag('div', rd.tagChildren(rd.child(vm => document.createTextNode('scrolling')),)))
-				.list()
-			),
+			rd.tagChildren(rd.tag('div',
+				rd.tagChildrenList(read()
+					.range(0, 256)
+					.map(i => rd.tag('div', rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + i)),)))
+					.list()
+				),
+			),),
 		),
 	)
 );
