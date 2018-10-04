@@ -1,4 +1,4 @@
-<meta charset='utf-8'>
+	<meta charset='utf-8'>
 <html>
 	<body>
 		<div id='target'></div>
@@ -119,12 +119,15 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 	}
 };
 
-let rd_tagAttrfs = attrs => (vm0, vm1, dom, domc) => {
+let rd_tagAttrsf = attrsf => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
 		;
 	else if (vm1 != null)
-		for (let [key, valuef] of Object.entries(attrs))
-			domc.setAttribute(key, valuef(vm1));
+		for (let [key, value] of Object.entries(attrsf(vm1)))
+			domc.setAttribute(key, value);
+	else
+		for (let [key, value] of Object.entries(attrsf(vm0)))
+			domc.removeAttribute(key);
 };
 
 let rd_tagAttrs = attrs => rd_cd(
@@ -170,7 +173,7 @@ let rd = {
 	),
 	tag: (tag, ...decorfs) => rd_element(() => newElement(tag), decorfs),
 	tagAttr: (key, value) => rd_tagAttrs({ [key]: value, }),
-	tagAttrfs: rd_tagAttrfs,
+	tagAttrsf: rd_tagAttrsf,
 	tagAttrs: rd_tagAttrs,
 	tagChildren: (...childrenfs) => rd_tagChildren(childrenfs),
 	tagChildrenList: rd_tagChildren,
@@ -195,29 +198,32 @@ let rd_vm = rd.tag('span',
 		rd.scope('fruits',
 			rd.tag('ul', rd.for(vm => vm, rd.tag('li', rd.tagChildren(text,))))
 		),
-		rd.tag('div',
-			rd.tagAttr('style', 'height: 200px; overflow: auto; position: absolute;'),
-			rd.tagListen('scroll', d => {
-				console.log('scrollTop', d.target.scrollTop);
-			}),
-			rd.tagChildren(rd.tag('div',
-				rd.tagAttrfs({
-					style: () => 'top: 20px; position: relative;',
+		rd.scope('virtualScrollHeight',
+			rd.tag('div',
+				rd.tagAttr('style', 'height: 200px; overflow: auto; position: absolute;'),
+				rd.tagListen('scroll', d => {
+					console.log('scrollTop', d.target.scrollTop);
+					renderAgain(rd_vm, { ...pvm, virtualScrollHeight: 0, });
 				}),
-				rd.tagChildrenList(read()
-					.range(0, 256)
-					.map(i => rd.tag('div', rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + i)),)))
-					.list()
-				),
-			),),
+				rd.tagChildren(rd.tag('div',
+					rd.tagAttrsf(vm => ({
+						style: 'position: relative; top: ' + vm + 'px;',
+					})),
+					rd.tagChildrenList(read()
+						.range(0, 256)
+						.map(i => rd.tag('div', rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + i)),)))
+						.list()
+					),
+				),),
+			),
 		),
 	)
 );
 
-renderAgain(rd_vm, { message: 'hello world0', fruits: ['banana',], });
-renderAgain(rd_vm, { message: 'hello world1', fruits: ['apple', 'banana',], });
-renderAgain(rd_vm, { message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], });
-renderAgain(rd_vm, { message: 'hello world~', fruits: ['banana', 'orange',], });
+renderAgain(rd_vm, { virtualScrollHeight: 0, message: 'hello world0', fruits: ['banana',], });
+renderAgain(rd_vm, { virtualScrollHeight: 0, message: 'hello world1', fruits: ['apple', 'banana',], });
+renderAgain(rd_vm, { virtualScrollHeight: 0, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], });
+renderAgain(rd_vm, { virtualScrollHeight: 0, message: 'hello world~', fruits: ['banana', 'orange',], });
 	</script>
 
 </html>
