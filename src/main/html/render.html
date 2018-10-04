@@ -173,8 +173,8 @@ let rd = {
 	),
 	tag: (tag, ...decorfs) => rd_element(() => newElement(tag), decorfs),
 	tagAttr: (key, value) => rd_tagAttrs({ [key]: value, }),
-	tagAttrsf: rd_tagAttrsf,
 	tagAttrs: rd_tagAttrs,
+	tagAttrsf: rd_tagAttrsf,
 	tagChildren: (...childrenfs) => rd_tagChildren(childrenfs),
 	tagChildrenList: rd_tagChildren,
 	tagListen: rd_tagEventListener,
@@ -190,7 +190,13 @@ let renderAgain = (renderer, vm) => {
 
 let text = rd.child(vm => document.createTextNode(vm));
 
+let rd_list = read()
+	.range(0, 256)
+	.map(i => rd.tag('div', rd.tagAttr('style', 'height: 32px;'), rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + i)),)))
+	.list();
+
 let rd_vm = rd.tag('span',
+	rd.tagAttr('style', 'font-family: Verdana;'),
 	rd.tagChildren(
 		rd.scope('message',
 			rd.tag('p', rd.tagAttr('style', 'font-weight: bold;'), rd.tagChildren(text,))
@@ -198,32 +204,49 @@ let rd_vm = rd.tag('span',
 		rd.scope('fruits',
 			rd.tag('ul', rd.for(vm => vm, rd.tag('li', rd.tagChildren(text,))))
 		),
-		rd.scope('virtualScrollHeight',
+		rd.scope('start',
 			rd.tag('div',
 				rd.tagAttr('style', 'height: 200px; overflow: auto; position: absolute;'),
 				rd.tagListen('scroll', d => {
-					console.log('scrollTop', d.target.scrollTop);
-					renderAgain(rd_vm, { ...pvm, virtualScrollHeight: 0, });
+					let scrollTop = d.target.scrollTop;
+					console.log('scrollTop', scrollTop);
+					let start = Math.floor(scrollTop / 32);
+					renderAgain(rd_vm, { ...pvm, start: start, });
 				}),
 				rd.tagChildren(rd.tag('div',
+					(vm0, vm1, dom, domc) => {
+						if (vm0 == vm1)
+							;
+						else if (vm0 == null) {
+							let s = vm1;
+							let e = vm1 + Math.floor(200 / 32) + 1;
+							for (let i = s; i < e; i++)
+								rd_list[i](vm0, vm1, domc, null);
+						} else if (vm1 == null) {
+							let s = vm0;
+							let e = vm0 + Math.floor(200 / 32) + 1;
+							for (let i = s; i < e; i++)
+								rd_list[i](vm0, vm1, domc, children[i]);
+						} else {
+							let s = vm1;
+							let e = vm1 + Math.floor(200 / 32) + 1;
+							for (let i = s; i < e; i++)
+								rd_list[i](vm0, vm1, domc, domc.childNodes[i]);
+						}
+					},
 					rd.tagAttrsf(vm => ({
-						style: 'position: relative; top: ' + vm + 'px;',
+						style: 'height: ' + rd_list.length * 32 + 'px; position: relative; top: ' + vm * 32 + 'px;',
 					})),
-					rd.tagChildrenList(read()
-						.range(0, 256)
-						.map(i => rd.tag('div', rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + i)),)))
-						.list()
-					),
 				),),
 			),
 		),
 	)
 );
 
-renderAgain(rd_vm, { virtualScrollHeight: 0, message: 'hello world0', fruits: ['banana',], });
-renderAgain(rd_vm, { virtualScrollHeight: 0, message: 'hello world1', fruits: ['apple', 'banana',], });
-renderAgain(rd_vm, { virtualScrollHeight: 0, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], });
-renderAgain(rd_vm, { virtualScrollHeight: 0, message: 'hello world~', fruits: ['banana', 'orange',], });
+renderAgain(rd_vm, { start: 0, message: 'hello world0', fruits: ['banana',], });
+renderAgain(rd_vm, { start: 0, message: 'hello world1', fruits: ['apple', 'banana',], });
+renderAgain(rd_vm, { start: 0, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], });
+renderAgain(rd_vm, { start: 0, message: 'hello world~', fruits: ['banana', 'orange',], });
 	</script>
 
 </html>
