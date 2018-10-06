@@ -174,10 +174,10 @@ let rd = {
 
 let pvm = null;
 
-let renderAgain = (renderer, vm) => {
+let renderAgain = (renderer, f) => {
 	let target = document.getElementById('target');
-	renderer(pvm, vm, target, target.firstChild);
-	pvm = vm;
+	let ppvm = pvm;
+	renderer(ppvm, pvm = f(pvm), target, target.firstChild);
 };
 
 let text = rd.child(vm => document.createTextNode(vm));
@@ -196,7 +196,7 @@ let rd_vm = rd.tag('span',
 			rd.tagListen('scroll', d => {
 				let scrollTop = d.target.scrollTop;
 				let start = Math.floor(scrollTop / 32);
-				renderAgain(rd_vm, { ...pvm, start: start, });
+				renderAgain(rd_vm, vm => ({ ...vm, start: start, }));
 			}),
 			rd.tagChildren(rd.tag('div',
 				rd.tagAttrsf(vm => ({
@@ -227,10 +227,10 @@ let vms = [];
 for (let i = 0; i < 256; i++)
 	vms.push(i);
 
-renderAgain(rd_vm, { start, vms, message: 'hello world0', fruits: ['banana',], });
-renderAgain(rd_vm, { start, vms, message: 'hello world1', fruits: ['apple', 'banana',], });
-renderAgain(rd_vm, { start, vms, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], });
-renderAgain(rd_vm, { start, vms, message: 'hello world~', fruits: ['banana', 'orange',], });
+renderAgain(rd_vm, vm => ({ start, vms, message: 'hello world0', fruits: ['banana',], }));
+renderAgain(rd_vm, vm => ({ start, vms, message: 'hello world1', fruits: ['apple', 'banana',], }));
+renderAgain(rd_vm, vm => ({ start, vms, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));
+renderAgain(rd_vm, vm => ({ start, vms, message: 'hello world~', fruits: ['banana', 'orange',], }));
 	</script>
 
 </html>
