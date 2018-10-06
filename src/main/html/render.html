@@ -205,7 +205,6 @@ let rd_vm = rd.tag('span',
 				rd.tagAttr('style', 'height: 200px; overflow: auto; position: absolute;'),
 				rd.tagListen('scroll', d => {
 					let scrollTop = d.target.scrollTop;
-					console.log('scrollTop', scrollTop);
 					let start = Math.floor(scrollTop / 32);
 					renderAgain(rd_vm, { ...pvm, start: start, });
 				}),
