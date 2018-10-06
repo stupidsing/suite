@@ -52,57 +52,6 @@ let rd_element = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
 		dom.removeChild(domc);
 };
 
-let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
-	if (vm0 == vm1)
-		;
-	else if (vm0 == null)
-		for (let i1 = 0; i1 < vm1.length; i1++)
-			rdf(null, vm1[i1], domc, null);
-	else if (vm1 == null) {
-		let children = Array.from(domc.childNodes);
-		for (let i0 = 0; i0 < vm0.length; i0++)
-			rdf(vm0[i0], null, domc, children[i0]);
-	} else {
-		let children = Array.from(domc.childNodes);
-		let map0 = new Map();
-		let map1 = new Map();
-
-		for (let i0 = 0; i0 < vm0.length; i0++)
-			map0.set(keyf(vm0[i0]), i0);
-		for (let i1 = 0; i1 < vm1.length; i1++)
-			map1.set(keyf(vm1[i1]), i1);
-
-		let isSameOrder = vm0.length == vm1.length;
-		let domc0 = domc;
-
-		for (let i1 = 0; i1 < vm1.length; i1++) {
-			let i0 = map0.get(keyf(vm1[i1]));
-			isSameOrder &= i0 == i1;
-		}
-
-		if (isSameOrder)
-			for (let i = 0; i < vm1.length; i++)
-				rdf(vm0[i], vm1[i], domc, children[i]);
-		else {
-			dom.replaceChild(domc = domc0.cloneNode(false), domc0);
-
-			for (let i1 = 0; i1 < vm1.length; i1++) {
-				let i0 = map0.get(keyf(vm1[i1]));
-				if (i0 != null) {
-					let child0 = children[i0];
-					domc.appendChild(child0);
-					rdf(vm0[i0], vm1[i1], domc, child0);
-				} else
-					rdf(null, vm1[i1], domc, null);
-			}
-
-			for (let i0 = 0; i0 < vm0.length; i0++)
-				if (!map1.has(keyf(vm0[i0])))
-					rdf(vm0[i0], null, domc0, domc0.childNodes[i0]);
-		}
-	}
-};
-
 let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
 		;
@@ -161,9 +110,60 @@ let rd_tagEventListener = (event, cb) => rd_cd(
 	(vm, dom, domc) => domc.removeEventListener(event, cb)
 );
 
+let rd_tagFor = (keyf, rdf) => (vm0, vm1, dom, domc) => {
+	if (vm0 == vm1)
+		;
+	else if (vm0 == null)
+		for (let i1 = 0; i1 < vm1.length; i1++)
+			rdf(null, vm1[i1], domc, null);
+	else if (vm1 == null) {
+		let children = Array.from(domc.childNodes);
+		for (let i0 = 0; i0 < vm0.length; i0++)
+			rdf(vm0[i0], null, domc, children[i0]);
+	} else {
+		let children = Array.from(domc.childNodes);
+		let map0 = new Map();
+		let map1 = new Map();
+
+		for (let i0 = 0; i0 < vm0.length; i0++)
+			map0.set(keyf(vm0[i0]), i0);
+		for (let i1 = 0; i1 < vm1.length; i1++)
+			map1.set(keyf(vm1[i1]), i1);
+
+		let isSameOrder = vm0.length == vm1.length;
+		let domc0 = domc;
+
+		for (let i1 = 0; i1 < vm1.length; i1++) {
+			let i0 = map0.get(keyf(vm1[i1]));
+			isSameOrder &= i0 == i1;
+		}
+
+		if (isSameOrder)
+			for (let i = 0; i < vm1.length; i++)
+				rdf(vm0[i], vm1[i], domc, children[i]);
+		else {
+			let children0 = Array.from(domc0.childNodes);
+			dom.replaceChild(domc = domc0.cloneNode(false), domc0);
+
+			for (let i1 = 0; i1 < vm1.length; i1++) {
+				let i0 = map0.get(keyf(vm1[i1]));
+				if (i0 != null) {
+					let child0 = children[i0];
+					domc.appendChild(child0);
+					rdf(vm0[i0], vm1[i1], domc, child0);
+				} else
+					rdf(null, vm1[i1], domc, null);
+			}
+
+			for (let i0 = 0; i0 < vm0.length; i0++)
+				if (!map1.has(keyf(vm0[i0])))
+					rdf(vm0[i0], null, domc0, children0[i0]);
+		}
+	}
+};
+
 let rd = {
 	child: rd_child,
-	for: rd_for,
 	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_child(() => document.createComment('else'))),
 	ifElse: rd_ifElse,
 	scope: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
@@ -177,6 +177,7 @@ let rd = {
 	tagAttrsf: rd_tagAttrsf,
 	tagChildren: (...childrenfs) => rd_tagChildren(childrenfs),
 	tagChildrenList: rd_tagChildren,
+	tagFor: rd_tagFor,
 	tagListen: rd_tagEventListener,
 };
 
@@ -190,11 +191,6 @@ let renderAgain = (renderer, vm) => {
 
 let text = rd.child(vm => document.createTextNode(vm));
 
-let rd_list = read()
-	.range(0, 256)
-	.map(i => rd.tag('div', rd.tagAttr('style', 'height: 32px;'), rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + i)),)))
-	.list();
-
 let rd_vm = rd.tag('span',
 	rd.tagAttr('style', 'font-family: Verdana;'),
 	rd.tagChildren(
@@ -202,7 +198,7 @@ let rd_vm = rd.tag('span',
 			rd.tag('p', rd.tagAttr('style', 'font-weight: bold;'), rd.tagChildren(text,))
 		),
 		rd.scope('fruits',
-			rd.tag('ul', rd.for(vm => vm, rd.tag('li', rd.tagChildren(text,))))
+			rd.tag('ul', rd.tagFor(vm => vm, rd.tag('li', rd.tagChildren(text,))))
 		),
 		rd.scope('start',
 			rd.tag('div',
@@ -214,29 +210,25 @@ let rd_vm = rd.tag('span',
 					renderAgain(rd_vm, { ...pvm, start: start, });
 				}),
 				rd.tagChildren(rd.tag('div',
-					(vm0, vm1, dom, domc) => {
-						if (vm0 == vm1)
-							;
-						else if (vm0 == null) {
-							let s = vm1;
-							let e = vm1 + Math.floor(200 / 32) + 1;
-							for (let i = s; i < e; i++)
-								rd_list[i](vm0, vm1, domc, null);
-						} else if (vm1 == null) {
-							let s = vm0;
-							let e = vm0 + Math.floor(200 / 32) + 1;
-							for (let i = s; i < e; i++)
-								rd_list[i](vm0, vm1, domc, children[i]);
-						} else {
-							let s = vm1;
-							let e = vm1 + Math.floor(200 / 32) + 1;
-							for (let i = s; i < e; i++)
-								rd_list[i](vm0, vm1, domc, domc.childNodes[i]);
-						}
-					},
 					rd.tagAttrsf(vm => ({
-						style: 'height: ' + rd_list.length * 32 + 'px; position: relative; top: ' + vm * 32 + 'px;',
+						style: 'height: ' + (256 - vm) * 32 + 'px; position: relative; top: ' + vm * 32 + 'px;',
 					})),
+					(vm0, vm1, dom, domc) => {
+						let list0 = s => {
+							let e = s + Math.floor(200 / 32) + 1;
+							let vms = [];
+							for (let i = s; i < e; i++)
+								vms.push(i);
+							return vms;
+						};
+
+						let list1 = s => s != null ? list0(s) : null;
+
+						rd.tagFor(
+							vm => vm,
+							rd.tag('div', rd.tagAttr('style', 'height: 32px;'), rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + vm)),))
+						)(list1(vm0), list1(vm1), dom, domc);
+					},
 				),),
 			),
 		),
