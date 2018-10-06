@@ -10,15 +10,6 @@
 	<script type='text/javascript'>
 'use strict';
 
-let newElement = (tag, attrs = [], children = []) => {
-	let el = document.createElement(tag);
-	for (let [key, value] of Object.entries(attrs))
-		el.setAttribute(key, value);
-	for (let child of children)
-		el.appendChild(child);
-	return el;
-};
-
 /*
 	a typical renderer has 4 parameters:
 	vm0 - old view model, null to append DOM elements
@@ -171,7 +162,7 @@ let rd = {
 		vm1 != null ? vm1[key] : null,
 		dom, domc
 	),
-	tag: (tag, ...decorfs) => rd_element(() => newElement(tag), decorfs),
+	tag: (tag, ...decorfs) => rd_element(() => document.createElement(tag), decorfs),
 	tagAttr: (key, value) => rd_tagAttrs({ [key]: value, }),
 	tagAttrs: rd_tagAttrs,
 	tagAttrsf: rd_tagAttrsf,
