@@ -188,6 +188,9 @@ let rd_vm = rd.tag('span',
 		rd.scope('message',
 			rd.tag('p', rd.tagAttr('style', 'font-weight: bold;'), rd.tagChildren(text,))
 		),
+		rd.scope('t',
+			rd.tag('p', rd.tagChildren(text,))
+		),
 		rd.scope('fruits',
 			rd.tag('ul', rd.tagFor(vm => vm, rd.tag('li', rd.tagChildren(text,))))
 		),
@@ -221,16 +224,22 @@ let rd_vm = rd.tag('span',
 	)
 );
 
+setInterval(() => {
+	console.log('in', pvm.t);
+	renderAgain(rd_vm, vm => ({ ...vm, t: vm.t + 1, }));
+}, 1000);
+
+let t = 0;
 let start = 0;
 let vms = [];
 
 for (let i = 0; i < 256; i++)
 	vms.push(i);
 
-renderAgain(rd_vm, vm => ({ start, vms, message: 'hello world0', fruits: ['banana',], }));
-renderAgain(rd_vm, vm => ({ start, vms, message: 'hello world1', fruits: ['apple', 'banana',], }));
-renderAgain(rd_vm, vm => ({ start, vms, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));
-renderAgain(rd_vm, vm => ({ start, vms, message: 'hello world~', fruits: ['banana', 'orange',], }));
+renderAgain(rd_vm, vm => ({ t, start, vms, message: 'hello world0', fruits: ['banana',], }));
+renderAgain(rd_vm, vm => ({ t, start, vms, message: 'hello world1', fruits: ['apple', 'banana',], }));
+renderAgain(rd_vm, vm => ({ t, start, vms, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));
+renderAgain(rd_vm, vm => ({ t, start, vms, message: 'hello world~', fruits: ['banana', 'orange',], }));
 	</script>
 
 </html>
