@@ -191,44 +191,44 @@ let rd_vm = rd.tag('span',
 		rd.scope('fruits',
 			rd.tag('ul', rd.tagFor(vm => vm, rd.tag('li', rd.tagChildren(text,))))
 		),
-		rd.scope('start',
-			rd.tag('div',
-				rd.tagAttr('style', 'height: 200px; overflow: auto; position: absolute;'),
-				rd.tagListen('scroll', d => {
-					let scrollTop = d.target.scrollTop;
-					let start = Math.floor(scrollTop / 32);
-					renderAgain(rd_vm, { ...pvm, start: start, });
-				}),
-				rd.tagChildren(rd.tag('div',
-					rd.tagAttrsf(vm => ({
-						style: 'height: ' + (256 - vm) * 32 + 'px; position: relative; top: ' + vm * 32 + 'px;',
-					})),
-					(vm0, vm1, dom, domc) => {
-						let list0 = s => {
-							let e = s + Math.floor(200 / 32) + 1;
-							let vms = [];
-							for (let i = s; i < e; i++)
-								vms.push(i);
-							return vms;
-						};
+		rd.tag('div',
+			rd.tagAttr('style', 'height: 200px; overflow: auto; position: absolute;'),
+			rd.tagListen('scroll', d => {
+				let scrollTop = d.target.scrollTop;
+				let start = Math.floor(scrollTop / 32);
+				renderAgain(rd_vm, { ...pvm, start: start, });
+			}),
+			rd.tagChildren(rd.tag('div',
+				rd.tagAttrsf(vm => ({
+					style: 'height: ' + (256 - vm.start) * 32 + 'px; position: relative; top: ' + vm.start * 32 + 'px;',
+				})),
+				(vm0, vm1, dom, domc) => {
+					let list0 = vm => {
+						let s = vm.start;
+						let e = s + Math.floor(200 / 32) + 1;
+						return vm.vms.slice(s, e);
+					};
 
-						let list1 = s => s != null ? list0(s) : null;
+					let list1 = s => s != null ? list0(s) : null;
 
-						rd.tagFor(
-							vm => vm,
-							rd.tag('div', rd.tagAttr('style', 'height: 32px;'), rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + vm)),))
-						)(list1(vm0), list1(vm1), dom, domc);
-					},
-				),),
-			),
+					rd.tagFor(
+						vm => vm,
+						rd.tag('div', rd.tagAttr('style', 'height: 32px;'), rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + vm)),))
+					)(list1(vm0), list1(vm1), dom, domc);
+				},
+			),),
 		),
 	)
 );
 
-renderAgain(rd_vm, { start: 0, message: 'hello world0', fruits: ['banana',], });
-renderAgain(rd_vm, { start: 0, message: 'hello world1', fruits: ['apple', 'banana',], });
-renderAgain(rd_vm, { start: 0, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], });
-renderAgain(rd_vm, { start: 0, message: 'hello world~', fruits: ['banana', 'orange',], });
+let vms = [];
+for (let i = 0; i < 256; i++)
+	vms.push(i);
+
+renderAgain(rd_vm, { start: 0, vms: vms, message: 'hello world0', fruits: ['banana',], });
+renderAgain(rd_vm, { start: 0, vms: vms, message: 'hello world1', fruits: ['apple', 'banana',], });
+renderAgain(rd_vm, { start: 0, vms: vms, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], });
+renderAgain(rd_vm, { start: 0, vms: vms, message: 'hello world~', fruits: ['banana', 'orange',], });
 	</script>
 
 </html>
