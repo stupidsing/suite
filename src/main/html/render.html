@@ -197,8 +197,7 @@ let rd_vm = rd.tag('span',
 		rd.tag('div',
 			rd.tagAttr('style', 'height: 200px; overflow: auto; position: absolute;'),
 			rd.tagListen('scroll', d => {
-				let scrollTop = d.target.scrollTop;
-				let start = Math.floor(scrollTop / 32);
+				let start = Math.floor(d.target.scrollTop / 32);
 				renderAgain(rd_vm, vm => ({ ...vm, start, }));
 			}),
 			rd.tagChildren(rd.tag('div',
