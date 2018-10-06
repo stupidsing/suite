@@ -221,14 +221,16 @@ let rd_vm = rd.tag('span',
 	)
 );
 
+let start = 0;
 let vms = [];
+
 for (let i = 0; i < 256; i++)
 	vms.push(i);
 
-renderAgain(rd_vm, { start: 0, vms: vms, message: 'hello world0', fruits: ['banana',], });
-renderAgain(rd_vm, { start: 0, vms: vms, message: 'hello world1', fruits: ['apple', 'banana',], });
-renderAgain(rd_vm, { start: 0, vms: vms, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], });
-renderAgain(rd_vm, { start: 0, vms: vms, message: 'hello world~', fruits: ['banana', 'orange',], });
+renderAgain(rd_vm, { start, vms, message: 'hello world0', fruits: ['banana',], });
+renderAgain(rd_vm, { start, vms, message: 'hello world1', fruits: ['apple', 'banana',], });
+renderAgain(rd_vm, { start, vms, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], });
+renderAgain(rd_vm, { start, vms, message: 'hello world~', fruits: ['banana', 'orange',], });
 	</script>
 
 </html>
