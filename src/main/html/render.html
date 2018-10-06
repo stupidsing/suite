@@ -199,7 +199,7 @@ let rd_vm = rd.tag('span',
 			rd.tagListen('scroll', d => {
 				let scrollTop = d.target.scrollTop;
 				let start = Math.floor(scrollTop / 32);
-				renderAgain(rd_vm, vm => ({ ...vm, start: start, }));
+				renderAgain(rd_vm, vm => ({ ...vm, start, }));
 			}),
 			rd.tagChildren(rd.tag('div',
 				rd.tagAttrsf(vm => ({
