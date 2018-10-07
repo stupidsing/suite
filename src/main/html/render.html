@@ -28,7 +28,7 @@ let rd_cd = (cf, df) => (vm0, vm1, dom, domc) => {
 	}
 };
 
-let rd_elem = elementf => rd_cd(
+let rd_element = elementf => rd_cd(
 	(vm, dom, domc) => dom.appendChild(domc = elementf(vm)),
 	(vm, dom, domc) => dom.removeChild(domc)
 );
@@ -168,8 +168,8 @@ let rd_tag = (elementf, decorfs) => {
 };
 
 let rd = {
-	child: rd_elem,
-	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_elem(() => document.createComment('else'))),
+	child: rd_element,
+	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_element(() => document.createComment('else'))),
 	ifElse: rd_ifElse,
 	scope: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
 		vm0 != null ? vm0[key] : null,
