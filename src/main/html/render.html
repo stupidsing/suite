@@ -10,6 +10,13 @@
 	<script type='text/javascript'>
 'use strict';
 
+let cud = dom => ({
+	create: c => dom.appendChild(c),
+	delete: c => dom.removeChild(c),
+	update: (c0, c1) => dom.replaceChild(c1, c0),
+});
+
+
 /*
 	a typical renderer has 4 parameters:
 	vm0 - old view model, null to append DOM elements
@@ -19,40 +26,40 @@
 	The renderer should detect the differences and apply changes under dom, or directly update domc.
 */
 
-let rd_cd = (cf, df) => (vm0, vm1, dom, domc) => {
+let rd_cd = (cf, df) => (vm0, vm1, cudf, domc) => {
 	if (vm0 == vm1)
 		;
 	else {
-		vm0 != null && df(vm0, dom, domc);
-		vm1 != null && cf(vm1, dom, domc);
+		vm0 != null && df(vm0, cudf, domc);
+		vm1 != null && cf(vm1, cudf, domc);
 	}
 };
 
 let rd_element = elementf => rd_cd(
-	(vm, dom, domc) => dom.appendChild(domc = elementf(vm)),
-	(vm, dom, domc) => dom.removeChild(domc)
+	(vm, cudf, domc) => cudf.create(domc = elementf(vm)),
+	(vm, cudf, domc) => cudf.delete(domc)
 );
 
-let rd_elementDecors = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
+let rd_elementDecors = (elementf, decorfs) => (vm0, vm1, cudf, domc) => {
 	if (vm0 == null)
-		dom.appendChild(domc = elementf());
+		cudf.create(domc = elementf());
 	if (vm0 != vm1)
 		for (let decorf of decorfs)
-			decorf(vm0, vm1, dom, domc);
+			decorf(vm0, vm1, cudf, domc);
 	if (vm1 == null)
-		dom.removeChild(domc);
+		cudf.delete(domc);
 };
 
-let rd_for = (keyf, rd_item) => (vm0, vm1, dom, domc) => {
+let rd_for = (keyf, rd_item) => (vm0, vm1, cudf, domc) => {
 	if (vm0 == vm1)
 		;
 	else if (vm0 == null)
 		for (let i1 = 0; i1 < vm1.length; i1++)
-			rd_item(null, vm1[i1], domc, null);
+			rd_item(null, vm1[i1], cud(domc), null);
 	else if (vm1 == null) {
 		let children = Array.from(domc.childNodes);
 		for (let i0 = 0; i0 < vm0.length; i0++)
-			rd_item(vm0[i0], null, domc, children[i0]);
+			rd_item(vm0[i0], null, cud(domc), children[i0]);
 	} else {
 		let children = Array.from(domc.childNodes);
 		let map0 = new Map();
@@ -76,26 +83,26 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, dom, domc) => {
 				rd_item(vm0[i], vm1[i], domc, children[i]);
 		else {
 			let children0 = Array.from(domc0.childNodes);
-			dom.replaceChild(domc = domc0.cloneNode(false), domc0);
+			cudf.update(domc0, domc = domc0.cloneNode(false));
 
 			for (let i1 = 0; i1 < vm1.length; i1++) {
 				let i0 = map0.get(keyf(vm1[i1]));
 				if (i0 != null) {
 					let child0 = children[i0];
 					domc.appendChild(child0);
-					rd_item(vm0[i0], vm1[i1], domc, child0);
+					rd_item(vm0[i0], vm1[i1], cud(domc), child0);
 				} else
-					rd_item(null, vm1[i1], domc, null);
+					rd_item(null, vm1[i1], cud(domc), null);
 			}
 
 			for (let i0 = 0; i0 < vm0.length; i0++)
 				if (!map1.has(keyf(vm0[i0])))
-					rd_item(vm0[i0], null, domc0, children0[i0]);
+					rd_item(vm0[i0], null, cud(domc0), children0[i0]);
 		}
 	}
 };
 
-let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
+let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf, domc) => {
 	if (vm0 == vm1)
 		;
 	else {
@@ -103,15 +110,15 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 		let f1 = vm1 != null && (iff(vm1) ? thenf : elsef);
 
 		if (f0 == f1)
-			f0(vm0, vm1, dom, domc);
+			f0(vm0, vm1, cudf, domc);
 		else {
-			f0 != null && f0(vm0, null, dom, domc);
-			f1 != null && f1(null, vm1, dom, domc);
+			f0 != null && f0(vm0, null, cudf, domc);
+			f1 != null && f1(null, vm1, cudf, domc);
 		}
 	}
 };
 
-let rd_tagAttrs = attrs => (vm0, vm1, dom, domc) => {
+let rd_tagAttrs = attrs => (vm0, vm1, cudf, domc) => {
 	if (vm0 == null)
 		for (let [key, value] of Object.entries(attrs))
 			domc.setAttribute(key, value);
@@ -120,7 +127,7 @@ let rd_tagAttrs = attrs => (vm0, vm1, dom, domc) => {
 			domc.removeAttribute(key);
 };
 
-let rd_tagAttrsf = attrsf => (vm0, vm1, dom, domc) => {
+let rd_tagAttrsf = attrsf => (vm0, vm1, cudf, domc) => {
 	if (vm0 == vm1)
 		;
 	else if (vm1 != null)
@@ -131,24 +138,24 @@ let rd_tagAttrsf = attrsf => (vm0, vm1, dom, domc) => {
 			domc.removeAttribute(key);
 };
 
-let rd_tagChildren = childrenfs => (vm0, vm1, dom, domc) => {
+let rd_tagChildren = childrenfs => (vm0, vm1, cudf, domc) => {
 	if (vm0 == vm1)
 		;
 	else if (vm0 == null)
 		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, domc, null);
+			childrenfs[i](vm0, vm1, cud(domc), null);
 	else if (vm1 == null) {
 		let children = Array.from(domc.childNodes);
 		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, domc, children[i]);
+			childrenfs[i](vm0, vm1, cud(domc), children[i]);
 	} else
 		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, domc, domc.childNodes[i]);
+			childrenfs[i](vm0, vm1, cud(domc), domc.childNodes[i]);
 };
 
 let rd_tagEventListener = (event, cb) => rd_cd(
-	(vm, dom, domc) => domc.addEventListener(event, cb),
-	(vm, dom, domc) => domc.removeEventListener(event, cb)
+	(vm, cudf, domc) => domc.addEventListener(event, cb),
+	(vm, cudf, domc) => domc.removeEventListener(event, cb)
 );
 
 let rd_tag = (elementf, decorfs) => {
@@ -178,7 +185,7 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 			.attrsf(vm => ({
 				style: 'height: ' + (vm.vms.length - vm.start) * rowHeight + 'px; position: relative; top: ' + vm.start * rowHeight + 'px;',
 			}))
-			.decor((vm0, vm1, dom, domc) => {
+			.decor((vm0, vm1, cudf, domc) => {
 				let list0 = vm => {
 					let s = vm.start;
 					let e = s + nItemsShown;
@@ -187,7 +194,7 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 	
 				let list1 = s => s != null ? list0(s) : null;
 	
-				rd_for(vm => vm, rd.tag('div').attr('style', 'height: ' + rowHeight + 'px;').child(rd_item).build())(list1(vm0), list1(vm1), dom, domc);
+				rd_for(vm => vm, rd.tag('div').attr('style', 'height: ' + rowHeight + 'px;').child(rd_item).build())(list1(vm0), list1(vm1), cudf, domc);
 			})
 			.build()
 		);
@@ -197,10 +204,10 @@ let rd = {
 	child: rd_element,
 	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_element(() => document.createComment('else'))),
 	ifElse: rd_ifElse,
-	scope: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
+	scope: (key, rdf) => (vm0, vm1, cudf, domc) => rdf(
 		vm0 != null ? vm0[key] : null,
 		vm1 != null ? vm1[key] : null,
-		dom, domc
+		cudf, domc
 	),
 	tag: tag => rd_tag(() => document.createElement(tag), []),
 	vscrollf: rd_vscrollf,
@@ -211,7 +218,7 @@ let pvm = null;
 let renderAgain = (renderer, f) => {
 	let target = document.getElementById('target');
 	let ppvm = pvm;
-	renderer(ppvm, pvm = f(pvm), target, target.firstChild);
+	renderer(ppvm, pvm = f(pvm), cud(target), target.firstChild);
 };
 
 let text = rd.child(vm => document.createTextNode(vm));
