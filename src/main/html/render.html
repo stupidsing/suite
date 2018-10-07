@@ -43,64 +43,6 @@ let rd_element = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
 		dom.removeChild(domc);
 };
 
-let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
-	if (vm0 == vm1)
-		;
-	else {
-		let f0 = vm0 != null && (iff(vm0) ? thenf : elsef);
-		let f1 = vm1 != null && (iff(vm1) ? thenf : elsef);
-
-		if (f0 == f1)
-			f0(vm0, vm1, dom, domc);
-		else {
-			f0 != null && f0(vm0, null, dom, domc);
-			f1 != null && f1(null, vm1, dom, domc);
-		}
-	}
-};
-
-let rd_tagAttrsf = attrsf => (vm0, vm1, dom, domc) => {
-	if (vm0 == vm1)
-		;
-	else if (vm1 != null)
-		for (let [key, value] of Object.entries(attrsf(vm1)))
-			domc.setAttribute(key, value);
-	else
-		for (let [key, value] of Object.entries(attrsf(vm0)))
-			domc.removeAttribute(key);
-};
-
-let rd_tagAttrs = attrs => rd_cd(
-	(vm, dom, domc) => {
-		for (let [key, value] of Object.entries(attrs))
-			domc.setAttribute(key, value);
-	}, 
-	(vm, dom, domc) => {
-		for (let [key, value] of Object.entries(attrs))
-			domc.removeAttribute(key);
-	},
-);
-
-let rd_tagChildren = childrenfs => (vm0, vm1, dom, domc) => {
-	if (vm0 == vm1)
-		;
-	else if (vm0 == null)
-		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, domc, null);
-	else if (vm1 == null) {
-		let children = Array.from(domc.childNodes);
-		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, domc, children[i]);
-	} else
-		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, domc, domc.childNodes[i]);
-};
-
-let rd_tagEventListener = (event, cb) => rd_cd(
-	(vm, dom, domc) => domc.addEventListener(event, cb),
-	(vm, dom, domc) => domc.removeEventListener(event, cb)
-);
-
 let rd_for_ = (keyf, rdf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
 		;
@@ -153,6 +95,79 @@ let rd_for_ = (keyf, rdf) => (vm0, vm1, dom, domc) => {
 	}
 };
 
+let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
+	if (vm0 == vm1)
+		;
+	else {
+		let f0 = vm0 != null && (iff(vm0) ? thenf : elsef);
+		let f1 = vm1 != null && (iff(vm1) ? thenf : elsef);
+
+		if (f0 == f1)
+			f0(vm0, vm1, dom, domc);
+		else {
+			f0 != null && f0(vm0, null, dom, domc);
+			f1 != null && f1(null, vm1, dom, domc);
+		}
+	}
+};
+
+let rd_tag = (elementf, decorfs) => {
+	let decor = decorf => rd_tag(elementf, [...decorfs, decorf,]);
+	return {
+		attr: (key, value) => decor(rd_tagAttrs({ [key]: value, })),
+		attrs: attrs => decor(rd_tagAttrs(attrs)),
+		attrsf: attrsf => decor(rd_tagAttrsf(attrsf)),
+		build: () => rd_element(elementf, decorfs),
+		children: (...childrenfs) => decor(rd_tagChildren(childrenfs)),
+		childrenList: childrenfs => decor(rd_tagChildren(childrenfs)),
+		decor,
+		for_: (keyf, rdf) => decor(rd_for_(keyf, rdf)),
+		listen: (event, cb) => decor(rd_tagEventListener(event, cb)),
+	};
+};
+
+let rd_tagAttrsf = attrsf => (vm0, vm1, dom, domc) => {
+	if (vm0 == vm1)
+		;
+	else if (vm1 != null)
+		for (let [key, value] of Object.entries(attrsf(vm1)))
+			domc.setAttribute(key, value);
+	else
+		for (let [key, value] of Object.entries(attrsf(vm0)))
+			domc.removeAttribute(key);
+};
+
+let rd_tagAttrs = attrs => rd_cd(
+	(vm, dom, domc) => {
+		for (let [key, value] of Object.entries(attrs))
+			domc.setAttribute(key, value);
+	}, 
+	(vm, dom, domc) => {
+		for (let [key, value] of Object.entries(attrs))
+			domc.removeAttribute(key);
+	},
+);
+
+let rd_tagChildren = childrenfs => (vm0, vm1, dom, domc) => {
+	if (vm0 == vm1)
+		;
+	else if (vm0 == null)
+		for (let i = 0; i < childrenfs.length; i++)
+			childrenfs[i](vm0, vm1, domc, null);
+	else if (vm1 == null) {
+		let children = Array.from(domc.childNodes);
+		for (let i = 0; i < childrenfs.length; i++)
+			childrenfs[i](vm0, vm1, domc, children[i]);
+	} else
+		for (let i = 0; i < childrenfs.length; i++)
+			childrenfs[i](vm0, vm1, domc, domc.childNodes[i]);
+};
+
+let rd_tagEventListener = (event, cb) => rd_cd(
+	(vm, dom, domc) => domc.addEventListener(event, cb),
+	(vm, dom, domc) => domc.removeEventListener(event, cb)
+);
+
 let rd = {
 	child: rd_child,
 	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_child(() => document.createComment('else'))),
@@ -162,17 +177,7 @@ let rd = {
 		vm1 != null ? vm1[key] : null,
 		dom, domc
 	),
-	tag: (tag, ...decorfs) => rd_element(() => document.createElement(tag), decorfs),
-};
-
-let rdt = {
-	attr: (key, value) => rd_tagAttrs({ [key]: value, }),
-	attrs: rd_tagAttrs,
-	attrsf: rd_tagAttrsf,
-	children: (...childrenfs) => rd_tagChildren(childrenfs),
-	childrenList: rd_tagChildren,
-	for_: rd_for_,
-	listen: rd_tagEventListener,
+	tag: tag => rd_tag(() => document.createElement(tag), []),
 };
 
 let pvm = null;
@@ -191,14 +196,16 @@ let scrollerItemHeight = 32;
 let rd_vscrollf = (scrollerHeight, scrollerItemHeight, rd_item, cbScroll) => {
 	let nItemsShown = Math.floor(scrollerHeight / scrollerItemHeight) + 1;
 
-	return rd.tag('div',
-		rdt.attr('style', 'height: ' + scrollerHeight + 'px; overflow: auto; position: absolute;'),
-		rdt.listen('scroll', d => cbScroll(Math.floor(d.target.scrollTop / scrollerItemHeight))),
-		rdt.children(rd.tag('div',
-			rdt.attrsf(vm => ({
+	return rd
+	.tag('div')
+		.attr('style', 'height: ' + scrollerHeight + 'px; overflow: auto; position: absolute;')
+		.listen('scroll', d => cbScroll(Math.floor(d.target.scrollTop / scrollerItemHeight)))
+		.children(rd
+			.tag('div')
+			.attrsf(vm => ({
 				style: 'height: ' + (vm.vms.length - vm.start) * scrollerItemHeight + 'px; position: relative; top: ' + vm.start * scrollerItemHeight + 'px;',
-			})),
-			(vm0, vm1, dom, domc) => {
+			}))
+			.decor((vm0, vm1, dom, domc) => {
 				let list0 = vm => {
 					let s = vm.start;
 					let e = s + nItemsShown;
@@ -207,32 +214,34 @@ let rd_vscrollf = (scrollerHeight, scrollerItemHeight, rd_item, cbScroll) => {
 	
 				let list1 = s => s != null ? list0(s) : null;
 	
-				rdt.for_(vm => vm, rd_item)(list1(vm0), list1(vm1), dom, domc);
-			},
-		),),
-	);
+				rd_for_(vm => vm, rd_item)(list1(vm0), list1(vm1), dom, domc);
+			})
+			.build(),
+		)
+		.build();
 };
 
-let rd_vm = rd.tag('span',
-	rdt.attr('style', 'font-family: Verdana;'),
-	rdt.children(
+let rd_vm = rd
+	.tag('span')
+	.attr('style', 'font-family: Verdana;')
+	.children(
 		rd.scope('message',
-			rd.tag('p', rdt.attr('style', 'font-weight: bold;'), rdt.children(text,))
+			rd.tag('p').attr('style', 'font-weight: bold;').children(text,).build()
 		),
 		rd.scope('t',
-			rd.tag('p', rdt.children(text,))
+			rd.tag('p').children(text,).build()
 		),
 		rd.scope('fruits',
-			rd.tag('ul', rdt.for_(vm => vm, rd.tag('li', rdt.children(text,))))
+			rd.tag('ul').for_(vm => vm, rd.tag('li').children(text,).build()).build()
 		),
 		rd.scope('vscroll',
 			rd_vscrollf(scrollerHeight, scrollerItemHeight,
-				rd.tag('div', rdt.attr('style', 'height: ' + scrollerItemHeight + 'px;'), rdt.children(rd.child(vm => document.createTextNode('scrolling ' + vm)),)),
+				rd.tag('div').attr('style', 'height: ' + scrollerItemHeight + 'px;').children(rd.child(vm => document.createTextNode('scrolling ' + vm)),).build(),
 				start => renderAgain(rd_vm, vm => ({ ...vm, vscroll: { start, vms: vm.vscroll.vms, }, })),
 			),
 		),
 	)
-);
+	.build();
 
 let t = 0;
 let start = 0;
