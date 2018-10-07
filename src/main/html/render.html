@@ -43,16 +43,16 @@ let rd_elementDecors = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
 		dom.removeChild(domc);
 };
 
-let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
+let rd_for = (keyf, rd_item) => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
 		;
 	else if (vm0 == null)
 		for (let i1 = 0; i1 < vm1.length; i1++)
-			rdf(null, vm1[i1], domc, null);
+			rd_item(null, vm1[i1], domc, null);
 	else if (vm1 == null) {
 		let children = Array.from(domc.childNodes);
 		for (let i0 = 0; i0 < vm0.length; i0++)
-			rdf(vm0[i0], null, domc, children[i0]);
+			rd_item(vm0[i0], null, domc, children[i0]);
 	} else {
 		let children = Array.from(domc.childNodes);
 		let map0 = new Map();
@@ -73,7 +73,7 @@ let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
 
 		if (isSameOrder)
 			for (let i = 0; i < vm1.length; i++)
-				rdf(vm0[i], vm1[i], domc, children[i]);
+				rd_item(vm0[i], vm1[i], domc, children[i]);
 		else {
 			let children0 = Array.from(domc0.childNodes);
 			dom.replaceChild(domc = domc0.cloneNode(false), domc0);
@@ -83,14 +83,14 @@ let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
 				if (i0 != null) {
 					let child0 = children[i0];
 					domc.appendChild(child0);
-					rdf(vm0[i0], vm1[i1], domc, child0);
+					rd_item(vm0[i0], vm1[i1], domc, child0);
 				} else
-					rdf(null, vm1[i1], domc, null);
+					rd_item(null, vm1[i1], domc, null);
 			}
 
 			for (let i0 = 0; i0 < vm0.length; i0++)
 				if (!map1.has(keyf(vm0[i0])))
-					rdf(vm0[i0], null, domc0, children0[i0]);
+					rd_item(vm0[i0], null, domc0, children0[i0]);
 		}
 	}
 };
@@ -163,7 +163,7 @@ let rd_tag = (elementf, decorfs) => {
 		children: (...childrenfs) => decor(rd_tagChildren(childrenfs)),
 		childrenList: childrenfs => decor(rd_tagChildren(childrenfs)),
 		decor,
-		for_: (keyf, rdf) => decor(rd_for(keyf, rdf)),
+		for_: (keyf, rd_item) => decor(rd_for(keyf, rd_item)),
 		listen: (event, cb) => decor(rd_tagEventListener(event, cb)),
 	};
 };
