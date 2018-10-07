@@ -182,6 +182,10 @@ let renderAgain = (renderer, f) => {
 
 let text = rd.child(vm => document.createTextNode(vm));
 
+let scrollerHeight = 200;
+let scrollerItemHeight = 32;
+let nItemsShown = Math.floor(scrollerHeight / scrollerItemHeight) + 1;
+
 let rd_vm = rd.tag('span',
 	rd.tagAttr('style', 'font-family: Verdana;'),
 	rd.tagChildren(
@@ -195,19 +199,19 @@ let rd_vm = rd.tag('span',
 			rd.tag('ul', rd.tagFor(vm => vm, rd.tag('li', rd.tagChildren(text,))))
 		),
 		rd.tag('div',
-			rd.tagAttr('style', 'height: 200px; overflow: auto; position: absolute;'),
+			rd.tagAttr('style', 'height: ' + scrollerHeight + 'px; overflow: auto; position: absolute;'),
 			rd.tagListen('scroll', d => {
-				let start = Math.floor(d.target.scrollTop / 32);
+				let start = Math.floor(d.target.scrollTop / scrollerItemHeight);
 				renderAgain(rd_vm, vm => ({ ...vm, start, }));
 			}),
 			rd.tagChildren(rd.tag('div',
 				rd.tagAttrsf(vm => ({
-					style: 'height: ' + (256 - vm.start) * 32 + 'px; position: relative; top: ' + vm.start * 32 + 'px;',
+					style: 'height: ' + (vm.vms.length - vm.start) * scrollerItemHeight + 'px; position: relative; top: ' + vm.start * scrollerItemHeight + 'px;',
 				})),
 				(vm0, vm1, dom, domc) => {
 					let list0 = vm => {
 						let s = vm.start;
-						let e = s + Math.floor(200 / 32) + 1;
+						let e = s + nItemsShown;
 						return vm.vms.slice(s, e);
 					};
 
@@ -215,7 +219,7 @@ let rd_vm = rd.tag('span',
 
 					rd.tagFor(
 						vm => vm,
-						rd.tag('div', rd.tagAttr('style', 'height: 32px;'), rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + vm)),))
+						rd.tag('div', rd.tagAttr('style', 'height: ' + scrollerItemHeight + 'px;'), rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + vm)),))
 					)(list1(vm0), list1(vm1), dom, domc);
 				},
 			),),
