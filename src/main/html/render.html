@@ -111,6 +111,15 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 	}
 };
 
+let rd_tagAttrs = attrs => (vm0, vm1, dom, domc) => {
+	if (vm0 == null)
+		for (let [key, value] of Object.entries(attrs))
+			domc.setAttribute(key, value);
+	if (vm1 == null)
+		for (let [key, value] of Object.entries(attrs))
+			domc.removeAttribute(key);
+};
+
 let rd_tagAttrsf = attrsf => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
 		;
@@ -121,17 +130,6 @@ let rd_tagAttrsf = attrsf => (vm0, vm1, dom, domc) => {
 		for (let [key, value] of Object.entries(attrsf(vm0)))
 			domc.removeAttribute(key);
 };
-
-let rd_tagAttrs = attrs => rd_cd(
-	(vm, dom, domc) => {
-		for (let [key, value] of Object.entries(attrs))
-			domc.setAttribute(key, value);
-	}, 
-	(vm, dom, domc) => {
-		for (let [key, value] of Object.entries(attrs))
-			domc.removeAttribute(key);
-	},
-);
 
 let rd_tagChildren = childrenfs => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
