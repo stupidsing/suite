@@ -10,15 +10,15 @@
 	<script type='text/javascript'>
 'use strict';
 
-let cud = (dom, c0) => {
-	let c_ = c0;
-	return {
-		child: () => c_,
-		childCud: child => cud(c_, child),
-		create: c => dom.appendChild(c_ = c),
-		delete: () => dom.removeChild(c_),
-		update: c => dom.replaceChild(c_ = c, c0),
+let cud = (dom, domc0) => {
+	let cud_ = {
+		childCud: child_ => cud(cud_.domChild, child_),
+		domChild: domc0,
+		create: c => dom.appendChild(cud_.domChild = c),
+		delete: () => dom.removeChild(cud_.domChild),
+		update: c => dom.replaceChild(cud_.domChild = c, domc0),
 	};
+	return cud_;
 };
 
 
@@ -55,17 +55,18 @@ let rd_elementDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
 };
 
 let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
+	let domc0 = cudf.domChild;
+	let children0 = domc0 != null ? Array.from(domc0.childNodes) : null;
+
 	if (vm0 == vm1)
 		;
 	else if (vm0 == null)
 		for (let i1 = 0; i1 < vm1.length; i1++)
 			rd_item(null, vm1[i1], cudf.childCud(null));
-	else if (vm1 == null) {
-		let children = Array.from(cudf.child().childNodes);
+	else if (vm1 == null)
 		for (let i0 = 0; i0 < vm0.length; i0++)
-			rd_item(vm0[i0], null, cudf.childCud(children[i0]));
-	} else {
-		let children = Array.from(cudf.child().childNodes);
+			rd_item(vm0[i0], null, cudf.childCud(children0[i0]));
+	else {
 		let map0 = new Map();
 		let map1 = new Map();
 
@@ -75,7 +76,6 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 			map1.set(keyf(vm1[i1]), i1);
 
 		let isSameOrder = vm0.length == vm1.length;
-		let domc0 = cudf.child();
 
 		for (let i1 = 0; i1 < vm1.length; i1++) {
 			let i0 = map0.get(keyf(vm1[i1]));
@@ -84,16 +84,15 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 
 		if (isSameOrder)
 			for (let i = 0; i < vm1.length; i++)
-				rd_item(vm0[i], vm1[i], children[i]);
+				rd_item(vm0[i], vm1[i], children0[i]);
 		else {
-			let children0 = Array.from(domc0.childNodes);
 			let domc1 = domc0.cloneNode(false);
 			cudf.update(domc1);
 
 			for (let i1 = 0; i1 < vm1.length; i1++) {
 				let i0 = map0.get(keyf(vm1[i1]));
 				if (i0 != null) {
-					let child0 = children[i0];
+					let child0 = children0[i0];
 					domc1.appendChild(child0);
 					rd_item(vm0[i0], vm1[i1], cudf.childCud(child0));
 				} else
@@ -126,10 +125,10 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf) => {
 let rd_tagAttrs = attrs => (vm0, vm1, cudf) => {
 	if (vm0 == null)
 		for (let [key, value] of Object.entries(attrs))
-			cudf.child().setAttribute(key, value);
+			cudf.domChild.setAttribute(key, value);
 	if (vm1 == null)
 		for (let [key, value] of Object.entries(attrs))
-			cudf.child().removeAttribute(key);
+			cudf.domChild.removeAttribute(key);
 };
 
 let rd_tagAttrsf = attrsf => (vm0, vm1, cudf) => {
@@ -137,30 +136,24 @@ let rd_tagAttrsf = attrsf => (vm0, vm1, cudf) => {
 		;
 	else if (vm1 != null)
 		for (let [key, value] of Object.entries(attrsf(vm1)))
-			cudf.child().setAttribute(key, value);
+			cudf.domChild.setAttribute(key, value);
 	else
 		for (let [key, value] of Object.entries(attrsf(vm0)))
-			cudf.child().removeAttribute(key);
+			cudf.domChild.removeAttribute(key);
 };
 
 let rd_tagChildren = childrenfs => (vm0, vm1, cudf) => {
-	if (vm0 == vm1)
-		;
-	else if (vm0 == null)
+	let domc0 = cudf.domChild;
+	let children0 = domc0 != null ? Array.from(domc0.childNodes) : null;
+
+	if (vm0 != vm1)
 		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, cudf.childCud(null));
-	else if (vm1 == null) {
-		let children = Array.from(cudf.child().childNodes);
-		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, cudf.childCud(children[i]));
-	} else
-		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, cudf.childCud(cudf.child().childNodes[i]));
+			childrenfs[i](vm0, vm1, cudf.childCud(domc0 != null ? children0[i] : null));
 };
 
 let rd_tagEventListener = (event, cb) => rd_cd(
-	(vm, cudf) => cudf.child().addEventListener(event, cb),
-	(vm, cudf) => cudf.child().removeEventListener(event, cb)
+	(vm, cudf) => cudf.domChild.addEventListener(event, cb),
+	(vm, cudf) => cudf.domChild.removeEventListener(event, cb)
 );
 
 let rd_tag = (elementf, decorfs) => {
