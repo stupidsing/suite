@@ -239,7 +239,7 @@ let rd_vm = rd
 			rd_vscrollf(scrollerHeight, scrollerItemHeight,
 				rd.tag('div').attr('style', 'height: ' + scrollerItemHeight + 'px;').child(rd.child(vm => document.createTextNode('scrolling ' + vm))).build(),
 				start => renderAgain(rd_vm, vm => ({ ...vm, vscroll: { start, vms: vm.vscroll.vms, }, })),
-			),
+			)
 		),
 	)
 	.build();
