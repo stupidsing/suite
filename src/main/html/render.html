@@ -245,13 +245,7 @@ let rd_vm = rd
 	.build();
 
 let t = 0;
-let start = 0;
-let vms = [];
-
-for (let i = 0; i < 256; i++)
-	vms.push(i);
-
-let vscroll = { start, vms, };
+let vscroll = { start: 0, vms: read().range(0, 256).list(), };
 
 setInterval(() => renderAgain(rd_vm, vm => ({ ...vm, t: vm.t + 1, })), 1000);
 
