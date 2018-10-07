@@ -160,6 +160,7 @@ let rd_tag = (elementf, decorfs) => {
 		attrs: attrs => decor(rd_tagAttrs(attrs)),
 		attrsf: attrsf => decor(rd_tagAttrsf(attrsf)),
 		build: () => rd_elementDecors(elementf, decorfs),
+		child: childf => decor(rd_tagChildren([childf])),
 		children: (...childrenfs) => decor(rd_tagChildren(childrenfs)),
 		childrenList: childrenfs => decor(rd_tagChildren(childrenfs)),
 		decor,
@@ -200,7 +201,7 @@ let rd_vscrollf = (scrollerHeight, scrollerItemHeight, rd_item, cbScroll) => {
 		.tag('div')
 		.attr('style', 'height: ' + scrollerHeight + 'px; overflow: auto; position: absolute;')
 		.listen('scroll', d => cbScroll(Math.floor(d.target.scrollTop / scrollerItemHeight)))
-		.children(rd
+		.child(rd
 			.tag('div')
 			.attrsf(vm => ({
 				style: 'height: ' + (vm.vms.length - vm.start) * scrollerItemHeight + 'px; position: relative; top: ' + vm.start * scrollerItemHeight + 'px;',
@@ -216,7 +217,7 @@ let rd_vscrollf = (scrollerHeight, scrollerItemHeight, rd_item, cbScroll) => {
 	
 				rd_for(vm => vm, rd_item)(list1(vm0), list1(vm1), dom, domc);
 			})
-			.build(),
+			.build()
 		)
 		.build();
 };
@@ -226,17 +227,17 @@ let rd_vm = rd
 	.attr('style', 'font-family: Verdana;')
 	.children(
 		rd.scope('message',
-			rd.tag('p').attr('style', 'font-weight: bold;').children(text,).build()
+			rd.tag('p').attr('style', 'font-weight: bold;').child(text).build()
 		),
 		rd.scope('t',
-			rd.tag('p').children(text,).build()
+			rd.tag('p').child(text).build()
 		),
 		rd.scope('fruits',
-			rd.tag('ul').for_(vm => vm, rd.tag('li').children(text,).build()).build()
+			rd.tag('ul').for_(vm => vm, rd.tag('li').child(text).build()).build()
 		),
 		rd.scope('vscroll',
 			rd_vscrollf(scrollerHeight, scrollerItemHeight,
-				rd.tag('div').attr('style', 'height: ' + scrollerItemHeight + 'px;').children(rd.child(vm => document.createTextNode('scrolling ' + vm)),).build(),
+				rd.tag('div').attr('style', 'height: ' + scrollerItemHeight + 'px;').child(rd.child(vm => document.createTextNode('scrolling ' + vm))).build(),
 				start => renderAgain(rd_vm, vm => ({ ...vm, vscroll: { start, vms: vm.vscroll.vms, }, })),
 			),
 		),
