@@ -16,11 +16,24 @@ let cud = (dom, domc0) => {
 		domChild: domc0,
 		create: c => dom.appendChild(cud_.domChild = c),
 		delete: () => dom.removeChild(cud_.domChild),
-		update: c => dom.replaceChild(cud_.domChild = c, domc0),
+		update: c => { let c0 = cud_.domChild; dom.replaceChild(cud_.domChild = c, c0); },
 	};
 	return cud_;
 };
 
+let cud_i0 = (dom, domc0) => {
+	let first0 = dom.childNodes[0];
+	let first1 = first0 != null? first0 : null;
+
+	let cud_ = {
+		childCud: child_ => cud(cud_.domChild, child_),
+		domChild: domc0,
+		create: c => dom.insertBefore(cud_.domChild = c, first),
+		delete: () => dom.removeChild(cud_.domChild),
+		update: c => { let c0 = cud_.domChild; dom.replaceChild(cud_.domChild = c, c0); },
+	};
+	return cud_;
+};
 
 /*
 	a typical renderer has 4 parameters:
