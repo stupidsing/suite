@@ -228,7 +228,7 @@ let rd_vm = rd.tag('span',
 		rd.scope('vscroll',
 			rd_vscrollf(scrollerHeight, scrollerItemHeight,
 				rd.tag('div', rdt.attr('style', 'height: ' + scrollerItemHeight + 'px;'), rdt.children(rd.child(vm => document.createTextNode('scrolling ' + vm)),)),
-				start => { renderAgain(rd_vm, vm => ({ ...vm, vscroll: { start, vms: vm.vscroll.vms, }, })); },
+				start => renderAgain(rd_vm, vm => ({ ...vm, vscroll: { start, vms: vm.vscroll.vms, }, })),
 			),
 		),
 	)
