@@ -234,8 +234,6 @@ let rd_vm = rd.tag('span',
 	)
 );
 
-setInterval(() => renderAgain(rd_vm, vm => ({ ...vm, t: vm.t + 1, })), 1000);
-
 let t = 0;
 let start = 0;
 let vms = [];
@@ -244,6 +242,8 @@ for (let i = 0; i < 256; i++)
 	vms.push(i);
 
 let vscroll = { start, vms, };
+
+setInterval(() => renderAgain(rd_vm, vm => ({ ...vm, t: vm.t + 1, })), 1000);
 
 renderAgain(rd_vm, vm => ({ t, vscroll, message: 'hello world0', fruits: ['banana',], }));
 renderAgain(rd_vm, vm => ({ t, vscroll, message: 'hello world1', fruits: ['apple', 'banana',], }));
