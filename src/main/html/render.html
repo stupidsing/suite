@@ -167,6 +167,33 @@ let rd_tag = (elementf, decorfs) => {
 	};
 };
 
+let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
+	let nItemsShown = Math.floor(height / rowHeight) + 1;
+
+	return rd
+		.tag('div')
+		.attr('style', 'height: ' + height + 'px; overflow: auto; position: absolute;')
+		.listen('scroll', d => cbScroll(Math.floor(d.target.scrollTop / rowHeight)))
+		.child(rd
+			.tag('div')
+			.attrsf(vm => ({
+				style: 'height: ' + (vm.vms.length - vm.start) * rowHeight + 'px; position: relative; top: ' + vm.start * rowHeight + 'px;',
+			}))
+			.decor((vm0, vm1, dom, domc) => {
+				let list0 = vm => {
+					let s = vm.start;
+					let e = s + nItemsShown;
+					return vm.vms.slice(s, e);
+				};
+	
+				let list1 = s => s != null ? list0(s) : null;
+	
+				rd_for(vm => vm, rd.tag('div').attr('style', 'height: ' + rowHeight + 'px;').child(rd_item).build())(list1(vm0), list1(vm1), dom, domc);
+			})
+			.build()
+		);
+};
+
 let rd = {
 	child: rd_element,
 	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_element(() => document.createComment('else'))),
@@ -177,6 +204,7 @@ let rd = {
 		dom, domc
 	),
 	tag: tag => rd_tag(() => document.createElement(tag), []),
+	vscrollf: rd_vscrollf,
 };
 
 let pvm = null;
@@ -188,36 +216,6 @@ let renderAgain = (renderer, f) => {
 };
 
 let text = rd.child(vm => document.createTextNode(vm));
-
-let scrollerHeight = 200;
-let scrollerItemHeight = 32;
-
-let rd_vscrollf = (scrollerHeight, scrollerItemHeight, rd_item, cbScroll) => {
-	let nItemsShown = Math.floor(scrollerHeight / scrollerItemHeight) + 1;
-
-	return rd
-		.tag('div')
-		.attr('style', 'height: ' + scrollerHeight + 'px; overflow: auto; position: absolute;')
-		.listen('scroll', d => cbScroll(Math.floor(d.target.scrollTop / scrollerItemHeight)))
-		.child(rd
-			.tag('div')
-			.attrsf(vm => ({
-				style: 'height: ' + (vm.vms.length - vm.start) * scrollerItemHeight + 'px; position: relative; top: ' + vm.start * scrollerItemHeight + 'px;',
-			}))
-			.decor((vm0, vm1, dom, domc) => {
-				let list0 = vm => {
-					let s = vm.start;
-					let e = s + nItemsShown;
-					return vm.vms.slice(s, e);
-				};
-	
-				let list1 = s => s != null ? list0(s) : null;
-	
-				rd_for(vm => vm, rd_item)(list1(vm0), list1(vm1), dom, domc);
-			})
-			.build()
-		);
-};
 
 let rd_vm = rd
 	.tag('span')
@@ -232,9 +230,9 @@ let rd_vm = rd
 		rd.scope('fruits',
 			rd.tag('ul').for_(vm => vm, rd.tag('li').child(text).build()).build()
 		),
-		rd.scope('vscroll',
-			rd_vscrollf(scrollerHeight, scrollerItemHeight,
-				rd.tag('div').attr('style', 'height: ' + scrollerItemHeight + 'px;').child(rd.child(vm => document.createTextNode('scrolling ' + vm))).build(),
+		rd.scope('vscroll', rd
+			.vscrollf(200, 32,
+				rd.child(vm => document.createTextNode('scrolling ' + vm)),
 				start => renderAgain(rd_vm, vm => ({ ...vm, vscroll: { start, vms: vm.vscroll.vms, }, })),
 			)
 			.build()
