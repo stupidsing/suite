@@ -233,7 +233,7 @@ let rd_vm = rd
 		rd.scope('vscroll', rd
 			.vscrollf(200, 32,
 				rd.child(vm => document.createTextNode('scrolling ' + vm)),
-				start => renderAgain(rd_vm, vm => ({ ...vm, vscroll: { start, vms: vm.vscroll.vms, }, })),
+				start => renderAgain(rd_vm, vm => ({ ...vm, vscroll: { ...vm.vscroll, start, }, })),
 			)
 			.build()
 		),
