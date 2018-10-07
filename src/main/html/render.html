@@ -168,7 +168,7 @@ let rd_tag = (elementf, decorfs) => {
 		decor,
 		for_: (keyf, rd_item) => decor(rd_for(keyf, rd_item)),
 		listen: (event, cb) => decor(rd_tagEventListener(event, cb)),
-		text: () => decor(rd_tagChildren([rd_element(vm => document.createTextNode(vm))])),
+		text: () => decor(rd_tagChildren([rd_element(vm => document.createTextNode(vm))])).build(),
 	};
 };
 
@@ -200,7 +200,7 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 };
 
 let rd = {
-	child: rd_element,
+	element: rd_element,
 	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_element(() => document.createComment('else'))),
 	ifElse: rd_ifElse,
 	scope: (key, rdf) => (vm0, vm1, cudf) => rdf(
@@ -225,17 +225,17 @@ let rd_vm = rd
 	.attr('style', 'font-family: Verdana;')
 	.children(
 		rd.scope('message',
-			rd.tag('p').attr('style', 'font-weight: bold;').text().build()
+			rd.tag('p').attr('style', 'font-weight: bold;').text()
 		),
 		rd.scope('t',
-			rd.tag('p').text().build()
+			rd.tag('p').text()
 		),
 		rd.scope('fruits',
-			rd.tag('ul').for_(vm => vm, rd.tag('li').text().build()).build()
+			rd.tag('ul').for_(vm => vm, rd.tag('li').text()).build()
 		),
 		rd.scope('vscroll', rd
 			.vscrollf(200, 32,
-				rd.child(vm => document.createTextNode('scrolling ' + vm)),
+				rd.element(vm => document.createTextNode('scrolling ' + vm)),
 				start => renderAgain(rd_vm, vm => ({ ...vm, vscroll: { ...vm.vscroll, start, }, })),
 			)
 			.build()
