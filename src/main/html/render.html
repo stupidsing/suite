@@ -190,6 +190,7 @@ let scrollerItemHeight = 32;
 
 let rd_vscrollf = (scrollerHeight, scrollerItemHeight, rd_item, cbScroll) => {
 	let nItemsShown = Math.floor(scrollerHeight / scrollerItemHeight) + 1;
+
 	return rd.tag('div',
 		rdt.attr('style', 'height: ' + scrollerHeight + 'px; overflow: auto; position: absolute;'),
 		rdt.listen('scroll', d => cbScroll(Math.floor(d.target.scrollTop / scrollerItemHeight))),
