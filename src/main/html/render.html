@@ -101,7 +101,7 @@ let rd_tagEventListener = (event, cb) => rd_cd(
 	(vm, dom, domc) => domc.removeEventListener(event, cb)
 );
 
-let rd_tagFor = (keyf, rdf) => (vm0, vm1, dom, domc) => {
+let rd_for_ = (keyf, rdf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
 		;
 	else if (vm0 == null)
@@ -163,13 +163,16 @@ let rd = {
 		dom, domc
 	),
 	tag: (tag, ...decorfs) => rd_element(() => document.createElement(tag), decorfs),
-	tagAttr: (key, value) => rd_tagAttrs({ [key]: value, }),
-	tagAttrs: rd_tagAttrs,
-	tagAttrsf: rd_tagAttrsf,
-	tagChildren: (...childrenfs) => rd_tagChildren(childrenfs),
-	tagChildrenList: rd_tagChildren,
-	tagFor: rd_tagFor,
-	tagListen: rd_tagEventListener,
+};
+
+let rdt = {
+	attr: (key, value) => rd_tagAttrs({ [key]: value, }),
+	attrs: rd_tagAttrs,
+	attrsf: rd_tagAttrsf,
+	children: (...childrenfs) => rd_tagChildren(childrenfs),
+	childrenList: rd_tagChildren,
+	for_: rd_for_,
+	listen: rd_tagEventListener,
 };
 
 let pvm = null;
@@ -188,10 +191,10 @@ let scrollerItemHeight = 32;
 let rd_vscrollf = (scrollerHeight, scrollerItemHeight, rd_item, cbScroll) => {
 	let nItemsShown = Math.floor(scrollerHeight / scrollerItemHeight) + 1;
 	return rd.tag('div',
-		rd.tagAttr('style', 'height: ' + scrollerHeight + 'px; overflow: auto; position: absolute;'),
-		rd.tagListen('scroll', d => cbScroll(Math.floor(d.target.scrollTop / scrollerItemHeight))),
-		rd.tagChildren(rd.tag('div',
-			rd.tagAttrsf(vm => ({
+		rdt.attr('style', 'height: ' + scrollerHeight + 'px; overflow: auto; position: absolute;'),
+		rdt.listen('scroll', d => cbScroll(Math.floor(d.target.scrollTop / scrollerItemHeight))),
+		rdt.children(rd.tag('div',
+			rdt.attrsf(vm => ({
 				style: 'height: ' + (vm.vms.length - vm.start) * scrollerItemHeight + 'px; position: relative; top: ' + vm.start * scrollerItemHeight + 'px;',
 			})),
 			(vm0, vm1, dom, domc) => {
@@ -203,26 +206,26 @@ let rd_vscrollf = (scrollerHeight, scrollerItemHeight, rd_item, cbScroll) => {
 	
 				let list1 = s => s != null ? list0(s) : null;
 	
-				rd.tagFor(vm => vm, rd_item)(list1(vm0), list1(vm1), dom, domc);
+				rdt.for_(vm => vm, rd_item)(list1(vm0), list1(vm1), dom, domc);
 			},
 		),),
 	);
 };
 
 let rd_vm = rd.tag('span',
-	rd.tagAttr('style', 'font-family: Verdana;'),
-	rd.tagChildren(
+	rdt.attr('style', 'font-family: Verdana;'),
+	rdt.children(
 		rd.scope('message',
-			rd.tag('p', rd.tagAttr('style', 'font-weight: bold;'), rd.tagChildren(text,))
+			rd.tag('p', rdt.attr('style', 'font-weight: bold;'), rdt.children(text,))
 		),
 		rd.scope('t',
-			rd.tag('p', rd.tagChildren(text,))
+			rd.tag('p', rdt.children(text,))
 		),
 		rd.scope('fruits',
-			rd.tag('ul', rd.tagFor(vm => vm, rd.tag('li', rd.tagChildren(text,))))
+			rd.tag('ul', rdt.for_(vm => vm, rd.tag('li', rdt.children(text,))))
 		),
 		rd_vscrollf(scrollerHeight, scrollerItemHeight,
-			rd.tag('div', rd.tagAttr('style', 'height: ' + scrollerItemHeight + 'px;'), rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + vm)),)),
+			rd.tag('div', rdt.attr('style', 'height: ' + scrollerItemHeight + 'px;'), rdt.children(rd.child(vm => document.createTextNode('scrolling ' + vm)),)),
 			start => { renderAgain(rd_vm, vm => ({ ...vm, start, })); },
 		),
 	)
