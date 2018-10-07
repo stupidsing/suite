@@ -168,6 +168,7 @@ let rd_tag = (elementf, decorfs) => {
 		decor,
 		for_: (keyf, rd_item) => decor(rd_for(keyf, rd_item)),
 		listen: (event, cb) => decor(rd_tagEventListener(event, cb)),
+		text: () => decor(rd_tagChildren([rd_element(vm => document.createTextNode(vm))])),
 	};
 };
 
@@ -219,20 +220,18 @@ let renderAgain = (renderer, f) => {
 	renderer(ppvm, pvm = f(pvm), cud(target, target.firstChild));
 };
 
-let text = rd.child(vm => document.createTextNode(vm));
-
 let rd_vm = rd
 	.tag('span')
 	.attr('style', 'font-family: Verdana;')
 	.children(
 		rd.scope('message',
-			rd.tag('p').attr('style', 'font-weight: bold;').child(text).build()
+			rd.tag('p').attr('style', 'font-weight: bold;').text().build()
 		),
 		rd.scope('t',
-			rd.tag('p').child(text).build()
+			rd.tag('p').text().build()
 		),
 		rd.scope('fruits',
-			rd.tag('ul').for_(vm => vm, rd.tag('li').child(text).build()).build()
+			rd.tag('ul').for_(vm => vm, rd.tag('li').text().build()).build()
 		),
 		rd.scope('vscroll', rd
 			.vscrollf(200, 32,
