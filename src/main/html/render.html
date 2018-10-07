@@ -158,7 +158,8 @@ let rd_tagEventListener = (event, cb) => rd_cd(
 
 let rd_tag = (elementf, decorfs) => {
 	let decor = decorf => rd_tag(elementf, [...decorfs, decorf,]);
-	let child = childf => decor(rd_tagChildren([childf]));
+	let children = childrenfs => decor(rd_tagChildren(childrenfs));
+	let child = childf => children([childf]);
 
 	return {
 		attr: (key, value) => decor(rd_tagAttrs({ [key]: value, })),
@@ -166,7 +167,7 @@ let rd_tag = (elementf, decorfs) => {
 		attrsf: attrsf => decor(rd_tagAttrsf(attrsf)),
 		build: () => rd_elementDecors(elementf, decorfs),
 		child,
-		children: (...childrenfs) => decor(rd_tagChildren(childrenfs)),
+		children: (...childrenfs) => children(childrenfs),
 		decor,
 		for_: (keyf, rd_item) => decor(rd_for(keyf, rd_item)),
 		listen: (event, cb) => decor(rd_tagEventListener(event, cb)),
