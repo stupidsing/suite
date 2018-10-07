@@ -225,16 +225,16 @@ let rd_vm = rd.tag('span',
 		rd.scope('fruits',
 			rd.tag('ul', rdt.for_(vm => vm, rd.tag('li', rdt.children(text,))))
 		),
-		rd_vscrollf(scrollerHeight, scrollerItemHeight,
-			rd.tag('div', rdt.attr('style', 'height: ' + scrollerItemHeight + 'px;'), rdt.children(rd.child(vm => document.createTextNode('scrolling ' + vm)),)),
-			start => { renderAgain(rd_vm, vm => ({ ...vm, start, })); },
+		rd.scope('vscroll',
+			rd_vscrollf(scrollerHeight, scrollerItemHeight,
+				rd.tag('div', rdt.attr('style', 'height: ' + scrollerItemHeight + 'px;'), rdt.children(rd.child(vm => document.createTextNode('scrolling ' + vm)),)),
+				start => { renderAgain(rd_vm, vm => ({ ...vm, vscroll: { start, vms: vm.vscroll.vms, }, })); },
+			),
 		),
 	)
 );
 
-setInterval(() => {
-	renderAgain(rd_vm, vm => ({ ...vm, t: vm.t + 1, }));
-}, 1000);
+setInterval(() => renderAgain(rd_vm, vm => ({ ...vm, t: vm.t + 1, })), 1000);
 
 let t = 0;
 let start = 0;
@@ -243,10 +243,12 @@ let vms = [];
 for (let i = 0; i < 256; i++)
 	vms.push(i);
 
-renderAgain(rd_vm, vm => ({ t, start, vms, message: 'hello world0', fruits: ['banana',], }));
-renderAgain(rd_vm, vm => ({ t, start, vms, message: 'hello world1', fruits: ['apple', 'banana',], }));
-renderAgain(rd_vm, vm => ({ t, start, vms, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));
-renderAgain(rd_vm, vm => ({ t, start, vms, message: 'hello world~', fruits: ['banana', 'orange',], }));
+let vscroll = { start, vms, };
+
+renderAgain(rd_vm, vm => ({ t, vscroll, message: 'hello world0', fruits: ['banana',], }));
+renderAgain(rd_vm, vm => ({ t, vscroll, message: 'hello world1', fruits: ['apple', 'banana',], }));
+renderAgain(rd_vm, vm => ({ t, vscroll, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));
+renderAgain(rd_vm, vm => ({ t, vscroll, message: 'hello world~', fruits: ['banana', 'orange',], }));
 	</script>
 
 </html>
