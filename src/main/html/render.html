@@ -28,12 +28,12 @@ let rd_cd = (cf, df) => (vm0, vm1, dom, domc) => {
 	}
 };
 
-let rd_child = elementf => rd_cd(
+let rd_elem = elementf => rd_cd(
 	(vm, dom, domc) => dom.appendChild(domc = elementf(vm)),
 	(vm, dom, domc) => dom.removeChild(domc)
 );
 
-let rd_element = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
+let rd_elementDecors = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
 	if (vm0 == null)
 		dom.appendChild(domc = elementf());
 	if (vm0 != vm1)
@@ -43,7 +43,7 @@ let rd_element = (elementf, decorfs) => (vm0, vm1, dom, domc) => {
 		dom.removeChild(domc);
 };
 
-let rd_for_ = (keyf, rdf) => (vm0, vm1, dom, domc) => {
+let rd_for = (keyf, rdf) => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
 		;
 	else if (vm0 == null)
@@ -117,11 +117,11 @@ let rd_tag = (elementf, decorfs) => {
 		attr: (key, value) => decor(rd_tagAttrs({ [key]: value, })),
 		attrs: attrs => decor(rd_tagAttrs(attrs)),
 		attrsf: attrsf => decor(rd_tagAttrsf(attrsf)),
-		build: () => rd_element(elementf, decorfs),
+		build: () => rd_elementDecors(elementf, decorfs),
 		children: (...childrenfs) => decor(rd_tagChildren(childrenfs)),
 		childrenList: childrenfs => decor(rd_tagChildren(childrenfs)),
 		decor,
-		for_: (keyf, rdf) => decor(rd_for_(keyf, rdf)),
+		for_: (keyf, rdf) => decor(rd_for(keyf, rdf)),
 		listen: (event, cb) => decor(rd_tagEventListener(event, cb)),
 	};
 };
@@ -169,8 +169,8 @@ let rd_tagEventListener = (event, cb) => rd_cd(
 );
 
 let rd = {
-	child: rd_child,
-	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_child(() => document.createComment('else'))),
+	child: rd_elem,
+	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_elem(() => document.createComment('else'))),
 	ifElse: rd_ifElse,
 	scope: (key, rdf) => (vm0, vm1, dom, domc) => rdf(
 		vm0 != null ? vm0[key] : null,
@@ -214,7 +214,7 @@ let rd_vscrollf = (scrollerHeight, scrollerItemHeight, rd_item, cbScroll) => {
 	
 				let list1 = s => s != null ? list0(s) : null;
 	
-				rd_for_(vm => vm, rd_item)(list1(vm0), list1(vm1), dom, domc);
+				rd_for(vm => vm, rd_item)(list1(vm0), list1(vm1), dom, domc);
 			})
 			.build(),
 		)
