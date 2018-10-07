@@ -185,14 +185,11 @@ let text = rd.child(vm => document.createTextNode(vm));
 let scrollerHeight = 200;
 let scrollerItemHeight = 32;
 
-let rd_vscrollf = (scrollerHeight, scrollerItemHeight, rd_item) => {
+let rd_vscrollf = (scrollerHeight, scrollerItemHeight, rd_item, cbScroll) => {
 	let nItemsShown = Math.floor(scrollerHeight / scrollerItemHeight) + 1;
 	return rd.tag('div',
 		rd.tagAttr('style', 'height: ' + scrollerHeight + 'px; overflow: auto; position: absolute;'),
-		rd.tagListen('scroll', d => {
-			let start = Math.floor(d.target.scrollTop / scrollerItemHeight);
-			renderAgain(rd_vm, vm => ({ ...vm, start, }));
-		}),
+		rd.tagListen('scroll', d => cbScroll(Math.floor(d.target.scrollTop / scrollerItemHeight))),
 		rd.tagChildren(rd.tag('div',
 			rd.tagAttrsf(vm => ({
 				style: 'height: ' + (vm.vms.length - vm.start) * scrollerItemHeight + 'px; position: relative; top: ' + vm.start * scrollerItemHeight + 'px;',
@@ -225,7 +222,8 @@ let rd_vm = rd.tag('span',
 			rd.tag('ul', rd.tagFor(vm => vm, rd.tag('li', rd.tagChildren(text,))))
 		),
 		rd_vscrollf(scrollerHeight, scrollerItemHeight,
-			rd.tag('div', rd.tagAttr('style', 'height: ' + scrollerItemHeight + 'px;'), rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + vm)),))
+			rd.tag('div', rd.tagAttr('style', 'height: ' + scrollerItemHeight + 'px;'), rd.tagChildren(rd.child(vm => document.createTextNode('scrolling ' + vm)),)),
+			start => { renderAgain(rd_vm, vm => ({ ...vm, start, })); },
 		),
 	)
 );
