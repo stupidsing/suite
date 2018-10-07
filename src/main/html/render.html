@@ -160,7 +160,6 @@ let rd_tag = (elementf, decorfs) => {
 		build: () => rd_elementDecors(elementf, decorfs),
 		child: childf => decor(rd_tagChildren([childf])),
 		children: (...childrenfs) => decor(rd_tagChildren(childrenfs)),
-		childrenList: childrenfs => decor(rd_tagChildren(childrenfs)),
 		decor,
 		for_: (keyf, rd_item) => decor(rd_for(keyf, rd_item)),
 		listen: (event, cb) => decor(rd_tagEventListener(event, cb)),
