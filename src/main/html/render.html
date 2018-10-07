@@ -111,21 +111,6 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, dom, domc) => {
 	}
 };
 
-let rd_tag = (elementf, decorfs) => {
-	let decor = decorf => rd_tag(elementf, [...decorfs, decorf,]);
-	return {
-		attr: (key, value) => decor(rd_tagAttrs({ [key]: value, })),
-		attrs: attrs => decor(rd_tagAttrs(attrs)),
-		attrsf: attrsf => decor(rd_tagAttrsf(attrsf)),
-		build: () => rd_elementDecors(elementf, decorfs),
-		children: (...childrenfs) => decor(rd_tagChildren(childrenfs)),
-		childrenList: childrenfs => decor(rd_tagChildren(childrenfs)),
-		decor,
-		for_: (keyf, rdf) => decor(rd_for(keyf, rdf)),
-		listen: (event, cb) => decor(rd_tagEventListener(event, cb)),
-	};
-};
-
 let rd_tagAttrsf = attrsf => (vm0, vm1, dom, domc) => {
 	if (vm0 == vm1)
 		;
@@ -167,6 +152,21 @@ let rd_tagEventListener = (event, cb) => rd_cd(
 	(vm, dom, domc) => domc.addEventListener(event, cb),
 	(vm, dom, domc) => domc.removeEventListener(event, cb)
 );
+
+let rd_tag = (elementf, decorfs) => {
+	let decor = decorf => rd_tag(elementf, [...decorfs, decorf,]);
+	return {
+		attr: (key, value) => decor(rd_tagAttrs({ [key]: value, })),
+		attrs: attrs => decor(rd_tagAttrs(attrs)),
+		attrsf: attrsf => decor(rd_tagAttrsf(attrsf)),
+		build: () => rd_elementDecors(elementf, decorfs),
+		children: (...childrenfs) => decor(rd_tagChildren(childrenfs)),
+		childrenList: childrenfs => decor(rd_tagChildren(childrenfs)),
+		decor,
+		for_: (keyf, rdf) => decor(rd_for(keyf, rdf)),
+		listen: (event, cb) => decor(rd_tagEventListener(event, cb)),
+	};
+};
 
 let rd = {
 	child: rd_elem,
