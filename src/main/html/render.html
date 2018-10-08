@@ -173,6 +173,26 @@ let rd_tagEventListener = (event, cb) => rd_cd(
 	(vm, cudf) => cudf.domChild.removeEventListener(event, cb)
 );
 
+let rd_tagStyle = style => (vm0, vm1, cudf) => {
+	if (vm0 == null)
+		for (let [key, value] of Object.entries(style))
+			cudf.domChild.style[key] = value;
+	if (vm1 == null)
+		for (let [key, value] of Object.entries(style))
+			cudf.domChild.style[key] = null;
+};
+
+let rd_tagStylef = stylef => (vm0, vm1, cudf) => {
+	if (vm0 == vm1)
+		;
+	else if (vm1 != null)
+		for (let [key, value] of Object.entries(stylef(vm1)))
+			cudf.domChild.style[key] = value;
+	else
+		for (let [key, value] of Object.entries(stylef(vm0)))
+			cudf.domChild.style[key] = null;
+};
+
 let rd_tag = (elementf, decorfs) => {
 	let decor = decorf => rd_tag(elementf, [...decorfs, decorf,]);
 	let attrs = attrs => decor(rd_tagAttrs(attrs));
@@ -189,6 +209,8 @@ let rd_tag = (elementf, decorfs) => {
 		decor,
 		for_: (keyf, rd_item) => decor(rd_for(keyf, rd_item)),
 		listen: (event, cb) => decor(rd_tagEventListener(event, cb)),
+		style: style => decor(rd_tagStyle(style)),
+		stylef: stylef => decor(rd_tagStylef(stylef)),
 		text: () => child(rd_element(vm => document.createTextNode(vm))).build(),
 	};
 };
@@ -198,12 +220,12 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 
 	return rd
 		.tag('div')
-		.attr('style', 'height: ' + height + 'px; overflow: auto; position: absolute;')
+		.style({ height: height + 'px', overflow: 'auto', position: 'absolute', })
 		.listen('scroll', d => cbScroll(Math.floor(d.target.scrollTop / rowHeight)))
 		.child(rd
 			.tag('div')
-			.attrsf(vm => ({
-				style: 'height: ' + (vm.vms.length - vm.start) * rowHeight + 'px; position: relative; top: ' + vm.start * rowHeight + 'px;',
+			.stylef(vm => ({
+				height: (vm.vms.length - vm.start) * rowHeight + 'px', position: 'relative', top: vm.start * rowHeight + 'px',
 			}))
 			.decor((vm0, vm1, cudf) => {
 				let list0 = vm => {
@@ -214,7 +236,7 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 
 				let list1 = s => s != null ? list0(s) : null;
 
-				rd_for(vm => vm, rd.tag('div').attr('style', 'height: ' + rowHeight + 'px;').child(rd_item).build())(list1(vm0), list1(vm1), cudf);
+				rd_for(vm => vm, rd.tag('div').style({ height: rowHeight + 'px', }).child(rd_item).build())(list1(vm0), list1(vm1), cudf);
 			})
 			.build()
 		);
@@ -243,10 +265,10 @@ let renderAgain = (renderer, f) => {
 
 let rd_vm = rd
 	.tag('span')
-	.attr('style', 'font-family: Verdana;')
+	.style({ 'font-family': 'Verdana', })
 	.children(
 		rd.scope('message',
-			rd.tag('p').attr('style', 'font-weight: bold;').text()
+			rd.tag('p').style({ 'font-weight': 'bold', }).text()
 		),
 		rd.scope('t',
 			rd.tag('p').text()
