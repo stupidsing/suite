@@ -12,11 +12,11 @@
 
 let cud = (dom, domc0) => {
 	let cud_ = {
-		childCud: child_ => cud(cud_.domChild, child_),
-		domChild: domc0,
-		create: c => dom.appendChild(cud_.domChild = c),
-		delete: () => dom.removeChild(cud_.domChild),
-		update: c => { let c0 = cud_.domChild; dom.replaceChild(cud_.domChild = c, c0); },
+		childCud: child_ => cud(cud_.childRef, child_),
+		childRef: domc0,
+		create: c => dom.appendChild(cud_.childRef = c),
+		delete: () => dom.removeChild(cud_.childRef),
+		update: c => { let c0 = cud_.childRef; dom.replaceChild(cud_.childRef = c, c0); },
 	};
 	return cud_;
 };
@@ -26,11 +26,11 @@ let cud_i0 = (dom, domc0) => {
 	let first1 = first0 != null? first0 : null;
 
 	let cud_ = {
-		childCud: child_ => cud(cud_.domChild, child_),
-		domChild: domc0,
-		create: c => dom.insertBefore(cud_.domChild = c, first),
-		delete: () => dom.removeChild(cud_.domChild),
-		update: c => { let c0 = cud_.domChild; dom.replaceChild(cud_.domChild = c, c0); },
+		childCud: child_ => cud(cud_.childRef, child_),
+		childRef: domc0,
+		create: c => dom.insertBefore(cud_.childRef = c, first),
+		delete: () => dom.removeChild(cud_.childRef),
+		update: c => { let c0 = cud_.childRef; dom.replaceChild(cud_.childRef = c, c0); },
 	};
 	return cud_;
 };
@@ -70,7 +70,7 @@ let rd_elementDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
 };
 
 let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
-	let domc0 = cudf.domChild;
+	let domc0 = cudf.childRef;
 	let children0 = domc0 != null ? Array.from(domc0.childNodes) : null;
 
 	if (vm0 == vm1)
@@ -140,10 +140,10 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf) => {
 let rd_tagAttrs = attrs => (vm0, vm1, cudf) => {
 	if (vm0 == null)
 		for (let [key, value] of Object.entries(attrs))
-			cudf.domChild.setAttribute(key, value);
+			cudf.childRef.setAttribute(key, value);
 	if (vm1 == null)
 		for (let [key, value] of Object.entries(attrs))
-			cudf.domChild.removeAttribute(key);
+			cudf.childRef.removeAttribute(key);
 };
 
 let rd_tagAttrsf = attrsf => (vm0, vm1, cudf) => {
@@ -151,14 +151,14 @@ let rd_tagAttrsf = attrsf => (vm0, vm1, cudf) => {
 		;
 	else if (vm1 != null)
 		for (let [key, value] of Object.entries(attrsf(vm1)))
-			cudf.domChild.setAttribute(key, value);
+			cudf.childRef.setAttribute(key, value);
 	else
 		for (let [key, value] of Object.entries(attrsf(vm0)))
-			cudf.domChild.removeAttribute(key);
+			cudf.childRef.removeAttribute(key);
 };
 
 let rd_tagChildren = childrenfs => (vm0, vm1, cudf) => {
-	let domc0 = cudf.domChild;
+	let domc0 = cudf.childRef;
 	let children0 = domc0 != null ? Array.from(domc0.childNodes) : null;
 
 	if (vm0 == vm1)
@@ -169,17 +169,17 @@ let rd_tagChildren = childrenfs => (vm0, vm1, cudf) => {
 };
 
 let rd_tagEventListener = (event, cb) => rd_cd(
-	(vm, cudf) => cudf.domChild.addEventListener(event, cb),
-	(vm, cudf) => cudf.domChild.removeEventListener(event, cb)
+	(vm, cudf) => cudf.childRef.addEventListener(event, cb),
+	(vm, cudf) => cudf.childRef.removeEventListener(event, cb)
 );
 
 let rd_tagStyle = style => (vm0, vm1, cudf) => {
 	if (vm0 == null)
 		for (let [key, value] of Object.entries(style))
-			cudf.domChild.style[key] = value;
+			cudf.childRef.style[key] = value;
 	if (vm1 == null)
 		for (let [key, value] of Object.entries(style))
-			cudf.domChild.style[key] = null;
+			cudf.childRef.style[key] = null;
 };
 
 let rd_tagStylef = stylef => (vm0, vm1, cudf) => {
@@ -187,10 +187,10 @@ let rd_tagStylef = stylef => (vm0, vm1, cudf) => {
 		;
 	else if (vm1 != null)
 		for (let [key, value] of Object.entries(stylef(vm1)))
-			cudf.domChild.style[key] = value;
+			cudf.childRef.style[key] = value;
 	else
 		for (let [key, value] of Object.entries(stylef(vm0)))
-			cudf.domChild.style[key] = null;
+			cudf.childRef.style[key] = null;
 };
 
 let rd_tag = (elementf, decorfs) => {
