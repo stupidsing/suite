@@ -207,9 +207,9 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 					let e = s + nItemsShown;
 					return vm.vms.slice(s, e);
 				};
-	
+
 				let list1 = s => s != null ? list0(s) : null;
-	
+
 				rd_for(vm => vm, rd.tag('div').attr('style', 'height: ' + rowHeight + 'px;').child(rd_item).build())(list1(vm0), list1(vm1), cudf);
 			})
 			.build()
