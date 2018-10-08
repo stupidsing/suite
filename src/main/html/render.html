@@ -60,7 +60,9 @@ let rd_element = elementf => rd_cd(
 let rd_elementDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
 	if (vm0 == null)
 		cudf.create(elementf());
-	if (vm0 != vm1)
+	if (vm0 == vm1)
+		;
+	else
 		for (let decorf of decorfs)
 			decorf(vm0, vm1, cudf);
 	if (vm1 == null)
@@ -159,7 +161,9 @@ let rd_tagChildren = childrenfs => (vm0, vm1, cudf) => {
 	let domc0 = cudf.domChild;
 	let children0 = domc0 != null ? Array.from(domc0.childNodes) : null;
 
-	if (vm0 != vm1)
+	if (vm0 == vm1)
+		;
+	else
 		for (let i = 0; i < childrenfs.length; i++)
 			childrenfs[i](vm0, vm1, cudf.childCud(domc0 != null ? children0[i] : null));
 };
