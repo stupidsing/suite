@@ -131,12 +131,12 @@ let rd_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 		let s_ = si;
 		let e_ = ei;
 
-		while (s_ < Math.min(e_, sx)) {
+		while (s_ < e_ && s_ < sx) {
 			rd_item(vms0[s_], null, cudf.childCud(domc0.childNodes[0]));
 			s_++;
 		}
 
-		while (Math.max(s_, ex) < e_) {
+		while (s_ < e_ && ex < e_) {
 			e_--;
 			rd_item(vms0[e_], null, cudf.childCud(domc0.childNodes[e_ - s_]));
 		}
