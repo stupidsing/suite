@@ -88,7 +88,7 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 
 		if (isSameOrder)
 			for (let i = 0; i < vm1.length; i++)
-				rd_item(vm0[i], vm1[i], children0[i]);
+				rd_item(vm0[i], vm1[i], cudf.childCud(children0[i]));
 		else {
 			let domc1 = domc0.cloneNode(false);
 			cudf.update(domc1);
