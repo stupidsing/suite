@@ -21,15 +21,8 @@ let cud = (dom, domc0) => {
 	return cud_;
 };
 
-let c_i0 = (dom, domc0) => {
-	let first0 = dom.childNodes[0];
-	let first1 = first0 != null? first0 : null;
-	return { create: c => dom.insertBefore(c, first), };
-};
-
-let c_ix = (dom, domc0) => {
-	return { create: c => dom.appendChild(c), };
-};
+let c_i0 = (dom, domc0) => ({ create: c => dom.insertBefore(c, dom.firstChild), });
+let c_ix = (dom, domc0) => ({ create: c => dom.appendChild(c), });
 
 /*
 	a typical renderer has 4 parameters:
