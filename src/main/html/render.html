@@ -21,18 +21,14 @@ let cud = (dom, domc0) => {
 	return cud_;
 };
 
-let cud_i0 = (dom, domc0) => {
+let c_i0 = (dom, domc0) => {
 	let first0 = dom.childNodes[0];
 	let first1 = first0 != null? first0 : null;
+	return { create: c => dom.insertBefore(c, first), };
+};
 
-	let cud_ = {
-		childCud: child_ => cud(cud_.childRef, child_),
-		childRef: domc0,
-		create: c => dom.insertBefore(cud_.childRef = c, first),
-		delete: () => dom.removeChild(cud_.childRef),
-		update: c => { let c0 = cud_.childRef; dom.replaceChild(cud_.childRef = c, c0); },
-	};
-	return cud_;
+let c_ix = (dom, domc0) => {
+	return { create: c => dom.appendChild(c), };
 };
 
 /*
