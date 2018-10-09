@@ -150,7 +150,7 @@ let rd_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 		while (e_ < ex)
 			rd_item(null, vms1[e_++], c_insertTail(domc0));
 
-		for (let i = s_; i < e_; i++)
+		for (let i = Math.max(si, sx); i < Math.min(ei, ex); i++)
 			rd_item(vms0[i], vms1[i], cudf.childCud(domc0.childNodes[i - s_]));
 	}
 };
