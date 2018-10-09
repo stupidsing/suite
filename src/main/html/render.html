@@ -258,10 +258,10 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 				height: (vm.vms.length - vm.start) * rowHeight + 'px', position: 'relative', top: vm.start * rowHeight + 'px',
 			}))
 			.decor((vm0, vm1, cudf) => rd_forRange(
-					vm => vm.vms,
-					vm => [vm.start, vm.start + nItemsShown],
-					rd_tag(() => document.createElement('div'), []).style({ height: rowHeight + 'px', }).child(rd_item).build())
-					(vm0, vm1, cudf))
+				vm => vm.vms,
+				vm => [vm.start, vm.start + nItemsShown],
+				rd_tag(() => document.createElement('div'), []).style({ height: rowHeight + 'px', }).child(rd_item).build())
+				(vm0, vm1, cudf))
 			.build()
 		);
 };
