@@ -10,19 +10,19 @@
 	<script type='text/javascript'>
 'use strict';
 
-let cud = (dom, domc0) => {
+let c_cud = (dom, domc0) => {
 	let cud_ = {
-		childCud: child_ => cud(cud_.childRef, child_),
+		childCud: child_ => c_cud(cud_.childRef, child_),
 		childRef: domc0,
-		create: c => dom.appendChild(cud_.childRef = c),
+		create: c => dom.insertBefore(cud_.childRef = c, null),
 		delete: () => dom.removeChild(cud_.childRef),
 		update: c => { let c0 = cud_.childRef; dom.replaceChild(cud_.childRef = c, c0); },
 	};
 	return cud_;
 };
 
-let c_i0 = dom => ({ create: c => dom.insertBefore(c, dom.firstChild), });
-let c_ix = dom => ({ create: c => dom.appendChild(c), });
+let c_insertHead = dom => c_cud(dom, dom.firstChild);
+let c_insertTail = dom => c_cud(dom, null);
 
 /*
 	a typical renderer has 4 parameters:
@@ -105,8 +105,49 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 
 			for (let i0 = 0; i0 < vm0.length; i0++)
 				if (!map1.has(keyf(vm0[i0])))
-					rd_item(vm0[i0], null, cud(domc0, children0[i0]));
+					rd_item(vm0[i0], null, c_cud(domc0, children0[i0]));
 		}
+	}
+};
+
+let rd_forRange = (rangef, vmsf, rd_item) => (vm0, vm1, cudf) => {
+	let domc0 = cudf.childRef;
+	let children0 = domc0 != null ? Array.from(domc0.childNodes) : null;
+
+	if (vm0 == vm1)
+		;
+	else if (vm0 == null) {
+		let [s, e] = rangef(vm1), vms1 = vmsf(vm1);
+		for (let i1 = s; i1 < e; i1++)
+			rd_item(null, vms1[i1], cudf.childCud(null));
+	} else if (vm1 == null) {
+		let [s, e] = rangef(vm0), vms0 = vmsf(vm0);
+		for (let i1 = s; i1 < e; i1++)
+			rd_item(vms0[i0], null, cudf.childCud(children0[i0]));
+	} else {
+		let [si, ei] = rangef(vm0), vms0 = vmsf(vm0);
+		let [sx, ex] = rangef(vm1), vms1 = vmsf(vm1);
+		let s_ = si;
+		let e_ = ei;
+
+		while (s_ < sx) {
+			rd_item(vms0[s_], null, cudf.childCud(children0[s_ - si]));
+			s_++;
+		}
+
+		while (ex < e_) {
+			e_--;
+			rd_item(vms0[e_], null, cudf.childCud(children0[e_ - si]));
+		}
+
+		while (sx < s_)
+			rd_item(null, vms1[s_--], c_insertHead(cudf.childRef));
+
+		while (e_ < ex)
+			rd_item(null, vms1[++e_], c_insertTail(cudf.childRef));
+
+		for (let i = s_; i < e_; i++)
+			rd_item(vms0[i], vms1[i], cudf.childCud(children0[i - sx]));
 	}
 };
 
@@ -225,7 +266,14 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 
 				let list1 = s => s != null ? list0(s) : null;
 
-				rd_for(vm => vm, rd.tag('div').style({ height: rowHeight + 'px', }).child(rd_item).build())(list1(vm0), list1(vm1), cudf);
+				if (true)
+					rd_for(vm => vm, rd.tag('div').style({ height: rowHeight + 'px', }).child(rd_item).build())(list1(vm0), list1(vm1), cudf);
+				else
+					rd_forRange(
+						vm => [vm.start, vm.start + nItemsShown],
+						vm => vm.vms,
+						rd.tag('div').style({ height: rowHeight + 'px', }).child(rd_item).build())
+						(vm0, vm1, cudf);
 			})
 			.build()
 		);
@@ -249,7 +297,7 @@ let pvm = null;
 let renderAgain = (renderer, f) => {
 	let target = document.getElementById('target');
 	let ppvm = pvm;
-	renderer(ppvm, pvm = f(pvm), cud(target, target.firstChild));
+	renderer(ppvm, pvm = f(pvm), c_cud(target, target.firstChild));
 };
 
 let rd_vm = rd
