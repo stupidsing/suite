@@ -10,19 +10,20 @@
 	<script type='text/javascript'>
 'use strict';
 
-let c_cud = (dom, domc0) => {
+let c_cud_ = (dom, domc0, insertBefore) => {
 	let cud_ = {
 		childCud: child_ => c_cud(cud_.childRef, child_),
 		childRef: domc0,
-		create: c => dom.insertBefore(cud_.childRef = c, null),
+		create: c => dom.insertBefore(cud_.childRef = c, insertBefore),
 		delete: () => dom.removeChild(cud_.childRef),
 		update: c => { let c0 = cud_.childRef; dom.replaceChild(cud_.childRef = c, c0); },
 	};
 	return cud_;
 };
 
-let c_insertHead = dom => c_cud(dom, dom.firstChild);
-let c_insertTail = dom => c_cud(dom, null);
+let c_cud = (dom, domc0) => c_cud_(dom, domc0, null);
+let c_insertHead = dom => c_cud_(dom, null, dom.firstChild);
+let c_insertTail = dom => c_cud_(dom, null,  null);
 
 /*
 	a typical renderer has 4 parameters:
@@ -110,7 +111,7 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 	}
 };
 
-let rd_forRange = (rangef, vmsf, rd_item) => (vm0, vm1, cudf) => {
+let rd_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 	let domc0 = cudf.childRef;
 	let children0 = domc0 != null ? Array.from(domc0.childNodes) : null;
 
@@ -122,7 +123,7 @@ let rd_forRange = (rangef, vmsf, rd_item) => (vm0, vm1, cudf) => {
 			rd_item(null, vms1[i1], cudf.childCud(null));
 	} else if (vm1 == null) {
 		let [s, e] = rangef(vm0), vms0 = vmsf(vm0);
-		for (let i1 = s; i1 < e; i1++)
+		for (let i0 = s; i0 < e; i0++)
 			rd_item(vms0[i0], null, cudf.childCud(children0[i0]));
 	} else {
 		let [si, ei] = rangef(vm0), vms0 = vmsf(vm0);
@@ -130,24 +131,27 @@ let rd_forRange = (rangef, vmsf, rd_item) => (vm0, vm1, cudf) => {
 		let s_ = si;
 		let e_ = ei;
 
-		while (s_ < sx) {
-			rd_item(vms0[s_], null, cudf.childCud(children0[s_ - si]));
+		while (s_ < Math.min(e_, sx)) {
+			rd_item(vms0[s_], null, cudf.childCud(domc0.childNodes[0]));
 			s_++;
 		}
 
-		while (ex < e_) {
+		while (Math.max(s_, ex) < e_) {
 			e_--;
-			rd_item(vms0[e_], null, cudf.childCud(children0[e_ - si]));
+			rd_item(vms0[e_], null, cudf.childCud(domc0.childNodes[e_ - s_]));
 		}
 
+		if (s_ == e_)
+			s_ = e_ = sx;
+
 		while (sx < s_)
-			rd_item(null, vms1[s_--], c_insertHead(cudf.childRef));
+			rd_item(null, vms1[--s_], c_insertHead(domc0));
 
 		while (e_ < ex)
-			rd_item(null, vms1[++e_], c_insertTail(cudf.childRef));
+			rd_item(null, vms1[e_++], c_insertTail(domc0));
 
 		for (let i = s_; i < e_; i++)
-			rd_item(vms0[i], vms1[i], cudf.childCud(children0[i - sx]));
+			rd_item(vms0[i], vms1[i], cudf.childCud(domc0.childNodes[i - s_]));
 	}
 };
 
@@ -266,14 +270,11 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 
 				let list1 = s => s != null ? list0(s) : null;
 
-				if (true)
-					rd_for(vm => vm, rd.tag('div').style({ height: rowHeight + 'px', }).child(rd_item).build())(list1(vm0), list1(vm1), cudf);
-				else
-					rd_forRange(
-						vm => [vm.start, vm.start + nItemsShown],
-						vm => vm.vms,
-						rd.tag('div').style({ height: rowHeight + 'px', }).child(rd_item).build())
-						(vm0, vm1, cudf);
+				rd_forRange(
+					vm => vm.vms,
+					vm => [vm.start, vm.start + nItemsShown],
+					rd.tag('div').style({ height: rowHeight + 'px', }).child(rd_item).build())
+					(vm0, vm1, cudf);
 			})
 			.build()
 		);
