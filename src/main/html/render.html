@@ -260,7 +260,7 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 			.decor((vm0, vm1, cudf) => rd_forRange(
 					vm => vm.vms,
 					vm => [vm.start, vm.start + nItemsShown],
-					rd.tag('div').style({ height: rowHeight + 'px', }).child(rd_item).build())
+					rd_tag(() => document.createElement('div'), []).style({ height: rowHeight + 'px', }).child(rd_item).build())
 					(vm0, vm1, cudf))
 			.build()
 		);
