@@ -23,7 +23,7 @@ let c_cud_ = (dom, domc0, insertBefore) => {
 
 let c_cud = (dom, domc0) => c_cud_(dom, domc0, null);
 let c_insertHead = dom => c_cud_(dom, null, dom.firstChild);
-let c_insertTail = dom => c_cud_(dom, null,  null);
+let c_insertTail = dom => c_cud_(dom, null, null);
 
 /*
 	a typical renderer has 4 parameters:
@@ -132,13 +132,13 @@ let rd_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 		let e_ = ei;
 
 		while (s_ < e_ && s_ < sx) {
-			rd_item(vms0[s_], null, cudf.childCud(domc0.childNodes[0]));
+			rd_item(vms0[s_], null, cudf.childCud(domc0.firstChild));
 			s_++;
 		}
 
 		while (s_ < e_ && ex < e_) {
 			e_--;
-			rd_item(vms0[e_], null, cudf.childCud(domc0.childNodes[e_ - s_]));
+			rd_item(vms0[e_], null, cudf.childCud(domc0.lastChild));
 		}
 
 		if (s_ == e_)
