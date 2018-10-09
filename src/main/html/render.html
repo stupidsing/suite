@@ -281,6 +281,7 @@ let rd_vm = rd
 				rd.element(vm => document.createTextNode('scrolling ' + vm)),
 				start => renderAgain(rd_vm, vm => ({ ...vm, vscroll: { ...vm.vscroll, start, }, })),
 			)
+			.style({ width: '400px', })
 			.build()
 		),
 	)
