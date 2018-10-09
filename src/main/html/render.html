@@ -261,21 +261,11 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 			.stylef(vm => ({
 				height: (vm.vms.length - vm.start) * rowHeight + 'px', position: 'relative', top: vm.start * rowHeight + 'px',
 			}))
-			.decor((vm0, vm1, cudf) => {
-				let list0 = vm => {
-					let s = vm.start;
-					let e = s + nItemsShown;
-					return vm.vms.slice(s, e);
-				};
-
-				let list1 = s => s != null ? list0(s) : null;
-
-				rd_forRange(
+			.decor((vm0, vm1, cudf) => rd_forRange(
 					vm => vm.vms,
 					vm => [vm.start, vm.start + nItemsShown],
 					rd.tag('div').style({ height: rowHeight + 'px', }).child(rd_item).build())
-					(vm0, vm1, cudf);
-			})
+					(vm0, vm1, cudf))
 			.build()
 		);
 };
