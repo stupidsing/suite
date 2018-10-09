@@ -131,21 +131,18 @@ let rd_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 		let s_ = si;
 		let e_ = ei;
 
-		while (s_ < e_ && s_ < sx)
-			rd_item(vms0[s_++], null, cudf.childCud(domc0.firstChild));
+		// remove elements at start and end of range
+		while (s_ < e_ && s_ < sx) rd_item(vms0[s_++], null, cudf.childCud(domc0.firstChild));
+		while (s_ < e_ && ex < e_) rd_item(vms0[--e_], null, cudf.childCud(domc0.lastChild));
 
-		while (s_ < e_ && ex < e_)
-			rd_item(vms0[--e_], null, cudf.childCud(domc0.lastChild));
+		// relocate the range if empty
+		if (s_ == e_) s_ = e_ = sx;
 
-		if (s_ == e_)
-			s_ = e_ = sx;
+		// insert elements at start and end of range
+		while (sx < s_) rd_item(null, vms1[--s_], c_insertHead(domc0));
+		while (e_ < ex) rd_item(null, vms1[e_++], c_insertTail(domc0));
 
-		while (sx < s_)
-			rd_item(null, vms1[--s_], c_insertHead(domc0));
-
-		while (e_ < ex)
-			rd_item(null, vms1[e_++], c_insertTail(domc0));
-
+		// update elements at common range
 		for (let i = Math.max(si, sx); i < Math.min(ei, ex); i++)
 			rd_item(vms0[i], vms1[i], cudf.childCud(domc0.childNodes[i - s_]));
 	}
