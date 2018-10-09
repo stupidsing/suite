@@ -135,7 +135,7 @@ let rd_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 		while (s_ < e_ && s_ < sx) rd_item(vms0[s_++], null, cudf.childCud(domc0.firstChild));
 		while (s_ < e_ && ex < e_) rd_item(vms0[--e_], null, cudf.childCud(domc0.lastChild));
 
-		// relocate the range if empty
+		// relocate range if empty
 		if (s_ == e_) s_ = e_ = sx;
 
 		// insert elements at start and end of range
