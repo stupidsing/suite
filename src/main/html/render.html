@@ -21,8 +21,8 @@ let cud = (dom, domc0) => {
 	return cud_;
 };
 
-let c_i0 = (dom, domc0) => ({ create: c => dom.insertBefore(c, dom.firstChild), });
-let c_ix = (dom, domc0) => ({ create: c => dom.appendChild(c), });
+let c_i0 = dom => ({ create: c => dom.insertBefore(c, dom.firstChild), });
+let c_ix = dom => ({ create: c => dom.appendChild(c), });
 
 /*
 	a typical renderer has 4 parameters:
