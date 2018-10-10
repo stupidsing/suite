@@ -247,12 +247,10 @@ let rd_tag = tag => rd_tag_(() => document.createElement(tag), []);
 let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 	let nItemsShown = Math.floor(height / rowHeight) + 1;
 
-	return rd
-		.tag('div')
+	return rd_tag('div')
 		.style({ height: height + 'px', overflow: 'auto', position: 'absolute', })
 		.listen('scroll', d => cbScroll(Math.floor(d.target.scrollTop / rowHeight)))
-		.child(rd
-			.tag('div')
+		.child(rd_tag('div')
 			.stylef(vm => ({
 				height: (vm.vms.length - vm.start) * rowHeight + 'px', position: 'relative', top: vm.start * rowHeight + 'px',
 			}))
@@ -266,9 +264,11 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 };
 
 let rd = {
+	div: () => rd_tag('div'),
 	element: rd_element,
 	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_element(() => document.createComment('else'))),
 	ifElse: rd_ifElse,
+	p: () => rd_tag('p'),
 	scope: (key, rdf) => (vm0, vm1, cudf) => rdf(
 		vm0 != null ? vm0[key] : null,
 		vm1 != null ? vm1[key] : null,
@@ -291,10 +291,10 @@ let rd_vm = rd
 	.style({ 'font-family': 'sans-serif', })
 	.children(
 		rd.scope('message',
-			rd.tag('p').style({ 'font-weight': 'bold', }).text()
+			rd.p().style({ 'font-weight': 'bold', }).text()
 		),
 		rd.scope('t',
-			rd.tag('p').text()
+			rd.p().text()
 		),
 		rd.scope('fruits',
 			rd.tag('ul').for_(vm => vm, rd.tag('li').text()).build()
