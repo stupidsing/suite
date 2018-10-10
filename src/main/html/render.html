@@ -33,6 +33,62 @@ let c_insertTail = dom => c_cud_(dom, null, null);
 	The renderer should detect the differences and apply changes using cud.
 */
 
+let rdt_attrs = attrs => (vm0, vm1, cudf) => {
+	if (vm0 == null)
+		for (let [key, value] of Object.entries(attrs))
+			cudf.childRef.setAttribute(key, value);
+	if (vm1 == null)
+		for (let [key, value] of Object.entries(attrs))
+			cudf.childRef.removeAttribute(key);
+};
+
+let rdt_attrsf = attrsf => (vm0, vm1, cudf) => {
+	if (vm0 == vm1)
+		;
+	else if (vm1 != null)
+		for (let [key, value] of Object.entries(attrsf(vm1)))
+			cudf.childRef.setAttribute(key, value);
+	else
+		for (let [key, value] of Object.entries(attrsf(vm0)))
+			cudf.childRef.removeAttribute(key);
+};
+
+let rdt_children = childrenfs => (vm0, vm1, cudf) => {
+	let domc0 = cudf.childRef;
+	let children0 = domc0 != null ? Array.from(domc0.childNodes) : null;
+
+	if (vm0 == vm1)
+		;
+	else
+		for (let i = 0; i < childrenfs.length; i++)
+			childrenfs[i](vm0, vm1, cudf.childCud(domc0 != null ? children0[i] : null));
+};
+
+let rdt_eventListener = (event, cb) => rd_cd(
+	(vm, cudf) => cudf.childRef.addEventListener(event, cb),
+	(vm, cudf) => cudf.childRef.removeEventListener(event, cb)
+);
+
+let rdt_style = style => (vm0, vm1, cudf) => {
+	if (vm0 == null)
+		for (let [key, value] of Object.entries(style))
+			cudf.childRef.style[key] = value;
+	if (vm1 == null)
+		for (let [key, value] of Object.entries(style))
+			cudf.childRef.style[key] = null;
+};
+
+let rdt_stylef = stylef => (vm0, vm1, cudf) => {
+	if (vm0 == vm1)
+		;
+	else if (vm1 != null)
+		for (let [key, value] of Object.entries(stylef(vm1)))
+			cudf.childRef.style[key] = value;
+	else
+		for (let [key, value] of Object.entries(stylef(vm0)))
+			cudf.childRef.style[key] = null;
+};
+
 let rd_cd = (cf, df) => (vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
@@ -164,83 +220,29 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf) => {
 	}
 };
 
-let rd_tagAttrs = attrs => (vm0, vm1, cudf) => {
-	if (vm0 == null)
-		for (let [key, value] of Object.entries(attrs))
-			cudf.childRef.setAttribute(key, value);
-	if (vm1 == null)
-		for (let [key, value] of Object.entries(attrs))
-			cudf.childRef.removeAttribute(key);
-};
-
-let rd_tagAttrsf = attrsf => (vm0, vm1, cudf) => {
-	if (vm0 == vm1)
-		;
-	else if (vm1 != null)
-		for (let [key, value] of Object.entries(attrsf(vm1)))
-			cudf.childRef.setAttribute(key, value);
-	else
-		for (let [key, value] of Object.entries(attrsf(vm0)))
-			cudf.childRef.removeAttribute(key);
-};
-
-let rd_tagChildren = childrenfs => (vm0, vm1, cudf) => {
-	let domc0 = cudf.childRef;
-	let children0 = domc0 != null ? Array.from(domc0.childNodes) : null;
-
-	if (vm0 == vm1)
-		;
-	else
-		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, cudf.childCud(domc0 != null ? children0[i] : null));
-};
-
-let rd_tagEventListener = (event, cb) => rd_cd(
-	(vm, cudf) => cudf.childRef.addEventListener(event, cb),
-	(vm, cudf) => cudf.childRef.removeEventListener(event, cb)
-);
-
-let rd_tagStyle = style => (vm0, vm1, cudf) => {
-	if (vm0 == null)
-		for (let [key, value] of Object.entries(style))
-			cudf.childRef.style[key] = value;
-	if (vm1 == null)
-		for (let [key, value] of Object.entries(style))
-			cudf.childRef.style[key] = null;
-};
-
-let rd_tagStylef = stylef => (vm0, vm1, cudf) => {
-	if (vm0 == vm1)
-		;
-	else if (vm1 != null)
-		for (let [key, value] of Object.entries(stylef(vm1)))
-			cudf.childRef.style[key] = value;
-	else
-		for (let [key, value] of Object.entries(stylef(vm0)))
-			cudf.childRef.style[key] = null;
-};
-
-let rd_tag = (elementf, decorfs) => {
-	let decor = decorf => rd_tag(elementf, [...decorfs, decorf,]);
-	let attrs = attrs => decor(rd_tagAttrs(attrs));
-	let children = childrenfs => decor(rd_tagChildren(childrenfs));
+let rd_tag_ = (elementf, decorfs) => {
+	let decor = decorf => rd_tag_(elementf, [...decorfs, decorf,]);
+	let attrs = attrs => decor(rdt_attrs(attrs));
+	let children = childrenfs => decor(rdt_children(childrenfs));
 	let child = childf => children([childf]);
 
 	return {
 		attr: (key, value) => attrs({ [key]: value, }),
 		attrs,
-		attrsf: attrsf => decor(rd_tagAttrsf(attrsf)),
+		attrsf: attrsf => decor(rdt_attrsf(attrsf)),
 		build: () => rd_elementDecors(elementf, decorfs),
 		child,
 		children: (...childrenfs) => children(childrenfs),
 		decor,
 		for_: (keyf, rd_item) => decor(rd_for(keyf, rd_item)),
-		listen: (event, cb) => decor(rd_tagEventListener(event, cb)),
-		style: style => decor(rd_tagStyle(style)),
-		stylef: stylef => decor(rd_tagStylef(stylef)),
+		listen: (event, cb) => decor(rdt_eventListener(event, cb)),
+		style: style => decor(rdt_style(style)),
+		stylef: stylef => decor(rdt_stylef(stylef)),
 		text: () => child(rd_element(vm => document.createTextNode(vm))).build(),
 	};
 };
+
+let rd_tag = tag => rd_tag_(() => document.createElement(tag), []);
 
 let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 	let nItemsShown = Math.floor(height / rowHeight) + 1;
@@ -257,7 +259,7 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 			.decor((vm0, vm1, cudf) => rd_forRange(
 				vm => vm.vms,
 				vm => [vm.start, vm.start + nItemsShown],
-				rd_tag(() => document.createElement('div'), []).style({ height: rowHeight + 'px', }).child(rd_item).build())
+				rd_tag('div').style({ height: rowHeight + 'px', }).child(rd_item).build())
 				(vm0, vm1, cudf))
 			.build()
 		);
@@ -272,7 +274,7 @@ let rd = {
 		vm1 != null ? vm1[key] : null,
 		cudf
 	),
-	tag: tag => rd_tag(() => document.createElement(tag), []),
+	tag: rd_tag,
 	vscrollf: rd_vscrollf,
 };
 
