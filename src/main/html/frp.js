@@ -3,7 +3,7 @@
 let frp = function() {
 	let signal = () => { // FRP dispatcher
 		let receivers = [];
-		let fire_ = data => { for (let i = 0; i < receivers.length; i++) receivers[i](data); };
+		let fire_ = data => { for (let receiver of receivers) receiver(data); };
 		let redirect_ = tf => {
 			let signal1 = signal();
 			wire_(data => tf(data, signal1));

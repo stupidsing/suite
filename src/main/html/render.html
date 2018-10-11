@@ -1,4 +1,7 @@
-	<meta charset='utf-8'>
+<meta charset='utf-8'>
+<!--
+file:///home/ywsing/workspace/suite/src/main/html/render.html
+-->
 <html>
 	<body>
 		<div id='target'></div>
@@ -26,7 +29,7 @@ let c_insertHead = dom => c_cud_(dom, null, dom.firstChild);
 let c_insertTail = dom => c_cud_(dom, null, null);
 
 /*
-	a typical renderer has 4 parameters:
+	a typical "render-difference" function accept 3 parameters:
 	vm0 - old view model, null to append DOM elements
 	vm1 - new view model, null to remove DOM elements
 	cud - DOM manipulator (create, update, delete)
@@ -61,7 +64,7 @@ let rdt_children = childrenfs => (vm0, vm1, cudf) => {
 		;
 	else
 		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, cudf.childCud(domc0 != null ? children0[i] : null));
+			childrenfs[i](vm0, vm1, cudf.childCud(children0 != null ? children0[i] : null));
 };
 
 let rdt_eventListener = (event, cb) => rd_cd(
@@ -230,15 +233,15 @@ let rd_tag_ = (elementf, decorfs) => {
 		attr: (key, value) => attrs({ [key]: value, }),
 		attrs,
 		attrsf: attrsf => decor(rdt_attrsf(attrsf)),
-		build: () => rd_elementDecors(elementf, decorfs),
 		child,
 		children: (...childrenfs) => children(childrenfs),
 		decor,
 		for_: (keyf, rd_item) => decor(rd_for(keyf, rd_item)),
 		listen: (event, cb) => decor(rdt_eventListener(event, cb)),
+		rd: () => rd_elementDecors(elementf, decorfs),
 		style: style => decor(rdt_style(style)),
 		stylef: stylef => decor(rdt_stylef(stylef)),
-		text: () => child(rd_element(vm => document.createTextNode(vm))).build(),
+		text: () => child(rd_element(vm => document.createTextNode(vm))),
 	};
 };
 
@@ -252,14 +255,16 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 		.listen('scroll', d => cbScroll(Math.floor(d.target.scrollTop / rowHeight)))
 		.child(rd_tag('div')
 			.stylef(vm => ({
-				height: (vm.vms.length - vm.start) * rowHeight + 'px', position: 'relative', top: vm.start * rowHeight + 'px',
+				height: (vm.vms.length - vm.start) * rowHeight + 'px',
+				position: 'relative',
+				top: vm.start * rowHeight + 'px',
 			}))
 			.decor((vm0, vm1, cudf) => rd_forRange(
 				vm => vm.vms,
 				vm => [vm.start, vm.start + nItemsShown],
-				rd_tag('div').style({ height: rowHeight + 'px', }).child(rd_item).build())
+				rd_tag('div').style({ height: rowHeight + 'px', }).child(rd_item).rd())
 				(vm0, vm1, cudf))
-			.build()
+			.rd()
 		);
 };
 
@@ -291,13 +296,13 @@ let rd_vm = rd
 	.style({ 'font-family': 'sans-serif', })
 	.children(
 		rd.scope('message',
-			rd.p().style({ 'font-weight': 'bold', }).text()
+			rd.p().style({ 'font-weight': 'bold', }).text().rd()
 		),
 		rd.scope('t',
-			rd.p().text()
+			rd.p().text().rd()
 		),
 		rd.scope('fruits',
-			rd.tag('ul').for_(vm => vm, rd.tag('li').text()).build()
+			rd.tag('ul').for_(vm => vm, rd.tag('li').text().rd()).rd()
 		),
 		rd.scope('vscroll', rd
 			.vscrollf(200, 32,
@@ -305,10 +310,10 @@ let rd_vm = rd
 				start => renderAgain(rd_vm, vm => ({ ...vm, vscroll: { ...vm.vscroll, start, }, })),
 			)
 			.style({ width: '400px', })
-			.build()
+			.rd()
 		),
 	)
-	.build();
+	.rd();
 
 let t = 0;
 let vscroll = { start: 0, vms: read().range(0, 256).list(), };
