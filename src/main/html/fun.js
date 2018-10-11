@@ -9,16 +9,16 @@ let read = list => {
 			for (let e of l) list1.push(e);
 			return read(list1);
 		},
-		cons: e => {
-			let list1 = [e];
-			for (let e of list) list1.push(e);
-			return read(list1);
-		},
 		concat: () => {
 			let list1 = [];
 			for (let e of list)
 				for (let f of e)
 					list1.push(f);
+			return read(list1);
+		},
+		cons: e => {
+			let list1 = [e];
+			for (let e of list) list1.push(e);
 			return read(list1);
 		},
 		filter: f => {
