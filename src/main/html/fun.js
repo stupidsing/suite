@@ -1,10 +1,29 @@
 "use strict";
 
-let lens = f => ({
-	apply: f,
-	index: index => lens(list0 => [...list0.slice(0, index), f(list0[index]), ...list0.slice(index + 1, list0.length),]),
-	key: key => lens(object0 => ({ ...object0, [key]: f(object0[key]), })),
-});
+let lens_ = gp => {
+	return {
+		apply: f => object0 => {
+			let { g: object1, p } = gp(object0);
+			return p(f(object1));
+		},
+		index: index => lens_(object0 => {
+			let { g: object1, p } = gp(object0);
+			return {
+				g: object1[index],
+				p: value => p([...object1.slice(0, index), value, ...object1.slice(index + 1, object1.length),]),
+			};
+		}),
+		key: key => lens_(object0 => {
+			let { g: object1, p } = gp(object0);
+			return {
+				g: object1[key],
+				p: value => p({ ...object1, [key]: value, }),
+			};
+		}),
+	};
+};
+
+let lens = () => lens_(object => ({ g: object, p: value => value, }));
 
 let read = list => {
 	return {
