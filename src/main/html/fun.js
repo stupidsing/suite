@@ -23,7 +23,7 @@ let lens_ = gp => {
 	};
 };
 
-let lens = () => lens_(object => ({ g: object, p: value => value, }));
+let lens = lens_(object => ({ g: object, p: value => value, }));
 
 let read = list => {
 	return {

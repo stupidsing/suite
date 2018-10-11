@@ -318,8 +318,8 @@ let rd_vm = rd
 let t = 0;
 let vscroll = { start: 0, vms: read().range(0, 256).list(), };
 
-let upd0 = lens().key('t').apply(t => t + 1);
-let upd1 = lens().key('vscroll').key('vms').index(3).apply(vm => Math.random().toString());
+let upd0 = lens.key('t').apply(t => t + 1);
+let upd1 = lens.key('vscroll').key('vms').index(3).apply(vm => Math.random().toString());
 
 setInterval(() => renderAgain(rd_vm, upd0), 1000);
 setInterval(() => renderAgain(rd_vm, upd1), 3000);
