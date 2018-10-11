@@ -3,18 +3,18 @@
 let lens_ = gp => {
 	return {
 		apply: f => object0 => {
-			let { g: object1, p } = gp(object0);
+			let { g: object1, p, } = gp(object0);
 			return p(f(object1));
 		},
 		index: index => lens_(object0 => {
-			let { g: object1, p } = gp(object0);
+			let { g: object1, p, } = gp(object0);
 			return {
 				g: object1[index],
 				p: value => p([...object1.slice(0, index), value, ...object1.slice(index + 1, object1.length),]),
 			};
 		}),
 		key: key => lens_(object0 => {
-			let { g: object1, p } = gp(object0);
+			let { g: object1, p, } = gp(object0);
 			return {
 				g: object1[key],
 				p: value => p({ ...object1, [key]: value, }),
