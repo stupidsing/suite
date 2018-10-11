@@ -24,7 +24,7 @@ let read = list => {
 		filter: f => {
 			let list1 = [];
 			for (let e of list)
-				if (f(e)) list1.append(e);
+				f(e) && list1.push(e);
 			return read(list1);
 		},
 		fold: (f, value) => {
