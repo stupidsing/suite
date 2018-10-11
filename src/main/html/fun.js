@@ -1,5 +1,14 @@
 "use strict";
 
+let lens_index = (index, f) => list0 => [...list0.slice(0, index), f(list0[index]), ...list0.slice(index + 1, list0.length),];
+let lens_key = (key, f) => object0 => ({ ...object0, [key]: f(object0[key]), });
+
+let lens = f => ({
+	apply: f,
+	index: index => lens(lens_index(index, f)),
+	key: key => lens(lens_key(key, f)),
+});
+
 let read = list => {
 	return {
 		append: r => {
