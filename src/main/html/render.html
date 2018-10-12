@@ -101,12 +101,12 @@ let rd_cd = (cf, df) => (vm0, vm1, cudf) => {
 	}
 };
 
-let rd_element = elementf => rd_cd(
+let rd_dom = elementf => rd_cd(
 	(vm, cudf) => cudf.create(elementf(vm)),
 	(vm, cudf) => cudf.delete()
 );
 
-let rd_elementDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
+let rd_domDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
 	if (vm0 == null)
 		cudf.create(elementf());
 	if (vm0 == vm1)
@@ -238,10 +238,10 @@ let rd_tag_ = (elementf, decorfs) => {
 		decor,
 		for_: (keyf, rd_item) => decor(rd_for(keyf, rd_item)),
 		listen: (event, cb) => decor(rdt_eventListener(event, cb)),
-		rd: () => rd_elementDecors(elementf, decorfs),
+		rd: () => rd_domDecors(elementf, decorfs),
 		style: style => decor(rdt_style(style)),
 		stylef: stylef => decor(rdt_stylef(stylef)),
-		text: () => child(rd_element(vm => document.createTextNode(vm))),
+		text: () => child(rd_dom(vm => document.createTextNode(vm))),
 	};
 };
 
@@ -270,16 +270,19 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 
 let rd = {
 	div: () => rd_tag('div'),
-	element: rd_element,
-	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_element(() => document.createComment('else'))),
+	dom: rd_dom,
+	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_dom(() => document.createComment('else'))),
 	ifElse: rd_ifElse,
+	li: () => rd_tag('li'),
 	p: () => rd_tag('p'),
 	scope: (key, rdf) => (vm0, vm1, cudf) => rdf(
 		vm0 != null ? vm0[key] : null,
 		vm1 != null ? vm1[key] : null,
 		cudf
 	),
+	span: () => rd_tag('span'),
 	tag: rd_tag,
+	ul: () => rd_tag('ul'),
 	vscrollf: rd_vscrollf,
 };
 
@@ -292,7 +295,7 @@ let renderAgain = (renderer, f) => {
 };
 
 let rd_vm = rd
-	.tag('span')
+	.span()
 	.style({ 'font-family': 'sans-serif', })
 	.children(
 		rd.scope('message',
@@ -302,11 +305,11 @@ let rd_vm = rd
 			rd.p().text().rd()
 		),
 		rd.scope('fruits',
-			rd.tag('ul').for_(vm => vm, rd.tag('li').text().rd()).rd()
+			rd.ul().for_(vm => vm, rd.li().text().rd()).rd()
 		),
 		rd.scope('vscroll', rd
 			.vscrollf(200, 32,
-				rd.element(vm => document.createTextNode('scrolling ' + vm)),
+				rd.dom(vm => document.createTextNode('scrolling ' + vm)),
 				start => renderAgain(rd_vm, vm => ({ ...vm, vscroll: { ...vm.vscroll, start, }, })),
 			)
 			.style({ width: '400px', })
