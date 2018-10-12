@@ -11,6 +11,8 @@ import suite.primitive.Bytes;
 
 public class FunpTest {
 
+	private Amd64Interpret interpret = new Amd64Interpret();
+
 	@Test
 	public void testArray() {
 		test(0, "define a := [0,] ~ a [0]");
@@ -142,13 +144,14 @@ public class FunpTest {
 		test(0, "let d := s:{} ~ type d = t:3 ~ if (`t:v` = d) then v else 0");
 	}
 
-	private void test(int r, String p) {
+	private void test(int r, String program) {
 		for (var isOptimize : new boolean[] { false, true, }) {
-			LogUtil.info(p);
-			var pair = Funp_.main(isOptimize).compile(Amd64Interpret.codeStart, p);
+			LogUtil.info(program);
+			var main = Funp_.main(isOptimize);
+			var pair = main.compile(interpret.codeStart, program);
 			var bytes = pair.t1;
 			LogUtil.info("Hex" + bytes + "\n\n");
-			assertEquals(r, new Amd64Interpret().interpret(pair.t0, bytes, Bytes.of()));
+			assertEquals(r, interpret.interpret(pair.t0, bytes, Bytes.of()));
 			assertTrue(bytes != null);
 		}
 	}

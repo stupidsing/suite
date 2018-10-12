@@ -13,6 +13,7 @@ import suite.util.RunUtil;
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfTest {
 
+	private Amd64Interpret interpret = new Amd64Interpret();
 	private WriteElf elf = new WriteElf();
 
 	@Test
@@ -44,8 +45,7 @@ public class ElfTest {
 			assertEquals(code, exec.code);
 			assertEquals(input, exec.out);
 		} else { // Windows => interpret assembly
-			var pair = main.compile(Amd64Interpret.codeStart, program);
-			var interpret = new Amd64Interpret();
+			var pair = main.compile(interpret.codeStart, program);
 			assertEquals(code, interpret.interpret(pair, bytes));
 			assertEquals(bytes, interpret.out.toBytes());
 		}

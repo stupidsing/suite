@@ -29,8 +29,8 @@ import suite.util.To;
 
 public class Amd64Interpret {
 
-	public static int codeStart = 0x00000100;
-	public final BytesBuilder out = new BytesBuilder();
+	public int codeStart = 0x00000100;
+	public BytesBuilder out = new BytesBuilder();
 
 	private IntInt_Obj<IntIntPair> f = (s, p) -> IntIntPair.of(s, s + p);
 
