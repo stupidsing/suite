@@ -310,7 +310,7 @@ let rd_vm = rd
 		rd.scope('vscroll', rd
 			.vscrollf(200, 32,
 				rd.dom(vm => document.createTextNode('scrolling ' + vm)),
-				start => renderAgain(rd_vm, lens.key('vscroll').key('start').apply(start0 => start)),
+				start1 => renderAgain(rd_vm, lens.key('vscroll').key('start').apply(start0 => start1)),
 			)
 			.style({ width: '400px', })
 			.rd()
