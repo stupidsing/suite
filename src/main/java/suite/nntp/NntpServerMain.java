@@ -47,8 +47,7 @@ public class NntpServerMain {
 
 					switch (pair.t0) {
 					case ARTICLE:
-						article = nntp.getArticle(currentGroupId, options);
-						if (article != null) {
+						if ((article = nntp.getArticle(currentGroupId, options)) != null) {
 							pw.println("220 Okay");
 							printHead(pw, article);
 							pw.println();
@@ -58,8 +57,7 @@ public class NntpServerMain {
 							pw.println("423 Error");
 						break;
 					case BODY:
-						article = nntp.getArticle(currentGroupId, options);
-						if (article != null) {
+						if ((article = nntp.getArticle(currentGroupId, options)) != null) {
 							pw.println("222 Okay");
 							pw.println(article.get(Nntp.contentKey));
 							pw.println(".");
@@ -70,8 +68,7 @@ public class NntpServerMain {
 						currentGroupId = options;
 						break;
 					case HEAD:
-						article = nntp.getArticle(currentGroupId, options);
-						if (article != null) {
+						if ((article = nntp.getArticle(currentGroupId, options)) != null) {
 							pw.println("221 Okay");
 							printHead(pw, article);
 							pw.println(".");
