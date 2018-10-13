@@ -25,50 +25,79 @@ let lens_ = gp => {
 
 let lens = lens_(object => ({ g: object, p: value => value, }));
 
-let read = list => {
+let read_ = iter => {
 	return {
 		append: r => {
-			let l = r.list();
-			let list1 = [];
-			for (let e of list) list1.push(e);
-			for (let e of l) list1.push(e);
-			return read(list1);
+			return read_(() => {
+				let it0 = iter();
+				let it1 = r.iter();
+				return () => {
+					let e;
+					if (it0 != null && (e = it0()) != null) return e; else it0 = null;
+					if (it1 != null && (e = it1()) != null) return e; else it1 = null;
+					return null;
+				};
+			});
 		},
-		concat: () => {
-			let list1 = [];
-			for (let e of list)
-				for (let f of e)
-					list1.push(f);
-			return read(list1);
-		},
-		cons: e => {
-			let list1 = [e];
-			for (let e of list) list1.push(e);
-			return read(list1);
-		},
-		filter: f => {
-			let list1 = [];
-			for (let e of list)
-				f(e) && list1.push(e);
-			return read(list1);
-		},
-		fold: (f, value) => {
-			for (let e of list) value = f(value, e);
+		concat: () => read_(() => {
+			let it0 = iter();
+			let it1 = null;
+			return () => {
+				let e;
+				while (it1 == null || (e = it1()) == null) {
+					let iter1 = it0();
+					if (iter1 != null) it1 = iter1.iter(); else return null;
+				}
+				return e;
+			};
+		}),
+		cons: e => read_(() => {
+			let it = iter();
+			let i = 0;
+			return () => i++ == 0 ? e : it();
+		}),
+		filter: f => read_(() => {
+			let it = iter();
+			return () => {
+				let e;
+				while ((e = it()) != null && !f(e));
+				return e;
+			};
+		}),
+		fold: (value, f) => {
+			let it = iter(), e;
+			while ((e = it()) != null) value = f(value, e);
 			return value;
 		},
 		foreach: f => {
-			for (let e of list) f(e);
+			let it = iter(), e;
+			while ((e = it()) != null) f(e);
 		},
-		list: () => list,
-		map: f => {
-			let list1 = [];
-			for (let e of list) list1.push(f(e));
-			return read(list1);
-		},
-		range: (s, e) => {
+		list: () => {
 			let list = [];
-			for (let i = s; i < e; i++) list.push(i);
-			return read(list);
+			let it = iter(), e;
+			while ((e = it()) != null) list.push(e);
+			return list;
 		},
+		map: f => read_(() => {
+			let it = iter();
+			return () => {
+				let e = it();
+				return e != null ? f(e) : null;
+			};
+		}),
+		range: (s, e) => read_(() => {
+			let i = s;
+			return () => i < e ? i++ : null;
+		}),
+		iter,
 	};
 };
+
+let read = list => read_(() => {
+	let i = 0;
+	return () => i < list.length ? list[i++] : null;
+});
+
+// test
+// read([read([1,2,]), read([2,3])]).concat().append(read([34,5,76])).cons(-1).foreach(s => console.log(s))

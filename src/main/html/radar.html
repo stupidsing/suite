@@ -115,7 +115,7 @@
 
 			// move
 			objects = read(objects)
-				.map(object => object.move())
+				.map(object => read(object.move()))
 				.concat()
 				.list();
 

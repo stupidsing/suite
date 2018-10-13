@@ -62,7 +62,7 @@ let frp = function() {
 			unique: () => {
 				let list = [];
 				return redirect_((data, signal1) => {
-					if (!read(list).fold((b_, d) => b_ || e == data, false)) {
+					if (!read(list).fold(false, (b_, d) => b_ || e == data)) {
 						signal1.fire(data);
 						list.push(data);
 					}
@@ -150,8 +150,8 @@ let frp = function() {
 			xhr.send();
 		},
 		kb: {
-			arrowx: keyleftsignal.append(keyrightsignal), // .fold((a, b) => a + b, 0).last();
-			arrowy: keyupsignal.append(keydownsignal), // .fold((a, b) => a + b, 0).last();
+			arrowx: keyleftsignal.append(keyrightsignal), // .fold(0, (a, b) => a + b).last();
+			arrowy: keyupsignal.append(keydownsignal), // .fold(0, (a, b) => a + b).last();
 			keypressed: keypressed,
 		},
 		motion: motionsignal,

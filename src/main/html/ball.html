@@ -89,7 +89,7 @@
 
 			// move
 			objects = read(objects)
-				.map(object => object.move())
+				.map(object => read(object.move()))
 				.concat()
 				.append(clicks().map(xy => ball_(xy.x, xy.y)))
 				.list();
