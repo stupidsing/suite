@@ -90,14 +90,11 @@ public class Matrix {
 	public boolean equals(float[][] m, float[][] n) {
 		var h = h(m);
 		var w = w(m);
-		if (h == h(n) && w == w(n)) {
-			for (var i = 0; i < h; i++)
-				for (var j = 0; j < w; j++)
-					if (m[i][j] != n[i][j])
-						return false;
-			return true;
-		} else
-			return false;
+		var b = h == h(n) && w == w(n);
+		for (var i = 0; i < h && b; i++)
+			for (var j = 0; j < w && b; j++)
+				b &= m[i][j] == n[i][j];
+		return b;
 	}
 
 	public int hashCode(float[][] m) {

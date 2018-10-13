@@ -1,6 +1,7 @@
 package suite.funp;
 
 import static suite.util.Friends.fail;
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
@@ -420,9 +421,7 @@ public class P0Parse {
 					return i -> FunpIndex.of(FunpReference.of(value), FunpNumber.ofNumber(i));
 				}).result();
 
-				return Ints_ //
-						.for_(size0) //
-						.fold(then, (i, then_) -> bind(fun0.apply(i), fun1.apply(i), then_, else_));
+				return forInt(size0).fold(then, (i, then_) -> bind(fun0.apply(i), fun1.apply(i), then_, else_));
 			};
 
 			if (be instanceof FunpBoolean && value instanceof FunpBoolean)
