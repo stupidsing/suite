@@ -1,11 +1,12 @@
 package suite.trade.backalloc.strategy;
 
+import static suite.util.Friends.forInt;
+
 import java.util.Map;
 import java.util.Random;
 
 import suite.object.Object_;
 import suite.primitive.Floats_;
-import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.trade.Time;
 import suite.trade.backalloc.BackAllocator;
@@ -30,8 +31,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 			var returnsBySymbol = dsBySymbol.mapValue(DataSource::returns).toMap();
 			var symbols = returnsBySymbol.keySet().toArray(new String[0]);
 
-			var portfolios = Ints_ //
-					.for_(99) //
+			var portfolios = forInt(99) //
 					.map(i -> randomPortfolio(symbols)) //
 					.toList();
 
@@ -62,8 +62,7 @@ public class MonteCarloBackAllocator implements BackAllocator {
 
 			var portfolio = portfolios.get(0);
 
-			return Ints_ //
-					.for_(symbols.length) //
+			return forInt(symbols.length) //
 					.map2(i -> symbols[i], i -> (double) portfolio[i]) //
 					.toList();
 		};

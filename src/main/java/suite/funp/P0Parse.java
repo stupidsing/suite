@@ -70,7 +70,6 @@ import suite.os.FileUtil;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
-import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
@@ -446,9 +445,7 @@ public class P0Parse {
 							? i -> pairs1.get(i).t1 //
 							: i -> FunpField.of(FunpReference.of(value), pairs0.get(i).t0);
 
-					return Ints_ //
-							.for_(size0) //
-							.fold(then, (i, then_) -> bind(pairs0.get(i).t1, fun.apply(i), then_, else_));
+					return forInt(size0).fold(then, (i, then_) -> bind(pairs0.get(i).t1, fun.apply(i), then_, else_));
 				})).applyIf(FunpTag.class, f -> f.apply((id, tag, value_) -> {
 					return new Switch<Funp>(value //
 					).applyIf(FunpTag.class, g -> g.apply((id1, tag1, value1) -> {

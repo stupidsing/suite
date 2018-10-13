@@ -1,11 +1,12 @@
 package suite.trade.backalloc.strategy;
 
+import static suite.util.Friends.forInt;
+
 import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.numeric.Statistic;
-import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.trade.Trade_;
@@ -42,8 +43,7 @@ public class KellyCriterion {
 		var returns = To.vector(symbols, excessReturnBySymbol::get);
 		var allocations = cholesky.inverseMul(cov).apply(returns);
 
-		return Ints_ //
-				.for_(nSymbols) //
+		return forInt(nSymbols) //
 				.map2(i -> symbols[i], i -> (double) allocations[i] * kellyReduction) //
 				.toList();
 	}

@@ -1,6 +1,7 @@
 package suite.sample;
 
 import static suite.util.Friends.fail;
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -20,7 +21,6 @@ import suite.primitive.Chars_;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.Ints.IntsBuilder;
-import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Sink;
 
@@ -168,8 +168,7 @@ public class DevMain {
 
 		Sink<State> redraw = state -> state.editState
 				.apply((st, undo, redo, text, oc, cc) -> cc.map((cx, cy) -> oc.map((ox, oy) -> {
-					var lines = Ints_ //
-							.for_(viewSizeY) //
+					var lines = forInt(viewSizeY) //
 							.map(screenY -> text.get(ox, oy + screenY, viewSizeX).replace('\t', ' ')) //
 							.toArray(String.class);
 

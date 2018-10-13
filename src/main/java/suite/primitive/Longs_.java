@@ -84,10 +84,6 @@ public class Longs_ {
 		return new LngStreamlet(() -> LngOutlet.of(ts, start, end, inc));
 	}
 
-	public static LngStreamlet for_(long e) {
-		return for_((long) 0, e);
-	}
-
 	public static LngStreamlet for_(long s, long e) {
 		return new LngStreamlet(() -> {
 			var m = LngMutable.of(s);

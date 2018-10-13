@@ -1,5 +1,6 @@
 package suite.sample;
 
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.rethrow;
 
 import java.nio.file.Files;
@@ -12,7 +13,6 @@ import org.apache.commons.codec.digest.Md5Crypt;
 
 import suite.adt.pair.Pair;
 import suite.os.FileUtil;
-import suite.primitive.Ints_;
 import suite.streamlet.Streamlet;
 import suite.util.RunUtil;
 import suite.util.To;
@@ -55,8 +55,7 @@ public class LibraryMain {
 				.map2((path, size) -> {
 					var attrs = rethrow(() -> Files.readAttributes(path, BasicFileAttributes.class));
 
-					var tags = Ints_ //
-							.for_(path.getNameCount()) //
+					var tags = forInt(path.getNameCount()) //
 							.map(i -> path.getName(i).toString()) //
 							.cons(To.string(attrs.lastModifiedTime().toInstant())) //
 							.collect();

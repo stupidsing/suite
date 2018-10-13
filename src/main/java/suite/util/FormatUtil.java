@@ -1,8 +1,9 @@
 package suite.util;
 
+import static suite.util.Friends.forInt;
+
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Int;
-import suite.primitive.Ints_;
 import suite.streamlet.Read;
 
 public class FormatUtil {
@@ -13,8 +14,7 @@ public class FormatUtil {
 
 		var rows = arrays.map(array -> To.array(nColumns, String.class, column -> column < array.length ? array[column] : ""));
 
-		var widths = Ints_ //
-				.for_(nColumns) //
+		var widths = forInt(nColumns) //
 				.collect(Int_Int.lift(column -> rows //
 						.collect(Obj_Int.lift(row -> row[column].length())).max())) //
 				.toArray();

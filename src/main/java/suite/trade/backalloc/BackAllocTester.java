@@ -1,5 +1,7 @@
 package suite.trade.backalloc;
 
+import static suite.util.Friends.forInt;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -7,7 +9,6 @@ import java.util.Map;
 
 import suite.math.numeric.Statistic;
 import suite.os.LogUtil;
-import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -84,8 +85,7 @@ public class BackAllocTester {
 			var t0 = period.from.epochSec();
 			var tx = period.to.epochSec();
 
-			var indices = Ints_ //
-					.for_(tradeTs.length) //
+			var indices = forInt(tradeTs.length) //
 					.filter(i -> {
 						var t = tradeTs[i];
 						return t0 <= t && t < tx;

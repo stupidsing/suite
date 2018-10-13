@@ -1,6 +1,7 @@
 package suite.trade.analysis;
 
 import static suite.util.Friends.abs;
+import static suite.util.Friends.forInt;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -17,7 +18,6 @@ import suite.os.LogUtil;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
-import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.adt.pair.IntFltPair;
 import suite.streamlet.As;
@@ -61,8 +61,7 @@ public class StatisticalArbitrageTest {
 		var mas = To.array(power, float[].class, p -> ma.movingAvg(prices, 1 << p));
 		var returns = ts.returns(prices);
 
-		var lr = stat.linearRegression(Ints_ //
-				.for_(1 << power, prices.length) //
+		var lr = stat.linearRegression(forInt(1 << power, prices.length)
 				.map(i -> FltObjPair.of(returns[i], Floats_.toArray(power, p -> mas[p][i - (1 << p)]))));
 
 		System.out.println(lr);
@@ -85,9 +84,8 @@ public class StatisticalArbitrageTest {
 		var prices0 = pricesBySymbol.get(symbol0);
 		var prices1 = pricesBySymbol.get(symbol1);
 
-		var lr = stat.linearRegression(Ints_ //
-				.for_(tor, length) //
-				.map(i -> FltObjPair.of(prices1[i], Floats_.toArray(tor, j -> prices0[i + j - tor]))));
+		var lr = stat.linearRegression(
+				forInt(tor, length).map(i -> FltObjPair.of(prices1[i], Floats_.toArray(tor, j -> prices0[i + j - tor]))));
 
 		System.out.println(lr);
 	}
@@ -197,8 +195,7 @@ public class StatisticalArbitrageTest {
 		var prices = cfg.dataSource(Asset.hsiSymbol).range(period).prices;
 		var maxTor = 16;
 
-		var differencesByTor = Ints_ //
-				.for_(1, maxTor) //
+		var differencesByTor = forInt(1, maxTor) //
 				.mapIntObj(tor -> {
 					var differences = ts.differences(tor, prices);
 					Arrays.sort(differences);
@@ -210,8 +207,7 @@ public class StatisticalArbitrageTest {
 			System.out.println("tor = " + tor + ", " + stat.moments(differencesByTor.get(tor)));
 
 		Int_Flt predictFun = t -> {
-			var cpsArray = Ints_ //
-					.for_(1, maxTor) //
+			var cpsArray = forInt(1, maxTor) //
 					.map(tor -> {
 						var differences = differencesByTor.get(tor);
 						var length = differences.length;
@@ -236,8 +232,7 @@ public class StatisticalArbitrageTest {
 			for (int cpsi = 0, predDiff = -500; predDiff < 500; cpsi++, predDiff += 100) {
 				var cpsi_ = cpsi;
 
-				var sum = Ints_ //
-						.for_(1, maxTor) //
+				var sum = forInt(1, maxTor) //
 						.map(i -> i) //
 						.toDouble(Obj_Dbl.sum(tor -> {
 							var probability = cpsArray[tor - 1][cpsi_ + 1] - cpsArray[tor - 1][cpsi_];

@@ -1,12 +1,12 @@
 package suite.trade.data;
 
 import static org.junit.Assert.assertTrue;
+import static suite.util.Friends.forInt;
 
 import java.util.HashSet;
 
 import org.junit.Test;
 
-import suite.primitive.Ints_;
 import suite.trade.Trade_;
 import suite.util.String_;
 
@@ -19,8 +19,7 @@ public class HkexFactBookTest {
 		var delisted = new HashSet<String>(hkexFactBook.queryDelisted().toList());
 
 		System.out.println(delisted);
-		System.out.println(Ints_ //
-				.for_(2008, Trade_.thisYear) //
+		System.out.println(forInt(2008, Trade_.thisYear) //
 				.mapIntObj(year -> hkexFactBook //
 						.queryLeadingCompaniesByMarketCap(year - 1) //
 						.filter(delisted::contains) //

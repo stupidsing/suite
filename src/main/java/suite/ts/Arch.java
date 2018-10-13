@@ -11,7 +11,6 @@ import suite.math.numeric.Statistic;
 import suite.primitive.DblPrimitives.DblSource;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
-import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.util.To;
 
@@ -30,9 +29,7 @@ public class Arch {
 		var variances = To.vector(lr0.residuals, residual -> residual * residual);
 
 		// conditional heteroskedasticity
-		var lr1 = stat.linearRegression(Ints_ //
-				.for_(length) //
-				.map(i -> FltObjPair.of(variances[i], copyPadZeroes(variances, i - p, i))));
+		var lr1 = stat.linearRegression(forInt(length).map(i -> FltObjPair.of(variances[i], copyPadZeroes(variances, i - p, i))));
 
 		return Floats_.concat(lr0.coefficients, lr1.coefficients);
 	}

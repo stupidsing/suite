@@ -42,7 +42,7 @@ public class Friends {
 	}
 
 	public static IntStreamlet forInt(int n) {
-		return forInt(n);
+		return forInt(0, n);
 	}
 
 	public static IntStreamlet forInt(int s, int e) {

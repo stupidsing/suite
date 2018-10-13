@@ -2,6 +2,7 @@ package suite.ts;
 
 import static suite.util.Friends.abs;
 import static suite.util.Friends.expm1;
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.log;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
@@ -35,9 +36,7 @@ public class TimeSeries {
 		var length = ys.length;
 		var meany = stat.mean(ys);
 		var ydevs = To.vector(length, i -> ys[i] - meany);
-		var acovs = To.vector(length, k -> Ints_ //
-				.for_(length - k) //
-				.toDouble(Int_Dbl.sum(i -> (ydevs[i] * ydevs[i + k]))));
+		var acovs = To.vector(length, k -> forInt(length - k).toDouble(Int_Dbl.sum(i -> (ydevs[i] * ydevs[i + k]))));
 		var inv = 1d / acovs[0];
 		return To.vector(acovs.length, k -> acovs[k] * inv);
 	}
@@ -46,8 +45,7 @@ public class TimeSeries {
 	public double adf(float[] ys, int tor) {
 		var ydiffs = differences_(1, ys);
 		var length = ys.length;
-		var lr = stat.linearRegression(Ints_ //
-				.for_(tor, length) //
+		var lr = stat.linearRegression(forInt(tor, length) //
 				.map(i -> FltObjPair.of(ydiffs[i],
 						// i - drift term, necessary?
 						Floats.concat(Floats.of(ys[i - 1], 1f, i), Floats.of(ydiffs, i - tor, i)).toArray())));
@@ -88,9 +86,7 @@ public class TimeSeries {
 			var diffs2 = To.vector(diffs, diff -> diff * diff);
 			return log(stat.variance(diffs2));
 		});
-		var lr = stat.linearRegression(Ints_ //
-				.for_(logVrs.length) //
-				.map(i -> FltObjPair.of((float) log(tors[i]), vec.of(logVrs[i], 1f))));
+		var lr = stat.linearRegression(forInt(logVrs.length).map(i -> FltObjPair.of((float) log(tors[i]), vec.of(logVrs[i], 1f))));
 		var beta0 = lr.coefficients[0];
 		return beta0 / 2d;
 	}
@@ -154,17 +150,13 @@ public class TimeSeries {
 	public LinearRegression meanReversion(float[] ys, int tor) {
 		var diffs = differences_(1, ys);
 
-		return stat.linearRegression(Ints_ //
-				.for_(tor, ys.length) //
-				.map(i -> FltObjPair.of(diffs[i], vec.of(ys[i], 1f))));
+		return stat.linearRegression(forInt(tor, ys.length).map(i -> FltObjPair.of(diffs[i], vec.of(ys[i], 1f))));
 	}
 
 	public LinearRegression movingAvgMeanReversion(float[] ys, float[] movingAvg, int tor) {
 		var diffs = differences_(1, ys);
 
-		return stat.linearRegression(Ints_ //
-				.for_(tor, ys.length) //
-				.map(i -> FltObjPair.of(diffs[i], vec.of(movingAvg[i], 1f))));
+		return stat.linearRegression(forInt(tor, ys.length).map(i -> FltObjPair.of(diffs[i], vec.of(movingAvg[i], 1f))));
 	}
 
 	// partial autocorrelation function

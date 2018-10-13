@@ -84,10 +84,6 @@ public class Ints_ {
 		return new IntStreamlet(() -> IntOutlet.of(ts, start, end, inc));
 	}
 
-	public static IntStreamlet for_(int e) {
-		return for_((int) 0, e);
-	}
-
 	public static IntStreamlet for_(int s, int e) {
 		return new IntStreamlet(() -> {
 			var m = IntMutable.of(s);

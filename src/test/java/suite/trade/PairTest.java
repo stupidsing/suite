@@ -1,12 +1,12 @@
 package suite.trade;
 
 import static org.junit.Assert.assertTrue;
+import static suite.util.Friends.forInt;
 
 import org.junit.Test;
 
 import suite.math.linalg.Vector;
 import suite.math.numeric.Statistic;
-import suite.primitive.Ints_;
 import suite.primitive.Longs_;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.trade.data.TradeCfg;
@@ -40,9 +40,7 @@ public class PairTest {
 		var prices1 = ds1.alignBeforePrices(tradeTimes).prices;
 		var length = prices0.length;
 
-		var lr = statistic.linearRegression(Ints_ //
-				.for_(length) //
-				.map(i -> FltObjPair.of(prices1[i], vec.of(prices0[i], 1f))));
+		var lr = statistic.linearRegression(forInt(length).map(i -> FltObjPair.of(prices1[i], vec.of(prices0[i], 1f))));
 
 		System.out.println(symbol0 + " -> " + symbol1 + lr);
 		assertTrue(.4d < lr.r2);

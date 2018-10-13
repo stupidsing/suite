@@ -10,7 +10,6 @@ import java.util.Random;
 import org.junit.Test;
 
 import suite.math.linalg.Vector;
-import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 
@@ -30,9 +29,7 @@ public class KMeansClusterTest {
 
 		var points = Read //
 				.from2(seeds) //
-				.concatMap2((prefix, source) -> Ints_ //
-						.for_(n) //
-						.map2(i -> prefix + i, i -> source.source())) //
+				.concatMap2((prefix, source) -> forInt(n).map2(i -> prefix + i, i -> source.source())) //
 				.toMap();
 
 		var kmc = new KmeansCluster(seeds.size());

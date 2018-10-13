@@ -1,11 +1,11 @@
 package suite.ts;
 
 import static suite.util.Friends.fail;
+import static suite.util.Friends.forInt;
 
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Floats_;
-import suite.primitive.Ints_;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.util.To;
 
@@ -33,12 +33,10 @@ public class Ardl {
 		return To.array(n, LinearRegression.class, it -> {
 			var fs = fsList[it];
 
-			if (length == fs.length)
-				return stat.linearRegression(Ints_ //
-						.for_(length - maxLag) //
-						.map(t -> FltObjPair.of(fs[t], getExplanatoryVariables(fsList, it, t))));
-			else
-				return fail("wrong input sizes");
+			return length == fs.length
+					? stat.linearRegression(
+							forInt(length - maxLag).map(t -> FltObjPair.of(fs[t], getExplanatoryVariables(fsList, it, t))))
+					: fail("wrong input sizes");
 		});
 	}
 

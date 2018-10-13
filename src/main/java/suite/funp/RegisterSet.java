@@ -8,7 +8,6 @@ import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.primitive.IntPrimitives.IntTest;
-import suite.primitive.Ints_;
 import suite.streamlet.Read;
 
 public class RegisterSet {
@@ -52,8 +51,7 @@ public class RegisterSet {
 	}
 
 	public OpReg[] list(IntTest pred) {
-		return Ints_ //
-				.for_(nRegisters) //
+		return forInt(nRegisters) //
 				.filter(this::isSet) //
 				.filter(pred) //
 				.map(r -> registers[r]) //

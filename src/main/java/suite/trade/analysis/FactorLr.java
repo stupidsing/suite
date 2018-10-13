@@ -1,5 +1,7 @@
 package suite.trade.analysis;
 
+import static suite.util.Friends.forInt;
+
 import java.util.List;
 import java.util.Map;
 
@@ -7,7 +9,6 @@ import suite.math.linalg.Matrix;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Int_Flt;
-import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Asset;
@@ -62,8 +63,7 @@ public class FactorLr {
 			var dsv = DataSourceView.of(0, 64, akds, (symbol, ds, period) -> ols(dsBySymbol_.get(symbol), period));
 
 			return index -> {
-				var xs = Ints_ //
-						.for_(indexSymbols.size()) //
+				var xs = forInt(indexSymbols.size()) //
 						.collect(Int_Flt.lift(i -> {
 							var indexPrices_ = indexPrices.get(i);
 							return (float) Quant.return_(indexPrices_[index - 2], indexPrices_[index - 1]);

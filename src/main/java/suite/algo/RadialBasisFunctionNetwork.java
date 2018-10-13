@@ -1,6 +1,7 @@
 package suite.algo;
 
 import static suite.util.Friends.exp;
+import static suite.util.Friends.forInt;
 
 import java.util.List;
 
@@ -9,7 +10,6 @@ import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
-import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.util.To;
@@ -59,8 +59,7 @@ public class RadialBasisFunctionNetwork {
 	}
 
 	private float[] evaluateRbfs(float[] in) {
-		return Ints_ //
-				.for_(nHiddens) //
+		return forInt(nHiddens) //
 				.collect(Int_Flt.lift(cl -> (float) exp(-.5d * vec.dotDiff(in, centers[cl]) * invVariances[cl]))) //
 				.toArray();
 	}

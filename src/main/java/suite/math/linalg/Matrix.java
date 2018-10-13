@@ -10,7 +10,6 @@ import suite.math.Math_;
 import suite.math.R3;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Int_Dbl;
-import suite.primitive.Ints_;
 import suite.streamlet.Read;
 import suite.util.To;
 
@@ -50,10 +49,7 @@ public class Matrix {
 		var h = h(vs);
 		var w = w(vs);
 		var means = To.vector(h, j -> Read.from(vs).toDouble(Obj_Dbl.sum(vector -> vector[j])) / w);
-
-		return To.matrix(h, h, (i0, i1) -> Ints_ //
-				.for_(w) //
-				.toDouble(Int_Dbl.sum(j -> vs[i0][j] * vs[i1][j])) / w - means[i0] * means[i1]);
+		return To.matrix(h, h, (i0, i1) -> forInt(w).toDouble(Int_Dbl.sum(j -> vs[i0][j] * vs[i1][j])) / w - means[i0] * means[i1]);
 	}
 
 	public float[][] copyOf(float[][] m) {
