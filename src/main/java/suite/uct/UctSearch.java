@@ -1,5 +1,6 @@
 package suite.uct;
 
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.log1p;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
@@ -10,7 +11,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.weiqi.Weiqi;
 
@@ -64,7 +64,7 @@ public class UctSearch<Move> {
 		var count = new AtomicInteger();
 		var end = System.currentTimeMillis() + boundedTime;
 
-		Ints_.for_(numberOfThreads).collect(As.executeThreadsByInt(i -> {
+		forInt(numberOfThreads).collect(As.executeThreadsByInt(i -> {
 			var j = 0;
 
 			while (count.getAndIncrement() < numberOfSimulations) {

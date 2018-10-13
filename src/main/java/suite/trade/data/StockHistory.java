@@ -1,6 +1,7 @@
 package suite.trade.data;
 
 import static suite.util.Friends.fail;
+import static suite.util.Friends.forInt;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +9,6 @@ import java.util.Map;
 
 import suite.object.Object_;
 import suite.primitive.Int_Flt;
-import suite.primitive.Ints_;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Iterate;
@@ -223,9 +223,9 @@ public class StockHistory {
 					t + DataSource.tickDuration, //
 					opPairs[io_].t1, //
 					clPairs[ic - 1].t1, //
-					Ints_.for_(il_, il = scan(loPairs, il_, t)).collect(Int_Flt.lift(i_ -> loPairs[i_].t1)).min(), //
-					Ints_.for_(ih_, ih = scan(hiPairs, ih_, t)).collect(Int_Flt.lift(i_ -> hiPairs[i_].t1)).max(), //
-					Ints_.for_(iv_, iv = scan(vlPairs, iv_, t)).collect(Int_Flt.lift(i_ -> vlPairs[i_].t1)).sum());
+					forInt(il_, il = scan(loPairs, il_, t)).collect(Int_Flt.lift(i_ -> loPairs[i_].t1)).min(), //
+					forInt(ih_, ih = scan(hiPairs, ih_, t)).collect(Int_Flt.lift(i_ -> hiPairs[i_].t1)).max(), //
+					forInt(iv_, iv = scan(vlPairs, iv_, t)).collect(Int_Flt.lift(i_ -> vlPairs[i_].t1)).sum());
 		}
 
 		return DataSource.of(Read.from(data));

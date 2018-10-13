@@ -1,5 +1,7 @@
 package suite.math.ts;
 
+import static suite.util.Friends.forInt;
+
 import java.util.Arrays;
 import java.util.Random;
 
@@ -8,7 +10,6 @@ import org.junit.Test;
 import suite.math.linalg.Vector;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
-import suite.primitive.Ints_;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.ts.Arima;
 import suite.ts.Arima.Arima_;
@@ -62,8 +63,8 @@ public class ArimaTest {
 			int tp = t + p, tpm1 = tp - 1;
 			int tq = t + q, tqm1 = tq - 1;
 			xsp[tp++] = (float) (epq[tq] //
-					+ Ints_.for_(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i])) //
-					+ Ints_.for_(q).toDouble(Int_Dbl.sum(i -> mas[i] * epq[tqm1 - i])));
+					+ forInt(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[tpm1 - i])) //
+					+ forInt(q).toDouble(Int_Dbl.sum(i -> mas[i] * epq[tqm1 - i])));
 		}
 
 		return Arrays.copyOfRange(xsp, p, xsp.length);

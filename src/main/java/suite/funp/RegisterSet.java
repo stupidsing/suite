@@ -1,6 +1,7 @@
 package suite.funp;
 
 import static suite.util.Friends.fail;
+import static suite.util.Friends.forInt;
 
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.OpMem;
@@ -26,7 +27,7 @@ public class RegisterSet {
 				.map2(opReg -> opReg.reg, opReg -> opReg) //
 				.toMap();
 
-		registers = Ints_.for_(nRegisters).map(map::get).toArray(OpReg.class);
+		registers = forInt(nRegisters).map(map::get).toArray(OpReg.class);
 	}
 
 	public RegisterSet() {

@@ -1,5 +1,6 @@
 package suite.net.nio;
 
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.rethrow;
 
 import java.io.Closeable;
@@ -25,7 +26,6 @@ import suite.object.Object_;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.primitive.Ints_;
 import suite.primitive.adt.pair.LngObjPair;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Sink;
@@ -110,7 +110,7 @@ public class NioDispatch implements Closeable {
 		private Pool<Reconnect> pool;
 
 		public ReconnectPool(InetSocketAddress address, Sink<Reconnectable> connected) {
-			pool = Pool.of(Ints_.for_(9).map(i -> new Reconnect(address, connected)).toArray(Reconnect.class));
+			pool = Pool.of(forInt(9).map(i -> new Reconnect(address, connected)).toArray(Reconnect.class));
 		}
 
 		public Closeable connect(Sink<Reconnectable> okay) {

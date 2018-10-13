@@ -1,6 +1,7 @@
 package suite.math.linalg;
 
 import static suite.util.Friends.fail;
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.min;
 
 import java.util.Arrays;
@@ -61,7 +62,7 @@ public class Matrix {
 
 	public double det(float[][] m) {
 		var size = sqSize_(m);
-		var cols = Ints_.for_(size).toArray();
+		var cols = forInt(size).toArray();
 
 		class Det {
 			private double sum;

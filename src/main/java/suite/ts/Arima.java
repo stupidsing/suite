@@ -1,5 +1,6 @@
 package suite.ts;
 
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -42,7 +43,7 @@ public class Arima {
 		var r = Ints_ //
 				.for_(p + 1) //
 				.collect(Int_Flt.lift(i -> {
-					double sum = Ints_.for_(i, length).toDouble(Int_Dbl.sum(j -> ys[j - i] * ys[j]));
+					double sum = forInt(i, length).toDouble(Int_Dbl.sum(j -> ys[j - i] * ys[j]));
 					return (float) (sum - mean2);
 				})) //
 				.toArray();
@@ -55,7 +56,7 @@ public class Arima {
 			var alpha0 = alpha;
 			var n_ = n;
 
-			var k1 = Ints_.for_(n).toDouble(Int_Dbl.sum(k -> alpha0[k] * r[n_ + 1 - k])) / d;
+			var k1 = forInt(n).toDouble(Int_Dbl.sum(k -> alpha0[k] * r[n_ + 1 - k])) / d;
 			d = d * (1d - k1 * k1);
 
 			var alpha1 = new float[p];
@@ -122,8 +123,8 @@ public class Arima {
 					.map(t -> {
 						int tp = t + p, tpm1 = tp - 1;
 						int tq = t + q, tqm1 = tq - 1;
-						var lrxs0 = Ints_.for_(p).collect(Int_Flt.lift(i -> xsp[tpm1 - i]));
-						var lrxs1 = Ints_.for_(q).collect(Int_Flt.lift(i -> epq[tqm1 - i]));
+						var lrxs0 = forInt(p).collect(Int_Flt.lift(i -> xsp[tpm1 - i]));
+						var lrxs1 = forInt(q).collect(Int_Flt.lift(i -> epq[tqm1 - i]));
 						return FltObjPair.of(xsp[tp], Floats_.concat(lrxs0, lrxs1).toArray());
 					}));
 
@@ -249,7 +250,7 @@ public class Arima {
 						int tq = t + q, tqm1 = tq - 1;
 						var lrxs = Floats_ //
 								.concat(Floats_.reverse(xsp, t, tp),
-										Ints_.for_(iter_).collect(Int_Flt.lift(i -> epqByIter[i][tqm1 - i]))) //
+										forInt(iter_).collect(Int_Flt.lift(i -> epqByIter[i][tqm1 - i]))) //
 								.toArray();
 						return FltObjPair.of(xsp[tp], lrxs);
 					}));
@@ -263,8 +264,8 @@ public class Arima {
 				var mas = Floats.of(coeffs, p).toArray();
 
 				var x1 = 0d //
-						+ Ints_.for_(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[lengthpm1 - i])) //
-						+ Ints_.for_(q).toDouble(Int_Dbl.sum(i -> mas[i] * epqByIter[i][lengthqm1 - i]));
+						+ forInt(p).toDouble(Int_Dbl.sum(i -> ars[i] * xsp[lengthpm1 - i])) //
+						+ forInt(q).toDouble(Int_Dbl.sum(i -> mas[i] * epqByIter[i][lengthqm1 - i]));
 
 				return new Arima_(ars, mas, x1);
 			}
@@ -330,7 +331,7 @@ public class Arima {
 					.map(t -> {
 						var tqm1 = t + qm1;
 						var lrxs = Floats_
-								.concat(Floats_.of(1f), Ints_.for_(iter_).collect(Int_Flt.lift(i -> epqByIter[i][tqm1 - i])))
+								.concat(Floats_.of(1f), forInt(iter_).collect(Int_Flt.lift(i -> epqByIter[i][tqm1 - i])))
 								.toArray();
 						return FltObjPair.of(xs[t], lrxs);
 					}));

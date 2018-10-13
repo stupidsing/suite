@@ -1,12 +1,12 @@
 package suite.trade.analysis;
 
 import static suite.util.Friends.abs;
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
-import suite.primitive.Ints_;
 import suite.trade.data.DataSource;
 import suite.ts.Quant;
 import suite.util.To;
@@ -21,7 +21,7 @@ public class Oscillator {
 		var length = ds.ts.length;
 		var trs = trueRange(ds);
 		var atrs = new float[length];
-		var atr = atrs[0] = Ints_.for_(n).collect(Int_Flt.lift(i -> trs[i])).sum() / n;
+		var atr = atrs[0] = forInt(n).collect(Int_Flt.lift(i -> trs[i])).sum() / n;
 		var invn = 1d / n;
 
 		for (var i = 1; i < length; i++)

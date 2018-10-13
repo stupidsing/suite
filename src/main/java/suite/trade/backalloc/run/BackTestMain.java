@@ -1,12 +1,13 @@
 package suite.trade.backalloc.run;
 
+import static suite.util.Friends.forInt;
+
 import java.nio.file.Paths;
 
 import suite.adt.pair.Pair;
 import suite.node.io.Operator.Assoc;
 import suite.object.Object_;
 import suite.parser.Wildcard;
-import suite.primitive.Ints_;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
@@ -46,10 +47,10 @@ public class BackTestMain {
 				.concatMap(s -> {
 					var pair = ParseUtil.search(s, "-", Assoc.RIGHT);
 					return pair != null //
-							? Ints_.for_(Integer.valueOf(pair.t0), Integer.valueOf(pair.t1)).map(i -> i) //
+							? forInt(Integer.valueOf(pair.t0), Integer.valueOf(pair.t1)).map(i -> i) //
 							: Read.each(Integer.valueOf(s));
 				}) //
-				: Ints_.for_(2007, Trade_.thisYear).map(i -> i);
+				: forInt(2007, Trade_.thisYear).map(i -> i);
 
 		Fun<Time, Streamlet<Asset>> fun = !arg2.isEmpty() //
 				? time -> Read.from(arg2.split(",")).map(cfg::queryCompany).collect() //

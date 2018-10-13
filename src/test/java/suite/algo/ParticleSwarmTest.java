@@ -2,6 +2,7 @@ package suite.algo;
 
 import static org.junit.Assert.assertTrue;
 import static suite.util.Friends.abs;
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 import static suite.util.Friends.sqrt;
@@ -14,7 +15,6 @@ import org.junit.Test;
 import suite.math.Math_;
 import suite.math.linalg.Vector;
 import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.Ints_;
 import suite.primitive.adt.pair.DblObjPair;
 import suite.streamlet.Read;
 
@@ -26,7 +26,7 @@ public class ParticleSwarmTest {
 
 	@Test
 	public void test() {
-		var particles = Ints_.for_(500).map(i -> new Particle()).toList();
+		var particles = forInt(500).map(i -> new Particle()).toList();
 		var globalBest = DblObjPair.of(Double.MIN_VALUE, vec.of());
 		var delta = 1d;
 

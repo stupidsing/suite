@@ -1,5 +1,6 @@
 package suite.nn;
 
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -12,7 +13,6 @@ import suite.primitive.DblMutable;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.Floats_;
 import suite.primitive.IntPrimitives.Int_Obj;
-import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Outlet;
@@ -154,8 +154,8 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[][][], float[][][]> convChannelLayer(int nInputChannels, int nOutputChannels, int sx, int sy) {
-		var cls = Ints_.for_(nOutputChannels) //
-				.map(oc -> Ints_.for_(nInputChannels) //
+		var cls = forInt(nOutputChannels) //
+				.map(oc -> forInt(nInputChannels) //
 						.map(ic -> conv2dLayer(sx, sy)) //
 						.toList()) //
 				.toList();
@@ -167,8 +167,8 @@ public class NeuralNetwork {
 			var hsx = ix - sx + 1;
 			var hsy = iy - sy + 1;
 
-			var outs = Ints_.for_(nOutputChannels) //
-					.map(oc -> Ints_.for_(nInputChannels) //
+			var outs = forInt(nOutputChannels) //
+					.map(oc -> forInt(nInputChannels) //
 							.map(ic -> cls.get(oc).get(ic).feed(inputs[ic])) //
 							.toList()) //
 					.toList();
@@ -347,7 +347,7 @@ public class NeuralNetwork {
 			int n, //
 			Int_Obj<Layer<I, O>> fun, //
 			Fun<Outlet<I>, I> combineErrors) {
-		var layers = Ints_.for_(n).map(fun::apply);
+		var layers = forInt(n).map(fun::apply);
 		return spawnLayer(clazz, layers, inputs -> inputs, combineErrors);
 	}
 
@@ -368,7 +368,7 @@ public class NeuralNetwork {
 	}
 
 	private <T> Layer<T[], T[]> channelLayer(int nChannels, Class<T> clazz, Int_Obj<Layer<T, T>> layerFun) {
-		var layers = Ints_.for_(nChannels).map(layerFun).collect();
+		var layers = forInt(nChannels).map(layerFun).collect();
 
 		return inputs -> {
 			var outs = layers.zip(Read.from(inputs), Layer::feed).collect();

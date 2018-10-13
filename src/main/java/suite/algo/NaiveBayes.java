@@ -1,5 +1,6 @@
 package suite.algo;
 
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.log;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class NaiveBayes {
 		b = log(threshold) + log(ms[i(true)]) - log(ms[i(false)]);
 
 		ps = To.array(nCategories, float[].class, i -> {
-			var range = Ints_.for_(length_);
+			var range = forInt(length_);
 			var is_ = is[i];
 			return range.collect(Int_Flt.lift(j -> (float) (is_[j] / ws[i]))).toArray();
 		});

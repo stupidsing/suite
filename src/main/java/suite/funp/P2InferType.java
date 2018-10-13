@@ -1,6 +1,7 @@
 package suite.funp;
 
 import static suite.util.Friends.fail;
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.max;
 
 import java.util.ArrayList;
@@ -95,7 +96,6 @@ import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Source;
@@ -927,7 +927,7 @@ public class P2InferType {
 
 		private FunpMemory getMemory_(int scope0) {
 			var nfp0 = scope != null //
-					? Ints_.for_(scope, scope0).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps)) // locals
+					? forInt(scope, scope0).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps)) // locals
 					: FunpNumber.of(IntMutable.of(0)); // globals
 			var nfp1 = offsetOperand != null ? FunpTree.of(TermOp.PLUS__, nfp0, FunpOperand.of(offsetOperand)) : nfp0;
 			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp1, FunpNumber.of(offset)), start, end);

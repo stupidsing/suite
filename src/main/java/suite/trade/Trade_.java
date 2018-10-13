@@ -2,6 +2,7 @@ package suite.trade;
 
 import static suite.util.Friends.abs;
 import static suite.util.Friends.expm1;
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.log1p;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
@@ -18,7 +19,6 @@ import suite.primitive.Dbl_Dbl;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.IntIntSink;
 import suite.primitive.IntPrimitives.Obj_Int;
-import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntFltPair;
 import suite.primitive.adt.pair.LngFltPair;
 import suite.primitive.adt.pair.LngIntPair;
@@ -100,7 +100,7 @@ public class Trade_ {
 		var i0 = 0;
 
 		IntIntSink tx = (i0_, i1_) -> {
-			if (Ints_.for_(i0_, i1_).mapInt(i -> trades0[i].buySell).sum() != 0)
+			if (forInt(i0_, i1_).mapInt(i -> trades0[i].buySell).sum() != 0)
 				while (i0_ < i1_) {
 					var trade0 = trades0[i0_++];
 					if (!String_.equals(trade0.remark, "#"))

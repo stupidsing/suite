@@ -1,6 +1,7 @@
 package suite.math.linalg;
 
 import static suite.util.Friends.fail;
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.sqrt;
 
 import java.util.Random;
@@ -9,7 +10,6 @@ import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
-import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Fun;
 import suite.util.To;
 
@@ -31,7 +31,7 @@ public class SingularValueDecomposition {
 
 		for (var j = 0; j < width_; j++) {
 			var j_ = j;
-			var mean = Ints_.for_(height).toDouble(Int_Dbl.sum(i -> m1[i][j_])) / height;
+			var mean = forInt(height).toDouble(Int_Dbl.sum(i -> m1[i][j_])) / height;
 			for (var i = 0; i < height; i++)
 				m1[i][j_] -= mean;
 		}

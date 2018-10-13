@@ -2,6 +2,7 @@ package suite.net.cluster;
 
 import static org.junit.Assert.assertEquals;
 import static suite.util.Friends.fail;
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
@@ -17,7 +18,6 @@ import suite.net.cluster.impl.NioCluster;
 import suite.net.cluster.impl.NioClusterMap;
 import suite.os.LogUtil;
 import suite.primitive.IntPrimitives.Int_Obj;
-import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
@@ -37,7 +37,7 @@ public class NioClusterMapTest {
 	public void testClusterMap() throws IOException {
 		var nNodes = 3;
 
-		var peers = Ints_.for_(nNodes).map2(i -> "NODE" + i, i -> new InetSocketAddress(localHost, 3000 + i)).toMap();
+		var peers = forInt(nNodes).map2(i -> "NODE" + i, i -> new InetSocketAddress(localHost, 3000 + i)).toMap();
 
 		var clusters = Read //
 				.from2(peers) //
@@ -80,8 +80,8 @@ public class NioClusterMapTest {
 		};
 
 		var sinks = Streamlet.concat( //
-				Ints_.for_(9).map(setf), //
-				Ints_.for_(9).map(getf), //
+				forInt(9).map(setf), //
+				forInt(9).map(getf), //
 				Read.from2(clusters).values().map(closef)).toList();
 
 		new Object() {

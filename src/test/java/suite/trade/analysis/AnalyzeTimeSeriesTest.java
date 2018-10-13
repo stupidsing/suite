@@ -2,6 +2,7 @@ package suite.trade.analysis;
 
 import static suite.util.Friends.abs;
 import static suite.util.Friends.expm1;
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.log1p;
 import static suite.util.Friends.max;
 import static suite.util.Friends.sqrt;
@@ -124,7 +125,7 @@ public class AnalyzeTimeSeriesTest {
 				+ "\nnYears = " + nYears //
 				+ "\nups = " + Floats_.of(returns).filter(return_ -> 0f <= return_).size() //
 				+ "\ndct period = " + max.t0 //
-				+ Ints_.for_(10).map(d -> "dct component [" + d + "d] = " + fds[d]) //
+				+ forInt(10).map(d -> "dct component [" + d + "d] = " + fds[d]) //
 				+ "\nreturn yearly sharpe = " + rmv.mean / sqrt(variance / nYears) //
 				+ "\nreturn kelly = " + kelly //
 				+ "\nreturn skew = " + stat.skewness(returns) //
@@ -139,10 +140,10 @@ public class AnalyzeTimeSeriesTest {
 				+ "\nhold " + buySell(d -> 1d).invest(prices) //
 				+ "\nkelly " + buySell(d -> kelly).invest(prices) //
 				+ "\nma200 trend " + mat.invest(prices) //
-				+ Ints_.for_(1, 8).map(d -> "revert [" + d + "d] " + reverts[d].invest(prices)) //
-				+ Ints_.for_(1, 8).map(d -> "trend_ [" + d + "d] " + trends_[d].invest(prices)) //
-				+ Ints_.for_(1, 8).map(d -> "revert [" + d + "d] long-only " + reverts[d].longOnly().invest(prices)) //
-				+ Ints_.for_(1, 8).map(d -> "trend_ [" + d + "d] long-only " + trends_[d].longOnly().invest(prices)) //
+				+ forInt(1, 8).map(d -> "revert [" + d + "d] " + reverts[d].invest(prices)) //
+				+ forInt(1, 8).map(d -> "trend_ [" + d + "d] " + trends_[d].invest(prices)) //
+				+ forInt(1, 8).map(d -> "revert [" + d + "d] long-only " + reverts[d].longOnly().invest(prices)) //
+				+ forInt(1, 8).map(d -> "trend_ [" + d + "d] long-only " + trends_[d].longOnly().invest(prices)) //
 				+ "\nms2 " + ms2.invest(prices) //
 				+ "\nms2 long-only " + ms2.longOnly().invest(prices) //
 				+ "\ntanh " + tanh.invest(prices) //

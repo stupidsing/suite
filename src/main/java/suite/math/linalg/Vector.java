@@ -1,13 +1,13 @@
 package suite.math.linalg;
 
 import static suite.util.Friends.fail;
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.sqrt;
 
 import java.util.Arrays;
 
 import suite.math.Math_;
 import suite.primitive.Int_Dbl;
-import suite.primitive.Ints_;
 
 public class Vector {
 
@@ -43,7 +43,7 @@ public class Vector {
 
 	public double convolute(int l, float[] m, int pm, float[] n, int pn) {
 		var d = pm + pn - 1;
-		return Ints_.for_(pm, pm + l).toDouble(Int_Dbl.sum(i -> m[i] * n[d - i]));
+		return forInt(pm, pm + l).toDouble(Int_Dbl.sum(i -> m[i] * n[d - i]));
 	}
 
 	public float[] copyOf(float[] m) {

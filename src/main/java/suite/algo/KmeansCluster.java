@@ -1,5 +1,7 @@
 package suite.algo;
 
+import static suite.util.Friends.forInt;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -7,7 +9,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.math.linalg.Vector;
 import suite.primitive.Int_Int;
-import suite.primitive.Ints_;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntDblPair;
@@ -45,7 +46,7 @@ public class KmeansCluster {
 		var ks = kMeansCluster(values, k, nIterations);
 		var map = new ObjIntMap<K>();
 
-		for (var i : Ints_.for_(ks.length))
+		for (var i : forInt(ks.length))
 			map.put(keys.get(i), ks[i]);
 
 		return map;
@@ -68,7 +69,7 @@ public class KmeansCluster {
 				centers = Read.from(bins).map(bin -> div(bin.sum, bin.count)).toList();
 			else {
 				var kMeans0 = centers;
-				return Ints_.for_(points.size()).collect(Int_Int.lift(i -> findNearest(points.get(i), kMeans0))).toArray();
+				return forInt(points.size()).collect(Int_Int.lift(i -> findNearest(points.get(i), kMeans0))).toArray();
 			}
 		}
 	}

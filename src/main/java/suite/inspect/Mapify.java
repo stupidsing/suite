@@ -1,5 +1,6 @@
 package suite.inspect;
 
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.rethrow;
 
 import java.lang.reflect.Array;
@@ -17,7 +18,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import suite.object.Object_;
-import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
 import suite.util.Switch;
@@ -97,7 +97,7 @@ public class Mapify {
 				var componentType = clazz.getComponentType();
 				var mapifier1 = getMapifier(componentType);
 				return new Mapifier(o -> {
-					return Ints_.for_(Array.getLength(o)).map2(i -> i, i -> apply_(Array.get(o, i), mapifier1.mapify)).toMap();
+					return forInt(Array.getLength(o)).map2(i -> i, i -> apply_(Array.get(o, i), mapifier1.mapify)).toMap();
 				}, o -> {
 					var map = (Map<?, ?>) o;
 					return To.array_(map.size(), componentType, i -> apply_(map.get(i), mapifier1.unmapify));

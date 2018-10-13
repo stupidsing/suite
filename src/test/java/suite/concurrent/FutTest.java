@@ -2,12 +2,12 @@ package suite.concurrent;
 
 import static org.junit.Assert.assertEquals;
 import static suite.util.Friends.fail;
+import static suite.util.Friends.forInt;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import suite.primitive.Ints_;
 import suite.util.Thread_;
 
 public class FutTest {
@@ -25,7 +25,7 @@ public class FutTest {
 		var nc = new AtomicInteger();
 		var count = 128;
 
-		Ints_.for_(count).map(i -> Thread_.newThread(() -> {
+		forInt(count).map(i -> Thread_.newThread(() -> {
 			if (fut.get() == value)
 				nc.incrementAndGet();
 			else

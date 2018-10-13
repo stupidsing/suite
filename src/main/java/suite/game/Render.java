@@ -1,5 +1,6 @@
 package suite.game;
 
+import static suite.util.Friends.forInt;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
@@ -62,7 +63,7 @@ public class Render {
 		var txs = Ints_.toArray(nThreads + 1, i -> width * i / nThreads);
 		var pixels = new R3[width][height];
 
-		Ints_.for_(nThreads).collect(As.executeThreadsByInt(t -> {
+		forInt(nThreads).collect(As.executeThreadsByInt(t -> {
 			for (var x = txs[t]; x < txs[t + 1]; x++)
 				for (var y = 0; y < height; y++)
 					pixels[x][y] = f.apply(x, y);

@@ -2,6 +2,7 @@ package suite.algo;
 
 import static java.util.Map.entry;
 import static org.junit.Assert.assertEquals;
+import static suite.util.Friends.forInt;
 
 import java.util.Map;
 import java.util.Random;
@@ -40,7 +41,7 @@ public class KMeansClusterTest {
 		assertEquals(9, clusters.size());
 
 		for (var prefix : seeds.keySet())
-			for (var i : Ints_.for_(n))
+			for (var i : forInt(n))
 				assertEquals(clusters.get(prefix + "0"), clusters.get(prefix + i));
 	}
 
