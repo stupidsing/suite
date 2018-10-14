@@ -142,6 +142,12 @@ let frp = function() {
 			requestAnimationFrame(tick);
 			return signal_;
 		},
+		fetch: (input, init) => {
+			let signal_ = signal();
+			fetch(input, init)
+				.then(response => signal_.fire(response.json()))
+				.catch(error => console.error(error));
+		},
 		http: url => {
 			let signal_ = signal();
 			let xhr = new XMLHttpRequest();
