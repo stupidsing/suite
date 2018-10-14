@@ -89,7 +89,18 @@ public class HtmlUtil {
 
 		private HtmlNode(String tag) {
 			this.tag = tag;
-			attrs = Read.from(tag.split(" ")).skip(1).map(kv -> String_.split2l(kv, "=")).toList();
+			if (tag.startsWith("<") && tag.endsWith(">"))
+				attrs = Read //
+						.from(String_.range(tag, 1, -1).split(" ")) //
+						.skip(1) //
+						.map(kv -> String_.split2l(kv, "=")) //
+						.map(Pair.mapSnd(v -> {
+							var isQuoted = v.startsWith("'") && v.endsWith("'") || v.startsWith("\"") && v.endsWith("\"");
+							return !isQuoted ? v : String_.range(v, 1, -1);
+						})) //
+						.toList();
+			else
+				attrs = null;
 		}
 	}
 
@@ -128,7 +139,7 @@ public class HtmlUtil {
 			}
 		};
 
-		var deque = new ArrayDeque<>(List.of(new HtmlNode("")));
+		var deque = new ArrayDeque<>(List.of(new HtmlNode("<>")));
 		var prevp = 0;
 
 		for (var pair : pairs) {
