@@ -33,8 +33,10 @@ let read_ = iter => {
 				let it1 = r.iter();
 				return () => {
 					let e;
-					if (it0 != null && (e = it0()) != null) return e; else it0 = null;
-					if (it1 != null && (e = it1()) != null) return e; else it1 = null;
+					if (it0 != null)
+						if ((e = it0()) != null) return e; else it0 = null;
+					if (it1 != null)
+						if ((e = it1()) != null) return e; else it1 = null;
 					return null;
 				};
 			});
