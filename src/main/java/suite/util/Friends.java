@@ -1,5 +1,6 @@
 package suite.util;
 
+import suite.primitive.Ints_;
 import suite.primitive.streamlet.IntStreamlet;
 import suite.util.Rethrow.SourceEx;
 
@@ -46,7 +47,7 @@ public class Friends {
 	}
 
 	public static IntStreamlet forInt(int s, int e) {
-		return forInt(s, e);
+		return Ints_.for_(s, e);
 	}
 
 	public static double log(double a) {
