@@ -69,8 +69,7 @@ let rdt_children = childrenfs => (vm0, vm1, cudf) => {
 
 let rdt_eventListener = (event, cb) => rd_cd(
 	(vm, cudf) => cudf.childRef.addEventListener(event, cb),
-	(vm, cudf) => cudf.childRef.removeEventListener(event, cb)
-);
+	(vm, cudf) => cudf.childRef.removeEventListener(event, cb));
 
 let rdt_style = style => (vm0, vm1, cudf) => {
 	if (vm0 == null)

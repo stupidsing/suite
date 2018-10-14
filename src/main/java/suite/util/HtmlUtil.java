@@ -91,13 +91,16 @@ public class HtmlUtil {
 
 	public HtmlNode parse(String in) {
 		var pairs = new ArrayList<IntIntPair>();
-		int pos0, pos1 = 0;
+		int pos0, pos1, posx = 0;
 
-		while (0 <= (pos0 = in.indexOf("<", pos1)) && 0 <= (pos1 = in.indexOf(">", pos0 + 1)))
-			pairs.add(IntIntPair.of(pos0, ++pos1));
+		while (0 <= (pos0 = in.indexOf("<", posx)) //
+				&& (pos1 = pos0 + 1) < in.length() //
+				&& !Character.isWhitespace(in.charAt(pos1)) //
+				&& 0 <= (posx = in.indexOf(">", pos1)))
+			pairs.add(IntIntPair.of(pos0, ++posx));
 
 		Fun<String, IntObjPair<String>> getNameFun = tag -> {
-			int p0 = 1, p1 = p0 + 1, px = tag.length() - 1;
+			int p1 = 1, px = tag.length() - 1;
 			var first = tag.charAt(p1);
 			var last = tag.charAt(px - 1);
 			int d;
@@ -128,7 +131,8 @@ public class HtmlUtil {
 			var p0 = pair.t0;
 			var px = pair.t1;
 
-			htmlNode.children.add(new HtmlNode(in.substring(prevp, p0)));
+			if (prevp != p0)
+				htmlNode.children.add(new HtmlNode(in.substring(prevp, p0)));
 
 			var tag = in.substring(p0, px);
 			var dn = getNameFun.apply(tag);
