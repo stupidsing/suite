@@ -91,13 +91,14 @@ public class HtmlUtil {
 
 	public HtmlNode parse(String in) {
 		var pairs = new ArrayList<IntIntPair>();
-		int pos0, pos1, posx = 0;
+		int pos0, posx = 0;
 
-		while (0 <= (pos0 = in.indexOf("<", posx)) //
-				&& (pos1 = pos0 + 1) < in.length() //
-				&& !Character.isWhitespace(in.charAt(pos1)) //
-				&& 0 <= (posx = in.indexOf(">", pos1)))
-			pairs.add(IntIntPair.of(pos0, ++posx));
+		while (0 <= (pos0 = in.indexOf("<", posx)) && (posx = pos0 + 1) < in.length())
+			if (!Character.isWhitespace(in.charAt(posx)))
+				if (0 <= (posx = in.indexOf(">", posx)))
+					pairs.add(IntIntPair.of(pos0, ++posx));
+				else
+					break;
 
 		Fun<String, IntObjPair<String>> getNameFun = tag -> {
 			int p1 = 1, px = tag.length() - 1;
@@ -127,7 +128,7 @@ public class HtmlUtil {
 		var prevp = 0;
 
 		for (var pair : pairs) {
-			HtmlNode htmlNode = deque.element(), htmlNode1;
+			var htmlNode = deque.element();
 			var p0 = pair.t0;
 			var px = pair.t1;
 
@@ -136,19 +137,19 @@ public class HtmlUtil {
 
 			var tag = in.substring(p0, px);
 			var dn = getNameFun.apply(tag);
-			var d = dn.t0;
-			var name = dn.t1;
 
-			if (d == -1)
-				while (!deque.isEmpty() && !String_.equals(getNameFun.apply(deque.pop().tag).t1, name))
-					;
-			else {
-				htmlNode.children.add(htmlNode1 = new HtmlNode(tag));
-				if (d == 1)
-					deque.push(htmlNode1);
-			}
-
-			prevp = px;
+			prevp = dn.map((d, name) -> {
+				if (d == -1)
+					while (!deque.isEmpty() && !String_.equals(getNameFun.apply(deque.pop().tag).t1, name))
+						;
+				else {
+					var htmlNode1 = new HtmlNode(tag);
+					htmlNode.children.add(htmlNode1);
+					if (d == 1)
+						deque.push(htmlNode1);
+				}
+				return px;
+			});
 		}
 
 		return deque.pop();
