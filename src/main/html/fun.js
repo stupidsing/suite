@@ -31,13 +31,11 @@ let read_ = iter => {
 			return read_(() => {
 				let it0 = iter();
 				let it1 = r.iter();
+				let its = [iter(), r.iter(),];
 				return () => {
 					let e;
-					if (it0 != null)
-						if ((e = it0()) != null) return e; else it0 = null;
-					if (it1 != null)
-						if ((e = it1()) != null) return e; else it1 = null;
-					return null;
+					while (0 < its.length && (e = its[0]()) == null) its.shift();
+					return e;
 				};
 			});
 		},
