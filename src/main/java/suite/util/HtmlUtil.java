@@ -93,8 +93,8 @@ public class HtmlUtil {
 		var pairs = new ArrayList<IntIntPair>();
 		int pos0, posx = 0;
 
-		while (0 <= (pos0 = in.indexOf("<", posx)) && (posx = pos0 + 1) < in.length())
-			if (!Character.isWhitespace(in.charAt(posx)))
+		while (0 <= (pos0 = in.indexOf("<", posx)))
+			if ((posx = pos0 + 1) < in.length() && !Character.isWhitespace(in.charAt(posx)))
 				if (0 <= (posx = in.indexOf(">", posx)))
 					pairs.add(IntIntPair.of(pos0, ++posx));
 				else
