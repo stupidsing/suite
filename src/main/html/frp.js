@@ -4,12 +4,14 @@ let frp = function() {
 	let signal = () => { // FRP dispatcher
 		let receivers = [];
 		let fire_ = data => { for (let receiver of receivers) receiver(data); };
+		let wire_ = receiver => receivers.push(receiver);
+
 		let redirect_ = tf => {
 			let signal1 = signal();
 			wire_(data => tf(data, signal1));
 			return signal1;
 		};
-		let wire_ = receiver => receivers.push(receiver);
+
 		return {
 			append: signal_ => {
 				let signal1 = signal();

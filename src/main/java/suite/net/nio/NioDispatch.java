@@ -26,7 +26,6 @@ import suite.object.Object_;
 import suite.os.LogUtil;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.primitive.adt.pair.LngObjPair;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil2.Sink2;
@@ -41,11 +40,15 @@ public class NioDispatch implements Closeable {
 	private PriorityQueue<TimeDispatch> timeDispatches = new PriorityQueue<>( //
 			TimeDispatch.class, //
 			256, //
-			(td0, td1) -> Long.compare(td0.t0, td1.t0));
+			(td0, td1) -> Long.compare(td0.time, td1.time));
 
-	private class TimeDispatch extends LngObjPair<Runnable> {
-		public TimeDispatch(long t0, Runnable t1) {
-			super(t0, t1);
+	private class TimeDispatch {
+		private long time;
+		private Runnable runnable;
+
+		private TimeDispatch(long t0, Runnable t1) {
+			this.time = t0;
+			this.runnable = t1;
 		}
 	}
 
@@ -337,7 +340,7 @@ public class NioDispatch implements Closeable {
 
 		while (isRunning) {
 			var td0 = timeDispatches.min();
-			var tdw = td0.t0;
+			var tdw = td0.time;
 			var wait = Math.max(0l, Math.min(500l, tdw - now));
 
 			// unfortunately Selector.wakeup() does not work on my Linux
@@ -365,7 +368,7 @@ public class NioDispatch implements Closeable {
 			}
 
 			if (tdw <= now)
-				timeDispatches.extractMin().t1.run();
+				timeDispatches.extractMin().runnable.run();
 		}
 	}
 
