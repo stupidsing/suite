@@ -6,9 +6,11 @@ import java.util.List;
 
 import suite.adt.map.BiMap;
 import suite.adt.map.HashBiMap;
+import suite.adt.pair.Pair;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.FunUtil.Fun;
+import suite.streamlet.Read;
 
 public class HtmlUtil {
 
@@ -82,10 +84,12 @@ public class HtmlUtil {
 
 	public class HtmlNode {
 		public final String tag;
+		public final List<Pair<String, String>> attrs;
 		public final List<HtmlNode> children = new ArrayList<>();
 
 		private HtmlNode(String tag) {
 			this.tag = tag;
+			attrs = Read.from(tag.split(" ")).skip(1).map(kv -> String_.split2l(kv, "=")).toList();
 		}
 	}
 
@@ -124,7 +128,7 @@ public class HtmlUtil {
 			}
 		};
 
-		var deque = new ArrayDeque<>(List.of(new HtmlNode(null)));
+		var deque = new ArrayDeque<>(List.of(new HtmlNode("")));
 		var prevp = 0;
 
 		for (var pair : pairs) {
