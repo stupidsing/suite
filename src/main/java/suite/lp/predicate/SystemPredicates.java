@@ -10,7 +10,6 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
-import suite.node.tree.TreeAnd;
 
 public class SystemPredicates {
 
@@ -173,7 +172,7 @@ public class SystemPredicates {
 
 	private BuiltinPredicate ifPredicate = PredicateUtil.p3((prover, p0, p1, p2) -> {
 		var b = PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(p0));
-		prover.setRemaining(TreeAnd.of(b ? p1 : p2, prover.getRemaining()));
+		prover.setRemaining(Tree.ofAnd(b ? p1 : p2, prover.getRemaining()));
 		return true;
 	});
 

@@ -23,9 +23,9 @@ import suite.lp.sewing.impl.SewingProverImpl;
 import suite.node.Atom;
 import suite.node.Data;
 import suite.node.Node;
+import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.pp.PrettyPrinter;
-import suite.node.tree.TreeAnd;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
@@ -198,7 +198,7 @@ public class CommandDispatcher {
 			return Boolean.FALSE;
 		});
 
-		sink.sink(TreeAnd.of(node1, elab));
+		sink.sink(Tree.ofAnd(node1, elab));
 
 		if (count[0] == 1)
 			opt.prompt().println(count[0] + " solution\n");

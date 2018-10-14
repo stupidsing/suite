@@ -18,8 +18,6 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.Tree;
-import suite.node.tree.TreeAnd;
-import suite.node.tree.TreeOr;
 import suite.node.util.Comparer;
 import suite.primitive.Chars;
 import suite.streamlet.FunUtil.Iterate;
@@ -69,12 +67,12 @@ public class FunInstructionExecutor extends InstructionExecutor {
 		case CONSLIST______:
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
-			result = TreeOr.of(n0, n1);
+			result = Tree.ofOr(n0, n1);
 			break;
 		case CONSPAIR______:
 			n0 = (Node) ds[--dsp];
 			n1 = (Node) ds[--dsp];
-			result = TreeAnd.of(n0, n1);
+			result = Tree.ofAnd(n0, n1);
 			break;
 		case DATACHARS_____:
 			result = new Data<>(To.chars(Str.str(regs[insn.op1])));

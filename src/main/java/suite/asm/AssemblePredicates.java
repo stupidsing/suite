@@ -3,7 +3,7 @@ package suite.asm;
 import suite.lp.predicate.PredicateUtil;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Int;
-import suite.node.tree.TreeAnd;
+import suite.node.Tree;
 import suite.node.util.TreeUtil;
 
 public class AssemblePredicates {
@@ -26,7 +26,7 @@ public class AssemblePredicates {
 			}
 
 			for (var j = n - 1; 0 <= j; j--)
-				p = TreeAnd.of(Int.of(Byte.toUnsignedInt(bytes[j])), p);
+				p = Tree.ofAnd(Int.of(Byte.toUnsignedInt(bytes[j])), p);
 
 			return prover.bind(p0, p);
 		});

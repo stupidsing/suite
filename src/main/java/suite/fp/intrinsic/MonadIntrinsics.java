@@ -20,7 +20,7 @@ import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Suspend;
-import suite.node.tree.TreeAnd;
+import suite.node.Tree;
 import suite.streamlet.FunUtil.Iterate;
 import suite.util.Thread_;
 
@@ -58,9 +58,9 @@ public class MonadIntrinsics {
 				process.waitFor();
 			});
 
-			return TreeAnd.of(//
+			return Tree.ofAnd(//
 					n0, //
-					Intrinsics.enclose(callback, TreeAnd.of(n1, n2)));
+					Intrinsics.enclose(callback, Tree.ofAnd(n1, n2)));
 		});
 	};
 

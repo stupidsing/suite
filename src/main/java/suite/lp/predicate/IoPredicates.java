@@ -14,8 +14,8 @@ import suite.lp.doer.Cloner;
 import suite.lp.predicate.PredicateUtil.BuiltinPredicate;
 import suite.node.Int;
 import suite.node.Str;
+import suite.node.Tree;
 import suite.node.io.Formatter;
-import suite.node.tree.TreeAnd;
 import suite.node.util.SuiteException;
 import suite.os.FileUtil;
 import suite.os.LogUtil;
@@ -104,7 +104,7 @@ public class IoPredicates {
 			return PredicateUtil.tryProve(prover, prover1 -> prover1.prove0(try_));
 		} catch (SuiteException ex) {
 			if (prover.bind(catch_, ex.getNode())) {
-				prover.setRemaining(TreeAnd.of(throw_, prover.getRemaining()));
+				prover.setRemaining(Tree.ofAnd(throw_, prover.getRemaining()));
 				return true;
 			} else
 				throw ex;

@@ -26,7 +26,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.Grapher;
 import suite.node.io.TermOp;
-import suite.node.tree.TreeAnd;
 import suite.node.util.Comparer;
 import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
@@ -135,7 +134,7 @@ public class EvalPredicates {
 			var size1 = Int.num(length);
 			Node list1 = Atom.NIL;
 			while (0 < size1--)
-				list1 = TreeAnd.of(new Reference(), list1);
+				list1 = Tree.ofAnd(new Reference(), list1);
 			return prover.bind(list, list1);
 		}
 	});

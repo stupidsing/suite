@@ -17,7 +17,6 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
-import suite.node.tree.TreeAnd;
 import suite.os.LogUtil;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil2.Fun2;
@@ -37,7 +36,7 @@ public class VerifyTest {
 	public void test() {
 		var and = new Fun<IList<String>, Node>() {
 			public Node apply(IList<String> list) {
-				return !list.isEmpty() ? TreeAnd.of(Suite.parse(list.head), apply(list.tail)) : Atom.TRUE;
+				return !list.isEmpty() ? Tree.ofAnd(Suite.parse(list.head), apply(list.tail)) : Atom.TRUE;
 			}
 		};
 
@@ -135,7 +134,7 @@ public class VerifyTest {
 		private Node verify(Node proof) {
 			return new SwitchNode<Node>(proof //
 			).match(".0, .1", (a, b) -> {
-				return TreeAnd.of(verify(a), verify(b));
+				return Tree.ofAnd(verify(a), verify(b));
 			}).match(".0 # .1", (a, b) -> {
 				return Tree.of(TermOp.NEXT__, a, verify(b));
 			}).match("axiom .0", a -> {
@@ -176,7 +175,7 @@ public class VerifyTest {
 				var t = Atom.temp();
 				var init = fun.apply(Suite.parse("0"));
 				var succ = Suite.substitute(".0 => .1", t, fun.apply(Suite.substitute("succ .0", t)));
-				Binder.bind(verify(a), TreeAnd.of(init, succ), new Trail());
+				Binder.bind(verify(a), Tree.ofAnd(init, succ), new Trail());
 				return Suite.substitute("is.nat .N => .0", fun.apply(Suite.parse(".N")));
 			}).match(".0 | rexpand .1", (a, b) -> {
 				var def = defs.get(Atom.name(b)).clone_();

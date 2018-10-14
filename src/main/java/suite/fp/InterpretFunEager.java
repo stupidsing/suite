@@ -23,8 +23,6 @@ import suite.node.io.Formatter;
 import suite.node.io.Operator;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
-import suite.node.tree.TreeAnd;
-import suite.node.tree.TreeOr;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
 import suite.streamlet.FunUtil.Fun;
@@ -198,7 +196,7 @@ public class InterpretFunEager {
 				.toMap();
 
 		var df = new HashMap<String, Node>();
-		df.put(TermOp.AND___.name, f2(TreeAnd::of));
+		df.put(TermOp.AND___.name, f2(Tree::ofAnd));
 		df.put("+call%i-t1", f1(i -> fn(1, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
 		df.put("+call%i-t2", f1(i -> fn(2, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
 		df.put("+call%i-t3", f1(i -> fn(3, l -> Data.<Intrinsic> get(i).invoke(ic, l))));
@@ -209,10 +207,10 @@ public class InterpretFunEager {
 		df.put("+get%i", f1(a -> new Data<>(Intrinsics.intrinsics.get(Atom.name(a).split("!")[1]))));
 		df.put("+is-list", f1(a -> b(Tree.decompose(a) != null)));
 		df.put("+is-pair", f1(a -> b(Tree.decompose(a) != null)));
-		df.put("+lcons", f2(TreeOr::of));
+		df.put("+lcons", f2(Tree::ofOr));
 		df.put("+lhead", f1(a -> Tree.decompose(a).getLeft()));
 		df.put("+ltail", f1(a -> Tree.decompose(a).getRight()));
-		df.put("+pcons", f2((a, b) -> TreeAnd.of(a, b)));
+		df.put("+pcons", f2((a, b) -> Tree.ofAnd(a, b)));
 		df.put("+pleft", f1(a -> Tree.decompose(a).getLeft()));
 		df.put("+pright", f1(a -> Tree.decompose(a).getRight()));
 		df.putAll(boolOpMap);
