@@ -29,8 +29,6 @@ let read_ = iter => {
 	return {
 		append: r => {
 			return read_(() => {
-				let it0 = iter();
-				let it1 = r.iter();
 				let its = [iter(), r.iter(),];
 				return () => {
 					let e;
