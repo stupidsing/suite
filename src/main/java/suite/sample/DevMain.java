@@ -27,7 +27,7 @@ import suite.streamlet.FunUtil.Sink;
 // mvn compile exec:java -Dexec.mainClass=suite.sample.DevMain -Dexec.args="${COLUMNS} ${LINES}"
 public class DevMain {
 
-	private LibcJna libc = (LibcJna) Native.loadLibrary("c", LibcJna.class);
+	private LibcJna libc = (LibcJna) Native.load("c", LibcJna.class);
 
 	private int wrapSize = 132;
 	private int viewSizeX;

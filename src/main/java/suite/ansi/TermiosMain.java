@@ -8,7 +8,7 @@ import suite.util.Thread_;
 // mvn compile exec:java -Dexec.mainClass=suite.ansi.TermiosMain
 public class TermiosMain {
 
-	private LibcJna libc = (LibcJna) Native.loadLibrary("c", LibcJna.class);
+	private LibcJna libc = (LibcJna) Native.load("c", LibcJna.class);
 
 	public static void main(String[] args) {
 		new TermiosMain().run();
