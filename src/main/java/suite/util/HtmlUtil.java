@@ -151,9 +151,8 @@ public class HtmlUtil {
 				htmlNode.children.add(new HtmlNode(in.substring(prevp, p0)));
 
 			var tag = in.substring(p0, px);
-			var dn = getNameFun.apply(tag);
 
-			prevp = dn.map((d, name) -> {
+			prevp = getNameFun.apply(tag).map((d, name) -> {
 				if (d == -1)
 					while (!deque.isEmpty() && !String_.equals(getNameFun.apply(deque.pop().tag).t1, name))
 						;
