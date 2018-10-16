@@ -2,6 +2,7 @@ package suite.util;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import suite.adt.map.BiMap;
@@ -83,13 +84,15 @@ public class HtmlUtil {
 	}
 
 	public class HtmlNode {
+		public final String name;
 		public final String tag;
 		public final List<Pair<String, String>> attrs;
 		public final List<HtmlNode> children = new ArrayList<>();
 
-		private HtmlNode(String tag) {
+		private HtmlNode(String name, String tag) {
+			this.name = name;
 			this.tag = tag;
-			if (tag.startsWith("<") && tag.endsWith(">"))
+			if (name != null)
 				attrs = Read //
 						.from(String_.range(tag, 1, -1).split(" ")) //
 						.skip(1) //
@@ -100,7 +103,7 @@ public class HtmlUtil {
 						})) //
 						.toList();
 			else
-				attrs = null;
+				attrs = Collections.emptyList();
 		}
 	}
 
@@ -122,7 +125,7 @@ public class HtmlUtil {
 			int d;
 
 			if (first == '!')
-				return IntObjPair.of(0, tag);
+				return IntObjPair.of(0, null);
 			else {
 				if (first == '/') {
 					p1++;
@@ -139,7 +142,7 @@ public class HtmlUtil {
 			}
 		};
 
-		var deque = new ArrayDeque<>(List.of(new HtmlNode("<>")));
+		var deque = new ArrayDeque<>(List.of(new HtmlNode(null, "<>")));
 		var prevp = 0;
 
 		for (var pair : pairs) {
@@ -148,7 +151,7 @@ public class HtmlUtil {
 			var px = pair.t1;
 
 			if (prevp != p0)
-				htmlNode.children.add(new HtmlNode(in.substring(prevp, p0)));
+				htmlNode.children.add(new HtmlNode(null, in.substring(prevp, p0)));
 
 			var tag = in.substring(p0, px);
 
@@ -157,7 +160,7 @@ public class HtmlUtil {
 					while (!deque.isEmpty() && !String_.equals(getNameFun.apply(deque.pop().tag).t1, name))
 						;
 				else {
-					var htmlNode1 = new HtmlNode(tag);
+					var htmlNode1 = new HtmlNode(name, tag);
 					htmlNode.children.add(htmlNode1);
 					if (d == 1)
 						deque.push(htmlNode1);
