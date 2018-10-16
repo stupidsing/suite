@@ -58,7 +58,7 @@ public class Util {
 			try {
 				return Read //
 						.from(clazz.getDeclaredMethods()) //
-						.filter(method -> !method.isDefault() && !method.isSynthetic() && !Modifier.isStatic(method.getModifiers())) //
+						.filter(m -> !m.isDefault() && !m.isSynthetic() && !Modifier.isStatic(m.getModifiers())) //
 						.uniqueResult();
 			} catch (Exception ex) {
 				return fail("for " + clazz, ex);
@@ -66,9 +66,9 @@ public class Util {
 	}
 
 	/**
-	 * Reads a line from a stream with a maximum line length limit. Removes
-	 * carriage return if it is DOS-mode line feed (CR-LF). Unknown behaviour
-	 * when dealing with non-ASCII encoding characters.
+	 * Reads a line from a stream with a maximum line length limit. Removes carriage
+	 * return if it is DOS-mode line feed (CR-LF). Unknown behaviour when dealing
+	 * with non-ASCII encoding characters.
 	 */
 	public static String readLine(InputStream is) {
 		return rethrow(() -> {
@@ -98,6 +98,12 @@ public class Util {
 
 	public static int temp() {
 		return counter.getAndIncrement();
+	}
+
+	public static <T extends Exception, R> R throwSneakly(Exception ex) throws T {
+		@SuppressWarnings("unchecked")
+		var t = (T) ex;
+		throw t;
 	}
 
 	private static String strip(StringBuilder sb) {
