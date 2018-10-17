@@ -290,7 +290,7 @@ let rds = s => {
 	while (0 <= (pos1 = s.indexOf('{', pos0)) && 0 <= (pos2 = s.indexOf('}', pos1))) {
 		let s0 = s.substring(pos0, pos1);
 		let f0 = f;
-		let f1 = eval('vm => vm.' + s.substring(pos1 + 1, pos2).trim());
+		let f1 = eval('vm => vm' + s.substring(pos1 + 1, pos2).trim());
 		f = vm => f0(vm) + s0 + f1(vm);
 		pos0 = pos2 + 1;
 	}
@@ -305,13 +305,17 @@ let rdc = node0 => {
 	if (node0.nodeType == Node.COMMENT_NODE) {
 		let sf = rds(node0.nodeValue);
 		return rd_dom(vm => document.createComment(sf(vm)));
-	} else if (node0.nodeType == Node.ELEMENT_NODE) {
-		let childNodes = node0.childNodes;
-		let as = {}, cs = [];
-		for (let a of node0.attributes) as[a.name] = a.value;
-		for (let c of node0.childNodes) cs.push(rdc(c));
-		return rd.tag(node0.localName).attrsf(vm => as).children(...cs).rd();
-	} else if (node0.nodeType == Node.TEXT_NODE) {
+	} else if (node0.nodeType == Node.ELEMENT_NODE)
+		if (node0.localName == 'rd-scope')
+			return rd.scope(node0.getAttribute('scope'), rdc(node0.childNodes[1]));
+		else {
+			let childNodes = node0.childNodes;
+			let as = {}, cs = [];
+			for (let a of node0.attributes) as[a.name] = a.value;
+			for (let c of node0.childNodes) cs.push(rdc(c));
+			return rd.tag(node0.localName).attrsf(vm => as).children(...cs).rd();
+		}
+	else if (node0.nodeType == Node.TEXT_NODE) {
 		let sf = rds(node0.nodeValue);
 		return rd.dom(vm => document.createTextNode(sf(vm)));
 	} else {
@@ -338,15 +342,12 @@ let rd_vm = rd
 			rd.p().style({ 'font-weight': 'bold', }).text().rd()
 		),
 		rd_parse(`
-			<p style='font-weight: bold;'>
-				hello world 2
-			</p>
-		`),
-		rd_parse(`
-			<p style='font-weight: bold;'>
-				hello world at time {t}
-				<!-- comment -->
-			</p>
+			<rd-scope scope='message'>
+				<p style='font-weight: bold;'>
+					wow, {}
+					<!-- comment -->
+				</p>
+			</rd-scope>
 		`),
 		rd.scope('t',
 			rd.p().text().rd()
