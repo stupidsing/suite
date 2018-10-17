@@ -304,7 +304,7 @@ let rds = s => {
 let rdc = node0 => {
 	if (node0.nodeType == Node.COMMENT_NODE) {
 		let sf = rds(node0.nodeValue);
-		return rd_dom(vm => document.createComment(sf(vm)));
+		return rd.dom(vm => document.createComment(sf(vm)));
 	} else if (node0.nodeType == Node.ELEMENT_NODE) {
 		let as = {}, cs = [], scope;
 		for (let a of node0.attributes) as[a.name] = a.value;
@@ -319,7 +319,7 @@ let rdc = node0 => {
 		return rd.dom(vm => document.createTextNode(sf(vm)));
 	} else {
 		console.error('unknown node type', node0);
-		return rd_dom(vm => document.createComment('unknown node type' + node0));
+		return rd.dom(vm => document.createComment('unknown node type' + node0));
 	}
 };
 
