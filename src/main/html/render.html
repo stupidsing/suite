@@ -292,7 +292,7 @@ let rdc = node0 => {
 		let as = {}, cs = [];
 		for (let a of node0.attributes) as[a.name] = a.value;
 		for (let c of node0.childNodes) cs.push(rdc(c));
-		return rd.tag(node0.localName).attrs(as).children(...cs).rd();
+		return rd.tag(node0.localName).attrsf(vm => as).children(...cs).rd();
 	} else if (node0.nodeType == Node.TEXT_NODE)
 		return rd.dom(vm => document.createTextNode(node0.nodeValue));
 	else {
