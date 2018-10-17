@@ -52,7 +52,7 @@ public class ChrDblFunUtil {
 				isAvail = source.source2(pair);
 			}
 
-			public ChrDblSource source() {
+			public ChrDblSource g() {
 				return isAvail ? cons(pair.t0, pair.t1, source_) : null;
 			}
 		};
@@ -65,7 +65,7 @@ public class ChrDblFunUtil {
 			public boolean source2(ChrDblPair pair) {
 				var b = false;
 				while (source2 != null && !(b = source2.source2(pair)))
-					source2 = source.source();
+					source2 = source.g();
 				return b;
 			}
 		};
@@ -208,8 +208,8 @@ public class ChrDblFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static Source<ChrDblSource> split(ChrDblPredicate fun0, ChrDblSource source2) {
 		var fun1 = fun0.rethrow();
@@ -222,7 +222,7 @@ public class ChrDblFunUtil {
 				isAvailable = source2.source2(pair);
 			}
 
-			public ChrDblSource source() {
+			public ChrDblSource g() {
 				return isAvailable ? cons(pair.t0, pair.t1, source2_) : null;
 			}
 		};
@@ -237,7 +237,7 @@ public class ChrDblFunUtil {
 
 		var thread = Thread_.startThread(() -> {
 			try {
-				fun.sink(enqueue);
+				fun.f(enqueue);
 			} finally {
 				enqueue(queue, null);
 			}

@@ -40,14 +40,14 @@ public class TermKey implements Comparable<TermKey> {
 		public void visit(Node node) {
 			if (node instanceof Reference) {
 				var id = ((Reference) node).getId();
-				referenceSink.sink(aliases.computeIfAbsent(id, any -> nAliases++));
+				referenceSink.f(aliases.computeIfAbsent(id, any -> nAliases++));
 			} else {
 				var nr = NodeRead.of(node);
 				for (var p : nr.children) {
 					visit(p.t0);
 					visit(p.t1);
 				}
-				nrSink.sink(nr);
+				nrSink.f(nr);
 			}
 		}
 	}

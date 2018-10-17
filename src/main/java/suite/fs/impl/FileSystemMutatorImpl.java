@@ -27,7 +27,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 	}
 
 	public Bytes read(Bytes name) {
-		var store = mutate.source();
+		var store = mutate.g();
 		var kvm = store.mutate();
 		var kdm = store.mutateData();
 
@@ -45,12 +45,12 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 	}
 
 	public List<Bytes> list(Bytes start, Bytes end) {
-		var store = mutate.source();
+		var store = mutate.g();
 		return new FileSystemKeySet(keyUtil, store).list(start, end).toList();
 	}
 
 	public void replace(Bytes name, Bytes bytes) {
-		var store = mutate.source();
+		var store = mutate.g();
 		var kvm = store.mutate();
 		var kdm = store.mutateData();
 
@@ -89,7 +89,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 	}
 
 	public void replace(Bytes name, int seq, Bytes bytes) {
-		var store = mutate.source();
+		var store = mutate.g();
 		var mutator = store.mutateData();
 
 		mutator.putPayload(key(keyUtil.hash(name), DATAID, seq), bytes);
@@ -97,7 +97,7 @@ public class FileSystemMutatorImpl implements FileSystemMutator {
 	}
 
 	public void resize(Bytes name, int size1) {
-		var store = mutate.source();
+		var store = mutate.g();
 		var kvm = store.mutate();
 		var kdm = store.mutateData();
 

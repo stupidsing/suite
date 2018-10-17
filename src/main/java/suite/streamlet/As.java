@@ -38,11 +38,9 @@ public class As {
 	public static Fun<Outlet<String>, String> conc(String delimiter) {
 		return outlet -> {
 			var sb = new StringBuilder();
-			outlet.sink(new Sink<>() {
-				public void sink(String s) {
-					sb.append(s);
-					sb.append(delimiter);
-				}
+			outlet.sink(s -> {
+				sb.append(s);
+				sb.append(delimiter);
 			});
 			return sb.toString();
 		};
@@ -59,11 +57,11 @@ public class As {
 	}
 
 	public static <T> Fun<Outlet<T>, Void> executeThreads(Sink<T> sink) {
-		return outlet -> outlet.map(t -> Thread_.newThread(() -> sink.sink(t))).collect(Thread_::startJoin);
+		return outlet -> outlet.map(t -> Thread_.newThread(() -> sink.f(t))).collect(Thread_::startJoin);
 	}
 
 	public static <T> Fun<IntOutlet, Void> executeThreadsByInt(IntSink sink) {
-		return outlet -> outlet.map(t -> Thread_.newThread(() -> sink.sink(t))).collect(Thread_::startJoin);
+		return outlet -> outlet.map(t -> Thread_.newThread(() -> sink.f(t))).collect(Thread_::startJoin);
 	}
 
 	public static InputStream inputStream(Bytes bytes) {
@@ -108,11 +106,11 @@ public class As {
 	public static <T> Fun<Outlet<T>, Integer> min(Obj_Int<T> fun) {
 		return outlet -> {
 			var source = outlet.source();
-			var t = source.source();
+			var t = source.g();
 			int result1;
 			if (t != null) {
 				var result = fun.apply(t);
-				while ((t = source.source()) != null)
+				while ((t = source.g()) != null)
 					if ((result1 = fun.apply(t)) < result)
 						result = result1;
 				return result;
@@ -133,7 +131,7 @@ public class As {
 		return outlet -> Outlet.of(new Source<>() {
 			private int index;
 
-			public O source() {
+			public O g() {
 				var i = outlet.next();
 				return i != null ? seq.apply(index++, i) : null;
 			}
@@ -161,15 +159,15 @@ public class As {
 	}
 
 	public static Outlet<Chars> utf8decode(Outlet<Bytes> bytesOutlet) {
-		Source<Bytes> source = bytesOutlet.source();
+		var source = bytesOutlet.source();
 
 		return Outlet.of(new Source<>() {
 			private BytesBuilder bb = new BytesBuilder();
 
-			public Chars source() {
+			public Chars g() {
 				Chars chars;
 				while ((chars = decode()).size() == 0) {
-					var bytes = source.source();
+					var bytes = source.g();
 					if (bytes != null)
 						bb.append(bytes);
 					else if (bb.size() == 0)
@@ -230,11 +228,11 @@ public class As {
 	}
 
 	public static Outlet<Bytes> utf8encode(Outlet<Chars> charsOutlet) {
-		Source<Chars> source = charsOutlet.source();
+		var source = charsOutlet.source();
 
 		return Outlet.of(new Source<>() {
-			public Bytes source() {
-				var chars = source.source();
+			public Bytes g() {
+				var chars = source.g();
 				if (chars != null) {
 					var bb = new BytesBuilder();
 					for (var i = 0; i < chars.size(); i++) {

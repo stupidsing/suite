@@ -56,10 +56,10 @@ public class Main implements AutoCloseable {
 		String verb = null;
 		String arg;
 
-		while ((arg = source.source()) != null)
+		while ((arg = source.g()) != null)
 			if (arg.startsWith("-"))
 				if (String_.equals(arg, "--file"))
-					inputs.add(readScript(source.source()));
+					inputs.add(readScript(source.g()));
 				else
 					b &= opt.processOption(arg, source);
 			else if (verb == null)

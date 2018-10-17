@@ -38,7 +38,7 @@ public class Scheduler {
 					schedules1.add(schedule);
 				else
 					try {
-						schedules1.addAll(schedule.run.source());
+						schedules1.addAll(schedule.run.g());
 					} catch (Exception ex) {
 						LogUtil.error(ex);
 					}

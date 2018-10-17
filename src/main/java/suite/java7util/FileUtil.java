@@ -26,7 +26,7 @@ public class FileUtil {
 		stack.push(file);
 
 		return new Source<File>() {
-			public File source() {
+			public File g() {
 				while (!stack.isEmpty()) {
 					var f = stack.pop();
 

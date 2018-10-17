@@ -50,7 +50,7 @@ public class SwitchNode<R> {
 		return applyIf(c, t -> {
 			@SuppressWarnings("unchecked")
 			var r = (R) rethrow(() -> {
-				sink.sink(t);
+				sink.f(t);
 				return t;
 			});
 			return r;
@@ -59,7 +59,7 @@ public class SwitchNode<R> {
 
 	public SwitchNode<R> match(Atom node, Source<R> fun) {
 		if (result == null && in == node)
-			result = fun.source();
+			result = fun.g();
 		return this;
 	}
 

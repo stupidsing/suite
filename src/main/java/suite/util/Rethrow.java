@@ -8,11 +8,11 @@ import java.util.function.Predicate;
 public class Rethrow {
 
 	public interface SinkEx<T, Ex extends Exception> {
-		public void sink(T t) throws Ex;
+		public void f(T t) throws Ex;
 	}
 
 	public interface SourceEx<T, Ex extends Exception> {
-		public T source() throws Ex;
+		public T g() throws Ex;
 	}
 
 	public static <K, V> BiPredicate<K, V> biPredicate(BiPredicate<K, V> fun0) {
@@ -27,7 +27,7 @@ public class Rethrow {
 
 	public static <T> T ex(SourceEx<T, Exception> source) {
 		try {
-			return source.source();
+			return source.g();
 		} catch (Exception ex) {
 			return fail(ex);
 		}

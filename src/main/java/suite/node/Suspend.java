@@ -28,7 +28,7 @@ public class Suspend extends Node {
 
 	private Node target() {
 		if (target == null)
-			target = source.source();
+			target = source.g();
 		return target;
 	}
 

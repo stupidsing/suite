@@ -100,7 +100,7 @@ public class Huffman {
 		return () -> {
 			Unit unit;
 
-			while (stack.isEmpty() && (unit = source.source()) != null) {
+			while (stack.isEmpty() && (unit = source.g()) != null) {
 				var node = dictionary.nodeByUnit.get(unit);
 				Node<Unit> parent;
 
@@ -118,12 +118,12 @@ public class Huffman {
 		return () -> {
 			Boolean b;
 
-			if ((b = source.source()) != null) {
+			if ((b = source.g()) != null) {
 				var node = dictionary.root;
 
 				while (node.unit == null) {
 					node = b ? node.node0 : node.node1;
-					b = source.source();
+					b = source.g();
 				}
 
 				return node.unit;

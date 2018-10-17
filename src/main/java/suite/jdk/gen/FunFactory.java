@@ -243,7 +243,7 @@ public class FunFactory {
 
 	public FunExpr parameter0(Source<FunExpr> doFun) {
 		var expr = new Declare0ParameterFunExpr();
-		expr.do_ = doFun.source();
+		expr.do_ = doFun.g();
 		return expr;
 	}
 

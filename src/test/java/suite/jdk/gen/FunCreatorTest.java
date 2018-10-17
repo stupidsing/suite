@@ -76,13 +76,13 @@ public class FunCreatorTest {
 	public void testClosure() {
 		Source<FunExpr> fun = () -> f.declare(f.int_(1),
 				one -> f.parameter1(j -> f.add(one, j)).cast_(Int_Int.class).apply(f.int_(2)));
-		assertEquals(3, LambdaInstance.of(IntSource.class, fun).newFun().source());
+		assertEquals(3, LambdaInstance.of(IntSource.class, fun).newFun().g());
 	}
 
 	@Test
 	public void testConstant() {
 		Iterate<FunExpr> fun = i -> f.int_(1);
-		assertEquals(1, LambdaInstance.of(IntSource.class, fun).newFun().source());
+		assertEquals(1, LambdaInstance.of(IntSource.class, fun).newFun().g());
 	}
 
 	@Test
@@ -90,14 +90,14 @@ public class FunCreatorTest {
 		var N1 = Int.of(1);
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		FunCreator<Source<Node>> fc = (FunCreator) FunCreator.of(Source.class);
-		assertEquals(Suite.parse("1"), fc.create(() -> f.object(N1)).apply(void_).source());
+		assertEquals(Suite.parse("1"), fc.create(() -> f.object(N1)).apply(void_).g());
 		assertEquals(Suite.parse("1 + 1"), fc.create(() -> f //
 				.invokeStatic(Tree.class, "of", //
 						f.object(TermOp.PLUS__), //
 						f.object(N1).cast_(Node.class), //
 						f.object(N1).cast_(Node.class))) //
 				.apply(void_) //
-				.source());
+				.g());
 	}
 
 	@Test
@@ -130,7 +130,7 @@ public class FunCreatorTest {
 	@Test
 	public void testIf() {
 		Source<FunExpr> fun = () -> f.if_(f._true(), f._true(), f._false());
-		assertEquals(1, LambdaInstance.of(IntSource.class, fun).newFun().source());
+		assertEquals(1, LambdaInstance.of(IntSource.class, fun).newFun().g());
 	}
 
 	@Test
@@ -151,7 +151,7 @@ public class FunCreatorTest {
 	public void testNew() {
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		FunCreator<Source<Node>> fc = (FunCreator) FunCreator.of(Source.class);
-		assertTrue(fc.create(() -> f.new_(Reference.class)).apply(void_).source() instanceof Reference);
+		assertTrue(fc.create(() -> f.new_(Reference.class)).apply(void_).g() instanceof Reference);
 	}
 
 	@Test
@@ -165,7 +165,7 @@ public class FunCreatorTest {
 	public void testProfile() {
 		Iterate<FunExpr> fun = i -> (ProfileFunExpr) f.profile(f.int_(1));
 		var instance = LambdaInstance.of(IntSource.class, fun).newFun();
-		assertEquals(1, instance.source());
+		assertEquals(1, instance.g());
 		Dump.details(instance);
 	}
 

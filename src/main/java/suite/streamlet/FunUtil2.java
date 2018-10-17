@@ -76,7 +76,7 @@ public class FunUtil2 {
 				isAvail = source2.source2(pair);
 			}
 
-			public Source2<K, V> source() {
+			public Source2<K, V> g() {
 				return isAvail ? cons(pair.t0, pair.t1, source_) : null;
 			}
 		};
@@ -89,7 +89,7 @@ public class FunUtil2 {
 			public boolean source2(Pair<K, V> pair) {
 				var b = false;
 				while (source2 != null && !(b = source2.source2(pair)))
-					source2 = source.source();
+					source2 = source.g();
 				return b;
 			}
 		};
@@ -239,8 +239,8 @@ public class FunUtil2 {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static <K, V> Source<Source2<K, V>> split(BiPredicate<K, V> fun0, Source2<K, V> source2) {
 		var fun1 = Rethrow.biPredicate(fun0);
@@ -253,7 +253,7 @@ public class FunUtil2 {
 				isAvailable = source2.source2(pair);
 			}
 
-			public Source2<K, V> source() {
+			public Source2<K, V> g() {
 				return isAvailable ? cons(pair.t0, pair.t1, source2_) : null;
 			}
 		};
@@ -268,7 +268,7 @@ public class FunUtil2 {
 
 		var thread = Thread_.startThread(() -> {
 			try {
-				fun.sink(enqueue);
+				fun.f(enqueue);
 			} finally {
 				enqueue(queue, null);
 			}

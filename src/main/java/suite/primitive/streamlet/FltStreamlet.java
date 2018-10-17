@@ -300,7 +300,7 @@ public class FltStreamlet implements StreamletDefaults<Float, FltOutlet> {
 	}
 
 	private FltOutlet spawn() {
-		return in.source();
+		return in.g();
 	}
 
 }

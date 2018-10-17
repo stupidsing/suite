@@ -131,7 +131,7 @@ public class Longs implements Iterable<Long> {
 		return new LngStreamlet(() -> LngOutlet.of(new LngSource() {
 			private int i = start;
 
-			public long source() {
+			public long g() {
 				return i < end ? cs[i++] : LngFunUtil.EMPTYVALUE;
 			}
 		}));

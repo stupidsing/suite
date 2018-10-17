@@ -29,7 +29,7 @@ public interface Chr_Int {
 			var source = outlet.source();
 			char c;
 			var result = (int) 0;
-			while ((c = source.source()) != ChrFunUtil.EMPTYVALUE)
+			while ((c = source.g()) != ChrFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;
 		};

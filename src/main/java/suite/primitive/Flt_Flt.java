@@ -29,7 +29,7 @@ public interface Flt_Flt {
 			var source = outlet.source();
 			float c;
 			var result = (float) 0;
-			while ((c = source.source()) != FltFunUtil.EMPTYVALUE)
+			while ((c = source.g()) != FltFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;
 		};

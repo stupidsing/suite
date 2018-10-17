@@ -68,7 +68,7 @@ public class SparseMatrix {
 		};
 
 		for (var r = 0; r < height; r++)
-			enqRow.sink(r);
+			enqRow.f(r);
 
 		while (!pq.isEmpty()) {
 			var pair = pq.extractMin();
@@ -76,7 +76,7 @@ public class SparseMatrix {
 			var j = js[r]++;
 			var spans = matrix.get(r);
 			matrix1.get(spans.columns[j]).add(r, spans.values[j]);
-			enqRow.sink(r);
+			enqRow.f(r);
 		}
 
 		return new SparseMatrix(width_, height, matrix1);

@@ -134,7 +134,7 @@ public class Chars_ {
 			this.outlet = outlet;
 		}
 
-		public Chars source() {
+		public Chars g() {
 			Chars in;
 			var cb = new CharsBuilder();
 			cb.append(buffer);

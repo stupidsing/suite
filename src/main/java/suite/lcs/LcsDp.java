@@ -58,7 +58,7 @@ public class LcsDp<T> {
 		var result = new ArrayList<T>(Collections.nCopies(node.length, null));
 
 		for (var i = node.length - 1; 0 <= i; i--)
-			result.set(i, source.source());
+			result.set(i, source.g());
 
 		return result;
 	}

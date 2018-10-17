@@ -84,7 +84,7 @@ public class IterativeParser {
 		Sink<Node> add = node -> {
 			var section = stack.peek();
 			if (!section.isDanglingRight)
-				addOperator.sink(TermOp.TUPLE_);
+				addOperator.f(TermOp.TUPLE_);
 			Tree.forceSetRight(section.list.getLast(), node);
 			section.isDanglingRight = false;
 		};
@@ -99,7 +99,7 @@ public class IterativeParser {
 			var ch = data.charAt(0);
 
 			if (operator != null) {
-				addOperator.sink(operator);
+				addOperator.f(operator);
 				if (operator == TermOp.BRACES)
 					stack.push(new Section('{'));
 			} else if (ch == '(' || ch == '[' || ch == '{')
@@ -114,18 +114,18 @@ public class IterativeParser {
 						node = TreeTuple.of(Atom.of("["), node);
 					else if (ch == '}')
 						node = TreeTuple.of(Atom.of("{"), node);
-					add.sink(node);
+					add.f(node);
 				} else
 					fail("cannot parse " + in);
 			} else if (ch == '`')
 				if (stack.peek().kind == ch) {
 					var node = stack.pop().unwind(null).getRight();
 					node = TreeTuple.of(Atom.of("`"), node);
-					add.sink(node);
+					add.f(node);
 				} else
 					stack.push(new Section(ch));
 			else if (String_.isNotBlank(data))
-				add.sink(terminalParser.parseTerminal(data));
+				add.f(terminalParser.parseTerminal(data));
 		}
 
 		return stack.size() == 1 ? stack.pop().unwind(null).getRight() : fail("cannot parse " + in);

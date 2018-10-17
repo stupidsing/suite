@@ -29,7 +29,7 @@ public class FindPredicates {
 	// memoize is not re-entrant due to using computeIfAbsent()
 	public BuiltinPredicate findAllMemoized = PredicateUtil.p3((prover, var, goal, results) -> {
 		var key = new TermKey(new Cloner().clone(Tree.of(TermOp.SEP___, var, goal)));
-		Node results_ = memoizedPredicates.computeIfAbsent(key, k -> Memoize.future(() -> findAll(prover, var, goal))).source();
+		Node results_ = memoizedPredicates.computeIfAbsent(key, k -> Memoize.future(() -> findAll(prover, var, goal))).g();
 		return prover.bind(results, results_);
 	});
 

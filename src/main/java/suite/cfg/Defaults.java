@@ -54,7 +54,7 @@ public class Defaults {
 	}
 
 	public static Prover secrets() {
-		return memoizeSecrets.source();
+		return memoizeSecrets.g();
 	}
 
 	public static Path tmp(String path) {

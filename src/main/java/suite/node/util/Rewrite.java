@@ -46,7 +46,7 @@ public class Rewrite {
 			Node node1;
 			if (!(node0 instanceof Reference)) {
 				var pit = trail.getPointInTime();
-				var ft = source.source();
+				var ft = source.g();
 
 				if (Binder.bind(node0, ft[0], trail))
 					node1 = ft[1];

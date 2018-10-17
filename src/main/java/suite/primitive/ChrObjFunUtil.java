@@ -41,7 +41,7 @@ public class ChrObjFunUtil {
 				isAvail = source.source2(pair);
 			}
 
-			public ChrObjSource<V> source() {
+			public ChrObjSource<V> g() {
 				return isAvail ? cons(pair.t0, pair.t1, source_) : null;
 			}
 		};
@@ -54,7 +54,7 @@ public class ChrObjFunUtil {
 			public boolean source2(ChrObjPair<V> pair) {
 				var b = false;
 				while (source2 != null && !(b = source2.source2(pair)))
-					source2 = source.source();
+					source2 = source.g();
 				return b;
 			}
 		};
@@ -197,8 +197,8 @@ public class ChrObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static <V> Source<ChrObjSource<V>> split(ChrObjPredicate<V> fun0, ChrObjSource<V> source2) {
 		ChrObjPredicate<V> fun1 = fun0.rethrow();
@@ -211,7 +211,7 @@ public class ChrObjFunUtil {
 				isAvailable = source2.source2(pair);
 			}
 
-			public ChrObjSource<V> source() {
+			public ChrObjSource<V> g() {
 				return isAvailable ? cons(pair.t0, pair.t1, source2_) : null;
 			}
 		};
@@ -241,7 +241,7 @@ public class ChrObjFunUtil {
 
 		var thread = Thread_.startThread(() -> {
 			try {
-				fun.sink(enqueue);
+				fun.f(enqueue);
 			} finally {
 				enqueue(queue, null);
 			}

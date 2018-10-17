@@ -92,8 +92,8 @@ public class IntSet {
 	public void forEach(IntSink sink) {
 		var source = source_();
 		int c;
-		while ((c = source.source()) != EMPTYVALUE)
-			sink.sink(c);
+		while ((c = source.g()) != EMPTYVALUE)
+			sink.f(c);
 	}
 
 	@Override
@@ -167,7 +167,7 @@ public class IntSet {
 			private int capacity = vs.length;
 			private int index = 0;
 
-			public int source() {
+			public int g() {
 				int v;
 				while (index < capacity)
 					if ((v = vs[index++]) != EMPTYVALUE)

@@ -75,7 +75,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 		return of(new FltSource() {
 			private int i = start;
 
-			public float source() {
+			public float g() {
 				var c = pred.test(i) ? ts[i] : EMPTYVALUE;
 				i += inc;
 				return c;
@@ -93,7 +93,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 
 	public static FltOutlet of(Source<Float> source) {
 		return FltOutlet.of(() -> {
-			var c = source.source();
+			var c = source.g();
 			return c != null ? c : EMPTYVALUE;
 		});
 	}
@@ -161,7 +161,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 			private float c;
 			private int index = list.size();
 
-			public O source() {
+			public O g() {
 				if (index == list.size()) {
 					index = 0;
 					c = next();
@@ -193,7 +193,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 		if (Object_.clazz(object) == FltOutlet.class) {
 			var source1 = ((FltOutlet) object).source;
 			float o0, o1;
-			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
+			while (Objects.equals(o0 = source.g(), o1 = source1.g()))
 				if (o0 == EMPTYVALUE && o1 == EMPTYVALUE)
 					return true;
 			return false;
@@ -232,7 +232,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	public int hashCode() {
 		var h = 7;
 		float c;
-		while ((c = source.source()) != EMPTYVALUE)
+		while ((c = source.g()) != EMPTYVALUE)
 			h = h * 31 + Objects.hashCode(c);
 		return h;
 	}
@@ -316,7 +316,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 	}
 
 	public float next() {
-		return source.source();
+		return source.g();
 	}
 
 	public FltOutlet nonBlock(float c0) {
@@ -325,7 +325,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 		new Thread(() -> {
 			float c;
 			do
-				queue.offerQuietly(c = source.source());
+				queue.offerQuietly(c = source.g());
 			while (c != EMPTYVALUE);
 		}).start();
 
@@ -359,7 +359,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 		var sink1 = sink0.rethrow();
 		float c;
 		while ((c = next()) != EMPTYVALUE)
-			sink1.sink(c);
+			sink1.f(c);
 	}
 
 	public FltOutlet skip(int n) {
@@ -396,7 +396,7 @@ public class FltOutlet implements OutletDefaults<Float> {
 		return of(new FltSource() {
 			private int count = n;
 
-			public float source() {
+			public float g() {
 				return 0 < count-- ? next() : null;
 			}
 		});

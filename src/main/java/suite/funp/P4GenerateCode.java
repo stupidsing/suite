@@ -278,9 +278,9 @@ public class P4GenerateCode {
 				var block = em.spawn(loopLabel, em1 -> {
 					var c1 = nc(em1);
 					Source<Boolean> r;
-					if ((r = new P4JumpIf(c1.compileCmpJmp(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.source())
+					if ((r = new P4JumpIf(c1.compileCmpJmp(exitLabel)).new JumpIf(while_).jnxIf()) != null && r.g())
 						label1.set(doLabel);
-					else if ((r = new P4JumpIf(c1.compileCmpJmp(doLabel)).new JumpIf(while_).jxxIf()) != null && r.source())
+					else if ((r = new P4JumpIf(c1.compileCmpJmp(doLabel)).new JumpIf(while_).jxxIf()) != null && r.g())
 						label1.set(exitLabel);
 					else {
 						c1.compileJumpZero(while_, exitLabel);
@@ -363,16 +363,16 @@ public class P4GenerateCode {
 				var jumpIf = new P4JumpIf(compileCmpJmp(jumpLabel)).new JumpIf(if_);
 				Source<Boolean> r;
 
-				if ((r = jumpIf.jnxIf()) != null && r.source())
+				if ((r = jumpIf.jnxIf()) != null && r.g())
 					thenElse.sink2(then_, else_);
-				else if ((r = jumpIf.jxxIf()) != null && r.source())
+				else if ((r = jumpIf.jxxIf()) != null && r.g())
 					thenElse.sink2(else_, then_);
 				else {
 					compileJumpZero(if_, jumpLabel);
 					thenElse.sink2(then_, else_);
 				}
 
-				return out.source();
+				return out.g();
 			})).applyIf(FunpInvoke.class, f -> f.apply(routine -> {
 				compileInvoke(routine);
 				return returnIsOp(i_eax);
@@ -757,7 +757,7 @@ public class P4GenerateCode {
 				em.emit(Insn.PUSH, ebp);
 				if (isUseEbp)
 					em.mov(ebp, esp);
-				sink.sink(c1.nc(registerSet, 0));
+				sink.f(c1.nc(registerSet, 0));
 				em.emit(Insn.POP, ebp);
 				em.emit(Insn.RET);
 			});
@@ -974,7 +974,7 @@ public class P4GenerateCode {
 				saveRegs(sink, rs_.unmask(op.reg), fd_ - op.size, index + 1, opRegs);
 				em.emit(Insn.POP, op);
 			} else
-				sink.sink(nc(rs_, fd_));
+				sink.f(nc(rs_, fd_));
 		}
 
 		private IntIntPair getAllocSize(int size) {
@@ -1004,7 +1004,7 @@ public class P4GenerateCode {
 		}
 
 		private OpImmLabel spawn(OpImmLabel in, Sink<Compile0> sink, OpImmLabel out) {
-			em.spawn(in, em1 -> sink.sink(nc(em1)), out);
+			em.spawn(in, em1 -> sink.f(nc(em1)), out);
 			return in;
 		}
 

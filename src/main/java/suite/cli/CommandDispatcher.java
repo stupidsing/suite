@@ -148,7 +148,7 @@ public class CommandDispatcher {
 		case OPTION:
 			Source<String> source = To.source(("-" + input).split(" "));
 			String option;
-			while ((option = source.source()) != null)
+			while ((option = source.g()) != null)
 				opt.processOption(option, source);
 			break;
 		case PRETTYPRINT:
@@ -186,7 +186,7 @@ public class CommandDispatcher {
 
 	private void elaborate(Node node0, Sink<Node> sink) {
 		int[] count = { 0 };
-		var ne = new CompileGeneralizerImpl().g(node0).source();
+		var ne = new CompileGeneralizerImpl().g(node0).g();
 		var node1 = ne.node;
 
 		var elab = new Data<Source<Boolean>>(() -> {
@@ -198,7 +198,7 @@ public class CommandDispatcher {
 			return Boolean.FALSE;
 		});
 
-		sink.sink(Tree.ofAnd(node1, elab));
+		sink.f(Tree.ofAnd(node1, elab));
 
 		if (count[0] == 1)
 			opt.prompt().println(count[0] + " solution\n");

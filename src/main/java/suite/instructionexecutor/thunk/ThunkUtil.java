@@ -41,14 +41,13 @@ public class ThunkUtil {
 	}
 
 	/**
-	 * Evaluates the whole (lazy) term to a list and feed the elements into a
-	 * sink.
+	 * Evaluates the whole (lazy) term to a list and feed the elements into a sink.
 	 */
 	public static void yawnSink(Iterate<Node> yawn, Node node, IoSink<Node> sink) throws IOException {
 		var st = yawnList(yawn, node, true);
 		Node n;
 		while ((n = st.next()) != null)
-			sink.sink(n);
+			sink.f(n);
 	}
 
 	public static Outlet<Node> yawnList(Iterate<Node> yawn, Node node, boolean isFacilitateGc) {
@@ -56,7 +55,7 @@ public class ThunkUtil {
 			private Node node_ = node;
 			private boolean first = true;
 
-			public Node source() {
+			public Node g() {
 
 				// first node is not a thunk, remainings are
 				if (!first)

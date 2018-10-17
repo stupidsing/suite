@@ -52,7 +52,7 @@ public abstract class Tree extends Node {
 		return new Streamlet<>(() -> Outlet.of(new Source<Node>() {
 			private Node node = node0;
 
-			public Node source() {
+			public Node g() {
 				var tree = fun.apply(node);
 				if (tree != null) {
 					node = tree.getRight();

@@ -108,13 +108,13 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 						isInUse.add(extent);
 			};
 
-			use.sink(roots);
+			use.f(roots);
 
 			var extents = extentFile.scan(start, end);
 
 			for (var extent : Read.from(extents).reverse())
 				if (isInUse.contains(extent))
-					use.sink(Read.from(loadSlot(extent).pairs).map(Pair::snd).toList());
+					use.f(Read.from(loadSlot(extent).pairs).map(Pair::snd).toList());
 
 			var map = new HashMap<Extent, Extent>();
 

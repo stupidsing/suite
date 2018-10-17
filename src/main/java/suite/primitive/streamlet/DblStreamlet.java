@@ -300,7 +300,7 @@ public class DblStreamlet implements StreamletDefaults<Double, DblOutlet> {
 	}
 
 	private DblOutlet spawn() {
-		return in.source();
+		return in.g();
 	}
 
 }

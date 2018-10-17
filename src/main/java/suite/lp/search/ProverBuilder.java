@@ -40,7 +40,7 @@ public class ProverBuilder {
 
 		public default Source<Node> collect(Node in) {
 			var source = To.source(in);
-			return FunUtil.suck(sink0 -> find(source, node -> sink0.sink(new Cloner().clone(node))));
+			return FunUtil.suck(sink0 -> find(source, node -> sink0.f(new Cloner().clone(node))));
 		}
 	}
 

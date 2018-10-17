@@ -58,7 +58,7 @@ public class SldResolution {
 			var value1 = orsMap.get(negate(e.getKey()));
 
 			if (value1 != null)
-				results.add(TreeUtil.buildUp(TermOp.AND___, List_.concat(value0.source(), value1.source())));
+				results.add(TreeUtil.buildUp(TermOp.AND___, List_.concat(value0.g(), value1.g())));
 		}
 
 		return results;

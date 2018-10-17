@@ -117,7 +117,7 @@ public class BackAllocTester {
 
 					var actions = play(up.trades);
 
-					log.sink(ymd //
+					log.f(ymd //
 							+ ", valuation = " + valuation_ //
 							+ ", portfolio = " + account //
 							+ ", actions = " + actions);

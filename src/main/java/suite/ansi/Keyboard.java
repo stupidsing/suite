@@ -117,7 +117,7 @@ public class Keyboard {
 	}
 
 	public void loop(Sink<Signal<Pair<VK, Character>>> sink) {
-		Signal.loop(this::get, signal -> sink.sink(signal.redirect(redirector)));
+		Signal.loop(this::get, signal -> sink.f(signal.redirect(redirector)));
 	}
 
 	public Signal<Pair<VK, Character>> signal() {
@@ -142,7 +142,7 @@ public class Keyboard {
 
 				if (t1 != null)
 					if ((vk = (t = t1).getValue()) != null) {
-						fire.sink(Pair.of(vk, null));
+						fire.f(Pair.of(vk, null));
 						reset();
 					} else
 						;
@@ -153,7 +153,7 @@ public class Keyboard {
 		}
 
 		private void flush(Sink<Pair<VK, Character>> fire) {
-			Read.from(chs).sink(ch -> fire.sink(Pair.of(null, ch)));
+			Read.from(chs).sink(ch -> fire.f(Pair.of(null, ch)));
 			reset();
 		}
 

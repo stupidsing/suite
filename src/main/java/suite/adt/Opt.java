@@ -61,7 +61,7 @@ public class Opt<T> {
 	}
 
 	public T or(Source<T> or) {
-		return !isEmpty() ? value : or.source();
+		return !isEmpty() ? value : or.g();
 	}
 
 	@Override

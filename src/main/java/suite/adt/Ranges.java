@@ -14,8 +14,8 @@ public class Ranges<T extends Comparable<? super T>> {
 	public static <T extends Comparable<? super T>> Ranges<T> intersect(Ranges<T> ranges0, Ranges<T> ranges1) {
 		var source0 = To.source(ranges0.ranges);
 		var source1 = To.source(ranges1.ranges);
-		var range0 = source0.source();
-		var range1 = source1.source();
+		var range0 = source0.g();
+		var range1 = source1.g();
 		var intersects = new ArrayList<Range<T>>();
 		var add = add(intersects);
 		T to;
@@ -23,10 +23,10 @@ public class Ranges<T extends Comparable<? super T>> {
 		while (range0 != null && range1 != null) {
 			if (nullMaxCompare(range0.to, range1.to) < 0) {
 				to = range0.to;
-				range0 = source0.source();
+				range0 = source0.g();
 			} else {
 				to = range1.to;
-				range1 = source1.source();
+				range1 = source1.g();
 			}
 
 			add.test(Range.of(Object_.min(range0.from, range0.from), to));

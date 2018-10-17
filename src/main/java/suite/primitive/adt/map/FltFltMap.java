@@ -39,7 +39,7 @@ public class FltFltMap {
 		return outlet -> {
 			var map = new FltFltMap();
 			T t;
-			while ((t = outlet.source().source()) != null)
+			while ((t = outlet.source().g()) != null)
 				map.put(kf1.apply(t), vf1.apply(t));
 			return map;
 		};

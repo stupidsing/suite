@@ -36,7 +36,7 @@ public class LazyIbTree<T> implements ITree<T> {
 		}
 
 		public List<Slot<T>> readSlots() {
-			return source.source();
+			return source.g();
 		}
 	}
 

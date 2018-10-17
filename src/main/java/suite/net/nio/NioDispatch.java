@@ -79,7 +79,7 @@ public class NioDispatch implements Closeable {
 				reader = new Runnable() {
 					public void run() {
 						packetId.read((id_, bs) -> {
-							handlers.remove(id_).sink(bs);
+							handlers.remove(id_).f(bs);
 							run();
 						}, rec.reconnect);
 					}
@@ -148,14 +148,14 @@ public class NioDispatch implements Closeable {
 			if (rec == null)
 				asyncConnect(address, rw_ -> {
 					var r = new Reconnectable(rw_, this::reset);
-					connected.sink(rec = r);
-					okay.sink(r);
+					connected.f(rec = r);
+					okay.f(r);
 				}, ex -> {
 					reset(ex);
 					timeDispatches.insert(new TimeDispatch(System.currentTimeMillis() + backoff.duration(), () -> connect(okay)));
 				});
 			else
-				okay.sink(rec);
+				okay.f(rec);
 		}
 
 		public void reset(Exception ex) {
@@ -213,7 +213,7 @@ public class NioDispatch implements Closeable {
 					if (start < bytes.size())
 						rw.write(bytes.range(start), written -> sink(start + written), fail);
 					else
-						okay.sink(null);
+						okay.f(null);
 				}
 			}.sink(0);
 		}
@@ -227,7 +227,7 @@ public class NioDispatch implements Closeable {
 						if (bytes_.get(i) == delim) {
 							bb.clear();
 							bb.append(bytes_.range(i + 1));
-							okay.sink(bytes_.range(0, i));
+							okay.f(bytes_.range(0, i));
 							return;
 						}
 
@@ -247,7 +247,7 @@ public class NioDispatch implements Closeable {
 						var bytes_ = bb.toBytes();
 						bb.clear();
 						bb.append(bytes_.range(n));
-						okay.sink(bytes_.range(0, n));
+						okay.f(bytes_.range(0, n));
 					} else
 						rw.read(bytes1 -> {
 							bb.append(bytes1);
@@ -277,11 +277,11 @@ public class NioDispatch implements Closeable {
 		public void read(Sink<Bytes> sink0, Sink<IOException> fail) {
 			Sink<Object> okay1 = object -> {
 				if (object instanceof Bytes)
-					sink0.sink((Bytes) object);
+					sink0.f((Bytes) object);
 				else if (object instanceof IOException)
-					fail.sink((IOException) object);
+					fail.f((IOException) object);
 				else
-					fail.sink(null);
+					fail.f(null);
 			};
 
 			reg(sc, SelectionKey.OP_READ, okay1, fail);
@@ -290,9 +290,9 @@ public class NioDispatch implements Closeable {
 		public void write(Bytes bytes, Sink<Integer> okay0, Sink<IOException> fail) {
 			Sink<Object> okay1 = dummy -> {
 				try {
-					okay0.sink(sc.write(bytes.toByteBuffer()));
+					okay0.f(sc.write(bytes.toByteBuffer()));
 				} catch (IOException ex) {
-					fail.sink(ex);
+					fail.f(ex);
 				}
 			};
 
@@ -303,9 +303,9 @@ public class NioDispatch implements Closeable {
 	public void asyncConnect(InetSocketAddress address, Sink<AsyncRw> okay0, Sink<IOException> fail) {
 		Sink<Object> okay1 = rw -> {
 			if (rw instanceof AsyncRw)
-				okay0.sink((AsyncRw) rw);
+				okay0.f((AsyncRw) rw);
 			else
-				fail.sink(null);
+				fail.f(null);
 		};
 
 		try {
@@ -314,7 +314,7 @@ public class NioDispatch implements Closeable {
 			sc.connect(address);
 			reg(sc, SelectionKey.OP_CONNECT, okay1, fail);
 		} catch (IOException ex) {
-			fail.sink(ex);
+			fail.f(ex);
 		}
 	}
 
@@ -330,7 +330,7 @@ public class NioDispatch implements Closeable {
 			reg(ssc, SelectionKey.OP_ACCEPT, accept, fail);
 			return () -> Object_.closeQuietly(ssc);
 		} catch (IOException ex) {
-			fail.sink(ex);
+			fail.f(ex);
 			return null;
 		}
 	}
@@ -387,37 +387,37 @@ public class NioDispatch implements Closeable {
 		if ((ops & SelectionKey.OP_ACCEPT) != 0) {
 			var sc = ((ServerSocketChannel) sc0).accept().socket().getChannel();
 			sc.configureBlocking(false);
-			callback.sink(new AsyncRw(sc));
+			callback.f(new AsyncRw(sc));
 			reg(sc0, SelectionKey.OP_ACCEPT);
 		}
 
 		if ((ops & SelectionKey.OP_CONNECT) != 0)
-			callback.sink(sc1.finishConnect() ? new AsyncRw(sc1) : null);
+			callback.f(sc1.finishConnect() ? new AsyncRw(sc1) : null);
 
 		if ((ops & SelectionKey.OP_READ) != 0) {
 			try {
 				var n = sc1.read(ByteBuffer.wrap(buffer));
 				if (0 <= n)
-					callback.sink(Bytes.of(buffer, 0, n));
+					callback.f(Bytes.of(buffer, 0, n));
 				else {
-					callback.sink(null);
+					callback.f(null);
 					sc1.close();
 				}
 			} catch (ClosedChannelException | NotYetConnectedException ex) {
-				callback.sink(ex);
+				callback.f(ex);
 				sc1.close();
 			}
 		}
 
 		if ((ops & SelectionKey.OP_WRITE) != 0)
-			callback.sink(null);
+			callback.f(null);
 	}
 
 	private void reg(SelectableChannel sc, int key, Sink<?> attachment, Sink<IOException> fail) {
 		try {
 			reg(sc, key, attachment);
 		} catch (ClosedChannelException ex) {
-			fail.sink(ex);
+			fail.f(ex);
 		}
 	}
 

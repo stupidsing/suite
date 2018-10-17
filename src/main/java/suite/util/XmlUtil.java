@@ -105,7 +105,7 @@ public class XmlUtil {
 				return Read.from(() -> new Source<XmlNode>() {
 					private int i = 0;
 
-					public XmlNode source() {
+					public XmlNode g() {
 						return i < nodeList.getLength() ? node(nodeList.item(i)) : null;
 					}
 				});

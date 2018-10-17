@@ -239,7 +239,7 @@ public class InterpretFunEager {
 			}
 
 			public Node yawn(Node node) {
-				return ((Wrap) node).source.source();
+				return ((Wrap) node).source.g();
 			}
 		};
 	}
@@ -257,7 +257,7 @@ public class InterpretFunEager {
 	}
 
 	private Fun<Frame, Node> unwrap(Fun<Frame, Node> getter) {
-		return frame -> ((Wrap) getter.apply(frame)).source.source();
+		return frame -> ((Wrap) getter.apply(frame)).source.g();
 	}
 
 	private Fun<Frame, Node> immediate(Node n) {

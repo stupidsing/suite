@@ -146,7 +146,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		return of(DblObjFunUtil.concat(DblObjFunUtil.map((k, v) -> {
 			var source = fun.apply(v).source();
 			return pair -> {
-				var value1 = source.source();
+				var value1 = source.g();
 				var b = value1 != null;
 				if (b)
 					pair.update(k, value1);

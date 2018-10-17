@@ -288,7 +288,7 @@ public class Streamlet<T> implements StreamletDefaults<T, Outlet<T>> {
 	}
 
 	private Outlet<T> spawn() {
-		return in.source();
+		return in.g();
 	}
 
 }

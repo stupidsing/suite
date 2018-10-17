@@ -281,7 +281,7 @@ public class Arima {
 			private float[] mas = To.vector(q, i -> random.nextGaussian());
 			private Arma arma = new Arma(ars, mas);
 
-			public double source() {
+			public double g() {
 				arma.backcast(xsp, epq);
 				return -arma.forwardRecursion(xsp, epq);
 			}

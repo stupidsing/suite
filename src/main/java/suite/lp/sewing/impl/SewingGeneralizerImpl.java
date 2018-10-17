@@ -22,7 +22,7 @@ public class SewingGeneralizerImpl implements GeneralizerFactory {
 	private VariableMapper<Atom> vm = new VariableMapper<>();
 
 	public static Node generalize(Node node) {
-		return new SewingGeneralizerImpl().g(node).source().node;
+		return new SewingGeneralizerImpl().g(node).g().node;
 	}
 
 	@Override

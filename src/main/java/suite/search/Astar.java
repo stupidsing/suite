@@ -53,7 +53,7 @@ public class Astar<Node> {
 				var sunkCost1 = ni.sunkCost + 1;
 				var source = generate.apply(node);
 
-				while ((node1 = source.source()) != null)
+				while ((node1 = source.g()) != null)
 					open.add(new NodeInfo(ni, node1, sunkCost1, sunkCost1 + estimate.apply(node1)));
 			} else {
 				var deque = new ArrayDeque<Node>();

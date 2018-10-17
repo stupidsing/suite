@@ -92,8 +92,8 @@ public class FltSet {
 	public void forEach(FltSink sink) {
 		var source = source_();
 		float c;
-		while ((c = source.source()) != EMPTYVALUE)
-			sink.sink(c);
+		while ((c = source.g()) != EMPTYVALUE)
+			sink.f(c);
 	}
 
 	@Override
@@ -167,7 +167,7 @@ public class FltSet {
 			private int capacity = vs.length;
 			private int index = 0;
 
-			public float source() {
+			public float g() {
 				float v;
 				while (index < capacity)
 					if ((v = vs[index++]) != EMPTYVALUE)

@@ -10,8 +10,6 @@ import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.streamlet.FltOutlet;
 import suite.primitive.streamlet.FltStreamlet;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.FunUtil.Source;
-import suite.streamlet.FunUtil2.Source2;
 import suite.streamlet.Outlet;
 import suite.streamlet.Outlet2;
 import suite.streamlet.Read;
@@ -27,7 +25,7 @@ public class FltPrimitives {
 		public T apply(float c);
 
 		public static <T> Fun<FltOutlet, Streamlet<T>> lift(Flt_Obj<T> fun0) {
-			Flt_Obj<T> fun1 = fun0.rethrow();
+			var fun1 = fun0.rethrow();
 			return s -> {
 				var ts = new ArrayList<T>();
 				float c;
@@ -109,12 +107,12 @@ public class FltPrimitives {
 	}
 
 	public interface FltSink {
-		public void sink(float c);
+		public void f(float c);
 
 		public default FltSink rethrow() {
 			return t -> {
 				try {
-					sink(t);
+					f(t);
 				} catch (Exception ex) {
 					fail("for " + t, ex);
 				}
@@ -123,14 +121,14 @@ public class FltPrimitives {
 	}
 
 	public interface FltSource {
-		public float source();
+		public float g();
 	}
 
 	public interface Obj_Flt<T> {
 		public float apply(T t);
 
 		public static <T> Fun<Outlet<T>, FltStreamlet> lift(Obj_Flt<T> fun0) {
-			Obj_Flt<T> fun1 = fun0.rethrow();
+			var fun1 = fun0.rethrow();
 			return ts -> {
 				var b = new FloatsBuilder();
 				T t;
@@ -141,12 +139,12 @@ public class FltPrimitives {
 		}
 
 		public static <T> Obj_Flt<Outlet<T>> sum(Obj_Flt<T> fun0) {
-			Obj_Flt<T> fun1 = fun0.rethrow();
+			var fun1 = fun0.rethrow();
 			return outlet -> {
-				Source<T> source = outlet.source();
+				var source = outlet.source();
 				T t;
 				var result = (float) 0;
-				while ((t = source.source()) != null)
+				while ((t = source.g()) != null)
 					result += fun1.apply(t);
 				return result;
 			};
@@ -169,8 +167,8 @@ public class FltPrimitives {
 		public static <K, V> Obj_Flt<Outlet2<K, V>> sum(ObjObj_Flt<K, V> fun0) {
 			ObjObj_Flt<K, V> fun1 = fun0.rethrow();
 			return outlet -> {
-				Pair<K, V> pair = Pair.of(null, null);
-				Source2<K, V> source = outlet.source();
+				var pair = Pair.<K, V> of(null, null);
+				var source = outlet.source();
 				var result = (float) 0;
 				while (source.source2(pair))
 					result += fun1.apply(pair.t0, pair.t1);

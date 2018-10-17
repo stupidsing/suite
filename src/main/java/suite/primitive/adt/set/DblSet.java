@@ -92,8 +92,8 @@ public class DblSet {
 	public void forEach(DblSink sink) {
 		var source = source_();
 		double c;
-		while ((c = source.source()) != EMPTYVALUE)
-			sink.sink(c);
+		while ((c = source.g()) != EMPTYVALUE)
+			sink.f(c);
 	}
 
 	@Override
@@ -167,7 +167,7 @@ public class DblSet {
 			private int capacity = vs.length;
 			private int index = 0;
 
-			public double source() {
+			public double g() {
 				double v;
 				while (index < capacity)
 					if ((v = vs[index++]) != EMPTYVALUE)

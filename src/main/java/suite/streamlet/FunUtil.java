@@ -21,12 +21,12 @@ public class FunUtil {
 	}
 
 	public interface Sink<I> {
-		public void sink(I i);
+		public void f(I i);
 
 		public default Sink<I> rethrow() {
 			return t -> {
 				try {
-					sink(t);
+					f(t);
 				} catch (Exception ex) {
 					fail("for " + t, ex);
 				}
@@ -35,7 +35,7 @@ public class FunUtil {
 	}
 
 	public interface Source<O> {
-		public O source();
+		public O g();
 	}
 
 	public interface Fun<I, O> extends Function<I, O> {
@@ -52,11 +52,11 @@ public class FunUtil {
 
 	public static <T> Source<Source<T>> chunk(int n, Source<T> source) {
 		return new Source<>() {
-			private T t = source.source();
+			private T t = source.g();
 			private boolean isAvail = t != null;
 			private int i;
 			private Source<T> source_ = () -> {
-				if ((isAvail = isAvail && (t = source.source()) != null) && ++i < n)
+				if ((isAvail = isAvail && (t = source.g()) != null) && ++i < n)
 					return t;
 				else {
 					i = 0;
@@ -64,7 +64,7 @@ public class FunUtil {
 				}
 			};
 
-			public Source<T> source() {
+			public Source<T> g() {
 				return isAvail ? cons(t, source_) : null;
 			}
 		};
@@ -74,10 +74,10 @@ public class FunUtil {
 		return new Source<>() {
 			private Source<T> source0 = nullSource();
 
-			public T source() {
+			public T g() {
 				T t = null;
-				while (source0 != null && (t = source0.source()) == null)
-					source0 = source.source();
+				while (source0 != null && (t = source0.g()) == null)
+					source0 = source.g();
 				return t;
 			}
 		};
@@ -87,9 +87,9 @@ public class FunUtil {
 		return new Source<>() {
 			private boolean isFirst = true;
 
-			public T source() {
+			public T g() {
 				if (!isFirst)
-					return source.source();
+					return source.g();
 				else {
 					isFirst = false;
 					return t;
@@ -102,7 +102,7 @@ public class FunUtil {
 		var fun1 = Rethrow.predicate(fun0);
 		return () -> {
 			T t = null;
-			while ((t = source.source()) != null && !fun1.test(t))
+			while ((t = source.g()) != null && !fun1.test(t))
 				;
 			return t;
 		};
@@ -112,10 +112,10 @@ public class FunUtil {
 		return new Source<>() {
 			private Iterator<T> iter = Collections.emptyIterator();
 
-			public T source() {
+			public T g() {
 				Iterable<T> iterable;
 				while (!iter.hasNext())
-					if ((iterable = source.source()) != null)
+					if ((iterable = source.g()) != null)
 						iter = iterable.iterator();
 					else
 						return null;
@@ -127,7 +127,7 @@ public class FunUtil {
 	public static <T, R> R fold(Fun<Pair<R, T>, R> fun0, R init, Source<T> source) {
 		var fun1 = fun0.rethrow();
 		T t;
-		while ((t = source.source()) != null)
+		while ((t = source.g()) != null)
 			init = fun1.apply(Pair.of(init, t));
 		return init;
 	}
@@ -135,7 +135,7 @@ public class FunUtil {
 	public static <T> boolean isAll(Predicate<T> pred0, Source<T> source) {
 		var pred1 = Rethrow.predicate(pred0);
 		T t;
-		while ((t = source.source()) != null)
+		while ((t = source.g()) != null)
 			if (!pred1.test(t))
 				return false;
 		return true;
@@ -144,7 +144,7 @@ public class FunUtil {
 	public static <T> boolean isAny(Predicate<T> pred0, Source<T> source) {
 		var pred1 = Rethrow.predicate(pred0);
 		T t;
-		while ((t = source.source()) != null)
+		while ((t = source.g()) != null)
 			if (pred1.test(t))
 				return true;
 		return false;
@@ -156,7 +156,7 @@ public class FunUtil {
 
 			public boolean hasNext() {
 				if (next == null)
-					next = source.source();
+					next = source.g();
 				return next != null;
 			}
 
@@ -175,7 +175,7 @@ public class FunUtil {
 	public static <T0, T1> Source<T1> map(Fun<T0, T1> fun0, Source<T0> source) {
 		var fun1 = fun0.rethrow();
 		return () -> {
-			var t0 = source.source();
+			var t0 = source.g();
 			return t0 != null ? fun1.apply(t0) : null;
 		};
 	}
@@ -184,7 +184,7 @@ public class FunUtil {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
 		return pair -> {
-			var t = source.source();
+			var t = source.g();
 			boolean b = t != null;
 			if (b)
 				pair.update(kf1.apply(t), vf1.apply(t));
@@ -205,9 +205,9 @@ public class FunUtil {
 		return new Source<>() {
 			private boolean isAppended = false;
 
-			public T source() {
+			public T g() {
 				if (!isAppended) {
-					var t_ = source.source();
+					var t_ = source.g();
 					if (t_ != null)
 						return t_;
 					else {
@@ -227,11 +227,11 @@ public class FunUtil {
 	public static <T> Source<Source<T>> split(Predicate<T> fun0, Source<T> source) {
 		var fun1 = Rethrow.predicate(fun0);
 		return new Source<>() {
-			private T t = source.source();
+			private T t = source.g();
 			private boolean isAvail = t != null;
-			private Source<T> source_ = () -> (isAvail = isAvail && (t = source.source()) != null) && !fun1.test(t) ? t : null;
+			private Source<T> source_ = () -> (isAvail = isAvail && (t = source.g()) != null) && !fun1.test(t) ? t : null;
 
-			public Source<T> source() {
+			public Source<T> g() {
 				return isAvail ? cons(t, source_) : null;
 			}
 		};
@@ -246,7 +246,7 @@ public class FunUtil {
 
 		var thread = Thread_.startThread(() -> {
 			try {
-				fun.sink(enqueue);
+				fun.f(enqueue);
 			} finally {
 				enqueue(queue, null);
 			}

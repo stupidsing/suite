@@ -131,7 +131,7 @@ public class Chars implements Iterable<Character> {
 		return new ChrStreamlet(() -> ChrOutlet.of(new ChrSource() {
 			private int i = start;
 
-			public char source() {
+			public char g() {
 				return i < end ? cs[i++] : ChrFunUtil.EMPTYVALUE;
 			}
 		}));

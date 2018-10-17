@@ -131,7 +131,7 @@ public class Doubles implements Iterable<Double> {
 		return new DblStreamlet(() -> DblOutlet.of(new DblSource() {
 			private int i = start;
 
-			public double source() {
+			public double g() {
 				return i < end ? cs[i++] : DblFunUtil.EMPTYVALUE;
 			}
 		}));

@@ -45,8 +45,8 @@ public class Signal<T> {
 	public static <T> Signal<T> from(Source<T> source) {
 		return of(sink -> executor.submit(() -> {
 			T t;
-			while ((t = source.source()) != null)
-				sink.sink(t);
+			while ((t = source.g()) != null)
+				sink.f(t);
 		}));
 	}
 
@@ -54,28 +54,28 @@ public class Signal<T> {
 		Signal<T> signal = of();
 		T t;
 
-		executor.submit(() -> sink.sink(signal));
+		executor.submit(() -> sink.f(signal));
 
-		while ((t = source.source()) != null)
+		while ((t = source.g()) != null)
 			signal.fire(t);
 	}
 
 	public static <T, U, V> Signal<V> merge(Signal<T> n0, Signal<U> n1, Fun2<T, U, V> fun) {
 		return of(fire -> {
 			var cr = new CasReference<Pair<T, U>>(Pair.of(null, null));
-			Sink<Pair<T, U>> recalc = pair -> fire.sink(pair.map(fun));
-			n0.wire_(t -> recalc.sink(cr.apply(pair -> Pair.of(t, pair.t1))));
-			n1.wire_(u -> recalc.sink(cr.apply(pair -> Pair.of(pair.t0, u))));
+			Sink<Pair<T, U>> recalc = pair -> fire.f(pair.map(fun));
+			n0.wire_(t -> recalc.f(cr.apply(pair -> Pair.of(t, pair.t1))));
+			n1.wire_(u -> recalc.f(cr.apply(pair -> Pair.of(pair.t0, u))));
 		});
 	}
 
 	public static Signal<Object> ofFixed(int ms) {
-		return of(fire -> executor.scheduleAtFixedRate(() -> fire.sink(null), ms, ms, TimeUnit.MILLISECONDS));
+		return of(fire -> executor.scheduleAtFixedRate(() -> fire.f(null), ms, ms, TimeUnit.MILLISECONDS));
 	}
 
 	public static <T> Signal<T> of(Sink<Sink<T>> sink) {
 		Signal<T> signal = of();
-		sink.sink(signal::fire);
+		sink.f(signal::fire);
 		return signal;
 	}
 
@@ -96,7 +96,7 @@ public class Signal<T> {
 	}
 
 	public Signal<T> delay(int ms) {
-		return redirect_((t, fire) -> executor.schedule(() -> fire.sink(t), ms, TimeUnit.MILLISECONDS));
+		return redirect_((t, fire) -> executor.schedule(() -> fire.f(t), ms, TimeUnit.MILLISECONDS));
 	}
 
 	public Signal<T> delayAccum(int ms) {
@@ -106,7 +106,7 @@ public class Signal<T> {
 			al.set(current);
 			executor.schedule(() -> {
 				if (al.get() == current)
-					fire.sink(t);
+					fire.f(t);
 			}, ms, TimeUnit.MILLISECONDS);
 		});
 	}
@@ -117,7 +117,7 @@ public class Signal<T> {
 
 			public void accept(T t, Sink<T> fire) {
 				if (previous == null || !Objects.equals(previous, t))
-					fire.sink(t);
+					fire.f(t);
 			}
 		});
 	}
@@ -125,17 +125,17 @@ public class Signal<T> {
 	public Signal<T> filter(Predicate<T> pred) {
 		return redirect_((t, fire) -> {
 			if (pred.test(t))
-				fire.sink(t);
+				fire.f(t);
 		});
 	}
 
 	public void fire(T t) {
-		receivers.forEach(sink -> sink.sink(t));
+		receivers.forEach(sink -> sink.f(t));
 	}
 
 	public <U> Signal<U> fold(U init, Fun2<U, T, U> fun) {
 		var cr = new CasReference<U>(init);
-		return redirect_((t1, fire) -> fire.sink(cr.apply(t0 -> fun.apply(t0, t1))));
+		return redirect_((t1, fire) -> fire.f(cr.apply(t0 -> fun.apply(t0, t1))));
 	}
 
 	public Signal<T> level(int ms) {
@@ -143,7 +143,7 @@ public class Signal<T> {
 	}
 
 	public <U> Signal<U> map(Fun<T, U> fun) {
-		return redirect_((t, sink) -> sink.sink(fun.apply(t)));
+		return redirect_((t, sink) -> sink.f(fun.apply(t)));
 	}
 
 	public Outlet<T> outlet() {
@@ -159,14 +159,14 @@ public class Signal<T> {
 	public Signal<T> resample(Signal<?> event) {
 		var mut = Mutable.<T> nil();
 		wire_(mut::update);
-		return event.redirect_((e, fire) -> fire.sink(mut.value()));
+		return event.redirect_((e, fire) -> fire.f(mut.value()));
 	}
 
 	public Signal<T> unique() {
 		var set = new HashSet<>();
 		return redirect_((t, fire) -> {
 			if (set.add(t))
-				fire.sink(t);
+				fire.f(t);
 		});
 	}
 

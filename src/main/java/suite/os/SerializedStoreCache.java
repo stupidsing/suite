@@ -35,7 +35,7 @@ public class SerializedStoreCache<K, V> {
 
 	public V get(K key, Source<V> source) {
 		var keyBytes = serialize(keySerializer, key);
-		var valueBytes = storeCache.get(keyBytes, () -> serialize(valueSerializer, source.source()));
+		var valueBytes = storeCache.get(keyBytes, () -> serialize(valueSerializer, source.g()));
 
 		return rethrow(() -> {
 			try (var bais = new ByteArrayInputStream(valueBytes.toArray()); var dis = SerInput.of(bais)) {

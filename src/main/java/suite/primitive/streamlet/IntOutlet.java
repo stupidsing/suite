@@ -75,7 +75,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		return of(new IntSource() {
 			private int i = start;
 
-			public int source() {
+			public int g() {
 				var c = pred.test(i) ? ts[i] : EMPTYVALUE;
 				i += inc;
 				return c;
@@ -93,7 +93,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 
 	public static IntOutlet of(Source<Integer> source) {
 		return IntOutlet.of(() -> {
-			var c = source.source();
+			var c = source.g();
 			return c != null ? c : EMPTYVALUE;
 		});
 	}
@@ -161,7 +161,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 			private int c;
 			private int index = list.size();
 
-			public O source() {
+			public O g() {
 				if (index == list.size()) {
 					index = 0;
 					c = next();
@@ -193,7 +193,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		if (Object_.clazz(object) == IntOutlet.class) {
 			var source1 = ((IntOutlet) object).source;
 			int o0, o1;
-			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
+			while (Objects.equals(o0 = source.g(), o1 = source1.g()))
 				if (o0 == EMPTYVALUE && o1 == EMPTYVALUE)
 					return true;
 			return false;
@@ -232,7 +232,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	public int hashCode() {
 		var h = 7;
 		int c;
-		while ((c = source.source()) != EMPTYVALUE)
+		while ((c = source.g()) != EMPTYVALUE)
 			h = h * 31 + Objects.hashCode(c);
 		return h;
 	}
@@ -316,7 +316,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 	}
 
 	public int next() {
-		return source.source();
+		return source.g();
 	}
 
 	public IntOutlet nonBlock(int c0) {
@@ -325,7 +325,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		new Thread(() -> {
 			int c;
 			do
-				queue.offerQuietly(c = source.source());
+				queue.offerQuietly(c = source.g());
 			while (c != EMPTYVALUE);
 		}).start();
 
@@ -359,7 +359,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		var sink1 = sink0.rethrow();
 		int c;
 		while ((c = next()) != EMPTYVALUE)
-			sink1.sink(c);
+			sink1.f(c);
 	}
 
 	public IntOutlet skip(int n) {
@@ -396,7 +396,7 @@ public class IntOutlet implements OutletDefaults<Integer> {
 		return of(new IntSource() {
 			private int count = n;
 
-			public int source() {
+			public int g() {
 				return 0 < count-- ? next() : null;
 			}
 		});

@@ -78,7 +78,7 @@ public class SelfOrganizingMap {
 					findMin(index1);
 				}
 			} else
-				sink.sink(is);
+				sink.f(is);
 		}
 
 		private void updateNeighbours(int[] is0, int index) {
@@ -90,7 +90,7 @@ public class SelfOrganizingMap {
 					updateNeighbours(is0, index);
 				}
 			} else
-				sink.sink(is);
+				sink.f(is);
 		}
 	}
 

@@ -45,7 +45,7 @@ public class PredicateUtil {
 
 	public static BuiltinPredicate sink(Sink<Node> fun) {
 		return p1((prover, p0) -> {
-			fun.sink(p0);
+			fun.f(p0);
 			return true;
 		});
 	}

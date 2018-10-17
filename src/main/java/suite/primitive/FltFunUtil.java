@@ -26,11 +26,11 @@ public class FltFunUtil {
 
 	public static Source<FltSource> chunk(int n, FltSource source) {
 		return new Source<>() {
-			private float c = source.source();
+			private float c = source.g();
 			private boolean isAvail = c != EMPTYVALUE;
 			private int i;
 			private FltSource source_ = () -> {
-				if ((isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && ++i < n)
+				if ((isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && ++i < n)
 					return c;
 				else {
 					i = 0;
@@ -38,7 +38,7 @@ public class FltFunUtil {
 				}
 			};
 
-			public FltSource source() {
+			public FltSource g() {
 				return isAvail ? cons(c, source_) : null;
 			}
 		};
@@ -48,10 +48,10 @@ public class FltFunUtil {
 		return new FltSource() {
 			private FltSource source0 = nullSource();
 
-			public float source() {
+			public float g() {
 				var c = EMPTYVALUE;
-				while (source0 != null && (c = source0.source()) == EMPTYVALUE)
-					source0 = source.source();
+				while (source0 != null && (c = source0.g()) == EMPTYVALUE)
+					source0 = source.g();
 				return c;
 			}
 		};
@@ -61,9 +61,9 @@ public class FltFunUtil {
 		return new FltSource() {
 			private boolean isFirst = true;
 
-			public float source() {
+			public float g() {
 				if (!isFirst)
-					return source.source();
+					return source.g();
 				else {
 					isFirst = false;
 					return c;
@@ -76,7 +76,7 @@ public class FltFunUtil {
 		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = EMPTYVALUE;
-			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
+			while ((c = source.g()) != EMPTYVALUE && !fun1.test(c))
 				;
 			return c;
 		};
@@ -86,10 +86,10 @@ public class FltFunUtil {
 		return new FltSource() {
 			private Iterator<Float> iter = Collections.emptyIterator();
 
-			public float source() {
+			public float g() {
 				Iterable<Float> iterable;
 				while (!iter.hasNext())
-					if ((iterable = source.source()) != null)
+					if ((iterable = source.g()) != null)
 						iter = iterable.iterator();
 					else
 						return EMPTYVALUE;
@@ -101,7 +101,7 @@ public class FltFunUtil {
 	public static <R> R fold(Fun<FltObjPair<R>, R> fun0, R init, FltSource source) {
 		var fun1 = fun0.rethrow();
 		float c;
-		while ((c = source.source()) != EMPTYVALUE)
+		while ((c = source.g()) != EMPTYVALUE)
 			init = fun1.apply(FltObjPair.of(c, init));
 		return init;
 	}
@@ -109,7 +109,7 @@ public class FltFunUtil {
 	public static boolean isAll(FltTest pred0, FltSource source) {
 		var pred1 = pred0.rethrow();
 		float c;
-		while ((c = source.source()) != EMPTYVALUE)
+		while ((c = source.g()) != EMPTYVALUE)
 			if (!pred1.test(c))
 				return false;
 		return true;
@@ -118,7 +118,7 @@ public class FltFunUtil {
 	public static boolean isAny(FltTest pred0, FltSource source) {
 		var pred1 = pred0.rethrow();
 		float c;
-		while ((c = source.source()) != EMPTYVALUE)
+		while ((c = source.g()) != EMPTYVALUE)
 			if (pred1.test(c))
 				return true;
 		return false;
@@ -130,7 +130,7 @@ public class FltFunUtil {
 
 			public boolean hasNext() {
 				if (next == EMPTYVALUE)
-					next = source.source();
+					next = source.g();
 				return next != EMPTYVALUE;
 			}
 
@@ -150,7 +150,7 @@ public class FltFunUtil {
 	public static <T1> Source<T1> map(Flt_Obj<T1> fun0, FltSource source) {
 		var fun1 = fun0.rethrow();
 		return () -> {
-			var c0 = source.source();
+			var c0 = source.g();
 			return c0 != FltFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
@@ -159,7 +159,7 @@ public class FltFunUtil {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
 		return pair -> {
-			var c = source.source();
+			var c = source.g();
 			var b = c != EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
@@ -170,7 +170,7 @@ public class FltFunUtil {
 	public static FltSource mapFlt(Flt_Flt fun0, FltSource source) {
 		var fun1 = fun0.rethrow();
 		return () -> {
-			var c = source.source();
+			var c = source.g();
 			return c != FltFunUtil.EMPTYVALUE ? fun1.apply(c) : FltFunUtil.EMPTYVALUE;
 		};
 	}
@@ -178,7 +178,7 @@ public class FltFunUtil {
 	public static <V> FltObjSource<V> mapFltObj(Flt_Obj<V> fun0, FltSource source) {
 		var fun1 = fun0.rethrow();
 		return pair -> {
-			var c = source.source();
+			var c = source.g();
 			if (c != FltFunUtil.EMPTYVALUE) {
 				pair.update(c, fun1.apply(c));
 				return true;
@@ -201,9 +201,9 @@ public class FltFunUtil {
 		return new FltSource() {
 			private boolean isAppended = false;
 
-			public float source() {
+			public float g() {
 				if (!isAppended) {
-					var c_ = source.source();
+					var c_ = source.g();
 					if (c_ != EMPTYVALUE)
 						return c_;
 					else {
@@ -217,18 +217,17 @@ public class FltFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static Source<FltSource> split(FltTest fun0, FltSource source) {
 		var fun1 = fun0.rethrow();
 		return new Source<>() {
-			private float c = source.source();
+			private float c = source.g();
 			private boolean isAvail = c != EMPTYVALUE;
-			private FltSource source_ = () -> (isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && !fun1.test(c) ? c
-					: null;
+			private FltSource source_ = () -> (isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && !fun1.test(c) ? c : null;
 
-			public FltSource source() {
+			public FltSource g() {
 				return isAvail ? cons(c, source_) : null;
 			}
 		};
@@ -243,7 +242,7 @@ public class FltFunUtil {
 
 		var thread = Thread_.startThread(() -> {
 			try {
-				fun.sink(enqueue);
+				fun.f(enqueue);
 			} finally {
 				enqueue(queue, EMPTYVALUE);
 			}

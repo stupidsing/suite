@@ -49,7 +49,7 @@ public class Dump {
 		new Object() {
 			private void d(Object object, String suffix) {
 				if (object == null)
-					sink.sink("null");
+					sink.f("null");
 				else if (dumpedObjects.put(object, true) == null)
 					try {
 						d_(object);
@@ -57,47 +57,47 @@ public class Dump {
 						dumpedObjects.remove(object);
 					}
 				else
-					sink.sink("(recursed)");
-				sink.sink(suffix);
+					sink.f("(recursed)");
+				sink.f(suffix);
 			}
 
 			private void d_(Object object) {
 				var clazz = object.getClass();
 
 				if (clazz.isArray()) {
-					sink.sink("[");
+					sink.f("[");
 					for (var i = 0; i < Array.getLength(object); i++)
 						d(Array.get(object, i), ",");
-					sink.sink("]");
+					sink.f("]");
 				} else if (Util.isSimple(clazz))
-					sink.sink(object.toString());
+					sink.f(object.toString());
 				else
 					new Switch<Object>(object //
 					).doIf(Collection.class, collection -> {
-						sink.sink("[");
+						sink.f("[");
 						for (var object1 : collection)
 							d(object1, ",");
-						sink.sink("]");
+						sink.f("]");
 					}).doIf(Map.class, map -> {
-						sink.sink("{");
+						sink.f("{");
 						for (var e : ((Map<?, ?>) object).entrySet()) {
 							d(e.getKey(), ":");
 							d(e.getValue(), ",");
 						}
-						sink.sink("}");
+						sink.f("}");
 					}).doIf(MapInterface.class, mi -> {
-						sink.sink(mi.getClass().getSimpleName());
-						sink.sink("{");
+						sink.f(mi.getClass().getSimpleName());
+						sink.f("{");
 						for (var object1 : MapObject_.list(object))
 							d(object1, ",");
-						sink.sink("}");
+						sink.f("}");
 					}).doIf(Pair.class, pair -> {
-						sink.sink("<");
+						sink.f("<");
 						d(pair.t0, "|");
 						d(pair.t1, ">");
 					}).doIf(Object.class, o -> {
-						sink.sink(o.getClass().getSimpleName());
-						sink.sink("{");
+						sink.f(o.getClass().getSimpleName());
+						sink.f("{");
 						for (var pair : readers(object)) {
 							Object value;
 							try {
@@ -107,11 +107,11 @@ public class Dump {
 							}
 
 							if (value != null) {
-								sink.sink(pair.t0 + ":");
+								sink.f(pair.t0 + ":");
 								d(value, ",");
 							}
 						}
-						sink.sink("}");
+						sink.f("}");
 					}).nonNullResult();
 			}
 		}.d(node, "");
@@ -174,11 +174,11 @@ public class Dump {
 			}
 
 			private void d(String prefix, Object object, Class<?> clazz) {
-				sink.sink(prefix);
-				sink.sink(" =");
+				sink.f(prefix);
+				sink.f(" =");
 
 				if (object == null)
-					sink.sink(" null\n");
+					sink.f(" null\n");
 				else if (dumpedObjects.put(object, true) == null)
 					try {
 						d_(prefix, object, clazz);
@@ -186,17 +186,17 @@ public class Dump {
 						dumpedObjects.remove(object);
 					}
 				else
-					sink.sink(" <<recursed>>");
+					sink.f(" <<recursed>>");
 			}
 
 			private void d_(String prefix, Object object, Class<?> clazz) {
 				if (clazz == String.class)
-					sink.sink(" \"" + object + "\"");
+					sink.f(" \"" + object + "\"");
 
 				if (!Collection.class.isAssignableFrom(clazz))
-					sink.sink(" " + object);
+					sink.f(" " + object);
 
-				sink.sink(" [" + clazz.getSimpleName() + "]\n");
+				sink.f(" [" + clazz.getSimpleName() + "]\n");
 
 				var count = 0;
 
@@ -231,8 +231,8 @@ public class Dump {
 						try {
 							d(k, pair.t1.call());
 						} catch (Throwable ex) {
-							sink.sink(k + "()");
-							sink.sink(" caught " + ex + "\n");
+							sink.f(k + "()");
+							sink.f(" caught " + ex + "\n");
 						}
 					}
 			}

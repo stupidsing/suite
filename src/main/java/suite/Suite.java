@@ -137,7 +137,7 @@ public class Suite {
 		var libraries0 = libraries;
 		libraries = libraries_;
 		try {
-			return source.source();
+			return source.g();
 		} finally {
 			libraries = libraries0;
 		}

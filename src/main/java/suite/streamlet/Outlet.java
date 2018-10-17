@@ -118,7 +118,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 			private T t;
 			private int index = list.size();
 
-			public R source() {
+			public R g() {
 				if (index == list.size()) {
 					index = 0;
 					t = next();
@@ -150,7 +150,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 		if (Object_.clazz(object) == Outlet.class) {
 			var source1 = ((Outlet<?>) object).source;
 			Object o0, o1;
-			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
+			while (Objects.equals(o0 = source.g(), o1 = source1.g()))
 				if (o0 == null && o1 == null)
 					return true;
 			return false;
@@ -189,7 +189,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	public int hashCode() {
 		var h = 7;
 		T t;
-		while ((t = source.source()) != null)
+		while ((t = source.g()) != null)
 			h = h * 31 + Objects.hashCode(t);
 		return h;
 	}
@@ -253,7 +253,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 	}
 
 	public T next() {
-		return source.source();
+		return source.g();
 	}
 
 	public Outlet<T> nonBlocking(T t0) {
@@ -262,7 +262,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 		new Thread(() -> {
 			T t;
 			do
-				queue.offerQuietly(t = source.source());
+				queue.offerQuietly(t = source.g());
 			while (t != null);
 		}).start();
 
@@ -292,7 +292,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 		var sink1 = sink0.rethrow();
 		T t;
 		while ((t = next()) != null)
-			sink1.sink(t);
+			sink1.f(t);
 	}
 
 	public Outlet<T> skip(int n) {
@@ -326,7 +326,7 @@ public class Outlet<T> implements OutletDefaults<T> {
 		return of(new Source<>() {
 			private int count = n;
 
-			public T source() {
+			public T g() {
 				return 0 < count-- ? next() : null;
 			}
 		});

@@ -227,7 +227,7 @@ public class P4Emit {
 
 	public Block spawn(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
 		var em = new Emit(in);
-		sink.sink(em);
+		sink.f(em);
 
 		var block = new Block(em.in, em.instructions, out);
 		blocks.add(block);

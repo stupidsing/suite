@@ -4,6 +4,6 @@ import java.io.IOException;
 
 public interface IoSink<I> {
 
-	public void sink(I i) throws IOException;
+	public void f(I i) throws IOException;
 
 }

@@ -112,7 +112,7 @@ public class Matcher<T> {
 		var map = bindMapUtil.pattern(p).match(node);
 		return rethrow(() -> {
 			if (map != null) {
-				var t = ctor.source();
+				var t = ctor.g();
 				var clazz = t.getClass();
 				for (var e : map.entrySet())
 					clazz.getField(e.getKey().substring(1)).set(t, e.getValue());

@@ -300,7 +300,7 @@ public class ChrStreamlet implements StreamletDefaults<Character, ChrOutlet> {
 	}
 
 	private ChrOutlet spawn() {
-		return in.source();
+		return in.g();
 	}
 
 }

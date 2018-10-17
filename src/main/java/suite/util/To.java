@@ -64,7 +64,7 @@ public class To {
 	public static Bytes bytes(IoSink<SerOutput> ioSink) {
 		var baos = new ByteArrayOutputStream();
 		try (var baos_ = baos) {
-			ioSink.sink(SerOutput.of(baos_));
+			ioSink.f(SerOutput.of(baos_));
 		} catch (IOException ex) {
 			fail(ex);
 		}
@@ -177,7 +177,7 @@ public class To {
 		return new Source<>() {
 			private int i;
 
-			public T source() {
+			public T g() {
 				return i < array.length ? array[i++] : null;
 			}
 		};

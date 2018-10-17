@@ -64,7 +64,7 @@ public class WalkForwardAllocTester {
 		var priceBySymbol = cfg.quote(dsBySymbol.keySet());
 
 		for (var e : priceBySymbol.entrySet())
-			log.sink(time.ymdHms() + "," + e.getKey() + "," + e.getValue());
+			log.f(time.ymdHms() + "," + e.getKey() + "," + e.getValue());
 
 		return tick(time, priceBySymbol);
 	}

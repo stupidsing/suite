@@ -92,8 +92,8 @@ public class ChrSet {
 	public void forEach(ChrSink sink) {
 		var source = source_();
 		char c;
-		while ((c = source.source()) != EMPTYVALUE)
-			sink.sink(c);
+		while ((c = source.g()) != EMPTYVALUE)
+			sink.f(c);
 	}
 
 	@Override
@@ -167,7 +167,7 @@ public class ChrSet {
 			private int capacity = vs.length;
 			private int index = 0;
 
-			public char source() {
+			public char g() {
 				char v;
 				while (index < capacity)
 					if ((v = vs[index++]) != EMPTYVALUE)

@@ -45,7 +45,7 @@ public class LempelZivWelchTest {
 		Source<Byte> source0 = new Source<>() {
 			private int index;
 
-			public Byte source() {
+			public Byte g() {
 				return index < bs.length ? bs[index++] : null;
 			}
 		};
@@ -57,7 +57,7 @@ public class LempelZivWelchTest {
 		var bb = new BytesBuilder();
 		Byte b;
 
-		while ((b = source2.source()) != null)
+		while ((b = source2.g()) != null)
 			bb.append(b);
 
 		return To.string(bb.toBytes());

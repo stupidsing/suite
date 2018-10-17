@@ -26,7 +26,7 @@ public class BindMapUtil {
 	private Fun<String, Pattern> patterns = Memoize.fun(pattern_ -> {
 		var sg = new SewingGeneralizerImpl();
 		var sgs = sg.g(Suite.parse(pattern_));
-		var ne = sgs.source();
+		var ne = sgs.g();
 
 		var cb = new CompileBinderImpl(false);
 		var pred = cb.binder(ne.node);
@@ -44,7 +44,7 @@ public class BindMapUtil {
 			}
 
 			public Node subst(Map<String, Node> map_) {
-				var ne = sgs.source();
+				var ne = sgs.g();
 				var refs = ne.env.refs;
 				for (var e : map_.entrySet())
 					refs[sgm_.get(e.getKey())].bound(e.getValue());

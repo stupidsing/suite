@@ -44,7 +44,7 @@ public class Condition {
 				return null;
 		}
 
-		return after.source();
+		return after.g();
 	}
 
 }

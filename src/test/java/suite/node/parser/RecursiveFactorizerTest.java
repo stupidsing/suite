@@ -111,9 +111,8 @@ public class RecursiveFactorizerTest {
 			Fun<String, Fun<Boolean, Node>> fun = hs -> b -> {
 				Source<Node> g = To.source(r);
 				var head = terminalNode(hs);
-				var n0 = !b ? g.source()
-						: operatorNode(TermOp.TUPLE_, List.of(g.source(), terminalNode(" "), terminalNode(newArgument)));
-				var n1 = operatorNode(g, TermOp.TUPLE_, g.source(), n0);
+				var n0 = !b ? g.g() : operatorNode(TermOp.TUPLE_, List.of(g.g(), terminalNode(" "), terminalNode(newArgument)));
+				var n1 = operatorNode(g, TermOp.TUPLE_, g.g(), n0);
 				return operatorNode(g, TermOp.TUPLE_, head, n1);
 			};
 
@@ -143,7 +142,7 @@ public class RecursiveFactorizerTest {
 	}
 
 	private Node treeNode(Source<Node> g, Node name, List<Node> nodes) {
-		var pairs = Read.from(nodes).map(node -> pairNode(node, g.source())).toList();
+		var pairs = Read.from(nodes).map(node -> pairNode(node, g.g())).toList();
 
 		var map = new HashMap<Node, Reference>();
 		map.put(Atom.of("name"), Reference.of(name));

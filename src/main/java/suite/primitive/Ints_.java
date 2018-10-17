@@ -134,7 +134,7 @@ public class Ints_ {
 			this.outlet = outlet;
 		}
 
-		public Ints source() {
+		public Ints g() {
 			Ints in;
 			var cb = new IntsBuilder();
 			cb.append(buffer);

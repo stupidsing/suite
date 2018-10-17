@@ -105,9 +105,9 @@ public class Summarize {
 				.map((k, v) -> "\nFor strategy " + k + ":" + v);
 
 		for (var out : outs)
-			log.sink(out);
+			log.f(out);
 
-		log.sink(FormatUtil.tablize("\nOverall:\t" + Time.now().ymdHms() + overall.out1()));
+		log.f(FormatUtil.tablize("\nOverall:\t" + Time.now().ymdHms() + overall.out1()));
 
 		// profit and loss
 		var pnlByKey = sellAll(trades, priceBySymbol) //

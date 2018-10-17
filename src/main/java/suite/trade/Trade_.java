@@ -147,12 +147,12 @@ public class Trade_ {
 				return LngIntPair.of(t, tn.t1 + (trade != null ? trade.buySell : 0));
 			};
 
-			var tn1 = tradeSource.source();
+			var tn1 = tradeSource.g();
 
 			for (var dividend : dividends) {
 				while (tn1 != null && tn1.t0 < dividend.t0) {
 					tn.update(tn1.t0, tn1.t1);
-					tn1 = tradeSource.source();
+					tn1 = tradeSource.g();
 				}
 
 				var amount = tn.t1 * dividend.t1;

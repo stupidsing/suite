@@ -29,7 +29,7 @@ public interface Flt_Chr {
 			var source = outlet.source();
 			float c;
 			var result = (char) 0;
-			while ((c = source.source()) != FltFunUtil.EMPTYVALUE)
+			while ((c = source.g()) != FltFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;
 		};

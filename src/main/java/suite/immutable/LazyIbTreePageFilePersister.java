@@ -97,11 +97,11 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 						isInUse[pointer - start] = true;
 			};
 
-			use.sink(pointers);
+			use.f(pointers);
 
 			for (var pointer = end - 1; start <= pointer; pointer--)
 				if (isInUse[pointer - start])
-					use.sink(Read.from(pageFile.load(pointer).pairs).map(Pair::snd).toList());
+					use.f(Read.from(pageFile.load(pointer).pairs).map(Pair::snd).toList());
 
 			var map = new HashMap<Integer, Integer>();
 			var p1 = start;

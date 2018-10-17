@@ -31,8 +31,8 @@ public class Inspect {
 	}
 
 	/**
-	 * @return true if both input value objects are of the same class and having
-	 *         all fields equal.
+	 * @return true if both input value objects are of the same class and having all
+	 *         fields equal.
 	 */
 	public <T> boolean equals(T o0, T o1) {
 		return new ObjectSupport<>(this::values).equals(o0, o1);

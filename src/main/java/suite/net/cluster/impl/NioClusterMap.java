@@ -76,7 +76,7 @@ public class NioClusterMap<K, V> {
 
 			@SuppressWarnings("unchecked")
 			var value = (V) response.value;
-			okay.sink(value);
+			okay.f(value);
 		}, fail);
 	}
 
@@ -90,12 +90,12 @@ public class NioClusterMap<K, V> {
 
 			@SuppressWarnings("unchecked")
 			var value1 = (V) response.value;
-			okay.sink(value1);
+			okay.f(value1);
 		}, fail);
 	}
 
 	private void requestForResponse(String peer, Serializable request, Sink<Serializable> okay, Sink<IOException> fail) {
-		cluster.requestForResponse(peer, request, object -> okay.sink((Serializable) object), fail);
+		cluster.requestForResponse(peer, request, object -> okay.f((Serializable) object), fail);
 	}
 
 	private String getPeerByHash(K key) {

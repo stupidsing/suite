@@ -146,7 +146,7 @@ public class IntObjOutlet<V> implements OutletDefaults<IntObjPair<V>> {
 		return of(IntObjFunUtil.concat(IntObjFunUtil.map((k, v) -> {
 			var source = fun.apply(v).source();
 			return pair -> {
-				var value1 = source.source();
+				var value1 = source.g();
 				var b = value1 != null;
 				if (b)
 					pair.update(k, value1);

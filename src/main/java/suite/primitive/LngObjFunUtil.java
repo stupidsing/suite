@@ -41,7 +41,7 @@ public class LngObjFunUtil {
 				isAvail = source.source2(pair);
 			}
 
-			public LngObjSource<V> source() {
+			public LngObjSource<V> g() {
 				return isAvail ? cons(pair.t0, pair.t1, source_) : null;
 			}
 		};
@@ -54,7 +54,7 @@ public class LngObjFunUtil {
 			public boolean source2(LngObjPair<V> pair) {
 				var b = false;
 				while (source2 != null && !(b = source2.source2(pair)))
-					source2 = source.source();
+					source2 = source.g();
 				return b;
 			}
 		};
@@ -197,8 +197,8 @@ public class LngObjFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static <V> Source<LngObjSource<V>> split(LngObjPredicate<V> fun0, LngObjSource<V> source2) {
 		LngObjPredicate<V> fun1 = fun0.rethrow();
@@ -211,7 +211,7 @@ public class LngObjFunUtil {
 				isAvailable = source2.source2(pair);
 			}
 
-			public LngObjSource<V> source() {
+			public LngObjSource<V> g() {
 				return isAvailable ? cons(pair.t0, pair.t1, source2_) : null;
 			}
 		};
@@ -241,7 +241,7 @@ public class LngObjFunUtil {
 
 		var thread = Thread_.startThread(() -> {
 			try {
-				fun.sink(enqueue);
+				fun.f(enqueue);
 			} finally {
 				enqueue(queue, null);
 			}

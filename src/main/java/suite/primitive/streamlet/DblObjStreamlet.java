@@ -319,7 +319,7 @@ public class DblObjStreamlet<V> implements StreamletDefaults<DblObjPair<V>, DblO
 	}
 
 	private DblObjOutlet<V> spawn() {
-		return in.source();
+		return in.g();
 	}
 
 }

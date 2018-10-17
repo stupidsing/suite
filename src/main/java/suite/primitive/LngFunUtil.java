@@ -26,11 +26,11 @@ public class LngFunUtil {
 
 	public static Source<LngSource> chunk(int n, LngSource source) {
 		return new Source<>() {
-			private long c = source.source();
+			private long c = source.g();
 			private boolean isAvail = c != EMPTYVALUE;
 			private int i;
 			private LngSource source_ = () -> {
-				if ((isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && ++i < n)
+				if ((isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && ++i < n)
 					return c;
 				else {
 					i = 0;
@@ -38,7 +38,7 @@ public class LngFunUtil {
 				}
 			};
 
-			public LngSource source() {
+			public LngSource g() {
 				return isAvail ? cons(c, source_) : null;
 			}
 		};
@@ -48,10 +48,10 @@ public class LngFunUtil {
 		return new LngSource() {
 			private LngSource source0 = nullSource();
 
-			public long source() {
+			public long g() {
 				var c = EMPTYVALUE;
-				while (source0 != null && (c = source0.source()) == EMPTYVALUE)
-					source0 = source.source();
+				while (source0 != null && (c = source0.g()) == EMPTYVALUE)
+					source0 = source.g();
 				return c;
 			}
 		};
@@ -61,9 +61,9 @@ public class LngFunUtil {
 		return new LngSource() {
 			private boolean isFirst = true;
 
-			public long source() {
+			public long g() {
 				if (!isFirst)
-					return source.source();
+					return source.g();
 				else {
 					isFirst = false;
 					return c;
@@ -76,7 +76,7 @@ public class LngFunUtil {
 		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = EMPTYVALUE;
-			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
+			while ((c = source.g()) != EMPTYVALUE && !fun1.test(c))
 				;
 			return c;
 		};
@@ -86,10 +86,10 @@ public class LngFunUtil {
 		return new LngSource() {
 			private Iterator<Long> iter = Collections.emptyIterator();
 
-			public long source() {
+			public long g() {
 				Iterable<Long> iterable;
 				while (!iter.hasNext())
-					if ((iterable = source.source()) != null)
+					if ((iterable = source.g()) != null)
 						iter = iterable.iterator();
 					else
 						return EMPTYVALUE;
@@ -101,7 +101,7 @@ public class LngFunUtil {
 	public static <R> R fold(Fun<LngObjPair<R>, R> fun0, R init, LngSource source) {
 		var fun1 = fun0.rethrow();
 		long c;
-		while ((c = source.source()) != EMPTYVALUE)
+		while ((c = source.g()) != EMPTYVALUE)
 			init = fun1.apply(LngObjPair.of(c, init));
 		return init;
 	}
@@ -109,7 +109,7 @@ public class LngFunUtil {
 	public static boolean isAll(LngTest pred0, LngSource source) {
 		var pred1 = pred0.rethrow();
 		long c;
-		while ((c = source.source()) != EMPTYVALUE)
+		while ((c = source.g()) != EMPTYVALUE)
 			if (!pred1.test(c))
 				return false;
 		return true;
@@ -118,7 +118,7 @@ public class LngFunUtil {
 	public static boolean isAny(LngTest pred0, LngSource source) {
 		var pred1 = pred0.rethrow();
 		long c;
-		while ((c = source.source()) != EMPTYVALUE)
+		while ((c = source.g()) != EMPTYVALUE)
 			if (pred1.test(c))
 				return true;
 		return false;
@@ -130,7 +130,7 @@ public class LngFunUtil {
 
 			public boolean hasNext() {
 				if (next == EMPTYVALUE)
-					next = source.source();
+					next = source.g();
 				return next != EMPTYVALUE;
 			}
 
@@ -150,7 +150,7 @@ public class LngFunUtil {
 	public static <T1> Source<T1> map(Lng_Obj<T1> fun0, LngSource source) {
 		var fun1 = fun0.rethrow();
 		return () -> {
-			var c0 = source.source();
+			var c0 = source.g();
 			return c0 != LngFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
@@ -159,7 +159,7 @@ public class LngFunUtil {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
 		return pair -> {
-			var c = source.source();
+			var c = source.g();
 			var b = c != EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
@@ -170,7 +170,7 @@ public class LngFunUtil {
 	public static LngSource mapLng(Lng_Lng fun0, LngSource source) {
 		var fun1 = fun0.rethrow();
 		return () -> {
-			var c = source.source();
+			var c = source.g();
 			return c != LngFunUtil.EMPTYVALUE ? fun1.apply(c) : LngFunUtil.EMPTYVALUE;
 		};
 	}
@@ -178,7 +178,7 @@ public class LngFunUtil {
 	public static <V> LngObjSource<V> mapLngObj(Lng_Obj<V> fun0, LngSource source) {
 		var fun1 = fun0.rethrow();
 		return pair -> {
-			var c = source.source();
+			var c = source.g();
 			if (c != LngFunUtil.EMPTYVALUE) {
 				pair.update(c, fun1.apply(c));
 				return true;
@@ -201,9 +201,9 @@ public class LngFunUtil {
 		return new LngSource() {
 			private boolean isAppended = false;
 
-			public long source() {
+			public long g() {
 				if (!isAppended) {
-					var c_ = source.source();
+					var c_ = source.g();
 					if (c_ != EMPTYVALUE)
 						return c_;
 					else {
@@ -217,18 +217,17 @@ public class LngFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static Source<LngSource> split(LngTest fun0, LngSource source) {
 		var fun1 = fun0.rethrow();
 		return new Source<>() {
-			private long c = source.source();
+			private long c = source.g();
 			private boolean isAvail = c != EMPTYVALUE;
-			private LngSource source_ = () -> (isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && !fun1.test(c) ? c
-					: null;
+			private LngSource source_ = () -> (isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && !fun1.test(c) ? c : null;
 
-			public LngSource source() {
+			public LngSource g() {
 				return isAvail ? cons(c, source_) : null;
 			}
 		};
@@ -243,7 +242,7 @@ public class LngFunUtil {
 
 		var thread = Thread_.startThread(() -> {
 			try {
-				fun.sink(enqueue);
+				fun.f(enqueue);
 			} finally {
 				enqueue(queue, EMPTYVALUE);
 			}

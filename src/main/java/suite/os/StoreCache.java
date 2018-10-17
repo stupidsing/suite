@@ -72,7 +72,7 @@ public class StoreCache {
 		var reget0 = reget.get();
 		try {
 			reget.set(true);
-			return source.source();
+			return source.g();
 		} finally {
 			reget.set(reget0);
 		}
@@ -87,7 +87,7 @@ public class StoreCache {
 	}
 
 	public Bytes get(Bytes key, Source<Bytes> source) {
-		var outlet = getOutlet(key, () -> Outlet.<Bytes> of(source.source()));
+		var outlet = getOutlet(key, () -> Outlet.<Bytes> of(source.g()));
 		return outlet.collect(Bytes::of);
 	}
 
@@ -122,7 +122,7 @@ public class StoreCache {
 				var vdis = new DataInputStream(vis);
 				return read(vdis).closeAtEnd(vis);
 			} else {
-				var outlet = source.source();
+				var outlet = source.g();
 				var vos = FileUtil.out(pair.t1);
 				var vdo = SerOutput.of(vos);
 
@@ -185,7 +185,7 @@ public class StoreCache {
 		return Outlet.of(new Source<Bytes>() {
 			private boolean cont = true;
 
-			public Bytes source() {
+			public Bytes g() {
 				return rethrow(() -> {
 					if (cont) {
 						var vb = new byte[Defaults.bufferSize];

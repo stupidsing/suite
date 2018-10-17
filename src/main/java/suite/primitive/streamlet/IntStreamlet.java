@@ -300,7 +300,7 @@ public class IntStreamlet implements StreamletDefaults<Integer, IntOutlet> {
 	}
 
 	private IntOutlet spawn() {
-		return in.source();
+		return in.g();
 	}
 
 }

@@ -52,11 +52,11 @@ public class CommandOptions {
 			isLazy = !on;
 		else if (String_.equals(arg, "--editor"))
 			EditorMain.main(null);
-		else if (String_.equals(arg, "--imports") && (arg1 = source.source()) != null)
+		else if (String_.equals(arg, "--imports") && (arg1 = source.g()) != null)
 			imports = List.of(arg1.split(","));
 		else if (String_.equals(arg, "--lazy"))
 			isLazy = on;
-		else if (String_.equals(arg, "--libraries") && (arg1 = source.source()) != null)
+		else if (String_.equals(arg, "--libraries") && (arg1 = source.g()) != null)
 			libraries = List.of(arg1.split(","));
 		else if (arg.startsWith("--no-"))
 			b &= processOption("--" + arg.substring(5), source, false);
@@ -64,7 +64,7 @@ public class CommandOptions {
 			isQuiet = on;
 		else if (String_.equals(arg, "--trace"))
 			isTrace = on;
-		else if (String_.equals(arg, "--use") && (arg1 = source.source()) != null)
+		else if (String_.equals(arg, "--use") && (arg1 = source.g()) != null)
 			libraries = List_.concat(libraries, List.of(arg1.split(",")));
 		else
 			fail("unknown option " + arg);

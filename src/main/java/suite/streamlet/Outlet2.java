@@ -137,7 +137,7 @@ public class Outlet2<K, V> implements OutletDefaults<Pair<K, V>> {
 		return of(FunUtil2.concat(FunUtil2.map((k, v) -> {
 			var source = fun.apply(v).source();
 			return pair -> {
-				var value1 = source.source();
+				var value1 = source.g();
 				var b = value1 != null;
 				if (b)
 					pair.update(k, value1);

@@ -121,7 +121,7 @@ public class Prover {
 				default:
 				}
 			} else if (query instanceof Data) {
-				query = isSuccess(Data.<Source<Boolean>> get(query).source());
+				query = isSuccess(Data.<Source<Boolean>> get(query).g());
 				continue;
 			}
 

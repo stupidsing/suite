@@ -80,10 +80,10 @@ public class NioCluster implements Closeable {
 			var req = NetUtil.serialize(request);
 			nd.new Requester(peers.get(peer)).request(req, rsp -> {
 				var response = NetUtil.deserialize(rsp);
-				okay.sink(response);
+				okay.f(response);
 			});
 		} else
-			fail.sink(new IOException("peer " + peer + " is not active"));
+			fail.f(new IOException("peer " + peer + " is not active"));
 	}
 
 	public void run() {

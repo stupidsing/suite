@@ -75,7 +75,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 		return of(new DblSource() {
 			private int i = start;
 
-			public double source() {
+			public double g() {
 				var c = pred.test(i) ? ts[i] : EMPTYVALUE;
 				i += inc;
 				return c;
@@ -93,7 +93,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 
 	public static DblOutlet of(Source<Double> source) {
 		return DblOutlet.of(() -> {
-			var c = source.source();
+			var c = source.g();
 			return c != null ? c : EMPTYVALUE;
 		});
 	}
@@ -161,7 +161,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 			private double c;
 			private int index = list.size();
 
-			public O source() {
+			public O g() {
 				if (index == list.size()) {
 					index = 0;
 					c = next();
@@ -193,7 +193,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 		if (Object_.clazz(object) == DblOutlet.class) {
 			var source1 = ((DblOutlet) object).source;
 			double o0, o1;
-			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
+			while (Objects.equals(o0 = source.g(), o1 = source1.g()))
 				if (o0 == EMPTYVALUE && o1 == EMPTYVALUE)
 					return true;
 			return false;
@@ -232,7 +232,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	public int hashCode() {
 		var h = 7;
 		double c;
-		while ((c = source.source()) != EMPTYVALUE)
+		while ((c = source.g()) != EMPTYVALUE)
 			h = h * 31 + Objects.hashCode(c);
 		return h;
 	}
@@ -316,7 +316,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 	}
 
 	public double next() {
-		return source.source();
+		return source.g();
 	}
 
 	public DblOutlet nonBlock(double c0) {
@@ -325,7 +325,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 		new Thread(() -> {
 			double c;
 			do
-				queue.offerQuietly(c = source.source());
+				queue.offerQuietly(c = source.g());
 			while (c != EMPTYVALUE);
 		}).start();
 
@@ -359,7 +359,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 		var sink1 = sink0.rethrow();
 		double c;
 		while ((c = next()) != EMPTYVALUE)
-			sink1.sink(c);
+			sink1.f(c);
 	}
 
 	public DblOutlet skip(int n) {
@@ -396,7 +396,7 @@ public class DblOutlet implements OutletDefaults<Double> {
 		return of(new DblSource() {
 			private int count = n;
 
-			public double source() {
+			public double g() {
 				return 0 < count-- ? next() : null;
 			}
 		});

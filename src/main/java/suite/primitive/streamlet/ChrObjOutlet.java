@@ -146,7 +146,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 		return of(ChrObjFunUtil.concat(ChrObjFunUtil.map((k, v) -> {
 			var source = fun.apply(v).source();
 			return pair -> {
-				var value1 = source.source();
+				var value1 = source.g();
 				var b = value1 != null;
 				if (b)
 					pair.update(k, value1);

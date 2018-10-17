@@ -63,7 +63,7 @@ public class IList<T> implements Iterable<T> {
 		return FunUtil.iterator(new Source<>() {
 			private IList<T> current = IList.this;
 
-			public T source() {
+			public T g() {
 				T t;
 				if (current != end) {
 					t = current.head;
@@ -94,7 +94,7 @@ public class IList<T> implements Iterable<T> {
 		return new Streamlet<>(() -> Outlet.of(new Source<T>() {
 			private IList<T> list = IList.this;
 
-			public T source() {
+			public T g() {
 				if (list != null) {
 					var t = list.head;
 					list = list.tail;

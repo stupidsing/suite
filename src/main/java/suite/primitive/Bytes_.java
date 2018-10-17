@@ -65,7 +65,7 @@ public class Bytes_ {
 			this.outlet = outlet;
 		}
 
-		public Bytes source() {
+		public Bytes g() {
 			Bytes in;
 			var bb = new BytesBuilder();
 			bb.append(buffer);

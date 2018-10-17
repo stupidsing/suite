@@ -56,7 +56,7 @@ public class Schedule {
 
 	public Schedule filterTime(Predicate<LocalDateTime> pred) {
 		return Schedule.of(nextRunDateTime, () -> Read //
-				.from(run.source()) //
+				.from(run.g()) //
 				.map(schedule -> {
 					var t = schedule.nextRunDateTime;
 					while (!pred.test(t))

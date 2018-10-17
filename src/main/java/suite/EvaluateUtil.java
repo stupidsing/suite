@@ -56,7 +56,7 @@ public class EvaluateUtil {
 
 	public boolean proveLogic(Builder builder, RuleSet rs, Node lp) {
 		Node goal = Suite.substitute(".0, sink ()", lp);
-		return evaluateLogic(builder, rs, goal).source() != null;
+		return evaluateLogic(builder, rs, goal).g() != null;
 	}
 
 	public Source<Node> evaluateLogic(Builder builder, RuleSet rs, Node lp) {
@@ -72,7 +72,7 @@ public class EvaluateUtil {
 
 	public void evaluateCallback(FunCompilerCfg fcc, IoSink<FunInstructionExecutor> sink) throws IOException {
 		try (var executor = configureFunExecutor(fcc)) {
-			sink.sink(executor);
+			sink.f(executor);
 		}
 	}
 

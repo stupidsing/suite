@@ -298,7 +298,7 @@ public class Streamlet2<K, V> implements StreamletDefaults<Pair<K, V>, Outlet2<K
 	}
 
 	private Outlet2<K, V> spawn() {
-		return in.source();
+		return in.g();
 	}
 
 }

@@ -89,11 +89,11 @@ public class IoPredicates {
 	public BuiltinPredicate log = PredicateUtil.sink(n -> LogUtil.info(Formatter.dump(n)));
 
 	public BuiltinPredicate sink = PredicateUtil.p1((prover, p0) -> {
-		prover.config().getSink().sink(p0);
+		prover.config().getSink().f(p0);
 		return false;
 	});
 
-	public BuiltinPredicate source = PredicateUtil.p1((prover, p0) -> prover.bind(p0, prover.config().getSource().source()));
+	public BuiltinPredicate source = PredicateUtil.p1((prover, p0) -> prover.bind(p0, prover.config().getSource().g()));
 
 	public BuiltinPredicate throwPredicate = PredicateUtil.sink(n -> {
 		throw new SuiteException(new Cloner().clone(n));

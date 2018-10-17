@@ -29,7 +29,7 @@ public interface Lng_Lng {
 			var source = outlet.source();
 			long c;
 			var result = (long) 0;
-			while ((c = source.source()) != LngFunUtil.EMPTYVALUE)
+			while ((c = source.g()) != LngFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;
 		};

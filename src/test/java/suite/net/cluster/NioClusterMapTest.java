@@ -62,9 +62,9 @@ public class NioClusterMapTest {
 
 		Source<NioClusterMap<Integer, String>> peerf = () -> clMap.get(peerNames.get(random.nextInt(nNodes)));
 
-		Int_Obj<Sink<Runnable>> setf = i -> cont -> peerf.source().set(i, Integer.toString(i), v0 -> cont.run(), fail);
+		Int_Obj<Sink<Runnable>> setf = i -> cont -> peerf.g().set(i, Integer.toString(i), v0 -> cont.run(), fail);
 
-		Int_Obj<Sink<Runnable>> getf = i -> cont -> peerf.source().get(i, v -> {
+		Int_Obj<Sink<Runnable>> getf = i -> cont -> peerf.g().get(i, v -> {
 			assertEquals(Integer.toString(i), v);
 			cont.run();
 		}, fail);
@@ -87,7 +87,7 @@ public class NioClusterMapTest {
 		new Object() {
 			public void run(int i) {
 				if (i < sinks.size())
-					sinks.get(i).sink(() -> run(i + 1));
+					sinks.get(i).f(() -> run(i + 1));
 			}
 		}.run(0);
 

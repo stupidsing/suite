@@ -144,7 +144,7 @@ public class P2InferType {
 		var checks = new ArrayList<Source<Boolean>>();
 
 		if (unify(t, new Infer(IMap.empty(), checks, null).infer(n2))) {
-			if (!Read.from(checks).isAll(Source<Boolean>::source))
+			if (!Read.from(checks).isAll(Source<Boolean>::g))
 				fail();
 
 			var erase = new Erase(0, IMap.empty(), null);

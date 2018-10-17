@@ -39,7 +39,7 @@ public class WriteStream extends OutputStream {
 	public void doPrintWriter(SinkEx<PrintWriter, IOException> sink) {
 		doWriter(w -> {
 			try (var pw = new PrintWriter(w)) {
-				sink.sink(pw);
+				sink.f(pw);
 			}
 		});
 	}
@@ -47,14 +47,14 @@ public class WriteStream extends OutputStream {
 	public void doWriter(SinkEx<OutputStreamWriter, IOException> sink) {
 		doWrite(os -> {
 			try (var w = new OutputStreamWriter(os, Defaults.charset)) {
-				sink.sink(w);
+				sink.f(w);
 			}
 		});
 	}
 
 	public void doWrite(SinkEx<WriteStream, IOException> sink) {
 		try (var os = this) {
-			sink.sink(os);
+			sink.f(os);
 		} catch (IOException ex) {
 			fail(ex);
 		}

@@ -319,7 +319,7 @@ public class LngObjStreamlet<V> implements StreamletDefaults<LngObjPair<V>, LngO
 	}
 
 	private LngObjOutlet<V> spawn() {
-		return in.source();
+		return in.g();
 	}
 
 }

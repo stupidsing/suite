@@ -300,7 +300,7 @@ public class LngStreamlet implements StreamletDefaults<Long, LngOutlet> {
 	}
 
 	private LngOutlet spawn() {
-		return in.source();
+		return in.g();
 	}
 
 }

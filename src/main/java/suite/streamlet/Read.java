@@ -82,7 +82,7 @@ public class Read {
 	}
 
 	public static <T> Streamlet<T> from(Source<Source<T>> source) {
-		return new Streamlet<>(() -> Outlet.of(source.source()));
+		return new Streamlet<>(() -> Outlet.of(source.g()));
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(Map<K, V> map) {
@@ -94,7 +94,7 @@ public class Read {
 	}
 
 	public static <K, V> Streamlet2<K, V> from2(Source<Source2<K, V>> source) {
-		return new Streamlet2<>(() -> Outlet2.of(source.source()));
+		return new Streamlet2<>(() -> Outlet2.of(source.g()));
 	}
 
 	public static Streamlet<String> lines(Path path) {

@@ -134,7 +134,7 @@ public class Floats_ {
 			this.outlet = outlet;
 		}
 
-		public Floats source() {
+		public Floats g() {
 			Floats in;
 			var cb = new FloatsBuilder();
 			cb.append(buffer);

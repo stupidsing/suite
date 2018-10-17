@@ -50,9 +50,9 @@ public class LempelZivWelch<Unit> {
 		var trie = root;
 		Unit unit;
 
-		while ((unit = source.source()) != null) {
+		while ((unit = source.g()) != null) {
 			if (!trie.branches.containsKey(unit)) {
-				sink.sink(trie.index);
+				sink.f(trie.index);
 				trie.branches.put(unit, new Trie(index++));
 				trie = root;
 			}
@@ -61,7 +61,7 @@ public class LempelZivWelch<Unit> {
 		}
 
 		if (trie != root)
-			sink.sink(trie.index);
+			sink.f(trie.index);
 	}
 
 	private void decode(Source<Integer> source, Sink<Unit> sink) {
@@ -72,13 +72,13 @@ public class LempelZivWelch<Unit> {
 
 		Integer index;
 
-		if ((index = source.source()) != null) {
+		if ((index = source.g()) != null) {
 			List<Unit> word;
 
 			for (var unit : word = dict.get(index))
-				sink.sink(unit);
+				sink.f(unit);
 
-			while ((index = source.source()) != null) {
+			while ((index = source.g()) != null) {
 				var word0 = word;
 				List<Unit> newWord;
 
@@ -90,7 +90,7 @@ public class LempelZivWelch<Unit> {
 				dict.add(newWord);
 
 				for (var unit : word)
-					sink.sink(unit);
+					sink.f(unit);
 			}
 		}
 	}

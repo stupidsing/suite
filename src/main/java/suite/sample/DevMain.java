@@ -188,7 +188,7 @@ public class DevMain {
 				})));
 
 		termios.clear();
-		redraw.sink(state0);
+		redraw.f(state0);
 
 		keyboard.loop(signal -> signal //
 				.fold(state0, (state, pair_) -> pair_.map((vk, ch) -> mutateState.apply(vk, ch, state))) //
@@ -278,10 +278,10 @@ public class DevMain {
 		for (var p = 0; p < size; p++) {
 			var ch = text.get.apply(p);
 			if (ch == '\n' || wrapSize < p - p0.value())
-				lf.sink(p);
+				lf.f(p);
 		}
 		if (1 < size - p0.value())
-			lf.sink(size);
+			lf.f(size);
 		return new Text(text, starts.toInts().toArray(), ends.toInts().toArray());
 	}
 

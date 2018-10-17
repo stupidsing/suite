@@ -75,7 +75,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		return of(new ChrSource() {
 			private int i = start;
 
-			public char source() {
+			public char g() {
 				var c = pred.test(i) ? ts[i] : EMPTYVALUE;
 				i += inc;
 				return c;
@@ -93,7 +93,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 
 	public static ChrOutlet of(Source<Character> source) {
 		return ChrOutlet.of(() -> {
-			var c = source.source();
+			var c = source.g();
 			return c != null ? c : EMPTYVALUE;
 		});
 	}
@@ -161,7 +161,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 			private char c;
 			private int index = list.size();
 
-			public O source() {
+			public O g() {
 				if (index == list.size()) {
 					index = 0;
 					c = next();
@@ -193,7 +193,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		if (Object_.clazz(object) == ChrOutlet.class) {
 			var source1 = ((ChrOutlet) object).source;
 			char o0, o1;
-			while (Objects.equals(o0 = source.source(), o1 = source1.source()))
+			while (Objects.equals(o0 = source.g(), o1 = source1.g()))
 				if (o0 == EMPTYVALUE && o1 == EMPTYVALUE)
 					return true;
 			return false;
@@ -232,7 +232,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	public int hashCode() {
 		var h = 7;
 		char c;
-		while ((c = source.source()) != EMPTYVALUE)
+		while ((c = source.g()) != EMPTYVALUE)
 			h = h * 31 + Objects.hashCode(c);
 		return h;
 	}
@@ -316,7 +316,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 	}
 
 	public char next() {
-		return source.source();
+		return source.g();
 	}
 
 	public ChrOutlet nonBlock(char c0) {
@@ -325,7 +325,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		new Thread(() -> {
 			char c;
 			do
-				queue.offerQuietly(c = source.source());
+				queue.offerQuietly(c = source.g());
 			while (c != EMPTYVALUE);
 		}).start();
 
@@ -359,7 +359,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		var sink1 = sink0.rethrow();
 		char c;
 		while ((c = next()) != EMPTYVALUE)
-			sink1.sink(c);
+			sink1.f(c);
 	}
 
 	public ChrOutlet skip(int n) {
@@ -396,7 +396,7 @@ public class ChrOutlet implements OutletDefaults<Character> {
 		return of(new ChrSource() {
 			private int count = n;
 
-			public char source() {
+			public char g() {
 				return 0 < count-- ? next() : null;
 			}
 		});

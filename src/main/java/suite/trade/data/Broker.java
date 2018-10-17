@@ -23,7 +23,7 @@ public interface Broker {
 	// https://www.personal.hsbc.com.hk/1/2/hk/investments/stocks/detail
 	public class Hsbc implements Broker { // bloodsucker
 		public Streamlet<Trade> queryHistory() {
-			return memoizeHistoryRecords.source();
+			return memoizeHistoryRecords.g();
 		}
 
 		private static Source<Streamlet<Trade>> memoizeHistoryRecords = Memoize.source(Hsbc::queryHistory_);

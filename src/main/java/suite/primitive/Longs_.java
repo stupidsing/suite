@@ -134,7 +134,7 @@ public class Longs_ {
 			this.outlet = outlet;
 		}
 
-		public Longs source() {
+		public Longs g() {
 			Longs in;
 			var cb = new LongsBuilder();
 			cb.append(buffer);

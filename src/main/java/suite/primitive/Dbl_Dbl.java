@@ -29,7 +29,7 @@ public interface Dbl_Dbl {
 			var source = outlet.source();
 			double c;
 			var result = (double) 0;
-			while ((c = source.source()) != DblFunUtil.EMPTYVALUE)
+			while ((c = source.g()) != DblFunUtil.EMPTYVALUE)
 				result += fun1.apply(c);
 			return result;
 		};

@@ -147,10 +147,10 @@ public class Amd64Interpret {
 
 				switch (instruction.insn) {
 				case ADD:
-					assign.sink(setFlags(source0 + source1));
+					assign.f(setFlags(source0 + source1));
 					break;
 				case AND:
-					assign.sink(setFlags(source0 & source1));
+					assign.f(setFlags(source0 & source1));
 					break;
 				case CALL:
 					push(eip);
@@ -168,7 +168,7 @@ public class Amd64Interpret {
 					cmpsd();
 					break;
 				case DEC:
-					assign.sink(source0 - 1);
+					assign.f(source0 - 1);
 					break;
 				case IDIV:
 					var n = ((long) regs[edx] << 32) + regs[eax];
@@ -178,10 +178,10 @@ public class Amd64Interpret {
 					regs[edx] = (int) mod;
 					break;
 				case INC:
-					assign.sink(source0 + 1);
+					assign.f(source0 + 1);
 					break;
 				case IMUL:
-					assign.sink(setFlags(source0 * source1));
+					assign.f(setFlags(source0 * source1));
 					break;
 				case INT:
 					var p0 = regs[eax] & 0xFF;
@@ -205,7 +205,7 @@ public class Amd64Interpret {
 							var bs = new byte[length];
 							for (var i = 0; i < length; i++)
 								bs[i] = mem.get(si++);
-							output.sink(Bytes.of(bs));
+							output.f(Bytes.of(bs));
 							rc = length;
 						} else if (regs[eax] == 0x5A) { // map
 							var size = mem.getInt(index(p1) + 4);
@@ -254,13 +254,13 @@ public class Amd64Interpret {
 				case LABEL:
 					break;
 				case LEA:
-					assign.sink(address((OpMem) op1));
+					assign.f(address((OpMem) op1));
 					break;
 				case LOG:
 					LogUtil.info("value = " + source0);
 					break;
 				case MOV:
-					assign.sink(source1);
+					assign.f(source1);
 					break;
 				case MOVSB:
 					movsb();
@@ -269,10 +269,10 @@ public class Amd64Interpret {
 					movsd();
 					break;
 				case OR:
-					assign.sink(setFlags(source0 | source1));
+					assign.f(setFlags(source0 | source1));
 					break;
 				case POP:
-					assign.sink(pop());
+					assign.f(pop());
 					break;
 				case PUSH:
 					push(source0);
@@ -302,28 +302,28 @@ public class Amd64Interpret {
 					eip = pop();
 					break;
 				case SETE:
-					assign.sink(c == 0 ? 1 : 0);
+					assign.f(c == 0 ? 1 : 0);
 					break;
 				case SETG:
-					assign.sink(0 < c ? 1 : 0);
+					assign.f(0 < c ? 1 : 0);
 					break;
 				case SETGE:
-					assign.sink(0 <= c ? 1 : 0);
+					assign.f(0 <= c ? 1 : 0);
 					break;
 				case SETL:
-					assign.sink(c < 0 ? 1 : 0);
+					assign.f(c < 0 ? 1 : 0);
 					break;
 				case SETLE:
-					assign.sink(c <= 0 ? 1 : 0);
+					assign.f(c <= 0 ? 1 : 0);
 					break;
 				case SETNE:
-					assign.sink(c != 0 ? 1 : 0);
+					assign.f(c != 0 ? 1 : 0);
 					break;
 				case SUB:
-					assign.sink(setFlags(source0 - source1));
+					assign.f(setFlags(source0 - source1));
 					break;
 				case XOR:
-					assign.sink(setFlags(source0 ^ source1));
+					assign.f(setFlags(source0 ^ source1));
 					break;
 				default:
 					fail();

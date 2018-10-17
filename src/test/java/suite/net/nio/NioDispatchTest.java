@@ -80,9 +80,9 @@ public class NioDispatchTest {
 
 	private Closeable listen(NioDispatch dispatch) throws IOException {
 		return dispatch.asyncListen(port, new Sink<>() {
-			public void sink(AsyncRw rw) {
+			public void f(AsyncRw rw) {
 				var buffer = dispatch.new Buffer(rw);
-				buffer.readLine(lf, bytes -> buffer.writeAll(Bytes.concat(bytes, lfs), v -> sink(rw), fail), fail);
+				buffer.readLine(lf, bytes -> buffer.writeAll(Bytes.concat(bytes, lfs), v -> f(rw), fail), fail);
 			}
 		});
 	}

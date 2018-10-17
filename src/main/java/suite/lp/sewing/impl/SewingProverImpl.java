@@ -590,7 +590,7 @@ public class SewingProverImpl implements ProverFactory {
 		} else if ((m = Suite.pattern("throw .0").match(node)) != null) {
 			var f = bf.cloner(m[0]);
 			tr = rt -> {
-				rt.handler.sink(new Cloner().clone(f.apply(rt.env)));
+				rt.handler.f(new Cloner().clone(f.apply(rt.env)));
 				return okay;
 			};
 		} else if ((m = Suite.pattern("try .0 .1 .2").match(node)) != null) {
@@ -608,7 +608,7 @@ public class SewingProverImpl implements ProverFactory {
 						rt.alts = alts0;
 						rt.pushRem(catch0);
 					} else
-						handler0.sink(node_);
+						handler0.f(node_);
 				};
 				rt.pushRem(rt_ -> {
 					rt_.handler = handler0;
@@ -631,7 +631,7 @@ public class SewingProverImpl implements ProverFactory {
 		} else if (node instanceof Data<?>) {
 			var data = ((Data<?>) node).data;
 			if (data instanceof Source<?>)
-				tr = rt -> ((Source<?>) data).source() != Boolean.TRUE ? okay : fail;
+				tr = rt -> ((Source<?>) data).g() != Boolean.TRUE ? okay : fail;
 			else
 				tr = fail("cannot understand " + node);
 		} else if (node instanceof Reference) {

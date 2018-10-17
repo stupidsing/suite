@@ -256,7 +256,7 @@ public class TopDownParse {
 						private State state_ = st1;
 						private Deque<Outlet<State>> outlets = new ArrayDeque<>();
 
-						public State source() {
+						public State g() {
 							if (state_ != null) {
 								State state0 = state_.deepen(frame, -1);
 								outlets.push(state0.pr(parse, gc));
@@ -278,7 +278,7 @@ public class TopDownParse {
 				private State state_ = st;
 				private Deque<Outlet<State>> outlets = new ArrayDeque<>();
 
-				public State source() {
+				public State g() {
 					var state0 = state_;
 					if (state0 != null) {
 						outlets.push(state0.pr(parse, g));

@@ -319,7 +319,7 @@ public class ChrObjStreamlet<V> implements StreamletDefaults<ChrObjPair<V>, ChrO
 	}
 
 	private ChrObjOutlet<V> spawn() {
-		return in.source();
+		return in.g();
 	}
 
 }

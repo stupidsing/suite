@@ -38,7 +38,7 @@ public class RunUtil {
 			}
 		};
 
-		Runnable runnable = () -> mutableCode.set(source.source());
+		Runnable runnable = () -> mutableCode.set(source.g());
 
 		switch (runOption) {
 		case PROFILE:

@@ -25,7 +25,7 @@ public class Switch<R> {
 		return applyIf(c, t -> {
 			@SuppressWarnings("unchecked")
 			var r = (R) rethrow(() -> {
-				fun.sink(t);
+				fun.f(t);
 				return t;
 			});
 			return r;

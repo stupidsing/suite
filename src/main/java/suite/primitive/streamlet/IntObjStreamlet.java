@@ -319,7 +319,7 @@ public class IntObjStreamlet<V> implements StreamletDefaults<IntObjPair<V>, IntO
 	}
 
 	private IntObjOutlet<V> spawn() {
-		return in.source();
+		return in.g();
 	}
 
 }

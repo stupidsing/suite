@@ -27,7 +27,7 @@ public class BindArrayUtil {
 	private Fun<String, Pattern> patterns = Memoize.fun(pattern_ -> {
 		var sg = new SewingGeneralizerImpl();
 		var sgs = sg.g(Suite.parse(pattern_));
-		var ne = sgs.source();
+		var ne = sgs.g();
 
 		var cb = new CompileBinderImpl(false);
 		var pred = cb.binder(ne.node);
@@ -55,7 +55,7 @@ public class BindArrayUtil {
 			}
 
 			public Node subst(Node... nodes) {
-				var ne = sgs.source();
+				var ne = sgs.g();
 				var refs = ne.env.refs;
 				for (var i = 0; i < nodes.length; i++)
 					refs[sgi[i]].bound(nodes[i]);

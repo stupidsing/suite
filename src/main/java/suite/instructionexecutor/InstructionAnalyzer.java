@@ -65,8 +65,8 @@ public class InstructionAnalyzer {
 		}
 
 		/**
-		 * Analyzes whether the variable can be stored in a local variable,
-		 * instead of a instance variable in a frame.
+		 * Analyzes whether the variable can be stored in a local variable, instead of a
+		 * instance variable in a frame.
 		 */
 		public boolean isTemporal() {
 			return false;
@@ -206,8 +206,8 @@ public class InstructionAnalyzer {
 	private void analyzeFpTailCalls(List<Instruction> instructions) {
 		for (var ip = 0; ip < instructions.size() - 1; ip++) {
 			Source<Instruction> source = flow(instructions, ip);
-			var instruction0 = source.source();
-			var instruction1 = source.source();
+			var instruction0 = source.g();
+			var instruction1 = source.g();
 
 			if (instruction0 != null && instruction0.insn == Insn.CALLTHUNK_____ //
 					&& instruction1 != null && instruction1.insn == Insn.ASSIGNRESULT__ //
@@ -220,7 +220,7 @@ public class InstructionAnalyzer {
 		Instruction instruction;
 		boolean isLeft = false, isReturningValue = false;
 
-		while ((instruction = source.source()) != null)
+		while ((instruction = source.g()) != null)
 			switch (instruction.insn) {
 			case ASSIGNFRAMEREG:
 				if (instruction.op1 == 0 && instruction.op2 == returnReg) {
@@ -248,7 +248,7 @@ public class InstructionAnalyzer {
 			private boolean end = false;
 			private int ip_ = ip;
 
-			public Instruction source() {
+			public Instruction g() {
 				if (!end && ip_ < instructions.size()) {
 					var instruction = instructions.get(ip_++);
 
@@ -265,7 +265,7 @@ public class InstructionAnalyzer {
 					case JUMP__________:
 						ip_ = instruction.op0;
 					case REMARK________:
-						return source();
+						return g();
 					default:
 						end = true;
 						return instruction;

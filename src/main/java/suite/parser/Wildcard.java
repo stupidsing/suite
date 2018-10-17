@@ -122,7 +122,7 @@ class Matcher {
 					private int start = state.pos;
 					private int end = state.pos;
 
-					public State source() {
+					public State g() {
 						if (end <= state.input.length()) {
 							String m = state.input.substring(start, end);
 							return new State(state.input, end++, IList.cons(m, state.matches));

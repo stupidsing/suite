@@ -134,7 +134,7 @@ public class Doubles_ {
 			this.outlet = outlet;
 		}
 
-		public Doubles source() {
+		public Doubles g() {
 			Doubles in;
 			var cb = new DoublesBuilder();
 			cb.append(buffer);

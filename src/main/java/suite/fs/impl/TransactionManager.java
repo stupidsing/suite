@@ -90,7 +90,7 @@ public class TransactionManager<Key, Value> {
 		});
 
 		if (ok) {
-			var store = source.source();
+			var store = source.g();
 			var mutator = store.mutate();
 			map.forEach((k, v) -> {
 				if (v != null)
@@ -103,7 +103,7 @@ public class TransactionManager<Key, Value> {
 	}
 
 	public <T> T begin(Fun<KeyValueMutator<Key, Value>, T> fun) {
-		var store = new Transaction(source.source());
+		var store = new Transaction(source.g());
 		var ok = false;
 		try {
 			var t = fun.apply(store.mutate());

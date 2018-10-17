@@ -13,6 +13,7 @@ import suite.ebnf.lr.BuildLr.State;
 import suite.immutable.IList;
 import suite.object.Object_;
 import suite.parser.Lexer;
+import suite.streamlet.As;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
@@ -48,7 +49,7 @@ public class LrParse {
 
 	private Ast parse(Source<Ast> tokens, State state) {
 		var stack = new ArrayDeque<Pair<Ast, State>>();
-		var token = tokens.source();
+		var token = tokens.g();
 
 		while (true) {
 			var lookahead = token != null ? token.entity : "EOF";
@@ -57,7 +58,7 @@ public class LrParse {
 			if (sr.t0 != null) { // shift
 				stack.push(Pair.of(token, state));
 				state = sr.t0;
-				token = tokens.source();
+				token = tokens.g();
 			} else { // reduce
 				var reduce = sr.t1;
 				var nodes = IList.<Ast> end();
@@ -89,15 +90,12 @@ public class LrParse {
 	}
 
 	private <K, V> String list(Map<K, V> map) {
-		var sb = new StringBuilder();
-		sb.append("{\n");
-		Read //
+		return Read //
 				.from2(map) //
 				.map2((k, v) -> k.toString(), (k, v) -> v) //
 				.sortByKey(Object_::compare) //
-				.sink((k, v) -> sb.append(k + " = " + v + "\n"));
-		sb.append("}\n");
-		return sb.toString();
+				.map((k, v) -> k + " = " + v + "\n") //
+				.collect(As.joinedBy("{\n", "", "}\n"));
 	}
 
 }

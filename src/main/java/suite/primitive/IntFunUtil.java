@@ -26,11 +26,11 @@ public class IntFunUtil {
 
 	public static Source<IntSource> chunk(int n, IntSource source) {
 		return new Source<>() {
-			private int c = source.source();
+			private int c = source.g();
 			private boolean isAvail = c != EMPTYVALUE;
 			private int i;
 			private IntSource source_ = () -> {
-				if ((isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && ++i < n)
+				if ((isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && ++i < n)
 					return c;
 				else {
 					i = 0;
@@ -38,7 +38,7 @@ public class IntFunUtil {
 				}
 			};
 
-			public IntSource source() {
+			public IntSource g() {
 				return isAvail ? cons(c, source_) : null;
 			}
 		};
@@ -48,10 +48,10 @@ public class IntFunUtil {
 		return new IntSource() {
 			private IntSource source0 = nullSource();
 
-			public int source() {
+			public int g() {
 				var c = EMPTYVALUE;
-				while (source0 != null && (c = source0.source()) == EMPTYVALUE)
-					source0 = source.source();
+				while (source0 != null && (c = source0.g()) == EMPTYVALUE)
+					source0 = source.g();
 				return c;
 			}
 		};
@@ -61,9 +61,9 @@ public class IntFunUtil {
 		return new IntSource() {
 			private boolean isFirst = true;
 
-			public int source() {
+			public int g() {
 				if (!isFirst)
-					return source.source();
+					return source.g();
 				else {
 					isFirst = false;
 					return c;
@@ -76,7 +76,7 @@ public class IntFunUtil {
 		var fun1 = fun0.rethrow();
 		return () -> {
 			var c = EMPTYVALUE;
-			while ((c = source.source()) != EMPTYVALUE && !fun1.test(c))
+			while ((c = source.g()) != EMPTYVALUE && !fun1.test(c))
 				;
 			return c;
 		};
@@ -86,10 +86,10 @@ public class IntFunUtil {
 		return new IntSource() {
 			private Iterator<Integer> iter = Collections.emptyIterator();
 
-			public int source() {
+			public int g() {
 				Iterable<Integer> iterable;
 				while (!iter.hasNext())
-					if ((iterable = source.source()) != null)
+					if ((iterable = source.g()) != null)
 						iter = iterable.iterator();
 					else
 						return EMPTYVALUE;
@@ -101,7 +101,7 @@ public class IntFunUtil {
 	public static <R> R fold(Fun<IntObjPair<R>, R> fun0, R init, IntSource source) {
 		var fun1 = fun0.rethrow();
 		int c;
-		while ((c = source.source()) != EMPTYVALUE)
+		while ((c = source.g()) != EMPTYVALUE)
 			init = fun1.apply(IntObjPair.of(c, init));
 		return init;
 	}
@@ -109,7 +109,7 @@ public class IntFunUtil {
 	public static boolean isAll(IntTest pred0, IntSource source) {
 		var pred1 = pred0.rethrow();
 		int c;
-		while ((c = source.source()) != EMPTYVALUE)
+		while ((c = source.g()) != EMPTYVALUE)
 			if (!pred1.test(c))
 				return false;
 		return true;
@@ -118,7 +118,7 @@ public class IntFunUtil {
 	public static boolean isAny(IntTest pred0, IntSource source) {
 		var pred1 = pred0.rethrow();
 		int c;
-		while ((c = source.source()) != EMPTYVALUE)
+		while ((c = source.g()) != EMPTYVALUE)
 			if (pred1.test(c))
 				return true;
 		return false;
@@ -130,7 +130,7 @@ public class IntFunUtil {
 
 			public boolean hasNext() {
 				if (next == EMPTYVALUE)
-					next = source.source();
+					next = source.g();
 				return next != EMPTYVALUE;
 			}
 
@@ -150,7 +150,7 @@ public class IntFunUtil {
 	public static <T1> Source<T1> map(Int_Obj<T1> fun0, IntSource source) {
 		var fun1 = fun0.rethrow();
 		return () -> {
-			var c0 = source.source();
+			var c0 = source.g();
 			return c0 != IntFunUtil.EMPTYVALUE ? fun1.apply(c0) : null;
 		};
 	}
@@ -159,7 +159,7 @@ public class IntFunUtil {
 		var kf1 = kf0.rethrow();
 		var vf1 = vf0.rethrow();
 		return pair -> {
-			var c = source.source();
+			var c = source.g();
 			var b = c != EMPTYVALUE;
 			if (b)
 				pair.update(kf1.apply(c), vf1.apply(c));
@@ -170,7 +170,7 @@ public class IntFunUtil {
 	public static IntSource mapInt(Int_Int fun0, IntSource source) {
 		var fun1 = fun0.rethrow();
 		return () -> {
-			var c = source.source();
+			var c = source.g();
 			return c != IntFunUtil.EMPTYVALUE ? fun1.apply(c) : IntFunUtil.EMPTYVALUE;
 		};
 	}
@@ -178,7 +178,7 @@ public class IntFunUtil {
 	public static <V> IntObjSource<V> mapIntObj(Int_Obj<V> fun0, IntSource source) {
 		var fun1 = fun0.rethrow();
 		return pair -> {
-			var c = source.source();
+			var c = source.g();
 			if (c != IntFunUtil.EMPTYVALUE) {
 				pair.update(c, fun1.apply(c));
 				return true;
@@ -201,9 +201,9 @@ public class IntFunUtil {
 		return new IntSource() {
 			private boolean isAppended = false;
 
-			public int source() {
+			public int g() {
 				if (!isAppended) {
-					var c_ = source.source();
+					var c_ = source.g();
 					if (c_ != EMPTYVALUE)
 						return c_;
 					else {
@@ -217,18 +217,17 @@ public class IntFunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static Source<IntSource> split(IntTest fun0, IntSource source) {
 		var fun1 = fun0.rethrow();
 		return new Source<>() {
-			private int c = source.source();
+			private int c = source.g();
 			private boolean isAvail = c != EMPTYVALUE;
-			private IntSource source_ = () -> (isAvail = isAvail && (c = source.source()) != EMPTYVALUE) && !fun1.test(c) ? c
-					: null;
+			private IntSource source_ = () -> (isAvail = isAvail && (c = source.g()) != EMPTYVALUE) && !fun1.test(c) ? c : null;
 
-			public IntSource source() {
+			public IntSource g() {
 				return isAvail ? cons(c, source_) : null;
 			}
 		};
@@ -243,7 +242,7 @@ public class IntFunUtil {
 
 		var thread = Thread_.startThread(() -> {
 			try {
-				fun.sink(enqueue);
+				fun.f(enqueue);
 			} finally {
 				enqueue(queue, EMPTYVALUE);
 			}

@@ -131,7 +131,7 @@ public class Ints implements Iterable<Integer> {
 		return new IntStreamlet(() -> IntOutlet.of(new IntSource() {
 			private int i = start;
 
-			public int source() {
+			public int g() {
 				return i < end ? cs[i++] : IntFunUtil.EMPTYVALUE;
 			}
 		}));

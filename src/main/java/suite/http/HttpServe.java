@@ -56,7 +56,7 @@ public class HttpServe {
 				handler.handle(request, sink);
 			} catch (Exception ex) {
 				LogUtil.error(ex);
-				sink.sink(HttpResponse.of(HttpResponse.HTTP500));
+				sink.f(HttpResponse.of(HttpResponse.HTTP500));
 			}
 		});
 	}

@@ -146,7 +146,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 		return of(FltObjFunUtil.concat(FltObjFunUtil.map((k, v) -> {
 			var source = fun.apply(v).source();
 			return pair -> {
-				var value1 = source.source();
+				var value1 = source.g();
 				var b = value1 != null;
 				if (b)
 					pair.update(k, value1);

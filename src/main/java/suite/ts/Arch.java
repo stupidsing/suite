@@ -43,7 +43,7 @@ public class Arch {
 			private double p1 = random.nextDouble() * .001d;
 			private double p2 = .9d + random.nextDouble() * .001d;
 
-			public double source() {
+			public double g() {
 				var eps = 0d;
 				var var = 0d;
 				var logLikelihood = 0d;

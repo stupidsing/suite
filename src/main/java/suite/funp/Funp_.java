@@ -113,7 +113,7 @@ public class Funp_ {
 
 	public static <T> T rethrow(String in, Source<T> source) {
 		try {
-			return source.source();
+			return source.g();
 		} catch (CompileException ex) {
 			throw new CompileException(ex.funp, ex.getMessage() + "\nin " + in, ex);
 		} catch (Exception ex) {

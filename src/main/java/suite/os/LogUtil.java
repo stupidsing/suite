@@ -90,7 +90,7 @@ public class LogUtil {
 		var prefix0 = prefix.get();
 		prefix.set(prefix0 + s);
 		try {
-			return source.source();
+			return source.g();
 		} finally {
 			prefix.set(prefix0);
 		}
@@ -115,7 +115,7 @@ public class LogUtil {
 	public static <T> T log(String message, Source<T> source) {
 		info("Enter " + message);
 		try {
-			return source.source();
+			return source.g();
 		} finally {
 			info("Exit " + message);
 		}

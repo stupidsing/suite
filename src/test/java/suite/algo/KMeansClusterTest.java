@@ -29,7 +29,7 @@ public class KMeansClusterTest {
 
 		var points = Read //
 				.from2(seeds) //
-				.concatMap2((prefix, source) -> forInt(n).map2(i -> prefix + i, i -> source.source())) //
+				.concatMap2((prefix, source) -> forInt(n).map2(i -> prefix + i, i -> source.g())) //
 				.toMap();
 
 		var kmc = new KmeansCluster(seeds.size());

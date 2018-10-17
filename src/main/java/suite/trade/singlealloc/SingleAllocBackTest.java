@@ -48,7 +48,7 @@ public class SingleAllocBackTest {
 		var sharpe = return_ / (sqrt(stat.variance(valuations) * Trade_.nTradeDaysPerYear / length));
 		// new TimeSeries().sharpeRatio(valuations, nApproxYears);
 
-		concludeLogSink.sink("" //
+		concludeLogSink.f("" //
 				+ ", " + account.transactionSummary(a -> 0d) //
 				+ ", return = " + To.string(return_) //
 				+ ", sharpe = " + To.string(sharpe));
@@ -60,7 +60,7 @@ public class SingleAllocBackTest {
 		var valuation = account.valuation(symbol -> price).sum();
 
 		if (day == 0 || buySell != 0)
-			tradeLogSink.sink("" //
+			tradeLogSink.f("" //
 					+ "> date = " + Time.ofEpochSec(ds.ts[day]).ymd() //
 					+ ", buy/sell = " + buySell //
 					+ ", price = " + To.string(price) //

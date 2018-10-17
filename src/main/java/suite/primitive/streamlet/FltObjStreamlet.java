@@ -319,7 +319,7 @@ public class FltObjStreamlet<V> implements StreamletDefaults<FltObjPair<V>, FltO
 	}
 
 	private FltObjOutlet<V> spawn() {
-		return in.source();
+		return in.g();
 	}
 
 }

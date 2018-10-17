@@ -131,7 +131,7 @@ public class Floats implements Iterable<Float> {
 		return new FltStreamlet(() -> FltOutlet.of(new FltSource() {
 			private int i = start;
 
-			public float source() {
+			public float g() {
 				return i < end ? cs[i++] : FltFunUtil.EMPTYVALUE;
 			}
 		}));
