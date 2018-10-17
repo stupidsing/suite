@@ -306,14 +306,17 @@ let rdc = node0 => {
 		let sf = rds(node0.nodeValue);
 		return rd.dom(vm => document.createComment(sf(vm)));
 	} else if (node0.nodeType == Node.ELEMENT_NODE) {
+		let bf = (as, cs) => rd.tag(node0.localName).attrsf(vm => as).children(...cs).rd();
 		let as = {}, cs = [], scope;
+		for (let a of node0.attributes) as[a.name] = a.value;
 		for (let c of node0.childNodes) cs.push(rdc(c));
-		let bf = cs => rd.tag(node0.localName).attrsf(vm => as).children(...cs).rd();
-		if (node0.localName == 'span' && (scope = node0.getAttribute('scope')) != null)
-			return rd.scope(scope, bf(cs));
+		if (node0.getAttribute('for') != null)
+			return rd.tag(node0.localName).for_(vm => vm, rd.span().children(...cs).rd()).rd();
+		else if (node0.localName == 'span' && (scope = node0.getAttribute('scope')) != null)
+			return rd.scope(scope, bf(as, cs));
 		else {
 			for (let a of node0.attributes) as[a.name] = a.value;
-			return bf(cs);
+			return bf(as, cs);
 		}
 	} else if (node0.nodeType == Node.TEXT_NODE) {
 		let sf = rds(node0.nodeValue);
@@ -338,20 +341,26 @@ let rd_vm = rd
 	.span()
 	.style({ 'font-family': 'sans-serif', })
 	.children(
-		rd.scope('message',
-			rd.p().style({ 'font-weight': 'bold', }).text().rd()
-		),
 		rd_parse(`
-			<span>
+			<span style='font-family: sans-serif;'>
 				<span scope='message'>
 					<p style='font-weight: bold;'>
 						{ vm } within scope
 						<!-- comment -->
 					</p>
 				</span>
+				<span scope='t'>{ vm }</span>				
+				<span scope='fruits'>
+					<ul for='vm'>
+						<li>{ vm }</li>
+					</ul>
+				</span>
 				hello world at time { vm.t }
 			</span>
 		`),
+		rd.scope('message',
+			rd.p().style({ 'font-weight': 'bold', }).text().rd()
+		),
 		rd.scope('t',
 			rd.p().text().rd()
 		),
