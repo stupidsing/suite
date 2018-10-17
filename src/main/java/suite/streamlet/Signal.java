@@ -43,10 +43,10 @@ public class Signal<T> {
 	}
 
 	public static <T> Signal<T> from(Source<T> source) {
-		return of(fire -> executor.submit(() -> {
+		return of(sink -> executor.submit(() -> {
 			T t;
 			while ((t = source.source()) != null)
-				fire.sink(t);
+				sink.sink(t);
 		}));
 	}
 

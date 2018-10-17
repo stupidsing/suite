@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
+import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil2.Source2;
 import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.NullableSyncQueue;
@@ -18,10 +19,6 @@ import suite.util.Thread_;
 public class FunUtil {
 
 	public interface Iterate<T> extends Fun<T, T> {
-	}
-
-	public interface Source<O> {
-		public O source();
 	}
 
 	public interface Sink<I> {
@@ -36,6 +33,10 @@ public class FunUtil {
 				}
 			};
 		}
+	}
+
+	public interface Source<O> {
+		public O source();
 	}
 
 	public interface Fun<I, O> extends Function<I, O> {
@@ -221,8 +222,8 @@ public class FunUtil {
 	}
 
 	/**
-	 * Problematic split: all data must be read, i.e. the children lists must
-	 * not be skipped.
+	 * Problematic split: all data must be read, i.e. the children lists must not be
+	 * skipped.
 	 */
 	public static <T> Source<Source<T>> split(Predicate<T> fun0, Source<T> source) {
 		var fun1 = Rethrow.predicate(fun0);
