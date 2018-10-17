@@ -310,6 +310,7 @@ let rdc = node0 => {
 		let as = {}, cs = [], scope;
 		for (let a of node0.attributes) as[a.name] = a.value;
 		for (let c of node0.childNodes) cs.push(rdc(c));
+
 		if (node0.getAttribute('for') != null)
 			return rd.tag(node0.localName).for_(vm => vm, rd.span().children(...cs).rd()).rd();
 		else if ((scope = node0.getAttribute('scope')) != null)
