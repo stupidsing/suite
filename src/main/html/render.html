@@ -309,7 +309,6 @@ let rdc = node0 => {
 		if (node0.localName == 'rd-scope')
 			return rd.scope(node0.getAttribute('scope'), rdc(node0.childNodes[1]));
 		else {
-			let childNodes = node0.childNodes;
 			let as = {}, cs = [];
 			for (let a of node0.attributes) as[a.name] = a.value;
 			for (let c of node0.childNodes) cs.push(rdc(c));
