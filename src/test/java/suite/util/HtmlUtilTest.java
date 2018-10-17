@@ -27,6 +27,14 @@ public class HtmlUtilTest {
 	}
 
 	@Test
+	public void testVariable() {
+		var h = "<meta charset='utf-8'><html>{ abc.def }</html>";
+		var hn = html.parse(h);
+		Dump.details(hn);
+		System.out.println(generate(hn));
+	}
+
+	@Test
 	public void testRender() {
 		var h = FileUtil.in("src/main/html/render.html").doRead(ReadStream::readString);
 		Dump.details(html.parse(h));
@@ -55,10 +63,39 @@ public class HtmlUtilTest {
 						}
 						sb.append(")");
 					}
-				} else if (h.tag.startsWith("<!--") && h.tag.endsWith("-->"))
-					sb.append("rd.dom(vm => document.createComment('" + String_.range(h.tag, 4, -3).trim() + "'))");
-				else
-					sb.append("rd.dom(vm => document.createTextNode('" + h.tag + "'))");
+				} else if (h.tag.startsWith("<!--") && h.tag.endsWith("-->")) {
+					sb.append("rd.dom(vm => document.createComment(");
+					s(String_.range(h.tag, 4, -3).trim());
+					sb.append("))");
+				} else {
+					sb.append("rd.dom(vm => document.createTextNode(");
+					s(h.tag);
+					sb.append("))");
+				}
+			}
+
+			private void s(String s) {
+				var pos0 = 0;
+				int pos1, pos2;
+
+				while (0 <= (pos1 = s.indexOf("{", pos0)) && 0 <= (pos2 = s.indexOf("}", pos1))) {
+					if (c(s.substring(pos0, pos1)))
+						sb.append(" + ");
+					sb.append("vm." + s.substring(pos1 + 1, pos2).trim() + " + ");
+					pos0 = pos2 + 1;
+				}
+
+				if (!c(s.substring(pos0))) {
+					var length = sb.length();
+					sb.delete(length - 3, length);
+				}
+			}
+
+			private boolean c(String s) {
+				var b = !s.isEmpty();
+				if (b)
+					sb.append("'" + s.replace("'", "\'").replace("\n", "\\n") + "'");
+				return b;
 			}
 		}.g(h);
 

@@ -29,27 +29,19 @@ public class Subst {
 	}
 
 	public void subst(String s, Iterate<String> fun, StringBuilder sb) {
-		while (true) {
-			var pos0 = s.indexOf(openSubst);
-			var pos1 = s.indexOf(closeSubst, pos0);
+		var pos0 = 0;
+		int pos1, pos2;
+		String value;
 
-			if (0 <= pos0 && 0 <= pos1) {
-				var left = s.substring(0, pos0);
-				var key = s.substring(pos0 + 2, pos1);
-				var right = s.substring(pos1 + 1);
-				var value = fun.apply(key);
-
-				if (value != null) {
-					sb.append(left);
-					subst(value, fun, sb);
-					s = right;
-					continue;
-				}
-			}
-
-			sb.append(s);
-			break;
+		while (0 <= (pos1 = s.indexOf(openSubst, pos0)) //
+				&& 0 <= (pos2 = s.indexOf(closeSubst, pos1)) //
+				&& (value = fun.apply(s.substring(pos1 + 2, pos2))) != null) {
+			sb.append(s.substring(pos0, pos1));
+			subst(value, fun, sb);
+			pos0 = pos2 + 1;
 		}
+
+		sb.append(s.substring(pos0));
 	}
 
 }

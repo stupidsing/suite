@@ -9,22 +9,17 @@ public class Template {
 
 	public String render(String in, Iterate<String> fun) {
 		var sb = new StringBuilder();
-		var start = 0;
+		var pos0 = 0;
+		int pos1, pos2;
 
-		while (true) {
-			var pos0 = in.indexOf(open, start);
-			if (pos0 == -1)
-				break;
-			var pos1 = in.indexOf(close, pos0 + open.length());
-			if (pos1 == -1)
-				break;
-
-			sb.append(fun.apply(in.substring(start, pos0)));
-			sb.append(in.substring(start, pos1));
-			start = pos1 + close.length();
+		while (0 <= (pos1 = in.indexOf(open, pos0)) //
+				&& 0 <= (pos2 = in.indexOf(close, pos1 + open.length()))) {
+			sb.append(fun.apply(in.substring(pos0, pos1)));
+			sb.append(in.substring(pos0, pos2));
+			pos0 = pos2 + close.length();
 		}
 
-		sb.append(fun.apply(in.substring(start)));
+		sb.append(fun.apply(in.substring(pos0)));
 		return sb.toString();
 	}
 
