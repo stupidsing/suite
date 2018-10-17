@@ -9,7 +9,6 @@ import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
 import suite.os.LogUtil;
-import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil2.Source2;
 import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.NullableSyncQueue;
