@@ -61,7 +61,7 @@ public class Bfgs {
 				var mb = mtx.sub(id, mtx.scale(mtx.mul(ys, ss), yts));
 				ib1 = mtx.add(mtx.mul(ma, ib, mb), mtx.scale(mtx.mul(ss), yts));
 			} else {
-				double ytiby = vec.dot(ys, mtx.mul(ib, ys));
+				var ytiby = vec.dot(ys, mtx.mul(ib, ys));
 				var ma = mtx.scale(mtx.mul(ss), yts + ytiby / (yts * yts));
 				var mb = mtx.scale(mtx.add(mtx.mul(ib, mtx.mul(ys, ss)), mtx.mul(mtx.mul(ss, ys), ib)), yts);
 				ib1 = mtx.add(ib, mtx.sub(ma, mb));
