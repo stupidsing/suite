@@ -312,7 +312,7 @@ let rdc = node0 => {
 		for (let c of node0.childNodes) cs.push(rdc(c));
 		if (node0.getAttribute('for') != null)
 			return rd.tag(node0.localName).for_(vm => vm, rd.span().children(...cs).rd()).rd();
-		else if (node0.localName == 'span' && (scope = node0.getAttribute('scope')) != null)
+		else if ((scope = node0.getAttribute('scope')) != null)
 			return rd.scope(scope, bf(as, cs));
 		else {
 			for (let a of node0.attributes) as[a.name] = a.value;
@@ -337,36 +337,43 @@ let renderAgain = (renderer, f) => {
 	renderer(ppvm, pvm = f(pvm), c_cud(target, target.firstChild));
 };
 
+let rd_vm0 = rd_parse(`
+	<span style='font-family: sans-serif;'>
+		<span scope='message'>
+			<p style='font-weight: bold;'>
+				{ vm } within scope
+				<!-- comment -->
+			</p>
+		</span>
+		<span scope='t'>
+			{ vm }
+		</span>				
+		<span scope='fruits'>
+			<ul for='vm'>
+				<li>{ vm }</li>
+			</ul>
+		</span>
+	</span>
+`);
+
+let rd_vm1 = rd.span().children(
+	rd.scope('message',
+		rd.p().style({ 'font-weight': 'bold', }).text().rd()
+	),
+	rd.scope('t',
+		rd.p().text().rd()
+	),
+	rd.scope('fruits',
+		rd.ul().for_(vm => vm, rd.li().text().rd()).rd()
+	),
+).rd();
+
 let rd_vm = rd
 	.span()
 	.style({ 'font-family': 'sans-serif', })
 	.children(
-		rd_parse(`
-			<span style='font-family: sans-serif;'>
-				<span scope='message'>
-					<p style='font-weight: bold;'>
-						{ vm } within scope
-						<!-- comment -->
-					</p>
-				</span>
-				<span scope='t'>{ vm }</span>				
-				<span scope='fruits'>
-					<ul for='vm'>
-						<li>{ vm }</li>
-					</ul>
-				</span>
-				hello world at time { vm.t }
-			</span>
-		`),
-		rd.scope('message',
-			rd.p().style({ 'font-weight': 'bold', }).text().rd()
-		),
-		rd.scope('t',
-			rd.p().text().rd()
-		),
-		rd.scope('fruits',
-			rd.ul().for_(vm => vm, rd.li().text().rd()).rd()
-		),
+		rd_vm0,
+		rd_vm1,
 		rd.scope('vscroll', rd
 			.vscrollf(200, 32,
 				rd.dom(vm => document.createTextNode('item ' + vm)),
