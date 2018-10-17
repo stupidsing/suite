@@ -342,11 +342,14 @@ let rd_vm = rd
 			rd.p().style({ 'font-weight': 'bold', }).text().rd()
 		),
 		rd_parse(`
-			<span scope='message'>
-				<p style='font-weight: bold;'>
-					{ vm } within scope
-					<!-- comment -->
-				</p>
+			<span>
+				<span scope='message'>
+					<p style='font-weight: bold;'>
+						{ vm } within scope
+						<!-- comment -->
+					</p>
+				</span>
+				hello world at time { vm.t }
 			</span>
 		`),
 		rd.scope('t',
