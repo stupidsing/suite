@@ -270,7 +270,7 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 let rd = {
 	div: () => rd_tag('div'),
 	dom: rd_dom,
-	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_dom(() => document.createComment('else'))),
+	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_dom(vm => document.createComment('else'))),
 	ifElse: rd_ifElse,
 	li: () => rd_tag('li'),
 	p: () => rd_tag('p'),
@@ -283,6 +283,26 @@ let rd = {
 	ul: () => rd_tag('ul'),
 	vscrollf: rd_vscrollf,
 };
+
+let rdc = node0 => {
+	if (node0.nodeType == Node.COMMENT_NODE)
+		return rd_dom(vm => document.createComment(node0.nodeValue));
+	else if (node0.nodeType == Node.ELEMENT_NODE) {
+		let childNodes = node0.childNodes;
+		let as = {};
+		for (let a of node0.attributes) as[a.name] = a.value;
+		let cs = [];
+		for (let c of node0.childNodes) cs.push(rdc(c));
+		return rd.tag(node0.localName).attrs(as).children(...cs).rd();
+	} else if (node0.nodeType == Node.TEXT_NODE)
+		return rd.dom(vm => document.createTextNode(node0.nodeValue));
+	else {
+		console.error('unknown node type', node0);
+		return rd_dom(vm => document.createComment('unknown node type' + node0));
+	}
+};
+
+let rd_parse = s => rdc(new DOMParser().parseFromString(s, 'text/xml').childNodes[0]);
 
 let pvm = null;
 
@@ -299,6 +319,12 @@ let rd_vm = rd
 		rd.scope('message',
 			rd.p().style({ 'font-weight': 'bold', }).text().rd()
 		),
+		rd_parse(`
+			<p style='font-weight: bold;'>
+				hello world 2
+				<!-- comment -->
+			</p>
+		`),
 		rd.scope('t',
 			rd.p().text().rd()
 		),
