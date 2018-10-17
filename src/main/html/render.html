@@ -290,7 +290,7 @@ let rds = s => {
 	while (0 <= (pos1 = s.indexOf('{', pos0)) && 0 <= (pos2 = s.indexOf('}', pos1))) {
 		let s0 = s.substring(pos0, pos1);
 		let f0 = f;
-		let f1 = eval('vm => vm' + s.substring(pos1 + 1, pos2).trim());
+		let f1 = eval('vm => (' + s.substring(pos1 + 1, pos2).trim() + ')');
 		f = vm => f0(vm) + s0 + f1(vm);
 		pos0 = pos2 + 1;
 	}
@@ -344,7 +344,7 @@ let rd_vm = rd
 		rd_parse(`
 			<rd-scope scope='message'>
 				<p style='font-weight: bold;'>
-					wow, {}
+					wow, { vm }
 					<!-- comment -->
 				</p>
 			</rd-scope>
