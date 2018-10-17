@@ -311,9 +311,8 @@ let rdc = node0 => {
 		for (let c of node0.childNodes) cs.push(rdc(c));
 		if (node0.localName == 'span' && (scope = node0.getAttribute('scope')) != null)
 			return rd.scope(scope, rdc(node0.childNodes[1]));
-		else {
+		else
 			return rd.tag(node0.localName).attrsf(vm => as).children(...cs).rd();
-		}
 	} else if (node0.nodeType == Node.TEXT_NODE) {
 		let sf = rds(node0.nodeValue);
 		return rd.dom(vm => document.createTextNode(sf(vm)));
