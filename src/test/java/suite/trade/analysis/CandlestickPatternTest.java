@@ -5,9 +5,6 @@ import static suite.util.Friends.forInt;
 import org.junit.Test;
 
 import suite.algo.KmeansCluster;
-import suite.primitive.IntFunUtil;
-import suite.primitive.adt.map.ObjIntMap;
-import suite.primitive.adt.pair.IntIntPair;
 import suite.trade.data.TradeCfgImpl;
 
 public class CandlestickPatternTest {
@@ -31,14 +28,21 @@ public class CandlestickPatternTest {
 		}).toList();
 
 		var kmc = new KmeansCluster(5).kMeansCluster(vectors, k, 99);
-		var ft = new ObjIntMap<IntIntPair>();
+		var hist = new int[k];
+		var ft = new int[k][k];
+
+		for (var c : kmc)
+			hist[c]++;
 
 		for (var i = 1; i < kmc.length; i++)
-			ft.update(IntIntPair.of(kmc[i - 1], kmc[i]), v0 -> 1 + (v0 != IntFunUtil.EMPTYVALUE ? v0 : 0));
+			ft[kmc[i - 1]][kmc[i]]++;
+
+		for (var i : forInt(k))
+			System.out.println("count " + i + " = " + hist[i]);
 
 		for (var s0 : forInt(k))
 			for (var s1 : forInt(k))
-				System.out.println("from = " + s0 + ", to = " + s1 + ", count = " + ft.get(IntIntPair.of(s0, s1)));
+				System.out.println("from = " + s0 + ", to = " + s1 + ", count = " + ft[s0][s1]);
 	}
 
 }
