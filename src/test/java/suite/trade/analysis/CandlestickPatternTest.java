@@ -10,7 +10,6 @@ import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.trade.data.TradeCfgImpl;
 
-// mvn test -Dtest=AnalyzeTimeSeriesTest#test
 public class CandlestickPatternTest {
 
 	private TradeCfgImpl cfg = new TradeCfgImpl();
