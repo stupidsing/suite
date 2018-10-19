@@ -30,7 +30,7 @@ public interface Broker {
 
 		private static Streamlet<Trade> queryHistory_() {
 			var url = Defaults.secrets("stockUrl .0")[0];
-			var path = HomeDir.resolve("workspace").resolve("home-data").resolve("stock.txt");
+			var path = HomeDir.resolve("home-data").resolve("stock.txt");
 			var bytes = Files.exists(path) ? Read.bytes(path) : Read.url(url);
 			return bytes.collect(As::table).map(Trade::of).collect();
 		}
