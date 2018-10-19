@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import suite.math.linalg.Vector;
-import suite.primitive.Int_Int;
+import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
 import suite.primitive.adt.pair.IntDblPair;
@@ -53,10 +53,13 @@ public class KmeansCluster {
 	}
 
 	public int[] kMeansCluster(List<float[]> points, int k, int nIterations) {
-		var centers = List_.left(points, k);
-		var iteration = 0;
+		return Read.from(points).collect(Obj_Int.lift(kMeansClusterClassifier(points, k, nIterations))).toArray();
+	}
 
-		while (true) {
+	private Obj_Int<float[]> kMeansClusterClassifier(List<float[]> points, int k, int nIterations) {
+		var centers = List_.left(points, k);
+
+		for (var iteration = 0; iteration < nIterations; iteration++) {
 			var bins = To.array(k, KmeansBin.class, j -> new KmeansBin());
 
 			for (var point : points) {
@@ -65,13 +68,11 @@ public class KmeansCluster {
 				bin.count++;
 			}
 
-			if (iteration++ <= nIterations)
-				centers = Read.from(bins).map(bin -> div(bin.sum, bin.count)).toList();
-			else {
-				var kMeans0 = centers;
-				return forInt(points.size()).collect(Int_Int.lift(i -> findNearest(points.get(i), kMeans0))).toArray();
-			}
+			centers = Read.from(bins).map(bin -> div(bin.sum, bin.count)).toList();
 		}
+
+		var centers_ = centers;
+		return point -> findNearest(point, centers_);
 	}
 
 	public int kNearestNeighbor(List<float[]> points, float[] point0) {
