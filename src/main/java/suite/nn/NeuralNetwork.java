@@ -172,7 +172,7 @@ public class NeuralNetwork {
 				var derives = To.matrix(nPoints, nOutputs, (i, j) -> errors[i][j] * Tanh.tanhGradient(outputs[i][j]));
 				var deltas = nmf.apply((ii, io) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][ii] * derives[p][io])));
 				var deltaSqs = mtx.mapOn(deltas, delta -> delta * delta);
-				mtx.addOn(mtx.scaleOn(rmsProps, .99d), mtx.scale(deltaSqs, .01d));
+				mtx.addOn(mtx.scaleOn(rmsProps, .99d), mtx.scaleOn(deltaSqs, .01d));
 
 				var adjusts = nmf.apply((i, j) -> deltas[i][j] * learningRate * .01d / sqrt(rmsProps[i][j]));
 
