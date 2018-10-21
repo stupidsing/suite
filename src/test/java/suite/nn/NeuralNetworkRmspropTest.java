@@ -86,8 +86,8 @@ public class NeuralNetworkRmspropTest {
 
 		}
 
-		private float[][] feed(float[][] inputs) {
-			return outputs = mtx.map(mtx.mul(weights, this.inputs = inputs), activate);
+		private float[][] feed(float[][] inputs_) {
+			return outputs = mtx.map(mtx.mul(weights, inputs = inputs_), activate);
 		}
 
 		private float[][] backprop(float[][] errors) {
