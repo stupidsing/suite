@@ -11,7 +11,7 @@ import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Read;
 import suite.util.To;
 
-public class NeuralNetworkRmspropTest {
+public class NeuralNetworkMinibatchRmspropTest {
 
 	private boolean[] booleans = new boolean[] { false, true, };
 	private Matrix mtx = new Matrix();
@@ -35,7 +35,7 @@ public class NeuralNetworkRmspropTest {
 					i -> new float[] { f(oper.apply(c(inputs[i][0]), c(inputs[i][1]))), });
 
 			var nn = new NeuralNetwork();
-			var train = nn.mlRmsprop(new int[] { mtx.width(inputs), 4, mtx.width(expect), });
+			var train = nn.mlMinibatchRmsprop(new int[] { mtx.width(inputs), 4, mtx.width(expect), });
 
 			for (var i = 0; i < 1024; i++) { // overfit
 				var out = train.feed(inputs);

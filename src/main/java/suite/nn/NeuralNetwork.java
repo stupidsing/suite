@@ -65,10 +65,10 @@ public class NeuralNetwork {
 		return layer;
 	}
 
-	public Layer<float[][], float[][]> mlRmsprop(int[] sizes) {
+	public Layer<float[][], float[][]> mlMinibatchRmsprop(int[] sizes) {
 		var layer = nil2dLayer();
 		for (var i = 1; i < sizes.length; i++)
-			layer = layer.append(feedForwardRmspropLayer(sizes[i - 1], sizes[i]));
+			layer = layer.append(feedForwardMinibatchRmspropLayer(sizes[i - 1], sizes[i]));
 		return layer;
 	}
 
@@ -160,7 +160,7 @@ public class NeuralNetwork {
 
 	// inputs :: nPoints * nInputs
 	// outputs :: nPoints * nOutputs
-	private Layer<float[][], float[][]> feedForwardRmspropLayer(int nInputs, int nOutputs) {
+	private Layer<float[][], float[][]> feedForwardMinibatchRmspropLayer(int nInputs, int nOutputs) {
 		var learningRate_ = learningRate * .01d;
 
 		IntObj_Obj<IntInt_Dbl, float[][]> nmf0 = (d, f) -> To.matrix(d, nOutputs, f);
