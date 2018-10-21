@@ -34,9 +34,9 @@ public class BackAllocBackTestTest {
 
 	@Test
 	public void testBackTestSingle() {
-		var asset = cfg.queryCompany("0945.HK");
+		var instrument = cfg.queryCompany("0945.HK");
 		var backAllocator = new MovingAvgMeanReversionBackAllocator().backAllocator();
-		assertGrowth(out(runner.backTest(backAllocator, period, Read.each(asset))));
+		assertGrowth(out(runner.backTest(backAllocator, period, Read.each(instrument))));
 	}
 
 	private void assertGrowth(Simulate sim) {

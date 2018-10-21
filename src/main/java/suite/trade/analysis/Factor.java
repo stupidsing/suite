@@ -8,7 +8,7 @@ import suite.math.numeric.Statistic;
 import suite.object.Object_;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Usex;
@@ -52,11 +52,11 @@ public class Factor {
 		ids = DataSource.of(akds.ts, indexPrices);
 	}
 
-	public List<Pair<Asset, Double>> query(Streamlet<Asset> assets) {
+	public List<Pair<Instrument, Double>> query(Streamlet<Instrument> instruments) {
 		var period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(now), 250 * 3);
 
-		return assets //
-				.map2(asset -> project(ids, cfg.dataSource(asset.symbol), period)) //
+		return instruments //
+				.map2(instrument -> project(ids, cfg.dataSource(instrument.symbol), period)) //
 				.sortByValue(Object_::compare) //
 				.toList();
 	}

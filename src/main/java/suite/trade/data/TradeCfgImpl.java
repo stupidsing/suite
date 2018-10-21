@@ -13,7 +13,7 @@ import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade;
@@ -43,12 +43,12 @@ public class TradeCfgImpl implements TradeCfg {
 	private Src srcPf___ = new Src(pf::queryCompany, pf::quote, pf::dataSource);
 
 	private class Src {
-		private Fun<String, Asset> queryFun;
+		private Fun<String, Instrument> queryFun;
 		private Fun<Set<String>, Map<String, Float>> quoteFun;
 		private Fun2<String, TimeRange, DataSource> dataSourceFun;
 
 		private Src( //
-				Fun<String, Asset> queryFun, //
+				Fun<String, Instrument> queryFun, //
 				Fun<Set<String>, Map<String, Float>> quoteFun, //
 				Fun2<String, TimeRange, DataSource> dataSourceFun) {
 			this.queryFun = queryFun;
@@ -65,15 +65,15 @@ public class TradeCfgImpl implements TradeCfg {
 		return dataSource_(symbol, period);
 	}
 
-	public Streamlet<Asset> queryCompanies() {
+	public Streamlet<Instrument> queryCompanies() {
 		return hkex.queryCompanies().filter(this::filter);
 	}
 
-	public Asset queryCompany(String symbol) {
+	public Instrument queryCompany(String symbol) {
 		return filter(symbol) ? src(symbol).queryFun.apply(symbol) : null;
 	}
 
-	public Streamlet<Asset> queryCompaniesByMarketCap(Time time) {
+	public Streamlet<Instrument> queryCompaniesByMarketCap(Time time) {
 		var year = time.year() - 1;
 		return Read //
 				.from(hkexFactBook.queryLeadingCompaniesByMarketCap(year)) //
@@ -118,7 +118,7 @@ public class TradeCfgImpl implements TradeCfg {
 	private Src src(String symbol) {
 		if (symbol.endsWith("=X"))
 			return srcForex;
-		else if (String_.equals(symbol, Asset.cashSymbol))
+		else if (String_.equals(symbol, Instrument.cashSymbol))
 			return srcHkd__;
 		else if (symbol.endsWith(".HK"))
 			return srcHkex_;
@@ -134,8 +134,8 @@ public class TradeCfgImpl implements TradeCfg {
 			return fail(symbol);
 	}
 
-	private boolean filter(Asset asset) {
-		return filter(asset.symbol);
+	private boolean filter(Instrument instrument) {
+		return filter(instrument.symbol);
 	}
 
 	private boolean filter(String symbol) {

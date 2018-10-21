@@ -13,7 +13,7 @@ import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.Trade;
 import suite.trade.Trade_;
@@ -34,7 +34,7 @@ public class WalkForwardAllocTester {
 	private Sink<String> log;
 
 	private long start;
-	private Map<String, Asset> assetBySymbol;
+	private Map<String, Instrument> instrumentBySymbol;
 	private Map<String, DataSource> dsBySymbol;
 
 	private long[] times;
@@ -43,7 +43,7 @@ public class WalkForwardAllocTester {
 	private List<Trade> trades;
 	private Map<String, Double> holdBySymbol;
 
-	public WalkForwardAllocTester(TradeCfg cfg, Streamlet<Asset> assets, float fund0, WalkForwardAllocator wfa) {
+	public WalkForwardAllocTester(TradeCfg cfg, Streamlet<Instrument> instruments, float fund0, WalkForwardAllocator wfa) {
 		this.cfg = cfg;
 		this.wfa = wfa;
 		this.log = System.out::println;
@@ -55,8 +55,11 @@ public class WalkForwardAllocTester {
 		holdBySymbol = new HashMap<>();
 
 		start = System.currentTimeMillis();
-		assetBySymbol = assets.toMap(asset -> asset.symbol);
-		dsBySymbol = assets.map2(asset -> asset.symbol, asset -> DataSource.of(times, new float[windowSize])).toMap();
+		instrumentBySymbol = instruments.toMap(instrument -> instrument.symbol);
+
+		dsBySymbol = instruments //
+				.map2(instrument -> instrument.symbol, instrument -> DataSource.of(times, new float[windowSize])) //
+				.toMap();
 	}
 
 	public String tick() {
@@ -85,7 +88,7 @@ public class WalkForwardAllocTester {
 		var akds = new AlignKeyDataSource<String>(times, Read.from2(dsBySymbol));
 		var ratioBySymbol = wfa.allocate(akds, windowSize);
 
-		var up = Trade_.updatePortfolio(time.ymdHms(), account, ratioBySymbol, assetBySymbol,
+		var up = Trade_.updatePortfolio(time.ymdHms(), account, ratioBySymbol, instrumentBySymbol,
 				Read.from2(priceBySymbol).mapValue(Eod::of).toMap());
 
 		float valuation_;

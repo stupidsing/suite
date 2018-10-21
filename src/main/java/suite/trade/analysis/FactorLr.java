@@ -11,7 +11,7 @@ import suite.math.numeric.Statistic.LinearRegression;
 import suite.primitive.Int_Flt;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.backalloc.BackAllocator;
@@ -47,11 +47,11 @@ public class FactorLr {
 		indexPrices = indexSymbols.map(symbol -> dsBySymbol.get(symbol).prices).toList();
 	}
 
-	public Map<Asset, String> query(Streamlet<Asset> assets) {
+	public Map<Instrument, String> query(Streamlet<Instrument> instruments) {
 		var period = TimeRange.daysBefore(HkexUtil.getOpenTimeBefore(now), 250 * 3);
 
-		return assets //
-				.map2(asset -> ols(cfg.dataSource(asset.symbol), period).toString()) //
+		return instruments //
+				.map2(instrument -> ols(cfg.dataSource(instrument.symbol), period).toString()) //
 				.toMap();
 	}
 

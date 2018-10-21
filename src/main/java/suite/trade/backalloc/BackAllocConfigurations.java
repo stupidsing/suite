@@ -5,7 +5,7 @@ import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.analysis.Factor;
 import suite.trade.backalloc.strategy.BackAllocatorGeneral;
@@ -20,10 +20,10 @@ import suite.trade.data.TradeCfg;
 public class BackAllocConfigurations {
 
 	private TradeCfg cfg;
-	private Fun<Time, Streamlet<Asset>> fun;
+	private Fun<Time, Streamlet<Instrument>> fun;
 
 	public class Bacs {
-		private Fun<Time, Streamlet<Asset>> fun_hsi = time -> Read.each(Asset.hsi);
+		private Fun<Time, Streamlet<Instrument>> fun_hsi = time -> Read.each(Instrument.hsi);
 
 		private BackAllocatorGeneral baGen = BackAllocatorGeneral.me;
 		private BackAllocatorMech baMech = BackAllocatorMech.me;
@@ -57,19 +57,19 @@ public class BackAllocConfigurations {
 
 		private Streamlet2<String, BackAllocConfiguration> bacByName0 = Read //
 				.<String, BackAllocConfiguration> empty2() //
-				.cons("hsi", BackAllocConfiguration.ofSingle(Asset.hsi)) //
+				.cons("hsi", BackAllocConfiguration.ofSingle(Instrument.hsi)) //
 				.cons("hsi.ppr", baGen.pprHsi.cfgUnl(fun_hsi)) //
 				.cons(pair_bb) //
 				.cons("bbslope", baOld.bbSlope().cfgUnl(fun)) //
 				.cons("facoil", ba_facoil.cfgUnl(fun)) //
-				.cons("january", BackAllocator_.ofSingle(Asset.hsiSymbol).january().cfgUnl(fun_hsi)) //
+				.cons("january", BackAllocator_.ofSingle(Instrument.hsiSymbol).january().cfgUnl(fun_hsi)) //
 				.cons("mix", BackAllocator_.sum(ba_bbHold, ba_donHold).cfgUnl(fun)) //
 				.cons(pair_pmamr) //
 				.cons(pair_pmamr2) //
 				.cons(pair_pmmmr) //
 				.cons(pair_revco) //
 				.cons("revdd", baOld.revDrawdown().holdExtend(40).cfgUnl(fun)) //
-				.cons("sellInMay", BackAllocator_.ofSingle(Asset.hsiSymbol).sellInMay().cfgUnl(fun_hsi));
+				.cons("sellInMay", BackAllocator_.ofSingle(Instrument.hsiSymbol).sellInMay().cfgUnl(fun_hsi));
 
 		public final Streamlet2<String, BackAllocConfiguration> bacByName = Streamlet2 //
 				.concat(bacs_, bacByName0);
@@ -83,7 +83,7 @@ public class BackAllocConfigurations {
 		this(cfg, cfg::queryCompaniesByMarketCap);
 	}
 
-	public BackAllocConfigurations(TradeCfg cfg, Fun<Time, Streamlet<Asset>> fun) {
+	public BackAllocConfigurations(TradeCfg cfg, Fun<Time, Streamlet<Instrument>> fun) {
 		this.cfg = cfg;
 		this.fun = fun;
 	}

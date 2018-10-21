@@ -18,7 +18,7 @@ import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.analysis.Oscillator;
 import suite.trade.backalloc.BackAllocator;
@@ -38,7 +38,7 @@ public class BackAllocatorGeneral {
 	public BackAllocator donHold = donchian(9).holdExtend(2).pick(5);
 	public BackAllocator ema = ema(2).pick(3);
 	public BackAllocator rsi = rsi(32, .7d);
-	public BackAllocator pprHsi = priceProRata(Asset.hsiSymbol);
+	public BackAllocator pprHsi = priceProRata(Instrument.hsiSymbol);
 	public BackAllocator tma = tripleExpGeometricMovingAvgs(2, 6, 18);
 
 	public final Streamlet2<String, BackAllocator> baByName = Read //

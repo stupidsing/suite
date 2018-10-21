@@ -7,8 +7,8 @@ import org.junit.Test;
 
 import suite.os.LogUtil;
 import suite.streamlet.Read;
-import suite.trade.Asset;
 import suite.trade.Forex;
+import suite.trade.Instrument;
 import suite.trade.TimeRange;
 import suite.trade.data.DataSource;
 import suite.trade.data.TradeCfg;
@@ -43,8 +43,8 @@ public class SingleAllocBackTestTest {
 		backTest(cfg.queryCompany("0005.HK"));
 	}
 
-	private void backTest(Asset asset) {
-		backTest(asset.symbol, asset.toString()) //
+	private void backTest(Instrument instrument) {
+		backTest(instrument.symbol, instrument.toString()) //
 				.forEach((sn, backTest) -> {
 					var conclusion = backTest.concludeLog.toString();
 					LogUtil.info("BEGIN strategy = " + sn + conclusion);

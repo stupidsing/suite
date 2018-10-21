@@ -16,7 +16,7 @@ import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade;
@@ -143,16 +143,16 @@ public class DailyMain {
 	private Result mamr(float factor) {
 		var tag = "mamr";
 		var nHoldDays = 8;
-		var assets = cfg.queryCompanies();
+		var instruments = cfg.queryCompanies();
 		var strategy = new Strategos().movingAvgMeanReverting(64, nHoldDays, .15f);
 
 		// pre-fetch quotes
-		cfg.quote(assets.map(asset -> asset.symbol).toSet());
+		cfg.quote(instruments.map(instrument -> instrument.symbol).toSet());
 
 		// identify stocks that are mean-reverting
 		var backTestBySymbol = SerializedStoreCache //
 				.of(serialize.mapOfString(serialize.boolean_)) //
-				.get(getClass().getSimpleName() + ".backTestBySymbol", () -> assets //
+				.get(getClass().getSimpleName() + ".backTestBySymbol", () -> instruments //
 						.map2(stock -> stock.symbol, stock -> {
 							try {
 								var period = TimeRange.threeYears();
@@ -170,8 +170,8 @@ public class DailyMain {
 		var trades = new ArrayList<Trade>();
 
 		// capture signals
-		for (var asset : assets) {
-			var symbol = asset.symbol;
+		for (var instrument : instruments) {
+			var symbol = instrument.symbol;
 
 			if (backTestBySymbol.get(symbol) == Boolean.TRUE)
 				try {
@@ -181,13 +181,13 @@ public class DailyMain {
 					var latestPrice = prices[last];
 
 					var signal = strategy.analyze(prices).get(last);
-					var nShares = signal * asset.lotSize * Math.round(factor / nHoldDays / (asset.lotSize * latestPrice));
+					var nShares = signal * instrument.lotSize * Math.round(factor / nHoldDays / (instrument.lotSize * latestPrice));
 					var trade = Trade.of(nShares, symbol, latestPrice);
 
 					if (signal != 0)
 						trades.add(trade);
 				} catch (Exception ex) {
-					LogUtil.warn(ex.getMessage() + " in " + asset);
+					LogUtil.warn(ex.getMessage() + " in " + instrument);
 				}
 		}
 
@@ -199,9 +199,9 @@ public class DailyMain {
 	}
 
 	public BackAllocConfiguration pairs(String symbol0, String symbol1) {
-		var assets = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect();
+		var instruments = Read.each(symbol0, symbol1).map(cfg::queryCompany).collect();
 		var backAllocator = BackAllocatorOld.me.pairs(cfg, symbol0, symbol1).unleverage();
-		return new BackAllocConfiguration(time -> assets, backAllocator);
+		return new BackAllocConfiguration(time -> instruments, backAllocator);
 	}
 
 	// some orders caused by stupid bugs. need to sell those at suitable times.
@@ -226,16 +226,16 @@ public class DailyMain {
 
 	private Result alloc(Pair<String, BackAllocConfiguration> pair, float fund) {
 		var bac = pair.t1;
-		return alloc(pair.t0, fund, bac.backAllocator, bac.assetsFun.apply(today));
+		return alloc(pair.t0, fund, bac.backAllocator, bac.instrumentsFun.apply(today));
 	}
 
 	private Result alloc(String tag, BackAllocConfiguration pair, float fund) {
-		return alloc(tag, fund, pair.backAllocator, pair.assetsFun.apply(today));
+		return alloc(tag, fund, pair.backAllocator, pair.instrumentsFun.apply(today));
 	}
 
-	private Result alloc(String tag, float fund, BackAllocator backAllocator, Streamlet<Asset> assets) {
+	private Result alloc(String tag, float fund, BackAllocator backAllocator, Streamlet<Instrument> instruments) {
 		var period = TimeRange.daysBefore(64);
-		var sim = BackAllocTester.of(cfg, period, assets, backAllocator, log).simulate(fund);
+		var sim = BackAllocTester.of(cfg, period, instruments, backAllocator, log).simulate(fund);
 		var account0 = Account.ofPortfolio(cfg.queryHistory().filter(r -> String_.equals(r.strategy, tag)));
 		var account1 = sim.account;
 		var assets0 = account0.assets();

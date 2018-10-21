@@ -20,7 +20,7 @@ import suite.streamlet.As;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.util.String_;
 import suite.util.To;
 
@@ -157,14 +157,14 @@ public class Hkex {
 			+ "\n0813.HK|Shimao Property Holdings Ltd.|500|39764" //
 	;
 
-	private Streamlet<Asset> companies = Read //
+	private Streamlet<Instrument> companies = Read //
 			.from(lines.split("\n")) //
 			.filter(line -> !line.isEmpty()) //
 			.map(line -> line.split("\\|")) //
-			.map(array -> Asset.of(array[0], array[1], Integer.parseInt(array[2]), Integer.parseInt(array[3]))) //
+			.map(array -> Instrument.of(array[0], array[1], Integer.parseInt(array[2]), Integer.parseInt(array[3]))) //
 			.collect();
 
-	private Map<String, Asset> companyBySymbol = Read.from(companies).toMap(company -> company.symbol);
+	private Map<String, Instrument> companyBySymbol = Read.from(companies).toMap(company -> company.symbol);
 
 	public static final Set<String> commonFirstNames = new HashSet<>(
 			List.of("", "China", "Guangdong", "Hang", "HK", "Hongkong", "New", "Standard"));
@@ -234,18 +234,18 @@ public class Hkex {
 		public List<Data> data;
 	}
 
-	public Streamlet<Asset> getCompanies() {
+	public Streamlet<Instrument> getCompanies() {
 		return companies;
 	}
 
-	public Asset queryCompany(String symbol) {
-		return !String_.equals(symbol, "6098.HK") ? queryCompany_(symbol) : Asset.of("6098.HK", "CG SERVICES", 1000);
+	public Instrument queryCompany(String symbol) {
+		return !String_.equals(symbol, "6098.HK") ? queryCompany_(symbol) : Instrument.of("6098.HK", "CG SERVICES", 1000);
 	}
 
-	private Asset queryCompany_(String symbol) {
-		var asset = companyBySymbol.get(symbol);
+	private Instrument queryCompany_(String symbol) {
+		var instrument = companyBySymbol.get(symbol);
 
-		if (asset == null && !delisted.contains(symbol)) {
+		if (instrument == null && !delisted.contains(symbol)) {
 			var json = query("" //
 					+ "https://www.hkex.com.hk/eng/csm/ws/Company.asmx/GetData" //
 					+ "?location=companySearch" //
@@ -259,24 +259,24 @@ public class Hkex {
 
 			var companyInfo = mapper.convertValue(json, CompanyInfo.class);
 
-			asset = Asset.of( //
+			instrument = Instrument.of( //
 					HkexUtil.toSymbol(companyInfo.stockCode), //
 					companyInfo.stockName.split("\\[")[0].trim(), //
 					queryBoardLot(symbol));
 		}
 
-		return asset;
+		return instrument;
 	}
 
-	public Streamlet<Asset> queryCompanies() {
+	public Streamlet<Instrument> queryCompanies() {
 		return Read //
 				.each(queryCompanies(0), queryCompanies(1), queryCompanies(2)) //
 				.flatMap(list -> list);
 	}
 
-	private List<Asset> queryCompanies(int pageNo) {
+	private List<Instrument> queryCompanies(int pageNo) {
 		return SerializedStoreCache //
-				.of(serialize.list(Asset.serializer)) //
+				.of(serialize.list(Instrument.serializer)) //
 				.get(getClass().getSimpleName() + ".queryCompanies(" + pageNo + ")", () -> queryCompanies_(pageNo));
 	}
 
@@ -327,7 +327,7 @@ public class Hkex {
 				.uniqueResult());
 	}
 
-	private List<Asset> queryCompanies_(int pageNo) {
+	private List<Instrument> queryCompanies_(int pageNo) {
 		var json = query("" //
 				+ "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
 				+ "?location=companySearch" //
@@ -369,7 +369,7 @@ public class Hkex {
 
 		var data1 = data0.collect();
 		var lotSizeBySymbol = queryLotSizeBySymbol_(data1.map(this::toSymbol));
-		return data1.map(datum -> toAsset(datum, lotSizeBySymbol)).toList();
+		return data1.map(datum -> toinstrument(datum, lotSizeBySymbol)).toList();
 	}
 
 	private Map<String, Integer> queryLotSizeBySymbol_(Streamlet<String> symbols) {
@@ -426,9 +426,9 @@ public class Hkex {
 		return json;
 	}
 
-	private Asset toAsset(List<String> list, Map<String, Integer> lotSizeBySymbol) {
+	private Instrument toinstrument(List<String> list, Map<String, Integer> lotSizeBySymbol) {
 		var symbol = toSymbol(list);
-		return Asset.of( //
+		return Instrument.of( //
 				symbol, //
 				list.get(2).trim(), //
 				lotSizeBySymbol.get(symbol), //

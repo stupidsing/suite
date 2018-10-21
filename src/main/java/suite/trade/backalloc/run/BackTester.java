@@ -12,7 +12,7 @@ import suite.streamlet.FunUtil;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.TimeRange;
 import suite.trade.backalloc.BackAllocTester;
 import suite.trade.backalloc.BackAllocTester.Simulate;
@@ -29,12 +29,12 @@ public class BackTester {
 	private Statistic stat = new Statistic();
 
 	public Simulate backTest(BackAllocator backAllocator, TimeRange period) {
-		var assets0 = cfg.queryCompaniesByMarketCap(period.from); // hkex.getCompanies()
-		return backTest(backAllocator, period, assets0);
+		var instruments0 = cfg.queryCompaniesByMarketCap(period.from); // hkex.getCompanies()
+		return backTest(backAllocator, period, instruments0);
 	}
 
-	public Simulate backTest(BackAllocator backAllocator, TimeRange period, Streamlet<Asset> assets) {
-		return BackAllocTester.of(cfg, period, assets, backAllocator, log).simulate(initial);
+	public Simulate backTest(BackAllocator backAllocator, TimeRange period, Streamlet<Instrument> instruments) {
+		return BackAllocTester.of(cfg, period, instruments, backAllocator, log).simulate(initial);
 	}
 
 	public <T> String conclude(Streamlet2<T, Simulate> simulationsByKey) {

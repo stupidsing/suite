@@ -18,12 +18,12 @@ import suite.util.To;
 
 public class Account {
 
-	private static String cashCode = Asset.cashSymbol;
+	private static String cashCode = Instrument.cashSymbol;
 
 	public static Account ofCash(float cash) {
-		var assets = new HashMap<String, Integer>();
-		assets.put(cashCode, (int) cash);
-		return new Account(assets);
+		var instruments = new HashMap<String, Integer>();
+		instruments.put(cashCode, (int) cash);
+		return new Account(instruments);
 	}
 
 	public static Account ofHistory(Iterable<Trade> trades) {
@@ -103,11 +103,11 @@ public class Account {
 		}
 	}
 
-	private void update(String code, int amount) {
+	private void update(String symbol, int amount) {
 		if (amount != 0)
-			assets.put(code, amount);
+			assets.put(symbol, amount);
 		else
-			assets.remove(code);
+			assets.remove(symbol);
 	}
 
 	public boolean validate() {

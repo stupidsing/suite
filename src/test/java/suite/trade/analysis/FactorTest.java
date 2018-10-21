@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.Usex;
 import suite.trade.data.TradeCfg;
@@ -18,16 +18,16 @@ public class FactorTest {
 	public void test() {
 		var indices = Read.each(Usex.crudeOil);
 
-		var assets0 = cfg.queryCompaniesByMarketCap(Time.now());
-		var assets1 = cfg.queryHistory().map(trade -> trade.symbol).distinct().map(cfg::queryCompany);
+		var instruments0 = cfg.queryCompaniesByMarketCap(Time.now());
+		var instruments1 = cfg.queryHistory().map(trade -> trade.symbol).distinct().map(cfg::queryCompany);
 
-		var assets = Streamlet //
-				.concat(assets0, assets1) //
-				.cons(Asset.hsi) //
+		var instruments = Streamlet //
+				.concat(instruments0, instruments1) //
+				.cons(Instrument.hsi) //
 				.cons(cfg.queryCompany("0753.HK")) //
 				.distinct();
 
-		var pairs = Factor.of(cfg, indices).query(assets);
+		var pairs = Factor.of(cfg, indices).query(instruments);
 		pairs.forEach(System.out::println);
 	}
 

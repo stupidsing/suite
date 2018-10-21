@@ -24,7 +24,7 @@ import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.data.DataSource;
@@ -56,7 +56,7 @@ public class StatisticalArbitrageTest {
 	public void testAutoRegressivePowersOfTwo() {
 		var power = 6;
 
-		var ds = cfg.dataSource(Asset.hsiSymbol).cleanse();
+		var ds = cfg.dataSource(Instrument.hsiSymbol).cleanse();
 		var prices = ds.prices;
 		var mas = To.array(power, float[].class, p -> ma.movingAvg(prices, 1 << p));
 		var returns = ts.returns(prices);
@@ -114,7 +114,7 @@ public class StatisticalArbitrageTest {
 
 	@Test
 	public void testMarketDirection() {
-		var ds = cfg.dataSource(Asset.hsiSymbol).cleanse();
+		var ds = cfg.dataSource(Instrument.hsiSymbol).cleanse();
 		var flagsArray = mt.time(ds.prices);
 		var flags0 = "-----";
 
@@ -136,7 +136,7 @@ public class StatisticalArbitrageTest {
 		var nTrials = 10000;
 		var nBets = 40;
 
-		var ds = cfg.dataSource(Asset.hsiSymbol).range(period).cleanse();
+		var ds = cfg.dataSource(Instrument.hsiSymbol).range(period).cleanse();
 		var returns = ds.returns();
 
 		for (var bet = 0f - 2f; bet < 1f + 2f; bet += .02f) {
@@ -160,7 +160,7 @@ public class StatisticalArbitrageTest {
 	public void testPeRatio() {
 		var out = cfg //
 				.queryCompaniesByMarketCap(Time.now()) //
-				.map(asset -> asset.symbol) //
+				.map(instrument -> instrument.symbol) //
 				.collect(symbols -> sina.queryFactors(As.streamlet(symbols), true)) //
 				.map2(factor -> factor.symbol, factor -> factor.pe) //
 				.sortByValue(Float::compare) //
@@ -192,7 +192,7 @@ public class StatisticalArbitrageTest {
 	// Naive Bayes return prediction
 	@Test
 	public void testReturnDistribution() {
-		var prices = cfg.dataSource(Asset.hsiSymbol).range(period).prices;
+		var prices = cfg.dataSource(Instrument.hsiSymbol).range(period).prices;
 		var maxTor = 16;
 
 		var differencesByTor = forInt(1, maxTor) //
@@ -303,7 +303,7 @@ public class StatisticalArbitrageTest {
 	private AlignKeyDataSource<String> dataSources() {
 		var symbols = cfg //
 				.queryCompaniesByMarketCap(Time.now()) //
-				.map(asset -> asset.symbol);
+				.map(instrument -> instrument.symbol);
 
 		return cfg.dataSources(period, symbols);
 	}

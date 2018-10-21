@@ -13,7 +13,7 @@ import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.trade.Account;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade;
@@ -27,7 +27,7 @@ public class BackAllocTester {
 
 	private TradeCfg cfg;
 	private TimeRange period;
-	private Streamlet<Asset> assets;
+	private Streamlet<Instrument> instruments;
 	private BackAllocator backAllocator;
 	private Sink<String> log;
 
@@ -37,21 +37,21 @@ public class BackAllocTester {
 	public static BackAllocTester of( //
 			TradeCfg cfg, //
 			TimeRange period, //
-			Streamlet<Asset> assets, //
+			Streamlet<Instrument> instruments, //
 			BackAllocator backAllocator, //
 			Sink<String> log) {
-		return new BackAllocTester(cfg, period, assets.distinct(), backAllocator, log);
+		return new BackAllocTester(cfg, period, instruments.distinct(), backAllocator, log);
 	}
 
 	private BackAllocTester( //
 			TradeCfg cfg, //
 			TimeRange period, //
-			Streamlet<Asset> assets, //
+			Streamlet<Instrument> instruments, //
 			BackAllocator backAllocator, //
 			Sink<String> log) {
 		this.cfg = cfg;
 		this.period = period;
-		this.assets = assets;
+		this.instruments = instruments;
 		this.backAllocator = backAllocator;
 		this.log = log;
 	}
@@ -74,9 +74,9 @@ public class BackAllocTester {
 			account = Account.ofCash(fund0);
 			trades = new ArrayList<>();
 
-			var assetBySymbol = assets.toMap(asset -> asset.symbol);
+			var instrumentBySymbol = instruments.toMap(instrument -> instrument.symbol);
 			var holdBySymbol_ = new HashMap<String, Double>();
-			var symbols = assetBySymbol.keySet();
+			var symbols = instrumentBySymbol.keySet();
 			var historyPeriod = TimeRange.of(period.from.addYears(-1), period.to);
 
 			var akds = cfg.dataSources(historyPeriod, Read.from(symbols));
@@ -109,7 +109,7 @@ public class BackAllocTester {
 					eodBySymbol = dsBySymbol.mapValue(ds -> ds.getEod(index)).toMap();
 
 					var ratioBySymbol = onDateTime.onDateTime(index + 1);
-					var up = Trade_.updatePortfolio(ymd, account, ratioBySymbol, assetBySymbol, eodBySymbol);
+					var up = Trade_.updatePortfolio(ymd, account, ratioBySymbol, instrumentBySymbol, eodBySymbol);
 					var valuation_ = valuations_[i] = up.valuation0;
 
 					for (var e : up.val0.streamlet())

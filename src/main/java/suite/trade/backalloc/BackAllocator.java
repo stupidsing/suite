@@ -26,7 +26,7 @@ import suite.primitive.adt.pair.DblFltPair;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.Trade_;
 import suite.trade.Usex;
@@ -52,10 +52,9 @@ public interface BackAllocator {
 	public interface OnDateTime {
 
 		/**
-		 * @return a portfolio consisting of list of symbols and potential
-		 *         values, or null if the strategy do not want to trade on that
-		 *         date. The assets will be allocated according to potential
-		 *         values pro-rata.
+		 * @return a portfolio consisting of list of symbols and potential values, or
+		 *         null if the strategy do not want to trade on that date. The assets
+		 *         will be allocated according to potential values pro-rata.
 		 */
 		public List<Pair<String, Double>> onDateTime(int index);
 	}
@@ -88,12 +87,12 @@ public interface BackAllocator {
 		};
 	}
 
-	public default BackAllocConfiguration cfg(Fun<Time, Streamlet<Asset>> assetsFun) {
-		return new BackAllocConfiguration(assetsFun, this);
+	public default BackAllocConfiguration cfg(Fun<Time, Streamlet<Instrument>> instrumentsFun) {
+		return new BackAllocConfiguration(instrumentsFun, this);
 	}
 
-	public default BackAllocConfiguration cfgUnl(Fun<Time, Streamlet<Asset>> assetsFun) {
-		return pick(40).unleverage().cfg(assetsFun);
+	public default BackAllocConfiguration cfgUnl(Fun<Time, Streamlet<Instrument>> instrumentsFun) {
+		return pick(40).unleverage().cfg(instrumentsFun);
 	}
 
 	public default BackAllocator dump() {
@@ -125,7 +124,7 @@ public interface BackAllocator {
 					var each = 1d / size;
 
 					return potentialBySymbol //
-							.filterKey(symbol -> !String_.equals(symbol, Asset.cashSymbol)) //
+							.filterKey(symbol -> !String_.equals(symbol, Instrument.cashSymbol)) //
 							.mapValue(potential -> 1d / each) //
 							.toList();
 				} else
@@ -134,7 +133,7 @@ public interface BackAllocator {
 		};
 	}
 
-	public default BackAllocator filterByAsset(Predicate<String> pred) {
+	public default BackAllocator filterBySymbol(Predicate<String> pred) {
 		return (akds0, indices) -> {
 			var akds1 = new AlignKeyDataSource<>(akds0.ts, akds0.dsByKey.filterKey(pred));
 

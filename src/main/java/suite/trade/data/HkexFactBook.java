@@ -71,8 +71,8 @@ public class HkexFactBook {
 		return Read //
 				.from(list1) //
 				.map(list -> {
-					// Asset asset = new
-					// Asset(HkexUtil.toSymbol(list.get(1).replace("*",
+					// var instrument = new
+					// Instrument(HkexUtil.toSymbol(list.get(1).replace("*",
 					// "")), list.get(2));
 					return HkexUtil.toSymbol(list.get(1).replace("*", ""));
 				}) //

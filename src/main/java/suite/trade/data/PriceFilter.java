@@ -8,7 +8,7 @@ import java.util.Set;
 import suite.primitive.Floats_;
 import suite.primitive.Flt_Flt;
 import suite.streamlet.Read;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.TimeRange;
 
 public class PriceFilter {
@@ -31,7 +31,7 @@ public class PriceFilter {
 				ds.volumes);
 	}
 
-	public Asset queryCompany(String symbol) {
+	public Instrument queryCompany(String symbol) {
 		return cfg.queryCompany(s(symbol));
 	}
 

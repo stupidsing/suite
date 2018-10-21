@@ -5,7 +5,7 @@ import java.util.Set;
 
 import suite.os.LogUtil;
 import suite.streamlet.Streamlet;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade;
@@ -17,11 +17,11 @@ public interface TradeCfg {
 
 	public DataSource dataSource(String symbol, TimeRange period);
 
-	public Streamlet<Asset> queryCompanies();
+	public Streamlet<Instrument> queryCompanies();
 
-	public Streamlet<Asset> queryCompaniesByMarketCap(Time time);
+	public Streamlet<Instrument> queryCompaniesByMarketCap(Time time);
 
-	public Asset queryCompany(String symbol);
+	public Instrument queryCompany(String symbol);
 
 	public Streamlet<Trade> queryHistory();
 

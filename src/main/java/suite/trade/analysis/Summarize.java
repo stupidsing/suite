@@ -139,10 +139,10 @@ public class Summarize {
 		var details = Read //
 				.from2(Trade_.portfolio(trades0)) //
 				.map((symbol, nShares) -> {
-					var asset = cfg.queryCompany(symbol);
+					var instrument = cfg.queryCompany(symbol);
 					var price = priceBySymbol.get(symbol);
 					var info = infoFun.apply(symbol);
-					return asset //
+					return instrument //
 							+ ": " + price + " * " + nShares //
 							+ " = " + ((long) (nShares * price)) //
 							+ (info != null ? " \t(" + info + ")" : "");

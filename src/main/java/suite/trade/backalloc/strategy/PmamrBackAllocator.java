@@ -5,7 +5,7 @@ import static suite.util.Friends.log1p;
 
 import suite.math.numeric.Statistic.LinearRegression;
 import suite.streamlet.Read;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
 import suite.trade.analysis.MovingAverage;
@@ -67,7 +67,7 @@ public class PmamrBackAllocator {
 						}) //
 						.filterValue(ps -> ps.dailyReturn < 0d) //
 						.filterValue(ps -> 0d < ps.sharpe) //
-						.cons(Asset.cashSymbol, new PotentialStat(Trade_.riskFreeInterestRate, 1d, 0d)) //
+						.cons(Instrument.cashSymbol, new PotentialStat(Trade_.riskFreeInterestRate, 1d, 0d)) //
 						.mapValue(ps -> ps.kelly) //
 						.sortBy((symbol, potential) -> -potential) //
 						.take(top) //

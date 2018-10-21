@@ -12,7 +12,7 @@ import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 import suite.trade.Trade_;
@@ -52,7 +52,7 @@ public class BackTestMain {
 				}) //
 				: forInt(2007, Trade_.thisYear).map(i -> i);
 
-		Fun<Time, Streamlet<Asset>> fun = !arg2.isEmpty() //
+		Fun<Time, Streamlet<Instrument>> fun = !arg2.isEmpty() //
 				? time -> Read.from(arg2.split(",")).map(cfg::queryCompany).collect() //
 				: cfg::queryCompaniesByMarketCap;
 
@@ -65,8 +65,8 @@ public class BackTestMain {
 				.join2(years.sort(Object_::compare).map(TimeRange::ofYear)) //
 				.map2((pair, period) -> pair.t0, (pair, period) -> {
 					var bac = pair.t1;
-					var assets = bac.assetsFun.apply(period.from);
-					return runner.backTest(bac.backAllocator, period, assets);
+					var instruments = bac.instrumentsFun.apply(period.from);
+					return runner.backTest(bac.backAllocator, period, instruments);
 				}) //
 				.collect();
 

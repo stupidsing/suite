@@ -1,15 +1,15 @@
 package suite.trade.walkforwardalloc;
 
 import suite.streamlet.Streamlet;
-import suite.trade.Asset;
+import suite.trade.Instrument;
 
 public class WalkForwardAllocConfiguration {
 
-	public final Streamlet<Asset> assets;
+	public final Streamlet<Instrument> instruments;
 	public final WalkForwardAllocator walkForwardAllocator;
 
-	public WalkForwardAllocConfiguration(Streamlet<Asset> assets, WalkForwardAllocator walkForwardAllocator) {
-		this.assets = assets;
+	public WalkForwardAllocConfiguration(Streamlet<Instrument> instruments, WalkForwardAllocator walkForwardAllocator) {
+		this.instruments = instruments;
 		this.walkForwardAllocator = walkForwardAllocator;
 	}
 

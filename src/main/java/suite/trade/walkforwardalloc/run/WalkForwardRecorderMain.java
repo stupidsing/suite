@@ -35,7 +35,7 @@ public class WalkForwardRecorderMain {
 	}
 
 	private boolean run() {
-		var assets = cfg.queryCompaniesByMarketCap(Time.now());
+		var instruments = cfg.queryCompaniesByMarketCap(Time.now());
 		var fund0 = 1000000f;
 
 		Trade_.isCacheQuotes = false;
@@ -49,7 +49,7 @@ public class WalkForwardRecorderMain {
 			var schedule = Schedule //
 					.ofRepeat(5, () -> {
 						var ymdHms = Time.now().ymdHms();
-						var priceBySymbol = cfg.quote(assets.map(asset -> asset.symbol).toSet());
+						var priceBySymbol = cfg.quote(instruments.map(instrument -> instrument.symbol).toSet());
 
 						try (var os = Files.newOutputStream(HomeDir.resolve(filename), //
 								StandardOpenOption.APPEND, StandardOpenOption.CREATE, StandardOpenOption.WRITE); //
@@ -82,7 +82,7 @@ public class WalkForwardRecorderMain {
 					cfg.queryCompaniesByMarketCap(Time.now()), //
 					bag.rsi.unleverage().walkForwardAllocator());
 
-			var tester = new WalkForwardAllocTester(cfg, wfac.assets, fund0, wfac.walkForwardAllocator);
+			var tester = new WalkForwardAllocTester(cfg, wfac.instruments, fund0, wfac.walkForwardAllocator);
 
 			for (var e : data.entrySet())
 				System.out.println(tester.tick(e.getKey(), e.getValue()));
