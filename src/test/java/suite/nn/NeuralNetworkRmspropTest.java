@@ -101,7 +101,7 @@ public class NeuralNetworkRmspropTest {
 
 			var adjusts = To.matrix(nInputs, nOutputs, (i, j) -> deltas[i][j] * learningRate / sqrt(rmsProps[i][j]));
 
-			return mtx.mul_mTn(derives, weights = mtx.add(weights, adjusts)); // nPoints * nInputs
+			return mtx.mul_mnT(derives, weights = mtx.add(weights, adjusts)); // nPoints * nInputs
 		}
 	}
 
