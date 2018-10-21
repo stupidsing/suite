@@ -28,7 +28,7 @@ public class HtmlUtilTest {
 
 	@Test
 	public void testVariable() {
-		var h = "<meta charset='utf-8'><html>{ abc.def }</html>";
+		var h = "<meta charset='utf-8'><html>{ vm.abc.def }</html>";
 		var hn = html.parse(h);
 		Dump.details(hn);
 		System.out.println(generate(hn));
@@ -69,7 +69,7 @@ public class HtmlUtilTest {
 					sb.append("))");
 				} else {
 					sb.append("rd.dom(vm => document.createTextNode(");
-					s(h.tag);
+					s(html.decode(h.tag));
 					sb.append("))");
 				}
 			}
@@ -81,7 +81,7 @@ public class HtmlUtilTest {
 				while (0 <= (pos1 = s.indexOf("{", pos0)) && 0 <= (pos2 = s.indexOf("}", pos1))) {
 					if (c(s.substring(pos0, pos1)))
 						sb.append(" + ");
-					sb.append("vm." + s.substring(pos1 + 1, pos2).trim() + " + ");
+					sb.append(s.substring(pos1 + 1, pos2).trim() + " + ");
 					pos0 = pos2 + 1;
 				}
 
