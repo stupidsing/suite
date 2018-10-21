@@ -147,10 +147,14 @@ public class FunpTest {
 		for (var isOptimize : new boolean[] { false, true, }) {
 			LogUtil.info(program);
 
-			var actual = Funp_.main(isOptimize).compile(interpret.codeStart, program).map((instructions, code) -> {
-				LogUtil.info("Hex" + code + "\n\n");
-				return interpret.interpret(instructions, code, Bytes.of());
-			}).intValue();
+			var actual = Funp_ //
+					.main(isOptimize) //
+					.compile(interpret.codeStart, program) //
+					.map((instructions, code) -> {
+						LogUtil.info("Hex" + code + "\n\n");
+						return interpret.interpret(instructions, code, Bytes.of());
+					}) //
+					.intValue();
 
 			assertEquals(expected, actual);
 		}
