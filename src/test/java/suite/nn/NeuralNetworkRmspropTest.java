@@ -26,15 +26,14 @@ public class NeuralNetworkRmspropTest {
 
 	@Test
 	public void test() {
-		var inputs = mtx.transpose(new float[][] { //
+		var inputs = new float[][] { //
 				{ -1f, -1f, 1f, }, //
 				{ -1f, 1f, 1f, }, //
 				{ 1f, -1f, 1f, }, //
 				{ 1f, 1f, 1f, }, //
-		});
+		};
 
-		var outputs = new float[][] { { -1f, -1f, 1f, 1f, }, };
-
+		var outputs = new float[][] { { -1f, }, { -1f, }, { 1f, }, { 1f, }, };
 		var nn = new Nn(new int[] { 3, 4, 1, });
 		float[][] results = null;
 
@@ -45,9 +44,9 @@ public class NeuralNetworkRmspropTest {
 		}
 
 		assertTrue(results[0][0] < -.5f);
-		assertTrue(results[0][1] < -.5f);
-		assertTrue(.5f < results[0][2]);
-		assertTrue(.5f < results[0][3]);
+		assertTrue(results[1][0] < -.5f);
+		assertTrue(.5f < results[2][0]);
+		assertTrue(.5f < results[3][0]);
 	}
 
 	private class Nn {
@@ -71,9 +70,9 @@ public class NeuralNetworkRmspropTest {
 	private class Layer {
 		private int nInputs;
 		private int nOutputs;
-		private float[][] inputs; // nInputs * nPoints
-		private float[][] weights; // nOutputs * nInputs
-		private float[][] outputs; // nOutputs * nPoints
+		private float[][] inputs; // nPoints * nInputs
+		private float[][] weights; // nInputs * nOutputs
+		private float[][] outputs; // nPoints * nOutputs
 		private float[][] rmsProps;
 		Dbl_Dbl activate = Tanh::tanh;
 		Dbl_Dbl activateGradient = Tanh::tanhGradient;
@@ -81,29 +80,28 @@ public class NeuralNetworkRmspropTest {
 		private Layer(int nInputs, int nOutputs) {
 			this.nInputs = nInputs;
 			this.nOutputs = nOutputs;
-			weights = To.matrix(nOutputs, nInputs, (i, j) -> random.nextGaussian() * initRate);
-			rmsProps = To.matrix(nOutputs, nInputs, (i, j) -> Math.abs(random.nextGaussian()) * initRate);
+			weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextGaussian() * initRate);
+			rmsProps = To.matrix(nInputs, nOutputs, (i, j) -> Math.abs(random.nextGaussian()) * initRate);
 
 		}
 
 		private float[][] feed(float[][] inputs_) {
-			return outputs = mtx.map(mtx.mul(weights, inputs = inputs_), activate);
+			return outputs = mtx.map(mtx.mul(inputs = inputs_, weights), activate);
 		}
 
 		private float[][] backprop(float[][] errors) {
-			var nPoints = mtx.width(errors);
-			var gradients = mtx.map(outputs, activateGradient);
-			var derives = To.matrix(nOutputs, nPoints, (i, j) -> errors[i][j] * gradients[i][j]);
+			var nPoints = mtx.height(errors);
+			var derives = To.matrix(nPoints, nOutputs, (i, j) -> errors[i][j] * activateGradient.apply(outputs[i][j]));
 
-			var deltas = To.matrix(nOutputs, nInputs,
-					(io, ii) -> forInt(nPoints).toDouble(Int_Dbl.sum(i -> derives[io][i] * inputs[ii][i])));
+			var deltas = To.matrix(nInputs, nOutputs,
+					(ii, io) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][ii] * derives[p][io])));
 
 			var deltaSqs = mtx.map(deltas, delta -> delta * delta);
 			rmsProps = mtx.add(mtx.scale(deltaSqs, .01d), mtx.scale(rmsProps, .99d));
 
-			var adjusts = To.matrix(nOutputs, nInputs, (i, j) -> deltas[i][j] * learningRate / sqrt(rmsProps[i][j]));
+			var adjusts = To.matrix(nInputs, nOutputs, (i, j) -> deltas[i][j] * learningRate / sqrt(rmsProps[i][j]));
 
-			return mtx.mul_mTn(weights = mtx.add(weights, adjusts), derives); // nInputs * nPoints
+			return mtx.mul_mTn(derives, weights = mtx.add(weights, adjusts)); // nPoints * nInputs
 		}
 	}
 
