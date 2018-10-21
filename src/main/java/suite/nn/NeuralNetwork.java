@@ -148,12 +148,42 @@ public class NeuralNetwork {
 			var outputs = Sigmoid.sigmoidOn(mtx.mul(inputs, weights));
 
 			return new Out<>(outputs, errors -> {
+				var derivatives = errors;
 				for (var j = 0; j < nOutputs; j++) {
-					var e = errors[j] *= (float) Sigmoid.sigmoidGradient(outputs[j]);
+					var e = derivatives[j] *= (float) Sigmoid.sigmoidGradient(outputs[j]);
 					for (var i = 0; i < nInputs; i++)
 						weights[i][j] += learningRate * inputs[i] * e;
 				}
-				return mtx.mul(weights, errors);
+				return mtx.mul(weights, derivatives);
+			});
+		};
+	}
+
+	private Layer<float[], float[]> feedForwardRmspropLayer(int nInputs, int nOutputs) {
+		var learningRate_ = learningRate * .01d;
+
+		IntObj_Obj<IntInt_Dbl, float[][]> nmf0 = (d, f) -> To.matrix(d, nOutputs, f);
+		Fun<IntInt_Dbl, float[][]> nmf1 = f -> nmf0.apply(nInputs, f);
+		var weights = nmf1.apply((i, j) -> random.nextGaussian() * initRate);
+		var rmsProps = nmf1.apply((i, j) -> Math.abs(random.nextGaussian()) * initRate);
+
+		return inputs -> {
+			var outputs = Tanh.tanhOn(mtx.mul(inputs, weights));
+
+			return new Out<>(outputs, errors -> {
+				var derivatives = errors;
+				mtx.scaleOn(rmsProps, .99d);
+				for (var j = 0; j < nOutputs; j++) {
+					var e = derivatives[j] *= (float) Tanh.tanhGradient(outputs[j]);
+					for (var i = 0; i < nInputs; i++) {
+						var delta = inputs[i] * e;
+						var deltaSq = delta * delta;
+						var rmsProp = rmsProps[i][j] += deltaSq * .01d;
+						var adjust = delta * learningRate_ / sqrt(rmsProp);
+						weights[i][j] += adjust;
+					}
+				}
+				return mtx.mul(weights, derivatives);
 			});
 		};
 	}
@@ -173,13 +203,13 @@ public class NeuralNetwork {
 			var outputs = mtx.mapOn(mtx.mul(inputs, weights), Tanh::tanh);
 
 			return new Out<>(outputs, errors -> {
-				var derives = nmf0.apply(nPoints, (i, j) -> errors[i][j] * Tanh.tanhGradient(outputs[i][j]));
-				var deltas = nmf1.apply((i, o) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][i] * derives[p][o])));
+				var derivatives = nmf0.apply(nPoints, (i, j) -> errors[i][j] * Tanh.tanhGradient(outputs[i][j]));
+				var deltas = nmf1.apply((i, o) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][i] * derivatives[p][o])));
 				var deltaSqs = mtx.map(deltas, delta -> delta * delta);
 				mtx.addOn(mtx.scaleOn(rmsProps, .99d), mtx.scaleOn(deltaSqs, .01d));
 
 				var adjusts = nmf1.apply((i, j) -> deltas[i][j] * learningRate_ / sqrt(rmsProps[i][j]));
-				return mtx.mul_mnT(derives, mtx.addOn(weights, adjusts)); // nPoints * nInputs
+				return mtx.mul_mnT(derivatives, mtx.addOn(weights, adjusts)); // nPoints * nInputs
 			});
 		};
 	}

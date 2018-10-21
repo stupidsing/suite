@@ -91,13 +91,13 @@ public class NeuralNetworkMinibatchRmspropTest0 {
 
 		private float[][] backprop(float[][] errors) {
 			var nPoints = mtx.height(errors);
-			var derives = newMatrix(nPoints, (i, j) -> errors[i][j] * activateGradient.apply(outputs[i][j]));
-			var deltas = newMatrix((i, o) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][i] * derives[p][o])));
+			var derivatives = newMatrix(nPoints, (i, j) -> errors[i][j] * activateGradient.apply(outputs[i][j]));
+			var deltas = newMatrix((i, o) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][i] * derivatives[p][o])));
 			var deltaSqs = mtx.map(deltas, delta -> delta * delta);
 			rmsProps = mtx.addOn(mtx.scaleOn(rmsProps, .99d), mtx.scaleOn(deltaSqs, .01d));
 
 			var adjusts = newMatrix((i, j) -> deltas[i][j] * learningRate / sqrt(rmsProps[i][j]));
-			return mtx.mul_mnT(derives, weights = mtx.add(weights, adjusts)); // nPoints * nInputs
+			return mtx.mul_mnT(derivatives, weights = mtx.add(weights, adjusts)); // nPoints * nInputs
 		}
 
 		private float[][] newMatrix(IntInt_Dbl f) {
