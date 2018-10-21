@@ -91,7 +91,7 @@ public class NeuralNetworkRmspropTest {
 		}
 
 		private float[][] backprop(float[][] errors) {
-			var nPoints = errors[0].length;
+			var nPoints = mtx.width(errors);
 			var gradients = mtx.map(outputs, activateGradient);
 			var derives = To.matrix(nOutputs, nPoints, (i, j) -> errors[i][j] * gradients[i][j]);
 
