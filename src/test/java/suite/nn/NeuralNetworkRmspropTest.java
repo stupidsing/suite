@@ -32,7 +32,7 @@ public class NeuralNetworkRmspropTest {
 
 		var result = Read.each2(op0, op1, op2).fold(true, (b, name, oper) -> {
 			var nn = new NeuralNetwork();
-			var train = nn.mlRmsprop(new int[] { inputs[0].length, 4, 1, });
+			var train = nn.mlRmsprop(new int[] { mtx.width(inputs), 4, 1, });
 
 			var expect = To.array(inputs.length, float[].class,
 					i -> new float[] { f(oper.apply(c(inputs[i][0]), c(inputs[i][1]))), });

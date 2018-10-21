@@ -35,7 +35,7 @@ public class NeuralNetworkRmspropTest0 {
 		};
 
 		var outputs = new float[][] { { -1f, }, { -1f, }, { 1f, }, { 1f, }, };
-		var nn = new Nn(new int[] { inputs[0].length, 4, 1, });
+		var nn = new Nn(new int[] { mtx.width(inputs), 4, mtx.width(outputs), });
 		float[][] results = null;
 
 		for (var i = 0; i < 1024; i++) { // overfit
