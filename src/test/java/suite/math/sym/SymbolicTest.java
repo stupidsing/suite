@@ -79,6 +79,13 @@ public class SymbolicTest {
 	}
 
 	@Test
+	public void testDifferentiationSigmoid() {
+		// actual: neg (neg 1 * exp neg x) * inv (1 + exp neg x) * inv (1 + exp neg x)
+		// expect: (exp neg x) * inv (1 + exp neg x) * inv (1 + exp neg x)
+		System.out.println(sym.d(Suite.parse("inv (1 + exp neg x)"), x));
+	}
+
+	@Test
 	public void testIntegration() {
 		verifyEquals("cos x + x * sin x", sym.i(Suite.parse("x * cos x"), x));
 	}
