@@ -38,7 +38,7 @@ public class NeuralNetworkRmspropTest0 {
 		var nn = new Nn(new int[] { inputs[0].length, 4, 1, });
 		float[][] results = null;
 
-		for (var i = 0; i < 256; i++) {
+		for (var i = 0; i < 16384; i++) { // overfit
 			var results_ = nn.feed(inputs);
 			nn.backprop(mtx.sub(outputs, results_));
 			System.out.println(mtx.toString(results = results_));
@@ -92,7 +92,7 @@ public class NeuralNetworkRmspropTest0 {
 		private float[][] backprop(float[][] errors) {
 			var nPoints = mtx.height(errors);
 			var inv = 1d / nPoints;
-			var derives = To.matrix(nPoints, nOutputs, (i, j) -> errors[i][j] * activateGradient.apply(outputs[i][j]));
+			var derives = newMatrix(nPoints, (i, j) -> errors[i][j] * activateGradient.apply(outputs[i][j]));
 			var deltas = newMatrix((i, o) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][i] * derives[p][o])) * inv);
 			var deltaSqs = mtx.map(deltas, delta -> delta * delta);
 			rmsProps = mtx.addOn(mtx.scaleOn(rmsProps, .99d), mtx.scaleOn(deltaSqs, .01d));
@@ -102,7 +102,11 @@ public class NeuralNetworkRmspropTest0 {
 		}
 
 		private float[][] newMatrix(IntInt_Dbl f) {
-			return To.matrix(nInputs, nOutputs, f);
+			return newMatrix(nInputs, f);
+		}
+
+		private float[][] newMatrix(int n, IntInt_Dbl f) {
+			return To.matrix(n, nOutputs, f);
 		}
 	}
 

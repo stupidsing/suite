@@ -36,7 +36,7 @@ public class NeuralNetworkRmspropTest {
 			var expect = To.array(inputs.length, float[].class,
 					i -> new float[] { f(oper.apply(c(inputs[i][0]), c(inputs[i][1]))), });
 
-			for (var i = 0; i < 16384; i++) {
+			for (var i = 0; i < 4096; i++) { // overfit
 				var out = train.feed(inputs);
 				var actual = out.output;
 				out.backprop.apply(mtx.sub(expect, actual));
