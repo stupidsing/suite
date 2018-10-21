@@ -184,8 +184,7 @@ public class NeuralNetwork {
 					var e = derivatives[j] *= (float) Tanh.tanhGradient(outputs[j]);
 					for (var i = 0; i < nInputs; i++) {
 						var delta = inputs[i] * e;
-						var deltaSq = delta * delta;
-						var rmsProp = rmsProps[i][j] += deltaSq * .01d;
+						var rmsProp = rmsProps[i][j] += delta * delta * .01d;
 						var adjust = delta * learningRate_ / sqrt(rmsProp);
 						weights[i][j] += adjust;
 					}
