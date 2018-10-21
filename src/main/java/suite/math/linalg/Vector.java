@@ -7,7 +7,6 @@ import static suite.util.Friends.sqrt;
 import java.util.Arrays;
 
 import suite.math.Math_;
-import suite.primitive.Dbl_Dbl;
 import suite.primitive.Int_Dbl;
 
 public class Vector {
@@ -61,14 +60,6 @@ public class Vector {
 
 	public double dotDiff(float[] m, float[] n) {
 		return dotDiff_(m, n);
-	}
-
-	public float[] map(float[] m0, Dbl_Dbl f) {
-		var h = m0.length;
-		var m1 = new float[h];
-		for (var i = 0; i < h; i++)
-			m1[i] = (float) f.apply(m0[i]);
-		return m1;
 	}
 
 	public float[] neg(float[] m) {
