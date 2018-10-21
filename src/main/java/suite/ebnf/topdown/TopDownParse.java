@@ -119,9 +119,9 @@ public class TopDownParse {
 							stack.pop().end = state_.pos;
 						else if (0 < d)
 							for (var i = 0; i < state_.frame.depth; i++) {
-								var node = new Ast(state_.frame.entity, state_.pos);
-								stack.peek().children.add(node);
-								stack.push(node);
+								var ast = new Ast(state_.frame.entity, state_.pos);
+								stack.peek().children.add(ast);
+								stack.push(ast);
 							}
 					}
 
