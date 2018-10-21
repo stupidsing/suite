@@ -9,6 +9,7 @@ import java.util.Arrays;
 import suite.math.Math_;
 import suite.math.R3;
 import suite.primitive.DblPrimitives.Obj_Dbl;
+import suite.primitive.Dbl_Dbl;
 import suite.primitive.Int_Dbl;
 import suite.streamlet.Read;
 import suite.util.To;
@@ -151,6 +152,16 @@ public class Matrix {
 		}
 
 		return n;
+	}
+
+	public float[][] map(float[][] m0, Dbl_Dbl f) {
+		var h = h(m0);
+		var w = w(m0);
+		var m1 = new float[h][w];
+		for (var i = 0; i < h; i++)
+			for (var j = 0; j < w; j++)
+				m1[i][j] = (float) f.apply(m0[i][j]);
+		return m1;
 	}
 
 	// v is a column vector; return vvT
