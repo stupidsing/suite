@@ -16,7 +16,7 @@ import suite.streamlet.Read;
 import suite.util.To;
 
 // https://gist.github.com/k15z/d6e986c4760fddf47061e3e383f139a4
-public class NeuralNetworkRmspropTest {
+public class NeuralNetworkRmspropTest0 {
 
 	private Matrix mtx = new Matrix();
 	private Random random = new Random();

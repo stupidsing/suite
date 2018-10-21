@@ -14,6 +14,7 @@ import suite.math.linalg.Matrix;
 import suite.primitive.DblMutable;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.Floats_;
+import suite.primitive.IntInt_Dbl;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Dbl;
 import suite.streamlet.FunUtil.Fun;
@@ -30,7 +31,7 @@ public class NeuralNetwork {
 	private Random random = new Random();
 
 	private double initRate = 1d;
-	private float learningRate = 1f;
+	private double learningRate = 1d;
 
 	public interface Layer<I, O> {
 		public Out<I, O> feed(I input);
@@ -159,8 +160,9 @@ public class NeuralNetwork {
 	// inputs :: nPoints * nInputs
 	// outputs :: nPoints * nOutputs
 	private Layer<float[][], float[][]> feedForwardRmsPropLayer(int nInputs, int nOutputs) {
-		var weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextGaussian() * initRate);
-		var rmsProps = To.matrix(nInputs, nOutputs, (i, j) -> Math.abs(random.nextGaussian()) * initRate);
+		Fun<IntInt_Dbl, float[][]> nmf = f -> To.matrix(nInputs, nOutputs, f);
+		var weights = nmf.apply((i, j) -> random.nextGaussian() * initRate);
+		var rmsProps = nmf.apply((i, j) -> Math.abs(random.nextGaussian()) * initRate);
 
 		return inputs -> {
 			var nPoints = mtx.height(inputs);
@@ -168,14 +170,11 @@ public class NeuralNetwork {
 
 			return new Out<>(outputs, errors -> {
 				var derives = To.matrix(nPoints, nOutputs, (i, j) -> errors[i][j] * Tanh.tanhGradient(outputs[i][j]));
-
-				var deltas = To.matrix(nInputs, nOutputs,
-						(ii, io) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][ii] * derives[p][io])));
-
+				var deltas = nmf.apply((ii, io) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][ii] * derives[p][io])));
 				var deltaSqs = mtx.mapOn(deltas, delta -> delta * delta);
 				mtx.addOn(mtx.scaleOn(rmsProps, .99d), mtx.scale(deltaSqs, .01d));
 
-				var adjusts = To.matrix(nInputs, nOutputs, (i, j) -> deltas[i][j] * learningRate / sqrt(rmsProps[i][j]));
+				var adjusts = nmf.apply((i, j) -> deltas[i][j] * learningRate * .01d / sqrt(rmsProps[i][j]));
 
 				return mtx.mul_mnT(derives, mtx.addOn(weights, adjusts)); // nPoints * nInputs
 			});
