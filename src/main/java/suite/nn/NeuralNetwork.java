@@ -166,12 +166,13 @@ public class NeuralNetwork {
 
 		return inputs -> {
 			var nPoints = mtx.height(inputs);
+			var inv = 1d / nPoints;
 			var outputs = mtx.mapOn(mtx.mul(inputs, weights), Tanh::tanh);
 
 			return new Out<>(outputs, errors -> {
 				var derives = To.matrix(nPoints, nOutputs, (i, j) -> errors[i][j] * Tanh.tanhGradient(outputs[i][j]));
-				var deltas = nmf.apply((ii, io) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][ii] * derives[p][io])));
-				var deltaSqs = mtx.mapOn(deltas, delta -> delta * delta);
+				var deltas = nmf.apply((i, o) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][i] * derives[p][o])) * inv);
+				var deltaSqs = mtx.map(deltas, delta -> delta * delta);
 				mtx.addOn(mtx.scaleOn(rmsProps, .99d), mtx.scaleOn(deltaSqs, .01d));
 
 				var adjusts = nmf.apply((i, j) -> deltas[i][j] * learningRate * .01d / sqrt(rmsProps[i][j]));

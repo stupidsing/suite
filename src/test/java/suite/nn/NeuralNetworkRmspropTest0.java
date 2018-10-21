@@ -38,7 +38,7 @@ public class NeuralNetworkRmspropTest0 {
 		var nn = new Nn(new int[] { inputs[0].length, 4, 1, });
 		float[][] results = null;
 
-		for (var i = 0; i < 128; i++) {
+		for (var i = 0; i < 256; i++) {
 			var results_ = nn.feed(inputs);
 			nn.backprop(mtx.sub(outputs, results_));
 			System.out.println(mtx.toString(results = results_));
@@ -86,15 +86,16 @@ public class NeuralNetworkRmspropTest0 {
 		}
 
 		private float[][] feed(float[][] inputs_) {
-			return outputs = mtx.map(mtx.mul(inputs = inputs_, weights), activate);
+			return outputs = mtx.mapOn(mtx.mul(inputs = inputs_, weights), activate);
 		}
 
 		private float[][] backprop(float[][] errors) {
 			var nPoints = mtx.height(errors);
+			var inv = 1d / nPoints;
 			var derives = To.matrix(nPoints, nOutputs, (i, j) -> errors[i][j] * activateGradient.apply(outputs[i][j]));
-			var deltas = newMatrix((ii, io) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][ii] * derives[p][io])));
+			var deltas = newMatrix((i, o) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][i] * derives[p][o])) * inv);
 			var deltaSqs = mtx.map(deltas, delta -> delta * delta);
-			rmsProps = mtx.add(mtx.scaleOn(rmsProps, .99d), mtx.scaleOn(deltaSqs, .01d));
+			rmsProps = mtx.addOn(mtx.scaleOn(rmsProps, .99d), mtx.scaleOn(deltaSqs, .01d));
 
 			var adjusts = newMatrix((i, j) -> deltas[i][j] * learningRate / sqrt(rmsProps[i][j]));
 			return mtx.mul_mnT(derives, weights = mtx.add(weights, adjusts)); // nPoints * nInputs
