@@ -1,5 +1,7 @@
 package suite.util;
 
+import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 import suite.inspect.Dump;
@@ -11,11 +13,9 @@ public class HtmlUtilTest {
 	private HtmlUtil html = new HtmlUtil();
 
 	@Test
-	public void test() {
-		var h = "<meta charset='utf-8'><html></html>";
-		var hn = html.parse(h);
-		Dump.details(hn);
-		System.out.println(generate(hn));
+	public void testEncode() {
+		assertEquals("abc & def", html.decode("abc&nbsp;&amp;&nbsp;def"));
+		assertEquals("abc&nbsp;&amp;&nbsp;def", html.encode("abc & def"));
 	}
 
 	@Test

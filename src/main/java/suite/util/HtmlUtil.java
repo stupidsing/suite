@@ -38,13 +38,14 @@ public class HtmlUtil {
 						;
 
 					var key = in.substring(start, index);
+					String entity;
 
 					if (String_.charAt(key, 1) == '#')
 						sb.append((char) Integer.parseInt(String_.range(key, 2, -1)));
-					else {
-						var entity = charByEscapeToken.get(key);
-						sb.append(entity != null ? entity : key);
-					}
+					else if ((entity = charByEscapeToken.get(key)) != null)
+						sb.append(entity);
+					else
+						sb.append(key);
 				} else
 					sb.append(ch);
 			}
@@ -64,15 +65,14 @@ public class HtmlUtil {
 
 			for (var index = 0; index < in.length(); index++) {
 				var ch = in.charAt(index);
+				var escaped = escapeTokenByChar.get(Character.toString(ch));
+				var isAscii = 32 <= ch && ch < 128 && ch != '"' && ch != '<' && ch != '>';
 
-				if (ch < 32 || 128 <= ch || ch == '"' || ch == '<' || ch == '>') {
-					var escaped = escapeTokenByChar.get("" + ch);
-
-					if (escaped != null)
-						sb.append(escaped);
-					else
-						sb.append("&#" + (int) ch + ";");
-				} else
+				if (escaped != null)
+					sb.append(escaped);
+				else if (!isAscii)
+					sb.append("&#" + (int) ch);
+				else
 					sb.append(ch);
 			}
 
@@ -174,13 +174,13 @@ public class HtmlUtil {
 	}
 
 	private void initialize() {
+		putEscapeMap("" + (char) 160, "&nbsp;");
 		putEscapeMap("€", "&euro;");
 		putEscapeMap(" ", "&nbsp;");
 		putEscapeMap("\"", "&quot;");
 		putEscapeMap("&", "&amp;");
 		putEscapeMap("<", "&lt;");
 		putEscapeMap(">", "&gt;");
-		putEscapeMap("" + (char) 160, "&nbsp;");
 		putEscapeMap("¡", "&iexcl;");
 		putEscapeMap("¢", "&cent;");
 		putEscapeMap("£", "&pound;");
