@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import suite.adt.pair.Pair;
 import suite.math.linalg.Vector;
+import suite.nn.NeuralNetwork.Layer;
 import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Read;
 
@@ -17,39 +18,50 @@ public class NeuralNetworkTest {
 	private Random random = new Random();
 	private Vector vec = new Vector();
 
+	private Pair<String, BinOp<Boolean>> op0 = Pair.of("and", (b0, b1) -> b0 && b1);
+	private Pair<String, BinOp<Boolean>> op1 = Pair.of("or_", (b0, b1) -> b0 || b1);
+	private Pair<String, BinOp<Boolean>> op2 = Pair.of("xor", (b0, b1) -> b0 ^ b1);
+
 	@Test
 	public void test() {
-		Pair<String, BinOp<Boolean>> op0 = Pair.of("and", (b0, b1) -> b0 && b1);
-		Pair<String, BinOp<Boolean>> op1 = Pair.of("or_", (b0, b1) -> b0 || b1);
-		Pair<String, BinOp<Boolean>> op2 = Pair.of("xor", (b0, b1) -> b0 ^ b1);
-
-		var result = Read.each2(op0, op1, op2).fold(true, (b, name, oper) -> {
+		assertTrue(Read.each2(op0, op1, op2).fold(true, (b, name, oper) -> {
 			var nn = new NeuralNetwork();
 			var train = nn.ml(new int[] { 2, 4, 1, });
+			return b && test(train, name, oper);
+		}));
+	}
 
-			for (var i = 0; i < 16384; i++) {
-				var b0 = random.nextBoolean();
-				var b1 = random.nextBoolean();
+	@Test
+	public void testRmsprop() {
+		assertTrue(Read.each2(op0, op1, op2).fold(true, (b, name, oper) -> {
+			var nn = new NeuralNetwork();
+			var train = nn.mlRmsprop(new int[] { 2, 4, 1, });
+			return b && test(train, name, oper);
+		}));
+	}
+
+	private Boolean test(Layer<float[], float[]> train, String name, BinOp<Boolean> oper) {
+		var b = true;
+		for (var i = 0; i < 16384; i++) {
+			var b0 = random.nextBoolean();
+			var b1 = random.nextBoolean();
+			var in = input(b0, b1);
+			var expect = vec.of(f(oper.apply(b0, b1)));
+			var out = train.feed(in);
+			var actual = out.output;
+			out.backprop.apply(vec.sub(expect, actual));
+		}
+
+		for (var b0 : booleans)
+			for (var b1 : booleans) {
 				var in = input(b0, b1);
-				var expect = vec.of(f(oper.apply(b0, b1)));
-				var out = train.feed(in);
-				var actual = out.output;
-				out.backprop.apply(vec.sub(expect, actual));
+				var out = oper.apply(b0, b1);
+				var f = train.feed(in).output[0];
+				System.out.println(b0 + " " + name + " " + b1 + " = " + f);
+				b &= out == .5f < f;
 			}
 
-			for (var b0 : booleans)
-				for (var b1 : booleans) {
-					var in = input(b0, b1);
-					var out = oper.apply(b0, b1);
-					var f = train.feed(in).output[0];
-					System.out.println(b0 + " " + name + " " + b1 + " = " + f);
-					b &= out == .5f < f;
-				}
-
-			return b;
-		});
-
-		assertTrue(result);
+		return b;
 	}
 
 	private float[] input(boolean b0, boolean b1) {

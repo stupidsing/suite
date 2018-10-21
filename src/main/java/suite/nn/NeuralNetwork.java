@@ -65,6 +65,13 @@ public class NeuralNetwork {
 		return layer;
 	}
 
+	public Layer<float[], float[]> mlRmsprop(int[] sizes) {
+		var layer = nil1dLayer();
+		for (var i = 1; i < sizes.length; i++)
+			layer = layer.append(feedForwardRmspropLayer(sizes[i - 1], sizes[i]));
+		return layer;
+	}
+
 	public Layer<float[][], float[][]> mlMinibatchRmsprop(int[] sizes) {
 		var layer = nil2dLayer();
 		for (var i = 1; i < sizes.length; i++)
