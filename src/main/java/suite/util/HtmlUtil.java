@@ -4,6 +4,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import suite.adt.map.BiMap;
 import suite.adt.map.HashBiMap;
@@ -19,6 +20,122 @@ public class HtmlUtil {
 
 	public HtmlUtil() {
 		initialize();
+	}
+
+	public class HtmlNode {
+		public final String name;
+		public final String tag;
+		public final List<Pair<String, String>> attrs;
+		public final List<HtmlNode> children = new ArrayList<>();
+
+		private HtmlNode(String name, String tag) {
+			this.name = name;
+			this.tag = tag;
+			if (name != null)
+				attrs = Read //
+						.from(String_.range(tag, 1, -1).split(" ")) //
+						.skip(1) //
+						.map(kv -> String_.split2l(kv, "=")) //
+						.map(Pair.mapSnd(v -> {
+							var isQuoted = v.startsWith("'") && v.endsWith("'") || v.startsWith("\"") && v.endsWith("\"");
+							return !isQuoted ? v : String_.range(v, 1, -1);
+						})) //
+						.toList();
+			else
+				attrs = Collections.emptyList();
+		}
+	}
+
+	public HtmlNode parse(String in) {
+		var pairs = new ArrayList<IntIntPair>();
+		int pos0, posx = 0;
+
+		while (0 <= (pos0 = in.indexOf("<", posx)))
+			if ((posx = pos0 + 1) < in.length() && !Character.isWhitespace(in.charAt(posx)))
+				if (0 <= (posx = in.indexOf(">", posx)))
+					pairs.add(IntIntPair.of(pos0, ++posx));
+				else
+					break;
+
+		Fun<String, IntObjPair<String>> getNameFun = tag -> {
+			int p1 = 1, px = tag.length() - 1;
+			var first = tag.charAt(p1);
+			var last = tag.charAt(px - 1);
+			int d;
+
+			if (first == '!')
+				return IntObjPair.of(0, null);
+			else {
+				if (first == '/') {
+					p1++;
+					d = -1;
+				} else if (last == '/') {
+					px--;
+					d = 0;
+				} else
+					d = 1;
+
+				var ps0 = tag.indexOf(' ');
+				var ps1 = 0 <= ps0 ? ps0 : px;
+				var name = tag.substring(p1, ps1);
+				return IntObjPair.of(d, name);
+			}
+		};
+
+		var deque = new ArrayDeque<>(List.of(new HtmlNode(null, "<>")));
+		var prevp = 0;
+
+		for (var pair : pairs) {
+			var htmlNode = deque.element();
+			var p0 = pair.t0;
+			var px = pair.t1;
+
+			if (prevp != p0) {
+				var s = decode(in.substring(prevp, p0)).trim();
+				if (!s.isEmpty())
+					htmlNode.children.add(new HtmlNode(null, s));
+			}
+
+			var tag = in.substring(p0, px);
+
+			prevp = getNameFun.apply(tag).map((d, name) -> {
+				if (d == -1)
+					while (!deque.isEmpty() && !String_.equals(getNameFun.apply(deque.pop().tag).t1, name))
+						;
+				else {
+					var htmlNode1 = new HtmlNode(name, tag);
+					htmlNode.children.add(htmlNode1);
+					if (d == 1)
+						deque.push(htmlNode1);
+				}
+				return px;
+			});
+		}
+
+		return deque.pop();
+
+	}
+
+	public String format(HtmlNode node) {
+		var sb = new StringBuilder();
+
+		new Object() {
+			private void f(HtmlNode node_) {
+				if (node_.name != null) {
+					sb.append("<" + node_.name);
+					for (Pair<String, String> attr : node_.attrs)
+						sb.append(" " + attr.t0 + "='" + attr.t1 + "'");
+					sb.append(">");
+					for (HtmlNode child : node_.children)
+						f(child);
+					if (!Set.of("br", "meta").contains(node_.name))
+						sb.append("</" + node_.name + ">");
+				} else
+					sb.append(node_.tag);
+			}
+		}.f(node);
+
+		return sb.toString();
 	}
 
 	public String decode(String in) {
@@ -81,96 +198,6 @@ public class HtmlUtil {
 			encoded = null;
 
 		return encoded;
-	}
-
-	public class HtmlNode {
-		public final String name;
-		public final String tag;
-		public final List<Pair<String, String>> attrs;
-		public final List<HtmlNode> children = new ArrayList<>();
-
-		private HtmlNode(String name, String tag) {
-			this.name = name;
-			this.tag = tag;
-			if (name != null)
-				attrs = Read //
-						.from(String_.range(tag, 1, -1).split(" ")) //
-						.skip(1) //
-						.map(kv -> String_.split2l(kv, "=")) //
-						.map(Pair.mapSnd(v -> {
-							var isQuoted = v.startsWith("'") && v.endsWith("'") || v.startsWith("\"") && v.endsWith("\"");
-							return !isQuoted ? v : String_.range(v, 1, -1);
-						})) //
-						.toList();
-			else
-				attrs = Collections.emptyList();
-		}
-	}
-
-	public HtmlNode parse(String in) {
-		var pairs = new ArrayList<IntIntPair>();
-		int pos0, posx = 0;
-
-		while (0 <= (pos0 = in.indexOf("<", posx)))
-			if ((posx = pos0 + 1) < in.length() && !Character.isWhitespace(in.charAt(posx)))
-				if (0 <= (posx = in.indexOf(">", posx)))
-					pairs.add(IntIntPair.of(pos0, ++posx));
-				else
-					break;
-
-		Fun<String, IntObjPair<String>> getNameFun = tag -> {
-			int p1 = 1, px = tag.length() - 1;
-			var first = tag.charAt(p1);
-			var last = tag.charAt(px - 1);
-			int d;
-
-			if (first == '!')
-				return IntObjPair.of(0, null);
-			else {
-				if (first == '/') {
-					p1++;
-					d = -1;
-				} else if (last == '/') {
-					px--;
-					d = 0;
-				} else
-					d = 1;
-
-				var ps0 = tag.indexOf(' ');
-				var ps1 = 0 <= ps0 ? ps0 : px;
-				return IntObjPair.of(d, tag.substring(p1, ps1));
-			}
-		};
-
-		var deque = new ArrayDeque<>(List.of(new HtmlNode(null, "<>")));
-		var prevp = 0;
-
-		for (var pair : pairs) {
-			var htmlNode = deque.element();
-			var p0 = pair.t0;
-			var px = pair.t1;
-
-			if (prevp != p0)
-				htmlNode.children.add(new HtmlNode(null, in.substring(prevp, p0)));
-
-			var tag = in.substring(p0, px);
-
-			prevp = getNameFun.apply(tag).map((d, name) -> {
-				if (d == -1)
-					while (!deque.isEmpty() && !String_.equals(getNameFun.apply(deque.pop().tag).t1, name))
-						;
-				else {
-					var htmlNode1 = new HtmlNode(name, tag);
-					htmlNode.children.add(htmlNode1);
-					if (d == 1)
-						deque.push(htmlNode1);
-				}
-				return px;
-			});
-		}
-
-		return deque.pop();
-
 	}
 
 	private void initialize() {

@@ -20,10 +20,11 @@ public class HtmlUtilTest {
 
 	@Test
 	public void testHtml() {
-		var h = "<meta charset='utf-8'><html><!-- comment --><head/><body>text</body></html>";
+		var h = "<meta charset='utf-8'><html><!-- comment --><head></head><body>text</body></html>";
 		var hn = html.parse(h);
 		Dump.details(hn);
 		System.out.println(generate(hn));
+		assertEquals(h, html.format(hn));
 	}
 
 	@Test
@@ -69,7 +70,7 @@ public class HtmlUtilTest {
 					sb.append("))");
 				} else {
 					sb.append("rd.dom(vm => document.createTextNode(");
-					s(html.decode(h.tag));
+					s(h.tag);
 					sb.append("))");
 				}
 			}
