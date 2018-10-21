@@ -123,10 +123,10 @@ public class HtmlUtil {
 			private void f(HtmlNode node_) {
 				if (node_.name != null) {
 					sb.append("<" + node_.name);
-					for (Pair<String, String> attr : node_.attrs)
+					for (var attr : node_.attrs)
 						sb.append(" " + attr.t0 + "='" + attr.t1 + "'");
 					sb.append(">");
-					for (HtmlNode child : node_.children)
+					for (var child : node_.children)
 						f(child);
 					if (!Set.of("br", "meta").contains(node_.name))
 						sb.append("</" + node_.name + ">");
