@@ -29,6 +29,7 @@ public class NeuralNetworkRmspropTest {
 				input(true, false), //
 				input(true, true), //
 		};
+
 		var result = Read.each2(op0, op1, op2).fold(true, (b, name, oper) -> {
 			var nn = new NeuralNetwork();
 			var train = nn.mlRmsprop(new int[] { inputs[0].length, 4, 1, });
