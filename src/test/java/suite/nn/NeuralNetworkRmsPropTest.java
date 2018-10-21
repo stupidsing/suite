@@ -45,7 +45,7 @@ public class NeuralNetworkRmsPropTest {
 					var out = oper.apply(b0, b1);
 					var f = train.feed(new float[][] { in, }).output[0][0];
 					System.out.println(b0 + " " + name + " " + b1 + " = " + f);
-					b &= out == .5f < f;
+					b &= out == 0f < f;
 				}
 
 			return b;
@@ -59,7 +59,7 @@ public class NeuralNetworkRmsPropTest {
 	}
 
 	private float f(boolean b) {
-		return b ? 1f : 0f;
+		return b ? 1f : -1f;
 	}
 
 }
