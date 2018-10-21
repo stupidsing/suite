@@ -22,7 +22,6 @@ public class HtmlUtilTest {
 	public void testHtml() {
 		var h = "<meta charset='utf-8'><html><!-- comment --><head></head><body>text</body></html>";
 		var hn = html.parse(h);
-		Dump.details(hn);
 		System.out.println(generate(hn));
 		assertEquals(h, html.format(hn));
 	}
@@ -33,6 +32,7 @@ public class HtmlUtilTest {
 		var hn = html.parse(h);
 		Dump.details(hn);
 		System.out.println(generate(hn));
+		assertEquals(h, html.format(hn));
 	}
 
 	@Test
