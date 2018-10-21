@@ -168,11 +168,9 @@ public class NeuralNetwork {
 
 	private Layer<float[], float[]> feedForwardRmspropLayer(int nInputs, int nOutputs) {
 		var learningRate_ = learningRate * .01d;
-
-		IntObj_Obj<IntInt_Dbl, float[][]> nmf0 = (d, f) -> To.matrix(d, nOutputs, f);
-		Fun<IntInt_Dbl, float[][]> nmf1 = f -> nmf0.apply(nInputs, f);
-		var weights = nmf1.apply((i, j) -> random.nextGaussian() * initRate);
-		var rmsProps = nmf1.apply((i, j) -> Math.abs(random.nextGaussian()) * initRate);
+		Fun<IntInt_Dbl, float[][]> nmf = f -> To.matrix(nInputs, nOutputs, f);
+		var weights = nmf.apply((i, j) -> random.nextGaussian() * initRate);
+		var rmsProps = nmf.apply((i, j) -> Math.abs(random.nextGaussian()) * initRate);
 
 		return inputs -> {
 			var outputs = Tanh.tanhOn(mtx.mul(inputs, weights));
@@ -198,7 +196,6 @@ public class NeuralNetwork {
 	// outputs :: nPoints * nOutputs
 	private Layer<float[][], float[][]> feedForwardMinibatchRmspropLayer(int nInputs, int nOutputs) {
 		var learningRate_ = learningRate * .01d;
-
 		IntObj_Obj<IntInt_Dbl, float[][]> nmf0 = (d, f) -> To.matrix(d, nOutputs, f);
 		Fun<IntInt_Dbl, float[][]> nmf1 = f -> nmf0.apply(nInputs, f);
 		var weights = nmf1.apply((i, j) -> random.nextGaussian() * initRate);
