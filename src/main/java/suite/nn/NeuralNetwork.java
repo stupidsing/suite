@@ -3,16 +3,19 @@ package suite.nn;
 import static suite.util.Friends.forInt;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
+import static suite.util.Friends.sqrt;
 
 import java.lang.reflect.Array;
 import java.util.Random;
 
 import suite.math.Sigmoid;
+import suite.math.Tanh;
 import suite.math.linalg.Matrix;
 import suite.primitive.DblMutable;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.Floats_;
 import suite.primitive.IntPrimitives.Int_Obj;
+import suite.primitive.Int_Dbl;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Outlet;
@@ -57,6 +60,13 @@ public class NeuralNetwork {
 		var layer = nil1dLayer();
 		for (var i = 1; i < sizes.length; i++)
 			layer = layer.append(feedForwardLayer(sizes[i - 1], sizes[i]));
+		return layer;
+	}
+
+	public Layer<float[][], float[][]> mlRmsProp(int[] sizes) {
+		var layer = nil2dLayer();
+		for (var i = 1; i < sizes.length; i++)
+			layer = layer.append(feedForwardRmsPropLayer(sizes[i - 1], sizes[i]));
 		return layer;
 	}
 
@@ -133,10 +143,7 @@ public class NeuralNetwork {
 		var weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextGaussian() * initRate);
 
 		return inputs -> {
-			var outputs = mtx.mul(inputs, weights);
-
-			for (var j = 0; j < nOutputs; j++)
-				outputs[j] = (float) Sigmoid.sigmoid(outputs[j]);
+			var outputs = Sigmoid.sigmoidOn(mtx.mul(inputs, weights));
 
 			return new Out<>(outputs, errors -> {
 				for (var j = 0; j < nOutputs; j++) {
@@ -145,6 +152,32 @@ public class NeuralNetwork {
 						weights[i][j] += learningRate * inputs[i] * e;
 				}
 				return mtx.mul(weights, errors);
+			});
+		};
+	}
+
+	// inputs :: nPoints * nInputs
+	// outputs :: nPoints * nOutputs
+	private Layer<float[][], float[][]> feedForwardRmsPropLayer(int nInputs, int nOutputs) {
+		var weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextGaussian() * initRate);
+		var rmsProps = To.matrix(nInputs, nOutputs, (i, j) -> Math.abs(random.nextGaussian()) * initRate);
+
+		return inputs -> {
+			var nPoints = mtx.height(inputs);
+			var outputs = mtx.mapOn(mtx.mul(inputs, weights), Tanh::tanh);
+
+			return new Out<>(outputs, errors -> {
+				var derives = To.matrix(nPoints, nOutputs, (i, j) -> errors[i][j] * Tanh.tanhGradient(outputs[i][j]));
+
+				var deltas = To.matrix(nInputs, nOutputs,
+						(ii, io) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][ii] * derives[p][io])));
+
+				var deltaSqs = mtx.mapOn(deltas, delta -> delta * delta);
+				mtx.addOn(mtx.scaleOn(rmsProps, .99d), mtx.scale(deltaSqs, .01d));
+
+				var adjusts = To.matrix(nInputs, nOutputs, (i, j) -> deltas[i][j] * learningRate / sqrt(rmsProps[i][j]));
+
+				return mtx.mul_mnT(derives, mtx.addOn(weights, adjusts)); // nPoints * nInputs
 			});
 		};
 	}

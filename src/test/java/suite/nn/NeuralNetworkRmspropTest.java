@@ -82,11 +82,10 @@ public class NeuralNetworkRmspropTest {
 			this.nOutputs = nOutputs;
 			weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextGaussian() * initRate);
 			rmsProps = To.matrix(nInputs, nOutputs, (i, j) -> Math.abs(random.nextGaussian()) * initRate);
-
 		}
 
 		private float[][] feed(float[][] inputs_) {
-			return outputs = mtx.map(mtx.mul(inputs = inputs_, weights), activate);
+			return outputs = mtx.mapOn(mtx.mul(inputs = inputs_, weights), activate);
 		}
 
 		private float[][] backprop(float[][] errors) {
@@ -96,8 +95,8 @@ public class NeuralNetworkRmspropTest {
 			var deltas = To.matrix(nInputs, nOutputs,
 					(ii, io) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][ii] * derives[p][io])));
 
-			var deltaSqs = mtx.map(deltas, delta -> delta * delta);
-			rmsProps = mtx.add(mtx.scale(deltaSqs, .01d), mtx.scale(rmsProps, .99d));
+			var deltaSqs = mtx.mapOn(deltas, delta -> delta * delta);
+			rmsProps = mtx.addOn(mtx.scale(rmsProps, .99d), mtx.scale(deltaSqs, .01d));
 
 			var adjusts = To.matrix(nInputs, nOutputs, (i, j) -> deltas[i][j] * learningRate / sqrt(rmsProps[i][j]));
 

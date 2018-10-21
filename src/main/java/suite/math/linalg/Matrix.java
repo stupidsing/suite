@@ -154,14 +154,17 @@ public class Matrix {
 		return n;
 	}
 
-	public float[][] map(float[][] m0, Dbl_Dbl f) {
-		var h = h(m0);
-		var w = w(m0);
-		var m1 = new float[h][w];
+	public float[][] map(float[][] m, Dbl_Dbl f) {
+		return mapOn(copyOf(m), f);
+	}
+
+	public float[][] mapOn(float[][] m, Dbl_Dbl f) {
+		var h = h(m);
+		var w = w(m);
 		for (var i = 0; i < h; i++)
 			for (var j = 0; j < w; j++)
-				m1[i][j] = (float) f.apply(m0[i][j]);
-		return m1;
+				m[i][j] = (float) f.apply(m[i][j]);
+		return m;
 	}
 
 	// v is a column vector; return vvT
