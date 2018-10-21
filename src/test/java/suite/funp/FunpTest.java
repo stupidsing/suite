@@ -1,7 +1,6 @@
 package suite.funp;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
@@ -144,15 +143,16 @@ public class FunpTest {
 		test(0, "let d := s:{} ~ type d = t:3 ~ if (`t:v` = d) then v else 0");
 	}
 
-	private void test(int r, String program) {
+	private void test(int expected, String program) {
 		for (var isOptimize : new boolean[] { false, true, }) {
 			LogUtil.info(program);
-			var main = Funp_.main(isOptimize);
-			var pair = main.compile(interpret.codeStart, program);
-			var bytes = pair.t1;
-			LogUtil.info("Hex" + bytes + "\n\n");
-			assertEquals(r, interpret.interpret(pair.t0, bytes, Bytes.of()));
-			assertTrue(bytes != null);
+
+			var actual = Funp_.main(isOptimize).compile(interpret.codeStart, program).map((instructions, code) -> {
+				LogUtil.info("Hex" + code + "\n\n");
+				return interpret.interpret(instructions, code, Bytes.of());
+			}).intValue();
+
+			assertEquals(expected, actual);
 		}
 	}
 
