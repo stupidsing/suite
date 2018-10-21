@@ -11,7 +11,7 @@ import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Read;
 import suite.util.To;
 
-public class NeuralNetworkRmsPropTest {
+public class NeuralNetworkRmspropTest {
 
 	private boolean[] booleans = new boolean[] { false, true, };
 	private Matrix mtx = new Matrix();
@@ -24,17 +24,17 @@ public class NeuralNetworkRmsPropTest {
 		Pair<String, BinOp<Boolean>> op2 = Pair.of("xor", (b0, b1) -> b0 ^ b1);
 
 		var inputs = new float[][] { //
-				{ -1f, -1f, 1f, }, //
-				{ -1f, 1f, 1f, }, //
-				{ 1f, -1f, 1f, }, //
-				{ 1f, 1f, 1f, }, //
+				input(false, false), //
+				input(false, true), //
+				input(true, false), //
+				input(true, true), //
 		};
 		var result = Read.each2(op0, op1, op2).fold(true, (b, name, oper) -> {
 			var nn = new NeuralNetwork();
-			var train = nn.mlRmsProp(new int[] { 3, 4, 1, });
+			var train = nn.mlRmsprop(new int[] { inputs[0].length, 4, 1, });
 
 			var expect = To.array(inputs.length, float[].class,
-					i -> new float[] { f(oper.apply(0f < inputs[i][0], 0f < inputs[i][1])), });
+					i -> new float[] { f(oper.apply(c(inputs[i][0]), c(inputs[i][1]))), });
 
 			for (var i = 0; i < 16384; i++) {
 				var out = train.feed(inputs);
@@ -48,7 +48,7 @@ public class NeuralNetworkRmsPropTest {
 					var out = oper.apply(b0, b1);
 					var f = train.feed(new float[][] { in, }).output[0][0];
 					System.out.println(b0 + " " + name + " " + b1 + " = " + f);
-					b &= out == 0f < f;
+					b &= out == c(f);
 				}
 
 			return b;
@@ -59,6 +59,10 @@ public class NeuralNetworkRmsPropTest {
 
 	private float[] input(boolean b0, boolean b1) {
 		return vec.of(f(b0), f(b1), 1d);
+	}
+
+	private boolean c(float f) {
+		return 0f < f;
 	}
 
 	private float f(boolean b) {

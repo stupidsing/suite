@@ -64,10 +64,10 @@ public class NeuralNetwork {
 		return layer;
 	}
 
-	public Layer<float[][], float[][]> mlRmsProp(int[] sizes) {
+	public Layer<float[][], float[][]> mlRmsprop(int[] sizes) {
 		var layer = nil2dLayer();
 		for (var i = 1; i < sizes.length; i++)
-			layer = layer.append(feedForwardRmsPropLayer(sizes[i - 1], sizes[i]));
+			layer = layer.append(feedForwardRmspropLayer(sizes[i - 1], sizes[i]));
 		return layer;
 	}
 
@@ -159,7 +159,7 @@ public class NeuralNetwork {
 
 	// inputs :: nPoints * nInputs
 	// outputs :: nPoints * nOutputs
-	private Layer<float[][], float[][]> feedForwardRmsPropLayer(int nInputs, int nOutputs) {
+	private Layer<float[][], float[][]> feedForwardRmspropLayer(int nInputs, int nOutputs) {
 		Fun<IntInt_Dbl, float[][]> nmf = f -> To.matrix(nInputs, nOutputs, f);
 		var weights = nmf.apply((i, j) -> random.nextGaussian() * initRate);
 		var rmsProps = nmf.apply((i, j) -> Math.abs(random.nextGaussian()) * initRate);
@@ -175,7 +175,6 @@ public class NeuralNetwork {
 				mtx.addOn(mtx.scaleOn(rmsProps, .99d), mtx.scaleOn(deltaSqs, .01d));
 
 				var adjusts = nmf.apply((i, j) -> deltas[i][j] * learningRate * .01d / sqrt(rmsProps[i][j]));
-
 				return mtx.mul_mnT(derives, mtx.addOn(weights, adjusts)); // nPoints * nInputs
 			});
 		};

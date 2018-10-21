@@ -11,6 +11,7 @@ import org.junit.Test;
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
 import suite.primitive.Dbl_Dbl;
+import suite.primitive.IntInt_Dbl;
 import suite.primitive.Int_Dbl;
 import suite.streamlet.Read;
 import suite.util.To;
@@ -34,7 +35,7 @@ public class NeuralNetworkRmspropTest0 {
 		};
 
 		var outputs = new float[][] { { -1f, }, { -1f, }, { 1f, }, { 1f, }, };
-		var nn = new Nn(new int[] { 3, 4, 1, });
+		var nn = new Nn(new int[] { inputs[0].length, 4, 1, });
 		float[][] results = null;
 
 		for (var i = 0; i < 128; i++) {
@@ -80,8 +81,8 @@ public class NeuralNetworkRmspropTest0 {
 		private Layer(int nInputs, int nOutputs) {
 			this.nInputs = nInputs;
 			this.nOutputs = nOutputs;
-			weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextGaussian() * initRate);
-			rmsProps = To.matrix(nInputs, nOutputs, (i, j) -> Math.abs(random.nextGaussian()) * initRate);
+			weights = newMatrix((i, j) -> random.nextGaussian() * initRate);
+			rmsProps = newMatrix((i, j) -> Math.abs(random.nextGaussian()) * initRate);
 		}
 
 		private float[][] feed(float[][] inputs_) {
@@ -91,16 +92,16 @@ public class NeuralNetworkRmspropTest0 {
 		private float[][] backprop(float[][] errors) {
 			var nPoints = mtx.height(errors);
 			var derives = To.matrix(nPoints, nOutputs, (i, j) -> errors[i][j] * activateGradient.apply(outputs[i][j]));
-
-			var deltas = To.matrix(nInputs, nOutputs,
-					(ii, io) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][ii] * derives[p][io])));
-
+			var deltas = newMatrix((ii, io) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][ii] * derives[p][io])));
 			var deltaSqs = mtx.mapOn(deltas, delta -> delta * delta);
 			rmsProps = mtx.addOn(mtx.scale(rmsProps, .99d), mtx.scale(deltaSqs, .01d));
 
-			var adjusts = To.matrix(nInputs, nOutputs, (i, j) -> deltas[i][j] * learningRate / sqrt(rmsProps[i][j]));
-
+			var adjusts = newMatrix((i, j) -> deltas[i][j] * learningRate / sqrt(rmsProps[i][j]));
 			return mtx.mul_mnT(derives, weights = mtx.add(weights, adjusts)); // nPoints * nInputs
+		}
+
+		private float[][] newMatrix(IntInt_Dbl f) {
+			return To.matrix(nInputs, nOutputs, f);
 		}
 	}
 
