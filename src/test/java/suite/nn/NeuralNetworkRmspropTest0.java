@@ -86,15 +86,15 @@ public class NeuralNetworkRmspropTest0 {
 		}
 
 		private float[][] feed(float[][] inputs_) {
-			return outputs = mtx.mapOn(mtx.mul(inputs = inputs_, weights), activate);
+			return outputs = mtx.map(mtx.mul(inputs = inputs_, weights), activate);
 		}
 
 		private float[][] backprop(float[][] errors) {
 			var nPoints = mtx.height(errors);
 			var derives = To.matrix(nPoints, nOutputs, (i, j) -> errors[i][j] * activateGradient.apply(outputs[i][j]));
 			var deltas = newMatrix((ii, io) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][ii] * derives[p][io])));
-			var deltaSqs = mtx.mapOn(deltas, delta -> delta * delta);
-			rmsProps = mtx.addOn(mtx.scale(rmsProps, .99d), mtx.scale(deltaSqs, .01d));
+			var deltaSqs = mtx.map(deltas, delta -> delta * delta);
+			rmsProps = mtx.add(mtx.scale(rmsProps, .99d), mtx.scale(deltaSqs, .01d));
 
 			var adjusts = newMatrix((i, j) -> deltas[i][j] * learningRate / sqrt(rmsProps[i][j]));
 			return mtx.mul_mnT(derives, weights = mtx.add(weights, adjusts)); // nPoints * nInputs
