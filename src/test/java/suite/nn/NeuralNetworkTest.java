@@ -24,9 +24,13 @@ public class NeuralNetworkTest {
 
 	@Test
 	public void test() {
-		assertTrue(Read.each2(op0, op1, op2).fold(true, (b, name, oper) -> b //
-				&& test(new NeuralNetwork().ml(new int[] { 2, 4, 1, }), name, oper) //
-				&& test(new NeuralNetwork().mlRmsprop(new int[] { 2, 4, 1, }), name, oper)));
+		assertTrue(Read.each2(op0, op1, op2).fold(true, (b, name, oper) -> {
+			var layerSizes = new int[] { 2, 4, 1, };
+
+			return b //
+					&& test(new NeuralNetwork().ml(layerSizes), name, oper) //
+					&& test(new NeuralNetwork().mlRmsprop(layerSizes), name, oper);
+		}));
 	}
 
 	private Boolean test(Layer<float[], float[]> train, String name, BinOp<Boolean> oper) {
