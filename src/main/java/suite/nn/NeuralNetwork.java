@@ -161,6 +161,7 @@ public class NeuralNetwork {
 				for (var i = 0; i < nInputs; i++)
 					for (var j = 0; j < nOutputs; j++)
 						weights[i][j] += learningRate * inputs[i] * derivatives[j];
+
 				return mtx.mul(weights, derivatives);
 			});
 		};
@@ -186,6 +187,7 @@ public class NeuralNetwork {
 						var rmsProp = rmsProps[i][j] = (float) (rmsProps[i][j] * .99d + delta * delta * .01d);
 						weights[i][j] += learningRate_ * delta / sqrt(rmsProp);
 					}
+
 				return mtx.mul(weights, derivatives);
 			});
 		};
