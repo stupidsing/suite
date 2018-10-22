@@ -205,7 +205,11 @@ public class NeuralNetwork {
 			var outputs = mtx.mapOn(mtx.mul(inputs, weights), Tanh::tanh);
 
 			return new Out<>(outputs, errors -> {
-				var derivatives = To.matrix(nPoints, nOutputs, (i, j) -> errors[i][j] * Tanh.tanhGradient(outputs[i][j]));
+				var derivatives = errors;
+
+				for (var i = 0; i < nPoints; i++)
+					for (var j = 0; j < nOutputs; j++)
+						derivatives[i][j] *= (float) Tanh.tanhGradient(outputs[i][j]);
 
 				var deltas = To.matrix(nInputs, nOutputs, (i, o) -> forInt(nPoints) //
 						.toDouble(Int_Dbl.sum(p -> inputs[p][i] * derivatives[p][o])));
