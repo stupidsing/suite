@@ -9,6 +9,7 @@ import suite.math.linalg.Vector;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.map.IntObjMap;
 import suite.primitive.adt.map.ObjIntMap;
+import suite.primitive.adt.pair.DblObjPair;
 import suite.primitive.adt.pair.IntDblPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -86,16 +87,13 @@ public class KmeansCluster {
 	}
 
 	private int findNearest(float[] point, List<float[]> points) {
-		var minDist = Double.MAX_VALUE;
-		var minj = 0;
+		var min = DblObjPair.of(Double.MAX_VALUE, 0);
 		for (var j = 0; j < points.size(); j++) {
 			var dist = sqdist(point, points.get(j));
-			if (dist < minDist) {
-				minDist = dist;
-				minj = j;
-			}
+			if (dist < min.t0)
+				min.update(dist, j);
 		}
-		return minj;
+		return min.t1;
 	}
 
 	private double sqdist(float[] a, float[] b) {
