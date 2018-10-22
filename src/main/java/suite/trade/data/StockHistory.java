@@ -131,18 +131,13 @@ public class StockHistory {
 	public StockHistory filter(TimeRange period) {
 		var t0 = period.from.epochSec();
 		var tx = period.to.epochSec();
-		Iterate<LngFltPair[]> filter_ = pairs0 -> {
-			var pairs1 = new ArrayList<LngFltPair>();
-			for (var pair : pairs0)
-				if (t0 <= pair.t0 && pair.t0 < tx)
-					pairs1.add(pair);
-			return pairs1.toArray(new LngFltPair[0]);
-		};
 
-		var data1 = Read //
-				.from2(data) //
-				.mapValue(filter_) //
-				.toMap();
+		Iterate<LngFltPair[]> filter_ = pairs0 -> Read //
+				.from(pairs0) //
+				.filter(pair -> t0 <= pair.t0 && pair.t0 < tx) //
+				.toArray(LngFltPair.class);
+
+		var data1 = Read.from2(data).mapValue(filter_).toMap();
 
 		return create(data1, filter_.apply(dividends), filter_.apply(splits));
 	}
@@ -301,7 +296,11 @@ public class StockHistory {
 		return create(isActive, data, dividends, splits);
 	}
 
-	private StockHistory create(boolean isActive, Map<String, LngFltPair[]> data, LngFltPair[] dividends, LngFltPair[] splits) {
+	private StockHistory create( //
+			boolean isActive, //
+			Map<String, LngFltPair[]> data, //
+			LngFltPair[] dividends, //
+			LngFltPair[] splits) {
 		return of(null, time, isActive, data, dividends, splits);
 	}
 
