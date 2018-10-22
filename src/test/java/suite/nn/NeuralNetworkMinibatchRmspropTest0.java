@@ -10,8 +10,6 @@ import org.junit.Test;
 
 import suite.math.Tanh;
 import suite.math.linalg.Matrix;
-import suite.primitive.Dbl_Dbl;
-import suite.primitive.IntInt_Dbl;
 import suite.primitive.Int_Dbl;
 import suite.streamlet.Read;
 import suite.util.To;
@@ -75,37 +73,30 @@ public class NeuralNetworkMinibatchRmspropTest0 {
 		private float[][] weights; // nInputs * nOutputs
 		private float[][] outputs; // nPoints * nOutputs
 		private float[][] rmsProps;
-		Dbl_Dbl activate = Tanh::tanh;
-		Dbl_Dbl activateGradient = Tanh::tanhGradient;
 
 		private Layer(int nInputs, int nOutputs) {
 			this.nInputs = nInputs;
 			this.nOutputs = nOutputs;
-			weights = newMatrix((i, j) -> random.nextGaussian() * initRate);
-			rmsProps = newMatrix((i, j) -> Math.abs(random.nextGaussian()) * initRate);
+			weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextGaussian() * initRate);
+			rmsProps = To.matrix(nInputs, nOutputs, (i, j) -> Math.abs(random.nextGaussian()) * initRate);
 		}
 
 		private float[][] feed(float[][] inputs_) {
-			return outputs = mtx.mapOn(mtx.mul(inputs = inputs_, weights), activate);
+			return outputs = mtx.mapOn(mtx.mul(inputs = inputs_, weights), Tanh::tanh);
 		}
 
 		private float[][] backprop(float[][] errors) {
 			var nPoints = mtx.height(errors);
-			var derivatives = newMatrix(nPoints, (i, j) -> errors[i][j] * activateGradient.apply(outputs[i][j]));
-			var deltas = newMatrix((i, o) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][i] * derivatives[p][o])));
+			var derivatives = To.matrix(nPoints, nOutputs, (i, j) -> errors[i][j] * Tanh.tanhGradient(outputs[i][j]));
+
+			var deltas = To.matrix(nInputs, nOutputs, (i, o) -> forInt(nPoints) //
+					.toDouble(Int_Dbl.sum(p -> inputs[p][i] * derivatives[p][o])));
+
 			var deltaSqs = mtx.map(deltas, delta -> delta * delta);
 			rmsProps = mtx.addOn(mtx.scaleOn(rmsProps, .99d), mtx.scaleOn(deltaSqs, .01d));
 
-			var adjusts = newMatrix((i, j) -> deltas[i][j] * learningRate / sqrt(rmsProps[i][j]));
+			var adjusts = To.matrix(nInputs, nOutputs, (i, j) -> deltas[i][j] * learningRate / sqrt(rmsProps[i][j]));
 			return mtx.mul_mnT(derivatives, weights = mtx.add(weights, adjusts)); // nPoints * nInputs
-		}
-
-		private float[][] newMatrix(IntInt_Dbl f) {
-			return newMatrix(nInputs, f);
-		}
-
-		private float[][] newMatrix(int n, IntInt_Dbl f) {
-			return To.matrix(n, nOutputs, f);
 		}
 	}
 
