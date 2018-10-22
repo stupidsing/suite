@@ -28,8 +28,8 @@ public class NeuralNetworkTest {
 			var layerSizes = new int[] { 2, 4, 1, };
 
 			return b //
-					&& test(new NeuralNetwork().ml(layerSizes), name, oper) //
-					&& test(new NeuralNetwork().mlRmsprop(layerSizes), name, oper);
+					&& test(new NeuralNetwork().ml(layerSizes), "ff-" + name, oper) //
+					&& test(new NeuralNetwork().mlRmsprop(layerSizes), "ff-rmsprop-" + name, oper);
 		}));
 	}
 
@@ -51,7 +51,7 @@ public class NeuralNetworkTest {
 				var in = input(b0, b1);
 				var out = oper.apply(b0, b1);
 				var f = train.feed(in).output[0];
-				System.out.println(b0 + " " + name + " " + b1 + " = " + f);
+				System.out.println(name + "(" + b0 + ", " + b1 + ") = " + f);
 				b &= out == .5f < f;
 			}
 
