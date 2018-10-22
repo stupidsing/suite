@@ -168,9 +168,8 @@ public class NeuralNetwork {
 
 	private Layer<float[], float[]> feedForwardRmspropLayer(int nInputs, int nOutputs) {
 		var learningRate_ = learningRate * .01d;
-		Fun<IntInt_Dbl, float[][]> nmf = f -> To.matrix(nInputs, nOutputs, f);
-		var weights = nmf.apply((i, j) -> random());
-		var rmsProps = nmf.apply((i, j) -> Math.abs(random()));
+		var weights = To.matrix(nInputs, nOutputs, (i, j) -> random());
+		var rmsProps = To.matrix(nInputs, nOutputs, (i, j) -> Math.abs(random()));
 
 		return inputs -> {
 			var outputs = Tanh.tanhOn(mtx.mul(inputs, weights));
@@ -194,22 +193,23 @@ public class NeuralNetwork {
 	// outputs :: nPoints * nOutputs
 	private Layer<float[][], float[][]> feedForwardMinibatchRmspropLayer(int nInputs, int nOutputs) {
 		var learningRate_ = learningRate * .01d;
-		IntObj_Obj<IntInt_Dbl, float[][]> nmf0 = (d, f) -> To.matrix(d, nOutputs, f);
-		Fun<IntInt_Dbl, float[][]> nmf1 = f -> nmf0.apply(nInputs, f);
-		var weights = nmf1.apply((i, j) -> random());
-		var rmsProps = nmf1.apply((i, j) -> Math.abs(random()));
+		var weights = To.matrix(nInputs, nOutputs, (i, j) -> random());
+		var rmsProps = To.matrix(nInputs, nOutputs, (i, j) -> Math.abs(random()));
 
 		return inputs -> {
 			var nPoints = mtx.height(inputs);
 			var outputs = mtx.mapOn(mtx.mul(inputs, weights), Tanh::tanh);
 
 			return new Out<>(outputs, errors -> {
-				var derivatives = nmf0.apply(nPoints, (i, j) -> errors[i][j] * Tanh.tanhGradient(outputs[i][j]));
-				var deltas = nmf1.apply((i, o) -> forInt(nPoints).toDouble(Int_Dbl.sum(p -> inputs[p][i] * derivatives[p][o])));
+				var derivatives = To.matrix(nPoints, nOutputs, (i, j) -> errors[i][j] * Tanh.tanhGradient(outputs[i][j]));
+
+				var deltas = To.matrix(nInputs, nOutputs, (i, o) -> forInt(nPoints) //
+						.toDouble(Int_Dbl.sum(p -> inputs[p][i] * derivatives[p][o])));
+
 				var deltaSqs = mtx.map(deltas, delta -> delta * delta);
 				mtx.addOn(mtx.scaleOn(rmsProps, .99d), mtx.scaleOn(deltaSqs, .01d));
 
-				var adjusts = nmf1.apply((i, j) -> deltas[i][j] * learningRate_ / sqrt(rmsProps[i][j]));
+				var adjusts = To.matrix(nInputs, nOutputs, (i, j) -> deltas[i][j] * learningRate_ / sqrt(rmsProps[i][j]));
 				return mtx.mul_mnT(derivatives, mtx.addOn(weights, adjusts)); // nPoints * nInputs
 			});
 		};
