@@ -182,8 +182,7 @@ public class NeuralNetwork {
 					for (var i = 0; i < nInputs; i++) {
 						var delta = inputs[i] * e;
 						var rmsProp = rmsProps[i][j] = (float) (rmsProps[i][j] * .99d + delta * delta * .01d);
-						var adjust = delta * learningRate_ / sqrt(rmsProp);
-						weights[i][j] += adjust;
+						weights[i][j] += learningRate_ * delta / sqrt(rmsProp);
 					}
 				}
 				return mtx.mul(weights, derivatives);
