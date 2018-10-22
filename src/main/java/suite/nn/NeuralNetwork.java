@@ -149,7 +149,7 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[], float[]> feedForwardLayer(int nInputs, int nOutputs) {
-		var weights = To.matrix(nInputs, nOutputs, (i, j) -> random.nextGaussian() * initRate);
+		var weights = To.matrix(nInputs, nOutputs, (i, j) -> random());
 
 		return inputs -> {
 			var outputs = Sigmoid.sigmoidOn(mtx.mul(inputs, weights));
@@ -169,20 +169,19 @@ public class NeuralNetwork {
 	private Layer<float[], float[]> feedForwardRmspropLayer(int nInputs, int nOutputs) {
 		var learningRate_ = learningRate * .01d;
 		Fun<IntInt_Dbl, float[][]> nmf = f -> To.matrix(nInputs, nOutputs, f);
-		var weights = nmf.apply((i, j) -> random.nextGaussian() * initRate);
-		var rmsProps = nmf.apply((i, j) -> Math.abs(random.nextGaussian()) * initRate);
+		var weights = nmf.apply((i, j) -> random());
+		var rmsProps = nmf.apply((i, j) -> Math.abs(random()));
 
 		return inputs -> {
 			var outputs = Tanh.tanhOn(mtx.mul(inputs, weights));
 
 			return new Out<>(outputs, errors -> {
 				var derivatives = errors;
-				mtx.scaleOn(rmsProps, .99d);
 				for (var j = 0; j < nOutputs; j++) {
 					var e = derivatives[j] *= (float) Tanh.tanhGradient(outputs[j]);
 					for (var i = 0; i < nInputs; i++) {
 						var delta = inputs[i] * e;
-						var rmsProp = rmsProps[i][j] += delta * delta * .01d;
+						var rmsProp = rmsProps[i][j] = (float) (rmsProps[i][j] * .99d + delta * delta * .01d);
 						var adjust = delta * learningRate_ / sqrt(rmsProp);
 						weights[i][j] += adjust;
 					}
@@ -198,8 +197,8 @@ public class NeuralNetwork {
 		var learningRate_ = learningRate * .01d;
 		IntObj_Obj<IntInt_Dbl, float[][]> nmf0 = (d, f) -> To.matrix(d, nOutputs, f);
 		Fun<IntInt_Dbl, float[][]> nmf1 = f -> nmf0.apply(nInputs, f);
-		var weights = nmf1.apply((i, j) -> random.nextGaussian() * initRate);
-		var rmsProps = nmf1.apply((i, j) -> Math.abs(random.nextGaussian()) * initRate);
+		var weights = nmf1.apply((i, j) -> random());
+		var rmsProps = nmf1.apply((i, j) -> Math.abs(random()));
 
 		return inputs -> {
 			var nPoints = mtx.height(inputs);
@@ -260,7 +259,7 @@ public class NeuralNetwork {
 	}
 
 	private Layer<float[][], float[][]> conv2dLayer(int sx, int sy) {
-		var kernel = To.matrix(sx, sy, (x, y) -> random.nextGaussian() * initRate);
+		var kernel = To.matrix(sx, sy, (x, y) -> random());
 		var bias = DblMutable.of(0d);
 
 		return inputs -> {
@@ -447,6 +446,10 @@ public class NeuralNetwork {
 					.zip(outs, (error, out) -> out.backprop.apply(error)) //
 					.toArray(clazz));
 		};
+	}
+
+	private double random() {
+		return random.nextGaussian() * initRate;
 	}
 
 }
