@@ -154,11 +154,13 @@ public class NeuralNetwork {
 
 			return new Out<>(outputs, errors -> {
 				var derivatives = errors;
-				for (var j = 0; j < nOutputs; j++) {
-					var e = derivatives[j] *= (float) Sigmoid.sigmoidGradient(outputs[j]);
-					for (var i = 0; i < nInputs; i++)
-						weights[i][j] += learningRate * inputs[i] * e;
-				}
+
+				for (var j = 0; j < nOutputs; j++)
+					derivatives[j] *= (float) Sigmoid.sigmoidGradient(outputs[j]);
+
+				for (var i = 0; i < nInputs; i++)
+					for (var j = 0; j < nOutputs; j++)
+						weights[i][j] += learningRate * inputs[i] * derivatives[j];
 				return mtx.mul(weights, derivatives);
 			});
 		};
@@ -174,14 +176,16 @@ public class NeuralNetwork {
 
 			return new Out<>(outputs, errors -> {
 				var derivatives = errors;
-				for (var j = 0; j < nOutputs; j++) {
-					var e = derivatives[j] *= (float) Tanh.tanhGradient(outputs[j]);
-					for (var i = 0; i < nInputs; i++) {
-						var delta = inputs[i] * e;
+
+				for (var j = 0; j < nOutputs; j++)
+					derivatives[j] *= (float) Tanh.tanhGradient(outputs[j]);
+
+				for (var i = 0; i < nInputs; i++)
+					for (var j = 0; j < nOutputs; j++) {
+						var delta = inputs[i] * derivatives[j];
 						var rmsProp = rmsProps[i][j] = (float) (rmsProps[i][j] * .99d + delta * delta * .01d);
 						weights[i][j] += learningRate_ * delta / sqrt(rmsProp);
 					}
-				}
 				return mtx.mul(weights, derivatives);
 			});
 		};
