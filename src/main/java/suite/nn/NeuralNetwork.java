@@ -14,8 +14,6 @@ import suite.math.linalg.Matrix;
 import suite.primitive.DblMutable;
 import suite.primitive.Dbl_Dbl;
 import suite.primitive.Floats_;
-import suite.primitive.IntInt_Dbl;
-import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Dbl;
 import suite.streamlet.FunUtil.Fun;
