@@ -9,7 +9,6 @@ import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
 import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Read;
-import suite.util.To;
 
 public class NeuralNetworkMinibatchRmspropTest {
 
@@ -31,8 +30,10 @@ public class NeuralNetworkMinibatchRmspropTest {
 		};
 
 		var result = Read.each2(op0, op1, op2).fold(true, (b, name, oper) -> {
-			var expect = To.array(inputs.length, float[].class,
-					i -> new float[] { f(oper.apply(c(inputs[i][0]), c(inputs[i][1]))), });
+			var expect = Read //
+					.from(inputs) //
+					.map(input -> new float[] { f(oper.apply(c(input[0]), c(input[1]))), }) //
+					.toArray(float[].class);
 
 			var nn = new NeuralNetwork();
 			var train = nn.mlMinibatchRmsprop(new int[] { mtx.width(inputs), 4, mtx.width(expect), });

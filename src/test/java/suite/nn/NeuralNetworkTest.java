@@ -31,6 +31,7 @@ public class NeuralNetworkTest {
 
 	private Boolean test(Layer<float[], float[]> train, String name, BinOp<Boolean> oper) {
 		var b = true;
+
 		for (var i = 0; i < 16384; i++) {
 			var b0 = random.nextBoolean();
 			var b1 = random.nextBoolean();
