@@ -98,15 +98,34 @@ public class NeuralNetwork {
 
 	// https://blog.janestreet.com/deep-learning-experiments-in-ocaml/
 	public Layer<float[][][], float[]> convVgg16() {
+		var b = new Object() {
+			private Layer<float[][][], float[][][]> nil3dLayer() {
+				return nilLayer();
+			}
+
+			private Layer<float[][][], float[][][]> convVgg16Block( //
+					Layer<float[][][], float[][][]> layer, //
+					int n, //
+					int nInputChannels, //
+					int nOutputChannels) {
+				var nChannels = nInputChannels;
+				for (var i = 0; i < n; i++) {
+					var nChannels0 = nChannels;
+					layer = layer.append(convChannelLayer(nChannels0, nChannels = nOutputChannels, 3, 3));
+				}
+				return layer.append(channelLayer(nOutputChannels, float[][].class, c -> maxPoolLayer(2, 2)));
+			}
+		};
+
 		var imageSize = 64;
 
 		// input 64x64x3
-		var layer0 = nil3dLayer();
-		var layer1 = convVgg16Block(layer0, 2, 3, 64);
-		var layer2 = convVgg16Block(layer1, 2, 64, 128);
-		var layer3 = convVgg16Block(layer2, 4, 128, 256);
-		var layer4 = convVgg16Block(layer3, 4, 256, 512);
-		var layer5 = convVgg16Block(layer4, 4, 512, 512);
+		var layer0 = b.nil3dLayer();
+		var layer1 = b.convVgg16Block(layer0, 2, 3, 64);
+		var layer2 = b.convVgg16Block(layer1, 2, 64, 128);
+		var layer3 = b.convVgg16Block(layer2, 4, 128, 256);
+		var layer4 = b.convVgg16Block(layer3, 4, 256, 512);
+		var layer5 = b.convVgg16Block(layer4, 4, 512, 512);
 
 		return layer5 //
 				.append(flattenLayer(float[][].class, imageSize - 16)) //
@@ -117,28 +136,11 @@ public class NeuralNetwork {
 				.append(softmaxLayer());
 	}
 
-	public Layer<float[][][], float[][][]> convVgg16Block( //
-			Layer<float[][][], float[][][]> layer, //
-			int n, //
-			int nInputChannels, //
-			int nOutputChannels) {
-		var nChannels = nInputChannels;
-		for (var i = 0; i < n; i++) {
-			var nChannels0 = nChannels;
-			layer = layer.append(convChannelLayer(nChannels0, nChannels = nOutputChannels, 3, 3));
-		}
-		return layer.append(channelLayer(nOutputChannels, float[][].class, c -> maxPoolLayer(2, 2)));
-	}
-
 	private Layer<float[], float[]> nil1dLayer() {
 		return nilLayer();
 	}
 
 	private Layer<float[][], float[][]> nil2dLayer() {
-		return nilLayer();
-	}
-
-	private Layer<float[][][], float[][][]> nil3dLayer() {
 		return nilLayer();
 	}
 
