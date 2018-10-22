@@ -1,7 +1,5 @@
 package suite.algo;
 
-import static suite.util.Friends.forInt;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -43,12 +41,10 @@ public class KmeansCluster {
 	public <K> ObjIntMap<K> kMeansCluster(Map<K, float[]> points, int k, int nIterations) {
 		var keys = new ArrayList<>(points.keySet());
 		var values = Read.from(keys).map(points::get).toList();
-		var ks = kMeansCluster(values, k, nIterations);
+		var classifier = kMeansClusterClassifier(values, k, nIterations);
 		var map = new ObjIntMap<K>();
-
-		for (var i : forInt(ks.length))
-			map.put(keys.get(i), ks[i]);
-
+		for (var e : points.entrySet())
+			map.put(e.getKey(), classifier.apply(e.getValue()));
 		return map;
 	}
 
