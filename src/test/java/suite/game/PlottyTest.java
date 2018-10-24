@@ -1,11 +1,15 @@
 package suite.game;
 
+import static suite.util.Friends.exp;
+
 import org.junit.Test;
 
+import suite.primitive.Floats_;
 import suite.streamlet.Read;
 import suite.trade.TimeRange;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
+import suite.util.To;
 
 public class PlottyTest {
 
@@ -17,6 +21,15 @@ public class PlottyTest {
 		var period = TimeRange.threeYears();
 		var ds = cfg.dataSource("0005.HK", period).range(period).validate();
 		pl.plot(Read.each(ds.closes));
+	}
+
+	@Test
+	public void testLogistic() {
+		var logistics = Floats_.of(new float[] { .1f, 1f, 10f }).map(theta -> To.vector(1200, i -> {
+			var x = (i - 600) * (1d / 100);
+			return 1d / (1d + exp(-theta * x));
+		}));
+		pl.plot(logistics);
 	}
 
 	@Test
