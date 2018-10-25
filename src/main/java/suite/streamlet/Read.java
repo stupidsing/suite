@@ -102,7 +102,7 @@ public class Read {
 	}
 
 	public static Streamlet<String> lines(File file) {
-		return new Streamlet<String>(() -> lines(rethrow(() -> new FileInputStream(file))));
+		return new Streamlet<>(() -> lines(rethrow(() -> new FileInputStream(file))));
 	}
 
 	public static Outlet<String> lines(InputStream is) {

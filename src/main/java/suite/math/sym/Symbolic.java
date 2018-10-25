@@ -292,7 +292,7 @@ public class Symbolic {
 		}
 
 		private Node sumOfProducts(Node node) {
-			class Recurse {
+			var recurse = new Object() {
 				private Streamlet<Node> pos(Node node_) {
 					return new SwitchNode<Streamlet<Node>>(node_ //
 					).match(patMul, (a, b) -> {
@@ -358,9 +358,9 @@ public class Symbolic {
 				private Node sumOfProducts(Node node) {
 					return add.recompose(x, sop(node));
 				}
-			}
+			};
 
-			return new Recurse().sumOfProducts(node);
+			return recurse.sumOfProducts(node);
 		}
 
 		private Node simplify(Node node) {
