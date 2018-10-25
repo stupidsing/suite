@@ -452,11 +452,7 @@ public class Symbolic {
 	private Opt<Node> rational(Node node) {
 		Fun2<Integer, Integer, Node> nf0 = (n, d) -> mul(Int.of(n), inv(Int.of(d)));
 		Fun2<Integer, Integer, Node> nf1 = (n, d) -> 0 <= n ? nf0.apply(n, d) : neg(nf0.apply(-n, d));
-
-		return Fractional //
-				.ofIntegral() //
-				.fractionalize(node) //
-				.map(pair -> pair.map(nf1));
+		return Fractional.ofIntegral().fractionalize(node).map(pair -> pair.map(nf1));
 	}
 
 	private Node add(Node a, Node b) {
