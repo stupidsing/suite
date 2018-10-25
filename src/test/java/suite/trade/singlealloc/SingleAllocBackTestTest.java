@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.Read;
 import suite.trade.Forex;
 import suite.trade.Instrument;
@@ -47,9 +47,9 @@ public class SingleAllocBackTestTest {
 		backTest(instrument.symbol, instrument.toString()) //
 				.forEach((sn, backTest) -> {
 					var conclusion = backTest.concludeLog.toString();
-					LogUtil.info("BEGIN strategy = " + sn + conclusion);
-					LogUtil.info(backTest.tradeLog.toString());
-					LogUtil.info("END__ strategy = " + sn + conclusion);
+					Log_.info("BEGIN strategy = " + sn + conclusion);
+					Log_.info(backTest.tradeLog.toString());
+					Log_.info("END__ strategy = " + sn + conclusion);
 				});
 	}
 
@@ -70,7 +70,7 @@ public class SingleAllocBackTestTest {
 
 	private SingleAllocBackTest backTest_(DataSource ds, String disp, BuySellStrategy strategy) {
 		var backTest = SingleAllocBackTest.test(ds, strategy);
-		LogUtil.info(disp + backTest.concludeLog);
+		Log_.info(disp + backTest.concludeLog);
 		return backTest;
 	}
 

@@ -8,7 +8,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.Read;
@@ -111,7 +111,7 @@ public class TradeCfgImpl implements TradeCfg {
 		var epx = ds.last().t0;
 		var now = min(Time.now().epochSec(), period.to.epochSec());
 		if (epx + 7 * 86400 * 1000l < now)
-			LogUtil.warn("ancient data: " + symbol + " " + Time.ofEpochSec(epx));
+			Log_.warn("ancient data: " + symbol + " " + Time.ofEpochSec(epx));
 		return ds;
 	}
 

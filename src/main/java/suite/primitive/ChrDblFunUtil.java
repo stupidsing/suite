@@ -5,7 +5,7 @@ import static suite.util.Friends.fail;
 import java.util.Iterator;
 
 import suite.adt.pair.Pair;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.ChrPrimitives.ChrTest;
 import suite.primitive.DblPrimitives.DblTest;
 import suite.primitive.adt.pair.ChrDblPair;
@@ -261,7 +261,7 @@ public class ChrDblFunUtil {
 		try {
 			queue.offer(t);
 		} catch (InterruptedException ex) {
-			LogUtil.error(ex);
+			Log_.error(ex);
 		}
 	}
 

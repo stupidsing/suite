@@ -3,7 +3,7 @@ package suite.trade.data;
 import java.util.Map;
 import java.util.Set;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.Streamlet;
 import suite.trade.Instrument;
 import suite.trade.Time;
@@ -35,7 +35,7 @@ public interface TradeCfg {
 					try {
 						return dataSource(symbol, period).validate();
 					} catch (Exception ex) {
-						LogUtil.warn("for " + symbol + " " + ex);
+						Log_.warn("for " + symbol + " " + ex);
 						return null;
 					}
 				}) //

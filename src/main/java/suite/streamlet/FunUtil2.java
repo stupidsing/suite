@@ -8,7 +8,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
@@ -292,7 +292,7 @@ public class FunUtil2 {
 		try {
 			queue.offer(t);
 		} catch (InterruptedException ex) {
-			LogUtil.error(ex);
+			Log_.error(ex);
 		}
 	}
 

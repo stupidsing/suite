@@ -2,7 +2,7 @@ package suite.util;
 
 import static suite.util.Friends.rethrow;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.util.Thread_.RunnableEx;
 
 public class Th extends Thread {
@@ -17,7 +17,7 @@ public class Th extends Thread {
 		try {
 			runnable.run();
 		} catch (Exception ex) {
-			LogUtil.error(ex);
+			Log_.error(ex);
 		}
 	}
 

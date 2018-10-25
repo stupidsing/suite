@@ -18,7 +18,7 @@ import org.apache.http.impl.client.HttpClients;
 import suite.adt.map.ListMultimap;
 import suite.adt.pair.FixieArray;
 import suite.concurrent.Backoff;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes_;
 import suite.primitive.Chars;
@@ -165,7 +165,7 @@ public class HttpUtil {
 
 	private static HttpResult httpApache(String method, URL url, Outlet<Bytes> in, Map<String, String> headers0)
 			throws IOException {
-		LogUtil.info("START " + method + " " + url);
+		Log_.info("START " + method + " " + url);
 		var client = HttpClients.createDefault();
 
 		var request = new HttpRequestBase() {
@@ -189,7 +189,7 @@ public class HttpUtil {
 				.closeAtEnd(inputStream) //
 				.closeAtEnd(response) //
 				.closeAtEnd(client) //
-				.closeAtEnd(() -> LogUtil.info("END__ " + method + " " + url));
+				.closeAtEnd(() -> Log_.info("END__ " + method + " " + url));
 
 		if (statusCode == HttpURLConnection.HTTP_OK)
 			return new HttpResult(statusCode, headers1, out);

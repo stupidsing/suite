@@ -5,7 +5,7 @@ import static suite.util.Friends.fail;
 import java.util.Collections;
 import java.util.Iterator;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.IntSource;
@@ -262,7 +262,7 @@ public class IntFunUtil {
 		try {
 			queue.offer(c);
 		} catch (InterruptedException ex) {
-			LogUtil.error(ex);
+			Log_.error(ex);
 		}
 	}
 

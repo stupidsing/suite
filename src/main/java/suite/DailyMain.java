@@ -7,7 +7,7 @@ import java.util.Set;
 import suite.adt.pair.Pair;
 import suite.math.Math_;
 import suite.node.util.Singleton;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.os.SerializedStoreCache;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.serialize.Serialize;
@@ -132,7 +132,7 @@ public class DailyMain {
 				+ "\n");
 
 		var result = sb.toString();
-		LogUtil.info(result);
+		Log_.info(result);
 
 		var smtp = new SmtpSslGmail();
 		smtp.send(null, getClass().getName(), result);
@@ -160,7 +160,7 @@ public class DailyMain {
 								var backTest = SingleAllocBackTest.test(ds, strategy);
 								return Math_.isPositive(backTest.account.cash());
 							} catch (Exception ex) {
-								LogUtil.warn(ex + " for " + stock);
+								Log_.warn(ex + " for " + stock);
 								return false;
 							}
 						}) //
@@ -187,7 +187,7 @@ public class DailyMain {
 					if (signal != 0)
 						trades.add(trade);
 				} catch (Exception ex) {
-					LogUtil.warn(ex.getMessage() + " in " + instrument);
+					Log_.warn(ex.getMessage() + " in " + instrument);
 				}
 		}
 

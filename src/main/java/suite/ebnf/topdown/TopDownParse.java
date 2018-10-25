@@ -11,7 +11,7 @@ import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
 import suite.ebnf.topdown.Expect.ExpectFun;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
@@ -133,7 +133,7 @@ public class TopDownParse {
 
 		private Outlet<State> parse(State state, Parser parser) {
 			if (trace)
-				LogUtil.info("parse(" + parser + "): " + in.substring(state.pos));
+				Log_.info("parse(" + parser + "): " + in.substring(state.pos));
 
 			var states = state.p(this, parser);
 			if (states == noResult && 0 < state.sign && state.frame.entity != null && errorPosition <= state.pos) {

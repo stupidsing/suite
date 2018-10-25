@@ -16,7 +16,7 @@ import suite.math.linalg.VirtualVector;
 import suite.math.numeric.Statistic;
 import suite.math.numeric.Statistic.MeanVariance;
 import suite.math.transform.DiscreteCosineTransform;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.Floats_;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Dbl;
@@ -63,9 +63,9 @@ public class AnalyzeTimeSeriesTest {
 		var cls = ds.closes;
 		var ocgs = Floats_.toArray(length, i -> cls[i] - ops[i]);
 		var cogs = Floats_.toArray(length, i -> ops[i] - cls[max(0, i - 1)]);
-		LogUtil.info("open/close gap = " + stat.meanVariance(ocgs));
-		LogUtil.info("close/open gap = " + stat.meanVariance(cogs));
-		LogUtil.info("ocg/cog covariance = " + stat.correlation(ocgs, cogs));
+		Log_.info("open/close gap = " + stat.meanVariance(ocgs));
+		Log_.info("close/open gap = " + stat.meanVariance(cogs));
+		Log_.info("ocg/cog covariance = " + stat.correlation(ocgs, cogs));
 		analyze(ds.prices);
 	}
 
@@ -119,7 +119,7 @@ public class AnalyzeTimeSeriesTest {
 			return Quant.sign(logPrices[last], logPrices[ref] - bbvariances[last] / (2d * mean * mean));
 		}).start(1 + 250);
 
-		LogUtil.info("" //
+		Log_.info("" //
 				+ "\nsymbol = " + symbol //
 				+ "\nlength = " + length //
 				+ "\nnYears = " + nYears //

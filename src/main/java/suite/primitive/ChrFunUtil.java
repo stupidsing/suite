@@ -5,7 +5,7 @@ import static suite.util.Friends.fail;
 import java.util.Collections;
 import java.util.Iterator;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.ChrPrimitives.ChrObjSource;
 import suite.primitive.ChrPrimitives.ChrSink;
 import suite.primitive.ChrPrimitives.ChrSource;
@@ -262,7 +262,7 @@ public class ChrFunUtil {
 		try {
 			queue.offer(c);
 		} catch (InterruptedException ex) {
-			LogUtil.error(ex);
+			Log_.error(ex);
 		}
 	}
 

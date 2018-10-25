@@ -10,7 +10,7 @@ import suite.node.Tree;
 import suite.node.Tuple;
 import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
-import suite.os.LogUtil;
+import suite.os.Log_;
 
 public class BasicIntrinsics {
 
@@ -30,12 +30,12 @@ public class BasicIntrinsics {
 
 	public Intrinsic log1 = (callback, inputs) -> {
 		var node = inputs.get(0);
-		LogUtil.info(Formatter.display(ThunkUtil.deepYawn(callback::yawn, node)));
+		Log_.info(Formatter.display(ThunkUtil.deepYawn(callback::yawn, node)));
 		return node;
 	};
 
 	public Intrinsic log2 = (callback, inputs) -> {
-		LogUtil.info(ThunkUtil.yawnString(callback::yawn, inputs.get(0)));
+		Log_.info(ThunkUtil.yawnString(callback::yawn, inputs.get(0)));
 		return inputs.get(1);
 	};
 

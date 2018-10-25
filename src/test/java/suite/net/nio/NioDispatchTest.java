@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import suite.cfg.Defaults;
 import suite.net.nio.NioDispatch.AsyncRw;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Sink;
 import suite.util.Rethrow;
@@ -33,7 +33,7 @@ public class NioDispatchTest {
 	private byte lf = 10;
 	private char lineFeed = (char) lf;
 	private Bytes lfs = Bytes.of(new byte[] { lf, });
-	private Sink<IOException> fail = LogUtil::error;
+	private Sink<IOException> fail = Log_::error;
 
 	@Test
 	public void testTextExchange0() throws IOException {

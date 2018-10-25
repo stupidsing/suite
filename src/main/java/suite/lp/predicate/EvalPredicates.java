@@ -31,7 +31,7 @@ import suite.node.util.Complexity;
 import suite.node.util.Cyclic;
 import suite.node.util.Rewrite;
 import suite.node.util.TreeUtil;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.FunUtil.Fun;
 import suite.util.Memoize;
 
@@ -83,7 +83,7 @@ public class EvalPredicates {
 		try {
 			result = engines.apply("js").eval(js);
 		} catch (ScriptException ex) {
-			LogUtil.error(ex);
+			Log_.error(ex);
 			return false;
 		}
 

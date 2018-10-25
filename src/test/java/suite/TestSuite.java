@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 
 // (cd src/test/java/; find * -name \*.java) | sed 's#/#.#g' | sed 's#\.java$#\.class, //#g'
 
@@ -17,7 +17,7 @@ public class TestSuite {
 
 	@Before
 	public void start() {
-		LogUtil.initLog4j(Level.DEBUG);
+		Log_.initLogging(Level.DEBUG);
 	}
 
 }

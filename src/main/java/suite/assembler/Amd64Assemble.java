@@ -20,7 +20,7 @@ import suite.assembler.Amd64.OpRegXmm;
 import suite.assembler.Amd64.OpRegYmm;
 import suite.assembler.Amd64.Operand;
 import suite.inspect.Dump;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.Bytes_;
@@ -163,7 +163,7 @@ public class Amd64Assemble {
 		assemblePass(false, offset, instructions);
 		var bytes = assemblePass(true, offset, instructions);
 		if (dump)
-			LogUtil.info(new Amd64Dump().dump(instructions));
+			Log_.info(new Amd64Dump().dump(instructions));
 		return bytes;
 	}
 

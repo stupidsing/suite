@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.IntPrimitives.IntObjPredicate;
 import suite.primitive.IntPrimitives.IntObjSource;
 import suite.primitive.IntPrimitives.IntObj_Obj;
@@ -265,7 +265,7 @@ public class IntObjFunUtil {
 		try {
 			queue.offer(t);
 		} catch (InterruptedException ex) {
-			LogUtil.error(ex);
+			Log_.error(ex);
 		}
 	}
 

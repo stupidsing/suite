@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.DblPrimitives.DblObjPredicate;
 import suite.primitive.DblPrimitives.DblObjSource;
 import suite.primitive.DblPrimitives.DblObj_Obj;
@@ -265,7 +265,7 @@ public class DblObjFunUtil {
 		try {
 			queue.offer(t);
 		} catch (InterruptedException ex) {
-			LogUtil.error(ex);
+			Log_.error(ex);
 		}
 	}
 

@@ -10,7 +10,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Path;
 
 import suite.object.Object_;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.util.To;
 
 public class JdkLoadClassUtil extends JdkUtil implements Closeable {
@@ -35,7 +35,7 @@ public class JdkLoadClassUtil extends JdkUtil implements Closeable {
 	}
 
 	private <T> Class<? extends T> load(String canonicalName) {
-		LogUtil.info("Loading class " + canonicalName);
+		Log_.info("Loading class " + canonicalName);
 
 		return rethrow(() -> {
 			@SuppressWarnings("unchecked")

@@ -4,7 +4,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.log4j.Level;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntSource;
 import suite.sample.Profiler;
@@ -25,7 +25,7 @@ public class RunUtil {
 	}
 
 	public static void run(RunOption runOption, Callable<Boolean> callable) {
-		LogUtil.initLog4j(Level.INFO);
+		Log_.initLogging(Level.INFO);
 		var mutableCode = IntMutable.nil();
 
 		IntSource source = () -> {
@@ -33,7 +33,7 @@ public class RunUtil {
 				return callable.call() ? 0 : 1;
 			} catch (Throwable ex) {
 				ex.printStackTrace();
-				LogUtil.fatal(ex);
+				Log_.fatal(ex);
 				return 2;
 			}
 		};
@@ -48,7 +48,7 @@ public class RunUtil {
 			runnable.run();
 			break;
 		case TIME___:
-			LogUtil.duration("main", () -> {
+			Log_.duration("main", () -> {
 				runnable.run();
 				return Boolean.TRUE;
 			});

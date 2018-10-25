@@ -18,7 +18,7 @@ import suite.cfg.Defaults;
 import suite.net.NetUtil;
 import suite.net.ThreadService;
 import suite.net.cluster.ClusterProbe;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -152,7 +152,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			try {
 				processSelectedKey(key);
 			} catch (Exception ex) {
-				LogUtil.error(ex);
+				Log_.error(ex);
 			}
 		}
 	}
@@ -245,7 +245,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			channel.send(ByteBuffer.wrap(bytes), peers.get(remote).get());
 			lastSentTimeByPeer.put(remote, System.currentTimeMillis());
 		} catch (IOException ex) {
-			LogUtil.error(ex);
+			Log_.error(ex);
 		}
 	}
 

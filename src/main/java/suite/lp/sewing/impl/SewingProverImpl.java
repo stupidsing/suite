@@ -44,7 +44,7 @@ import suite.node.util.Rewrite;
 import suite.node.util.SuiteException;
 import suite.node.util.TreeUtil;
 import suite.object.Object_;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
@@ -832,13 +832,13 @@ public class SewingProverImpl implements ProverFactory {
 				var m = Formatter.dump(rt.query);
 				var indent = rt.debug.indent;
 
-				LogUtil.info(indent + "QUERY " + m);
+				Log_.info(indent + "QUERY " + m);
 				rt.pushRem(rt_ -> {
-					LogUtil.info(indent + "OK___ " + m);
+					Log_.info(indent + "OK___ " + m);
 					return okay;
 				});
 				rt.pushAlt(rt_ -> {
-					LogUtil.info(indent + "FAIL_ " + m);
+					Log_.info(indent + "FAIL_ " + m);
 					return fail;
 				});
 				return tr1;

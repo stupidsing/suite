@@ -23,7 +23,7 @@ public class Pipe {
 				command0 = new String[] { s, };
 
 		if (command0 != null)
-			LogUtil.info("START " + sh);
+			Log_.info("START " + sh);
 		else
 			fail("cannot find shell executable");
 
@@ -53,7 +53,7 @@ public class Pipe {
 				else
 					fail("code = " + code);
 				process.destroy();
-				LogUtil.info("END__ " + sh);
+				Log_.info("END__ " + sh);
 				return process;
 			}));
 		}));

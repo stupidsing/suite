@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.text.DecimalFormat;
 
 import suite.cfg.Defaults;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.os.Stopwatch;
 import suite.uct.ShuffleUtil;
 import suite.uct.UctSearch;
@@ -99,7 +99,7 @@ public class UctWeiqiMain<Move> {
 					else
 						quit = true;
 				} catch (Exception ex) {
-					LogUtil.error(ex);
+					Log_.error(ex);
 				}
 		}
 	}

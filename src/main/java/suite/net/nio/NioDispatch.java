@@ -23,7 +23,7 @@ import suite.concurrent.Backoff;
 import suite.concurrent.Pool;
 import suite.net.NetUtil;
 import suite.object.Object_;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.streamlet.FunUtil.Iterate;
@@ -96,7 +96,7 @@ public class NioDispatch implements Closeable {
 
 	public class Responder {
 		public Closeable listen(int port, Iterate<Bytes> fun, Sink<IOException> fail) {
-			Sink<IOException> failRequest = LogUtil::error;
+			Sink<IOException> failRequest = Log_::error;
 
 			return asyncListen(port, rw -> {
 				PacketId packetId = new PacketId(rw);
@@ -159,7 +159,7 @@ public class NioDispatch implements Closeable {
 		}
 
 		public void reset(Exception ex) {
-			LogUtil.error(ex);
+			Log_.error(ex);
 			rec.rw.close();
 			rec = null;
 		}
@@ -270,7 +270,7 @@ public class NioDispatch implements Closeable {
 				sc.register(selector, 0, null);
 				sc.close();
 			} catch (IOException ex) {
-				LogUtil.error(ex);
+				Log_.error(ex);
 			}
 		}
 
@@ -319,7 +319,7 @@ public class NioDispatch implements Closeable {
 	}
 
 	public Closeable asyncListen(int port, Sink<AsyncRw> accept) {
-		return asyncListen(port, accept, LogUtil::error);
+		return asyncListen(port, accept, Log_::error);
 	}
 
 	public Closeable asyncListen(int port, Sink<AsyncRw> accept, Sink<IOException> fail) {
@@ -363,7 +363,7 @@ public class NioDispatch implements Closeable {
 				try {
 					processKey(key);
 				} catch (Exception ex) {
-					LogUtil.error(ex);
+					Log_.error(ex);
 				}
 			}
 

@@ -8,7 +8,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import suite.adt.pair.Pair;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.FunUtil2.Source2;
 import suite.util.Fail.InterruptedRuntimeException;
 import suite.util.NullableSyncQueue;
@@ -266,7 +266,7 @@ public class FunUtil {
 		try {
 			queue.offer(t);
 		} catch (InterruptedException ex) {
-			LogUtil.error(ex);
+			Log_.error(ex);
 		}
 	}
 

@@ -30,9 +30,9 @@ public class Execute {
 				command = new String[] { s, };
 
 		if (command != null) {
-			LogUtil.info("START " + sh);
+			Log_.info("START " + sh);
 			var execute = new Execute(command, sh);
-			LogUtil.info("END__ " + sh);
+			Log_.info("END__ " + sh);
 			return execute.code == 0 ? execute.out : fail(execute.toString());
 		} else
 			return fail("cannot find shell executable");

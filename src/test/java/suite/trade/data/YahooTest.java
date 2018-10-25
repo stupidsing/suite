@@ -5,7 +5,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import suite.inspect.Dump;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.FunUtil2.Fun2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
@@ -35,7 +35,7 @@ public class YahooTest {
 			try {
 				yahoo.dataSourceL1(symbol, TimeRange.daysBefore(31));
 			} catch (Exception ex) {
-				LogUtil.error(ex);
+				Log_.error(ex);
 			}
 	}
 

@@ -16,7 +16,7 @@ import org.junit.Test;
 
 import suite.net.cluster.impl.NioCluster;
 import suite.net.cluster.impl.NioClusterMap;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
@@ -31,7 +31,7 @@ public class NioClusterMapTest {
 	private static Random random = new Random();
 
 	private InetAddress localHost = Rethrow.ex(InetAddress::getLocalHost);
-	private Sink<IOException> fail = LogUtil::error;
+	private Sink<IOException> fail = Log_::error;
 
 	@Test
 	public void testClusterMap() throws IOException {

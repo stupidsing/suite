@@ -1,6 +1,6 @@
 package suite.node.io;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.util.String_;
 
 public class Escaper {
@@ -39,7 +39,7 @@ public class Escaper {
 					s = s.substring(0, pos) + c + s.substring(pos + 3);
 				}
 		} catch (StringIndexOutOfBoundsException | NumberFormatException ex) {
-			LogUtil.error(ex);
+			Log_.error(ex);
 		}
 
 		return s;

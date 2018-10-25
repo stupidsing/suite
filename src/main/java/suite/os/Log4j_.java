@@ -17,12 +17,12 @@ import suite.proxy.Intercept;
 import suite.streamlet.FunUtil.Source;
 import suite.util.Array_;
 
-public class LogUtil {
+public class Log4j_ {
 
 	private static int maxStackTraceLength = 99;
 	private static ThreadLocal<String> prefix = ThreadLocal.withInitial(() -> "");
 
-	private static Log_ suiteLog = new Log_() {
+	private static Out out = new Out() {
 		private Log log0 = LogFactory.getLog("suite");
 
 		public void info(String message) {
@@ -44,7 +44,7 @@ public class LogUtil {
 		}
 	};
 
-	private interface Log_ {
+	private interface Out {
 		public void info(String message);
 
 		public void warn(String message);
@@ -82,7 +82,7 @@ public class LogUtil {
 
 	public static <T> T duration(String m, Source<T> source) {
 		var tr = Stopwatch.of(source);
-		LogUtil.info(m + " in " + tr.duration + "ms, GC occurred " + tr.nGcs + " times in " + tr.gcDuration + " ms");
+		Log4j_.info(m + " in " + tr.duration + "ms, GC occurred " + tr.nGcs + " times in " + tr.gcDuration + " ms");
 		return tr.result;
 	}
 
@@ -97,19 +97,19 @@ public class LogUtil {
 	}
 
 	public static void info(String message) {
-		suiteLog.info(prefix.get() + message);
+		out.info(prefix.get() + message);
 	}
 
 	public static void warn(String message) {
-		suiteLog.warn(prefix.get() + message);
+		out.warn(prefix.get() + message);
 	}
 
 	public static void error(Throwable th) {
-		suiteLog.error(th);
+		out.error(th);
 	}
 
 	public static void fatal(Throwable th) {
-		suiteLog.fatal(th);
+		out.fatal(th);
 	}
 
 	public static <T> T log(String message, Source<T> source) {

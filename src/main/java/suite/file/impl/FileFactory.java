@@ -12,7 +12,7 @@ import suite.file.ExtentAllocator.Extent;
 import suite.file.ExtentFile;
 import suite.file.PageFile;
 import suite.node.util.Singleton;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.serialize.SerInput;
@@ -94,22 +94,22 @@ public class FileFactory {
 	public static PageFile logged(PageFile pageFile) {
 		return new PageFile() {
 			public void close() throws IOException {
-				LogUtil.info("PageFile[" + System.identityHashCode(pageFile) + "].close()");
+				Log_.info("PageFile[" + System.identityHashCode(pageFile) + "].close()");
 				pageFile.close();
 			}
 
 			public void sync() {
-				LogUtil.info("PageFile[" + System.identityHashCode(pageFile) + "].sync()");
+				Log_.info("PageFile[" + System.identityHashCode(pageFile) + "].sync()");
 				pageFile.sync();
 			}
 
 			public Bytes load(int pointer) {
-				LogUtil.info("PageFile[" + System.identityHashCode(pageFile) + "].load(" + pointer + ")");
+				Log_.info("PageFile[" + System.identityHashCode(pageFile) + "].load(" + pointer + ")");
 				return pageFile.load(pointer);
 			}
 
 			public void save(int pointer, Bytes bytes) {
-				LogUtil.info("PageFile[" + System.identityHashCode(pageFile) + "].save(" + pointer + ")");
+				Log_.info("PageFile[" + System.identityHashCode(pageFile) + "].save(" + pointer + ")");
 				pageFile.save(pointer, bytes);
 			}
 		};

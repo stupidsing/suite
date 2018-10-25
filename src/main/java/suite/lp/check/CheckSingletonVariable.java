@@ -11,7 +11,7 @@ import suite.node.Atom;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.Rewrite_.NodeRead;
-import suite.os.LogUtil;
+import suite.os.Log_;
 
 public class CheckSingletonVariable {
 
@@ -66,7 +66,7 @@ public class CheckSingletonVariable {
 		private void warn(Prototype prototype) {
 			for (var entry1 : isSingleton.entrySet())
 				if (entry1.getValue() == Boolean.TRUE)
-					LogUtil.warn("Variable only used once: " + prototype + "/" + entry1.getKey());
+					Log_.warn("Variable only used once: " + prototype + "/" + entry1.getKey());
 		}
 	}
 

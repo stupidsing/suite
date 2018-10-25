@@ -63,7 +63,7 @@ public class StoreCache {
 		if (String_.equals(System.getenv("EVICTSTORECACHE"), "Y"))
 			paths.forEach(FileUtil::delete);
 		else
-			LogUtil.info(paths //
+			Log_.info(paths //
 					.map(path -> "rm '" + path + "'") //
 					.toString());
 	}

@@ -7,7 +7,7 @@ import suite.lp.kb.Prototype;
 import suite.lp.kb.Rule;
 import suite.node.Node;
 import suite.node.util.TreeUtil;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.Read;
 
 public class CheckPredicateCall {
@@ -23,7 +23,7 @@ public class CheckPredicateCall {
 	private void check(Node node) {
 		var prototype = Prototype.of(node);
 		if (nElementsByPrototype.get(prototype) != null && TreeUtil.nElements(node) < nElementsByPrototype.get(prototype))
-			LogUtil.warn("Not enough number of elements: " + prototype);
+			Log_.warn("Not enough number of elements: " + prototype);
 	}
 
 }

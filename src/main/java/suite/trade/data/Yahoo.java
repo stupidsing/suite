@@ -20,7 +20,7 @@ import suite.http.HttpUtil;
 import suite.node.util.Singleton;
 import suite.object.Object_;
 import suite.os.FileUtil;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.FltPrimitives.Obj_Flt;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.adt.pair.LngFltPair;
@@ -195,7 +195,7 @@ public class Yahoo {
 				: stockHistory1.splits;
 
 		var stockHistory2 = stockHistory1.create(stockHistory1.data, stockHistory1.dividends, splits2);
-		var stockHistory3 = LogUtil.prefix("for " + symbol + ": ", () -> stockHistory2.cleanse());
+		var stockHistory3 = Log_.prefix("for " + symbol + ": ", () -> stockHistory2.cleanse());
 		return stockHistory3;
 	}
 

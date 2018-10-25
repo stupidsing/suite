@@ -14,7 +14,7 @@ import suite.adt.pair.Pair;
 import suite.algo.KmeansCluster;
 import suite.math.numeric.Statistic;
 import suite.math.transform.DiscreteCosineTransform;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.DblPrimitives.Obj_Dbl;
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
@@ -185,7 +185,7 @@ public class StatisticalArbitrageTest {
 					max = IntFltPair.of(i, f);
 			}
 
-			LogUtil.info(e.t0 + " has period " + max.t0);
+			Log_.info(e.t0 + " has period " + max.t0);
 		}
 	}
 

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import suite.assembler.Amd64Interpret;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.Bytes;
 
 public class FunpTest {
@@ -145,13 +145,13 @@ public class FunpTest {
 
 	private void test(int expected, String program) {
 		for (var isOptimize : new boolean[] { false, true, }) {
-			LogUtil.info(program);
+			Log_.info(program);
 
 			var actual = Funp_ //
 					.main(isOptimize) //
 					.compile(interpret.codeStart, program) //
 					.map((instructions, code) -> {
-						LogUtil.info("Hex" + code + "\n\n");
+						Log_.info("Hex" + code + "\n\n");
 						return interpret.interpret(instructions, code, Bytes.of());
 					}) //
 					.intValue();

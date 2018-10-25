@@ -6,7 +6,7 @@ import suite.node.Node;
 import suite.node.Str;
 import suite.node.io.Escaper;
 import suite.node.util.Context;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.util.ParseUtil;
 import suite.util.String_;
 
@@ -38,7 +38,7 @@ public class TerminalParser {
 			else {
 				s = s.trim(); // trim unquoted atoms
 				if (!ParseUtil.isParseable(s))
-					LogUtil.info("Suspicious input when parsing " + s);
+					Log_.info("Suspicious input when parsing " + s);
 			}
 
 			return Atom.of(localContext, s);

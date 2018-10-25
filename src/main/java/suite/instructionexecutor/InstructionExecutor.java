@@ -20,7 +20,7 @@ import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
-import suite.os.LogUtil;
+import suite.os.Log_;
 
 public class InstructionExecutor implements AutoCloseable {
 
@@ -208,7 +208,7 @@ public class InstructionExecutor implements AutoCloseable {
 					current.frame = current.frame.previous;
 					break;
 				case LOGREG________:
-					LogUtil.info(regs[insn.op0].toString());
+					Log_.info(regs[insn.op0].toString());
 					break;
 				case NEWNODE_______:
 					regs[insn.op0] = new Reference();

@@ -13,7 +13,7 @@ import suite.node.io.Operator.Assoc;
 import suite.node.util.Singleton;
 import suite.object.MapInterface;
 import suite.object.MapObject_;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
@@ -34,11 +34,11 @@ public class Dump {
 	}
 
 	public static void lines(Object node) {
-		LogUtil.info(format(toLine(node)));
+		Log_.info(format(toLine(node)));
 	}
 
 	public static void line(Object node) {
-		LogUtil.info(toLine(node));
+		Log_.info(toLine(node));
 	}
 
 	public static String toLine(Object node) {
@@ -137,7 +137,7 @@ public class Dump {
 		sb.append("Dumping ");
 		sb.append(name);
 		Dump.toDetails("", object, sb);
-		LogUtil.info(sb.toString());
+		Log_.info(sb.toString());
 	}
 
 	public static String object(Object object) {

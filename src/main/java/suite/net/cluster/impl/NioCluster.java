@@ -12,7 +12,7 @@ import suite.net.cluster.ClusterProbe;
 import suite.net.nio.NioDispatch;
 import suite.net.nio.NioDispatch.AsyncRw;
 import suite.object.Object_;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Signal;
@@ -24,7 +24,7 @@ public class NioCluster implements Closeable {
 	private ClusterProbe probe;
 
 	private NioDispatch nd = new NioDispatch();
-	private Sink<IOException> f = LogUtil::error;
+	private Sink<IOException> f = Log_::error;
 	private Closeable unlisten;
 
 	/**

@@ -1,6 +1,6 @@
 package suite.http;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.os.SocketUtil;
 import suite.primitive.IoSink;
 
@@ -32,10 +32,10 @@ public class HttpServe {
 			try {
 				response = handler.handle(request);
 			} catch (Exception ex) {
-				LogUtil.error(ex);
+				Log_.error(ex);
 				response = HttpResponse.of(HttpResponse.HTTP500);
 			} finally {
-				LogUtil.info(request.getLogString() + " " + response.getLogString());
+				Log_.info(request.getLogString() + " " + response.getLogString());
 			}
 
 			httpIo.writeResponse(os, response);
@@ -47,7 +47,7 @@ public class HttpServe {
 			var request = httpIo.readRequest(is);
 
 			IoSink<HttpResponse> sink = response -> {
-				LogUtil.info(request.getLogString() + " " + response.getLogString());
+				Log_.info(request.getLogString() + " " + response.getLogString());
 				httpIo.writeResponse(os, response);
 				close.close();
 			};
@@ -55,7 +55,7 @@ public class HttpServe {
 			try {
 				handler.handle(request, sink);
 			} catch (Exception ex) {
-				LogUtil.error(ex);
+				Log_.error(ex);
 				sink.f(HttpResponse.of(HttpResponse.HTTP500));
 			}
 		});

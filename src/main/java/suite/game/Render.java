@@ -14,7 +14,7 @@ import javax.swing.JLabel;
 
 import suite.cfg.Defaults;
 import suite.math.R3;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.Floats_;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.Ints_;
@@ -51,7 +51,7 @@ public class Render {
 			try {
 				color = f.apply(xs[x], ys[y]);
 			} catch (Exception ex) {
-				LogUtil.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
+				Log_.error(new RuntimeException("at (" + x + ", " + y + ")", ex));
 				color = new R3(1d, 1d, 1d);
 			}
 			return color;

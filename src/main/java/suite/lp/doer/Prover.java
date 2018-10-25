@@ -16,7 +16,7 @@ import suite.node.Node;
 import suite.node.Suspend;
 import suite.node.Tree;
 import suite.node.io.TermOp;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.FunUtil.Source;
 import suite.util.List_;
 
@@ -71,8 +71,8 @@ public class Prover {
 	public boolean prove(Node query) {
 		var hook = new Thread(() -> {
 			var d = LocalDateTime.now().toString();
-			LogUtil.info("-- trace dump at " + d + " --\n" + tracer.getTrace());
-			LogUtil.info("-- fail dump at " + d + " --\n" + tracer.getFailTrace());
+			Log_.info("-- trace dump at " + d + " --\n" + tracer.getTrace());
+			Log_.info("-- fail dump at " + d + " --\n" + tracer.getFailTrace());
 		});
 
 		if (config.isTrace())

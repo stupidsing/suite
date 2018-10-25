@@ -1,6 +1,6 @@
 package suite.trade.data;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.IntFlt_Flt;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.pair.LngFltPair;
@@ -53,7 +53,7 @@ public class Cleanse {
 			if (isValid(price0, price2) && !isValid(price0, price1) && !isValid(price1, price2)) {
 				set.apply(i - 1, price0);
 				if (Boolean.FALSE)
-					LogUtil.warn("price spiked: " + To.string(price0) + ", " + To.string(price1) + ", " + To.string(price2));
+					Log_.warn("price spiked: " + To.string(price0) + ", " + To.string(price1) + ", " + To.string(price2));
 			}
 		}
 	}

@@ -40,7 +40,7 @@ public class Scheduler {
 					try {
 						schedules1.addAll(schedule.run.g());
 					} catch (Exception ex) {
-						LogUtil.error(ex);
+						Log_.error(ex);
 					}
 
 			schedules = schedules1;

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.os.SocketUtil;
 import suite.os.SocketUtil.Io;
 import suite.primitive.BooMutable;
@@ -43,7 +43,7 @@ public class LoadBalancer {
 					alives = alives1;
 					Thread.sleep(500l);
 				} catch (Exception ex) {
-					LogUtil.error(ex);
+					Log_.error(ex);
 				}
 		});
 

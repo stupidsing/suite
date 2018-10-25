@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import suite.math.numeric.Statistic;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -162,7 +162,7 @@ public class BackAllocTester {
 						+ " " + account.transactionSummary(cfg::transactionFee).out0() //
 						+ " holds::" + sb + "...";
 			else {
-				LogUtil.error(exception);
+				Log_.error(exception);
 				return "exception = " + exception;
 			}
 		}

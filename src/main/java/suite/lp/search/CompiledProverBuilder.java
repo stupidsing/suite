@@ -7,7 +7,7 @@ import suite.lp.kb.RuleSet;
 import suite.lp.search.ProverBuilder.Builder;
 import suite.lp.search.ProverBuilder.Finder;
 import suite.node.Node;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.FunUtil.Fun;
 
 public class CompiledProverBuilder implements Builder {
@@ -56,7 +56,7 @@ public class CompiledProverBuilder implements Builder {
 	}
 
 	private Node compile(Node program) {
-		return LogUtil.duration("Code compiled", () -> compiler.collectSingle(program));
+		return Log_.duration("Code compiled", () -> compiler.collectSingle(program));
 	}
 
 	private Finder newCompiler(Builder builder) {

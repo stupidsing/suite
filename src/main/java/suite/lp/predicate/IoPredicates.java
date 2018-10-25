@@ -18,7 +18,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.util.SuiteException;
 import suite.os.FileUtil;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.util.To;
 
@@ -32,7 +32,7 @@ public class IoPredicates {
 	public BuiltinPredicate dumpStack = (prover, ps) -> {
 		var date = LocalDateTime.now().toString();
 		var trace = prover.getTracer().getStackTrace();
-		LogUtil.info("-- stack trace at " + date + " --\n" + trace);
+		Log_.info("-- stack trace at " + date + " --\n" + trace);
 		return true;
 	};
 
@@ -42,7 +42,7 @@ public class IoPredicates {
 				var cmd = Str.str(p0);
 				return Runtime.getRuntime().exec(cmd).waitFor() == 0;
 			} catch (IOException | InterruptedException ex) {
-				LogUtil.error(ex);
+				Log_.error(ex);
 			}
 		return false;
 	});
@@ -86,7 +86,7 @@ public class IoPredicates {
 		return prover.bind(new Str(s), p0);
 	}));
 
-	public BuiltinPredicate log = PredicateUtil.sink(n -> LogUtil.info(Formatter.dump(n)));
+	public BuiltinPredicate log = PredicateUtil.sink(n -> Log_.info(Formatter.dump(n)));
 
 	public BuiltinPredicate sink = PredicateUtil.p1((prover, p0) -> {
 		prover.config().getSink().f(p0);

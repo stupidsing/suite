@@ -6,7 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 import suite.object.Object_;
-import suite.os.LogUtil;
+import suite.os.Log_;
 
 public class JdkUnsafeLoadClassUtil extends JdkUtil {
 
@@ -19,7 +19,7 @@ public class JdkUnsafeLoadClassUtil extends JdkUtil {
 	}
 
 	private <T> Class<? extends T> load(Class<T> interfaceClazz, String canonicalName, Path path) {
-		LogUtil.info("Loading class " + canonicalName);
+		Log_.info("Loading class " + canonicalName);
 		var bytes = rethrow(() -> Files.readAllBytes(path));
 		return new UnsafeUtil().defineClass(interfaceClazz, canonicalName, bytes);
 	}

@@ -32,7 +32,7 @@ import suite.jdk.gen.pass.FunGenerateBytecode;
 import suite.jdk.gen.pass.FunRewrite;
 import suite.jdk.lambda.LambdaInterface;
 import suite.object.Object_;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
@@ -149,11 +149,11 @@ public class FunCreator<I> extends FunFactory {
 				var paramTypes = parameterTypes.toArray(new Type[0]);
 
 				if (isLog) {
-					LogUtil.info("expr0 = " + expr0);
-					LogUtil.info("expr1 = " + expr1);
-					LogUtil.info("expr2 = " + expr2);
-					LogUtil.info("class = " + clsName + " implements " + interfaceClass.getName());
-					LogUtil.info("fields = " + fieldTypes);
+					Log_.info("expr0 = " + expr0);
+					Log_.info("expr1 = " + expr1);
+					Log_.info("expr2 = " + expr2);
+					Log_.info("class = " + clsName + " implements " + interfaceClass.getName());
+					Log_.info("fields = " + fieldTypes);
 					var constantPool = cp.getConstantPool();
 					var instructions = il.getInstructions();
 
@@ -167,7 +167,7 @@ public class FunCreator<I> extends FunFactory {
 							p = constantPool.constantToString(constantPool.getConstant(((CPInstruction) instruction).getIndex()));
 						else
 							p = "";
-						LogUtil.info("(" + i + ") " + s + " " + p);
+						Log_.info("(" + i + ") " + s + " " + p);
 					}
 				}
 

@@ -19,7 +19,7 @@ import suite.cfg.Defaults;
 import suite.net.ServeSocket;
 import suite.object.Object_;
 import suite.os.FileUtil;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.util.ParseUtil;
 import suite.util.RunUtil;
 import suite.util.String_;
@@ -117,7 +117,7 @@ public class Main implements AutoCloseable {
 			Suite.evaluateFunToWriter(opt.fcc(node), sw);
 			ready = sw.toString();
 		} catch (Exception ex) {
-			LogUtil.error(ex);
+			Log_.error(ex);
 			ready = "ERROR";
 		}
 
@@ -140,7 +140,7 @@ public class Main implements AutoCloseable {
 
 				code &= dispatcher.dispatchCommand(sb.toString(), writer);
 			} catch (Throwable ex) {
-				LogUtil.error(ex);
+				Log_.error(ex);
 			}
 	}
 

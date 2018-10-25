@@ -5,7 +5,7 @@ import static suite.util.Friends.rethrow;
 import java.net.Socket;
 
 import suite.cfg.Defaults;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.os.SocketUtil;
 import suite.primitive.adt.pair.IntObjPair;
 import suite.streamlet.FunUtil.Fun;
@@ -33,7 +33,7 @@ public class HttpProxy {
 	public void serve0() {
 		new SocketUtil().listenIo(port, (is, os) -> {
 			var line = Util.readLine(is);
-			LogUtil.info("PROXY " + line);
+			Log_.info("PROXY " + line);
 
 			var url = line.split(" ")[1];
 			var pp = String_.split2(url, "://");
@@ -56,7 +56,7 @@ public class HttpProxy {
 		new SocketUtil().listenIo(port, (is, os) -> {
 			var request0 = httpIo.readRequest(is);
 			var path = request0.path();
-			LogUtil.info("PROXY " + path);
+			Log_.info("PROXY " + path);
 
 			var headers1 = request0.headers.remove("Connection").put("Connection", "close");
 

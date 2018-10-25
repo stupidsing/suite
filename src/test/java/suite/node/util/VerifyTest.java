@@ -17,7 +17,7 @@ import suite.node.Tree;
 import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil2.Fun2;
 
@@ -202,7 +202,7 @@ public class VerifyTest {
 
 		private Node extend_(String proof) {
 			var node = verify(Suite.parse(proof));
-			LogUtil.info("proven :: " + node);
+			Log_.info("proven :: " + node);
 			return node;
 		}
 	}

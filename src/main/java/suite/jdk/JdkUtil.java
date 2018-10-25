@@ -10,7 +10,7 @@ import javax.tools.ToolProvider;
 
 import suite.cfg.Defaults;
 import suite.os.FileUtil;
-import suite.os.LogUtil;
+import suite.os.Log_;
 
 public class JdkUtil {
 
@@ -26,11 +26,11 @@ public class JdkUtil {
 		Path srcFilePath = srcDir.resolve(canonicalName.replace('.', '/') + ".java");
 		Path binFilePath = binDir.resolve(canonicalName.replace('.', '/') + ".class");
 
-		LogUtil.info("Writing " + srcFilePath);
+		Log_.info("Writing " + srcFilePath);
 		FileUtil.out(srcFilePath).doWrite(os -> os.write(java.getBytes(Defaults.charset)));
 
 		// compile the Java, load the class, return an instantiated object
-		LogUtil.info("Compiling " + srcFilePath);
+		Log_.info("Compiling " + srcFilePath);
 		FileUtil.mkdir(binDir);
 
 		var jc = ToolProvider.getSystemJavaCompiler();

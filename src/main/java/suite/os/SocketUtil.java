@@ -49,7 +49,7 @@ public class SocketUtil {
 					try (var is = socket.getInputStream(); var os = socket.getOutputStream()) {
 						io.serve(is, os);
 					} catch (Exception ex) {
-						LogUtil.error(ex);
+						Log_.error(ex);
 					} finally {
 						Object_.closeQuietly(socket);
 					}
@@ -79,7 +79,7 @@ public class SocketUtil {
 							socket.close();
 						});
 					} catch (Exception ex) {
-						LogUtil.error(ex);
+						Log_.error(ex);
 					}
 				});
 			}

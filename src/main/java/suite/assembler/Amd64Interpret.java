@@ -15,7 +15,7 @@ import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_;
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntInt_Obj;
@@ -95,7 +95,7 @@ public class Amd64Interpret {
 			var instruction = instructions.get(eip++);
 
 			if (Boolean.FALSE)
-				LogUtil.info(state(instruction));
+				Log_.info(state(instruction));
 
 			try {
 				IntObj_Int<Operand> trim = (i, op) -> {
@@ -257,7 +257,7 @@ public class Amd64Interpret {
 					assign.f(address((OpMem) op1));
 					break;
 				case LOG:
-					LogUtil.info("value = " + source0);
+					Log_.info("value = " + source0);
 					break;
 				case MOV:
 					assign.f(source1);
@@ -329,7 +329,7 @@ public class Amd64Interpret {
 					fail();
 				}
 			} catch (Exception ex) {
-				LogUtil.info(state(instruction));
+				Log_.info(state(instruction));
 				throw ex;
 			}
 		}

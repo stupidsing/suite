@@ -4,7 +4,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 
@@ -55,7 +55,7 @@ public class Thread_ {
 			try {
 				Thread.sleep(time);
 			} catch (InterruptedException ex) {
-				LogUtil.error(ex);
+				Log_.error(ex);
 			}
 	}
 

@@ -6,7 +6,7 @@ import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 
 public class ClipboardUtil {
 
@@ -24,10 +24,10 @@ public class ClipboardUtil {
 			try {
 				text = contents.getTransferData(DataFlavor.stringFlavor).toString();
 			} catch (UnsupportedFlavorException ex) {
-				LogUtil.error(ex);
+				Log_.error(ex);
 				text = "";
 			} catch (IOException ex) {
-				LogUtil.error(ex);
+				Log_.error(ex);
 				text = "";
 			}
 		else

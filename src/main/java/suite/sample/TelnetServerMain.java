@@ -9,7 +9,7 @@ import java.io.OutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
-import suite.os.LogUtil;
+import suite.os.Log_;
 import suite.os.SocketUtil;
 import suite.streamlet.Read;
 import suite.util.Copy;
@@ -67,7 +67,7 @@ public class TelnetServerMain {
 					run_();
 				} catch (InterruptedException | InterruptedIOException ex) {
 				} catch (Exception ex) {
-					LogUtil.error(ex);
+					Log_.error(ex);
 				} finally {
 
 					// if we are not being interrupted by another thread, issue
