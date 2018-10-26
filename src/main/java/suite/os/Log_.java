@@ -38,14 +38,14 @@ public class Log_ {
 		private void logException(String type, String message, Throwable th) {
 			try (var sw = new StringWriter(); var pw = new PrintWriter(sw);) {
 				th.printStackTrace(pw);
-				log(type, (!message.isEmpty() ? message + ": " : "") + prefix.get() + sw);
+				log(type, (!message.isEmpty() ? message + ": " : "") + sw);
 			} catch (IOException ex) {
 				ex.printStackTrace();
 			}
 		}
 
 		private void log(String type, String message) {
-			System.out.println(current() + " " + type + " " + message);
+			System.out.println(current() + " " + type + " " + prefix.get() + message);
 		}
 
 		private String current() {
@@ -92,11 +92,11 @@ public class Log_ {
 	}
 
 	public static void info(String message) {
-		out.info(prefix.get() + message);
+		out.info(message);
 	}
 
 	public static void warn(String message) {
-		out.warn(prefix.get() + message);
+		out.warn(message);
 	}
 
 	public static void error(Throwable th) {
