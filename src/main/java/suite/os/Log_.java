@@ -19,23 +19,7 @@ public class Log_ {
 	private static Out out = new Out() {
 		private DateTimeFormatter yyyymmdd = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 
-		public void info(String message) {
-			log("[I]", message);
-		}
-
-		public void warn(String message) {
-			log("[W]", message);
-		}
-
-		public void error(String message, Throwable th) {
-			logException("[E]", message, th);
-		}
-
-		public void fatal(String message, Throwable th) {
-			logException("[F]", message, th);
-		}
-
-		private void logException(String type, String message, Throwable th) {
+		public void logException(String type, String message, Throwable th) {
 			try (var sw = new StringWriter(); var pw = new PrintWriter(sw);) {
 				th.printStackTrace(pw);
 				log(type, (!message.isEmpty() ? message + ": " : "") + sw);
@@ -44,7 +28,7 @@ public class Log_ {
 			}
 		}
 
-		private void log(String type, String message) {
+		public void log(String type, String message) {
 			System.out.println(current() + " " + type + " " + prefix.get() + message);
 		}
 
@@ -54,13 +38,9 @@ public class Log_ {
 	};
 
 	private interface Out {
-		public void info(String message);
+		public void log(String type, String message);
 
-		public void warn(String message);
-
-		public void error(String message, Throwable th);
-
-		public void fatal(String message, Throwable th);
+		public void logException(String type, String message, Throwable th);
 	}
 
 	public static void initLogging(Object level) {
@@ -92,11 +72,11 @@ public class Log_ {
 	}
 
 	public static void info(String message) {
-		out.info(message);
+		out.log("[I]", message);
 	}
 
 	public static void warn(String message) {
-		out.warn(message);
+		out.log("[W]", message);
 	}
 
 	public static void error(Throwable th) {
@@ -104,7 +84,7 @@ public class Log_ {
 	}
 
 	public static void error(String message, Throwable th) {
-		out.error(message, th);
+		out.logException("[E]", message, th);
 	}
 
 	public static void fatal(Throwable th) {
@@ -112,7 +92,7 @@ public class Log_ {
 	}
 
 	public static void fatal(String message, Throwable th) {
-		out.fatal(message, th);
+		out.logException("[F]", message, th);
 	}
 
 	public static <I> I proxy(Class<I> interface_, I object) {
