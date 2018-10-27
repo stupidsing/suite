@@ -321,8 +321,7 @@ public class NeuralNetwork {
 					out[iy >> shifty] += in[iy];
 			}
 
-			return new Out<>(outputs, errors -> To //
-					.matrix(sx, sy, (ix, iy) -> errors[ix >> shiftx][iy >> shifty]));
+			return new Out<>(outputs, errors -> To.matrix(sx, sy, (ix, iy) -> errors[ix >> shiftx][iy >> shifty]));
 		};
 	}
 
