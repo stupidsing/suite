@@ -29,10 +29,8 @@ public class Read {
 	private static Streamlet2<?, ?> empty2 = from2(() -> FunUtil2.nullSource());
 
 	public static Streamlet<Bytes> bytes(Path path) {
-		return bytes(path.toFile());
-	}
+		var file = path.toFile();
 
-	public static Streamlet<Bytes> bytes(File file) {
 		return new Streamlet<>(() -> {
 			InputStream is = rethrow(() -> new FileInputStream(file));
 			return To.outlet(is).closeAtEnd(is);
