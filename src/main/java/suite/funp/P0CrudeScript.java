@@ -77,8 +77,12 @@ public class P0CrudeScript {
 					return FunpDefine.of(Str.str(a), expr(b), stmt(c), Fdt.L_MONO);
 				}).match("statement-block (.0,)", a -> {
 					return stmt(a);
+				}).match("statement-for (.0, .1, .2, .3,)", (a, b, c, d) -> {
+					return expr(a);
 				}).match("statement-if (.0, .1, .2,)", (a, b, c) -> {
 					return FunpIf.of(expr(a), stmt(b), stmt(c));
+				}).match("statement-while (.0, .1,)", (a, b) -> {
+					return expr(b);
 				}).nonNullResult();
 			}
 
