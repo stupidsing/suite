@@ -46,14 +46,14 @@ public class SslTest {
 			pw.print("GET / HTTP/1.0\n\n");
 			pw.flush();
 
-			if (!pw.checkError()) {
+			if (!pw.checkError())
 				try (var is = socket.getInputStream(); var isr = new InputStreamReader(is); var br = new BufferedReader(isr);) {
 					String line;
 
 					while ((line = br.readLine()) != null)
 						System.out.println(line);
 				}
-			} else
+			else
 				throw new IOException("PrintWriter error");
 		}
 	}
