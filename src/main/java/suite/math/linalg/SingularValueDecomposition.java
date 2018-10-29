@@ -36,8 +36,9 @@ public class SingularValueDecomposition {
 		}
 
 		var cov = mtx.scale(mtx.mul_mTn(m1, m1), 1d / height);
-		var evs = eigen.power(cov);
-		return eigen.values(cov, evs);
+		return eigen.power0(cov).t1;
+		// var evs = eigen.power(cov);
+		// return eigen.values(cov, evs);
 	}
 
 	// http://www.cs.yale.edu/homes/el327/datamining2013aFiles/07_singular_value_decomposition.pdf
