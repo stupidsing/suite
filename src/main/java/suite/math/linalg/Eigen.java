@@ -1,10 +1,12 @@
 package suite.math.linalg;
 
 import static suite.util.Friends.abs;
+import static suite.util.Friends.forInt;
 
 import java.util.Random;
 
 import suite.adt.pair.Pair;
+import suite.primitive.Int_Dbl;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.util.To;
 
@@ -13,6 +15,26 @@ public class Eigen {
 	private Matrix mtx = new Matrix();
 	private Random random = new Random();
 	private Vector vec = new Vector();
+
+	// Machine Learning - An Algorithm Perspective
+	// 6.2 Principal Components Analysis
+	public float[] pca(float[][] m0) {
+		var m1 = mtx.copyOf(m0);
+		var height = mtx.height(m1);
+		var width_ = mtx.width(m1);
+
+		for (var j = 0; j < width_; j++) {
+			var j_ = j;
+			var mean = forInt(height).toDouble(Int_Dbl.sum(i -> m1[i][j_])) / height;
+			for (var i = 0; i < height; i++)
+				m1[i][j_] -= mean;
+		}
+
+		var cov = mtx.scale(mtx.mul_mTn(m1, m1), 1d / height);
+		return power0(cov).t1;
+		// var evs = eigen.power(cov);
+		// return eigen.values(cov, evs);
+	}
 
 	// Paul Wilmott on Quantitative Finance, Second Edition
 	// 37.13.1 The Power Method, page 620
@@ -33,7 +55,7 @@ public class Eigen {
 		return eigenVectors;
 	}
 
-	public FltObjPair<float[]> power0(float[][] m) {
+	private FltObjPair<float[]> power0(float[][] m) {
 		var size = mtx.sqSize(m);
 		var xs = To.vector(size, i -> random.nextFloat());
 		var eigenValue = Float.NaN;

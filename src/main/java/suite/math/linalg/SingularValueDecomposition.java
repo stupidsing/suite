@@ -1,14 +1,12 @@
 package suite.math.linalg;
 
 import static suite.util.Friends.fail;
-import static suite.util.Friends.forInt;
 import static suite.util.Friends.sqrt;
 
 import java.util.Random;
 
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
-import suite.primitive.Int_Dbl;
 import suite.streamlet.FunUtil.Fun;
 import suite.util.To;
 
@@ -20,26 +18,6 @@ public class SingularValueDecomposition {
 	private Matrix mtx = new Matrix();
 	private Random random = new Random();
 	private Vector vec = new Vector();
-
-	// Machine Learning - An Algorithm Perspective
-	// 6.2 Principal Components Analysis
-	public float[] pca(float[][] m0) {
-		var m1 = mtx.copyOf(m0);
-		var height = mtx.height(m1);
-		var width_ = mtx.width(m1);
-
-		for (var j = 0; j < width_; j++) {
-			var j_ = j;
-			var mean = forInt(height).toDouble(Int_Dbl.sum(i -> m1[i][j_])) / height;
-			for (var i = 0; i < height; i++)
-				m1[i][j_] -= mean;
-		}
-
-		var cov = mtx.scale(mtx.mul_mTn(m1, m1), 1d / height);
-		return eigen.power0(cov).t1;
-		// var evs = eigen.power(cov);
-		// return eigen.values(cov, evs);
-	}
 
 	// http://www.cs.yale.edu/homes/el327/datamining2013aFiles/07_singular_value_decomposition.pdf
 	// "Computing the SVD: The power method"

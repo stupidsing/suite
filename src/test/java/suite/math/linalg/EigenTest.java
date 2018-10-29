@@ -2,6 +2,9 @@ package suite.math.linalg;
 
 import org.junit.Test;
 
+import suite.math.Math_;
+import suite.util.To;
+
 public class EigenTest {
 
 	private Eigen eigen = new Eigen();
@@ -21,6 +24,15 @@ public class EigenTest {
 				{ 3f, 2f, 6f, }, //
 				{ 2f, 2f, 5f, }, //
 				{ -2f, -1f, -4f, } });
+	}
+
+	@Test
+	public void testPca() {
+		var size = 9;
+		var m = To.matrix(size, size, (i, j) -> i);
+		var pc = eigen.pca(m);
+		for (var f : pc)
+			Math_.verifyEquals(f, pc[0]);
 	}
 
 	private void test(float[][] m) {
