@@ -36,7 +36,7 @@ public class Eigen {
 	public FltObjPair<float[]> power0(float[][] m) {
 		var size = mtx.sqSize(m);
 		var xs = To.vector(size, i -> random.nextFloat());
-		var eigenValue = 0f;
+		var eigenValue = Float.NaN;
 
 		for (var iteration = 0; iteration < 256; iteration++) {
 			var ys = mtx.mul(m, xs);
