@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.Random;
 
 import suite.math.Complex;
-import suite.primitive.Floats_;
 import suite.util.To;
 
 public class JenkinsTraub {
@@ -164,7 +163,7 @@ public class JenkinsTraub {
 	}
 
 	private float[] d(float[] poly) {
-		return Floats_.toArray(poly.length - 1, i -> {
+		return To.vector(poly.length - 1, i -> {
 			var i1 = i + 1;
 			return poly[i1] * i1;
 		});

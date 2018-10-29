@@ -7,7 +7,6 @@ import org.junit.Test;
 import suite.inspect.Dump;
 import suite.math.Math_;
 import suite.math.linalg.Vector;
-import suite.primitive.Floats_;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.streamlet.Read;
 import suite.util.To;
@@ -27,7 +26,7 @@ public class StatisticTest {
 	@Test
 	public void testLinearRegression() {
 		int m = 7, n = 9;
-		var expect = Floats_.toArray(m, j -> random.nextFloat());
+		var expect = To.vector(m, j -> random.nextFloat());
 		var xs = To.matrix(n, m, (i, j) -> random.nextFloat());
 
 		var lr = stat.linearRegression(Read //
@@ -39,7 +38,7 @@ public class StatisticTest {
 		var actual = lr.coefficients();
 		vec.verifyEquals(expect, actual, .1f);
 
-		var xtest = Floats_.toArray(m, j -> random.nextFloat());
+		var xtest = To.vector(m, j -> random.nextFloat());
 		Math_.verifyEquals(vec.dot(expect, xtest), lr.predict(xtest), .1f);
 		Math_.verifyEquals(1f, (float) lr.r2, .1f);
 	}

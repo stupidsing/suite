@@ -8,7 +8,6 @@ import java.util.Arrays;
 
 import suite.adt.pair.Pair;
 import suite.math.linalg.Vector;
-import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.util.To;
 
@@ -25,7 +24,7 @@ public class Polynomial {
 
 	public float[] add(float[] ps0, float[] ps1) {
 		var length = max(ps0.length, ps1.length);
-		return Floats_.toArray(length, i -> {
+		return To.vector(length, i -> {
 			var p0 = length < ps0.length ? ps0[length] : 0f;
 			var p1 = length < ps1.length ? ps1[length] : 0f;
 			return p0 + p1;

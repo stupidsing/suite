@@ -8,7 +8,6 @@ import java.util.List;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
-import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
@@ -50,7 +49,7 @@ public class RadialBasisFunctionNetwork {
 			variances[cl] += vec.dotDiff(ins[i], centers[cl]);
 		}
 
-		invVariances = Floats_.toArray(variances.length, i -> 1f / variances[i]);
+		invVariances = To.vector(variances.length, i -> 1f / variances[i]);
 		var rbfs = Read.from(ins).map(this::evaluateRbfs).toArray(float[].class);
 		var rbfs_t = mtx.transpose(rbfs);
 		var cdf = cd.inverseMul(mtx.mul(rbfs_t, rbfs));

@@ -8,7 +8,6 @@ import java.util.Random;
 
 import suite.adt.pair.Fixie;
 import suite.adt.pair.Fixie_.Fixie3;
-import suite.primitive.Floats_;
 import suite.primitive.Int_Dbl;
 import suite.streamlet.FunUtil.Fun;
 import suite.util.To;
@@ -77,7 +76,7 @@ public class SingularValueDecomposition {
 
 	private Fixie3<Double, float[], float[]> svd0(float[][] a) {
 		var n = mtx.width(a);
-		var x = Floats_.toArray(n, i -> random.nextFloat());
+		var x = To.vector(n, i -> random.nextFloat());
 		var at = mtx.transpose(a);
 
 		for (var i = 0; i < 16; i++)
@@ -93,7 +92,7 @@ public class SingularValueDecomposition {
 	// http://www.anstuocmath.ro/mathematics/anale2015vol2/Bentbib_A.H.__Kanber_A..pdf
 	// "3 SVD Power Method"
 	private Fixie3<Double, float[], float[]> svd1(float[][] a) {
-		var v = Floats_.toArray(mtx.width(a), i -> random.nextFloat());
+		var v = To.vector(mtx.width(a), i -> random.nextFloat());
 		var at = mtx.transpose(a);
 
 		for (var i = 0; i < 256; i++) {

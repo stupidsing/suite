@@ -20,7 +20,6 @@ import suite.os.Log_;
 import suite.primitive.Floats_;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.primitive.Int_Dbl;
-import suite.primitive.Int_Flt;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntFltPair;
 import suite.trade.Time;
@@ -61,8 +60,8 @@ public class AnalyzeTimeSeriesTest {
 		var length = ds.ts.length;
 		var ops = ds.opens;
 		var cls = ds.closes;
-		var ocgs = Floats_.toArray(length, i -> cls[i] - ops[i]);
-		var cogs = Floats_.toArray(length, i -> ops[i] - cls[max(0, i - 1)]);
+		var ocgs = To.vector(length, i -> cls[i] - ops[i]);
+		var cogs = To.vector(length, i -> ops[i] - cls[max(0, i - 1)]);
 		Log_.info("open/close gap = " + stat.meanVariance(ocgs));
 		Log_.info("close/open gap = " + stat.meanVariance(cogs));
 		Log_.info("ocg/cog covariance = " + stat.correlation(ocgs, cogs));
@@ -95,8 +94,8 @@ public class AnalyzeTimeSeriesTest {
 			return buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		};
 
-		Int_Obj<BuySell> revert = d -> momFun.apply(d).scale(0f, -1f);
-		Int_Obj<BuySell> trend_ = d -> momFun.apply(d).scale(0f, +1f);
+		Int_Obj<BuySell> revert = d -> momFun.apply(d).scale(0d, -1d);
+		Int_Obj<BuySell> trend_ = d -> momFun.apply(d).scale(0d, +1d);
 		var reverts = To.array(8, BuySell.class, revert);
 		var trends_ = To.array(8, BuySell.class, trend_);
 		var tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
@@ -152,28 +151,28 @@ public class AnalyzeTimeSeriesTest {
 	}
 
 	private BuySell buySell(Int_Dbl fun) {
-		return d -> (float) fun.apply(d);
+		return fun::apply;
 	}
 
-	public interface BuySell extends Int_Flt {
+	public interface BuySell extends Int_Dbl {
 		public default BuySell longOnly() {
-			return d -> max(0f, apply(d));
+			return d -> max(0d, apply(d));
 		}
 
-		public default BuySell scale(float a, float b) {
+		public default BuySell scale(double a, double b) {
 			return d -> a + b * apply(d);
 		}
 
 		public default BuySell start(int s) {
-			return d -> s <= d ? apply(d) : 0f;
+			return d -> s <= d ? apply(d) : 0d;
 		}
 
 		public default Returns engage(float[] prices) {
-			return me.engage_(prices, Floats_.toArray(prices.length, this));
+			return me.engage_(prices, To.vector(prices.length, this));
 		}
 
 		public default Returns invest(float[] prices) {
-			return me.invest_(prices, Floats_.toArray(prices.length, this));
+			return me.invest_(prices, To.vector(prices.length, this));
 		}
 	}
 

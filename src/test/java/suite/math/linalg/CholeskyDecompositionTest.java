@@ -4,7 +4,6 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import suite.primitive.Floats_;
 import suite.util.To;
 
 public class CholeskyDecompositionTest {
@@ -22,7 +21,7 @@ public class CholeskyDecompositionTest {
 	@Test
 	public void testInverseMul() {
 		var random = new Random();
-		var fs = Floats_.toArray(3, i -> random.nextFloat());
+		var fs = To.vector(3, i -> random.nextFloat());
 		var invm0 = cholesky.inverseMul(mtx.copyOf(m0));
 		var actual0 = mtx.mul(m0, invm0.apply(fs));
 		var actual1 = invm0.apply(mtx.mul(m0, fs));

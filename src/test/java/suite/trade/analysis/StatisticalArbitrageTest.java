@@ -16,7 +16,6 @@ import suite.math.numeric.Statistic;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.os.Log_;
 import suite.primitive.DblPrimitives.Obj_Dbl;
-import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.primitive.adt.pair.FltObjPair;
 import suite.primitive.adt.pair.IntFltPair;
@@ -62,7 +61,7 @@ public class StatisticalArbitrageTest {
 		var returns = ts.returns(prices);
 
 		var lr = stat.linearRegression(forInt(1 << power, prices.length)
-				.map(i -> FltObjPair.of(returns[i], Floats_.toArray(power, p -> mas[p][i - (1 << p)]))));
+				.map(i -> FltObjPair.of(returns[i], To.vector(power, p -> mas[p][i - (1 << p)]))));
 
 		System.out.println(lr);
 	}
@@ -85,7 +84,7 @@ public class StatisticalArbitrageTest {
 		var prices1 = pricesBySymbol.get(symbol1);
 
 		var lr = stat.linearRegression(
-				forInt(tor, length).map(i -> FltObjPair.of(prices1[i], Floats_.toArray(tor, j -> prices0[i + j - tor]))));
+				forInt(tor, length).map(i -> FltObjPair.of(prices1[i], To.vector(tor, j -> prices0[i + j - tor]))));
 
 		System.out.println(lr);
 	}

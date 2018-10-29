@@ -8,9 +8,9 @@ import java.util.Random;
 
 import suite.math.linalg.Vector;
 import suite.primitive.DblMutable;
-import suite.primitive.Floats_;
 import suite.primitive.Ints_;
 import suite.streamlet.FunUtil.Sink;
+import suite.util.To;
 
 public class SelfOrganizingMap {
 
@@ -30,7 +30,7 @@ public class SelfOrganizingMap {
 		var alpha = 1f;
 
 		for (var i = 0; i < size; i++)
-			som[i] = Floats_.toArray(length, i_ -> random.nextFloat());
+			som[i] = To.vector(length, i_ -> random.nextFloat());
 
 		for (var iteration = 0; iteration < 256; iteration++)
 			for (var in : ins) {

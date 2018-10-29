@@ -9,6 +9,7 @@ import suite.primitive.Ints_;
 import suite.trade.analysis.MovingAverage;
 import suite.trade.singlealloc.BuySellStrategy.GetBuySell;
 import suite.ts.Quant;
+import suite.util.To;
 
 public class Strategos {
 
@@ -30,7 +31,7 @@ public class Strategos {
 				Arrays.fill(fs0, nPastDays, windowSize, price0);
 
 				var fs1 = dct.dct(fs0);
-				var fs2 = Floats_.toArray(windowSize, j -> j < nLowPass ? fs1[j] : 0f);
+				var fs2 = To.vector(windowSize, j -> j < nLowPass ? fs1[j] : 0f);
 				var fs3 = dct.idct(fs2);
 
 				var predict = fs3[fs3.length - 1];

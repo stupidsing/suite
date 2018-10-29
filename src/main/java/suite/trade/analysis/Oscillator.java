@@ -52,10 +52,10 @@ public class Oscillator {
 		var maDmUps = ma.movingAvg(dmUps, nDays);
 		var maDmDns = ma.movingAvg(dmDns, nDays);
 		var invAtrs = To.vector(ma.movingAvg(trueRange(ds), nDays), f -> Quant.div(1f, f));
-		var diUps = Floats_.toArray(length, i -> maDmUps[i] * invAtrs[i]);
-		var diDns = Floats_.toArray(length, i -> maDmDns[i] * invAtrs[i]);
+		var diUps = To.vector(length, i -> maDmUps[i] * invAtrs[i]);
+		var diDns = To.vector(length, i -> maDmDns[i] * invAtrs[i]);
 
-		return new Dmi(Floats_.toArray(length, i -> {
+		return new Dmi(To.vector(length, i -> {
 			var diDn = diDns[i];
 			var diUp = diUps[i];
 			return Quant.div(diUp - diDn, diUp + diDn);

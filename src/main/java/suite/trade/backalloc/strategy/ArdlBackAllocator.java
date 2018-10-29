@@ -3,11 +3,11 @@ package suite.trade.backalloc.strategy;
 import java.util.List;
 
 import suite.adt.pair.Pair;
-import suite.primitive.Floats_;
 import suite.streamlet.Read;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.ts.Ardl;
+import suite.util.To;
 
 public class ArdlBackAllocator implements BackAllocator {
 
@@ -28,7 +28,7 @@ public class ArdlBackAllocator implements BackAllocator {
 
 		return index -> {
 			var prices = ardl.predict(lrs, fs, index);
-			var returns = Floats_.toArray(prices.length, i -> prices[i] / fs[i][index]);
+			var returns = To.vector(prices.length, i -> prices[i] / fs[i][index]);
 			var maxReturns = 0f;
 			Integer maxi = null;
 

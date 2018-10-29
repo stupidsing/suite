@@ -3,11 +3,11 @@ package suite.trade.backalloc.strategy;
 import static suite.util.Friends.abs;
 
 import suite.math.numeric.Statistic;
-import suite.primitive.Floats_;
 import suite.trade.backalloc.BackAllocator;
 import suite.trade.data.DataSource.AlignKeyDataSource;
 import suite.trade.data.DataSourceView;
 import suite.ts.TimeSeries;
+import suite.util.To;
 
 public class ReverseCorrelateBackAllocator implements BackAllocator {
 
@@ -63,7 +63,7 @@ public class ReverseCorrelateBackAllocator implements BackAllocator {
 					.mapValue(ds -> {
 						var prices = ds.prices;
 						var last = index - 1;
-						return Floats_.toArray(tor, i -> prices[last - i]);
+						return To.vector(tor, i -> prices[last - i]);
 					}) //
 					.collect();
 

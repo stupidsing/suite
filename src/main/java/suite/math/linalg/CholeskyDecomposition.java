@@ -3,7 +3,6 @@ package suite.math.linalg;
 import static suite.util.Friends.sqrt;
 
 import suite.adt.pair.Pair;
-import suite.primitive.Floats_;
 import suite.streamlet.FunUtil.Iterate;
 import suite.util.To;
 
@@ -34,7 +33,7 @@ public class CholeskyDecomposition {
 			}
 
 			// will be inverse(D) * fs1
-			var fs2 = Floats_.toArray(fs1.length, i -> fs1[i] * reciprocalsD[i]);
+			var fs2 = To.vector(fs1.length, i -> fs1[i] * reciprocalsD[i]);
 			var fs3 = new float[width]; // will be inverse(L*) * fs2
 
 			for (var i = width - 1; 0 <= i; i--) {

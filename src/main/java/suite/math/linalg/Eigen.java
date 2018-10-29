@@ -5,7 +5,7 @@ import static suite.util.Friends.abs;
 import java.util.Random;
 
 import suite.adt.pair.Pair;
-import suite.primitive.Floats_;
+import suite.util.To;
 
 public class Eigen {
 
@@ -22,7 +22,7 @@ public class Eigen {
 		var eigenValue = 0f;
 
 		for (var v = 0; v < size; v++) {
-			var xs = Floats_.toArray(size, i -> random.nextFloat());
+			var xs = To.vector(size, i -> random.nextFloat());
 
 			for (var iteration = 0; iteration < 256; iteration++) {
 				var ys = mtx.mul(m, xs);
@@ -61,7 +61,7 @@ public class Eigen {
 			if (0 < j && (beta = vec.dot(prevw = ws[j - 1])) != 0d)
 				vj = vec.scale(prevw, 1d / (betas[j] = (float) beta));
 			else
-				vj = vec.normalizeOn(Floats_.toArray(n, i -> random.nextFloat()));
+				vj = vec.normalizeOn(To.vector(n, i -> random.nextFloat()));
 
 			var wp = mtx.mul(m, vs[j] = vj);
 			var sub0 = vec.scale(vj, alphas[0] = (float) vec.dot(wp, vj));
@@ -82,7 +82,7 @@ public class Eigen {
 	}
 
 	public float[] values(float[][] m, float[][] vs) {
-		return Floats_.toArray(vs.length, i -> {
+		return To.vector(vs.length, i -> {
 			var v = vs[i];
 			return (float) (vec.abs(mtx.mul(m, v)) / vec.abs(v));
 		});

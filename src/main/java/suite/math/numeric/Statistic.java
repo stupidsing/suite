@@ -10,7 +10,6 @@ import java.util.List;
 import suite.math.linalg.CholeskyDecomposition;
 import suite.math.linalg.Matrix;
 import suite.math.linalg.Vector;
-import suite.primitive.Floats_;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.Int_Dbl;
@@ -76,7 +75,7 @@ public class Statistic {
 		List<FltObjPair<float[]>> list = pairs.toList();
 		var size = list.size();
 		var x = To.array(size, float[].class, i -> list.get(i).t1);
-		var y = Floats_.toArray(size, i -> list.get(i).t0);
+		var y = To.vector(size, i -> list.get(i).t0);
 		return linearRegression(x, y, null);
 	}
 
@@ -160,7 +159,7 @@ public class Statistic {
 
 		// the t statistic is the coefficient divided by its standard error
 		public float[] tStatistic() {
-			return Floats_.toArray(nDepVariables, i -> {
+			return To.vector(nDepVariables, i -> {
 				var mv = new MeanVariance(in.length, j -> in[j][i]);
 				var invsd = sqrt(mv.variance / (sse * invn2));
 				return (float) (coefficients[i] * invsd);
@@ -193,7 +192,7 @@ public class Statistic {
 
 			if (nSamples == bs.length) {
 				var xt = mtx.transpose(x);
-				var y = Floats_.toArray(nSamples, i -> bs[i] ? 1f : 0f);
+				var y = To.vector(nSamples, i -> bs[i] ? 1f : 0f);
 
 				for (var n = 0; n < 256; n++) {
 					var bernoulli = To.vector(x, this::predict);
