@@ -9,6 +9,7 @@ sed 's#import com.jcraft.jsch.*#<groupId>com.jcraft</groupId><artifactId>jsch</a
 sed 's#import com.nativelibs4java.bridj.*#<groupId>com.nativelibs4java</groupId><artifactId>bridj</artifactId>#g' |
 sed 's#import com.nativelibs4java.opencl.*#<groupId>com.nativelibs4java</groupId><artifactId>javacl</artifactId>#g' |
 sed 's#import com.sun.jna.*#<groupId>net.java.dev.jna</groupId><artifactId>jna</artifactId>#g' |
+sed 's#import io.vertx.*#<groupId>io.vertx</groupId><artifactId>vertx-core</artifactId>#g' |
 sed 's#import javax.mail.*#<groupId>javax.mail</groupId><artifactId>mail</artifactId>#g' |
 sed 's#import jline.console.*#<groupId>jline</groupId><artifactId>jline</artifactId>#g' |
 sed 's#import org.apache.bcel.*#<groupId>org.apache.bcel</groupId><artifactId>bcel</artifactId>#g' |
