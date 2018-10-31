@@ -1,11 +1,13 @@
 package suite.sample;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 import org.junit.Test;
@@ -26,9 +28,20 @@ public class FixTest {
 	private char sep = 1;
 
 	@Test
-	public void testFix() {
+	public void testFix0() {
+		var username = "12345";
+		var password = "passw0rd!";
+		var ff = new FormatFix("theBroker", username);
+		var fix = ff.logon(password);
+		System.out.println(fix);
+		var map = parseFix(fix);
+		assertEquals(username, map.get(553));
+	}
+
+	@Test
+	public void testFix1() {
 		Defaults.bindSecrets("fix .0 .1").map((username, password) -> {
-			var fix = new FormatFix(username).logon(password);
+			var fix = new FormatFix("ctrader", username).logon(password);
 			var map = parseFix(fix);
 			assertEquals(username, map.get(553));
 			return true;
@@ -83,7 +96,10 @@ public class FixTest {
 				var ns = ar.result();
 
 				ns.upgradeToSsl(void0 -> {
-					ns.closeHandler(void1 -> Log_.error(new RuntimeException("closed")));
+					ns.closeHandler(void1 -> {
+						Log_.error(new RuntimeException("closed"));
+						isEnded.complete(false);
+					});
 
 					ns.handler(handleBuffer);
 
@@ -93,7 +109,7 @@ public class FixTest {
 					};
 
 					Defaults.bindSecrets("fix .0 .1").map((username, password) -> {
-						var ff = new FormatFix(username);
+						var ff = new FormatFix("ctrader", username);
 
 						vertx.setTimer(500l, t0 -> {
 							write.f(ff.logon(password));
@@ -126,7 +142,7 @@ public class FixTest {
 				});
 			});
 
-			isEnded.join();
+			assertTrue(isEnded.join());
 		} finally {
 			netClient.close();
 			vertx.close();
@@ -134,10 +150,12 @@ public class FixTest {
 	}
 
 	private class FormatFix {
+		private String broker;
 		private String username;
 		private int msgSegNum = 1;
 
-		private FormatFix(String username) {
+		private FormatFix(String broker, String username) {
+			this.broker = broker;
 			this.username = username;
 		}
 
@@ -176,16 +194,15 @@ public class FixTest {
 		}
 
 		private String testRequest() {
-			return format("1", "" //
-					+ f(112, "test you"));
+			return format("1", f(112, "test you"));
 		}
 
 		private String format(String msgType, String m0) {
-			var senderCompId = "ctrader." + username;
+			var senderCompId = broker + "." + username;
 			var targetCompId = "cServer";
 			var sendingTime = Instant.now().atOffset(ZoneOffset.UTC).format(dtf);
 			var targetSubId = "QUOTE"; // TRADE
-			var senderSubId = (String) null;
+			var senderSubId = "S" + UUID.randomUUID().toString().substring(0, 7);
 
 			var m1 = "" //
 					+ f(35, msgType) //
