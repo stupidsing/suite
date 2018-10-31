@@ -28,20 +28,9 @@ public class FixTest {
 	private char sep = 1;
 
 	@Test
-	public void testFix0() {
-		var username = "12345";
-		var password = "passw0rd!";
-		var ff = new FormatFix("theBroker", username);
-		var fix = ff.logon(password);
-		System.out.println(fix);
-		var map = parseFix(fix);
-		assertEquals(username, map.get(553));
-	}
-
-	@Test
-	public void testFix1() {
+	public void testFix() {
 		Defaults.bindSecrets("fix .0 .1").map((username, password) -> {
-			var fix = new FormatFix("ctrader", username).logon(password);
+			var fix = new FormatFix(username).logon(password);
 			var map = parseFix(fix);
 			assertEquals(username, map.get(553));
 			return true;
@@ -109,7 +98,7 @@ public class FixTest {
 					};
 
 					Defaults.bindSecrets("fix .0 .1").map((username, password) -> {
-						var ff = new FormatFix("ctrader", username);
+						var ff = new FormatFix(username);
 
 						vertx.setTimer(500l, t0 -> {
 							write.f(ff.logon(password));
@@ -150,12 +139,10 @@ public class FixTest {
 	}
 
 	private class FormatFix {
-		private String broker;
 		private String username;
 		private int msgSegNum = 1;
 
-		private FormatFix(String broker, String username) {
-			this.broker = broker;
+		private FormatFix(String username) {
 			this.username = username;
 		}
 
@@ -198,7 +185,7 @@ public class FixTest {
 		}
 
 		private String format(String msgType, String m0) {
-			var senderCompId = broker + "." + username;
+			var senderCompId = "ctrader." + username;
 			var targetCompId = "cServer";
 			var sendingTime = Instant.now().atOffset(ZoneOffset.UTC).format(dtf);
 			var targetSubId = "QUOTE"; // TRADE
