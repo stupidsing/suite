@@ -50,7 +50,7 @@ public class FixTest {
 
 			public void handle(Buffer buffer) {
 				if (Boolean.TRUE)
-					Log_.info("Received " + buffer.toString());
+					Log_.info("RECV " + buffer.toString());
 
 				appender.appendBuffer(buffer);
 
@@ -77,10 +77,9 @@ public class FixTest {
 
 		var vertx = Vertx.vertx();
 		var netClient = vertx.createNetClient();
+		var isEnded = new CompletableFuture<Boolean>();
 
 		try {
-			var isEnded = new CompletableFuture<Boolean>();
-
 			netClient.connect(port, "h4.p.ctrader.cn", ar -> {
 				var ns = ar.result();
 
@@ -94,7 +93,7 @@ public class FixTest {
 
 					Sink<String> write = s -> {
 						ns.write(s);
-						System.out.println("wrote " + s);
+						System.out.println("SEND " + s);
 					};
 
 					Defaults.bindSecrets("fix .0 .1").map((username, password) -> {
@@ -140,6 +139,7 @@ public class FixTest {
 
 	private class FormatFix {
 		private String username;
+		private String senderSubId = "S" + UUID.randomUUID().toString().substring(0, 7);
 		private int msgSegNum = 1;
 
 		private FormatFix(String username) {
@@ -186,10 +186,9 @@ public class FixTest {
 
 		private String format(String msgType, String m0) {
 			var senderCompId = "ctrader." + username;
-			var targetCompId = "cServer";
+			var targetCompId = "CSERVER";
 			var sendingTime = Instant.now().atOffset(ZoneOffset.UTC).format(dtf);
 			var targetSubId = "QUOTE"; // TRADE
-			var senderSubId = "S" + UUID.randomUUID().toString().substring(0, 7);
 
 			var m1 = "" //
 					+ f(35, msgType) //
