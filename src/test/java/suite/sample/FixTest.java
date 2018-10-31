@@ -2,9 +2,11 @@ package suite.sample;
 
 import static org.junit.Assert.assertEquals;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
 import org.junit.Test;
 
@@ -12,26 +14,22 @@ import io.vertx.core.Handler;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import suite.cfg.Defaults;
+import suite.os.Log_;
 import suite.primitive.Chars_;
-import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.adt.map.IntObjMap;
 import suite.streamlet.FunUtil.Sink;
 import suite.util.String_;
-import suite.util.Thread_;
 
 public class FixTest {
 
+	private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm:ss", Locale.ENGLISH);
 	private char sep = 1;
 
 	@Test
 	public void testFix() {
 		Defaults.bindSecrets("fix .0 .1").map((username, password) -> {
-			var fix = formatFix(username, password);
-
-			System.out.println(fix);
-
+			var fix = new FormatFix(username).logon(password);
 			var map = parseFix(fix);
-
 			assertEquals(username, map.get(553));
 			return true;
 		});
@@ -43,41 +41,35 @@ public class FixTest {
 		var portTrade = 5212;
 		var port = Boolean.TRUE ? portQuote : portTrade;
 
-		Sink<IntObjMap<String>> handleFix = map -> {
-			System.out.println(map);
-		};
+		Sink<IntObjMap<String>> handleFix = map -> Log_.info(map.toString());
 
 		Handler<Buffer> handleBuffer = new Handler<Buffer>() {
 			private Buffer appender = Buffer.buffer();
 
 			public void handle(Buffer buffer) {
+				if (Boolean.TRUE)
+					Log_.info("Received " + buffer.toString());
+
 				appender.appendBuffer(buffer);
 
 				var length = buffer.length();
 				var p0 = 0;
 				var p1 = p0;
-				while (p1 < length && appender.getByte(p1++) != sep)
-					;
-				var p2 = p1;
-				while (p2 < length && appender.getByte(p2++) != sep)
-					;
-				var sizePair = kv(p1, p2);
-				var size = sizePair != null ? Integer.valueOf(sizePair[1]) : -1;
-				var p3 = 0 <= size ? p2 + size : length;
-				var p4 = p3;
-				while (p4 < length && appender.getByte(p4++) != sep)
-					;
-				var checksumPair = kv(p3, p4);
-				var checksum = checksumPair != null ? Integer.valueOf(checksumPair[1]) : -1;
+				int p2, p3;
+				boolean b;
 
-				if (0 <= checksum) {
-					handleFix.f(parseFix(appender.getString(0, p4)));
-					appender = appender.slice(p4, length);
+				b = false;
+				while ((p2 = p1 + 4) <= length && !(b = String_.equals(appender.getString(p1, p1 + 4), sep + "10=")))
+					p1++;
+
+				b = false;
+				while ((p3 = p2 + 1) <= length && !(b = appender.getByte(p2) == sep))
+					p2++;
+
+				if (b) {
+					handleFix.f(parseFix(appender.getString(0, p3)));
+					appender = appender.slice(p3, length);
 				}
-			}
-
-			private String[] kv(int s, int e) {
-				return e <= appender.length() ? appender.getString(s, e - 1).split("=") : null;
 			}
 		};
 
@@ -85,58 +77,131 @@ public class FixTest {
 		var netClient = vertx.createNetClient();
 
 		try {
+			var isEnded = new CompletableFuture<Boolean>();
+
 			netClient.connect(port, "h4.p.ctrader.cn", ar -> {
 				var ns = ar.result();
 
 				ns.upgradeToSsl(void_ -> {
 					ns.handler(handleBuffer);
-					ns.write(Buffer.buffer(Defaults.bindSecrets("fix .0 .1").map(this::formatFix)));
+
+					Defaults.bindSecrets("fix .0 .1").map((username, password) -> {
+						var ff = new FormatFix(username);
+
+						vertx.setTimer(500l, t0 -> {
+							ns.write(ff.logon(password));
+							vertx.setTimer(500l, t1 -> {
+								ns.write(ff.heartbeat());
+								vertx.setTimer(500l, t2 -> {
+									ns.write(ff.testRequest());
+									vertx.setTimer(500l, t3 -> {
+										ns.write(ff.marketDataRequest());
+										vertx.setTimer(500l, t4 -> {
+											ns.write(ff.logout());
+											vertx.setTimer(500l, t5 -> {
+												isEnded.complete(true);
+											});
+										});
+									});
+								});
+							});
+						});
+
+						// return ns.write("" //
+						// + ff.logon(password) //
+						// + ff.heartbeat() //
+						// + ff.testRequest() //
+						// + ff.marketDataRequest() //
+						// + ff.logout());
+
+						return true;
+					});
 				});
 			});
 
-			Thread_.sleepQuietly(10 * 1000l);
+			isEnded.join();
 		} finally {
 			netClient.close();
 			vertx.close();
 		}
 	}
 
-	private String formatFix(String username, String password) {
-		var msgType = "A";
-		var senderCompId = "ctrader." + username;
-		var targetCompId = "cServer";
-		var msgSegNum = 1;
-		var sendingTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm:ss", Locale.ENGLISH));
-		var targetSubId = "TRADE";
-		var senderSubId = "QUOTE"; // TRADE
-		var encryptMethod = 0;
-		var heartBtInt = 30; // heartbeat seconds
-		var resetSeqNumFlag = "Y";
+	private class FormatFix {
+		private String username;
+		private int msgSegNum = 1;
 
-		IntObj_Obj<String, String> f = (k, v) -> k + "=" + v + sep;
+		private FormatFix(String username) {
+			this.username = username;
+		}
 
-		var body = "" //
-				+ f.apply(35, msgType) //
-				+ f.apply(49, senderCompId) //
-				+ f.apply(56, targetCompId) //
-				+ f.apply(34, Integer.toString(msgSegNum)) //
-				+ f.apply(52, sendingTime) //
-				+ f.apply(57, targetSubId) //
-				+ f.apply(50, senderSubId) //
-				+ f.apply(98, Integer.toString(encryptMethod)) //
-				+ f.apply(108, Integer.toString(heartBtInt)) //
-				+ f.apply(141, resetSeqNumFlag) //
-				+ f.apply(553, username) //
-				+ f.apply(554, password);
+		private String heartbeat() {
+			return format("5", "");
+		}
 
-		var hb = "" //
-				+ f.apply(8, "FIX.4.4") //
-				+ f.apply(9, Integer.toString(body.length())) //
-				+ body;
+		private String logout() {
+			return format("5", "");
+		}
 
-		var checksum = Chars_.of(hb.toCharArray()).sum() & 0xFF;
-		var fix = hb + f.apply(10, String_.right("000" + Integer.toString(checksum), -3));
-		return fix;
+		private String logon(String password) {
+			var encryptMethod = 0;
+			var heartBtInt = 30; // heartbeat seconds
+			var resetSeqNumFlag = "Y";
+
+			return format("A", "" //
+					+ f(98, Integer.toString(encryptMethod)) //
+					+ f(108, Integer.toString(heartBtInt)) //
+					+ f(141, resetSeqNumFlag) //
+					+ f(553, username) //
+					+ f(554, password));
+		}
+
+		private String marketDataRequest() {
+			return format("A", "" //
+					+ f(262, "EURUSD:WDqsoT") //
+					+ f(263, "1") //
+					+ f(264, "0") //
+					+ f(265, "1") //
+					+ f(267, "2") //
+					+ f(269, "0") //
+					+ f(269, "1") //
+					+ f(46, "1") //
+					+ f(55, "1"));
+		}
+
+		private String testRequest() {
+			return format("1", "" //
+					+ f(112, "test you"));
+		}
+
+		private String format(String msgType, String m0) {
+			var senderCompId = "ctrader." + username;
+			var targetCompId = "cServer";
+			var sendingTime = Instant.now().atOffset(ZoneOffset.UTC).format(dtf);
+			var targetSubId = "QUOTE"; // TRADE
+			var senderSubId = (String) null;
+
+			var m1 = "" //
+					+ f(35, msgType) //
+					+ f(49, senderCompId) //
+					+ f(56, targetCompId) //
+					+ f(34, Integer.toString(msgSegNum++)) //
+					+ f(52, sendingTime) //
+					+ f(57, targetSubId) //
+					+ f(50, senderSubId) //
+					+ m0;
+
+			var m2 = "" //
+					+ f(8, "FIX.4.4") //
+					+ f(9, Integer.toString(m1.length())) //
+					+ m1;
+
+			var checksum = Chars_.of(m2.toCharArray()).sum() & 0xFF;
+			return m2 + f(10, String_.right("000" + Integer.toString(checksum), -3));
+		}
+
+		private String f(int k, String v) {
+			return v != null ? k + "=" + v + sep : "";
+		}
 	}
 
 	private IntObjMap<String> parseFix(String fix) {
