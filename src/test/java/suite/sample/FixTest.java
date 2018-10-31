@@ -82,22 +82,29 @@ public class FixTest {
 			netClient.connect(port, "h4.p.ctrader.cn", ar -> {
 				var ns = ar.result();
 
-				ns.upgradeToSsl(void_ -> {
+				ns.upgradeToSsl(void0 -> {
+					ns.closeHandler(void1 -> Log_.error(new RuntimeException("closed")));
+
 					ns.handler(handleBuffer);
+
+					Sink<String> write = s -> {
+						ns.write(s);
+						System.out.println("wrote " + s);
+					};
 
 					Defaults.bindSecrets("fix .0 .1").map((username, password) -> {
 						var ff = new FormatFix(username);
 
 						vertx.setTimer(500l, t0 -> {
-							ns.write(ff.logon(password));
+							write.f(ff.logon(password));
 							vertx.setTimer(500l, t1 -> {
-								ns.write(ff.heartbeat());
+								write.f(ff.heartbeat());
 								vertx.setTimer(500l, t2 -> {
-									ns.write(ff.testRequest());
+									write.f(ff.testRequest());
 									vertx.setTimer(500l, t3 -> {
-										ns.write(ff.marketDataRequest());
+										write.f(ff.marketDataRequest());
 										vertx.setTimer(500l, t4 -> {
-											ns.write(ff.logout());
+											write.f(ff.logout());
 											vertx.setTimer(500l, t5 -> {
 												isEnded.complete(true);
 											});
