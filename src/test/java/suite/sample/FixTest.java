@@ -147,7 +147,7 @@ public class FixTest {
 		}
 
 		private String heartbeat() {
-			return format("5", "");
+			return format("0", "");
 		}
 
 		private String logout() {
