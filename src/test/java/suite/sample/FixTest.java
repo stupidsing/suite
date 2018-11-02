@@ -25,6 +25,7 @@ import suite.util.String_;
 public class FixTest {
 
 	private DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyyMMdd-HH:mm:ss", Locale.ENGLISH);
+	private boolean isQuote = true;
 	private char sep = 1;
 
 	@Test
@@ -41,7 +42,7 @@ public class FixTest {
 	public void testVertx() {
 		var portQuote = 5211;
 		var portTrade = 5212;
-		var port = Boolean.TRUE ? portQuote : portTrade;
+		var port = isQuote ? portQuote : portTrade;
 
 		Sink<IntObjMap<String>> handleFix = map -> Log_.info(map.toString());
 
@@ -49,7 +50,7 @@ public class FixTest {
 			private Buffer appender = Buffer.buffer();
 
 			public void handle(Buffer buffer) {
-				if (Boolean.TRUE)
+				if (isQuote)
 					Log_.info("RECV " + buffer.toString());
 
 				appender.appendBuffer(buffer);
@@ -188,7 +189,7 @@ public class FixTest {
 			var senderCompId = "ctrader." + username;
 			var targetCompId = "CSERVER";
 			var sendingTime = Instant.now().atOffset(ZoneOffset.UTC).format(dtf);
-			var targetSubId = "QUOTE"; // TRADE
+			var targetSubId = isQuote ? "QUOTE" : "TRADE";
 
 			var m1 = "" //
 					+ f(35, msgType) //
