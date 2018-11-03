@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 let frp = function() {
 	let signal = () => { // FRP dispatcher
@@ -104,7 +104,7 @@ let frp = function() {
 	document.onmouseup = e => mouseclicksignal.fire(false);
 
 	if (window.DeviceMotionEvent)
-		window.addEventListener("devicemotion", e => {
+		window.addEventListener('devicemotion', e => {
 			motionsignal.fire({
 				a: e.acceleration,
 				aig: e.accelerationIncludingGravity,
@@ -112,17 +112,17 @@ let frp = function() {
 				interval: e.interval,
 			});
 		}, false);
-	else log("device motion not supported");
+	else log('device motion not supported');
 
 	if (window.DeviceOrientationEvent)
-		window.addEventListener("deviceorientation", e => {
+		window.addEventListener('deviceorientation', e => {
 			orientationsignal.fire({
 				lr: e.gamma, // the left-to-right tilt in degrees, where right is positive
 				fb: e.beta, // the front-to-back tilt in degrees, where front is positive
 				dir: e.alpha, // the compass direction the device is facing in degrees
 			});
 		}, false);
-	else log("device orientation not supported");
+	else log('device orientation not supported');
 
 	let keypressed = keycode => {
 		let signal_;
