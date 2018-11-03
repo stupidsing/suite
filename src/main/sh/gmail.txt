@@ -1,0 +1,9 @@
+openssl s_client -crlf -connect imap.gmail.com:993
+tag login stupidsing@gmail.com password
+tag LIST "" "*"
+tag SELECT INBOX
+tag STATUS INBOX (MESSAGES)
+tag FETCH 6378:6388 (BODY[HEADER])
+tag FETCH 6388 (BODY)
+tag FETCH 6388 (BODY[n])
+tag LOGOUT
