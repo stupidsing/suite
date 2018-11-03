@@ -359,6 +359,7 @@ public class NeuralNetwork {
 		return flattenLayer(float[].class, stride);
 	}
 
+	// T must be an array type
 	private <T> Layer<T[], T> flattenLayer(Class<T> arrayClazz, int stride) {
 		var clazz = arrayClazz.getComponentType();
 
