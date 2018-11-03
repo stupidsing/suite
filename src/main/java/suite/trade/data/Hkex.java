@@ -365,7 +365,7 @@ public class Hkex {
 					.flatMap(json_ -> json_.path("tr")) //
 					.filter(json_ -> !json_.path("thead").asBoolean()) //
 					.flatMap(json_ -> json_.path("td")) //
-					.map(json_ -> Read.from(json_).map(JsonNode::asText).toList());
+					.map(json_ -> Read.from(json_).map(JsonNode::textValue).toList());
 
 		var data1 = data0.collect();
 		var lotSizeBySymbol = queryLotSizeBySymbol_(data1.map(this::toSymbol));
