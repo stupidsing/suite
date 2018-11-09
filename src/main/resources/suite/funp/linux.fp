@@ -101,7 +101,7 @@ define !get.char {} := !do
 	let.global buffer := array buffer.size * byte ~
 	let.global start.end := (0, 0) ~
 	let (s0, e0) := start.end ~
-	let (s1, e1) := if (s0 < e0) then (start.end) else (0, !read (address.of buffer, buffer.size)) ~
+	let (s1, e1) := if (s0 < e0) then start.end else (0, !read (address.of buffer, buffer.size)) ~
 	assert (s1 < e1) ~
 	assign start.end := (s1 + 1, e1) ~
 	buffer [s0]
