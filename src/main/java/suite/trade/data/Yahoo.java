@@ -53,24 +53,23 @@ public class Yahoo {
 				.collect();
 
 		var ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
-		var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
-		var closes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
-		var lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
-		var highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
+		var ops = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
+		var cls = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
+		var los = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
+		var his = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
 		var volumes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[5]))).toArray();
 
-		adjust(symbol, ts, opens);
-		adjust(symbol, ts, closes);
-		adjust(symbol, ts, lows);
-		adjust(symbol, ts, highs);
+		adjust(symbol, ts, ops);
+		adjust(symbol, ts, cls);
+		adjust(symbol, ts, los);
+		adjust(symbol, ts, his);
 
-		return DataSource.ofOhlcv( //
-				ts, //
-				cleanse.cleanse(opens), //
-				cleanse.cleanse(closes), //
-				cleanse.cleanse(lows), //
-				cleanse.cleanse(highs), //
-				volumes);
+		cleanse.cleanse(ops);
+		cleanse.cleanse(cls);
+		cleanse.cleanse(los);
+		cleanse.cleanse(his);
+
+		return DataSource.ofOhlcv(ts, ops, cls, los, his, volumes);
 	}
 
 	// https://l1-query.finance.yahoo.com/v7/finance/chart/0012.HK?period1=0&period2=1497550133&interval=1d&indicators=quote&includeTimestamps=true&includePrePost=true&events=div%7Csplit%7Cearn&corsDomain=finance.yahoo.com

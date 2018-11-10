@@ -13,18 +13,12 @@ import suite.util.To;
  */
 public class Cleanse {
 
-	public float[] cleanse(float[] prices) {
-		cleanse(prices.length, //
-				i -> prices[i], //
-				(i, price) -> prices[i] = price);
-		return prices;
+	public void cleanse(float[] prices) {
+		cleanse(prices.length, i -> prices[i], (i, price) -> prices[i] = price);
 	}
 
-	public LngFltPair[] cleanse(LngFltPair[] pairs) {
-		cleanse(pairs.length, //
-				i -> pairs[i].t1, //
-				(i, price) -> pairs[i].t1 = price);
-		return pairs;
+	public void cleanse(LngFltPair[] pairs) {
+		cleanse(pairs.length, i -> pairs[i].t1, (i, price) -> pairs[i].t1 = price);
 	}
 
 	public boolean isValid(float price0, float price1) {

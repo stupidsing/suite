@@ -119,9 +119,8 @@ public class StockHistory {
 				.from2(data) //
 				.map2((name, pairs) -> {
 					if (!String_.equals(name, "volume"))
-						return cleanse.cleanse(pairs);
-					else
-						return pairs;
+						cleanse.cleanse(pairs);
+					return pairs;
 				}) //
 				.toMap();
 
