@@ -15,7 +15,7 @@ public class EigenTest {
 	public void test2() {
 		test(new float[][] { //
 				{ 4f, 3f, }, //
-				{ -2f, -3f, } });
+				{ -2f, -3f, }, });
 	}
 
 	@Test
@@ -23,7 +23,7 @@ public class EigenTest {
 		test(new float[][] { //
 				{ 3f, 2f, 6f, }, //
 				{ 2f, 2f, 5f, }, //
-				{ -2f, -1f, -4f, } });
+				{ -2f, -1f, -4f, }, });
 	}
 
 	@Test
