@@ -1,50 +1,50 @@
 'use strict';
 
 let frp = function() {
-	let signal = () => { // FRP dispatcher
+	let newSignal = () => { // FRP dispatcher
 		let receivers = [];
 		let fire_ = data => { for (let receiver of receivers) receiver(data); };
 		let wire_ = receiver => receivers.push(receiver);
 
 		let redirect_ = tf => {
-			let signal1 = signal();
-			wire_(data => tf(data, signal1));
-			return signal1;
+			let signal = newSignal();
+			wire_(data => tf(data, signal));
+			return signal;
 		};
 
 		return {
-			append: signal_ => {
-				let signal1 = signal();
+			append: signal => {
+				let signal1 = newSignal();
 				wire_(signal1.fire);
-				signal_.wire(signal1.fire);
+				signal.wire(signal1.fire);
 				return signal1;
 			},
 			close: () => receivers = [], // for garbage collection
-			concatmap: f => redirect_((data, signal1) => f(data).wire(signal1.fire)),
-			delay: time => redirect_((data, signal1) => setTimeout(() => signal1.fire(data), time)),
+			concatmap: f => redirect_((data, signal) => f(data).wire(signal.fire)),
+			delay: time => redirect_((data, signal) => setTimeout(() => signal.fire(data), time)),
 			edge: () => {
 				let data_;
-				return redirect_((data, signal1) => {
-					if(data != data_) signal1.fire(data);
+				return redirect_((data, signal) => {
+					if(data != data_) signal.fire(data);
 					data_ = data;
 				});
 			},
-			filter: f => redirect_((data, signal1) => { if (f(data)) signal1.fire(data); }),
+			filter: f => redirect_((data, signal) => { if (f(data)) signal.fire(data); }),
 			fire: fire_,
-			fold: (f, value) => redirect_((data, signal1) => signal1.fire(value = f(value, data))),
+			fold: (f, value) => redirect_((data, signal) => signal.fire(value = f(value, data))),
 			last: () => {
 				let data_;
 				wire_(data => data_ = data);
 				return () => data_;
 			},
-			map: f => redirect_((data, signal1) => signal1.fire(f(data))),
+			map: f => redirect_((data, signal) => signal.fire(f(data))),
 			merge: (signal_, f) => {
 				let v0, v1;
-				let signal1 = signal();
-				let fire1 = () => signal1.fire(f(v0, v1));
+				let signal = newSignal();
+				let fire1 = () => signal.fire(f(v0, v1));
 				wire_(data => { v0 = data; fire1(); });
 				f.wire(data => { v1 = data; fire1(); });
-				return signal1;
+				return signal;
 			},
 			read: () => {
 				let list = [];
@@ -56,16 +56,16 @@ let frp = function() {
 				};
 			},
 			redirect: redirect_,
-			resample: signal_ => {
+			resample: signal => {
 				let data_;
 				wire_(data => data_ = data);
-				return signal_.redirect((data, signal1) => signal1.fire(data_));
+				return signal.redirect((data, signal1) => signal1.fire(data_));
 			},
 			unique: () => {
 				let list = [];
-				return redirect_((data, signal1) => {
+				return redirect_((data, signal) => {
 					if (!read(list).fold(false, (b_, d) => b_ || e == data)) {
-						signal1.fire(data);
+						signal.fire(data);
 						list.push(data);
 					}
 				});
@@ -75,10 +75,10 @@ let frp = function() {
 	};
 
 	let kbkeysignals = {};
-	let mouseclicksignal = signal();
-	let mousemovesignal = signal();
-	let motionsignal = signal();
-	let orientationsignal = signal();
+	let mouseclicksignal = newSignal();
+	let mousemovesignal = newSignal();
+	let motionsignal = newSignal();
+	let orientationsignal = newSignal();
 
 	let kbpressed_ = (e, down) => {
 		let signal = kbkeysignals[(!(e.which)) ? e.keyCode : (e.which ? e.which : 0)];
@@ -126,7 +126,7 @@ let frp = function() {
 
 	let keypressed = keycode => {
 		let signal_;
-		if (!(signal_ = kbkeysignals[keycode])) signal_ = kbkeysignals[keycode] = signal();
+		if (!(signal_ = kbkeysignals[keycode])) signal_ = kbkeysignals[keycode] = newSignal();
 		return signal_;
 	};
 	let keydownsignal = keypressed(40).map(d => d ? 1 : 0);
@@ -136,24 +136,24 @@ let frp = function() {
 
 	return {
 		animframe: () => {
-			let signal_ = signal();
+			let signal = newSignal();
 			let tick = () => {
-				signal_.fire(true);
+				signal.fire(true);
 				requestAnimationFrame(tick);
 			}
 			requestAnimationFrame(tick);
-			return signal_;
+			return signal;
 		},
 		fetch: (input, init) => {
-			let signal_ = signal();
+			let signal = newSignal();
 			fetch(input, init)
-				.then(response => signal_.fire(response.json()))
+				.then(response => signal.fire(response.json()))
 				.catch(error => console.error(error));
 		},
 		http: url => {
-			let signal_ = signal();
+			let signal = newSignal();
 			let xhr = new XMLHttpRequest();
-			xhr.addEventListener('load', () => { signal_.fire(this.responseText); });
+			xhr.addEventListener('load', () => { signal.fire(this.responseText); });
 			xhr.open('GET', url);
 			xhr.send();
 		},
@@ -169,13 +169,13 @@ let frp = function() {
 		},
 		orientation: orientationsignal,
 		tick: timeout => {
-			let signal_ = signal();
+			let signal = newSignal();
 			let tick = () => {
-				signal_.fire(true);
+				signal.fire(true);
 				setTimeout(tick, timeout);
 			}
 			setTimeout(tick, timeout);
-			return signal_;
+			return signal;
 		},
 	};
 } ();
