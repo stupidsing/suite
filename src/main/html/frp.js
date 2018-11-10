@@ -13,11 +13,11 @@ let frp = function() {
 		};
 
 		return {
-			append: signal => {
-				let signal1 = newSignal();
-				wire_(signal1.fire);
-				signal.wire(signal1.fire);
-				return signal1;
+			append: other => {
+				let signal = newSignal();
+				wire_(signal.fire);
+				other.wire(signal.fire);
+				return signal;
 			},
 			close: () => receivers = [], // for garbage collection
 			concatmap: f => redirect_((data, signal) => f(data).wire(signal.fire)),
@@ -38,7 +38,7 @@ let frp = function() {
 				return () => data_;
 			},
 			map: f => redirect_((data, signal) => signal.fire(f(data))),
-			merge: (signal_, f) => {
+			merge: (other, f) => {
 				let v0, v1;
 				let signal = newSignal();
 				let fire1 = () => signal.fire(f(v0, v1));
@@ -56,10 +56,10 @@ let frp = function() {
 				};
 			},
 			redirect: redirect_,
-			resample: signal => {
+			resample: commander => {
 				let data_;
 				wire_(data => data_ = data);
-				return signal.redirect((data, signal1) => signal1.fire(data_));
+				return commander.redirect((data, signal) => signal.fire(data_));
 			},
 			unique: () => {
 				let list = [];
@@ -125,9 +125,9 @@ let frp = function() {
 	else log('device orientation not supported');
 
 	let keypressed = keycode => {
-		let signal_;
-		if (!(signal_ = kbkeysignals[keycode])) signal_ = kbkeysignals[keycode] = newSignal();
-		return signal_;
+		let signal;
+		if (!(signal = kbkeysignals[keycode])) signal = kbkeysignals[keycode] = newSignal();
+		return signal;
 	};
 	let keydownsignal = keypressed(40).map(d => d ? 1 : 0);
 	let keyleftsignal = keypressed(37).map(d => d ? -1 : 0);
