@@ -343,29 +343,15 @@ public class NioDispatch implements Closeable {
 			var tdw = td0.time;
 			var wait = Math.max(0l, Math.min(500l, tdw - now));
 
-			// unfortunately Selector.wakeup() does not work on my Linux
-			// machines. Thus we specify a time out to allow the selector
-			// freed out temporarily; otherwise the register() methods in
-			// other threads might block forever.
-			rethrow(() -> selector.select(wait));
-			now = System.currentTimeMillis();
-
-			// this seems to allow other threads to gain access. Not exactly
-			// the behavior as documented in NIO, but anyway.
-			wakeUpSelector();
-
-			var iter = selector.selectedKeys().iterator();
-
-			while (iter.hasNext()) {
-				var key = iter.next();
-				iter.remove();
-
+			rethrow(() -> selector.select(key -> {
 				try {
 					processKey(key);
 				} catch (Exception ex) {
 					Log_.error(ex);
 				}
-			}
+			}, wait));
+
+			now = System.currentTimeMillis();
 
 			if (tdw <= now)
 				timeDispatches.extractMin().runnable.run();
