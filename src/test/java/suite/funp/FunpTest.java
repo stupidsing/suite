@@ -62,7 +62,7 @@ public class FunpTest {
 	@Test
 	public void testDivMod() {
 		test(4, "define { n: 43, d: 10, } ~ n / d");
-		test(4, "define { n: 44, d: 10, } ~ n % d");
+		test(6, "define { n: 46, d: 10, } ~ n % d");
 	}
 
 	@Test
