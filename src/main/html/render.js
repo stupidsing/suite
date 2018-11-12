@@ -12,8 +12,6 @@ let c_cud_ = (dom, domc0, insertBefore) => {
 };
 
 let c_cud = (dom, domc0) => c_cud_(dom, domc0, null);
-let c_insertHead = dom => c_cud_(dom, null, dom.firstChild);
-let c_insertTail = dom => c_cud_(dom, null, null);
 
 let r_cud = (dom, domc0, domcx) => {
 	let deleteRange = (c0, cx) => {
