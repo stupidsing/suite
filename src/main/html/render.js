@@ -347,17 +347,19 @@ let rd_parseDom = node0 => {
 		let tag = rd.tag(node0.localName);
 		let bf = (as, cs) => tag.attrsf(vm => as).children(...cs).rd();
 		let as = {}, cs = [], scope;
-		for (let a of node0.attributes) as[a.name] = a.value;
-		for (let c of node0.childNodes) cs.push(rd_parseDom(c));
+
+		for (let attr of node0.attributes)
+			as[attr.name] = attr.value;
+
+		for (let child of node0.childNodes)
+			cs.push(rd_parseDom(child));
 
 		if (node0.getAttribute('for-span') != null)
 			return tag.for_(vm => vm, rd.span().children(...cs).rd()).rd();
 		else if ((scope = node0.getAttribute('scope')) != null)
 			return rd.scope(scope, bf(as, cs));
-		else {
-			for (let a of node0.attributes) as[a.name] = a.value;
+		else
 			return bf(as, cs);
-		}
 	} else if (node0.nodeType == Node.TEXT_NODE) {
 		let sf = rd_parseTemplate(node0.nodeValue);
 		return rd.dom(vm => document.createTextNode(sf(vm)));
