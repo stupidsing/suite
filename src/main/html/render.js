@@ -14,6 +14,8 @@ let c_cud_ = (dom, domc0, insertBefore) => {
 let c_cud = (dom, domc0) => c_cud_(dom, domc0, null);
 
 let r_cud = (dom, domc0, domcx) => {
+	let range = { s: domc0, e: domcx, };
+
 	let deleteRange = (c0, cx) => {
 			let child = c0;
 			while (child != cx) {
@@ -26,20 +28,18 @@ let r_cud = (dom, domc0, domcx) => {
 	let cud_ = {
 		childCud: child_ => c_cud_(cud_.childRef, child_, child_ != null ? child_.nextSibling : null),
 		childRef: domc0,
-		childRef0: domc0,
-		childRefx: domcx,
 		create: c => {
-			dom.insertBefore(cud_.childRef = c, cud_.childRefx);
-			if (cud_.childRef0 == domcx) cud_.childRef0 = c;
+			dom.insertBefore(cud_.childRef = c, range.e);
+			if (range.s == domcx) range.s = c;
 		},
 		delete: () => {
-			deleteRange(cud_.childRef0, cud_.childRefx);
+			deleteRange(range.s, range.e);
 			cud_.childRef = null;
-			cud_.childRef0 = cud_.childRefx;
+			range.s = range.e;
 		},
 		update: c => {
-			deleteRange(cud_.childRef0, cud_.childRefx);
-			dom.insertBefore(cud_.childRef = cud_.childRef0 = c, cud_.childRefx);
+			deleteRange(range.s, range.e);
+			dom.insertBefore(cud_.childRef = range.s = c, range.e);
 		},
 	};
 
