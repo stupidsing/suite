@@ -13,40 +13,38 @@ let c_cud_ = (dom, domc0, insertBefore) => {
 	return cud_;
 };
 
-let c_cud = (dom, domc0) => c_cud_(dom, domc0, null);
-
 let r_cud = (dom, domc0, domcx) => {
-	let range = { s: domc0, e: domcx, };
+	let range = { s: domc0, e: domcx, }; // s exclusive, e inclusive
+	let endex = () => next(range.e);
 
 	let deleteRange = (c0, cx) => {
-			let child = c0;
-			while (child != cx) {
-				let child1 = child.nextSibling;
-				dom.removeChild(d);
-				child = child1;
+			while (range.s != range.e) {
+				let child1 = range.e.previousSibling;
+				dom.removeChild(range.e);
+				range.e = child1;
 			}
 	};
 
 	let cud_ = {
-		childCud: child_ => c_cud_(cud_.childRef, child_, next(child_)),
-		childRef: domc0,
+		childCud: child_ => c_cud_(range.e, child_, next(child_)),
+		childRef: domcx,
 		create: c => {
-			dom.insertBefore(cud_.childRef = c, range.e);
-			if (range.s == domcx) range.s = c;
+			dom.insertBefore(cud_.childRef = range.e = c, endex());
 		},
 		delete: () => {
 			deleteRange(range.s, range.e);
 			cud_.childRef = null;
-			range.s = range.e;
 		},
 		update: c => {
 			deleteRange(range.s, range.e);
-			dom.insertBefore(cud_.childRef = range.s = c, range.e);
+			dom.insertBefore(cud_.childRef = range.e = c, endex());
 		},
 	};
 
 	return cud_;
 };
+
+let wm = new WeakMap();
 
 /*
 	a typical "render-difference" function accept 3 parameters:
@@ -138,54 +136,74 @@ let rd_domDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
 };
 
 let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
-	let domc0 = cudf.childRef;
-	let children0 = domc0 != null ? Array.from(domc0.childNodes) : null;
-
 	if (vm0 == vm1)
 		;
-	else if (vm0 == null)
-		for (let i1 = 0; i1 < vm1.length; i1++)
-			rd_item(null, vm1[i1], cudf.childCud(null));
-	else if (vm1 == null)
-		for (let i0 = 0; i0 < vm0.length; i0++)
-			rd_item(vm0[i0], null, cudf.childCud(children0[i0]));
 	else {
-		let map0 = new Map();
-		let map1 = new Map();
+		let domc0 = cudf.childRef;
+		let children0 = wm.get(domc0);
+		let children1 = [null,];
 
-		for (let i0 = 0; i0 < vm0.length; i0++)
-			map0.set(keyf(vm0[i0]), i0);
-		for (let i1 = 0; i1 < vm1.length; i1++)
-			map1.set(keyf(vm1[i1]), i1);
-
-		let isSameOrder = vm0.length == vm1.length;
-
-		for (let i1 = 0; i1 < vm1.length; i1++) {
-			let i0 = map0.get(keyf(vm1[i1]));
-			isSameOrder &= i0 == i1;
-		}
-
-		if (isSameOrder)
-			for (let i = 0; i < vm1.length; i++)
-				rd_item(vm0[i], vm1[i], cudf.childCud(children0[i]));
+		if (vm0 == null)
+			for (let i1 = 0; i1 < vm1.length; i1++) {
+				rd_item(null, vm1[i1], r_cud(domc0, domc0.lastChild, domc0.lastChild));
+				children1.push(domc0.lastChild);
+			}
+		else if (vm1 == null)
+			for (let i0 = 0; i0 < vm0.length; i0++)
+				rd_item(vm0[i0], null, r_cud(domc0, children0[i0], children0[i0 + 1]));
 		else {
-			let domc1 = domc0.cloneNode(false);
-			cudf.update(domc1);
+			let map0 = new Map();
+			let map1 = new Map();
+
+			for (let i0 = 0; i0 < vm0.length; i0++)
+				map0.set(keyf(vm0[i0]), i0);
+			for (let i1 = 0; i1 < vm1.length; i1++)
+				map1.set(keyf(vm1[i1]), i1);
+
+			let isSameOrder = vm0.length == vm1.length;
 
 			for (let i1 = 0; i1 < vm1.length; i1++) {
 				let i0 = map0.get(keyf(vm1[i1]));
-				if (i0 != null) {
-					let child0 = children0[i0];
-					domc1.appendChild(child0);
-					rd_item(vm0[i0], vm1[i1], cudf.childCud(child0));
-				} else
-					rd_item(null, vm1[i1], cudf.childCud(null));
+				isSameOrder &= i0 == i1;
 			}
 
-			for (let i0 = 0; i0 < vm0.length; i0++)
-				if (!map1.has(keyf(vm0[i0])))
-					rd_item(vm0[i0], null, c_cud(domc0, children0[i0]));
+			if (isSameOrder)
+				for (let i = 0; i < vm1.length; i++) {
+					rd_item(vm0[i], vm1[i], r_cud(domc0, children0[i], children0[i + 1]));
+					children1.push(children0[i + 1]);
+				}
+			else {
+				let domc1 = domc0.cloneNode(false);
+				cudf.update(domc1);
+
+				for (let i1 = 0; i1 < vm1.length; i1++) {
+					let i0 = map0.get(keyf(vm1[i1]));
+
+					if (i0 != null) {
+						let d = domc0.lastChild;
+						let child0 = children0[i0];
+						let childx = children0[i0 + 1];
+
+						while (child0 != childx) {
+							let prev = childx.previousSibling;
+							domc1.insertBefore(childx, next(d));
+							childx = prev;
+						}
+
+						rd_item(vm0[i0], vm1[i1], r_cud(domc0, d, childx));
+					} else
+						rd_item(null, vm1[i1], r_cud(domc0, domc0.lastChild, domc0.lastChild));
+
+					children1.push(domc0.lastChild);
+				}
+
+				for (let i0 = 0; i0 < vm0.length; i0++)
+					if (!map1.has(keyf(vm0[i0])))
+						rd_item(vm0[i0], null, r_cud(domc0, children0[i0], children0[i0 + 1]));
+			}
 		}
+
+		wm.set(domc0, children1);
 	}
 };
 
@@ -356,5 +374,5 @@ let pvm = null;
 let renderAgain = (renderer, f) => {
 	let target = document.getElementById('target');
 	let ppvm = pvm;
-	renderer(ppvm, pvm = f(pvm), c_cud(target, target.firstChild));
+	renderer(ppvm, pvm = f(pvm), c_cud_(target, target.firstChild, null));
 };
