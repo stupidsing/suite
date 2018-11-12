@@ -1,8 +1,10 @@
 'use strict';
 
+let next = dom => dom != null ? dom.nextSibling : null;
+
 let c_cud_ = (dom, domc0, insertBefore) => {
 	let cud_ = {
-		childCud: child_ => c_cud_(cud_.childRef, child_, child_ != null ? child_.nextSibling : null),
+		childCud: child_ => c_cud_(cud_.childRef, child_, next(child_)),
 		childRef: domc0,
 		create: c => dom.insertBefore(cud_.childRef = c, insertBefore),
 		delete: () => dom.removeChild(cud_.childRef),
@@ -26,7 +28,7 @@ let r_cud = (dom, domc0, domcx) => {
 	};
 
 	let cud_ = {
-		childCud: child_ => c_cud_(cud_.childRef, child_, child_ != null ? child_.nextSibling : null),
+		childCud: child_ => c_cud_(cud_.childRef, child_, next(child_)),
 		childRef: domc0,
 		create: c => {
 			dom.insertBefore(cud_.childRef = c, range.e);
