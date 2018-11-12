@@ -15,6 +15,39 @@ let c_cud = (dom, domc0) => c_cud_(dom, domc0, null);
 let c_insertHead = dom => c_cud_(dom, null, dom.firstChild);
 let c_insertTail = dom => c_cud_(dom, null, null);
 
+let r_cud = (dom, domc0, domcx) => {
+	let deleteRange = (c0, cx) => {
+			let child = c0;
+			while (child != cx) {
+				let child1 = child.nextSibling;
+				dom.removeChild(d);
+				child = child1;
+			}
+	};
+
+	let cud_ = {
+		childCud: child_ => c_cud_(cud_.childRef, child_, child_ != null ? child_.nextSibling : null),
+		childRef: domc0,
+		childRef0: domc0,
+		childRefx: domcx,
+		create: c => {
+			dom.insertBefore(cud_.childRef = c, cud_.childRefx);
+			if (cud_.childRef0 == domcx) cud_.childRef0 = c;
+		},
+		delete: () => {
+			deleteRange(cud_.childRef0, cud_.childRefx);
+			cud_.childRef = null;
+			cud_.childRef0 = cud_.childRefx;
+		},
+		update: c => {
+			deleteRange(cud_.childRef0, cud_.childRefx);
+			dom.insertBefore(cud_.childRef = cud_.childRef0 = c, cud_.childRefx);
+		},
+	};
+
+	return cud_;
+};
+
 /*
 	a typical "render-difference" function accept 3 parameters:
 	vm0 - old view model, null to append DOM elements
@@ -184,8 +217,8 @@ let rd_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 		if (s_ == e_) s_ = e_ = sx;
 
 		// insert elements at start and end of range
-		while (sx < s_) rd_item(null, vms1[--s_], c_insertHead(domc0));
-		while (e_ < ex) rd_item(null, vms1[e_++], c_insertTail(domc0));
+		while (sx < s_) rd_item(null, vms1[--s_], r_cud(domc0, null, domc0.firstChild));
+		while (e_ < ex) rd_item(null, vms1[e_++], r_cud(domc0, null, null));
 
 		// update elements at common range
 		for (let i = Math.max(si, sx); i < Math.min(ei, ex); i++)
