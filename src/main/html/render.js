@@ -210,15 +210,19 @@ let rd_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 		let e_ = ei;
 
 		// remove elements at start and end of range
-		while (s_ < e_ && s_ < sx) rd_item(vms0[s_++], null, cudf.childCud(domc0.firstChild));
-		while (s_ < e_ && ex < e_) rd_item(vms0[--e_], null, cudf.childCud(domc0.lastChild));
+		while (s_ < e_ && s_ < sx)
+			rd_item(vms0[s_++], null, cudf.childCud(domc0.firstChild));
+		while (s_ < e_ && ex < e_)
+			rd_item(vms0[--e_], null, cudf.childCud(domc0.lastChild));
 
 		// relocate range if empty
 		if (s_ == e_) s_ = e_ = sx;
 
 		// insert elements at start and end of range
-		while (sx < s_) rd_item(null, vms1[--s_], r_cud(domc0, null, domc0.firstChild));
-		while (e_ < ex) rd_item(null, vms1[e_++], r_cud(domc0, null, null));
+		while (sx < s_)
+			rd_item(null, vms1[--s_], r_cud(domc0, null, domc0.firstChild));
+		while (e_ < ex)
+			rd_item(null, vms1[e_++], r_cud(domc0, null, null));
 
 		// update elements at common range
 		for (let i = Math.max(si, sx); i < Math.min(ei, ex); i++)
@@ -332,7 +336,6 @@ let rd_parseDom = node0 => {
 
 		for (let attr of node0.attributes)
 			as[attr.name] = attr.value;
-
 		for (let child of node0.childNodes)
 			cs.push(rd_parseDom(child));
 
