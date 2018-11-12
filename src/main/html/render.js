@@ -271,7 +271,7 @@ let rd = {
 	vscrollf: rd_vscrollf,
 };
 
-let rds = s => {
+let rd_parseTemplate = s => {
 	let pos0 = 0, pos1, pos2;
 	let f = vm => '';
 	while (0 <= (pos1 = s.indexOf('{', pos0)) && 0 <= (pos2 = s.indexOf('}', pos1))) {
@@ -288,16 +288,16 @@ let rds = s => {
 	return f;
 };
 
-let rdc = node0 => {
+let rd_parseDom = node0 => {
 	if (node0.nodeType == Node.COMMENT_NODE) {
-		let sf = rds(node0.nodeValue);
+		let sf = rd_parseTemplate(node0.nodeValue);
 		return rd.dom(vm => document.createComment(sf(vm)));
 	} else if (node0.nodeType == Node.ELEMENT_NODE) {
 		let tag = rd.tag(node0.localName);
 		let bf = (as, cs) => tag.attrsf(vm => as).children(...cs).rd();
 		let as = {}, cs = [], scope;
 		for (let a of node0.attributes) as[a.name] = a.value;
-		for (let c of node0.childNodes) cs.push(rdc(c));
+		for (let c of node0.childNodes) cs.push(rd_parseDom(c));
 
 		if (node0.getAttribute('for-span') != null)
 			return tag.for_(vm => vm, rd.span().children(...cs).rd()).rd();
@@ -308,7 +308,7 @@ let rdc = node0 => {
 			return bf(as, cs);
 		}
 	} else if (node0.nodeType == Node.TEXT_NODE) {
-		let sf = rds(node0.nodeValue);
+		let sf = rd_parseTemplate(node0.nodeValue);
 		return rd.dom(vm => document.createTextNode(sf(vm)));
 	} else {
 		console.error('unknown node type', node0);
@@ -316,7 +316,7 @@ let rdc = node0 => {
 	}
 };
 
-let rd_parse = s => rdc(new DOMParser().parseFromString(s, 'text/xml').childNodes[0]);
+let rd_parse = s => rd_parseDom(new DOMParser().parseFromString(s, 'text/xml').childNodes[0]);
 
 let pvm = null;
 
