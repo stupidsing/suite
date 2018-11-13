@@ -50,7 +50,7 @@ let wm = new WeakMap();
 	a typical "render-difference" function accept 3 parameters:
 	vm0 - old view model, null to append DOM elements
 	vm1 - new view model, null to remove DOM elements
-	cud - DOM manipulator (create, update, delete)
+	cudf - DOM manipulator (create, update, delete)
 	The renderer should detect the differences and apply changes using cud.
 */
 
@@ -264,8 +264,8 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf) => {
 	}
 };
 
-let rd_tag_ = (elementf, decorfs) => {
-	let decor = decorf => rd_tag_(elementf, [...decorfs, decorf,]);
+let rd_tagf = (elementf, decorfs) => {
+	let decor = decorf => rd_tagf(elementf, [...decorfs, decorf,]);
 	let attrs = attrs => decor(rdt_attrs(attrs));
 	let children = childrenfs => decor(rdt_children(childrenfs));
 	let child = childf => children([childf]);
@@ -286,7 +286,7 @@ let rd_tag_ = (elementf, decorfs) => {
 	};
 };
 
-let rd_tag = tag => rd_tag_(() => document.createElement(tag), []);
+let rd_tag = tag => rd_tagf(() => document.createElement(tag), []);
 
 let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 	let nItemsShown = Math.floor(height / rowHeight) + 1;
