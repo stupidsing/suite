@@ -2,9 +2,9 @@
 
 let next = dom => dom != null ? dom.nextSibling : null;
 
-let c_cud_ = (dom, domc0, insertBefore) => {
+let c_cud = (dom, domc0, insertBefore) => {
 	let cud_ = {
-		childCud: child_ => c_cud_(cud_.childRef, child_, next(child_)),
+		childCud: child_ => c_cud(cud_.childRef, child_, next(child_)),
 		childRef: domc0,
 		create: c => dom.insertBefore(cud_.childRef = c, insertBefore),
 		delete: () => dom.removeChild(cud_.childRef),
@@ -17,7 +17,7 @@ let r_cud = (dom, domc0, domcx) => {
 	let range = { s: domc0, e: domcx, }; // s exclusive, e inclusive
 	let endex = () => next(range.e);
 
-	let deleteRange = (c0, cx) => {
+	let deleteRange = () => {
 			while (range.s != range.e) {
 				let child1 = range.e.previousSibling;
 				dom.removeChild(range.e);
@@ -26,17 +26,17 @@ let r_cud = (dom, domc0, domcx) => {
 	};
 
 	let cud_ = {
-		childCud: child_ => c_cud_(range.e, child_, next(child_)),
+		childCud: child_ => c_cud(range.e, child_, next(child_)),
 		childRef: domcx,
 		create: c => {
 			dom.insertBefore(cud_.childRef = range.e = c, endex());
 		},
 		delete: () => {
-			deleteRange(range.s, range.e);
+			deleteRange();
 			cud_.childRef = null;
 		},
 		update: c => {
-			deleteRange(range.s, range.e);
+			deleteRange();
 			dom.insertBefore(cud_.childRef = range.e = c, endex());
 		},
 	};
@@ -379,5 +379,5 @@ let pvm = null;
 let renderAgain = (renderer, f) => {
 	let target = document.getElementById('target');
 	let ppvm = pvm;
-	renderer(ppvm, pvm = f(pvm), c_cud_(target, target.firstChild, null));
+	renderer(ppvm, pvm = f(pvm), c_cud(target, target.firstChild, null));
 };
