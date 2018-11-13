@@ -2,9 +2,9 @@
 
 let next = dom => dom != null ? dom.nextSibling : null;
 
-let c_cud_ = (dom, domc0, insertBefore) => {
+let c_cud = (dom, domc0, insertBefore) => {
 	let cud_ = {
-		childCud: child_ => c_cud_(cud_.childRef, child_, next(child_)),
+		childCud: child_ => c_cud(cud_.childRef, child_, next(child_)),
 		childRef: domc0,
 		create: c => dom.insertBefore(cud_.childRef = c, insertBefore),
 		delete: () => dom.removeChild(cud_.childRef),
@@ -12,8 +12,6 @@ let c_cud_ = (dom, domc0, insertBefore) => {
 	};
 	return cud_;
 };
-
-let c_cud = (dom, domc0) => c_cud_(dom, domc0, null);
 
 let r_cud = (dom, domc0, domcx) => {
 	let range = { s: domc0, e: domcx, };
@@ -28,7 +26,7 @@ let r_cud = (dom, domc0, domcx) => {
 	};
 
 	let cud_ = {
-		childCud: child_ => c_cud_(cud_.childRef, child_, next(child_)),
+		childCud: child_ => c_cud(cud_.childRef, child_, next(child_)),
 		childRef: domc0,
 		create: c => {
 			dom.insertBefore(cud_.childRef = c, range.e);
@@ -52,7 +50,7 @@ let r_cud = (dom, domc0, domcx) => {
 	a typical "render-difference" function accept 3 parameters:
 	vm0 - old view model, null to append DOM elements
 	vm1 - new view model, null to remove DOM elements
-	cud - DOM manipulator (create, update, delete)
+	cudf - DOM manipulator (create, update, delete)
 	The renderer should detect the differences and apply changes using cud.
 */
 
@@ -184,7 +182,7 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 
 			for (let i0 = 0; i0 < vm0.length; i0++)
 				if (!map1.has(keyf(vm0[i0])))
-					rd_item(vm0[i0], null, c_cud(domc0, children0[i0]));
+					rd_item(vm0[i0], null, c_cud(domc0, children0[i0], null));
 		}
 	}
 };
@@ -361,5 +359,5 @@ let pvm = null;
 let renderAgain = (renderer, f) => {
 	let target = document.getElementById('target');
 	let ppvm = pvm;
-	renderer(ppvm, pvm = f(pvm), c_cud(target, target.firstChild));
+	renderer(ppvm, pvm = f(pvm), c_cud(target, target.firstChild, null));
 };
