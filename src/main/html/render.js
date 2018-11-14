@@ -186,16 +186,16 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 					let i0 = map0.get(keyf(vm1[i1]));
 
 					if (i0 != null) {
-						let d = domc1.lastChild;
+						let prev = domc1.lastChild;
 						let child0 = children0[i0];
 						let childx = children0[i0 + 1];
 
 						while (child0 != childx) {
-							domc1.insertBefore(childx, next(d));
+							domc1.insertBefore(childx, null);
 							childx = prevSiblingMap.get(childx);
 						}
 
-						rd_item(vm0[i0], vm1[i1], r_cud(domc1, d, childx));
+						rd_item(vm0[i0], vm1[i1], r_cud(domc1, prev, childx));
 					} else
 						rd_item(null, vm1[i1], r_cud(domc1, domc1.lastChild, domc1.lastChild));
 
