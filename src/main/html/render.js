@@ -384,5 +384,5 @@ let pvm = null;
 let renderAgain = (renderer, f) => {
 	let target = document.getElementById('target');
 	let ppvm = pvm;
-	renderer(ppvm, pvm = f(pvm), c_cud(target, target.firstChild, null));
+	renderer(ppvm, pvm = f(pvm), r_cud(target, null, target.lastChild));
 };
