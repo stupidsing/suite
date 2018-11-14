@@ -25,7 +25,7 @@ let r_cud = (dom, domc0, domcx) => {
 	};
 
 	let cud_ = {
-		childCud: child_ => c_cud(range.e, child_, next(child_)),
+		childCud: child_ => c_cud(cud_.childRef, child_, next(child_)),
 		childRef: domcx,
 		create: c => {
 			dom.insertBefore(c, next(range.e));
