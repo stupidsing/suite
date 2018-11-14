@@ -170,7 +170,7 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 
 			if (isSameOrder)
 				for (let i = 0; i < vm1.length; i++) {
-					rd_item(vm0[i], vm1[i], r_cud(domc1, children0[i], children0[i + 1]));
+					rd_item(vm0[i], vm1[i], r_cud(domc0, children0[i], children0[i + 1]));
 					children1.push(children0[i + 1]);
 				}
 			else {
@@ -199,12 +199,14 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 					} else
 						rd_item(null, vm1[i1], r_cud(domc1, domc1.lastChild, domc1.lastChild));
 
-					children1.push(domc0.lastChild);
+					children1.push(domc1.lastChild);
 				}
 
 				for (let i0 = 0; i0 < vm0.length; i0++)
 					if (!map1.has(keyf(vm0[i0])))
 						rd_item(vm0[i0], null, r_cud(domc0, children0[i0], children0[i0 + 1]));
+
+				domc0 = domc1;
 			}
 		}
 
