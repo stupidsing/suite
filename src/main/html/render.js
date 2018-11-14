@@ -15,7 +15,6 @@ let c_cud = (dom, domc0, insertBefore) => {
 
 let r_cud = (dom, domc0, domcx) => {
 	let range = { s: domc0, e: domcx, }; // s exclusive, e inclusive
-	let endex = () => next(range.e);
 
 	let deleteRange = () => {
 			while (range.s != range.e) {
@@ -29,7 +28,7 @@ let r_cud = (dom, domc0, domcx) => {
 		childCud: child_ => c_cud(range.e, child_, next(child_)),
 		childRef: domcx,
 		create: c => {
-			dom.insertBefore(cud_.childRef = range.e = c, endex());
+			dom.insertBefore(cud_.childRef = range.e = c, next(range.e));
 		},
 		delete: () => {
 			deleteRange();
@@ -37,7 +36,7 @@ let r_cud = (dom, domc0, domcx) => {
 		},
 		update: c => {
 			deleteRange();
-			dom.insertBefore(cud_.childRef = range.e = c, endex());
+			dom.insertBefore(cud_.childRef = range.e = c, next(range.e));
 		},
 	};
 
@@ -169,7 +168,7 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 
 			if (isSameOrder)
 				for (let i = 0; i < vm1.length; i++) {
-					rd_item(vm0[i], vm1[i], r_cud(domc0, children0[i], children0[i + 1]));
+					rd_item(vm0[i], vm1[i], r_cud(domc1, children0[i], children0[i + 1]));
 					children1.push(children0[i + 1]);
 				}
 			else {
@@ -180,7 +179,7 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 					let i0 = map0.get(keyf(vm1[i1]));
 
 					if (i0 != null) {
-						let d = domc0.lastChild;
+						let d = domc1.lastChild;
 						let child0 = children0[i0];
 						let childx = children0[i0 + 1];
 
@@ -190,9 +189,9 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 							childx = prev;
 						}
 
-						rd_item(vm0[i0], vm1[i1], r_cud(domc0, d, childx));
+						rd_item(vm0[i0], vm1[i1], r_cud(domc1, d, childx));
 					} else
-						rd_item(null, vm1[i1], r_cud(domc0, domc0.lastChild, domc0.lastChild));
+						rd_item(null, vm1[i1], r_cud(domc1, domc1.lastChild, domc1.lastChild));
 
 					children1.push(domc0.lastChild);
 				}
