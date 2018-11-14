@@ -174,6 +174,11 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 					children1.push(children0[i + 1]);
 				}
 			else {
+				let prevSiblingMap = new Map();
+
+				for (let child of domc0.childNodes)
+					prevSiblingMap.set(child, child.previousSibling);
+
 				let domc1 = domc0.cloneNode(false);
 				cudf.update(domc1);
 
@@ -186,7 +191,7 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 						let childx = children0[i0 + 1];
 
 						while (child0 != childx) {
-							let prev = childx.previousSibling;
+							let prev = prevSiblingMap.get(childx);
 							domc1.insertBefore(childx, next(d));
 							childx = prev;
 						}
