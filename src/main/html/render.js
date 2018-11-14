@@ -28,7 +28,8 @@ let r_cud = (dom, domc0, domcx) => {
 		childCud: child_ => c_cud(range.e, child_, next(child_)),
 		childRef: domcx,
 		create: c => {
-			dom.insertBefore(cud_.childRef = range.e = c, next(range.e));
+			dom.insertBefore(c, next(range.e));
+			cud_.childRef = range.e = c;
 		},
 		delete: () => {
 			deleteRange();
@@ -36,7 +37,8 @@ let r_cud = (dom, domc0, domcx) => {
 		},
 		update: c => {
 			deleteRange();
-			dom.insertBefore(cud_.childRef = range.e = c, next(range.e));
+			dom.insertBefore(c, next(range.e));
+			cud_.childRef = range.e = c;
 		},
 	};
 
