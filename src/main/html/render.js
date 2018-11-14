@@ -191,9 +191,8 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 						let childx = children0[i0 + 1];
 
 						while (child0 != childx) {
-							let prev = prevSiblingMap.get(childx);
 							domc1.insertBefore(childx, next(d));
-							childx = prev;
+							childx = prevSiblingMap.get(childx);
 						}
 
 						rd_item(vm0[i0], vm1[i1], r_cud(domc1, d, childx));
