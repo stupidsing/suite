@@ -1,20 +1,5 @@
 'use strict';
 
-let next = dom => dom != null ? dom.nextSibling : null;
-
-let c_cud = (dom, domc0) => {
-	let insertBefore = next(domc0);
-
-	let cud = {
-		childRef: domc0,
-		create: c => dom.insertBefore(cud.childRef = c, insertBefore),
-		delete: () => dom.removeChild(cud.childRef),
-		update: c => { let c0 = cud.childRef; dom.replaceChild(cud.childRef = c, c0); },
-	};
-
-	return cud;
-};
-
 let r_cud = (dom, domc0, domcx) => {
 	let deleteRange = cud => {
 			while (cud.childRef0 != cud.childRef) {
@@ -38,6 +23,13 @@ let r_cud = (dom, domc0, domcx) => {
 	};
 
 	return cud;
+};
+
+let r_cudChild = (dom, domc0) => {
+	if (domc0 != null)
+		return r_cud(dom, domc0.previousSibling, domc0);
+	else
+		return r_cud(dom, dom.lastChild, dom.lastChild);
 };
 
 let wm = new WeakMap();
@@ -78,7 +70,7 @@ let rdt_children = childrenfs => (vm0, vm1, cudf) => {
 	else if (domc0 != null) {
 		let children0 = Array.from(domc0.childNodes);
 		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, c_cud(domc0, children0[i]));
+			childrenfs[i](vm0, vm1, r_cudChild(domc0, children0[i]));
 	} else
 		for (let i = 0; i < childrenfs.length; i++)
 			childrenfs[i](vm0, vm1, r_cud(domc0, domc0.lastChild, domc0.lastChild));
@@ -249,7 +241,7 @@ let rd_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 
 		// update elements at common range
 		for (let i = Math.max(si, sx); i < Math.min(ei, ex); i++)
-			rd_item(vms0[i], vms1[i], c_cud(domc0, domc0.childNodes[i - s_]));
+			rd_item(vms0[i], vms1[i], r_cudChild(domc0, domc0.childNodes[i - s_]));
 	}
 };
 
