@@ -5,45 +5,43 @@ let next = dom => dom != null ? dom.nextSibling : null;
 let c_cud = (dom, domc0) => {
 	let insertBefore = next(domc0);
 
-	let cud_ = {
+	let cud = {
 		childRef: domc0,
-		create: c => dom.insertBefore(cud_.childRef = c, insertBefore),
-		delete: () => dom.removeChild(cud_.childRef),
-		update: c => { let c0 = cud_.childRef; dom.replaceChild(cud_.childRef = c, c0); },
+		create: c => dom.insertBefore(cud.childRef = c, insertBefore),
+		delete: () => dom.removeChild(cud.childRef),
+		update: c => { let c0 = cud.childRef; dom.replaceChild(cud.childRef = c, c0); },
 	};
 
-	return cud_;
+	return cud;
 };
 
 let r_cud = (dom, domc0, domcx) => {
-	let range = { s: domc0, e: domcx, }; // s exclusive, e inclusive
-
-	let deleteRange = () => {
-			while (range.s != range.e) {
-				let child1 = range.e.previousSibling;
-				dom.removeChild(range.e);
-				range.e = child1;
+	let deleteRange = cud => {
+			while (cud.childRef0 != cud.childRef) {
+				let prev = cud.childRef.previousSibling;
+				dom.removeChild(cud.childRef);
+				cud.childRef = prev;
 			}
 	};
 
-	let cud_ = {
-		childRef: domcx,
+	let cud = {
+		childRef0: domc0, // exclusive
+		childRef: domcx, // inclusive
 		create: c => {
-			dom.insertBefore(c, range.e != null ? range.e.nextSibling : dom.firstChild);
-			cud_.childRef = range.e = c;
+			dom.insertBefore(c, cud.childRef0 != null ? cud.childRef0.nextSibling : dom.firstChild);
+			cud.childRef0 = (cud.childRef = c).previousSibling;
 		},
 		delete: () => {
-			deleteRange();
-			cud_.childRef = null;
+			deleteRange(cud);
 		},
 		update: c => {
-			deleteRange();
-			dom.insertBefore(c, range.e != null ? range.e.nextSibling : dom.firstChild);
-			cud_.childRef = range.e = c;
+			deleteRange(cud);
+			dom.insertBefore(c, cud.childRef0 != null ? cud.childRef0.nextSibling : dom.firstChild);
+			cud.childRef0 = (cud.childRef = c).previousSibling;
 		},
 	};
 
-	return cud_;
+	return cud;
 };
 
 let wm = new WeakMap();
