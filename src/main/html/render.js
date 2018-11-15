@@ -10,8 +10,8 @@ let r_cud = (dom, domc0, domcx) => {
 	};
 
 	let insert = (cud, c) => {
-		dom.insertBefore(c, cud.childRef != null ? cud.childRef.nextSibling : dom.firstChild);
-		cud.childRef = c;
+		let childRef_ = cud.childRef;
+		dom.insertBefore(cud.childRef = c, childRef_ != null ? childRef_.nextSibling : dom.firstChild);
 	};
 
 	let cud = {
