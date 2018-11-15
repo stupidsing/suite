@@ -4,7 +4,6 @@ let next = dom => dom != null ? dom.nextSibling : null;
 
 let c_cud = (dom, domc0, insertBefore) => {
 	let cud_ = {
-		childCud: child_ => c_cud(cud_.childRef, child_, next(child_)),
 		childRef: domc0,
 		create: c => dom.insertBefore(cud_.childRef = c, insertBefore),
 		delete: () => dom.removeChild(cud_.childRef),
@@ -25,7 +24,6 @@ let r_cud = (dom, domc0, domcx) => {
 	};
 
 	let cud_ = {
-		childCud: child_ => c_cud(cud_.childRef, child_, next(child_)),
 		childRef: domcx,
 		create: c => {
 			dom.insertBefore(c, range.e != null ? range.e.nextSibling : dom.firstChild);
@@ -77,13 +75,16 @@ let rdt_attrsf = attrsf => (vm0, vm1, cudf) => {
 
 let rdt_children = childrenfs => (vm0, vm1, cudf) => {
 	let domc0 = cudf.childRef;
-	let children0 = domc0 != null ? Array.from(domc0.childNodes) : null;
 
 	if (vm0 == vm1)
 		;
-	else
+	else if (domc0 != null) {
+		let children0 = Array.from(domc0.childNodes);
 		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, cudf.childCud(children0 != null ? children0[i] : null));
+			childrenfs[i](vm0, vm1, c_cud(domc0, children0[i], next(children0[i])));
+	} else
+		for (let i = 0; i < childrenfs.length; i++)
+			childrenfs[i](vm0, vm1, r_cud(domc0, domc0.lastChild, domc0.lastChild));
 };
 
 let rdt_eventListener = (event, cb) => rd_cd(
@@ -197,7 +198,7 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 
 						rd_item(vm0[i0], vm1[i1], r_cud(domc1, prev, childx));
 					} else
-						rd_item(null, vm1[i1], r_cud(domc1, null, null));
+						rd_item(null, vm1[i1], r_cud(domc1, domc1.lastChild, domc1.lastChild));
 
 					children1.push(domc1.lastChild);
 				}
@@ -251,7 +252,7 @@ let rd_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 
 		// update elements at common range
 		for (let i = Math.max(si, sx); i < Math.min(ei, ex); i++)
-			rd_item(vms0[i], vms1[i], cudf.childCud(domc0.childNodes[i - s_]));
+			rd_item(vms0[i], vms1[i], c_cud(domc0, domc0.childNodes[i - s_], next(domc0.childNodes[i - s_])));
 	}
 };
 
