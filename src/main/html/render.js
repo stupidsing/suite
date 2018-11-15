@@ -17,8 +17,8 @@ let r_cud = (dom, domc0, domcx) => {
 	let cud = {
 		childRef0: domc0, // exclusive
 		childRef: domcx, // inclusive
-		create: c => { insert(cud, c); },
-		delete: () => { deleteRange(cud); },
+		create: c => insert(cud, c),
+		delete: () => deleteRange(cud),
 		update: c => { deleteRange(cud); insert(cud, c); },
 	};domc0
 
