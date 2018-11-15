@@ -20,19 +20,19 @@ let r_cud = (dom, domc0, domcx) => {
 		create: c => { insert(cud, c); },
 		delete: () => { deleteRange(cud); },
 		update: c => { deleteRange(cud); insert(cud, c); },
-	};
+	};domc0
 
 	return cud;
 };
 
-let r_cudChild = (dom, domc0) => {
-	if (domc0 != null)
-		return r_cud(dom, domc0.previousSibling, domc0);
+let r_cudChild = (dom, domc) => {
+	if (domc != null)
+		return r_cud(dom, domc.previousSibling, domc);
 	else
-		return r_cud(dom, dom.lastChild, dom.lastChild);
+		return r_cud(dom, dom.lastChild, dom.lastChild); // adds to last
 };
 
-let wm = new WeakMap();
+let wm = new WeakMap(); // map from DOM element to list of children DOM
 
 /*
 	a typical "render-difference" function accept 3 parameters:
@@ -63,17 +63,21 @@ let rdt_attrsf = attrsf => (vm0, vm1, cudf) => {
 };
 
 let rdt_children = childrenfs => (vm0, vm1, cudf) => {
-	let domc0 = cudf.childRef;
-
 	if (vm0 == vm1)
 		;
-	else if (domc0 != null) {
-		let children0 = Array.from(domc0.childNodes);
-		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, r_cudChild(domc0, children0[i]));
-	} else
-		for (let i = 0; i < childrenfs.length; i++)
-			childrenfs[i](vm0, vm1, r_cud(domc0, domc0.lastChild, domc0.lastChild));
+	else {
+		let domc = cudf.childRef;
+		let children0 = wm.get(domc);
+		let children1 = [null,];
+
+		children0 = Array.from(domc.childNodes);
+		for (let i = 0; i < childrenfs.length; i++) {
+			childrenfs[i](vm0, vm1, r_cudChild(domc, children0[i]));
+			children1.push(domc.lastChild);
+		}
+
+		wm.set(domc, children1);
+	}
 };
 
 let rdt_eventListener = (event, cb) => rd_cd(
