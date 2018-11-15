@@ -28,7 +28,7 @@ let r_cud = (dom, domc0, domcx) => {
 		childCud: child_ => c_cud(cud_.childRef, child_, next(child_)),
 		childRef: domcx,
 		create: c => {
-			dom.insertBefore(c, next(range.e));
+			dom.insertBefore(c, range.e != null ? range.e.nextSibling : dom.firstChild);
 			cud_.childRef = range.e = c;
 		},
 		delete: () => {
@@ -37,7 +37,7 @@ let r_cud = (dom, domc0, domcx) => {
 		},
 		update: c => {
 			deleteRange();
-			dom.insertBefore(c, next(range.e));
+			dom.insertBefore(c, range.e != null ? range.e.nextSibling : dom.firstChild);
 			cud_.childRef = range.e = c;
 		},
 	};
@@ -197,7 +197,7 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 
 						rd_item(vm0[i0], vm1[i1], r_cud(domc1, prev, childx));
 					} else
-						rd_item(null, vm1[i1], r_cud(domc1, domc1.lastChild, domc1.lastChild));
+						rd_item(null, vm1[i1], r_cud(domc1, null, null));
 
 					children1.push(domc1.lastChild);
 				}
@@ -223,11 +223,11 @@ let rd_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 	else if (vm0 == null) {
 		let [s, e] = rangef(vm1), vms1 = vmsf(vm1);
 		for (let i1 = s; i1 < e; i1++)
-			rd_item(null, vms1[i1], cudf.childCud(null));
+			rd_item(null, vms1[i1], r_cud(domc0, domc0.lastChild, domc0.lastChild));
 	} else if (vm1 == null) {
 		let [s, e] = rangef(vm0), vms0 = vmsf(vm0);
 		for (let i0 = s; i0 < e; i0++)
-			rd_item(vms0[i0], null, cudf.childCud(children0[i0]));
+			rd_item(vms0[i0], null, r_cud(domc0, children0[i0 - 1], children0[i0]));
 	} else {
 		let [si, ei] = rangef(vm0), vms0 = vmsf(vm0);
 		let [sx, ex] = rangef(vm1), vms1 = vmsf(vm1);
@@ -236,18 +236,18 @@ let rd_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 
 		// remove elements at start and end of range
 		while (s_ < e_ && s_ < sx)
-			rd_item(vms0[s_++], null, cudf.childCud(domc0.firstChild));
+			rd_item(vms0[s_++], null, r_cud(domc0, null, domc0.firstChild));
 		while (s_ < e_ && ex < e_)
-			rd_item(vms0[--e_], null, cudf.childCud(domc0.lastChild));
+			rd_item(vms0[--e_], null, r_cud(domc0, domc0.lastChild.previousSibling, domc0.lastChild));
 
 		// relocate range if empty
 		if (s_ == e_) s_ = e_ = sx;
 
 		// insert elements at start and end of range
 		while (sx < s_)
-			rd_item(null, vms1[--s_], r_cud(domc0, null, domc0.firstChild));
+			rd_item(null, vms1[--s_], r_cud(domc0, null, null));
 		while (e_ < ex)
-			rd_item(null, vms1[e_++], r_cud(domc0, null, null));
+			rd_item(null, vms1[e_++], r_cud(domc0, domc0.lastChild, domc0.lastChild));
 
 		// update elements at common range
 		for (let i = Math.max(si, sx); i < Math.min(ei, ex); i++)
