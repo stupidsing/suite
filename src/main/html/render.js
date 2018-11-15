@@ -24,21 +24,17 @@ let r_cud = (dom, domc0, domcx) => {
 			}
 	};
 
+	let insert = (cud, c) => {
+		dom.insertBefore(c, cud.childRef0 != null ? cud.childRef0.nextSibling : dom.firstChild);
+		cud.childRef0 = (cud.childRef = c).previousSibling;
+	};
+
 	let cud = {
 		childRef0: domc0, // exclusive
 		childRef: domcx, // inclusive
-		create: c => {
-			dom.insertBefore(c, cud.childRef0 != null ? cud.childRef0.nextSibling : dom.firstChild);
-			cud.childRef0 = (cud.childRef = c).previousSibling;
-		},
-		delete: () => {
-			deleteRange(cud);
-		},
-		update: c => {
-			deleteRange(cud);
-			dom.insertBefore(c, cud.childRef0 != null ? cud.childRef0.nextSibling : dom.firstChild);
-			cud.childRef0 = (cud.childRef = c).previousSibling;
-		},
+		create: c => { insert(cud, c); },
+		delete: () => { deleteRange(cud); },
+		update: c => { deleteRange(cud); insert(cud, c); },
 	};
 
 	return cud;
