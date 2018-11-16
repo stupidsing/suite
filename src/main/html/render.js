@@ -62,22 +62,26 @@ let rdt_attrsf = attrsf => (vm0, vm1, cudf) => {
 			cudf.childRef.removeAttribute(key);
 };
 
-let rdt_children = childrenfs => (vm0, vm1, cudf) => {
-	if (vm0 == vm1)
-		;
-	else {
-		let domc = cudf.childRef;
-		let children0 = wm.get(domc);
-		let children1 = [null,];
+let rdt_children = childrenfs => {
+	let wm_ = new WeakMap();
 
-		children0 = Array.from(domc.childNodes);
-		for (let i = 0; i < childrenfs.length; i++) {
-			childrenfs[i](vm0, vm1, r_cudChild(domc, children0[i]));
-			children1.push(domc.lastChild);
+	return (vm0, vm1, cudf) => {
+		if (vm0 == vm1)
+			;
+		else {
+			let domc = cudf.childRef;
+			let children0 = wm_.get(domc);
+			let children1 = [null,];
+
+			children0 = Array.from(domc.childNodes);
+			for (let i = 0; i < childrenfs.length; i++) {
+				childrenfs[i](vm0, vm1, r_cudChild(domc, children0[i]));
+				children1.push(domc.lastChild);
+			}
+
+			wm_.set(domc, children1);
 		}
-
-		wm.set(domc, children1);
-	}
+	};
 };
 
 let rdt_eventListener = (event, cb) => rd_cd(
