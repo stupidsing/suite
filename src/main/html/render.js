@@ -11,7 +11,7 @@ let r_cud = (dom, domc0, domcx) => {
 
 	let insert = (cud, c) => {
 		let childRef_ = cud.childRef;
-		dom.insertBefore(cud.childRef = c, childRef_ != null ? childRef_.nextSibling : dom.firstChild);
+		cud.childRef = dom.insertBefore(c, childRef_ != null ? childRef_.nextSibling : dom.firstChild);
 	};
 
 	let cud = {
@@ -188,10 +188,8 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 						let child0 = children0[i0];
 						let childx = children0[i0 + 1];
 
-						while (child0 != childx) {
-							domc1.insertBefore(childx, null);
-							childx = prevSiblingMap.get(childx);
-						}
+						while (child0 != childx)
+							childx = prevSiblingMap.get(domc1.insertBefore(childx, null));
 
 						rd_item(vm0[i0], vm1[i1], r_cud(domc1, prev, childx));
 					} else
