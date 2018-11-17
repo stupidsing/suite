@@ -20,7 +20,7 @@ let r_cud = (dom, domc0, domcx) => {
 		create: c => insert_(cud, c),
 		delete: () => delete_(cud),
 		update: c => { delete_(cud); insert_(cud, c); },
-	};domc0
+	};
 
 	return cud;
 };
