@@ -1,6 +1,26 @@
 'use strict';
 
+let verify_ = (parent, s0, sx) => {
+	// if (s0 != null && s0.parentNode != parent) throw 'fail';
+	// if (sx != null && sx.parentNode != parent) throw 'fail';
+	// let e = parent.lastChild;
+	// while (e != sx) e = e.previousSibling;
+	// while (e != s0) e = e.previousSibling;
+	// while (e != null) e = e.previousSibling;
+};
+
+let verifyChildren = (parent, children) => {
+	if (children != null)
+		for (let i = 1; i < children.length; i++)
+			verify_(parent, children[i - 1], children[i]);
+};
+
 let r_cud = (dom, domc0, domcx) => {
+	let verify = cud => {
+		verify_(dom, cud.childRef0, cud.childRef);
+		return cud;
+	};
+
 	let delete_ = cud => {
 			while (cud.childRef0 != cud.childRef) {
 				let prev = cud.childRef.previousSibling;
@@ -14,13 +34,13 @@ let r_cud = (dom, domc0, domcx) => {
 		cud.childRef = dom.insertBefore(c, childRef_ != null ? childRef_.nextSibling : dom.firstChild);
 	};
 
-	let cud = {
+	let cud = verify({
 		childRef0: domc0, // exclusive
 		childRef: domcx, // inclusive
 		create: c => insert_(cud, c),
 		delete: () => delete_(cud),
 		update: c => { delete_(cud); insert_(cud, c); },
-	};
+	});
 
 	return cud;
 };
