@@ -14,35 +14,6 @@ import suite.streamlet.FunUtil.Source;
 
 public class Log_ {
 
-	private static ThreadLocal<String> prefix = ThreadLocal.withInitial(() -> "");
-
-	private static Out out = new Out() {
-		private DateTimeFormatter yyyymmdd = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
-
-		public void logException(String type, String message, Throwable th) {
-			try (var sw = new StringWriter(); var pw = new PrintWriter(sw);) {
-				th.printStackTrace(pw);
-				log(type, (!message.isEmpty() ? message + ": " : "") + sw);
-			} catch (IOException ex) {
-				ex.printStackTrace();
-			}
-		}
-
-		public void log(String type, String message) {
-			System.out.println(current() + " " + type + " " + prefix.get() + message);
-		}
-
-		private String current() {
-			return yyyymmdd.format(LocalDateTime.now());
-		}
-	};
-
-	private interface Out {
-		public void log(String type, String message);
-
-		public void logException(String type, String message, Throwable th);
-	}
-
 	public static void initLogging(Object level) {
 	}
 
@@ -123,5 +94,34 @@ public class Log_ {
 			}
 		});
 	}
+
+	private static Out out = new Out() {
+		private DateTimeFormatter yyyymmdd = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
+
+		public void logException(String type, String message, Throwable th) {
+			try (var sw = new StringWriter(); var pw = new PrintWriter(sw);) {
+				th.printStackTrace(pw);
+				log(type, (!message.isEmpty() ? message + ": " : "") + sw);
+			} catch (IOException ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		public void log(String type, String message) {
+			System.out.println(current() + " " + type + " " + prefix.get() + message);
+		}
+
+		private String current() {
+			return yyyymmdd.format(LocalDateTime.now());
+		}
+	};
+
+	private interface Out {
+		public void log(String type, String message);
+
+		public void logException(String type, String message, Throwable th);
+	}
+
+	private static ThreadLocal<String> prefix = ThreadLocal.withInitial(() -> "");
 
 }
