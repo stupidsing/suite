@@ -1,7 +1,7 @@
 'use strict';
 
 let r_cud = (dom, domc0, domcx) => {
-	let deleteRange = cud => {
+	let delete_ = cud => {
 			while (cud.childRef0 != cud.childRef) {
 				let prev = cud.childRef.previousSibling;
 				dom.removeChild(cud.childRef);
@@ -9,7 +9,7 @@ let r_cud = (dom, domc0, domcx) => {
 			}
 	};
 
-	let insert = (cud, c) => {
+	let insert_ = (cud, c) => {
 		let childRef_ = cud.childRef;
 		cud.childRef = dom.insertBefore(c, childRef_ != null ? childRef_.nextSibling : dom.firstChild);
 	};
@@ -17,9 +17,9 @@ let r_cud = (dom, domc0, domcx) => {
 	let cud = {
 		childRef0: domc0, // exclusive
 		childRef: domcx, // inclusive
-		create: c => insert(cud, c),
-		delete: () => deleteRange(cud),
-		update: c => { deleteRange(cud); insert(cud, c); },
+		create: c => insert_(cud, c),
+		delete: () => delete_(cud),
+		update: c => { delete_(cud); insert_(cud, c); },
 	};domc0
 
 	return cud;
@@ -84,57 +84,16 @@ let rdt_children = childrenfs => {
 	};
 };
 
-let rdt_eventListener = (event, cb) => rd_cd(
-	(vm, cudf) => cudf.childRef.addEventListener(event, cb),
-	(vm, cudf) => cudf.childRef.removeEventListener(event, cb));
-
-let rdt_style = style => (vm0, vm1, cudf) => {
-	if (vm0 == null)
-		for (let [key, value] of Object.entries(style))
-			cudf.childRef.style[key] = value;
-	if (vm1 == null)
-		for (let [key, value] of Object.entries(style))
-			cudf.childRef.style[key] = null;
-};
-
-let rdt_stylef = stylef => (vm0, vm1, cudf) => {
-	if (vm0 == vm1)
-		;
-	else if (vm1 != null)
-		for (let [key, value] of Object.entries(stylef(vm1)))
-			cudf.childRef.style[key] = value;
-	else
-		for (let [key, value] of Object.entries(stylef(vm0)))
-			cudf.childRef.style[key] = null;
-};
-
-let rd_cd = (cf, df) => (vm0, vm1, cudf) => {
+let rdt_eventListener = (event, cb) => (vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
 	else {
-		vm0 != null && df(vm0, cudf);
-		vm1 != null && cf(vm1, cudf);
+		vm0 != null && cudf.childRef.removeEventListener(event, cb);
+		vm1 != null && cudf.childRef.addEventListener(event, cb);
 	}
 };
 
-let rd_dom = elementf => rd_cd(
-	(vm, cudf) => cudf.create(elementf(vm)),
-	(vm, cudf) => cudf.delete()
-);
-
-let rd_domDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
-	if (vm0 == null)
-		cudf.create(elementf());
-	if (vm0 == vm1)
-		;
-	else
-		for (let decorf of decorfs)
-			decorf(vm0, vm1, cudf);
-	if (vm1 == null)
-		cudf.delete();
-};
-
-let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
+let rdt_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
 	else {
@@ -210,7 +169,7 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 	}
 };
 
-let rd_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
+let rdt_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 	let domc0 = cudf.childRef;
 	let children0 = domc0 != null ? Array.from(domc0.childNodes) : null;
 
@@ -251,6 +210,46 @@ let rd_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 	}
 };
 
+let rdt_style = style => (vm0, vm1, cudf) => {
+	if (vm0 == null)
+		for (let [key, value] of Object.entries(style))
+			cudf.childRef.style[key] = value;
+	if (vm1 == null)
+		for (let [key, value] of Object.entries(style))
+			cudf.childRef.style[key] = null;
+};
+
+let rdt_stylef = stylef => (vm0, vm1, cudf) => {
+	if (vm0 == vm1)
+		;
+	else if (vm1 != null)
+		for (let [key, value] of Object.entries(stylef(vm1)))
+			cudf.childRef.style[key] = value;
+	else
+		for (let [key, value] of Object.entries(stylef(vm0)))
+			cudf.childRef.style[key] = null;
+};
+
+let rd_dom = elementf => (vm0, vm1, cudf) => {
+	if (vm0 == vm1)
+		;
+	else {
+		vm0 != null && cudf.delete();
+		vm1 != null && cudf.create(elementf(vm1));
+	}
+};
+let rd_domDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
+	if (vm0 == null)
+		cudf.create(elementf());
+	if (vm0 == vm1)
+		;
+	else
+		for (let decorf of decorfs)
+			decorf(vm0, vm1, cudf);
+	if (vm1 == null)
+		cudf.delete();
+};
+
 let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
@@ -280,7 +279,7 @@ let rd_tagf = (elementf, decorfs) => {
 		child,
 		children: (...childrenfs) => children(childrenfs),
 		decor,
-		for_: (keyf, rd_item) => decor(rd_for(keyf, rd_item)),
+		for_: (keyf, rd_item) => decor(rdt_for(keyf, rd_item)),
 		listen: (event, cb) => decor(rdt_eventListener(event, cb)),
 		rd: () => rd_domDecors(elementf, decorfs),
 		style: style => decor(rdt_style(style)),
@@ -303,7 +302,7 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 				position: 'relative',
 				top: vm.start * rowHeight + 'px',
 			}))
-			.decor((vm0, vm1, cudf) => rd_forRange(
+			.decor((vm0, vm1, cudf) => rdt_forRange(
 				vm => vm.vms,
 				vm => [vm.start, vm.start + nItemsShown],
 				rd_tag('div').style({ height: rowHeight + 'px', }).child(rd_item).rd())
