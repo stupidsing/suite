@@ -52,8 +52,6 @@ let r_cudChild = (dom, domc) => {
 		return r_cud(dom, dom.lastChild, dom.lastChild); // adds to last
 };
 
-let wm = new WeakMap(); // map from DOM element to list of children DOM
-
 /*
 	a typical "render-difference" function accept 3 parameters:
 	vm0 - old view model, null to append DOM elements
@@ -62,7 +60,7 @@ let wm = new WeakMap(); // map from DOM element to list of children DOM
 	The renderer should detect the differences and apply changes using cud.
 */
 
-let rdt_attrs = attrs => (vm0, vm1, cudf) => {
+let rdt_attrs = attrs => (wm, vm0, vm1, cudf) => {
 	if (vm0 == null)
 		for (let [key, value] of Object.entries(attrs))
 			cudf.childRef.setAttribute(key, value);
@@ -71,7 +69,7 @@ let rdt_attrs = attrs => (vm0, vm1, cudf) => {
 			cudf.childRef.removeAttribute(key);
 };
 
-let rdt_attrsf = attrsf => (vm0, vm1, cudf) => {
+let rdt_attrsf = attrsf => (wm, vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
 	else if (vm1 != null)
@@ -82,30 +80,30 @@ let rdt_attrsf = attrsf => (vm0, vm1, cudf) => {
 			cudf.childRef.removeAttribute(key);
 };
 
-let rdt_children = childrenfs => {
-	let wm_ = new WeakMap();
+let rdt_children = childrenfs => (wm, vm0, vm1, cudf) => {
+	if (vm0 == vm1)
+		;
+	else {
+		let domc = cudf.childRef;
+		let children0 = wm.get(domc);
+		let children1 = [null,];
 
-	return (vm0, vm1, cudf) => {
-		if (vm0 == vm1)
-			;
-		else {
-			let domc = cudf.childRef;
-			let children0 = wm_.get(domc);
-			let children1 = [null,];
-
-			children0 = Array.from(domc.childNodes);
-			for (let i = 0; i < childrenfs.length; i++) {
-				let cud = r_cudChild(domc, children0[i]);
-				childrenfs[i](vm0, vm1, cud);
-				children1.push(cud.childRef);
-			}
-
-			wm_.set(domc, children1);
+		children0 = [null, ...Array.from(domc.childNodes)];
+		for (let i = 0; i < childrenfs.length; i++) {
+			let cud;
+			if (vm0 == null)
+				cud = r_cud(domc, domc.lastChild, domc.lastChild);
+			else
+				cud = r_cud(domc, children1[i], children0[i + 1]);
+			childrenfs[i](vm0, vm1, cud);
+			children1.push(cud.childRef);
 		}
-	};
+
+		wm.set(domc, children1);
+	}
 };
 
-let rdt_eventListener = (event, cb) => (vm0, vm1, cudf) => {
+let rdt_eventListener = (event, cb) => (wm, vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
 	else {
@@ -114,7 +112,7 @@ let rdt_eventListener = (event, cb) => (vm0, vm1, cudf) => {
 	}
 };
 
-let rdt_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
+let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
 	else {
@@ -199,7 +197,7 @@ let rdt_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 	}
 };
 
-let rdt_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
+let rdt_forRange = (vmsf, rangef, rd_item) => (wm, vm0, vm1, cudf) => {
 	let domc0 = cudf.childRef;
 	let children0 = domc0 != null ? Array.from(domc0.childNodes) : null;
 
@@ -240,7 +238,7 @@ let rdt_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 	}
 };
 
-let rdt_style = style => (vm0, vm1, cudf) => {
+let rdt_style = style => (wm, vm0, vm1, cudf) => {
 	if (vm0 == null)
 		for (let [key, value] of Object.entries(style))
 			cudf.childRef.style[key] = value;
@@ -249,7 +247,7 @@ let rdt_style = style => (vm0, vm1, cudf) => {
 			cudf.childRef.style[key] = null;
 };
 
-let rdt_stylef = stylef => (vm0, vm1, cudf) => {
+let rdt_stylef = stylef => (wm, vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
 	else if (vm1 != null)
@@ -268,16 +266,20 @@ let rd_dom = elementf => (vm0, vm1, cudf) => {
 		vm1 != null && cudf.create(elementf(vm1));
 	}
 };
-let rd_domDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
-	if (vm0 == null)
-		cudf.create(elementf());
-	if (vm0 == vm1)
-		;
-	else
-		for (let decorf of decorfs)
-			decorf(vm0, vm1, cudf);
-	if (vm1 == null)
-		cudf.delete();
+let rd_domDecors = (elementf, decorfs) => {
+	let wm = new WeakMap(); // map from DOM element to list of children DOM
+
+	return (vm0, vm1, cudf) => {
+		if (vm0 == null)
+			cudf.create(elementf());
+		if (vm0 == vm1)
+			;
+		else
+			for (let decorf of decorfs)
+				decorf(wm, vm0, vm1, cudf);
+		if (vm1 == null)
+			cudf.delete();
+	};
 };
 
 let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf) => {
@@ -332,11 +334,11 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 				position: 'relative',
 				top: vm.start * rowHeight + 'px',
 			}))
-			.decor((vm0, vm1, cudf) => rdt_forRange(
+			.decor((wm, vm0, vm1, cudf) => rdt_forRange(
 				vm => vm.vms,
 				vm => [vm.start, vm.start + nItemsShown],
 				rd_tag('div').style({ height: rowHeight + 'px', }).child(rd_item).rd())
-				(vm0, vm1, cudf))
+				(wm, vm0, vm1, cudf))
 			.rd()
 		);
 };
