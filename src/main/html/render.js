@@ -164,10 +164,10 @@ let rdt_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 
 				for (let i1 = 0; i1 < vm1.length; i1++) {
 					let i0 = map0.get(keyf(vm1[i1]));
+					let prev = domc1.lastChild;
 					let cud;
 
 					if (i0 != null) {
-						let prev = domc1.lastChild;
 						let child0 = children0[i0];
 						let childx = children0[i0 + 1];
 						let list = [];
@@ -182,7 +182,7 @@ let rdt_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 
 						rd_item(vm0[i0], vm1[i1], cud = r_cud(domc1, prev, domc1.lastChild));
 					} else
-						rd_item(null, vm1[i1], cud = r_cud(domc1, domc1.lastChild, domc1.lastChild));
+						rd_item(null, vm1[i1], cud = r_cud(domc1, prev, prev));
 
 					children1.push(cud.childRef);
 				}
