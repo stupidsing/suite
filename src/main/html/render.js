@@ -198,19 +198,19 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 };
 
 let rdt_forRange = (vmsf, rangef, rd_item) => (wm, vm0, vm1, cudf) => {
-	let domc0 = cudf.childRef;
-	let children0 = domc0 != null ? Array.from(domc0.childNodes) : null;
+	let domc = cudf.childRef;
+	let children0 = domc != null ? Array.from(domc.childNodes) : null;
 
 	if (vm0 == vm1)
 		;
 	else if (vm0 == null) {
 		let [s, e] = rangef(vm1), vms1 = vmsf(vm1);
 		for (let i1 = s; i1 < e; i1++)
-			rd_item(null, vms1[i1], r_cud(domc0, domc0.lastChild, domc0.lastChild));
+			rd_item(null, vms1[i1], r_cud(domc, domc.lastChild, domc.lastChild));
 	} else if (vm1 == null) {
 		let [s, e] = rangef(vm0), vms0 = vmsf(vm0);
 		for (let i0 = s; i0 < e; i0++)
-			rd_item(vms0[i0], null, r_cud(domc0, children0[i0 - 1], children0[i0]));
+			rd_item(vms0[i0], null, r_cud(domc, children0[i0 - 1], children0[i0]));
 	} else {
 		let [si, ei] = rangef(vm0), vms0 = vmsf(vm0);
 		let [sx, ex] = rangef(vm1), vms1 = vmsf(vm1);
@@ -219,22 +219,22 @@ let rdt_forRange = (vmsf, rangef, rd_item) => (wm, vm0, vm1, cudf) => {
 
 		// remove elements at start and end of range
 		while (s_ < e_ && s_ < sx)
-			rd_item(vms0[s_++], null, r_cud(domc0, null, domc0.firstChild));
+			rd_item(vms0[s_++], null, r_cud(domc, null, domc.firstChild));
 		while (s_ < e_ && ex < e_)
-			rd_item(vms0[--e_], null, r_cud(domc0, domc0.lastChild.previousSibling, domc0.lastChild));
+			rd_item(vms0[--e_], null, r_cud(domc, domc.lastChild.previousSibling, domc.lastChild));
 
 		// relocate range if empty
 		if (s_ == e_) s_ = e_ = sx;
 
 		// insert elements at start and end of range
 		while (sx < s_)
-			rd_item(null, vms1[--s_], r_cud(domc0, null, null));
+			rd_item(null, vms1[--s_], r_cud(domc, null, null));
 		while (e_ < ex)
-			rd_item(null, vms1[e_++], r_cud(domc0, domc0.lastChild, domc0.lastChild));
+			rd_item(null, vms1[e_++], r_cud(domc, domc.lastChild, domc.lastChild));
 
 		// update elements at common range
 		for (let i = Math.max(si, sx); i < Math.min(ei, ex); i++)
-			rd_item(vms0[i], vms1[i], r_cudChild(domc0, domc0.childNodes[i - s_]));
+			rd_item(vms0[i], vms1[i], r_cudChild(domc, domc.childNodes[i - s_]));
 	}
 };
 
