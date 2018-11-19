@@ -299,8 +299,8 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf) => {
 	}
 };
 
-let rd_tagf = (elementf, decorfs) => {
-	let decor = decorf => rd_tagf(elementf, [...decorfs, decorf,]);
+let rdb_tagf = (elementf, decorfs) => {
+	let decor = decorf => rdb_tagf(elementf, [...decorfs, decorf,]);
 	let attrs = attrs => decor(rdt_attrs(attrs));
 	let children = childrenfs => decor(rdt_children(childrenfs));
 	let child = childf => children([childf]);
@@ -321,15 +321,15 @@ let rd_tagf = (elementf, decorfs) => {
 	};
 };
 
-let rd_tag = tag => rd_tagf(() => document.createElement(tag), []);
+let rdb_tag = tag => rdb_tagf(() => document.createElement(tag), []);
 
-let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
+let rdb_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 	let nItemsShown = Math.floor(height / rowHeight) + 1;
 
-	return rd_tag('div')
+	return rdb_tag('div')
 		.style({ height: height + 'px', overflow: 'auto', position: 'absolute', })
 		.listen('scroll', d => cbScroll(Math.floor(d.target.scrollTop / rowHeight)))
-		.child(rd_tag('div')
+		.child(rdb_tag('div')
 			.stylef(vm => ({
 				height: (vm.vms.length - vm.start) * rowHeight + 'px',
 				position: 'relative',
@@ -338,27 +338,27 @@ let rd_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 			.decor((wm, vm0, vm1, cudf) => rdt_forRange(
 				vm => vm.vms,
 				vm => [vm.start, vm.start + nItemsShown],
-				rd_tag('div').style({ height: rowHeight + 'px', }).child(rd_item).rd())
+				rdb_tag('div').style({ height: rowHeight + 'px', }).child(rd_item).rd())
 				(wm, vm0, vm1, cudf))
 			.rd()
 		);
 };
 
 let rd = {
-	div: () => rd_tag('div'),
+	div: () => rdb_tag('div'),
 	dom: rd_dom,
 	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_dom(vm => document.createComment('else'))),
 	ifElse: rd_ifElse,
-	li: () => rd_tag('li'),
-	p: () => rd_tag('p'),
+	li: () => rdb_tag('li'),
+	p: () => rdb_tag('p'),
 	scope: (key, rdf) => (vm0, vm1, cudf) => rdf(
 		vm0 != null ? vm0[key] : null,
 		vm1 != null ? vm1[key] : null,
 		cudf),
-	span: () => rd_tag('span'),
-	tag: rd_tag,
-	ul: () => rd_tag('ul'),
-	vscrollf: rd_vscrollf,
+	span: () => rdb_tag('span'),
+	tag: rdb_tag,
+	ul: () => rdb_tag('ul'),
+	vscrollf: rdb_vscrollf,
 };
 
 let rd_parseTemplate = s => {
