@@ -335,11 +335,10 @@ let rdb_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 				position: 'relative',
 				top: vm.start * rowHeight + 'px',
 			}))
-			.decor((wm, vm0, vm1, cudf) => rdt_forRange(
+			.decor(rdt_forRange(
 				vm => vm.vms,
 				vm => [vm.start, vm.start + nItemsShown],
-				rdb_tag('div').style({ height: rowHeight + 'px', }).child(rd_item).rd())
-				(wm, vm0, vm1, cudf))
+				rdb_tag('div').style({ height: rowHeight + 'px', }).child(rd_item).rd()))
 			.rd()
 		);
 };
