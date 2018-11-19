@@ -12,6 +12,7 @@ sed 's#import com.sun.jna.*#<groupId>net.java.dev.jna</groupId><artifactId>jna</
 sed 's#import io.vertx.*#<groupId>io.vertx</groupId><artifactId>vertx-core</artifactId>#g' |
 sed 's#import javax.mail.*#<groupId>javax.mail</groupId><artifactId>mail</artifactId>#g' |
 sed 's#import jline.console.*#<groupId>jline</groupId><artifactId>jline</artifactId>#g' |
+sed 's#import net.spy.memcached.*#<groupId>net.spy</groupId><artifactId>spymemcached</artifactId>#g' |
 sed 's#import org.apache.bcel.*#<groupId>org.apache.bcel</groupId><artifactId>bcel</artifactId>#g' |
 sed 's#import org.apache.commons.logging.*#<groupId>commons-logging</groupId><artifactId>commons-logging</artifactId>#g' |
 sed 's#import org.apache.log4j.*#<groupId>log4j</groupId><artifactId>log4j</artifactId>#g' |
@@ -21,6 +22,7 @@ sed 's#import org.objectweb.asm.Opcodes*#<groupId>org.ow2.asm</groupId><artifact
 sed 's#import org.objectweb.asm.util.*#<groupId>org.ow2.asm</groupId><artifactId>asm-util</artifactId>#g' |
 sed 's#import org.slf4j.*#<groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId>#g' |
 sed 's#import org.telegram.telegrambots.bots.*#<groupId>org.telegram</groupId><artifactId>telegrambots</artifactId>#g' |
+sed 's#import redis.clients.*#<groupId>redis.clients</groupId><artifactId>Jedis</artifactId>#g' |
 sort |
 uniq |
 grep '<artifactId>' |
