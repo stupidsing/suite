@@ -266,6 +266,7 @@ let rd_dom = elementf => (vm0, vm1, cudf) => {
 		vm1 != null && cudf.create(elementf(vm1));
 	}
 };
+
 let rd_domDecors = (elementf, decorfs) => {
 	let wm = new WeakMap(); // map from DOM element to list of children DOM
 
