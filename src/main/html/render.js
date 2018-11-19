@@ -88,7 +88,6 @@ let rdt_children = childrenfs => (wm, vm0, vm1, cudf) => {
 		let children0 = wm.get(domc);
 		let children1 = [null,];
 
-		children0 = [null, ...Array.from(domc.childNodes)];
 		for (let i = 0; i < childrenfs.length; i++) {
 			let cud;
 			if (vm0 == null)
