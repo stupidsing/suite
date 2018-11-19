@@ -95,8 +95,9 @@ let rdt_children = childrenfs => {
 
 			children0 = Array.from(domc.childNodes);
 			for (let i = 0; i < childrenfs.length; i++) {
-				childrenfs[i](vm0, vm1, r_cudChild(domc, children0[i]));
-				children1.push(domc.lastChild);
+				let cud = r_cudChild(domc, children0[i]);
+				childrenfs[i](vm0, vm1, cud);
+				children1.push(cud.childRef);
 			}
 
 			wm_.set(domc, children1);
@@ -123,8 +124,9 @@ let rdt_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 
 		if (vm0 == null)
 			for (let i1 = 0; i1 < vm1.length; i1++) {
-				rd_item(null, vm1[i1], r_cud(domc0, domc0.lastChild, domc0.lastChild));
-				children1.push(domc0.lastChild);
+				let cud = r_cud(domc0, domc0.lastChild, domc0.lastChild);
+				rd_item(null, vm1[i1], cud);
+				children1.push(cud.childRef);
 			}
 		else if (vm1 == null)
 			for (let i0 = 0; i0 < vm0.length; i0++)
@@ -147,8 +149,9 @@ let rdt_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 
 			if (isSameOrder)
 				for (let i = 0; i < vm1.length; i++) {
-					rd_item(vm0[i], vm1[i], r_cud(domc0, children1[i], children0[i + 1]));
-					children1.push(children0[i + 1]);
+					let cud = r_cud(domc0, children1[i], children0[i + 1]);
+					rd_item(vm0[i], vm1[i], cud);
+					children1.push(cud.childRef);
 				}
 			else {
 				let prevSiblingMap = new Map();
@@ -161,6 +164,7 @@ let rdt_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 
 				for (let i1 = 0; i1 < vm1.length; i1++) {
 					let i0 = map0.get(keyf(vm1[i1]));
+					let cud;
 
 					if (i0 != null) {
 						let prev = domc1.lastChild;
@@ -176,11 +180,11 @@ let rdt_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 						while (0 < list.length)
 							domc1.insertBefore(list.pop(), null);
 
-						rd_item(vm0[i0], vm1[i1], r_cud(domc1, prev, domc1.lastChild));
+						rd_item(vm0[i0], vm1[i1], cud = r_cud(domc1, prev, domc1.lastChild));
 					} else
-						rd_item(null, vm1[i1], r_cud(domc1, domc1.lastChild, domc1.lastChild));
+						rd_item(null, vm1[i1], cud = r_cud(domc1, domc1.lastChild, domc1.lastChild));
 
-					children1.push(domc1.lastChild);
+					children1.push(cud.childRef);
 				}
 
 				for (let i0 = 0; i0 < vm0.length; i0++)
