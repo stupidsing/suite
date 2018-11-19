@@ -45,12 +45,7 @@ let r_cud = (dom, domc0, domcx) => {
 	return cud;
 };
 
-let r_cudChild = (dom, domc) => {
-	if (domc != null)
-		return r_cud(dom, domc.previousSibling, domc);
-	else
-		return r_cud(dom, dom.lastChild, dom.lastChild); // adds to last
-};
+let r_cudChild = (dom, domc) => r_cud(dom, domc.previousSibling, domc);
 
 /*
 	a typical "render-difference" function accept 3 parameters:
