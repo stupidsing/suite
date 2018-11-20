@@ -1,12 +1,12 @@
 'use strict';
 
 let verify_ = (parent, s0, sx) => {
-	// if (s0 != null && s0.parentNode != parent) throw 'fail';
-	// if (sx != null && sx.parentNode != parent) throw 'fail';
-	// let e = parent.lastChild;
-	// while (e != sx) e = e.previousSibling;
-	// while (e != s0) e = e.previousSibling;
-	// while (e != null) e = e.previousSibling;
+	if (s0 != null && s0.parentNode != parent) throw 'fail';
+	if (sx != null && sx.parentNode != parent) throw 'fail';
+	let e = parent.lastChild;
+	while (e != sx) e = e.previousSibling;
+	while (e != s0) e = e.previousSibling;
+	while (e != null) e = e.previousSibling;
 };
 
 let verifyChildren = (parent, children) => {
