@@ -316,6 +316,7 @@ let rd_list = childrenfs => (vm0, vm1, cudf) => {
 			map1 = map0;
 		else
 			gwm.set(domc, map1 = new Map());
+
 		let list0 = map1.get(vm0);
 		let list1 = [cudf.childRef0,];
 
