@@ -157,6 +157,12 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 					children1.push(cud.childRef);
 				}
 			else {
+				for (let i0 = 0; i0 < vm0.length; i0++)
+					if (!map1.has(keyf(vm0[i0]))) {
+						rd_item(vm0[i0], null, cud = r_cud(domc0, children0[i0], children0[i0 + 1]));
+						children0[i0 + 1] = cud.childRef;
+					}
+
 				let prevSiblingMap = new Map();
 
 				for (let child of domc0.childNodes)
@@ -164,12 +170,13 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 
 				let domc1 = domc0.cloneNode(false);
 				cudf.update(domc1);
+				gwm.set(domc1, gwm.get(domc0));
 
 				for (let i1 = 0; i1 < vm1.length; i1++) {
 					let i0 = map0.get(keyf(vm1[i1]));
 					let prev = domc1.lastChild;
 
-					if (i0 != null) {
+					if (i0 != null) { // transplanting DOM children
 						let child0 = children0[i0];
 						let childx = children0[i0 + 1];
 						let list = [];
@@ -188,12 +195,6 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 
 					children1.push(cud.childRef);
 				}
-
-				for (let i0 = 0; i0 < vm0.length; i0++)
-					if (!map1.has(keyf(vm0[i0]))) {
-						rd_item(vm0[i0], null, cud = r_cud(domc0, children0[i0], children0[i0 + 1]));
-						children0[i0 + 1] = cud.childRef;
-					}
 
 				domc0 = domc1;
 			}
@@ -431,7 +432,9 @@ let rd_parseDom = node0 => {
 		for (let child of node0.childNodes)
 			cs.push(rd_parseDom(child));
 
-		if (node0.getAttribute('for-span') != null)
+		if (node0.getAttribute('for') != null)
+			return tag.for_(vm => vm, rd.list(cs)).rd();
+		else if (node0.getAttribute('for-span') != null)
 			return tag.for_(vm => vm, rd.span().children(...cs).rd()).rd();
 		else if ((scope = node0.getAttribute('scope')) != null)
 			return rd.scope(scope, bf(as, cs));
