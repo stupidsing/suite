@@ -390,35 +390,33 @@ let rd_parseDom = node0 => {
 		return rd_dom(vm => document.createComment(sf(vm)));
 	} else if (node0.nodeType == Node.ELEMENT_NODE) {
 		let name = node0.localName;
-		let as = {}, cs = [], scope;
+
+		let cf = nodes => {
+			let cs1 = [];
+			for (let child of nodes)
+				if (child.nodeType == Node.ELEMENT_NODE && child.localName == 'rd_for')
+					return rd_list(cf(child.childNodes));
+				else if (child.nodeType == Node.ELEMENT_NODE && child.localName == 'rd_scope')
+					return rd_scope(node.getAttribute('scope'), cf(child.childNodes));
+				else
+					cs1.push(rd_parseDom(child));
+			return cs1;
+		};
+
+		let as = {}, cs = cf(node0.childNodes), scope;
 
 		for (let attr of node0.attributes)
 			as[attr.name] = attr.value;
-		for (let child of node0.childNodes) {
-			let c;
-			if (child.nodeType == Node.ELEMENT_NODE && child.localName == 'rd_for') {
-				let cs1 = [];
-				for (let child1 of child.childNodes)
-					cs1.push(rd_parseDom(child));
-				c = rd_list(cs1);
-			} else
-				c = rd_parseDom(child);
-			cs.push(c);
-		}
 
-		if (name.startsWith('rd_')) {
-			eval(name);
-		} else {
-			let tag = rdb_tag(node0.localName);
-			let bf = (as, cs) => tag.attrsf(vm => as).children(cs).rd();
-	
-			if (node0.getAttribute('rd_for') != null)
-				return tag.for_(vm => vm, rd_list(cs)).rd();
-			else if ((scope = node0.getAttribute('rd_scope')) != null)
-				return rd_scope(scope, bf(as, cs));
-			else
-				return bf(as, cs);
-		}
+		let tag = rdb_tag(node0.localName);
+		let bf = (as, cs) => tag.attrsf(vm => as).children(cs).rd();
+
+		if (node0.getAttribute('rd_for') != null)
+			return tag.for_(vm => vm, rd_list(cs)).rd();
+		else if ((scope = node0.getAttribute('rd_scope')) != null)
+			return rd_scope(scope, bf(as, cs));
+		else
+			return bf(as, cs);
 	} else if (node0.nodeType == Node.TEXT_NODE) {
 		let sf = rd_parseTemplate(node0.nodeValue);
 		return rd_dom(vm => document.createTextNode(sf(vm)));
