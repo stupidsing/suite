@@ -49,19 +49,17 @@ let rd_vm = rd
 	.style({ 'font-family': 'sans-serif', })
 	.children(
 		rd.list([
-			rd_parse(`<p>a</p>`),
-			rd_parse(`<p>b</p>`),
+			rd_vm0,
+			rd_vm1,
+			rd.scope('vscroll', rd
+				.vscrollf(200, 32,
+					rd.dom(vm => document.createTextNode('item ' + vm)),
+					start1 => renderAgain(rd_vm, lens.key('vscroll').key('start').apply(start0 => start1)),
+				)
+				.style({ width: '400px', })
+				.rd()
+			),
 		]),
-		rd_vm0,
-		rd_vm1,
-		rd.scope('vscroll', rd
-			.vscrollf(200, 32,
-				rd.dom(vm => document.createTextNode('item ' + vm)),
-				start1 => renderAgain(rd_vm, lens.key('vscroll').key('start').apply(start0 => start1)),
-			)
-			.style({ width: '400px', })
-			.rd()
-		),
 	)
 	.rd();
 
