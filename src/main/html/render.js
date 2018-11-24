@@ -395,9 +395,9 @@ let rd_parseDom = node0 => {
 			let cs1 = [];
 			for (let child of nodes)
 				if (child.nodeType == Node.ELEMENT_NODE && child.localName == 'rd_for')
-					return rd_list(cf(child.childNodes));
+					cs1.push(rd_list(cf(child.childNodes)));
 				else if (child.nodeType == Node.ELEMENT_NODE && child.localName == 'rd_scope')
-					return rd_scope(node.getAttribute('scope'), cf(child.childNodes));
+					cs1.push(rd_scope(node.getAttribute('scope'), rd_list(cf(child.childNodes))));
 				else
 					cs1.push(rd_parseDom(child));
 			return cs1;
