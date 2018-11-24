@@ -39,6 +39,7 @@ let r_cud = (dom, domc0, domcx) => {
 		childRef: domcx, // inclusive
 		create: c => insert_(cud, c),
 		delete: () => delete_(cud),
+		parentRef: dom,
 		update: c => { delete_(cud); insert_(cud, c); },
 	});
 
@@ -261,6 +262,8 @@ let rdt_stylef = stylef => (wm, vm0, vm1, cudf) => {
 			cudf.childRef.style[key] = null;
 };
 
+let gwm = new WeakMap();
+
 let rd_dom = elementf => (vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
@@ -299,6 +302,35 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf) => {
 			f0 != null && f0(vm0, null, cudf);
 			f1 != null && f1(null, vm1, cudf);
 		}
+	}
+};
+
+let rd_list = childrenfs => (vm0, vm1, cudf) => {
+	if (vm0 == vm1)
+		;
+	else {
+		let domc = cudf.parentRef;
+		let g0 = gwm.get(domc);
+		let g1;
+		if (g0 != null)
+			g1 = g0;
+		else
+			gwm.set(domc, g1 = new WeakMap());
+		let list0 = g1.get(vm0);
+		let list1 = [cudf.childRef0,];
+
+		for (let i = 0; i < childrenfs.length; i++) {
+			let cud;
+			if (vm0 == null)
+				cud = cudf;
+			else
+				cud = r_cud(domc, list1[i], list0[i + 1]);
+			childrenfs[i](vm0, vm1, cud);
+			list1.push(cud.childRef);
+		}
+
+		cudf.childRef = list1[childrenfs.length];
+		g1.set(vm1, list1);
 	}
 };
 
@@ -352,6 +384,7 @@ let rd = {
 	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_dom(vm => document.createComment('else'))),
 	ifElse: rd_ifElse,
 	li: () => rdb_tag('li'),
+	list: rd_list,
 	p: () => rdb_tag('p'),
 	scope: (key, rdf) => (vm0, vm1, cudf) => rdf(
 		vm0 != null ? vm0[key] : null,

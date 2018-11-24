@@ -48,6 +48,10 @@ let rd_vm = rd
 	.span()
 	.style({ 'font-family': 'sans-serif', })
 	.children(
+		rd.list([
+			rd_parse(`<p>a</p>`),
+			rd_parse(`<p>b</p>`),
+		]),
 		rd_vm0,
 		rd_vm1,
 		rd.scope('vscroll', rd
