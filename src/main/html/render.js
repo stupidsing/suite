@@ -75,6 +75,15 @@ let rdt_attrsf = attrsf => (wm, vm0, vm1, cudf) => {
 			cudf.childRef.removeAttribute(key);
 };
 
+let rdt_child = childf => (wm, vm0, vm1, cudf) => {
+	if (vm0 == vm1)
+		;
+	else {
+		let domc = cudf.childRef;
+		childf(vm0, vm1, r_cud(domc, null, domc.lastChild));
+	}
+};
+
 let rdt_children = childrenfs => (wm, vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
@@ -297,7 +306,7 @@ let rdb_tagf = (elementf, decorfs) => {
 	let decor = decorf => rdb_tagf(elementf, [...decorfs, decorf,]);
 	let attrs = attrs => decor(rdt_attrs(attrs));
 	let children = childrenfs => decor(rdt_children(childrenfs));
-	let child = childf => children([childf]);
+	let child = childf => decor(rdt_child(childf));
 
 	return {
 		attr: (key, value) => attrs({ [key]: value, }),
