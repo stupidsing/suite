@@ -17,7 +17,7 @@ let verifyChildren = (parent, children) => {
 
 let r_cud = (dom, domc0, domcx) => {
 	let verify = cud => {
-		verify_(dom, cud.childRef0, cud.childRef);
+		verify_(cud.parentRef, cud.childRef0, cud.childRef);
 		return cud;
 	};
 
@@ -123,16 +123,18 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 		let domc0 = cudf.childRef;
 		let children0 = wm.get(domc0);
 		let children1 = [null,];
+		let cud;
 
 		if (vm0 == null)
 			for (let i1 = 0; i1 < vm1.length; i1++) {
-				let cud = r_cud(domc0, domc0.lastChild, domc0.lastChild);
-				rd_item(null, vm1[i1], cud);
+				rd_item(null, vm1[i1], cud = r_cud(domc0, domc0.lastChild, domc0.lastChild));
 				children1.push(cud.childRef);
 			}
 		else if (vm1 == null)
-			for (let i0 = 0; i0 < vm0.length; i0++)
-				rd_item(vm0[i0], null, r_cud(domc0, children0[i0], children0[i0 + 1]));
+			for (let i0 = 0; i0 < vm0.length; i0++) {
+				rd_item(vm0[i0], null, cud = r_cud(domc0, children0[i0], children0[i0 + 1]));
+				children0[i0 + 1] = cud.childRef;
+			}
 		else {
 			let map0 = new Map();
 			let map1 = new Map();
@@ -151,8 +153,7 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 
 			if (isSameOrder)
 				for (let i = 0; i < vm1.length; i++) {
-					let cud = r_cud(domc0, children1[i], children0[i + 1]);
-					rd_item(vm0[i], vm1[i], cud);
+					rd_item(vm0[i], vm1[i], cud = r_cud(domc0, children1[i], children0[i + 1]));
 					children1.push(cud.childRef);
 				}
 			else {
@@ -167,7 +168,6 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 				for (let i1 = 0; i1 < vm1.length; i1++) {
 					let i0 = map0.get(keyf(vm1[i1]));
 					let prev = domc1.lastChild;
-					let cud;
 
 					if (i0 != null) {
 						let child0 = children0[i0];
@@ -190,8 +190,10 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 				}
 
 				for (let i0 = 0; i0 < vm0.length; i0++)
-					if (!map1.has(keyf(vm0[i0])))
-						rd_item(vm0[i0], null, r_cud(domc0, children0[i0], children0[i0 + 1]));
+					if (!map1.has(keyf(vm0[i0]))) {
+						rd_item(vm0[i0], null, cud = r_cud(domc0, children0[i0], children0[i0 + 1]));
+						children0[i0 + 1] = cud.childRef;
+					}
 
 				domc0 = domc1;
 			}
