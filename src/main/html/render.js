@@ -310,13 +310,13 @@ let rd_list = childrenfs => (vm0, vm1, cudf) => {
 		;
 	else {
 		let domc = cudf.parentRef;
-		let g0 = gwm.get(domc);
-		let g1;
-		if (g0 != null)
-			g1 = g0;
+		let map0 = gwm.get(domc);
+		let map1;
+		if (map0 != null)
+			map1 = map0;
 		else
-			gwm.set(domc, g1 = new Map());
-		let list0 = g1.get(vm0);
+			gwm.set(domc, map1 = new Map());
+		let list0 = map1.get(vm0);
 		let list1 = [cudf.childRef0,];
 
 		for (let i = 0; i < childrenfs.length; i++) {
@@ -330,8 +330,8 @@ let rd_list = childrenfs => (vm0, vm1, cudf) => {
 		}
 
 		cudf.childRef = list1[childrenfs.length];
-		g1.delete(vm0);
-		g1.set(vm1, list1);
+		map1.delete(vm0);
+		map1.set(vm1, list1);
 	}
 };
 
