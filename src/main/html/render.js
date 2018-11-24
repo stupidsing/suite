@@ -317,6 +317,12 @@ let rd_list = childrenfs => (vm0, vm1, cudf) => {
 	}
 };
 
+let rd_scope = (key, rdf) => (vm0, vm1, cudf) => rdf(
+	vm0 != null ? vm0[key] : null,
+	vm1 != null ? vm1[key] : null,
+	cudf
+);
+
 let rdb_tagf = (elementf, decorfs) => {
 	let decor = decorf => rdb_tagf(elementf, [...decorfs, decorf,]);
 	let attrs = attrs => decor(rdt_attrs(attrs));
@@ -361,24 +367,6 @@ let rdb_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 		);
 };
 
-let rd = {
-	div: () => rdb_tag('div'),
-	dom: rd_dom,
-	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_dom(vm => document.createComment('else'))),
-	ifElse: rd_ifElse,
-	li: () => rdb_tag('li'),
-	list: rd_list,
-	p: () => rdb_tag('p'),
-	scope: (key, rdf) => (vm0, vm1, cudf) => rdf(
-		vm0 != null ? vm0[key] : null,
-		vm1 != null ? vm1[key] : null,
-		cudf),
-	span: () => rdb_tag('span'),
-	tag: rdb_tag,
-	ul: () => rdb_tag('ul'),
-	vscrollf: rdb_vscrollf,
-};
-
 let rd_parseTemplate = s => {
 	let pos0 = 0, pos1, pos2;
 	let f = vm => '';
@@ -399,33 +387,64 @@ let rd_parseTemplate = s => {
 let rd_parseDom = node0 => {
 	if (node0.nodeType == Node.COMMENT_NODE) {
 		let sf = rd_parseTemplate(node0.nodeValue);
-		return rd.dom(vm => document.createComment(sf(vm)));
+		return rd_dom(vm => document.createComment(sf(vm)));
 	} else if (node0.nodeType == Node.ELEMENT_NODE) {
-		let tag = rd.tag(node0.localName);
-		let bf = (as, cs) => tag.attrsf(vm => as).children(cs).rd();
+		let name = node0.localName;
 		let as = {}, cs = [], scope;
 
 		for (let attr of node0.attributes)
 			as[attr.name] = attr.value;
-		for (let child of node0.childNodes)
-			cs.push(rd_parseDom(child));
+		for (let child of node0.childNodes) {
+			let c;
+			if (child.nodeType == Node.ELEMENT_NODE && child.localName == 'rd_for') {
+				let cs1 = [];
+				for (let child1 of child.childNodes)
+					cs1.push(rd_parseDom(child));
+				c = rd_list(cs1);
+			} else
+				c = rd_parseDom(child);
+			cs.push(c);
+		}
 
-		if (node0.getAttribute('r_for') != null)
-			return tag.for_(vm => vm, rd.list(cs)).rd();
-		else if ((scope = node0.getAttribute('r_scope')) != null)
-			return rd.scope(scope, bf(as, cs));
-		else
-			return bf(as, cs);
+		if (name.startsWith('rd_')) {
+			eval(name);
+		} else {
+			let tag = rdb_tag(node0.localName);
+			let bf = (as, cs) => tag.attrsf(vm => as).children(cs).rd();
+	
+			if (node0.getAttribute('rd_for') != null)
+				return tag.for_(vm => vm, rd_list(cs)).rd();
+			else if ((scope = node0.getAttribute('rd_scope')) != null)
+				return rd_scope(scope, bf(as, cs));
+			else
+				return bf(as, cs);
+		}
 	} else if (node0.nodeType == Node.TEXT_NODE) {
 		let sf = rd_parseTemplate(node0.nodeValue);
-		return rd.dom(vm => document.createTextNode(sf(vm)));
+		return rd_dom(vm => document.createTextNode(sf(vm)));
 	} else {
 		console.error('unknown node type', node0);
-		return rd.dom(vm => document.createComment('unknown node type' + node0));
+		return rd_dom(vm => document.createComment('unknown node type' + node0));
 	}
 };
 
 let rd_parse = s => rd_parseDom(new DOMParser().parseFromString(s, 'text/xml').childNodes[0]);
+
+let rd = {
+	div: () => rdb_tag('div'),
+	dom: rd_dom,
+	if_: (iff, thenf) => rd_ifElse(iff, thenf, rd_dom(vm => document.createComment('else'))),
+	ifElse: rd_ifElse,
+	li: () => rdb_tag('li'),
+	list: rd_list,
+	p: () => rdb_tag('p'),
+	parse: rd_parse,
+	scope: rd_scope,
+	span: () => rdb_tag('span'),
+	tag: rdb_tag,
+	ul: () => rdb_tag('ul'),
+	vscrollf: rdb_vscrollf,
+};
 
 let pvm = null;
 

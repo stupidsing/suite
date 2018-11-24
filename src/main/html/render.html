@@ -13,19 +13,19 @@ file:///home/ywsing/suite/src/main/html/render.html
 	<script src='render.js'></script>
 
 	<script type='text/javascript'>
-let rd_vm0 = rd_parse(`
+let rd_vm0 = rd.parse(`
 	<span style='font-family: sans-serif;'>
-		<span r_scope='message'>
+		<span rd_scope='message'>
 			<p style='font-weight: bold;'>
 				{ vm } within scope
 				<!-- comment -->
 			</p>
 		</span>
-		<span r_scope='t'>
+		<span rd_scope='t'>
 			{ vm }
 		</span>
-		<span r_scope='fruits'>
-			<ul r_for='vm'>
+		<span rd_scope='fruits'>
+			<ul rd_for='vm'>
 				<li>{ vm }</li>
 			</ul>
 		</span>
