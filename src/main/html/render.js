@@ -328,7 +328,7 @@ let rdb_tagf = (elementf, decorfs) => {
 		attrs,
 		attrsf: attrsf => decor(rdt_attrsf(attrsf)),
 		child,
-		children: (...childrenfs) => children(childrenfs),
+		children,
 		decor,
 		for_: (keyf, rd_item) => decor(rdt_for(keyf, rd_item)),
 		listen: (event, cb) => decor(rdt_eventListener(event, cb)),
@@ -402,7 +402,7 @@ let rd_parseDom = node0 => {
 		return rd.dom(vm => document.createComment(sf(vm)));
 	} else if (node0.nodeType == Node.ELEMENT_NODE) {
 		let tag = rd.tag(node0.localName);
-		let bf = (as, cs) => tag.attrsf(vm => as).children(...cs).rd();
+		let bf = (as, cs) => tag.attrsf(vm => as).children(cs).rd();
 		let as = {}, cs = [], scope;
 
 		for (let attr of node0.attributes)
