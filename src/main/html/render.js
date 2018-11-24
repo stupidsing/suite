@@ -315,7 +315,7 @@ let rd_list = childrenfs => (vm0, vm1, cudf) => {
 		if (g0 != null)
 			g1 = g0;
 		else
-			gwm.set(domc, g1 = new WeakMap());
+			gwm.set(domc, g1 = new Map());
 		let list0 = g1.get(vm0);
 		let list1 = [cudf.childRef0,];
 
@@ -330,6 +330,7 @@ let rd_list = childrenfs => (vm0, vm1, cudf) => {
 		}
 
 		cudf.childRef = list1[childrenfs.length];
+		g1.delete(vm0);
 		g1.set(vm1, list1);
 	}
 };
