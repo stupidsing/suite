@@ -419,7 +419,8 @@ let rd_parseDom = node0 => {
 		let sf = rd_parseTemplate(node0.nodeValue);
 		return rd.dom(vm => document.createComment(sf(vm)));
 	} else if (node0.nodeType == Node.ELEMENT_NODE) {
-		let tag = rd.tag(node0.localName);
+		let name = node0.localName;
+		let tag = rd.tag(name);
 		let bf = (as, cs) => tag.attrsf(vm => as).children(...cs).rd();
 		let as = {}, cs = [], scope;
 
