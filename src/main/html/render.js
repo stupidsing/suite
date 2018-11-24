@@ -85,28 +85,6 @@ let rdt_child = childf => (wm, vm0, vm1, cudf) => {
 	}
 };
 
-let rdt_children = childrenfs => (wm, vm0, vm1, cudf) => {
-	if (vm0 == vm1)
-		;
-	else {
-		let domc = cudf.childRef;
-		let children0 = wm.get(domc);
-		let children1 = [null,];
-
-		for (let i = 0; i < childrenfs.length; i++) {
-			let cud;
-			if (vm0 == null)
-				cud = r_cud(domc, domc.lastChild, domc.lastChild);
-			else
-				cud = r_cud(domc, children1[i], children0[i + 1]);
-			childrenfs[i](vm0, vm1, cud);
-			children1.push(cud.childRef);
-		}
-
-		wm.set(domc, children1);
-	}
-};
-
 let rdt_eventListener = (event, cb) => (wm, vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
@@ -342,8 +320,8 @@ let rd_list = childrenfs => (vm0, vm1, cudf) => {
 let rdb_tagf = (elementf, decorfs) => {
 	let decor = decorf => rdb_tagf(elementf, [...decorfs, decorf,]);
 	let attrs = attrs => decor(rdt_attrs(attrs));
-	let children = childrenfs => decor(rdt_children(childrenfs));
 	let child = childf => decor(rdt_child(childf));
+	let children = childrenfs => child(rd_list(childrenfs));
 
 	return {
 		attr: (key, value) => attrs({ [key]: value, }),
@@ -432,11 +410,9 @@ let rd_parseDom = node0 => {
 		for (let child of node0.childNodes)
 			cs.push(rd_parseDom(child));
 
-		if (node0.getAttribute('for') != null)
+		if (node0.getAttribute('r_for') != null)
 			return tag.for_(vm => vm, rd.list(cs)).rd();
-		else if (node0.getAttribute('for-span') != null)
-			return tag.for_(vm => vm, rd.span().children(...cs).rd()).rd();
-		else if ((scope = node0.getAttribute('scope')) != null)
+		else if ((scope = node0.getAttribute('r_scope')) != null)
 			return rd.scope(scope, bf(as, cs));
 		else
 			return bf(as, cs);
