@@ -333,8 +333,11 @@ let rd_for = (keyf, rd_item) => {
 						childx = prevSiblingMap.get(childx);
 					}
 
+					let childRef = children1[i1];
+					let before = childRef != null ? childRef.nextSibling : domc.firstChild;
+
 					while (0 < list.length)
-						domc.insertBefore(list.pop(), children1[i1] != null ? children1[i1].nextSibling : domc.firstChild);
+						domc.insertBefore(list.pop(), before);
 
 					rd_item(vm0[i0], vm1[i1], cud = r_cud(domc, children1[i1], children0[i0 + 1]));
 				} else
