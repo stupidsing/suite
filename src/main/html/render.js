@@ -124,6 +124,7 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 
 		if (0 < vm0.length) {
 			isSameOrder = vm0.length == vm1.length;
+
 			for (let i1 = 0; i1 < vm1.length; i1++) {
 				let i0 = map0.get(keyf(vm1[i1]));
 				isSameOrder &= i0 == i1;
