@@ -1,26 +1,25 @@
 'use strict';
 
-let verify_ = (parent, s0, sx) => {
-	if (s0 != null && s0.parentNode != parent) throw 'fail';
-	if (sx != null && sx.parentNode != parent) throw 'fail';
+let verifyList = (parent, nodes) => {
 	let e = parent.lastChild;
-	while (e != sx) e = e.previousSibling;
-	while (e != s0) e = e.previousSibling;
+	for (let i = nodes.length - 1; 0 <= i; i--) {
+		let node = nodes[i];
+		if (node == null || node.parentNode == parent)
+			while (e != node)
+				e = e.previousSibling;
+		else
+			throw 'fail';
+	}
 	while (e != null) e = e.previousSibling;
-};
+	return nodes;
+}
 
-let verifyChildren = (parent, children) => {
-	if (children != null)
-		for (let i = 1; i < children.length; i++)
-			verify_(parent, children[i - 1], children[i]);
+let verifyCud = cud => {
+	verifyList(cud.parentRef, [cud.childRef0, cud.childRef,]);
+	return cud;
 };
 
 let r_cud = (dom, domc0, domcx) => {
-	let verify = cud => {
-		verify_(cud.parentRef, cud.childRef0, cud.childRef);
-		return cud;
-	};
-
 	let delete_ = cud => {
 			while (cud.childRef0 != cud.childRef) {
 				let prev = cud.childRef.previousSibling;
@@ -34,7 +33,7 @@ let r_cud = (dom, domc0, domcx) => {
 		cud.childRef = dom.insertBefore(c, childRef_ != null ? childRef_.nextSibling : dom.firstChild);
 	};
 
-	let cud = verify({
+	let cud = verifyCud({
 		childRef0: domc0, // exclusive
 		childRef: domcx, // inclusive
 		create: c => insert_(cud, c),
@@ -193,7 +192,7 @@ let rdt_for = (keyf, rd_item) => {
 
 			domc0 = domc1;
 
-			cm.set(domc0, children1);
+			cm.set(domc0, verifyList(domc0, children1));
 		}
 	};
 };
@@ -327,8 +326,10 @@ let rd_for = (keyf, rd_item) => {
 				children1.push(cud.childRef);
 			}
 
+			cudf.childRef = children1[vm1.length];
+			verifyCud(cudf);
 			cm.delete(vm0);
-			cm.set(vm1, children1);
+			cm.set(vm1, verifyList(domc, children1));
 		}
 	};
 };
@@ -372,8 +373,9 @@ let rd_list = childrenfs => {
 			}
 
 			cudf.childRef = list1[childrenfs.length];
+			verifyCud(cudf);
 			cm.delete(vm0);
-			cm.set(vm1, list1);
+			cm.set(vm1, verifyList(domc, list1));
 		}
 	};
 };
