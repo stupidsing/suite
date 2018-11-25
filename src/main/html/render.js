@@ -173,7 +173,7 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 					rd_item(vm0[i0], vm1[i1], cud = r_cud(domc1, prev, domc1.lastChild));
 				}
 			else
-				rd_item(null, vm1[i1], cud = r_cud(domc1, prev, prev));
+				rd_item(null, vm1[i1], cud = r_cud(domc1, children1[i1], children1[i1]));
 
 			children1.push(cud.childRef);
 		}
