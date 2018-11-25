@@ -286,14 +286,14 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 		gwm.set(domc, cm1 = new Map());
 
 	let children0;
-	let children1 = [cudf.childRef,];
+	let children1 = [cudf.childRef0,];
 	let cud;
 
 	if (vm0 != null)
 		children0 = cm1.get(vm0);
 	else {
 		vm0 = [];
-		children0 = [cudf.childRef,];
+		children0 = [cudf.childRef0,];
 	}
 
 	vm1 = vm1 != null ? vm1 : [];
