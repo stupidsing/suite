@@ -380,11 +380,7 @@ let rd_list = childrenfs => {
 			let list1 = [cudf.childRef0,];
 
 			for (let i = 0; i < childrenfs.length; i++) {
-				let cud;
-				if (vm0 == null)
-					cud = r_cud(domc, list1[i], list1[i]);
-				else
-					cud = r_cud(domc, list1[i], list0[i + 1]);
+				let cud = r_cud(domc, list1[i], vm0 != null ? list0[i + 1] : list1[i]);
 				childrenfs[i](vm0, vm1, cud);
 				list1.push(cud.childRef);
 			}
