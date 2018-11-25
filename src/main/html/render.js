@@ -107,7 +107,6 @@ let rdt_for = (keyf, rd_item) => {
 
 	return (vm0, vm1, cudf) => {
 		let cm = getOrAdd(getOrAdd(gwm, cudf.parentRef), key);
-
 		let domc0 = cudf.childRef;
 		let domc1;
 		let children0;
@@ -287,7 +286,6 @@ let rd_for = (keyf, rd_item) => {
 	return (vm0, vm1, cudf) => {
 		let domc = cudf.parentRef;
 		let cm = getOrAdd(getOrAdd(gwm, domc), key);
-
 		let children0;
 		let children1 = [cudf.childRef0,];
 		let cud;
@@ -360,7 +358,6 @@ let rd_list = childrenfs => {
 		else {
 			let domc = cudf.parentRef;
 			let cm = getOrAdd(getOrAdd(gwm, domc), key);
-
 			let list0 = cm.get(vm0);
 			let list1 = [cudf.childRef0,];
 
