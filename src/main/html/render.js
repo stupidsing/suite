@@ -276,6 +276,67 @@ let rd_domDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
 		cudf.delete();
 };
 
+let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
+	let domc = cudf.childRef;
+	let cm0 = gwm.get(domc);
+	let cm1;
+	if (cm0 != null)
+		cm1 = cm0;
+	else
+		gwm.set(domc, cm1 = new Map());
+
+	let children0;
+	let children1 = [null,];
+	let cud;
+
+	if (vm0 != null)
+		children0 = cm1.get(domc);
+	else {
+		vm0 = [];
+		children0 = [null,];
+	}
+
+	vm1 = vm1 != null ? vm1 : [];
+
+	if (vm0 == vm1)
+		;
+	else {
+		let map0 = new Map();
+		let map1 = new Map();
+
+		for (let i0 = 0; i0 < vm0.length; i0++)
+			map0.set(keyf(vm0[i0]), i0);
+		for (let i1 = 0; i1 < vm1.length; i1++)
+			map1.set(keyf(vm1[i1]), i1);
+
+		for (let i0 = 0; i0 < vm0.length; i0++)
+			if (!map1.has(keyf(vm0[i0]))) {
+				rd_item(vm0[i0], null, cud = r_cud(domc, children0[i0], children0[i0 + 1]));
+				children0[i0 + 1] = cud.childRef;
+			}
+
+		let prevSiblingMap = new Map();
+
+		domc = domc;
+
+		for (let i1 = 0; i1 < vm1.length; i1++) {
+			let i0 = map0.get(keyf(vm1[i1]));
+			let prev = domc.lastChild;
+
+			if (i0 != null)
+				rd_item(vm0[i0], vm1[i1], cud = r_cud(domc, children1[i1], children0[i0 + 1]));
+			else
+				rd_item(null, vm1[i1], cud = r_cud(domc, children1[i1], children1[i1]));
+
+			children1.push(cud.childRef);
+		}
+
+		domc = domc;
+
+		cm1.set(domc, children1);
+	}
+};
+
 let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
@@ -333,14 +394,13 @@ let rdb_tagf = (elementf, decorfs) => {
 	let decor = decorf => rdb_tagf(elementf, [...decorfs, decorf,]);
 	let attrs = attrs => decor(rdt_attrs(attrs));
 	let child = childf => decor(rdt_child(childf));
-	let children = childrenfs => child(rd_list(childrenfs));
 
 	return {
 		attr: (key, value) => attrs({ [key]: value, }),
 		attrs,
 		attrsf: attrsf => decor(rdt_attrsf(attrsf)),
 		child,
-		children,
+		children: childrenfs => child(rd_list(childrenfs)),
 		decor,
 		for_: (keyf, rd_item) => decor(rdt_for(keyf, rd_item)),
 		listen: (event, cb) => decor(rdt_eventListener(event, cb)),
@@ -401,12 +461,12 @@ let rd_parseDom = node0 => {
 			let cs1 = [];
 			for (let child of nodes)
 				if (child.nodeType == Node.ELEMENT_NODE && child.localName == 'rd_for')
-					cs1.push(rd_list(cf(child.childNodes)));
+					cs1.push(rd_for(vm => vm, cf(child.childNodes)));
 				else if (child.nodeType == Node.ELEMENT_NODE && child.localName == 'rd_scope')
-					cs1.push(rd_scope(child.getAttribute('scope'), rd_list(cf(child.childNodes))));
+					cs1.push(rd_scope(child.getAttribute('scope'), cf(child.childNodes)));
 				else
 					cs1.push(rd_parseDom(child));
-			return cs1;
+			return rd_list(cs1);
 		};
 
 		let as = {}, cs = cf(node0.childNodes), scope;
@@ -415,10 +475,10 @@ let rd_parseDom = node0 => {
 			as[attr.name] = attr.value;
 
 		let tag = rdb_tag(node0.localName);
-		let bf = (as, cs) => tag.attrsf(vm => as).children(cs).rd();
+		let bf = (as, cs) => tag.attrsf(vm => as).child(cs).rd();
 
 		if (node0.getAttribute('rd_for') != null)
-			return tag.for_(vm => vm, rd_list(cs)).rd();
+			return tag.for_(vm => vm, cs).rd();
 		else if ((scope = node0.getAttribute('rd_scope')) != null)
 			return rd_scope(scope, bf(as, cs));
 		else
