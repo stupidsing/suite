@@ -475,14 +475,14 @@ let rd_parseDom = node0 => {
 			as[attr.name] = attr.value;
 
 		let tag = rdb_tag(node0.localName);
-		let bf = (as, cs) => tag.attrsf(vm => as).child(cs).rd();
+		let bf = () => tag.attrsf(vm => as).child(cs).rd();
 
 		if (node0.getAttribute('rd_for') != null)
 			return tag.for_(vm => vm, cs).rd();
 		else if ((scope = node0.getAttribute('rd_scope')) != null)
-			return rd_scope(scope, bf(as, cs));
+			return rd_scope(scope, bf());
 		else
-			return bf(as, cs);
+			return bf();
 	} else if (node0.nodeType == Node.TEXT_NODE) {
 		let sf = rd_parseTemplate(node0.nodeValue);
 		return rd_dom(vm => document.createTextNode(sf(vm)));
