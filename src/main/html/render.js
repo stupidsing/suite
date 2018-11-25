@@ -164,7 +164,6 @@ let rdt_for = (keyf, rd_item) => {
 
 			for (let i1 = 0; i1 < vm1.length; i1++) {
 				let i0 = map0.get(keyf(vm1[i1]));
-				let prev = domc1.lastChild;
 
 				if (i0 != null)
 					if (isSameOrder)
@@ -182,7 +181,7 @@ let rdt_for = (keyf, rd_item) => {
 						while (0 < list.length)
 							domc1.insertBefore(list.pop(), null);
 
-						rd_item(vm0[i0], vm1[i1], cud = r_cud(domc1, prev, domc1.lastChild));
+						rd_item(vm0[i0], vm1[i1], cud = r_cud(domc1, children1[i1], domc1.lastChild));
 					}
 				else
 					rd_item(null, vm1[i1], cud = r_cud(domc1, children1[i1], children1[i1]));
@@ -366,7 +365,7 @@ let rd_list = childrenfs => {
 			for (let i = 0; i < childrenfs.length; i++) {
 				let cud;
 				if (vm0 == null)
-					cud = cudf;
+					cud = r_cud(domc, list1[i], list1[i]);
 				else
 					cud = r_cud(domc, list1[i], list0[i + 1]);
 				childrenfs[i](vm0, vm1, cud);
