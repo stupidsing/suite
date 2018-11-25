@@ -156,7 +156,7 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 
 			if (i0 != null)
 				if (isSameOrder)
-					;
+					rd_item(vm0[i0], vm1[i1], cud = r_cud(domc1, children1[i1], children0[i0 + 1]));
 				else { // transplanting DOM children
 					let child0 = children0[i0];
 					let childx = children0[i0 + 1];
