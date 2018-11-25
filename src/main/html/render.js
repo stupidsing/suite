@@ -188,7 +188,7 @@ let rdt_forRange = (vmsf, rangef, rd_item) => (wm, vm0, vm1, cudf) => {
 	} else if (vm1 == null) {
 		let [s, e] = rangef(vm0), vms0 = vmsf(vm0);
 		for (let i0 = s; i0 < e; i0++)
-			rd_item(vms0[i0], null, r_cud(domc, children0[i0 - 1], children0[i0]));
+			rd_item(vms0[i0], null, r_cudChild(domc, children0[i0]));
 	} else {
 		let [si, ei] = rangef(vm0), vms0 = vmsf(vm0);
 		let [sx, ex] = rangef(vm1), vms1 = vmsf(vm1);
