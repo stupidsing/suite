@@ -139,12 +139,12 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 
 		let prevSiblingMap = new Map();
 
-		for (let child of domc0.childNodes)
-			prevSiblingMap.set(child, child.previousSibling);
-
 		if (isSameOrder)
 			domc1 = domc0;
 		else {
+			for (let child of domc0.childNodes)
+				prevSiblingMap.set(child, child.previousSibling);
+
 			domc1 = domc0.cloneNode(false);
 			cudf.update(domc1);
 			gwm.set(domc1, gwm.get(domc0));
@@ -154,21 +154,25 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 			let i0 = map0.get(keyf(vm1[i1]));
 			let prev = domc1.lastChild;
 
-			if (i0 != null) { // transplanting DOM children
-				let child0 = children0[i0];
-				let childx = children0[i0 + 1];
-				let list = [];
+			if (i0 != null)
+				if (isSameOrder)
+					;
+				else { // transplanting DOM children
+					let child0 = children0[i0];
+					let childx = children0[i0 + 1];
+					let list = [];
 
-				while (child0 != childx) {
-					list.push(childx);
-					childx = prevSiblingMap.get(childx);
+					while (child0 != childx) {
+						list.push(childx);
+						childx = prevSiblingMap.get(childx);
+					}
+
+					while (0 < list.length)
+						domc1.insertBefore(list.pop(), null);
+
+					rd_item(vm0[i0], vm1[i1], cud = r_cud(domc1, prev, domc1.lastChild));
 				}
-
-				while (0 < list.length)
-					domc1.insertBefore(list.pop(), null);
-
-				rd_item(vm0[i0], vm1[i1], cud = r_cud(domc1, prev, domc1.lastChild));
-			} else
+			else
 				rd_item(null, vm1[i1], cud = r_cud(domc1, prev, prev));
 
 			children1.push(cud.childRef);
