@@ -400,7 +400,7 @@ let rdb_tagf = (elementf, decorfs) => {
 		attrs,
 		attrsf: attrsf => decor(rdt_attrsf(attrsf)),
 		child,
-		children: childrenfs => child(rd_list(childrenfs)),
+		children: (...childrenfs) => child(rd_list(childrenfs)),
 		decor,
 		for_: (keyf, rd_item) => decor(rdt_for(keyf, rd_item)),
 		listen: (event, cb) => decor(rdt_eventListener(event, cb)),

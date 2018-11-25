@@ -40,7 +40,7 @@ let rd_vm0 = rd.parse(`
 	</span>
 `);
 
-let rd_vm1 = rd.span().children([
+let rd_vm1 = rd.span().children(
 	rd.scope('message',
 		rd.p().style({ 'font-weight': 'bold', }).text().rd()
 	),
@@ -50,7 +50,7 @@ let rd_vm1 = rd.span().children([
 	rd.scope('fruits',
 		rd.ul().for_(vm => vm, rd.li().text().rd()).rd()
 	),
-]).rd();
+).rd();
 
 let rd_vm = rd
 	.span()
