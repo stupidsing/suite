@@ -94,7 +94,14 @@ let rdt_eventListener = (event, cb) => (wm, vm0, vm1, cudf) => {
 	}
 };
 
-let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
+let rdt_for = (keyf, rd_item) => (wmx, vm0, vm1, cudf) => {
+	let cm0 = gwm.get(cudf.parentRef);
+	let cm1;
+	if (cm0 != null)
+		cm1 = cm0;
+	else
+		gwm.set(cudf.parentRef, cm1 = new Map());
+
 	let domc0 = cudf.childRef;
 	let domc1;
 	let children0;
@@ -102,7 +109,7 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 	let cud;
 
 	if (vm0 != null)
-		children0 = wm.get(domc0);
+		children0 = cm1.get(domc0);
 	else {
 		vm0 = [];
 		children0 = [null,];
@@ -181,7 +188,7 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 
 		domc0 = domc1;
 
-		wm.set(domc0, children1);
+		cm1.set(domc0, children1);
 	}
 };
 
@@ -294,14 +301,14 @@ let rd_list = childrenfs => (vm0, vm1, cudf) => {
 		;
 	else {
 		let domc = cudf.parentRef;
-		let map0 = gwm.get(domc);
-		let map1;
-		if (map0 != null)
-			map1 = map0;
+		let cm0 = gwm.get(domc);
+		let cm1;
+		if (cm0 != null)
+			cm1 = cm0;
 		else
-			gwm.set(domc, map1 = new Map());
+			gwm.set(domc, cm1 = new Map());
 
-		let list0 = map1.get(vm0);
+		let list0 = cm1.get(vm0);
 		let list1 = [cudf.childRef0,];
 
 		for (let i = 0; i < childrenfs.length; i++) {
@@ -315,8 +322,8 @@ let rd_list = childrenfs => (vm0, vm1, cudf) => {
 		}
 
 		cudf.childRef = list1[childrenfs.length];
-		map1.delete(vm0);
-		map1.set(vm1, list1);
+		cm1.delete(vm0);
+		cm1.set(vm1, list1);
 	}
 };
 
