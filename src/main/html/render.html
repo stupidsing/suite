@@ -17,26 +17,20 @@ let close;
 
 let rd_vm0 = rd.parse(`
 	<span style='font-family: sans-serif;'>
-		<span>
-			<rd_scope scope='message'>
-				<p style='font-weight: bold;'>
-					{ vm } within scope
-					<!-- comment -->
-				</p>
-			</rd_scope>
-		</span>
-		<span>
-			<rd_scope scope='t'>
-				{ vm }
-			</rd_scope>
-		</span>
-		<span>
-			<rd_scope scope='fruits'>
-				<ul rd_for='vm'>
-					<li>{ vm }</li>
-				</ul>
-			</rd_scope>
-		</span>
+		<rd_scope scope='message'>
+			<p style='font-weight: bold;'>
+				{ vm } within scope
+				<!-- comment -->
+			</p>
+		</rd_scope>
+		<rd_scope scope='t'>
+			{ vm }
+		</rd_scope>
+		<rd_scope scope='fruits'>
+			<ul rd_for='vm'>
+				<li>{ vm }</li>
+			</ul>
+		</rd_scope>
 	</span>
 `);
 
