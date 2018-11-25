@@ -315,12 +315,29 @@ let rd_for = (keyf, rd_item) => {
 					children0[i0 + 1] = cud.childRef;
 				}
 
+			let prevSiblingMap = new Map();
+
+			for (let child of domc.childNodes)
+				prevSiblingMap.set(child, child.previousSibling);
+
 			for (let i1 = 0; i1 < vm1.length; i1++) {
 				let i0 = map0.get(keyf(vm1[i1]));
 
-				if (i0 != null)
+				if (i0 != null) { // transplant DOM children
+					let child0 = children0[i0];
+					let childx = children0[i0 + 1];
+					let list = [];
+
+					while (child0 != childx) {
+						list.push(childx);
+						childx = prevSiblingMap.get(childx);
+					}
+
+					while (0 < list.length)
+						domc.insertBefore(list.pop(), children1[i1] != null ? children1[i1].nextSibling : domc.firstChild);
+
 					rd_item(vm0[i0], vm1[i1], cud = r_cud(domc, children1[i1], children0[i0 + 1]));
-				else
+				} else
 					rd_item(null, vm1[i1], cud = r_cud(domc, children1[i1], children1[i1]));
 
 				children1.push(cud.childRef);
