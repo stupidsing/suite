@@ -113,7 +113,7 @@ let rdt_for = (keyf, rd_item) => {
 		let cud;
 
 		if (vm0 != null)
-			children0 = cm.get(domc0);
+			children0 = cm.get(vm0);
 		else {
 			vm0 = [];
 			children0 = [null,];
@@ -192,7 +192,8 @@ let rdt_for = (keyf, rd_item) => {
 
 			domc0 = domc1;
 
-			cm.set(domc0, verifyList(domc0, children1));
+			cm.delete(vm0);
+			cm.set(vm1, verifyList(domc0, children1));
 		}
 	};
 };
