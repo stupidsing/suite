@@ -103,15 +103,12 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 		let children1 = [null,];
 		let cud;
 
+		vm1 = vm1 != null ? vm1 : [];
+
 		if (vm0 == null)
 			for (let i1 = 0; i1 < vm1.length; i1++) {
 				rd_item(null, vm1[i1], cud = r_cud(domc0, domc0.lastChild, domc0.lastChild));
 				children1.push(cud.childRef);
-			}
-		else if (vm1 == null)
-			for (let i0 = 0; i0 < vm0.length; i0++) {
-				rd_item(vm0[i0], null, cud = r_cud(domc0, children0[i0], children0[i0 + 1]));
-				children0[i0 + 1] = cud.childRef;
 			}
 		else {
 			let map0 = new Map();
@@ -122,7 +119,7 @@ let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
 			for (let i1 = 0; i1 < vm1.length; i1++)
 				map1.set(keyf(vm1[i1]), i1);
 
-			let isSameOrder = vm0.length == vm1.length;
+			let isSameOrder = vm0.length == 0 || vm1.length == 0 || vm0.length == vm1.length;
 
 			for (let i1 = 0; i1 < vm1.length; i1++) {
 				let i0 = map0.get(keyf(vm1[i1]));
