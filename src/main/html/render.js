@@ -56,7 +56,7 @@ let r_cudChild = (dom, domc) => r_cud(dom, domc.previousSibling, domc);
 	The renderer should detect the differences and apply changes using cud.
 */
 
-let rdt_attrs = attrs => (wm, vm0, vm1, cudf) => {
+let rdt_attrs = attrs => (vm0, vm1, cudf) => {
 	if (vm0 == null)
 		for (let [key, value] of Object.entries(attrs))
 			cudf.childRef.setAttribute(key, value);
@@ -65,7 +65,7 @@ let rdt_attrs = attrs => (wm, vm0, vm1, cudf) => {
 			cudf.childRef.removeAttribute(key);
 };
 
-let rdt_attrsf = attrsf => (wm, vm0, vm1, cudf) => {
+let rdt_attrsf = attrsf => (vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
 	else if (vm1 != null)
@@ -76,7 +76,7 @@ let rdt_attrsf = attrsf => (wm, vm0, vm1, cudf) => {
 			cudf.childRef.removeAttribute(key);
 };
 
-let rdt_child = childf => (wm, vm0, vm1, cudf) => {
+let rdt_child = childf => (vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
 	else {
@@ -85,7 +85,7 @@ let rdt_child = childf => (wm, vm0, vm1, cudf) => {
 	}
 };
 
-let rdt_eventListener = (event, cb) => (wm, vm0, vm1, cudf) => {
+let rdt_eventListener = (event, cb) => (vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
 	else {
@@ -94,7 +94,7 @@ let rdt_eventListener = (event, cb) => (wm, vm0, vm1, cudf) => {
 	}
 };
 
-let rdt_for = (keyf, rd_item) => (wmx, vm0, vm1, cudf) => {
+let rdt_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 	let cm0 = gwm.get(cudf.parentRef);
 	let cm1;
 	if (cm0 != null)
@@ -192,7 +192,7 @@ let rdt_for = (keyf, rd_item) => (wmx, vm0, vm1, cudf) => {
 	}
 };
 
-let rdt_forRange = (vmsf, rangef, rd_item) => (wm, vm0, vm1, cudf) => {
+let rdt_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 	let domc = cudf.childRef;
 	let children0 = domc != null ? Array.from(domc.childNodes) : null;
 
@@ -233,7 +233,7 @@ let rdt_forRange = (vmsf, rangef, rd_item) => (wm, vm0, vm1, cudf) => {
 	}
 };
 
-let rdt_style = style => (wm, vm0, vm1, cudf) => {
+let rdt_style = style => (vm0, vm1, cudf) => {
 	if (vm0 == null)
 		for (let [key, value] of Object.entries(style))
 			cudf.childRef.style[key] = value;
@@ -242,7 +242,7 @@ let rdt_style = style => (wm, vm0, vm1, cudf) => {
 			cudf.childRef.style[key] = null;
 };
 
-let rdt_stylef = stylef => (wm, vm0, vm1, cudf) => {
+let rdt_stylef = stylef => (vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
 	else if (vm1 != null)
@@ -264,20 +264,16 @@ let rd_dom = elementf => (vm0, vm1, cudf) => {
 	}
 };
 
-let rd_domDecors = (elementf, decorfs) => {
-	let wm = new WeakMap(); // map from DOM element to list of children DOM
-
-	return (vm0, vm1, cudf) => {
-		if (vm0 == null)
-			cudf.create(elementf());
-		if (vm0 == vm1)
-			;
-		else
-			for (let decorf of decorfs)
-				decorf(wm, vm0, vm1, cudf);
-		if (vm1 == null)
-			cudf.delete();
-	};
+let rd_domDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
+	if (vm0 == null)
+		cudf.create(elementf());
+	if (vm0 == vm1)
+		;
+	else
+		for (let decorf of decorfs)
+			decorf(vm0, vm1, cudf);
+	if (vm1 == null)
+		cudf.delete();
 };
 
 let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf) => {
