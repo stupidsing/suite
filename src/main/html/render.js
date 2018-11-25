@@ -95,24 +95,24 @@ let rdt_eventListener = (event, cb) => (wm, vm0, vm1, cudf) => {
 };
 
 let rdt_for = (keyf, rd_item) => (wm, vm0, vm1, cudf) => {
+	let domc0 = cudf.childRef;
+	let domc1;
+	let children0;
+	let children1 = [null,];
+	let cud;
+
+	if (vm0 != null)
+		children0 = wm.get(domc0);
+	else {
+		vm0 = [];
+		children0 = [null,];
+	}
+
+	vm1 = vm1 != null ? vm1 : [];
+
 	if (vm0 == vm1)
 		;
 	else {
-		let domc0 = cudf.childRef;
-		let domc1;
-		let children0;
-		let children1 = [null,];
-		let cud;
-
-		if (vm0 != null)
-			children0 = wm.get(domc0);
-		else {
-			vm0 = [];
-			children0 = [null,];
-		}
-
-		vm1 = vm1 != null ? vm1 : [];
-
 		let map0 = new Map();
 		let map1 = new Map();
 		let isSameOrder;
