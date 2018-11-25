@@ -277,7 +277,7 @@ let rd_domDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
 };
 
 let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
-	let domc = cudf.childRef;
+	let domc = cudf.parentRef;
 	let cm0 = gwm.get(domc);
 	let cm1;
 	if (cm0 != null)
@@ -286,14 +286,14 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 		gwm.set(domc, cm1 = new Map());
 
 	let children0;
-	let children1 = [null,];
+	let children1 = [cudf.childRef,];
 	let cud;
 
 	if (vm0 != null)
-		children0 = cm1.get(domc);
+		children0 = cm1.get(vm0);
 	else {
 		vm0 = [];
-		children0 = [null,];
+		children0 = [cudf.childRef,];
 	}
 
 	vm1 = vm1 != null ? vm1 : [];
@@ -315,13 +315,8 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 				children0[i0 + 1] = cud.childRef;
 			}
 
-		let prevSiblingMap = new Map();
-
-		domc = domc;
-
 		for (let i1 = 0; i1 < vm1.length; i1++) {
 			let i0 = map0.get(keyf(vm1[i1]));
-			let prev = domc.lastChild;
 
 			if (i0 != null)
 				rd_item(vm0[i0], vm1[i1], cud = r_cud(domc, children1[i1], children0[i0 + 1]));
@@ -331,9 +326,8 @@ let rd_for = (keyf, rd_item) => (vm0, vm1, cudf) => {
 			children1.push(cud.childRef);
 		}
 
-		domc = domc;
-
-		cm1.set(domc, children1);
+		cm1.delete(vm0);
+		cm1.set(vm1, children1);
 	}
 };
 
