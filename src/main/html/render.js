@@ -109,15 +109,15 @@ let rdt_for = (keyf, rd_item) => {
 		let cm = getOrAdd(getOrAdd(gwm, cudf.parentRef), key);
 		let domc0 = cudf.childRef;
 		let domc1;
-		let children0;
-		let children1 = [null,];
+		let list0;
+		let list1 = [null,];
 		let cud;
 
 		if (vm0 != null)
-			children0 = cm.get(vm0);
+			list0 = cm.get(vm0);
 		else {
 			vm0 = [];
-			children0 = [null,];
+			list0 = [null,];
 		}
 
 		vm1 = vm1 != null ? vm1 : [];
@@ -146,8 +146,8 @@ let rdt_for = (keyf, rd_item) => {
 
 			for (let i0 = 0; i0 < vm0.length; i0++)
 				if (!map1.has(keyf(vm0[i0]))) {
-					rd_item(vm0[i0], null, cud = r_cud(domc0, children0[i0], children0[i0 + 1]));
-					children0[i0 + 1] = cud.childRef;
+					rd_item(vm0[i0], null, cud = r_cud(domc0, list0[i0], list0[i0 + 1]));
+					list0[i0 + 1] = cud.childRef;
 				}
 
 			let prevSiblingMap = new Map();
@@ -168,10 +168,10 @@ let rdt_for = (keyf, rd_item) => {
 
 				if (i0 != null)
 					if (isSameOrder)
-						rd_item(vm0[i0], vm1[i1], cud = r_cud(domc1, children1[i1], children0[i0 + 1]));
+						rd_item(vm0[i0], vm1[i1], cud = r_cud(domc1, list1[i1], list0[i0 + 1]));
 					else { // transplant DOM children
-						let child0 = children0[i0];
-						let childx = children0[i0 + 1];
+						let child0 = list0[i0];
+						let childx = list0[i0 + 1];
 						let list = [];
 
 						while (child0 != childx) {
@@ -182,18 +182,18 @@ let rdt_for = (keyf, rd_item) => {
 						while (0 < list.length)
 							domc1.insertBefore(list.pop(), null);
 
-						rd_item(vm0[i0], vm1[i1], cud = r_cud(domc1, children1[i1], domc1.lastChild));
+						rd_item(vm0[i0], vm1[i1], cud = r_cud(domc1, list1[i1], domc1.lastChild));
 					}
 				else
-					rd_item(null, vm1[i1], cud = r_cud(domc1, children1[i1], children1[i1]));
+					rd_item(null, vm1[i1], cud = r_cud(domc1, list1[i1], list1[i1]));
 
-				children1.push(cud.childRef);
+				list1.push(cud.childRef);
 			}
 
 			domc0 = domc1;
 
 			cm.delete(vm0);
-			cm.set(vm1, verifyList(domc0, children1));
+			cm.set(vm1, verifyList(domc0, list1));
 		}
 	};
 };
@@ -286,15 +286,15 @@ let rd_for = (keyf, rd_item) => {
 	return (vm0, vm1, cudf) => {
 		let domc = cudf.parentRef;
 		let cm = getOrAdd(getOrAdd(gwm, domc), key);
-		let children0;
-		let children1 = [cudf.childRef0,];
+		let list0;
+		let list1 = [cudf.childRef0,];
 		let cud;
 
 		if (vm0 != null)
-			children0 = cm.get(vm0);
+			list0 = cm.get(vm0);
 		else {
 			vm0 = [];
-			children0 = [cudf.childRef0,];
+			list0 = [cudf.childRef0,];
 		}
 
 		vm1 = vm1 != null ? vm1 : [];
@@ -312,8 +312,8 @@ let rd_for = (keyf, rd_item) => {
 
 			for (let i0 = 0; i0 < vm0.length; i0++)
 				if (!map1.has(keyf(vm0[i0]))) {
-					rd_item(vm0[i0], null, cud = r_cud(domc, children0[i0], children0[i0 + 1]));
-					children0[i0 + 1] = cud.childRef;
+					rd_item(vm0[i0], null, cud = r_cud(domc, list0[i0], list0[i0 + 1]));
+					list0[i0 + 1] = cud.childRef;
 				}
 
 			let prevSiblingMap = new Map();
@@ -325,8 +325,8 @@ let rd_for = (keyf, rd_item) => {
 				let i0 = map0.get(keyf(vm1[i1]));
 
 				if (i0 != null) { // transplant DOM children
-					let child0 = children0[i0];
-					let childx = children0[i0 + 1];
+					let child0 = list0[i0];
+					let childx = list0[i0 + 1];
 					let list = [];
 
 					while (child0 != childx) {
@@ -334,23 +334,23 @@ let rd_for = (keyf, rd_item) => {
 						childx = prevSiblingMap.get(childx);
 					}
 
-					let childRef = children1[i1];
+					let childRef = list1[i1];
 					let before = childRef != null ? childRef.nextSibling : domc.firstChild;
 
 					while (0 < list.length)
 						domc.insertBefore(list.pop(), before);
 
-					rd_item(vm0[i0], vm1[i1], cud = r_cud(domc, children1[i1], children0[i0 + 1]));
+					rd_item(vm0[i0], vm1[i1], cud = r_cud(domc, list1[i1], list0[i0 + 1]));
 				} else
-					rd_item(null, vm1[i1], cud = r_cud(domc, children1[i1], children1[i1]));
+					rd_item(null, vm1[i1], cud = r_cud(domc, list1[i1], list1[i1]));
 
-				children1.push(cud.childRef);
+				list1.push(cud.childRef);
 			}
 
-			cudf.setTail(children1[vm1.length]);
+			cudf.setTail(list1[vm1.length]);
 			verifyCud(cudf);
 			cm.delete(vm0);
-			cm.set(vm1, verifyList(domc, children1));
+			cm.set(vm1, verifyList(domc, list1));
 		}
 	};
 };
