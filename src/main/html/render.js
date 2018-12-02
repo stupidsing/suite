@@ -373,7 +373,11 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf) => {
 let rd_list = childrenfs => {
 	let key = {};
 
-	return (vm0, vm1, cudf) => {
+	if (childrenfs.length == 0)
+		return (vm0, vm1, cudf) => {};
+	else if (childrenfs.length == 1)
+		return childrenfs[0];
+	else return (vm0, vm1, cudf) => {
 		if (vm0 == vm1)
 			;
 		else {
