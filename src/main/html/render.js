@@ -377,26 +377,27 @@ let rd_list = childrenfs => {
 		return (vm0, vm1, cudf) => {};
 	else if (childrenfs.length == 1)
 		return childrenfs[0];
-	else return (vm0, vm1, cudf) => {
-		if (vm0 == vm1)
-			;
-		else {
-			let domc = cudf.parent.childRef;
-			let cm = getOrAdd(getOrAdd(gwm, domc), key);
-			let list0 = cm.get(vm0);
-			let list1 = [cudf.childRef0,];
+	else
+		return (vm0, vm1, cudf) => {
+			if (vm0 == vm1)
+				;
+			else {
+				let domc = cudf.parent.childRef;
+				let cm = getOrAdd(getOrAdd(gwm, domc), key);
+				let list0 = cm.get(vm0);
+				let list1 = [cudf.childRef0,];
 
-			for (let i = 0; i < childrenfs.length; i++) {
-				let cud = r_cud(cudf.parent, list1[i], vm0 != null ? list0[i + 1] : list1[i]);
-				childrenfs[i](vm0, vm1, cud);
-				list1.push(cud.childRef);
+				for (let i = 0; i < childrenfs.length; i++) {
+					let cud = r_cud(cudf.parent, list1[i], vm0 != null ? list0[i + 1] : list1[i]);
+					childrenfs[i](vm0, vm1, cud);
+					list1.push(cud.childRef);
+				}
+
+				cudf.setTail(list1[childrenfs.length]);
+				cm.delete(vm0);
+				cm.set(vm1, verifyList(domc, list1));
 			}
-
-			cudf.setTail(list1[childrenfs.length]);
-			cm.delete(vm0);
-			cm.set(vm1, verifyList(domc, list1));
-		}
-	};
+		};
 };
 
 let rd_scope = (key, rdf) => (vm0, vm1, cudf) => rdf(
