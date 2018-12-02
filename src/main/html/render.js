@@ -26,14 +26,14 @@ let r_cud = (parent, domc0, domcx) => {
 			while (cud.childRef0 != cud.childRef) {
 				let prev = cud.childRef.previousSibling;
 				parent.childRef.removeChild(cud.childRef);
-				cud.childRef = prev;
+				cud.setTail(prev);
 			}
 	};
 
 	let insert_ = (cud, c) => {
 		let parentRef = parent.childRef;
 		let childRef_ = cud.childRef;
-		cud.childRef = parentRef.insertBefore(c, childRef_ != null ? childRef_.nextSibling : parentRef.firstChild);
+		cud.setTail(parentRef.insertBefore(c, childRef_ != null ? childRef_.nextSibling : parentRef.firstChild));
 	};
 
 	let cud = verifyCud({
