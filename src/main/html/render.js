@@ -39,7 +39,7 @@ let r_cud = (dom, domc0, domcx) => {
 		create: c => insert_(cud, c),
 		delete: () => delete_(cud),
 		parentRef: dom,
-		setTail: c => cud.childRef = c,
+		setTail: c => { cud.childRef = c; verifyCud(cud); },
 		update: c => { delete_(cud); insert_(cud, c); },
 	});
 
@@ -348,7 +348,6 @@ let rd_for = (keyf, rd_item) => {
 			}
 
 			cudf.setTail(list1[vm1.length]);
-			verifyCud(cudf);
 			cm.delete(vm0);
 			cm.set(vm1, verifyList(domc, list1));
 		}
@@ -390,7 +389,6 @@ let rd_list = childrenfs => {
 			}
 
 			cudf.setTail(list1[childrenfs.length]);
-			verifyCud(cudf);
 			cm.delete(vm0);
 			cm.set(vm1, verifyList(domc, list1));
 		}
