@@ -187,7 +187,7 @@ let rdt_for = (keyf, rd_item) => {
 				else
 					rd_item(null, vm1[i1], cud = r_cud(cudf, list1[i1], list1[i1]));
 
-				list1.push(cud.childRef);
+				list1[i1 + 1] = cud.childRef;
 			}
 
 			domc0 = domc1;
@@ -344,7 +344,7 @@ let rd_for = (keyf, rd_item) => {
 				} else
 					rd_item(null, vm1[i1], cud = r_cud(cudf.parent, list1[i1], list1[i1]));
 
-				list1.push(cud.childRef);
+				list1[i1 + 1] = cud.childRef;
 			}
 
 			cudf.setTail(list1[vm1.length]);
@@ -390,7 +390,7 @@ let rd_list = childrenfs => {
 				for (let i = 0; i < childrenfs.length; i++) {
 					let cud = r_cud(cudf.parent, list1[i], vm0 != null ? list0[i + 1] : list1[i]);
 					childrenfs[i](vm0, vm1, cud);
-					list1.push(cud.childRef);
+					list1[i + 1] = cud.childRef;
 				}
 
 				cudf.setTail(list1[childrenfs.length]);
