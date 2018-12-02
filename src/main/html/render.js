@@ -106,11 +106,11 @@ let rdt_for = (keyf, rd_item) => {
 	let key = {};
 
 	return (vm0, vm1, cudf) => {
-		let cm = getOrAdd(getOrAdd(gwm, cudf.parentRef), key);
 		let domc0 = cudf.childRef;
 		let domc1;
 		let list0;
 		let list1 = [null,];
+		let cm = getOrAdd(getOrAdd(gwm, domc0), key);
 		let cud;
 
 		if (vm0 != null)
