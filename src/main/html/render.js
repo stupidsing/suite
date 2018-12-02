@@ -39,12 +39,12 @@ let r_cud = (parent, domc0, domcx) => {
 	let cud = verifyCud({
 		childRef0: domc0, // exclusive
 		childRef: domcx, // inclusive
-		create: c => insert_(cud, c),
-		delete: () => delete_(cud),
+		create: c => { insert_(cud, c); verifyCud(cud); },
+		delete: () => { delete_(cud); verifyCud(cud); },
 		get: domc => r_cud(cud, domc.previousSibling, domc),
 		parent,
 		setTail: c => { cud.childRef = c; verifyCud(cud); },
-		update: c => { delete_(cud); insert_(cud, c); },
+		update: c => { delete_(cud); insert_(cud, c); verifyCud(cud); },
 	});
 
 	return cud;
