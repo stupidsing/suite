@@ -19,7 +19,9 @@ let verifyCud = cud => {
 	return cud;
 };
 
-let r_cud = (dom, domc0, domcx) => {
+let r_cud = (parent, domc0, domcx) => {
+	let dom = parent.childRef;
+
 	let delete_ = cud => {
 			while (cud.childRef0 != cud.childRef) {
 				let prev = cud.childRef.previousSibling;
@@ -38,6 +40,8 @@ let r_cud = (dom, domc0, domcx) => {
 		childRef: domcx, // inclusive
 		create: c => insert_(cud, c),
 		delete: () => delete_(cud),
+		get: domc => r_cud(cud, domc.previousSibling, domc),
+		parent,
 		parentRef: dom,
 		setTail: c => { cud.childRef = c; verifyCud(cud); },
 		update: c => { delete_(cud); insert_(cud, c); },
@@ -45,8 +49,6 @@ let r_cud = (dom, domc0, domcx) => {
 
 	return cud;
 };
-
-let r_cudChild = (dom, domc) => r_cud(dom, domc.previousSibling, domc);
 
 let gwm = new WeakMap(); // global weak map
 
@@ -87,10 +89,8 @@ let rdt_attrsf = attrsf => (vm0, vm1, cudf) => {
 let rdt_child = childf => (vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
-	else {
-		let domc = cudf.childRef;
-		childf(vm0, vm1, r_cud(domc, null, domc.lastChild));
-	}
+	else
+		childf(vm0, vm1, r_cud(cudf, null, cudf.childRef.lastChild));
 };
 
 let rdt_eventListener = (event, cb) => (vm0, vm1, cudf) => {
@@ -146,7 +146,7 @@ let rdt_for = (keyf, rd_item) => {
 
 			for (let i0 = 0; i0 < vm0.length; i0++)
 				if (!map1.has(keyf(vm0[i0]))) {
-					rd_item(vm0[i0], null, cud = r_cud(domc0, list0[i0], list0[i0 + 1]));
+					rd_item(vm0[i0], null, cud = r_cud(cudf, list0[i0], list0[i0 + 1]));
 					list0[i0 + 1] = cud.childRef;
 				}
 
@@ -168,7 +168,7 @@ let rdt_for = (keyf, rd_item) => {
 
 				if (i0 != null)
 					if (isSameOrder)
-						rd_item(vm0[i0], vm1[i1], cud = r_cud(domc1, list1[i1], list0[i0 + 1]));
+						rd_item(vm0[i0], vm1[i1], cud = r_cud(cudf, list1[i1], list0[i0 + 1]));
 					else { // transplant DOM children
 						let child0 = list0[i0];
 						let childx = list0[i0 + 1];
@@ -182,10 +182,10 @@ let rdt_for = (keyf, rd_item) => {
 						while (0 < list.length)
 							domc1.insertBefore(list.pop(), null);
 
-						rd_item(vm0[i0], vm1[i1], cud = r_cud(domc1, list1[i1], domc1.lastChild));
+						rd_item(vm0[i0], vm1[i1], cud = r_cud(cudf, list1[i1], domc1.lastChild));
 					}
 				else
-					rd_item(null, vm1[i1], cud = r_cud(domc1, list1[i1], list1[i1]));
+					rd_item(null, vm1[i1], cud = r_cud(cudf, list1[i1], list1[i1]));
 
 				list1.push(cud.childRef);
 			}
@@ -207,11 +207,11 @@ let rdt_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 	else if (vm0 == null) {
 		let [s, e] = rangef(vm1), vms1 = vmsf(vm1);
 		for (let i1 = s; i1 < e; i1++)
-			rd_item(null, vms1[i1], r_cud(domc, domc.lastChild, domc.lastChild));
+			rd_item(null, vms1[i1], r_cud(cudf, domc.lastChild, domc.lastChild));
 	} else if (vm1 == null) {
 		let [s, e] = rangef(vm0), vms0 = vmsf(vm0);
 		for (let i0 = s; i0 < e; i0++)
-			rd_item(vms0[i0], null, r_cudChild(domc, children0[i0 - s]));
+			rd_item(vms0[i0], null, cudf.get(children0[i0 - s]));
 	} else {
 		let [si, ei] = rangef(vm0), vms0 = vmsf(vm0);
 		let [sx, ex] = rangef(vm1), vms1 = vmsf(vm1);
@@ -220,22 +220,22 @@ let rdt_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 
 		// remove elements at start and end of range
 		while (s_ < e_ && s_ < sx)
-			rd_item(vms0[s_++], null, r_cud(domc, null, domc.firstChild));
+			rd_item(vms0[s_++], null, r_cud(cudf, null, domc.firstChild));
 		while (s_ < e_ && ex < e_)
-			rd_item(vms0[--e_], null, r_cud(domc, domc.lastChild.previousSibling, domc.lastChild));
+			rd_item(vms0[--e_], null, r_cud(cudf, domc.lastChild.previousSibling, domc.lastChild));
 
 		// relocate range if empty
 		if (s_ == e_) s_ = e_ = sx;
 
 		// insert elements at start and end of range
 		while (sx < s_)
-			rd_item(null, vms1[--s_], r_cud(domc, null, null));
+			rd_item(null, vms1[--s_], r_cud(cudf, null, null));
 		while (e_ < ex)
-			rd_item(null, vms1[e_++], r_cud(domc, domc.lastChild, domc.lastChild));
+			rd_item(null, vms1[e_++], r_cud(cudf, domc.lastChild, domc.lastChild));
 
 		// update elements at common range
 		for (let i = Math.max(si, sx); i < Math.min(ei, ex); i++)
-			rd_item(vms0[i], vms1[i], r_cudChild(domc, domc.childNodes[i - s_]));
+			rd_item(vms0[i], vms1[i], cudf.get(domc.childNodes[i - s_]));
 	}
 };
 
@@ -312,7 +312,7 @@ let rd_for = (keyf, rd_item) => {
 
 			for (let i0 = 0; i0 < vm0.length; i0++)
 				if (!map1.has(keyf(vm0[i0]))) {
-					rd_item(vm0[i0], null, cud = r_cud(domc, list0[i0], list0[i0 + 1]));
+					rd_item(vm0[i0], null, cud = r_cud(cudf.parent, list0[i0], list0[i0 + 1]));
 					list0[i0 + 1] = cud.childRef;
 				}
 
@@ -340,9 +340,9 @@ let rd_for = (keyf, rd_item) => {
 					while (0 < list.length)
 						domc.insertBefore(list.pop(), before);
 
-					rd_item(vm0[i0], vm1[i1], cud = r_cud(domc, list1[i1], list0[i0 + 1]));
+					rd_item(vm0[i0], vm1[i1], cud = r_cud(cudf.parent, list1[i1], list0[i0 + 1]));
 				} else
-					rd_item(null, vm1[i1], cud = r_cud(domc, list1[i1], list1[i1]));
+					rd_item(null, vm1[i1], cud = r_cud(cudf.parent, list1[i1], list1[i1]));
 
 				list1.push(cud.childRef);
 			}
@@ -383,7 +383,7 @@ let rd_list = childrenfs => {
 			let list1 = [cudf.childRef0,];
 
 			for (let i = 0; i < childrenfs.length; i++) {
-				let cud = r_cud(domc, list1[i], vm0 != null ? list0[i + 1] : list1[i]);
+				let cud = r_cud(cudf.parent, list1[i], vm0 != null ? list0[i + 1] : list1[i]);
 				childrenfs[i](vm0, vm1, cud);
 				list1.push(cud.childRef);
 			}
@@ -526,5 +526,5 @@ let pvm = null;
 let renderAgain = (renderer, f) => {
 	let target = document.getElementById('target');
 	let ppvm = pvm;
-	renderer(ppvm, pvm = f(pvm), r_cud(target, null, target.lastChild));
+	renderer(ppvm, pvm = f(pvm), r_cud({ childRef: target, }, null, target.lastChild));
 };
