@@ -15,7 +15,7 @@ let verifyList = (parent, nodes) => {
 }
 
 let verifyCud = cud => {
-	verifyList(cud.parentRef, [cud.childRef0, cud.childRef,]);
+	verifyList(cud.parent.childRef, [cud.childRef0, cud.childRef,]);
 	return cud;
 };
 
@@ -25,14 +25,15 @@ let r_cud = (parent, domc0, domcx) => {
 	let delete_ = cud => {
 			while (cud.childRef0 != cud.childRef) {
 				let prev = cud.childRef.previousSibling;
-				dom.removeChild(cud.childRef);
+				parent.childRef.removeChild(cud.childRef);
 				cud.childRef = prev;
 			}
 	};
 
 	let insert_ = (cud, c) => {
+		let parentRef = parent.childRef;
 		let childRef_ = cud.childRef;
-		cud.childRef = dom.insertBefore(c, childRef_ != null ? childRef_.nextSibling : dom.firstChild);
+		cud.childRef = parentRef.insertBefore(c, childRef_ != null ? childRef_.nextSibling : parentRef.firstChild);
 	};
 
 	let cud = verifyCud({
@@ -42,7 +43,6 @@ let r_cud = (parent, domc0, domcx) => {
 		delete: () => delete_(cud),
 		get: domc => r_cud(cud, domc.previousSibling, domc),
 		parent,
-		parentRef: dom,
 		setTail: c => { cud.childRef = c; verifyCud(cud); },
 		update: c => { delete_(cud); insert_(cud, c); },
 	});
@@ -284,7 +284,7 @@ let rd_for = (keyf, rd_item) => {
 	let key = {};
 
 	return (vm0, vm1, cudf) => {
-		let domc = cudf.parentRef;
+		let domc = cudf.parent.childRef;
 		let cm = getOrAdd(getOrAdd(gwm, domc), key);
 		let list0;
 		let list1 = [cudf.childRef0,];
@@ -381,7 +381,7 @@ let rd_list = childrenfs => {
 		if (vm0 == vm1)
 			;
 		else {
-			let domc = cudf.parentRef;
+			let domc = cudf.parent.childRef;
 			let cm = getOrAdd(getOrAdd(gwm, domc), key);
 			let list0 = cm.get(vm0);
 			let list1 = [cudf.childRef0,];
