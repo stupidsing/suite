@@ -117,7 +117,7 @@ let rdt_for = (keyf, rd_item) => {
 			list0 = cm.get(vm0);
 		else {
 			vm0 = [];
-			list0 = [null,];
+			list0 = [...list1];
 		}
 
 		vm1 = vm1 != null ? vm1 : [];
@@ -294,7 +294,7 @@ let rd_for = (keyf, rd_item) => {
 			list0 = cm.get(vm0);
 		else {
 			vm0 = [];
-			list0 = [cudf.childRef0,];
+			list0 = [...list1];
 		}
 
 		vm1 = vm1 != null ? vm1 : [];
