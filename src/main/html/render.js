@@ -284,7 +284,8 @@ let rd_for = (keyf, rd_item) => {
 	let key = {};
 
 	return (vm0, vm1, cudf) => {
-		let domc = cudf.parent.childRef;
+		let parent = cudf.parent;
+		let domc = parent.childRef;
 		let cm = getOrAdd(getOrAdd(gwm, domc), key);
 		let list0;
 		let list1 = [cudf.childRef0,];
@@ -312,7 +313,7 @@ let rd_for = (keyf, rd_item) => {
 
 			for (let i0 = 0; i0 < vm0.length; i0++)
 				if (!map1.has(keyf(vm0[i0]))) {
-					rd_item(vm0[i0], null, cud = r_cud(cudf.parent, list0[i0], list0[i0 + 1]));
+					rd_item(vm0[i0], null, cud = r_cud(parent, list0[i0], list0[i0 + 1]));
 					list0[i0 + 1] = cud.childRef;
 				}
 
@@ -340,9 +341,9 @@ let rd_for = (keyf, rd_item) => {
 					while (0 < list.length)
 						domc.insertBefore(list.pop(), before);
 
-					rd_item(vm0[i0], vm1[i1], cud = r_cud(cudf.parent, list1[i1], list0[i0 + 1]));
+					rd_item(vm0[i0], vm1[i1], cud = r_cud(parent, list1[i1], list0[i0 + 1]));
 				} else
-					rd_item(null, vm1[i1], cud = r_cud(cudf.parent, list1[i1], list1[i1]));
+					rd_item(null, vm1[i1], cud = r_cud(parent, list1[i1], list1[i1]));
 
 				list1[i1 + 1] = cud.childRef;
 			}
@@ -382,13 +383,14 @@ let rd_list = childrenfs => {
 			if (vm0 == vm1)
 				;
 			else {
-				let domc = cudf.parent.childRef;
+				let parent = cudf.parent;
+				let domc = parent.childRef;
 				let cm = getOrAdd(getOrAdd(gwm, domc), key);
 				let list0 = cm.get(vm0);
 				let list1 = [cudf.childRef0,];
 
 				for (let i = 0; i < childrenfs.length; i++) {
-					let cud = r_cud(cudf.parent, list1[i], vm0 != null ? list0[i + 1] : list1[i]);
+					let cud = r_cud(parent, list1[i], vm0 != null ? list0[i + 1] : list1[i]);
 					childrenfs[i](vm0, vm1, cud);
 					list1[i + 1] = cud.childRef;
 				}
