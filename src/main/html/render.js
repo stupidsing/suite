@@ -20,8 +20,6 @@ let verifyCud = cud => {
 };
 
 let r_cud = (parent, domc0, domcx) => {
-	let dom = parent.childRef;
-
 	let delete_ = cud => {
 			while (cud.childRef0 != cud.childRef) {
 				let prev = cud.childRef.previousSibling;
