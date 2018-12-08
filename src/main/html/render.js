@@ -104,25 +104,25 @@ let rdt_for = (keyf, rd_item) => {
 	let key = {};
 
 	return (vm0, vm1, cudf) => {
-		let domc0 = cudf.childRef;
-		let domc1;
-		let list0;
-		let list1 = [null,];
-		let cm = getOrAdd(getOrAdd(gwm, domc0), key);
-		let cud;
-
-		if (vm0 != null)
-			list0 = cm.get(vm0);
-		else {
-			vm0 = [];
-			list0 = [...list1];
-		}
-
-		vm1 = vm1 != null ? vm1 : [];
-
 		if (vm0 == vm1)
 			;
 		else {
+			let domc0 = cudf.childRef;
+			let domc1;
+			let list0;
+			let list1 = [null,];
+			let cm = getOrAdd(getOrAdd(gwm, domc0), key);
+			let cud;
+
+			if (vm0 != null)
+				list0 = cm.get(vm0);
+			else {
+				vm0 = [];
+				list0 = [...list1];
+			}
+
+			vm1 = vm1 != null ? vm1 : [];
+
 			let map0 = new Map();
 			let map1 = new Map();
 			let isSameOrder;
@@ -282,25 +282,25 @@ let rd_for = (keyf, rd_item) => {
 	let key = {};
 
 	return (vm0, vm1, cudf) => {
-		let parent = cudf.parent;
-		let domc = parent.childRef;
-		let cm = getOrAdd(getOrAdd(gwm, domc), key);
-		let list0;
-		let list1 = [cudf.childRef0,];
-		let cud;
-
-		if (vm0 != null)
-			list0 = cm.get(vm0);
-		else {
-			vm0 = [];
-			list0 = [...list1];
-		}
-
-		vm1 = vm1 != null ? vm1 : [];
-
 		if (vm0 == vm1)
 			;
 		else {
+			let parent = cudf.parent;
+			let domc = parent.childRef;
+			let cm = getOrAdd(getOrAdd(gwm, domc), key);
+			let list0;
+			let list1 = [cudf.childRef0,];
+			let cud;
+
+			if (vm0 != null)
+				list0 = cm.get(vm0);
+			else {
+				vm0 = [];
+				list0 = [...list1];
+			}
+
+			vm1 = vm1 != null ? vm1 : [];
+
 			let map0 = new Map();
 			let map1 = new Map();
 
