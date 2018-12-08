@@ -331,7 +331,7 @@ let rd_for = (keyf, rd_item) => {
 
 					while (child0 != c) {
 						list.push(c);
-						c = prevSiblingMap.get(cildx);
+						c = prevSiblingMap.get(c);
 					}
 
 					let childRef = list1[i1];
@@ -340,7 +340,7 @@ let rd_for = (keyf, rd_item) => {
 					while (0 < list.length)
 						domc.insertBefore(list.pop(), before);
 
-					rd_item(vm0[i0], vm1[i1], cud = r_cud(parent, list1[i1], list0[i0 + 1]));
+					rd_item(vm0[i0], vm1[i1], cud = r_cud(parent, list1[i1], childx));
 				} else
 					rd_item(null, vm1[i1], cud = r_cud(parent, list1[i1], list1[i1]));
 
