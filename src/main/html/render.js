@@ -388,16 +388,13 @@ let rd_list = childrenfs => {
 				let list1 = [cudf.childRef0,];
 				let cud;
 
-				if (vm0 == null)
-					for (let i = 0; i < childrenfs.length; i++) {
+				for (let i = 0; i < childrenfs.length; i++) {
+					if (vm0 == null || list0[i] == list0[i + 1])
 						childrenfs[i](vm0, vm1, cud = r_cud(parent, list1[i], list1[i]));
-						list1[i + 1] = cud.childRef;
-					}
-				else
-					for (let i = childrenfs.length - 1; 0 <= i; i--) {
-						childrenfs[i](vm0, vm1, cud = r_cud(parent, list0[i], list0[i + 1]));
-						list1[i + 1] = cud.childRef;
-					}
+					else
+						childrenfs[i](vm0, vm1, cud = r_cud(parent, list1[i], list0[i + 1]));
+					list1[i + 1] = cud.childRef;
+				}
 
 				cudf.setTail(list1[childrenfs.length]);
 				cm.delete(vm0);
