@@ -391,6 +391,8 @@ let rd_list = childrenfs => {
 				for (let i = 0; i < childrenfs.length; i++) {
 					if (vm0 == null || list0[i] == list0[i + 1])
 						childrenfs[i](vm0, vm1, cud = r_cud(parent, list1[i], list1[i]));
+					else if (list0[i] == list0[i + 1])
+						childrenfs[i](vm0, vm1, cud = r_cud(parent, list0[i], list0[i + 1]));
 					else
 						childrenfs[i](vm0, vm1, cud = r_cud(parent, list1[i], list0[i + 1]));
 					list1[i + 1] = cud.childRef;
