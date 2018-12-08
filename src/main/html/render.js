@@ -390,14 +390,12 @@ let rd_list = childrenfs => {
 
 				if (vm0 == null)
 					for (let i = 0; i < childrenfs.length; i++) {
-						let cud = r_cud(parent, list1[i], list1[i]);
-						childrenfs[i](vm0, vm1, cud);
+						childrenfs[i](vm0, vm1, cud = r_cud(parent, list1[i], list1[i]));
 						list1[i + 1] = cud.childRef;
 					}
 				else
 					for (let i = childrenfs.length - 1; 0 <= i; i--) {
-						let cud = r_cud(parent, list0[i], list0[i + 1]);
-						childrenfs[i](vm0, vm1, cud);
+						childrenfs[i](vm0, vm1, cud = r_cud(parent, list0[i], list0[i + 1]));
 						list1[i + 1] = cud.childRef;
 					}
 
