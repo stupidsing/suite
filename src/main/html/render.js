@@ -327,10 +327,11 @@ let rd_for = (keyf, rd_item) => {
 					let child0 = list0[i0];
 					let childx = list0[i0 + 1];
 					let list = [];
+					let c = childx;
 
-					while (child0 != childx) {
-						list.push(childx);
-						childx = prevSiblingMap.get(childx);
+					while (child0 != c) {
+						list.push(c);
+						c = prevSiblingMap.get(cildx);
 					}
 
 					let childRef = list1[i1];
