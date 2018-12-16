@@ -120,8 +120,7 @@ public class Dump {
 	}
 
 	/**
-	 * Dumps object content (public data and getters) through Reflection to a
-	 * log4j.
+	 * Dumps object content (public data and getters) through Reflection to a log4j.
 	 */
 	public static void details(Object object) {
 		var trace = Thread_.getStackTrace(3);
@@ -129,8 +128,8 @@ public class Dump {
 	}
 
 	/**
-	 * Dumps object content (public data and getters) through Reflection to a
-	 * log4j, with a descriptive name which you gave.
+	 * Dumps object content (public data and getters) through Reflection to a log4j,
+	 * with a descriptive name which you gave.
 	 */
 	public static void details(String name, Object object) {
 		var sb = new StringBuilder();
@@ -151,9 +150,9 @@ public class Dump {
 	 * Private fields are not dumped.
 	 *
 	 * @param prefix
-	 *            To be appended before each line.
+	 *                   To be appended before each line.
 	 * @param object
-	 *            The monster.
+	 *                   The monster.
 	 */
 	public static String toDetails(String prefix, Object object) {
 		var sb = new StringBuilder();
@@ -190,9 +189,20 @@ public class Dump {
 			}
 
 			private void d_(String prefix, Object object, Class<?> clazz) {
-				if (clazz == String.class)
+				if (clazz.isArray() && Util.isSimple(clazz.getComponentType())) {
+					sink.f(" [ ");
+					for (var i = 0; i < Array.getLength(object); i++)
+						sink.f(Array.get(object, i) + ", ");
+					sink.f("]\n");
+				} else if (clazz == String.class)
 					sink.f(" \"" + object + "\"");
+				else if (Util.isSimple(clazz))
+					sink.f(" " + object + " [" + clazz.getSimpleName() + "]\n");
+				else
+					d_c(prefix, object, clazz);
+			}
 
+			private void d_c(String prefix, Object object, Class<?> clazz) {
 				if (!Collection.class.isAssignableFrom(clazz))
 					sink.f(" " + object);
 
@@ -201,11 +211,17 @@ public class Dump {
 				var count = 0;
 
 				// simple listings for simple classes
-				if (Util.isSimple(clazz))
-					;
-				else if (clazz.isArray())
-					for (var i = 0; i < Array.getLength(object); i++)
-						d(prefix + "[" + count++ + "]", Array.get(object, i));
+				if (clazz.isArray())
+					if (Util.isSimple(clazz.getComponentType())) {
+						var sb = new StringBuilder();
+						sb.append("[");
+						for (var i = 0; i < Array.getLength(object); i++)
+							sb.append(Array.get(object, i) + ", ");
+						sb.append("]");
+						d(prefix, sb.toString());
+					} else
+						for (var i = 0; i < Array.getLength(object); i++)
+							d(prefix + "[" + count++ + "]", Array.get(object, i));
 				else if (Collection.class.isAssignableFrom(clazz))
 					for (var o1 : (Collection<?>) object)
 						d(prefix + "[" + count++ + "]", o1);
