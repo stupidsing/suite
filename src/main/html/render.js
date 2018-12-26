@@ -7,8 +7,10 @@ let verifyList = (parent, nodes) => {
 		if (node == null || node.parentNode == parent)
 			while (e != node)
 				e = e.previousSibling;
-		else
+		else {
+			console.trace();
 			throw 'fail';
+		}
 	}
 	while (e != null) e = e.previousSibling;
 	return nodes;
