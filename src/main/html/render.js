@@ -499,8 +499,6 @@ let rd_parseDom = node0 => {
 
 		if (node0.getAttribute('rd_for') != null)
 			return tag.for_(vm => vm, cs).rd();
-		else if ((scope = node0.getAttribute('rd_scope')) != null)
-			return rd_scope(scope, bf());
 		else
 			return bf();
 	} else if (node0.nodeType == Node.TEXT_NODE) {
