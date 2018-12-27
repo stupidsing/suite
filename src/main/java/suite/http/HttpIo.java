@@ -27,15 +27,16 @@ public class HttpIo {
 		var headers = readHeaders(is0);
 
 		return FixieArray.of(ls).map((method, url, protocol) -> {
-			Fun2<String, String, HttpRequest> requestFun = (host, pqs) -> String_.split2l(pqs, "?").map((path0, query) -> {
-				var is1 = getContentStream(is0, headers);
-				var path1 = path0.startsWith("/") ? path0 : "/" + path0;
-				var path2 = rethrow(() -> URLDecoder.decode(path1, Defaults.charset));
+			Fun2<String, String, HttpRequest> requestFun = (host, pqs) -> String_.split2l(pqs, "?")
+					.map((path0, query) -> {
+						var is1 = getContentStream(is0, headers);
+						var path1 = path0.startsWith("/") ? path0 : "/" + path0;
+						var path2 = rethrow(() -> URLDecoder.decode(path1, Defaults.charset));
 
-				return String_.equals(protocol, "HTTP/1.1") //
-						? new HttpRequest(method, host, path2, query, headers, is1) //
-						: fail("only HTTP/1.1 is supported");
-			});
+						return String_.equals(protocol, "HTTP/1.1") //
+								? new HttpRequest(method, host, path2, query, headers, is1) //
+								: fail("only HTTP/1.1 is supported");
+					});
 
 			var pp = String_.split2(url, "://");
 			return pp != null ? String_.split2l(pp.t1, "/").map(requestFun) : requestFun.apply("", url);
@@ -59,7 +60,8 @@ public class HttpIo {
 	public void writeRequest(OutputStream os, HttpRequest request) throws IOException {
 		var server = request.server;
 		var path = request.path();
-		var url = !server.isEmpty() ? "http://" + server + "/" + path : path;
+		var query = request.query;
+		var url = (!server.isEmpty() ? "http://" + server + "/" : "") + path + (!query.isEmpty() ? "?" + query : "");
 
 		var s = request.method + " " + url + " HTTP/1.1\r\n" //
 				+ request.headers.streamlet().map((k, v) -> k + ": " + v + "\r\n").collect(As::joined) //
