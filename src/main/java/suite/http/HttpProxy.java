@@ -55,8 +55,8 @@ public class HttpProxy {
 
 		new SocketUtil().listenIo(port, (is, os) -> {
 			var request0 = httpIo.readRequest(is);
-			var path = request0.path();
-			Log_.info("PROXY " + path);
+			var pq = request0.path() + "?" + request0.query;
+			Log_.info("PROXY " + pq);
 
 			var headers1 = request0.headers.remove("Connection").put("Connection", "close");
 
@@ -68,7 +68,7 @@ public class HttpProxy {
 					headers1, //
 					request0.inputStream);
 
-			try (var socket1 = connect(path); //
+			try (var socket1 = connect(pq); //
 					var is0 = is; //
 					var os0 = os; //
 					var is1 = socket1.getInputStream(); //
