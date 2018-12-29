@@ -19,17 +19,17 @@ public class Keeper {
 
 	private Path keeperDir = Defaults.tmp("keeper");
 
-	private ObjectMapper objectMapper;
+	private ObjectMapper om;
 	private Mapify mapify = Singleton.me.mapify;
 
-	public Keeper(ObjectMapper objectMapper) {
-		this.objectMapper = objectMapper;
+	public Keeper(ObjectMapper om) {
+		this.om = om;
 	}
 
 	public PackageMemento loadPackageMemento(String packageName) {
 		return FileUtil //
 				.in(keeperDir.resolve(packageName)) //
-				.doRead(is -> mapify.unmapify(PackageMemento.class, objectMapper.readValue(is, Map.class)));
+				.doRead(is -> mapify.unmapify(PackageMemento.class, om.readValue(is, Map.class)));
 	}
 
 	public void savePackageMemento(PackageMemento packageMemento) {
@@ -37,7 +37,7 @@ public class Keeper {
 
 		FileUtil //
 				.out(keeperDir.resolve(packageName)) //
-				.doWrite(os -> objectMapper.writeValue(os, mapify.mapify(PackageMemento.class, packageMemento)));
+				.doWrite(os -> om.writeValue(os, mapify.mapify(PackageMemento.class, packageMemento)));
 	}
 
 	public void removePackageMemento(String packageName) {

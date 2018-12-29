@@ -24,7 +24,7 @@ import suite.trade.Trade_;
 
 public class Google {
 
-	private static ObjectMapper mapper = new ObjectMapper();
+	private static ObjectMapper om = new ObjectMapper();
 
 	public Fixie3<Map<String, String>, String, List<String[]>> historical(String symbol) {
 		var url = "" //
@@ -95,7 +95,7 @@ public class Google {
 			var json = HttpUtil.get(url).inputStream().doRead(is -> {
 				for (var i = 0; i < 4; i++)
 					is.read();
-				return mapper.readTree(is);
+				return om.readTree(is);
 			});
 
 			return Read //
