@@ -21,8 +21,8 @@ import suite.streamlet.Read;
 
 public class PackageManager {
 
-	private ObjectMapper objectMapper = new ObjectMapper();
-	private Keeper keeper = new Keeper(objectMapper);
+	private ObjectMapper om = new ObjectMapper();
+	private Keeper keeper = new Keeper(om);
 	private Log log = LogFactory.getLog(getClass());
 
 	public boolean install(String packageFilename) {
@@ -99,7 +99,7 @@ public class PackageManager {
 
 	private PackageManifest getPackageManifest(String packageFilename) {
 		try (var zipFile = new ZipFile(packageFilename); var fis = zipFile.getInputStream(zipFile.getEntry("pm.json"))) {
-			return objectMapper.readValue(fis, PackageManifest.class);
+			return om.readValue(fis, PackageManifest.class);
 		} catch (IOException ex) {
 			return fail(ex);
 		}
