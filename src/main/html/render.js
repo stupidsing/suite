@@ -480,7 +480,7 @@ let rd_parseDom = node0 => {
 			for (let attr of node0.attributes)
 				as[attr.name] = attr.value;
 
-			let tag = rdb_tag(node0.localName);
+			let tag = rdb_tag(name);
 			let bf = () => tag.attrsf(vm => as).child(cs).rd();
 
 			if (node0.getAttribute('rd_for') != null)
