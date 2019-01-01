@@ -15,11 +15,11 @@ let verifyCud = cud => {
 
 let r_cud = (parent, domc0, domcx) => {
 	let delete_ = cud => {
-			while (cud.childRef0 != cud.childRef) {
-				let prev = cud.childRef.previousSibling;
-				parent.childRef.removeChild(cud.childRef);
-				cud.setTail(prev);
-			}
+		while (cud.childRef0 != cud.childRef) {
+			let prev = cud.childRef.previousSibling;
+			parent.childRef.removeChild(cud.childRef);
+			cud.setTail(prev);
+		}
 	};
 
 	let insert_ = (cud, c) => {
