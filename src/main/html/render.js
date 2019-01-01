@@ -498,10 +498,8 @@ let rd_parseDom = node0 => {
 	} else if (node0.nodeType == Node.TEXT_NODE) {
 		let sf = rd_parseTemplate(node0.nodeValue);
 		return rd_dom(vm => document.createTextNode(sf(vm)));
-	} else {
-		console.error('unknown node type', node0);
-		return rd_dom(vm => document.createComment('unknown node type' + node0));
-	}
+	} else
+		throw 'unknown node type';
 };
 
 let rd_parse = s => rd_parseDom(new DOMParser().parseFromString(s, 'text/xml').childNodes[0]);
