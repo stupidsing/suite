@@ -491,7 +491,7 @@ let rd_parseDom = node0 => {
 			return rd_list(cs);
 		};
 
-		let as = {}, cs = cf(node0.childNodes), scope;
+		let as = {}, cs = cf(node0.childNodes);
 
 		for (let attr of node0.attributes)
 			as[attr.name] = attr.value;
