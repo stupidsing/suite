@@ -468,39 +468,34 @@ let rd_parseDom = node0 => {
 	if (node0.nodeType == Node.COMMENT_NODE) {
 		let sf = rd_parseTemplate(node0.nodeValue);
 		return rd_dom(vm => document.createComment(sf(vm)));
-	} else if (node0.nodeType == Node.ELEMENT_NODE) {
-		let name = node0.localName;
+	} else if (node0.nodeType == Node.ELEMENT_NODE)
+		if (node0.localName == 'rd_for')
+			return rd_for(vm => vm, rd_parseDomNodes(node0.childNodes));
+		else if (node0.localName == 'rd_scope')
+			return rd_scope(node0.getAttribute('scope'), rd_parseDomNodes(node0.childNodes));
+		else {
+			let name = node0.localName;
+			let as = {}, cs = rd_parseDomNodes(node0.childNodes);
 
-		let cf = nodes => {
-			let cs = [];
-			for (let child of nodes)
-				if (child.nodeType == Node.ELEMENT_NODE && child.localName == 'rd_for')
-					cs.push(rd_for(vm => vm, cf(child.childNodes)));
-				else if (child.nodeType == Node.ELEMENT_NODE && child.localName == 'rd_scope')
-					cs.push(rd_scope(child.getAttribute('scope'), cf(child.childNodes)));
-				else
-					cs.push(rd_parseDom(child));
-			return rd_list(cs);
-		};
+			for (let attr of node0.attributes)
+				as[attr.name] = attr.value;
 
-		let as = {}, cs = cf(node0.childNodes);
+			let tag = rdb_tag(node0.localName);
+			let bf = () => tag.attrsf(vm => as).child(cs).rd();
 
-		for (let attr of node0.attributes)
-			as[attr.name] = attr.value;
-
-		let tag = rdb_tag(node0.localName);
-		let bf = () => tag.attrsf(vm => as).child(cs).rd();
-
-		if (node0.getAttribute('rd_for') != null)
-			return tag.for_(vm => vm, cs).rd();
-		else
-			return bf();
-	} else if (node0.nodeType == Node.TEXT_NODE) {
+			if (node0.getAttribute('rd_for') != null)
+				return tag.for_(vm => vm, cs).rd();
+			else
+				return bf();
+		}
+	else if (node0.nodeType == Node.TEXT_NODE) {
 		let sf = rd_parseTemplate(node0.nodeValue);
 		return rd_dom(vm => document.createTextNode(sf(vm)));
 	} else
 		throw 'unknown node type';
 };
+
+let rd_parseDomNodes = nodes => rd_list(Array.from(nodes).map(rd_parseDom));
 
 let rd_parse = s => rd_parseDom(new DOMParser().parseFromString(s, 'text/xml').childNodes[0]);
 
