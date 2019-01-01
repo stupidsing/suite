@@ -2,14 +2,12 @@
 
 let verifyList = (parent, nodes) => {
 	let e = parent.lastChild;
-	for (let i = nodes.length - 1; 0 <= i; i--) {
-		let node = nodes[i];
-		while (e != node)
+	for (let i = nodes.length - 1; 0 <= i; i--)
+		while (e != nodes[i])
 			if (e.parentNode == parent)
 				e = e.previousSibling;
 			else
 				throw 'fail';
-	}
 	return nodes;
 }
 
