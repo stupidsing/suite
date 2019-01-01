@@ -4,20 +4,17 @@ let verifyList = (parent, nodes) => {
 	let e = parent.lastChild;
 	for (let i = nodes.length - 1; 0 <= i; i--) {
 		let node = nodes[i];
-		if (node == null || node.parentNode == parent)
-			while (e != node)
+		while (e != node)
+			if (e.parentNode == parent)
 				e = e.previousSibling;
-		else {
-			console.trace();
-			throw 'fail';
-		}
+			else
+				throw 'fail';
 	}
-	while (e != null) e = e.previousSibling;
 	return nodes;
 }
 
 let verifyCud = cud => {
-	verifyList(cud.parent.childRef, [cud.childRef0, cud.childRef,]);
+	verifyList(cud.parent.childRef, [null, cud.childRef0, cud.childRef,]);
 	return cud;
 };
 
