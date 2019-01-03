@@ -481,12 +481,11 @@ let rd_parseDom = node0 => {
 				as[attr.name] = attr.value;
 
 			let tag = rdb_tag(name);
-			let bf = () => tag.attrsf(vm => as).child(cs).rd();
 
 			if (node0.getAttribute('rd_for') != null)
 				return tag.for_(vm => vm, cs).rd();
 			else
-				return bf();
+				return tag.attrsf(vm => as).child(cs).rd();
 		}
 	else if (node0.nodeType == Node.TEXT_NODE) {
 		let sf = rd_parseTemplate(node0.nodeValue);
