@@ -286,9 +286,10 @@ let rd_for = (keyf, rd_item) => {
 			let list1 = [cudf.childRef0,];
 			let cud;
 
-			if (vm0 != null)
+			if (vm0 != null) {
 				list0 = cm.get(vm0);
-			else {
+				list0[0] = cudf.childRef0;
+			} else {
 				vm0 = [];
 				list0 = [...list1];
 			}
@@ -320,19 +321,20 @@ let rd_for = (keyf, rd_item) => {
 				if (i0 != null) { // transplant DOM children
 					let child0 = list0[i0];
 					let childx = list0[i0 + 1];
-					let list = [];
-					let c = childx;
-
-					while (child0 != c) {
-						list.push(c);
-						c = prevSiblingMap.get(c);
-					}
-
 					let childRef = list1[i1];
-					let before = childRef != null ? childRef.nextSibling : domc.firstChild;
 
-					while (0 < list.length)
-						domc.insertBefore(list.pop(), before);
+					if (child0 != childRef) {
+						let list = [];
+						let c = child0;
+
+						while (c != childx)
+							list.push(c = c != null ? c.nextSibling : domc.firstChild);
+
+						for (let node of list) {
+							domc.removeChild(node);
+							domc.insertBefore(node, childRef != null ? childRef.nextSibling : domc.firstChild);
+						}
+					}
 
 					rd_item(vm0[i0], vm1[i1], cud = r_cud(parent, list1[i1], childx));
 				} else
