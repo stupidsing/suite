@@ -35,6 +35,13 @@ public class HkexFactBookTest {
 	}
 
 	@Test
+	public void testLeadingCompaniesByQuarter() {
+		var companies = hkexFactBook.query50LeadingCompaniesByMarketCap(2018, "3rd-Quarter");
+		System.out.println(companies.toList());
+		assertTrue(companies.isAny(symbol -> String_.equals(symbol, "0005.HK")));
+	}
+
+	@Test
 	public void testMainBoard() {
 		var companies = hkexFactBook.queryMainBoardCompanies(2012);
 		System.out.println(companies.toList());
