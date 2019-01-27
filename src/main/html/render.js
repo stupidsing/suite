@@ -341,18 +341,29 @@ let rd_for = (keyf, rd_item) => {
 						while (c != childx)
 							list.push(c = c != null ? c.nextSibling : domc.firstChild);
 
-						for (let node of list) domc.removeChild(node);
+						for (let node of list)
+							domc.removeChild(node);
 
 						let before = childRef != null ? childRef.nextSibling : domc.firstChild;
 
-						for (let node of list) domc.insertBefore(node, before);
+						for (let node of list)
+							domc.insertBefore(node, before);
 					}
 
 					rd_item(vm1[i1], vm2[i2], cud = r_cud(parent, list2[i2], childx));
+					list2[i2 + 1] = cud.childRef;
 				} else
-					rd_item(null, vm2[i2], cud = r_cud(parent, list2[i2], list2[i2]));
+					list2[i2 + 1] = list2[i2];
+			}
 
-				list2[i2 + 1] = cud.childRef;
+			for (let i2 = 0; i2 < vm2.length; i2++) {
+				let key = keyf(vm2[i2]);
+				let i1 = map1.get(key);
+
+				if (i1 == null) {
+					rd_item(null, vm2[i2], cud = r_cud(parent, list2[i2], list2[i2]));
+					list2[i2 + 1] = cud.childRef;
+				}
 			}
 
 			cudf.setTail(list2[vm2.length]);
