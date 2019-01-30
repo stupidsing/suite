@@ -275,8 +275,8 @@ let rd_domDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
 let rd_for = (keyf, rd_item) => {
 	let key = {};
 
-	return (vm0, vm2, cudf) => {
-		if (vm0 == vm2)
+	return (vm0, vm3, cudf) => {
+		if (vm0 == vm3)
 			;
 		else {
 			let parent = cudf.parent;
@@ -284,7 +284,6 @@ let rd_for = (keyf, rd_item) => {
 			let cm = getOrAdd(getOrAdd(gwm, domc), key);
 			let vm1 = [];
 			let list0;
-			let list2 = [cudf.childRef0,];
 			let cud;
 
 			if (vm0 != null) {
@@ -292,18 +291,18 @@ let rd_for = (keyf, rd_item) => {
 				list0[0] = cudf.childRef0;
 			} else {
 				vm0 = [];
-				list0 = [...list2];
+				list0 = [cudf.childRef0,];
 			}
 
-			let list1 = [list0[0]];
-
-			vm2 = vm2 != null ? vm2 : [];
+			vm3 = vm3 != null ? vm3 : [];
 
 			let map1 = new Map();
 			let map2 = new Map();
-			for (let i2 = 0; i2 < vm2.length; i2++)
-				map2.set(keyf(vm2[i2]), i2);
+			let map3 = new Map();
+			for (let i3 = 0; i3 < vm3.length; i3++)
+				map3.set(keyf(vm3[i3]), i3);
 
+			let list1 = [list0[0]];
 			let i1 = 0;
 
 			for (let i0 = 0; i0 < vm0.length; i0++) {
@@ -315,7 +314,7 @@ let rd_for = (keyf, rd_item) => {
 				else
 					cud = r_cud(parent, list1[i1], list0[i0 + 1]);
 
-				if (map2.delete(key))
+				if (!map1.has(key) && map3.has(key))
 					map1.set(key, i1);
 				else
 					rd_item(vm, null, cud);
@@ -324,12 +323,15 @@ let rd_for = (keyf, rd_item) => {
 				list1[++i1] = cud.childRef;
 			}
 
+			let list2 = [list1[0]];
+			let vm2 = vm3;
+
 			for (let i2 = 0; i2 < vm2.length; i2++) {
 				let key = keyf(vm2[i2]);
 				let i1 = map1.get(key);
 
-				if (i1 != null) { // transplant DOM children
-					map1.delete(key);
+				if (!map2.has(key) && i1 != null) { // transplant DOM children
+					map2.set(key, i2);
 					let child0 = list1[i1];
 					let childx = list1[i1 + 1];
 					let childRef = list2[i2];
@@ -351,24 +353,30 @@ let rd_for = (keyf, rd_item) => {
 					}
 
 					rd_item(vm1[i1], vm2[i2], cud = r_cud(parent, list2[i2], childx));
-					list2[i2 + 1] = cud.childRef;
+					list2[i2 + 1] = list1[i2 + 1] = cud.childRef;
 				} else
 					list2[i2 + 1] = list2[i2];
 			}
 
-			for (let i2 = 0; i2 < vm2.length; i2++) {
-				let key = keyf(vm2[i2]);
-				let i1 = map1.get(key);
+			let list3 = [list2[0]];
 
-				if (i1 == null) {
-					rd_item(null, vm2[i2], cud = r_cud(parent, list2[i2], list2[i2]));
-					list2[i2 + 1] = cud.childRef;
-				}
+			for (let i3 = 0; i3 < vm3.length; i3++) {
+				let key = keyf(vm3[i3]);
+				let i2 = map2.get(key);
+
+				if (i2 != null)
+					if (list2[i2] == list2[i2 + 1])
+						cud = r_cud(parent, list3[i3], list3[i3]);
+					else
+						cud = r_cud(parent, list3[i3], list2[i2 + 1]);
+				else
+					rd_item(null, vm3[i3], cud = r_cud(parent, list3[i3], list3[i3]));
+				list3[i3 + 1] = cud.childRef;
 			}
 
-			cudf.setTail(list2[vm2.length]);
+			cudf.setTail(list3[vm3.length]);
 			cm.delete(vm0);
-			cm.set(vm2, verifyList(domc, list2));
+			cm.set(vm3, verifyList(domc, list3));
 		}
 	};
 };
