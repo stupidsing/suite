@@ -94,102 +94,6 @@ let rdt_eventListener = (event, cb) => (vm0, vm1, cudf) => {
 	}
 };
 
-let rdt_for = (keyf, rd_item) => {
-	let key = {};
-
-	return (vm0, vm1, cudf) => {
-		if (vm0 == vm1)
-			;
-		else {
-			let domc0 = cudf.childRef;
-			let domc1;
-			let list0;
-			let list1 = [null,];
-			let cm = getOrAdd(getOrAdd(gwm, domc0), key);
-			let cud;
-
-			if (vm0 != null)
-				list0 = cm.get(vm0);
-			else {
-				vm0 = [];
-				list0 = [...list1];
-			}
-
-			vm1 = vm1 != null ? vm1 : [];
-
-			let map0 = new Map();
-			let map1 = new Map();
-			let isSameOrder;
-
-			for (let i0 = 0; i0 < vm0.length; i0++)
-				map0.set(keyf(vm0[i0]), i0);
-			for (let i1 = 0; i1 < vm1.length; i1++)
-				map1.set(keyf(vm1[i1]), i1);
-
-			if (0 < vm0.length) {
-				isSameOrder = vm0.length == vm1.length;
-
-				for (let i1 = 0; i1 < vm1.length; i1++) {
-					let i0 = map0.get(keyf(vm1[i1]));
-					isSameOrder &= i0 == i1;
-				}
-			} else
-				isSameOrder = true;
-
-			for (let i0 = 0; i0 < vm0.length; i0++)
-				if (!map1.has(keyf(vm0[i0]))) {
-					rd_item(vm0[i0], null, cud = r_cud(cudf, list0[i0], list0[i0 + 1]));
-					list0[i0 + 1] = cud.childRef;
-				}
-
-			let prevSiblingMap = new Map();
-
-			if (isSameOrder)
-				domc1 = domc0;
-			else {
-				for (let child of domc0.childNodes)
-					prevSiblingMap.set(child, child.previousSibling);
-
-				domc1 = domc0.cloneNode(false);
-				cudf.update(domc1);
-				gwm.set(domc1, gwm.get(domc0));
-			}
-
-			for (let i1 = 0; i1 < vm1.length; i1++) {
-				let i0 = map0.get(keyf(vm1[i1]));
-
-				if (i0 != null)
-					if (isSameOrder)
-						rd_item(vm0[i0], vm1[i1], cud = r_cud(cudf, list1[i1], list0[i0 + 1]));
-					else { // transplant DOM children
-						let child0 = list0[i0];
-						let childx = list0[i0 + 1];
-						let list = [];
-
-						while (child0 != childx) {
-							list.push(childx);
-							childx = prevSiblingMap.get(childx);
-						}
-
-						while (0 < list.length)
-							domc1.insertBefore(list.pop(), null);
-
-						rd_item(vm0[i0], vm1[i1], cud = r_cud(cudf, list1[i1], domc1.lastChild));
-					}
-				else
-					rd_item(null, vm1[i1], cud = r_cud(cudf, list1[i1], list1[i1]));
-
-				list1[i1 + 1] = cud.childRef;
-			}
-
-			domc0 = domc1;
-
-			cm.delete(vm0);
-			cm.set(vm1, verifyList(domc0, list1));
-		}
-	};
-};
-
 let rdt_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 	let domc = cudf.childRef;
 	let children0 = domc != null ? Array.from(domc.childNodes) : null;
@@ -449,7 +353,6 @@ let rdb_tagf = (elementf, decorfs) => {
 		child,
 		children: (...childrenfs) => child(rd_list(childrenfs)),
 		decor,
-		for_: (keyf, rd_item) => decor(rdt_for(keyf, rd_item)),
 		listen: (event, cb) => decor(rdt_eventListener(event, cb)),
 		rd: () => rd_domDecors(elementf, decorfs),
 		style: style => decor(rdt_style(style)),
@@ -513,12 +416,7 @@ let rd_parseDom = node0 => {
 			for (let attr of node0.attributes)
 				as[attr.name] = attr.value;
 
-			let tag = rdb_tag(name);
-
-			if (node0.getAttribute('rd_for') != null)
-				return tag.for_(vm => vm, cs).rd();
-			else
-				return tag.attrsf(vm => as).child(cs).rd();
+			return rdb_tag(name).attrsf(vm => as).child(cs).rd();
 		}
 	else if (node0.nodeType == Node.TEXT_NODE) {
 		let sf = rd_parseTemplate(node0.nodeValue);

@@ -42,7 +42,7 @@ let rd_vm1 = rd.span().children(
 		rd.p().text().rd()
 	),
 	rd.scope('fruits',
-		rd.ul().for_(vm => vm, rd.li().text().rd()).rd()
+		rd.ul().child(rd_for(vm => vm, rd.li().text().rd())).rd()
 	),
 ).rd();
 
