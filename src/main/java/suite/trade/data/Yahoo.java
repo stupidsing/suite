@@ -36,9 +36,8 @@ import suite.util.To;
 
 public class Yahoo {
 
-	private static ObjectMapper mapper = new ObjectMapper();
-
 	private Cleanse cleanse = new Cleanse();
+	private ObjectMapper om = new ObjectMapper();
 	private QuoteCache<String> quoteCache = new QuoteCache<>(this::quote_);
 
 	public DataSource dataSourceCsv(String symbol, TimeRange period) {
@@ -211,7 +210,7 @@ public class Yahoo {
 				+ "&events=div%7Csplit%7Cearn" //
 				+ "&corsDomain=finance.yahoo.com";
 
-		return HttpUtil.get(url).inputStream().doRead(mapper::readTree);
+		return HttpUtil.get(url).inputStream().doRead(om::readTree);
 	}
 
 	public DataSource dataSourceYql(String symbol, TimeRange period) {
@@ -229,7 +228,7 @@ public class Yahoo {
 				+ "&callback=";
 
 		return Singleton.me.storeCache.http(urlString).collect(To::inputStream).doRead(is -> {
-			var json = mapper.readTree(is);
+			var json = om.readTree(is);
 
 			var quotes = Read.each(json) //
 					.flatMap(json_ -> json_.path("query")) //

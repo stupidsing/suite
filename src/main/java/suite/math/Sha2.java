@@ -1,7 +1,6 @@
 package suite.math;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
 
 import suite.primitive.IntIntSink;
 import suite.primitive.Ints_;
@@ -24,42 +23,50 @@ public class Sha2 {
 			0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2, };
 
 	public byte[] sha256(byte[] bs0) {
+		var s512 = 512;
 		int h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a;
 		int h4 = 0x510e527f, h5 = 0x9b05688c, h6 = 0x1f83d9ab, h7 = 0x5be0cd19;
 		var L0 = bs0.length * 8;
 		var L1 = L0 + 1;
 		var L2 = L1 + 64;
-		var L3 = L2 + 511 & 0xFFFFFE00;
+		var L3 = L2 + s512 - 1 & ~(s512 - 1);
 		var K = L3 - L2;
 
-		var is = Ints_.toArray(bs0.length / 4, i -> {
-			var i4 = i * 4;
-			return bs0[i4] + (bs0[i4 + 1] << 8) + (bs0[i4 + 2] << 16) + (bs0[i4 + 3] << 24);
-		});
+		var is = new int[L3 / 32];
 
-		IntIntSink set = (pos, b) -> is[pos / 32] |= b << pos % 32;
+		for (var i = 0; i < bs0.length; i++) {
+			var div4 = i / 4;
+			var mod4 = i % 4;
+			is[div4] |= Byte.toUnsignedInt(bs0[i]) << 24 - mod4 * 8;
+		}
 
-		set.sink2(L1, 1);
+		IntIntSink set = (pos, b) -> {
+			var div32 = pos / 32;
+			var mod32 = pos % 32;
+			is[div32] |= (b & 1) << 31 - mod32;
+		};
+
+		set.sink2(L0, 1);
 
 		for (var i = 0; i < 64; i++)
-			set.sink2(L1 + K, L0 >> (63 - i) & 1);
+			set.sink2(L1 + K + i, L0 >> 63 - i);
 
-		for (var pos = 0; pos < is.length;) {
-			var i0 = pos;
-			var w = Arrays.copyOfRange(is, i0, pos += 512 / 32);
+		var w = new int[64];
 
-			for (var i = 16; i < 64; i++) {
-				var wi2 = w[i - 2];
+		for (var pos = 0; pos < is.length; pos += s512 / 32) {
+			Ints_.copy(is, pos, w, 0, s512 / 32);
+
+			for (var i = s512 / 32; i < w.length; i++) {
+				var wi02 = w[i - 02];
 				var wi15 = w[i - 15];
-				var s0 = Integer.rotateRight(wi15, 7) ^ Integer.rotateRight(wi15, 18) ^ wi15 >> 3;
-				var s1 = Integer.rotateRight(wi2, 17) ^ Integer.rotateRight(wi2, 19) ^ wi2 >> 10;
-				w[i] = w[i - 16] + s0 + w[i - 7] + s1;
+				var s0 = Integer.rotateRight(wi15, 07) ^ Integer.rotateRight(wi15, 18) ^ wi15 >>> 03;
+				var s1 = Integer.rotateRight(wi02, 17) ^ Integer.rotateRight(wi02, 19) ^ wi02 >>> 10;
+				w[i] = w[i - 16] + s0 + w[i - 07] + s1;
 			}
 
-			int a = h0, b = h1, c = h2, d = h3;
-			int e = h4, f = h5, g = h6, h = h7;
+			int a = h0, b = h1, c = h2, d = h3, e = h4, f = h5, g = h6, h = h7;
 
-			for (var i = 0; i < 64; i++) {
+			for (var i = 0; i < w.length; i++) {
 				var s1 = Integer.rotateRight(e, 6) ^ Integer.rotateRight(e, 11) ^ Integer.rotateRight(e, 25);
 				var ch = e & f ^ ~e & g;
 				var temp1 = h + s1 + ch + k[i] + w[i];

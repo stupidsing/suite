@@ -51,7 +51,6 @@ public class BindArrayUtil {
 				return pred.test(new BindEnv(env), node) //
 						? To.array(size, Node.class, i -> env.get(cbi[i])) //
 						: null;
-
 			}
 
 			public Node subst(Node... nodes) {

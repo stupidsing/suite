@@ -31,7 +31,14 @@ public class HkexFactBook {
 				.collect();
 	}
 
-	public Streamlet<String> queryLeadingCompaniesByMarketCap(int year) {
+	public Streamlet<String> queryCompaniesByMarketCap(int year) {
+		if (year <= 2017)
+			return queryYearlyLeadingCompaniesByMarketCap(year);
+		else
+			return queryQuarterlyLeadingCompaniesByMarketCap(year, "3rd-Quarter");
+	}
+
+	public Streamlet<String> queryYearlyLeadingCompaniesByMarketCap(int year) {
 		var list0 = Singleton.me.storeCache //
 				.pipe(getUrl(year)) //
 				.pipe("xargs -I {} curl '{}'") //
@@ -79,6 +86,26 @@ public class HkexFactBook {
 				.collect();
 	}
 
+	public Streamlet<String> queryQuarterlyLeadingCompaniesByMarketCap(int year, String quarter) {
+		String url = "https://www.hkex.com.hk" //
+				+ "/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports" //
+				+ "/HKEX-Securities-and-Derivatives-Markets-Quarterly-Report/" //
+				+ quarter + "-" + year + "/Full_e.pdf?la=en";
+
+		return Singleton.me.storeCache //
+				.pipe(url) //
+				.pipe("xargs -I {} wget -O - '{}'") //
+				.pipe("pdftotext -nopgbrk -raw - -") //
+				.pipe("sed -e '1,/50 Leading Companies by Market Capitalisation/ d'") //
+				.pipe("sed -n '1,/Market Total/ p'") //
+				.pipe("cut -d' ' -f2-") //
+				.pipe("egrep '^0'") //
+				.read() //
+				.map(line -> HkexUtil.toSymbol(line.substring(0, 5))) //
+				.sort(Object_::compare) //
+				.collect();
+	}
+
 	public Streamlet<String> queryMainBoardCompanies(int year) {
 		return Singleton.me.storeCache //
 				.pipe(getUrl(year)) //
@@ -94,12 +121,8 @@ public class HkexFactBook {
 	}
 
 	private String getUrl(int year) {
-		var dir = "http://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book";
-		if (year <= 2008)
-			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf";
-		else if (year <= 2015)
-			return dir + "/HKEx-Fact-Book-" + year + "/fb_" + year + ".pdf";
-		else if (year <= 2017)
+		var dir = "https://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book";
+		if (year <= 2017)
 			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf";
 		else
 			return fail();

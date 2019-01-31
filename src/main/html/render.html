@@ -13,22 +13,24 @@ file:///home/ywsing/suite/src/main/html/render.html
 	<script src='render.js'></script>
 
 	<script type='text/javascript'>
-let rd_vm0 = rd_parse(`
+let close;
+
+let rd_vm0 = rd.parse(`
 	<span style='font-family: sans-serif;'>
-		<span scope='message'>
+		<rd_scope scope='message'>
 			<p style='font-weight: bold;'>
 				{ vm } within scope
 				<!-- comment -->
 			</p>
-		</span>
-		<span scope='t'>
+		</rd_scope>
+		<rd_scope scope='t'>
 			{ vm }
-		</span>
-		<span scope='fruits'>
-			<ul for-span='vm'>
-				<li>{ vm }</li>
+		</rd_scope>
+		<rd_scope scope='fruits'>
+			<ul>
+				<rd_for><li>{ vm }</li></rd_for>
 			</ul>
-		</span>
+		</rd_scope>
 	</span>
 `);
 
@@ -40,24 +42,28 @@ let rd_vm1 = rd.span().children(
 		rd.p().text().rd()
 	),
 	rd.scope('fruits',
-		rd.ul().for_(vm => vm, rd.li().text().rd()).rd()
+		rd.ul().child(rd_for(vm => vm, rd.li().text().rd())).rd()
 	),
 ).rd();
 
 let rd_vm = rd
 	.span()
 	.style({ 'font-family': 'sans-serif', })
-	.children(
-		rd_vm0,
-		rd_vm1,
-		rd.scope('vscroll', rd
-			.vscrollf(200, 32,
-				rd.dom(vm => document.createTextNode('item ' + vm)),
-				start1 => renderAgain(rd_vm, lens.key('vscroll').key('start').apply(start0 => start1)),
-			)
-			.style({ width: '400px', })
-			.rd()
-		),
+	.child(
+		rd.list([
+			rd_vm0,
+			rd_vm1,
+			rd.tag('button').child(rd.dom(vm => document.createTextNode('Close'))).listen('click', d => close()).rd(),
+			rd.p().rd(),
+			rd.scope('vscroll', rd
+				.vscrollf(200, 32,
+					rd.dom(vm => document.createTextNode('item ' + vm)),
+					start1 => renderAgain(rd_vm, lens.key('vscroll').key('start').apply(start0 => start1)),
+				)
+				.style({ width: '400px', })
+				.rd()
+			),
+		]),
 	)
 	.rd();
 
@@ -67,12 +73,18 @@ let vscroll = { start: 0, vms: read().range(0, 256).list(), };
 let upd0 = lens.key('t').apply(t => t + 1);
 let upd1 = lens.key('vscroll').key('vms').index(3).apply(vm => Math.random().toString());
 
-setInterval(() => renderAgain(rd_vm, upd0), 1000);
-setInterval(() => renderAgain(rd_vm, upd1), 3000);
+let interval0 = setInterval(() => renderAgain(rd_vm, upd0), 1000);
+let interval1 = setInterval(() => renderAgain(rd_vm, upd1), 3000);
 
 renderAgain(rd_vm, vm => ({ t, vscroll, message: 'hello world0', fruits: ['banana',], }));
 renderAgain(rd_vm, vm => ({ t, vscroll, message: 'hello world1', fruits: ['apple', 'banana',], }));
 renderAgain(rd_vm, vm => ({ t, vscroll, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));
 renderAgain(rd_vm, vm => ({ t, vscroll, message: 'hello world~', fruits: ['banana', 'orange',], }));
+
+close = () => {
+	clearInterval(interval0);
+	clearInterval(interval1);
+	renderAgain(rd_vm, vm => null);
+};
 	</script>
 </html>

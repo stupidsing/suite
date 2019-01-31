@@ -27,7 +27,7 @@ import suite.util.To;
 public class Hkex {
 
 	// .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-	private static ObjectMapper mapper = new ObjectMapper();
+	private static ObjectMapper om = new ObjectMapper();
 	private Serialize serialize = Singleton.me.serialize;
 
 	private Set<String> delisted = new HashSet<>(List.of("0013.HK"));
@@ -197,9 +197,9 @@ public class Hkex {
 
 			private List<Table> tables_() {
 				if (table.isArray())
-					return Read.from(table).map(json -> mapper.convertValue(json, Table.class)).toList();
+					return Read.from(table).map(json -> om.convertValue(json, Table.class)).toList();
 				else
-					return List.of(mapper.convertValue(table, Table.class));
+					return List.of(om.convertValue(table, Table.class));
 			}
 		}
 
@@ -257,7 +257,7 @@ public class Hkex {
 					+ "&x=" //
 					+ "&y=");
 
-			var companyInfo = mapper.convertValue(json, CompanyInfo.class);
+			var companyInfo = om.convertValue(json, CompanyInfo.class);
 
 			instrument = Instrument.of( //
 					HkexUtil.toSymbol(companyInfo.stockCode), //
@@ -288,7 +288,7 @@ public class Hkex {
 		var url = "https://www.hkex.com.hk/eng/csm/ws/IndexMove.asmx/GetData?LangCode=en";
 
 		return HttpUtil.get(url).inputStream().doRead(is -> Read //
-				.each(mapper.readTree(is)) //
+				.each(om.readTree(is)) //
 				.flatMap(json_ -> json_.path("data")) //
 				.filter(json_ -> String_.equals(json_.path("title").textValue(), "Hong Kong")) //
 				.flatMap(json_ -> json_.path("content")) //
@@ -318,7 +318,7 @@ public class Hkex {
 				+ "&TYYYY=";
 
 		return HttpUtil.get(url).inputStream().doRead(is -> Read //
-				.each(mapper.readTree(is)) //
+				.each(om.readTree(is)) //
 				.flatMap(json_ -> json_.path("data")) //
 				.filter(json_ -> String_.equals(json_.path("title").textValue(), "Stock price HKD")) //
 				.flatMap(json_ -> json_.path("content")) //
@@ -348,7 +348,7 @@ public class Hkex {
 				+ "&TMM=" //
 				+ "&TYYYY=");
 
-		var companySearch = mapper.convertValue(json, CompanySearch.class);
+		var companySearch = om.convertValue(json, CompanySearch.class);
 		Streamlet<List<String>> data0;
 
 		if (Boolean.TRUE)
@@ -398,7 +398,7 @@ public class Hkex {
 					+ "&x=" //
 					+ "&y=");
 
-			CompanyInfo companyInfo = mapper.convertValue(json, CompanyInfo.class);
+			CompanyInfo companyInfo = om.convertValue(json, CompanyInfo.class);
 
 			var boardLotStr = Read //
 					.each(companyInfo) //
@@ -417,10 +417,10 @@ public class Hkex {
 		JsonNode json;
 
 		if (Boolean.TRUE)
-			json = Singleton.me.storeCache.http(url).collect(To::inputStream).doRead(mapper::readTree);
+			json = Singleton.me.storeCache.http(url).collect(To::inputStream).doRead(om::readTree);
 		else {
 			var execute = new Execute(new String[] { "curl", url, });
-			json = rethrow(() -> mapper.readTree(execute.out));
+			json = rethrow(() -> om.readTree(execute.out));
 		}
 
 		return json;

@@ -21,7 +21,7 @@ public class HkexFactBookTest {
 		System.out.println(delisted);
 		System.out.println(forInt(2008, Trade_.thisYear) //
 				.mapIntObj(year -> hkexFactBook //
-						.queryLeadingCompaniesByMarketCap(year - 1) //
+						.queryYearlyLeadingCompaniesByMarketCap(year - 1) //
 						.filter(delisted::contains) //
 						.toList()) //
 				.toList());
@@ -29,7 +29,14 @@ public class HkexFactBookTest {
 
 	@Test
 	public void testLeadingCompanies() {
-		var companies = hkexFactBook.queryLeadingCompaniesByMarketCap(2016);
+		var companies = hkexFactBook.queryYearlyLeadingCompaniesByMarketCap(2016);
+		System.out.println(companies.toList());
+		assertTrue(companies.isAny(symbol -> String_.equals(symbol, "0005.HK")));
+	}
+
+	@Test
+	public void testLeadingCompaniesByQuarter() {
+		var companies = hkexFactBook.queryQuarterlyLeadingCompaniesByMarketCap(2018, "3rd-Quarter");
 		System.out.println(companies.toList());
 		assertTrue(companies.isAny(symbol -> String_.equals(symbol, "0005.HK")));
 	}

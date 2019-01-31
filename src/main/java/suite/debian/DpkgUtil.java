@@ -61,7 +61,7 @@ public class DpkgUtil {
 		return Read //
 				.from(packages) //
 				.map(pm -> {
-					String line = pm.getOrDefault("Depends", "");
+					var line = pm.getOrDefault("Depends", "");
 					var list = Read //
 							.from(line.split(",")) //
 							.filter(s -> !s.isEmpty()) //

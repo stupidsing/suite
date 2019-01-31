@@ -75,8 +75,9 @@ public class TradeCfgImpl implements TradeCfg {
 
 	public Streamlet<Instrument> queryCompaniesByMarketCap(Time time) {
 		var year = time.year() - 1;
+
 		return Read //
-				.from(hkexFactBook.queryLeadingCompaniesByMarketCap(year)) //
+				.from(hkexFactBook.queryCompaniesByMarketCap(year)) //
 				.map(this::queryCompany) //
 				.filter(this::filter);
 	}
