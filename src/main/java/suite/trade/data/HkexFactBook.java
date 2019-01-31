@@ -89,8 +89,8 @@ public class HkexFactBook {
 	public Streamlet<String> queryQuarterlyLeadingCompaniesByMarketCap(int year, String quarter) {
 		String url = "https://www.hkex.com.hk" //
 				+ "/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports" //
-				+ "/HKEX-Securities-and-Derivatives-Markets-Quarterly-Report" //
-				+ "/" + quarter + "-" + year + "/Full_e.pdf?la=en";
+				+ "/HKEX-Securities-and-Derivatives-Markets-Quarterly-Report/" //
+				+ quarter + "-" + year + "/Full_e.pdf?la=en";
 
 		return Singleton.me.storeCache //
 				.pipe(url) //
