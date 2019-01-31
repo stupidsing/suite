@@ -31,7 +31,14 @@ public class HkexFactBook {
 				.collect();
 	}
 
-	public Streamlet<String> queryLeadingCompaniesByMarketCap(int year) {
+	public Streamlet<String> queryCompaniesByMarketCap(int year) {
+		if (year <= 2017)
+			return queryYearlyLeadingCompaniesByMarketCap(year);
+		else
+			return queryQuarterlyLeadingCompaniesByMarketCap(year, "3rd-Quarter");
+	}
+
+	public Streamlet<String> queryYearlyLeadingCompaniesByMarketCap(int year) {
 		var list0 = Singleton.me.storeCache //
 				.pipe(getUrl(year)) //
 				.pipe("xargs -I {} curl '{}'") //
@@ -79,10 +86,11 @@ public class HkexFactBook {
 				.collect();
 	}
 
-	public Streamlet<String> query50LeadingCompaniesByMarketCap(int year, String quarter) {
+	public Streamlet<String> queryQuarterlyLeadingCompaniesByMarketCap(int year, String quarter) {
 		String url = "https://www.hkex.com.hk" //
 				+ "/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports" //
-				+ "/HKEX-Securities-and-Derivatives-Markets-Quarterly-Report/" + quarter + "-" + year + "/Full_e.pdf?la=en";
+				+ "/HKEX-Securities-and-Derivatives-Markets-Quarterly-Report" //
+				+ "/" + quarter + "-" + year + "/Full_e.pdf?la=en";
 
 		return Singleton.me.storeCache //
 				.pipe(url) //
@@ -116,8 +124,6 @@ public class HkexFactBook {
 		var dir = "https://www.hkex.com.hk/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports/HKEX-Fact-Book";
 		if (year <= 2017)
 			return dir + "/HKEX-Fact-Book-" + year + "/FB_" + year + ".pdf";
-		else if (year <= 2019)
-			return getUrl(2017);
 		else
 			return fail();
 	}
