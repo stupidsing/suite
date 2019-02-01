@@ -95,10 +95,10 @@ public class WriteElf {
 				.dw(0x3E) // e_machine
 				.dd(1) // e_version
 				.dq(org + size) // e_entry
-				.dq(52) // e_phoff
+				.dq(64) // e_phoff
 				.dq(0) // e_shoff
 				.dd(0) // e_flags
-				.dw(52) // e_ehsize
+				.dw(64) // e_ehsize
 				.dw(32) // e_phentsize
 				.dw(1) // e_phnum
 				.dw(0) // e_shentsize
