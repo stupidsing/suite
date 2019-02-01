@@ -44,7 +44,7 @@ public class ServerMain {
 				.secrets() //
 				.prove(Suite.substitute("auth .0 .1", new Str(username), new Str(password)));
 
-		HttpHandler handlerSse = request -> {
+		HttpHandler handlerSse0 = request -> {
 			var headers = PerMap //
 					.<String, PerList<String>>empty() //
 					.put("Cache-Control", PerList.of("no-cache")) //
@@ -58,11 +58,26 @@ public class ServerMain {
 						Thread_.sleepQuietly(1000l);
 						var event = "event: number\ndata: " + i + "\n\n";
 						return Bytes.of(event.getBytes(Defaults.charset));
-					} else {
+					} else
 						return null;
-					}
 				}
 			}));
+		};
+
+		HttpHandler handlerSse1 = request -> {
+			var headers = PerMap //
+					.<String, PerList<String>>empty() //
+					.put("Cache-Control", PerList.of("no-cache")) //
+					.put("Content-Type", PerList.of("text/event-stream"));
+
+			return HttpResponse.ofWriter(HttpResponse.HTTP200, new HttpHeader(headers), writer -> {
+				for (var i = 0; i < 8; i++) {
+					Thread_.sleepQuietly(1000l);
+					var event = "event: number\ndata: " + i + "\n\n";
+					writer.f(Bytes.of(event.getBytes(Defaults.charset)));
+				}
+				writer.f(null);
+			});
 		};
 
 		HttpHandler handlerSite = request -> HttpResponse.of(To.outlet("" //
@@ -78,7 +93,7 @@ public class ServerMain {
 				.<String, HttpHandler>empty() //
 				.put("hello", HttpHandler.ofData("Hello world")) //
 				.put("path", HttpHandler.ofPath(Defaults.tmp)) //
-				.put("sse", handlerSse) //
+				.put("sse", Boolean.FALSE ? handlerSse0 : handlerSse1) //
 				.put("site", HttpHandler.ofSession(authenticate, handlerSite)));
 
 		new HttpServe(8051).serve(handler1);

@@ -77,7 +77,22 @@ public class HttpIo {
 				+ "\r\n";
 
 		os.write(s.getBytes(Defaults.charset));
-		Copy.stream(response.out.collect(To::inputStream), os);
+		var out = response.out;
+
+		if (out != null)
+			Copy.stream(out.collect(To::inputStream), os);
+		else {
+			response.write.f(bytes -> {
+				try {
+					if (bytes != null)
+						os.write(bytes.toArray());
+					else
+						os.close();
+				} catch (Exception ex) {
+					throw new RuntimeException(ex);
+				}
+			});
+		}
 	}
 
 	private HttpHeader readHeaders(InputStream is) {
