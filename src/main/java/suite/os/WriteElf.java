@@ -14,12 +14,13 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntPrimitives.Int_Obj;
 import suite.serialize.SerOutput;
+import suite.util.String_;
 import suite.util.Util;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class WriteElf {
 
-	private boolean isAmd64 = false;
+	private boolean isAmd64 = String_.equals(System.getenv("HOSTTYPE"), "x86_64");
 
 	public Execute exec(byte[] input, Int_Obj<Bytes> source) {
 		var path = Defaults.tmp("a.out." + Util.temp());
