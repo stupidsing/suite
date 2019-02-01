@@ -44,41 +44,33 @@ public class ServerMain {
 				.secrets() //
 				.prove(Suite.substitute("auth .0 .1", new Str(username), new Str(password)));
 
-		HttpHandler handlerSse0 = request -> {
-			var headers = PerMap //
-					.<String, PerList<String>>empty() //
-					.put("Cache-Control", PerList.of("no-cache")) //
-					.put("Content-Type", PerList.of("text/event-stream"));
+		HttpHeader sseHeaders = new HttpHeader(PerMap //
+				.<String, PerList<String>>empty() //
+				.put("Cache-Control", PerList.of("no-cache")) //
+				.put("Content-Type", PerList.of("text/event-stream")));
 
-			return HttpResponse.of(HttpResponse.HTTP200, new HttpHeader(headers), Outlet.of(new Source<Bytes>() {
-				private int i = 0;
+		HttpHandler handlerSse0 = request -> HttpResponse.of(HttpResponse.HTTP200, sseHeaders,
+				Outlet.of(new Source<Bytes>() {
+					private int i = 0;
 
-				public Bytes g() {
-					if (i++ < 8) {
-						Thread_.sleepQuietly(1000l);
-						var event = "event: number\ndata: " + i + "\n\n";
-						return Bytes.of(event.getBytes(Defaults.charset));
-					} else
-						return null;
-				}
-			}));
-		};
+					public Bytes g() {
+						if (i++ < 8) {
+							Thread_.sleepQuietly(1000l);
+							var event = "event: number\ndata: " + i + "\n\n";
+							return Bytes.of(event.getBytes(Defaults.charset));
+						} else
+							return null;
+					}
+				}));
 
-		HttpHandler handlerSse1 = request -> {
-			var headers = PerMap //
-					.<String, PerList<String>>empty() //
-					.put("Cache-Control", PerList.of("no-cache")) //
-					.put("Content-Type", PerList.of("text/event-stream"));
-
-			return HttpResponse.ofWriter(HttpResponse.HTTP200, new HttpHeader(headers), writer -> {
-				for (var i = 0; i < 8; i++) {
-					Thread_.sleepQuietly(1000l);
-					var event = "event: number\ndata: " + i + "\n\n";
-					writer.f(Bytes.of(event.getBytes(Defaults.charset)));
-				}
-				writer.f(null);
-			});
-		};
+		HttpHandler handlerSse1 = request -> HttpResponse.ofWriter(HttpResponse.HTTP200, sseHeaders, writer -> {
+			for (var i = 0; i < 8; i++) {
+				Thread_.sleepQuietly(1000l);
+				var event = "event: number\ndata: " + i + "\n\n";
+				writer.f(Bytes.of(event.getBytes(Defaults.charset)));
+			}
+			writer.f(null);
+		});
 
 		HttpHandler handlerSite = request -> HttpResponse.of(To.outlet("" //
 				+ "<html>" //
