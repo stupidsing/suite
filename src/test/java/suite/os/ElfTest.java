@@ -35,6 +35,11 @@ public class ElfTest {
 	}
 
 	@Test
+	public void testZero() {
+		test(0, "0", "");
+	}
+
+	@Test
 	public void testFold() {
 		test(100, "!for (n = 0; n < 100; n + 1)", "");
 	}

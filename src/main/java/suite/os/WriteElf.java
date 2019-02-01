@@ -20,12 +20,15 @@ import suite.util.Util;
 public class WriteElf {
 
 	private boolean isAmd64 = Execute.shell("uname -a").contains("x86_64");
+	private int org = isAmd64 ? 0x00400000 : 0x08048000;
+	private int fileHeaderSize = isAmd64 ? 64 : 52;
+	private int progHeaderSize = isAmd64 ? 56 : 32;
+	private int elfHeaderSize = fileHeaderSize + progHeaderSize;
 
 	public Execute exec(byte[] input, Int_Obj<Bytes> source) {
 		var path = Defaults.tmp("a.out." + Util.temp());
-		var org = isAmd64 ? 0x00400000 : 0x08048000;
 
-		write(org, source.apply(org + (isAmd64 ? 120 : 84)), path);
+		write(org, source.apply(org + elfHeaderSize), path);
 		return new Execute(new String[] { path.toString(), }, input);
 	}
 
@@ -52,8 +55,6 @@ public class WriteElf {
 	}
 
 	private Bytes header32(int org, Bytes code, SerOutput do_) throws IOException {
-		var size = 84;
-
 		return new Write_() //
 				.db(0x7F) // e_ident
 				.append("ELF".getBytes(Defaults.charset)) //
@@ -62,12 +63,12 @@ public class WriteElf {
 				.dw(2) // e_type
 				.dw(0x03) // e_machine
 				.dd(1) // e_version
-				.dd(org + size) // e_entry
-				.dd(52) // e_phoff
+				.dd(org + elfHeaderSize) // e_entry
+				.dd(fileHeaderSize) // e_phoff
 				.dd(0) // e_shoff
 				.dd(0) // e_flags
-				.dw(52) // e_ehsize
-				.dw(32) // e_phentsize
+				.dw(fileHeaderSize) // e_ehsize
+				.dw(progHeaderSize) // e_phentsize
 				.dw(1) // e_phnum
 				.dw(0) // e_shentsize
 				.dw(0) // e_shnum
@@ -76,16 +77,14 @@ public class WriteElf {
 				.dd(0) // p_offset
 				.dd(org) // p_vaddr
 				.dd(org) // p_paddr
-				.dd(code.size() + size) // p_filesz
-				.dd(code.size() + size) // p_memsz
+				.dd(code.size() + elfHeaderSize) // p_filesz
+				.dd(code.size() + elfHeaderSize) // p_memsz
 				.dd(7) // p_flags PF_R|PF_W|PF_X
 				.dd(0x1000) // p_align
 				.toBytes();
 	}
 
 	private Bytes header64(int org, Bytes code, SerOutput do_) throws IOException {
-		var size = 120;
-
 		return new Write_() //
 				.db(0x7F) // e_ident
 				.append("ELF".getBytes(Defaults.charset)) //
@@ -94,12 +93,12 @@ public class WriteElf {
 				.dw(2) // e_type
 				.dw(0x3E) // e_machine
 				.dd(1) // e_version
-				.dq(org + size) // e_entry
-				.dq(64) // e_phoff
+				.dq(org + elfHeaderSize) // e_entry
+				.dq(fileHeaderSize) // e_phoff
 				.dq(0) // e_shoff
 				.dd(0) // e_flags
-				.dw(64) // e_ehsize
-				.dw(56) // e_phentsize
+				.dw(fileHeaderSize) // e_ehsize
+				.dw(progHeaderSize) // e_phentsize
 				.dw(1) // e_phnum
 				.dw(0) // e_shentsize
 				.dw(0) // e_shnum
@@ -109,8 +108,8 @@ public class WriteElf {
 				.dq(0) // p_offset
 				.dq(org) // p_vaddr
 				.dq(org) // p_paddr
-				.dq(code.size() + size) // p_filesz
-				.dq(code.size() + size) // p_memsz
+				.dq(code.size() + elfHeaderSize) // p_filesz
+				.dq(code.size() + elfHeaderSize) // p_memsz
 				.dq(0x1000) // p_align
 				.toBytes();
 	}
