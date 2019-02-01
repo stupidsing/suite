@@ -56,7 +56,7 @@ public class ServerMain {
 				public Bytes g() {
 					if (i++ < 8) {
 						Thread_.sleepQuietly(1000l);
-						String event = "event: number\ndata: " + i + "\n\n";
+						var event = "event: number\ndata: " + i + "\n\n";
 						return Bytes.of(event.getBytes(Defaults.charset));
 					} else {
 						return null;
