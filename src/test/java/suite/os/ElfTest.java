@@ -23,7 +23,7 @@ public class ElfTest {
 	private WriteElf elf = new WriteElf();
 
 	@Test
-	public void testAsm() {
+	public void testAmd64() {
 		var instructions = List.of( //
 				amd64.instruction(Insn.MOV, amd64.rax, amd64.imm(0x3C, 8)), //
 				amd64.instruction(Insn.MOV, amd64.rdi, amd64.imm(0x00, 8)), //
