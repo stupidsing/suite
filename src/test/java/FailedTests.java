@@ -9,7 +9,6 @@ import org.junit.Test;
 import suite.Suite;
 import suite.fp.FunRbTreeTest;
 import suite.ip.ImperativeCompiler;
-import suite.lp.Configuration.ProverCfg;
 
 public class FailedTests {
 
@@ -48,7 +47,7 @@ public class FailedTests {
 		Suite.noLibraries(() -> Suite.evaluateFun("use MATH ~ (a => (use MATH ~ 1))_{0}", true));
 	}
 
-	// nPE. Method not found in concatm due to not importing standard library.
+	// NPE. Method not found in concatm due to not importing standard library.
 	// module dependency checks are necessary
 	@Test
 	public void testEager() {
@@ -58,12 +57,6 @@ public class FailedTests {
 	@Test
 	public void testParse() {
 		Suite.parse(" test");
-	}
-
-	// unmatched types
-	@Test
-	public void testPrecompile() {
-		assertTrue(Suite.precompile("CHARS", new ProverCfg()));
 	}
 
 	// (Expected) infinite loop.
