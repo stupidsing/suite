@@ -149,7 +149,7 @@ public class Amd64Assemble {
 		}
 
 		public Bytes encode_() {
-			return encode(size == 1 || size == 2 || size == 4 ? this : invalid, null);
+			return encode(size == 1 || size == 2 || size == 4 || size == 8 ? this : invalid, null);
 		}
 
 	}
@@ -650,6 +650,9 @@ public class Amd64Assemble {
 			break;
 		case SUBPS:
 			encode = assembleRegRm(instruction.op0, instruction.op1, 0x5C).pre(0x0F);
+			break;
+		case SYSCALL:
+			encode = new InsnCode(4, bs(0x0F, 0x05));
 			break;
 		case SYSENTER:
 			encode = new InsnCode(4, bs(0x0F, 0x34));

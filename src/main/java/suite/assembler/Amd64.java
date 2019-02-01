@@ -118,6 +118,7 @@ public class Amd64 {
 		STOSW, //
 		SUB, //
 		SUBPS, //
+		SYSCALL, //
 		SYSENTER, //
 		SYSEXIT, //
 		WRMSR, //
@@ -197,6 +198,14 @@ public class Amd64 {
 	public OpReg ebp = reg32[5];
 	public OpReg esi = reg32[6];
 	public OpReg edi = reg32[7];
+	public OpReg rax = reg64[0];
+	public OpReg rcx = reg64[1];
+	public OpReg rdx = reg64[2];
+	public OpReg rbx = reg64[3];
+	public OpReg rsp = reg64[4];
+	public OpReg rbp = reg64[5];
+	public OpReg rsi = reg64[6];
+	public OpReg rdi = reg64[7];
 
 	public BiMap<Atom, OpReg> regByName = new HashBiMap<>() {
 		{
