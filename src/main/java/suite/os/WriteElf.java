@@ -99,13 +99,13 @@ public class WriteElf {
 				.dq(0) // e_shoff
 				.dd(0) // e_flags
 				.dw(64) // e_ehsize
-				.dw(32) // e_phentsize
+				.dw(56) // e_phentsize
 				.dw(1) // e_phnum
 				.dw(0) // e_shentsize
 				.dw(0) // e_shnum
 				.dw(0) // e_shstrndx
 				.dd(1) // p_type
-				.dd(7) // p_flags
+				.dd(7) // p_flags PF_R|PF_W|PF_X
 				.dq(0) // p_offset
 				.dq(org) // p_vaddr
 				.dq(org) // p_paddr
@@ -142,7 +142,7 @@ public class WriteElf {
 		private Write_ d(int n, long i) {
 			for (var j = 0; j < n; j++) {
 				bb.append((byte) (i & 0xFF));
-				i = i >> 8;
+				i >>= 8;
 			}
 			return this;
 		}
