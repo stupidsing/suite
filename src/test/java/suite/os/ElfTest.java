@@ -34,14 +34,14 @@ public class ElfTest {
 		assertEquals("", exec.out);
 	}
 
-//	@Test
+	@Test
 	public void testFold() {
 		test(100, "!for (n = 0; n < 100; n + 1)", "");
 	}
 
 	// io :: a -> io a
 	// io.cat :: io a -> (a -> io b) -> io b
-//	@Test
+	@Test
 	public void testIo() {
 		var text = "garbage\n";
 
