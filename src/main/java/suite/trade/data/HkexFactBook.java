@@ -35,7 +35,7 @@ public class HkexFactBook {
 		if (year <= 2017)
 			return queryYearlyLeadingCompaniesByMarketCap(year);
 		else
-			return queryQuarterlyLeadingCompaniesByMarketCap(year, "3rd-Quarter");
+			return queryQuarterlyLeadingCompaniesByMarketCap(year, "4th-Quarter");
 	}
 
 	public Streamlet<String> queryYearlyLeadingCompaniesByMarketCap(int year) {
@@ -89,8 +89,8 @@ public class HkexFactBook {
 	public Streamlet<String> queryQuarterlyLeadingCompaniesByMarketCap(int year, String quarter) {
 		String url = "https://www.hkex.com.hk" //
 				+ "/-/media/HKEX-Market/Market-Data/Statistics/Consolidated-Reports" //
-				+ "/HKEX-Securities-and-Derivatives-Markets-Quarterly-Report/" //
-				+ quarter + "-" + year + "/Full_e.pdf?la=en";
+				+ "/HKEX-Securities-and-Derivatives-Markets-Quarterly-Report" //
+				+ "/" + quarter + "-" + year + "/Full_e.pdf?la=en";
 
 		return Singleton.me.storeCache //
 				.pipe(url) //
