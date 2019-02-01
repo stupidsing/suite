@@ -23,9 +23,9 @@ public class WriteElf {
 
 	public Execute exec(byte[] input, Int_Obj<Bytes> source) {
 		var path = Defaults.tmp("a.out." + Util.temp());
-		var org = 0x08048000;
+		var org = isAmd64 ? 0x00400000 : 0x08048000;
 
-		write(org, source.apply(org + 84), path);
+		write(org, source.apply(org + (isAmd64 ? 120 : 84)), path);
 		return new Execute(new String[] { path.toString(), }, input);
 	}
 
@@ -47,15 +47,22 @@ public class WriteElf {
 	}
 
 	private void write(int org, Bytes code, SerOutput do_) throws IOException {
-		var header = new Write_() //
+		do_.writeBytes(isAmd64 ? header64(org, code, do_) : header32(org, code, do_));
+		do_.writeBytes(code);
+	}
+
+	private Bytes header32(int org, Bytes code, SerOutput do_) throws IOException {
+		var size = 84;
+
+		return new Write_() //
 				.db(0x7F) // e_ident
 				.append("ELF".getBytes(Defaults.charset)) //
-				.append(new byte[] { (byte) (isAmd64 ? 2 : 1), 1, 1, 0, }) //
+				.append(new byte[] { 1, 1, 1, 0, }) //
 				.append(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, }) //
 				.dw(2) // e_type
-				.dw(isAmd64 ? 0x3E : 0x03) // e_machine
+				.dw(0x03) // e_machine
 				.dd(1) // e_version
-				.dd(org + 84) // e_entry
+				.dd(org + size) // e_entry
 				.dd(52) // e_phoff
 				.dd(0) // e_shoff
 				.dd(0) // e_flags
@@ -69,14 +76,43 @@ public class WriteElf {
 				.dd(0) // p_offset
 				.dd(org) // p_vaddr
 				.dd(org) // p_paddr
-				.dd(code.size() + 84) // p_filesz
-				.dd(code.size() + 84) // p_memsz
+				.dd(code.size() + size) // p_filesz
+				.dd(code.size() + size) // p_memsz
 				.dd(7) // p_flags PF_R|PF_W|PF_X
 				.dd(0x1000) // p_align
 				.toBytes();
+	}
 
-		do_.writeBytes(header);
-		do_.writeBytes(code);
+	private Bytes header64(int org, Bytes code, SerOutput do_) throws IOException {
+		var size = 120;
+
+		return new Write_() //
+				.db(0x7F) // e_ident
+				.append("ELF".getBytes(Defaults.charset)) //
+				.append(new byte[] { 2, 1, 1, 0, }) //
+				.append(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, }) //
+				.dw(2) // e_type
+				.dw(0x3E) // e_machine
+				.dd(1) // e_version
+				.dq(org + size) // e_entry
+				.dq(52) // e_phoff
+				.dq(0) // e_shoff
+				.dd(0) // e_flags
+				.dw(52) // e_ehsize
+				.dw(32) // e_phentsize
+				.dw(1) // e_phnum
+				.dw(0) // e_shentsize
+				.dw(0) // e_shnum
+				.dw(0) // e_shstrndx
+				.dd(1) // p_type
+				.dd(7) // p_flags
+				.dq(0) // p_offset
+				.dq(org) // p_vaddr
+				.dq(org) // p_paddr
+				.dq(code.size() + size) // p_filesz
+				.dq(code.size() + size) // p_memsz
+				.dq(0x1000) // p_align
+				.toBytes();
 	}
 
 	private class Write_ {
@@ -94,12 +130,16 @@ public class WriteElf {
 			return d(4, i);
 		}
 
+		private Write_ dq(long i) {
+			return d(8, i);
+		}
+
 		private Write_ append(byte[] bs) {
 			bb.append(bs);
 			return this;
 		}
 
-		private Write_ d(int n, int i) {
+		private Write_ d(int n, long i) {
 			for (var j = 0; j < n; j++) {
 				bb.append((byte) (i & 0xFF));
 				i = i >> 8;
