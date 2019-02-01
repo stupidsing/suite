@@ -8,13 +8,18 @@ import java.util.function.BiPredicate;
 
 import suite.cfg.Defaults;
 import suite.http.HttpHandler;
+import suite.http.HttpHeader;
 import suite.http.HttpHeaderUtil;
 import suite.http.HttpResponse;
 import suite.http.HttpServe;
 import suite.node.Str;
 import suite.os.Schedule;
 import suite.os.Scheduler;
+import suite.persistent.PerList;
 import suite.persistent.PerMap;
+import suite.primitive.Bytes;
+import suite.streamlet.FunUtil.Source;
+import suite.streamlet.Outlet;
 import suite.telegram.TelegramBot;
 import suite.util.RunUtil;
 import suite.util.Thread_;
@@ -39,7 +44,28 @@ public class ServerMain {
 				.secrets() //
 				.prove(Suite.substitute("auth .0 .1", new Str(username), new Str(password)));
 
-		HttpHandler handler0 = request -> HttpResponse.of(To.outlet("" //
+		HttpHandler handlerSse = request -> {
+			var headers = PerMap //
+					.<String, PerList<String>>empty() //
+					.put("Cache-Control", PerList.of("no-cache")) //
+					.put("Content-Type", PerList.of("text/event-stream"));
+
+			return HttpResponse.of(HttpResponse.HTTP200, new HttpHeader(headers), Outlet.of(new Source<Bytes>() {
+				private int i = 0;
+
+				public Bytes g() {
+					if (i++ < 8) {
+						Thread_.sleepQuietly(1000l);
+						String event = "event: number\ndata: " + i + "\n\n";
+						return Bytes.of(event.getBytes(Defaults.charset));
+					} else {
+						return null;
+					}
+				}
+			}));
+		};
+
+		HttpHandler handlerSite = request -> HttpResponse.of(To.outlet("" //
 				+ "<html>" //
 				+ "<br/>method = " + request.method //
 				+ "<br/>server = " + request.server //
@@ -49,10 +75,11 @@ public class ServerMain {
 				+ "</html>"));
 
 		var handler1 = HttpHandler.ofDispatch(PerMap //
-				.<String, HttpHandler> empty() //
+				.<String, HttpHandler>empty() //
 				.put("hello", HttpHandler.ofData("Hello world")) //
 				.put("path", HttpHandler.ofPath(Defaults.tmp)) //
-				.put("site", HttpHandler.ofSession(authenticate, handler0)));
+				.put("sse", handlerSse) //
+				.put("site", HttpHandler.ofSession(authenticate, handlerSite)));
 
 		new HttpServe(8051).serve(handler1);
 	}
