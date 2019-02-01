@@ -1,5 +1,6 @@
 package suite;
 
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -13,13 +14,12 @@ import suite.http.HttpHeaderUtil;
 import suite.http.HttpResponse;
 import suite.http.HttpServe;
 import suite.node.Str;
+import suite.os.Execute;
 import suite.os.Schedule;
 import suite.os.Scheduler;
 import suite.persistent.PerList;
 import suite.persistent.PerMap;
 import suite.primitive.Bytes;
-import suite.streamlet.FunUtil.Source;
-import suite.streamlet.Outlet;
 import suite.telegram.TelegramBot;
 import suite.util.RunUtil;
 import suite.util.Thread_;
@@ -30,6 +30,9 @@ public class ServerMain {
 
 	public static void main(String[] args) {
 		RunUtil.run(() -> new ServerMain().run());
+
+		Execute.shell("x-www-browser http://127.0.0.1:8051/html/render.html");
+		// Execute.shell("x-www-browser http://127.0.0.1:8051/site");
 	}
 
 	private boolean run() {
@@ -49,24 +52,10 @@ public class ServerMain {
 				.put("Cache-Control", PerList.of("no-cache")) //
 				.put("Content-Type", PerList.of("text/event-stream")));
 
-		HttpHandler handlerSse0 = request -> HttpResponse.of(HttpResponse.HTTP200, sseHeaders,
-				Outlet.of(new Source<Bytes>() {
-					private int i = 0;
-
-					public Bytes g() {
-						if (i++ < 8) {
-							Thread_.sleepQuietly(1000l);
-							var event = "event: number\ndata: " + i + "\n\n";
-							return Bytes.of(event.getBytes(Defaults.charset));
-						} else
-							return null;
-					}
-				}));
-
-		HttpHandler handlerSse1 = request -> HttpResponse.ofWriter(HttpResponse.HTTP200, sseHeaders, writer -> {
+		HttpHandler handlerSse = request -> HttpResponse.ofWriter(HttpResponse.HTTP200, sseHeaders, writer -> {
 			for (var i = 0; i < 8; i++) {
 				Thread_.sleepQuietly(1000l);
-				var event = "event: number\ndata: " + i + "\n\n";
+				var event = "event: number\ndata: { \"i\": " + i + " }\n\n";
 				writer.f(Bytes.of(event.getBytes(Defaults.charset)));
 			}
 			writer.f(null);
@@ -84,8 +73,9 @@ public class ServerMain {
 		var handler1 = HttpHandler.ofDispatch(PerMap //
 				.<String, HttpHandler>empty() //
 				.put("hello", HttpHandler.ofData("Hello world")) //
+				.put("html", HttpHandler.ofPath(Paths.get("src/main/html"))) //
 				.put("path", HttpHandler.ofPath(Defaults.tmp)) //
-				.put("sse", Boolean.FALSE ? handlerSse0 : handlerSse1) //
+				.put("sse", handlerSse) //
 				.put("site", HttpHandler.ofSession(authenticate, handlerSite)));
 
 		new HttpServe(8051).serve(handler1);

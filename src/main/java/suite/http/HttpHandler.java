@@ -10,8 +10,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.BiPredicate;
 
+import suite.persistent.PerList;
 import suite.persistent.PerMap;
+import suite.primitive.Bytes;
 import suite.primitive.LngMutable;
+import suite.streamlet.FunUtil.Sink;
 import suite.util.String_;
 import suite.util.To;
 
@@ -93,6 +96,15 @@ public interface HttpHandler {
 
 	public static HttpHandler ofSession(BiPredicate<String, String> authenticate, HttpHandler handler0) {
 		return new HttpSessionControl(authenticate).getSessionHandler(handler0);
+	}
+
+	public static HttpHandler ofSse(Sink<Sink<Bytes>> write) {
+		HttpHeader sseHeaders = new HttpHeader(PerMap //
+				.<String, PerList<String>>empty() //
+				.put("Cache-Control", PerList.of("no-cache")) //
+				.put("Content-Type", PerList.of("text/event-stream")));
+
+		return request -> HttpResponse.ofWriter(HttpResponse.HTTP200, sseHeaders, write);
 	}
 
 	public HttpResponse handle(HttpRequest request);

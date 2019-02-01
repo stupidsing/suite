@@ -84,9 +84,10 @@ public class HttpIo {
 		else {
 			response.write.f(bytes -> {
 				try {
-					if (bytes != null)
+					if (bytes != null) {
 						os.write(bytes.toArray());
-					else
+						os.flush();
+					} else
 						os.close();
 				} catch (Exception ex) {
 					throw new RuntimeException(ex);

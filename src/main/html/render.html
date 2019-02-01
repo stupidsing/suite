@@ -31,6 +31,7 @@ let rd_vm0 = rd.parse(`
 				<rd_for><li>{ vm }</li></rd_for>
 			</ul>
 		</rd_scope>
+		<rd_scope scope='sse'>server sent events: <rd_for>{ vm }</rd_for></rd_scope>
 	</span>
 `);
 
@@ -67,6 +68,7 @@ let rd_vm = rd
 	)
 	.rd();
 
+let sse = [];
 let t = 0;
 let vscroll = { start: 0, vms: read().range(0, 256).list(), };
 
@@ -76,15 +78,23 @@ let upd1 = lens.key('vscroll').key('vms').index(3).apply(vm => Math.random().toS
 let interval0 = setInterval(() => renderAgain(rd_vm, upd0), 1000);
 let interval1 = setInterval(() => renderAgain(rd_vm, upd1), 3000);
 
-renderAgain(rd_vm, vm => ({ t, vscroll, message: 'hello world0', fruits: ['banana',], }));
-renderAgain(rd_vm, vm => ({ t, vscroll, message: 'hello world1', fruits: ['apple', 'banana',], }));
-renderAgain(rd_vm, vm => ({ t, vscroll, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));
-renderAgain(rd_vm, vm => ({ t, vscroll, message: 'hello world~', fruits: ['banana', 'orange',], }));
+renderAgain(rd_vm, vm => ({ sse, t, vscroll, message: 'hello world0', fruits: ['banana',], }));
+renderAgain(rd_vm, vm => ({ sse, t, vscroll, message: 'hello world1', fruits: ['apple', 'banana',], }));
+renderAgain(rd_vm, vm => ({ sse, t, vscroll, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));
+renderAgain(rd_vm, vm => ({ sse, t, vscroll, message: 'hello world~', fruits: ['banana', 'orange',], }));
 
 close = () => {
 	clearInterval(interval0);
 	clearInterval(interval1);
 	renderAgain(rd_vm, vm => null);
 };
+
+let eventSource = new EventSource('/sse');
+
+eventSource.onError = error => console.log(error);
+eventSource.onMessage = event => console.log(event);
+
+eventSource.addEventListener("close", event => eventSource.close());
+eventSource.addEventListener("number", event => renderAgain(rd_vm, vm => ({ ...vm, sse: [...vm.sse, JSON.parse(event.data).i,], })));
 	</script>
 </html>
