@@ -32,10 +32,9 @@ public class HkexFactBook {
 	}
 
 	public Streamlet<String> queryCompaniesByMarketCap(int year) {
-		if (year <= 2017)
-			return queryYearlyLeadingCompaniesByMarketCap(year);
-		else
-			return queryQuarterlyLeadingCompaniesByMarketCap(year, "4th-Quarter");
+		return year <= 2017 //
+				? queryYearlyLeadingCompaniesByMarketCap(year) //
+				: queryQuarterlyLeadingCompaniesByMarketCap(year, "4th-Quarter");
 	}
 
 	public Streamlet<String> queryYearlyLeadingCompaniesByMarketCap(int year) {
