@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.function.IntFunction;
 
 import suite.cfg.Defaults;
-import suite.immutable.IPointer;
 import suite.instructionexecutor.thunk.IndexedReader;
 import suite.instructionexecutor.thunk.IndexedSourceReader;
 import suite.node.Atom;
@@ -17,6 +16,7 @@ import suite.node.Data;
 import suite.node.Node;
 import suite.node.Tree;
 import suite.object.Object_;
+import suite.persistent.PerPointer;
 import suite.primitive.Chars;
 
 public class Intrinsics {
@@ -59,10 +59,10 @@ public class Intrinsics {
 		return drain(callback, IndexedReader.of(read, size));
 	}
 
-	public static Node drain(IntrinsicCallback callback, IPointer<Node> pointer) {
+	public static Node drain(IntrinsicCallback callback, PerPointer<Node> pointer) {
 		var drain = new Intrinsic() {
 			public Node invoke(IntrinsicCallback callback1, List<Node> inputs) {
-				IPointer<Node> pointer1 = Data.get(inputs.get(0));
+				PerPointer<Node> pointer1 = Data.get(inputs.get(0));
 				Node head;
 
 				if ((head = pointer1.head()) != null) {
@@ -81,7 +81,7 @@ public class Intrinsics {
 		return callback.enclose(id_, node);
 	}
 
-	public static IPointer<Chars> read(Reader reader) {
+	public static PerPointer<Chars> read(Reader reader) {
 		return IndexedSourceReader.of(() -> rethrow(() -> {
 			var buffer = new char[Defaults.bufferSize];
 			var nCharsRead = reader.read(buffer);

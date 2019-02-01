@@ -10,9 +10,9 @@ import java.util.List;
 
 import org.junit.Test;
 
-import suite.immutable.ISet;
 import suite.object.Object_;
 import suite.os.FileUtil;
+import suite.persistent.PerSet;
 import suite.search.DirectedGraph;
 import suite.search.StronglyConnectedComponents;
 import suite.streamlet.Read;
@@ -24,7 +24,7 @@ public class DependencyTest {
 
 	@Test
 	public void testDependency() {
-		dumpDependencies(ISet.empty(), "", "suite.util.Rethrow");
+		dumpDependencies(PerSet.empty(), "", "suite.util.Rethrow");
 	}
 
 	@Test
@@ -56,7 +56,7 @@ public class DependencyTest {
 		}
 	}
 
-	private void dumpDependencies(ISet<String> set, String indent, String className) {
+	private void dumpDependencies(PerSet<String> set, String indent, String className) {
 		if (!set.contains(className)) {
 			System.out.println(indent + className);
 

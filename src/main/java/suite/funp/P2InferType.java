@@ -79,7 +79,6 @@ import suite.funp.P2.FunpRoutine2;
 import suite.funp.P2.FunpRoutineIo;
 import suite.funp.P2.FunpSaveRegisters0;
 import suite.funp.P2.FunpSaveRegisters1;
-import suite.immutable.IMap;
 import suite.inspect.Inspect;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -94,6 +93,7 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
+import suite.persistent.PerMap;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.adt.pair.IntIntPair;
@@ -143,11 +143,11 @@ public class P2InferType {
 		var n2 = captureLambdas(n1);
 		var checks = new ArrayList<Source<Boolean>>();
 
-		if (unify(t, new Infer(IMap.empty(), checks, null).infer(n2))) {
+		if (unify(t, new Infer(PerMap.empty(), checks, null).infer(n2))) {
 			if (!Read.from(checks).isAll(Source<Boolean>::g))
 				fail();
 
-			var erase = new Erase(0, IMap.empty(), null);
+			var erase = new Erase(0, PerMap.empty(), null);
 			erase.erase(n2); // first pass
 			return erase.erase(n2); // second pass
 		} else
@@ -301,11 +301,11 @@ public class P2InferType {
 	}
 
 	private class Infer {
-		private IMap<String, Pair<Fdt, Node>> env;
+		private PerMap<String, Pair<Fdt, Node>> env;
 		private List<Source<Boolean>> checks;
 		private Node me;
 
-		private Infer(IMap<String, Pair<Fdt, Node>> env, List<Source<Boolean>> checks, Node me) {
+		private Infer(PerMap<String, Pair<Fdt, Node>> env, List<Source<Boolean>> checks, Node me) {
 			this.env = env;
 			this.checks = checks;
 			this.me = me;
@@ -437,7 +437,7 @@ public class P2InferType {
 				var tf = infer(frame);
 				var tr = typeRefOf(tf);
 				unify(n, tr, infer(fpIn));
-				var env1 = IMap //
+				var env1 = PerMap //
 						.<String, Pair<Fdt, Node>> empty() //
 						.replace(frameVar.vn, Pair.of(Fdt.L_MONO, tf)) //
 						.replace(vn, Pair.of(Fdt.L_MONO, tv));
@@ -521,10 +521,10 @@ public class P2InferType {
 
 	private class Erase {
 		private int scope;
-		private IMap<String, Var> env;
+		private PerMap<String, Var> env;
 		private Var me;
 
-		private Erase(int scope, IMap<String, Var> env, Var me) {
+		private Erase(int scope, PerMap<String, Var> env, Var me) {
 			this.scope = scope;
 			this.env = env;
 			this.me = me;
@@ -674,7 +674,7 @@ public class P2InferType {
 				var b = ps + ps; // return address and EBP
 				var lt = new LambdaType(n);
 				var size = getTypeSize(typeOf(frame));
-				var env1 = IMap //
+				var env1 = PerMap //
 						.<String, Var> empty() //
 						.replace(frameVar.vn, localStack(0, IntMutable.of(0), 0, size)) //
 						.replace(vn, localStack(1, IntMutable.of(0), b, b + lt.is));

@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import static suite.util.Friends.fail;
 
@@ -13,7 +13,7 @@ import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.List_;
 
-public class LazyIbTree<T> implements ITree<T> {
+public class LazyPbTree<T> implements PerTree<T> {
 
 	private static int maxBranchFactor = 32;
 	private static int minBranchFactor = maxBranchFactor / 2;
@@ -57,7 +57,7 @@ public class LazyIbTree<T> implements ITree<T> {
 		}
 	}
 
-	public static <T> LazyIbTree<T> of(Comparator<T> comparator, List<T> ts) {
+	public static <T> LazyPbTree<T> of(Comparator<T> comparator, List<T> ts) {
 		var list = Read.from(ts).cons(null).map(t -> new Slot<>(null, t)).toList();
 		int size;
 
@@ -71,14 +71,14 @@ public class LazyIbTree<T> implements ITree<T> {
 			}
 		}
 
-		return new LazyIbTree<>(comparator, list);
+		return new LazyPbTree<>(comparator, list);
 	}
 
-	public LazyIbTree(Comparator<T> comparator) {
+	public LazyPbTree(Comparator<T> comparator) {
 		this(comparator, List.of(new Slot<T>(() -> List.of(), null)));
 	}
 
-	public LazyIbTree(Comparator<T> comparator, List<Slot<T>> source) {
+	public LazyPbTree(Comparator<T> comparator, List<Slot<T>> source) {
 		this.comparator = comparator;
 		this.root = source;
 	}
@@ -142,7 +142,7 @@ public class LazyIbTree<T> implements ITree<T> {
 		return fs != null && fs.c == 0 ? fs.slot.pivot : null;
 	}
 
-	public LazyIbTree<T> add(T t) {
+	public LazyPbTree<T> add(T t) {
 		return update(t, t0 -> t0 == null ? t : fail("duplicate key"));
 	}
 
@@ -152,16 +152,16 @@ public class LazyIbTree<T> implements ITree<T> {
 	 *
 	 * Asserts comparator.compare(<original-value>, t) == 0.
 	 */
-	public LazyIbTree<T> replace(T t) {
+	public LazyPbTree<T> replace(T t) {
 		return update(t, t_ -> t);
 	}
 
-	public LazyIbTree<T> remove(T t) {
+	public LazyPbTree<T> remove(T t) {
 		return update(t, t_ -> null);
 	}
 
-	public LazyIbTree<T> update(T t, Iterate<T> fun) {
-		return new LazyIbTree<>(comparator, newRoot(update(root, t, fun)));
+	public LazyPbTree<T> update(T t, Iterate<T> fun) {
+		return new LazyPbTree<>(comparator, newRoot(update(root, t, fun)));
 	}
 
 	private List<Slot<T>> update(List<Slot<T>> node0, T t, Iterate<T> fun) {

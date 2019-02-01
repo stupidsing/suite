@@ -1,13 +1,13 @@
 package suite.fp.intrinsic;
 
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
-import suite.immutable.IPointer;
 import suite.instructionexecutor.thunk.IPointerMapper;
 import suite.instructionexecutor.thunk.IndexedSourceReader;
 import suite.instructionexecutor.thunk.ThunkUtil;
 import suite.node.Data;
 import suite.node.Int;
 import suite.node.Node;
+import suite.persistent.PerPointer;
 import suite.primitive.Chars;
 import suite.primitive.Chars_;
 import suite.streamlet.Outlet;
@@ -27,7 +27,7 @@ public class CharsIntrinsics {
 	};
 
 	public Intrinsic drain = (callback, inputs) -> {
-		IPointer<Chars> pointer = Data.get(inputs.get(0));
+		PerPointer<Chars> pointer = Data.get(inputs.get(0));
 		return Intrinsics.drain(callback, IPointerMapper.map(Data<Chars>::new, pointer));
 	};
 

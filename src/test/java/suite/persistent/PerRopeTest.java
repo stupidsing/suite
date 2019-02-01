@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import static org.junit.Assert.assertEquals;
 import static suite.util.Friends.min;
@@ -7,22 +7,22 @@ import java.util.Random;
 
 import org.junit.Test;
 
-import suite.immutable.IRope.IRopeList;
 import suite.os.FileUtil;
+import suite.persistent.PerRope.IRopeList;
 import suite.primitive.Chars_;
 
-public class IRopeTest {
+public class PerRopeTest {
 
 	@Test
 	public void test() {
 		var length = 1024;
 		var s = new String(Chars_.toArray(length, c -> (char) c));
-		var rope = new IRope<>(IRopeList.of(""));
+		var rope = new PerRope<>(IRopeList.of(""));
 		var p = 0;
 
 		while (p < length) {
 			var p1 = min(length, p + 32 + new Random().nextInt(16));
-			rope = IRope.meld(rope, new IRope<>(IRopeList.of(s.substring(p, p1))));
+			rope = PerRope.meld(rope, new PerRope<>(IRopeList.of(s.substring(p, p1))));
 			p = p1;
 		}
 

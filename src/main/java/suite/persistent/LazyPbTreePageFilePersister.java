@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import static suite.util.Friends.max;
 
@@ -16,8 +16,8 @@ import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
-import suite.immutable.LazyIbTree.Slot;
 import suite.node.util.Singleton;
+import suite.persistent.LazyPbTree.Slot;
 import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
@@ -25,7 +25,7 @@ import suite.serialize.Serialize.Serializer;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 
-public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integer, T> {
+public class LazyPbTreePageFilePersister<T> implements LazyPbTreePersister<Integer, T> {
 
 	private Serialize serialize = Singleton.me.serialize;
 	private SerializedPageFile<Integer> nPagesFile;
@@ -43,7 +43,7 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 		}
 	}
 
-	public LazyIbTreePageFilePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
+	public LazyPbTreePageFilePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
 		var ts1 = serialize.nullable(ts);
 		var ps = serialize.pair(ts1, serialize.int_);
 		var lps = serialize.list(ps);
@@ -74,11 +74,11 @@ public class LazyIbTreePageFilePersister<T> implements LazyIbTreePersister<Integ
 		}
 	}
 
-	public LazyIbTree<T> load(Integer pointer) {
-		return new LazyIbTree<>(comparator, load_(pointer));
+	public LazyPbTree<T> load(Integer pointer) {
+		return new LazyPbTree<>(comparator, load_(pointer));
 	}
 
-	public Integer save(LazyIbTree<T> tree) {
+	public Integer save(LazyPbTree<T> tree) {
 		synchronized (writeLock) {
 			return save_(tree.root);
 		}

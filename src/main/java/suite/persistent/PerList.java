@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -12,36 +12,36 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Streamlet;
 
 /**
- * Immutable linked list.
+ * Persistent linked list.
  *
  * @author ywsing
  */
-public class IList<T> implements Iterable<T> {
+public class PerList<T> implements Iterable<T> {
 
 	public final T head;
-	public final IList<T> tail;
+	public final PerList<T> tail;
 
-	private static IList<?> end = new IList<>(null, null);
+	private static PerList<?> end = new PerList<>(null, null);
 
-	public static <T> IList<T> end() {
+	public static <T> PerList<T> end() {
 		@SuppressWarnings("unchecked")
-		var end = (IList<T>) IList.end;
+		var end = (PerList<T>) PerList.end;
 		return end;
 	}
 
 	@SafeVarargs
-	public static <T> IList<T> of(T... ts) {
-		var list = IList.<T> end();
+	public static <T> PerList<T> of(T... ts) {
+		var list = PerList.<T> end();
 		for (var t : ts)
 			list = cons(t, list);
 		return list;
 	}
 
-	public static <T> IList<T> cons(T t, IList<T> list) {
-		return new IList<>(t, list);
+	public static <T> PerList<T> cons(T t, PerList<T> list) {
+		return new PerList<>(t, list);
 	}
 
-	public IList(T head, IList<T> tail) {
+	public PerList(T head, PerList<T> tail) {
 		this.head = head;
 		this.tail = tail;
 	}
@@ -61,7 +61,7 @@ public class IList<T> implements Iterable<T> {
 	@Override
 	public Iterator<T> iterator() {
 		return FunUtil.iterator(new Source<>() {
-			private IList<T> current = IList.this;
+			private PerList<T> current = PerList.this;
 
 			public T g() {
 				T t;
@@ -75,11 +75,11 @@ public class IList<T> implements Iterable<T> {
 		});
 	}
 
-	public IList<T> remove(T t) {
-		IList<T> result = end();
+	public PerList<T> remove(T t) {
+		PerList<T> result = end();
 		for (var t_ : reverse())
 			if (!Objects.equals(t, t_))
-				result = IList.cons(t_, result);
+				result = PerList.cons(t_, result);
 		return result;
 	}
 
@@ -92,7 +92,7 @@ public class IList<T> implements Iterable<T> {
 
 	public Streamlet<T> streamlet() {
 		return new Streamlet<>(() -> Outlet.of(new Source<T>() {
-			private IList<T> list = IList.this;
+			private PerList<T> list = PerList.this;
 
 			public T g() {
 				if (list != null) {
@@ -107,9 +107,9 @@ public class IList<T> implements Iterable<T> {
 
 	@Override
 	public boolean equals(Object object) {
-		if (Object_.clazz(object) == IList.class) {
+		if (Object_.clazz(object) == PerList.class) {
 			var list0 = this;
-			var list1 = (IList<?>) object;
+			var list1 = (PerList<?>) object;
 			boolean e0, e1;
 			while (true) {
 				e0 = list0.isEmpty();

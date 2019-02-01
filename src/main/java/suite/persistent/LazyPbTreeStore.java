@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import java.util.Comparator;
 import java.util.List;
@@ -16,15 +16,15 @@ import suite.object.Object_;
 import suite.serialize.Serialize;
 import suite.serialize.Serialize.Serializer;
 
-public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, Value> {
+public class LazyPbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, Value> {
 
 	private static Serialize serialize = Singleton.me.serialize;
 
 	private SerializedPageFile<Pointer> superblockFile;
-	private LazyIbTreePersister<Pointer, Pair<Key, Value>> persister;
-	private LazyIbTreeMutator<Key, Value> mutator;
+	private LazyPbTreePersister<Pointer, Pair<Key, Value>> persister;
+	private LazyPbTreeMutator<Key, Value> mutator;
 
-	public static <K, V> LazyIbTreeStore<Extent, K, V> ofExtent( //
+	public static <K, V> LazyPbTreeStore<Extent, K, V> ofExtent( //
 			PageFile pageFile, //
 			Comparator<K> kc, //
 			Serializer<K> ks, //
@@ -41,11 +41,11 @@ public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 		var xs = serialize.nullable(serialize.extent());
 		var pfs = FileFactory.subPageFiles(pageFile, 0, 1, Integer.MAX_VALUE);
 		var superblockFile = SerializedFileFactory.serialized(pfs[0], xs);
-		var persister = new LazyIbTreeExtentFilePersister<>(pfs[1], pc, ps);
-		return new LazyIbTreeStore<>(superblockFile, persister, kc);
+		var persister = new LazyPbTreeExtentFilePersister<>(pfs[1], pc, ps);
+		return new LazyPbTreeStore<>(superblockFile, persister, kc);
 	}
 
-	public static <K, V> LazyIbTreeStore<Integer, K, V> ofPage( //
+	public static <K, V> LazyPbTreeStore<Integer, K, V> ofPage( //
 			PageFile pageFile, //
 			Comparator<K> kc, //
 			Serializer<K> ks, //
@@ -54,21 +54,21 @@ public class LazyIbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 		var ps = serialize.pair(ks, vs);
 		var pfs = FileFactory.subPageFiles(pageFile, 0, 1, Integer.MAX_VALUE);
 		var superblockFile = SerializedFileFactory.serialized(pfs[0], serialize.nullable(serialize.int_));
-		var persister = new LazyIbTreePageFilePersister<>(pfs[1], pc, ps);
-		return new LazyIbTreeStore<>(superblockFile, persister, kc);
+		var persister = new LazyPbTreePageFilePersister<>(pfs[1], pc, ps);
+		return new LazyPbTreeStore<>(superblockFile, persister, kc);
 	}
 
-	public LazyIbTreeStore( //
+	public LazyPbTreeStore( //
 			SerializedPageFile<Pointer> superblockFile, //
-			LazyIbTreePersister<Pointer, Pair<Key, Value>> persister, //
+			LazyPbTreePersister<Pointer, Pair<Key, Value>> persister, //
 			Comparator<Key> kc) {
 		this.superblockFile = superblockFile;
 		this.persister = persister;
 
 		var pointer = superblockFile.load(0);
 		if (pointer == null)
-			superblockFile.save(0, pointer = persister.save(new LazyIbTree<>((p0, p1) -> kc.compare(p0.t0, p1.t0))));
-		mutator = new LazyIbTreeMutator<>(persister.load(pointer));
+			superblockFile.save(0, pointer = persister.save(new LazyPbTree<>((p0, p1) -> kc.compare(p0.t0, p1.t0))));
+		mutator = new LazyPbTreeMutator<>(persister.load(pointer));
 	}
 
 	@Override

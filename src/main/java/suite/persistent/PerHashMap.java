@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import java.util.Objects;
 
@@ -8,19 +8,19 @@ import suite.streamlet.FunUtil2.Source2;
 import suite.streamlet.Outlet2;
 import suite.streamlet.Streamlet2;
 
-public class IHashMap<K, V> {
+public class PerHashMap<K, V> {
 
-	private IHashSet<Pair<K, V>> set;
+	private PerHashSet<Pair<K, V>> set;
 
-	public static <K, V> IHashMap<K, V> meld(IHashMap<K, V> map0, IHashMap<K, V> map1, BinOp<V> f) {
-		return new IHashMap<>(IHashSet.meld(map0.set, map1.set, (e0, e1) -> Pair.of(e0.t0, f.apply(e0.t1, e1.t1))));
+	public static <K, V> PerHashMap<K, V> meld(PerHashMap<K, V> map0, PerHashMap<K, V> map1, BinOp<V> f) {
+		return new PerHashMap<>(PerHashSet.meld(map0.set, map1.set, (e0, e1) -> Pair.of(e0.t0, f.apply(e0.t1, e1.t1))));
 	}
 
-	public IHashMap() {
-		this(new IHashSet<>());
+	public PerHashMap() {
+		this(new PerHashSet<>());
 	}
 
-	public IHashMap(IHashSet<Pair<K, V>> set) {
+	public PerHashMap(PerHashSet<Pair<K, V>> set) {
 		this.set = set;
 	}
 
@@ -47,12 +47,12 @@ public class IHashMap<K, V> {
 		return null;
 	}
 
-	public IHashMap<K, V> add(K k, V v) {
-		return new IHashMap<>(set.add(Pair.of(k, v)));
+	public PerHashMap<K, V> add(K k, V v) {
+		return new PerHashMap<>(set.add(Pair.of(k, v)));
 	}
 
-	public IHashMap<K, V> remove(K k) {
-		return new IHashMap<>(set.remove(Pair.of(k, null)));
+	public PerHashMap<K, V> remove(K k) {
+		return new PerHashMap<>(set.remove(Pair.of(k, null)));
 	}
 
 }

@@ -2,14 +2,14 @@ package suite.instructionexecutor.thunk;
 
 import java.util.function.IntFunction;
 
-import suite.immutable.IPointer;
+import suite.persistent.PerPointer;
 
 public class IndexedReader<T> {
 
 	private IntFunction<T> read;
 	private int size;
 
-	public static <T> IPointer<T> of(IntFunction<T> read, int size) {
+	public static <T> PerPointer<T> of(IntFunction<T> read, int size) {
 		return new IndexedReader<>(read, size).pointer(0);
 	}
 
@@ -18,14 +18,14 @@ public class IndexedReader<T> {
 		this.size = size;
 	}
 
-	private IPointer<T> pointer(int position) {
-		return new IPointer<>() {
+	private PerPointer<T> pointer(int position) {
+		return new PerPointer<>() {
 			public T head() {
 				return position < size ? read.apply(position) : null;
 			}
 
 			@Override
-			public IPointer<T> tail() {
+			public PerPointer<T> tail() {
 				return pointer(position + 1);
 			}
 		};

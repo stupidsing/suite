@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -10,21 +10,21 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 import suite.streamlet.Streamlet2;
 
-public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
+public class PerMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 
-	private static IMap<?, ?> empty = new IMap<Integer, Object>();
-	private ITree<Pair<K, V>> tree = new IbTree<>(Pair.comparatorByFirst());
+	private static PerMap<?, ?> empty = new PerMap<Integer, Object>();
+	private PerTree<Pair<K, V>> tree = new PbTree<>(Pair.comparatorByFirst());
 
-	public static <K extends Comparable<K>, V> IMap<K, V> empty() {
+	public static <K extends Comparable<K>, V> PerMap<K, V> empty() {
 		@SuppressWarnings("unchecked")
-		var m = (IMap<K, V>) empty;
+		var m = (PerMap<K, V>) empty;
 		return m;
 	}
 
-	private IMap() {
+	private PerMap() {
 	}
 
-	public IMap(ITree<Pair<K, V>> tree) {
+	public PerMap(PerTree<Pair<K, V>> tree) {
 		this.tree = tree;
 	}
 
@@ -45,21 +45,21 @@ public class IMap<K extends Comparable<K>, V> implements Iterable<Pair<K, V>> {
 		return Pair.snd(tree.find(Pair.of(k, (V) null)));
 	}
 
-	public IMap<K, V> put(K k, V v) {
-		return new IMap<>(tree.add(Pair.of(k, v)));
+	public PerMap<K, V> put(K k, V v) {
+		return new PerMap<>(tree.add(Pair.of(k, v)));
 	}
 
-	public IMap<K, V> replace(K k, V v) {
-		return new IMap<>(tree.replace(Pair.of(k, v)));
+	public PerMap<K, V> replace(K k, V v) {
+		return new PerMap<>(tree.replace(Pair.of(k, v)));
 	}
 
-	public IMap<K, V> remove(K k) {
-		return new IMap<>(tree.remove(Pair.of(k, (V) null)));
+	public PerMap<K, V> remove(K k) {
+		return new PerMap<>(tree.remove(Pair.of(k, (V) null)));
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == IMap.class && Objects.equals(streamlet(), ((IMap<?, ?>) object).streamlet());
+		return Object_.clazz(object) == PerMap.class && Objects.equals(streamlet(), ((PerMap<?, ?>) object).streamlet());
 	}
 
 	@Override

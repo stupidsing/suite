@@ -12,7 +12,6 @@ import java.util.Map;
 import suite.Suite;
 import suite.adt.Mutable;
 import suite.adt.map.ListMultimap;
-import suite.immutable.IList;
 import suite.lp.Configuration.ProverCfg;
 import suite.lp.compile.impl.CompileExpressionImpl;
 import suite.lp.doer.Binder;
@@ -45,6 +44,7 @@ import suite.node.util.SuiteException;
 import suite.node.util.TreeUtil;
 import suite.object.Object_;
 import suite.os.Log_;
+import suite.persistent.PerList;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
@@ -112,9 +112,9 @@ public class SewingProverImpl implements ProverFactory {
 
 	private class Debug {
 		private String indent = "";
-		private IList<Node> stack = IList.end();
+		private PerList<Node> stack = PerList.end();
 
-		private Debug(String indent, IList<Node> stack) {
+		private Debug(String indent, PerList<Node> stack) {
 			this.indent = indent;
 			this.stack = stack;
 		}
@@ -123,15 +123,15 @@ public class SewingProverImpl implements ProverFactory {
 	private class Runtime extends BindEnv {
 		private Cps cps;
 		private Node query;
-		private IList<Trampoline> cutPoint;
-		private IList<Trampoline> rems = IList.end(); // continuations
-		private IList<Trampoline> alts = IList.end(); // alternatives
+		private PerList<Trampoline> cutPoint;
+		private PerList<Trampoline> rems = PerList.end(); // continuations
+		private PerList<Trampoline> alts = PerList.end(); // alternatives
 		private Prover prover;
-		private Debug debug = new Debug("", IList.end());
+		private Debug debug = new Debug("", PerList.end());
 
 		private void trampoline() {
 			while (!alts.isEmpty()) {
-				rems = IList.cons(alts.head, IList.end());
+				rems = PerList.cons(alts.head, PerList.end());
 				alts = alts.tail;
 
 				Trampoline rem;
@@ -169,11 +169,11 @@ public class SewingProverImpl implements ProverFactory {
 
 		private void pushRem(Trampoline tr) {
 			if (tr != okay)
-				rems = IList.cons(tr, rems);
+				rems = PerList.cons(tr, rems);
 		}
 
 		private void pushAlt(Trampoline tr) {
-			alts = IList.cons(tr, alts);
+			alts = PerList.cons(tr, alts);
 		}
 	}
 
@@ -375,7 +375,7 @@ public class SewingProverImpl implements ProverFactory {
 				};
 				cps = rt -> {
 					var rems = rt.rems;
-					rt.rems = IList.cons(fail, IList.end());
+					rt.rems = PerList.cons(fail, PerList.end());
 					new Runtime(rt, rt_ -> {
 						rt_.query = f.apply(rt.env);
 						rt_.rems = rems;
@@ -745,7 +745,7 @@ public class SewingProverImpl implements ProverFactory {
 
 				Cps cpsx = rt -> {
 					var rems = rt.rems;
-					rt.rems = IList.cons(fail, IList.end());
+					rt.rems = PerList.cons(fail, PerList.end());
 					new Runtime(rt, rt_ -> {
 						rt_.rems = rems;
 						return okay;
@@ -813,7 +813,7 @@ public class SewingProverImpl implements ProverFactory {
 		if (traceLevel == TraceLevel.STACK || traceLevel == TraceLevel.TRACE)
 			tr1 = rt -> {
 				var debug0 = rt.debug;
-				rt.debug = new Debug(debug0.indent + "| ", IList.cons(rt.query, rt.debug.stack));
+				rt.debug = new Debug(debug0.indent + "| ", PerList.cons(rt.query, rt.debug.stack));
 				rt.pushRem(rt2 -> {
 					rt.debug = debug0;
 					return okay;

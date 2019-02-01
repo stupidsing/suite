@@ -21,9 +21,9 @@ import suite.funp.P0.FunpTagId;
 import suite.funp.P0.FunpTagValue;
 import suite.funp.P0.FunpTypeCheck;
 import suite.funp.P0.FunpVariable;
-import suite.immutable.IMap;
 import suite.inspect.Inspect;
 import suite.node.util.Singleton;
+import suite.persistent.PerMap;
 import suite.primitive.IntMutable;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
@@ -62,9 +62,9 @@ public class P1Inline {
 		};
 
 		class Rename {
-			private IMap<String, String> vns;
+			private PerMap<String, String> vns;
 
-			private Rename(IMap<String, String> vns) {
+			private Rename(PerMap<String, String> vns) {
 				this.vns = vns;
 			}
 
@@ -91,7 +91,7 @@ public class P1Inline {
 			}
 		}
 
-		return new Rename(IMap.empty()).rename(node);
+		return new Rename(PerMap.empty()).rename(node);
 	}
 
 	// Before - define i := memory ~ assign (i <= value)

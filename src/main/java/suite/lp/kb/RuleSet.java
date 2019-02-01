@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import suite.Suite;
-import suite.immutable.IList;
 import suite.jdk.Handler;
 import suite.lp.check.CheckLogic;
 import suite.lp.doer.Prover;
@@ -16,6 +15,7 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.os.FileUtil;
+import suite.persistent.PerList;
 import suite.util.To;
 
 public interface RuleSet {
@@ -61,7 +61,7 @@ class RuleSetImport {
 	}
 
 	String root = "file:" + FileUtil.homeDir() + "/src/main/ll/";
-	ThreadLocal<IList<Node>> importing = ThreadLocal.withInitial(() -> IList.end());
+	ThreadLocal<PerList<Node>> importing = ThreadLocal.withInitial(() -> PerList.end());
 
 	synchronized boolean importFrom(RuleSet ruleSet, Node node) {
 		var rules = new ArrayList<Rule>();
@@ -74,7 +74,7 @@ class RuleSetImport {
 		var importing0 = importing.get();
 
 		try {
-			importing.set(IList.cons(node, importing0));
+			importing.set(PerList.cons(node, importing0));
 			for (var rule : rules)
 				if (rule.head != Atom.NIL)
 					ruleSet.addRule(rule);

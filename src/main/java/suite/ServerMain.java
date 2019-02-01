@@ -11,10 +11,10 @@ import suite.http.HttpHandler;
 import suite.http.HttpHeaderUtil;
 import suite.http.HttpResponse;
 import suite.http.HttpServe;
-import suite.immutable.IMap;
 import suite.node.Str;
 import suite.os.Schedule;
 import suite.os.Scheduler;
+import suite.persistent.PerMap;
 import suite.telegram.TelegramBot;
 import suite.util.RunUtil;
 import suite.util.Thread_;
@@ -48,7 +48,7 @@ public class ServerMain {
 				+ "<br/>headers = " + request.headers //
 				+ "</html>"));
 
-		var handler1 = HttpHandler.ofDispatch(IMap //
+		var handler1 = HttpHandler.ofDispatch(PerMap //
 				.<String, HttpHandler> empty() //
 				.put("hello", HttpHandler.ofData("Hello world")) //
 				.put("path", HttpHandler.ofPath(Defaults.tmp)) //

@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import suite.Suite;
-import suite.immutable.IMap;
-import suite.immutable.ISet;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
@@ -20,6 +18,8 @@ import suite.node.Node;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.node.util.Rewrite;
+import suite.persistent.PerMap;
+import suite.persistent.PerSet;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -45,9 +45,9 @@ public class Chr {
 	}
 
 	private class State {
-		private IMap<Prototype, ISet<Node>> factsByPrototype;
+		private PerMap<Prototype, PerSet<Node>> factsByPrototype;
 
-		public State(IMap<Prototype, ISet<Node>> factsByPrototype) {
+		public State(PerMap<Prototype, PerSet<Node>> factsByPrototype) {
 			this.factsByPrototype = factsByPrototype;
 		}
 	}
@@ -82,7 +82,7 @@ public class Chr {
 	}
 
 	public Collection<Node> chr(Collection<Node> facts) {
-		var state = new State(IMap.empty());
+		var state = new State(PerMap.empty());
 
 		for (var fact : facts) {
 			var prototype = Prototype.of(fact);
@@ -159,14 +159,14 @@ public class Chr {
 
 			states = states.map(new Fun<>() {
 				public State apply(State state) {
-					var factsByPrototype1 = IMap.<Prototype, ISet<Node>> empty();
+					var factsByPrototype1 = PerMap.<Prototype, PerSet<Node>> empty();
 					for (var e : state.factsByPrototype)
 						factsByPrototype1 = factsByPrototype1.put(e.t0, replace(e.t1));
 					return new State(factsByPrototype1);
 				}
 
-				private ISet<Node> replace(ISet<Node> facts) {
-					var facts1 = ISet.<Node> empty();
+				private PerSet<Node> replace(PerSet<Node> facts) {
+					var facts1 = PerSet.<Node> empty();
 					for (var node : facts)
 						facts1 = facts1.replace(rw.replace(from, to, node));
 					return facts1;
@@ -198,12 +198,12 @@ public class Chr {
 		return Atom.of(name);
 	}
 
-	private ISet<Node> getFacts(State state, Prototype prototype) {
+	private PerSet<Node> getFacts(State state, Prototype prototype) {
 		var results = state.factsByPrototype.get(prototype);
-		return results != null ? results : ISet.empty();
+		return results != null ? results : PerSet.empty();
 	}
 
-	private State setFacts(State state, Prototype prototype, ISet<Node> nodes) {
+	private State setFacts(State state, Prototype prototype, PerSet<Node> nodes) {
 		var facts = state.factsByPrototype;
 		return new State(nodes.streamlet().first() != null ? facts.replace(prototype, nodes) : facts.remove(prototype));
 	}

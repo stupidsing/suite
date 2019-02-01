@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,11 +8,11 @@ import java.util.List;
 import suite.util.Array_;
 
 /**
- * Immutable binomial priority queue, implemented using dense-list of trees.
+ * Persistent binomial priority queue, implemented using dense-list of trees.
  *
  * @author ywsing
  */
-public class IBinPriorityQueue<T> {
+public class PerBinPriorityQueue<T> {
 
 	private static int maxRank = 64;
 
@@ -58,7 +58,7 @@ public class IBinPriorityQueue<T> {
 			return min;
 		}
 
-		private IBinPriorityQueue<T> deleteMin() {
+		private PerBinPriorityQueue<T> deleteMin() {
 			findMin();
 
 			var forest0 = newForest();
@@ -73,18 +73,18 @@ public class IBinPriorityQueue<T> {
 			for (var node : tree.nodes)
 				forest1[rank++] = node;
 
-			var pq0 = new IBinPriorityQueue<>(comparator, forest0);
-			var pq1 = new IBinPriorityQueue<>(comparator, forest1);
+			var pq0 = new PerBinPriorityQueue<>(comparator, forest0);
+			var pq1 = new PerBinPriorityQueue<>(comparator, forest1);
 			return pq0.meld(pq1);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
-	public IBinPriorityQueue(Comparator<T> comparator) {
+	public PerBinPriorityQueue(Comparator<T> comparator) {
 		this(comparator, Array_.newArray(Node.class, maxRank));
 	}
 
-	public IBinPriorityQueue(Comparator<T> comparator, Node[] trees) {
+	public PerBinPriorityQueue(Comparator<T> comparator, Node[] trees) {
 		this.comparator = comparator;
 		this.trees = trees;
 	}
@@ -93,17 +93,17 @@ public class IBinPriorityQueue<T> {
 		return new FindMinimum().findMin();
 	}
 
-	public IBinPriorityQueue<T> deleteMin() {
+	public PerBinPriorityQueue<T> deleteMin() {
 		return new FindMinimum().deleteMin();
 	}
 
-	public IBinPriorityQueue<T> add(T value) {
+	public PerBinPriorityQueue<T> add(T value) {
 		var forest = newForest();
 		forest[0] = new Node(value);
-		return meld(new IBinPriorityQueue<>(comparator, forest));
+		return meld(new PerBinPriorityQueue<>(comparator, forest));
 	}
 
-	public IBinPriorityQueue<T> meld(IBinPriorityQueue<T> pq) {
+	public PerBinPriorityQueue<T> meld(PerBinPriorityQueue<T> pq) {
 		var forest = newForest();
 		Node tree = null;
 
@@ -125,7 +125,7 @@ public class IBinPriorityQueue<T> {
 			forest[rank] = !list1.isEmpty() ? list1.get(0) : null;
 		}
 
-		return new IBinPriorityQueue<>(comparator, forest);
+		return new PerBinPriorityQueue<>(comparator, forest);
 	}
 
 	private Node link(int rank, Node node0, Node node1) {

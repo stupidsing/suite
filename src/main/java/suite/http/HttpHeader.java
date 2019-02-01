@@ -2,20 +2,20 @@ package suite.http;
 
 import static suite.util.Friends.fail;
 
-import suite.immutable.IList;
-import suite.immutable.IMap;
+import suite.persistent.PerList;
+import suite.persistent.PerMap;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 
 public class HttpHeader {
 
-	private IMap<String, IList<String>> map;
+	private PerMap<String, PerList<String>> map;
 
 	public HttpHeader() {
-		this(IMap.empty());
+		this(PerMap.empty());
 	}
 
-	public HttpHeader(IMap<String, IList<String>> map) {
+	public HttpHeader(PerMap<String, PerList<String>> map) {
 		this.map = map;
 	}
 
@@ -29,8 +29,8 @@ public class HttpHeader {
 
 	public HttpHeader put(String key, String value) {
 		var list0 = map.get(key);
-		var list1 = list0 != null ? list0 : IList.<String> end();
-		return new HttpHeader(map.replace(key, IList.cons(value, list1)));
+		var list1 = list0 != null ? list0 : PerList.<String> end();
+		return new HttpHeader(map.replace(key, PerList.cons(value, list1)));
 	}
 
 	public HttpHeader remove(String key) {

@@ -10,9 +10,9 @@ import suite.ebnf.Ebnf.Ast;
 import suite.ebnf.Grammar;
 import suite.ebnf.lr.BuildLr.Reduce;
 import suite.ebnf.lr.BuildLr.State;
-import suite.immutable.IList;
 import suite.object.Object_;
 import suite.parser.Lexer;
+import suite.persistent.PerList;
 import suite.streamlet.As;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Outlet;
@@ -61,11 +61,11 @@ public class LrParse {
 				token = tokens.g();
 			} else { // reduce
 				var reduce = sr.t1;
-				var nodes = IList.<Ast> end();
+				var nodes = PerList.<Ast> end();
 
 				for (var i = 0; i < reduce.n(); i++) {
 					var ns = stack.pop();
-					nodes = IList.cons(ns.t0, nodes);
+					nodes = PerList.cons(ns.t0, nodes);
 					state = ns.t1;
 				}
 

@@ -5,8 +5,6 @@ import static suite.util.Friends.fail;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.immutable.IList;
-import suite.immutable.IMap;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Cloner;
@@ -18,6 +16,8 @@ import suite.node.io.Formatter;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.os.Log_;
+import suite.persistent.PerList;
+import suite.persistent.PerMap;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil2.Fun2;
 
@@ -34,22 +34,22 @@ public class VerifyTest {
 
 	@Test
 	public void test() {
-		var and = new Fun<IList<String>, Node>() {
-			public Node apply(IList<String> list) {
+		var and = new Fun<PerList<String>, Node>() {
+			public Node apply(PerList<String> list) {
 				return !list.isEmpty() ? Tree.ofAnd(Suite.parse(list.head), apply(list.tail)) : Atom.TRUE;
 			}
 		};
 
 		Fun2<String, Node, Definition> def_ = (t0, t1) -> new Definition(Suite.parse(t0), t1);
 		Fun2<String, String, Definition> def2 = (t0, t1) -> def_.apply(t0, Suite.parse(t1));
-		Fun2<String, IList<String>, Definition> defn = (t0, t1) -> def_.apply(t0, and.apply(t1));
+		Fun2<String, PerList<String>, Definition> defn = (t0, t1) -> def_.apply(t0, and.apply(t1));
 
-		var defs = IMap //
+		var defs = PerMap //
 				.<String, Definition> empty() //
-				.put("def$iff", defn.apply("iff .A .B", IList.of( //
+				.put("def$iff", defn.apply("iff .A .B", PerList.of( //
 						"fore # .A => .B", //
 						"back # .B => .A"))) //
-				.put("def$eq", defn.apply("eq-class .eq", IList.of( //
+				.put("def$eq", defn.apply("eq-class .eq", PerList.of( //
 						"reflexive # true => .A .eq .A", //
 						"symmetric # .A .eq .B => .B .eq .A", //
 						"transitive # .A .eq .B, .B .eq .C => .A .eq .C"))) //
@@ -57,24 +57,24 @@ public class VerifyTest {
 						".class .P => .class (.op .P)")) //
 				.put("def$bin-op", def2.apply("bin-op .class .op", //
 						".class .P, .class .Q => .class (.P .op .Q)")) //
-				.put("def$set", defn.apply("set .eq", IList.of( //
+				.put("def$set", defn.apply("set .eq", PerList.of( //
 						".S .eq .T => (.E set-in .S) iff (.E set-in .T)"))) //
-				.put("def$group0", defn.apply("group0 .class .eq .op .zero", IList.of( //
+				.put("def$group0", defn.apply("group0 .class .eq .op .zero", PerList.of( //
 						".class .zero", //
 						"eq-class .eq", //
 						".class .P, .P .eq .Q => .class .Q", //
 						"bin-op .class .op", //
 						".class .P => (.zero .op .P) .eq .P", //
 						".class .P, .class .Q, .class .R => (.P .op (.Q .op .R)) .eq ((.P .op .Q) .op .R)"))) //
-				.put("def$group", defn.apply("group .class .eq .op .inv .zero", IList.of( //
+				.put("def$group", defn.apply("group .class .eq .op .inv .zero", PerList.of( //
 						"group0 .class .eq .op .zero", //
 						".class .P => (.P .op (.inv .P)) .eq .zero"))) //
-				.put("def$field", defn.apply("field .class .eq .op0 .inv0 .zero .op1 .inv1 .one", IList.of( //
+				.put("def$field", defn.apply("field .class .eq .op0 .inv0 .zero .op1 .inv1 .one", PerList.of( //
 						"group .class .eq .op0 .inv0 .zero", //
 						"group0 .class .eq .op1 .inv1 .one", //
 						".class .P => .P .eq .zero; (.P .op1 (.inv1 .P)) .eq .one")));
 
-		var axioms = IMap //
+		var axioms = PerMap //
 				.<String, Node> empty() //
 				.put("@complement", Suite.parse(".P, not .P => false")) //
 				.put("@and-lhs", Suite.parse(".P, .Q => .P")) //
@@ -123,10 +123,10 @@ public class VerifyTest {
 	}
 
 	private class Verify {
-		private IMap<String, Definition> defs;
-		private IMap<String, Node> rules;
+		private PerMap<String, Definition> defs;
+		private PerMap<String, Node> rules;
 
-		private Verify(IMap<String, Definition> defs, IMap<String, Node> rules) {
+		private Verify(PerMap<String, Definition> defs, PerMap<String, Node> rules) {
 			this.defs = defs;
 			this.rules = rules;
 		}

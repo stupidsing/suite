@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import static suite.util.Friends.fail;
 
@@ -12,7 +12,7 @@ import suite.streamlet.Streamlet;
 import suite.util.Fail;
 import suite.util.List_;
 
-public class IbTree<T> implements ITree<T> {
+public class PbTree<T> implements PerTree<T> {
 
 	private static int maxBranchFactor = 4;
 	private static int minBranchFactor = maxBranchFactor / 2;
@@ -50,13 +50,13 @@ public class IbTree<T> implements ITree<T> {
 		}
 	}
 
-	public static <T> IbTree<T> of(Comparator<T> comparator, List<T> ts) {
-		var ibTree = new IbTree<>(comparator);
+	public static <T> PbTree<T> of(Comparator<T> comparator, List<T> ts) {
+		var pbTree = new PbTree<>(comparator);
 
 		var list = Read //
 				.from(ts) //
 				.cons(null) //
-				.map(t -> ibTree.new Slot(null, t)) //
+				.map(t -> pbTree.new Slot(null, t)) //
 				.toList();
 
 		int size;
@@ -65,21 +65,21 @@ public class IbTree<T> implements ITree<T> {
 			var list1 = new ArrayList<>();
 			for (var i = 0; i < size;) {
 				var i1 = i + maxBranchFactor <= size ? i + minBranchFactor : size;
-				list1.add(ibTree.new Slot(list.subList(i, i1), list.get(i).pivot));
+				list1.add(pbTree.new Slot(list.subList(i, i1), list.get(i).pivot));
 				i = i1;
 			}
 		}
 
-		ibTree.root = list;
-		return ibTree;
+		pbTree.root = list;
+		return pbTree;
 	}
 
-	public IbTree(Comparator<T> comparator) {
+	public PbTree(Comparator<T> comparator) {
 		this.root = List.of(new Slot(null, null));
 		this.comparator = comparator;
 	}
 
-	private IbTree(Comparator<T> comparator, List<Slot> root) {
+	private PbTree(Comparator<T> comparator, List<Slot> root) {
 		this.root = root;
 		this.comparator = comparator;
 	}
@@ -141,7 +141,7 @@ public class IbTree<T> implements ITree<T> {
 		return fs != null && fs.c == 0 ? fs.slot.pivot : null;
 	}
 
-	public IbTree<T> add(T t) {
+	public PbTree<T> add(T t) {
 		return update(t, t0 -> {
 			if (t0 == null)
 				return t;
@@ -151,21 +151,21 @@ public class IbTree<T> implements ITree<T> {
 	}
 
 	/**
-	 * Replaces a value with another. Mainly for dictionary cases to replace
-	 * stored value for the same key.
+	 * Replaces a value with another. Mainly for dictionary cases to replace stored
+	 * value for the same key.
 	 *
 	 * Asserts comparator.compare(<original-value>, t) == 0.
 	 */
-	public IbTree<T> replace(T t) {
+	public PbTree<T> replace(T t) {
 		return update(t, t_ -> t);
 	}
 
-	public IbTree<T> remove(T t) {
-		return new IbTree<>(comparator, newRoot(update(root, t, t_ -> null)));
+	public PbTree<T> remove(T t) {
+		return new PbTree<>(comparator, newRoot(update(root, t, t_ -> null)));
 	}
 
-	public IbTree<T> update(T t, Iterate<T> fun) {
-		return new IbTree<>(comparator, newRoot(update(root, t, fun)));
+	public PbTree<T> update(T t, Iterate<T> fun) {
+		return new PbTree<>(comparator, newRoot(update(root, t, fun)));
 	}
 
 	private List<Slot> update(List<Slot> node0, T t, Iterate<T> fun) {

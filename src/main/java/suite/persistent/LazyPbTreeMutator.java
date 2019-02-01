@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import suite.adt.Mutable;
 import suite.adt.pair.Pair;
@@ -6,11 +6,11 @@ import suite.fs.KeyValueMutator;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Streamlet;
 
-public class LazyIbTreeMutator<K, V> implements KeyValueMutator<K, V> {
+public class LazyPbTreeMutator<K, V> implements KeyValueMutator<K, V> {
 
-	private LazyIbTree<Pair<K, V>> tree;
+	private LazyPbTree<Pair<K, V>> tree;
 
-	public LazyIbTreeMutator(LazyIbTree<Pair<K, V>> tree) {
+	public LazyPbTreeMutator(LazyPbTree<Pair<K, V>> tree) {
 		this.tree = tree;
 	}
 
@@ -39,7 +39,7 @@ public class LazyIbTreeMutator<K, V> implements KeyValueMutator<K, V> {
 		update(key, pair0 -> null);
 	}
 
-	public LazyIbTree<Pair<K, V>> get() {
+	public LazyPbTree<Pair<K, V>> get() {
 		return tree;
 	}
 
@@ -47,7 +47,7 @@ public class LazyIbTreeMutator<K, V> implements KeyValueMutator<K, V> {
 		tree = update_(key, fun);
 	}
 
-	private LazyIbTree<Pair<K, V>> update_(K key, Iterate<Pair<K, V>> fun) {
+	private LazyPbTree<Pair<K, V>> update_(K key, Iterate<Pair<K, V>> fun) {
 		return tree.update(node(key), fun);
 	}
 

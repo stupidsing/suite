@@ -1,6 +1,6 @@
 package suite.instructionexecutor.thunk;
 
-import suite.immutable.IPointer;
+import suite.persistent.PerPointer;
 import suite.streamlet.FunUtil.Fun;
 
 public class IPointerMapper<T0, T1> {
@@ -11,18 +11,18 @@ public class IPointerMapper<T0, T1> {
 		this.fun = fun;
 	}
 
-	public static <T0, T1> IPointer<T1> map(Fun<T0, T1> fun, IPointer<T0> pointer) {
+	public static <T0, T1> PerPointer<T1> map(Fun<T0, T1> fun, PerPointer<T0> pointer) {
 		return new IPointerMapper<>(fun).map(pointer);
 	}
 
-	public IPointer<T1> map(IPointer<T0> pointer) {
-		return new IPointer<>() {
+	public PerPointer<T1> map(PerPointer<T0> pointer) {
+		return new PerPointer<>() {
 			public T1 head() {
 				var head = pointer.head();
 				return head != null ? fun.apply(head) : null;
 			}
 
-			public IPointer<T1> tail() {
+			public PerPointer<T1> tail() {
 				return map(pointer.tail());
 			}
 		};

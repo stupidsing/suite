@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,20 +8,20 @@ import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil2.BinOp;
 import suite.streamlet.Streamlet;
 
-public class IIntMap<V> {
+public class PerIntMap<V> {
 
 	private Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>> bl0;
 
-	public static <V> IIntMap<V> meld(IIntMap<V> map0, IIntMap<V> map1, BinOp<V> f) {
+	public static <V> PerIntMap<V> meld(PerIntMap<V> map0, PerIntMap<V> map1, BinOp<V> f) {
 		BinOp<Bl<V>> f4 = (m0, m1) -> Bl.meld(m0, m1, f);
 		BinOp<Bl<Bl<V>>> f3 = (m0, m1) -> Bl.meld(m0, m1, f4);
 		BinOp<Bl<Bl<Bl<V>>>> f2 = (m0, m1) -> Bl.meld(m0, m1, f3);
 		BinOp<Bl<Bl<Bl<Bl<V>>>>> f1 = (m0, m1) -> Bl.meld(m0, m1, f2);
 		BinOp<Bl<Bl<Bl<Bl<Bl<V>>>>>> f0 = (m0, m1) -> Bl.meld(m0, m1, f1);
-		return new IIntMap<>(Bl.meld(map0.bl0, map1.bl0, f0));
+		return new PerIntMap<>(Bl.meld(map0.bl0, map1.bl0, f0));
 	}
 
-	public static <V> IIntMap<V> of(List<IntObjPair<V>> list) {
+	public static <V> PerIntMap<V> of(List<IntObjPair<V>> list) {
 		var list6 = new ArrayList<>(list);
 		list6.sort((p0, p1) -> Integer.compare(p0.t0, p1.t0));
 		var list5 = consolidate(list6);
@@ -29,7 +29,7 @@ public class IIntMap<V> {
 		var list3 = consolidate(list4);
 		var list2 = consolidate(list3);
 		var list1 = consolidate(list2);
-		return new IIntMap<>(Bl.of(list1.subList(0, list1.size())));
+		return new PerIntMap<>(Bl.of(list1.subList(0, list1.size())));
 	}
 
 	private static <V> List<IntObjPair<Bl<V>>> consolidate(List<IntObjPair<V>> list0) {
@@ -46,11 +46,11 @@ public class IIntMap<V> {
 		return list1;
 	}
 
-	public IIntMap() {
+	public PerIntMap() {
 		this(null);
 	}
 
-	private IIntMap(Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>> Bl) {
+	private PerIntMap(Bl<Bl<Bl<Bl<Bl<Bl<V>>>>>> Bl) {
 		this.bl0 = Bl;
 	}
 
@@ -78,7 +78,7 @@ public class IIntMap<V> {
 		return Bl.get(bl5, k5);
 	}
 
-	public IIntMap<V> update(int key, Iterate<V> fun) {
+	public PerIntMap<V> update(int key, Iterate<V> fun) {
 		var k0 = key >>> 30 & 63;
 		var k1 = key >>> 24 & 63;
 		var k2 = key >>> 18 & 63;
@@ -98,7 +98,7 @@ public class IIntMap<V> {
 		var new2 = Bl.update(Bl2, k2, new3);
 		var new1 = Bl.update(bl1, k1, new2);
 		var new0 = Bl.update(bl0, k0, new1);
-		return new IIntMap<>(new0);
+		return new PerIntMap<>(new0);
 	}
 
 }

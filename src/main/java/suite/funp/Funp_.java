@@ -12,11 +12,11 @@ import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpLambda;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P2.FunpFramePointer;
-import suite.immutable.IMap;
 import suite.inspect.Inspect;
 import suite.node.Node;
 import suite.node.util.Singleton;
 import suite.object.AutoInterface;
+import suite.persistent.PerMap;
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
@@ -86,7 +86,7 @@ public class Funp_ {
 		var defByVariables = new IdentityHashMap<FunpVariable, Funp>();
 
 		new Object() {
-			private Funp associate(IMap<String, Funp> vars, Funp node_) {
+			private Funp associate(PerMap<String, Funp> vars, Funp node_) {
 				return inspect.rewrite(node_, Funp.class, n_ -> n_.sw( //
 				).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, type) -> {
 					associate(vars, value);
@@ -106,7 +106,7 @@ public class Funp_ {
 					return n_;
 				})).result());
 			}
-		}.associate(IMap.empty(), node);
+		}.associate(PerMap.empty(), node);
 
 		return defByVariables;
 	}

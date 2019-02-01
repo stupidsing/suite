@@ -12,8 +12,8 @@ import suite.fs.KeyDataMutator;
 import suite.fs.KeyDataStore;
 import suite.fs.KeyValueMutator;
 import suite.fs.KeyValueStore;
-import suite.immutable.LazyIbTreeStore;
 import suite.node.util.Singleton;
+import suite.persistent.LazyPbTreeStore;
 import suite.primitive.Bytes;
 import suite.serialize.Serialize;
 import suite.streamlet.Streamlet;
@@ -31,19 +31,19 @@ public class LazyIbTreeFileSystemImpl implements FileSystem {
 		var pfs = FileFactory.subPageFiles(jpf, 0, 10240, 20480, 30720);
 
 		mutator = new FileSystemMutatorImpl(keyUtil, () -> new KeyDataStore<>() {
-			private KeyValueStore<Bytes, Bytes> kvss = LazyIbTreeStore.ofExtent( //
+			private KeyValueStore<Bytes, Bytes> kvss = LazyPbTreeStore.ofExtent( //
 					pfs[0], //
 					Bytes.comparator, //
 					serialize.variableLengthBytes, //
 					serialize.variableLengthBytes);
 
-			private KeyValueStore<Bytes, Integer> kvsis = LazyIbTreeStore.ofExtent( //
+			private KeyValueStore<Bytes, Integer> kvsis = LazyPbTreeStore.ofExtent( //
 					pfs[1], //
 					Bytes.comparator, //
 					serialize.variableLengthBytes, //
 					serialize.int_);
 
-			private KeyValueStore<Bytes, Boolean> kvsbs = LazyIbTreeStore.ofExtent( //
+			private KeyValueStore<Bytes, Boolean> kvsbs = LazyPbTreeStore.ofExtent( //
 					pfs[2], //
 					Bytes.comparator, //
 					serialize.variableLengthBytes, //

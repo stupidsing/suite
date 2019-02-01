@@ -1,14 +1,14 @@
-package suite.immutable;
+package suite.persistent;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class IIntMapTest {
+public class PerIntMapTest {
 
 	@Test
 	public void test() {
-		var map = new IIntMap<>();
+		var map = new PerIntMap<>();
 
 		for (var i = 0; i < 256; i++) {
 			var i_ = i;

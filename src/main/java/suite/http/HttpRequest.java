@@ -3,14 +3,14 @@ package suite.http;
 import java.io.InputStream;
 
 import suite.adt.pair.Pair;
-import suite.immutable.IList;
+import suite.persistent.PerList;
 import suite.streamlet.As;
 
 public class HttpRequest {
 
 	public final String method;
 	public final String server;
-	public final IList<String> paths;
+	public final PerList<String> paths;
 	public final String query;
 	public final HttpHeader headers;
 	public final InputStream inputStream;
@@ -28,7 +28,7 @@ public class HttpRequest {
 	public HttpRequest( //
 			String method, //
 			String server, //
-			IList<String> paths, //
+			PerList<String> paths, //
 			String query, //
 			HttpHeader headers, //
 			InputStream inputStream) {
@@ -48,7 +48,7 @@ public class HttpRequest {
 		if (!paths.isEmpty())
 			return Pair.of(paths.head, new HttpRequest(method, server, paths.tail, query, headers, inputStream));
 		else
-			return Pair.of("", new HttpRequest(method, server, IList.end(), query, headers, inputStream));
+			return Pair.of("", new HttpRequest(method, server, PerList.end(), query, headers, inputStream));
 	}
 
 	public String getLogString() {

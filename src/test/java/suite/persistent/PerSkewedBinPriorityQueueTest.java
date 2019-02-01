@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import static org.junit.Assert.assertEquals;
 
@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import suite.object.Object_;
 
-public class IBinPriorityQueueTest {
+public class PerSkewedBinPriorityQueueTest {
 
 	@Test
 	public void test() {
@@ -20,7 +20,7 @@ public class IBinPriorityQueueTest {
 			list.add(i);
 		Collections.shuffle(list);
 
-		var pq = new IBinPriorityQueue<Integer>(Object_::compare);
+		var pq = new PerSkewedBinPriorityQueue<Integer>(Object_::compare);
 
 		for (var i : list)
 			pq = pq.add(i);

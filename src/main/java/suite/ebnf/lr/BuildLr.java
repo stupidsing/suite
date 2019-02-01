@@ -12,7 +12,7 @@ import java.util.Set;
 import suite.adt.pair.Pair;
 import suite.ebnf.Grammar;
 import suite.ebnf.Grammar.GrammarType;
-import suite.immutable.IList;
+import suite.persistent.PerList;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
@@ -159,10 +159,10 @@ public class BuildLr {
 	}
 
 	private Blr build(String entity, Transition nextx) {
-		return build(IList.end(), grammarByEntity.get(entity), nextx);
+		return build(PerList.end(), grammarByEntity.get(entity), nextx);
 	}
 
-	private Blr build(IList<Pair<String, Set<String>>> ps, Grammar eg, Transition nextx) {
+	private Blr build(PerList<Pair<String, Set<String>>> ps, Grammar eg, Transition nextx) {
 		Fun<Streamlet2<String, Transition>, Blr> mergeAll = st2 -> {
 			var next = newTransition(readLookahead.readLookahead(eg, nextx.keySet()));
 			var state1 = newState(nextx);

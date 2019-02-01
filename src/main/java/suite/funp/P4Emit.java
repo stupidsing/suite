@@ -15,7 +15,7 @@ import suite.assembler.Amd64.OpImmLabel;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
-import suite.immutable.IList;
+import suite.persistent.PerList;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 
@@ -188,13 +188,13 @@ public class P4Emit {
 
 		var gen = new Object() {
 			private void g(OpImmLabel label) {
-				g(label, IList.end());
+				g(label, PerList.end());
 			}
 
-			private void g(OpImmLabel label, IList<OpImmLabel> stack) {
+			private void g(OpImmLabel label, PerList<OpImmLabel> stack) {
 				for (var label_ : inByOut.get(label))
 					if (!stack.contains(label_) && !set.contains(label_))
-						g(label_, IList.cons(label_, stack));
+						g(label_, PerList.cons(label_, stack));
 				gj(label, false);
 			}
 

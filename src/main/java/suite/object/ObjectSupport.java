@@ -3,13 +3,13 @@ package suite.object;
 import java.util.List;
 import java.util.Objects;
 
-import suite.immutable.IList;
+import suite.persistent.PerList;
 import suite.streamlet.FunUtil.Fun;
 import suite.util.String_;
 
 public class ObjectSupport<T> {
 
-	private static ThreadLocal<IList<Object>> recurse = ThreadLocal.withInitial(IList::end);
+	private static ThreadLocal<PerList<Object>> recurse = ThreadLocal.withInitial(PerList::end);
 
 	private Fun<T, List<?>> listFun;
 
@@ -71,7 +71,7 @@ public class ObjectSupport<T> {
 
 		if (!recurse0.containsId(t))
 			try {
-				recurse.set(IList.cons(t, recurse0));
+				recurse.set(PerList.cons(t, recurse0));
 				sb.append(t.getClass().getSimpleName() + "(");
 				for (var value : listFun.apply(t))
 					sb.append(value + ",");

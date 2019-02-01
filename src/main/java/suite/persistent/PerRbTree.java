@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import static suite.util.Friends.fail;
 
@@ -11,12 +11,12 @@ import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
 
 /**
- * Immutable Red-Black tree implementation. However, node deletion is not
+ * Persistent Red-Black tree implementation. However, node deletion is not
  * implemented.
  *
  * @author ywsing
  */
-public class IRbTree<T> implements ITree<T> {
+public class PerRbTree<T> implements PerTree<T> {
 
 	private Node root;
 	private Comparator<T> comparator;
@@ -34,11 +34,11 @@ public class IRbTree<T> implements ITree<T> {
 		}
 	}
 
-	public IRbTree(Comparator<T> comparator) {
+	public PerRbTree(Comparator<T> comparator) {
 		this(comparator, null);
 	}
 
-	private IRbTree(Comparator<T> comparator, Node root) {
+	private PerRbTree(Comparator<T> comparator, Node root) {
 		this.root = root;
 		this.comparator = comparator;
 	}
@@ -90,7 +90,7 @@ public class IRbTree<T> implements ITree<T> {
 		return null;
 	}
 
-	public IRbTree<T> add(T t) {
+	public PerRbTree<T> add(T t) {
 		return add(t, false);
 	}
 
@@ -100,21 +100,21 @@ public class IRbTree<T> implements ITree<T> {
 	 *
 	 * Asserts comparator.compare(<original-value>, t) == 0.
 	 */
-	public IRbTree<T> replace(T t) {
+	public PerRbTree<T> replace(T t) {
 		return add(t, true);
 	}
 
-	public IRbTree<T> remove(T t) {
+	public PerRbTree<T> remove(T t) {
 		throw new UnsupportedOperationException();
 	}
 
-	private IRbTree<T> add(T t, boolean isReplace) {
+	private PerRbTree<T> add(T t, boolean isReplace) {
 		var node = root;
 
 		if (node != null && !node.isBlack) // turns red node into black
 			node = new Node(true, node.pivot, node.left, node.right);
 
-		return new IRbTree<>(comparator, add(node, t, isReplace));
+		return new PerRbTree<>(comparator, add(node, t, isReplace));
 	}
 
 	private Node add(Node node, T t, boolean isReplace) {

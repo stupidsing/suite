@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import java.util.Iterator;
 import java.util.Objects;
@@ -6,21 +6,21 @@ import java.util.Objects;
 import suite.object.Object_;
 import suite.streamlet.Streamlet;
 
-public class ISet<V extends Comparable<V>> implements Iterable<V> {
+public class PerSet<V extends Comparable<V>> implements Iterable<V> {
 
-	private static ISet<?> empty = new ISet<Integer>();
-	private ITree<V> tree = new IbTree<>(Object_::compare);
+	private static PerSet<?> empty = new PerSet<Integer>();
+	private PerTree<V> tree = new PbTree<>(Object_::compare);
 
-	public static <V extends Comparable<V>> ISet<V> empty() {
+	public static <V extends Comparable<V>> PerSet<V> empty() {
 		@SuppressWarnings("unchecked")
-		ISet<V> m = (ISet<V>) empty;
+		PerSet<V> m = (PerSet<V>) empty;
 		return m;
 	}
 
-	private ISet() {
+	private PerSet() {
 	}
 
-	public ISet(ITree<V> tree) {
+	public PerSet(PerTree<V> tree) {
 		this.tree = tree;
 	}
 
@@ -41,21 +41,21 @@ public class ISet<V extends Comparable<V>> implements Iterable<V> {
 		return tree.find(v);
 	}
 
-	public ISet<V> add(V v) {
-		return new ISet<>(tree.add(v));
+	public PerSet<V> add(V v) {
+		return new PerSet<>(tree.add(v));
 	}
 
-	public ISet<V> replace(V v) {
-		return new ISet<>(tree.replace(v));
+	public PerSet<V> replace(V v) {
+		return new PerSet<>(tree.replace(v));
 	}
 
-	public ISet<V> remove(V v) {
-		return new ISet<>(tree.remove(v));
+	public PerSet<V> remove(V v) {
+		return new PerSet<>(tree.remove(v));
 	}
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == ISet.class && Objects.equals(streamlet(), ((ISet<?>) object).streamlet());
+		return Object_.clazz(object) == PerSet.class && Objects.equals(streamlet(), ((PerSet<?>) object).streamlet());
 	}
 
 	@Override

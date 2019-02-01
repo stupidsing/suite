@@ -5,7 +5,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.function.BiPredicate;
 
-import suite.immutable.IList;
+import suite.persistent.PerList;
 import suite.primitive.LngMutable;
 import suite.streamlet.As;
 import suite.util.HtmlUtil;
@@ -61,7 +61,7 @@ public class HttpSessionControl {
 			var session = sessionId != null ? sessionManager.get(sessionId) : null;
 			HttpResponse response;
 
-			if (Objects.equals(request.paths, IList.of("login"))) {
+			if (Objects.equals(request.paths, PerList.of("login"))) {
 				var attrs = HttpHeaderUtil.getPostedAttrs(request.inputStream);
 				var username = attrs.get("username");
 				var password = attrs.get("password");
@@ -81,11 +81,11 @@ public class HttpSessionControl {
 					response = showProtectedPage(request1, sessionId);
 				} else
 					response = showLoginPage(paths, true);
-			} else if (Objects.equals(request.paths, IList.of("logout"))) {
+			} else if (Objects.equals(request.paths, PerList.of("logout"))) {
 				if (sessionId != null)
 					sessionManager.remove(sessionId);
 
-				response = showLoginPage(IList.end(), false);
+				response = showLoginPage(PerList.end(), false);
 			} else if (session != null && current < session.lastRequestDt.value() + TIMEOUTDURATION) {
 				session.lastRequestDt.update(current);
 				response = showProtectedPage(request, sessionId);
@@ -101,7 +101,7 @@ public class HttpSessionControl {
 			return new HttpResponse(r.status, headers1, r.out);
 		}
 
-		private HttpResponse showLoginPage(IList<String> redirectPath, boolean isLoginFailed) {
+		private HttpResponse showLoginPage(PerList<String> redirectPath, boolean isLoginFailed) {
 			var redirectPath1 = redirectPath.streamlet().map(p -> "/" + p).collect(As::joined);
 
 			return HttpResponse.of(To.outlet("<html>" //

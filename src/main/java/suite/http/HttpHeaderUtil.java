@@ -8,19 +8,19 @@ import java.net.URLDecoder;
 import java.util.Map;
 
 import suite.cfg.Defaults;
-import suite.immutable.IList;
+import suite.persistent.PerList;
 import suite.streamlet.Read;
 import suite.util.String_;
 
 public class HttpHeaderUtil {
 
-	public static IList<String> getPaths(String pathString) {
+	public static PerList<String> getPaths(String pathString) {
 		var arr = pathString.split("/");
-		var paths = IList.<String> end();
+		var paths = PerList.<String> end();
 		for (var i = arr.length - 1; i >= 0; i--) {
 			String p = arr[i];
 			if (!p.isEmpty() && !String_.equals(p, ".."))
-				paths = IList.cons(p, paths);
+				paths = PerList.cons(p, paths);
 		}
 		return paths;
 	}

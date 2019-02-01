@@ -50,8 +50,6 @@ import suite.funp.P0.FunpTypeCheck;
 import suite.funp.P0.FunpVariable;
 import suite.funp.P0.FunpVariableNew;
 import suite.http.HttpUtil;
-import suite.immutable.IMap;
-import suite.immutable.ISet;
 import suite.inspect.Inspect;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
@@ -67,6 +65,8 @@ import suite.node.io.TermOp;
 import suite.node.util.Singleton;
 import suite.node.util.TreeUtil;
 import suite.os.FileUtil;
+import suite.persistent.PerMap;
+import suite.persistent.PerSet;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.IntPrimitives.Int_Obj;
@@ -90,14 +90,14 @@ public class P0Parse {
 	private Map<String, Integer> idByTag = new HashMap<>();
 
 	public Funp parse(Node node0) {
-		var node1 = new Expand(IMap.empty()).e(node0);
-		return new Parse(ISet.empty()).p(node1);
+		var node1 = new Expand(PerMap.empty()).e(node0);
+		return new Parse(PerSet.empty()).p(node1);
 	}
 
 	private class Expand {
-		private IMap<Prototype, Node[]> macros;
+		private PerMap<Prototype, Node[]> macros;
 
-		private Expand(IMap<Prototype, Node[]> macros) {
+		private Expand(PerMap<Prototype, Node[]> macros) {
 			this.macros = macros;
 		}
 
@@ -126,9 +126,9 @@ public class P0Parse {
 	}
 
 	private class Parse {
-		private ISet<String> vns;
+		private PerSet<String> vns;
 
-		private Parse(ISet<String> vns) {
+		private Parse(PerSet<String> vns) {
 			this.vns = vns;
 		}
 
@@ -370,7 +370,7 @@ public class P0Parse {
 		}
 
 		private Funp bind(Node a, Node b, Node c, Node d) {
-			var vnsMutable = Mutable.of(ISet.<String> empty());
+			var vnsMutable = Mutable.of(PerSet.<String> empty());
 
 			Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class, n_ -> n_.cast(FunpVariableNew.class, f -> f.apply(vn -> {
 				vnsMutable.update(vnsMutable.value().replace(vn));
@@ -380,7 +380,7 @@ public class P0Parse {
 			var be = iter.apply(p(a));
 			var vns_ = vnsMutable.value();
 			var value = p(b);
-			var then = new Parse(vns_.streamlet().fold(vns, ISet::add)).p(c);
+			var then = new Parse(vns_.streamlet().fold(vns, PerSet::add)).p(c);
 			var else_ = p(d);
 			var f0 = new Bind(vns_).bind(be, value, then, else_);
 			var f1 = FunpTypeCheck.of(be, value, f0);
@@ -401,9 +401,9 @@ public class P0Parse {
 	}
 
 	private class Bind {
-		private ISet<String> vns;
+		private PerSet<String> vns;
 
-		private Bind(ISet<String> vns) {
+		private Bind(PerSet<String> vns) {
 			this.vns = vns;
 		}
 

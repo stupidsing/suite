@@ -3,7 +3,7 @@ package suite.parser;
 import java.util.List;
 
 import suite.adt.pair.Pair;
-import suite.immutable.IList;
+import suite.persistent.PerList;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet;
@@ -79,17 +79,17 @@ class Matcher {
 	private class State {
 		private String input;
 		private int pos;
-		private IList<String> matches;
+		private PerList<String> matches;
 
 		private State(String input) {
-			this(input, 0, IList.<String> end());
+			this(input, 0, PerList.<String> end());
 		}
 
 		private State(State state, int advance) {
 			this(state.input, state.pos + advance, state.matches);
 		}
 
-		private State(String input, int position, IList<String> matches) {
+		private State(String input, int position, PerList<String> matches) {
 			this.input = input;
 			pos = position;
 			this.matches = matches;
@@ -125,7 +125,7 @@ class Matcher {
 					public State g() {
 						if (end <= state.input.length()) {
 							String m = state.input.substring(start, end);
-							return new State(state.input, end++, IList.cons(m, state.matches));
+							return new State(state.input, end++, PerList.cons(m, state.matches));
 						} else
 							return null;
 					}

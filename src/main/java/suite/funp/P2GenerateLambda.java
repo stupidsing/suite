@@ -28,9 +28,9 @@ import suite.funp.P0.FunpStruct;
 import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P0.FunpVariable;
-import suite.immutable.IMap;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+import suite.persistent.PerMap;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
 import suite.util.To;
@@ -98,20 +98,20 @@ public class P2GenerateLambda {
 	}
 
 	public int eval(Funp f) {
-		var thunk = compile(0, IMap.empty(), f);
+		var thunk = compile(0, PerMap.empty(), f);
 		var value = thunk.apply(new Rt(null, null));
 		return ((Int) value).i;
 	}
 
-	private Thunk compile(int fs, IMap<String, Integer> env, Funp n) {
+	private Thunk compile(int fs, PerMap<String, Integer> env, Funp n) {
 		return new Compile(fs, env).compile_(n);
 	}
 
 	private class Compile {
 		private int fs;
-		private IMap<String, Integer> env;
+		private PerMap<String, Integer> env;
 
-		private Compile(int fs, IMap<String, Integer> env) {
+		private Compile(int fs, PerMap<String, Integer> env) {
 			this.fs = fs;
 			this.env = env;
 		}

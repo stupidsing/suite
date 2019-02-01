@@ -1,4 +1,4 @@
-package suite.immutable;
+package suite.persistent;
 
 import static suite.util.Friends.max;
 import static suite.util.Friends.rethrow;
@@ -20,8 +20,8 @@ import suite.file.PageFile;
 import suite.file.SerializedPageFile;
 import suite.file.impl.FileFactory;
 import suite.file.impl.SerializedFileFactory;
-import suite.immutable.LazyIbTree.Slot;
 import suite.node.util.Singleton;
+import suite.persistent.LazyPbTree.Slot;
 import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
 import suite.serialize.Serialize;
@@ -31,7 +31,7 @@ import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.Read;
 import suite.util.To;
 
-public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Extent, T> {
+public class LazyPbTreeExtentFilePersister<T> implements LazyPbTreePersister<Extent, T> {
 
 	private Serialize serialize = Singleton.me.serialize;
 
@@ -52,7 +52,7 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 		}
 	}
 
-	public LazyIbTreeExtentFilePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
+	public LazyPbTreeExtentFilePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
 		var ts1 = serialize.nullable(ts);
 		var es = serialize.extent();
 		var ps = serialize.pair(ts1, es);
@@ -84,12 +84,12 @@ public class LazyIbTreeExtentFilePersister<T> implements LazyIbTreePersister<Ext
 	}
 
 	@Override
-	public LazyIbTree<T> load(Extent extent) {
-		return new LazyIbTree<>(comparator, load_(extent));
+	public LazyPbTree<T> load(Extent extent) {
+		return new LazyPbTree<>(comparator, load_(extent));
 	}
 
 	@Override
-	public Extent save(LazyIbTree<T> tree) {
+	public Extent save(LazyPbTree<T> tree) {
 		synchronized (writeLock) {
 			return save_(tree.root);
 		}

@@ -8,9 +8,9 @@ import suite.file.JournalledPageFile;
 import suite.file.PageFile;
 import suite.fs.KeyValueMutator;
 import suite.fs.impl.TransactionManager;
-import suite.immutable.LazyIbTreeStore;
 import suite.node.util.Singleton;
 import suite.object.Object_;
+import suite.persistent.LazyPbTreeStore;
 import suite.serialize.Serialize;
 import suite.streamlet.FunUtil.Fun;
 
@@ -24,7 +24,7 @@ public class Database implements Closeable {
 	public Database(Path path) {
 		journalledPageFile = JournalledFileFactory.journalled(path, PageFile.defaultPageSize);
 
-		transactionManager = new TransactionManager<>(() -> LazyIbTreeStore.ofExtent( //
+		transactionManager = new TransactionManager<>(() -> LazyPbTreeStore.ofExtent( //
 				journalledPageFile, //
 				Object_::compare, //
 				serialize.int_, //

@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import suite.Suite;
 import suite.adt.Mutable;
-import suite.immutable.IMap;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Prover;
@@ -25,6 +24,7 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
+import suite.persistent.PerMap;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil2.BiFun;
@@ -74,7 +74,7 @@ public class InterpretFunLazy {
 		df.putAll(intOpMap);
 
 		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
-		var lazy0 = new Lazy(0, IMap.empty());
+		var lazy0 = new Lazy(0, PerMap.empty());
 		var frame = new Frame();
 
 		for (var key : keys) {
@@ -95,7 +95,7 @@ public class InterpretFunLazy {
 	}
 
 	private Node inferType(Node node) {
-		var env0 = IMap //
+		var env0 = PerMap //
 				.<String, Node> empty() //
 				.put(TermOp.AND___.name, Suite.substitute("FUN .0 FUN .1 CONS .0 .1")) //
 				.put("fst", Suite.substitute("FUN (CONS .0 .1) .0")) //
@@ -113,9 +113,9 @@ public class InterpretFunLazy {
 				.fold(env1, (e, o) -> e.put(o.name_(), Suite.substitute("FUN NUMBER FUN NUMBER NUMBER")));
 
 		class InferType {
-			private IMap<String, Node> env;
+			private PerMap<String, Node> env;
 
-			private InferType(IMap<String, Node> env) {
+			private InferType(PerMap<String, Node> env) {
 				this.env = env;
 			}
 
@@ -201,9 +201,9 @@ public class InterpretFunLazy {
 
 	private class Lazy {
 		private int fs;
-		private IMap<Node, Fun<Frame, Thunk>> vm;
+		private PerMap<Node, Fun<Frame, Thunk>> vm;
 
-		private Lazy(int fs, IMap<Node, Fun<Frame, Thunk>> vm) {
+		private Lazy(int fs, PerMap<Node, Fun<Frame, Thunk>> vm) {
 			this.fs = fs;
 			this.vm = vm;
 		}
@@ -275,7 +275,7 @@ public class InterpretFunLazy {
 			}).match(Matcher.error, m -> {
 				return frame -> () -> fail("error termination " + Formatter.display(m));
 			}).match(Matcher.fun, (param, do_) -> {
-				var vm1 = IMap.<Node, Fun<Frame, Thunk>> empty();
+				var vm1 = PerMap.<Node, Fun<Frame, Thunk>> empty();
 				for (var e : vm) {
 					var getter0 = e.t1;
 					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));

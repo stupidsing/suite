@@ -1,6 +1,6 @@
-package suite.immutable;
+package suite.persistent;
 
-public interface IPointer<T> {
+public interface PerPointer<T> {
 
 	/**
 	 * @return current element, if null if end of list was reached.
@@ -10,6 +10,6 @@ public interface IPointer<T> {
 	/**
 	 * @return pointer pointing to succeeding element.
 	 */
-	public IPointer<T> tail();
+	public PerPointer<T> tail();
 
 }

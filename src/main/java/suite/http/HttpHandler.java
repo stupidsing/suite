@@ -10,7 +10,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.BiPredicate;
 
-import suite.immutable.IMap;
+import suite.persistent.PerMap;
 import suite.primitive.LngMutable;
 import suite.util.String_;
 import suite.util.To;
@@ -21,7 +21,7 @@ public interface HttpHandler {
 		return request -> HttpResponse.of(To.outlet(data));
 	}
 
-	public static HttpHandler ofDispatch(IMap<String, HttpHandler> map) {
+	public static HttpHandler ofDispatch(PerMap<String, HttpHandler> map) {
 		return request -> {
 			var p = request.split();
 			var handler = map.get(p.t0);

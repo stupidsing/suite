@@ -5,7 +5,7 @@ import static suite.util.Friends.fail;
 import java.util.ArrayList;
 import java.util.List;
 
-import suite.immutable.IPointer;
+import suite.persistent.PerPointer;
 import suite.streamlet.FunUtil.Source;
 import suite.util.List_;
 
@@ -17,7 +17,7 @@ public class IndexedSourceReader<T> {
 	private int offset = 0;
 	private List<T> queue = new ArrayList<>();
 
-	public static <T> IPointer<T> of(Source<T> st) {
+	public static <T> PerPointer<T> of(Source<T> st) {
 		return new IndexedSourceReader<>(st).pointer(0);
 	}
 
@@ -25,8 +25,8 @@ public class IndexedSourceReader<T> {
 		this.source = Source;
 	}
 
-	private IPointer<T> pointer(int position) {
-		return new IPointer<>() {
+	private PerPointer<T> pointer(int position) {
+		return new PerPointer<>() {
 			public T head() {
 				synchronized (IndexedSourceReader.this) {
 					while (queue.size() <= position - offset) {
@@ -57,7 +57,7 @@ public class IndexedSourceReader<T> {
 				}
 			}
 
-			public IPointer<T> tail() {
+			public PerPointer<T> tail() {
 				return pointer(position + 1);
 			}
 		};

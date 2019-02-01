@@ -4,7 +4,6 @@ import static suite.util.Friends.fail;
 
 import suite.Suite;
 import suite.adt.Mutable;
-import suite.immutable.IMap;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.node.Atom;
@@ -14,6 +13,7 @@ import suite.node.Reference;
 import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
+import suite.persistent.PerMap;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.Read;
@@ -39,9 +39,9 @@ public class InterpretFunLazy0 {
 
 	public Node inferType(Node node) {
 		class InferType {
-			private IMap<String, Node> env;
+			private PerMap<String, Node> env;
 
-			private InferType(IMap<String, Node> env) {
+			private InferType(PerMap<String, Node> env) {
 				this.env = env;
 			}
 
@@ -85,7 +85,7 @@ public class InterpretFunLazy0 {
 			}
 		}
 
-		var env0 = IMap //
+		var env0 = PerMap //
 				.<String, Node> empty() //
 				.put(Atom.TRUE.name, Suite.parse("BOOLEAN")) //
 				.put(Atom.FALSE.name, Suite.parse("BOOLEAN")) //
@@ -110,7 +110,7 @@ public class InterpretFunLazy0 {
 	public Thunk lazy(Node node) {
 		Thunk error = () -> fail("error termination");
 
-		var env0 = IMap //
+		var env0 = PerMap //
 				.<String, Thunk> empty() //
 				.put(Atom.TRUE.name, () -> Atom.TRUE) //
 				.put(Atom.FALSE.name, () -> Atom.FALSE) //
@@ -130,8 +130,8 @@ public class InterpretFunLazy0 {
 		return lazy0(node).apply(env2);
 	}
 
-	private Fun<IMap<String, Thunk>, Thunk> lazy0(Node node) {
-		return new SwitchNode<Fun<IMap<String, Thunk>, Thunk>>(node //
+	private Fun<PerMap<String, Thunk>, Thunk> lazy0(Node node) {
+		return new SwitchNode<Fun<PerMap<String, Thunk>, Thunk>>(node //
 		).match("define .0 := .1 ~ .2", (a, b, c) -> {
 			var vk = Atom.name(a);
 			var value = lazy0(b);

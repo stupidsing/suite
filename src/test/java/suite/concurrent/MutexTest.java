@@ -7,7 +7,7 @@ import org.junit.Test;
 
 import suite.concurrent.Concurrent.DeadlockException;
 import suite.concurrent.Mutex.MutexLock;
-import suite.immutable.IList;
+import suite.persistent.PerList;
 import suite.primitive.BooMutable;
 import suite.streamlet.As;
 import suite.streamlet.Read;
@@ -24,25 +24,25 @@ public class MutexTest {
 
 	@Test
 	public void testDeadlock() {
-		var ra = lockInOrder(IList.of(a, b));
-		var rb = lockInOrder(IList.of(b, a));
+		var ra = lockInOrder(PerList.of(a, b));
+		var rb = lockInOrder(PerList.of(b, a));
 		assertTrue(isDeadlock(ra, rb));
 	}
 
 	@Test
 	public void testNoDeadlock() {
-		var ra = lockInOrder(IList.of(a, b));
-		var rb = lockInOrder(IList.of(a, b));
+		var ra = lockInOrder(PerList.of(a, b));
+		var rb = lockInOrder(PerList.of(a, b));
 		assertFalse(isDeadlock(ra, rb));
 	}
 
-	private MutexTestRunnable lockInOrder(IList<Mutex> ms) {
+	private MutexTestRunnable lockInOrder(PerList<Mutex> ms) {
 		return new MutexTestRunnable() {
 			public void run() {
 				run(ms);
 			}
 
-			private void run(IList<Mutex> ms) {
+			private void run(PerList<Mutex> ms) {
 				if (!ms.isEmpty())
 					try (var mla = new MutexLock(ms.head)) {
 						Thread_.sleepQuietly(500);

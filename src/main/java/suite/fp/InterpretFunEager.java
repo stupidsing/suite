@@ -11,7 +11,6 @@ import suite.Suite;
 import suite.fp.intrinsic.Intrinsics;
 import suite.fp.intrinsic.Intrinsics.Intrinsic;
 import suite.fp.intrinsic.Intrinsics.IntrinsicCallback;
-import suite.immutable.IMap;
 import suite.lp.search.SewingProverBuilder2;
 import suite.node.Atom;
 import suite.node.Data;
@@ -25,6 +24,7 @@ import suite.node.io.SwitchNode;
 import suite.node.io.TermOp;
 import suite.node.util.Comparer;
 import suite.node.util.TreeUtil;
+import suite.persistent.PerMap;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
@@ -55,9 +55,9 @@ public class InterpretFunEager {
 
 	private class Eager {
 		private int fs;
-		private IMap<Node, Fun<Frame, Node>> vm;
+		private PerMap<Node, Fun<Frame, Node>> vm;
 
-		private Eager(int fs, IMap<Node, Fun<Frame, Node>> vm) {
+		private Eager(int fs, PerMap<Node, Fun<Frame, Node>> vm) {
 			this.fs = fs;
 			this.vm = vm;
 		}
@@ -122,7 +122,7 @@ public class InterpretFunEager {
 			}).match(Matcher.error, m -> {
 				return frame -> fail("error termination " + Formatter.display(m));
 			}).match(Matcher.fun, (param, do_) -> {
-				var vm1 = IMap.<Node, Fun<Frame, Node>> empty();
+				var vm1 = PerMap.<Node, Fun<Frame, Node>> empty();
 				for (var e : vm) {
 					var getter0 = e.t1;
 					vm1 = vm1.put(e.t0, frame -> getter0.apply(frame.parent));
@@ -217,7 +217,7 @@ public class InterpretFunEager {
 		df.putAll(intOpMap);
 
 		var keys = df.keySet().stream().sorted().collect(Collectors.toList());
-		var eager0 = new Eager(0, IMap.empty());
+		var eager0 = new Eager(0, PerMap.empty());
 		var frame = new Frame();
 
 		for (var key : keys) {
