@@ -54,7 +54,7 @@ public class WriteElf {
 				.append(new byte[] { (byte) (isAmd64 ? 2 : 1), 1, 1, 0, }) //
 				.append(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0, }) //
 				.dw(2) // e_type
-				.dw(3) // e_machine
+				.dw(isAmd64 ? 0x3E : 0x03) // e_machine
 				.dd(1) // e_version
 				.dd(org + 84) // e_entry
 				.dd(52) // e_phoff
