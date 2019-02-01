@@ -25,7 +25,7 @@ public class ElfTest {
 	@Test
 	public void testAsm() {
 		var instructions = List.of( //
-				amd64.instruction(Insn.MOV, amd64.rax, amd64.imm(0x60, 8)), //
+				amd64.instruction(Insn.MOV, amd64.rax, amd64.imm(0x3C, 8)), //
 				amd64.instruction(Insn.MOV, amd64.rdi, amd64.imm(0x00, 8)), //
 				amd64.instruction(Insn.SYSCALL));
 
