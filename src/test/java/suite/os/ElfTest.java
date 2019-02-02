@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
+import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Interpret;
 import suite.cfg.Defaults;
@@ -24,12 +25,23 @@ public class ElfTest {
 
 	@Test
 	public void testAmd64() {
-		var instructions = List.of( //
-				amd64.instruction(Insn.MOV, amd64.rax, amd64.imm(0x3C, 8)), //
-				amd64.instruction(Insn.MOV, amd64.rdi, amd64.imm(0x00, 8)), //
-				amd64.instruction(Insn.SYSCALL));
+		List<Instruction> instructions;
+		int offset_;
 
-		var exec = elf.exec(new byte[0], offset -> new Amd64Assemble().assemble(offset + 120, instructions, true));
+		if (Funp_.isAmd64) {
+			instructions = List.of( //
+					amd64.instruction(Insn.MOV, amd64.rax, amd64.imm64(0x3C)), //
+					amd64.instruction(Insn.MOV, amd64.rdi, amd64.imm64(0x00)), //
+					amd64.instruction(Insn.SYSCALL));
+			offset_ = 120;
+		} else {
+			instructions = List.of( //
+					amd64.instruction(Insn.MOV, amd64.eax, amd64.imm(0x01, 4)), //
+					amd64.instruction(Insn.INT, amd64.imm8(-128)));
+			offset_ = 84;
+		}
+
+		var exec = elf.exec(new byte[0], offset -> new Amd64Assemble().assemble(offset + offset_, instructions, true));
 		assertEquals(0, exec.code);
 		assertEquals("", exec.out);
 	}
