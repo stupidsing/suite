@@ -266,6 +266,10 @@ public class Amd64 {
 		return imm(imm, 4);
 	}
 
+	public Operand imm64(long imm) {
+		return imm(imm, 8);
+	}
+
 	public OpImm imm(long imm, int size) {
 		var op = new OpImm();
 		op.imm = imm;

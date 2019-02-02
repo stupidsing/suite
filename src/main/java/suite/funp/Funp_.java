@@ -16,6 +16,7 @@ import suite.inspect.Inspect;
 import suite.node.Node;
 import suite.node.util.Singleton;
 import suite.object.AutoInterface;
+import suite.os.Execute;
 import suite.persistent.PerMap;
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Source;
@@ -27,6 +28,7 @@ public class Funp_ {
 	public static int integerSize = 4;
 	public static int pointerSize = 4;
 	public static Funp framePointer = new FunpFramePointer();
+	public static boolean isAmd64 = Execute.shell("uname -a").contains("x86_64");
 
 	private boolean isOptimize;
 

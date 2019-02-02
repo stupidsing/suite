@@ -20,7 +20,7 @@ public class ElfTest {
 
 	private Amd64 amd64 = Amd64.me;
 	private Amd64Interpret interpret = new Amd64Interpret();
-	private WriteElf elf = new WriteElf();
+	private WriteElf elf = new WriteElf(Funp_.isAmd64);
 
 	@Test
 	public void testAmd64() {

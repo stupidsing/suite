@@ -19,11 +19,15 @@ import suite.util.Util;
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class WriteElf {
 
-	private boolean isAmd64 = Execute.shell("uname -a").contains("x86_64");
+	private boolean isAmd64;
 	private int org = isAmd64 ? 0x00400000 : 0x08048000;
 	private int fileHeaderSize = isAmd64 ? 64 : 52;
 	private int progHeaderSize = isAmd64 ? 56 : 32;
 	private int elfHeaderSize = fileHeaderSize + progHeaderSize;
+
+	public WriteElf(boolean isAmd64) {
+		this.isAmd64 = isAmd64;
+	}
 
 	public Execute exec(byte[] input, Int_Obj<Bytes> source) {
 		var path = Defaults.tmp("a.out." + Util.temp());
