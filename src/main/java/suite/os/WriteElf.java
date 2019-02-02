@@ -20,13 +20,17 @@ import suite.util.Util;
 public class WriteElf {
 
 	private boolean isAmd64;
-	private int org = isAmd64 ? 0x00400000 : 0x08048000;
-	private int fileHeaderSize = isAmd64 ? 64 : 52;
-	private int progHeaderSize = isAmd64 ? 56 : 32;
-	private int elfHeaderSize = fileHeaderSize + progHeaderSize;
+	private int org;
+	private int fileHeaderSize;
+	private int progHeaderSize;
+	private int elfHeaderSize;
 
 	public WriteElf(boolean isAmd64) {
 		this.isAmd64 = isAmd64;
+		org = isAmd64 ? 0x00400000 : 0x08048000;
+		fileHeaderSize = isAmd64 ? 64 : 52;
+		progHeaderSize = isAmd64 ? 56 : 32;
+		elfHeaderSize = fileHeaderSize + progHeaderSize;
 	}
 
 	public Execute exec(byte[] input, Int_Obj<Bytes> source) {
