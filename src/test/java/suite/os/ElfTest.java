@@ -29,7 +29,7 @@ public class ElfTest {
 				amd64.instruction(Insn.MOV, amd64.rdi, amd64.imm(0x00, 8)), //
 				amd64.instruction(Insn.SYSCALL));
 
-		var exec = elf.exec(new byte[0], offset -> new Amd64Assemble().assemble(offset + 84, instructions, true));
+		var exec = elf.exec(new byte[0], offset -> new Amd64Assemble().assemble(offset + 120, instructions, true));
 		assertEquals(0, exec.code);
 		assertEquals("", exec.out);
 	}
