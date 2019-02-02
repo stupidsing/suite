@@ -4,7 +4,6 @@ import static java.util.Map.entry;
 import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -159,7 +158,17 @@ public class P4GenerateCode {
 			labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm32(0l))).in;
 			freeChainPointer = em.spawn(em1 -> em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l))).in;
 
-			for (var i : Arrays.asList( //
+			var prolog_amd64 = List.of( //
+					"MOV (RAX, +x00000009)", //
+					"MOV (RDI, 0)", //
+					"MOV (RSI, +x00010000)", //
+					"MOV (RDX, +x00000003)", //
+					"MOV (R10, +x00000022)", //
+					"MOV (R8, +xFFFFFFFF)", //
+					"MOV (R9, +x00000000)", //
+					"SYSCALL ()");
+
+			var prolog_i686 = List.of( //
 					"SUB (ESP, +x18)", //
 					"MOV (`ESP + +x00`, 0)", //
 					"MOV (`ESP + +x04`, +x00010000)", //
@@ -170,7 +179,9 @@ public class P4GenerateCode {
 					"MOV (EAX, +x0000005A)", //
 					"MOV (EBX, ESP)", //
 					"INT (+x80)", //
-					"ADD (ESP, +x18)"))
+					"ADD (ESP, +x18)");
+
+			for (var i : Funp_.isAmd64 ? prolog_amd64 : prolog_i686)
 				em.emit(p.parse(Suite.parse(i)));
 
 			em.mov(amd64.mem(labelPointer, ps), eax);
@@ -179,8 +190,16 @@ public class P4GenerateCode {
 				em.mov(ebp, esp);
 			em.emit(Insn.CLD);
 			new Compile0(Result.ISSPEC, em, null, ebx, null, registerSet, 0).compile(funp);
-			em.mov(eax, amd64.imm(1, is));
-			em.emit(Insn.INT, amd64.imm8(-128));
+
+			if (Funp_.isAmd64) {
+				em.mov(amd64.rdi, amd64.imm64(0x00));
+				em.mov(amd64.edi, amd64.eax);
+				em.mov(amd64.rax, amd64.imm64(0x3C));
+				em.emit(Insn.SYSCALL);
+			} else {
+				em.mov(eax, amd64.imm(1, is));
+				em.emit(Insn.INT, amd64.imm8(-128));
+			}
 		}, null);
 	}
 
