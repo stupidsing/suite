@@ -770,13 +770,17 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRm(Instruction instruction, int bReg, int bModrm, int num) {
-		if (instruction.op0 instanceof OpReg && 1 < instruction.op0.size) {
-			var op0 = (OpReg) instruction.op0;
-			return new InsnCode(instruction.op0.size, bs(bReg + op0.reg));
-		} else if (isRm.test(instruction.op0))
+		if (instruction.op0 instanceof OpReg && 1 < instruction.op0.size)
+			return assembleReg(instruction, bReg);
+		else if (isRm.test(instruction.op0))
 			return assembleByteFlag(instruction.op0, bModrm, num);
 		else
 			return invalid;
+	}
+
+	private InsnCode assembleReg(Instruction instruction, int bReg) {
+		var op0 = (OpReg) instruction.op0;
+		return new InsnCode(op0.size, bs(bReg + (op0.reg & 7)));
 	}
 
 	private InsnCode assembleRmRegImm(Instruction instruction, int bModrm, int bImm, int num) {
