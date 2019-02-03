@@ -415,7 +415,7 @@ public class Amd64Assemble {
 					var op1 = (OpImm) instruction.op1;
 					if (instruction.op0 instanceof OpReg && isNonRexReg.test(instruction.op0))
 						encode = assembleReg(instruction, 0xB0 + (op1.size <= 1 ? 0 : 8)).imm(op1);
-					else if (isRm.test(instruction.op0))
+					else if (isRm.test(instruction.op0) && Integer.MIN_VALUE <= op1.imm && op1.imm <= Integer.MAX_VALUE)
 						encode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(op1.imm, Math.min(op1.size, 4));
 					else
 						encode = invalid;
@@ -490,34 +490,34 @@ public class Amd64Assemble {
 			encode = assembleInOut(instruction.op0, instruction.op1, 0xE6);
 			break;
 		case POP:
-			if (1 < instruction.op0.size)
-				if (isRm.test(instruction.op0))
+			if (isRm.test(instruction.op0))
+				if (instruction.op0.size == 2 || instruction.op0.size == (isAmd64 ? 8 : 4))
 					encode = assembleRm(instruction, 0x58, 0x8E, 0);
-				else if (instruction.op0 instanceof OpRegSegment) {
-					var sreg = (OpRegSegment) instruction.op0;
-					switch (sreg.sreg) {
-					case 0: // POP ES
-						encode = assemble(instruction, 0x07);
-						break;
-					// case 1: // POP CS, no such thing
-					case 2: // POP SS
-						encode = assemble(instruction, 0x17);
-						break;
-					case 3: // POP DS
-						encode = assemble(instruction, 0x1F);
-						break;
-					case 4: // POP FS
-						encode = new InsnCode(sreg.size, bs(0x0F, 0xA1));
-						break;
-					case 5: // POP GS
-						encode = new InsnCode(sreg.size, bs(0x0F, 0xA9));
-						break;
-					default:
-						encode = invalid;
-					}
-				} else
+				else
 					encode = invalid;
-			else
+			else if (instruction.op0 instanceof OpRegSegment) {
+				var sreg = (OpRegSegment) instruction.op0;
+				switch (sreg.sreg) {
+				case 0: // POP ES
+					encode = isAmd64 ? invalid : assemble(instruction, 0x07);
+					break;
+				// case 1: // POP CS, no such thing
+				case 2: // POP SS
+					encode = isAmd64 ? invalid : assemble(instruction, 0x17);
+					break;
+				case 3: // POP DS
+					encode = isAmd64 ? invalid : assemble(instruction, 0x1F);
+					break;
+				case 4: // POP FS
+					encode = new InsnCode(sreg.size, bs(0x0F, 0xA1));
+					break;
+				case 5: // POP GS
+					encode = new InsnCode(sreg.size, bs(0x0F, 0xA9));
+					break;
+				default:
+					encode = invalid;
+				}
+			} else
 				encode = invalid;
 			break;
 		case POPA:
@@ -530,36 +530,36 @@ public class Amd64Assemble {
 			if (instruction.op0 instanceof OpImm) {
 				var size = instruction.op0.size;
 				encode = new InsnCode(size, (OpImm) instruction.op0).setByte(0x68 + (1 < size ? 0 : 2));
-			} else if (1 < instruction.op0.size)
-				if (isRm.test(instruction.op0))
+			} else if (isRm.test(instruction.op0))
+				if (instruction.op0.size == 2 || instruction.op0.size == (isAmd64 ? 8 : 4))
 					encode = assembleRm(instruction, 0x50, 0xFE, 6);
-				else if (instruction.op0 instanceof OpRegSegment) {
-					var sreg = (OpRegSegment) instruction.op0;
-					switch (sreg.sreg) {
-					case 0: // PUSH ES
-						encode = assemble(instruction, 0x06);
-						break;
-					case 1: // PUSH CS
-						encode = assemble(instruction, 0x0E);
-						break;
-					case 2: // PUSH SS
-						encode = assemble(instruction, 0x16);
-						break;
-					case 3: // PUSH DS
-						encode = assemble(instruction, 0x1E);
-						break;
-					case 4: // PUSH FS
-						encode = new InsnCode(sreg.size, bs(0x0F, 0xA0));
-						break;
-					case 5: // PUSH GS
-						encode = new InsnCode(sreg.size, bs(0x0F, 0xA8));
-						break;
-					default:
-						encode = invalid;
-					}
-				} else
+				else
 					encode = invalid;
-			else
+			else if (instruction.op0 instanceof OpRegSegment) {
+				var sreg = (OpRegSegment) instruction.op0;
+				switch (sreg.sreg) {
+				case 0: // PUSH ES
+					encode = isAmd64 ? invalid : assemble(instruction, 0x06);
+					break;
+				case 1: // PUSH CS
+					encode = isAmd64 ? invalid : assemble(instruction, 0x0E);
+					break;
+				case 2: // PUSH SS
+					encode = isAmd64 ? invalid : assemble(instruction, 0x16);
+					break;
+				case 3: // PUSH DS
+					encode = isAmd64 ? invalid : assemble(instruction, 0x1E);
+					break;
+				case 4: // PUSH FS
+					encode = new InsnCode(sreg.size, bs(0x0F, 0xA0));
+					break;
+				case 5: // PUSH GS
+					encode = new InsnCode(sreg.size, bs(0x0F, 0xA8));
+					break;
+				default:
+					encode = invalid;
+				}
+			} else
 				encode = invalid;
 			break;
 		case PUSHA:
