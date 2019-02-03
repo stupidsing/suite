@@ -408,10 +408,10 @@ public class Amd64Assemble {
 			if (instruction.op0.size == instruction.op1.size)
 				if (instruction.op1 instanceof OpImm) {
 					var op1 = (OpImm) instruction.op1;
-					if (instruction.op0 instanceof OpReg)
+					if (instruction.op0 instanceof OpReg && isNonRexReg.test(instruction.op0))
 						encode = assembleReg(instruction, 0xB0 + (op1.size <= 1 ? 0 : 8)).imm(op1);
 					else if (isRm.test(instruction.op0))
-						encode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(op1);
+						encode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(op1.imm, Math.min(op1.size, 4));
 					else
 						encode = invalid;
 				} else if (instruction.op0 instanceof OpRegSegment) {
@@ -767,7 +767,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRm(Instruction instruction, int bReg, int bModrm, int num) {
-		if (instruction.op0 instanceof OpReg && 1 < instruction.op0.size)
+		if (instruction.op0 instanceof OpReg && 1 < instruction.op0.size && isNonRexReg.test(instruction.op0))
 			return assembleReg(instruction, bReg);
 		else if (isRm.test(instruction.op0))
 			return assembleByteFlag(instruction.op0, bModrm, num);
@@ -777,7 +777,7 @@ public class Amd64Assemble {
 
 	private InsnCode assembleReg(Instruction instruction, int bReg) {
 		var op0 = (OpReg) instruction.op0;
-		return new InsnCode(op0.size, bs(bReg + (op0.reg & 7)));
+		return new InsnCode(op0.size, bs(bReg + op0.reg));
 	}
 
 	private InsnCode assembleRmRegImm(Instruction instruction, int bModrm, int bImm, int num) {
@@ -917,6 +917,7 @@ public class Amd64Assemble {
 
 	Predicate<Operand> isAcc = operand -> operand instanceof OpReg && ((OpReg) operand).reg == 0;
 	Predicate<Operand> isReg = operand -> operand instanceof OpReg;
+	Predicate<Operand> isNonRexReg = operand -> operand instanceof OpReg && ((OpReg) operand).reg < 8;
 	Predicate<Operand> isRm = operand -> operand instanceof OpMem || operand instanceof OpReg;
 	Predicate<Operand> isXmm = op -> op instanceof OpRegXmm;
 	Predicate<Operand> isXmmYmm = op -> op instanceof OpRegXmm || op instanceof OpRegYmm;
@@ -1037,7 +1038,7 @@ public class Amd64Assemble {
 	}
 
 	private int rex(Modrm modrm) {
-		return rex(modrm.size, modrm.num, modrm.i, modrm.b);
+		return rex(modrm.size, modrm.num, modrm.i, 0 <= modrm.b ? modrm.b : modrm.rm);
 	}
 
 	private int rex(int size, int r, int x, int b) {
