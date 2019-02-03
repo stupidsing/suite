@@ -245,7 +245,7 @@ public class Amd64Assemble {
 			encode = new InsnCode(4, bb.toBytes().toArray());
 			break;
 		case DEC:
-			encode = assembleRm(instruction, 0x48, 0xFE, 1);
+			encode = assembleRm(instruction, isAmd64 ? -1 : 0x48, 0xFE, 1);
 			break;
 		case DIV:
 			encode = assembleByteFlag(instruction.op0, 0xF6, 6);
@@ -290,7 +290,7 @@ public class Amd64Assemble {
 			encode = assembleInOut(instruction.op1, instruction.op0, 0xE4);
 			break;
 		case INC:
-			encode = assembleRm(instruction, 0x40, 0xFE, 0);
+			encode = assembleRm(instruction, isAmd64 ? -1 : 0x40, 0xFE, 0);
 			break;
 		case INT:
 			if (instruction.op0 instanceof OpImm) {
@@ -772,7 +772,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRm(Instruction instruction, int bReg, int bModrm, int num) {
-		if (instruction.op0 instanceof OpReg && 1 < instruction.op0.size && isNonRexReg.test(instruction.op0))
+		if (bReg != -1 && instruction.op0 instanceof OpReg && 1 < instruction.op0.size && isNonRexReg.test(instruction.op0))
 			return assembleReg(instruction, bReg);
 		else if (isRm.test(instruction.op0))
 			return assembleByteFlag(instruction.op0, bModrm, num);
@@ -900,10 +900,15 @@ public class Amd64Assemble {
 			if (modrm != null) {
 				bb.append(b(modrm.rm, modrm.num, modrm.mod));
 				appendIf(bb, sib(modrm));
+
+				long disp;
+
 				if (isAmd64 && modrm.mod == 0 && (modrm.rm & 7) == 5) // RIP-relative addressing
-					appendImm(bb, modrm.dispSize, modrm.disp - offset);
+					disp = modrm.disp - offset;
 				else
-					appendImm(bb, modrm.dispSize, modrm.disp);
+					disp = modrm.disp;
+
+				appendImm(bb, modrm.dispSize, disp);
 			}
 			appendImm(bb, insnCode.immSize, insnCode.imm);
 			return bb.toBytes();
