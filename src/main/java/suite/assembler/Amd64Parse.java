@@ -46,12 +46,9 @@ public class Amd64Parse {
 			return parseOpMem(m, 4);
 		else if ((m = Suite.pattern("`.0`").match(node)) != null)
 			return parseOpMem(m, 4);
-		else if (node instanceof Int) {
-			var opImm = amd64.new OpImm();
-			opImm.imm = Int.num(node);
-			opImm.size = 4;
-			return opImm;
-		} else
+		else if (node instanceof Int)
+			return amd64.imm(Int.num(node), 4);
+		else
 			return fail("bad operand");
 	}
 
