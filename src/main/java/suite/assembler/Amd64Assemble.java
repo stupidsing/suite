@@ -30,6 +30,7 @@ import suite.primitive.Bytes_;
 public class Amd64Assemble {
 
 	private InsnCode invalid = new InsnCode(-1, new byte[0]);
+	private boolean isAmd64;
 
 	private enum Vexm {
 		VM0F__, VM0F38, VM0F3A,
@@ -53,7 +54,7 @@ public class Amd64Assemble {
 	private interface Encode {
 		public boolean isValid();
 
-		public Bytes encode_();
+		public Bytes encode_(long offset);
 	}
 
 	private class VexCode implements Encode {
@@ -64,8 +65,8 @@ public class Amd64Assemble {
 			return code.isValid();
 		}
 
-		public Bytes encode_() {
-			return encode(code, vex(m, p, code.size, code.modrm, w, v));
+		public Bytes encode_(long offset) {
+			return encode(offset, code, vex(m, p, code.size, code.modrm, w, v));
 		}
 	}
 
@@ -148,8 +149,8 @@ public class Amd64Assemble {
 			return 0 < size;
 		}
 
-		public Bytes encode_() {
-			return encode(size == 1 || size == 2 || size == 4 || size == 8 ? this : invalid, null);
+		public Bytes encode_(long offset) {
+			return encode(offset, size == 1 || size == 2 || size == 4 || size == 8 ? this : invalid, null);
 		}
 
 	}
@@ -157,6 +158,10 @@ public class Amd64Assemble {
 	private class Modrm {
 		private int size, mod, num, rm, s, i, b, dispSize;
 		private long disp;
+	}
+
+	public Amd64Assemble(boolean isAmd64) {
+		this.isAmd64 = isAmd64;
 	}
 
 	public Bytes assemble(long offset, List<Instruction> instructions, boolean dump) {
@@ -701,7 +706,7 @@ public class Amd64Assemble {
 			encode = invalid;
 		}
 
-		return encode.encode_();
+		return encode.encode_(offset);
 	}
 
 	private InsnCode assembleInOut(Operand port, Operand acc, int b) {
@@ -880,7 +885,7 @@ public class Amd64Assemble {
 		return insnCode;
 	}
 
-	private Bytes encode(InsnCode insnCode, byte[] vexs) {
+	private Bytes encode(long offset, InsnCode insnCode, byte[] vexs) {
 		if (insnCode.isValid()) {
 			var modrm = insnCode.modrm;
 			var bb = new BytesBuilder();
@@ -895,7 +900,10 @@ public class Amd64Assemble {
 			if (modrm != null) {
 				bb.append(b(modrm.rm, modrm.num, modrm.mod));
 				appendIf(bb, sib(modrm));
-				appendImm(bb, modrm.dispSize, modrm.disp);
+				if (isAmd64 && modrm.mod == 0 && (modrm.rm & 7) == 5) // RIP-relative addressing
+					appendImm(bb, modrm.dispSize, modrm.disp - offset);
+				else
+					appendImm(bb, modrm.dispSize, modrm.disp);
 			}
 			appendImm(bb, insnCode.immSize, insnCode.imm);
 			return bb.toBytes();

@@ -74,11 +74,12 @@ import suite.util.Switch;
 
 public class P4GenerateCode {
 
+	private boolean isAmd64 = Funp_.isAmd64;
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
 
 	private Amd64 amd64 = Amd64.me;
-	private Amd64Assemble asm = new Amd64Assemble();
+	private Amd64Assemble asm = new Amd64Assemble(isAmd64);
 
 	private OpReg eax = amd64.eax;
 	private OpReg ebx = amd64.ebx;
@@ -181,7 +182,7 @@ public class P4GenerateCode {
 					"INT (+x80)", //
 					"ADD (ESP, +x18)");
 
-			for (var i : Funp_.isAmd64 ? prolog_amd64 : prolog_i686)
+			for (var i : isAmd64 ? prolog_amd64 : prolog_i686)
 				em.emit(p.parse(Suite.parse(i)));
 
 			em.mov(amd64.mem(labelPointer, ps), eax);
@@ -191,7 +192,7 @@ public class P4GenerateCode {
 			em.emit(Insn.CLD);
 			new Compile0(Result.ISSPEC, em, null, ebx, null, registerSet, 0).compile(funp);
 
-			if (Funp_.isAmd64) {
+			if (isAmd64) {
 				em.mov(amd64.rdi, amd64.imm64(0x00));
 				em.mov(amd64.edi, amd64.eax);
 				em.mov(amd64.rax, amd64.imm64(0x3C));
