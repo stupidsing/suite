@@ -25,7 +25,7 @@ public class ElfTest {
 	private Amd64Interpret interpret = new Amd64Interpret();
 	private WriteElf elf = new WriteElf(isAmd64);
 
-	// @Test
+	@Test
 	public void testAmd64() {
 		List<Instruction> instructions;
 
