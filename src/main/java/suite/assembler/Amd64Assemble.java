@@ -813,11 +813,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRegRm(Operand reg, Operand rm, int b) {
-		return assembleRegRm(reg, rm, b, isReg);
-	}
-
-	private InsnCode assembleRegRm(Operand reg, Operand rm, int b, Predicate<Operand> pred) {
-		if (pred.test(reg) && isRm.test(rm))
+		if (isReg.test(reg) && isRm.test(rm))
 			return assemble(rm, b, ((OpReg) reg).reg);
 		else
 			return invalid;
