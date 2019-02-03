@@ -25,7 +25,7 @@ public class ElfTest {
 	private Amd64Interpret interpret = new Amd64Interpret();
 	private WriteElf elf = new WriteElf(isAmd64);
 
-	@Test
+//	@Test
 	public void testAmd64() {
 		List<Instruction> instructions;
 
@@ -44,7 +44,7 @@ public class ElfTest {
 		assertEquals("", exec.out);
 	}
 
-	@Test
+//	@Test
 	public void testZero() {
 		test(0, "0", "");
 	}
@@ -56,7 +56,7 @@ public class ElfTest {
 
 	// io :: a -> io a
 	// io.cat :: io a -> (a -> io b) -> io b
-	@Test
+//	@Test
 	public void testIo() {
 		var text = "garbage\n";
 
