@@ -411,7 +411,8 @@ public class Amd64Assemble {
 
 					if (instruction.op0 instanceof OpReg) {
 						var op0 = (OpReg) instruction.op0;
-						encode = new InsnCode(op1.size, op1).setByte(0xB0 + (op0.size <= 1 ? 0 : 8) + op0.reg);
+						var encode_ = new InsnCode(op1.size, op1).setByte(0xB0 + (op0.size <= 1 ? 0 : 8) + (op0.reg & 7));
+						encode = op0.reg < 8 ? encode_ : encode_.pre(0x48);
 					} else if (isRm.test(instruction.op0))
 						encode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(op1);
 					else
