@@ -262,6 +262,10 @@ public class Amd64 {
 		return imm(imm, 1);
 	}
 
+	public Operand imm16(long imm) {
+		return imm(imm, 2);
+	}
+
 	public Operand imm32(long imm) {
 		return imm(imm, 4);
 	}

@@ -34,18 +34,32 @@ public class Amd64Parse {
 
 	public Operand parseOperand(Node node) {
 		Operand operand;
-		Node[] m;
+		Node[] m0, m1;
 
 		if ((operand = amd64.registerByName.get(node)) != null)
 			return operand;
-		else if ((m = Suite.pattern("BYTE `.0`").match(node)) != null)
-			return parseOpMem(m, 1);
-		else if ((m = Suite.pattern("WORD `.0`").match(node)) != null)
-			return parseOpMem(m, 2);
-		else if ((m = Suite.pattern("DWORD `.0`").match(node)) != null)
-			return parseOpMem(m, 4);
-		else if ((m = Suite.pattern("`.0`").match(node)) != null)
-			return parseOpMem(m, 4);
+		else if ((m0 = Suite.pattern("BYTE .0").match(node)) != null)
+			if ((m1 = Suite.pattern("`.0`").match(node)) != null)
+				return parseOpMem(m1, 1);
+			else
+				return amd64.imm8(Int.num(m0[0]));
+		else if ((m0 = Suite.pattern("WORD .0").match(node)) != null)
+			if ((m1 = Suite.pattern("`.0`").match(node)) != null)
+				return parseOpMem(m0, 2);
+			else
+				return amd64.imm16(Int.num(m0[0]));
+		else if ((m0 = Suite.pattern("DWORD .0").match(node)) != null)
+			if ((m1 = Suite.pattern("`.0`").match(node)) != null)
+				return parseOpMem(m0, 4);
+			else
+				return amd64.imm32(Int.num(m0[0]));
+		else if ((m0 = Suite.pattern("QWORD .0").match(node)) != null)
+			if ((m1 = Suite.pattern("`.0`").match(node)) != null)
+				return parseOpMem(m0, 8);
+			else
+				return amd64.imm64(Int.num(m0[0]));
+		else if ((m0 = Suite.pattern("`.0`").match(node)) != null)
+			return parseOpMem(m0, 4);
 		else if (node instanceof Int)
 			return amd64.imm(Int.num(node), 4);
 		else
