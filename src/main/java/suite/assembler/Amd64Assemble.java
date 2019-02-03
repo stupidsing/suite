@@ -787,10 +787,13 @@ public class Amd64Assemble {
 
 	private InsnCode assembleRmRegImm(Instruction instruction, int bModrm, int bAccImm, int bRmImm, int num) {
 		InsnCode insnCodeRmReg;
-		if ((insnCodeRmReg = assembleRmReg(instruction, bModrm)).isValid())
-			return insnCodeRmReg;
-		else if (instruction.op1 instanceof OpImm)
-			return assembleRmImm(instruction.op0, (OpImm) instruction.op1, bAccImm, bRmImm, num);
+		if (instruction.op0.size == instruction.op1.size)
+			if ((insnCodeRmReg = assembleRmReg(instruction, bModrm)).isValid())
+				return insnCodeRmReg;
+			else if (instruction.op1 instanceof OpImm)
+				return assembleRmImm(instruction.op0, (OpImm) instruction.op1, bAccImm, bRmImm, num);
+			else
+				return invalid;
 		else
 			return invalid;
 	}

@@ -26,22 +26,18 @@ public class ElfTest {
 	@Test
 	public void testAmd64() {
 		List<Instruction> instructions;
-		int offset_;
 
-		if (Funp_.isAmd64) {
+		if (Funp_.isAmd64)
 			instructions = List.of( //
 					amd64.instruction(Insn.MOV, amd64.rax, amd64.imm64(0x3C)), //
 					amd64.instruction(Insn.MOV, amd64.rdi, amd64.imm64(0x00)), //
 					amd64.instruction(Insn.SYSCALL));
-			offset_ = 120;
-		} else {
+		else
 			instructions = List.of( //
 					amd64.instruction(Insn.MOV, amd64.eax, amd64.imm(0x01, 4)), //
 					amd64.instruction(Insn.INT, amd64.imm8(-128)));
-			offset_ = 84;
-		}
 
-		var exec = elf.exec(new byte[0], offset -> new Amd64Assemble().assemble(offset + offset_, instructions, true));
+		var exec = elf.exec(new byte[0], offset -> new Amd64Assemble().assemble(offset, instructions, true));
 		assertEquals(0, exec.code);
 		assertEquals("", exec.out);
 	}
