@@ -159,13 +159,13 @@ public class P4GenerateCode {
 			freeChainPointer = em.spawn(em1 -> em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l))).in;
 
 			var prolog_amd64 = List.of( //
-					"MOV (RAX, +x00000009)", //
-					"MOV (RDI, 0)", //
-					"MOV (RSI, +x00010000)", //
-					"MOV (RDX, +x00000003)", //
-					"MOV (R10, +x00000022)", //
-					"MOV (R8, +xFFFFFFFF)", //
-					"MOV (R9, +x00000000)", //
+					"MOV (RAX, QWORD +x00000009)", //
+					"MOV (RDI, QWORD 0)", //
+					"MOV (RSI, QWORD +x00010000)", //
+					"MOV (RDX, QWORD +x00000003)", //
+					"MOV (R10, QWORD +x00000022)", //
+					"MOV (R8, QWORD +xFFFFFFFF)", //
+					"MOV (R9, QWORD +x00000000)", //
 					"SYSCALL ()");
 
 			var prolog_i686 = List.of( //
