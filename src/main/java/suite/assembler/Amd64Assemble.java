@@ -268,20 +268,17 @@ public class Amd64Assemble {
 		case IMUL:
 			if (instruction.op1 instanceof OpNone)
 				encode = assembleByteFlag(instruction.op0, 0xF6, 5);
-			else if (instruction.op0.size == instruction.op1.size)
-				if (instruction.op2 instanceof OpNone)
-					encode = assembleRegRm(instruction.op0, instruction.op1, 0xAF).pre(0x0F);
-				else if (instruction.op2 instanceof OpImm) {
-					var imm = (OpImm) instruction.op2;
-					if (imm.size <= 1)
-						encode = assembleRegRm(instruction.op0, instruction.op1, 0x6B).imm(imm);
-					else if (imm.size == instruction.op0.size)
-						encode = assembleRegRm(instruction.op0, instruction.op1, 0x69).imm(imm);
-					else
-						encode = invalid;
-				} else
+			else if (instruction.op2 instanceof OpNone)
+				encode = assembleRegRm(instruction.op0, instruction.op1, 0xAF).pre(0x0F);
+			else if (instruction.op2 instanceof OpImm) {
+				var imm = (OpImm) instruction.op2;
+				if (imm.size <= 1)
+					encode = assembleRegRm(instruction.op0, instruction.op1, 0x6B).imm(imm);
+				else if (imm.size == instruction.op0.size)
+					encode = assembleRegRm(instruction.op0, instruction.op1, 0x69).imm(imm);
+				else
 					encode = invalid;
-			else
+			} else
 				encode = invalid;
 			break;
 		case IN:
@@ -375,7 +372,7 @@ public class Amd64Assemble {
 			encode = new InsnCode(4, new byte[0]);
 			break;
 		case LEA:
-			encode = assembleRegRm(instruction.op0, instruction.op1, 0x8D);
+			encode = assembleRegRm_(instruction.op0, instruction.op1, 0x8D);
 			break;
 		case LOG:
 			encode = new InsnCode(4, new byte[0]);
@@ -813,10 +810,11 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRegRm(Operand reg, Operand rm, int b) {
-		if (isReg.test(reg) && isRm.test(rm))
-			return assemble(rm, b, ((OpReg) reg).reg);
-		else
-			return invalid;
+		return reg.size == rm.size ? assembleRegRm_(reg, rm, b) : invalid;
+	}
+
+	private InsnCode assembleRegRm_(Operand reg, Operand rm, int b) {
+		return isReg.test(reg) && isRm.test(rm) ? assemble(rm, b, ((OpReg) reg).reg) : invalid;
 	}
 
 	private InsnCode assembleRmImm(Operand op0, OpImm op1, int bAccImm, int bRmImm, int num) {
