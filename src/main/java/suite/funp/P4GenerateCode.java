@@ -499,8 +499,8 @@ public class P4GenerateCode {
 				});
 				return returnIsOp(op0);
 			} else if (result == Result.PS2OP || result == Result.PS2REG || result == Result.PS2SPEC) {
-				var op0 = isOutSpec ? pop0 : rs.get(is);
-				var op1 = isOutSpec ? pop1 : rs.mask(op0).get(is);
+				var op0 = isOutSpec ? pop0 : rs.get(ps);
+				var op1 = isOutSpec ? pop1 : rs.mask(op0).get(ps);
 				compileAllocStack(ps + ps, FunpDontCare.of(), List.of(op1, op0), c1 -> {
 					assign.sink2(c1, frame(c1.fd, fd));
 					return new CompileOut();
