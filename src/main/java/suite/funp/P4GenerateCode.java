@@ -85,8 +85,8 @@ public class P4GenerateCode {
 	private OpReg ebx = amd64.ebx;
 	private OpReg ecx = amd64.ecx;
 	private OpReg edx = amd64.edx;
-	private OpReg ebp = amd64.ebp;
-	private OpReg esp = amd64.esp;
+	private OpReg ebp = isAmd64 ? amd64.rbp : amd64.ebp;
+	private OpReg esp = isAmd64 ? amd64.rsp : amd64.esp;
 	private OpReg esi = amd64.esi;
 	private OpReg edi = amd64.edi;
 	private OpReg[] integerRegs = is == 4 ? amd64.reg32 : is == 8 ? amd64.reg64 : null;
@@ -157,7 +157,8 @@ public class P4GenerateCode {
 
 		return p4emit.generate(p4emit.label(), em -> {
 			labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm32(0l))).in;
-			freeChainPointer = em.spawn(em1 -> em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l))).in;
+			freeChainPointer = em
+					.spawn(em1 -> em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l))).in;
 
 			var prolog_amd64 = List.of( //
 					"MOV (RAX, QWORD +x00000009)", //
@@ -194,11 +195,11 @@ public class P4GenerateCode {
 
 			if (isAmd64) {
 				em.mov(amd64.rdi, amd64.imm64(0x00));
-				em.mov(amd64.edi, amd64.eax);
+				em.mov(amd64.edi, amd64.ebx);
 				em.mov(amd64.rax, amd64.imm64(0x3C));
 				em.emit(Insn.SYSCALL);
 			} else {
-				em.mov(eax, amd64.imm(1, is));
+				em.mov(eax, amd64.imm32(1));
 				em.emit(Insn.INT, amd64.imm8(-128));
 			}
 		}, null);
@@ -230,7 +231,7 @@ public class P4GenerateCode {
 
 		// invariant: fd = ESP - EBP
 		private CompileOut compile(Funp n) {
-			return n.<CompileOut> switch_( //
+			return n.<CompileOut>switch_( //
 			).applyIf(FunpAllocGlobal.class, f -> f.apply((size, value, expr, address) -> {
 				if (!compileGlobal(size, address, value))
 					compileAssign(value, FunpMemory.of(FunpOperand.of(address), 0, size));
@@ -273,7 +274,8 @@ public class P4GenerateCode {
 			})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 				return returnAssign((c1, t) -> Read //
 						.from2(pairs) //
-						.sink((n_, ofs) -> c1.compileAssign(n_, FunpMemory.of(t.pointer, t.start + ofs.t0, t.start + ofs.t1))));
+						.sink((n_, ofs) -> c1.compileAssign(n_,
+								FunpMemory.of(t.pointer, t.start + ofs.t0, t.start + ofs.t1))));
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
 				var p = new Amd64Parse();
 				new Object() {
@@ -293,7 +295,7 @@ public class P4GenerateCode {
 				var loopLabel = em.label();
 				var doLabel = em.label();
 				var exitLabel = em.label();
-				var label1 = Mutable.<OpImmLabel> nil();
+				var label1 = Mutable.<OpImmLabel>nil();
 
 				var block = em.spawn(loopLabel, em1 -> {
 					var c1 = nc(em1);
@@ -431,7 +433,8 @@ public class P4GenerateCode {
 							&& (op1 = p4deOp.decompose(fd, pointer, start + ps, ps)) != null)
 						return returnPs2Op(op0, op1);
 					else
-						return mf.apply((start_, r) -> returnPs2Op(amd64.mem(r, start_, ps), amd64.mem(r, start_ + ps, ps)));
+						return mf.apply(
+								(start_, r) -> returnPs2Op(amd64.mem(r, start_, ps), amd64.mem(r, start_ + ps, ps)));
 				else
 					return fail();
 			})).applyIf(FunpNumber.class, f -> f.apply(i -> {

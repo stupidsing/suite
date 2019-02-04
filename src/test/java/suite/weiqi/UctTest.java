@@ -136,7 +136,7 @@ public class UctTest {
 	public void testUctGame() {
 		new Profiler().profile(() -> {
 			var df = new DecimalFormat("0.000");
-			var nSimulations = 5000; // 20000
+			var nSimulations = 20000;
 			var boundedTime = 300000;
 			var seed = new Random().nextInt();
 

@@ -26,7 +26,7 @@ public class ElfTest {
 	private WriteElf elf = new WriteElf(isAmd64);
 
 	@Test
-	public void testAmd64() {
+	public void testAssembler() {
 		List<Instruction> instructions;
 
 		if (isAmd64)
@@ -45,8 +45,8 @@ public class ElfTest {
 	}
 
 	@Test
-	public void testZero() {
-		test(0, "0", "");
+	public void testCall() {
+		test(3, "let id := (i => i + 1) ~ (2 | id)", "");
 	}
 
 	@Test
@@ -82,6 +82,11 @@ public class ElfTest {
 			assertEquals(code, interpret.interpret(pair, input));
 			assertEquals(input, interpret.out.toBytes());
 		}
+	}
+
+	@Test
+	public void testZero() {
+		test(0, "0", "");
 	}
 
 }
