@@ -194,11 +194,11 @@ public class P4GenerateCode {
 
 			if (isAmd64) {
 				em.mov(amd64.rdi, amd64.imm64(0x00));
-				em.mov(amd64.edi, amd64.eax);
+				em.mov(amd64.edi, amd64.ebx);
 				em.mov(amd64.rax, amd64.imm64(0x3C));
 				em.emit(Insn.SYSCALL);
 			} else {
-				em.mov(eax, amd64.imm(1, is));
+				em.mov(eax, amd64.imm32(1));
 				em.emit(Insn.INT, amd64.imm8(-128));
 			}
 		}, null);

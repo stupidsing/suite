@@ -740,16 +740,12 @@ public class Amd64Assemble {
 		var size = op0.size;
 		byte[] bs0;
 
-		switch (size) {
-		case 1:
+		if (size == 1)
 			bs0 = bs(b1);
-			break;
-		case 4:
+		else if (size == 4)
 			bs0 = bs4;
-			break;
-		default:
+		else
 			return invalid;
-		}
 
 		var rel = op0.imm - (offset + bs0.length + size);
 		InsnCode insnCode;
@@ -904,7 +900,7 @@ public class Amd64Assemble {
 				long disp;
 
 				if (isAmd64 && modrm.mod == 0 && (modrm.rm & 7) == 5) // RIP-relative addressing
-					disp = modrm.disp - offset;
+					disp = modrm.disp - offset - bb.size() - modrm.dispSize - insnCode.immSize;
 				else
 					disp = modrm.disp;
 
