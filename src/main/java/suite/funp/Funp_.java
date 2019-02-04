@@ -27,7 +27,7 @@ public class Funp_ {
 	public static boolean isAmd64 = Execute.shell("uname -a").contains("x86_64");
 	public static int booleanSize = 1;
 	public static int integerSize = 4;
-	public static int pointerSize = 4;
+	public static int pointerSize = isAmd64 ? 8 : 4;
 	public static Funp framePointer = new FunpFramePointer();
 
 	private boolean isOptimize;
