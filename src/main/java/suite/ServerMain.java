@@ -52,15 +52,6 @@ public class ServerMain {
 				.put("Cache-Control", PerList.of("no-cache")) //
 				.put("Content-Type", PerList.of("text/event-stream")));
 
-		HttpHandler handlerSse = request -> HttpResponse.ofWriter(HttpResponse.HTTP200, sseHeaders, writer -> {
-			for (var i = 0; i < 8; i++) {
-				Thread_.sleepQuietly(1000l);
-				var event = "event: number\ndata: { \"i\": " + i + " }\n\n";
-				writer.f(Bytes.of(event.getBytes(Defaults.charset)));
-			}
-			writer.f(null);
-		});
-
 		HttpHandler handlerSite = request -> HttpResponse.of(To.outlet("" //
 				+ "<html>" //
 				+ "<br/>method = " + request.method //
@@ -70,13 +61,22 @@ public class ServerMain {
 				+ "<br/>headers = " + request.headers //
 				+ "</html>"));
 
+		HttpHandler handlerSse = request -> HttpResponse.ofWriter(HttpResponse.HTTP200, sseHeaders, writer -> {
+			for (var i = 0; i < 8; i++) {
+				Thread_.sleepQuietly(1000l);
+				var event = "event: number\ndata: { \"i\": " + i + " }\n\n";
+				writer.f(Bytes.of(event.getBytes(Defaults.charset)));
+			}
+			writer.f(null);
+		});
+
 		var handler1 = HttpHandler.ofDispatch(PerMap //
 				.<String, HttpHandler>empty() //
 				.put("hello", HttpHandler.ofData("Hello world")) //
 				.put("html", HttpHandler.ofPath(Paths.get("src/main/html"))) //
 				.put("path", HttpHandler.ofPath(Defaults.tmp)) //
-				.put("sse", handlerSse) //
-				.put("site", HttpHandler.ofSession(authenticate, handlerSite)));
+				.put("site", HttpHandler.ofSession(authenticate, handlerSite)) //
+				.put("sse", handlerSse));
 
 		new HttpServe(8051).serve(handler1);
 	}
