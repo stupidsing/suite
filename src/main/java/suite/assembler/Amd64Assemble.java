@@ -74,13 +74,17 @@ public class Amd64Assemble {
 		public int size;
 		public byte[] bs;
 		public Modrm modrm;
-		public int immSize;
 		public long imm;
+		public int immSize;
 
 		private InsnCode(int size, OpImm imm) {
+			this(size, imm.imm, imm.size);
+		}
+
+		private InsnCode(int size, long imm, int immSize) {
 			this.size = size;
-			this.immSize = imm.size;
-			this.imm = imm.imm;
+			this.imm = imm;
+			this.immSize = immSize;
 		}
 
 		private InsnCode(int size, byte[] bs) {
@@ -782,16 +786,12 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRmRegImm(Instruction instruction, int bModrm, int bImm, int num) {
-		return assembleRmRegImm(instruction, bModrm, bModrm + 4, bImm, num);
-	}
-
-	private InsnCode assembleRmRegImm(Instruction instruction, int bModrm, int bAccImm, int bRmImm, int num) {
 		InsnCode insnCodeRmReg;
 		if (instruction.op0.size == instruction.op1.size)
 			if ((insnCodeRmReg = assembleRmReg(instruction, bModrm)).isValid())
 				return insnCodeRmReg;
 			else if (instruction.op1 instanceof OpImm)
-				return assembleRmImm(instruction.op0, (OpImm) instruction.op1, bAccImm, bRmImm, num);
+				return assembleRmImm(instruction.op0, (OpImm) instruction.op1, bModrm + 4, bImm, num);
 			else
 				return invalid;
 		else
@@ -821,16 +821,22 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRmImm(Operand op0, OpImm op1, int bAccImm, int bRmImm, int num) {
-		var insnCode = new InsnCode(op0.size, op1);
+		InsnCode insnCode;
 
-		if (isAcc.test(op0))
-			insnCode.bs = bs(bAccImm + (op0.size <= 1 ? 0 : 1));
-		else if (isRm.test(op0)) {
-			var b0 = ((1 < op0.size && op1.size <= 1) ? 2 : 0) + (op0.size <= 1 ? 0 : 1);
-			insnCode.bs = bs(bRmImm + b0);
-			insnCode.modrm = modrm(op0, num);
+		if (Integer.MIN_VALUE <= op1.imm && op1.imm <= Integer.MAX_VALUE) {
+			insnCode = new InsnCode(op0.size, op1.imm, Math.min(op1.size, 4));
+
+			if (isAcc.test(op0))
+				insnCode.bs = bs(bAccImm + (op0.size <= 1 ? 0 : 1));
+			else if (isRm.test(op0)) {
+				var b0 = ((1 < op0.size && op1.size <= 1) ? 2 : 0) + (op0.size <= 1 ? 0 : 1);
+				insnCode.bs = bs(bRmImm + b0);
+				insnCode.modrm = modrm(op0, num);
+			} else
+				insnCode = invalid;
 		} else
 			insnCode = invalid;
+
 		return insnCode;
 	}
 

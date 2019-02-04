@@ -46,7 +46,7 @@ public class ElfTest {
 
 	@Test
 	public void testCall() {
-		test(3, "let id := (i => i + 1) ~ 2", "");
+		test(3, "let id := (i => i + 1) ~ (2 | id)", "");
 	}
 
 	@Test
