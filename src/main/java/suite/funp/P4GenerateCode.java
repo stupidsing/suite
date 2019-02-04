@@ -657,7 +657,7 @@ public class P4GenerateCode {
 		private CompileOut compileHeap(Integer size, FixieFun3<Compile0, Integer, OpMem, CompileOut> fun) {
 			var pair = getAllocSize(size);
 			var rf = em.mov(rs.get(ps), freeChainPointer);
-			em.addImm(rf, pair.t0 * 4);
+			em.addImm(rf, pair.t0 * ps);
 			var fcp = amd64.mem(rf, 0, ps);
 			return fun.apply(mask(fcp), pair.t1, fcp);
 		}
