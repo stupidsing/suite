@@ -455,9 +455,10 @@ public class P4GenerateCode {
 				var fd1 = fd;
 				for (var opReg : opRegs)
 					saves.value().add(Pair.of(opReg, fd1 -= is));
-				em.addImm(_sp, fd1 - fd);
-				var out = nc(rs, fd1).compile(expr);
-				em.addImm(_sp, fd - fd1);
+				var pushSize = getAlignedSize(fd - fd1);
+				em.addImm(_sp, -pushSize);
+				var out = nc(rs, fd - pushSize).compile(expr);
+				em.addImm(_sp, pushSize);
 				return out;
 			})).applyIf(FunpSaveRegisters1.class, f -> f.apply((expr, saves) -> {
 				for (var pair : saves.value())
@@ -899,7 +900,7 @@ public class P4GenerateCode {
 
 		private OpReg compileLoad(Funp node, OpReg op) {
 			var size = op.size;
-			if (size == is)
+			if (size == is || size == ps)
 				compileSpec(size, node, op);
 			else
 				compileAllocStack(size, FunpDontCare.of(), null, c1 -> {
