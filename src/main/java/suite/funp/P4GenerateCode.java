@@ -95,7 +95,7 @@ public class P4GenerateCode {
 	private OpReg _ax = isAmd64 ? amd64.rax : amd64.eax;
 	private OpReg _dx = isAmd64 ? amd64.rdx : amd64.edx;
 	private OpReg _bp = isAmd64 ? amd64.rbp : amd64.ebp;
-	private OpReg _sp = isAmd64 ? amd64.rsp : amd64.esp;
+	private OpReg _sp = Funp_._sp;
 
 	private RegisterSet registerSet;
 	private boolean isUseEbp;
@@ -200,7 +200,6 @@ public class P4GenerateCode {
 			new Compile0(ISSPEC, em, null, ebx, null, registerSet, 0).compile(funp);
 
 			if (isAmd64) {
-				em.mov(amd64.rdi, amd64.imm64(0x00));
 				em.mov(amd64.edi, amd64.ebx);
 				em.mov(amd64.rax, amd64.imm64(0x3C));
 				em.emit(Insn.SYSCALL);

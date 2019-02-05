@@ -105,7 +105,7 @@ public class P4DecomposeOperand {
 			private DecomposeAdd(Funp n0) {
 				for (var n1 : decompose.apply(TermOp.PLUS__, n0))
 					if (n1 instanceof FunpFramePointer && !isUseEbp) {
-						addReg(amd64.esp, 1);
+						addReg(Funp_._sp, 1);
 						disp -= fd;
 					} else {
 						var dec = new DecomposeMult();
