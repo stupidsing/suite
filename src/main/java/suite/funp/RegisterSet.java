@@ -13,7 +13,7 @@ import suite.streamlet.Read;
 public class RegisterSet {
 
 	private static Amd64 amd64 = Amd64.me;
-	private static int nRegisters = 8;
+	private static int nRegisters = Funp_.nRegisters;
 	private static OpReg[] registers;
 
 	public final int flag;
@@ -22,7 +22,7 @@ public class RegisterSet {
 		var map = Read //
 				.from2(amd64.regByName) //
 				.values() //
-				.filter(opReg -> opReg.size == Funp_.integerSize) //
+				.filter(opReg -> opReg.size == Funp_.pushSize) //
 				.map2(opReg -> opReg.reg, opReg -> opReg) //
 				.toMap();
 
