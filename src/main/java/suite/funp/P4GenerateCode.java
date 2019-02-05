@@ -87,6 +87,7 @@ public class P4GenerateCode {
 	private OpReg ecx = amd64.ecx;
 	private OpReg edx = amd64.edx;
 	private OpReg _ax = isAmd64 ? amd64.rax : amd64.eax;
+	private OpReg _dx = isAmd64 ? amd64.rdx : amd64.edx;
 	private OpReg _bp = isAmd64 ? amd64.rbp : amd64.ebp;
 	private OpReg _sp = isAmd64 ? amd64.rsp : amd64.esp;
 	private OpReg esi = amd64.esi;
@@ -600,22 +601,23 @@ public class P4GenerateCode {
 			var size = source.size();
 
 			IntObj_Obj<OpMem, OpMem> shift = (disp, op) -> {
+				var regs = isAmd64 ? amd64.reg64 : amd64.reg32;
 				var br = op.baseReg;
 				var ir = op.indexReg;
 				return amd64.mem( //
-						0 <= br ? amd64.reg32[br] : null, //
-						0 <= ir ? amd64.reg32[ir] : null, //
+						0 <= br ? regs[br] : null, //
+						0 <= ir ? regs[ir] : null, //
 						op.scale, op.disp.imm + disp, op.size);
 			};
 
 			Runnable moveBlock = () -> {
-				var r0 = compileIsReg(target.pointer);
-				var r1 = mask(r0).compileIsReg(source.pointer);
+				var r0 = compilePsReg(target.pointer);
+				var r1 = mask(r0).compilePsReg(source.pointer);
 				var start0 = target.start;
 				var start1 = source.start;
 
 				if (r0 != r1 || start0 != start1)
-					if (16 < size)
+					if (4 * pushSize < size)
 						saveRegs(c1 -> {
 							var r = rs.mask(r0, edi).get(esi);
 							em.lea(r, amd64.mem(r1, start1, is));
@@ -629,8 +631,8 @@ public class P4GenerateCode {
 						}, ecx, esi, edi);
 					else if (0 < size) {
 						int p = 0, p1;
-						for (; (p1 = p + is) <= size; p = p1)
-							mov(amd64.mem(r0, start0 + p, is), amd64.mem(r1, start1 + p, is));
+						for (; (p1 = p + pushSize) <= size; p = p1)
+							mov(amd64.mem(r0, start0 + p, pushSize), amd64.mem(r1, start1 + p, pushSize));
 						for (; (p1 = p + 1) <= size; p = p1)
 							mov(amd64.mem(r0, start0 + p, 1), amd64.mem(r1, start1 + p, 1));
 					}
@@ -638,12 +640,12 @@ public class P4GenerateCode {
 
 			if (size != target.size())
 				fail();
-			else if (size % is == 0 && Set.of(2, 3, 4).contains(size / is)) {
-				var opt = p4deOp.decomposeFunpMemory(fd, target, is);
-				var ops = p4deOp.decomposeFunpMemory(fd, source, is);
+			else if (size % pushSize == 0 && Set.of(2, 3, 4).contains(size / pushSize)) {
+				var opt = p4deOp.decomposeFunpMemory(fd, target, pushSize);
+				var ops = p4deOp.decomposeFunpMemory(fd, source, pushSize);
 
 				if (opt != null && ops != null)
-					for (var disp = 0; disp < size; disp += is)
+					for (var disp = 0; disp < size; disp += pushSize)
 						mov(shift.apply(disp, opt), shift.apply(disp, ops));
 				else
 					moveBlock.run();
@@ -897,7 +899,7 @@ public class P4GenerateCode {
 		private OpReg compileLoad(Funp node, OpReg op) {
 			var size = op.size;
 			if (size == is)
-				compileIsSpec(node, op);
+				compileSpec(size, node, op);
 			else
 				compileAllocStack(size, FunpDontCare.of(), null, c1 -> {
 					var fd1 = c1.fd;
@@ -909,7 +911,11 @@ public class P4GenerateCode {
 		}
 
 		private OpReg compileIsLoad(Funp node) {
-			return isOutSpec ? compileIsSpec(node, pop0) : compileIsReg(node);
+			return compileLoad(is, node);
+		}
+
+		private OpReg compileLoad(int size, Funp node) {
+			return isOutSpec ? compileSpec(size, node, pop0) : compileReg(size, node);
 		}
 
 		private OpMem compileFrame(int start, int size) {
@@ -930,8 +936,7 @@ public class P4GenerateCode {
 		}
 
 		private OpReg compileIsSpec(Funp n, OpReg op) {
-			nc(ISSPEC, null, op, null).compile(n);
-			return op;
+			return compileSpec(is, n, op);
 		}
 
 		private Operand compilePsOp(Funp n) {
@@ -957,6 +962,11 @@ public class P4GenerateCode {
 
 		private OpReg compileReg(int size, Funp n) {
 			return (OpReg) nc(new Result(Rt.REG, 1, size)).compile(n).op0;
+		}
+
+		private OpReg compileSpec(int size, Funp n, OpReg op) {
+			nc(new Result(Rt.SPEC, 1, size), null, op, null).compile(n);
+			return op;
 		}
 
 		private OpReg compileCompare(OpReg r0, int start0, OpReg r1, int start1, int size, boolean isEq) {
