@@ -82,14 +82,13 @@ public class RegisterSet {
 	}
 
 	private OpReg get_(int size) {
-		var r = get_();
-		var reg = r.reg;
+		var reg = get_();
 		if (size == 1 && reg < 4) // AL, BL, CL or DL
 			return amd64.reg8[reg];
 		else if (size == 2)
 			return amd64.reg16[reg];
 		else if (size == 4)
-			return r;
+			return amd64.reg32[reg];
 		else if (size == 8)
 			return amd64.reg64[reg];
 		else
@@ -100,10 +99,10 @@ public class RegisterSet {
 		return isSet_(reg);
 	}
 
-	private OpReg get_() {
+	private int get_() {
 		for (var i = 0; i < nRegisters; i++)
 			if (!isSet_(i))
-				return registers[i];
+				return i;
 		return fail();
 	}
 
