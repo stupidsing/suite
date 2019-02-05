@@ -90,12 +90,13 @@ public class P4GenerateCode {
 	private OpReg ebx = amd64.ebx;
 	private OpReg ecx = amd64.ecx;
 	private OpReg edx = amd64.edx;
+	private OpReg esi = amd64.esi;
+	private OpReg edi = amd64.edi;
 	private OpReg _ax = isAmd64 ? amd64.rax : amd64.eax;
 	private OpReg _dx = isAmd64 ? amd64.rdx : amd64.edx;
 	private OpReg _bp = isAmd64 ? amd64.rbp : amd64.ebp;
 	private OpReg _sp = isAmd64 ? amd64.rsp : amd64.esp;
-	private OpReg esi = amd64.esi;
-	private OpReg edi = amd64.edi;
+
 	private RegisterSet registerSet;
 	private boolean isUseEbp;
 
