@@ -253,23 +253,23 @@ public class P4GenerateCode {
 				compileIsSpec(value, (OpReg) target.operand.value());
 				return compile(expr);
 			})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
-				return returnIsOp(amd64.imm(b ? 1 : 0, Funp_.booleanSize));
+				return returnOp(amd64.imm(b ? 1 : 0, Funp_.booleanSize));
 			})).applyIf(FunpCmp.class, f -> f.apply((op, l, r) -> {
 				var isEq = op == TermOp.EQUAL_;
 				var r0 = compileIsReg(l.pointer);
 				var r1 = mask(r0).compileIsReg(r.pointer);
 				var size0 = l.size();
 				var size1 = r.size();
-				return size0 == size1 ? returnIsOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : fail();
+				return size0 == size1 ? returnOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : fail();
 			})).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
 				var rbyte = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
 				var reg = integerRegs[rbyte.reg];
 				if (from == Coerce.BYTE) {
 					compileByte(expr, reg);
-					return returnIsOp(reg);
+					return returnOp(reg);
 				} else if (to == Coerce.BYTE) {
 					compileIsSpec(expr, reg);
-					return returnIsOp(rbyte);
+					return returnOp(rbyte);
 				} else
 					return compile(expr);
 			})).applyIf(FunpData.class, f -> f.apply(pairs -> {
@@ -288,7 +288,7 @@ public class P4GenerateCode {
 				}.assign(this, 0);
 
 				Read.from(asm).map(p::parse).sink(em::emit);
-				return returnIsOp(i_eax);
+				return returnOp(i_eax);
 			})).applyIf(FunpDontCare.class, f -> {
 				return returnDontCare();
 			}).applyIf(FunpDoWhile.class, f -> f.apply((while_, do_, expr) -> {
@@ -318,7 +318,7 @@ public class P4GenerateCode {
 				em.emit(Insn.HLT);
 				return returnDontCare();
 			}).applyIf(FunpFramePointer.class, t -> {
-				return returnIsOp(compileFramePointer());
+				return returnOp(compileFramePointer());
 			}).applyIf(FunpHeapAlloc.class, f -> f.apply(size -> {
 				return compileHeap(size, (c1, allocSize, fcp) -> {
 					var ra = isOutSpec ? pop0 : c1.rs.get(ps);
@@ -335,12 +335,12 @@ public class P4GenerateCode {
 					c1.em.emit(Insn.JZ, labelAlloc);
 					c1.mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
 					c1.em.label(labelEnd);
-					return returnIsOp(ra);
+					return returnOp(ra);
 				});
 			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, reference, expr) -> {
 				var out = compile(expr);
 				return mask(pop0, pop1, out.op0, out.op1).compileHeap(size, (c1, allocSize, fcp) -> {
-					var ref = c1.compileIsReg(reference);
+					var ref = c1.compilePsReg(reference);
 					c1.mask(ref).mov(amd64.mem(ref, 0, ps), fcp);
 					c1.em.mov(fcp, ref);
 					return out;
@@ -359,7 +359,7 @@ public class P4GenerateCode {
 						ops[0] = c1.em.mov(rs.get(op0), op0);
 					};
 					compile1 = (c1, node_) -> c1.compileIsSpec(node_, ops[0]);
-					out = () -> returnIsOp(ops[0]);
+					out = () -> returnOp(ops[0]);
 				} else if (result.nRegs == 2) {
 					var ops = new OpReg[2];
 					compile0 = (c1, node_) -> {
@@ -368,7 +368,7 @@ public class P4GenerateCode {
 						ops[1] = c1.em.mov(rs.mask(ops[0]).get(co1.op1), co1.op1);
 					};
 					compile1 = (c1, node_) -> c1.compilePs2Spec(node_, ops[0], ops[1]);
-					out = () -> returnPs2Op(ops[0], ops[1]);
+					out = () -> return2Op(ops[0], ops[1]);
 				} else
 					throw new RuntimeException();
 
@@ -397,10 +397,10 @@ public class P4GenerateCode {
 				return out.g();
 			})).applyIf(FunpInvoke.class, f -> f.apply(routine -> {
 				compileInvoke(routine);
-				return returnIsOp(i_eax);
+				return returnOp(i_eax);
 			})).applyIf(FunpInvoke2.class, f -> f.apply(routine -> {
 				compileInvoke(routine);
-				return returnPs2Op(p2_eax, p2_edx);
+				return return2Op(p2_eax, p2_edx);
 			})).applyIf(FunpInvokeIo.class, f -> f.apply((routine, is, os) -> {
 				compileInvoke(routine);
 				return returnAssign((c1, target) -> {
@@ -418,37 +418,37 @@ public class P4GenerateCode {
 					var i = fn != null ? fn.i.value() : IntFunUtil.EMPTYVALUE;
 					var pointer1 = i != IntFunUtil.EMPTYVALUE ? ft.left : pointer;
 					var start1 = start + (i != IntFunUtil.EMPTYVALUE ? i : 0);
-					return fun.apply(start1, compileIsReg(pointer1));
+					return fun.apply(start1, compilePsReg(pointer1));
 				};
 
 				if (result.t == Rt.ASSIGN)
 					return returnAssign((c1, target) -> c1.compileAssign(f, target));
 				else if (result.nRegs == 1)
 					if ((op0 = p4deOp.decompose(fd, pointer, start, size)) != null)
-						return returnIsOp(op0);
+						return returnOp(op0);
 					else
-						return mf.apply((start_, r) -> returnIsOp(amd64.mem(r, start_, size)));
+						return mf.apply((start_, r) -> returnOp(amd64.mem(r, start_, size)));
 				else if (result.nRegs == 2)
 					if ((op0 = p4deOp.decompose(fd, pointer, start, ps)) != null
 							&& (op1 = p4deOp.decompose(fd, pointer, start + ps, ps)) != null)
-						return returnPs2Op(op0, op1);
+						return return2Op(op0, op1);
 					else
-						return mf.apply((start_, r) -> returnPs2Op(amd64.mem(r, start_, ps), amd64.mem(r, start_ + ps, ps)));
+						return mf.apply((start_, r) -> return2Op(amd64.mem(r, start_, ps), amd64.mem(r, start_ + ps, ps)));
 				else
 					return fail();
 			})).applyIf(FunpNumber.class, f -> f.apply(i -> {
-				return returnIsOp(amd64.imm(i.value(), is));
+				return returnOp(amd64.imm(i.value(), is));
 			})).applyIf(FunpOperand.class, f -> f.apply(op -> {
-				return returnIsOp(op.value());
+				return returnOp(op.value());
 			})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr) -> {
-				return returnPs2Op(compileOp(is, frame), compileRoutine(c1 -> c1.compileIsSpec(expr, i_eax)));
+				return return2Op(compilePsOp(frame), compileRoutine(c1 -> c1.compileIsSpec(expr, i_eax)));
 			})).applyIf(FunpRoutine2.class, f -> f.apply((frame, expr) -> {
-				return returnPs2Op(compileOp(is, frame), compileRoutine(c1 -> c1.compilePs2Spec(expr, p2_eax, p2_edx)));
+				return return2Op(compilePsOp(frame), compileRoutine(c1 -> c1.compilePs2Spec(expr, p2_eax, p2_edx)));
 			})).applyIf(FunpRoutineIo.class, f -> f.apply((frame, expr, is, os) -> {
 				// input argument, return address and EBP
 				var o = ps + ps + is;
 				var out = frame(o, o + os);
-				return returnPs2Op(compileOp(is, frame), compileRoutine(c1 -> c1.compileAssign(expr, out)));
+				return return2Op(compilePsOp(frame), compileRoutine(c1 -> c1.compileAssign(expr, out)));
 			})).applyIf(FunpSaveRegisters0.class, f -> f.apply((expr, saves) -> {
 				var opRegs = rs.list(r -> !registerSet.isSet(r));
 				var fd1 = fd;
@@ -481,9 +481,9 @@ public class P4GenerateCode {
 					return new CompileOut(op0, op1);
 				}
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
-				return returnIsOp(compileTree(n, op, op.assoc(), lhs, rhs));
+				return returnOp(compileTree(n, op, op.assoc(), lhs, rhs));
 			})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
-				return returnIsOp(compileTree(n, op, Assoc.RIGHT, lhs, rhs));
+				return returnOp(compileTree(n, op, Assoc.RIGHT, lhs, rhs));
 			})).nonNullResult();
 		}
 
@@ -493,20 +493,20 @@ public class P4GenerateCode {
 					assign.sink2(this, target);
 				return new CompileOut();
 			} else if (result.nRegs == 1) {
-				var op0 = isOutSpec ? pop0 : rs.get(is);
+				var op0 = isOutSpec ? pop0 : rs.get(result.regSize);
 				compileAllocStack(is, FunpDontCare.of(), List.of(op0), c1 -> {
 					assign.sink2(c1, frame(c1.fd, fd));
 					return new CompileOut();
 				});
-				return returnIsOp(op0);
+				return returnOp(op0);
 			} else if (result.nRegs == 2) {
-				var op0 = isOutSpec ? pop0 : rs.get(ps);
-				var op1 = isOutSpec ? pop1 : rs.mask(op0).get(ps);
+				var op0 = isOutSpec ? pop0 : rs.get(result.regSize);
+				var op1 = isOutSpec ? pop1 : rs.mask(op0).get(result.regSize);
 				compileAllocStack(ps + ps, FunpDontCare.of(), List.of(op1, op0), c1 -> {
 					assign.sink2(c1, frame(c1.fd, fd));
 					return new CompileOut();
 				});
-				return returnPs2Op(op0, op1);
+				return return2Op(op0, op1);
 			} else
 				return fail();
 		}
@@ -522,7 +522,7 @@ public class P4GenerateCode {
 				return fail();
 		}
 
-		private CompileOut returnIsOp(Operand op) {
+		private CompileOut returnOp(Operand op) {
 			if (result.t == Rt.ASSIGN) {
 				var opt = p4deOp.decomposeFunpMemory(fd, target);
 				opt = opt != null ? opt : amd64.mem(mask(op).compileIsReg(target.pointer), target.start, target.size());
@@ -540,26 +540,29 @@ public class P4GenerateCode {
 			return new CompileOut();
 		}
 
-		private CompileOut returnPs2Op(Operand op0, Operand op1) {
+		private CompileOut return2Op(Operand op0, Operand op1) {
+			var size0 = op0.size;
+			var size1 = op1.size;
+
 			if (result.t == Rt.ASSIGN) {
-				var opt0 = p4deOp.decompose(fd, target.pointer, target.start, ps);
-				var opt1 = p4deOp.decompose(fd, target.pointer, target.start + ps, ps);
+				var opt0 = p4deOp.decompose(fd, target.pointer, target.start, size0);
+				var opt1 = p4deOp.decompose(fd, target.pointer, target.start + size0, size1);
 				if (opt0 == null || opt1 == null) {
 					var r = mask(op0, op1).compileIsReg(target.pointer);
-					opt0 = amd64.mem(r, target.start, ps);
-					opt1 = amd64.mem(r, target.start + ps, ps);
+					opt0 = amd64.mem(r, target.start, size0);
+					opt1 = amd64.mem(r, target.start + size0, size1);
 				}
 				if (op0 instanceof OpMem)
-					op0 = em.mov(rs.mask(opt0, opt1, op1).get(op0.size), op0);
+					op0 = em.mov(rs.mask(opt0, opt1, op1).get(size0), op0);
 				em.mov(opt0, op0);
 				if (op1 instanceof OpMem)
-					op1 = em.mov(rs.mask(opt1).get(op1.size), op1);
+					op1 = em.mov(rs.mask(opt1).get(size1), op1);
 				em.mov(opt1, op1);
 			} else if (result.t == Rt.OP || result.t == Rt.REG) {
 				if (result.t == Rt.REG && !(op0 instanceof OpReg))
-					op0 = em.mov(rs.mask(op1).get(op0.size), op0);
+					op0 = em.mov(rs.mask(op1).get(size0), op0);
 				if (result.t == Rt.REG && !(op1 instanceof OpReg))
-					op1 = em.mov(rs.mask(op0).get(op1.size), op1);
+					op1 = em.mov(rs.mask(op0).get(size1), op1);
 				return new CompileOut(op0, op1);
 			} else if (result.t == Rt.SPEC) {
 				var r = rs.mask(op1, pop1).get(pop0);
@@ -923,7 +926,7 @@ public class P4GenerateCode {
 		}
 
 		private OpReg compileIsReg(Funp n) {
-			return (OpReg) nc(ISREG).compile(n).op0;
+			return compileReg(is, n);
 		}
 
 		private OpReg compileIsSpec(Funp n, OpReg op) {
@@ -933,6 +936,10 @@ public class P4GenerateCode {
 
 		private Operand compilePsOp(Funp n) {
 			return compileOp(ps, n);
+		}
+
+		private OpReg compilePsReg(Funp n) {
+			return compileReg(ps, n);
 		}
 
 		private CompileOut compilePs2Op(Funp n) {
@@ -946,6 +953,10 @@ public class P4GenerateCode {
 
 		private Operand compileOp(int size, Funp n) {
 			return nc(new Result(Rt.OP, 1, size)).compile(n).op0;
+		}
+
+		private OpReg compileReg(int size, Funp n) {
+			return (OpReg) nc(new Result(Rt.REG, 1, size)).compile(n).op0;
 		}
 
 		private OpReg compileCompare(OpReg r0, int start0, OpReg r1, int start1, int size, boolean isEq) {
@@ -1076,12 +1087,9 @@ public class P4GenerateCode {
 	}
 
 	private Result ASSIGN = new Result(Rt.ASSIGN, -1, -1); // assign value to certain memory region
-	private Result ISOP = new Result(Rt.OP, 1, is); // put value to an operand (r/m or immediate)
 	private Result ISREG = new Result(Rt.REG, 1, is); // put value to a register operand
 	private Result ISSPEC = new Result(Rt.SPEC, 1, is); // put value to a specified operand
-	private Result PSOP = new Result(Rt.OP, 1, ps);
 	private Result PS2OP = new Result(Rt.OP, 2, ps); // put value to an operand pair
-	private Result PS2REG = new Result(Rt.REG, 2, ps); // put value to a register operand pair
 	private Result PS2SPEC = new Result(Rt.SPEC, 2, ps); // put value to a specified operand pair
 
 	private class Result {
@@ -1097,7 +1105,10 @@ public class P4GenerateCode {
 	}
 
 	private enum Rt {
-		ASSIGN, OP, REG, SPEC,
+		ASSIGN, // assign value to certain memory region
+		OP, // put value to an operand
+		REG, // put value to a register operand
+		SPEC, // put value to a specified operand
 	};
 
 }
