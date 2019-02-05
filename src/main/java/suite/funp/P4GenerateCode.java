@@ -75,11 +75,15 @@ import suite.util.Switch;
 public class P4GenerateCode {
 
 	private boolean isAmd64 = Funp_.isAmd64;
+	private Amd64 amd64 = Funp_.amd64;
+
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
-	private int pushSize = isAmd64 ? 8 : 4;
+	private int pushSize = Funp_.pushSize;
+	private OpReg[] integerRegs = Funp_.integerRegs;
+	private OpReg[] pointerRegs = Funp_.pointerRegs;
+	private OpReg[] pushRegs = Funp_.pushRegs;
 
-	private Amd64 amd64 = Amd64.me;
 	private Amd64Assemble asm = new Amd64Assemble(isAmd64);
 
 	private OpReg eax = amd64.eax;
@@ -92,9 +96,6 @@ public class P4GenerateCode {
 	private OpReg _sp = isAmd64 ? amd64.rsp : amd64.esp;
 	private OpReg esi = amd64.esi;
 	private OpReg edi = amd64.edi;
-	private OpReg[] integerRegs = is == 4 ? amd64.reg32 : is == 8 ? amd64.reg64 : null;
-	private OpReg[] pointerRegs = ps == 4 ? amd64.reg32 : ps == 8 ? amd64.reg64 : null;
-	private OpReg[] pushRegs = pushSize == 4 ? amd64.reg32 : pushSize == 8 ? amd64.reg64 : null;
 	private RegisterSet registerSet;
 	private boolean isUseEbp;
 

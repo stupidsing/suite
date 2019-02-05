@@ -6,7 +6,9 @@ import java.util.Map;
 
 import suite.Suite;
 import suite.adt.pair.Pair;
+import suite.assembler.Amd64;
 import suite.assembler.Amd64.Instruction;
+import suite.assembler.Amd64.OpReg;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpLambda;
@@ -25,9 +27,15 @@ import suite.streamlet.Read;
 public class Funp_ {
 
 	public static boolean isAmd64 = Execute.shell("uname -a").contains("x86_64");
+	public static Amd64 amd64 = Amd64.me;
+
 	public static int booleanSize = 1;
 	public static int integerSize = 4;
 	public static int pointerSize = isAmd64 ? 8 : 4;
+	public static int pushSize = isAmd64 ? 8 : 4;
+	public static OpReg[] integerRegs = integerSize == 4 ? amd64.reg32 : integerSize == 8 ? amd64.reg64 : null;
+	public static OpReg[] pointerRegs = pointerSize == 4 ? amd64.reg32 : pointerSize == 8 ? amd64.reg64 : null;
+	public static OpReg[] pushRegs = pushSize == 4 ? amd64.reg32 : pushSize == 8 ? amd64.reg64 : null;
 	public static Funp framePointer = new FunpFramePointer();
 
 	private boolean isOptimize;
