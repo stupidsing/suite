@@ -123,7 +123,7 @@ public class P4Emit {
 			if (op.baseReg < 0 && op.indexReg < 0)
 				return amd64.imm(op.disp.imm, is);
 			else if (op.indexReg < 0 && op.disp.imm == 0)
-				return amd64.reg32[op.baseReg];
+				return (Funp_.isAmd64 ? amd64.reg64 : amd64.reg32)[op.baseReg];
 			else
 				return null;
 		}
