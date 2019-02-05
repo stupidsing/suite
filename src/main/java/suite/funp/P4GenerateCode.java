@@ -270,7 +270,7 @@ public class P4GenerateCode {
 				var rbyte = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
 				var reg = integerRegs[rbyte.reg];
 				if (from == Coerce.BYTE) {
-					compileByte(expr, reg);
+					compileByte(expr, pushRegs[rbyte.reg]);
 					return returnOp(reg);
 				} else if (to == Coerce.BYTE) {
 					compileIsSpec(expr, reg);
@@ -879,7 +879,7 @@ public class P4GenerateCode {
 		}
 
 		private void compileJumpZero(Funp if_, Operand label) {
-			var op0 = isOutSpec ? pop0 : rs.get(is);
+			var op0 = isOutSpec ? pop0 : rs.get(Funp_.pushSize);
 			compileByte(if_, op0);
 			em.emit(Insn.OR, op0, op0);
 			em.emit(Insn.JZ, label);
@@ -890,7 +890,7 @@ public class P4GenerateCode {
 		}
 
 		private void compileByte(Funp n, Operand op0) {
-			compileAllocStack(is, FunpNumber.ofNumber(0), List.of(op0), c1 -> {
+			compileAllocStack(op0.size, FunpNumber.ofNumber(0), List.of(op0), c1 -> {
 				var fd1 = c1.fd;
 				c1.compileAssign(n, frame(fd1, fd1 + Funp_.booleanSize));
 				return new CompileOut();
