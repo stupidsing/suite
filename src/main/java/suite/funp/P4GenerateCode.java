@@ -500,7 +500,7 @@ public class P4GenerateCode {
 				return new CompileOut();
 			} else if (result.nRegs == 1) {
 				var op0 = isOutSpec ? pop0 : rs.get(result.regSize);
-				compileAllocStack(result.regSize, FunpDontCare.of(), List.of(op0), c1 -> {
+				compileAllocStack(result.regSize, FunpDontCare.of(), List.of(pushRegs[op0.reg]), c1 -> {
 					assign.sink2(c1, frame(c1.fd, fd));
 					return new CompileOut();
 				});
