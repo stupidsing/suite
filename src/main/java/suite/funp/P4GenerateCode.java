@@ -671,30 +671,31 @@ public class P4GenerateCode {
 		}
 
 		private Operand compileTree(Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
+			var size = is;
 			var numRhs = rhs.cast(FunpNumber.class, n_ -> n_.i.value());
 			var insn = insnByOp.get(operator);
 			var setInsn = setInsnByOp.get(operator);
 			var setRevInsn = setRevInsnByOp.get(operator);
 			var shInsn = shInsnByOp.get(operator);
-			var op = p4deOp.decompose(fd, n, 0, is);
+			var op = p4deOp.decompose(fd, n, 0, size);
 			Operand opResult = null;
 
 			if (opResult == null && op != null)
 				opResult = lea(op);
 
 			if (opResult == null && operator == TermOp.OR____) {
-				compileIsLoad(lhs);
-				opResult = compileIsOp(rhs);
+				compileLoad(size, lhs);
+				opResult = compileOp(size, rhs);
 			}
 
 			if (opResult == null && operator == TermOp.DIVIDE && numRhs != null && Integer.bitCount(numRhs) == 1)
-				em.shiftImm(Insn.SHR, opResult = compileIsLoad(rhs), Integer.numberOfTrailingZeros(numRhs));
+				em.shiftImm(Insn.SHR, opResult = compileLoad(size, rhs), Integer.numberOfTrailingZeros(numRhs));
 
 			if (opResult == null)
 				if (operator == TermOp.DIVIDE)
-					opResult = compileDivMod(lhs, rhs, eax, edx);
+					opResult = compileDivMod(lhs, rhs, _ax, _dx);
 				else if (operator == TermOp.MODULO)
-					opResult = compileDivMod(lhs, rhs, edx, eax);
+					opResult = compileDivMod(lhs, rhs, _dx, _ax);
 				else if (operator == TermOp.MINUS_) {
 					var pair = compileCommutativeTree(Insn.SUB, assoc, lhs, rhs);
 					if ((opResult = pair.t1) == rhs)
@@ -703,7 +704,7 @@ public class P4GenerateCode {
 					var pair = compileCommutativeTree(Insn.CMP, assoc, lhs, rhs);
 					em.emit(pair.t0 == lhs ? setInsn : setRevInsn, opResult = isOutSpec ? pop0 : rs.get(1));
 				} else if (shInsn != null) {
-					var op0 = compileIsLoad(lhs);
+					var op0 = compileLoad(size, lhs);
 					if (numRhs != null)
 						em.emit(shInsn, op0, amd64.imm(numRhs, 1));
 					else
@@ -1097,7 +1098,6 @@ public class P4GenerateCode {
 	}
 
 	private Result ASSIGN = new Result(Rt.ASSIGN, -1, -1); // assign value to certain memory region
-	private Result ISREG = new Result(Rt.REG, 1, is); // put value to a register operand
 	private Result ISSPEC = new Result(Rt.SPEC, 1, is); // put value to a specified operand
 	private Result PS2OP = new Result(Rt.OP, 2, ps); // put value to an operand pair
 	private Result PS2SPEC = new Result(Rt.SPEC, 2, ps); // put value to a specified operand pair
