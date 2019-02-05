@@ -93,6 +93,8 @@ public class P4GenerateCode {
 	private OpReg esi = amd64.esi;
 	private OpReg edi = amd64.edi;
 	private OpReg[] integerRegs = is == 4 ? amd64.reg32 : is == 8 ? amd64.reg64 : null;
+	private OpReg[] pointerRegs = ps == 4 ? amd64.reg32 : ps == 8 ? amd64.reg64 : null;
+	private OpReg[] pushRegs = pushSize == 4 ? amd64.reg32 : pushSize == 8 ? amd64.reg64 : null;
 	private RegisterSet registerSet;
 	private boolean isUseEbp;
 
@@ -602,12 +604,11 @@ public class P4GenerateCode {
 			var size = source.size();
 
 			IntObj_Obj<OpMem, OpMem> shift = (disp, op) -> {
-				var regs = isAmd64 ? amd64.reg64 : amd64.reg32;
 				var br = op.baseReg;
 				var ir = op.indexReg;
 				return amd64.mem( //
-						0 <= br ? regs[br] : null, //
-						0 <= ir ? regs[ir] : null, //
+						0 <= br ? pointerRegs[br] : null, //
+						0 <= ir ? pointerRegs[ir] : null, //
 						op.scale, op.disp.imm + disp, op.size);
 			};
 
@@ -1025,7 +1026,7 @@ public class P4GenerateCode {
 		private void saveRegs(Sink<Compile0> sink, RegisterSet rs_, int fd_, int index, OpReg... opRegs) {
 			OpReg op;
 			if (index < opRegs.length && rs_.contains(op = opRegs[index])) {
-				var opPush = (isAmd64 ? amd64.reg64 : amd64.reg32)[op.reg];
+				var opPush = pushRegs[op.reg];
 				em.emit(Insn.PUSH, opPush);
 				saveRegs(sink, rs_.unmask(op.reg), fd_ - op.size, index + 1, opRegs);
 				em.emit(Insn.POP, opPush);
