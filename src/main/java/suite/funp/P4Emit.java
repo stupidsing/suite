@@ -233,7 +233,7 @@ public class P4Emit {
 
 	public OpImmLabel label() {
 		var op = amd64.new OpImmLabel();
-		op.size = Funp_.pointerSize;
+		op.size = Funp_.labelSize;
 		return op;
 	}
 

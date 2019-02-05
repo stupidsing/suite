@@ -31,6 +31,7 @@ public class Funp_ {
 
 	public static int booleanSize = 1;
 	public static int integerSize = 4;
+	public static int labelSize = 4;
 	public static int pointerSize = isAmd64 ? 8 : 4;
 	public static int pushSize = isAmd64 ? 8 : 4;
 	public static OpReg[] integerRegs = integerSize == 4 ? amd64.reg32 : integerSize == 8 ? amd64.reg64 : null;
