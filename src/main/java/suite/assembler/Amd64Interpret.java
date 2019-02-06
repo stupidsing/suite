@@ -129,6 +129,7 @@ public class Amd64Interpret {
 				var op1 = instruction.op1;
 				var source0 = fetch32.apply(op0);
 				var source1 = fetch32.apply(op1);
+				int p0, p1, p2, p3, rc;
 				LngSink assign;
 				Runnable r;
 
@@ -198,11 +199,10 @@ public class Amd64Interpret {
 					assign.f(setFlags(source0 * source1));
 					break;
 				case INT:
-					var p0 = regs[eax] & 0xFF;
-					var p1 = regs[ebx];
-					var p2 = regs[ecx];
-					var p3 = regs[edx];
-					int rc;
+					p0 = regs[eax] & 0xFF;
+					p1 = regs[ebx];
+					p2 = regs[ecx];
+					p3 = regs[edx];
 					if ((byte) source0 == -128)
 						if (p0 == 0x01) // exit
 							return p1;
@@ -221,7 +221,7 @@ public class Amd64Interpret {
 								bs[i] = mem.get(si++);
 							output.f(Bytes.of(bs));
 							rc = length;
-						} else if (regs[eax] == 0x5A) { // map
+						} else if (p0 == 0x5A) { // map
 							var size = mem.getInt(index(p1) + 4);
 							rc = size < posData.t1 - posData.t0 ? baseData.t0 : fail();
 						} else
@@ -335,6 +335,16 @@ public class Amd64Interpret {
 					break;
 				case SUB:
 					assign.f(setFlags(source0 - source1));
+					break;
+				case SYSCALL:
+					p0 = regs[eax] & 0xFF;
+					if (p0 == 0x09) // map
+						rc = regs[esi] < posData.t1 - posData.t0 ? baseData.t0 : fail();
+					else if (p0 == 0x3C) // exit
+						return regs[edi];
+					else
+						rc = fail("invalid syscall " + regs[eax]);
+					regs[eax] = rc;
 					break;
 				case XOR:
 					assign.f(setFlags(source0 ^ source1));
