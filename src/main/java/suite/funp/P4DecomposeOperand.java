@@ -100,7 +100,7 @@ public class P4DecomposeOperand {
 		class DecomposeAdd {
 			private OpReg baseReg = null, indexReg = null;
 			private int scale = 1, disp = disp0;
-			private boolean ok = is124(size);
+			private boolean ok = isSizeOk(size);
 
 			private DecomposeAdd(Funp n0) {
 				for (var n1 : decompose.apply(TermOp.PLUS__, n0))
@@ -140,12 +140,12 @@ public class P4DecomposeOperand {
 		return new DecomposeAdd(n0).op();
 	}
 
-	private boolean is1248(long scale) {
-		return is124(scale) || scale == 8;
+	private boolean isSizeOk(long scale) {
+		return scale == 1 || scale == 2 || scale == 4 || Funp_.isAmd64 && scale == 8;
 	}
 
-	private boolean is124(long scale) {
-		return scale == 1 || scale == 2 || scale == 4;
+	private boolean is1248(long scale) {
+		return scale == 1 || scale == 2 || scale == 4 || scale == 8;
 	}
 
 }
