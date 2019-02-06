@@ -37,7 +37,7 @@ public class ElfTest {
 		else
 			instructions = List.of( //
 					amd64.instruction(Insn.MOV, amd64.eax, amd64.imm(0x01, 4)), //
-					amd64.instruction(Insn.INT, amd64.imm8(-128)));
+					amd64.instruction(Insn.INT, amd64.imm8(0x80)));
 
 		var exec = elf.exec(new byte[0], offset -> new Amd64Assemble(isAmd64).assemble(offset, instructions, true));
 		assertEquals(0, exec.code);

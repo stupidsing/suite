@@ -205,7 +205,7 @@ public class P4GenerateCode {
 				em.emit(Insn.SYSCALL);
 			} else {
 				em.mov(eax, amd64.imm32(1));
-				em.emit(Insn.INT, amd64.imm8(-128));
+				em.emit(Insn.INT, amd64.imm8(0x80));
 			}
 		}, null);
 	}
