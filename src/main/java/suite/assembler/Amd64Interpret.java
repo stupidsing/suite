@@ -19,9 +19,9 @@ import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntInt_Obj;
-import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.LngPrimitives.LngSink;
-import suite.primitive.adt.map.IntIntMap;
+import suite.primitive.LngPrimitives.Obj_Lng;
+import suite.primitive.adt.map.LngIntMap;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Sink;
 import suite.util.To;
@@ -81,7 +81,7 @@ public class Amd64Interpret {
 		eip = 0;
 		regs[esp] = baseStack.t1 - 16;
 
-		var labelAddressByInsnIndex = new IntIntMap();
+		var labelAddressByInsnIndex = new LngIntMap();
 
 		for (var i = 0; i < instructions.size(); i++) {
 			var i_ = i;
@@ -97,7 +97,7 @@ public class Amd64Interpret {
 				Log_.info(state(instruction));
 
 			try {
-				Obj_Int<Operand> fetch32 = op -> {
+				Obj_Lng<Operand> fetch32 = op -> {
 					long v0;
 					if (op instanceof OpImm)
 						v0 = (int) ((OpImm) op).imm;
@@ -108,7 +108,7 @@ public class Amd64Interpret {
 						v0 = regs[reg];
 					} else
 						v0 = 0;
-					return (int) trim(v0, op.size);
+					return trim(v0, op.size);
 				};
 
 				var op0 = instruction.op0;
@@ -150,7 +150,7 @@ public class Amd64Interpret {
 				case CLD:
 					break;
 				case CMP:
-					c = Integer.compare(source0, source1);
+					c = Long.compare(source0, source1);
 					break;
 				case CMPSB:
 					cmpsb();
@@ -289,7 +289,7 @@ public class Amd64Interpret {
 					}
 					break;
 				case RET:
-					eip = pop();
+					eip = (int) pop();
 					break;
 				case SETE:
 					assign.f(c == 0 ? 1 : 0);
@@ -369,13 +369,13 @@ public class Amd64Interpret {
 		regs[edi] += 4;
 	}
 
-	private void push(int value) {
+	private void push(long value) {
 		regs[esp] -= Funp_.pushSize;
 		assignMemory(regs[esp], Funp_.pushSize).f(value);
 	}
 
-	private int pop() {
-		var i = mem.getInt(index(regs[esp]));
+	private long pop() {
+		var i = trim(mem.getLong(index(regs[esp])), Funp_.pushSize);
 		regs[esp] += Funp_.pushSize;
 		return i;
 	}
