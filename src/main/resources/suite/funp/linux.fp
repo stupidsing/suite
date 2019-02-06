@@ -2,13 +2,14 @@ expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
 expand !peek .pointer := asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
 expand (!poke (.pointer, .value) ~ .expr) := (perform !do asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~ .expr) ~
+expand ps := 4 ~
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
 
 define !mmap length := !do
-	let ps := [0, length, 3, 34, -1, 0,] ~
-	asm (EAX = 90; EBX = address.of ps;) { INT (+x80); }
+	let ms := [0, length, 3, 34, -1, 0,] ~
+	asm (EAX = 90; EBX = address.of ms;) { INT (+x80); }
 ~
 
 define !munmap (length, pointer) := !do
@@ -21,12 +22,12 @@ let.global alloc.pointer := 0 ~
 let.global alloc.free.chain := 0 ~
 
 define !alloc size0 := !do
-	let size := max (4, size0) ~
+	let size := max (ps, size0) ~
 	define {
 		!alloc.chain pointer := !do
 			let chain := !peek pointer ~
 			if (chain != 0) then (
-				let pointer1 := chain + 4 ~
+				let pointer1 := chain + ps ~
 				if (!peek chain != size) then (
 					!alloc.chain coerce.pointer pointer1
 				) else (
@@ -40,7 +41,7 @@ define !alloc size0 := !do
 	if (p0 = 0) then (
 		let ap := alloc.pointer ~
 		let pointer.head := if (ap != 0) then ap else !mmap 16384 ~
-		let pointer.block := pointer.head + 4 ~
+		let pointer.block := pointer.head + ps ~
 		!poke (pointer.head, size) ~
 		assign alloc.pointer := pointer.block + size ~
 		pointer.block
@@ -48,8 +49,8 @@ define !alloc size0 := !do
 ~
 
 define !dealloc (size0, pointer.block) := !do
-	let size := max (4, size0) ~
-	let pointer.head := pointer.block - 4 ~
+	let size := max (ps, size0) ~
+	let pointer.head := pointer.block - ps ~
 	assert (size = !peek pointer.head) ~
 	!poke (pointer.block, alloc.free.chain) ~
 	assign alloc.free.chain := pointer.head ~
