@@ -29,14 +29,14 @@ public class P4DecomposeOperand {
 		this.isUseEbp = isUseEbp;
 	}
 
-	public Operand decomposeNumber(int fd, Funp node) {
-		return node.<Operand> switch_( //
+	public Operand decomposeNumber(int fd, Funp node, int size) {
+		return node.<Operand>switch_( //
 		).applyIf(FunpDontCare.class, f -> {
-			return amd64.eax;
+			return amd64.regs(size)[amd64.axReg];
 		}).applyIf(FunpNumber.class, f -> {
-			return amd64.imm(f.i.value(), is);
+			return amd64.imm(f.i.value(), size);
 		}).applyIf(FunpMemory.class, f -> {
-			return f.size() == is ? decomposeFunpMemory(fd, f) : null;
+			return f.size() == size ? decomposeFunpMemory(fd, f) : null;
 		}).result();
 	}
 

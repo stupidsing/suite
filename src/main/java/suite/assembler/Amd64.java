@@ -188,26 +188,35 @@ public class Amd64 {
 	public OpRegXmm[] regXmm = To.array(16, OpRegXmm.class, this::newRegXmm);
 	public OpRegYmm[] regYmm = To.array(16, OpRegYmm.class, this::newRegYmm);
 
-	public OpReg al = reg8[0];
-	public OpReg cl = reg8[1];
-	public OpReg dl = reg8[2];
-	public OpReg bl = reg8[3];
-	public OpReg eax = reg32[0];
-	public OpReg ecx = reg32[1];
-	public OpReg edx = reg32[2];
-	public OpReg ebx = reg32[3];
-	public OpReg esp = reg32[4];
-	public OpReg ebp = reg32[5];
-	public OpReg esi = reg32[6];
-	public OpReg edi = reg32[7];
-	public OpReg rax = reg64[0];
-	public OpReg rcx = reg64[1];
-	public OpReg rdx = reg64[2];
-	public OpReg rbx = reg64[3];
-	public OpReg rsp = reg64[4];
-	public OpReg rbp = reg64[5];
-	public OpReg rsi = reg64[6];
-	public OpReg rdi = reg64[7];
+	public int axReg = 0;
+	public int cxReg = 1;
+	public int dxReg = 2;
+	public int bxReg = 3;
+	public int spReg = 4;
+	public int bpReg = 5;
+	public int siReg = 6;
+	public int diReg = 7;
+
+	public OpReg al = reg8[axReg];
+	public OpReg cl = reg8[cxReg];
+	public OpReg dl = reg8[dxReg];
+	public OpReg bl = reg8[bxReg];
+	public OpReg eax = reg32[axReg];
+	public OpReg ecx = reg32[cxReg];
+	public OpReg edx = reg32[dxReg];
+	public OpReg ebx = reg32[bxReg];
+	public OpReg esp = reg32[spReg];
+	public OpReg ebp = reg32[bpReg];
+	public OpReg esi = reg32[siReg];
+	public OpReg edi = reg32[diReg];
+	public OpReg rax = reg64[axReg];
+	public OpReg rcx = reg64[cxReg];
+	public OpReg rdx = reg64[dxReg];
+	public OpReg rbx = reg64[bxReg];
+	public OpReg rsp = reg64[spReg];
+	public OpReg rbp = reg64[bpReg];
+	public OpReg rsi = reg64[siReg];
+	public OpReg rdi = reg64[diReg];
 
 	public BiMap<Atom, OpReg> regByName = new HashBiMap<>() {
 		{

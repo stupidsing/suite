@@ -585,7 +585,7 @@ public class P4GenerateCode {
 			var c1 = nc(rs, fd1);
 			Operand op;
 
-			if (size == pushSize && (op = p4deOp.decomposeNumber(fd, value)) != null)
+			if (size == pushSize && (op = p4deOp.decomposeNumber(fd, value, size)) != null)
 				em.emit(Insn.PUSH, op);
 			else {
 				em.addImm(_sp, -alignedSize);
@@ -749,8 +749,8 @@ public class P4GenerateCode {
 		}
 
 		private Pair<Funp, OpReg> compileCommutativeTree(Insn insn, Assoc assoc, Funp lhs, Funp rhs) {
-			var opLhs = p4deOp.decomposeNumber(fd, lhs);
-			var opRhs = p4deOp.decomposeNumber(fd, rhs);
+			var opLhs = p4deOp.decomposeNumber(fd, lhs, is);
+			var opRhs = p4deOp.decomposeNumber(fd, rhs, is);
 			var opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
 			var opRhsReg = opRhs instanceof OpReg ? (OpReg) opRhs : null;
 

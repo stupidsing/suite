@@ -55,13 +55,13 @@ public class Amd64Interpret {
 
 	private Amd64 amd64 = Amd64.me;
 	private Amd64Dump dump = new Amd64Dump();
-	private int eax = amd64.eax.reg;
-	private int ebx = amd64.ebx.reg;
-	private int ecx = amd64.ecx.reg;
-	private int edx = amd64.edx.reg;
-	private int esp = amd64.esp.reg;
-	private int esi = amd64.esi.reg;
-	private int edi = amd64.edi.reg;
+	private int eax = amd64.axReg;
+	private int ebx = amd64.bxReg;
+	private int ecx = amd64.cxReg;
+	private int edx = amd64.dxReg;
+	private int esp = amd64.spReg;
+	private int esi = amd64.siReg;
+	private int edi = amd64.diReg;
 	private int eip;
 
 	private int[] scales = { 1, 2, 4, 8, };
