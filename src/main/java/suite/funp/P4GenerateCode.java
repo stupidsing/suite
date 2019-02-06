@@ -696,12 +696,13 @@ public class P4GenerateCode {
 
 			if (opResult == null)
 				if (operator == TermOp.DIVIDE)
-					opResult = compileDivMod(lhs, rhs, _ax, _dx);
+					opResult = compileDivMod(lhs, rhs, integerRegs[amd64.axReg], integerRegs[amd64.dxReg]);
 				else if (operator == TermOp.MODULO)
-					opResult = compileDivMod(lhs, rhs, _dx, _ax);
+					opResult = compileDivMod(lhs, rhs, integerRegs[amd64.dxReg], integerRegs[amd64.axReg]);
 				else if (operator == TermOp.MINUS_) {
 					var pair = compileCommutativeTree(Insn.SUB, assoc, lhs, rhs);
-					if ((opResult = pair.t1) == rhs)
+					opResult = pair.t1;
+					if (pair.t0 == rhs)
 						em.emit(Insn.NEG, opResult);
 				} else if (setInsn != null) {
 					var pair = compileCommutativeTree(Insn.CMP, assoc, lhs, rhs);

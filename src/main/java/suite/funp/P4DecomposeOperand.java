@@ -21,7 +21,6 @@ import suite.streamlet.FunUtil2.Fun2;
 
 public class P4DecomposeOperand {
 
-	private int is = Funp_.integerSize;
 	private Amd64 amd64 = Amd64.me;
 	private boolean isUseEbp;
 
