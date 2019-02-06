@@ -1,5 +1,7 @@
 package suite.assembler;
 
+import static suite.util.Friends.fail;
+
 import suite.adt.map.BiMap;
 import suite.adt.map.HashBiMap;
 import suite.node.Atom;
@@ -313,6 +315,19 @@ public class Amd64 {
 		op.size = size;
 		op.disp = opDisp;
 		return op;
+	}
+
+	public OpReg[] regs(int size) {
+		if (size == 1)
+			return reg8;
+		else if (size == 2)
+			return reg16;
+		else if (size == 4)
+			return reg32;
+		else if (size == 8)
+			return reg64;
+		else
+			return fail();
 	}
 
 	public OpReg reg(String name) {
