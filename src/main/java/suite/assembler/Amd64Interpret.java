@@ -133,19 +133,9 @@ public class Amd64Interpret {
 				LngSink assign;
 				Runnable r;
 
-				if (op0 instanceof OpMem) {
-					var index = index(address((OpMem) op0));
-					if (op0.size == 1)
-						assign = i -> mem.put(index, (byte) i);
-					else if (op0.size == 2)
-						assign = i -> mem.putShort(index, (short) i);
-					else if (op0.size == 4)
-						assign = i -> mem.putInt(index,(int) i);
-					else if (op0.size == 8)
-						assign = i -> mem.putLong(index, i);
-					else
-						assign = null;
-				} else if (op0 instanceof OpReg) {
+				if (op0 instanceof OpMem)
+					assign = assignMemory(address((OpMem) op0), op0.size);
+				else if (op0 instanceof OpReg) {
 					var reg = ((OpReg) op0).reg;
 					if (op0.size == 1)
 						assign = i -> regs[reg] = (int) (regs[reg] & 0xFFFFFFFFFFFFFF00l | i & 0x00000000000000FFl);
@@ -402,6 +392,22 @@ public class Amd64Interpret {
 		var i = mem.getInt(index(regs[esp]));
 		regs[esp] += Funp_.integerSize;
 		return i;
+	}
+
+	private LngSink assignMemory(int address, int size) {
+		LngSink assign;
+		var index = index(address);
+		if (size == 1)
+			assign = i -> mem.put(index, (byte) i);
+		else if (size == 2)
+			assign = i -> mem.putShort(index, (short) i);
+		else if (size == 4)
+			assign = i -> mem.putInt(index, (int) i);
+		else if (size == 8)
+			assign = i -> mem.putLong(index, i);
+		else
+			assign = null;
+		return assign;
 	}
 
 	private long setFlags(long value) {
