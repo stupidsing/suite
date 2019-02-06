@@ -68,13 +68,14 @@ public class FunpTest {
 	}
 
 	@Test
-	public void testExpr0() {
+	public void testExpr() {
 		test(7, "1 + 2 * 3");
+		test(3, "1 + 2 * (3 + 4) / 7");
 	}
 
 	@Test
-	public void testExpr1() {
-		test(3, "1 + 2 * (3 + 4) / 7");
+	public void testFold() {
+		test(100, "fold (n = 0; n < 100; n + 1)");
 	}
 
 	@Test
@@ -91,7 +92,6 @@ public class FunpTest {
 	@Test
 	public void testIo() {
 		test(1, "!do 1");
-		test(100, "!for (n = 0; n < 100; n + 1)");
 	}
 
 	@Test

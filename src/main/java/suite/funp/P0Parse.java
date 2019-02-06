@@ -233,6 +233,13 @@ public class P0Parse {
 				return FunpDefineRec.of(list.mapValue(p1::p).toList(), p1.p(b));
 			}).match("error", () -> {
 				return FunpError.of();
+			}).match("fold (.0 = .1; .2; .3)", (a, b, c, d) -> {
+				var vn = Atom.name(a);
+				var var = FunpVariable.of(vn);
+				var p1 = nv(doToken).nv(vn);
+				var while_ = p1.p(c);
+				var do_ = FunpDoAssignVar.of(var, p1.p(d), var);
+				return FunpDefine.of(vn, p(b), FunpDoWhile.of(while_, do_, var), Fdt.L_MONO);
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
