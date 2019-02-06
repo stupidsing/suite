@@ -225,7 +225,7 @@ public class Amd64Interpret {
 							var size = mem.getInt(index(p1) + 4);
 							rc = size < posData.t1 - posData.t0 ? baseData.t0 : fail();
 						} else
-							rc = fail("invalid syscall " + regs[eax]);
+							rc = fail("invalid int 80h call " + regs[eax]);
 					else
 						rc = fail();
 					regs[eax] = rc;
