@@ -18,8 +18,8 @@ import suite.funp.Funp_;
 import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
+import suite.primitive.IntInt_Int;
 import suite.primitive.IntInt_Obj;
-import suite.primitive.IntObj_Int;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.adt.map.IntIntMap;
@@ -98,14 +98,14 @@ public class Amd64Interpret {
 				Log_.info(state(instruction));
 
 			try {
-				IntObj_Int<Operand> trim = (i, op) -> {
-					if (op.size == 1)
+				IntInt_Int trim = (i, size) -> {
+					if (size == 1)
 						return (byte) i;
-					else if (op.size == 2)
+					else if (size == 2)
 						return (short) i;
-					else if (op.size == 4)
+					else if (size == 4)
 						return (int) i;
-					else if (op.size == 8)
+					else if (size == 8)
 						return i;
 					else
 						return i;
@@ -122,7 +122,7 @@ public class Amd64Interpret {
 						v0 = regs[reg];
 					} else
 						v0 = 0;
-					return trim.apply(v0, op);
+					return trim.apply(v0, op.size);
 				};
 
 				var op0 = instruction.op0;
@@ -384,13 +384,13 @@ public class Amd64Interpret {
 	}
 
 	private void push(int value) {
-		regs[esp] -= Funp_.integerSize;
-		mem.putInt(index(regs[esp]), value);
+		regs[esp] -= Funp_.pushSize;
+		assignMemory(regs[esp], Funp_.pushSize).f(value);
 	}
 
 	private int pop() {
 		var i = mem.getInt(index(regs[esp]));
-		regs[esp] += Funp_.integerSize;
+		regs[esp] += Funp_.pushSize;
 		return i;
 	}
 
