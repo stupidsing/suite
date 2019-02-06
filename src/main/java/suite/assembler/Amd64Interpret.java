@@ -20,8 +20,8 @@ import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.IntObj_Int;
-import suite.primitive.IntPrimitives.IntSink;
 import suite.primitive.IntPrimitives.Obj_Int;
+import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.adt.map.IntIntMap;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Sink;
@@ -100,7 +100,13 @@ public class Amd64Interpret {
 			try {
 				IntObj_Int<Operand> trim = (i, op) -> {
 					if (op.size == 1)
-						return (int) (byte) i;
+						return (byte) i;
+					else if (op.size == 2)
+						return (short) i;
+					else if (op.size == 4)
+						return (int) i;
+					else if (op.size == 8)
+						return i;
 					else
 						return i;
 				};
@@ -123,23 +129,31 @@ public class Amd64Interpret {
 				var op1 = instruction.op1;
 				var source0 = fetch32.apply(op0);
 				var source1 = fetch32.apply(op1);
-				IntSink assign;
+				LngSink assign;
 				Runnable r;
 
 				if (op0 instanceof OpMem) {
 					var index = index(address((OpMem) op0));
 					if (op0.size == 1)
 						assign = i -> mem.put(index, (byte) i);
+					else if (op0.size == 2)
+						assign = i -> mem.putShort(index, (short) i);
 					else if (op0.size == 4)
-						assign = i -> mem.putInt(index, i);
+						assign = i -> mem.putInt(index,(int) i);
+					else if (op0.size == 8)
+						assign = i -> mem.putLong(index, i);
 					else
 						assign = null;
 				} else if (op0 instanceof OpReg) {
 					var reg = ((OpReg) op0).reg;
 					if (op0.size == 1)
-						assign = i -> regs[reg] = regs[reg] & 0xFFFFFF00 | i;
+						assign = i -> regs[reg] = (int) (regs[reg] & 0xFFFFFFFFFFFFFF00l | i & 0x00000000000000FFl);
+					else if (op0.size == 2)
+						assign = i -> regs[reg] = (int) (regs[reg] & 0xFFFFFFFFFFFF0000l | i & 0x000000000000FFFFl);
 					else if (op0.size == 4)
-						assign = i -> regs[reg] = i;
+						assign = i -> regs[reg] = (int) i;
+					else if (op0.size == 8)
+						assign = i -> regs[reg] = (int) i;
 					else
 						assign = null;
 				} else
