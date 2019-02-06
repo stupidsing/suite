@@ -380,6 +380,8 @@ public class P2InferType {
 							return unify(n, typeByte, tp);
 						else if (size == is)
 							return unify(n, typeNumber, tp);
+						else if (size == ps)
+							return unify(n, typePatDecor.subst(typeDecorRef.subst(), new Reference()), tp);
 						else
 							return fail();
 					});
