@@ -142,7 +142,7 @@ public class P0Parse {
 				var p1 = nv(doToken).nv(vn);
 				var while_ = p1.p(c);
 				var do_ = FunpDoAssignVar.of(var, p1.p(d), var);
-				return FunpIo.of(FunpDefine.of(vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}"))), Fdt.L_MONO));
+				return FunpIo.of(FunpDefine.of(vn, p(b), FunpDoWhile.of(while_, do_, var), Fdt.L_MONO));
 			}).match(".0 | .1", (a, b) -> {
 				return FunpApply.of(p(a), p(b));
 			}).match(".0 .1", (a, b) -> {
