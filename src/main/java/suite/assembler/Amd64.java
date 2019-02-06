@@ -5,6 +5,7 @@ import static suite.util.Friends.fail;
 import suite.adt.map.BiMap;
 import suite.adt.map.HashBiMap;
 import suite.node.Atom;
+import suite.object.ToStringObject;
 import suite.util.To;
 
 public class Amd64 {
@@ -135,7 +136,7 @@ public class Amd64 {
 		XOR, //
 	};
 
-	public class Operand {
+	public class Operand extends ToStringObject<Operand> {
 		public int size;
 	}
 
@@ -174,7 +175,7 @@ public class Amd64 {
 		public int reg;
 	}
 
-	public class Instruction {
+	public class Instruction extends ToStringObject<Instruction> {
 		public Insn insn;
 		public Operand op0, op1, op2;
 	}
