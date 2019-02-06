@@ -86,19 +86,19 @@ public class To {
 		};
 	}
 
-	public static String hex(int i) {
-		return Character.toString(hexDigits.charAt(i & 0x0F));
+	public static String hex(long i) {
+		return Character.toString(hexDigits.charAt((int) (i & 0x0F)));
 	}
 
-	public static String hex2(int i) {
+	public static String hex2(long i) {
 		return hex(i >>> 4) + hex(i);
 	}
 
-	public static String hex4(int i) {
+	public static String hex4(long i) {
 		return hex2(i >>> 8 & 0xFF) + hex2(i & 0xFF);
 	}
 
-	public static String hex8(int i) {
+	public static String hex8(long i) {
 		return hex4(i >>> 16 & 0xFFFF) + hex4(i & 0xFFFF);
 	}
 

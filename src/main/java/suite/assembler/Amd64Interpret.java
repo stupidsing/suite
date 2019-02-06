@@ -19,10 +19,12 @@ import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
 import suite.primitive.IntInt_Obj;
+import suite.primitive.LngLng_Obj;
 import suite.primitive.LngPrimitives.LngSink;
 import suite.primitive.LngPrimitives.Obj_Lng;
 import suite.primitive.adt.map.LngIntMap;
 import suite.primitive.adt.pair.IntIntPair;
+import suite.primitive.adt.pair.LngLngPair;
 import suite.streamlet.FunUtil.Sink;
 import suite.util.To;
 
@@ -31,23 +33,24 @@ public class Amd64Interpret {
 	public int codeStart = 0x00000100;
 	public BytesBuilder out = new BytesBuilder();
 
-	private IntInt_Obj<IntIntPair> f = (s, p) -> IntIntPair.of(s, s + p);
+	private LngLng_Obj<LngLngPair> fl = (s, p) -> LngLngPair.of(s, s + p);
+	private IntInt_Obj<IntIntPair> fi = (s, p) -> IntIntPair.of(s, s + p);
 
-	private IntIntPair baseNull = IntIntPair.of(0, codeStart);
-	private IntIntPair baseCode = f.apply(baseNull.t1, 0x08000000);
-	private IntIntPair baseData = f.apply(baseCode.t1, 0x08000000);
-	private IntIntPair baseStack = f.apply(baseData.t1, 0x00040000);
-	// private IntIntPair baseEnd = f.apply(baseStack.t1, 0);
+	private LngLngPair baseNull = LngLngPair.of(0, codeStart);
+	private LngLngPair baseCode = fl.apply(baseNull.t1, 0x08000000);
+	private LngLngPair baseData = fl.apply(baseCode.t1, 0x08000000);
+	private LngLngPair baseStack = fl.apply(baseData.t1, 0x00040000);
+	// private LngLngPair baseEnd = fl.apply(baseStack.t1, 0);
 
 	private IntIntPair posNull = IntIntPair.of(0, 0);
-	private IntIntPair posCode = f.apply(posNull.t1, 65536);
-	private IntIntPair posData = f.apply(posCode.t1, 262144);
-	private IntIntPair posStack = f.apply(posData.t1, 262144);
-	private IntIntPair posEnd = f.apply(posStack.t1, 0);
+	private IntIntPair posCode = fi.apply(posNull.t1, 65536);
+	private IntIntPair posData = fi.apply(posCode.t1, 262144);
+	private IntIntPair posStack = fi.apply(posData.t1, 262144);
+	private IntIntPair posEnd = fi.apply(posStack.t1, 0);
 
-	private int diffCode = baseCode.t0 - posCode.t0;
-	private int diffData = baseData.t0 - posData.t0;
-	private int diffStack = baseStack.t0 - posStack.t0;
+	private long diffCode = baseCode.t0 - posCode.t0;
+	private long diffData = baseData.t0 - posData.t0;
+	private long diffStack = baseStack.t0 - posStack.t0;
 	private ByteBuffer mem = ByteBuffer.allocate(posEnd.t0);
 	private long[] regs = new long[16];
 	private int c;
@@ -115,7 +118,8 @@ public class Amd64Interpret {
 				var op1 = instruction.op1;
 				var source0 = fetch32.apply(op0);
 				var source1 = fetch32.apply(op1);
-				int p0, p1, p2, p3, rc;
+				int p0, p1, p2, p3;
+				long rc;
 				LngSink assign;
 				Runnable r;
 
@@ -420,16 +424,15 @@ public class Amd64Interpret {
 		return opMem.disp.imm + (0 <= br ? regs[br] : 0) + (0 <= ir ? regs[ir] * scales[opMem.scale] : 0);
 	}
 
-	private int index(long address0) {
-		var address = (int) address0;
+	private int index(long address) {
 		if (address < baseCode.t1)
-			return address - diffCode;
+			return posCode.t0 + (int) (address - baseCode.t0);
 		else if (address < baseData.t1)
-			return address - diffData;
+			return posData.t0 + (int) (address - baseData.t0);
 		else if (address < baseStack.t1)
-			return address - diffStack;
+			return posStack.t0 + (int) (address - baseStack.t0);
 		else
-			return fail("address gone wild: " + Integer.toHexString(address));
+			return fail("address gone wild: " + Long.toHexString(address));
 	}
 
 	private String state(Instruction instruction) {
