@@ -18,7 +18,6 @@ import suite.funp.Funp_;
 import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
-import suite.primitive.IntInt_Int;
 import suite.primitive.IntInt_Obj;
 import suite.primitive.IntPrimitives.Obj_Int;
 import suite.primitive.LngPrimitives.LngSink;
@@ -98,31 +97,18 @@ public class Amd64Interpret {
 				Log_.info(state(instruction));
 
 			try {
-				IntInt_Int trim = (i, size) -> {
-					if (size == 1)
-						return (byte) i;
-					else if (size == 2)
-						return (short) i;
-					else if (size == 4)
-						return (int) i;
-					else if (size == 8)
-						return i;
-					else
-						return i;
-				};
-
 				Obj_Int<Operand> fetch32 = op -> {
-					int v0;
+					long v0;
 					if (op instanceof OpImm)
 						v0 = (int) ((OpImm) op).imm;
 					else if (op instanceof OpMem)
-						v0 = mem.getInt(index(address((OpMem) op)));
+						v0 = mem.getLong(index(address((OpMem) op)));
 					else if (op instanceof OpReg) {
 						var reg = ((OpReg) op).reg;
 						v0 = regs[reg];
 					} else
 						v0 = 0;
-					return trim.apply(v0, op.size);
+					return (int) trim(v0, op.size);
 				};
 
 				var op0 = instruction.op0;
@@ -394,6 +380,11 @@ public class Amd64Interpret {
 		return i;
 	}
 
+	private long setFlags(long value) {
+		c = Long.compare(value, 0);
+		return value;
+	}
+
 	private LngSink assignMemory(int address, int size) {
 		LngSink assign;
 		var index = index(address);
@@ -410,9 +401,17 @@ public class Amd64Interpret {
 		return assign;
 	}
 
-	private long setFlags(long value) {
-		c = Long.compare(value, 0);
-		return value;
+	private long trim(long i, int size) {
+		if (size == 1)
+			return (byte) i;
+		else if (size == 2)
+			return (short) i;
+		else if (size == 4)
+			return (int) i;
+		else if (size == 8)
+			return i;
+		else
+			return i;
 	}
 
 	private int address(OpMem opMem) {
