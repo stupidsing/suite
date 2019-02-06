@@ -48,9 +48,6 @@ public class Amd64Interpret {
 	private IntIntPair posStack = fi.apply(posData.t1, 262144);
 	private IntIntPair posEnd = fi.apply(posStack.t1, 0);
 
-	private long diffCode = baseCode.t0 - posCode.t0;
-	private long diffData = baseData.t0 - posData.t0;
-	private long diffStack = baseStack.t0 - posStack.t0;
 	private ByteBuffer mem = ByteBuffer.allocate(posEnd.t0);
 	private long[] regs = new long[16];
 	private int c;
