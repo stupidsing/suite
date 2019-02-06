@@ -394,8 +394,8 @@ public class Amd64Interpret {
 		return i;
 	}
 
-	private int setFlags(int value) {
-		c = Integer.compare(value, 0);
+	private long setFlags(long value) {
+		c = Long.compare(value, 0);
 		return value;
 	}
 
