@@ -8,13 +8,13 @@ define min (a, b) := if (a < b) then a else b ~
 
 define !mmap length := !do
 	let ps := [0, length, 3, 34, -1, 0,] ~
-	asm (EAX = 90; EBX = address.of ps;) { INT (-128); }
+	asm (EAX = 90; EBX = address.of ps;) { INT (+x80); }
 ~
 
 define !munmap (length, pointer) := !do
 	--type pointer = address.of (array buffer.size * byte) ~
 	type pointer = number ~
-	asm (EAX = 91; EBX = pointer; ECX = length;) { INT (-128); }
+	asm (EAX = 91; EBX = pointer; ECX = length;) { INT (+x80); }
 ~
 
 let.global alloc.pointer := 0 ~
@@ -79,12 +79,12 @@ define !new.mut.number init := !do
 
 define !read (pointer, length) := !do
 	type pointer = address.of (array _ * byte) ~
-	asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
+	asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { INT (+x80); } -- length in EAX
 ~
 
 define !write (pointer, length) := !do
 	type pointer = address.of (array _ * byte) ~
-	asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (-128); } -- length in EAX
+	asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (+x80); } -- length in EAX
 ~
 
 define !write.all (pointer, length) :=

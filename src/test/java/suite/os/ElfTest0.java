@@ -38,7 +38,7 @@ public class ElfTest0 {
 				+ "    asm _ MOV (EDX, EAX); \n" //
 				+ "    asm _ MOV (EAX, 3); \n" //
 				+ "    asm _ XOR (EBX, EBX); \n" //
-				+ "    asm _ INT (-128); \n" //
+				+ "    asm _ INT (+x80); \n" //
 				+ "    -- length in EAX \n" //
 				+ "); \n" //
 				+ "\n" //
@@ -49,7 +49,7 @@ public class ElfTest0 {
 				+ "    asm _ MOV (EDX, EAX); \n" //
 				+ "    asm _ MOV (EAX, 4); \n" //
 				+ "    asm _ MOV (EBX, 1); \n" //
-				+ "    asm _ INT (-128); \n" //
+				+ "    asm _ INT (+x80); \n" //
 				+ "    -- length in EAX \n" //
 				+ "); \n" //
 				+ "\n" //
@@ -74,7 +74,7 @@ public class ElfTest0 {
 				+ program //
 				+ "asm _ MOV (EBX, EAX);" //
 				+ "asm _ MOV (EAX, 1);" //
-				+ "asm _ INT (-128);"));
+				+ "asm _ INT (+x80);"));
 	}
 
 }
