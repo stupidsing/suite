@@ -92,8 +92,6 @@ public class P4GenerateCode {
 	private OpReg edx = amd64.edx;
 	private OpReg esi = amd64.esi;
 	private OpReg edi = amd64.edi;
-	private OpReg _ax = isAmd64 ? amd64.rax : amd64.eax;
-	private OpReg _dx = isAmd64 ? amd64.rdx : amd64.edx;
 	private OpReg _bp = isAmd64 ? amd64.rbp : amd64.ebp;
 	private OpReg _sp = Funp_._sp;
 
@@ -192,7 +190,7 @@ public class P4GenerateCode {
 			for (var i : isAmd64 ? prolog_amd64 : prolog_i686)
 				em.emit(p.parse(Suite.parse(i)));
 
-			em.mov(amd64.mem(labelPointer, ps), _ax);
+			em.mov(amd64.mem(labelPointer, ps), pointerRegs[amd64.axReg]);
 
 			if (isUseEbp)
 				em.mov(_bp, _sp);

@@ -29,7 +29,7 @@ public class P4DecomposeOperand {
 	}
 
 	public Operand decomposeNumber(int fd, Funp node, int size) {
-		return node.<Operand>switch_( //
+		return node.<Operand> switch_( //
 		).applyIf(FunpDontCare.class, f -> {
 			return amd64.regs(size)[amd64.axReg];
 		}).applyIf(FunpNumber.class, f -> {
