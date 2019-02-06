@@ -147,10 +147,7 @@ public class P4Emit {
 		}
 
 		public void emit(Instruction instruction) {
-			if (instruction.insn == Insn.POP && instruction.op0.size != Funp_.pointerSize)
-				fail(instruction.toString());
-			else
-				instructions.add(instruction);
+			instructions.add(instruction);
 		}
 
 		public Block spawn(Sink<Emit> sink) {
