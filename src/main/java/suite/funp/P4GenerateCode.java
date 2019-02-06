@@ -497,7 +497,8 @@ public class P4GenerateCode {
 				return new CompileOut();
 			} else if (result.nRegs == 1) {
 				var op0 = isOutSpec ? pop0 : rs.get(result.regSize);
-				compileAllocStack(result.regSize, FunpDontCare.of(), List.of(pushRegs[op0.reg]), c1 -> {
+				var op0_ = pushRegs[op0.reg];
+				compileAllocStack(result.regSize, FunpDontCare.of(), List.of(op0_), c1 -> {
 					assign.sink2(c1, frame(c1.fd, fd));
 					return new CompileOut();
 				});
@@ -505,7 +506,9 @@ public class P4GenerateCode {
 			} else if (result.nRegs == 2) {
 				var op0 = isOutSpec ? pop0 : rs.get(result.regSize);
 				var op1 = isOutSpec ? pop1 : rs.mask(op0).get(result.regSize);
-				compileAllocStack(result.regSize + result.regSize, FunpDontCare.of(), List.of(op1, op0), c1 -> {
+				var op0_ = pushRegs[op0.reg];
+				var op1_ = pushRegs[op1.reg];
+				compileAllocStack(result.regSize + result.regSize, FunpDontCare.of(), List.of(op1_, op0_), c1 -> {
 					assign.sink2(c1, frame(c1.fd, fd));
 					return new CompileOut();
 				});
@@ -878,7 +881,7 @@ public class P4GenerateCode {
 		}
 
 		private void compileJumpZero(Funp if_, Operand label) {
-			var op0 = isOutSpec ? pop0 : rs.get(Funp_.pushSize);
+			var op0 = rs.get(Funp_.pushSize);
 			compileByte(if_, op0);
 			em.emit(Insn.OR, op0, op0);
 			em.emit(Insn.JZ, label);
