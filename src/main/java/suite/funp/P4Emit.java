@@ -129,12 +129,15 @@ public class P4Emit {
 		}
 
 		public <T extends Operand> T mov(T op0, Operand op1) {
+			OpImm opImm;
 			if (op0 != op1)
-				if (op0.size == op1.size)
-					if (op0 instanceof OpReg && op1 instanceof OpImm && ((OpImm) op1).imm == 0 && !(op1 instanceof OpImmLabel))
-						emit(amd64.instruction(Insn.XOR, op0, op0));
-					else
-						emit(amd64.instruction(Insn.MOV, op0, op1));
+				if ((opImm = op1.cast(OpImm.class)) != null //
+						&& op0 instanceof OpReg //
+						&& opImm.imm == 0 //
+						&& !(op1 instanceof OpImmLabel))
+					emit(amd64.instruction(Insn.XOR, op0, op0));
+				else if (op0.size == op1.size || op0.size == 8 && op1.size == 4)
+					emit(amd64.instruction(Insn.MOV, op0, op1));
 				else
 					fail();
 			return op0;

@@ -191,6 +191,8 @@ public class Amd64Assemble {
 
 	public Bytes assemble(boolean isPass2, long offset, Instruction instruction) {
 		Encode encode;
+		OpImm opImm;
+
 		switch (instruction.insn) {
 		case AAA:
 			encode = assemble(instruction, 0x37);
@@ -243,7 +245,7 @@ public class Amd64Assemble {
 			encode = new InsnCode(4, bs(0x0F, 0xA2));
 			break;
 		case D:
-			var opImm = ((OpImm) instruction.op0);
+			opImm = ((OpImm) instruction.op0);
 			var bb = new BytesBuilder();
 			appendImm(bb, opImm.size, opImm.imm);
 			encode = new InsnCode(4, bb.toBytes().toArray());
@@ -414,33 +416,36 @@ public class Amd64Assemble {
 			encode = assemble(instruction.op0, 0x00, 3).pre(0x0F);
 			break;
 		case MOV:
-			if (instruction.op0.size == instruction.op1.size)
+			if ((opImm = instruction.op1.cast(OpImm.class)) != null // MOV r/m64, imm32 zero-extended
+					&& isRm.test(instruction.op0) //
+					&& Integer.MIN_VALUE <= opImm.imm //
+					&& opImm.imm <= Integer.MAX_VALUE)
+				encode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(opImm.imm, Math.min(opImm.size, 4));
+			else if (instruction.op0.size == instruction.op1.size)
 				if (instruction.op1 instanceof OpImm) {
 					var op1 = (OpImm) instruction.op1;
 					if (instruction.op0 instanceof OpReg && isNonRexReg.test(instruction.op0))
 						encode = assembleReg(instruction, 0xB0 + (op1.size <= 1 ? 0 : 8)).imm(op1);
-					else if (isRm.test(instruction.op0) && Integer.MIN_VALUE <= op1.imm && op1.imm <= Integer.MAX_VALUE)
-						encode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(op1.imm, Math.min(op1.size, 4));
 					else
 						encode = invalid;
 				} else if (instruction.op0 instanceof OpRegSegment) {
-					var regSegment = (OpRegSegment) instruction.op0;
-					encode = assemble(instruction.op1, 0x8E, regSegment.sreg);
+					var opRegSegment = (OpRegSegment) instruction.op0;
+					encode = assemble(instruction.op1, 0x8E, opRegSegment.sreg);
 				} else if (instruction.op1 instanceof OpRegSegment) {
-					var regSegment = (OpRegSegment) instruction.op1;
-					encode = assemble(instruction.op0, 0x8C, regSegment.sreg);
+					var opRegSegment = (OpRegSegment) instruction.op1;
+					encode = assemble(instruction.op0, 0x8C, opRegSegment.sreg);
 				} else if (instruction.op0.size == 4 //
 						&& instruction.op0 instanceof OpReg //
 						&& instruction.op1 instanceof OpRegControl) {
-					var reg = (OpReg) instruction.op0;
-					var regControl = (OpRegControl) instruction.op1;
-					encode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x20, b(reg.reg, regControl.creg, 3), });
+					var opReg = (OpReg) instruction.op0;
+					var opRegCt = (OpRegControl) instruction.op1;
+					encode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x20, b(opReg.reg, opRegCt.creg, 3), });
 				} else if (instruction.op0.size == 4 //
 						&& instruction.op0 instanceof OpRegControl //
 						&& instruction.op1 instanceof OpReg) {
-					var regControl = (OpRegControl) instruction.op0;
-					var reg = (OpReg) instruction.op1;
-					encode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x22, b(reg.reg, regControl.creg, 3), });
+					var opRegCt = (OpRegControl) instruction.op0;
+					var opReg = (OpReg) instruction.op1;
+					encode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x22, b(opReg.reg, opRegCt.creg, 3), });
 				} else if ((encode = assembleRmReg(instruction, 0x88)).isValid())
 					;
 				else

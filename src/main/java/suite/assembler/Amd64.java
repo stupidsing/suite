@@ -337,7 +337,7 @@ public class Amd64 {
 		else if (size == 8)
 			return reg64;
 		else
-			return fail();
+			return null;
 	}
 
 	public OpReg reg(String name) {

@@ -98,9 +98,9 @@ public class P4GenerateCode {
 	private RegisterSet registerSet;
 	private boolean isUseEbp;
 
-	private OpReg i_eax = eax;
-	private OpReg p2_eax = eax;
-	private OpReg p2_edx = edx;
+	private OpReg i_eax = integerRegs[amd64.axReg];
+	private OpReg p2_eax = pointerRegs[amd64.axReg];
+	private OpReg p2_edx = pointerRegs[amd64.dxReg];
 
 	private OpImm labelPointer;
 	private OpImm freeChainPointer;
@@ -455,7 +455,7 @@ public class P4GenerateCode {
 				var opRegs = rs.list(r -> !registerSet.isSet(r));
 				var fd1 = fd;
 				for (var opReg : opRegs)
-					saves.value().add(Pair.of(opReg, fd1 -= is));
+					saves.value().add(Pair.of(opReg, fd1 -= opReg.size));
 				var pushSize = getAlignedSize(fd - fd1);
 				em.addImm(_sp, -pushSize);
 				var out = nc(rs, fd - pushSize).compile(expr);
@@ -463,14 +463,14 @@ public class P4GenerateCode {
 				return out;
 			})).applyIf(FunpSaveRegisters1.class, f -> f.apply((expr, saves) -> {
 				for (var pair : saves.value())
-					em.mov(compileFrame(pair.t1, is), pair.t0);
+					em.mov(compileFrame(pair.t1, pair.t0.size), pair.t0);
 
 				var out = compile(expr);
 
 				if (isOutSpec) {
 					for (var pair : saves.value())
 						if (pair.t0 != pop0 && pair.t0 != pop1)
-							em.mov(pair.t0, compileFrame(pair.t1, is));
+							em.mov(pair.t0, compileFrame(pair.t1, pair.t0.size));
 					return out;
 				} else {
 					var op0 = out.op0;
@@ -480,7 +480,7 @@ public class P4GenerateCode {
 					if (op1 != null)
 						op1 = em.mov(rs.contains(op1) ? rs.mask(op0).get(op1.size) : op1, op1);
 					for (var pair : saves.value())
-						em.mov(pair.t0, compileFrame(pair.t1, is));
+						em.mov(pair.t0, compileFrame(pair.t1, pair.t0.size));
 					return new CompileOut(op0, op1);
 				}
 			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
@@ -515,12 +515,13 @@ public class P4GenerateCode {
 		}
 
 		private CompileOut returnDontCare() {
+			var regs = amd64.regs(result.regSize);
 			if (result.t == Rt.ASSIGN || result.t == Rt.SPEC)
 				return new CompileOut();
 			else if (result.nRegs == 1)
-				return new CompileOut(i_eax);
+				return new CompileOut(regs[amd64.axReg]);
 			else if (result.nRegs == 2)
-				return new CompileOut(p2_eax, p2_edx);
+				return new CompileOut(regs[amd64.axReg], regs[amd64.dxReg]);
 			else
 				return fail();
 		}
@@ -973,17 +974,19 @@ public class P4GenerateCode {
 		}
 
 		private OpReg compileCompare(OpReg r0, int start0, OpReg r1, int start1, int size, boolean isEq) {
-			var opResult = isOutSpec ? pop0 : rs.mask(ecx, esi, edi).get(Funp_.booleanSize);
+			var _cx = pointerRegs[amd64.cxReg];
+			var _si = pointerRegs[amd64.siReg];
+			var _di = pointerRegs[amd64.diReg];
+			var opResult = isOutSpec ? pop0 : rs.mask(_cx, _si, _di).get(Funp_.booleanSize);
 			var endLabel = em.label();
 			var neqLabel = spawn(c1 -> c1.em.emit(Insn.SETE, opResult), endLabel);
 
 			saveRegs(c1 -> {
-
-				var r = rs.mask(r0, edi).get(esi);
+				var r = rs.mask(r0, _di).get(_si);
 				em.lea(r, amd64.mem(r1, start1, is));
-				em.lea(edi, amd64.mem(r0, start0, is));
-				em.mov(esi, r);
-				em.mov(ecx, amd64.imm(size / 4, is));
+				em.lea(_di, amd64.mem(r0, start0, is));
+				em.mov(_si, r);
+				em.mov(_cx, amd64.imm(size / 4, is));
 				em.emit(Insn.REPE);
 				em.emit(Insn.CMPSD);
 				em.emit(Insn.JNE, neqLabel);
@@ -992,7 +995,7 @@ public class P4GenerateCode {
 					em.emit(Insn.JNE, neqLabel);
 				}
 				em.jumpLabel(neqLabel, endLabel);
-			}, ecx, esi, edi);
+			}, _cx, _si, _di);
 			return opResult;
 		}
 
