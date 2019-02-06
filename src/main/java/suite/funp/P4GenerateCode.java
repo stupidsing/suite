@@ -532,7 +532,7 @@ public class P4GenerateCode {
 		private CompileOut returnOp(Operand op) {
 			if (result.t == Rt.ASSIGN) {
 				var opt = p4deOp.decomposeFunpMemory(fd, target);
-				opt = opt != null ? opt : amd64.mem(mask(op).compileIsReg(target.pointer), target.start, target.size());
+				opt = opt != null ? opt : amd64.mem(mask(op).compilePsReg(target.pointer), target.start, target.size());
 				if (op instanceof OpMem)
 					op = em.mov(rs.mask(opt).get(op.size), op);
 				em.mov(opt, op);

@@ -132,7 +132,7 @@ public class P4Emit {
 			var opImm = op1.cast(OpImm.class);
 			var isRegImm = op0 instanceof OpReg && opImm != null;
 			if (op0 != op1)
-				if (op0.size == op1.size || op0.size == 8 && op1.size == 4)
+				if (op0.size == op1.size || op0.size == 8 && op1.size == 4 && isRegImm)
 					if (isRegImm && opImm.imm == 0 && !(op1 instanceof OpImmLabel))
 						emit(amd64.instruction(Insn.XOR, op0, op0));
 					else
