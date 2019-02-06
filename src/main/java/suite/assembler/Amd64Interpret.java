@@ -49,7 +49,7 @@ public class Amd64Interpret {
 	private int diffData = baseData.t0 - posData.t0;
 	private int diffStack = baseStack.t0 - posStack.t0;
 	private ByteBuffer mem = ByteBuffer.allocate(posEnd.t0);
-	private int[] regs = new int[16];
+	private long[] regs = new long[16];
 	private int c;
 
 	private Amd64 amd64 = Amd64.me;
@@ -87,7 +87,7 @@ public class Amd64Interpret {
 			var i_ = i;
 			var instruction = instructions.get(i_);
 			if (instruction.insn == Insn.LABEL)
-				labelAddressByInsnIndex.update((int) ((OpImm) instruction.op0).imm, i0 -> i_ + 1);
+				labelAddressByInsnIndex.update(((OpImm) instruction.op0).imm, i0 -> i_ + 1);
 		}
 
 		while (true) {
@@ -100,7 +100,7 @@ public class Amd64Interpret {
 				Obj_Lng<Operand> fetch32 = op -> {
 					long v0;
 					if (op instanceof OpImm)
-						v0 = (int) ((OpImm) op).imm;
+						v0 = ((OpImm) op).imm;
 					else if (op instanceof OpMem)
 						v0 = mem.getLong(index(address((OpMem) op)));
 					else if (op instanceof OpReg) {
@@ -124,13 +124,13 @@ public class Amd64Interpret {
 				else if (op0 instanceof OpReg) {
 					var reg = ((OpReg) op0).reg;
 					if (op0.size == 1)
-						assign = i -> regs[reg] = (int) (regs[reg] & 0xFFFFFFFFFFFFFF00l | i & 0x00000000000000FFl);
+						assign = i -> regs[reg] = regs[reg] & 0xFFFFFFFFFFFFFF00l | i & 0x00000000000000FFl;
 					else if (op0.size == 2)
-						assign = i -> regs[reg] = (int) (regs[reg] & 0xFFFFFFFFFFFF0000l | i & 0x000000000000FFFFl);
+						assign = i -> regs[reg] = regs[reg] & 0xFFFFFFFFFFFF0000l | i & 0x000000000000FFFFl;
 					else if (op0.size == 4)
-						assign = i -> regs[reg] = (int) i;
+						assign = i -> regs[reg] = i & 0xFFFFFFFFl;
 					else if (op0.size == 8)
-						assign = i -> regs[reg] = (int) i;
+						assign = i -> regs[reg] = i;
 					else
 						assign = null;
 				} else
@@ -162,11 +162,11 @@ public class Amd64Interpret {
 					assign.f(source0 - 1);
 					break;
 				case IDIV:
-					var n = ((long) regs[edx] << 32) + regs[eax];
+					var n = (regs[edx] << 32) + regs[eax];
 					var div = n / source0;
 					var mod = n % source0;
-					regs[eax] = (int) div;
-					regs[edx] = (int) mod;
+					regs[eax] = div;
+					regs[edx] = mod;
 					break;
 				case INC:
 					assign.f(source0 + 1);
@@ -175,10 +175,10 @@ public class Amd64Interpret {
 					assign.f(setFlags(source0 * source1));
 					break;
 				case INT:
-					p0 = regs[eax] & 0xFF;
-					p1 = regs[ebx];
-					p2 = regs[ecx];
-					p3 = regs[edx];
+					p0 = (int) (regs[eax] & 0xFF);
+					p1 = (int) regs[ebx];
+					p2 = (int) regs[ecx];
+					p3 = (int) regs[edx];
 					if ((byte) source0 == -128)
 						if (p0 == 0x01) // exit
 							return p1;
@@ -313,11 +313,11 @@ public class Amd64Interpret {
 					assign.f(setFlags(source0 - source1));
 					break;
 				case SYSCALL:
-					p0 = regs[eax] & 0xFF;
+					p0 = (int) (regs[eax] & 0xFF);
 					if (p0 == 0x09) // map
 						rc = regs[esi] < posData.t1 - posData.t0 ? baseData.t0 : fail();
 					else if (p0 == 0x3C) // exit
-						return regs[edi];
+						return (int) regs[edi];
 					else
 						rc = fail("invalid syscall " + regs[eax]);
 					regs[eax] = rc;
@@ -385,7 +385,7 @@ public class Amd64Interpret {
 		return value;
 	}
 
-	private LngSink assignMemory(int address, int size) {
+	private LngSink assignMemory(long address, int size) {
 		LngSink assign;
 		var index = index(address);
 		if (size == 1)
@@ -414,13 +414,14 @@ public class Amd64Interpret {
 			return i;
 	}
 
-	private int address(OpMem opMem) {
+	private long address(OpMem opMem) {
 		var br = opMem.baseReg;
 		var ir = opMem.indexReg;
-		return (int) opMem.disp.imm + (0 <= br ? regs[br] : 0) + (0 <= ir ? regs[ir] * scales[opMem.scale] : 0);
+		return opMem.disp.imm + (0 <= br ? regs[br] : 0) + (0 <= ir ? regs[ir] * scales[opMem.scale] : 0);
 	}
 
-	private int index(int address) {
+	private int index(long address0) {
+		var address = (int) address0;
 		if (address < baseCode.t1)
 			return address - diffCode;
 		else if (address < baseData.t1)
