@@ -676,7 +676,10 @@ public class P4GenerateCode {
 		}
 
 		private Operand compileTree(Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
-			var size = is;
+			return compileTree(is, n, operator, assoc, lhs, rhs);
+		}
+
+		private Operand compileTree(int size, Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
 			var numRhs = rhs.cast(FunpNumber.class, n_ -> n_.i.value());
 			var insn = insnByOp.get(operator);
 			var setInsn = setInsnByOp.get(operator);
