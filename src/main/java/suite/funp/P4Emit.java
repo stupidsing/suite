@@ -22,7 +22,7 @@ import suite.streamlet.Read;
 public class P4Emit {
 
 	private Amd64 amd64 = Amd64.me;
-	private int is = Funp_.integerSize;
+	private int ps = Funp_.pointerSize;
 
 	private List<Block> blocks = new ArrayList<>();
 
@@ -121,7 +121,7 @@ public class P4Emit {
 
 		public Operand lea(OpMem op) {
 			if (op.baseReg < 0 && op.indexReg < 0)
-				return amd64.imm(op.disp.imm, is);
+				return amd64.imm(op.disp.imm, ps);
 			else if (op.indexReg < 0 && op.disp.imm == 0)
 				return Funp_.pointerRegs[op.baseReg];
 			else

@@ -662,8 +662,8 @@ public class P2InferType {
 				unify(n, typeOf(reference), typeRefOf(typeArrayOf(null, te)));
 				var size = getTypeSize(te);
 				var address0 = erase(reference);
-				var inc = FunpTree.of(TermOp.MULT__, erase(index), FunpNumber.ofNumber(size));
-				var address1 = FunpTree.of(TermOp.PLUS__, address0, inc);
+				var inc = FunpTree.of(ps, TermOp.MULT__, erase(index), FunpNumber.ofNumber(size));
+				var address1 = FunpTree.of(ps, TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
 			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {
 				var b = ps + ps; // return address and EBP
@@ -914,7 +914,7 @@ public class P2InferType {
 		}
 
 		private Funp getAddress(int scope0) {
-			return getMemory(scope0).apply((p, s, e) -> FunpTree.of(TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
+			return getMemory(scope0).apply((p, s, e) -> FunpTree.of(ps, TermOp.PLUS__, p, FunpNumber.ofNumber(s)));
 		}
 
 		private FunpMemory getMemory(int scope0) {
@@ -931,8 +931,10 @@ public class P2InferType {
 			var nfp0 = scope != null //
 					? forInt(scope, scope0).<Funp> fold(Funp_.framePointer, (i, n) -> FunpMemory.of(n, 0, ps)) // locals
 					: FunpNumber.of(IntMutable.of(0)); // globals
-			var nfp1 = offsetOperand != null ? FunpTree.of(TermOp.PLUS__, nfp0, FunpOperand.of(offsetOperand)) : nfp0;
-			return FunpMemory.of(FunpTree.of(TermOp.PLUS__, nfp1, FunpNumber.of(offset)), start, end);
+			var nfp1 = offsetOperand != null //
+					? FunpTree.of(ps, TermOp.PLUS__, nfp0, FunpOperand.of(offsetOperand)) //
+					: nfp0;
+			return FunpMemory.of(FunpTree.of(ps, TermOp.PLUS__, nfp1, FunpNumber.of(offset)), start, end);
 		}
 
 		private boolean isReg() {
