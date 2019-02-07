@@ -361,7 +361,6 @@ public class P0 {
 	}
 
 	public static class FunpNumber implements Funp, P4.End {
-		public int size;
 		public IntMutable i;
 
 		public static FunpNumber ofNumber(int i) {
@@ -370,13 +369,12 @@ public class P0 {
 
 		public static FunpNumber of(IntMutable i) {
 			var f = new FunpNumber();
-			f.size = Funp_.integerSize;
 			f.i = i;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Integer, IntMutable, R> fun) {
-			return fun.apply(size, i);
+		public <R> R apply(FixieFun1<IntMutable, R> fun) {
+			return fun.apply(i);
 		}
 	}
 

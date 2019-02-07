@@ -1024,7 +1024,7 @@ public class P4GenerateCode {
 		}
 
 		private OpImm imm(FunpNumber number) {
-			return amd64.imm(number.i.value(), number.size);
+			return amd64.imm(number.i.value(), is);
 		}
 
 		private FunpMemory frame(int start, int end) {
