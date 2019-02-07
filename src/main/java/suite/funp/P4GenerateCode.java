@@ -62,7 +62,6 @@ import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
 import suite.primitive.Bytes;
 import suite.primitive.IntFunUtil;
-import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntObj_Obj;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Fun;
@@ -438,9 +437,9 @@ public class P4GenerateCode {
 						return mf.apply((start_, r) -> return2Op(amd64.mem(r, start_, ps), amd64.mem(r, start_ + ps, ps)));
 				else
 					return fail();
-			})).applyIf(FunpNumber.class, f -> f.apply(i -> {
-				return returnOp(amd64.imm(i.value(), is));
-			})).applyIf(FunpOperand.class, f -> f.apply(op -> {
+			})).applyIf(FunpNumber.class, f -> {
+				return returnOp(imm(f));
+			}).applyIf(FunpOperand.class, f -> f.apply(op -> {
 				return returnOp(op.value());
 			})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr) -> {
 				return return2Op(compilePsOp(frame), compileRoutine(c1 -> c1.compileIsSpec(expr, i_eax)));
@@ -802,7 +801,7 @@ public class P4GenerateCode {
 			});
 		}
 
-		private boolean compileGlobal(Integer size, Mutable<Operand> address, Funp node) {
+		private boolean compileGlobal(int size, Mutable<Operand> address, Funp node) {
 			var o = new Object() {
 				private List<Instruction> instructions = new ArrayList<>();
 				private int blanks = 0;
@@ -831,16 +830,16 @@ public class P4GenerateCode {
 					})).applyIf(FunpDontCare.class, f -> {
 						blanks += size;
 						return true;
-					}).applyIf(FunpNumber.class, f -> f.apply(i -> {
-						return d(i, size);
-					})).applyIf(Funp.class, f -> {
+					}).applyIf(FunpNumber.class, f -> {
+						return d(f);
+					}).applyIf(Funp.class, f -> {
 						return false;
 					}).result();
 				}
 
-				private boolean d(IntMutable i, int size) {
+				private boolean d(FunpNumber number) {
 					flush();
-					return instructions.add(amd64.instruction(Insn.D, amd64.imm(i.value(), size)));
+					return instructions.add(amd64.instruction(Insn.D, imm(number)));
 				}
 
 				private void flush() {
@@ -1022,6 +1021,10 @@ public class P4GenerateCode {
 				em.mov(op1 = rs.mask(op0, op1).get(op1.size), oldOp1);
 			}
 			return em.mov(op0, op1);
+		}
+
+		private OpImm imm(FunpNumber number) {
+			return amd64.imm(number.i.value(), number.size);
 		}
 
 		private FunpMemory frame(int start, int end) {
