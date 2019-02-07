@@ -1,7 +1,5 @@
 package suite.assembler;
 
-import static suite.util.Friends.fail;
-
 import suite.adt.map.BiMap;
 import suite.adt.map.HashBiMap;
 import suite.node.Atom;
