@@ -490,22 +490,22 @@ public class P2InferType {
 				types.put(Atom.of(tag), Reference.of(tr));
 				unify(n, typeRefOf(typeTagOf(Dict.of(types))), infer(reference));
 				return tr;
-			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
+			})).applyIf(FunpTree.class, f -> f.apply((size, op, lhs, rhs) -> {
 				Node ti;
 				if (Set.of(TermOp.BIGAND, TermOp.BIGOR_).contains(op))
 					ti = typeBoolean;
 				else if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op))
 					ti = new Reference();
 				else
-					ti = typeNumber;
+					ti = size == Funp_.integerSize ? typeNumber : fail();
 				unify(n, infer(lhs), ti);
 				unify(n, infer(rhs), ti);
 				var cmp = Set.of(TermOp.EQUAL_, TermOp.NOTEQ_, TermOp.LE____, TermOp.LT____).contains(op);
 				return cmp ? typeBoolean : ti;
-			})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
+			})).applyIf(FunpTree2.class, f -> f.apply((size, op, lhs, rhs) -> {
 				unify(n, infer(lhs), typeNumber);
 				unify(n, infer(rhs), typeNumber);
-				return typeNumber;
+				return size == Funp_.integerSize ? typeNumber : fail();
 			})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
 				unify(n, infer(left), infer(right));
 				return infer(expr);
@@ -729,7 +729,7 @@ public class P2InferType {
 				return FunpMemory.of(erase(reference), 0, is);
 			})).applyIf(FunpTagValue.class, f -> f.apply((reference, tag) -> {
 				return FunpMemory.of(erase(reference), is, is + getTypeSize(type0));
-			})).applyIf(FunpTree.class, f -> f.apply((op, l, r) -> {
+			})).applyIf(FunpTree.class, f -> f.apply((size, op, l, r) -> {
 				var size0 = getTypeSize(typeOf(l));
 				var size1 = getTypeSize(typeOf(r));
 				if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op) && (is < size0 || is < size1)) {

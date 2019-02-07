@@ -186,7 +186,7 @@ public class P2GenerateLambda {
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
 				var funs = Read.from2(pairs).mapValue(this::compile_).collect();
 				return rt -> new Struct(funs.mapValue(v -> v.apply(rt)).toMap());
-			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
+			})).applyIf(FunpTree.class, f -> f.apply((size, op, lhs, rhs) -> {
 				var v0 = compile_(lhs);
 				var v1 = compile_(rhs);
 				if (op == TermOp.BIGAND)
@@ -197,7 +197,7 @@ public class P2GenerateLambda {
 					var fun = TreeUtil.evaluateOp(op);
 					return rt -> new Int(fun.apply(i(rt, v0), i(rt, v1)));
 				}
-			})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
+			})).applyIf(FunpTree2.class, f -> f.apply((size, op, lhs, rhs) -> {
 				var v0 = compile_(lhs);
 				var v1 = compile_(rhs);
 				var fun = TreeUtil.evaluateOp(op);

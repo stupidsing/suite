@@ -482,10 +482,10 @@ public class P4GenerateCode {
 						em.mov(pair.t0, compileFrame(pair.t1, pair.t0.size));
 					return new CompileOut(op0, op1);
 				}
-			})).applyIf(FunpTree.class, f -> f.apply((op, lhs, rhs) -> {
-				return returnOp(compileTree(n, op, op.assoc(), lhs, rhs));
-			})).applyIf(FunpTree2.class, f -> f.apply((op, lhs, rhs) -> {
-				return returnOp(compileTree(n, op, Assoc.RIGHT, lhs, rhs));
+			})).applyIf(FunpTree.class, f -> f.apply((size, op, lhs, rhs) -> {
+				return returnOp(compileTree(size, n, op, op.assoc(), lhs, rhs));
+			})).applyIf(FunpTree2.class, f -> f.apply((size, op, lhs, rhs) -> {
+				return returnOp(compileTree(size, n, op, Assoc.RIGHT, lhs, rhs));
 			})).nonNullResult();
 		}
 
@@ -672,10 +672,6 @@ public class P4GenerateCode {
 			em.addImm(rf, pair.t0 * ps);
 			var fcp = amd64.mem(rf, 0, ps);
 			return fun.apply(mask(fcp), pair.t1, fcp);
-		}
-
-		private Operand compileTree(Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
-			return compileTree(is, n, operator, assoc, lhs, rhs);
 		}
 
 		private Operand compileTree(int size, Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
