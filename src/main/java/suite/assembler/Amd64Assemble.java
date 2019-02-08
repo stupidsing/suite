@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 import suite.adt.pair.Fixie_.FixieFun3;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
+import suite.assembler.Amd64.OpImmLabel;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpNone;
 import suite.assembler.Amd64.OpReg;
@@ -213,7 +214,7 @@ public class Amd64Assemble {
 			encode = assemble(instruction, 0x67);
 			break;
 		case CALL:
-			if (instruction.op0 instanceof OpImm && instruction.op0.size == 4)
+			if (instruction.op0 instanceof OpImm && 4 <= instruction.op0.size)
 				encode = assembleJumpImm((OpImm) instruction.op0, offset, -1, bs(0xE8));
 			else if (isRm.test(instruction.op0))
 				encode = assemble(instruction.op0, 0xFF, 2);
@@ -749,6 +750,9 @@ public class Amd64Assemble {
 		var size = op0.size;
 		byte[] bs0;
 
+		if (op0 instanceof OpImmLabel)
+			size = Math.min(size, 4);
+
 		if (size == 1)
 			bs0 = bs(b1);
 		else if (size == 4)
@@ -848,8 +852,8 @@ public class Amd64Assemble {
 	private InsnCode assembleShift(Instruction instruction, int b, int num) {
 		if (isRm.test(instruction.op0)) {
 			var shift = instruction.op1;
+			var shiftImm = shift.cast(OpImm.class);
 			boolean isShiftImm;
-			OpImm shiftImm = shift.cast(OpImm.class);
 			int b1;
 			if (shiftImm != null) {
 				isShiftImm = 1 <= shiftImm.imm;
@@ -860,7 +864,7 @@ public class Amd64Assemble {
 			} else
 				return invalid;
 
-			InsnCode insnCode = assembleByteFlag(instruction.op0, b1, num);
+			var insnCode = assembleByteFlag(instruction.op0, b1, num);
 
 			if (shiftImm != null && !isShiftImm) {
 				insnCode.immSize = 1;
