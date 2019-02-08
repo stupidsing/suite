@@ -142,6 +142,10 @@ public class P4Emit {
 			return op0;
 		}
 
+		public void emitJump(Insn insn, Operand op) {
+			emit(jumpInstruction(insn, op));
+		}
+
 		public void emit(Insn insn, Operand... ops) {
 			emit(amd64.instruction(insn, ops));
 		}
@@ -214,7 +218,7 @@ public class P4Emit {
 							gj(out, true);
 					}
 				} else if (jump)
-					list.add(amd64.instruction(Insn.JMP, label));
+					list.add(jumpInstruction(Insn.JMP, label));
 			}
 		};
 
@@ -235,8 +239,17 @@ public class P4Emit {
 
 	public OpImmLabel label() {
 		var op = amd64.new OpImmLabel();
-		op.size = Funp_.labelSize;
+		op.size = Funp_.pointerSize;
 		return op;
+	}
+
+	private Instruction jumpInstruction(Insn insn, Operand op) {
+		Instruction instruction;
+		if (op instanceof OpImmLabel && op.size == 8)
+			instruction = amd64.instruction(insn, amd64.imm32(((OpImmLabel) op).imm));
+		else
+			instruction = amd64.instruction(insn, op);
+		return instruction;
 	}
 
 }

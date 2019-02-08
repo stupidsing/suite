@@ -332,7 +332,7 @@ public class P4GenerateCode {
 
 					c1.em.mov(ra, fcp);
 					c1.em.emit(Insn.OR, ra, ra);
-					c1.em.emit(Insn.JZ, labelAlloc);
+					c1.em.emitJump(Insn.JZ, labelAlloc);
 					c1.mask(ra).mov(fcp, amd64.mem(ra, 0, ps));
 					c1.em.label(labelEnd);
 					return returnOp(ra);
@@ -752,7 +752,7 @@ public class P4GenerateCode {
 		private FixieFun4<Insn, Insn, Funp, Funp, Boolean> compileCmpJmp(Operand label) {
 			return (insn, revInsn, lhs, rhs) -> {
 				var pair = compileCommutativeTree(is, Insn.CMP, Assoc.RIGHT, lhs, rhs);
-				em.emit(pair.t0 == lhs ? insn : revInsn, label);
+				em.emitJump(pair.t0 == lhs ? insn : revInsn, label);
 				return true;
 			};
 		}
@@ -881,7 +881,7 @@ public class P4GenerateCode {
 			else
 				op = em.mov(rs.mask(out.op0).get(ps), out.op1);
 			em.mov(_bp, out.op0);
-			em.emit(Insn.CALL, op);
+			em.emitJump(Insn.CALL, op);
 			if (isUseEbp && out.op0 != _bp)
 				em.lea(_bp, amd64.mem(_sp, -fd, is));
 		}
@@ -890,11 +890,11 @@ public class P4GenerateCode {
 			var op0 = rs.get(Funp_.pushSize);
 			compileByte(if_, op0);
 			em.emit(Insn.OR, op0, op0);
-			em.emit(Insn.JZ, label);
+			em.emitJump(Insn.JZ, label);
 
 			// var r0 = compileOpReg(if_);
 			// em.emit(Insn.OR, r0, r0));
-			// em.emit(Insn.JZ, label));
+			// em.emitJump(Insn.JZ, label));
 		}
 
 		private void compileByte(Funp n, Operand op0) {
@@ -997,10 +997,10 @@ public class P4GenerateCode {
 				em.mov(_cx, amd64.imm(size / 4, is));
 				em.emit(Insn.REPE);
 				em.emit(Insn.CMPSD);
-				em.emit(Insn.JNE, neqLabel);
+				em.emitJump(Insn.JNE, neqLabel);
 				for (var i = 0; i < size % 4; i++) {
 					em.emit(Insn.CMPSB);
-					em.emit(Insn.JNE, neqLabel);
+					em.emitJump(Insn.JNE, neqLabel);
 				}
 				em.jumpLabel(neqLabel, endLabel);
 			}, _cx, _si, _di);
