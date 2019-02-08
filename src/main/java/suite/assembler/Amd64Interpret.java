@@ -97,7 +97,7 @@ public class Amd64Interpret {
 				Log_.info(state(instruction));
 
 			try {
-				Obj_Lng<Operand> fetch32 = op -> {
+				Obj_Lng<Operand> fetch = op -> {
 					long v0;
 					if (op instanceof OpImm)
 						v0 = ((OpImm) op).imm;
@@ -113,8 +113,8 @@ public class Amd64Interpret {
 
 				var op0 = instruction.op0;
 				var op1 = instruction.op1;
-				var source0 = fetch32.apply(op0);
-				var source1 = fetch32.apply(op1);
+				var source0 = fetch.apply(op0);
+				var source1 = fetch.apply(op1);
 				int p0, p1, p2, p3;
 				long rc;
 				LngSink assign;
