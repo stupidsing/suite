@@ -73,7 +73,7 @@ public class ElfTest {
 		var input = Bytes.of(in.getBytes(Defaults.charset));
 		var main = Funp_.main(true);
 
-		if (Boolean.TRUE && RunUtil.isUnix()) { // not Windows => run ELF
+		if (Boolean.TRUE && RunUtil.isLinux()) { // not Windows => run ELF
 			var exec = elf.exec(input.toArray(), offset -> main.compile(offset, program).t1);
 			assertEquals(code, exec.code);
 			assertEquals(in, exec.out);

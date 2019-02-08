@@ -14,7 +14,7 @@ public class FontUtil {
 		String monoFontName;
 		String sansFontName;
 
-		if (!RunUtil.isUnix()) {
+		if (!RunUtil.isLinux()) {
 			System.setProperty("awt.useSystemAAFontSettings", "off");
 			System.setProperty("swing.aatext", "false");
 			monoFontName = "Courier New";

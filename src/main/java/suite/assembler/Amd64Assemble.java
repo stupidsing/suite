@@ -849,14 +849,12 @@ public class Amd64Assemble {
 		if (isRm.test(instruction.op0)) {
 			var shift = instruction.op1;
 			boolean isShiftImm;
-			OpImm shiftImm;
+			OpImm shiftImm = shift.cast(OpImm.class);
 			int b1;
-			if (shift instanceof OpImm) {
-				shiftImm = (OpImm) shift;
+			if (shiftImm != null) {
 				isShiftImm = 1 <= shiftImm.imm;
 				b1 = b + (isShiftImm ? 0 : 16);
 			} else if (shift.size == 1 && shift instanceof OpReg && ((OpReg) shift).reg == 1) { // CL
-				shiftImm = null;
 				isShiftImm = false;
 				b1 = b + 16 + 2;
 			} else

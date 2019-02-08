@@ -18,7 +18,6 @@ import suite.inspect.Inspect;
 import suite.node.Node;
 import suite.node.util.Singleton;
 import suite.object.AutoInterface;
-import suite.os.Execute;
 import suite.persistent.PerMap;
 import suite.primitive.Bytes;
 import suite.streamlet.FunUtil.Source;
@@ -27,7 +26,7 @@ import suite.util.RunUtil;
 
 public class Funp_ {
 
-	public static boolean isAmd64 = RunUtil.isUnix() ? Execute.shell("uname -a").contains("x86_64") : false;
+	public static boolean isAmd64 = RunUtil.isLinux64();
 	public static Amd64 amd64 = Amd64.me;
 
 	public static int booleanSize = 1;

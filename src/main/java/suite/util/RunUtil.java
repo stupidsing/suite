@@ -4,6 +4,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.log4j.Level;
 
+import suite.os.Execute;
 import suite.os.Log_;
 import suite.primitive.IntMutable;
 import suite.primitive.IntPrimitives.IntSource;
@@ -15,7 +16,16 @@ public class RunUtil {
 		RUN____, PROFILE, TIME___,
 	};
 
-	public static boolean isUnix() {
+	public static boolean isLinux64() {
+		if (System.getenv("USE_32BIT") != null)
+			return false;
+		else if (System.getenv("USE_64BIT") != null)
+			return true;
+		else
+			return RunUtil.isLinux() && Execute.shell("uname -a").contains("x86_64");
+	}
+
+	public static boolean isLinux() {
 		var os = System.getenv("OS");
 		return os == null || !os.startsWith("Windows");
 	}
