@@ -40,9 +40,9 @@ public class Funp_ {
 	public static int nRegisters = isAmd64 ? 16 : 8;
 	public static Funp framePointer = new FunpFramePointer();
 
-	private boolean isOptimize;
-
 	private static Inspect inspect = Singleton.me.inspect;
+
+	private boolean isOptimize;
 
 	public interface Funp extends AutoInterface<Funp> {
 	}
