@@ -316,7 +316,7 @@ public class P0Parse {
 		private Funp consult(String url) {
 			Fun<ReadStream, Funp> r0 = is -> is.doRead(is_ -> FunpPredefine.of(parse(Suite.parse(FileUtil.read(is_)))));
 
-			Fun<SourceEx<ReadStream, IOException>, Funp> r1 = source -> rethrow(() -> source.g()).doRead(r0::apply);
+			Fun<SourceEx<ReadStream, IOException>, Funp> r1 = source -> rethrow(source::g).doRead(r0::apply);
 
 			if (url.startsWith("file://"))
 				return r1.apply(() -> FileUtil.in(url.substring(7)));
