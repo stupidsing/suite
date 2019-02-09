@@ -5,13 +5,12 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import suite.cfg.Defaults;
-import suite.funp.Funp_;
 import suite.ip.ImperativeCompiler;
 
 // http://www.muppetlabs.com/~breadbox/software/tiny/teensy.html
 public class ElfTest0 {
 
-	private WriteElf elf = new WriteElf(Funp_.isAmd64);
+	private WriteElf elf = new WriteElf(false);
 	private ImperativeCompiler ic = new ImperativeCompiler();
 
 	@Test

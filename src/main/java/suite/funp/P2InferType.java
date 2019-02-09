@@ -120,18 +120,19 @@ public class P2InferType {
 	private int ps = Funp_.pointerSize;
 	private int maxRegAlloc = 3;
 
-	private Node typeBoolean = Atom.of("BOOLEAN");
-	private Node typeByte = Atom.of("BYTE");
-	private Node typeNumber = Atom.of("NUMBER");
-
 	private Pattern typeDecorArray = Suite.pattern("ARRAY .0");
 	private Pattern typeDecorIo = Suite.pattern("IO");
 	private Pattern typeDecorRef = Suite.pattern("REF");
 
 	private Pattern typePatDecor = Suite.pattern(".0: .1");
+	private Pattern typePatInt = Suite.pattern("INT .0");
 	private Pattern typePatLambda = Suite.pattern("LAMBDA .0 .1");
 	private Pattern typePatStruct = Suite.pattern("STRUCT .0 .1");
 	private Pattern typePatTag = Suite.pattern("TAG .0");
+
+	private Node typeBoolean = Atom.of("BOOLEAN");
+	private Node typeByte = typePatInt.subst(Int.of(1));
+	private Node typeNumber = typePatInt.subst(Int.of(4));
 
 	private Map<Funp, Node> typeByNode = new IdentityHashMap<>();
 	private Map<Funp, Boolean> isRegByNode = new IdentityHashMap<>();
@@ -1035,8 +1036,6 @@ public class P2InferType {
 		Node[] m, d;
 		if (n == typeBoolean)
 			return Funp_.booleanSize;
-		else if (n == typeByte)
-			return 1;
 		else if ((m = typePatDecor.match(n)) != null)
 			if ((d = typeDecorArray.match(m[0])) != null) {
 				var size = d[0];
@@ -1047,6 +1046,8 @@ public class P2InferType {
 				return ps;
 			else
 				return fail();
+		else if ((m = typePatInt.match(n)) != null)
+			return Int.num(m[0]);
 		else if ((m = typePatLambda.match(n)) != null)
 			return ps + ps;
 		else if (n == typeNumber)

@@ -27,7 +27,7 @@ import suite.util.RunUtil;
 public class Funp_ {
 
 	public static boolean isAmd64 = RunUtil.isLinux64();
-	public static Amd64 amd64 = Amd64.me;
+	private static Amd64 amd64 = Amd64.me;
 
 	public static int booleanSize = 1;
 	public static int integerSize = 4;

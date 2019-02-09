@@ -74,7 +74,7 @@ import suite.util.Switch;
 public class P4GenerateCode {
 
 	private boolean isAmd64 = Funp_.isAmd64;
-	private Amd64 amd64 = Funp_.amd64;
+	private Amd64 amd64 = Amd64.me;
 
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
