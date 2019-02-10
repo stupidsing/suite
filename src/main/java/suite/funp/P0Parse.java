@@ -216,6 +216,8 @@ public class P0Parse {
 				return FunpCoerce.of(Coerce.BYTE, Coerce.NUMBER, p(a));
 			}).match("coerce.pointer .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.POINTER, p(a));
+			}).match("consult .0 := .1", (a, b) -> {
+				return consult(Str.str(a), b);
 			}).match("consult .0", a -> {
 				return consult(Str.str(a));
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
