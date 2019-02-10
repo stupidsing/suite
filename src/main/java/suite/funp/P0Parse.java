@@ -90,8 +90,12 @@ public class P0Parse {
 	private int tagId;
 	private Map<String, Integer> idByTag = new HashMap<>();
 
-	public Funp parse(Node node0) {
-		var node1 = new Expand(PerMap.empty()).e(node0);
+	public Funp parse(Node node) {
+		return parse(node, PerMap.<Prototype, Node[]> empty());
+	}
+
+	private Funp parse(Node node0, PerMap<Prototype, Node[]> macros) {
+		var node1 = new Expand(macros).e(node0);
 		return new Parse(PerSet.empty()).p(node1);
 	}
 
@@ -321,12 +325,16 @@ public class P0Parse {
 			return consult_(url, is -> is.doRead(r0));
 		}
 
-		private Funp consult(String url, Node node) {
-			var app = "$APP";
-			var va = Atom.of(app);
-			var macros = PerMap.<Prototype, Node[]>empty().put(Prototype.of(va), new Node[] { va, node, });
+		private Funp consult(String url, Node program) {
+			FunIo<ReadStream, Funp> r0 = is -> {
+				var node0 = Suite.parse(FileUtil.read(is) + "$APP");
+				var node1 = Tree //
+						.iter(node0, TermOp.CONTD_) //
+						.reverse() //
+						.fold(program, (n, left) -> Tree.of(TermOp.CONTD_, left, n));
+				return parse(node1);
+			};
 
-			FunIo<ReadStream, Funp> r0 = is -> parse(new Expand(macros).e(Suite.parse(FileUtil.read(is) + app)));
 			return consult_(url, is -> is.doRead(r0));
 		}
 

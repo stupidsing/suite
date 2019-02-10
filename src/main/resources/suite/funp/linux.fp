@@ -5,7 +5,8 @@ expand (!asm.peek .p) := asm (EBX = .p;) { MOV (EAX, `EBX`); } ~
 expand (!asm.poke .p .value) := asm (EAX = .value; EBX = .p;) { MOV (`EBX`, EAX); } ~
 expand (!asm.read .p .length) := asm (EAX = 3; EBX = 0; ECX = .p; EDX = .length;) { INT (+x80); } ~
 expand (!asm.write .p .length) := asm (EAX = 4; EBX = 1; ECX = .p; EDX = .length;) { INT (+x80); } ~
-expand os.ps := 4 ~
+
+consult "asm.i686.fp" ~
 
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
