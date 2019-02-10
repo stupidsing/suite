@@ -3,18 +3,18 @@ expand (assert .check ~ .expr) := if .check then .expr else error ~
 expand !peek .pointer := asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
 expand (!poke (.pointer, .value) ~ .expr) := (perform !do asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~ .expr) ~
 
+expand (!os.adjust.pointer .p .add) := asm (EAX = .p; EBX = .add;) { ADD (EAX, EBX); } ~
 expand (!os.mmap .length) := (let ms := [0, .length, 3, 34, -1, 0,] ~ asm (EAX = 90; EBX = address.of ms;) { INT (+x80); }) ~
 expand (!os.munmap .length .p) := asm (EAX = 91; EBX = .p; ECX = .length;) { INT (+x80); } ~
-expand (!os.adjust.pointer .p .add) := asm (EAX = .p; EBX = .add;) { ADD (EAX, EBX); } ~
 expand (!os.read .p .length) := asm (EAX = 3; EBX = 0; ECX = .p; EDX = .length;) { INT (+x80); } ~
 expand (!os.write .p .length) := asm (EAX = 4; EBX = 1; ECX = .p; EDX = .length;) { INT (+x80); } ~
-expand ps := 4 ~
+expand os.ps := 4 ~
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
 
 define !mmap length := !do
-	!os.mmap length -- pointer in RAX
+	!os.mmap length
 ~
 
 define !munmap (length, pointer) := !do
@@ -27,12 +27,12 @@ let.global alloc.pointer := 0 ~
 let.global alloc.free.chain := 0 ~
 
 define !alloc size0 := !do
-	let size := max (ps, size0) ~
+	let size := max (os.ps, size0) ~
 	define {
 		!alloc.chain pointer := !do
 			let chain := !peek pointer ~
 			if (chain != 0) then (
-				let pointer1 := chain + ps ~
+				let pointer1 := chain + os.ps ~
 				if (!peek chain != size) then (
 					!alloc.chain coerce.pointer pointer1
 				) else (
@@ -46,7 +46,7 @@ define !alloc size0 := !do
 	if (p0 = 0) then (
 		let ap := alloc.pointer ~
 		let pointer.head := if (ap != 0) then ap else !mmap 16384 ~
-		let pointer.block := pointer.head + ps ~
+		let pointer.block := pointer.head + os.ps ~
 		!poke (pointer.head, size) ~
 		assign alloc.pointer := pointer.block + size ~
 		pointer.block
@@ -54,8 +54,8 @@ define !alloc size0 := !do
 ~
 
 define !dealloc (size0, pointer.block) := !do
-	let size := max (ps, size0) ~
-	let pointer.head := pointer.block - ps ~
+	let size := max (os.ps, size0) ~
+	let pointer.head := pointer.block - os.ps ~
 	assert (size = !peek pointer.head) ~
 	!poke (pointer.block, alloc.free.chain) ~
 	assign alloc.free.chain := pointer.head ~
@@ -85,12 +85,12 @@ define !new.mut.number init := !do
 
 define !read (pointer, length) := !do
 	type pointer = address.of (array _ * byte) ~
-	!os.read pointer length -- length in RAX
+	!os.read pointer length
 ~
 
 define !write (pointer, length) := !do
 	type pointer = address.of (array _ * byte) ~
-	!os.write pointer length -- length in RAX
+	!os.write pointer length
 ~
 
 define !write.all (pointer, length) :=
