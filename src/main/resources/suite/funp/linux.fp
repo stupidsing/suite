@@ -2,20 +2,25 @@ expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
 expand !peek .pointer := asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
 expand (!poke (.pointer, .value) ~ .expr) := (perform !do asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~ .expr) ~
+
+expand (!os.mmap .length) := (let ms := [0, .length, 3, 34, -1, 0,] ~ asm (EAX = 90; EBX = address.of ms;) { INT (+x80); }) ~
+expand (!os.munmap .length .p) := asm (EAX = 91; EBX = .p; ECX = .length;) { INT (+x80); } ~
+expand (!os.adjust.pointer .p .add) := asm (EAX = .p; EBX = .add;) { ADD (EAX, EBX); } ~
+expand (!os.read .p .length) := asm (EAX = 3; EBX = 0; ECX = .p; EDX = .length;) { INT (+x80); } ~
+expand (!os.write .p .length) := asm (EAX = 4; EBX = 1; ECX = .p; EDX = .length;) { INT (+x80); } ~
 expand ps := 4 ~
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
 
 define !mmap length := !do
-	let ms := [0, length, 3, 34, -1, 0,] ~
-	asm (EAX = 90; EBX = address.of ms;) { INT (+x80); }
+	!os.mmap length -- pointer in RAX
 ~
 
 define !munmap (length, pointer) := !do
 	--type pointer = address.of (array buffer.size * byte) ~
 	type pointer = number ~
-	asm (EAX = 91; EBX = pointer; ECX = length;) { INT (+x80); }
+	!os.munmap length pointer
 ~
 
 let.global alloc.pointer := 0 ~
@@ -80,18 +85,18 @@ define !new.mut.number init := !do
 
 define !read (pointer, length) := !do
 	type pointer = address.of (array _ * byte) ~
-	asm (EAX = 3; EBX = 0; ECX = pointer; EDX = length;) { INT (+x80); } -- length in EAX
+	!os.read pointer length -- length in RAX
 ~
 
 define !write (pointer, length) := !do
 	type pointer = address.of (array _ * byte) ~
-	asm (EAX = 4; EBX = 1; ECX = pointer; EDX = length;) { INT (+x80); } -- length in EAX
+	!os.write pointer length -- length in RAX
 ~
 
 define !write.all (pointer, length) :=
 	type pointer = address.of (array _ * byte) ~
 	!for (n = length; 0 < n;
-		let p1 := asm (EAX = pointer; EBX = length; ECX = n;) { ADD (EAX, EBX); SUB (EAX, ECX); } ~
+		let p1 := !os.adjust.pointer pointer (length - n) ~
 		let n1 := !write (coerce.pointer p1, n) ~
 		assert (n1 != 0) ~
 		n - n1
