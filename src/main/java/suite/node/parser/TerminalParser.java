@@ -5,18 +5,11 @@ import suite.node.Int;
 import suite.node.Node;
 import suite.node.Str;
 import suite.node.io.Escaper;
-import suite.node.util.Context;
 import suite.os.Log_;
 import suite.util.ParseUtil;
 import suite.util.String_;
 
 public class TerminalParser {
-
-	private Context localContext;
-
-	public TerminalParser(Context localContext) {
-		this.localContext = localContext;
-	}
 
 	public Node parseTerminal(String s) {
 		if (!s.isEmpty()) {
@@ -41,7 +34,7 @@ public class TerminalParser {
 					Log_.info("Suspicious input when parsing " + s);
 			}
 
-			return Atom.of(localContext, s);
+			return Atom.of(s);
 		} else
 			return Atom.NIL;
 	}

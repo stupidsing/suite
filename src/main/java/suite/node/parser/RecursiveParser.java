@@ -9,7 +9,6 @@ import suite.node.parser.FactorizeResult.FNode;
 import suite.node.parser.FactorizeResult.FTerminal;
 import suite.node.parser.FactorizeResult.FTree;
 import suite.node.tree.TreeTuple;
-import suite.node.util.Singleton;
 
 /**
  * Recursive-descent parser for operator-based languages.
@@ -19,7 +18,7 @@ import suite.node.util.Singleton;
 public class RecursiveParser {
 
 	private Operator[] operators;
-	private TerminalParser terminalParser = new TerminalParser(Singleton.me.grandContext);
+	private TerminalParser terminalParser = new TerminalParser();
 
 	public RecursiveParser(Operator[] operators) {
 		this.operators = operators;

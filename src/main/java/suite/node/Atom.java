@@ -1,6 +1,5 @@
 package suite.node;
 
-import suite.node.util.Context;
 import suite.node.util.Singleton;
 import suite.util.Util;
 
@@ -18,11 +17,7 @@ public class Atom extends Node {
 	}
 
 	public static Atom of(String name) {
-		return of(Singleton.me.grandContext, name);
-	}
-
-	public static Atom of(Context context, String name) {
-		return context.findAtom(name, Atom::new);
+		return Singleton.me.grandContext.findAtom(name, Atom::new);
 	}
 
 	private Atom(String name) {

@@ -14,8 +14,6 @@ import suite.node.io.Operator.Assoc;
 import suite.node.io.TermOp;
 import suite.node.parser.Lexer.Token;
 import suite.node.tree.TreeTuple;
-import suite.node.util.Context;
-import suite.node.util.Singleton;
 import suite.streamlet.FunUtil.Sink;
 import suite.text.Preprocess;
 import suite.util.String_;
@@ -31,12 +29,8 @@ public class IterativeParser {
 	private Operator[] operators;
 
 	public IterativeParser(Operator[] operators) {
-		this(Singleton.me.grandContext, operators);
-	}
-
-	private IterativeParser(Context context, Operator[] operators) {
 		this.operators = operators;
-		terminalParser = new TerminalParser(context);
+		terminalParser = new TerminalParser();
 	}
 
 	private class Section {
