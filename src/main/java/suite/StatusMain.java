@@ -18,7 +18,7 @@ public class StatusMain {
 
 	private boolean run() {
 		var summarize = Summarize.of(cfg);
-		var sbs = summarize.summarize(r -> r.strategy);
+		var sbs = summarize.summarize(trade -> trade.strategy);
 		System.out.println(sbs.log);
 		System.out.println(new TreeMap<>(sbs.pnlByKey));
 		return true;

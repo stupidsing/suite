@@ -92,7 +92,7 @@ public class DailyMain {
 			sellForEarn(sellPool);
 		}
 
-		var sbs = Summarize.of(cfg).summarize();
+		var sbs = Summarize.of(cfg).summarize(trade -> trade.strategy);
 
 		var strategyTrades = Read //
 				.from(results) //
