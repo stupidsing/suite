@@ -75,6 +75,7 @@ import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Streamlet2;
 import suite.util.ReadStream;
+import suite.util.ReadStream.FunIo;
 import suite.util.Rethrow.SourceEx;
 import suite.util.Switch;
 import suite.util.To;
@@ -314,8 +315,20 @@ public class P0Parse {
 		}
 
 		private Funp consult(String url) {
-			Fun<ReadStream, Funp> r0 = is -> is.doRead(is_ -> FunpPredefine.of(parse(Suite.parse(FileUtil.read(is_)))));
+			FunIo<ReadStream, Funp> r0 = is -> FunpPredefine.of(parse(Suite.parse(FileUtil.read(is))));
+			return consult_(url, is -> is.doRead(r0));
+		}
 
+		private Funp consult(String url, Node node) {
+			var app = "$APP";
+			var va = Atom.of(app);
+			var macros = PerMap.<Prototype, Node[]>empty().put(Prototype.of(va), new Node[] { va, node, });
+
+			FunIo<ReadStream, Funp> r0 = is -> parse(new Expand(macros).e(Suite.parse(FileUtil.read(is) + app)));
+			return consult_(url, is -> is.doRead(r0));
+		}
+
+		private Funp consult_(String url, Fun<ReadStream, Funp> r0) {
 			Fun<SourceEx<ReadStream, IOException>, Funp> r1 = source -> rethrow(source::g).doRead(r0::apply);
 
 			if (url.startsWith("file://"))
