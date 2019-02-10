@@ -7,7 +7,7 @@ import java.util.WeakHashMap;
 import suite.node.Atom;
 import suite.streamlet.FunUtil.Fun;
 
-public class Context {
+public class AtomContext {
 
 	private Map<String, WeakReference<Atom>> atomPool = new WeakHashMap<>();
 

@@ -17,7 +17,7 @@ public class Atom extends Node {
 	}
 
 	public static Atom of(String name) {
-		return Singleton.me.grandContext.findAtom(name, Atom::new);
+		return Singleton.me.atomContext.findAtom(name, Atom::new);
 	}
 
 	private Atom(String name) {

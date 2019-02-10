@@ -10,7 +10,7 @@ public class Singleton {
 
 	public static final Singleton me = new Singleton();
 
-	public final Context grandContext = new Context();
+	public final AtomContext atomContext = new AtomContext();
 	public final Inspect inspect = new Inspect();
 	public final Mapify mapify = new Mapify(inspect);
 	public final Nodify nodify = new Nodify(inspect);
