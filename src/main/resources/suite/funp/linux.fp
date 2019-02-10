@@ -1,26 +1,28 @@
+expand (!asm.adjust.pointer .p .add) := asm (EAX = .p; EBX = .add;) { ADD (EAX, EBX); } ~
+expand (!asm.mmap .length) := (let ms := [0, .length, 3, 34, -1, 0,] ~ asm (EAX = 90; EBX = address.of ms;) { INT (+x80); }) ~
+expand (!asm.munmap .length .p) := asm (EAX = 91; EBX = .p; ECX = .length;) { INT (+x80); } ~
+expand (!asm.peek .p) := asm (EBX = .p;) { MOV (EAX, `EBX`); } ~
+expand (!asm.poke .p .value) := asm (EAX = .value; EBX = .p;) { MOV (`EBX`, EAX); } ~
+expand (!asm.read .p .length) := asm (EAX = 3; EBX = 0; ECX = .p; EDX = .length;) { INT (+x80); } ~
+expand (!asm.write .p .length) := asm (EAX = 4; EBX = 1; ECX = .p; EDX = .length;) { INT (+x80); } ~
+expand os.ps := 4 ~
+
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
-expand !peek .pointer := asm (EBX = .pointer;) { MOV (EAX, `EBX`); } ~
-expand (!poke (.pointer, .value) ~ .expr) := (perform !do asm (EAX = .value; EBX = .pointer;) { MOV (`EBX`, EAX); } ~ .expr) ~
-
-expand (!os.adjust.pointer .p .add) := asm (EAX = .p; EBX = .add;) { ADD (EAX, EBX); } ~
-expand (!os.mmap .length) := (let ms := [0, .length, 3, 34, -1, 0,] ~ asm (EAX = 90; EBX = address.of ms;) { INT (+x80); }) ~
-expand (!os.munmap .length .p) := asm (EAX = 91; EBX = .p; ECX = .length;) { INT (+x80); } ~
-expand (!os.read .p .length) := asm (EAX = 3; EBX = 0; ECX = .p; EDX = .length;) { INT (+x80); } ~
-expand (!os.write .p .length) := asm (EAX = 4; EBX = 1; ECX = .p; EDX = .length;) { INT (+x80); } ~
-expand os.ps := 4 ~
+expand !peek .pointer := !asm.peek .pointer ~
+expand (!poke (.pointer, .value) ~ .expr) := (perform !do !asm.poke .pointer .value ~ .expr) ~
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
 
 define !mmap length := !do
-	!os.mmap length
+	!asm.mmap length
 ~
 
 define !munmap (length, pointer) := !do
 	--type pointer = address.of (array buffer.size * byte) ~
 	type pointer = number ~
-	!os.munmap length pointer
+	!asm.munmap length pointer
 ~
 
 let.global alloc.pointer := 0 ~
@@ -85,18 +87,18 @@ define !new.mut.number init := !do
 
 define !read (pointer, length) := !do
 	type pointer = address.of (array _ * byte) ~
-	!os.read pointer length
+	!asm.read pointer length
 ~
 
 define !write (pointer, length) := !do
 	type pointer = address.of (array _ * byte) ~
-	!os.write pointer length
+	!asm.write pointer length
 ~
 
 define !write.all (pointer, length) :=
 	type pointer = address.of (array _ * byte) ~
 	!for (n = length; 0 < n;
-		let p1 := !os.adjust.pointer pointer (length - n) ~
+		let p1 := !asm.adjust.pointer pointer (length - n) ~
 		let n1 := !write (coerce.pointer p1, n) ~
 		assert (n1 != 0) ~
 		n - n1
