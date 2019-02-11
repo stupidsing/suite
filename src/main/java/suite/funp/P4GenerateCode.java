@@ -160,7 +160,8 @@ public class P4GenerateCode {
 
 		return p4emit.generate(p4emit.label(), em -> {
 			labelPointer = em.spawn(em1 -> em1.emit(Insn.D, amd64.imm32(0l))).in;
-			freeChainPointer = em.spawn(em1 -> em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l))).in;
+			freeChainPointer = em
+					.spawn(em1 -> em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l))).in;
 
 			var prolog_amd64 = List.of( //
 					"MOV (RAX, QWORD +x00000009)", //
@@ -275,7 +276,8 @@ public class P4GenerateCode {
 			})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 				return returnAssign((c1, t) -> Read //
 						.from2(pairs) //
-						.sink((n_, ofs) -> c1.compileAssign(n_, FunpMemory.of(t.pointer, t.start + ofs.t0, t.start + ofs.t1))));
+						.sink((n_, ofs) -> c1.compileAssign(n_,
+								FunpMemory.of(t.pointer, t.start + ofs.t0, t.start + ofs.t1))));
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
 				var p = new Amd64Parse();
 				new Object() {
@@ -433,7 +435,8 @@ public class P4GenerateCode {
 							&& (op1 = p4deOp.decompose(fd, pointer, start + ps, ps)) != null)
 						return return2Op(op0, op1);
 					else
-						return mf.apply((start_, r) -> return2Op(amd64.mem(r, start_, ps), amd64.mem(r, start_ + ps, ps)));
+						return mf.apply(
+								(start_, r) -> return2Op(amd64.mem(r, start_, ps), amd64.mem(r, start_ + ps, ps)));
 				else
 					return fail();
 			})).applyIf(FunpNumber.class, f -> {
@@ -817,6 +820,8 @@ public class P4GenerateCode {
 							return fill(1, expr);
 						else if (to == Coerce.NUMBER)
 							return fill(is, expr);
+						else if (to == Coerce.NUMBERP)
+							return fill(ps, expr);
 						else if (to == Coerce.POINTER)
 							return fill(ps, expr);
 						else

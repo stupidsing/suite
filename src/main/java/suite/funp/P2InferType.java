@@ -342,6 +342,8 @@ public class P2InferType {
 						return typeByte;
 					else if (coerce == Coerce.NUMBER)
 						return typeNumber;
+					else if (coerce == Coerce.NUMBERP)
+						return typePatInt.subst(Int.of(ps));
 					else if (coerce == Coerce.POINTER)
 						return typeRefOf(new Reference());
 					else
@@ -671,7 +673,8 @@ public class P2InferType {
 				var scope1 = scope + 1;
 				var lt = new LambdaType(n);
 				var frame = Funp_.framePointer;
-				var expr1 = new Erase(scope1, env.replace(vn, localStack(scope1, IntMutable.of(0), b, b + lt.is)), me).erase(expr);
+				var expr1 = new Erase(scope1, env.replace(vn, localStack(scope1, IntMutable.of(0), b, b + lt.is)), me)
+						.erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr) -> {
 				var b = ps + ps; // return address and EBP
@@ -811,7 +814,8 @@ public class P2InferType {
 			// pass 1: check for any reference accesses to locals, set
 			// isRegByNode;
 			// pass 2: put locals to registers according to isRegByNode.
-			return var.isReg() ? FunpAllocReg.of(size, value, expr1, operand) : FunpAllocStack.of(size, value, expr1, offset);
+			return var.isReg() ? FunpAllocReg.of(size, value, expr1, operand)
+					: FunpAllocStack.of(size, value, expr1, offset);
 		}
 
 		private Funp eraseRoutine(LambdaType lt, Funp frame, Funp expr) {

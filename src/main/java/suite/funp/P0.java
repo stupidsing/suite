@@ -67,7 +67,7 @@ public class P0 {
 
 	public static class FunpCoerce implements Funp, P2.End {
 		public enum Coerce {
-			BYTE, NUMBER, POINTER,
+			BYTE, NUMBERP, NUMBER, POINTER,
 		};
 
 		public Coerce from;

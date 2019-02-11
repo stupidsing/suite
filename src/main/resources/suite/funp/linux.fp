@@ -14,7 +14,7 @@ define !mmap length := !do
 
 define !munmap (length, pointer) := !do
 	--type pointer = address.of (array buffer.size * byte) ~
-	type pointer = number ~
+	type pointer = numberp ~
 	!asm.munmap length pointer
 ~
 

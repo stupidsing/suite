@@ -218,6 +218,8 @@ public class P0Parse {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, p(a));
 			}).match("coerce.number .0", a -> {
 				return FunpCoerce.of(Coerce.BYTE, Coerce.NUMBER, p(a));
+			}).match("coerce.numberp .0", a -> {
+				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, p(a));
 			}).match("coerce.pointer .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.POINTER, p(a));
 			}).match("consult .0 ~ .1", (a, b) -> {
@@ -270,6 +272,10 @@ public class P0Parse {
 				return FunpNumber.of(IntMutable.nil());
 			}).match("number .0", a -> {
 				return FunpNumber.ofNumber(num(a));
+			}).match("numberp", () -> {
+				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpDontCare.of());
+			}).match("numberp .0", a -> {
+				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, FunpNumber.ofNumber(num(a)));
 			}).match("perform .0 ~ .1", (a, b) -> {
 				var lambda = lambda(dontCare, b);
 				return checkDo(() -> FunpDefine.of(lambda.vn, p(a), lambda.expr, Fdt.L_IOAP));
