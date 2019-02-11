@@ -379,7 +379,7 @@ public class P2InferType {
 					checks.add(() -> {
 						if (!(tp.finalNode() instanceof Reference))
 							return getTypeSize(tp) == size;
-						else if (size == 1 || size == is)
+						else if (size == 1 || size == is || size == ps)
 							return unify(n, typePatInt.subst(Int.of(size)), tp);
 						else if (size == ps)
 							return unify(n, typePatDecor.subst(typeDecorRef.subst(), new Reference()), tp);

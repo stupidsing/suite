@@ -23,14 +23,14 @@ let.global alloc.pointer := null ~
 let.global alloc.free.chain := null ~
 
 define !alloc size0 := !do
-	let size := coerce.numberp max (os.ps, size0) ~
+	let size := from.number max (os.ps, size0) ~
 	define {
 		!alloc.chain pointer := !do
 			let chain := !peek pointer ~
 			if (chain != null) then (
 				let pointer1 := !asm.adjust.pointer chain os.ps ~
 				if (!peek chain != size) then (
-					!alloc.chain coerce.pointer pointer1
+					!alloc.chain pointer1
 				) else (
 					!poke (pointer, !peek pointer1) ~
 					chain
@@ -38,7 +38,7 @@ define !alloc size0 := !do
 			) else null
 		~
 	} ~
-	let p0 := !alloc.chain address.of alloc.free.chain ~
+	let p0 := !alloc.chain to.numberp from.pointer address.of alloc.free.chain ~
 	if (p0 = null) then (
 		let ap := alloc.pointer ~
 		let pointer.head := if (ap != null) then ap else !mmap 16384 ~
@@ -93,7 +93,7 @@ define !write.all (pointer, length) :=
 	type pointer = address.of (array _ * byte) ~
 	!for (n = length; 0 < n;
 		let p1 := !asm.adjust.pointer pointer (length - n) ~
-		let n1 := !write (coerce.pointer p1, n) ~
+		let n1 := !write (to.pointer p1, n) ~
 		assert (n1 != 0) ~
 		n - n1
 	)
@@ -118,7 +118,7 @@ define !put.number n :=
 				let div := n / 10 ~
 				let mod := n % 10 ~
 				!put.number_ div ~
-				!put.char coerce.byte (mod + number '0')
+				!put.char to.byte from.number (mod + number '0')
 			) else {}
 		~
 	} ~

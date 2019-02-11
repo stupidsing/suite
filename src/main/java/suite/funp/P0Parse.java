@@ -214,14 +214,6 @@ public class P0Parse {
 							return p(n);
 					}
 				}.d(a);
-			}).match("coerce.byte .0", a -> {
-				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, p(a));
-			}).match("coerce.number .0", a -> {
-				return FunpCoerce.of(Coerce.BYTE, Coerce.NUMBER, p(a));
-			}).match("coerce.numberp .0", a -> {
-				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, p(a));
-			}).match("coerce.pointer .0", a -> {
-				return FunpCoerce.of(Coerce.NUMBER, Coerce.POINTER, p(a));
 			}).match("consult .0 ~ .1", (a, b) -> {
 				return consult(Str.str(a), b);
 			}).match("consult .0", a -> {
@@ -249,6 +241,14 @@ public class P0Parse {
 				var while_ = p1.p(c);
 				var do_ = FunpDoAssignVar.of(var, p1.p(d), var);
 				return FunpDefine.of(vn, p(b), FunpDoWhile.of(while_, do_, var), Fdt.L_MONO);
+			}).match("from.byte .0", a -> {
+				return FunpCoerce.of(Coerce.BYTE, Coerce.NUMBERP, p(a));
+			}).match("from.number .0", a -> {
+				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, p(a));
+			}).match("from.numberp .0", a -> {
+				return FunpCoerce.of(Coerce.NUMBERP, Coerce.NUMBERP, p(a));
+			}).match("from.pointer .0", a -> {
+				return FunpCoerce.of(Coerce.POINTER, Coerce.NUMBERP, p(a));
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
@@ -283,6 +283,14 @@ public class P0Parse {
 				return FunpPredefine.of(p(a));
 			}).match("size.of .0", a -> {
 				return FunpSizeOf.of(p(a));
+			}).match("to.byte .0", a -> {
+				return FunpCoerce.of(Coerce.NUMBERP, Coerce.BYTE, p(a));
+			}).match("to.number .0", a -> {
+				return FunpCoerce.of(Coerce.NUMBERP, Coerce.NUMBER, p(a));
+			}).match("to.numberp .0", a -> {
+				return FunpCoerce.of(Coerce.NUMBERP, Coerce.NUMBERP, p(a));
+			}).match("to.pointer .0", a -> {
+				return FunpCoerce.of(Coerce.NUMBERP, Coerce.POINTER, p(a));
 			}).match("type .0 = .1 ~ .2", (a, b, c) -> {
 				return FunpTypeCheck.of(p(a), p(b), p(c));
 			}).match(Atom.FALSE, () -> {

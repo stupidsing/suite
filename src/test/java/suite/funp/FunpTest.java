@@ -41,7 +41,7 @@ public class FunpTest {
 
 	@Test
 	public void testCoerce() {
-		test(1, "define i := 1 ~ define b := coerce.byte i ~ i");
+		test(1, "define i := 1 ~ define b := to.byte from.number i ~ i");
 	}
 
 	@Test
@@ -131,8 +131,8 @@ public class FunpTest {
 
 	@Test
 	public void testString() {
-		test(65, "define s := \"A world for us\" ~ coerce.number (^s) [0]");
-		test(65, "let.global s := \"A world for us\" ~ coerce.number (^s) [0]");
+		test(65, "define s := \"A world for us\" ~ to.number from.byte (^s) [0]");
+		test(65, "let.global s := \"A world for us\" ~ to.number from.byte (^s) [0]");
 	}
 
 	@Test
