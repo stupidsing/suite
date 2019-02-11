@@ -27,7 +27,7 @@ define !alloc size0 := !do
 	define {
 		!alloc.chain pointer := !do
 			let chain := !peek pointer ~
-			if (chain != 0) then (
+			if (chain != null) then (
 				let pointer1 := !asm.adjust.pointer chain os.ps ~
 				if (!peek chain != size) then (
 					!alloc.chain coerce.pointer pointer1
