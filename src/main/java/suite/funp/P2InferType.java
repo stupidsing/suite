@@ -132,7 +132,7 @@ public class P2InferType {
 
 	private Node typeBoolean = Atom.of("BOOLEAN");
 	private Node typeByte = typePatInt.subst(Int.of(1));
-	private Node typeNumber = typePatInt.subst(Int.of(4));
+	private Node typeNumber = typePatInt.subst(Int.of(is));
 
 	private Map<Funp, Node> typeByNode = new IdentityHashMap<>();
 	private Map<Funp, Boolean> isRegByNode = new IdentityHashMap<>();
@@ -372,24 +372,22 @@ public class P2InferType {
 				var t = new Reference();
 				unify(n, typeRefOf(t), infer(pointer));
 				return t;
-			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
+			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
 				for (var assign : assigns) {
 					var size = assign.t0.size;
 					var tp = infer(assign.t1);
 					checks.add(() -> {
 						if (!(tp.finalNode() instanceof Reference))
 							return getTypeSize(tp) == size;
-						else if (size == Funp_.booleanSize)
-							return unify(n, typeByte, tp);
-						else if (size == is)
-							return unify(n, typeNumber, tp);
+						else if (size == 1 || size == is)
+							return unify(n, typePatInt.subst(Int.of(size)), tp);
 						else if (size == ps)
 							return unify(n, typePatDecor.subst(typeDecorRef.subst(), new Reference()), tp);
 						else
 							return fail();
 					});
 				}
-				return typeNumber;
+				return typePatInt.subst(Int.of(opResult.size));
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), typeRefOf(infer(value)));
 				return infer(expr);
@@ -611,7 +609,7 @@ public class P2InferType {
 				return FunpAllocStack.of(offset, FunpDontCare.of(), expr2, offsetStack);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
-			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
+			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
 				env // disable register locals
 						.streamlet2() //
 						.values() //
@@ -619,7 +617,7 @@ public class P2InferType {
 						.sink(var -> var.setReg(false));
 
 				var saves = Mutable.of(new ArrayList<Pair<OpReg, Integer>>());
-				var fa = FunpDoAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm);
+				var fa = FunpDoAsm.of(Read.from2(assigns).mapValue(this::erase).toList(), asm, opResult);
 				return FunpSaveRegisters0.of(FunpSaveRegisters1.of(fa, saves), saves);
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				return FunpAssignMem.of(memory(reference, n), erase(value), erase(expr));

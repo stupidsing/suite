@@ -149,16 +149,18 @@ public class P0 {
 	public static class FunpDoAsm implements Funp, P4.End {
 		public List<Pair<OpReg, Funp>> assigns;
 		public List<Node> asm;
+		public OpReg opResult;
 
-		public static FunpDoAsm of(List<Pair<OpReg, Funp>> assigns, List<Node> asm) {
+		public static FunpDoAsm of(List<Pair<OpReg, Funp>> assigns, List<Node> asm, OpReg opResult) {
 			var f = new FunpDoAsm();
 			f.assigns = assigns;
 			f.asm = asm;
+			f.opResult = opResult;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<List<Pair<OpReg, Funp>>, List<Node>, R> fun) {
-			return fun.apply(assigns, asm);
+		public <R> R apply(FixieFun3<List<Pair<OpReg, Funp>>, List<Node>, OpReg, R> fun) {
+			return fun.apply(assigns, asm, opResult);
 		}
 	}
 

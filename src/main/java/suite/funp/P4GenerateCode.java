@@ -278,7 +278,7 @@ public class P4GenerateCode {
 						.from2(pairs) //
 						.sink((n_, ofs) -> c1.compileAssign(n_,
 								FunpMemory.of(t.pointer, t.start + ofs.t0, t.start + ofs.t1))));
-			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm) -> {
+			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
 				var p = new Amd64Parse();
 				new Object() {
 					private Object assign(Compile0 c1, int i) {
@@ -290,7 +290,7 @@ public class P4GenerateCode {
 				}.assign(this, 0);
 
 				Read.from(asm).map(p::parse).sink(em::emit);
-				return returnOp(i_eax);
+				return returnOp(opResult);
 			})).applyIf(FunpDontCare.class, f -> {
 				return returnDontCare();
 			}).applyIf(FunpDoWhile.class, f -> f.apply((while_, do_, expr) -> {
