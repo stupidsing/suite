@@ -69,6 +69,11 @@ public class ElfTest {
 		test(0, program, text);
 	}
 
+	@Test
+	public void testZero() {
+		test(0, "0", "");
+	}
+
 	private void test(int code, String program, String in) {
 		var input = Bytes.of(in.getBytes(Defaults.charset));
 		var main = Funp_.main(true);
@@ -82,11 +87,6 @@ public class ElfTest {
 			assertEquals(code, interpret.interpret(pair, input));
 			assertEquals(input, interpret.out.toBytes());
 		}
-	}
-
-	@Test
-	public void testZero() {
-		test(0, "0", "");
 	}
 
 }
