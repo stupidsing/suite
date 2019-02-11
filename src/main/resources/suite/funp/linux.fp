@@ -19,11 +19,11 @@ define !munmap (length, pointer) := !do
 	!asm.munmap length pointer
 ~
 
-let.global alloc.pointer := 0 ~
-let.global alloc.free.chain := 0 ~
+let.global alloc.pointer := null ~
+let.global alloc.free.chain := null ~
 
 define !alloc size0 := !do
-	let size := max (os.ps, size0) ~
+	let size := coerce.numberp max (os.ps, size0) ~
 	define {
 		!alloc.chain pointer := !do
 			let chain := !peek pointer ~
@@ -35,13 +35,13 @@ define !alloc size0 := !do
 					!poke (pointer, !peek pointer1) ~
 					chain
 				)
-			) else 0
+			) else null
 		~
 	} ~
 	let p0 := !alloc.chain address.of alloc.free.chain ~
-	if (p0 = 0) then (
+	if (p0 = null) then (
 		let ap := alloc.pointer ~
-		let pointer.head := if (ap != 0) then ap else !mmap 16384 ~
+		let pointer.head := if (ap != null) then ap else !mmap 16384 ~
 		let pointer.block := !asm.adjust.pointer pointer.head os.ps ~
 		!poke (pointer.head, size) ~
 		assign alloc.pointer := !asm.adjust.pointer pointer.block size ~
