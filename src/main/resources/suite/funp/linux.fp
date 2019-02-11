@@ -27,7 +27,7 @@ define !alloc size0 := !do
 		!alloc.chain pointer := !do
 			let chain := !peek pointer ~
 			if (chain != 0) then (
-				let pointer1 := chain + os.ps ~
+				let pointer1 := !asm.adjust.pointer chain os.ps ~
 				if (!peek chain != size) then (
 					!alloc.chain coerce.pointer pointer1
 				) else (
@@ -41,16 +41,16 @@ define !alloc size0 := !do
 	if (p0 = 0) then (
 		let ap := alloc.pointer ~
 		let pointer.head := if (ap != 0) then ap else !mmap 16384 ~
-		let pointer.block := pointer.head + os.ps ~
+		let pointer.block := !asm.adjust.pointer pointer.head os.ps ~
 		!poke (pointer.head, size) ~
-		assign alloc.pointer := pointer.block + size ~
+		assign alloc.pointer := !asm.adjust.pointer pointer.block size ~
 		pointer.block
 	) else p0
 ~
 
 define !dealloc (size0, pointer.block) := !do
 	let size := max (os.ps, size0) ~
-	let pointer.head := pointer.block - os.ps ~
+	let pointer.head := !asm.adjust.pointer pointer.block (0 - os.ps) ~
 	assert (size = !peek pointer.head) ~
 	!poke (pointer.block, alloc.free.chain) ~
 	assign alloc.free.chain := pointer.head ~
