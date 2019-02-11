@@ -70,11 +70,12 @@ define !new.pool length := !do
 define !new.mut.number init := !do
 	type init = number ~
 	let size := size.of init ~
-	let pointer := !alloc size ~
+	let address := !alloc size ~
+	let pointer := type (address.of number) to.pointer address ~
 	assign ^pointer := init ~
 	{
-		destroy {} := !dealloc (size, pointer) ~
-		get {} := !do !peek pointer ~
+		destroy {} := !dealloc (size, address) ~
+		get {} := !do (^pointer) ~
 		set v1 := !do (assign ^pointer := v1 ~ {}) ~
 	}
 ~

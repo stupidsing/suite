@@ -197,7 +197,7 @@ public class P0Parse {
 				var v = FunpVariable.of(Atom.name(a));
 				return checkDo(() -> FunpDoAssignVar.of(v, p(b), p(c)));
 			}).match("assign ^.0 := .1 ~ .2", (a, b, c) -> {
-				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
+				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(p(a))), p(b), p(c)));
 			}).match("byte", () -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpDontCare.of());
 			}).match("byte .0", a -> {
@@ -291,6 +291,8 @@ public class P0Parse {
 				return FunpCoerce.of(Coerce.NUMBERP, Coerce.NUMBERP, p(a));
 			}).match("to.pointer .0", a -> {
 				return FunpCoerce.of(Coerce.NUMBERP, Coerce.POINTER, p(a));
+			}).match("type .0 .1", (a, b) -> {
+				return FunpTypeCheck.of(p(a), p(b), p(b));
 			}).match("type .0 = .1 ~ .2", (a, b, c) -> {
 				return FunpTypeCheck.of(p(a), p(b), p(c));
 			}).match(Atom.FALSE, () -> {
