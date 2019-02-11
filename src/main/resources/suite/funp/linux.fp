@@ -1,5 +1,6 @@
 consult "asm.i686.fp" ~
 
+expand null := numberp 0 ~
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
 expand !peek .pointer := !asm.peek .pointer ~

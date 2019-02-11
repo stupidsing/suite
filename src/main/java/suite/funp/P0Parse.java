@@ -188,7 +188,7 @@ public class P0Parse {
 				return FunpReference.of(p(a));
 			}).match("array .0 * .1", (a, b) -> {
 				return FunpRepeat.of(a != Atom.of("_") ? Int.num(a) : null, p(b));
-			}).match("asm .0 {.1} .2", (a, b, c) -> {
+			}).match("asm .0 {.1}/.2", (a, b, c) -> {
 				return checkDo(() -> FunpDoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
 					var ma = Suite.pattern(".0 = .1").match(n);
 					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
