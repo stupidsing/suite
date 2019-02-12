@@ -147,7 +147,12 @@ public class P0Parse {
 				var p1 = nv(doToken).nv(vn);
 				var while_ = p1.p(c);
 				var do_ = FunpDoAssignVar.of(var, p1.p(d), var);
-				return FunpIo.of(FunpDefine.of(vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}"))), Fdt.L_MONO));
+				return FunpIo
+						.of(FunpDefine.of(vn, p(b), FunpDoWhile.of(while_, do_, p(Suite.parse("{}"))), Fdt.L_MONO));
+			}).match(".0:.1 .2", (a, b, c) -> {
+				var c0 = Coerce.valueOf(Atom.name(b).toUpperCase());
+				var c1 = Coerce.valueOf(Atom.name(a).toUpperCase());
+				return FunpCoerce.of(c0, c1, p(c));
 			}).match(".0 | .1", (a, b) -> {
 				return FunpApply.of(p(a), p(b));
 			}).match(".0 .1", (a, b) -> {
@@ -241,14 +246,6 @@ public class P0Parse {
 				var while_ = p1.p(c);
 				var do_ = FunpDoAssignVar.of(var, p1.p(d), var);
 				return FunpDefine.of(vn, p(b), FunpDoWhile.of(while_, do_, var), Fdt.L_MONO);
-			}).match("from.byte .0", a -> {
-				return FunpCoerce.of(Coerce.BYTE, Coerce.NUMBERP, p(a));
-			}).match("from.number .0", a -> {
-				return FunpCoerce.of(Coerce.NUMBER, Coerce.NUMBERP, p(a));
-			}).match("from.numberp .0", a -> {
-				return FunpCoerce.of(Coerce.NUMBERP, Coerce.NUMBERP, p(a));
-			}).match("from.pointer .0", a -> {
-				return FunpCoerce.of(Coerce.POINTER, Coerce.NUMBERP, p(a));
 			}).match("if (`.0` = .1) then .2 else .3", (a, b, c, d) -> {
 				return bind(a, b, c, d);
 			}).match("if .0 then .1 else .2", (a, b, c) -> {
@@ -283,14 +280,6 @@ public class P0Parse {
 				return FunpPredefine.of(p(a));
 			}).match("size.of .0", a -> {
 				return FunpSizeOf.of(p(a));
-			}).match("to.byte .0", a -> {
-				return FunpCoerce.of(Coerce.NUMBERP, Coerce.BYTE, p(a));
-			}).match("to.number .0", a -> {
-				return FunpCoerce.of(Coerce.NUMBERP, Coerce.NUMBER, p(a));
-			}).match("to.numberp .0", a -> {
-				return FunpCoerce.of(Coerce.NUMBERP, Coerce.NUMBERP, p(a));
-			}).match("to.pointer .0", a -> {
-				return FunpCoerce.of(Coerce.NUMBERP, Coerce.POINTER, p(a));
 			}).match("type .0 .1", (a, b) -> {
 				return FunpTypeCheck.of(p(a), p(b), p(b));
 			}).match("type .0 = .1 ~ .2", (a, b, c) -> {
@@ -377,7 +366,8 @@ public class P0Parse {
 						Node[] m;
 						if ((m = Suite.pattern(".0 .1 := .2").match(n)) != null)
 							return Pair.of(Atom.name(m[0]), Suite.substitute("capture (.0 => .1)", m[1], m[2]));
-						else if ((m = Suite.pattern(".0 := .1").match(n)) != null || (m = Suite.pattern(".0: .1").match(n)) != null)
+						else if ((m = Suite.pattern(".0 := .1").match(n)) != null
+								|| (m = Suite.pattern(".0: .1").match(n)) != null)
 							return Pair.of(Atom.name(m[0]), m[1]);
 						else
 							return Pair.of(Atom.name(n), n);
@@ -418,10 +408,11 @@ public class P0Parse {
 		private Funp bind(Node a, Node b, Node c, Node d) {
 			var vnsMutable = Mutable.of(PerSet.<String> empty());
 
-			Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class, n_ -> n_.cast(FunpVariableNew.class, f -> f.apply(vn -> {
-				vnsMutable.update(vnsMutable.value().replace(vn));
-				return FunpVariable.of(vn);
-			})));
+			Iterate<Funp> iter = be -> inspect.rewrite(be, Funp.class,
+					n_ -> n_.cast(FunpVariableNew.class, f -> f.apply(vn -> {
+						vnsMutable.update(vnsMutable.value().replace(vn));
+						return FunpVariable.of(vn);
+					})));
 
 			var be = iter.apply(p(a));
 			var vns_ = vnsMutable.value();
