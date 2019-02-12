@@ -85,6 +85,11 @@ public class P4GenerateCode {
 
 	private Amd64Assemble asm = new Amd64Assemble(isAmd64);
 
+	private int axReg = amd64.axReg;
+	private int cxReg = amd64.cxReg;
+	private int dxReg = amd64.dxReg;
+	private int siReg = amd64.siReg;
+	private int diReg = amd64.diReg;
 	private OpReg eax = amd64.eax;
 	private OpReg ebx = amd64.ebx;
 	private OpReg ecx = amd64.ecx;
@@ -96,8 +101,8 @@ public class P4GenerateCode {
 	private RegisterSet registerSet;
 	private boolean isUseEbp;
 
-	private OpReg p2_eax = pointerRegs[amd64.axReg];
-	private OpReg p2_edx = pointerRegs[amd64.dxReg];
+	private OpReg p2_eax = pointerRegs[axReg];
+	private OpReg p2_edx = pointerRegs[dxReg];
 
 	private OpImm labelPointer;
 	private OpImm freeChainPointer;
@@ -188,7 +193,7 @@ public class P4GenerateCode {
 			for (var i : isAmd64 ? prolog_amd64 : prolog_i686)
 				em.emit(p.parse(Suite.parse(i)));
 
-			em.mov(amd64.mem(labelPointer, ps), pointerRegs[amd64.axReg]);
+			em.mov(amd64.mem(labelPointer, ps), pointerRegs[axReg]);
 
 			if (isUseEbp)
 				em.mov(_bp, _sp);
@@ -196,7 +201,7 @@ public class P4GenerateCode {
 			new Compile0(ISSPEC, em, null, ebx, null, registerSet, 0).compile(funp);
 
 			if (isAmd64) {
-				em.mov(amd64.edi, amd64.ebx);
+				em.mov(edi, ebx);
 				em.mov(amd64.rax, amd64.imm64(0x3C));
 				em.emit(Insn.SYSCALL);
 			} else {
@@ -398,7 +403,7 @@ public class P4GenerateCode {
 				return out.g();
 			})).applyIf(FunpInvoke.class, f -> f.apply((routine, is, os) -> {
 				compileInvoke(routine);
-				return returnOp(amd64.regs(os)[amd64.axReg]);
+				return returnOp(amd64.regs(os)[axReg]);
 			})).applyIf(FunpInvoke2.class, f -> f.apply((routine, is, os) -> {
 				compileInvoke(routine);
 				return return2Op(p2_eax, p2_edx);
@@ -443,7 +448,7 @@ public class P4GenerateCode {
 			}).applyIf(FunpOperand.class, f -> f.apply(op -> {
 				return returnOp(op.value());
 			})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr, is, os) -> {
-				OpReg _ax = amd64.regs(os)[amd64.axReg];
+				OpReg _ax = amd64.regs(os)[axReg];
 				return return2Op(compilePsOp(frame), compileRoutine(c1 -> c1.compileSpec(expr, _ax)));
 			})).applyIf(FunpRoutine2.class, f -> f.apply((frame, expr, is, os) -> {
 				return return2Op(compilePsOp(frame), compileRoutine(c1 -> c1.compile2Spec(expr, p2_eax, p2_edx)));
@@ -523,9 +528,9 @@ public class P4GenerateCode {
 			if (result.t == Rt.ASSIGN || result.t == Rt.SPEC)
 				return new CompileOut();
 			else if (result.nRegs == 1)
-				return new CompileOut(regs[amd64.axReg]);
+				return new CompileOut(regs[axReg]);
 			else if (result.nRegs == 2)
-				return new CompileOut(regs[amd64.axReg], regs[amd64.dxReg]);
+				return new CompileOut(regs[axReg], regs[dxReg]);
 			else
 				return fail();
 		}
@@ -680,8 +685,8 @@ public class P4GenerateCode {
 
 		private Operand compileTree(int size, Funp n, Object operator, Assoc assoc, Funp lhs, Funp rhs) {
 			var regs = amd64.regs(size);
-			var _ax = regs[amd64.axReg];
-			var _dx = regs[amd64.dxReg];
+			var _ax = regs[axReg];
+			var _dx = regs[dxReg];
 
 			var numRhs = rhs.cast(FunpNumber.class, n_ -> n_.i.value());
 			var insn = insnByOp.get(operator);
@@ -735,8 +740,8 @@ public class P4GenerateCode {
 
 		private Operand compileDivMod(Funp lhs, Funp rhs, OpReg r0, OpReg r1) {
 			var regs = amd64.regs(r0.size);
-			var _ax = regs[amd64.axReg];
-			var _dx = regs[amd64.dxReg];
+			var _ax = regs[axReg];
+			var _dx = regs[dxReg];
 			var opResult = isOutSpec ? pop0 : rs.get(r0);
 			Sink<Compile0> sink0 = c1 -> {
 				c1.compileSpec(lhs, _ax);
@@ -987,9 +992,9 @@ public class P4GenerateCode {
 		}
 
 		private OpReg compileCompare(OpReg r0, int start0, OpReg r1, int start1, int size, boolean isEq) {
-			var _cx = pointerRegs[amd64.cxReg];
-			var _si = pointerRegs[amd64.siReg];
-			var _di = pointerRegs[amd64.diReg];
+			var _cx = pointerRegs[cxReg];
+			var _si = pointerRegs[siReg];
+			var _di = pointerRegs[diReg];
 			var opResult = isOutSpec ? pop0 : rs.mask(_cx, _si, _di).get(Funp_.booleanSize);
 			var endLabel = em.label();
 			var neqLabel = spawn(c1 -> c1.em.emit(Insn.SETE, opResult), endLabel);
