@@ -762,10 +762,10 @@ public class P2InferType {
 			var saves = Mutable.of(new ArrayList<Pair<OpReg, Integer>>());
 			var os = 0;
 			Funp invoke;
-			if (lt.os == is)
-				invoke = FunpInvoke.of(lambda1);
+			if (lt.os == is || lt.os == ps)
+				invoke = FunpInvoke.of(lambda1, lt.is, lt.os);
 			else if (lt.os == ps + ps)
-				invoke = FunpInvoke2.of(lambda1);
+				invoke = FunpInvoke2.of(lambda1, lt.is, lt.os);
 			else
 				invoke = FunpInvokeIo.of(lambda1, lt.is, os = lt.os);
 			var as0 = allocStack(size, value, FunpSaveRegisters1.of(invoke, saves));
@@ -817,10 +817,10 @@ public class P2InferType {
 		}
 
 		private Funp eraseRoutine(LambdaType lt, Funp frame, Funp expr) {
-			if (lt.os == is)
-				return FunpRoutine.of(frame, expr);
+			if (lt.os == is || lt.os == ps)
+				return FunpRoutine.of(frame, expr, lt.is, lt.os);
 			else if (lt.os == ps + ps)
-				return FunpRoutine2.of(frame, expr);
+				return FunpRoutine2.of(frame, expr, lt.is, lt.os);
 			else
 				return FunpRoutineIo.of(frame, expr, lt.is, lt.os);
 		}

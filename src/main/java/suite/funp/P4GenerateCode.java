@@ -96,7 +96,6 @@ public class P4GenerateCode {
 	private RegisterSet registerSet;
 	private boolean isUseEbp;
 
-	private OpReg i_eax = integerRegs[amd64.axReg];
 	private OpReg p2_eax = pointerRegs[amd64.axReg];
 	private OpReg p2_edx = pointerRegs[amd64.dxReg];
 
@@ -397,10 +396,10 @@ public class P4GenerateCode {
 				}
 
 				return out.g();
-			})).applyIf(FunpInvoke.class, f -> f.apply(routine -> {
+			})).applyIf(FunpInvoke.class, f -> f.apply((routine, is, os) -> {
 				compileInvoke(routine);
-				return returnOp(i_eax);
-			})).applyIf(FunpInvoke2.class, f -> f.apply(routine -> {
+				return returnOp(amd64.regs(os)[amd64.axReg]);
+			})).applyIf(FunpInvoke2.class, f -> f.apply((routine, is, os) -> {
 				compileInvoke(routine);
 				return return2Op(p2_eax, p2_edx);
 			})).applyIf(FunpInvokeIo.class, f -> f.apply((routine, is, os) -> {
@@ -443,9 +442,10 @@ public class P4GenerateCode {
 				return returnOp(imm(f));
 			}).applyIf(FunpOperand.class, f -> f.apply(op -> {
 				return returnOp(op.value());
-			})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr) -> {
-				return return2Op(compilePsOp(frame), compileRoutine(c1 -> c1.compileSpec(expr, i_eax)));
-			})).applyIf(FunpRoutine2.class, f -> f.apply((frame, expr) -> {
+			})).applyIf(FunpRoutine.class, f -> f.apply((frame, expr, is, os) -> {
+				OpReg _ax = amd64.regs(os)[amd64.axReg];
+				return return2Op(compilePsOp(frame), compileRoutine(c1 -> c1.compileSpec(expr, _ax)));
+			})).applyIf(FunpRoutine2.class, f -> f.apply((frame, expr, is, os) -> {
 				return return2Op(compilePsOp(frame), compileRoutine(c1 -> c1.compile2Spec(expr, p2_eax, p2_edx)));
 			})).applyIf(FunpRoutineIo.class, f -> f.apply((frame, expr, is, os) -> {
 				// input argument, return address and EBP

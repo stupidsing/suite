@@ -197,29 +197,35 @@ public class P2 {
 
 	public static class FunpInvoke implements Funp, P4.End {
 		public Funp routine;
+		public int is, os;
 
-		public static FunpInvoke of(Funp routine) {
+		public static FunpInvoke of(Funp routine, int is, int os) {
 			var f = new FunpInvoke();
 			f.routine = routine;
+			f.is = is;
+			f.os = os;
 			return f;
 		}
 
-		public <R> R apply(FixieFun1<Funp, R> fun) {
-			return fun.apply(routine);
+		public <R> R apply(FixieFun3<Funp, Integer, Integer, R> fun) {
+			return fun.apply(routine, is, os);
 		}
 	}
 
 	public static class FunpInvoke2 implements Funp, P4.End {
 		public Funp routine;
+		public int is, os;
 
-		public static FunpInvoke2 of(Funp routine) {
+		public static FunpInvoke2 of(Funp routine, int is, int os) {
 			var f = new FunpInvoke2();
 			f.routine = routine;
+			f.is = is;
+			f.os = os;
 			return f;
 		}
 
-		public <R> R apply(FixieFun1<Funp, R> fun) {
-			return fun.apply(routine);
+		public <R> R apply(FixieFun3<Funp, Integer, Integer, R> fun) {
+			return fun.apply(routine, is, os);
 		}
 	}
 
@@ -301,34 +307,39 @@ public class P2 {
 	public static class FunpRoutine implements Funp, P4.End {
 		public Funp frame;
 		public Funp expr;
+		public int is, os;
 
-		public static FunpRoutine of(Funp frame, Funp expr) {
+		public static FunpRoutine of(Funp frame, Funp expr, int is, int os) {
 			var f = new FunpRoutine();
 			f.frame = frame;
 			f.expr = expr;
+			f.is = is;
+			f.os = os;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
-			return fun.apply(frame, expr);
+		public <R> R apply(FixieFun4<Funp, Funp, Integer, Integer, R> fun) {
+			return fun.apply(frame, expr, is, os);
 		}
 	}
 
 	public static class FunpRoutine2 implements Funp, P4.End {
 		public Funp frame;
 		public Funp expr;
+		public int is, os;
 
-		public static FunpRoutine2 of(Funp frame, Funp expr) {
+		public static FunpRoutine2 of(Funp frame, Funp expr, int is, int os) {
 			var f = new FunpRoutine2();
 			f.frame = frame;
 			f.expr = expr;
+			f.is = is;
+			f.os = os;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<Funp, Funp, R> fun) {
-			return fun.apply(frame, expr);
+		public <R> R apply(FixieFun4<Funp, Funp, Integer, Integer, R> fun) {
+			return fun.apply(frame, expr, is, os);
 		}
-
 	}
 
 	public static class FunpRoutineIo implements Funp, P4.End {
