@@ -23,6 +23,7 @@ public class Amd64 {
 		CMP, //
 		CMPSB, //
 		CMPSD, //
+		CMPSQ, //
 		CMPSW, //
 		CMPXCHG, //
 		CPUID, //
@@ -77,6 +78,7 @@ public class Amd64 {
 		MOVQ, //
 		MOVSB, //
 		MOVSD, //
+		MOVSQ, //
 		MOVSW, //
 		MOVSX, //
 		MOVZX, //
@@ -116,6 +118,7 @@ public class Amd64 {
 		STI, //
 		STOSB, //
 		STOSD, //
+		STOSQ, //
 		STOSW, //
 		SUB, //
 		SUBPS, //

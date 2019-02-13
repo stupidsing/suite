@@ -238,6 +238,9 @@ public class Amd64Assemble {
 		case CMPSD:
 			encode = new InsnCode(4, bs(0xA7));
 			break;
+		case CMPSQ:
+			encode = new InsnCode(8, bs(0xA7));
+			break;
 		case CMPSW:
 			encode = new InsnCode(2, bs(0xA7));
 			break;
@@ -471,6 +474,9 @@ public class Amd64Assemble {
 		case MOVSD:
 			encode = new InsnCode(4, bs(0xA5));
 			break;
+		case MOVSQ:
+			encode = new InsnCode(8, bs(0xA5));
+			break;
 		case MOVSW:
 			encode = new InsnCode(2, bs(0xA5));
 			break;
@@ -653,6 +659,9 @@ public class Amd64Assemble {
 			break;
 		case STOSD:
 			encode = new InsnCode(4, bs(0xAB));
+			break;
+		case STOSQ:
+			encode = new InsnCode(8, bs(0xAB));
 			break;
 		case STOSW:
 			encode = new InsnCode(2, bs(0xAB));

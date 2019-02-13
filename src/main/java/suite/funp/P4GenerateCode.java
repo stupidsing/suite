@@ -94,7 +94,6 @@ public class P4GenerateCode {
 	private OpReg eax = amd64.eax;
 	private OpReg ebx = amd64.ebx;
 	private OpReg ecx = amd64.ecx;
-	private OpReg esi = amd64.esi;
 	private OpReg edi = amd64.edi;
 	private OpReg _cx = pointerRegs[cxReg];
 	private OpReg _si = pointerRegs[siReg];
@@ -654,10 +653,10 @@ public class P4GenerateCode {
 							em.lea(r, amd64.mem(r1, start1, is));
 							em.lea(_di, amd64.mem(r0, start0, is));
 							em.mov(_si, r);
-							em.mov(_cx, amd64.imm(size / 4, is));
+							em.mov(_cx, amd64.imm(size / Funp_.pointerSize, is));
 							em.emit(Insn.REP);
-							em.emit(Insn.MOVSD);
-							for (var i = 0; i < size % 4; i++)
+							em.emit(Funp_.isAmd64 ? Insn.MOVSQ : Insn.MOVSD);
+							for (var i = 0; i < size % Funp_.pointerSize; i++)
 								em.emit(Insn.MOVSB);
 						}, _cx, _si, _di);
 					else if (0 < size) {
@@ -1010,11 +1009,11 @@ public class P4GenerateCode {
 				em.lea(r, amd64.mem(r1, start1, is));
 				em.lea(_di, amd64.mem(r0, start0, is));
 				em.mov(_si, r);
-				em.mov(_cx, amd64.imm(size / 4, is));
+				em.mov(_cx, amd64.imm(size / Funp_.pointerSize, is));
 				em.emit(Insn.REPE);
-				em.emit(Insn.CMPSD);
+				em.emit(isAmd64 ? Insn.CMPSQ : Insn.CMPSD);
 				em.emit(Insn.JNE, neqLabel);
-				for (var i = 0; i < size % 4; i++) {
+				for (var i = 0; i < size % Funp_.pointerSize; i++) {
 					em.emit(Insn.CMPSB);
 					em.emit(Insn.JNE, neqLabel);
 				}
