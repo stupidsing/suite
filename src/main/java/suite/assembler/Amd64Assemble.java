@@ -28,6 +28,8 @@ import suite.primitive.Bytes_;
 
 // TODO validate number of operands
 // TODO validate size of operands
+// do not use SPL, BPL, SIL, DIL in 32-bit mode
+// do not use AH, BH, CH, DH in 64-bit long mode
 public class Amd64Assemble {
 
 	private InsnCode invalid = new InsnCode(-1, new byte[0]);
@@ -903,7 +905,7 @@ public class Amd64Assemble {
 			else {
 				if (insnCode.size == 2)
 					bb.append((byte) 0x66);
-				appendIf(bb, modrm != null ? rex(modrm) : rex(insnCode.size, 0, 0, 0));
+				appendIf(bb, modrm != null ? rexModrm(insnCode) : rex(insnCode.size, 0, 0, 0));
 			}
 			bb.append(insnCode.bs);
 			if (modrm != null) {
@@ -1059,7 +1061,8 @@ public class Amd64Assemble {
 		}
 	}
 
-	private int rex(Modrm modrm) {
+	private int rexModrm(InsnCode insnCode) {
+		var modrm = insnCode.modrm;
 		return rex(modrm.size, modrm.num, modrm.i, 0 <= modrm.b ? modrm.b : modrm.rm);
 	}
 
@@ -1068,7 +1071,7 @@ public class Amd64Assemble {
 				+ (bit4(r) << 2) //
 				+ (bit4(x) << 1) //
 				+ (bit4(b) << 0);
-		return b04 != 0 ? 0x40 + b04 : -1;
+		return isAmd64 && size == 1 || b04 != 0 ? 0x40 + b04 : -1;
 	}
 
 	// https://en.wikipedia.org/wiki/VEX_prefix

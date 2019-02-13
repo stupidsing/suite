@@ -376,16 +376,17 @@ public class P2InferType {
 				for (var assign : assigns) {
 					var size = assign.t0.size;
 					var tp = infer(assign.t1);
-					checks.add(() -> {
-						if (!(tp.finalNode() instanceof Reference))
-							return getTypeSize(tp) == size;
-						else if (size == 1 || size == is || size == ps)
-							return unify(n, typePatInt.subst(Int.of(size)), tp);
-						else if (size == ps)
-							return unify(n, typePatDecor.subst(typeDecorRef.subst(), new Reference()), tp);
+					if (!(tp.finalNode() instanceof Reference))
+						if (getTypeSize(tp) == size)
+							;
 						else
-							return fail();
-					});
+							fail();
+					else if (size == 1 || size == is || size == ps)
+						unify(n, typePatInt.subst(Int.of(size)), tp);
+					else if (size == ps)
+						unify(n, typePatDecor.subst(typeDecorRef.subst(), new Reference()), tp);
+					else
+						fail();
 				}
 				return typePatInt.subst(Int.of(opResult.size));
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
