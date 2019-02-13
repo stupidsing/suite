@@ -131,7 +131,6 @@ public class P2InferType {
 	private Pattern typePatTag = Suite.pattern("TAG .0");
 
 	private Node typeBoolean = Atom.of("BOOLEAN");
-	private Node typeByte = typePatInt.subst(Int.of(1));
 	private Node typeNumber = typePatInt.subst(Int.of(is));
 
 	private Map<Funp, Node> typeByNode = new IdentityHashMap<>();
@@ -655,12 +654,13 @@ public class P2InferType {
 				return erase(expr);
 			})).applyIf(FunpIo.class, f -> f.apply(expr -> {
 				return erase(expr);
-			})).applyIf(FunpIndex.class, f -> f.apply((reference, index) -> {
+			})).applyIf(FunpIndex.class, f -> f.apply((reference, index0) -> {
 				var te = new Reference();
 				unify(n, typeOf(reference), typeRefOf(typeArrayOf(null, te)));
 				var size = getTypeSize(te);
 				var address0 = erase(reference);
-				var inc = FunpTree.of(ps, TermOp.MULT__, erase(index), FunpNumber.ofNumber(size));
+				var index1 = FunpCoerce.of(Coerce.NUMBER, Coerce.POINTER, erase(index0));
+				var inc = FunpTree.of(ps, TermOp.MULT__, index1, FunpNumber.ofNumber(size));
 				var address1 = FunpTree.of(ps, TermOp.PLUS__, address0, inc);
 				return FunpMemory.of(address1, 0, size);
 			})).applyIf(FunpLambda.class, f -> f.apply((vn, expr, isCapture) -> {

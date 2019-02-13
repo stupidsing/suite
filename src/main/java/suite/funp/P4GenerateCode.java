@@ -90,12 +90,16 @@ public class P4GenerateCode {
 	private int dxReg = amd64.dxReg;
 	private int siReg = amd64.siReg;
 	private int diReg = amd64.diReg;
+	private int bpReg = amd64.bpReg;
 	private OpReg eax = amd64.eax;
 	private OpReg ebx = amd64.ebx;
 	private OpReg ecx = amd64.ecx;
 	private OpReg esi = amd64.esi;
 	private OpReg edi = amd64.edi;
-	private OpReg _bp = isAmd64 ? amd64.rbp : amd64.ebp;
+	private OpReg _cx = pointerRegs[cxReg];
+	private OpReg _si = pointerRegs[siReg];
+	private OpReg _di = pointerRegs[diReg];
+	private OpReg _bp = pointerRegs[bpReg];
 	private OpReg _sp = Funp_._sp;
 
 	private RegisterSet registerSet;
@@ -646,16 +650,16 @@ public class P4GenerateCode {
 				if (r0 != r1 || start0 != start1)
 					if (4 * pushSize < size)
 						saveRegs(c1 -> {
-							var r = rs.mask(r0, edi).get(esi);
+							var r = rs.mask(r0, _di).get(_si);
 							em.lea(r, amd64.mem(r1, start1, is));
-							em.lea(edi, amd64.mem(r0, start0, is));
-							em.mov(esi, r);
-							em.mov(ecx, amd64.imm(size / 4, is));
+							em.lea(_di, amd64.mem(r0, start0, is));
+							em.mov(_si, r);
+							em.mov(_cx, amd64.imm(size / 4, is));
 							em.emit(Insn.REP);
 							em.emit(Insn.MOVSD);
 							for (var i = 0; i < size % 4; i++)
 								em.emit(Insn.MOVSB);
-						}, ecx, esi, edi);
+						}, _cx, _si, _di);
 					else if (0 < size) {
 						int p = 0, p1;
 						for (; (p1 = p + pushSize) <= size; p = p1)
@@ -997,9 +1001,6 @@ public class P4GenerateCode {
 		}
 
 		private OpReg compileCompare(OpReg r0, int start0, OpReg r1, int start1, int size, boolean isEq) {
-			var _cx = pointerRegs[cxReg];
-			var _si = pointerRegs[siReg];
-			var _di = pointerRegs[diReg];
 			var opResult = isOutSpec ? pop0 : rs.mask(_cx, _si, _di).get(Funp_.booleanSize);
 			var endLabel = em.label();
 			var neqLabel = spawn(c1 -> c1.em.emit(Insn.SETE, opResult), endLabel);

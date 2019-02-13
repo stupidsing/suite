@@ -292,6 +292,12 @@ public class Amd64Interpret {
 				case RET:
 					eip = (int) pop();
 					break;
+				case SAL:
+					assign.f(source0 << source1);
+					break;
+				case SAR:
+					assign.f(source0 >>> source1);
+					break;
 				case SETE:
 					assign.f(c == 0 ? 1 : 0);
 					break;
@@ -309,6 +315,12 @@ public class Amd64Interpret {
 					break;
 				case SETNE:
 					assign.f(c != 0 ? 1 : 0);
+					break;
+				case SHL:
+					assign.f(source0 << source1);
+					break;
+				case SHR:
+					assign.f(source0 >> source1);
 					break;
 				case SUB:
 					assign.f(setFlags(source0 - source1));
