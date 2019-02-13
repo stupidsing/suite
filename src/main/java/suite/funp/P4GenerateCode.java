@@ -267,27 +267,30 @@ public class P4GenerateCode {
 				var size1 = r.size();
 				return size0 == size1 ? returnOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : fail();
 			})).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
-				var rbyte = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
-				var integerReg = integerRegs[rbyte.reg];
-				var pointerReg = pointerRegs[rbyte.reg];
+				if (Funp_.getCoerceSize(from) != Funp_.getCoerceSize(to)) {
+					var rbyte = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
+					var integerReg = integerRegs[rbyte.reg];
+					var pointerReg = pointerRegs[rbyte.reg];
 
-				if (from == Coerce.BYTE)
-					compileByte(expr, pushRegs[rbyte.reg]);
-				else if (from == Coerce.NUMBER)
-					compileSpec(expr, integerReg);
-				else if (from == Coerce.NUMBERP || from == Coerce.POINTER)
-					compileSpec(expr, pointerReg);
-				else
-					fail();
+					if (from == Coerce.BYTE)
+						compileByte(expr, pushRegs[rbyte.reg]);
+					else if (from == Coerce.NUMBER)
+						compileSpec(expr, integerReg);
+					else if (from == Coerce.NUMBERP || from == Coerce.POINTER)
+						compileSpec(expr, pointerReg);
+					else
+						fail();
 
-				if (to == Coerce.BYTE)
-					return returnOp(rbyte);
-				else if (to == Coerce.NUMBER)
-					return returnOp(integerReg);
-				else if (to == Coerce.NUMBERP || to == Coerce.POINTER)
-					return returnOp(pointerReg);
-				else
-					return fail();
+					if (to == Coerce.BYTE)
+						return returnOp(rbyte);
+					else if (to == Coerce.NUMBER)
+						return returnOp(integerReg);
+					else if (to == Coerce.NUMBERP || to == Coerce.POINTER)
+						return returnOp(pointerReg);
+					else
+						return fail();
+				} else
+					return compile(expr);
 			})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 				return returnAssign((c1, t) -> Read //
 						.from2(pairs) //
@@ -832,16 +835,7 @@ public class P4GenerateCode {
 				private boolean fill(int size, Funp node) {
 					return new Switch<Boolean>(node //
 					).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
-						if (to == Coerce.BYTE)
-							return fill(1, expr);
-						else if (to == Coerce.NUMBER)
-							return fill(is, expr);
-						else if (to == Coerce.NUMBERP)
-							return fill(ps, expr);
-						else if (to == Coerce.POINTER)
-							return fill(ps, expr);
-						else
-							return fail();
+						return fill(Funp_.getCoerceSize(to), expr);
 					})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 						var offset = 0;
 						var b = true;
