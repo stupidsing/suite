@@ -61,7 +61,7 @@ public class ElfTest {
 		var text = "garbage\n";
 
 		var program = "" //
-				+ "let linux := consult \"linux" + (Funp_.isAmd64 ? "64" : "") + ".fp\" ~ !do \n" //
+				+ "let linux := consult \"linux" + (isAmd64 ? "64" : "") + ".fp\" ~ !do \n" //
 				+ "	let !cat := linux/!cat ~ \n" //
 				+ "	!cat {} ~ \n" //
 				+ "	0 \n";
