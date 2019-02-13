@@ -80,17 +80,17 @@ define !new.mut.number init := !do
 ~
 
 define !read (pointer, length) := !do
-	type pointer = address.of (array _ * byte) ~
+	type pointer = address.of _ ~
 	!asm.read pointer length
 ~
 
 define !write (pointer, length) := !do
-	type pointer = address.of (array _ * byte) ~
+	type pointer = address.of _ ~
 	!asm.write pointer length
 ~
 
 define !write.all (pointer, length) :=
-	type pointer = address.of (array _ * byte) ~
+	type pointer = address.of _ ~
 	!for (n = length; 0 < n;
 		let p1 := !asm.adjust.pointer pointer (length - n) ~
 		let n1 := !write (pointer:numberp p1, n) ~
@@ -109,7 +109,7 @@ define !get.char {} := !do
 	buffer [s0]
 ~
 
-define !put.char ch := !write.all (address.of predef [ch,], 1) ~
+define !put.char ch := !write.all (address.of predef [type byte ch,], 1) ~
 
 define !put.number n :=
 	define {

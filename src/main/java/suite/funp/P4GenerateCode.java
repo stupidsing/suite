@@ -807,7 +807,7 @@ public class P4GenerateCode {
 				var first = isRightAssoc ? rhs : lhs;
 				var second = isRightAssoc ? lhs : rhs;
 				var op0 = compileLoad(size, first);
-				var op1 = mask(op0).compileIsOp(second);
+				var op1 = mask(op0).compileOp(size, second);
 				return Pair.of(first, em.emitRegInsn(insn, op0, op1));
 			}
 		}
@@ -1042,7 +1042,7 @@ public class P4GenerateCode {
 		private <T extends Operand> T mov(T op0, Operand op1) {
 			if (op0 instanceof OpMem && op1 instanceof OpMem) {
 				var oldOp1 = op1;
-				em.mov(op1 = rs.mask(op0, op1).get(op1.size), oldOp1);
+				em.mov(op1 = rs.mask(op0, op1).get(op1.size, isAmd64), oldOp1);
 			}
 			return em.mov(op0, op1);
 		}

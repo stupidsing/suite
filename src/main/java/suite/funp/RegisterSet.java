@@ -43,11 +43,15 @@ public class RegisterSet {
 
 	public OpReg get(Operand op) {
 		var prefer = op instanceof OpReg ? (OpReg) op : null;
-		return prefer != null && !isSet(prefer.reg) ? prefer : get_(op.size);
+		return prefer != null && !isSet(prefer.reg) ? prefer : get_(op.size, false);
 	}
 
 	public OpReg get(int size) {
-		return get_(size);
+		return get_(size, false);
+	}
+
+	public OpReg get(int size, boolean isAllowAllByteRegisters) {
+		return get_(size, isAllowAllByteRegisters);
 	}
 
 	public OpReg[] list(IntTest pred) {
@@ -81,9 +85,9 @@ public class RegisterSet {
 		return flag_;
 	}
 
-	private OpReg get_(int size) {
+	private OpReg get_(int size, boolean isAllowAllByteRegisters) {
 		var reg = get_();
-		if (size == 1 && reg < 4) // AL, BL, CL or DL
+		if (size == 1 && (isAllowAllByteRegisters || reg < 4)) // AL, BL, CL or DL
 			return amd64.reg8[reg];
 		else if (size == 2)
 			return amd64.reg16[reg];
