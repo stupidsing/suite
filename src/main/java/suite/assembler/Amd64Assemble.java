@@ -163,7 +163,7 @@ public class Amd64Assemble {
 	}
 
 	private class Modrm {
-		private int size, mod, num, rm, s, i, b, dispSize;
+		private int mod, num, rm, s, i, b, dispSize;
 		private long disp;
 	}
 
@@ -837,7 +837,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRegRm_(Operand reg, Operand rm, int b) {
-		return isReg.test(reg) && isRm.test(rm) ? assemble(rm, b, ((OpReg) reg).reg) : invalid;
+		return isReg.test(reg) && isRm.test(rm) ? assemble(rm, b, ((OpReg) reg).reg, reg.size) : invalid;
 	}
 
 	private InsnCode assembleRmImm(Operand op0, OpImm op1, int bAccImm, int bRmImm, int num) {
@@ -900,7 +900,11 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assemble(Operand operand, int b, int num) {
-		var insnCode = new InsnCode(operand.size, bs(b));
+		return assemble(operand, b, num, operand.size);
+	}
+
+	private InsnCode assemble(Operand operand, int b, int num, int size) {
+		var insnCode = new InsnCode(size, bs(b));
 		insnCode.modrm = modrm(operand, num);
 		return insnCode;
 	}
@@ -914,7 +918,7 @@ public class Amd64Assemble {
 			else {
 				if (insnCode.size == 2)
 					bb.append((byte) 0x66);
-				appendIf(bb, modrm != null ? rexModrm(insnCode) : rex(insnCode.size, 0, 0, 0));
+				appendIf(bb, modrm != null ? rexModrm(insnCode.size, insnCode) : rex(insnCode.size, 0, 0, 0));
 			}
 			bb.append(insnCode.bs);
 			if (modrm != null) {
@@ -1026,7 +1030,6 @@ public class Amd64Assemble {
 			throw new RuntimeException("bad operand");
 
 		var modrm = new Modrm();
-		modrm.size = operand.size;
 		modrm.mod = mod;
 		modrm.num = num;
 		modrm.rm = rm;
@@ -1070,9 +1073,9 @@ public class Amd64Assemble {
 		}
 	}
 
-	private int rexModrm(InsnCode insnCode) {
+	private int rexModrm(int size, InsnCode insnCode) {
 		var modrm = insnCode.modrm;
-		return rex(modrm.size, modrm.num, modrm.i, 0 <= modrm.b ? modrm.b : modrm.rm);
+		return rex(size, modrm.num, modrm.i, 0 <= modrm.b ? modrm.b : modrm.rm);
 	}
 
 	private int rex(int size, int r, int x, int b) {

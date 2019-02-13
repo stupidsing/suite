@@ -353,8 +353,10 @@ public class Amd64Interpret {
 		Runnable r = null;
 		r = insn == Insn.CMPSB ? this::cmpsb : r;
 		r = insn == Insn.CMPSD ? this::cmpsd : r;
+		r = insn == Insn.CMPSQ ? this::cmpsq : r;
 		r = insn == Insn.MOVSB ? this::movsb : r;
 		r = insn == Insn.MOVSD ? this::movsd : r;
+		r = insn == Insn.MOVSQ ? this::movsq : r;
 		return r != null ? r : fail();
 	}
 
@@ -370,6 +372,12 @@ public class Amd64Interpret {
 		regs[edi] += 4;
 	}
 
+	private void cmpsq() {
+		c = Long.compare(mem.getLong(index(regs[esi])), mem.getLong(index(regs[edi])));
+		regs[esi] += 8;
+		regs[edi] += 8;
+	}
+
 	private void movsb() {
 		mem.put(index(regs[edi]), mem.get(index(regs[esi])));
 		regs[esi]++;
@@ -380,6 +388,12 @@ public class Amd64Interpret {
 		mem.putInt(index(regs[edi]), mem.getInt(index(regs[esi])));
 		regs[esi] += 4;
 		regs[edi] += 4;
+	}
+
+	private void movsq() {
+		mem.putLong(index(regs[edi]), mem.getLong(index(regs[esi])));
+		regs[esi] += 8;
+		regs[edi] += 8;
 	}
 
 	private void push(long value) {
