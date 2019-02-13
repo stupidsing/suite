@@ -268,15 +268,26 @@ public class P4GenerateCode {
 				return size0 == size1 ? returnOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : fail();
 			})).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
 				var rbyte = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
-				var reg = integerRegs[rbyte.reg];
-				if (from == Coerce.BYTE) {
+				var integerReg = integerRegs[rbyte.reg];
+				var pointerReg = pointerRegs[rbyte.reg];
+
+				if (from == Coerce.BYTE)
 					compileByte(expr, pushRegs[rbyte.reg]);
-					return returnOp(reg);
-				} else if (to == Coerce.BYTE) {
-					compileSpec(expr, reg);
+				else if (from == Coerce.NUMBER)
+					compileSpec(expr, integerReg);
+				else if (from == Coerce.NUMBERP || from == Coerce.POINTER)
+					compileSpec(expr, pointerReg);
+				else
+					fail();
+
+				if (to == Coerce.BYTE)
 					return returnOp(rbyte);
-				} else
-					return compile(expr);
+				else if (to == Coerce.NUMBER)
+					return returnOp(integerReg);
+				else if (to == Coerce.NUMBERP || to == Coerce.POINTER)
+					return returnOp(pointerReg);
+				else
+					return fail();
 			})).applyIf(FunpData.class, f -> f.apply(pairs -> {
 				return returnAssign((c1, t) -> Read //
 						.from2(pairs) //
