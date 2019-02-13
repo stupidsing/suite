@@ -9,6 +9,7 @@ import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpReg;
+import suite.funp.P0.FunpCoerce.Coerce;
 import suite.funp.P0.FunpDefine;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpLambda;
@@ -121,6 +122,17 @@ public class Funp_ {
 		}.associate(PerMap.empty(), node);
 
 		return defByVariables;
+	}
+
+	public static int getCoerceSize(Coerce coerce) {
+		if (coerce == Coerce.BYTE)
+			return 1;
+		else if (coerce == Coerce.NUMBER)
+			return integerSize;
+		else if (coerce == Coerce.NUMBERP || coerce == Coerce.POINTER)
+			return pointerSize;
+		else
+			return fail(null, "");
 	}
 
 	public static <T> T rethrow(String in, Source<T> source) {
