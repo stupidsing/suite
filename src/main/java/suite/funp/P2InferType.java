@@ -338,12 +338,8 @@ public class P2InferType {
 				return typeBoolean;
 			}).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
 				Fun<Coerce, Node> tf = coerce -> {
-					if (coerce == Coerce.BYTE)
-						return typeByte;
-					else if (coerce == Coerce.NUMBER)
-						return typeNumber;
-					else if (coerce == Coerce.NUMBERP)
-						return typePatInt.subst(Int.of(ps));
+					if (coerce == Coerce.BYTE || coerce == Coerce.NUMBER || coerce == Coerce.NUMBERP)
+						return typePatInt.subst(Int.of(Funp_.getCoerceSize(coerce)));
 					else if (coerce == Coerce.POINTER)
 						return typeRefOf(new Reference());
 					else
