@@ -1,4 +1,4 @@
-consult "asm.i686.fp" ~
+consult "asm.${platform}.fp" ~
 
 expand null := numberp 0 ~
 expand buffer.size := 256 ~

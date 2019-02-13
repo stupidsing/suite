@@ -220,7 +220,7 @@ public class P0Parse {
 					}
 				}.d(a);
 			}).match("consult .0 ~ .1", (a, b) -> {
-				return consult(Str.str(a), b);
+				return consult(Str.str(a).replace("${platform}", Funp_.isAmd64 ? "amd64" : "i686"), b);
 			}).match("consult .0", a -> {
 				return consult(Str.str(a));
 			}).match("define .0 := .1 ~ .2", (a, b, c) -> {
