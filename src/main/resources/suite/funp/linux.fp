@@ -46,8 +46,8 @@ define !alloc size0 := !do
 		let pointer.block := !adjust.pointer pointer.head os.ps ~
 		!poke (pointer.head, sizep) ~
 		assign alloc.pointer := numberp:pointer !adjust.pointer pointer.block size1 ~
-		numberp:pointer pointer.block
-	) else numberp:pointer p0
+		pointer.block
+	) else p0
 ~
 
 define !dealloc (size0, pointer.block) := !do
@@ -72,7 +72,7 @@ define !new.pool length := !do
 define !new.mut.number init := !do
 	type init = number ~
 	let size := size.of init ~
-	let address := !alloc size ~
+	let address := numberp:pointer !alloc size ~
 	let pointer := type (address.of number) pointer:numberp address ~
 	assign ^pointer := init ~
 	{
