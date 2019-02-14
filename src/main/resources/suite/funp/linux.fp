@@ -12,11 +12,11 @@ define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
 
 define !mmap length := !do
-	!asm.mmap length
+	pointer:numberp !asm.mmap length
 ~
 
 define !munmap (length, pointer) := !do
-	!asm.munmap length pointer
+	!asm.munmap length numberp:pointer pointer
 ~
 
 let.global alloc.pointer := nullp ~
@@ -42,7 +42,7 @@ define !alloc size0 := !do
 	let p0 := !alloc.chain address.of alloc.free.chain ~
 	if (p0 = nullp) then (
 		let ap := alloc.pointer ~
-		let pointer.head := if (ap != nullp) then ap else pointer:numberp !mmap 16384 ~
+		let pointer.head := if (ap != nullp) then ap else !mmap 16384 ~
 		let pointer.block := !adjust.pointer pointer.head os.ps ~
 		!poke (pointer.head, sizep) ~
 		assign alloc.pointer := !adjust.pointer pointer.block size1 ~
