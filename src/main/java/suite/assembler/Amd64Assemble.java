@@ -786,7 +786,7 @@ public class Amd64Assemble {
 	private InsnCode assembleRegRmExtended(Instruction instruction, int b) {
 		if (instruction.op0 instanceof OpReg && isRm.test(instruction.op1)) {
 			var reg = (OpReg) instruction.op0;
-			return assemble(instruction.op1, b + (instruction.op1.size <= 1 ? 0 : 1), reg.reg);
+			return assemble(instruction.op1, b + (instruction.op1.size <= 1 ? 0 : 1), reg.reg, reg.size);
 		} else
 			return invalid;
 	}
