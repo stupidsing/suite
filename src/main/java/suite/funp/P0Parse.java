@@ -191,6 +191,8 @@ public class P0Parse {
 				return FunpStruct.of(kvs(a).mapValue(this::p).toList());
 			}).match("address.of .0", a -> {
 				return FunpReference.of(p(a));
+			}).match("address.of.any", () -> {
+				return FunpReference.of(FunpDontCare.of());
 			}).match("array .0 * .1", (a, b) -> {
 				return FunpRepeat.of(a != Atom.of("_") ? Int.num(a) : null, p(b));
 			}).match("asm .0 {.1}/.2", (a, b, c) -> {

@@ -3,9 +3,9 @@ consult "asm.${platform}.fp" ~
 expand null := numberp 0 ~
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
-expand !adjust.pointer .pointer .add := !asm.adjust.pointer (type (address.of _) .pointer) .add ~
-expand !peek .pointer := !asm.peek type (address.of _) .pointer ~
-expand (!poke (.pointer, .value) ~ .expr) := (perform !do !asm.poke (type (address.of _) .pointer) .value ~ .expr) ~
+expand !adjust.pointer .pointer .add := !asm.adjust.pointer (type address.of.any .pointer) .add ~
+expand !peek .pointer := !asm.peek type address.of.any .pointer ~
+expand (!poke (.pointer, .value) ~ .expr) := (perform !do !asm.poke (type address.of.any .pointer) .value ~ .expr) ~
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
@@ -81,19 +81,19 @@ define !new.mut.number init := !do
 ~
 
 define !read (pointer, length) := !do
-	type pointer = address.of _ ~
+	type pointer = address.of.any ~
 	!asm.read pointer length
 ~
 
 define !write (pointer, length) := !do
-	type pointer = address.of _ ~
+	type pointer = address.of.any ~
 	!asm.write pointer length
 ~
 
 define !write.all (pointer, length) :=
-	type pointer = address.of _ ~
+	type pointer = address.of.any ~
 	!for (n = length; 0 < n;
-		let p1 := !asm.adjust.pointer pointer (length - n) ~
+		let p1 := !adjust.pointer pointer (length - n) ~
 		let n1 := !write (pointer:numberp p1, n) ~
 		assert (n1 != 0) ~
 		n - n1
