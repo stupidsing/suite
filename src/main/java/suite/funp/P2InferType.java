@@ -11,6 +11,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
@@ -368,9 +369,8 @@ public class P2InferType {
 				unify(n, typeRefOf(t), infer(pointer));
 				return t;
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
-				for (var assign : assigns) {
-					var size = assign.t0.size;
-					var tp = infer(assign.t1);
+				BiConsumer<Operand, Node> opType = (op, tp) -> {
+					var size = op.size;
 					if (!(tp.finalNode() instanceof Reference))
 						if (getTypeSize(tp) == size)
 							;
@@ -382,8 +382,14 @@ public class P2InferType {
 						unify(n, typePatDecor.subst(typeDecorRef.subst(), new Reference()), tp);
 					else
 						fail();
-				}
-				return typePatInt.subst(Int.of(opResult.size));
+				};
+
+				for (var assign : assigns)
+					opType.accept(assign.t0, infer(assign.t1));
+
+				var tr = new Reference();
+				opType.accept(opResult, tr);
+				return tr;
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), typeRefOf(infer(value)));
 				return infer(expr);

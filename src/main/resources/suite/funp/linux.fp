@@ -4,6 +4,7 @@ expand null := numberp 0 ~
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
 expand !adjust.pointer .pointer .add := !asm.adjust.pointer (type address.of.any .pointer) .add ~
+expand !adjust.pointer1 .pointer .add := type address.of.any !asm.adjust.pointer (type address.of.any .pointer) .add ~
 expand !peek .pointer := !asm.peek type address.of.any .pointer ~
 expand (!poke (.pointer, .value) ~ .expr) := (perform !do !asm.poke (type address.of.any .pointer) .value ~ .expr) ~
 
