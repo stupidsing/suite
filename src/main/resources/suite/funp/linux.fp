@@ -42,9 +42,9 @@ define !alloc size0 := !do
 	let p0 := !alloc.chain address.of alloc.free.chain ~
 	if (p0 = nullp) then (
 		let ap := alloc.pointer ~
-		let pointer.head := if (ap != null) then ap else !mmap 16384 ~
-		let pointer.block := !adjust.pointer (pointer:numberp pointer.head) os.ps ~
-		!poke (pointer:numberp pointer.head, sizep) ~
+		let pointer.head := pointer:numberp if (ap != null) then ap else !mmap 16384 ~
+		let pointer.block := !adjust.pointer pointer.head os.ps ~
+		!poke (pointer.head, sizep) ~
 		assign alloc.pointer := numberp:pointer !adjust.pointer pointer.block size1 ~
 		numberp:pointer pointer.block
 	) else numberp:pointer p0
