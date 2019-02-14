@@ -3,6 +3,7 @@ consult "asm.${platform}.fp" ~
 expand null := numberp 0 ~
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
+expand !adjust.pointer .pointer .add := !asm.adjust.pointer (type (address.of _) .pointer) .add ~
 expand !peek .pointer := !asm.peek type (address.of _) .pointer ~
 expand (!poke (.pointer, .value) ~ .expr) := (perform !do !asm.poke (type (address.of _) .pointer) .value ~ .expr) ~
 
@@ -27,7 +28,7 @@ define !alloc size0 := !do
 		!alloc.chain pointer := !do
 			let chain := !peek pointer:numberp pointer ~
 			if (chain != null) then (
-				let pointer1 := !asm.adjust.pointer chain os.ps ~
+				let pointer1 := !adjust.pointer (pointer:numberp chain) os.ps ~
 				if (!peek pointer:numberp chain != sizep) then (
 					!alloc.chain pointer1
 				) else (
@@ -41,16 +42,16 @@ define !alloc size0 := !do
 	if (p0 = null) then (
 		let ap := alloc.pointer ~
 		let pointer.head := if (ap != null) then ap else !mmap 16384 ~
-		let pointer.block := !asm.adjust.pointer pointer.head os.ps ~
+		let pointer.block := !adjust.pointer (pointer:numberp pointer.head) os.ps ~
 		!poke (pointer:numberp pointer.head, sizep) ~
-		assign alloc.pointer := !asm.adjust.pointer pointer.block size1 ~
+		assign alloc.pointer := !adjust.pointer (pointer:numberp pointer.block) size1 ~
 		pointer.block
 	) else p0
 ~
 
 define !dealloc (size0, pointer.block) := !do
 	let sizep := numberp:number max (os.ps, size0) ~
-	let pointer.head := !asm.adjust.pointer pointer.block (0 - os.ps) ~
+	let pointer.head := !adjust.pointer (pointer:numberp pointer.block) (0 - os.ps) ~
 	assert (sizep = !peek pointer:numberp pointer.head) ~
 	!poke (pointer:numberp pointer.block, alloc.free.chain) ~
 	assign alloc.free.chain := pointer.head ~
