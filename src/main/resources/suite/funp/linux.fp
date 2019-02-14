@@ -1,10 +1,11 @@
 consult "asm.${platform}.fp" ~
 
 expand null := numberp 0 ~
+expand nullp := type address.of.any numberp 0 ~
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
 expand !adjust.pointer .pointer .add := !asm.adjust.pointer (type address.of.any .pointer) .add ~
-expand !adjust.pointer1 .pointer .add := pointer:numberp !asm.adjust.pointer (type address.of.any .pointer) .add ~
+expand !adjust.pointerp .pointer .add := pointer:numberp !asm.adjust.pointer (type address.of.any .pointer) .add ~
 expand !peek .pointer := !asm.peek type address.of.any .pointer ~
 expand (!poke (.pointer, .value) ~ .expr) := (perform !do !asm.poke (type address.of.any .pointer) .value ~ .expr) ~
 
@@ -29,7 +30,7 @@ define !alloc size0 := !do
 		!alloc.chain pointer := !do
 			let chain := !peek pointer:numberp pointer ~
 			if (chain != null) then (
-				let pointer1 := !adjust.pointer1 (pointer:numberp chain) os.ps ~
+				let pointer1 := !adjust.pointerp (pointer:numberp chain) os.ps ~
 				if (!peek pointer:numberp chain != sizep) then (
 					!alloc.chain numberp:pointer pointer1
 				) else (
@@ -43,10 +44,10 @@ define !alloc size0 := !do
 	if (p0 = null) then (
 		let ap := alloc.pointer ~
 		let pointer.head := if (ap != null) then ap else !mmap 16384 ~
-		let pointer.block := !adjust.pointer (pointer:numberp pointer.head) os.ps ~
+		let pointer.block := !adjust.pointerp (pointer:numberp pointer.head) os.ps ~
 		!poke (pointer:numberp pointer.head, sizep) ~
-		assign alloc.pointer := !adjust.pointer (pointer:numberp pointer.block) size1 ~
-		pointer.block
+		assign alloc.pointer := !adjust.pointer pointer.block size1 ~
+		numberp:pointer pointer.block
 	) else p0
 ~
 
