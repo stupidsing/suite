@@ -3,8 +3,8 @@ consult "asm.${platform}.fp" ~
 expand null := numberp 0 ~
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
-expand !peekp .pointer := !asm.peek type (address.of _) .pointer ~
-expand (!poke (.pointer, .value) ~ .expr) := (perform !do !asm.poke .pointer .value ~ .expr) ~
+expand !peek .pointer := !asm.peek type (address.of _) .pointer ~
+expand (!poke (.pointer, .value) ~ .expr) := (perform !do !asm.poke (type (address.of _) .pointer) .value ~ .expr) ~
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
@@ -25,13 +25,13 @@ define !alloc size0 := !do
 	let sizep := numberp:number size1 ~
 	define {
 		!alloc.chain pointer := !do
-			let chain := !peekp pointer:numberp pointer ~
+			let chain := !peek pointer:numberp pointer ~
 			if (chain != null) then (
 				let pointer1 := !asm.adjust.pointer chain os.ps ~
-				if (!peekp pointer:numberp chain != sizep) then (
+				if (!peek pointer:numberp chain != sizep) then (
 					!alloc.chain pointer1
 				) else (
-					!poke (pointer, !peekp pointer:numberp pointer1) ~
+					!poke (pointer:numberp pointer, !peek pointer:numberp pointer1) ~
 					chain
 				)
 			) else null
@@ -42,7 +42,7 @@ define !alloc size0 := !do
 		let ap := alloc.pointer ~
 		let pointer.head := if (ap != null) then ap else !mmap 16384 ~
 		let pointer.block := !asm.adjust.pointer pointer.head os.ps ~
-		!poke (pointer.head, sizep) ~
+		!poke (pointer:numberp pointer.head, sizep) ~
 		assign alloc.pointer := !asm.adjust.pointer pointer.block size1 ~
 		pointer.block
 	) else p0
@@ -51,8 +51,8 @@ define !alloc size0 := !do
 define !dealloc (size0, pointer.block) := !do
 	let sizep := numberp:number max (os.ps, size0) ~
 	let pointer.head := !asm.adjust.pointer pointer.block (0 - os.ps) ~
-	assert (sizep = !peekp pointer:numberp pointer.head) ~
-	!poke (pointer.block, alloc.free.chain) ~
+	assert (sizep = !peek pointer:numberp pointer.head) ~
+	!poke (pointer:numberp pointer.block, alloc.free.chain) ~
 	assign alloc.free.chain := pointer.head ~
 	{}
 ~
