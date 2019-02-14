@@ -46,17 +46,17 @@ define !alloc size0 := !do
 		let pointer.head := if (ap != null) then ap else !mmap 16384 ~
 		let pointer.block := !adjust.pointerp (pointer:numberp pointer.head) os.ps ~
 		!poke (pointer:numberp pointer.head, sizep) ~
-		assign alloc.pointer := !adjust.pointer pointer.block size1 ~
+		assign alloc.pointer := numberp:pointer !adjust.pointerp pointer.block size1 ~
 		numberp:pointer pointer.block
 	) else p0
 ~
 
 define !dealloc (size0, pointer.block) := !do
 	let sizep := numberp:number max (os.ps, size0) ~
-	let pointer.head := !adjust.pointer (pointer:numberp pointer.block) (0 - os.ps) ~
-	assert (sizep = !peek pointer:numberp pointer.head) ~
+	let pointer.head := !adjust.pointerp (pointer:numberp pointer.block) (0 - os.ps) ~
+	assert (sizep = !peek pointer.head) ~
 	!poke (pointer:numberp pointer.block, alloc.free.chain) ~
-	assign alloc.free.chain := pointer.head ~
+	assign alloc.free.chain := numberp:pointer pointer.head ~
 	{}
 ~
 
