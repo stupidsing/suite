@@ -28,9 +28,10 @@ define !alloc size0 := !do
 	define {
 		!alloc.chain pointer := !do
 			let chain := !peek pointer ~
+			let chain1 := pointer:numberp chain ~
 			if (chain != null) then (
-				let pointer1 := !adjust.pointer (pointer:numberp chain) os.ps ~
-				if (!peek pointer:numberp chain != sizep) then (
+				let pointer1 := !adjust.pointer chain1 os.ps ~
+				if (!peek chain1 != sizep) then (
 					!alloc.chain pointer1
 				) else (
 					!poke (pointer, !peek pointer1) ~
