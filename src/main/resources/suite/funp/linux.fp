@@ -4,6 +4,7 @@ expand null := numberp 0 ~
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
 expand !peek .pointer := !asm.peek .pointer ~
+expand !peekp .pointer := !asm.peek type (address.of _) .pointer ~
 expand (!poke (.pointer, .value) ~ .expr) := (perform !do !asm.poke .pointer .value ~ .expr) ~
 
 define max (a, b) := if (a < b) then b else a ~
@@ -28,7 +29,7 @@ define !alloc size0 := !do
 			let chain := !peek pointer ~
 			if (chain != null) then (
 				let pointer1 := !asm.adjust.pointer chain os.ps ~
-				if (!peek chain != sizep) then (
+				if (!peekp pointer:numberp chain != sizep) then (
 					!alloc.chain pointer1
 				) else (
 					!poke (pointer, !peek pointer1) ~
