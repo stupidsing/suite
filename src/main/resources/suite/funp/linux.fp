@@ -4,7 +4,7 @@ expand null := numberp 0 ~
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
 expand !adjust.pointer .pointer .add := !asm.adjust.pointer (type address.of.any .pointer) .add ~
-expand !adjust.pointer1 .pointer .add := type address.of.any !asm.adjust.pointer (type address.of.any .pointer) .add ~
+expand !adjust.pointer1 .pointer .add := pointer:numberp !asm.adjust.pointer (type address.of.any .pointer) .add ~
 expand !peek .pointer := !asm.peek type address.of.any .pointer ~
 expand (!poke (.pointer, .value) ~ .expr) := (perform !do !asm.poke (type address.of.any .pointer) .value ~ .expr) ~
 
@@ -29,11 +29,11 @@ define !alloc size0 := !do
 		!alloc.chain pointer := !do
 			let chain := !peek pointer:numberp pointer ~
 			if (chain != null) then (
-				let pointer1 := !adjust.pointer (pointer:numberp chain) os.ps ~
+				let pointer1 := !adjust.pointer1 (pointer:numberp chain) os.ps ~
 				if (!peek pointer:numberp chain != sizep) then (
-					!alloc.chain pointer1
+					!alloc.chain numberp:pointer pointer1
 				) else (
-					!poke (pointer:numberp pointer, !peek pointer:numberp pointer1) ~
+					!poke (pointer:numberp pointer, !peek pointer1) ~
 					chain
 				)
 			) else null
