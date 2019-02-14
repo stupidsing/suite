@@ -51,11 +51,10 @@ define !alloc size0 := !do
 ~
 
 define !dealloc (size0, pointer.block) := !do
-	let pointer.block1 := pointer:numberp pointer.block ~
 	let sizep := numberp:number max (os.ps, size0) ~
-	let pointer.head := !adjust.pointer pointer.block1 (0 - os.ps) ~
+	let pointer.head := !adjust.pointer pointer.block (0 - os.ps) ~
 	assert (sizep = !peek pointer.head) ~
-	!poke (pointer.block1, alloc.free.chain) ~
+	!poke (pointer.block, alloc.free.chain) ~
 	assign alloc.free.chain := numberp:pointer pointer.head ~
 	{}
 ~
@@ -72,8 +71,8 @@ define !new.pool length := !do
 define !new.mut.number init := !do
 	type init = number ~
 	let size := size.of init ~
-	let address := numberp:pointer !alloc size ~
-	let pointer := type (address.of number) pointer:numberp address ~
+	let address := !alloc size ~
+	let pointer := type (address.of number) address ~
 	assign ^pointer := init ~
 	{
 		destroy {} := !dealloc (size, address) ~
