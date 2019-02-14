@@ -4,8 +4,7 @@ expand null := numberp 0 ~
 expand nullp := type address.of.any numberp 0 ~
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
-expand !adjust.pointer .pointer .add := !asm.adjust.pointer (type address.of.any .pointer) .add ~
-expand !adjust.pointerp .pointer .add := pointer:numberp !asm.adjust.pointer (type address.of.any .pointer) .add ~
+expand !adjust.pointer .pointer .add := pointer:numberp !asm.adjust.pointer (type address.of.any .pointer) .add ~
 expand !peek .pointer := !asm.peek type address.of.any .pointer ~
 expand (!poke (.pointer, .value) ~ .expr) := (perform !do !asm.poke (type address.of.any .pointer) .value ~ .expr) ~
 
@@ -28,13 +27,14 @@ define !alloc size0 := !do
 	let sizep := numberp:number size1 ~
 	define {
 		!alloc.chain pointer := !do
-			let chain := !peek pointer:numberp pointer ~
+			let pqr := pointer:numberp pointer ~
+			let chain := !peek pqr ~
 			if (chain != null) then (
-				let pointer1 := !adjust.pointerp (pointer:numberp chain) os.ps ~
+				let pointer1 := !adjust.pointer (pointer:numberp chain) os.ps ~
 				if (!peek pointer:numberp chain != sizep) then (
 					!alloc.chain numberp:pointer pointer1
 				) else (
-					!poke (pointer:numberp pointer, !peek pointer1) ~
+					!poke (pqr, !peek pointer1) ~
 					chain
 				)
 			) else null
@@ -44,16 +44,16 @@ define !alloc size0 := !do
 	if (p0 = null) then (
 		let ap := alloc.pointer ~
 		let pointer.head := if (ap != null) then ap else !mmap 16384 ~
-		let pointer.block := !adjust.pointerp (pointer:numberp pointer.head) os.ps ~
+		let pointer.block := !adjust.pointer (pointer:numberp pointer.head) os.ps ~
 		!poke (pointer:numberp pointer.head, sizep) ~
-		assign alloc.pointer := numberp:pointer !adjust.pointerp pointer.block size1 ~
+		assign alloc.pointer := numberp:pointer !adjust.pointer pointer.block size1 ~
 		numberp:pointer pointer.block
 	) else p0
 ~
 
 define !dealloc (size0, pointer.block) := !do
 	let sizep := numberp:number max (os.ps, size0) ~
-	let pointer.head := !adjust.pointerp (pointer:numberp pointer.block) (0 - os.ps) ~
+	let pointer.head := !adjust.pointer (pointer:numberp pointer.block) (0 - os.ps) ~
 	assert (sizep = !peek pointer.head) ~
 	!poke (pointer:numberp pointer.block, alloc.free.chain) ~
 	assign alloc.free.chain := numberp:pointer pointer.head ~
@@ -96,7 +96,7 @@ define !write.all (pointer, length) :=
 	type pointer = address.of.any ~
 	!for (n = length; 0 < n;
 		let p1 := !adjust.pointer pointer (length - n) ~
-		let n1 := !write (pointer:numberp p1, n) ~
+		let n1 := !write (p1, n) ~
 		assert (n1 != 0) ~
 		n - n1
 	)
