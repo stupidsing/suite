@@ -281,7 +281,8 @@ public class P0Parse {
 			}).match("size.of .0", a -> {
 				return FunpSizeOf.of(p(a));
 			}).match("type .0 .1", (a, b) -> {
-				return FunpTypeCheck.of(p(a), p(b), p(b));
+				var pb = p(b);
+				return FunpTypeCheck.of(p(a), pb, pb);
 			}).match("type .0 = .1 ~ .2", (a, b, c) -> {
 				return FunpTypeCheck.of(p(a), p(b), p(c));
 			}).match(Atom.FALSE, () -> {
