@@ -1,7 +1,7 @@
 consult "asm.${platform}.fp" ~
 
 expand null := numberp 0 ~
-expand nullp := type address.of.any numberp 0 ~
+expand nullp := pointer:number 0 ~
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
 expand !adjust.pointer .pointer .add := pointer:numberp !asm.adjust.pointer (type address.of.any .pointer) .add ~
@@ -29,13 +29,13 @@ define !alloc size0 := !do
 		!alloc.chain pointer := !do
 			let chain := !peek pointer ~
 			let chain1 := pointer:numberp chain ~
-			if (chain != null) then (
+			if (chain1 != nullp) then (
 				let pointer1 := !adjust.pointer chain1 os.ps ~
 				if (!peek chain1 != sizep) then (
 					!alloc.chain pointer1
 				) else (
 					!poke (pointer, !peek pointer1) ~
-					chain
+					numberp:pointer chain1
 				)
 			) else null
 		~
