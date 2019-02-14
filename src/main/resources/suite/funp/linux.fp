@@ -27,20 +27,19 @@ define !alloc size0 := !do
 	let sizep := numberp:number size1 ~
 	define {
 		!alloc.chain pointer := !do
-			let pqr := pointer:numberp pointer ~
-			let chain := !peek pqr ~
+			let chain := !peek pointer ~
 			if (chain != null) then (
 				let pointer1 := !adjust.pointer (pointer:numberp chain) os.ps ~
 				if (!peek pointer:numberp chain != sizep) then (
-					!alloc.chain numberp:pointer pointer1
+					!alloc.chain pointer1
 				) else (
-					!poke (pqr, !peek pointer1) ~
+					!poke (pointer, !peek pointer1) ~
 					chain
 				)
 			) else null
 		~
 	} ~
-	let p0 := !alloc.chain numberp:pointer address.of alloc.free.chain ~
+	let p0 := !alloc.chain address.of alloc.free.chain ~
 	if (p0 = null) then (
 		let ap := alloc.pointer ~
 		let pointer.head := if (ap != null) then ap else !mmap 16384 ~
