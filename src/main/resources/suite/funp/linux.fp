@@ -3,7 +3,6 @@ consult "asm.${platform}.fp" ~
 expand null := numberp 0 ~
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
-expand !peek .pointer := !asm.peek .pointer ~
 expand !peekp .pointer := !asm.peek type (address.of _) .pointer ~
 expand (!poke (.pointer, .value) ~ .expr) := (perform !do !asm.poke .pointer .value ~ .expr) ~
 
@@ -26,13 +25,13 @@ define !alloc size0 := !do
 	let sizep := numberp:number size1 ~
 	define {
 		!alloc.chain pointer := !do
-			let chain := !peek pointer ~
+			let chain := !peekp pointer:numberp pointer ~
 			if (chain != null) then (
 				let pointer1 := !asm.adjust.pointer chain os.ps ~
 				if (!peekp pointer:numberp chain != sizep) then (
 					!alloc.chain pointer1
 				) else (
-					!poke (pointer, !peek pointer1) ~
+					!poke (pointer, !peekp pointer:numberp pointer1) ~
 					chain
 				)
 			) else null
@@ -52,7 +51,7 @@ define !alloc size0 := !do
 define !dealloc (size0, pointer.block) := !do
 	let sizep := numberp:number max (os.ps, size0) ~
 	let pointer.head := !asm.adjust.pointer pointer.block (0 - os.ps) ~
-	assert (sizep = !peek pointer.head) ~
+	assert (sizep = !peekp pointer:numberp pointer.head) ~
 	!poke (pointer.block, alloc.free.chain) ~
 	assign alloc.free.chain := pointer.head ~
 	{}
