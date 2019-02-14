@@ -20,7 +20,7 @@ define !munmap (length, pointer) := !do
 ~
 
 let.global alloc.pointer := nullp ~
-let.global alloc.free.chain := null ~
+let.global alloc.free.chain := nullp ~
 
 define !alloc size0 := !do
 	let size1 := max (os.ps, size0) ~
@@ -55,7 +55,7 @@ define !dealloc (size0, pointer.block) := !do
 	let pointer.head := !adjust.pointer pointer.block (0 - os.ps) ~
 	assert (sizep = !peek pointer.head) ~
 	!poke (pointer.block, alloc.free.chain) ~
-	assign alloc.free.chain := numberp:pointer pointer.head ~
+	assign alloc.free.chain := pointer.head ~
 	{}
 ~
 
