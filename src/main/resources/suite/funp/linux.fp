@@ -15,7 +15,7 @@ define !mmap length := !do
 ~
 
 define !munmap (length, pointer) := !do
-	!asm.munmap length numberp:pointer pointer
+	!asm.munmap length type address.of.any pointer
 ~
 
 let.global alloc.pointer := null ~
