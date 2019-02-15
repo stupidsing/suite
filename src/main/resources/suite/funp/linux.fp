@@ -26,13 +26,13 @@ define !alloc size0 := !do
 	let sizep := numberp:number size1 ~
 	define {
 		!alloc.chain pointer := !do
-			let chain := ^(pointer:pointer pointer) ~
+			let chain := ^pointer ~
 			if (chain != null) then (
 				let pointer1 := !adjust.pointer chain os.ps ~
-				if (^(pointer:pointer chain) != sizep) then (
+				if (^chain != sizep) then (
 					!alloc.chain pointer1
 				) else (
-					assign ^pointer := ^(pointer:pointer pointer1) ~
+					assign ^pointer := ^pointer1 ~
 					chain
 				)
 			) else null
@@ -71,7 +71,7 @@ define !new.mut.number init := !do
 	type init = number ~
 	let size := size.of init ~
 	let address := !alloc size ~
-	let pointer := type (address.of number) address ~
+	let pointer := pointer:pointer address ~
 	assign ^pointer := init ~
 	{
 		destroy {} := !dealloc (size, address) ~
