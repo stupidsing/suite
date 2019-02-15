@@ -13,7 +13,8 @@ define !mmap length := !do
 ~
 
 define !munmap (length, pointer) := !do
-	!asm.munmap length type address.of.any pointer
+	type pointer = address.of.any ~
+	!asm.munmap length pointer
 ~
 
 let.global alloc.pointer := null ~
@@ -108,7 +109,10 @@ define !get.char {} := !do
 	buffer [s0]
 ~
 
-define !put.char ch := !write.all (address.of predef [type byte ch,], 1) ~
+define !put.char ch :=
+	type ch = byte ~
+	!write.all (address.of predef [ch,], 1)
+~
 
 define !put.number n :=
 	define {
