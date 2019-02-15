@@ -3,7 +3,11 @@ consult "asm.${platform}.fp" ~
 expand null := pointer:number 0 ~
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
-expand !adjust.pointer .pointer .add := pointer:numberp !asm.adjust.pointer (type address.of.any .pointer) .add ~
+
+expand !adjust.pointer .pointer .add :=
+	type .pointer = address.of.any ~
+	pointer:numberp !asm.adjust.pointer .pointer .add
+~
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
