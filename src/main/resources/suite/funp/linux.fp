@@ -4,8 +4,6 @@ expand null := pointer:number 0 ~
 expand buffer.size := 256 ~
 expand (assert .check ~ .expr) := if .check then .expr else error ~
 expand !adjust.pointer .pointer .add := pointer:numberp !asm.adjust.pointer (type address.of.any .pointer) .add ~
-expand !peek .pointer := !asm.peek type address.of.any .pointer ~
-expand (!poke (.pointer, .value) ~ .expr) := (perform !do !asm.poke (type address.of.any .pointer) .value ~ .expr) ~
 
 define max (a, b) := if (a < b) then b else a ~
 define min (a, b) := if (a < b) then a else b ~
