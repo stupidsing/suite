@@ -138,6 +138,7 @@ public class FunpTest {
 	@Test
 	public void testStruct() {
 		test(3, "define s := { a: 1, b: 2, c: 3, } ~ s/c");
+		test(3, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ (^p)/c");
 	}
 
 	@Test
