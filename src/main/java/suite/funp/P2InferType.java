@@ -495,7 +495,7 @@ public class P2InferType {
 				else if (Set.of(TermOp.EQUAL_, TermOp.NOTEQ_).contains(op))
 					ti = new Reference();
 				else
-					ti = size == Funp_.integerSize ? typeNumber : fail();
+					ti = size == is ? typeNumber : fail();
 				unify(n, infer(lhs), ti);
 				unify(n, infer(rhs), ti);
 				var cmp = Set.of(TermOp.EQUAL_, TermOp.NOTEQ_, TermOp.LE____, TermOp.LT____).contains(op);
@@ -503,7 +503,7 @@ public class P2InferType {
 			})).applyIf(FunpTree2.class, f -> f.apply((size, op, lhs, rhs) -> {
 				unify(n, infer(lhs), typeNumber);
 				unify(n, infer(rhs), typeNumber);
-				return size == Funp_.integerSize ? typeNumber : fail();
+				return size == is ? typeNumber : fail();
 			})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
 				unify(n, infer(left), infer(right));
 				return infer(expr);
