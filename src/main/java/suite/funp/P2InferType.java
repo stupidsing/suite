@@ -461,7 +461,7 @@ public class P2InferType {
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
 				var types = Read //
 						.from2(pairs) //
-						.map2((name, value) -> (Node) Atom.of(name), (name, value) -> Reference.of(infer(value, name))) //
+						.<Node, Reference> map2((n_, v) -> Atom.of(n_), (n_, v) -> Reference.of(infer(v, n_))) //
 						.toMap();
 				var ref = new Reference();
 				var ts = typeStructOf(Dict.of(types), ref);
