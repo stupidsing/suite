@@ -504,9 +504,12 @@ public class P2InferType {
 				unify(n, infer(lhs), typeNumber);
 				unify(n, infer(rhs), typeNumber);
 				return size == is ? typeNumber : fail();
-			})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
-				unify(n, infer(left), infer(right));
-				return infer(expr);
+			})).applyIf(FunpTypeCheck.class, f -> f.apply((lhs, rhs, expr) -> {
+				var te = infer(expr);
+				var tl = infer(lhs);
+				var tr = rhs != null ? infer(rhs) : te;
+				unify(n, tl, tr);
+				return te;
 			})).applyIf(FunpVariable.class, f -> {
 				return getVariable(f);
 			}).applyIf(FunpVariableNew.class, f -> f.apply(vn -> {
