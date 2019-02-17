@@ -467,13 +467,9 @@ public class P2InferType {
 				var ts = typeStructOf(Dict.of(types), ref);
 				checks.add(() -> {
 					if (ref.isFree()) {
-						var list = new ArrayList<Node>();
-						var set = new HashSet<Node>();
 						var fs0 = Read.from(pairs).<Node> map(pair -> Atom.of(pair.t0));
 						var fs1 = Read.from(types.keySet());
-						for (var field : Streamlet.concat(fs0, fs1))
-							if (set.add(field))
-								list.add(field);
+						var list = Streamlet.concat(fs0, fs1).distinct().toList();
 						unify(ref, TreeUtil.buildUp(TermOp.AND___, list));
 					}
 					return true;
