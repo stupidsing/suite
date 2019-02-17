@@ -31,11 +31,14 @@ define !alloc size0 := !do
 		!alloc.chain pointer := !do
 			let chain := ^pointer ~
 			if (chain != null) then (
-				let pointer1 := !adjust.pointer chain os.ps ~
-				if (^chain != sizep) then (
-					!alloc.chain pointer1
+				let ps := type (address.of {
+					size: numberp,
+					next: null,
+				}) pointer:pointer chain ~
+				if ((^ps)/size != sizep) then (
+					!alloc.chain pointer:pointer (^ps)/next
 				) else (
-					assign ^pointer := ^pointer1 ~
+					assign ^pointer := (^ps)/next ~
 					chain
 				)
 			) else null
