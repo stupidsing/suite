@@ -459,11 +459,10 @@ public class P2InferType {
 				infer(expr);
 				return typeNumber;
 			})).applyIf(FunpStruct.class, f -> f.apply(pairs -> {
-				var types = new HashMap<Node, Reference>();
-				for (var kv : pairs) {
-					var name = kv.t0;
-					types.put(Atom.of(name), Reference.of(infer(kv.t1, name)));
-				}
+				var types = Read //
+						.from2(pairs) //
+						.map2((name, value) -> (Node) Atom.of(name), (name, value) -> Reference.of(infer(value, name))) //
+						.toMap();
 				var ref = new Reference();
 				var ts = typeStructOf(Dict.of(types), ref);
 				checks.add(() -> {
