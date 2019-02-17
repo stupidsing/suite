@@ -978,24 +978,41 @@ public class P2InferType {
 	}
 
 	public Node cloneType(Node type) {
-		return new SwitchNode<Node>(type.finalNode() //
-		).applyIf(Reference.class, t -> {
-			return new Reference();
-		}).match(typePatDecor, (a, b) -> {
-			return typePatDecor.subst(cloneNode(a), cloneType(b));
-		}).match(typePatLambda, (a, b) -> {
-			return typePatLambda.subst(cloneType(a), cloneType(b));
-		}).match(typePatStruct, (a, b) -> {
-			var map0 = Dict.m(a);
-			var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
-			return typePatStruct.subst(Dict.of(map1), b);
-		}).match(typePatTag, a -> {
-			var map0 = Dict.m(a);
-			var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
-			return typePatTag.subst(Dict.of(map1));
-		}).applyIf(Node.class, t -> {
-			return t;
-		}).nonNullResult();
+		var cloned = new IdentityHashMap<Node, Reference>();
+
+		return new Object() {
+			private Node cloneType(Node t0) {
+				var tx = cloned.get(t0);
+
+				if (tx == null) {
+					cloned.put(t0, tx = new Reference());
+
+					var tc = new SwitchNode<Node>(t0.finalNode() //
+					).applyIf(Reference.class, t -> {
+						return new Reference();
+					}).match(typePatDecor, (a, b) -> {
+						return typePatDecor.subst(cloneNode(a), cloneType(b));
+					}).match(typePatLambda, (a, b) -> {
+						return typePatLambda.subst(cloneType(a), cloneType(b));
+					}).match(typePatStruct, (a, b) -> {
+						var map0 = Dict.m(a);
+						var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
+						return typePatStruct.subst(Dict.of(map1), b);
+					}).match(typePatTag, a -> {
+						var map0 = Dict.m(a);
+						var map1 = Read.from2(map0).mapValue(t -> Reference.of(cloneType(t))).toMap();
+						return typePatTag.subst(Dict.of(map1));
+					}).applyIf(Node.class, t -> {
+						return t;
+					}).nonNullResult();
+
+					if (!Binder.bind(tx, tc, new Trail()))
+						fail();
+				}
+
+				return tx;
+			}
+		}.cloneType(type);
 	}
 
 	public Node cloneNode(Node node) {
