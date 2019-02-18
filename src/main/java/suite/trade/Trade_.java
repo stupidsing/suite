@@ -64,7 +64,7 @@ public class Trade_ {
 			var symbol = trade.symbol;
 			var buySell = trade.buySell;
 			var price = trade.price;
-			List<IntFltPair> acquires0 = acquireBySymbol.getOrDefault(symbol, List.of());
+			var acquires0 = acquireBySymbol.getOrDefault(symbol, List.of());
 			var acquires1 = new ArrayList<IntFltPair>();
 
 			for (var acquire : acquires0) {
@@ -85,7 +85,7 @@ public class Trade_ {
 		return Read //
 				.from2(acquireBySymbol) //
 				.mapValue(acquires -> {
-					IntFltPair sum = IntFltPair.of(0, 0f);
+					var sum = IntFltPair.of(0, 0f);
 					for (var acquire : acquires)
 						sum.update(sum.t0 + acquire.t0, sum.t1 + acquire.t0 * acquire.t1);
 					return sum.t1 / sum.t0;
