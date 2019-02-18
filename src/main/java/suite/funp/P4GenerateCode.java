@@ -655,7 +655,7 @@ public class P4GenerateCode {
 							em.mov(_si, r);
 							em.mov(_cx, amd64.imm(size / Funp_.pointerSize, is));
 							em.emit(Insn.REP);
-							em.emit(Funp_.isAmd64 ? Insn.MOVSQ : Insn.MOVSD);
+							em.emit(isAmd64 ? Insn.MOVSQ : Insn.MOVSD);
 							for (var i = 0; i < size % Funp_.pointerSize; i++)
 								em.emit(Insn.MOVSB);
 						}, _cx, _si, _di);
