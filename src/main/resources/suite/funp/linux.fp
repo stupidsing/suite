@@ -24,6 +24,11 @@ define !munmap (length, pointer) := !do
 let.global alloc.pointer := null ~
 let.global alloc.free.chain := null ~
 
+virtual ps.block := {
+	size: numberp,
+	next: null,
+} ~
+
 define !alloc size0 := !do
 	let size1 := max (os.ps, size0) ~
 	let sizep := numberp:number size1 ~
@@ -31,10 +36,7 @@ define !alloc size0 := !do
 		!alloc.chain pointer := !do
 			let chain := ^pointer ~
 			if (chain != null) then (
-				let ps := type (address.of {
-					size: numberp,
-					next: null,
-				}) pointer:pointer chain ~
+				let ps := type (address.of ps.block) pointer:pointer chain ~
 				if ((^ps)/size != sizep) then (
 					!alloc.chain pointer:pointer (^ps)/next
 				) else (
@@ -57,10 +59,7 @@ define !alloc size0 := !do
 
 define !dealloc (size0, pointer.block) := !do
 	let sizep := numberp:number max (os.ps, size0) ~
-	let ps := type (address.of {
-		size: numberp,
-		next: null,
-	}) !adjust.pointer pointer.block (0 - os.ps) ~
+	let ps := type (address.of ps.block) !adjust.pointer pointer.block (0 - os.ps) ~
 	assert ((^ps)/size = sizep) ~
 	assign ^(pointer:pointer pointer.block) := alloc.free.chain ~
 	assign alloc.free.chain := ps ~
