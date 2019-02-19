@@ -815,7 +815,8 @@ public class P2InferType {
 			// pass 1: check for any reference accesses to locals, set
 			// isRegByNode;
 			// pass 2: put locals to registers according to isRegByNode.
-			return var.isReg() ? FunpAllocReg.of(size, value, expr1, operand)
+			return var.isReg() //
+					? FunpAllocReg.of(size, value, expr1, operand) //
 					: FunpAllocStack.of(size, value, expr1, offset);
 		}
 
