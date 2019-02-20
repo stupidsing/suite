@@ -14,6 +14,7 @@ import suite.funp.P0.FunpTree;
 import suite.funp.P0.FunpTree2;
 import suite.funp.P2.FunpFramePointer;
 import suite.funp.P2.FunpMemory;
+import suite.funp.P2.FunpOperand;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
 import suite.node.util.TreeUtil;
@@ -36,7 +37,9 @@ public class P4DecomposeOperand {
 			return f.size() == size ? decomposeFunpMemory(fd, f) : null;
 		}).applyIf(FunpNumber.class, f -> {
 			return amd64.imm(f.i.value(), size);
-		}).result();
+		}).applyIf(FunpOperand.class, f -> f.apply(op -> {
+			return op.value();
+		})).result();
 	}
 
 	public OpMem decomposeFunpMemory(int fd, FunpMemory node) {
