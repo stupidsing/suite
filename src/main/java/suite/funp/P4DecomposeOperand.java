@@ -32,10 +32,10 @@ public class P4DecomposeOperand {
 		return node.<Operand> switch_( //
 		).applyIf(FunpDontCare.class, f -> {
 			return amd64.regs(size)[amd64.axReg];
-		}).applyIf(FunpNumber.class, f -> {
-			return amd64.imm(f.i.value(), size);
 		}).applyIf(FunpMemory.class, f -> {
 			return f.size() == size ? decomposeFunpMemory(fd, f) : null;
+		}).applyIf(FunpNumber.class, f -> {
+			return amd64.imm(f.i.value(), size);
 		}).result();
 	}
 
