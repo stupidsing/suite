@@ -1,15 +1,13 @@
 package suite.assembler;
 
-import static suite.util.Friends.fail;
-
 import java.util.List;
 
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpMem;
 import suite.assembler.Amd64.OpNone;
-import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
+import suite.funp.Funp_;
 import suite.streamlet.Read;
 
 public class Amd64Dump {
@@ -31,16 +29,9 @@ public class Amd64Dump {
 	}
 
 	private String dump(Operand op0) {
-		var pointerSize = 4;
-		OpReg[] regs;
+		var pointerSize = Funp_.pointerSize;
+		var regs = amd64.regs(pointerSize);
 		String name;
-
-		if (pointerSize == 4)
-			regs = amd64.reg32;
-		else if (pointerSize == 8)
-			regs = amd64.reg64;
-		else
-			return fail();
 
 		if (op0 instanceof OpImm) {
 			var opImm = (OpImm) op0;

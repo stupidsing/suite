@@ -91,7 +91,6 @@ public class P4GenerateCode {
 	private int dxReg = amd64.dxReg;
 	private int siReg = amd64.siReg;
 	private int diReg = amd64.diReg;
-	private int bpReg = amd64.bpReg;
 	private OpReg eax = amd64.eax;
 	private OpReg ebx = amd64.ebx;
 	private OpReg ecx = amd64.ecx;
@@ -99,7 +98,7 @@ public class P4GenerateCode {
 	private OpReg _cx = pointerRegs[cxReg];
 	private OpReg _si = pointerRegs[siReg];
 	private OpReg _di = pointerRegs[diReg];
-	private OpReg _bp = pointerRegs[bpReg];
+	private OpReg _bp = Funp_._bp;
 	private OpReg _sp = Funp_._sp;
 
 	private RegisterSet registerSet;

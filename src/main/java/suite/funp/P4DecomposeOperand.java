@@ -86,7 +86,7 @@ public class P4DecomposeOperand {
 				Funp right;
 				for (var n1 : decompose.apply(TermOp.MULT__, n0))
 					if (n1 instanceof FunpFramePointer && isUseEbp && reg == null)
-						reg = amd64.ebp;
+						reg = Funp_._bp;
 					else if ((number = n1.cast(FunpNumber.class)) != null)
 						scale *= number.i.value();
 					else if ((tree = n1.cast(FunpTree2.class)) != null //

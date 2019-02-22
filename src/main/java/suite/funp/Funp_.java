@@ -37,7 +37,8 @@ public class Funp_ {
 	public static OpReg[] integerRegs = amd64.regs(integerSize);
 	public static OpReg[] pointerRegs = amd64.regs(pointerSize);
 	public static OpReg[] pushRegs = amd64.regs(pushSize);
-	public static OpReg _sp = isAmd64 ? amd64.rsp : amd64.esp;
+	public static OpReg _bp = pointerRegs[amd64.bpReg];
+	public static OpReg _sp = pointerRegs[amd64.spReg];
 	public static int nRegisters = isAmd64 ? 16 : 8;
 	public static Funp framePointer = new FunpFramePointer();
 
