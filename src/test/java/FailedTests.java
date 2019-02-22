@@ -3,10 +3,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.io.StringWriter;
 
 import org.junit.Test;
 
 import suite.Suite;
+import suite.cli.CommandDispatcher;
+import suite.cli.CommandOptions;
 import suite.fp.FunRbTreeTest;
 import suite.ip.ImperativeCompiler;
 
@@ -27,6 +30,11 @@ public class FailedTests {
 				+ "data (C1 :t) over :t as (C0 :t) ~ \n" //
 				+ "data (C2 :t) over :t as (C1 :t) ~ \n" //
 				+ "(C2 boolean) of (A true)"));
+	}
+
+	@Test
+	public void testCommand() throws IOException {
+		new CommandDispatcher(new CommandOptions()).dispatchCommand("/ .a = 1 #", new StringWriter());
 	}
 
 	// cannot capture reference to a structure
