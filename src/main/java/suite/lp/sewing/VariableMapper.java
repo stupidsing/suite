@@ -55,7 +55,7 @@ public class VariableMapper<K> {
 	}
 
 	public <L> VariableMapper<L> mapKeys(Fun<K, L> fun) {
-		VariableMapper<L> vm = new VariableMapper<>();
+		var vm = new VariableMapper<L>();
 		for (var e : indices.entrySet())
 			vm.indices.put(fun.apply(e.getKey()), e.getValue());
 		vm.nVariables = nVariables;
