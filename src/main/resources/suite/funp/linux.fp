@@ -58,10 +58,11 @@ define !alloc size0 := !do
 ~
 
 define !dealloc (size0, pointer.block) := !do
-	let sizep := numberp:number max (os.ps, size0) ~
-	let ps := type (address.of ps.block) !adjust.pointer pointer.block (0 - os.ps) ~
-	assert ((^ps)/size = sizep) ~
-	assign ^(pointer:pointer pointer.block) := alloc.free.chain ~
+	let ps := !adjust.pointer pointer.block (0 - os.ps) ~
+	assign ^ps := type ps.block {
+		size: numberp:number max (os.ps, size0),
+		next: alloc.free.chain,
+	} ~
 	assign alloc.free.chain := ps ~
 	{}
 ~

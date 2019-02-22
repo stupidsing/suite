@@ -119,7 +119,7 @@ public class P2InferType {
 
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
-	private int maxRegAlloc = 3;
+	private int maxRegAlloc = Funp_.isAmd64 ? 3 : 2;
 
 	private Pattern typeDecorArray = Suite.pattern("ARRAY .0");
 	private Pattern typeDecorIo = Suite.pattern("IO");
