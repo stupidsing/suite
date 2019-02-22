@@ -19,6 +19,12 @@ public class FunpTest {
 	}
 
 	@Test
+	public void testAssign() {
+		test(3, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ !do (assign (^p)/b := 4 ~ (^p)/c)");
+		test(4, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ !do (assign (^p)/c := 4 ~ (^p)/c)");
+	}
+
+	@Test
 	public void testBind() {
 		test(1, "define a := [0, 1,] ~ if (`[0, v,]` = a) then v else 0");
 		test(0, "define a := [0, 1,] ~ if (`[1, v,]` = a) then v else 0");

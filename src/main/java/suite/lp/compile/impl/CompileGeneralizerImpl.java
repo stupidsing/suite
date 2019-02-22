@@ -12,7 +12,7 @@ import suite.node.Reference;
 public class CompileGeneralizerImpl implements GeneralizerFactory {
 
 	private CompileClonerImpl cc = new CompileClonerImpl();
-	private VariableMapper<Atom> vm = new VariableMapper<>();
+	private VariableMapper<Atom> vm;
 
 	@Override
 	public VariableMapper<Atom> mapper() {
@@ -21,14 +21,13 @@ public class CompileGeneralizerImpl implements GeneralizerFactory {
 
 	@Override
 	public Generalize_ generalizer(Node node) {
-		var mapper = cc.mapper();
 		var generalizer = new Generalizer();
-		Generalize_ generalize = cc.cloner(generalizer.generalize(node))::apply;
+		var generalize = cc.cloner(generalizer.generalize(node));
 		var indices = new IdentityHashMap<Reference, Atom>();
 		for (var variableName : generalizer.getVariableNames())
 			indices.put(generalizer.getVariable(variableName), variableName);
-		vm = mapper.mapKeys(indices::get);
-		return generalize;
+		vm = cc.mapper().mapKeys(indices::get);
+		return generalize::apply;
 	}
 
 }
