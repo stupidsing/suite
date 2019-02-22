@@ -43,7 +43,7 @@ public class Amd64Dump {
 			var s = "" //
 					+ (0 <= baseReg ? " + " + dump(regs[baseReg]) : "") //
 					+ (0 <= indexReg ? " + " + dump(regs[indexReg]) + " * " + (1 << opMem.scale) : "") //
-					+ (0 < opMem.disp.size ? dumpDisp(opMem.disp.imm, pointerSize) : "");
+					+ (0 < opMem.disp.size ? dumpDisp(opMem.disp.imm) : "");
 			return "[" + s.substring(3) + "]";
 		} else if ((name = (amd64.registerByName.inverse().get(op0).name)) != null)
 			return name;
@@ -51,11 +51,11 @@ public class Amd64Dump {
 			return op0.toString();
 	}
 
-	private String dumpDisp(long disp, int pointerSize) {
+	private String dumpDisp(long disp) {
 		if (0 <= disp)
-			return " + " + dump(disp, pointerSize);
+			return " + " + dump(disp, Funp_.pointerSize);
 		else
-			return " + -" + dump(-disp, pointerSize);
+			return " + -" + dump(-disp, Funp_.pointerSize);
 	}
 
 	private String dump(long imm, int size) {
