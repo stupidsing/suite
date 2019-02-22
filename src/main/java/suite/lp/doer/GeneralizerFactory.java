@@ -18,7 +18,8 @@ public interface GeneralizerFactory {
 	}
 
 	public default Source<NodeEnv<Atom>> g(Node node) {
-		return mapper().g(generalizer(node)::apply);
+		var generalize = generalizer(node);
+		return mapper().g(generalize::apply);
 	}
 
 }
