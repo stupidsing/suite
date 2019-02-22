@@ -637,22 +637,9 @@ public class P2InferType {
 				var next_ = e1.applyOnce(m, next, size);
 				var while_ = FunpDoWhile.of(cont_, assign(m, next_, FunpDontCare.of()), m);
 				return FunpAllocStack.of(size, e1.erase(init), while_, offset);
-			})).applyIf(FunpField.class, f -> f.apply((reference, field) -> {
-				var map = new HashMap<Node, Reference>();
-				var ts = typeStructOf(Dict.of(map));
-				unify(n, typeOf(reference), typeRefOf(ts));
-				var offset = 0;
-				var struct = isCompletedStruct(ts);
-				if (struct != null)
-					for (var pair : struct) {
-						var offset1 = offset + getTypeSize(pair.t1);
-						if (!String_.equals(Atom.name(pair.t0), field))
-							offset = offset1;
-						else
-							return FunpMemory.of(erase(reference), offset, offset1);
-					}
-				return fail();
-			})).applyIf(FunpHeapDealloc.class, f -> f.apply((size, ref, expr) -> {
+			})).applyIf(FunpField.class, f -> {
+				return getField(f);
+			}).applyIf(FunpHeapDealloc.class, f -> f.apply((size, ref, expr) -> {
 				var in = FunpData.of(List.of( //
 						Pair.of(FunpNumber.ofNumber(size), IntIntPair.of(0, ps)), //
 						Pair.of(ref, IntIntPair.of(ps, ps + ps))));
@@ -839,6 +826,8 @@ public class P2InferType {
 						return assign(getVariable(var), erase(value), getAddress(expr));
 					})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 						return erase(pointer);
+					})).applyIf(FunpField.class, f -> f.apply((ref, field) -> {
+						return FunpTree.of(TermOp.PLUS__, erase(ref), FunpNumber.ofNumber(getFieldOffset(f).t0));
 					})).applyIf(FunpMe.class, f -> {
 						return me.getAddress(scope);
 					}).applyIf(FunpVariable.class, f -> f.apply(vn -> {
@@ -848,6 +837,28 @@ public class P2InferType {
 					}).nonNullResult();
 				}
 			}.getAddress(expr);
+		}
+
+		private FunpMemory getField(FunpField n) {
+			var pair = getFieldOffset(n);
+			return FunpMemory.of(erase(n.reference), pair.t0, pair.t1);
+		}
+
+		private IntIntPair getFieldOffset(FunpField n) {
+			var map = new HashMap<Node, Reference>();
+			var ts = typeStructOf(Dict.of(map));
+			unify(n, typeOf(n.reference), typeRefOf(ts));
+			var offset = 0;
+			var struct = isCompletedStruct(ts);
+			if (struct != null)
+				for (var pair : struct) {
+					var offset1 = offset + getTypeSize(pair.t1);
+					if (!String_.equals(Atom.name(pair.t0), n.field))
+						offset = offset1;
+					else
+						return IntIntPair.of(offset, offset1);
+				}
+			return fail();
 		}
 
 		private Funp getVariable(FunpVariable var) {

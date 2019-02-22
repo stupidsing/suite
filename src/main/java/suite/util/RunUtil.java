@@ -16,10 +16,14 @@ public class RunUtil {
 		RUN____, PROFILE, TIME___,
 	};
 
+	public static String get(String key, String defaultValue) {
+		return get_(key, defaultValue);
+	}
+
 	public static boolean isLinux64() {
-		if (System.getenv("USE_32BIT") != null)
+		if (get_("USE_32BIT", null) != null)
 			return false;
-		else if (System.getenv("USE_64BIT") != null)
+		else if (get_("USE_64BIT", null) != null)
 			return true;
 		else
 			return RunUtil.isLinux() && Execute.shell("uname -a").contains("x86_64");
@@ -67,6 +71,13 @@ public class RunUtil {
 		var code = mutableCode.value();
 		if (code != 0)
 			System.exit(code);
+	}
+
+	private static String get_(String key, String defaultValue) {
+		String value = null;
+		value = value != null ? value : System.getenv(key);
+		value = value != null ? value : System.getProperty(key);
+		return value != null ? value : defaultValue;
 	}
 
 }

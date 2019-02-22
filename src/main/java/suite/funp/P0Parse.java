@@ -201,8 +201,7 @@ public class P0Parse {
 					return Pair.of(Amd64.me.regByName.get(ma[0]), p(ma[1]));
 				}).toList(), Tree.iter(b, TermOp.OR____).toList(), Amd64.me.regByName.get(c)));
 			}).match("assign .0 := .1 ~ .2", (a, b, c) -> {
-				var v = FunpVariable.of(Atom.name(a));
-				return checkDo(() -> FunpDoAssignVar.of(v, p(b), p(c)));
+				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
 			}).match("assign ^.0 := .1 ~ .2", (a, b, c) -> {
 				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(p(a))), p(b), p(c)));
 			}).match("byte", () -> {
