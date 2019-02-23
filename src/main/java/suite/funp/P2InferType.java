@@ -363,6 +363,7 @@ public class P2InferType {
 					var vn = pair.t0;
 					unify(n, env1.get(vn).t1, infer1.infer(pair.t1, vn));
 				}
+
 				return infer1.infer(expr);
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				var t = new Reference();
