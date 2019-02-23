@@ -22,13 +22,13 @@ import suite.adt.pair.Pair;
 import suite.assembler.Amd64.OpReg;
 import suite.assembler.Amd64.Operand;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpCoerce.Coerce;
 import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDoAsm;
@@ -350,10 +350,10 @@ public class P2InferType {
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, type) -> {
 				var tvalue = infer(value, vn);
 				return new Infer(env.replace(vn, Pair.of(type, tvalue)), checks, me).infer(expr);
-			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, type) -> {
 				var pairs_ = Read.from(pairs);
 				var vns = pairs_.map(Pair::fst);
-				var env1 = vns.fold(env, (e, vn) -> e.put(vn, Pair.of(Fdt.L_MONO, new Reference())));
+				var env1 = vns.fold(env, (e, vn) -> e.put(vn, Pair.of(type, new Reference())));
 				var ts = typeStructOf(Dict.of(vns //
 						.<Node, Reference> map2(Atom::of, vn -> Reference.of(env1.get(vn).t1)) //
 						.toMap()), TreeUtil.buildUp(TermOp.AND___, Read.from(vns).<Node> map(Atom::of).toList()));
@@ -584,29 +584,34 @@ public class P2InferType {
 					return erase(expr);
 				else
 					return fail();
-			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
-				var assigns = new ArrayList<Fixie3<String, Var, Funp>>();
-				var offsetStack = IntMutable.nil();
-				var env1 = env;
-				var offset = 0;
+			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, type) -> {
+				if (type == Fdt.L_MONO) {
+					var assigns = new ArrayList<Fixie3<String, Var, Funp>>();
+					var offsetStack = IntMutable.nil();
+					var env1 = env;
+					var offset = 0;
 
-				for (var pair : pairs) {
-					var vn = pair.t0;
-					var value = pair.t1;
-					var offset0 = offset;
-					var var = localStack(scope, offsetStack, offset0, offset += getTypeSize(typeOf(value)));
-					env1 = env1.replace(vn, var);
-					assigns.add(Fixie.of(vn, var, value));
-				}
+					for (var pair : pairs) {
+						var vn = pair.t0;
+						var value = pair.t1;
+						var offset0 = offset;
+						var var = localStack(scope, offsetStack, offset0, offset += getTypeSize(typeOf(value)));
+						env1 = env1.replace(vn, var);
+						assigns.add(Fixie.of(vn, var, value));
+					}
 
-				var e1 = new Erase(scope, env1, localStack(scope, offsetStack, 0, getTypeSize(type0)));
-				var expr1 = e1.erase(expr);
+					var e1 = new Erase(scope, env1, localStack(scope, offsetStack, 0, getTypeSize(type0)));
+					var expr1 = e1.erase(expr);
 
-				var expr2 = Read //
-						.from(assigns) //
-						.fold(expr1, (e, x) -> x.map((vn, v, n_) -> assign(v.get(scope), e1.erase(n_, vn), e)));
+					var expr2 = Read //
+							.from(assigns) //
+							.fold(expr1, (e, x) -> x.map((vn, v, n_) -> assign(v.get(scope), e1.erase(n_, vn), e)));
 
-				return FunpAllocStack.of(offset, FunpDontCare.of(), expr2, offsetStack);
+					return FunpAllocStack.of(offset, FunpDontCare.of(), expr2, offsetStack);
+				} else if (type == Fdt.VIRT)
+					return erase(expr);
+				else
+					return fail();
 			})).applyIf(FunpDeref.class, f -> f.apply(pointer -> {
 				return FunpMemory.of(erase(pointer), 0, getTypeSize(type0));
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {

@@ -5,12 +5,12 @@ import static suite.util.Friends.fail;
 import java.util.Map;
 
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDoFold;
 import suite.funp.P0.FunpDontCare;

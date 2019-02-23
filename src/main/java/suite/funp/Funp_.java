@@ -106,7 +106,7 @@ public class Funp_ {
 					associate(vars, value);
 					associate(vars.replace(vn, f), expr);
 					return n_;
-				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, type) -> {
 					var vars1 = Read.from(pairs).fold(vars, (vs, pair) -> vs.replace(pair.t0, f));
 					for (var pair : pairs)
 						associate(vars1, pair.t1);

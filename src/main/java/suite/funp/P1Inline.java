@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDontCare;
@@ -74,13 +74,14 @@ public class P1Inline {
 					var vn1 = newVarName.apply(vn0);
 					var r1 = new Rename(vns.replace(vn0, vn1));
 					return FunpDefine.of(vn1, rename(value), r1.rename(expr), type);
-				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr) -> {
+				})).applyIf(FunpDefineRec.class, f -> f.apply((pairs0, expr, type) -> {
 					var pairs = Read.from2(pairs0);
 					var vns1 = pairs.keys().fold(vns, (vns_, vn) -> vns_.replace(vn, newVarName.apply(vn)));
 					var r1 = new Rename(vns1);
 					return FunpDefineRec.of( //
 							pairs.map2((vn, value) -> vns1.get(vn), (vn, value) -> r1.rename(value)).toList(), //
-							r1.rename(expr));
+							r1.rename(expr), //
+							type);
 				})).applyIf(FunpLambda.class, f -> f.apply((vn0, expr, isCapture) -> {
 					var vn1 = newVarName.apply(vn0);
 					var r1 = new Rename(vns.replace(vn0, vn1));

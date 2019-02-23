@@ -4,10 +4,10 @@ import java.util.List;
 
 import suite.adt.pair.Pair;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDoAssignVar;
 import suite.funp.P0.FunpDoWhile;
@@ -30,14 +30,14 @@ public class P1ReduceTailCall {
 
 	public Funp reduce(Funp node) {
 		return inspect.rewrite(node, Funp.class, node_ -> {
-			return node_.cast(FunpDefineRec.class, f -> f.apply((pairs, expr) -> {
+			return node_.cast(FunpDefineRec.class, f -> f.apply((pairs, expr, type) -> {
 				if (pairs.size() == 1) {
 					var pair = pairs.get(0);
 					var lambdaVar = pair.t0;
 					var lambda1 = pair.t1.cast(FunpLambda.class, g -> g.apply((vn, do_, isCapture) -> {
 						return !isHasLambda(do_) ? rewriteTco(lambdaVar, vn, do_) : null;
 					}));
-					return lambda1 != null ? FunpDefineRec.of(List.of(Pair.of(lambdaVar, lambda1)), expr) : null;
+					return lambda1 != null ? FunpDefineRec.of(List.of(Pair.of(lambdaVar, lambda1)), expr, type) : null;
 				} else
 					return null;
 			}));

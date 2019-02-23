@@ -14,13 +14,13 @@ import suite.adt.Mutable;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64;
 import suite.funp.Funp_.Funp;
+import suite.funp.P0.Fdt;
 import suite.funp.P0.FunpApply;
 import suite.funp.P0.FunpArray;
 import suite.funp.P0.FunpBoolean;
 import suite.funp.P0.FunpCoerce;
 import suite.funp.P0.FunpCoerce.Coerce;
 import suite.funp.P0.FunpDefine;
-import suite.funp.P0.FunpDefine.Fdt;
 import suite.funp.P0.FunpDefineRec;
 import suite.funp.P0.FunpDeref;
 import suite.funp.P0.FunpDoAsm;
@@ -237,7 +237,7 @@ public class P0Parse {
 				var list = kvs(a).collect();
 				var vns1 = list.fold(vns, (vs, k, v) -> vs.add(k));
 				var p1 = new Parse(vns1);
-				return FunpDefineRec.of(list.mapValue(p1::p).toList(), p1.p(b));
+				return FunpDefineRec.of(list.mapValue(p1::p).toList(), p1.p(b), Fdt.L_MONO);
 			}).match("error", () -> {
 				return FunpError.of();
 			}).match("fold (.0 = .1; .2; .3)", (a, b, c, d) -> {
@@ -293,7 +293,8 @@ public class P0Parse {
 				return FunpDontCare.of();
 			}).match("virtual .0 := .1 ~ .2", (a, b, c) -> {
 				var vn = Atom.name(a);
-				return FunpDefine.of(vn, p(b), nv(vn).p(c), Fdt.VIRT);
+				var p1 = new Parse(vns.add(vn));
+				return FunpDefineRec.of(List.of(Pair.of(vn, p1.p(b))), p1.p(c), Fdt.VIRT);
 			}).applyIf(Atom.class, atom -> {
 				var vn = atom.name;
 				return vns.contains(vn) ? FunpVariable.of(vn) : FunpVariableNew.of(vn);

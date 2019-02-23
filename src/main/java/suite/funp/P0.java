@@ -88,15 +88,6 @@ public class P0 {
 	}
 
 	public static class FunpDefine implements Funp, P2.End {
-		public enum Fdt {
-			GLOB, // global variable
-			HEAP, // local variable, pointer to heap
-			L_IOAP, // local variable, I/O access
-			L_MONO, // local variable, mono type
-			L_POLY, // local variable, polymorphic type
-			VIRT, // virtual variable
-		};
-
 		public String vn;
 		public Funp value;
 		public Funp expr;
@@ -119,16 +110,18 @@ public class P0 {
 	public static class FunpDefineRec implements Funp, P2.End {
 		public List<Pair<String, Funp>> pairs;
 		public Funp expr;
+		public Fdt type;
 
-		public static FunpDefineRec of(List<Pair<String, Funp>> pairs, Funp expr) {
+		public static FunpDefineRec of(List<Pair<String, Funp>> pairs, Funp expr, Fdt type) {
 			var f = new FunpDefineRec();
 			f.pairs = pairs;
 			f.expr = expr;
+			f.type = type;
 			return f;
 		}
 
-		public <R> R apply(FixieFun2<List<Pair<String, Funp>>, Funp, R> fun) {
-			return fun.apply(pairs, expr);
+		public <R> R apply(FixieFun3<List<Pair<String, Funp>>, Funp, Fdt, R> fun) {
+			return fun.apply(pairs, expr, type);
 		}
 	}
 
@@ -604,5 +597,14 @@ public class P0 {
 			return fun.apply(vn);
 		}
 	}
+
+	public enum Fdt {
+		GLOB, // global variable
+		HEAP, // local variable, pointer to heap
+		L_IOAP, // local variable, I/O access
+		L_MONO, // local variable, mono type
+		L_POLY, // local variable, polymorphic type
+		VIRT, // virtual variable
+	};
 
 }
