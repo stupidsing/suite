@@ -11,7 +11,7 @@ import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 
 import suite.BindArrayUtil.Pattern;
 import suite.Suite;
@@ -369,26 +369,23 @@ public class P2InferType {
 				unify(n, typeRefOf(t), infer(pointer));
 				return t;
 			})).applyIf(FunpDoAsm.class, f -> f.apply((assigns, asm, opResult) -> {
-				BiConsumer<Operand, Node> opType = (op, tp) -> {
+				BiPredicate<Operand, Node> opType = (op, tp) -> {
 					var size = op.size;
 					if (!(tp.finalNode() instanceof Reference))
-						if (getTypeSize(tp) == size)
-							;
-						else
-							fail();
+						return getTypeSize(tp) == size || Funp_.<Boolean> fail(n, null);
 					else if (size == 1 || size == is || size == ps)
-						unify(n, typePatInt.subst(Int.of(size)), tp);
+						return unify(n, typePatInt.subst(Int.of(size)), tp);
 					else if (size == ps)
-						unify(n, typePatDecor.subst(typeDecorRef.subst(), new Reference()), tp);
+						return unify(n, typePatDecor.subst(typeDecorRef.subst(), new Reference()), tp);
 					else
-						fail();
+						return fail();
 				};
 
 				for (var assign : assigns)
-					opType.accept(assign.t0, infer(assign.t1));
+					opType.test(assign.t0, infer(assign.t1));
 
 				var tr = new Reference();
-				opType.accept(opResult, tr);
+				opType.test(opResult, tr);
 				return tr;
 			})).applyIf(FunpDoAssignRef.class, f -> f.apply((reference, value, expr) -> {
 				unify(n, infer(reference), typeRefOf(infer(value)));
