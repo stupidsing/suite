@@ -664,8 +664,8 @@ public class P2InferType {
 				var scope1 = scope + 1;
 				var lt = new LambdaType(n);
 				var frame = Funp_.framePointer;
-				var expr1 = new Erase(scope1, env.replace(vn, localStack(scope1, IntMutable.of(0), b, b + lt.is)), me)
-						.erase(expr);
+				var env1 = env.replace(vn, localStack(scope1, IntMutable.of(0), b, b + lt.is));
+				var expr1 = new Erase(scope1, env1, me).erase(expr);
 				return eraseRoutine(lt, frame, expr1);
 			})).applyIf(FunpLambdaCapture.class, f -> f.apply((fp0, frameVar, frame, vn, expr) -> {
 				var b = ps + ps; // return address and EBP
