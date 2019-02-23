@@ -76,6 +76,7 @@ public class P4GenerateCode {
 	private boolean isAmd64 = Funp_.isAmd64;
 	private Amd64 amd64 = Amd64.me;
 
+	private int bs = Funp_.booleanSize;
 	private int is = Funp_.integerSize;
 	private int ps = Funp_.pointerSize;
 	private int pushSize = Funp_.pushSize;
@@ -260,7 +261,7 @@ public class P4GenerateCode {
 				compileSpec(value, (OpReg) target.operand.value());
 				return compile(expr);
 			})).applyIf(FunpBoolean.class, f -> f.apply(b -> {
-				return returnOp(amd64.imm(b ? 1 : 0, Funp_.booleanSize));
+				return returnOp(amd64.imm(b ? 1 : 0, bs));
 			})).applyIf(FunpCmp.class, f -> f.apply((op, l, r) -> {
 				var isEq = op == TermOp.EQUAL_;
 				var r0 = compileIsReg(l.pointer);
@@ -270,7 +271,7 @@ public class P4GenerateCode {
 				return size0 == size1 ? returnOp(compileCompare(r0, l.start, r1, r.start, size0, isEq)) : fail();
 			})).applyIf(FunpCoerce.class, f -> f.apply((from, to, expr) -> {
 				if (Funp_.getCoerceSize(from) != Funp_.getCoerceSize(to)) {
-					var rbyte = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(1);
+					var rbyte = pop1 != null && pop1.reg < 4 ? pop1 : rs.get(bs);
 					var integerReg = integerRegs[rbyte.reg];
 					var pointerReg = pointerRegs[rbyte.reg];
 
@@ -735,7 +736,7 @@ public class P4GenerateCode {
 						em.emit(Insn.NEG, opResult);
 				} else if (setInsn != null) {
 					var pair = compileCommutativeTree(size, Insn.CMP, assoc, lhs, rhs);
-					em.emit(pair.t0 == lhs ? setInsn : setRevInsn, opResult = isOutSpec ? pop0 : rs.get(1));
+					em.emit(pair.t0 == lhs ? setInsn : setRevInsn, opResult = isOutSpec ? pop0 : rs.get(bs));
 				} else if (shInsn != null) {
 					var op0 = compileLoad(size, lhs);
 					if (numRhs != null)
@@ -922,7 +923,7 @@ public class P4GenerateCode {
 		private void compileByte(Funp n, Operand op0) {
 			compileAllocStack(op0.size, FunpNumber.ofNumber(0), List.of(op0), c1 -> {
 				var fd1 = c1.fd;
-				c1.compileAssign(n, frame(fd1, fd1 + Funp_.booleanSize));
+				c1.compileAssign(n, frame(fd1, fd1 + bs));
 				return new CompileOut();
 			});
 		}
@@ -1004,7 +1005,7 @@ public class P4GenerateCode {
 		}
 
 		private OpReg compileCompare(OpReg r0, int start0, OpReg r1, int start1, int size, boolean isEq) {
-			var opResult = isOutSpec ? pop0 : rs.mask(_cx, _si, _di).get(Funp_.booleanSize);
+			var opResult = isOutSpec ? pop0 : rs.mask(_cx, _si, _di).get(bs);
 			var endLabel = em.label();
 			var neqLabel = spawn(c1 -> c1.em.emit(Insn.SETE, opResult), endLabel);
 
