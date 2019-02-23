@@ -27,7 +27,7 @@ virtual ps.block := {
 } ~
 
 let.global alloc.pointer := type (address.of ps.block) null ~
-let.global alloc.free.chain := null ~
+let.global alloc.free.chain := type (address.of ps.block) null ~
 
 define !alloc size0 := !do
 	let size1 := max (os.ps, size0) ~
@@ -36,9 +36,9 @@ define !alloc size0 := !do
 		!alloc.chain pointer := !do
 			let chain := ^pointer ~
 			if (chain != null) then (
-				let ps := type (address.of ps.block) pointer:pointer chain ~
+				let ps := chain ~
 				if ((^ps)/size != sizep) then (
-					!alloc.chain pointer:pointer (^ps)/next
+					!alloc.chain address.of (^ps)/next
 				) else (
 					assign ^pointer := (^ps)/next ~
 					chain
