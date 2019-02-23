@@ -34,14 +34,13 @@ define !alloc size0 := !do
 	let sizep := numberp:number size1 ~
 	define {
 		!alloc.chain pointer := !do
-			let chain := ^pointer ~
-			if (chain != null) then (
-				let ps := chain ~
+			let ps := ^pointer ~
+			if (ps != null) then (
 				if ((^ps)/size != sizep) then (
 					!alloc.chain address.of (^ps)/next
 				) else (
 					assign ^pointer := (^ps)/next ~
-					chain
+					ps
 				)
 			) else null
 		~
@@ -49,9 +48,9 @@ define !alloc size0 := !do
 	let p0 := !alloc.chain address.of alloc.free.chain ~
 	if (p0 = null) then (
 		let ap := alloc.pointer ~
-		let pointer.head := if (ap != null) then ap else !mmap 16384 ~
-		let pointer.block := !adjust.pointer pointer.head os.ps ~
-		assign (^pointer.head)/size := sizep ~
+		let ps := if (ap != null) then ap else !mmap 16384 ~
+		let pointer.block := !adjust.pointer ps os.ps ~
+		assign (^ps)/size := sizep ~
 		assign alloc.pointer := !adjust.pointer pointer.block size1 ~
 		pointer.block
 	) else p0
