@@ -23,7 +23,7 @@ define !munmap (length, pointer) := !do
 
 virtual ps.block := {
 	size: numberp,
-	next: null,
+	next: address.of ps.block,
 } ~
 
 let.global alloc.pointer := type (address.of ps.block) null ~

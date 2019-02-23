@@ -82,7 +82,7 @@ import suite.funp.P2.FunpSaveRegisters0;
 import suite.funp.P2.FunpSaveRegisters1;
 import suite.inspect.Inspect;
 import suite.lp.Trail;
-import suite.lp.doer.Binder;
+import suite.lp.doer.BinderRecursive;
 import suite.lp.doer.Cloner;
 import suite.node.Atom;
 import suite.node.Dict;
@@ -988,10 +988,6 @@ public class P2InferType {
 				+ "\nin " + n.getClass().getSimpleName());
 	}
 
-	private boolean unify(Node type0, Node type1) {
-		return Binder.bind(type0, type1, new Trail());
-	}
-
 	public Node cloneType(Node type) {
 		var cloned = new IdentityHashMap<Node, Reference>();
 
@@ -1021,13 +1017,18 @@ public class P2InferType {
 						return t;
 					}).nonNullResult();
 
-					if (!Binder.bind(tx, tc, new Trail()))
+					if (!unify(tx, tc))
 						fail();
 				}
 
 				return tx;
 			}
 		}.cloneType(type);
+	}
+
+	private boolean unify(Node type0, Node type1) {
+		return new BinderRecursive(new Trail()).bind(type0, type1);
+		// return Binder.bind(type0, type1, new Trail());
 	}
 
 	public Node cloneNode(Node node) {
