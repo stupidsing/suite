@@ -67,7 +67,6 @@ import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Sink;
 import suite.streamlet.FunUtil.Source;
-import suite.streamlet.FunUtil2.Fun2;
 import suite.streamlet.FunUtil2.Sink2;
 import suite.streamlet.Read;
 import suite.util.Switch;
@@ -783,11 +782,6 @@ public class P4GenerateCode {
 		}
 
 		private Pair<Funp, OpReg> compileCommutativeTree(int size, Insn insn, Assoc assoc, Funp lhs, Funp rhs) {
-			Fun2<Funp, Operand, OpReg> load = (n, opOther) -> {
-				var op = compileLoad(size, n);
-				return em.mov(rs.contains(op) ? rs.mask(opOther).get(size) : op, op);
-			};
-
 			var opLhs = p4deOp.decomposeNumber(fd, lhs, size);
 			var opRhs = p4deOp.decomposeNumber(fd, rhs, size);
 			var opLhsReg = opLhs instanceof OpReg ? (OpReg) opLhs : null;
@@ -802,25 +796,30 @@ public class P4GenerateCode {
 					em.emit(insn, opLhs, opRhs);
 					return Pair.of(lhs, null);
 				} else
-					return Pair.of(lhs, em.emitRegInsn(insn, load.apply(lhs, opRhs), opRhs));
+					return Pair.of(lhs, em.emitRegInsn(insn, compileLoadMasked(size, lhs, opRhs), opRhs));
 			else if (opLhs instanceof OpImm && !(opRhs instanceof OpImm))
 				if (insn == Insn.CMP && opRhs != null) {
 					em.emit(insn, opRhs, opLhs);
 					return Pair.of(rhs, null);
 				} else
-					return Pair.of(rhs, em.emitRegInsn(insn, load.apply(rhs, opLhs), opLhs));
+					return Pair.of(rhs, em.emitRegInsn(insn, compileLoadMasked(size, rhs, opLhs), opLhs));
 			else if (opLhs != null)
-				return Pair.of(rhs, em.emitRegInsn(insn, load.apply(rhs, opLhs), opLhs));
+				return Pair.of(rhs, em.emitRegInsn(insn, compileLoadMasked(size, rhs, opLhs), opLhs));
 			else if (opRhs != null)
-				return Pair.of(lhs, em.emitRegInsn(insn, load.apply(lhs, opRhs), opRhs));
+				return Pair.of(lhs, em.emitRegInsn(insn, compileLoadMasked(size, lhs, opRhs), opRhs));
 			else {
 				var isRightAssoc = assoc == Assoc.RIGHT;
 				var first = isRightAssoc ? rhs : lhs;
 				var second = isRightAssoc ? lhs : rhs;
-				var op0 = load.apply(first, null);
+				var op0 = compileLoadMasked(size, first, null);
 				var op1 = mask(op0).compileOp(size, second);
 				return Pair.of(first, em.emitRegInsn(insn, op0, op1));
 			}
+		}
+
+		private OpReg compileLoadMasked(int size, Funp node, Operand opOther) {
+			var op = compileLoad(size, node);
+			return em.mov(rs.contains(op) ? rs.mask(opOther).get(size) : op, op);
 		}
 
 		private Operand compileRoutine(Sink<Compile0> sink) {
