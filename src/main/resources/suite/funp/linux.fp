@@ -139,7 +139,7 @@ define !put.number n :=
 		!put.number_ n
 	|| n < 0 => !do
 		!put.char byte '-' ~
-		!put.number_ n
+		!put.number_ (0 - n)
 	|| !put.char byte '0'
 ~
 
