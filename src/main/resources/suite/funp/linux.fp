@@ -21,13 +21,13 @@ define !munmap (length, pointer) := !do
 	!asm.munmap length pointer
 ~
 
-let.global alloc.pointer := null ~
-let.global alloc.free.chain := null ~
-
 virtual ps.block := {
 	size: numberp,
 	next: null,
 } ~
+
+let.global alloc.pointer := type (address.of ps.block) null ~
+let.global alloc.free.chain := null ~
 
 define !alloc size0 := !do
 	let size1 := max (os.ps, size0) ~
@@ -51,7 +51,7 @@ define !alloc size0 := !do
 		let ap := alloc.pointer ~
 		let pointer.head := if (ap != null) then ap else !mmap 16384 ~
 		let pointer.block := !adjust.pointer pointer.head os.ps ~
-		assign ^pointer.head := sizep ~
+		assign (^pointer.head)/size := sizep ~
 		assign alloc.pointer := !adjust.pointer pointer.block size1 ~
 		pointer.block
 	) else p0
