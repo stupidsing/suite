@@ -100,7 +100,7 @@ public class Amd64Assemble {
 		}
 
 		private InsnCode imm(long imm1, int size1) {
-			return set(size1, bs, imm1, size1);
+			return set(size, bs, imm1, size1);
 		}
 
 		private InsnCode pre(int pre) {
