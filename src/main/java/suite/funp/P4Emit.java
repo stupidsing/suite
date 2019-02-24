@@ -78,24 +78,24 @@ public class P4Emit {
 			else if (i == 1l)
 				emit(amd64.instruction(Insn.INC, op0));
 			else if (i != 0l)
-				emit(amd64.instruction(Insn.ADD, op0, amd64.imm(i, op0.size)));
+				emit(amd64.instruction(Insn.ADD, op0, amd64.imm(i, i == (byte) i ? 1 : op0.size)));
 		}
 
 		private void andImm(Operand op0, long i) {
 			if (i != -1l)
-				emit(amd64.instruction(Insn.AND, op0, amd64.imm(i, op0.size)));
+				emit(amd64.instruction(Insn.AND, op0, amd64.imm(i, i == (byte) i ? 1 : op0.size)));
 		}
 
 		private void orImm(Operand op0, long i) {
 			if (i != 0l)
-				emit(amd64.instruction(Insn.OR, op0, amd64.imm(i, op0.size)));
+				emit(amd64.instruction(Insn.OR, op0, amd64.imm(i, i == (byte) i ? 1 : op0.size)));
 		}
 
 		private void xorImm(Operand op0, long i) {
 			if (i == -1l)
 				emit(amd64.instruction(Insn.NOT, op0));
 			else if (i != 0l)
-				emit(amd64.instruction(Insn.XOR, op0, amd64.imm(i, op0.size)));
+				emit(amd64.instruction(Insn.XOR, op0, amd64.imm(i, i == (byte) i ? 1 : op0.size)));
 		}
 
 		private void imulImm(OpReg r0, long i) {

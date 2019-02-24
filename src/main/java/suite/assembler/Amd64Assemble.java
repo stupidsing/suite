@@ -6,6 +6,7 @@ import static suite.util.Friends.fail;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import suite.adt.pair.Fixie_.FixieFun3;
@@ -807,11 +808,11 @@ public class Amd64Assemble {
 
 	private InsnCode assembleRmRegImm(Instruction instruction, int bModrm, int bImm, int num) {
 		InsnCode insnCodeRmReg;
-		if (instruction.op0.size == instruction.op1.size)
+		if (instruction.op1 instanceof OpImm && Set.of(1, instruction.op0.size).contains(instruction.op1.size))
+			return assembleRmImm(instruction.op0, (OpImm) instruction.op1, bModrm + 4, bImm, num);
+		else if (instruction.op0.size == instruction.op1.size)
 			if ((insnCodeRmReg = assembleRmReg(instruction, bModrm)).isValid())
 				return insnCodeRmReg;
-			else if (instruction.op1 instanceof OpImm)
-				return assembleRmImm(instruction.op0, (OpImm) instruction.op1, bModrm + 4, bImm, num);
 			else
 				return invalid;
 		else
