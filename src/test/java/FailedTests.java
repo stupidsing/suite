@@ -65,9 +65,9 @@ public class FailedTests {
 
 	@Test
 	public void testPutChar() {
-		var program = "let !put.number := (consult \"linux.fp\")/!put.number ~ !do (!put.number 0 ~ 0)";
+		var program = "let linux := consult \"linux.fp\" ~ let !put.number := linux/!put.number ~ !do (!put.number 1 ~ 0)";
 		var elf = new WriteElf(Funp_.isAmd64);
-		var input = Bytes.of("0".getBytes(Defaults.charset));
+		var input = Bytes.of("".getBytes(Defaults.charset));
 		var main = Funp_.main(false);
 		var exec = elf.exec(input.toArray(), offset -> main.compile(offset, program).t1);
 		assertEquals(0, exec.code);

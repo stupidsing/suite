@@ -518,7 +518,7 @@ public class P2InferType {
 		}
 
 		private Node getVariable(FunpVariable var) {
-			return env.get(var.vn).map((type, tv) -> type == Fdt.L_POLY ? cloneType(tv) : tv);
+			return env.get(var.vn).map((type, tv) -> Fdt.isPoly(type) ? cloneType(tv) : tv);
 		}
 	}
 
@@ -562,7 +562,7 @@ public class P2InferType {
 			})).applyIf(FunpTypeCheck.class, f -> f.apply((left, right, expr) -> {
 				return erase(expr);
 			})).applyIf(FunpDefine.class, f -> f.apply((vn, value, expr, type) -> {
-				if (type == Fdt.GLOB) {
+				if (Fdt.isGlobal(type)) {
 					var size = getTypeSize(typeOf(value));
 					var address = Mutable.<Operand> nil();
 					var var = global(address, 0, size);
@@ -578,7 +578,7 @@ public class P2InferType {
 							? FunpHeapAlloc.of(size) //
 							: applyOnce(FunpNumber.ofNumber(size), globals.get("!alloc").get(scope), ps);
 					return defineLocal(f, vn, alloc, expr, ps);
-				} else if (Set.of(Fdt.L_IOAP, Fdt.L_MONO, Fdt.L_POLY).contains(type))
+				} else if (Fdt.isLocal(type))
 					return defineLocal(f, vn, value, expr);
 				else if (type == Fdt.VIRT)
 					return erase(expr);

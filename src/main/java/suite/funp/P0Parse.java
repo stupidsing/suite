@@ -238,6 +238,8 @@ public class P0Parse {
 				var vns1 = list.fold(vns, (vs, k, v) -> vs.add(k));
 				var p1 = new Parse(vns1);
 				return FunpDefineRec.of(list.mapValue(p1::p).toList(), p1.p(b), Fdt.L_MONO);
+			}).match("define.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
+				return define(Fdt.G_POLY, a, capture(lambdaSeparate(b, c)), d);
 			}).match("error", () -> {
 				return FunpError.of();
 			}).match("fold (.0 = .1; .2; .3)", (a, b, c, d) -> {
@@ -261,9 +263,9 @@ public class P0Parse {
 			}).match("let .0 .1 := .2 ~ .3", (a, b, c, d) -> {
 				return define(Fdt.L_MONO, a, capture(lambdaSeparate(b, c)), d);
 			}).match("let.global .0 := .1 ~ .2", (a, b, c) -> {
-				return define(Fdt.GLOB, a, p(b), c);
+				return define(Fdt.G_MONO, a, p(b), c);
 			}).match("let.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
-				return define(Fdt.GLOB, a, capture(lambdaSeparate(b, c)), d);
+				return define(Fdt.G_MONO, a, capture(lambdaSeparate(b, c)), d);
 			}).match("me", () -> {
 				return FunpMe.of();
 			}).match("number", () -> {
@@ -308,7 +310,7 @@ public class P0Parse {
 						.<Funp> map(ch -> FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(ch))) //
 						.snoc(FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpNumber.ofNumber(0))) //
 						.toList());
-				return FunpDefine.of(vn, fa, FunpReference.of(FunpVariable.of(vn)), Fdt.GLOB);
+				return FunpDefine.of(vn, fa, FunpReference.of(FunpVariable.of(vn)), Fdt.G_MONO);
 			}).applyTree((op, l, r) -> {
 				return FunpTree.of(op, p(l), p(r));
 			}).nonNullResult();

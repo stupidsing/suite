@@ -599,12 +599,26 @@ public class P0 {
 	}
 
 	public enum Fdt {
-		GLOB, // global variable
+		G_MONO, // global variable, mono type
+		G_POLY, // global variable, polymorphic type
 		HEAP, // local variable, pointer to heap
 		L_IOAP, // local variable, I/O access
 		L_MONO, // local variable, mono type
 		L_POLY, // local variable, polymorphic type
 		VIRT, // virtual variable
+		;
+
+		public static boolean isGlobal(Fdt fdt) {
+			return fdt == Fdt.G_MONO || fdt == Fdt.G_POLY;
+		}
+
+		public static boolean isLocal(Fdt fdt) {
+			return fdt == Fdt.L_IOAP || fdt == Fdt.L_MONO || fdt == Fdt.L_POLY;
+		}
+
+		public static boolean isPoly(Fdt fdt) {
+			return fdt == Fdt.G_POLY || fdt == Fdt.L_POLY;
+		}
 	};
 
 }
