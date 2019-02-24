@@ -72,7 +72,7 @@ public class ElfTest {
 	@Test
 	public void testPutChar() {
 		test(0, "let !put.char := (consult \"linux.fp\")/!put.char ~ !do (!put.char byte 65 ~ 0)", "A");
-		//test(0, "let !put.number := (consult \"linux.fp\")/!put.number ~ !do (!put.number 65 ~ 0)", "65");
+		test(0, "let !put.number := (consult \"linux.fp\")/!put.number ~ !do (!put.number 65 ~ 0)", "65");
 	}
 
 	@Test

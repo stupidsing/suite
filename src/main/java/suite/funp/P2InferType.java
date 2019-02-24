@@ -585,11 +585,34 @@ public class P2InferType {
 				else
 					return fail();
 			})).applyIf(FunpDefineRec.class, f -> f.apply((pairs, expr, type) -> {
-				if (type == Fdt.L_MONO) {
+				if (type == Fdt.G_MONO) {
 					var assigns = new ArrayList<Fixie3<String, Var, Funp>>();
-					var offsetStack = IntMutable.nil();
 					var env1 = env;
 					var offset = 0;
+					var address = Mutable.<Operand> nil();
+
+					for (var pair : pairs) {
+						var vn = pair.t0;
+						var value = pair.t1;
+						var offset0 = offset;
+						var var = global(address, offset0, offset += getTypeSize(typeOf(value)));
+						env1 = env1.replace(vn, var);
+						assigns.add(Fixie.of(vn, var, value));
+					}
+
+					var e1 = new Erase(scope, env1, global(address, 0, getTypeSize(type0)));
+					var expr1 = e1.erase(expr);
+
+					var expr2 = Read //
+							.from(assigns) //
+							.fold(expr1, (e, x) -> x.map((vn, v, n_) -> assign(v.get(scope), e1.erase(n_, vn), e)));
+
+					return FunpAllocGlobal.of(offset, FunpDontCare.of(), expr2, address);
+				} else if (type == Fdt.L_MONO) {
+					var assigns = new ArrayList<Fixie3<String, Var, Funp>>();
+					var env1 = env;
+					var offset = 0;
+					var offsetStack = IntMutable.nil();
 
 					for (var pair : pairs) {
 						var vn = pair.t0;
