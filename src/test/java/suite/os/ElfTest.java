@@ -80,14 +80,14 @@ public class ElfTest {
 		test(0, "0", "");
 	}
 
-	private void test(int code, String program, String in) {
-		var input = Bytes.of(in.getBytes(Defaults.charset));
+	private void test(int code, String program, String expected) {
+		var input = Bytes.of(expected.getBytes(Defaults.charset));
 		var main = Funp_.main(true);
 
 		if (Boolean.TRUE && RunUtil.isLinux()) { // not Windows => run ELF
 			var exec = elf.exec(input.toArray(), offset -> main.compile(offset, program).t1);
 			assertEquals(code, exec.code);
-			assertEquals(in, exec.out);
+			assertEquals(expected, exec.out);
 		} else { // Windows => interpret assembly
 			var pair = main.compile(interpret.codeStart, program);
 			assertEquals(code, interpret.interpret(pair, input));

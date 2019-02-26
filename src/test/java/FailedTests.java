@@ -65,7 +65,7 @@ public class FailedTests {
 
 	@Test
 	public void testPutChar() {
-		var program = "let !put.number := (consult \"linux.fp\")/!put.number ~ !do (!put.number 1 ~ 0)";
+		var program = "let !put.number := (consult \"linux.fp\")/!put.number ~ !do (!put.number 65 ~ 0)";
 		var elf = new WriteElf(true);
 		var input = Bytes.of("".getBytes(Defaults.charset));
 		var main = Funp_.main(false);
