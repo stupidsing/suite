@@ -189,32 +189,32 @@ public class P4Emit {
 		var set = new HashSet<OpImmLabel>();
 
 		var gen = new Object() {
-			private void g(OpImmLabel label) {
-				g(label, PerList.end());
-			}
-
 			private void g(OpImmLabel label, PerList<OpImmLabel> stack) {
-				for (var label_ : inByOut.get(label))
+				for (var label_ : inByOut.get(label)) {
 					if (!stack.contains(label_) && !set.contains(label_))
 						g(label_, PerList.cons(label_, stack));
+					break;
+				}
 				gj(label, false);
 			}
 
 			private void gj(OpImmLabel label, boolean jump) {
-				if (set.add(label)) {
-					var label_ = getLabelRep(label);
-					var b = blockByLabel.get(label_);
+				var labelRep = getLabelRep(label);
+				var b = blockByLabel.get(labelRep);
+				var g = false;
 
-					if (!isForward.test(b)) {
-						for (var l : labelGroups.get(b.in))
-							list.add(amd64.instruction(Insn.LABEL, l));
+				if (!isForward.test(b)) {
+					for (var l : labelGroups.get(labelRep))
+						g |= set.add(l) && list.add(amd64.instruction(Insn.LABEL, l));
+
+					if (g) {
 						list.addAll(b.instructions);
 						var out = b.out;
 						if (out != null)
 							gj(out, true);
-					}
-				} else if (jump)
-					list.add(amd64.instruction(Insn.JMP, label));
+					} else if (jump)
+						list.add(amd64.instruction(Insn.JMP, label));
+				}
 			}
 
 			private OpImmLabel getLabelRep(OpImmLabel label) {
@@ -229,7 +229,7 @@ public class P4Emit {
 			labelGroups.put(gen.getLabelRep(block.in), block.in);
 
 		gen.gj(in, true);
-		blocks.forEach(block -> gen.g(block.in));
+		blocks.forEach(block -> gen.g(block.in, PerList.end()));
 
 		return list;
 	}
