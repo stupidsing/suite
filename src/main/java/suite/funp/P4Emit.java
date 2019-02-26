@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.function.Predicate;
 
+import suite.adt.map.BiListMultimap;
 import suite.assembler.Amd64;
 import suite.assembler.Amd64.Insn;
 import suite.assembler.Amd64.Instruction;
@@ -183,6 +184,8 @@ public class P4Emit {
 		var blockByLabel = blocks_.toMap(block -> block.in);
 		var inByOut = blocks_.filter(b -> b.out != null).toMultimap(b -> b.out, b -> b.in);
 		var ids = blocks_.filter(isForward).toMap(b -> b.in, b -> b.out);
+
+		var labelGroups = new BiListMultimap<OpImmLabel, OpImmLabel>();
 		var set = new HashSet<OpImmLabel>();
 
 		var gen = new Object() {
@@ -199,15 +202,12 @@ public class P4Emit {
 
 			private void gj(OpImmLabel label, boolean jump) {
 				if (set.add(label)) {
-					OpImmLabel label_;
-
-					while ((label_ = ids.get(label)) != null)
-						label = label_;
-
-					var b = blockByLabel.get(label);
+					var label_ = getLabelRep(label);
+					var b = blockByLabel.get(label_);
 
 					if (!isForward.test(b)) {
-						list.add(amd64.instruction(Insn.LABEL, b.in));
+						for (var l : labelGroups.get(b.in))
+							list.add(amd64.instruction(Insn.LABEL, l));
 						list.addAll(b.instructions);
 						var out = b.out;
 						if (out != null)
@@ -216,7 +216,17 @@ public class P4Emit {
 				} else if (jump)
 					list.add(amd64.instruction(Insn.JMP, label));
 			}
+
+			private OpImmLabel getLabelRep(OpImmLabel label) {
+				OpImmLabel label_;
+				while ((label_ = ids.get(label)) != null)
+					label = label_;
+				return label;
+			}
 		};
+
+		for (var block : blocks)
+			labelGroups.put(gen.getLabelRep(block.in), block.in);
 
 		gen.gj(in, true);
 		blocks.forEach(block -> gen.g(block.in));

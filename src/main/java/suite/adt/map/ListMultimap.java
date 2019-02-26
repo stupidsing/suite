@@ -20,6 +20,10 @@ public class ListMultimap<K, V> {
 		this.map = map;
 	}
 
+	public void clear() {
+		map.clear();
+	}
+
 	public boolean containsKey(K key) {
 		return map.containsKey(key);
 	}
