@@ -7,7 +7,7 @@ import java.util.Map;
 
 import suite.Suite;
 import suite.adt.map.BiMap;
-import suite.adt.map.HashBiMap;
+import suite.adt.map.BiHashMap;
 import suite.node.Node;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;
@@ -16,7 +16,7 @@ import suite.streamlet.FunUtil.Iterate;
 
 public class InstructionUtil {
 
-	private static BiMap<Insn, String> insnNames = new HashBiMap<>();
+	private static BiMap<Insn, String> insnNames = new BiHashMap<>();
 	private static Map<Operator, Insn> evalInsns = new HashMap<>();
 
 	static {

@@ -12,7 +12,7 @@ import java.util.Map;
 
 import suite.adt.IdentityKey;
 import suite.adt.map.BiMap;
-import suite.adt.map.HashBiMap;
+import suite.adt.map.BiHashMap;
 import suite.adt.pair.Pair;
 import suite.file.ExtentAllocator.Extent;
 import suite.file.ExtentFile;
@@ -42,7 +42,7 @@ public class LazyPbTreeExtentFilePersister<T> implements LazyPbTreePersister<Ext
 
 	private Object writeLock = new Object();
 	private int nPages;
-	private BiMap<Extent, IdentityKey<List<Slot<T>>>> slotsByExtent = new HashBiMap<>();
+	private BiMap<Extent, IdentityKey<List<Slot<T>>>> slotsByExtent = new BiHashMap<>();
 
 	public static class PersistSlot<T> {
 		public final List<Pair<T, Extent>> pairs;

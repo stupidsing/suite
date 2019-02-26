@@ -7,7 +7,7 @@ import java.util.List;
 
 import suite.Suite;
 import suite.adt.map.BiMap;
-import suite.adt.map.HashBiMap;
+import suite.adt.map.BiHashMap;
 import suite.instructionexecutor.InstructionUtil.Activation;
 import suite.instructionexecutor.InstructionUtil.Frame;
 import suite.instructionexecutor.InstructionUtil.Insn;
@@ -27,7 +27,7 @@ public class InstructionExecutor implements AutoCloseable {
 	private Instruction[] instructions;
 	private int yawnEntryPoint;
 
-	protected BiMap<Integer, Node> constantPool = new HashBiMap<>();
+	protected BiMap<Integer, Node> constantPool = new BiHashMap<>();
 
 	private InstructionAnalyzer analyzer = new InstructionAnalyzer();
 

@@ -7,16 +7,16 @@ import java.util.Set;
 
 import suite.object.Object_;
 
-public class HashBiMap<K, V> implements BiMap<K, V> {
+public class BiHashMap<K, V> implements BiMap<K, V> {
 
 	private Map<K, V> map = new HashMap<>();
 	private Map<V, K> inverseMap = new HashMap<>();
 
-	public HashBiMap() {
+	public BiHashMap() {
 		this(new HashMap<>(), new HashMap<>());
 	}
 
-	private HashBiMap(Map<K, V> map, Map<V, K> inverseMap) {
+	private BiHashMap(Map<K, V> map, Map<V, K> inverseMap) {
 		this.map = map;
 		this.inverseMap = inverseMap;
 	}
@@ -48,8 +48,8 @@ public class HashBiMap<K, V> implements BiMap<K, V> {
 	}
 
 	@Override
-	public HashBiMap<V, K> inverse() {
-		return new HashBiMap<>(inverseMap, map);
+	public BiHashMap<V, K> inverse() {
+		return new BiHashMap<>(inverseMap, map);
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class HashBiMap<K, V> implements BiMap<K, V> {
 
 	@Override
 	public boolean equals(Object object) {
-		return Object_.clazz(object) == HashBiMap.class ? map.equals(((HashBiMap<?, ?>) object).map) : false;
+		return Object_.clazz(object) == BiHashMap.class ? map.equals(((BiHashMap<?, ?>) object).map) : false;
 	}
 
 	@Override

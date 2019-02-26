@@ -1,7 +1,7 @@
 package suite.assembler;
 
 import suite.adt.map.BiMap;
-import suite.adt.map.HashBiMap;
+import suite.adt.map.BiHashMap;
 import suite.node.Atom;
 import suite.object.ToStringObject;
 import suite.util.To;
@@ -220,7 +220,7 @@ public class Amd64 {
 	public OpReg rsi = reg64[siReg];
 	public OpReg rdi = reg64[diReg];
 
-	public BiMap<Atom, OpReg> regByName = new HashBiMap<>() {
+	public BiMap<Atom, OpReg> regByName = new BiHashMap<>() {
 		{
 			String[] rbs = { "AL", "CL", "DL", "BL", "SPL", "BPL", "SIL", "DIL", };
 			String[] rws = { "AX", "CX", "DX", "BX", "SP", "BP", "SI", "DI", };
@@ -243,14 +243,14 @@ public class Amd64 {
 		}
 	};
 
-	public BiMap<Atom, OpRegControl> cregByName = new HashBiMap<>() {
+	public BiMap<Atom, OpRegControl> cregByName = new BiHashMap<>() {
 		{
 			for (var i : new int[] { 0, 2, 3, 4, })
 				put(Atom.of("CR" + i), newRegControl(i));
 		}
 	};
 
-	public BiMap<Atom, OpRegSegment> sregByName = new HashBiMap<>() {
+	public BiMap<Atom, OpRegSegment> sregByName = new BiHashMap<>() {
 		{
 			String[] srs = { "ES", "CS", "SS", "DS", "FS", "GS", };
 
@@ -259,7 +259,7 @@ public class Amd64 {
 		}
 	};
 
-	public BiMap<Atom, Operand> registerByName = new HashBiMap<>() {
+	public BiMap<Atom, Operand> registerByName = new BiHashMap<>() {
 		{
 			putAll(regByName);
 			putAll(cregByName);

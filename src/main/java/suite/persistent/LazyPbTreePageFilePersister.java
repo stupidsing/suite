@@ -10,7 +10,7 @@ import java.util.Map;
 
 import suite.adt.IdentityKey;
 import suite.adt.map.BiMap;
-import suite.adt.map.HashBiMap;
+import suite.adt.map.BiHashMap;
 import suite.adt.pair.Pair;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
@@ -33,7 +33,7 @@ public class LazyPbTreePageFilePersister<T> implements LazyPbTreePersister<Integ
 	private Comparator<T> comparator;
 	private Object writeLock = new Object();
 	private int nPages;
-	private BiMap<Integer, IdentityKey<List<Slot<T>>>> slotsByPointer = new HashBiMap<>();
+	private BiMap<Integer, IdentityKey<List<Slot<T>>>> slotsByPointer = new BiHashMap<>();
 
 	public static class PersistSlot<T> {
 		public final List<Pair<T, Integer>> pairs;

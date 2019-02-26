@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import suite.adt.map.BiMap;
-import suite.adt.map.HashBiMap;
+import suite.adt.map.BiHashMap;
 import suite.adt.pair.Pair;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.IntObjPair;
@@ -16,7 +16,7 @@ import suite.streamlet.Read;
 
 public class HtmlUtil {
 
-	private BiMap<String, String> escapeTokenByChar = new HashBiMap<>();
+	private BiMap<String, String> escapeTokenByChar = new BiHashMap<>();
 
 	public HtmlUtil() {
 		initialize();
