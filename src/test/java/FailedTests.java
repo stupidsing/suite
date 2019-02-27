@@ -54,16 +54,6 @@ public class FailedTests {
 		Suite.noLibraries(() -> Suite.evaluateFun("use MONAD ~ 0", false));
 	}
 
-	// (Expected) infinite loop.
-	// (Actual) short boolean evaluation in Prover skipped the loop:
-	// alt = andTree(bt, orTree(andTree(right, rem), alt));
-	@Test
-	public void testRepeat() throws IOException {
-		var rs = Suite.newRuleSet();
-		rs.importPath("auto.sl");
-		assertTrue(Suite.proveLogic(rs, "repeat, fail"));
-	}
-
 	// why returning null pointer?
 	@Test
 	public void testRecursiveCall() {
@@ -78,6 +68,16 @@ public class FailedTests {
 	// @Test
 	public void testRecursiveType() {
 		Suite.evaluateFunType("data (rb-tree_{:t}) over :t as (rb-tree_{:t}) ~ (:t => rb-tree_{:t}) of 1");
+	}
+
+	// (Expected) infinite loop.
+	// (Actual) short boolean evaluation in Prover skipped the loop:
+	// alt = andTree(bt, orTree(andTree(right, rem), alt));
+	@Test
+	public void testRepeat() throws IOException {
+		var rs = Suite.newRuleSet();
+		rs.importPath("auto.sl");
+		assertTrue(Suite.proveLogic(rs, "repeat, fail"));
 	}
 
 	// takes 11 seconds to type check
