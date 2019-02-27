@@ -842,7 +842,7 @@ public class Amd64Assemble {
 		if (Integer.MIN_VALUE <= op1.imm && op1.imm <= Integer.MAX_VALUE) {
 			insnCode = new InsnCode(op0.size, op1.imm, Math.min(op1.size, 4));
 
-			if (isAcc.test(op0))
+			if (isAcc.test(op0) && op0.size == op1.size)
 				insnCode.bs = bs(bAccImm + (op0.size <= 1 ? 0 : 1));
 			else if (isRm.test(op0)) {
 				var b0 = ((1 < op0.size && op1.size <= 1) ? 2 : 0) + (op0.size <= 1 ? 0 : 1);
