@@ -204,8 +204,8 @@ public class P4Emit {
 				var g = false;
 
 				if (!isForward.test(b)) {
-					for (var l : labelGroups.get(labelRep))
-						g |= set.add(l) && list.add(amd64.instruction(Insn.LABEL, l));
+					for (var label_ : labelGroups.get(labelRep))
+						g |= set.add(label_) && list.add(amd64.instruction(Insn.LABEL, label_));
 
 					if (g) {
 						list.addAll(b.instructions);
