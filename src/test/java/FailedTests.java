@@ -7,12 +7,8 @@ import java.io.IOException;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.cfg.Defaults;
 import suite.fp.FunRbTreeTest;
-import suite.funp.Funp_;
 import suite.ip.ImperativeCompiler;
-import suite.os.WriteElf;
-import suite.primitive.Bytes;
 
 public class FailedTests {
 
@@ -61,17 +57,6 @@ public class FailedTests {
 	@Test
 	public void testParse() {
 		Suite.parse(" test");
-	}
-
-	@Test
-	public void testPutChar() {
-		var program = "let !put.number := (consult \"linux.fp\")/!put.number ~ !do (!put.number 65 ~ 0)";
-		var elf = new WriteElf(true);
-		var input = Bytes.of("".getBytes(Defaults.charset));
-		var main = Funp_.main(false);
-		var exec = elf.exec(input.toArray(), offset -> main.compile(offset, program).t1);
-		assertEquals(0, exec.code);
-		assertEquals("1", exec.out);
 	}
 
 	// (Expected) infinite loop.
