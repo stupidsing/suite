@@ -162,7 +162,7 @@ public class P0Parse {
 					var isIndex = m != null && 0 < m.length && !isList(m[0]);
 					var isIo = checkDo() && vn.startsWith("!");
 					var apply = vns.contains(vn) && !isIndex ? FunpApply.of(p(b), FunpVariable.of(vn)) : null;
-					return !isIo ? apply : FunpDoEvalIo.of(apply);
+					return isIo && apply != null ? FunpDoEvalIo.of(apply) : apply;
 				} else
 					return null;
 			}).match(".0 .1 ~ .2", (a, b, c) -> {
