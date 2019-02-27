@@ -54,11 +54,6 @@ public class FailedTests {
 		Suite.noLibraries(() -> Suite.evaluateFun("use MONAD ~ 0", false));
 	}
 
-	@Test
-	public void testParse() {
-		Suite.parse(" test");
-	}
-
 	// (Expected) infinite loop.
 	// (Actual) short boolean evaluation in Prover skipped the loop:
 	// alt = andTree(bt, orTree(andTree(right, rem), alt));

@@ -18,19 +18,11 @@ public class IterativeParserTest {
 	private IterativeParser iterativeParser = new IterativeParser(TermOp.values());
 
 	@Test
-	public void testParseChar() {
-		test("97", "+'a'");
-	}
-
-	@Test
-	public void testParseNil() {
-		test("()");
-	}
-
-	@Test
-	public void testParseSpacedOperator() {
-		test("!, a");
-		test("a, b", "a   ,   b");
+	public void testParseAuto() {
+		var in = FileUtil.read("src/main/ll/auto.sl");
+		var node = iterativeParser.parse(in);
+		System.out.println(new PrettyPrinter().prettyPrint(node));
+		assertNotNull(Tree.decompose(node));
 	}
 
 	@Test
@@ -40,10 +32,8 @@ public class IterativeParserTest {
 	}
 
 	@Test
-	public void testParseQuotes() {
-		test("''''");
-		test("'`' (0 - ())", "`0 -`");
-		test("'`' (() - ())", "`-`");
+	public void testParseChar() {
+		test("97", "+'a'");
 	}
 
 	@Test
@@ -69,24 +59,16 @@ public class IterativeParserTest {
 	}
 
 	@Test
-	public void testParsePredicate() {
-		test("length ('_', '.r') '.l1' :- length '.r' '.l0', sum '.l1' '.l0' 1");
-	}
-
-	@Test
-	public void testParseAuto() {
-		var in = FileUtil.read("src/main/ll/auto.sl");
-		var node = iterativeParser.parse(in);
-		System.out.println(new PrettyPrinter().prettyPrint(node));
-		assertNotNull(Tree.decompose(node));
-	}
-
-	@Test
 	public void testParseFile() {
 		var in = FileUtil.read("src/main/ll/fc/fc.sl");
 		var node = iterativeParser.parse(in);
 		System.out.println(new PrettyPrinter().prettyPrint(node));
 		assertNotNull(Tree.decompose(node));
+	}
+
+	@Test
+	public void testParseNil() {
+		test("()");
 	}
 
 	@Test
@@ -99,6 +81,29 @@ public class IterativeParserTest {
 		};
 		test.g(); // warm-up
 		Log_.duration("parse", test);
+	}
+
+	@Test
+	public void testParsePredicate() {
+		test("length ('_', '.r') '.l1' :- length '.r' '.l0', sum '.l1' '.l0' 1");
+	}
+
+	@Test
+	public void testParseQuotes() {
+		test("''''");
+		test("'`' (0 - ())", "`0 -`");
+		test("'`' (() - ())", "`-`");
+	}
+
+	@Test
+	public void testParseSpace() {
+		test("test", " test");
+	}
+
+	@Test
+	public void testParseSpacedOperator() {
+		test("!, a");
+		test("a, b", "a   ,   b");
 	}
 
 	private void test(String s) {

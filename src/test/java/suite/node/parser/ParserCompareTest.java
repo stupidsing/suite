@@ -15,12 +15,9 @@ public class ParserCompareTest {
 	private RecursiveParser recursiveParser = new RecursiveParser(operators);
 
 	@Test
-	public void testParseExpressionCompare() {
+	public void test() {
+		test(" test");
 		test("1 : 2 * (3 - 4)");
-	}
-
-	@Test
-	public void testParseFileCompare() {
 		test(FileUtil.read("src/main/ll/auto.sl"));
 	}
 
