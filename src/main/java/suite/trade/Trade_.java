@@ -272,15 +272,15 @@ public class Trade_ {
 
 	private static Streamlet<Trade> diff_( //
 			String time, //
-			Map<String, Integer> instrument0, //
+			Map<String, Integer> instruments0, //
 			Map<String, Integer> instruments1, //
 			Obj_Flt<String> priceFun) {
-		Set<String> symbols = Set_.union(instrument0.keySet(), instruments1.keySet());
+		Set<String> symbols = Set_.union(instruments0.keySet(), instruments1.keySet());
 
 		return Read //
 				.from(symbols) //
 				.map2(symbol -> {
-					int n0 = instrument0.getOrDefault(symbol, 0);
+					int n0 = instruments0.getOrDefault(symbol, 0);
 					int n1 = instruments1.getOrDefault(symbol, 0);
 					return n1 - n0;
 				}) //
