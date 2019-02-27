@@ -234,17 +234,11 @@ public class P0Parse {
 			}).match("define .0 .1 := .2 ~ .3", (a, b, c, d) -> {
 				return define(Fdt.L_POLY, a, capture(lambdaSeparate(b, c)), d);
 			}).match("define { .0 } ~ .1", (a, b) -> {
-				var list = kvs(a).collect();
-				var vns1 = list.fold(vns, (vs, k, v) -> vs.add(k));
-				var p1 = new Parse(vns1);
-				return FunpDefineRec.of(list.mapValue(p1::p).toList(), p1.p(b), Fdt.L_MONO);
+				return defineMono(a, b, Fdt.L_MONO);
 			}).match("define.global .0 .1 := .2 ~ .3", (a, b, c, d) -> {
 				return define(Fdt.G_POLY, a, capture(lambdaSeparate(b, c)), d);
 			}).match("define.global { .0 } ~ .1", (a, b) -> {
-				var list = kvs(a).collect();
-				var vns1 = list.fold(vns, (vs, k, v) -> vs.add(k));
-				var p1 = new Parse(vns1);
-				return FunpDefineRec.of(list.mapValue(p1::p).toList(), p1.p(b), Fdt.G_MONO);
+				return defineMono(a, b, Fdt.G_MONO);
 			}).match("error", () -> {
 				return FunpError.of();
 			}).match("fold (.0 = .1; .2; .3)", (a, b, c, d) -> {
@@ -366,6 +360,13 @@ public class P0Parse {
 		private Funp define(Fdt t, Node var, Funp value, Node expr) {
 			var vn = isVar(var) ? Atom.name(var) : null;
 			return vn != null ? FunpDefine.of(vn, value, nv(vn).p(expr), t) : null;
+		}
+
+		private Funp defineMono(Node a, Node b, Fdt fdt) {
+			var list = kvs(a).collect();
+			var vns1 = list.fold(vns, (vs, k, v) -> vs.add(k));
+			var p1 = new Parse(vns1);
+			return FunpDefineRec.of(list.mapValue(p1::p).toList(), p1.p(b), fdt);
 		}
 
 		private Streamlet2<String, Node> kvs(Node node) {
