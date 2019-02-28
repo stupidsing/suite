@@ -124,7 +124,7 @@ define.global !put.char ch :=
 ~
 
 define !put.number n :=
-	define.global {
+	define {
 		!put.number_ n := !do
 			if (0 < n) then (
 				let div := n / 10 ~
