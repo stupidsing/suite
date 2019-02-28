@@ -195,7 +195,7 @@ public class P0Parse {
 			}).match("address.of.any", () -> {
 				return FunpReference.of(FunpDontCare.of());
 			}).match("array .0 * .1", (a, b) -> {
-				return FunpRepeat.of(a != Atom.of("_") ? Int.num(a) : null, p(b));
+				return FunpRepeat.of(a != dontCare ? Int.num(a) : null, p(b));
 			}).match("asm .0 {.1}/.2", (a, b, c) -> {
 				return checkDo(() -> FunpDoAsm.of(Tree.iter(a, TermOp.OR____).map(n -> {
 					var ma = Suite.pattern(".0 = .1").match(n);
@@ -214,11 +214,8 @@ public class P0Parse {
 			}).match("case || .0", a -> {
 				return new Object() {
 					private Funp d(Node n) {
-						Node[] m;
-						if ((m = Suite.pattern(".0 => .1 || .2").match(n)) != null)
-							return FunpIf.of(p(m[0]), p(m[1]), d(m[2]));
-						else
-							return p(n);
+						var m = Suite.pattern(".0 => .1 || .2").match(n);
+						return m != null ? FunpIf.of(p(m[0]), p(m[1]), d(m[2])) : p(n);
 					}
 				}.d(a);
 			}).match("consult .0 ~ .1", (a, b) -> {
