@@ -195,6 +195,7 @@ public class Amd64Assemble {
 	public Bytes assemble(boolean isPass2, long offset, Instruction instruction) {
 		Encode encode;
 		OpImm opImm;
+		byte[] bs;
 
 		switch (instruction.insn) {
 		case AAA:
@@ -208,6 +209,13 @@ public class Amd64Assemble {
 			break;
 		case ADDPS:
 			encode = assembleRegRm(instruction.op0, instruction.op1, 0x58).pre(0x0F);
+			break;
+		case ALIGN:
+			var align = ((OpImm) instruction.op0).imm;
+			var alignm1 = align - 1;
+			bs = new byte[(int) (align - (offset & alignm1) & alignm1)];
+			Arrays.fill(bs, (byte) 0x90);
+			encode = new InsnCode(4, Bytes.of(bs).toArray());
 			break;
 		case AND:
 			encode = assembleRmRegImm(instruction, 0x20, 0x80, 4);
@@ -263,7 +271,7 @@ public class Amd64Assemble {
 			encode = assembleByteFlag(instruction.op0, 0xF6, 6);
 			break;
 		case DS:
-			var bs = new byte[(int) ((OpImm) instruction.op0).imm];
+			bs = new byte[(int) ((OpImm) instruction.op0).imm];
 			var b = instruction.op1 instanceof OpImm ? ((OpImm) instruction.op1).imm : 0x90;
 			Arrays.fill(bs, (byte) b);
 			encode = new InsnCode(4, Bytes.of(bs).toArray());

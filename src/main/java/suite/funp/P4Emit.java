@@ -28,6 +28,7 @@ public class P4Emit {
 	private List<Block> blocks = new ArrayList<>();
 
 	public class Block {
+		public int align = 1;
 		public OpImmLabel in;
 		public List<Instruction> instructions;
 		public OpImmLabel out;
@@ -152,7 +153,9 @@ public class P4Emit {
 		}
 
 		public Block spawn(Sink<Emit> sink) {
-			return spawn(label(), sink, null);
+			var block = spawn(label(), sink, null);
+			block.align = Funp_.pushSize;
+			return block;
 		}
 
 		public Block spawn(OpImmLabel in, Sink<Emit> sink, OpImmLabel out) {
@@ -205,7 +208,9 @@ public class P4Emit {
 
 				if (!isForward.test(b)) {
 					for (var label_ : labelGroups.get(labelRep))
-						g |= set.add(label_) && list.add(amd64.instruction(Insn.LABEL, label_));
+						g |= set.add(label_) //
+								&& list.add(amd64.instruction(Insn.ALIGN, amd64.imm32(b.align))) //
+								&& list.add(amd64.instruction(Insn.LABEL, label_));
 
 					if (g) {
 						list.addAll(b.instructions);

@@ -141,6 +141,8 @@ public class Amd64Interpret {
 				case ADD:
 					assign.f(setFlags(source0 + source1));
 					break;
+				case ALIGN:
+					break;
 				case AND:
 					assign.f(setFlags(source0 & source1));
 					break;

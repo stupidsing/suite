@@ -15,6 +15,7 @@ public class Amd64 {
 		ADC, //
 		ADD, //
 		ADDPS, //
+		ALIGN, //
 		AND, //
 		AOP, //
 		CALL, //
