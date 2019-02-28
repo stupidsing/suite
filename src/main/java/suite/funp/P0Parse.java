@@ -73,6 +73,7 @@ import suite.primitive.IntPrimitives.Int_Obj;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.FunUtil.Iterate;
 import suite.streamlet.FunUtil.Source;
+import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.ReadStream;
 import suite.util.ReadStream.FunIo;
@@ -293,9 +294,7 @@ public class P0Parse {
 			}).match(dontCare, () -> {
 				return FunpDontCare.of();
 			}).match("virtual .0 := .1 ~ .2", (a, b, c) -> {
-				var vn = Atom.name(a);
-				var p1 = new Parse(vns.add(vn));
-				return FunpDefineRec.of(List.of(Pair.of(vn, p1.p(b))), p1.p(c), Fdt.VIRT);
+				return defineMono(Read.each2(Pair.of(Atom.name(a), b)), c, Fdt.VIRT);
 			}).applyIf(Atom.class, atom -> {
 				var vn = atom.name;
 				return vns.contains(vn) ? FunpVariable.of(vn) : FunpVariableNew.of(vn);
@@ -363,9 +362,11 @@ public class P0Parse {
 		}
 
 		private Funp defineMono(Node a, Node b, Fdt fdt) {
-			var list = kvs(a).collect();
-			var vns1 = list.fold(vns, (vs, k, v) -> vs.add(k));
-			var p1 = new Parse(vns1);
+			return defineMono(kvs(a).collect(), b, fdt);
+		}
+
+		private Funp defineMono(Streamlet2<String, Node> list, Node b, Fdt fdt) {
+			var p1 = new Parse(list.fold(vns, (vns, k, v) -> vns.add(k)));
 			return FunpDefineRec.of(list.mapValue(p1::p).toList(), p1.p(b), fdt);
 		}
 
