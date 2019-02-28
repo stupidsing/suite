@@ -123,7 +123,7 @@ define.global !put.char ch :=
 	!write.all (address.of predef [ch,], 1)
 ~
 
-define.global !put.number n :=
+define !put.number n :=
 	define.global {
 		!put.number_ n := !do
 			if (0 < n) then (
