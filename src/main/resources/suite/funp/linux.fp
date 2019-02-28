@@ -9,14 +9,14 @@ expand !adjust.pointer .pointer .add :=
 	pointer:numberp !asm.adjust.pointer .pointer .add
 ~
 
-define.global max (a, b) := if (a < b) then b else a ~
-define.global min (a, b) := if (a < b) then a else b ~
+define max (a, b) := if (a < b) then b else a ~
+define min (a, b) := if (a < b) then a else b ~
 
-define.global !mmap length := !do
+define !mmap length := !do
 	pointer:numberp !asm.mmap length
 ~
 
-define.global !munmap (length, pointer) := !do
+define !munmap (length, pointer) := !do
 	type pointer = address.of.any ~
 	!asm.munmap length pointer
 ~
@@ -29,7 +29,7 @@ virtual ps.block := {
 let.global alloc.pointer := type (address.of ps.block) null ~
 let.global alloc.free.chain := type (address.of ps.block) null ~
 
-define.global !alloc size0 := !do
+define !alloc size0 := !do
 	let size1 := max (os.ps, size0) ~
 	let sizep := numberp:number size1 ~
 	define {
@@ -56,7 +56,7 @@ define.global !alloc size0 := !do
 	) else p0
 ~
 
-define.global !dealloc (size0, pointer.block) := !do
+define !dealloc (size0, pointer.block) := !do
 	let ps := !adjust.pointer pointer.block (0 - os.ps) ~
 	assign ^ps := type ps.block {
 		size: numberp:number max (os.ps, size0),
@@ -66,7 +66,7 @@ define.global !dealloc (size0, pointer.block) := !do
 	{}
 ~
 
-define.global !new.pool length := !do
+define !new.pool length := !do
 	let pool := !mmap length ~
 	{
 		destroy {} := !munmap (length, pool) ~
@@ -75,7 +75,7 @@ define.global !new.pool length := !do
 	}
 ~
 
-define.global !new.mut.number init := !do
+define !new.mut.number init := !do
 	type init = number ~
 	let size := size.of init ~
 	let address := !alloc size ~
@@ -88,7 +88,7 @@ define.global !new.mut.number init := !do
 	}
 ~
 
-define.global !read (pointer, length) := !do
+define !read (pointer, length) := !do
 	type pointer = address.of.any ~
 	!asm.read pointer length
 ~
@@ -108,7 +108,7 @@ define.global !write.all (pointer, length) :=
 	)
 ~
 
-define.global !get.char {} := !do
+define !get.char {} := !do
 	let.global buffer := array buffer.size * byte ~
 	let.global start.end := (0, 0) ~
 	let (s0, e0) := start.end ~
@@ -143,14 +143,14 @@ define.global !put.number n :=
 	|| !put.char byte '0'
 ~
 
-define.global !put.string s :=
+define !put.string s :=
 	!for (i = 0; (^s) [i] != byte 0;
 		!put.char (^s) [i] ~
 		i + 1
 	)
 ~
 
-define.global !cat {} :=
+define !cat {} :=
 	!for (n = 1; n != 0;
 		let pointer := address.of predef (array buffer.size * byte) ~
 		let nBytesRead := !read (pointer, buffer.size) ~
