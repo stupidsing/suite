@@ -430,10 +430,13 @@ public class Amd64Assemble {
 			encode = assemble(instruction.op0, 0x00, 3).pre(0x0F);
 			break;
 		case MOV:
-			if ((opImm = instruction.op1.cast(OpImm.class)) != null // MOV r/m64, imm32 zero-extended
+			if ((opImm = instruction.op1.cast(OpImm.class)) != null //
 					&& isRm.test(instruction.op0) //
-					&& Integer.MIN_VALUE <= opImm.imm //
-					&& opImm.imm <= Integer.MAX_VALUE)
+					&& Integer.MIN_VALUE <= opImm.imm && opImm.imm <= Integer.MAX_VALUE)
+				// MOV r/m8, imm8
+				// MOV r/m16, imm16
+				// MOV r/m32, imm32
+				// MOV r/m64, imm32 sign-extended
 				encode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(opImm.imm, Math.min(opImm.size, 4));
 			else if (instruction.op0.size == instruction.op1.size)
 				if (instruction.op1 instanceof OpImm) {
@@ -956,10 +959,10 @@ public class Amd64Assemble {
 		}
 	}
 
-	Predicate<Operand> isAcc = operand -> operand instanceof OpReg && ((OpReg) operand).reg == 0;
-	Predicate<Operand> isReg = operand -> operand instanceof OpReg;
-	Predicate<Operand> isNonRexReg = operand -> operand instanceof OpReg && ((OpReg) operand).reg < 8;
-	Predicate<Operand> isRm = operand -> operand instanceof OpMem || operand instanceof OpReg;
+	Predicate<Operand> isAcc = op -> op instanceof OpReg && ((OpReg) op).reg == 0;
+	Predicate<Operand> isReg = op -> op instanceof OpReg;
+	Predicate<Operand> isNonRexReg = op -> op instanceof OpReg && op.size == 1 && ((OpReg) op).reg < 8;
+	Predicate<Operand> isRm = op -> op instanceof OpMem || op instanceof OpReg;
 	Predicate<Operand> isXmm = op -> op instanceof OpRegXmm;
 	Predicate<Operand> isXmmYmm = op -> op instanceof OpRegXmm || op instanceof OpRegYmm;
 
