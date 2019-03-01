@@ -38,37 +38,33 @@ public class Amd64Parse {
 
 	public Operand parseOperand(Node node_) {
 		Operand operand;
-		Node[] m0, m1;
+		Node[] m;
 		var node = node_.finalNode();
 
 		if ((operand = parseOperand(node_, 4)) != null)
 			return operand;
 		else if (node instanceof Atom && (operand = amd64.registerByName.get(node)) != null)
 			return operand;
-		else if ((m0 = Suite.pattern("BYTE .0").match(node)) != null)
-			if ((m1 = Suite.pattern("`.0`").match(m0[0])) != null)
-				return parseOpMem(m1, 1);
-			else
-				return parseOperand(m0[0], 1);
-		else if ((m0 = Suite.pattern("WORD .0").match(node)) != null)
-			if ((m1 = Suite.pattern("`.0`").match(m0[0])) != null)
-				return parseOpMem(m1, 2);
-			else
-				return parseOperand(m0[0], 2);
-		else if ((m0 = Suite.pattern("DWORD .0").match(node)) != null)
-			if ((m1 = Suite.pattern("`.0`").match(m0[0])) != null)
-				return parseOpMem(m1, 4);
-			else
-				return parseOperand(m0[0], 4);
-		else if ((m0 = Suite.pattern("QWORD .0").match(node)) != null)
-			if ((m1 = Suite.pattern("`.0`").match(m0[0])) != null)
-				return parseOpMem(m1, 8);
-			else
-				return parseOperand(m0[0], 8);
-		else if ((m0 = Suite.pattern("`.0`").match(node)) != null)
-			return parseOpMem(m0, 4);
+		else if ((m = Suite.pattern("BYTE .0").match(node)) != null)
+			return parseOperandCast(m, 1);
+		else if ((m = Suite.pattern("WORD .0").match(node)) != null)
+			return parseOperandCast(m, 2);
+		else if ((m = Suite.pattern("DWORD .0").match(node)) != null)
+			return parseOperandCast(m, 4);
+		else if ((m = Suite.pattern("QWORD .0").match(node)) != null)
+			return parseOperandCast(m, 8);
+		else if ((m = Suite.pattern("`.0`").match(node)) != null)
+			return parseOpMem(m, 4);
 		else
 			return fail("bad operand");
+	}
+
+	private Operand parseOperandCast(Node[] m0, int size) {
+		Node[] m1;
+		if ((m1 = Suite.pattern("`.0`").match(m0[0])) != null)
+			return parseOpMem(m1, size);
+		else
+			return parseOperand(m0[0], size);
 	}
 
 	private Operand parseOperand(Node node, int size) {
