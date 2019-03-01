@@ -3,6 +3,8 @@ package suite.assembler;
 import static suite.util.Friends.fail;
 
 import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 import suite.Suite;
 import suite.assembler.Amd64.Insn;
@@ -11,6 +13,7 @@ import suite.assembler.Amd64.Operand;
 import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
+import suite.node.Reference;
 import suite.node.Tree;
 import suite.node.io.TermOp;
 import suite.streamlet.Read;
@@ -19,10 +22,11 @@ import suite.streamlet.Streamlet;
 public class Amd64Parse {
 
 	private static Amd64 amd64 = Amd64.me;
+	private Map<Node, Operand> references = new IdentityHashMap<>();
 
 	public Instruction parse(Node node) {
 		var tree = Tree.decompose(node, TermOp.TUPLE_);
-		var insn = Enum.valueOf(Insn.class, Atom.name(tree.getLeft()));
+		var insn = Insn.valueOf(Atom.name(tree.getLeft()));
 		var ops = tree.getRight();
 		var operands = scan(ops, ".0, .1").map(this::parseOperand).toList();
 
@@ -32,38 +36,52 @@ public class Amd64Parse {
 				2 < operands.size() ? operands.get(2) : amd64.none);
 	}
 
-	public Operand parseOperand(Node node) {
+	public Operand parseOperand(Node node_) {
 		Operand operand;
 		Node[] m0, m1;
+		var node = node_.finalNode();
 
-		if ((operand = amd64.registerByName.get(node)) != null)
+		if ((operand = parseOperand(node_, 4)) != null)
+			return operand;
+		else if (node instanceof Atom && (operand = amd64.registerByName.get(node)) != null)
 			return operand;
 		else if ((m0 = Suite.pattern("BYTE .0").match(node)) != null)
 			if ((m1 = Suite.pattern("`.0`").match(m0[0])) != null)
 				return parseOpMem(m1, 1);
 			else
-				return amd64.imm8(Int.num(m0[0]));
+				return parseOperand(m0[0], 1);
 		else if ((m0 = Suite.pattern("WORD .0").match(node)) != null)
 			if ((m1 = Suite.pattern("`.0`").match(m0[0])) != null)
 				return parseOpMem(m1, 2);
 			else
-				return amd64.imm16(Int.num(m0[0]));
+				return parseOperand(m0[0], 2);
 		else if ((m0 = Suite.pattern("DWORD .0").match(node)) != null)
 			if ((m1 = Suite.pattern("`.0`").match(m0[0])) != null)
 				return parseOpMem(m1, 4);
 			else
-				return amd64.imm32(Int.num(m0[0]));
+				return parseOperand(m0[0], 4);
 		else if ((m0 = Suite.pattern("QWORD .0").match(node)) != null)
 			if ((m1 = Suite.pattern("`.0`").match(m0[0])) != null)
 				return parseOpMem(m1, 8);
 			else
-				return amd64.imm64(Int.num(m0[0]));
+				return parseOperand(m0[0], 8);
 		else if ((m0 = Suite.pattern("`.0`").match(node)) != null)
 			return parseOpMem(m0, 4);
-		else if (node instanceof Int)
-			return amd64.imm(Int.num(node), 4);
 		else
 			return fail("bad operand");
+	}
+
+	private Operand parseOperand(Node node, int size) {
+		if (node instanceof Int)
+			return amd64.imm(Int.num(node), size);
+		else if (node instanceof Reference)
+			return references.computeIfAbsent(node, n -> {
+				var op = amd64.new OpImmLabel();
+				op.size = 4;
+				return op;
+			});
+		else
+			return null;
 	}
 
 	private Operand parseOpMem(Node[] m, int size) {
