@@ -3,6 +3,7 @@ package suite.adt.map;
 import static org.junit.Assert.assertEquals;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -21,11 +22,7 @@ public class IntIntMapTest {
 		assertEquals(4, map.get(3));
 		assertEquals(6, map.get(5));
 
-		var expected = new HashSet<>();
-		expected.add("1:2");
-		expected.add("3:4");
-		expected.add("5:6");
-
+		var expected = Set.of("1:2", "3:4", "5:6");
 		var actual = new HashSet<>();
 
 		var source = map.source();
