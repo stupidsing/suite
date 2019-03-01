@@ -8,6 +8,8 @@ import java.util.List;
 
 import suite.Suite;
 import suite.adt.pair.Pair;
+import suite.assembler.Amd64Assemble;
+import suite.assembler.Amd64Parse;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
@@ -34,6 +36,9 @@ import suite.util.To;
 
 public class Assembler {
 
+	private Amd64Assemble aa;
+	private Amd64Parse ap;
+
 	private RuleSet ruleSet;
 	private Finder finder;
 	private int bits;
@@ -48,6 +53,9 @@ public class Assembler {
 	}
 
 	public Assembler(int bits, boolean isLongMode, Fun<List<Pair<Reference, Node>>, List<Pair<Reference, Node>>> preassemble) {
+		aa = new Amd64Assemble(bits == 64);
+		ap = new Amd64Parse();
+
 		ruleSet = Suite.newRuleSet(List.of("asm.sl", "auto.sl"));
 
 		if (isLongMode)
@@ -124,7 +132,13 @@ public class Assembler {
 					else if (Int.num(reference.finalNode()) != address)
 						fail("address varied between passes at " + Integer.toHexString(address));
 
-					return assemble(isPass2, address, instruction);
+					try {
+						return Boolean.FALSE //
+								? assemble(isPass2, address, instruction) //
+								: assemble0(isPass2, address, instruction);
+					} catch (Exception ex) {
+						return fail("in " + instruction + " during pass " + (!isPass2 ? "1" : "2"), ex);
+					}
 				});
 				out.append(bytes);
 			}
@@ -138,14 +152,14 @@ public class Assembler {
 	}
 
 	private Bytes assemble(boolean isPass2, int address, Node instruction) {
-		try {
-			var ins = Suite.substitute(".0, .1, .2,", Int.of(bits), Int.of(address), instruction);
-			var bytesList = new ArrayList<Bytes>();
-			finder.find(To.source(ins), node -> bytesList.add(convertByteStream(node)));
-			return Read.from(bytesList).min((bytes0, bytes1) -> bytes0.size() - bytes1.size());
-		} catch (Exception ex) {
-			return fail("in " + instruction + " during pass " + (!isPass2 ? "1" : "2"), ex);
-		}
+		return instruction != Atom.NIL ? aa.assemble(isPass2, address, ap.parse(instruction)) : Bytes.empty;
+	}
+
+	private Bytes assemble0(boolean isPass2, int address, Node instruction) {
+		var ins = Suite.substitute(".0, .1, .2,", Int.of(bits), Int.of(address), instruction);
+		var bytesList = new ArrayList<Bytes>();
+		finder.find(To.source(ins), node -> bytesList.add(convertByteStream(node)));
+		return Read.from(bytesList).min((bytes0, bytes1) -> bytes0.size() - bytes1.size());
 	}
 
 	private Bytes convertByteStream(Node node) {
