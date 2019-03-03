@@ -284,7 +284,7 @@ public class Amd64Assemble {
 			break;
 		case IMM:
 			if (instruction.op0 instanceof OpImm) {
-				var insnCode_ = new InsnCode(0, (OpImm) instruction.op0);
+				var insnCode_ = new InsnCode(4, (OpImm) instruction.op0);
 				insnCode_.bs = new byte[] {};
 				encode = insnCode_;
 			} else
