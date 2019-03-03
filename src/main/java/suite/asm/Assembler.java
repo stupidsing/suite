@@ -134,8 +134,8 @@ public class Assembler {
 
 					try {
 						return Boolean.FALSE //
-								? assemble(isPass2, address, instruction) //
-								: assemble0(isPass2, address, instruction);
+								? assemble_a(isPass2, address, instruction) //
+								: assemble_sl(isPass2, address, instruction);
 					} catch (Exception ex) {
 						return fail("in " + instruction + " during pass " + (!isPass2 ? "1" : "2"), ex);
 					}
@@ -151,11 +151,11 @@ public class Assembler {
 		return out.toBytes();
 	}
 
-	private Bytes assemble(boolean isPass2, int address, Node instruction) {
+	private Bytes assemble_a(boolean isPass2, int address, Node instruction) {
 		return instruction != Atom.NIL ? aa.assemble(isPass2, address, ap.parse(instruction)) : Bytes.empty;
 	}
 
-	private Bytes assemble0(boolean isPass2, int address, Node instruction) {
+	private Bytes assemble_sl(boolean isPass2, int address, Node instruction) {
 		var ins = Suite.substitute(".0, .1, .2,", Int.of(bits), Int.of(address), instruction);
 		var bytesList = new ArrayList<Bytes>();
 		finder.find(To.source(ins), node -> bytesList.add(convertByteStream(node)));

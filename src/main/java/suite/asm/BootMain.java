@@ -16,26 +16,28 @@ import suite.util.To;
 public class BootMain {
 
 	public static void main(String[] args) {
-		RunUtil.run(RunOption.TIME___, () -> {
-			var bootLoader = new Assembler(16).assemble(FileUtil.read("src/main/asm/bootloader.asm"));
-			var kernel = new ImperativeCompiler().compile(0x40000, Paths.get("src/main/il/kernel.il"));
+		RunUtil.run(RunOption.TIME___, BootMain::main);
+	}
 
-			if (bootLoader.size() == 512 && kernel.size() < 65536) {
+	public static boolean main() {
+		var bootLoader = new Assembler(16).assemble(FileUtil.read("src/main/asm/bootloader.asm"));
+		var kernel = new ImperativeCompiler().compile(0x40000, Paths.get("src/main/il/kernel.il"));
 
-				// combine the images and align to 512 bytes
-				var disk0 = Bytes.concat(bootLoader, kernel);
-				var disk1 = disk0.pad(disk0.size() + 511 & 0xFFFFFE00);
+		if (bootLoader.size() == 512 && kernel.size() < 65536) {
 
-				var image = "target/boot.bin";
-				Read.each(disk1).collect(To.file(image));
+			// combine the images and align to 512 bytes
+			var disk0 = Bytes.concat(bootLoader, kernel);
+			var disk1 = disk0.pad(disk0.size() + 511 & 0xFFFFFE00);
 
-				System.out.println("cat " + image + " | dd bs=512 count=1 | /opt/udis86-1.7.2/udcli/udcli -16 | less");
-				System.out.println("cat " + image + " | dd bs=512 skip=1 | /opt/udis86-1.7.2/udcli/udcli -32 | less");
-				System.out.println("qemu-system-x86_64 target/boot.bin");
-				return true;
-			} else
-				return fail("size not match");
-		});
+			var image = "target/boot.bin";
+			Read.each(disk1).collect(To.file(image));
+
+			System.out.println("cat " + image + " | dd bs=512 count=1 | ~/udis86/udcli/udcli -16 | less");
+			System.out.println("cat " + image + " | dd bs=512 skip=1 | ~/udis86/udcli/udcli -32 | less");
+			System.out.println("qemu-system-x86_64 target/boot.bin");
+			return true;
+		} else
+			return fail("size not match");
 	}
 
 }
