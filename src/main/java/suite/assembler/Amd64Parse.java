@@ -60,11 +60,8 @@ public class Amd64Parse {
 	}
 
 	private Operand parseOperandCast(Node[] m0, int size) {
-		Node[] m1;
-		if ((m1 = Suite.pattern("`.0`").match(m0[0])) != null)
-			return parseOpMem(m1, size);
-		else
-			return parseOperand(m0[0], size);
+		var m1 = Suite.pattern("`.0`").match(m0[0]);
+		return m1 != null ? parseOpMem(m1, size) : parseOperand(m0[0], size);
 	}
 
 	private Operand parseOperand(Node node, int size) {
