@@ -259,7 +259,7 @@ public class Amd64Assemble {
 			encode = new InsnCode(4, bs(0x0F, 0xA2));
 			break;
 		case D:
-			opImm = ((OpImm) instruction.op0);
+			opImm = (OpImm) instruction.op0;
 			var bb = new BytesBuilder();
 			appendImm(bb, opImm.size, opImm.imm);
 			encode = new InsnCode(4, bb.toBytes().toArray());
