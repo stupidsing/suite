@@ -38,15 +38,16 @@ asis:_s:_a (CLI ()) (+xFA, .e)/.e #
 asis:.s:.a (CMP (.op0, .op1)) .e :- asi-2op:.s:.a .op0 .op1 +x38 +x80 07 .e #
 asis:.s:.a (CMPXCHG (.rm, .reg)) (+x0F, .e1)/.ex :- asi-rm-reg:.s:.a .rm .reg +xB0 .e1/.ex #
 asis:_s:_a (CPUID) (+x0F, +xA2, .e)/.e #
-asis:_s:_a (D8 .imm) .e :- as-emit:8 .imm .e #
-asis:_s:_a (D16 .imm) .e :- as-emit:16 .imm .e #
-asis:_s:_a (D32 .imm) .e :- as-emit:32 .imm .e #
 asis:.s:.a (DEC .op) .e :- asi-1op:.s:.a .op +x48 +xFE 1 .e #
 asis:.s:.a (DIV .rm) .e :- asi-rm:.s:.a +xF6 .rm 6 .e #
 asis:_s:_a (DS "") .e/.e #
 asis:_s:_a (DS .s) (.b, .e1)/.ex :- .s != "", substring .s 0 1 .h, substring .s 1 0 .t, char.ascii .h .b, asis:_:_ (DS .t) .e1/.ex #
 asis:_s:_a (HLT ()) (+xF4, .e)/.e #
 asis:.s:.a (IDIV .rm) .e :- asi-rm:.s:.a +xF6 .rm 7 .e #
+asis:_s:_a (IMM (BYTE .imm)) .e :- as-emit:8 .imm .e #
+asis:_s:_a (IMM (DWORD .imm)) .e :- as-emit:32 .imm .e #
+asis:_s:_a (IMM (QWORD .imm)) .e :- as-emit:64 .imm .e #
+asis:_s:_a (IMM (WORD .imm)) .e :- as-emit:16 .imm .e #
 asis:.s:.a (IMUL .rm) .e :- asi-rm:.s:.a +xF6 .rm 5 .e #
 asis:.s:.a (IMUL (.reg, .rm)) .e0/.ex :- as-rm-regwd:.s:.a .rm .reg .e0/(+x0F, +xAF, .e1)/.e1/.ex #
 asis:.s:.a (IMUL (.reg, .rm, .imm)) .e0/.ex :- as-rm-regwd:.s:.a .rm .reg .e0/(+x6B, .e1)/.e1/.e2, as-verify-emit:8 .imm .e2/.ex #

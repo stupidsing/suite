@@ -178,8 +178,8 @@ declare pg-setup = function [] (
 	asm _ MOV (EAX, CR0); -- enable paging
 	asm _ OR (EAX, +x80000000);
 	asm _ MOV (CR0, EAX);
-	asm _ D8 (+xEB); -- JMP $ + 2
-	asm _ D8 (+x00);
+	asm _ IMM (BYTE +xEB); -- JMP $ + 2
+	asm _ IMM (BYTE +x00);
 
 	pg-map [ap-local-apic-address, ap-local-apic-address,];
 );
@@ -195,8 +195,8 @@ declare pg-teardown = function [] (
 	asm _ MOV (EAX, CR0); -- disable paging
 	asm _ AND (EAX, +x7FFFFFFF);
 	asm _ MOV (CR0, EAX);
-	asm _ D8 (+xEB); -- JMP $ + 2
-	asm _ D8 (+x00);
+	asm _ IMM (BYTE +xEB); -- JMP $ + 2
+	asm _ IMM (BYTE +x00);
 
 	for i0 in (0, 1024) do (
 		declare pt1 = (qw-get [pt0 + i0 shl 3,]) and +xFFFFFFFFFFFFF000;

@@ -11,10 +11,10 @@
 
 	-- loads kernel
 	AOP  ()
-	MOV  (`.bootDrive`, DL)
+	MOV  (BYTE `.bootDrive`, DL)
 
 	-- resets disk drive
-	XOR  (AH, AH)
+	XOR  (AX, AX)
 	INT  (+x13)
 
 	-- load 128 sectors, i.e. 64K data
@@ -23,17 +23,17 @@
 	MOV  (ES, AX)
 .readNextSector
 	PUSHA ()
-	MOV  (AH, +x42)
+	MOV  (AX, +x4200)
 	MOV  (SI, .dap)
 	AOP  ()
-	MOV  (DL, `.bootDrive`)
+	MOV  (DL, BYTE `.bootDrive`)
 	INT  (+x13)
 --	JC   (.diskError)
 	POPA ()
 	AOP  ()
 	ADD  (DWORD `.dapLba`, 16)
 	AOP  ()
-	ADD  (WORD `.dapMemAddress`, 8192)
+	ADD  (WORD `.dapMemAddress`, WORD 8192)
 	JNZ  (.readNextSector)
 
 	-- kernel loaded to ES:[0]
@@ -55,43 +55,43 @@
 	MOV  (SS, AX)
 
 	-- jumps to the kernel
-	D8   (+x66)
-	D8   (+x67)
-	D8   (+xEA)
-	D32  (.kernelAddress)
-	D16  (+x8)
+	IMM  (BYTE +x66)
+	IMM  (BYTE +x67)
+	IMM  (BYTE +xEA)
+	IMM  (DWORD .kernelAddress)
+	IMM  (WORD +x8)
 
 .bootDrive
-	D8   (0)
+	IMM  (BYTE 0)
 
 	ADVANCE (+x7D00)
 .dap -- disk address packet for LBA BIOS
-	D16  (+x0010) -- size if this structure
-	D16  (+x0010) -- number of sectors to transfer
+	IMM  (WORD +x0010) -- size if this structure
+	IMM  (WORD +x0010) -- number of sectors to transfer
 .dapMemAddress
-	D16  (+x0000) -- memory address
-	D16  (+x4000) -- memory segment
+	IMM  (WORD +x0000) -- memory address
+	IMM  (WORD +x4000) -- memory segment
 .dapLba
-	D32  (+x00000001) -- starting LBA, low 32-bits
-	D32  (+x00000000) -- starting LBA, high 32-bits
+	IMM  (DWORD +x00000001) -- starting LBA, low 32-bits
+	IMM  (DWORD +x00000000) -- starting LBA, high 32-bits
 
 .gdt
-	D32  (0)
-	D32  (0)
-	D32  (+x0000FFFF) -- supervisor code descriptor
-	D32  (+x00CF9A00)
-	D32  (+x0000FFFF) -- supervisor data descriptor
-	D32  (+x00CF9200)
-	D32  (+x0000FFFF) -- user code descriptor
-	D32  (+x00CFFA00)
-	D32  (+x0000FFFF) -- user data descriptor
-	D32  (+x00CFF200)
-	D32  (+x08000867) -- task state segment
-	D32  (+x00408902)
+	IMM  (DWORD 0)
+	IMM  (DWORD 0)
+	IMM  (DWORD +x0000FFFF) -- supervisor code descriptor
+	IMM  (DWORD +x00CF9A00)
+	IMM  (DWORD +x0000FFFF) -- supervisor data descriptor
+	IMM  (DWORD +x00CF9200)
+	IMM  (DWORD +x0000FFFF) -- user code descriptor
+	IMM  (DWORD +x00CFFA00)
+	IMM  (DWORD +x0000FFFF) -- user data descriptor
+	IMM  (DWORD +x00CFF200)
+	IMM  (DWORD +x08000867) -- task state segment
+	IMM  (DWORD +x00408902)
 .gdtr
-	D16  (+x2F)
-	D32  (.gdt)
+	IMM  (WORD +x2F)
+	IMM  (DWORD .gdt)
 
 	ADVANCE (+x7DFE)
-	D8   (+x55)
-	D8   (+xAA)
+	IMM  (BYTE +x55)
+	IMM  (BYTE +xAA)

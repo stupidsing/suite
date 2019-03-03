@@ -56,8 +56,8 @@ declare svc-service = function [p0, p1, p2,] (
 		asm _ MOV (EBX, `EBP + 16`);
 		asm _ MOV (ECX, `EBP + 12`);
 		asm _ MOV (EDX, ESP);
-		asm _ D8 (+x68);
-		asm _ D32 (.sysexitPoint);
+		asm _ IMM (BYTE +x68);
+		asm _ IMM (DWORD .sysexitPoint);
 		asm _ POP (EDI);
 		asm _ SYSENTER ();
 		asm .sysexitPoint ();

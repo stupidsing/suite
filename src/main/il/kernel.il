@@ -219,8 +219,8 @@ asm _ MOV (ESP, kernel-second-esp);
 	asm _ PUSH (EBX); -- would be ESP
 	asm _ PUSHF ();
 	asm _ PUSH (+x1B); -- would be CS
-	asm _ D8 (+x68);
-	asm _ D32 (.user); -- would be IP
+	asm _ IMM (BYTE +x68);
+	asm _ IMM (DWORD .user); -- would be IP
 	asm _ IRET ();
 
 	pg-deallocate [user-stack-address, 1,];
