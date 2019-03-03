@@ -94,12 +94,11 @@ public class Amd64Parse {
 					opMem.scale = Int.num(m[1]);
 				} else
 					fail("bad operand");
-			else if (component instanceof Int)
-				if (opMem.disp.size == 0) {
-					opMem.disp.imm = Int.num(component);
-					opMem.disp.size = 4;
-				} else
-					fail("bad operand");
+			else if (component instanceof Int) {
+				opMem.disp.imm = Int.num(component);
+				opMem.disp.size = opMem.disp.size == 0 ? 4 : fail("bad operand");
+			} else if (component instanceof Reference)
+				opMem.disp.size = opMem.disp.size == 0 ? 4 : fail("bad operand");
 			else if (opMem.baseReg < 0)
 				opMem.baseReg = amd64.regByName.get(component).reg;
 			else
