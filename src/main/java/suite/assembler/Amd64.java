@@ -148,8 +148,15 @@ public class Amd64 {
 	}
 
 	public class OpImmLabel extends OpImm {
+		public boolean assigned;
+
 		public OpImmLabel(int size) {
 			this.size = size;
+		}
+
+		public void adjustImm(long imm) {
+			assigned = true;
+			this.imm += imm;
 		}
 	}
 

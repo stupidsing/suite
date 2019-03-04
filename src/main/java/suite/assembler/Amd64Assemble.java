@@ -396,7 +396,7 @@ public class Amd64Assemble {
 			break;
 		case LABEL:
 			if (!isPass2)
-				((OpImm) instruction.op0).imm += offset;
+				((OpImmLabel) instruction.op0).adjustImm(offset);
 			encode = new InsnCode(4, new byte[0]);
 			break;
 		case LEA:
@@ -785,10 +785,11 @@ public class Amd64Assemble {
 		else
 			return invalid;
 
-		var rel = op0.imm - (offset + bs0.length + size);
+		var opImmLabel = op0.cast(OpImmLabel.class);
+		var rel = opImmLabel == null || opImmLabel.assigned ? op0.imm - (offset + bs0.length + size) : 0l;
 		InsnCode insnCode;
 
-		if (1 < size || -128 <= rel && rel < 128) {
+		if (-128 <= rel && rel < 128 || 1 < size) {
 			insnCode = new InsnCode(size, bs0);
 			insnCode.immSize = size;
 			insnCode.imm = rel;

@@ -16,10 +16,12 @@ declare copy = function [dst, src, len,] (
 	asm _ MOV (ESI, `EBP + 16`);
 	asm _ MOV (ECX, `EBP + 20`);
 	asm _ SHR (ECX, 2);
-	asm _ REP MOVSD ();
+	asm _ REP ();
+	asm _ MOVSD ();
 	asm _ MOV (ECX, `EBP + 20`);
 	asm _ AND (ECX, 3);
-	asm _ REP MOVSB ();
+	asm _ REP ();
+	asm _ MOVSB ();
 );
 
 declare zero = function [dst, len,] (
@@ -28,10 +30,12 @@ declare zero = function [dst, len,] (
 	asm _ MOV (EDI, `EBP + 12`);
 	asm _ MOV (ECX, `EBP + 16`);
 	asm _ SHR (ECX, 2);
-	asm _ REP STOSD ();
+	asm _ REP ();
+	asm _  STOSD ();
 	asm _ MOV (ECX, `EBP + 16`);
 	asm _ AND (ECX, 3);
-	asm _ REP STOSB ();
+	asm _ REP ();
+	asm _  STOSB ();
 );
 
 declare dw-get = function [p,] (
