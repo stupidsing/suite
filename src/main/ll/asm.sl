@@ -40,8 +40,6 @@ asis:.s:.a (CMPXCHG (.rm, .reg)) (+x0F, .e1)/.ex :- asi-rm-reg:.s:.a .rm .reg +x
 asis:_s:_a (CPUID) (+x0F, +xA2, .e)/.e #
 asis:.s:.a (DEC .op) .e :- asi-1op:.s:.a .op +x48 +xFE 1 .e #
 asis:.s:.a (DIV .rm) .e :- asi-rm:.s:.a +xF6 .rm 6 .e #
-asis:_s:_a (DSTR "") .e/.e #
-asis:_s:_a (DSTR .s) (.b, .e1)/.ex :- .s != "", substring .s 0 1 .h, substring .s 1 0 .t, char.ascii .h .b, asis:_:_ (DSTR .t) .e1/.ex #
 asis:_s:_a (HLT ()) (+xF4, .e)/.e #
 asis:.s:.a (IDIV .rm) .e :- asi-rm:.s:.a +xF6 .rm 7 .e #
 asis:_s:_a (IMM (BYTE .imm)) .e :- as-emit:8 .imm .e #
@@ -159,6 +157,8 @@ asis:_s:_a (WRMSR ()) (+x0F, +x30, .e)/.e #
 asis:.s:_a (XCHG (.acc, .reg)) (.b, .e)/.e :- as-reg:.s .acc 0, as-reg:.s .reg .r, let .b (+x90 + .r) #
 asis:.s:.a (XCHG (.rm, .reg)) .e :- asi-rm-reg:.s:.a .rm .reg +x86 .e #
 asis:.s:.a (XOR (.op0, .op1)) .e :- asi-2op:.s:.a .op0 .op1 +x30 +x80 6 .e #
+asis:_s:_a "" .e/.e #
+asis:_s:_a .s (.b, .e1)/.ex :- is.string .s, .s != "", substring .s 0 1 .h, substring .s 1 0 .t, char.ascii .h .b, asis:_:_ .t .e1/.ex #
 
 asi-jump .a (BYTE .target) .b _ _ (.b, .e1)/.ex
 	:- asi-jump8 .a .target .e1/.ex, !
