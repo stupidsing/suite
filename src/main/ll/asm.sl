@@ -80,7 +80,7 @@ asis:_s:.a (JP .target) .e :- asi-jump .a .target +x7A +x0F +x8A .e #
 asis:_s:.a (JS .target) .e :- asi-jump .a .target +x78 +x0F +x88 .e #
 asis:_s:.a (JZ .target) .e :- asi-jump .a .target +x74 +x0F +x84 .e #
 asis:_s:.a (LEA (.reg, .rm)) .e0/.ex :- as-rm-regwd:_:.a .rm .reg .e0/(+x8D, .e1)/.e1/.ex #
-asis:.s:_a (LOCK .a) (+xF0, .e1)/.ex :- asis:.s:_a .a .e1/.ex #
+asis:_s:_a (LOCK ()) (+xF0, .e)/.e #
 asis:_s:.a (LOOP .target) (+xE2, .e1)/.ex :- asi-jump8 .a .target .e1/.ex #
 asis:_s:.a (LOOPE .target) (+xE1, .e1)/.ex :- asi-jump8 .a .target .e1/.ex #
 asis:_s:.a (LOOPNE .target) (+xE0, .e1)/.ex :- asi-jump8 .a .target .e1/.ex #
