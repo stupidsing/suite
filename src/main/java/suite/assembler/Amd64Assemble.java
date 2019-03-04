@@ -768,24 +768,24 @@ public class Amd64Assemble {
 			return invalid;
 	}
 
-	private InsnCode assembleJump(Instruction instruction, long offset, int bNear, byte[] bFar) {
+	private InsnCode assembleJump(Instruction instruction, long offset, int bj1, byte[] bj24) {
 		if (instruction.op0 instanceof OpImm)
-			return assembleJumpImm((OpImm) instruction.op0, offset, bNear, bFar);
+			return assembleJumpImm((OpImm) instruction.op0, offset, bj1, bj24);
 		else
 			return invalid;
 	}
 
-	private InsnCode assembleJumpImm(OpImm op0, long offset, int b1, byte[] bs4) {
+	private InsnCode assembleJumpImm(OpImm op0, long offset, int bj1, byte[] bj24) {
 		var size = op0.size;
 		byte[] bs0;
 
 		if (op0 instanceof OpImmLabel)
-			size = Math.min(size, 4);
+			size = Math.min(Math.min(size, archSize), 4);
 
 		if (size == 1)
-			bs0 = bs(b1);
-		else if (size == 4)
-			bs0 = bs4;
+			bs0 = bs(bj1);
+		else if (size == 2 || size == 4)
+			bs0 = bj24;
 		else
 			return invalid;
 
@@ -793,7 +793,8 @@ public class Amd64Assemble {
 		var rel = opImmLabel == null || opImmLabel.assigned ? op0.imm - (offset + bs0.length + size) : 0l;
 		InsnCode insnCode;
 
-		if (size == 1 && -128 <= rel && rel < 128
+		if (size == 1 && Byte.MIN_VALUE <= rel && rel <= Byte.MAX_VALUE //
+				|| size == 2 && Short.MIN_VALUE <= rel && rel <= Short.MAX_VALUE //
 				|| size == 4 && Integer.MIN_VALUE <= rel && rel <= Integer.MAX_VALUE) {
 			insnCode = new InsnCode(size, bs0);
 			insnCode.immSize = size;
@@ -912,7 +913,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assemble(int b) {
-		return new InsnCode(4, bs(b));
+		return new InsnCode(archSize, bs(b));
 	}
 
 	private InsnCode assemble(Operand operand, int b, int num) {
@@ -932,7 +933,7 @@ public class Amd64Assemble {
 			if (vexs != null)
 				bb.append(vexs);
 			else {
-				if (insnCode.size == 2)
+				if ((archSize == 2) != (insnCode.size == 2))
 					bb.append((byte) 0x66);
 				appendIf(bb, modrm != null ? rexModrm(insnCode.size, insnCode) : rex(insnCode.size, 0, 0, 0));
 			}
