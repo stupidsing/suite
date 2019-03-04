@@ -91,7 +91,7 @@ public class Amd64Assemble {
 		}
 
 		private InsnCode(byte[] bs) {
-			this(4, bs);
+			this(Math.min(archSize, 4), bs);
 		}
 
 		private InsnCode(int size, byte[] bs) {
@@ -776,11 +776,8 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleJumpImm(OpImm op0, long offset, int bj1, byte[] bj24) {
-		var size = op0.size;
+		var size = Math.min(Math.min(op0.size, archSize), 4);
 		byte[] bs0;
-
-		if (op0 instanceof OpImmLabel)
-			size = Math.min(Math.min(size, archSize), 4);
 
 		if (size == 1)
 			bs0 = bs(bj1);
