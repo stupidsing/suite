@@ -210,6 +210,9 @@ public class Amd64Assemble {
 		case ADDPS:
 			encode = assembleRegRm(instruction.op0, instruction.op1, 0x58).pre(0x0F);
 			break;
+		case ADVANCE:
+			encode = new InsnCode(4, new byte[(int) (((OpImm) instruction.op0).imm - offset)]);
+			break;
 		case ALIGN:
 			var align = ((OpImm) instruction.op0).imm;
 			var alignm1 = align - 1;
@@ -359,7 +362,7 @@ public class Amd64Assemble {
 			encode = assembleJump(instruction, offset, 0x7E, bs(0x0F, 0x8E));
 			break;
 		case JMP:
-			if (isRm.test(instruction.op0) && instruction.op0.size == 4)
+			if (isRm.test(instruction.op0) && instruction.op0.size == (isAmd64 ? 8 : 4))
 				encode = assemble(instruction.op0, 0xFF, 4);
 			else
 				encode = assembleJump(instruction, offset, 0xEB, bs(0xE9));

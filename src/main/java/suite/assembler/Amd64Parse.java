@@ -68,11 +68,7 @@ public class Amd64Parse {
 		if (node instanceof Int)
 			return amd64.imm(Int.num(node), size);
 		else if (node instanceof Reference)
-			return references.computeIfAbsent(node, n -> {
-				var op = amd64.new OpImmLabel();
-				op.size = 4;
-				return op;
-			});
+			return references.computeIfAbsent(node, n -> amd64.new OpImmLabel(size));
 		else
 			return null;
 	}

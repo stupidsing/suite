@@ -249,9 +249,7 @@ public class P4Emit {
 	}
 
 	public OpImmLabel label() {
-		var op = amd64.new OpImmLabel();
-		op.size = ps;
-		return op;
+		return amd64.new OpImmLabel(ps);
 	}
 
 }

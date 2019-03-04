@@ -1,7 +1,7 @@
 package suite.assembler;
 
-import suite.adt.map.BiMap;
 import suite.adt.map.BiHashMap;
+import suite.adt.map.BiMap;
 import suite.node.Atom;
 import suite.object.ToStringObject;
 import suite.util.To;
@@ -15,6 +15,7 @@ public class Amd64 {
 		ADC, //
 		ADD, //
 		ADDPS, //
+		ADVANCE, //
 		ALIGN, //
 		AND, //
 		AOP, //
@@ -147,6 +148,9 @@ public class Amd64 {
 	}
 
 	public class OpImmLabel extends OpImm {
+		public OpImmLabel(int size) {
+			this.size = size;
+		}
 	}
 
 	public class OpMem extends Operand {
