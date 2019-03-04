@@ -125,9 +125,9 @@ asis:_s:_a (PUSH SS) (+x16, .e)/.e #
 asis:_s:_a (PUSHA ()) (+x60, .e)/.e #
 asis:_s:_a (PUSHF ()) (+x9C, .e)/.e #
 asis:_s:_a (RDMSR ()) (+x0F, +x32, .e)/.e #
-asis:.s:_a (REP ()) (+xF3, .e)/.e #
-asis:.s:_a (REPE ()) (+xF3, .e)/.e #
-asis:.s:_a (REPNE ()) (+xF2, .e)/.e #
+asis:_s:_a (REP ()) (+xF3, .e)/.e #
+asis:_s:_a (REPE ()) (+xF3, .e)/.e #
+asis:_s:_a (REPNE ()) (+xF2, .e)/.e #
 asis:_s:_a (RET ()) (+xC3, .e)/.e #
 asis:_s:_a (RET .imm) (+xC2, .e1)/.ex :- as-verify-emit:16 .imm .e1/.ex #
 asis:.s:.a (SAL (.rm, .op)) .e :- asi-shift:.s:.a .rm .op +xC0 4 .e #
