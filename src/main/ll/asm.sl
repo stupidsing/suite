@@ -40,8 +40,8 @@ asis:.s:.a (CMPXCHG (.rm, .reg)) (+x0F, .e1)/.ex :- asi-rm-reg:.s:.a .rm .reg +x
 asis:_s:_a (CPUID) (+x0F, +xA2, .e)/.e #
 asis:.s:.a (DEC .op) .e :- asi-1op:.s:.a .op +x48 +xFE 1 .e #
 asis:.s:.a (DIV .rm) .e :- asi-rm:.s:.a +xF6 .rm 6 .e #
-asis:_s:_a (DS "") .e/.e #
-asis:_s:_a (DS .s) (.b, .e1)/.ex :- .s != "", substring .s 0 1 .h, substring .s 1 0 .t, char.ascii .h .b, asis:_:_ (DS .t) .e1/.ex #
+asis:_s:_a (DSTR "") .e/.e #
+asis:_s:_a (DSTR .s) (.b, .e1)/.ex :- .s != "", substring .s 0 1 .h, substring .s 1 0 .t, char.ascii .h .b, asis:_:_ (DSTR .t) .e1/.ex #
 asis:_s:_a (HLT ()) (+xF4, .e)/.e #
 asis:.s:.a (IDIV .rm) .e :- asi-rm:.s:.a +xF6 .rm 7 .e #
 asis:_s:_a (IMM (BYTE .imm)) .e :- as-emit:8 .imm .e #

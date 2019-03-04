@@ -226,7 +226,7 @@ ic-compile-operand-better-option (REG .reg) (_ R+, .e)/.e .reg
 #
 ic-compile-operand-better-option (STRING .s) .e0/.ex .strLabel
 	:- .e0 = (_ JMP (DWORD .label)
-		, .strLabel DS (.s)
+		, .strLabel DSTR (.s)
 		, _ IMM (BYTE 0)
 		, .label R+
 		, .ex)
