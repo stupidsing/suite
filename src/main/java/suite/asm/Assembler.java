@@ -10,6 +10,7 @@ import suite.Suite;
 import suite.adt.pair.Pair;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Parse;
+import suite.cfg.Defaults;
 import suite.lp.Trail;
 import suite.lp.doer.Binder;
 import suite.lp.doer.Generalizer;
@@ -20,6 +21,7 @@ import suite.node.Atom;
 import suite.node.Int;
 import suite.node.Node;
 import suite.node.Reference;
+import suite.node.Str;
 import suite.node.Tree;
 import suite.node.io.SwitchNode;
 import suite.parser.CommentPreprocessor;
@@ -152,7 +154,12 @@ public class Assembler {
 	}
 
 	private Bytes assemble_a(boolean isPass2, int address, Node instruction) {
-		return instruction != Atom.NIL ? aa.assemble(isPass2, address, ap.parse(instruction)) : Bytes.empty;
+		if (instruction == Atom.NIL)
+			return Bytes.empty;
+		else if (instruction instanceof Str)
+			return Bytes.of(Str.str(instruction).getBytes(Defaults.charset));
+		else
+			return aa.assemble(isPass2, address, ap.parse(instruction));
 	}
 
 	private Bytes assemble_sl(boolean isPass2, int address, Node instruction) {
