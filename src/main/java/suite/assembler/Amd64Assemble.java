@@ -90,6 +90,10 @@ public class Amd64Assemble {
 			this.immSize = immSize;
 		}
 
+		private InsnCode(byte[] bs) {
+			this(4, bs);
+		}
+
 		private InsnCode(int size, byte[] bs) {
 			this.size = size;
 			this.bs = bs;
@@ -211,14 +215,14 @@ public class Amd64Assemble {
 			encode = assembleRegRm(instruction.op0, instruction.op1, 0x58).pre(0x0F);
 			break;
 		case ADVANCE:
-			encode = new InsnCode(4, new byte[(int) (((OpImm) instruction.op0).imm - offset)]);
+			encode = new InsnCode(new byte[(int) (((OpImm) instruction.op0).imm - offset)]);
 			break;
 		case ALIGN:
 			var align = ((OpImm) instruction.op0).imm;
 			var alignm1 = align - 1;
 			bs = new byte[(int) (align - (offset & alignm1) & alignm1)];
 			Arrays.fill(bs, (byte) 0x90);
-			encode = new InsnCode(4, Bytes.of(bs).toArray());
+			encode = new InsnCode(Bytes.of(bs).toArray());
 			break;
 		case AND:
 			encode = assembleRmRegImm(instruction, 0x20, 0x80, 4);
@@ -259,13 +263,13 @@ public class Amd64Assemble {
 			encode = assembleRegRm(instruction.op1, instruction.op0, 0xB0);
 			break;
 		case CPUID:
-			encode = new InsnCode(4, bs(0x0F, 0xA2));
+			encode = new InsnCode(bs(0x0F, 0xA2));
 			break;
 		case D:
 			opImm = (OpImm) instruction.op0;
 			var bb = new BytesBuilder();
 			appendImm(bb, opImm.size, opImm.imm);
-			encode = new InsnCode(4, bb.toBytes().toArray());
+			encode = new InsnCode(bb.toBytes().toArray());
 			break;
 		case DEC:
 			encode = assembleRm(instruction, archSize == 8 ? -1 : 0x48, 0xFE, 1);
@@ -277,7 +281,7 @@ public class Amd64Assemble {
 			bs = new byte[(int) ((OpImm) instruction.op0).imm];
 			var b = instruction.op1 instanceof OpImm ? ((OpImm) instruction.op1).imm : 0x90;
 			Arrays.fill(bs, (byte) b);
-			encode = new InsnCode(4, Bytes.of(bs).toArray());
+			encode = new InsnCode(Bytes.of(bs).toArray());
 			break;
 		case HLT:
 			encode = assemble(0xF4);
@@ -287,7 +291,7 @@ public class Amd64Assemble {
 			break;
 		case IMM:
 			if (instruction.op0 instanceof OpImm) {
-				var insnCode_ = new InsnCode(4, (OpImm) instruction.op0);
+				var insnCode_ = new InsnCode(archSize, (OpImm) instruction.op0);
 				insnCode_.bs = new byte[] {};
 				encode = insnCode_;
 			} else
@@ -397,13 +401,13 @@ public class Amd64Assemble {
 		case LABEL:
 			if (!isPass2)
 				((OpImmLabel) instruction.op0).adjustImm(offset);
-			encode = new InsnCode(4, new byte[0]);
+			encode = new InsnCode(new byte[0]);
 			break;
 		case LEA:
 			encode = assembleRegRm_(instruction.op0, instruction.op1, 0x8D);
 			break;
 		case LOG:
-			encode = new InsnCode(4, new byte[0]);
+			encode = new InsnCode(new byte[0]);
 			break;
 		case LOCK:
 			encode = assemble(0xF0);
@@ -601,7 +605,7 @@ public class Amd64Assemble {
 			encode = assemble(0x9C);
 			break;
 		case RDMSR:
-			encode = new InsnCode(4, bs(0x0F, 0x32));
+			encode = new InsnCode(bs(0x0F, 0x32));
 			break;
 		case REP:
 			encode = assemble(0xF3);
@@ -672,7 +676,7 @@ public class Amd64Assemble {
 			encode = new InsnCode(1, bs(0xAA));
 			break;
 		case STOSD:
-			encode = new InsnCode(4, bs(0xAB));
+			encode = new InsnCode(bs(0xAB));
 			break;
 		case STOSQ:
 			encode = new InsnCode(8, bs(0xAB));
@@ -687,13 +691,13 @@ public class Amd64Assemble {
 			encode = assembleRegRm(instruction.op0, instruction.op1, 0x5C).pre(0x0F);
 			break;
 		case SYSCALL:
-			encode = new InsnCode(4, bs(0x0F, 0x05));
+			encode = new InsnCode(bs(0x0F, 0x05));
 			break;
 		case SYSENTER:
-			encode = new InsnCode(4, bs(0x0F, 0x34));
+			encode = new InsnCode(bs(0x0F, 0x34));
 			break;
 		case SYSEXIT:
-			encode = new InsnCode(4, bs(0x0F, 0x35));
+			encode = new InsnCode(bs(0x0F, 0x35));
 			break;
 		case TEST:
 			if (instruction.op0.size == instruction.op1.size)
@@ -732,7 +736,7 @@ public class Amd64Assemble {
 				encode = invalid;
 			break;
 		case WRMSR:
-			encode = new InsnCode(4, bs(0x0F, 0x30));
+			encode = new InsnCode(bs(0x0F, 0x30));
 			break;
 		case XOR:
 			encode = assembleRmRegImm(instruction, 0x30, 0x80, 6);

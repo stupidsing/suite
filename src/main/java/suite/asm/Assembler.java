@@ -55,7 +55,7 @@ public class Assembler {
 	}
 
 	public Assembler(int bits, boolean isLongMode, Fun<List<Pair<Reference, Node>>, List<Pair<Reference, Node>>> preassemble) {
-		aa = new Amd64Assemble(bits == 64);
+		aa = new Amd64Assemble(bits / 8);
 		ap = new Amd64Parse();
 
 		ruleSet = Suite.newRuleSet(List.of("asm.sl", "auto.sl"));
