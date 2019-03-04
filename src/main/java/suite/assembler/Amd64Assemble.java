@@ -676,7 +676,7 @@ public class Amd64Assemble {
 			encode = new InsnCode(1, bs(0xAA));
 			break;
 		case STOSD:
-			encode = new InsnCode(bs(0xAB));
+			encode = new InsnCode(4, bs(0xAB));
 			break;
 		case STOSQ:
 			encode = new InsnCode(8, bs(0xAB));
