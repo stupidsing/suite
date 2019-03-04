@@ -199,7 +199,7 @@ public class Amd64Assemble {
 
 		switch (instruction.insn) {
 		case AAA:
-			encode = assemble(instruction, 0x37);
+			encode = assemble(0x37);
 			break;
 		case ADC:
 			encode = assembleRmRegImm(instruction, 0x10, 0x80, 2);
@@ -224,7 +224,7 @@ public class Amd64Assemble {
 			encode = assembleRmRegImm(instruction, 0x20, 0x80, 4);
 			break;
 		case AOP:
-			encode = assemble(instruction, 0x67);
+			encode = assemble(0x67);
 			break;
 		case CALL:
 			if (instruction.op0 instanceof OpImm && 4 <= instruction.op0.size)
@@ -235,10 +235,10 @@ public class Amd64Assemble {
 				encode = invalid;
 			break;
 		case CLD:
-			encode = assemble(instruction, 0xFC);
+			encode = assemble(0xFC);
 			break;
 		case CLI:
-			encode = assemble(instruction, 0xFA);
+			encode = assemble(0xFA);
 			break;
 		case CMP:
 			encode = assembleRmRegImm(instruction, 0x38, 0x80, 7);
@@ -280,7 +280,7 @@ public class Amd64Assemble {
 			encode = new InsnCode(4, Bytes.of(bs).toArray());
 			break;
 		case HLT:
-			encode = assemble(instruction, 0xF4);
+			encode = assemble(0xF4);
 			break;
 		case IDIV:
 			encode = assembleByteFlag(instruction.op0, 0xF6, 7);
@@ -319,20 +319,20 @@ public class Amd64Assemble {
 			if (instruction.op0 instanceof OpImm) {
 				var iv = ((OpImm) instruction.op0).imm;
 				if (iv != 3)
-					encode = assemble(instruction, 0xCD).imm(iv, 1);
+					encode = assemble(0xCD).imm(iv, 1);
 				else
-					encode = assemble(instruction, 0xCC);
+					encode = assemble(0xCC);
 			} else
 				encode = invalid;
 			break;
 		case INTO:
-			encode = assemble(instruction, 0xCE);
+			encode = assemble(0xCE);
 			break;
 		case INVLPG:
 			encode = assemble(instruction.op0, 0x01, 7).pre(0x0F);
 			break;
 		case IRET:
-			encode = assemble(instruction, 0xCF);
+			encode = assemble(0xCF);
 			break;
 		case JA:
 			encode = assembleJump(instruction, offset, 0x77, bs(0x0F, 0x87));
@@ -406,7 +406,7 @@ public class Amd64Assemble {
 			encode = new InsnCode(4, new byte[0]);
 			break;
 		case LOCK:
-			encode = assemble(instruction, 0xF0);
+			encode = assemble(0xF0);
 			break;
 		case LOOP:
 			encode = assembleJump(instruction, offset, 0xE2, null);
@@ -510,7 +510,7 @@ public class Amd64Assemble {
 			encode = assembleByteFlag(instruction.op0, 0xF6, 3);
 			break;
 		case NOP:
-			encode = assemble(instruction, 0x90);
+			encode = assemble(0x90);
 			break;
 		case NOT:
 			encode = assembleByteFlag(instruction.op0, 0xF6, 2);
@@ -531,14 +531,14 @@ public class Amd64Assemble {
 				var sreg = (OpRegSegment) instruction.op0;
 				switch (sreg.sreg) {
 				case 0: // POP ES
-					encode = isAmd64 ? invalid : assemble(instruction, 0x07);
+					encode = isAmd64 ? invalid : assemble(0x07);
 					break;
 				// case 1: // POP CS, no such thing
 				case 2: // POP SS
-					encode = isAmd64 ? invalid : assemble(instruction, 0x17);
+					encode = isAmd64 ? invalid : assemble(0x17);
 					break;
 				case 3: // POP DS
-					encode = isAmd64 ? invalid : assemble(instruction, 0x1F);
+					encode = isAmd64 ? invalid : assemble(0x1F);
 					break;
 				case 4: // POP FS
 					encode = new InsnCode(sreg.size, bs(0x0F, 0xA1));
@@ -553,10 +553,10 @@ public class Amd64Assemble {
 				encode = invalid;
 			break;
 		case POPA:
-			encode = assemble(instruction, 0x61);
+			encode = assemble(0x61);
 			break;
 		case POPF:
-			encode = assemble(instruction, 0x9D);
+			encode = assemble(0x9D);
 			break;
 		case PUSH:
 			if (instruction.op0 instanceof OpImm) {
@@ -571,16 +571,16 @@ public class Amd64Assemble {
 				var sreg = (OpRegSegment) instruction.op0;
 				switch (sreg.sreg) {
 				case 0: // PUSH ES
-					encode = isAmd64 ? invalid : assemble(instruction, 0x06);
+					encode = isAmd64 ? invalid : assemble(0x06);
 					break;
 				case 1: // PUSH CS
-					encode = isAmd64 ? invalid : assemble(instruction, 0x0E);
+					encode = isAmd64 ? invalid : assemble(0x0E);
 					break;
 				case 2: // PUSH SS
-					encode = isAmd64 ? invalid : assemble(instruction, 0x16);
+					encode = isAmd64 ? invalid : assemble(0x16);
 					break;
 				case 3: // PUSH DS
-					encode = isAmd64 ? invalid : assemble(instruction, 0x1E);
+					encode = isAmd64 ? invalid : assemble(0x1E);
 					break;
 				case 4: // PUSH FS
 					encode = new InsnCode(sreg.size, bs(0x0F, 0xA0));
@@ -595,26 +595,26 @@ public class Amd64Assemble {
 				encode = invalid;
 			break;
 		case PUSHA:
-			encode = assemble(instruction, 0x60);
+			encode = assemble(0x60);
 			break;
 		case PUSHF:
-			encode = assemble(instruction, 0x9C);
+			encode = assemble(0x9C);
 			break;
 		case RDMSR:
 			encode = new InsnCode(4, bs(0x0F, 0x32));
 			break;
 		case REP:
-			encode = assemble(instruction, 0xF3);
+			encode = assemble(0xF3);
 			break;
 		case REPE:
-			encode = assemble(instruction, 0xF3);
+			encode = assemble(0xF3);
 			break;
 		case REPNE:
-			encode = assemble(instruction, 0xF2);
+			encode = assemble(0xF2);
 			break;
 		case RET:
 			if (instruction.op0 instanceof OpNone)
-				encode = assemble(instruction, 0xC3);
+				encode = assemble(0xC3);
 			else if (instruction.op0 instanceof OpImm && instruction.op0.size == 2)
 				encode = new InsnCode(instruction.op0.size, (OpImm) instruction.op0).setByte(0xC2);
 			else
@@ -666,7 +666,7 @@ public class Amd64Assemble {
 			encode = assembleShift(instruction, 0xC0, 5);
 			break;
 		case STI:
-			encode = assemble(instruction, 0xFB);
+			encode = assemble(0xFB);
 			break;
 		case STOSB:
 			encode = new InsnCode(1, bs(0xAA));
@@ -725,7 +725,7 @@ public class Amd64Assemble {
 		case XCHG:
 			if (instruction.op0.size == instruction.op1.size && instruction.op1 instanceof OpReg)
 				if (isAcc.test(instruction.op0))
-					encode = assemble(instruction, 0x90 + ((OpReg) instruction.op1).reg);
+					encode = assemble(0x90 + ((OpReg) instruction.op1).reg);
 				else
 					encode = assembleByteFlag(instruction.op0, 0x86, instruction.op1);
 			else
@@ -907,7 +907,7 @@ public class Amd64Assemble {
 		return assemble(operand, b + (operand.size <= 1 ? 0 : 1), num);
 	}
 
-	private InsnCode assemble(Instruction instruction, int b) {
+	private InsnCode assemble(int b) {
 		return new InsnCode(4, bs(b));
 	}
 
