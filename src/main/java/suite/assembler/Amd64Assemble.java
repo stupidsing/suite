@@ -789,7 +789,8 @@ public class Amd64Assemble {
 		var rel = opImmLabel == null || opImmLabel.assigned ? op0.imm - (offset + bs0.length + size) : 0l;
 		InsnCode insnCode;
 
-		if (-128 <= rel && rel < 128 || 1 < size) {
+		if (size == 1 && -128 <= rel && rel < 128
+				|| size == 4 && Integer.MIN_VALUE <= rel && rel <= Integer.MAX_VALUE) {
 			insnCode = new InsnCode(size, bs0);
 			insnCode.immSize = size;
 			insnCode.imm = rel;
