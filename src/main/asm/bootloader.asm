@@ -6,7 +6,7 @@
 	CLI  ()
 
 	-- enables A20 gate by BIOS
-	MOV  (AX, +x2401)
+	MOV  (AX, WORD +x2401)
 	INT  (+x15)
 
 	-- loads kernel
@@ -23,7 +23,7 @@
 	MOV  (ES, AX)
 .readNextSector
 	PUSHA ()
-	MOV  (AX, +x4200)
+	MOV  (AX, WORD +x4200)
 	MOV  (SI, .dap)
 	AOP  ()
 	MOV  (DL, BYTE `.bootDrive`)
@@ -47,7 +47,7 @@
 	MOV  (CR0, EAX)
 	JMP  (.flush)
 .flush
-	MOV  (AX, 16)
+	MOV  (AX, WORD 16)
 	MOV  (DS, AX)
 	MOV  (ES, AX)
 	MOV  (FS, AX)

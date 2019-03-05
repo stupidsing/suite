@@ -9,7 +9,7 @@ declare idt-setup = function [] (
 		asm _ PUSHA ();
 		asm _ PUSH (DS);
 		asm _ PUSH (ES);
-		asm _ MOV (AX, 16);
+		asm _ MOV (AX, WORD 16);
 		asm _ MOV (DS, AX);
 		asm _ MOV (ES, AX);
 		asm _ PUSH (`+x40000`);
@@ -104,7 +104,7 @@ declare idt-setup = function [] (
 		asm _ POP (EBX); -- error code
 		asm _ POP (ECX); -- error EIP
 		asm _ POP (EDX); -- error CS
-		asm _ MOV (DI, 16);
+		asm _ MOV (DI, WORD 16);
 		asm _ MOV (DS, DI);
 		asm _ PUSH (`+x40000`);
 		asm _ MOV (ESI, EBP);

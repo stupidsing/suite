@@ -152,7 +152,7 @@ for (declare i = 0; i < 104; i =+ 4) do (
 --dw-set [tss-address + 4, current-process as int + size-of sch-node,]; -- set by scheduler instead
 dw-set [tss-address + 8, +x10,];
 
-asm _ MOV (AX, +x2B);
+asm _ MOV (AX, WORD +x2B);
 asm _ LTR (AX);
 
 declare user-mode = function [] (
