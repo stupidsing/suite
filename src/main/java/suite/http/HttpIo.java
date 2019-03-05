@@ -1,6 +1,7 @@
 package suite.http;
 
 import static suite.util.Friends.fail;
+import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 import static suite.util.Friends.rethrow;
 
@@ -122,7 +123,7 @@ public class HttpIo {
 			public int read(byte[] bytes, int offset, int length) throws IOException {
 				if (0 < remaining) {
 					var result = is.read(bytes, offset, min(length, remaining));
-					remaining -= Math.max(0, result);
+					remaining -= max(0, result);
 					return result;
 				} else
 					return -1;

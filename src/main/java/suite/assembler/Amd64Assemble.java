@@ -2,10 +2,12 @@ package suite.assembler;
 
 import static java.util.Map.entry;
 import static suite.util.Friends.fail;
+import static suite.util.Friends.min;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import suite.adt.pair.Fixie_.FixieFun3;
@@ -91,7 +93,7 @@ public class Amd64Assemble {
 		}
 
 		private InsnCode(byte[] bs) {
-			this(Math.min(archSize, 4), bs);
+			this(min(archSize, 4), bs);
 		}
 
 		private InsnCode(int size, byte[] bs) {
@@ -439,16 +441,18 @@ public class Amd64Assemble {
 		case MOV:
 			if ((opImm = instruction.op1.cast(OpImm.class)) != null //
 					&& isRm.test(instruction.op0) //
-					&& Integer.MIN_VALUE <= opImm.imm && opImm.imm <= Integer.MAX_VALUE)
+					// && opImm.isBound() //
+					&& Integer.MIN_VALUE <= opImm.imm && opImm.imm <= Integer.MAX_VALUE //
+					&& (instruction.op0 instanceof OpMem || instruction.op0.size == 8))
 				// MOV r/m8, imm8
 				// MOV r/m16, imm16
 				// MOV r/m32, imm32
 				// MOV r/m64, imm32 sign-extended
-				encode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(opImm.imm, Math.min(opImm.size, 4));
+				encode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(opImm.imm, min(opImm.size, 4));
 			else if (instruction.op0.size == instruction.op1.size)
 				if (instruction.op1 instanceof OpImm) {
 					var op1 = (OpImm) instruction.op1;
-					if (instruction.op0 instanceof OpReg && isNonRexReg.test(instruction.op0))
+					if (instruction.op0 instanceof OpReg && isRexReg.test(instruction.op0))
 						encode = assembleReg(instruction, 0xB0 + (op1.size <= 1 ? 0 : 8)).imm(op1);
 					else
 						encode = invalid;
@@ -776,7 +780,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleJumpImm(OpImm op0, long offset, int bj1, byte[] bj24) {
-		var size = Math.min(Math.min(op0.size, archSize), 4);
+		var size = min(op0.size, min(archSize, 4));
 		byte[] bs0;
 
 		if (size == 1)
@@ -786,8 +790,7 @@ public class Amd64Assemble {
 		else
 			return invalid;
 
-		var opImmLabel = op0.cast(OpImmLabel.class);
-		var rel = opImmLabel == null || opImmLabel.assigned ? op0.imm - (offset + bs0.length + size) : 0l;
+		var rel = op0.isBound() ? op0.imm - (offset + bs0.length + size) : 0l;
 		InsnCode insnCode;
 
 		if (size == 1 && Byte.MIN_VALUE <= rel && rel <= Byte.MAX_VALUE //
@@ -810,7 +813,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRm(Instruction instruction, int bReg, int bModrm, int num) {
-		if (bReg != -1 && instruction.op0 instanceof OpReg && 1 < instruction.op0.size && isNonRexReg.test(instruction.op0))
+		if (bReg != -1 && instruction.op0 instanceof OpReg && 1 < instruction.op0.size)
 			return assembleReg(instruction, bReg);
 		else if (isRm.test(instruction.op0))
 			return assembleByteFlag(instruction.op0, bModrm, num);
@@ -858,7 +861,7 @@ public class Amd64Assemble {
 		InsnCode insnCode;
 
 		if (Integer.MIN_VALUE <= op1.imm && op1.imm <= Integer.MAX_VALUE) {
-			insnCode = new InsnCode(op0.size, op1.imm, Math.min(op1.size, 4));
+			insnCode = new InsnCode(op0.size, op1.imm, min(op1.size, 4));
 
 			if (isAcc.test(op0) && op0.size == op1.size)
 				insnCode.bs = bs(bAccImm + (op0.size <= 1 ? 0 : 1));
@@ -930,7 +933,9 @@ public class Amd64Assemble {
 			if (vexs != null)
 				bb.append(vexs);
 			else {
-				if ((archSize == 2) != (insnCode.size == 2))
+				if (archSize == 2 && Set.of(4, 8).contains(insnCode.size))
+					bb.append((byte) 0x66);
+				if (archSize != 2 && insnCode.size == 2)
 					bb.append((byte) 0x66);
 				appendIf(bb, modrm != null ? rexModrm(insnCode.size, insnCode) : rex(insnCode.size, 0, 0, 0));
 			}
@@ -968,7 +973,7 @@ public class Amd64Assemble {
 
 	Predicate<Operand> isAcc = op -> op instanceof OpReg && ((OpReg) op).reg == 0;
 	Predicate<Operand> isReg = op -> op instanceof OpReg;
-	Predicate<Operand> isNonRexReg = op -> op instanceof OpReg && op.size == 1 && ((OpReg) op).reg < 8;
+	Predicate<Operand> isRexReg = op -> op instanceof OpReg && (op.size != 1 || ((OpReg) op).reg < 8);
 	Predicate<Operand> isRm = op -> op instanceof OpMem || op instanceof OpReg;
 	Predicate<Operand> isXmm = op -> op instanceof OpRegXmm;
 	Predicate<Operand> isXmmYmm = op -> op instanceof OpRegXmm || op instanceof OpRegYmm;

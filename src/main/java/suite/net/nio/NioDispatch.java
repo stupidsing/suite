@@ -1,6 +1,8 @@
 package suite.net.nio;
 
 import static suite.util.Friends.forInt;
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
 import static suite.util.Friends.rethrow;
 
 import java.io.Closeable;
@@ -341,7 +343,7 @@ public class NioDispatch implements Closeable {
 		while (isRunning) {
 			var td0 = timeDispatches.min();
 			var tdw = td0.time;
-			var wait = Math.max(0l, Math.min(500l, tdw - now));
+			var wait = max(0l, min(500l, tdw - now));
 
 			rethrow(() -> selector.select(key -> {
 				try {

@@ -226,7 +226,7 @@ public class Serialize {
 			int i = 0, i1, length = int_.read(si);
 			var array = length < Defaults.bufferLimit ? new boolean[length] : null;
 			while (i < length) {
-				i1 = Math.min(i + 32, length);
+				i1 = min(i + 32, length);
 				int m = 1, c = si.readInt();
 				for (; i < i1; i++, m <<= 1)
 					array[i] = (c & m) != 0;
@@ -238,7 +238,7 @@ public class Serialize {
 			int i = 0, i1, length = array.length;
 			int_.write(so, length);
 			while (i < length) {
-				i1 = Math.min(i + 32, length);
+				i1 = min(i + 32, length);
 				int m = 1, c = 0;
 				for (; i < i1; i++, m <<= 1)
 					c |= array[i] ? m : 0;

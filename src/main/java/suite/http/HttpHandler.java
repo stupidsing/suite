@@ -1,6 +1,8 @@
 package suite.http;
 
 import static suite.util.Friends.fail;
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
 import static suite.util.Friends.rethrow;
 
 import java.io.IOException;
@@ -54,8 +56,8 @@ public interface HttpHandler {
 					if (array.length == 2) {
 						var a0 = array[0];
 						var a1 = array[1];
-						var p0 = Math.max(!a1.isEmpty() ? Long.valueOf(a0) : Long.MIN_VALUE, 0);
-						var px = Math.min(!a1.isEmpty() ? Long.valueOf(a1) : Long.MAX_VALUE, size);
+						var p0 = max(!a1.isEmpty() ? Long.valueOf(a0) : Long.MIN_VALUE, 0);
+						var px = min(!a1.isEmpty() ? Long.valueOf(a1) : Long.MAX_VALUE, size);
 						var p = LngMutable.of(p0);
 
 						var empty = new HttpHeader() //
@@ -76,7 +78,7 @@ public interface HttpHandler {
 							public int read(byte b[], int off, int len0) throws IOException {
 								var pos = p.value();
 								if (pos != px) {
-									var len1 = Math.min(len0, (int) (px - pos));
+									var len1 = min(len0, (int) (px - pos));
 									raf.seek(pos);
 									var n = raf.read(b, off, len1);
 									p.update(pos + n);
