@@ -28,13 +28,13 @@
 	AOP  ()
 	MOV  (DL, BYTE `.bootDrive`)
 	INT  (+x13)
---	JC   (.diskError)
+--	JC   (BYTE .diskError)
 	POPA ()
 	AOP  ()
-	ADD  (DWORD `.dapLba`, 16)
+	ADD  (DWORD `.dapLba`, BYTE 16)
 	AOP  ()
 	ADD  (WORD `.dapMemAddress`, WORD 8192)
-	JNZ  (.readNextSector)
+	JNZ  (BYTE .readNextSector)
 
 	-- kernel loaded to ES:[0]
 
@@ -43,9 +43,9 @@
 	LGDT (`.gdtr`)
 
 	MOV  (EAX, CR0)
-	OR   (EAX, 1)
+	OR   (EAX, BYTE 1)
 	MOV  (CR0, EAX)
-	JMP  (.flush)
+	JMP  (BYTE .flush)
 .flush
 	MOV  (AX, WORD 16)
 	MOV  (DS, AX)

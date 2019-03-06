@@ -132,7 +132,7 @@ public class Assembler {
 					if (!isPass2)
 						reference.bound(Int.of(address));
 					else if (Int.num(reference.finalNode()) != address)
-						fail("address varied between passes at " + Integer.toHexString(address));
+						fail("address varied between passes at " + Integer.toHexString(address) + ": " + instruction);
 
 					try {
 						return Boolean.FALSE //
