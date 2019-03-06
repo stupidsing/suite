@@ -36,6 +36,7 @@ public class Amd64Assemble {
 
 	private InsnCode invalid = new InsnCode(-1, new byte[0]);
 	private int archSize; // 2, 4 or 8 for 286, i686 and amd64
+	private int defaultSize;
 
 	private enum Vexm {
 		VM0F__, VM0F38, VM0F3A,
@@ -93,7 +94,7 @@ public class Amd64Assemble {
 		}
 
 		private InsnCode(byte[] bs) {
-			this(min(archSize, 4), bs);
+			this(defaultSize, bs);
 		}
 
 		private InsnCode(int size, byte[] bs) {
@@ -175,6 +176,7 @@ public class Amd64Assemble {
 
 	public Amd64Assemble(int archSize) {
 		this.archSize = archSize;
+		this.defaultSize = min(archSize, 4);
 	}
 
 	public Bytes assemble(long offset, List<Instruction> instructions, boolean dump) {
@@ -430,13 +432,13 @@ public class Amd64Assemble {
 			encode = assembleJump(instruction, offset, 0xE1, null);
 			break;
 		case LGDT:
-			encode = assemble(instruction.op0, 0x01, 2).pre(0x0F);
+			encode = assemble(instruction.op0, 0x01, 2, defaultSize).pre(0x0F);
 			break;
 		case LIDT:
-			encode = assemble(instruction.op0, 0x01, 3).pre(0x0F);
+			encode = assemble(instruction.op0, 0x01, 3, defaultSize).pre(0x0F);
 			break;
 		case LTR:
-			encode = assemble(instruction.op0, 0x00, 3).pre(0x0F);
+			encode = assemble(instruction.op0, 0x00, 3, defaultSize).pre(0x0F);
 			break;
 		case MOV:
 			if ((opImm = instruction.op1.cast(OpImm.class)) != null //
@@ -780,7 +782,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleJumpImm(OpImm op0, long offset, int bj1, byte[] bj24) {
-		var size = min(op0.size, min(archSize, 4));
+		var size = min(op0.size, defaultSize);
 		byte[] bs0;
 
 		if (size == 1)
@@ -884,7 +886,7 @@ public class Amd64Assemble {
 			boolean isShiftImm;
 			int b1;
 			if (shiftImm != null) {
-				isShiftImm = 1 <= shiftImm.imm;
+				isShiftImm = shiftImm.imm != 1;
 				b1 = b + (isShiftImm ? 0 : 16);
 			} else if (shift.size == 1 && shift instanceof OpReg && ((OpReg) shift).reg == 1) { // CL
 				isShiftImm = false;
@@ -894,7 +896,7 @@ public class Amd64Assemble {
 
 			var insnCode = assembleByteFlag(instruction.op0, b1, num);
 
-			if (shiftImm != null && !isShiftImm) {
+			if (isShiftImm) {
 				insnCode.immSize = 1;
 				insnCode.imm = shiftImm.imm;
 			}
