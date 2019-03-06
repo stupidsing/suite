@@ -860,15 +860,17 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRmImm(Operand op0, OpImm op1, int bAccImm, int bRmImm, int num) {
+		var size0 = op0.size;
+		var size1 = op1.isBound() && Byte.MIN_VALUE <= op1.imm && op1.imm <= Byte.MAX_VALUE ? 1 : op1.size;
 		InsnCode insnCode;
 
 		if (Integer.MIN_VALUE <= op1.imm && op1.imm <= Integer.MAX_VALUE) {
-			insnCode = new InsnCode(op0.size, op1.imm, min(op1.size, 4));
+			insnCode = new InsnCode(size0, op1.imm, min(size1, 4));
 
-			if (isAcc.test(op0) && op0.size == op1.size)
-				insnCode.bs = bs(bAccImm + (op0.size <= 1 ? 0 : 1));
+			if (isAcc.test(op0) && size0 == size1)
+				insnCode.bs = bs(bAccImm + (size0 <= 1 ? 0 : 1));
 			else if (isRm.test(op0)) {
-				var b0 = ((1 < op0.size && op1.size <= 1) ? 2 : 0) + (op0.size <= 1 ? 0 : 1);
+				var b0 = ((1 < size0 && size1 <= 1) ? 2 : 0) + (size0 <= 1 ? 0 : 1);
 				insnCode.bs = bs(bRmImm + b0);
 				insnCode.modrm = modrm(op0, num);
 			} else
@@ -962,7 +964,7 @@ public class Amd64Assemble {
 	}
 
 	private void appendIf(BytesBuilder bb, int b) {
-		if (0 <= b)
+		if (b != -1)
 			bb.append((byte) b);
 	}
 
@@ -995,7 +997,17 @@ public class Amd64Assemble {
 			var op = (OpMem) operand;
 			var baseReg = op.baseReg;
 			int indexReg;
-			var ds0 = op.disp.size;
+			int ds0;
+
+			if (op.disp.isBound())
+				if (op.disp.imm == 0)
+					ds0 = 0;
+				else if (Byte.MIN_VALUE <= op.disp.imm && op.disp.imm <= Byte.MAX_VALUE)
+					ds0 = 1;
+				else
+					ds0 = op.disp.size;
+			else
+				ds0 = op.disp.size;
 
 			if ((op.indexReg & 7) != 4)
 				indexReg = op.indexReg;
