@@ -26,7 +26,7 @@ public class YahooTest {
 		Dump.details(yahoo.dataSourceL1("0012.HK", TimeRange.of(time0, timex)));
 	}
 
-	@Test
+	// @Test // takes too long
 	public void testL1All() {
 		var hkexFactBook = new HkexFactBook();
 		var symbols = hkexFactBook.queryMainBoardCompanies(2016);
