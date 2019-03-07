@@ -25,7 +25,6 @@ import suite.util.String_;
 public class TradeCfgImpl implements TradeCfg {
 
 	private Broker broker = new Hsbc();
-	private Google google = new Google();
 	private Hkd hkd = new Hkd();
 	private Hkex hkex = new Hkex();
 	private HkexFactBook hkexFactBook = new HkexFactBook();
@@ -39,7 +38,7 @@ public class TradeCfgImpl implements TradeCfg {
 	private Src srcHkex_ = new Src(hkex::queryCompany, sina::quote, yahoo::dataSourceL1);
 	private Src srcIndex = new Src(hkd::queryCompany, yahoo::quote, yahoo::dataSourceL1);
 	private Src srcNymex = new Src(null, yahoo::quote, quandl::dataSourceCsv);
-	private Src srcNone_ = new Src(null, google::quote, null);
+	private Src srcNone_ = new Src(null, yahoo::quote, null);
 	private Src srcPf___ = new Src(pf::queryCompany, pf::quote, pf::dataSource);
 
 	private class Src {

@@ -213,48 +213,6 @@ public class Yahoo {
 		return HttpUtil.get(url).inputStream().doRead(om::readTree);
 	}
 
-	public DataSource dataSourceYql(String symbol, TimeRange period) {
-		var yql = "select *" //
-				+ " from yahoo.finance.historicaldata" //
-				+ " where symbol = \"" + symbol + "\"" //
-				+ " and startDate = \"" + period.from.ymd() + "\"" //
-				+ " and endDate = \"" + period.to.ymd() + "\"";
-
-		var urlString = "http://query.yahooapis.com/v1/public/yql" //
-				+ "?q=" + encode(yql) //
-				+ "&format=json" //
-				+ "&diagnostics=true" //
-				+ "&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys" //
-				+ "&callback=";
-
-		return Singleton.me.storeCache.http(urlString).collect(To::inputStream).doRead(is -> {
-			var json = om.readTree(is);
-
-			var quotes = Read.each(json) //
-					.flatMap(json_ -> json_.path("query")) //
-					.flatMap(json_ -> json_.path("results")) //
-					.flatMap(json_ -> json_.path("quote")) //
-					.collect();
-
-			var arrays = quotes //
-					.map(json_ -> new String[] { //
-							json_.path("Date").textValue(), //
-							json_.path("Open").textValue(), //
-							json_.path("Close").textValue(), //
-							json_.path("Low").textValue(), //
-							json_.path("High").textValue(), }) //
-					.collect();
-
-			var ts = arrays.collect(Obj_Lng.lift(array -> closeTs(array[0]))).toArray();
-			var opens = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[1]))).toArray();
-			var closes = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[2]))).toArray();
-			var lows = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[3]))).toArray();
-			var highs = arrays.collect(Obj_Flt.lift(array -> Float.parseFloat(array[4]))).toArray();
-			var volumes = new float[ts.length];
-			return DataSource.ofOhlcv(ts, opens, closes, lows, highs, volumes);
-		});
-	}
-
 	/**
 	 * http://www.jarloo.com/yahoo_finance/
 	 * 

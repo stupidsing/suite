@@ -14,10 +14,4 @@ public class AastocksTest {
 		assertTrue(20000f < hsi);
 	}
 
-	@Test
-	public void testQuote() {
-		var quote = aa.quote("0005.HK");
-		assertTrue(70f < quote);
-	}
-
 }

@@ -39,11 +39,6 @@ public class YahooTest {
 			}
 	}
 
-	// @Test
-	public void testYql() {
-		test(yahoo::dataSourceYql);
-	}
-
 	private void test(Fun2<String, TimeRange, DataSource> fun) {
 		var symbol = "0005.HK";
 
