@@ -185,11 +185,11 @@ public class Amd64 {
 		public int sreg;
 	}
 
-	public class OpRegXmm extends OpReg {
+	public class OpRegXmm extends Operand {
 		public int reg;
 	}
 
-	public class OpRegYmm extends OpReg {
+	public class OpRegYmm extends Operand {
 		public int reg;
 	}
 

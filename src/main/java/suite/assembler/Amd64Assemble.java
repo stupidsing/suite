@@ -264,7 +264,7 @@ public class Amd64Assemble {
 			encode = new InsnCode(2, bs(0xA7));
 			break;
 		case CMPXCHG:
-			encode = assembleRegRm(instruction.op1, instruction.op0, 0xB0);
+			encode = assembleRmReg(instruction, 0xB0, -1, isReg).pre(0x0F);
 			break;
 		case CPUID:
 			encode = new InsnCode(bs(0x0F, 0xA2));
@@ -451,6 +451,8 @@ public class Amd64Assemble {
 				// MOV r/m32, imm32
 				// MOV r/m64, imm32 sign-extended
 				encode = assembleByteFlag(instruction.op0, 0xC6, 0).imm(opImm.imm, min(opImm.size, 4));
+			else if ((encode = assembleRmReg(instruction, 0x88)).isValid())
+				;
 			else if (instruction.op0.size == instruction.op1.size)
 				if (instruction.op1 instanceof OpImm) {
 					var op1 = (OpImm) instruction.op1;
@@ -476,9 +478,7 @@ public class Amd64Assemble {
 					var opRegCt = (OpRegControl) instruction.op0;
 					var opReg = (OpReg) instruction.op1;
 					encode = new InsnCode(4, new byte[] { (byte) 0x0F, (byte) 0x22, b(opReg.reg, opRegCt.creg, 3), });
-				} else if ((encode = assembleRmReg(instruction, 0x88)).isValid())
-					;
-				else
+				} else
 					encode = invalid;
 			else
 				encode = invalid;
@@ -842,11 +842,14 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRmReg(Instruction instruction, int bRmReg, int bRegRm, Predicate<Operand> pred) {
-		FixieFun3<Operand, Integer, OpReg, InsnCode> fun = (rm, b1, reg) -> 0 <= b1 ? assembleByteFlag(rm, b1, reg) : invalid;
-		if (isRm.test(instruction.op0) && pred.test(instruction.op1))
-			return fun.apply(instruction.op0, bRmReg, (OpReg) instruction.op1);
-		else if (pred.test(instruction.op0) && isRm.test(instruction.op1))
-			return fun.apply(instruction.op1, bRegRm, (OpReg) instruction.op0);
+		FixieFun3<Operand, Integer, OpReg, InsnCode> fun = (rm, b, reg) -> 0 <= b ? assembleByteFlag(rm, b, reg) : invalid;
+		if (instruction.op0.size == instruction.op1.size)
+			if (isRm.test(instruction.op0) && pred.test(instruction.op1))
+				return fun.apply(instruction.op0, bRmReg, (OpReg) instruction.op1);
+			else if (pred.test(instruction.op0) && isRm.test(instruction.op1))
+				return fun.apply(instruction.op1, bRegRm, (OpReg) instruction.op0);
+			else
+				return invalid;
 		else
 			return invalid;
 	}

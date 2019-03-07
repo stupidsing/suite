@@ -49,7 +49,7 @@ ic-compile-register0 (DECLARES _ .offset .size .do) .e0/.ex
 ic-compile-register0 (EXTEND-SIGNED .memory) .e0/.ex
 	:- ic-compile-memory .memory .e0/.e1 1 .pointer
 	, ic-compile-operand (MEMORY 4 .pointer) .e1/.e2 .op
-	, .e2 = (_ MOVSX ($0, .op), .ex)
+	, .e2 = (_ MOVSX ($0, BYTE .op), .ex)
 #
 ic-compile-register0 (INVOKE .mr .ips) .e0/.ex
 	:- once (
