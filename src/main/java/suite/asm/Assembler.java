@@ -135,7 +135,7 @@ public class Assembler {
 						fail("address varied between passes at " + Integer.toHexString(address) + ": " + instruction);
 
 					try {
-						return Boolean.FALSE //
+						return Boolean.TRUE //
 								? assemble_a(isPass2, address, instruction) //
 								: assemble_sl(isPass2, address, instruction);
 					} catch (Exception ex) {

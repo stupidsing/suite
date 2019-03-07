@@ -7,7 +7,6 @@ import java.io.IOException;
 import org.junit.Test;
 
 import suite.Suite;
-import suite.primitive.Bytes;
 
 public class AssemblerTest {
 
@@ -17,7 +16,7 @@ public class AssemblerTest {
 		Suite.isProverTrace = true;
 		try {
 			var assembler = new Assembler(32);
-			assembler.assemble(Suite.parse(".org = 0, .l LEA (EAX, `EAX * 4 + (0 - 4)`),"));
+			assembler.assemble(Suite.parse(".org = 0, .l LEA (EAX, `EAX * 4 + (-4)`),"));
 		} finally {
 			Suite.isProverTrace = isProverTrace0;
 		}
@@ -26,7 +25,7 @@ public class AssemblerTest {
 	@Test
 	public void testAssembleLongMode() throws IOException {
 		var assembler = new Assembler(32, true);
-		Bytes bytes = assembler.assemble(Suite.parse(".org = 0, .l MOV (R9D, DWORD 16),"));
+		var bytes = assembler.assemble(Suite.parse(".org = 0, .l MOV (R9D, DWORD 16),"));
 		assertEquals(7, bytes.size());
 	}
 

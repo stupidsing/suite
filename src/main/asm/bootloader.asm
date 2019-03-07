@@ -24,7 +24,7 @@
 .readNextSector
 	PUSHA ()
 	MOV  (AX, WORD +x4200)
-	MOV  (SI, .dap)
+	MOV  (SI, WORD .dap)
 	AOP  ()
 	MOV  (DL, BYTE `.bootDrive`)
 	INT  (+x13)

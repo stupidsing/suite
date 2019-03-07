@@ -445,7 +445,9 @@ public class Amd64Assemble {
 					&& isRm.test(instruction.op0) //
 					// && opImm.isBound() //
 					&& Integer.MIN_VALUE <= opImm.imm && opImm.imm <= Integer.MAX_VALUE //
-					&& (instruction.op0 instanceof OpMem || instruction.op0.size == 8))
+					&& (!isNonRexReg.test(instruction.op0) //
+							|| instruction.op0 instanceof OpMem //
+							|| instruction.op0.size == 8))
 				// MOV r/m8, imm8
 				// MOV r/m16, imm16
 				// MOV r/m32, imm32
@@ -456,7 +458,7 @@ public class Amd64Assemble {
 			else if (instruction.op0.size == instruction.op1.size)
 				if (instruction.op1 instanceof OpImm) {
 					var op1 = (OpImm) instruction.op1;
-					if (instruction.op0 instanceof OpReg && isRexReg.test(instruction.op0))
+					if (instruction.op0 instanceof OpReg && isNonRexReg.test(instruction.op0))
 						encode = assembleReg(instruction, 0xB0 + (op1.size <= 1 ? 0 : 8)).imm(op1);
 					else
 						encode = invalid;
@@ -979,6 +981,7 @@ public class Amd64Assemble {
 	}
 
 	Predicate<Operand> isAcc = op -> op instanceof OpReg && ((OpReg) op).reg == 0;
+	Predicate<Operand> isNonRexReg = op -> op instanceof OpReg && ((OpReg) op).reg < 8;
 	Predicate<Operand> isReg = op -> op instanceof OpReg;
 	Predicate<Operand> isRexReg = op -> op instanceof OpReg && (op.size != 1 || ((OpReg) op).reg < 8);
 	Predicate<Operand> isRm = op -> op instanceof OpMem || op instanceof OpReg;
