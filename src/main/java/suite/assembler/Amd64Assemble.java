@@ -326,10 +326,7 @@ public class Amd64Assemble {
 		case INT:
 			if (instruction.op0 instanceof OpImm) {
 				var iv = ((OpImm) instruction.op0).imm;
-				if (iv != 3)
-					encode = assemble(0xCD).imm(iv, 1);
-				else
-					encode = assemble(0xCC);
+				encode = iv != 3 ? assemble(0xCD).imm(iv, 1) : assemble(0xCC);
 			} else
 				encode = invalid;
 			break;
