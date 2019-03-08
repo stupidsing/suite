@@ -17,7 +17,7 @@ public class CompileUtil {
 	}
 
 	public synchronized RuleSet imperativeCompilerRuleSet() {
-		return newRuleSetFun.apply(List.of("asm.sl", "auto.sl", "ic/ic.sl"));
+		return newRuleSetFun.apply(List.of("auto.sl", "ic/ic.sl"));
 	}
 
 	public synchronized RuleSet logicCompilerRuleSet() {
