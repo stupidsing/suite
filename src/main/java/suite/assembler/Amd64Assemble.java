@@ -892,6 +892,7 @@ public class Amd64Assemble {
 			var shiftImm = shift.cast(OpImm.class);
 			boolean isShiftImm;
 			int b1;
+
 			if (shiftImm != null) {
 				isShiftImm = shiftImm.imm != 1;
 				b1 = b + (isShiftImm ? 0 : 16);
@@ -980,13 +981,12 @@ public class Amd64Assemble {
 		}
 	}
 
-	Predicate<Operand> isAcc = op -> op instanceof OpReg && ((OpReg) op).reg == 0;
-	Predicate<Operand> isNonRexReg = op -> op instanceof OpReg && ((OpReg) op).reg < 8;
-	Predicate<Operand> isReg = op -> op instanceof OpReg;
-	Predicate<Operand> isRexReg = op -> op instanceof OpReg && (op.size != 1 || ((OpReg) op).reg < 8);
-	Predicate<Operand> isRm = op -> op instanceof OpMem || op instanceof OpReg;
-	Predicate<Operand> isXmm = op -> op instanceof OpRegXmm;
-	Predicate<Operand> isXmmYmm = op -> op instanceof OpRegXmm || op instanceof OpRegYmm;
+	private Predicate<Operand> isAcc = op -> op instanceof OpReg && ((OpReg) op).reg == 0;
+	private Predicate<Operand> isNonRexReg = op -> op instanceof OpReg && ((OpReg) op).reg < 8;
+	private Predicate<Operand> isReg = op -> op instanceof OpReg;
+	private Predicate<Operand> isRm = op -> op instanceof OpMem || op instanceof OpReg;
+	private Predicate<Operand> isXmm = op -> op instanceof OpRegXmm;
+	private Predicate<Operand> isXmmYmm = op -> op instanceof OpRegXmm || op instanceof OpRegYmm;
 
 	private Modrm modrm(Operand operand, int num) {
 		int mod, rm, s, i, b, dispSize;
