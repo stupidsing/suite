@@ -31,11 +31,11 @@ declare zero = function [dst, len,] (
 	asm _ MOV (ECX, `EBP + 16`);
 	asm _ SHR (ECX, 2);
 	asm _ REP ();
-	asm _  STOSD ();
+	asm _ STOSD ();
 	asm _ MOV (ECX, `EBP + 16`);
 	asm _ AND (ECX, 3);
 	asm _ REP ();
-	asm _  STOSB ();
+	asm _ STOSB ();
 );
 
 declare dw-get = function [p,] (

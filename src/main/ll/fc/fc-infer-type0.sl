@@ -257,10 +257,10 @@ fc-instantiate-type (.typeVar, .typeVars) .tc0 .tcx
 fc-default-fun-type () (LIST-OF _) #
 fc-default-fun-type +call%i-t1 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _ _)) #
 fc-default-fun-type +call%i-t2 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _ (FUN-OF _ _))) #
-fc-default-fun-type +call%i-t3 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
+fc-default-fun-type +call%i-t3 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _ (FUN-OF _ (FUN-OF _ _)))) #
 fc-default-fun-type +call%i-v1 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _ _)) #
 fc-default-fun-type +call%i-v2 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _ (FUN-OF _ _))) #
-fc-default-fun-type +call%i-v3 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _  (FUN-OF _ (FUN-OF _ _)))) #
+fc-default-fun-type +call%i-v3 (FUN-OF (FUNCTOR-OF data (ATOM-OF %i)) (FUN-OF _ (FUN-OF _ (FUN-OF _ _)))) #
 fc-default-fun-type +compare (FUN-OF .t (FUN-OF .t NUMBER)) #
 fc-default-fun-type +get%i (FUN-OF (ATOM-OF _) (FUNCTOR-OF data (ATOM-OF %i))) #
 fc-default-fun-type +is-list (FUN-OF (LIST-OF _) BOOLEAN) #
