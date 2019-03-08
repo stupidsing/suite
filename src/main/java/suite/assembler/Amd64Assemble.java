@@ -705,13 +705,12 @@ public class Amd64Assemble {
 			encode = new InsnCode(bs(0x0F, 0x35));
 			break;
 		case TEST:
-			if (instruction.op0.size == instruction.op1.size)
-				if (instruction.op1 instanceof OpImm)
-					encode = assembleRmImm(instruction.op0, (OpImm) instruction.op1, 0xA8, 0xF6, 0);
-				else
-					encode = assembleByteFlag(instruction.op0, 0x84, instruction.op1);
+			if (instruction.op1 instanceof OpImm)
+				encode = instruction.op0.size == instruction.op1.size
+						? assembleRmImm(instruction.op0, (OpImm) instruction.op1, 0xA8, 0xF6, 0)
+						: invalid;
 			else
-				encode = invalid;
+				encode = assembleByteFlag(instruction.op0, 0x84, instruction.op1);
 			break;
 		case VADDPS:
 			encode = assembleRegRm(instruction.op0, instruction.op2, 0x58).vex(Vexp.VP__, instruction.op1, Vexm.VM0F__);
@@ -732,8 +731,8 @@ public class Amd64Assemble {
 			encode = assembleRegRm(instruction.op0, instruction.op2, 0x5C).vex(Vexp.VP__, instruction.op1, Vexm.VM0F__);
 			break;
 		case XCHG:
-			if (instruction.op0.size == instruction.op1.size && instruction.op1 instanceof OpReg)
-				if (isAcc.test(instruction.op0))
+			if (instruction.op1 instanceof OpReg)
+				if (isAcc.test(instruction.op0) && instruction.op0.size == instruction.op1.size)
 					encode = assemble(0x90 + ((OpReg) instruction.op1).reg);
 				else
 					encode = assembleByteFlag(instruction.op0, 0x86, instruction.op1);
@@ -842,13 +841,10 @@ public class Amd64Assemble {
 
 	private InsnCode assembleRmReg(Instruction instruction, int bRmReg, int bRegRm, Predicate<Operand> pred) {
 		FixieFun3<Operand, Integer, OpReg, InsnCode> fun = (rm, b, reg) -> 0 <= b ? assembleByteFlag(rm, b, reg) : invalid;
-		if (instruction.op0.size == instruction.op1.size)
-			if (isRm.test(instruction.op0) && pred.test(instruction.op1))
-				return fun.apply(instruction.op0, bRmReg, (OpReg) instruction.op1);
-			else if (pred.test(instruction.op0) && isRm.test(instruction.op1))
-				return fun.apply(instruction.op1, bRegRm, (OpReg) instruction.op0);
-			else
-				return invalid;
+		if (isRm.test(instruction.op0) && pred.test(instruction.op1))
+			return fun.apply(instruction.op0, bRmReg, (OpReg) instruction.op1);
+		else if (pred.test(instruction.op0) && isRm.test(instruction.op1))
+			return fun.apply(instruction.op1, bRegRm, (OpReg) instruction.op0);
 		else
 			return invalid;
 	}
@@ -912,7 +908,7 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleByteFlag(Operand operand, int b, Operand reg) {
-		return assembleByteFlag(operand, b, ((OpReg) reg).reg);
+		return operand.size == reg.size ? assembleByteFlag(operand, b, ((OpReg) reg).reg) : invalid;
 	}
 
 	private InsnCode assembleByteFlag(Operand operand, int b, int num) {
