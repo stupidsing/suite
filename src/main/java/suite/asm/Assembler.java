@@ -8,6 +8,7 @@ import java.util.List;
 
 import suite.Suite;
 import suite.adt.pair.Pair;
+import suite.asm.Assembler.Asm;
 import suite.assembler.Amd64Assemble;
 import suite.assembler.Amd64Parse;
 import suite.cfg.Defaults;
@@ -38,13 +39,12 @@ import suite.util.To;
 
 public class Assembler {
 
-	private Amd64Assemble aa;
-	private Amd64Parse ap;
-
-	private RuleSet ruleSet;
-	private Finder finder;
-	private int bits;
+	private Asm asm;
 	private Fun<List<Pair<Reference, Node>>, List<Pair<Reference, Node>>> preassemble;
+
+	public interface Asm {
+		public Bytes assemble(boolean isPass2, int address, Node instruction);
+	}
 
 	public Assembler(int bits) {
 		this(bits, false);
@@ -54,23 +54,9 @@ public class Assembler {
 		this(bits, isLongMode, lnis -> lnis);
 	}
 
-	public Assembler(int bits, boolean isLongMode, Fun<List<Pair<Reference, Node>>, List<Pair<Reference, Node>>> preassemble) {
-		aa = new Amd64Assemble(bits / 8);
-		ap = new Amd64Parse();
-
-		ruleSet = Suite.newRuleSet(List.of("asm.sl", "auto.sl"));
-
-		if (isLongMode)
-			Suite.addRule(ruleSet, "as-long-mode");
-
-		finder = new SewingProverBuilder2() //
-				.build(ruleSet) //
-				.apply(Suite.parse("" //
-						+ "source (.bits, .address, .instruction,)" //
-						+ ", asi:.bits:.address .instruction .code" //
-						+ ", sink .code"));
-
-		this.bits = bits;
+	public Assembler(int bits, boolean isLongMode,
+			Fun<List<Pair<Reference, Node>>, List<Pair<Reference, Node>>> preassemble) {
+		asm = Boolean.TRUE ? new AsmA(bits) : new AsmSl(bits, isLongMode);
 		this.preassemble = preassemble;
 	}
 
@@ -93,7 +79,8 @@ public class Assembler {
 		var lnis = Read //
 				.from(List_.right(lines, start)) //
 				.map(line -> String_.split2l(line, "\t").map((label, command) -> {
-					var reference = String_.isNotBlank(label) ? generalizer.getVariable(Atom.of(label)) : new Reference();
+					var reference = String_.isNotBlank(label) ? generalizer.getVariable(Atom.of(label))
+							: new Reference();
 					var instruction = generalizer.generalize(Suite.parse(command));
 					return Pair.of(reference, instruction);
 				})).toList();
@@ -135,9 +122,7 @@ public class Assembler {
 						fail("address varied between passes at " + Integer.toHexString(address) + ": " + instruction);
 
 					try {
-						return Boolean.TRUE //
-								? assemble_a(isPass2, address, instruction) //
-								: assemble_sl(isPass2, address, instruction);
+						return asm.assemble(isPass2, address, instruction);
 					} catch (Exception ex) {
 						return fail("in " + instruction + " during pass " + (!isPass2 ? "1" : "2"), ex);
 					}
@@ -153,7 +138,19 @@ public class Assembler {
 		return out.toBytes();
 	}
 
-	private Bytes assemble_a(boolean isPass2, int address, Node instruction) {
+}
+
+class AsmA implements Asm {
+
+	private Amd64Assemble aa;
+	private Amd64Parse ap;
+
+	public AsmA(int bits) {
+		aa = new Amd64Assemble(bits / 8);
+		ap = new Amd64Parse();
+	}
+
+	public Bytes assemble(boolean isPass2, int address, Node instruction) {
 		if (instruction == Atom.NIL)
 			return Bytes.empty;
 		else if (instruction instanceof Str)
@@ -162,11 +159,36 @@ public class Assembler {
 			return aa.assemble(isPass2, address, ap.parse(instruction));
 	}
 
-	private Bytes assemble_sl(boolean isPass2, int address, Node instruction) {
+}
+
+class AsmSl implements Asm {
+
+	private RuleSet ruleSet;
+	private Finder finder;
+	private int bits;
+
+	public AsmSl(int bits, boolean isLongMode) {
+		ruleSet = Suite.newRuleSet(List.of("asm.sl", "auto.sl"));
+
+		if (isLongMode)
+			Suite.addRule(ruleSet, "as-long-mode");
+
+		finder = new SewingProverBuilder2() //
+				.build(ruleSet) //
+				.apply(Suite.parse("" //
+						+ "source (.bits, .address, .instruction,)" //
+						+ ", asi:.bits:.address .instruction .code" //
+						+ ", sink .code"));
+
+		this.bits = bits;
+	}
+
+	public Bytes assemble(boolean isPass2, int address, Node instruction) {
 		var ins = Suite.substitute(".0, .1, .2,", Int.of(bits), Int.of(address), instruction);
 		var bytesList = new ArrayList<Bytes>();
 		finder.find(To.source(ins), node -> bytesList.add(convertByteStream(node)));
 		return Read.from(bytesList).min((bytes0, bytes1) -> bytes0.size() - bytes1.size());
+
 	}
 
 	private Bytes convertByteStream(Node node) {
