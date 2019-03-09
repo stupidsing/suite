@@ -27,9 +27,10 @@ import suite.util.RunUtil;
 
 public class Funp_ {
 
-	public static boolean isAmd64 = RunUtil.isLinux64();
 	private static Amd64 amd64 = Amd64.me;
+	private static Inspect inspect = Singleton.me.inspect;
 
+	public static boolean isAmd64 = RunUtil.isLinux64();
 	public static int booleanSize = 1;
 	public static int integerSize = 4;
 	public static int pointerSize = isAmd64 ? 8 : 4;
@@ -41,8 +42,6 @@ public class Funp_ {
 	public static OpReg _sp = pointerRegs[amd64.spReg];
 	public static int nRegisters = isAmd64 ? 16 : 8;
 	public static Funp framePointer = new FunpFramePointer();
-
-	private static Inspect inspect = Singleton.me.inspect;
 
 	private boolean isOptimize;
 
