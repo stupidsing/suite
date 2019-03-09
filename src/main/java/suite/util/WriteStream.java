@@ -8,11 +8,10 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 
 import suite.cfg.Defaults;
-import suite.util.Rethrow.SinkEx;
+import suite.util.Rethrow.SinkIo;
 
 /**
- * Implements an output stream using a given output stream. Extends this class
- * to provide additional functionality.
+ * Extends output stream to provide additional functionality.
  *
  * @author ywsing
  */
@@ -36,7 +35,7 @@ public class WriteStream extends OutputStream {
 		doWriter(w -> w.write(content));
 	}
 
-	public void doPrintWriter(SinkEx<PrintWriter, IOException> sink) {
+	public void doPrintWriter(SinkIo<PrintWriter> sink) {
 		doWriter(w -> {
 			try (var pw = new PrintWriter(w)) {
 				sink.f(pw);
@@ -44,7 +43,7 @@ public class WriteStream extends OutputStream {
 		});
 	}
 
-	public void doWriter(SinkEx<OutputStreamWriter, IOException> sink) {
+	public void doWriter(SinkIo<OutputStreamWriter> sink) {
 		doWrite(os -> {
 			try (var w = new OutputStreamWriter(os, Defaults.charset)) {
 				sink.f(w);
@@ -52,7 +51,7 @@ public class WriteStream extends OutputStream {
 		});
 	}
 
-	public void doWrite(SinkEx<WriteStream, IOException> sink) {
+	public void doWrite(SinkIo<WriteStream> sink) {
 		try (var os = this) {
 			sink.f(os);
 		} catch (IOException ex) {

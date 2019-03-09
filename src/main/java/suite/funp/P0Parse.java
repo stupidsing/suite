@@ -76,7 +76,7 @@ import suite.streamlet.FunUtil.Source;
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
 import suite.util.ReadStream;
-import suite.util.ReadStream.FunIo;
+import suite.util.Rethrow.FunIo;
 import suite.util.Rethrow.SourceEx;
 import suite.util.Switch;
 import suite.util.To;

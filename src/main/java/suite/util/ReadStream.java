@@ -8,10 +8,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import suite.cfg.Defaults;
+import suite.util.Rethrow.FunIo;
 
 /**
- * Implements an input stream using a given input stream. Extends this class to
- * provide additional functionality.
+ * Extends input stream to provide additional functionality.
  *
  * @author ywsing
  */
@@ -25,10 +25,6 @@ public class ReadStream extends InputStream {
 
 	protected ReadStream(InputStream is) {
 		this.is = is;
-	}
-
-	public interface FunIo<I, O> {
-		public O apply(I i) throws IOException;
 	}
 
 	public String readString() {

@@ -881,8 +881,7 @@ public class P4GenerateCode {
 
 			var block = spawn(c -> {
 				if (ok)
-					for (var instruction : o.instructions)
-						c.em.emit(instruction);
+					o.instructions.forEach(c.em::emit);
 				else
 					c.em.emit(Insn.DS, amd64.imm32(size));
 			});
