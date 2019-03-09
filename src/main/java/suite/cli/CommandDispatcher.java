@@ -185,7 +185,7 @@ public class CommandDispatcher {
 	}
 
 	private void elaborate(Node node0, Sink<Node> sink) {
-		int[] count = { 0 };
+		var count = new int[] { 0 };
 		var ne = new CompileGeneralizerImpl().g(node0).g();
 		var node1 = ne.node;
 
@@ -200,10 +200,7 @@ public class CommandDispatcher {
 
 		sink.f(Tree.ofAnd(node1, elab));
 
-		if (count[0] == 1)
-			opt.prompt().println(count[0] + " solution\n");
-		else
-			opt.prompt().println(count[0] + " solutions\n");
+		opt.prompt().println(count[0] + " solution" + (count[0] == 1 ? "" : "s") + "\n");
 	}
 
 	public boolean dispatchEvaluate(List<String> inputs) {
