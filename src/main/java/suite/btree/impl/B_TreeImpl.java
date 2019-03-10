@@ -165,13 +165,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 	@Override
 	public void create() {
 		allocator.create();
-		var root = allocator.allocate();
-
-		var superblock = new Superblock();
-		superblock.root = root;
-		superblockFile.save(0, superblock);
-
-		savePage(new Page(root, List.of(new KeyPointer(null, new Terminal()))));
+		newRoot(List.of(new KeyPointer(null, new Terminal())));
 	}
 
 	@Override
@@ -250,7 +244,7 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 		if (kp != null && Objects.equals(kp.key, key)) {
 			discard(kp);
 			kp.pointer = pointer; // replace existing value
-			savePage(t.page);
+			saveOldPage(t.page);
 		} else
 			addAndSplit(t.traverse, new KeyPointer(key, pointer));
 	}
@@ -272,22 +266,28 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				int pointer0 = page.pointer, pointer1 = allocator.allocate();
 				var p0 = new Page(pointer0, page.subList(0, half));
 				var p1 = new Page(pointer1, page.subList(half, size));
-				savePage(p0);
-				savePage(p1);
+				saveOldPage(p0);
+				saveNewPage(p1);
 
 				toInsert = pointerTo(p1); // propagates to parent
 
 				if (slots.empty()) { // have to create a new root
-					var kp = pointerTo(p0);
-
-					create();
-					page = new Page(root(), List.of(kp, toInsert));
-					savePage(page);
+					newRoot(List.of(pointerTo(p0), toInsert));
 					done = true;
 				}
 			} else
-				savePage(page);
+				saveOldPage(page);
 		} while (!done);
+	}
+
+	private void newRoot(List<KeyPointer> kps) {
+		var root = allocator.allocate();
+
+		var superblock = new Superblock();
+		superblock.root = root;
+		superblockFile.save(0, superblock);
+
+		saveNewPage(new Page(root, kps));
 	}
 
 	@Override
@@ -335,8 +335,8 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				if (half < lsize) { // shift
 					var out = lp.remove(lsize - 1);
 					mp.add(0, out);
-					savePage(mp);
-					savePage(lp);
+					saveOldPage(mp);
+					saveOldPage(lp);
 					page.set(index, pointerTo(mp));
 				} else
 					merge(page, lp, mp, index - 1);
@@ -344,8 +344,8 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				if (half < rsize) { // shift
 					var out = rp.remove(0);
 					mp.add(out);
-					savePage(mp);
-					savePage(rp);
+					saveOldPage(mp);
+					saveOldPage(rp);
 					page.set(index + 1, pointerTo(rp));
 				} else
 					merge(page, mp, rp, index);
@@ -354,24 +354,24 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 				// left/right node empty, should only happen at root node
 				page.clear();
 				page.addAll(mp);
-				savePage(page);
+				saveOldPage(page);
 				allocator.deallocate(mp.pointer);
 			} else
 				fail("unbalanced B-tree");
 		}
 
-		savePage(page);
+		saveOldPage(page);
 	}
 
 	/**
 	 * Merge two consecutive branches in a page.
 	 *
-	 * p0 and p1 are branches of parent. p0 is located in slot 'index' of
-	 * parent, while p1 is in next.
+	 * p0 and p1 are branches of parent. p0 is located in slot 'index' of parent,
+	 * while p1 is in next.
 	 */
 	private void merge(Page parent, Page p0, Page p1, int index) {
 		p0.addAll(p1);
-		savePage(p0);
+		saveOldPage(p0);
 		allocator.deallocate(p1.pointer);
 		parent.remove(index + 1);
 	}
@@ -409,6 +409,14 @@ public class B_TreeImpl<Key, Value> implements B_Tree<Key, Value> {
 
 	private Page loadPage(int pointer) {
 		return pageFile.load(pointer);
+	}
+
+	private void saveNewPage(Page page) {
+		savePage(page);
+	}
+
+	private void saveOldPage(Page page) {
+		savePage(page);
 	}
 
 	private void savePage(Page page) {
