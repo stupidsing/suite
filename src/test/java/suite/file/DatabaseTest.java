@@ -29,7 +29,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testUpdate() throws IOException {
-		try (var database = new Database(Defaults.tmp("database"))) {
+		try (var database = Database.open(Defaults.tmp("database"))) {
 			database.transact(tx -> {
 				for (var i = 0; i < nRecords; i++)
 					tx.put(i, "sample");
