@@ -1,6 +1,7 @@
 package suite.file;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static suite.util.Friends.fail;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testRollback() throws IOException {
-		try (var database = new Database(Defaults.tmp("database"))) {
+		try (var database = Database.create(Defaults.tmp("database"))) {
 			database.transact(tx -> {
 				for (var i = 0; i < nRecords; i++)
 					tx.put(i, "sample");

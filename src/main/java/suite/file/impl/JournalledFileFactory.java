@@ -27,6 +27,9 @@ public class JournalledFileFactory {
 				pageSize);
 	}
 
+	/**
+	 * Journalling based on redo logs.
+	 */
 	private static JournalledPageFile journalled( //
 			PageFile df, //
 			PageFile jpf, //

@@ -1127,7 +1127,7 @@ public class Amd64Assemble {
 		var w_ = bit4(w);
 		if (m == 1 && x == 0 && b == 0 && w == 0) {
 			var b1 = ((bit4(modrm.num) ^ 1) << 7) //
-					+ (~v << 3)//
+					+ (~v << 3) //
 					+ ((size != 16 ? 1 : 0) << 2) //
 					+ (p << 0);
 			return bs(0xC5, b1);
