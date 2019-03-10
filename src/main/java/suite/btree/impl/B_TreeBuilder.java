@@ -25,7 +25,7 @@ import suite.serialize.Serialize.Serializer;
 
 public class B_TreeBuilder<Key, Value> {
 
-	private static Serialize serialize = Singleton.me.serialize;
+	private static Serialize ser = Singleton.me.serialize;
 
 	private static char BRANCH = 'I';
 	private static char LEAF = 'L';
@@ -48,7 +48,7 @@ public class B_TreeBuilder<Key, Value> {
 			FileUtil.deleteIfExists(path);
 
 		var jpf = JournalledFileFactory.journalled(path, pageSize);
-		var b_tree = new B_TreeBuilder<>(ks, serialize.int_).build(jpf, nPages, cmp);
+		var b_tree = new B_TreeBuilder<>(ks, ser.int_).build(jpf, nPages, cmp);
 
 		if (isNew) {
 			b_tree.create();
@@ -59,7 +59,7 @@ public class B_TreeBuilder<Key, Value> {
 	}
 
 	public B_TreeBuilder(Serializer<Key> keySerializer, Serializer<Value> valueSerializer) {
-		this.keySerializer = serialize.nullable(keySerializer);
+		this.keySerializer = ser.nullable(keySerializer);
 		this.valueSerializer = valueSerializer;
 	}
 
@@ -76,9 +76,9 @@ public class B_TreeBuilder<Key, Value> {
 		return FixieArray.of(pfs).map((alf0, sbf0, pf0) -> {
 			var b_tree = new B_TreeImpl<Key, Value>(Object_.nullsFirst(cmp));
 
-			var als = serialize.bytes(pageSize);
+			var als = ser.bytes(pageSize);
 			var sbs = superblockSerializer(b_tree);
-			var pys = serialize.bytes(pageSize);
+			var pys = ser.bytes(pageSize);
 			var ps = pageSerializer(b_tree);
 
 			var alf = SerializedFileFactory.serialized(alf0, als);
@@ -99,12 +99,12 @@ public class B_TreeBuilder<Key, Value> {
 		return new Serializer<>() {
 			public B_TreeImpl<Key, Value>.Superblock read(SerInput si) throws IOException {
 				var superblock = b_tree.new Superblock();
-				superblock.root = serialize.int_.read(si);
+				superblock.root = ser.int_.read(si);
 				return superblock;
 			}
 
 			public void write(SerOutput so, B_TreeImpl<Key, Value>.Superblock value) throws IOException {
-				serialize.int_.write(so, value.root);
+				ser.int_.write(so, value.root);
 			}
 		};
 	}

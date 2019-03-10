@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.IdentityKey;
-import suite.adt.map.BiMap;
 import suite.adt.map.BiHashMap;
+import suite.adt.map.BiMap;
 import suite.adt.pair.Pair;
 import suite.file.PageFile;
 import suite.file.SerializedPageFile;
@@ -27,7 +27,7 @@ import suite.streamlet.Read;
 
 public class LazyPbTreePageFilePersister<T> implements LazyPbTreePersister<Integer, T> {
 
-	private Serialize serialize = Singleton.me.serialize;
+	private Serialize ser = Singleton.me.serialize;
 	private SerializedPageFile<Integer> nPagesFile;
 	private SerializedPageFile<PersistSlot<T>> pageFile;
 	private Comparator<T> comparator;
@@ -44,9 +44,9 @@ public class LazyPbTreePageFilePersister<T> implements LazyPbTreePersister<Integ
 	}
 
 	public LazyPbTreePageFilePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
-		var ts1 = serialize.nullable(ts);
-		var ps = serialize.pair(ts1, serialize.int_);
-		var lps = serialize.list(ps);
+		var ts1 = ser.nullable(ts);
+		var ps = ser.pair(ts1, ser.int_);
+		var lps = ser.list(ps);
 		var pss = new Serializer<PersistSlot<T>>() {
 			public PersistSlot<T> read(SerInput si) throws IOException {
 				return new PersistSlot<>(lps.read(si));
@@ -60,7 +60,7 @@ public class LazyPbTreePageFilePersister<T> implements LazyPbTreePersister<Integ
 		var pfs = FileFactory.subPageFiles(pf, 0, 1, Integer.MAX_VALUE);
 
 		this.comparator = comparator;
-		nPagesFile = SerializedFileFactory.serialized(pfs[0], serialize.int_);
+		nPagesFile = SerializedFileFactory.serialized(pfs[0], ser.int_);
 		pageFile = SerializedFileFactory.serialized(pfs[1], pss);
 		nPages = nPagesFile.load(0);
 	}

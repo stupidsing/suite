@@ -33,7 +33,7 @@ import suite.util.To;
 
 public class LazyPbTreeExtentFilePersister<T> implements LazyPbTreePersister<Extent, T> {
 
-	private Serialize serialize = Singleton.me.serialize;
+	private Serialize ser = Singleton.me.serialize;
 
 	private SerializedPageFile<Integer> nPagesFile;
 	private ExtentFile extentFile;
@@ -53,10 +53,10 @@ public class LazyPbTreeExtentFilePersister<T> implements LazyPbTreePersister<Ext
 	}
 
 	public LazyPbTreeExtentFilePersister(PageFile pf, Comparator<T> comparator, Serializer<T> ts) {
-		var ts1 = serialize.nullable(ts);
-		var es = serialize.extent();
-		var ps = serialize.pair(ts1, es);
-		var lps = serialize.list(ps);
+		var ts1 = ser.nullable(ts);
+		var es = ser.extent();
+		var ps = ser.pair(ts1, es);
+		var lps = ser.list(ps);
 		serializer = new Serializer<>() {
 			public PersistSlot<T> read(SerInput si) throws IOException {
 				return new PersistSlot<>(lps.read(si));
@@ -70,7 +70,7 @@ public class LazyPbTreeExtentFilePersister<T> implements LazyPbTreePersister<Ext
 		var pfs = FileFactory.subPageFiles(pf, 0, 1, Integer.MAX_VALUE);
 
 		this.comparator = comparator;
-		nPagesFile = SerializedFileFactory.serialized(pfs[0], serialize.int_);
+		nPagesFile = SerializedFileFactory.serialized(pfs[0], ser.int_);
 		extentFile = FileFactory.extentFile(pfs[1]);
 		nPages = nPagesFile.load(0);
 	}

@@ -16,7 +16,7 @@ import suite.serialize.Serialize.Serializer;
 
 public class FileSystemKeyUtil {
 
-	private Serialize serialize = Singleton.me.serialize;
+	private Serialize ser = Singleton.me.serialize;
 
 	private int hashOffset = 0;
 	private int idOffset = hashOffset + 256 / 8;
@@ -122,7 +122,7 @@ public class FileSystemKeyUtil {
 	}
 
 	public Serializer<Bytes> serializer() {
-		return serialize.bytes(keyLength);
+		return ser.bytes(keyLength);
 	}
 
 }

@@ -16,7 +16,7 @@ import suite.streamlet.FunUtil.Fun;
 
 public class Database implements Closeable {
 
-	private Serialize serialize = Singleton.me.serialize;
+	private Serialize ser = Singleton.me.serialize;
 
 	private JournalledPageFile journalledPageFile;
 	private TransactionManager<Integer, String> transactionManager;
@@ -27,8 +27,8 @@ public class Database implements Closeable {
 		transactionManager = new TransactionManager<>(() -> LazyPbTreeStore.ofExtent( //
 				journalledPageFile, //
 				Object_::compare, //
-				serialize.int_, //
-				serialize.variableLengthString));
+				ser.int_, //
+				ser.variableLengthString));
 	}
 
 	@Override

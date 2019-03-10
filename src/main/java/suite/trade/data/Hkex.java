@@ -28,7 +28,7 @@ public class Hkex {
 
 	// .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 	private static ObjectMapper om = new ObjectMapper();
-	private Serialize serialize = Singleton.me.serialize;
+	private Serialize ser = Singleton.me.serialize;
 
 	private Set<String> delisted = new HashSet<>(List.of("0013.HK"));
 
@@ -239,7 +239,8 @@ public class Hkex {
 	}
 
 	public Instrument queryCompany(String symbol) {
-		return !String_.equals(symbol, "6098.HK") ? queryCompany_(symbol) : Instrument.of("6098.HK", "CG SERVICES", 1000);
+		return !String_.equals(symbol, "6098.HK") ? queryCompany_(symbol)
+				: Instrument.of("6098.HK", "CG SERVICES", 1000);
 	}
 
 	private Instrument queryCompany_(String symbol) {
@@ -276,7 +277,7 @@ public class Hkex {
 
 	private List<Instrument> queryCompanies(int pageNo) {
 		return SerializedStoreCache //
-				.of(serialize.list(Instrument.serializer)) //
+				.of(ser.list(Instrument.serializer)) //
 				.get(getClass().getSimpleName() + ".queryCompanies(" + pageNo + ")", () -> queryCompanies_(pageNo));
 	}
 
@@ -379,7 +380,7 @@ public class Hkex {
 				.toMap();
 
 		return SerializedStoreCache //
-				.of(serialize.mapOfString(serialize.int_)) //
+				.of(ser.mapOfString(ser.int_)) //
 				.get(getClass().getSimpleName() + ".queryLotSizeBySymbol(" + symbols.collect(As.conc(",")) + ")", fun);
 	}
 

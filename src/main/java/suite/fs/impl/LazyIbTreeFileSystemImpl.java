@@ -21,7 +21,7 @@ import suite.streamlet.Streamlet;
 public class LazyIbTreeFileSystemImpl implements FileSystem {
 
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
-	private Serialize serialize = Singleton.me.serialize;
+	private Serialize ser = Singleton.me.serialize;
 
 	private JournalledPageFile jpf;
 	private FileSystemMutator mutator;
@@ -34,20 +34,20 @@ public class LazyIbTreeFileSystemImpl implements FileSystem {
 			private KeyValueStore<Bytes, Bytes> kvss = LazyPbTreeStore.ofExtent( //
 					pfs[0], //
 					Bytes.comparator, //
-					serialize.variableLengthBytes, //
-					serialize.variableLengthBytes);
+					ser.variableLengthBytes, //
+					ser.variableLengthBytes);
 
 			private KeyValueStore<Bytes, Integer> kvsis = LazyPbTreeStore.ofExtent( //
 					pfs[1], //
 					Bytes.comparator, //
-					serialize.variableLengthBytes, //
-					serialize.int_);
+					ser.variableLengthBytes, //
+					ser.int_);
 
 			private KeyValueStore<Bytes, Boolean> kvsbs = LazyPbTreeStore.ofExtent( //
 					pfs[2], //
 					Bytes.comparator, //
-					serialize.variableLengthBytes, //
-					serialize.boolean_);
+					ser.variableLengthBytes, //
+					ser.boolean_);
 
 			public KeyValueMutator<Bytes, Integer> mutate() {
 				return kvsis.mutate();

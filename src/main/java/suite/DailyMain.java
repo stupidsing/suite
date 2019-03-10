@@ -43,7 +43,7 @@ public class DailyMain {
 	private Set<String> blackList = Set.of("0607.HK", "2973.HK");
 
 	private TradeCfg cfg = new TradeCfgImpl();
-	private Serialize serialize = Singleton.me.serialize;
+	private Serialize ser = Singleton.me.serialize;
 	private StringBuilder sb = new StringBuilder();
 	private Sink<String> log = To.sink(sb);
 	private Time today = Time.now();
@@ -151,7 +151,7 @@ public class DailyMain {
 
 		// identify stocks that are mean-reverting
 		var backTestBySymbol = SerializedStoreCache //
-				.of(serialize.mapOfString(serialize.boolean_)) //
+				.of(ser.mapOfString(ser.boolean_)) //
 				.get(getClass().getSimpleName() + ".backTestBySymbol", () -> instruments //
 						.map2(stock -> stock.symbol, stock -> {
 							try {

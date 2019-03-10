@@ -27,7 +27,7 @@ public class B_TreeTest {
 
 	private Comparator<Integer> cmp = Object_::compare;
 	private Random random = new Random();
-	private Serialize serialize = Singleton.me.serialize;
+	private Serialize ser = Singleton.me.serialize;
 	private int[] keys;
 
 	@Before
@@ -41,9 +41,10 @@ public class B_TreeTest {
 		var path = Defaults.tmp("b_tree-dump");
 
 		Files.deleteIfExists(path);
-		var builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
+		var builder = new B_TreeBuilder<>(ser.int_, ser.string(16));
 
-		try (var jpf = JournalledFileFactory.journalled(path, pageSize); var b_tree = builder.build(jpf, pageSize, cmp)) {
+		try (var jpf = JournalledFileFactory.journalled(path, pageSize);
+				var b_tree = builder.build(jpf, pageSize, cmp)) {
 			b_tree.create();
 
 			for (var i = 0; i < 32; i++)
@@ -62,11 +63,12 @@ public class B_TreeTest {
 		var path = Defaults.tmp("b_tree-file");
 
 		Files.deleteIfExists(path);
-		var builder = new B_TreeBuilder<>(serialize.int_, serialize.string(16));
+		var builder = new B_TreeBuilder<>(ser.int_, ser.string(16));
 
 		shuffleNumbers();
 
-		try (var jpf = JournalledFileFactory.journalled(path, pageSize); var b_tree = builder.build(jpf, pageSize, cmp)) {
+		try (var jpf = JournalledFileFactory.journalled(path, pageSize);
+				var b_tree = builder.build(jpf, pageSize, cmp)) {
 			b_tree.create();
 			testStep0(b_tree);
 			jpf.commit();
@@ -75,13 +77,15 @@ public class B_TreeTest {
 
 		shuffleNumbers();
 
-		try (var jpf = JournalledFileFactory.journalled(path, pageSize); var b_tree = builder.build(jpf, pageSize, cmp)) {
+		try (var jpf = JournalledFileFactory.journalled(path, pageSize);
+				var b_tree = builder.build(jpf, pageSize, cmp)) {
 			testStep1(b_tree);
 			jpf.commit();
 			jpf.sync();
 		}
 
-		try (var jpf = JournalledFileFactory.journalled(path, pageSize); var b_tree = builder.build(jpf, pageSize, cmp)) {
+		try (var jpf = JournalledFileFactory.journalled(path, pageSize);
+				var b_tree = builder.build(jpf, pageSize, cmp)) {
 			testStep2(b_tree);
 			jpf.commit();
 			jpf.sync();
@@ -104,7 +108,7 @@ public class B_TreeTest {
 		}
 
 		Files.deleteIfExists(path);
-		var builder = new B_TreeBuilder<>(serialize.int_, serialize.bytes(64));
+		var builder = new B_TreeBuilder<>(ser.int_, ser.bytes(64));
 
 		try (var jpf = JournalledFileFactory.journalled(path, pageSize); var b_tree = builder.build(jpf, 9999, cmp)) {
 			new Profiler().profile(() -> {

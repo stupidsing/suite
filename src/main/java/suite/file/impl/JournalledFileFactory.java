@@ -17,7 +17,7 @@ import suite.serialize.Serialize.Serializer;
 
 public class JournalledFileFactory {
 
-	private static Serialize serialize = Singleton.me.serialize;
+	private static Serialize ser = Singleton.me.serialize;
 
 	public static JournalledPageFile journalled(Path path, int pageSize) {
 		return journalled( //
@@ -32,7 +32,7 @@ public class JournalledFileFactory {
 			PageFile jpf, //
 			PageFile ppf, //
 			int pageSize) {
-		var bytesSerializer = serialize.bytes(pageSize);
+		var bytesSerializer = ser.bytes(pageSize);
 
 		var journalEntrySerializer = new Serializer<JournalEntry>() {
 			public JournalEntry read(SerInput si) throws IOException {
@@ -49,7 +49,7 @@ public class JournalledFileFactory {
 
 		var dataFile = df;
 		var journalPageFile = SerializedFileFactory.serialized(jpf, journalEntrySerializer);
-		var pointerPageFile = SerializedFileFactory.serialized(ppf, serialize.int_);
+		var pointerPageFile = SerializedFileFactory.serialized(ppf, ser.int_);
 		var nCommittedJournalEntries0 = pointerPageFile.load(0);
 
 		var journalEntries = new ArrayList<JournalEntry>();
@@ -105,8 +105,8 @@ public class JournalledFileFactory {
 			}
 
 			/**
-			 * Makes sure the current snapshot of data is saved and recoverable
-			 * on failure, upon the return of method call.
+			 * Makes sure the current snapshot of data is saved and recoverable on failure,
+			 * upon the return of method call.
 			 */
 			public synchronized void sync() {
 				journalPageFile.sync();

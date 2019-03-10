@@ -18,7 +18,7 @@ import suite.serialize.Serialize.Serializer;
 
 public class LazyPbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, Value> {
 
-	private static Serialize serialize = Singleton.me.serialize;
+	private static Serialize ser = Singleton.me.serialize;
 
 	private SerializedPageFile<Pointer> superblockFile;
 	private LazyPbTreePersister<Pointer, Pair<Key, Value>> persister;
@@ -37,8 +37,8 @@ public class LazyPbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 			else
 				return b0 ? 1 : b1 ? -1 : 0;
 		};
-		var ps = serialize.pair(ks, vs);
-		var xs = serialize.nullable(serialize.extent());
+		var ps = ser.pair(ks, vs);
+		var xs = ser.nullable(ser.extent());
 		var pfs = FileFactory.subPageFiles(pageFile, 0, 1, Integer.MAX_VALUE);
 		var superblockFile = SerializedFileFactory.serialized(pfs[0], xs);
 		var persister = new LazyPbTreeExtentFilePersister<>(pfs[1], pc, ps);
@@ -51,9 +51,9 @@ public class LazyPbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 			Serializer<K> ks, //
 			Serializer<V> vs) {
 		Comparator<Pair<K, V>> pc = (p0, p1) -> kc.compare(p0.t0, p1.t0);
-		var ps = serialize.pair(ks, vs);
+		var ps = ser.pair(ks, vs);
 		var pfs = FileFactory.subPageFiles(pageFile, 0, 1, Integer.MAX_VALUE);
-		var superblockFile = SerializedFileFactory.serialized(pfs[0], serialize.nullable(serialize.int_));
+		var superblockFile = SerializedFileFactory.serialized(pfs[0], ser.nullable(ser.int_));
 		var persister = new LazyPbTreePageFilePersister<>(pfs[1], pc, ps);
 		return new LazyPbTreeStore<>(superblockFile, persister, kc);
 	}
