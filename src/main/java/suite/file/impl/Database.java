@@ -23,9 +23,9 @@ public class Database implements Closeable {
 	private TransactionManager<Integer, String> transactionManager;
 
 	public static Database create(Path path) {
-		FileUtil.delete(path);
-		FileUtil.delete(FileUtil.ext(path, ".journal"));
-		FileUtil.delete(FileUtil.ext(path, ".pointer"));
+		FileUtil.deleteIfExists(path);
+		FileUtil.deleteIfExists(FileUtil.ext(path, ".journal"));
+		FileUtil.deleteIfExists(FileUtil.ext(path, ".pointer"));
 		return open(path);
 	}
 
