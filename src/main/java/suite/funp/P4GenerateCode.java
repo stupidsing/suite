@@ -171,13 +171,14 @@ public class P4GenerateCode {
 					.spawn(em1 -> em1.emit(Insn.DS, amd64.imm32(allocSizes.length * ps), amd64.imm8(0l))).in;
 
 			var prolog_amd64 = List.of( //
-					"MOV (RAX, QWORD +x00000009)", //
-					"MOV (RDI, QWORD 0)", //
-					"MOV (RSI, QWORD +x00010000)", //
-					"MOV (RDX, QWORD +x00000003)", //
-					"MOV (R10, QWORD +x00000022)", //
-					"MOV (R8, QWORD +xFFFFFFFF)", //
-					"MOV (R9, QWORD +x00000000)", //
+					"MOV (RAX, DWORD +x00000009)", //
+					"XOR (RDI, RDI)", //
+					"MOV (RSI, DWORD +x00010000)", //
+					"MOV (RDX, DWORD +x00000003)", //
+					"MOV (R10, DWORD +x00000022)", //
+					"XOR (R8, R8)", //
+					"XOR (R9, R9)", //
+					"NOT (R8)", //
 					"SYSCALL ()");
 
 			var prolog_i686 = List.of( //

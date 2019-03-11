@@ -261,6 +261,12 @@ public class Amd64Interpret {
 				case MOVSD:
 					movsd();
 					break;
+				case NEG:
+					assign.f(-source0);
+					break;
+				case NOT:
+					assign.f(~source0);
+					break;
 				case OR:
 					assign.f(setFlags(source0 | source1));
 					break;
