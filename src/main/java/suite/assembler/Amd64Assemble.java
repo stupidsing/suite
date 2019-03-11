@@ -37,7 +37,7 @@ public class Amd64Assemble {
 	private InsnCode invalid = new InsnCode(-1, new byte[0]);
 	private int archSize; // 2, 4 or 8 for 286, i686 and amd64
 	private int defaultSize;
-	private boolean isAmd64;
+	private boolean isLongMode;
 
 	private enum Vexm {
 		VM0F__, VM0F38, VM0F3A,
@@ -178,7 +178,7 @@ public class Amd64Assemble {
 	public Amd64Assemble(int archSize) {
 		this.archSize = archSize;
 		this.defaultSize = min(archSize, 4);
-		this.isAmd64 = archSize == 8;
+		this.isLongMode = archSize == 8;
 	}
 
 	public Bytes assemble(long offset, List<Instruction> instructions, boolean dump) {
@@ -278,7 +278,7 @@ public class Amd64Assemble {
 			encode = new InsnCode(bb.toBytes().toArray());
 			break;
 		case DEC:
-			encode = assembleRm(instruction, isAmd64 ? -1 : 0x48, 0xFE, 1);
+			encode = assembleRm(instruction, isLongMode ? -1 : 0x48, 0xFE, 1);
 			break;
 		case DIV:
 			encode = assembleByteFlag(instruction.op0, 0xF6, 6);
@@ -323,7 +323,7 @@ public class Amd64Assemble {
 			encode = assembleInOut(instruction.op1, instruction.op0, 0xE4);
 			break;
 		case INC:
-			encode = assembleRm(instruction, isAmd64 ? -1 : 0x40, 0xFE, 0);
+			encode = assembleRm(instruction, isLongMode ? -1 : 0x40, 0xFE, 0);
 			break;
 		case INT:
 			if (instruction.op0 instanceof OpImm) {
@@ -542,14 +542,14 @@ public class Amd64Assemble {
 				var sreg = (OpRegSegment) instruction.op0;
 				switch (sreg.sreg) {
 				case 0: // POP ES
-					encode = isAmd64 ? invalid : assemble(0x07);
+					encode = isLongMode ? invalid : assemble(0x07);
 					break;
 				// case 1: // POP CS, no such thing
 				case 2: // POP SS
-					encode = isAmd64 ? invalid : assemble(0x17);
+					encode = isLongMode ? invalid : assemble(0x17);
 					break;
 				case 3: // POP DS
-					encode = isAmd64 ? invalid : assemble(0x1F);
+					encode = isLongMode ? invalid : assemble(0x1F);
 					break;
 				case 4: // POP FS
 					encode = new InsnCode(sreg.size, bs(0x0F, 0xA1));
@@ -582,16 +582,16 @@ public class Amd64Assemble {
 				var sreg = (OpRegSegment) instruction.op0;
 				switch (sreg.sreg) {
 				case 0: // PUSH ES
-					encode = isAmd64 ? invalid : assemble(0x06);
+					encode = isLongMode ? invalid : assemble(0x06);
 					break;
 				case 1: // PUSH CS
-					encode = isAmd64 ? invalid : assemble(0x0E);
+					encode = isLongMode ? invalid : assemble(0x0E);
 					break;
 				case 2: // PUSH SS
-					encode = isAmd64 ? invalid : assemble(0x16);
+					encode = isLongMode ? invalid : assemble(0x16);
 					break;
 				case 3: // PUSH DS
-					encode = isAmd64 ? invalid : assemble(0x1E);
+					encode = isLongMode ? invalid : assemble(0x1E);
 					break;
 				case 4: // PUSH FS
 					encode = new InsnCode(sreg.size, bs(0x0F, 0xA0));
@@ -951,7 +951,7 @@ public class Amd64Assemble {
 
 				long disp;
 
-				if (isAmd64 && modrm.mod == 0 && (modrm.rm & 7) == 5) // RIP-relative addressing
+				if (isLongMode && modrm.mod == 0 && (modrm.rm & 7) == 5) // RIP-relative addressing
 					disp = modrm.disp - offset - bb.size() - modrm.dispSize - insnCode.immSize;
 				else
 					disp = modrm.disp;
@@ -1117,7 +1117,7 @@ public class Amd64Assemble {
 				+ (bit4(r) << 2) //
 				+ (bit4(x) << 1) //
 				+ (bit4(b) << 0);
-		return isAmd64 && size == 1 || b04 != 0 ? 0x40 + b04 : -1;
+		return isLongMode && size == 1 || b04 != 0 ? 0x40 + b04 : -1;
 	}
 
 	// https://en.wikipedia.org/wiki/VEX_prefix
