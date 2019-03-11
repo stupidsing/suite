@@ -43,7 +43,7 @@ public class B_TreeTest {
 		Files.deleteIfExists(path);
 		var builder = new B_TreeBuilder<>(ser.int_, ser.string(16));
 
-		try (var jpf = JournalledFileFactory.journalled(path, pageSize);
+		try (var jpf = JournalledFileFactory.open(path, pageSize);
 				var b_tree = builder.build(jpf, pageSize, cmp)) {
 			b_tree.create();
 
@@ -67,7 +67,7 @@ public class B_TreeTest {
 
 		shuffleNumbers();
 
-		try (var jpf = JournalledFileFactory.journalled(path, pageSize);
+		try (var jpf = JournalledFileFactory.open(path, pageSize);
 				var b_tree = builder.build(jpf, pageSize, cmp)) {
 			b_tree.create();
 			testStep0(b_tree);
@@ -77,14 +77,14 @@ public class B_TreeTest {
 
 		shuffleNumbers();
 
-		try (var jpf = JournalledFileFactory.journalled(path, pageSize);
+		try (var jpf = JournalledFileFactory.open(path, pageSize);
 				var b_tree = builder.build(jpf, pageSize, cmp)) {
 			testStep1(b_tree);
 			jpf.commit();
 			jpf.sync();
 		}
 
-		try (var jpf = JournalledFileFactory.journalled(path, pageSize);
+		try (var jpf = JournalledFileFactory.open(path, pageSize);
 				var b_tree = builder.build(jpf, pageSize, cmp)) {
 			testStep2(b_tree);
 			jpf.commit();
@@ -110,7 +110,7 @@ public class B_TreeTest {
 		Files.deleteIfExists(path);
 		var builder = new B_TreeBuilder<>(ser.int_, ser.bytes(64));
 
-		try (var jpf = JournalledFileFactory.journalled(path, pageSize); var b_tree = builder.build(jpf, 9999, cmp)) {
+		try (var jpf = JournalledFileFactory.open(path, pageSize); var b_tree = builder.build(jpf, 9999, cmp)) {
 			new Profiler().profile(() -> {
 				b_tree.create();
 				for (var i = 0; i < nKeys; i++) {

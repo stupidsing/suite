@@ -47,7 +47,7 @@ public class B_TreeBuilder<Key, Value> {
 		if (isNew)
 			FileUtil.deleteIfExists(path);
 
-		var jpf = JournalledFileFactory.journalled(path, pageSize);
+		var jpf = JournalledFileFactory.open(path, pageSize);
 		var b_tree = new B_TreeBuilder<>(ks, ser.int_).build(jpf, nPages, cmp);
 
 		if (isNew) {

@@ -19,18 +19,32 @@ public class JournalledFileFactory {
 
 	private static Serialize ser = Singleton.me.serialize;
 
-	public static JournalledPageFile journalled(Path path, int pageSize) {
-		return journalled( //
-				FileFactory.pageFile(path, pageSize), //
-				FileFactory.pageFile(FileUtil.ext(path, ".journal"), pageSize + 4), //
-				FileFactory.pageFile(FileUtil.ext(path, ".pointer"), 4), //
+	public static JournalledPageFile open(Path path, int pageSize) {
+		return open(path, pageSize, false);
+	}
+
+	public static JournalledPageFile open(Path path, int pageSize, boolean isCreate) {
+		var path0 = path;
+		var path1 = FileUtil.ext(path0, ".journal");
+		var path2 = FileUtil.ext(path0, ".pointer");
+
+		if (isCreate) {
+			FileUtil.deleteIfExists(path0);
+			FileUtil.deleteIfExists(path1);
+			FileUtil.deleteIfExists(path2);
+		}
+
+		return open( //
+				FileFactory.pageFile(path0, pageSize), //
+				FileFactory.pageFile(path1, pageSize + 4), //
+				FileFactory.pageFile(path2, 4), //
 				pageSize);
 	}
 
 	/**
 	 * Journalling based on redo logs.
 	 */
-	private static JournalledPageFile journalled( //
+	private static JournalledPageFile open( //
 			PageFile df, //
 			PageFile jpf, //
 			PageFile ppf, //

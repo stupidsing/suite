@@ -10,7 +10,6 @@ import suite.fs.KeyValueMutator;
 import suite.fs.impl.TransactionManager;
 import suite.node.util.Singleton;
 import suite.object.Object_;
-import suite.os.FileUtil;
 import suite.persistent.LazyPbTreeStore;
 import suite.serialize.Serialize;
 import suite.streamlet.FunUtil.Fun;
@@ -23,18 +22,15 @@ public class Database implements Closeable {
 	private TransactionManager<Integer, String> transactionManager;
 
 	public static Database create(Path path) {
-		FileUtil.deleteIfExists(path);
-		FileUtil.deleteIfExists(FileUtil.ext(path, ".journal"));
-		FileUtil.deleteIfExists(FileUtil.ext(path, ".pointer"));
-		return open(path);
+		return new Database(path, true);
 	}
 
 	public static Database open(Path path) {
-		return new Database(path);
+		return new Database(path, false);
 	}
 
-	private Database(Path path) {
-		journalledPageFile = JournalledFileFactory.journalled(path, PageFile.defaultPageSize);
+	private Database(Path path, boolean isCreate) {
+		journalledPageFile = JournalledFileFactory.open(path, PageFile.defaultPageSize, isCreate);
 
 		transactionManager = new TransactionManager<>(() -> LazyPbTreeStore.ofExtent( //
 				journalledPageFile, //
