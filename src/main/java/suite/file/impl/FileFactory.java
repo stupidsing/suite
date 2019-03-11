@@ -12,6 +12,7 @@ import suite.file.ExtentAllocator.Extent;
 import suite.file.ExtentFile;
 import suite.file.PageFile;
 import suite.node.util.Singleton;
+import suite.os.FileUtil;
 import suite.os.Log_;
 import suite.primitive.Bytes;
 import suite.primitive.Bytes.BytesBuilder;
@@ -115,7 +116,10 @@ public class FileFactory {
 		};
 	}
 
-	public static PageFile pageFile(Path path, int pageSize) {
+	public static PageFile pageFile(Path path, boolean isCreate, int pageSize) {
+		if (isCreate)
+			FileUtil.deleteIfExists(path);
+
 		var file = new RandomAccessibleFile(path);
 
 		return new PageFile() {
@@ -128,7 +132,8 @@ public class FileFactory {
 			}
 
 			public Bytes load(int pointer) {
-				int start = pointer * pageSize, end = start + pageSize;
+				var start = pointer * pageSize;
+				var end = start + pageSize;
 				return file.load(start, end);
 			}
 
