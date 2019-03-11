@@ -1,6 +1,7 @@
 package suite.file;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static suite.util.Friends.fail;
 
 import java.io.IOException;
@@ -23,6 +24,10 @@ public class DatabaseTest {
 				return fail();
 			});
 		} catch (RuntimeException ex) {
+		}
+
+		try (var database = Database.open(Defaults.tmp("database"))) {
+			assertNull(database.transact(tx -> tx.get(0)));
 		}
 	}
 

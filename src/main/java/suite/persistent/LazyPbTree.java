@@ -173,8 +173,7 @@ public class LazyPbTree<T> implements PerTree<T> {
 		var slots0 = fs.slot.readSlots();
 		List<Slot<T>> slots2;
 
-		// adds the node into it
-		if (!slots0.isEmpty()) {
+		if (!slots0.isEmpty()) { // recurse into branches
 			var slots1 = update(slots0, t, fun);
 			List<Slot<T>> inner;
 
@@ -188,15 +187,15 @@ public class LazyPbTree<T> implements PerTree<T> {
 					slots2 = slots1;
 			else
 				slots2 = slots1;
-		} else {
-			var t0 = fs.c == 0 ? fs.slot.pivot : null;
-			var t1 = fun.apply(t0);
-
-			slots2 = new ArrayList<>();
-			if (fs.c != 0)
-				slots2.add(fs.slot);
+		} else if (fs.c == 0) { // already exists
+			var t1 = fun.apply(fs.slot.pivot);
+			slots2 = t1 != null ? List.of(new Slot<>(() -> List.of(), t1)) : List.of();
+		} else { // key not exists
+			var t1 = fun.apply(null);
 			if (t1 != null)
-				slots2.add(new Slot<>(() -> List.of(), t1));
+				slots2 = List.of(fs.slot, new Slot<>(() -> List.of(), t1));
+			else
+				return node0; // no change
 		}
 
 		var slots3 = List_.concat(List_.left(node0, s0), slots2, List_.right(node0, s1));
