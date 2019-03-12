@@ -5,6 +5,8 @@ import static suite.util.Friends.forInt;
 import static suite.util.Friends.max;
 import static suite.util.Friends.min;
 
+import java.util.Arrays;
+
 import suite.primitive.Floats_;
 import suite.primitive.Int_Flt;
 import suite.trade.data.DataSource;
@@ -97,6 +99,31 @@ public class Oscillator {
 			var meanAbsDev = sumAbsDev / l;
 			return r * (ps[i] - mean) / meanAbsDev;
 		});
+	}
+
+	// market meanness index
+	// https://www.financial-hacker.com/the-market-meanness-index/
+	public float[] mmi(float[] prices, int window) {
+		var length = prices.length;
+		var mmis = new float[length];
+
+		for (var start = window; start < length; start++) {
+			var w = Arrays.copyOfRange(prices, start - window, start);
+			Arrays.sort(w);
+			var median = w[w.length / 2];
+
+			int nLos = 0, nHis = 0;
+			for (var i = window - 1; 0 <= i; i--) {
+				var si = start - window + i;
+				if (prices[si + 1] < prices[si] && median < prices[si])
+					nLos++;
+				else if (prices[si] < prices[si + 1] && prices[si] < median)
+					nHis++;
+			}
+			mmis[start] = (nLos + nHis) / ((float) window - 1);
+		}
+
+		return mmis;
 	}
 
 	public Movement movement(float[] prices, int window) {
