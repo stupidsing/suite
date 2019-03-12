@@ -17,7 +17,7 @@ public class DatabaseTest {
 
 	@Test
 	public void testRollback() throws IOException {
-		try (var database = Database.create(Defaults.tmp("database"))) {
+		try (var database = Database.openNew(Defaults.tmp("database"))) {
 			database.transact(tx -> {
 				for (var i = 0; i < nRecords; i++)
 					tx.put(i, "sample");
