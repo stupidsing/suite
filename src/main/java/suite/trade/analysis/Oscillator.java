@@ -110,9 +110,10 @@ public class Oscillator {
 		for (var start = window; start < length; start++) {
 			var w = Arrays.copyOfRange(prices, start - window, start);
 			Arrays.sort(w);
-			var median = w[w.length / 2];
 
+			var median = w[w.length / 2];
 			int nLos = 0, nHis = 0;
+
 			for (var i = window - 1; 0 <= i; i--) {
 				var si = start - window + i;
 				if (prices[si + 1] < prices[si] && median < prices[si])
@@ -120,6 +121,7 @@ public class Oscillator {
 				else if (prices[si] < prices[si + 1] && prices[si] < median)
 					nHis++;
 			}
+
 			mmis[start] = (nLos + nHis) / ((float) window - 1);
 		}
 
