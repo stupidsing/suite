@@ -57,6 +57,7 @@ public class LazyPbTreeExtentFilePersister<T> implements LazyPbTreePersister<Ext
 		var es = ser.extent();
 		var ps = ser.pair(ts1, es);
 		var lps = ser.list(ps);
+
 		serializer = new Serializer<>() {
 			public PersistSlot<T> read(SerInput si) throws IOException {
 				return new PersistSlot<>(lps.read(si));

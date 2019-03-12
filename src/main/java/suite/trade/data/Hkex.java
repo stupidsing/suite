@@ -328,6 +328,34 @@ public class Hkex {
 				.uniqueResult());
 	}
 
+	// https://www.daytradetheworld.com/wiki/hkex/
+	public float getTickSize(float price) {
+		if (price <= .25f)
+			return .001f;
+		else if (price <= .5f)
+			return .005f;
+		else if (price <= 10f)
+			return .01f;
+		else if (price <= 20f)
+			return .02f;
+		else if (price <= 100f)
+			return .05f;
+		else if (price <= 200f)
+			return .1f;
+		else if (price <= 500f)
+			return .2f;
+		else if (price <= 1000f)
+			return .5f;
+		else if (price <= 2000f)
+			return 1f;
+		else if (price <= 5000f)
+			return 2f;
+		else if (price <= 9995f)
+			return 5f;
+		else
+			return Float.NaN;
+	}
+
 	private List<Instrument> queryCompanies_(int pageNo) {
 		var json = query("" //
 				+ "https://www.hkex.com.hk/eng/csm/ws/Result.asmx/GetData" //
