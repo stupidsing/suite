@@ -21,12 +21,12 @@ public class Database implements Closeable {
 	private JournalledPageFile journalledPageFile;
 	private TransactionManager<Integer, String> transactionManager;
 
-	public static Database openNew(Path path) {
-		return new Database(path, true);
-	}
-
 	public static Database open(Path path) {
 		return new Database(path, false);
+	}
+
+	public static Database openNew(Path path) {
+		return new Database(path, true);
 	}
 
 	private Database(Path path, boolean isCreate) {
