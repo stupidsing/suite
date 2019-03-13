@@ -96,9 +96,10 @@ public class B_TreeTest {
 	@Test
 	public void testInsertPerformance() throws IOException {
 		var nKeys = 16384;
-		keys = Ints_.toArray(nKeys, i -> i);
 		var pageSize = 4096;
 		var path = Defaults.tmp("b_tree-file");
+
+		keys = Ints_.toArray(nKeys, i -> i);
 
 		for (var i = 0; i < nKeys; i++) {
 			var j = random.nextInt(nKeys);
