@@ -18,7 +18,7 @@ import suite.primitive.Bytes;
 import suite.serialize.Serialize;
 import suite.streamlet.Streamlet;
 
-public class LazyIbTreeFileSystemImpl implements FileSystem {
+public class LazyPbTreeFileSystemImpl implements FileSystem {
 
 	private FileSystemKeyUtil keyUtil = new FileSystemKeyUtil();
 	private Serialize ser = Singleton.me.serialize;
@@ -26,7 +26,7 @@ public class LazyIbTreeFileSystemImpl implements FileSystem {
 	private JournalledPageFile jpf;
 	private FileSystemMutator mutator;
 
-	public LazyIbTreeFileSystemImpl(Path path, int pageSize) {
+	public LazyPbTreeFileSystemImpl(Path path, int pageSize) {
 		jpf = JournalledFileFactory.open(path, pageSize);
 		var pfs = FileFactory.subPageFiles(jpf, 0, 10240, 20480, 30720);
 
