@@ -31,7 +31,7 @@ public class Huffman {
 	}
 
 	private <Unit> Dictionary<Unit> build(List<Unit> input) {
-		Comparator<Node<Unit>> comparator = (node0, node1) -> node0.size - node1.size;
+		var comparator = Comparator.<Node<Unit>> comparingInt(node -> node.size);
 
 		@SuppressWarnings("unchecked")
 		var clazz = (Class<Node<Unit>>) (Class<?>) Node.class;

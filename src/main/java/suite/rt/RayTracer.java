@@ -45,7 +45,7 @@ public class RayTracer {
 
 		public RayIntersection intersection();
 
-		public Comparator<RayHit> comparator = (rh0, rh1) -> rh0.advance() < rh1.advance() ? -1 : 1;
+		public Comparator<RayHit> comparator = Comparator.comparingDouble(RayHit::advance);
 	}
 
 	public interface RayIntersection {

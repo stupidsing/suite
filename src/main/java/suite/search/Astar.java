@@ -14,8 +14,7 @@ import suite.streamlet.FunUtil.Source;
 
 public class Astar<Node> {
 
-	private Comparator<NodeInfo> comparator = (ni0, ni1) -> ni0.estimatedCost - ni1.estimatedCost;
-
+	private Comparator<NodeInfo> comparator = Comparator.comparingInt(ni -> ni.estimatedCost);
 	private Fun<Node, Source<Node>> generate;
 	private Obj_Int<Node> estimate;
 

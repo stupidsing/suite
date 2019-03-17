@@ -29,14 +29,7 @@ public class LazyPbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 			Comparator<K> kc, //
 			Serializer<K> ks, //
 			Serializer<V> vs) {
-		Comparator<Pair<K, V>> pc = (p0, p1) -> {
-			boolean b0 = p0 != null;
-			boolean b1 = p1 != null;
-			if (b0 && b1)
-				return kc.compare(p0.t0, p1.t0);
-			else
-				return b0 ? 1 : b1 ? -1 : 0;
-		};
+		var pc = Comparator.nullsLast(Comparator.<Pair<K, V>, K> comparing(p -> p.t0, kc));
 		var ps = ser.pair(ks, vs);
 		var xs = ser.nullable(ser.extent());
 		var pfs = FileFactory.subPageFiles(pageFile, 0, 1, Integer.MAX_VALUE);
@@ -50,7 +43,7 @@ public class LazyPbTreeStore<Pointer, Key, Value> implements KeyValueStore<Key, 
 			Comparator<K> kc, //
 			Serializer<K> ks, //
 			Serializer<V> vs) {
-		Comparator<Pair<K, V>> pc = (p0, p1) -> kc.compare(p0.t0, p1.t0);
+		var pc = Comparator.<Pair<K, V>, K> comparing(p -> p.t0, kc);
 		var ps = ser.pair(ks, vs);
 		var pfs = FileFactory.subPageFiles(pageFile, 0, 1, Integer.MAX_VALUE);
 		var superblockFile = SerializedFileFactory.serialized(pfs[0], ser.nullable(ser.int_));
