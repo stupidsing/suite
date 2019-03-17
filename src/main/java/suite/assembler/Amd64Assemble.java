@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import suite.adt.pair.Fixie_.FixieFun3;
 import suite.assembler.Amd64.Instruction;
 import suite.assembler.Amd64.OpImm;
 import suite.assembler.Amd64.OpImmLabel;
@@ -842,13 +841,16 @@ public class Amd64Assemble {
 	}
 
 	private InsnCode assembleRmReg(Instruction instruction, int bRmReg, int bRegRm, Predicate<Operand> pred) {
-		FixieFun3<Operand, Integer, OpReg, InsnCode> fun = (rm, b, reg) -> 0 <= b ? assembleByteFlag(rm, b, reg) : invalid;
 		if (isRm.test(instruction.op0) && pred.test(instruction.op1))
-			return fun.apply(instruction.op0, bRmReg, (OpReg) instruction.op1);
+			return assembleRmReg(instruction.op0, (OpReg) instruction.op1, bRmReg);
 		else if (pred.test(instruction.op0) && isRm.test(instruction.op1))
-			return fun.apply(instruction.op1, bRegRm, (OpReg) instruction.op0);
+			return assembleRmReg(instruction.op1, (OpReg) instruction.op0, bRegRm);
 		else
 			return invalid;
+	}
+
+	private InsnCode assembleRmReg(Operand rm, OpReg reg, int b) {
+		return 0 <= b ? assembleByteFlag(rm, b, reg) : invalid;
 	}
 
 	private InsnCode assembleRegRm(Operand reg, Operand rm, int b) {
@@ -1076,16 +1078,7 @@ public class Amd64Assemble {
 	}
 
 	private int dispMod(int dispSize) {
-		switch (dispSize) {
-		case 0:
-			return 0;
-		case 1:
-			return 1;
-		case 4:
-			return 2;
-		default:
-			return fail("bad displacement");
-		}
+		return dispSize == 0 ? 0 : dispSize == 1 ? 1 : dispSize == 4 ? 2 : fail("bad displacement");
 	}
 
 	private int sib(Modrm modrm) {
@@ -1093,18 +1086,8 @@ public class Amd64Assemble {
 	}
 
 	private int scale(OpMem op) {
-		switch (op.scale) {
-		case 1:
-			return 0;
-		case 2:
-			return 1;
-		case 4:
-			return 2;
-		case 8:
-			return 3;
-		default:
-			return fail("bad scale");
-		}
+		var l = Integer.lowestOneBit(op.scale) - 1;
+		return 0 <= l && l < 4 ? l : fail("bad scale");
 	}
 
 	private int rexModrm(int size, InsnCode insnCode) {
