@@ -10,7 +10,6 @@ import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -194,18 +193,6 @@ public class Object_ {
 			ctor.setAccessible(true);
 			return ctor.newInstance();
 		});
-	}
-
-	public static <T> Comparator<T> nullsFirst(Comparator<T> cmp0) {
-		return (key0, key1) -> {
-			var b0 = key0 != null;
-			var b1 = key1 != null;
-
-			if (b0 && b1)
-				return cmp0.compare(key0, key1);
-			else
-				return b0 ? 1 : b1 ? -1 : 0;
-		};
 	}
 
 	public static void wait(Object object) {
