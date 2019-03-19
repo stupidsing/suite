@@ -1086,7 +1086,7 @@ public class Amd64Assemble {
 	}
 
 	private int scale(OpMem op) {
-		var l = Integer.lowestOneBit(op.scale) - 1;
+		var l = Integer.numberOfTrailingZeros(op.scale);
 		return 0 <= l && l < 4 ? l : fail("bad scale");
 	}
 

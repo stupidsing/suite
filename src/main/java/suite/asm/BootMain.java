@@ -9,14 +9,13 @@ import suite.os.FileUtil;
 import suite.primitive.Bytes;
 import suite.streamlet.Read;
 import suite.util.RunUtil;
-import suite.util.RunUtil.RunOption;
 import suite.util.To;
 
 // mvn compile exec:java -Dexec.mainClass=suite.asm.BootMain && qemu-system-x86_64 target/boot.bin
 public class BootMain {
 
 	public static void main(String[] args) {
-		RunUtil.run(RunOption.TIME___, BootMain::main);
+		RunUtil.run(BootMain::main);
 	}
 
 	public static boolean main() {
