@@ -359,10 +359,9 @@ public class Statistic {
 		}
 
 		public String toString() {
-			return "(n:" + size //
-					+ " mean:" + To.string(mean) //
-					+ " range:" + To.string(min) + "~" + To.string(max) //
+			return "(mean:" + To.string(mean) //
 					+ " sd:" + To.string(standardDeviation()) //
+					+ " range:" + To.string(min) + "~" + To.string(max) //
 					+ ")";
 		}
 	}

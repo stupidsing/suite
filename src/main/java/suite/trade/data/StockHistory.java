@@ -270,9 +270,10 @@ public class StockHistory {
 					if (Boolean.TRUE)
 						// may got negative prices
 						a -= dividend.t1 * b;
-					else
+					else {
 						// may got skewed profits
-						b *= (pair.t0 - dividend.t0) / pair.t0;
+						b *= (pair.t1 - dividend.t1) / pair.t1;
+					}
 					di--;
 				}
 			}
@@ -280,6 +281,7 @@ public class StockHistory {
 			if (0 <= si) {
 				var split = splits[si];
 				if (t < split.t0) {
+					a *= split.t1;
 					b *= split.t1;
 					si--;
 				}
