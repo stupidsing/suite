@@ -23,10 +23,6 @@ public class Quant {
 		return n / d1;
 	}
 
-	public static Int_Dbl filterRange(int start, Int_Dbl fun) {
-		return index -> start <= index ? fun.apply(index) : 0d;
-	}
-
 	public static Int_Dbl enterExit( //
 			int start, int end, //
 			int timedExit, //
@@ -88,6 +84,10 @@ public class Quant {
 		}
 
 		return index -> holds[index - 1];
+	}
+
+	public static Int_Dbl filterRange(int start, Int_Dbl fun) {
+		return index -> start <= index ? fun.apply(index) : 0d;
 	}
 
 	public static Int_Dbl fold(int start, int end, IntFlt_Flt fun) {

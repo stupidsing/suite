@@ -1,5 +1,7 @@
 package suite.util;
 
+import static suite.util.Friends.rethrow;
+
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -9,6 +11,29 @@ import suite.streamlet.Outlet;
 import suite.streamlet.Read;
 
 public class Thread_ {
+
+	public static class Th extends Thread {
+		private RunnableEx runnable;
+
+		public Th(RunnableEx runnable) {
+			this.runnable = runnable;
+		}
+
+		public void run() {
+			try {
+				runnable.run();
+			} catch (Exception ex) {
+				Log_.error(ex);
+			}
+		}
+
+		public void join_() {
+			rethrow(() -> {
+				join();
+				return this;
+			});
+		}
+	}
 
 	public interface RunnableEx {
 		public void run() throws Exception;

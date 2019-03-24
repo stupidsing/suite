@@ -16,7 +16,6 @@ import suite.file.impl.JournalledFileFactory;
 import suite.file.impl.SerializedFileFactory;
 import suite.fs.KeyDataStore;
 import suite.node.util.Singleton;
-import suite.object.Object_;
 import suite.os.FileUtil;
 import suite.serialize.SerInput;
 import suite.serialize.SerOutput;
@@ -74,7 +73,7 @@ public class B_TreeBuilder<Key, Value> {
 		var pfs = FileFactory.subPageFiles(f, p0, p1, p2, p3);
 
 		return FixieArray.of(pfs).map((alf0, sbf0, pf0) -> {
-			var b_tree = new B_TreeImpl<Key, Value>(Object_.nullsFirst(cmp));
+			var b_tree = new B_TreeImpl<Key, Value>(Comparator.nullsFirst(cmp));
 
 			var als = ser.bytes(pageSize);
 			var sbs = superblockSerializer(b_tree);

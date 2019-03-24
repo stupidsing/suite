@@ -5,7 +5,6 @@ import static suite.util.Friends.expm1;
 import static suite.util.Friends.forInt;
 import static suite.util.Friends.log1p;
 import static suite.util.Friends.max;
-import static suite.util.Friends.sqrt;
 
 import java.util.Arrays;
 
@@ -71,8 +70,6 @@ public class AnalyzeTimeSeriesTest {
 	private void analyze(float[] prices) {
 		var length = prices.length;
 		var log2 = Quant.log2trunc(length);
-		var nYears = length * Trade_.invTradeDaysPerYear;
-
 		var fds = dct.dct(Arrays.copyOfRange(prices, length - log2, length));
 		var returns = ts.returns(prices);
 		var logPrices = To.vector(prices, Math::log);
@@ -121,11 +118,10 @@ public class AnalyzeTimeSeriesTest {
 		Log_.info("" //
 				+ "\nsymbol = " + symbol //
 				+ "\nlength = " + length //
-				+ "\nnYears = " + nYears //
+				+ "\nnYears = " + length * Trade_.invTradeDaysPerYear //
 				+ "\nups = " + Floats_.of(returns).filter(return_ -> 0f <= return_).size() //
 				+ "\ndct period = " + max.t0 //
 				+ forInt(10).map(d -> "dct component [" + d + "d] = " + fds[d]) //
-				+ "\nreturn yearly sharpe = " + rmv.mean / sqrt(variance / nYears) //
 				+ "\nreturn kelly = " + kelly //
 				+ "\nreturn skew = " + stat.skewness(returns) //
 				+ "\nreturn kurt = " + stat.kurtosis(returns) //
