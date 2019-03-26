@@ -63,8 +63,11 @@ public class StoreCache {
 
 		if (String_.equals(RunUtil.get("EVICTSTORECACHE", "N"), "Y"))
 			paths.forEach(FileUtil::delete);
-		else
-			Log_.info(paths.map(path -> "rm '" + path + "'").toString());
+		else {
+			var rms = paths.map(path -> "rm '" + path + "'").toString();
+			if (!rms.isEmpty())
+				Log_.info(rms);
+		}
 	}
 
 	public <T> T reget(Source<T> source) {
