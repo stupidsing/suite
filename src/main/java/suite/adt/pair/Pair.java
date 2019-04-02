@@ -45,7 +45,7 @@ public class Pair<T0, T1> {
 	}
 
 	public static <T0 extends Comparable<? super T0>, T1> Comparator<Pair<T0, T1>> comparatorByFirst() {
-		return (pair0, pair1) -> Object_.compare(fst(pair0), fst(pair1));
+		return Comparator.comparing(pair -> fst(pair), Object_::compare);
 	}
 
 	public static <T0> T0 fst(Pair<T0, ?> pair) {
