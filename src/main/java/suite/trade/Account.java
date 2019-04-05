@@ -99,7 +99,7 @@ public class Account {
 		}
 
 		public String out1() {
-			return "transactions = " + To.string(transactionAmount) + "/" + nTransactions + ", fee = " + To.string(transactionFee);
+			return "FEE = " + To.string(transactionFee);
 		}
 	}
 
