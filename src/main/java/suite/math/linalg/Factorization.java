@@ -43,4 +43,35 @@ public class Factorization {
 		return Pair.of(u, v);
 	}
 
+	// https://towardsdatascience.com/prototyping-a-recommender-system-step-by-step-part-2-alternating-least-square-als-matrix-4a76c58714a1
+	// SGD Algorithm for MF
+	public Pair<float[][], float[][]> sgd(float[][] v, int k) {
+		var eps = .25d;
+		var lambda = .01d;
+		var inv = 1d / Math.sqrt(k);
+		var height = mtx.height(v);
+		var width = mtx.width(v);
+		var w = To.matrix(height, k, (i, j) -> random.nextFloat() * inv);
+		var h = To.matrix(k, width, (i, j) -> random.nextFloat() * inv);
+
+		for (var iter = 0; iter < 999999; iter++) {
+			var i = random.nextInt(height);
+			var j = random.nextInt(width);
+			var dot = 0d;
+
+			for (var s = 0; s < k; s++)
+				dot += w[i][s] * h[s][j];
+
+			var error = dot - v[i][j];
+
+			for (var s = 0; s < k; s++)
+				w[i][s] -= eps * (error * h[s][j] + lambda * w[i][s]);
+
+			for (var s = 0; s < k; s++)
+				h[s][j] -= eps * (error * w[i][s] + lambda * h[s][j]);
+		}
+
+		return Pair.of(w, h);
+	}
+
 }
