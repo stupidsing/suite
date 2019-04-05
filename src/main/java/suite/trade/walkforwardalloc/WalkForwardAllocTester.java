@@ -120,7 +120,7 @@ public class WalkForwardAllocTester {
 		var sb = new StringBuilder();
 
 		for (var e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
-			sb.append(e.t0 + ":" + String.format("%.0f", e.t1 * 100d / length) + "%,");
+			sb.append(e.map((symbol, hold) -> symbol + ":" + To.percent(hold / length) + ","));
 
 		return "nTicks:" + length //
 				+ " val:" + (0 < length ? valuations_[length - 1] : "N/A") //

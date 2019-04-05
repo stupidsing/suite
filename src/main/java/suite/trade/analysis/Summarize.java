@@ -1,5 +1,6 @@
 package suite.trade.analysis;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 import suite.adt.pair.Fixie;
@@ -157,7 +158,7 @@ public class Summarize {
 		public final Streamlet<String> details;
 		public final Streamlet<Trade> trades;
 		public final Account account;
-		public final String size, pnl, dividend;
+		public final double size, pnl, dividend;
 		public final TransactionSummary transactionSummary;
 
 		public Summarize_(Streamlet<String> details, Streamlet<Trade> trades0, Streamlet<Trade> trades1) {
@@ -168,36 +169,45 @@ public class Summarize {
 			var amount1 = account1.cash();
 
 			this.details = details;
-			this.trades = trades0;
-			this.account = account0;
-			size = To.string(amount1 - amount0);
-			pnl = To.string(amount1);
-			dividend = To.string(Trade_.dividend(trades, dividendFun, dividendFeeFun));
+			trades = trades0;
+			account = account0;
+			size = amount1 - amount0;
+			pnl = amount1;
+			dividend = Trade_.dividend(trades, dividendFun, dividendFeeFun);
 			transactionSummary = accountTx.transactionSummary(cfg::transactionFee);
 		}
 
 		public String out0() {
 			return details //
 					.snoc("" //
-							+ "size:" + size //
-							+ ", pnl:" + pnl //
-							+ ", div:" + dividend //
+							+ "size:" + To.string(size) //
+							+ ", pnl:" + To.string(pnl) //
+							+ ", div:" + To.string(dividend) //
 							+ ", " + transactionSummary.out0()) //
 					.toString();
 		}
 
 		public String out1() {
+			var start = Time.of(trades.first().date).epochDay();
+			var end = LocalDate.now().toEpochDay();
+			var nYears = (end - start) / 365f;
+			var nav0 = size - pnl;
+			var nav1 = nav0 + pnl + dividend - transactionSummary.transactionFee;
+			var rtn = nav1 / nav0;
+			double cagr = Math.expm1(Math.log(rtn) / nYears);
+
 			return details //
-					.snoc("SIZ = " + size) //
-					.snoc("PNL = " + pnl) //
-					.snoc("DIV = " + dividend) //
+					.snoc("SIZ = " + To.string(size)) //
+					.snoc("PNL = " + To.string(pnl)) //
+					.snoc("DIV = " + To.string(dividend)) //
+					.snoc("CAGR = " + cagr) //
 					.snoc(transactionSummary.out1()) //
 					.toString();
 		}
 	}
 
 	private String percent(float price1, float pricex) {
-		var pc = String.format("%.1f", 100d * Quant.return_(price1, pricex)) + "%";
+		var pc = To.percent(Quant.return_(price1, pricex));
 		return (pc.startsWith("-") ? "" : "+") + pc;
 	}
 

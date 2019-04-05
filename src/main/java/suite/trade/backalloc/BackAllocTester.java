@@ -151,7 +151,7 @@ public class BackAllocTester {
 			var length = valuations.length;
 
 			for (var e : Read.from2(holdBySymbol).sortBy((symbol, value) -> -value).take(5))
-				sb.append(e.t0 + ":" + String.format("%.0f", e.t1 * 100d) + "%,");
+				sb.append(e.map((symbol, hold) -> symbol + ":" + To.percent(hold) + ","));
 
 			if (exception == null)
 				return period //

@@ -168,6 +168,10 @@ public class To {
 		}).closeAtEnd(bis).closeAtEnd(is);
 	}
 
+	public static String percent(double d) {
+		return String.format("%.1f", d * 100d) + "%";
+	}
+
 	public static Sink<String> sink(StringBuilder sb) {
 		return s -> sb.append("\n" + s);
 	}
