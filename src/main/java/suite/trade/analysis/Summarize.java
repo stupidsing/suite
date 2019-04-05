@@ -200,8 +200,8 @@ public class Summarize {
 					.snoc("SIZ = " + To.string(size)) //
 					.snoc("PNL = " + To.string(pnl)) //
 					.snoc("DIV = " + To.string(dividend)) //
-					.snoc("CAGR = " + cagr) //
 					.snoc(transactionSummary.out1()) //
+					.snoc("CAGR = " + To.percent(cagr)) //
 					.toString();
 		}
 	}
