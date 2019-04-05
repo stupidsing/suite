@@ -19,7 +19,7 @@ public class FactorizationTest {
 		});
 
 		System.out.println(mtx.toString(uv));
-		mtx.verifyEquals(m, uv, .01f);
+		mtx.verifyEquals(m, uv, .05f);
 	}
 
 }
