@@ -194,7 +194,7 @@ public class Summarize {
 			var nav0 = size - pnl;
 			var nav1 = nav0 + pnl + dividend - transactionSummary.transactionFee;
 			var rtn = nav1 / nav0;
-			double cagr = Math.expm1(Math.log(rtn) / nYears);
+			var cagr = Math.expm1(Math.log(rtn) / nYears);
 
 			return details //
 					.snoc("SIZ = " + To.string(size)) //
