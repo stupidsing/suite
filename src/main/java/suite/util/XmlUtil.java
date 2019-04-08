@@ -11,7 +11,6 @@ import java.io.StringWriter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.w3c.dom.bootstrap.DOMImplementationRegistry;
@@ -35,7 +34,7 @@ public class XmlUtil {
 
 		public String namespaceUri();
 
-		public String localName();
+		public String nodeName();
 
 		public String text();
 
@@ -85,8 +84,8 @@ public class XmlUtil {
 				return n.getNamespaceURI();
 			}
 
-			public String localName() {
-				return n.getLocalName();
+			public String nodeName() {
+				return n.getNodeName();
 			}
 
 			public String text() {
@@ -98,7 +97,19 @@ public class XmlUtil {
 			}
 
 			public Streamlet<XmlNode> children(String tagName) {
-				return xmlNodes(((Element) n).getElementsByTagName(tagName));
+				var nodeList = n.getChildNodes();
+
+				return Read.from(() -> new Source<XmlNode>() {
+					private int i = 0;
+
+					public XmlNode g() {
+						Node child;
+						while (i < nodeList.getLength())
+							if (String_.equals((child = nodeList.item(i++)).getNodeName(), tagName))
+								return node(child);
+						return null;
+					}
+				});
 			}
 
 			private Streamlet<XmlNode> xmlNodes(NodeList nodeList) {
