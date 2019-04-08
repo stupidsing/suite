@@ -10,7 +10,7 @@ public class Qr {
 	private Vector vec = new Vector();
 
 	public Pair<float[][], float[][]> decompose(float[][] m0) {
-		Pair<float[][], float[][]> qr = decompose_mT_T(mtx.transpose(m0));
+		var qr = decompose_mT_T(mtx.transpose(m0));
 		return qr.map((q, r) -> Pair.of(mtx.transpose(q), mtx.transpose(r)));
 	}
 
