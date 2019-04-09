@@ -21,7 +21,7 @@ public class XmlUtilTest {
 	}
 
 	@Test
-	public void test1() throws SAXException {
+	public void testPom() throws SAXException {
 		XmlNode xml = xmlUtil.read(FileUtil.in("pom.xml"));
 
 		System.out.println(xml);
