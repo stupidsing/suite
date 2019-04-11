@@ -190,7 +190,7 @@ public class Summarize {
 		public String out1() {
 			var start = Time.of(trades.first().date).epochDay();
 			var end = LocalDate.now().toEpochDay();
-			var nYears = (end - start) / 365f;
+			var nYears = (end - start) / 365.25d;
 			var nav0 = size - pnl;
 			var nav1 = nav0 + pnl + dividend - transactionSummary.transactionFee;
 			var rtn = nav1 / nav0;
