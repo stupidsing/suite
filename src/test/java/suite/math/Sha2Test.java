@@ -2,13 +2,22 @@ package suite.math;
 
 import static org.junit.Assert.assertEquals;
 
+import java.nio.charset.StandardCharsets;
+
 import org.junit.Test;
 
 public class Sha2Test {
 
+	private Sha2 sha2 = new Sha2();
+
 	@Test
 	public void test() {
-		assertEquals(0xE3, Byte.toUnsignedInt(new Sha2().sha256(new byte[0])[0]));
+		byte[] empty = new byte[0];
+		assertEquals(0xE3, Byte.toUnsignedInt(sha2.sha256(empty)[0]));
+		assertEquals(0x4B, Byte.toUnsignedInt(sha2.sha256(new byte[] { 1, })[0]));
+		assertEquals(0xB6, Byte.toUnsignedInt(sha2.hmacSha256(empty, empty)[0]));
+		assertEquals(0xF7, Byte.toUnsignedInt(sha2.hmacSha256("key".getBytes(StandardCharsets.US_ASCII),
+				"The quick brown fox jumps over the lazy dog".getBytes(StandardCharsets.US_ASCII))[0]));
 	}
 
 }

@@ -34,7 +34,7 @@ public class Jwt {
 		var json = rethrow(() -> om.readTree(header));
 		var b = String_.equals(json.path("typ").textValue(), "JWT") && String_.equals(json.path("alg").textValue(), "HS256");
 		var data = encodeUrl(header) + "." + encodeUrl(payload);
-		var hash = sha2.sha256(data.getBytes(charset));
+		var hash = sha2.sha256(data.getBytes(charset)); // sha2.hmac(secret, data.getBytes(charset))
 		return b && Arrays.equals(hash, hash1) ? payload : fail();
 	}
 

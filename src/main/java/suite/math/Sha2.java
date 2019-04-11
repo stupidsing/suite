@@ -1,8 +1,10 @@
 package suite.math;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
-import suite.primitive.IntIntSink;
+import suite.primitive.Bytes;
+import suite.primitive.IntLngSink;
 import suite.primitive.Ints_;
 
 /**
@@ -22,6 +24,24 @@ public class Sha2 {
 			0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, //
 			0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2, };
 
+	public byte[] hmacSha256(byte[] key0, byte[] bs0) {
+		var blockSize = 64;
+		var key1 = blockSize < key0.length ? sha256(key0) : key0;
+		var key2 = Arrays.copyOf(key1, blockSize);
+
+		// input and output key pads
+		var ikp = new byte[blockSize];
+		var okp = new byte[blockSize];
+
+		for (var i = 0; i < blockSize; i++) {
+			ikp[i] = (byte) (key2[i] ^ 0x36);
+			okp[i] = (byte) (key2[i] ^ 0x5c);
+		}
+
+		var h0 = sha256(Bytes.concat(Bytes.of(ikp), Bytes.of(bs0)).toArray());
+		return sha256(Bytes.concat(Bytes.of(okp), Bytes.of(h0)).toArray());
+	}
+
 	public byte[] sha256(byte[] bs0) {
 		var s512 = 512;
 		int h0 = 0x6a09e667, h1 = 0xbb67ae85, h2 = 0x3c6ef372, h3 = 0xa54ff53a;
@@ -40,7 +60,7 @@ public class Sha2 {
 			is[div4] |= Byte.toUnsignedInt(bs0[i]) << 24 - mod4 * 8;
 		}
 
-		IntIntSink set = (pos, b) -> {
+		IntLngSink set = (pos, b) -> {
 			var div32 = pos / 32;
 			var mod32 = pos % 32;
 			is[div32] |= (b & 1) << 31 - mod32;
@@ -49,7 +69,7 @@ public class Sha2 {
 		set.sink2(L0, 1);
 
 		for (var i = 0; i < 64; i++)
-			set.sink2(L1 + K + i, L0 >> 63 - i);
+			set.sink2(L1 + K + i, (long) L0 >>> 63 - i);
 
 		var w = new int[64];
 
@@ -94,7 +114,7 @@ public class Sha2 {
 			h7 += h;
 		}
 
-		var bs1 = new byte[256];
+		var bs1 = new byte[256 / 8];
 		var bb = ByteBuffer.wrap(bs1);
 		bb.putInt(h0);
 		bb.putInt(h1);

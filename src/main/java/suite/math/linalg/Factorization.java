@@ -10,7 +10,7 @@ public class Factorization {
 	private Matrix mtx = new Matrix();
 	private Random random = new Random();
 
-	public Pair<float[][], float[][]> factor(float[][] m, int w) { // ALS?
+	public Pair<float[][], float[][]> factor(float[][] m, int w) {
 		var height = mtx.height(m);
 		var width = mtx.width(m);
 		var u = To.matrix(height, w, (i, j) -> random.nextFloat());
