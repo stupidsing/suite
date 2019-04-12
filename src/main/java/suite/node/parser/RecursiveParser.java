@@ -17,8 +17,8 @@ import suite.node.tree.TreeTuple;
  */
 public class RecursiveParser {
 
-	private Operator[] operators;
 	private TerminalParser terminalParser = new TerminalParser();
+	private Operator[] operators;
 
 	public RecursiveParser(Operator[] operators) {
 		this.operators = operators;

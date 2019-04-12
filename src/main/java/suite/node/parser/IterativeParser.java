@@ -19,18 +19,17 @@ import suite.text.Preprocess;
 import suite.util.String_;
 
 /**
- * Non-recursive, performance-improved parser for operator-based languages.
+ * Non-recursive, near O(length) parser for operator-based languages.
  *
  * @author ywsing
  */
 public class IterativeParser {
 
-	private TerminalParser terminalParser;
+	private TerminalParser terminalParser = new TerminalParser();
 	private Operator[] operators;
 
 	public IterativeParser(Operator[] operators) {
 		this.operators = operators;
-		terminalParser = new TerminalParser();
 	}
 
 	private class Section {

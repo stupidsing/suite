@@ -26,11 +26,10 @@ public class SuffixArrayTest {
 
 	private int[] suffixArray(String s) {
 		var length = s.length();
-
 		int[] orderByStart = null;
 		var k2 = 1;
 
-		do {
+		while (k2 / 2 < length) {
 			var orderByStart_ = orderByStart;
 			var k_ = k2 / 2;
 
@@ -66,7 +65,6 @@ public class SuffixArrayTest {
 
 			var keys = new ArrayList<Key>();
 			Ints_.for_(0, length).sink(i -> keys.add(new Key(i)));
-
 			Collections.sort(keys);
 
 			orderByStart = new int[length];
@@ -80,7 +78,7 @@ public class SuffixArrayTest {
 			}
 
 			k2 *= 2;
-		} while (k2 / 2 < length);
+		}
 
 		return orderByStart;
 	}
