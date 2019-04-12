@@ -156,7 +156,7 @@ public class BackAllocTester {
 			if (exception == null)
 				return period //
 						+ " val:" + (0 < length ? valuations[length - 1] : "N/A") //
-						+ " yearRtn:" + To.string(annualReturn) //
+						+ " cagr:" + To.string(annualReturn) //
 						+ " sharpe:" + To.string(sharpe) //
 						+ " skew:" + To.string(skewness) //
 						+ " " + account.transactionSummary(cfg::transactionFee).out0() //
