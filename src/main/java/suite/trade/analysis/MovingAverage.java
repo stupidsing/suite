@@ -41,6 +41,56 @@ public class MovingAverage {
 		}
 	}
 
+	// https://en.wikipedia.org/wiki/Exponential_smoothing#Double_exponential_smoothing
+	public float[] doubleExpSmoothing_HoltWinters(float[] fs, double alpha, double beta) {
+		var des = new float[fs.length + 1];
+		var nalpha = 1d - alpha;
+		var nbeta = 1d - beta;
+		var des_ = (double) fs[0];
+		var a = (double) fs[1]; // estimated level
+		var b = (double) fs[1] - fs[0]; // estimated trend
+		var i = 0;
+		for (; i < 2; i++)
+			des[i] = (float) (des_ = fs[i]);
+		for (; i < fs.length; i++) {
+			var a_ = a;
+			var b_ = b;
+			a = alpha * fs[i] + nalpha * des_;
+			b = beta * (a - a_) + nbeta * b_;
+			des[i] = (float) (des_ = a + b);
+		}
+		for (; i <= des.length; i++)
+			des[i] = (float) (des_ += b); // prediction
+		return des;
+	}
+
+	// https://en.wikipedia.org/wiki/Exponential_smoothing#Double_exponential_smoothing
+	public float[] doubleExpSmoothing_Browns(float[] fs, double alpha) {
+		var des = new float[fs.length + 1];
+		var nalpha = 1d - alpha;
+		var ana = alpha / nalpha;
+		var des_ = (double) fs[0];
+		var fs0 = 0 < fs.length ? (double) fs[0] : 0d;
+		var sa = fs0;
+		var sb = fs0;
+		var a = sa; // estimated level
+		var b = 0d; // estimated trend
+		var i = 0;
+		for (; i < fs.length; i++) {
+			var sa_ = sa;
+			var sb_ = sb;
+			sa = alpha * fs[i] + nalpha * sa_;
+			sb = alpha * sa + nalpha * sb_;
+			a = 2 * sa - sb;
+			b = ana * (sa - sb);
+			des[i] = (float) (des_ = a + b);
+		}
+		for (; i <= des.length; i++)
+			des[i] = (float) (des_ += b); // prediction
+		return des;
+
+	}
+
 	public float[] exponentialGeometricMovingAvg(float[] prices, int halfLife) {
 		return exponentialGeometricMovingAvg(prices, exp(log(.5d) * halfLife));
 	}
