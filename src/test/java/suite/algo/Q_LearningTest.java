@@ -132,12 +132,14 @@ public class Q_LearningTest {
 
 		var nalpha = 1d - alpha;
 		var q = new float[nStates][nActions];
+		Result result;
 
 		for (var iter = 0; iter < 524288; iter++) {
 			var state = initial;
+			var st = state.encode();
 
-			while (true) {
-				var qst = q[state.encode()];
+			do {
+				var qst = q[st];
 				int action;
 
 				if (random.nextDouble() < epsilon)
@@ -145,16 +147,23 @@ public class Q_LearningTest {
 				else
 					action = getMaxActionValue(qst).t0;
 
-				var result = state.move(action);
-				var qst1 = q[result.state.encode()];
-				var max = getMaxActionValue(qst1).t1;
+				result = state.move(action);
+				state = result.state;
+				st = state.encode();
 
-				qst[action] = (float) (nalpha * qst[action] + alpha * (result.reward + gamma * max));
-				if (!result.done)
-					state = result.state;
-				else
-					break;
-			}
+				var adj = result.reward + gamma * getMaxActionValue(q[st]).t1;
+				qst[action] = (float) (nalpha * qst[action] + alpha * adj);
+			} while (!result.done);
+		}
+
+		{
+			var state = initial;
+
+			do {
+				System.out.println("TAXI = " + state.taxi);
+				result = state.move(getMaxActionValue(q[state.encode()]).t0);
+				state = result.state;
+			} while (!result.done);
 		}
 
 		decode(0);
