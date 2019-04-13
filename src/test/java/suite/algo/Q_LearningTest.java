@@ -27,7 +27,7 @@ public class Q_LearningTest {
 	private int nActions = 6;
 	private int onTaxi = locations.size();
 
-	private Set<IntIntPair> noLeft = Set.of( //
+	private Set<IntIntPair> noLeft_ = Set.of( //
 			IntIntPair.of(0, 2), //
 			IntIntPair.of(3, 1), //
 			IntIntPair.of(3, 3), //
@@ -80,7 +80,7 @@ public class Q_LearningTest {
 				else
 					return new Result(this, -1);
 			else if (action == 2) // left
-				if (taxi.t1 != 0 && !noLeft.contains(taxi))
+				if (taxi.t1 != 0 && !noLeft_.contains(taxi))
 					return new Result(new State(IntIntPair.of(taxi.t0, taxi.t1 - 1), passenger, destination), -1);
 				else
 					return new Result(this, -1);
@@ -125,52 +125,48 @@ public class Q_LearningTest {
 
 	@Test
 	public void test() {
+		var initial = new State(IntIntPair.of(3, 1), 0, 3);
 		var alpha = .1d;
 		var gamma = .6d;
 		var epsilon = .1d;
 
 		var nalpha = 1d - alpha;
 		var q = new float[nStates][nActions];
-		State state;
-		boolean done;
 
-		for (var iter = 0; iter < 1024; iter++) {
-			state = new State(IntIntPair.of(3, 1), 0, 3);
-			done = false;
+		for (var iter = 0; iter < 524288; iter++) {
+			var state = initial;
 
-			while (!done) {
+			while (true) {
 				var qst = q[state.encode()];
-				IntDblPair actionValue;
+				int action;
 
-				if (random.nextDouble() < epsilon) {
-					var action = random.nextInt(nActions);
-					actionValue = IntDblPair.of(action, qst[action]);
-				} else {
-					actionValue = IntDblPair.of(-1, Integer.MIN_VALUE);
-					for (var action = 0; action < nActions; action++) {
-						var value = qst[action];
-						if (actionValue.t1 < value)
-							actionValue = IntDblPair.of(action, value);
-					}
-				}
+				if (random.nextDouble() < epsilon)
+					action = random.nextInt(nActions);
+				else
+					action = getMaxActionValue(qst).t0;
 
-				var action = actionValue.t0;
 				var result = state.move(action);
-				var value0 = qst[action];
-				var state1 = result.state;
-				var qst1 = q[state1.encode()];
-				var max = Double.MIN_VALUE;
+				var qst1 = q[result.state.encode()];
+				var max = getMaxActionValue(qst1).t1;
 
-				for (var value : qst1)
-					max = Math.max(max, value);
-
-				qst[action] = (float) (nalpha * value0 + alpha * (result.reward + gamma * max));
-				state = state1;
-				done = result.done;
+				qst[action] = (float) (nalpha * qst[action] + alpha * (result.reward + gamma * max));
+				if (!result.done)
+					state = result.state;
+				else
+					break;
 			}
 		}
 
 		decode(0);
+	}
+
+	private IntDblPair getMaxActionValue(float[] qst) {
+		var actionValue = IntDblPair.of(-1, Double.NEGATIVE_INFINITY);
+		float value;
+		for (var action = 0; action < nActions; action++)
+			if (actionValue.t1 < (value = qst[action]))
+				actionValue.update(action, value);
+		return actionValue;
 	}
 
 }
