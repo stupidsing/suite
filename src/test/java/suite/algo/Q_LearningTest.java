@@ -135,8 +135,8 @@ public class Q_LearningTest {
 		Result result;
 
 		for (var iter = 0; iter < 524288; iter++) {
-			var state = initial;
-			var st = state.encode();
+			State state;
+			var st = (state = initial).encode();
 
 			do {
 				var qst = q[st];
@@ -148,8 +148,7 @@ public class Q_LearningTest {
 					action = getMaxActionValue(qst).t0;
 
 				result = state.move(action);
-				state = result.state;
-				st = state.encode();
+				st = (state = result.state).encode();
 
 				var adj = result.reward + gamma * getMaxActionValue(q[st]).t1;
 				qst[action] = (float) (nalpha * qst[action] + alpha * adj);
