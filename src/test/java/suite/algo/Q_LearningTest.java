@@ -131,8 +131,8 @@ public class Q_LearningTest {
 		var gamma = .6d;
 		var epsilon = .1d;
 
-		var nalpha = 1d - alpha;
 		var q = new float[nStates][nActions];
+		var nalpha = 1d - alpha;
 		Result result;
 		State state;
 		int st;
@@ -156,19 +156,17 @@ public class Q_LearningTest {
 			} while (!result.done);
 		}
 
-		{
-			st = (state = initial).encode();
-			var n = 0;
+		st = (state = initial).encode();
+		var n = 0;
 
-			do {
-				System.out.println("TAXI = " + state.taxi);
-				n++;
-				var action = getMaxActionValue(q[st]).t0;
-				st = (state = (result = state.move(action)).state).encode();
-			} while (!result.done);
+		do {
+			System.out.println("TAXI = " + state.taxi);
+			var action = getMaxActionValue(q[st]).t0;
+			st = (state = (result = state.move(action)).state).encode();
+			n++;
+		} while (!result.done);
 
-			assertTrue(n == 13);
-		}
+		assertTrue(n == 13);
 
 		decode(0);
 	}
