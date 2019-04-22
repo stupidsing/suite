@@ -1,5 +1,6 @@
 package suite.algo;
 
+import static org.junit.Assert.assertTrue;
 import static suite.util.Friends.fail;
 
 import java.util.List;
@@ -133,10 +134,11 @@ public class Q_LearningTest {
 		var nalpha = 1d - alpha;
 		var q = new float[nStates][nActions];
 		Result result;
+		State state;
+		int st;
 
 		for (var iter = 0; iter < 524288; iter++) {
-			State state;
-			var st = (state = initial).encode();
+			st = (state = initial).encode();
 
 			do {
 				var qst = q[st];
@@ -147,8 +149,7 @@ public class Q_LearningTest {
 				else
 					action = getMaxActionValue(qst).t0;
 
-				result = state.move(action);
-				st = (state = result.state).encode();
+				st = (state = (result = state.move(action)).state).encode();
 
 				var adj = result.reward + gamma * getMaxActionValue(q[st]).t1;
 				qst[action] = (float) (nalpha * qst[action] + alpha * adj);
@@ -156,13 +157,17 @@ public class Q_LearningTest {
 		}
 
 		{
-			var state = initial;
+			st = (state = initial).encode();
+			var n = 0;
 
 			do {
 				System.out.println("TAXI = " + state.taxi);
-				result = state.move(getMaxActionValue(q[state.encode()]).t0);
-				state = result.state;
+				n++;
+				var action = getMaxActionValue(q[st]).t0;
+				st = (state = (result = state.move(action)).state).encode();
 			} while (!result.done);
+
+			assertTrue(n == 13);
 		}
 
 		decode(0);
