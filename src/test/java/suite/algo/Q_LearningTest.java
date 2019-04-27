@@ -122,7 +122,7 @@ public class Q_LearningTest {
 		c /= 5;
 		var taxix = c % 5;
 		c /= 5;
-		var passenger = c % 5;
+		var passenger = c;
 		return new State(IntIntPair.of(taxix, taxiy), passenger, destination);
 	}
 
