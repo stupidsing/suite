@@ -1,8 +1,10 @@
 package suite.algo;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static suite.util.Friends.fail;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
@@ -135,13 +137,12 @@ public class Q_LearningTest {
 		var nalpha = 1d - alpha;
 		Result result;
 		State state;
-		int st;
+		float[] qst;
 
 		for (var iter = 0; iter < 524288; iter++) {
-			st = (state = initial).encode();
+			qst = q[(state = initial).encode()];
 
 			do {
-				var qst = q[st];
 				int action;
 
 				if (random.nextDouble() < epsilon)
@@ -149,26 +150,28 @@ public class Q_LearningTest {
 				else
 					action = getMaxActionValue(qst).t0;
 
-				st = (state = (result = state.move(action)).state).encode();
+				var qst0 = qst;
+				qst = q[(state = (result = state.move(action)).state).encode()];
 
-				var adj = result.reward + gamma * getMaxActionValue(q[st]).t1;
-				qst[action] = (float) (nalpha * qst[action] + alpha * adj);
+				var adj = result.reward + gamma * getMaxActionValue(qst).t1;
+				qst0[action] = (float) (nalpha * qst0[action] + alpha * adj);
 			} while (!result.done);
 		}
 
-		st = (state = initial).encode();
-		var n = 0;
+		var path = new ArrayList<String>();
+		qst = q[(state = initial).encode()];
 
 		do {
-			System.out.println("TAXI = " + state.taxi);
-			var action = getMaxActionValue(q[st]).t0;
-			st = (state = (result = state.move(action)).state).encode();
-			n++;
+			var taxi = state.taxi;
+			path.add(taxi.toString());
+
+			var action = getMaxActionValue(qst).t0;
+			qst = q[(state = (result = state.move(action)).state).encode()];
 		} while (!result.done);
 
-		assertTrue(n == 13);
-
-		decode(0);
+		System.out.println("TAXI = " + path);
+		assertTrue(path.size() == 13);
+		assertNotNull(decode(0));
 	}
 
 	private IntDblPair getMaxActionValue(float[] qst) {
