@@ -18,8 +18,8 @@ public class ChrTest {
 				, "given (LE .x .y,) if (LE .x .y,) then () end" //
 				, "given (LE .x .y, LE .y .z,) if () then (LE .x .z,) end"));
 
-		var facts = List.of(Suite.parse("LE A B"), Suite.parse("LE B C"), Suite.parse("LE C A"));
-		var facts1 = chr.chr(facts);
+		var facts0 = List.of(Suite.parse("LE A B"), Suite.parse("LE B C"), Suite.parse("LE C A"));
+		var facts1 = chr.chr(facts0);
 		assertEquals(2, facts1.size());
 		System.out.println(facts1);
 	}
