@@ -77,6 +77,19 @@ public class TimeSeries {
 		return dropDiff_(tor, fs);
 	}
 
+	// Advances in Financial Machine Learning, Marcos Lopez de Prado, 5.5
+	public float[] fracDiff(float[] ts, double d, int window) {
+		var weights = new float[window];
+		var weight = 1d;
+
+		for (var k = 0; k < window;) {
+			weights[k++] = (float) weight;
+			weight *= -(d - k + 1) / k;
+		}
+
+		return To.vector(ts.length - window, i -> vec.convolute(window, ts, i, weights, window));
+	}
+
 	// epchan
 	public double hurst(float[] ys, int tor) {
 		var logys = To.vector(ys, Math::log);
