@@ -12,10 +12,12 @@ import suite.object.Object_;
  */
 public class FltMutable {
 
+	private static float empty = FltFunUtil.EMPTYVALUE;
+
 	private float value;
 
 	public static FltMutable nil() {
-		return FltMutable.of(FltFunUtil.EMPTYVALUE);
+		return FltMutable.of(empty);
 	}
 
 	public static FltMutable of(float c) {
@@ -29,7 +31,7 @@ public class FltMutable {
 	}
 
 	public void set(float c) {
-		if (value == FltFunUtil.EMPTYVALUE)
+		if (value == empty)
 			update(c);
 		else
 			fail("value already set");
@@ -55,7 +57,7 @@ public class FltMutable {
 
 	@Override
 	public String toString() {
-		return value != FltFunUtil.EMPTYVALUE ? Float.toString(value) : "null";
+		return value != empty ? Float.toString(value) : "null";
 	}
 
 }

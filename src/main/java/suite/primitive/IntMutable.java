@@ -12,10 +12,12 @@ import suite.object.Object_;
  */
 public class IntMutable {
 
+	private static int empty = IntFunUtil.EMPTYVALUE;
+
 	private int value;
 
 	public static IntMutable nil() {
-		return IntMutable.of(IntFunUtil.EMPTYVALUE);
+		return IntMutable.of(empty);
 	}
 
 	public static IntMutable of(int c) {
@@ -29,7 +31,7 @@ public class IntMutable {
 	}
 
 	public void set(int c) {
-		if (value == IntFunUtil.EMPTYVALUE)
+		if (value == empty)
 			update(c);
 		else
 			fail("value already set");
@@ -55,7 +57,7 @@ public class IntMutable {
 
 	@Override
 	public String toString() {
-		return value != IntFunUtil.EMPTYVALUE ? Integer.toString(value) : "null";
+		return value != empty ? Integer.toString(value) : "null";
 	}
 
 }

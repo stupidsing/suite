@@ -42,7 +42,7 @@ import suite.util.To;
 
 public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
-	private static char EMPTYVALUE = ChrFunUtil.EMPTYVALUE;
+	private static char empty = ChrFunUtil.EMPTYVALUE;
 
 	private ChrObjSource<V> source;
 
@@ -160,7 +160,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public int count() {
-		var pair = ChrObjPair.<V> of((char) 0, null);
+		var pair = ChrObjPair.of(empty, (V) null);
 		var i = 0;
 		while (next(pair))
 			i++;
@@ -178,7 +178,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjOutlet<V> drop(int n) {
-		var pair = ChrObjPair.<V> of((char) 0, null);
+		var pair = ChrObjPair.of(empty, (V) null);
 		var isAvailable = true;
 		while (0 < n && (isAvailable &= next(pair)))
 			n--;
@@ -192,8 +192,8 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 			var outlet = (ChrObjOutlet<V>) (ChrObjOutlet<?>) object;
 			var source2 = outlet.source;
 			boolean b, b0, b1;
-			var pair0 = ChrObjPair.<V> of((char) 0, null);
-			var pair1 = ChrObjPair.<V> of((char) 0, null);
+			var pair0 = ChrObjPair.of(empty, (V) null);
+			var pair1 = ChrObjPair.of(empty, (V) null);
 			while ((b = (b0 = source2.source2(pair0)) == (b1 = source2.source2(pair1))) //
 					&& b0 //
 					&& b1 //
@@ -217,7 +217,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjPair<V> first() {
-		var pair = ChrObjPair.<V> of((char) 0, null);
+		var pair = ChrObjPair.of(empty, (V) null);
 		return next(pair) ? pair : null;
 	}
 
@@ -235,7 +235,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	@Override
 	public int hashCode() {
-		var pair = ChrObjPair.<V> of((char) 0, null);
+		var pair = ChrObjPair.of(empty, (V) null);
 		var h = 7;
 		while (next(pair))
 			h = h * 31 + pair.hashCode();
@@ -257,13 +257,13 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public ChrOutlet keys() {
 		return ChrOutlet.of(() -> {
-			var pair = ChrObjPair.<V> of((char) 0, null);
-			return next(pair) ? pair.t0 : EMPTYVALUE;
+			var pair = ChrObjPair.of(empty, (V) null);
+			return next(pair) ? pair.t0 : empty;
 		});
 	}
 
 	public ChrObjPair<V> last() {
-		var pair = ChrObjPair.<V> of((char) 0, null);
+		var pair = ChrObjPair.of(empty, (V) null);
 		if (next(pair))
 			while (next(pair))
 				;
@@ -297,8 +297,8 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjPair<V> minOrNull(Comparator<ChrObjPair<V>> comparator) {
-		var pair = ChrObjPair.<V> of((char) 0, null);
-		var pair1 = ChrObjPair.<V> of((char) 0, null);
+		var pair = ChrObjPair.of(empty, (V) null);
+		var pair1 = ChrObjPair.of(empty, (V) null);
 		if (next(pair)) {
 			while (next(pair1))
 				if (0 < comparator.compare(pair, pair1))
@@ -314,7 +314,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 		new Thread(() -> {
 			boolean b;
 			do {
-				var pair = ChrObjPair.<V> of((char) 0, null);
+				var pair = ChrObjPair.of(empty, (V) null);
 				b = source.source2(pair);
 				queue.offerQuietly(pair);
 			} while (b);
@@ -333,7 +333,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ChrObjPair<V> opt() {
-		var pair = ChrObjPair.<V> of((char) 0, null);
+		var pair = ChrObjPair.of(empty, (V) null);
 		if (next(pair))
 			if (!next(pair))
 				return pair;
@@ -345,7 +345,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public Outlet<ChrObjPair<V>> pairs() {
 		return Outlet.of(() -> {
-			var pair = ChrObjPair.<V> of((char) 0, null);
+			var pair = ChrObjPair.of(empty, (V) null);
 			return next(pair) ? pair : null;
 		});
 	}
@@ -360,13 +360,13 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public void sink(Sink2<Character, V> sink0) {
 		var sink1 = sink0.rethrow();
-		var pair = ChrObjPair.<V> of((char) 0, null);
+		var pair = ChrObjPair.of(empty, (V) null);
 		while (next(pair))
 			sink1.sink2(pair.t0, pair.t1);
 	}
 
 	public ChrObjOutlet<V> skip(int n) {
-		var pair = ChrObjPair.<V> of((char) 0, null);
+		var pair = ChrObjPair.of(empty, (V) null);
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
@@ -380,7 +380,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	public ChrObjOutlet<V> sort(Comparator<ChrObjPair<V>> comparator) {
 		var list = new ArrayList<ChrObjPair<V>>();
 		ChrObjPair<V> pair;
-		while (next(pair = ChrObjPair.of((char) 0, null)))
+		while (next(pair = ChrObjPair.of(empty, null)))
 			list.add(pair);
 		return of(List_.sort(list, comparator));
 	}
@@ -425,14 +425,14 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	public List<ChrObjPair<V>> toList() {
 		var list = new ArrayList<ChrObjPair<V>>();
 		ChrObjPair<V> pair;
-		while (next(pair = ChrObjPair.of((char) 0, null)))
+		while (next(pair = ChrObjPair.of(empty, null)))
 			list.add(pair);
 		return list;
 	}
 
 	public ChrObjMap<List<V>> toListMap() {
 		var map = new ChrObjMap<List<V>>();
-		var pair = ChrObjPair.<V> of((char) 0, null);
+		var pair = ChrObjPair.of(empty, (V) null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
 		return map;
@@ -440,7 +440,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 
 	public ChrObjMap<V> toMap() {
 		var map = new ChrObjMap<V>();
-		var pair = ChrObjPair.<V> of((char) 0, null);
+		var pair = ChrObjPair.of(empty, (V) null);
 		while (source.source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
@@ -453,7 +453,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	}
 
 	public ObjChrMap<V> toObjChrMap() {
-		var pair = ChrObjPair.<V> of((char) 0, null);
+		var pair = ChrObjPair.of(empty, (V) null);
 		var map = new ObjChrMap<V>();
 		while (source.source2(pair))
 			map.put(pair.t1, pair.t0);
@@ -463,7 +463,7 @@ public class ChrObjOutlet<V> implements OutletDefaults<ChrObjPair<V>> {
 	public Set<ChrObjPair<V>> toSet() {
 		var set = new HashSet<ChrObjPair<V>>();
 		ChrObjPair<V> pair;
-		while (next(pair = ChrObjPair.of((char) 0, null)))
+		while (next(pair = ChrObjPair.of(empty, null)))
 			set.add(pair);
 		return set;
 

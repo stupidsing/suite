@@ -12,10 +12,12 @@ import suite.object.Object_;
  */
 public class LngMutable {
 
+	private static long empty = LngFunUtil.EMPTYVALUE;
+
 	private long value;
 
 	public static LngMutable nil() {
-		return LngMutable.of(LngFunUtil.EMPTYVALUE);
+		return LngMutable.of(empty);
 	}
 
 	public static LngMutable of(long c) {
@@ -29,7 +31,7 @@ public class LngMutable {
 	}
 
 	public void set(long c) {
-		if (value == LngFunUtil.EMPTYVALUE)
+		if (value == empty)
 			update(c);
 		else
 			fail("value already set");
@@ -55,7 +57,7 @@ public class LngMutable {
 
 	@Override
 	public String toString() {
-		return value != LngFunUtil.EMPTYVALUE ? Long.toString(value) : "null";
+		return value != empty ? Long.toString(value) : "null";
 	}
 
 }

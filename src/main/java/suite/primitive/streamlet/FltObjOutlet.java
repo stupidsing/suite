@@ -42,7 +42,7 @@ import suite.util.To;
 
 public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 
-	private static float EMPTYVALUE = FltFunUtil.EMPTYVALUE;
+	private static float empty = FltFunUtil.EMPTYVALUE;
 
 	private FltObjSource<V> source;
 
@@ -160,7 +160,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public int count() {
-		var pair = FltObjPair.<V> of((float) 0, null);
+		var pair = FltObjPair.of(empty, (V) null);
 		var i = 0;
 		while (next(pair))
 			i++;
@@ -178,7 +178,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public FltObjOutlet<V> drop(int n) {
-		var pair = FltObjPair.<V> of((float) 0, null);
+		var pair = FltObjPair.of(empty, (V) null);
 		var isAvailable = true;
 		while (0 < n && (isAvailable &= next(pair)))
 			n--;
@@ -192,8 +192,8 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 			var outlet = (FltObjOutlet<V>) (FltObjOutlet<?>) object;
 			var source2 = outlet.source;
 			boolean b, b0, b1;
-			var pair0 = FltObjPair.<V> of((float) 0, null);
-			var pair1 = FltObjPair.<V> of((float) 0, null);
+			var pair0 = FltObjPair.of(empty, (V) null);
+			var pair1 = FltObjPair.of(empty, (V) null);
 			while ((b = (b0 = source2.source2(pair0)) == (b1 = source2.source2(pair1))) //
 					&& b0 //
 					&& b1 //
@@ -217,7 +217,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public FltObjPair<V> first() {
-		var pair = FltObjPair.<V> of((float) 0, null);
+		var pair = FltObjPair.of(empty, (V) null);
 		return next(pair) ? pair : null;
 	}
 
@@ -235,7 +235,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 
 	@Override
 	public int hashCode() {
-		var pair = FltObjPair.<V> of((float) 0, null);
+		var pair = FltObjPair.of(empty, (V) null);
 		var h = 7;
 		while (next(pair))
 			h = h * 31 + pair.hashCode();
@@ -257,13 +257,13 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 
 	public FltOutlet keys() {
 		return FltOutlet.of(() -> {
-			var pair = FltObjPair.<V> of((float) 0, null);
-			return next(pair) ? pair.t0 : EMPTYVALUE;
+			var pair = FltObjPair.of(empty, (V) null);
+			return next(pair) ? pair.t0 : empty;
 		});
 	}
 
 	public FltObjPair<V> last() {
-		var pair = FltObjPair.<V> of((float) 0, null);
+		var pair = FltObjPair.of(empty, (V) null);
 		if (next(pair))
 			while (next(pair))
 				;
@@ -297,8 +297,8 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public FltObjPair<V> minOrNull(Comparator<FltObjPair<V>> comparator) {
-		var pair = FltObjPair.<V> of((float) 0, null);
-		var pair1 = FltObjPair.<V> of((float) 0, null);
+		var pair = FltObjPair.of(empty, (V) null);
+		var pair1 = FltObjPair.of(empty, (V) null);
 		if (next(pair)) {
 			while (next(pair1))
 				if (0 < comparator.compare(pair, pair1))
@@ -314,7 +314,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 		new Thread(() -> {
 			boolean b;
 			do {
-				var pair = FltObjPair.<V> of((float) 0, null);
+				var pair = FltObjPair.of(empty, (V) null);
 				b = source.source2(pair);
 				queue.offerQuietly(pair);
 			} while (b);
@@ -333,7 +333,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public FltObjPair<V> opt() {
-		var pair = FltObjPair.<V> of((float) 0, null);
+		var pair = FltObjPair.of(empty, (V) null);
 		if (next(pair))
 			if (!next(pair))
 				return pair;
@@ -345,7 +345,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 
 	public Outlet<FltObjPair<V>> pairs() {
 		return Outlet.of(() -> {
-			var pair = FltObjPair.<V> of((float) 0, null);
+			var pair = FltObjPair.of(empty, (V) null);
 			return next(pair) ? pair : null;
 		});
 	}
@@ -360,13 +360,13 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 
 	public void sink(Sink2<Float, V> sink0) {
 		var sink1 = sink0.rethrow();
-		var pair = FltObjPair.<V> of((float) 0, null);
+		var pair = FltObjPair.of(empty, (V) null);
 		while (next(pair))
 			sink1.sink2(pair.t0, pair.t1);
 	}
 
 	public FltObjOutlet<V> skip(int n) {
-		var pair = FltObjPair.<V> of((float) 0, null);
+		var pair = FltObjPair.of(empty, (V) null);
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
@@ -380,7 +380,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	public FltObjOutlet<V> sort(Comparator<FltObjPair<V>> comparator) {
 		var list = new ArrayList<FltObjPair<V>>();
 		FltObjPair<V> pair;
-		while (next(pair = FltObjPair.of((float) 0, null)))
+		while (next(pair = FltObjPair.of(empty, null)))
 			list.add(pair);
 		return of(List_.sort(list, comparator));
 	}
@@ -425,14 +425,14 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	public List<FltObjPair<V>> toList() {
 		var list = new ArrayList<FltObjPair<V>>();
 		FltObjPair<V> pair;
-		while (next(pair = FltObjPair.of((float) 0, null)))
+		while (next(pair = FltObjPair.of(empty, null)))
 			list.add(pair);
 		return list;
 	}
 
 	public FltObjMap<List<V>> toListMap() {
 		var map = new FltObjMap<List<V>>();
-		var pair = FltObjPair.<V> of((float) 0, null);
+		var pair = FltObjPair.of(empty, (V) null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
 		return map;
@@ -440,7 +440,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 
 	public FltObjMap<V> toMap() {
 		var map = new FltObjMap<V>();
-		var pair = FltObjPair.<V> of((float) 0, null);
+		var pair = FltObjPair.of(empty, (V) null);
 		while (source.source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
@@ -453,7 +453,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	}
 
 	public ObjFltMap<V> toObjFltMap() {
-		var pair = FltObjPair.<V> of((float) 0, null);
+		var pair = FltObjPair.of(empty, (V) null);
 		var map = new ObjFltMap<V>();
 		while (source.source2(pair))
 			map.put(pair.t1, pair.t0);
@@ -463,7 +463,7 @@ public class FltObjOutlet<V> implements OutletDefaults<FltObjPair<V>> {
 	public Set<FltObjPair<V>> toSet() {
 		var set = new HashSet<FltObjPair<V>>();
 		FltObjPair<V> pair;
-		while (next(pair = FltObjPair.of((float) 0, null)))
+		while (next(pair = FltObjPair.of(empty, null)))
 			set.add(pair);
 		return set;
 

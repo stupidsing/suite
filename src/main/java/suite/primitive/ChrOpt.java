@@ -11,7 +11,9 @@ import suite.primitive.ChrPrimitives.Chr_Obj;
 
 public class ChrOpt {
 
-	private static ChrOpt none_ = ChrOpt.of(ChrFunUtil.EMPTYVALUE);
+	private static char empty = ChrFunUtil.EMPTYVALUE;
+	private static ChrOpt none_ = ChrOpt.of(empty);
+
 	private char value;
 
 	public static ChrOpt none() {
@@ -25,7 +27,7 @@ public class ChrOpt {
 	}
 
 	public boolean isEmpty() {
-		return value == ChrFunUtil.EMPTYVALUE;
+		return value == empty;
 	}
 
 	public ChrOpt filter(ChrTest pred) {
@@ -52,7 +54,7 @@ public class ChrOpt {
 
 	@Override
 	public String toString() {
-		return value != ChrFunUtil.EMPTYVALUE ? Character.toString(value) : "null";
+		return value != empty ? Character.toString(value) : "null";
 	}
 
 }

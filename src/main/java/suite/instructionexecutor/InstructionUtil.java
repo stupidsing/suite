@@ -6,8 +6,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import suite.Suite;
-import suite.adt.map.BiMap;
 import suite.adt.map.BiHashMap;
+import suite.adt.map.BiMap;
 import suite.node.Node;
 import suite.node.io.Operator;
 import suite.node.io.TermOp;

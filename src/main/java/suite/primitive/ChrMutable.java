@@ -12,10 +12,12 @@ import suite.object.Object_;
  */
 public class ChrMutable {
 
+	private static char empty = ChrFunUtil.EMPTYVALUE;
+
 	private char value;
 
 	public static ChrMutable nil() {
-		return ChrMutable.of(ChrFunUtil.EMPTYVALUE);
+		return ChrMutable.of(empty);
 	}
 
 	public static ChrMutable of(char c) {
@@ -29,7 +31,7 @@ public class ChrMutable {
 	}
 
 	public void set(char c) {
-		if (value == ChrFunUtil.EMPTYVALUE)
+		if (value == empty)
 			update(c);
 		else
 			fail("value already set");
@@ -55,7 +57,7 @@ public class ChrMutable {
 
 	@Override
 	public String toString() {
-		return value != ChrFunUtil.EMPTYVALUE ? Character.toString(value) : "null";
+		return value != empty ? Character.toString(value) : "null";
 	}
 
 }

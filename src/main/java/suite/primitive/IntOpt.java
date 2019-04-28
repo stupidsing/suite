@@ -11,7 +11,9 @@ import suite.primitive.IntPrimitives.Int_Obj;
 
 public class IntOpt {
 
-	private static IntOpt none_ = IntOpt.of(IntFunUtil.EMPTYVALUE);
+	private static int empty = IntFunUtil.EMPTYVALUE;
+	private static IntOpt none_ = IntOpt.of(empty);
+
 	private int value;
 
 	public static IntOpt none() {
@@ -25,7 +27,7 @@ public class IntOpt {
 	}
 
 	public boolean isEmpty() {
-		return value == IntFunUtil.EMPTYVALUE;
+		return value == empty;
 	}
 
 	public IntOpt filter(IntTest pred) {
@@ -52,7 +54,7 @@ public class IntOpt {
 
 	@Override
 	public String toString() {
-		return value != IntFunUtil.EMPTYVALUE ? Integer.toString(value) : "null";
+		return value != empty ? Integer.toString(value) : "null";
 	}
 
 }

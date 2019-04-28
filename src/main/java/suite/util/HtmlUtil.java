@@ -6,8 +6,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
-import suite.adt.map.BiMap;
 import suite.adt.map.BiHashMap;
+import suite.adt.map.BiMap;
 import suite.adt.pair.Pair;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.primitive.adt.pair.IntObjPair;

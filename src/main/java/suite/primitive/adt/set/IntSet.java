@@ -17,7 +17,7 @@ import suite.primitive.streamlet.IntStreamlet;
  */
 public class IntSet {
 
-	private static int EMPTYVALUE = IntFunUtil.EMPTYVALUE;
+	private static int empty = IntFunUtil.EMPTYVALUE;
 
 	private int size;
 	private int[] vs;
@@ -56,7 +56,7 @@ public class IntSet {
 			allocate(capacity * 2);
 
 			for (var i = 0; i < capacity; i++)
-				if ((v_ = vs0[i]) != EMPTYVALUE)
+				if ((v_ = vs0[i]) != empty)
 					add_(v_);
 		}
 
@@ -92,7 +92,7 @@ public class IntSet {
 	public void forEach(IntSink sink) {
 		var source = source_();
 		int c;
-		while ((c = source.g()) != EMPTYVALUE)
+		while ((c = source.g()) != empty)
 			sink.f(c);
 	}
 
@@ -109,14 +109,14 @@ public class IntSet {
 		var index = index(c);
 		var b = vs[index] == c;
 		if (b) {
-			vs[index] = EMPTYVALUE;
+			vs[index] = empty;
 			size--;
 			new Object() {
 				private void rehash(int index) {
 					var index1 = (index + 1) & mask;
 					var v = vs[index1];
-					if (v != EMPTYVALUE) {
-						vs[index1] = EMPTYVALUE;
+					if (v != empty) {
+						vs[index1] = empty;
 						rehash(index1);
 						vs[index(v)] = v;
 					}
@@ -157,7 +157,7 @@ public class IntSet {
 		var mask = vs.length - 1;
 		var index = Integer.hashCode(c) & mask;
 		int c0;
-		while ((c0 = vs[index]) != EMPTYVALUE && c0 != c)
+		while ((c0 = vs[index]) != empty && c0 != c)
 			index = index + 1 & mask;
 		return index;
 	}
@@ -170,16 +170,16 @@ public class IntSet {
 			public int g() {
 				int v;
 				while (index < capacity)
-					if ((v = vs[index++]) != EMPTYVALUE)
+					if ((v = vs[index++]) != empty)
 						return v;
-				return EMPTYVALUE;
+				return empty;
 			}
 		};
 	}
 
 	private void allocate(int capacity) {
 		vs = new int[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, empty);
 	}
 
 }

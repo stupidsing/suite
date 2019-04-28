@@ -11,8 +11,8 @@ import java.util.List;
 import java.util.Map;
 
 import suite.adt.IdentityKey;
-import suite.adt.map.BiMap;
 import suite.adt.map.BiHashMap;
+import suite.adt.map.BiMap;
 import suite.adt.pair.Pair;
 import suite.file.ExtentAllocator.Extent;
 import suite.file.ExtentFile;

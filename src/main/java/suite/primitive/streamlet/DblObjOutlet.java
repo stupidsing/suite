@@ -42,7 +42,7 @@ import suite.util.To;
 
 public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
-	private static double EMPTYVALUE = DblFunUtil.EMPTYVALUE;
+	private static double empty = DblFunUtil.EMPTYVALUE;
 
 	private DblObjSource<V> source;
 
@@ -160,7 +160,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public int count() {
-		var pair = DblObjPair.<V> of((double) 0, null);
+		var pair = DblObjPair.of(empty, (V) null);
 		var i = 0;
 		while (next(pair))
 			i++;
@@ -178,7 +178,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjOutlet<V> drop(int n) {
-		var pair = DblObjPair.<V> of((double) 0, null);
+		var pair = DblObjPair.of(empty, (V) null);
 		var isAvailable = true;
 		while (0 < n && (isAvailable &= next(pair)))
 			n--;
@@ -192,8 +192,8 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 			var outlet = (DblObjOutlet<V>) (DblObjOutlet<?>) object;
 			var source2 = outlet.source;
 			boolean b, b0, b1;
-			var pair0 = DblObjPair.<V> of((double) 0, null);
-			var pair1 = DblObjPair.<V> of((double) 0, null);
+			var pair0 = DblObjPair.of(empty, (V) null);
+			var pair1 = DblObjPair.of(empty, (V) null);
 			while ((b = (b0 = source2.source2(pair0)) == (b1 = source2.source2(pair1))) //
 					&& b0 //
 					&& b1 //
@@ -217,7 +217,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjPair<V> first() {
-		var pair = DblObjPair.<V> of((double) 0, null);
+		var pair = DblObjPair.of(empty, (V) null);
 		return next(pair) ? pair : null;
 	}
 
@@ -235,7 +235,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	@Override
 	public int hashCode() {
-		var pair = DblObjPair.<V> of((double) 0, null);
+		var pair = DblObjPair.of(empty, (V) null);
 		var h = 7;
 		while (next(pair))
 			h = h * 31 + pair.hashCode();
@@ -257,13 +257,13 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	public DblOutlet keys() {
 		return DblOutlet.of(() -> {
-			var pair = DblObjPair.<V> of((double) 0, null);
-			return next(pair) ? pair.t0 : EMPTYVALUE;
+			var pair = DblObjPair.of(empty, (V) null);
+			return next(pair) ? pair.t0 : empty;
 		});
 	}
 
 	public DblObjPair<V> last() {
-		var pair = DblObjPair.<V> of((double) 0, null);
+		var pair = DblObjPair.of(empty, (V) null);
 		if (next(pair))
 			while (next(pair))
 				;
@@ -297,8 +297,8 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjPair<V> minOrNull(Comparator<DblObjPair<V>> comparator) {
-		var pair = DblObjPair.<V> of((double) 0, null);
-		var pair1 = DblObjPair.<V> of((double) 0, null);
+		var pair = DblObjPair.of(empty, (V) null);
+		var pair1 = DblObjPair.of(empty, (V) null);
 		if (next(pair)) {
 			while (next(pair1))
 				if (0 < comparator.compare(pair, pair1))
@@ -314,7 +314,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 		new Thread(() -> {
 			boolean b;
 			do {
-				var pair = DblObjPair.<V> of((double) 0, null);
+				var pair = DblObjPair.of(empty, (V) null);
 				b = source.source2(pair);
 				queue.offerQuietly(pair);
 			} while (b);
@@ -333,7 +333,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public DblObjPair<V> opt() {
-		var pair = DblObjPair.<V> of((double) 0, null);
+		var pair = DblObjPair.of(empty, (V) null);
 		if (next(pair))
 			if (!next(pair))
 				return pair;
@@ -345,7 +345,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	public Outlet<DblObjPair<V>> pairs() {
 		return Outlet.of(() -> {
-			var pair = DblObjPair.<V> of((double) 0, null);
+			var pair = DblObjPair.of(empty, (V) null);
 			return next(pair) ? pair : null;
 		});
 	}
@@ -360,13 +360,13 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	public void sink(Sink2<Double, V> sink0) {
 		var sink1 = sink0.rethrow();
-		var pair = DblObjPair.<V> of((double) 0, null);
+		var pair = DblObjPair.of(empty, (V) null);
 		while (next(pair))
 			sink1.sink2(pair.t0, pair.t1);
 	}
 
 	public DblObjOutlet<V> skip(int n) {
-		var pair = DblObjPair.<V> of((double) 0, null);
+		var pair = DblObjPair.of(empty, (V) null);
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
@@ -380,7 +380,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	public DblObjOutlet<V> sort(Comparator<DblObjPair<V>> comparator) {
 		var list = new ArrayList<DblObjPair<V>>();
 		DblObjPair<V> pair;
-		while (next(pair = DblObjPair.of((double) 0, null)))
+		while (next(pair = DblObjPair.of(empty, null)))
 			list.add(pair);
 		return of(List_.sort(list, comparator));
 	}
@@ -425,14 +425,14 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	public List<DblObjPair<V>> toList() {
 		var list = new ArrayList<DblObjPair<V>>();
 		DblObjPair<V> pair;
-		while (next(pair = DblObjPair.of((double) 0, null)))
+		while (next(pair = DblObjPair.of(empty, null)))
 			list.add(pair);
 		return list;
 	}
 
 	public DblObjMap<List<V>> toListMap() {
 		var map = new DblObjMap<List<V>>();
-		var pair = DblObjPair.<V> of((double) 0, null);
+		var pair = DblObjPair.of(empty, (V) null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
 		return map;
@@ -440,7 +440,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 
 	public DblObjMap<V> toMap() {
 		var map = new DblObjMap<V>();
-		var pair = DblObjPair.<V> of((double) 0, null);
+		var pair = DblObjPair.of(empty, (V) null);
 		while (source.source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
@@ -453,7 +453,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	}
 
 	public ObjDblMap<V> toObjDblMap() {
-		var pair = DblObjPair.<V> of((double) 0, null);
+		var pair = DblObjPair.of(empty, (V) null);
 		var map = new ObjDblMap<V>();
 		while (source.source2(pair))
 			map.put(pair.t1, pair.t0);
@@ -463,7 +463,7 @@ public class DblObjOutlet<V> implements OutletDefaults<DblObjPair<V>> {
 	public Set<DblObjPair<V>> toSet() {
 		var set = new HashSet<DblObjPair<V>>();
 		DblObjPair<V> pair;
-		while (next(pair = DblObjPair.of((double) 0, null)))
+		while (next(pair = DblObjPair.of(empty, null)))
 			set.add(pair);
 		return set;
 

@@ -11,7 +11,9 @@ import suite.primitive.DblPrimitives.Dbl_Obj;
 
 public class DblOpt {
 
-	private static DblOpt none_ = DblOpt.of(DblFunUtil.EMPTYVALUE);
+	private static double empty = DblFunUtil.EMPTYVALUE;
+	private static DblOpt none_ = DblOpt.of(empty);
+
 	private double value;
 
 	public static DblOpt none() {
@@ -25,7 +27,7 @@ public class DblOpt {
 	}
 
 	public boolean isEmpty() {
-		return value == DblFunUtil.EMPTYVALUE;
+		return value == empty;
 	}
 
 	public DblOpt filter(DblTest pred) {
@@ -52,7 +54,7 @@ public class DblOpt {
 
 	@Override
 	public String toString() {
-		return value != DblFunUtil.EMPTYVALUE ? Double.toString(value) : "null";
+		return value != empty ? Double.toString(value) : "null";
 	}
 
 }

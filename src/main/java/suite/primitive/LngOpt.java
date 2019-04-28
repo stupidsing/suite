@@ -11,7 +11,9 @@ import suite.primitive.LngPrimitives.Lng_Obj;
 
 public class LngOpt {
 
-	private static LngOpt none_ = LngOpt.of(LngFunUtil.EMPTYVALUE);
+	private static long empty = LngFunUtil.EMPTYVALUE;
+	private static LngOpt none_ = LngOpt.of(empty);
+
 	private long value;
 
 	public static LngOpt none() {
@@ -25,7 +27,7 @@ public class LngOpt {
 	}
 
 	public boolean isEmpty() {
-		return value == LngFunUtil.EMPTYVALUE;
+		return value == empty;
 	}
 
 	public LngOpt filter(LngTest pred) {
@@ -52,7 +54,7 @@ public class LngOpt {
 
 	@Override
 	public String toString() {
-		return value != LngFunUtil.EMPTYVALUE ? Long.toString(value) : "null";
+		return value != empty ? Long.toString(value) : "null";
 	}
 
 }

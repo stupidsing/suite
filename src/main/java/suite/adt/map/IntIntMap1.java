@@ -21,7 +21,7 @@ import suite.streamlet.As;
  */
 public class IntIntMap1 {
 
-	private static int EMPTYVALUE = IntFunUtil.EMPTYVALUE;
+	private static int empty = IntFunUtil.EMPTYVALUE;
 
 	private int size;
 	private long[] kvs;
@@ -36,7 +36,7 @@ public class IntIntMap1 {
 
 	public int computeIfAbsent(int key, Int_Int fun) {
 		var v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == empty)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -65,7 +65,7 @@ public class IntIntMap1 {
 		var index = key & mask;
 		long kv;
 		int v;
-		while ((v = v(kv = kvs[index])) != EMPTYVALUE)
+		while ((v = v(kv = kvs[index])) != empty)
 			if (k(kv) != key)
 				index = index + 1 & mask;
 			else
@@ -100,21 +100,21 @@ public class IntIntMap1 {
 		var index = key & mask;
 		long kv;
 		int v0;
-		while ((v0 = v(kv = kvs[index])) != EMPTYVALUE)
+		while ((v0 = v(kv = kvs[index])) != empty)
 			if (k(kv) != key)
 				index = index + 1 & mask;
 			else
 				break;
 		var v1 = fun.apply(v0);
 		kvs[index] = kv(key, v1);
-		size += (v1 != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
-		if (v1 == EMPTYVALUE)
+		size += (v1 != empty ? 1 : 0) - (v0 != empty ? 1 : 0);
+		if (v1 == empty)
 			new Object() {
 				private void rehash(int index) {
 					var index1 = (index + 1) & mask;
 					var kv_ = kvs[index1];
 					var v = v(kv_);
-					if (v != EMPTYVALUE) {
+					if (v != empty) {
 						rehash(index1);
 						store(k(kv_), v);
 					}
@@ -152,7 +152,7 @@ public class IntIntMap1 {
 			for (var i = 0; i < capacity; i++) {
 				var kv0 = kvs0[i];
 				var v_ = v(kv0);
-				if (v_ != EMPTYVALUE)
+				if (v_ != empty)
 					store(k(kv0), v_);
 			}
 		}
@@ -164,7 +164,7 @@ public class IntIntMap1 {
 		var index = key & mask;
 		long kv;
 		int v0;
-		while ((v0 = v(kv = kvs[index])) != EMPTYVALUE)
+		while ((v0 = v(kv = kvs[index])) != empty)
 			if (k(kv) != key)
 				index = index + 1 & mask;
 			else
@@ -182,7 +182,7 @@ public class IntIntMap1 {
 				long kv;
 				int v;
 				while (index < capacity)
-					if ((v = v(kv = kvs[index++])) == EMPTYVALUE)
+					if ((v = v(kv = kvs[index++])) == empty)
 						;
 					else {
 						pair.update(k(kv), v);
@@ -195,7 +195,7 @@ public class IntIntMap1 {
 
 	private void allocate(int capacity) {
 		kvs = new long[capacity];
-		Arrays.fill(kvs, kv(0, EMPTYVALUE));
+		Arrays.fill(kvs, kv(0, empty));
 	}
 
 	private long kv(int k, int v) {

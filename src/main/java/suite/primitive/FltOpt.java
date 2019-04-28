@@ -11,7 +11,9 @@ import suite.primitive.FltPrimitives.Flt_Obj;
 
 public class FltOpt {
 
-	private static FltOpt none_ = FltOpt.of(FltFunUtil.EMPTYVALUE);
+	private static float empty = FltFunUtil.EMPTYVALUE;
+	private static FltOpt none_ = FltOpt.of(empty);
+
 	private float value;
 
 	public static FltOpt none() {
@@ -25,7 +27,7 @@ public class FltOpt {
 	}
 
 	public boolean isEmpty() {
-		return value == FltFunUtil.EMPTYVALUE;
+		return value == empty;
 	}
 
 	public FltOpt filter(FltTest pred) {
@@ -52,7 +54,7 @@ public class FltOpt {
 
 	@Override
 	public String toString() {
-		return value != FltFunUtil.EMPTYVALUE ? Float.toString(value) : "null";
+		return value != empty ? Float.toString(value) : "null";
 	}
 
 }

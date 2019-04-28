@@ -27,7 +27,7 @@ import suite.streamlet.Outlet;
  */
 public class IntIntMap {
 
-	private static int EMPTYVALUE = IntFunUtil.EMPTYVALUE;
+	private static int empty = IntFunUtil.EMPTYVALUE;
 
 	private int size;
 	private int[] ks;
@@ -55,7 +55,7 @@ public class IntIntMap {
 
 	public int computeIfAbsent(int key, Int_Int fun) {
 		var v = get(key);
-		if (v == EMPTYVALUE)
+		if (v == empty)
 			put(key, v = fun.apply(key));
 		return v;
 	}
@@ -91,7 +91,7 @@ public class IntIntMap {
 
 	public int get(int key) {
 		var index = index(key);
-		return ks[index] == key ? vs[index] : EMPTYVALUE;
+		return ks[index] == key ? vs[index] : empty;
 	}
 
 	public void put(int key, int v) {
@@ -111,15 +111,15 @@ public class IntIntMap {
 		var v0 = vs[index];
 		var v1 = vs[index] = fun.apply(v0);
 		ks[index] = key;
-		size += (v1 != EMPTYVALUE ? 1 : 0) - (v0 != EMPTYVALUE ? 1 : 0);
-		if (v1 == EMPTYVALUE)
+		size += (v1 != empty ? 1 : 0) - (v0 != empty ? 1 : 0);
+		if (v1 == empty)
 			new Object() {
 				private void rehash(int index) {
 					var index1 = (index + 1) & mask;
 					var v_ = vs[index1];
-					if (v_ != EMPTYVALUE) {
+					if (v_ != empty) {
 						var k = ks[index1];
-						vs[index1] = EMPTYVALUE;
+						vs[index1] = empty;
 						rehash(index1);
 						store(k, v_);
 					}
@@ -160,14 +160,14 @@ public class IntIntMap {
 			allocate(capacity * 2);
 
 			for (var i = 0; i < capacity; i++)
-				if ((v_ = vs0[i]) != EMPTYVALUE)
+				if ((v_ = vs0[i]) != empty)
 					store(ks0[i], v_);
 		}
 	}
 
 	private void store(int key, int v1) {
 		var index = index(key);
-		if (vs[index] == EMPTYVALUE) {
+		if (vs[index] == empty) {
 			ks[index] = key;
 			vs[index] = v1;
 		} else
@@ -177,7 +177,7 @@ public class IntIntMap {
 	private int index(int key) {
 		var mask = vs.length - 1;
 		var index = Integer.hashCode(key) & mask;
-		while (vs[index] != EMPTYVALUE && ks[index] != key)
+		while (vs[index] != empty && ks[index] != key)
 			index = index + 1 & mask;
 		return index;
 	}
@@ -191,7 +191,7 @@ public class IntIntMap {
 				while (index < capacity) {
 					var k = ks[index];
 					var v = vs[index++];
-					if (v != EMPTYVALUE) {
+					if (v != empty) {
 						pair.update(k, v);
 						return true;
 					}
@@ -204,7 +204,7 @@ public class IntIntMap {
 	private void allocate(int capacity) {
 		ks = new int[capacity];
 		vs = new int[capacity];
-		Arrays.fill(vs, EMPTYVALUE);
+		Arrays.fill(vs, empty);
 	}
 
 }

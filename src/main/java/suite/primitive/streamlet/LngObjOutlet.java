@@ -42,7 +42,7 @@ import suite.util.To;
 
 public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
-	private static long EMPTYVALUE = LngFunUtil.EMPTYVALUE;
+	private static long empty = LngFunUtil.EMPTYVALUE;
 
 	private LngObjSource<V> source;
 
@@ -160,7 +160,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public int count() {
-		var pair = LngObjPair.<V> of((long) 0, null);
+		var pair = LngObjPair.of(empty, (V) null);
 		var i = 0;
 		while (next(pair))
 			i++;
@@ -178,7 +178,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public LngObjOutlet<V> drop(int n) {
-		var pair = LngObjPair.<V> of((long) 0, null);
+		var pair = LngObjPair.of(empty, (V) null);
 		var isAvailable = true;
 		while (0 < n && (isAvailable &= next(pair)))
 			n--;
@@ -192,8 +192,8 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 			var outlet = (LngObjOutlet<V>) (LngObjOutlet<?>) object;
 			var source2 = outlet.source;
 			boolean b, b0, b1;
-			var pair0 = LngObjPair.<V> of((long) 0, null);
-			var pair1 = LngObjPair.<V> of((long) 0, null);
+			var pair0 = LngObjPair.of(empty, (V) null);
+			var pair1 = LngObjPair.of(empty, (V) null);
 			while ((b = (b0 = source2.source2(pair0)) == (b1 = source2.source2(pair1))) //
 					&& b0 //
 					&& b1 //
@@ -217,7 +217,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public LngObjPair<V> first() {
-		var pair = LngObjPair.<V> of((long) 0, null);
+		var pair = LngObjPair.of(empty, (V) null);
 		return next(pair) ? pair : null;
 	}
 
@@ -235,7 +235,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
 	@Override
 	public int hashCode() {
-		var pair = LngObjPair.<V> of((long) 0, null);
+		var pair = LngObjPair.of(empty, (V) null);
 		var h = 7;
 		while (next(pair))
 			h = h * 31 + pair.hashCode();
@@ -257,13 +257,13 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
 	public LngOutlet keys() {
 		return LngOutlet.of(() -> {
-			var pair = LngObjPair.<V> of((long) 0, null);
-			return next(pair) ? pair.t0 : EMPTYVALUE;
+			var pair = LngObjPair.of(empty, (V) null);
+			return next(pair) ? pair.t0 : empty;
 		});
 	}
 
 	public LngObjPair<V> last() {
-		var pair = LngObjPair.<V> of((long) 0, null);
+		var pair = LngObjPair.of(empty, (V) null);
 		if (next(pair))
 			while (next(pair))
 				;
@@ -297,8 +297,8 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public LngObjPair<V> minOrNull(Comparator<LngObjPair<V>> comparator) {
-		var pair = LngObjPair.<V> of((long) 0, null);
-		var pair1 = LngObjPair.<V> of((long) 0, null);
+		var pair = LngObjPair.of(empty, (V) null);
+		var pair1 = LngObjPair.of(empty, (V) null);
 		if (next(pair)) {
 			while (next(pair1))
 				if (0 < comparator.compare(pair, pair1))
@@ -314,7 +314,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 		new Thread(() -> {
 			boolean b;
 			do {
-				var pair = LngObjPair.<V> of((long) 0, null);
+				var pair = LngObjPair.of(empty, (V) null);
 				b = source.source2(pair);
 				queue.offerQuietly(pair);
 			} while (b);
@@ -333,7 +333,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public LngObjPair<V> opt() {
-		var pair = LngObjPair.<V> of((long) 0, null);
+		var pair = LngObjPair.of(empty, (V) null);
 		if (next(pair))
 			if (!next(pair))
 				return pair;
@@ -345,7 +345,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
 	public Outlet<LngObjPair<V>> pairs() {
 		return Outlet.of(() -> {
-			var pair = LngObjPair.<V> of((long) 0, null);
+			var pair = LngObjPair.of(empty, (V) null);
 			return next(pair) ? pair : null;
 		});
 	}
@@ -360,13 +360,13 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
 	public void sink(Sink2<Long, V> sink0) {
 		var sink1 = sink0.rethrow();
-		var pair = LngObjPair.<V> of((long) 0, null);
+		var pair = LngObjPair.of(empty, (V) null);
 		while (next(pair))
 			sink1.sink2(pair.t0, pair.t1);
 	}
 
 	public LngObjOutlet<V> skip(int n) {
-		var pair = LngObjPair.<V> of((long) 0, null);
+		var pair = LngObjPair.of(empty, (V) null);
 		var end = false;
 		for (var i = 0; !end && i < n; i++)
 			end = next(pair);
@@ -380,7 +380,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	public LngObjOutlet<V> sort(Comparator<LngObjPair<V>> comparator) {
 		var list = new ArrayList<LngObjPair<V>>();
 		LngObjPair<V> pair;
-		while (next(pair = LngObjPair.of((long) 0, null)))
+		while (next(pair = LngObjPair.of(empty, null)))
 			list.add(pair);
 		return of(List_.sort(list, comparator));
 	}
@@ -425,14 +425,14 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	public List<LngObjPair<V>> toList() {
 		var list = new ArrayList<LngObjPair<V>>();
 		LngObjPair<V> pair;
-		while (next(pair = LngObjPair.of((long) 0, null)))
+		while (next(pair = LngObjPair.of(empty, null)))
 			list.add(pair);
 		return list;
 	}
 
 	public LngObjMap<List<V>> toListMap() {
 		var map = new LngObjMap<List<V>>();
-		var pair = LngObjPair.<V> of((long) 0, null);
+		var pair = LngObjPair.of(empty, (V) null);
 		while (next(pair))
 			map.computeIfAbsent(pair.t0, k_ -> new ArrayList<>()).add(pair.t1);
 		return map;
@@ -440,7 +440,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 
 	public LngObjMap<V> toMap() {
 		var map = new LngObjMap<V>();
-		var pair = LngObjPair.<V> of((long) 0, null);
+		var pair = LngObjPair.of(empty, (V) null);
 		while (source.source2(pair))
 			map.put(pair.t0, pair.t1);
 		return map;
@@ -453,7 +453,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	}
 
 	public ObjLngMap<V> toObjLngMap() {
-		var pair = LngObjPair.<V> of((long) 0, null);
+		var pair = LngObjPair.of(empty, (V) null);
 		var map = new ObjLngMap<V>();
 		while (source.source2(pair))
 			map.put(pair.t1, pair.t0);
@@ -463,7 +463,7 @@ public class LngObjOutlet<V> implements OutletDefaults<LngObjPair<V>> {
 	public Set<LngObjPair<V>> toSet() {
 		var set = new HashSet<LngObjPair<V>>();
 		LngObjPair<V> pair;
-		while (next(pair = LngObjPair.of((long) 0, null)))
+		while (next(pair = LngObjPair.of(empty, null)))
 			set.add(pair);
 		return set;
 

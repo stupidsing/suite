@@ -12,10 +12,12 @@ import suite.object.Object_;
  */
 public class DblMutable {
 
+	private static double empty = DblFunUtil.EMPTYVALUE;
+
 	private double value;
 
 	public static DblMutable nil() {
-		return DblMutable.of(DblFunUtil.EMPTYVALUE);
+		return DblMutable.of(empty);
 	}
 
 	public static DblMutable of(double c) {
@@ -29,7 +31,7 @@ public class DblMutable {
 	}
 
 	public void set(double c) {
-		if (value == DblFunUtil.EMPTYVALUE)
+		if (value == empty)
 			update(c);
 		else
 			fail("value already set");
@@ -55,7 +57,7 @@ public class DblMutable {
 
 	@Override
 	public String toString() {
-		return value != DblFunUtil.EMPTYVALUE ? Double.toString(value) : "null";
+		return value != empty ? Double.toString(value) : "null";
 	}
 
 }
