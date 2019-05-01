@@ -25,7 +25,7 @@ public class RangeMinQueryTest {
 			}
 		}
 
-		var o = new Object() {
+		var root = new Object() {
 			private Rmq build(int s, int e) {
 				if (s == e)
 					return null;
@@ -42,9 +42,7 @@ public class RangeMinQueryTest {
 					return rmq;
 				}
 			}
-		};
-
-		var root = o.build(0, ts.length);
+		}.build(0, ts.length);
 
 		return (s, e) -> new Object() {
 			private int query(int s, int e, Rmq rmq) {
