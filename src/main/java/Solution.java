@@ -5,6 +5,10 @@ import java.util.Scanner;
 public class Solution {
 
 	public static void main(String[] args) {
+		new Solution().run(args);
+	}
+
+	void run(String[] args) {
 		Scanner in = new Scanner(new BufferedReader(new InputStreamReader(System.in)));
 		int t = in.nextInt(); // Scanner has functions to read ints, longs, strings, chars, etc.
 		for (int c = 1; c <= t; ++c) {
