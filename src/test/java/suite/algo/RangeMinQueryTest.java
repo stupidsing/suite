@@ -19,9 +19,11 @@ public class RangeMinQueryTest {
 			private int minIndex;
 			private Rmq l, r;
 
-			private Rmq(int mid, int minIndex) {
+			private Rmq(int mid, int minIndex, Rmq l, Rmq r) {
 				this.mid = mid;
 				this.minIndex = minIndex;
+				this.l = l;
+				this.r = r;
 			}
 		}
 
@@ -30,16 +32,13 @@ public class RangeMinQueryTest {
 				if (s == e)
 					return null;
 				else if (s + 1 == e)
-					return new Rmq(s, s);
+					return new Rmq(s, s, null, null);
 				else {
 					var mid = (int) (s + (long) e) / 2;
 					Rmq l = build(s, mid);
 					Rmq r = build(mid, e);
 					var isLeft = ts[l.minIndex].compareTo(ts[r.minIndex]);
-					var rmq = new Rmq(mid, (isLeft < 0 ? l : r).minIndex);
-					rmq.l = l;
-					rmq.r = r;
-					return rmq;
+					return new Rmq(mid, (isLeft < 0 ? l : r).minIndex, l, r);
 				}
 			}
 		}.build(0, ts.length);
