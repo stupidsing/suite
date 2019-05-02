@@ -54,7 +54,7 @@ public class NfaToDfaTest {
 			public final State init;
 			public final Map<State, Map<Symbol, State>> edges;
 
-			private Dfa(State init, Map<State, Map<Symbol, State>> edges) {
+			public Dfa(State init, Map<State, Map<Symbol, State>> edges) {
 				this.init = init;
 				this.edges = edges;
 			}
