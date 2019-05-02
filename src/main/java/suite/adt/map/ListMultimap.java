@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import suite.streamlet.Read;
 import suite.streamlet.Streamlet2;
@@ -46,6 +47,10 @@ public class ListMultimap<K, V> {
 			if (!value.isEmpty())
 				return false;
 		return true;
+	}
+
+	public Set<K> keySet() {
+		return map.keySet();
 	}
 
 	public Streamlet2<K, List<V>> listEntries() {
