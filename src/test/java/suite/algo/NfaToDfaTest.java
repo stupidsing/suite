@@ -51,11 +51,12 @@ public class NfaToDfaTest {
 		}
 
 		public class Dfa {
-			public State init;
-			public final Map<State, Map<Symbol, State>> edges = new HashMap<>();
+			public final State init;
+			public final Map<State, Map<Symbol, State>> edges;
 
-			public Dfa(State init) {
+			private Dfa(State init, Map<State, Map<Symbol, State>> edges) {
 				this.init = init;
+				this.edges = edges;
 			}
 
 			public void add(State from, Symbol edge, State to) {
@@ -95,18 +96,19 @@ public class NfaToDfaTest {
 			var nfaStates0 = closure.apply(nfa.init);
 			var stateMap = new HashMap<Set<State>, State>();
 			var stack = new ArrayDeque<Set<State>>();
-			var dfa = new Dfa(null);
+
+			var edges = new HashMap<State, Map<Symbol, State>>();
 
 			Fun<Set<State>, State> addState = nfaStates -> {
 				var term = Read.from(nfaStates).isAny(nfaState -> nfaState.term);
 				var dfaState = new State(term);
 				stateMap.put(nfaStates, dfaState);
-				dfa.edges.put(dfaState, new HashMap<>());
+				edges.put(dfaState, new HashMap<>());
 				stack.push(nfaStates);
 				return dfaState;
 			};
 
-			dfa.init = addState.apply(nfaStates0);
+			var init = addState.apply(nfaStates0);
 
 			while (!stack.isEmpty()) {
 				var nfaStates = stack.pop();
@@ -126,11 +128,11 @@ public class NfaToDfaTest {
 					if (dfaState1 == null)
 						dfaState1 = addState.apply(nfaStates1);
 
-					dfa.edges.get(dfaState).put(symbol1, dfaState1);
+					edges.get(dfaState).put(symbol1, dfaState1);
 				}
 			}
 
-			return dfa;
+			return new Dfa(init, edges);
 		}
 	}
 
