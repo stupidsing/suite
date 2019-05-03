@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import suite.inspect.Dump;
 import suite.os.Log_;
-import suite.streamlet.FunUtil2.Fun2;
 import suite.trade.Time;
 import suite.trade.TimeRange;
 
@@ -16,7 +15,15 @@ public class YahooTest {
 
 	@Test
 	public void testL1() {
-		test(yahoo::dataSourceL1);
+		var symbol = "0005.HK";
+
+		var ds = yahoo.dataSourceL1(symbol, TimeRange.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1))).validate();
+		System.out.println(ds.recent(symbol, 9));
+
+		var tsLength = ds.ts.length;
+		var pricesLength = ds.prices.length;
+		assertTrue(tsLength == pricesLength);
+		assertTrue(0 < tsLength);
 	}
 
 	@Test
@@ -37,18 +44,6 @@ public class YahooTest {
 			} catch (Exception ex) {
 				Log_.error(ex);
 			}
-	}
-
-	private void test(Fun2<String, TimeRange, DataSource> fun) {
-		var symbol = "0005.HK";
-
-		var ds = fun.apply(symbol, TimeRange.of(Time.of(2016, 1, 1), Time.of(2017, 1, 1))).validate();
-		System.out.println(ds.recent(symbol, 9));
-
-		var tsLength = ds.ts.length;
-		var pricesLength = ds.prices.length;
-		assertTrue(tsLength == pricesLength);
-		assertTrue(0 < tsLength);
 	}
 
 }
