@@ -173,7 +173,12 @@ public class Time implements Comparable<Time> {
 	}
 
 	public String ymdHms() {
-		return To.string(dateTime);
+		return ymdHms_();
+	}
+
+	@Override
+	public String toString() {
+		return ymdHms_();
 	}
 
 	@Override
@@ -189,6 +194,10 @@ public class Time implements Comparable<Time> {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(dateTime);
+	}
+
+	private String ymdHms_() {
+		return To.string(dateTime);
 	}
 
 }
