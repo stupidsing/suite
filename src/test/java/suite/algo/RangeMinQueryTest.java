@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import suite.primitive.IntInt_Int;
+import suite.util.Util;
 
 public class RangeMinQueryTest {
 
@@ -34,9 +35,9 @@ public class RangeMinQueryTest {
 				else if (s + 1 == e)
 					return new Rmq(s, s, null, null);
 				else {
-					var mid = (int) (s + (long) e) / 2;
-					Rmq l = build(s, mid);
-					Rmq r = build(mid, e);
+					var mid = Util.mid(s, e);
+					var l = build(s, mid);
+					var r = build(mid, e);
 					var isLeft = ts[l.minIndex].compareTo(ts[r.minIndex]);
 					return new Rmq(mid, (isLeft < 0 ? l : r).minIndex, l, r);
 				}
@@ -45,13 +46,16 @@ public class RangeMinQueryTest {
 
 		return (s, e) -> new Object() {
 			private int query(int s, int e, Rmq rmq) {
-				var min = rmq.mid;
-				int mi;
-				if (rmq.l != null && s < rmq.mid && ts[mi = query(s, rmq.mid, rmq.l)].compareTo(ts[min]) < 0)
-					min = mi;
-				if (rmq.r != null && rmq.mid < e && ts[mi = query(rmq.mid, e, rmq.r)].compareTo(ts[min]) < 0)
-					min = mi;
-				return min;
+				if (rmq != null) {
+					var min = rmq.mid;
+					int mi;
+					if (s < rmq.mid && ts[mi = query(s, rmq.mid, rmq.l)].compareTo(ts[min]) < 0)
+						min = mi;
+					if (rmq.mid < e && ts[mi = query(rmq.mid, e, rmq.r)].compareTo(ts[min]) < 0)
+						min = mi;
+					return min;
+				} else
+					return s;
 			}
 		}.query(s, e, root);
 	}

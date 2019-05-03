@@ -65,6 +65,10 @@ public class Util {
 			}
 	}
 
+	public static int mid(int a, int b) {
+		return (int) ((a + (long) b) / 2);
+	}
+
 	/**
 	 * Reads a line from a stream with a maximum line length limit. Removes carriage
 	 * return if it is DOS-mode line feed (CR-LF). Unknown behaviour when dealing
