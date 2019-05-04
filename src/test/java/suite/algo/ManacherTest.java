@@ -1,6 +1,7 @@
 package suite.algo;
 
 import static org.junit.Assert.assertEquals;
+import static suite.util.Friends.min;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +41,7 @@ public class ManacherTest {
 						var mpl = mpls.get(j);
 						var d = j - e - 1;
 						if (mpl != d) {
-							mpls.add(Math.min(mpl, d));
+							mpls.add(min(mpl, d));
 							j--;
 							continue;
 						} else
@@ -62,7 +63,7 @@ public class ManacherTest {
 		for (var j = s; e < j; j--) {
 			var mpl = mpls.get(j);
 			var d = j - e - 1;
-			mpls.add(Math.min(d, mpl));
+			mpls.add(min(d, mpl));
 		}
 
 		return mpls;

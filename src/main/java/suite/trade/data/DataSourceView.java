@@ -1,5 +1,8 @@
 package suite.trade.data;
 
+import static suite.util.Friends.max;
+import static suite.util.Friends.min;
+
 import java.util.Map;
 
 import suite.trade.Time;
@@ -49,8 +52,8 @@ public class DataSourceView<K, V> {
 		var to = TimeRange.max.epochSec();
 
 		for (var t : akds.ts) {
-			fr = Long.min(t, fr);
-			to = Long.max(t, to);
+			fr = min(t, fr);
+			to = max(t, to);
 		}
 
 		var period = TimeRange.of(Time.ofEpochSec(fr), Time.ofEpochSec(to).addDays(1));
