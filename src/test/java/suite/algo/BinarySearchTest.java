@@ -28,18 +28,18 @@ public class BinarySearchTest {
 	// find the leftest value in is that is greater than or equal to i.
 	// if no such value, return is.length.
 	private int search(int[] is, int i) {
-		return new Object() {
-			private int s(int s, int e) {
-				int length = e - s;
-				var mid = s + length / 2;
-				if (length <= 0)
-					return s;
-				else if (i <= is[mid])
-					return s(s, mid);
-				else
-					return s(mid + 1, e);
-			}
-		}.s(0, is.length);
+		var s = 0;
+		var e = is.length;
+
+		while (s != e) {
+			var mid = s + (e - s) / 2;
+			if (i <= is[mid])
+				e = mid;
+			else
+				s = mid + 1;
+		}
+
+		return s;
 	}
 
 }
