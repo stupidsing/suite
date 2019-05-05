@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import suite.primitive.IntInt_Int;
-import suite.util.Util;
 
 public class RangeMinQueryTest {
 
@@ -35,7 +34,7 @@ public class RangeMinQueryTest {
 				else if (s + 1 == e)
 					return new Rmq(s, s, null, null);
 				else {
-					var mid = Util.mid(s, e);
+					var mid = s + (e - s) / 2;
 					var l = build(s, mid);
 					var r = build(mid, e);
 					var isLeft = ts[l.minIndex].compareTo(ts[r.minIndex]);

@@ -21,7 +21,7 @@ public class BinarySearchTest {
 		assertEquals(0, search(is, Integer.MIN_VALUE));
 		assertEquals(l, search(is, Integer.MAX_VALUE));
 
-		for (var i = 0; i <= l; i++)
+		for (var i = 0; i < l; i++)
 			assertEquals(i, search(is, i));
 	}
 
