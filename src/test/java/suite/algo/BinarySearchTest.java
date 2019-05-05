@@ -10,8 +10,10 @@ public class BinarySearchTest {
 
 	@Test
 	public void test() {
+		test(0);
+		test(1);
 		test(10);
-		test(200);
+		test(20000);
 	}
 
 	private void test(int size) {
