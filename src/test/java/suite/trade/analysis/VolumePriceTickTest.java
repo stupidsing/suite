@@ -32,8 +32,12 @@ public class VolumePriceTickTest {
 		var prices = Boolean.TRUE ? vpt.forward() : vpt.backward();
 
 		for (var days = 1; days < 8; days++) {
-			var ma_ = ma.movingAvg(prices, days);
-			var returns = cr.buySell(t -> prices[t] < ma_[t] ? -1d : 1d).invest(prices);
+			var ma_a = ma.movingAvg(prices, 1);
+			var ma_b = ma.movingAvg(prices, days);
+			var returns = cr.buySell(d -> {
+				var last = d - 1;
+				return Quant.sign(ma_a[last], ma_b[last]);
+			}).start(1).invest(prices);
 			System.out.println("ma[" + days + "] = " + returns.sharpe());
 		}
 	}

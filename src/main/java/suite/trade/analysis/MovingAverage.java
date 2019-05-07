@@ -120,6 +120,8 @@ public class MovingAverage {
 		return To.vector(movingAvgs, Math::exp);
 	}
 
+	// movingAvg(prices, 1) = prices
+	// movingAvg(prices, 2) means taking average of two-days
 	public float[] movingAvg(float[] prices, int windowSize) {
 		var length = prices.length;
 		var movingAvgs = new float[length];
