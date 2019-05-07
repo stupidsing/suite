@@ -1,9 +1,7 @@
 package suite.trade.analysis;
 
 import static suite.util.Friends.abs;
-import static suite.util.Friends.expm1;
 import static suite.util.Friends.forInt;
-import static suite.util.Friends.log1p;
 import static suite.util.Friends.max;
 
 import java.util.Arrays;
@@ -13,12 +11,10 @@ import org.junit.Test;
 import suite.math.Tanh;
 import suite.math.linalg.VirtualVector;
 import suite.math.numeric.Statistic;
-import suite.math.numeric.Statistic.MeanVariance;
 import suite.math.transform.DiscreteCosineTransform;
 import suite.os.Log_;
 import suite.primitive.Floats_;
 import suite.primitive.IntPrimitives.Int_Obj;
-import suite.primitive.Int_Dbl;
 import suite.primitive.Ints_;
 import suite.primitive.adt.pair.IntFltPair;
 import suite.trade.Time;
@@ -28,6 +24,8 @@ import suite.trade.data.DataSource;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
 import suite.ts.BollingerBands;
+import suite.ts.CalculateReturns;
+import suite.ts.CalculateReturns.BuySell;
 import suite.ts.Quant;
 import suite.ts.TimeSeries;
 import suite.util.To;
@@ -35,14 +33,13 @@ import suite.util.To;
 // mvn test -Dtest=AnalyzeTimeSeriesTest#test
 public class AnalyzeTimeSeriesTest {
 
-	private static AnalyzeTimeSeriesTest me = new AnalyzeTimeSeriesTest();
-
 	private String symbol = "2800.HK";
 	private TimeRange period = TimeRange.of(Time.of(2005, 1, 1), TimeRange.max);
 	// TimeRange.of(Time.of(2013, 1, 1), Time.of(2014, 1, 1));
 	// TimeRange.threeYears();
 
 	private BollingerBands bb = new BollingerBands();
+	private CalculateReturns cr = new CalculateReturns();
 	private TradeCfg cfg = new TradeCfgImpl();
 	private DiscreteCosineTransform dct = new DiscreteCosineTransform();
 	private MarketTiming mt = new MarketTiming();
@@ -88,27 +85,27 @@ public class AnalyzeTimeSeriesTest {
 		Int_Obj<BuySell> momFun = n -> {
 			var d0 = 1 + n;
 			var d1 = 1;
-			return buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
+			return cr.buySell(d -> Quant.sign(prices[d - d0], prices[d - d1])).start(d0);
 		};
 
 		Int_Obj<BuySell> revert = d -> momFun.apply(d).scale(0d, -1d);
 		Int_Obj<BuySell> trend_ = d -> momFun.apply(d).scale(0d, +1d);
 		var reverts = To.array(8, BuySell.class, revert);
 		var trends_ = To.array(8, BuySell.class, trend_);
-		var tanh = buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
+		var tanh = cr.buySell(d -> Tanh.tanh(3.2d * reverts[1].apply(d)));
 		var holds = mt.hold(prices, 1f, 1f, 1f);
 		var ma200 = ma.movingAvg(prices, 200);
-		var mat = buySell(d -> {
+		var mat = cr.buySell(d -> {
 			var last = d - 1;
 			return Quant.sign(ma200[last], prices[last]);
 		}).start(1).longOnly();
-		var mt_ = buySell(d -> holds[d]);
+		var mt_ = cr.buySell(d -> holds[d]);
 
 		var bbmv = bb.meanVariances(VirtualVector.of(logReturns), 9, 0);
 		var bbmean = bbmv.t0;
 		var bbvariances = bbmv.t1;
 
-		var ms2 = buySell(d -> {
+		var ms2 = cr.buySell(d -> {
 			var last = d - 1;
 			var ref = last - 250;
 			var mean = bbmean[last];
@@ -132,8 +129,8 @@ public class AnalyzeTimeSeriesTest {
 						.of(4, 16) //
 						.map(d -> "variance ratio [" + d + "d over 1d] = " + ts.varianceRatio(prices, d)) //
 				+ "\nreturn hurst = " + ts.hurst(prices, prices.length / 2) //
-				+ "\nhold " + buySell(d -> 1d).invest(prices) //
-				+ "\nkelly " + buySell(d -> kelly).invest(prices) //
+				+ "\nhold " + cr.buySell(d -> 1d).invest(prices) //
+				+ "\nkelly " + cr.buySell(d -> kelly).invest(prices) //
 				+ "\nma200 trend " + mat.invest(prices) //
 				+ forInt(1, 8).map(d -> "revert [" + d + "d] " + reverts[d].invest(prices)) //
 				+ forInt(1, 8).map(d -> "trend_ [" + d + "d] " + trends_[d].invest(prices)) //
@@ -144,82 +141,6 @@ public class AnalyzeTimeSeriesTest {
 				+ "\ntanh " + tanh.invest(prices) //
 				+ "\ntimed " + mt_.invest(prices) //
 				+ "\ntimed long-only " + mt_.longOnly().invest(prices));
-	}
-
-	private BuySell buySell(Int_Dbl fun) {
-		return fun::apply;
-	}
-
-	public interface BuySell extends Int_Dbl {
-		public default BuySell longOnly() {
-			return d -> max(0d, apply(d));
-		}
-
-		public default BuySell scale(double a, double b) {
-			return d -> a + b * apply(d);
-		}
-
-		public default BuySell start(int s) {
-			return d -> s <= d ? apply(d) : 0d;
-		}
-
-		public default Returns engage(float[] prices) {
-			return me.engage_(prices, To.vector(prices.length, this));
-		}
-
-		public default Returns invest(float[] prices) {
-			return me.invest_(prices, To.vector(prices.length, this));
-		}
-	}
-
-	private Returns engage_(float[] prices, float[] holds) {
-		var length = prices.length;
-		var returns = new float[length];
-		var val = 1d;
-		returns[0] = (float) val;
-		for (var d = 1; d < length; d++)
-			returns[d] = (float) (val += holds[d] * (prices[d] - prices[d - 1]));
-		return new Returns(returns);
-	}
-
-	private Returns invest_(float[] prices, float[] holds) {
-		var length = prices.length;
-		var returns = new float[length];
-		var val = 1d;
-		returns[0] = (float) val;
-		for (var d = 1; d < length; d++)
-			returns[d] = (float) (val *= 1d + holds[d] * Quant.return_(prices[d - 1], prices[d]));
-		return new Returns(returns);
-	}
-
-	private class Returns {
-		private float[] vals;
-		private float[] returns;
-		private MeanVariance rmv;
-
-		private Returns(float[] vals) {
-			this.vals = vals;
-			returns = ts.returns(vals);
-			rmv = stat.meanVariance(returns);
-		}
-
-		public String toString() {
-			var return_ = return_();
-			var yearPeriod = Trade_.nTradeDaysPerYear / (double) vals.length;
-			return "o/c =" //
-					+ " rtn:" + To.string(return_) //
-					+ " cagr:" + To.string(expm1(log1p(return_) * yearPeriod)) //
-					+ " sharpe:" + To.string(sharpe()) //
-					+ " dist:" + rmv;
-		}
-
-		private double return_() {
-			return Quant.return_(vals[0], vals[vals.length - 1]);
-		}
-
-		private double sharpe() {
-			return rmv.mean / rmv.standardDeviation();
-		}
 	}
 
 }
