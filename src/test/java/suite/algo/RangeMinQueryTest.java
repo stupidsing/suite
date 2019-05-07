@@ -29,9 +29,7 @@ public class RangeMinQueryTest {
 
 		var root = new Object() {
 			private Rmq build(int s, int e) {
-				if (s == e)
-					return null;
-				else if (s + 1 == e)
+				if (e <= s + 1)
 					return new Rmq(s, s, null, null);
 				else {
 					var mid = s + (e - s) / 2;
