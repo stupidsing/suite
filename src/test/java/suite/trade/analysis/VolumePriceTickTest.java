@@ -40,30 +40,25 @@ public class VolumePriceTickTest {
 	}
 
 	private class VolumePriceTick {
-		private float[] prices;
 		private float[] vols;
-		private int vpl;
 		private double vpd;
+		private float[] prices0, prices1;
+		private double vp0, vp1;
 
 		private VolumePriceTick(float[] prices, float[] vols, int vpl) {
-			this.prices = prices;
 			this.vols = vols;
-			this.vpl = vpl;
-
 			vpd = vec.dot(prices, vols) / vpl;
+			prices0 = prices;
+			prices1 = new float[vpl];
 		}
 
 		private float[] forward() {
-			var prices0 = prices;
-			var prices1 = new float[vpl];
-			var vp0 = 0d;
-			var vp1 = 0d;
 			var t0 = 0;
 
-			for (var t1 = 0; t1 < vpl; t1++) {
+			for (var t1 = 0; t1 < prices1.length; t1++) {
 				prices1[t1] = prices0[t0];
 				vp1 += vpd;
-				while (vp0 < vp1 && t0 < prices.length) {
+				while (vp0 < vp1 && t0 < prices0.length) {
 					vp0 += prices0[t0] * vols[t0];
 					t0++;
 				}
@@ -73,17 +68,13 @@ public class VolumePriceTickTest {
 		}
 
 		private float[] backward() {
-			var prices0 = prices;
-			var prices1 = new float[vpl];
-			var pv0 = 0d;
-			var pv1 = 0d;
-			var t0 = prices.length - 1;
+			var t0 = prices0.length - 1;
 
-			for (var t1 = vpl - 1; 0 <= t1; t1--) {
+			for (var t1 = prices1.length - 1; 0 <= t1; t1--) {
 				prices1[t1] = prices0[t0];
-				pv1 += vpd;
-				while (pv0 < pv1 && 0 < t0) {
-					pv0 += prices0[t0] * vols[t0];
+				vp1 += vpd;
+				while (vp0 < vp1 && 0 <= t0) {
+					vp0 += prices0[t0] * vols[t0];
 					t0--;
 				}
 			}
