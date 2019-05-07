@@ -2,6 +2,8 @@ package suite.math.ts;
 
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+
 import org.junit.Test;
 
 import suite.trade.Time;
@@ -14,6 +16,17 @@ public class TimeSeriesTest {
 
 	private TradeCfg cfg = new TradeCfgImpl();
 	private TimeSeries ts = new TimeSeries();
+
+	@Test
+	public void testFixedWindowFracDiff() {
+		var symbol = "2800.HK";
+		var d = .5d;
+		var window = 19;
+		var period = TimeRange.of(Time.of(2005, 1, 1), TimeRange.max);
+		var fs = cfg.dataSource(symbol).range(period).closes;
+
+		System.out.println(Arrays.toString(ts.fracDiff(fs, d, window)));
+	}
 
 	@Test
 	public void testSharpeRatio() {

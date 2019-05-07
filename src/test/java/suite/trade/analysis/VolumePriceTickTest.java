@@ -28,11 +28,11 @@ public class VolumePriceTickTest {
 		analyze(cfg.dataSource(symbol).range(period), 1024);
 	}
 
-	private void analyze(DataSource ds, int pvl) {
-		var vpt = new VolumePriceTick(ds.closes, ds.volumes, pvl);
+	private void analyze(DataSource ds, int vpl) {
+		var vpt = new VolumePriceTick(ds.closes, ds.volumes, vpl);
 		var prices = Boolean.TRUE ? vpt.forward() : vpt.backward();
 
-		for (var days = 1; days < 9; days++) {
+		for (var days = 1; days < 8; days++) {
 			var ma_ = ma.movingAvg(prices, days);
 			var returns = cr.buySell(t -> prices[t] < ma_[t] ? -1d : 1d).invest(prices);
 			System.out.println("ma[" + days + "] = " + returns.sharpe());
@@ -42,29 +42,29 @@ public class VolumePriceTickTest {
 	private class VolumePriceTick {
 		private float[] prices;
 		private float[] vols;
-		private int pvl;
-		private double pvd;
+		private int vpl;
+		private double vpd;
 
-		private VolumePriceTick(float[] prices, float[] vols, int pvl) {
+		private VolumePriceTick(float[] prices, float[] vols, int vpl) {
 			this.prices = prices;
 			this.vols = vols;
-			this.pvl = pvl;
+			this.vpl = vpl;
 
-			pvd = vec.dot(prices, vols) / pvl;
+			vpd = vec.dot(prices, vols) / vpl;
 		}
 
 		private float[] forward() {
 			var prices0 = prices;
-			var prices1 = new float[pvl];
-			var pv0 = 0d;
-			var pv1 = 0d;
+			var prices1 = new float[vpl];
+			var vp0 = 0d;
+			var vp1 = 0d;
 			var t0 = 0;
 
-			for (var t1 = 0; t1 < pvl; t1++) {
+			for (var t1 = 0; t1 < vpl; t1++) {
 				prices1[t1] = prices0[t0];
-				pv1 += pvd;
-				while (pv0 < pv1 && t0 < prices.length) {
-					pv0 += prices0[t0] * vols[t0];
+				vp1 += vpd;
+				while (vp0 < vp1 && t0 < prices.length) {
+					vp0 += prices0[t0] * vols[t0];
 					t0++;
 				}
 			}
@@ -74,14 +74,14 @@ public class VolumePriceTickTest {
 
 		private float[] backward() {
 			var prices0 = prices;
-			var prices1 = new float[pvl];
+			var prices1 = new float[vpl];
 			var pv0 = 0d;
 			var pv1 = 0d;
 			var t0 = prices.length - 1;
 
-			for (var t1 = pvl - 1; 0 <= t1; t1--) {
+			for (var t1 = vpl - 1; 0 <= t1; t1--) {
 				prices1[t1] = prices0[t0];
-				pv1 += pvd;
+				pv1 += vpd;
 				while (pv0 < pv1 && 0 < t0) {
 					pv0 += prices0[t0] * vols[t0];
 					t0--;
