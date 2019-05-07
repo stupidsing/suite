@@ -10,10 +10,9 @@ import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
 import suite.ts.CalculateReturns;
 
-// mvn test -Dtest=AnalyzeTimeSeriesTest#test
 public class VolumePriceTickTest {
 
-	private String symbol = "2800.HK";
+	private String symbol = "1299.HK";
 	private TimeRange period = TimeRange.of(Time.of(2005, 1, 1), TimeRange.max);
 	// TimeRange.of(Time.of(2013, 1, 1), Time.of(2014, 1, 1));
 	// TimeRange.threeYears();
