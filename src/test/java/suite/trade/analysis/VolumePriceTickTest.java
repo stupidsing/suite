@@ -24,7 +24,7 @@ public class VolumePriceTickTest {
 
 	@Test
 	public void test() {
-		analyze(cfg.dataSource(symbol).range(period), 1024);
+		analyze(cfg.dataSource(symbol).range(period), 384);
 	}
 
 	private void analyze(DataSource ds, int vpl) {
@@ -61,7 +61,7 @@ public class VolumePriceTickTest {
 			for (var t1 = 0; t1 < prices1.length; t1++) {
 				prices1[t1] = prices0[t0];
 				vp1 += vpd;
-				while (vp0 < vp1) {
+				while (vp0 < vp1 && t0 < prices0.length) {
 					vp0 += prices0[t0] * vols[t0];
 					t0++;
 				}
@@ -76,7 +76,7 @@ public class VolumePriceTickTest {
 			for (var t1 = prices1.length - 1; 0 <= t1; t1--) {
 				prices1[t1] = prices0[t0];
 				vp1 += vpd;
-				while (vp0 < vp1) {
+				while (vp0 < vp1 && 0 <= t0) {
 					vp0 += prices0[t0] * vols[t0];
 					t0--;
 				}
