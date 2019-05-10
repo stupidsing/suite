@@ -5,13 +5,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import org.junit.Test;
 
 import suite.adt.map.ListMultimap;
+import suite.streamlet.As;
 import suite.streamlet.FunUtil.Fun;
 import suite.streamlet.Read;
+import suite.streamlet.Streamlet;
 
 // https://www.geeksforgeeks.org/program-implement-nfa-epsilon-move-dfa-conversion/
 public class NfaToDfaTest {
@@ -64,15 +65,17 @@ public class NfaToDfaTest {
 			}
 
 			public String toString() {
-				var lines0 = new TreeSet<String>();
-				edges.keySet().forEach(state -> lines0.add("\n" + state + (state.term ? " (terminal)" : "")));
-				var lines1 = new TreeSet<String>();
-				edges.forEach((fr, m) -> m.forEach((st, to) -> lines1.add("\n" + fr + " [" + st + "] => " + to)));
-				var sb = new StringBuilder();
-				sb.append("init = " + init + ", edges = ");
-				lines0.forEach(sb::append);
-				lines1.forEach(sb::append);
-				return sb.toString();
+				var edges_ = Read.from2(edges);
+
+				return "init = " + init + ", edges = " + Streamlet.concat( //
+						edges_ //
+								.keys() //
+								.map(state -> "\n" + state + (state.term ? " (terminal)" : "")), //
+						edges_ //
+								.concatMap((fr, m) -> Read //
+										.from2(m) //
+										.map((st, to) -> "\n" + fr + " [" + st + "] => " + to)))
+						.collect(As::joined);
 			}
 		}
 
