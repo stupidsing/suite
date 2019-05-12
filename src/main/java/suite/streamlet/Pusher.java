@@ -87,8 +87,8 @@ public class Pusher<T> {
 		this(new Bag<>());
 	}
 
-	private Pusher(Bag<Sink<T>> receivers) {
-		this.pullers = receivers;
+	private Pusher(Bag<Sink<T>> pullers) {
+		this.pullers = pullers;
 	}
 
 	public <U> Pusher<U> concatMap(Fun<T, Pusher<U>> fun) {
@@ -170,21 +170,21 @@ public class Pusher<T> {
 		});
 	}
 
-	public void wire(Runnable receiver) {
-		wire_(t -> receiver.run());
+	public void wire(Runnable runner) {
+		wire_(t -> runner.run());
 	}
 
-	public void wire(Sink<T> receiver) {
-		wire_(receiver);
+	public void wire(Sink<T> puller) {
+		wire_(puller);
 	}
 
 	private <U> Pusher<U> redirect_(Redirector<T, U> redirector) {
 		return of(push -> wire_(t -> redirector.accept(t, push)));
 	}
 
-	private Runnable wire_(Sink<T> receiver) {
-		pullers.add(receiver);
-		return () -> pullers.remove(receiver);
+	private Runnable wire_(Sink<T> puller) {
+		pullers.add(puller);
+		return () -> pullers.remove(puller);
 	}
 
 }

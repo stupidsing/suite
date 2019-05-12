@@ -1,51 +1,51 @@
 'use strict';
 
 let frp = function() {
-	let newSignal = () => { // FRP dispatcher
-		let receivers = [];
-		let fire_ = data => { for (let receiver of receivers) receiver(data); };
-		let wire_ = receiver => receivers.push(receiver);
+	let newPusher = () => { // FRP dispatcher
+		let pullers = [];
+		let push_ = data => { for (let puller of pullers) puller(data); };
+		let wire_ = puller => pullers.push(puller);
 
 		let redirect_ = tf => {
-			let signal = newSignal();
-			wire_(data => tf(data, signal));
-			return signal;
+			let pusher = newPusher();
+			wire_(data => tf(data, pusher));
+			return pusher;
 		};
 
 		return {
 			append: other => {
-				let signal = newSignal();
-				wire_(signal.fire);
-				other.wire(signal.fire);
-				return signal;
+				let pusher = newPusher();
+				wire_(pusher.push);
+				other.wire(pusher.push);
+				return pusher;
 			},
-			close: () => receivers = [], // for garbage collection
-			concatmap: f => redirect_((data, signal) => f(data).wire(signal.fire)),
-			delay: time => redirect_((data, signal) => setTimeout(() => signal.fire(data), time)),
+			close: () => pullers = [], // for garbage collection
+			concatmap: f => redirect_((data, pusher) => f(data).wire(pusher.push)),
+			delay: time => redirect_((data, pusher) => setTimeout(() => pusher.push(data), time)),
 			edge: () => {
 				let data_;
-				return redirect_((data, signal) => {
-					if(data != data_) signal.fire(data);
+				return redirect_((data, pusher) => {
+					if(data != data_) pusher.push(data);
 					data_ = data;
 				});
 			},
-			filter: f => redirect_((data, signal) => { if (f(data)) signal.fire(data); }),
-			fire: fire_,
-			fold: (f, value) => redirect_((data, signal) => signal.fire(value = f(value, data))),
+			filter: f => redirect_((data, pusher) => { if (f(data)) pusher.push(data); }),
+			fold: (f, value) => redirect_((data, pusher) => pusher.push(value = f(value, data))),
 			last: () => {
 				let data_;
 				wire_(data => data_ = data);
 				return () => data_;
 			},
-			map: f => redirect_((data, signal) => signal.fire(f(data))),
+			map: f => redirect_((data, pusher) => pusher.push(f(data))),
 			merge: (other, f) => {
 				let v0, v1;
-				let signal = newSignal();
-				let fire1 = () => signal.fire(f(v0, v1));
-				wire_(data => { v0 = data; fire1(); });
-				f.wire(data => { v1 = data; fire1(); });
-				return signal;
+				let pusher = newPusher();
+				let push1 = () => pusher.push(f(v0, v1));
+				wire_(data => { v0 = data; push1(); });
+				f.wire(data => { v1 = data; push1(); });
+				return pusher;
 			},
+			push: push_,
 			read: () => {
 				let list = [];
 				wire_(data => list.push(data));
@@ -59,13 +59,13 @@ let frp = function() {
 			resample: commander => {
 				let data_;
 				wire_(data => data_ = data);
-				return commander.redirect((data, signal) => signal.fire(data_));
+				return commander.redirect((data, pusher) => pusher.push(data_));
 			},
 			unique: () => {
 				let list = [];
-				return redirect_((data, signal) => {
+				return redirect_((data, pusher) => {
 					if (!read(list).fold(false, (b_, d) => b_ || e == data)) {
-						signal.fire(data);
+						pusher.push(data);
 						list.push(data);
 					}
 				});
@@ -74,20 +74,20 @@ let frp = function() {
 		};
 	};
 
-	let kbkeysignals = {};
-	let mouseclicksignal = newSignal();
-	let mousemovesignal = newSignal();
-	let motionsignal = newSignal();
-	let orientationsignal = newSignal();
+	let kbkeypushers = {};
+	let mouseclickpusher = newPusher();
+	let mousemovepusher = newPusher();
+	let motionpusher = newPusher();
+	let orientationpusher = newPusher();
 
 	let kbpressed_ = (e, down) => {
-		let signal = kbkeysignals[(!(e.which)) ? e.keyCode : (e.which ? e.which : 0)];
-		if (signal) signal.fire(down);
+		let pusher = kbkeypushers[(!(e.which)) ? e.keyCode : (e.which ? e.which : 0)];
+		if (pusher) pusher.push(down);
 	};
 
 	document.onkeydown = e => kbpressed_(e, true);
 	document.onkeyup = e => kbpressed_(e, false);
-	document.onmousedown = e => mouseclicksignal.fire(true);
+	document.onmousedown = e => mouseclickpusher.push(true);
 	document.onmousemove = e => {
 		let e1 = (!e) ? window.event : e;
 		let x;
@@ -99,13 +99,13 @@ let frp = function() {
 			x = e1.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
 			y = e1.clientY + document.body.scrollTop + document.documentElement.scrollTop;
 		}
-		mousemovesignal.fire({ x: x, y: y });
+		mousemovepusher.push({ x: x, y: y });
 	};
-	document.onmouseup = e => mouseclicksignal.fire(false);
+	document.onmouseup = e => mouseclickpusher.push(false);
 
 	if (window.DeviceMotionEvent)
 		window.addEventListener('devicemotion', e => {
-			motionsignal.fire({
+			motionpusher.push({
 				a: e.acceleration,
 				aig: e.accelerationIncludingGravity,
 				rr: e.rotationRate,
@@ -116,7 +116,7 @@ let frp = function() {
 
 	if (window.DeviceOrientationEvent)
 		window.addEventListener('deviceorientation', e => {
-			orientationsignal.fire({
+			orientationpusher.push({
 				lr: e.gamma, // the left-to-right tilt in degrees, where right is positive
 				fb: e.beta, // the front-to-back tilt in degrees, where front is positive
 				dir: e.alpha, // the compass direction the device is facing in degrees
@@ -125,57 +125,57 @@ let frp = function() {
 	else log('device orientation not supported');
 
 	let keypressed = keycode => {
-		let signal;
-		if (!(signal = kbkeysignals[keycode])) signal = kbkeysignals[keycode] = newSignal();
-		return signal;
+		let pusher;
+		if (!(pusher = kbkeypushers[keycode])) pusher = kbkeypushers[keycode] = newPusher();
+		return pusher;
 	};
-	let keydownsignal = keypressed(40).map(d => d ? 1 : 0);
-	let keyleftsignal = keypressed(37).map(d => d ? -1 : 0);
-	let keyrightsignal = keypressed(39).map(d => d ? 1 : 0);
-	let keyupsignal = keypressed(38).map(d => d ? -1 : 0);
+	let keydownpusher = keypressed(40).map(d => d ? 1 : 0);
+	let keyleftpusher = keypressed(37).map(d => d ? -1 : 0);
+	let keyrightpusher = keypressed(39).map(d => d ? 1 : 0);
+	let keyuppusher = keypressed(38).map(d => d ? -1 : 0);
 
 	return {
 		animframe: () => {
-			let signal = newSignal();
+			let pusher = newPusher();
 			let tick = () => {
-				signal.fire(true);
+				pusher.push(true);
 				requestAnimationFrame(tick);
 			}
 			requestAnimationFrame(tick);
-			return signal;
+			return pusher;
 		},
 		fetch: (input, init) => {
-			let signal = newSignal();
+			let pusher = newPusher();
 			fetch(input, init)
-				.then(response => signal.fire(response.json()))
+				.then(response => pusher.push(response.json()))
 				.catch(error => console.error(error));
 		},
 		http: url => {
-			let signal = newSignal();
+			let pusher = newPusher();
 			let xhr = new XMLHttpRequest();
-			xhr.addEventListener('load', () => { signal.fire(this.responseText); });
+			xhr.addEventListener('load', () => { pusher.push(this.responseText); });
 			xhr.open('GET', url);
 			xhr.send();
 		},
 		kb: {
-			arrowx: keyleftsignal.append(keyrightsignal), // .fold(0, (a, b) => a + b).last();
-			arrowy: keyupsignal.append(keydownsignal), // .fold(0, (a, b) => a + b).last();
+			arrowx: keyleftpusher.append(keyrightpusher), // .fold(0, (a, b) => a + b).last();
+			arrowy: keyuppusher.append(keydownpusher), // .fold(0, (a, b) => a + b).last();
 			keypressed: keypressed,
 		},
-		motion: motionsignal,
+		motion: motionpusher,
 		mouse: {
-			click: mouseclicksignal,
-			move: mousemovesignal,
+			click: mouseclickpusher,
+			move: mousemovepusher,
 		},
-		orientation: orientationsignal,
+		orientation: orientationpusher,
 		tick: timeout => {
-			let signal = newSignal();
+			let pusher = newPusher();
 			let tick = () => {
-				signal.fire(true);
+				pusher.push(true);
 				setTimeout(tick, timeout);
 			}
 			setTimeout(tick, timeout);
-			return signal;
+			return pusher;
 		},
 	};
 } ();
