@@ -9,6 +9,7 @@ import suite.trade.data.DataSource;
 import suite.trade.data.TradeCfg;
 import suite.trade.data.TradeCfgImpl;
 import suite.ts.CalculateReturns;
+import suite.ts.Quant;
 
 public class VolumePriceTickTest {
 
