@@ -24,6 +24,7 @@ import suite.ts.TimeSeries;
 import suite.util.Set_;
 import suite.util.To;
 
+// all prices should be already adjusted according to corporate service actions
 public class DataSource {
 
 	public static long tickDuration = 7l * 3600l; // 09:30 to 16:30

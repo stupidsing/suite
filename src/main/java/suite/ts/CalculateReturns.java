@@ -17,27 +17,61 @@ public class CalculateReturns {
 	private Statistic stat = new Statistic();
 	private TimeSeries ts = new TimeSeries();
 
+	/**
+	 * Simulates trading using a single instrument.
+	 * 
+	 * @param fun a function returns the holding position at a specified time.
+	 * @return a strategy.
+	 */
 	public BuySell buySell(Int_Dbl fun) {
 		return fun::apply;
 	}
 
 	public interface BuySell extends Int_Dbl {
+		/**
+		 * @return a new strategy that would never short.
+		 */
 		public default BuySell longOnly() {
 			return d -> max(0d, apply(d));
 		}
 
+		/**
+		 * Adjusts long ratio or leverage linearly.
+		 * 
+		 * @param a long ratio base.
+		 * @param b leverage scaling factor.
+		 * @return a new strategy.
+		 */
 		public default BuySell scale(double a, double b) {
 			return d -> a + b * apply(d);
 		}
 
+		/**
+		 * Specify amount of data to skip before the trading strategy actually starts.
+		 * 
+		 * @param s how many elements to skip.
+		 * @return a new strategy.
+		 */
 		public default BuySell start(int s) {
 			return d -> s <= d ? apply(d) : 0d;
 		}
 
+		/**
+		 * Simulates the strategy without re-investing.
+		 * 
+		 * @param prices input prices.
+		 * @return strategy returns.
+		 */
 		public default Returns engage(float[] prices) {
 			return me.engage_(prices, To.vector(prices.length, this));
 		}
 
+		/**
+		 * Simulates the strategy with re-investing.
+		 * 
+		 * @param prices input prices.
+		 * @return strategy returns.
+		 */
 		public default Returns invest(float[] prices) {
 			return me.invest_(prices, To.vector(prices.length, this));
 		}
