@@ -27,8 +27,7 @@ public class FactorTest {
 				.cons(cfg.queryCompany("0753.HK")) //
 				.distinct();
 
-		var pairs = Factor.of(cfg, indices).query(instruments);
-		pairs.forEach(System.out::println);
+		new Factor(cfg, indices).query(instruments).forEach(System.out::println);
 	}
 
 }

@@ -29,21 +29,13 @@ public class Factor {
 	private Vector vec = new Vector();
 
 	public static Factor ofCrudeOil(TradeCfg cfg) {
-		return of(cfg, Read.each(Usex.crudeOil));
+		return new Factor(cfg, Read.each(Usex.crudeOil));
 	}
 
-	public static Factor ofUsMarket(TradeCfg cfg) {
-		return of(cfg, Read.each(Usex.dowJones, Usex.nasdaq, Usex.sp500));
-	}
-
-	public static Factor of(TradeCfg cfg, Streamlet<String> indices) {
-		return new Factor(cfg, indices);
-	}
-
-	private Factor(TradeCfg cfg, Streamlet<String> indices) {
+	public Factor(TradeCfg cfg, Streamlet<String> indexSymbols_) {
 		this.cfg = cfg;
 
-		var akds = cfg.dataSources(TimeRange.of(Time.MIN, now), indices);
+		var akds = cfg.dataSources(TimeRange.of(Time.MIN, now), indexSymbols_);
 
 		var indexPrices = akds.dsByKey //
 				.map((symbol, ds) -> ds.prices) //
@@ -66,7 +58,8 @@ public class Factor {
 			var dsBySymbol = akds.dsByKey;
 			var dsBySymbol_ = dsBySymbol.toMap();
 
-			var dsv = DataSourceView.of(0, 64, akds, (symbol, ds, period) -> project(ids, dsBySymbol_.get(symbol), period));
+			var dsv = DataSourceView.of(0, 64, akds,
+					(symbol, ds, period) -> project(ids, dsBySymbol_.get(symbol), period));
 
 			return index -> {
 				var indexPrices = ids.prices;

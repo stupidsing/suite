@@ -32,11 +32,7 @@ public class FactorLr {
 	private Statistic stat = new Statistic();
 	private Time now = Time.now();
 
-	public static FactorLr of(TradeCfg cfg, Streamlet<String> indexSymbols) {
-		return new FactorLr(cfg, indexSymbols);
-	}
-
-	private FactorLr(TradeCfg cfg, Streamlet<String> indexSymbols_) {
+	public FactorLr(TradeCfg cfg, Streamlet<String> indexSymbols_) {
 		this.cfg = cfg;
 
 		indexSymbols = indexSymbols_.collect();

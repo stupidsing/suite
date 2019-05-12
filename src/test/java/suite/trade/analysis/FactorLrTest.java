@@ -27,7 +27,7 @@ public class FactorLrTest {
 				.cons(cfg.queryCompany("0753.HK")) //
 				.distinct();
 
-		var pairs = FactorLr.of(cfg, indices).query(instruments);
+		var pairs = new FactorLr(cfg, indices).query(instruments);
 
 		for (var pair : pairs.entrySet())
 			System.out.println(pair);
