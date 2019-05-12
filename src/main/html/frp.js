@@ -8,7 +8,7 @@ let frp = function() {
 
 		let redirect_ = tf => {
 			let pusher = newPusher();
-			wire_(data => tf(data, pusher));
+			wire_(data => tf(data, pusher.push));
 			return pusher;
 		};
 
@@ -20,23 +20,23 @@ let frp = function() {
 				return pusher;
 			},
 			close: () => pullers = [], // for garbage collection
-			concatmap: f => redirect_((data, pusher) => f(data).wire(pusher.push)),
-			delay: time => redirect_((data, pusher) => setTimeout(() => pusher.push(data), time)),
+			concatmap: f => redirect_((data, push) => f(data).wire(push)),
+			delay: time => redirect_((data, push) => setTimeout(() => push(data), time)),
 			edge: () => {
 				let data_;
-				return redirect_((data, pusher) => {
-					if(data != data_) pusher.push(data);
+				return redirect_((data, push) => {
+					if(data != data_) push(data);
 					data_ = data;
 				});
 			},
-			filter: f => redirect_((data, pusher) => { if (f(data)) pusher.push(data); }),
-			fold: (f, value) => redirect_((data, pusher) => pusher.push(value = f(value, data))),
+			filter: f => redirect_((data, push) => { if (f(data)) push(data); }),
+			fold: (f, value) => redirect_((data, push) => push(value = f(value, data))),
 			last: () => {
 				let data_;
 				wire_(data => data_ = data);
 				return () => data_;
 			},
-			map: f => redirect_((data, pusher) => pusher.push(f(data))),
+			map: f => redirect_((data, push) => push(f(data))),
 			merge: (other, f) => {
 				let v0, v1;
 				let pusher = newPusher();
@@ -59,13 +59,13 @@ let frp = function() {
 			resample: commander => {
 				let data_;
 				wire_(data => data_ = data);
-				return commander.redirect((data, pusher) => pusher.push(data_));
+				return commander.redirect((data, push) => push(data_));
 			},
 			unique: () => {
 				let list = [];
-				return redirect_((data, pusher) => {
+				return redirect_((data, push) => {
 					if (!read(list).fold(false, (b_, d) => b_ || e == data)) {
-						pusher.push(data);
+						push(data);
 						list.push(data);
 					}
 				});
