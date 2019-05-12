@@ -22,7 +22,7 @@ import suite.os.Log_;
 import suite.primitive.adt.pair.IntIntPair;
 import suite.streamlet.As;
 import suite.streamlet.Read;
-import suite.streamlet.Signal;
+import suite.streamlet.Pusher;
 import suite.util.String_;
 import suite.util.To;
 
@@ -58,8 +58,8 @@ public class ClusterProbeImpl implements ClusterProbe {
 	 */
 	private Map<String, Long> lastSentTimeByPeer = new HashMap<>();
 
-	private Signal<String> onJoined = Signal.of();
-	private Signal<String> onLeft = Signal.of();
+	private Pusher<String> onJoined = Pusher.of();
+	private Pusher<String> onLeft = Pusher.of();
 
 	private enum Command {
 		HELO, FINE, BYEE
@@ -136,7 +136,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 			}
 
 			for (var peer : lastActiveTimeByPeer.keySet())
-				onLeft.fire(peer);
+				onLeft.push(peer);
 		}
 
 		dc.close();
@@ -184,7 +184,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 				if (data == Command.HELO) // reply HELO messages
 					sendMessage(remote, formMessage(Command.FINE));
 				else if (data == Command.BYEE && lastActiveTimeByPeer.remove(remote) != null)
-					onLeft.fire(remote);
+					onLeft.push(remote);
 		}
 	}
 
@@ -193,7 +193,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 		if (oldTime == null || oldTime < time)
 			if (lastActiveTimeByPeer.put(node, time) == null)
-				onJoined.fire(node);
+				onJoined.push(node);
 	}
 
 	private void keepAlive(long current) {
@@ -222,7 +222,7 @@ public class ClusterProbeImpl implements ClusterProbe {
 
 			if (timeoutDuration < current - e.getValue()) {
 				peerIter.remove();
-				onLeft.fire(node);
+				onLeft.push(node);
 			}
 		}
 	}
@@ -280,11 +280,11 @@ public class ClusterProbeImpl implements ClusterProbe {
 		this.peers.putAll(Read.from2(peers1).mapValue(IpPort::new).toMap());
 	}
 
-	public Signal<String> getOnJoined() {
+	public Pusher<String> getOnJoined() {
 		return onJoined;
 	}
 
-	public Signal<String> getOnLeft() {
+	public Pusher<String> getOnLeft() {
 		return onLeft;
 	}
 

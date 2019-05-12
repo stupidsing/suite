@@ -2,7 +2,7 @@ package suite.net.cluster;
 
 import java.util.Set;
 
-import suite.streamlet.Signal;
+import suite.streamlet.Pusher;
 
 public interface ClusterProbe {
 
@@ -14,8 +14,8 @@ public interface ClusterProbe {
 
 	public Set<String> getActivePeers();
 
-	public Signal<String> getOnJoined();
+	public Pusher<String> getOnJoined();
 
-	public Signal<String> getOnLeft();
+	public Pusher<String> getOnLeft();
 
 }

@@ -6,9 +6,9 @@ import java.util.List;
 import suite.adt.Trie;
 import suite.adt.pair.Pair;
 import suite.streamlet.FunUtil.Sink;
+import suite.streamlet.Pusher;
+import suite.streamlet.Pusher.Redirector;
 import suite.streamlet.Read;
-import suite.streamlet.Signal;
-import suite.streamlet.Signal.Redirector;
 
 public class Keyboard {
 
@@ -116,12 +116,12 @@ public class Keyboard {
 			trie.add(pair.t0, pair.t1);
 	}
 
-	public void loop(Sink<Signal<Pair<VK, Character>>> sink) {
-		Signal.loop(this::get, signal -> sink.f(signal.redirect(redirector)));
+	public void loop(Sink<Pusher<Pair<VK, Character>>> sink) {
+		Pusher.loop(this::get, pusher -> sink.f(pusher.redirect(redirector)));
 	}
 
-	public Signal<Pair<VK, Character>> signal() {
-		return Signal.from(this::get).redirect(redirector);
+	public Pusher<Pair<VK, Character>> pusher() {
+		return Pusher.from(this::get).redirect(redirector);
 	}
 
 	private Character get() {
@@ -133,7 +133,7 @@ public class Keyboard {
 		private List<Character> chs = new ArrayList<>();
 		private Trie<Integer, VK> t = trie;
 
-		public void accept(Character ch_, Sink<Pair<VK, Character>> fire) {
+		public void accept(Character ch_, Sink<Pair<VK, Character>> push) {
 			if (ch_ != null) {
 				var t1 = t.getMap().get((int) ch_);
 				VK vk;
@@ -142,18 +142,18 @@ public class Keyboard {
 
 				if (t1 != null)
 					if ((vk = (t = t1).getValue()) != null) {
-						fire.f(Pair.of(vk, null));
+						push.f(Pair.of(vk, null));
 						reset();
 					} else
 						;
 				else
-					flush(fire);
+					flush(push);
 			} else
-				flush(fire);
+				flush(push);
 		}
 
-		private void flush(Sink<Pair<VK, Character>> fire) {
-			Read.from(chs).sink(ch -> fire.f(Pair.of(null, ch)));
+		private void flush(Sink<Pair<VK, Character>> push) {
+			Read.from(chs).sink(ch -> push.f(Pair.of(null, ch)));
 			reset();
 		}
 

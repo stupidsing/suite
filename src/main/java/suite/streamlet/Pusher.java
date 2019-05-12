@@ -25,24 +25,24 @@ import suite.util.NullableSyncQueue;
  * 
  * @author ywsing
  */
-public class Signal<T> {
+public class Pusher<T> {
 
 	private static ScheduledExecutorService executor = Executors.newScheduledThreadPool(8);
 
-	private Bag<Sink<T>> receivers;
+	private Bag<Sink<T>> pullers;
 
 	public interface Redirector<T0, T1> {
 		public void accept(T0 t0, Sink<T1> sink);
 	}
 
-	public static <T> Signal<T> append(Signal<T> n0, Signal<T> n1) {
-		return of(fire -> {
-			n0.wire_(fire);
-			n1.wire_(fire);
+	public static <T> Pusher<T> append(Pusher<T> n0, Pusher<T> n1) {
+		return of(push -> {
+			n0.wire_(push);
+			n1.wire_(push);
 		});
 	}
 
-	public static <T> Signal<T> from(Source<T> source) {
+	public static <T> Pusher<T> from(Source<T> source) {
 		return of(sink -> executor.submit(() -> {
 			T t;
 			while ((t = source.g()) != null)
@@ -50,99 +50,95 @@ public class Signal<T> {
 		}));
 	}
 
-	public static <T> void loop(Source<T> source, Sink<Signal<T>> sink) {
-		Signal<T> signal = of();
+	public static <T> void loop(Source<T> source, Sink<Pusher<T>> sink) {
+		Pusher<T> pusher = of();
 		T t;
 
-		executor.submit(() -> sink.f(signal));
+		executor.submit(() -> sink.f(pusher));
 
 		while ((t = source.g()) != null)
-			signal.fire(t);
+			pusher.push(t);
 	}
 
-	public static <T, U, V> Signal<V> merge(Signal<T> n0, Signal<U> n1, Fun2<T, U, V> fun) {
-		return of(fire -> {
+	public static <T, U, V> Pusher<V> merge(Pusher<T> n0, Pusher<U> n1, Fun2<T, U, V> fun) {
+		return of(push -> {
 			var cr = new CasReference<Pair<T, U>>(Pair.of(null, null));
-			Sink<Pair<T, U>> recalc = pair -> fire.f(pair.map(fun));
+			Sink<Pair<T, U>> recalc = pair -> push.f(pair.map(fun));
 			n0.wire_(t -> recalc.f(cr.apply(pair -> Pair.of(t, pair.t1))));
 			n1.wire_(u -> recalc.f(cr.apply(pair -> Pair.of(pair.t0, u))));
 		});
 	}
 
-	public static Signal<Object> ofFixed(int ms) {
-		return of(fire -> executor.scheduleAtFixedRate(() -> fire.f(null), ms, ms, TimeUnit.MILLISECONDS));
+	public static Pusher<Object> ofFixed(int ms) {
+		return of(push -> executor.scheduleAtFixedRate(() -> push.f(null), ms, ms, TimeUnit.MILLISECONDS));
 	}
 
-	public static <T> Signal<T> of(Sink<Sink<T>> sink) {
-		Signal<T> signal = of();
-		sink.f(signal::fire);
-		return signal;
+	public static <T> Pusher<T> of(Sink<Sink<T>> sink) {
+		Pusher<T> pusher = of();
+		sink.f(pusher::push);
+		return pusher;
 	}
 
-	public static <T> Signal<T> of() {
-		return new Signal<>();
+	public static <T> Pusher<T> of() {
+		return new Pusher<>();
 	}
 
-	private Signal() {
+	private Pusher() {
 		this(new Bag<>());
 	}
 
-	private Signal(Bag<Sink<T>> receivers) {
-		this.receivers = receivers;
+	private Pusher(Bag<Sink<T>> receivers) {
+		this.pullers = receivers;
 	}
 
-	public <U> Signal<U> concatMap(Fun<T, Signal<U>> fun) {
-		return redirect_((t, fire) -> fun.apply(t).wire_(fire));
+	public <U> Pusher<U> concatMap(Fun<T, Pusher<U>> fun) {
+		return redirect_((t, push) -> fun.apply(t).wire_(push));
 	}
 
-	public Signal<T> delay(int ms) {
-		return redirect_((t, fire) -> executor.schedule(() -> fire.f(t), ms, TimeUnit.MILLISECONDS));
+	public Pusher<T> delay(int ms) {
+		return redirect_((t, push) -> executor.schedule(() -> push.f(t), ms, TimeUnit.MILLISECONDS));
 	}
 
-	public Signal<T> delayAccum(int ms) {
+	public Pusher<T> delayAccum(int ms) {
 		var al = new AtomicLong();
-		return redirect_((t, fire) -> {
+		return redirect_((t, push) -> {
 			var current = System.currentTimeMillis();
 			al.set(current);
 			executor.schedule(() -> {
 				if (al.get() == current)
-					fire.f(t);
+					push.f(t);
 			}, ms, TimeUnit.MILLISECONDS);
 		});
 	}
 
-	public Signal<T> edge() {
+	public Pusher<T> edge() {
 		return redirect_(new Redirector<>() {
 			private T previous = null;
 
-			public void accept(T t, Sink<T> fire) {
+			public void accept(T t, Sink<T> push) {
 				if (previous == null || !Objects.equals(previous, t))
-					fire.f(t);
+					push.f(t);
 			}
 		});
 	}
 
-	public Signal<T> filter(Predicate<T> pred) {
-		return redirect_((t, fire) -> {
+	public Pusher<T> filter(Predicate<T> pred) {
+		return redirect_((t, push) -> {
 			if (pred.test(t))
-				fire.f(t);
+				push.f(t);
 		});
 	}
 
-	public void fire(T t) {
-		receivers.forEach(sink -> sink.f(t));
-	}
-
-	public <U> Signal<U> fold(U init, Fun2<U, T, U> fun) {
+	public <U> Pusher<U> fold(U init, Fun2<U, T, U> fun) {
 		var cr = new CasReference<U>(init);
-		return redirect_((t1, fire) -> fire.f(cr.apply(t0 -> fun.apply(t0, t1))));
+		return redirect_((t1, push) -> push.f(cr.apply(t0 -> fun.apply(t0, t1))));
 	}
 
-	public Signal<T> level(int ms) {
+	public Pusher<T> level(int ms) {
 		return resample(ofFixed(ms));
 	}
 
-	public <U> Signal<U> map(Fun<T, U> fun) {
+	public <U> Pusher<U> map(Fun<T, U> fun) {
 		return redirect_((t, sink) -> sink.f(fun.apply(t)));
 	}
 
@@ -152,21 +148,25 @@ public class Signal<T> {
 		return Outlet.of(() -> rethrow(queue::take));
 	}
 
-	public <U> Signal<U> redirect(Redirector<T, U> redirector) {
+	public void push(T t) {
+		pullers.forEach(sink -> sink.f(t));
+	}
+
+	public <U> Pusher<U> redirect(Redirector<T, U> redirector) {
 		return redirect_(redirector);
 	}
 
-	public Signal<T> resample(Signal<?> event) {
+	public Pusher<T> resample(Pusher<?> event) {
 		var mut = Mutable.<T> nil();
 		wire_(mut::update);
-		return event.redirect_((e, fire) -> fire.f(mut.value()));
+		return event.redirect_((e, push) -> push.f(mut.value()));
 	}
 
-	public Signal<T> unique() {
+	public Pusher<T> unique() {
 		var set = new HashSet<>();
-		return redirect_((t, fire) -> {
+		return redirect_((t, push) -> {
 			if (set.add(t))
-				fire.f(t);
+				push.f(t);
 		});
 	}
 
@@ -178,13 +178,13 @@ public class Signal<T> {
 		wire_(receiver);
 	}
 
-	private <U> Signal<U> redirect_(Redirector<T, U> redirector) {
-		return of(fire -> wire_(t -> redirector.accept(t, fire)));
+	private <U> Pusher<U> redirect_(Redirector<T, U> redirector) {
+		return of(push -> wire_(t -> redirector.accept(t, push)));
 	}
 
 	private Runnable wire_(Sink<T> receiver) {
-		receivers.add(receiver);
-		return () -> receivers.remove(receiver);
+		pullers.add(receiver);
+		return () -> pullers.remove(receiver);
 	}
 
 }

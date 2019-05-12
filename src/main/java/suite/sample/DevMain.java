@@ -190,7 +190,7 @@ public class DevMain {
 		termios.clear();
 		redraw.f(state0);
 
-		keyboard.loop(signal -> signal //
+		keyboard.loop(pusher -> pusher //
 				.fold(state0, (state, pair_) -> pair_.map((vk, ch) -> mutateState.apply(vk, ch, state))) //
 				.wire(redraw));
 	}

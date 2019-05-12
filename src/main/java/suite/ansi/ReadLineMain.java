@@ -14,7 +14,7 @@ public class ReadLineMain {
 	public static void main(String[] args) {
 		RunUtil.run(() -> {
 			var keyboard = new Keyboard((LibcJna) Native.load("c", LibcJna.class));
-			var keys = keyboard.signal().outlet();
+			var keys = keyboard.pusher().outlet();
 			Pair<VK, Character> pair;
 
 			while (!Objects.equals(pair = keys.next(), Pair.of(null, 'q')))

@@ -1,6 +1,6 @@
 package suite.editor;
 
-import suite.streamlet.Signal;
+import suite.streamlet.Pusher;
 
 public class EditorModel {
 
@@ -20,15 +20,15 @@ public class EditorModel {
 		searchText.change(searchText_);
 	}
 
-	public Signal<Boolean> isModifiedChanged() {
+	public Pusher<Boolean> isModifiedChanged() {
 		return isModified.changed;
 	}
 
-	public Signal<String> filenameChanged() {
+	public Pusher<String> filenameChanged() {
 		return filename.changed;
 	}
 
-	public Signal<String> searchTextChanged() {
+	public Pusher<String> searchTextChanged() {
 		return searchText.changed;
 	}
 

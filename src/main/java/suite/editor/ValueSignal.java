@@ -2,12 +2,12 @@ package suite.editor;
 
 import java.util.Objects;
 
-import suite.streamlet.Signal;
+import suite.streamlet.Pusher;
 
 public class ValueSignal<T> {
 
 	private T value;
-	public final Signal<T> changed = Signal.of();
+	public final Pusher<T> changed = Pusher.of();
 
 	public static <T> ValueSignal<T> of(T value) {
 		return new ValueSignal<>(value);
@@ -20,7 +20,7 @@ public class ValueSignal<T> {
 	public void change(T value_) {
 		if (!Objects.equals(value, value_)) {
 			value = value_;
-			changed.fire(value_);
+			changed.push(value_);
 		}
 	}
 

@@ -25,27 +25,27 @@ import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 
 import suite.streamlet.FunUtil.Sink;
-import suite.streamlet.Signal;
+import suite.streamlet.Pusher;
 import suite.util.Rethrow.SinkEx;
 
 public class Listen {
 
-	public static Signal<ActionEvent> action(AbstractButton component) {
-		return signal(fire -> component.addActionListener(fire::f));
+	public static Pusher<ActionEvent> action(AbstractButton component) {
+		return pusher(push -> component.addActionListener(push::f));
 	}
 
-	public static Signal<ActionEvent> action(JTextField component) {
-		return signal(fire -> component.addActionListener(fire::f));
+	public static Pusher<ActionEvent> action(JTextField component) {
+		return pusher(push -> component.addActionListener(push::f));
 	}
 
-	public static Signal<ActionEvent> actionPerformed(JComponent component, Object key) {
-		return signal(fire -> component //
+	public static Pusher<ActionEvent> actionPerformed(JComponent component, Object key) {
+		return pusher(push -> component //
 				.getActionMap() //
 				.put(key, new AbstractAction() {
 					private static final long serialVersionUID = 1l;
 
 					public void actionPerformed(ActionEvent event) {
-						fire.f(event);
+						push.f(event);
 					}
 				}));
 	}
@@ -57,76 +57,76 @@ public class Listen {
 		});
 	}
 
-	public static Signal<ComponentEvent> componentResized(Component component) {
-		return signal(fire -> component.addComponentListener(new ComponentAdapter() {
+	public static Pusher<ComponentEvent> componentResized(Component component) {
+		return pusher(push -> component.addComponentListener(new ComponentAdapter() {
 			public void componentResized(ComponentEvent event) {
-				fire.f(event);
+				push.f(event);
 			}
 		}));
 	}
 
-	public static Signal<DocumentEvent> documentChanged(JTextComponent textComponent) {
+	public static Pusher<DocumentEvent> documentChanged(JTextComponent textComponent) {
 		return documentChanged(textComponent.getDocument());
 	}
 
-	public static Signal<DocumentEvent> documentChanged(Document document) {
-		return signal(fire -> document.addDocumentListener(new DocumentListener() {
+	public static Pusher<DocumentEvent> documentChanged(Document document) {
+		return pusher(push -> document.addDocumentListener(new DocumentListener() {
 			public void removeUpdate(DocumentEvent event) {
-				fire.f(event);
+				push.f(event);
 			}
 
 			public void insertUpdate(DocumentEvent event) {
-				fire.f(event);
+				push.f(event);
 			}
 
 			public void changedUpdate(DocumentEvent event) {
-				fire.f(event);
+				push.f(event);
 			}
 		}));
 	}
 
-	public static Signal<KeyEvent> keyPressed(Component component) {
-		return signal(fire -> component.addKeyListener(new KeyAdapter() {
+	public static Pusher<KeyEvent> keyPressed(Component component) {
+		return pusher(push -> component.addKeyListener(new KeyAdapter() {
 			public void keyPressed(KeyEvent event) {
-				fire.f(event);
+				push.f(event);
 			}
 		}));
 	}
 
-	public static Signal<KeyEvent> keyPressed(Component component, int keyCode) {
+	public static Pusher<KeyEvent> keyPressed(Component component, int keyCode) {
 		return keyPressed(component).filter(event -> event.getKeyCode() == keyCode);
 	}
 
-	public static Signal<MouseEvent> mouseClicked(Component component) {
-		return signal(fire -> {
+	public static Pusher<MouseEvent> mouseClicked(Component component) {
+		return pusher(push -> {
 			component.addMouseListener(new MouseAdapter() {
 				public void mouseClicked(MouseEvent event) {
-					fire.f(event);
+					push.f(event);
 				}
 			});
 		});
 	}
 
-	public static Signal<MouseEvent> mouseDoubleClicked(Component component) {
+	public static Pusher<MouseEvent> mouseDoubleClicked(Component component) {
 		return mouseClicked(component).filter(event -> event.getClickCount() == 2);
 	}
 
-	public static Signal<WindowEvent> windowClosing(Window window) {
-		return signal(fire -> {
+	public static Pusher<WindowEvent> windowClosing(Window window) {
+		return pusher(push -> {
 			window.addWindowListener(new WindowAdapter() {
 				public void windowClosing(WindowEvent event) {
-					fire.f(event);
+					push.f(event);
 				}
 			});
 		});
 	}
 
-	public static <T> Signal<T> signal(Sink<Sink<T>> sink) {
-		var signal = Signal.of(sink);
+	private static <T> Pusher<T> pusher(Sink<Sink<T>> sink) {
+		var pusher = Pusher.of(sink);
 
-		return Signal.of(fire -> {
-			signal.wire(t -> {
-				SwingUtilities.invokeLater(() -> fire.f(t));
+		return Pusher.of(push -> {
+			pusher.wire(t -> {
+				SwingUtilities.invokeLater(() -> push.f(t));
 			});
 		});
 	}

@@ -15,7 +15,7 @@ import javax.swing.undo.UndoManager;
 
 import suite.adt.pair.Pair;
 import suite.streamlet.FunUtil.Fun;
-import suite.streamlet.Signal;
+import suite.streamlet.Pusher;
 import suite.util.Rethrow.SinkEx;
 import suite.util.String_;
 
@@ -77,7 +77,7 @@ public class EditorPane extends JEditorPane {
 		replace(document, start, end, fun);
 	}
 
-	private Signal<ActionEvent> bind(int keyCode, int modifiers) {
+	private Pusher<ActionEvent> bind(int keyCode, int modifiers) {
 		var keyStroke = KeyStroke.getKeyStroke(keyCode, modifiers);
 		var key = Pair.of(keyCode, modifiers);
 		getInputMap().put(keyStroke, key);
