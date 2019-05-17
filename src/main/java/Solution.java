@@ -16,6 +16,7 @@ public class Solution {
 			int n = in.nextInt();
 			String out = "" + (m + n);
 			System.out.println("Case #" + c + ": " + out);
+			System.out.flush();
 		}
 		in.close();
 	}
