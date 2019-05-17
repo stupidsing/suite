@@ -143,6 +143,7 @@ public class Q_LearningTest {
 			qst = q[(state = initial).encode()];
 
 			do {
+				var qst0 = qst;
 				int action;
 
 				if (random.nextDouble() < epsilon)
@@ -150,7 +151,6 @@ public class Q_LearningTest {
 				else
 					action = getMaxActionValue(qst).t0;
 
-				var qst0 = qst;
 				qst = q[(state = (result = state.move(action)).state).encode()];
 
 				var adj = result.reward + gamma * getMaxActionValue(qst).t1;
@@ -162,8 +162,7 @@ public class Q_LearningTest {
 		qst = q[(state = initial).encode()];
 
 		do {
-			var taxi = state.taxi;
-			path.add(taxi.toString());
+			path.add(state.taxi.toString());
 
 			var action = getMaxActionValue(qst).t0;
 			qst = q[(state = (result = state.move(action)).state).encode()];
