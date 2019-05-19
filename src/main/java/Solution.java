@@ -10,7 +10,7 @@ public class Solution {
 
 	void run(String[] args) {
 		Scanner in = new Scanner(new BufferedReader(new InputStreamReader(System.in)));
-		int t = in.nextInt(); // Scanner has functions to read ints, longs, strings, chars, etc.
+		int t = in.nextInt();
 		for (int c = 1; c <= t; c++) {
 			int m = in.nextInt();
 			int n = in.nextInt();
