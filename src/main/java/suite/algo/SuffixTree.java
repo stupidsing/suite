@@ -24,13 +24,13 @@ public class SuffixTree {
 
 		private String edgesToString() {
 			var sb = new StringBuilder();
-			edges.forEach((k, v) -> sb.append(k + ":" + v.toString(word) + ","));
+			edges.forEach((k, v) -> sb.append(k + ":" + v + ","));
 			return "{" + sb + "}";
 		}
 
-		public boolean contains(String word, String suffix) {
+		public boolean contains(String suffix) {
 			var edge = !suffix.isEmpty() ? edges.get(suffix.charAt(0)) : null;
-			return edge != null && edge.contains(word, suffix);
+			return edge != null && edge.contains(suffix);
 		}
 	}
 
@@ -45,17 +45,17 @@ public class SuffixTree {
 			this.next = next;
 		}
 
+		public String toString() {
+			return "{'" + word.substring(fr, to) + "'" + (next != null ? ",next:" + next : "") + "}";
+		}
+
 		private int getLength() {
 			return to - fr;
 		}
 
-		private String toString(String word) {
-			return "{content:" + word.substring(fr, to) + (next != null ? ",next:" + next : "") + "}";
-		}
-
-		private boolean contains(String word, String suffix) {
+		private boolean contains(String suffix) {
 			if (next != null)
-				return suffix.startsWith(word.substring(fr, to)) && next.contains(word, suffix.substring(to - fr));
+				return suffix.startsWith(word.substring(fr, to)) && next.contains(suffix.substring(to - fr));
 			else
 				return word.substring(fr, to).equals(suffix);
 		}

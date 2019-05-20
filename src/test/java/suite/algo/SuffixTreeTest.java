@@ -30,8 +30,8 @@ public class SuffixTreeTest {
 			var suffixTree = new SuffixTree(word);
 			System.out.println("Building suffix tree for word: " + word);
 			System.out.println("Suffix tree: " + suffixTree.root);
-			for (var i = 0; i < word.length() - 1; i++)
-				assertTrue(suffixTree.root.contains(word, word.substring(i)));
+			for (var i = 0; i < word.length(); i++)
+				assertTrue(suffixTree.root.contains(word.substring(i)));
 		});
 	}
 
