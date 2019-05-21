@@ -15,12 +15,14 @@ public class ContinuedFractionTest {
 
 	@Test
 	public void test() {
-		var r = IntIntPair.of(649, 200);
+		var f0 = IntIntPair.of(649, 200);
+		var r = f0;
+
 		var ints = toContinuedFraction(r);
 		assertTrue(Arrays.equals(new int[] { 3, 4, 12, 4, }, ints.toArray()));
-		var p = ints.size();
-		var f = toFraction(ints, p);
-		assertEquals(IntIntPair.of(649, 200), f);
+
+		var fx = toFraction(ints);
+		assertEquals(f0, fx);
 	}
 
 	private Ints toContinuedFraction(IntIntPair r) {
@@ -37,7 +39,8 @@ public class ContinuedFractionTest {
 		return ints;
 	}
 
-	private IntIntPair toFraction(Ints ints, int p) {
+	private IntIntPair toFraction(Ints ints) {
+		var p = ints.size();
 		var f = IntIntPair.of(ints.get(--p), 1);
 		while (0 < p)
 			f = simplify(IntIntPair.of(ints.get(--p) * f.t0 + f.t1, f.t0));
