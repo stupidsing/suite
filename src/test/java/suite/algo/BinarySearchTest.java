@@ -4,43 +4,81 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import suite.primitive.Int_Int;
 import suite.primitive.Ints_;
 
 public class BinarySearchTest {
 
 	@Test
-	public void test() {
-		test(0);
-		test(1);
-		test(10);
-		test(20000);
+	public void testAsc() {
+		testAsc(0);
+		testAsc(1);
+		testAsc(10);
+		testAsc(20000);
 	}
 
-	private void test(int size) {
-		var is = Ints_.toArray(size, i -> i);
-		var l = is.length;
+	@Test
+	public void testDesc() {
+		testDesc(0);
+		testDesc(1);
+		testDesc(10);
+		testDesc(20000);
+	}
 
-		assertEquals(0, search(is, Integer.MIN_VALUE));
-		assertEquals(l, search(is, Integer.MAX_VALUE));
+	private void testAsc(int l) {
+		Int_Int f = i -> i;
+		var is = Ints_.toArray(l, f);
+
+		assertEquals(0, searchAsc(is, Integer.MIN_VALUE));
+		assertEquals(l, searchAsc(is, Integer.MAX_VALUE));
 
 		for (var i = 0; i < l; i++)
-			assertEquals(i, search(is, i));
+			assertEquals(i, searchAsc(is, f.apply(i)));
 	}
 
+	private void testDesc(int l) {
+		Int_Int f = i -> l + 1 - i;
+		var is = Ints_.toArray(l, f);
+
+		assertEquals(l - 1, searchDesc(is, Integer.MIN_VALUE));
+		assertEquals(-1, searchDesc(is, Integer.MAX_VALUE));
+
+		for (var i = 0; i < l; i++)
+			assertEquals(i, searchDesc(is, f.apply(i)));
+	}
+
+	// in an ascending sequence,
 	// find the leftest value in is that is greater than or equal to i.
 	// if no such value, return is.length.
-	private int search(int[] is, int i) {
+	private int searchAsc(int[] is, int i) {
 		var s = 0;
 		var e = is.length;
-		int mid;
+		int l, mid;
 
-		while (s != e)
-			if (i <= is[mid = s + (e - s) / 2])
+		while (0 < (l = e - s))
+			if (i <= is[mid = s + l / 2])
 				e = mid;
 			else
 				s = mid + 1;
 
 		return s;
+	}
+
+	// in a descending sequence,
+	// find the rightest value in is that is greater than or equal to i.
+	// if no such value, return -1.
+	private int searchDesc(int[] is, int i) {
+		var s = -1;
+		var e = is.length - 1;
+		int l, mid;
+
+		while (0 < (l = e - s))
+			if (i <= is[mid = e - l / 2])
+				s = mid;
+			else
+				e = mid - 1;
+
+		return e;
 	}
 
 }
