@@ -8,24 +8,20 @@ public class SuffixTree {
 
 	public final Node root;
 
-	private int idGenerator;
+	private int counter;
 	private String word;
 	private ActivePoint active;
 	private int remainder;
 
 	public class Node {
-		private int id = idGenerator++;
+		private int id = counter++;
 		private Map<Character, Edge> edges = new HashMap<>();
 		private Node link; // suffix link
 
 		public String toString() {
-			return "{id:" + id + ",link:" + (link != null ? link.id : null) + ",edges:" + edgesToString() + "}";
-		}
-
-		private String edgesToString() {
 			var sb = new StringBuilder();
 			edges.forEach((k, v) -> sb.append(k + ":" + v + ","));
-			return "{" + sb + "}";
+			return "{id:" + id + ",link:" + (link != null ? link.id : null) + ",edges:{" + sb + "}}";
 		}
 
 		public boolean contains(String suffix) {
