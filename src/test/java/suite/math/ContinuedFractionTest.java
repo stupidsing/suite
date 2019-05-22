@@ -25,18 +25,15 @@ public class ContinuedFractionTest {
 		assertEquals(f0, fx);
 	}
 
+	// https://en.wikipedia.org/wiki/Continued_fraction#Calculating_continued_fraction_representations
 	private Ints toContinuedFraction(IntIntPair r) {
 		var ib = new IntsBuilder();
-
-		// https://en.wikipedia.org/wiki/Continued_fraction#Calculating_continued_fraction_representations
 		while (r.t1 != 0) {
 			var ip = r.t0 / r.t1;
 			r = simplify(IntIntPair.of(r.t1, r.t0 - ip * r.t1));
 			ib.append(ip);
 		}
-
-		var ints = ib.toInts();
-		return ints;
+		return ib.toInts();
 	}
 
 	private IntIntPair toFraction(Ints ints) {
@@ -54,12 +51,10 @@ public class ContinuedFractionTest {
 
 	// a < b
 	private int gcd(int a, int b) {
-		while (a != 0) {
-			var mod = b % a;
-			b = a;
-			a = mod;
-		}
-		return b;
+		var f = IntIntPair.of(a, b);
+		while (f.t0 != 0)
+			f.update(f.t1 % f.t0, f.t0);
+		return f.t1;
 	}
 
 }
