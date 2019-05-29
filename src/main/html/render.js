@@ -289,8 +289,8 @@ let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf) => {
 	if (vm0 == vm1)
 		;
 	else {
-		let f0 = vm0 != null && (iff(vm0) ? thenf : elsef);
-		let f1 = vm1 != null && (iff(vm1) ? thenf : elsef);
+		let f0 = vm0 != null ? (iff(vm0) ? thenf : elsef) : null;
+		let f1 = vm1 != null ? (iff(vm1) ? thenf : elsef) : null;
 
 		if (f0 == f1)
 			f0(vm0, vm1, cudf);
@@ -335,11 +335,13 @@ let rd_list = childrenfs => {
 		};
 };
 
-let rd_scope = (key, rdf) => (vm0, vm1, cudf) => rdf(
-	vm0 != null ? vm0[key] : null,
-	vm1 != null ? vm1[key] : null,
+let rd_map = (vmf, rdf) => (vm0, vm1, cudf) => rdf(
+	vm0 != null ? vmf(vm0) : null,
+	vm1 != null ? vmf(vm1) : null,
 	cudf
 );
+
+let rd_scope = (key, rdf) => rd_map(vm => vm[key], rdf);
 
 let rdb_tagf = (elementf, decorfs) => {
 	let decor = decorf => rdb_tagf(elementf, [...decorfs, decorf,]);
@@ -383,6 +385,13 @@ let rdb_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 		);
 };
 
+let rd_parseExpr = s => {
+	if (s != null)
+		return eval("vm => (" + s + ")");
+	else
+		return vm => vm;
+};
+
 let rd_parseTemplate = s => {
 	let pos0 = 0, pos1, pos2;
 	let f = vm => '';
@@ -406,7 +415,9 @@ let rd_parseDom = node0 => {
 		return rd_dom(vm => document.createComment(sf(vm)));
 	} else if (node0.nodeType == Node.ELEMENT_NODE)
 		if (node0.localName == 'rd_for')
-			return rd_for(vm => vm, rd_parseDomNodes(node0.childNodes));
+			return rd_map(rd_parseExpr(node0.getAttribute('v')), rd_for(vm => vm, rd_parseDomNodes(node0.childNodes)));
+		else if (node0.localName == 'rd_if')
+			return rd_ifElse(rd_parseExpr(node0.getAttribute('v')), rd_parseDomNodes(node0.childNodes), (vm0, vm1, cudf) => {});
 		else if (node0.localName == 'rd_scope')
 			return rd_scope(node0.getAttribute('scope'), rd_parseDomNodes(node0.childNodes));
 		else {
@@ -436,6 +447,7 @@ let rd = {
 	ifElse: rd_ifElse,
 	li: () => rdb_tag('li'),
 	list: rd_list,
+	map: rd_map,
 	p: () => rdb_tag('p'),
 	parse: rd_parse,
 	scope: rd_scope,

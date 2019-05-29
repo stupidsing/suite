@@ -26,11 +26,9 @@ let rd_vm0 = rd.parse(`
 		<rd_scope scope='t'>
 			{ vm }
 		</rd_scope>
-		<rd_scope scope='fruits'>
-			<ul>
-				<rd_for><li>{ vm }</li></rd_for>
-			</ul>
-		</rd_scope>
+		<ul>
+			<rd_for v='vm.fruits'><li>{ vm }</li></rd_for>
+		</ul>
 		<rd_scope scope='sse'>server sent events: <rd_for>{ vm }</rd_for></rd_scope>
 	</span>
 `);
@@ -42,7 +40,7 @@ let rd_vm1 = rd.span().children(
 	rd.scope('t',
 		rd.p().text().rd()
 	),
-	rd.scope('fruits',
+	rd.map(vm => vm.fruits,
 		rd.ul().child(rd_for(vm => vm, rd.li().text().rd())).rd()
 	),
 ).rd();
