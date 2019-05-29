@@ -29,7 +29,10 @@ let rd_vm0 = rd.parse(`
 		<ul>
 			<rd_for v='vm.fruits'><li>{ vm }</li></rd_for>
 		</ul>
-		<rd_scope scope='sse'>server sent events: <rd_for>{ vm }</rd_for></rd_scope>
+		<div>
+			<rd_scope scope='sse'>server sent events: <rd_for>{ vm }</rd_for></rd_scope>
+		</div>
+		<button rd_on_click='close()'>Close</button>
 	</span>
 `);
 
@@ -43,6 +46,7 @@ let rd_vm1 = rd.span().children(
 	rd.map(vm => vm.fruits,
 		rd.ul().child(rd_for(vm => vm, rd.li().text().rd())).rd()
 	),
+	rd.tag('button').child(rd.dom(vm => document.createTextNode('Close'))).listen('click', ev => close()).rd(),
 ).rd();
 
 let rd_vm = rd
@@ -52,7 +56,6 @@ let rd_vm = rd
 		rd.list([
 			rd_vm0,
 			rd_vm1,
-			rd.tag('button').child(rd.dom(vm => document.createTextNode('Close'))).listen('click', d => close()).rd(),
 			rd.p().rd(),
 			rd.scope('vscroll', rd
 				.vscrollf(200, 32,

@@ -392,6 +392,10 @@ let rd_parseExpr = s => {
 		return vm => vm;
 };
 
+let rd_parseListener = s => {
+	return eval("ev => (" + s + ")");
+};
+
 let rd_parseTemplate = s => {
 	let pos0 = 0, pos1, pos2;
 	let f = vm => '';
@@ -423,11 +427,17 @@ let rd_parseDom = node0 => {
 		else {
 			let name = node0.localName;
 			let as = {}, cs = rd_parseDomNodes(node0.childNodes);
+			let listens = [];
 
 			for (let attr of node0.attributes)
-				as[attr.name] = attr.value;
+				if (attr.name.startsWith('rd_on_'))
+					listens.push(rd => rd.listen(attr.name.substring(6), rd_parseListener(attr.value)));
+				else
+					as[attr.name] = attr.value;
 
-			return rdb_tag(name).attrsf(vm => as).child(cs).rd();
+			let rd = rdb_tag(name).attrsf(vm => as).child(cs);
+			for (let listen of listens) rd = listen(rd);
+			return rd.rd();
 		}
 	else if (node0.nodeType == Node.TEXT_NODE) {
 		let sf = rd_parseTemplate(node0.nodeValue);
