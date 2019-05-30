@@ -84,6 +84,12 @@ let read_ = iter => {
 				return e != null ? f(e) : null;
 			};
 		}),
+		object: () => {
+			let ob = {};
+			let it = iter(), e;
+			while ((e = it()) != null) ob[e[0]] = e[1];
+			return ob;
+		},
 		range: (s, e) => read_(() => {
 			let i = s;
 			return () => i < e ? i++ : null;
@@ -92,7 +98,8 @@ let read_ = iter => {
 	};
 };
 
-let read = list => read_(() => {
+let read = object => read_(() => {
+	let list = typeof object == 'string' || Array.isArray(object) ? object : Object.entries(object);
 	let i = 0;
 	return () => i < list.length ? list[i++] : null;
 });

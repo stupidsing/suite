@@ -385,15 +385,22 @@ let rdb_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 		);
 };
 
+let rd_parseLambda = (v, s) => {
+	if (s.startsWith('{') && s.endsWith('}'))
+		return eval(v + ' => ' + s);
+	else
+		return eval(v + ' => (' + s + ')');
+};
+
 let rd_parseExpr = s => {
 	if (s != null)
-		return eval("vm => (" + s + ")");
+		return rd_parseLambda('vm', s);
 	else
 		return vm => vm;
 };
 
 let rd_parseListener = s => {
-	return eval("ev => (" + s + ")");
+	return rd_parseLambda('ev', s);
 };
 
 let rd_parseTemplate = s => {
@@ -402,7 +409,7 @@ let rd_parseTemplate = s => {
 	while (0 <= (pos1 = s.indexOf('{', pos0)) && 0 <= (pos2 = s.indexOf('}', pos1))) {
 		let s0 = s.substring(pos0, pos1);
 		let f0 = f;
-		let f1 = eval('vm => (' + s.substring(pos1 + 1, pos2).trim() + ')');
+		let f1 = rd_parseExpr(s.substring(pos1 + 1, pos2).trim());
 		f = vm => f0(vm) + s0 + f1(vm);
 		pos0 = pos2 + 1;
 	}
@@ -427,16 +434,16 @@ let rd_parseDom = node0 => {
 		else {
 			let name = node0.localName;
 			let as = {}, cs = rd_parseDomNodes(node0.childNodes);
-			let listens = [];
+			let decors = [];
 
 			for (let attr of node0.attributes)
 				if (attr.name.startsWith('rd_on_'))
-					listens.push(rd => rd.listen(attr.name.substring(6), rd_parseListener(attr.value)));
+					decors.push(rd => rd.listen(attr.name.substring(6), rd_parseListener(attr.value)));
 				else
-					as[attr.name] = attr.value;
+					as[attr.name] = rd_parseTemplate(attr.value);
 
-			let rd = rdb_tag(name).attrsf(vm => as).child(cs);
-			for (let listen of listens) rd = listen(rd);
+			let rd = rdb_tag(name).attrsf(vm => read(as).map(([k, vf]) => [k, vf(vm)]).object()).child(cs);
+			for (let decor of decors) rd = decor(rd);
 			return rd.rd();
 		}
 	else if (node0.nodeType == Node.TEXT_NODE) {

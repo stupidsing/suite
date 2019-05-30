@@ -1,0 +1,62 @@
+<meta charset='utf-8'>
+<!--
+file:///home/ywsing/suite/src/main/html/render.html
+-->
+<!DOCTYPE html>
+<html>
+	<body>
+		<div id='target'></div>
+	</body>
+
+	<script src='frp.js'></script>
+	<script src='fun.js'></script>
+	<script src='render.js'></script>
+
+	<script type='text/javascript'>
+let close;
+
+let handle = ev => {
+	// ev.preventDefault();
+	console.log(ev.type, ev);
+};
+
+let rd_vm = rd.parse(`
+	<span>
+		<table style='user-select: none;'>
+			<rd_for>
+				<tr>
+					<rd_for>
+						<td>
+							<div draggable='true'
+								style='background: { vm.d ? "#888888" : "#DDDDDD" }; height: 50px; width: 50px;'
+								rd_on_dragend='handle(ev)'
+								rd_on_dragenter='handle(ev)'
+								rd_on_dragexit='handle(ev)'
+								rd_on_dragleave='handle(ev)'
+								rd_on_dragover='{}'
+								rd_on_dragstart='handle(ev)'
+								rd_on_drop='handle(ev)'>
+								<!--rd_if>D</rd_if-->
+							</div>
+						</td>
+					</rd_for>
+				</tr>
+			</rd_for>
+		</table>
+		<button rd_on_click='close()'>Close</button>
+	</span>
+`);
+
+var m = read().range(0, 3).map(i => read().range(0, 3).map(j => ({ d: 0 })).list()).list();
+m[1][1] = { d: 1 };
+
+let vm = [];
+
+renderAgain(rd_vm, vm => m);
+
+close = () => {
+	renderAgain(rd_vm, vm => null);
+};
+
+	</script>
+</html>
