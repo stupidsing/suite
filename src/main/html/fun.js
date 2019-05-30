@@ -25,6 +25,11 @@ let lens_ = gp => {
 
 let lens = lens_(object => ({ g: object, p: value => value, }));
 
+let range = (s, e) => read_(() => {
+	let i = s;
+	return () => i < e ? i++ : null;
+});
+
 let read_ = iter => {
 	return {
 		append: r => {
@@ -90,10 +95,7 @@ let read_ = iter => {
 			while ((e = it()) != null) ob[e[0]] = e[1];
 			return ob;
 		},
-		range: (s, e) => read_(() => {
-			let i = s;
-			return () => i < e ? i++ : null;
-		}),
+		range,
 		iter,
 	};
 };
