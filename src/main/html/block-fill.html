@@ -47,14 +47,15 @@ let rd_vm = rd.parse(`
 	</span>
 `);
 
-var m = read().range(0, 3).map(i => read().range(0, 3).map(j => ({ d: 0 })).list()).list();
-m[1][1] = { d: 1 };
+var vm0 = range(0, 3).map(i => range(0, 3).map(j => ({ d: 0 })).list()).list();
+vm0[1][1] = { d: 1 };
 
-let vm = [];
+// let interval = setInterval(() => renderAgain(rd_vm, vm => { vm[1][1].d = 1 - vm[1][1].d; return JSON.parse(JSON.stringify(vm)); }), 500);
 
-renderAgain(rd_vm, vm => m);
+renderAgain(rd_vm, vm => vm0);
 
 close = () => {
+	// clearInterval(interval);
 	renderAgain(rd_vm, vm => null);
 };
 
