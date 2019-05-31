@@ -34,12 +34,12 @@ define !alloc size0 := !do
 	let sizep := numberp:number size1 ~
 	define {
 		!alloc.chain pointer := !do
-			let ps := ^pointer ~
+			let ps := pointer* ~
 			if (ps != null) then (
-				if ((^ps)/size != sizep) then (
-					!alloc.chain address.of (^ps)/next
+				if (ps*/size != sizep) then (
+					!alloc.chain address.of ps*/next
 				) else (
-					assign ^pointer := (^ps)/next ~
+					assign pointer* := ps*/next ~
 					ps
 				)
 			) else null
@@ -50,7 +50,7 @@ define !alloc size0 := !do
 		let ap := alloc.pointer ~
 		let ps := if (ap != null) then ap else !mmap 16384 ~
 		let pointer.block := !adjust.pointer ps os.ps ~
-		assign (^ps)/size := sizep ~
+		assign ps*/size := sizep ~
 		assign alloc.pointer := !adjust.pointer pointer.block size1 ~
 		pointer.block
 	) else p0
@@ -58,7 +58,7 @@ define !alloc size0 := !do
 
 define !dealloc (size0, pointer.block) := !do
 	let ps := !adjust.pointer pointer.block (0 - os.ps) ~
-	assign ^ps := type ps.block {
+	assign ps* := type ps.block {
 		size: numberp:number max (os.ps, size0),
 		next: alloc.free.chain,
 	} ~
@@ -80,11 +80,11 @@ define !new.mut.number init := !do
 	let size := size.of init ~
 	let address := !alloc size ~
 	let pointer := pointer:pointer address ~
-	assign ^pointer := init ~
+	assign pointer* := init ~
 	{
 		destroy {} := !dealloc (size, address) ~
-		get {} := !do (^pointer) ~
-		set v1 := !do (assign ^pointer := v1 ~ {}) ~
+		get {} := !do pointer* ~
+		set v1 := !do (assign pointer* := v1 ~ {}) ~
 	}
 ~
 
@@ -144,8 +144,8 @@ define !put.number n :=
 ~
 
 define !put.string s :=
-	!for (i = 0; (^s) [i] != byte 0;
-		!put.char (^s) [i] ~
+	!for (i = 0; s* [i] != byte 0;
+		!put.char s* [i] ~
 		i + 1
 	)
 ~

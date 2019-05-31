@@ -53,7 +53,7 @@ public class Util {
 		else if (clazz == Sink.class)
 			return rethrow(() -> clazz.getMethod("sink", Object.class));
 		else if (clazz == Source.class)
-			return rethrow(() -> clazz.getMethod("source"));
+			return rethrow(() -> clazz.getMethod("g"));
 		else
 			try {
 				return Read //

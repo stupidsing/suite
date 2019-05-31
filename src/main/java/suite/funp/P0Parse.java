@@ -181,13 +181,13 @@ public class P0Parse {
 				return FunpStruct.of(List.of(Pair.of("t0", p(a)), Pair.of("t1", p(b))));
 			}).match(".0/.1", (a, b) -> {
 				return b instanceof Atom ? FunpField.of(FunpReference.of(p(a)), Atom.name(b)) : null;
+			}).match(".0*", a -> {
+				return FunpDeref.of(p(a));
 			}).match(".0:.1", (a, b) -> {
 				var tag = Atom.name(a);
 				return FunpTag.of(IntMutable.of(idByTag.computeIfAbsent(tag, t -> ++tagId)), tag, p(b));
 			}).match("[.0]", a -> {
 				return isList(a) ? FunpArray.of(Tree.iter(a).map(this::p).toList()) : null;
-			}).match("^.0", a -> {
-				return FunpDeref.of(p(a));
 			}).match("{ .0 }", a -> {
 				return FunpStruct.of(kvs(a).mapValue(this::p).toList());
 			}).match("address.of .0", a -> {

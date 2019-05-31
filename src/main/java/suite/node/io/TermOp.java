@@ -32,6 +32,7 @@ public enum TermOp implements Operator {
 	TUPLE_(" ", Assoc.RIGHT), //
 	ITEM__("/", Assoc.LEFT), //
 	COLON_(":", Assoc.RIGHT), //
+	DEREF_("*", Assoc.LEFT), //
 	;
 
 	public String name;

@@ -20,8 +20,8 @@ public class FunpTest {
 
 	@Test
 	public void testAssign() {
-		test(3, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ !do (assign (^p)/b := 4 ~ (^p)/c)");
-		test(4, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ !do (assign (^p)/c := 4 ~ (^p)/c)");
+		test(3, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ !do (assign p*/b := 4 ~ p*/c)");
+		test(4, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ !do (assign p*/c := 4 ~ p*/c)");
 	}
 
 	@Test
@@ -122,7 +122,7 @@ public class FunpTest {
 
 	@Test
 	public void testReference() {
-		test(5, "define i := 3 ~ define p := address.of i ~ 2 + ^p");
+		test(5, "define i := 3 ~ define p := address.of i ~ 2 + p*");
 	}
 
 	@Test
@@ -137,14 +137,14 @@ public class FunpTest {
 
 	@Test
 	public void testString() {
-		test(65, "define s := \"A world for us\" ~ number:byte (^s) [0]");
-		test(65, "let.global s := \"A world for us\" ~ number:byte (^s) [0]");
+		test(65, "define s := \"A world for us\" ~ number:byte s* [0]");
+		test(65, "let.global s := \"A world for us\" ~ number:byte s* [0]");
 	}
 
 	@Test
 	public void testStruct() {
 		test(3, "define s := { a: 1, b: 2, c: 3, } ~ s/c");
-		test(3, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ (^p)/c");
+		test(3, "define p := address.of predef { a: 1, b: 2, c: 3, } ~ p*/c");
 	}
 
 	@Test
