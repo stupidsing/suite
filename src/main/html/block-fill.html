@@ -30,15 +30,15 @@ let handledragend = (vm, ev) => {
 	dragtarget.d = dragsource.d;
 	dragsource.d = 0;
 	handle(vm, ev);
-	renderAgain(rd_vm, vm => JSON.parse(JSON.stringify(vm)));
+	renderAgain(view, vm => JSON.parse(JSON.stringify(vm)));
 };
 
 let handledragenter = (vm, ev) => handle(dragtarget = vm, ev);
 let handledragstart = (vm, ev) => handle(dragsource = vm, ev);
 
-let rd_vm = rd.parse(`
+let view = rd.parse(`
 	<span>
-		<table style='font-family: monospace; user-select: none;'>
+		<table style='font-family: monospace; font-size: 20; user-select: none;'>
 			<rd_for>
 				<tr>
 					<rd_for>
@@ -52,7 +52,7 @@ let rd_vm = rd.parse(`
 								rd_on_dragover='{}'
 								rd_on_dragstart='handledragstart(vm, ev)'
 								rd_on_drop='handle(vm, ev)'>
-								<rd_if v='vm.d'>D</rd_if>
+								<rd_if v='vm.d'>😂</rd_if>
 							</div>
 						</td>
 					</rd_for>
@@ -66,13 +66,13 @@ let rd_vm = rd.parse(`
 var vm0 = range(0, 8).map(i => range(0, 8).map(j => ({ d: 0 })).list()).list();
 vm0[1][1] = { d: 1 };
 
-// let interval = setInterval(() => renderAgain(rd_vm, vm => { vm[1][1].d = 1 - vm[1][1].d; return JSON.parse(JSON.stringify(vm)); }), 500);
+// let interval = setInterval(() => renderAgain(view, vm => { vm[1][1].d = 1 - vm[1][1].d; return JSON.parse(JSON.stringify(vm)); }), 500);
 
-renderAgain(rd_vm, vm => vm0);
+renderAgain(view, vm => vm0);
 
 close = () => {
 	// clearInterval(interval);
-	renderAgain(rd_vm, vm => null);
+	renderAgain(view, vm => null);
 };
 
 	</script>

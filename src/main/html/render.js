@@ -380,7 +380,7 @@ let render = () => {
 
 		return rdb_tag('div')
 			.style({ height: height + 'px', overflow: 'auto', position: 'absolute', })
-			.listen('scroll', d => cbScroll(Math.floor(d.target.scrollTop / rowHeight)))
+			.listen('scroll', (vm, ev) => cbScroll(Math.floor(ev.target.scrollTop / rowHeight)))
 			.child(rdb_tag('div')
 				.stylef(vm => ({
 					height: (vm.vms.length - vm.start) * rowHeight + 'px',

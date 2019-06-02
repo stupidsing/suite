@@ -17,7 +17,7 @@ let { lens, range, read, } = fun();
 let { rd, renderAgain, } = render();
 let close;
 
-let rd_vm0 = rd.parse(`
+let view0 = rd.parse(`
 	<span style='font-family: sans-serif;'>
 		<rd_scope scope='message'>
 			<p style='font-weight: bold;'>
@@ -38,7 +38,7 @@ let rd_vm0 = rd.parse(`
 	</span>
 `);
 
-let rd_vm1 = rd.span().children(
+let view1 = rd.span().children(
 	rd.scope('message',
 		rd.p().style({ 'font-weight': 'bold', }).text().rd()
 	),
@@ -48,21 +48,21 @@ let rd_vm1 = rd.span().children(
 	rd.map(vm => vm.fruits,
 		rd.ul().child(rd.for(vm => vm, rd.li().text().rd())).rd()
 	),
-	rd.tag('button').child(rd.dom(vm => document.createTextNode('Close'))).listen('click', ev => close()).rd(),
+	rd.tag('button').child(rd.dom(vm => document.createTextNode('Close'))).listen('click', (vm, ev) => close()).rd(),
 ).rd();
 
-let rd_vm = rd
+let view = rd
 	.span()
 	.style({ 'font-family': 'sans-serif', })
 	.child(
 		rd.list([
-			rd_vm0,
-			rd_vm1,
+			view0,
+			view1,
 			rd.p().rd(),
 			rd.scope('vscroll', rd
 				.vscrollf(200, 32,
 					rd.dom(vm => document.createTextNode('item ' + vm)),
-					start1 => renderAgain(rd_vm, lens.key('vscroll').key('start').apply(start0 => start1)),
+					start1 => renderAgain(view, lens.key('vscroll').key('start').apply(start0 => start1)),
 				)
 				.style({ width: '400px', })
 				.rd()
@@ -78,18 +78,18 @@ let vscroll = { start: 0, vms: read().range(0, 256).list(), };
 let upd0 = lens.key('t').apply(t => t + 1);
 let upd1 = lens.key('vscroll').key('vms').index(3).apply(vm => Math.random().toString());
 
-let interval0 = setInterval(() => renderAgain(rd_vm, upd0), 1000);
-let interval1 = setInterval(() => renderAgain(rd_vm, upd1), 3000);
+let interval0 = setInterval(() => renderAgain(view, upd0), 1000);
+let interval1 = setInterval(() => renderAgain(view, upd1), 3000);
 
-renderAgain(rd_vm, vm => ({ sse, t, vscroll, message: 'hello world0', fruits: ['banana',], }));
-renderAgain(rd_vm, vm => ({ sse, t, vscroll, message: 'hello world1', fruits: ['apple', 'banana',], }));
-renderAgain(rd_vm, vm => ({ sse, t, vscroll, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));
-renderAgain(rd_vm, vm => ({ sse, t, vscroll, message: 'hello world~', fruits: ['banana', 'orange',], }));
+renderAgain(view, vm => ({ sse, t, vscroll, message: 'hello world0', fruits: ['banana',], }));
+renderAgain(view, vm => ({ sse, t, vscroll, message: 'hello world1', fruits: ['apple', 'banana',], }));
+renderAgain(view, vm => ({ sse, t, vscroll, message: 'hello world2', fruits: ['apple', 'orange', 'orange', 'banana',], }));
+renderAgain(view, vm => ({ sse, t, vscroll, message: 'hello world~', fruits: ['banana', 'orange',], }));
 
 close = () => {
 	clearInterval(interval0);
 	clearInterval(interval1);
-	renderAgain(rd_vm, vm => null);
+	renderAgain(view, vm => null);
 };
 
 let eventSource = new EventSource('/sse');
@@ -97,7 +97,7 @@ let eventSource = new EventSource('/sse');
 eventSource.onError = error => console.log(error);
 eventSource.onMessage = event => console.log(event);
 
-eventSource.addEventListener("close", event => eventSource.close());
-eventSource.addEventListener("number", event => renderAgain(rd_vm, vm => ({ ...vm, sse: [...vm.sse, JSON.parse(event.data).i,], })));
+eventSource.addEventListener("close", ev => eventSource.close());
+eventSource.addEventListener("number", ev => renderAgain(view, vm => ({ ...vm, sse: [...vm.sse, JSON.parse(ev.data).i,], })));
 	</script>
 </html>
