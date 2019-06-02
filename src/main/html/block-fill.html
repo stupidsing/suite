@@ -33,23 +33,18 @@ let handledragend = (vm, ev) => {
 	renderAgain(rd_vm, vm => JSON.parse(JSON.stringify(vm)));
 };
 
-let handledragenter = (vm, ev) => {
-	handle(dragtarget = vm, ev);
-};
-
-let handledragstart = (vm, ev) => {
-	handle(dragsource = vm, ev);
-};
+let handledragenter = (vm, ev) => handle(dragtarget = vm, ev);
+let handledragstart = (vm, ev) => handle(dragsource = vm, ev);
 
 let rd_vm = rd.parse(`
 	<span>
-		<table style='user-select: none;'>
+		<table style='font-family: monospace; user-select: none;'>
 			<rd_for>
 				<tr>
 					<rd_for>
 						<td>
 							<div draggable='true'
-								style='background: { vm.d ? "#888888" : "#DDDDDD" }; height: 50px; width: 50px;'
+								style='background: { vm.d ? "#888888" : "#DDDDDD" }; display: table-cell; height: 50px; text-align: center; vertical-align: middle; width: 50px;'
 								rd_on_dragend='handledragend(vm, ev)'
 								rd_on_dragenter='handledragenter(vm, ev)'
 								rd_on_dragexit='handle(vm, ev)'
@@ -57,7 +52,7 @@ let rd_vm = rd.parse(`
 								rd_on_dragover='{}'
 								rd_on_dragstart='handledragstart(vm, ev)'
 								rd_on_drop='handle(vm, ev)'>
-								<!--rd_if>D</rd_if-->
+								<rd_if v='vm.d'>D</rd_if>
 							</div>
 						</td>
 					</rd_for>
@@ -68,7 +63,7 @@ let rd_vm = rd.parse(`
 	</span>
 `);
 
-var vm0 = range(0, 3).map(i => range(0, 3).map(j => ({ d: 0 })).list()).list();
+var vm0 = range(0, 8).map(i => range(0, 8).map(j => ({ d: 0 })).list()).list();
 vm0[1][1] = { d: 1 };
 
 // let interval = setInterval(() => renderAgain(rd_vm, vm => { vm[1][1].d = 1 - vm[1][1].d; return JSON.parse(JSON.stringify(vm)); }), 500);
