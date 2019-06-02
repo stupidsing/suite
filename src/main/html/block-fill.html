@@ -18,9 +18,9 @@ let { lens, range, read, } = fun();
 let { rd, renderAgain, } = render();
 let close;
 
-let handle = ev => {
+let handle = (vm, ev) => {
 	// ev.preventDefault();
-	console.log(ev.type, ev);
+	console.log(vm, ev.type, ev);
 };
 
 let rd_vm = rd.parse(`
@@ -32,13 +32,13 @@ let rd_vm = rd.parse(`
 						<td>
 							<div draggable='true'
 								style='background: { vm.d ? "#888888" : "#DDDDDD" }; height: 50px; width: 50px;'
-								rd_on_dragend='handle(ev)'
-								rd_on_dragenter='handle(ev)'
-								rd_on_dragexit='handle(ev)'
-								rd_on_dragleave='handle(ev)'
+								rd_on_dragend='handle(vm, ev)'
+								rd_on_dragenter='handle(vm, ev)'
+								rd_on_dragexit='handle(vm, ev)'
+								rd_on_dragleave='handle(vm, ev)'
 								rd_on_dragover='{}'
-								rd_on_dragstart='handle(ev)'
-								rd_on_drop='handle(ev)'>
+								rd_on_dragstart='handle(vm, ev)'
+								rd_on_drop='handle(vm, ev)'>
 								<!--rd_if>D</rd_if-->
 							</div>
 						</td>

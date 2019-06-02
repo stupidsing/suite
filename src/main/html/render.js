@@ -127,13 +127,22 @@ let render = () => {
 		}
 	};
 
-	let rdt_listen = (event, cb) => (vm0, vm1, cudf) => {
-		if (vm0 == vm1)
-			;
-		else {
-			vm0 != null && cudf.childRef.removeEventListener(event, cb);
-			vm1 != null && cudf.childRef.addEventListener(event, cb);
-		}
+	let rdt_listen = (event, cb) => {
+		let els = {};
+		return (vm0, vm1, cudf) => {
+			let domc = cudf.childRef;
+			if (vm0 == vm1)
+				;
+			else {
+				if (vm0 != null) {
+					domc.removeEventListener(event, els[domc]);
+					delete els[domc];
+				}
+				if (vm1 != null) {
+					domc.addEventListener(event, els[domc] = ev => cb(vm1, ev));
+				}
+			}
+		};
 	};
 
 	let rdt_style = style => (vm0, vm1, cudf) => {
@@ -396,7 +405,7 @@ let render = () => {
 	};
 
 	let rd_parseListen = s => {
-		return rd_parseLambda('ev', s);
+		return rd_parseLambda('(vm, ev)', s);
 	};
 
 	let rd_parseTemplate = s => {
