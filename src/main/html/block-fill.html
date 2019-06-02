@@ -36,6 +36,27 @@ let handledragend = (vm, ev) => {
 let handledragenter = (vm, ev) => handle(dragtarget = vm, ev);
 let handledragstart = (vm, ev) => handle(dragsource = vm, ev);
 
+let viewCell = rd.parse(`
+	<div draggable='true'
+		style='
+			background: { vm.d ? "#888888" : "#DDDDDD" };
+			display: table-cell;
+			height: 50px;
+			text-align: center;
+			vertical-align: middle;
+			width: 50px;
+		'
+		rd_on_dragend='handledragend(vm, ev)'
+		rd_on_dragenter='handledragenter(vm, ev)'
+		rd_on_dragexit='handle(vm, ev)'
+		rd_on_dragleave='handle(vm, ev)'
+		rd_on_dragover='{}'
+		rd_on_dragstart='handledragstart(vm, ev)'
+		rd_on_drop='handle(vm, ev)'>
+		<rd_if v='vm.d'>😂</rd_if>
+	</div>
+`);
+
 let view = rd.parse(`
 	<span>
 		<table style='font-family: monospace; font-size: 20; user-select: none;'>
@@ -43,17 +64,7 @@ let view = rd.parse(`
 				<tr>
 					<rd_for>
 						<td>
-							<div draggable='true'
-								style='background: { vm.d ? "#888888" : "#DDDDDD" }; display: table-cell; height: 50px; text-align: center; vertical-align: middle; width: 50px;'
-								rd_on_dragend='handledragend(vm, ev)'
-								rd_on_dragenter='handledragenter(vm, ev)'
-								rd_on_dragexit='handle(vm, ev)'
-								rd_on_dragleave='handle(vm, ev)'
-								rd_on_dragover='{}'
-								rd_on_dragstart='handledragstart(vm, ev)'
-								rd_on_drop='handle(vm, ev)'>
-								<rd_if v='vm.d'>😂</rd_if>
-							</div>
+							<rd_component v='viewCell' />
 						</td>
 					</rd_for>
 				</tr>
@@ -64,7 +75,7 @@ let view = rd.parse(`
 `);
 
 var vm0 = range(0, 8).map(i => range(0, 8).map(j => ({ d: 0 })).list()).list();
-vm0[1][1] = { d: 1 };
+vm0[1][1].d = 1;
 
 // let interval = setInterval(() => renderAgain(view, vm => { vm[1][1].d = 1 - vm[1][1].d; return JSON.parse(JSON.stringify(vm)); }), 500);
 

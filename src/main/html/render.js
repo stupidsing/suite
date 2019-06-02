@@ -430,7 +430,9 @@ let render = () => {
 			let sf = rd_parseTemplate(node0.nodeValue);
 			return rd_dom(vm => document.createComment(sf(vm)));
 		} else if (node0.nodeType == Node.ELEMENT_NODE)
-			if (node0.localName == 'rd_for')
+			if (node0.localName == 'rd_component')
+				return eval(node0.getAttribute('v'));
+			else if (node0.localName == 'rd_for')
 				return rd_map(rd_parseExpr(node0.getAttribute('v')), rd_for(vm => vm, rd_parseDomNodes(node0.childNodes)));
 			else if (node0.localName == 'rd_if')
 				return rd_ifElse(rd_parseExpr(node0.getAttribute('v')), rd_parseDomNodes(node0.childNodes), (vm0, vm1, cudf) => {});
