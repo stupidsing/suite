@@ -386,17 +386,12 @@ let rdb_vscrollf = (height, rowHeight, rd_item, cbScroll) => {
 };
 
 let rd_parseLambda = (v, s) => {
-	if (s.startsWith('{') && s.endsWith('}'))
-		return eval(v + ' => ' + s);
-	else
-		return eval(v + ' => (' + s + ')');
+	let e = s.startsWith('{') && s.endsWith('}') ? s : '(' + s + ')';
+	return eval(v + ' => ' + e);
 };
 
 let rd_parseExpr = s => {
-	if (s != null)
-		return rd_parseLambda('vm', s);
-	else
-		return vm => vm;
+	return s != null ? rd_parseLambda('vm', s) : vm => vm;
 };
 
 let rd_parseListener = s => {
