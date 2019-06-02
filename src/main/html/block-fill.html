@@ -27,8 +27,9 @@ let handle = (vm, ev) => {
 };
 
 let handledragend = (vm, ev) => {
+	let orig = dragtarget.d;
 	dragtarget.d = dragsource.d;
-	dragsource.d = 0;
+	dragsource.d = orig;
 	handle(vm, ev);
 	renderAgain(view, vm => JSON.parse(JSON.stringify(vm)));
 };
