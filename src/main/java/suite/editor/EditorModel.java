@@ -4,9 +4,9 @@ import suite.streamlet.Pusher;
 
 public class EditorModel {
 
-	private ValueSignal<Boolean> isModified = ValueSignal.of(false);
-	private ValueSignal<String> filename = ValueSignal.of("");
-	private ValueSignal<String> searchText = ValueSignal.of("");
+	private ValuePusher<Boolean> isModified = ValuePusher.of(false);
+	private ValuePusher<String> filename = ValuePusher.of("");
+	private ValuePusher<String> searchText = ValuePusher.of("");
 
 	public void changeIsModified(boolean modified_) {
 		isModified.change(modified_);

@@ -85,15 +85,6 @@ let rdt_child = childf => (vm0, vm1, cudf) => {
 		childf(vm0, vm1, r_cud(cudf, null, cudf.childRef.lastChild));
 };
 
-let rdt_eventListener = (event, cb) => (vm0, vm1, cudf) => {
-	if (vm0 == vm1)
-		;
-	else {
-		vm0 != null && cudf.childRef.removeEventListener(event, cb);
-		vm1 != null && cudf.childRef.addEventListener(event, cb);
-	}
-};
-
 let rdt_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 	let domc = cudf.childRef;
 	let children0 = domc != null ? Array.from(domc.childNodes) : null;
@@ -132,6 +123,15 @@ let rdt_forRange = (vmsf, rangef, rd_item) => (vm0, vm1, cudf) => {
 		// update elements at common range
 		for (let i = Math.max(si, sx); i < Math.min(ei, ex); i++)
 			rd_item(vms0[i], vms1[i], cudf.get(domc.childNodes[i - s_]));
+	}
+};
+
+let rdt_listen = (event, cb) => (vm0, vm1, cudf) => {
+	if (vm0 == vm1)
+		;
+	else {
+		vm0 != null && cudf.childRef.removeEventListener(event, cb);
+		vm1 != null && cudf.childRef.addEventListener(event, cb);
 	}
 };
 
@@ -355,7 +355,7 @@ let rdb_tagf = (elementf, decorfs) => {
 		child,
 		children: (...childrenfs) => child(rd_list(childrenfs)),
 		decor,
-		listen: (event, cb) => decor(rdt_eventListener(event, cb)),
+		listen: (event, cb) => decor(rdt_listen(event, cb)),
 		rd: () => rd_domDecors(elementf, decorfs),
 		style: style => decor(rdt_style(style)),
 		stylef: stylef => decor(rdt_stylef(stylef)),
@@ -394,7 +394,7 @@ let rd_parseExpr = s => {
 	return s != null ? rd_parseLambda('vm', s) : vm => vm;
 };
 
-let rd_parseListener = s => {
+let rd_parseListen = s => {
 	return rd_parseLambda('ev', s);
 };
 
@@ -433,7 +433,7 @@ let rd_parseDom = node0 => {
 
 			for (let attr of node0.attributes)
 				if (attr.name.startsWith('rd_on_'))
-					decors.push(rd => rd.listen(attr.name.substring(6), rd_parseListener(attr.value)));
+					decors.push(rd => rd.listen(attr.name.substring(6), rd_parseListen(attr.value)));
 				else
 					as[attr.name] = rd_parseTemplate(attr.value);
 

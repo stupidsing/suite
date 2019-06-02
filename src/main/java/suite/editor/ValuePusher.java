@@ -4,16 +4,16 @@ import java.util.Objects;
 
 import suite.streamlet.Pusher;
 
-public class ValueSignal<T> {
+public class ValuePusher<T> {
 
 	private T value;
 	public final Pusher<T> changed = Pusher.of();
 
-	public static <T> ValueSignal<T> of(T value) {
-		return new ValueSignal<>(value);
+	public static <T> ValuePusher<T> of(T value) {
+		return new ValuePusher<>(value);
 	}
 
-	private ValueSignal(T value_) {
+	private ValuePusher(T value_) {
 		value = value_;
 	}
 
