@@ -18,9 +18,27 @@ let { lens, range, read, } = fun();
 let { rd, renderAgain, } = render();
 let close;
 
+let dragsource = null;
+let dragtarget = null;
+
 let handle = (vm, ev) => {
 	// ev.preventDefault();
 	console.log(vm, ev.type, ev);
+};
+
+let handledragend = (vm, ev) => {
+	dragtarget.d = dragsource.d;
+	dragsource.d = 0;
+	handle(vm, ev);
+	renderAgain(rd_vm, vm => JSON.parse(JSON.stringify(vm)));
+};
+
+let handledragenter = (vm, ev) => {
+	handle(dragtarget = vm, ev);
+};
+
+let handledragstart = (vm, ev) => {
+	handle(dragsource = vm, ev);
 };
 
 let rd_vm = rd.parse(`
@@ -32,12 +50,12 @@ let rd_vm = rd.parse(`
 						<td>
 							<div draggable='true'
 								style='background: { vm.d ? "#888888" : "#DDDDDD" }; height: 50px; width: 50px;'
-								rd_on_dragend='handle(vm, ev)'
-								rd_on_dragenter='handle(vm, ev)'
+								rd_on_dragend='handledragend(vm, ev)'
+								rd_on_dragenter='handledragenter(vm, ev)'
 								rd_on_dragexit='handle(vm, ev)'
 								rd_on_dragleave='handle(vm, ev)'
 								rd_on_dragover='{}'
-								rd_on_dragstart='handle(vm, ev)'
+								rd_on_dragstart='handledragstart(vm, ev)'
 								rd_on_drop='handle(vm, ev)'>
 								<!--rd_if>D</rd_if-->
 							</div>
