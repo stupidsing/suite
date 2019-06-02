@@ -13,6 +13,8 @@ file:///home/ywsing/suite/src/main/html/render.html
 	<script src='render.js'></script>
 
 	<script type='text/javascript'>
+let { lens, range, read, } = fun();
+let { rd, renderAgain, } = render();
 let close;
 
 let rd_vm0 = rd.parse(`
@@ -44,7 +46,7 @@ let rd_vm1 = rd.span().children(
 		rd.p().text().rd()
 	),
 	rd.map(vm => vm.fruits,
-		rd.ul().child(rd_for(vm => vm, rd.li().text().rd())).rd()
+		rd.ul().child(rd.for(vm => vm, rd.li().text().rd())).rd()
 	),
 	rd.tag('button').child(rd.dom(vm => document.createTextNode('Close'))).listen('click', ev => close()).rd(),
 ).rd();
