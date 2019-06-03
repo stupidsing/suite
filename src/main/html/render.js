@@ -44,6 +44,7 @@ let render = () => {
 	};
 
 	let gwm = new WeakMap(); // global weak map
+	let gdirty = new WeakSet();
 
 	let getOrAdd = (map0, key) => {
 		let map1 = map0.get(key);
@@ -52,6 +53,8 @@ let render = () => {
 	};
 
 	let gwmget = (key0, key1) => getOrAdd(getOrAdd(gwm, key0), key1);
+
+	let isClear = (vm0, vm1) => vm0 == vm1 /* && !gdirty.has(vm1) */;
 
 	/*
 		a typical "render-difference" function accept 3 parameters:
@@ -71,7 +74,7 @@ let render = () => {
 	};
 
 	let rdt_attrsf = attrsf => (vm0, vm1, cudf) => {
-		if (vm0 == vm1)
+		if (isClear(vm0, vm1))
 			;
 		else if (vm1 != null)
 			for (let [key, value] of Object.entries(attrsf(vm1)))
@@ -82,7 +85,7 @@ let render = () => {
 	};
 
 	let rdt_child = childf => (vm0, vm1, cudf) => {
-		if (vm0 == vm1)
+		if (isClear(vm0, vm1))
 			;
 		else
 			childf(vm0, vm1, r_cud(cudf, null, cudf.childRef.lastChild));
@@ -92,7 +95,7 @@ let render = () => {
 		let domc = cudf.childRef;
 		let children0 = domc != null ? Array.from(domc.childNodes) : null;
 
-		if (vm0 == vm1)
+		if (isClear(vm0, vm1))
 			;
 		else if (vm0 == null) {
 			let [s, e] = rangef(vm1), vms1 = vmsf(vm1);
@@ -133,7 +136,7 @@ let render = () => {
 		let els = {};
 		return (vm0, vm1, cudf) => {
 			let domc = cudf.childRef;
-			if (vm0 == vm1)
+			if (isClear(vm0, vm1))
 				;
 			else {
 				if (vm0 != null) {
@@ -157,7 +160,7 @@ let render = () => {
 	};
 
 	let rdt_stylef = stylef => (vm0, vm1, cudf) => {
-		if (vm0 == vm1)
+		if (isClear(vm0, vm1))
 			;
 		else if (vm1 != null)
 			for (let [key, value] of Object.entries(stylef(vm1)))
@@ -168,7 +171,7 @@ let render = () => {
 	};
 
 	let rd_dom = elementf => (vm0, vm1, cudf) => {
-		if (vm0 == vm1)
+		if (isClear(vm0, vm1))
 			;
 		else {
 			vm0 != null && cudf.delete();
@@ -179,7 +182,7 @@ let render = () => {
 	let rd_domDecors = (elementf, decorfs) => (vm0, vm1, cudf) => {
 		if (vm0 == null)
 			cudf.create(elementf());
-		if (vm0 == vm1)
+		if (isClear(vm0, vm1))
 			;
 		else
 			for (let decorf of decorfs)
@@ -192,7 +195,7 @@ let render = () => {
 		let key = {};
 
 		return (vm0, vm3, cudf) => {
-			if (vm0 == vm3)
+			if (isClear(vm0, vm3))
 				;
 			else {
 				let parent = cudf.parent;
@@ -225,7 +228,7 @@ let render = () => {
 					let vm = vm0[i0];
 					let key = keyf(vm);
 
-					if (list0[i0] == list0[i0 + 1])
+					if (isClear(list0[i0], list0[i0 + 1]))
 						cud = r_cud(parent, list1[i1], list1[i1]);
 					else
 						cud = r_cud(parent, list1[i1], list0[i0 + 1]);
@@ -281,7 +284,7 @@ let render = () => {
 					let i2 = map2.get(key);
 
 					if (i2 != null)
-						if (list2[i2] == list2[i2 + 1])
+						if (isClear(list2[i2], list2[i2 + 1]))
 							cud = r_cud(parent, list3[i3], list3[i3]);
 						else
 							cud = r_cud(parent, list3[i3], list2[i2 + 1]);
@@ -298,7 +301,7 @@ let render = () => {
 	};
 
 	let rd_ifElse = (iff, thenf, elsef) => (vm0, vm1, cudf) => {
-		if (vm0 == vm1)
+		if (isClear(vm0, vm1))
 			;
 		else {
 			let f0 = vm0 != null ? (iff(vm0) ? thenf : elsef) : null;
@@ -322,7 +325,7 @@ let render = () => {
 			return childrenfs[0];
 		else
 			return (vm0, vm1, cudf) => {
-				if (vm0 == vm1)
+				if (isClear(vm0, vm1))
 					;
 				else {
 					let parent = cudf.parent;
@@ -333,7 +336,7 @@ let render = () => {
 					let cud;
 
 					for (let i = 0; i < childrenfs.length; i++) {
-						if (vm0 == null || list0[i] == list0[i + 1])
+						if (vm0 == null || isClear(list0[i], list0[i + 1]))
 							childrenfs[i](vm0, vm1, cud = r_cud(parent, list1[i], list1[i]));
 						else
 							childrenfs[i](vm0, vm1, cud = r_cud(parent, list1[i], list0[i + 1]));
@@ -397,74 +400,71 @@ let render = () => {
 			);
 	};
 
-	let rd_parseLambda = (v, s) => {
-		let e = s.startsWith('{') && s.endsWith('}') ? s : '(' + s + ')';
-		return eval(v + ' => ' + e);
-	};
+	let rd_parse = s => {
+		let parseLambda = (v, s) => {
+			let e = s.startsWith('{') && s.endsWith('}') ? s : '(' + s + ')';
+			return eval(v + ' => ' + e);
+		};
 
-	let rd_parseExpr = s => {
-		return s != null ? rd_parseLambda('vm', s) : vm => vm;
-	};
+		let parseExpr = s =>  s != null ? parseLambda('vm', s) : vm => vm;
+		let parseListen = s => parseLambda('(vm, ev)', s);
 
-	let rd_parseListen = s => {
-		return rd_parseLambda('(vm, ev)', s);
-	};
-
-	let rd_parseTemplate = s => {
-		let pos0 = 0, pos1, pos2;
-		let f = vm => '';
-		while (0 <= (pos1 = s.indexOf('{', pos0)) && 0 <= (pos2 = s.indexOf('}', pos1))) {
-			let s0 = s.substring(pos0, pos1);
-			let f0 = f;
-			let f1 = rd_parseExpr(s.substring(pos1 + 1, pos2).trim());
-			f = vm => f0(vm) + s0 + f1(vm);
-			pos0 = pos2 + 1;
-		}
-		{
-			let f0 = f;
-			f = vm => f0(vm) + s.substring(pos0);
-		}
-		return f;
-	};
-
-	let rd_parseDom = node0 => {
-		if (node0.nodeType == Node.COMMENT_NODE) {
-			let sf = rd_parseTemplate(node0.nodeValue);
-			return rd_dom(vm => document.createComment(sf(vm)));
-		} else if (node0.nodeType == Node.ELEMENT_NODE)
-			if (node0.localName == 'rd_component')
-				return eval(node0.getAttribute('v'));
-			else if (node0.localName == 'rd_for')
-				return rd_map(rd_parseExpr(node0.getAttribute('v')), rd_for(vm => vm, rd_parseDomNodes(node0.childNodes)));
-			else if (node0.localName == 'rd_if')
-				return rd_ifElse(rd_parseExpr(node0.getAttribute('v')), rd_parseDomNodes(node0.childNodes), (vm0, vm1, cudf) => {});
-			else if (node0.localName == 'rd_scope')
-				return rd_scope(node0.getAttribute('scope'), rd_parseDomNodes(node0.childNodes));
-			else {
-				let name = node0.localName;
-				let as = {}, cs = rd_parseDomNodes(node0.childNodes);
-				let decors = [];
-
-				for (let attr of node0.attributes)
-					if (attr.name.startsWith('rd_on_'))
-						decors.push(rd => rd.listen(attr.name.substring(6), rd_parseListen(attr.value)));
-					else
-						as[attr.name] = rd_parseTemplate(attr.value);
-
-				let rd = rdb_tag(name).attrsf(vm => read(as).map(([k, vf]) => [k, vf(vm)]).object()).child(cs);
-				for (let decor of decors) rd = decor(rd);
-				return rd.rd();
+		let parseTemplate = s => {
+			let pos0 = 0, pos1, pos2;
+			let f = vm => '';
+			while (0 <= (pos1 = s.indexOf('{', pos0)) && 0 <= (pos2 = s.indexOf('}', pos1))) {
+				let s0 = s.substring(pos0, pos1);
+				let f0 = f;
+				let f1 = parseExpr(s.substring(pos1 + 1, pos2).trim());
+				f = vm => f0(vm) + s0 + f1(vm);
+				pos0 = pos2 + 1;
 			}
-		else if (node0.nodeType == Node.TEXT_NODE) {
-			let sf = rd_parseTemplate(node0.nodeValue);
-			return rd_dom(vm => document.createTextNode(sf(vm)));
-		} else
-			throw 'unknown node type';
+			{
+				let f0 = f;
+				f = vm => f0(vm) + s.substring(pos0);
+			}
+			return f;
+		};
+
+		let parseDom = node0 => {
+			if (node0.nodeType == Node.COMMENT_NODE) {
+				let sf = parseTemplate(node0.nodeValue);
+				return rd_dom(vm => document.createComment(sf(vm)));
+			} else if (node0.nodeType == Node.ELEMENT_NODE)
+				if (node0.localName == 'rd_component')
+					return eval(node0.getAttribute('v'));
+				else if (node0.localName == 'rd_for')
+					return rd_map(parseExpr(node0.getAttribute('v')), rd_for(vm => vm, parseDomNodes(node0.childNodes)));
+				else if (node0.localName == 'rd_if')
+					return rd_ifElse(parseExpr(node0.getAttribute('v')), parseDomNodes(node0.childNodes), (vm0, vm1, cudf) => {});
+				else if (node0.localName == 'rd_scope')
+					return rd_scope(node0.getAttribute('scope'), parseDomNodes(node0.childNodes));
+				else {
+					let name = node0.localName;
+					let as = {}, cs = parseDomNodes(node0.childNodes);
+					let decors = [];
+
+					for (let attr of node0.attributes)
+						if (attr.name.startsWith('rd_on_'))
+							decors.push(rd => rd.listen(attr.name.substring(6), parseListen(attr.value)));
+						else
+							as[attr.name] = parseTemplate(attr.value);
+
+					let rd = rdb_tag(name).attrsf(vm => read(as).map(([k, vf]) => [k, vf(vm)]).object()).child(cs);
+					for (let decor of decors) rd = decor(rd);
+					return rd.rd();
+				}
+			else if (node0.nodeType == Node.TEXT_NODE) {
+				let sf = parseTemplate(node0.nodeValue);
+				return rd_dom(vm => document.createTextNode(sf(vm)));
+			} else
+				throw 'unknown node type';
+		};
+
+		let parseDomNodes = nodes => rd_list(Array.from(nodes).map(parseDom));
+
+		return parseDom(new DOMParser().parseFromString(s, 'text/xml').childNodes[0]);
 	};
-
-	let rd_parseDomNodes = nodes => rd_list(Array.from(nodes).map(rd_parseDom));
-
-	let rd_parse = s => rd_parseDom(new DOMParser().parseFromString(s, 'text/xml').childNodes[0]);
 
 	let rd = {
 		div: () => rdb_tag('div'),
@@ -486,11 +486,14 @@ let render = () => {
 
 	let pvm = null;
 
+	let markDirty = vm => gdirty.add(vm);
+
 	let renderAgain = (renderer, f) => {
 		let target = document.getElementById('target');
 		let ppvm = pvm;
 		renderer(ppvm, pvm = f(pvm), r_cud({ childRef: target, }, null, target.lastChild));
+		gdirty = new WeakSet();
 	};
 
-	return { rd, renderAgain, };
+	return { markDirty, rd, renderAgain, };
 };

@@ -15,11 +15,19 @@ file:///home/ywsing/suite/src/main/html/render.html
 	<script type='text/javascript'>
 'use strict';
 let { lens, range, read, } = fun();
-let { rd, renderAgain, } = render();
+let { rd, markDirty, renderAgain, } = render();
+let isHide = false;
+let isShow = true;
 let close;
 
 let dragsource = null;
 let dragtarget = null;
+
+let markDirtyCell = vm => {
+	markDirty(vm0);
+	markDirty(vm0[vm.x]);
+	markDirty(vm0[vm.x][vm.y]);
+};
 
 let handle = (vm, ev) => {
 	// ev.preventDefault();
@@ -31,6 +39,11 @@ let handledragend = (vm, ev) => {
 	dragtarget.d = dragsource.d;
 	dragsource.d = orig;
 	handle(vm, ev);
+	/*
+	markDirtyCell(dragsource);
+	markDirtyCell(dragtarget);
+	renderAgain(view, vm => vm);
+	*/
 	renderAgain(view, vm => JSON.parse(JSON.stringify(vm)));
 };
 
@@ -51,7 +64,7 @@ let viewCell = rd.parse(`
 		rd_on_dragenter='handledragenter(vm, ev)'
 		rd_on_dragexit='handle(vm, ev)'
 		rd_on_dragleave='handle(vm, ev)'
-		rd_on_dragover='{}'
+		rd_on_dragover='{ ev.dataTransfer.dropEffect = "move"; }'
 		rd_on_dragstart='handledragstart(vm, ev)'
 		rd_on_drop='handle(vm, ev)'>
 		<rd_if v='vm.d'>😂</rd_if>
@@ -75,10 +88,10 @@ let view = rd.parse(`
 	</span>
 `);
 
-var vm0 = range(0, 8).map(i => range(0, 8).map(j => ({ d: 0 })).list()).list();
-vm0[1][1].d = 1;
+var vm0 = range(0, 8).map(x => range(0, 8).map(y => ({ d: isHide, x, y, })).list()).list();
+vm0[1][1].d = isShow;
 
-// let interval = setInterval(() => renderAgain(view, vm => { vm[1][1].d = 1 - vm[1][1].d; return JSON.parse(JSON.stringify(vm)); }), 500);
+// let interval = setInterval(() => renderAgain(view, vm => { vm[1][1].d = vm[1][1].d != isShow ? isShow : isHide; return JSON.parse(JSON.stringify(vm)); }), 500);
 
 renderAgain(view, vm => vm0);
 

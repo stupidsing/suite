@@ -25,8 +25,8 @@ import suite.util.Util;
 
 public class Read {
 
-	private static Streamlet<?> empty = from(FunUtil::<Object> nullSource);
-	private static Streamlet2<?, ?> empty2 = from2(FunUtil2::<Object, Object> nullSource);
+	private static Streamlet<?> empty = from(() -> FunUtil.nullSource());
+	private static Streamlet2<?, ?> empty2 = from2(() -> FunUtil2.nullSource());
 
 	public static Streamlet<Bytes> bytes(Path path) {
 		var file = path.toFile();
