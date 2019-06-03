@@ -30,6 +30,8 @@ let vmsetcell = (vmt0, vmc1) =>  {
 let dragsource = null;
 let dragtarget = null;
 
+let handleclick = (vmc, ev) => renderAgain(view, vm => vmsetcell(vm, { ...vmc, d: !vmc.d, }));
+
 let handledragend = (vm, ev) => {
 	renderAgain(view, vm => {
 		vm = vmsetcell(vm, { ...dragsource, d: dragtarget.d, });
@@ -51,6 +53,7 @@ let viewCell = rd.parse(`
 			vertical-align: middle;
 			width: 50px;
 		'
+		rd_on_click='handleclick(vm, ev)'
 		rd_on_dragend='handledragend(vm, ev)'
 		rd_on_dragenter='handledragenter(vm, ev)'
 		rd_on_dragexit='{}'
