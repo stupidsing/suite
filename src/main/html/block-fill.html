@@ -19,31 +19,27 @@ let { lens, range, read, } = fun();
 let { rd, renderAgain, } = render();
 let close;
 
+let vmsetcell = (vmt0, vmc1) =>  {
+	let vmr0 = vmt0[vmc1.x];
+	let vmc0 = vmr0[vmc1.y];
+	let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
+	let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
+	return vmt1;
+};
+
 let dragsource = null;
 let dragtarget = null;
 
-let handle = (vm, ev) => {
-	// ev.preventDefault();
-	console.log(vm, ev.type, ev);
-};
-
 let handledragend = (vm, ev) => {
-	let setCell = (vmt0, vmc1) =>  {
-		let vmr0 = vmt0[vmc1.x];
-		let vmc0 = vmr0[vmc1.y];
-		let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
-		let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
-		return vmt1;
-	}
 	renderAgain(view, vm => {
-		vm = setCell(vm, { ...dragsource, d: dragtarget.d, });
-		vm = setCell(vm, { ...dragtarget, d: dragsource.d, });
+		vm = vmsetcell(vm, { ...dragsource, d: dragtarget.d, });
+		vm = vmsetcell(vm, { ...dragtarget, d: dragsource.d, });
 		return vm;
 	});
 };
 
-let handledragenter = (vm, ev) => handle(dragtarget = vm, ev);
-let handledragstart = (vm, ev) => handle(dragsource = vm, ev);
+let handledragenter = (vm, ev) => dragtarget = vm;
+let handledragstart = (vm, ev) => dragsource = vm;
 
 let viewCell = rd.parse(`
 	<div draggable='true'
@@ -57,11 +53,11 @@ let viewCell = rd.parse(`
 		'
 		rd_on_dragend='handledragend(vm, ev)'
 		rd_on_dragenter='handledragenter(vm, ev)'
-		rd_on_dragexit='handle(vm, ev)'
-		rd_on_dragleave='handle(vm, ev)'
+		rd_on_dragexit='{}'
+		rd_on_dragleave='{}'
 		rd_on_dragover='{ ev.dataTransfer.dropEffect = "move"; }'
 		rd_on_dragstart='handledragstart(vm, ev)'
-		rd_on_drop='handle(vm, ev)'>
+		rd_on_drop='{}'>
 		<rd_if v='vm.d'>😂</rd_if>
 	</div>
 `);
