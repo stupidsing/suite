@@ -14,20 +14,13 @@ file:///home/ywsing/suite/src/main/html/render.html
 
 	<script type='text/javascript'>
 'use strict';
+
 let { lens, range, read, } = fun();
-let { rd, markDirty, renderAgain, } = render();
-let isHide = false;
-let isShow = true;
+let { rd, renderAgain, } = render();
 let close;
 
 let dragsource = null;
 let dragtarget = null;
-
-let markDirtyCell = vm => {
-	markDirty(vm0);
-	markDirty(vm0[vm.x]);
-	markDirty(vm0[vm.x][vm.y]);
-};
 
 let handle = (vm, ev) => {
 	// ev.preventDefault();
@@ -35,16 +28,17 @@ let handle = (vm, ev) => {
 };
 
 let handledragend = (vm, ev) => {
-	let orig = dragtarget.d;
-	dragtarget.d = dragsource.d;
-	dragsource.d = orig;
-	handle(vm, ev);
-	/*
-	markDirtyCell(dragsource);
-	markDirtyCell(dragtarget);
-	renderAgain(view, vm => vm);
-	*/
-	renderAgain(view, vm => JSON.parse(JSON.stringify(vm)));
+	let setCell = (vm, cell) =>  {
+		vm = vm.map(c => c);
+		vm[cell.x] = vm[cell.x].map(c => c);
+		vm[cell.x][cell.y] = cell;
+		return vm;
+	}
+	renderAgain(view, vm => {
+		vm = setCell(vm, { ...dragsource, d: dragtarget.d, });
+		vm = setCell(vm, { ...dragtarget, d: dragsource.d, });
+		return vm;
+	});
 };
 
 let handledragenter = (vm, ev) => handle(dragtarget = vm, ev);
@@ -88,12 +82,13 @@ let view = rd.parse(`
 	</span>
 `);
 
-var vm0 = range(0, 8).map(x => range(0, 8).map(y => ({ d: isHide, x, y, })).list()).list();
-vm0[1][1].d = isShow;
+// let interval = setInterval(() => renderAgain(view, vm => { vm[1][1].d = !vm[1][1].d; return JSON.parse(JSON.stringify(vm)); }), 500);
 
-// let interval = setInterval(() => renderAgain(view, vm => { vm[1][1].d = vm[1][1].d != isShow ? isShow : isHide; return JSON.parse(JSON.stringify(vm)); }), 500);
-
-renderAgain(view, vm => vm0);
+renderAgain(view, vm => {
+	var vm0 = range(0, 8).map(x => range(0, 8).map(y => ({ d: false, x, y, })).list()).list();
+	vm0[1][1].d = true;
+	return vm0;
+});
 
 close = () => {
 	// clearInterval(interval);

@@ -19,30 +19,30 @@ let close;
 
 let view0 = rd.parse(`
 	<span style='font-family: sans-serif;'>
-		<rd_scope scope='message'>
+		<rd_map v='vm.message'>
 			<p style='font-weight: bold;'>
 				{ vm } within scope
 				<!-- comment -->
 			</p>
-		</rd_scope>
-		<rd_scope scope='t'>
+		</rd_map>
+		<rd_map v='vm.t'>
 			{ vm }
-		</rd_scope>
+		</rd_map>
 		<ul>
 			<rd_for v='vm.fruits'><li>{ vm }</li></rd_for>
 		</ul>
 		<div>
-			<rd_scope scope='sse'>server sent events: <rd_for>{ vm }</rd_for></rd_scope>
+			<rd_map v='vm.sse'>server sent events: <rd_for>{ vm }</rd_for></rd_map>
 		</div>
 		<button rd_on_click='close()'>Close</button>
 	</span>
 `);
 
 let view1 = rd.span().children(
-	rd.scope('message',
+	rd.map(vm => vm.message,
 		rd.p().style({ 'font-weight': 'bold', }).text().rd()
 	),
-	rd.scope('t',
+	rd.map(vm => vm.t,
 		rd.p().text().rd()
 	),
 	rd.map(vm => vm.fruits,
@@ -59,7 +59,7 @@ let view = rd
 			view0,
 			view1,
 			rd.p().rd(),
-			rd.scope('vscroll', rd
+			rd.map(vm => vm.vscroll, rd
 				.vscrollf(200, 32,
 					rd.dom(vm => document.createTextNode('item ' + vm)),
 					start1 => renderAgain(view, lens.key('vscroll').key('start').apply(start0 => start1)),

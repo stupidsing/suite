@@ -44,7 +44,6 @@ let render = () => {
 	};
 
 	let gwm = new WeakMap(); // global weak map
-	let gdirty = new WeakSet();
 
 	let getOrAdd = (map0, key) => {
 		let map1 = map0.get(key);
@@ -54,7 +53,7 @@ let render = () => {
 
 	let gwmget = (key0, key1) => getOrAdd(getOrAdd(gwm, key0), key1);
 
-	let isClear = (vm0, vm1) => vm0 == vm1 /* && !gdirty.has(vm1) */;
+	let isClear = (vm0, vm1) => vm0 == vm1;
 
 	/*
 		a typical "render-difference" function accept 3 parameters:
@@ -228,7 +227,7 @@ let render = () => {
 					let vm = vm0[i0];
 					let key = keyf(vm);
 
-					if (isClear(list0[i0], list0[i0 + 1]))
+					if (list0[i0] == list0[i0 + 1])
 						cud = r_cud(parent, list1[i1], list1[i1]);
 					else
 						cud = r_cud(parent, list1[i1], list0[i0 + 1]);
@@ -284,7 +283,7 @@ let render = () => {
 					let i2 = map2.get(key);
 
 					if (i2 != null)
-						if (isClear(list2[i2], list2[i2 + 1]))
+						if (list2[i2] == list2[i2 + 1])
 							cud = r_cud(parent, list3[i3], list3[i3]);
 						else
 							cud = r_cud(parent, list3[i3], list2[i2 + 1]);
@@ -336,7 +335,7 @@ let render = () => {
 					let cud;
 
 					for (let i = 0; i < childrenfs.length; i++) {
-						if (vm0 == null || isClear(list0[i], list0[i + 1]))
+						if (vm0 == null || list0[i] == list0[i + 1])
 							childrenfs[i](vm0, vm1, cud = r_cud(parent, list1[i], list1[i]));
 						else
 							childrenfs[i](vm0, vm1, cud = r_cud(parent, list1[i], list0[i + 1]));
@@ -355,8 +354,6 @@ let render = () => {
 		vm1 != null ? vmf(vm1) : null,
 		cudf
 	);
-
-	let rd_scope = (key, rdf) => rd_map(vm => vm[key], rdf);
 
 	let rdb_tagf = (elementf, decorfs) => {
 		let decor = decorf => rdb_tagf(elementf, [...decorfs, decorf,]);
@@ -437,8 +434,8 @@ let render = () => {
 					return rd_map(parseExpr(node0.getAttribute('v')), rd_for(vm => vm, parseDomNodes(node0.childNodes)));
 				else if (node0.localName == 'rd_if')
 					return rd_ifElse(parseExpr(node0.getAttribute('v')), parseDomNodes(node0.childNodes), (vm0, vm1, cudf) => {});
-				else if (node0.localName == 'rd_scope')
-					return rd_scope(node0.getAttribute('scope'), parseDomNodes(node0.childNodes));
+				else if (node0.localName == 'rd_map')
+					return rd_map(parseExpr(node0.getAttribute('v')), parseDomNodes(node0.childNodes));
 				else {
 					let name = node0.localName;
 					let as = {}, cs = parseDomNodes(node0.childNodes);
@@ -477,7 +474,6 @@ let render = () => {
 		map: rd_map,
 		p: () => rdb_tag('p'),
 		parse: rd_parse,
-		scope: rd_scope,
 		span: () => rdb_tag('span'),
 		tag: rdb_tag,
 		ul: () => rdb_tag('ul'),
@@ -486,14 +482,11 @@ let render = () => {
 
 	let pvm = null;
 
-	let markDirty = vm => gdirty.add(vm);
-
 	let renderAgain = (renderer, f) => {
 		let target = document.getElementById('target');
 		let ppvm = pvm;
 		renderer(ppvm, pvm = f(pvm), r_cud({ childRef: target, }, null, target.lastChild));
-		gdirty = new WeakSet();
 	};
 
-	return { markDirty, rd, renderAgain, };
+	return { rd, renderAgain, };
 };
