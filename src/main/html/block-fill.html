@@ -28,11 +28,12 @@ let handle = (vm, ev) => {
 };
 
 let handledragend = (vm, ev) => {
-	let setCell = (vm, cell) =>  {
-		vm = vm.map(c => c);
-		vm[cell.x] = vm[cell.x].map(c => c);
-		vm[cell.x][cell.y] = cell;
-		return vm;
+	let setCell = (vmt0, vmc1) =>  {
+		let vmr0 = vmt0[vmc1.x];
+		let vmc0 = vmr0[vmc1.y];
+		let vmr1 = vmr0.map(vmc => vmc != vmc0 ? vmc : vmc1);
+		let vmt1 = vmt0.map(vmr => vmr != vmr0 ? vmr : vmr1);
+		return vmt1;
 	}
 	renderAgain(view, vm => {
 		vm = setCell(vm, { ...dragsource, d: dragtarget.d, });
