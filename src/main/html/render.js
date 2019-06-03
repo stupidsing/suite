@@ -51,6 +51,8 @@ let render = () => {
 		return map1;
 	};
 
+	let gwmget = (key0, key1) => getOrAdd(getOrAdd(gwm, key0), key1);
+
 	/*
 		a typical "render-difference" function accept 3 parameters:
 		vm0 - old view model, null to append DOM elements
@@ -195,7 +197,7 @@ let render = () => {
 			else {
 				let parent = cudf.parent;
 				let domc = parent.childRef;
-				let cm = getOrAdd(getOrAdd(gwm, domc), key);
+				let cm = gwmget(domc, key);
 				let vm1 = [];
 				let list0;
 				let cud;
@@ -325,7 +327,7 @@ let render = () => {
 				else {
 					let parent = cudf.parent;
 					let domc = parent.childRef;
-					let cm = getOrAdd(getOrAdd(gwm, domc), key);
+					let cm = gwmget(domc, key);
 					let list0 = cm.get(vm0);
 					let list1 = [cudf.childRef0,];
 					let cud;
