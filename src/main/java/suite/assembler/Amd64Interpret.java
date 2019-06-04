@@ -75,6 +75,8 @@ public class Amd64Interpret {
 	}
 
 	public int interpret(List<Instruction> instructions, Bytes code, Bytes input) {
+		out.clear();
+
 		mem.order(ByteOrder.LITTLE_ENDIAN);
 		mem.position(posCode.t0);
 		mem.put(code.bs);
@@ -261,6 +263,9 @@ public class Amd64Interpret {
 				case MOVSD:
 					movsd();
 					break;
+				case MOVSX:
+					assign.f(source1);
+					break;
 				case NEG:
 					assign.f(-source0);
 					break;
@@ -347,7 +352,7 @@ public class Amd64Interpret {
 					assign.f(setFlags(source0 ^ source1));
 					break;
 				default:
-					fail();
+					fail("unknown instruction " + instruction.insn);
 				}
 			} catch (Exception ex) {
 				Log_.info(state(instruction));
