@@ -142,7 +142,7 @@ public class P0Parse {
 			return new SwitchNode<Funp>(node //
 			).match("!do .0", a -> {
 				return FunpIo.of(nv(doToken).p(a));
-			}).match("!for (.0 = .1 # .2 # .3)", (a, b, c, d) -> {
+			}).match("!for (.0 := .1 # .2 # .3)", (a, b, c, d) -> {
 				var vn = Atom.name(a);
 				var var = FunpVariable.of(vn);
 				var p1 = nv(doToken).nv(vn);

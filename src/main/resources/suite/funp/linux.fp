@@ -100,7 +100,7 @@ define.global !write (pointer, length) := !do
 
 define.global !write.all (pointer, length) :=
 	!for (
-		n = length #
+		n := length #
 		0 < n #
 		let p1 := !adjust.pointer pointer (length - n) ~
 		let n1 := !write (p1, n) ~
@@ -121,7 +121,7 @@ define !get.char {} := !do
 
 define !get.string (pointer, length) :=
 	!for (
-		nb = (0, true) #
+		nb := (0, true) #
 		let (n, b) := nb ~
 		n < length && b #
 		let (n, b) := nb ~
@@ -158,7 +158,7 @@ define !put.number n :=
 
 define !put.string s :=
 	!for (
-		i = 0 #
+		i := 0 #
 		s* [i] != byte 0 #
 		!put.char s* [i] ~
 		i + 1
@@ -167,7 +167,7 @@ define !put.string s :=
 
 define !cat {} :=
 	!for (
-		n = 1 #
+		n := 1 #
 		n != 0 #
 		let pointer := address.of predef (array buffer.size * byte) ~
 		let nBytesRead := !read (pointer, buffer.size) ~
