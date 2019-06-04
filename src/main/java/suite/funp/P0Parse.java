@@ -193,8 +193,6 @@ public class P0Parse {
 				}).toList(), Tree.iter(b, TermOp.OR____).toList(), Amd64.me.regByName.get(c)));
 			}).match("assign .0 := .1 ~ .2", (a, b, c) -> {
 				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(p(a)), p(b), p(c)));
-			}).match("assign ^.0 := .1 ~ .2", (a, b, c) -> {
-				return checkDo(() -> FunpDoAssignRef.of(FunpReference.of(FunpDeref.of(p(a))), p(b), p(c)));
 			}).match("byte", () -> {
 				return FunpCoerce.of(Coerce.NUMBER, Coerce.BYTE, FunpDontCare.of());
 			}).match("byte .0", a -> {
