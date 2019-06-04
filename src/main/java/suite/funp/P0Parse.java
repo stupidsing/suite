@@ -147,7 +147,7 @@ public class P0Parse {
 				var var = FunpVariable.of(vn);
 				var p1 = nv(doToken).nv(vn);
 				var while_ = p1.p(c);
-				var do_ = FunpDoAssignVar.of(var, p1.p(d), var);
+				var do_ = FunpDoAssignVar.of(var, p1.p(d), FunpDontCare.of());
 				return FunpIo.of(FunpDefine.of( //
 						vn, //
 						p(b), //
