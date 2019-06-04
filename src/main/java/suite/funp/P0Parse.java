@@ -394,10 +394,10 @@ public class P0Parse {
 			return lambda(a, b, true);
 		}
 
-		private FunpLambda lambda(Node a, Node b, boolean isAllowDo) {
+		private FunpLambda lambda(Node a, Node b, boolean isPassDo) {
 			var isVar = isVar(a);
 			var vn = isVar ? Atom.name(a) : "l$" + Util.temp();
-			var nv = isAllowDo ? nv(vn) : new Parse(vns.replace(vn).remove(doToken));
+			var nv = isPassDo ? nv(vn) : new Parse(vns.replace(vn).remove(doToken));
 			var f = isVar ? nv.p(b) : nv.bind(a, Atom.of(vn), b);
 			return FunpLambda.of(vn, f, false);
 		}
